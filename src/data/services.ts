@@ -1,0 +1,247 @@
+import { ServiceItem } from "./types";
+
+import designImg from "@/assets/services/design-services.jpg";
+import builtinImg from "@/assets/services/builtin-solutions.jpg";
+import renovationImg from "@/assets/services/renovation-works.jpg";
+import commercialImg from "@/assets/services/commercial-works.jpg";
+import exteriorImg from "@/assets/services/exterior-works.jpg";
+import warehouseImg from "@/assets/services/warehouse-shelving.jpg";
+import approvalImg from "@/assets/services/approval-docs.jpg";
+import artisticCoatingImg from "@/assets/services/artistic-coating.jpg";
+import oldHouseImg from "@/assets/services/old-house-renovation.jpg";
+import kitchenImg from "@/assets/services/kitchen-renovation.jpg";
+import bathroomImg from "@/assets/services/bathroom-renovation.jpg";
+import officeImg from "@/assets/services/office-renovation.jpg";
+import shoplotImg from "@/assets/services/shoplot-renovation.jpg";
+
+export const servicesData: ServiceItem[] = [
+  {
+    id: "renovation",
+    title: "Full Renovation",
+    slug: "renovation",
+    summary: "Complete renovation for condos and landed properties — hacking, tiling, electrical, plumbing, carpentry, painting, and all finishing works under one contract.",
+    description: "Our full renovation service handles every aspect of your project from start to finish. Whether you're upgrading a dated condo or transforming a landed home, we coordinate all trades — demolition, masonry, electrical, plumbing, carpentry, ceiling, flooring, and painting — so you only need one point of contact.\n\nWe provide a detailed project timeline, weekly progress updates, and a dedicated project manager for every job. Our team has completed over 200 residential renovations across Kuala Lumpur and Selangor.",
+    suitableFor: ["Homeowners renovating their condo or landed house", "Property investors preparing units for rent or sale", "Anyone doing a partial or full unit renovation", "Families moving into a new or subsale property"],
+    commonProjects: ["Full condo renovation", "Landed house makeover", "Kitchen and bathroom overhaul", "Flooring replacement", "Ceiling and lighting upgrade", "Rewiring and replumbing"],
+    processSteps: [
+      { title: "Site Assessment", desc: "We inspect the site and understand your requirements." },
+      { title: "Quotation", desc: "Detailed quotation with itemized costs." },
+      { title: "Permit & Scheduling", desc: "We handle permits and create a project timeline." },
+      { title: "Construction", desc: "Our team executes the renovation with regular updates." },
+      { title: "Handover", desc: "Final inspection, cleaning, and handover." },
+    ],
+    items: ["Demolition & Preliminary Works", "Structural & Masonry Works", "Carpentry & Custom Works", "Ceiling Works", "Painting & Finishing", "Flooring Works", "Doors, Windows & Glass", "Electrical Works", "ELV & Smart Systems", "Plumbing & Sanitary", "Air-Conditioning & Ventilation", "Fire Protection & Safety", "Metal Works", "Waterproofing"],
+    faqs: [
+      { q: "Do you handle everything or do I need to hire separate contractors?", a: "We handle everything. Our team manages all trades under one contract." },
+      { q: "Can I renovate while living in the unit?", a: "It depends on the scope. For partial renovations, yes. For full renovations, we recommend temporary alternative accommodation." },
+      { q: "Do you provide warranty?", a: "Yes. We provide workmanship warranty on all renovation works." },
+    ],
+    image: renovationImg,
+  },
+  {
+    id: "design",
+    title: "Interior Design",
+    slug: "design",
+    summary: "Professional space planning, interior design, 3D visualization, and construction drawings for residential and commercial projects.",
+    description: "Our design team transforms your vision into detailed plans and stunning visuals. We handle everything from initial space planning and concept development to full 3D renders and construction-ready drawings. Whether it's a cozy condo or a large commercial space, our design process ensures every detail is planned before construction begins.",
+    suitableFor: ["Homeowners planning a renovation", "Business owners opening a new outlet", "Property developers", "Anyone who wants to visualize before committing"],
+    commonProjects: ["Condo interior design", "Landed house layout planning", "Office space planning", "Retail store concept design", "F&B restaurant interior"],
+    processSteps: [
+      { title: "Consultation", desc: "We discuss your needs, preferences, budget, and timeline." },
+      { title: "Site Measurement", desc: "Our team visits the site for accurate measurements." },
+      { title: "Concept Design", desc: "We present layout options and mood boards for your review." },
+      { title: "3D Visualization", desc: "Detailed 3D renders show you the final result before any work begins." },
+      { title: "Construction Drawings", desc: "Technical drawings are prepared for precise execution." },
+    ],
+    items: ["Space Planning & Layout", "Residential Interior Design", "Commercial Interior Design", "3D Visualizations & Construction Drawings", "Submission & Drawing Coordination"],
+    faqs: [
+      { q: "Do I need to hire a separate designer?", a: "No. Our in-house design team handles everything from concept to construction drawings." },
+      { q: "Can I see the design before construction?", a: "Yes. We provide 3D visualizations so you can see and approve the design before any work begins." },
+      { q: "How long does the design process take?", a: "Typically 1-2 weeks for residential projects and 2-4 weeks for commercial projects." },
+    ],
+    image: designImg,
+  },
+  {
+    id: "builtin",
+    title: "Custom Built-In Furniture",
+    slug: "builtin",
+    summary: "Made-to-measure wardrobes, kitchen cabinets, TV consoles, shoe cabinets, vanities, and storage solutions designed for better space usage and durability.",
+    description: "Every space is different, and off-the-shelf furniture rarely fits perfectly. Our custom built-in solutions are designed and manufactured to your exact dimensions and style preferences. Using quality materials like melamine, acrylic, solid wood, and premium hardware, we create furniture that maximizes your space and matches your interior.",
+    suitableFor: ["Homeowners who want perfect-fit furniture", "Small condos needing space optimization", "Offices requiring custom storage", "Anyone who wants unique, tailored designs"],
+    commonProjects: ["Walk-in wardrobes", "Full kitchen cabinet sets", "TV feature walls with cabinets", "Home office desks and shelving", "Bathroom vanities"],
+    processSteps: [
+      { title: "Measurement", desc: "Precise on-site measurements of your space." },
+      { title: "Design & Material Selection", desc: "Choose materials, colors, hardware, and finishes." },
+      { title: "3D Preview", desc: "See your custom furniture in a realistic 3D render." },
+      { title: "Factory Manufacturing", desc: "Your furniture is manufactured in our workshop." },
+      { title: "Installation", desc: "Professional on-site installation and adjustment." },
+    ],
+    items: ["Custom Wardrobes", "Kitchen Cabinets", "Bathroom Vanities", "Shoe Cabinets", "Storage Cabinets", "TV Cabinets", "Display Cabinets", "Wine Cabinets", "Walk-In Wardrobes", "Study Desks", "Office Storage Systems", "Timber Paneling & Partitions"],
+    faqs: [
+      { q: "What materials do you use for built-in furniture?", a: "We use melamine, acrylic, solid wood, laminate, and other premium materials. All come with soft-close hardware as standard." },
+      { q: "How long does custom furniture take?", a: "Typically 2-4 weeks from confirmed design to installation." },
+      { q: "Can I choose my own handles and hardware?", a: "Yes. We offer a wide range of handles, knobs, and hardware for you to choose from." },
+    ],
+    image: builtinImg,
+  },
+  {
+    id: "kitchen",
+    title: "Kitchen Renovation",
+    slug: "kitchen",
+    summary: "Complete kitchen renovation including cabinet replacement, countertop upgrade, tiling, plumbing, electrical, and appliance integration for modern cooking spaces.",
+    description: "The kitchen is the heart of every home. Our kitchen renovation service covers everything from full cabinet replacement and countertop installation to plumbing upgrades, electrical rewiring, tiling, and ventilation. We design kitchens that are practical, easy to maintain, and built to last — whether it's a compact condo kitchen or a spacious landed home cooking area.\n\nWe work with quality materials including quartz countertops, acrylic and melamine cabinets, porcelain tiles, and stainless steel hardware. Every kitchen we build comes with soft-close mechanisms, proper waterproofing, and efficient layout planning.",
+    suitableFor: ["Homeowners upgrading an old or dated kitchen", "Families who need more storage and counter space", "Property owners preparing units for rent", "Anyone building a new kitchen from scratch"],
+    commonProjects: ["Full kitchen cabinet replacement", "Countertop upgrade to quartz or granite", "Kitchen island installation", "Wet and dry kitchen separation", "Kitchen tiling and backsplash", "Exhaust and ventilation upgrade"],
+    processSteps: [
+      { title: "Kitchen Assessment", desc: "We measure your kitchen and discuss your cooking habits and storage needs." },
+      { title: "Layout & Design", desc: "We propose an optimized layout with 3D visualization." },
+      { title: "Material Selection", desc: "Choose cabinet materials, countertop, tiles, and hardware." },
+      { title: "Demolition & Prep", desc: "Remove old cabinets, tiling, and prepare the space." },
+      { title: "Installation & Finishing", desc: "Install new cabinets, countertop, plumbing, and appliances." },
+    ],
+    items: ["Kitchen Cabinet (Upper & Lower)", "Quartz / Granite Countertop", "Kitchen Island", "Tiling & Backsplash", "Plumbing & Sink", "Electrical & Lighting", "Exhaust & Ventilation", "Appliance Integration"],
+    faqs: [
+      { q: "How long does a kitchen renovation take?", a: "A typical kitchen renovation takes 3-5 weeks depending on the scope and whether plumbing changes are needed." },
+      { q: "Can you work with my existing layout?", a: "Yes. We can upgrade materials and cabinets within your existing layout, or redesign the entire kitchen for better efficiency." },
+      { q: "Do you install kitchen appliances?", a: "Yes. We integrate ovens, hoods, hobs, dishwashers, and other appliances into the cabinet design." },
+    ],
+    image: kitchenImg,
+  },
+  {
+    id: "bathroom",
+    title: "Bathroom Renovation",
+    slug: "bathroom",
+    summary: "Full bathroom renovation including waterproofing, tiling, vanity installation, shower system upgrade, and plumbing works for a clean, modern bathroom.",
+    description: "A well-designed bathroom improves daily comfort and adds value to your property. Our bathroom renovation service covers demolition, waterproofing, tiling, vanity installation, shower system upgrade, toilet replacement, plumbing, and all finishing works.\n\nWe pay special attention to waterproofing — the most critical aspect of any bathroom renovation. Our waterproofing process includes multiple layers of membrane application and a 48-hour water test before tiling begins. We use quality tiles, premium sanitary ware, and durable hardware to create bathrooms that look good and last.",
+    suitableFor: ["Homeowners with outdated or leaking bathrooms", "Anyone upgrading from a basic bathroom to a modern design", "Property owners preparing units for sale or rent", "Families adding or expanding bathroom spaces"],
+    commonProjects: ["Full bathroom gut and rebuild", "Shower area upgrade with glass partition", "Floating vanity installation", "Toilet and bidet replacement", "Bathroom tiling and waterproofing", "Rain shower and mixer installation"],
+    processSteps: [
+      { title: "Assessment", desc: "We inspect the existing bathroom for leaks, drainage issues, and structural condition." },
+      { title: "Design & Selection", desc: "Choose tiles, vanity, shower system, and sanitary ware." },
+      { title: "Demolition", desc: "Remove old tiles, fixtures, and fittings." },
+      { title: "Waterproofing", desc: "Apply waterproof membrane and conduct water test." },
+      { title: "Installation", desc: "Tile, install fixtures, vanity, and all plumbing." },
+    ],
+    items: ["Waterproofing (Membrane + Water Test)", "Wall & Floor Tiling", "Floating / Wall-Mounted Vanity", "Shower Glass Partition", "Rain Shower System", "Toilet & Bidet", "Plumbing & Drainage", "Lighting & Ventilation"],
+    faqs: [
+      { q: "How long does a bathroom renovation take?", a: "A typical bathroom renovation takes 2-3 weeks, including the waterproofing curing period." },
+      { q: "Is waterproofing really necessary?", a: "Absolutely. Poor waterproofing is the number one cause of bathroom leaks. We apply multiple layers and conduct a 48-hour water test before tiling." },
+      { q: "Can you renovate a bathroom without changing the layout?", a: "Yes. We can upgrade materials, tiles, and fixtures within the existing layout." },
+    ],
+    image: bathroomImg,
+  },
+  {
+    id: "office",
+    title: "Office Renovation",
+    slug: "office",
+    summary: "Practical office layout planning, partition works, furniture installation, data cabling, and professional finishing for productive working spaces.",
+    description: "A well-designed office improves productivity, reflects your brand, and creates a comfortable environment for your team. Our office renovation service covers space planning, partition installation, ceiling and lighting, flooring, data cabling, pantry setup, and all finishing works.\n\nWe understand that office renovations need to be completed quickly to minimize business downtime. Our team works efficiently and can arrange after-hours or weekend work when needed. We've completed office fit-outs for tech companies, professional firms, co-working spaces, and corporate headquarters across KL and Selangor.",
+    suitableFor: ["Companies setting up a new office", "Businesses relocating or expanding", "Co-working space operators", "Professional firms upgrading their workspace"],
+    commonProjects: ["New office fit-out from bare unit", "Office partition and meeting room setup", "Reception and front desk design", "Pantry and washroom renovation", "Data cabling and electrical upgrade", "Workstation and storage installation"],
+    processSteps: [
+      { title: "Brief & Site Visit", desc: "We understand your team size, workflow, and brand requirements." },
+      { title: "Layout & Design", desc: "We propose an office layout optimized for productivity and collaboration." },
+      { title: "Quotation & Timeline", desc: "Detailed cost breakdown with a realistic project schedule." },
+      { title: "Construction", desc: "We execute the renovation with minimal disruption to your business." },
+      { title: "Handover", desc: "Final inspection, cleaning, and IT infrastructure testing." },
+    ],
+    items: ["Office Partitioning (Glass / Gypsum)", "Meeting Room Setup", "Reception & Front Desk", "Pantry & Washroom", "Ceiling & Lighting", "Flooring (Carpet Tile / Vinyl)", "Data Cabling & Electrical", "Workstation & Storage", "Air-Conditioning", "Signage & Branding"],
+    faqs: [
+      { q: "Can you work after business hours?", a: "Yes. We can arrange night or weekend work to minimize disruption to your operations." },
+      { q: "How fast can you complete an office renovation?", a: "A typical office fit-out takes 4-8 weeks depending on the size and scope." },
+      { q: "Do you handle data cabling and IT infrastructure?", a: "Yes. We coordinate data cabling, network points, and power outlets for all workstations." },
+    ],
+    image: officeImg,
+  },
+  {
+    id: "shoplot",
+    title: "Shoplot Renovation",
+    slug: "shoplot",
+    summary: "Complete shop lot renovation for retail, F&B, clinic, salon, and service businesses — from shopfront design to interior fit-out and signage.",
+    description: "Opening or upgrading a shop lot requires careful planning to maximize customer flow, create the right atmosphere, and meet regulatory requirements. Our shoplot renovation service covers everything from shopfront design and signage to interior layout, counter setup, display systems, and compliance works.\n\nWe have experience with retail stores, restaurants and cafés, clinics, hair salons, education centers, and professional service offices. We understand the different requirements of each business type and design spaces that support your operations and attract customers.",
+    suitableFor: ["Business owners opening a new outlet", "F&B operators setting up a restaurant or café", "Clinic and salon operators", "Retailers needing display and branding works", "Service businesses upgrading their premises"],
+    commonProjects: ["New shop lot fit-out from bare unit", "Restaurant and café interior", "Retail store with display system", "Clinic or salon setup", "Shopfront glass and signage works", "Counter and cashier area"],
+    processSteps: [
+      { title: "Business Brief", desc: "We understand your business type, target customers, and brand identity." },
+      { title: "Layout & Concept", desc: "We design a layout that optimizes customer flow and operations." },
+      { title: "Quotation & Permits", desc: "Detailed quotation and coordination with local council for permits." },
+      { title: "Construction", desc: "Full renovation execution including shopfront, interior, and compliance works." },
+      { title: "Handover & Support", desc: "Final inspection, signage installation, and post-handover support." },
+    ],
+    items: ["Shopfront Design & Works", "Interior Layout & Partitioning", "Counter & Display System", "Signage & Branding", "Ceiling & Lighting", "Flooring & Tiling", "Plumbing & Electrical", "Air-Conditioning", "Fire Safety Compliance", "Kitchen Setup (F&B)"],
+    faqs: [
+      { q: "How long does a shop lot renovation take?", a: "A typical shop lot renovation takes 4-8 weeks depending on the scope and type of business." },
+      { q: "Do you handle fire safety and local council compliance?", a: "Yes. We coordinate fire safety installations, signage licenses, and ensure compliance with local regulations." },
+      { q: "Can you design the shopfront and signage?", a: "Yes. We design and fabricate shopfront works, 3D signage, lightbox signs, and LED channel letters." },
+    ],
+    image: shoplotImg,
+  },
+  {
+    id: "artistic-coating",
+    title: "Artistic Wall Coating — Remmers",
+    slug: "artistic-coating",
+    summary: "Authorized applicator for German Remmers artistic wall coatings in Malaysia. Premium textured finishes, lime-based coatings, metallic effects, and decorative plasters for luxury interiors.",
+    description: "FLASH CAST is an authorized applicator for Remmers, a leading German manufacturer of premium architectural coatings. Our trained technicians apply authentic European artistic wall coatings that transform ordinary walls into stunning feature surfaces. Unlike regular paint, these coatings create unique textures, depth, and visual effects that cannot be replicated by conventional methods.\n\nOur Remmers coating range includes lime-based finishes (Kalkfarbe), metallic effects (Artisto Fill Metallic), decorative plasters (Dekorputz), Venetian-style finishes, and natural stone effects. All products are imported directly from Germany.",
+    suitableFor: ["Homeowners wanting premium feature walls", "Interior designers seeking unique finishes", "Hotels and hospitality venues", "Restaurants and F&B interiors", "Commercial showrooms and lobbies"],
+    commonProjects: ["Living room TV feature wall", "Master bedroom accent wall", "Hotel lobby and corridor coating", "Restaurant interior wall finish", "Office reception feature wall"],
+    processSteps: [
+      { title: "Consultation & Color Selection", desc: "We show physical samples and recommend coatings that suit your space and style." },
+      { title: "Surface Preparation", desc: "We prepare the wall surface — cleaning, priming, and ensuring the substrate is ready." },
+      { title: "Sample Application", desc: "We apply a test patch on-site so you can approve the actual finish." },
+      { title: "Full Application", desc: "Our trained technicians apply the coating by hand — each layer carefully worked." },
+      { title: "Sealing & Protection", desc: "The finished surface is sealed for durability and easy cleaning." },
+    ],
+    items: ["Remmers Lime-Based Coatings (Kalkfarbe)", "Artisto Fill Metallic Effects", "Decorative Plaster (Dekorputz)", "Venetian-Style Finishes", "Natural Stone & Concrete Effects", "Marmorino & Stucco Finishes", "Rust & Oxidation Effects", "Custom Color Mixing & Matching"],
+    faqs: [
+      { q: "What is artistic wall coating?", a: "Artistic wall coatings are premium decorative finishes that create texture, depth, and visual effects on walls. Each application is handcrafted — no two walls are exactly alike." },
+      { q: "How durable is it?", a: "When properly applied and sealed, Remmers coatings last 10-15+ years. They are washable, scratch-resistant, and maintain their appearance over time." },
+      { q: "How much does it cost?", a: "Basic lime finishes start from RM 15-25 per sqft. Premium metallic and multi-layer finishes range from RM 30-60+ per sqft." },
+    ],
+    image: artisticCoatingImg,
+  },
+  {
+    id: "old-house",
+    title: "Old House Renovation",
+    slug: "old-house",
+    summary: "Comprehensive renovation for aging terrace houses, bungalows, and semi-detached homes — structural repair, rewiring, replumbing, and full interior makeover.",
+    description: "Many Malaysian homeowners inherit or purchase older properties that need major upgrading. Our Old House Renovation service handles the unique challenges of aging buildings — cracked walls, outdated wiring, old plumbing, termite damage, roof leaks, and worn-out interiors.\n\nWe assess the structural condition of your property and create a renovation plan that addresses both safety concerns and aesthetic goals. Our team has extensive experience with Malaysian terrace houses, semi-detached homes, and bungalows built in the 1970s-1990s.",
+    suitableFor: ["Owners of terrace houses built before 2000", "Inherited property needing major renovation", "Property investors upgrading old units", "Families wanting to modernize their family home"],
+    commonProjects: ["Full terrace house renovation", "Bungalow modernization", "Semi-D interior overhaul", "Kitchen and bathroom replacement", "Roof repair and waterproofing", "Complete rewiring and replumbing"],
+    processSteps: [
+      { title: "Structural Assessment", desc: "We inspect for structural issues, termite damage, water damage, and electrical/plumbing condition." },
+      { title: "Renovation Plan", desc: "Detailed plan addressing structural repairs and interior design upgrades." },
+      { title: "Cost Estimation", desc: "Transparent itemized quotation covering all works." },
+      { title: "Demolition & Repair", desc: "Demolition, structural repairs, waterproofing, rewiring, and replumbing." },
+      { title: "Interior Fit-Out", desc: "New flooring, ceiling, painting, built-in furniture, and all finishing works." },
+      { title: "Final Handover", desc: "Complete inspection, cleaning, and warranty handover." },
+    ],
+    items: ["Structural Repair & Reinforcement", "Roof Repair & Waterproofing", "Complete Electrical Rewiring", "Plumbing & Pipe Replacement", "Termite Treatment & Prevention", "Wall Crack Repair & Plastering", "Window & Door Replacement", "Kitchen & Bathroom Overhaul", "Flooring Replacement", "Ceiling & Lighting Upgrade", "Built-In Furniture & Carpentry", "Interior & Exterior Painting"],
+    faqs: [
+      { q: "How much does an old house renovation cost?", a: "A full old house renovation typically ranges from RM 80,000 to RM 300,000+ depending on property size and condition." },
+      { q: "How long does it take?", a: "A full renovation usually takes 10-16 weeks depending on the extent of structural repairs needed." },
+      { q: "Do you handle termite issues?", a: "Yes. We conduct termite inspections and arrange professional treatment before renovation begins." },
+    ],
+    image: oldHouseImg,
+  },
+  {
+    id: "approval",
+    title: "Permit & Drawing Support",
+    slug: "approval",
+    summary: "Renovation permit applications, management office coordination, architectural drawings, and all documentation services for your project.",
+    description: "Renovation in Malaysia requires proper permits and approvals — from management office applications to DBKL renovation permits. Our documentation team handles the entire paperwork process so you can focus on your project. We coordinate with management offices, local councils, and authorities on your behalf.",
+    suitableFor: ["Anyone doing renovation in a managed property", "Projects requiring DBKL or local council permits", "Commercial renovations needing compliance documentation"],
+    commonProjects: ["Condo management office renovation applications", "DBKL renovation permit submissions", "Drawing and plan submissions", "Site inspection coordination"],
+    processSteps: [
+      { title: "Document Collection", desc: "We gather all necessary project documents and drawings." },
+      { title: "Application Submission", desc: "We submit the application to the relevant authority." },
+      { title: "Follow-Up", desc: "We track the application and respond to any queries." },
+      { title: "Approval & Handover", desc: "Once approved, we hand over all documentation to you." },
+    ],
+    items: ["Management Office Renovation Application", "DBKL Renovation Permit Assistance", "Drawing Submission Coordination", "Documentation Preparation", "Site Inspection Coordination"],
+    faqs: [
+      { q: "How long does it take to get a renovation permit?", a: "Management office approvals typically take 1-2 weeks. DBKL permits may take 2-4 weeks." },
+      { q: "Can you handle the entire permit process?", a: "Yes. We handle everything from document preparation to submission and follow-up." },
+    ],
+    image: approvalImg,
+  },
+];

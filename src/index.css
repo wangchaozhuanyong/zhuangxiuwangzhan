@@ -1,0 +1,220 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+SC:wght@400;500;700&family=Playfair+Display:wght@400;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 40 20% 97%;
+    --foreground: 30 10% 12%;
+
+    --card: 40 15% 96%;
+    --card-foreground: 30 10% 12%;
+
+    --popover: 40 20% 97%;
+    --popover-foreground: 30 10% 12%;
+
+    --primary: 30 15% 18%;
+    --primary-foreground: 40 20% 97%;
+
+    --secondary: 35 12% 92%;
+    --secondary-foreground: 30 10% 12%;
+
+    --muted: 38 14% 94%;
+    --muted-foreground: 30 8% 45%;
+
+    --accent: 30 25% 22%;
+    --accent-foreground: 40 20% 97%;
+
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
+
+    --border: 35 12% 88%;
+    --input: 35 12% 88%;
+    --ring: 30 25% 22%;
+
+    --radius: 0.375rem;
+
+    /* Custom tokens */
+    --steel: 30 8% 50%;
+    --steel-light: 35 10% 82%;
+    --gold: 38 55% 50%;
+    --warm: 32 30% 92%;
+    --surface-dark: 30 15% 10%;
+    --surface-dark-foreground: 40 15% 92%;
+    --surface-elevated: 40 20% 97%;
+
+    --font-display: 'Playfair Display', serif;
+    --font-body: 'Inter', sans-serif;
+
+    --sidebar-background: 40 15% 96%;
+    --sidebar-foreground: 240 5.3% 26.1%;
+    --sidebar-primary: 30 15% 18%;
+    --sidebar-primary-foreground: 40 20% 97%;
+    --sidebar-accent: 38 14% 94%;
+    --sidebar-accent-foreground: 30 10% 12%;
+    --sidebar-border: 35 12% 88%;
+    --sidebar-ring: 30 25% 22%;
+  }
+
+  .dark {
+    --background: 220 20% 6%;
+    --foreground: 0 0% 95%;
+
+    --card: 220 18% 10%;
+    --card-foreground: 0 0% 95%;
+
+    --popover: 220 18% 10%;
+    --popover-foreground: 0 0% 95%;
+
+    --primary: 0 0% 95%;
+    --primary-foreground: 220 20% 8%;
+
+    --secondary: 220 15% 15%;
+    --secondary-foreground: 0 0% 95%;
+
+    --muted: 220 15% 15%;
+    --muted-foreground: 220 10% 60%;
+
+    --accent: 210 60% 50%;
+    --accent-foreground: 0 0% 100%;
+
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 210 40% 98%;
+
+    --border: 220 15% 18%;
+    --input: 220 15% 18%;
+    --ring: 210 60% 50%;
+
+    --sidebar-background: 240 5.9% 10%;
+    --sidebar-foreground: 240 4.8% 95.9%;
+    --sidebar-primary: 224.3 76.3% 48%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 240 3.7% 15.9%;
+    --sidebar-accent-foreground: 240 4.8% 95.9%;
+    --sidebar-border: 240 3.7% 15.9%;
+    --sidebar-ring: 217.2 91.2% 59.8%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground font-body antialiased;
+  }
+  h1, h2, h3 {
+    font-family: var(--font-display);
+  }
+}
+
+@layer components {
+  .section-padding {
+    @apply px-4 py-16 md:px-8 md:py-24 lg:px-16;
+  }
+  .container-narrow {
+    @apply max-w-6xl mx-auto;
+  }
+  .text-steel {
+    color: hsl(var(--steel));
+  }
+  .text-steel-light {
+    color: hsl(var(--steel-light));
+  }
+  .bg-surface-dark {
+    background-color: hsl(var(--surface-dark));
+    color: hsl(var(--surface-dark-foreground));
+  }
+  .text-gold {
+    color: hsl(var(--gold));
+  }
+  .border-steel {
+    border-color: hsl(var(--steel-light));
+  }
+  .bg-steel-light {
+    background-color: hsl(var(--steel-light));
+  }
+  .accent-line {
+    @apply w-12 h-0.5 bg-accent;
+  }
+
+  /* Card hover — subtle lift + shadow */
+  .hover-lift {
+    @apply transition-all duration-300 ease-out hover:-translate-y-1.5;
+    &:hover {
+      box-shadow: 0 12px 32px -8px hsl(var(--foreground) / 0.1);
+    }
+  }
+
+  /* Image zoom on hover (apply to parent, img inside scales) */
+  .img-zoom img {
+    @apply transition-transform duration-700 ease-out;
+  }
+  .img-zoom:hover img {
+    @apply scale-105;
+  }
+
+  /* Button press effect */
+  .btn-press {
+    @apply transition-transform duration-150 active:scale-[0.97];
+  }
+
+  /* Stagger children animation helper */
+  .stagger-children > * {
+    @apply opacity-0;
+    animation: fade-in 0.5s ease-out forwards;
+  }
+  .stagger-children > *:nth-child(1) { animation-delay: 0ms; }
+  .stagger-children > *:nth-child(2) { animation-delay: 80ms; }
+  .stagger-children > *:nth-child(3) { animation-delay: 160ms; }
+  .stagger-children > *:nth-child(4) { animation-delay: 240ms; }
+  .stagger-children > *:nth-child(5) { animation-delay: 320ms; }
+  .stagger-children > *:nth-child(6) { animation-delay: 400ms; }
+  .stagger-children > *:nth-child(7) { animation-delay: 480ms; }
+  .stagger-children > *:nth-child(8) { animation-delay: 560ms; }
+
+  /* Scrollbar hide for horizontal scroll */
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+    &::-webkit-scrollbar { display: none; }
+  }
+
+  /* Scroll fade hint — right edge gradient */
+  .scroll-fade-right {
+    -webkit-mask-image: linear-gradient(to right, black 85%, transparent 100%);
+    mask-image: linear-gradient(to right, black 85%, transparent 100%);
+  }
+
+  /* Text shadow for hero headlines */
+  .text-shadow-hero {
+    text-shadow: 0 2px 16px rgba(0,0,0,0.35);
+  }
+}
+
+@keyframes fade-in {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Hero Ken Burns — subtle slow zoom, disabled on reduced-motion */
+@keyframes hero-ken-burns {
+  0% { transform: scale(1); }
+  100% { transform: scale(1.06); }
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+/* Reduced motion: disable all custom animations and transitions */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+  html { scroll-behavior: auto; }
+}
