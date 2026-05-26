@@ -11,6 +11,7 @@ import Reveal from "@/components/Reveal";
 import PageMeta from "@/components/PageMeta";
 import { JsonLdBreadcrumb } from "@/components/JsonLd";
 import { whatsappUrl } from "@/config/site";
+import { translateMaterialCategory, translateMaterialSubcategory } from "@/i18n/displayLabels";
 
 const copy = {
   en: {
@@ -56,6 +57,8 @@ const MaterialSubcategoryPage = () => {
   const category = categories.find((item) => item.slug === categorySlug);
   const subcategory = category?.subcategories.find((item) => item.slug === subcategorySlug);
   const items = category?.items.filter((item) => item.subcategory === subcategorySlug) || [];
+  const displayCategoryName = category ? translateMaterialCategory(category.name, language) : "";
+  const displaySubcategoryName = subcategory ? translateMaterialSubcategory(subcategory.name, language) : "";
 
   useEffect(() => {
     void getPublishedMaterials(language).then(setCategories);
@@ -73,21 +76,21 @@ const MaterialSubcategoryPage = () => {
   return (
     <main className="pt-16">
       <PageMeta
-        title={`${subcategory.name} | ${category.name} | FLASH CAST`}
-        description={t.metaDescription(subcategory.description, subcategory.name)}
-        keywords={t.metaKeywords(subcategory.name, category.name)}
+        title={`${displaySubcategoryName} | ${displayCategoryName} | FLASH CAST`}
+        description={t.metaDescription(subcategory.description, displaySubcategoryName)}
+        keywords={t.metaKeywords(displaySubcategoryName, displayCategoryName)}
         canonicalPath={`/materials/category/${category.slug}/${subcategory.slug}`}
       />
-      <JsonLdBreadcrumb items={[{ name: t.breadcrumbHome, url: "/" }, { name: t.breadcrumbMaterials, url: "/materials" }, { name: category.name, url: `/materials/category/${category.slug}` }, { name: subcategory.name, url: `/materials/category/${category.slug}/${subcategory.slug}` }]} />
+      <JsonLdBreadcrumb items={[{ name: t.breadcrumbHome, url: "/" }, { name: t.breadcrumbMaterials, url: "/materials" }, { name: displayCategoryName, url: `/materials/category/${category.slug}` }, { name: displaySubcategoryName, url: `/materials/category/${category.slug}/${subcategory.slug}` }]} />
 
       <section className="bg-muted border-b border-border">
         <div className="section-padding !pb-0">
           <div className="container-narrow">
             <Link to={`/materials/category/${category.slug}`} className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-accent mb-6 transition-colors">
-              <ArrowLeft className="w-4 h-4" /> {category.name}
+              <ArrowLeft className="w-4 h-4" /> {displayCategoryName}
             </Link>
             <div className="accent-line mb-4" />
-            <h1 className="font-display text-3xl md:text-4xl font-bold mb-2 md:text-center">{subcategory.name}</h1>
+            <h1 className="font-display text-3xl md:text-4xl font-bold mb-2 md:text-center">{displaySubcategoryName}</h1>
             <p className="text-muted-foreground max-w-xl md:mx-auto md:text-center pb-12 md:pb-16">{subcategory.description}</p>
           </div>
         </div>
@@ -113,7 +116,7 @@ const MaterialSubcategoryPage = () => {
           ) : (
             <div className="text-center py-16">
               <p className="text-muted-foreground mb-2">{t.comingSoon}</p>
-              <p className="text-sm text-muted-foreground mb-6">{t.enquireText(subcategory.name)}</p>
+              <p className="text-sm text-muted-foreground mb-6">{t.enquireText(displaySubcategoryName)}</p>
               <Button asChild>
                 <Link to="/quote">{t.quote} <ArrowRight className="ml-2 w-4 h-4" /></Link>
               </Button>
@@ -125,7 +128,7 @@ const MaterialSubcategoryPage = () => {
       <section className="section-padding bg-accent text-accent-foreground text-center">
         <Reveal>
           <div className="container-narrow">
-            <h2 className="font-display text-3xl font-bold mb-4">{t.interested(subcategory.name)}</h2>
+            <h2 className="font-display text-3xl font-bold mb-4">{t.interested(displaySubcategoryName)}</h2>
             <p className="text-accent-foreground/80 mb-6 max-w-lg mx-auto">{t.ctaText}</p>
             <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center">
               <Button variant="secondary" size="lg" className="btn-press w-full sm:w-auto min-h-[3rem] text-sm font-bold tracking-wide rounded-md px-8 py-3 justify-center" asChild>

@@ -6,6 +6,7 @@ import { getPublishedBlogPosts } from "@/lib/contentApi";
 import { useLanguage } from "@/i18n/LanguageContext";
 import PageMeta from "@/components/PageMeta";
 import { JsonLdBreadcrumb } from "@/components/JsonLd";
+import { translateBlogCategory, translateKeywordLabel } from "@/i18n/displayLabels";
 
 const categories = [
   { value: "All", en: "All", zh: "全部" },
@@ -100,7 +101,7 @@ const Blog = () => {
                   <img src={filtered[0].image} alt={filtered[0].title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
                 </div>
                 <div className="p-6">
-                  <span className="text-accent text-xs font-medium uppercase tracking-wider">{filtered[0].category}</span>
+                  <span className="text-accent text-xs font-medium uppercase tracking-wider">{translateBlogCategory(filtered[0].category, language)}</span>
                   <h2 className="font-display text-2xl font-bold mt-2 mb-3 group-hover:text-accent transition-colors">{filtered[0].title}</h2>
                   <p className="text-muted-foreground text-sm mb-4 line-clamp-3">{filtered[0].excerpt}</p>
                   <div className="flex items-center gap-4 text-xs text-muted-foreground">
@@ -120,14 +121,14 @@ const Blog = () => {
                 </div>
                 <div className="p-4">
                   <div className="flex items-center gap-3 mb-2">
-                    <span className="text-accent text-xs font-medium uppercase tracking-wider">{post.category}</span>
+                    <span className="text-accent text-xs font-medium uppercase tracking-wider">{translateBlogCategory(post.category, language)}</span>
                     <span className="text-muted-foreground text-xs">{post.readTime}</span>
                   </div>
                   <h3 className="font-display text-base font-semibold mb-2 group-hover:text-accent transition-colors line-clamp-2">{post.title}</h3>
                   <p className="text-muted-foreground text-sm line-clamp-2">{post.excerpt}</p>
                   <div className="mt-3 flex flex-wrap gap-1">
                     {post.tags.slice(0, 3).map((tag) => (
-                      <span key={tag} className="text-xs px-2 py-0.5 bg-muted rounded text-muted-foreground">#{tag}</span>
+                      <span key={tag} className="text-xs px-2 py-0.5 bg-muted rounded text-muted-foreground">#{translateKeywordLabel(tag, language)}</span>
                     ))}
                   </div>
                 </div>

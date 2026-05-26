@@ -11,6 +11,7 @@ import PageMeta from "@/components/PageMeta";
 import { JsonLdBreadcrumb } from "@/components/JsonLd";
 import { whatsappUrl } from "@/config/site";
 import heroImg from "@/assets/hero-materials.jpg";
+import { translateMaterialCategory } from "@/i18n/displayLabels";
 
 const copy = {
   en: {
@@ -55,6 +56,7 @@ const Materials = () => {
   const { language } = useLanguage();
   const t = copy[language];
   const [categories, setCategories] = useState(materialsData);
+  const displayCategoryName = (value: string) => translateMaterialCategory(value, language);
 
   useEffect(() => {
     void getPublishedMaterials(language).then(setCategories);
@@ -96,11 +98,11 @@ const Materials = () => {
               <Reveal key={category.slug} delay={index * 80}>
                 <Link to={`/materials/category/${category.slug}`} className="group block hover-lift">
                   <div className="relative overflow-hidden rounded-xl aspect-[4/3] bg-muted border border-border">
-                    <img src={category.image} alt={category.alt || category.name} loading="lazy" width={400} height={300} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                    <img src={category.image} alt={category.alt || displayCategoryName(category.name)} loading="lazy" width={400} height={300} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
                     <div className="absolute bottom-0 left-0 right-0 p-4">
                       <h3 className="font-display font-bold text-sm md:text-base leading-tight" style={{ color: "#fff", textShadow: "0 1px 4px rgba(0,0,0,0.5)" }}>
-                        {category.name}
+                        {displayCategoryName(category.name)}
                       </h3>
                       <p className="text-[10px] md:text-xs mt-1.5" style={{ color: "rgba(255,255,255,0.65)" }}>
                         {category.subcategories.length} {t.subcategories}

@@ -6,6 +6,7 @@ import Reveal from "@/components/Reveal";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { useT } from "@/i18n/useT";
 import { getPublishedProjects } from "@/lib/contentApi";
+import { translateDisplayText } from "@/i18n/displayLabels";
 
 type FeaturedProject = {
   slug: string;
@@ -104,6 +105,8 @@ const ProjectsSection = () => {
                 typeLabels[language][typeKey as keyof (typeof typeLabels)[typeof language]] ||
                 project.type ||
                 typeLabels[language].renovation;
+              const title = translateDisplayText(project.title || "", language);
+              const description = translateDisplayText(project.description || "", language);
 
               return (
                 <Reveal key={project.slug} delay={index * 80}>
@@ -132,14 +135,14 @@ const ProjectsSection = () => {
                     </div>
                     <div className="p-5">
                       <h3 className="font-display text-base font-semibold mb-2 text-white group-hover:text-gold transition-colors">
-                        {project.title}
+                        {title}
                       </h3>
                       <p className="mb-3 flex items-center gap-1.5 text-xs text-white/55">
                         <MapPin className="h-3.5 w-3.5 text-gold" />
                         {project.location}
                       </p>
                       <p className="text-white/62 text-xs leading-relaxed line-clamp-2">
-                        {project.description}
+                        {description}
                       </p>
                     </div>
                   </Link>

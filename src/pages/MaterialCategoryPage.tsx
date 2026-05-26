@@ -11,6 +11,7 @@ import Reveal from "@/components/Reveal";
 import PageMeta from "@/components/PageMeta";
 import { JsonLdBreadcrumb } from "@/components/JsonLd";
 import { whatsappUrl } from "@/config/site";
+import { translateMaterialCategory, translateMaterialSubcategory } from "@/i18n/displayLabels";
 
 const copy = {
   en: {
@@ -55,6 +56,7 @@ const MaterialCategoryPage = () => {
   const t = copy[language];
   const [categories, setCategories] = useState(materialsData);
   const category = categories.find((item) => item.slug === categorySlug);
+  const displayCategoryName = category ? translateMaterialCategory(category.name, language) : "";
 
   useEffect(() => {
     void getPublishedMaterials(language).then(setCategories);
@@ -72,16 +74,16 @@ const MaterialCategoryPage = () => {
   return (
     <main className="pt-16">
       <PageMeta
-        title={`${category.name} | ${t.breadcrumbMaterials} | FLASH CAST`}
-        description={t.metaDescription(category.description, category.name)}
-        keywords={t.metaKeywords(category.name)}
+        title={`${displayCategoryName} | ${t.breadcrumbMaterials} | FLASH CAST`}
+        description={t.metaDescription(category.description, displayCategoryName)}
+        keywords={t.metaKeywords(displayCategoryName)}
         canonicalPath={`/materials/category/${category.slug}`}
       />
-      <JsonLdBreadcrumb items={[{ name: t.breadcrumbHome, url: "/" }, { name: t.breadcrumbMaterials, url: "/materials" }, { name: category.name, url: `/materials/category/${category.slug}` }]} />
+      <JsonLdBreadcrumb items={[{ name: t.breadcrumbHome, url: "/" }, { name: t.breadcrumbMaterials, url: "/materials" }, { name: displayCategoryName, url: `/materials/category/${category.slug}` }]} />
 
       <section className="relative overflow-hidden">
         <div className="absolute inset-0">
-          <img src={category.image} alt={category.alt || category.name} className="w-full h-full object-cover" />
+          <img src={category.image} alt={category.alt || displayCategoryName} className="w-full h-full object-cover" />
           <div className="absolute inset-0 bg-gradient-to-r from-black/65 via-black/35 to-transparent" />
         </div>
         <div className="relative z-10 section-padding">
@@ -90,7 +92,7 @@ const MaterialCategoryPage = () => {
               <ArrowLeft className="w-4 h-4" /> {t.allMaterials}
             </Link>
             <h1 className="font-display text-3xl md:text-4xl font-bold mb-3 md:text-center" style={{ color: "#fff", textShadow: "0 2px 6px rgba(0,0,0,0.5)" }}>
-              {category.name}
+              {displayCategoryName}
             </h1>
             <p className="max-w-xl md:mx-auto md:text-center" style={{ color: "rgba(255,255,255,0.75)" }}>{category.description}</p>
           </div>
@@ -108,11 +110,11 @@ const MaterialCategoryPage = () => {
               <Reveal key={subcategory.slug} delay={index * 60} direction="none">
                 <Link to={`/materials/category/${category.slug}/${subcategory.slug}`} className="snap-start shrink-0 w-44 sm:w-48 md:w-auto group block hover-lift">
                   <div className="relative overflow-hidden rounded-xl aspect-square bg-muted border border-border">
-                    <img src={subcategory.image} alt={subcategory.alt || subcategory.name} loading="lazy" width={300} height={300} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                    <img src={subcategory.image} alt={subcategory.alt || translateMaterialSubcategory(subcategory.name, language)} loading="lazy" width={300} height={300} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
                     <div className="absolute bottom-0 left-0 right-0 p-3">
                       <h3 className="font-semibold text-sm leading-tight" style={{ color: "#fff", textShadow: "0 1px 3px rgba(0,0,0,0.5)" }}>
-                        {subcategory.name}
+                        {translateMaterialSubcategory(subcategory.name, language)}
                       </h3>
                     </div>
                   </div>
@@ -127,7 +129,7 @@ const MaterialCategoryPage = () => {
         <section className="section-padding bg-muted">
           <div className="container-narrow">
             <Reveal>
-              <h2 className="font-display text-xl md:text-2xl font-bold mb-6">{t.allProducts(category.name)}</h2>
+              <h2 className="font-display text-xl md:text-2xl font-bold mb-6">{t.allProducts(displayCategoryName)}</h2>
             </Reveal>
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-5">
               {category.items.map((item, index) => (
@@ -150,7 +152,7 @@ const MaterialCategoryPage = () => {
       <section className="section-padding bg-accent text-accent-foreground text-center">
         <Reveal>
           <div className="container-narrow">
-            <h2 className="font-display text-3xl font-bold mb-4">{t.interested(category.name)}</h2>
+            <h2 className="font-display text-3xl font-bold mb-4">{t.interested(displayCategoryName)}</h2>
             <p className="text-accent-foreground/80 mb-6 max-w-lg mx-auto">{t.ctaText}</p>
             <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center">
               <Button variant="secondary" size="lg" className="btn-press w-full sm:w-auto min-h-[3rem] text-sm font-bold tracking-wide rounded-md px-8 py-3 justify-center" asChild>

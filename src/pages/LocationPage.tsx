@@ -17,6 +17,7 @@ import { useLanguage } from "@/i18n/LanguageContext";
 import { withLanguagePrefix } from "@/i18n/routes";
 import { siteConfig, whatsappUrl } from "@/config/site";
 import { isHtmlText, stripHtml } from "@/lib/text";
+import { translateDisplayText, translateProjectType } from "@/i18n/displayLabels";
 
 const copy = {
   en: {
@@ -93,8 +94,13 @@ const LocationPage = () => {
   }, [slug, language]);
 
   const servicesList = servicesData.map((service) => ({
-    name: serviceNameMap[service.slug]?.[language] || service.title,
+    name: serviceNameMap[service.slug]?.[language] || translateDisplayText(service.title, language),
     link: `/services/${service.slug}`,
+  }));
+  const displayText = (value: string) => translateDisplayText(value, language);
+  const localizedFaqs = location.faqs.map((faq) => ({
+    q: displayText(faq.q),
+    a: displayText(faq.a),
   }));
 
   if (!location) {
@@ -144,7 +150,7 @@ const LocationPage = () => {
           <h1 className="font-display text-3xl md:text-5xl font-bold text-primary-foreground mb-4">
             {t.heroTitle(location.name)}
           </h1>
-          <p className="text-steel-light max-w-2xl text-lg mb-2">{location.description}</p>
+                  <p className="text-steel-light max-w-2xl text-lg mb-2">{displayText(location.description)}</p>
           <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 mt-8">
             <Button size="lg" className="btn-press w-full sm:w-auto min-h-[3rem] text-sm font-bold tracking-wide shadow-xl shadow-accent/40 bg-accent hover:bg-accent/90 text-accent-foreground rounded-md px-8 py-3 justify-center" asChild>
               <Link to="/quote">{t.quote} <ArrowRight className="w-4 h-4 ml-2" /></Link>
@@ -179,7 +185,7 @@ const LocationPage = () => {
                     {location.propertyTypes.map((propertyType: string) => (
                       <li key={propertyType} className="flex items-start gap-2 text-sm text-muted-foreground">
                         <CheckCircle className="w-4 h-4 text-accent mt-0.5 shrink-0" />
-                        <span>{propertyType}</span>
+                        <span>{displayText(propertyType)}</span>
                       </li>
                     ))}
                   </ul>
@@ -209,14 +215,14 @@ const LocationPage = () => {
         <div className="container-narrow">
           <SectionHeader title={t.commonNeeds(location.name)} />
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 max-w-3xl mx-auto">
-            {location.commonNeeds.map((need: string) => (
-              <Reveal key={need}>
-                <div className="flex items-start gap-3 p-4 bg-background border border-border rounded-lg">
-                  <CheckCircle className="w-4 h-4 text-accent mt-0.5 shrink-0" />
-                  <span className="text-sm">{need}</span>
-                </div>
-              </Reveal>
-            ))}
+                  {location.commonNeeds.map((need: string) => (
+                    <Reveal key={need}>
+                      <div className="flex items-start gap-3 p-4 bg-background border border-border rounded-lg">
+                        <CheckCircle className="w-4 h-4 text-accent mt-0.5 shrink-0" />
+                  <span className="text-sm">{displayText(need)}</span>
+                      </div>
+                    </Reveal>
+                  ))}
           </div>
           {location.constructionNotes && (
             <Reveal delay={200}>
@@ -226,8 +232,8 @@ const LocationPage = () => {
                   className="text-muted-foreground text-sm leading-relaxed prose prose-sm max-w-none prose-p:my-3 prose-headings:mb-3 prose-headings:mt-6"
                   dangerouslySetInnerHTML={{
                     __html: isHtmlText(location.constructionNotes)
-                      ? location.constructionNotes
-                      : `<p>${location.constructionNotes}</p>`,
+                      ? displayText(location.constructionNotes)
+                      : `<p>${displayText(location.constructionNotes)}</p>`,
                   }}
                 />
               </div>
@@ -241,25 +247,25 @@ const LocationPage = () => {
           <div className="container-narrow">
             <SectionHeader title={t.featuredProjects(location.name)} />
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-5">
-              {location.projects.map((project: any, index: number) => (
-                <Reveal key={project.title} delay={index * 80}>
-                  <div className="rounded-lg overflow-hidden border border-border bg-card hover-lift">
-                    <div className="aspect-[4/3] overflow-hidden">
-                      <img src={project.image} alt={project.title} loading="lazy" width={600} height={450} className="w-full h-full object-cover" />
+                  {location.projects.map((project: any, index: number) => (
+                    <Reveal key={project.title} delay={index * 80}>
+                      <div className="rounded-lg overflow-hidden border border-border bg-card hover-lift">
+                        <div className="aspect-[4/3] overflow-hidden">
+                      <img src={project.image} alt={displayText(project.title)} loading="lazy" width={600} height={450} className="w-full h-full object-cover" />
                     </div>
                     <div className="p-4">
-                      <span className="text-accent text-[10px] font-bold uppercase tracking-widest bg-accent/10 px-2 py-0.5 rounded-sm">{project.type}</span>
-                      <h3 className="font-semibold text-sm mt-2">{project.title}</h3>
+                      <span className="text-accent text-[10px] font-bold uppercase tracking-widest bg-accent/10 px-2 py-0.5 rounded-sm">{translateProjectType(project.type, language)}</span>
+                      <h3 className="font-semibold text-sm mt-2">{displayText(project.title)}</h3>
                     </div>
-                  </div>
-                </Reveal>
+                      </div>
+                    </Reveal>
               ))}
             </div>
           </div>
         </section>
       )}
 
-      <FAQSection title={t.faqTitle(location.name)} faqs={location.faqs} />
+      <FAQSection title={t.faqTitle(location.name)} faqs={localizedFaqs} />
 
       <CTABanner
         title={t.ctaTitle(location.name)}

@@ -15,6 +15,7 @@ import kitchenImg from "@/assets/kitchen-cabinet.jpg";
 import warehouseImg from "@/assets/warehouse-shelving.jpg";
 import exteriorImg from "@/assets/exterior-works.jpg";
 import heroImg from "@/assets/hero-projects.jpg";
+import { translateDisplayText, translateProjectType } from "@/i18n/displayLabels";
 
 const typeImageMap: Record<string, string> = {
   Residential: residentialImg,
@@ -99,6 +100,10 @@ const Projects = () => {
   const [projects, setProjects] = useState<any[]>([]);
   const pageCopy = copy[language];
   const filtered = filter === "All" ? projects : projects.filter((project) => project.type === filter);
+  const displayProjectType = (value: string) => translateProjectType(value, language);
+  const displayProjectTitle = (value: string) => translateDisplayText(value, language);
+  const displayProjectDescription = (project: any) =>
+    language === "zh" ? String(project.description || "").replace(new RegExp(String(project.type || "").replace(/[.*+?^${}()|[\]\\]/g, "\\$&"), "gi"), displayProjectType(project.type)) : project.description;
 
   useEffect(() => {
     void getPublishedProjects(language).then(setProjects);
@@ -160,21 +165,21 @@ const Projects = () => {
                   <div className="relative overflow-hidden rounded-lg aspect-[4/3] mb-4 img-zoom">
                     <img
                       src={project.thumbnail || typeImageMap[project.type] || residentialImg}
-                      alt={project.thumbnailAlt || `${project.title} - ${project.type} renovation in ${project.location}`}
+                      alt={project.thumbnailAlt || `${project.title} - ${displayProjectType(project.type)} renovation in ${project.location}`}
                       loading="lazy"
                       width={800}
                       height={500}
                       className="w-full h-full object-cover"
                     />
                     <div className="absolute top-3 left-3">
-                      <span className="bg-accent/90 text-accent-foreground text-xs font-medium px-3 py-1 rounded-full backdrop-blur-sm">{project.type}</span>
+                      <span className="bg-accent/90 text-accent-foreground text-xs font-medium px-3 py-1 rounded-full backdrop-blur-sm">{displayProjectType(project.type)}</span>
                     </div>
                   </div>
-                  <h3 className="font-display text-lg font-semibold mb-1 group-hover:text-accent transition-colors">{project.title}</h3>
+                  <h3 className="font-display text-lg font-semibold mb-1 group-hover:text-accent transition-colors">{displayProjectTitle(project.title)}</h3>
                   <span className="flex items-center gap-1 text-muted-foreground text-sm mb-2">
                     <MapPin className="w-3 h-3" /> {project.location}
                   </span>
-                  <p className="text-muted-foreground text-sm line-clamp-2">{project.description}</p>
+                  <p className="text-muted-foreground text-sm line-clamp-2">{displayProjectDescription(project)}</p>
                 </Link>
               </Reveal>
             ))}

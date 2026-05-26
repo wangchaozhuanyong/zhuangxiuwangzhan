@@ -11,6 +11,7 @@ import PageMeta from "@/components/PageMeta";
 import { JsonLdBreadcrumb } from "@/components/JsonLd";
 import { whatsappUrl } from "@/config/site";
 import { isHtmlText, stripHtml } from "@/lib/text";
+import { translateProjectType } from "@/i18n/displayLabels";
 
 const typeToService: Record<string, { en: string; zh: string; slug: string }> = {
   Residential: { en: "Interior Renovation", zh: "室内装修", slug: "renovation" },
@@ -194,13 +195,14 @@ const ProjectDetail = () => {
   const mainImageAlt = project.imageAlts?.[0] || project.thumbnailAlt || project.title;
   const relatedService = typeToService[project.type];
   const relatedServiceName = relatedService?.[language];
+  const projectTypeLabel = translateProjectType(project.type, language);
 
   return (
     <main className="pt-16">
       <PageMeta
         title={`${project.title} | ${project.location} | ${t.metaSuffix}`}
-        description={t.metaDescription(project.type, project.location, project.clientNeed)}
-        keywords={t.metaKeywords(project.type, project.location, project.title)}
+        description={t.metaDescription(projectTypeLabel, project.location, project.clientNeed)}
+        keywords={t.metaKeywords(projectTypeLabel, project.location, project.title)}
         canonicalPath={`/projects/${project.slug}`}
       />
       <JsonLdBreadcrumb items={[{ name: t.breadcrumbHome, url: "/" }, { name: t.breadcrumbProjects, url: "/projects" }, { name: project.title, url: `/projects/${project.slug}` }]} />
@@ -214,7 +216,7 @@ const ProjectDetail = () => {
           <Link to="/projects" className="inline-flex items-center gap-1 text-steel-light text-sm hover:text-accent transition-colors mb-4">
             <ArrowLeft className="w-3.5 h-3.5" /> {t.allProjects}
           </Link>
-          <span className="text-accent text-xs font-medium uppercase tracking-wider block mb-2">{project.type}</span>
+          <span className="text-accent text-xs font-medium uppercase tracking-wider block mb-2">{projectTypeLabel}</span>
           <h1 className="font-display text-3xl md:text-4xl font-bold text-primary-foreground mb-2">{project.title}</h1>
           <div className="flex items-center gap-4 text-steel-light text-sm">
             <span className="flex items-center gap-1"><MapPin className="w-3.5 h-3.5" /> {project.location}</span>
@@ -230,7 +232,7 @@ const ProjectDetail = () => {
               <Reveal>
                 <div className="p-5 bg-muted rounded-lg border border-border mb-8">
                   <p className="text-muted-foreground text-sm leading-relaxed">
-                    <strong className="text-foreground">{t.summaryLabel}</strong> {t.summary(project.title, project.type, project.location, project.duration, project.scope)}
+                    <strong className="text-foreground">{t.summaryLabel}</strong> {t.summary(project.title, projectTypeLabel, project.location, project.duration, project.scope)}
                   </p>
                 </div>
               </Reveal>
@@ -286,7 +288,7 @@ const ProjectDetail = () => {
                 <div className="p-5 bg-accent/5 rounded-lg border border-accent/20">
                   <h3 className="font-display text-lg font-bold mb-2">{t.resultTitle}</h3>
                   <p className="text-muted-foreground text-sm leading-relaxed">
-                    {t.resultIntro(project.type, project.location, project.duration, project.scope.length, project.materialsUsed.length)}
+                    {t.resultIntro(projectTypeLabel, project.location, project.duration, project.scope.length, project.materialsUsed.length)}
                     {project.testimonial && ` ${t.satisfied}`}
                     {relatedService && <> {t.similarPrompt} <Link to={`/services/${relatedService.slug}`} className="text-accent hover:underline font-medium">{relatedServiceName}</Link> {t.serviceWord}</>}
                   </p>
@@ -298,7 +300,7 @@ const ProjectDetail = () => {
               <div className="bg-card border border-border rounded-lg p-5">
                 <h3 className="font-semibold mb-4">{t.details}</h3>
                 <div className="space-y-3 text-sm">
-                  <div className="flex justify-between gap-3"><span className="text-muted-foreground">{t.type}</span><span className="font-medium text-right">{project.type}</span></div>
+                  <div className="flex justify-between gap-3"><span className="text-muted-foreground">{t.type}</span><span className="font-medium text-right">{projectTypeLabel}</span></div>
                   <div className="flex justify-between gap-3"><span className="text-muted-foreground">{t.location}</span><span className="font-medium text-right">{project.location}</span></div>
                   <div className="flex justify-between gap-3"><span className="text-muted-foreground">{t.duration}</span><span className="font-medium text-right">{project.duration}</span></div>
                   <div className="flex justify-between gap-3"><span className="text-muted-foreground">{t.scopeItems}</span><span className="font-medium text-right">{project.scope.length} {t.items}</span></div>
@@ -367,7 +369,7 @@ const ProjectDetail = () => {
                   <img src={item.images[0] || item.thumbnail} alt={item.imageAlts?.[0] || item.thumbnailAlt || item.title} loading="lazy" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
                 </div>
                 <div className="p-4">
-                  <span className="text-accent text-xs font-medium uppercase tracking-wider">{item.type}</span>
+                  <span className="text-accent text-xs font-medium uppercase tracking-wider">{translateProjectType(item.type, language)}</span>
                   <h3 className="font-display text-base font-semibold mt-1">{item.title}</h3>
                   <p className="text-muted-foreground text-xs flex items-center gap-1 mt-1">
                     <MapPin className="w-3 h-3" /> {item.location}

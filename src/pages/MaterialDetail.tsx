@@ -11,6 +11,7 @@ import PageMeta from "@/components/PageMeta";
 import { JsonLdBreadcrumb } from "@/components/JsonLd";
 import { whatsappUrl } from "@/config/site";
 import { isHtmlText, stripHtml } from "@/lib/text";
+import { translateMaterialCategory, translateMaterialType, translateSpaceLabel } from "@/i18n/displayLabels";
 
 const copy = {
   en: {
@@ -71,6 +72,8 @@ const MaterialDetail = () => {
 
   const [material, setMaterial] = useState<any>(fallbackMaterial);
   const [category, setCategory] = useState<any>(fallbackCategory);
+  const displayCategoryName = category ? translateMaterialCategory(category.name, language) : "";
+  const displayMaterialType = material ? translateMaterialType(material.type || "", language) : "";
 
   useEffect(() => {
     if (!slug) return;
@@ -95,17 +98,17 @@ const MaterialDetail = () => {
     <main className="pt-16">
       <PageMeta
         title={t.metaTitle(material.name)}
-        description={t.metaDescription(material.description, material.suitableSpaces)}
-        keywords={t.metaKeywords(material.name, material.category)}
+        description={t.metaDescription(material.description, material.suitableSpaces.map((space: string) => translateSpaceLabel(space, language)))}
+        keywords={t.metaKeywords(material.name, displayCategoryName)}
         canonicalPath={`/materials/${material.slug}`}
       />
-      <JsonLdBreadcrumb items={[{ name: t.breadcrumbHome, url: "/" }, { name: t.breadcrumbMaterials, url: "/materials" }, { name: category.name, url: `/materials/category/${category.slug}` }, { name: material.name, url: `/materials/${material.slug}` }]} />
+      <JsonLdBreadcrumb items={[{ name: t.breadcrumbHome, url: "/" }, { name: t.breadcrumbMaterials, url: "/materials" }, { name: displayCategoryName, url: `/materials/category/${category.slug}` }, { name: material.name, url: `/materials/${material.slug}` }]} />
 
       <section className="bg-muted px-4 md:px-8 py-3">
         <div className="container-narrow flex items-center gap-2 text-sm text-muted-foreground">
           <Link to="/materials" className="hover:text-accent">{t.breadcrumbMaterials}</Link>
           <span>/</span>
-          <Link to={`/materials/category/${category.slug}`} className="hover:text-accent">{category.name}</Link>
+          <Link to={`/materials/category/${category.slug}`} className="hover:text-accent">{displayCategoryName}</Link>
           <span>/</span>
           <span className="text-foreground">{material.name}</span>
         </div>
@@ -119,7 +122,7 @@ const MaterialDetail = () => {
             </div>
 
             <div>
-              <span className="text-accent text-xs font-medium uppercase tracking-wider">{material.category}</span>
+              <span className="text-accent text-xs font-medium uppercase tracking-wider">{displayCategoryName}</span>
               <h1 className="font-display text-2xl md:text-3xl font-bold mt-2 mb-4">{material.name}</h1>
               {isHtmlText(material.description) ? (
                 <div className="prose prose-neutral max-w-none text-muted-foreground mb-6" dangerouslySetInnerHTML={{ __html: material.description }} />
@@ -130,10 +133,10 @@ const MaterialDetail = () => {
               <div className="space-y-4 mb-8">
                 <div className="grid grid-cols-2 gap-4">
                   {[
-                    { label: t.type, value: material.type },
+                    { label: t.type, value: displayMaterialType || material.type },
                     { label: t.color, value: material.color },
                     { label: t.texture, value: material.texture },
-                    { label: t.category, value: material.category },
+                    { label: t.category, value: displayCategoryName },
                   ].map((item) => (
                     <div key={item.label} className="p-3 bg-muted rounded-lg">
                       <span className="text-xs text-muted-foreground block mb-1">{item.label}</span>
@@ -147,7 +150,7 @@ const MaterialDetail = () => {
                 <h3 className="font-semibold mb-2">{t.suitableSpaces}</h3>
                 <div className="flex flex-wrap gap-2">
                   {material.suitableSpaces.map((space: string) => (
-                    <span key={space} className="text-xs px-3 py-1 bg-muted rounded-full text-muted-foreground">{space}</span>
+                    <span key={space} className="text-xs px-3 py-1 bg-muted rounded-full text-muted-foreground">{translateSpaceLabel(space, language)}</span>
                   ))}
                 </div>
               </div>
@@ -183,7 +186,7 @@ const MaterialDetail = () => {
       {otherMaterials.length > 0 && (
         <section className="section-padding bg-muted">
           <div className="container-narrow">
-            <h2 className="font-display text-2xl font-bold mb-6">{t.more(category.name)}</h2>
+            <h2 className="font-display text-2xl font-bold mb-6">{t.more(displayCategoryName)}</h2>
             <div className="flex gap-4 overflow-x-auto pb-4 -mx-4 px-4 snap-x">
               {otherMaterials.map((item: any) => (
                 <Link key={item.id} to={`/materials/${item.slug}`} className="snap-start shrink-0 w-[180px] md:w-[220px] group">
@@ -191,7 +194,7 @@ const MaterialDetail = () => {
                     <img src={item.image} alt={item.alt || item.name} loading="lazy" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
                   </div>
                   <h3 className="font-semibold text-sm">{item.name}</h3>
-                  <p className="text-muted-foreground text-xs">{item.type} / {item.color || item.category}</p>
+                  <p className="text-muted-foreground text-xs">{translateMaterialType(item.type, language)} / {item.color || displayCategoryName}</p>
                 </Link>
               ))}
             </div>

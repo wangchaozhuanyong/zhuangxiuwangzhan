@@ -11,6 +11,7 @@ import PageMeta from "@/components/PageMeta";
 import { JsonLdBreadcrumb } from "@/components/JsonLd";
 import { whatsappUrl } from "@/config/site";
 import { isHtmlText } from "@/lib/text";
+import { translateBlogCategory, translateKeywordLabel } from "@/i18n/displayLabels";
 
 const copy = {
   en: {
@@ -156,7 +157,7 @@ const BlogDetail = () => {
           <Link to="/blog" className="inline-flex items-center gap-1 text-steel text-sm hover:text-accent transition-colors mb-6">
             <ArrowLeft className="w-3.5 h-3.5" /> {t.backToBlog}
           </Link>
-          <span className="text-accent text-xs font-medium uppercase tracking-wider block mb-3">{post.category}</span>
+          <span className="text-accent text-xs font-medium uppercase tracking-wider block mb-3">{translateBlogCategory(post.category, language)}</span>
           <h1 className="font-display text-3xl md:text-4xl font-bold text-primary-foreground mb-4">{post.title}</h1>
           <div className="flex items-center gap-4 text-sm text-steel-light">
             <span className="flex items-center gap-1"><Clock className="w-3.5 h-3.5" /> {readTime}</span>
@@ -178,7 +179,7 @@ const BlogDetail = () => {
           <div className="mt-10 pt-6 border-t border-border">
             <div className="flex flex-wrap gap-2">
               {post.tags.map((tag) => (
-                <span key={tag} className="text-xs px-3 py-1 bg-muted rounded-full text-muted-foreground">#{tag}</span>
+                <span key={tag} className="text-xs px-3 py-1 bg-muted rounded-full text-muted-foreground">#{translateKeywordLabel(tag, language)}</span>
               ))}
             </div>
           </div>
