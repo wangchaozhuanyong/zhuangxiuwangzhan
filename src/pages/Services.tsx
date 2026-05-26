@@ -11,6 +11,7 @@ import { JsonLdBreadcrumb } from "@/components/JsonLd";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { whatsappUrl } from "@/config/site";
 import heroImg from "@/assets/hero-services.jpg";
+import { translateDisplayText } from "@/i18n/displayLabels";
 
 const copy = {
   en: {
@@ -70,7 +71,21 @@ const copy = {
 const Services = () => {
   const { language } = useLanguage();
   const t = copy[language];
-  const [services, setServices] = useState(servicesData);
+  const displayText = (value: string) => translateDisplayText(value, language);
+  const initialServices = language === "zh"
+    ? servicesData.map((service) => ({
+        ...service,
+        title: displayText(service.title),
+        summary: displayText(service.summary),
+        description: displayText(service.description),
+        suitableFor: service.suitableFor.map((item) => displayText(item)),
+        commonProjects: service.commonProjects.map((item) => displayText(item)),
+        processSteps: service.processSteps.map((step) => ({ title: displayText(step.title), desc: displayText(step.desc) })),
+        items: service.items.map((item) => displayText(item)),
+        faqs: service.faqs.map((faq) => ({ q: displayText(faq.q), a: displayText(faq.a) })),
+      }))
+    : servicesData;
+  const [services, setServices] = useState(initialServices);
 
   useEffect(() => {
     void getPublishedServices(language).then(setServices);
@@ -112,14 +127,14 @@ const Services = () => {
               <Reveal direction={index % 2 !== 0 ? "right" : "left"}>
                 <div className={index % 2 !== 0 ? "lg:order-2" : ""}>
                   <div className="accent-line mb-4" />
-                  <h2 className="font-display text-2xl md:text-3xl font-bold mb-4">{service.title}</h2>
-                  <p className="text-muted-foreground mb-4 leading-relaxed">{service.summary}</p>
+                  <h2 className="font-display text-2xl md:text-3xl font-bold mb-4">{displayText(service.title)}</h2>
+                  <p className="text-muted-foreground mb-4 leading-relaxed">{displayText(service.summary)}</p>
 
                   <div className="mb-4">
                     <h3 className="font-semibold text-sm mb-2">{t.suitableFor}</h3>
                     <div className="flex flex-wrap gap-2">
                       {service.suitableFor.slice(0, 4).map((item: string) => (
-                        <span key={item} className="text-xs px-3 py-1 bg-accent/10 text-accent rounded-full">{item}</span>
+                        <span key={item} className="text-xs px-3 py-1 bg-accent/10 text-accent rounded-full">{displayText(item)}</span>
                       ))}
                     </div>
                   </div>
@@ -128,7 +143,7 @@ const Services = () => {
                     {service.items.slice(0, 8).map((item: string) => (
                       <li key={item} className="flex items-center gap-2 text-sm">
                         <CheckCircle className="w-3.5 h-3.5 text-accent shrink-0" />
-                        {item}
+                        {displayText(item)}
                       </li>
                     ))}
                     {service.items.length > 8 && (
@@ -142,7 +157,7 @@ const Services = () => {
               </Reveal>
               <Reveal direction={index % 2 !== 0 ? "left" : "right"} delay={150}>
                 <div className={`${index % 2 !== 0 ? "lg:order-1" : ""} overflow-hidden rounded-lg img-zoom`}>
-                  <img src={service.image} alt={`${service.title} service by FLASH CAST in Kuala Lumpur`} loading="lazy" width={800} height={600} className="w-full object-cover aspect-[4/3]" />
+                  <img src={service.image} alt={`${displayText(service.title)} service by FLASH CAST in Kuala Lumpur`} loading="lazy" width={800} height={600} className="w-full object-cover aspect-[4/3]" />
                 </div>
               </Reveal>
             </div>

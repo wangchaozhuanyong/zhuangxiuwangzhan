@@ -13,6 +13,7 @@ import { JsonLdService, JsonLdBreadcrumb, JsonLdFAQ } from "@/components/JsonLd"
 import { useLanguage } from "@/i18n/LanguageContext";
 import { whatsappUrl } from "@/config/site";
 import { isHtmlText, stripHtml } from "@/lib/text";
+import { translateDisplayText } from "@/i18n/displayLabels";
 
 const copy = {
   en: {
@@ -97,7 +98,21 @@ const ServiceDetail = () => {
   const { slug } = useParams<{ slug: string }>();
   const { language } = useLanguage();
   const t = language === "zh" ? zhCopy : copy.en;
-  const [services, setServices] = useState(servicesData);
+  const displayText = (value: string) => translateDisplayText(value, language);
+  const initialServices = language === "zh"
+    ? servicesData.map((service) => ({
+        ...service,
+        title: displayText(service.title),
+        summary: displayText(service.summary),
+        description: displayText(service.description),
+        suitableFor: service.suitableFor.map((item) => displayText(item)),
+        commonProjects: service.commonProjects.map((item) => displayText(item)),
+        processSteps: service.processSteps.map((step) => ({ title: displayText(step.title), desc: displayText(step.desc) })),
+        items: service.items.map((item) => displayText(item)),
+        faqs: service.faqs.map((faq) => ({ q: displayText(faq.q), a: displayText(faq.a) })),
+      }))
+    : servicesData;
+  const [services, setServices] = useState(initialServices);
 
   useEffect(() => {
     void getPublishedServices(language).then(setServices);
@@ -115,22 +130,36 @@ const ServiceDetail = () => {
   }
 
   const heroImage = service.image;
+  const serviceTitle = displayText(service.title);
+  const serviceSummary = displayText(service.summary);
+  const serviceDescription = displayText(service.description);
+  const serviceSuitableFor = service.suitableFor.map((item: string) => displayText(item));
+  const serviceItems = service.items.map((item: string) => displayText(item));
+  const serviceCommonProjects = service.commonProjects.map((item: string) => displayText(item));
+  const serviceProcessSteps = service.processSteps.map((step: any) => ({
+    title: displayText(step.title),
+    desc: displayText(step.desc),
+  }));
+  const serviceFaqs = service.faqs.map((faq: any) => ({
+    q: displayText(faq.q),
+    a: displayText(faq.a),
+  }));
 
   return (
     <main className="pt-16">
       <PageMeta
-        title={`${service.title} Kuala Lumpur | ${t.metaSuffix}`}
-        description={stripHtml(service.summary)}
-        keywords={t.metaKeywords(service.title)}
+        title={`${serviceTitle} Kuala Lumpur | ${t.metaSuffix}`}
+        description={stripHtml(serviceSummary)}
+        keywords={t.metaKeywords(serviceTitle)}
         canonicalPath={`/services/${service.slug}`}
       />
-      <JsonLdService name={service.title} description={service.summary} />
-      <JsonLdBreadcrumb items={[{ name: t.breadcrumbHome, url: "/" }, { name: t.breadcrumbServices, url: "/services" }, { name: service.title, url: `/services/${service.slug}` }]} />
-      <JsonLdFAQ faqs={service.faqs.map((faq: any) => ({ question: faq.q, answer: faq.a }))} />
+      <JsonLdService name={serviceTitle} description={serviceSummary} />
+      <JsonLdBreadcrumb items={[{ name: t.breadcrumbHome, url: "/" }, { name: t.breadcrumbServices, url: "/services" }, { name: serviceTitle, url: `/services/${service.slug}` }]} />
+      <JsonLdFAQ faqs={serviceFaqs.map((faq: any) => ({ question: faq.q, answer: faq.a }))} />
 
       <section className="relative min-h-[50vh] flex items-center overflow-hidden">
         <div className="absolute inset-0">
-          <img src={heroImage} alt={service.title} className="w-full h-full object-cover scale-105 animate-[scale-up_1.2s_ease-out_forwards]" />
+          <img src={heroImage} alt={serviceTitle} className="w-full h-full object-cover scale-105 animate-[scale-up_1.2s_ease-out_forwards]" />
           <div className="absolute inset-0 bg-gradient-to-r from-black/60 via-black/30 to-transparent" />
         </div>
         <div className="relative z-10 container-narrow px-4 md:px-8 py-20">
@@ -138,8 +167,8 @@ const ServiceDetail = () => {
             <ArrowLeft className="w-3.5 h-3.5" /> {t.allServices}
           </Link>
           <p className="font-body font-semibold text-[11px] tracking-[0.3em] uppercase mb-4" style={{ color: "hsl(var(--gold))" }}>{t.services}</p>
-          <h1 className="font-display text-3xl md:text-5xl font-bold mb-4 max-w-lg" style={{ color: "#fff", textShadow: "0 2px 8px rgba(0,0,0,0.5)" }}>{service.title}</h1>
-          <p className="max-w-2xl text-base md:text-lg leading-relaxed" style={{ color: "rgba(255,255,255,0.9)", textShadow: "0 1px 4px rgba(0,0,0,0.4)" }}>{service.summary}</p>
+          <h1 className="font-display text-3xl md:text-5xl font-bold mb-4 max-w-lg" style={{ color: "#fff", textShadow: "0 2px 8px rgba(0,0,0,0.5)" }}>{serviceTitle}</h1>
+          <p className="max-w-2xl text-base md:text-lg leading-relaxed" style={{ color: "rgba(255,255,255,0.9)", textShadow: "0 1px 4px rgba(0,0,0,0.4)" }}>{serviceSummary}</p>
           <div className="flex flex-col sm:flex-row gap-3 mt-8">
             <Button size="lg" className="btn-press bg-accent hover:bg-accent/90 text-accent-foreground font-semibold h-12 px-8" asChild>
               <Link to="/quote">{t.getQuote} <ArrowRight className="w-4 h-4 ml-2" /></Link>
@@ -159,14 +188,14 @@ const ServiceDetail = () => {
             <Reveal direction="left">
               <div>
                 <h2 className="font-display text-2xl md:text-3xl font-bold mb-4">{t.overview}</h2>
-                {isHtmlText(service.description) ? (
-                  <div className="prose prose-neutral max-w-none text-muted-foreground mb-6" dangerouslySetInnerHTML={{ __html: service.description }} />
+                {isHtmlText(serviceDescription) ? (
+                  <div className="prose prose-neutral max-w-none text-muted-foreground mb-6" dangerouslySetInnerHTML={{ __html: serviceDescription }} />
                 ) : (
-                  <p className="text-muted-foreground leading-relaxed mb-6">{service.description}</p>
+                  <p className="text-muted-foreground leading-relaxed mb-6">{serviceDescription}</p>
                 )}
                 <h3 className="font-semibold mb-3">{t.suitableFor}</h3>
                 <ul className="space-y-2 mb-6">
-                  {service.suitableFor.map((item: string) => (
+                  {serviceSuitableFor.map((item: string) => (
                     <li key={item} className="flex items-start gap-2 text-sm text-muted-foreground">
                       <CheckCircle className="w-4 h-4 text-accent mt-0.5 shrink-0" />
                       {item}
@@ -179,7 +208,7 @@ const ServiceDetail = () => {
               <div>
                 <h3 className="font-semibold mb-3">{t.offer}</h3>
                 <div className="grid grid-cols-1 gap-2">
-                  {service.items.map((item: string) => (
+                  {serviceItems.map((item: string) => (
                     <div key={item} className="flex items-center gap-2 py-2.5 px-4 bg-muted rounded-md text-sm transition-colors hover:bg-accent/10">
                       <span className="w-1.5 h-1.5 rounded-full bg-accent shrink-0" />
                       {item}
@@ -196,7 +225,7 @@ const ServiceDetail = () => {
         <div className="container-narrow">
           <h2 className="font-display text-2xl font-bold mb-6">{t.commonProjects}</h2>
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3">
-            {service.commonProjects.map((project: string) => (
+            {serviceCommonProjects.map((project: string) => (
               <div key={project} className="p-4 bg-background rounded-lg text-center text-sm font-medium border border-border">
                 {project}
               </div>
@@ -209,7 +238,7 @@ const ServiceDetail = () => {
         <div className="container-narrow max-w-3xl">
           <h2 className="font-display text-2xl md:text-3xl font-bold mb-8 text-center">{t.process}</h2>
           <div className="space-y-6">
-            {service.processSteps.map((step: any, index: number) => (
+            {serviceProcessSteps.map((step: any, index: number) => (
               <div key={`${step.title}-${index}`} className="flex gap-4">
                 <div className="shrink-0 w-10 h-10 rounded-full bg-accent text-accent-foreground flex items-center justify-center text-sm font-bold">
                   {index + 1}
@@ -228,7 +257,7 @@ const ServiceDetail = () => {
         <div className="container-narrow max-w-3xl">
           <h2 className="font-display text-2xl font-bold mb-6 text-center">{t.faq}</h2>
           <Accordion type="single" collapsible className="space-y-2">
-            {service.faqs.map((faq: any, index: number) => (
+            {serviceFaqs.map((faq: any, index: number) => (
               <AccordionItem key={`${faq.q}-${index}`} value={`faq-${index}`} className="bg-background rounded-lg border border-border px-4">
                 <AccordionTrigger className="text-left font-medium text-sm md:text-base">{faq.q}</AccordionTrigger>
                 <AccordionContent className="text-muted-foreground text-sm">{faq.a}</AccordionContent>
@@ -252,9 +281,9 @@ const ServiceDetail = () => {
                   className="group p-5 rounded-lg border border-border bg-card hover-lift text-center block transition-colors hover:border-accent/30"
                 >
                   <h3 className="font-display font-semibold text-sm mb-1 group-hover:text-accent transition-colors">
-                    {item.title}
+                    {displayText(item.title)}
                   </h3>
-                  <p className="text-muted-foreground text-xs leading-relaxed line-clamp-2">{item.summary}</p>
+                  <p className="text-muted-foreground text-xs leading-relaxed line-clamp-2">{displayText(item.summary)}</p>
                 </Link>
               ))}
           </div>
@@ -270,7 +299,7 @@ const ServiceDetail = () => {
 
       <section className="section-padding bg-accent text-accent-foreground text-center">
         <div className="container-narrow">
-          <h2 className="font-display text-3xl font-bold mb-4">{t.interested(service.title)}</h2>
+          <h2 className="font-display text-3xl font-bold mb-4">{t.interested(serviceTitle)}</h2>
           <p className="mb-6 opacity-90">{t.ctaText}</p>
           <div className="flex flex-col sm:flex-row justify-center gap-3 sm:gap-4">
             <Button size="lg" variant="secondary" className="btn-press w-full sm:w-auto min-h-[3rem] text-sm font-bold tracking-wide rounded-md px-8 py-3 justify-center" asChild>

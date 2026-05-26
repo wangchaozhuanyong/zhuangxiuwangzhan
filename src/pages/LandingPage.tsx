@@ -13,6 +13,7 @@ import { useLanguage } from "@/i18n/LanguageContext";
 import { getPublishedLandingPageBySlug } from "@/lib/contentApi";
 import { whatsappUrl } from "@/config/site";
 import { isHtmlText, stripHtml } from "@/lib/text";
+import { translateDisplayText } from "@/i18n/displayLabels";
 
 const shellCopy = {
   en: {
@@ -60,6 +61,7 @@ const LandingPage = () => {
   const t = language === "zh" ? zhShellCopy : shellCopy.en;
   const fallbackPage = landingPages[slug || ""];
   const [page, setPage] = useState(fallbackPage || null);
+  const displayText = (value: string) => translateDisplayText(value, language);
 
   useEffect(() => {
     if (!slug) return;
@@ -83,23 +85,42 @@ const LandingPage = () => {
     );
   }
 
+  const landingPage = language === "zh"
+    ? {
+        ...page,
+        title: displayText(page.title),
+        subtitle: displayText(page.subtitle),
+        heroAlt: displayText(page.heroAlt || page.title),
+        description: displayText(page.description),
+        benefits: page.benefits.map((item) => displayText(item)),
+        relatedProjects: page.relatedProjects.map((item) => ({
+          ...item,
+          title: displayText(item.title),
+          location: displayText(item.location),
+        })),
+        faqs: page.faqs.map((faq) => ({ q: displayText(faq.q), a: displayText(faq.a) })),
+        seoTitle: displayText(page.seoTitle || ""),
+        seoDescription: displayText(page.seoDescription || ""),
+      }
+    : page;
+
   return (
     <main className="pt-16">
       <PageMeta
-        title={page.seoTitle || `${page.title} | ${t.metaSuffix}`}
-        description={page.seoDescription || stripHtml(page.description)}
+        title={landingPage.seoTitle || `${landingPage.title} | ${t.metaSuffix}`}
+        description={landingPage.seoDescription || stripHtml(landingPage.description)}
         canonicalPath={`/landing/${slug || ""}`}
       />
       <section className="relative min-h-[60vh] flex items-center">
         <div className="absolute inset-0">
-          <img src={page.heroImage} alt={page.heroAlt || page.title} className="w-full h-full object-cover" loading="eager" width={1920} height={800} />
+          <img src={page.heroImage} alt={landingPage.heroAlt || landingPage.title} className="w-full h-full object-cover" loading="eager" width={1920} height={800} />
           <div className="absolute inset-0 bg-gradient-to-r from-foreground/90 via-foreground/75 to-foreground/40" />
         </div>
         <div className="relative z-10 container-narrow px-4 md:px-8 py-24">
           <div className="max-w-xl">
             <p className="text-accent font-medium text-sm tracking-widest uppercase mb-3">FLASH CAST SDN. BHD.</p>
-            <h1 className="font-display text-3xl md:text-5xl font-bold text-primary-foreground leading-tight mb-4">{page.title}</h1>
-            <p className="text-steel-light text-lg mb-6">{page.subtitle}</p>
+            <h1 className="font-display text-3xl md:text-5xl font-bold text-primary-foreground leading-tight mb-4">{landingPage.title}</h1>
+            <p className="text-steel-light text-lg mb-6">{landingPage.subtitle}</p>
             <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
               <Button size="lg" className="btn-press w-full sm:w-auto min-h-[3rem] text-sm font-bold tracking-wide shadow-xl shadow-accent/40 bg-accent hover:bg-accent/90 text-accent-foreground rounded-md px-8 py-3 justify-center" asChild>
                 <Link to="/quote">{t.quote} <ArrowRight className="w-4 h-4 ml-2" /></Link>
@@ -122,10 +143,10 @@ const LandingPage = () => {
               <div>
                 <div className="accent-line mb-4" />
                 <h2 className="font-display text-2xl md:text-3xl font-bold mb-4">{t.overview}</h2>
-                {isHtmlText(page.description) ? (
-                  <div className="prose prose-neutral max-w-none text-muted-foreground" dangerouslySetInnerHTML={{ __html: page.description }} />
+                {isHtmlText(landingPage.description) ? (
+                  <div className="prose prose-neutral max-w-none text-muted-foreground" dangerouslySetInnerHTML={{ __html: landingPage.description }} />
                 ) : (
-                  <p className="text-muted-foreground leading-relaxed">{page.description}</p>
+                  <p className="text-muted-foreground leading-relaxed">{landingPage.description}</p>
                 )}
               </div>
             </Reveal>
@@ -133,7 +154,7 @@ const LandingPage = () => {
               <div className="bg-muted p-6 rounded-lg border border-border">
                 <h3 className="font-semibold text-base mb-4">{t.whyChoose}</h3>
                 <ul className="space-y-3">
-                  {page.benefits.map((b) => (
+                  {landingPage.benefits.map((b) => (
                     <li key={b} className="flex items-start gap-3">
                       <CheckCircle className="w-4 h-4 text-accent mt-0.5 shrink-0" />
                       <span className="text-sm">{b}</span>
@@ -147,7 +168,7 @@ const LandingPage = () => {
       </section>
 
       {/* Related Projects */}
-      {page.relatedProjects.length > 0 && (
+      {landingPage.relatedProjects.length > 0 && (
         <section className="section-padding bg-muted">
           <div className="container-narrow">
             <Reveal>
@@ -157,7 +178,7 @@ const LandingPage = () => {
               </div>
             </Reveal>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 max-w-2xl mx-auto">
-              {page.relatedProjects.map((p, i) => (
+              {landingPage.relatedProjects.map((p, i) => (
                 <Reveal key={p.title} delay={i * 80}>
                   <div className="rounded-lg overflow-hidden border border-border bg-background hover-lift">
                     <div className="aspect-[4/3] overflow-hidden">
@@ -176,7 +197,7 @@ const LandingPage = () => {
       )}
 
       {/* FAQ */}
-      <FAQSection faqs={page.faqs} className="section-padding bg-background" />
+      <FAQSection faqs={landingPage.faqs} className="section-padding bg-background" />
 
       {/* CTA */}
       <CTABanner title={t.ctaTitle} description={t.ctaDescription} quoteLabel={t.quote} whatsappLabel={t.whatsapp} />

@@ -55,7 +55,7 @@ const materialSubcategoryLabels: Record<string, { en: string; zh: string }> = {
   "barn door": { en: "Barn Door", zh: "谷仓门" },
   "aluminium sliding door": { en: "Aluminium Sliding Door", zh: "铝合金推拉门" },
   "frameless glass door": { en: "Frameless Glass Door", zh: "无框玻璃门" },
-  "fluted panel": { en: "Fluted Panel", zh: "凹槽板" },
+  "fluted panel": { en: "Fluted Panel", zh: "凹槽饰板" },
   "timber cladding": { en: "Timber Cladding", zh: "木饰面" },
   "feature wall tile": { en: "Feature Wall Tile", zh: "背景墙砖" },
   "wall panel": { en: "Wall Panel", zh: "墙板" },
@@ -139,7 +139,7 @@ const keywordLabels: Record<string, { en: string; zh: string }> = {
   "kitchen renovation": { en: "Kitchen Renovation", zh: "厨房装修" },
   "bathroom renovation": { en: "Bathroom Renovation", zh: "浴室装修" },
   "shoplot renovation": { en: "Shoplot Renovation", zh: "店铺装修" },
-  "old house renovation": { en: "Old House Renovation", zh: "旧房装修" },
+  "old house renovation": { en: "Old House Renovation", zh: "旧屋翻新" },
 };
 
 const readLabel = (map: Record<string, { en: string; zh: string }>, value: string, language: Language) => {

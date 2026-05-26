@@ -38,7 +38,21 @@ const getFallbackProjects = async (language: "en" | "zh" = "en") => {
   }));
 };
 const getFallbackMaterials = async () => (await import("@/data/materials")).materialsData;
-const getFallbackBlogPosts = async () => (await import("@/data/blog")).blogPosts;
+const getFallbackBlogPosts = async (language: "en" | "zh" = "en") => {
+  const { blogPosts } = await import("@/data/blog");
+  if (language !== "zh") return blogPosts;
+
+  const localize = (value: string) => translateDisplayText(value, language);
+
+  return blogPosts.map((post: any) => ({
+    ...post,
+    title: localize(post.title || ""),
+    excerpt: localize(post.excerpt || ""),
+    content: localize(post.content || ""),
+    category: localize(post.category || ""),
+    tags: (post.tags || []).map((tag: string) => localize(tag)),
+  }));
+};
 const getFallbackLocations = async (language: "en" | "zh" = "en") => {
   const { locationsData } = await import("@/data/locations");
   if (language !== "zh") return locationsData;
@@ -63,7 +77,27 @@ const getFallbackLocations = async (language: "en" | "zh" = "en") => {
     ])
   );
 };
-const getFallbackServices = async () => (await import("@/data/services")).servicesData;
+const getFallbackServices = async (language: "en" | "zh" = "en") => {
+  const { servicesData } = await import("@/data/services");
+  if (language !== "zh") return servicesData;
+
+  const localize = (value: string) => translateDisplayText(value, language);
+
+  return servicesData.map((service: any) => ({
+    ...service,
+    title: localize(service.title || ""),
+    summary: localize(service.summary || ""),
+    description: localize(service.description || ""),
+    suitableFor: (service.suitableFor || []).map((item: string) => localize(item)),
+    commonProjects: (service.commonProjects || []).map((item: string) => localize(item)),
+    processSteps: (service.processSteps || []).map((step: any) => ({
+      title: localize(step.title || ""),
+      desc: localize(step.desc || ""),
+    })),
+    items: (service.items || []).map((item: string) => localize(item)),
+    faqs: (service.faqs || []).map((faq: any) => ({ q: localize(faq.q || ""), a: localize(faq.a || "") })),
+  }));
+};
 
 export const getPublishedProjects = async (language: "en" | "zh") => {
   if (!isSupabaseConfigured) return getFallbackProjects(language);
@@ -145,7 +179,7 @@ export const getPublishedTestimonials = async (language: "en" | "zh" = "en") => 
 };
 
 export const getPublishedServices = async (language: "en" | "zh" = "en") => {
-  if (!isSupabaseConfigured) return getFallbackServices();
+  if (!isSupabaseConfigured) return getFallbackServices(language);
 
   const { data, error } = await supabase!
     .from("services")
@@ -153,7 +187,7 @@ export const getPublishedServices = async (language: "en" | "zh" = "en") => {
     .eq("status", "published")
     .order("sort_order", { ascending: true });
 
-  if (error || !data?.length) return getFallbackServices();
+  if (error || !data?.length) return getFallbackServices(language);
 
   return data.map((item: any) => ({
     id: item.id,
@@ -280,25 +314,28 @@ export const getPublishedMaterialBySlug = async (slug: string, language: "en" | 
 };
 
 export const getPublishedBlogPosts = async (language: "en" | "zh" = "en") => {
-  if (!isSupabaseConfigured) return getFallbackBlogPosts();
+  if (!isSupabaseConfigured) return getFallbackBlogPosts(language);
   const { data, error } = await supabase!.from("blog_posts").select("*").eq("status", "published").order("published_at", byCreatedAtDesc);
-  if (error || !data?.length) return getFallbackBlogPosts();
+  if (error || !data?.length) return getFallbackBlogPosts(language);
+
+  const localize = (value: string) => (language === "zh" ? translateDisplayText(value, language) : value);
+
   return data.map((item: any) => ({
     id: item.id,
     slug: item.slug,
-    title: item[`title_${language}`] || item.title_en || item.title_zh,
-    excerpt: item[`excerpt_${language}`] || item.excerpt_en || item.excerpt_zh,
-    content: item[`content_${language}`] || item.content_en || item.content_zh,
-    category: item.category || "Renovation",
+    title: localize(item[`title_${language}`] || item.title_en || item.title_zh || ""),
+    excerpt: localize(item[`excerpt_${language}`] || item.excerpt_en || item.excerpt_zh || ""),
+    content: localize(item[`content_${language}`] || item.content_en || item.content_zh || ""),
+    category: localize(item.category || "Renovation"),
     date: item.published_at || item.created_at,
     readTime: "5 min read",
     image: item.cover_image_url || "",
-    tags: item.tags || [],
+    tags: (item.tags || []).map((tag: string) => localize(tag)),
   }));
 };
 
 export const getPublishedBlogPostBySlug = async (slug: string, language: "en" | "zh" = "en") => {
-  const fallbackPost = async () => (await getFallbackBlogPosts()).find((post) => post.slug === slug) || null;
+  const fallbackPost = async () => (await getFallbackBlogPosts(language)).find((post) => post.slug === slug) || null;
   if (!isSupabaseConfigured) return fallbackPost();
 
   const { data, error } = await supabase!
@@ -313,14 +350,14 @@ export const getPublishedBlogPostBySlug = async (slug: string, language: "en" | 
   return {
     id: data.id,
     slug: data.slug,
-    title: data[`title_${language}`] || data.title_en || data.title_zh,
-    excerpt: data[`excerpt_${language}`] || data.excerpt_en || data.excerpt_zh,
-    content: data[`content_${language}`] || data.content_en || data.content_zh,
-    category: data.category || "Renovation",
+    title: language === "zh" ? translateDisplayText(data[`title_${language}`] || data.title_en || data.title_zh || "", language) : data[`title_${language}`] || data.title_en || data.title_zh,
+    excerpt: language === "zh" ? translateDisplayText(data[`excerpt_${language}`] || data.excerpt_en || data.excerpt_zh || "", language) : data[`excerpt_${language}`] || data.excerpt_en || data.excerpt_zh,
+    content: language === "zh" ? translateDisplayText(data[`content_${language}`] || data.content_en || data.content_zh || "", language) : data[`content_${language}`] || data.content_en || data.content_zh,
+    category: language === "zh" ? translateDisplayText(data.category || "Renovation", language) : data.category || "Renovation",
     date: data.published_at || data.created_at,
     readTime: "5 min read",
     image: data.cover_image_url || "",
-    tags: data.tags || [],
+    tags: (data.tags || []).map((tag: string) => (language === "zh" ? translateDisplayText(tag, language) : tag)),
   };
 };
 
@@ -359,7 +396,27 @@ export const getPublishedServiceAreaBySlug = async (slug: string, language: "en"
 export const getPublishedLandingPageBySlug = async (slug: string, language: "en" | "zh" = "en") => {
   const fallback = async () => {
     const { landingPages } = await import("@/data/landings");
-    return landingPages[slug] || null;
+    const page = landingPages[slug] || null;
+    if (!page || language !== "zh") return page;
+
+    const localize = (value: string) => translateDisplayText(value, language);
+
+    return {
+      ...page,
+      title: localize(page.title || ""),
+      subtitle: localize(page.subtitle || ""),
+      heroAlt: localize(page.heroAlt || page.title || ""),
+      description: localize(page.description || ""),
+      benefits: (page.benefits || []).map((item: string) => localize(item)),
+      relatedProjects: (page.relatedProjects || []).map((project: any) => ({
+        ...project,
+        title: localize(project.title || ""),
+        location: localize(project.location || ""),
+      })),
+      faqs: (page.faqs || []).map((faq: any) => ({ q: localize(faq.q || ""), a: localize(faq.a || "") })),
+      seoTitle: localize(page.seoTitle || ""),
+      seoDescription: localize(page.seoDescription || ""),
+    };
   };
 
   if (!isSupabaseConfigured) return fallback();
@@ -373,16 +430,18 @@ export const getPublishedLandingPageBySlug = async (slug: string, language: "en"
 
   if (error || !data) return fallback();
 
+  const localize = (value: string) => (language === "zh" ? translateDisplayText(value, language) : value);
+
   return {
-    title: data[`title_${language}`] || data.title_en || data.title_zh,
-    subtitle: data[`excerpt_${language}`] || data.excerpt_en || data.excerpt_zh || "",
+    title: localize(data[`title_${language}`] || data.title_en || data.title_zh || ""),
+    subtitle: localize(data[`excerpt_${language}`] || data.excerpt_en || data.excerpt_zh || ""),
     heroImage: data.hero_image_url || "",
-    heroAlt: data[`alt_${language}`] || data.alt_en || data.alt_zh || data[`title_${language}`] || data.title_en || data.title_zh,
-    description: data[`content_${language}`] || data.content_en || data.content_zh || "",
-    benefits: data[`benefits_${language}`] || data.benefits_en || data.benefits_zh || [],
+    heroAlt: localize(data[`alt_${language}`] || data.alt_en || data.alt_zh || data[`title_${language}`] || data.title_en || data.title_zh || ""),
+    description: localize(data[`content_${language}`] || data.content_en || data.content_zh || ""),
+    benefits: (data[`benefits_${language}`] || data.benefits_en || data.benefits_zh || []).map((item: string) => localize(item)),
     relatedProjects: data.related_projects || [],
-    faqs: data[`faqs_${language}`] || data.faqs_en || data.faqs_zh || [],
-    seoTitle: data[`seo_title_${language}`] || data.seo_title_en || data.seo_title_zh,
-    seoDescription: data[`seo_description_${language}`] || data.seo_description_en || data.seo_description_zh,
+    faqs: (data[`faqs_${language}`] || data.faqs_en || data.faqs_zh || []).map((faq: any) => ({ q: localize(faq.q || ""), a: localize(faq.a || "") })),
+    seoTitle: localize(data[`seo_title_${language}`] || data.seo_title_en || data.seo_title_zh || ""),
+    seoDescription: localize(data[`seo_description_${language}`] || data.seo_description_en || data.seo_description_zh || ""),
   };
 };
