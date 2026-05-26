@@ -6,7 +6,7 @@ import { getPublishedBlogPosts } from "@/lib/contentApi";
 import { useLanguage } from "@/i18n/LanguageContext";
 import PageMeta from "@/components/PageMeta";
 import { JsonLdBreadcrumb } from "@/components/JsonLd";
-import { translateBlogCategory, translateKeywordLabel } from "@/i18n/displayLabels";
+import { translateBlogCategory, translateDisplayText, translateKeywordLabel } from "@/i18n/displayLabels";
 
 const categories = [
   { value: "All", en: "All", zh: "全部" },
@@ -52,7 +52,16 @@ const Blog = () => {
   const { language } = useLanguage();
   const t = copy[language];
   const [filter, setFilter] = useState("All");
-  const [posts, setPosts] = useState(blogPosts);
+  const displayText = (value: string) => translateDisplayText(value, language);
+  const initialPosts = language === "zh"
+    ? blogPosts.map((post) => ({
+        ...post,
+        title: displayText(post.title),
+        excerpt: displayText(post.excerpt),
+        content: displayText(post.content),
+      }))
+    : blogPosts;
+  const [posts, setPosts] = useState(initialPosts);
   const filtered = filter === "All" ? posts : posts.filter((post) => post.category === filter);
 
   useEffect(() => {
@@ -102,8 +111,8 @@ const Blog = () => {
                 </div>
                 <div className="p-6">
                   <span className="text-accent text-xs font-medium uppercase tracking-wider">{translateBlogCategory(filtered[0].category, language)}</span>
-                  <h2 className="font-display text-2xl font-bold mt-2 mb-3 group-hover:text-accent transition-colors">{filtered[0].title}</h2>
-                  <p className="text-muted-foreground text-sm mb-4 line-clamp-3">{filtered[0].excerpt}</p>
+                  <h2 className="font-display text-2xl font-bold mt-2 mb-3 group-hover:text-accent transition-colors">{displayText(filtered[0].title)}</h2>
+                  <p className="text-muted-foreground text-sm mb-4 line-clamp-3">{displayText(filtered[0].excerpt)}</p>
                   <div className="flex items-center gap-4 text-xs text-muted-foreground">
                     <span className="flex items-center gap-1"><Clock className="w-3 h-3" /> {filtered[0].readTime}</span>
                     <span>{filtered[0].date}</span>
@@ -124,8 +133,8 @@ const Blog = () => {
                     <span className="text-accent text-xs font-medium uppercase tracking-wider">{translateBlogCategory(post.category, language)}</span>
                     <span className="text-muted-foreground text-xs">{post.readTime}</span>
                   </div>
-                  <h3 className="font-display text-base font-semibold mb-2 group-hover:text-accent transition-colors line-clamp-2">{post.title}</h3>
-                  <p className="text-muted-foreground text-sm line-clamp-2">{post.excerpt}</p>
+                  <h3 className="font-display text-base font-semibold mb-2 group-hover:text-accent transition-colors line-clamp-2">{displayText(post.title)}</h3>
+                  <p className="text-muted-foreground text-sm line-clamp-2">{displayText(post.excerpt)}</p>
                   <div className="mt-3 flex flex-wrap gap-1">
                     {post.tags.slice(0, 3).map((tag) => (
                       <span key={tag} className="text-xs px-2 py-0.5 bg-muted rounded text-muted-foreground">#{translateKeywordLabel(tag, language)}</span>

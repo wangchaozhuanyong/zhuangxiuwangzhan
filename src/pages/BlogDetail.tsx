@@ -11,7 +11,7 @@ import PageMeta from "@/components/PageMeta";
 import { JsonLdBreadcrumb } from "@/components/JsonLd";
 import { whatsappUrl } from "@/config/site";
 import { isHtmlText } from "@/lib/text";
-import { translateBlogCategory, translateKeywordLabel } from "@/i18n/displayLabels";
+import { translateBlogCategory, translateKeywordLabel, translateDisplayText } from "@/i18n/displayLabels";
 
 const copy = {
   en: {
@@ -75,8 +75,17 @@ const BlogDetail = () => {
   const { slug } = useParams<{ slug: string }>();
   const { language } = useLanguage();
   const t = language === "zh" ? zhCopy : copy.en;
-  const [post, setPost] = useState(blogPosts.find((item) => item.slug === slug));
-  const [otherPosts, setOtherPosts] = useState(blogPosts.filter((item) => item.slug !== slug).slice(0, 3));
+  const displayText = (value: string) => translateDisplayText(value, language);
+  const initialPosts = language === "zh"
+    ? blogPosts.map((item) => ({
+        ...item,
+        title: displayText(item.title),
+        excerpt: displayText(item.excerpt),
+        content: displayText(item.content),
+      }))
+    : blogPosts;
+  const [post, setPost] = useState(initialPosts.find((item) => item.slug === slug));
+  const [otherPosts, setOtherPosts] = useState(initialPosts.filter((item) => item.slug !== slug).slice(0, 3));
 
   useEffect(() => {
     if (!slug) return;
@@ -144,13 +153,13 @@ const BlogDetail = () => {
   return (
     <main className="pt-16">
       <PageMeta
-        title={`${post.title} | ${t.metaSuffix}`}
-        description={post.excerpt}
+        title={`${displayText(post.title)} | ${t.metaSuffix}`}
+        description={displayText(post.excerpt)}
         keywords={post.tags.join(", ")}
         canonicalPath={`/blog/${post.slug}`}
         ogType="article"
       />
-      <JsonLdBreadcrumb items={[{ name: t.breadcrumbHome, url: "/" }, { name: t.breadcrumbBlog, url: "/blog" }, { name: post.title, url: `/blog/${post.slug}` }]} />
+      <JsonLdBreadcrumb items={[{ name: t.breadcrumbHome, url: "/" }, { name: t.breadcrumbBlog, url: "/blog" }, { name: displayText(post.title), url: `/blog/${post.slug}` }]} />
 
       <section className="section-padding bg-surface-dark">
         <div className="container-narrow max-w-3xl">
@@ -158,7 +167,7 @@ const BlogDetail = () => {
             <ArrowLeft className="w-3.5 h-3.5" /> {t.backToBlog}
           </Link>
           <span className="text-accent text-xs font-medium uppercase tracking-wider block mb-3">{translateBlogCategory(post.category, language)}</span>
-          <h1 className="font-display text-3xl md:text-4xl font-bold text-primary-foreground mb-4">{post.title}</h1>
+          <h1 className="font-display text-3xl md:text-4xl font-bold text-primary-foreground mb-4">{displayText(post.title)}</h1>
           <div className="flex items-center gap-4 text-sm text-steel-light">
             <span className="flex items-center gap-1"><Clock className="w-3.5 h-3.5" /> {readTime}</span>
             <span>{post.date}</span>
@@ -167,13 +176,13 @@ const BlogDetail = () => {
       </section>
 
       <div className="container-narrow max-w-3xl px-4 md:px-8 -mt-4">
-        <img src={post.image} alt={post.title} className="w-full rounded-lg aspect-[2/1] object-cover" />
+        <img src={post.image} alt={displayText(post.title)} className="w-full rounded-lg aspect-[2/1] object-cover" />
       </div>
 
       <section className="section-padding bg-background">
         <div className="container-narrow max-w-3xl">
           <div className="prose-sm">
-            {renderContent(post.content)}
+            {renderContent(displayText(post.content))}
           </div>
 
           <div className="mt-10 pt-6 border-t border-border">
@@ -224,10 +233,10 @@ const BlogDetail = () => {
                 </div>
                 <div className="p-4">
                   <span className="text-accent text-xs font-medium">{item.category}</span>
-                  <h3 className="font-semibold text-sm mt-1 line-clamp-2">{item.title}</h3>
-                </div>
-              </Link>
-            ))}
+                <h3 className="font-semibold text-sm mt-1 line-clamp-2">{displayText(item.title)}</h3>
+              </div>
+            </Link>
+          ))}
           </div>
         </div>
       </section>
