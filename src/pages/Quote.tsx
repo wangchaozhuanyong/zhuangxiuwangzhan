@@ -34,6 +34,16 @@ const budgetRanges = [
   { value: "Not sure yet", en: "Not sure yet", zh: "暂不确定" },
 ];
 
+const getLocalizedOptionLabel = (
+  options: { value: string; en: string; zh: string }[],
+  value: string,
+  language: "en" | "zh",
+) => {
+  const option = options.find((item) => item.value === value);
+  if (!option) return value;
+  return language === "zh" ? option.zh : option.en;
+};
+
 const copy = {
   en: {
     metaTitle: "Get a Free Renovation Quote | Kuala Lumpur & Selangor | FLASH CAST",
@@ -250,12 +260,12 @@ const Quote = () => {
               {t.successIntro}, <strong className="text-foreground">{form.name}</strong>. {t.successReceived}
             </p>
             <p className="text-muted-foreground mb-8">
-              {t.successFollowUp} <strong className="text-foreground">24 hours</strong> {t.successFollowUpEnd}
+              {t.successFollowUp} <strong className="text-foreground">{language === "zh" ? "24 小时" : "24 hours"}</strong> {t.successFollowUpEnd}
             </p>
             <div className="bg-card p-5 rounded-lg border border-border mb-8 text-left text-sm space-y-2">
-              <p><span className="text-muted-foreground">{t.successProject}</span> <span className="font-medium">{form.projectType}</span></p>
+              <p><span className="text-muted-foreground">{t.successProject}</span> <span className="font-medium">{getLocalizedOptionLabel(projectTypes, form.projectType, language)}</span></p>
               <p><span className="text-muted-foreground">{t.successLocation}</span> <span className="font-medium">{form.location}</span></p>
-              {form.budget && <p><span className="text-muted-foreground">{t.successBudget}</span> <span className="font-medium">{form.budget}</span></p>}
+              {form.budget && <p><span className="text-muted-foreground">{t.successBudget}</span> <span className="font-medium">{getLocalizedOptionLabel(budgetRanges, form.budget, language)}</span></p>}
             </div>
             <div className="flex flex-col sm:flex-row gap-3 justify-center">
               <Button className="btn-press font-semibold h-12 px-8" asChild>

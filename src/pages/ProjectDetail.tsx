@@ -11,7 +11,7 @@ import PageMeta from "@/components/PageMeta";
 import { JsonLdBreadcrumb } from "@/components/JsonLd";
 import { whatsappUrl } from "@/config/site";
 import { isHtmlText, stripHtml } from "@/lib/text";
-import { translateProjectType } from "@/i18n/displayLabels";
+import { translateDisplayText, translateProjectType } from "@/i18n/displayLabels";
 
 const typeToService: Record<string, { en: string; zh: string; slug: string }> = {
   Residential: { en: "Interior Renovation", zh: "室内装修", slug: "renovation" },
@@ -196,13 +196,14 @@ const ProjectDetail = () => {
   const relatedService = typeToService[project.type];
   const relatedServiceName = relatedService?.[language];
   const projectTypeLabel = translateProjectType(project.type, language);
+  const projectLocationLabel = translateDisplayText(project.location, language);
 
   return (
     <main className="pt-16">
       <PageMeta
         title={`${project.title} | ${project.location} | ${t.metaSuffix}`}
-        description={t.metaDescription(projectTypeLabel, project.location, project.clientNeed)}
-        keywords={t.metaKeywords(projectTypeLabel, project.location, project.title)}
+        description={t.metaDescription(projectTypeLabel, projectLocationLabel, project.clientNeed)}
+        keywords={t.metaKeywords(projectTypeLabel, projectLocationLabel, project.title)}
         canonicalPath={`/projects/${project.slug}`}
       />
       <JsonLdBreadcrumb items={[{ name: t.breadcrumbHome, url: "/" }, { name: t.breadcrumbProjects, url: "/projects" }, { name: project.title, url: `/projects/${project.slug}` }]} />
@@ -219,7 +220,7 @@ const ProjectDetail = () => {
           <span className="text-accent text-xs font-medium uppercase tracking-wider block mb-2">{projectTypeLabel}</span>
           <h1 className="font-display text-3xl md:text-4xl font-bold text-primary-foreground mb-2">{project.title}</h1>
           <div className="flex items-center gap-4 text-steel-light text-sm">
-            <span className="flex items-center gap-1"><MapPin className="w-3.5 h-3.5" /> {project.location}</span>
+            <span className="flex items-center gap-1"><MapPin className="w-3.5 h-3.5" /> {projectLocationLabel}</span>
             <span className="flex items-center gap-1"><Clock className="w-3.5 h-3.5" /> {project.duration}</span>
           </div>
         </div>
@@ -279,7 +280,7 @@ const ProjectDetail = () => {
                   <div className="p-6 bg-muted rounded-lg border border-border mb-8">
                     <Star className="w-5 h-5 text-gold mb-3" />
                     <p className="italic text-foreground mb-3 leading-relaxed">"{project.testimonial}"</p>
-                    <p className="text-sm text-muted-foreground font-medium">{t.testimonialBy(project.location)}</p>
+                    <p className="text-sm text-muted-foreground font-medium">{t.testimonialBy(projectLocationLabel)}</p>
                   </div>
                 </Reveal>
               )}
@@ -370,9 +371,9 @@ const ProjectDetail = () => {
                 </div>
                 <div className="p-4">
                   <span className="text-accent text-xs font-medium uppercase tracking-wider">{translateProjectType(item.type, language)}</span>
-                  <h3 className="font-display text-base font-semibold mt-1">{item.title}</h3>
+                    <h3 className="font-display text-base font-semibold mt-1">{translateDisplayText(item.title, language)}</h3>
                   <p className="text-muted-foreground text-xs flex items-center gap-1 mt-1">
-                    <MapPin className="w-3 h-3" /> {item.location}
+                    <MapPin className="w-3 h-3" /> {translateDisplayText(item.location, language)}
                   </p>
                 </div>
               </Link>

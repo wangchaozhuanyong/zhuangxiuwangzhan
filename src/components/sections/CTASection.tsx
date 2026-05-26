@@ -4,38 +4,40 @@ import { ArrowRight } from "lucide-react";
 import WhatsAppIcon from "@/components/WhatsAppIcon";
 import Reveal from "@/components/Reveal";
 import { useLanguage } from "@/i18n/LanguageContext";
+import { useT } from "@/i18n/useT";
 import { whatsappUrl } from "@/config/site";
 
 const copy = {
   en: {
     title: "Planning to Renovate Your Home or Office?",
-    description: "Get a free consultation and quotation today. Tell us about your project and we'll get back to you within 24 hours.",
-    quote: "Get Free Quote",
-    whatsapp: "WhatsApp Us",
+    description:
+      "Get a free consultation and quotation today. Tell us about your project and we'll get back to you within 24 hours.",
   },
   zh: {
     title: "正在规划住宅或办公室装修？",
-    description: "立即获取免费咨询和报价。告诉我们你的项目需求，我们会尽快回复并协助评估。",
-    quote: "获取免费报价",
-    whatsapp: "WhatsApp 咨询",
+    description: "立即获取免费咨询和报价。告诉我们您的项目需求，我们会在 24 小时内与您联系。",
   },
 };
 
 const CTASection = () => {
   const { language } = useLanguage();
-  const t = copy[language];
+  const t = useT();
+  const content = copy[language];
 
   return (
     <section className="bg-surface-dark section-padding relative overflow-hidden" id="cta">
-      <div className="absolute inset-0 bg-[linear-gradient(135deg,rgba(184,149,94,0.16),transparent_42%,rgba(255,255,255,0.04))]" aria-hidden="true" />
+      <div
+        className="absolute inset-0 bg-[linear-gradient(135deg,rgba(184,149,94,0.16),transparent_42%,rgba(255,255,255,0.04))]"
+        aria-hidden="true"
+      />
       <div className="container-narrow">
         <Reveal>
           <div className="relative mx-auto max-w-2xl text-center">
             <h2 className="font-display text-3xl md:text-4xl font-bold mb-4" style={{ color: "hsl(var(--surface-dark-foreground))" }}>
-              {t.title}
+              {content.title}
             </h2>
             <p className="text-base md:text-lg mb-8 leading-relaxed" style={{ color: "hsl(var(--surface-dark-foreground) / 0.8)" }}>
-              {t.description}
+              {content.description}
             </p>
             <div className="flex flex-col sm:flex-row gap-3 justify-center">
               <Button
@@ -44,7 +46,7 @@ const CTASection = () => {
                 asChild
               >
                 <Link to="/quote">
-                  <ArrowRight className="w-4 h-4 mr-2" /> {t.quote}
+                  <ArrowRight className="w-4 h-4 mr-2" /> {t("cta.getQuote")}
                 </Link>
               </Button>
               <Button
@@ -54,7 +56,7 @@ const CTASection = () => {
                 asChild
               >
                 <a href={whatsappUrl()} target="_blank" rel="noopener noreferrer">
-                  <WhatsAppIcon className="w-[18px] h-[18px] mr-2 text-[#25D366]" /> {t.whatsapp}
+                  <WhatsAppIcon className="w-[18px] h-[18px] mr-2 text-[#25D366]" /> {t("cta.whatsapp")}
                 </a>
               </Button>
             </div>

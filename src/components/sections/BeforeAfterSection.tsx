@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { ArrowRight, ChevronLeft, ChevronRight } from "lucide-react";
 import Reveal from "@/components/Reveal";
 import { useLanguage } from "@/i18n/LanguageContext";
+import { translateDisplayText } from "@/i18n/displayLabels";
 
 import beforeKitchen from "@/assets/before-after/before-kitchen.jpg";
 import afterKitchen from "@/assets/before-after/after-kitchen.jpg";
@@ -181,7 +182,7 @@ const BeforeAfterSection = () => {
                 />
                 <div className="p-5">
                   <h3 className="font-display text-lg font-semibold mb-1">{item.title}</h3>
-                  <p className="text-muted-foreground text-xs mb-2">{item.location}</p>
+                  <p className="text-muted-foreground text-xs mb-2">{translateDisplayText(item.location, language)}</p>
                   <p className="text-muted-foreground text-sm leading-relaxed">{item.desc}</p>
                 </div>
               </div>

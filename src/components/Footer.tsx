@@ -17,15 +17,25 @@ const locationLinks = [
   { name: "Puchong", slug: "puchong" },
 ];
 
+const locationLinksZh = [
+  { name: "吉隆坡", slug: "kuala-lumpur" },
+  { name: "八打灵再也", slug: "petaling-jaya" },
+  { name: "雪兰莪", slug: "selangor" },
+  { name: "Mont Kiara", slug: "mont-kiara" },
+  { name: "蕉赖", slug: "cheras" },
+  { name: "Bangsar", slug: "bangsar" },
+  { name: "梳邦再也", slug: "subang-jaya" },
+  { name: "蒲种", slug: "puchong" },
+];
+
 const footerCopy = {
   en: {
     ctaTitle: "Ready to Transform Your Space?",
     ctaText: "Get a free consultation and quote for your dream renovation.",
     ctaButton: "Get Free Quote",
-    brandText: "Professional renovation and interior design company in Kuala Lumpur, Malaysia. Specializing in residential renovation, custom built-in furniture, commercial fit-out, and artistic wall coating (German Remmers).",
-    brandTextShort: "Professional renovation and interior design company in Kuala Lumpur, Malaysia.",
+    brandText:
+      "Professional renovation and interior design company in Kuala Lumpur, Malaysia. Specializing in residential renovation, custom built-in furniture, commercial fit-out, and artistic wall coating (German Remmers).",
     trustLine: "SSM Registered / In-House Design & Build Team",
-    mobileTrustLine: "SSM Registered / Mon-Sat 9AM-6PM",
     hours: "Mon - Sat / 9:00 AM - 6:00 PM",
     servicesTitle: "Services",
     companyTitle: "Company",
@@ -54,18 +64,17 @@ const footerCopy = {
     ],
   },
   zh: {
-    ctaTitle: "准备开始改造你的空间？",
-    ctaText: "预约免费装修咨询，让我们根据空间、预算和工期整理合适方案。",
+    ctaTitle: "准备好改造您的空间了吗？",
+    ctaText: "立即获取免费咨询与装修报价。让我们一起打造理想空间。",
     ctaButton: "获取免费报价",
-    brandText: "FLASH CAST 是位于吉隆坡的装修与室内设计公司，提供住宅装修、定制内嵌家具、商业空间装修和德国 Remmers 艺术墙面涂装服务。",
-    brandTextShort: "位于吉隆坡的装修与室内设计公司。",
+    brandText:
+      "FLASH CAST 是位于吉隆坡的专业装修与室内设计公司，专注住宅装修、定制内嵌家具、商业空间装修以及德国 Remmers 艺术墙面涂装。",
     trustLine: "SSM 注册 / 自有设计与施工团队",
-    mobileTrustLine: "SSM 注册 / 周一至周六 9AM-6PM",
     hours: "周一至周六 / 9:00 AM - 6:00 PM",
     servicesTitle: "服务项目",
     companyTitle: "公司",
-    areasTitle: "服务地区",
-    rights: "版权所有。",
+    areasTitle: "服务区域",
+    rights: "保留所有权利。",
     privacy: "隐私政策",
     terms: "使用条款",
     serviceLinks: [
@@ -84,7 +93,7 @@ const footerCopy = {
       { name: "施工流程", path: "/process" },
       { name: "装修博客", path: "/blog" },
       { name: "常见问题", path: "/faq" },
-      { name: "免费报价", path: "/quote" },
+      { name: "获取报价", path: "/quote" },
       { name: "联系我们", path: "/contact" },
     ],
   },
@@ -136,11 +145,7 @@ const MobileAccordion = ({
         }`}
       />
     </button>
-    <div
-      className={`overflow-hidden transition-all duration-300 ${
-        isOpen ? "max-h-96 pb-5" : "max-h-0"
-      }`}
-    >
+    <div className={`overflow-hidden transition-all duration-300 ${isOpen ? "max-h-96 pb-5" : "max-h-0"}`}>
       {children}
     </div>
   </div>
@@ -150,10 +155,7 @@ const Footer = () => {
   const { language } = useLanguage();
   const t = footerCopy[language];
   const [openSection, setOpenSection] = useState<string | null>(null);
-
-  const toggleSection = (section: string) => {
-    setOpenSection((prev) => (prev === section ? null : section));
-  };
+  const areas = language === "zh" ? locationLinksZh : locationLinks;
 
   const contactItems = [
     { icon: MapPin, text: "94, Jalan Mega Mendung, Taman United, 58200 KL", start: true },
@@ -209,14 +211,19 @@ const Footer = () => {
                   </span>
                 ))}
               </div>
-              <p className="text-xs text-white/25 mb-8">{t.hours}</p>
+
+              <p className="text-[11px] tracking-[0.12em] uppercase text-white/20">
+                {t.hours}
+              </p>
             </div>
 
-            <div className="col-span-2 col-start-6">
+            <div className="col-span-2">
               <SectionTitle>{t.servicesTitle}</SectionTitle>
               <ul className="space-y-3">
-                {t.serviceLinks.map((service) => (
-                  <FooterLink key={service.slug} to={`/services/${service.slug}`}>{service.name}</FooterLink>
+                {t.serviceLinks.map((item) => (
+                  <FooterLink key={item.slug} to={`/services/${item.slug}`}>
+                    {item.name}
+                  </FooterLink>
                 ))}
               </ul>
             </div>
@@ -225,77 +232,96 @@ const Footer = () => {
               <SectionTitle>{t.companyTitle}</SectionTitle>
               <ul className="space-y-3">
                 {t.companyLinks.map((item) => (
-                  <FooterLink key={item.path} to={item.path}>{item.name}</FooterLink>
+                  <FooterLink key={item.path} to={item.path}>
+                    {item.name}
+                  </FooterLink>
                 ))}
               </ul>
             </div>
 
-            <div className="col-span-2">
+            <div className="col-span-4">
               <SectionTitle>{t.areasTitle}</SectionTitle>
-              <ul className="space-y-3">
-                {locationLinks.map((location) => (
-                  <FooterLink key={location.slug} to={`/locations/${location.slug}`}>{location.name}</FooterLink>
-                ))}
-              </ul>
-            </div>
-          </div>
-
-          <div className="lg:hidden">
-            <div className="flex flex-col items-center mb-10">
-              <img src={logoImg} alt="FLASH CAST" className="h-9 w-auto brightness-0 invert opacity-90 mb-5" />
-              <p className="text-sm text-white/40 leading-relaxed mb-2 max-w-[280px] text-center">
-                {t.brandTextShort}
-              </p>
-              <p className="text-xs text-white/25 mb-7 text-center">{t.mobileTrustLine}</p>
-
-              <div className="flex flex-col gap-4 text-sm text-white/45 mb-7 w-full max-w-[280px]">
-                {contactItems.map((item) => (
-                  <span key={item.text} className={`flex ${item.start ? "items-start" : "items-center"} gap-3`}>
-                    <span className="w-10 h-10 rounded-full bg-white/[0.04] border border-white/[0.06] flex items-center justify-center shrink-0">
-                      <item.icon className="w-4 h-4 text-[hsl(var(--gold))]" />
-                    </span>
-                    <span className="pt-2 text-left">{item.text}</span>
-                  </span>
+              <div className="flex flex-wrap gap-2">
+                {areas.map((area) => (
+                  <Link
+                    key={area.slug}
+                    to={`/locations/${area.slug}`}
+                    className="px-3 py-1.5 rounded-full text-xs bg-white/[0.04] border border-white/[0.06] text-white/55 hover:text-[hsl(var(--gold))] hover:border-[hsl(var(--gold)/0.25)] transition-colors"
+                  >
+                    {area.name}
+                  </Link>
                 ))}
               </div>
             </div>
-
-            <div className="border-t border-white/[0.06]">
-              <MobileAccordion title={t.servicesTitle} isOpen={openSection === "services"} onToggle={() => toggleSection("services")}>
-                <ul className="space-y-3 px-1">
-                  {t.serviceLinks.map((service) => (
-                    <FooterLink key={service.slug} to={`/services/${service.slug}`}>{service.name}</FooterLink>
-                  ))}
-                </ul>
-              </MobileAccordion>
-              <MobileAccordion title={t.companyTitle} isOpen={openSection === "company"} onToggle={() => toggleSection("company")}>
-                <ul className="space-y-3 px-1">
-                  {t.companyLinks.map((item) => (
-                    <FooterLink key={item.path} to={item.path}>{item.name}</FooterLink>
-                  ))}
-                </ul>
-              </MobileAccordion>
-              <MobileAccordion title={t.areasTitle} isOpen={openSection === "areas"} onToggle={() => toggleSection("areas")}>
-                <ul className="grid grid-cols-2 gap-x-4 gap-y-3 px-1">
-                  {locationLinks.map((location) => (
-                    <FooterLink key={location.slug} to={`/locations/${location.slug}`}>{location.name}</FooterLink>
-                  ))}
-                </ul>
-              </MobileAccordion>
-            </div>
           </div>
-        </div>
-      </div>
 
-      <div className="bg-[hsl(220,22%,5%)] border-t border-white/[0.04]">
-        <div className="container-narrow px-5 md:px-8 lg:px-16 py-5 flex flex-col md:flex-row justify-between items-center gap-3 text-xs text-white/25 text-center">
-          <p>&copy; {new Date().getFullYear()} FLASH CAST SDN. BHD. {t.rights}</p>
-          <div className="flex items-center gap-4">
-            <span>SSM: {siteConfig.ssmNumber}</span>
-            <span className="w-px h-3 bg-white/[0.06]" />
-            <Link to="/privacy" className="hover:text-white/50 transition-colors">{t.privacy}</Link>
-            <span className="w-px h-3 bg-white/[0.06]" />
-            <Link to="/terms" className="hover:text-white/50 transition-colors">{t.terms}</Link>
+          <div className="lg:hidden flex flex-col gap-2">
+            <div className="pb-3 mb-2 border-b border-white/[0.08]">
+              <div className="flex items-center gap-3 mb-4">
+                <img src={logoImg} alt="FLASH CAST" className="h-9 w-auto brightness-0 invert opacity-90" />
+              </div>
+              <p className="text-sm text-white/40 leading-relaxed mb-3">
+                {t.brandText}
+              </p>
+            </div>
+
+            <MobileAccordion
+              title={t.servicesTitle}
+              isOpen={openSection === "services"}
+              onToggle={() => setOpenSection(openSection === "services" ? null : "services")}
+            >
+              <ul className="space-y-3">
+                {t.serviceLinks.map((item) => (
+                  <FooterLink key={item.slug} to={`/services/${item.slug}`}>
+                    {item.name}
+                  </FooterLink>
+                ))}
+              </ul>
+            </MobileAccordion>
+
+            <MobileAccordion
+              title={t.companyTitle}
+              isOpen={openSection === "company"}
+              onToggle={() => setOpenSection(openSection === "company" ? null : "company")}
+            >
+              <ul className="space-y-3">
+                {t.companyLinks.map((item) => (
+                  <FooterLink key={item.path} to={item.path}>
+                    {item.name}
+                  </FooterLink>
+                ))}
+              </ul>
+            </MobileAccordion>
+
+            <MobileAccordion
+              title={t.areasTitle}
+              isOpen={openSection === "areas"}
+              onToggle={() => setOpenSection(openSection === "areas" ? null : "areas")}
+            >
+              <div className="flex flex-wrap gap-2">
+                {areas.map((area) => (
+                  <Link
+                    key={area.slug}
+                    to={`/locations/${area.slug}`}
+                    className="px-3 py-1.5 rounded-full text-xs bg-white/[0.04] border border-white/[0.06] text-white/55 hover:text-[hsl(var(--gold))] hover:border-[hsl(var(--gold)/0.25)] transition-colors"
+                  >
+                    {area.name}
+                  </Link>
+                ))}
+              </div>
+            </MobileAccordion>
+          </div>
+
+          <div className="mt-10 pt-6 border-t border-white/[0.08] flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 text-xs text-white/25">
+            <p>© {new Date().getFullYear()} FLASH CAST SDN. BHD. {t.rights}</p>
+            <div className="flex items-center gap-4">
+              <Link to="/privacy" className="hover:text-white transition-colors">
+                {t.privacy}
+              </Link>
+              <Link to="/terms" className="hover:text-white transition-colors">
+                {t.terms}
+              </Link>
+            </div>
           </div>
         </div>
       </div>

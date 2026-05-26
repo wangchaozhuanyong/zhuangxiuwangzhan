@@ -6,7 +6,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { isSupabaseConfigured, supabase } from "@/lib/supabase";
 import AdminLayout from "./AdminLayout";
 import AdminImageUpload from "./AdminImageUpload";
-import AdminProjectImages from "./AdminProjectImages";
+import AdminProjectImages from "./AdminProjectImages.tsx";
 
 const editableTables = new Set([
   "services",
@@ -82,6 +82,56 @@ const imageFields = new Set(["image_url", "cover_image_url", "hero_image_url"]);
 const autoTranslateTables = new Set(["services", "projects", "blog_posts", "materials", "testimonials", "hero_slides", "service_areas", "landing_pages"]);
 const readOnlyTables = new Set(["translation_jobs"]);
 const readOnlyFields = new Set(["created_at", "updated_at", "regenerated_at"]);
+const isZhBrowser = () => typeof navigator !== "undefined" && navigator.language.toLowerCase().startsWith("zh");
+
+const copy = {
+  en: {
+    unsupported: (table: string) => `Unsupported table: ${table}`,
+    saving: "Saving...",
+    saved: "Saved.",
+    generating: "Generating English...",
+    generatingEnglish: "Saved. Generating English...",
+    generationFailed: (message: string) => `Saved, but English generation failed: ${message}`,
+    generated: "Saved and English generated. You can review or manually edit the English fields below.",
+    saveFirst: "Save this record before generating English.",
+    regenerated: "English regenerated. Refresh or reselect the record to review it.",
+    createManual: "Create Manual Record",
+    newChinese: "New Chinese Content",
+    searchPlaceholder: "Search current list...",
+    allStatuses: "All statuses",
+    refresh: "Refresh List",
+    refreshing: "Refreshing...",
+    exportCsv: "Export Filtered CSV",
+    showing: (filtered: number, total: number) => `Showing ${filtered} of ${total} latest records`,
+    bilingualTitle: "Chinese first, English reviewable",
+    bilingualDesc: "Fill Chinese fields, save, then review or edit generated English fields.",
+    leadTip: "Lead workflow tip: update the status and notes after calling, WhatsApp follow-up, site visit scheduling, quotation, or closing.",
+    save: "Save",
+  },
+  zh: {
+    unsupported: (table: string) => `不支持的数据表：${table}`,
+    saving: "保存中...",
+    saved: "已保存。",
+    generating: "正在生成英文...",
+    generatingEnglish: "已保存。正在生成英文...",
+    generationFailed: (message: string) => `已保存，但英文生成失败：${message}`,
+    generated: "已保存并生成英文。您可以在下方审核或手动修改英文字段。",
+    saveFirst: "请先保存该记录，再生成英文。",
+    regenerated: "英文已重新生成。请刷新或重新选择记录查看。",
+    createManual: "创建手动记录",
+    newChinese: "新增中文内容",
+    searchPlaceholder: "搜索当前列表...",
+    allStatuses: "全部状态",
+    refresh: "刷新列表",
+    refreshing: "刷新中...",
+    exportCsv: "导出筛选 CSV",
+    showing: (filtered: number, total: number) => `显示 ${filtered} / ${total} 条最新记录`,
+    bilingualTitle: "先写中文，英文可复查",
+    bilingualDesc: "先填写中文字段并保存，然后查看或编辑系统生成的英文字段。",
+    leadTip: "线索处理提示：通话、WhatsApp 跟进、上门测量、报价或结案后，请更新状态和备注。",
+    save: "保存",
+  },
+};
 
 const getRecordLabel = (row: Record<string, any>, type: string) => {
   if (type === "leads") return `${row.name || "Lead"} - ${row.phone || "No phone"}`;
@@ -153,6 +203,8 @@ const statusOptions: Record<string, string[]> = {
 
 const AdminContentEditor = () => {
   const { type = "projects", id } = useParams<{ type: string; id?: string }>();
+  const lang = isZhBrowser() ? "zh" : "en";
+  const t = copy[lang];
   const [rows, setRows] = useState<any[]>([]);
   const [record, setRecord] = useState<Record<string, any>>({});
   const [status, setStatus] = useState("");
@@ -198,7 +250,7 @@ const AdminContentEditor = () => {
   }, [loadRows]);
 
   const save = async () => {
-    setStatus("Saving...");
+    setStatus(t.saving);
     const payload = { ...record };
     delete payload.id;
     delete payload.created_at;
@@ -222,33 +274,33 @@ const AdminContentEditor = () => {
 
     const hasChineseContent = Object.keys(payload).some((field) => field.endsWith("_zh") && payload[field]);
     if (autoTranslateTables.has(type) && hasChineseContent) {
-      setStatus("Saved. Generating English...");
+      setStatus(t.generatingEnglish);
       const { error: translationError } = await supabase!.functions.invoke("generate-english-content", {
         body: { table: type, id: data.id },
       });
 
       if (translationError) {
-        setStatus(`Saved, but English generation failed: ${translationError.message}`);
+        setStatus(t.generationFailed(translationError.message));
         return;
       }
 
       const { data: translatedRecord } = await supabase!.from(type).select("*").eq("id", data.id).single();
       if (translatedRecord) setRecord(translatedRecord);
-      setStatus("Saved and English generated. You can review or manually edit the English fields below.");
+      setStatus(t.generated);
       return;
     }
 
-    setStatus("Saved.");
+    setStatus(t.saved);
     await loadRows();
   };
 
   const regenerateEnglish = async () => {
     if (!record.id) {
-      setStatus("Save this record before generating English.");
+      setStatus(t.saveFirst);
       return;
     }
 
-    setStatus("Generating English...");
+    setStatus(t.generating);
     const { error } = await supabase!.functions.invoke("generate-english-content", {
       body: { table: type, id: record.id },
     });
@@ -258,13 +310,13 @@ const AdminContentEditor = () => {
       return;
     }
 
-    setStatus("English regenerated. Refresh or reselect the record to review it.");
+    setStatus(t.regenerated);
   };
 
   if (!canEdit) {
     return (
       <AdminLayout>
-        <div className="rounded-xl border border-border bg-card p-6">Unsupported table: {type}</div>
+        <div className="rounded-xl border border-border bg-card p-6">{t.unsupported(type)}</div>
       </AdminLayout>
     );
   }
@@ -272,40 +324,40 @@ const AdminContentEditor = () => {
   return (
     <AdminLayout>
       <div className="grid gap-6 xl:grid-cols-[320px_1fr]">
-        <div className="rounded-xl border border-border bg-card p-4">
+          <div className="rounded-xl border border-border bg-card p-4">
           <h2 className="font-display text-lg font-bold mb-3">{type}</h2>
           {!readOnlyTables.has(type) && (
             <Button className="mb-4 w-full" onClick={() => setRecord({ status: type === "leads" ? "new" : type === "quote_requests" ? "pending" : "draft", sort_order: 0 })}>
-              {type === "leads" || type === "quote_requests" ? "Create Manual Record" : "New Chinese Content"}
+              {type === "leads" || type === "quote_requests" ? t.createManual : t.newChinese}
             </Button>
           )}
           <div className="mb-4 space-y-2">
             <Input
               value={search}
               onChange={(event) => setSearch(event.target.value)}
-              placeholder="Search current list..."
+              placeholder={t.searchPlaceholder}
             />
             <select
               value={statusFilter}
               onChange={(event) => setStatusFilter(event.target.value)}
               className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
             >
-              <option value="all">All statuses</option>
+              <option value="all">{t.allStatuses}</option>
               {availableStatuses.map((option) => (
                 <option key={option} value={option}>{option}</option>
               ))}
             </select>
             <Button className="w-full" variant="outline" onClick={() => void loadRows()} disabled={isLoading || !isSupabaseConfigured}>
-              {isLoading ? "Refreshing..." : "Refresh List"}
+              {isLoading ? t.refreshing : t.refresh}
             </Button>
           </div>
           {(type === "leads" || type === "quote_requests") && (
             <Button className="mb-4 w-full" variant="outline" onClick={() => exportRowsAsCsv(type, visibleFields, filteredRows)} disabled={filteredRows.length === 0}>
-              Export Filtered CSV
+              {t.exportCsv}
             </Button>
           )}
           <p className="mb-3 text-xs text-muted-foreground">
-            Showing {filteredRows.length} of {rows.length} latest records
+            {t.showing(filteredRows.length, rows.length)}
           </p>
           <div className="space-y-2">
             {filteredRows.map((row) => (
@@ -323,17 +375,17 @@ const AdminContentEditor = () => {
         <div className="rounded-xl border border-border bg-card p-6">
           <div className="mb-5 flex items-start justify-between gap-4">
             <div>
-              <h2 className="font-display text-xl font-bold">Chinese first, English reviewable</h2>
-              <p className="text-sm text-muted-foreground">Fill Chinese fields, save, then review or edit generated English fields.</p>
+              <h2 className="font-display text-xl font-bold">{t.bilingualTitle}</h2>
+              <p className="text-sm text-muted-foreground">{t.bilingualDesc}</p>
             </div>
             <div className="flex flex-col gap-2 sm:flex-row">
-              <Button variant="outline" onClick={regenerateEnglish} disabled={!isSupabaseConfigured || !record.id}>Regenerate English</Button>
-              <Button onClick={save} disabled={!isSupabaseConfigured || readOnlyTables.has(type)}>Save</Button>
+              <Button variant="outline" onClick={regenerateEnglish} disabled={!isSupabaseConfigured || !record.id}> {lang === "zh" ? "重新生成英文" : "Regenerate English"} </Button>
+              <Button onClick={save} disabled={!isSupabaseConfigured || readOnlyTables.has(type)}>{t.save}</Button>
             </div>
           </div>
           {(type === "leads" || type === "quote_requests") && (
             <div className="mb-4 rounded-lg border border-accent/20 bg-accent/5 p-3 text-sm text-muted-foreground">
-              Lead workflow tip: update the status and notes after calling, WhatsApp follow-up, site visit scheduling, quotation, or closing.
+              {t.leadTip}
             </div>
           )}
           {status && <div className="mb-4 rounded-lg bg-muted p-3 text-sm">{status}</div>}

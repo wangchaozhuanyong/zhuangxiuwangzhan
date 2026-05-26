@@ -3,6 +3,7 @@ import { Star } from "lucide-react";
 import Reveal from "@/components/Reveal";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { useT } from "@/i18n/useT";
+import { translateDisplayText } from "@/i18n/displayLabels";
 import { getPublishedTestimonials } from "@/lib/contentApi";
 
 const fallbackTestimonials = {
@@ -28,13 +29,13 @@ const fallbackTestimonials = {
   ],
   zh: [
     {
-      text: "团队响应很快，施工品质也很稳定。项目按时交付，最终效果整洁又有质感，报价清楚，没有隐藏收费。",
+      text: "团队响应很快，施工品质也很稳定。项目按时交付，最终效果整洁又有质感，报价清楚，没有隐藏费用。",
       client: "Tan 先生",
       location: "Mont Kiara, KL",
       type: "公寓装修",
     },
     {
-      text: "装修过程中沟通顺畅，工地主管随时都在，周报照片也让我们很放心。最终成品和 3D 设计几乎一模一样。",
+      text: "装修过程中沟通顺畅，工地主管也随时都在，周报照片让我们很放心。最终成品和 3D 设计几乎一模一样。",
       client: "Lee 女士",
       location: "Petaling Jaya",
       type: "办公室装修",
@@ -46,6 +47,30 @@ const fallbackTestimonials = {
       type: "厨房装修",
     },
   ],
+} as const;
+
+const testimonialTypeLabels = {
+  en: {
+    "Condo Renovation": "Condo Renovation",
+    "Office Fit-Out": "Office Fit-Out",
+    "Kitchen Renovation": "Kitchen Renovation",
+    公寓装修: "Condo Renovation",
+    办公室装修: "Office Fit-Out",
+    厨房装修: "Kitchen Renovation",
+  },
+  zh: {
+    "Condo Renovation": "公寓装修",
+    "Office Fit-Out": "办公室装修",
+    "Kitchen Renovation": "厨房装修",
+    公寓装修: "公寓装修",
+    办公室装修: "办公室装修",
+    厨房装修: "厨房装修",
+  },
+} as const;
+
+const formatTestimonialType = (value: string, language: "en" | "zh") => {
+  const mapped = testimonialTypeLabels[language][value as keyof (typeof testimonialTypeLabels)[typeof language]];
+  return mapped || translateDisplayText(value, language);
 };
 
 const TestimonialsSection = () => {
@@ -58,6 +83,7 @@ const TestimonialsSection = () => {
 
     void getPublishedTestimonials(language).then((data) => {
       if (!active) return;
+
       setItems(
         data.length
           ? data.map((item, index) => ({
@@ -66,7 +92,7 @@ const TestimonialsSection = () => {
               location: fallbackTestimonials[language][index]?.location || "",
               type: fallbackTestimonials[language][index]?.type || "",
             }))
-          : fallbackTestimonials[language]
+          : fallbackTestimonials[language],
       );
     });
 
@@ -75,16 +101,13 @@ const TestimonialsSection = () => {
     };
   }, [language]);
 
-  const heading = useMemo(() => ({
-    en: {
+  const heading = useMemo(
+    () => ({
       title: t("testimonials.title"),
       subtitle: t("testimonials.subtitle"),
-    },
-    zh: {
-      title: t("testimonials.title"),
-      subtitle: t("testimonials.subtitle"),
-    },
-  })[language], [language, t]);
+    }),
+    [t],
+  );
 
   return (
     <section className="section-padding bg-muted" id="testimonials">
@@ -93,9 +116,7 @@ const TestimonialsSection = () => {
           <div className="text-center mb-10 md:mb-14">
             <div className="accent-line mx-auto mb-4" />
             <h2 className="font-display text-3xl md:text-4xl font-bold mb-3">{heading.title}</h2>
-            <p className="text-muted-foreground max-w-lg mx-auto text-sm md:text-base">
-              {heading.subtitle}
-            </p>
+            <p className="text-muted-foreground max-w-lg mx-auto text-sm md:text-base">{heading.subtitle}</p>
           </div>
         </Reveal>
 
@@ -108,13 +129,13 @@ const TestimonialsSection = () => {
                     <Star key={j} className="w-4 h-4 fill-current text-gold" />
                   ))}
                 </div>
-                <blockquote className="text-sm leading-relaxed mb-5 flex-1">
-                  "{item.text}"
-                </blockquote>
+                <blockquote className="text-sm leading-relaxed mb-5 flex-1">"{item.text}"</blockquote>
                 <div className="border-t border-border pt-4">
                   <p className="font-semibold text-sm">{item.client}</p>
                   <p className="text-muted-foreground text-xs">
-                    {[item.type, item.location].filter(Boolean).join(" · ")}
+                    {[formatTestimonialType(item.type, language), translateDisplayText(item.location, language)]
+                      .filter(Boolean)
+                      .join(" · ")}
                   </p>
                 </div>
               </div>

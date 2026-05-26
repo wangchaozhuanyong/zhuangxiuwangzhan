@@ -92,6 +92,9 @@ const privacyCopy = {
 const Privacy = () => {
   const { language } = useLanguage();
   const t = privacyCopy[language];
+  const contactLabel = language === "zh" ? "联系信息" : "Contact";
+  const emailLabel = language === "zh" ? "邮箱：" : "Email:";
+  const phoneLabel = language === "zh" ? "电话：" : "Phone:";
 
   return (
     <main className="pt-16">
@@ -119,10 +122,11 @@ const Privacy = () => {
                   ) : null}
                   {section.title.endsWith("Contact Us") || section.title.endsWith("联系我们") ? (
                     <div className="bg-muted rounded-lg p-5 mt-3 text-sm text-muted-foreground space-y-1">
-                      <p><strong className="text-foreground">FLASH CAST SDN. BHD.</strong></p>
+                      <p><strong className="text-foreground">{contactLabel}</strong></p>
+                      <p>FLASH CAST SDN. BHD.</p>
                       <p>94, Jalan Mega Mendung, Taman United, 58200 Kuala Lumpur</p>
-                      <p>Email: {siteConfig.email}</p>
-                      <p>Phone: {siteConfig.phoneDisplay}</p>
+                      <p>{emailLabel} {siteConfig.email}</p>
+                      <p>{phoneLabel} {siteConfig.phoneDisplay}</p>
                     </div>
                   ) : null}
                 </section>

@@ -3,16 +3,34 @@ import { ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Reveal from "@/components/Reveal";
 import { materialsData } from "@/data/materials";
+import { useLanguage } from "@/i18n/LanguageContext";
+import { translateDisplayText } from "@/i18n/displayLabels";
+import { useT } from "@/i18n/useT";
+
+const copy = {
+  en: {
+    title: "Material Library",
+    subtitle: "Browse quality materials - then request a quote",
+  },
+  zh: {
+    title: "材料库",
+    subtitle: "浏览精选材料，再获取报价",
+  },
+};
 
 const MaterialsSection = () => {
+  const { language } = useLanguage();
+  const t = useT();
+  const content = copy[language];
+
   return (
     <section className="section-padding bg-muted" id="materials">
       <div className="container-narrow">
         <Reveal>
           <div className="text-center mb-10 md:mb-14">
             <div className="accent-line mb-4 mx-auto" />
-            <h2 className="font-display text-3xl md:text-4xl font-bold mb-3">Material Library</h2>
-            <p className="text-muted-foreground text-sm md:text-base">Browse quality materials — then request a quote</p>
+            <h2 className="font-display text-3xl md:text-4xl font-bold mb-3">{content.title}</h2>
+            <p className="text-muted-foreground text-sm md:text-base">{content.subtitle}</p>
           </div>
         </Reveal>
 
@@ -25,10 +43,19 @@ const MaterialsSection = () => {
               >
                 <div className="rounded-lg overflow-hidden bg-card border border-border hover-lift h-full transition-colors hover:border-accent/30">
                   <div className="aspect-square overflow-hidden img-zoom">
-                    <img src={cat.image} alt={cat.name} loading="lazy" className="w-full h-full object-cover" width={200} height={200} />
+                    <img
+                      src={cat.image}
+                      alt={translateDisplayText(cat.name, language)}
+                      loading="lazy"
+                      className="w-full h-full object-cover"
+                      width={200}
+                      height={200}
+                    />
                   </div>
                   <div className="p-4 md:p-5">
-                    <p className="font-medium text-xs md:text-sm text-center group-hover:text-accent transition-colors leading-tight">{cat.name}</p>
+                    <p className="font-medium text-xs md:text-sm text-center group-hover:text-accent transition-colors leading-tight">
+                      {translateDisplayText(cat.name, language)}
+                    </p>
                   </div>
                 </div>
               </Link>
@@ -39,7 +66,9 @@ const MaterialsSection = () => {
         <Reveal delay={400}>
           <div className="text-center mt-10">
             <Button variant="outline" className="btn-press" asChild>
-              <Link to="/materials">View All Materials <ArrowRight className="w-4 h-4 ml-2" /></Link>
+              <Link to="/materials">
+                {t("cta.viewAll")} <ArrowRight className="w-4 h-4 ml-2" />
+              </Link>
             </Button>
           </div>
         </Reveal>

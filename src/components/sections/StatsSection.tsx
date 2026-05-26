@@ -10,10 +10,10 @@ const stats = {
     { icon: ShieldCheck, value: "SSM", label: "Registered Company", desc: "Fully registered with workmanship warranty on all projects", iconClass: "text-gold" },
   ],
   zh: [
-    { icon: Star, value: "200+", label: "完成项目", desc: "覆盖吉隆坡与雪兰莪的住宅、商业和工业空间", iconClass: "text-gold" },
-    { icon: Clock, value: "10+", label: "行业经验", desc: "长期服务马来西亚装修市场，熟悉本地施工需求", iconClass: "text-gold" },
-    { icon: Users, value: "信赖", label: "业主与企业客户", desc: "回头客和客户转介绍，是我们最重要的信任来源", iconClass: "text-gold" },
-    { icon: ShieldCheck, value: "SSM", label: "注册公司", desc: "正规注册公司，项目提供施工保修与后续支持", iconClass: "text-gold" },
+    { icon: Star, value: "200+", label: "已完成项目", desc: "覆盖吉隆坡与雪兰莪的住宅、商业及工业项目", iconClass: "text-gold" },
+    { icon: Clock, value: "10+", label: "行业经验", desc: "在马来西亚装修市场拥有十年以上经验", iconClass: "text-gold" },
+    { icon: Users, value: "信赖", label: "业主与企业客户", desc: "回头客户与转介绍是我们最重要的认可", iconClass: "text-gold" },
+    { icon: ShieldCheck, value: "SSM", label: "注册公司", desc: "正规注册公司，所有项目提供施工保修", iconClass: "text-gold" },
   ],
 };
 

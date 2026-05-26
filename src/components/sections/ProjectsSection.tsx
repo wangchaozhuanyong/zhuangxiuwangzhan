@@ -107,6 +107,7 @@ const ProjectsSection = () => {
                 typeLabels[language].renovation;
               const title = translateDisplayText(project.title || "", language);
               const description = translateDisplayText(project.description || "", language);
+              const location = translateDisplayText(project.location || "", language);
 
               return (
                 <Reveal key={project.slug} delay={index * 80}>
@@ -118,7 +119,7 @@ const ProjectsSection = () => {
                       {project.thumbnail ? (
                         <img
                           src={project.thumbnail}
-                          alt={project.thumbnailAlt || `${project.title} - ${project.location}`}
+                          alt={project.thumbnailAlt || `${title} - ${location}`}
                           loading="lazy"
                           width={800}
                           height={600}
@@ -139,7 +140,7 @@ const ProjectsSection = () => {
                       </h3>
                       <p className="mb-3 flex items-center gap-1.5 text-xs text-white/55">
                         <MapPin className="h-3.5 w-3.5 text-gold" />
-                        {project.location}
+                        {location}
                       </p>
                       <p className="text-white/62 text-xs leading-relaxed line-clamp-2">
                         {description}

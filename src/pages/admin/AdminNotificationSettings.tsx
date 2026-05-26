@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -7,6 +7,8 @@ import { Switch } from "@/components/ui/switch";
 import { useToast } from "@/hooks/use-toast";
 import { isSupabaseConfigured, supabase } from "@/lib/supabase";
 import AdminLayout from "./AdminLayout";
+
+const isZhBrowser = () => typeof navigator !== "undefined" && navigator.language.toLowerCase().startsWith("zh");
 
 type Settings = {
   telegram_enabled: boolean;
@@ -32,8 +34,91 @@ const emptySettings: Settings = {
   maintenance_last_sent_at: null,
 };
 
+const copy = {
+  en: {
+    notifications: "Notifications",
+    leadAlerts: "Telegram Lead Alerts",
+    leadDesc: "Configure Telegram Bot API alerts for contact leads and quote requests. The bot token is stored server-side and only a masked value is shown after saving.",
+    savedToken: "Saved token",
+    noToken: "No bot token saved",
+    loading: "Loading notification settings...",
+    enableLead: "Enable Telegram notifications",
+    enableLeadDesc: "When enabled, new website form submissions will be sent to Telegram.",
+    botToken: "Telegram Bot Token",
+    botTokenPlaceholder: "Paste BotFather token",
+    keepTokenPlaceholder: "Leave blank to keep current token",
+    chatId: "Telegram Chat ID",
+    chatIdPlaceholder: "Example: 123456789 or -1001234567890",
+    saving: "Saving...",
+    save: "Save Settings",
+    sending: "Sending...",
+    test: "Send Test Message",
+    ops: "Operations",
+    maintenance: "Website Maintenance Reminders",
+    maintenanceDesc: "Send the weekly website maintenance checklist to Telegram. The reminder includes lead status, pending quote status, content counts, SEO checks, and monthly content tasks when selected.",
+    lastSent: "Last sent",
+    enableMaintenance: "Enable maintenance reminders",
+    monday: "Monday",
+    tuesday: "Tuesday",
+    wednesday: "Wednesday",
+    thursday: "Thursday",
+    friday: "Friday",
+    saturday: "Saturday",
+    sunday: "Sunday",
+    sendReminder: "Send Reminder",
+    testFailed: "Test failed",
+    saveFailed: "Failed to save Telegram settings",
+    loadFailed: "Failed to load notification settings",
+    testSent: "Telegram test message sent",
+    saved: "Telegram settings saved",
+    maintenanceTestFailed: "Maintenance reminder test failed",
+    maintenanceSent: "Maintenance reminder sent",
+  },
+  zh: {
+    notifications: "通知",
+    leadAlerts: "Telegram 线索提醒",
+    leadDesc: "配置 Telegram Bot API，用于接收联系线索和报价请求提醒。机器人令牌会保存在服务器端，保存后仅显示部分遮罩内容。",
+    savedToken: "已保存令牌",
+    noToken: "尚未保存机器人令牌",
+    loading: "正在加载通知设置...",
+    enableLead: "启用 Telegram 通知",
+    enableLeadDesc: "启用后，新的网站表单提交会发送到 Telegram。",
+    botToken: "Telegram 机器人令牌",
+    botTokenPlaceholder: "粘贴 BotFather 令牌",
+    keepTokenPlaceholder: "留空以保留当前令牌",
+    chatId: "Telegram Chat ID",
+    chatIdPlaceholder: "例如：123456789 或 -1001234567890",
+    saving: "保存中...",
+    save: "保存设置",
+    sending: "发送中...",
+    test: "发送测试消息",
+    ops: "运维",
+    maintenance: "网站维护提醒",
+    maintenanceDesc: "将每周网站维护检查清单发送到 Telegram。提醒内容包含线索状态、待处理报价、内容数量、SEO 检查，以及可选的月度内容任务。",
+    lastSent: "上次发送",
+    enableMaintenance: "启用维护提醒",
+    monday: "周一",
+    tuesday: "周二",
+    wednesday: "周三",
+    thursday: "周四",
+    friday: "周五",
+    saturday: "周六",
+    sunday: "周日",
+    sendReminder: "发送提醒",
+    testFailed: "测试失败",
+    saveFailed: "保存 Telegram 设置失败",
+    loadFailed: "加载通知设置失败",
+    testSent: "Telegram 测试消息已发送",
+    saved: "Telegram 设置已保存",
+    maintenanceTestFailed: "维护提醒测试失败",
+    maintenanceSent: "维护提醒已发送",
+  },
+};
+
 const AdminNotificationSettings = () => {
   const { toast } = useToast();
+  const lang = isZhBrowser() ? "zh" : "en";
+  const t = copy[lang];
   const [settings, setSettings] = useState<Settings>(emptySettings);
   const [botToken, setBotToken] = useState("");
   const [chatId, setChatId] = useState("");
@@ -48,7 +133,7 @@ const AdminNotificationSettings = () => {
   const [testing, setTesting] = useState(false);
   const [testingMaintenance, setTestingMaintenance] = useState(false);
 
-  const loadSettings = async () => {
+  const loadSettings = useCallback(async () => {
     if (!isSupabaseConfigured) return;
     setLoading(true);
     const { data, error } = await supabase!.functions.invoke("notification-settings", {
@@ -56,7 +141,7 @@ const AdminNotificationSettings = () => {
     });
 
     if (error) {
-      toast({ title: "Failed to load notification settings", description: error.message, variant: "destructive" });
+      toast({ title: t.loadFailed, description: error.message, variant: "destructive" });
       setLoading(false);
       return;
     }
@@ -71,11 +156,11 @@ const AdminNotificationSettings = () => {
     setMaintenanceTimezone(nextSettings.maintenance_timezone || "Asia/Kuala_Lumpur");
     setBotToken("");
     setLoading(false);
-  };
+  }, [toast, t.loadFailed]);
 
   useEffect(() => {
     void loadSettings();
-  }, []);
+  }, [loadSettings]);
 
   const saveSettings = async () => {
     setSaving(true);
@@ -93,7 +178,7 @@ const AdminNotificationSettings = () => {
     });
 
     if (error) {
-      toast({ title: "Failed to save Telegram settings", description: error.message, variant: "destructive" });
+      toast({ title: t.saveFailed, description: error.message, variant: "destructive" });
       setSaving(false);
       return;
     }
@@ -108,7 +193,7 @@ const AdminNotificationSettings = () => {
     setMaintenanceTimezone(nextSettings.maintenance_timezone || "Asia/Kuala_Lumpur");
     setBotToken("");
     setSaving(false);
-    toast({ title: "Telegram settings saved" });
+    toast({ title: t.saved });
   };
 
   const testTelegram = async () => {
@@ -118,13 +203,13 @@ const AdminNotificationSettings = () => {
     });
 
     if (error) {
-      toast({ title: "Telegram test failed", description: error.message, variant: "destructive" });
+      toast({ title: t.testFailed, description: error.message, variant: "destructive" });
       setTesting(false);
       return;
     }
 
     setTesting(false);
-    toast({ title: "Telegram test message sent" });
+    toast({ title: t.testSent });
   };
 
   const testMaintenanceReminder = async () => {
@@ -134,161 +219,140 @@ const AdminNotificationSettings = () => {
     });
 
     if (error) {
-      toast({ title: "Maintenance reminder test failed", description: error.message, variant: "destructive" });
+      toast({ title: t.maintenanceTestFailed, description: error.message, variant: "destructive" });
       setTestingMaintenance(false);
       return;
     }
 
     setTestingMaintenance(false);
-    toast({ title: "Maintenance reminder sent" });
+    toast({ title: t.maintenanceSent });
   };
 
   return (
     <AdminLayout>
       <div className="grid gap-6">
-      <div className="rounded-xl border border-border bg-card p-6">
-        <div className="flex flex-col gap-3 border-b border-border pb-5 md:flex-row md:items-start md:justify-between">
-          <div>
-            <p className="text-xs font-semibold uppercase tracking-[0.25em] text-accent">Notifications</p>
-            <h2 className="font-display text-2xl font-bold">Telegram Lead Alerts</h2>
-            <p className="mt-2 max-w-2xl text-sm text-muted-foreground">
-              Configure Telegram Bot API alerts for contact leads and quote requests. The bot token is stored server-side and only a masked value is shown after saving.
-            </p>
+        <div className="rounded-xl border border-border bg-card p-6">
+          <div className="flex flex-col gap-3 border-b border-border pb-5 md:flex-row md:items-start md:justify-between">
+            <div>
+              <p className="text-xs font-semibold uppercase tracking-[0.25em] text-accent">{t.notifications}</p>
+              <h2 className="font-display text-2xl font-bold">{t.leadAlerts}</h2>
+              <p className="mt-2 max-w-2xl text-sm text-muted-foreground">
+                {t.leadDesc}
+              </p>
+            </div>
+            <div className="rounded-lg border border-border bg-muted px-3 py-2 text-sm">
+              {settings.has_telegram_bot_token ? `${t.savedToken}: ${settings.telegram_bot_token_masked}` : t.noToken}
+            </div>
           </div>
-          <div className="rounded-lg border border-border bg-muted px-3 py-2 text-sm">
-            {settings.has_telegram_bot_token ? `Saved token: ${settings.telegram_bot_token_masked}` : "No bot token saved"}
-          </div>
-        </div>
 
-        {loading ? (
-          <div className="py-12 text-center text-sm text-muted-foreground">Loading notification settings...</div>
-        ) : (
-          <div className="grid gap-6 pt-6">
-            <div className="flex items-center justify-between rounded-lg border border-border p-4">
-              <div>
-                <Label htmlFor="telegram-enabled">Enable Telegram notifications</Label>
-                <p className="mt-1 text-sm text-muted-foreground">When enabled, new website form submissions will be sent to Telegram.</p>
+          {loading ? (
+            <div className="py-12 text-center text-sm text-muted-foreground">{t.loading}</div>
+          ) : (
+            <div className="grid gap-6 pt-6">
+              <div className="flex items-center justify-between rounded-lg border border-border p-4">
+                <div>
+                  <Label htmlFor="telegram-enabled">{t.enableLead}</Label>
+                  <p className="mt-1 text-sm text-muted-foreground">{t.enableLeadDesc}</p>
+                </div>
+                <Switch id="telegram-enabled" checked={enabled} onCheckedChange={setEnabled} />
               </div>
-              <Switch id="telegram-enabled" checked={enabled} onCheckedChange={setEnabled} />
-            </div>
 
-            <div className="grid gap-2">
-              <Label htmlFor="telegram-bot-token">Telegram Bot Token</Label>
-              <Input
-                id="telegram-bot-token"
-                type="password"
-                value={botToken}
-                placeholder={settings.has_telegram_bot_token ? "Leave blank to keep current token" : "Paste BotFather token"}
-                onChange={(event) => setBotToken(event.target.value)}
-              />
-            </div>
+              <div className="grid gap-2">
+                <Label htmlFor="telegram-bot-token">{t.botToken}</Label>
+                <Input
+                  id="telegram-bot-token"
+                  type="password"
+                  value={botToken}
+                  placeholder={settings.has_telegram_bot_token ? t.keepTokenPlaceholder : t.botTokenPlaceholder}
+                  onChange={(event) => setBotToken(event.target.value)}
+                />
+              </div>
 
-            <div className="grid gap-2">
-              <Label htmlFor="telegram-chat-id">Telegram Chat ID</Label>
-              <Input
-                id="telegram-chat-id"
-                value={chatId}
-                placeholder="Example: 123456789 or -1001234567890"
-                onChange={(event) => setChatId(event.target.value)}
-              />
-            </div>
+              <div className="grid gap-2">
+                <Label htmlFor="telegram-chat-id">{t.chatId}</Label>
+                <Input
+                  id="telegram-chat-id"
+                  value={chatId}
+                  placeholder={t.chatIdPlaceholder}
+                  onChange={(event) => setChatId(event.target.value)}
+                />
+              </div>
 
-            <div className="flex flex-col gap-3 border-t border-border pt-5 sm:flex-row">
-              <Button onClick={saveSettings} disabled={saving || testing}>
-                {saving ? "Saving..." : "Save Settings"}
-              </Button>
-              <Button variant="outline" onClick={testTelegram} disabled={saving || testing || !settings.has_telegram_bot_token || !settings.telegram_chat_id}>
-                {testing ? "Sending..." : "Send Test Message"}
-              </Button>
+              <div className="flex flex-col gap-3 border-t border-border pt-5 sm:flex-row">
+                <Button onClick={saveSettings} disabled={saving || testing}>
+                  {saving ? t.saving : t.save}
+                </Button>
+                <Button variant="outline" onClick={testTelegram} disabled={saving || testing || !settings.has_telegram_bot_token || !settings.telegram_chat_id}>
+                  {testing ? t.sending : t.test}
+                </Button>
+              </div>
             </div>
-          </div>
-        )}
-      </div>
-
-      <div className="rounded-xl border border-border bg-card p-6">
-        <div className="border-b border-border pb-5">
-          <p className="text-xs font-semibold uppercase tracking-[0.25em] text-accent">Operations</p>
-          <h2 className="font-display text-2xl font-bold">Website Maintenance Reminders</h2>
-          <p className="mt-2 max-w-2xl text-sm text-muted-foreground">
-            Send the weekly website maintenance checklist to Telegram. The reminder includes lead status, pending quote status, content counts, SEO checks, and monthly content tasks when selected.
-          </p>
-          {settings.maintenance_last_sent_at && (
-            <p className="mt-2 text-xs text-muted-foreground">
-              Last sent: {new Date(settings.maintenance_last_sent_at).toLocaleString()}
-            </p>
           )}
         </div>
 
-        {loading ? (
-          <div className="py-12 text-center text-sm text-muted-foreground">Loading maintenance reminder settings...</div>
-        ) : (
-          <div className="grid gap-6 pt-6">
+        <div className="rounded-xl border border-border bg-card p-6">
+          <div className="border-b border-border pb-5">
+            <p className="text-xs font-semibold uppercase tracking-[0.25em] text-accent">{t.ops}</p>
+            <h2 className="font-display text-2xl font-bold">{t.maintenance}</h2>
+            <p className="mt-2 max-w-2xl text-sm text-muted-foreground">
+              {t.maintenanceDesc}
+            </p>
+            {settings.maintenance_last_sent_at && (
+              <p className="mt-2 text-xs text-muted-foreground">
+                {t.lastSent}: {new Date(settings.maintenance_last_sent_at).toLocaleString()}
+              </p>
+            )}
+          </div>
+
+          <div className="grid gap-4 pt-6 md:grid-cols-2">
             <div className="flex items-center justify-between rounded-lg border border-border p-4">
               <div>
-                <Label htmlFor="maintenance-enabled">Enable maintenance reminders</Label>
-                <p className="mt-1 text-sm text-muted-foreground">When enabled, scheduled calls to the reminder function can send the checklist to Telegram.</p>
+                <Label htmlFor="maintenance-enabled">{t.enableMaintenance}</Label>
               </div>
               <Switch id="maintenance-enabled" checked={maintenanceEnabled} onCheckedChange={setMaintenanceEnabled} />
             </div>
 
-            <div className="grid gap-4 md:grid-cols-3">
-              <div className="grid gap-2">
-                <Label>Reminder day</Label>
-                <Select value={maintenanceDay} onValueChange={setMaintenanceDay}>
-                  <SelectTrigger><SelectValue placeholder="Select day" /></SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="monday">Monday</SelectItem>
-                    <SelectItem value="tuesday">Tuesday</SelectItem>
-                    <SelectItem value="wednesday">Wednesday</SelectItem>
-                    <SelectItem value="thursday">Thursday</SelectItem>
-                    <SelectItem value="friday">Friday</SelectItem>
-                    <SelectItem value="saturday">Saturday</SelectItem>
-                    <SelectItem value="sunday">Sunday</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-
-              <div className="grid gap-2">
-                <Label htmlFor="maintenance-time">Reminder time</Label>
-                <Input id="maintenance-time" type="time" value={maintenanceTime} onChange={(event) => setMaintenanceTime(event.target.value)} />
-              </div>
-
-              <div className="grid gap-2">
-                <Label>Timezone</Label>
-                <Select value={maintenanceTimezone} onValueChange={setMaintenanceTimezone}>
-                  <SelectTrigger><SelectValue placeholder="Select timezone" /></SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="Asia/Kuala_Lumpur">Malaysia</SelectItem>
-                    <SelectItem value="Asia/Shanghai">China</SelectItem>
-                    <SelectItem value="UTC">UTC</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
+            <div className="grid gap-2">
+              <Label>{t.maintenance}</Label>
+              <Select value={maintenanceDay} onValueChange={setMaintenanceDay}>
+                <SelectTrigger><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="monday">{t.monday}</SelectItem>
+                  <SelectItem value="tuesday">{t.tuesday}</SelectItem>
+                  <SelectItem value="wednesday">{t.wednesday}</SelectItem>
+                  <SelectItem value="thursday">{t.thursday}</SelectItem>
+                  <SelectItem value="friday">{t.friday}</SelectItem>
+                  <SelectItem value="saturday">{t.saturday}</SelectItem>
+                  <SelectItem value="sunday">{t.sunday}</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
 
-            <div className="flex items-center justify-between rounded-lg border border-border p-4">
-              <div>
-                <Label htmlFor="include-monthly">Include monthly content tasks in test</Label>
-                <p className="mt-1 text-sm text-muted-foreground">Use this when you want Telegram to include blog, case study, material, and location page reminders.</p>
-              </div>
+            <div className="grid gap-2">
+              <Label htmlFor="maintenance-time">{lang === "zh" ? "时间" : "Time"}</Label>
+              <Input id="maintenance-time" value={maintenanceTime} onChange={(e) => setMaintenanceTime(e.target.value)} />
+            </div>
+
+            <div className="grid gap-2">
+              <Label htmlFor="maintenance-timezone">{lang === "zh" ? "时区" : "Timezone"}</Label>
+              <Input id="maintenance-timezone" value={maintenanceTimezone} onChange={(e) => setMaintenanceTimezone(e.target.value)} />
+            </div>
+
+            <div className="flex items-center gap-3">
               <Switch id="include-monthly" checked={includeMonthly} onCheckedChange={setIncludeMonthly} />
-            </div>
-
-            <div className="flex flex-col gap-3 border-t border-border pt-5 sm:flex-row">
-              <Button onClick={saveSettings} disabled={saving || testingMaintenance}>
-                {saving ? "Saving..." : "Save Reminder Settings"}
-              </Button>
-              <Button
-                variant="outline"
-                onClick={testMaintenanceReminder}
-                disabled={saving || testingMaintenance || !settings.has_telegram_bot_token || !settings.telegram_chat_id}
-              >
-                {testingMaintenance ? "Sending..." : "Send Maintenance Test"}
-              </Button>
+              <Label htmlFor="include-monthly">{lang === "zh" ? "包含月度任务" : "Include monthly tasks"}</Label>
             </div>
           </div>
-        )}
-      </div>
+
+          <div className="flex flex-col gap-3 border-t border-border pt-5 sm:flex-row">
+            <Button onClick={saveSettings} disabled={saving || testingMaintenance}>
+              {saving ? t.saving : t.save}
+            </Button>
+            <Button variant="outline" onClick={testMaintenanceReminder} disabled={testingMaintenance}>
+              {testingMaintenance ? t.sending : t.sendReminder}
+            </Button>
+          </div>
+        </div>
       </div>
     </AdminLayout>
   );

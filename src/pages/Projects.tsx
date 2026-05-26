@@ -102,6 +102,7 @@ const Projects = () => {
   const filtered = filter === "All" ? projects : projects.filter((project) => project.type === filter);
   const displayProjectType = (value: string) => translateProjectType(value, language);
   const displayProjectTitle = (value: string) => translateDisplayText(value, language);
+  const displayProjectLocation = (value: string) => translateDisplayText(value, language);
   const displayProjectDescription = (project: any) =>
     language === "zh" ? String(project.description || "").replace(new RegExp(String(project.type || "").replace(/[.*+?^${}()|[\]\\]/g, "\\$&"), "gi"), displayProjectType(project.type)) : project.description;
 
@@ -176,8 +177,8 @@ const Projects = () => {
                     </div>
                   </div>
                   <h3 className="font-display text-lg font-semibold mb-1 group-hover:text-accent transition-colors">{displayProjectTitle(project.title)}</h3>
-                  <span className="flex items-center gap-1 text-muted-foreground text-sm mb-2">
-                    <MapPin className="w-3 h-3" /> {project.location}
+                    <span className="flex items-center gap-1 text-muted-foreground text-sm mb-2">
+                    <MapPin className="w-3 h-3" /> {displayProjectLocation(project.location)}
                   </span>
                   <p className="text-muted-foreground text-sm line-clamp-2">{displayProjectDescription(project)}</p>
                 </Link>

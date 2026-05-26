@@ -1,24 +1,34 @@
 import Link from "@/components/LocalizedLink";
 import Reveal from "@/components/Reveal";
+import { useLanguage } from "@/i18n/LanguageContext";
+
+const copy = {
+  en: {
+    intro:
+      "FLASH CAST SDN. BHD. is a professional renovation company based in Kuala Lumpur, Malaysia. We specialize in interior renovation, custom built-in furniture, commercial fit-out, artistic wall coating (German Remmers), and full project management solutions across Selangor and the Klang Valley.",
+    areasPrefix: "Serving",
+  },
+  zh: {
+    intro:
+      "FLASH CAST SDN. BHD. 是一家总部位于马来西亚吉隆坡的专业装修公司。我们专注于室内装修、定制家具、商业空间装修、德国 Remmers 艺术涂料，以及覆盖雪兰莪和巴生谷的全案管理服务。",
+    areasPrefix: "服务区域",
+  },
+};
 
 const GeoSection = () => {
+  const { language } = useLanguage();
+  const content = copy[language];
+
   return (
     <section className="section-padding bg-muted border-t border-border">
       <div className="container-narrow">
         <Reveal>
           <p className="text-muted-foreground text-sm md:text-base leading-relaxed text-center max-w-3xl mx-auto mb-4">
-            <strong className="text-foreground">FLASH CAST SDN. BHD.</strong> (闪铸设计) is a professional{" "}
-            <strong className="text-foreground">renovation company</strong> based in{" "}
-            <strong className="text-foreground">Kuala Lumpur, Malaysia</strong>. We specialize in{" "}
-            <Link to="/services/renovation" className="text-accent hover:underline font-medium">interior renovation</Link>,{" "}
-            <Link to="/services/builtin" className="text-accent hover:underline font-medium">custom built-in furniture</Link>,{" "}
-            <Link to="/services/commercial" className="text-accent hover:underline font-medium">commercial fit-out</Link>,{" "}
-            <Link to="/services/artistic-coating" className="text-accent hover:underline font-medium">artistic wall coating (German Remmers)</Link>,{" "}
-            and full project management solutions across{" "}
-            <Link to="/locations/selangor" className="text-accent hover:underline font-medium">Selangor</Link> and the Klang Valley.
+            {content.intro}
           </p>
           <p className="text-muted-foreground text-xs md:text-sm text-center max-w-2xl mx-auto">
-            Serving <Link to="/locations/kuala-lumpur" className="hover:underline text-foreground font-medium">Kuala Lumpur</Link>{" · "}
+            {content.areasPrefix}{" "}
+            <Link to="/locations/kuala-lumpur" className="hover:underline text-foreground font-medium">Kuala Lumpur</Link>{" · "}
             <Link to="/locations/petaling-jaya" className="hover:underline text-foreground font-medium">Petaling Jaya</Link>{" · "}
             <Link to="/locations/cheras" className="hover:underline text-foreground font-medium">Cheras</Link>{" · "}
             <Link to="/locations/mont-kiara" className="hover:underline text-foreground font-medium">Mont Kiara</Link>{" · "}
