@@ -1,4 +1,5 @@
-import { Phone } from "lucide-react";
+import { useEffect, useState } from "react";
+import { Phone, X } from "lucide-react";
 import WhatsAppIcon from "@/components/WhatsAppIcon";
 import LocalizedLink from "@/components/LocalizedLink";
 import { useLanguage } from "@/i18n/LanguageContext";
@@ -11,6 +12,8 @@ const copy = {
     quote: "Free Quote",
     whatsappAria: "Chat on WhatsApp",
     whatsappDesktop: "WhatsApp Us",
+    prompt: "Need a renovation estimate? We can help you plan the budget first.",
+    close: "Close consultation prompt",
   },
   zh: {
     whatsapp: "WhatsApp",
@@ -18,12 +21,51 @@ const copy = {
     quote: "免费报价",
     whatsappAria: "通过 WhatsApp 咨询",
     whatsappDesktop: "WhatsApp 咨询",
+    prompt: "需要装修报价？我们可以先帮你估算预算。",
+    close: "关闭咨询提示",
   },
 };
 
 const FloatingCTA = () => {
   const { language } = useLanguage();
   const t = copy[language];
+  const [showDesktopCta, setShowDesktopCta] = useState(false);
+
+  useEffect(() => {
+    const dismissedAt = Number(localStorage.getItem("flashcast_cta_dismissed_at") || 0);
+    const dismissedRecently = Date.now() - dismissedAt < 24 * 60 * 60 * 1000;
+
+    if (dismissedRecently) {
+      return;
+    }
+
+    const reveal = () => setShowDesktopCta(true);
+    const timer = window.setTimeout(reveal, 18000);
+
+    const handleScroll = () => {
+      const scrollable = document.documentElement.scrollHeight - window.innerHeight;
+
+      if (scrollable <= 0) {
+        return;
+      }
+
+      if (window.scrollY / scrollable > 0.3) {
+        reveal();
+      }
+    };
+
+    window.addEventListener("scroll", handleScroll, { passive: true });
+
+    return () => {
+      window.clearTimeout(timer);
+      window.removeEventListener("scroll", handleScroll);
+    };
+  }, []);
+
+  const dismissPrompt = () => {
+    localStorage.setItem("flashcast_cta_dismissed_at", String(Date.now()));
+    setShowDesktopCta(false);
+  };
 
   return (
     <>
@@ -42,16 +84,49 @@ const FloatingCTA = () => {
         </LocalizedLink>
       </div>
 
-      <a
-        href={whatsappUrl()}
-        target="_blank"
-        rel="noopener noreferrer"
-        className="fixed bottom-6 right-5 z-50 hidden items-center justify-center rounded-full bg-[#25D366] px-5 py-3 text-white shadow-xl transition-all duration-300 hover:scale-105 hover:shadow-2xl active:scale-95 lg:flex"
-        aria-label={t.whatsappAria}
-      >
-        <WhatsAppIcon className="h-5 w-5" />
-        <span className="ml-2 text-sm font-semibold">{t.whatsappDesktop}</span>
-      </a>
+      <div className="fixed bottom-6 right-6 z-50 hidden w-[330px] lg:block">
+        {showDesktopCta ? (
+          <div className="relative mb-3 rounded-2xl border border-white/18 bg-charcoal/92 p-4 text-white shadow-2xl backdrop-blur-md animate-fade-up">
+            <button
+              type="button"
+              onClick={dismissPrompt}
+              aria-label={t.close}
+              className="absolute right-3 top-3 rounded-full p-1 text-white/60 transition-colors hover:bg-white/10 hover:text-white"
+            >
+              <X className="h-4 w-4" />
+            </button>
+            <p className="pr-6 text-sm font-medium leading-6 text-white/88">{t.prompt}</p>
+            <div className="mt-4 grid grid-cols-2 gap-2">
+              <LocalizedLink
+                to="/quote"
+                className="rounded-full bg-[hsl(var(--gold))] px-4 py-2 text-center text-sm font-semibold text-charcoal transition-transform hover:scale-[1.02]"
+              >
+                {t.quote}
+              </LocalizedLink>
+              <a
+                href={whatsappUrl("Floating desktop prompt")}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="rounded-full border border-white/25 px-4 py-2 text-center text-sm font-semibold text-white transition-colors hover:bg-white/10"
+              >
+                WhatsApp
+              </a>
+            </div>
+          </div>
+        ) : null}
+        <a
+          href={whatsappUrl("Floating desktop CTA")}
+          target="_blank"
+          rel="noopener noreferrer"
+          aria-label={t.whatsappAria}
+          className={`ml-auto flex w-fit items-center justify-center rounded-full bg-[#25D366] px-5 py-3 text-white shadow-xl transition-all duration-500 hover:scale-105 hover:shadow-2xl active:scale-95 ${
+            showDesktopCta ? "translate-y-0 opacity-100" : "pointer-events-none translate-y-4 opacity-0"
+          }`}
+        >
+          <WhatsAppIcon className="h-5 w-5" />
+          <span className="ml-2 text-sm font-semibold">{t.whatsappDesktop}</span>
+        </a>
+      </div>
     </>
   );
 };

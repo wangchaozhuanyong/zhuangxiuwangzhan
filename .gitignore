@@ -14,7 +14,10 @@ dist-ssr
 .env
 .env.*
 !.env.example
-public/videos/
+public/videos/*
+!public/videos/home-hero.mp4
+!public/videos/home-hero-mobile.mp4
+!public/videos/home-hero-poster.jpg
 
 # Editor directories and files
 .vscode/*
