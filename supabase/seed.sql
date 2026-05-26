@@ -1,0 +1,14 @@
+-- Production content is managed by scripts/upsert-production-content.mjs.
+--
+-- The content script is preferred over a large SQL seed because it can safely
+-- upsert bilingual CMS records, refresh project image galleries, and reuse
+-- public image assets without duplicating a long SQL fixture.
+--
+-- Usage:
+--   VITE_SUPABASE_URL=<project-url> \
+--   SUPABASE_SERVICE_ROLE_KEY=<service-role-key> \
+--   node scripts/upsert-production-content.mjs
+--
+-- This file intentionally stays lightweight so `supabase db reset` does not
+-- re-import stale or outdated marketing content.
+select 'Run scripts/upsert-production-content.mjs to load FLASH CAST production content.' as message;

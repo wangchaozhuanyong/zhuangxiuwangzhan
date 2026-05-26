@@ -1,19 +1,36 @@
-import { Link } from "react-router-dom";
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { ArrowRight } from "lucide-react";
 import WhatsAppIcon from "@/components/WhatsAppIcon";
 import { useT } from "@/i18n/useT";
+import { useLanguage } from "@/i18n/LanguageContext";
+import { getPublishedHeroSlides } from "@/lib/contentApi";
+import LocalizedLink from "@/components/LocalizedLink";
+import { whatsappUrl } from "@/config/site";
 import heroImg from "@/assets/hero-luxury-living.jpg";
 
 const HeroSection = () => {
   const t = useT();
+  const { language } = useLanguage();
+  const [slide, setSlide] = useState<any>(null);
+
+  useEffect(() => {
+    void getPublishedHeroSlides(language).then((slides) => setSlide(slides[0] || null));
+  }, [language]);
+
+  const title = slide?.title;
+  const subtitle = slide?.excerpt || t("hero.subtitle");
+  const image = slide?.image || heroImg;
+  const imageAlt = slide?.alt || "Modern luxury living room renovation by FLASH CAST in Kuala Lumpur";
+  const buttonLabel = slide?.buttonLabel || t("cta.getQuote");
+  const buttonUrl = slide?.buttonUrl || "/quote";
 
   return (
     <section className="relative min-h-[100svh] flex items-center overflow-hidden">
       <div className="absolute inset-0">
         <img
-          src={heroImg}
-          alt="Modern luxury living room renovation by FLASH CAST in Kuala Lumpur"
+          src={image}
+          alt={imageAlt}
           className="w-full h-full object-cover"
           width={1920}
           height={1080}
@@ -42,11 +59,17 @@ const HeroSection = () => {
               letterSpacing: "-0.02em",
             }}
           >
-            {t("hero.title.line1")}
-            <br />
-            {t("hero.title.line2")}
-            <br />
-            {t("hero.title.line3")}
+            {title ? title : (
+              <>
+                {t("hero.title.line1")}
+                {" "}
+                <br />
+                {t("hero.title.line2")}
+                {" "}
+                <br />
+                {t("hero.title.line3")}
+              </>
+            )}
           </h1>
 
           <p
@@ -58,7 +81,7 @@ const HeroSection = () => {
               textShadow: "0 1px 8px rgba(0,0,0,0.5)",
             }}
           >
-            {t("hero.subtitle")}
+            {subtitle}
           </p>
 
           <div
@@ -70,16 +93,16 @@ const HeroSection = () => {
               className="btn-press w-full sm:w-auto min-h-[3rem] text-sm font-bold tracking-wide shadow-xl bg-white text-foreground hover:bg-white/90 rounded-md px-8 py-3 justify-center"
               asChild
             >
-              <Link to="/quote">
-                <ArrowRight className="w-4 h-4 mr-2" /> {t("cta.getQuote")}
-              </Link>
+              <LocalizedLink to={buttonUrl}>
+                <ArrowRight className="w-4 h-4 mr-2" /> {buttonLabel}
+              </LocalizedLink>
             </Button>
             <Button
               size="lg"
               className="btn-press w-full sm:w-auto min-h-[3rem] text-sm font-semibold bg-transparent text-white border border-white/40 hover:bg-white/10 backdrop-blur-sm shadow-md rounded-md px-8 py-3 justify-center"
               asChild
             >
-              <a href="https://wa.me/60123456789" target="_blank" rel="noopener noreferrer" aria-label="Contact FLASH CAST on WhatsApp">
+              <a href={whatsappUrl()} target="_blank" rel="noopener noreferrer" aria-label="Contact FLASH CAST on WhatsApp">
                 <WhatsAppIcon className="w-[18px] h-[18px] mr-2 text-[#25D366]" /> {t("cta.whatsapp")}
               </a>
             </Button>

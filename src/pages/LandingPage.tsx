@@ -1,31 +1,98 @@
-import { useParams, Link } from "react-router-dom";
+import { useParams } from "react-router-dom";
+import { useEffect, useState } from "react";
+import Link from "@/components/LocalizedLink";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, CheckCircle, MapPin, Star } from "lucide-react";
 import WhatsAppIcon from "@/components/WhatsAppIcon";
 import Reveal from "@/components/Reveal";
-import CTABanner from "@/components/templates/CTABanner";
-import FAQSection from "@/components/templates/FAQSection";
+import CTABanner from "@/components/blocks/CTABanner";
+import FAQSection from "@/components/blocks/FAQSection";
+import PageMeta from "@/components/PageMeta";
 import { landingPages } from "@/data/landings";
+import { useLanguage } from "@/i18n/LanguageContext";
+import { getPublishedLandingPageBySlug } from "@/lib/contentApi";
+import { whatsappUrl } from "@/config/site";
+import { isHtmlText, stripHtml } from "@/lib/text";
+
+const shellCopy = {
+  en: {
+    notFound: "Page Not Found",
+    backHome: "Back to Home",
+    quote: "Get a Free Quote",
+    whatsapp: "WhatsApp Us",
+    overview: "Overview",
+    whyChoose: "Why Choose Us",
+    relatedProjects: "Related Projects",
+    ctaTitle: "Ready to Get Started?",
+    ctaDescription: "Contact us today for a free consultation and quotation.",
+    metaSuffix: "FLASH CAST SDN. BHD.",
+  },
+  zh: {
+    notFound: "页面不存在",
+    backHome: "返回首页",
+    quote: "获取免费报价",
+    whatsapp: "WhatsApp 咨询",
+    overview: "服务概览",
+    whyChoose: "为什么选择我们",
+    relatedProjects: "相关案例",
+    ctaTitle: "准备开始规划项目？",
+    ctaDescription: "欢迎联系我们，获取免费咨询和装修报价。",
+    metaSuffix: "FLASH CAST SDN. BHD.",
+  },
+};
+
+const zhShellCopy = {
+  notFound: "页面不存在",
+  backHome: "返回首页",
+  quote: "获取免费报价",
+  whatsapp: "WhatsApp 咨询",
+  overview: "服务概览",
+  whyChoose: "为什么选择我们",
+  relatedProjects: "相关案例",
+  ctaTitle: "准备开始规划项目？",
+  ctaDescription: "欢迎联系我们，获取免费咨询和装修报价。",
+  metaSuffix: "FLASH CAST SDN. BHD.",
+};
 
 const LandingPage = () => {
   const { slug } = useParams<{ slug: string }>();
-  const page = landingPages[slug || ""];
+  const { language } = useLanguage();
+  const t = language === "zh" ? zhShellCopy : shellCopy.en;
+  const fallbackPage = landingPages[slug || ""];
+  const [page, setPage] = useState(fallbackPage || null);
+
+  useEffect(() => {
+    if (!slug) return;
+    let active = true;
+    void getPublishedLandingPageBySlug(slug, language).then((item) => {
+      if (active) setPage(item);
+    });
+
+    return () => {
+      active = false;
+    };
+  }, [slug, language]);
 
   if (!page) {
     return (
       <main className="pt-16 section-padding text-center">
-        <h1 className="font-display text-3xl font-bold mb-4">Page Not Found</h1>
-        <Button asChild><Link to="/">Back to Home</Link></Button>
+        <PageMeta title={`${t.notFound} | ${t.metaSuffix}`} description={t.notFound} canonicalPath={`/landing/${slug || ""}`} />
+        <h1 className="font-display text-3xl font-bold mb-4">{t.notFound}</h1>
+        <Button asChild><Link to="/">{t.backHome}</Link></Button>
       </main>
     );
   }
 
   return (
     <main className="pt-16">
-      {/* Hero */}
+      <PageMeta
+        title={page.seoTitle || `${page.title} | ${t.metaSuffix}`}
+        description={page.seoDescription || stripHtml(page.description)}
+        canonicalPath={`/landing/${slug || ""}`}
+      />
       <section className="relative min-h-[60vh] flex items-center">
         <div className="absolute inset-0">
-          <img src={page.heroImage} alt={page.title} className="w-full h-full object-cover" loading="eager" width={1920} height={800} />
+          <img src={page.heroImage} alt={page.heroAlt || page.title} className="w-full h-full object-cover" loading="eager" width={1920} height={800} />
           <div className="absolute inset-0 bg-gradient-to-r from-foreground/90 via-foreground/75 to-foreground/40" />
         </div>
         <div className="relative z-10 container-narrow px-4 md:px-8 py-24">
@@ -35,11 +102,11 @@ const LandingPage = () => {
             <p className="text-steel-light text-lg mb-6">{page.subtitle}</p>
             <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
               <Button size="lg" className="btn-press w-full sm:w-auto min-h-[3rem] text-sm font-bold tracking-wide shadow-xl shadow-accent/40 bg-accent hover:bg-accent/90 text-accent-foreground rounded-md px-8 py-3 justify-center" asChild>
-                <Link to="/quote">Get a Free Quote <ArrowRight className="w-4 h-4 ml-2" /></Link>
+                <Link to="/quote">{t.quote} <ArrowRight className="w-4 h-4 ml-2" /></Link>
               </Button>
               <Button size="lg" className="btn-press w-full sm:w-auto min-h-[3rem] text-sm font-semibold bg-white text-neutral-800 border-0 hover:bg-white/90 shadow-md rounded-md px-8 py-3 justify-center" asChild>
-                <a href="https://wa.me/60123456789" target="_blank" rel="noopener noreferrer">
-                  <WhatsAppIcon className="w-[18px] h-[18px] mr-2 text-[#25D366]" /> WhatsApp Us
+                <a href={whatsappUrl()} target="_blank" rel="noopener noreferrer">
+                  <WhatsAppIcon className="w-[18px] h-[18px] mr-2 text-[#25D366]" /> {t.whatsapp}
                 </a>
               </Button>
             </div>
@@ -54,13 +121,17 @@ const LandingPage = () => {
             <Reveal direction="left">
               <div>
                 <div className="accent-line mb-4" />
-                <h2 className="font-display text-2xl md:text-3xl font-bold mb-4">Overview</h2>
-                <p className="text-muted-foreground leading-relaxed">{page.description}</p>
+                <h2 className="font-display text-2xl md:text-3xl font-bold mb-4">{t.overview}</h2>
+                {isHtmlText(page.description) ? (
+                  <div className="prose prose-neutral max-w-none text-muted-foreground" dangerouslySetInnerHTML={{ __html: page.description }} />
+                ) : (
+                  <p className="text-muted-foreground leading-relaxed">{page.description}</p>
+                )}
               </div>
             </Reveal>
             <Reveal direction="right" delay={100}>
               <div className="bg-muted p-6 rounded-lg border border-border">
-                <h3 className="font-semibold text-base mb-4">Why Choose Us</h3>
+                <h3 className="font-semibold text-base mb-4">{t.whyChoose}</h3>
                 <ul className="space-y-3">
                   {page.benefits.map((b) => (
                     <li key={b} className="flex items-start gap-3">
@@ -82,7 +153,7 @@ const LandingPage = () => {
             <Reveal>
               <div className="text-center mb-10">
                 <div className="accent-line mx-auto mb-4" />
-                <h2 className="font-display text-2xl md:text-3xl font-bold mb-3">Related Projects</h2>
+                <h2 className="font-display text-2xl md:text-3xl font-bold mb-3">{t.relatedProjects}</h2>
               </div>
             </Reveal>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 max-w-2xl mx-auto">
@@ -108,7 +179,7 @@ const LandingPage = () => {
       <FAQSection faqs={page.faqs} className="section-padding bg-background" />
 
       {/* CTA */}
-      <CTABanner title="Ready to Get Started?" description="Contact us today for a free consultation and quotation." />
+      <CTABanner title={t.ctaTitle} description={t.ctaDescription} quoteLabel={t.quote} whatsappLabel={t.whatsapp} />
     </main>
   );
 };

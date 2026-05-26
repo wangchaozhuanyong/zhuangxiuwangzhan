@@ -1,4 +1,7 @@
 import { Helmet } from "react-helmet-async";
+import { useLanguage } from "@/i18n/LanguageContext";
+import { stripLanguagePrefix, withLanguagePrefix } from "@/i18n/routes";
+import { siteConfig } from "@/config/site";
 
 interface PageMetaProps {
   title: string;
@@ -9,33 +12,37 @@ interface PageMetaProps {
   canonicalPath?: string;
 }
 
-const SITE_URL = "https://flashcast.com.my";
-const DEFAULT_OG_IMAGE = "https://flashcast.com.my/og-image.jpg";
-
 const PageMeta = ({
   title,
   description,
   keywords,
-  ogImage = DEFAULT_OG_IMAGE,
+  ogImage = siteConfig.ogImage,
   ogType = "website",
   canonicalPath,
 }: PageMetaProps) => {
+  const { language } = useLanguage();
   const fullTitle = title.includes("FLASH CAST") ? title : `${title} | FLASH CAST SDN. BHD.`;
-  const canonicalUrl = canonicalPath ? `${SITE_URL}${canonicalPath}` : undefined;
+  const path = canonicalPath ? stripLanguagePrefix(canonicalPath) : stripLanguagePrefix(window.location.pathname);
+  const canonicalUrl = `${siteConfig.url}${withLanguagePrefix(path, language)}`;
+  const zhUrl = `${siteConfig.url}${withLanguagePrefix(path, "zh")}`;
+  const enUrl = `${siteConfig.url}${withLanguagePrefix(path, "en")}`;
 
   return (
     <Helmet>
       <title>{fullTitle}</title>
       <meta name="description" content={description} />
       {keywords && <meta name="keywords" content={keywords} />}
-      {canonicalUrl && <link rel="canonical" href={canonicalUrl} />}
+      <link rel="canonical" href={canonicalUrl} />
+      <link rel="alternate" hrefLang="zh-CN" href={zhUrl} />
+      <link rel="alternate" hrefLang="en" href={enUrl} />
+      <link rel="alternate" hrefLang="x-default" href={enUrl} />
 
       {/* Open Graph */}
       <meta property="og:title" content={fullTitle} />
       <meta property="og:description" content={description} />
       <meta property="og:image" content={ogImage} />
       <meta property="og:type" content={ogType} />
-      {canonicalUrl && <meta property="og:url" content={canonicalUrl} />}
+      <meta property="og:url" content={canonicalUrl} />
 
       {/* Twitter */}
       <meta name="twitter:card" content="summary_large_image" />

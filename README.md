@@ -1,3 +1,3 @@
-# Welcome to your Lovable project
+# FLASH CAST Website
 
-TODO: Document your project here
+Malaysian renovation company website with bilingual public pages, Supabase-backed content management, lead capture, and SEO-focused location, blog, project, and materials pages.

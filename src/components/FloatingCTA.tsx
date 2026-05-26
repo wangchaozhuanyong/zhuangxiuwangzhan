@@ -1,18 +1,58 @@
+import { Phone } from "lucide-react";
 import WhatsAppIcon from "@/components/WhatsAppIcon";
+import LocalizedLink from "@/components/LocalizedLink";
+import { useLanguage } from "@/i18n/LanguageContext";
+import { siteConfig, whatsappUrl } from "@/config/site";
+
+const copy = {
+  en: {
+    whatsapp: "WhatsApp",
+    call: "Call",
+    quote: "Free Quote",
+    whatsappAria: "Chat on WhatsApp",
+    whatsappDesktop: "WhatsApp Us",
+  },
+  zh: {
+    whatsapp: "WhatsApp",
+    call: "电话",
+    quote: "免费报价",
+    whatsappAria: "通过 WhatsApp 咨询",
+    whatsappDesktop: "WhatsApp 咨询",
+  },
+};
 
 const FloatingCTA = () => {
+  const { language } = useLanguage();
+  const t = copy[language];
+
   return (
-    <a
-      href="https://wa.me/60123456789"
-      target="_blank"
-      rel="noopener noreferrer"
-      className="fixed bottom-6 right-5 sm:bottom-6 sm:right-6 z-50 flex items-center justify-center w-14 h-14 sm:w-auto sm:h-auto sm:px-5 sm:py-3 bg-[#25D366] text-white rounded-full shadow-xl transition-all duration-300 hover:shadow-2xl hover:scale-105 active:scale-95 animate-fade-in"
-      style={{ animationDelay: "1s", opacity: 0 }}
-      aria-label="Chat on WhatsApp"
-    >
-      <WhatsAppIcon className="w-7 h-7 sm:w-5 sm:h-5" />
-      <span className="hidden sm:inline text-sm font-semibold ml-2">WhatsApp Us</span>
-    </a>
+    <>
+      <div className="fixed inset-x-0 bottom-0 z-50 grid grid-cols-3 border-t border-border bg-background/95 backdrop-blur md:hidden">
+        <a href={whatsappUrl()} target="_blank" rel="noopener noreferrer" className="flex min-h-14 flex-col items-center justify-center text-[11px] font-semibold text-foreground">
+          <WhatsAppIcon className="mb-1 h-5 w-5 text-[#25D366]" />
+          {t.whatsapp}
+        </a>
+        <a href={siteConfig.phoneHref} className="flex min-h-14 flex-col items-center justify-center border-x border-border text-[11px] font-semibold text-foreground">
+          <Phone className="mb-1 h-5 w-5 text-accent" />
+          {t.call}
+        </a>
+        <LocalizedLink to="/quote" className="flex min-h-14 flex-col items-center justify-center bg-accent text-[11px] font-bold text-accent-foreground">
+          <span className="mb-1 text-base leading-none">RM</span>
+          {t.quote}
+        </LocalizedLink>
+      </div>
+
+      <a
+        href={whatsappUrl()}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="fixed bottom-6 right-5 z-50 hidden items-center justify-center rounded-full bg-[#25D366] px-5 py-3 text-white shadow-xl transition-all duration-300 hover:scale-105 hover:shadow-2xl active:scale-95 md:flex"
+        aria-label={t.whatsappAria}
+      >
+        <WhatsAppIcon className="h-5 w-5" />
+        <span className="ml-2 text-sm font-semibold">{t.whatsappDesktop}</span>
+      </a>
+    </>
   );
 };
 

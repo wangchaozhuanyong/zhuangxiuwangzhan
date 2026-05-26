@@ -1,8 +1,8 @@
 import { CategoryItem } from "./types";
 
 /**
- * Mock categories data — unified category system for services, materials, and projects.
- * In production, this will be managed via a backend admin panel.
+ * Seeded categories for services, materials, and projects.
+ * In production, these are managed via the backend admin panel.
  */
 export const categoriesData: CategoryItem[] = [
   // Service categories

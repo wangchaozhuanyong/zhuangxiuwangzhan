@@ -1,5 +1,5 @@
 import { useState, useRef, useCallback } from "react";
-import { Link } from "react-router-dom";
+import Link from "@/components/LocalizedLink";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, ChevronLeft, ChevronRight } from "lucide-react";
 import Reveal from "@/components/Reveal";

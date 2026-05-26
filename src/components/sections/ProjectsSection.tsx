@@ -1,12 +1,19 @@
-import { Link } from "react-router-dom";
+import Link from "@/components/LocalizedLink";
 import { Button } from "@/components/ui/button";
 import { ArrowRight } from "lucide-react";
 import Reveal from "@/components/Reveal";
-import { projectsData } from "@/data/projects";
-
-const featured = projectsData.slice(0, 6);
+import { useLanguage } from "@/i18n/LanguageContext";
+import { getPublishedProjects } from "@/lib/contentApi";
+import { useEffect, useState } from "react";
 
 const ProjectsSection = () => {
+  const { language } = useLanguage();
+  const [featured, setFeatured] = useState<any[]>([]);
+
+  useEffect(() => {
+    void getPublishedProjects(language).then((projects) => setFeatured(projects.slice(0, 6)));
+  }, [language]);
+
   return (
     <section className="section-padding bg-muted" id="projects">
       <div className="container-narrow">

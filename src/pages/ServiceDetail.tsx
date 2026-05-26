@@ -1,23 +1,115 @@
-import { useParams, Link } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
+import Link from "@/components/LocalizedLink";
 import { Button } from "@/components/ui/button";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { ArrowRight, ArrowLeft, CheckCircle } from "lucide-react";
 import WhatsAppIcon from "@/components/WhatsAppIcon";
 import { servicesData } from "@/data/services";
+import { getPublishedServices } from "@/lib/contentApi";
 import Reveal from "@/components/Reveal";
 import PageMeta from "@/components/PageMeta";
 import { JsonLdService, JsonLdBreadcrumb, JsonLdFAQ } from "@/components/JsonLd";
-// Images are now stored in servicesData directly
+import { useLanguage } from "@/i18n/LanguageContext";
+import { whatsappUrl } from "@/config/site";
+import { isHtmlText, stripHtml } from "@/lib/text";
+
+const copy = {
+  en: {
+    notFound: "Service Not Found",
+    viewAll: "View All Services",
+    metaSuffix: "FLASH CAST Renovation Services",
+    metaKeywords: (title: string) => `${title} KL, ${title} Malaysia, renovation Kuala Lumpur`,
+    breadcrumbHome: "Home",
+    breadcrumbServices: "Services",
+    allServices: "All Services",
+    services: "Services",
+    getQuote: "Get a Quote",
+    whatsapp: "WhatsApp Us",
+    overview: "Overview",
+    suitableFor: "Suitable For",
+    offer: "What We Offer",
+    commonProjects: "Common Projects",
+    process: "Our Process",
+    faq: "Frequently Asked Questions",
+    relatedServices: "Related Services",
+    viewProjects: "View Projects",
+    materialLibrary: "Material Library",
+    faqLink: "FAQ",
+    interested: (title: string) => `Interested in ${title}?`,
+    ctaText: "Contact us for a free consultation and quotation. We serve Kuala Lumpur, Selangor, and surrounding areas.",
+    freeQuote: "Get a Free Quote",
+  },
+  zh: {
+    notFound: "服务不存在",
+    viewAll: "查看全部服务",
+    metaSuffix: "FLASH CAST 装修服务",
+    metaKeywords: (title: string) => `${title} 吉隆坡, ${title} 马来西亚, Kuala Lumpur 装修服务`,
+    breadcrumbHome: "首页",
+    breadcrumbServices: "服务项目",
+    allServices: "全部服务",
+    services: "服务项目",
+    getQuote: "获取报价",
+    whatsapp: "WhatsApp 咨询",
+    overview: "服务概览",
+    suitableFor: "适合空间",
+    offer: "我们提供",
+    commonProjects: "常见项目",
+    process: "服务流程",
+    faq: "常见问题",
+    relatedServices: "相关服务",
+    viewProjects: "查看案例",
+    materialLibrary: "材料库",
+    faqLink: "常见问题",
+    interested: (title: string) => `想了解 ${title}？`,
+    ctaText: "联系我们获取免费咨询与报价。我们服务 Kuala Lumpur、Selangor 与周边地区。",
+    freeQuote: "获取免费报价",
+  },
+};
+
+const zhCopy = {
+  notFound: "服务不存在",
+  viewAll: "查看全部服务",
+  metaSuffix: "FLASH CAST 装修服务",
+  metaKeywords: (title: string) => `${title} 吉隆坡, ${title} 马来西亚, Kuala Lumpur 装修服务`,
+  breadcrumbHome: "首页",
+  breadcrumbServices: "服务项目",
+  allServices: "全部服务",
+  services: "服务项目",
+  getQuote: "获取报价",
+  whatsapp: "WhatsApp 咨询",
+  overview: "服务概览",
+  suitableFor: "适合空间",
+  offer: "我们提供",
+  commonProjects: "常见项目",
+  process: "服务流程",
+  faq: "常见问题",
+  relatedServices: "相关服务",
+  viewProjects: "查看案例",
+  materialLibrary: "材料库",
+  faqLink: "常见问题",
+  interested: (title: string) => `想了解 ${title}？`,
+  ctaText: "联系我们获取免费咨询与报价。我们服务 Kuala Lumpur、Selangor 与周边地区。",
+  freeQuote: "获取免费报价",
+};
 
 const ServiceDetail = () => {
   const { slug } = useParams<{ slug: string }>();
-  const service = servicesData.find((s) => s.slug === slug);
+  const { language } = useLanguage();
+  const t = language === "zh" ? zhCopy : copy.en;
+  const [services, setServices] = useState(servicesData);
+
+  useEffect(() => {
+    void getPublishedServices(language).then(setServices);
+  }, [language]);
+
+  const service = services.find((item) => item.slug === slug);
 
   if (!service) {
     return (
       <main className="pt-16 section-padding text-center">
-        <h1 className="font-display text-3xl font-bold mb-4">Service Not Found</h1>
-        <Button asChild><Link to="/services">View All Services</Link></Button>
+        <h1 className="font-display text-3xl font-bold mb-4">{t.notFound}</h1>
+        <Button asChild><Link to="/services">{t.viewAll}</Link></Button>
       </main>
     );
   }
@@ -27,15 +119,15 @@ const ServiceDetail = () => {
   return (
     <main className="pt-16">
       <PageMeta
-        title={`${service.title} Kuala Lumpur | FLASH CAST Renovation Services`}
-        description={service.summary}
-        keywords={`${service.title} KL, ${service.title} Malaysia, renovation Kuala Lumpur`}
+        title={`${service.title} Kuala Lumpur | ${t.metaSuffix}`}
+        description={stripHtml(service.summary)}
+        keywords={t.metaKeywords(service.title)}
         canonicalPath={`/services/${service.slug}`}
       />
       <JsonLdService name={service.title} description={service.summary} />
-      <JsonLdBreadcrumb items={[{ name: "Home", url: "/" }, { name: "Services", url: "/services" }, { name: service.title, url: `/services/${service.slug}` }]} />
-      <JsonLdFAQ faqs={service.faqs.map(f => ({ question: f.q, answer: f.a }))} />
-      {/* Hero */}
+      <JsonLdBreadcrumb items={[{ name: t.breadcrumbHome, url: "/" }, { name: t.breadcrumbServices, url: "/services" }, { name: service.title, url: `/services/${service.slug}` }]} />
+      <JsonLdFAQ faqs={service.faqs.map((faq: any) => ({ question: faq.q, answer: faq.a }))} />
+
       <section className="relative min-h-[50vh] flex items-center overflow-hidden">
         <div className="absolute inset-0">
           <img src={heroImage} alt={service.title} className="w-full h-full object-cover scale-105 animate-[scale-up_1.2s_ease-out_forwards]" />
@@ -43,43 +135,41 @@ const ServiceDetail = () => {
         </div>
         <div className="relative z-10 container-narrow px-4 md:px-8 py-20">
           <Link to="/services" className="inline-flex items-center gap-1 text-sm hover:text-accent transition-colors mb-6" style={{ color: "rgba(255,255,255,0.8)" }}>
-            <ArrowLeft className="w-3.5 h-3.5" /> All Services
+            <ArrowLeft className="w-3.5 h-3.5" /> {t.allServices}
           </Link>
-          <p className="font-body font-semibold text-[11px] tracking-[0.3em] uppercase mb-4" style={{ color: "hsl(var(--gold))" }}>Services</p>
+          <p className="font-body font-semibold text-[11px] tracking-[0.3em] uppercase mb-4" style={{ color: "hsl(var(--gold))" }}>{t.services}</p>
           <h1 className="font-display text-3xl md:text-5xl font-bold mb-4 max-w-lg" style={{ color: "#fff", textShadow: "0 2px 8px rgba(0,0,0,0.5)" }}>{service.title}</h1>
           <p className="max-w-2xl text-base md:text-lg leading-relaxed" style={{ color: "rgba(255,255,255,0.9)", textShadow: "0 1px 4px rgba(0,0,0,0.4)" }}>{service.summary}</p>
           <div className="flex flex-col sm:flex-row gap-3 mt-8">
             <Button size="lg" className="btn-press bg-accent hover:bg-accent/90 text-accent-foreground font-semibold h-12 px-8" asChild>
-              <Link to="/quote">Get a Quote <ArrowRight className="w-4 h-4 ml-2" /></Link>
+              <Link to="/quote">{t.getQuote} <ArrowRight className="w-4 h-4 ml-2" /></Link>
             </Button>
-            <Button
-              size="lg"
-              variant="outline"
-              className="bg-white text-neutral-800 hover:bg-white/90 border-0 btn-press h-12 px-8 font-semibold shadow-md"
-              asChild
-            >
-              <a href="https://wa.me/60123456789" target="_blank" rel="noopener noreferrer">
-                <WhatsAppIcon className="w-[18px] h-[18px] mr-2 text-[#25D366]" /> WhatsApp Us
+            <Button size="lg" variant="outline" className="bg-white text-neutral-800 hover:bg-white/90 border-0 btn-press h-12 px-8 font-semibold shadow-md" asChild>
+              <a href={whatsappUrl()} target="_blank" rel="noopener noreferrer">
+                <WhatsAppIcon className="w-[18px] h-[18px] mr-2 text-[#25D366]" /> {t.whatsapp}
               </a>
             </Button>
           </div>
         </div>
       </section>
 
-      {/* Description */}
       <section className="section-padding bg-background">
         <div className="container-narrow">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
             <Reveal direction="left">
               <div>
-                <h2 className="font-display text-2xl md:text-3xl font-bold mb-4">Overview</h2>
-                <p className="text-muted-foreground leading-relaxed mb-6">{service.description}</p>
-                <h3 className="font-semibold mb-3">Suitable For</h3>
+                <h2 className="font-display text-2xl md:text-3xl font-bold mb-4">{t.overview}</h2>
+                {isHtmlText(service.description) ? (
+                  <div className="prose prose-neutral max-w-none text-muted-foreground mb-6" dangerouslySetInnerHTML={{ __html: service.description }} />
+                ) : (
+                  <p className="text-muted-foreground leading-relaxed mb-6">{service.description}</p>
+                )}
+                <h3 className="font-semibold mb-3">{t.suitableFor}</h3>
                 <ul className="space-y-2 mb-6">
-                  {service.suitableFor.map((s) => (
-                    <li key={s} className="flex items-start gap-2 text-sm text-muted-foreground">
+                  {service.suitableFor.map((item: string) => (
+                    <li key={item} className="flex items-start gap-2 text-sm text-muted-foreground">
                       <CheckCircle className="w-4 h-4 text-accent mt-0.5 shrink-0" />
-                      {s}
+                      {item}
                     </li>
                   ))}
                 </ul>
@@ -87,9 +177,9 @@ const ServiceDetail = () => {
             </Reveal>
             <Reveal direction="right" delay={150}>
               <div>
-                <h3 className="font-semibold mb-3">What We Offer</h3>
+                <h3 className="font-semibold mb-3">{t.offer}</h3>
                 <div className="grid grid-cols-1 gap-2">
-                  {service.items.map((item) => (
+                  {service.items.map((item: string) => (
                     <div key={item} className="flex items-center gap-2 py-2.5 px-4 bg-muted rounded-md text-sm transition-colors hover:bg-accent/10">
                       <span className="w-1.5 h-1.5 rounded-full bg-accent shrink-0" />
                       {item}
@@ -102,29 +192,27 @@ const ServiceDetail = () => {
         </div>
       </section>
 
-      {/* Common Projects */}
       <section className="section-padding bg-muted">
         <div className="container-narrow">
-          <h2 className="font-display text-2xl font-bold mb-6">Common Projects</h2>
+          <h2 className="font-display text-2xl font-bold mb-6">{t.commonProjects}</h2>
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3">
-            {service.commonProjects.map((proj) => (
-              <div key={proj} className="p-4 bg-background rounded-lg text-center text-sm font-medium border border-border">
-                {proj}
+            {service.commonProjects.map((project: string) => (
+              <div key={project} className="p-4 bg-background rounded-lg text-center text-sm font-medium border border-border">
+                {project}
               </div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* Process */}
       <section className="section-padding bg-background">
         <div className="container-narrow max-w-3xl">
-          <h2 className="font-display text-2xl md:text-3xl font-bold mb-8 text-center">Our Process</h2>
+          <h2 className="font-display text-2xl md:text-3xl font-bold mb-8 text-center">{t.process}</h2>
           <div className="space-y-6">
-            {service.processSteps.map((step, i) => (
-              <div key={i} className="flex gap-4">
+            {service.processSteps.map((step: any, index: number) => (
+              <div key={`${step.title}-${index}`} className="flex gap-4">
                 <div className="shrink-0 w-10 h-10 rounded-full bg-accent text-accent-foreground flex items-center justify-center text-sm font-bold">
-                  {i + 1}
+                  {index + 1}
                 </div>
                 <div className="pt-1">
                   <h3 className="font-semibold mb-1">{step.title}</h3>
@@ -136,68 +224,61 @@ const ServiceDetail = () => {
         </div>
       </section>
 
-      {/* FAQ */}
       <section className="section-padding bg-muted">
         <div className="container-narrow max-w-3xl">
-          <h2 className="font-display text-2xl font-bold mb-6 text-center">Frequently Asked Questions</h2>
+          <h2 className="font-display text-2xl font-bold mb-6 text-center">{t.faq}</h2>
           <Accordion type="single" collapsible className="space-y-2">
-            {service.faqs.map((f, i) => (
-              <AccordionItem key={i} value={`faq-${i}`} className="bg-background rounded-lg border border-border px-4">
-                <AccordionTrigger className="text-left font-medium text-sm md:text-base">{f.q}</AccordionTrigger>
-                <AccordionContent className="text-muted-foreground text-sm">{f.a}</AccordionContent>
+            {service.faqs.map((faq: any, index: number) => (
+              <AccordionItem key={`${faq.q}-${index}`} value={`faq-${index}`} className="bg-background rounded-lg border border-border px-4">
+                <AccordionTrigger className="text-left font-medium text-sm md:text-base">{faq.q}</AccordionTrigger>
+                <AccordionContent className="text-muted-foreground text-sm">{faq.a}</AccordionContent>
               </AccordionItem>
             ))}
           </Accordion>
         </div>
       </section>
 
-      {/* Related Services */}
       <section className="section-padding bg-background">
         <div className="container-narrow">
-          <h2 className="font-display text-2xl font-bold mb-6 text-center">Related Services</h2>
+          <h2 className="font-display text-2xl font-bold mb-6 text-center">{t.relatedServices}</h2>
           <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-            {servicesData
-              .filter((s) => s.slug !== service.slug)
+            {services
+              .filter((item) => item.slug !== service.slug)
               .slice(0, 3)
-              .map((s) => (
+              .map((item) => (
                 <Link
-                  key={s.slug}
-                  to={`/services/${s.slug}`}
+                  key={item.slug}
+                  to={`/services/${item.slug}`}
                   className="group p-5 rounded-lg border border-border bg-card hover-lift text-center block transition-colors hover:border-accent/30"
                 >
                   <h3 className="font-display font-semibold text-sm mb-1 group-hover:text-accent transition-colors">
-                    {s.title}
+                    {item.title}
                   </h3>
-                  <p className="text-muted-foreground text-xs leading-relaxed line-clamp-2">{s.summary}</p>
+                  <p className="text-muted-foreground text-xs leading-relaxed line-clamp-2">{item.summary}</p>
                 </Link>
               ))}
           </div>
           <div className="flex flex-wrap justify-center gap-3 mt-6 text-sm">
-            <Link to="/projects" className="text-accent hover:underline">View Projects →</Link>
+            <Link to="/projects" className="text-accent hover:underline">{t.viewProjects}</Link>
             <span className="text-border">|</span>
-            <Link to="/materials" className="text-accent hover:underline">Material Library →</Link>
+            <Link to="/materials" className="text-accent hover:underline">{t.materialLibrary}</Link>
             <span className="text-border">|</span>
-            <Link to="/faq" className="text-accent hover:underline">FAQ →</Link>
+            <Link to="/faq" className="text-accent hover:underline">{t.faqLink}</Link>
           </div>
         </div>
       </section>
 
-      {/* CTA */}
       <section className="section-padding bg-accent text-accent-foreground text-center">
         <div className="container-narrow">
-          <h2 className="font-display text-3xl font-bold mb-4">Interested in {service.title}?</h2>
-          <p className="mb-6 opacity-90">Contact us for a free consultation and quotation. We serve Kuala Lumpur, Selangor, and surrounding areas.</p>
+          <h2 className="font-display text-3xl font-bold mb-4">{t.interested(service.title)}</h2>
+          <p className="mb-6 opacity-90">{t.ctaText}</p>
           <div className="flex flex-col sm:flex-row justify-center gap-3 sm:gap-4">
             <Button size="lg" variant="secondary" className="btn-press w-full sm:w-auto min-h-[3rem] text-sm font-bold tracking-wide rounded-md px-8 py-3 justify-center" asChild>
-              <Link to="/quote">Get a Free Quote</Link>
+              <Link to="/quote">{t.freeQuote}</Link>
             </Button>
-            <Button
-              size="lg"
-              className="btn-press w-full sm:w-auto min-h-[3rem] text-sm font-semibold bg-white text-neutral-800 border-0 hover:bg-white/90 shadow-md rounded-md px-8 py-3 justify-center"
-              asChild
-            >
-              <a href="https://wa.me/60123456789" target="_blank" rel="noopener noreferrer">
-                <WhatsAppIcon className="w-[18px] h-[18px] mr-2 text-[#25D366]" /> WhatsApp Us
+            <Button size="lg" className="btn-press w-full sm:w-auto min-h-[3rem] text-sm font-semibold bg-white text-neutral-800 border-0 hover:bg-white/90 shadow-md rounded-md px-8 py-3 justify-center" asChild>
+              <a href={whatsappUrl()} target="_blank" rel="noopener noreferrer">
+                <WhatsAppIcon className="w-[18px] h-[18px] mr-2 text-[#25D366]" /> {t.whatsapp}
               </a>
             </Button>
           </div>

@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import Link from "@/components/LocalizedLink";
 import { MapPin } from "lucide-react";
 import Reveal from "@/components/Reveal";
 import { serviceAreas, serviceAreaIntro, serviceAreaFooter } from "@/data/siteContent";

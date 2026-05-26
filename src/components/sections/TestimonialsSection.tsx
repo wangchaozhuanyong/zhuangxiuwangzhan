@@ -1,8 +1,18 @@
+import { useEffect, useState } from "react";
 import { Star } from "lucide-react";
 import Reveal from "@/components/Reveal";
 import { testimonials } from "@/data/siteContent";
+import { getPublishedTestimonials } from "@/lib/contentApi";
+import { useLanguage } from "@/i18n/LanguageContext";
 
 const TestimonialsSection = () => {
+  const { language } = useLanguage();
+  const [items, setItems] = useState(testimonials);
+
+  useEffect(() => {
+    void getPublishedTestimonials(language).then((data) => setItems(data.length ? data : testimonials));
+  }, [language]);
+
   return (
     <section className="section-padding bg-muted" id="testimonials">
       <div className="container-narrow">
@@ -17,11 +27,11 @@ const TestimonialsSection = () => {
         </Reveal>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
-          {testimonials.map((t, i) => (
+          {items.map((t, i) => (
             <Reveal key={i} delay={i * 100}>
               <div className="bg-card border border-border rounded-lg p-6 hover-lift h-full flex flex-col">
                 <div className="flex gap-0.5 mb-4">
-                  {[...Array(5)].map((_, j) => (
+                  {[...Array(t.rating || 5)].map((_, j) => (
                     <Star key={j} className="w-4 h-4 fill-current text-gold" />
                   ))}
                 </div>

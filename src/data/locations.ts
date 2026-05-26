@@ -164,6 +164,26 @@ export const locationsData: Record<string, LocationData> = {
       { q: "How long does a typical terrace house renovation take in Subang?", a: "A full renovation for a standard double-storey terrace typically takes 8-12 weeks." },
     ],
   },
+  "puchong": {
+    name: "Puchong",
+    slug: "puchong",
+    metaTitle: "Renovation Company Puchong | Home, Office & Shop Renovation | FLASH CAST",
+    description: "Professional renovation services in Puchong for landed homes, condos, offices, retail shops, and commercial spaces. Free site measurement and detailed quotation by FLASH CAST.",
+    intro: "Puchong has a strong mix of family homes, new condominiums, shop lots, and light commercial spaces. FLASH CAST supports homeowners and business owners with practical renovation planning, custom built-in work, waterproofing, electrical upgrades, office fit-outs, and shop renovations across Bandar Puchong Jaya, Bandar Puteri, IOI Boulevard, Taman Kinrara, and surrounding areas.",
+    propertyTypes: ["Double-storey terrace houses", "Condominiums and serviced apartments", "Shop lots and retail units", "Offices around IOI Boulevard and Bandar Puteri", "Light industrial and warehouse units"],
+    commonNeeds: ["Kitchen and bathroom renovation", "Full landed house refurbishment", "Custom built-in cabinets and wardrobes", "Retail shop and office fit-out", "Waterproofing and repair works", "Space planning for growing families"],
+    constructionNotes: "Most Puchong landed house extensions require local council checks, while strata properties need management approval before work starts. FLASH CAST helps coordinate site measurement, renovation scope, material planning, and required approval documents before construction begins.",
+    projects: [
+      { title: "Home Office Renovation in Puchong", type: "Residential", image: residentialImg },
+      { title: "Retail Fit-Out near Bandar Puteri", type: "Commercial", image: commercialImg },
+      { title: "Kitchen Cabinet Upgrade in Taman Kinrara", type: "Built-In", image: kitchenImg },
+    ],
+    faqs: [
+      { q: "Do you provide renovation service in all Puchong areas?", a: "Yes. We cover Bandar Puchong Jaya, Bandar Puteri, Taman Kinrara, Puchong South, IOI Boulevard, and nearby Klang Valley areas." },
+      { q: "Can you renovate a Puchong terrace house while the family is still staying there?", a: "Yes, depending on the scope. We can phase the works and isolate dusty or noisy areas where possible, but full renovations are usually smoother when the unit is vacant." },
+      { q: "Do you offer free site measurement in Puchong?", a: "Yes. We provide free consultation and site measurement for renovation enquiries in Puchong and nearby areas." },
+    ],
+  },
 };
 
 /** All location slugs for navigation and sitemap */

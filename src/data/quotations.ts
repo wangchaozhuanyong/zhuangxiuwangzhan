@@ -1,16 +1,15 @@
 import { QuotationItem } from "./types";
 
 /**
- * Mock quotations data — represents quote requests from customers.
- * In production, this will be replaced with API calls to the backend.
+ * Seeded quotation data for local admin UI and development previews.
  */
 export const quotationsData: QuotationItem[] = [
   {
     id: "quote-1",
     leadId: "lead-1",
     customerName: "Ahmad Razak",
-    customerPhone: "+60 12-345 6789",
-    customerEmail: "ahmad@example.com",
+    customerPhone: "+60 12-000 0001",
+    customerEmail: "ahmad.razak@flashcast.com.my",
     projectType: "Residential Renovation",
     location: "Mont Kiara, Kuala Lumpur",
     propertySize: "1,200 sqft",

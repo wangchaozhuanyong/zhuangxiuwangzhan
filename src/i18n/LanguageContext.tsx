@@ -1,6 +1,5 @@
 import { createContext, useContext, useState, useEffect, ReactNode } from "react";
-
-type Language = "en" | "zh";
+import { getDefaultLanguage, getLanguageFromPath, Language } from "@/i18n/routes";
 
 interface LanguageContextType {
   language: Language;
@@ -16,8 +15,7 @@ export const useLanguage = () => useContext(LanguageContext);
 
 export const LanguageProvider = ({ children }: { children: ReactNode }) => {
   const [language, setLanguage] = useState<Language>(() => {
-    const saved = localStorage.getItem("fc-lang");
-    return saved === "zh" ? "zh" : "en";
+    return getLanguageFromPath() || getDefaultLanguage();
   });
 
   useEffect(() => {

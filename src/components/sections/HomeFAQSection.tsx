@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import Link from "@/components/LocalizedLink";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Button } from "@/components/ui/button";
 import { ArrowRight } from "lucide-react";

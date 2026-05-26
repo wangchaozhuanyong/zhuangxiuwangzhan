@@ -1,15 +1,14 @@
 import { LeadItem } from "./types";
 
 /**
- * Mock leads data — represents customer enquiries.
- * In production, this will be replaced with API calls to the backend.
+ * Seeded lead data for local admin UI and development previews.
  */
 export const leadsData: LeadItem[] = [
   {
     id: "lead-1",
     name: "Ahmad Razak",
-    phone: "+60 12-345 6789",
-    email: "ahmad@example.com",
+    phone: "+60 12-000 0001",
+    email: "ahmad.razak@flashcast.com.my",
     message: "I want to renovate my 3-bedroom condo in Mont Kiara. Looking for full interior renovation including kitchen cabinets and wardrobes.",
     source: "website",
     serviceInterest: "Residential Renovation",

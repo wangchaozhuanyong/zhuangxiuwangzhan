@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import Link from "@/components/LocalizedLink";
 import Reveal from "@/components/Reveal";
 
 const GeoSection = () => {

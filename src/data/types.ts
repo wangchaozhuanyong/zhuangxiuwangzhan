@@ -1,6 +1,6 @@
 /**
- * Mock data types and structures for FLASH CAST website.
- * All data is static mock — ready to be replaced with API/DB calls later.
+ * Data types and structures for the FLASH CAST website.
+ * These models support seeded demo content and backend-driven records.
  * 
  * Modules:
  * - Services: renovation service categories
@@ -20,7 +20,7 @@ export interface ServiceItem {
   summary: string;           // short description for listing
   description: string;       // full description for detail page
   suitableFor: string[];     // target customer types
-  commonProjects: string[];  // typical project examples
+  commonProjects: string[];  // common project scopes
   processSteps: { title: string; desc: string }[]; // step-by-step process
   items: string[];           // sub-items / scope list
   faqs: { q: string; a: string }[]; // service-specific FAQs

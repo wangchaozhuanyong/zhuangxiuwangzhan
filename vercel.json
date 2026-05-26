@@ -1,0 +1,12 @@
+{
+  "rewrites": [
+    {
+      "source": "/sitemap.xml",
+      "destination": "https://rbsnyexjifounogswrjp.functions.supabase.co/sitemap"
+    },
+    {
+      "source": "/((?!robots.txt|assets/|images/|favicon.ico|logo-flashcast.png|og-image.jpg).*)",
+      "destination": "/index.html"
+    }
+  ]
+}

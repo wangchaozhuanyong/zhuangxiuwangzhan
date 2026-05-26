@@ -1,5 +1,5 @@
 import Reveal from "@/components/Reveal";
-import IconCardGrid from "@/components/templates/IconCardGrid";
+import IconCardGrid from "@/components/blocks/IconCardGrid";
 import { useT } from "@/i18n/useT";
 import { Paintbrush, MessageCircle, Layers, Target, Wrench, ShieldCheck } from "lucide-react";
 

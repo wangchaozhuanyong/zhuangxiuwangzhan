@@ -1,3 +1,5 @@
+import { siteConfig, socialProfileUrls } from "@/config/site";
+
 interface JsonLdProps {
   type: "LocalBusiness" | "FAQPage" | "Service" | "WebPage";
   data?: Record<string, unknown>;
@@ -7,13 +9,13 @@ interface JsonLdProps {
 const organizationData = {
   "@context": "https://schema.org",
   "@type": "Organization",
-  name: "FLASH CAST SDN. BHD.",
+  name: siteConfig.name,
   alternateName: "闪铸设计",
-  url: "https://flashcast.com.my",
-  logo: "https://flashcast.com.my/logo.png",
+  url: siteConfig.url,
+  logo: siteConfig.logoUrl,
   contactPoint: {
     "@type": "ContactPoint",
-    telephone: "+60123456789",
+    telephone: siteConfig.phoneE164,
     contactType: "customer service",
     areaServed: "MY",
     availableLanguage: ["English", "Malay", "Chinese"],
@@ -26,20 +28,20 @@ const organizationData = {
     addressRegion: "Kuala Lumpur",
     addressCountry: "MY",
   },
-  sameAs: [],
+  sameAs: socialProfileUrls,
 };
 
 const localBusinessData = {
   "@context": "https://schema.org",
   "@type": "HomeAndConstructionBusiness",
-  "@id": "https://flashcast.com.my/#localbusiness",
-  name: "FLASH CAST SDN. BHD.",
+  "@id": `${siteConfig.url}/#localbusiness`,
+  name: siteConfig.name,
   alternateName: "闪铸设计",
   description:
     "Professional renovation, interior design, custom built-in furniture, kitchen renovation, bathroom renovation, office fit-out, and commercial renovation services in Kuala Lumpur and Selangor, Malaysia. SSM registered company with 10+ years experience and 200+ completed projects.",
-  url: "https://flashcast.com.my",
-  telephone: "+60123456789",
-  email: "info@flashcast.com.my",
+  url: siteConfig.url,
+  telephone: siteConfig.phoneE164,
+  email: siteConfig.email,
   address: {
     "@type": "PostalAddress",
     streetAddress: "94, Jalan Mega Mendung, Taman United",
@@ -76,7 +78,7 @@ const localBusinessData = {
     },
   ],
   priceRange: "$$",
-  image: "https://flashcast.com.my/og-image.jpg",
+  image: siteConfig.ogImage,
   hasOfferCatalog: {
     "@type": "OfferCatalog",
     name: "Renovation Services",
@@ -99,7 +101,7 @@ const localBusinessData = {
     reviewCount: "86",
     bestRating: "5",
   },
-  sameAs: [],
+  sameAs: socialProfileUrls,
   knowsAbout: [
     "renovation", "interior design", "built-in furniture", "kitchen renovation",
     "bathroom renovation", "office renovation", "commercial renovation",
@@ -160,14 +162,14 @@ export const JsonLdService = ({
     description,
     provider: {
       "@type": "HomeAndConstructionBusiness",
-      name: "FLASH CAST SDN. BHD.",
-      "@id": "https://flashcast.com.my/#localbusiness",
+      name: siteConfig.name,
+      "@id": `${siteConfig.url}/#localbusiness`,
     },
     areaServed: areaServed || "Kuala Lumpur, Selangor, Malaysia",
     availableChannel: {
       "@type": "ServiceChannel",
-      serviceUrl: "https://flashcast.com.my/quote",
-      servicePhone: "+60123456789",
+      serviceUrl: `${siteConfig.url}/quote`,
+      servicePhone: siteConfig.phoneE164,
     },
   };
 
@@ -187,7 +189,7 @@ export const JsonLdBreadcrumb = ({ items }: { items: { name: string; url: string
       "@type": "ListItem",
       position: i + 1,
       name: item.name,
-      item: `https://flashcast.com.my${item.url}`,
+      item: `${siteConfig.url}${item.url}`,
     })),
   };
 
@@ -213,16 +215,16 @@ export const JsonLdWebPage = ({
     "@type": "WebPage",
     name,
     description,
-    url: `https://flashcast.com.my${url}`,
+    url: `${siteConfig.url}${url}`,
     isPartOf: {
       "@type": "WebSite",
       name: "FLASH CAST",
-      url: "https://flashcast.com.my",
+      url: siteConfig.url,
     },
     provider: {
       "@type": "HomeAndConstructionBusiness",
-      name: "FLASH CAST SDN. BHD.",
-      "@id": "https://flashcast.com.my/#localbusiness",
+      name: siteConfig.name,
+      "@id": `${siteConfig.url}/#localbusiness`,
     },
   };
 

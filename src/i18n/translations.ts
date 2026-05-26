@@ -296,7 +296,7 @@ export const translations: Translations = {
   "form.name": { en: "Name", zh: "姓名" },
   "form.name.placeholder": { en: "Your full name", zh: "您的全名" },
   "form.phone": { en: "Phone / WhatsApp", zh: "电话 / WhatsApp" },
-  "form.phone.placeholder": { en: "+60 12-345 6789", zh: "+60 12-345 6789" },
+  "form.phone.placeholder": { en: "+60 11-2885 3888", zh: "+60 11-2885 3888" },
   "form.email": { en: "Email", zh: "邮箱" },
   "form.email.placeholder": { en: "your@email.com", zh: "your@email.com" },
   "form.email.optional": { en: "(optional)", zh: "（选填）" },
