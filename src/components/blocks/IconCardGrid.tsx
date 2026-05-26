@@ -37,14 +37,14 @@ const IconCardGrid = ({ items, columns = 2, alignLeft = true, layout = "vertical
       {items.map((item, i) => {
         const content = (
           <div
-            className={`group relative rounded-lg border border-border bg-card hover-lift h-full transition-colors hover:border-accent/30 ${
+            className={`group luxury-card-muted relative hover-lift h-full transition-colors hover:border-accent/30 ${
               isHorizontal
                 ? "flex items-start gap-4 p-5 md:p-6"
                 : `p-6 md:p-7 ${alignLeft ? "" : "text-center"}`
             }`}
           >
             <div
-              className={`rounded-full bg-accent/10 flex items-center justify-center transition-colors group-hover:bg-accent/20 ${
+              className={`rounded-md border border-border/70 bg-background/75 flex items-center justify-center transition-colors group-hover:border-accent/40 group-hover:bg-accent/10 ${
                 isHorizontal
                   ? "w-10 h-10 shrink-0"
                   : `w-12 h-12 mb-4 ${alignLeft ? "" : "mx-auto"}`

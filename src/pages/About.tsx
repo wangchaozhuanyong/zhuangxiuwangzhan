@@ -132,7 +132,7 @@ const About = () => {
   const t = aboutCopy[language];
 
   return (
-    <main className="pt-16">
+    <main className="pt-16 overflow-x-hidden">
       <PageMeta title={t.metaTitle} description={t.metaDescription} keywords={t.metaKeywords} canonicalPath="/about" />
       <JsonLdBreadcrumb items={[{ name: t.breadcrumbHome, url: "/" }, { name: t.breadcrumbAbout, url: "/about" }]} />
 

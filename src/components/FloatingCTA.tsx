@@ -46,7 +46,7 @@ const FloatingCTA = () => {
         href={whatsappUrl()}
         target="_blank"
         rel="noopener noreferrer"
-        className="fixed bottom-6 right-5 z-50 hidden items-center justify-center rounded-full bg-[#25D366] px-5 py-3 text-white shadow-xl transition-all duration-300 hover:scale-105 hover:shadow-2xl active:scale-95 md:flex"
+        className="fixed bottom-6 right-5 z-50 hidden items-center justify-center rounded-full bg-[#25D366] px-5 py-3 text-white shadow-xl transition-all duration-300 hover:scale-105 hover:shadow-2xl active:scale-95 lg:flex"
         aria-label={t.whatsappAria}
       >
         <WhatsAppIcon className="h-5 w-5" />

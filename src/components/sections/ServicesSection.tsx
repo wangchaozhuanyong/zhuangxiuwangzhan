@@ -87,10 +87,13 @@ const ServicesSection = () => {
               <Reveal key={service.link} delay={i * 60}>
                 <LocalizedLink
                   to={service.link}
-                  className="group block rounded-lg bg-card border border-border p-5 hover-lift h-full"
+                  className="group luxury-card-muted relative block h-full overflow-hidden p-5 hover-lift"
                 >
+                  <span className="absolute right-4 top-4 font-display text-3xl font-bold text-foreground/[0.05]">
+                    {String(i + 1).padStart(2, "0")}
+                  </span>
                   <div className="flex items-center gap-3 mb-3">
-                    <div className="w-10 h-10 rounded-md bg-muted flex items-center justify-center shrink-0 group-hover:bg-accent/10 transition-colors">
+                    <div className="w-10 h-10 rounded-md border border-border/70 bg-background/70 flex items-center justify-center shrink-0 group-hover:border-accent/40 group-hover:bg-accent/10 transition-colors">
                       <Icon className="w-5 h-5 text-gold" />
                     </div>
                     <h3 className="font-display text-sm font-semibold leading-tight group-hover:text-gold transition-colors">

@@ -66,7 +66,7 @@ const Navbar = () => {
 
   return (
     <>
-      <header className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${scrolled ? "bg-background/98 backdrop-blur-md border-b border-border shadow-sm" : "bg-background/95 backdrop-blur-md border-b border-border"}`}>
+      <header className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${scrolled ? "bg-background/92 backdrop-blur-xl border-b border-border/70 shadow-[0_14px_40px_-34px_rgba(0,0,0,0.6)]" : "bg-background/82 backdrop-blur-xl border-b border-white/10"}`}>
         <div className="container-narrow flex items-center justify-between h-16 px-4 md:px-8">
           <LocalizedLink to="/" className="flex items-center shrink-0">
             <img src={logoImg} alt="FLASH CAST SDN. BHD." className="h-8 md:h-9 w-auto object-contain" />
@@ -82,7 +82,7 @@ const Navbar = () => {
                   className={`relative text-[13px] font-medium px-3 py-2 transition-colors ${isActive ? "text-foreground" : "text-muted-foreground hover:text-foreground"}`}
                 >
                   {t(item.labelKey)}
-                  {isActive && <span className="absolute bottom-0 left-3 right-3 h-[2px] bg-accent rounded-full" />}
+                  {isActive && <span className="absolute bottom-0 left-3 right-3 h-px bg-accent rounded-full shadow-[0_0_12px_hsl(var(--accent)/0.45)]" />}
                 </LocalizedLink>
               );
             })}
@@ -119,12 +119,8 @@ const Navbar = () => {
 
       {isOpen && (
         <div className="lg:hidden fixed inset-x-0 top-16 bottom-0 z-[60] bg-background overflow-hidden">
-          <div className="absolute inset-x-0 top-0 bottom-[185px] overflow-y-auto px-5 py-4">
-            <p className="text-[10px] font-semibold tracking-[0.2em] uppercase text-muted-foreground mb-3 px-3 flex items-center">
-              <span className="w-1.5 h-1.5 rounded-full bg-accent inline-block mr-2" />
-              {t("nav.navigation")}
-            </p>
-            <div className="space-y-0.5">
+          <div className="absolute inset-x-0 top-0 bottom-[185px] overflow-y-auto px-5 pt-3 pb-4">
+            <div className="space-y-1">
               {navItems.map((item, index) => {
                 const isActive = isActivePath(location.pathname, item.path);
                 const Icon = item.icon;
@@ -133,9 +129,9 @@ const Navbar = () => {
                     key={item.path}
                     to={item.path}
                     style={{ animationDelay: `${index * 40}ms` }}
-                    className={`flex items-center gap-3 py-3 px-3 rounded-lg text-[15px] font-medium transition-colors opacity-0 animate-fade-in [animation-fill-mode:forwards] ${isActive ? "text-accent bg-accent/10 border-l-2 border-accent" : "text-foreground active:bg-muted"}`}
+                    className={`flex items-center gap-3 rounded-xl px-3 py-3 text-[15px] font-medium transition-colors opacity-0 animate-fade-in [animation-fill-mode:forwards] ${isActive ? "text-accent bg-accent/10 ring-1 ring-inset ring-accent/15" : "text-foreground active:bg-muted"}`}
                   >
-                    <span className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 ${isActive ? "bg-accent/15" : "bg-muted/50"}`}>
+                    <span className={`w-9 h-9 rounded-full flex items-center justify-center shrink-0 ${isActive ? "bg-accent/15" : "bg-muted/50"}`}>
                       <Icon className={`w-[18px] h-[18px] ${isActive ? "text-accent" : "text-muted-foreground"}`} />
                     </span>
                     {t(item.labelKey)}

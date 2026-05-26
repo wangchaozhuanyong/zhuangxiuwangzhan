@@ -21,14 +21,14 @@ const StatsSection = () => {
   const { language } = useLanguage();
 
   return (
-    <section className="py-12 md:py-16 bg-background border-b border-border" id="trust">
+    <section className="py-12 md:py-16 bg-background border-b border-border/70" id="trust">
       <div className="container-narrow px-5 md:px-8">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
           {stats[language].map((stat, i) => {
             const Icon = stat.icon;
             return (
               <Reveal key={i} delay={i * 80}>
-                <div className="bg-card border border-border rounded-lg p-6 text-center hover-lift">
+                <div className="luxury-card p-6 text-center hover-lift">
                   <div className="flex justify-center mb-3">
                     <Icon className={`w-7 h-7 ${stat.iconClass}`} />
                   </div>

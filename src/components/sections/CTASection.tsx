@@ -26,10 +26,11 @@ const CTASection = () => {
   const t = copy[language];
 
   return (
-    <section className="bg-surface-dark section-padding" id="cta">
+    <section className="bg-surface-dark section-padding relative overflow-hidden" id="cta">
+      <div className="absolute inset-0 bg-[linear-gradient(135deg,rgba(184,149,94,0.16),transparent_42%,rgba(255,255,255,0.04))]" aria-hidden="true" />
       <div className="container-narrow">
         <Reveal>
-          <div className="text-center max-w-2xl mx-auto">
+          <div className="relative mx-auto max-w-2xl text-center">
             <h2 className="font-display text-3xl md:text-4xl font-bold mb-4" style={{ color: "hsl(var(--surface-dark-foreground))" }}>
               {t.title}
             </h2>
