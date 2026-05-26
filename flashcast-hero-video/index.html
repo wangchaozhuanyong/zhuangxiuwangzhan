@@ -107,11 +107,10 @@
 
         .visual {
           position: absolute;
-          inset: -4%;
-          width: 108%;
-          height: 108%;
+          inset: 0;
+          width: 100%;
+          height: 100%;
           object-fit: cover;
-          filter: saturate(0.82) contrast(1.04) brightness(0.86);
           will-change: transform, opacity;
         }
 
@@ -131,21 +130,15 @@
         .veil {
           position: absolute;
           inset: 0;
-          background:
-            linear-gradient(90deg, rgba(17, 16, 14, 0.74) 0%, rgba(17, 16, 14, 0.34) 46%, rgba(17, 16, 14, 0.66) 100%),
-            linear-gradient(180deg, rgba(17, 16, 14, 0.16) 0%, rgba(17, 16, 14, 0.82) 100%);
+          background: linear-gradient(90deg, rgba(17, 16, 14, 0.18) 0%, rgba(17, 16, 14, 0.02) 52%, rgba(17, 16, 14, 0.06) 100%);
         }
 
         .detail-veil {
-          background:
-            linear-gradient(90deg, rgba(17, 16, 14, 0.76), rgba(17, 16, 14, 0.26), rgba(17, 16, 14, 0.72)),
-            radial-gradient(circle at 52% 42%, rgba(185, 154, 98, 0.16), transparent 36%);
+          background: linear-gradient(90deg, rgba(17, 16, 14, 0.16), rgba(17, 16, 14, 0), rgba(17, 16, 14, 0.12));
         }
 
         .final-veil {
-          background:
-            linear-gradient(90deg, rgba(17, 16, 14, 0.82), rgba(17, 16, 14, 0.36), rgba(17, 16, 14, 0.84)),
-            linear-gradient(180deg, rgba(17, 16, 14, 0.18), rgba(17, 16, 14, 0.88));
+          background: linear-gradient(90deg, rgba(17, 16, 14, 0.22), rgba(17, 16, 14, 0.02), rgba(17, 16, 14, 0.16));
         }
 
         .content {
@@ -153,14 +146,14 @@
           display: flex;
           flex-direction: column;
           box-sizing: border-box;
-          gap: 22px;
-          width: min(760px, 46%);
+          gap: 18px;
+          width: min(700px, 42%);
           z-index: 2;
         }
 
         .content-bottom {
           left: 132px;
-          bottom: 128px;
+          bottom: 108px;
         }
 
         .content-left {
@@ -186,7 +179,7 @@
         .kicker {
           margin: 0;
           color: #b99a62;
-          font-size: 22px;
+          font-size: 18px;
           font-weight: 700;
           letter-spacing: 0.22em;
           text-transform: uppercase;
@@ -200,24 +193,24 @@
           font-weight: 700;
           letter-spacing: 0;
           line-height: 1.02;
-          text-shadow: 0 22px 70px rgba(0, 0, 0, 0.45);
+          text-shadow: 0 6px 24px rgba(0, 0, 0, 0.36);
         }
 
         h1 {
           max-width: 820px;
-          font-size: 104px;
+          font-size: 86px;
         }
 
         h2 {
           max-width: 720px;
-          font-size: 76px;
+          font-size: 64px;
         }
 
         .caption {
           margin: 0;
           max-width: 680px;
           color: rgba(244, 238, 228, 0.78);
-          font-size: 28px;
+          font-size: 24px;
           font-weight: 500;
           line-height: 1.42;
         }
