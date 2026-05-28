@@ -15,6 +15,25 @@ const categories = [
   { value: "Inspiration", en: "Inspiration", zh: "设计灵感" },
 ];
 
+const normalizeCategory = (value: string) => value.trim().toLowerCase();
+
+const matchesCategory = (postCategory: string, filter: string) => {
+  if (filter === "All") return true;
+
+  const selectedCategory = categories.find((category) => category.value === filter);
+  const aliases = [
+    filter,
+    selectedCategory?.en,
+    selectedCategory?.zh,
+    translateBlogCategory(filter, "en"),
+    translateBlogCategory(filter, "zh"),
+  ]
+    .filter(Boolean)
+    .map((value) => normalizeCategory(value as string));
+
+  return aliases.includes(normalizeCategory(postCategory));
+};
+
 const copy = {
   en: {
     metaTitle: "Renovation Blog & Insights | Tips & Guides | FLASH CAST Kuala Lumpur",
@@ -62,7 +81,7 @@ const Blog = () => {
       }))
     : blogPosts;
   const [posts, setPosts] = useState(initialPosts);
-  const filtered = filter === "All" ? posts : posts.filter((post) => post.category === filter);
+  const filtered = posts.filter((post) => matchesCategory(post.category, filter));
 
   useEffect(() => {
     void getPublishedBlogPosts(language).then(setPosts);

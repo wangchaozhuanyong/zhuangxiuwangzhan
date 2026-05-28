@@ -113,7 +113,7 @@ const Services = () => {
       </section>
 
       <section className="py-8 bg-muted border-b border-border">
-        <div className="container-narrow">
+        <div className="container-narrow px-5 md:px-8">
           <p className="text-muted-foreground text-sm leading-relaxed text-center max-w-3xl mx-auto">
             <strong className="text-foreground">{t.geoPrefix}</strong> {t.geoText(services.length)} <strong className="text-foreground">Kuala Lumpur</strong> and <strong className="text-foreground">Selangor</strong>, Malaysia, {t.geoEnd}
           </p>

@@ -3,7 +3,7 @@ import Link from "@/components/LocalizedLink";
 import { Button } from "@/components/ui/button";
 import { MapPin, Phone, Mail, ArrowRight, ChevronDown } from "lucide-react";
 import { useLanguage } from "@/i18n/LanguageContext";
-import { siteConfig } from "@/config/site";
+import { useSiteSettings } from "@/hooks/useSiteSettings";
 import logoImg from "@/assets/logo-flashcast.png";
 
 const locationLinks = [
@@ -136,14 +136,15 @@ const MobileAccordion = ({
 
 const Footer = () => {
   const { language } = useLanguage();
+  const settings = useSiteSettings();
   const t = footerCopy[language];
   const [openSection, setOpenSection] = useState<string | null>(null);
   const areas = language === "zh" ? locationLinksZh : locationLinks;
 
   const contactItems = [
-    { icon: MapPin, text: "94, Jalan Mega Mendung, Taman United, 58200 KL", start: true },
-    { icon: Phone, text: siteConfig.phoneDisplay },
-    { icon: Mail, text: siteConfig.email },
+    { icon: MapPin, text: settings.short_address || settings.address, start: true },
+    { icon: Phone, text: settings.phone_display },
+    { icon: Mail, text: settings.email },
   ];
 
   return (
@@ -280,7 +281,7 @@ const Footer = () => {
           </div>
 
           <div className="mt-10 flex flex-col items-start justify-between gap-4 border-t border-white/[0.08] pt-6 text-xs text-white/25 sm:flex-row sm:items-center">
-            <p>© {new Date().getFullYear()} FLASH CAST SDN. BHD. {t.rights}</p>
+              <p>© {new Date().getFullYear()} {settings.company_name} {t.rights}</p>
             <div className="flex items-center gap-4">
               <Link to="/privacy" className="transition-colors hover:text-white">
                 {t.privacy}

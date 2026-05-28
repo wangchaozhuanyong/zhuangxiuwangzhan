@@ -8,6 +8,18 @@ const isZhBrowser = () => typeof navigator !== "undefined" && navigator.language
 const copy = {
   en: {
     dashboard: "Dashboard",
+    todayTasks: "Today's Tasks",
+    groupWorkspace: "Workspace",
+    groupWebsite: "Website Content",
+    groupBusiness: "Business Content",
+    groupCustomers: "Customers",
+    groupMediaSeo: "Media & SEO",
+    groupSystem: "System",
+    home: "Home Page",
+    about: "About Us",
+    faqs: "FAQ",
+    beforeAfter: "Before / After",
+    brandLogos: "Brand Logos",
     heroSlides: "Hero Slides",
     services: "Services",
     projects: "Projects",
@@ -18,6 +30,11 @@ const copy = {
     landingPages: "Landing Pages",
     leads: "Leads",
     quoteRequests: "Quote Requests",
+    media: "Media Library",
+    seo: "SEO Settings",
+    sitemap: "Sitemap / Robots",
+    users: "Admin Users",
+    websiteSettings: "Website Settings",
     translationJobs: "Translation Jobs",
     notificationSettings: "Notification Settings",
     notConfiguredTitle: "Supabase is not configured",
@@ -32,6 +49,18 @@ const copy = {
   },
   zh: {
     dashboard: "总览",
+    todayTasks: "今日待办",
+    groupWorkspace: "工作台",
+    groupWebsite: "网站内容",
+    groupBusiness: "业务内容",
+    groupCustomers: "客户管理",
+    groupMediaSeo: "媒体与 SEO",
+    groupSystem: "系统设置",
+    home: "首页管理",
+    about: "关于我们",
+    faqs: "FAQ 管理",
+    beforeAfter: "Before / After",
+    brandLogos: "品牌 Logo",
     heroSlides: "首屏轮播",
     services: "服务项目",
     projects: "装修案例",
@@ -42,6 +71,11 @@ const copy = {
     landingPages: "落地页",
     leads: "线索",
     quoteRequests: "报价请求",
+    media: "媒体库",
+    seo: "SEO 设置",
+    sitemap: "Sitemap / Robots",
+    users: "管理员账号",
+    websiteSettings: "网站基础设置",
     translationJobs: "翻译任务",
     notificationSettings: "通知设置",
     notConfiguredTitle: "Supabase 未配置",
@@ -56,20 +90,60 @@ const copy = {
   },
 };
 
-const navItems = [
-  { key: "dashboard", path: "/admin/dashboard" },
-  { key: "heroSlides", path: "/admin/content/hero_slides" },
-  { key: "services", path: "/admin/content/services" },
-  { key: "projects", path: "/admin/content/projects" },
-  { key: "blog", path: "/admin/content/blog_posts" },
-  { key: "materials", path: "/admin/content/materials" },
-  { key: "testimonials", path: "/admin/content/testimonials" },
-  { key: "serviceAreas", path: "/admin/content/service_areas" },
-  { key: "landingPages", path: "/admin/content/landing_pages" },
-  { key: "leads", path: "/admin/content/leads" },
-  { key: "quoteRequests", path: "/admin/content/quote_requests" },
-  { key: "translationJobs", path: "/admin/content/translation_jobs" },
-  { key: "notificationSettings", path: "/admin/notifications" },
+const navGroups = [
+  {
+    key: "groupWorkspace",
+    items: [
+      { key: "dashboard", path: "/admin/dashboard" },
+      { key: "todayTasks", path: "/admin/dashboard#tasks" },
+    ],
+  },
+  {
+    key: "groupWebsite",
+    items: [
+      { key: "home", path: "/admin/home" },
+      { key: "about", path: "/admin/about" },
+      { key: "faqs", path: "/admin/faqs" },
+      { key: "testimonials", path: "/admin/content/testimonials" },
+      { key: "brandLogos", path: "/admin/home#brands" },
+      { key: "beforeAfter", path: "/admin/home#before-after" },
+    ],
+  },
+  {
+    key: "groupBusiness",
+    items: [
+      { key: "services", path: "/admin/services" },
+      { key: "projects", path: "/admin/projects" },
+      { key: "materials", path: "/admin/materials" },
+      { key: "blog", path: "/admin/blog" },
+      { key: "serviceAreas", path: "/admin/content/service_areas" },
+      { key: "landingPages", path: "/admin/content/landing_pages" },
+    ],
+  },
+  {
+    key: "groupCustomers",
+    items: [
+      { key: "leads", path: "/admin/leads" },
+      { key: "quoteRequests", path: "/admin/quotes" },
+    ],
+  },
+  {
+    key: "groupMediaSeo",
+    items: [
+      { key: "media", path: "/admin/media" },
+      { key: "seo", path: "/admin/seo" },
+      { key: "sitemap", path: "/admin/seo#sitemap" },
+    ],
+  },
+  {
+    key: "groupSystem",
+    items: [
+      { key: "websiteSettings", path: "/admin/settings" },
+      { key: "notificationSettings", path: "/admin/notifications" },
+      { key: "translationJobs", path: "/admin/content/translation_jobs" },
+      { key: "users", path: "/admin/users" },
+    ],
+  },
 ];
 
 const AdminLayout = ({ children }: { children: ReactNode }) => {
@@ -183,19 +257,34 @@ const AdminLayout = ({ children }: { children: ReactNode }) => {
           </Button>
         </div>
       </div>
-      <div className="container-narrow grid gap-6 px-4 py-6 lg:grid-cols-[220px_1fr]">
-        <aside className="rounded-xl border border-border bg-card p-3 h-fit">
-          {navItems.map((item) => (
-            <Link
-              key={item.path}
-              to={item.path}
-              className={`block rounded-lg px-3 py-2 text-sm font-medium ${
-                location.pathname === item.path ? "bg-accent text-accent-foreground" : "text-muted-foreground hover:bg-muted"
-              }`}
-            >
-              {t[item.key as keyof typeof t]}
-            </Link>
-          ))}
+      <div className="container-narrow grid gap-6 px-4 py-6 lg:grid-cols-[260px_1fr]">
+        <aside className="h-fit rounded-xl border border-border bg-card p-3">
+          <nav className="space-y-4">
+            {navGroups.map((group) => (
+              <div key={group.key}>
+                <p className="mb-2 px-3 text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
+                  {t[group.key as keyof typeof t]}
+                </p>
+                <div className="space-y-1">
+                  {group.items.map((item) => {
+                    const itemPath = item.path.split("#")[0];
+                    const isActive = location.pathname === itemPath;
+                    return (
+                      <Link
+                        key={item.path}
+                        to={item.path}
+                        className={`block rounded-lg px-3 py-2 text-sm font-medium ${
+                          isActive ? "bg-accent text-accent-foreground" : "text-muted-foreground hover:bg-muted"
+                        }`}
+                      >
+                        {t[item.key as keyof typeof t]}
+                      </Link>
+                    );
+                  })}
+                </div>
+              </div>
+            ))}
+          </nav>
         </aside>
         <section>{children}</section>
       </div>

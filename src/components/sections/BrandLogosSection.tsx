@@ -18,14 +18,14 @@ const brands = [
 
 const BrandLogosSection = () => {
   return (
-    <section className="py-10 md:py-14 bg-muted border-y border-border">
+    <section className="bg-muted py-10 md:py-12 lg:py-14 border-y border-border">
       <div className="container-narrow px-5 md:px-8">
         <Reveal>
-          <p className="text-center text-muted-foreground text-xs font-semibold tracking-[0.2em] uppercase mb-8">
+          <p className="mb-6 text-center text-xs font-semibold uppercase tracking-[0.2em] text-muted-foreground md:mb-8">
             Trusted Brands & Partners We Work With
           </p>
         </Reveal>
-        <div className="flex flex-wrap items-center justify-center gap-8 md:gap-12">
+        <div className="flex flex-wrap items-center justify-center gap-6 md:gap-10 lg:gap-12">
           {brands.map((brand) => (
             <div
               key={brand.name}

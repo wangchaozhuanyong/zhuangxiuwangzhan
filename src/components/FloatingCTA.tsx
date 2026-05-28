@@ -3,7 +3,7 @@ import { Phone, X } from "lucide-react";
 import WhatsAppIcon from "@/components/WhatsAppIcon";
 import LocalizedLink from "@/components/LocalizedLink";
 import { useLanguage } from "@/i18n/LanguageContext";
-import { siteConfig, whatsappUrl } from "@/config/site";
+import { useSiteSettings } from "@/hooks/useSiteSettings";
 
 const copy = {
   en: {
@@ -28,6 +28,7 @@ const copy = {
 
 const FloatingCTA = () => {
   const { language } = useLanguage();
+  const settings = useSiteSettings();
   const t = copy[language];
   const [showDesktopCta, setShowDesktopCta] = useState(false);
 
@@ -70,11 +71,11 @@ const FloatingCTA = () => {
   return (
     <>
       <div className="fixed inset-x-0 bottom-0 z-50 grid grid-cols-3 border-t border-border bg-background/95 backdrop-blur md:hidden">
-        <a href={whatsappUrl()} target="_blank" rel="noopener noreferrer" className="flex min-h-14 flex-col items-center justify-center text-[11px] font-semibold text-foreground">
+        <a href={settings.whatsapp_url()} target="_blank" rel="noopener noreferrer" className="flex min-h-14 flex-col items-center justify-center text-[11px] font-semibold text-foreground">
           <WhatsAppIcon className="mb-1 h-5 w-5 text-[#25D366]" />
           {t.whatsapp}
         </a>
-        <a href={siteConfig.phoneHref} className="flex min-h-14 flex-col items-center justify-center border-x border-border text-[11px] font-semibold text-foreground">
+        <a href={settings.phone_href} className="flex min-h-14 flex-col items-center justify-center border-x border-border text-[11px] font-semibold text-foreground">
           <Phone className="mb-1 h-5 w-5 text-accent" />
           {t.call}
         </a>
@@ -104,7 +105,7 @@ const FloatingCTA = () => {
                 {t.quote}
               </LocalizedLink>
               <a
-                href={whatsappUrl("Floating desktop prompt")}
+                href={settings.whatsapp_url("Floating desktop prompt")}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="rounded-full border border-white/25 px-4 py-2 text-center text-sm font-semibold text-white transition-colors hover:bg-white/10"
@@ -115,7 +116,7 @@ const FloatingCTA = () => {
           </div>
         ) : null}
         <a
-          href={whatsappUrl("Floating desktop CTA")}
+          href={settings.whatsapp_url("Floating desktop CTA")}
           target="_blank"
           rel="noopener noreferrer"
           aria-label={t.whatsappAria}

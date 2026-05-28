@@ -39,6 +39,12 @@ const AdminDashboard = lazy(() => import("./pages/admin/AdminDashboard"));
 const AdminContentEditor = lazy(() => import("./pages/admin/AdminContentEditor"));
 const AdminNotificationSettings = lazy(() => import("./pages/admin/AdminNotificationSettings"));
 const AdminTranslationJobs = lazy(() => import("./pages/admin/AdminTranslationJobs"));
+const AdminWebsiteSettings = lazy(() => import("./pages/admin/AdminWebsiteSettings"));
+const AdminLeadList = lazy(() => import("./pages/admin/AdminLeadList"));
+const AdminLeadDetail = lazy(() => import("./pages/admin/AdminLeadDetail"));
+const AdminQuoteList = lazy(() => import("./pages/admin/AdminQuoteList"));
+const AdminQuoteDetail = lazy(() => import("./pages/admin/AdminQuoteDetail"));
+const AdminComingSoon = lazy(() => import("./pages/admin/AdminComingSoon"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 
 const queryClient = new QueryClient();
@@ -62,6 +68,29 @@ const AppShell = () => {
           <Route path="/" element={<RootLanguageRedirect />} />
           <Route path="/admin" element={<AdminLogin />} />
           <Route path="/admin/dashboard" element={<AdminDashboard />} />
+          <Route path="/admin/settings" element={<AdminWebsiteSettings />} />
+          <Route path="/admin/leads" element={<AdminLeadList />} />
+          <Route path="/admin/leads/:id" element={<AdminLeadDetail />} />
+          <Route path="/admin/quotes" element={<AdminQuoteList />} />
+          <Route path="/admin/quotes/:id" element={<AdminQuoteDetail />} />
+          <Route path="/admin/home" element={<AdminComingSoon />} />
+          <Route path="/admin/about" element={<AdminComingSoon />} />
+          <Route path="/admin/faqs" element={<AdminComingSoon />} />
+          <Route path="/admin/services" element={<AdminComingSoon />} />
+          <Route path="/admin/services/new" element={<AdminComingSoon />} />
+          <Route path="/admin/services/:id" element={<AdminComingSoon />} />
+          <Route path="/admin/projects" element={<AdminComingSoon />} />
+          <Route path="/admin/projects/new" element={<AdminComingSoon />} />
+          <Route path="/admin/projects/:id" element={<AdminComingSoon />} />
+          <Route path="/admin/materials" element={<AdminComingSoon />} />
+          <Route path="/admin/materials/new" element={<AdminComingSoon />} />
+          <Route path="/admin/materials/:id" element={<AdminComingSoon />} />
+          <Route path="/admin/blog" element={<AdminComingSoon />} />
+          <Route path="/admin/blog/new" element={<AdminComingSoon />} />
+          <Route path="/admin/blog/:id" element={<AdminComingSoon />} />
+          <Route path="/admin/media" element={<AdminComingSoon />} />
+          <Route path="/admin/seo" element={<AdminComingSoon />} />
+          <Route path="/admin/users" element={<AdminComingSoon />} />
           <Route path="/admin/notifications" element={<AdminNotificationSettings />} />
           <Route path="/admin/content/translation_jobs" element={<AdminTranslationJobs />} />
           <Route path="/admin/content/translation_jobs/:id" element={<AdminTranslationJobs />} />

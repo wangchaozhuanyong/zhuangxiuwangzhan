@@ -10,7 +10,8 @@ import PageMeta from "@/components/PageMeta";
 import { JsonLdBreadcrumb } from "@/components/JsonLd";
 import { submitContactLead } from "@/lib/leadApi";
 import { useLanguage } from "@/i18n/LanguageContext";
-import { siteConfig, whatsappUrl } from "@/config/site";
+import { siteConfig } from "@/config/site";
+import { useSiteSettings } from "@/hooks/useSiteSettings";
 import heroImg from "@/assets/hero-contact.jpg";
 
 const serviceItems = {
@@ -178,6 +179,7 @@ type FormErrors = Partial<Record<string, string>>;
 
 const Contact = () => {
   const { language } = useLanguage();
+  const settings = useSiteSettings();
   const t = copy[language];
   const [form, setForm] = useState({ name: "", phone: "", email: "", projectType: "", location: "", message: "" });
   const [errors, setErrors] = useState<FormErrors>({});
@@ -217,9 +219,9 @@ const Contact = () => {
   };
 
   const contactItems = [
-    { icon: MapPin, title: t.addressTitle, text: t.addressText },
-    { icon: Phone, title: t.phoneTitle, text: siteConfig.phoneDisplay },
-    { icon: Mail, title: t.emailTitle, text: siteConfig.email },
+    { icon: MapPin, title: t.addressTitle, text: settings.address || t.addressText },
+    { icon: Phone, title: t.phoneTitle, text: settings.phone_display },
+    { icon: Mail, title: t.emailTitle, text: settings.email },
     { icon: Clock, title: t.hoursTitle, text: t.hoursText },
   ];
 
@@ -285,7 +287,7 @@ const Contact = () => {
                     <Link to="/quote">{t.quoteCta} <ArrowRight className="w-4 h-4 ml-2" /></Link>
                   </Button>
                   <Button size="lg" className="btn-press w-full sm:w-auto min-h-[3rem] text-sm font-semibold bg-white text-neutral-800 border-0 hover:bg-white/90 shadow-md rounded-md px-8 py-3 justify-center" asChild>
-                    <a href={whatsappUrl()} target="_blank" rel="noopener noreferrer">
+                    <a href={settings.whatsapp_url()} target="_blank" rel="noopener noreferrer">
                       <WhatsAppIcon className="w-[18px] h-[18px] mr-2 text-[#25D366]" /> {t.whatsappCta}
                     </a>
                   </Button>
@@ -318,13 +320,13 @@ const Contact = () => {
                           <p className="text-sm text-destructive">{t.errorText}</p>
                           <div className="flex flex-wrap gap-2">
                             <Button size="sm" className="btn-press" asChild>
-                              <a href={whatsappUrl()} target="_blank" rel="noopener noreferrer">
+                              <a href={settings.whatsapp_url()} target="_blank" rel="noopener noreferrer">
                                 <WhatsAppIcon className="w-4 h-4 mr-1.5" />
                                 {t.whatsappCta}
                               </a>
                             </Button>
                             <Button size="sm" variant="outline" className="btn-press" asChild>
-                              <a href={siteConfig.phoneHref}>
+                              <a href={settings.phone_href}>
                                 <Phone className="w-4 h-4 mr-1.5" />
                                 {t.phoneTitle}
                               </a>
@@ -347,7 +349,7 @@ const Contact = () => {
                       <div>
                         <label className="block text-sm font-medium mb-1.5">{t.phone} <span className="text-destructive">*</span></label>
                         <Input
-                          type="tel" required placeholder={siteConfig.phoneDisplay} value={form.phone}
+                          type="tel" required placeholder={settings.phone_display} value={form.phone}
                           className={errors.phone ? "border-destructive" : ""}
                           onChange={(e) => { setForm({ ...form, phone: e.target.value }); setErrors({ ...errors, phone: undefined }); }}
                         />

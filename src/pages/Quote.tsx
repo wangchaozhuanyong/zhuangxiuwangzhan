@@ -10,7 +10,8 @@ import { JsonLdBreadcrumb } from "@/components/JsonLd";
 import { submitQuoteRequest } from "@/lib/leadApi";
 import Reveal from "@/components/Reveal";
 import { useLanguage } from "@/i18n/LanguageContext";
-import { siteConfig, whatsappUrl } from "@/config/site";
+import { siteConfig } from "@/config/site";
+import { useSiteSettings } from "@/hooks/useSiteSettings";
 import heroImg from "@/assets/hero-quote.jpg";
 
 const projectTypes = [
@@ -189,6 +190,7 @@ type FormErrors = Partial<Record<string, string>>;
 
 const Quote = () => {
   const { language } = useLanguage();
+  const settings = useSiteSettings();
   const t = copy[language];
   const [form, setForm] = useState({
     name: "",
@@ -261,7 +263,7 @@ const Quote = () => {
               <div className="space-y-3">
                 <p className="flex items-center gap-2 text-sm text-muted-foreground">
                   <Phone className="h-4 w-4 text-accent" />
-                  {t.contactLabel}: {siteConfig.phoneDisplay}
+                  {t.contactLabel}: {settings.phone_display}
                 </p>
                 <p className="flex items-center gap-2 text-sm text-muted-foreground">
                   <MapPin className="h-4 w-4 text-accent" />
@@ -280,7 +282,7 @@ const Quote = () => {
                 <Link to="/contact">{t.backHome}</Link>
               </Button>
               <Button asChild size="lg" variant="outline" className="flex-1">
-                <a href={whatsappUrl()} target="_blank" rel="noreferrer">
+                <a href={settings.whatsapp_url()} target="_blank" rel="noreferrer">
                   <WhatsAppIcon className="mr-2 h-4 w-4" /> {t.whatsappNow}
                 </a>
               </Button>
@@ -414,7 +416,7 @@ const Quote = () => {
                   <p className="mb-1 font-medium text-foreground">{t.photoTitle}</p>
                   <p>
                     {t.photoText}{" "}
-                    <a href={whatsappUrl()} target="_blank" rel="noreferrer" className="font-medium text-accent hover:underline">
+                    <a href={settings.whatsapp_url()} target="_blank" rel="noreferrer" className="font-medium text-accent hover:underline">
                       WhatsApp
                     </a>{" "}
                     {t.photoTextEnd}
@@ -457,7 +459,7 @@ const Quote = () => {
                 <h3 className="mb-3 font-display text-xl font-bold">{t.chatTitle}</h3>
                 <p className="mb-5 text-sm text-muted-foreground">{t.chatText}</p>
                 <Button asChild className="w-full">
-                  <a href={whatsappUrl()} target="_blank" rel="noreferrer">
+                  <a href={settings.whatsapp_url()} target="_blank" rel="noreferrer">
                     <WhatsAppIcon className="mr-2 h-4 w-4" /> {t.whatsappNow}
                   </a>
                 </Button>
@@ -470,7 +472,7 @@ const Quote = () => {
                   <p>{t.navFaq}</p>
                   <p className="flex items-center gap-2">
                     <Phone className="h-4 w-4 text-accent" />
-                    {t.contactLabel}: {siteConfig.phoneDisplay}
+                    {t.contactLabel}: {settings.phone_display}
                   </p>
                 </div>
               </div>

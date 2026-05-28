@@ -80,7 +80,7 @@ const ServicesSection = () => {
           </div>
         </Reveal>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4">
+        <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
           {services.map((service, i) => {
             const Icon = service.icon;
             return (
@@ -110,7 +110,7 @@ const ServicesSection = () => {
         </div>
 
         <Reveal delay={600}>
-          <div className="text-center mt-10">
+          <div className="mt-8 text-center md:mt-10">
             <Button variant="outline" className="btn-press" asChild>
               <LocalizedLink to="/services">{t("cta.viewAllServices")} <ArrowRight className="w-4 h-4 ml-2" /></LocalizedLink>
             </Button>

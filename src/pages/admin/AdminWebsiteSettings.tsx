@@ -1,0 +1,130 @@
+import { useEffect, useState } from "react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { fetchSiteSettings, fallbackSiteSettings, saveSiteSettings, type SiteSettings } from "@/lib/siteSettingsApi";
+import AdminLayout from "./AdminLayout";
+
+const isZhBrowser = () => typeof navigator !== "undefined" && navigator.language.toLowerCase().startsWith("zh");
+
+const copy = {
+  en: {
+    title: "Website Settings",
+    description: "Manage company contact details, social links, logo URLs, and default SEO fallback content.",
+    company: "Company",
+    contact: "Contact",
+    media: "Brand Media",
+    seo: "Default SEO",
+    social: "Social Links",
+    save: "Save Settings",
+    saving: "Saving...",
+    saved: "Settings saved.",
+  },
+  zh: {
+    title: "网站基础设置",
+    description: "管理公司联系方式、社交媒体链接、Logo 地址和默认 SEO 文案。",
+    company: "公司信息",
+    contact: "联系方式",
+    media: "品牌媒体",
+    seo: "默认 SEO",
+    social: "社交媒体",
+    save: "保存设置",
+    saving: "保存中...",
+    saved: "设置已保存。",
+  },
+};
+
+const fields: Array<{ key: keyof SiteSettings; label: string; group: "company" | "contact" | "media" | "seo" | "social"; textarea?: boolean }> = [
+  { key: "company_name", label: "Company Name / 公司名称", group: "company" },
+  { key: "brand_name", label: "Brand Name / 品牌名", group: "company" },
+  { key: "ssm_number", label: "SSM Number / SSM 编号", group: "company" },
+  { key: "email", label: "Email / 邮箱", group: "contact" },
+  { key: "phone_display", label: "Phone Display / 展示电话", group: "contact" },
+  { key: "phone_e164", label: "Phone E.164 / 电话国际格式", group: "contact" },
+  { key: "whatsapp_number", label: "WhatsApp Number / WhatsApp 号码", group: "contact" },
+  { key: "address_zh", label: "Address ZH / 中文地址", group: "contact", textarea: true },
+  { key: "address_en", label: "Address EN / 英文地址", group: "contact", textarea: true },
+  { key: "short_address_zh", label: "Short Address ZH / 中文短地址", group: "contact" },
+  { key: "short_address_en", label: "Short Address EN / 英文短地址", group: "contact" },
+  { key: "logo_url", label: "Logo URL", group: "media" },
+  { key: "favicon_url", label: "Favicon URL", group: "media" },
+  { key: "og_image_url", label: "Default OG Image URL", group: "media" },
+  { key: "facebook_url", label: "Facebook", group: "social" },
+  { key: "instagram_url", label: "Instagram", group: "social" },
+  { key: "tiktok_url", label: "TikTok", group: "social" },
+  { key: "xiaohongshu_url", label: "Xiaohongshu / 小红书", group: "social" },
+  { key: "linkedin_url", label: "LinkedIn", group: "social" },
+  { key: "default_seo_title_zh", label: "Default SEO Title ZH / 默认中文 SEO 标题", group: "seo" },
+  { key: "default_seo_title_en", label: "Default SEO Title EN / 默认英文 SEO 标题", group: "seo" },
+  { key: "default_seo_description_zh", label: "Default SEO Description ZH / 默认中文 SEO 描述", group: "seo", textarea: true },
+  { key: "default_seo_description_en", label: "Default SEO Description EN / 默认英文 SEO 描述", group: "seo", textarea: true },
+];
+
+const AdminWebsiteSettings = () => {
+  const lang = isZhBrowser() ? "zh" : "en";
+  const t = copy[lang];
+  const [settings, setSettings] = useState<SiteSettings>(fallbackSiteSettings);
+  const [status, setStatus] = useState("");
+  const [saving, setSaving] = useState(false);
+
+  useEffect(() => {
+    void fetchSiteSettings().then(setSettings);
+  }, []);
+
+  const updateField = (key: keyof SiteSettings, value: string) => {
+    setSettings((current) => ({ ...current, [key]: value }));
+  };
+
+  const handleSave = async () => {
+    setSaving(true);
+    setStatus(t.saving);
+    try {
+      await saveSiteSettings(settings);
+      setStatus(t.saved);
+    } catch (error) {
+      setStatus(error instanceof Error ? error.message : String(error));
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const renderGroup = (group: "company" | "contact" | "media" | "seo" | "social") => (
+    <section className="rounded-xl border border-border bg-card p-5">
+      <h2 className="mb-4 font-display text-xl font-bold">{t[group]}</h2>
+      <div className="grid gap-4 md:grid-cols-2">
+        {fields.filter((field) => field.group === group).map((field) => (
+          <div key={field.key} className={field.textarea ? "md:col-span-2" : ""}>
+            <label className="mb-1 block text-sm font-medium">{field.label}</label>
+            {field.textarea ? (
+              <Textarea rows={3} value={settings[field.key] || ""} onChange={(event) => updateField(field.key, event.target.value)} />
+            ) : (
+              <Input value={settings[field.key] || ""} onChange={(event) => updateField(field.key, event.target.value)} />
+            )}
+          </div>
+        ))}
+      </div>
+    </section>
+  );
+
+  return (
+    <AdminLayout>
+      <div className="space-y-6">
+        <div className="flex flex-col gap-4 rounded-xl border border-border bg-card p-6 md:flex-row md:items-start md:justify-between">
+          <div>
+            <h1 className="font-display text-2xl font-bold">{t.title}</h1>
+            <p className="mt-2 text-sm text-muted-foreground">{t.description}</p>
+            {status && <p className="mt-3 rounded-lg bg-muted p-3 text-sm">{status}</p>}
+          </div>
+          <Button onClick={handleSave} disabled={saving}>{saving ? t.saving : t.save}</Button>
+        </div>
+        {renderGroup("company")}
+        {renderGroup("contact")}
+        {renderGroup("media")}
+        {renderGroup("social")}
+        {renderGroup("seo")}
+      </div>
+    </AdminLayout>
+  );
+};
+
+export default AdminWebsiteSettings;
