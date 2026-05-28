@@ -3,6 +3,7 @@ import Link from "@/components/LocalizedLink";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, MapPin } from "lucide-react";
 import Reveal from "@/components/Reveal";
+import SmartImage from "@/components/SmartImage";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { useT } from "@/i18n/useT";
 import { getPublishedProjects } from "@/lib/contentApi";
@@ -106,12 +107,12 @@ const ProjectsSection = () => {
                   >
                     <div className="relative aspect-[4/3] overflow-hidden bg-white/5 img-zoom">
                       {project.thumbnail ? (
-                        <img
+                        <SmartImage
                           src={project.thumbnail}
                           alt={project.thumbnailAlt || `${title} - ${location}`}
-                          loading="lazy"
                           width={800}
                           height={600}
+                          sizes="(max-width: 640px) 92vw, (max-width: 1024px) 45vw, 30vw"
                           className="h-full w-full object-cover"
                         />
                       ) : (
