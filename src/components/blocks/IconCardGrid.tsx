@@ -33,7 +33,7 @@ const IconCardGrid = ({ items, columns = 2, alignLeft = true, layout = "vertical
   const isHorizontal = layout === "horizontal";
 
   return (
-    <div className={`grid ${colClass} gap-4 md:gap-5`}>
+    <div className={`grid ${colClass} items-stretch gap-4 md:gap-5`}>
       {items.map((item, i) => {
         const content = (
           <div
@@ -52,11 +52,11 @@ const IconCardGrid = ({ items, columns = 2, alignLeft = true, layout = "vertical
             >
               <item.icon className="w-5 h-5 text-accent transition-transform duration-300 group-hover:scale-110" />
             </div>
-            <div>
+            <div className={isHorizontal ? "min-w-0 flex-1 flex flex-col" : ""}>
               <h3 className={`font-display font-semibold text-base md:text-lg group-hover:text-accent transition-colors ${isHorizontal ? "mb-1" : "mb-2"}`}>
                 {item.title}
               </h3>
-              <p className="text-muted-foreground text-sm leading-relaxed">{item.desc}</p>
+              <p className={`text-muted-foreground text-sm leading-relaxed ${isHorizontal ? "mt-auto" : ""}`}>{item.desc}</p>
             </div>
           </div>
         );
