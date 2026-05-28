@@ -15,13 +15,13 @@ import heroImg from "@/assets/hero-quote.jpg";
 
 const projectTypes = [
   { value: "Residential Renovation", en: "Residential Renovation", zh: "住宅装修" },
-  { value: "Commercial / Office Fit-Out", en: "Commercial / Office Fit-Out", zh: "商业 / 办公室装修" },
+  { value: "Commercial / Office Fit-Out", en: "Commercial / Office Fit-Out", zh: "商业 / 办公室装潢" },
   { value: "Custom Built-In Furniture", en: "Custom Built-In Furniture", zh: "定制内嵌家具" },
   { value: "Kitchen Cabinet", en: "Kitchen Cabinet", zh: "厨房橱柜" },
   { value: "Shop Renovation", en: "Shop Renovation", zh: "店铺装修" },
-  { value: "Artistic Wall Coating (Remmers)", en: "Artistic Wall Coating (Remmers)", zh: "艺术墙面涂装 (Remmers)" },
+  { value: "Artistic Wall Coating (Remmers)", en: "Artistic Wall Coating (Remmers)", zh: "艺术墙面涂装（Remmers）" },
   { value: "Exterior / Shopfront Works", en: "Exterior / Shopfront Works", zh: "外墙 / 门面工程" },
-  { value: "Warehouse & Shelving", en: "Warehouse & Shelving", zh: "仓储架与仓库工程" },
+  { value: "Warehouse & Shelving", en: "Warehouse & Shelving", zh: "仓库与货架工程" },
   { value: "Other", en: "Other", zh: "其他" },
 ];
 
@@ -34,11 +34,7 @@ const budgetRanges = [
   { value: "Not sure yet", en: "Not sure yet", zh: "暂不确定" },
 ];
 
-const getLocalizedOptionLabel = (
-  options: { value: string; en: string; zh: string }[],
-  value: string,
-  language: "en" | "zh",
-) => {
+const getLocalizedOptionLabel = (options: { value: string; en: string; zh: string }[], value: string, language: "en" | "zh") => {
   const option = options.find((item) => item.value === value);
   if (!option) return value;
   return language === "zh" ? option.zh : option.en;
@@ -118,74 +114,74 @@ const copy = {
   },
   zh: {
     metaTitle: "免费装修报价 | 吉隆坡与雪兰莪 | FLASH CAST",
-    metaDescription: "向 FLASH CAST SDN. BHD. 索取免费装修报价。服务 Kuala Lumpur 与 Selangor，包含免费现场测量咨询。",
-    metaKeywords: "吉隆坡装修报价, 马来西亚装修估价, 雪兰莪装修公司",
+    metaDescription: "向 FLASH CAST SDN. BHD. 申请免费装修报价。吉隆坡与雪兰莪可安排免费上门测量。",
+    metaKeywords: "吉隆坡装修报价, 马来西亚装修估价, 免费上门测量, 装修公司",
     breadcrumbHome: "首页",
-    breadcrumbCurrent: "免费报价",
+    breadcrumbCurrent: "获取报价",
     heroEyebrow: "免费咨询",
-    heroTitle: "索取免费装修报价",
-    heroText: "告诉我们你的装修需求，我们会整理清楚的分项报价。KL 与 Selangor 项目可安排免费现场测量。",
+    heroTitle: "获取免费报价",
+    heroText: "告诉我们您的装修需求，我们会提供清晰、分项的报价。吉隆坡与雪兰莪项目可安排免费上门测量。",
     heroAlt: "FLASH CAST 免费装修报价咨询",
-    formTitle: "告诉我们你的项目需求",
+    formTitle: "请告诉我们您的项目",
     errorTitle: "提交失败",
-    errorText: "请稍后再试，或直接通过 WhatsApp 联系我们。",
+    errorText: "请稍后重试，或直接通过 WhatsApp 联系我们。",
     name: "姓名",
     phone: "电话 / WhatsApp",
-    email: "电邮",
-    optional: "选填",
+    email: "邮箱",
+    optional: "可选",
     projectType: "项目类型",
     budgetRange: "预算范围",
-    location: "项目地区",
+    location: "项目地点",
     propertySize: "空间面积",
     approx: "大约",
     details: "项目详情",
     selectProjectType: "请选择项目类型",
     selectBudgetRange: "请选择预算范围",
-    namePlaceholder: "请输入姓名",
+    namePlaceholder: "请输入您的全名",
     emailPlaceholder: "your@email.com",
     locationPlaceholder: "例如 Mont Kiara, KL",
     sizePlaceholder: "例如 1,200 sqft",
-    detailsPlaceholder: "请简单说明要装修的空间、材料偏好、风格、工期或特别需求。",
-    photoTitle: "有现场照片？",
-    photoText: "提交后可通过",
-    photoTextEnd: "发送现场照片，方便我们更准确评估报价。",
-    submit: "提交报价需求",
+    detailsPlaceholder: "请描述您的项目：需要装修的房间、偏好的材料、风格、工期，或其他特殊需求。",
+    photoTitle: "有现场照片吗？",
+    photoText: "提交后，您可以通过",
+    photoTextEnd: "发送现场照片，这样我们能提供更准确的报价。照片有助于我们更了解您的空间。",
+    submit: "提交报价请求",
     submitting: "提交中...",
-    privacyNote: "我们会在 24 小时内联系你。不骚扰、无强制消费。",
-    successTitle: "报价需求已提交！",
-    successIntro: "谢谢你",
-    successReceived: "我们已经收到你的项目资料。",
-    successFollowUp: "团队会在",
-    successFollowUpEnd: "内联系你并安排免费现场测量。",
+    privacyNote: "我们会在 24 小时内与您联系。无垃圾信息、无强制消费。",
+    successTitle: "报价请求已提交！",
+    successIntro: "谢谢您",
+    successReceived: "我们已经收到您的项目资料。",
+    successFollowUp: "我们的团队会在",
+    successFollowUpEnd: "内与您联系，安排免费上门测量。",
     successProject: "项目：",
-    successLocation: "地区：",
+    successLocation: "地点：",
     successBudget: "预算：",
-    whatsappFast: "通过 WhatsApp 更快联系",
+    whatsappFast: "通过 WhatsApp 获取更快回复",
     backHome: "返回首页",
-    trustTitle: "你会获得什么",
+    trustTitle: "您将获得什么",
     trustPoints: [
-      "免费现场测量与装修咨询",
-      "清楚的分项报价，无隐藏收费",
-      "施工前可提供 3D 设计效果参考",
-      "SSM 注册公司，并提供施工保固",
+      "免费上门测量与咨询",
+      "清晰分项报价，无隐藏费用",
+      "施工前提供 3D 设计效果图",
+      "SSM 注册公司，提供施工保固",
     ],
     chatTitle: "想先聊一聊？",
-    chatText: "可以直接 WhatsApp 咨询。营业时间内，我们通常会在 30 分钟内回复。",
+    chatText: "您可以直接通过 WhatsApp 获取即时回复。营业时间内，我们通常会在 30 分钟内回复。",
     whatsappNow: "立即 WhatsApp 咨询",
     contactLabel: "电话 / WhatsApp",
-    hours: "周一至周六：9 AM - 6 PM",
+    hours: "周一至周六：上午 9 点至下午 6 点",
     sunday: "周日：预约制",
     office: "Taman United, KL",
     address: siteConfig.shortAddress,
-    navServices: "服务项目",
+    navServices: "我们的服务",
     navProjects: "装修案例",
     navFaq: "常见问题",
-    requiredName: "请输入姓名",
-    requiredPhone: "请输入电话号码",
-    invalidPhone: "请输入有效电话号码",
-    invalidEmail: "请输入有效电邮",
+    requiredName: "请输入您的姓名",
+    requiredPhone: "请输入您的电话号码",
+    invalidPhone: "请输入有效的电话号码",
+    invalidEmail: "请输入有效的邮箱",
     requiredProject: "请选择项目类型",
-    requiredLocation: "请输入项目地区",
+    requiredLocation: "请输入项目地点",
   },
 };
 
@@ -208,19 +204,19 @@ const Quote = () => {
   const [status, setStatus] = useState<"idle" | "submitting" | "success" | "error">("idle");
 
   const validate = (): boolean => {
-    const e: FormErrors = {};
-    if (!form.name.trim()) e.name = t.requiredName;
-    if (!form.phone.trim()) e.phone = t.requiredPhone;
-    else if (!/^[+]?\d[\d\s-]{6,}$/.test(form.phone.trim())) e.phone = t.invalidPhone;
-    if (form.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email.trim())) e.email = t.invalidEmail;
-    if (!form.projectType) e.projectType = t.requiredProject;
-    if (!form.location.trim()) e.location = t.requiredLocation;
-    setErrors(e);
-    return Object.keys(e).length === 0;
+    const next: FormErrors = {};
+    if (!form.name.trim()) next.name = t.requiredName;
+    if (!form.phone.trim()) next.phone = t.requiredPhone;
+    else if (!/^[+]?\d[\d\s-]{6,}$/.test(form.phone.trim())) next.phone = t.invalidPhone;
+    if (form.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email.trim())) next.email = t.invalidEmail;
+    if (!form.projectType) next.projectType = t.requiredProject;
+    if (!form.location.trim()) next.location = t.requiredLocation;
+    setErrors(next);
+    return Object.keys(next).length === 0;
   };
 
-  const handleSubmit = async (e: FormEvent) => {
-    e.preventDefault();
+  const handleSubmit = async (event: FormEvent) => {
+    event.preventDefault();
     if (!validate()) return;
     setStatus("submitting");
 
@@ -243,38 +239,50 @@ const Quote = () => {
     }
   };
 
-  const FieldError = ({ msg }: { msg?: string }) =>
-    msg ? <p className="text-destructive text-xs mt-1 flex items-center gap-1"><AlertCircle className="w-3 h-3" />{msg}</p> : null;
-
   if (status === "success") {
     return (
       <main className="pt-16">
         <PageMeta title={t.successTitle} description={t.metaDescription} canonicalPath="/quote" />
-        <section className="section-padding bg-background min-h-[70vh] flex items-center">
-          <div className="container-narrow max-w-lg mx-auto text-center">
-            <div className="w-16 h-16 mx-auto mb-6 rounded-full bg-accent/10 flex items-center justify-center">
-              <CheckCircle className="w-8 h-8 text-accent" />
+        <section className="section-padding flex min-h-[70vh] items-center bg-background">
+          <div className="container-narrow mx-auto max-w-lg text-center">
+            <div className="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-full bg-accent/10">
+              <CheckCircle className="h-8 w-8 text-accent" />
             </div>
-            <h1 className="font-display text-3xl font-bold mb-4">{t.successTitle}</h1>
-            <p className="text-muted-foreground mb-2">
+            <h1 className="mb-4 font-display text-3xl font-bold">{t.successTitle}</h1>
+            <p className="mb-2 text-muted-foreground">
               {t.successIntro}, <strong className="text-foreground">{form.name}</strong>. {t.successReceived}
             </p>
-            <p className="text-muted-foreground mb-8">
-              {t.successFollowUp} <strong className="text-foreground">{language === "zh" ? "24 小时" : "24 hours"}</strong> {t.successFollowUpEnd}
+            <p className="mb-2 text-muted-foreground">
+              {t.successFollowUp} <strong className="text-foreground">24 小时</strong> {t.successFollowUpEnd}
             </p>
-            <div className="bg-card p-5 rounded-lg border border-border mb-8 text-left text-sm space-y-2">
-              <p><span className="text-muted-foreground">{t.successProject}</span> <span className="font-medium">{getLocalizedOptionLabel(projectTypes, form.projectType, language)}</span></p>
-              <p><span className="text-muted-foreground">{t.successLocation}</span> <span className="font-medium">{form.location}</span></p>
-              {form.budget && <p><span className="text-muted-foreground">{t.successBudget}</span> <span className="font-medium">{getLocalizedOptionLabel(budgetRanges, form.budget, language)}</span></p>}
+
+            <div className="mt-8 rounded-xl border border-border bg-card p-6 text-left">
+              <h2 className="mb-4 font-display text-xl font-semibold">{t.whatsappFast}</h2>
+              <div className="space-y-3">
+                <p className="flex items-center gap-2 text-sm text-muted-foreground">
+                  <Phone className="h-4 w-4 text-accent" />
+                  {t.contactLabel}: {siteConfig.phoneDisplay}
+                </p>
+                <p className="flex items-center gap-2 text-sm text-muted-foreground">
+                  <MapPin className="h-4 w-4 text-accent" />
+                  {t.office}
+                </p>
+                <p className="flex items-center gap-2 text-sm text-muted-foreground">
+                  <Clock className="h-4 w-4 text-accent" />
+                  {t.hours}
+                </p>
+                <p className="text-sm text-muted-foreground">{t.sunday}</p>
+              </div>
             </div>
-            <div className="flex flex-col sm:flex-row gap-3 justify-center">
-              <Button className="btn-press font-semibold h-12 px-8" asChild>
-                <a href={whatsappUrl()} target="_blank" rel="noopener noreferrer">
-                  <WhatsAppIcon className="w-[18px] h-[18px] mr-2 text-[#25D366]" /> {t.whatsappFast}
-                </a>
+
+            <div className="mt-8 flex flex-col gap-3 sm:flex-row">
+              <Button asChild size="lg" className="flex-1">
+                <Link to="/contact">{t.backHome}</Link>
               </Button>
-              <Button variant="outline" className="btn-press h-12 px-8" asChild>
-                <Link to="/">{t.backHome}</Link>
+              <Button asChild size="lg" variant="outline" className="flex-1">
+                <a href={whatsappUrl()} target="_blank" rel="noreferrer">
+                  <WhatsAppIcon className="mr-2 h-4 w-4" /> {t.whatsappNow}
+                </a>
               </Button>
             </div>
           </div>
@@ -288,209 +296,186 @@ const Quote = () => {
       <PageMeta title={t.metaTitle} description={t.metaDescription} keywords={t.metaKeywords} canonicalPath="/quote" />
       <JsonLdBreadcrumb items={[{ name: t.breadcrumbHome, url: "/" }, { name: t.breadcrumbCurrent, url: "/quote" }]} />
 
-      <section className="relative min-h-[45vh] flex items-center overflow-hidden">
+      <section className="relative flex min-h-[45vh] items-center overflow-hidden">
         <div className="absolute inset-0">
-          <img src={heroImg} alt={t.heroAlt} className="w-full h-full object-cover" width={1920} height={800} />
+          <img src={heroImg} alt={t.heroAlt} className="h-full w-full object-cover" />
           <div className="absolute inset-0 bg-gradient-to-r from-black/60 via-black/30 to-transparent" />
         </div>
-        <div className="relative z-10 container-narrow px-5 md:px-8 py-20 md:py-28">
-          <p className="font-body font-semibold text-[11px] tracking-[0.3em] uppercase mb-4" style={{ color: "hsl(var(--gold))" }}>{t.heroEyebrow}</p>
-          <h1 className="font-display text-3xl md:text-5xl font-bold leading-tight mb-4 max-w-lg" style={{ color: "#fff", textShadow: "0 2px 8px rgba(0,0,0,0.5)" }}>
+        <div className="relative z-10 container-narrow px-5 py-20 md:px-8 md:py-28">
+          <p className="mb-4 font-body text-[11px] font-semibold uppercase tracking-[0.3em]" style={{ color: "hsl(var(--gold))" }}>
+            {t.heroEyebrow}
+          </p>
+          <h1 className="mb-4 max-w-lg font-display text-3xl font-bold leading-tight text-white md:text-5xl" style={{ textShadow: "0 2px 8px rgba(0,0,0,0.5)" }}>
             {t.heroTitle}
           </h1>
-          <p className="max-w-xl text-base md:text-lg leading-relaxed" style={{ color: "rgba(255,255,255,0.9)", textShadow: "0 1px 4px rgba(0,0,0,0.4)" }}>
+          <p className="max-w-xl text-base leading-relaxed text-white/90 md:text-lg" style={{ textShadow: "0 1px 4px rgba(0,0,0,0.4)" }}>
             {t.heroText}
           </p>
         </div>
       </section>
 
       <section className="section-padding bg-background">
-        <div className="container-narrow">
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
-            <div className="lg:col-span-2">
-              <div className="bg-card p-6 md:p-8 rounded-lg border border-border">
-                <h2 className="font-display text-xl font-bold mb-6">{t.formTitle}</h2>
+        <div className="container-narrow grid gap-10 lg:grid-cols-[1.1fr_0.9fr]">
+          <Reveal>
+            <div>
+              <h2 className="mb-6 font-display text-2xl font-bold md:text-3xl">{t.formTitle}</h2>
 
-                {status === "error" && (
-                  <div className="mb-6 p-4 bg-destructive/10 border border-destructive/20 rounded-lg flex items-start gap-3">
-                    <AlertCircle className="w-5 h-5 text-destructive shrink-0 mt-0.5" />
-                    <div className="space-y-3">
-                      <p className="text-sm font-medium text-destructive">{t.errorTitle}</p>
-                      <p className="text-xs text-muted-foreground mt-1">{t.errorText}</p>
-                      <div className="flex flex-wrap gap-2">
-                        <Button size="sm" className="btn-press" asChild>
-                          <a href={whatsappUrl()} target="_blank" rel="noopener noreferrer">
-                            <WhatsAppIcon className="w-4 h-4 mr-1.5" />
-                            {t.whatsappNow}
-                          </a>
-                        </Button>
-                        <Button size="sm" variant="outline" className="btn-press" asChild>
-                          <a href={siteConfig.phoneHref}>
-                            <Phone className="w-4 h-4 mr-1.5" />
-                            {t.contactLabel}
-                          </a>
-                        </Button>
-                      </div>
-                    </div>
+              {status === "error" && (
+                <div className="mb-6 flex items-start gap-3 rounded-lg border border-destructive/20 bg-destructive/5 p-4 text-sm">
+                  <AlertCircle className="mt-0.5 h-4 w-4 text-destructive" />
+                  <div>
+                    <p className="font-medium text-destructive">{t.errorTitle}</p>
+                    <p className="text-muted-foreground">{t.errorText}</p>
                   </div>
-                )}
+                </div>
+              )}
 
-                <form className="space-y-5" onSubmit={handleSubmit} noValidate>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <div>
-                      <label className="block text-sm font-medium mb-1">{t.name} <span className="text-destructive">*</span></label>
-                      <Input
-                        required placeholder={t.namePlaceholder} value={form.name}
-                        className={errors.name ? "border-destructive" : ""}
-                        onChange={(e) => { setForm({ ...form, name: e.target.value }); setErrors({ ...errors, name: undefined }); }}
-                      />
-                      <FieldError msg={errors.name} />
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium mb-1">{t.phone} <span className="text-destructive">*</span></label>
-                      <Input
-                        type="tel" required placeholder={siteConfig.phoneDisplay} value={form.phone}
-                        className={errors.phone ? "border-destructive" : ""}
-                        onChange={(e) => { setForm({ ...form, phone: e.target.value }); setErrors({ ...errors, phone: undefined }); }}
-                      />
-                      <FieldError msg={errors.phone} />
-                    </div>
+              <form onSubmit={handleSubmit} className="space-y-4">
+                <div className="grid gap-4 md:grid-cols-2">
+                  <div>
+                    <label className="mb-1 block text-sm font-medium">{t.name}</label>
+                    <Input value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} placeholder={t.namePlaceholder} />
+                    {errors.name && <p className="mt-1 text-xs text-destructive">{errors.name}</p>}
                   </div>
                   <div>
-                    <label className="block text-sm font-medium mb-1">{t.email} <span className="text-muted-foreground text-xs">({t.optional})</span></label>
-                    <Input
-                      type="email" placeholder={t.emailPlaceholder} value={form.email}
-                      className={errors.email ? "border-destructive" : ""}
-                      onChange={(e) => { setForm({ ...form, email: e.target.value }); setErrors({ ...errors, email: undefined }); }}
-                    />
-                    <FieldError msg={errors.email} />
+                    <label className="mb-1 block text-sm font-medium">{t.phone}</label>
+                    <Input value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} placeholder={t.contactLabel} />
+                    {errors.phone && <p className="mt-1 text-xs text-destructive">{errors.phone}</p>}
                   </div>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <div>
-                      <label className="block text-sm font-medium mb-1">{t.projectType} <span className="text-destructive">*</span></label>
-                      <select
-                        required value={form.projectType}
-                        onChange={(e) => { setForm({ ...form, projectType: e.target.value }); setErrors({ ...errors, projectType: undefined }); }}
-                        className={`flex h-10 w-full rounded-md border bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 ${errors.projectType ? "border-destructive" : "border-input"}`}
-                      >
-                        <option value="">{t.selectProjectType}</option>
-                        {projectTypes.map((option) => <option key={option.value} value={option.value}>{option[language]}</option>)}
-                      </select>
-                      <FieldError msg={errors.projectType} />
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium mb-1">{t.budgetRange} <span className="text-muted-foreground text-xs">({t.optional})</span></label>
-                      <select
-                        value={form.budget}
-                        onChange={(e) => setForm({ ...form, budget: e.target.value })}
-                        className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-                      >
-                        <option value="">{t.selectBudgetRange}</option>
-                        {budgetRanges.map((option) => <option key={option.value} value={option.value}>{option[language]}</option>)}
-                      </select>
-                    </div>
-                  </div>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <div>
-                      <label className="block text-sm font-medium mb-1">{t.location} <span className="text-destructive">*</span></label>
-                      <Input
-                        required placeholder={t.locationPlaceholder} value={form.location}
-                        className={errors.location ? "border-destructive" : ""}
-                        onChange={(e) => { setForm({ ...form, location: e.target.value }); setErrors({ ...errors, location: undefined }); }}
-                      />
-                      <FieldError msg={errors.location} />
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium mb-1">{t.propertySize} <span className="text-muted-foreground text-xs">({t.approx})</span></label>
-                      <Input placeholder={t.sizePlaceholder} value={form.propertySize} onChange={(e) => setForm({ ...form, propertySize: e.target.value })} />
-                    </div>
+                </div>
+
+                <div className="grid gap-4 md:grid-cols-2">
+                  <div>
+                    <label className="mb-1 block text-sm font-medium">
+                      {t.email} <span className="text-muted-foreground">({t.optional})</span>
+                    </label>
+                    <Input value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} placeholder={t.emailPlaceholder} />
+                    {errors.email && <p className="mt-1 text-xs text-destructive">{errors.email}</p>}
                   </div>
                   <div>
-                    <label className="block text-sm font-medium mb-1">{t.details} <span className="text-muted-foreground text-xs">({t.optional})</span></label>
-                    <Textarea rows={5} placeholder={t.detailsPlaceholder} value={form.details} onChange={(e) => setForm({ ...form, details: e.target.value })} />
-                  </div>
-                  <div className="bg-muted rounded-lg p-4 border border-border text-sm text-muted-foreground">
-                    <p className="font-medium text-foreground text-xs mb-1">{t.photoTitle}</p>
-                    <p className="text-xs">
-                      {t.photoText} <a href={whatsappUrl()} className="text-accent hover:underline font-medium" target="_blank" rel="noopener noreferrer">WhatsApp</a> {t.photoTextEnd}
-                    </p>
-                  </div>
-                  <Button type="submit" size="lg" className="w-full btn-press font-semibold h-12" disabled={status === "submitting"}>
-                    {status === "submitting" ? (
-                      <><Loader2 className="w-4 h-4 mr-2 animate-spin" /> {t.submitting}</>
-                    ) : (
-                      <>{t.submit} <ArrowRight className="w-4 h-4 ml-2" /></>
-                    )}
-                  </Button>
-                  <p className="text-xs text-muted-foreground text-center">{t.privacyNote}</p>
-                </form>
-              </div>
-            </div>
-
-            <div className="space-y-6">
-              <Reveal>
-                <div className="bg-card p-6 rounded-lg border border-border">
-                  <h3 className="font-display font-semibold text-base mb-4">{t.trustTitle}</h3>
-                  <ul className="space-y-3">
-                    {t.trustPoints.map((point) => (
-                      <li key={point} className="flex items-start gap-2 text-sm text-muted-foreground">
-                        <CheckCircle className="w-4 h-4 text-accent mt-0.5 shrink-0" />
-                        {point}
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              </Reveal>
-
-              <Reveal delay={100}>
-                <div className="bg-card p-6 rounded-lg border border-border">
-                  <h3 className="font-display font-semibold text-base mb-4">{t.chatTitle}</h3>
-                  <p className="text-muted-foreground text-sm mb-4">{t.chatText}</p>
-                  <Button className="w-full btn-press font-semibold h-11" asChild>
-                    <a href={whatsappUrl()} target="_blank" rel="noopener noreferrer">
-                      <WhatsAppIcon className="w-[18px] h-[18px] mr-2 text-[#25D366]" /> {t.whatsappNow}
-                    </a>
-                  </Button>
-                </div>
-              </Reveal>
-
-              <Reveal delay={200}>
-                <div className="bg-card p-6 rounded-lg border border-border space-y-3">
-                  <div className="flex items-start gap-3">
-                    <Phone className="w-4 h-4 text-accent mt-0.5" />
-                    <div>
-                      <p className="text-sm font-medium">{siteConfig.phoneDisplay}</p>
-                      <p className="text-xs text-muted-foreground">{t.contactLabel}</p>
-                    </div>
-                  </div>
-                  <div className="flex items-start gap-3">
-                    <Clock className="w-4 h-4 text-accent mt-0.5" />
-                    <div>
-                      <p className="text-sm font-medium">{t.hours}</p>
-                      <p className="text-xs text-muted-foreground">{t.sunday}</p>
-                    </div>
-                  </div>
-                  <div className="flex items-start gap-3">
-                    <MapPin className="w-4 h-4 text-accent mt-0.5" />
-                    <div>
-                      <p className="text-sm font-medium">{t.office}</p>
-                      <p className="text-xs text-muted-foreground">{t.address}</p>
-                    </div>
+                    <label className="mb-1 block text-sm font-medium">{t.location}</label>
+                    <Input value={form.location} onChange={(e) => setForm({ ...form, location: e.target.value })} placeholder={t.locationPlaceholder} />
+                    {errors.location && <p className="mt-1 text-xs text-destructive">{errors.location}</p>}
                   </div>
                 </div>
-              </Reveal>
 
-              <Reveal delay={300}>
-                <div className="text-center text-xs text-muted-foreground space-y-1">
+                <div className="grid gap-4 md:grid-cols-2">
+                  <div>
+                    <label className="mb-1 block text-sm font-medium">{t.projectType}</label>
+                    <select
+                      className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+                      value={form.projectType}
+                      onChange={(e) => setForm({ ...form, projectType: e.target.value })}
+                    >
+                      <option value="">{t.selectProjectType}</option>
+                      {projectTypes.map((item) => (
+                        <option key={item.value} value={item.value}>
+                          {language === "zh" ? item.zh : item.en}
+                        </option>
+                      ))}
+                    </select>
+                    {errors.projectType && <p className="mt-1 text-xs text-destructive">{errors.projectType}</p>}
+                  </div>
+                  <div>
+                    <label className="mb-1 block text-sm font-medium">{t.budgetRange}</label>
+                    <select
+                      className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+                      value={form.budget}
+                      onChange={(e) => setForm({ ...form, budget: e.target.value })}
+                    >
+                      <option value="">{t.selectBudgetRange}</option>
+                      {budgetRanges.map((item) => (
+                        <option key={item.value} value={item.value}>
+                          {language === "zh" ? item.zh : item.en}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
+
+                <div>
+                  <label className="mb-1 block text-sm font-medium">
+                    {t.propertySize} <span className="text-muted-foreground">({t.approx})</span>
+                  </label>
+                  <Input value={form.propertySize} onChange={(e) => setForm({ ...form, propertySize: e.target.value })} placeholder={t.sizePlaceholder} />
+                </div>
+
+                <div>
+                  <label className="mb-1 block text-sm font-medium">{t.details}</label>
+                  <Textarea
+                    rows={5}
+                    value={form.details}
+                    onChange={(e) => setForm({ ...form, details: e.target.value })}
+                    placeholder={t.detailsPlaceholder}
+                  />
+                </div>
+
+                <div className="rounded-lg border border-border bg-muted/30 p-4 text-sm text-muted-foreground">
+                  <p className="mb-1 font-medium text-foreground">{t.photoTitle}</p>
                   <p>
-                    <Link to="/services" className="text-accent hover:underline">{t.navServices}</Link>{" / "}
-                    <Link to="/projects" className="text-accent hover:underline">{t.navProjects}</Link>{" / "}
-                    <Link to="/faq" className="text-accent hover:underline">{t.navFaq}</Link>
+                    {t.photoText}{" "}
+                    <a href={whatsappUrl()} target="_blank" rel="noreferrer" className="font-medium text-accent hover:underline">
+                      WhatsApp
+                    </a>{" "}
+                    {t.photoTextEnd}
                   </p>
                 </div>
-              </Reveal>
+
+                <div className="pt-2">
+                  <Button type="submit" size="lg" className="w-full md:w-auto" disabled={status === "submitting"}>
+                    {status === "submitting" ? (
+                      <>
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" /> {t.submitting}
+                      </>
+                    ) : (
+                      <>
+                        {t.submit} <ArrowRight className="ml-2 h-4 w-4" />
+                      </>
+                    )}
+                  </Button>
+                  <p className="mt-3 text-xs text-muted-foreground">{t.privacyNote}</p>
+                </div>
+              </form>
             </div>
-          </div>
+          </Reveal>
+
+          <Reveal delay={120}>
+            <div className="lg:sticky lg:top-24">
+              <div className="rounded-2xl border border-border bg-card p-6 shadow-sm">
+                <h2 className="mb-4 font-display text-2xl font-bold">{t.trustTitle}</h2>
+                <ul className="space-y-3">
+                  {t.trustPoints.map((point) => (
+                    <li key={point} className="flex items-start gap-3 text-sm text-muted-foreground">
+                      <CheckCircle className="mt-0.5 h-4 w-4 shrink-0 text-accent" />
+                      <span>{point}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+
+              <div className="mt-6 rounded-2xl border border-border bg-muted/30 p-6">
+                <h3 className="mb-3 font-display text-xl font-bold">{t.chatTitle}</h3>
+                <p className="mb-5 text-sm text-muted-foreground">{t.chatText}</p>
+                <Button asChild className="w-full">
+                  <a href={whatsappUrl()} target="_blank" rel="noreferrer">
+                    <WhatsAppIcon className="mr-2 h-4 w-4" /> {t.whatsappNow}
+                  </a>
+                </Button>
+              </div>
+
+              <div className="mt-6 rounded-2xl border border-border bg-card p-6">
+                <h3 className="mb-3 font-display text-lg font-bold">{t.navServices}</h3>
+                <div className="space-y-2 text-sm text-muted-foreground">
+                  <p>{t.navProjects}</p>
+                  <p>{t.navFaq}</p>
+                  <p className="flex items-center gap-2">
+                    <Phone className="h-4 w-4 text-accent" />
+                    {t.contactLabel}: {siteConfig.phoneDisplay}
+                  </p>
+                </div>
+              </div>
+            </div>
+          </Reveal>
         </div>
       </section>
     </main>

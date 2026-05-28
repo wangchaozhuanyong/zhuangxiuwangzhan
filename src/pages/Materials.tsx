@@ -33,20 +33,20 @@ const copy = {
     whatsapp: "WhatsApp Us",
   },
   zh: {
-    metaTitle: "装修材料库 | 地板、橱柜、浴室材料 | FLASH CAST",
-    metaDescription: "浏览 FLASH CAST 装修材料库，了解定制橱柜、家具、浴室配件、地板、门窗和墙板等马来西亚装修常用材料。",
-    metaKeywords: "吉隆坡装修材料, 马来西亚厨房橱柜, 浴室配件 KL, 雪兰莪定制衣柜, 装修材料库",
+    metaTitle: "装修材料库 | 地板、橱柜、浴室 | FLASH CAST",
+    metaDescription: "浏览 FLASH CAST 精选材料库，了解定制橱柜、家具、浴室配件、地板、门窗与墙板等马来西亚装修常用材料。",
+    metaKeywords: "吉隆坡装修材料, 马来西亚厨房橱柜, 浴室配件 KL, 地板 吉隆坡, 定制衣柜 雪兰莪",
     breadcrumbHome: "首页",
     breadcrumbMaterials: "材料库",
     heroAlt: "FLASH CAST 装修材料库",
     eyebrow: "浏览与选择",
     title: "装修材料库",
-    intro: "浏览适合马来西亚装修项目的常用材料，从定制橱柜、家具、浴室配件到地板和墙板。",
-    choose: "按分类选择",
-    chooseText: "选择一个材料分类，进一步查看适合项目的材料选项",
+    intro: "浏览适合您装修项目的精选材料，从定制橱柜、家具到浴室配件、地板等，一站式查看。",
+    choose: "按分类浏览",
+    chooseText: "选择一个分类，查看适合您项目的材料选项",
     subcategories: "个子分类",
     ctaTitle: "对某种材料感兴趣？",
-    ctaText: "联系我们索取样板、确认供应情况，或获取项目报价。",
+    ctaText: "欢迎联系我们索取样板、确认库存，或获取项目报价。",
     quote: "索取报价",
     whatsapp: "WhatsApp 咨询",
   },
@@ -67,17 +67,19 @@ const Materials = () => {
       <PageMeta title={t.metaTitle} description={t.metaDescription} keywords={t.metaKeywords} canonicalPath="/materials" />
       <JsonLdBreadcrumb items={[{ name: t.breadcrumbHome, url: "/" }, { name: t.breadcrumbMaterials, url: "/materials" }]} />
 
-      <section className="relative min-h-[45vh] flex items-center overflow-hidden">
+      <section className="relative flex min-h-[45vh] items-center overflow-hidden">
         <div className="absolute inset-0">
-          <img src={heroImg} alt={t.heroAlt} className="w-full h-full object-cover" />
+          <img src={heroImg} alt={t.heroAlt} className="h-full w-full object-cover" />
           <div className="absolute inset-0 bg-gradient-to-r from-black/60 via-black/30 to-transparent" />
         </div>
-        <div className="relative z-10 container-narrow px-5 md:px-8 py-20 md:py-28">
-          <p className="font-body font-semibold text-[11px] tracking-[0.3em] uppercase mb-4" style={{ color: "hsl(var(--gold))" }}>{t.eyebrow}</p>
-          <h1 className="font-display text-3xl md:text-5xl font-bold leading-tight mb-4 max-w-lg" style={{ color: "#fff", textShadow: "0 2px 8px rgba(0,0,0,0.5)" }}>
+        <div className="relative z-10 container-narrow px-5 py-20 md:px-8 md:py-28">
+          <p className="mb-4 font-body text-[11px] font-semibold uppercase tracking-[0.3em]" style={{ color: "hsl(var(--gold))" }}>
+            {t.eyebrow}
+          </p>
+          <h1 className="mb-4 max-w-lg font-display text-3xl font-bold leading-tight text-white md:text-5xl" style={{ textShadow: "0 2px 8px rgba(0,0,0,0.5)" }}>
             {t.title}
           </h1>
-          <p className="max-w-xl text-base md:text-lg leading-relaxed" style={{ color: "rgba(255,255,255,0.9)", textShadow: "0 1px 4px rgba(0,0,0,0.4)" }}>
+          <p className="max-w-xl text-base leading-relaxed text-white/90 md:text-lg" style={{ textShadow: "0 1px 4px rgba(0,0,0,0.4)" }}>
             {t.intro}
           </p>
         </div>
@@ -86,25 +88,32 @@ const Materials = () => {
       <section className="section-padding bg-background">
         <div className="container-narrow">
           <Reveal>
-            <div className="text-center mb-10">
-              <div className="accent-line mb-4 mx-auto" />
-              <h2 className="font-display text-2xl md:text-3xl font-bold mb-2">{t.choose}</h2>
-              <p className="text-muted-foreground text-sm">{t.chooseText}</p>
+            <div className="mb-10 text-center">
+              <div className="accent-line mx-auto mb-4" />
+              <h2 className="mb-2 font-display text-2xl font-bold md:text-3xl">{t.choose}</h2>
+              <p className="text-sm text-muted-foreground">{t.chooseText}</p>
             </div>
           </Reveal>
 
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
+          <div className="grid grid-cols-2 gap-4 md:grid-cols-4 md:gap-6">
             {categories.map((category, index) => (
               <Reveal key={category.slug} delay={index * 80}>
                 <Link to={`/materials/category/${category.slug}`} className="group block hover-lift">
-                  <div className="relative overflow-hidden rounded-xl aspect-[4/3] bg-muted border border-border">
-                    <img src={category.image} alt={category.alt || displayCategoryName(category.name)} loading="lazy" width={400} height={300} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                  <div className="relative aspect-[4/3] overflow-hidden rounded-xl border border-border bg-muted">
+                    <img
+                      src={category.image}
+                      alt={category.alt || displayCategoryName(category.name)}
+                      loading="lazy"
+                      width={400}
+                      height={300}
+                      className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+                    />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
                     <div className="absolute bottom-0 left-0 right-0 p-4">
-                      <h3 className="font-display font-bold text-sm md:text-base leading-tight" style={{ color: "#fff", textShadow: "0 1px 4px rgba(0,0,0,0.5)" }}>
+                      <h3 className="font-display text-sm font-bold leading-tight text-white md:text-base" style={{ textShadow: "0 1px 4px rgba(0,0,0,0.5)" }}>
                         {displayCategoryName(category.name)}
                       </h3>
-                      <p className="text-[10px] md:text-xs mt-1.5" style={{ color: "rgba(255,255,255,0.65)" }}>
+                      <p className="mt-1.5 text-[10px] md:text-xs" style={{ color: "rgba(255,255,255,0.65)" }}>
                         {category.subcategories.length} {t.subcategories}
                       </p>
                     </div>
@@ -116,18 +125,20 @@ const Materials = () => {
         </div>
       </section>
 
-      <section className="section-padding bg-accent text-accent-foreground text-center">
+      <section className="section-padding bg-accent text-center text-accent-foreground">
         <Reveal>
           <div className="container-narrow">
-            <h2 className="font-display text-3xl font-bold mb-4">{t.ctaTitle}</h2>
-            <p className="text-accent-foreground/80 mb-6 max-w-lg mx-auto">{t.ctaText}</p>
-            <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center">
-              <Button variant="secondary" size="lg" className="btn-press w-full sm:w-auto min-h-[3rem] text-sm font-bold tracking-wide rounded-md px-8 py-3 justify-center" asChild>
-                <Link to="/quote">{t.quote} <ArrowRight className="ml-2 w-4 h-4" /></Link>
+            <h2 className="mb-4 font-display text-3xl font-bold">{t.ctaTitle}</h2>
+            <p className="mx-auto mb-6 max-w-lg text-accent-foreground/80">{t.ctaText}</p>
+            <div className="flex flex-col justify-center gap-3 sm:flex-row sm:gap-4">
+              <Button variant="secondary" size="lg" className="btn-press w-full justify-center rounded-md px-8 py-3 text-sm font-bold tracking-wide min-h-[3rem] sm:w-auto" asChild>
+                <Link to="/quote">
+                  {t.quote} <ArrowRight className="ml-2 h-4 w-4" />
+                </Link>
               </Button>
-              <Button size="lg" className="btn-press w-full sm:w-auto min-h-[3rem] text-sm font-semibold bg-white text-neutral-800 border-0 hover:bg-white/90 shadow-md rounded-md px-8 py-3 justify-center" asChild>
+              <Button size="lg" className="btn-press w-full justify-center rounded-md border-0 bg-white px-8 py-3 text-sm font-semibold text-neutral-800 shadow-md hover:bg-white/90 min-h-[3rem] sm:w-auto" asChild>
                 <a href={whatsappUrl()} target="_blank" rel="noopener noreferrer">
-                  <WhatsAppIcon className="w-[18px] h-[18px] mr-2 text-[#25D366]" /> {t.whatsapp}
+                  <WhatsAppIcon className="mr-2 h-[18px] w-[18px] text-[#25D366]" /> {t.whatsapp}
                 </a>
               </Button>
             </div>

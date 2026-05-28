@@ -38,6 +38,7 @@ const AdminLogin = lazy(() => import("./pages/admin/AdminLogin"));
 const AdminDashboard = lazy(() => import("./pages/admin/AdminDashboard"));
 const AdminContentEditor = lazy(() => import("./pages/admin/AdminContentEditor"));
 const AdminNotificationSettings = lazy(() => import("./pages/admin/AdminNotificationSettings"));
+const AdminTranslationJobs = lazy(() => import("./pages/admin/AdminTranslationJobs"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 
 const queryClient = new QueryClient();
@@ -62,6 +63,8 @@ const AppShell = () => {
           <Route path="/admin" element={<AdminLogin />} />
           <Route path="/admin/dashboard" element={<AdminDashboard />} />
           <Route path="/admin/notifications" element={<AdminNotificationSettings />} />
+          <Route path="/admin/content/translation_jobs" element={<AdminTranslationJobs />} />
+          <Route path="/admin/content/translation_jobs/:id" element={<AdminTranslationJobs />} />
           <Route path="/admin/content/:type/:id?" element={<AdminContentEditor />} />
           <Route path="/:lang" element={<><LanguageRouteSync /><Index /></>} />
           <Route path="/:lang/about" element={<><LanguageRouteSync /><About /></>} />

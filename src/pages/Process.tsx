@@ -35,28 +35,28 @@ const content = {
     ],
   },
   zh: {
-    metaTitle: "装修流程 | FLASH CAST 如何执行项目",
-    metaDescription: "了解 FLASH CAST 从咨询、测量、设计、报价、施工到交付的装修流程。透明报价、定期汇报、专业项目管理。",
+    metaTitle: "施工流程 | FLASH CAST 如何执行项目",
+    metaDescription: "了解 FLASH CAST 如何从咨询、设计、施工到交付，全流程透明管理您的装修项目。",
     metaKeywords: "装修流程, 马来西亚装修步骤, 吉隆坡装修流程, FLASH CAST 施工流程",
     breadcrumbHome: "首页",
     breadcrumbProcess: "施工流程",
     imageAlt: "FLASH CAST 装修流程与项目管理",
-    label: "如何执行",
-    title: "我们的装修流程",
-    description: "从第一次咨询到最终交付，我们用清晰流程管理项目：透明报价、定期更新、每一步都有专人跟进。",
+    label: "我们的做法",
+    title: "装修施工流程",
+    description: "从第一次咨询到最终交付，我们用清晰、结构化的方式管理每个项目。报价透明、进度稳定、每一步都有专业团队跟进。",
     sectionTitle: "6 个步骤完成理想空间",
-    sectionDescription: "每个项目都会按照标准流程推进，让预算、工期、材料和施工进度更清楚。",
-    ctaTitle: "准备开始？",
-    ctaDescription: "今天联系我们，第一步只是简单聊聊你的装修需求。",
+    sectionDescription: "每个项目都遵循同一套成熟流程，确保透明、高效，并让客户安心。",
+    ctaTitle: "准备开始了吗？",
+    ctaDescription: "立即联系我们，第一步只是一次简单沟通。",
     quoteLabel: "获取免费报价",
     whatsappLabel: "WhatsApp 咨询",
     steps: [
-      { num: "01", title: "初步咨询", desc: "了解你的目标、空间、风格和预算。", details: ["通过网站、WhatsApp 或电话提交需求", "沟通装修范围、时间和预算", "提供初步建议和方向"] },
-      { num: "02", title: "现场测量", desc: "到现场检查并测量尺寸，KL 与 Selangor 项目可安排免费测量。", details: ["现场尺寸测量", "检查现有条件和限制", "拍照记录供设计和报价参考"] },
-      { num: "03", title: "设计方案", desc: "整理空间布局和视觉方向，需要时可提供 3D 效果参考。", details: ["空间规划与布局设计", "3D 效果图参考", "材料样板和搭配建议"] },
-      { num: "04", title: "报价与材料确认", desc: "提供清楚的分项报价，并一起确认材料和预算。", details: ["分项报价清楚列明", "比较材料选项和价格", "确认付款和施工安排"] },
-      { num: "05", title: "施工执行", desc: "由团队负责施工管理、现场监督和进度汇报。", details: ["准证申请与协调", "各工种按计划施工", "定期提供现场照片和进度更新"] },
-      { num: "06", title: "交付与保固", desc: "最终检查、缺陷修正、清洁和施工保固交接。", details: ["最终验收和 walkthrough", "缺陷清单与修正", "交付前清洁", "保固资料交接"] },
+      { num: "01", title: "初步咨询", desc: "了解您的目标、空间、风格与预算。", details: ["通过网站、WhatsApp 或电话提交咨询", "沟通需求、时间安排与预算", "获取初步建议与方向"] },
+      { num: "02", title: "上门测量", desc: "我们会到现场进行精确测量。吉隆坡与雪兰莪咨询可享免费上门测量。", details: ["现场测量", "评估现有条件与限制", "拍照记录，供设计参考"] },
+      { num: "03", title: "设计方案", desc: "根据空间规划与视觉方向制作方案，必要时提供 3D 效果图。", details: ["空间规划与布局设计", "3D 方案可视化", "材料样板与搭配建议"] },
+      { num: "04", title: "报价与材料确认", desc: "提供清晰的分项报价，并讨论材料选择，费用透明不含隐藏项。", details: ["分项报价，价格清晰", "材料对比与建议", "付款安排说明"] },
+      { num: "05", title: "施工执行", desc: "由团队统一管理，现场监督并持续汇报进度。", details: ["申请与协调所需许可", "由我们团队执行各工种", "定期发送现场进度照片"] },
+      { num: "06", title: "交付验收", desc: "最终质量检查、缺陷修正、清洁与保固交付。", details: ["最终巡检与验收", "缺陷清单与修正", "专业清洁", "保固资料交付"] },
     ],
   },
 };
@@ -76,22 +76,22 @@ const Process = () => {
         <div className="container-narrow">
           <SectionHeader title={t.sectionTitle} description={t.sectionDescription} />
 
-          <div className="max-w-3xl mx-auto space-y-6">
+          <div className="mx-auto max-w-3xl space-y-6">
             {t.steps.map((step, index) => (
               <Reveal key={step.num} delay={index * 80}>
-                <div className="relative flex gap-5 md:gap-7 p-6 md:p-8 bg-card rounded-lg border border-border hover-lift">
+                <div className="hover-lift relative flex gap-5 rounded-lg border border-border bg-card p-6 md:gap-7 md:p-8">
                   <div className="shrink-0">
-                    <div className="w-14 h-14 rounded-full bg-accent text-accent-foreground flex items-center justify-center font-display font-bold text-lg">
+                    <div className="flex h-14 w-14 items-center justify-center rounded-full bg-accent font-display text-lg font-bold text-accent-foreground">
                       {step.num}
                     </div>
                   </div>
                   <div>
-                    <h3 className="font-display font-semibold text-lg mb-2">{step.title}</h3>
-                    <p className="text-muted-foreground text-sm leading-relaxed mb-3">{step.desc}</p>
+                    <h3 className="mb-2 font-display text-lg font-semibold">{step.title}</h3>
+                    <p className="mb-3 text-sm leading-relaxed text-muted-foreground">{step.desc}</p>
                     <ul className="space-y-1.5">
                       {step.details.map((detail) => (
-                        <li key={detail} className="flex items-start gap-2 text-muted-foreground text-xs">
-                          <CheckCircle className="w-3.5 h-3.5 text-accent mt-0.5 shrink-0" />
+                        <li key={detail} className="flex items-start gap-2 text-xs text-muted-foreground">
+                          <CheckCircle className="mt-0.5 h-3.5 w-3.5 shrink-0 text-accent" />
                           <span>{detail}</span>
                         </li>
                       ))}

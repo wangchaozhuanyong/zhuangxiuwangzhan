@@ -5,6 +5,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { supabase } from "@/lib/supabase";
 import AdminImageUpload from "./AdminImageUpload";
+import type { Language } from "@/i18n/routes";
 
 const isZhBrowser = () => typeof navigator !== "undefined" && navigator.language.toLowerCase().startsWith("zh");
 
@@ -66,6 +67,16 @@ const copy = {
     after: "后图",
   },
 };
+
+const imageTypeLabels: Record<string, Record<Language, string>> = {
+  cover: { en: "cover", zh: "封面" },
+  gallery: { en: "gallery", zh: "图库" },
+  before: { en: "before", zh: "前图" },
+  after: { en: "after", zh: "后图" },
+};
+
+const formatImageType = (value: string, language: Language) =>
+  imageTypeLabels[value]?.[language] || value;
 
 const AdminProjectImages = ({ projectId }: AdminProjectImagesProps) => {
   const lang = isZhBrowser() ? "zh" : "en";
@@ -170,7 +181,7 @@ const AdminProjectImages = ({ projectId }: AdminProjectImagesProps) => {
           {images.map((image) => (
             <TableRow key={image.id}>
               <TableCell><img src={image.image_url} alt={image.alt_en || image.alt_zh || "Project image"} className="h-16 w-24 rounded object-cover" /></TableCell>
-              <TableCell>{image.image_type}</TableCell>
+              <TableCell>{formatImageType(image.image_type, lang as Language)}</TableCell>
               <TableCell className="max-w-xs text-xs text-muted-foreground">{image.alt_zh}<br />{image.alt_en}</TableCell>
               <TableCell>
                 <Input className="w-20" type="number" value={image.sort_order || 0} onChange={(event) => updateImage(image, { sort_order: Number(event.target.value || 0) })} />

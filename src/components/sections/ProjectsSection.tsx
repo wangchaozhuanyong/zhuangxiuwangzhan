@@ -22,15 +22,14 @@ const sectionCopy = {
   en: {
     eyebrow: "Selected Work",
     title: "Recent Renovation Projects",
-    subtitle:
-      "Explore completed residential, commercial, kitchen, built-in furniture, and fit-out projects across Kuala Lumpur and Selangor.",
+    subtitle: "Explore completed residential, commercial, kitchen, built-in furniture, and fit-out projects across Kuala Lumpur and Selangor.",
     empty: "Project highlights are being updated. Contact us for recent site references.",
   },
   zh: {
     eyebrow: "精选案例",
-    title: "近期装修项目",
-    subtitle: "查看我们在吉隆坡和雪兰莪完成的住宅、商业、厨房、定制家具和空间装修案例。",
-    empty: "项目案例正在更新中。你也可以联系我们获取近期工地参考。",
+    title: "近期装修案例",
+    subtitle: "查看我们在吉隆坡与雪兰莪完成的住宅、商业、厨房、定制家具与空间装潢项目。",
+    empty: "项目案例正在更新中。欢迎联系我们获取近期工地参考。",
   },
 };
 
@@ -49,8 +48,8 @@ const typeLabels = {
   zh: {
     residential: "住宅",
     commercial: "商业",
-    "built-in": "定制家具",
-    warehouse: "仓储",
+    "built-in": "定制内嵌家具",
+    warehouse: "仓库",
     exterior: "外墙",
     office: "办公室",
     kitchen: "厨房",
@@ -69,7 +68,6 @@ const ProjectsSection = () => {
 
   useEffect(() => {
     let active = true;
-
     void getPublishedProjects(language).then((projects) => {
       if (!active) return;
       setFeatured(projects.slice(0, 6));
@@ -84,27 +82,18 @@ const ProjectsSection = () => {
     <section className="section-padding bg-surface-dark" id="projects">
       <div className="container-narrow">
         <Reveal>
-          <div className="text-center mb-10 md:mb-14">
-            <p className="mb-3 text-[11px] font-bold uppercase tracking-[0.28em] text-gold">
-              {copy.eyebrow}
-            </p>
-            <h2 className="font-display text-3xl md:text-4xl font-bold mb-3 text-white">
-              {copy.title}
-            </h2>
-            <p className="max-w-2xl mx-auto text-sm md:text-base text-white/65">
-              {copy.subtitle}
-            </p>
+          <div className="mb-10 text-center md:mb-14">
+            <p className="mb-3 text-[11px] font-bold uppercase tracking-[0.28em] text-gold">{copy.eyebrow}</p>
+            <h2 className="font-display mb-3 text-3xl font-bold text-white md:text-4xl">{copy.title}</h2>
+            <p className="mx-auto max-w-2xl text-sm text-white/65 md:text-base">{copy.subtitle}</p>
           </div>
         </Reveal>
 
         {featured.length ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+          <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
             {featured.map((project, index) => {
               const typeKey = normalizeTypeKey(project.type || "renovation");
-              const label =
-                typeLabels[language][typeKey as keyof (typeof typeLabels)[typeof language]] ||
-                project.type ||
-                typeLabels[language].renovation;
+              const label = typeLabels[language][typeKey as keyof (typeof typeLabels)[typeof language]] || project.type || typeLabels[language].renovation;
               const title = translateDisplayText(project.title || "", language);
               const description = translateDisplayText(project.description || "", language);
               const location = translateDisplayText(project.location || "", language);
@@ -115,7 +104,7 @@ const ProjectsSection = () => {
                     to={`/projects/${project.slug}`}
                     className="group block h-full overflow-hidden rounded-xl border border-white/10 bg-white/[0.035] shadow-[0_24px_80px_rgba(0,0,0,0.22)] transition hover:-translate-y-1 hover:border-gold/45 hover:bg-white/[0.055]"
                   >
-                    <div className="aspect-[4/3] overflow-hidden img-zoom relative bg-white/5">
+                    <div className="relative aspect-[4/3] overflow-hidden bg-white/5 img-zoom">
                       {project.thumbnail ? (
                         <img
                           src={project.thumbnail}
@@ -123,28 +112,22 @@ const ProjectsSection = () => {
                           loading="lazy"
                           width={800}
                           height={600}
-                          className="w-full h-full object-cover"
+                          className="h-full w-full object-cover"
                         />
                       ) : (
-                        <div className="flex h-full items-center justify-center px-6 text-center text-sm text-white/55">
-                          FLASH CAST
-                        </div>
+                        <div className="flex h-full items-center justify-center px-6 text-center text-sm text-white/55">FLASH CAST</div>
                       )}
-                      <span className="absolute top-3 left-3 rounded-sm border border-white/20 bg-black/35 px-2.5 py-1 text-[10px] font-bold uppercase tracking-widest text-white backdrop-blur-sm">
+                      <span className="absolute left-3 top-3 rounded-sm border border-white/20 bg-black/35 px-2.5 py-1 text-[10px] font-bold uppercase tracking-widest text-white backdrop-blur-sm">
                         {label}
                       </span>
                     </div>
                     <div className="p-5">
-                      <h3 className="font-display text-base font-semibold mb-2 text-white group-hover:text-gold transition-colors">
-                        {title}
-                      </h3>
+                      <h3 className="mb-2 font-display text-base font-semibold text-white transition-colors group-hover:text-gold">{title}</h3>
                       <p className="mb-3 flex items-center gap-1.5 text-xs text-white/55">
                         <MapPin className="h-3.5 w-3.5 text-gold" />
                         {location}
                       </p>
-                      <p className="text-white/62 text-xs leading-relaxed line-clamp-2">
-                        {description}
-                      </p>
+                      <p className="line-clamp-2 text-xs leading-relaxed text-white/62">{description}</p>
                     </div>
                   </Link>
                 </Reveal>
@@ -152,20 +135,14 @@ const ProjectsSection = () => {
             })}
           </div>
         ) : (
-          <div className="rounded-xl border border-white/10 bg-white/[0.035] p-8 text-center text-sm text-white/65">
-            {copy.empty}
-          </div>
+          <div className="rounded-xl border border-white/10 bg-white/[0.035] p-8 text-center text-sm text-white/65">{copy.empty}</div>
         )}
 
         <Reveal delay={500}>
-          <div className="text-center mt-10">
-            <Button
-              variant="outline"
-              className="btn-press border-white/25 bg-white/5 text-white hover:bg-white/12 hover:text-white"
-              asChild
-            >
+          <div className="mt-10 text-center">
+            <Button variant="outline" className="btn-press border-white/25 bg-white/5 text-white hover:bg-white/12 hover:text-white" asChild>
               <Link to="/projects">
-                {t("cta.viewAllProjects")} <ArrowRight className="w-4 h-4 ml-2" />
+                {t("cta.viewAllProjects")} <ArrowRight className="ml-2 h-4 w-4" />
               </Link>
             </Button>
           </div>

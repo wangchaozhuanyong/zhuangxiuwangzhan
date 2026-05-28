@@ -78,6 +78,7 @@ const BeforeAfterSlider = ({
   const [position, setPosition] = useState(50);
   const containerRef = useRef<HTMLDivElement>(null);
   const isDragging = useRef(false);
+  const touchStart = useRef<{ x: number; y: number } | null>(null);
 
   const updatePosition = useCallback((clientX: number) => {
     if (!containerRef.current) return;
@@ -91,17 +92,39 @@ const BeforeAfterSlider = ({
   const handleMouseMove = (e: React.MouseEvent) => {
     if (isDragging.current) updatePosition(e.clientX);
   };
-  const handleTouchStart = () => { isDragging.current = true; };
-  const handleTouchEnd = () => { isDragging.current = false; };
+  const handleTouchStart = (e: React.TouchEvent) => {
+    const touch = e.touches[0];
+    touchStart.current = { x: touch.clientX, y: touch.clientY };
+    isDragging.current = false;
+  };
+  const handleTouchEnd = () => {
+    isDragging.current = false;
+    touchStart.current = null;
+  };
   const handleTouchMove = (e: React.TouchEvent) => {
+    const touch = e.touches[0];
+    if (!touchStart.current) {
+      touchStart.current = { x: touch.clientX, y: touch.clientY };
+      return;
+    }
+
+    const deltaX = Math.abs(touch.clientX - touchStart.current.x);
+    const deltaY = Math.abs(touch.clientY - touchStart.current.y);
+
+    if (!isDragging.current) {
+      if (deltaX < 8 && deltaY < 8) return;
+      if (deltaY > deltaX) return;
+      isDragging.current = true;
+    }
+
     e.preventDefault();
-    updatePosition(e.touches[0].clientX);
+    updatePosition(touch.clientX);
   };
 
   return (
     <div
       ref={containerRef}
-      className="relative aspect-[4/3] rounded-lg overflow-hidden cursor-col-resize select-none touch-none"
+      className="relative aspect-[4/3] rounded-lg overflow-hidden cursor-col-resize select-none [touch-action:pan-y]"
       onMouseDown={handleMouseDown}
       onMouseUp={handleMouseUp}
       onMouseLeave={handleMouseUp}

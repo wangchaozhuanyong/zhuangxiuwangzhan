@@ -88,9 +88,9 @@ const sendTelegramTest = async (settings: TelegramSettings) => {
     body: JSON.stringify({
       chat_id: chatId,
       text: [
-        "FLASH CAST test notification",
-        "Telegram lead notifications are connected.",
-        `Time: ${new Date().toISOString()}`,
+        "FLASH CAST 测试通知",
+        "Telegram 推送已连接成功。",
+        `时间：${new Date().toISOString()}`,
       ].join("\n"),
       disable_web_page_preview: true,
     }),

@@ -7,32 +7,32 @@ const corsHeaders = {
 };
 
 const labelMap: Record<string, string> = {
-  name: "Name",
-  phone: "Phone",
-  email: "Email",
-  message: "Message",
-  project_type: "Project Type",
-  location: "Location",
-  source_path: "Source Page",
-  customer_name: "Name",
-  customer_phone: "Phone",
-  customer_email: "Email",
-  property_size: "Property Size",
-  estimated_budget: "Budget",
-  quoted_amount: "Quoted Amount",
-  valid_until: "Quote Valid Until",
-  project_details: "Project Details",
-  status: "Status",
-  notes: "Notes",
-  area: "Area",
-  budget: "Budget",
-  size: "Size",
-  details: "Details",
+  name: "姓名",
+  phone: "电话",
+  email: "邮箱",
+  message: "留言内容",
+  project_type: "项目类型",
+  location: "所在地区",
+  source_path: "来源页面",
+  customer_name: "姓名",
+  customer_phone: "电话",
+  customer_email: "邮箱",
+  property_size: "房屋面积",
+  estimated_budget: "预算",
+  quoted_amount: "报价金额",
+  valid_until: "报价有效期",
+  project_details: "项目详情",
+  status: "状态",
+  notes: "备注",
+  area: "区域",
+  budget: "预算",
+  size: "面积",
+  details: "详情",
 };
 
 const telegramKeyMap: Record<string, string> = {
-  contact: "New Contact Lead",
-  quote: "New Quote Request",
+  contact: "新线索来了",
+  quote: "新报价请求来了",
 };
 
 const getServiceRoleKey = () =>
@@ -94,8 +94,7 @@ const formatSummaryLines = (type: string, data: Record<string, unknown>) => {
       seen.add(key);
       const value = cleanValue(data[key]);
       if (!value) return "";
-      const label = labelMap[key] || key;
-      return `${label}: ${value}`;
+      return `${labelMap[key] || key}：${value}`;
     })
     .filter(Boolean);
 
@@ -104,24 +103,24 @@ const formatSummaryLines = (type: string, data: Record<string, unknown>) => {
     if (!labelMap[key]) continue;
     const cleaned = cleanValue(value);
     if (!cleaned) continue;
-    lines.push(`${labelMap[key]}: ${cleaned}`);
+    lines.push(`${labelMap[key]}：${cleaned}`);
   }
 
   return lines;
 };
 
 const truncateText = (text: string, limit = 3800) =>
-  text.length <= limit ? text : `${text.slice(0, limit - 20)}\n\n[Message truncated]`;
+  text.length <= limit ? text : `${text.slice(0, limit - 20)}\n\n[消息已截断]`;
 
 const buildTelegramMessage = (type: string, data: Record<string, unknown>) => {
-  const title = telegramKeyMap[type] || "New FLASH CAST Lead";
+  const title = telegramKeyMap[type] || "FLASH CAST 新线索";
   const lines = formatSummaryLines(type, data);
 
   const message = [
-    `FLASH CAST`,
+    "FLASH CAST",
     title,
-    `Lead ID: ${cleanValue(data.id) || "-"}`,
-    `Created At: ${cleanValue(data.created_at) || cleanValue(data.inserted_at) || "-"}`,
+    `编号：${cleanValue(data.id) || "-"}`,
+    `提交时间：${cleanValue(data.created_at) || cleanValue(data.inserted_at) || "-"}`,
     "",
     ...lines,
   ].join("\n");
