@@ -167,7 +167,7 @@ const LocationPage = () => {
         </div>
       </section>
 
-      <section className="section-padding bg-background">
+      <section className="section-padding-next bg-background">
         <div className="container-narrow">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-10 items-start">
             <Reveal direction="left">

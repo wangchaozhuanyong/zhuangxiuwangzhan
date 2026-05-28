@@ -3,6 +3,7 @@ import { useParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   translateDisplayText,
   translateFieldLabel,
@@ -15,6 +16,7 @@ import { isSupabaseConfigured, supabase } from "@/lib/supabase";
 import AdminImageUpload from "./AdminImageUpload";
 import AdminLayout from "./AdminLayout";
 import AdminProjectImages from "./AdminProjectImages";
+import { AdminActionBar, AdminFilters, AdminPageShell } from "./AdminPageShell";
 
 const editableTables = new Set([
   "services",
@@ -463,6 +465,7 @@ const AdminContentEditor = () => {
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
   const [isLoading, setIsLoading] = useState(false);
+  const [activeLang, setActiveLang] = useState<"zh" | "en">("zh");
   const canEdit = editableTables.has(type);
 
   const visibleFields = useMemo(() => tableFields[type] || [...contentFields, ...englishFields, "slug", "status", "sort_order"], [type]);
@@ -574,100 +577,164 @@ const AdminContentEditor = () => {
   if (!canEdit) {
     return (
       <AdminLayout>
-        <div className="rounded-xl border border-border bg-card p-6">{t.unsupported(type)}</div>
+        <AdminPageShell title={t.unsupported(type)}>
+          <div className="rounded-xl border border-border bg-card p-6 text-sm text-muted-foreground">
+            {t.unsupported(type)}
+          </div>
+        </AdminPageShell>
       </AdminLayout>
     );
   }
 
   return (
     <AdminLayout>
-      <div className="grid gap-6 xl:grid-cols-[320px_1fr]">
-        <div className="rounded-xl border border-border bg-card p-4">
-          <h2 className="font-display mb-3 text-lg font-bold">{tableLabels[type]?.[lang] || type}</h2>
-          {!readOnlyTables.has(type) && (
-            <Button
-              className="mb-4 w-full"
-              onClick={() => setRecord({ status: type === "leads" ? "new" : type === "quote_requests" ? "pending" : "draft", sort_order: 0 })}
-            >
-              {t.createRecord}
-            </Button>
-          )}
-          <div className="mb-4 space-y-2">
-            <Input value={search} onChange={(event) => setSearch(event.target.value)} placeholder={t.searchPlaceholder} />
-            <select
-              value={statusFilter}
-              onChange={(event) => setStatusFilter(event.target.value)}
-              className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
-            >
-              <option value="all">{t.allStatuses}</option>
-              {statusOptionLabels.map((option) => (
-                <option key={option.value} value={option.value}>
-                  {option.label}
-                </option>
-              ))}
-            </select>
-            <Button className="w-full" variant="outline" onClick={() => void loadRows()} disabled={isLoading || !isSupabaseConfigured}>
-              {isLoading ? t.refreshing : t.refresh}
-            </Button>
-          </div>
-          {(type === "leads" || type === "quote_requests") && (
-            <Button className="mb-4 w-full" variant="outline" onClick={() => exportRowsAsCsv(type, visibleFields, filteredRows)} disabled={filteredRows.length === 0}>
-              {t.exportCsv}
-            </Button>
-          )}
-          <p className="mb-3 text-xs text-muted-foreground">{t.showing(filteredRows.length, rows.length)}</p>
-          <div className="space-y-2">
-            {filteredRows.map((row) => (
-              <button key={row.id} className="block w-full rounded-lg border border-border p-3 text-left text-sm hover:bg-muted" onClick={() => setRecord(row)}>
-                <span className="font-medium">{getRecordLabel(row, type, lang)}</span>
-                <span className="block text-xs text-muted-foreground">{getRecordMeta(row, type, lang)}</span>
-              </button>
-            ))}
-          </div>
-        </div>
-        <div className="rounded-xl border border-border bg-card p-6">
-          <div className="mb-5 flex items-start justify-between gap-4">
-            <div>
-              <h2 className="font-display text-xl font-bold">{t.bilingualTitle}</h2>
-              <p className="text-sm text-muted-foreground">{t.bilingualDesc}</p>
+      <AdminPageShell
+        title={`${tableLabels[type]?.[lang] || type}`}
+        description={`${t.bilingualTitle} · ${t.bilingualDesc}`}
+        headerRight={
+          <Tabs value={activeLang} onValueChange={(v) => setActiveLang(v as "zh" | "en")}>
+            <TabsList>
+              <TabsTrigger value="zh">中文</TabsTrigger>
+              <TabsTrigger value="en">英文</TabsTrigger>
+            </TabsList>
+          </Tabs>
+        }
+      >
+        <AdminActionBar
+          left={
+            <div className="min-w-0">
+              <div className="truncate text-sm font-semibold">{getRecordLabel(record, type, lang)}</div>
+              <div className="truncate text-xs text-muted-foreground">{getRecordMeta(record, type, lang)}</div>
             </div>
-            <div className="flex flex-col gap-2 sm:flex-row">
+          }
+          right={
+            <>
               <Button variant="outline" onClick={regenerateEnglish} disabled={!isSupabaseConfigured || !record.id}>
                 {t.regenerate}
               </Button>
               <Button onClick={save} disabled={!isSupabaseConfigured || readOnlyTables.has(type)}>
                 {t.save}
               </Button>
+            </>
+          }
+        />
+
+        <div className="grid min-w-0 gap-6 xl:grid-cols-[320px_minmax(0,1fr)]">
+          <div className="min-w-0 rounded-xl border border-border bg-card p-4">
+            {!readOnlyTables.has(type) && (
+              <Button
+                className="mb-4 w-full"
+                onClick={() => setRecord({ status: type === "leads" ? "new" : type === "quote_requests" ? "pending" : "draft", sort_order: 0 })}
+              >
+                {t.createRecord}
+              </Button>
+            )}
+
+            <AdminFilters>
+              <Input value={search} onChange={(event) => setSearch(event.target.value)} placeholder={t.searchPlaceholder} />
+              <select
+                value={statusFilter}
+                onChange={(event) => setStatusFilter(event.target.value)}
+                className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+              >
+                <option value="all">{t.allStatuses}</option>
+                {statusOptionLabels.map((option) => (
+                  <option key={option.value} value={option.value}>
+                    {option.label}
+                  </option>
+                ))}
+              </select>
+            </AdminFilters>
+
+            <div className="mt-3 space-y-2">
+              <Button className="w-full" variant="outline" onClick={() => void loadRows()} disabled={isLoading || !isSupabaseConfigured}>
+                {isLoading ? t.refreshing : t.refresh}
+              </Button>
+              {(type === "leads" || type === "quote_requests") && (
+                <Button className="w-full" variant="outline" onClick={() => exportRowsAsCsv(type, visibleFields, filteredRows)} disabled={filteredRows.length === 0}>
+                  {t.exportCsv}
+                </Button>
+              )}
+            </div>
+
+            <p className="my-3 text-xs text-muted-foreground">{t.showing(filteredRows.length, rows.length)}</p>
+            <div className="space-y-2">
+              {filteredRows.map((row) => (
+                <button
+                  key={row.id}
+                  className="block w-full min-w-0 rounded-lg border border-border p-3 text-left text-sm hover:bg-muted"
+                  onClick={() => setRecord(row)}
+                >
+                  <span className="block truncate font-medium">{getRecordLabel(row, type, lang)}</span>
+                  <span className="block truncate text-xs text-muted-foreground">{getRecordMeta(row, type, lang)}</span>
+                </button>
+              ))}
             </div>
           </div>
-          {(type === "leads" || type === "quote_requests") && (
-            <div className="mb-4 rounded-lg border border-accent/20 bg-accent/5 p-3 text-sm text-muted-foreground">{t.leadTip}</div>
-          )}
-          {status && <div className="mb-4 rounded-lg bg-muted p-3 text-sm">{status}</div>}
-          <div className="grid gap-4 md:grid-cols-2">
-            {visibleFields.map((field) => (
-              <div key={field} className={field.includes("content") || field.includes("description") ? "md:col-span-2" : ""}>
-                <label className="mb-1 block text-sm font-medium">{translateFieldLabel(field, lang)}</label>
-                {readOnlyFields.has(field) ? (
-                  <Input value={formatFieldValue(field, record[field])} readOnly className="bg-muted text-muted-foreground" />
-                ) : field.includes("content") || field.includes("description") ? (
-                  <Textarea rows={5} value={formatFieldValue(field, record[field])} onChange={(event) => setRecord({ ...record, [field]: event.target.value })} />
-                ) : arrayLikeFields.has(field) || jsonFields.has(field) ? (
-                  <Textarea rows={4} value={formatFieldValue(field, record[field])} onChange={(event) => setRecord({ ...record, [field]: event.target.value })} />
-                ) : imageFields.has(field) ? (
-                  <div className="space-y-3">
-                    <Input value={formatFieldValue(field, record[field])} onChange={(event) => setRecord({ ...record, [field]: event.target.value })} />
-                    <AdminImageUpload value={record[field]} folder={`${type}/${record.id || "draft"}`} onUploaded={(url) => setRecord({ ...record, [field]: url })} />
-                  </div>
-                ) : (
-                  <Input value={formatFieldValue(field, record[field])} onChange={(event) => setRecord({ ...record, [field]: event.target.value })} />
-                )}
-              </div>
-            ))}
+
+          <div className="min-w-0 rounded-xl border border-border bg-card p-4 md:p-6">
+            {(type === "leads" || type === "quote_requests") && (
+              <div className="mb-4 rounded-lg border border-accent/20 bg-accent/5 p-3 text-sm text-muted-foreground">{t.leadTip}</div>
+            )}
+            {status && <div className="mb-4 rounded-lg bg-muted p-3 text-sm">{status}</div>}
+
+            <Tabs value={activeLang} onValueChange={(v) => setActiveLang(v as "zh" | "en")}>
+              <TabsContent value="zh" className="mt-0">
+                <div className="grid min-w-0 gap-4 md:grid-cols-2">
+                  {visibleFields
+                    .filter((field) => !field.endsWith("_en"))
+                    .map((field) => (
+                      <div key={field} className={field.includes("content") || field.includes("description") ? "md:col-span-2" : ""}>
+                        <label className="mb-1 block text-sm font-medium">{translateFieldLabel(field, lang)}</label>
+                        {readOnlyFields.has(field) ? (
+                          <Input value={formatFieldValue(field, record[field])} readOnly className="bg-muted text-muted-foreground" />
+                        ) : field.includes("content") || field.includes("description") ? (
+                          <Textarea rows={5} value={formatFieldValue(field, record[field])} onChange={(event) => setRecord({ ...record, [field]: event.target.value })} />
+                        ) : arrayLikeFields.has(field) || jsonFields.has(field) ? (
+                          <Textarea rows={4} value={formatFieldValue(field, record[field])} onChange={(event) => setRecord({ ...record, [field]: event.target.value })} />
+                        ) : imageFields.has(field) ? (
+                          <div className="space-y-3">
+                            <Input value={formatFieldValue(field, record[field])} onChange={(event) => setRecord({ ...record, [field]: event.target.value })} />
+                            <AdminImageUpload value={record[field]} folder={`${type}/${record.id || "draft"}`} onUploaded={(url) => setRecord({ ...record, [field]: url })} />
+                          </div>
+                        ) : (
+                          <Input value={formatFieldValue(field, record[field])} onChange={(event) => setRecord({ ...record, [field]: event.target.value })} />
+                        )}
+                      </div>
+                    ))}
+                </div>
+              </TabsContent>
+              <TabsContent value="en" className="mt-0">
+                <div className="grid min-w-0 gap-4 md:grid-cols-2">
+                  {visibleFields
+                    .filter((field) => field.endsWith("_en") || !field.endsWith("_zh"))
+                    .map((field) => (
+                      <div key={field} className={field.includes("content") || field.includes("description") ? "md:col-span-2" : ""}>
+                        <label className="mb-1 block text-sm font-medium">{translateFieldLabel(field, lang)}</label>
+                        {readOnlyFields.has(field) ? (
+                          <Input value={formatFieldValue(field, record[field])} readOnly className="bg-muted text-muted-foreground" />
+                        ) : field.includes("content") || field.includes("description") ? (
+                          <Textarea rows={5} value={formatFieldValue(field, record[field])} onChange={(event) => setRecord({ ...record, [field]: event.target.value })} />
+                        ) : arrayLikeFields.has(field) || jsonFields.has(field) ? (
+                          <Textarea rows={4} value={formatFieldValue(field, record[field])} onChange={(event) => setRecord({ ...record, [field]: event.target.value })} />
+                        ) : imageFields.has(field) ? (
+                          <div className="space-y-3">
+                            <Input value={formatFieldValue(field, record[field])} onChange={(event) => setRecord({ ...record, [field]: event.target.value })} />
+                            <AdminImageUpload value={record[field]} folder={`${type}/${record.id || "draft"}`} onUploaded={(url) => setRecord({ ...record, [field]: url })} />
+                          </div>
+                        ) : (
+                          <Input value={formatFieldValue(field, record[field])} onChange={(event) => setRecord({ ...record, [field]: event.target.value })} />
+                        )}
+                      </div>
+                    ))}
+                </div>
+              </TabsContent>
+            </Tabs>
+
+            {type === "projects" && <AdminProjectImages projectId={record.id} />}
           </div>
-          {type === "projects" && <AdminProjectImages projectId={record.id} />}
         </div>
-      </div>
+      </AdminPageShell>
     </AdminLayout>
   );
 };

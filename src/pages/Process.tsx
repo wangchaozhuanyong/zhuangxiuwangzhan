@@ -72,7 +72,7 @@ const Process = () => {
 
       <HeroBanner image={heroImg} imageAlt={t.imageAlt} label={t.label} title={t.title} description={t.description} />
 
-      <section className="section-padding bg-background">
+      <section className="section-padding-next bg-background">
         <div className="container-narrow">
           <SectionHeader title={t.sectionTitle} description={t.sectionDescription} />
 

@@ -7,6 +7,7 @@ import { Switch } from "@/components/ui/switch";
 import { useToast } from "@/hooks/use-toast";
 import { isSupabaseConfigured, supabase } from "@/lib/supabase";
 import AdminLayout from "./AdminLayout";
+import { AdminActionBar, AdminPageShell } from "./AdminPageShell";
 
 const isZhBrowser = () => typeof navigator !== "undefined" && navigator.language.toLowerCase().startsWith("zh");
 
@@ -230,19 +231,34 @@ const AdminNotificationSettings = () => {
 
   return (
     <AdminLayout>
-      <div className="grid gap-6">
-        <div className="rounded-xl border border-border bg-card p-6">
-          <div className="flex flex-col gap-3 border-b border-border pb-5 md:flex-row md:items-start md:justify-between">
-            <div>
-              <p className="text-xs font-semibold uppercase tracking-[0.25em] text-accent">{t.notifications}</p>
-              <h2 className="font-display text-2xl font-bold">{t.leadAlerts}</h2>
-              <p className="mt-2 max-w-2xl text-sm text-muted-foreground">
-                {t.leadDesc}
-              </p>
-            </div>
-            <div className="rounded-lg border border-border bg-muted px-3 py-2 text-sm">
+      <AdminPageShell title={t.leadAlerts} description={t.leadDesc}>
+        <AdminActionBar
+          left={
+            <div className="truncate text-sm text-muted-foreground">
               {settings.has_telegram_bot_token ? `${t.savedToken}: ${settings.telegram_bot_token_masked}` : t.noToken}
             </div>
+          }
+          right={
+            <>
+              <Button onClick={saveSettings} disabled={saving || testing || loading}>
+                {saving ? t.saving : t.save}
+              </Button>
+              <Button
+                variant="outline"
+                onClick={testTelegram}
+                disabled={saving || testing || loading || !settings.has_telegram_bot_token || !settings.telegram_chat_id}
+              >
+                {testing ? t.sending : t.test}
+              </Button>
+            </>
+          }
+        />
+
+        <div className="grid gap-6">
+        <div className="rounded-xl border border-border bg-card p-6">
+          <div className="border-b border-border pb-5">
+            <p className="text-xs font-semibold uppercase tracking-[0.25em] text-accent">{t.notifications}</p>
+            <h2 className="font-display text-2xl font-bold">{t.leadAlerts}</h2>
           </div>
 
           {loading ? (
@@ -278,14 +294,7 @@ const AdminNotificationSettings = () => {
                 />
               </div>
 
-              <div className="flex flex-col gap-3 border-t border-border pt-5 sm:flex-row">
-                <Button onClick={saveSettings} disabled={saving || testing}>
-                  {saving ? t.saving : t.save}
-                </Button>
-                <Button variant="outline" onClick={testTelegram} disabled={saving || testing || !settings.has_telegram_bot_token || !settings.telegram_chat_id}>
-                  {testing ? t.sending : t.test}
-                </Button>
-              </div>
+              {/* actions moved to sticky action bar */}
             </div>
           )}
         </div>
@@ -353,7 +362,8 @@ const AdminNotificationSettings = () => {
             </Button>
           </div>
         </div>
-      </div>
+        </div>
+      </AdminPageShell>
     </AdminLayout>
   );
 };

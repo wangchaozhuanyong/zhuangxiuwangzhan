@@ -315,7 +315,7 @@ const Quote = () => {
         </div>
       </section>
 
-      <section className="section-padding bg-background">
+      <section className="section-padding-next bg-background">
         <div className="container-narrow grid gap-10 lg:grid-cols-[1.1fr_0.9fr]">
           <Reveal>
             <div>

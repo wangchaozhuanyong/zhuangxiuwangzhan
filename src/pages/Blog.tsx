@@ -136,7 +136,7 @@ const Blog = () => {
         </div>
       </section>
 
-      <section className="section-padding bg-background">
+      <section className="section-padding-next bg-background">
         <div className="container-narrow">
           <div className="flex gap-2 overflow-x-auto pb-4 mb-8 -mx-4 px-4">
             {categories.map((category) => (

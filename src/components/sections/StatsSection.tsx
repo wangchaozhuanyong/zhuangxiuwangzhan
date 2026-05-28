@@ -21,8 +21,8 @@ const StatsSection = () => {
   const { language } = useLanguage();
 
   return (
-    <section className="bg-background py-10 md:py-14 lg:py-16 border-b border-border/70" id="trust">
-      <div className="container-narrow px-5 md:px-8">
+    <section className="section-padding-compact bg-background border-b border-border/70" id="stats">
+      <div className="container-narrow">
         <div className="grid grid-cols-1 items-stretch gap-5 sm:grid-cols-2 lg:grid-cols-4 md:gap-6">
           {stats[language].map((stat, i) => {
             const Icon = stat.icon;

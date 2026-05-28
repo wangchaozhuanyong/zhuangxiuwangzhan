@@ -28,8 +28,8 @@ const BrandLogosSection = () => {
   }, []);
 
   return (
-    <section className="bg-muted py-10 md:py-12 lg:py-14 border-y border-border">
-      <div className="container-narrow px-5 md:px-8">
+    <section className="section-padding-compact bg-muted border-y border-border">
+      <div className="container-narrow">
         <Reveal>
           <p className="mb-6 text-center text-xs font-semibold uppercase tracking-[0.2em] text-muted-foreground md:mb-8">
             Trusted Brands & Partners We Work With

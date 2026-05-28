@@ -97,7 +97,7 @@ const MaterialSubcategoryPage = () => {
         </div>
       </section>
 
-      <section className="section-padding bg-background">
+      <section className="section-padding-next bg-background">
         <div className="container-narrow">
           {items.length > 0 ? (
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">

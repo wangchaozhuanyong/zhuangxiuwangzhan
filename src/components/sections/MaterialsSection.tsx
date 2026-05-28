@@ -2,6 +2,7 @@ import Link from "@/components/LocalizedLink";
 import { ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Reveal from "@/components/Reveal";
+import SmartImage from "@/components/SmartImage";
 import { materialsData } from "@/data/materials";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { translateDisplayText } from "@/i18n/displayLabels";
@@ -43,13 +44,13 @@ const MaterialsSection = () => {
               >
                 <div className="card-equal rounded-lg overflow-hidden bg-card border border-border hover-lift transition-colors hover:border-accent/30">
                   <div className="aspect-square overflow-hidden img-zoom">
-                    <img
+                    <SmartImage
                       src={cat.image}
                       alt={translateDisplayText(cat.name, language)}
-                      loading="lazy"
-                      className="w-full h-full object-cover"
                       width={200}
                       height={200}
+                      sizes="(max-width: 640px) 45vw, (max-width: 1024px) 30vw, 240px"
+                      className="w-full h-full object-cover"
                     />
                   </div>
                   <div className="card-equal-body p-4 md:p-5">

@@ -96,7 +96,7 @@ const Materials = () => {
         </div>
       </section>
 
-      <section className="section-padding bg-background">
+      <section className="section-padding-next bg-background">
         <div className="container-narrow">
           <Reveal>
             <div className="mb-10 text-center">

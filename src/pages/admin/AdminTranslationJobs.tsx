@@ -5,6 +5,7 @@ import { translateStatusLabel } from "@/i18n/displayLabels";
 import type { Language } from "@/i18n/routes";
 import { isSupabaseConfigured, supabase } from "@/lib/supabase";
 import AdminLayout from "./AdminLayout";
+import { AdminFilters, AdminPageShell } from "./AdminPageShell";
 
 type TranslationJob = {
   id: string;
@@ -130,18 +131,17 @@ const AdminTranslationJobs = () => {
 
   return (
     <AdminLayout>
-      <div className="space-y-6">
-        <div className="rounded-xl border border-border bg-card p-6">
-          <div className="mb-5 flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
-            <div>
-              <h2 className="font-display text-2xl font-bold">{t.title}</h2>
-              <p className="mt-2 text-sm text-muted-foreground">{t.description}</p>
-            </div>
-            <Button variant="outline" onClick={() => void loadJobs()} disabled={isLoading || !isSupabaseConfigured}>
-              {isLoading ? t.refreshing : t.refresh}
-            </Button>
-          </div>
-          <div className="grid gap-3 md:grid-cols-[1fr_220px]">
+      <AdminPageShell
+        title={t.title}
+        description={t.description}
+        actions={
+          <Button variant="outline" onClick={() => void loadJobs()} disabled={isLoading || !isSupabaseConfigured}>
+            {isLoading ? t.refreshing : t.refresh}
+          </Button>
+        }
+      >
+        <div className="space-y-4">
+          <AdminFilters>
             <Input value={search} onChange={(event) => setSearch(event.target.value)} placeholder={t.searchPlaceholder} />
             <select
               value={statusFilter}
@@ -155,48 +155,48 @@ const AdminTranslationJobs = () => {
                 </option>
               ))}
             </select>
-          </div>
-          {message && <div className="mt-4 rounded-lg bg-muted p-3 text-sm">{message}</div>}
-          <p className="mt-4 text-xs text-muted-foreground">{t.showing(filteredJobs.length, jobs.length)}</p>
-        </div>
+          </AdminFilters>
+          {message && <div className="rounded-lg bg-muted p-3 text-sm">{message}</div>}
+          <p className="text-xs text-muted-foreground">{t.showing(filteredJobs.length, jobs.length)}</p>
 
-        <div className="space-y-3">
-          {filteredJobs.map((job) => (
-            <article key={job.id} className="rounded-xl border border-border bg-card p-5">
-              <div className="mb-4 flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
-                <div>
-                  <p className="font-semibold">{getTableLabel(job.table_name, lang)}</p>
-                  <p className="mt-1 break-all text-xs text-muted-foreground">{job.record_id || "-"}</p>
+          <div className="space-y-3">
+            {filteredJobs.map((job) => (
+              <article key={job.id} className="rounded-xl border border-border bg-card p-5">
+                <div className="mb-4 flex min-w-0 flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
+                  <div className="min-w-0">
+                    <p className="truncate font-semibold">{getTableLabel(job.table_name, lang)}</p>
+                    <p className="mt-1 break-all text-xs text-muted-foreground">{job.record_id || "-"}</p>
+                  </div>
+                  <span className="w-fit rounded-full bg-muted px-3 py-1 text-xs font-medium">
+                    {translateStatusLabel("translation_jobs", job.status || "queued", lang)}
+                  </span>
                 </div>
-                <span className="w-fit rounded-full bg-muted px-3 py-1 text-xs font-medium">
-                  {translateStatusLabel("translation_jobs", job.status || "queued", lang)}
-                </span>
-              </div>
-              <dl className="grid gap-4 text-sm md:grid-cols-2 xl:grid-cols-4">
-                <div>
-                  <dt className="text-xs font-medium text-muted-foreground">{t.created}</dt>
-                  <dd>{formatDateTime(job.created_at, "-")}</dd>
-                </div>
-                <div>
-                  <dt className="text-xs font-medium text-muted-foreground">{t.updated}</dt>
-                  <dd>{formatDateTime(job.updated_at, "-")}</dd>
-                </div>
-                <div>
-                  <dt className="text-xs font-medium text-muted-foreground">{t.regenerated}</dt>
-                  <dd>{formatDateTime(job.regenerated_at, t.notRegenerated)}</dd>
-                </div>
-                <div>
-                  <dt className="text-xs font-medium text-muted-foreground">{t.error}</dt>
-                  <dd className="break-words">{job.error_message || t.noError}</dd>
-                </div>
-              </dl>
-            </article>
-          ))}
-          {!isLoading && filteredJobs.length === 0 && (
-            <div className="rounded-xl border border-border bg-card p-6 text-sm text-muted-foreground">{t.empty}</div>
-          )}
+                <dl className="grid gap-4 text-sm md:grid-cols-2 xl:grid-cols-4">
+                  <div>
+                    <dt className="text-xs font-medium text-muted-foreground">{t.created}</dt>
+                    <dd>{formatDateTime(job.created_at, "-")}</dd>
+                  </div>
+                  <div>
+                    <dt className="text-xs font-medium text-muted-foreground">{t.updated}</dt>
+                    <dd>{formatDateTime(job.updated_at, "-")}</dd>
+                  </div>
+                  <div>
+                    <dt className="text-xs font-medium text-muted-foreground">{t.regenerated}</dt>
+                    <dd>{formatDateTime(job.regenerated_at, t.notRegenerated)}</dd>
+                  </div>
+                  <div>
+                    <dt className="text-xs font-medium text-muted-foreground">{t.error}</dt>
+                    <dd className="break-words">{job.error_message || t.noError}</dd>
+                  </div>
+                </dl>
+              </article>
+            ))}
+            {!isLoading && filteredJobs.length === 0 && (
+              <div className="rounded-xl border border-border bg-card p-6 text-sm text-muted-foreground">{t.empty}</div>
+            )}
+          </div>
         </div>
-      </div>
+      </AdminPageShell>
     </AdminLayout>
   );
 };

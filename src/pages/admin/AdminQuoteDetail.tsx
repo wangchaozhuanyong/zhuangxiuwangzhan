@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { isSupabaseConfigured, supabase } from "@/lib/supabase";
 import AdminLayout from "./AdminLayout";
+import { AdminActionBar, AdminPageShell } from "./AdminPageShell";
 
 const statuses = ["pending", "contacted", "site_visit_scheduled", "quoted", "accepted", "rejected", "closed"];
 const followupTypes = ["note", "call", "whatsapp", "site_visit", "quotation", "closed"];
@@ -61,81 +62,98 @@ const AdminQuoteDetail = () => {
 
   return (
     <AdminLayout>
-      <div className="space-y-6">
-        {message && <div className="rounded-xl border border-border bg-card p-4 text-sm">{message}</div>}
-        {quote && (
-          <>
-            <div className="rounded-xl border border-border bg-card p-6">
-              <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
-                <div>
-                  <h1 className="font-display text-2xl font-bold">{quote.customer_name || "Quote Request"}</h1>
-                  <p className="mt-1 text-sm text-muted-foreground">{quote.customer_phone} · {quote.customer_email || "-"}</p>
-                  <p className="mt-1 text-sm text-muted-foreground">{quote.project_type || "-"} · {new Date(quote.created_at).toLocaleString()}</p>
-                </div>
-                <div className="flex gap-2">
-                  <Button asChild variant="outline"><a href={`https://wa.me/${String(quote.customer_phone || "").replace(/[^\d]/g, "")}`} target="_blank" rel="noreferrer">WhatsApp</a></Button>
-                  <Button asChild variant="outline"><a href={`tel:${String(quote.customer_phone || "").replace(/[^\d+]/g, "")}`}>Call</a></Button>
-                </div>
+      <AdminPageShell
+        title={quote?.customer_name || "Quote Request"}
+        description={quote ? `${quote.customer_phone || "-"} · ${quote.customer_email || "-"}` : undefined}
+      >
+        <AdminActionBar
+          left={
+            quote ? (
+              <div className="min-w-0">
+                <div className="truncate text-xs text-muted-foreground">{quote.project_type || "-"} · {new Date(quote.created_at).toLocaleString()}</div>
               </div>
-            </div>
+            ) : null
+          }
+          right={
+            quote ? (
+              <>
+                <Button asChild size="sm" variant="outline"><a href={`https://wa.me/${String(quote.customer_phone || "").replace(/[^\d]/g, "")}`} target="_blank" rel="noreferrer">WhatsApp</a></Button>
+                <Button asChild size="sm" variant="outline"><a href={`tel:${String(quote.customer_phone || "").replace(/[^\d+]/g, "")}`}>Call</a></Button>
+              </>
+            ) : null
+          }
+        />
 
-            <div className="grid gap-6 lg:grid-cols-[1fr_360px]">
-              <section className="rounded-xl border border-border bg-card p-6">
-                <h2 className="mb-4 font-display text-xl font-bold">Quote Details</h2>
-                <div className="grid gap-4 text-sm md:grid-cols-2">
-                  <div><span className="text-muted-foreground">Location:</span> {quote.location || "-"}</div>
-                  <div><span className="text-muted-foreground">Size:</span> {quote.property_size || "-"}</div>
-                  <div><span className="text-muted-foreground">Budget:</span> {quote.estimated_budget || "-"}</div>
-                  <div>
-                    <label className="mb-1 block text-sm font-medium">Quoted Amount</label>
-                    <Input type="number" value={quote.quoted_amount || ""} onChange={(event) => setQuote({ ...quote, quoted_amount: event.target.value })} onBlur={() => void updateQuote({ quoted_amount: quote.quoted_amount || null })} />
+        <div className="space-y-6">
+          {message && <div className="rounded-xl border border-border bg-card p-4 text-sm">{message}</div>}
+          {quote && (
+            <>
+              <div className="grid min-w-0 gap-6 lg:grid-cols-[minmax(0,1fr)_360px]">
+                <section className="min-w-0 rounded-xl border border-border bg-card p-4 md:p-6">
+                  <h2 className="mb-4 font-display text-xl font-bold">Quote Details</h2>
+                  <div className="grid gap-4 text-sm md:grid-cols-2">
+                    <div className="min-w-0"><span className="text-muted-foreground">Location:</span> {quote.location || "-"}</div>
+                    <div className="min-w-0"><span className="text-muted-foreground">Size:</span> {quote.property_size || "-"}</div>
+                    <div className="min-w-0"><span className="text-muted-foreground">Budget:</span> {quote.estimated_budget || "-"}</div>
+                    <div className="min-w-0">
+                      <label className="mb-1 block text-sm font-medium">Quoted Amount</label>
+                      <Input
+                        type="number"
+                        value={quote.quoted_amount || ""}
+                        onChange={(event) => setQuote({ ...quote, quoted_amount: event.target.value })}
+                        onBlur={() => void updateQuote({ quoted_amount: quote.quoted_amount || null })}
+                      />
+                    </div>
+                    <div className="min-w-0 md:col-span-2">
+                      <span className="text-muted-foreground">Details:</span>
+                      <p className="mt-1 whitespace-pre-wrap break-words">{quote.project_details || "-"}</p>
+                    </div>
+                    <div className="min-w-0">
+                      <label className="mb-1 block text-sm font-medium">Status</label>
+                      <select value={quote.status || "pending"} onChange={(event) => void updateQuote({ status: event.target.value })} className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm">
+                        {statuses.map((item) => <option key={item} value={item}>{item}</option>)}
+                      </select>
+                    </div>
+                    <div className="min-w-0">
+                      <label className="mb-1 block text-sm font-medium">Valid Until</label>
+                      <Input type="date" value={quote.valid_until || ""} onChange={(event) => setQuote({ ...quote, valid_until: event.target.value })} onBlur={() => void updateQuote({ valid_until: quote.valid_until || null })} />
+                    </div>
+                    <div className="md:col-span-2">
+                      <label className="mb-1 block text-sm font-medium">Notes</label>
+                      <Textarea rows={4} value={quote.notes || ""} onChange={(event) => setQuote({ ...quote, notes: event.target.value })} onBlur={() => void updateQuote({ notes: quote.notes || null })} />
+                    </div>
                   </div>
-                  <div className="md:col-span-2"><span className="text-muted-foreground">Details:</span><p className="mt-1 whitespace-pre-wrap">{quote.project_details || "-"}</p></div>
-                  <div>
-                    <label className="mb-1 block text-sm font-medium">Status</label>
-                    <select value={quote.status || "pending"} onChange={(event) => void updateQuote({ status: event.target.value })} className="flex h-10 rounded-md border border-input bg-background px-3 py-2 text-sm">
-                      {statuses.map((item) => <option key={item} value={item}>{item}</option>)}
+                </section>
+
+                <section className="min-w-0 rounded-xl border border-border bg-card p-4 md:p-6">
+                  <h2 className="mb-4 font-display text-xl font-bold">Add Follow-up</h2>
+                  <form onSubmit={addFollowup} className="space-y-3">
+                    <select value={followupType} onChange={(event) => setFollowupType(event.target.value)} className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm">
+                      {followupTypes.map((item) => <option key={item} value={item}>{item}</option>)}
                     </select>
-                  </div>
-                  <div>
-                    <label className="mb-1 block text-sm font-medium">Valid Until</label>
-                    <Input type="date" value={quote.valid_until || ""} onChange={(event) => setQuote({ ...quote, valid_until: event.target.value })} onBlur={() => void updateQuote({ valid_until: quote.valid_until || null })} />
-                  </div>
-                  <div className="md:col-span-2">
-                    <label className="mb-1 block text-sm font-medium">Notes</label>
-                    <Textarea rows={4} value={quote.notes || ""} onChange={(event) => setQuote({ ...quote, notes: event.target.value })} onBlur={() => void updateQuote({ notes: quote.notes || null })} />
-                  </div>
+                    <Textarea rows={4} value={content} onChange={(event) => setContent(event.target.value)} placeholder="Follow-up note..." />
+                    <Input type="datetime-local" value={nextFollowUpAt} onChange={(event) => setNextFollowUpAt(event.target.value)} />
+                    <Button type="submit" className="w-full">Save Follow-up</Button>
+                  </form>
+                </section>
+              </div>
+
+              <section className="min-w-0 rounded-xl border border-border bg-card p-4 md:p-6">
+                <h2 className="mb-4 font-display text-xl font-bold">Timeline</h2>
+                <div className="space-y-3">
+                  {followups.map((item) => (
+                    <div key={item.id} className="rounded-lg border border-border p-4 text-sm">
+                      <p className="font-medium">{item.followup_type} · {new Date(item.created_at).toLocaleString()}</p>
+                      <p className="mt-2 whitespace-pre-wrap break-words text-muted-foreground">{item.content}</p>
+                      {item.next_follow_up_at && <p className="mt-2 text-xs text-accent">Next: {new Date(item.next_follow_up_at).toLocaleString()}</p>}
+                    </div>
+                  ))}
                 </div>
               </section>
-
-              <section className="rounded-xl border border-border bg-card p-6">
-                <h2 className="mb-4 font-display text-xl font-bold">Add Follow-up</h2>
-                <form onSubmit={addFollowup} className="space-y-3">
-                  <select value={followupType} onChange={(event) => setFollowupType(event.target.value)} className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm">
-                    {followupTypes.map((item) => <option key={item} value={item}>{item}</option>)}
-                  </select>
-                  <Textarea rows={4} value={content} onChange={(event) => setContent(event.target.value)} placeholder="Follow-up note..." />
-                  <Input type="datetime-local" value={nextFollowUpAt} onChange={(event) => setNextFollowUpAt(event.target.value)} />
-                  <Button type="submit" className="w-full">Save Follow-up</Button>
-                </form>
-              </section>
-            </div>
-
-            <section className="rounded-xl border border-border bg-card p-6">
-              <h2 className="mb-4 font-display text-xl font-bold">Timeline</h2>
-              <div className="space-y-3">
-                {followups.map((item) => (
-                  <div key={item.id} className="rounded-lg border border-border p-4 text-sm">
-                    <p className="font-medium">{item.followup_type} · {new Date(item.created_at).toLocaleString()}</p>
-                    <p className="mt-2 whitespace-pre-wrap text-muted-foreground">{item.content}</p>
-                    {item.next_follow_up_at && <p className="mt-2 text-xs text-accent">Next: {new Date(item.next_follow_up_at).toLocaleString()}</p>}
-                  </div>
-                ))}
-              </div>
-            </section>
-          </>
-        )}
-      </div>
+            </>
+          )}
+        </div>
+      </AdminPageShell>
     </AdminLayout>
   );
 };

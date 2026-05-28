@@ -3,6 +3,7 @@ import Link from "@/components/LocalizedLink";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, ChevronLeft, ChevronRight } from "lucide-react";
 import Reveal from "@/components/Reveal";
+import SmartImage from "@/components/SmartImage";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { translateDisplayText } from "@/i18n/displayLabels";
 import { getPublishedBeforeAfterItems } from "@/lib/homeContentApi";
@@ -162,14 +163,23 @@ const BeforeAfterSlider = ({
       onKeyDown={handleKeyDown}
       onClick={(e) => updatePosition(e.clientX)}
     >
-      <img src={after} alt={`After: ${alt}`} className="absolute inset-0 w-full h-full object-cover" loading="lazy" />
+      <SmartImage
+        src={after}
+        alt={`After: ${alt}`}
+        className="absolute inset-0 w-full h-full object-cover"
+        width={800}
+        height={600}
+        sizes="(max-width: 768px) 92vw, 30vw"
+      />
       <div className="absolute inset-0 overflow-hidden" style={{ width: `${position}%` }}>
-        <img
+        <SmartImage
           src={before}
           alt={`Before: ${alt}`}
           className="absolute inset-0 w-full h-full object-cover"
           style={{ minWidth: containerRef.current ? `${containerRef.current.offsetWidth}px` : "100%" }}
-          loading="lazy"
+          width={800}
+          height={600}
+          sizes="(max-width: 768px) 92vw, 30vw"
         />
       </div>
       <div className="absolute top-0 bottom-0 w-0.5 bg-white shadow-lg" style={{ left: `${position}%`, transform: "translateX(-50%)" }}>
@@ -223,7 +233,7 @@ const BeforeAfterSection = () => {
   }, [language]);
 
   return (
-    <section className="section-padding bg-background" id="before-after">
+    <section className="section-padding-next bg-background" id="before-after">
       <div className="container-narrow">
         <Reveal>
           <div className="text-center mb-10 md:mb-14">

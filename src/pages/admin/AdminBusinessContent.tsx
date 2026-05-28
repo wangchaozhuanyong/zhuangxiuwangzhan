@@ -3,10 +3,12 @@ import { Link, useParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { isSupabaseConfigured, supabase } from "@/lib/supabase";
 import AdminImageUpload from "./AdminImageUpload";
 import AdminLayout from "./AdminLayout";
 import AdminProjectImages from "./AdminProjectImages";
+import { AdminActionBar, AdminFilters, AdminPageShell } from "./AdminPageShell";
 
 type ModuleKey = "services" | "projects" | "materials" | "blog_posts";
 type FieldType = "text" | "textarea" | "number" | "date" | "image" | "array" | "json" | "select";
@@ -183,31 +185,30 @@ export const AdminBusinessList = ({ module }: { module: ModuleKey }) => {
 
   return (
     <AdminLayout>
-      <div className="space-y-6">
-        <div className="rounded-xl border border-border bg-card p-6">
-          <div className="mb-4 flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
-            <h1 className="font-display text-2xl font-bold">{config.title}</h1>
-            <Button asChild><Link to={`${config.route}/new`}>新建 / New</Link></Button>
-          </div>
-          <div className="grid gap-3 md:grid-cols-[1fr_220px]">
+      <AdminPageShell
+        title={config.title}
+        actions={<Button asChild><Link to={`${config.route}/new`}>新建 / New</Link></Button>}
+      >
+        <div className="space-y-4">
+          <AdminFilters>
             <Input value={search} onChange={(event) => setSearch(event.target.value)} placeholder="搜索标题、slug、分类..." />
             <select value={status} onChange={(event) => setStatus(event.target.value)} className="flex h-10 rounded-md border border-input bg-background px-3 py-2 text-sm">
               <option value="all">全部状态 / All</option>
               {statusOptions.map((item) => <option key={item} value={item}>{item}</option>)}
             </select>
-          </div>
-          {message && <p className="mt-4 rounded-lg bg-muted p-3 text-sm">{message}</p>}
-        </div>
+          </AdminFilters>
+          {message && <p className="rounded-lg bg-muted p-3 text-sm">{message}</p>}
 
-        <div className="space-y-3">
-          {filtered.map((row) => (
-            <Link key={row.id} to={`${config.route}/${row.id}`} className="block rounded-xl border border-border bg-card p-4 hover:bg-muted">
-              <p className="font-semibold">{row[config.labelField] || row.title_en || row.slug || row.id}</p>
-              <p className="mt-1 text-xs text-muted-foreground">{row.slug || "-"} · {row.status || "-"} · {new Date(row.created_at).toLocaleString()}</p>
-            </Link>
-          ))}
+          <div className="space-y-3">
+            {filtered.map((row) => (
+              <Link key={row.id} to={`${config.route}/${row.id}`} className="block rounded-xl border border-border bg-card p-4 hover:bg-muted">
+                <p className="font-semibold">{row[config.labelField] || row.title_en || row.slug || row.id}</p>
+                <p className="mt-1 text-xs text-muted-foreground">{row.slug || "-"} · {row.status || "-"} · {new Date(row.created_at).toLocaleString()}</p>
+              </Link>
+            ))}
+          </div>
         </div>
-      </div>
+      </AdminPageShell>
     </AdminLayout>
   );
 };
@@ -217,7 +218,7 @@ export const AdminBusinessEditor = ({ module }: { module: ModuleKey }) => {
   const config = moduleConfig[module];
   const isNew = id === "new";
   const [record, setRecord] = useState<Record<string, any>>(emptyRecord);
-  const [showEnglish, setShowEnglish] = useState(false);
+  const [activeLang, setActiveLang] = useState<"zh" | "en">("zh");
   const [status, setStatus] = useState("");
 
   useEffect(() => {
@@ -232,6 +233,19 @@ export const AdminBusinessEditor = ({ module }: { module: ModuleKey }) => {
   }, [config.table, id, isNew]);
 
   const update = (key: string, value: unknown) => setRecord((current) => ({ ...current, [key]: value }));
+
+  const copyZhToEn = () => {
+    const updates: Record<string, unknown> = {};
+    for (const field of config.fields) {
+      if (!field.key.endsWith("_zh")) continue;
+      const enKey = field.key.replace(/_zh$/, "_en");
+      const hasEnField = config.fields.some((f) => f.key === enKey);
+      if (!hasEnField) continue;
+      updates[enKey] = record[field.key] ?? "";
+    }
+    setRecord((current) => ({ ...current, ...updates }));
+    setStatus("Copied ZH → EN.");
+  };
 
   const save = async (generateEnglish = false) => {
     const payload: Record<string, unknown> = { ...record };
@@ -286,7 +300,6 @@ export const AdminBusinessEditor = ({ module }: { module: ModuleKey }) => {
 
   const renderGroup = (group: FieldConfig["group"], title: string) => {
     const groupFields = config.fields.filter((field) => field.group === group);
-    if (group === "english" && !showEnglish) return null;
     return (
       <section className="rounded-xl border border-border bg-card p-6">
         <h2 className="mb-4 font-display text-xl font-bold">{title}</h2>
@@ -297,21 +310,34 @@ export const AdminBusinessEditor = ({ module }: { module: ModuleKey }) => {
 
   return (
     <AdminLayout>
-      <form onSubmit={(event: FormEvent) => { event.preventDefault(); void save(false); }} className="space-y-6">
-        <div className="rounded-xl border border-border bg-card p-6">
-          <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
-            <div>
-              <h1 className="font-display text-2xl font-bold">{config.title}</h1>
-              <p className="mt-2 text-sm text-muted-foreground">中文优先编辑，英文内容可自动生成后再复查。</p>
-              {status && <p className="mt-3 rounded-lg bg-muted p-3 text-sm">{status}</p>}
-            </div>
-            <div className="flex flex-wrap gap-2">
-              <Button type="button" variant="outline" onClick={() => setShowEnglish((value) => !value)}>英文内容</Button>
-              <Button type="button" variant="outline" onClick={() => void save(true)}>保存并生成英文</Button>
-              <Button type="submit">保存</Button>
-            </div>
-          </div>
-        </div>
+      <form onSubmit={(event: FormEvent) => { event.preventDefault(); void save(false); }} className="min-w-0 space-y-6">
+        <AdminPageShell
+          title={config.title}
+          description="使用固定操作条与分组表单，移动端自动换行，避免按钮与字段重叠。"
+          headerRight={
+            <Tabs value={activeLang} onValueChange={(v) => setActiveLang(v as "zh" | "en")}>
+              <TabsList>
+                <TabsTrigger value="zh">中文</TabsTrigger>
+                <TabsTrigger value="en">英文</TabsTrigger>
+              </TabsList>
+            </Tabs>
+          }
+        >
+          <AdminActionBar
+            left={
+              <div className="flex min-w-0 flex-col">
+                <div className="truncate text-sm font-semibold">{record.title_zh || record.title_en || record.slug || (isNew ? "New" : record.id)}</div>
+                <div className="truncate text-xs text-muted-foreground">{status || (isNew ? "Draft" : "")}</div>
+              </div>
+            }
+            right={
+              <>
+                <Button type="button" variant="outline" onClick={copyZhToEn}>中文复制到英文</Button>
+                <Button type="button" variant="outline" onClick={() => void save(true)}>保存并生成英文</Button>
+                <Button type="submit">保存</Button>
+              </>
+            }
+          />
 
         <section className="rounded-xl border border-border bg-card p-6">
           <h2 className="mb-4 font-display text-xl font-bold">发布设置</h2>
@@ -329,11 +355,18 @@ export const AdminBusinessEditor = ({ module }: { module: ModuleKey }) => {
           </div>
         </section>
 
-        {renderGroup("core", "核心内容")}
-        {renderGroup("details", "业务详情")}
-        {module === "projects" ? <AdminProjectImages projectId={record.id} /> : null}
-        {renderGroup("seo", "SEO")}
-        {renderGroup("english", "英文内容 / English")}
+          <Tabs value={activeLang} onValueChange={(v) => setActiveLang(v as "zh" | "en")}>
+            <TabsContent value="zh" className="mt-0 space-y-6">
+              {renderGroup("core", "核心内容")}
+              {renderGroup("details", "业务详情")}
+              {module === "projects" ? <AdminProjectImages projectId={record.id} /> : null}
+              {renderGroup("seo", "SEO")}
+            </TabsContent>
+            <TabsContent value="en" className="mt-0 space-y-6">
+              {renderGroup("english", "英文内容 / English")}
+            </TabsContent>
+          </Tabs>
+        </AdminPageShell>
       </form>
     </AdminLayout>
   );

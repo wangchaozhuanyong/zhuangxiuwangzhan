@@ -100,7 +100,7 @@ const MaterialCategoryPage = () => {
         </div>
       </section>
 
-      <section className="section-padding bg-background">
+      <section className="section-padding-next bg-background">
         <div className="container-narrow">
           <Reveal>
             <h2 className="font-display text-xl md:text-2xl font-bold mb-6">{t.browseSubcategories}</h2>
