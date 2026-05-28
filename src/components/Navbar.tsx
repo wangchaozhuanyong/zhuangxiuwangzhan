@@ -35,12 +35,14 @@ const isActivePath = (pathname: string, itemPath: string) => {
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const [logoHadError, setLogoHadError] = useState(false);
   const mobileMenuRef = useRef<HTMLDivElement>(null);
   const location = useLocation();
   const navigate = useNavigate();
   const { language, setLanguage } = useLanguage();
   const t = useT();
   const settings = useSiteSettings();
+  const logoSrc = !logoHadError && settings.logo_url ? settings.logo_url : "/logo-flashcast.png";
 
   const changeLanguage = () => {
     const nextLanguage = language === "en" ? "zh" : "en";
@@ -91,7 +93,14 @@ const Navbar = () => {
       >
         <div className="mx-auto flex h-[68px] w-full max-w-7xl flex-nowrap items-center gap-2 px-4 md:h-[72px] md:px-6 xl:px-8">
           <LocalizedLink to="/" className="flex items-center shrink-0">
-            <img src={settings.logo_url} alt={settings.company_name} className="h-8 md:h-9 w-auto object-contain drop-shadow-[0_1px_1px_rgba(255,255,255,0.45)]" />
+            <img
+              src={logoSrc}
+              alt={settings.company_name}
+              className="h-8 md:h-9 w-auto object-contain drop-shadow-[0_1px_1px_rgba(255,255,255,0.45)]"
+              loading="eager"
+              decoding="async"
+              onError={() => setLogoHadError(true)}
+            />
           </LocalizedLink>
 
           <nav className="hidden min-w-0 flex-1 items-center gap-0.5 xl:flex">
