@@ -120,11 +120,37 @@ const BeforeAfterSlider = ({
     e.preventDefault();
     updatePosition(touch.clientX);
   };
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
+    const step = e.shiftKey ? 10 : 5;
+    if (e.key === "ArrowLeft" || e.key === "ArrowDown") {
+      e.preventDefault();
+      setPosition((value) => Math.max(0, value - step));
+    }
+    if (e.key === "ArrowRight" || e.key === "ArrowUp") {
+      e.preventDefault();
+      setPosition((value) => Math.min(100, value + step));
+    }
+    if (e.key === "Home") {
+      e.preventDefault();
+      setPosition(0);
+    }
+    if (e.key === "End") {
+      e.preventDefault();
+      setPosition(100);
+    }
+  };
 
   return (
     <div
       ref={containerRef}
-      className="relative aspect-[4/3] rounded-lg overflow-hidden cursor-col-resize select-none [touch-action:pan-y]"
+      className="relative aspect-[4/3] rounded-lg overflow-hidden cursor-col-resize select-none [touch-action:pan-y] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2"
+      role="slider"
+      tabIndex={0}
+      aria-valuemin={0}
+      aria-valuemax={100}
+      aria-valuenow={Math.round(position)}
+      aria-valuetext={`${Math.round(position)}% ${beforeLabel}, ${100 - Math.round(position)}% ${afterLabel}`}
+      aria-label={`${beforeLabel} / ${afterLabel}: ${alt}`}
       onMouseDown={handleMouseDown}
       onMouseUp={handleMouseUp}
       onMouseLeave={handleMouseUp}
@@ -132,6 +158,7 @@ const BeforeAfterSlider = ({
       onTouchStart={handleTouchStart}
       onTouchEnd={handleTouchEnd}
       onTouchMove={handleTouchMove}
+      onKeyDown={handleKeyDown}
       onClick={(e) => updatePosition(e.clientX)}
     >
       <img src={after} alt={`After: ${alt}`} className="absolute inset-0 w-full h-full object-cover" loading="lazy" />

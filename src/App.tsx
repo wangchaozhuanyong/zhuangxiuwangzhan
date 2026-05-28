@@ -2,7 +2,7 @@ import { lazy, Suspense } from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Route, Routes, useLocation } from "react-router-dom";
 import { HelmetProvider } from "react-helmet-async";
-import { LanguageProvider } from "@/i18n/LanguageContext";
+import { LanguageProvider, useLanguage } from "@/i18n/LanguageContext";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -68,81 +68,89 @@ const PageLoader = () => (
 
 const AppShell = () => {
   const location = useLocation();
+  const { language } = useLanguage();
   const isAdminRoute = location.pathname.startsWith("/admin");
 
   return (
     <>
       <ScrollToTop />
+      {!isAdminRoute && (
+        <a href="#main-content" className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[100] focus:rounded-md focus:bg-background focus:px-4 focus:py-2 focus:text-sm focus:font-semibold focus:text-foreground focus:shadow-lg">
+          {language === "zh" ? "跳到主要内容" : "Skip to main content"}
+        </a>
+      )}
       {!isAdminRoute && <Navbar />}
-      <Suspense fallback={<PageLoader />}>
-        <Routes>
-          <Route path="/" element={<RootLanguageRedirect />} />
-          <Route path="/admin" element={<AdminLogin />} />
-          <Route path="/admin/dashboard" element={<AdminDashboard />} />
-          <Route path="/admin/settings" element={<AdminWebsiteSettings />} />
-          <Route path="/admin/leads" element={<AdminLeadList />} />
-          <Route path="/admin/leads/:id" element={<AdminLeadDetail />} />
-          <Route path="/admin/quotes" element={<AdminQuoteList />} />
-          <Route path="/admin/quotes/:id" element={<AdminQuoteDetail />} />
-          <Route path="/admin/home" element={<AdminComingSoon />} />
-          <Route path="/admin/about" element={<AdminComingSoon />} />
-          <Route path="/admin/faqs" element={<AdminComingSoon />} />
-          <Route path="/admin/services" element={<AdminBusinessContent />} />
-          <Route path="/admin/services/new" element={<AdminServiceEditor />} />
-          <Route path="/admin/services/:id" element={<AdminServiceEditor />} />
-          <Route path="/admin/projects" element={<AdminProjectList />} />
-          <Route path="/admin/projects/new" element={<AdminProjectEditor />} />
-          <Route path="/admin/projects/:id" element={<AdminProjectEditor />} />
-          <Route path="/admin/materials" element={<AdminMaterialList />} />
-          <Route path="/admin/materials/new" element={<AdminMaterialEditor />} />
-          <Route path="/admin/materials/:id" element={<AdminMaterialEditor />} />
-          <Route path="/admin/blog" element={<AdminBlogList />} />
-          <Route path="/admin/blog/new" element={<AdminBlogEditor />} />
-          <Route path="/admin/blog/:id" element={<AdminBlogEditor />} />
-          <Route path="/admin/media" element={<AdminMediaLibrary />} />
-          <Route path="/admin/seo" element={<AdminSeoManager />} />
-          <Route path="/admin/users" element={<AdminUsers />} />
-          <Route path="/admin/notifications" element={<AdminNotificationSettings />} />
-          <Route path="/admin/content/translation_jobs" element={<AdminTranslationJobs />} />
-          <Route path="/admin/content/translation_jobs/:id" element={<AdminTranslationJobs />} />
-          <Route path="/admin/content/:type/:id?" element={<AdminContentEditor />} />
-          <Route path="/:lang" element={<><LanguageRouteSync /><Index /></>} />
-          <Route path="/:lang/about" element={<><LanguageRouteSync /><About /></>} />
-          <Route path="/:lang/services" element={<><LanguageRouteSync /><Services /></>} />
-          <Route path="/:lang/services/old-house" element={<><LanguageRouteSync /><OldHouseRenovation /></>} />
-          <Route path="/:lang/services/:slug" element={<><LanguageRouteSync /><ServiceDetail /></>} />
-          <Route path="/:lang/materials" element={<><LanguageRouteSync /><Materials /></>} />
-          <Route path="/:lang/materials/category/:categorySlug" element={<><LanguageRouteSync /><MaterialCategoryPage /></>} />
-          <Route path="/:lang/materials/category/:categorySlug/:subcategorySlug" element={<><LanguageRouteSync /><MaterialSubcategoryPage /></>} />
-          <Route path="/:lang/materials/:slug" element={<><LanguageRouteSync /><MaterialDetail /></>} />
-          <Route path="/:lang/projects" element={<><LanguageRouteSync /><Projects /></>} />
-          <Route path="/:lang/projects/:slug" element={<><LanguageRouteSync /><ProjectDetail /></>} />
-          <Route path="/:lang/process" element={<><LanguageRouteSync /><Process /></>} />
-          <Route path="/:lang/faq" element={<><LanguageRouteSync /><FAQ /></>} />
-          <Route path="/:lang/contact" element={<><LanguageRouteSync /><Contact /></>} />
-          <Route path="/:lang/quote" element={<><LanguageRouteSync /><Quote /></>} />
-          <Route path="/:lang/blog" element={<><LanguageRouteSync /><Blog /></>} />
-          <Route path="/:lang/blog/:slug" element={<><LanguageRouteSync /><BlogDetail /></>} />
-          <Route path="/:lang/locations/:slug" element={<><LanguageRouteSync /><LocationPage /></>} />
-          <Route path="/:lang/landing/:slug" element={<><LanguageRouteSync /><LandingPage /></>} />
-          <Route path="/:lang/privacy" element={<><LanguageRouteSync /><Privacy /></>} />
-          <Route path="/:lang/terms" element={<><LanguageRouteSync /><Terms /></>} />
-          <Route path="/about" element={<LegacyLanguageRedirect />} />
-          <Route path="/services/*" element={<LegacyLanguageRedirect />} />
-          <Route path="/materials/*" element={<LegacyLanguageRedirect />} />
-          <Route path="/projects/*" element={<LegacyLanguageRedirect />} />
-          <Route path="/process" element={<LegacyLanguageRedirect />} />
-          <Route path="/faq" element={<LegacyLanguageRedirect />} />
-          <Route path="/contact" element={<LegacyLanguageRedirect />} />
-          <Route path="/quote" element={<LegacyLanguageRedirect />} />
-          <Route path="/blog/*" element={<LegacyLanguageRedirect />} />
-          <Route path="/locations/*" element={<LegacyLanguageRedirect />} />
-          <Route path="/landing/*" element={<LegacyLanguageRedirect />} />
-          <Route path="/privacy" element={<LegacyLanguageRedirect />} />
-          <Route path="/terms" element={<LegacyLanguageRedirect />} />
-          <Route path="*" element={<NotFound />} />
-        </Routes>
-      </Suspense>
+      <div id="main-content" tabIndex={-1}>
+        <Suspense fallback={<PageLoader />}>
+          <Routes>
+            <Route path="/" element={<RootLanguageRedirect />} />
+            <Route path="/admin" element={<AdminLogin />} />
+            <Route path="/admin/dashboard" element={<AdminDashboard />} />
+            <Route path="/admin/settings" element={<AdminWebsiteSettings />} />
+            <Route path="/admin/leads" element={<AdminLeadList />} />
+            <Route path="/admin/leads/:id" element={<AdminLeadDetail />} />
+            <Route path="/admin/quotes" element={<AdminQuoteList />} />
+            <Route path="/admin/quotes/:id" element={<AdminQuoteDetail />} />
+            <Route path="/admin/home" element={<AdminComingSoon />} />
+            <Route path="/admin/about" element={<AdminComingSoon />} />
+            <Route path="/admin/faqs" element={<AdminComingSoon />} />
+            <Route path="/admin/services" element={<AdminBusinessContent />} />
+            <Route path="/admin/services/new" element={<AdminServiceEditor />} />
+            <Route path="/admin/services/:id" element={<AdminServiceEditor />} />
+            <Route path="/admin/projects" element={<AdminProjectList />} />
+            <Route path="/admin/projects/new" element={<AdminProjectEditor />} />
+            <Route path="/admin/projects/:id" element={<AdminProjectEditor />} />
+            <Route path="/admin/materials" element={<AdminMaterialList />} />
+            <Route path="/admin/materials/new" element={<AdminMaterialEditor />} />
+            <Route path="/admin/materials/:id" element={<AdminMaterialEditor />} />
+            <Route path="/admin/blog" element={<AdminBlogList />} />
+            <Route path="/admin/blog/new" element={<AdminBlogEditor />} />
+            <Route path="/admin/blog/:id" element={<AdminBlogEditor />} />
+            <Route path="/admin/media" element={<AdminMediaLibrary />} />
+            <Route path="/admin/seo" element={<AdminSeoManager />} />
+            <Route path="/admin/users" element={<AdminUsers />} />
+            <Route path="/admin/notifications" element={<AdminNotificationSettings />} />
+            <Route path="/admin/content/translation_jobs" element={<AdminTranslationJobs />} />
+            <Route path="/admin/content/translation_jobs/:id" element={<AdminTranslationJobs />} />
+            <Route path="/admin/content/:type/:id?" element={<AdminContentEditor />} />
+            <Route path="/:lang" element={<><LanguageRouteSync /><Index /></>} />
+            <Route path="/:lang/about" element={<><LanguageRouteSync /><About /></>} />
+            <Route path="/:lang/services" element={<><LanguageRouteSync /><Services /></>} />
+            <Route path="/:lang/services/old-house" element={<><LanguageRouteSync /><OldHouseRenovation /></>} />
+            <Route path="/:lang/services/:slug" element={<><LanguageRouteSync /><ServiceDetail /></>} />
+            <Route path="/:lang/materials" element={<><LanguageRouteSync /><Materials /></>} />
+            <Route path="/:lang/materials/category/:categorySlug" element={<><LanguageRouteSync /><MaterialCategoryPage /></>} />
+            <Route path="/:lang/materials/category/:categorySlug/:subcategorySlug" element={<><LanguageRouteSync /><MaterialSubcategoryPage /></>} />
+            <Route path="/:lang/materials/:slug" element={<><LanguageRouteSync /><MaterialDetail /></>} />
+            <Route path="/:lang/projects" element={<><LanguageRouteSync /><Projects /></>} />
+            <Route path="/:lang/projects/:slug" element={<><LanguageRouteSync /><ProjectDetail /></>} />
+            <Route path="/:lang/process" element={<><LanguageRouteSync /><Process /></>} />
+            <Route path="/:lang/faq" element={<><LanguageRouteSync /><FAQ /></>} />
+            <Route path="/:lang/contact" element={<><LanguageRouteSync /><Contact /></>} />
+            <Route path="/:lang/quote" element={<><LanguageRouteSync /><Quote /></>} />
+            <Route path="/:lang/blog" element={<><LanguageRouteSync /><Blog /></>} />
+            <Route path="/:lang/blog/:slug" element={<><LanguageRouteSync /><BlogDetail /></>} />
+            <Route path="/:lang/locations/:slug" element={<><LanguageRouteSync /><LocationPage /></>} />
+            <Route path="/:lang/landing/:slug" element={<><LanguageRouteSync /><LandingPage /></>} />
+            <Route path="/:lang/privacy" element={<><LanguageRouteSync /><Privacy /></>} />
+            <Route path="/:lang/terms" element={<><LanguageRouteSync /><Terms /></>} />
+            <Route path="/about" element={<LegacyLanguageRedirect />} />
+            <Route path="/services/*" element={<LegacyLanguageRedirect />} />
+            <Route path="/materials/*" element={<LegacyLanguageRedirect />} />
+            <Route path="/projects/*" element={<LegacyLanguageRedirect />} />
+            <Route path="/process" element={<LegacyLanguageRedirect />} />
+            <Route path="/faq" element={<LegacyLanguageRedirect />} />
+            <Route path="/contact" element={<LegacyLanguageRedirect />} />
+            <Route path="/quote" element={<LegacyLanguageRedirect />} />
+            <Route path="/blog/*" element={<LegacyLanguageRedirect />} />
+            <Route path="/locations/*" element={<LegacyLanguageRedirect />} />
+            <Route path="/landing/*" element={<LegacyLanguageRedirect />} />
+            <Route path="/privacy" element={<LegacyLanguageRedirect />} />
+            <Route path="/terms" element={<LegacyLanguageRedirect />} />
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </Suspense>
+      </div>
       {!isAdminRoute && <Footer />}
       {!isAdminRoute && <FloatingCTA />}
     </>

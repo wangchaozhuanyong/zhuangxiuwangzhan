@@ -323,7 +323,7 @@ const Quote = () => {
               <h2 className="mb-6 font-display text-2xl font-bold md:text-3xl">{t.formTitle}</h2>
 
               {status === "error" && (
-                <div className="mb-6 flex items-start gap-3 rounded-lg border border-destructive/20 bg-destructive/5 p-4 text-sm">
+                <div role="alert" aria-live="polite" className="mb-6 flex items-start gap-3 rounded-lg border border-destructive/20 bg-destructive/5 p-4 text-sm">
                   <AlertCircle className="mt-0.5 h-4 w-4 text-destructive" />
                   <div>
                     <p className="font-medium text-destructive">{t.errorTitle}</p>
@@ -335,39 +335,42 @@ const Quote = () => {
               <form onSubmit={handleSubmit} className="space-y-4">
                 <div className="grid gap-4 md:grid-cols-2">
                   <div>
-                    <label className="mb-1 block text-sm font-medium">{t.name}</label>
-                    <Input value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} placeholder={t.namePlaceholder} />
-                    {errors.name && <p className="mt-1 text-xs text-destructive">{errors.name}</p>}
+                    <label htmlFor="quote-name" className="mb-1 block text-sm font-medium">{t.name}</label>
+                    <Input id="quote-name" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} placeholder={t.namePlaceholder} aria-invalid={Boolean(errors.name)} aria-describedby={errors.name ? "quote-name-error" : undefined} />
+                    {errors.name && <p id="quote-name-error" role="alert" className="mt-1 text-xs text-destructive">{errors.name}</p>}
                   </div>
                   <div>
-                    <label className="mb-1 block text-sm font-medium">{t.phone}</label>
-                    <Input value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} placeholder={t.contactLabel} />
-                    {errors.phone && <p className="mt-1 text-xs text-destructive">{errors.phone}</p>}
+                    <label htmlFor="quote-phone" className="mb-1 block text-sm font-medium">{t.phone}</label>
+                    <Input id="quote-phone" type="tel" value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} placeholder={t.contactLabel} aria-invalid={Boolean(errors.phone)} aria-describedby={errors.phone ? "quote-phone-error" : undefined} />
+                    {errors.phone && <p id="quote-phone-error" role="alert" className="mt-1 text-xs text-destructive">{errors.phone}</p>}
                   </div>
                 </div>
 
                 <div className="grid gap-4 md:grid-cols-2">
                   <div>
-                    <label className="mb-1 block text-sm font-medium">
+                    <label htmlFor="quote-email" className="mb-1 block text-sm font-medium">
                       {t.email} <span className="text-muted-foreground">({t.optional})</span>
                     </label>
-                    <Input value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} placeholder={t.emailPlaceholder} />
-                    {errors.email && <p className="mt-1 text-xs text-destructive">{errors.email}</p>}
+                    <Input id="quote-email" type="email" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} placeholder={t.emailPlaceholder} aria-invalid={Boolean(errors.email)} aria-describedby={errors.email ? "quote-email-error" : undefined} />
+                    {errors.email && <p id="quote-email-error" role="alert" className="mt-1 text-xs text-destructive">{errors.email}</p>}
                   </div>
                   <div>
-                    <label className="mb-1 block text-sm font-medium">{t.location}</label>
-                    <Input value={form.location} onChange={(e) => setForm({ ...form, location: e.target.value })} placeholder={t.locationPlaceholder} />
-                    {errors.location && <p className="mt-1 text-xs text-destructive">{errors.location}</p>}
+                    <label htmlFor="quote-location" className="mb-1 block text-sm font-medium">{t.location}</label>
+                    <Input id="quote-location" value={form.location} onChange={(e) => setForm({ ...form, location: e.target.value })} placeholder={t.locationPlaceholder} aria-invalid={Boolean(errors.location)} aria-describedby={errors.location ? "quote-location-error" : undefined} />
+                    {errors.location && <p id="quote-location-error" role="alert" className="mt-1 text-xs text-destructive">{errors.location}</p>}
                   </div>
                 </div>
 
                 <div className="grid gap-4 md:grid-cols-2">
                   <div>
-                    <label className="mb-1 block text-sm font-medium">{t.projectType}</label>
+                    <label htmlFor="quote-project-type" className="mb-1 block text-sm font-medium">{t.projectType}</label>
                     <select
+                      id="quote-project-type"
                       className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
                       value={form.projectType}
                       onChange={(e) => setForm({ ...form, projectType: e.target.value })}
+                      aria-invalid={Boolean(errors.projectType)}
+                      aria-describedby={errors.projectType ? "quote-project-type-error" : undefined}
                     >
                       <option value="">{t.selectProjectType}</option>
                       {projectTypes.map((item) => (
@@ -376,11 +379,12 @@ const Quote = () => {
                         </option>
                       ))}
                     </select>
-                    {errors.projectType && <p className="mt-1 text-xs text-destructive">{errors.projectType}</p>}
+                    {errors.projectType && <p id="quote-project-type-error" role="alert" className="mt-1 text-xs text-destructive">{errors.projectType}</p>}
                   </div>
                   <div>
-                    <label className="mb-1 block text-sm font-medium">{t.budgetRange}</label>
+                    <label htmlFor="quote-budget" className="mb-1 block text-sm font-medium">{t.budgetRange}</label>
                     <select
+                      id="quote-budget"
                       className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
                       value={form.budget}
                       onChange={(e) => setForm({ ...form, budget: e.target.value })}
@@ -396,15 +400,16 @@ const Quote = () => {
                 </div>
 
                 <div>
-                  <label className="mb-1 block text-sm font-medium">
+                  <label htmlFor="quote-property-size" className="mb-1 block text-sm font-medium">
                     {t.propertySize} <span className="text-muted-foreground">({t.approx})</span>
                   </label>
-                  <Input value={form.propertySize} onChange={(e) => setForm({ ...form, propertySize: e.target.value })} placeholder={t.sizePlaceholder} />
+                  <Input id="quote-property-size" value={form.propertySize} onChange={(e) => setForm({ ...form, propertySize: e.target.value })} placeholder={t.sizePlaceholder} />
                 </div>
 
                 <div>
-                  <label className="mb-1 block text-sm font-medium">{t.details}</label>
+                  <label htmlFor="quote-details" className="mb-1 block text-sm font-medium">{t.details}</label>
                   <Textarea
+                    id="quote-details"
                     rows={5}
                     value={form.details}
                     onChange={(e) => setForm({ ...form, details: e.target.value })}
@@ -424,7 +429,7 @@ const Quote = () => {
                 </div>
 
                 <div className="pt-2">
-                  <Button type="submit" size="lg" className="w-full md:w-auto" disabled={status === "submitting"}>
+                  <Button type="submit" size="lg" className="w-full md:w-auto" disabled={status === "submitting"} aria-busy={status === "submitting"}>
                     {status === "submitting" ? (
                       <>
                         <Loader2 className="mr-2 h-4 w-4 animate-spin" /> {t.submitting}
