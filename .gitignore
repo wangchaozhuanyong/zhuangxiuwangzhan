@@ -31,3 +31,5 @@ public/videos/*
 *.sln
 *.sw?
 .lovable/
+
+.vercel
