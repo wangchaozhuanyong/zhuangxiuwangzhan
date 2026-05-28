@@ -45,6 +45,15 @@ const AdminLeadDetail = lazy(() => import("./pages/admin/AdminLeadDetail"));
 const AdminQuoteList = lazy(() => import("./pages/admin/AdminQuoteList"));
 const AdminQuoteDetail = lazy(() => import("./pages/admin/AdminQuoteDetail"));
 const AdminComingSoon = lazy(() => import("./pages/admin/AdminComingSoon"));
+const AdminBusinessContent = lazy(() => import("./pages/admin/AdminBusinessContent").then((module) => ({ default: () => <module.AdminBusinessList module="services" /> })));
+const AdminServiceEditor = lazy(() => import("./pages/admin/AdminBusinessContent").then((module) => ({ default: () => <module.AdminBusinessEditor module="services" /> })));
+const AdminProjectList = lazy(() => import("./pages/admin/AdminBusinessContent").then((module) => ({ default: () => <module.AdminBusinessList module="projects" /> })));
+const AdminProjectEditor = lazy(() => import("./pages/admin/AdminBusinessContent").then((module) => ({ default: () => <module.AdminBusinessEditor module="projects" /> })));
+const AdminMaterialList = lazy(() => import("./pages/admin/AdminBusinessContent").then((module) => ({ default: () => <module.AdminBusinessList module="materials" /> })));
+const AdminMaterialEditor = lazy(() => import("./pages/admin/AdminBusinessContent").then((module) => ({ default: () => <module.AdminBusinessEditor module="materials" /> })));
+const AdminBlogList = lazy(() => import("./pages/admin/AdminBusinessContent").then((module) => ({ default: () => <module.AdminBusinessList module="blog_posts" /> })));
+const AdminBlogEditor = lazy(() => import("./pages/admin/AdminBusinessContent").then((module) => ({ default: () => <module.AdminBusinessEditor module="blog_posts" /> })));
+const AdminMediaLibrary = lazy(() => import("./pages/admin/AdminMediaLibrary"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 
 const queryClient = new QueryClient();
@@ -76,19 +85,19 @@ const AppShell = () => {
           <Route path="/admin/home" element={<AdminComingSoon />} />
           <Route path="/admin/about" element={<AdminComingSoon />} />
           <Route path="/admin/faqs" element={<AdminComingSoon />} />
-          <Route path="/admin/services" element={<AdminComingSoon />} />
-          <Route path="/admin/services/new" element={<AdminComingSoon />} />
-          <Route path="/admin/services/:id" element={<AdminComingSoon />} />
-          <Route path="/admin/projects" element={<AdminComingSoon />} />
-          <Route path="/admin/projects/new" element={<AdminComingSoon />} />
-          <Route path="/admin/projects/:id" element={<AdminComingSoon />} />
-          <Route path="/admin/materials" element={<AdminComingSoon />} />
-          <Route path="/admin/materials/new" element={<AdminComingSoon />} />
-          <Route path="/admin/materials/:id" element={<AdminComingSoon />} />
-          <Route path="/admin/blog" element={<AdminComingSoon />} />
-          <Route path="/admin/blog/new" element={<AdminComingSoon />} />
-          <Route path="/admin/blog/:id" element={<AdminComingSoon />} />
-          <Route path="/admin/media" element={<AdminComingSoon />} />
+          <Route path="/admin/services" element={<AdminBusinessContent />} />
+          <Route path="/admin/services/new" element={<AdminServiceEditor />} />
+          <Route path="/admin/services/:id" element={<AdminServiceEditor />} />
+          <Route path="/admin/projects" element={<AdminProjectList />} />
+          <Route path="/admin/projects/new" element={<AdminProjectEditor />} />
+          <Route path="/admin/projects/:id" element={<AdminProjectEditor />} />
+          <Route path="/admin/materials" element={<AdminMaterialList />} />
+          <Route path="/admin/materials/new" element={<AdminMaterialEditor />} />
+          <Route path="/admin/materials/:id" element={<AdminMaterialEditor />} />
+          <Route path="/admin/blog" element={<AdminBlogList />} />
+          <Route path="/admin/blog/new" element={<AdminBlogEditor />} />
+          <Route path="/admin/blog/:id" element={<AdminBlogEditor />} />
+          <Route path="/admin/media" element={<AdminMediaLibrary />} />
           <Route path="/admin/seo" element={<AdminComingSoon />} />
           <Route path="/admin/users" element={<AdminComingSoon />} />
           <Route path="/admin/notifications" element={<AdminNotificationSettings />} />
