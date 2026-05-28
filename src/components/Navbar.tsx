@@ -35,7 +35,7 @@ const isActivePath = (pathname: string, itemPath: string) => {
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
-  const [logoHadError, setLogoHadError] = useState(false);
+  const [logoState, setLogoState] = useState<"primary" | "fallback" | "none">("primary");
   const mobileMenuRef = useRef<HTMLDivElement>(null);
   const location = useLocation();
   const navigate = useNavigate();
@@ -43,8 +43,11 @@ const Navbar = () => {
   const t = useT();
   const settings = useSiteSettings();
   const primaryLogoSrc = settings.logo_url || "";
-  const logoSrc = logoHadError || !primaryLogoSrc ? "/logo-flashcast.png" : primaryLogoSrc;
   const brandText = settings.company_name || "FLASH CAST SDN. BHD.";
+  const resolvedLogoState: "primary" | "fallback" | "none" =
+    logoState === "primary" && !primaryLogoSrc ? "fallback" : logoState;
+  const logoSrc =
+    resolvedLogoState === "primary" ? primaryLogoSrc : resolvedLogoState === "fallback" ? "/logo-flashcast.png" : "";
 
   const changeLanguage = () => {
     const nextLanguage = language === "en" ? "zh" : "en";
@@ -95,16 +98,23 @@ const Navbar = () => {
       >
         <div className="mx-auto flex h-[68px] w-full max-w-7xl flex-nowrap items-center gap-2 px-4 md:h-[72px] md:px-6 xl:px-8">
           <LocalizedLink to="/" className="flex min-w-0 flex-1 items-center gap-2 shrink-0">
-            <img
-              src={logoSrc}
-              alt=""
-              className="h-8 md:h-9 w-auto object-contain drop-shadow-[0_1px_1px_rgba(255,255,255,0.45)] shrink-0"
-              loading="eager"
-              decoding="async"
-              onError={() => {
-                if (!logoHadError) setLogoHadError(true);
-              }}
-            />
+            {resolvedLogoState !== "none" ? (
+              <img
+                src={logoSrc}
+                alt=""
+                className="h-8 md:h-9 w-auto object-contain drop-shadow-[0_1px_1px_rgba(255,255,255,0.45)] shrink-0"
+                loading="eager"
+                decoding="async"
+                onError={() => setLogoState(resolvedLogoState === "primary" ? "fallback" : "none")}
+              />
+            ) : (
+              <span
+                aria-hidden="true"
+                className="shrink-0 inline-flex h-8 w-8 md:h-9 md:w-9 items-center justify-center rounded-lg bg-muted text-[11px] font-bold tracking-wide text-foreground/80"
+              >
+                FC
+              </span>
+            )}
             <span className="sr-only">{brandText}</span>
             <span className="min-w-0 truncate text-[13px] font-semibold tracking-wide text-foreground/90 md:text-[14px]">
               {brandText}
