@@ -57,6 +57,10 @@ const AdminBlogEditor = lazy(() => import("./pages/admin/AdminBusinessContent").
 const AdminMediaLibrary = lazy(() => import("./pages/admin/AdminMediaLibrary"));
 const AdminSeoManager = lazy(() => import("./pages/admin/AdminSeoManager"));
 const AdminUsers = lazy(() => import("./pages/admin/AdminUsers"));
+const AdminHomeSections = lazy(() => import("./pages/admin/AdminSimpleCms").then((module) => ({ default: () => <module.default module="home_sections" /> })));
+const AdminFaqs = lazy(() => import("./pages/admin/AdminSimpleCms").then((module) => ({ default: () => <module.default module="faqs" /> })));
+const AdminBeforeAfter = lazy(() => import("./pages/admin/AdminSimpleCms").then((module) => ({ default: () => <module.default module="before_after_items" /> })));
+const AdminBrandPartners = lazy(() => import("./pages/admin/AdminSimpleCms").then((module) => ({ default: () => <module.default module="brand_partners" /> })));
 const NotFound = lazy(() => import("./pages/NotFound"));
 
 const queryClient = new QueryClient();
@@ -94,9 +98,11 @@ const AppShell = () => {
             <Route path="/admin/leads/:id" element={<AdminLeadDetail />} />
             <Route path="/admin/quotes" element={<AdminQuoteList />} />
             <Route path="/admin/quotes/:id" element={<AdminQuoteDetail />} />
-            <Route path="/admin/home" element={<AdminComingSoon />} />
+            <Route path="/admin/home" element={<AdminHomeSections />} />
             <Route path="/admin/about" element={<AdminComingSoon />} />
-            <Route path="/admin/faqs" element={<AdminComingSoon />} />
+            <Route path="/admin/faqs" element={<AdminFaqs />} />
+            <Route path="/admin/before-after" element={<AdminBeforeAfter />} />
+            <Route path="/admin/brand-partners" element={<AdminBrandPartners />} />
             <Route path="/admin/services" element={<AdminBusinessContent />} />
             <Route path="/admin/services/new" element={<AdminServiceEditor />} />
             <Route path="/admin/services/:id" element={<AdminServiceEditor />} />

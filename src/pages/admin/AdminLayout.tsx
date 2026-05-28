@@ -105,8 +105,8 @@ const navGroups = [
       { key: "about", path: "/admin/about" },
       { key: "faqs", path: "/admin/faqs" },
       { key: "testimonials", path: "/admin/content/testimonials" },
-      { key: "brandLogos", path: "/admin/home#brands" },
-      { key: "beforeAfter", path: "/admin/home#before-after" },
+      { key: "brandLogos", path: "/admin/brand-partners" },
+      { key: "beforeAfter", path: "/admin/before-after" },
     ],
   },
   {
