@@ -11,6 +11,7 @@ import PageMeta from "@/components/PageMeta";
 import { JsonLdBreadcrumb } from "@/components/JsonLd";
 import { useSiteSettings } from "@/hooks/useSiteSettings";
 import { isHtmlText, stripHtml } from "@/lib/text";
+import { sanitizeHtml } from "@/lib/sanitizeHtml";
 import { translateDisplayText, translateProjectType } from "@/i18n/displayLabels";
 
 const typeToService: Record<string, { en: string; zh: string; slug: string }> = {
@@ -242,7 +243,7 @@ const ProjectDetail = () => {
               <Reveal>
                 <h2 className="font-display text-2xl font-bold mb-4">{t.overview}</h2>
                 {isHtmlText(project.description) ? (
-                  <div className="prose prose-neutral max-w-none text-muted-foreground mb-8" dangerouslySetInnerHTML={{ __html: project.description }} />
+                  <div className="prose prose-neutral max-w-none text-muted-foreground mb-8" dangerouslySetInnerHTML={{ __html: sanitizeHtml(project.description) }} />
                 ) : (
                   <p className="text-muted-foreground leading-relaxed mb-8">{project.description}</p>
                 )}

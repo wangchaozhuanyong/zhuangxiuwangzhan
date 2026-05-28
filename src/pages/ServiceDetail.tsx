@@ -13,6 +13,7 @@ import { JsonLdService, JsonLdBreadcrumb, JsonLdFAQ } from "@/components/JsonLd"
 import { useLanguage } from "@/i18n/LanguageContext";
 import { useSiteSettings } from "@/hooks/useSiteSettings";
 import { isHtmlText, stripHtml } from "@/lib/text";
+import { sanitizeHtml } from "@/lib/sanitizeHtml";
 import { translateDisplayText } from "@/i18n/displayLabels";
 
 const copy = {
@@ -190,7 +191,7 @@ const ServiceDetail = () => {
               <div>
                 <h2 className="font-display text-2xl md:text-3xl font-bold mb-4">{t.overview}</h2>
                 {isHtmlText(serviceDescription) ? (
-                  <div className="prose prose-neutral max-w-none text-muted-foreground mb-6" dangerouslySetInnerHTML={{ __html: serviceDescription }} />
+                  <div className="prose prose-neutral max-w-none text-muted-foreground mb-6" dangerouslySetInnerHTML={{ __html: sanitizeHtml(serviceDescription) }} />
                 ) : (
                   <p className="text-muted-foreground leading-relaxed mb-6">{serviceDescription}</p>
                 )}

@@ -13,6 +13,7 @@ import { useLanguage } from "@/i18n/LanguageContext";
 import { getPublishedLandingPageBySlug } from "@/lib/contentApi";
 import { useSiteSettings } from "@/hooks/useSiteSettings";
 import { isHtmlText, stripHtml } from "@/lib/text";
+import { sanitizeHtml } from "@/lib/sanitizeHtml";
 import { translateDisplayText } from "@/i18n/displayLabels";
 
 const shellCopy = {
@@ -145,7 +146,7 @@ const LandingPage = () => {
                 <div className="accent-line mb-4" />
                 <h2 className="font-display text-2xl md:text-3xl font-bold mb-4">{t.overview}</h2>
                 {isHtmlText(landingPage.description) ? (
-                  <div className="prose prose-neutral max-w-none text-muted-foreground" dangerouslySetInnerHTML={{ __html: landingPage.description }} />
+                  <div className="prose prose-neutral max-w-none text-muted-foreground" dangerouslySetInnerHTML={{ __html: sanitizeHtml(landingPage.description) }} />
                 ) : (
                   <p className="text-muted-foreground leading-relaxed">{landingPage.description}</p>
                 )}

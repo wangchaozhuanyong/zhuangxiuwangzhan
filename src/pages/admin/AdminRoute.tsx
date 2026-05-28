@@ -43,7 +43,16 @@ const AdminRoute = ({ children }: { children: ReactNode }) => {
 
   if (!isSupabaseConfigured) return <>{children}</>;
 
-  if (authState === "checking") return null;
+  if (authState === "checking") {
+    return (
+      <main className="min-h-screen bg-muted pt-24 px-4">
+        <div className="mx-auto max-w-md rounded-xl border border-border bg-card p-8 text-center">
+          <div className="mx-auto mb-4 h-8 w-8 animate-spin rounded-full border-2 border-accent border-t-transparent" />
+          <p className="text-sm text-muted-foreground">正在检查管理员状态...</p>
+        </div>
+      </main>
+    );
+  }
   if (authState === "signed-out") return <Navigate to="/admin" replace />;
   if (authState === "denied") return <Navigate to="/admin" replace />;
 

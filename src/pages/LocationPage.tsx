@@ -18,6 +18,7 @@ import { withLanguagePrefix } from "@/i18n/routes";
 import { siteConfig } from "@/config/site";
 import { useSiteSettings } from "@/hooks/useSiteSettings";
 import { isHtmlText, stripHtml } from "@/lib/text";
+import { sanitizeHtml } from "@/lib/sanitizeHtml";
 import { translateDisplayText, translateProjectType } from "@/i18n/displayLabels";
 
 const copy = {
@@ -178,7 +179,7 @@ const LocationPage = () => {
                 <div
                   className="text-muted-foreground leading-relaxed mb-6 prose prose-sm max-w-none prose-p:my-3 prose-headings:mb-3 prose-headings:mt-6"
                   dangerouslySetInnerHTML={{
-                    __html: isHtmlText(location.intro) ? location.intro : `<p>${location.intro}</p>`,
+                    __html: sanitizeHtml(isHtmlText(location.intro) ? location.intro : `<p>${location.intro}</p>`),
                   }}
                 />
                 <div className="bg-muted p-5 rounded-lg border border-border">
@@ -233,9 +234,11 @@ const LocationPage = () => {
                 <div
                   className="text-muted-foreground text-sm leading-relaxed prose prose-sm max-w-none prose-p:my-3 prose-headings:mb-3 prose-headings:mt-6"
                   dangerouslySetInnerHTML={{
-                    __html: isHtmlText(location.constructionNotes)
-                      ? displayText(location.constructionNotes)
-                      : `<p>${displayText(location.constructionNotes)}</p>`,
+                    __html: sanitizeHtml(
+                      isHtmlText(location.constructionNotes)
+                        ? displayText(location.constructionNotes)
+                        : `<p>${displayText(location.constructionNotes)}</p>`
+                    ),
                   }}
                 />
               </div>

@@ -11,6 +11,7 @@ import PageMeta from "@/components/PageMeta";
 import { JsonLdBreadcrumb } from "@/components/JsonLd";
 import { useSiteSettings } from "@/hooks/useSiteSettings";
 import { isHtmlText } from "@/lib/text";
+import { sanitizeHtml } from "@/lib/sanitizeHtml";
 import { translateBlogCategory, translateKeywordLabel, translateDisplayText } from "@/i18n/displayLabels";
 
 const copy = {
@@ -109,7 +110,7 @@ const BlogDetail = () => {
 
   const renderContent = (content: string) => {
     if (isHtmlText(content)) {
-      return <div className="prose prose-neutral max-w-none" dangerouslySetInnerHTML={{ __html: content }} />;
+      return <div className="prose prose-neutral max-w-none" dangerouslySetInnerHTML={{ __html: sanitizeHtml(content) }} />;
     }
 
     return content.split("\n\n").map((block, index) => {

@@ -11,6 +11,7 @@ import PageMeta from "@/components/PageMeta";
 import { JsonLdBreadcrumb } from "@/components/JsonLd";
 import { useSiteSettings } from "@/hooks/useSiteSettings";
 import { isHtmlText, stripHtml } from "@/lib/text";
+import { sanitizeHtml } from "@/lib/sanitizeHtml";
 import { translateMaterialCategory, translateMaterialType, translateSpaceLabel } from "@/i18n/displayLabels";
 
 const copy = {
@@ -126,7 +127,7 @@ const MaterialDetail = () => {
               <span className="text-accent text-xs font-medium uppercase tracking-wider">{displayCategoryName}</span>
               <h1 className="font-display text-2xl md:text-3xl font-bold mt-2 mb-4">{material.name}</h1>
               {isHtmlText(material.description) ? (
-                <div className="prose prose-neutral max-w-none text-muted-foreground mb-6" dangerouslySetInnerHTML={{ __html: material.description }} />
+                <div className="prose prose-neutral max-w-none text-muted-foreground mb-6" dangerouslySetInnerHTML={{ __html: sanitizeHtml(material.description) }} />
               ) : (
                 <p className="text-muted-foreground leading-relaxed mb-6">{material.description}</p>
               )}
