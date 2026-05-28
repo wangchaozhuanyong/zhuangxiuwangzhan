@@ -77,7 +77,7 @@ const ServicesSection = () => {
   ).slice(0, 8);
 
   return (
-    <section className="section-padding-next bg-background" id="services">
+    <section className="section-padding bg-background" id="services">
       <div className="container-narrow">
         <Reveal>
           <div className="text-center mb-10 md:mb-14">

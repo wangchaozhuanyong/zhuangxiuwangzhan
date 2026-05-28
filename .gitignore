@@ -30,5 +30,6 @@ public/videos/*
 *.njsproj
 *.sln
 *.sw?
+.lovable/
 
 .vercel

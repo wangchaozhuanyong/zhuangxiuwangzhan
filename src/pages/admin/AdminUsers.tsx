@@ -3,7 +3,6 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { isSupabaseConfigured, supabase } from "@/lib/supabase";
 import AdminLayout from "./AdminLayout";
-import { AdminPageShell } from "./AdminPageShell";
 
 const AdminUsers = () => {
   const [users, setUsers] = useState<any[]>([]);
@@ -44,44 +43,43 @@ const AdminUsers = () => {
 
   return (
     <AdminLayout>
-      <AdminPageShell
-        title="管理员账号 / Admin Users"
-        description="只管理后台白名单。不会显示或使用 service role key。"
-      >
-        <div className="space-y-6">
-          {message && <p className="rounded-lg bg-muted p-3 text-sm">{message}</p>}
-
-          <form onSubmit={addUser} className="rounded-xl border border-border bg-card p-4 md:p-6">
-            <h2 className="mb-4 font-display text-xl font-bold">新增管理员</h2>
-            <div className="grid min-w-0 gap-4 md:grid-cols-[minmax(0,1fr)_minmax(0,1fr)_auto] md:items-end">
-              <div className="min-w-0">
-                <label className="mb-1 block text-sm font-medium">Auth User ID</label>
-                <Input value={form.user_id} onChange={(event) => setForm({ ...form, user_id: event.target.value })} placeholder="Supabase Auth user UUID" />
-              </div>
-              <div className="min-w-0">
-                <label className="mb-1 block text-sm font-medium">Email</label>
-                <Input type="email" value={form.email} onChange={(event) => setForm({ ...form, email: event.target.value })} placeholder="admin@example.com" />
-              </div>
-              <Button type="submit" className="shrink-0">添加</Button>
-            </div>
-          </form>
-
-          <div className="space-y-3">
-            {users.map((user) => (
-              <article key={user.user_id} className="rounded-xl border border-border bg-card p-4">
-                <div className="flex min-w-0 flex-col gap-3 md:flex-row md:items-center md:justify-between">
-                  <div className="min-w-0">
-                    <p className="truncate font-semibold">{user.email || user.user_id}</p>
-                    <p className="mt-1 break-all text-xs text-muted-foreground">{user.user_id}</p>
-                    <p className="mt-1 truncate text-xs text-muted-foreground">{user.active ? "active" : "inactive"} · {new Date(user.created_at).toLocaleString()}</p>
-                  </div>
-                  <Button variant="outline" className="shrink-0" onClick={() => void toggleActive(user)}>{user.active ? "停用" : "启用"}</Button>
-                </div>
-              </article>
-            ))}
-          </div>
+      <div className="space-y-6">
+        <div className="rounded-xl border border-border bg-card p-6">
+          <h1 className="font-display text-2xl font-bold">管理员账号 / Admin Users</h1>
+          <p className="mt-2 text-sm text-muted-foreground">只管理后台白名单。不会显示或使用 service role key。</p>
+          {message && <p className="mt-4 rounded-lg bg-muted p-3 text-sm">{message}</p>}
         </div>
-      </AdminPageShell>
+
+        <form onSubmit={addUser} className="rounded-xl border border-border bg-card p-6">
+          <h2 className="mb-4 font-display text-xl font-bold">新增管理员</h2>
+          <div className="grid gap-4 md:grid-cols-[1fr_1fr_auto] md:items-end">
+            <div>
+              <label className="mb-1 block text-sm font-medium">Auth User ID</label>
+              <Input value={form.user_id} onChange={(event) => setForm({ ...form, user_id: event.target.value })} placeholder="Supabase Auth user UUID" />
+            </div>
+            <div>
+              <label className="mb-1 block text-sm font-medium">Email</label>
+              <Input type="email" value={form.email} onChange={(event) => setForm({ ...form, email: event.target.value })} placeholder="admin@example.com" />
+            </div>
+            <Button type="submit">添加</Button>
+          </div>
+        </form>
+
+        <div className="space-y-3">
+          {users.map((user) => (
+            <article key={user.user_id} className="rounded-xl border border-border bg-card p-4">
+              <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+                <div>
+                  <p className="font-semibold">{user.email || user.user_id}</p>
+                  <p className="mt-1 break-all text-xs text-muted-foreground">{user.user_id}</p>
+                  <p className="mt-1 text-xs text-muted-foreground">{user.active ? "active" : "inactive"} · {new Date(user.created_at).toLocaleString()}</p>
+                </div>
+                <Button variant="outline" onClick={() => void toggleActive(user)}>{user.active ? "停用" : "启用"}</Button>
+              </div>
+            </article>
+          ))}
+        </div>
+      </div>
     </AdminLayout>
   );
 };

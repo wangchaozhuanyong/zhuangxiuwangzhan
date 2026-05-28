@@ -160,7 +160,7 @@ const OldHouseRenovation = () => {
         </div>
       </section>
 
-      <section className="section-padding-next bg-background">
+      <section className="section-padding bg-background">
         <div className="container-narrow grid grid-cols-1 lg:grid-cols-2 gap-10 items-center">
           <Reveal direction="left">
             <div>

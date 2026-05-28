@@ -172,7 +172,7 @@ const FAQ = () => {
         </div>
       </section>
 
-      <section className="section-padding-next bg-background">
+      <section className="section-padding bg-background">
         <div className="container-narrow max-w-3xl">
           {categories.map((category, categoryIndex) => (
             <Reveal key={category.category} delay={categoryIndex * 100}>

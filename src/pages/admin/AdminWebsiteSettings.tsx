@@ -5,7 +5,6 @@ import { Textarea } from "@/components/ui/textarea";
 import { fetchSiteSettings, fallbackSiteSettings, saveSiteSettings, type SiteSettings } from "@/lib/siteSettingsApi";
 import AdminLayout from "./AdminLayout";
 import AdminImageUpload from "./AdminImageUpload";
-import { AdminActionBar, AdminPageShell } from "./AdminPageShell";
 
 const isZhBrowser = () => typeof navigator !== "undefined" && navigator.language.toLowerCase().startsWith("zh");
 
@@ -124,19 +123,21 @@ const AdminWebsiteSettings = () => {
 
   return (
     <AdminLayout>
-      <AdminPageShell title={t.title} description={t.description}>
-        <AdminActionBar
-          left={status ? <div className="truncate text-sm text-muted-foreground">{status}</div> : <div className="truncate text-sm text-muted-foreground"> </div>}
-          right={<Button onClick={handleSave} disabled={saving}>{saving ? t.saving : t.save}</Button>}
-        />
-        <div className="space-y-6">
-          {renderGroup("company")}
-          {renderGroup("contact")}
-          {renderGroup("media")}
-          {renderGroup("social")}
-          {renderGroup("seo")}
+      <div className="space-y-6">
+        <div className="flex flex-col gap-4 rounded-xl border border-border bg-card p-6 md:flex-row md:items-start md:justify-between">
+          <div>
+            <h1 className="font-display text-2xl font-bold">{t.title}</h1>
+            <p className="mt-2 text-sm text-muted-foreground">{t.description}</p>
+            {status && <p className="mt-3 rounded-lg bg-muted p-3 text-sm">{status}</p>}
+          </div>
+          <Button onClick={handleSave} disabled={saving}>{saving ? t.saving : t.save}</Button>
         </div>
-      </AdminPageShell>
+        {renderGroup("company")}
+        {renderGroup("contact")}
+        {renderGroup("media")}
+        {renderGroup("social")}
+        {renderGroup("seo")}
+      </div>
     </AdminLayout>
   );
 };

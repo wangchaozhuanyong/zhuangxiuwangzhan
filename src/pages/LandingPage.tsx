@@ -138,7 +138,7 @@ const LandingPage = () => {
       </section>
 
       {/* Description + Benefits */}
-      <section className="section-padding-next bg-background">
+      <section className="section-padding bg-background">
         <div className="container-narrow">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-10 items-start">
             <Reveal direction="left">
@@ -199,10 +199,7 @@ const LandingPage = () => {
       )}
 
       {/* FAQ */}
-      <FAQSection
-        faqs={landingPage.faqs}
-        className={landingPage.relatedProjects.length > 0 ? "section-padding bg-background" : "section-padding-next bg-background"}
-      />
+      <FAQSection faqs={landingPage.faqs} className="section-padding bg-background" />
 
       {/* CTA */}
       <CTABanner title={t.ctaTitle} description={t.ctaDescription} quoteLabel={t.quote} whatsappLabel={t.whatsapp} />

@@ -3,7 +3,6 @@ import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { isSupabaseConfigured, supabase } from "@/lib/supabase";
 import AdminLayout from "./AdminLayout";
-import { AdminPageShell } from "./AdminPageShell";
 
 const isZhBrowser = () => typeof navigator !== "undefined" && navigator.language.toLowerCase().startsWith("zh");
 
@@ -103,56 +102,57 @@ const AdminDashboard = () => {
 
   return (
     <AdminLayout>
-      <AdminPageShell title={t.title} description={t.body}>
-        <div className="space-y-6">
-          <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-            {t.cards.map((card) => (
-              <Link key={card.key} to={card.href} className="min-w-0 rounded-xl border border-border bg-card p-5 hover:bg-muted">
-                <p className="truncate text-sm text-muted-foreground">{card.label}</p>
-                <p className="mt-2 font-display text-3xl font-bold">{counts[card.key] ?? "-"}</p>
+      <div className="mb-6 rounded-xl border border-border bg-card p-6">
+        <h1 className="font-display text-2xl font-bold">{t.title}</h1>
+        <p className="mt-2 text-sm text-muted-foreground">{t.body}</p>
+      </div>
+
+      <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+        {t.cards.map((card) => (
+          <Link key={card.key} to={card.href} className="rounded-xl border border-border bg-card p-5 hover-lift">
+            <p className="text-sm text-muted-foreground">{card.label}</p>
+            <p className="mt-2 font-display text-3xl font-bold">{counts[card.key] ?? "-"}</p>
+          </Link>
+        ))}
+      </div>
+
+      <div className="mt-6 grid gap-6 xl:grid-cols-2">
+        <div className="rounded-xl border border-border bg-card p-6">
+          <h2 className="mb-4 font-display text-xl font-bold">{t.recentLeads}</h2>
+          <div className="space-y-3">
+            {recentLeads.map((lead) => (
+              <Link key={lead.id} to={`/admin/leads/${lead.id}`} className="block rounded-lg border border-border p-3 text-sm hover:bg-muted">
+                <span className="font-medium">{lead.name || "Lead"} · {lead.phone || "-"}</span>
+                <span className="block text-xs text-muted-foreground">{lead.status} · {lead.source_path || "-"}</span>
               </Link>
             ))}
-          </div>
-
-          <div className="grid gap-6 xl:grid-cols-2">
-            <div className="min-w-0 rounded-xl border border-border bg-card p-4 md:p-6">
-              <h2 className="mb-4 font-display text-xl font-bold">{t.recentLeads}</h2>
-              <div className="space-y-3">
-                {recentLeads.map((lead) => (
-                  <Link key={lead.id} to={`/admin/leads/${lead.id}`} className="block min-w-0 rounded-lg border border-border p-3 text-sm hover:bg-muted">
-                    <span className="block truncate font-medium">{lead.name || "Lead"} · {lead.phone || "-"}</span>
-                    <span className="block truncate text-xs text-muted-foreground">{lead.status} · {lead.source_path || "-"}</span>
-                  </Link>
-                ))}
-                {recentLeads.length === 0 && <p className="text-sm text-muted-foreground">{t.empty}</p>}
-              </div>
-            </div>
-            <div className="min-w-0 rounded-xl border border-border bg-card p-4 md:p-6">
-              <h2 className="mb-4 font-display text-xl font-bold">{t.recentQuotes}</h2>
-              <div className="space-y-3">
-                {recentQuotes.map((quote) => (
-                  <Link key={quote.id} to={`/admin/quotes/${quote.id}`} className="block min-w-0 rounded-lg border border-border p-3 text-sm hover:bg-muted">
-                    <span className="block truncate font-medium">{quote.customer_name || "Quote"} · {quote.customer_phone || "-"}</span>
-                    <span className="block truncate text-xs text-muted-foreground">{quote.status} · {quote.project_type || "-"}</span>
-                  </Link>
-                ))}
-                {recentQuotes.length === 0 && <p className="text-sm text-muted-foreground">{t.empty}</p>}
-              </div>
-            </div>
-          </div>
-
-          <div id="tasks" className="rounded-xl border border-border bg-card p-4 md:p-6">
-            <h2 className="mb-4 font-display text-xl font-bold">{t.quickActions}</h2>
-            <div className="flex flex-wrap gap-3">
-              {t.actions.map((action) => (
-                <Button key={action.href} asChild variant="outline" className="max-w-full">
-                  <Link to={action.href} className="truncate">{action.label}</Link>
-                </Button>
-              ))}
-            </div>
+            {recentLeads.length === 0 && <p className="text-sm text-muted-foreground">{t.empty}</p>}
           </div>
         </div>
-      </AdminPageShell>
+        <div className="rounded-xl border border-border bg-card p-6">
+          <h2 className="mb-4 font-display text-xl font-bold">{t.recentQuotes}</h2>
+          <div className="space-y-3">
+            {recentQuotes.map((quote) => (
+              <Link key={quote.id} to={`/admin/quotes/${quote.id}`} className="block rounded-lg border border-border p-3 text-sm hover:bg-muted">
+                <span className="font-medium">{quote.customer_name || "Quote"} · {quote.customer_phone || "-"}</span>
+                <span className="block text-xs text-muted-foreground">{quote.status} · {quote.project_type || "-"}</span>
+              </Link>
+            ))}
+            {recentQuotes.length === 0 && <p className="text-sm text-muted-foreground">{t.empty}</p>}
+          </div>
+        </div>
+      </div>
+
+      <div id="tasks" className="mt-6 rounded-xl border border-border bg-card p-6">
+        <h2 className="mb-4 font-display text-xl font-bold">{t.quickActions}</h2>
+        <div className="flex flex-wrap gap-3">
+          {t.actions.map((action) => (
+            <Button key={action.href} asChild variant="outline">
+              <Link to={action.href}>{action.label}</Link>
+            </Button>
+          ))}
+        </div>
+      </div>
     </AdminLayout>
   );
 };

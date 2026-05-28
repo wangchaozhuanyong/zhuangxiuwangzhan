@@ -181,7 +181,7 @@ const BlogDetail = () => {
         <img src={post.image} alt={displayText(post.title)} className="w-full rounded-lg aspect-[2/1] object-cover" />
       </div>
 
-      <section className="section-padding-next bg-background">
+      <section className="section-padding bg-background">
         <div className="container-narrow max-w-3xl">
           <div className="prose-sm">
             {renderContent(displayText(post.content))}

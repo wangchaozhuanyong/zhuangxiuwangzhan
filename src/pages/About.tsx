@@ -138,7 +138,7 @@ const About = () => {
 
       <HeroBanner image={heroImg} imageAlt={t.imageAlt} label={t.label} title={t.title} description={t.description} />
 
-      <section className="section-padding-next bg-background">
+      <section className="section-padding bg-background">
         <div className="container-narrow">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
             <Reveal direction="left">

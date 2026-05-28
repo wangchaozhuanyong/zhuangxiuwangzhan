@@ -2,11 +2,9 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { isSupabaseConfigured, supabase } from "@/lib/supabase";
 import AdminImageUpload from "./AdminImageUpload";
 import AdminLayout from "./AdminLayout";
-import { AdminActionBar, AdminPageShell } from "./AdminPageShell";
 
 type ModuleKey = "home_sections" | "faqs" | "before_after_items" | "brand_partners";
 type Field = { key: string; label: string; type?: "text" | "textarea" | "image" | "number" | "select" };
@@ -77,7 +75,6 @@ const AdminSimpleCms = ({ module }: { module: ModuleKey }) => {
   const [rows, setRows] = useState<any[]>([]);
   const [record, setRecord] = useState<Record<string, any>>(emptyRecord);
   const [message, setMessage] = useState("");
-  const [activeLang, setActiveLang] = useState<"zh" | "en">("zh");
 
   const loadRows = useCallback(async () => {
     if (!isSupabaseConfigured) return;
@@ -92,7 +89,6 @@ const AdminSimpleCms = ({ module }: { module: ModuleKey }) => {
 
   const title = useMemo(() => record[config.labelField] || record.title_en || record.name || "New", [config.labelField, record]);
   const update = (key: string, value: unknown) => setRecord((current) => ({ ...current, [key]: value }));
-  const isEditing = Boolean(record.id) || record !== emptyRecord;
 
   const save = async () => {
     if (!isSupabaseConfigured) return;
@@ -141,105 +137,53 @@ const AdminSimpleCms = ({ module }: { module: ModuleKey }) => {
     );
   };
 
-  const copyZhToEn = () => {
-    const updates: Record<string, unknown> = {};
-    for (const field of config.fields) {
-      if (!field.key.endsWith("_zh")) continue;
-      const enKey = field.key.replace(/_zh$/, "_en");
-      const hasEnField = config.fields.some((f) => f.key === enKey);
-      if (!hasEnField) continue;
-      updates[enKey] = record[field.key] ?? "";
-    }
-    setRecord((current) => ({ ...current, ...updates }));
-    setMessage("Copied ZH → EN.");
-  };
-
-  const visibleFields = (langKey: "zh" | "en") =>
-    config.fields.filter((field) => {
-      if (field.key.endsWith("_zh")) return langKey === "zh";
-      if (field.key.endsWith("_en")) return langKey === "en";
-      return true;
-    });
-
   return (
     <AdminLayout>
-      <AdminPageShell
-        title={config.title}
-        description="列表与编辑分区，移动端自动上下排列，避免控件挤压重叠。"
-        actions={<Button type="button" variant="outline" onClick={() => setRecord(emptyRecord)}>新建 / New</Button>}
-      >
-        <AdminActionBar
-          left={<div className="truncate text-sm text-muted-foreground">正在编辑：<span className="font-medium text-foreground">{title}</span></div>}
-          right={
-            <>
-              <Button type="button" variant="outline" onClick={copyZhToEn}>中文复制到英文</Button>
-              <Button type="button" onClick={() => void save()}>保存 / Save</Button>
-            </>
-          }
-        />
-
-        <div className="grid min-w-0 gap-6 xl:grid-cols-[minmax(0,1fr)_420px]">
-          <section className="min-w-0 rounded-xl border border-border bg-card p-4 md:p-6">
-            {message && <p className="mb-4 rounded-lg bg-muted p-3 text-sm">{message}</p>}
-            <div className="space-y-3">
-              {rows.map((row) => (
-                <div key={row.id} className="flex min-w-0 flex-col gap-3 rounded-lg border border-border p-4 md:flex-row md:items-center md:justify-between">
-                  <div className="min-w-0">
-                    <p className="truncate font-semibold">{row[config.labelField] || row.title_en || row.name || row.id}</p>
-                    <p className="truncate text-xs text-muted-foreground">{row.status || "-"} · sort {row.sort_order || 0}</p>
-                  </div>
-                  <div className="flex shrink-0 flex-wrap gap-2">
-                    <Button type="button" variant="outline" size="sm" onClick={() => setRecord(row)}>编辑</Button>
-                    <Button type="button" variant="destructive" size="sm" onClick={() => void remove(row.id)}>删除</Button>
-                  </div>
-                </div>
-              ))}
+      <div className="grid gap-6 xl:grid-cols-[1fr_420px]">
+        <section className="rounded-xl border border-border bg-card p-6">
+          <div className="mb-5 flex items-start justify-between gap-4">
+            <div>
+              <h1 className="font-display text-2xl font-bold">{config.title}</h1>
+              {message && <p className="mt-2 rounded-lg bg-muted p-3 text-sm">{message}</p>}
             </div>
-          </section>
-
-          <section className="min-w-0 rounded-xl border border-border bg-card p-4 md:p-6">
-            <div className="mb-4 flex min-w-0 items-center justify-between gap-3">
-              <h2 className="min-w-0 truncate font-display text-xl font-bold">{title}</h2>
-              <div className="shrink-0">
-                <Tabs value={activeLang} onValueChange={(v) => setActiveLang(v as "zh" | "en")}>
-                  <TabsList>
-                    <TabsTrigger value="zh">中文</TabsTrigger>
-                    <TabsTrigger value="en">英文</TabsTrigger>
-                  </TabsList>
-                </Tabs>
-              </div>
-            </div>
-
-            <Tabs value={activeLang} onValueChange={(v) => setActiveLang(v as "zh" | "en")}>
-              <TabsContent value="zh" className="mt-0">
-                <div className="grid min-w-0 gap-4 md:grid-cols-2 xl:grid-cols-1">
-                  {visibleFields("zh").map(renderField)}
+            <Button type="button" variant="outline" onClick={() => setRecord(emptyRecord)}>新建 / New</Button>
+          </div>
+          <div className="space-y-3">
+            {rows.map((row) => (
+              <div key={row.id} className="flex flex-col gap-3 rounded-lg border border-border p-4 md:flex-row md:items-center md:justify-between">
+                <div>
+                  <p className="font-semibold">{row[config.labelField] || row.title_en || row.name || row.id}</p>
+                  <p className="text-xs text-muted-foreground">{row.status || "-"} · sort {row.sort_order || 0}</p>
                 </div>
-              </TabsContent>
-              <TabsContent value="en" className="mt-0">
-                <div className="grid min-w-0 gap-4 md:grid-cols-2 xl:grid-cols-1">
-                  {visibleFields("en").map(renderField)}
+                <div className="flex gap-2">
+                  <Button type="button" variant="outline" size="sm" onClick={() => setRecord(row)}>编辑</Button>
+                  <Button type="button" variant="destructive" size="sm" onClick={() => void remove(row.id)}>删除</Button>
                 </div>
-              </TabsContent>
-            </Tabs>
+              </div>
+            ))}
+          </div>
+        </section>
 
-            <div className="mt-5 grid gap-4 md:grid-cols-2 xl:grid-cols-1">
-              <div>
-                <label className="mb-1 block text-sm font-medium">Status</label>
-                <select value={record.status || "published"} onChange={(event) => update("status", event.target.value)} className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm">
-                  <option value="published">published</option>
-                  <option value="draft">draft</option>
-                  <option value="archived">archived</option>
-                </select>
-              </div>
-              <div>
-                <label className="mb-1 block text-sm font-medium">Sort Order</label>
-                <Input type="number" value={record.sort_order || 0} onChange={(event) => update("sort_order", Number(event.target.value || 0))} />
-              </div>
+        <section className="rounded-xl border border-border bg-card p-6">
+          <h2 className="mb-4 font-display text-xl font-bold">{title}</h2>
+          <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-1">
+            {config.fields.map(renderField)}
+            <div>
+              <label className="mb-1 block text-sm font-medium">Status</label>
+              <select value={record.status || "published"} onChange={(event) => update("status", event.target.value)} className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm">
+                <option value="published">published</option>
+                <option value="draft">draft</option>
+                <option value="archived">archived</option>
+              </select>
             </div>
-          </section>
-        </div>
-      </AdminPageShell>
+            <div>
+              <label className="mb-1 block text-sm font-medium">Sort Order</label>
+              <Input type="number" value={record.sort_order || 0} onChange={(event) => update("sort_order", Number(event.target.value || 0))} />
+            </div>
+          </div>
+          <Button type="button" className="mt-5 w-full" onClick={() => void save()}>保存 / Save</Button>
+        </section>
+      </div>
     </AdminLayout>
   );
 };
