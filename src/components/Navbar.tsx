@@ -138,7 +138,7 @@ const Navbar = () => {
             </Button>
           </div>
 
-          <div className="flex items-center gap-1 -mr-1 xl:hidden">
+          <div className="ml-auto flex items-center gap-1 -mr-1 xl:hidden">
             <button onClick={changeLanguage} className="site-header__control flex items-center gap-1 text-xs font-semibold text-foreground px-3 py-2 rounded-xl transition-colors" aria-label={languageAriaLabel}>
               <Globe className="w-3.5 h-3.5" />
               <span className="font-semibold">{language === "en" ? "EN" : "中文"}</span>
