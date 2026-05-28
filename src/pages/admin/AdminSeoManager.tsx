@@ -66,7 +66,7 @@ const AdminSeoManager = () => {
         <div className="rounded-xl border border-border bg-card p-6">
           <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
             <div>
-              <h1 className="font-display text-2xl font-bold">SEO 管理 / SEO Manager</h1>
+              <h1 className="font-display text-2xl font-bold">SEO 管理</h1>
               <p className="mt-2 text-sm text-muted-foreground">检查服务、案例、材料、博客、地区和落地页的 SEO 缺失项。</p>
             </div>
             <select value={status} onChange={(event) => setStatus(event.target.value)} className="flex h-10 rounded-md border border-input bg-background px-3 py-2 text-sm">
@@ -91,7 +91,7 @@ const AdminSeoManager = () => {
                     <p className="font-semibold">{row.title_zh || row.title_en || row.name || row.slug || row.source.label}</p>
                     <p className="mt-1 text-xs text-muted-foreground">{row.source.label} · {row.slug || "-"} · {row.status || "-"}</p>
                     <div className="mt-2 flex flex-wrap gap-2">
-                      {issues.length ? issues.map((issue) => <span key={issue} className="rounded-full bg-destructive/10 px-2 py-1 text-xs text-destructive">{issue}</span>) : <span className="rounded-full bg-accent/10 px-2 py-1 text-xs text-accent">SEO OK</span>}
+                      {issues.length ? issues.map((issue) => <span key={issue} className="rounded-full bg-destructive/10 px-2 py-1 text-xs text-destructive">{issue}</span>) : <span className="rounded-full bg-accent/10 px-2 py-1 text-xs text-accent">SEO 通过</span>}
                     </div>
                   </div>
                   <div className="flex gap-2">

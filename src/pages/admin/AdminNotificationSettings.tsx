@@ -117,7 +117,7 @@ const copy = {
 
 const AdminNotificationSettings = () => {
   const { toast } = useToast();
-  const lang = isZhBrowser() ? "zh" : "en";
+  const lang = "zh";
   const t = copy[lang];
   const [settings, setSettings] = useState<Settings>(emptySettings);
   const [botToken, setBotToken] = useState("");
@@ -329,18 +329,18 @@ const AdminNotificationSettings = () => {
             </div>
 
             <div className="grid gap-2">
-              <Label htmlFor="maintenance-time">{lang === "zh" ? "时间" : "Time"}</Label>
+              <Label htmlFor="maintenance-time">时间</Label>
               <Input id="maintenance-time" value={maintenanceTime} onChange={(e) => setMaintenanceTime(e.target.value)} />
             </div>
 
             <div className="grid gap-2">
-              <Label htmlFor="maintenance-timezone">{lang === "zh" ? "时区" : "Timezone"}</Label>
+              <Label htmlFor="maintenance-timezone">时区</Label>
               <Input id="maintenance-timezone" value={maintenanceTimezone} onChange={(e) => setMaintenanceTimezone(e.target.value)} />
             </div>
 
             <div className="flex items-center gap-3">
               <Switch id="include-monthly" checked={includeMonthly} onCheckedChange={setIncludeMonthly} />
-              <Label htmlFor="include-monthly">{lang === "zh" ? "包含月度任务" : "Include monthly tasks"}</Label>
+              <Label htmlFor="include-monthly">包含月度任务</Label>
             </div>
           </div>
 

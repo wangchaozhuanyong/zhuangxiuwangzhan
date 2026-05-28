@@ -30,7 +30,7 @@ const AdminLogin = () => {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
-  const lang = isZhBrowser() ? "zh" : "en";
+  const lang = "zh";
   const t = copy[lang];
 
   if (!isSupabaseConfigured) {

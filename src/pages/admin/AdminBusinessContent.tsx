@@ -20,13 +20,13 @@ type FieldConfig = {
 
 const moduleConfig: Record<ModuleKey, { title: string; route: string; table: ModuleKey; labelField: string; fields: FieldConfig[] }> = {
   services: {
-    title: "服务项目 / Services",
+    title: "服务项目",
     route: "/admin/services",
     table: "services",
     labelField: "title_zh",
     fields: [
       { key: "title_zh", label: "中文标题", group: "core" },
-      { key: "slug", label: "Slug", group: "core" },
+      { key: "slug", label: "Slug（链接标识）", group: "core" },
       { key: "excerpt_zh", label: "中文摘要", type: "textarea", group: "core" },
       { key: "content_zh", label: "中文详情", type: "textarea", group: "details" },
       { key: "image_url", label: "封面图", type: "image", group: "core" },
@@ -36,21 +36,21 @@ const moduleConfig: Record<ModuleKey, { title: string; route: string; table: Mod
       { key: "faqs_zh", label: "FAQ JSON", type: "json", group: "details" },
       { key: "seo_title_zh", label: "中文 SEO 标题", group: "seo" },
       { key: "seo_description_zh", label: "中文 SEO 描述", type: "textarea", group: "seo" },
-      { key: "title_en", label: "English Title", group: "english" },
-      { key: "excerpt_en", label: "English Excerpt", type: "textarea", group: "english" },
-      { key: "content_en", label: "English Content", type: "textarea", group: "english" },
-      { key: "seo_title_en", label: "English SEO Title", group: "english" },
-      { key: "seo_description_en", label: "English SEO Description", type: "textarea", group: "english" },
+      { key: "title_en", label: "英文标题", group: "english" },
+      { key: "excerpt_en", label: "英文摘要", type: "textarea", group: "english" },
+      { key: "content_en", label: "英文详情", type: "textarea", group: "english" },
+      { key: "seo_title_en", label: "英文 SEO 标题", group: "english" },
+      { key: "seo_description_en", label: "英文 SEO 描述", type: "textarea", group: "english" },
     ],
   },
   projects: {
-    title: "装修案例 / Projects",
+    title: "装修案例",
     route: "/admin/projects",
     table: "projects",
     labelField: "title_zh",
     fields: [
       { key: "title_zh", label: "案例标题", group: "core" },
-      { key: "slug", label: "Slug", group: "core" },
+      { key: "slug", label: "Slug（链接标识）", group: "core" },
       { key: "excerpt_zh", label: "案例摘要", type: "textarea", group: "core" },
       { key: "content_zh", label: "项目描述", type: "textarea", group: "details" },
       { key: "image_url", label: "封面图", type: "image", group: "core" },
@@ -65,21 +65,21 @@ const moduleConfig: Record<ModuleKey, { title: string; route: string; table: Mod
       { key: "highlights_zh", label: "项目亮点（一行一个）", type: "array", group: "details" },
       { key: "seo_title_zh", label: "中文 SEO 标题", group: "seo" },
       { key: "seo_description_zh", label: "中文 SEO 描述", type: "textarea", group: "seo" },
-      { key: "title_en", label: "English Title", group: "english" },
-      { key: "excerpt_en", label: "English Excerpt", type: "textarea", group: "english" },
-      { key: "content_en", label: "English Content", type: "textarea", group: "english" },
-      { key: "seo_title_en", label: "English SEO Title", group: "english" },
-      { key: "seo_description_en", label: "English SEO Description", type: "textarea", group: "english" },
+      { key: "title_en", label: "英文标题", group: "english" },
+      { key: "excerpt_en", label: "英文摘要", type: "textarea", group: "english" },
+      { key: "content_en", label: "英文详情", type: "textarea", group: "english" },
+      { key: "seo_title_en", label: "英文 SEO 标题", group: "english" },
+      { key: "seo_description_en", label: "英文 SEO 描述", type: "textarea", group: "english" },
     ],
   },
   materials: {
-    title: "材料库 / Materials",
+    title: "材料库",
     route: "/admin/materials",
     table: "materials",
     labelField: "title_zh",
     fields: [
       { key: "title_zh", label: "材料名称", group: "core" },
-      { key: "slug", label: "Slug", group: "core" },
+      { key: "slug", label: "Slug（链接标识）", group: "core" },
       { key: "excerpt_zh", label: "材料摘要", type: "textarea", group: "core" },
       { key: "image_url", label: "图片", type: "image", group: "core" },
       { key: "category", label: "分类", group: "details" },
@@ -95,20 +95,20 @@ const moduleConfig: Record<ModuleKey, { title: string; route: string; table: Mod
       { key: "note_zh", label: "备注", type: "textarea", group: "details" },
       { key: "seo_title_zh", label: "中文 SEO 标题", group: "seo" },
       { key: "seo_description_zh", label: "中文 SEO 描述", type: "textarea", group: "seo" },
-      { key: "title_en", label: "English Title", group: "english" },
-      { key: "excerpt_en", label: "English Excerpt", type: "textarea", group: "english" },
-      { key: "seo_title_en", label: "English SEO Title", group: "english" },
-      { key: "seo_description_en", label: "English SEO Description", type: "textarea", group: "english" },
+      { key: "title_en", label: "英文标题", group: "english" },
+      { key: "excerpt_en", label: "英文摘要", type: "textarea", group: "english" },
+      { key: "seo_title_en", label: "英文 SEO 标题", group: "english" },
+      { key: "seo_description_en", label: "英文 SEO 描述", type: "textarea", group: "english" },
     ],
   },
   blog_posts: {
-    title: "博客文章 / Blog",
+    title: "博客文章",
     route: "/admin/blog",
     table: "blog_posts",
     labelField: "title_zh",
     fields: [
       { key: "title_zh", label: "标题", group: "core" },
-      { key: "slug", label: "Slug", group: "core" },
+      { key: "slug", label: "Slug（链接标识）", group: "core" },
       { key: "category", label: "分类", group: "core" },
       { key: "tags", label: "标签（一行一个）", type: "array", group: "core" },
       { key: "cover_image_url", label: "封面图", type: "image", group: "core" },
@@ -117,11 +117,11 @@ const moduleConfig: Record<ModuleKey, { title: string; route: string; table: Mod
       { key: "published_at", label: "发布时间", type: "date", group: "details" },
       { key: "seo_title_zh", label: "中文 SEO 标题", group: "seo" },
       { key: "seo_description_zh", label: "中文 SEO 描述", type: "textarea", group: "seo" },
-      { key: "title_en", label: "English Title", group: "english" },
-      { key: "excerpt_en", label: "English Excerpt", type: "textarea", group: "english" },
-      { key: "content_en", label: "English Content", type: "textarea", group: "english" },
-      { key: "seo_title_en", label: "English SEO Title", group: "english" },
-      { key: "seo_description_en", label: "English SEO Description", type: "textarea", group: "english" },
+      { key: "title_en", label: "英文标题", group: "english" },
+      { key: "excerpt_en", label: "英文摘要", type: "textarea", group: "english" },
+      { key: "content_en", label: "英文正文", type: "textarea", group: "english" },
+      { key: "seo_title_en", label: "英文 SEO 标题", group: "english" },
+      { key: "seo_description_en", label: "英文 SEO 描述", type: "textarea", group: "english" },
     ],
   },
 };
@@ -187,12 +187,12 @@ export const AdminBusinessList = ({ module }: { module: ModuleKey }) => {
         <div className="rounded-xl border border-border bg-card p-6">
           <div className="mb-4 flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
             <h1 className="font-display text-2xl font-bold">{config.title}</h1>
-            <Button asChild><Link to={`${config.route}/new`}>新建 / New</Link></Button>
+            <Button asChild><Link to={`${config.route}/new`}>新建</Link></Button>
           </div>
           <div className="grid gap-3 md:grid-cols-[1fr_220px]">
-            <Input value={search} onChange={(event) => setSearch(event.target.value)} placeholder="搜索标题、slug、分类..." />
+            <Input value={search} onChange={(event) => setSearch(event.target.value)} placeholder="搜索标题、Slug、分类..." />
             <select value={status} onChange={(event) => setStatus(event.target.value)} className="flex h-10 rounded-md border border-input bg-background px-3 py-2 text-sm">
-              <option value="all">全部状态 / All</option>
+              <option value="all">全部状态</option>
               {statusOptions.map((item) => <option key={item} value={item}>{item}</option>)}
             </select>
           </div>
@@ -251,12 +251,12 @@ export const AdminBusinessEditor = ({ module }: { module: ModuleKey }) => {
     }
     const savedId = data.id;
     setRecord((current) => ({ ...current, id: savedId }));
-    setStatus("Saved.");
+    setStatus("已保存。");
     if (generateEnglish) {
       const { error: translationError } = await supabase!.functions.invoke("generate-english-content", {
         body: { table: config.table, id: savedId },
       });
-      setStatus(translationError ? `Saved, translation failed: ${translationError.message}` : "Saved and translation requested.");
+      setStatus(translationError ? `已保存，但生成英文失败：${translationError.message}` : "已保存，并已发起英文生成。");
     }
     if (isNew) window.history.replaceState(null, "", `${config.route}/${savedId}`);
   };
@@ -333,7 +333,7 @@ export const AdminBusinessEditor = ({ module }: { module: ModuleKey }) => {
         {renderGroup("details", "业务详情")}
         {module === "projects" ? <AdminProjectImages projectId={record.id} /> : null}
         {renderGroup("seo", "SEO")}
-        {renderGroup("english", "英文内容 / English")}
+        {renderGroup("english", "英文内容")}
       </form>
     </AdminLayout>
   );

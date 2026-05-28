@@ -79,7 +79,7 @@ const formatImageType = (value: string, language: Language) =>
   imageTypeLabels[value]?.[language] || value;
 
 const AdminProjectImages = ({ projectId }: AdminProjectImagesProps) => {
-  const lang = isZhBrowser() ? "zh" : "en";
+  const lang = "zh";
   const t = copy[lang];
   const [images, setImages] = useState<any[]>([]);
   const [draft, setDraft] = useState<any>(emptyImage);
@@ -180,7 +180,7 @@ const AdminProjectImages = ({ projectId }: AdminProjectImagesProps) => {
         <TableBody>
           {images.map((image) => (
             <TableRow key={image.id}>
-              <TableCell><img src={image.image_url} alt={image.alt_en || image.alt_zh || "Project image"} className="h-16 w-24 rounded object-cover" /></TableCell>
+              <TableCell><img src={image.image_url} alt={image.alt_en || image.alt_zh || "项目图片"} className="h-16 w-24 rounded object-cover" /></TableCell>
               <TableCell>{formatImageType(image.image_type, lang as Language)}</TableCell>
               <TableCell className="max-w-xs text-xs text-muted-foreground">{image.alt_zh}<br />{image.alt_en}</TableCell>
               <TableCell>

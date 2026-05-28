@@ -87,7 +87,7 @@ const getTableLabel = (table: string | null, language: Language) => {
 };
 
 const AdminTranslationJobs = () => {
-  const lang: Language = isZhBrowser() ? "zh" : "en";
+  const lang: Language = "zh";
   const t = copy[lang];
   const [jobs, setJobs] = useState<TranslationJob[]>([]);
   const [search, setSearch] = useState("");

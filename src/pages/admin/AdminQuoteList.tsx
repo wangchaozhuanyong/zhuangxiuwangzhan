@@ -50,7 +50,7 @@ const AdminQuoteList = () => {
       <div className="space-y-6">
         <div className="rounded-xl border border-border bg-card p-6">
           <div className="mb-4 flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
-            <h1 className="font-display text-2xl font-bold">报价请求 / Quote Requests</h1>
+            <h1 className="font-display text-2xl font-bold">报价请求</h1>
             <Button variant="outline" onClick={exportCsv} disabled={filtered.length === 0}>导出 CSV</Button>
           </div>
           <div className="grid gap-3 md:grid-cols-[1fr_220px]">

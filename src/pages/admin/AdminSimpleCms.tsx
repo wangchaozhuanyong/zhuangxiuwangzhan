@@ -11,59 +11,59 @@ type Field = { key: string; label: string; type?: "text" | "textarea" | "image" 
 
 const configs: Record<ModuleKey, { title: string; table: ModuleKey; labelField: string; fields: Field[] }> = {
   home_sections: {
-    title: "首页模块 / Home Sections",
+    title: "首页模块",
     table: "home_sections",
     labelField: "section_key",
     fields: [
-      { key: "section_key", label: "Section Key" },
+      { key: "section_key", label: "模块标识（section_key）" },
       { key: "title_zh", label: "中文标题" },
-      { key: "title_en", label: "English Title" },
+      { key: "title_en", label: "英文标题" },
       { key: "subtitle_zh", label: "中文副标题", type: "textarea" },
-      { key: "subtitle_en", label: "English Subtitle", type: "textarea" },
+      { key: "subtitle_en", label: "英文副标题", type: "textarea" },
       { key: "content_zh", label: "中文内容", type: "textarea" },
-      { key: "content_en", label: "English Content", type: "textarea" },
+      { key: "content_en", label: "英文内容", type: "textarea" },
       { key: "image_url", label: "图片", type: "image" },
       { key: "button_label_zh", label: "中文按钮" },
-      { key: "button_label_en", label: "English Button" },
-      { key: "button_url", label: "Button URL" },
+      { key: "button_label_en", label: "英文按钮" },
+      { key: "button_url", label: "按钮链接（URL）" },
     ],
   },
   faqs: {
-    title: "常见问题 / FAQs",
+    title: "常见问题",
     table: "faqs",
     labelField: "question_zh",
     fields: [
-      { key: "page_key", label: "Page Key" },
+      { key: "page_key", label: "页面标识（page_key）" },
       { key: "question_zh", label: "中文问题", type: "textarea" },
-      { key: "question_en", label: "English Question", type: "textarea" },
+      { key: "question_en", label: "英文问题", type: "textarea" },
       { key: "answer_zh", label: "中文答案", type: "textarea" },
-      { key: "answer_en", label: "English Answer", type: "textarea" },
+      { key: "answer_en", label: "英文答案", type: "textarea" },
     ],
   },
   before_after_items: {
-    title: "前后对比 / Before & After",
+    title: "改造前后",
     table: "before_after_items",
     labelField: "title_zh",
     fields: [
       { key: "title_zh", label: "中文标题" },
-      { key: "title_en", label: "English Title" },
-      { key: "location", label: "Location" },
+      { key: "title_en", label: "英文标题" },
+      { key: "location", label: "地点" },
       { key: "description_zh", label: "中文描述", type: "textarea" },
-      { key: "description_en", label: "English Description", type: "textarea" },
-      { key: "before_image_url", label: "Before Image", type: "image" },
-      { key: "after_image_url", label: "After Image", type: "image" },
-      { key: "alt_zh", label: "中文 Alt" },
-      { key: "alt_en", label: "English Alt" },
+      { key: "description_en", label: "英文描述", type: "textarea" },
+      { key: "before_image_url", label: "改造前图片", type: "image" },
+      { key: "after_image_url", label: "改造后图片", type: "image" },
+      { key: "alt_zh", label: "中文 Alt 文本", },
+      { key: "alt_en", label: "英文 Alt 文本", },
     ],
   },
   brand_partners: {
-    title: "品牌合作 / Brand Partners",
+    title: "品牌合作",
     table: "brand_partners",
     labelField: "name",
     fields: [
-      { key: "name", label: "Name" },
+      { key: "name", label: "名称" },
       { key: "logo_url", label: "Logo", type: "image" },
-      { key: "website_url", label: "Website URL" },
+      { key: "website_url", label: "官网链接（URL）" },
     ],
   },
 };
@@ -87,7 +87,7 @@ const AdminSimpleCms = ({ module }: { module: ModuleKey }) => {
     void loadRows();
   }, [loadRows]);
 
-  const title = useMemo(() => record[config.labelField] || record.title_en || record.name || "New", [config.labelField, record]);
+  const title = useMemo(() => record[config.labelField] || record.title_en || record.name || "新建", [config.labelField, record]);
   const update = (key: string, value: unknown) => setRecord((current) => ({ ...current, [key]: value }));
 
   const save = async () => {
@@ -103,7 +103,7 @@ const AdminSimpleCms = ({ module }: { module: ModuleKey }) => {
       setMessage(error.message);
       return;
     }
-    setMessage("Saved.");
+    setMessage("已保存。");
     setRecord(emptyRecord);
     await loadRows();
   };
@@ -113,7 +113,7 @@ const AdminSimpleCms = ({ module }: { module: ModuleKey }) => {
     const { error } = await supabase!.from(config.table).delete().eq("id", id);
     if (error) setMessage(error.message);
     else {
-      setMessage("Deleted.");
+      setMessage("已删除。");
       await loadRows();
     }
   };
@@ -146,14 +146,14 @@ const AdminSimpleCms = ({ module }: { module: ModuleKey }) => {
               <h1 className="font-display text-2xl font-bold">{config.title}</h1>
               {message && <p className="mt-2 rounded-lg bg-muted p-3 text-sm">{message}</p>}
             </div>
-            <Button type="button" variant="outline" onClick={() => setRecord(emptyRecord)}>新建 / New</Button>
+            <Button type="button" variant="outline" onClick={() => setRecord(emptyRecord)}>新建</Button>
           </div>
           <div className="space-y-3">
             {rows.map((row) => (
               <div key={row.id} className="flex flex-col gap-3 rounded-lg border border-border p-4 md:flex-row md:items-center md:justify-between">
                 <div>
                   <p className="font-semibold">{row[config.labelField] || row.title_en || row.name || row.id}</p>
-                  <p className="text-xs text-muted-foreground">{row.status || "-"} · sort {row.sort_order || 0}</p>
+                  <p className="text-xs text-muted-foreground">{row.status || "-"} · 排序 {row.sort_order || 0}</p>
                 </div>
                 <div className="flex gap-2">
                   <Button type="button" variant="outline" size="sm" onClick={() => setRecord(row)}>编辑</Button>
@@ -169,7 +169,7 @@ const AdminSimpleCms = ({ module }: { module: ModuleKey }) => {
           <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-1">
             {config.fields.map(renderField)}
             <div>
-              <label className="mb-1 block text-sm font-medium">Status</label>
+              <label className="mb-1 block text-sm font-medium">状态</label>
               <select value={record.status || "published"} onChange={(event) => update("status", event.target.value)} className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm">
                 <option value="published">published</option>
                 <option value="draft">draft</option>
@@ -177,11 +177,11 @@ const AdminSimpleCms = ({ module }: { module: ModuleKey }) => {
               </select>
             </div>
             <div>
-              <label className="mb-1 block text-sm font-medium">Sort Order</label>
+              <label className="mb-1 block text-sm font-medium">排序</label>
               <Input type="number" value={record.sort_order || 0} onChange={(event) => update("sort_order", Number(event.target.value || 0))} />
             </div>
           </div>
-          <Button type="button" className="mt-5 w-full" onClick={() => void save()}>保存 / Save</Button>
+          <Button type="button" className="mt-5 w-full" onClick={() => void save()}>保存</Button>
         </section>
       </div>
     </AdminLayout>

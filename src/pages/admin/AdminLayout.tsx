@@ -288,7 +288,7 @@ const AdminLayout = ({ children }: { children: ReactNode }) => {
   }
 
   return (
-    <main className="min-h-screen bg-muted pt-16">
+    <main className="min-h-screen bg-muted">
       <div className="border-b border-border bg-background">
         <div className="container-narrow flex flex-col gap-4 px-4 py-4 md:flex-row md:items-center md:justify-between">
           <div>

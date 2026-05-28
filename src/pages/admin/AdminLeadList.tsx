@@ -16,7 +16,7 @@ const copy = {
 const csvEscape = (value: unknown) => `"${String(value ?? "").replaceAll('"', '""')}"`;
 
 const AdminLeadList = () => {
-  const lang = isZhBrowser() ? "zh" : "en";
+  const lang = "zh";
   const t = copy[lang];
   const [rows, setRows] = useState<any[]>([]);
   const [search, setSearch] = useState("");

@@ -455,7 +455,7 @@ const statusOptions: Record<string, string[]> = {
 
 const AdminContentEditor = () => {
   const { type = "projects", id } = useParams<{ type: string; id?: string }>();
-  const lang: Language = isZhBrowser() ? "zh" : "en";
+  const lang: Language = "zh";
   const t = copy[lang];
   const [rows, setRows] = useState<any[]>([]);
   const [record, setRecord] = useState<Record<string, any>>({});

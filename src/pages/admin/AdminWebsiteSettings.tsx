@@ -64,7 +64,7 @@ const fields: Array<{ key: keyof SiteSettings; label: string; group: "company" |
 ];
 
 const AdminWebsiteSettings = () => {
-  const lang = isZhBrowser() ? "zh" : "en";
+  const lang = "zh";
   const t = copy[lang];
   const [settings, setSettings] = useState<SiteSettings>(fallbackSiteSettings);
   const [status, setStatus] = useState("");

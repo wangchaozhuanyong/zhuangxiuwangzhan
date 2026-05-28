@@ -74,7 +74,7 @@ const AdminMediaLibrary = () => {
     <AdminLayout>
       <div className="space-y-6">
         <div className="rounded-xl border border-border bg-card p-6">
-          <h1 className="font-display text-2xl font-bold">媒体库 / Media Library</h1>
+          <h1 className="font-display text-2xl font-bold">媒体库</h1>
           <p className="mt-2 text-sm text-muted-foreground">上传图片、复制 URL，并管理 alt 文案与用途分类。</p>
           <div className="mt-5">
             <AdminImageUpload folder="media" onUploaded={(url) => void createAsset(url)} />
@@ -113,12 +113,12 @@ const AdminMediaLibrary = () => {
             <div className="w-full max-w-xl rounded-xl border border-border bg-card p-6 shadow-xl">
               <h2 className="mb-4 font-display text-xl font-bold">编辑媒体信息</h2>
               <div className="space-y-4">
-                <Input value={editing.folder || ""} onChange={(event) => setEditing({ ...editing, folder: event.target.value })} placeholder="Folder" />
+                <Input value={editing.folder || ""} onChange={(event) => setEditing({ ...editing, folder: event.target.value })} placeholder="文件夹" />
                 <select value={editing.usage_type || "general"} onChange={(event) => setEditing({ ...editing, usage_type: event.target.value })} className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm">
                   {usageTypes.filter((item) => item !== "all").map((item) => <option key={item} value={item}>{item}</option>)}
                 </select>
                 <Textarea rows={3} value={editing.alt_zh || ""} onChange={(event) => setEditing({ ...editing, alt_zh: event.target.value })} placeholder="中文 alt" />
-                <Textarea rows={3} value={editing.alt_en || ""} onChange={(event) => setEditing({ ...editing, alt_en: event.target.value })} placeholder="English alt" />
+                <Textarea rows={3} value={editing.alt_en || ""} onChange={(event) => setEditing({ ...editing, alt_en: event.target.value })} placeholder="英文 alt" />
               </div>
               <div className="mt-5 flex justify-end gap-2">
                 <Button variant="outline" onClick={() => setEditing(null)}>取消</Button>

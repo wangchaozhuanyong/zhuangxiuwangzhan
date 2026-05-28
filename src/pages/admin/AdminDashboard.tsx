@@ -62,7 +62,7 @@ const copy = {
 };
 
 const AdminDashboard = () => {
-  const lang = isZhBrowser() ? "zh" : "en";
+  const lang = "zh";
   const t = copy[lang];
   const [counts, setCounts] = useState<Record<string, number>>({});
   const [recentLeads, setRecentLeads] = useState<any[]>([]);
@@ -122,7 +122,7 @@ const AdminDashboard = () => {
           <div className="space-y-3">
             {recentLeads.map((lead) => (
               <Link key={lead.id} to={`/admin/leads/${lead.id}`} className="block rounded-lg border border-border p-3 text-sm hover:bg-muted">
-                <span className="font-medium">{lead.name || "Lead"} · {lead.phone || "-"}</span>
+                <span className="font-medium">{lead.name || "线索"} · {lead.phone || "-"}</span>
                 <span className="block text-xs text-muted-foreground">{lead.status} · {lead.source_path || "-"}</span>
               </Link>
             ))}
@@ -134,7 +134,7 @@ const AdminDashboard = () => {
           <div className="space-y-3">
             {recentQuotes.map((quote) => (
               <Link key={quote.id} to={`/admin/quotes/${quote.id}`} className="block rounded-lg border border-border p-3 text-sm hover:bg-muted">
-                <span className="font-medium">{quote.customer_name || "Quote"} · {quote.customer_phone || "-"}</span>
+                <span className="font-medium">{quote.customer_name || "报价请求"} · {quote.customer_phone || "-"}</span>
                 <span className="block text-xs text-muted-foreground">{quote.status} · {quote.project_type || "-"}</span>
               </Link>
             ))}
