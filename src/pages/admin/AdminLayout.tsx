@@ -1,7 +1,8 @@
-import { ReactNode, useEffect, useState } from "react";
+import { ReactNode, useEffect, useMemo, useState } from "react";
 import { Link, Navigate, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { isSupabaseConfigured, supabase } from "@/lib/supabase";
+import { ChevronDown } from "lucide-react";
 
 const isZhBrowser = () => typeof navigator !== "undefined" && navigator.language.toLowerCase().startsWith("zh");
 
@@ -146,11 +147,59 @@ const navGroups = [
   },
 ];
 
+const NAV_EXPANDED_KEY = "flashcast_admin_nav_expanded_groups";
+
 const AdminLayout = ({ children }: { children: ReactNode }) => {
   const location = useLocation();
   const [authState, setAuthState] = useState<"checking" | "signed-in" | "signed-out" | "denied">("checking");
   const lang = isZhBrowser() ? "zh" : "en";
   const t = copy[lang];
+
+  const activeGroupKeys = useMemo(() => {
+    const pathname = location.pathname;
+    return navGroups
+      .filter((group) => group.items.some((item) => item.path.split("#")[0] === pathname))
+      .map((group) => group.key);
+  }, [location.pathname]);
+
+  const [expandedGroups, setExpandedGroups] = useState<Record<string, boolean>>(() => {
+    if (typeof window === "undefined") return {};
+    try {
+      const raw = window.localStorage.getItem(NAV_EXPANDED_KEY);
+      const parsed = raw ? (JSON.parse(raw) as string[]) : [];
+      return Object.fromEntries(parsed.map((key) => [key, true]));
+    } catch {
+      return {};
+    }
+  });
+
+  useEffect(() => {
+    // Always expand the group containing the active route.
+    if (!activeGroupKeys.length) return;
+    setExpandedGroups((prev) => {
+      let changed = false;
+      const next = { ...prev };
+      for (const key of activeGroupKeys) {
+        if (!next[key]) {
+          next[key] = true;
+          changed = true;
+        }
+      }
+      return changed ? next : prev;
+    });
+  }, [activeGroupKeys]);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    try {
+      const keys = Object.entries(expandedGroups)
+        .filter(([, value]) => Boolean(value))
+        .map(([key]) => key);
+      window.localStorage.setItem(NAV_EXPANDED_KEY, JSON.stringify(keys));
+    } catch {
+      // ignore
+    }
+  }, [expandedGroups]);
 
   useEffect(() => {
     if (!isSupabaseConfigured) {
@@ -262,26 +311,39 @@ const AdminLayout = ({ children }: { children: ReactNode }) => {
           <nav className="space-y-4">
             {navGroups.map((group) => (
               <div key={group.key}>
-                <p className="mb-2 px-3 text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
-                  {t[group.key as keyof typeof t]}
-                </p>
-                <div className="space-y-1">
-                  {group.items.map((item) => {
-                    const itemPath = item.path.split("#")[0];
-                    const isActive = location.pathname === itemPath;
-                    return (
-                      <Link
-                        key={item.path}
-                        to={item.path}
-                        className={`block rounded-lg px-3 py-2 text-sm font-medium ${
-                          isActive ? "bg-accent text-accent-foreground" : "text-muted-foreground hover:bg-muted"
-                        }`}
-                      >
-                        {t[item.key as keyof typeof t]}
-                      </Link>
-                    );
-                  })}
-                </div>
+                <button
+                  type="button"
+                  className="flex w-full items-center justify-between rounded-lg px-3 py-2 text-left text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground hover:bg-muted"
+                  aria-expanded={Boolean(expandedGroups[group.key])}
+                  onClick={() =>
+                    setExpandedGroups((prev) => ({
+                      ...prev,
+                      [group.key]: !prev[group.key],
+                    }))
+                  }
+                >
+                  <span>{t[group.key as keyof typeof t]}</span>
+                  <ChevronDown className={`h-4 w-4 transition-transform ${expandedGroups[group.key] ? "rotate-180" : ""}`} />
+                </button>
+                {expandedGroups[group.key] && (
+                  <div className="mt-1 space-y-1">
+                    {group.items.map((item) => {
+                      const itemPath = item.path.split("#")[0];
+                      const isActive = location.pathname === itemPath;
+                      return (
+                        <Link
+                          key={item.path}
+                          to={item.path}
+                          className={`block rounded-lg px-3 py-2 text-sm font-medium ${
+                            isActive ? "bg-accent text-accent-foreground" : "text-muted-foreground hover:bg-muted"
+                          }`}
+                        >
+                          {t[item.key as keyof typeof t]}
+                        </Link>
+                      );
+                    })}
+                  </div>
+                )}
               </div>
             ))}
           </nav>
