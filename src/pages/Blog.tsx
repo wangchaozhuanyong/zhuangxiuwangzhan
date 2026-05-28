@@ -34,6 +34,39 @@ const matchesCategory = (postCategory: string, filter: string) => {
   return aliases.includes(normalizeCategory(postCategory));
 };
 
+const localizeFallbackPosts = (language: "en" | "zh") =>
+  language === "zh"
+    ? blogPosts.map((post) => ({
+        ...post,
+        title: translateDisplayText(post.title, language),
+        excerpt: translateDisplayText(post.excerpt, language),
+        content: translateDisplayText(post.content, language),
+      }))
+    : blogPosts;
+
+const mergeWithFallbackCategories = (cmsPosts: typeof blogPosts, fallbackPosts: typeof blogPosts) => {
+  if (!cmsPosts.length) return fallbackPosts;
+
+  const merged = [...cmsPosts];
+  const existingSlugs = new Set(merged.map((post) => post.slug));
+
+  categories
+    .filter((category) => category.value !== "All")
+    .forEach((category) => {
+      if (merged.some((post) => matchesCategory(post.category, category.value))) return;
+
+      fallbackPosts
+        .filter((post) => matchesCategory(post.category, category.value))
+        .forEach((post) => {
+          if (existingSlugs.has(post.slug)) return;
+          existingSlugs.add(post.slug);
+          merged.push(post);
+        });
+    });
+
+  return merged;
+};
+
 const copy = {
   en: {
     metaTitle: "Renovation Blog & Insights | Tips & Guides | FLASH CAST Kuala Lumpur",
@@ -72,19 +105,17 @@ const Blog = () => {
   const t = copy[language];
   const [filter, setFilter] = useState("All");
   const displayText = (value: string) => translateDisplayText(value, language);
-  const initialPosts = language === "zh"
-    ? blogPosts.map((post) => ({
-        ...post,
-        title: displayText(post.title),
-        excerpt: displayText(post.excerpt),
-        content: displayText(post.content),
-      }))
-    : blogPosts;
+  const initialPosts = localizeFallbackPosts(language);
   const [posts, setPosts] = useState(initialPosts);
   const filtered = posts.filter((post) => matchesCategory(post.category, filter));
 
   useEffect(() => {
-    void getPublishedBlogPosts(language).then(setPosts);
+    const fallbackPosts = localizeFallbackPosts(language);
+    setPosts(fallbackPosts);
+
+    void getPublishedBlogPosts(language).then((cmsPosts) => {
+      setPosts(mergeWithFallbackCategories(cmsPosts, fallbackPosts));
+    });
   }, [language]);
 
   return (

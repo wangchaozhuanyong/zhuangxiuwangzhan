@@ -106,6 +106,23 @@ export const materialsData: MaterialCategory[] = [
     ],
   },
   {
+    name: "Countertops & Stone Surfaces",
+    slug: "countertops-stone-surfaces",
+    description: "Quartz, sintered stone, solid surface, and porcelain slab options for kitchen counters, islands, vanities, and commercial counters.",
+    image: carraraWhiteImg,
+    subcategories: [
+      { name: "Quartz Countertops", slug: "quartz-countertops", description: "Durable quartz surfaces for kitchen counters, islands, and vanity tops.", image: carraraWhiteImg },
+      { name: "Sintered Stone", slug: "sintered-stone", description: "Large-format stone-look slabs with strong heat, stain, and scratch resistance.", image: laminateGreyImg },
+      { name: "Solid Surface", slug: "solid-surface", description: "Seamless, repairable surfaces for modern kitchens, bathrooms, and counters.", image: subwayWhiteImg },
+      { name: "Porcelain Slab", slug: "porcelain-slab", description: "Thin, premium slabs for feature counters, splashbacks, and wall surfaces.", image: carraraWhiteImg },
+    ],
+    items: [
+      { id: "top-1", name: "Quartz Countertop - Carrara White", slug: "quartz-countertop-carrara-white", category: "Countertops & Stone Surfaces", subcategory: "quartz-countertops", type: "Quartz", color: "Carrara White", texture: "Marble Look", suitableSpaces: ["Kitchen", "Bathroom", "Dining Room"], recommendedPairing: "Pairs well with white, grey, or wood-tone kitchen cabinets", description: "Low-maintenance quartz countertop with a clean Carrara marble look for modern kitchens and islands.", note: "Popular for dry kitchens and kitchen islands.", image: carraraWhiteImg },
+      { id: "top-2", name: "Sintered Stone - Grey Stone", slug: "sintered-stone-grey", category: "Countertops & Stone Surfaces", subcategory: "sintered-stone", type: "Sintered Stone", color: "Grey", texture: "Stone Pattern", suitableSpaces: ["Kitchen", "Commercial", "Bathroom"], recommendedPairing: "Works well with minimalist cabinets and dark metal details", description: "High-performance sintered stone surface suitable for heavy-use kitchen counters and commercial counters.", note: "Heat and stain resistant when properly installed.", image: laminateGreyImg },
+      { id: "top-3", name: "Solid Surface - Warm White", slug: "solid-surface-warm-white", category: "Countertops & Stone Surfaces", subcategory: "solid-surface", type: "Solid Surface", color: "Warm White", texture: "Smooth", suitableSpaces: ["Bathroom", "Kitchen", "Office"], recommendedPairing: "Ideal for seamless vanity tops and integrated basins", description: "Smooth solid surface material with seamless joining and easy repair for bathrooms and counters.", note: "Good option for curved or custom counter profiles.", image: subwayWhiteImg },
+    ],
+  },
+  {
     name: "Flooring",
     slug: "flooring",
     description: "SPC vinyl, laminate, engineered wood, and vinyl plank flooring for every space.",

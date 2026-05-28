@@ -252,6 +252,86 @@ Contact us to discuss feature wall options for your home.`,
     tags: ["feature wall", "interior design", "trends", "2025", "inspiration"],
   },
   {
+    id: "blog-11",
+    slug: "small-condo-storage-design-ideas",
+    title: "Small Condo Storage Design Ideas for KL Homes",
+    excerpt: "Practical design ideas for compact condos — built-in wardrobes, hidden storage, TV wall cabinets, shoe cabinets, and multi-purpose study corners.",
+    content: `Compact condos in Kuala Lumpur can feel spacious when storage is planned properly. The key is not to add more loose furniture, but to design storage into the architecture of the unit.
+
+## 1. Full-Height Built-In Cabinets
+
+Use full-height cabinets from floor to ceiling wherever possible. This reduces dust gaps, increases capacity, and gives the room a cleaner built-in look.
+
+## 2. TV Feature Wall With Storage
+
+A TV wall can include closed cabinets, open display shelves, and cable management. For small living rooms, keep the depth slim so circulation remains comfortable.
+
+## 3. Entry Shoe Cabinet
+
+The entrance is often wasted space. A full-height shoe cabinet with a mirror panel, key drawer, and ventilation slots keeps the foyer tidy.
+
+## 4. Platform Bed Storage
+
+For bedrooms, platform beds with drawers or lift-up storage can replace bulky loose cabinets. This is useful for seasonal items, luggage, and bedding.
+
+## 5. Window Seat or Bay Area Storage
+
+If your condo has a window ledge or awkward corner, convert it into a bench with storage below. It adds function without taking up extra walking space.
+
+## 6. Study Corner With Overhead Cabinets
+
+Many homeowners now need a home office. A compact built-in desk with overhead storage can fit into a bedroom, corridor niche, or living room corner.
+
+## Design Tip
+
+Use lighter cabinet colours, handle-less doors, and consistent panel lines to make built-ins feel less heavy. FLASH CAST can help measure your unit and design storage that fits your daily routine.`,
+    category: "Inspiration",
+    date: "2026-03-18",
+    readTime: "4 min",
+    image: "https://images.unsplash.com/photo-1617103996702-96ff29b1c467?w=800&h=400&fit=crop",
+    tags: ["condo", "storage", "built-in", "interior design", "inspiration"],
+  },
+  {
+    id: "blog-12",
+    slug: "modern-warm-minimalist-home-design-malaysia",
+    title: "Modern Warm Minimalist Home Design Ideas for Malaysia",
+    excerpt: "How to create a warm minimalist interior using wood tones, soft lighting, textured walls, concealed storage, and practical renovation details.",
+    content: `Warm minimalism is one of the most requested interior styles for Malaysian homes. It keeps the space clean and uncluttered, but avoids feeling cold by using natural textures, warm lighting, and practical storage.
+
+## 1. Start With a Calm Base Palette
+
+Use warm white, beige, greige, light oak, and soft taupe as the base. These colours work well in Malaysian daylight and make condos feel brighter.
+
+## 2. Add Wood Tone Strategically
+
+Wood-look cabinets, timber cladding, or engineered wood flooring can warm up the space. Avoid mixing too many wood tones in one room; choose one main tone and repeat it.
+
+## 3. Use Layered Lighting
+
+Combine downlights, cove lighting, pendant lights, and task lighting. Warm white light around 3000K usually feels more comfortable for homes.
+
+## 4. Keep Storage Concealed
+
+Minimalist interiors only work when clutter has a place to go. Plan enough closed storage in the living room, kitchen, bedroom, and entrance area.
+
+## 5. Introduce Texture, Not Clutter
+
+Use fluted panels, lime wash paint, microcement, stone-look counters, or fabric textures to create visual depth without adding too many objects.
+
+## 6. Make Maintenance Practical
+
+Choose finishes that suit daily Malaysian living. For example, SPC vinyl is easier to maintain than timber in wet-prone areas, and melamine cabinets offer good value for busy families.
+
+## Final Thought
+
+The best warm minimalist homes are not just beautiful in photos; they are easy to live in. FLASH CAST can help translate this style into buildable details, material selections, and a realistic renovation budget.`,
+    category: "Inspiration",
+    date: "2026-04-02",
+    readTime: "4 min",
+    image: "https://images.unsplash.com/photo-1600210492493-0946911123ea?w=800&h=400&fit=crop",
+    tags: ["minimalist", "interior design", "lighting", "materials", "inspiration"],
+  },
+  {
     id: "blog-7",
     slug: "renovation-cost-malaysia-2025",
     title: "How Much Does Renovation Cost in Malaysia? (2025 Guide)",

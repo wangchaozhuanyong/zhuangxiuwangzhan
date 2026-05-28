@@ -59,7 +59,17 @@ const Materials = () => {
   const displayCategoryName = (value: string) => translateMaterialCategory(value, language);
 
   useEffect(() => {
-    void getPublishedMaterials(language).then(setCategories);
+    void getPublishedMaterials(language).then((items) => {
+      const hasCountertopCategory = items.some((category) => category.slug === "countertops-stone-surfaces" || /countertop|stone surface/i.test(category.name));
+      const countertopCategory = materialsData.find((category) => category.slug === "countertops-stone-surfaces");
+
+      if (items.length < 8 && !hasCountertopCategory && countertopCategory) {
+        setCategories([...items, countertopCategory]);
+        return;
+      }
+
+      setCategories(items);
+    });
   }, [language]);
 
   return (

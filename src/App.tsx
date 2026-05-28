@@ -12,6 +12,7 @@ import FloatingCTA from "@/components/FloatingCTA";
 import { LanguageRouteSync, LegacyLanguageRedirect, RootLanguageRedirect } from "@/components/LanguageRouteSync";
 import ScrollToTop from "./components/ScrollToTop";
 import Index from "./pages/Index";
+import FAQ from "./pages/FAQ";
 
 // Lazy-load all non-homepage routes
 const About = lazy(() => import("./pages/About"));
@@ -24,7 +25,6 @@ const MaterialDetail = lazy(() => import("./pages/MaterialDetail"));
 const Projects = lazy(() => import("./pages/Projects"));
 const ProjectDetail = lazy(() => import("./pages/ProjectDetail"));
 const Process = lazy(() => import("./pages/Process"));
-const FAQ = lazy(() => import("./pages/FAQ"));
 const Contact = lazy(() => import("./pages/Contact"));
 const Quote = lazy(() => import("./pages/Quote"));
 const Blog = lazy(() => import("./pages/Blog"));
