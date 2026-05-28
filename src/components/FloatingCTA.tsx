@@ -70,7 +70,7 @@ const FloatingCTA = () => {
 
   return (
     <>
-      <div className="fixed inset-x-0 bottom-0 z-50 grid grid-cols-3 border-t border-border bg-background/95 backdrop-blur md:hidden">
+      <div className="fixed inset-x-0 bottom-0 z-50 grid grid-cols-3 border-t border-border bg-background/95 pb-[env(safe-area-inset-bottom)] backdrop-blur md:hidden">
         <a href={settings.whatsapp_url()} target="_blank" rel="noopener noreferrer" className="flex min-h-14 flex-col items-center justify-center text-[11px] font-semibold text-foreground">
           <WhatsAppIcon className="mb-1 h-5 w-5 text-[#25D366]" />
           {t.whatsapp}
@@ -120,9 +120,7 @@ const FloatingCTA = () => {
           target="_blank"
           rel="noopener noreferrer"
           aria-label={t.whatsappAria}
-          className={`ml-auto flex w-fit items-center justify-center rounded-full bg-[#25D366] px-5 py-3 text-white shadow-xl transition-all duration-500 hover:scale-105 hover:shadow-2xl active:scale-95 ${
-            showDesktopCta ? "translate-y-0 opacity-100" : "pointer-events-none translate-y-4 opacity-0"
-          }`}
+          className="ml-auto flex w-fit translate-y-0 items-center justify-center rounded-full bg-[#25D366] px-5 py-3 text-white shadow-xl transition-all duration-500 hover:scale-105 hover:shadow-2xl active:scale-95"
         >
           <WhatsAppIcon className="h-5 w-5" />
           <span className="ml-2 text-sm font-semibold">{t.whatsappDesktop}</span>

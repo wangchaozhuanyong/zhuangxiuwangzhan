@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { ArrowRight, BookOpen, FolderOpen, GitBranch, Globe, HelpCircle, Home, Info, Layers, LucideIcon, Mail, Menu, Wrench, X } from "lucide-react";
 import WhatsAppIcon from "@/components/WhatsAppIcon";
@@ -36,6 +36,7 @@ const isActivePath = (pathname: string, itemPath: string) => {
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const mobileMenuRef = useRef<HTMLDivElement>(null);
   const location = useLocation();
   const navigate = useNavigate();
   const { language, setLanguage } = useLanguage();
@@ -64,6 +65,24 @@ const Navbar = () => {
     };
   }, [isOpen]);
 
+  useEffect(() => {
+    if (!isOpen) return;
+
+    mobileMenuRef.current?.querySelector<HTMLElement>("a, button")?.focus();
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        setIsOpen(false);
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [isOpen]);
+
+  const languageAriaLabel = language === "zh" ? "切换语言" : "Switch language";
+  const menuAriaLabel = language === "zh" ? "打开导航菜单" : "Toggle navigation menu";
+
   return (
     <>
       <header className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${scrolled ? "bg-background/92 backdrop-blur-xl border-b border-border/70 shadow-[0_14px_40px_-34px_rgba(0,0,0,0.6)]" : "bg-background/82 backdrop-blur-xl border-b border-white/10"}`}>
@@ -89,7 +108,7 @@ const Navbar = () => {
           </nav>
 
           <div className="hidden lg:flex items-center gap-2 shrink-0">
-            <button onClick={changeLanguage} className="flex items-center gap-1 text-xs font-medium text-muted-foreground hover:text-foreground transition-colors px-2 py-1.5 rounded-md hover:bg-muted" aria-label="Switch language">
+            <button onClick={changeLanguage} className="flex items-center gap-1 text-xs font-medium text-muted-foreground hover:text-foreground transition-colors px-2 py-1.5 rounded-md hover:bg-muted" aria-label={languageAriaLabel}>
               <Globe className="w-3.5 h-3.5" />
               <span className={language === "en" ? "text-foreground font-semibold" : ""}>EN</span>
               <span className="text-muted-foreground/40">|</span>
@@ -101,16 +120,22 @@ const Navbar = () => {
               </a>
             </Button>
             <Button size="sm" className="font-semibold" asChild>
-              <LocalizedLink to="/quote">{t("cta.getAQuote")} <ArrowRight className="w-3.5 h-3.5 ml-1" /></LocalizedLink>
+              <LocalizedLink to="/quote">{t("cta.getQuote")} <ArrowRight className="w-3.5 h-3.5 ml-1" /></LocalizedLink>
             </Button>
           </div>
 
           <div className="lg:hidden flex items-center gap-1 -mr-1">
-            <button onClick={changeLanguage} className="flex items-center gap-1 text-xs font-medium text-muted-foreground hover:text-foreground transition-colors px-2 py-2 rounded-lg hover:bg-muted" aria-label="Switch language">
+            <button onClick={changeLanguage} className="flex items-center gap-1 text-xs font-medium text-muted-foreground hover:text-foreground transition-colors px-2 py-2 rounded-lg hover:bg-muted" aria-label={languageAriaLabel}>
               <Globe className="w-3.5 h-3.5" />
               <span className="font-semibold">{language === "en" ? "EN" : "中文"}</span>
             </button>
-            <button className="w-10 h-10 flex items-center justify-center rounded-lg hover:bg-muted transition-colors" onClick={() => setIsOpen(!isOpen)} aria-label="Toggle menu">
+            <button
+              className="w-10 h-10 flex items-center justify-center rounded-lg hover:bg-muted transition-colors"
+              onClick={() => setIsOpen(!isOpen)}
+              aria-label={menuAriaLabel}
+              aria-expanded={isOpen}
+              aria-controls="mobile-navigation"
+            >
               {isOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
             </button>
           </div>
@@ -118,7 +143,7 @@ const Navbar = () => {
       </header>
 
       {isOpen && (
-        <div className="lg:hidden fixed inset-x-0 top-16 bottom-0 z-[60] bg-background overflow-hidden">
+        <div id="mobile-navigation" ref={mobileMenuRef} className="lg:hidden fixed inset-x-0 top-16 bottom-0 z-[60] bg-background overflow-hidden">
           <div className="absolute inset-x-0 top-0 bottom-[185px] overflow-y-auto px-5 pt-3 pb-4">
             <div className="space-y-1">
               {navItems.map((item, index) => {
@@ -147,7 +172,7 @@ const Navbar = () => {
 
           <div className="absolute inset-x-0 bottom-0 border-t border-border bg-background/95 backdrop-blur-sm px-5 pt-4 pb-[max(1rem,env(safe-area-inset-bottom))] space-y-3">
             <div className="flex items-center justify-center">
-              <button onClick={changeLanguage} className="flex items-center gap-1.5 text-xs font-medium text-muted-foreground px-3 py-1.5 rounded-full border border-border hover:bg-muted transition-colors">
+              <button onClick={changeLanguage} className="flex items-center gap-1.5 text-xs font-medium text-muted-foreground px-3 py-1.5 rounded-full border border-border hover:bg-muted transition-colors" aria-label={languageAriaLabel}>
                 <Globe className="w-3.5 h-3.5" />
                 <span className={language === "en" ? "text-foreground font-semibold" : ""}>EN</span>
                 <span className="text-muted-foreground/40">|</span>

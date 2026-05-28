@@ -24,38 +24,38 @@ const serviceItems = {
     "Warehouse & Shelving",
   ],
   zh: [
-    "????",
-    "??????",
-    "??????",
-    "????",
-    "???????",
-    "???????",
+    "室内装修",
+    "定制内嵌家具",
+    "商业空间装修",
+    "艺术墙面涂装",
+    "外墙与门面工程",
+    "仓库与货架工程",
   ],
 };
 
 const projectTypeOptions = [
-  { value: "condo", en: "Condo Renovation", zh: "????" },
-  { value: "landed", en: "Landed House Renovation", zh: "?? / ?????" },
-  { value: "kitchen", en: "Kitchen Renovation", zh: "????" },
-  { value: "bathroom", en: "Bathroom Renovation", zh: "????" },
-  { value: "office", en: "Office Renovation", zh: "?????" },
-  { value: "shoplot", en: "Shoplot / Commercial", zh: "?? / ????" },
-  { value: "builtin", en: "Custom Built-In Furniture", zh: "??????" },
-  { value: "old-house", en: "Old House Renovation", zh: "????" },
-  { value: "other", en: "Other", zh: "??" },
+  { value: "condo", en: "Condo Renovation", zh: "公寓装修" },
+  { value: "landed", en: "Landed House Renovation", zh: "排屋 / 独栋住宅装修" },
+  { value: "kitchen", en: "Kitchen Renovation", zh: "厨房装修" },
+  { value: "bathroom", en: "Bathroom Renovation", zh: "浴室装修" },
+  { value: "office", en: "Office Renovation", zh: "办公室装修" },
+  { value: "shoplot", en: "Shoplot / Commercial", zh: "店铺 / 商业空间装修" },
+  { value: "builtin", en: "Custom Built-In Furniture", zh: "定制内嵌家具" },
+  { value: "old-house", en: "Old House Renovation", zh: "老房翻新" },
+  { value: "other", en: "Other", zh: "其他" },
 ];
 
 const locationOptions = [
-  { value: "kl-city", en: "KL City Centre", zh: "??????" },
-  { value: "mont-kiara", en: "Mont Kiara / Sri Hartamas", zh: "??? / Sri Hartamas" },
-  { value: "bangsar", en: "Bangsar / Mid Valley", zh: "?? / Mid Valley" },
-  { value: "cheras", en: "Cheras", zh: "??" },
-  { value: "kepong", en: "Kepong / Sentul", zh: "?? / Sentul" },
-  { value: "pj", en: "Petaling Jaya", zh: "?????" },
-  { value: "subang", en: "Subang Jaya", zh: "????" },
-  { value: "shah-alam", en: "Shah Alam / Setia Alam", zh: "??? / Setia Alam" },
-  { value: "puchong", en: "Puchong", zh: "??" },
-  { value: "other", en: "Other", zh: "??" },
+  { value: "kl-city", en: "KL City Centre", zh: "吉隆坡市中心" },
+  { value: "mont-kiara", en: "Mont Kiara / Sri Hartamas", zh: "满家乐 / Sri Hartamas" },
+  { value: "bangsar", en: "Bangsar / Mid Valley", zh: "孟沙 / Mid Valley" },
+  { value: "cheras", en: "Cheras", zh: "蕉赖" },
+  { value: "kepong", en: "Kepong / Sentul", zh: "甲洞 / Sentul" },
+  { value: "pj", en: "Petaling Jaya", zh: "八打灵再也" },
+  { value: "subang", en: "Subang Jaya", zh: "梳邦再也" },
+  { value: "shah-alam", en: "Shah Alam / Setia Alam", zh: "莎阿南 / Setia Alam" },
+  { value: "puchong", en: "Puchong", zh: "蒲种" },
+  { value: "other", en: "Other", zh: "其他" },
 ];
 
 const copy = {
@@ -137,8 +137,8 @@ const copy = {
     quoteCta: "获取免费报价",
     whatsappCta: "WhatsApp 咨询",
     successTitle: "信息已发送！",
-    successThanks: "谢谢你",
-    successText: "我们会在 24 小时内回复你。",
+    successThanks: "谢谢您",
+    successText: "我们会在 24 小时内回复您。",
     sendAnother: "再发送一条信息",
     formTitle: "发送咨询信息",
     errorText: "提交失败。请稍后再试，或通过 WhatsApp 联系我们。",
@@ -153,10 +153,10 @@ const copy = {
     emailPlaceholder: "your@email.com",
     selectType: "请选择类型...",
     selectArea: "请选择地区...",
-    messagePlaceholder: "请告诉我们你的项目类型、面积、工期、预算范围和特别需求。",
+    messagePlaceholder: "请告诉我们您的项目类型、面积、工期、预算范围和特别需求。",
     send: "发送信息",
     sending: "发送中...",
-    responseNote: "我们会在 24 小时内回复你。不骚扰。",
+    responseNote: "我们会在 24 小时内回复您。不骚扰。",
     mapTitle: "欢迎到访办公室",
     mapDescription: "位于 Kuala Lumpur Taman United，服务 KL、Selangor 与 Klang Valley。",
     mapFrameTitle: "FLASH CAST 吉隆坡办公室位置",
@@ -225,8 +225,16 @@ const Contact = () => {
     { icon: Clock, title: t.hoursTitle, text: t.hoursText },
   ];
 
-  const FieldError = ({ msg }: { msg?: string }) =>
-    msg ? <p className="text-destructive text-xs mt-1 flex items-center gap-1"><AlertCircle className="w-3 h-3" />{msg}</p> : null;
+  const mapAddress = settings.address || t.addressText;
+  const mapEmbedSrc = `https://www.google.com/maps?q=${encodeURIComponent(mapAddress)}&output=embed`;
+
+  const FieldError = ({ id, msg }: { id: string; msg?: string }) =>
+    msg ? (
+      <p id={id} role="alert" className="text-destructive text-xs mt-1 flex items-center gap-1">
+        <AlertCircle className="w-3 h-3" />
+        {msg}
+      </p>
+    ) : null;
 
   return (
     <main className="pt-16">
@@ -314,7 +322,7 @@ const Contact = () => {
                     <h2 className="font-display text-2xl font-bold mb-6">{t.formTitle}</h2>
 
                     {status === "error" && (
-                      <div className="mb-6 p-4 bg-destructive/10 border border-destructive/20 rounded-lg flex items-start gap-3">
+                      <div role="alert" aria-live="polite" className="mb-6 p-4 bg-destructive/10 border border-destructive/20 rounded-lg flex items-start gap-3">
                         <AlertCircle className="w-5 h-5 text-destructive shrink-0 mt-0.5" />
                         <div className="space-y-3">
                           <p className="text-sm text-destructive">{t.errorText}</p>
@@ -338,36 +346,46 @@ const Contact = () => {
 
                     <form className="space-y-4" onSubmit={handleSubmit} noValidate>
                       <div>
-                        <label className="block text-sm font-medium mb-1.5">{t.name} <span className="text-destructive">*</span></label>
+                        <label htmlFor="contact-name" className="block text-sm font-medium mb-1.5">{t.name} <span className="text-destructive">*</span></label>
                         <Input
+                          id="contact-name"
                           required placeholder={t.namePlaceholder} value={form.name}
                           className={errors.name ? "border-destructive" : ""}
+                          aria-invalid={Boolean(errors.name)}
+                          aria-describedby={errors.name ? "contact-name-error" : undefined}
                           onChange={(e) => { setForm({ ...form, name: e.target.value }); setErrors({ ...errors, name: undefined }); }}
                         />
-                        <FieldError msg={errors.name} />
+                        <FieldError id="contact-name-error" msg={errors.name} />
                       </div>
                       <div>
-                        <label className="block text-sm font-medium mb-1.5">{t.phone} <span className="text-destructive">*</span></label>
+                        <label htmlFor="contact-phone" className="block text-sm font-medium mb-1.5">{t.phone} <span className="text-destructive">*</span></label>
                         <Input
+                          id="contact-phone"
                           type="tel" required placeholder={settings.phone_display} value={form.phone}
                           className={errors.phone ? "border-destructive" : ""}
+                          aria-invalid={Boolean(errors.phone)}
+                          aria-describedby={errors.phone ? "contact-phone-error" : undefined}
                           onChange={(e) => { setForm({ ...form, phone: e.target.value }); setErrors({ ...errors, phone: undefined }); }}
                         />
-                        <FieldError msg={errors.phone} />
+                        <FieldError id="contact-phone-error" msg={errors.phone} />
                       </div>
                       <div>
-                        <label className="block text-sm font-medium mb-1.5">{t.email} <span className="text-muted-foreground text-xs">({t.optional})</span></label>
+                        <label htmlFor="contact-email" className="block text-sm font-medium mb-1.5">{t.email} <span className="text-muted-foreground text-xs">({t.optional})</span></label>
                         <Input
+                          id="contact-email"
                           type="email" placeholder={t.emailPlaceholder} value={form.email}
                           className={errors.email ? "border-destructive" : ""}
+                          aria-invalid={Boolean(errors.email)}
+                          aria-describedby={errors.email ? "contact-email-error" : undefined}
                           onChange={(e) => { setForm({ ...form, email: e.target.value }); setErrors({ ...errors, email: undefined }); }}
                         />
-                        <FieldError msg={errors.email} />
+                        <FieldError id="contact-email-error" msg={errors.email} />
                       </div>
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <div>
-                          <label className="block text-sm font-medium mb-1.5">{t.projectType}</label>
+                          <label htmlFor="contact-project-type" className="block text-sm font-medium mb-1.5">{t.projectType}</label>
                           <select
+                            id="contact-project-type"
                             className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                             value={form.projectType}
                             onChange={(e) => setForm({ ...form, projectType: e.target.value })}
@@ -377,8 +395,9 @@ const Contact = () => {
                           </select>
                         </div>
                         <div>
-                          <label className="block text-sm font-medium mb-1.5">{t.location}</label>
+                          <label htmlFor="contact-location" className="block text-sm font-medium mb-1.5">{t.location}</label>
                           <select
+                            id="contact-location"
                             className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                             value={form.location}
                             onChange={(e) => setForm({ ...form, location: e.target.value })}
@@ -389,16 +408,19 @@ const Contact = () => {
                         </div>
                       </div>
                       <div>
-                        <label className="block text-sm font-medium mb-1.5">{t.message} <span className="text-destructive">*</span></label>
+                        <label htmlFor="contact-message" className="block text-sm font-medium mb-1.5">{t.message} <span className="text-destructive">*</span></label>
                         <Textarea
+                          id="contact-message"
                           required rows={4} placeholder={t.messagePlaceholder}
                           value={form.message}
                           className={errors.message ? "border-destructive" : ""}
+                          aria-invalid={Boolean(errors.message)}
+                          aria-describedby={errors.message ? "contact-message-error" : undefined}
                           onChange={(e) => { setForm({ ...form, message: e.target.value }); setErrors({ ...errors, message: undefined }); }}
                         />
-                        <FieldError msg={errors.message} />
+                        <FieldError id="contact-message-error" msg={errors.message} />
                       </div>
-                      <Button type="submit" size="lg" className="w-full btn-press font-semibold h-12" disabled={status === "submitting"}>
+                      <Button type="submit" size="lg" className="w-full btn-press font-semibold h-12" disabled={status === "submitting"} aria-busy={status === "submitting"}>
                         {status === "submitting" ? (
                           <><Loader2 className="w-4 h-4 mr-2 animate-spin" /> {t.sending}</>
                         ) : (
@@ -426,7 +448,7 @@ const Contact = () => {
           </Reveal>
           <div className="rounded-lg overflow-hidden border border-border">
             <iframe
-              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3984.0!2d101.68!3d3.11!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zM8KwMDYnMzYuMCJOIDEwMcKwNDAnNDguMCJF!5e0!3m2!1sen!2smy!4v1600000000000"
+              src={mapEmbedSrc}
               width="100%"
               height="350"
               style={{ border: 0 }}
