@@ -42,7 +42,9 @@ const Navbar = () => {
   const { language, setLanguage } = useLanguage();
   const t = useT();
   const settings = useSiteSettings();
-  const logoSrc = !logoHadError && settings.logo_url ? settings.logo_url : "/logo-flashcast.png";
+  const primaryLogoSrc = settings.logo_url || "";
+  const logoSrc = logoHadError || !primaryLogoSrc ? "/logo-flashcast.png" : primaryLogoSrc;
+  const brandText = settings.company_name || "FLASH CAST SDN. BHD.";
 
   const changeLanguage = () => {
     const nextLanguage = language === "en" ? "zh" : "en";
@@ -92,15 +94,21 @@ const Navbar = () => {
         className="site-header fixed top-0 left-0 right-0 z-50 transition-all duration-300"
       >
         <div className="mx-auto flex h-[68px] w-full max-w-7xl flex-nowrap items-center gap-2 px-4 md:h-[72px] md:px-6 xl:px-8">
-          <LocalizedLink to="/" className="flex items-center shrink-0">
+          <LocalizedLink to="/" className="flex min-w-0 flex-1 items-center gap-2 shrink-0">
             <img
               src={logoSrc}
-              alt={settings.company_name}
-              className="h-8 md:h-9 w-auto object-contain drop-shadow-[0_1px_1px_rgba(255,255,255,0.45)]"
+              alt=""
+              className="h-8 md:h-9 w-auto object-contain drop-shadow-[0_1px_1px_rgba(255,255,255,0.45)] shrink-0"
               loading="eager"
               decoding="async"
-              onError={() => setLogoHadError(true)}
+              onError={() => {
+                if (!logoHadError) setLogoHadError(true);
+              }}
             />
+            <span className="sr-only">{brandText}</span>
+            <span className="min-w-0 truncate text-[13px] font-semibold tracking-wide text-foreground/90 md:text-[14px]">
+              {brandText}
+            </span>
           </LocalizedLink>
 
           <nav className="hidden min-w-0 flex-1 items-center gap-0.5 xl:flex">
@@ -138,7 +146,7 @@ const Navbar = () => {
             </Button>
           </div>
 
-          <div className="ml-auto flex items-center gap-1 -mr-1 xl:hidden">
+          <div className="flex shrink-0 items-center gap-1 -mr-1 xl:hidden">
             <button onClick={changeLanguage} className="site-header__control flex items-center gap-1 text-xs font-semibold text-foreground px-3 py-2 rounded-xl transition-colors" aria-label={languageAriaLabel}>
               <Globe className="w-3.5 h-3.5" />
               <span className="font-semibold">{language === "en" ? "EN" : "中文"}</span>
