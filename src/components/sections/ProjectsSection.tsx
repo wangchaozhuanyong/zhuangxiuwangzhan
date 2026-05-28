@@ -28,8 +28,8 @@ const sectionCopy = {
   zh: {
     eyebrow: "精选案例",
     title: "近期装修案例",
-    subtitle: "查看我们在吉隆坡与雪兰莪完成的住宅、商业、厨房、定制家具与空间装潢项目。",
-    empty: "项目案例正在更新中。欢迎联系我们获取近期工地参考。",
+    subtitle: "查看我们在坉隆坡与雪兰莪完戝的佝宅〝商业〝厨房〝定制家具与空间装潢项目。",
+    empty: "项目案例正在更新中。欢迎蝔系我们获坖近期工地坂考。",
   },
 };
 
@@ -46,7 +46,7 @@ const typeLabels = {
     renovation: "Renovation",
   },
   zh: {
-    residential: "住宅",
+    residential: "佝宅",
     commercial: "商业",
     "built-in": "定制内嵌家具",
     warehouse: "仓库",
@@ -90,7 +90,7 @@ const ProjectsSection = () => {
         </Reveal>
 
         {featured.length ? (
-          <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="card-grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
             {featured.map((project, index) => {
               const typeKey = normalizeTypeKey(project.type || "renovation");
               const label = typeLabels[language][typeKey as keyof (typeof typeLabels)[typeof language]] || project.type || typeLabels[language].renovation;
@@ -102,7 +102,7 @@ const ProjectsSection = () => {
                 <Reveal key={project.slug} delay={index * 80}>
                   <Link
                     to={`/projects/${project.slug}`}
-                    className="group block h-full overflow-hidden rounded-xl border border-white/10 bg-white/[0.035] shadow-[0_24px_80px_rgba(0,0,0,0.22)] transition hover:-translate-y-1 hover:border-gold/45 hover:bg-white/[0.055]"
+                    className="card-equal group block overflow-hidden rounded-xl border border-white/10 bg-white/[0.035] shadow-[0_24px_80px_rgba(0,0,0,0.22)] transition hover:-translate-y-1 hover:border-gold/45 hover:bg-white/[0.055]"
                   >
                     <div className="relative aspect-[4/3] overflow-hidden bg-white/5 img-zoom">
                       {project.thumbnail ? (
@@ -121,7 +121,7 @@ const ProjectsSection = () => {
                         {label}
                       </span>
                     </div>
-                    <div className="p-5">
+                    <div className="card-equal-body p-5">
                       <h3 className="mb-2 font-display text-base font-semibold text-white transition-colors group-hover:text-gold">{title}</h3>
                       <p className="mb-3 flex items-center gap-1.5 text-xs text-white/55">
                         <MapPin className="h-3.5 w-3.5 text-gold" />

@@ -53,19 +53,28 @@ const ServicesSection = () => {
     void getPublishedServices(language).then((items) => setDynamicServices(items));
   }, [language]);
 
-  const services = dynamicServices.length
-    ? dynamicServices.slice(0, 10).map((service) => ({
+  const fallbackServices = serviceEntries.map((service) => ({
+    icon: service.icon,
+    title: t(service.titleKey),
+    desc: t(service.descKey),
+    link: service.link,
+  }));
+
+  const mappedDynamicServices = dynamicServices.map((service) => ({
         icon: iconBySlug[service.slug] || Home,
         title: service.title,
         desc: service.summary || service.description,
         link: service.slug === "old-house" ? "/services/old-house" : `/services/${service.slug}`,
-      }))
-    : serviceEntries.map((service) => ({
-        icon: service.icon,
-        title: t(service.titleKey),
-        desc: t(service.descKey),
-        link: service.link,
       }));
+
+  const services = (
+    dynamicServices.length
+      ? [
+          ...mappedDynamicServices,
+          ...fallbackServices.filter((fallback) => !mappedDynamicServices.some((item) => item.link === fallback.link)),
+        ]
+      : fallbackServices
+  ).slice(0, 8);
 
   return (
     <section className="section-padding bg-background" id="services">
@@ -80,14 +89,14 @@ const ServicesSection = () => {
           </div>
         </Reveal>
 
-        <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
+        <div className="card-grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
           {services.map((service, i) => {
             const Icon = service.icon;
             return (
               <Reveal key={service.link} delay={i * 60}>
                 <LocalizedLink
                   to={service.link}
-                  className="group luxury-card-muted relative block h-full overflow-hidden p-5 hover-lift"
+                  className="card-equal group luxury-card-muted relative block overflow-hidden p-5 hover-lift"
                 >
                   <span className="absolute right-4 top-4 font-display text-3xl font-bold text-foreground/[0.05]">
                     {String(i + 1).padStart(2, "0")}
@@ -100,7 +109,7 @@ const ServicesSection = () => {
                       {service.title}
                     </h3>
                   </div>
-                  <p className="text-muted-foreground text-xs leading-relaxed">
+                  <p className="card-equal-body text-muted-foreground text-xs leading-relaxed">
                     {service.desc}
                   </p>
                 </LocalizedLink>

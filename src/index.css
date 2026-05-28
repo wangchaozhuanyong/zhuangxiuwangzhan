@@ -216,6 +216,17 @@
     mask-image: linear-gradient(to right, black 85%, transparent 100%);
   }
 
+  /* Equal-height card layout helpers (use with grid) */
+  .card-grid {
+    @apply grid items-stretch;
+  }
+  .card-equal {
+    @apply h-full flex flex-col;
+  }
+  .card-equal-body {
+    @apply flex-1;
+  }
+
   /* Text shadow for hero headlines */
   .text-shadow-hero {
     text-shadow: 0 2px 16px rgba(0,0,0,0.35);

@@ -219,10 +219,10 @@ const BeforeAfterSection = () => {
           </div>
         </Reveal>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="card-grid grid-cols-1 gap-6 md:grid-cols-3">
           {comparisons[language].map((item, i) => (
             <Reveal key={item.title} delay={i * 120}>
-              <div className="bg-card rounded-lg border border-border overflow-hidden hover-lift">
+              <div className="card-equal bg-card rounded-lg border border-border overflow-hidden hover-lift">
                 <BeforeAfterSlider
                   before={item.before}
                   after={item.after}
@@ -230,7 +230,7 @@ const BeforeAfterSection = () => {
                   beforeLabel={sectionCopy.before}
                   afterLabel={sectionCopy.after}
                 />
-                <div className="p-5">
+                <div className="card-equal-body p-5">
                   <h3 className="font-display text-lg font-semibold mb-1">{item.title}</h3>
                   <p className="text-muted-foreground text-xs mb-2">{translateDisplayText(item.location, language)}</p>
                   <p className="text-muted-foreground text-sm leading-relaxed">{item.desc}</p>

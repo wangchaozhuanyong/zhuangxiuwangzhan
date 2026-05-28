@@ -34,14 +34,14 @@ const MaterialsSection = () => {
           </div>
         </Reveal>
 
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 md:gap-5">
+        <div className="card-grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 md:gap-5">
           {materialsData.map((cat, i) => (
             <Reveal key={cat.slug} delay={i * 60}>
               <Link
                 to={`/materials/category/${cat.slug}`}
                 className="group block h-full"
               >
-                <div className="rounded-lg overflow-hidden bg-card border border-border hover-lift h-full transition-colors hover:border-accent/30">
+                <div className="card-equal rounded-lg overflow-hidden bg-card border border-border hover-lift transition-colors hover:border-accent/30">
                   <div className="aspect-square overflow-hidden img-zoom">
                     <img
                       src={cat.image}
@@ -52,7 +52,7 @@ const MaterialsSection = () => {
                       height={200}
                     />
                   </div>
-                  <div className="p-4 md:p-5">
+                  <div className="card-equal-body p-4 md:p-5">
                     <p className="font-medium text-xs md:text-sm text-center group-hover:text-accent transition-colors leading-tight">
                       {translateDisplayText(cat.name, language)}
                     </p>

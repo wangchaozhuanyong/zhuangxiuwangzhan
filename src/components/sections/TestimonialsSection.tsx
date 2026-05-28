@@ -26,6 +26,24 @@ const fallbackTestimonials = {
       location: "Bangsar, KL",
       type: "Kitchen Renovation",
     },
+    {
+      text: "Our old landed house needed rewiring, plumbing and a full interior refresh. FLASH CAST explained every stage clearly and solved site issues without pushing unnecessary upgrades.",
+      client: "Mr. Lim",
+      location: "Cheras, KL",
+      type: "Old House Renovation",
+    },
+    {
+      text: "They handled our shop renovation from layout planning to final touch-up. The team understood our opening deadline and coordinated the trades well, so we could start business on schedule.",
+      client: "Ms. Aisha",
+      location: "Subang Jaya",
+      type: "Shoplot Renovation",
+    },
+    {
+      text: "The built-in wardrobe and storage work made our unit much more practical. Measurements were accurate, finishing was neat, and the team kept the site clean before handover.",
+      client: "Mr. Chan",
+      location: "Puchong",
+      type: "Custom Built-In Furniture",
+    },
   ],
   zh: [
     {
@@ -46,6 +64,24 @@ const fallbackTestimonials = {
       location: "Bangsar, KL",
       type: "厨房装修",
     },
+    {
+      text: "我们的旧排屋需要重拉电线、水管和整体翻新。FLASH CAST 每个阶段都解释得很清楚，现场问题也处理得专业，没有一直推不必要的升级。",
+      client: "Lim 先生",
+      location: "Cheras, KL",
+      type: "老房翻新",
+    },
+    {
+      text: "店铺装修从动线规划到最后修补都由他们协调。团队理解我们开业时间很紧，工种安排得好，最后可以按计划开门营业。",
+      client: "Aisha 女士",
+      location: "Subang Jaya",
+      type: "店铺装修",
+    },
+    {
+      text: "定制衣柜和收纳做好后，整个单位实用很多。尺寸量得准，收口整齐，交屋前现场也整理得很干净。",
+      client: "Chan 先生",
+      location: "Puchong",
+      type: "定制内嵌家具",
+    },
   ],
 } as const;
 
@@ -54,17 +90,29 @@ const testimonialTypeLabels = {
     "Condo Renovation": "Condo Renovation",
     "Office Fit-Out": "Office Fit-Out",
     "Kitchen Renovation": "Kitchen Renovation",
+    "Old House Renovation": "Old House Renovation",
+    "Shoplot Renovation": "Shoplot Renovation",
+    "Custom Built-In Furniture": "Custom Built-In Furniture",
     公寓装修: "Condo Renovation",
     办公室装修: "Office Fit-Out",
     厨房装修: "Kitchen Renovation",
+    老房翻新: "Old House Renovation",
+    店铺装修: "Shoplot Renovation",
+    定制内嵌家具: "Custom Built-In Furniture",
   },
   zh: {
     "Condo Renovation": "公寓装修",
     "Office Fit-Out": "办公室装修",
     "Kitchen Renovation": "厨房装修",
+    "Old House Renovation": "老房翻新",
+    "Shoplot Renovation": "店铺装修",
+    "Custom Built-In Furniture": "定制内嵌家具",
     公寓装修: "公寓装修",
     办公室装修: "办公室装修",
     厨房装修: "厨房装修",
+    老房翻新: "老房翻新",
+    店铺装修: "店铺装修",
+    定制内嵌家具: "定制内嵌家具",
   },
 } as const;
 
@@ -84,16 +132,15 @@ const TestimonialsSection = () => {
     void getPublishedTestimonials(language).then((data) => {
       if (!active) return;
 
-      setItems(
-        data.length
-          ? data.map((item, index) => ({
+      const fallbackItems = fallbackTestimonials[language];
+      const cmsItems = data.map((item, index) => ({
               text: item.text,
               client: item.client,
-              location: fallbackTestimonials[language][index]?.location || "",
-              type: fallbackTestimonials[language][index]?.type || "",
-            }))
-          : fallbackTestimonials[language],
-      );
+              location: fallbackItems[index]?.location || "",
+              type: fallbackItems[index]?.type || "",
+            }));
+
+      setItems(data.length ? [...cmsItems, ...fallbackItems.slice(cmsItems.length)].slice(0, 6) : fallbackItems);
     });
 
     return () => {
@@ -120,16 +167,16 @@ const TestimonialsSection = () => {
           </div>
         </Reveal>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+        <div className="card-grid grid-cols-1 gap-5 md:grid-cols-3">
           {items.map((item, i) => (
             <Reveal key={`${item.client}-${i}`} delay={i * 100}>
-              <div className="bg-card border border-border rounded-lg p-6 hover-lift h-full flex flex-col">
+              <div className="card-equal bg-card border border-border rounded-lg p-6 hover-lift">
                 <div className="flex gap-0.5 mb-4">
                   {[...Array(5)].map((_, j) => (
                     <Star key={j} className="w-4 h-4 fill-current text-gold" />
                   ))}
                 </div>
-                <blockquote className="text-sm leading-relaxed mb-5 flex-1">"{item.text}"</blockquote>
+                <blockquote className="card-equal-body text-sm leading-relaxed mb-5">"{item.text}"</blockquote>
                 <div className="border-t border-border pt-4">
                   <p className="font-semibold text-sm">{item.client}</p>
                   <p className="text-muted-foreground text-xs">
