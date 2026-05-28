@@ -1,4 +1,39 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
+
+type RevealOptions = { threshold?: number; rootMargin?: string };
+
+type SharedObserverEntry = {
+  observer: IntersectionObserver;
+  callbacks: WeakMap<Element, (entry: IntersectionObserverEntry) => void>;
+};
+
+const sharedObservers = new Map<string, SharedObserverEntry>();
+
+const getObserverKey = (opts: RevealOptions) => `${opts.threshold ?? 0.15}::${opts.rootMargin ?? "0px 0px -40px 0px"}`;
+
+const getSharedObserver = (opts: RevealOptions) => {
+  const key = getObserverKey(opts);
+  const existing = sharedObservers.get(key);
+  if (existing) return existing;
+
+  const callbacks = new WeakMap<Element, (entry: IntersectionObserverEntry) => void>();
+  const observer = new IntersectionObserver(
+    (entries) => {
+      for (const entry of entries) {
+        const cb = callbacks.get(entry.target);
+        if (cb) cb(entry);
+      }
+    },
+    {
+      threshold: opts.threshold ?? 0.15,
+      rootMargin: opts.rootMargin ?? "0px 0px -40px 0px",
+    }
+  );
+
+  const created = { observer, callbacks };
+  sharedObservers.set(key, created);
+  return created;
+};
 
 /**
  * Lightweight scroll-reveal hook using Intersection Observer.
@@ -6,31 +41,40 @@ import { useEffect, useRef, useState } from "react";
  * Once visible, stays visible (no re-hide on scroll up).
  */
 export function useScrollReveal<T extends HTMLElement = HTMLDivElement>(
-  options?: { threshold?: number; rootMargin?: string }
+  options?: RevealOptions
 ) {
   const ref = useRef<T>(null);
   const [isVisible, setIsVisible] = useState(false);
+
+  const opts = useMemo(
+    () => ({
+      threshold: options?.threshold ?? 0.15,
+      rootMargin: options?.rootMargin ?? "0px 0px -40px 0px",
+    }),
+    [options?.threshold, options?.rootMargin]
+  );
 
   useEffect(() => {
     const el = ref.current;
     if (!el) return;
 
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          setIsVisible(true);
-          observer.unobserve(el);
-        }
-      },
-      {
-        threshold: options?.threshold ?? 0.15,
-        rootMargin: options?.rootMargin ?? "0px 0px -40px 0px",
+    if (isVisible) return;
+
+    const { observer, callbacks } = getSharedObserver(opts);
+    callbacks.set(el, (entry) => {
+      if (entry.isIntersecting) {
+        setIsVisible(true);
+        callbacks.delete(el);
+        observer.unobserve(el);
       }
-    );
+    });
 
     observer.observe(el);
-    return () => observer.disconnect();
-  }, [options?.threshold, options?.rootMargin]);
+    return () => {
+      callbacks.delete(el);
+      observer.unobserve(el);
+    };
+  }, [isVisible, opts]);
 
   return { ref, isVisible };
 }
