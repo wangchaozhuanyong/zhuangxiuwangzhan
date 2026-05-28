@@ -1,10 +1,11 @@
-import { useState, useRef, useCallback } from "react";
+import { useEffect, useState, useRef, useCallback } from "react";
 import Link from "@/components/LocalizedLink";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, ChevronLeft, ChevronRight } from "lucide-react";
 import Reveal from "@/components/Reveal";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { translateDisplayText } from "@/i18n/displayLabels";
+import { getPublishedBeforeAfterItems } from "@/lib/homeContentApi";
 
 import beforeKitchen from "@/assets/before-after/before-kitchen.jpg";
 import afterKitchen from "@/assets/before-after/after-kitchen.jpg";
@@ -189,6 +190,7 @@ const BeforeAfterSlider = ({
 
 const BeforeAfterSection = () => {
   const { language } = useLanguage();
+  const [dynamicComparisons, setDynamicComparisons] = useState(comparisons[language]);
   const sectionCopy = {
     en: {
       title: "See the Transformation",
@@ -206,6 +208,20 @@ const BeforeAfterSection = () => {
     },
   }[language];
 
+  useEffect(() => {
+    setDynamicComparisons(comparisons[language]);
+    void getPublishedBeforeAfterItems(language).then((items) => {
+      if (!items.length) return;
+      setDynamicComparisons(items.map((item) => ({
+        before: item.before_image_url,
+        after: item.after_image_url,
+        title: item.title,
+        location: item.location,
+        desc: item.description,
+      })));
+    });
+  }, [language]);
+
   return (
     <section className="section-padding bg-background" id="before-after">
       <div className="container-narrow">
@@ -220,7 +236,7 @@ const BeforeAfterSection = () => {
         </Reveal>
 
         <div className="card-grid grid-cols-1 gap-6 md:grid-cols-3">
-          {comparisons[language].map((item, i) => (
+          {dynamicComparisons.map((item, i) => (
             <Reveal key={item.title} delay={i * 120}>
               <div className="card-equal bg-card rounded-lg border border-border overflow-hidden hover-lift">
                 <BeforeAfterSlider

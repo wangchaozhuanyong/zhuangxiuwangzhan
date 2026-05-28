@@ -1,3 +1,4 @@
+import { useEffect, useMemo, useState } from "react";
 import Link from "@/components/LocalizedLink";
 import { Button } from "@/components/ui/button";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
@@ -7,6 +8,7 @@ import { JsonLdFAQ, JsonLdBreadcrumb } from "@/components/JsonLd";
 import WhatsAppIcon from "@/components/WhatsAppIcon";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { useSiteSettings } from "@/hooks/useSiteSettings";
+import { getPublishedFaqs } from "@/lib/homeContentApi";
 import heroImg from "@/assets/hero-faq.jpg";
 
 const faqContent = {
@@ -132,11 +134,26 @@ const FAQ = () => {
   const { language } = useLanguage();
   const settings = useSiteSettings();
   const t = faqContent[language];
+  const [dynamicFaqs, setDynamicFaqs] = useState<typeof faqContent.en.categories>([]);
+  const categories = useMemo(() => dynamicFaqs.length ? dynamicFaqs : t.categories, [dynamicFaqs, t.categories]);
+
+  useEffect(() => {
+    setDynamicFaqs([]);
+    void getPublishedFaqs(language).then((items) => {
+      if (!items.length) return;
+      setDynamicFaqs([
+        {
+          category: language === "zh" ? "常见问题" : "General",
+          items: items.map((item) => ({ q: item.question, a: item.answer })),
+        },
+      ]);
+    });
+  }, [language]);
 
   return (
     <main className="pt-16">
       <PageMeta title={t.metaTitle} description={t.metaDescription} keywords={t.metaKeywords} canonicalPath="/faq" />
-      <JsonLdFAQ faqs={t.categories.flatMap((cat) => cat.items.map((item) => ({ question: item.q, answer: item.a })))} />
+      <JsonLdFAQ faqs={categories.flatMap((cat) => cat.items.map((item) => ({ question: item.q, answer: item.a })))} />
       <JsonLdBreadcrumb items={[{ name: t.breadcrumbHome, url: "/" }, { name: t.breadcrumbFaq, url: "/faq" }]} />
 
       <section className="relative min-h-[45vh] flex items-center overflow-hidden">
@@ -157,7 +174,7 @@ const FAQ = () => {
 
       <section className="section-padding bg-background">
         <div className="container-narrow max-w-3xl">
-          {t.categories.map((category, categoryIndex) => (
+          {categories.map((category, categoryIndex) => (
             <Reveal key={category.category} delay={categoryIndex * 100}>
               <div className="mb-10">
                 <div className="accent-line mb-3" />
