@@ -54,6 +54,8 @@ const AdminMaterialEditor = lazy(() => import("./pages/admin/AdminBusinessConten
 const AdminBlogList = lazy(() => import("./pages/admin/AdminBusinessContent").then((module) => ({ default: () => <module.AdminBusinessList module="blog_posts" /> })));
 const AdminBlogEditor = lazy(() => import("./pages/admin/AdminBusinessContent").then((module) => ({ default: () => <module.AdminBusinessEditor module="blog_posts" /> })));
 const AdminMediaLibrary = lazy(() => import("./pages/admin/AdminMediaLibrary"));
+const AdminSeoManager = lazy(() => import("./pages/admin/AdminSeoManager"));
+const AdminUsers = lazy(() => import("./pages/admin/AdminUsers"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 
 const queryClient = new QueryClient();
@@ -98,8 +100,8 @@ const AppShell = () => {
           <Route path="/admin/blog/new" element={<AdminBlogEditor />} />
           <Route path="/admin/blog/:id" element={<AdminBlogEditor />} />
           <Route path="/admin/media" element={<AdminMediaLibrary />} />
-          <Route path="/admin/seo" element={<AdminComingSoon />} />
-          <Route path="/admin/users" element={<AdminComingSoon />} />
+          <Route path="/admin/seo" element={<AdminSeoManager />} />
+          <Route path="/admin/users" element={<AdminUsers />} />
           <Route path="/admin/notifications" element={<AdminNotificationSettings />} />
           <Route path="/admin/content/translation_jobs" element={<AdminTranslationJobs />} />
           <Route path="/admin/content/translation_jobs/:id" element={<AdminTranslationJobs />} />
