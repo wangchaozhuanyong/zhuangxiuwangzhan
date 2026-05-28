@@ -15,7 +15,8 @@ import { servicesData } from "@/data/services";
 import { getPublishedServiceAreaBySlug } from "@/lib/contentApi";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { withLanguagePrefix } from "@/i18n/routes";
-import { siteConfig, whatsappUrl } from "@/config/site";
+import { siteConfig } from "@/config/site";
+import { useSiteSettings } from "@/hooks/useSiteSettings";
 import { isHtmlText, stripHtml } from "@/lib/text";
 import { translateDisplayText, translateProjectType } from "@/i18n/displayLabels";
 
@@ -85,6 +86,7 @@ const serviceNameMap: Record<string, { en: string; zh: string }> = {
 const LocationPage = () => {
   const { slug } = useParams<{ slug: string }>();
   const { language } = useLanguage();
+  const settings = useSiteSettings();
   const t = copy[language];
   const [location, setLocation] = useState(locationsData[slug || ""]);
 
@@ -128,9 +130,9 @@ const LocationPage = () => {
           __html: JSON.stringify({
             "@context": "https://schema.org",
             "@type": "LocalBusiness",
-            name: "FLASH CAST SDN. BHD.",
+            name: settings.company_name,
             description: location.description,
-            address: { "@type": "PostalAddress", streetAddress: "94, Jalan Mega Mendung, Taman United", addressLocality: "Kuala Lumpur", postalCode: "58200", addressCountry: "MY" },
+            address: settings.address,
             areaServed: location.name,
             url: `${siteConfig.url}${withLanguagePrefix(`/locations/${location.slug}`, language)}`,
           }),
@@ -156,7 +158,7 @@ const LocationPage = () => {
               <Link to="/quote">{t.quote} <ArrowRight className="w-4 h-4 ml-2" /></Link>
             </Button>
             <Button size="lg" className="btn-press w-full sm:w-auto min-h-[3rem] text-sm font-semibold bg-white text-neutral-800 border-0 hover:bg-white/90 shadow-md rounded-md px-8 py-3 justify-center" asChild>
-              <a href={whatsappUrl()} target="_blank" rel="noopener noreferrer">
+              <a href={settings.whatsapp_url()} target="_blank" rel="noopener noreferrer">
                 <WhatsAppIcon className="w-[18px] h-[18px] mr-2 text-[#25D366]" /> {t.whatsapp}
               </a>
             </Button>

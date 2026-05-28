@@ -9,7 +9,7 @@ import { useLanguage } from "@/i18n/LanguageContext";
 import Reveal from "@/components/Reveal";
 import PageMeta from "@/components/PageMeta";
 import { JsonLdBreadcrumb } from "@/components/JsonLd";
-import { whatsappUrl } from "@/config/site";
+import { useSiteSettings } from "@/hooks/useSiteSettings";
 import heroImg from "@/assets/hero-materials.jpg";
 import { translateMaterialCategory } from "@/i18n/displayLabels";
 
@@ -54,6 +54,7 @@ const copy = {
 
 const Materials = () => {
   const { language } = useLanguage();
+  const settings = useSiteSettings();
   const t = copy[language];
   const [categories, setCategories] = useState(materialsData);
   const displayCategoryName = (value: string) => translateMaterialCategory(value, language);
@@ -80,16 +81,16 @@ const Materials = () => {
       <section className="relative flex min-h-[45vh] items-center overflow-hidden">
         <div className="absolute inset-0">
           <img src={heroImg} alt={t.heroAlt} className="h-full w-full object-cover" />
-          <div className="absolute inset-0 bg-gradient-to-r from-black/60 via-black/30 to-transparent" />
+          <div className="absolute inset-0 media-readable-overlay" />
         </div>
         <div className="relative z-10 container-narrow px-5 py-20 md:px-8 md:py-28">
-          <p className="mb-4 font-body text-[11px] font-semibold uppercase tracking-[0.3em]" style={{ color: "hsl(var(--gold))" }}>
+          <p className="mb-4 font-body text-[11px] font-semibold uppercase tracking-[0.3em] text-gold">
             {t.eyebrow}
           </p>
-          <h1 className="mb-4 max-w-lg font-display text-3xl font-bold leading-tight text-white md:text-5xl" style={{ textShadow: "0 2px 8px rgba(0,0,0,0.5)" }}>
+          <h1 className="mb-4 max-w-lg font-display text-3xl font-bold leading-tight text-on-media md:text-5xl">
             {t.title}
           </h1>
-          <p className="max-w-xl text-base leading-relaxed text-white/90 md:text-lg" style={{ textShadow: "0 1px 4px rgba(0,0,0,0.4)" }}>
+          <p className="max-w-xl text-base leading-relaxed text-on-media-muted md:text-lg">
             {t.intro}
           </p>
         </div>
@@ -120,10 +121,10 @@ const Materials = () => {
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
                     <div className="absolute bottom-0 left-0 right-0 p-4">
-                      <h3 className="font-display text-sm font-bold leading-tight text-white md:text-base" style={{ textShadow: "0 1px 4px rgba(0,0,0,0.5)" }}>
+                      <h3 className="font-display text-sm font-bold leading-tight text-on-media md:text-base">
                         {displayCategoryName(category.name)}
                       </h3>
-                      <p className="mt-1.5 text-[10px] md:text-xs" style={{ color: "rgba(255,255,255,0.65)" }}>
+                      <p className="mt-1.5 text-[10px] text-on-media-muted md:text-xs">
                         {category.subcategories.length} {t.subcategories}
                       </p>
                     </div>
@@ -146,9 +147,9 @@ const Materials = () => {
                   {t.quote} <ArrowRight className="ml-2 h-4 w-4" />
                 </Link>
               </Button>
-              <Button size="lg" className="btn-press w-full justify-center rounded-md border-0 bg-white px-8 py-3 text-sm font-semibold text-neutral-800 shadow-md hover:bg-white/90 min-h-[3rem] sm:w-auto" asChild>
-                <a href={whatsappUrl()} target="_blank" rel="noopener noreferrer">
-                  <WhatsAppIcon className="mr-2 h-[18px] w-[18px] text-[#25D366]" /> {t.whatsapp}
+              <Button size="lg" className="btn-press w-full justify-center rounded-md border-0 bg-card px-8 py-3 text-sm font-semibold text-card-foreground shadow-md hover:bg-card/90 min-h-[3rem] sm:w-auto" asChild>
+                <a href={settings.whatsapp_url()} target="_blank" rel="noopener noreferrer">
+                  <WhatsAppIcon className="mr-2 h-[18px] w-[18px] text-whatsapp" /> {t.whatsapp}
                 </a>
               </Button>
             </div>

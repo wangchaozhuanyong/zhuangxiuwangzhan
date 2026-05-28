@@ -5,7 +5,7 @@ import WhatsAppIcon from "@/components/WhatsAppIcon";
 import Reveal from "@/components/Reveal";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { useT } from "@/i18n/useT";
-import { whatsappUrl } from "@/config/site";
+import { useSiteSettings } from "@/hooks/useSiteSettings";
 
 const copy = {
   en: {
@@ -22,6 +22,7 @@ const copy = {
 const CTASection = () => {
   const { language } = useLanguage();
   const t = useT();
+  const settings = useSiteSettings();
   const content = copy[language];
 
   return (
@@ -33,16 +34,16 @@ const CTASection = () => {
       <div className="container-narrow">
         <Reveal>
           <div className="relative mx-auto max-w-2xl text-center">
-            <h2 className="font-display text-3xl md:text-4xl font-bold mb-4" style={{ color: "hsl(var(--surface-dark-foreground))" }}>
+            <h2 className="font-display text-3xl md:text-4xl font-bold mb-4 text-surface-dark-foreground">
               {content.title}
             </h2>
-            <p className="text-base md:text-lg mb-8 leading-relaxed" style={{ color: "hsl(var(--surface-dark-foreground) / 0.8)" }}>
+            <p className="text-base md:text-lg mb-8 leading-relaxed text-surface-dark-foreground/80">
               {content.description}
             </p>
             <div className="flex flex-col sm:flex-row gap-3 justify-center">
               <Button
                 size="lg"
-                className="btn-press min-h-[3rem] text-sm font-bold tracking-wide bg-white text-foreground hover:bg-white/90 rounded-md px-8 py-3"
+                className="btn-press min-h-[3rem] text-sm font-bold tracking-wide bg-card text-card-foreground hover:bg-card/90 rounded-md px-8 py-3"
                 asChild
               >
                 <Link to="/quote">
@@ -51,12 +52,11 @@ const CTASection = () => {
               </Button>
               <Button
                 size="lg"
-                className="btn-press min-h-[3rem] text-sm font-semibold bg-transparent border border-white/30 hover:bg-white/10 rounded-md px-8 py-3"
-                style={{ color: "hsl(var(--surface-dark-foreground))" }}
+                className="btn-press min-h-[3rem] text-sm font-semibold bg-transparent border border-white/30 text-surface-dark-foreground hover:bg-white/10 rounded-md px-8 py-3"
                 asChild
               >
-                <a href={whatsappUrl()} target="_blank" rel="noopener noreferrer">
-                  <WhatsAppIcon className="w-[18px] h-[18px] mr-2 text-[#25D366]" /> {t("cta.whatsapp")}
+                <a href={settings.whatsapp_url()} target="_blank" rel="noopener noreferrer">
+                  <WhatsAppIcon className="w-[18px] h-[18px] mr-2 text-whatsapp" /> {t("cta.whatsapp")}
                 </a>
               </Button>
             </div>

@@ -10,7 +10,6 @@ import { JsonLdBreadcrumb } from "@/components/JsonLd";
 import { submitQuoteRequest } from "@/lib/leadApi";
 import Reveal from "@/components/Reveal";
 import { useLanguage } from "@/i18n/LanguageContext";
-import { siteConfig } from "@/config/site";
 import { useSiteSettings } from "@/hooks/useSiteSettings";
 import heroImg from "@/assets/hero-quote.jpg";
 
@@ -102,7 +101,7 @@ const copy = {
     hours: "Mon - Sat: 9 AM - 6 PM",
     sunday: "Sun: By Appointment",
     office: "Taman United, KL",
-    address: siteConfig.shortAddress,
+    address: "",
     navServices: "Our Services",
     navProjects: "Projects",
     navFaq: "FAQ",
@@ -173,7 +172,7 @@ const copy = {
     hours: "周一至周六：上午 9 点至下午 6 点",
     sunday: "周日：预约制",
     office: "Taman United, KL",
-    address: siteConfig.shortAddress,
+    address: "",
     navServices: "我们的服务",
     navProjects: "装修案例",
     navFaq: "常见问题",
@@ -301,16 +300,16 @@ const Quote = () => {
       <section className="relative flex min-h-[45vh] items-center overflow-hidden">
         <div className="absolute inset-0">
           <img src={heroImg} alt={t.heroAlt} className="h-full w-full object-cover" />
-          <div className="absolute inset-0 bg-gradient-to-r from-black/60 via-black/30 to-transparent" />
+          <div className="absolute inset-0 media-readable-overlay" />
         </div>
         <div className="relative z-10 container-narrow px-5 py-20 md:px-8 md:py-28">
-          <p className="mb-4 font-body text-[11px] font-semibold uppercase tracking-[0.3em]" style={{ color: "hsl(var(--gold))" }}>
+          <p className="mb-4 font-body text-[11px] font-semibold uppercase tracking-[0.3em] text-gold">
             {t.heroEyebrow}
           </p>
-          <h1 className="mb-4 max-w-lg font-display text-3xl font-bold leading-tight text-white md:text-5xl" style={{ textShadow: "0 2px 8px rgba(0,0,0,0.5)" }}>
+          <h1 className="mb-4 max-w-lg font-display text-3xl font-bold leading-tight text-on-media md:text-5xl">
             {t.heroTitle}
           </h1>
-          <p className="max-w-xl text-base leading-relaxed text-white/90 md:text-lg" style={{ textShadow: "0 1px 4px rgba(0,0,0,0.4)" }}>
+          <p className="max-w-xl text-base leading-relaxed text-on-media-muted md:text-lg">
             {t.heroText}
           </p>
         </div>

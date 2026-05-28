@@ -2,7 +2,7 @@ import Reveal from "@/components/Reveal";
 import PageMeta from "@/components/PageMeta";
 import { JsonLdBreadcrumb } from "@/components/JsonLd";
 import { useLanguage } from "@/i18n/LanguageContext";
-import { siteConfig } from "@/config/site";
+import { useSiteSettings } from "@/hooks/useSiteSettings";
 
 const termsCopy = {
   en: {
@@ -53,6 +53,7 @@ const termsCopy = {
 
 const Terms = () => {
   const { language } = useLanguage();
+  const settings = useSiteSettings();
   const t = termsCopy[language];
   const contactLabel = language === "zh" ? "联系信息" : "Contact";
   const emailLabel = language === "zh" ? "邮箱：" : "Email:";
@@ -85,10 +86,10 @@ const Terms = () => {
                   {section.title.endsWith("Contact") || section.title.endsWith("联系") ? (
                     <div className="bg-muted rounded-lg p-5 mt-3 text-sm text-muted-foreground space-y-1">
                       <p><strong className="text-foreground">{contactLabel}</strong></p>
-                      <p>FLASH CAST SDN. BHD.</p>
-                      <p>94, Jalan Mega Mendung, Taman United, 58200 Kuala Lumpur</p>
-                      <p>{emailLabel} {siteConfig.email}</p>
-                      <p>{phoneLabel} {siteConfig.phoneDisplay}</p>
+                      <p>{settings.company_name}</p>
+                      <p>{settings.address}</p>
+                      <p>{emailLabel} {settings.email}</p>
+                      <p>{phoneLabel} {settings.phone_display}</p>
                     </div>
                   ) : null}
                 </section>

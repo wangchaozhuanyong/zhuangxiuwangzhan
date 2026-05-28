@@ -9,7 +9,7 @@ import { getPublishedMaterialBySlug } from "@/lib/contentApi";
 import { useLanguage } from "@/i18n/LanguageContext";
 import PageMeta from "@/components/PageMeta";
 import { JsonLdBreadcrumb } from "@/components/JsonLd";
-import { whatsappUrl } from "@/config/site";
+import { useSiteSettings } from "@/hooks/useSiteSettings";
 import { isHtmlText, stripHtml } from "@/lib/text";
 import { translateMaterialCategory, translateMaterialType, translateSpaceLabel } from "@/i18n/displayLabels";
 
@@ -57,6 +57,7 @@ const copy = {
 const MaterialDetail = () => {
   const { slug } = useParams<{ slug: string }>();
   const { language } = useLanguage();
+  const settings = useSiteSettings();
   const t = copy[language];
 
   let fallbackMaterial = null;
@@ -173,7 +174,7 @@ const MaterialDetail = () => {
                   <Link to="/quote">{t.enquire} <ArrowRight className="w-4 h-4 ml-2" /></Link>
                 </Button>
                 <Button size="lg" variant="outline" asChild>
-                  <a href={whatsappUrl()} target="_blank" rel="noopener noreferrer">
+                  <a href={settings.whatsapp_url()} target="_blank" rel="noopener noreferrer">
                     <WhatsAppIcon className="w-[18px] h-[18px] mr-2 text-[#25D366]" /> {t.whatsapp}
                   </a>
                 </Button>

@@ -1,4 +1,5 @@
 import { siteConfig, socialProfileUrls } from "@/config/site";
+import { useSiteSettings } from "@/hooks/useSiteSettings";
 
 interface JsonLdProps {
   type: "LocalBusiness" | "FAQPage" | "Service" | "WebPage";
@@ -6,16 +7,16 @@ interface JsonLdProps {
   faqs?: { question: string; answer: string }[];
 }
 
-const organizationData = {
+const createOrganizationData = (settings: ReturnType<typeof useSiteSettings>) => ({
   "@context": "https://schema.org",
   "@type": "Organization",
-  name: siteConfig.name,
-  alternateName: "闪铸设计",
+  name: settings.company_name,
+  alternateName: settings.brand_name,
   url: siteConfig.url,
-  logo: siteConfig.logoUrl,
+  logo: settings.logo_url,
   contactPoint: {
     "@type": "ContactPoint",
-    telephone: siteConfig.phoneE164,
+    telephone: settings.phone_e164,
     contactType: "customer service",
     areaServed: "MY",
     availableLanguage: ["English", "Malay", "Chinese"],
@@ -29,19 +30,19 @@ const organizationData = {
     addressCountry: "MY",
   },
   sameAs: socialProfileUrls,
-};
+});
 
-const localBusinessData = {
+const createLocalBusinessData = (settings: ReturnType<typeof useSiteSettings>) => ({
   "@context": "https://schema.org",
   "@type": "HomeAndConstructionBusiness",
   "@id": `${siteConfig.url}/#localbusiness`,
-  name: siteConfig.name,
-  alternateName: "闪铸设计",
+  name: settings.company_name,
+  alternateName: settings.brand_name,
   description:
     "Professional renovation, interior design, custom built-in furniture, kitchen renovation, bathroom renovation, office fit-out, and commercial renovation services in Kuala Lumpur and Selangor, Malaysia. SSM registered company with 10+ years experience and 200+ completed projects.",
   url: siteConfig.url,
-  telephone: siteConfig.phoneE164,
-  email: siteConfig.email,
+  telephone: settings.phone_e164,
+  email: settings.email,
   address: {
     "@type": "PostalAddress",
     streetAddress: "94, Jalan Mega Mendung, Taman United",
@@ -78,7 +79,7 @@ const localBusinessData = {
     },
   ],
   priceRange: "$$",
-  image: siteConfig.ogImage,
+  image: settings.og_image_url,
   hasOfferCatalog: {
     "@type": "OfferCatalog",
     name: "Renovation Services",
@@ -107,21 +108,27 @@ const localBusinessData = {
     "bathroom renovation", "office renovation", "commercial renovation",
     "artistic wall coating", "Remmers", "Kuala Lumpur renovation",
   ],
+});
+
+export const JsonLdOrganization = () => {
+  const settings = useSiteSettings();
+  return (
+    <script
+      type="application/ld+json"
+      dangerouslySetInnerHTML={{ __html: JSON.stringify(createOrganizationData(settings)) }}
+    />
+  );
 };
 
-export const JsonLdOrganization = () => (
-  <script
-    type="application/ld+json"
-    dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationData) }}
-  />
-);
-
-export const JsonLdLocalBusiness = () => (
-  <script
-    type="application/ld+json"
-    dangerouslySetInnerHTML={{ __html: JSON.stringify(localBusinessData) }}
-  />
-);
+export const JsonLdLocalBusiness = () => {
+  const settings = useSiteSettings();
+  return (
+    <script
+      type="application/ld+json"
+      dangerouslySetInnerHTML={{ __html: JSON.stringify(createLocalBusinessData(settings)) }}
+    />
+  );
+};
 
 export const JsonLdFAQ = ({ faqs }: { faqs: { question: string; answer: string }[] }) => {
   const data = {
@@ -154,6 +161,7 @@ export const JsonLdService = ({
   description: string;
   areaServed?: string;
 }) => {
+  const settings = useSiteSettings();
   const data = {
     "@context": "https://schema.org",
     "@type": "Service",
@@ -162,14 +170,14 @@ export const JsonLdService = ({
     description,
     provider: {
       "@type": "HomeAndConstructionBusiness",
-      name: siteConfig.name,
+      name: settings.company_name,
       "@id": `${siteConfig.url}/#localbusiness`,
     },
     areaServed: areaServed || "Kuala Lumpur, Selangor, Malaysia",
     availableChannel: {
       "@type": "ServiceChannel",
       serviceUrl: `${siteConfig.url}/quote`,
-      servicePhone: siteConfig.phoneE164,
+      servicePhone: settings.phone_e164,
     },
   };
 
@@ -210,6 +218,7 @@ export const JsonLdWebPage = ({
   description: string;
   url: string;
 }) => {
+  const settings = useSiteSettings();
   const data = {
     "@context": "https://schema.org",
     "@type": "WebPage",
@@ -223,7 +232,7 @@ export const JsonLdWebPage = ({
     },
     provider: {
       "@type": "HomeAndConstructionBusiness",
-      name: siteConfig.name,
+      name: settings.company_name,
       "@id": `${siteConfig.url}/#localbusiness`,
     },
   };

@@ -84,8 +84,8 @@ const ProjectsSection = () => {
         <Reveal>
           <div className="mb-10 text-center md:mb-14">
             <p className="mb-3 text-[11px] font-bold uppercase tracking-[0.28em] text-gold">{copy.eyebrow}</p>
-            <h2 className="font-display mb-3 text-3xl font-bold text-white md:text-4xl">{copy.title}</h2>
-            <p className="mx-auto max-w-2xl text-sm text-white/65 md:text-base">{copy.subtitle}</p>
+            <h2 className="font-display mb-3 text-3xl font-bold text-surface-dark-foreground md:text-4xl">{copy.title}</h2>
+            <p className="mx-auto max-w-2xl text-sm text-surface-dark-foreground/65 md:text-base">{copy.subtitle}</p>
           </div>
         </Reveal>
 
@@ -115,19 +115,19 @@ const ProjectsSection = () => {
                           className="h-full w-full object-cover"
                         />
                       ) : (
-                        <div className="flex h-full items-center justify-center px-6 text-center text-sm text-white/55">FLASH CAST</div>
+                        <div className="flex h-full items-center justify-center px-6 text-center text-sm text-surface-dark-foreground/55">FLASH CAST</div>
                       )}
-                      <span className="absolute left-3 top-3 rounded-sm border border-white/20 bg-black/35 px-2.5 py-1 text-[10px] font-bold uppercase tracking-widest text-white backdrop-blur-sm">
+                      <span className="absolute left-3 top-3 rounded-sm border border-white/20 bg-surface-dark/70 px-2.5 py-1 text-[10px] font-bold uppercase tracking-widest text-surface-dark-foreground backdrop-blur-sm">
                         {label}
                       </span>
                     </div>
                     <div className="card-equal-body p-5">
-                      <h3 className="mb-2 font-display text-base font-semibold text-white transition-colors group-hover:text-gold">{title}</h3>
-                      <p className="mb-3 flex items-center gap-1.5 text-xs text-white/55">
+                      <h3 className="mb-2 font-display text-base font-semibold text-surface-dark-foreground transition-colors group-hover:text-gold">{title}</h3>
+                      <p className="mb-3 flex items-center gap-1.5 text-xs text-surface-dark-foreground/55">
                         <MapPin className="h-3.5 w-3.5 text-gold" />
                         {location}
                       </p>
-                      <p className="line-clamp-2 text-xs leading-relaxed text-white/62">{description}</p>
+                      <p className="line-clamp-2 text-xs leading-relaxed text-surface-dark-foreground/62">{description}</p>
                     </div>
                   </Link>
                 </Reveal>
@@ -135,12 +135,12 @@ const ProjectsSection = () => {
             })}
           </div>
         ) : (
-          <div className="rounded-xl border border-white/10 bg-white/[0.035] p-8 text-center text-sm text-white/65">{copy.empty}</div>
+          <div className="rounded-xl border border-white/10 bg-white/[0.035] p-8 text-center text-sm text-surface-dark-foreground/65">{copy.empty}</div>
         )}
 
         <Reveal delay={500}>
           <div className="mt-10 text-center">
-            <Button variant="outline" className="btn-press border-white/25 bg-white/5 text-white hover:bg-white/12 hover:text-white" asChild>
+            <Button variant="outline" className="btn-press border-white/25 bg-white/5 text-surface-dark-foreground hover:bg-white/12 hover:text-surface-dark-foreground" asChild>
               <Link to="/projects">
                 {t("cta.viewAllProjects")} <ArrowRight className="ml-2 h-4 w-4" />
               </Link>

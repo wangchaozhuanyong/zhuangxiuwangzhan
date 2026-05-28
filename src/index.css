@@ -44,6 +44,13 @@
     --surface-dark: 30 12% 7%;
     --surface-dark-foreground: 38 22% 94%;
     --surface-elevated: 38 20% 97%;
+    --gold-foreground: 30 15% 8%;
+    --whatsapp: 142 70% 49%;
+    --whatsapp-foreground: 0 0% 100%;
+    --media-foreground: 0 0% 100%;
+    --media-muted-foreground: 0 0% 92%;
+    --media-overlay-start: 0 0% 0%;
+    --media-overlay-end: 0 0% 0%;
 
     --font-display: 'Playfair Display', serif;
     --font-body: 'Inter', sans-serif;
@@ -195,8 +202,34 @@
     background-color: hsl(var(--surface-dark));
     color: hsl(var(--surface-dark-foreground));
   }
+  .text-surface-dark-foreground {
+    color: hsl(var(--surface-dark-foreground));
+  }
   .text-gold {
     color: hsl(var(--gold));
+  }
+  .text-on-media {
+    color: hsl(var(--media-foreground));
+    text-shadow: 0 2px 12px hsl(var(--media-overlay-start) / 0.5);
+  }
+  .text-on-media-muted {
+    color: hsl(var(--media-muted-foreground) / 0.9);
+    text-shadow: 0 1px 6px hsl(var(--media-overlay-start) / 0.45);
+  }
+  .media-readable-overlay {
+    background: linear-gradient(
+      90deg,
+      hsl(var(--media-overlay-start) / 0.62) 0%,
+      hsl(var(--media-overlay-start) / 0.32) 48%,
+      hsl(var(--media-overlay-end) / 0.08) 100%
+    );
+  }
+  .adaptive-surface {
+    background-color: var(--adaptive-bg, hsl(var(--card)));
+    color: var(--adaptive-fg, hsl(var(--card-foreground)));
+  }
+  .adaptive-surface-muted {
+    color: color-mix(in srgb, var(--adaptive-fg, hsl(var(--card-foreground))) 78%, transparent);
   }
   .border-steel {
     border-color: hsl(var(--steel-light));

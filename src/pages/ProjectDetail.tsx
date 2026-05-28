@@ -9,7 +9,7 @@ import { useLanguage } from "@/i18n/LanguageContext";
 import Reveal from "@/components/Reveal";
 import PageMeta from "@/components/PageMeta";
 import { JsonLdBreadcrumb } from "@/components/JsonLd";
-import { whatsappUrl } from "@/config/site";
+import { useSiteSettings } from "@/hooks/useSiteSettings";
 import { isHtmlText, stripHtml } from "@/lib/text";
 import { translateDisplayText, translateProjectType } from "@/i18n/displayLabels";
 
@@ -161,6 +161,7 @@ const zhCopy = {
 const ProjectDetail = () => {
   const { slug } = useParams<{ slug: string }>();
   const { language } = useLanguage();
+  const settings = useSiteSettings();
   const t = language === "zh" ? zhCopy : copy.en;
   const [project, setProject] = useState<any | null | undefined>(undefined);
   const [allProjects, setAllProjects] = useState<any[]>([]);
@@ -341,7 +342,7 @@ const ProjectDetail = () => {
                   <Link to="/quote">{t.quote} <ArrowRight className="w-3.5 h-3.5 ml-1" /></Link>
                 </Button>
                 <Button size="sm" className="w-full bg-white text-neutral-800 hover:bg-white/90 border-0 btn-press shadow-md min-h-[2.75rem] text-sm font-semibold rounded-md px-6 py-2.5 justify-center" asChild>
-                  <a href={whatsappUrl()} target="_blank" rel="noopener noreferrer">
+                  <a href={settings.whatsapp_url()} target="_blank" rel="noopener noreferrer">
                     <WhatsAppIcon className="w-4 h-4 mr-1 text-[#25D366]" /> {t.whatsapp}
                   </a>
                 </Button>

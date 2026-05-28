@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Phone, X } from "lucide-react";
 import WhatsAppIcon from "@/components/WhatsAppIcon";
 import LocalizedLink from "@/components/LocalizedLink";
+import AdaptiveSurface from "@/components/AdaptiveSurface";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { useSiteSettings } from "@/hooks/useSiteSettings";
 
@@ -72,7 +73,7 @@ const FloatingCTA = () => {
     <>
       <div className="fixed inset-x-0 bottom-0 z-50 grid grid-cols-3 border-t border-border bg-background/95 pb-[env(safe-area-inset-bottom)] backdrop-blur md:hidden">
         <a href={settings.whatsapp_url()} target="_blank" rel="noopener noreferrer" className="flex min-h-14 flex-col items-center justify-center text-[11px] font-semibold text-foreground">
-          <WhatsAppIcon className="mb-1 h-5 w-5 text-[#25D366]" />
+          <WhatsAppIcon className="mb-1 h-5 w-5 text-whatsapp" />
           {t.whatsapp}
         </a>
         <a href={settings.phone_href} className="flex min-h-14 flex-col items-center justify-center border-x border-border text-[11px] font-semibold text-foreground">
@@ -87,20 +88,24 @@ const FloatingCTA = () => {
 
       <div className="fixed bottom-6 right-6 z-50 hidden w-[330px] lg:block">
         {showDesktopCta ? (
-          <div className="relative mb-3 rounded-2xl border border-white/18 bg-charcoal/92 p-4 text-white shadow-2xl backdrop-blur-md animate-fade-up">
+          <AdaptiveSurface
+            background="hsl(var(--surface-dark) / 0.92)"
+            foreground="hsl(var(--surface-dark-foreground))"
+            className="relative mb-3 rounded-2xl border border-white/18 p-4 shadow-2xl backdrop-blur-md animate-fade-up"
+          >
             <button
               type="button"
               onClick={dismissPrompt}
               aria-label={t.close}
-              className="absolute right-3 top-3 rounded-full p-1 text-white/60 transition-colors hover:bg-white/10 hover:text-white"
+              className="absolute right-3 top-3 rounded-full p-1 text-surface-dark-foreground/60 transition-colors hover:bg-white/10 hover:text-surface-dark-foreground"
             >
               <X className="h-4 w-4" />
             </button>
-            <p className="pr-6 text-sm font-medium leading-6 text-white/88">{t.prompt}</p>
+            <p className="pr-6 text-sm font-medium leading-6 text-surface-dark-foreground/90">{t.prompt}</p>
             <div className="mt-4 grid grid-cols-2 gap-2">
               <LocalizedLink
                 to="/quote"
-                className="rounded-full bg-[hsl(var(--gold))] px-4 py-2 text-center text-sm font-semibold text-charcoal transition-transform hover:scale-[1.02]"
+                className="rounded-full bg-gold px-4 py-2 text-center text-sm font-semibold text-gold-foreground transition-transform hover:scale-[1.02]"
               >
                 {t.quote}
               </LocalizedLink>
@@ -108,19 +113,19 @@ const FloatingCTA = () => {
                 href={settings.whatsapp_url("Floating desktop prompt")}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="rounded-full border border-white/25 px-4 py-2 text-center text-sm font-semibold text-white transition-colors hover:bg-white/10"
+                className="rounded-full border border-white/25 px-4 py-2 text-center text-sm font-semibold text-surface-dark-foreground transition-colors hover:bg-white/10"
               >
                 WhatsApp
               </a>
             </div>
-          </div>
+          </AdaptiveSurface>
         ) : null}
         <a
           href={settings.whatsapp_url("Floating desktop CTA")}
           target="_blank"
           rel="noopener noreferrer"
           aria-label={t.whatsappAria}
-          className="ml-auto flex w-fit translate-y-0 items-center justify-center rounded-full bg-[#25D366] px-5 py-3 text-white shadow-xl transition-all duration-500 hover:scale-105 hover:shadow-2xl active:scale-95"
+          className="ml-auto flex w-fit translate-y-0 items-center justify-center rounded-full bg-whatsapp px-5 py-3 text-whatsapp-foreground shadow-xl transition-all duration-500 hover:scale-105 hover:shadow-2xl active:scale-95"
         >
           <WhatsAppIcon className="h-5 w-5" />
           <span className="ml-2 text-sm font-semibold">{t.whatsappDesktop}</span>

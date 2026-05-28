@@ -6,6 +6,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { isSupabaseConfigured, supabase } from "@/lib/supabase";
 import AdminImageUpload from "./AdminImageUpload";
 import AdminLayout from "./AdminLayout";
+import AdminProjectImages from "./AdminProjectImages";
 
 type ModuleKey = "services" | "projects" | "materials" | "blog_posts";
 type FieldType = "text" | "textarea" | "number" | "date" | "image" | "array" | "json" | "select";
@@ -249,6 +250,7 @@ export const AdminBusinessEditor = ({ module }: { module: ModuleKey }) => {
       return;
     }
     const savedId = data.id;
+    setRecord((current) => ({ ...current, id: savedId }));
     setStatus("Saved.");
     if (generateEnglish) {
       const { error: translationError } = await supabase!.functions.invoke("generate-english-content", {
@@ -329,6 +331,7 @@ export const AdminBusinessEditor = ({ module }: { module: ModuleKey }) => {
 
         {renderGroup("core", "核心内容")}
         {renderGroup("details", "业务详情")}
+        {module === "projects" ? <AdminProjectImages projectId={record.id} /> : null}
         {renderGroup("seo", "SEO")}
         {renderGroup("english", "英文内容 / English")}
       </form>

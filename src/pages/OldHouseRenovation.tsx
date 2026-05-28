@@ -8,7 +8,7 @@ import { JsonLdBreadcrumb } from "@/components/JsonLd";
 import FAQSection from "@/components/blocks/FAQSection";
 import CTABanner from "@/components/blocks/CTABanner";
 import { useLanguage } from "@/i18n/LanguageContext";
-import { whatsappUrl } from "@/config/site";
+import { useSiteSettings } from "@/hooks/useSiteSettings";
 import heroImg from "@/assets/old-house-hero.jpg";
 import beforeAfterImg from "@/assets/old-house-before-after.jpg";
 import oldHouseServiceImg from "@/assets/services/old-house-renovation.jpg";
@@ -132,6 +132,7 @@ const content = {
 
 const OldHouseRenovation = () => {
   const { language } = useLanguage();
+  const settings = useSiteSettings();
   const t = content[language];
 
   return (
@@ -153,7 +154,7 @@ const OldHouseRenovation = () => {
               <Link to="/quote"><ArrowRight className="w-4 h-4 mr-2" /> {t.assessment}</Link>
             </Button>
             <Button size="lg" className="btn-press w-full sm:w-auto min-h-[3rem] text-sm font-semibold bg-transparent text-white border border-white/40 hover:bg-white/10 rounded-md px-8 py-3 justify-center" asChild>
-              <a href={whatsappUrl()} target="_blank" rel="noopener noreferrer"><WhatsAppIcon className="w-[18px] h-[18px] mr-2 text-[#25D366]" /> {t.whatsapp}</a>
+              <a href={settings.whatsapp_url()} target="_blank" rel="noopener noreferrer"><WhatsAppIcon className="w-[18px] h-[18px] mr-2 text-[#25D366]" /> {t.whatsapp}</a>
             </Button>
           </div>
         </div>

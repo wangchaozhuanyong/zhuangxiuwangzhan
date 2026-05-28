@@ -7,8 +7,7 @@ import { useLanguage } from "@/i18n/LanguageContext";
 import { useT } from "@/i18n/useT";
 import { switchLanguagePath } from "@/i18n/routes";
 import LocalizedLink from "@/components/LocalizedLink";
-import { whatsappUrl } from "@/config/site";
-import logoImg from "@/assets/logo-flashcast.png";
+import { useSiteSettings } from "@/hooks/useSiteSettings";
 
 interface NavItem {
   labelKey: string;
@@ -41,6 +40,7 @@ const Navbar = () => {
   const navigate = useNavigate();
   const { language, setLanguage } = useLanguage();
   const t = useT();
+  const settings = useSiteSettings();
 
   const changeLanguage = () => {
     const nextLanguage = language === "en" ? "zh" : "en";
@@ -91,7 +91,7 @@ const Navbar = () => {
       >
         <div className="mx-auto flex h-[68px] w-full max-w-7xl flex-nowrap items-center gap-2 px-4 md:h-[72px] md:px-6 xl:px-8">
           <LocalizedLink to="/" className="flex items-center shrink-0">
-            <img src={logoImg} alt="FLASH CAST SDN. BHD." className="h-8 md:h-9 w-auto object-contain drop-shadow-[0_1px_1px_rgba(255,255,255,0.45)]" />
+            <img src={settings.logo_url} alt={settings.company_name} className="h-8 md:h-9 w-auto object-contain drop-shadow-[0_1px_1px_rgba(255,255,255,0.45)]" />
           </LocalizedLink>
 
           <nav className="hidden min-w-0 flex-1 items-center gap-0.5 xl:flex">
@@ -118,8 +118,8 @@ const Navbar = () => {
               <span className={language === "zh" ? "text-foreground font-semibold" : ""}>中文</span>
             </button>
             <Button variant="ghost" size="sm" className="whitespace-nowrap text-muted-foreground hover:text-foreground" asChild>
-              <a href={whatsappUrl()} target="_blank" rel="noopener noreferrer">
-                <WhatsAppIcon className="w-4 h-4 mr-1.5 text-[#25D366]" /> WhatsApp
+              <a href={settings.whatsapp_url()} target="_blank" rel="noopener noreferrer">
+                <WhatsAppIcon className="w-4 h-4 mr-1.5 text-whatsapp" /> WhatsApp
               </a>
             </Button>
             <Button size="sm" className="font-semibold" asChild>
@@ -188,8 +188,8 @@ const Navbar = () => {
               <LocalizedLink to="/quote">{t("cta.getQuote")}</LocalizedLink>
             </Button>
             <Button size="lg" variant="outline" className="w-full h-12 text-sm font-medium justify-center" asChild>
-              <a href={whatsappUrl()} target="_blank" rel="noopener noreferrer">
-                <WhatsAppIcon className="w-4 h-4 mr-1.5 text-[#25D366]" />
+              <a href={settings.whatsapp_url()} target="_blank" rel="noopener noreferrer">
+                <WhatsAppIcon className="w-4 h-4 mr-1.5 text-whatsapp" />
                 {t("cta.whatsapp")}
               </a>
             </Button>

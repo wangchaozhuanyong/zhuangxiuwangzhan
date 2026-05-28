@@ -10,7 +10,6 @@ import PageMeta from "@/components/PageMeta";
 import { JsonLdBreadcrumb } from "@/components/JsonLd";
 import { submitContactLead } from "@/lib/leadApi";
 import { useLanguage } from "@/i18n/LanguageContext";
-import { siteConfig } from "@/config/site";
 import { useSiteSettings } from "@/hooks/useSiteSettings";
 import heroImg from "@/assets/hero-contact.jpg";
 
@@ -71,7 +70,7 @@ const copy = {
     heroAlt: "Contact FLASH CAST renovation company",
     infoTitle: "Get In Touch",
     addressTitle: "Address",
-    addressText: siteConfig.address,
+    addressText: "",
     phoneTitle: "Phone / WhatsApp",
     emailTitle: "Email",
     hoursTitle: "Business Hours",
@@ -128,7 +127,7 @@ const copy = {
     heroAlt: "联系 FLASH CAST 装修公司",
     infoTitle: "联系方式",
     addressTitle: "地址",
-    addressText: siteConfig.address,
+    addressText: "",
     phoneTitle: "电话 / WhatsApp",
     emailTitle: "电邮",
     hoursTitle: "营业时间",
@@ -244,14 +243,14 @@ const Contact = () => {
       <section className="relative min-h-[45vh] flex items-center overflow-hidden">
         <div className="absolute inset-0">
           <img src={heroImg} alt={t.heroAlt} className="w-full h-full object-cover" width={1920} height={800} />
-          <div className="absolute inset-0 bg-gradient-to-r from-black/60 via-black/30 to-transparent" />
+          <div className="absolute inset-0 media-readable-overlay" />
         </div>
         <div className="relative z-10 container-narrow px-5 md:px-8 py-20 md:py-28">
-          <p className="font-body font-semibold text-[11px] tracking-[0.3em] uppercase mb-4" style={{ color: "hsl(var(--gold))" }}>{t.heroEyebrow}</p>
-          <h1 className="font-display text-3xl md:text-5xl font-bold leading-tight mb-4 max-w-lg" style={{ color: "#fff", textShadow: "0 2px 8px rgba(0,0,0,0.5)" }}>
+          <p className="font-body font-semibold text-[11px] tracking-[0.3em] uppercase mb-4 text-gold">{t.heroEyebrow}</p>
+          <h1 className="font-display text-3xl md:text-5xl font-bold leading-tight mb-4 max-w-lg text-on-media">
             {t.heroTitle}
           </h1>
-          <p className="max-w-xl text-base md:text-lg leading-relaxed" style={{ color: "rgba(255,255,255,0.9)", textShadow: "0 1px 4px rgba(0,0,0,0.4)" }}>
+          <p className="max-w-xl text-base md:text-lg leading-relaxed text-on-media-muted">
             {t.heroText}
           </p>
         </div>
@@ -294,9 +293,9 @@ const Contact = () => {
                   <Button size="lg" className="btn-press w-full sm:w-auto min-h-[3rem] text-sm font-bold tracking-wide rounded-md px-8 py-3 justify-center" asChild>
                     <Link to="/quote">{t.quoteCta} <ArrowRight className="w-4 h-4 ml-2" /></Link>
                   </Button>
-                  <Button size="lg" className="btn-press w-full sm:w-auto min-h-[3rem] text-sm font-semibold bg-white text-neutral-800 border-0 hover:bg-white/90 shadow-md rounded-md px-8 py-3 justify-center" asChild>
+                  <Button size="lg" className="btn-press w-full sm:w-auto min-h-[3rem] text-sm font-semibold bg-card text-card-foreground border-0 hover:bg-card/90 shadow-md rounded-md px-8 py-3 justify-center" asChild>
                     <a href={settings.whatsapp_url()} target="_blank" rel="noopener noreferrer">
-                      <WhatsAppIcon className="w-[18px] h-[18px] mr-2 text-[#25D366]" /> {t.whatsappCta}
+                      <WhatsAppIcon className="w-[18px] h-[18px] mr-2 text-whatsapp" /> {t.whatsappCta}
                     </a>
                   </Button>
                 </div>

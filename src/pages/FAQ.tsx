@@ -6,7 +6,7 @@ import PageMeta from "@/components/PageMeta";
 import { JsonLdFAQ, JsonLdBreadcrumb } from "@/components/JsonLd";
 import WhatsAppIcon from "@/components/WhatsAppIcon";
 import { useLanguage } from "@/i18n/LanguageContext";
-import { whatsappUrl } from "@/config/site";
+import { useSiteSettings } from "@/hooks/useSiteSettings";
 import heroImg from "@/assets/hero-faq.jpg";
 
 const faqContent = {
@@ -130,6 +130,7 @@ const faqContent = {
 
 const FAQ = () => {
   const { language } = useLanguage();
+  const settings = useSiteSettings();
   const t = faqContent[language];
 
   return (
@@ -186,7 +187,7 @@ const FAQ = () => {
                 <Link to="/contact">{t.contact}</Link>
               </Button>
               <Button size="lg" className="btn-press w-full sm:w-auto min-h-[3rem] text-sm font-semibold bg-white text-neutral-800 border-0 hover:bg-white/90 shadow-md rounded-md px-8 py-3 justify-center" asChild>
-                <a href={whatsappUrl()} target="_blank" rel="noopener noreferrer">
+                <a href={settings.whatsapp_url()} target="_blank" rel="noopener noreferrer">
                   <WhatsAppIcon className="w-[18px] h-[18px] mr-2 text-[#25D366]" /> {t.whatsapp}
                 </a>
               </Button>

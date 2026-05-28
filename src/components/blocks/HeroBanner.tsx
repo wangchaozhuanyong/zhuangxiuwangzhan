@@ -24,27 +24,24 @@ const HeroBanner = ({ image, imageAlt, label, title, description }: HeroBannerPr
           width={1920}
           height={800}
         />
-        <div className="absolute inset-0 bg-gradient-to-r from-black/60 via-black/30 to-transparent" />
+        <div className="absolute inset-0 media-readable-overlay" />
       </div>
       <div className="relative z-10 container-narrow px-5 md:px-8 py-20 md:py-28">
         {label && (
           <p
-            className="font-body font-semibold text-[11px] tracking-[0.3em] uppercase mb-4"
-            style={{ color: "hsl(var(--gold))" }}
+            className="font-body font-semibold text-[11px] tracking-[0.3em] uppercase mb-4 text-gold"
           >
             {label}
           </p>
         )}
         <h1
-          className="font-display text-3xl md:text-5xl font-bold leading-tight mb-4 max-w-lg"
-          style={{ color: "#fff", textShadow: "0 2px 8px rgba(0,0,0,0.5)" }}
+          className="font-display text-3xl md:text-5xl font-bold leading-tight mb-4 max-w-lg text-on-media"
         >
           {title}
         </h1>
         {description && (
           <p
-            className="max-w-xl text-base md:text-lg leading-relaxed"
-            style={{ color: "rgba(255,255,255,0.9)", textShadow: "0 1px 4px rgba(0,0,0,0.4)" }}
+            className="max-w-xl text-base md:text-lg leading-relaxed text-on-media-muted"
           >
             {description}
           </p>

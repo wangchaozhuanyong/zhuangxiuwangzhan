@@ -177,7 +177,7 @@ const BeforeAfterSlider = ({
           <ChevronRight className="w-4 h-4 text-foreground -ml-1" />
         </div>
       </div>
-      <span className="absolute top-3 left-3 bg-foreground/80 text-white text-[10px] font-bold uppercase tracking-widest px-2.5 py-1 rounded-sm">
+      <span className="absolute top-3 left-3 bg-surface-dark/85 text-surface-dark-foreground text-[10px] font-bold uppercase tracking-widest px-2.5 py-1 rounded-sm">
         {beforeLabel}
       </span>
       <span className="absolute top-3 right-3 bg-white/90 text-foreground text-[10px] font-bold uppercase tracking-widest px-2.5 py-1 rounded-sm">

@@ -11,7 +11,7 @@ import PageMeta from "@/components/PageMeta";
 import { landingPages } from "@/data/landings";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { getPublishedLandingPageBySlug } from "@/lib/contentApi";
-import { whatsappUrl } from "@/config/site";
+import { useSiteSettings } from "@/hooks/useSiteSettings";
 import { isHtmlText, stripHtml } from "@/lib/text";
 import { translateDisplayText } from "@/i18n/displayLabels";
 
@@ -58,6 +58,7 @@ const zhShellCopy = {
 const LandingPage = () => {
   const { slug } = useParams<{ slug: string }>();
   const { language } = useLanguage();
+  const settings = useSiteSettings();
   const t = language === "zh" ? zhShellCopy : shellCopy.en;
   const fallbackPage = landingPages[slug || ""];
   const [page, setPage] = useState(fallbackPage || null);
@@ -126,7 +127,7 @@ const LandingPage = () => {
                 <Link to="/quote">{t.quote} <ArrowRight className="w-4 h-4 ml-2" /></Link>
               </Button>
               <Button size="lg" className="btn-press w-full sm:w-auto min-h-[3rem] text-sm font-semibold bg-white text-neutral-800 border-0 hover:bg-white/90 shadow-md rounded-md px-8 py-3 justify-center" asChild>
-                <a href={whatsappUrl()} target="_blank" rel="noopener noreferrer">
+                <a href={settings.whatsapp_url()} target="_blank" rel="noopener noreferrer">
                   <WhatsAppIcon className="w-[18px] h-[18px] mr-2 text-[#25D366]" /> {t.whatsapp}
                 </a>
               </Button>

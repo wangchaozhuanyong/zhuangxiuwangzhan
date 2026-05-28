@@ -9,7 +9,7 @@ import { getPublishedBlogPostBySlug, getPublishedBlogPosts } from "@/lib/content
 import { useLanguage } from "@/i18n/LanguageContext";
 import PageMeta from "@/components/PageMeta";
 import { JsonLdBreadcrumb } from "@/components/JsonLd";
-import { whatsappUrl } from "@/config/site";
+import { useSiteSettings } from "@/hooks/useSiteSettings";
 import { isHtmlText } from "@/lib/text";
 import { translateBlogCategory, translateKeywordLabel, translateDisplayText } from "@/i18n/displayLabels";
 
@@ -74,6 +74,7 @@ const zhCopy = {
 const BlogDetail = () => {
   const { slug } = useParams<{ slug: string }>();
   const { language } = useLanguage();
+  const settings = useSiteSettings();
   const t = language === "zh" ? zhCopy : copy.en;
   const displayText = (value: string) => translateDisplayText(value, language);
   const initialPosts = language === "zh"
@@ -201,7 +202,7 @@ const BlogDetail = () => {
                 <Link to="/quote">{t.quote} <ArrowRight className="w-4 h-4 ml-2" /></Link>
               </Button>
               <Button size="lg" className="btn-press w-full sm:w-auto min-h-[3rem] text-sm font-semibold bg-white text-neutral-800 border-0 hover:bg-white/90 shadow-md rounded-md px-8 py-3 justify-center" asChild>
-                <a href={whatsappUrl()} target="_blank" rel="noopener noreferrer">
+                <a href={settings.whatsapp_url()} target="_blank" rel="noopener noreferrer">
                   <WhatsAppIcon className="w-[18px] h-[18px] mr-2 text-[#25D366]" /> {t.whatsapp}
                 </a>
               </Button>

@@ -4,6 +4,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { fetchSiteSettings, fallbackSiteSettings, saveSiteSettings, type SiteSettings } from "@/lib/siteSettingsApi";
 import AdminLayout from "./AdminLayout";
+import AdminImageUpload from "./AdminImageUpload";
 
 const isZhBrowser = () => typeof navigator !== "undefined" && navigator.language.toLowerCase().startsWith("zh");
 
@@ -33,6 +34,8 @@ const copy = {
     saved: "设置已保存。",
   },
 };
+
+const mediaFields = new Set<keyof SiteSettings>(["logo_url", "favicon_url", "og_image_url"]);
 
 const fields: Array<{ key: keyof SiteSettings; label: string; group: "company" | "contact" | "media" | "seo" | "social"; textarea?: boolean }> = [
   { key: "company_name", label: "Company Name / 公司名称", group: "company" },
@@ -97,6 +100,18 @@ const AdminWebsiteSettings = () => {
             <label className="mb-1 block text-sm font-medium">{field.label}</label>
             {field.textarea ? (
               <Textarea rows={3} value={settings[field.key] || ""} onChange={(event) => updateField(field.key, event.target.value)} />
+            ) : mediaFields.has(field.key) ? (
+              <div className="space-y-3">
+                <Input value={settings[field.key] || ""} onChange={(event) => updateField(field.key, event.target.value)} />
+                <AdminImageUpload
+                  folder="site-settings"
+                  value={settings[field.key] || ""}
+                  onUploaded={(url) => updateField(field.key, url)}
+                />
+                {settings[field.key] ? (
+                  <img src={settings[field.key]} alt={field.label} className="max-h-20 max-w-xs rounded border border-border bg-muted object-contain p-2" />
+                ) : null}
+              </div>
             ) : (
               <Input value={settings[field.key] || ""} onChange={(event) => updateField(field.key, event.target.value)} />
             )}

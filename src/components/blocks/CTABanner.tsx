@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import { ArrowRight } from "lucide-react";
 import WhatsAppIcon from "@/components/WhatsAppIcon";
 import Reveal from "@/components/Reveal";
-import { whatsappUrl } from "@/config/site";
+import { useSiteSettings } from "@/hooks/useSiteSettings";
 
 interface CTABannerProps {
   title?: string;
@@ -25,6 +25,8 @@ const CTABanner = ({
   whatsappLabel = "WhatsApp Us",
   quotePath = "/quote",
 }: CTABannerProps) => {
+  const settings = useSiteSettings();
+
   return (
     <section className="section-padding bg-accent text-accent-foreground text-center">
       <Reveal>
@@ -44,11 +46,11 @@ const CTABanner = ({
             </Button>
             <Button
               size="lg"
-              className="btn-press w-full sm:w-auto min-h-[3rem] text-sm font-semibold bg-white text-neutral-800 border-0 hover:bg-white/90 shadow-md rounded-md px-8 py-3 justify-center"
+              className="btn-press w-full sm:w-auto min-h-[3rem] text-sm font-semibold bg-card text-card-foreground border-0 hover:bg-card/90 shadow-md rounded-md px-8 py-3 justify-center"
               asChild
             >
-              <a href={whatsappUrl()} target="_blank" rel="noopener noreferrer">
-                <WhatsAppIcon className="w-[18px] h-[18px] mr-2 text-[#25D366]" /> {whatsappLabel}
+              <a href={settings.whatsapp_url()} target="_blank" rel="noopener noreferrer">
+                <WhatsAppIcon className="w-[18px] h-[18px] mr-2 text-whatsapp" /> {whatsappLabel}
               </a>
             </Button>
           </div>
