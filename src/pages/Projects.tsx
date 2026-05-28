@@ -3,6 +3,7 @@ import Link from "@/components/LocalizedLink";
 import { Button } from "@/components/ui/button";
 import { MapPin, ArrowRight } from "lucide-react";
 import WhatsAppIcon from "@/components/WhatsAppIcon";
+import SmartImage from "@/components/SmartImage";
 import { getPublishedProjects } from "@/lib/contentApi";
 import { useLanguage } from "@/i18n/LanguageContext";
 import Reveal from "@/components/Reveal";
@@ -139,7 +140,7 @@ const Projects = () => {
         </div>
       </section>
 
-      <section className="section-padding bg-background">
+      <section className="section-padding-next bg-background">
         <div className="container-narrow">
           <Reveal>
             <div className="flex flex-wrap gap-2 mb-8 justify-center">
@@ -164,12 +165,12 @@ const Projects = () => {
               <Reveal key={project.id} delay={index * 80}>
                 <Link to={`/projects/${project.slug}`} className="group hover-lift block">
                   <div className="relative overflow-hidden rounded-lg aspect-[4/3] mb-4 img-zoom">
-                    <img
+                    <SmartImage
                       src={project.thumbnail || typeImageMap[project.type] || residentialImg}
                       alt={project.thumbnailAlt || `${project.title} - ${displayProjectType(project.type)} renovation in ${project.location}`}
-                      loading="lazy"
                       width={800}
                       height={500}
+                      sizes="(max-width: 768px) 92vw, 45vw"
                       className="w-full h-full object-cover"
                     />
                     <div className="absolute top-3 left-3">
