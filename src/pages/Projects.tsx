@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "@/components/LocalizedLink";
 import { Button } from "@/components/ui/button";
 import { MapPin, ArrowRight } from "lucide-react";
@@ -100,6 +100,16 @@ const Projects = () => {
   const { language } = useLanguage();
   const settings = useSiteSettings();
   const [projects, setProjects] = useState<any[]>([]);
+  const categoryBarRef = useRef<HTMLDivElement | null>(null);
+  const categoryButtonRefs = useRef<Record<(typeof categories)[number], HTMLButtonElement | null>>({
+    All: null,
+    Residential: null,
+    Commercial: null,
+    "Built-In": null,
+    Warehouse: null,
+    Exterior: null,
+    Office: null,
+  });
   const pageCopy = copy[language];
   const filtered = filter === "All" ? projects : projects.filter((project) => project.type === filter);
   const displayProjectType = (value: string) => translateProjectType(value, language);
@@ -108,12 +118,30 @@ const Projects = () => {
   const displayProjectDescription = (project: any) =>
     language === "zh" ? String(project.description || "").replace(new RegExp(String(project.type || "").replace(/[.*+?^${}()|[\]\\]/g, "\\$&"), "gi"), displayProjectType(project.type)) : project.description;
 
+  const scrollCategoryIntoView = (category: (typeof categories)[number]) => {
+    const bar = categoryBarRef.current;
+    const target = categoryButtonRefs.current[category];
+    if (!bar || !target) return;
+
+    const prefersReducedMotion =
+      typeof window !== "undefined" && window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
+    const behavior: ScrollBehavior = prefersReducedMotion ? "auto" : "smooth";
+
+    const barRect = bar.getBoundingClientRect();
+    const targetRect = target.getBoundingClientRect();
+    const currentLeft = bar.scrollLeft;
+    const offsetWithinBar = targetRect.left - barRect.left;
+    const nextLeft = currentLeft + offsetWithinBar - (barRect.width - targetRect.width) / 2;
+
+    bar.scrollTo({ left: Math.max(0, nextLeft), behavior });
+  };
+
   useEffect(() => {
     void getPublishedProjects(language).then(setProjects);
   }, [language]);
 
   return (
-    <main className="pt-16">
+    <main className="pt-16 pb-20 md:pb-0">
       <PageMeta
         title={pageCopy.metaTitle}
         description={pageCopy.metaDescription}
@@ -141,14 +169,28 @@ const Projects = () => {
       </section>
 
       <section className="section-padding-next bg-background">
-        <div className="container-narrow">
+        <div className="container-narrow px-5 md:px-8">
           <Reveal>
-            <div className="flex flex-wrap gap-2 mb-8 justify-center">
+            <div className="-mx-5 md:mx-0 mb-8">
+              <div
+                ref={categoryBarRef}
+                className="flex gap-2 overflow-x-auto scrollbar-hide scroll-fade-right px-5 md:px-0 py-1 md:flex-wrap md:justify-center md:overflow-visible md:[mask-image:none] md:[-webkit-mask-image:none]"
+                role="tablist"
+                aria-label={language === "zh" ? "项目分类筛选" : "Project category filter"}
+              >
               {categories.map((category) => (
                 <button
                   key={category}
-                  onClick={() => setFilter(category)}
-                  className={`px-4 py-2 rounded-full text-sm font-medium transition-all duration-300 btn-press ${
+                  onClick={() => {
+                    setFilter(category);
+                    requestAnimationFrame(() => scrollCategoryIntoView(category));
+                  }}
+                  ref={(node) => {
+                    categoryButtonRefs.current[category] = node;
+                  }}
+                  role="tab"
+                  aria-selected={filter === category}
+                  className={`shrink-0 px-4 py-2 rounded-full text-sm font-medium transition-all duration-300 btn-press ${
                     filter === category
                       ? "bg-accent text-accent-foreground shadow-md"
                       : "bg-muted text-muted-foreground hover:bg-accent/10"
@@ -157,6 +199,7 @@ const Projects = () => {
                   {categoryLabels[language][category]}
                 </button>
               ))}
+              </div>
             </div>
           </Reveal>
 

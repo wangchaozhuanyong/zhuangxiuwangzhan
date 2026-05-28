@@ -1,6 +1,8 @@
 import Reveal from "@/components/Reveal";
 import { ShieldCheck, Star, Clock, Users } from "lucide-react";
 import { useLanguage } from "@/i18n/LanguageContext";
+import { useEffect, useMemo, useState } from "react";
+import { getPublishedHomeSection } from "@/lib/homeContentApi";
 
 const stats = {
   en: [
@@ -17,14 +19,53 @@ const stats = {
   ],
 };
 
+const iconMap: Record<string, any> = {
+  star: Star,
+  clock: Clock,
+  users: Users,
+  shieldcheck: ShieldCheck,
+  shield_check: ShieldCheck,
+  shield: ShieldCheck,
+};
+
 const StatsSection = () => {
   const { language } = useLanguage();
+  const [items, setItems] = useState<any[] | null>(null);
+
+  useEffect(() => {
+    let active = true;
+    setItems(null);
+    void getPublishedHomeSection(language, "stats").then((section) => {
+      if (!active) return;
+      const list = Array.isArray(section?.items) ? section!.items : [];
+      setItems(list.length ? list : []);
+    });
+    return () => {
+      active = false;
+    };
+  }, [language]);
+
+  const display = useMemo(() => {
+    if (!items) return stats[language];
+    if (items.length === 0) return stats[language];
+    return items.map((item: any) => {
+      const key = String(item.icon || "").toLowerCase().replace(/\s+/g, "");
+      const Icon = iconMap[key] || Star;
+      return {
+        icon: Icon,
+        value: String(item.value || ""),
+        label: language === "zh" ? String(item.label_zh || item.label_en || "") : String(item.label_en || item.label_zh || ""),
+        desc: language === "zh" ? String(item.desc_zh || item.desc_en || "") : String(item.desc_en || item.desc_zh || ""),
+        iconClass: "text-gold",
+      };
+    });
+  }, [items, language]);
 
   return (
     <section className="bg-background py-10 md:py-14 lg:py-16 border-b border-border/70" id="trust">
       <div className="container-narrow px-5 md:px-8">
         <div className="grid grid-cols-1 items-stretch gap-5 sm:grid-cols-2 lg:grid-cols-4 md:gap-6">
-          {stats[language].map((stat, i) => {
+          {display.map((stat: any, i: number) => {
             const Icon = stat.icon;
             return (
               <Reveal key={i} delay={i * 80}>

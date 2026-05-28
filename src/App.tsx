@@ -47,18 +47,19 @@ const AdminLeadDetail = lazy(() => import("./pages/admin/AdminLeadDetail"));
 const AdminQuoteList = lazy(() => import("./pages/admin/AdminQuoteList"));
 const AdminQuoteDetail = lazy(() => import("./pages/admin/AdminQuoteDetail"));
 const AdminComingSoon = lazy(() => import("./pages/admin/AdminComingSoon"));
-const AdminBusinessContent = lazy(() => import("./pages/admin/AdminBusinessContent").then((module) => ({ default: () => <module.AdminBusinessList module="services" /> })));
-const AdminServiceEditor = lazy(() => import("./pages/admin/AdminBusinessContent").then((module) => ({ default: () => <module.AdminBusinessEditor module="services" /> })));
-const AdminProjectList = lazy(() => import("./pages/admin/AdminBusinessContent").then((module) => ({ default: () => <module.AdminBusinessList module="projects" /> })));
-const AdminProjectEditor = lazy(() => import("./pages/admin/AdminBusinessContent").then((module) => ({ default: () => <module.AdminBusinessEditor module="projects" /> })));
-const AdminMaterialList = lazy(() => import("./pages/admin/AdminBusinessContent").then((module) => ({ default: () => <module.AdminBusinessList module="materials" /> })));
-const AdminMaterialEditor = lazy(() => import("./pages/admin/AdminBusinessContent").then((module) => ({ default: () => <module.AdminBusinessEditor module="materials" /> })));
-const AdminBlogList = lazy(() => import("./pages/admin/AdminBusinessContent").then((module) => ({ default: () => <module.AdminBusinessList module="blog_posts" /> })));
-const AdminBlogEditor = lazy(() => import("./pages/admin/AdminBusinessContent").then((module) => ({ default: () => <module.AdminBusinessEditor module="blog_posts" /> })));
+const AdminServiceList = lazy(() => import("./pages/admin/AdminServiceList"));
+const AdminServiceEditor = lazy(() => import("./pages/admin/AdminServiceEditor"));
+const AdminProjectList = lazy(() => import("./pages/admin/AdminProjectList"));
+const AdminProjectEditor = lazy(() => import("./pages/admin/AdminProjectEditor"));
+const AdminMaterialList = lazy(() => import("./pages/admin/AdminMaterialList"));
+const AdminMaterialEditor = lazy(() => import("./pages/admin/AdminMaterialEditor"));
+const AdminBlogList = lazy(() => import("./pages/admin/AdminBlogList"));
+const AdminBlogEditor = lazy(() => import("./pages/admin/AdminBlogEditor"));
 const AdminMediaLibrary = lazy(() => import("./pages/admin/AdminMediaLibrary"));
 const AdminSeoManager = lazy(() => import("./pages/admin/AdminSeoManager"));
 const AdminUsers = lazy(() => import("./pages/admin/AdminUsers"));
-const AdminHomeSections = lazy(() => import("./pages/admin/AdminSimpleCms").then((module) => ({ default: () => <module.default module="home_sections" /> })));
+const AdminHomeEditor = lazy(() => import("./pages/admin/AdminHomeEditor"));
+const AdminAboutEditor = lazy(() => import("./pages/admin/AdminAboutEditor"));
 const AdminFaqs = lazy(() => import("./pages/admin/AdminSimpleCms").then((module) => ({ default: () => <module.default module="faqs" /> })));
 const AdminBeforeAfter = lazy(() => import("./pages/admin/AdminSimpleCms").then((module) => ({ default: () => <module.default module="before_after_items" /> })));
 const AdminBrandPartners = lazy(() => import("./pages/admin/AdminSimpleCms").then((module) => ({ default: () => <module.default module="brand_partners" /> })));
@@ -99,12 +100,12 @@ const AppShell = () => {
             <Route path="/admin/leads/:id" element={<AdminRoute><AdminLeadDetail /></AdminRoute>} />
             <Route path="/admin/quotes" element={<AdminRoute><AdminQuoteList /></AdminRoute>} />
             <Route path="/admin/quotes/:id" element={<AdminRoute><AdminQuoteDetail /></AdminRoute>} />
-            <Route path="/admin/home" element={<AdminRoute><AdminHomeSections /></AdminRoute>} />
-            <Route path="/admin/about" element={<AdminRoute><AdminComingSoon /></AdminRoute>} />
+            <Route path="/admin/home" element={<AdminRoute><AdminHomeEditor /></AdminRoute>} />
+            <Route path="/admin/about" element={<AdminRoute><AdminAboutEditor /></AdminRoute>} />
             <Route path="/admin/faqs" element={<AdminRoute><AdminFaqs /></AdminRoute>} />
             <Route path="/admin/before-after" element={<AdminRoute><AdminBeforeAfter /></AdminRoute>} />
             <Route path="/admin/brand-partners" element={<AdminRoute><AdminBrandPartners /></AdminRoute>} />
-            <Route path="/admin/services" element={<AdminRoute><AdminBusinessContent /></AdminRoute>} />
+            <Route path="/admin/services" element={<AdminRoute><AdminServiceList /></AdminRoute>} />
             <Route path="/admin/services/new" element={<AdminRoute><AdminServiceEditor /></AdminRoute>} />
             <Route path="/admin/services/:id" element={<AdminRoute><AdminServiceEditor /></AdminRoute>} />
             <Route path="/admin/projects" element={<AdminRoute><AdminProjectList /></AdminRoute>} />

@@ -91,7 +91,7 @@ const moduleConfig: Record<ModuleKey, { title: string; route: string; table: Mod
       { key: "suitable_spaces_zh", label: "适用空间（一行一个）", type: "array", group: "details" },
       { key: "pros_zh", label: "优点（一行一个）", type: "array", group: "details" },
       { key: "cons_zh", label: "缺点（一行一个）", type: "array", group: "details" },
-      { key: "recommended_pairing_zh", label: "推荐搭配（一行一个）", type: "array", group: "details" },
+      { key: "recommended_pairing_zh", label: "推荐搭配（文本）", type: "textarea", group: "details" },
       { key: "note_zh", label: "备注", type: "textarea", group: "details" },
       { key: "seo_title_zh", label: "中文 SEO 标题", group: "seo" },
       { key: "seo_description_zh", label: "中文 SEO 描述", type: "textarea", group: "seo" },
@@ -127,7 +127,19 @@ const moduleConfig: Record<ModuleKey, { title: string; route: string; table: Mod
 };
 
 const statusOptions = ["draft", "published", "archived"];
-const arrayFields = new Set(["tags", "materials", "scope", "suitable_for_zh", "common_projects_zh", "scope_items_zh", "highlights_zh", "suitable_spaces_zh", "pros_zh", "cons_zh", "recommended_pairing_zh"]);
+// NOTE: materials.recommended_pairing_zh/en are TEXT in DB (not text[]). Keep them as textarea, not array.
+const arrayFields = new Set([
+  "tags",
+  "materials",
+  "scope",
+  "suitable_for_zh",
+  "common_projects_zh",
+  "scope_items_zh",
+  "highlights_zh",
+  "suitable_spaces_zh",
+  "pros_zh",
+  "cons_zh",
+]);
 const jsonFields = new Set(["faqs_zh"]);
 
 const emptyRecord = { status: "draft", sort_order: 0 };

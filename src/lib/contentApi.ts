@@ -113,6 +113,11 @@ export const getPublishedProjects = async (language: "en" | "zh") => {
   const localize = (value: string) => (language === "zh" ? translateDisplayText(value, language) : value);
 
   return data.map((item: any) => ({
+    // images priority:
+    // - cover: project_images(image_type='cover')
+    // - then gallery
+    // - then before/after (still part of the full list)
+    // - finally fallback to projects.image_url if DB images are empty
     id: item.id,
     slug: item.slug,
     title: localize(item[`title_${language}`] || item.title_en || item.title_zh || ""),
@@ -128,10 +133,46 @@ export const getPublishedProjects = async (language: "en" | "zh") => {
     scope: item.scope || [],
     highlights: (item[`highlights_${language}`] || item.highlights_en || item.highlights_zh || []).map((value: string) => localize(value)),
     duration: item.duration || "",
-    images: (item.project_images || []).sort((a: any, b: any) => a.sort_order - b.sort_order).map((image: any) => image.image_url),
-    imageAlts: (item.project_images || []).sort((a: any, b: any) => a.sort_order - b.sort_order).map((image: any) => image[`alt_${language}`] || image.alt_en || image.alt_zh || item[`title_${language}`] || item.title_en || item.title_zh),
-    thumbnail: item.project_images?.[0]?.image_url || "",
-    thumbnailAlt: item.project_images?.[0]?.[`alt_${language}`] || item.project_images?.[0]?.alt_en || item.project_images?.[0]?.alt_zh || item[`title_${language}`] || item.title_en || item.title_zh,
+    images: (() => {
+      const all = (item.project_images || []).slice().sort((a: any, b: any) => a.sort_order - b.sort_order);
+      const cover = all.filter((img: any) => img.image_type === "cover");
+      const gallery = all.filter((img: any) => img.image_type === "gallery");
+      const beforeAfter = all.filter((img: any) => img.image_type === "before" || img.image_type === "after");
+      const urls = [...cover, ...gallery, ...beforeAfter].map((img: any) => img.image_url).filter(Boolean);
+      return urls.length ? urls : item.image_url ? [item.image_url] : [];
+    })(),
+    imageAlts: (() => {
+      const all = (item.project_images || []).slice().sort((a: any, b: any) => a.sort_order - b.sort_order);
+      const cover = all.filter((img: any) => img.image_type === "cover");
+      const gallery = all.filter((img: any) => img.image_type === "gallery");
+      const beforeAfter = all.filter((img: any) => img.image_type === "before" || img.image_type === "after");
+      const ordered = [...cover, ...gallery, ...beforeAfter];
+      const fallbackAlt = item[`title_${language}`] || item.title_en || item.title_zh;
+      const alts = ordered
+        .map((img: any) => img[`alt_${language}`] || img.alt_en || img.alt_zh || fallbackAlt)
+        .filter(Boolean);
+      return alts.length ? alts : fallbackAlt ? [fallbackAlt] : [];
+    })(),
+    thumbnail: (() => {
+      const all = (item.project_images || []).slice().sort((a: any, b: any) => a.sort_order - b.sort_order);
+      const cover = all.find((img: any) => img.image_type === "cover");
+      const galleryFirst = all.find((img: any) => img.image_type === "gallery");
+      return cover?.image_url || galleryFirst?.image_url || item.image_url || "";
+    })(),
+    thumbnailAlt: (() => {
+      const all = (item.project_images || []).slice().sort((a: any, b: any) => a.sort_order - b.sort_order);
+      const cover = all.find((img: any) => img.image_type === "cover");
+      const galleryFirst = all.find((img: any) => img.image_type === "gallery");
+      const chosen = cover || galleryFirst;
+      return (
+        chosen?.[`alt_${language}`] ||
+        chosen?.alt_en ||
+        chosen?.alt_zh ||
+        item[`title_${language}`] ||
+        item.title_en ||
+        item.title_zh
+      );
+    })(),
   }));
 };
 
@@ -217,12 +258,18 @@ export const getPublishedProjectBySlug = async (slug: string, language: "en" | "
 
   if (error || !data) return fallbackProjects();
 
-  const images = (data.project_images || [])
-    .sort((a: any, b: any) => a.sort_order - b.sort_order)
-    .map((image: any) => image.image_url);
-  const imageAlts = (data.project_images || [])
-    .sort((a: any, b: any) => a.sort_order - b.sort_order)
-    .map((image: any) => image[`alt_${language}`] || image.alt_en || image.alt_zh || data[`title_${language}`] || data.title_en || data.title_zh);
+  const orderedImages = (data.project_images || []).slice().sort((a: any, b: any) => a.sort_order - b.sort_order);
+  const cover = orderedImages.filter((img: any) => img.image_type === "cover");
+  const gallery = orderedImages.filter((img: any) => img.image_type === "gallery");
+  const beforeAfter = orderedImages.filter((img: any) => img.image_type === "before" || img.image_type === "after");
+  const imageRecords = [...cover, ...gallery, ...beforeAfter];
+  const fallbackUrl = data.image_url ? [data.image_url] : [];
+  const fallbackAlt = data[`title_${language}`] || data.title_en || data.title_zh;
+
+  const images = imageRecords.map((img: any) => img.image_url).filter(Boolean);
+  const imageAlts = imageRecords
+    .map((img: any) => img[`alt_${language}`] || img.alt_en || img.alt_zh || fallbackAlt)
+    .filter(Boolean);
 
   return {
     id: data.id,
@@ -239,10 +286,18 @@ export const getPublishedProjectBySlug = async (slug: string, language: "en" | "
     budget: data.budget || "",
     area: data.area || "",
     testimonial: "",
-    images,
-    imageAlts,
-    thumbnail: images[0] || "",
-    thumbnailAlt: imageAlts[0] || data[`title_${language}`] || data.title_en || data.title_zh,
+    images: images.length ? images : fallbackUrl,
+    imageAlts: imageAlts.length ? imageAlts : fallbackAlt ? [fallbackAlt] : [],
+    thumbnail: (cover[0]?.image_url || gallery[0]?.image_url || images[0] || data.image_url || ""),
+    thumbnailAlt:
+      (cover[0]?.[`alt_${language}`] ||
+        cover[0]?.alt_en ||
+        cover[0]?.alt_zh ||
+        gallery[0]?.[`alt_${language}`] ||
+        gallery[0]?.alt_en ||
+        gallery[0]?.alt_zh ||
+        imageAlts[0] ||
+        fallbackAlt),
   };
 };
 

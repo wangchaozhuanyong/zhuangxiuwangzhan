@@ -124,6 +124,24 @@ const AdminProjectImages = ({ projectId }: AdminProjectImagesProps) => {
     if (error) setStatus(error.message);
   };
 
+  const setAsCover = async (image: any) => {
+    if (!projectId) return;
+    setStatus("");
+    // Ensure "single cover": reset other cover images to gallery, then set this one as cover.
+    const { error: resetError } = await supabase!
+      .from("project_images")
+      .update({ image_type: "gallery" })
+      .eq("project_id", projectId)
+      .eq("image_type", "cover");
+    if (resetError) {
+      setStatus(resetError.message);
+      return;
+    }
+    await updateImage(image, { image_type: "cover", sort_order: 0 });
+    await loadImages();
+    setStatus(lang === "zh" ? "已设为封面（前台列表将优先显示该图）。" : "Cover image updated.");
+  };
+
   const deleteImage = async (id: string) => {
     const { error } = await supabase!.from("project_images").delete().eq("id", id);
     if (error) {
@@ -146,6 +164,13 @@ const AdminProjectImages = ({ projectId }: AdminProjectImagesProps) => {
       <div className="mb-4">
         <h3 className="font-display text-lg font-bold">{t.title}</h3>
         <p className="text-sm text-muted-foreground">{t.description}</p>
+      </div>
+      <div className="mb-4 rounded-lg border border-border bg-muted/40 p-3 text-xs text-muted-foreground">
+        <p className="font-medium text-foreground mb-1">封面图规则（已与前台统一）</p>
+        <ul className="list-disc pl-5 space-y-0.5">
+          <li>前台列表/详情缩略图：优先使用 <code>project_images</code> 中 <code>image_type='cover'</code> 的图片。</li>
+          <li>没有 cover 时，使用第一张 gallery；仍没有则回退到 <code>projects.image_url</code>；最后使用默认图。</li>
+        </ul>
       </div>
       {status && <div className="mb-4 rounded-lg bg-muted p-3 text-sm">{status}</div>}
       <div className="mb-6 grid gap-4 md:grid-cols-2">
@@ -174,6 +199,7 @@ const AdminProjectImages = ({ projectId }: AdminProjectImagesProps) => {
             <TableHead>{t.type}</TableHead>
             <TableHead>{t.alt}</TableHead>
             <TableHead>{t.sort}</TableHead>
+            <TableHead>操作</TableHead>
             <TableHead />
           </TableRow>
         </TableHeader>
@@ -185,6 +211,13 @@ const AdminProjectImages = ({ projectId }: AdminProjectImagesProps) => {
               <TableCell className="max-w-xs text-xs text-muted-foreground">{image.alt_zh}<br />{image.alt_en}</TableCell>
               <TableCell>
                 <Input className="w-20" type="number" value={image.sort_order || 0} onChange={(event) => updateImage(image, { sort_order: Number(event.target.value || 0) })} />
+              </TableCell>
+              <TableCell>
+                <div className="flex flex-wrap gap-2">
+                  <Button type="button" variant="outline" size="sm" onClick={() => void setAsCover(image)} disabled={image.image_type === "cover"}>
+                    设为封面
+                  </Button>
+                </div>
               </TableCell>
               <TableCell className="text-right">
                 <Button type="button" variant="destructive" size="sm" onClick={() => deleteImage(image.id)}>{t.delete}</Button>

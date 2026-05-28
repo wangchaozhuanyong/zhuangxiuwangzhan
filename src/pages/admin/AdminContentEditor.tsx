@@ -173,6 +173,9 @@ const arrayLikeFields = new Set([
 
 const jsonFields = new Set(["faqs_zh", "faqs_en", "projects", "process_steps_zh", "process_steps_en", "related_projects"]);
 const imageFields = new Set(["image_url", "cover_image_url", "hero_image_url"]);
+
+// materials.recommended_pairing_zh/en are TEXT columns (not text[]). Keep them as textarea.
+const longTextFields = new Set(["recommended_pairing_zh", "recommended_pairing_en", "note_zh", "note_en"]);
 const autoTranslateTables = new Set(["services", "projects", "blog_posts", "materials", "testimonials", "hero_slides", "service_areas", "landing_pages"]);
 const readOnlyTables = new Set(["translation_jobs"]);
 const readOnlyFields = new Set(["created_at", "updated_at", "regenerated_at"]);
@@ -650,7 +653,7 @@ const AdminContentEditor = () => {
                 <label className="mb-1 block text-sm font-medium">{translateFieldLabel(field, lang)}</label>
                 {readOnlyFields.has(field) ? (
                   <Input value={formatFieldValue(field, record[field])} readOnly className="bg-muted text-muted-foreground" />
-                ) : field.includes("content") || field.includes("description") ? (
+                ) : field.includes("content") || field.includes("description") || longTextFields.has(field) ? (
                   <Textarea rows={5} value={formatFieldValue(field, record[field])} onChange={(event) => setRecord({ ...record, [field]: event.target.value })} />
                 ) : arrayLikeFields.has(field) || jsonFields.has(field) ? (
                   <Textarea rows={4} value={formatFieldValue(field, record[field])} onChange={(event) => setRecord({ ...record, [field]: event.target.value })} />

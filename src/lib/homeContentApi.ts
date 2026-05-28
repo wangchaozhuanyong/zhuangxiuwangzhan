@@ -24,6 +24,46 @@ export type PublishedFaq = {
   answer: string;
 };
 
+export type PublishedHomeSection = {
+  id: string;
+  section_key: string;
+  title: string;
+  subtitle: string;
+  content: string;
+  image_url?: string | null;
+  items: any[];
+};
+
+export type PublishedProcessStep = {
+  id: string;
+  step_number: number;
+  title: string;
+  description: string;
+  icon_key?: string | null;
+};
+
+export type PublishedCtaBlock = {
+  id: string;
+  block_key: string;
+  title: string;
+  description: string;
+  primary_label: string;
+  primary_url: string;
+  secondary_label: string;
+  secondary_url: string;
+  image_url?: string | null;
+};
+
+export type PublishedAboutSection = {
+  id: string;
+  section_key: string;
+  title: string;
+  subtitle: string;
+  content: string;
+  image_url?: string | null;
+  items: any[];
+};
+
 export const getPublishedBrandPartners = async (): Promise<PublishedBrandPartner[]> => {
   if (!isSupabaseConfigured) return [];
 
@@ -79,4 +119,96 @@ export const getPublishedFaqs = async (language: "en" | "zh", pageKey = "general
     question: language === "zh" ? item.question_zh || item.question_en : item.question_en || item.question_zh,
     answer: language === "zh" ? item.answer_zh || item.answer_en : item.answer_en || item.answer_zh,
   }));
+};
+
+export const getPublishedHomeSection = async (
+  language: "en" | "zh",
+  sectionKey: string,
+): Promise<PublishedHomeSection | null> => {
+  if (!isSupabaseConfigured) return null;
+  const { data, error } = await supabase!
+    .from("home_sections")
+    .select("*")
+    .eq("status", "published")
+    .eq("section_key", sectionKey)
+    .order("sort_order")
+    .limit(1);
+  if (error) return null;
+  const row: any = (data || [])[0];
+  if (!row) return null;
+  return {
+    id: row.id,
+    section_key: row.section_key,
+    title: language === "zh" ? row.title_zh || row.title_en || "" : row.title_en || row.title_zh || "",
+    subtitle: language === "zh" ? row.subtitle_zh || row.subtitle_en || "" : row.subtitle_en || row.subtitle_zh || "",
+    content: language === "zh" ? row.content_zh || row.content_en || "" : row.content_en || row.content_zh || "",
+    image_url: row.image_url,
+    items: (language === "zh" ? row.items_zh || row.items_en : row.items_en || row.items_zh) || [],
+  };
+};
+
+export const getPublishedProcessSteps = async (language: "en" | "zh"): Promise<PublishedProcessStep[]> => {
+  if (!isSupabaseConfigured) return [];
+  const { data, error } = await supabase!
+    .from("process_steps")
+    .select("*")
+    .eq("status", "published")
+    .order("sort_order")
+    .order("step_number");
+  if (error) return [];
+  return (data || []).map((row: any) => ({
+    id: row.id,
+    step_number: Number(row.step_number || 0),
+    title: language === "zh" ? row.title_zh || row.title_en || "" : row.title_en || row.title_zh || "",
+    description: language === "zh" ? row.description_zh || row.description_en || "" : row.description_en || row.description_zh || "",
+    icon_key: row.icon_key || null,
+  }));
+};
+
+export const getPublishedCtaBlock = async (language: "en" | "zh", blockKey: string): Promise<PublishedCtaBlock | null> => {
+  if (!isSupabaseConfigured) return null;
+  const { data, error } = await supabase!
+    .from("cta_blocks")
+    .select("*")
+    .eq("status", "published")
+    .eq("block_key", blockKey)
+    .single();
+  if (error || !data) return null;
+  return {
+    id: data.id,
+    block_key: data.block_key,
+    title: language === "zh" ? data.title_zh || data.title_en || "" : data.title_en || data.title_zh || "",
+    description: language === "zh" ? data.description_zh || data.description_en || "" : data.description_en || data.description_zh || "",
+    primary_label: language === "zh" ? data.primary_label_zh || data.primary_label_en || "" : data.primary_label_en || data.primary_label_zh || "",
+    primary_url: data.primary_url || "/quote",
+    secondary_label: language === "zh" ? data.secondary_label_zh || data.secondary_label_en || "" : data.secondary_label_en || data.secondary_label_zh || "",
+    secondary_url: data.secondary_url || "",
+    image_url: data.image_url || null,
+  };
+};
+
+export const getPublishedAboutSection = async (
+  language: "en" | "zh",
+  sectionKey: string,
+): Promise<PublishedAboutSection | null> => {
+  if (!isSupabaseConfigured) return null;
+  const { data, error } = await supabase!
+    .from("about_sections")
+    .select("*")
+    .eq("status", "published")
+    .eq("section_key", sectionKey)
+    .order("sort_order")
+    .limit(1);
+  if (error) return null;
+  const row: any = (data || [])[0];
+  if (!row) return null;
+  return {
+    id: row.id,
+    section_key: row.section_key,
+    title: language === "zh" ? row.title_zh || row.title_en || "" : row.title_en || row.title_zh || "",
+    subtitle: language === "zh" ? row.subtitle_zh || row.subtitle_en || "" : row.subtitle_en || row.subtitle_zh || "",
+    content: language === "zh" ? row.content_zh || row.content_en || "" : row.content_en || row.content_zh || "",
+    image_url: row.image_url,
+    items: (language === "zh" ? row.items_zh || row.items_en : row.items_en || row.items_zh) || [],
+  };
 };

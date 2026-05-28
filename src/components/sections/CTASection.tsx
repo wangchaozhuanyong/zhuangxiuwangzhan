@@ -6,6 +6,8 @@ import Reveal from "@/components/Reveal";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { useT } from "@/i18n/useT";
 import { useSiteSettings } from "@/hooks/useSiteSettings";
+import { useEffect, useState } from "react";
+import { getPublishedCtaBlock } from "@/lib/homeContentApi";
 
 const copy = {
   en: {
@@ -24,6 +26,33 @@ const CTASection = () => {
   const t = useT();
   const settings = useSiteSettings();
   const content = copy[language];
+  const [dynamic, setDynamic] = useState<{ title?: string; description?: string; primary_label?: string; primary_url?: string } | null>(null);
+
+  useEffect(() => {
+    let active = true;
+    setDynamic(null);
+    void getPublishedCtaBlock(language, "home_final").then((block) => {
+      if (!active) return;
+      if (!block) {
+        setDynamic({});
+        return;
+      }
+      setDynamic({
+        title: block.title,
+        description: block.description,
+        primary_label: block.primary_label,
+        primary_url: block.primary_url,
+      });
+    });
+    return () => {
+      active = false;
+    };
+  }, [language]);
+
+  const title = dynamic?.title || content.title;
+  const description = dynamic?.description || content.description;
+  const primaryLabel = dynamic?.primary_label || t("cta.getQuote");
+  const primaryUrl = dynamic?.primary_url || "/quote";
 
   return (
     <section className="bg-surface-dark section-padding relative overflow-hidden" id="cta">
@@ -35,10 +64,10 @@ const CTASection = () => {
         <Reveal>
           <div className="relative mx-auto max-w-2xl text-center">
             <h2 className="font-display text-3xl md:text-4xl font-bold mb-4 text-surface-dark-foreground">
-              {content.title}
+              {title}
             </h2>
             <p className="text-base md:text-lg mb-8 leading-relaxed text-surface-dark-foreground/80">
-              {content.description}
+              {description}
             </p>
             <div className="flex flex-col sm:flex-row gap-3 justify-center">
               <Button
@@ -46,8 +75,8 @@ const CTASection = () => {
                 className="btn-press min-h-[3rem] text-sm font-bold tracking-wide bg-card text-card-foreground hover:bg-card/90 rounded-md px-8 py-3"
                 asChild
               >
-                <Link to="/quote">
-                  <ArrowRight className="w-4 h-4 mr-2" /> {t("cta.getQuote")}
+                <Link to={primaryUrl}>
+                  <ArrowRight className="w-4 h-4 mr-2" /> {primaryLabel}
                 </Link>
               </Button>
               <Button

@@ -1,47 +1,37 @@
-import { ReactNode, useEffect, useState } from "react";
-import { Navigate } from "react-router-dom";
-import { isSupabaseConfigured, supabase } from "@/lib/supabase";
+import { useMemo } from "react";
+import { Link, Navigate, Outlet } from "react-router-dom";
+import { Button } from "@/components/ui/button";
+import { supabase } from "@/lib/supabase";
+import { useAdminAuth } from "@/pages/admin/AdminAuthProvider";
 
-type AuthState = "checking" | "signed-in" | "signed-out" | "denied";
+const isZhBrowser = () => typeof navigator !== "undefined" && navigator.language.toLowerCase().startsWith("zh");
 
-const AdminRoute = ({ children }: { children: ReactNode }) => {
-  const [authState, setAuthState] = useState<AuthState>("checking");
+const AdminRoute = () => {
+  const { state: authState, isSupabaseConfigured } = useAdminAuth();
+  const lang = useMemo(() => (isZhBrowser() ? "zh" : "en"), []);
 
-  useEffect(() => {
-    if (!isSupabaseConfigured) {
-      setAuthState("signed-in");
-      return;
-    }
-
-    let active = true;
-
-    const check = async () => {
-      const { data } = await supabase!.auth.getSession();
-      if (!active) return;
-
-      if (!data.session) {
-        setAuthState("signed-out");
-        return;
-      }
-
-      const { data: isAdmin, error } = await supabase!.rpc("is_admin");
-      if (!active) return;
-      setAuthState(!error && isAdmin ? "signed-in" : "denied");
-    };
-
-    void check();
-
-    const { data: listener } = supabase!.auth.onAuthStateChange(() => {
-      void check();
-    });
-
-    return () => {
-      active = false;
-      listener.subscription.unsubscribe();
-    };
-  }, []);
-
-  if (!isSupabaseConfigured) return <>{children}</>;
+  if (!isSupabaseConfigured) {
+    return (
+      <main className="min-h-screen bg-muted px-4 pt-24">
+        <div className="mx-auto max-w-2xl rounded-xl border border-border bg-card p-8">
+          <h1 className="font-display text-2xl font-bold mb-3">{lang === "zh" ? "Supabase 未配置" : "Supabase is not configured"}</h1>
+          <p className="text-muted-foreground mb-5">
+            {lang === "zh"
+              ? "请在环境变量中添加 VITE_SUPABASE_URL 和 VITE_SUPABASE_ANON_KEY 后再使用后台。"
+              : "Add VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY to your environment to enable the admin panel."}
+          </p>
+          <div className="flex flex-wrap items-center gap-2">
+            <Button asChild variant="outline">
+              <Link to={lang === "zh" ? "/zh" : "/en"}>{lang === "zh" ? "返回网站" : "Back to website"}</Link>
+            </Button>
+            <Button asChild>
+              <Link to="/admin">{lang === "zh" ? "返回登录页" : "Back to login"}</Link>
+            </Button>
+          </div>
+        </div>
+      </main>
+    );
+  }
 
   if (authState === "checking") {
     return (
@@ -54,9 +44,35 @@ const AdminRoute = ({ children }: { children: ReactNode }) => {
     );
   }
   if (authState === "signed-out") return <Navigate to="/admin" replace />;
-  if (authState === "denied") return <Navigate to="/admin" replace />;
+  if (authState === "denied") {
+    return (
+      <main className="min-h-screen bg-muted px-4 pt-24">
+        <div className="mx-auto max-w-md rounded-xl border border-border bg-card p-8">
+          <h1 className="font-display text-2xl font-bold mb-3">{lang === "zh" ? "需要管理员权限" : "Admin access required"}</h1>
+          <p className="text-muted-foreground mb-5">
+            {lang === "zh"
+              ? "当前账号已登录，但未被列为管理员。请联系站点负责人为你开通权限。"
+              : "Your account is signed in, but it is not listed as an admin."}
+          </p>
+          <div className="flex flex-wrap items-center gap-2">
+            <Button
+              onClick={async () => {
+                await supabase?.auth.signOut();
+                window.location.href = "/admin";
+              }}
+            >
+              {lang === "zh" ? "退出登录" : "Sign out"}
+            </Button>
+            <Button asChild variant="outline">
+              <Link to={lang === "zh" ? "/zh" : "/en"}>{lang === "zh" ? "返回网站" : "Back to website"}</Link>
+            </Button>
+          </div>
+        </div>
+      </main>
+    );
+  }
 
-  return <>{children}</>;
+  return <Outlet />;
 };
 
 export default AdminRoute;

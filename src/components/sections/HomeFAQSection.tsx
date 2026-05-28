@@ -4,14 +4,37 @@ import { Button } from "@/components/ui/button";
 import { ArrowRight } from "lucide-react";
 import Reveal from "@/components/Reveal";
 import { useT } from "@/i18n/useT";
+import { useEffect, useState } from "react";
+import { useLanguage } from "@/i18n/LanguageContext";
+import { getPublishedFaqs } from "@/lib/homeContentApi";
 
 const HomeFAQSection = () => {
   const t = useT();
+  const { language } = useLanguage();
+  const [dynamicFaqs, setDynamicFaqs] = useState<{ q: string; a: string }[] | null>(null);
 
   const faqs = Array.from({ length: 7 }, (_, i) => ({
     q: t(`faq.q${i + 1}`),
     a: t(`faq.a${i + 1}`),
   }));
+
+  useEffect(() => {
+    let active = true;
+    setDynamicFaqs(null);
+    void getPublishedFaqs(language, "home").then((rows) => {
+      if (!active) return;
+      if (!rows.length) {
+        setDynamicFaqs([]);
+        return;
+      }
+      setDynamicFaqs(rows.map((r) => ({ q: r.question, a: r.answer })));
+    });
+    return () => {
+      active = false;
+    };
+  }, [language]);
+
+  const displayFaqs = dynamicFaqs && dynamicFaqs.length ? dynamicFaqs : faqs;
 
   return (
     <section className="section-padding bg-background" id="faq">
@@ -30,7 +53,7 @@ const HomeFAQSection = () => {
 
         <Reveal delay={100}>
           <Accordion type="single" collapsible className="space-y-2">
-            {faqs.map((f, i) => (
+            {displayFaqs.map((f, i) => (
               <AccordionItem key={i} value={`home-faq-${i}`} className="bg-card rounded-lg border border-border px-4">
                 <AccordionTrigger className="text-left font-medium text-sm md:text-base">{f.q}</AccordionTrigger>
                 <AccordionContent className="text-muted-foreground text-sm leading-relaxed">{f.a}</AccordionContent>

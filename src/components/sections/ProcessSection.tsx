@@ -1,14 +1,46 @@
 import Reveal from "@/components/Reveal";
 import { useT } from "@/i18n/useT";
+import { useEffect, useState } from "react";
+import { useLanguage } from "@/i18n/LanguageContext";
+import { getPublishedProcessSteps } from "@/lib/homeContentApi";
 
 const ProcessSection = () => {
   const t = useT();
+  const { language } = useLanguage();
+  const [dynamicSteps, setDynamicSteps] = useState<{ num: string; title: string; desc: string }[] | null>(null);
 
   const steps = Array.from({ length: 6 }, (_, i) => ({
     num: String(i + 1).padStart(2, "0"),
     title: t(`process.step${i + 1}.title`),
     desc: t(`process.step${i + 1}.desc`),
   }));
+
+  useEffect(() => {
+    let active = true;
+    setDynamicSteps(null);
+    void getPublishedProcessSteps(language).then((rows) => {
+      if (!active) return;
+      if (!rows.length) {
+        setDynamicSteps([]);
+        return;
+      }
+      setDynamicSteps(
+        rows
+          .slice()
+          .sort((a, b) => (a.sort_order ?? 0) - (b.sort_order ?? 0))
+          .map((row, idx) => ({
+            num: String(row.step_number || idx + 1).padStart(2, "0"),
+            title: row.title,
+            desc: row.description,
+          })),
+      );
+    });
+    return () => {
+      active = false;
+    };
+  }, [language]);
+
+  const displaySteps = dynamicSteps && dynamicSteps.length ? dynamicSteps : steps;
 
   return (
     <section className="section-padding bg-background" id="process">
@@ -24,7 +56,7 @@ const ProcessSection = () => {
         </Reveal>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-          {steps.map((step, i) => (
+          {displaySteps.map((step, i) => (
             <Reveal key={step.num} delay={i * 80}>
               <div className="luxury-card-muted p-6 hover-lift h-full">
                 <span className="font-display text-3xl font-bold text-gold/30 mb-2 block">{step.num}</span>

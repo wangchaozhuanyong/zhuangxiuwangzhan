@@ -8,7 +8,10 @@ import SectionHeader from "@/components/blocks/SectionHeader";
 import IconCardGrid from "@/components/blocks/IconCardGrid";
 import { companyMilestones, coreValues, teamHighlights, companyStats } from "@/data/siteContent";
 import { useLanguage } from "@/i18n/LanguageContext";
+import { useSiteSettings } from "@/hooks/useSiteSettings";
 import heroImg from "@/assets/hero-about.jpg";
+import { getPublishedAboutSection, getPublishedCtaBlock } from "@/lib/homeContentApi";
+import { useEffect, useMemo, useState } from "react";
 
 const aboutCopy = {
   en: {
@@ -130,13 +133,89 @@ const localizedStats = {
 const About = () => {
   const { language } = useLanguage();
   const t = aboutCopy[language];
+  const settings = useSiteSettings();
+
+  const [heroSection, setHeroSection] = useState<any | null>(null);
+  const [introSection, setIntroSection] = useState<any | null>(null);
+  const [statsSection, setStatsSection] = useState<any | null>(null);
+  const [valuesSection, setValuesSection] = useState<any | null>(null);
+  const [teamSection, setTeamSection] = useState<any | null>(null);
+  const [milestonesSection, setMilestonesSection] = useState<any | null>(null);
+  const [officeSection, setOfficeSection] = useState<any | null>(null);
+  const [ctaBlock, setCtaBlock] = useState<any | null>(null);
+
+  useEffect(() => {
+    let active = true;
+    void Promise.all([
+      getPublishedAboutSection(language, "hero"),
+      getPublishedAboutSection(language, "intro"),
+      getPublishedAboutSection(language, "stats"),
+      getPublishedAboutSection(language, "core_values"),
+      getPublishedAboutSection(language, "team"),
+      getPublishedAboutSection(language, "milestones"),
+      getPublishedAboutSection(language, "office"),
+      getPublishedCtaBlock(language, "about_final"),
+    ]).then(([hero, intro, stats, values, team, milestones, office, cta]) => {
+      if (!active) return;
+      setHeroSection(hero);
+      setIntroSection(intro);
+      setStatsSection(stats);
+      setValuesSection(values);
+      setTeamSection(team);
+      setMilestonesSection(milestones);
+      setOfficeSection(office);
+      setCtaBlock(cta);
+    });
+
+    return () => {
+      active = false;
+    };
+  }, [language]);
+
+  const dynamicIntroParagraphs = useMemo<string[] | null>(() => {
+    const items = introSection?.items;
+    if (!Array.isArray(items) || items.length === 0) return null;
+    const asStrings = items.filter((x: any) => typeof x === "string");
+    return asStrings.length ? asStrings : null;
+  }, [introSection?.items]);
+
+  const dynamicStats = useMemo<Array<{ value: string; label: string }> | null>(() => {
+    const items = statsSection?.items;
+    if (!Array.isArray(items) || items.length === 0) return null;
+    const normalized = items
+      .map((x: any) => ({
+        value: String(x?.value ?? ""),
+        label: String(x?.label ?? ""),
+      }))
+      .filter((x: any) => x.value && x.label);
+    return normalized.length ? normalized : null;
+  }, [statsSection?.items]);
+
+  const dynamicMilestones = useMemo<Array<{ year: string; title: string; desc: string }> | null>(() => {
+    const items = milestonesSection?.items;
+    if (!Array.isArray(items) || items.length === 0) return null;
+    const normalized = items
+      .map((x: any) => ({
+        year: String(x?.year ?? ""),
+        title: String(x?.title ?? ""),
+        desc: String(x?.desc ?? ""),
+      }))
+      .filter((x: any) => x.year && x.title && x.desc);
+    return normalized.length ? normalized : null;
+  }, [milestonesSection?.items]);
 
   return (
     <main className="pt-16 overflow-x-hidden">
       <PageMeta title={t.metaTitle} description={t.metaDescription} keywords={t.metaKeywords} canonicalPath="/about" />
       <JsonLdBreadcrumb items={[{ name: t.breadcrumbHome, url: "/" }, { name: t.breadcrumbAbout, url: "/about" }]} />
 
-      <HeroBanner image={heroImg} imageAlt={t.imageAlt} label={t.label} title={t.title} description={t.description} />
+      <HeroBanner
+        image={(heroSection?.image_url as string) || heroImg}
+        imageAlt={t.imageAlt}
+        label={t.label}
+        title={(heroSection?.title as string) || t.title}
+        description={(heroSection?.content as string) || (heroSection?.subtitle as string) || t.description}
+      />
 
       <section className="section-padding bg-background">
         <div className="container-narrow">
@@ -144,8 +223,8 @@ const About = () => {
             <Reveal direction="left">
               <div>
                 <div className="accent-line mb-4" />
-                <h2 className="font-display text-2xl md:text-3xl font-bold mb-4">{t.introTitle}</h2>
-                {t.intro.map((paragraph) => (
+                <h2 className="font-display text-2xl md:text-3xl font-bold mb-4">{(introSection?.title as string) || t.introTitle}</h2>
+                {(dynamicIntroParagraphs || t.intro).map((paragraph) => (
                   <p key={paragraph} className="text-muted-foreground mb-4">{paragraph}</p>
                 ))}
                 <div className="flex flex-wrap gap-3">
@@ -159,7 +238,7 @@ const About = () => {
             </Reveal>
             <Reveal direction="right" delay={150}>
               <div className="grid grid-cols-2 gap-5">
-                {localizedStats[language].map((stat) => (
+                {(dynamicStats || localizedStats[language]).map((stat: any) => (
                   <div key={stat.label} className="text-center p-6 bg-card rounded-lg border border-border group hover-lift">
                     <span className="font-display text-2xl md:text-3xl font-bold text-accent block mb-1">{stat.value}</span>
                     <span className="text-muted-foreground text-xs leading-relaxed">{stat.label}</span>
@@ -173,23 +252,23 @@ const About = () => {
 
       <section className="section-padding bg-muted">
         <div className="container-narrow">
-          <SectionHeader title={t.valuesTitle} description={t.valuesDescription} />
+          <SectionHeader title={(valuesSection?.title as string) || t.valuesTitle} description={(valuesSection?.content as string) || t.valuesDescription} />
           <IconCardGrid items={localizedValues[language]} columns={2} layout="horizontal" />
         </div>
       </section>
 
       <section className="section-padding bg-background">
         <div className="container-narrow">
-          <SectionHeader title={t.teamTitle} description={t.teamDescription} />
+          <SectionHeader title={(teamSection?.title as string) || t.teamTitle} description={(teamSection?.content as string) || t.teamDescription} />
           <IconCardGrid items={localizedTeam[language]} columns={4} layout="horizontal" />
         </div>
       </section>
 
       <section className="section-padding bg-muted">
         <div className="container-narrow">
-          <SectionHeader title={t.journeyTitle} description={t.journeyDescription} />
+          <SectionHeader title={(milestonesSection?.title as string) || t.journeyTitle} description={(milestonesSection?.content as string) || t.journeyDescription} />
           <div className="max-w-2xl mx-auto">
-            {localizedMilestones[language].map((milestone, i) => (
+            {(dynamicMilestones || localizedMilestones[language]).map((milestone: any, i: number) => (
               <Reveal key={milestone.year} delay={i * 60}>
                 <div className="flex gap-5 mb-6 last:mb-0">
                   <div className="flex flex-col items-center">
@@ -215,14 +294,14 @@ const About = () => {
       <section className="section-padding bg-background">
         <Reveal>
           <div className="container-narrow">
-            <SectionHeader title={t.officeTitle} description={t.officeDescription} />
+            <SectionHeader title={(officeSection?.title as string) || t.officeTitle} description={(officeSection?.content as string) || t.officeDescription} />
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-stretch max-w-3xl mx-auto">
               <div className="bg-card p-8 rounded-lg text-center hover-lift flex flex-col items-center justify-center border border-border">
                 <div className="w-12 h-12 mx-auto mb-4 rounded-full bg-accent/10 flex items-center justify-center">
                   <MapPin className="w-5 h-5 text-accent" />
                 </div>
-                <p className="font-semibold mb-1">FLASH CAST SDN. BHD.</p>
-                <p className="text-muted-foreground text-sm mb-3">94, Jalan Mega Mendung, Taman United,<br />58200 Kuala Lumpur, Malaysia</p>
+                <p className="font-semibold mb-1">{settings.company_name}</p>
+                <p className="text-muted-foreground text-sm mb-3 whitespace-pre-line">{settings.address}</p>
                 <p className="text-muted-foreground text-xs">{t.hours}</p>
               </div>
               <div className="rounded-lg overflow-hidden bg-background border border-border min-h-[220px]">
@@ -242,7 +321,13 @@ const About = () => {
         </Reveal>
       </section>
 
-      <CTABanner title={t.ctaTitle} description={t.ctaDescription} quoteLabel={t.quoteLabel} whatsappLabel={t.whatsappLabel} />
+      <CTABanner
+        title={(ctaBlock?.title as string) || t.ctaTitle}
+        description={(ctaBlock?.description as string) || t.ctaDescription}
+        quoteLabel={(ctaBlock?.primary_label as string) || t.quoteLabel}
+        whatsappLabel={(ctaBlock?.secondary_label as string) || t.whatsappLabel}
+        quotePath={(ctaBlock?.primary_url as string) || "/quote"}
+      />
     </main>
   );
 };
