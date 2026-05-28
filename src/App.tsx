@@ -14,6 +14,7 @@ import { LanguageRouteSync, LegacyLanguageRedirect, RootLanguageRedirect } from 
 import ScrollToTop from "./components/ScrollToTop";
 import Index from "./pages/Index";
 import FAQ from "./pages/FAQ";
+import AdminRoute from "./pages/admin/AdminRoute";
 
 // Lazy-load all non-homepage routes
 const About = lazy(() => import("./pages/About"));
@@ -92,40 +93,40 @@ const AppShell = () => {
           <Routes>
             <Route path="/" element={<RootLanguageRedirect />} />
             <Route path="/admin" element={<AdminLogin />} />
-            <Route path="/admin/dashboard" element={<AdminDashboard />} />
-            <Route path="/admin/settings" element={<AdminWebsiteSettings />} />
-            <Route path="/admin/leads" element={<AdminLeadList />} />
-            <Route path="/admin/leads/:id" element={<AdminLeadDetail />} />
-            <Route path="/admin/quotes" element={<AdminQuoteList />} />
-            <Route path="/admin/quotes/:id" element={<AdminQuoteDetail />} />
-            <Route path="/admin/home" element={<AdminHomeSections />} />
-            <Route path="/admin/about" element={<AdminComingSoon />} />
-            <Route path="/admin/faqs" element={<AdminFaqs />} />
-            <Route path="/admin/before-after" element={<AdminBeforeAfter />} />
-            <Route path="/admin/brand-partners" element={<AdminBrandPartners />} />
-            <Route path="/admin/services" element={<AdminBusinessContent />} />
-            <Route path="/admin/services/new" element={<AdminServiceEditor />} />
-            <Route path="/admin/services/:id" element={<AdminServiceEditor />} />
-            <Route path="/admin/projects" element={<AdminProjectList />} />
-            <Route path="/admin/projects/new" element={<AdminProjectEditor />} />
-            <Route path="/admin/projects/:id" element={<AdminProjectEditor />} />
-            <Route path="/admin/materials" element={<AdminMaterialList />} />
-            <Route path="/admin/materials/new" element={<AdminMaterialEditor />} />
-            <Route path="/admin/materials/:id" element={<AdminMaterialEditor />} />
-            <Route path="/admin/blog" element={<AdminBlogList />} />
-            <Route path="/admin/blog/new" element={<AdminBlogEditor />} />
-            <Route path="/admin/blog/:id" element={<AdminBlogEditor />} />
-            <Route path="/admin/media" element={<AdminMediaLibrary />} />
-            <Route path="/admin/seo" element={<AdminSeoManager />} />
-            <Route path="/admin/users" element={<AdminUsers />} />
-            <Route path="/admin/notifications" element={<AdminNotificationSettings />} />
+            <Route path="/admin/dashboard" element={<AdminRoute><AdminDashboard /></AdminRoute>} />
+            <Route path="/admin/settings" element={<AdminRoute><AdminWebsiteSettings /></AdminRoute>} />
+            <Route path="/admin/leads" element={<AdminRoute><AdminLeadList /></AdminRoute>} />
+            <Route path="/admin/leads/:id" element={<AdminRoute><AdminLeadDetail /></AdminRoute>} />
+            <Route path="/admin/quotes" element={<AdminRoute><AdminQuoteList /></AdminRoute>} />
+            <Route path="/admin/quotes/:id" element={<AdminRoute><AdminQuoteDetail /></AdminRoute>} />
+            <Route path="/admin/home" element={<AdminRoute><AdminHomeSections /></AdminRoute>} />
+            <Route path="/admin/about" element={<AdminRoute><AdminComingSoon /></AdminRoute>} />
+            <Route path="/admin/faqs" element={<AdminRoute><AdminFaqs /></AdminRoute>} />
+            <Route path="/admin/before-after" element={<AdminRoute><AdminBeforeAfter /></AdminRoute>} />
+            <Route path="/admin/brand-partners" element={<AdminRoute><AdminBrandPartners /></AdminRoute>} />
+            <Route path="/admin/services" element={<AdminRoute><AdminBusinessContent /></AdminRoute>} />
+            <Route path="/admin/services/new" element={<AdminRoute><AdminServiceEditor /></AdminRoute>} />
+            <Route path="/admin/services/:id" element={<AdminRoute><AdminServiceEditor /></AdminRoute>} />
+            <Route path="/admin/projects" element={<AdminRoute><AdminProjectList /></AdminRoute>} />
+            <Route path="/admin/projects/new" element={<AdminRoute><AdminProjectEditor /></AdminRoute>} />
+            <Route path="/admin/projects/:id" element={<AdminRoute><AdminProjectEditor /></AdminRoute>} />
+            <Route path="/admin/materials" element={<AdminRoute><AdminMaterialList /></AdminRoute>} />
+            <Route path="/admin/materials/new" element={<AdminRoute><AdminMaterialEditor /></AdminRoute>} />
+            <Route path="/admin/materials/:id" element={<AdminRoute><AdminMaterialEditor /></AdminRoute>} />
+            <Route path="/admin/blog" element={<AdminRoute><AdminBlogList /></AdminRoute>} />
+            <Route path="/admin/blog/new" element={<AdminRoute><AdminBlogEditor /></AdminRoute>} />
+            <Route path="/admin/blog/:id" element={<AdminRoute><AdminBlogEditor /></AdminRoute>} />
+            <Route path="/admin/media" element={<AdminRoute><AdminMediaLibrary /></AdminRoute>} />
+            <Route path="/admin/seo" element={<AdminRoute><AdminSeoManager /></AdminRoute>} />
+            <Route path="/admin/users" element={<AdminRoute><AdminUsers /></AdminRoute>} />
+            <Route path="/admin/notifications" element={<AdminRoute><AdminNotificationSettings /></AdminRoute>} />
             <Route path="/admin/content/leads" element={<Navigate to="/admin/leads" replace />} />
             <Route path="/admin/content/leads/:id" element={<Navigate to="/admin/leads" replace />} />
             <Route path="/admin/content/quote_requests" element={<Navigate to="/admin/quotes" replace />} />
             <Route path="/admin/content/quote_requests/:id" element={<Navigate to="/admin/quotes" replace />} />
-            <Route path="/admin/content/translation_jobs" element={<AdminTranslationJobs />} />
-            <Route path="/admin/content/translation_jobs/:id" element={<AdminTranslationJobs />} />
-            <Route path="/admin/content/:type/:id?" element={<AdminContentEditor />} />
+            <Route path="/admin/content/translation_jobs" element={<AdminRoute><AdminTranslationJobs /></AdminRoute>} />
+            <Route path="/admin/content/translation_jobs/:id" element={<AdminRoute><AdminTranslationJobs /></AdminRoute>} />
+            <Route path="/admin/content/:type/:id?" element={<AdminRoute><AdminContentEditor /></AdminRoute>} />
             <Route path="/:lang" element={<><LanguageRouteSync /><Index /></>} />
             <Route path="/:lang/about" element={<><LanguageRouteSync /><About /></>} />
             <Route path="/:lang/services" element={<><LanguageRouteSync /><Services /></>} />

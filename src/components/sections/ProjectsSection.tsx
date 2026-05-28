@@ -28,8 +28,8 @@ const sectionCopy = {
   zh: {
     eyebrow: "精选案例",
     title: "近期装修案例",
-    subtitle: "查看我们在坉隆坡与雪兰莪完戝的佝宅〝商业〝厨房〝定制家具与空间装潢项目。",
-    empty: "项目案例正在更新中。欢迎蝔系我们获坖近期工地坂考。",
+    subtitle: "查看我们在吉隆坡与雪兰莪完成的住宅、商业、厨房、定制家具与空间装潢项目。",
+    empty: "项目案例正在更新中。欢迎联系我们获取近期工地参考。",
   },
 };
 
@@ -46,7 +46,7 @@ const typeLabels = {
     renovation: "Renovation",
   },
   zh: {
-    residential: "佝宅",
+    residential: "住宅",
     commercial: "商业",
     "built-in": "定制内嵌家具",
     warehouse: "仓库",
