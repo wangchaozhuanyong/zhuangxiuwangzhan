@@ -1,6 +1,6 @@
 import { lazy, Suspense } from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Route, Routes, useLocation } from "react-router-dom";
+import { BrowserRouter, Navigate, Route, Routes, useLocation } from "react-router-dom";
 import { HelmetProvider } from "react-helmet-async";
 import { LanguageProvider, useLanguage } from "@/i18n/LanguageContext";
 import { Toaster as Sonner } from "@/components/ui/sonner";
@@ -70,6 +70,7 @@ const AppShell = () => {
   const location = useLocation();
   const { language } = useLanguage();
   const isAdminRoute = location.pathname.startsWith("/admin");
+  const isHomeRoute = /^\/(en|zh)\/?$/.test(location.pathname);
 
   return (
     <>
@@ -110,6 +111,10 @@ const AppShell = () => {
             <Route path="/admin/seo" element={<AdminSeoManager />} />
             <Route path="/admin/users" element={<AdminUsers />} />
             <Route path="/admin/notifications" element={<AdminNotificationSettings />} />
+            <Route path="/admin/content/leads" element={<Navigate to="/admin/leads" replace />} />
+            <Route path="/admin/content/leads/:id" element={<Navigate to="/admin/leads" replace />} />
+            <Route path="/admin/content/quote_requests" element={<Navigate to="/admin/quotes" replace />} />
+            <Route path="/admin/content/quote_requests/:id" element={<Navigate to="/admin/quotes" replace />} />
             <Route path="/admin/content/translation_jobs" element={<AdminTranslationJobs />} />
             <Route path="/admin/content/translation_jobs/:id" element={<AdminTranslationJobs />} />
             <Route path="/admin/content/:type/:id?" element={<AdminContentEditor />} />
@@ -152,7 +157,7 @@ const AppShell = () => {
         </Suspense>
       </div>
       {!isAdminRoute && <Footer />}
-      {!isAdminRoute && <FloatingCTA />}
+      {!isAdminRoute && !isHomeRoute && <FloatingCTA />}
     </>
   );
 };
