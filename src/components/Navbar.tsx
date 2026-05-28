@@ -86,19 +86,19 @@ const Navbar = () => {
   return (
     <>
       <header className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${scrolled ? "bg-background/92 backdrop-blur-xl border-b border-border/70 shadow-[0_14px_40px_-34px_rgba(0,0,0,0.6)]" : "bg-background/82 backdrop-blur-xl border-b border-white/10"}`}>
-        <div className="container-narrow flex items-center justify-between h-16 px-4 md:px-8">
+        <div className="container-narrow flex h-16 flex-nowrap items-center gap-2 px-4 md:px-8">
           <LocalizedLink to="/" className="flex items-center shrink-0">
             <img src={logoImg} alt="FLASH CAST SDN. BHD." className="h-8 md:h-9 w-auto object-contain" />
           </LocalizedLink>
 
-          <nav className="hidden lg:flex items-center gap-0.5">
+          <nav className="hidden lg:flex min-w-0 flex-1 items-center gap-0.5 overflow-x-auto">
             {navItems.map((item) => {
               const isActive = isActivePath(location.pathname, item.path);
               return (
                 <LocalizedLink
                   key={item.path}
                   to={item.path}
-                  className={`relative text-[13px] font-medium px-3 py-2 transition-colors ${isActive ? "text-foreground" : "text-muted-foreground hover:text-foreground"}`}
+                  className={`relative whitespace-nowrap text-[13px] font-medium px-2.5 py-2 transition-colors ${isActive ? "text-foreground" : "text-muted-foreground hover:text-foreground"}`}
                 >
                   {t(item.labelKey)}
                   {isActive && <span className="absolute bottom-0 left-3 right-3 h-px bg-accent rounded-full shadow-[0_0_12px_hsl(var(--accent)/0.45)]" />}
@@ -107,20 +107,22 @@ const Navbar = () => {
             })}
           </nav>
 
-          <div className="hidden lg:flex items-center gap-2 shrink-0">
+          <div className="hidden lg:flex shrink-0 items-center gap-2">
             <button onClick={changeLanguage} className="flex items-center gap-1 text-xs font-medium text-muted-foreground hover:text-foreground transition-colors px-2 py-1.5 rounded-md hover:bg-muted" aria-label={languageAriaLabel}>
               <Globe className="w-3.5 h-3.5" />
               <span className={language === "en" ? "text-foreground font-semibold" : ""}>EN</span>
               <span className="text-muted-foreground/40">|</span>
               <span className={language === "zh" ? "text-foreground font-semibold" : ""}>中文</span>
             </button>
-            <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-foreground" asChild>
+            <Button variant="ghost" size="sm" className="whitespace-nowrap text-muted-foreground hover:text-foreground" asChild>
               <a href={whatsappUrl()} target="_blank" rel="noopener noreferrer">
                 <WhatsAppIcon className="w-4 h-4 mr-1.5 text-[#25D366]" /> WhatsApp
               </a>
             </Button>
             <Button size="sm" className="font-semibold" asChild>
-              <LocalizedLink to="/quote">{t("cta.getQuote")} <ArrowRight className="w-3.5 h-3.5 ml-1" /></LocalizedLink>
+              <LocalizedLink to="/quote" className="whitespace-nowrap">
+                {t("cta.getQuote")} <ArrowRight className="w-3.5 h-3.5 ml-1" />
+              </LocalizedLink>
             </Button>
           </div>
 
