@@ -85,10 +85,13 @@ const Navbar = () => {
 
   return (
     <>
-      <header className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${scrolled ? "bg-background/92 backdrop-blur-xl border-b border-border/70 shadow-[0_14px_40px_-34px_rgba(0,0,0,0.6)]" : "bg-background/82 backdrop-blur-xl border-b border-white/10"}`}>
-        <div className="mx-auto flex h-16 w-full max-w-7xl flex-nowrap items-center gap-2 px-4 md:px-6 xl:px-8">
+      <header
+        data-scrolled={scrolled ? "true" : "false"}
+        className="site-header fixed top-0 left-0 right-0 z-50 transition-all duration-300"
+      >
+        <div className="mx-auto flex h-[68px] w-full max-w-7xl flex-nowrap items-center gap-2 px-4 md:h-[72px] md:px-6 xl:px-8">
           <LocalizedLink to="/" className="flex items-center shrink-0">
-            <img src={logoImg} alt="FLASH CAST SDN. BHD." className="h-8 md:h-9 w-auto object-contain" />
+            <img src={logoImg} alt="FLASH CAST SDN. BHD." className="h-8 md:h-9 w-auto object-contain drop-shadow-[0_1px_1px_rgba(255,255,255,0.45)]" />
           </LocalizedLink>
 
           <nav className="hidden min-w-0 flex-1 items-center gap-0.5 xl:flex">
@@ -98,7 +101,7 @@ const Navbar = () => {
                 <LocalizedLink
                   key={item.path}
                   to={item.path}
-                  className={`relative whitespace-nowrap px-2.5 py-2 text-[12px] font-medium transition-colors 2xl:text-[13px] ${isActive ? "text-foreground" : "text-muted-foreground hover:text-foreground"}`}
+                  className={`relative whitespace-nowrap px-2.5 py-2 text-[12px] font-medium transition-colors 2xl:text-[13px] ${isActive ? "text-foreground" : "text-foreground/75 hover:text-foreground"}`}
                 >
                   {t(item.labelKey)}
                   {isActive && <span className="absolute bottom-0 left-3 right-3 h-px bg-accent rounded-full shadow-[0_0_12px_hsl(var(--accent)/0.45)]" />}
@@ -108,7 +111,7 @@ const Navbar = () => {
           </nav>
 
           <div className="hidden shrink-0 items-center gap-2 xl:flex">
-            <button onClick={changeLanguage} className="flex items-center gap-1 text-xs font-medium text-muted-foreground hover:text-foreground transition-colors px-2 py-1.5 rounded-md hover:bg-muted" aria-label={languageAriaLabel}>
+            <button onClick={changeLanguage} className="site-header__control flex items-center gap-1 text-xs font-medium text-foreground/75 hover:text-foreground transition-colors px-3 py-2 rounded-full" aria-label={languageAriaLabel}>
               <Globe className="w-3.5 h-3.5" />
               <span className={language === "en" ? "text-foreground font-semibold" : ""}>EN</span>
               <span className="text-muted-foreground/40">|</span>
@@ -127,12 +130,12 @@ const Navbar = () => {
           </div>
 
           <div className="flex items-center gap-1 -mr-1 xl:hidden">
-            <button onClick={changeLanguage} className="flex items-center gap-1 text-xs font-medium text-muted-foreground hover:text-foreground transition-colors px-2 py-2 rounded-lg hover:bg-muted" aria-label={languageAriaLabel}>
+            <button onClick={changeLanguage} className="site-header__control flex items-center gap-1 text-xs font-semibold text-foreground px-3 py-2 rounded-xl transition-colors" aria-label={languageAriaLabel}>
               <Globe className="w-3.5 h-3.5" />
               <span className="font-semibold">{language === "en" ? "EN" : "中文"}</span>
             </button>
             <button
-              className="w-10 h-10 flex items-center justify-center rounded-lg hover:bg-muted transition-colors"
+              className="site-header__control w-10 h-10 flex items-center justify-center rounded-xl text-foreground transition-colors"
               onClick={() => setIsOpen(!isOpen)}
               aria-label={menuAriaLabel}
               aria-expanded={isOpen}
@@ -145,7 +148,7 @@ const Navbar = () => {
       </header>
 
       {isOpen && (
-        <div id="mobile-navigation" ref={mobileMenuRef} className="fixed inset-x-0 top-16 bottom-0 z-[60] overflow-hidden bg-background xl:hidden">
+        <div id="mobile-navigation" ref={mobileMenuRef} className="fixed inset-x-0 top-[68px] bottom-0 z-[60] overflow-hidden bg-background md:top-[72px] xl:hidden">
           <div className="absolute inset-x-0 top-0 bottom-[185px] overflow-y-auto px-5 pt-3 pb-4">
             <div className="space-y-1">
               {navItems.map((item, index) => {
