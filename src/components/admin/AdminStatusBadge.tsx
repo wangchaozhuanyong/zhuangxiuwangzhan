@@ -5,7 +5,6 @@ import { cn } from "@/lib/utils";
 type AdminStatusBadgeProps = {
   status?: string | null;
   className?: string;
-  /** 状态所属表，如 leads、quote_requests；内容项用 default */
   context?: string;
 };
 
@@ -20,9 +19,12 @@ const mapVariant = (status?: string | null) => {
 };
 
 export default function AdminStatusBadge({ status, className, context = "default" }: AdminStatusBadgeProps) {
-  const label = status ? adminStatusLabel(context, status) : "—";
+  const label = status ? adminStatusLabel(context, status) : "-";
   return (
-    <Badge variant={mapVariant(status) as "default" | "secondary" | "destructive" | "outline"} className={cn("whitespace-nowrap", className)}>
+    <Badge
+      variant={mapVariant(status) as "default" | "secondary" | "destructive" | "outline"}
+      className={cn("whitespace-nowrap", className)}
+    >
       {label}
     </Badge>
   );

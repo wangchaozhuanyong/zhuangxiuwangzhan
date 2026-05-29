@@ -12,10 +12,10 @@ const stats = {
     { icon: ShieldCheck, value: "SSM", label: "Registered Company", desc: "Company registration and contact details are shown clearly for client verification.", iconClass: "text-gold" },
   ],
   zh: [
-    { icon: Star, value: "200+", label: "已完成项目", desc: "覆盖吉隆坡与雪兰莪的住宅、商业及工业项目", iconClass: "text-gold" },
-    { icon: Clock, value: "10+", label: "行业经验", desc: "在马来西亚装修市场拥有十年以上经验", iconClass: "text-gold" },
-    { icon: Users, value: "信赖", label: "业主与企业客户", desc: "回头客户与转介绍是我们最重要的认可", iconClass: "text-gold" },
-    { icon: ShieldCheck, value: "SSM", label: "注册公司", desc: "正规注册公司，所有项目提供施工保修", iconClass: "text-gold" },
+    { icon: Star, value: "Scope", label: "清楚规划范围", desc: "报价前先了解现场情况、使用需求、材料、预算和时间安排。", iconClass: "text-gold" },
+    { icon: Clock, value: "KL & Selangor", label: "本地服务区域", desc: "主要处理 Kuala Lumpur、Selangor 和附近 Klang Valley 区域的装修咨询。", iconClass: "text-gold" },
+    { icon: Users, value: "住宅与商业", label: "住宅和商业项目", desc: "可按需求沟通住宅装修、办公室装修、店铺装修、定制柜体和部分工业空间。", iconClass: "text-gold" },
+    { icon: ShieldCheck, value: "SSM", label: "注册公司", desc: "网站清楚展示公司注册、地址和联系方式，方便客户核对。", iconClass: "text-gold" },
   ],
 };
 

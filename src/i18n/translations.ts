@@ -44,18 +44,18 @@ export const translations: Translations = {
   },
 
   // ============ STATS / TRUST SECTION ============
-  "stats.projects.value": { en: "200+", zh: "200+" },
-  "stats.projects.label": { en: "Completed Projects", zh: "已完成项目" },
-  "stats.projects.desc": { en: "Across Kuala Lumpur and Selangor — residential, commercial, and industrial", zh: "覆盖吉隆坡和雪兰莪 — 住宅、商业及工业项目" },
-  "stats.experience.value": { en: "10+", zh: "10+" },
-  "stats.experience.label": { en: "Years Experience", zh: "年行业经验" },
-  "stats.experience.desc": { en: "A decade of renovation experience in the Malaysian market", zh: "十年马来西亚装修行业经验" },
+  "stats.projects.value": { en: "Scope", zh: "Scope" },
+  "stats.projects.label": { en: "Clear Project Planning", zh: "已完成项目" },
+  "stats.projects.desc": { en: "Site condition, usage needs, materials, budget, and timeline are reviewed before quotation. — residential, commercial, and industrial", zh: "覆盖吉隆坡和雪兰莪 — 住宅、商业及工业项目" },
+  "stats.experience.value": { en: "KL & Selangor", zh: "KL & Selangor" },
+  "stats.experience.label": { en: "Local Service Areas", zh: "年行业经验" },
+  "stats.experience.desc": { en: "Renovation enquiries are handled for Kuala Lumpur, Selangor, and nearby Klang Valley areas.", zh: "十年马来西亚装修行业经验" },
   "stats.trusted.value": { en: "Trusted", zh: "信赖" },
   "stats.trusted.label": { en: "By Homeowners & Businesses", zh: "业主和企业的选择" },
   "stats.trusted.desc": { en: "Repeat clients and referrals are our strongest endorsement", zh: "回头客和转介绍是我们最好的证明" },
   "stats.ssm.value": { en: "SSM", zh: "SSM" },
   "stats.ssm.label": { en: "Registered Company", zh: "注册公司" },
-  "stats.ssm.desc": { en: "Fully registered with workmanship warranty on all projects", zh: "正规注册公司，所有项目提供施工保修" },
+  "stats.ssm.desc": { en: "Company registration and contact details are shown clearly for client verification.", zh: "正规注册公司，所有项目提供施工保修" },
 
   // ============ SERVICES SECTION ============
   "services.title": { en: "Our Renovation Services", zh: "我们的装修服务" },
@@ -100,7 +100,7 @@ export const translations: Translations = {
   },
   "services.artisticCoating": { en: "Artistic Wall Coating", zh: "艺术墙面涂料" },
   "services.artisticCoating.desc": {
-    en: "Authorized German Remmers applicator. Premium textured wall finishes for feature walls and luxury interiors.",
+    en: "German Remmers artistic wall coating options for feature walls and selected interior spaces.",
     zh: "德国 Remmers 授权施工商。高端纹理墙面涂装，适用于特色墙和豪华室内空间。",
   },
   "services.oldHouse": { en: "Old House Renovation", zh: "老房翻新" },
@@ -127,7 +127,7 @@ export const translations: Translations = {
   },
   "whyUs.quotation.title": { en: "Clear Quotation Breakdown", zh: "报价明细清晰透明" },
   "whyUs.quotation.desc": {
-    en: "Every quotation is itemized with clear pricing — no lump sums, no hidden costs. You know exactly what you're paying for before any work begins.",
+    en: "Quotation items are broken down by confirmed scope, materials, and work items so clients can compare the details clearly.",
     zh: "每份报价都逐项列明价格 — 不打包、不隐藏费用。施工前您清楚知道每一分钱花在哪里。",
   },
   "whyUs.material.title": { en: "Material Selection Support", zh: "材料选择支持" },
@@ -145,9 +145,9 @@ export const translations: Translations = {
     en: "We focus on practical renovation planning, reliable execution, and quality finishing. Every project is built to last, not just to look good.",
     zh: "我们注重实用的装修规划、可靠的施工和高品质收尾。每个项目都要经久耐用，不仅仅是好看。",
   },
-  "whyUs.ssm.title": { en: "SSM Registered & Warranty", zh: "SSM 注册 & 施工保修" },
+  "whyUs.ssm.title": { en: "SSM Registered Company", zh: "SSM 注册 & 施工保修" },
   "whyUs.ssm.desc": {
-    en: "FLASH CAST SDN. BHD. is a fully SSM-registered company. All renovation works come with workmanship warranty for your peace of mind.",
+    en: "FLASH CAST SDN. BHD. is a registered company. After-sales and warranty terms should be confirmed in the final quotation or project document.",
     zh: "FLASH CAST SDN. BHD. 是一家完全 SSM 注册的公司。所有装修工程均提供施工保修，让您安心无忧。",
   },
 
@@ -173,11 +173,11 @@ export const translations: Translations = {
   // ============ TESTIMONIALS ============
   "testimonials.title": { en: "What Our Clients Say", zh: "客户评价" },
   "testimonials.subtitle": {
-    en: "Real feedback from homeowners and business clients across Kuala Lumpur and Selangor.",
+    en: "Published feedback from homeowners and business clients across Kuala Lumpur and Selangor.",
     zh: "来自吉隆坡和雪兰莪州业主及企业客户的真实反馈。",
   },
   "testimonials.1.text": {
-    en: "Very responsive team and solid workmanship. The project was delivered on time and the final result looks clean and premium. The quotation was transparent with no hidden costs.",
+    en: "Published client feedback should be shown only when the original review has been confirmed.",
     zh: "团队响应迅速，施工质量扎实。项目按时交付，最终效果干净高级。报价透明，没有隐藏费用。",
   },
   "testimonials.2.text": {
@@ -202,7 +202,7 @@ export const translations: Translations = {
   },
   "faq.q2": { en: "Do you provide a quotation after site visit?", zh: "现场勘察后会提供报价吗？" },
   "faq.a2": {
-    en: "Yes. We provide free site measurements and detailed itemized quotations for all projects in Kuala Lumpur and Selangor — no obligation, no hidden charges.",
+    en: "You can send your project type, location, area, photos, and requirements first. Site measurement and quotation details are confirmed based on area, project type, and schedule.",
     zh: "是的。我们为吉隆坡和雪兰莪州所有项目提供免费现场测量和详细逐项报价 — 无需任何承诺，无隐藏费用。",
   },
   "faq.q3": { en: "Do you serve Kuala Lumpur and Selangor only?", zh: "只服务吉隆坡和雪兰莪吗？" },
@@ -227,7 +227,7 @@ export const translations: Translations = {
   },
   "faq.q7": { en: "Do you provide warranty or after-sales support?", zh: "提供保修或售后服务吗？" },
   "faq.a7": {
-    en: "Yes. All renovation works come with workmanship warranty. We also provide after-sales support for any issues that arise after handover.",
+    en: "We provide after-sales follow-up. Warranty scope, duration, and claim method should be confirmed in the quotation or project document.",
     zh: "是的。所有装修工程均提供施工保修。我们也为交付后出现的任何问题提供售后支持。",
   },
 
@@ -255,7 +255,7 @@ export const translations: Translations = {
     zh: "我们是 SSM 注册公司，办公室位于吉隆坡58200 Taman United, Jalan Mega Mendung 94号。我们的团队负责装修过程的每一个环节。",
   },
   "about.whoWeAre.p3": {
-    en: "As an authorized applicator for German Remmers artistic coatings, we also bring European-quality decorative wall finishes to Malaysian homes and commercial spaces.",
+    en: "We also discuss artistic wall coating options for Malaysian homes and commercial spaces when this finish suits the project.",
     zh: "作为德国 Remmers 艺术涂料的授权施工商，我们也为马来西亚住宅和商业空间带来欧洲品质的装饰墙面涂装。",
   },
   "about.coreValues": { en: "Our Core Values", zh: "核心价值观" },
@@ -281,7 +281,7 @@ export const translations: Translations = {
   "contact.sendMessage": { en: "Send Us a Message", zh: "给我们留言" },
   "contact.messageSent": { en: "Message Sent!", zh: "消息已发送！" },
   "contact.thankYou": { en: "Thank you", zh: "感谢您" },
-  "contact.replyPromise": { en: "We'll get back to you within 24 hours.", zh: "我们将在24小时内回复您。" },
+  "contact.replyPromise": { en: "We will review your message and follow up during business hours.", zh: "我们将在24小时内回复您。" },
   "contact.address": { en: "Address", zh: "地址" },
   "contact.phone": { en: "Phone / WhatsApp", zh: "电话 / WhatsApp" },
   "contact.email": { en: "Email", zh: "邮箱" },
@@ -290,7 +290,7 @@ export const translations: Translations = {
   "contact.ourServices": { en: "Our Services", zh: "我们的服务" },
   "contact.visitOffice": { en: "Visit Our Office", zh: "参观办公室" },
   "contact.visitOffice.desc": { en: "Located in Taman United, Kuala Lumpur — serving KL, Selangor, and the Klang Valley", zh: "位于吉隆坡 Taman United — 服务吉隆坡、雪兰莪和巴生谷地区" },
-  "contact.noSpam": { en: "We'll respond within 24 hours. No spam.", zh: "我们将在24小时内回复。不会发送垃圾信息。" },
+  "contact.noSpam": { en: "We will follow up during business hours. No spam.", zh: "我们将在24小时内回复。不会发送垃圾信息。" },
 
   // ============ FORM FIELDS ============
   "form.name": { en: "Name", zh: "姓名" },

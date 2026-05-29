@@ -45,7 +45,7 @@ export const locationsData: Record<string, LocationData> = {
       { q: "Do you provide renovation services throughout Kuala Lumpur?", a: "Yes. We cover all areas in Kuala Lumpur including Mont Kiara, Bangsar, Cheras, Kepong, Wangsa Maju, Sentul, Sri Hartamas, Damansara Heights, Taman Tun Dr Ismail, and the city centre." },
       { q: "Can you help with DBKL renovation permits and condo management approvals?", a: "Yes. We handle all documentation — DBKL renovation permit applications, management office coordination, deposit processing, and site inspection scheduling. This is included in our project management service." },
       { q: "How quickly can you start a project in KL?", a: "After site measurement and quotation approval, we can typically begin within 1-2 weeks depending on permit requirements and material availability. Urgent projects may start sooner." },
-      { q: "What is the average cost of a condo renovation in Kuala Lumpur?", a: "A typical KL condo renovation ranges from RM 30,000 – RM 150,000+ depending on scope, size, and materials. We provide a detailed itemized quotation after a free site measurement." },
+      { q: "What affects condo renovation cost in Kuala Lumpur?", a: "Condo renovation cost depends on scope, size, materials, management rules, and site condition. A quotation should be prepared after reviewing the project details." },
     ],
   },
   "selangor": {
@@ -64,7 +64,7 @@ export const locationsData: Record<string, LocationData> = {
     ],
     faqs: [
       { q: "Which areas in Selangor do you serve?", a: "We serve all major areas including Shah Alam, Petaling Jaya, Subang Jaya, Puchong, Klang, Ampang, Kajang, Rawang, Setia Alam, Kota Kemuning, and surrounding areas." },
-      { q: "Is site measurement free in Selangor?", a: "Yes. We provide free site measurements for all enquiries within Selangor — no obligation, no hidden charges." },
+      { q: "Can site measurement be arranged in Selangor?", a: "Site measurement can be arranged based on area, project type, access, and schedule." },
       { q: "Can you handle landed house extensions in Selangor?", a: "Yes. We handle house extensions including structural works, foundations, roofing, and all relevant council permit applications." },
       { q: "Do you handle renovation permits across different Selangor councils?", a: "Yes. We coordinate with MBSA, MBPJ, MPSJ, MPK, and other local councils in Selangor for permit applications and compliance." },
     ],
@@ -85,7 +85,7 @@ export const locationsData: Record<string, LocationData> = {
     faqs: [
       { q: "Do you do renovations in all PJ areas?", a: "Yes. We cover SS2, Damansara, Kelana Jaya, PJ New Town, Section 17, Taman SEA, SS15, Tropicana, and all surrounding areas in Petaling Jaya." },
       { q: "Can you renovate my office in PJ?", a: "Yes. We specialize in office fit-outs including glass partitioning, reception counters, workstation setup, and full interior renovation. Many of our commercial projects are in PJ." },
-      { q: "How much does a terrace house renovation cost in PJ?", a: "A typical PJ terrace house renovation ranges from RM 50,000 – RM 200,000+ depending on scope. We provide free site measurement and detailed quotation." },
+      { q: "What affects terrace house renovation cost in PJ?", a: "Terrace house renovation cost in PJ depends on size, structure, wiring, plumbing, materials, and confirmed scope." },
     ],
   },
   "cheras": {
@@ -123,7 +123,7 @@ export const locationsData: Record<string, LocationData> = {
     faqs: [
       { q: "Do you have experience with Mont Kiara condos?", a: "Yes. We have completed projects in multiple Mont Kiara developments including i-Zen, 28 Mont Kiara, Arcoris, and Solaris Dutamas." },
       { q: "Can you do high-end finishes like marble and artistic coating?", a: "Absolutely. We work with premium materials including marble, natural stone, solid wood, high-gloss acrylic, and German Remmers artistic wall coatings." },
-      { q: "What is the cost range for a Mont Kiara condo renovation?", a: "Premium renovations in Mont Kiara typically range from RM 80,000 – RM 300,000+ depending on size and material selections." },
+      { q: "What affects Mont Kiara condo renovation cost?", a: "Mont Kiara condo renovation cost depends on size, material selection, management requirements, and confirmed scope." },
     ],
   },
   "bangsar": {
@@ -181,7 +181,7 @@ export const locationsData: Record<string, LocationData> = {
     faqs: [
       { q: "Do you provide renovation service in all Puchong areas?", a: "Yes. We cover Bandar Puchong Jaya, Bandar Puteri, Taman Kinrara, Puchong South, IOI Boulevard, and nearby Klang Valley areas." },
       { q: "Can you renovate a Puchong terrace house while the family is still staying there?", a: "Yes, depending on the scope. We can phase the works and isolate dusty or noisy areas where possible, but full renovations are usually smoother when the unit is vacant." },
-      { q: "Do you offer free site measurement in Puchong?", a: "Yes. We provide free consultation and site measurement for renovation enquiries in Puchong and nearby areas." },
+      { q: "Can site measurement be arranged in Puchong?", a: "Site measurement in Puchong can be arranged based on project type, access, and schedule." },
     ],
   },
 };

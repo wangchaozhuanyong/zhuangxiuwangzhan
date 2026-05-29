@@ -54,8 +54,8 @@ export const landingPages: Record<string, LandingData> = {
         a: "We offer SPC vinyl, laminate, engineered wood, and timber flooring in various styles and finishes.",
       },
       {
-        q: "Do you provide free measurement for flooring?",
-        a: "Yes. Free site measurement is included for all flooring projects in KL and Selangor.",
+        q: "Can measurement be arranged for flooring?",
+        a: "Measurement can be arranged based on area, project type, access, and schedule.",
       },
       {
         q: "How long does flooring installation take?",

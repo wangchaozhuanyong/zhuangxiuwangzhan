@@ -11,7 +11,7 @@ const copy = {
   en: {
     title: "Planning to Renovate Your Home or Office?",
     description:
-      "Get a free consultation and quotation today. Tell us about your project and we'll get back to you within 24 hours.",
+      "Tell us about your project, location, budget range, and timeline. We will review the details and follow up during business hours.",
   },
   zh: {
     title: "正在规划住宅或办公室装修？",

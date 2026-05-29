@@ -1,14 +1,126 @@
 import { Suspense, useEffect, useMemo, useState } from "react";
 import { Link, Outlet, useLocation } from "react-router-dom";
+import {
+  BarChart3,
+  Bell,
+  BookOpen,
+  BriefcaseBusiness,
+  Building2,
+  ChevronDown,
+  ClipboardList,
+  ExternalLink,
+  FileSearch,
+  FileText,
+  FolderKanban,
+  Globe2,
+  Home,
+  Image,
+  Images,
+  Languages,
+  LayoutDashboard,
+  ListChecks,
+  LogOut,
+  MapPinned,
+  Menu,
+  MessageSquareText,
+  Moon,
+  Newspaper,
+  PanelLeftClose,
+  PanelLeftOpen,
+  Search,
+  Settings,
+  Sparkles,
+  Star,
+  Sun,
+  UserCog,
+  Users,
+  Wrench,
+  type LucideIcon,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { supabase } from "@/lib/supabase";
 import { Sheet, SheetContent, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
-import { ChevronDown, Menu } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
-import { adminPublicSitePath, getAdminLang } from "@/lib/adminLocale";
+import { supabase } from "@/lib/supabase";
+import {
+  adminPublicSitePath,
+  applyAdminTheme,
+  clearAdminTheme,
+  getAdminLang,
+  getAdminTheme,
+  setAdminLang,
+  setAdminTheme,
+  type AdminLang,
+  type AdminTheme,
+} from "@/lib/adminLocale";
 import { useAdminDefaultContentSeed } from "@/lib/adminDefaultContent";
+import { cn } from "@/lib/utils";
 
-const copy = {
+type AdminCopy = {
+  dashboard: string;
+  todayTasks: string;
+  groupWorkspace: string;
+  groupWebsite: string;
+  groupBusiness: string;
+  groupCustomers: string;
+  groupMediaSeo: string;
+  groupSystem: string;
+  home: string;
+  pages: string;
+  about: string;
+  faqs: string;
+  beforeAfter: string;
+  brandLogos: string;
+  services: string;
+  projects: string;
+  blog: string;
+  materials: string;
+  testimonials: string;
+  serviceAreas: string;
+  landingPages: string;
+  leads: string;
+  quoteRequests: string;
+  media: string;
+  seo: string;
+  sitemap: string;
+  users: string;
+  websiteSettings: string;
+  translationJobs: string;
+  notificationSettings: string;
+  backToWebsite: string;
+  seedRunning: string;
+  seedDone: (inserted: number, updated: number) => string;
+  seedError: (message: string) => string;
+  signOut: string;
+  brand: string;
+  title: string;
+  subtitle: string;
+  menu: string;
+  collapseNav: string;
+  expandNav: string;
+  language: string;
+  theme: string;
+  lightTheme: string;
+  darkTheme: string;
+  contentReady: string;
+  currentPage: string;
+};
+
+type NavItem = {
+  key: keyof AdminCopy;
+  path: string;
+  icon: LucideIcon;
+};
+
+type NavGroup = {
+  key: keyof AdminCopy;
+  icon: LucideIcon;
+  items: NavItem[];
+};
+
+const NAV_EXPANDED_KEY = "flashcast_admin_nav_expanded_groups";
+const NAV_COLLAPSED_KEY = "flashcast_admin_nav_collapsed";
+
+const copy: Record<AdminLang, AdminCopy> = {
   en: {
     dashboard: "Dashboard",
     todayTasks: "Today's Tasks",
@@ -24,7 +136,6 @@ const copy = {
     faqs: "FAQ",
     beforeAfter: "Before / After",
     brandLogos: "Brand Logos",
-    heroSlides: "Hero Slides",
     services: "Services",
     projects: "Projects",
     blog: "Blog",
@@ -41,18 +152,23 @@ const copy = {
     websiteSettings: "Website Settings",
     translationJobs: "Translation Jobs",
     notificationSettings: "Notification Settings",
-    notConfiguredTitle: "Supabase is not configured",
-    notConfiguredBody: "Add VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY to your environment to enable the admin panel.",
-    backToWebsite: "Back to website",
-    checking: "Checking admin session...",
-    accessRequired: "Admin access required",
-    deniedBody: "Your account is signed in, but it is not listed as a FLASH CAST admin.",
+    backToWebsite: "View website",
     seedRunning: "Checking default CMS content...",
-    seedDone: (inserted: number, updated: number) => `Default CMS content ready. Added ${inserted}, filled ${updated}.`,
-    seedError: (message: string) => `Default CMS content sync failed: ${message}`,
+    seedDone: (inserted, updated) => `Default CMS content ready. Added ${inserted}, filled ${updated}.`,
+    seedError: (message) => `Default CMS content sync failed: ${message}`,
     signOut: "Sign out",
     brand: "FLASH CAST Admin",
     title: "Content & Lead Management",
+    subtitle: "Manage website content, enquiries, media, SEO and settings.",
+    menu: "Open admin menu",
+    collapseNav: "Collapse navigation",
+    expandNav: "Expand navigation",
+    language: "Language",
+    theme: "Theme",
+    lightTheme: "Light",
+    darkTheme: "Dark",
+    contentReady: "Content status",
+    currentPage: "Current page",
   },
   zh: {
     dashboard: "总览",
@@ -64,12 +180,11 @@ const copy = {
     groupMediaSeo: "媒体与 SEO",
     groupSystem: "系统设置",
     home: "首页管理",
-    pages: "页面级内容",
+    pages: "页面内容",
     about: "关于我们",
     faqs: "常见问题",
     beforeAfter: "改造前后",
     brandLogos: "品牌合作",
-    heroSlides: "首屏轮播",
     services: "服务项目",
     projects: "装修案例",
     blog: "博客",
@@ -81,89 +196,112 @@ const copy = {
     quoteRequests: "报价请求",
     media: "媒体库",
     seo: "SEO 设置",
-    sitemap: "站点地图 / Robots",
+    sitemap: "Sitemap / Robots",
     users: "管理员账号",
     websiteSettings: "网站基础设置",
     translationJobs: "翻译任务",
     notificationSettings: "通知设置",
-    notConfiguredTitle: "Supabase 未配置",
-    notConfiguredBody: "请在环境变量中添加 VITE_SUPABASE_URL 和 VITE_SUPABASE_ANON_KEY 以启用后台。",
-    backToWebsite: "返回网站",
-    checking: "正在检查管理员状态...",
-    accessRequired: "需要管理员权限",
-    deniedBody: "当前账号已登录，但未被列为 FLASH CAST 管理员。",
+    backToWebsite: "查看网站",
     seedRunning: "正在检查后台默认内容...",
-    seedDone: (inserted: number, updated: number) => `后台默认内容已就绪：新增 ${inserted} 条，补齐 ${updated} 条。`,
-    seedError: (message: string) => `后台默认内容同步失败：${message}`,
+    seedDone: (inserted, updated) => `后台默认内容已就绪：新增 ${inserted} 条，补齐 ${updated} 条。`,
+    seedError: (message) => `后台默认内容同步失败：${message}`,
     signOut: "退出登录",
     brand: "FLASH CAST 后台",
     title: "内容与线索管理",
+    subtitle: "管理网站内容、客户咨询、媒体素材、SEO 和系统设置。",
+    menu: "打开后台菜单",
+    collapseNav: "收起导航",
+    expandNav: "展开导航",
+    language: "语言",
+    theme: "皮肤",
+    lightTheme: "浅色",
+    darkTheme: "深色",
+    contentReady: "内容状态",
+    currentPage: "当前页面",
   },
 };
 
-const navGroups = [
+const navGroups: NavGroup[] = [
   {
     key: "groupWorkspace",
+    icon: LayoutDashboard,
     items: [
-      { key: "dashboard", path: "/admin/dashboard" },
-      { key: "todayTasks", path: "/admin/dashboard#tasks" },
+      { key: "dashboard", path: "/admin/dashboard", icon: BarChart3 },
+      { key: "todayTasks", path: "/admin/dashboard#tasks", icon: ListChecks },
     ],
   },
   {
     key: "groupWebsite",
+    icon: Globe2,
     items: [
-      { key: "home", path: "/admin/home" },
-      { key: "pages", path: "/admin/pages" },
-      { key: "about", path: "/admin/about" },
-      { key: "faqs", path: "/admin/faqs" },
-      { key: "testimonials", path: "/admin/content/testimonials" },
-      { key: "brandLogos", path: "/admin/brand-partners" },
-      { key: "beforeAfter", path: "/admin/before-after" },
+      { key: "home", path: "/admin/home", icon: Home },
+      { key: "pages", path: "/admin/pages", icon: FileText },
+      { key: "about", path: "/admin/about", icon: Building2 },
+      { key: "faqs", path: "/admin/faqs", icon: MessageSquareText },
+      { key: "testimonials", path: "/admin/content/testimonials", icon: Star },
+      { key: "brandLogos", path: "/admin/brand-partners", icon: Sparkles },
+      { key: "beforeAfter", path: "/admin/before-after", icon: Images },
     ],
   },
   {
     key: "groupBusiness",
+    icon: BriefcaseBusiness,
     items: [
-      { key: "services", path: "/admin/services" },
-      { key: "projects", path: "/admin/projects" },
-      { key: "materials", path: "/admin/materials" },
-      { key: "blog", path: "/admin/blog" },
-      { key: "serviceAreas", path: "/admin/content/service_areas" },
-      { key: "landingPages", path: "/admin/content/landing_pages" },
+      { key: "services", path: "/admin/services", icon: Wrench },
+      { key: "projects", path: "/admin/projects", icon: FolderKanban },
+      { key: "materials", path: "/admin/materials", icon: BookOpen },
+      { key: "blog", path: "/admin/blog", icon: Newspaper },
+      { key: "serviceAreas", path: "/admin/content/service_areas", icon: MapPinned },
+      { key: "landingPages", path: "/admin/content/landing_pages", icon: Globe2 },
     ],
   },
   {
     key: "groupCustomers",
+    icon: Users,
     items: [
-      { key: "leads", path: "/admin/leads" },
-      { key: "quoteRequests", path: "/admin/quotes" },
+      { key: "leads", path: "/admin/leads", icon: Users },
+      { key: "quoteRequests", path: "/admin/quotes", icon: ClipboardList },
     ],
   },
   {
     key: "groupMediaSeo",
+    icon: Image,
     items: [
-      { key: "media", path: "/admin/media" },
-      { key: "seo", path: "/admin/seo" },
-      { key: "sitemap", path: "/admin/seo#sitemap" },
+      { key: "media", path: "/admin/media", icon: Image },
+      { key: "seo", path: "/admin/seo", icon: Search },
+      { key: "sitemap", path: "/admin/seo#sitemap", icon: FileSearch },
     ],
   },
   {
     key: "groupSystem",
+    icon: Settings,
     items: [
-      { key: "websiteSettings", path: "/admin/settings" },
-      { key: "notificationSettings", path: "/admin/notifications" },
-      { key: "translationJobs", path: "/admin/content/translation_jobs" },
-      { key: "users", path: "/admin/users" },
+      { key: "websiteSettings", path: "/admin/settings", icon: Settings },
+      { key: "notificationSettings", path: "/admin/notifications", icon: Bell },
+      { key: "translationJobs", path: "/admin/content/translation_jobs", icon: Languages },
+      { key: "users", path: "/admin/users", icon: UserCog },
     ],
   },
 ];
 
-const NAV_EXPANDED_KEY = "flashcast_admin_nav_expanded_groups";
-const NAV_COLLAPSED_KEY = "flashcast_admin_nav_collapsed";
+const readNavCollapsed = () => {
+  if (typeof window === "undefined") return false;
+  return window.localStorage.getItem(NAV_COLLAPSED_KEY) === "1";
+};
+
+const readExpandedGroups = () => {
+  if (typeof window === "undefined") return {};
+  try {
+    const raw = window.localStorage.getItem(NAV_EXPANDED_KEY);
+    const parsed = raw ? (JSON.parse(raw) as string[]) : [];
+    return Object.fromEntries(parsed.map((key) => [key, true]));
+  } catch {
+    return {};
+  }
+};
 
 const normalizeHash = (hash: string) => hash.replace(/^#/, "");
 
-/** Match nav item including hash anchors (e.g. /admin/dashboard vs /admin/dashboard#tasks). */
 const isAdminNavItemActive = (itemPath: string, pathname: string, hash: string) => {
   const [path, fragment] = itemPath.split("#");
   if (pathname !== path) return false;
@@ -171,48 +309,65 @@ const isAdminNavItemActive = (itemPath: string, pathname: string, hash: string) 
   return normalizeHash(hash) === "";
 };
 
+const ControlButton = ({
+  active,
+  children,
+  onClick,
+  label,
+}: {
+  active: boolean;
+  children: string;
+  onClick: () => void;
+  label: string;
+}) => (
+  <button
+    type="button"
+    aria-pressed={active}
+    aria-label={label}
+    onClick={onClick}
+    className={cn(
+      "h-8 rounded-full px-3 text-xs font-semibold transition-colors",
+      active ? "bg-primary text-primary-foreground shadow-sm" : "text-muted-foreground hover:bg-background hover:text-foreground",
+    )}
+  >
+    {children}
+  </button>
+);
+
 const AdminLayout = () => {
   const location = useLocation();
-  const lang = getAdminLang();
-  const t = copy[lang];
+  const [adminLang, setAdminLangState] = useState<AdminLang>(() => getAdminLang());
+  const [theme, setTheme] = useState<AdminTheme>(() => getAdminTheme());
+  const [mobileNavOpen, setMobileNavOpen] = useState(false);
+  const [navCollapsed, setNavCollapsed] = useState(() => readNavCollapsed());
+  const [expandedGroups, setExpandedGroups] = useState<Record<string, boolean>>(() => readExpandedGroups());
+  const seedSummary = useAdminDefaultContentSeed();
+  const t = copy[adminLang];
+
   const copyText = useMemo(
-    () => (key: string) => {
-      const value = t[key as keyof typeof t];
-      return typeof value === "string" ? value : key;
+    () => (key: keyof AdminCopy) => {
+      const value = t[key];
+      return typeof value === "string" ? value : String(key);
     },
     [t],
   );
-  const [mobileNavOpen, setMobileNavOpen] = useState(false);
-  const seedSummary = useAdminDefaultContentSeed();
-  const [navCollapsed, setNavCollapsed] = useState(() => {
-    if (typeof window === "undefined") return false;
-    try {
-      return window.localStorage.getItem(NAV_COLLAPSED_KEY) === "1";
-    } catch {
-      return false;
-    }
-  });
 
-  const activeGroupKeys = useMemo(() => {
-    const pathname = location.pathname;
-    return navGroups
-      .filter((group) => group.items.some((item) => item.path.split("#")[0] === pathname))
-      .map((group) => group.key);
-  }, [location.pathname]);
-
-  const [expandedGroups, setExpandedGroups] = useState<Record<string, boolean>>(() => {
-    if (typeof window === "undefined") return {};
-    try {
-      const raw = window.localStorage.getItem(NAV_EXPANDED_KEY);
-      const parsed = raw ? (JSON.parse(raw) as string[]) : [];
-      return Object.fromEntries(parsed.map((key) => [key, true]));
-    } catch {
-      return {};
-    }
-  });
+  const activeGroupKeys = useMemo(
+    () =>
+      navGroups
+        .filter((group) => group.items.some((item) => item.path.split("#")[0] === location.pathname))
+        .map((group) => group.key),
+    [location.pathname],
+  );
 
   useEffect(() => {
-    // Always expand the group containing the active route.
+    applyAdminTheme(theme, adminLang);
+    setAdminTheme(theme);
+
+    return () => clearAdminTheme();
+  }, [theme, adminLang]);
+
+  useEffect(() => {
     if (!activeGroupKeys.length) return;
     setExpandedGroups((prev) => {
       let changed = false;
@@ -228,197 +383,265 @@ const AdminLayout = () => {
   }, [activeGroupKeys]);
 
   useEffect(() => {
-    if (typeof window === "undefined") return;
-    try {
-      const keys = Object.entries(expandedGroups)
-        .filter(([, value]) => Boolean(value))
-        .map(([key]) => key);
-      window.localStorage.setItem(NAV_EXPANDED_KEY, JSON.stringify(keys));
-    } catch {
-      // ignore
-    }
+    const keys = Object.entries(expandedGroups)
+      .filter(([, value]) => Boolean(value))
+      .map(([key]) => key);
+    window.localStorage.setItem(NAV_EXPANDED_KEY, JSON.stringify(keys));
   }, [expandedGroups]);
 
   useEffect(() => {
-    if (typeof window === "undefined") return;
-    try {
-      window.localStorage.setItem(NAV_COLLAPSED_KEY, navCollapsed ? "1" : "0");
-    } catch {
-      // ignore
-    }
+    window.localStorage.setItem(NAV_COLLAPSED_KEY, navCollapsed ? "1" : "0");
   }, [navCollapsed]);
 
   useEffect(() => {
     setMobileNavOpen(false);
-  }, []);
+  }, [location.pathname, location.hash]);
 
   const activeNavLabel = useMemo(() => {
-    const { pathname, hash } = location;
     for (const group of navGroups) {
       for (const item of group.items) {
-        if (isAdminNavItemActive(item.path, pathname, hash)) return copyText(item.key);
+        if (isAdminNavItemActive(item.path, location.pathname, location.hash)) return copyText(item.key);
       }
     }
     return copyText("title");
-  }, [copyText, location]);
+  }, [copyText, location.hash, location.pathname]);
 
-  const websitePath = adminPublicSitePath();
+  const websitePath = adminPublicSitePath(adminLang);
 
-  const Nav = ({ variant }: { variant: "desktop" | "mobile" }) => (
-    <aside
-      className={[
-        "h-full border-border bg-card",
-        variant === "desktop" ? "hidden lg:block" : "block",
-      ].join(" ")}
-    >
-      <div className="flex items-center justify-between border-b border-border px-3 py-3">
-        <div className="min-w-0">
-          <p className="text-[10px] font-semibold uppercase tracking-[0.25em] text-accent">{t.brand}</p>
-          <p className={`truncate text-sm font-semibold ${navCollapsed ? "max-w-[120px]" : "max-w-[220px]"}`}>{t.title}</p>
-        </div>
-        <Button
-          type="button"
-          size="sm"
-          variant="ghost"
-          className="hidden lg:inline-flex"
-          onClick={() => setNavCollapsed((v) => !v)}
-        >
-          {navCollapsed ? "»" : "«"}
-        </Button>
-      </div>
-      <nav className={`space-y-4 p-3 ${navCollapsed ? "w-[72px]" : "w-[260px]"}`}>
-        {navGroups.map((group) => {
-          const groupLabel = copyText(group.key);
-          return (
-            <div key={group.key}>
-            <button
-              type="button"
-              className={[
-                "flex w-full items-center justify-between rounded-lg px-3 py-2 text-left text-[11px] font-semibold uppercase tracking-[0.18em] text-muted-foreground hover:bg-muted",
-                navCollapsed ? "justify-center px-2" : "",
-              ].join(" ")}
-              aria-expanded={Boolean(expandedGroups[group.key])}
-              onClick={() =>
-                setExpandedGroups((prev) => ({
-                  ...prev,
-                  [group.key]: !prev[group.key],
-                }))
-              }
-            >
-              <span className={navCollapsed ? "sr-only" : ""}>{groupLabel}</span>
-              <ChevronDown
-                className={[
-                  "h-4 w-4 transition-transform",
-                  expandedGroups[group.key] ? "rotate-180" : "",
-                  navCollapsed ? "hidden" : "",
-                ].join(" ")}
-              />
-            </button>
-            {expandedGroups[group.key] && (
-              <div className="mt-1 space-y-1">
-                {group.items.map((item) => {
-                  const isActive = isAdminNavItemActive(item.path, location.pathname, location.hash);
-                  const label = copyText(item.key);
-                  return (
-                    <Link
-                      key={item.path}
-                      to={item.path}
-                      className={[
-                        "block rounded-lg px-3 py-2 text-sm font-medium",
-                        isActive ? "bg-accent text-accent-foreground" : "text-muted-foreground hover:bg-muted",
-                        navCollapsed ? "px-2 text-center" : "",
-                      ].join(" ")}
-                      title={label}
-                    >
-                      <span className={navCollapsed ? "sr-only" : ""}>{label}</span>
-                      <span className={navCollapsed ? "text-[11px] font-semibold" : "hidden"}>{label.slice(0, 1)}</span>
-                    </Link>
-                  );
-                })}
-              </div>
-            )}
+  const changeLanguage = (nextLanguage: AdminLang) => {
+    setAdminLang(nextLanguage);
+    setAdminLangState(nextLanguage);
+  };
+
+  const NavLink = ({ item, compact }: { item: NavItem; compact: boolean }) => {
+    const isActive = isAdminNavItemActive(item.path, location.pathname, location.hash);
+    const label = copyText(item.key);
+    const Icon = item.icon;
+    return (
+      <Link
+        key={item.path}
+        to={item.path}
+        title={label}
+        aria-current={isActive ? "page" : undefined}
+        className={cn(
+          "group flex min-h-10 min-w-0 items-center gap-3 rounded-lg px-3 py-2 text-sm font-semibold transition-colors",
+          isActive
+            ? "bg-accent text-accent-foreground shadow-[0_12px_30px_-22px_rgba(184,135,70,0.8)]"
+            : "text-sidebar-foreground/76 hover:bg-sidebar-accent hover:text-sidebar-accent-foreground",
+          compact && "mx-auto h-10 w-10 justify-center px-0",
+        )}
+      >
+        <Icon className={cn("h-4 w-4 shrink-0", isActive ? "text-accent-foreground" : "text-sidebar-foreground/58 group-hover:text-sidebar-accent-foreground")} />
+        <span className={cn("truncate", compact && "sr-only")}>{label}</span>
+      </Link>
+    );
+  };
+
+  const Nav = ({ variant }: { variant: "desktop" | "mobile" }) => {
+    const compact = variant === "desktop" && navCollapsed;
+    return (
+      <aside
+        className={cn(
+          "flex h-full min-h-0 flex-col border-sidebar-border bg-sidebar text-sidebar-foreground",
+          variant === "desktop" ? "border-r transition-[width] duration-200" : "w-full",
+          variant === "desktop" && (compact ? "w-[76px]" : "w-[280px]"),
+        )}
+      >
+        <div className={cn("flex min-h-[76px] items-center gap-3 border-b border-sidebar-border px-4", compact && "justify-center px-3")}>
+          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-primary text-sm font-bold tracking-wide text-primary-foreground">
+            FC
           </div>
-          );
-        })}
-      </nav>
-    </aside>
-  );
+          <div className={cn("min-w-0 flex-1", compact && "sr-only")}>
+            <p className="truncate text-[11px] font-bold uppercase tracking-[0.18em] text-accent">{t.brand}</p>
+            <p className="truncate text-sm font-semibold text-sidebar-foreground">{t.title}</p>
+          </div>
+          {variant === "desktop" && (
+            <Button
+              type="button"
+              size="icon"
+              variant="ghost"
+              aria-label={navCollapsed ? t.expandNav : t.collapseNav}
+              title={navCollapsed ? t.expandNav : t.collapseNav}
+              className={cn("h-9 w-9 shrink-0 rounded-lg text-sidebar-foreground/70 hover:bg-sidebar-accent hover:text-sidebar-accent-foreground", compact && "hidden")}
+              onClick={() => setNavCollapsed((value) => !value)}
+            >
+              <PanelLeftClose className="h-4 w-4" />
+            </Button>
+          )}
+        </div>
+
+        {variant === "desktop" && compact && (
+          <div className="border-b border-sidebar-border px-3 py-3">
+            <Button
+              type="button"
+              size="icon"
+              variant="ghost"
+              aria-label={t.expandNav}
+              title={t.expandNav}
+              className="h-10 w-10 rounded-lg text-sidebar-foreground/70 hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
+              onClick={() => setNavCollapsed(false)}
+            >
+              <PanelLeftOpen className="h-4 w-4" />
+            </Button>
+          </div>
+        )}
+
+        <nav className={cn("min-h-0 flex-1 overflow-y-auto px-3 py-4", compact ? "space-y-4" : "space-y-5")} aria-label={t.menu}>
+          {navGroups.map((group) => {
+            const groupLabel = copyText(group.key);
+            const GroupIcon = group.icon;
+            const isExpanded = Boolean(expandedGroups[group.key]);
+
+            if (compact) {
+              return (
+                <div key={group.key} className="space-y-1 border-t border-sidebar-border/70 pt-4 first:border-t-0 first:pt-0">
+                  <p className="sr-only">{groupLabel}</p>
+                  {group.items.map((item) => (
+                    <NavLink key={item.path} item={item} compact />
+                  ))}
+                </div>
+              );
+            }
+
+            return (
+              <div key={group.key} className="space-y-1">
+                <button
+                  type="button"
+                  className="flex min-h-10 w-full items-center justify-between rounded-lg px-3 py-2 text-left text-xs font-bold uppercase tracking-[0.12em] text-sidebar-foreground/56 transition-colors hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
+                  aria-expanded={isExpanded}
+                  onClick={() => setExpandedGroups((prev) => ({ ...prev, [group.key]: !prev[group.key] }))}
+                >
+                  <span className="flex min-w-0 items-center gap-2">
+                    <GroupIcon className="h-4 w-4 shrink-0" />
+                    <span className="truncate">{groupLabel}</span>
+                  </span>
+                  <ChevronDown className={cn("h-4 w-4 shrink-0 transition-transform", isExpanded && "rotate-180")} />
+                </button>
+                {isExpanded && (
+                  <div className="space-y-1">
+                    {group.items.map((item) => (
+                      <NavLink key={item.path} item={item} compact={false} />
+                    ))}
+                  </div>
+                )}
+              </div>
+            );
+          })}
+        </nav>
+      </aside>
+    );
+  };
 
   return (
-    <div className="min-h-screen bg-muted">
-      <header className="sticky top-0 z-40 border-b border-border bg-background/90 backdrop-blur">
-        <div className="mx-auto flex max-w-7xl items-center justify-between gap-3 px-4 py-3">
-          <div className="flex items-center gap-2">
-            <Sheet open={mobileNavOpen} onOpenChange={setMobileNavOpen}>
-              <SheetTrigger asChild>
-                <Button type="button" variant="outline" size="icon" className="lg:hidden">
-                  <Menu className="h-4 w-4" />
-                  <span className="sr-only">菜单</span>
-                </Button>
-              </SheetTrigger>
-              <SheetContent side="left" className="p-0">
-                <div className="p-4">
-                  <SheetTitle className="sr-only">{t.brand}</SheetTitle>
-                </div>
-                <Nav variant="mobile" />
-              </SheetContent>
-            </Sheet>
-            <div className="min-w-0">
-              <p className="truncate text-sm font-semibold">{activeNavLabel}</p>
-              <p className="text-xs text-muted-foreground">{t.brand}</p>
-            </div>
-          </div>
-          <div className="flex items-center gap-2">
-            <Button asChild variant="outline" className="hidden sm:inline-flex">
-              <Link to={websitePath}>{t.backToWebsite}</Link>
-            </Button>
-            <Button
-              variant="outline"
-              onClick={async () => {
-                await supabase?.auth.signOut();
-                window.location.href = "/admin";
-              }}
-            >
-              {t.signOut}
-            </Button>
-          </div>
-        </div>
-      </header>
-
-      <div className="mx-auto grid max-w-7xl gap-4 px-4 py-4 lg:grid-cols-[auto_1fr]">
-        <div className="sticky top-[64px] hidden h-[calc(100vh-64px)] lg:block">
+    <div className="min-h-screen bg-background text-foreground">
+      <div className="lg:grid lg:min-h-screen lg:grid-cols-[auto_minmax(0,1fr)]">
+        <div className="hidden lg:block lg:sticky lg:top-0 lg:h-screen">
           <Nav variant="desktop" />
         </div>
-        <section className="min-w-0">
-          <div className="mx-auto w-full max-w-5xl">
-            {seedSummary.status === "running" && (
-              <div className="mb-4 rounded-lg border border-border bg-card px-4 py-3 text-sm text-muted-foreground">
-                {t.seedRunning}
-              </div>
-            )}
-            {seedSummary.status === "done" && (seedSummary.inserted > 0 || seedSummary.updated > 0) && (
-              <div className="mb-4 rounded-lg border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-800">
-                {t.seedDone(seedSummary.inserted, seedSummary.updated)}
-              </div>
-            )}
-            {seedSummary.status === "error" && (
-              <div className="mb-4 rounded-lg border border-destructive/30 bg-destructive/10 px-4 py-3 text-sm text-destructive">
-                {t.seedError(seedSummary.error || "Unknown error")}
-              </div>
-            )}
-            <Suspense
-              fallback={
-                <div className="space-y-4">
-                  <Skeleton className="h-8 w-1/3" />
-                  <Skeleton className="h-48 w-full" />
-                  <Skeleton className="h-48 w-full" />
+
+        <div className="min-w-0">
+          <header className="sticky top-0 z-40 border-b border-border bg-card/95 backdrop-blur-xl">
+            <div className="flex min-h-[72px] items-center justify-between gap-3 px-4 sm:px-6 lg:px-8">
+              <div className="flex min-w-0 flex-1 items-center gap-3">
+                <Sheet open={mobileNavOpen} onOpenChange={setMobileNavOpen}>
+                  <SheetTrigger asChild>
+                    <Button type="button" variant="outline" size="icon" className="h-10 w-10 shrink-0 rounded-lg lg:hidden">
+                      <Menu className="h-4 w-4" />
+                      <span className="sr-only">{t.menu}</span>
+                    </Button>
+                  </SheetTrigger>
+                  <SheetContent side="left" className="w-[320px] max-w-[88vw] border-sidebar-border bg-sidebar p-0 text-sidebar-foreground">
+                    <SheetTitle className="sr-only">{t.brand}</SheetTitle>
+                    <Nav variant="mobile" />
+                  </SheetContent>
+                </Sheet>
+
+                <div className="min-w-0">
+                  <p className="text-[11px] font-bold uppercase tracking-[0.16em] text-muted-foreground">{t.currentPage}</p>
+                  <h1 className="truncate text-base font-semibold leading-6 sm:text-lg">{activeNavLabel}</h1>
                 </div>
-              }
-            >
-              <Outlet />
-            </Suspense>
-          </div>
-        </section>
+              </div>
+
+              <div className="flex shrink-0 flex-wrap items-center justify-end gap-2">
+                <div className="hidden h-10 items-center gap-1 rounded-full border border-border bg-muted/60 p-1 sm:inline-flex" aria-label={t.language}>
+                  <ControlButton active={adminLang === "zh"} label="中文" onClick={() => changeLanguage("zh")}>
+                    中
+                  </ControlButton>
+                  <ControlButton active={adminLang === "en"} label="English" onClick={() => changeLanguage("en")}>
+                    EN
+                  </ControlButton>
+                </div>
+
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="icon"
+                  className="h-10 w-10 rounded-lg"
+                  aria-label={theme === "dark" ? t.lightTheme : t.darkTheme}
+                  title={theme === "dark" ? t.lightTheme : t.darkTheme}
+                  onClick={() => setTheme((value) => (value === "dark" ? "light" : "dark"))}
+                >
+                  {theme === "dark" ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+                </Button>
+
+                <Button asChild variant="outline" className="hidden h-10 rounded-lg px-4 md:inline-flex">
+                  <Link to={websitePath}>
+                    <ExternalLink className="h-4 w-4" />
+                    {t.backToWebsite}
+                  </Link>
+                </Button>
+
+                <Button
+                  variant="outline"
+                  className="h-10 rounded-lg px-3 sm:px-4"
+                  onClick={async () => {
+                    await supabase?.auth.signOut();
+                    window.location.href = "/admin";
+                  }}
+                >
+                  <LogOut className="h-4 w-4" />
+                  <span className="hidden sm:inline">{t.signOut}</span>
+                </Button>
+              </div>
+            </div>
+          </header>
+
+          <main className="min-w-0 px-4 py-5 sm:px-6 lg:px-8">
+            <div className="mx-auto w-full max-w-[1480px] space-y-5">
+              {seedSummary.status === "running" && (
+                <div className="rounded-lg border border-border bg-card px-4 py-3 text-sm text-muted-foreground shadow-sm">
+                  <span className="font-semibold text-foreground">{t.contentReady}</span>
+                  <span className="mx-2 text-border">/</span>
+                  {t.seedRunning}
+                </div>
+              )}
+              {seedSummary.status === "done" && (seedSummary.inserted > 0 || seedSummary.updated > 0) && (
+                <div className="rounded-lg border border-emerald-500/25 bg-emerald-500/10 px-4 py-3 text-sm text-emerald-700 dark:text-emerald-300">
+                  {t.seedDone(seedSummary.inserted, seedSummary.updated)}
+                </div>
+              )}
+              {seedSummary.status === "error" && (
+                <div className="rounded-lg border border-destructive/30 bg-destructive/10 px-4 py-3 text-sm text-destructive">
+                  {t.seedError(seedSummary.error || "Unknown error")}
+                </div>
+              )}
+
+              <Suspense
+                fallback={
+                  <div className="space-y-4">
+                    <Skeleton className="h-9 w-64 max-w-full" />
+                    <Skeleton className="h-52 w-full rounded-lg" />
+                    <Skeleton className="h-52 w-full rounded-lg" />
+                  </div>
+                }
+              >
+                <div key={adminLang} className="min-w-0">
+                  <Outlet />
+                </div>
+              </Suspense>
+            </div>
+          </main>
+        </div>
       </div>
     </div>
   );

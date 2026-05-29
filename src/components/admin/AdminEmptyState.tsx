@@ -13,11 +13,10 @@ export default function AdminEmptyState({
   className?: string;
 }) {
   return (
-    <div className={cn("rounded-xl border border-dashed border-border bg-card p-8 text-center", className)}>
+    <div className={cn("rounded-lg border border-dashed border-border bg-card p-8 text-center shadow-sm", className)}>
       <h3 className="text-base font-semibold">{title}</h3>
-      {description && <div className="mt-1 text-sm text-muted-foreground">{description}</div>}
+      {description && <div className="mx-auto mt-2 max-w-xl text-sm leading-6 text-muted-foreground">{description}</div>}
       {action && <div className="mt-4 flex justify-center">{action}</div>}
     </div>
   );
 }
-

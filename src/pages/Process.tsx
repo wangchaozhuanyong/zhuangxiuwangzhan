@@ -31,9 +31,9 @@ const content = {
       { num: "01", title: "Consultation", desc: "We understand your goals, space, style, and budget.", details: ["Submit enquiry via website, WhatsApp, or phone", "Discuss requirements, timeline, and budget", "Receive initial advice and recommendations"] },
       { num: "02", title: "Site Measurement", desc: "We inspect the site and take precise measurements. Free for enquiries in KL and Selangor.", details: ["On-site measurement", "Assess existing conditions and constraints", "Take photos and notes for design reference"] },
       { num: "03", title: "Design Proposal", desc: "We prepare layout ideas and visual direction, including 3D renders when required.", details: ["Space planning and layout design", "3D visualization of proposed design", "Material samples and selection"] },
-      { num: "04", title: "Quotation & Material Selection", desc: "We provide a clear breakdown and discuss materials. No hidden costs or lump-sum guesswork.", details: ["Itemized quotation with clear pricing", "Material comparison and recommendations", "Payment schedule discussion"] },
+      { num: "04", title: "Quotation & Material Selection", desc: "We provide a clear breakdown and discuss materials based on the confirmed scope.", details: ["Itemized quotation with clear pricing", "Material comparison and recommendations", "Payment schedule discussion"] },
       { num: "05", title: "Construction", desc: "Work is managed by our team with site supervision and progress updates.", details: ["Permit application and coordination", "Trades executed by our team", "Regular progress updates with photos"] },
-      { num: "06", title: "Handover", desc: "Final quality check, defect rectification, cleaning, and workmanship warranty handover.", details: ["Final walkthrough and inspection", "Defect list and rectification", "Professional cleaning", "Warranty handover"] },
+      { num: "06", title: "Handover", desc: "Final quality check, defect discussion, cleaning, and handover notes based on the confirmed scope.", details: ["Final walkthrough and inspection", "Defect list and rectification", "Professional cleaning", "After-sales terms confirmed in project documents"] },
     ],
   },
   zh: {

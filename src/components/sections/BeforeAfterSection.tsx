@@ -202,7 +202,7 @@ const BeforeAfterSection = () => {
   const { language } = useLanguage();
   const { data: publishedItems } = usePublishedBeforeAfterItems(language);
   const dynamicComparisons = useMemo(() => {
-    if (!publishedItems?.length) return comparisons[language];
+    if (!publishedItems?.length) return [];
     return publishedItems.map((item) => ({
       before: item.before_image_url,
       after: item.after_image_url,
@@ -210,7 +210,7 @@ const BeforeAfterSection = () => {
       location: item.location,
       desc: item.description,
     }));
-  }, [language, publishedItems]);
+  }, [publishedItems]);
   const sectionCopy = {
     en: {
       title: "See the Transformation",
@@ -227,6 +227,8 @@ const BeforeAfterSection = () => {
       after: "施工后",
     },
   }[language];
+
+  if (!dynamicComparisons.length) return null;
 
   return (
     <section className="section-padding bg-background" id="before-after">

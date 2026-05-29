@@ -17,9 +17,9 @@ export default function AdminPageHeader({
   actions?: ReactNode;
 }) {
   return (
-    <div className="mb-6">
+    <div className="mb-6 rounded-lg border border-border bg-card px-5 py-4 shadow-sm">
       {breadcrumbs && breadcrumbs.length > 0 && (
-        <nav className="mb-2 flex flex-wrap items-center gap-1 text-xs text-muted-foreground">
+        <nav className="mb-3 flex flex-wrap items-center gap-1 text-xs text-muted-foreground">
           {breadcrumbs.map((bc, idx) => (
             <span key={`${bc.label}-${idx}`} className="flex items-center gap-1">
               {idx > 0 && <span className="opacity-60">/</span>}
@@ -37,12 +37,11 @@ export default function AdminPageHeader({
 
       <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
         <div className="min-w-0">
-          <h1 className="font-display text-2xl font-bold leading-tight">{title}</h1>
-          {description && <div className="mt-1 text-sm text-muted-foreground">{description}</div>}
+          <h1 className="text-2xl font-semibold leading-tight tracking-normal">{title}</h1>
+          {description && <div className="mt-2 max-w-3xl text-sm leading-6 text-muted-foreground">{description}</div>}
         </div>
-        {actions && <div className="flex shrink-0 flex-wrap items-center justify-start gap-2">{actions}</div>}
+        {actions && <div className="flex shrink-0 flex-wrap items-center justify-start gap-2 sm:justify-end">{actions}</div>}
       </div>
     </div>
   );
 }
-

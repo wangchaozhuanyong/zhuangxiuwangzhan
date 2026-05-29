@@ -93,7 +93,7 @@ export const homepageServices: HomepageService[] = [
   {
     icon: Palette,
     title: "Artistic Wall Coating",
-    desc: "Authorized German Remmers applicator. Premium textured wall finishes for feature walls and luxury interiors.",
+    desc: "German Remmers artistic wall coating options for feature walls and selected interior spaces.",
     link: "/services/artistic-coating",
   },
   {
@@ -123,7 +123,7 @@ export const whyChooseUsReasons: WhyChooseItem[] = [
   {
     icon: MessageCircle,
     title: "Clear Quotation Breakdown",
-    desc: "Every quotation is itemized with clear pricing - no lump sums, no hidden costs. You know exactly what you're paying for before any work begins.",
+    desc: "Quotation items are broken down by confirmed scope, materials, and work items so clients can compare the details clearly.",
   },
   {
     icon: Layers,
@@ -142,8 +142,8 @@ export const whyChooseUsReasons: WhyChooseItem[] = [
   },
   {
     icon: ShieldCheck,
-    title: "SSM Registered & Warranty",
-    desc: "FLASH CAST SDN. BHD. is a fully SSM-registered company. All renovation works come with workmanship warranty for your peace of mind.",
+    title: "SSM Registered Company",
+    desc: "FLASH CAST SDN. BHD. is a registered company. After-sales and warranty terms should be confirmed in the final quotation or project document.",
   },
 ]; // ============ TRUST STATS ============
 export interface TrustStat {
@@ -156,16 +156,16 @@ export interface TrustStat {
 export const trustStats: TrustStat[] = [
   {
     icon: Star,
-    value: "200+",
-    label: "Completed Projects",
-    desc: "Across Kuala Lumpur and Selangor - residential, commercial, and industrial",
+    value: "Scope",
+    label: "Clear Project Planning",
+    desc: "Site condition, usage needs, materials, budget, and timeline are reviewed before quotation.",
     iconClass: "text-gold",
   },
   {
     icon: Clock,
-    value: "10+",
-    label: "Years Experience",
-    desc: "A decade of renovation experience in the Malaysian market",
+    value: "KL & Selangor",
+    label: "Local Service Areas",
+    desc: "Renovation enquiries are handled for Kuala Lumpur, Selangor, and nearby Klang Valley areas.",
     iconClass: "text-gold",
   },
   {
@@ -179,7 +179,7 @@ export const trustStats: TrustStat[] = [
     icon: ShieldCheck,
     value: "SSM",
     label: "Registered Company",
-    desc: "Fully registered with workmanship warranty on all projects",
+    desc: "Company registration and contact details are shown clearly for client verification.",
     iconClass: "text-gold",
   },
 ]; // ============ PROCESS STEPS ============
@@ -206,9 +206,9 @@ export const processSteps: ProcessStep[] = [
     num: "02",
     icon: Ruler,
     title: "Site Measurement",
-    desc: "We inspect the site and take precise measurements. Free for all enquiries in KL and Selangor.",
+    desc: "We inspect the site and take precise measurements. Site visit arrangement depends on area, project type, and schedule.",
     details: [
-      "Free on-site measurement",
+      "Site visit arrangement based on project details",
       "Assess existing conditions and constraints",
       "Take photos and notes for design reference",
     ],
@@ -228,7 +228,7 @@ export const processSteps: ProcessStep[] = [
     num: "04",
     icon: FileText,
     title: "Quotation & Material Selection",
-    desc: "We provide a clear breakdown and discuss materials. No hidden costs, no lump-sum guesswork.",
+    desc: "We provide a clear breakdown and discuss materials based on the confirmed scope.",
     details: [
       "Itemized quotation with clear pricing",
       "Material comparison and recommendations",
@@ -250,12 +250,12 @@ export const processSteps: ProcessStep[] = [
     num: "06",
     icon: Handshake,
     title: "Handover",
-    desc: "Final quality check, defect rectification, thorough cleaning, and workmanship warranty handover.",
+    desc: "Final quality check, defect discussion, cleaning, and handover notes based on the confirmed scope.",
     details: [
       "Final walkthrough and inspection",
       "Defect list and rectification",
       "Professional cleaning",
-      "Warranty handover",
+      "After-sales terms confirmed in project documents",
     ],
   },
 ]; // ============ ABOUT PAGE ============
@@ -277,8 +277,8 @@ export const companyMilestones: MilestoneItem[] = [
   },
   {
     year: "2019",
-    title: "Remmers Partnership",
-    desc: "Became an authorized applicator for German Remmers artistic wall coatings in Malaysia.",
+    title: "Artistic Wall Coating Service",
+    desc: "Expanded artistic wall coating options for selected feature wall projects.",
   },
   {
     year: "2021",
@@ -287,8 +287,8 @@ export const companyMilestones: MilestoneItem[] = [
   },
   {
     year: "2023",
-    title: "200+ Projects Milestone",
-    desc: "Completed over 200 projects across residential, commercial, and industrial categories.",
+    title: "Broader Project Coverage",
+    desc: "Expanded renovation references across residential, commercial, and selected industrial spaces.",
   },
   {
     year: "2025",
@@ -310,7 +310,7 @@ export const coreValues: CoreValueItem[] = [
   {
     icon: Eye,
     title: "Transparency",
-    desc: "Clear quotations with no hidden costs. Itemized pricing, regular progress updates, and honest communication throughout.",
+    desc: "Clear quotations, itemized pricing, regular progress updates, and direct communication throughout the project.",
   },
   {
     icon: Clock,
@@ -347,14 +347,14 @@ export const teamHighlights: TeamHighlightItem[] = [
   {
     icon: Star,
     title: "Specialist Applicators",
-    desc: "Certified Remmers coating applicators trained in German artistic wall finishing techniques.",
+    desc: "Wall coating applicators familiar with selected decorative finishing methods.",
   },
 ];
 export const companyStats = [
-  { value: "200+", label: "Projects Completed" },
-  { value: "10+", label: "Years Experience" },
-  { value: "50+", label: "Team Members" },
-  { value: "98%", label: "Client Satisfaction" },
+  { value: "Scope", label: "Clear Project Planning" },
+  { value: "KL & Selangor", label: "Local Service Areas" },
+  { value: "Homes", label: "Residential Projects" },
+  { value: "Business", label: "Commercial Projects" },
 ]; // ============ TESTIMONIALS ============
 export interface Testimonial {
   text: string;
@@ -364,7 +364,7 @@ export interface Testimonial {
 }
 export const testimonials: Testimonial[] = [
   {
-    text: "Very responsive team and solid workmanship. The project was delivered on time and the final result looks clean and premium. The quotation was transparent with no hidden costs.",
+    text: "Published client feedback should be shown only when the original review has been confirmed.",
     client: "Mr. Tan",
     location: "Mont Kiara, KL",
     type: "Condo Renovation",
@@ -393,7 +393,7 @@ export const homeFAQs: FAQItem[] = [
   },
   {
     q: "Do you provide a quotation after site visit?",
-    a: "Yes. We provide free site measurements and detailed itemized quotations for all projects in Kuala Lumpur and Selangor - no obligation, no hidden charges.",
+    a: "Yes. You can send your project type, location, area, photos, and requirements first. Site measurement and quotation details are confirmed based on area, project type, and schedule.",
   },
   {
     q: "Do you serve Kuala Lumpur and Selangor only?",
@@ -413,7 +413,7 @@ export const homeFAQs: FAQItem[] = [
   },
   {
     q: "Do you provide warranty or after-sales support?",
-    a: "Yes. All renovation works come with workmanship warranty. We also provide after-sales support for any issues that arise after handover.",
+    a: "We provide after-sales follow-up. Warranty scope, duration, and claim method should be confirmed in the quotation or project document.",
   },
 ]; // ============ HOMEPAGE PROCESS STEPS (simplified) ============
 export interface HomepageProcessStep {

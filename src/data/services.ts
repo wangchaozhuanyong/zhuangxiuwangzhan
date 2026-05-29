@@ -34,7 +34,7 @@ export const servicesData: ServiceItem[] = [
     faqs: [
       { q: "Do you handle everything or do I need to hire separate contractors?", a: "We handle everything. Our team manages all trades under one contract." },
       { q: "Can I renovate while living in the unit?", a: "It depends on the scope. For partial renovations, yes. For full renovations, we recommend temporary alternative accommodation." },
-      { q: "Do you provide warranty?", a: "Yes. We provide workmanship warranty on all renovation works." },
+      { q: "Do you provide warranty?", a: "We provide after-sales follow-up. Warranty scope and duration should be confirmed in the quotation or project document." },
     ],
     image: renovationImg,
   },
@@ -180,8 +180,8 @@ export const servicesData: ServiceItem[] = [
     id: "artistic-coating",
     title: "Artistic Wall Coating — Remmers",
     slug: "artistic-coating",
-    summary: "Authorized applicator for German Remmers artistic wall coatings in Malaysia. Premium textured finishes, lime-based coatings, metallic effects, and decorative plasters for luxury interiors.",
-    description: "FLASH CAST is an authorized applicator for Remmers, a leading German manufacturer of premium architectural coatings. Our trained technicians apply authentic European artistic wall coatings that transform ordinary walls into stunning feature surfaces. Unlike regular paint, these coatings create unique textures, depth, and visual effects that cannot be replicated by conventional methods.\n\nOur Remmers coating range includes lime-based finishes (Kalkfarbe), metallic effects (Artisto Fill Metallic), decorative plasters (Dekorputz), Venetian-style finishes, and natural stone effects. All products are imported directly from Germany.",
+    summary: "German Remmers artistic wall coating options for feature walls and selected interior spaces.",
+    description: "Artistic wall coating is suitable for feature walls and selected interiors that need texture, depth, and a more distinctive finish than regular paint.\n\nBefore recommending a coating approach, we confirm wall condition, design direction, color, sample effect, maintenance expectations, and site constraints.",
     suitableFor: ["Homeowners wanting premium feature walls", "Interior designers seeking unique finishes", "Hotels and hospitality venues", "Restaurants and F&B interiors", "Commercial showrooms and lobbies"],
     commonProjects: ["Living room TV feature wall", "Master bedroom accent wall", "Hotel lobby and corridor coating", "Restaurant interior wall finish", "Office reception feature wall"],
     processSteps: [
@@ -194,8 +194,8 @@ export const servicesData: ServiceItem[] = [
     items: ["Remmers Lime-Based Coatings (Kalkfarbe)", "Artisto Fill Metallic Effects", "Decorative Plaster (Dekorputz)", "Venetian-Style Finishes", "Natural Stone & Concrete Effects", "Marmorino & Stucco Finishes", "Rust & Oxidation Effects", "Custom Color Mixing & Matching"],
     faqs: [
       { q: "What is artistic wall coating?", a: "Artistic wall coatings are premium decorative finishes that create texture, depth, and visual effects on walls. Each application is handcrafted — no two walls are exactly alike." },
-      { q: "How durable is it?", a: "When properly applied and sealed, Remmers coatings last 10-15+ years. They are washable, scratch-resistant, and maintain their appearance over time." },
-      { q: "How much does it cost?", a: "Basic lime finishes start from RM 15-25 per sqft. Premium metallic and multi-layer finishes range from RM 30-60+ per sqft." },
+      { q: "How durable is it?", a: "Durability depends on wall condition, coating type, application method, sealing, and daily use. We explain maintenance needs before confirmation." },
+      { q: "How much does it cost?", a: "Cost depends on wall area, selected finish, surface preparation, number of layers, and site condition. A quotation should be confirmed after reviewing the wall." },
     ],
     image: artisticCoatingImg,
   },
@@ -217,7 +217,7 @@ export const servicesData: ServiceItem[] = [
     ],
     items: ["Structural Repair & Reinforcement", "Roof Repair & Waterproofing", "Complete Electrical Rewiring", "Plumbing & Pipe Replacement", "Termite Treatment & Prevention", "Wall Crack Repair & Plastering", "Window & Door Replacement", "Kitchen & Bathroom Overhaul", "Flooring Replacement", "Ceiling & Lighting Upgrade", "Built-In Furniture & Carpentry", "Interior & Exterior Painting"],
     faqs: [
-      { q: "How much does an old house renovation cost?", a: "A full old house renovation typically ranges from RM 80,000 to RM 300,000+ depending on property size and condition." },
+      { q: "How much does an old house renovation cost?", a: "Old house renovation cost depends heavily on property size, structure, wiring, plumbing, waterproofing, and the confirmed scope." },
       { q: "How long does it take?", a: "A full renovation usually takes 10-16 weeks depending on the extent of structural repairs needed." },
       { q: "Do you handle termite issues?", a: "Yes. We conduct termite inspections and arrange professional treatment before renovation begins." },
     ],

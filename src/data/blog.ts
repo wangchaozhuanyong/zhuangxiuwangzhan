@@ -10,7 +10,7 @@ export const blogPosts: BlogPost[] = [
 
 ## Step 1: Set Your Budget
 
-Before anything else, decide how much you're willing to invest. A typical condo renovation in KL ranges from RM 30,000 to RM 150,000+ depending on scope and materials. Factor in a 10-15% buffer for unexpected costs.
+Before anything else, decide how much you're willing to invest. Condo renovation cost in KL depends on scope, size, existing condition, management rules, and material choices. Keep a buffer for unexpected works discovered after site inspection.
 
 ## Step 2: Apply for Renovation Permits
 
@@ -335,38 +335,28 @@ The best warm minimalist homes are not just beautiful in photos; they are easy t
     id: "blog-7",
     slug: "renovation-cost-malaysia-2025",
     title: "How Much Does Renovation Cost in Malaysia? (2025 Guide)",
-    excerpt: "A comprehensive breakdown of renovation costs in Malaysia for 2025 — condos, landed houses, kitchens, bathrooms, and commercial spaces.",
-    content: `One of the most common questions we get: "How much will my renovation cost?" Here's a realistic breakdown for 2025.
+    excerpt: "A practical guide to what affects renovation cost in Malaysia for condos, landed houses, kitchens, bathrooms, and commercial spaces.",
+    content: `One of the most common questions we get: "How much will my renovation cost?" The safest answer is that cost depends on confirmed scope, site condition, materials, management requirements, and timeline.
 
 ## Condo Renovation Costs
 
-**Basic renovation** (painting, flooring, lights): RM 20,000 – RM 40,000
-**Standard renovation** (cabinets, flooring, ceiling, painting): RM 40,000 – RM 80,000
-**Full renovation** (everything including electrical, plumbing): RM 80,000 – RM 150,000+
-**Premium renovation** (luxury materials, smart home): RM 150,000 – RM 300,000+
+Condo renovation cost is affected by management rules, working hours, lift booking, protection works, hacking limits, built-in furniture, electrical changes, wet works, and material choices.
 
 ## Landed House Renovation Costs
 
-Landed houses typically cost more due to larger areas and potential structural work:
-**Partial renovation**: RM 50,000 – RM 100,000
-**Full renovation**: RM 100,000 – RM 250,000
-**Full renovation with extension**: RM 200,000 – RM 500,000+
+Landed house renovation usually needs deeper checking because roof, drainage, waterproofing, wiring, plumbing, and structure may affect the final scope.
 
 ## Kitchen Renovation Costs
 
-**Cabinet replacement only**: RM 8,000 – RM 25,000
-**Full kitchen renovation** (cabinets, countertop, tiling, plumbing): RM 20,000 – RM 60,000+
+Kitchen cost depends on cabinet length, carcass material, door finish, countertop, hardware, appliances, plumbing, backsplash, and electrical points.
 
 ## Bathroom Renovation Costs
 
-**Basic refresh** (new tiles, fixtures): RM 5,000 – RM 12,000
-**Full bathroom renovation**: RM 12,000 – RM 30,000+
+Bathroom cost depends on waterproofing, hacking, tile selection, plumbing, drainage slope, shower screen, vanity, ventilation, and fittings.
 
 ## Commercial Renovation Costs
 
-**Office fit-out**: RM 30 – RM 80 per sqft
-**Shop lot renovation**: RM 50,000 – RM 200,000
-**F&B restaurant**: RM 80,000 – RM 300,000+
+Commercial cost depends on authority requirements, electrical load, air conditioning, fire safety, signage, partitions, furniture, and the opening timeline.
 
 ## Factors That Affect Cost
 
@@ -386,7 +376,7 @@ We recommend setting your total budget, then allocating:
 - 10% for design and permits
 - 10% for contingency
 
-Contact FLASH CAST for a free site measurement and detailed quotation — no obligation, no hidden costs.`,
+Contact FLASH CAST with your location, photos, and scope so the team can review the next step and quotation details.`,
     category: "Guides",
     date: "2026-01-20",
     readTime: "6 min",
@@ -422,7 +412,7 @@ Ask about the materials they use and where they source them. Reputable contracto
 
 ## 6. Check Warranty Terms
 
-Ask about workmanship warranty — what's covered, how long, and the process for reporting defects.
+Ask what after-sales or warranty terms are included, what is covered, and how defects should be reported.
 
 ## 7. Assess Communication
 
@@ -462,7 +452,7 @@ Unlike regular paint, artistic wall coatings are premium decorative finishes app
 Remmers is a German manufacturer with over 75 years of expertise in architectural coatings. Their products stand out because:
 - **Natural ingredients**: Lime, marble dust, mineral pigments
 - **Breathable**: Regulates indoor humidity naturally
-- **Durable**: Lasts 10-15+ years with proper application
+- **Durability depends on application**: Lifespan depends on wall condition, coating type, sealing, maintenance, and daily use
 - **Eco-friendly**: Low VOC, mineral-based formulations
 - **Authentic European quality**: Imported directly from Germany
 
@@ -482,7 +472,7 @@ Remmers is a German manufacturer with over 75 years of expertise in architectura
 
 - Regular paint: RM 2-5 per sqft
 - Decorative paint: RM 8-15 per sqft
-- Remmers artistic coating: RM 15-60 per sqft
+- Artistic coating: price depends on selected finish, wall area, surface preparation, and number of layers
 
 While the upfront cost is higher, artistic coatings last significantly longer and create a visual impact that regular paint simply cannot achieve.
 
@@ -562,7 +552,7 @@ Contact us to see physical samples and discuss artistic coating options for your
 4. Plan storage carefully — avoid building cabinets you won't use
 5. Get quotes from 2-3 companies and compare item by item
 
-Contact FLASH CAST for a free measurement and quotation. We provide detailed pricing for every item — no hidden costs.`,
+Contact FLASH CAST with your measurements, photos, and requirements so the team can review scope and quotation details.`,
     category: "Guides",
     date: "2026-02-20",
     readTime: "5 min",

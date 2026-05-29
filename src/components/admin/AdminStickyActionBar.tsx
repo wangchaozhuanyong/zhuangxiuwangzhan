@@ -11,12 +11,11 @@ export default function AdminStickyActionBar({
   className?: string;
 }) {
   return (
-    <div className={cn("sticky top-[64px] z-30 -mx-4 mb-4 border-b border-border bg-background/95 px-4 py-3 backdrop-blur", className)}>
-      <div className="mx-auto flex max-w-5xl flex-wrap items-center justify-between gap-2">
+    <div className={cn("sticky top-[72px] z-30 -mx-4 mb-5 border-b border-border bg-background/95 px-4 py-3 backdrop-blur sm:-mx-6 sm:px-6 lg:-mx-8 lg:px-8", className)}>
+      <div className="mx-auto flex max-w-[1480px] flex-wrap items-center justify-between gap-2">
         <div className="flex min-w-0 flex-wrap items-center gap-2">{left}</div>
         <div className="flex flex-wrap items-center gap-2">{right}</div>
       </div>
     </div>
   );
 }
-

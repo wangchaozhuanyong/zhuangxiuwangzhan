@@ -39,10 +39,10 @@ const faqContent = {
       {
         category: "Process & Pricing",
         items: [
-          { q: "How do I get a quotation?", a: "Contact us via WhatsApp, phone, or our online quote form. We will arrange a free site measurement and provide a detailed itemized quotation with no obligation and no hidden charges." },
-          { q: "Do you offer free site measurements?", a: "Yes, we provide free on-site measurements for projects in KL and Selangor as part of our quotation process." },
+          { q: "How do I get a quotation?", a: "Contact us via WhatsApp, phone, or the online quote form. We will review your project type, location, photos, and scope before confirming the next step and quotation details." },
+          { q: "Can site measurement be arranged?", a: "Site measurement can be arranged based on area, project type, site access, and schedule." },
           { q: "How long does a typical renovation take?", a: "Most residential renovations take 6-12 weeks. Kitchen projects take 3-5 weeks. Bathroom renovations take 2-3 weeks. Office and shop lot fit-outs take 4-8 weeks. We provide a detailed timeline with milestones." },
-          { q: "Do you provide warranty or after-sales support?", a: "Yes. All renovation works come with workmanship warranty. We also provide after-sales support for any issues that arise after handover." },
+          { q: "Do you provide warranty or after-sales support?", a: "We provide after-sales follow-up. Warranty scope, duration, and claim method should be confirmed in the quotation or project document." },
         ],
       },
       {
