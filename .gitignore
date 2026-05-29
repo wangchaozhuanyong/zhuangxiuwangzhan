@@ -18,6 +18,8 @@ test-results
 public/videos/*
 !public/videos/home-hero.mp4
 !public/videos/home-hero-mobile.mp4
+!public/videos/home-hero.webm
+!public/videos/home-hero-mobile.webm
 !public/videos/home-hero-poster.jpg
 
 # Editor directories and files

@@ -2,10 +2,11 @@ import { spawn } from "node:child_process";
 
 const url = process.env.PREVIEW_URL || "http://127.0.0.1:4191";
 const port = Number(new URL(url).port || "4191");
+const npmCmd = process.platform === "win32" ? "npm.cmd" : "npm";
 
 const startPreview = () => {
   const args = ["run", "preview", "--", "--host", "127.0.0.1", "--port", String(port), "--strictPort"];
-  const child = spawn("npm.cmd", args, { stdio: "inherit", shell: true });
+  const child = spawn(npmCmd, args, { stdio: "inherit", shell: process.platform === "win32" });
   return child;
 };
 
