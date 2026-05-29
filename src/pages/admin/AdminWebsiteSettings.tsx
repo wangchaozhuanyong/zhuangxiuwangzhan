@@ -1,5 +1,6 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useAdminFormState } from "@/hooks/useAdminFormState";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -7,8 +8,7 @@ import { fetchSiteSettings, fallbackSiteSettings, saveSiteSettings, type SiteSet
 import { invalidateSiteSettings } from "@/lib/adminInvalidate";
 import SmartImage from "@/components/SmartImage";
 import AdminImageUpload from "./AdminImageUpload";
-
-const isZhBrowser = () => typeof navigator !== "undefined" && navigator.language.toLowerCase().startsWith("zh");
+import { getAdminLang } from "@/lib/adminLocale";
 
 const copy = {
   en: {
@@ -40,47 +40,45 @@ const copy = {
 const mediaFields = new Set<keyof SiteSettings>(["logo_url", "favicon_url", "og_image_url"]);
 
 const fields: Array<{ key: keyof SiteSettings; label: string; group: "company" | "contact" | "media" | "seo" | "social"; textarea?: boolean }> = [
-  { key: "company_name", label: "Company Name / 公司名称", group: "company" },
-  { key: "brand_name", label: "Brand Name / 品牌名", group: "company" },
-  { key: "ssm_number", label: "SSM Number / SSM 编号", group: "company" },
-  { key: "email", label: "Email / 邮箱", group: "contact" },
-  { key: "phone_display", label: "Phone Display / 展示电话", group: "contact" },
-  { key: "phone_e164", label: "Phone E.164 / 电话国际格式", group: "contact" },
-  { key: "whatsapp_number", label: "WhatsApp Number / WhatsApp 号码", group: "contact" },
-  { key: "address_zh", label: "Address ZH / 中文地址", group: "contact", textarea: true },
-  { key: "address_en", label: "Address EN / 英文地址", group: "contact", textarea: true },
-  { key: "short_address_zh", label: "Short Address ZH / 中文短地址", group: "contact" },
-  { key: "short_address_en", label: "Short Address EN / 英文短地址", group: "contact" },
-  { key: "logo_url", label: "Logo URL", group: "media" },
-  { key: "favicon_url", label: "Favicon URL", group: "media" },
-  { key: "og_image_url", label: "Default OG Image URL", group: "media" },
-  { key: "facebook_url", label: "Facebook", group: "social" },
-  { key: "instagram_url", label: "Instagram", group: "social" },
-  { key: "tiktok_url", label: "TikTok", group: "social" },
-  { key: "xiaohongshu_url", label: "Xiaohongshu / 小红书", group: "social" },
-  { key: "linkedin_url", label: "LinkedIn", group: "social" },
-  { key: "default_seo_title_zh", label: "Default SEO Title ZH / 默认中文 SEO 标题", group: "seo" },
-  { key: "default_seo_title_en", label: "Default SEO Title EN / 默认英文 SEO 标题", group: "seo" },
-  { key: "default_seo_description_zh", label: "Default SEO Description ZH / 默认中文 SEO 描述", group: "seo", textarea: true },
-  { key: "default_seo_description_en", label: "Default SEO Description EN / 默认英文 SEO 描述", group: "seo", textarea: true },
+  { key: "company_name", label: "公司名称", group: "company" },
+  { key: "brand_name", label: "品牌名", group: "company" },
+  { key: "ssm_number", label: "SSM 注册编号", group: "company" },
+  { key: "email", label: "邮箱", group: "contact" },
+  { key: "phone_display", label: "展示电话", group: "contact" },
+  { key: "phone_e164", label: "电话（E.164 国际格式）", group: "contact" },
+  { key: "whatsapp_number", label: "WhatsApp 号码", group: "contact" },
+  { key: "address_zh", label: "中文地址", group: "contact", textarea: true },
+  { key: "address_en", label: "英文地址", group: "contact", textarea: true },
+  { key: "short_address_zh", label: "中文短地址", group: "contact" },
+  { key: "short_address_en", label: "英文短地址", group: "contact" },
+  { key: "logo_url", label: "Logo 图片地址", group: "media" },
+  { key: "favicon_url", label: "网站图标地址", group: "media" },
+  { key: "og_image_url", label: "默认分享预览图地址", group: "media" },
+  { key: "facebook_url", label: "Facebook 链接", group: "social" },
+  { key: "instagram_url", label: "Instagram 链接", group: "social" },
+  { key: "tiktok_url", label: "TikTok 链接", group: "social" },
+  { key: "xiaohongshu_url", label: "小红书链接", group: "social" },
+  { key: "linkedin_url", label: "LinkedIn 链接", group: "social" },
+  { key: "default_seo_title_zh", label: "默认中文 SEO 标题", group: "seo" },
+  { key: "default_seo_title_en", label: "默认英文 SEO 标题", group: "seo" },
+  { key: "default_seo_description_zh", label: "默认中文 SEO 描述", group: "seo", textarea: true },
+  { key: "default_seo_description_en", label: "默认英文 SEO 描述", group: "seo", textarea: true },
 ];
 
 const AdminWebsiteSettings = () => {
-  const lang = "zh";
+  const lang = getAdminLang();
   const t = copy[lang];
   const queryClient = useQueryClient();
-  const { data: remoteSettings } = useQuery({
+  const { data: remoteSettings, isFetched } = useQuery({
     queryKey: ["site-settings"],
     queryFn: fetchSiteSettings,
-    initialData: fallbackSiteSettings,
   });
-  const [settings, setSettings] = useState<SiteSettings>(fallbackSiteSettings);
+  const { state: settings, setForm: setSettings, applyRemote } = useAdminFormState<SiteSettings>(
+    isFetched ? remoteSettings ?? fallbackSiteSettings : undefined,
+    { initial: fallbackSiteSettings },
+  );
   const [status, setStatus] = useState("");
   const [saving, setSaving] = useState(false);
-
-  useEffect(() => {
-    if (remoteSettings) setSettings(remoteSettings);
-  }, [remoteSettings]);
 
   const updateField = (key: keyof SiteSettings, value: string) => {
     setSettings((current) => ({ ...current, [key]: value }));
@@ -92,6 +90,8 @@ const AdminWebsiteSettings = () => {
     try {
       await saveSiteSettings(settings);
       await invalidateSiteSettings(queryClient);
+      const fresh = await fetchSiteSettings();
+      applyRemote(fresh);
       setStatus(t.saved);
     } catch (error) {
       setStatus(error instanceof Error ? error.message : String(error));

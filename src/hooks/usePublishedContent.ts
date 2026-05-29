@@ -131,6 +131,7 @@ export function usePublishedCtaBlock(language: "en" | "zh", blockKey: string) {
     queryKey: ["published", "cta", language, blockKey],
     queryFn: () => getPublishedCtaBlock(language, blockKey),
     enabled: isSupabaseConfigured,
+    retry: false,
     ...queryDefaults,
   });
 }

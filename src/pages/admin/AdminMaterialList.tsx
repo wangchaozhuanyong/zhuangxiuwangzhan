@@ -9,6 +9,7 @@ import AdminDataTable, { type AdminDataTableColumn } from "@/components/admin/Ad
 import AdminStatusBadge from "@/components/admin/AdminStatusBadge";
 import AdminEmptyState from "@/components/admin/AdminEmptyState";
 import SmartImage from "@/components/SmartImage";
+import { publishStatusOptions } from "@/lib/adminLocale";
 
 export default function AdminMaterialList() {
   const { data: rows = [], error, isFetching, refetch } = useAdminMaterials();
@@ -108,9 +109,11 @@ export default function AdminMaterialList() {
           className="flex h-10 rounded-md border border-input bg-background px-3 py-2 text-sm"
         >
           <option value="all">全部状态</option>
-          <option value="draft">draft</option>
-          <option value="published">published</option>
-          <option value="archived">archived</option>
+          {publishStatusOptions().map(({ value, label }) => (
+            <option key={value} value={value}>
+              {label}
+            </option>
+          ))}
         </select>
       </div>
 

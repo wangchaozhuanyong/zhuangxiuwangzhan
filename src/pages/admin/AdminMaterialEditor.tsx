@@ -1,4 +1,5 @@
 import { FormEvent, useCallback, useEffect, useMemo, useState } from "react";
+import { useAdminFormState } from "@/hooks/useAdminFormState";
 import { useQueryClient } from "@tanstack/react-query";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -13,6 +14,7 @@ import AdminEmptyState from "@/components/admin/AdminEmptyState";
 import ImageField from "@/components/admin/ImageField";
 import { invalidateAdminContentDetail, invalidateAfterAdminContentSave } from "@/lib/adminInvalidate";
 import { useAdminMaterialDetail } from "@/lib/adminQueries";
+import { publishStatusOptions } from "@/lib/adminLocale";
 
 type MaterialRecord = {
   id?: string;
@@ -107,7 +109,6 @@ export default function AdminMaterialEditor() {
   const navigate = useNavigate();
   const { id } = useParams<{ id: string }>();
   const isNew = id === "new";
-  const [record, setRecord] = useState<MaterialRecord>(empty);
   const [showEnglish, setShowEnglish] = useState(false);
   const [slugChecking, setSlugChecking] = useState(false);
   const [slugError, setSlugError] = useState<string>("");
@@ -115,13 +116,9 @@ export default function AdminMaterialEditor() {
 
   const { data: loaded, isLoading, isError, error: loadError } = useAdminMaterialDetail(isNew ? undefined : id);
 
-  useEffect(() => {
-    if (isNew) {
-      setRecord(empty);
-      return;
-    }
-    if (!loaded) return;
-    setRecord({
+  const loadedRecord = useMemo<MaterialRecord | undefined>(() => {
+    if (isNew || !loaded) return isNew ? empty : undefined;
+    return {
       ...empty,
       ...(loaded as any),
       suitable_spaces_zh: (loaded as any).suitable_spaces_zh || [],
@@ -134,8 +131,13 @@ export default function AdminMaterialEditor() {
       recommended_pairing_en: (loaded as any).recommended_pairing_en || "",
       note_zh: (loaded as any).note_zh || "",
       note_en: (loaded as any).note_en || "",
-    });
-  }, [isNew, loaded, id]);
+    };
+  }, [isNew, loaded]);
+
+  const { state: record, setForm: setRecord, applyRemote } = useAdminFormState<MaterialRecord>(loadedRecord, {
+    resetKey: id ?? "new",
+    initial: empty,
+  });
 
   useEffect(() => {
     if (!isError || !loadError) return;
@@ -220,7 +222,7 @@ export default function AdminMaterialEditor() {
     }
 
     const savedId = (data as any)?.id;
-    setRecord((r) => ({ ...r, id: savedId, slug, status: payload.status }));
+    applyRemote({ ...record, id: savedId, slug, status: payload.status });
     toast({ title: "已保存" });
     void invalidateAfterAdminContentSave(queryClient);
 
@@ -304,9 +306,11 @@ export default function AdminMaterialEditor() {
                 onChange={(e) => setRecord((r) => ({ ...r, status: e.target.value as any }))}
                 className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
               >
-                <option value="draft">draft</option>
-                <option value="published">published</option>
-                <option value="archived">archived</option>
+                {publishStatusOptions().map(({ value, label }) => (
+                  <option key={value} value={value}>
+                    {label}
+                  </option>
+                ))}
               </select>
             </div>
             <div>

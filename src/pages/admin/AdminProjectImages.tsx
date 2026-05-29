@@ -11,7 +11,7 @@ import AdminImageUpload from "./AdminImageUpload";
 import SmartImage from "@/components/SmartImage";
 import type { Language } from "@/i18n/routes";
 
-const isZhBrowser = () => typeof navigator !== "undefined" && navigator.language.toLowerCase().startsWith("zh");
+import { getAdminLang } from "@/lib/adminLocale";
 
 interface AdminProjectImagesProps {
   projectId?: string;
@@ -84,7 +84,7 @@ const formatImageType = (value: string, language: Language) =>
 
 const AdminProjectImages = ({ projectId }: AdminProjectImagesProps) => {
   const queryClient = useQueryClient();
-  const lang = "zh";
+  const lang = getAdminLang();
   const t = copy[lang];
   const { data: images = [], refetch } = useAdminProjectImages(projectId);
   const [draft, setDraft] = useState<any>(emptyImage);
@@ -142,7 +142,7 @@ const AdminProjectImages = ({ projectId }: AdminProjectImagesProps) => {
     }
     await updateImage(image, { image_type: "cover", sort_order: 0 });
     refreshProjectCaches();
-    setStatus(lang === "zh" ? "已设为封面（前台列表将优先显示该图）。" : "Cover image updated.");
+    setStatus("已设为封面（前台列表将优先显示该图）。");
   };
 
   const deleteImage = async (id: string) => {

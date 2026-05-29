@@ -148,7 +148,8 @@ const Footer = () => {
 
   return (
     <footer>
-      <div className="footer-cta-bar">
+      {/* 移动端由 MobileActionBar 提供固定联系入口，避免与页脚 CTA 叠层冲突 */}
+      <div className="footer-cta-bar hidden md:block">
         <div className="site-container flex flex-col items-center gap-6 py-10 text-center md:flex-row md:justify-between md:py-14 md:text-left">
           <div className="min-w-0">
             <h3 className="heading-safe font-display text-2xl font-bold text-surface-dark-foreground md:text-3xl">{t.ctaTitle}</h3>

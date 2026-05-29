@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { MapPin, Phone, Mail, Clock, ArrowRight, CheckCircle, Loader2, AlertCircle } from "lucide-react";
+import GoogleMapEmbed from "@/components/GoogleMapEmbed";
 import WhatsAppIcon from "@/components/WhatsAppIcon";
 import Reveal from "@/components/Reveal";
 import SmartImage from "@/components/SmartImage";
@@ -232,7 +233,6 @@ const Contact = () => {
   ];
 
   const mapAddress = settings.address || t.addressText;
-  const mapEmbedSrc = `https://www.google.com/maps?q=${encodeURIComponent(mapAddress)}&output=embed`;
 
   const FieldError = ({ id, msg }: { id: string; msg?: string }) =>
     msg ? (
@@ -453,18 +453,7 @@ const Contact = () => {
               <p className="text-muted-foreground text-sm">{t.mapDescription}</p>
             </div>
           </Reveal>
-          <div className="overflow-hidden rounded-card-lg border border-border">
-            <iframe
-              src={mapEmbedSrc}
-              width="100%"
-              height="350"
-              style={{ border: 0 }}
-              allowFullScreen
-              loading="lazy"
-              referrerPolicy="no-referrer-when-downgrade"
-              title={t.mapFrameTitle}
-            />
-          </div>
+          <GoogleMapEmbed title={t.mapFrameTitle} addressLabel={mapAddress} height={350} />
         </div>
       </section>
 

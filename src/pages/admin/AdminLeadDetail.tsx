@@ -6,6 +6,8 @@ import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
 import { supabase } from "@/lib/supabase";
 import { useAdminLead } from "@/lib/adminQueries";
+import { getAdminLang } from "@/lib/adminLocale";
+import { translateStatusLabel } from "@/i18n/displayLabels";
 
 const statuses = ["new", "contacted", "site_visit_scheduled", "quoted", "converted", "closed", "spam"];
 const followupTypes = ["note", "call", "whatsapp", "site_visit", "quotation", "closed"];
@@ -19,6 +21,7 @@ const followupTypeLabels: Record<string, string> = {
 };
 
 const AdminLeadDetail = () => {
+  const lang = getAdminLang();
   const { id } = useParams<{ id: string }>();
   const queryClient = useQueryClient();
   const { data, error } = useAdminLead(id);
@@ -94,7 +97,11 @@ const AdminLeadDetail = () => {
                   <div>
                     <label className="mb-1 block text-sm font-medium">状态</label>
                     <select value={lead.status || "new"} onChange={(event) => void updateLead({ status: event.target.value })} className="flex h-10 rounded-md border border-input bg-background px-3 py-2 text-sm">
-                      {statuses.map((item) => <option key={item} value={item}>{item}</option>)}
+                      {statuses.map((item) => (
+                        <option key={item} value={item}>
+                          {translateStatusLabel("leads", item, lang)}
+                        </option>
+                      ))}
                     </select>
                   </div>
                   <div>

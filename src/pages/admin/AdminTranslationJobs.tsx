@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { translateStatusLabel } from "@/i18n/displayLabels";
 import type { Language } from "@/i18n/routes";
+import { getAdminLang } from "@/lib/adminLocale";
 import { isSupabaseConfigured } from "@/lib/supabase";
 import { useAdminTranslationJobs } from "@/lib/adminQueries";
 
@@ -74,7 +75,7 @@ const getTableLabel = (table: string | null, language: Language) => {
 };
 
 const AdminTranslationJobs = () => {
-  const lang: Language = "zh";
+  const lang = getAdminLang();
   const t = copy[lang];
   const { data: jobs = [], isFetching, error, refetch } = useAdminTranslationJobs();
   const [search, setSearch] = useState("");

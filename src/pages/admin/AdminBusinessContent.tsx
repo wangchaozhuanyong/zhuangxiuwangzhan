@@ -1,4 +1,5 @@
 import { FormEvent, useEffect, useMemo, useState } from "react";
+import { useAdminFormState } from "@/hooks/useAdminFormState";
 import { useQueryClient } from "@tanstack/react-query";
 import { invalidateAdminContentDetail, invalidateAfterAdminContentSave } from "@/lib/adminInvalidate";
 import { useAdminBusinessRecord, useAdminTableRows, type AdminContentTable } from "@/lib/adminQueries";
@@ -220,19 +221,21 @@ export const AdminBusinessEditor = ({ module }: { module: ModuleKey }) => {
   const config = moduleConfig[module];
   const isNew = id === "new";
   const queryClient = useQueryClient();
-  const [record, setRecord] = useState<Record<string, any>>(emptyRecord);
   const [showEnglish, setShowEnglish] = useState(false);
   const [status, setStatus] = useState("");
 
   const { data: loaded, isError, error: loadError } = useAdminBusinessRecord(config.table, isNew ? undefined : id);
 
-  useEffect(() => {
-    if (isNew || !id) {
-      setRecord(emptyRecord);
-      return;
-    }
-    if (loaded) setRecord(loaded);
-  }, [config.table, id, isNew, loaded]);
+  const loadedRecord = useMemo(() => {
+    if (isNew) return emptyRecord;
+    if (!loaded) return undefined;
+    return loaded;
+  }, [isNew, loaded]);
+
+  const { state: record, setForm: setRecord, applyRemote } = useAdminFormState<Record<string, any>>(loadedRecord, {
+    resetKey: `${config.table}:${id ?? "new"}`,
+    initial: emptyRecord,
+  });
 
   useEffect(() => {
     if (!isError || !loadError) return;
@@ -258,7 +261,7 @@ export const AdminBusinessEditor = ({ module }: { module: ModuleKey }) => {
       return;
     }
     const savedId = data.id;
-    setRecord((current) => ({ ...current, id: savedId }));
+    applyRemote({ ...record, id: savedId });
     setStatus("已保存。");
     void invalidateAfterAdminContentSave(queryClient);
     if (generateEnglish) {

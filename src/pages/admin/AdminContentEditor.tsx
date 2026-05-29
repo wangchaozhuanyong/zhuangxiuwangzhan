@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { invalidateAdminContentLists, invalidatePublishedContent } from "@/lib/adminInvalidate";
 import { useAdminEditorRows } from "@/lib/adminQueries";
@@ -14,6 +14,7 @@ import {
   translateStatusLabel,
 } from "@/i18n/displayLabels";
 import type { Language } from "@/i18n/routes";
+import { getAdminLang } from "@/lib/adminLocale";
 import { isSupabaseConfigured, supabase } from "@/lib/supabase";
 import AdminImageUpload from "./AdminImageUpload";
 import AdminProjectImages from "./AdminProjectImages";
@@ -182,7 +183,6 @@ const autoTranslateTables = new Set(["services", "projects", "blog_posts", "mate
 const readOnlyTables = new Set(["translation_jobs"]);
 const readOnlyFields = new Set(["created_at", "updated_at", "regenerated_at"]);
 
-const isZhBrowser = () => typeof navigator !== "undefined" && navigator.language.toLowerCase().startsWith("zh");
 const humanize = (value: string) => value.replace(/_/g, " ").replace(/\b\w/g, (char) => char.toUpperCase());
 
 const copy = {
@@ -463,12 +463,18 @@ const listContentTables = new Set(["services", "projects", "materials", "blog_po
 const AdminContentEditor = () => {
   const { type = "projects", id } = useParams<{ type: string; id?: string }>();
   const queryClient = useQueryClient();
-  const lang: Language = "zh";
+  const lang = getAdminLang();
   const t = copy[lang];
   const [record, setRecord] = useState<Record<string, any>>({});
+  const recordDirtyRef = useRef(false);
   const [status, setStatus] = useState("");
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
+
+  const setRecordField = useCallback((patch: Record<string, any> | ((prev: Record<string, any>) => Record<string, any>)) => {
+    recordDirtyRef.current = true;
+    setRecord((prev) => (typeof patch === "function" ? patch(prev) : { ...prev, ...patch }));
+  }, []);
   const canEdit = editableTables.has(type);
   const { data: rows = [], isFetching, error: rowsError, refetch } = useAdminEditorRows(type, canEdit);
   const isLoading = isFetching;
@@ -494,10 +500,15 @@ const AdminContentEditor = () => {
   }, [rows, search, statusFilter, visibleFields]);
 
   useEffect(() => {
+    recordDirtyRef.current = false;
+  }, [id, type]);
+
+  useEffect(() => {
     if (rowsError) {
       setStatus(rowsError instanceof Error ? rowsError.message : String(rowsError));
       return;
     }
+    if (recordDirtyRef.current) return;
     if (id && rows.length) {
       setRecord(rows.find((item) => item.id === id) || {});
     } else if (!id) {
@@ -526,6 +537,7 @@ const AdminContentEditor = () => {
     }
 
     const savedRecord = { ...record, id: data.id };
+    recordDirtyRef.current = false;
     setRecord(savedRecord);
 
     const hasChineseContent = Object.keys(payload).some((field) => field.endsWith("_zh") && payload[field]);
@@ -541,7 +553,10 @@ const AdminContentEditor = () => {
       }
 
       const { data: translatedRecord } = await supabase!.from(type).select("*").eq("id", data.id).single();
-      if (translatedRecord) setRecord(translatedRecord);
+      if (translatedRecord) {
+        recordDirtyRef.current = false;
+        setRecord(translatedRecord);
+      }
       setStatus(t.generated);
       refreshContentCaches();
       await refetch();
@@ -571,7 +586,10 @@ const AdminContentEditor = () => {
     }
 
     const { data: translatedRecord } = await supabase!.from(type).select("*").eq("id", record.id).single();
-    if (translatedRecord) setRecord(translatedRecord);
+    if (translatedRecord) {
+      recordDirtyRef.current = false;
+      setRecord(translatedRecord);
+    }
     setStatus(t.regenerated);
     refreshContentCaches();
     void queryClient.invalidateQueries({ queryKey: ["admin", type, "rows"] });
@@ -591,7 +609,10 @@ const AdminContentEditor = () => {
           {!readOnlyTables.has(type) && (
             <Button
               className="mb-4 w-full"
-              onClick={() => setRecord({ status: type === "leads" ? "new" : type === "quote_requests" ? "pending" : "draft", sort_order: 0 })}
+              onClick={() => {
+                recordDirtyRef.current = false;
+                setRecord({ status: type === "leads" ? "new" : type === "quote_requests" ? "pending" : "draft", sort_order: 0 });
+              }}
             >
               {t.createRecord}
             </Button>
@@ -622,7 +643,14 @@ const AdminContentEditor = () => {
           <p className="mb-3 text-xs text-muted-foreground">{t.showing(filteredRows.length, rows.length)}</p>
           <div className="space-y-2">
             {filteredRows.map((row) => (
-              <button key={row.id} className="block w-full rounded-lg border border-border p-3 text-left text-sm hover:bg-muted" onClick={() => setRecord(row)}>
+              <button
+                key={row.id}
+                className="block w-full rounded-lg border border-border p-3 text-left text-sm hover:bg-muted"
+                onClick={() => {
+                  recordDirtyRef.current = false;
+                  setRecord(row);
+                }}
+              >
                 <span className="font-medium">{getRecordLabel(row, type, lang)}</span>
                 <span className="block text-xs text-muted-foreground">{getRecordMeta(row, type, lang)}</span>
               </button>
@@ -655,16 +683,16 @@ const AdminContentEditor = () => {
                 {readOnlyFields.has(field) ? (
                   <Input value={formatFieldValue(field, record[field])} readOnly className="bg-muted text-muted-foreground" />
                 ) : field.includes("content") || field.includes("description") || longTextFields.has(field) ? (
-                  <Textarea rows={5} value={formatFieldValue(field, record[field])} onChange={(event) => setRecord({ ...record, [field]: event.target.value })} />
+                  <Textarea rows={5} value={formatFieldValue(field, record[field])} onChange={(event) => setRecordField({ [field]: event.target.value })} />
                 ) : arrayLikeFields.has(field) || jsonFields.has(field) ? (
-                  <Textarea rows={4} value={formatFieldValue(field, record[field])} onChange={(event) => setRecord({ ...record, [field]: event.target.value })} />
+                  <Textarea rows={4} value={formatFieldValue(field, record[field])} onChange={(event) => setRecordField({ [field]: event.target.value })} />
                 ) : imageFields.has(field) ? (
                   <div className="space-y-3">
-                    <Input value={formatFieldValue(field, record[field])} onChange={(event) => setRecord({ ...record, [field]: event.target.value })} />
-                    <AdminImageUpload value={record[field]} folder={`${type}/${record.id || "draft"}`} onUploaded={(url) => setRecord({ ...record, [field]: url })} />
+                    <Input value={formatFieldValue(field, record[field])} onChange={(event) => setRecordField({ [field]: event.target.value })} />
+                    <AdminImageUpload value={record[field]} folder={`${type}/${record.id || "draft"}`} onUploaded={(url) => setRecordField({ [field]: url })} />
                   </div>
                 ) : (
-                  <Input value={formatFieldValue(field, record[field])} onChange={(event) => setRecord({ ...record, [field]: event.target.value })} />
+                  <Input value={formatFieldValue(field, record[field])} onChange={(event) => setRecordField({ [field]: event.target.value })} />
                 )}
               </div>
             ))}

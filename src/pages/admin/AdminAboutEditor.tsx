@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
@@ -13,11 +13,13 @@ import ImageField from "@/components/admin/ImageField";
 import { invalidatePublishedContent } from "@/lib/adminInvalidate";
 import { aboutSectionKeys, type AboutSectionKey, type AboutSectionRow, type CtaRow } from "@/lib/adminEditorData";
 import { useAdminAboutEditorData } from "@/lib/adminQueries";
+import { translateFieldLabel } from "@/i18n/displayLabels";
+import { getAdminLang, publishStatusOptions } from "@/lib/adminLocale";
+
+const L = (field: string) => translateFieldLabel(field, getAdminLang());
 
 const sectionKeys = aboutSectionKeys;
 type SectionKey = AboutSectionKey;
-
-const statusOptions = ["published", "draft", "archived"] as const;
 
 const jsonStringify = (value: any) => JSON.stringify(value ?? [], null, 2);
 const safeJsonParse = (value: string) => {
@@ -38,9 +40,20 @@ export default function AdminAboutEditor() {
 
   const [ctaBlock, setCtaBlock] = useState<CtaRow | null>(null);
   const [editingCta, setEditingCta] = useState<CtaRow | null>(null);
+  const formDirtyRef = useRef(false);
+
+  const markDirty = () => {
+    formDirtyRef.current = true;
+  };
+
+  const touchEditingCta: typeof setEditingCta = (value) => {
+    markDirty();
+    setEditingCta(value);
+  };
 
   useEffect(() => {
     if (!bundle) return;
+    if (formDirtyRef.current) return;
     setSections(bundle.sections);
     const zh: Record<string, string> = {};
     const en: Record<string, string> = {};
@@ -54,17 +67,23 @@ export default function AdminAboutEditor() {
   }, [bundle]);
 
   const refreshEditor = async () => {
+    formDirtyRef.current = false;
     void invalidatePublishedContent(queryClient);
     await refetch();
   };
 
-  const updateSection = (key: string, patch: Partial<AboutSectionRow>) =>
+  const updateSection = (key: string, patch: Partial<AboutSectionRow>) => {
+    markDirty();
     setSections((prev) => ({ ...prev, [key]: { ...(prev[key] || ({ section_key: key } as any)), ...patch } }));
+  };
 
   const saveSection = async (key: string) => {
     if (!supabase) return;
     const row = sections[key];
-    if (!row) return;
+    if (!row) {
+      toast({ title: "无法保存", description: "区块数据尚未加载，请刷新页面后重试。", variant: "destructive" });
+      return;
+    }
 
     try {
       const parsedZh = safeJsonParse(itemsZh[key] || "[]");
@@ -168,14 +187,14 @@ export default function AdminAboutEditor() {
       <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as any)}>
         <div className="mb-4 overflow-auto">
           <TabsList className="w-max">
-            <TabsTrigger value="hero">Hero</TabsTrigger>
+            <TabsTrigger value="hero">首屏</TabsTrigger>
             <TabsTrigger value="intro">公司介绍</TabsTrigger>
             <TabsTrigger value="stats">统计数据</TabsTrigger>
             <TabsTrigger value="core_values">核心价值</TabsTrigger>
             <TabsTrigger value="team">团队亮点</TabsTrigger>
             <TabsTrigger value="milestones">公司历程</TabsTrigger>
             <TabsTrigger value="office">办公室</TabsTrigger>
-            <TabsTrigger value="cta">CTA</TabsTrigger>
+            <TabsTrigger value="cta">行动号召</TabsTrigger>
           </TabsList>
         </div>
 
@@ -196,9 +215,9 @@ export default function AdminAboutEditor() {
                           onChange={(e) => updateSection(key, { status: e.target.value as any })}
                           className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
                         >
-                          {statusOptions.map((s) => (
-                            <option key={s} value={s}>
-                              {s}
+                          {publishStatusOptions().map(({ value, label }) => (
+                            <option key={value} value={value}>
+                              {label}
                             </option>
                           ))}
                         </select>
@@ -212,27 +231,27 @@ export default function AdminAboutEditor() {
                         />
                       </div>
                       <div>
-                        <label className="mb-1 block text-sm font-medium">title_zh</label>
+                        <label className="mb-1 block text-sm font-medium">{L("title_zh")}</label>
                         <Input value={row.title_zh || ""} onChange={(e) => updateSection(key, { title_zh: e.target.value })} />
                       </div>
                       <div>
-                        <label className="mb-1 block text-sm font-medium">title_en</label>
+                        <label className="mb-1 block text-sm font-medium">{L("title_en")}</label>
                         <Input value={row.title_en || ""} onChange={(e) => updateSection(key, { title_en: e.target.value })} />
                       </div>
                       <div className="md:col-span-2">
-                        <label className="mb-1 block text-sm font-medium">subtitle_zh</label>
+                        <label className="mb-1 block text-sm font-medium">{L("subtitle_zh")}</label>
                         <Textarea rows={2} value={row.subtitle_zh || ""} onChange={(e) => updateSection(key, { subtitle_zh: e.target.value })} />
                       </div>
                       <div className="md:col-span-2">
-                        <label className="mb-1 block text-sm font-medium">subtitle_en</label>
+                        <label className="mb-1 block text-sm font-medium">{L("subtitle_en")}</label>
                         <Textarea rows={2} value={row.subtitle_en || ""} onChange={(e) => updateSection(key, { subtitle_en: e.target.value })} />
                       </div>
                       <div className="md:col-span-2">
-                        <label className="mb-1 block text-sm font-medium">content_zh</label>
+                        <label className="mb-1 block text-sm font-medium">{L("content_zh")}</label>
                         <Textarea rows={5} value={row.content_zh || ""} onChange={(e) => updateSection(key, { content_zh: e.target.value })} />
                       </div>
                       <div className="md:col-span-2">
-                        <label className="mb-1 block text-sm font-medium">content_en</label>
+                        <label className="mb-1 block text-sm font-medium">{L("content_en")}</label>
                         <Textarea rows={5} value={row.content_en || ""} onChange={(e) => updateSection(key, { content_en: e.target.value })} />
                       </div>
                       <div className="md:col-span-2">
@@ -246,11 +265,11 @@ export default function AdminAboutEditor() {
                       </div>
                       <div>
                         <label className="mb-1 block text-sm font-medium">items_zh（JSON）</label>
-                        <Textarea rows={10} value={itemsZh[key] || "[]"} onChange={(e) => setItemsZh((prev) => ({ ...prev, [key]: e.target.value }))} />
+                        <Textarea rows={10} value={itemsZh[key] || "[]"} onChange={(e) => { markDirty(); setItemsZh((prev) => ({ ...prev, [key]: e.target.value })); }} />
                       </div>
                       <div>
                         <label className="mb-1 block text-sm font-medium">items_en（JSON）</label>
-                        <Textarea rows={10} value={itemsEn[key] || "[]"} onChange={(e) => setItemsEn((prev) => ({ ...prev, [key]: e.target.value }))} />
+                        <Textarea rows={10} value={itemsEn[key] || "[]"} onChange={(e) => { markDirty(); setItemsEn((prev) => ({ ...prev, [key]: e.target.value })); }} />
                       </div>
                     </div>
                     <div className="mt-4 flex gap-2">
@@ -270,61 +289,61 @@ export default function AdminAboutEditor() {
                 <label className="mb-1 block text-sm font-medium">状态</label>
                 <select
                   value={ctaDraft.status || "published"}
-                  onChange={(e) => setEditingCta((v) => ({ ...(v || ctaDraft), status: e.target.value as any }))}
+                  onChange={(e) => touchEditingCta((v) => ({ ...(v || ctaDraft), status: e.target.value as any }))}
                   className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
                 >
-                  {statusOptions.map((s) => (
-                    <option key={s} value={s}>
-                      {s}
+                  {publishStatusOptions().map(({ value, label }) => (
+                    <option key={value} value={value}>
+                      {label}
                     </option>
                   ))}
                 </select>
               </div>
               <div>
-                <label className="mb-1 block text-sm font-medium">title_zh</label>
-                <Input value={ctaDraft.title_zh || ""} onChange={(e) => setEditingCta((v) => ({ ...(v || ctaDraft), title_zh: e.target.value }))} />
+                <label className="mb-1 block text-sm font-medium">{L("title_zh")}</label>
+                <Input value={ctaDraft.title_zh || ""} onChange={(e) => touchEditingCta((v) => ({ ...(v || ctaDraft), title_zh: e.target.value }))} />
               </div>
               <div>
-                <label className="mb-1 block text-sm font-medium">title_en</label>
-                <Input value={ctaDraft.title_en || ""} onChange={(e) => setEditingCta((v) => ({ ...(v || ctaDraft), title_en: e.target.value }))} />
+                <label className="mb-1 block text-sm font-medium">{L("title_en")}</label>
+                <Input value={ctaDraft.title_en || ""} onChange={(e) => touchEditingCta((v) => ({ ...(v || ctaDraft), title_en: e.target.value }))} />
               </div>
               <div className="md:col-span-2">
-                <label className="mb-1 block text-sm font-medium">description_zh</label>
-                <Textarea rows={3} value={ctaDraft.description_zh || ""} onChange={(e) => setEditingCta((v) => ({ ...(v || ctaDraft), description_zh: e.target.value }))} />
+                <label className="mb-1 block text-sm font-medium">{L("description_zh")}</label>
+                <Textarea rows={3} value={ctaDraft.description_zh || ""} onChange={(e) => touchEditingCta((v) => ({ ...(v || ctaDraft), description_zh: e.target.value }))} />
               </div>
               <div className="md:col-span-2">
-                <label className="mb-1 block text-sm font-medium">description_en</label>
-                <Textarea rows={3} value={ctaDraft.description_en || ""} onChange={(e) => setEditingCta((v) => ({ ...(v || ctaDraft), description_en: e.target.value }))} />
+                <label className="mb-1 block text-sm font-medium">{L("description_en")}</label>
+                <Textarea rows={3} value={ctaDraft.description_en || ""} onChange={(e) => touchEditingCta((v) => ({ ...(v || ctaDraft), description_en: e.target.value }))} />
               </div>
               <div>
-                <label className="mb-1 block text-sm font-medium">primary_label_zh</label>
-                <Input value={ctaDraft.primary_label_zh || ""} onChange={(e) => setEditingCta((v) => ({ ...(v || ctaDraft), primary_label_zh: e.target.value }))} />
+                <label className="mb-1 block text-sm font-medium">{L("primary_label_zh")}</label>
+                <Input value={ctaDraft.primary_label_zh || ""} onChange={(e) => touchEditingCta((v) => ({ ...(v || ctaDraft), primary_label_zh: e.target.value }))} />
               </div>
               <div>
-                <label className="mb-1 block text-sm font-medium">primary_label_en</label>
-                <Input value={ctaDraft.primary_label_en || ""} onChange={(e) => setEditingCta((v) => ({ ...(v || ctaDraft), primary_label_en: e.target.value }))} />
+                <label className="mb-1 block text-sm font-medium">{L("primary_label_en")}</label>
+                <Input value={ctaDraft.primary_label_en || ""} onChange={(e) => touchEditingCta((v) => ({ ...(v || ctaDraft), primary_label_en: e.target.value }))} />
               </div>
               <div className="md:col-span-2">
-                <label className="mb-1 block text-sm font-medium">primary_url</label>
-                <Input value={ctaDraft.primary_url || ""} onChange={(e) => setEditingCta((v) => ({ ...(v || ctaDraft), primary_url: e.target.value }))} />
+                <label className="mb-1 block text-sm font-medium">{L("primary_url")}</label>
+                <Input value={ctaDraft.primary_url || ""} onChange={(e) => touchEditingCta((v) => ({ ...(v || ctaDraft), primary_url: e.target.value }))} />
               </div>
               <div>
-                <label className="mb-1 block text-sm font-medium">secondary_label_zh</label>
-                <Input value={ctaDraft.secondary_label_zh || ""} onChange={(e) => setEditingCta((v) => ({ ...(v || ctaDraft), secondary_label_zh: e.target.value }))} />
+                <label className="mb-1 block text-sm font-medium">{L("secondary_label_zh")}</label>
+                <Input value={ctaDraft.secondary_label_zh || ""} onChange={(e) => touchEditingCta((v) => ({ ...(v || ctaDraft), secondary_label_zh: e.target.value }))} />
               </div>
               <div>
-                <label className="mb-1 block text-sm font-medium">secondary_label_en</label>
-                <Input value={ctaDraft.secondary_label_en || ""} onChange={(e) => setEditingCta((v) => ({ ...(v || ctaDraft), secondary_label_en: e.target.value }))} />
+                <label className="mb-1 block text-sm font-medium">{L("secondary_label_en")}</label>
+                <Input value={ctaDraft.secondary_label_en || ""} onChange={(e) => touchEditingCta((v) => ({ ...(v || ctaDraft), secondary_label_en: e.target.value }))} />
               </div>
               <div className="md:col-span-2">
-                <label className="mb-1 block text-sm font-medium">secondary_url</label>
-                <Input value={ctaDraft.secondary_url || ""} onChange={(e) => setEditingCta((v) => ({ ...(v || ctaDraft), secondary_url: e.target.value }))} />
+                <label className="mb-1 block text-sm font-medium">{L("secondary_url")}</label>
+                <Input value={ctaDraft.secondary_url || ""} onChange={(e) => touchEditingCta((v) => ({ ...(v || ctaDraft), secondary_url: e.target.value }))} />
               </div>
               <div className="md:col-span-2">
                 <ImageField
                   label="image_url（可选）"
                   value={ctaDraft.image_url || ""}
-                  onChange={(url) => setEditingCta((v) => ({ ...(v || ctaDraft), image_url: url }))}
+                  onChange={(url) => touchEditingCta((v) => ({ ...(v || ctaDraft), image_url: url }))}
                   folder="cta_blocks"
                   usageType="hero"
                 />

@@ -105,12 +105,16 @@
     background-image: linear-gradient(180deg, hsl(var(--background)) 0%, hsl(36 20% 91%) 100%);
   }
 
-  html[data-floating-cta="true"] body {
-    padding-bottom: calc(4rem + env(safe-area-inset-bottom, 0px));
+  /* 仅移动端为底部固定行动栏预留空间，避免与页脚/内容重叠 */
+  @media (max-width: 767px) {
+    html[data-mobile-action-bar="true"] body {
+      padding-bottom: calc(4rem + env(safe-area-inset-bottom, 0px));
+    }
   }
 
   html[data-menu-open="true"] body {
     overflow: hidden;
+    padding-bottom: 0;
   }
 
   h1,

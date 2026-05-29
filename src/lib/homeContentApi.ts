@@ -174,18 +174,20 @@ export const getPublishedCtaBlock = async (language: "en" | "zh", blockKey: stri
     .select("*")
     .eq("status", "published")
     .eq("block_key", blockKey)
-    .single();
-  if (error || !data) return null;
+    .limit(1);
+  if (error) return null;
+  const row: any = (data || [])[0];
+  if (!row) return null;
   return {
-    id: data.id,
-    block_key: data.block_key,
-    title: language === "zh" ? data.title_zh || data.title_en || "" : data.title_en || data.title_zh || "",
-    description: language === "zh" ? data.description_zh || data.description_en || "" : data.description_en || data.description_zh || "",
-    primary_label: language === "zh" ? data.primary_label_zh || data.primary_label_en || "" : data.primary_label_en || data.primary_label_zh || "",
-    primary_url: data.primary_url || "/quote",
-    secondary_label: language === "zh" ? data.secondary_label_zh || data.secondary_label_en || "" : data.secondary_label_en || data.secondary_label_zh || "",
-    secondary_url: data.secondary_url || "",
-    image_url: data.image_url || null,
+    id: row.id,
+    block_key: row.block_key,
+    title: language === "zh" ? row.title_zh || row.title_en || "" : row.title_en || row.title_zh || "",
+    description: language === "zh" ? row.description_zh || row.description_en || "" : row.description_en || row.description_zh || "",
+    primary_label: language === "zh" ? row.primary_label_zh || row.primary_label_en || "" : row.primary_label_en || row.primary_label_zh || "",
+    primary_url: row.primary_url || "/quote",
+    secondary_label: language === "zh" ? row.secondary_label_zh || row.secondary_label_en || "" : row.secondary_label_en || row.secondary_label_zh || "",
+    secondary_url: row.secondary_url || "",
+    image_url: row.image_url || null,
   };
 };
 

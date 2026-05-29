@@ -4,8 +4,7 @@ import { Navigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { isSupabaseConfigured, supabase } from "@/lib/supabase";
-
-const isZhBrowser = () => typeof navigator !== "undefined" && navigator.language.toLowerCase().startsWith("zh");
+import { getAdminLang } from "@/lib/adminLocale";
 
 const copy = {
   en: {
@@ -31,7 +30,7 @@ const AdminLogin = () => {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
-  const lang = "zh";
+  const lang = getAdminLang();
   const t = copy[lang];
 
   if (!isSupabaseConfigured) {

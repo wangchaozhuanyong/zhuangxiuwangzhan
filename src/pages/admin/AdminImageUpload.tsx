@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import SmartImage from "@/components/SmartImage";
 import { supabase } from "@/lib/supabase";
+import { getAdminLang } from "@/lib/adminLocale";
 
 interface AdminImageUploadProps {
   value?: string;
@@ -28,8 +29,6 @@ const copy = {
     bucketTip: "使用 Supabase Storage 存储桶：",
   },
 } as const;
-
-const isZhBrowser = () => typeof navigator !== "undefined" && navigator.language.toLowerCase().startsWith("zh");
 
 async function prepareUploadFile(file: File): Promise<{ file: File; width?: number; height?: number; converted: boolean }> {
   const mime = file.type || "";
@@ -70,7 +69,7 @@ async function prepareUploadFile(file: File): Promise<{ file: File; width?: numb
 }
 
 const AdminImageUpload = ({ value, folder = "content", onUploaded }: AdminImageUploadProps) => {
-  const lang = isZhBrowser() ? "zh" : "en";
+  const lang = getAdminLang();
   const t = copy[lang];
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState("");

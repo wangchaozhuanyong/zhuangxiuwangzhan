@@ -9,6 +9,7 @@ import AdminDataTable, { type AdminDataTableColumn } from "@/components/admin/Ad
 import AdminStatusBadge from "@/components/admin/AdminStatusBadge";
 import AdminEmptyState from "@/components/admin/AdminEmptyState";
 import SmartImage from "@/components/SmartImage";
+import { publishStatusOptions } from "@/lib/adminLocale";
 
 const pickThumbnail = (row: AdminProjectRow) => {
   const images = (row.project_images || []).slice().sort((a, b) => (a.sort_order || 0) - (b.sort_order || 0));
@@ -115,9 +116,11 @@ export default function AdminProjectList() {
           className="flex h-10 rounded-md border border-input bg-background px-3 py-2 text-sm"
         >
           <option value="all">全部状态</option>
-          <option value="draft">draft</option>
-          <option value="published">published</option>
-          <option value="archived">archived</option>
+          {publishStatusOptions().map(({ value, label }) => (
+            <option key={value} value={value}>
+              {label}
+            </option>
+          ))}
         </select>
       </div>
 

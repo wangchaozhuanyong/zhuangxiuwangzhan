@@ -3,11 +3,14 @@ import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useAdminQuotes } from "@/lib/adminQueries";
+import { getAdminLang } from "@/lib/adminLocale";
+import { translateStatusLabel } from "@/i18n/displayLabels";
 
 const statuses = ["all", "pending", "contacted", "site_visit_scheduled", "quoted", "accepted", "rejected", "closed"];
 const csvEscape = (value: unknown) => `"${String(value ?? "").replaceAll('"', '""')}"`;
 
 const AdminQuoteList = () => {
+  const lang = getAdminLang();
   const { data: rows = [], error } = useAdminQuotes();
   const [search, setSearch] = useState("");
   const [status, setStatus] = useState("all");
@@ -44,7 +47,11 @@ const AdminQuoteList = () => {
           <div className="grid gap-3 md:grid-cols-[1fr_220px]">
             <Input value={search} onChange={(event) => setSearch(event.target.value)} placeholder="搜索客户、电话、项目、地区..." />
             <select value={status} onChange={(event) => setStatus(event.target.value)} className="flex h-10 rounded-md border border-input bg-background px-3 py-2 text-sm">
-              {statuses.map((item) => <option key={item} value={item}>{item}</option>)}
+              {statuses.map((item) => (
+                <option key={item} value={item}>
+                  {item === "all" ? "全部状态" : translateStatusLabel("quote_requests", item, lang)}
+                </option>
+              ))}
             </select>
           </div>
           {message && <p className="mt-4 rounded-lg bg-muted p-3 text-sm">{message}</p>}
@@ -56,7 +63,7 @@ const AdminQuoteList = () => {
               <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
                 <Link to={`/admin/quotes/${quote.id}`} className="min-w-0">
                   <p className="font-semibold">{quote.customer_name || "-"} · {quote.customer_phone || "-"}</p>
-                  <p className="truncate text-xs text-muted-foreground">{quote.status} · {quote.project_type || "-"} · {quote.location || "-"} · {new Date(quote.created_at).toLocaleString()}</p>
+                  <p className="truncate text-xs text-muted-foreground">{translateStatusLabel("quote_requests", quote.status || "pending", lang)} · {quote.project_type || "-"} · {quote.location || "-"} · {new Date(quote.created_at).toLocaleString("zh-CN")}</p>
                 </Link>
                 <div className="flex gap-2">
                   <Button asChild size="sm" variant="outline"><a href={`https://wa.me/${String(quote.customer_phone || "").replace(/[^\d]/g, "")}`} target="_blank" rel="noreferrer">WhatsApp</a></Button>

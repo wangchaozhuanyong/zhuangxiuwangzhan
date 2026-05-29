@@ -4,6 +4,8 @@ import { useAdminDashboardStats } from "@/lib/adminQueries";
 import AdminPageHeader from "@/components/admin/AdminPageHeader";
 import AdminStatCard from "@/components/admin/AdminStatCard";
 import AdminEmptyState from "@/components/admin/AdminEmptyState";
+import { adminStatusLabel, getAdminLang } from "@/lib/adminLocale";
+import { translateProjectType } from "@/i18n/displayLabels";
 
 const copy = {
   en: {
@@ -71,7 +73,7 @@ const copy = {
 };
 
 const AdminDashboard = () => {
-  const lang = "zh";
+  const lang = getAdminLang();
   const t = copy[lang];
   const { data } = useAdminDashboardStats();
   const counts = data?.counts ?? {};
@@ -97,7 +99,7 @@ const AdminDashboard = () => {
         description={t.body}
         actions={
           <Button asChild variant="outline">
-            <Link to="/admin/media">{lang === "zh" ? "上传图片" : "Upload image"}</Link>
+            <Link to="/admin/media">上传图片</Link>
           </Button>
         }
       />
@@ -115,16 +117,18 @@ const AdminDashboard = () => {
             {recentLeads.map((lead) => (
               <Link key={lead.id} to={`/admin/leads/${lead.id}`} className="block rounded-lg border border-border p-3 text-sm hover:bg-muted">
                 <span className="font-medium">{lead.name || "线索"} · {lead.phone || "-"}</span>
-                <span className="block text-xs text-muted-foreground">{lead.status} · {lead.source_path || "-"}</span>
+                <span className="block text-xs text-muted-foreground">
+                  {adminStatusLabel("leads", lead.status || "new")} · {lead.source_path || "-"}
+                </span>
               </Link>
             ))}
             {recentLeads.length === 0 && (
               <AdminEmptyState
                 title={t.empty}
-                description={lang === "zh" ? "当有新联系表单提交后会显示在这里。" : "New contact submissions will appear here."}
+                description="当有新联系表单提交后会显示在这里。"
                 action={
                   <Button asChild variant="outline">
-                    <Link to="/admin/leads">{lang === "zh" ? "查看线索" : "View leads"}</Link>
+                    <Link to="/admin/leads">查看线索</Link>
                   </Button>
                 }
               />
@@ -137,16 +141,19 @@ const AdminDashboard = () => {
             {recentQuotes.map((quote) => (
               <Link key={quote.id} to={`/admin/quotes/${quote.id}`} className="block rounded-lg border border-border p-3 text-sm hover:bg-muted">
                 <span className="font-medium">{quote.customer_name || "报价请求"} · {quote.customer_phone || "-"}</span>
-                <span className="block text-xs text-muted-foreground">{quote.status} · {quote.project_type || "-"}</span>
+                <span className="block text-xs text-muted-foreground">
+                  {adminStatusLabel("quote_requests", quote.status || "pending")}
+                  {quote.project_type ? ` · ${translateProjectType(quote.project_type, lang)}` : ""}
+                </span>
               </Link>
             ))}
             {recentQuotes.length === 0 && (
               <AdminEmptyState
                 title={t.empty}
-                description={lang === "zh" ? "当有新报价表单提交后会显示在这里。" : "New quote requests will appear here."}
+                description="当有新报价表单提交后会显示在这里。"
                 action={
                   <Button asChild variant="outline">
-                    <Link to="/admin/quotes">{lang === "zh" ? "查看报价" : "View quotes"}</Link>
+                    <Link to="/admin/quotes">查看报价</Link>
                   </Button>
                 }
               />

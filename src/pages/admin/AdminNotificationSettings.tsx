@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -10,7 +10,7 @@ import { isSupabaseConfigured, supabase } from "@/lib/supabase";
 import type { NotificationSettings } from "@/lib/adminEditorData";
 import { useAdminNotificationSettings } from "@/lib/adminQueries";
 
-const isZhBrowser = () => typeof navigator !== "undefined" && navigator.language.toLowerCase().startsWith("zh");
+import { getAdminLang } from "@/lib/adminLocale";
 
 const emptySettings: NotificationSettings = {
   telegram_enabled: false,
@@ -109,7 +109,7 @@ const AdminNotificationSettings = () => {
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const { data: remoteSettings, isLoading, error, refetch } = useAdminNotificationSettings();
-  const lang = "zh";
+  const lang = getAdminLang();
   const t = copy[lang];
   const [settings, setSettings] = useState<NotificationSettings>(emptySettings);
   const [botToken, setBotToken] = useState("");
@@ -123,15 +123,13 @@ const AdminNotificationSettings = () => {
   const [saving, setSaving] = useState(false);
   const [testing, setTesting] = useState(false);
   const [testingMaintenance, setTestingMaintenance] = useState(false);
+  const formDirtyRef = useRef(false);
 
-  useEffect(() => {
-    if (error) {
-      toast({ title: t.loadFailed, description: error instanceof Error ? error.message : String(error), variant: "destructive" });
-    }
-  }, [error, toast, t.loadFailed]);
+  const markDirty = () => {
+    formDirtyRef.current = true;
+  };
 
-  useEffect(() => {
-    const nextSettings = remoteSettings || emptySettings;
+  const applyNotificationForm = (nextSettings: NotificationSettings) => {
     setSettings(nextSettings);
     setEnabled(Boolean(nextSettings.telegram_enabled));
     setChatId(nextSettings.telegram_chat_id || "");
@@ -140,6 +138,18 @@ const AdminNotificationSettings = () => {
     setMaintenanceTime(nextSettings.maintenance_reminder_time || "09:00");
     setMaintenanceTimezone(nextSettings.maintenance_timezone || "Asia/Kuala_Lumpur");
     setBotToken("");
+    formDirtyRef.current = false;
+  };
+
+  useEffect(() => {
+    if (error) {
+      toast({ title: t.loadFailed, description: error instanceof Error ? error.message : String(error), variant: "destructive" });
+    }
+  }, [error, toast, t.loadFailed]);
+
+  useEffect(() => {
+    if (!remoteSettings || formDirtyRef.current) return;
+    applyNotificationForm(remoteSettings);
   }, [remoteSettings]);
 
   const loading = isLoading;
@@ -166,14 +176,7 @@ const AdminNotificationSettings = () => {
     }
 
     const nextSettings = data.settings || emptySettings;
-    setSettings(nextSettings);
-    setEnabled(Boolean(nextSettings.telegram_enabled));
-    setChatId(nextSettings.telegram_chat_id || "");
-    setMaintenanceEnabled(nextSettings.maintenance_reminders_enabled ?? true);
-    setMaintenanceDay(nextSettings.maintenance_reminder_day || "monday");
-    setMaintenanceTime(nextSettings.maintenance_reminder_time || "09:00");
-    setMaintenanceTimezone(nextSettings.maintenance_timezone || "Asia/Kuala_Lumpur");
-    setBotToken("");
+    applyNotificationForm(nextSettings);
     setSaving(false);
     toast({ title: t.saved });
     void queryClient.invalidateQueries({ queryKey: ["admin", "notification_settings"] });
@@ -237,7 +240,14 @@ const AdminNotificationSettings = () => {
                   <Label htmlFor="telegram-enabled">{t.enableLead}</Label>
                   <p className="mt-1 text-sm text-muted-foreground">{t.enableLeadDesc}</p>
                 </div>
-                <Switch id="telegram-enabled" checked={enabled} onCheckedChange={setEnabled} />
+                <Switch
+                  id="telegram-enabled"
+                  checked={enabled}
+                  onCheckedChange={(value) => {
+                    markDirty();
+                    setEnabled(value);
+                  }}
+                />
               </div>
 
               <div className="grid gap-2">
@@ -247,7 +257,10 @@ const AdminNotificationSettings = () => {
                   type="password"
                   value={botToken}
                   placeholder={settings.has_telegram_bot_token ? t.keepTokenPlaceholder : t.botTokenPlaceholder}
-                  onChange={(event) => setBotToken(event.target.value)}
+                  onChange={(event) => {
+                    markDirty();
+                    setBotToken(event.target.value);
+                  }}
                 />
               </div>
 
@@ -257,10 +270,14 @@ const AdminNotificationSettings = () => {
                   id="telegram-chat-id"
                   value={chatId}
                   placeholder={t.chatIdPlaceholder}
-                  onChange={(event) => setChatId(event.target.value)}
+                  onChange={(event) => {
+                    markDirty();
+                    setChatId(event.target.value);
+                  }}
                 />
               </div>
 
+              <p className="text-xs text-muted-foreground">开关与输入项修改后需点击「保存设置」才会写入数据库。</p>
               <div className="flex flex-col gap-3 border-t border-border pt-5 sm:flex-row">
                 <Button onClick={saveSettings} disabled={saving || testing}>
                   {saving ? t.saving : t.save}
@@ -292,12 +309,25 @@ const AdminNotificationSettings = () => {
               <div>
                 <Label htmlFor="maintenance-enabled">{t.enableMaintenance}</Label>
               </div>
-              <Switch id="maintenance-enabled" checked={maintenanceEnabled} onCheckedChange={setMaintenanceEnabled} />
+              <Switch
+                id="maintenance-enabled"
+                checked={maintenanceEnabled}
+                onCheckedChange={(value) => {
+                  markDirty();
+                  setMaintenanceEnabled(value);
+                }}
+              />
             </div>
 
             <div className="grid gap-2">
               <Label>{t.maintenance}</Label>
-              <Select value={maintenanceDay} onValueChange={setMaintenanceDay}>
+              <Select
+                value={maintenanceDay}
+                onValueChange={(value) => {
+                  markDirty();
+                  setMaintenanceDay(value);
+                }}
+              >
                 <SelectTrigger><SelectValue /></SelectTrigger>
                 <SelectContent>
                   <SelectItem value="monday">{t.monday}</SelectItem>
@@ -313,12 +343,26 @@ const AdminNotificationSettings = () => {
 
             <div className="grid gap-2">
               <Label htmlFor="maintenance-time">时间</Label>
-              <Input id="maintenance-time" value={maintenanceTime} onChange={(e) => setMaintenanceTime(e.target.value)} />
+              <Input
+                id="maintenance-time"
+                value={maintenanceTime}
+                onChange={(e) => {
+                  markDirty();
+                  setMaintenanceTime(e.target.value);
+                }}
+              />
             </div>
 
             <div className="grid gap-2">
               <Label htmlFor="maintenance-timezone">时区</Label>
-              <Input id="maintenance-timezone" value={maintenanceTimezone} onChange={(e) => setMaintenanceTimezone(e.target.value)} />
+              <Input
+                id="maintenance-timezone"
+                value={maintenanceTimezone}
+                onChange={(e) => {
+                  markDirty();
+                  setMaintenanceTimezone(e.target.value);
+                }}
+              />
             </div>
 
             <div className="flex items-center gap-3">
@@ -327,6 +371,7 @@ const AdminNotificationSettings = () => {
             </div>
           </div>
 
+          <p className="text-xs text-muted-foreground">「包含月度任务」仅用于发送测试提醒，不会保存到数据库。</p>
           <div className="flex flex-col gap-3 border-t border-border pt-5 sm:flex-row">
             <Button onClick={saveSettings} disabled={saving || testingMaintenance}>
               {saving ? t.saving : t.save}

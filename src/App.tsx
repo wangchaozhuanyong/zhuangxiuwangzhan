@@ -1,4 +1,4 @@
-import { lazy, Suspense, useEffect } from "react";
+import { lazy, Suspense } from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Navigate, Route, Routes, useLocation } from "react-router-dom";
 import { HelmetProvider } from "react-helmet-async";
@@ -11,6 +11,7 @@ import Footer from "@/components/Footer";
 import FloatingCTA from "@/components/FloatingCTA";
 import DynamicBrandHead from "@/components/DynamicBrandHead";
 import { LanguageRouteSync, LegacyLanguageRedirect, RootLanguageRedirect } from "@/components/LanguageRouteSync";
+import { PublicChromeProvider } from "@/contexts/PublicChromeContext";
 import ScrollToTop from "./components/ScrollToTop";
 import Index from "./pages/Index";
 import FAQ from "./pages/FAQ";
@@ -88,22 +89,9 @@ const AppShell = () => {
   const location = useLocation();
   const { language } = useLanguage();
   const isAdminRoute = location.pathname.startsWith("/admin");
-  const isHomeRoute = /^\/(en|zh)\/?$/.test(location.pathname);
-  const showFloatingCta = !isAdminRoute && !isHomeRoute;
-
-  useEffect(() => {
-    if (showFloatingCta) {
-      document.documentElement.dataset.floatingCta = "true";
-    } else {
-      delete document.documentElement.dataset.floatingCta;
-    }
-    return () => {
-      delete document.documentElement.dataset.floatingCta;
-    };
-  }, [showFloatingCta]);
 
   return (
-    <>
+    <PublicChromeProvider isAdminRoute={isAdminRoute}>
       <DynamicBrandHead />
       <ScrollToTop />
       {!isAdminRoute && (
@@ -200,8 +188,8 @@ const AppShell = () => {
         </Suspense>
       </div>
       {!isAdminRoute && <Footer />}
-      {showFloatingCta && <FloatingCTA />}
-    </>
+      {!isAdminRoute && <FloatingCTA />}
+    </PublicChromeProvider>
   );
 };
 

@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { Link } from "react-router-dom";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -14,8 +14,10 @@ import ImageField from "@/components/admin/ImageField";
 import { invalidatePublishedContent } from "@/lib/adminInvalidate";
 import type { CtaRow, FaqRow, HomeSectionRow, ProcessStepRow } from "@/lib/adminEditorData";
 import { useAdminHomeEditorData } from "@/lib/adminQueries";
+import { translateFieldLabel } from "@/i18n/displayLabels";
+import { adminStatusLabel, getAdminLang, publishStatusOptions } from "@/lib/adminLocale";
 
-const statusOptions = ["published", "draft", "archived"] as const;
+const L = (field: string) => translateFieldLabel(field, getAdminLang());
 
 const safeJsonParse = (value: string) => {
   const raw = value.trim();
@@ -42,9 +44,15 @@ export default function AdminHomeEditor() {
   const [statsItemsEn, setStatsItemsEn] = useState("");
   const [whyItemsZh, setWhyItemsZh] = useState("");
   const [whyItemsEn, setWhyItemsEn] = useState("");
+  const formDirtyRef = useRef(false);
+
+  const markDirty = () => {
+    formDirtyRef.current = true;
+  };
 
   useEffect(() => {
     if (!bundle) return;
+    if (formDirtyRef.current) return;
     setStatsSection(bundle.stats);
     setWhySection(bundle.why);
     setProcessSteps(bundle.processSteps);
@@ -61,12 +69,17 @@ export default function AdminHomeEditor() {
   }, [bundle]);
 
   const refreshEditor = async () => {
+    formDirtyRef.current = false;
     void invalidatePublishedContent(queryClient);
     await refetch();
   };
 
   const saveHomeSectionItems = async (row: HomeSectionRow | null, items_zh: string, items_en: string) => {
-    if (!row?.id || !supabase) return;
+    if (!supabase) return;
+    if (!row?.id) {
+      toast({ title: "无法保存", description: "首页模块数据尚未加载，请刷新页面后重试。", variant: "destructive" });
+      return;
+    }
     try {
       const parsedZh = safeJsonParse(items_zh);
       const parsedEn = safeJsonParse(items_en);
@@ -204,7 +217,7 @@ export default function AdminHomeEditor() {
     <>
     <AdminPageHeader
         title="首页管理"
-        description="这里管理首页关键区块：统计数据 / 为什么选择我们 / 施工流程 / 首页 FAQ / 首页 CTA。Hero、客户评价、Before/After 可通过对应入口管理。"
+        description="这里管理首页关键区块：统计数据、为什么选择我们、施工流程、首页 FAQ、首页 CTA。首屏、客户评价、改造前后可通过对应入口管理。"
         actions={
           <Button variant="outline" onClick={() => void refetch()} disabled={loading}>
             {loading ? "刷新中..." : "刷新"}
@@ -219,7 +232,7 @@ export default function AdminHomeEditor() {
             <TabsTrigger value="stats">统计数据</TabsTrigger>
             <TabsTrigger value="why">为什么选择我们</TabsTrigger>
             <TabsTrigger value="process">施工流程</TabsTrigger>
-            <TabsTrigger value="beforeAfter">Before/After</TabsTrigger>
+            <TabsTrigger value="beforeAfter">改造前后</TabsTrigger>
             <TabsTrigger value="testimonials">客户评价</TabsTrigger>
             <TabsTrigger value="faq">首页 FAQ</TabsTrigger>
             <TabsTrigger value="cta">首页 CTA</TabsTrigger>
@@ -230,7 +243,7 @@ export default function AdminHomeEditor() {
           <AdminFormSection title="首屏 Hero（hero_slides）" description="首页首屏当前展示第一条已发布幻灯片。">
             <div className="flex flex-wrap gap-2">
               <Button asChild>
-                <Link to="/admin/content/hero_slides">管理 Hero Slides</Link>
+                <Link to="/admin/content/hero_slides">管理首屏轮播</Link>
               </Button>
               <Button asChild variant="outline">
                 <a href="/zh" target="_blank" rel="noreferrer">
@@ -255,12 +268,12 @@ export default function AdminHomeEditor() {
 
             <div className="grid gap-4 md:grid-cols-2">
               <div>
-                <label className="mb-1 block text-sm font-medium">items_zh</label>
-                <Textarea rows={12} value={statsItemsZh} onChange={(e) => setStatsItemsZh(e.target.value)} />
+                <label className="mb-1 block text-sm font-medium">{L("items_zh")}</label>
+                <Textarea rows={12} value={statsItemsZh} onChange={(e) => { markDirty(); setStatsItemsZh(e.target.value); }} />
               </div>
               <div>
-                <label className="mb-1 block text-sm font-medium">items_en</label>
-                <Textarea rows={12} value={statsItemsEn} onChange={(e) => setStatsItemsEn(e.target.value)} />
+                <label className="mb-1 block text-sm font-medium">{L("items_en")}</label>
+                <Textarea rows={12} value={statsItemsEn} onChange={(e) => { markDirty(); setStatsItemsEn(e.target.value); }} />
               </div>
             </div>
 
@@ -284,12 +297,12 @@ export default function AdminHomeEditor() {
 
             <div className="grid gap-4 md:grid-cols-2">
               <div>
-                <label className="mb-1 block text-sm font-medium">items_zh</label>
+                <label className="mb-1 block text-sm font-medium">{L("items_zh")}</label>
                 <Textarea rows={12} value={whyItemsZh} onChange={(e) => setWhyItemsZh(e.target.value)} />
               </div>
               <div>
-                <label className="mb-1 block text-sm font-medium">items_en</label>
-                <Textarea rows={12} value={whyItemsEn} onChange={(e) => setWhyItemsEn(e.target.value)} />
+                <label className="mb-1 block text-sm font-medium">{L("items_en")}</label>
+                <Textarea rows={12} value={whyItemsEn} onChange={(e) => { markDirty(); setWhyItemsEn(e.target.value); }} />
               </div>
             </div>
 
@@ -351,7 +364,7 @@ export default function AdminHomeEditor() {
             <AdminFormSection title="编辑步骤" description="保存后立即影响首页流程模块。">
               <div className="grid gap-4 md:grid-cols-2">
                 <div>
-                  <label className="mb-1 block text-sm font-medium">step_number</label>
+                  <label className="mb-1 block text-sm font-medium">{L("step_number")}</label>
                   <Input
                     type="number"
                     value={editingStep.step_number}
@@ -359,7 +372,7 @@ export default function AdminHomeEditor() {
                   />
                 </div>
                 <div>
-                  <label className="mb-1 block text-sm font-medium">sort_order</label>
+                  <label className="mb-1 block text-sm font-medium">{L("sort_order")}</label>
                   <Input
                     type="number"
                     value={editingStep.sort_order ?? 0}
@@ -367,35 +380,35 @@ export default function AdminHomeEditor() {
                   />
                 </div>
                 <div>
-                  <label className="mb-1 block text-sm font-medium">title_zh</label>
+                  <label className="mb-1 block text-sm font-medium">{L("title_zh")}</label>
                   <Input value={editingStep.title_zh || ""} onChange={(e) => setEditingStep((v) => (v ? { ...v, title_zh: e.target.value } : v))} />
                 </div>
                 <div>
-                  <label className="mb-1 block text-sm font-medium">title_en</label>
+                  <label className="mb-1 block text-sm font-medium">{L("title_en")}</label>
                   <Input value={editingStep.title_en || ""} onChange={(e) => setEditingStep((v) => (v ? { ...v, title_en: e.target.value } : v))} />
                 </div>
                 <div className="md:col-span-2">
-                  <label className="mb-1 block text-sm font-medium">description_zh</label>
+                  <label className="mb-1 block text-sm font-medium">{L("description_zh")}</label>
                   <Textarea rows={3} value={editingStep.description_zh || ""} onChange={(e) => setEditingStep((v) => (v ? { ...v, description_zh: e.target.value } : v))} />
                 </div>
                 <div className="md:col-span-2">
-                  <label className="mb-1 block text-sm font-medium">description_en</label>
+                  <label className="mb-1 block text-sm font-medium">{L("description_en")}</label>
                   <Textarea rows={3} value={editingStep.description_en || ""} onChange={(e) => setEditingStep((v) => (v ? { ...v, description_en: e.target.value } : v))} />
                 </div>
                 <div>
-                  <label className="mb-1 block text-sm font-medium">icon_key</label>
+                  <label className="mb-1 block text-sm font-medium">{L("icon_key")}</label>
                   <Input value={editingStep.icon_key || ""} onChange={(e) => setEditingStep((v) => (v ? { ...v, icon_key: e.target.value } : v))} placeholder="可选，例如：ruler / message-circle" />
                 </div>
                 <div>
-                  <label className="mb-1 block text-sm font-medium">status</label>
+                  <label className="mb-1 block text-sm font-medium">{L("status")}</label>
                   <select
                     value={editingStep.status || "published"}
                     onChange={(e) => setEditingStep((v) => (v ? { ...v, status: e.target.value as any } : v))}
                     className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
                   >
-                    {statusOptions.map((s) => (
-                      <option key={s} value={s}>
-                        {s}
+                    {publishStatusOptions().map(({ value, label }) => (
+                      <option key={value} value={value}>
+                        {label}
                       </option>
                     ))}
                   </select>
@@ -412,10 +425,10 @@ export default function AdminHomeEditor() {
         </TabsContent>
 
         <TabsContent value="beforeAfter" className="space-y-6">
-          <AdminFormSection title="Before / After（before_after_items）" description="用于首页 BeforeAfterSection。">
+          <AdminFormSection title="改造前后（before_after_items）" description="用于首页改造前后展示区块。">
             <div className="flex flex-wrap gap-2">
               <Button asChild>
-                <Link to="/admin/before-after">管理 Before / After</Link>
+                <Link to="/admin/before-after">管理改造前后</Link>
               </Button>
             </div>
           </AdminFormSection>
@@ -458,7 +471,9 @@ export default function AdminHomeEditor() {
                   <div className="flex flex-wrap items-start justify-between gap-3">
                     <div className="min-w-0">
                       <div className="font-medium truncate">{f.question_zh || f.question_en || "(未填写问题)"}</div>
-                      <div className="text-xs text-muted-foreground">sort_order: {f.sort_order ?? 0} · status: {f.status || "published"}</div>
+                      <div className="text-xs text-muted-foreground">
+                        排序：{f.sort_order ?? 0} · 状态：{adminStatusLabel("default", f.status || "published")}
+                      </div>
                     </div>
                     <div className="flex gap-2">
                       <Button variant="outline" size="sm" onClick={() => setEditingFaq(f)}>
@@ -479,7 +494,7 @@ export default function AdminHomeEditor() {
             <AdminFormSection title="编辑 FAQ" description="中文优先；英文可为空，前台会 fallback。">
               <div className="grid gap-4 md:grid-cols-2">
                 <div>
-                  <label className="mb-1 block text-sm font-medium">sort_order</label>
+                  <label className="mb-1 block text-sm font-medium">{L("sort_order")}</label>
                   <Input
                     type="number"
                     value={editingFaq.sort_order ?? 0}
@@ -487,33 +502,33 @@ export default function AdminHomeEditor() {
                   />
                 </div>
                 <div>
-                  <label className="mb-1 block text-sm font-medium">status</label>
+                  <label className="mb-1 block text-sm font-medium">{L("status")}</label>
                   <select
                     value={editingFaq.status || "published"}
                     onChange={(e) => setEditingFaq((v) => (v ? { ...v, status: e.target.value as any } : v))}
                     className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
                   >
-                    {statusOptions.map((s) => (
-                      <option key={s} value={s}>
-                        {s}
+                    {publishStatusOptions().map(({ value, label }) => (
+                      <option key={value} value={value}>
+                        {label}
                       </option>
                     ))}
                   </select>
                 </div>
                 <div className="md:col-span-2">
-                  <label className="mb-1 block text-sm font-medium">question_zh</label>
+                  <label className="mb-1 block text-sm font-medium">{L("question_zh")}</label>
                   <Textarea rows={2} value={editingFaq.question_zh || ""} onChange={(e) => setEditingFaq((v) => (v ? { ...v, question_zh: e.target.value } : v))} />
                 </div>
                 <div className="md:col-span-2">
-                  <label className="mb-1 block text-sm font-medium">answer_zh</label>
+                  <label className="mb-1 block text-sm font-medium">{L("answer_zh")}</label>
                   <Textarea rows={4} value={editingFaq.answer_zh || ""} onChange={(e) => setEditingFaq((v) => (v ? { ...v, answer_zh: e.target.value } : v))} />
                 </div>
                 <div className="md:col-span-2">
-                  <label className="mb-1 block text-sm font-medium">question_en</label>
+                  <label className="mb-1 block text-sm font-medium">{L("question_en")}</label>
                   <Textarea rows={2} value={editingFaq.question_en || ""} onChange={(e) => setEditingFaq((v) => (v ? { ...v, question_en: e.target.value } : v))} />
                 </div>
                 <div className="md:col-span-2">
-                  <label className="mb-1 block text-sm font-medium">answer_en</label>
+                  <label className="mb-1 block text-sm font-medium">{L("answer_en")}</label>
                   <Textarea rows={4} value={editingFaq.answer_en || ""} onChange={(e) => setEditingFaq((v) => (v ? { ...v, answer_en: e.target.value } : v))} />
                 </div>
               </div>
@@ -537,53 +552,53 @@ export default function AdminHomeEditor() {
                   onChange={(e) => setEditingCta((v) => ({ ...(v || ctaDraft), status: e.target.value as any }))}
                   className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
                 >
-                  {statusOptions.map((s) => (
-                    <option key={s} value={s}>
-                      {s}
+                  {publishStatusOptions().map(({ value, label }) => (
+                    <option key={value} value={value}>
+                      {label}
                     </option>
                   ))}
                 </select>
               </div>
               <div>
-                <label className="mb-1 block text-sm font-medium">title_zh</label>
+                <label className="mb-1 block text-sm font-medium">{L("title_zh")}</label>
                 <Input value={(editingCta || ctaDraft).title_zh || ""} onChange={(e) => setEditingCta((v) => ({ ...(v || ctaDraft), title_zh: e.target.value }))} />
               </div>
               <div>
-                <label className="mb-1 block text-sm font-medium">title_en</label>
+                <label className="mb-1 block text-sm font-medium">{L("title_en")}</label>
                 <Input value={(editingCta || ctaDraft).title_en || ""} onChange={(e) => setEditingCta((v) => ({ ...(v || ctaDraft), title_en: e.target.value }))} />
               </div>
               <div className="md:col-span-2">
-                <label className="mb-1 block text-sm font-medium">description_zh</label>
+                <label className="mb-1 block text-sm font-medium">{L("description_zh")}</label>
                 <Textarea rows={3} value={(editingCta || ctaDraft).description_zh || ""} onChange={(e) => setEditingCta((v) => ({ ...(v || ctaDraft), description_zh: e.target.value }))} />
               </div>
               <div className="md:col-span-2">
-                <label className="mb-1 block text-sm font-medium">description_en</label>
+                <label className="mb-1 block text-sm font-medium">{L("description_en")}</label>
                 <Textarea rows={3} value={(editingCta || ctaDraft).description_en || ""} onChange={(e) => setEditingCta((v) => ({ ...(v || ctaDraft), description_en: e.target.value }))} />
               </div>
 
               <div>
-                <label className="mb-1 block text-sm font-medium">primary_label_zh</label>
+                <label className="mb-1 block text-sm font-medium">{L("primary_label_zh")}</label>
                 <Input value={(editingCta || ctaDraft).primary_label_zh || ""} onChange={(e) => setEditingCta((v) => ({ ...(v || ctaDraft), primary_label_zh: e.target.value }))} />
               </div>
               <div>
-                <label className="mb-1 block text-sm font-medium">primary_label_en</label>
+                <label className="mb-1 block text-sm font-medium">{L("primary_label_en")}</label>
                 <Input value={(editingCta || ctaDraft).primary_label_en || ""} onChange={(e) => setEditingCta((v) => ({ ...(v || ctaDraft), primary_label_en: e.target.value }))} />
               </div>
               <div className="md:col-span-2">
-                <label className="mb-1 block text-sm font-medium">primary_url</label>
+                <label className="mb-1 block text-sm font-medium">{L("primary_url")}</label>
                 <Input value={(editingCta || ctaDraft).primary_url || ""} onChange={(e) => setEditingCta((v) => ({ ...(v || ctaDraft), primary_url: e.target.value }))} />
               </div>
 
               <div>
-                <label className="mb-1 block text-sm font-medium">secondary_label_zh</label>
+                <label className="mb-1 block text-sm font-medium">{L("secondary_label_zh")}</label>
                 <Input value={(editingCta || ctaDraft).secondary_label_zh || ""} onChange={(e) => setEditingCta((v) => ({ ...(v || ctaDraft), secondary_label_zh: e.target.value }))} />
               </div>
               <div>
-                <label className="mb-1 block text-sm font-medium">secondary_label_en</label>
+                <label className="mb-1 block text-sm font-medium">{L("secondary_label_en")}</label>
                 <Input value={(editingCta || ctaDraft).secondary_label_en || ""} onChange={(e) => setEditingCta((v) => ({ ...(v || ctaDraft), secondary_label_en: e.target.value }))} />
               </div>
               <div className="md:col-span-2">
-                <label className="mb-1 block text-sm font-medium">secondary_url</label>
+                <label className="mb-1 block text-sm font-medium">{L("secondary_url")}</label>
                 <Input value={(editingCta || ctaDraft).secondary_url || ""} onChange={(e) => setEditingCta((v) => ({ ...(v || ctaDraft), secondary_url: e.target.value }))} />
               </div>
 

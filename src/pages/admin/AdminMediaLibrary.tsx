@@ -12,7 +12,19 @@ import {
 import SmartImage from "@/components/SmartImage";
 import AdminImageUpload from "./AdminImageUpload";
 
-const usageTypes = ["all", "hero", "project", "material", "blog", "logo", "og", "before_after", "general"];
+const usageTypes = ["all", "hero", "project", "material", "blog", "logo", "og", "before_after", "general"] as const;
+
+const usageTypeLabels: Record<(typeof usageTypes)[number], string> = {
+  all: "全部分类",
+  hero: "首屏",
+  project: "案例",
+  material: "材料",
+  blog: "博客",
+  logo: "品牌 Logo",
+  og: "分享预览图",
+  before_after: "改造前后",
+  general: "通用",
+};
 
 const AdminMediaLibrary = () => {
   const { data: assets = [], error } = useAdminMediaAssets();
@@ -80,7 +92,7 @@ const AdminMediaLibrary = () => {
           <div className="grid gap-3 md:grid-cols-[1fr_220px]">
             <Input value={search} onChange={(event) => setSearch(event.target.value)} placeholder="搜索文件名、alt、分类..." />
             <select value={usageType} onChange={(event) => setUsageType(event.target.value)} className="flex h-10 rounded-md border border-input bg-background px-3 py-2 text-sm">
-              {usageTypes.map((item) => <option key={item} value={item}>{item}</option>)}
+              {usageTypes.map((item) => <option key={item} value={item}>{usageTypeLabels[item]}</option>)}
             </select>
           </div>
         </div>
@@ -97,7 +109,7 @@ const AdminMediaLibrary = () => {
               />
               <div className="space-y-3 p-4 text-sm">
                 <p className="truncate font-medium">{asset.file_name || asset.file_url}</p>
-                <p className="text-xs text-muted-foreground">{asset.usage_type || "general"} · {asset.folder || "-"}</p>
+                <p className="text-xs text-muted-foreground">{usageTypeLabels[(asset.usage_type as keyof typeof usageTypeLabels) || "general"] || asset.usage_type || "通用"} · {asset.folder || "-"}</p>
                 <div className="flex flex-wrap gap-2">
                   <Button size="sm" variant="outline" onClick={() => navigator.clipboard.writeText(asset.file_url)}>复制 URL</Button>
                   <Button size="sm" variant="outline" onClick={() => setEditing(asset)}>编辑</Button>
@@ -115,10 +127,12 @@ const AdminMediaLibrary = () => {
               <div className="space-y-4">
                 <Input value={editing.folder || ""} onChange={(event) => setEditing({ ...editing, folder: event.target.value })} placeholder="文件夹" />
                 <select value={editing.usage_type || "general"} onChange={(event) => setEditing({ ...editing, usage_type: event.target.value })} className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm">
-                  {usageTypes.filter((item) => item !== "all").map((item) => <option key={item} value={item}>{item}</option>)}
+                  {usageTypes.filter((item) => item !== "all").map((item) => (
+                    <option key={item} value={item}>{usageTypeLabels[item]}</option>
+                  ))}
                 </select>
-                <Textarea rows={3} value={editing.alt_zh || ""} onChange={(event) => setEditing({ ...editing, alt_zh: event.target.value })} placeholder="中文 alt" />
-                <Textarea rows={3} value={editing.alt_en || ""} onChange={(event) => setEditing({ ...editing, alt_en: event.target.value })} placeholder="英文 alt" />
+                <Textarea rows={3} value={editing.alt_zh || ""} onChange={(event) => setEditing({ ...editing, alt_zh: event.target.value })} placeholder="中文 Alt 文本" />
+                <Textarea rows={3} value={editing.alt_en || ""} onChange={(event) => setEditing({ ...editing, alt_en: event.target.value })} placeholder="英文 Alt 文本" />
               </div>
               <div className="mt-5 flex justify-end gap-2">
                 <Button variant="outline" onClick={() => setEditing(null)}>取消</Button>

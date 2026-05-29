@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { invalidatePublishedContent } from "@/lib/adminInvalidate";
 import { useAdminSimpleCmsRows } from "@/lib/adminQueries";
@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { isSupabaseConfigured, supabase } from "@/lib/supabase";
 import AdminImageUpload from "./AdminImageUpload";
+import { publishStatusOptions } from "@/lib/adminLocale";
 
 type ModuleKey = "home_sections" | "faqs" | "before_after_items" | "brand_partners";
 type Field = { key: string; label: string; type?: "text" | "textarea" | "image" | "number" | "select" };
@@ -77,10 +78,24 @@ const AdminSimpleCms = ({ module }: { module: ModuleKey }) => {
   const queryClient = useQueryClient();
   const { data: rows = [], error, refetch } = useAdminSimpleCmsRows(config.table);
   const [record, setRecord] = useState<Record<string, any>>(emptyRecord);
+  const recordDirtyRef = useRef(false);
   const [message, setMessage] = useState(error instanceof Error ? error.message : error ? String(error) : "");
 
   const title = useMemo(() => record[config.labelField] || record.title_en || record.name || "新建", [config.labelField, record]);
-  const update = (key: string, value: unknown) => setRecord((current) => ({ ...current, [key]: value }));
+  const update = (key: string, value: unknown) => {
+    recordDirtyRef.current = true;
+    setRecord((current) => ({ ...current, [key]: value }));
+  };
+
+  const loadRecord = (row: Record<string, any>) => {
+    recordDirtyRef.current = false;
+    setRecord(row);
+  };
+
+  const resetRecord = () => {
+    recordDirtyRef.current = false;
+    setRecord(emptyRecord);
+  };
 
   const save = async () => {
     if (!isSupabaseConfigured) return;
@@ -98,7 +113,7 @@ const AdminSimpleCms = ({ module }: { module: ModuleKey }) => {
     setMessage("已保存。");
     void invalidatePublishedContent(queryClient);
     void queryClient.invalidateQueries({ queryKey: ["admin", config.table, "rows"] });
-    setRecord(emptyRecord);
+    resetRecord();
     await refetch();
   };
 
@@ -141,7 +156,7 @@ const AdminSimpleCms = ({ module }: { module: ModuleKey }) => {
               <h1 className="font-display text-2xl font-bold">{config.title}</h1>
               {message && <p className="mt-2 rounded-lg bg-muted p-3 text-sm">{message}</p>}
             </div>
-            <Button type="button" variant="outline" onClick={() => setRecord(emptyRecord)}>新建</Button>
+            <Button type="button" variant="outline" onClick={resetRecord}>新建</Button>
           </div>
           <div className="space-y-3">
             {rows.map((row) => (
@@ -151,7 +166,7 @@ const AdminSimpleCms = ({ module }: { module: ModuleKey }) => {
                   <p className="text-xs text-muted-foreground">{row.status || "-"} · 排序 {row.sort_order || 0}</p>
                 </div>
                 <div className="flex gap-2">
-                  <Button type="button" variant="outline" size="sm" onClick={() => setRecord(row)}>编辑</Button>
+                  <Button type="button" variant="outline" size="sm" onClick={() => loadRecord(row)}>编辑</Button>
                   <Button type="button" variant="destructive" size="sm" onClick={() => void remove(row.id)}>删除</Button>
                 </div>
               </div>
@@ -166,9 +181,11 @@ const AdminSimpleCms = ({ module }: { module: ModuleKey }) => {
             <div>
               <label className="mb-1 block text-sm font-medium">状态</label>
               <select value={record.status || "published"} onChange={(event) => update("status", event.target.value)} className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm">
-                <option value="published">published</option>
-                <option value="draft">draft</option>
-                <option value="archived">archived</option>
+                {publishStatusOptions().map(({ value, label }) => (
+                  <option key={value} value={value}>
+                    {label}
+                  </option>
+                ))}
               </select>
             </div>
             <div>

@@ -9,6 +9,8 @@ import { switchLanguagePath } from "@/i18n/routes";
 import LocalizedLink from "@/components/LocalizedLink";
 import { useSiteSettings } from "@/hooks/useSiteSettings";
 import SmartImage from "@/components/SmartImage";
+import { usePublicChrome } from "@/contexts/PublicChromeContext";
+import { PUBLIC_CHROME_Z } from "@/lib/publicChrome";
 
 interface NavItem {
   labelKey: string;
@@ -34,7 +36,7 @@ const isActivePath = (pathname: string, itemPath: string) => {
 };
 
 const Navbar = () => {
-  const [isOpen, setIsOpen] = useState(false);
+  const { menuOpen: isOpen, setMenuOpen: setIsOpen } = usePublicChrome();
   const [scrolled, setScrolled] = useState(false);
   const [logoState, setLogoState] = useState<"primary" | "fallback" | "none">("primary");
   const mobileMenuRef = useRef<HTMLDivElement>(null);
@@ -99,7 +101,8 @@ const Navbar = () => {
     <>
       <header
         data-scrolled={scrolled ? "true" : "false"}
-        className="site-header fixed top-0 left-0 right-0 z-50 transition-all duration-300"
+        className="site-header fixed top-0 left-0 right-0 transition-all duration-300"
+        style={{ zIndex: PUBLIC_CHROME_Z.header }}
       >
         <div className="site-container flex h-16 flex-nowrap items-center gap-3 md:h-[72px]">
           <LocalizedLink
@@ -198,7 +201,8 @@ const Navbar = () => {
         <div
           id="mobile-navigation"
           ref={mobileMenuRef}
-          className="fixed inset-x-0 bottom-0 top-16 z-[60] flex flex-col border-t border-border/60 bg-background/98 backdrop-blur-xl md:top-[72px] xl:hidden"
+          className="fixed inset-x-0 bottom-0 top-16 flex flex-col border-t border-border/60 bg-background/98 backdrop-blur-xl md:top-[72px] xl:hidden"
+          style={{ zIndex: PUBLIC_CHROME_Z.mobileMenu }}
         >
           <div className="min-h-0 flex-1 overflow-y-auto px-5 py-4">
             <div className="space-y-0.5">
@@ -210,14 +214,15 @@ const Navbar = () => {
                     key={item.path}
                     to={item.path}
                     style={{ animationDelay: `${index * 40}ms` }}
-                    className={`relative flex min-h-[52px] items-center gap-3 rounded-card px-3 text-[15px] font-medium opacity-0 animate-fade-in [animation-fill-mode:forwards] ${isActive ? "text-foreground" : "text-foreground/85 active:bg-muted/60"}`}
+                    className={`flex min-h-[52px] items-center gap-3 rounded-card px-3 text-[15px] font-medium opacity-0 animate-fade-in [animation-fill-mode:forwards] ${isActive ? "bg-muted/45 text-foreground" : "text-foreground/85 active:bg-muted/60"}`}
                   >
-                    {isActive && <span className="absolute bottom-2 left-3 right-3 h-px bg-accent/80" aria-hidden />}
-                    <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-border/70 bg-card">
+                    <span
+                      className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-full border bg-card ${isActive ? "border-gold/35 bg-gold/10" : "border-border/70"}`}
+                    >
                       <Icon className={`h-[18px] w-[18px] ${isActive ? "text-gold" : "text-muted-foreground"}`} />
                     </span>
-                    <span className="min-w-0 flex-1">{t(item.labelKey)}</span>
-                    <ChevronRight className="h-4 w-4 shrink-0 text-muted-foreground/50" />
+                    <span className={`min-w-0 flex-1 ${isActive ? "font-semibold" : ""}`}>{t(item.labelKey)}</span>
+                    <ChevronRight className={`h-4 w-4 shrink-0 ${isActive ? "text-gold/60" : "text-muted-foreground/50"}`} />
                   </LocalizedLink>
                 );
               })}

@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
+import { getAdminLang } from "@/lib/adminLocale";
 
 const copy = {
   en: {
@@ -13,8 +14,6 @@ const copy = {
     fallback: "打开旧内容编辑器",
   },
 };
-
-const isZhBrowser = () => typeof navigator !== "undefined" && navigator.language.toLowerCase().startsWith("zh");
 
 const fallbackMap: Record<string, string> = {
   "/admin/home": "/admin/content/hero_slides",
@@ -30,7 +29,7 @@ const fallbackMap: Record<string, string> = {
 };
 
 const AdminComingSoon = () => {
-  const lang = isZhBrowser() ? "zh" : "en";
+  const lang = getAdminLang();
   const t = copy[lang];
   const fallback = fallbackMap[window.location.pathname] || "/admin/dashboard";
 

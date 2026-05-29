@@ -5,8 +5,7 @@ import { supabase } from "@/lib/supabase";
 import { Sheet, SheetContent, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { ChevronDown, Menu } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
-
-const isZhBrowser = () => typeof navigator !== "undefined" && navigator.language.toLowerCase().startsWith("zh");
+import { adminPublicSitePath, getAdminLang } from "@/lib/adminLocale";
 
 const copy = {
   en: {
@@ -61,9 +60,9 @@ const copy = {
     groupSystem: "系统设置",
     home: "首页管理",
     about: "关于我们",
-    faqs: "FAQ 管理",
-    beforeAfter: "Before / After",
-    brandLogos: "品牌 Logo",
+    faqs: "常见问题",
+    beforeAfter: "改造前后",
+    brandLogos: "品牌合作",
     heroSlides: "首屏轮播",
     services: "服务项目",
     projects: "装修案例",
@@ -76,7 +75,7 @@ const copy = {
     quoteRequests: "报价请求",
     media: "媒体库",
     seo: "SEO 设置",
-    sitemap: "Sitemap / Robots",
+    sitemap: "站点地图 / Robots",
     users: "管理员账号",
     websiteSettings: "网站基础设置",
     translationJobs: "翻译任务",
@@ -152,9 +151,19 @@ const navGroups = [
 const NAV_EXPANDED_KEY = "flashcast_admin_nav_expanded_groups";
 const NAV_COLLAPSED_KEY = "flashcast_admin_nav_collapsed";
 
+const normalizeHash = (hash: string) => hash.replace(/^#/, "");
+
+/** Match nav item including hash anchors (e.g. /admin/dashboard vs /admin/dashboard#tasks). */
+const isAdminNavItemActive = (itemPath: string, pathname: string, hash: string) => {
+  const [path, fragment] = itemPath.split("#");
+  if (pathname !== path) return false;
+  if (fragment) return normalizeHash(hash) === fragment;
+  return normalizeHash(hash) === "";
+};
+
 const AdminLayout = () => {
   const location = useLocation();
-  const lang = isZhBrowser() ? "zh" : "en";
+  const lang = getAdminLang();
   const t = copy[lang];
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
   const [navCollapsed, setNavCollapsed] = useState(() => {
@@ -226,16 +235,16 @@ const AdminLayout = () => {
   }, []);
 
   const activeNavLabel = useMemo(() => {
-    const pathname = location.pathname;
+    const { pathname, hash } = location;
     for (const group of navGroups) {
       for (const item of group.items) {
-        if (item.path.split("#")[0] === pathname) return t[item.key as keyof typeof t];
+        if (isAdminNavItemActive(item.path, pathname, hash)) return t[item.key as keyof typeof t];
       }
     }
     return t.title;
-  }, [location.pathname, t]);
+  }, [location, t]);
 
-  const websitePath = lang === "zh" ? "/zh" : "/en";
+  const websitePath = adminPublicSitePath();
 
   const Nav = ({ variant }: { variant: "desktop" | "mobile" }) => (
     <aside
@@ -288,8 +297,7 @@ const AdminLayout = () => {
             {expandedGroups[group.key] && (
               <div className="mt-1 space-y-1">
                 {group.items.map((item) => {
-                  const itemPath = item.path.split("#")[0];
-                  const isActive = location.pathname === itemPath;
+                  const isActive = isAdminNavItemActive(item.path, location.pathname, location.hash);
                   return (
                     <Link
                       key={item.path}
@@ -323,7 +331,7 @@ const AdminLayout = () => {
               <SheetTrigger asChild>
                 <Button type="button" variant="outline" size="icon" className="lg:hidden">
                   <Menu className="h-4 w-4" />
-                  <span className="sr-only">Menu</span>
+                  <span className="sr-only">菜单</span>
                 </Button>
               </SheetTrigger>
               <SheetContent side="left" className="p-0">
