@@ -14,7 +14,8 @@ supabase db push
 ## 2. Edge Functions 部署
 
 ```bash
-supabase functions deploy submit-lead
+# 项目使用 sb_publishable_* API Key 时，submit-lead 须关闭 JWT 校验（见 supabase/config.toml）
+supabase functions deploy submit-lead --no-verify-jwt
 supabase functions deploy notify-lead
 supabase functions deploy notification-settings
 supabase functions deploy maintenance-reminder
