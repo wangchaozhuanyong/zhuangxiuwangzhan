@@ -228,7 +228,7 @@ export const FaqListEditor = ({
       </div>
       <Button type="button" variant="outline" size="sm" onClick={() => onChange([...items, { q: "", a: "" }])}>
         <Plus className="mr-2 h-4 w-4" />
-        添加 FAQ
+        添加问答
       </Button>
     </div>
   );
@@ -273,7 +273,7 @@ export const ProjectCardsEditor = ({
               <Input value={item.title || ""} onChange={(event) => update(index, { title: event.target.value })} placeholder="项目标题" />
               <Input value={String(item[metaKey] || "")} onChange={(event) => update(index, { [metaKey]: event.target.value })} placeholder={metaLabel} />
               <div className="space-y-3 md:col-span-2">
-                <Input value={item.image || ""} onChange={(event) => update(index, { image: event.target.value })} placeholder="图片 URL" />
+                <Input value={item.image || ""} onChange={(event) => update(index, { image: event.target.value })} placeholder="图片地址" />
                 <AdminImageUpload value={item.image || ""} folder={folder} onUploaded={(url) => update(index, { image: url })} />
               </div>
             </div>
@@ -343,7 +343,7 @@ export const AboutSectionItemsEditor = ({
               <Textarea value={item.title || ""} onChange={(event) => update(index, { title: event.target.value })} placeholder="段落内容" rows={4} />
             ) : isStats ? (
               <div className="grid gap-3 md:grid-cols-3">
-                <Input value={item.value || ""} onChange={(event) => update(index, { value: event.target.value })} placeholder="数字/短语，例如 200+" />
+                <Input value={item.value || ""} onChange={(event) => update(index, { value: event.target.value })} placeholder="数字或短语，例如 200+" />
                 <Input value={item.label || ""} onChange={(event) => update(index, { label: event.target.value })} placeholder="标签" />
                 <Input value={item.icon || ""} onChange={(event) => update(index, { icon: event.target.value })} placeholder="图标 key，例如 star" />
               </div>
@@ -409,20 +409,20 @@ export const HomeSectionItemsEditor = ({
             <div className="grid gap-3 md:grid-cols-2">
               {variant === "stats" ? (
                 <>
-                  <Input value={item.value || ""} onChange={(event) => update(index, { value: event.target.value })} placeholder="数字/短词，例如 200+" />
+                  <Input value={item.value || ""} onChange={(event) => update(index, { value: event.target.value })} placeholder="数字或短语，例如 200+" />
                   <Input value={item.icon || ""} onChange={(event) => update(index, { icon: event.target.value })} placeholder="图标 key，例如 star" />
                   <Input value={item.label_zh || ""} onChange={(event) => update(index, { label_zh: event.target.value })} placeholder="中文标签" />
-                  <Input value={item.label_en || ""} onChange={(event) => update(index, { label_en: event.target.value })} placeholder="English label" />
+                  <Input value={item.label_en || ""} onChange={(event) => update(index, { label_en: event.target.value })} placeholder="英文标签" />
                 </>
               ) : (
                 <>
                   <Input value={item.title_zh || ""} onChange={(event) => update(index, { title_zh: event.target.value })} placeholder="中文标题" />
-                  <Input value={item.title_en || ""} onChange={(event) => update(index, { title_en: event.target.value })} placeholder="English title" />
+                  <Input value={item.title_en || ""} onChange={(event) => update(index, { title_en: event.target.value })} placeholder="英文标题" />
                   <Input value={item.icon || ""} onChange={(event) => update(index, { icon: event.target.value })} placeholder="图标 key，例如 paintbrush" />
                 </>
               )}
               <Textarea value={item.desc_zh || ""} onChange={(event) => update(index, { desc_zh: event.target.value })} placeholder="中文说明" rows={3} />
-              <Textarea value={item.desc_en || ""} onChange={(event) => update(index, { desc_en: event.target.value })} placeholder="English description" rows={3} />
+              <Textarea value={item.desc_en || ""} onChange={(event) => update(index, { desc_en: event.target.value })} placeholder="英文说明" rows={3} />
             </div>
           </div>
         ))}
