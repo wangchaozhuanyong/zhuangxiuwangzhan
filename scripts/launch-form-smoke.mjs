@@ -15,6 +15,8 @@ const env = Object.fromEntries(
 const supabase = createClient(env.VITE_SUPABASE_URL, env.VITE_SUPABASE_ANON_KEY);
 const startedAt = Date.now() - 5000;
 const stamp = new Date().toISOString().slice(0, 19).replace(/[:T]/g, "-");
+const phoneSuffix = String(Date.now()).slice(-7);
+const testPhone = `+6011${phoneSuffix}`;
 
 async function invoke(body) {
   const { data, error } = await supabase.functions.invoke("submit-lead", { body });
@@ -24,7 +26,7 @@ async function invoke(body) {
 const contact = await invoke({
   type: "contact",
   name: `Launch Contact ${stamp}`,
-  phone: "+601128853888",
+  phone: testPhone,
   email: "launch-test@flashcast.com.my",
   message: "Prelaunch launch smoke test — contact form integration.",
   sourcePath: "/zh/contact",
@@ -35,7 +37,7 @@ const contact = await invoke({
 const quote = await invoke({
   type: "quote",
   name: `Launch Quote ${stamp}`,
-  phone: "+601128853888",
+  phone: testPhone,
   email: "launch-test@flashcast.com.my",
   projectType: "Kitchen",
   location: "Kuala Lumpur",
