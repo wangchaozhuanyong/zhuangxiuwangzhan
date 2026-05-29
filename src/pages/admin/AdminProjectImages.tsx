@@ -39,43 +39,55 @@ const copy = {
     type: "Type",
     alt: "Alt",
     sort: "Sort",
+    action: "Actions",
     delete: "Delete",
+    setCover: "Set as cover",
     saveProjectFirst: "Save the project and upload/select an image first.",
     added: "Image added.",
+    coverSet: "Set as cover. The public project list will use this image first.",
     cover: "cover",
     gallery: "gallery",
     before: "before",
     after: "after",
+    coverRuleTitle: "Cover image rule, aligned with the public site:",
+    coverRulePrimary: "Public lists and detail thumbnails use the image whose image_type is cover first.",
+    coverRuleFallback: "If there is no cover, the first gallery image is used, then projects.image_url, then the default image.",
   },
   zh: {
     saveFirst: "请先保存项目，再管理图库和前后对比图片。",
     title: "项目图片",
-    description: "管理图库、封面、前图和后图，并填写中英双语 alt 文本。",
-    imageUrl: "图片 URL",
+    description: "管理图库、封面、施工前和施工后图片，并填写中英文图片说明。",
+    imageUrl: "图片地址",
     imageType: "图片类型",
-    altZh: "中文 alt",
-    altEn: "英文 alt",
+    altZh: "中文图片说明",
+    altEn: "英文图片说明",
     sortOrder: "排序",
     addImage: "添加图片",
     preview: "预览",
     type: "类型",
-    alt: "说明",
+    alt: "图片说明",
     sort: "排序",
+    action: "操作",
     delete: "删除",
-    saveProjectFirst: "请先保存项目并上传/选择图片。",
+    setCover: "设为封面",
+    saveProjectFirst: "请先保存项目，并上传或填写图片地址。",
     added: "图片已添加。",
+    coverSet: "已设为封面，前台案例列表会优先显示这张图。",
     cover: "封面",
     gallery: "图库",
-    before: "前图",
-    after: "后图",
+    before: "施工前",
+    after: "施工后",
+    coverRuleTitle: "封面图规则，已和前台统一：",
+    coverRulePrimary: "前台列表和详情缩略图，会优先使用 image_type 为 cover 的图片。",
+    coverRuleFallback: "如果没有封面图，会依次使用第一张图库图片、projects.image_url、默认图片。",
   },
 };
 
 const imageTypeLabels: Record<string, Record<Language, string>> = {
   cover: { en: "cover", zh: "封面" },
   gallery: { en: "gallery", zh: "图库" },
-  before: { en: "before", zh: "前图" },
-  after: { en: "after", zh: "后图" },
+  before: { en: "before", zh: "施工前" },
+  after: { en: "after", zh: "施工后" },
 };
 
 const formatImageType = (value: string, language: Language) =>
@@ -129,7 +141,6 @@ const AdminProjectImages = ({ projectId }: AdminProjectImagesProps) => {
   const setAsCover = async (image: any) => {
     if (!projectId) return;
     setStatus("");
-    // Ensure "single cover": reset other cover images to gallery, then set this one as cover.
     const { error: resetError } = await supabase!
       .from("project_images")
       .update({ image_type: "gallery" })
@@ -141,7 +152,7 @@ const AdminProjectImages = ({ projectId }: AdminProjectImagesProps) => {
     }
     await updateImage(image, { image_type: "cover", sort_order: 0 });
     refreshProjectCaches();
-    setStatus("已设为封面（前台列表将优先显示该图）。");
+    setStatus(t.coverSet);
   };
 
   const deleteImage = async (id: string) => {
@@ -169,10 +180,10 @@ const AdminProjectImages = ({ projectId }: AdminProjectImagesProps) => {
         <p className="text-sm text-muted-foreground">{t.description}</p>
       </div>
       <div className="mb-4 rounded-lg border border-border bg-muted/40 p-3 text-xs text-muted-foreground">
-        <p className="mb-1 font-medium text-foreground">封面图规则（已与前台统一）</p>
+        <p className="mb-1 font-medium text-foreground">{t.coverRuleTitle}</p>
         <ul className="list-disc space-y-0.5 pl-5">
-          <li>前台列表/详情缩略图：优先使用 <code>project_images</code> 中 <code>image_type='cover'</code> 的图片。</li>
-          <li>没有 cover 时，使用第一张 gallery；仍没有则回退到 <code>projects.image_url</code>；最后使用默认图。</li>
+          <li>{t.coverRulePrimary}</li>
+          <li>{t.coverRuleFallback}</li>
         </ul>
       </div>
       {status && <div className="mb-4 rounded-lg bg-muted p-3 text-sm">{status}</div>}
@@ -202,7 +213,7 @@ const AdminProjectImages = ({ projectId }: AdminProjectImagesProps) => {
             <TableHead>{t.type}</TableHead>
             <TableHead>{t.alt}</TableHead>
             <TableHead>{t.sort}</TableHead>
-            <TableHead>操作</TableHead>
+            <TableHead>{t.action}</TableHead>
             <TableHead />
           </TableRow>
         </TableHeader>
@@ -218,7 +229,7 @@ const AdminProjectImages = ({ projectId }: AdminProjectImagesProps) => {
               <TableCell>
                 <div className="flex flex-wrap gap-2">
                   <Button type="button" variant="outline" size="sm" onClick={() => void setAsCover(image)} disabled={image.image_type === "cover"}>
-                    设为封面
+                    {t.setCover}
                   </Button>
                 </div>
               </TableCell>
