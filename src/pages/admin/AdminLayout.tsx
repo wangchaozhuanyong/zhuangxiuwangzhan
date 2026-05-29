@@ -18,7 +18,6 @@ import {
   Images,
   Languages,
   LayoutDashboard,
-  ListChecks,
   LogOut,
   MapPinned,
   Menu,
@@ -227,7 +226,6 @@ const navGroups: NavGroup[] = [
     icon: LayoutDashboard,
     items: [
       { key: "dashboard", path: "/admin/dashboard", icon: BarChart3 },
-      { key: "todayTasks", path: "/admin/dashboard#tasks", icon: ListChecks },
     ],
   },
   {
@@ -302,11 +300,22 @@ const readExpandedGroups = () => {
 
 const normalizeHash = (hash: string) => hash.replace(/^#/, "");
 
+const navItems = navGroups.flatMap((group) => group.items);
+
+const hasExactHashNavItem = (pathname: string, hash: string) => {
+  const activeHash = normalizeHash(hash);
+  if (!activeHash) return false;
+  return navItems.some((item) => {
+    const [path, fragment] = item.path.split("#");
+    return path === pathname && fragment === activeHash;
+  });
+};
+
 const isAdminNavItemActive = (itemPath: string, pathname: string, hash: string) => {
   const [path, fragment] = itemPath.split("#");
   if (pathname !== path) return false;
   if (fragment) return normalizeHash(hash) === fragment;
-  return normalizeHash(hash) === "";
+  return !hasExactHashNavItem(pathname, hash);
 };
 
 const ControlButton = ({
@@ -369,17 +378,7 @@ const AdminLayout = () => {
 
   useEffect(() => {
     if (!activeGroupKeys.length) return;
-    setExpandedGroups((prev) => {
-      let changed = false;
-      const next = { ...prev };
-      for (const key of activeGroupKeys) {
-        if (!next[key]) {
-          next[key] = true;
-          changed = true;
-        }
-      }
-      return changed ? next : prev;
-    });
+    setExpandedGroups({ [activeGroupKeys[0]]: true });
   }, [activeGroupKeys]);
 
   useEffect(() => {
@@ -424,14 +423,14 @@ const AdminLayout = () => {
         title={label}
         aria-current={isActive ? "page" : undefined}
         className={cn(
-          "group flex min-h-10 min-w-0 items-center gap-3 rounded-lg px-3 py-2 text-sm font-semibold transition-colors",
+          "group flex min-h-9 min-w-0 items-center gap-2.5 rounded-md border border-transparent px-3 py-2 text-sm font-semibold transition-colors",
           isActive
-            ? "bg-accent text-accent-foreground shadow-[0_12px_30px_-22px_rgba(184,135,70,0.8)]"
+            ? "border border-accent/25 bg-accent/15 text-sidebar-accent-foreground shadow-sm"
             : "text-sidebar-foreground/76 hover:bg-sidebar-accent hover:text-sidebar-accent-foreground",
           compact && "mx-auto h-10 w-10 justify-center px-0",
         )}
       >
-        <Icon className={cn("h-4 w-4 shrink-0", isActive ? "text-accent-foreground" : "text-sidebar-foreground/58 group-hover:text-sidebar-accent-foreground")} />
+        <Icon className={cn("h-4 w-4 shrink-0", isActive ? "text-accent" : "text-sidebar-foreground/58 group-hover:text-sidebar-accent-foreground")} />
         <span className={cn("truncate", compact && "sr-only")}>{label}</span>
       </Link>
     );
@@ -486,7 +485,7 @@ const AdminLayout = () => {
           </div>
         )}
 
-        <nav className={cn("min-h-0 flex-1 overflow-y-auto px-3 py-4", compact ? "space-y-4" : "space-y-5")} aria-label={t.menu}>
+        <nav className={cn("min-h-0 flex-1 overflow-y-auto px-3 py-4", compact ? "space-y-4" : "space-y-2.5")} aria-label={t.menu}>
           {navGroups.map((group) => {
             const groupLabel = copyText(group.key);
             const GroupIcon = group.icon;
@@ -504,12 +503,26 @@ const AdminLayout = () => {
             }
 
             return (
-              <div key={group.key} className="space-y-1">
+              <div
+                key={group.key}
+                className={cn(
+                  "rounded-xl border border-transparent transition-colors",
+                  isExpanded && "border-sidebar-border bg-sidebar-accent/35 p-1.5",
+                )}
+              >
                 <button
                   type="button"
-                  className="flex min-h-10 w-full items-center justify-between rounded-lg px-3 py-2 text-left text-xs font-bold uppercase tracking-[0.12em] text-sidebar-foreground/56 transition-colors hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
+                  className={cn(
+                    "flex min-h-11 w-full items-center justify-between rounded-lg px-3 py-2 text-left text-sm font-bold text-sidebar-foreground transition-colors hover:bg-sidebar-accent hover:text-sidebar-accent-foreground",
+                    isExpanded && "bg-sidebar text-sidebar-foreground shadow-sm",
+                  )}
                   aria-expanded={isExpanded}
-                  onClick={() => setExpandedGroups((prev) => ({ ...prev, [group.key]: !prev[group.key] }))}
+                  onClick={() =>
+                    setExpandedGroups((prev) => {
+                      if (prev[group.key]) return {};
+                      return { [group.key]: true };
+                    })
+                  }
                 >
                   <span className="flex min-w-0 items-center gap-2">
                     <GroupIcon className="h-4 w-4 shrink-0" />
@@ -518,7 +531,7 @@ const AdminLayout = () => {
                   <ChevronDown className={cn("h-4 w-4 shrink-0 transition-transform", isExpanded && "rotate-180")} />
                 </button>
                 {isExpanded && (
-                  <div className="space-y-1">
+                  <div className="ml-5 mt-1.5 space-y-1 border-l border-sidebar-border pl-2">
                     {group.items.map((item) => (
                       <NavLink key={item.path} item={item} compact={false} />
                     ))}

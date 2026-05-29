@@ -49,7 +49,6 @@ const AdminLeadList = lazy(() => import("./pages/admin/AdminLeadList"));
 const AdminLeadDetail = lazy(() => import("./pages/admin/AdminLeadDetail"));
 const AdminQuoteList = lazy(() => import("./pages/admin/AdminQuoteList"));
 const AdminQuoteDetail = lazy(() => import("./pages/admin/AdminQuoteDetail"));
-const AdminComingSoon = lazy(() => import("./pages/admin/AdminComingSoon"));
 const AdminServiceList = lazy(() => import("./pages/admin/AdminServiceList"));
 const AdminServiceEditor = lazy(() => import("./pages/admin/AdminServiceEditor"));
 const AdminProjectList = lazy(() => import("./pages/admin/AdminProjectList"));
