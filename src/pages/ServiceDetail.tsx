@@ -136,6 +136,12 @@ const ServiceDetail = () => {
   if (!service) {
     return (
       <main className="pt-site-header section-padding text-center">
+        <PageMeta
+          title={t.notFound}
+          description={language === "zh" ? "这个服务页面暂时不存在，请返回服务列表查看已发布装修服务。" : "This service page is not available. Please return to the service list."}
+          canonicalPath="/services"
+          noIndex
+        />
         <h1 className="font-display text-3xl font-bold mb-4">{t.notFound}</h1>
         <Button asChild><Link to="/services">{t.viewAll}</Link></Button>
       </main>
@@ -152,11 +158,11 @@ const ServiceDetail = () => {
   const serviceProcessSteps = service.processSteps.map((step: any) => ({
     title: displayText(step.title),
     desc: displayText(step.desc),
-  }));
+  })).filter((step: any) => step.title || step.desc);
   const serviceFaqs = service.faqs.map((faq: any) => ({
     q: displayText(faq.q),
     a: displayText(faq.a),
-  }));
+  })).filter((faq: any) => faq.q && faq.a);
 
   return (
     <main className="pt-site-header">
@@ -168,7 +174,7 @@ const ServiceDetail = () => {
       />
       <JsonLdService name={serviceTitle} description={serviceSummary} />
       <JsonLdBreadcrumb items={[{ name: t.breadcrumbHome, url: "/" }, { name: t.breadcrumbServices, url: "/services" }, { name: serviceTitle, url: `/services/${service.slug}` }]} />
-      <JsonLdFAQ faqs={serviceFaqs.map((faq: any) => ({ question: faq.q, answer: faq.a }))} />
+      {serviceFaqs.length > 0 && <JsonLdFAQ faqs={serviceFaqs.map((faq: any) => ({ question: faq.q, answer: faq.a }))} />}
 
       <section className="page-hero">
         <div className="absolute inset-0">
@@ -250,38 +256,42 @@ const ServiceDetail = () => {
         </div>
       </section>
 
-      <section className="section-padding bg-background">
-        <div className="container-narrow max-w-3xl">
-          <h2 className="font-display text-2xl md:text-3xl font-bold mb-8 text-center">{t.process}</h2>
-          <div className="space-y-6">
-            {serviceProcessSteps.map((step: any, index: number) => (
-              <div key={`${step.title}-${index}`} className="flex gap-4">
-                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-accent/25 bg-accent/15 text-sm font-bold text-gold">
-                  {index + 1}
+      {serviceProcessSteps.length > 0 && (
+        <section className="section-padding bg-background">
+          <div className="container-narrow max-w-3xl">
+            <h2 className="font-display text-2xl md:text-3xl font-bold mb-8 text-center">{t.process}</h2>
+            <div className="space-y-6">
+              {serviceProcessSteps.map((step: any, index: number) => (
+                <div key={`${step.title}-${index}`} className="flex gap-4">
+                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-accent/25 bg-accent/15 text-sm font-bold text-gold">
+                    {index + 1}
+                  </div>
+                  <div className="pt-1">
+                    <h3 className="font-semibold mb-1">{step.title}</h3>
+                    <p className="text-muted-foreground text-sm">{step.desc}</p>
+                  </div>
                 </div>
-                <div className="pt-1">
-                  <h3 className="font-semibold mb-1">{step.title}</h3>
-                  <p className="text-muted-foreground text-sm">{step.desc}</p>
-                </div>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
+      )}
 
-      <section className="section-padding bg-muted">
-        <div className="container-narrow max-w-3xl">
-          <h2 className="font-display text-2xl font-bold mb-6 text-center">{t.faq}</h2>
-          <Accordion type="single" collapsible className="space-y-2">
-            {serviceFaqs.map((faq: any, index: number) => (
-              <AccordionItem key={`${faq.q}-${index}`} value={`faq-${index}`} className="bg-background rounded-card border border-border px-4">
-                <AccordionTrigger className="text-left font-medium text-sm md:text-base">{faq.q}</AccordionTrigger>
-                <AccordionContent className="text-muted-foreground text-sm">{faq.a}</AccordionContent>
-              </AccordionItem>
-            ))}
-          </Accordion>
-        </div>
-      </section>
+      {serviceFaqs.length > 0 && (
+        <section className="section-padding bg-muted">
+          <div className="container-narrow max-w-3xl">
+            <h2 className="font-display text-2xl font-bold mb-6 text-center">{t.faq}</h2>
+            <Accordion type="single" collapsible className="space-y-2">
+              {serviceFaqs.map((faq: any, index: number) => (
+                <AccordionItem key={`${faq.q}-${index}`} value={`faq-${index}`} className="bg-background rounded-card border border-border px-4">
+                  <AccordionTrigger className="text-left font-medium text-sm md:text-base">{faq.q}</AccordionTrigger>
+                  <AccordionContent className="text-muted-foreground text-sm">{faq.a}</AccordionContent>
+                </AccordionItem>
+              ))}
+            </Accordion>
+          </div>
+        </section>
+      )}
 
       <section className="section-padding bg-background">
         <div className="container-narrow">

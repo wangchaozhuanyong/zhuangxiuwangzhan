@@ -23,7 +23,7 @@ const sectionCopy = {
   en: {
     eyebrow: "Selected Work",
     title: "Recent Renovation Projects",
-    subtitle: "Explore completed residential, commercial, kitchen, built-in furniture, and fit-out projects across Kuala Lumpur and Selangor.",
+    subtitle: "Explore residential, commercial, kitchen, built-in furniture, and fit-out project references across Kuala Lumpur and Selangor.",
     empty: "Project highlights are being updated. Contact us for recent site references.",
   },
   zh: {

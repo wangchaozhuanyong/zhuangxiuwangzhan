@@ -6,10 +6,10 @@ import { usePublishedHomeSection } from "@/hooks/usePublishedContent";
 
 const stats = {
   en: [
-    { icon: Star, value: "200+", label: "Completed Projects", desc: "Across Kuala Lumpur and Selangor for residential, commercial, and industrial spaces", iconClass: "text-gold" },
-    { icon: Clock, value: "10+", label: "Years Experience", desc: "A decade of renovation experience in the Malaysian market", iconClass: "text-gold" },
-    { icon: Users, value: "Trusted", label: "By Homeowners & Businesses", desc: "Repeat clients and referrals are our strongest endorsement", iconClass: "text-gold" },
-    { icon: ShieldCheck, value: "SSM", label: "Registered Company", desc: "Fully registered with workmanship warranty on all projects", iconClass: "text-gold" },
+    { icon: Star, value: "Scope", label: "Clear Project Planning", desc: "Site condition, usage needs, materials, budget, and timeline are reviewed before quotation.", iconClass: "text-gold" },
+    { icon: Clock, value: "KL & Selangor", label: "Local Service Areas", desc: "Renovation enquiries are handled for Kuala Lumpur, Selangor, and nearby Klang Valley areas.", iconClass: "text-gold" },
+    { icon: Users, value: "Homes & Businesses", label: "Residential and Commercial", desc: "Support for home renovation, office fit-out, shop renovation, built-in furniture, and selected industrial spaces.", iconClass: "text-gold" },
+    { icon: ShieldCheck, value: "SSM", label: "Registered Company", desc: "Company registration and contact details are shown clearly for client verification.", iconClass: "text-gold" },
   ],
   zh: [
     { icon: Star, value: "200+", label: "已完成项目", desc: "覆盖吉隆坡与雪兰莪的住宅、商业及工业项目", iconClass: "text-gold" },

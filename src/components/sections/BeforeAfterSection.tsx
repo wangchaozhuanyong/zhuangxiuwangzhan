@@ -214,14 +214,14 @@ const BeforeAfterSection = () => {
   const sectionCopy = {
     en: {
       title: "See the Transformation",
-      subtitle: "Drag the slider to compare before and after - real projects by FLASH CAST.",
+      subtitle: "Drag the slider to compare before and after renovation references by FLASH CAST.",
       viewAll: "View All Projects",
       before: "Before",
       after: "After",
     },
     zh: {
       title: "看看变化前后",
-      subtitle: "拖动滑块对比施工前后，查看 FLASH CAST 的真实项目成果。",
+      subtitle: "拖动滑块对比施工前后，查看 FLASH CAST 的装修参考效果。",
       viewAll: "查看全部案例",
       before: "施工前",
       after: "施工后",

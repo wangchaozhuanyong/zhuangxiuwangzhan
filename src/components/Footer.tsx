@@ -106,6 +106,19 @@ const SectionTitle = ({ children }: { children: ReactNode }) => (
   </div>
 );
 
+const normalizeFooterServiceLinks = (links: { name: string; slug: string }[], language: "en" | "zh") =>
+  links.map((item) => {
+    if (item.slug === "commercial") {
+      return { ...item, name: language === "zh" ? "办公室装修" : "Office Renovation", slug: "office-renovation" };
+    }
+
+    if (item.slug === "exterior") {
+      return { ...item, name: language === "zh" ? "店铺装修" : "Shop Renovation", slug: "shop-renovation" };
+    }
+
+    return item;
+  });
+
 const FooterLink = ({ to, children }: { to: string; children: ReactNode }) => (
   <li>
     <Link to={to} className="text-[13px] leading-relaxed text-white/60 transition-colors duration-200 hover:text-gold">
@@ -141,6 +154,7 @@ const Footer = () => {
   const [openSection, setOpenSection] = useState<string | null>(null);
   const [logoFailed, setLogoFailed] = useState(false);
   const areas = language === "zh" ? locationLinksZh : locationLinks;
+  const serviceLinks = normalizeFooterServiceLinks(t.serviceLinks, language);
   const logoSrc = !logoFailed && settings.logo_url ? settings.logo_url : logoFallback;
 
   const contactItems = [
@@ -198,7 +212,7 @@ const Footer = () => {
             <div className="col-span-2">
               <SectionTitle>{t.servicesTitle}</SectionTitle>
               <ul className="space-y-3">
-                {t.serviceLinks.map((item) => (
+                {serviceLinks.map((item) => (
                   <FooterLink key={item.slug} to={`/services/${item.slug}`}>
                     {item.name}
                   </FooterLink>
@@ -259,7 +273,7 @@ const Footer = () => {
 
             <MobileAccordion title={t.servicesTitle} isOpen={openSection === "services"} onToggle={() => setOpenSection(openSection === "services" ? null : "services")}>
               <ul className="space-y-3">
-                {t.serviceLinks.map((item) => (
+                {serviceLinks.map((item) => (
                   <FooterLink key={item.slug} to={`/services/${item.slug}`}>
                     {item.name}
                   </FooterLink>

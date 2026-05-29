@@ -11,6 +11,7 @@ interface PageMetaProps {
   ogImage?: string;
   ogType?: string;
   canonicalPath?: string;
+  noIndex?: boolean;
 }
 
 const PageMeta = ({
@@ -20,6 +21,7 @@ const PageMeta = ({
   ogImage,
   ogType = "website",
   canonicalPath,
+  noIndex = false,
 }: PageMetaProps) => {
   const { language } = useLanguage();
   const settings = useSiteSettings();
@@ -36,6 +38,7 @@ const PageMeta = ({
     <Helmet>
       <title>{fullTitle}</title>
       <meta name="description" content={description} />
+      {noIndex && <meta name="robots" content="noindex,follow" />}
       {keywords && <meta name="keywords" content={keywords} />}
       <link rel="canonical" href={canonicalUrl} />
       <link rel="alternate" hrefLang="zh-CN" href={zhUrl} />

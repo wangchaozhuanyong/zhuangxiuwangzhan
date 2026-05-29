@@ -16,11 +16,11 @@ import { translateDisplayText, translateProjectType } from "@/i18n/displayLabels
 
 const typeToService: Record<string, { en: string; zh: string; slug: string }> = {
   Residential: { en: "Interior Renovation", zh: "室内装修", slug: "renovation" },
-  Commercial: { en: "Commercial Works", zh: "商业空间装修", slug: "commercial" },
+  Commercial: { en: "Shop Renovation", zh: "店铺装修", slug: "shop-renovation" },
   "Built-In": { en: "Custom Built-In Solutions", zh: "定制内嵌家具", slug: "builtin" },
   Warehouse: { en: "Warehouse & Shelving", zh: "仓库与货架工程", slug: "warehouse" },
-  Exterior: { en: "Exterior Works", zh: "外墙与门面工程", slug: "exterior" },
-  Office: { en: "Commercial Works", zh: "商业空间装修", slug: "commercial" },
+  Exterior: { en: "Shop Renovation", zh: "店铺装修", slug: "shop-renovation" },
+  Office: { en: "Office Renovation", zh: "办公室装修", slug: "office-renovation" },
 };
 
 const copy = {
@@ -30,12 +30,12 @@ const copy = {
     breadcrumbHome: "Home",
     breadcrumbProjects: "Projects",
     metaSuffix: "FLASH CAST Renovation",
-    metaDescription: (type: string, location: string, need: string) => `${type} renovation project in ${location} by FLASH CAST: ${need}`,
+    metaDescription: (type: string, location: string, need: string) => `${type} renovation project reference in ${location} by FLASH CAST: ${need}`,
     metaKeywords: (type: string, location: string, title: string) => `${type} renovation ${location}, ${title}, renovation project Malaysia`,
     allProjects: "All Projects",
     summaryLabel: "Project Summary:",
     summary: (title: string, type: string, location: string, duration: string, scope: string[]) =>
-      `${title} is a ${type.toLowerCase()} renovation project completed by FLASH CAST SDN. BHD. in ${location}, Malaysia. The project was completed in ${duration} and included ${scope.slice(0, 3).join(", ")}, and more.`,
+      `${title} is a ${type.toLowerCase()} renovation project reference by FLASH CAST SDN. BHD. in ${location}, Malaysia. The listed scope includes ${scope.slice(0, 3).join(", ")}, and more.`,
     overview: "Project Overview",
     clientRequirements: "Client's Requirements",
     solution: "Our Solution & Highlights",
@@ -43,8 +43,8 @@ const copy = {
     testimonialBy: (location: string) => `Client, ${location}`,
     resultTitle: "Project Result",
     resultIntro: (type: string, location: string, duration: string, scopeCount: number, materialCount: number) =>
-      `This ${type.toLowerCase()} project in ${location} was completed in ${duration} by FLASH CAST's in-house team. The scope covered ${scopeCount} work items using ${materialCount} selected materials.`,
-    satisfied: "The client was satisfied with the quality and professionalism of the delivery.",
+      `This ${type.toLowerCase()} project page outlines the renovation scope in ${location}, with ${scopeCount} work items and ${materialCount} selected material categories.`,
+    satisfied: "The client feedback shown above is linked to this published project record.",
     similarPrompt: "Looking for a similar project? Explore our",
     serviceWord: "service.",
     details: "Project Details",
@@ -74,12 +74,12 @@ const copy = {
     breadcrumbHome: "首页",
     breadcrumbProjects: "装修案例",
     metaSuffix: "FLASH CAST 装修案例",
-    metaDescription: (type: string, location: string, need: string) => `FLASH CAST 在 ${location} 完成的 ${type} 装修案例：${need}`,
+    metaDescription: (type: string, location: string, need: string) => `FLASH CAST 在 ${location} 的 ${type} 装修项目参考：${need}`,
     metaKeywords: (type: string, location: string, title: string) => `${location} ${type} 装修案例, ${title}, 马来西亚装修公司`,
     allProjects: "全部案例",
     summaryLabel: "项目摘要：",
     summary: (title: string, type: string, location: string, duration: string, scope: string[]) =>
-      `${title} 是 FLASH CAST SDN. BHD. 在 ${location} 完成的 ${type} 项目，工期为 ${duration}，施工内容包括 ${scope.slice(0, 3).join("、")} 等。`,
+      `${title} 是 FLASH CAST SDN. BHD. 在 ${location} 发布的 ${type} 项目参考，施工内容包括 ${scope.slice(0, 3).join("、")} 等。`,
     overview: "项目概览",
     clientRequirements: "客户需求",
     solution: "解决方案与项目亮点",
@@ -87,8 +87,8 @@ const copy = {
     testimonialBy: (location: string) => `${location} 客户`,
     resultTitle: "项目成果",
     resultIntro: (type: string, location: string, duration: string, scopeCount: number, materialCount: number) =>
-      `这个位于 ${location} 的 ${type} 项目由 FLASH CAST 自有团队完成，工期 ${duration}，共涵盖 ${scopeCount} 项施工内容，并使用 ${materialCount} 类精选材料。`,
-    satisfied: "客户对交付质量和施工专业度表示满意。",
+      `这个位于 ${location} 的 ${type} 项目页面说明了装修范围，共涵盖 ${scopeCount} 项施工内容，并使用 ${materialCount} 类材料。`,
+    satisfied: "上方客户反馈来自该已发布项目记录。",
     similarPrompt: "想做类似项目？可以先了解我们的",
     serviceWord: "服务。",
     details: "项目资料",
@@ -120,12 +120,12 @@ const zhCopy = {
   breadcrumbHome: "首页",
   breadcrumbProjects: "装修案例",
   metaSuffix: "FLASH CAST 装修案例",
-  metaDescription: (type: string, location: string, need: string) => `FLASH CAST 在 ${location} 完成的 ${type} 装修案例：${stripHtml(need)}`,
+  metaDescription: (type: string, location: string, need: string) => `FLASH CAST 在 ${location} 的 ${type} 装修项目参考：${stripHtml(need)}`,
   metaKeywords: (type: string, location: string, title: string) => `${location} ${type} 装修案例, ${title}, 马来西亚装修公司`,
   allProjects: "全部案例",
   summaryLabel: "项目摘要：",
   summary: (title: string, type: string, location: string, duration: string, scope: string[]) =>
-    `${title} 是 FLASH CAST SDN. BHD. 在 ${location} 完成的 ${type} 项目，工期为 ${duration}，施工内容包括 ${scope.slice(0, 3).join("、")} 等。`,
+    `${title} 是 FLASH CAST SDN. BHD. 在 ${location} 发布的 ${type} 项目参考，施工内容包括 ${scope.slice(0, 3).join("、")} 等。`,
   overview: "项目概览",
   clientRequirements: "客户需求",
   solution: "解决方案与项目亮点",
@@ -133,8 +133,8 @@ const zhCopy = {
   testimonialBy: (location: string) => `${location} 客户`,
   resultTitle: "项目成果",
   resultIntro: (type: string, location: string, duration: string, scopeCount: number, materialCount: number) =>
-    `这个位于 ${location} 的 ${type} 项目由 FLASH CAST 自有团队完成，工期 ${duration}，共涵盖 ${scopeCount} 项施工内容，并使用 ${materialCount} 类精选材料。`,
-  satisfied: "客户对交付质量和施工专业度表示满意。",
+    `这个位于 ${location} 的 ${type} 项目页面说明了装修范围，共涵盖 ${scopeCount} 项施工内容，并使用 ${materialCount} 类材料。`,
+  satisfied: "上方客户反馈来自该已发布项目记录。",
   similarPrompt: "想做类似项目？可以先了解我们的",
   serviceWord: "服务。",
   details: "项目资料",
@@ -181,6 +181,12 @@ const ProjectDetail = () => {
   if (!projectPending && !project) {
     return (
       <main className="pt-site-header section-padding text-center">
+        <PageMeta
+          title={t.notFound}
+          description={language === "zh" ? "这个装修案例页面暂时不存在，请返回案例列表查看已发布内容。" : "This renovation project page is not available. Please return to the project list."}
+          canonicalPath="/projects"
+          noIndex
+        />
         <h1 className="font-display text-3xl font-bold mb-4">{t.notFound}</h1>
         <Button asChild><Link to="/projects">{t.viewAll}</Link></Button>
       </main>

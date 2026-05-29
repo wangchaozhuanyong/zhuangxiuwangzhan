@@ -136,8 +136,12 @@ const FAQ = () => {
   const settings = useSiteSettings();
   const t = faqContent[language];
   const { data: pageContent } = usePublishedSitePage(language, "faq");
-  const { data: publishedFaqs } = usePublishedFaqs(language, "general");
+  const { data: generalFaqs } = usePublishedFaqs(language, "general");
+  const { data: homeFaqs } = usePublishedFaqs(language, "home");
   const categories = useMemo(() => {
+    const publishedFaqs = [...(generalFaqs || []), ...(homeFaqs || [])].filter(
+      (item, index, list) => list.findIndex((faq) => faq.question === item.question) === index,
+    );
     if (!publishedFaqs?.length) return t.categories;
     return [
       {
@@ -145,7 +149,7 @@ const FAQ = () => {
         items: publishedFaqs.map((item) => ({ q: item.question, a: item.answer })),
       },
     ];
-  }, [publishedFaqs, t.categories, language]);
+  }, [generalFaqs, homeFaqs, t.categories, language]);
 
   return (
     <main className="pt-site-header">

@@ -1,4 +1,4 @@
-import { Phone } from "lucide-react";
+import { ClipboardList, Phone } from "lucide-react";
 import WhatsAppIcon from "@/components/WhatsAppIcon";
 import LocalizedLink from "@/components/LocalizedLink";
 import { useLanguage } from "@/i18n/LanguageContext";
@@ -48,7 +48,7 @@ const MobileActionBar = () => {
         to="/quote"
         className="flex min-h-16 min-w-0 flex-col items-center justify-center bg-[#15120E] text-[11px] font-bold text-[#C6A46A]"
       >
-        <span className="mb-1 text-base leading-none">RM</span>
+        <ClipboardList className="mb-1 h-5 w-5" />
         {t.quote}
       </LocalizedLink>
     </nav>

@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { MapPin, ArrowRight } from "lucide-react";
 import WhatsAppIcon from "@/components/WhatsAppIcon";
 import SmartImage from "@/components/SmartImage";
-import { usePublishedProjects } from "@/hooks/usePublishedContent";
+import { usePublishedProjects, usePublishedSitePage } from "@/hooks/usePublishedContent";
 import { useLanguage } from "@/i18n/LanguageContext";
 import Reveal from "@/components/Reveal";
 import PageMeta from "@/components/PageMeta";
@@ -54,12 +54,14 @@ const categoryLabels = {
 const copy = {
   en: {
     metaTitle: "Renovation Projects Kuala Lumpur & Selangor | FLASH CAST Portfolio",
-    metaDescription: "Explore completed renovation projects by FLASH CAST across Kuala Lumpur and Selangor - residential condos, commercial offices, custom kitchens, warehouses, and shopfront renovations.",
+    metaDescription: "Explore renovation project references by FLASH CAST across Kuala Lumpur and Selangor - residential condos, commercial offices, custom kitchens, warehouses, and shopfront works.",
+    metaKeywords: "renovation projects KL, condo renovation Kuala Lumpur, office fit-out Selangor, kitchen renovation Malaysia",
     breadcrumbHome: "Home",
     breadcrumbProjects: "Projects",
+    heroAlt: "FLASH CAST renovation projects portfolio",
     eyebrow: "Portfolio",
     title: "Our Projects",
-    intro: "Completed renovation projects across Kuala Lumpur and Selangor - from residential homes to commercial spaces and warehouses.",
+    intro: "Renovation project references across Kuala Lumpur and Selangor - from residential homes to commercial spaces and warehouses.",
     empty: "No projects found in this category.",
     ctaTitle: "Have a Similar Project?",
     ctaText: "Share your requirements and we'll provide a tailored proposal with accurate pricing.",
@@ -75,12 +77,14 @@ const copy = {
   },
   zh: {
     metaTitle: "吉隆坡与雪兰莪装修案例 | FLASH CAST 项目作品",
-    metaDescription: "浏览 FLASH CAST 在吉隆坡和雪兰莪完成的装修案例，包括公寓、住宅、办公室、厨房、仓储和店铺装修。",
+    metaDescription: "浏览 FLASH CAST 在吉隆坡和雪兰莪发布的装修项目参考，包括公寓、住宅、办公室、厨房、仓储和店铺装修。",
+    metaKeywords: "吉隆坡装修案例, 雪兰莪装修项目, 马来西亚室内装修, 店铺装修 KL",
     breadcrumbHome: "首页",
     breadcrumbProjects: "装修案例",
+    heroAlt: "FLASH CAST 装修案例作品",
     eyebrow: "案例作品",
     title: "装修案例",
-    intro: "查看我们在吉隆坡和雪兰莪完成的住宅、商业空间、定制家具和仓储装修项目。",
+    intro: "查看我们在吉隆坡和雪兰莪发布的住宅、商业空间、定制家具和仓储装修项目参考。",
     empty: "这个分类暂时没有项目案例。",
     ctaTitle: "也想做类似项目？",
     ctaText: "告诉我们您的装修需求，我们会根据空间、预算和工期提供合适方案。",
@@ -101,6 +105,7 @@ const Projects = () => {
   const { language } = useLanguage();
   const settings = useSiteSettings();
   const { data: projects = [] } = usePublishedProjects(language);
+  const { data: pageContent } = usePublishedSitePage(language, "projects");
   const categoryBarRef = useRef<HTMLDivElement | null>(null);
   const categoryButtonRefs = useRef<Record<(typeof categories)[number], HTMLButtonElement | null>>({
     All: null,
@@ -140,19 +145,19 @@ const Projects = () => {
   return (
     <main className="pt-site-header">
       <PageMeta
-        title={pageCopy.metaTitle}
-        description={pageCopy.metaDescription}
-        keywords="renovation projects KL, condo renovation Kuala Lumpur, office fit-out Selangor, kitchen renovation Malaysia"
+        title={pageContent?.seo_title || pageCopy.metaTitle}
+        description={pageContent?.seo_description || pageCopy.metaDescription}
+        keywords={pageContent?.seo_keywords || pageCopy.metaKeywords}
         canonicalPath="/projects"
       />
       <JsonLdBreadcrumb items={[{ name: pageCopy.breadcrumbHome, url: "/" }, { name: pageCopy.breadcrumbProjects, url: "/projects" }]} />
 
       <HeroBanner
-        image={heroImg}
-        imageAlt="FLASH CAST renovation projects portfolio"
-        label={pageCopy.eyebrow}
-        title={pageCopy.title}
-        description={pageCopy.intro}
+        image={pageContent?.image_url || heroImg}
+        imageAlt={pageContent?.alt || pageCopy.heroAlt}
+        label={pageContent?.subtitle || pageCopy.eyebrow}
+        title={pageContent?.title || pageCopy.title}
+        description={pageContent?.description || pageCopy.intro}
       />
 
       <section className="section-padding bg-background">
@@ -232,8 +237,8 @@ const Projects = () => {
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_0%,rgba(198,164,106,0.1),transparent_50%)]" aria-hidden />
         <Reveal>
           <div className="container-narrow relative">
-            <h2 className="heading-safe mb-4 font-display text-3xl font-bold text-surface-dark-foreground">{pageCopy.ctaTitle}</h2>
-            <p className="mx-auto mb-6 max-w-lg text-surface-dark-foreground/75">{pageCopy.ctaText}</p>
+            <h2 className="heading-safe mb-4 font-display text-3xl font-bold text-surface-dark-foreground">{pageContent?.cta_title || pageCopy.ctaTitle}</h2>
+            <p className="mx-auto mb-6 max-w-lg text-surface-dark-foreground/75">{pageContent?.cta_description || pageCopy.ctaText}</p>
             <div className="flex flex-col justify-center gap-3 sm:flex-row sm:gap-4">
               <Link to="/quote" className="btn-on-dark-primary min-h-12 w-full justify-center px-8 sm:w-auto">
                 {pageCopy.quote} <ArrowRight className="h-4 w-4" />

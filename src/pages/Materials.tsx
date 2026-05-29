@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { ArrowRight } from "lucide-react";
 import WhatsAppIcon from "@/components/WhatsAppIcon";
 import { materialsData } from "@/data/materials";
-import { usePublishedMaterials } from "@/hooks/usePublishedContent";
+import { usePublishedMaterials, usePublishedSitePage } from "@/hooks/usePublishedContent";
 import SmartImage from "@/components/SmartImage";
 import { useLanguage } from "@/i18n/LanguageContext";
 import Reveal from "@/components/Reveal";
@@ -59,6 +59,7 @@ const Materials = () => {
   const settings = useSiteSettings();
   const t = copy[language];
   const { data: publishedCategories } = usePublishedMaterials(language);
+  const { data: pageContent } = usePublishedSitePage(language, "materials");
   const categories = useMemo(() => {
     const items = publishedCategories ?? [];
     const hasCountertopCategory = items.some(
@@ -76,10 +77,21 @@ const Materials = () => {
 
   return (
     <main className="pt-site-header">
-      <PageMeta title={t.metaTitle} description={t.metaDescription} keywords={t.metaKeywords} canonicalPath="/materials" />
+      <PageMeta
+        title={pageContent?.seo_title || t.metaTitle}
+        description={pageContent?.seo_description || t.metaDescription}
+        keywords={pageContent?.seo_keywords || t.metaKeywords}
+        canonicalPath="/materials"
+      />
       <JsonLdBreadcrumb items={[{ name: t.breadcrumbHome, url: "/" }, { name: t.breadcrumbMaterials, url: "/materials" }]} />
 
-      <HeroBanner image={heroImg} imageAlt={t.heroAlt} label={t.eyebrow} title={t.title} description={t.intro} />
+      <HeroBanner
+        image={pageContent?.image_url || heroImg}
+        imageAlt={pageContent?.alt || t.heroAlt}
+        label={pageContent?.subtitle || t.eyebrow}
+        title={pageContent?.title || t.title}
+        description={pageContent?.description || t.intro}
+      />
 
       <section className="section-padding bg-background">
         <div className="container-narrow">
@@ -125,8 +137,8 @@ const Materials = () => {
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_0%,rgba(198,164,106,0.1),transparent_50%)]" aria-hidden />
         <Reveal>
           <div className="container-narrow relative">
-            <h2 className="heading-safe mb-4 font-display text-3xl font-bold text-surface-dark-foreground">{t.ctaTitle}</h2>
-            <p className="mx-auto mb-6 max-w-lg text-surface-dark-foreground/75">{t.ctaText}</p>
+            <h2 className="heading-safe mb-4 font-display text-3xl font-bold text-surface-dark-foreground">{pageContent?.cta_title || t.ctaTitle}</h2>
+            <p className="mx-auto mb-6 max-w-lg text-surface-dark-foreground/75">{pageContent?.cta_description || t.ctaText}</p>
             <div className="flex flex-col justify-center gap-3 sm:flex-row sm:gap-4">
               <Link to="/quote" className="btn-on-dark-primary min-h-12 w-full justify-center px-8 sm:w-auto">
                 {t.quote} <ArrowRight className="h-4 w-4" />
