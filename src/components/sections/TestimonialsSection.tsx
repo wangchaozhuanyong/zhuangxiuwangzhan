@@ -32,8 +32,10 @@ const TestimonialsSection = () => {
                     <Star key={j} className="h-4 w-4 fill-gold text-gold" />
                   ))}
                 </div>
-                <blockquote className="card-equal-body prose-safe mb-5 text-sm before:content-['\201C'] before:text-gold/40 after:content-['\201D'] after:text-gold/40">
+                <blockquote className="card-equal-body prose-safe mb-5 text-sm">
+                  <span className="text-gold/40" aria-hidden="true">&ldquo;</span>
                   {item.text}
+                  <span className="text-gold/40" aria-hidden="true">&rdquo;</span>
                 </blockquote>
                 <div className="border-t border-border pt-4">
                   <p className="font-semibold text-sm">{item.client}</p>

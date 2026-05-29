@@ -2,6 +2,7 @@ import PageMeta from "@/components/PageMeta";
 import { JsonLdLocalBusiness, JsonLdOrganization } from "@/components/JsonLd";
 import HeroSection from "@/components/sections/HeroSection";
 import StatsSection from "@/components/sections/StatsSection";
+import BrandLogosSection from "@/components/sections/BrandLogosSection";
 import ServicesSection from "@/components/sections/ServicesSection";
 import ProjectsSection from "@/components/sections/ProjectsSection";
 import WhyChooseUsSection from "@/components/sections/WhyChooseUsSection";
@@ -11,6 +12,7 @@ import TestimonialsSection from "@/components/sections/TestimonialsSection";
 import HomeFAQSection from "@/components/sections/HomeFAQSection";
 import CTASection from "@/components/sections/CTASection";
 import { useLanguage } from "@/i18n/LanguageContext";
+import { usePublishedSitePage } from "@/hooks/usePublishedContent";
 
 const pageCopy = {
   en: {
@@ -28,19 +30,24 @@ const pageCopy = {
 const Index = () => {
   const { language } = useLanguage();
   const copy = pageCopy[language];
+  const { data: pageContent } = usePublishedSitePage(language, "home");
+  const metaTitle = pageContent?.seo_title || pageContent?.title || copy.title;
+  const metaDescription = pageContent?.seo_description || pageContent?.description || copy.description;
+  const metaKeywords = pageContent?.seo_keywords || copy.keywords;
 
   return (
     <main>
       <PageMeta
-        title={copy.title}
-        description={copy.description}
-        keywords={copy.keywords}
-        canonicalPath="/"
+        title={metaTitle}
+        description={metaDescription}
+        keywords={metaKeywords}
+        canonicalPath={pageContent?.path || "/"}
       />
       <JsonLdLocalBusiness />
       <JsonLdOrganization />
-      <HeroSection />
+      <HeroSection pageContent={pageContent} />
       <StatsSection />
+      <BrandLogosSection />
       <ServicesSection />
       <ProjectsSection />
       <WhyChooseUsSection />

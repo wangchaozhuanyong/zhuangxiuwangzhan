@@ -366,6 +366,8 @@ export const getPublishedMaterials = async (language: "en" | "zh" = "en") => {
       texture: item.texture || "",
       suitableSpaces: item[`suitable_spaces_${language}`] || item.suitable_spaces_en || item.suitable_spaces_zh || [],
       recommendedPairing: item[`recommended_pairing_${language}`] || item.recommended_pairing_en || item.recommended_pairing_zh || "",
+      pros: item[`pros_${language}`] || item.pros_en || item.pros_zh || [],
+      cons: item[`cons_${language}`] || item.cons_en || item.cons_zh || [],
       description: item[`content_${language}`] || item.content_en || item.content_zh || item[`excerpt_${language}`] || "",
       note: item[`note_${language}`] || item.note_en || item.note_zh || item.reference_price || "",
       image: item.image_url || "",

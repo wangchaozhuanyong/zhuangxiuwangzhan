@@ -1,7 +1,7 @@
 ﻿import { useParams } from "react-router-dom";
 import Link from "@/components/LocalizedLink";
 import { Button } from "@/components/ui/button";
-import { ArrowRight } from "lucide-react";
+import { AlertCircle, ArrowRight, CheckCircle2 } from "lucide-react";
 import WhatsAppIcon from "@/components/WhatsAppIcon";
 import { materialsData } from "@/data/materials";
 import { usePublishedMaterialBySlug } from "@/hooks/usePublishedContent";
@@ -29,6 +29,8 @@ const copy = {
     category: "Category",
     suitableSpaces: "Suitable Spaces",
     recommendedPairing: "Recommended Pairing",
+    pros: "Advantages",
+    cons: "Things to Note",
     note: "Note:",
     enquire: "Enquire About This Material",
     whatsapp: "WhatsApp",
@@ -48,6 +50,8 @@ const copy = {
     category: "分类",
     suitableSpaces: "适用空间",
     recommendedPairing: "推荐搭配",
+    pros: "优点",
+    cons: "注意点",
     note: "备注：",
     enquire: "咨询此材料",
     whatsapp: "WhatsApp 咨询",
@@ -88,6 +92,8 @@ const MaterialDetail = () => {
   }
 
   const otherMaterials = category.items.filter((item: any) => item.slug !== slug);
+  const pros = Array.isArray((material as any).pros) ? (material as any).pros.filter(Boolean) : [];
+  const cons = Array.isArray((material as any).cons) ? (material as any).cons.filter(Boolean) : [];
 
   return (
     <main className="pt-site-header">
@@ -154,6 +160,35 @@ const MaterialDetail = () => {
                 <div className="mb-6">
                   <h3 className="font-semibold mb-2">{t.recommendedPairing}</h3>
                   <p className="text-muted-foreground text-sm">{material.recommendedPairing}</p>
+                </div>
+              )}
+
+              {(pros.length > 0 || cons.length > 0) && (
+                <div className="mb-6 grid gap-4 md:grid-cols-2">
+                  {pros.length > 0 && (
+                    <div className="rounded-card border border-accent/20 bg-accent/5 p-4">
+                      <h3 className="mb-3 flex items-center gap-2 text-sm font-semibold">
+                        <CheckCircle2 className="h-4 w-4 text-accent" /> {t.pros}
+                      </h3>
+                      <ul className="space-y-2 text-sm text-muted-foreground">
+                        {pros.map((item: string) => (
+                          <li key={item} className="leading-relaxed">{item}</li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+                  {cons.length > 0 && (
+                    <div className="rounded-card border border-border bg-muted/70 p-4">
+                      <h3 className="mb-3 flex items-center gap-2 text-sm font-semibold">
+                        <AlertCircle className="h-4 w-4 text-muted-foreground" /> {t.cons}
+                      </h3>
+                      <ul className="space-y-2 text-sm text-muted-foreground">
+                        {cons.map((item: string) => (
+                          <li key={item} className="leading-relaxed">{item}</li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
                 </div>
               )}
 
