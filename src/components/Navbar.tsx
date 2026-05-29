@@ -11,6 +11,7 @@ import { useSiteSettings } from "@/hooks/useSiteSettings";
 import SmartImage from "@/components/SmartImage";
 import { usePublicChrome } from "@/contexts/PublicChromeContext";
 import { PUBLIC_CHROME_Z } from "@/lib/publicChrome";
+import { addCacheBuster } from "@/lib/siteSettingsApi";
 import logoFallback from "@/assets/logo-flashcast.webp";
 
 interface NavItem {
@@ -46,7 +47,7 @@ const Navbar = () => {
   const { language, setLanguage } = useLanguage();
   const t = useT();
   const settings = useSiteSettings();
-  const primaryLogoSrc = settings.logo_url || "";
+  const primaryLogoSrc = addCacheBuster(settings.logo_url || "", settings.updated_at);
   const brandText = settings.company_name || "FLASH CAST SDN. BHD.";
   const resolvedLogoState: "primary" | "fallback" | "none" =
     logoState === "primary" && primaryLogoSrc ? "primary" : logoState === "none" ? "none" : "fallback";

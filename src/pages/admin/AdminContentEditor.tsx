@@ -19,6 +19,8 @@ import { isSupabaseConfigured, supabase } from "@/lib/supabase";
 import AdminImageUpload from "./AdminImageUpload";
 import AdminProjectImages from "./AdminProjectImages";
 import { FaqListEditor, ProjectCardsEditor, TextListEditor } from "@/components/admin/StructuredArrayEditors";
+import { AdminFieldLabel } from "@/components/admin/AdminHelpTip";
+import { getAdminFieldHelp, getAdminTableHelp } from "@/lib/adminHelpText";
 
 const editableTables = new Set([
   "services",
@@ -39,16 +41,9 @@ const englishFields = ["title_en", "excerpt_en", "content_en", "seo_title_en", "
 
 const tableFields: Record<string, string[]> = {
   hero_slides: [
-    "title_zh",
-    "excerpt_zh",
     "button_label_zh",
-    "alt_zh",
-    "title_en",
-    "excerpt_en",
     "button_label_en",
-    "alt_en",
     "button_url",
-    "image_url",
     "status",
     "sort_order",
   ],
@@ -188,12 +183,12 @@ const humanize = (value: string) => value.replace(/_/g, " ").replace(/\b\w/g, (c
 
 const copy = {
   en: {
-    unsupported: (table: string) => `Unsupported table: ${table}`,
+    unsupported: (table: string) => "Unsupported table: " + table,
     saving: "Saving...",
     saved: "Saved.",
     generating: "Generating English...",
     generatingEnglish: "Saved. Generating English...",
-    generationFailed: (message: string) => `Saved, but English generation failed: ${message}`,
+    generationFailed: (message: string) => "Saved, but English generation failed: " + message,
     generated: "Saved and English generated. You can review or manually edit the English fields below.",
     saveFirst: "Save this record before generating English.",
     regenerated: "English regenerated. Refresh or reselect the record to review it.",
@@ -203,7 +198,7 @@ const copy = {
     refresh: "Refresh List",
     refreshing: "Refreshing...",
     exportCsv: "Export Filtered CSV",
-    showing: (filtered: number, total: number) => `Showing ${filtered} of ${total} latest records`,
+    showing: (filtered: number, total: number) => "Showing " + filtered + " of " + total + " latest records",
     bilingualTitle: "Chinese first, English reviewable",
     bilingualDesc: "Fill Chinese fields, save, then review or edit generated English fields.",
     leadTip: "Lead workflow tip: update the status and notes after call, WhatsApp follow-up, site visit scheduling, quotation, or closing.",
@@ -211,23 +206,23 @@ const copy = {
     regenerate: "Regenerate English",
   },
   zh: {
-    unsupported: (table: string) => `不支持的数据表：${table}`,
+    unsupported: (table: string) => "不支持的数据表：" + table,
     saving: "保存中...",
-    saved: "已保存。",
+    saved: "已保存",
     generating: "正在生成英文...",
     generatingEnglish: "已保存，正在生成英文...",
-    generationFailed: (message: string) => `已保存，但英文生成失败：${message}`,
-    generated: "已保存并生成英文。你可以在下方审核或手动修改英文字段。",
-    saveFirst: "请先保存该记录，再生成英文。",
+    generationFailed: (message: string) => "已保存，但英文生成失败：" + message,
+    generated: "已保存并生成英文。你可以在下面查看或手动修改英文内容。",
+    saveFirst: "请先保存这条记录，再生成英文。",
     regenerated: "英文已重新生成。请刷新或重新选择记录查看。",
     createRecord: "新建记录",
     searchPlaceholder: "搜索当前列表...",
     allStatuses: "全部状态",
     refresh: "刷新列表",
     refreshing: "刷新中...",
-    exportCsv: "导出筛选 CSV",
-    showing: (filtered: number, total: number) => `显示 ${filtered} / ${total} 条最新记录`,
-    bilingualTitle: "先写中文，英文可复查",
+    exportCsv: "导出筛选后的 CSV",
+    showing: (filtered: number, total: number) => "显示 " + filtered + " / " + total + " 条最新记录",
+    bilingualTitle: "中文优先，英文可复查",
     bilingualDesc: "先填写中文字段并保存，然后查看或编辑系统生成的英文字段。",
     leadTip: "线索处理提示：通话、WhatsApp 跟进、上门测量、报价或结案后，请更新状态和备注。",
     save: "保存",
@@ -236,7 +231,7 @@ const copy = {
 };
 
 const tableLabels: Record<string, { en: string; zh: string }> = {
-  hero_slides: { en: "Hero Slides", zh: "首页幻灯片" },
+  hero_slides: { en: "Hero Buttons", zh: "首屏按钮" },
   services: { en: "Services", zh: "服务项目" },
   projects: { en: "Projects", zh: "装修案例" },
   materials: { en: "Materials", zh: "材料库" },
@@ -261,7 +256,7 @@ const fieldLabels: Record<string, { en: string; zh: string }> = {
   slug: { en: "Slug", zh: "Slug" },
   image_url: { en: "Image URL", zh: "图片 URL" },
   cover_image_url: { en: "Cover Image URL", zh: "封面图 URL" },
-  hero_image_url: { en: "Hero Image URL", zh: "主视觉图片 URL" },
+  hero_image_url: { en: "Hero Image URL", zh: "主视觉图 URL" },
   status: { en: "Status", zh: "状态" },
   sort_order: { en: "Sort Order", zh: "排序" },
   suitable_for: { en: "Suitable For", zh: "适用场景" },
@@ -293,12 +288,12 @@ const fieldLabels: Record<string, { en: string; zh: string }> = {
   customer_email: { en: "Customer Email", zh: "客户邮箱" },
   phone: { en: "Phone", zh: "电话" },
   email: { en: "Email", zh: "邮箱" },
-  name: { en: "Name", zh: "名称" },
+  name: { en: "Name", zh: "姓名" },
   message: { en: "Message", zh: "留言" },
   source: { en: "Source", zh: "来源" },
   source_path: { en: "Source Path", zh: "来源路径" },
   notes: { en: "Notes", zh: "备注" },
-  area_name: { en: "Area Name", zh: "地区名称" },
+  area_name: { en: "Area Name", zh: "区域名称" },
   construction_notes: { en: "Construction Notes", zh: "施工说明" },
   property_types: { en: "Property Types", zh: "房产类型" },
   common_needs: { en: "Common Needs", zh: "常见需求" },
@@ -375,17 +370,17 @@ const getRecordLabel = (row: Record<string, any>, type: string, language: Langua
   if (type === "leads") {
     const name = row.name || (language === "zh" ? "线索" : "Lead");
     const phone = row.phone || (language === "zh" ? "无电话" : "No phone");
-    return `${name} - ${phone}`;
+    return name + " · " + phone;
   }
 
   if (type === "quote_requests") {
     const name = row.customer_name || (language === "zh" ? "报价请求" : "Quote request");
     const phone = row.customer_phone || (language === "zh" ? "无电话" : "No phone");
-    return `${name} - ${phone}`;
+    return name + " · " + phone;
   }
 
   if (type === "translation_jobs") {
-    return `${getTableLabel(row.table_name || "translation", language)} - ${translateStatusLabel("translation_jobs", row.status || "unknown", language)}`;
+    return getTableLabel(row.table_name || "translation", language) + " · " + translateStatusLabel("translation_jobs", row.status || "unknown", language);
   }
 
   const text = row.title_zh || row.title_en || row.name || row.customer_name || row.id;
@@ -394,11 +389,23 @@ const getRecordLabel = (row: Record<string, any>, type: string, language: Langua
 
 const getRecordMeta = (row: Record<string, any>, type: string, language: Language) => {
   if (type === "leads") {
-    return `${translateProjectType(row.project_type || (language === "zh" ? "常规" : "General"), language)} · ${translateLocationLabel(row.location || (language === "zh" ? "未填写地点" : "No location"), language)} · ${translateStatusLabel("leads", row.status || "new", language)}`;
+    return (
+      translateProjectType(row.project_type || (language === "zh" ? "常规" : "General"), language) +
+      " · " +
+      translateLocationLabel(row.location || (language === "zh" ? "未填写地点" : "No location"), language) +
+      " · " +
+      translateStatusLabel("leads", row.status || "new", language)
+    );
   }
 
   if (type === "quote_requests") {
-    return `${translateProjectType(row.project_type || (language === "zh" ? "项目" : "Project"), language)} · ${translateLocationLabel(row.location || (language === "zh" ? "未填写地点" : "No location"), language)} · ${translateStatusLabel("quote_requests", row.status || "pending", language)}`;
+    return (
+      translateProjectType(row.project_type || (language === "zh" ? "项目" : "Project"), language) +
+      " · " +
+      translateLocationLabel(row.location || (language === "zh" ? "未填写地点" : "No location"), language) +
+      " · " +
+      translateStatusLabel("quote_requests", row.status || "pending", language)
+    );
   }
 
   if (type === "translation_jobs") return row.error_message || row.record_id || (language === "zh" ? "翻译任务" : "Translation job");
@@ -620,6 +627,7 @@ const AdminContentEditor = () => {
     <div className="grid gap-6 xl:grid-cols-[320px_1fr]">
         <div className="rounded-xl border border-border bg-card p-4">
           <h2 className="font-display mb-3 text-lg font-bold">{tableLabels[type]?.[lang] || type}</h2>
+          <p className="mb-3 text-xs leading-5 text-muted-foreground">{getAdminTableHelp(type)}</p>
           {!readOnlyTables.has(type) && (
             <Button
               className="mb-4 w-full"
@@ -704,14 +712,15 @@ const AdminContentEditor = () => {
                 <div key={field} className={isWide ? "md:col-span-2" : ""}>
                   {readOnlyFields.has(field) ? (
                     <>
-                      <label className="mb-1 block text-sm font-medium">{label}</label>
+                      <AdminFieldLabel label={label} help={getAdminFieldHelp(field)} />
                       <Input value={formatFieldValue(field, record[field])} readOnly className="bg-muted text-muted-foreground" />
                     </>
                   ) : field === "faqs_zh" || field === "faqs_en" ? (
-                    <FaqListEditor label={label} value={arrayValue(field, record[field])} onChange={(value) => setRecordField({ [field]: value })} />
+                    <FaqListEditor label={label} helpText={getAdminFieldHelp(field)} value={arrayValue(field, record[field])} onChange={(value) => setRecordField({ [field]: value })} />
                   ) : field === "projects" ? (
                     <ProjectCardsEditor
                       label={label}
+                      helpText={getAdminFieldHelp(field)}
                       value={arrayValue(field, record[field])}
                       onChange={(value) => setRecordField({ [field]: value })}
                       folder={`${type}/${record.id || "draft"}/projects`}
@@ -721,6 +730,7 @@ const AdminContentEditor = () => {
                   ) : field === "related_projects" ? (
                     <ProjectCardsEditor
                       label={label}
+                      helpText={getAdminFieldHelp(field)}
                       value={arrayValue(field, record[field])}
                       onChange={(value) => setRecordField({ [field]: value })}
                       folder={`${type}/${record.id || "draft"}/related-projects`}
@@ -728,20 +738,20 @@ const AdminContentEditor = () => {
                       metaLabel="项目地点"
                     />
                   ) : arrayLikeFields.has(field) ? (
-                    <TextListEditor label={label} value={arrayValue(field, record[field])} onChange={(value) => setRecordField({ [field]: value })} />
+                    <TextListEditor label={label} helpText={getAdminFieldHelp(field)} value={arrayValue(field, record[field])} onChange={(value) => setRecordField({ [field]: value })} />
                   ) : field.includes("content") || field.includes("description") || longTextFields.has(field) ? (
                     <>
-                      <label className="mb-1 block text-sm font-medium">{label}</label>
+                      <AdminFieldLabel label={label} help={getAdminFieldHelp(field)} />
                       <Textarea rows={5} value={formatFieldValue(field, record[field])} onChange={(event) => setRecordField({ [field]: event.target.value })} />
                     </>
                   ) : jsonFields.has(field) ? (
                     <>
-                      <label className="mb-1 block text-sm font-medium">{label}</label>
+                      <AdminFieldLabel label={label} help={getAdminFieldHelp(field)} />
                       <Textarea rows={4} value={formatFieldValue(field, record[field])} onChange={(event) => setRecordField({ [field]: event.target.value })} />
                     </>
                   ) : imageFields.has(field) ? (
                     <>
-                      <label className="mb-1 block text-sm font-medium">{label}</label>
+                      <AdminFieldLabel label={label} help={getAdminFieldHelp(field)} />
                       <div className="space-y-3">
                         <Input value={formatFieldValue(field, record[field])} onChange={(event) => setRecordField({ [field]: event.target.value })} />
                         <AdminImageUpload value={record[field]} folder={`${type}/${record.id || "draft"}`} onUploaded={(url) => setRecordField({ [field]: url })} />
@@ -749,7 +759,7 @@ const AdminContentEditor = () => {
                     </>
                   ) : (
                     <>
-                      <label className="mb-1 block text-sm font-medium">{label}</label>
+                      <AdminFieldLabel label={label} help={getAdminFieldHelp(field)} />
                       <Input value={formatFieldValue(field, record[field])} onChange={(event) => setRecordField({ [field]: event.target.value })} />
                     </>
                   )}

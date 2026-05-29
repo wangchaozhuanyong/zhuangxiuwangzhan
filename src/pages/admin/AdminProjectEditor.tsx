@@ -227,7 +227,7 @@ export default function AdminProjectEditor() {
               <Link to="/admin/projects">返回列表</Link>
             </Button>
             {record.status && <span className="text-xs text-muted-foreground">状态：{record.status}</span>}
-            {slugChecking && <span className="text-xs text-muted-foreground">slug 检查中...</span>}
+            {slugChecking && <span className="text-xs text-muted-foreground">slug 妫€鏌ヤ腑...</span>}
             {slugError && <span className="text-xs text-destructive">{slugError}</span>}
           </>
         }
@@ -262,7 +262,7 @@ export default function AdminProjectEditor() {
       >
         <AdminPageHeader
           title={isNew ? "新建案例" : "编辑案例"}
-          description="封面/图库/Before-After 请在“项目图片”模块中管理。前台缩略图优先使用 cover。"
+          description="封面 / 图库 / Before-After 请在“项目图片”模块里管理，前台缩略图优先使用 cover。"
           actions={
             <Button type="button" variant="outline" onClick={() => setShowEnglish((v) => !v)}>
               {showEnglish ? "隐藏英文" : "显示英文"}
@@ -270,7 +270,7 @@ export default function AdminProjectEditor() {
           }
         />
 
-        <AdminFormSection title="发布与排序" description="草稿不对外展示；发布后前台 /projects 生效。">
+        <AdminFormSection title="发布与排序" description="草稿不对外展示；发布后前台 /projects 生效。" helpText="控制案例是否在前台显示，以及它在案例列表里的排序。">
           <div className="grid gap-4 md:grid-cols-3">
             <div>
               <label className="mb-1 block text-sm font-medium">状态</label>
@@ -293,7 +293,7 @@ export default function AdminProjectEditor() {
           </div>
         </AdminFormSection>
 
-        <AdminFormSection title="基础信息（中文）" description="用于案例列表卡片与详情页标题/摘要。">
+        <AdminFormSection title="基础信息（中文）" description="用于案例列表卡片与详情页标题/摘要。" helpText="管理案例中文标题、摘要、正文和基础展示信息。">
           <div className="grid gap-4 md:grid-cols-2">
             <div className="md:col-span-2">
               <label className="mb-1 block text-sm font-medium">案例标题 title_zh</label>
@@ -346,7 +346,7 @@ export default function AdminProjectEditor() {
           </div>
         </AdminFormSection>
 
-        <AdminFormSection title="项目资料（中文）" description="用于详情页的项目资料展示。">
+        <AdminFormSection title="项目资料（中文）" description="用于详情页的项目资料展示。" helpText="管理项目地点、面积、周期、预算、类型、材料、范围和亮点。">
           <div className="grid gap-4 md:grid-cols-2">
             <div>
               <label className="mb-1 block text-sm font-medium">项目类型 project_type</label>
@@ -373,21 +373,21 @@ export default function AdminProjectEditor() {
               <Textarea rows={4} value={record.client_need_zh} onChange={(e) => setRecord((r) => ({ ...r, client_need_zh: e.target.value }))} />
             </div>
             <div>
-              <label className="mb-1 block text-sm font-medium">使用材料 materials（一行一个）</label>
+              <label className="mb-1 block text-sm font-medium">使用材料 materials（每行一个）</label>
               <Textarea rows={6} value={formatLines(record.materials)} onChange={(e) => setRecord((r) => ({ ...r, materials: parseLines(e.target.value) }))} />
             </div>
             <div>
-              <label className="mb-1 block text-sm font-medium">施工范围 scope（一行一个）</label>
+              <label className="mb-1 block text-sm font-medium">施工范围 scope（每行一个）</label>
               <Textarea rows={6} value={formatLines(record.scope)} onChange={(e) => setRecord((r) => ({ ...r, scope: parseLines(e.target.value) }))} />
             </div>
             <div className="md:col-span-2">
-              <label className="mb-1 block text-sm font-medium">项目亮点 highlights_zh（一行一个）</label>
+              <label className="mb-1 block text-sm font-medium">项目亮点 highlights_zh（每行一个）</label>
               <Textarea rows={6} value={formatLines(record.highlights_zh)} onChange={(e) => setRecord((r) => ({ ...r, highlights_zh: parseLines(e.target.value) }))} />
             </div>
           </div>
         </AdminFormSection>
 
-        <AdminFormSection title="封面兜底（legacy）" description="仅作为兜底：当没有 project_images 封面/图库时，前台会回退到这里。建议仍然在“项目图片”里设置 cover。">
+        <AdminFormSection title="封面兜底（legacy）" description="仅作为兜底：当没有 project_images 封面/图库时，前台会回退到这里。建议还是在“项目图片”里设置 cover。" helpText="这是旧封面字段。优先去项目图片里设置 cover，这里只做备用。">
           <div className="grid gap-4 md:grid-cols-2">
             <div className="md:col-span-2">
               <ImageField
@@ -396,7 +396,7 @@ export default function AdminProjectEditor() {
                 onChange={(url) => setRecord((r) => ({ ...r, image_url: url }))}
                 folder={`projects/${record.id || "draft"}`}
                 usageType="project"
-                helpText="注意：前台优先使用 project_images 的 cover/gallery；这里仅作为兜底。"
+                helpText="注意：前台优先使用 project_images 的 cover/gallery；这里只作为兜底。"
               />
             </div>
           </div>
@@ -404,7 +404,7 @@ export default function AdminProjectEditor() {
 
         <AdminProjectImages projectId={record.id} />
 
-        <AdminFormSection title="SEO（中文）" description="用于前台 meta title/description。为空时前台会 fallback。">
+        <AdminFormSection title="SEO（中文）" description="用于前台 meta title / description，留空时前台会回退默认值。" helpText="管理中文案例详情页的搜索标题和搜索描述。">
           <div className="grid gap-4 md:grid-cols-2">
             <div className="md:col-span-2">
               <label className="mb-1 block text-sm font-medium">SEO 标题 seo_title_zh</label>
@@ -419,7 +419,7 @@ export default function AdminProjectEditor() {
 
         {showEnglish && (
           <>
-            <AdminFormSection title="英文内容（可折叠）" description="英文为空时前台英文页会 fallback 中文。">
+            <AdminFormSection title="英文内容（可折叠）" description="英文为空时前台英文页会回退中文。" helpText="管理英文案例内容，没填英文时，英文前台会回退显示中文。">
               <div className="grid gap-4 md:grid-cols-2">
                 <div className="md:col-span-2">
                   <label className="mb-1 block text-sm font-medium">英文标题 title_en</label>
@@ -430,7 +430,7 @@ export default function AdminProjectEditor() {
                   <Textarea rows={3} value={record.excerpt_en} onChange={(e) => setRecord((r) => ({ ...r, excerpt_en: e.target.value }))} />
                 </div>
                 <div className="md:col-span-2">
-                  <label className="mb-1 block text-sm font-medium">英文详情 content_en</label>
+                  <label className="mb-1 block text-sm font-medium">英文正文 content_en</label>
                   <Textarea rows={10} value={record.content_en} onChange={(e) => setRecord((r) => ({ ...r, content_en: e.target.value }))} />
                 </div>
                 <div className="md:col-span-2">
@@ -438,13 +438,13 @@ export default function AdminProjectEditor() {
                   <Textarea rows={4} value={record.client_need_en} onChange={(e) => setRecord((r) => ({ ...r, client_need_en: e.target.value }))} />
                 </div>
                 <div className="md:col-span-2">
-                  <label className="mb-1 block text-sm font-medium">项目亮点 highlights_en（一行一个）</label>
+                  <label className="mb-1 block text-sm font-medium">项目亮点 highlights_en（每行一个）</label>
                   <Textarea rows={6} value={formatLines(record.highlights_en)} onChange={(e) => setRecord((r) => ({ ...r, highlights_en: parseLines(e.target.value) }))} />
                 </div>
               </div>
             </AdminFormSection>
 
-            <AdminFormSection title="SEO（英文）" description="可选；为空时前台 fallback。">
+            <AdminFormSection title="SEO（英文）" description="可选；为空时前台会回退。" helpText="管理英文案例详情页 SEO 文案。为空时前台会自动回退。">
               <div className="grid gap-4 md:grid-cols-2">
                 <div className="md:col-span-2">
                   <label className="mb-1 block text-sm font-medium">seo_title_en</label>
@@ -464,4 +464,3 @@ export default function AdminProjectEditor() {
     </>
   );
 }
-

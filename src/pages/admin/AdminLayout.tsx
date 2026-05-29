@@ -172,7 +172,7 @@ const copy: Record<AdminLang, AdminCopy> = {
   zh: {
     dashboard: "总览",
     todayTasks: "今日待办",
-    groupWorkspace: "工作台",
+    groupWorkspace: "工作区",
     groupWebsite: "网站内容",
     groupBusiness: "业务内容",
     groupCustomers: "客户管理",
@@ -196,7 +196,7 @@ const copy: Record<AdminLang, AdminCopy> = {
     media: "媒体库",
     seo: "SEO 设置",
     sitemap: "Sitemap / Robots",
-    users: "管理员账号",
+    users: "管理员账户",
     websiteSettings: "网站基础设置",
     translationJobs: "翻译任务",
     notificationSettings: "通知设置",
@@ -212,13 +212,14 @@ const copy: Record<AdminLang, AdminCopy> = {
     collapseNav: "收起导航",
     expandNav: "展开导航",
     language: "语言",
-    theme: "皮肤",
+    theme: "主题",
     lightTheme: "浅色",
     darkTheme: "深色",
     contentReady: "内容状态",
     currentPage: "当前页面",
   },
 };
+
 
 const navGroups: NavGroup[] = [
   {

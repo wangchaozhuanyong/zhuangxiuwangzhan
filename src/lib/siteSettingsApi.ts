@@ -2,6 +2,7 @@ import { siteConfig } from "@/config/site";
 import { isSupabaseConfigured, supabase } from "@/lib/supabase";
 
 export type SiteSettings = {
+  updated_at?: string;
   company_name: string;
   brand_name: string;
   ssm_number: string;
@@ -27,6 +28,18 @@ export type SiteSettings = {
   default_seo_title_en: string;
   default_seo_description_zh: string;
   default_seo_description_en: string;
+};
+
+export const addCacheBuster = (url: string, version?: string) => {
+  if (!url || !version) return url;
+
+  try {
+    const parsed = new URL(url, "https://example.com");
+    parsed.searchParams.set("v", version);
+    return url.startsWith("/") ? `${parsed.pathname}${parsed.search}${parsed.hash}` : parsed.toString();
+  } catch {
+    return url;
+  }
 };
 
 const normalizePhoneHref = (phone: string) => `tel:${phone.replace(/[^\d+]/g, "")}`;

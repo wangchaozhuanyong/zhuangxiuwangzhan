@@ -16,6 +16,7 @@ import { FaqListEditor, ProcessStepsEditor, TextListEditor } from "@/components/
 import { invalidateAdminContentDetail, invalidateAfterAdminContentSave } from "@/lib/adminInvalidate";
 import { useAdminServiceDetail } from "@/lib/adminQueries";
 import { publishStatusOptions } from "@/lib/adminLocale";
+import { getAdminFieldHelp } from "@/lib/adminHelpText";
 
 type ServiceRecord = {
   id?: string;
@@ -242,7 +243,7 @@ export default function AdminServiceEditor() {
               <Link to="/admin/services">返回列表</Link>
             </Button>
             {record.status && <span className="text-xs text-muted-foreground">状态：{record.status}</span>}
-            {slugChecking && <span className="text-xs text-muted-foreground">slug 检查中...</span>}
+            {slugChecking && <span className="text-xs text-muted-foreground">slug 妫€鏌ヤ腑...</span>}
             {slugError && <span className="text-xs text-destructive">{slugError}</span>}
           </>
         }
@@ -277,7 +278,7 @@ export default function AdminServiceEditor() {
       >
         <AdminPageHeader
           title={isNew ? "新建服务" : "编辑服务"}
-          description="中文优先编辑；英文可自动生成后再复查。保存/发布/预览统一在顶部操作栏。"
+          description="中文优先编辑；英文可自动生成后再复查。保存、发布、预览统一在顶部操作栏。"
           actions={
             <Button type="button" variant="outline" onClick={() => setShowEnglish((v) => !v)}>
               {showEnglish ? "隐藏英文" : "显示英文"}
@@ -285,7 +286,7 @@ export default function AdminServiceEditor() {
           }
         />
 
-        <AdminFormSection title="发布与排序" description="草稿不对外展示；发布后前台 /services 生效。">
+        <AdminFormSection title="发布与排序" description="草稿不对外展示；发布后前台 /services 生效。" helpText="控制服务是否在前台显示，以及它在服务列表里的排序。">
           <div className="grid gap-4 md:grid-cols-3">
             <div>
               <label className="mb-1 block text-sm font-medium">状态</label>
@@ -312,7 +313,7 @@ export default function AdminServiceEditor() {
           </div>
         </AdminFormSection>
 
-        <AdminFormSection title="基础信息（中文）" description="用于服务列表卡片与详情页标题/摘要。">
+        <AdminFormSection title="基础信息（中文）" description="用于服务列表卡片与详情页标题/摘要。" helpText="管理服务中文标题、摘要和正文。前台中文服务列表和详情页会读取这里。">
           <div className="grid gap-4 md:grid-cols-2">
             <div className="md:col-span-2">
               <label className="mb-1 block text-sm font-medium">中文标题 title_zh</label>
@@ -365,7 +366,7 @@ export default function AdminServiceEditor() {
           </div>
         </AdminFormSection>
 
-        <AdminFormSection title="图片" description="支持粘贴 URL 或直接上传。后续会接入媒体库选择器。">
+        <AdminFormSection title="图片" description="支持粘贴 URL 或直接上传，后续会接入媒体库选择器。" helpText="管理服务封面图，服务列表卡片和详情页头图会优先使用这里。">
           <div className="grid gap-4 md:grid-cols-2">
             <div className="md:col-span-2">
               <ImageField
@@ -376,7 +377,7 @@ export default function AdminServiceEditor() {
                 usageType="hero"
                 altValue={record.alt_zh}
                 onAltChange={(alt) => setRecord((r) => ({ ...r, alt_zh: alt }))}
-                helpText="提示：服务列表与详情页会使用该封面图。"
+                helpText="提示：服务列表与详情页会使用这个封面图。"
               />
             </div>
             {showEnglish && (
@@ -388,11 +389,12 @@ export default function AdminServiceEditor() {
           </div>
         </AdminFormSection>
 
-        <AdminFormSection title="业务字段（中文）" description="这些字段会被前台服务详情页读取。">
+        <AdminFormSection title="业务字段（中文）" description="这些字段会被前台服务详情页读取。" helpText="管理适合场景、常见项目、服务范围、流程和 FAQ，都会显示在服务详情页。">
           <div className="grid gap-4 md:grid-cols-2">
             <div>
               <TextListEditor
                 label="适合场景 suitable_for_zh"
+                helpText={getAdminFieldHelp("suitable_for_zh")}
                 value={record.suitable_for_zh}
                 onChange={(value) => setRecord((r) => ({ ...r, suitable_for_zh: value }))}
                 placeholder="例如：公寓装修、旧屋翻新"
@@ -401,6 +403,7 @@ export default function AdminServiceEditor() {
             <div>
               <TextListEditor
                 label="常见项目 common_projects_zh"
+                helpText={getAdminFieldHelp("common_projects_zh")}
                 value={record.common_projects_zh}
                 onChange={(value) => setRecord((r) => ({ ...r, common_projects_zh: value }))}
                 placeholder="例如：厨房翻新、浴室防水"
@@ -409,6 +412,7 @@ export default function AdminServiceEditor() {
             <div className="md:col-span-2">
               <TextListEditor
                 label="服务范围 scope_items_zh"
+                helpText={getAdminFieldHelp("scope_items_zh")}
                 value={record.scope_items_zh}
                 onChange={(value) => setRecord((r) => ({ ...r, scope_items_zh: value }))}
                 placeholder="例如：水电工程、木作、油漆"
@@ -417,6 +421,7 @@ export default function AdminServiceEditor() {
             <div className="md:col-span-2">
               <ProcessStepsEditor
                 label="服务步骤 process_steps_zh"
+                helpText={getAdminFieldHelp("process_steps_zh")}
                 value={record.process_steps_zh}
                 onChange={(value) => setRecord((r) => ({ ...r, process_steps_zh: value }))}
               />
@@ -424,6 +429,7 @@ export default function AdminServiceEditor() {
             <div className="md:col-span-2">
               <FaqListEditor
                 label="服务 FAQ faqs_zh"
+                helpText={getAdminFieldHelp("faqs_zh")}
                 value={record.faqs_zh}
                 onChange={(value) => setRecord((r) => ({ ...r, faqs_zh: value }))}
               />
@@ -431,7 +437,7 @@ export default function AdminServiceEditor() {
           </div>
         </AdminFormSection>
 
-        <AdminFormSection title="SEO（中文）" description="用于前台 meta title/description。为空时前台会 fallback。">
+        <AdminFormSection title="SEO（中文）" description="用于前台 meta title / description，留空时前台会回退默认值。" helpText="管理中文页面在浏览器标题、搜索结果和分享卡片里的文案。">
           <div className="grid gap-4 md:grid-cols-2">
             <div className="md:col-span-2">
               <label className="mb-1 block text-sm font-medium">SEO 标题 seo_title_zh</label>
@@ -446,7 +452,7 @@ export default function AdminServiceEditor() {
 
         {showEnglish && (
           <>
-            <AdminFormSection title="英文内容（可折叠）" description="英文为空时前台英文页会 fallback 中文。">
+            <AdminFormSection title="英文内容（可折叠）" description="英文为空时前台英文页会回退中文。" helpText="管理英文服务内容，没填英文时，英文前台会回退显示中文。">
               <div className="grid gap-4 md:grid-cols-2">
                 <div className="md:col-span-2">
                   <label className="mb-1 block text-sm font-medium">英文标题 title_en</label>
@@ -457,17 +463,18 @@ export default function AdminServiceEditor() {
                   <Textarea rows={3} value={record.excerpt_en} onChange={(e) => setRecord((r) => ({ ...r, excerpt_en: e.target.value }))} />
                 </div>
                 <div className="md:col-span-2">
-                  <label className="mb-1 block text-sm font-medium">英文详情 content_en</label>
+                  <label className="mb-1 block text-sm font-medium">英文正文 content_en</label>
                   <Textarea rows={10} value={record.content_en} onChange={(e) => setRecord((r) => ({ ...r, content_en: e.target.value }))} />
                 </div>
               </div>
             </AdminFormSection>
 
-            <AdminFormSection title="业务字段（英文）" description="可选；为空时自动 fallback。">
+        <AdminFormSection title="业务字段（英文）" description="可选；为空时自动回退。" helpText="管理英文服务详情页的列表、流程和 FAQ。">
               <div className="grid gap-4 md:grid-cols-2">
                 <div>
                   <TextListEditor
                     label="suitable_for_en"
+                    helpText={getAdminFieldHelp("suitable_for_en")}
                     value={record.suitable_for_en}
                     onChange={(value) => setRecord((r) => ({ ...r, suitable_for_en: value }))}
                     placeholder="Example: Condo renovation"
@@ -476,6 +483,7 @@ export default function AdminServiceEditor() {
                 <div>
                   <TextListEditor
                     label="common_projects_en"
+                    helpText={getAdminFieldHelp("common_projects_en")}
                     value={record.common_projects_en}
                     onChange={(value) => setRecord((r) => ({ ...r, common_projects_en: value }))}
                     placeholder="Example: Kitchen upgrade"
@@ -484,6 +492,7 @@ export default function AdminServiceEditor() {
                 <div className="md:col-span-2">
                   <TextListEditor
                     label="scope_items_en"
+                    helpText={getAdminFieldHelp("scope_items_en")}
                     value={record.scope_items_en}
                     onChange={(value) => setRecord((r) => ({ ...r, scope_items_en: value }))}
                     placeholder="Example: Electrical works"
@@ -492,6 +501,7 @@ export default function AdminServiceEditor() {
                 <div className="md:col-span-2">
                   <ProcessStepsEditor
                     label="process_steps_en"
+                    helpText={getAdminFieldHelp("process_steps_en")}
                     value={record.process_steps_en}
                     onChange={(value) => setRecord((r) => ({ ...r, process_steps_en: value }))}
                   />
@@ -499,6 +509,7 @@ export default function AdminServiceEditor() {
                 <div className="md:col-span-2">
                   <FaqListEditor
                     label="faqs_en"
+                    helpText={getAdminFieldHelp("faqs_en")}
                     value={record.faqs_en}
                     onChange={(value) => setRecord((r) => ({ ...r, faqs_en: value }))}
                   />
@@ -506,7 +517,7 @@ export default function AdminServiceEditor() {
               </div>
             </AdminFormSection>
 
-            <AdminFormSection title="SEO（英文）" description="可选；为空时前台 fallback。">
+        <AdminFormSection title="SEO（英文）" description="可选；为空时前台会回退。" helpText="管理英文页面 SEO 文案。为空时前台会自动回退。">
               <div className="grid gap-4 md:grid-cols-2">
                 <div className="md:col-span-2">
                   <label className="mb-1 block text-sm font-medium">seo_title_en</label>
@@ -526,4 +537,3 @@ export default function AdminServiceEditor() {
     </>
   );
 }
-

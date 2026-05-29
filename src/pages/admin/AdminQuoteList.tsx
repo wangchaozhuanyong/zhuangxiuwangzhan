@@ -9,8 +9,14 @@ import { translateStatusLabel } from "@/i18n/displayLabels";
 const statuses = ["all", "pending", "contacted", "site_visit_scheduled", "quoted", "accepted", "rejected", "closed"];
 const csvEscape = (value: unknown) => `"${String(value ?? "").replaceAll('"', '""')}"`;
 
+const copy = {
+  en: { title: "Quote Requests", search: "Search customer, phone, project, location...", statusAll: "All statuses", exportCsv: "Export CSV", empty: "No quote requests found.", whatsapp: "WhatsApp", call: "Call" },
+  zh: { title: "报价请求", search: "搜索客户、电话、项目、地区...", statusAll: "全部状态", exportCsv: "导出 CSV", empty: "暂无报价请求。", whatsapp: "WhatsApp 联系", call: "拨打电话" },
+};
+
 const AdminQuoteList = () => {
   const lang = getAdminLang();
+  const t = copy[lang];
   const { data: rows = [], error } = useAdminQuotes();
   const [search, setSearch] = useState("");
   const [status, setStatus] = useState("all");
@@ -37,44 +43,43 @@ const AdminQuoteList = () => {
   };
 
   return (
-    <>
     <div className="space-y-6">
-        <div className="rounded-xl border border-border bg-card p-6">
-          <div className="mb-4 flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
-            <h1 className="font-display text-2xl font-bold">报价请求</h1>
-            <Button variant="outline" onClick={exportCsv} disabled={filtered.length === 0}>导出 CSV</Button>
-          </div>
-          <div className="grid gap-3 md:grid-cols-[1fr_220px]">
-            <Input value={search} onChange={(event) => setSearch(event.target.value)} placeholder="搜索客户、电话、项目、地区..." />
-            <select value={status} onChange={(event) => setStatus(event.target.value)} className="flex h-10 rounded-md border border-input bg-background px-3 py-2 text-sm">
-              {statuses.map((item) => (
-                <option key={item} value={item}>
-                  {item === "all" ? "全部状态" : translateStatusLabel("quote_requests", item, lang)}
-                </option>
-              ))}
-            </select>
-          </div>
-          {message && <p className="mt-4 rounded-lg bg-muted p-3 text-sm">{message}</p>}
+      <div className="rounded-xl border border-border bg-card p-6">
+        <div className="mb-4 flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+          <h1 className="font-display text-2xl font-bold">{t.title}</h1>
+          <Button variant="outline" onClick={exportCsv} disabled={filtered.length === 0}>{t.exportCsv}</Button>
         </div>
+        <div className="grid gap-3 md:grid-cols-[1fr_220px]">
+          <Input value={search} onChange={(event) => setSearch(event.target.value)} placeholder={t.search} />
+          <select value={status} onChange={(event) => setStatus(event.target.value)} className="flex h-10 rounded-md border border-input bg-background px-3 py-2 text-sm">
+            {statuses.map((item) => (
+              <option key={item} value={item}>
+                {item === "all" ? t.statusAll : translateStatusLabel("quote_requests", item, lang)}
+              </option>
+            ))}
+          </select>
+        </div>
+        {message && <p className="mt-4 rounded-lg bg-muted p-3 text-sm">{message}</p>}
+      </div>
 
-        <div className="space-y-3">
-          {filtered.map((quote) => (
-            <div key={quote.id} className="rounded-xl border border-border bg-card p-4">
-              <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
-                <Link to={`/admin/quotes/${quote.id}`} className="min-w-0">
-                  <p className="font-semibold">{quote.customer_name || "-"} · {quote.customer_phone || "-"}</p>
-                  <p className="truncate text-xs text-muted-foreground">{translateStatusLabel("quote_requests", quote.status || "pending", lang)} · {quote.project_type || "-"} · {quote.location || "-"} · {new Date(quote.created_at).toLocaleString("zh-CN")}</p>
-                </Link>
-                <div className="flex gap-2">
-                  <Button asChild size="sm" variant="outline"><a href={`https://wa.me/${String(quote.customer_phone || "").replace(/[^\d]/g, "")}`} target="_blank" rel="noreferrer">WhatsApp</a></Button>
-                  <Button asChild size="sm" variant="outline"><a href={`tel:${String(quote.customer_phone || "").replace(/[^\d+]/g, "")}`}>电话</a></Button>
-                </div>
+      <div className="space-y-3">
+        {filtered.map((quote) => (
+          <div key={quote.id} className="rounded-xl border border-border bg-card p-4">
+            <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+              <Link to={`/admin/quotes/${quote.id}`} className="min-w-0">
+                <p className="font-semibold">{quote.customer_name || "-"} · {quote.customer_phone || "-"}</p>
+                <p className="truncate text-xs text-muted-foreground">{translateStatusLabel("quote_requests", quote.status || "pending", lang)} · {quote.project_type || "-"} · {quote.location || "-"} · {new Date(quote.created_at).toLocaleString("zh-CN")}</p>
+              </Link>
+              <div className="flex gap-2">
+                <Button asChild size="sm" variant="outline"><a href={`https://wa.me/${String(quote.customer_phone || "").replace(/[^\d]/g, "")}`} target="_blank" rel="noreferrer">{t.whatsapp}</a></Button>
+                <Button asChild size="sm" variant="outline"><a href={`tel:${String(quote.customer_phone || "").replace(/[^\d+]/g, "")}`}>{t.call}</a></Button>
               </div>
             </div>
-          ))}
-        </div>
+          </div>
+        ))}
+        {filtered.length === 0 && <div className="rounded-xl border border-border bg-card p-6 text-sm text-muted-foreground">{t.empty}</div>}
       </div>
-  </>
+    </div>
   );
 };
 

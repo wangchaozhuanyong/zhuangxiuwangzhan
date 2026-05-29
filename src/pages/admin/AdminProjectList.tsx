@@ -62,8 +62,8 @@ export default function AdminProjectList() {
       header: "类型 / 地区",
       cell: (row) => (
         <div className="text-xs text-muted-foreground">
-          <div>{row.project_type || "—"}</div>
-          <div>{row.location || "—"}</div>
+          <div>{row.project_type || "-"}</div>
+          <div>{row.location || "-"}</div>
         </div>
       ),
     },
@@ -85,7 +85,7 @@ export default function AdminProjectList() {
       className: "w-[180px]",
       cell: (row) => (
         <span className="text-xs text-muted-foreground">
-          {row.updated_at ? new Date(row.updated_at).toLocaleString() : row.created_at ? new Date(row.created_at).toLocaleString() : "—"}
+          {row.updated_at ? new Date(row.updated_at).toLocaleString() : row.created_at ? new Date(row.created_at).toLocaleString() : "-"}
         </span>
       ),
     },
@@ -93,9 +93,9 @@ export default function AdminProjectList() {
 
   return (
     <>
-    <AdminPageHeader
+      <AdminPageHeader
         title="装修案例"
-        description="管理案例列表、封面/图库/Before-After 图片、SEO 与发布状态。"
+        description="管理案例列表、封面、图库/Before-After 图片、SEO 与发布状态。"
         actions={
           <div className="flex flex-wrap gap-2">
             <Button variant="outline" onClick={() => void refetch()} disabled={!isSupabaseConfigured || isFetching}>
@@ -133,7 +133,7 @@ export default function AdminProjectList() {
         empty={
           <AdminEmptyState
             title="暂无案例"
-            description="先新建一个案例并发布，前台 /projects 将显示该案例。"
+            description="先新建一个案例并发布，前台 /projects 才会显示。"
             action={
               <Button asChild>
                 <Link to="/admin/projects/new">新建案例</Link>
@@ -145,4 +145,3 @@ export default function AdminProjectList() {
     </>
   );
 }
-

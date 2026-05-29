@@ -1,4 +1,4 @@
-﻿import { FormEvent, useState } from "react";
+import { FormEvent, useState } from "react";
 import LocalizedLink from "@/components/LocalizedLink";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -13,6 +13,7 @@ import Reveal from "@/components/Reveal";
 import SmartImage from "@/components/SmartImage";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { useSiteSettings } from "@/hooks/useSiteSettings";
+import { usePublishedSitePage } from "@/hooks/usePublishedContent";
 import heroImg from "@/assets/hero-quote.webp";
 import HeroBanner from "@/components/blocks/HeroBanner";
 
@@ -196,6 +197,7 @@ const Quote = () => {
   const { language } = useLanguage();
   const settings = useSiteSettings();
   const t = copy[language];
+  const { data: pageContent } = usePublishedSitePage(language, "quote");
   const [form, setForm] = useState({
     name: "",
     phone: "",
@@ -252,7 +254,7 @@ const Quote = () => {
   if (status === "success") {
     return (
       <main className="pt-site-header">
-        <PageMeta title={t.successTitle} description={t.metaDescription} canonicalPath="/quote" />
+        <PageMeta title={t.successTitle} description={pageContent?.seo_description || t.metaDescription} canonicalPath="/quote" />
         <section className="section-padding flex min-h-[70vh] items-center bg-background">
           <div className="container-narrow mx-auto max-w-lg text-center">
             <div className="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-full bg-accent/10">
@@ -303,10 +305,21 @@ const Quote = () => {
 
   return (
     <main className="pt-site-header">
-      <PageMeta title={t.metaTitle} description={t.metaDescription} keywords={t.metaKeywords} canonicalPath="/quote" />
+      <PageMeta
+        title={pageContent?.seo_title || t.metaTitle}
+        description={pageContent?.seo_description || t.metaDescription}
+        keywords={pageContent?.seo_keywords || t.metaKeywords}
+        canonicalPath="/quote"
+      />
       <JsonLdBreadcrumb items={[{ name: t.breadcrumbHome, url: "/" }, { name: t.breadcrumbCurrent, url: "/quote" }]} />
 
-      <HeroBanner image={heroImg} imageAlt={t.heroAlt} label={t.heroEyebrow} title={t.heroTitle} description={t.heroText} />
+      <HeroBanner
+        image={pageContent?.image_url || heroImg}
+        imageAlt={pageContent?.alt || t.heroAlt}
+        label={pageContent?.subtitle || t.heroEyebrow}
+        title={pageContent?.title || t.heroTitle}
+        description={pageContent?.description || t.heroText}
+      />
 
       <section className="section-padding bg-background pb-24 md:pb-28">
         <div className="container-narrow grid gap-10 lg:grid-cols-[1.1fr_0.9fr]">

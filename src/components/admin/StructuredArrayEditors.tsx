@@ -3,6 +3,7 @@ import AdminImageUpload from "@/pages/admin/AdminImageUpload";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import AdminHelpTip from "@/components/admin/AdminHelpTip";
 
 type TextItem = string;
 type ProcessStep = { title?: string; desc?: string; [key: string]: unknown };
@@ -28,6 +29,14 @@ type HomeSectionItem = {
   icon?: string;
   [key: string]: unknown;
 };
+type EditorHelp = { helpText?: string | null };
+
+const EditorLabel = ({ label, helpText }: { label: string; helpText?: string | null }) => (
+  <label className="flex items-center gap-1.5 text-sm font-medium">
+    <span>{label}</span>
+    <AdminHelpTip text={helpText} />
+  </label>
+);
 
 const normalizeTextItems = (value?: unknown[]): TextItem[] =>
   (value || []).map((item) => String(item || ""));
@@ -101,20 +110,21 @@ export const TextListEditor = ({
   onChange,
   placeholder = "填写一条内容",
   addLabel = "添加一条",
+  helpText,
 }: {
   label: string;
   value?: string[];
   onChange: (value: string[]) => void;
   placeholder?: string;
   addLabel?: string;
-}) => {
+} & EditorHelp) => {
   const items = normalizeTextItems(value);
   const update = (index: number, nextValue: string) => onChange(items.map((item, i) => (i === index ? nextValue : item)));
   const remove = (index: number) => onChange(items.filter((_, i) => i !== index));
 
   return (
     <div className="space-y-3">
-      <label className="block text-sm font-medium">{label}</label>
+      <EditorLabel label={label} helpText={helpText} />
       <div className="space-y-2">
         {items.map((item, index) => (
           <div key={`${label}-${index}`} className="flex gap-2 rounded-lg border border-border bg-background p-3">
@@ -140,18 +150,19 @@ export const ProcessStepsEditor = ({
   label,
   value,
   onChange,
+  helpText,
 }: {
   label: string;
   value?: ProcessStep[];
   onChange: (value: ProcessStep[]) => void;
-}) => {
+} & EditorHelp) => {
   const items = normalizeProcessSteps(value);
   const update = (index: number, patch: Partial<ProcessStep>) => onChange(items.map((item, i) => (i === index ? { ...item, ...patch } : item)));
   const remove = (index: number) => onChange(items.filter((_, i) => i !== index));
 
   return (
     <div className="space-y-3">
-      <label className="block text-sm font-medium">{label}</label>
+      <EditorLabel label={label} helpText={helpText} />
       <div className="space-y-3">
         {items.map((item, index) => (
           <div key={`${label}-${index}`} className="rounded-lg border border-border bg-background p-4">
@@ -183,18 +194,19 @@ export const FaqListEditor = ({
   label,
   value,
   onChange,
+  helpText,
 }: {
   label: string;
   value?: FaqItem[];
   onChange: (value: FaqItem[]) => void;
-}) => {
+} & EditorHelp) => {
   const items = normalizeFaqs(value);
   const update = (index: number, patch: Partial<FaqItem>) => onChange(items.map((item, i) => (i === index ? { ...item, ...patch } : item)));
   const remove = (index: number) => onChange(items.filter((_, i) => i !== index));
 
   return (
     <div className="space-y-3">
-      <label className="block text-sm font-medium">{label}</label>
+      <EditorLabel label={label} helpText={helpText} />
       <div className="space-y-3">
         {items.map((item, index) => (
           <div key={`${label}-${index}`} className="rounded-lg border border-border bg-background p-4">
@@ -229,6 +241,7 @@ export const ProjectCardsEditor = ({
   folder,
   metaKey,
   metaLabel,
+  helpText,
 }: {
   label: string;
   value?: ProjectCard[];
@@ -236,14 +249,14 @@ export const ProjectCardsEditor = ({
   folder: string;
   metaKey: "type" | "location";
   metaLabel: string;
-}) => {
+} & EditorHelp) => {
   const items = normalizeProjectCards(value);
   const update = (index: number, patch: Partial<ProjectCard>) => onChange(items.map((item, i) => (i === index ? { ...item, ...patch } : item)));
   const remove = (index: number) => onChange(items.filter((_, i) => i !== index));
 
   return (
     <div className="space-y-3">
-      <label className="block text-sm font-medium">{label}</label>
+      <EditorLabel label={label} helpText={helpText} />
       <div className="space-y-3">
         {items.map((item, index) => (
           <div key={`${label}-${index}`} className="rounded-lg border border-border bg-background p-4">
@@ -280,12 +293,13 @@ export const AboutSectionItemsEditor = ({
   sectionKey,
   value,
   onChange,
+  helpText,
 }: {
   label: string;
   sectionKey: string;
   value?: AboutSectionItem[];
   onChange: (value: AboutSectionItem[]) => void;
-}) => {
+} & EditorHelp) => {
   const items = normalizeAboutItems(value);
   const update = (index: number, patch: Partial<AboutSectionItem>) => onChange(items.map((item, i) => (i === index ? { ...item, ...patch } : item)));
   const remove = (index: number) => onChange(items.filter((_, i) => i !== index));
@@ -304,7 +318,7 @@ export const AboutSectionItemsEditor = ({
   if (!isIntro && !isStats && !isMilestone && !isCards) {
     return (
       <div className="space-y-2">
-        <label className="block text-sm font-medium">{label}</label>
+        <EditorLabel label={label} helpText={helpText} />
         <p className="text-sm text-muted-foreground">这个区块暂时不需要列表内容，标题、正文和图片在上面编辑即可。</p>
       </div>
     );
@@ -312,7 +326,7 @@ export const AboutSectionItemsEditor = ({
 
   return (
     <div className="space-y-3">
-      <label className="block text-sm font-medium">{label}</label>
+      <EditorLabel label={label} helpText={helpText} />
       <div className="space-y-3">
         {items.map((item, index) => (
           <div key={`${label}-${index}`} className="rounded-lg border border-border bg-background p-4">
@@ -362,12 +376,13 @@ export const HomeSectionItemsEditor = ({
   value,
   onChange,
   variant,
+  helpText,
 }: {
   label: string;
   value?: HomeSectionItem[];
   onChange: (value: HomeSectionItem[]) => void;
   variant: "stats" | "why";
-}) => {
+} & EditorHelp) => {
   const items = normalizeHomeItems(value);
   const update = (index: number, patch: Partial<HomeSectionItem>) => onChange(items.map((item, i) => (i === index ? { ...item, ...patch } : item)));
   const remove = (index: number) => onChange(items.filter((_, i) => i !== index));
@@ -378,7 +393,7 @@ export const HomeSectionItemsEditor = ({
 
   return (
     <div className="space-y-3">
-      <label className="block text-sm font-medium">{label}</label>
+      <EditorLabel label={label} helpText={helpText} />
       <div className="space-y-3">
         {items.map((item, index) => (
           <div key={`${label}-${index}`} className="rounded-lg border border-border bg-background p-4">

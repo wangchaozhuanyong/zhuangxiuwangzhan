@@ -58,7 +58,7 @@ export default function AdminServiceList() {
       className: "w-[180px]",
       cell: (row) => (
         <span className="text-xs text-muted-foreground">
-          {row.updated_at ? new Date(row.updated_at).toLocaleString() : row.created_at ? new Date(row.created_at).toLocaleString() : "—"}
+          {row.updated_at ? new Date(row.updated_at).toLocaleString() : row.created_at ? new Date(row.created_at).toLocaleString() : "-"}
         </span>
       ),
     },
@@ -66,7 +66,7 @@ export default function AdminServiceList() {
 
   return (
     <>
-    <AdminPageHeader
+      <AdminPageHeader
         title="服务项目"
         description="管理服务列表与服务详情内容。保存后前台服务列表与详情会同步更新。"
         actions={

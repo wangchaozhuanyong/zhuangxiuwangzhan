@@ -54,9 +54,9 @@ export default function AdminMaterialList() {
       header: "分类",
       cell: (row) => (
         <div className="text-xs text-muted-foreground">
-          <div>{row.category || "—"}</div>
-          <div>{row.subcategory || "—"}</div>
-          <div>{row.material_type || "—"}</div>
+          <div>{row.category || "-"}</div>
+          <div>{row.subcategory || "-"}</div>
+          <div>{row.material_type || "-"}</div>
         </div>
       ),
     },
@@ -78,7 +78,7 @@ export default function AdminMaterialList() {
       className: "w-[180px]",
       cell: (row) => (
         <span className="text-xs text-muted-foreground">
-          {row.updated_at ? new Date(row.updated_at).toLocaleString() : row.created_at ? new Date(row.created_at).toLocaleString() : "—"}
+          {row.updated_at ? new Date(row.updated_at).toLocaleString() : row.created_at ? new Date(row.created_at).toLocaleString() : "-"}
         </span>
       ),
     },
@@ -86,7 +86,7 @@ export default function AdminMaterialList() {
 
   return (
     <>
-    <AdminPageHeader
+      <AdminPageHeader
         title="材料库"
         description="管理材料分类、图片、详情、推荐搭配与 SEO。保存后前台材料库与详情会同步更新。"
         actions={
@@ -126,7 +126,7 @@ export default function AdminMaterialList() {
         empty={
           <AdminEmptyState
             title="暂无材料"
-            description="先新建一个材料并发布，前台 /materials 将显示该材料。"
+            description="先新建一条材料并发布，前台 /materials 才会显示。"
             action={
               <Button asChild>
                 <Link to="/admin/materials/new">新建材料</Link>
@@ -138,4 +138,3 @@ export default function AdminMaterialList() {
     </>
   );
 }
-

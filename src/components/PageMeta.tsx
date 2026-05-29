@@ -2,6 +2,7 @@ import { Helmet } from "react-helmet-async";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { stripLanguagePrefix, withLanguagePrefix } from "@/i18n/routes";
 import { siteConfig } from "@/config/site";
+import { addCacheBuster } from "@/lib/siteSettingsApi";
 import { useSiteSettings } from "@/hooks/useSiteSettings";
 
 interface PageMetaProps {
@@ -27,7 +28,7 @@ const PageMeta = ({
   const settings = useSiteSettings();
   const brandName = settings.brand_name || "FLASH CAST";
   const companyName = settings.company_name || siteConfig.name;
-  const image = ogImage || settings.og_image_url || siteConfig.ogImage;
+  const image = ogImage || addCacheBuster(settings.og_image_url || siteConfig.ogImage, settings.updated_at);
   const fullTitle = title.includes(brandName) || title.includes(companyName) ? title : `${title} | ${companyName}`;
   const path = canonicalPath ? stripLanguagePrefix(canonicalPath) : stripLanguagePrefix(window.location.pathname);
   const canonicalUrl = `${siteConfig.url}${withLanguagePrefix(path, language)}`;

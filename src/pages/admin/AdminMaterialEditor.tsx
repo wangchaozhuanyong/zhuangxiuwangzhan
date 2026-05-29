@@ -254,7 +254,7 @@ export default function AdminMaterialEditor() {
               <Link to="/admin/materials">返回列表</Link>
             </Button>
             {record.status && <span className="text-xs text-muted-foreground">状态：{record.status}</span>}
-            {slugChecking && <span className="text-xs text-muted-foreground">slug 检查中...</span>}
+            {slugChecking && <span className="text-xs text-muted-foreground">slug 妫€鏌ヤ腑...</span>}
             {slugError && <span className="text-xs text-destructive">{slugError}</span>}
           </>
         }
@@ -289,7 +289,7 @@ export default function AdminMaterialEditor() {
       >
         <AdminPageHeader
           title={isNew ? "新建材料" : "编辑材料"}
-          description="推荐搭配/备注字段为纯文本（TEXT），不会再被保存成数组，避免 Supabase schema 冲突。"
+          description="推荐搭配 / 备注字段使用纯文本，不会再存成数组，避免 Supabase schema 冲突。"
           actions={
             <Button type="button" variant="outline" onClick={() => setShowEnglish((v) => !v)}>
               {showEnglish ? "隐藏英文" : "显示英文"}
@@ -297,7 +297,7 @@ export default function AdminMaterialEditor() {
           }
         />
 
-        <AdminFormSection title="发布与排序" description="草稿不对外展示；发布后前台 /materials 生效。">
+        <AdminFormSection title="发布与排序" description="草稿不对外展示；发布后前台 /materials 生效。" helpText="控制材料是否在前台材料库显示，以及它在列表里的排序。">
           <div className="grid gap-4 md:grid-cols-3">
             <div>
               <label className="mb-1 block text-sm font-medium">状态</label>
@@ -320,7 +320,7 @@ export default function AdminMaterialEditor() {
           </div>
         </AdminFormSection>
 
-        <AdminFormSection title="基础信息（中文）" description="用于材料列表卡片与详情页标题/摘要。">
+        <AdminFormSection title="基础信息（中文）" description="用于材料列表卡片与详情页标题/摘要。" helpText="管理材料中文名称、摘要和正文。前台材料列表和详情页会读取这里。">
           <div className="grid gap-4 md:grid-cols-2">
             <div className="md:col-span-2">
               <label className="mb-1 block text-sm font-medium">材料名称 title_zh</label>
@@ -372,7 +372,7 @@ export default function AdminMaterialEditor() {
           </div>
         </AdminFormSection>
 
-        <AdminFormSection title="分类与属性" description="用于材料库分类页与详情页展示。">
+        <AdminFormSection title="分类与属性" description="用于材料库分类页与详情页展示。" helpText="管理材料分类、类型、颜色和纹理，用于筛选、分类页和详情页。">
           <div className="grid gap-4 md:grid-cols-2">
             <div>
               <label className="mb-1 block text-sm font-medium">分类 category</label>
@@ -401,7 +401,7 @@ export default function AdminMaterialEditor() {
           </div>
         </AdminFormSection>
 
-        <AdminFormSection title="图片" description="支持粘贴 URL 或直接上传。后续会接入媒体库选择器。">
+        <AdminFormSection title="图片" description="支持粘贴 URL 或直接上传，后续会接入媒体库选择器。" helpText="管理材料封面图，材料列表和详情页会优先使用这里。">
           <div className="grid gap-4 md:grid-cols-2">
             <div className="md:col-span-2">
               <ImageField
@@ -423,24 +423,24 @@ export default function AdminMaterialEditor() {
           </div>
         </AdminFormSection>
 
-        <AdminFormSection title="适用与评价（中文）" description="数组字段使用“一行一个”。">
+        <AdminFormSection title="适用与评价（中文）" description="数组字段使用“一行一个”。" helpText="管理适用空间、优缺点、搭配建议、价格参考和备注。">
           <div className="grid gap-4 md:grid-cols-2">
             <div>
-              <label className="mb-1 block text-sm font-medium">适用空间 suitable_spaces_zh（一行一个）</label>
+              <label className="mb-1 block text-sm font-medium">适用空间 suitable_spaces_zh（每行一个）</label>
               <Textarea rows={6} value={formatLines(record.suitable_spaces_zh)} onChange={(e) => setRecord((r) => ({ ...r, suitable_spaces_zh: parseLines(e.target.value) }))} />
             </div>
             <div>
-              <label className="mb-1 block text-sm font-medium">优点 pros_zh（一行一个）</label>
+              <label className="mb-1 block text-sm font-medium">优点 pros_zh（每行一个）</label>
               <Textarea rows={6} value={formatLines(record.pros_zh)} onChange={(e) => setRecord((r) => ({ ...r, pros_zh: parseLines(e.target.value) }))} />
             </div>
             <div>
-              <label className="mb-1 block text-sm font-medium">缺点 cons_zh（一行一个）</label>
+              <label className="mb-1 block text-sm font-medium">缺点 cons_zh（每行一个）</label>
               <Textarea rows={6} value={formatLines(record.cons_zh)} onChange={(e) => setRecord((r) => ({ ...r, cons_zh: parseLines(e.target.value) }))} />
             </div>
             <div className="md:col-span-2">
               <label className="mb-1 block text-sm font-medium">推荐搭配 recommended_pairing_zh（TEXT）</label>
               <Textarea rows={4} value={record.recommended_pairing_zh} onChange={(e) => setRecord((r) => ({ ...r, recommended_pairing_zh: e.target.value }))} />
-              <p className="mt-1 text-xs text-muted-foreground">该字段是数据库 TEXT，不会被保存为数组。</p>
+              <p className="mt-1 text-xs text-muted-foreground">这个字段是数据库 TEXT，不会被保存成数组。</p>
             </div>
             <div className="md:col-span-2">
               <label className="mb-1 block text-sm font-medium">备注 note_zh（TEXT）</label>
@@ -449,7 +449,7 @@ export default function AdminMaterialEditor() {
           </div>
         </AdminFormSection>
 
-        <AdminFormSection title="SEO（中文）" description="用于前台 meta title/description。为空时前台会 fallback。">
+        <AdminFormSection title="SEO（中文）" description="用于前台 meta title / description，留空时前台会回退默认值。" helpText="管理中文材料详情页搜索标题和搜索描述。">
           <div className="grid gap-4 md:grid-cols-2">
             <div className="md:col-span-2">
               <label className="mb-1 block text-sm font-medium">SEO 标题 seo_title_zh</label>
@@ -464,7 +464,7 @@ export default function AdminMaterialEditor() {
 
         {showEnglish && (
           <>
-            <AdminFormSection title="英文内容（可折叠）" description="英文为空时前台英文页会 fallback 中文。">
+            <AdminFormSection title="英文内容（可折叠）" description="英文为空时前台英文页会回退中文。" helpText="管理英文材料内容，没填英文时，英文前台会回退显示中文。">
               <div className="grid gap-4 md:grid-cols-2">
                 <div className="md:col-span-2">
                   <label className="mb-1 block text-sm font-medium">英文标题 title_en</label>
@@ -481,18 +481,18 @@ export default function AdminMaterialEditor() {
               </div>
             </AdminFormSection>
 
-            <AdminFormSection title="适用与评价（英文）" description="可选；为空时自动 fallback。">
+        <AdminFormSection title="适用与评价（英文）" description="可选；为空时自动回退。" helpText="管理英文适用空间、优缺点、搭配建议和备注。">
               <div className="grid gap-4 md:grid-cols-2">
                 <div>
-                  <label className="mb-1 block text-sm font-medium">suitable_spaces_en（一行一个）</label>
+                  <label className="mb-1 block text-sm font-medium">suitable_spaces_en（每行一个）</label>
                   <Textarea rows={6} value={formatLines(record.suitable_spaces_en)} onChange={(e) => setRecord((r) => ({ ...r, suitable_spaces_en: parseLines(e.target.value) }))} />
                 </div>
                 <div>
-                  <label className="mb-1 block text-sm font-medium">pros_en（一行一个）</label>
+                  <label className="mb-1 block text-sm font-medium">pros_en（每行一个）</label>
                   <Textarea rows={6} value={formatLines(record.pros_en)} onChange={(e) => setRecord((r) => ({ ...r, pros_en: parseLines(e.target.value) }))} />
                 </div>
                 <div>
-                  <label className="mb-1 block text-sm font-medium">cons_en（一行一个）</label>
+                  <label className="mb-1 block text-sm font-medium">cons_en（每行一个）</label>
                   <Textarea rows={6} value={formatLines(record.cons_en)} onChange={(e) => setRecord((r) => ({ ...r, cons_en: parseLines(e.target.value) }))} />
                 </div>
                 <div className="md:col-span-2">
@@ -506,7 +506,7 @@ export default function AdminMaterialEditor() {
               </div>
             </AdminFormSection>
 
-            <AdminFormSection title="SEO（英文）" description="可选；为空时前台 fallback。">
+            <AdminFormSection title="SEO（英文）" description="可选；为空时前台会回退。" helpText="管理英文材料详情页 SEO 文案。为空时前台会自动回退。">
               <div className="grid gap-4 md:grid-cols-2">
                 <div className="md:col-span-2">
                   <label className="mb-1 block text-sm font-medium">seo_title_en</label>
@@ -526,4 +526,3 @@ export default function AdminMaterialEditor() {
     </>
   );
 }
-

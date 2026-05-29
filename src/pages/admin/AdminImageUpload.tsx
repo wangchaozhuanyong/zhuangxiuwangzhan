@@ -48,12 +48,12 @@ async function prepareUploadFile(file: File): Promise<{ file: File; width?: numb
   canvas.width = targetW;
   canvas.height = targetH;
   const ctx = canvas.getContext("2d");
-  if (!ctx) throw new Error("Canvas not supported");
+  if (!ctx) throw new Error("浏览器不支持画布");
   ctx.drawImage(bitmap, 0, 0, targetW, targetH);
 
   const blob: Blob = await new Promise((resolve, reject) => {
     canvas.toBlob(
-      (b) => (b ? resolve(b) : reject(new Error("Failed to encode webp"))),
+      (b) => (b ? resolve(b) : reject(new Error("WebP 编码失败"))),
       "image/webp",
       WEBP_QUALITY,
     );
@@ -105,7 +105,7 @@ const AdminImageUpload = ({ value, folder = "content", onUploaded }: AdminImageU
       const { data } = supabase.storage.from(BUCKET).getPublicUrl(path);
       onUploaded(data.publicUrl);
     } catch (e) {
-      setError(e instanceof Error ? e.message : "Upload failed");
+      setError(e instanceof Error ? e.message : "上传失败");
     } finally {
       setUploading(false);
     }

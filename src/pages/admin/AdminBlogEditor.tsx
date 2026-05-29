@@ -225,7 +225,7 @@ export default function AdminBlogEditor() {
               <Link to="/admin/blog">返回列表</Link>
             </Button>
             {record.status && <span className="text-xs text-muted-foreground">状态：{record.status}</span>}
-            {slugChecking && <span className="text-xs text-muted-foreground">slug 检查中...</span>}
+            {slugChecking && <span className="text-xs text-muted-foreground">slug 妫€鏌ヤ腑...</span>}
             {slugError && <span className="text-xs text-destructive">{slugError}</span>}
           </>
         }
@@ -276,7 +276,7 @@ export default function AdminBlogEditor() {
           }
         />
 
-        <AdminFormSection title="发布与排序" description="发布后前台 /blog 生效；发布时间用于前台排序与展示。">
+        <AdminFormSection title="发布与排序" description="发布后前台 /blog 生效；发布时间用于前台排序与展示。" helpText="控制文章是否在博客列表显示，以及文章排序和发布时间。">
           <div className="grid gap-4 md:grid-cols-3">
             <div>
               <label className="mb-1 block text-sm font-medium">状态</label>
@@ -307,7 +307,7 @@ export default function AdminBlogEditor() {
           </div>
         </AdminFormSection>
 
-        <AdminFormSection title="基础信息（中文）" description="用于博客列表卡片与详情页标题/摘要。">
+        <AdminFormSection title="基础信息（中文）" description="用于博客列表卡片与详情页标题/摘要。" helpText="管理中文博客标题、摘要、正文、分类和标签。">
           <div className="grid gap-4 md:grid-cols-2">
             <div className="md:col-span-2">
               <label className="mb-1 block text-sm font-medium">标题 title_zh</label>
@@ -353,7 +353,7 @@ export default function AdminBlogEditor() {
               <Input value={record.category} onChange={(e) => setRecord((r) => ({ ...r, category: e.target.value }))} placeholder="Guides / Materials / Inspiration..." />
             </div>
             <div>
-              <label className="mb-1 block text-sm font-medium">标签 tags（一行一个）</label>
+              <label className="mb-1 block text-sm font-medium">标签 tags（每行一个）</label>
               <Textarea rows={3} value={formatLines(record.tags)} onChange={(e) => setRecord((r) => ({ ...r, tags: parseLines(e.target.value) }))} />
             </div>
 
@@ -369,7 +369,7 @@ export default function AdminBlogEditor() {
           </div>
         </AdminFormSection>
 
-        <AdminFormSection title="封面图" description="用于博客列表与详情页头图。支持粘贴 URL 或直接上传。后续会接入媒体库选择器。">
+        <AdminFormSection title="封面图" description="用于博客列表与详情页头图，支持粘贴 URL 或直接上传，后续会接入媒体库选择器。" helpText="管理博客封面图，列表卡片和详情页头图会读取这里。">
           <div className="grid gap-4 md:grid-cols-2">
             <div className="md:col-span-2">
               <ImageField
@@ -391,7 +391,7 @@ export default function AdminBlogEditor() {
           </div>
         </AdminFormSection>
 
-        <AdminFormSection title="SEO（中文）" description="用于前台 meta title/description。为空时前台会 fallback。">
+        <AdminFormSection title="SEO（中文）" description="用于前台 meta title / description，留空时前台会回退到默认值。" helpText="管理中文博客文章的搜索标题和搜索描述。">
           <div className="grid gap-4 md:grid-cols-2">
             <div className="md:col-span-2">
               <label className="mb-1 block text-sm font-medium">SEO 标题 seo_title_zh</label>
@@ -406,7 +406,7 @@ export default function AdminBlogEditor() {
 
         {showEnglish && (
           <>
-            <AdminFormSection title="英文内容（可折叠）" description="英文为空时前台英文页会 fallback 中文。">
+            <AdminFormSection title="英文内容（可折叠）" description="英文为空时前台英文页会回退中文。" helpText="管理英文博客内容，没填英文时，英文前台会回退显示中文。">
               <div className="grid gap-4 md:grid-cols-2">
                 <div className="md:col-span-2">
                   <label className="mb-1 block text-sm font-medium">英文标题 title_en</label>
@@ -423,7 +423,7 @@ export default function AdminBlogEditor() {
               </div>
             </AdminFormSection>
 
-            <AdminFormSection title="SEO（英文）" description="可选；为空时前台 fallback。">
+            <AdminFormSection title="SEO（英文）" description="可选；为空时前台会自动回退。" helpText="管理英文博客文章 SEO 文案。为空时前台会自动回退。">
               <div className="grid gap-4 md:grid-cols-2">
                 <div className="md:col-span-2">
                   <label className="mb-1 block text-sm font-medium">seo_title_en</label>
@@ -443,4 +443,3 @@ export default function AdminBlogEditor() {
     </>
   );
 }
-

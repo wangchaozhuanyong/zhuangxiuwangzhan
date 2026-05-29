@@ -1,4 +1,4 @@
-﻿import { useMemo } from "react";
+import { useMemo } from "react";
 import { CheckCircle } from "lucide-react";
 import Reveal from "@/components/Reveal";
 import PageMeta from "@/components/PageMeta";
@@ -7,7 +7,7 @@ import HeroBanner from "@/components/blocks/HeroBanner";
 import CTABanner from "@/components/blocks/CTABanner";
 import SectionHeader from "@/components/blocks/SectionHeader";
 import { useLanguage } from "@/i18n/LanguageContext";
-import { usePublishedProcessSteps } from "@/hooks/usePublishedContent";
+import { usePublishedProcessSteps, usePublishedSitePage } from "@/hooks/usePublishedContent";
 import heroImg from "@/assets/hero-process.webp";
 
 const content = {
@@ -67,6 +67,7 @@ const Process = () => {
   const { language } = useLanguage();
   const t = content[language];
   const { data: publishedSteps } = usePublishedProcessSteps(language);
+  const { data: pageContent } = usePublishedSitePage(language, "process");
   const steps = useMemo(() => {
     if (!publishedSteps?.length) return t.steps;
     return publishedSteps.map((row, index) => ({
@@ -79,14 +80,25 @@ const Process = () => {
 
   return (
     <main className="pt-site-header">
-      <PageMeta title={t.metaTitle} description={t.metaDescription} keywords={t.metaKeywords} canonicalPath="/process" />
+      <PageMeta
+        title={pageContent?.seo_title || t.metaTitle}
+        description={pageContent?.seo_description || t.metaDescription}
+        keywords={pageContent?.seo_keywords || t.metaKeywords}
+        canonicalPath="/process"
+      />
       <JsonLdBreadcrumb items={[{ name: t.breadcrumbHome, url: "/" }, { name: t.breadcrumbProcess, url: "/process" }]} />
 
-      <HeroBanner image={heroImg} imageAlt={t.imageAlt} label={t.label} title={t.title} description={t.description} />
+      <HeroBanner
+        image={pageContent?.image_url || heroImg}
+        imageAlt={pageContent?.alt || t.imageAlt}
+        label={pageContent?.subtitle || t.label}
+        title={pageContent?.title || t.title}
+        description={pageContent?.description || t.description}
+      />
 
       <section className="section-padding bg-background">
         <div className="container-narrow">
-          <SectionHeader title={t.sectionTitle} description={t.sectionDescription} />
+          <SectionHeader title={t.sectionTitle} description={pageContent?.content || t.sectionDescription} />
 
           <div className="mx-auto max-w-3xl space-y-6">
             {steps.map((step, index) => (
@@ -116,7 +128,12 @@ const Process = () => {
         </div>
       </section>
 
-      <CTABanner title={t.ctaTitle} description={t.ctaDescription} quoteLabel={t.quoteLabel} whatsappLabel={t.whatsappLabel} />
+      <CTABanner
+        title={pageContent?.cta_title || t.ctaTitle}
+        description={pageContent?.cta_description || t.ctaDescription}
+        quoteLabel={t.quoteLabel}
+        whatsappLabel={t.whatsappLabel}
+      />
     </main>
   );
 };

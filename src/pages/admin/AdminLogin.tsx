@@ -34,7 +34,7 @@ const copy = {
   zh: {
     brand: "FLASH CAST 后台",
     title: "管理员登录",
-    description: "登录后可以管理网站内容、客户咨询、媒体素材和 SEO。",
+    description: "登录后可以管理网站内容、客户询盘、媒体素材和 SEO。",
     email: "邮箱",
     password: "密码",
     signIn: "登录",
@@ -121,7 +121,7 @@ const AdminLogin = () => {
         <div className="mb-4 flex items-center justify-end gap-2">
           <div className="inline-flex h-10 items-center gap-1 rounded-full border border-border bg-muted/60 p-1" aria-label={t.language}>
             <ToggleButton active={language === "zh"} label="中文" onClick={() => changeLanguage("zh")}>
-              中
+              中文
             </ToggleButton>
             <ToggleButton active={language === "en"} label="English" onClick={() => changeLanguage("en")}>
               EN

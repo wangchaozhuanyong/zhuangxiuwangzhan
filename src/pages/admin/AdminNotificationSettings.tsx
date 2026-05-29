@@ -9,7 +9,6 @@ import { useToast } from "@/hooks/use-toast";
 import { isSupabaseConfigured, supabase } from "@/lib/supabase";
 import type { NotificationSettings } from "@/lib/adminEditorData";
 import { useAdminNotificationSettings } from "@/lib/adminQueries";
-
 import { getAdminLang } from "@/lib/adminLocale";
 
 const emptySettings: NotificationSettings = {
@@ -67,7 +66,7 @@ const copy = {
   zh: {
     notifications: "通知",
     leadAlerts: "Telegram 线索提醒",
-    leadDesc: "配置 Telegram Bot API，用于接收联系线索和报价请求提醒。机器人令牌会保存在服务器端，保存后仅显示部分遮罩内容。",
+    leadDesc: "配置 Telegram Bot API，用于接收联系人线索和报价请求提醒。机器人令牌会保存在服务器端，保存后只显示部分遮罩内容。",
     savedToken: "已保存令牌",
     noToken: "尚未保存机器人令牌",
     loading: "正在加载通知设置...",
@@ -84,7 +83,7 @@ const copy = {
     test: "发送测试消息",
     ops: "运维",
     maintenance: "网站维护提醒",
-    maintenanceDesc: "将每周网站维护检查清单发送到 Telegram。提醒内容包含线索状态、待处理报价、内容数量、SEO 检查，以及可选的月度内容任务。",
+    maintenanceDesc: "把每周的网站维护清单发送到 Telegram。提醒内容会包含线索状态、待处理报价、内容数量、SEO 检查，以及可选的月度内容任务。",
     lastSent: "上次发送",
     enableMaintenance: "启用维护提醒",
     monday: "周一",
@@ -217,171 +216,167 @@ const AdminNotificationSettings = () => {
 
   return (
     <div className="grid gap-6">
-        <div className="rounded-xl border border-border bg-card p-6">
-          <div className="flex flex-col gap-3 border-b border-border pb-5 md:flex-row md:items-start md:justify-between">
-            <div>
-              <p className="text-xs font-semibold uppercase tracking-[0.25em] text-accent">{t.notifications}</p>
-              <h2 className="font-display text-2xl font-bold">{t.leadAlerts}</h2>
-              <p className="mt-2 max-w-2xl text-sm text-muted-foreground">
-                {t.leadDesc}
-              </p>
+      <div className="rounded-xl border border-border bg-card p-6">
+        <div className="flex flex-col gap-3 border-b border-border pb-5 md:flex-row md:items-start md:justify-between">
+          <div>
+            <p className="text-xs font-semibold uppercase tracking-[0.25em] text-accent">{t.notifications}</p>
+            <h2 className="font-display text-2xl font-bold">{t.leadAlerts}</h2>
+            <p className="mt-2 max-w-2xl text-sm text-muted-foreground">{t.leadDesc}</p>
+          </div>
+          <div className="rounded-lg border border-border bg-muted px-3 py-2 text-sm">
+            {settings.has_telegram_bot_token ? `${t.savedToken}: ${settings.telegram_bot_token_masked}` : t.noToken}
+          </div>
+        </div>
+
+        {loading ? (
+          <div className="py-12 text-center text-sm text-muted-foreground">{t.loading}</div>
+        ) : (
+          <div className="grid gap-6 pt-6">
+            <div className="flex items-center justify-between rounded-lg border border-border p-4">
+              <div>
+                <Label htmlFor="telegram-enabled">{t.enableLead}</Label>
+                <p className="mt-1 text-sm text-muted-foreground">{t.enableLeadDesc}</p>
+              </div>
+              <Switch
+                id="telegram-enabled"
+                checked={enabled}
+                onCheckedChange={(value) => {
+                  markDirty();
+                  setEnabled(value);
+                }}
+              />
             </div>
-            <div className="rounded-lg border border-border bg-muted px-3 py-2 text-sm">
-              {settings.has_telegram_bot_token ? `${t.savedToken}: ${settings.telegram_bot_token_masked}` : t.noToken}
+
+            <div className="grid gap-2">
+              <Label htmlFor="telegram-bot-token">{t.botToken}</Label>
+              <Input
+                id="telegram-bot-token"
+                type="password"
+                value={botToken}
+                placeholder={settings.has_telegram_bot_token ? t.keepTokenPlaceholder : t.botTokenPlaceholder}
+                onChange={(event) => {
+                  markDirty();
+                  setBotToken(event.target.value);
+                }}
+              />
+            </div>
+
+            <div className="grid gap-2">
+              <Label htmlFor="telegram-chat-id">{t.chatId}</Label>
+              <Input
+                id="telegram-chat-id"
+                value={chatId}
+                placeholder={t.chatIdPlaceholder}
+                onChange={(event) => {
+                  markDirty();
+                  setChatId(event.target.value);
+                }}
+              />
+            </div>
+
+            <p className="text-xs text-muted-foreground">开关和输入项改完后，要点一下“保存设置”才会真正写入数据库。</p>
+            <div className="flex flex-col gap-3 border-t border-border pt-5 sm:flex-row">
+              <Button onClick={saveSettings} disabled={saving || testing}>
+                {saving ? t.saving : t.save}
+              </Button>
+              <Button variant="outline" onClick={testTelegram} disabled={saving || testing || !settings.has_telegram_bot_token || !settings.telegram_chat_id}>
+                {testing ? t.sending : t.test}
+              </Button>
             </div>
           </div>
+        )}
+      </div>
 
-          {loading ? (
-            <div className="py-12 text-center text-sm text-muted-foreground">{t.loading}</div>
-          ) : (
-            <div className="grid gap-6 pt-6">
-              <div className="flex items-center justify-between rounded-lg border border-border p-4">
-                <div>
-                  <Label htmlFor="telegram-enabled">{t.enableLead}</Label>
-                  <p className="mt-1 text-sm text-muted-foreground">{t.enableLeadDesc}</p>
-                </div>
-                <Switch
-                  id="telegram-enabled"
-                  checked={enabled}
-                  onCheckedChange={(value) => {
-                    markDirty();
-                    setEnabled(value);
-                  }}
-                />
-              </div>
-
-              <div className="grid gap-2">
-                <Label htmlFor="telegram-bot-token">{t.botToken}</Label>
-                <Input
-                  id="telegram-bot-token"
-                  type="password"
-                  value={botToken}
-                  placeholder={settings.has_telegram_bot_token ? t.keepTokenPlaceholder : t.botTokenPlaceholder}
-                  onChange={(event) => {
-                    markDirty();
-                    setBotToken(event.target.value);
-                  }}
-                />
-              </div>
-
-              <div className="grid gap-2">
-                <Label htmlFor="telegram-chat-id">{t.chatId}</Label>
-                <Input
-                  id="telegram-chat-id"
-                  value={chatId}
-                  placeholder={t.chatIdPlaceholder}
-                  onChange={(event) => {
-                    markDirty();
-                    setChatId(event.target.value);
-                  }}
-                />
-              </div>
-
-              <p className="text-xs text-muted-foreground">开关与输入项修改后需点击「保存设置」才会写入数据库。</p>
-              <div className="flex flex-col gap-3 border-t border-border pt-5 sm:flex-row">
-                <Button onClick={saveSettings} disabled={saving || testing}>
-                  {saving ? t.saving : t.save}
-                </Button>
-                <Button variant="outline" onClick={testTelegram} disabled={saving || testing || !settings.has_telegram_bot_token || !settings.telegram_chat_id}>
-                  {testing ? t.sending : t.test}
-                </Button>
-              </div>
-            </div>
+      <div className="rounded-xl border border-border bg-card p-6">
+        <div className="border-b border-border pb-5">
+          <p className="text-xs font-semibold uppercase tracking-[0.25em] text-accent">{t.ops}</p>
+          <h2 className="font-display text-2xl font-bold">{t.maintenance}</h2>
+          <p className="mt-2 max-w-2xl text-sm text-muted-foreground">{t.maintenanceDesc}</p>
+          {settings.maintenance_last_sent_at && (
+            <p className="mt-2 text-xs text-muted-foreground">
+              {t.lastSent}: {new Date(settings.maintenance_last_sent_at).toLocaleString()}
+            </p>
           )}
         </div>
 
-        <div className="rounded-xl border border-border bg-card p-6">
-          <div className="border-b border-border pb-5">
-            <p className="text-xs font-semibold uppercase tracking-[0.25em] text-accent">{t.ops}</p>
-            <h2 className="font-display text-2xl font-bold">{t.maintenance}</h2>
-            <p className="mt-2 max-w-2xl text-sm text-muted-foreground">
-              {t.maintenanceDesc}
-            </p>
-            {settings.maintenance_last_sent_at && (
-              <p className="mt-2 text-xs text-muted-foreground">
-                {t.lastSent}: {new Date(settings.maintenance_last_sent_at).toLocaleString()}
-              </p>
-            )}
+        <div className="grid gap-4 pt-6 md:grid-cols-2">
+          <div className="flex items-center justify-between rounded-lg border border-border p-4">
+            <div>
+              <Label htmlFor="maintenance-enabled">{t.enableMaintenance}</Label>
+            </div>
+            <Switch
+              id="maintenance-enabled"
+              checked={maintenanceEnabled}
+              onCheckedChange={(value) => {
+                markDirty();
+                setMaintenanceEnabled(value);
+              }}
+            />
           </div>
 
-          <div className="grid gap-4 pt-6 md:grid-cols-2">
-            <div className="flex items-center justify-between rounded-lg border border-border p-4">
-              <div>
-                <Label htmlFor="maintenance-enabled">{t.enableMaintenance}</Label>
-              </div>
-              <Switch
-                id="maintenance-enabled"
-                checked={maintenanceEnabled}
-                onCheckedChange={(value) => {
-                  markDirty();
-                  setMaintenanceEnabled(value);
-                }}
-              />
-            </div>
-
-            <div className="grid gap-2">
-              <Label>{t.maintenance}</Label>
-              <Select
-                value={maintenanceDay}
-                onValueChange={(value) => {
-                  markDirty();
-                  setMaintenanceDay(value);
-                }}
-              >
-                <SelectTrigger><SelectValue /></SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="monday">{t.monday}</SelectItem>
-                  <SelectItem value="tuesday">{t.tuesday}</SelectItem>
-                  <SelectItem value="wednesday">{t.wednesday}</SelectItem>
-                  <SelectItem value="thursday">{t.thursday}</SelectItem>
-                  <SelectItem value="friday">{t.friday}</SelectItem>
-                  <SelectItem value="saturday">{t.saturday}</SelectItem>
-                  <SelectItem value="sunday">{t.sunday}</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-
-            <div className="grid gap-2">
-              <Label htmlFor="maintenance-time">时间</Label>
-              <Input
-                id="maintenance-time"
-                value={maintenanceTime}
-                onChange={(e) => {
-                  markDirty();
-                  setMaintenanceTime(e.target.value);
-                }}
-              />
-            </div>
-
-            <div className="grid gap-2">
-              <Label htmlFor="maintenance-timezone">时区</Label>
-              <Input
-                id="maintenance-timezone"
-                value={maintenanceTimezone}
-                onChange={(e) => {
-                  markDirty();
-                  setMaintenanceTimezone(e.target.value);
-                }}
-              />
-            </div>
-
-            <div className="flex items-center gap-3">
-              <Switch id="include-monthly" checked={includeMonthly} onCheckedChange={setIncludeMonthly} />
-              <Label htmlFor="include-monthly">包含月度任务</Label>
-            </div>
+          <div className="grid gap-2">
+            <Label>{t.monday}</Label>
+            <Select
+              value={maintenanceDay}
+              onValueChange={(value) => {
+                markDirty();
+                setMaintenanceDay(value);
+              }}
+            >
+              <SelectTrigger><SelectValue /></SelectTrigger>
+              <SelectContent>
+                <SelectItem value="monday">{t.monday}</SelectItem>
+                <SelectItem value="tuesday">{t.tuesday}</SelectItem>
+                <SelectItem value="wednesday">{t.wednesday}</SelectItem>
+                <SelectItem value="thursday">{t.thursday}</SelectItem>
+                <SelectItem value="friday">{t.friday}</SelectItem>
+                <SelectItem value="saturday">{t.saturday}</SelectItem>
+                <SelectItem value="sunday">{t.sunday}</SelectItem>
+              </SelectContent>
+            </Select>
           </div>
 
-          <p className="text-xs text-muted-foreground">「包含月度任务」仅用于发送测试提醒，不会保存到数据库。</p>
-          <div className="flex flex-col gap-3 border-t border-border pt-5 sm:flex-row">
-            <Button onClick={saveSettings} disabled={saving || testingMaintenance}>
-              {saving ? t.saving : t.save}
-            </Button>
-            <Button variant="outline" onClick={testMaintenanceReminder} disabled={testingMaintenance}>
-              {testingMaintenance ? t.sending : t.sendReminder}
-            </Button>
+          <div className="grid gap-2">
+            <Label htmlFor="maintenance-time">时间</Label>
+            <Input
+              id="maintenance-time"
+              value={maintenanceTime}
+              onChange={(e) => {
+                markDirty();
+                setMaintenanceTime(e.target.value);
+              }}
+            />
+          </div>
+
+          <div className="grid gap-2">
+            <Label htmlFor="maintenance-timezone">时区</Label>
+            <Input
+              id="maintenance-timezone"
+              value={maintenanceTimezone}
+              onChange={(e) => {
+                markDirty();
+                setMaintenanceTimezone(e.target.value);
+              }}
+            />
+          </div>
+
+          <div className="flex items-center gap-3">
+            <Switch id="include-monthly" checked={includeMonthly} onCheckedChange={setIncludeMonthly} />
+            <Label htmlFor="include-monthly">包含月度任务</Label>
           </div>
         </div>
+
+        <p className="text-xs text-muted-foreground">“包含月度任务”只用于发送测试提醒，不会保存到数据库。</p>
+        <div className="flex flex-col gap-3 border-t border-border pt-5 sm:flex-row">
+          <Button onClick={saveSettings} disabled={saving || testingMaintenance}>
+            {saving ? t.saving : t.save}
+          </Button>
+          <Button variant="outline" onClick={testMaintenanceReminder} disabled={testingMaintenance}>
+            {testingMaintenance ? t.sending : t.sendReminder}
+          </Button>
+        </div>
       </div>
+    </div>
   );
 };
 

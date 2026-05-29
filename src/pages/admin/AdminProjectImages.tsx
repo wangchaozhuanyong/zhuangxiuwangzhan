@@ -10,7 +10,6 @@ import { supabase } from "@/lib/supabase";
 import AdminImageUpload from "./AdminImageUpload";
 import SmartImage from "@/components/SmartImage";
 import type { Language } from "@/i18n/routes";
-
 import { getAdminLang } from "@/lib/adminLocale";
 
 interface AdminProjectImagesProps {
@@ -170,8 +169,8 @@ const AdminProjectImages = ({ projectId }: AdminProjectImagesProps) => {
         <p className="text-sm text-muted-foreground">{t.description}</p>
       </div>
       <div className="mb-4 rounded-lg border border-border bg-muted/40 p-3 text-xs text-muted-foreground">
-        <p className="font-medium text-foreground mb-1">封面图规则（已与前台统一）</p>
-        <ul className="list-disc pl-5 space-y-0.5">
+        <p className="mb-1 font-medium text-foreground">封面图规则（已与前台统一）</p>
+        <ul className="list-disc space-y-0.5 pl-5">
           <li>前台列表/详情缩略图：优先使用 <code>project_images</code> 中 <code>image_type='cover'</code> 的图片。</li>
           <li>没有 cover 时，使用第一张 gallery；仍没有则回退到 <code>projects.image_url</code>；最后使用默认图。</li>
         </ul>

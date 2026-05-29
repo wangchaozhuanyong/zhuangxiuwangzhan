@@ -4,6 +4,7 @@ import { ArrowRight, ChevronDown, Mail, MapPin, Phone } from "lucide-react";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { useSiteSettings } from "@/hooks/useSiteSettings";
 import SmartImage from "@/components/SmartImage";
+import { addCacheBuster } from "@/lib/siteSettingsApi";
 import logoFallback from "@/assets/logo-flashcast.webp";
 
 const locationLinks = [
@@ -155,7 +156,7 @@ const Footer = () => {
   const [logoFailed, setLogoFailed] = useState(false);
   const areas = language === "zh" ? locationLinksZh : locationLinks;
   const serviceLinks = normalizeFooterServiceLinks(t.serviceLinks, language);
-  const logoSrc = !logoFailed && settings.logo_url ? settings.logo_url : logoFallback;
+  const logoSrc = !logoFailed && settings.logo_url ? addCacheBuster(settings.logo_url, settings.updated_at) : logoFallback;
 
   const contactItems = [
     { icon: MapPin, text: settings.address, start: true },

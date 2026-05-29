@@ -54,8 +54,8 @@ export default function AdminBlogList() {
       header: "分类 / 发布时间",
       cell: (row) => (
         <div className="text-xs text-muted-foreground">
-          <div>{row.category || "—"}</div>
-          <div>{row.published_at ? new Date(row.published_at).toLocaleString() : "—"}</div>
+          <div>{row.category || "-"}</div>
+          <div>{row.published_at ? new Date(row.published_at).toLocaleString() : "-"}</div>
         </div>
       ),
     },
@@ -77,7 +77,7 @@ export default function AdminBlogList() {
       className: "w-[180px]",
       cell: (row) => (
         <span className="text-xs text-muted-foreground">
-          {row.updated_at ? new Date(row.updated_at).toLocaleString() : row.created_at ? new Date(row.created_at).toLocaleString() : "—"}
+          {row.updated_at ? new Date(row.updated_at).toLocaleString() : row.created_at ? new Date(row.created_at).toLocaleString() : "-"}
         </span>
       ),
     },
@@ -85,7 +85,7 @@ export default function AdminBlogList() {
 
   return (
     <>
-    <AdminPageHeader
+      <AdminPageHeader
         title="博客文章"
         description="管理博客列表、封面图、发布时间、SEO 与发布状态。发布后前台 /blog 生效。"
         actions={
@@ -137,4 +137,3 @@ export default function AdminBlogList() {
     </>
   );
 }
-

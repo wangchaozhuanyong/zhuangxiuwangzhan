@@ -8,7 +8,7 @@ import { isSupabaseConfigured } from "@/lib/supabase";
 import { useAdminTranslationJobs } from "@/lib/adminQueries";
 
 const tableLabels: Record<string, { en: string; zh: string }> = {
-  hero_slides: { en: "Hero Slides", zh: "首页幻灯片" },
+  hero_slides: { en: "Hero Buttons", zh: "首页首屏按钮" },
   services: { en: "Services", zh: "服务项目" },
   projects: { en: "Projects", zh: "装修案例" },
   materials: { en: "Materials", zh: "材料库" },

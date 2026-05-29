@@ -115,7 +115,7 @@ export default function AdminAboutEditor() {
     if (!supabase) return;
     const row = sections[key];
     if (!row) {
-      toast({ title: "无法保存", description: "区块数据尚未加载，请刷新页面后重试。", variant: "destructive" });
+      toast({ title: "无法保存", description: "区块数据还没加载出来，请先刷新页面再试。", variant: "destructive" });
       return;
     }
 
@@ -199,7 +199,7 @@ export default function AdminAboutEditor() {
 
   return (
     <>
-    <AdminPageHeader
+      <AdminPageHeader
         title="关于我们管理"
         description="管理关于我们页面的 Hero、介绍、统计、价值观、团队、里程碑、办公室与 CTA。前台会优先读取已发布内容，空则自动 fallback 静态内容。"
         actions={
@@ -225,7 +225,7 @@ export default function AdminAboutEditor() {
             <TabsTrigger value="core_values">核心价值</TabsTrigger>
             <TabsTrigger value="team">团队亮点</TabsTrigger>
             <TabsTrigger value="milestones">公司历程</TabsTrigger>
-            <TabsTrigger value="office">办公室</TabsTrigger>
+            <TabsTrigger value="office">办公区</TabsTrigger>
             <TabsTrigger value="cta">行动号召</TabsTrigger>
           </TabsList>
         </div>
@@ -234,9 +234,13 @@ export default function AdminAboutEditor() {
           const row = sections[key];
           return (
             <TabsContent key={key} value={key} className="space-y-6">
-              <AdminFormSection title={`about_sections: ${key}`} description="中英文可分别编辑；列表、卡片、标签等内容可以直接添加、删除和排序。">
+              <AdminFormSection
+                title={"关于我们区块：" + key}
+                description="中英文可分别编辑，列表、卡片、标签等内容可以直接添加、删除和排序。"
+                helpText="管理关于我们页面的一个内容区块。保存后，对应区块会在前台关于我们页面同步更新。"
+              >
                 {!row ? (
-                  <div className="text-sm text-muted-foreground">加载中…</div>
+                  <div className="text-sm text-muted-foreground">加载中...</div>
                 ) : (
                   <>
                     <div className="grid gap-4 md:grid-cols-2">
@@ -291,13 +295,14 @@ export default function AdminAboutEditor() {
                           label="image_url（可选）"
                           value={row.image_url || ""}
                           onChange={(url) => updateSection(key, { image_url: url })}
-                          folder={`about_sections/${key}`}
+                          folder={"about_sections/" + key}
                           usageType="hero"
                         />
                       </div>
                       <div className="md:col-span-2">
                         <AboutSectionItemsEditor
-                          label="中文列表/卡片内容"
+                          label="中文列表 / 卡片内容"
+                          helpText="管理当前区块的中文列表或卡片内容。不同区块会按自己的页面样式展示。"
                           sectionKey={key}
                           value={itemsZh[key] || []}
                           onChange={(value) => {
@@ -309,6 +314,7 @@ export default function AdminAboutEditor() {
                       <div className="md:col-span-2">
                         <AboutSectionItemsEditor
                           label="English list/card content"
+                          helpText="管理当前区块的英文列表或卡片内容。英文为空时前台会尽量回退显示中文。"
                           sectionKey={key}
                           value={itemsEn[key] || []}
                           onChange={(value) => {
@@ -329,7 +335,7 @@ export default function AdminAboutEditor() {
         })}
 
         <TabsContent value="cta" className="space-y-6">
-          <AdminFormSection title="关于我们 CTA（cta_blocks: about_final）" description="用于关于我们页面底部 CTA。">
+          <AdminFormSection title="关于我们 CTA（cta_blocks: about_final）" description="用于关于我们页面底部 CTA。" helpText="管理关于我们页面底部的联系/报价引导区，包含标题、说明、按钮和图片。">
             <div className="grid gap-4 md:grid-cols-2">
               <div className="md:col-span-2">
                 <label className="mb-1 block text-sm font-medium">状态</label>
@@ -404,4 +410,3 @@ export default function AdminAboutEditor() {
     </>
   );
 }
-

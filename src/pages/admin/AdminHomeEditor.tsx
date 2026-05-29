@@ -68,7 +68,7 @@ export default function AdminHomeEditor() {
   const saveHomeSectionItems = async (row: HomeSectionRow | null, items: any[]) => {
     if (!supabase) return;
     if (!row?.id) {
-      toast({ title: "无法保存", description: "首页模块数据尚未加载，请刷新页面后重试。", variant: "destructive" });
+      toast({ title: "无法保存", description: "首页模块数据还没加载出来，请先刷新页面再试。", variant: "destructive" });
       return;
     }
     const cleaned = items.filter((item) => Object.values(item || {}).some((value) => String(value || "").trim()));
@@ -204,9 +204,9 @@ export default function AdminHomeEditor() {
 
   return (
     <>
-    <AdminPageHeader
+      <AdminPageHeader
         title="首页管理"
-        description="这里管理首页关键区块：统计数据、为什么选择我们、施工流程、首页 FAQ、首页 CTA。首屏、客户评价、改造前后可通过对应入口管理。"
+        description="这里管理首页关键区块：统计数据、为什么选择我们、施工流程、首页 FAQ、首页 CTA。首页首屏固定播放视频，后台只管理按钮文案和链接，避免图片覆盖视频。"
         actions={
           <Button variant="outline" onClick={() => void refetch()} disabled={loading}>
             {loading ? "刷新中..." : "刷新"}
@@ -217,7 +217,7 @@ export default function AdminHomeEditor() {
       <Tabs value={activeTab} onValueChange={setActiveTab}>
         <div className="mb-4 overflow-auto">
           <TabsList className="w-max">
-            <TabsTrigger value="hero">首屏 Hero</TabsTrigger>
+            <TabsTrigger value="hero">首屏按钮</TabsTrigger>
             <TabsTrigger value="stats">统计数据</TabsTrigger>
             <TabsTrigger value="why">为什么选择我们</TabsTrigger>
             <TabsTrigger value="process">施工流程</TabsTrigger>
@@ -229,10 +229,10 @@ export default function AdminHomeEditor() {
         </div>
 
         <TabsContent value="hero" className="space-y-6">
-          <AdminFormSection title="首屏 Hero（hero_slides）" description="首页首屏当前展示第一条已发布幻灯片。">
+          <AdminFormSection title="首页首屏按钮（固定视频）" description="首页最上方只播放固定视频，不再读取后台图片或轮播图。" helpText="这里最多管理首屏中间的报价按钮文案和跳转链接。图片、标题、副标题不会再覆盖首页视频，避免前后台逻辑冲突。">
             <div className="flex flex-wrap gap-2">
               <Button asChild>
-                <Link to="/admin/content/hero_slides">管理首屏轮播</Link>
+                <Link to="/admin/content/hero_slides">管理首屏按钮文案</Link>
               </Button>
               <Button asChild variant="outline">
                 <a href="/zh" target="_blank" rel="noreferrer">
@@ -247,9 +247,11 @@ export default function AdminHomeEditor() {
           <AdminFormSection
             title="统计数据（home_sections: stats）"
             description="用于首页 StatsSection。这里保存后，前台统计数据优先读取后台内容。"
+            helpText="管理首页统计数字和说明，例如服务范围、地区、信任背书等。保存后首页统计模块会同步更新。"
           >
             <HomeSectionItemsEditor
               label="统计项目"
+              helpText="每一条统计都会显示成首页统计卡片，可以设置图标、数字、标题和说明。"
               variant="stats"
               value={statsItems}
               onChange={(value) => {
@@ -268,9 +270,11 @@ export default function AdminHomeEditor() {
           <AdminFormSection
             title="为什么选择我们（home_sections: why_choose_us）"
             description="用于首页 WhyChooseUsSection。这里保存后，前台为什么选择我们模块优先读取后台内容。"
+            helpText="管理首页优势卖点卡片。每一条都是前台首页的一个优势说明。"
           >
             <HomeSectionItemsEditor
               label="优势项目"
+              helpText="每一条优势都会显示成首页优势卡片，可以设置图标、标题和说明。"
               variant="why"
               value={whyItems}
               onChange={(value) => {
@@ -286,7 +290,7 @@ export default function AdminHomeEditor() {
         </TabsContent>
 
         <TabsContent value="process" className="space-y-6">
-          <AdminFormSection title="施工流程（process_steps）" description="用于首页 ProcessSection 与流程页（后续会接入）。">
+          <AdminFormSection title="施工流程（process_steps）" description="用于首页 ProcessSection 与流程页。" helpText="管理施工流程步骤。保存后首页流程模块和流程页步骤列表都会读取这里。">
             <div className="flex flex-wrap gap-2">
               <Button
                 type="button"
@@ -316,7 +320,7 @@ export default function AdminHomeEditor() {
                         #{s.step_number} · {s.title_zh || s.title_en || "(未命名)"}{" "}
                         <span className="text-xs text-muted-foreground">({s.status || "published"})</span>
                       </div>
-                      <div className="text-xs text-muted-foreground">sort_order: {s.sort_order ?? 0} · icon: {s.icon_key || "—"}</div>
+                      <div className="text-xs text-muted-foreground">sort_order: {s.sort_order ?? 0} · icon: {s.icon_key || "-"}</div>
                     </div>
                     <div className="flex gap-2">
                       <Button variant="outline" size="sm" onClick={() => setEditingStep(s)}>
@@ -334,7 +338,7 @@ export default function AdminHomeEditor() {
           </AdminFormSection>
 
           {editingStep && (
-            <AdminFormSection title="编辑步骤" description="保存后立即影响首页流程模块。">
+            <AdminFormSection title="编辑步骤" description="保存后会立刻影响首页流程模块。" helpText="填写步骤编号、标题、说明、图标和状态。只有 published 会在前台显示。">
               <div className="grid gap-4 md:grid-cols-2">
                 <div>
                   <label className="mb-1 block text-sm font-medium">{L("step_number")}</label>
@@ -370,7 +374,7 @@ export default function AdminHomeEditor() {
                 </div>
                 <div>
                   <label className="mb-1 block text-sm font-medium">{L("icon_key")}</label>
-                  <Input value={editingStep.icon_key || ""} onChange={(e) => setEditingStep((v) => (v ? { ...v, icon_key: e.target.value } : v))} placeholder="可选，例如：ruler / message-circle" />
+                  <Input value={editingStep.icon_key || ""} onChange={(e) => setEditingStep((v) => (v ? { ...v, icon_key: e.target.value } : v))} placeholder="可选，例如 ruler / message-circle" />
                 </div>
                 <div>
                   <label className="mb-1 block text-sm font-medium">{L("status")}</label>
@@ -398,7 +402,7 @@ export default function AdminHomeEditor() {
         </TabsContent>
 
         <TabsContent value="beforeAfter" className="space-y-6">
-          <AdminFormSection title="改造前后（before_after_items）" description="用于首页改造前后展示区块。">
+          <AdminFormSection title="改造前后（before_after_items）" description="用于首页改造前后展示区块。" helpText="管理首页改造前/改造后对比内容，通常用于展示施工效果。">
             <div className="flex flex-wrap gap-2">
               <Button asChild>
                 <Link to="/admin/before-after">管理改造前后</Link>
@@ -408,7 +412,7 @@ export default function AdminHomeEditor() {
         </TabsContent>
 
         <TabsContent value="testimonials" className="space-y-6">
-          <AdminFormSection title="客户评价（testimonials）" description="用于首页 TestimonialsSection。">
+          <AdminFormSection title="客户评价（testimonials）" description="用于首页 TestimonialsSection。" helpText="管理首页客户评价内容，发布后的评价会显示在前台首页。">
             <div className="flex flex-wrap gap-2">
               <Button asChild>
                 <Link to="/admin/content/testimonials">管理客户评价</Link>
@@ -418,7 +422,7 @@ export default function AdminHomeEditor() {
         </TabsContent>
 
         <TabsContent value="faq" className="space-y-6">
-          <AdminFormSection title="首页 FAQ（faqs page_key='home'）" description="用于首页 HomeFAQSection。">
+          <AdminFormSection title="首页 FAQ（faqs page_key='home'）" description="用于首页 HomeFAQSection。" helpText="管理首页底部常见问题。这里只影响 page_key 为 home 的 FAQ。">
             <div className="flex flex-wrap gap-2">
               <Button
                 type="button"
@@ -464,7 +468,7 @@ export default function AdminHomeEditor() {
           </AdminFormSection>
 
           {editingFaq && (
-            <AdminFormSection title="编辑 FAQ" description="中文优先；英文可为空，前台会 fallback。">
+            <AdminFormSection title="编辑 FAQ" description="中文优先；英文可为空，前台会 fallback。" helpText="填写问题、答案、排序和状态。英文没填时英文前台会回退显示中文。">
               <div className="grid gap-4 md:grid-cols-2">
                 <div>
                   <label className="mb-1 block text-sm font-medium">{L("sort_order")}</label>
@@ -516,7 +520,7 @@ export default function AdminHomeEditor() {
         </TabsContent>
 
         <TabsContent value="cta" className="space-y-6">
-          <AdminFormSection title="首页 CTA（cta_blocks: home_final）" description="用于首页 CTASection。">
+          <AdminFormSection title="首页 CTA（cta_blocks: home_final）" description="用于首页 CTASection。" helpText="管理首页底部联系/报价引导区，包括标题、说明、按钮文字、按钮链接和图片。">
             <div className="grid gap-4 md:grid-cols-2">
               <div className="md:col-span-2">
                 <label className="mb-1 block text-sm font-medium">状态</label>
@@ -595,4 +599,3 @@ export default function AdminHomeEditor() {
     </>
   );
 }
-

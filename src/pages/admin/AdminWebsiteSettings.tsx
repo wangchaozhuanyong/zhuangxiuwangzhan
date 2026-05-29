@@ -41,10 +41,10 @@ const mediaFields = new Set<keyof SiteSettings>(["logo_url", "favicon_url", "og_
 
 const fields: Array<{ key: keyof SiteSettings; label: string; group: "company" | "contact" | "media" | "seo" | "social"; textarea?: boolean }> = [
   { key: "company_name", label: "公司名称", group: "company" },
-  { key: "brand_name", label: "品牌名", group: "company" },
+  { key: "brand_name", label: "品牌名称", group: "company" },
   { key: "ssm_number", label: "SSM 注册编号", group: "company" },
   { key: "email", label: "邮箱", group: "contact" },
-  { key: "phone_display", label: "展示电话", group: "contact" },
+  { key: "phone_display", label: "显示电话", group: "contact" },
   { key: "phone_e164", label: "电话（E.164 国际格式）", group: "contact" },
   { key: "whatsapp_number", label: "WhatsApp 号码", group: "contact" },
   { key: "address_zh", label: "中文地址", group: "contact", textarea: true },
@@ -133,23 +133,21 @@ const AdminWebsiteSettings = () => {
   );
 
   return (
-    <>
     <div className="space-y-6">
-        <div className="flex flex-col gap-4 rounded-xl border border-border bg-card p-6 md:flex-row md:items-start md:justify-between">
-          <div>
-            <h1 className="font-display text-2xl font-bold">{t.title}</h1>
-            <p className="mt-2 text-sm text-muted-foreground">{t.description}</p>
-            {status && <p className="mt-3 rounded-lg bg-muted p-3 text-sm">{status}</p>}
-          </div>
-          <Button onClick={handleSave} disabled={saving}>{saving ? t.saving : t.save}</Button>
+      <div className="flex flex-col gap-4 rounded-xl border border-border bg-card p-6 md:flex-row md:items-start md:justify-between">
+        <div>
+          <h1 className="font-display text-2xl font-bold">{t.title}</h1>
+          <p className="mt-2 text-sm text-muted-foreground">{t.description}</p>
+          {status && <p className="mt-3 rounded-lg bg-muted p-3 text-sm">{status}</p>}
         </div>
-        {renderGroup("company")}
-        {renderGroup("contact")}
-        {renderGroup("media")}
-        {renderGroup("social")}
-        {renderGroup("seo")}
+        <Button onClick={handleSave} disabled={saving}>{saving ? t.saving : t.save}</Button>
       </div>
-  </>
+      {renderGroup("company")}
+      {renderGroup("contact")}
+      {renderGroup("media")}
+      {renderGroup("social")}
+      {renderGroup("seo")}
+    </div>
   );
 };
 
