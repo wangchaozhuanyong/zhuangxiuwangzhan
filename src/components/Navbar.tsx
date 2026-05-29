@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { ArrowRight, BookOpen, FolderOpen, GitBranch, Globe, HelpCircle, Home, Info, Layers, LucideIcon, Mail, Menu, Wrench, X } from "lucide-react";
+import { ArrowRight, BookOpen, FolderOpen, GitBranch, ChevronRight, Globe, HelpCircle, Home, Info, Layers, LucideIcon, Mail, Menu, Wrench, X } from "lucide-react";
 import WhatsAppIcon from "@/components/WhatsAppIcon";
 import { Button } from "@/components/ui/button";
 import { useLanguage } from "@/i18n/LanguageContext";
@@ -67,9 +67,13 @@ const Navbar = () => {
   }, [location.pathname]);
 
   useEffect(() => {
-    document.body.style.overflow = isOpen ? "hidden" : "";
+    if (isOpen) {
+      document.documentElement.dataset.menuOpen = "true";
+    } else {
+      delete document.documentElement.dataset.menuOpen;
+    }
     return () => {
-      document.body.style.overflow = "";
+      delete document.documentElement.dataset.menuOpen;
     };
   }, [isOpen]);
 
@@ -97,13 +101,16 @@ const Navbar = () => {
         data-scrolled={scrolled ? "true" : "false"}
         className="site-header fixed top-0 left-0 right-0 z-50 transition-all duration-300"
       >
-        <div className="mx-auto flex h-[68px] w-full max-w-7xl flex-nowrap items-center gap-2 px-4 md:h-[72px] md:px-6 xl:px-8">
-          <LocalizedLink to="/" className="flex min-w-0 flex-1 items-center gap-2 shrink-0">
+        <div className="site-container flex h-16 flex-nowrap items-center gap-3 md:h-[72px]">
+          <LocalizedLink
+            to="/"
+            className="flex min-w-0 max-w-[min(52%,14rem)] shrink-0 items-center gap-2 sm:max-w-[13rem]"
+          >
             {resolvedLogoState !== "none" ? (
               <SmartImage
                 src={logoSrc}
                 alt=""
-                className="h-8 md:h-9 w-auto object-contain drop-shadow-[0_1px_1px_rgba(255,255,255,0.45)] shrink-0"
+                className="h-8 w-auto shrink-0 object-contain md:h-9"
                 width={160}
                 height={36}
                 loading="eager"
@@ -113,74 +120,88 @@ const Navbar = () => {
             ) : (
               <span
                 aria-hidden="true"
-                className="shrink-0 inline-flex h-8 w-8 md:h-9 md:w-9 items-center justify-center rounded-lg bg-muted text-[11px] font-bold tracking-wide text-foreground/80"
+                className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-btn bg-muted text-[11px] font-bold tracking-wide text-foreground/80 md:h-9 md:w-9"
               >
                 FC
               </span>
             )}
             <span className="sr-only">{brandText}</span>
-            <span className="min-w-0 truncate text-[13px] font-semibold tracking-wide text-foreground/90 md:text-[14px]">
+            <span className="min-w-0 truncate text-[13px] font-semibold tracking-wide text-foreground/90 md:text-sm">
               {brandText}
             </span>
           </LocalizedLink>
 
-          <nav className="hidden min-w-0 flex-1 items-center gap-0.5 xl:flex">
+          <nav className="hidden min-w-0 flex-1 items-center justify-center gap-1 xl:flex">
             {navItems.map((item) => {
               const isActive = isActivePath(location.pathname, item.path);
               return (
                 <LocalizedLink
                   key={item.path}
                   to={item.path}
-                  className={`relative whitespace-nowrap px-2.5 py-2 text-[12px] font-medium transition-colors 2xl:text-[13px] ${isActive ? "text-foreground" : "text-foreground/75 hover:text-foreground"}`}
+                  className={`relative whitespace-nowrap px-3 py-2.5 text-xs font-medium transition-colors 2xl:text-[13px] ${isActive ? "text-foreground" : "text-foreground/70 hover:text-foreground"}`}
                 >
                   {t(item.labelKey)}
-                  {isActive && <span className="absolute bottom-0 left-3 right-3 h-px bg-accent rounded-full shadow-[0_0_12px_hsl(var(--accent)/0.45)]" />}
+                  {isActive && (
+                    <span className="absolute bottom-1 left-3 right-3 h-px rounded-full bg-accent shadow-[0_0_10px_hsl(var(--accent)/0.4)]" />
+                  )}
                 </LocalizedLink>
               );
             })}
           </nav>
 
-          <div className="hidden shrink-0 items-center gap-2 xl:flex">
-            <button onClick={changeLanguage} className="site-header__control flex items-center gap-1 text-xs font-medium text-foreground/75 hover:text-foreground transition-colors px-3 py-2 rounded-full" aria-label={languageAriaLabel}>
-              <Globe className="w-3.5 h-3.5" />
-              <span className={language === "en" ? "text-foreground font-semibold" : ""}>EN</span>
+          <div className="hidden shrink-0 items-center gap-2.5 xl:flex">
+            <button
+              onClick={changeLanguage}
+              className="site-header__control flex items-center gap-1 rounded-full px-3 py-2 text-xs font-medium text-foreground/75 transition-colors hover:text-foreground"
+              aria-label={languageAriaLabel}
+            >
+              <Globe className="h-3.5 w-3.5" />
+              <span className={language === "en" ? "font-semibold text-foreground" : ""}>EN</span>
               <span className="text-muted-foreground/40">|</span>
-              <span className={language === "zh" ? "text-foreground font-semibold" : ""}>中文</span>
+              <span className={language === "zh" ? "font-semibold text-foreground" : ""}>中文</span>
             </button>
-            <Button variant="ghost" size="sm" className="whitespace-nowrap text-muted-foreground hover:text-foreground" asChild>
+            <Button variant="ghost" size="sm" className="whitespace-nowrap text-muted-foreground" asChild>
               <a href={settings.whatsapp_url()} target="_blank" rel="noopener noreferrer">
-                <WhatsAppIcon className="w-4 h-4 mr-1.5 text-whatsapp" /> WhatsApp
+                <WhatsAppIcon className="mr-1.5 h-4 w-4 text-whatsapp" /> WhatsApp
               </a>
             </Button>
             <Button size="sm" className="font-semibold" asChild>
               <LocalizedLink to="/quote" className="whitespace-nowrap">
-                {t("cta.getQuote")} <ArrowRight className="w-3.5 h-3.5 ml-1" />
+                {t("cta.getQuote")} <ArrowRight className="ml-1 h-3.5 w-3.5" />
               </LocalizedLink>
             </Button>
           </div>
 
-          <div className="flex shrink-0 items-center gap-1 -mr-1 xl:hidden">
-            <button onClick={changeLanguage} className="site-header__control flex items-center gap-1 text-xs font-semibold text-foreground px-3 py-2 rounded-xl transition-colors" aria-label={languageAriaLabel}>
-              <Globe className="w-3.5 h-3.5" />
-              <span className="font-semibold">{language === "en" ? "EN" : "中文"}</span>
+          <div className="ml-auto flex shrink-0 items-center gap-1.5 xl:hidden">
+            <button
+              onClick={changeLanguage}
+              className="site-header__control flex items-center gap-1 rounded-btn px-3 py-2 text-xs font-semibold text-foreground transition-colors"
+              aria-label={languageAriaLabel}
+            >
+              <Globe className="h-3.5 w-3.5" />
+              <span>{language === "en" ? "EN" : "中文"}</span>
             </button>
             <button
-              className="site-header__control w-10 h-10 flex items-center justify-center rounded-xl text-foreground transition-colors"
+              className="site-header__control flex h-10 w-10 items-center justify-center rounded-btn text-foreground transition-colors"
               onClick={() => setIsOpen(!isOpen)}
               aria-label={menuAriaLabel}
               aria-expanded={isOpen}
               aria-controls="mobile-navigation"
             >
-              {isOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+              {isOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
             </button>
           </div>
         </div>
       </header>
 
       {isOpen && (
-        <div id="mobile-navigation" ref={mobileMenuRef} className="fixed inset-x-0 top-[68px] bottom-0 z-[60] overflow-hidden bg-background md:top-[72px] xl:hidden">
-          <div className="absolute inset-x-0 top-0 bottom-[185px] overflow-y-auto px-5 pt-3 pb-4">
-            <div className="space-y-1">
+        <div
+          id="mobile-navigation"
+          ref={mobileMenuRef}
+          className="fixed inset-x-0 bottom-0 top-16 z-[60] flex flex-col border-t border-border/60 bg-background/98 backdrop-blur-xl md:top-[72px] xl:hidden"
+        >
+          <div className="min-h-0 flex-1 overflow-y-auto px-5 py-4">
+            <div className="space-y-0.5">
               {navItems.map((item, index) => {
                 const isActive = isActivePath(location.pathname, item.path);
                 const Icon = item.icon;
@@ -189,37 +210,27 @@ const Navbar = () => {
                     key={item.path}
                     to={item.path}
                     style={{ animationDelay: `${index * 40}ms` }}
-                    className={`flex items-center gap-3 rounded-xl px-3 py-3 text-[15px] font-medium transition-colors opacity-0 animate-fade-in [animation-fill-mode:forwards] ${isActive ? "text-accent bg-accent/10 ring-1 ring-inset ring-accent/15" : "text-foreground active:bg-muted"}`}
+                    className={`relative flex min-h-[52px] items-center gap-3 rounded-card px-3 text-[15px] font-medium opacity-0 animate-fade-in [animation-fill-mode:forwards] ${isActive ? "text-foreground" : "text-foreground/85 active:bg-muted/60"}`}
                   >
-                    <span className={`w-9 h-9 rounded-full flex items-center justify-center shrink-0 ${isActive ? "bg-accent/15" : "bg-muted/50"}`}>
-                      <Icon className={`w-[18px] h-[18px] ${isActive ? "text-accent" : "text-muted-foreground"}`} />
+                    {isActive && <span className="absolute bottom-2 left-3 right-3 h-px bg-accent/80" aria-hidden />}
+                    <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-border/70 bg-card">
+                      <Icon className={`h-[18px] w-[18px] ${isActive ? "text-gold" : "text-muted-foreground"}`} />
                     </span>
-                    {t(item.labelKey)}
+                    <span className="min-w-0 flex-1">{t(item.labelKey)}</span>
+                    <ChevronRight className="h-4 w-4 shrink-0 text-muted-foreground/50" />
                   </LocalizedLink>
                 );
               })}
             </div>
           </div>
 
-          <div className="absolute inset-x-0 bottom-[185px] z-10">
-            <div className="h-px bg-gradient-to-r from-transparent via-accent/30 to-transparent" />
-          </div>
-
-          <div className="absolute inset-x-0 bottom-0 border-t border-border bg-background/95 backdrop-blur-sm px-5 pt-4 pb-[max(1rem,env(safe-area-inset-bottom))] space-y-3">
-            <div className="flex items-center justify-center">
-              <button onClick={changeLanguage} className="flex items-center gap-1.5 text-xs font-medium text-muted-foreground px-3 py-1.5 rounded-full border border-border hover:bg-muted transition-colors" aria-label={languageAriaLabel}>
-                <Globe className="w-3.5 h-3.5" />
-                <span className={language === "en" ? "text-foreground font-semibold" : ""}>EN</span>
-                <span className="text-muted-foreground/40">|</span>
-                <span className={language === "zh" ? "text-foreground font-semibold" : ""}>中文</span>
-              </button>
-            </div>
-            <Button size="lg" className="w-full font-semibold h-12 text-sm justify-center" asChild>
+          <div className="shrink-0 space-y-3 border-t border-border bg-background/95 px-5 pb-[max(1rem,env(safe-area-inset-bottom))] pt-4 backdrop-blur-sm">
+            <Button size="lg" className="h-12 w-full justify-center text-sm font-semibold" asChild>
               <LocalizedLink to="/quote">{t("cta.getQuote")}</LocalizedLink>
             </Button>
-            <Button size="lg" variant="outline" className="w-full h-12 text-sm font-medium justify-center" asChild>
+            <Button size="lg" variant="outline" className="h-12 w-full justify-center text-sm font-medium" asChild>
               <a href={settings.whatsapp_url()} target="_blank" rel="noopener noreferrer">
-                <WhatsAppIcon className="w-4 h-4 mr-1.5 text-whatsapp" />
+                <WhatsAppIcon className="mr-1.5 h-4 w-4 text-whatsapp" />
                 {t("cta.whatsapp")}
               </a>
             </Button>

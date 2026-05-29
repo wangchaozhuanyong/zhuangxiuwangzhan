@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+﻿import { useRef, useState } from "react";
 import Link from "@/components/LocalizedLink";
 import { Button } from "@/components/ui/button";
 import { MapPin, ArrowRight } from "lucide-react";
@@ -16,6 +16,7 @@ import kitchenImg from "@/assets/kitchen-cabinet.webp";
 import warehouseImg from "@/assets/warehouse-shelving.webp";
 import exteriorImg from "@/assets/exterior-works.webp";
 import heroImg from "@/assets/hero-projects.webp";
+import HeroBanner from "@/components/blocks/HeroBanner";
 import { translateDisplayText, translateProjectType } from "@/i18n/displayLabels";
 
 const typeImageMap: Record<string, string> = {
@@ -137,7 +138,7 @@ const Projects = () => {
   };
 
   return (
-    <main className="pt-16 pb-20 md:pb-0">
+    <main className="pt-site-header">
       <PageMeta
         title={pageCopy.metaTitle}
         description={pageCopy.metaDescription}
@@ -146,26 +147,16 @@ const Projects = () => {
       />
       <JsonLdBreadcrumb items={[{ name: pageCopy.breadcrumbHome, url: "/" }, { name: pageCopy.breadcrumbProjects, url: "/projects" }]} />
 
-      <section className="relative min-h-[45vh] flex items-center overflow-hidden">
-        <div className="absolute inset-0">
-          <SmartImage src={heroImg} alt="FLASH CAST renovation projects portfolio" className="w-full h-full object-cover" loading="eager" fetchPriority="high" width={1920} height={1080} />
-          <div className="absolute inset-0 media-readable-overlay" />
-        </div>
-        <div className="relative z-10 container-narrow px-5 md:px-8 py-20 md:py-28">
-          <p className="font-body font-semibold text-[11px] tracking-[0.3em] uppercase mb-4 text-gold">{pageCopy.eyebrow}</p>
-          <h1
-            className="font-display text-3xl md:text-5xl font-bold leading-tight mb-4 max-w-lg text-on-media"
-          >
-            {pageCopy.title}
-          </h1>
-          <p className="max-w-xl text-base md:text-lg leading-relaxed text-on-media-muted">
-            {pageCopy.intro}
-          </p>
-        </div>
-      </section>
+      <HeroBanner
+        image={heroImg}
+        imageAlt="FLASH CAST renovation projects portfolio"
+        label={pageCopy.eyebrow}
+        title={pageCopy.title}
+        description={pageCopy.intro}
+      />
 
-      <section className="section-padding-next bg-background">
-        <div className="container-narrow px-5 md:px-8">
+      <section className="section-padding bg-background">
+        <div className="container-narrow">
           <Reveal>
             <div className="-mx-5 md:mx-0 mb-8">
               <div
@@ -203,7 +194,7 @@ const Projects = () => {
             {filtered.map((project, index) => (
               <Reveal key={project.id} delay={index * 80}>
                 <Link to={`/projects/${project.slug}`} className="group hover-lift block">
-                  <div className="relative overflow-hidden rounded-lg aspect-[4/3] mb-4 img-zoom">
+                  <div className="relative mb-4 aspect-[4/3] overflow-hidden rounded-card img-zoom">
                     <SmartImage
                       src={project.thumbnail || typeImageMap[project.type] || residentialImg}
                       alt={project.thumbnailAlt || `${project.title} - ${displayProjectType(project.type)} renovation in ${project.location}`}
@@ -232,20 +223,24 @@ const Projects = () => {
         </div>
       </section>
 
-      <section className="section-padding bg-accent text-accent-foreground text-center">
+      <section className="section-padding relative overflow-hidden bg-surface-dark text-center">
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_0%,rgba(198,164,106,0.1),transparent_50%)]" aria-hidden />
         <Reveal>
-          <div className="container-narrow">
-            <h2 className="font-display text-3xl font-bold mb-4">{pageCopy.ctaTitle}</h2>
-            <p className="text-accent-foreground/80 mb-6 max-w-lg mx-auto">{pageCopy.ctaText}</p>
-            <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center">
-              <Button variant="secondary" size="lg" className="btn-press w-full sm:w-auto min-h-[3rem] text-sm font-bold tracking-wide rounded-md px-8 py-3 justify-center" asChild>
-                <Link to="/quote">{pageCopy.quote} <ArrowRight className="w-4 h-4 ml-2" /></Link>
-              </Button>
-              <Button size="lg" className="btn-press w-full sm:w-auto min-h-[3rem] text-sm font-semibold bg-card text-card-foreground border-0 hover:bg-card/90 shadow-md rounded-md px-8 py-3 justify-center" asChild>
-                <a href={settings.whatsapp_url()} target="_blank" rel="noopener noreferrer">
-                  <WhatsAppIcon className="w-[18px] h-[18px] mr-2 text-whatsapp" /> {pageCopy.whatsapp}
-                </a>
-              </Button>
+          <div className="container-narrow relative">
+            <h2 className="heading-safe mb-4 font-display text-3xl font-bold text-surface-dark-foreground">{pageCopy.ctaTitle}</h2>
+            <p className="mx-auto mb-6 max-w-lg text-surface-dark-foreground/75">{pageCopy.ctaText}</p>
+            <div className="flex flex-col justify-center gap-3 sm:flex-row sm:gap-4">
+              <Link to="/quote" className="btn-on-dark-primary min-h-12 w-full justify-center px-8 sm:w-auto">
+                {pageCopy.quote} <ArrowRight className="h-4 w-4" />
+              </Link>
+              <a
+                href={settings.whatsapp_url()}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="btn-on-dark-secondary min-h-12 w-full justify-center px-8 sm:w-auto"
+              >
+                <WhatsAppIcon className="mr-2 h-[18px] w-[18px] text-whatsapp" /> {pageCopy.whatsapp}
+              </a>
             </div>
           </div>
         </Reveal>

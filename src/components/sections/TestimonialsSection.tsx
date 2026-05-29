@@ -159,13 +159,15 @@ const TestimonialsSection = () => {
         <div className="card-grid grid-cols-1 gap-5 md:grid-cols-3">
           {items.map((item, i) => (
             <Reveal key={`${item.client}-${i}`} delay={i * 100}>
-              <div className="card-equal bg-card border border-border rounded-lg p-6 hover-lift">
-                <div className="flex gap-0.5 mb-4">
+              <div className="card-equal luxury-card p-6 hover-lift">
+                <div className="mb-4 flex gap-0.5">
                   {[...Array(5)].map((_, j) => (
-                    <Star key={j} className="w-4 h-4 fill-current text-gold" />
+                    <Star key={j} className="h-4 w-4 fill-gold text-gold" />
                   ))}
                 </div>
-                <blockquote className="card-equal-body text-sm leading-relaxed mb-5">"{item.text}"</blockquote>
+                <blockquote className="card-equal-body prose-safe mb-5 text-sm before:content-['\201C'] before:text-gold/40 after:content-['\201D'] after:text-gold/40">
+                  {item.text}
+                </blockquote>
                 <div className="border-t border-border pt-4">
                   <p className="font-semibold text-sm">{item.client}</p>
                   <p className="text-muted-foreground text-xs">

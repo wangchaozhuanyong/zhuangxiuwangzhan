@@ -1,10 +1,8 @@
 /**
  * CTA banner for sub-pages with Quote + WhatsApp buttons.
- * Used across the site for a consistent call to action.
  */
 
 import Link from "@/components/LocalizedLink";
-import { Button } from "@/components/ui/button";
 import { ArrowRight } from "lucide-react";
 import WhatsAppIcon from "@/components/WhatsAppIcon";
 import Reveal from "@/components/Reveal";
@@ -28,31 +26,24 @@ const CTABanner = ({
   const settings = useSiteSettings();
 
   return (
-    <section className="section-padding bg-accent text-accent-foreground text-center">
+    <section className="section-padding relative overflow-hidden bg-surface-dark text-center">
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_0%,rgba(198,164,106,0.1),transparent_50%)]" aria-hidden />
       <Reveal>
-        <div className="container-narrow">
-          <h2 className="font-display text-3xl font-bold mb-4">{title}</h2>
-          <p className="text-accent-foreground/80 mb-6 max-w-lg mx-auto">{description}</p>
-          <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center">
-            <Button
-              variant="secondary"
-              size="lg"
-              className="btn-press w-full sm:w-auto min-h-[3rem] text-sm font-bold tracking-wide rounded-md px-8 py-3 justify-center"
-              asChild
+        <div className="container-narrow relative">
+          <h2 className="heading-safe mb-4 font-display text-3xl font-bold text-surface-dark-foreground">{title}</h2>
+          <p className="mx-auto mb-6 max-w-lg text-surface-dark-foreground/75">{description}</p>
+          <div className="flex flex-col justify-center gap-3 sm:flex-row sm:gap-4">
+            <Link to={quotePath} className="btn-on-dark-primary min-h-12 w-full justify-center px-8 sm:w-auto">
+              {quoteLabel} <ArrowRight className="h-4 w-4" />
+            </Link>
+            <a
+              href={settings.whatsapp_url()}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="btn-on-dark-secondary min-h-12 w-full justify-center px-8 sm:w-auto"
             >
-              <Link to={quotePath}>
-                {quoteLabel} <ArrowRight className="w-4 h-4 ml-2" />
-              </Link>
-            </Button>
-            <Button
-              size="lg"
-              className="btn-press w-full sm:w-auto min-h-[3rem] text-sm font-semibold bg-card text-card-foreground border-0 hover:bg-card/90 shadow-md rounded-md px-8 py-3 justify-center"
-              asChild
-            >
-              <a href={settings.whatsapp_url()} target="_blank" rel="noopener noreferrer">
-                <WhatsAppIcon className="w-[18px] h-[18px] mr-2 text-whatsapp" /> {whatsappLabel}
-              </a>
-            </Button>
+              <WhatsAppIcon className="h-[18px] w-[18px] text-whatsapp" /> {whatsappLabel}
+            </a>
           </div>
         </div>
       </Reveal>

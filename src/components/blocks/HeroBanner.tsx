@@ -2,7 +2,8 @@
  * Hero banner component for sub-pages.
  */
 
-import Reveal from "@/components/Reveal";
+import { ArrowLeft } from "lucide-react";
+import LocalizedLink from "@/components/LocalizedLink";
 import SmartImage from "@/components/SmartImage";
 
 interface HeroBannerProps {
@@ -11,43 +12,42 @@ interface HeroBannerProps {
   label?: string;
   title: string;
   description?: string;
+  backTo?: string;
+  backLabel?: string;
 }
 
-const HeroBanner = ({ image, imageAlt, label, title, description }: HeroBannerProps) => {
+const HeroBanner = ({ image, imageAlt, label, title, description, backTo, backLabel }: HeroBannerProps) => {
   return (
-    <section className="relative min-h-[45vh] flex items-center overflow-hidden">
+    <section className="page-hero">
       <div className="absolute inset-0">
         <SmartImage
           src={image}
           alt={imageAlt}
-          className="w-full h-full object-cover"
+          className="h-full w-full object-cover"
           loading="eager"
           fetchPriority="high"
           width={1920}
           height={800}
         />
-        <div className="absolute inset-0 media-readable-overlay" />
+        <div className="absolute inset-0 media-readable-overlay" aria-hidden="true" />
       </div>
-      <div className="relative z-10 container-narrow px-5 md:px-8 py-20 md:py-28">
-        {label && (
-          <p
-            className="font-body font-semibold text-[11px] tracking-[0.3em] uppercase mb-4 text-gold"
+      <div className="page-hero__content site-container">
+        {backTo && backLabel ? (
+          <LocalizedLink
+            to={backTo}
+            className="mb-6 inline-flex items-center gap-1.5 text-sm text-on-media-muted transition-colors hover:text-gold"
           >
-            {label}
-          </p>
-        )}
-        <h1
-          className="font-display text-3xl md:text-5xl font-bold leading-tight mb-4 max-w-lg text-on-media"
-        >
-          {title}
-        </h1>
-        {description && (
-          <p
-            className="max-w-xl text-base md:text-lg leading-relaxed text-on-media-muted"
-          >
-            {description}
-          </p>
-        )}
+            <ArrowLeft className="h-4 w-4" />
+            {backLabel}
+          </LocalizedLink>
+        ) : null}
+        {label ? (
+          <p className="mb-4 font-body text-[11px] font-semibold uppercase tracking-[0.28em] text-gold">{label}</p>
+        ) : null}
+        <h1 className="heading-safe mb-4 max-w-2xl text-3xl font-bold text-on-media md:text-5xl">{title}</h1>
+        {description ? (
+          <p className="prose-safe max-w-xl text-base leading-relaxed text-on-media-muted md:text-lg">{description}</p>
+        ) : null}
       </div>
     </section>
   );

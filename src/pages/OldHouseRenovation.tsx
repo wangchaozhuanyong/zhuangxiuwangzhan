@@ -1,4 +1,4 @@
-import Link from "@/components/LocalizedLink";
+﻿import Link from "@/components/LocalizedLink";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, CheckCircle, AlertTriangle, Wrench, Droplets, Home } from "lucide-react";
 import WhatsAppIcon from "@/components/WhatsAppIcon";
@@ -137,26 +137,31 @@ const OldHouseRenovation = () => {
   const t = content[language];
 
   return (
-    <main className="pt-16">
+    <main className="pt-site-header">
       <PageMeta title={t.metaTitle} description={t.metaDescription} keywords={t.metaKeywords} canonicalPath="/services/old-house" />
       <JsonLdBreadcrumb items={[{ name: t.breadcrumbHome, url: "/" }, { name: t.breadcrumbServices, url: "/services" }, { name: t.breadcrumbCurrent, url: "/services/old-house" }]} />
 
-      <section className="relative min-h-[54vh] flex items-center overflow-hidden">
+      <section className="page-hero lg:min-h-[600px]">
         <div className="absolute inset-0">
-          <SmartImage src={heroImg} alt={t.heroAlt} className="w-full h-full object-cover" width={1920} height={720} loading="eager" fetchPriority="high" />
-          <div className="absolute inset-0 bg-gradient-to-r from-black/60 via-black/30 to-transparent" />
+          <SmartImage src={heroImg} alt={t.heroAlt} className="h-full w-full object-cover" width={1920} height={720} loading="eager" fetchPriority="high" />
+          <div className="absolute inset-0 media-readable-overlay" aria-hidden="true" />
         </div>
-        <div className="relative z-10 container-narrow px-5 md:px-8 py-20 md:py-32">
-          <p className="font-body font-semibold text-[11px] tracking-[0.3em] uppercase mb-4 text-gold">{t.label}</p>
-          <h1 className="font-display text-3xl md:text-5xl font-bold leading-tight mb-5 max-w-2xl text-white" style={{ textShadow: "0 2px 12px rgba(0,0,0,0.5)" }}>{t.title}</h1>
-          <p className="max-w-xl text-base md:text-lg leading-relaxed mb-8 text-white/90" style={{ textShadow: "0 1px 6px rgba(0,0,0,0.5)" }}>{t.description}</p>
-          <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
-            <Button size="lg" className="btn-press w-full sm:w-auto min-h-[3rem] text-sm font-bold bg-white text-foreground hover:bg-white/90 rounded-md px-8 py-3 justify-center" asChild>
-              <Link to="/quote"><ArrowRight className="w-4 h-4 mr-2" /> {t.assessment}</Link>
-            </Button>
-            <Button size="lg" className="btn-press w-full sm:w-auto min-h-[3rem] text-sm font-semibold bg-transparent text-white border border-white/40 hover:bg-white/10 rounded-md px-8 py-3 justify-center" asChild>
-              <a href={settings.whatsapp_url()} target="_blank" rel="noopener noreferrer"><WhatsAppIcon className="w-[18px] h-[18px] mr-2 text-[#25D366]" /> {t.whatsapp}</a>
-            </Button>
+        <div className="page-hero__content site-container">
+          <p className="mb-4 font-body text-[11px] font-semibold uppercase tracking-[0.28em] text-gold">{t.label}</p>
+          <h1 className="heading-safe mb-5 max-w-2xl text-3xl font-bold text-on-media md:text-5xl">{t.title}</h1>
+          <p className="prose-safe mb-8 max-w-xl text-base text-on-media-muted md:text-lg">{t.description}</p>
+          <div className="flex flex-col gap-3 sm:flex-row sm:gap-4">
+            <Link to="/quote" className="btn-on-dark-primary min-h-12 w-full justify-center px-8 sm:w-auto">
+              <ArrowRight className="h-4 w-4" /> {t.assessment}
+            </Link>
+            <a
+              href={settings.whatsapp_url()}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="btn-on-dark-secondary min-h-12 w-full justify-center px-8 sm:w-auto"
+            >
+              <WhatsAppIcon className="h-[18px] w-[18px] text-whatsapp" /> {t.whatsapp}
+            </a>
           </div>
         </div>
       </section>
@@ -174,7 +179,7 @@ const OldHouseRenovation = () => {
             </div>
           </Reveal>
           <Reveal direction="right" delay={120}>
-            <SmartImage src={beforeAfterImg} alt={language === "zh" ? "旧屋翻新前后对比" : "Before and after old house renovation"} loading="lazy" width={1280} height={640} className="w-full object-cover rounded-lg" />
+            <SmartImage src={beforeAfterImg} alt={language === "zh" ? "旧屋翻新前后对比" : "Before and after old house renovation"} loading="lazy" width={1280} height={640} className="w-full rounded-card-lg object-cover" />
           </Reveal>
         </div>
       </section>
@@ -191,7 +196,7 @@ const OldHouseRenovation = () => {
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
             {t.challenges.map((item, i) => (
               <Reveal key={item.title} delay={i * 80}>
-                <div className="flex gap-4 p-5 bg-card rounded-lg border border-border hover-lift">
+                <div className="flex gap-4 p-5 bg-card rounded-card border border-border hover-lift">
                   <div className="w-12 h-12 rounded-full bg-destructive/10 flex items-center justify-center shrink-0"><item.icon className="w-5 h-5 text-destructive" /></div>
                   <div><h3 className="font-semibold text-sm md:text-base mb-1">{item.title}</h3><p className="text-muted-foreground text-sm leading-relaxed">{item.desc}</p></div>
                 </div>
@@ -204,7 +209,7 @@ const OldHouseRenovation = () => {
       <section className="section-padding bg-background">
         <div className="container-narrow grid grid-cols-1 lg:grid-cols-2 gap-10 items-center">
           <Reveal direction="left">
-            <SmartImage src={oldHouseServiceImg} alt={language === "zh" ? "旧屋翻新施工现场" : "Old house renovation in progress"} loading="lazy" width={960} height={720} className="w-full object-cover aspect-[4/3] rounded-lg" />
+            <SmartImage src={oldHouseServiceImg} alt={language === "zh" ? "旧屋翻新施工现场" : "Old house renovation in progress"} loading="lazy" width={960} height={720} className="aspect-[4/3] w-full rounded-card-lg object-cover" />
           </Reveal>
           <Reveal direction="right" delay={120}>
             <div>
@@ -231,7 +236,7 @@ const OldHouseRenovation = () => {
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
             {t.process.map((step, i) => (
               <Reveal key={step.num} delay={i * 80}>
-                <div className="text-center p-5 rounded-lg border border-white/10 bg-white/[0.03] h-full">
+                <div className="h-full rounded-card border border-white/10 bg-white/[0.03] p-5 text-center">
                   <span className="text-gold font-display text-3xl font-bold">{step.num}</span>
                   <h3 className="font-semibold mt-2 mb-1.5 text-sm md:text-base text-surface-dark-foreground">{step.title}</h3>
                   <p className="text-xs md:text-sm leading-relaxed text-steel">{step.desc}</p>
@@ -254,7 +259,7 @@ const OldHouseRenovation = () => {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-5 max-w-4xl mx-auto">
             {t.prices.map((item, i) => (
               <Reveal key={item.type} delay={i * 80}>
-                <div className="bg-card p-6 rounded-lg border border-border hover-lift text-center h-full flex flex-col">
+                <div className="bg-card p-6 rounded-card border border-border hover-lift text-center h-full flex flex-col">
                   <h3 className="font-display text-lg font-semibold mb-2">{item.type}</h3>
                   <p className="text-gold font-display text-2xl font-bold mb-3">{item.range}</p>
                   <p className="text-muted-foreground text-sm leading-relaxed flex-1">{item.desc}</p>

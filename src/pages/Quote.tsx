@@ -1,5 +1,5 @@
-import { FormEvent, useState } from "react";
-import Link from "@/components/LocalizedLink";
+﻿import { FormEvent, useState } from "react";
+import LocalizedLink from "@/components/LocalizedLink";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -8,11 +8,13 @@ import WhatsAppIcon from "@/components/WhatsAppIcon";
 import PageMeta from "@/components/PageMeta";
 import { JsonLdBreadcrumb } from "@/components/JsonLd";
 import { submitQuoteRequest } from "@/lib/leadApi";
+import { useFormGuard } from "@/hooks/useFormGuard";
 import Reveal from "@/components/Reveal";
 import SmartImage from "@/components/SmartImage";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { useSiteSettings } from "@/hooks/useSiteSettings";
 import heroImg from "@/assets/hero-quote.webp";
+import HeroBanner from "@/components/blocks/HeroBanner";
 
 const projectTypes = [
   { value: "Residential Renovation", en: "Residential Renovation", zh: "住宅装修" },
@@ -82,6 +84,7 @@ const copy = {
     successIntro: "Thank you",
     successReceived: "We have received your project details.",
     successFollowUp: "Our team will contact you within",
+    successFollowUpHours: "24 hours",
     successFollowUpEnd: "to arrange a free site measurement.",
     successProject: "Project:",
     successLocation: "Location:",
@@ -153,6 +156,7 @@ const copy = {
     successIntro: "谢谢您",
     successReceived: "我们已经收到您的项目资料。",
     successFollowUp: "我们的团队会在",
+    successFollowUpHours: "24 小时",
     successFollowUpEnd: "内与您联系，安排免费上门测量。",
     successProject: "项目：",
     successLocation: "地点：",
@@ -204,6 +208,8 @@ const Quote = () => {
   });
   const [errors, setErrors] = useState<FormErrors>({});
   const [status, setStatus] = useState<"idle" | "submitting" | "success" | "error">("idle");
+  const formGuard = useFormGuard();
+  const [honeypot, setHoneypot] = useState("");
 
   const validate = (): boolean => {
     const next: FormErrors = {};
@@ -233,6 +239,8 @@ const Quote = () => {
         budget: form.budget,
         details: form.details,
         sourcePath: window.location.pathname,
+        website: honeypot,
+        startedAt: formGuard.startedAt,
       });
       setStatus("success");
     } catch (error) {
@@ -243,7 +251,7 @@ const Quote = () => {
 
   if (status === "success") {
     return (
-      <main className="pt-16">
+      <main className="pt-site-header">
         <PageMeta title={t.successTitle} description={t.metaDescription} canonicalPath="/quote" />
         <section className="section-padding flex min-h-[70vh] items-center bg-background">
           <div className="container-narrow mx-auto max-w-lg text-center">
@@ -255,10 +263,10 @@ const Quote = () => {
               {t.successIntro}, <strong className="text-foreground">{form.name}</strong>. {t.successReceived}
             </p>
             <p className="mb-2 text-muted-foreground">
-              {t.successFollowUp} <strong className="text-foreground">24 小时</strong> {t.successFollowUpEnd}
+              {t.successFollowUp} <strong className="text-foreground">{t.successFollowUpHours}</strong> {t.successFollowUpEnd}
             </p>
 
-            <div className="mt-8 rounded-xl border border-border bg-card p-6 text-left">
+            <div className="luxury-card mt-8 p-6 text-left">
               <h2 className="mb-4 font-display text-xl font-semibold">{t.whatsappFast}</h2>
               <div className="space-y-3">
                 <p className="flex items-center gap-2 text-sm text-muted-foreground">
@@ -279,7 +287,7 @@ const Quote = () => {
 
             <div className="mt-8 flex flex-col gap-3 sm:flex-row">
               <Button asChild size="lg" className="flex-1">
-                <Link to="/contact">{t.backHome}</Link>
+                <LocalizedLink to="/">{t.backHome}</LocalizedLink>
               </Button>
               <Button asChild size="lg" variant="outline" className="flex-1">
                 <a href={settings.whatsapp_url()} target="_blank" rel="noreferrer">
@@ -294,29 +302,13 @@ const Quote = () => {
   }
 
   return (
-    <main className="pt-16">
+    <main className="pt-site-header">
       <PageMeta title={t.metaTitle} description={t.metaDescription} keywords={t.metaKeywords} canonicalPath="/quote" />
       <JsonLdBreadcrumb items={[{ name: t.breadcrumbHome, url: "/" }, { name: t.breadcrumbCurrent, url: "/quote" }]} />
 
-      <section className="relative flex min-h-[45vh] items-center overflow-hidden">
-        <div className="absolute inset-0">
-          <SmartImage src={heroImg} alt={t.heroAlt} className="h-full w-full object-cover" width={1920} height={800} loading="eager" fetchPriority="high" />
-          <div className="absolute inset-0 media-readable-overlay" />
-        </div>
-        <div className="relative z-10 container-narrow px-5 py-20 md:px-8 md:py-28">
-          <p className="mb-4 font-body text-[11px] font-semibold uppercase tracking-[0.3em] text-gold">
-            {t.heroEyebrow}
-          </p>
-          <h1 className="mb-4 max-w-lg font-display text-3xl font-bold leading-tight text-on-media md:text-5xl">
-            {t.heroTitle}
-          </h1>
-          <p className="max-w-xl text-base leading-relaxed text-on-media-muted md:text-lg">
-            {t.heroText}
-          </p>
-        </div>
-      </section>
+      <HeroBanner image={heroImg} imageAlt={t.heroAlt} label={t.heroEyebrow} title={t.heroTitle} description={t.heroText} />
 
-      <section className="section-padding bg-background">
+      <section className="section-padding bg-background pb-24 md:pb-28">
         <div className="container-narrow grid gap-10 lg:grid-cols-[1.1fr_0.9fr]">
           <Reveal>
             <div>
@@ -426,6 +418,19 @@ const Quote = () => {
                     </a>{" "}
                     {t.photoTextEnd}
                   </p>
+                </div>
+
+                <div className="absolute -left-[9999px] top-auto h-0 w-0 overflow-hidden" aria-hidden="true">
+                  <label htmlFor="quote-website">Website</label>
+                  <input
+                    id="quote-website"
+                    type="text"
+                    name="website"
+                    tabIndex={-1}
+                    autoComplete="off"
+                    value={honeypot}
+                    onChange={(e) => setHoneypot(e.target.value)}
+                  />
                 </div>
 
                 <div className="pt-2">

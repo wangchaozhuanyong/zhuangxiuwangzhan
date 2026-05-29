@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+﻿import { useMemo } from "react";
 import { useParams } from "react-router-dom";
 import Link from "@/components/LocalizedLink";
 import { Button } from "@/components/ui/button";
@@ -125,7 +125,7 @@ const ServiceDetail = () => {
 
   if (!service) {
     return (
-      <main className="pt-16 section-padding text-center">
+      <main className="pt-site-header section-padding text-center">
         <h1 className="font-display text-3xl font-bold mb-4">{t.notFound}</h1>
         <Button asChild><Link to="/services">{t.viewAll}</Link></Button>
       </main>
@@ -149,7 +149,7 @@ const ServiceDetail = () => {
   }));
 
   return (
-    <main className="pt-16">
+    <main className="pt-site-header">
       <PageMeta
         title={`${serviceTitle} Kuala Lumpur | ${t.metaSuffix}`}
         description={stripHtml(serviceSummary)}
@@ -160,27 +160,30 @@ const ServiceDetail = () => {
       <JsonLdBreadcrumb items={[{ name: t.breadcrumbHome, url: "/" }, { name: t.breadcrumbServices, url: "/services" }, { name: serviceTitle, url: `/services/${service.slug}` }]} />
       <JsonLdFAQ faqs={serviceFaqs.map((faq: any) => ({ question: faq.q, answer: faq.a }))} />
 
-      <section className="relative min-h-[50vh] flex items-center overflow-hidden">
+      <section className="page-hero">
         <div className="absolute inset-0">
-          <SmartImage src={heroImage} alt={serviceTitle} className="w-full h-full object-cover scale-105 animate-[scale-up_1.2s_ease-out_forwards]" width={1920} height={800} loading="eager" fetchPriority="high" />
-          <div className="absolute inset-0 bg-gradient-to-r from-black/60 via-black/30 to-transparent" />
+          <SmartImage src={heroImage} alt={serviceTitle} className="h-full w-full object-cover" width={1920} height={800} loading="eager" fetchPriority="high" />
+          <div className="absolute inset-0 media-readable-overlay" aria-hidden="true" />
         </div>
-        <div className="relative z-10 container-narrow px-4 md:px-8 py-20">
-          <Link to="/services" className="inline-flex items-center gap-1 text-sm hover:text-accent transition-colors mb-6" style={{ color: "rgba(255,255,255,0.8)" }}>
-            <ArrowLeft className="w-3.5 h-3.5" /> {t.allServices}
+        <div className="page-hero__content site-container">
+          <Link to="/services" className="mb-6 inline-flex items-center gap-1 text-sm text-on-media-muted transition-colors hover:text-gold">
+            <ArrowLeft className="h-3.5 w-3.5" /> {t.allServices}
           </Link>
-          <p className="font-body font-semibold text-[11px] tracking-[0.3em] uppercase mb-4" style={{ color: "hsl(var(--gold))" }}>{t.services}</p>
-          <h1 className="font-display text-3xl md:text-5xl font-bold mb-4 max-w-lg" style={{ color: "#fff", textShadow: "0 2px 8px rgba(0,0,0,0.5)" }}>{serviceTitle}</h1>
-          <p className="max-w-2xl text-base md:text-lg leading-relaxed" style={{ color: "rgba(255,255,255,0.9)", textShadow: "0 1px 4px rgba(0,0,0,0.4)" }}>{serviceSummary}</p>
-          <div className="flex flex-col sm:flex-row gap-3 mt-8">
-            <Button size="lg" className="btn-press bg-accent hover:bg-accent/90 text-accent-foreground font-semibold h-12 px-8" asChild>
-              <Link to="/quote">{t.getQuote} <ArrowRight className="w-4 h-4 ml-2" /></Link>
-            </Button>
-            <Button size="lg" variant="outline" className="bg-white text-neutral-800 hover:bg-white/90 border-0 btn-press h-12 px-8 font-semibold shadow-md" asChild>
-              <a href={settings.whatsapp_url()} target="_blank" rel="noopener noreferrer">
-                <WhatsAppIcon className="w-[18px] h-[18px] mr-2 text-[#25D366]" /> {t.whatsapp}
-              </a>
-            </Button>
+          <p className="mb-4 font-body text-[11px] font-semibold uppercase tracking-[0.28em] text-gold">{t.services}</p>
+          <h1 className="heading-safe mb-4 max-w-2xl text-3xl font-bold text-on-media md:text-5xl">{serviceTitle}</h1>
+          <p className="prose-safe mb-8 max-w-2xl text-base text-on-media-muted md:text-lg">{serviceSummary}</p>
+          <div className="flex flex-col gap-3 sm:flex-row">
+            <Link to="/quote" className="btn-on-dark-primary min-h-12 justify-center px-8 sm:w-auto">
+              {t.getQuote} <ArrowRight className="h-4 w-4" />
+            </Link>
+            <a
+              href={settings.whatsapp_url()}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="btn-on-dark-secondary min-h-12 justify-center px-8 sm:w-auto"
+            >
+              <WhatsAppIcon className="mr-2 h-[18px] w-[18px] text-whatsapp" /> {t.whatsapp}
+            </a>
           </div>
         </div>
       </section>
@@ -229,7 +232,7 @@ const ServiceDetail = () => {
           <h2 className="font-display text-2xl font-bold mb-6">{t.commonProjects}</h2>
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3">
             {serviceCommonProjects.map((project: string) => (
-              <div key={project} className="p-4 bg-background rounded-lg text-center text-sm font-medium border border-border">
+              <div key={project} className="rounded-card border border-border bg-background p-4 text-center text-sm font-medium">
                 {project}
               </div>
             ))}
@@ -243,7 +246,7 @@ const ServiceDetail = () => {
           <div className="space-y-6">
             {serviceProcessSteps.map((step: any, index: number) => (
               <div key={`${step.title}-${index}`} className="flex gap-4">
-                <div className="shrink-0 w-10 h-10 rounded-full bg-accent text-accent-foreground flex items-center justify-center text-sm font-bold">
+                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-accent/25 bg-accent/15 text-sm font-bold text-gold">
                   {index + 1}
                 </div>
                 <div className="pt-1">
@@ -261,7 +264,7 @@ const ServiceDetail = () => {
           <h2 className="font-display text-2xl font-bold mb-6 text-center">{t.faq}</h2>
           <Accordion type="single" collapsible className="space-y-2">
             {serviceFaqs.map((faq: any, index: number) => (
-              <AccordionItem key={`${faq.q}-${index}`} value={`faq-${index}`} className="bg-background rounded-lg border border-border px-4">
+              <AccordionItem key={`${faq.q}-${index}`} value={`faq-${index}`} className="bg-background rounded-card border border-border px-4">
                 <AccordionTrigger className="text-left font-medium text-sm md:text-base">{faq.q}</AccordionTrigger>
                 <AccordionContent className="text-muted-foreground text-sm">{faq.a}</AccordionContent>
               </AccordionItem>
@@ -281,7 +284,7 @@ const ServiceDetail = () => {
                 <Link
                   key={item.slug}
                   to={`/services/${item.slug}`}
-                  className="group p-5 rounded-lg border border-border bg-card hover-lift text-center block transition-colors hover:border-accent/30"
+                  className="group p-5 rounded-card border border-border bg-card hover-lift text-center block transition-colors hover:border-accent/30"
                 >
                   <h3 className="font-display font-semibold text-sm mb-1 group-hover:text-accent transition-colors">
                     {displayText(item.title)}
@@ -300,19 +303,23 @@ const ServiceDetail = () => {
         </div>
       </section>
 
-      <section className="section-padding bg-accent text-accent-foreground text-center">
-        <div className="container-narrow">
-          <h2 className="font-display text-3xl font-bold mb-4">{t.interested(serviceTitle)}</h2>
-          <p className="mb-6 opacity-90">{t.ctaText}</p>
-          <div className="flex flex-col sm:flex-row justify-center gap-3 sm:gap-4">
-            <Button size="lg" variant="secondary" className="btn-press w-full sm:w-auto min-h-[3rem] text-sm font-bold tracking-wide rounded-md px-8 py-3 justify-center" asChild>
-              <Link to="/quote">{t.freeQuote}</Link>
-            </Button>
-            <Button size="lg" className="btn-press w-full sm:w-auto min-h-[3rem] text-sm font-semibold bg-white text-neutral-800 border-0 hover:bg-white/90 shadow-md rounded-md px-8 py-3 justify-center" asChild>
-              <a href={settings.whatsapp_url()} target="_blank" rel="noopener noreferrer">
-                <WhatsAppIcon className="w-[18px] h-[18px] mr-2 text-[#25D366]" /> {t.whatsapp}
-              </a>
-            </Button>
+      <section className="section-padding relative overflow-hidden bg-surface-dark text-center">
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_0%,rgba(198,164,106,0.1),transparent_50%)]" aria-hidden />
+        <div className="container-narrow relative">
+          <h2 className="heading-safe mb-4 font-display text-3xl font-bold text-surface-dark-foreground">{t.interested(serviceTitle)}</h2>
+          <p className="mb-6 text-surface-dark-foreground/75">{t.ctaText}</p>
+          <div className="flex flex-col justify-center gap-3 sm:flex-row sm:gap-4">
+            <Link to="/quote" className="btn-on-dark-primary min-h-12 w-full justify-center px-8 sm:w-auto">
+              {t.freeQuote}
+            </Link>
+            <a
+              href={settings.whatsapp_url()}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="btn-on-dark-secondary min-h-12 w-full justify-center px-8 sm:w-auto"
+            >
+              <WhatsAppIcon className="mr-2 h-[18px] w-[18px] text-whatsapp" /> {t.whatsapp}
+            </a>
           </div>
         </div>
       </section>

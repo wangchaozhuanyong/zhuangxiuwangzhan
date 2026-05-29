@@ -1,7 +1,8 @@
-import { useParams } from "react-router-dom";
+﻿import { useParams } from "react-router-dom";
 import Link from "@/components/LocalizedLink";
 import { Button } from "@/components/ui/button";
-import { ArrowRight, ArrowLeft } from "lucide-react";
+import { ArrowRight } from "lucide-react";
+import HeroBanner from "@/components/blocks/HeroBanner";
 import WhatsAppIcon from "@/components/WhatsAppIcon";
 import { materialsData } from "@/data/materials";
 import { usePublishedMaterials } from "@/hooks/usePublishedContent";
@@ -62,7 +63,7 @@ const MaterialCategoryPage = () => {
 
   if (!category) {
     return (
-      <main className="pt-16 section-padding text-center">
+      <main className="pt-site-header section-padding text-center">
         <h1 className="font-display text-3xl font-bold mb-4">{t.notFound}</h1>
         <Button asChild><Link to="/materials">{t.viewAll}</Link></Button>
       </main>
@@ -70,7 +71,7 @@ const MaterialCategoryPage = () => {
   }
 
   return (
-    <main className="pt-16">
+    <main className="pt-site-header">
       <PageMeta
         title={`${displayCategoryName} | ${t.breadcrumbMaterials} | FLASH CAST`}
         description={t.metaDescription(category.description, displayCategoryName)}
@@ -79,23 +80,14 @@ const MaterialCategoryPage = () => {
       />
       <JsonLdBreadcrumb items={[{ name: t.breadcrumbHome, url: "/" }, { name: t.breadcrumbMaterials, url: "/materials" }, { name: displayCategoryName, url: `/materials/category/${category.slug}` }]} />
 
-      <section className="relative overflow-hidden">
-        <div className="absolute inset-0">
-          <SmartImage src={category.image} alt={category.alt || displayCategoryName} className="w-full h-full object-cover" width={1200} height={500} loading="eager" />
-          <div className="absolute inset-0 bg-gradient-to-r from-black/65 via-black/35 to-transparent" />
-        </div>
-        <div className="relative z-10 section-padding">
-          <div className="container-narrow">
-            <Link to="/materials" className="inline-flex items-center gap-1.5 text-sm hover:text-accent mb-6 transition-colors" style={{ color: "rgba(255,255,255,0.75)" }}>
-              <ArrowLeft className="w-4 h-4" /> {t.allMaterials}
-            </Link>
-            <h1 className="font-display text-3xl md:text-4xl font-bold mb-3 md:text-center" style={{ color: "#fff", textShadow: "0 2px 6px rgba(0,0,0,0.5)" }}>
-              {displayCategoryName}
-            </h1>
-            <p className="max-w-xl md:mx-auto md:text-center" style={{ color: "rgba(255,255,255,0.75)" }}>{category.description}</p>
-          </div>
-        </div>
-      </section>
+      <HeroBanner
+        image={category.image}
+        imageAlt={category.alt || displayCategoryName}
+        title={displayCategoryName}
+        description={category.description}
+        backTo="/materials"
+        backLabel={t.allMaterials}
+      />
 
       <section className="section-padding bg-background">
         <div className="container-narrow">
@@ -107,11 +99,11 @@ const MaterialCategoryPage = () => {
             {category.subcategories.map((subcategory, index) => (
               <Reveal key={subcategory.slug} delay={index * 60} direction="none">
                 <Link to={`/materials/category/${category.slug}/${subcategory.slug}`} className="snap-start shrink-0 w-44 sm:w-48 md:w-auto group block hover-lift">
-                  <div className="relative overflow-hidden rounded-xl aspect-square bg-muted border border-border">
+                  <div className="relative aspect-square overflow-hidden rounded-card border border-border bg-muted">
                     <SmartImage src={subcategory.image} alt={subcategory.alt || translateMaterialSubcategory(subcategory.name, language)} loading="lazy" width={300} height={300} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
                     <div className="absolute bottom-0 left-0 right-0 p-3">
-                      <h3 className="font-semibold text-sm leading-tight" style={{ color: "#fff", textShadow: "0 1px 3px rgba(0,0,0,0.5)" }}>
+                      <h3 className="text-sm font-semibold leading-tight text-on-media">
                         {translateMaterialSubcategory(subcategory.name, language)}
                       </h3>
                     </div>
@@ -133,7 +125,7 @@ const MaterialCategoryPage = () => {
               {category.items.map((item, index) => (
                 <Reveal key={item.id} delay={index * 60} direction="none">
                   <Link to={`/materials/${item.slug}`} className="group block hover-lift">
-                    <div className="relative overflow-hidden rounded-lg aspect-square mb-3 bg-card border border-border img-zoom">
+                    <div className="relative aspect-square overflow-hidden rounded-card mb-3 bg-card border border-border img-zoom">
                       <SmartImage src={item.image} alt={item.alt || item.name} loading="lazy" width={400} height={400} className="w-full h-full object-cover" />
                     </div>
                     <h3 className="font-semibold text-sm mb-1 group-hover:text-accent transition-colors">{item.name}</h3>
@@ -147,20 +139,24 @@ const MaterialCategoryPage = () => {
         </section>
       )}
 
-      <section className="section-padding bg-accent text-accent-foreground text-center">
+      <section className="section-padding relative overflow-hidden bg-surface-dark text-center">
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_0%,rgba(198,164,106,0.1),transparent_50%)]" aria-hidden />
         <Reveal>
-          <div className="container-narrow">
-            <h2 className="font-display text-3xl font-bold mb-4">{t.interested(displayCategoryName)}</h2>
-            <p className="text-accent-foreground/80 mb-6 max-w-lg mx-auto">{t.ctaText}</p>
-            <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center">
-              <Button variant="secondary" size="lg" className="btn-press w-full sm:w-auto min-h-[3rem] text-sm font-bold tracking-wide rounded-md px-8 py-3 justify-center" asChild>
-                <Link to="/quote">{t.quote} <ArrowRight className="ml-2 w-4 h-4" /></Link>
-              </Button>
-              <Button size="lg" className="btn-press w-full sm:w-auto min-h-[3rem] text-sm font-semibold bg-white text-neutral-800 border-0 hover:bg-white/90 shadow-md rounded-md px-8 py-3 justify-center" asChild>
-                <a href={settings.whatsapp_url()} target="_blank" rel="noopener noreferrer">
-                  <WhatsAppIcon className="w-[18px] h-[18px] mr-2 text-[#25D366]" /> {t.whatsapp}
-                </a>
-              </Button>
+          <div className="container-narrow relative">
+            <h2 className="heading-safe mb-4 font-display text-3xl font-bold text-surface-dark-foreground">{t.interested(displayCategoryName)}</h2>
+            <p className="mx-auto mb-6 max-w-lg text-surface-dark-foreground/75">{t.ctaText}</p>
+            <div className="flex flex-col justify-center gap-3 sm:flex-row sm:gap-4">
+              <Link to="/quote" className="btn-on-dark-primary min-h-12 w-full justify-center px-8 sm:w-auto">
+                {t.quote} <ArrowRight className="h-4 w-4" />
+              </Link>
+              <a
+                href={settings.whatsapp_url()}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="btn-on-dark-secondary min-h-12 w-full justify-center px-8 sm:w-auto"
+              >
+                <WhatsAppIcon className="mr-2 h-[18px] w-[18px] text-whatsapp" /> {t.whatsapp}
+              </a>
             </div>
           </div>
         </Reveal>

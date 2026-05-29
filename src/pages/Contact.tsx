@@ -1,4 +1,4 @@
-import { FormEvent, useState } from "react";
+﻿import { FormEvent, useState } from "react";
 import Link from "@/components/LocalizedLink";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -10,9 +10,11 @@ import SmartImage from "@/components/SmartImage";
 import PageMeta from "@/components/PageMeta";
 import { JsonLdBreadcrumb } from "@/components/JsonLd";
 import { submitContactLead } from "@/lib/leadApi";
+import { useFormGuard } from "@/hooks/useFormGuard";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { useSiteSettings } from "@/hooks/useSiteSettings";
 import heroImg from "@/assets/hero-contact.webp";
+import HeroBanner from "@/components/blocks/HeroBanner";
 
 const serviceItems = {
   en: [
@@ -184,6 +186,8 @@ const Contact = () => {
   const [form, setForm] = useState({ name: "", phone: "", email: "", projectType: "", location: "", message: "" });
   const [errors, setErrors] = useState<FormErrors>({});
   const [status, setStatus] = useState<"idle" | "submitting" | "success" | "error">("idle");
+  const formGuard = useFormGuard();
+  const [honeypot, setHoneypot] = useState("");
 
   const validate = (): boolean => {
     const e: FormErrors = {};
@@ -210,6 +214,8 @@ const Contact = () => {
         location: form.location,
         message: form.message,
         sourcePath: window.location.pathname,
+        website: honeypot,
+        startedAt: formGuard.startedAt,
       });
       setStatus("success");
     } catch (error) {
@@ -237,25 +243,11 @@ const Contact = () => {
     ) : null;
 
   return (
-    <main className="pt-16">
+    <main className="pt-site-header">
       <PageMeta title={t.metaTitle} description={t.metaDescription} keywords={t.metaKeywords} canonicalPath="/contact" />
       <JsonLdBreadcrumb items={[{ name: t.breadcrumbHome, url: "/" }, { name: t.breadcrumbCurrent, url: "/contact" }]} />
 
-      <section className="relative min-h-[45vh] flex items-center overflow-hidden">
-        <div className="absolute inset-0">
-          <SmartImage src={heroImg} alt={t.heroAlt} className="w-full h-full object-cover" width={1920} height={800} loading="eager" fetchPriority="high" />
-          <div className="absolute inset-0 media-readable-overlay" />
-        </div>
-        <div className="relative z-10 container-narrow px-5 md:px-8 py-20 md:py-28">
-          <p className="font-body font-semibold text-[11px] tracking-[0.3em] uppercase mb-4 text-gold">{t.heroEyebrow}</p>
-          <h1 className="font-display text-3xl md:text-5xl font-bold leading-tight mb-4 max-w-lg text-on-media">
-            {t.heroTitle}
-          </h1>
-          <p className="max-w-xl text-base md:text-lg leading-relaxed text-on-media-muted">
-            {t.heroText}
-          </p>
-        </div>
-      </section>
+      <HeroBanner image={heroImg} imageAlt={t.heroAlt} label={t.heroEyebrow} title={t.heroTitle} description={t.heroText} />
 
       <section className="section-padding bg-background">
         <div className="container-narrow">
@@ -266,7 +258,7 @@ const Contact = () => {
                 <h2 className="font-display text-2xl font-bold mb-6">{t.infoTitle}</h2>
                 <div className="space-y-5">
                   {contactItems.map((item) => (
-                    <div key={item.title} className="flex items-start gap-4 group p-4 rounded-lg border border-border hover-lift">
+                    <div key={item.title} className="flex items-start gap-4 group p-4 rounded-card border border-border hover-lift">
                       <div className="w-10 h-10 rounded-full bg-accent/10 flex items-center justify-center shrink-0">
                         <item.icon className="w-4 h-4 text-accent" />
                       </div>
@@ -278,7 +270,7 @@ const Contact = () => {
                   ))}
                 </div>
 
-                <div className="mt-6 p-4 bg-muted rounded-lg border border-border">
+                <div className="mt-6 p-4 bg-muted rounded-card border border-border">
                   <h3 className="font-semibold text-sm mb-3">{t.servicesTitle}</h3>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                     {serviceItems[language].map((service) => (
@@ -290,21 +282,24 @@ const Contact = () => {
                   </div>
                 </div>
 
-                <div className="mt-6 flex flex-col sm:flex-row gap-3 sm:gap-4">
-                  <Button size="lg" className="btn-press w-full sm:w-auto min-h-[3rem] text-sm font-bold tracking-wide rounded-md px-8 py-3 justify-center" asChild>
-                    <Link to="/quote">{t.quoteCta} <ArrowRight className="w-4 h-4 ml-2" /></Link>
-                  </Button>
-                  <Button size="lg" className="btn-press w-full sm:w-auto min-h-[3rem] text-sm font-semibold bg-card text-card-foreground border-0 hover:bg-card/90 shadow-md rounded-md px-8 py-3 justify-center" asChild>
-                    <a href={settings.whatsapp_url()} target="_blank" rel="noopener noreferrer">
-                      <WhatsAppIcon className="w-[18px] h-[18px] mr-2 text-whatsapp" /> {t.whatsappCta}
-                    </a>
-                  </Button>
+                <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:gap-4">
+                  <Link to="/quote" className="btn-brand-primary min-h-12 w-full justify-center px-8 sm:w-auto">
+                    {t.quoteCta} <ArrowRight className="h-4 w-4" />
+                  </Link>
+                  <a
+                    href={settings.whatsapp_url()}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="btn-brand-secondary min-h-12 w-full justify-center px-8 sm:w-auto"
+                  >
+                    <WhatsAppIcon className="mr-2 h-[18px] w-[18px] text-whatsapp" /> {t.whatsappCta}
+                  </a>
                 </div>
               </div>
             </Reveal>
 
             <Reveal direction="right" delay={150}>
-              <div className="bg-card p-6 md:p-8 rounded-lg border border-border">
+              <div className="rounded-card border border-border bg-card p-6 md:p-8">
                 {status === "success" ? (
                   <div className="text-center py-8">
                     <div className="w-14 h-14 mx-auto mb-5 rounded-full bg-accent/10 flex items-center justify-center">
@@ -420,6 +415,18 @@ const Contact = () => {
                         />
                         <FieldError id="contact-message-error" msg={errors.message} />
                       </div>
+                      <div className="absolute -left-[9999px] top-auto h-0 w-0 overflow-hidden" aria-hidden="true">
+                        <label htmlFor="contact-website">Website</label>
+                        <input
+                          id="contact-website"
+                          type="text"
+                          name="website"
+                          tabIndex={-1}
+                          autoComplete="off"
+                          value={honeypot}
+                          onChange={(e) => setHoneypot(e.target.value)}
+                        />
+                      </div>
                       <Button type="submit" size="lg" className="w-full btn-press font-semibold h-12" disabled={status === "submitting"} aria-busy={status === "submitting"}>
                         {status === "submitting" ? (
                           <><Loader2 className="w-4 h-4 mr-2 animate-spin" /> {t.sending}</>
@@ -446,7 +453,7 @@ const Contact = () => {
               <p className="text-muted-foreground text-sm">{t.mapDescription}</p>
             </div>
           </Reveal>
-          <div className="rounded-lg overflow-hidden border border-border">
+          <div className="overflow-hidden rounded-card-lg border border-border">
             <iframe
               src={mapEmbedSrc}
               width="100%"

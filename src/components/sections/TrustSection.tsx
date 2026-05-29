@@ -42,7 +42,7 @@ const TrustSection = () => {
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-5">
           {stats[language].map((item, i) => (
             <Reveal key={item.label} delay={i * 100}>
-              <div className="text-center p-5 md:p-6 rounded-lg border border-border bg-card group h-full">
+              <div className="text-center p-5 md:p-6 rounded-card border border-border bg-card group h-full">
                 <div className="w-12 h-12 mx-auto mb-3 rounded-full bg-muted flex items-center justify-center">
                   <item.icon className={`w-5 h-5 ${item.iconClass} transition-transform duration-300 group-hover:scale-110`} />
                 </div>
@@ -63,7 +63,7 @@ const TrustSection = () => {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-5">
               {testimonials.map((testimonial, i) => (
                 <Reveal key={i} delay={250 + i * 100}>
-                  <div className="p-5 md:p-6 bg-card rounded-lg border border-border h-full flex flex-col">
+                  <div className="flex h-full flex-col rounded-card border border-border bg-card p-5 md:p-6">
                     <div className="flex gap-1 mb-3">
                       {[...Array(5)].map((_, j) => (
                         <Star key={j} className="w-3.5 h-3.5 text-gold fill-gold" />

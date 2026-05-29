@@ -1,4 +1,4 @@
-import { useParams } from "react-router-dom";
+﻿import { useParams } from "react-router-dom";
 import { useMemo } from "react";
 import Link from "@/components/LocalizedLink";
 import { Button } from "@/components/ui/button";
@@ -69,7 +69,7 @@ const LandingPage = () => {
 
   if (!page) {
     return (
-      <main className="pt-16 section-padding text-center">
+      <main className="pt-site-header section-padding text-center">
         <PageMeta title={`${t.notFound} | ${t.metaSuffix}`} description={t.notFound} canonicalPath={`/landing/${slug || ""}`} />
         <h1 className="font-display text-3xl font-bold mb-4">{t.notFound}</h1>
         <Button asChild><Link to="/">{t.backHome}</Link></Button>
@@ -97,31 +97,34 @@ const LandingPage = () => {
     : page;
 
   return (
-    <main className="pt-16">
+    <main className="pt-site-header">
       <PageMeta
         title={landingPage.seoTitle || `${landingPage.title} | ${t.metaSuffix}`}
         description={landingPage.seoDescription || stripHtml(landingPage.description)}
         canonicalPath={`/landing/${slug || ""}`}
       />
-      <section className="relative min-h-[60vh] flex items-center">
+      <section className="page-hero lg:min-h-[600px]">
         <div className="absolute inset-0">
-          <SmartImage src={page.heroImage} alt={landingPage.heroAlt || landingPage.title} className="w-full h-full object-cover" loading="eager" width={1920} height={800} fetchPriority="high" />
-          <div className="absolute inset-0 bg-gradient-to-r from-foreground/90 via-foreground/75 to-foreground/40" />
+          <SmartImage src={page.heroImage} alt={landingPage.heroAlt || landingPage.title} className="h-full w-full object-cover" loading="eager" width={1920} height={800} fetchPriority="high" />
+          <div className="absolute inset-0 media-readable-overlay" aria-hidden="true" />
         </div>
-        <div className="relative z-10 container-narrow px-4 md:px-8 py-24">
-          <div className="max-w-xl">
-            <p className="text-accent font-medium text-sm tracking-widest uppercase mb-3">FLASH CAST SDN. BHD.</p>
-            <h1 className="font-display text-3xl md:text-5xl font-bold text-primary-foreground leading-tight mb-4">{landingPage.title}</h1>
-            <p className="text-steel-light text-lg mb-6">{landingPage.subtitle}</p>
-            <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
-              <Button size="lg" className="btn-press w-full sm:w-auto min-h-[3rem] text-sm font-bold tracking-wide shadow-xl shadow-accent/40 bg-accent hover:bg-accent/90 text-accent-foreground rounded-md px-8 py-3 justify-center" asChild>
-                <Link to="/quote">{t.quote} <ArrowRight className="w-4 h-4 ml-2" /></Link>
-              </Button>
-              <Button size="lg" className="btn-press w-full sm:w-auto min-h-[3rem] text-sm font-semibold bg-white text-neutral-800 border-0 hover:bg-white/90 shadow-md rounded-md px-8 py-3 justify-center" asChild>
-                <a href={settings.whatsapp_url()} target="_blank" rel="noopener noreferrer">
-                  <WhatsAppIcon className="w-[18px] h-[18px] mr-2 text-[#25D366]" /> {t.whatsapp}
-                </a>
-              </Button>
+        <div className="page-hero__content site-container">
+          <div className="max-w-xl min-w-0">
+            <p className="mb-3 text-sm font-medium uppercase tracking-widest text-gold">FLASH CAST SDN. BHD.</p>
+            <h1 className="heading-safe mb-4 text-3xl font-bold leading-tight text-on-media md:text-5xl">{landingPage.title}</h1>
+            <p className="prose-safe mb-6 text-lg text-on-media-muted">{landingPage.subtitle}</p>
+            <div className="flex flex-col gap-3 sm:flex-row sm:gap-4">
+              <Link to="/quote" className="btn-on-dark-primary min-h-12 w-full justify-center px-8 sm:w-auto">
+                {t.quote} <ArrowRight className="h-4 w-4" />
+              </Link>
+              <a
+                href={settings.whatsapp_url()}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="btn-on-dark-secondary min-h-12 w-full justify-center px-8 sm:w-auto"
+              >
+                <WhatsAppIcon className="mr-2 h-[18px] w-[18px] text-whatsapp" /> {t.whatsapp}
+              </a>
             </div>
           </div>
         </div>
@@ -143,7 +146,7 @@ const LandingPage = () => {
               </div>
             </Reveal>
             <Reveal direction="right" delay={100}>
-              <div className="bg-muted p-6 rounded-lg border border-border">
+              <div className="luxury-card-muted p-6">
                 <h3 className="font-semibold text-base mb-4">{t.whyChoose}</h3>
                 <ul className="space-y-3">
                   {landingPage.benefits.map((b) => (
@@ -172,7 +175,7 @@ const LandingPage = () => {
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 max-w-2xl mx-auto">
               {landingPage.relatedProjects.map((p, i) => (
                 <Reveal key={p.title} delay={i * 80}>
-                  <div className="rounded-lg overflow-hidden border border-border bg-background hover-lift">
+                  <div className="luxury-card overflow-hidden hover-lift">
                     <div className="aspect-[4/3] overflow-hidden">
                       <SmartImage src={p.image} alt={p.title} loading="lazy" width={600} height={450} className="w-full h-full object-cover" />
                     </div>

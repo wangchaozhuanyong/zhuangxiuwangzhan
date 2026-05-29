@@ -1,7 +1,8 @@
-import { useParams } from "react-router-dom";
+﻿import { useParams } from "react-router-dom";
 import Link from "@/components/LocalizedLink";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, ArrowRight } from "lucide-react";
+import { ArrowRight } from "lucide-react";
+import HeroBanner from "@/components/blocks/HeroBanner";
 import WhatsAppIcon from "@/components/WhatsAppIcon";
 import { materialsData } from "@/data/materials";
 import { usePublishedMaterials } from "@/hooks/usePublishedContent";
@@ -64,7 +65,7 @@ const MaterialSubcategoryPage = () => {
 
   if (!category || !subcategory) {
     return (
-      <main className="pt-16 section-padding text-center">
+      <main className="pt-site-header section-padding text-center">
         <h1 className="font-display text-3xl font-bold mb-4">{t.notFound}</h1>
         <Button asChild><Link to="/materials">{t.viewAll}</Link></Button>
       </main>
@@ -72,7 +73,7 @@ const MaterialSubcategoryPage = () => {
   }
 
   return (
-    <main className="pt-16">
+    <main className="pt-site-header">
       <PageMeta
         title={`${displaySubcategoryName} | ${displayCategoryName} | FLASH CAST`}
         description={t.metaDescription(subcategory.description, displaySubcategoryName)}
@@ -81,18 +82,14 @@ const MaterialSubcategoryPage = () => {
       />
       <JsonLdBreadcrumb items={[{ name: t.breadcrumbHome, url: "/" }, { name: t.breadcrumbMaterials, url: "/materials" }, { name: displayCategoryName, url: `/materials/category/${category.slug}` }, { name: displaySubcategoryName, url: `/materials/category/${category.slug}/${subcategory.slug}` }]} />
 
-      <section className="bg-muted border-b border-border">
-        <div className="section-padding !pb-0">
-          <div className="container-narrow">
-            <Link to={`/materials/category/${category.slug}`} className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-accent mb-6 transition-colors">
-              <ArrowLeft className="w-4 h-4" /> {displayCategoryName}
-            </Link>
-            <div className="accent-line mb-4" />
-            <h1 className="font-display text-3xl md:text-4xl font-bold mb-2 md:text-center">{displaySubcategoryName}</h1>
-            <p className="text-muted-foreground max-w-xl md:mx-auto md:text-center pb-12 md:pb-16">{subcategory.description}</p>
-          </div>
-        </div>
-      </section>
+      <HeroBanner
+        image={subcategory.image}
+        imageAlt={subcategory.alt || displaySubcategoryName}
+        title={displaySubcategoryName}
+        description={subcategory.description}
+        backTo={`/materials/category/${category.slug}`}
+        backLabel={displayCategoryName}
+      />
 
       <section className="section-padding bg-background">
         <div className="container-narrow">
@@ -101,7 +98,7 @@ const MaterialSubcategoryPage = () => {
               {items.map((item, index) => (
                 <Reveal key={item.id} delay={index * 60} direction="none">
                   <Link to={`/materials/${item.slug}`} className="group block hover-lift">
-                    <div className="relative overflow-hidden rounded-lg aspect-square mb-3 bg-muted border border-border img-zoom">
+                    <div className="relative aspect-square overflow-hidden rounded-card mb-3 bg-muted border border-border img-zoom">
                       <SmartImage src={item.image} alt={item.alt || item.name} loading="lazy" width={400} height={400} className="w-full h-full object-cover" />
                     </div>
                     <h3 className="font-semibold text-sm mb-1 group-hover:text-accent transition-colors">{item.name}</h3>
@@ -123,20 +120,24 @@ const MaterialSubcategoryPage = () => {
         </div>
       </section>
 
-      <section className="section-padding bg-accent text-accent-foreground text-center">
+      <section className="section-padding relative overflow-hidden bg-surface-dark text-center">
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_0%,rgba(198,164,106,0.1),transparent_50%)]" aria-hidden />
         <Reveal>
-          <div className="container-narrow">
-            <h2 className="font-display text-3xl font-bold mb-4">{t.interested(displaySubcategoryName)}</h2>
-            <p className="text-accent-foreground/80 mb-6 max-w-lg mx-auto">{t.ctaText}</p>
-            <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center">
-              <Button variant="secondary" size="lg" className="btn-press w-full sm:w-auto min-h-[3rem] text-sm font-bold tracking-wide rounded-md px-8 py-3 justify-center" asChild>
-                <Link to="/quote">{t.quote} <ArrowRight className="ml-2 w-4 h-4" /></Link>
-              </Button>
-              <Button size="lg" className="btn-press w-full sm:w-auto min-h-[3rem] text-sm font-semibold bg-white text-neutral-800 border-0 hover:bg-white/90 shadow-md rounded-md px-8 py-3 justify-center" asChild>
-                <a href={settings.whatsapp_url()} target="_blank" rel="noopener noreferrer">
-                  <WhatsAppIcon className="w-[18px] h-[18px] mr-2 text-[#25D366]" /> {t.whatsapp}
-                </a>
-              </Button>
+          <div className="container-narrow relative">
+            <h2 className="heading-safe mb-4 font-display text-3xl font-bold text-surface-dark-foreground">{t.interested(displaySubcategoryName)}</h2>
+            <p className="mx-auto mb-6 max-w-lg text-surface-dark-foreground/75">{t.ctaText}</p>
+            <div className="flex flex-col justify-center gap-3 sm:flex-row sm:gap-4">
+              <Link to="/quote" className="btn-on-dark-primary min-h-12 w-full justify-center px-8 sm:w-auto">
+                {t.quote} <ArrowRight className="h-4 w-4" />
+              </Link>
+              <a
+                href={settings.whatsapp_url()}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="btn-on-dark-secondary min-h-12 w-full justify-center px-8 sm:w-auto"
+              >
+                <WhatsAppIcon className="mr-2 h-[18px] w-[18px] text-whatsapp" /> {t.whatsapp}
+              </a>
             </div>
           </div>
         </Reveal>

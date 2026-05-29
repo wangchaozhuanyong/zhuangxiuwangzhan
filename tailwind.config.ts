@@ -14,6 +14,9 @@ export default {
       },
     },
     extend: {
+      maxWidth: {
+        site: "1180px",
+      },
       fontFamily: {
         display: ['Playfair Display', 'Noto Sans SC', 'serif'],
         body: ['Inter', 'Noto Sans SC', 'sans-serif'],
@@ -83,6 +86,15 @@ export default {
         lg: "var(--radius)",
         md: "calc(var(--radius) - 2px)",
         sm: "calc(var(--radius) - 4px)",
+        btn: "10px",
+        card: "18px",
+        "card-lg": "24px",
+        hero: "28px",
+      },
+      boxShadow: {
+        luxury: "0 24px 80px -52px rgba(21, 18, 14, 0.45)",
+        "luxury-soft": "0 22px 70px -56px rgba(21, 18, 14, 0.5)",
+        "luxury-hover": "0 24px 56px -34px rgba(21, 18, 14, 0.45)",
       },
       keyframes: {
         "accordion-down": {

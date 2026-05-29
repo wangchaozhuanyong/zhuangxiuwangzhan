@@ -1,4 +1,4 @@
-import { lazy, Suspense } from "react";
+import { lazy, Suspense, useEffect } from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Navigate, Route, Routes, useLocation } from "react-router-dom";
 import { HelmetProvider } from "react-helmet-async";
@@ -89,6 +89,18 @@ const AppShell = () => {
   const { language } = useLanguage();
   const isAdminRoute = location.pathname.startsWith("/admin");
   const isHomeRoute = /^\/(en|zh)\/?$/.test(location.pathname);
+  const showFloatingCta = !isAdminRoute && !isHomeRoute;
+
+  useEffect(() => {
+    if (showFloatingCta) {
+      document.documentElement.dataset.floatingCta = "true";
+    } else {
+      delete document.documentElement.dataset.floatingCta;
+    }
+    return () => {
+      delete document.documentElement.dataset.floatingCta;
+    };
+  }, [showFloatingCta]);
 
   return (
     <>
@@ -188,7 +200,7 @@ const AppShell = () => {
         </Suspense>
       </div>
       {!isAdminRoute && <Footer />}
-      {!isAdminRoute && !isHomeRoute && <FloatingCTA />}
+      {showFloatingCta && <FloatingCTA />}
     </>
   );
 };

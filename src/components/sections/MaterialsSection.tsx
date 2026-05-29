@@ -42,7 +42,7 @@ const MaterialsSection = () => {
                 to={`/materials/category/${cat.slug}`}
                 className="group block h-full"
               >
-                <div className="card-equal rounded-lg overflow-hidden bg-card border border-border hover-lift transition-colors hover:border-accent/30">
+                <div className="card-equal luxury-card overflow-hidden hover-lift transition-colors hover:border-accent/30">
                   <div className="aspect-square overflow-hidden img-zoom">
                     <SmartImage
                       src={cat.image}

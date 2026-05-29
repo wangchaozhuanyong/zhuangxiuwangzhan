@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+﻿import { useMemo } from "react";
 import { useParams } from "react-router-dom";
 import Link from "@/components/LocalizedLink";
 import { Button } from "@/components/ui/button";
@@ -100,7 +100,7 @@ const BlogDetail = () => {
 
   if (!post) {
     return (
-      <main className="pt-16 section-padding text-center">
+      <main className="pt-site-header section-padding text-center">
         <h1 className="font-display text-3xl font-bold mb-4">{t.notFound}</h1>
         <Button asChild><Link to="/blog">{t.backToBlog}</Link></Button>
       </main>
@@ -156,7 +156,7 @@ const BlogDetail = () => {
   };
 
   return (
-    <main className="pt-16">
+    <main className="pt-site-header">
       <PageMeta
         title={`${displayText(post.title)} | ${t.metaSuffix}`}
         description={displayText(post.excerpt)}
@@ -172,8 +172,8 @@ const BlogDetail = () => {
             <ArrowLeft className="w-3.5 h-3.5" /> {t.backToBlog}
           </Link>
           <span className="text-accent text-xs font-medium uppercase tracking-wider block mb-3">{translateBlogCategory(post.category, language)}</span>
-          <h1 className="font-display text-3xl md:text-4xl font-bold text-primary-foreground mb-4">{displayText(post.title)}</h1>
-          <div className="flex items-center gap-4 text-sm text-steel-light">
+          <h1 className="heading-safe mb-4 font-display text-3xl font-bold text-surface-dark-foreground md:text-4xl">{displayText(post.title)}</h1>
+          <div className="flex items-center gap-4 text-sm text-surface-dark-foreground/65">
             <span className="flex items-center gap-1"><Clock className="w-3.5 h-3.5" /> {readTime}</span>
             <span>{post.date}</span>
           </div>
@@ -181,7 +181,7 @@ const BlogDetail = () => {
       </section>
 
       <div className="container-narrow max-w-3xl px-4 md:px-8 -mt-4">
-        <SmartImage src={post.image} alt={displayText(post.title)} className="w-full rounded-lg aspect-[2/1] object-cover" width={1200} height={600} loading="eager" />
+        <SmartImage src={post.image} alt={displayText(post.title)} className="aspect-[2/1] w-full rounded-card-lg object-cover shadow-luxury" width={1200} height={600} loading="eager" />
       </div>
 
       <section className="section-padding bg-background">
@@ -198,18 +198,21 @@ const BlogDetail = () => {
             </div>
           </div>
 
-          <div className="mt-10 p-6 bg-muted rounded-lg text-center">
-            <h3 className="font-display text-xl font-bold mb-2">{t.ctaTitle}</h3>
-            <p className="text-muted-foreground text-sm mb-4">{t.ctaText}</p>
-            <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center">
-              <Button size="lg" className="btn-press w-full sm:w-auto min-h-[3rem] text-sm font-bold tracking-wide rounded-md px-8 py-3 justify-center" asChild>
-                <Link to="/quote">{t.quote} <ArrowRight className="w-4 h-4 ml-2" /></Link>
-              </Button>
-              <Button size="lg" className="btn-press w-full sm:w-auto min-h-[3rem] text-sm font-semibold bg-white text-neutral-800 border-0 hover:bg-white/90 shadow-md rounded-md px-8 py-3 justify-center" asChild>
-                <a href={settings.whatsapp_url()} target="_blank" rel="noopener noreferrer">
-                  <WhatsAppIcon className="w-[18px] h-[18px] mr-2 text-[#25D366]" /> {t.whatsapp}
-                </a>
-              </Button>
+          <div className="luxury-card-muted mt-10 p-6 text-center">
+            <h3 className="heading-safe mb-2 font-display text-xl font-bold">{t.ctaTitle}</h3>
+            <p className="mb-4 text-sm text-muted-foreground">{t.ctaText}</p>
+            <div className="flex flex-col justify-center gap-3 sm:flex-row sm:gap-4">
+              <Link to="/quote" className="btn-brand-primary min-h-12 w-full justify-center px-8 sm:w-auto">
+                {t.quote} <ArrowRight className="h-4 w-4" />
+              </Link>
+              <a
+                href={settings.whatsapp_url()}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="btn-brand-secondary min-h-12 w-full justify-center px-8 sm:w-auto"
+              >
+                <WhatsAppIcon className="mr-2 h-[18px] w-[18px] text-whatsapp" /> {t.whatsapp}
+              </a>
             </div>
           </div>
 
@@ -232,7 +235,7 @@ const BlogDetail = () => {
           <h2 className="font-display text-2xl font-bold mb-8">{t.moreArticles}</h2>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
             {otherPosts.map((item) => (
-              <Link key={item.id} to={`/blog/${item.slug}`} className="group rounded-lg overflow-hidden bg-card border border-border hover-lift">
+              <Link key={item.id} to={`/blog/${item.slug}`} className="group luxury-card overflow-hidden hover-lift">
                 <div className="aspect-[16/10] overflow-hidden">
                   <SmartImage src={item.image} alt={item.title} loading="lazy" width={400} height={300} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
                 </div>

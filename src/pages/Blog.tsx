@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+﻿import { useMemo, useState } from "react";
 import SmartImage from "@/components/SmartImage";
 import Link from "@/components/LocalizedLink";
 import { Clock } from "lucide-react";
@@ -115,7 +115,7 @@ const Blog = () => {
   const filtered = posts.filter((post) => matchesCategory(post.category, filter));
 
   return (
-    <main className="pt-16">
+    <main className="pt-site-header">
       <PageMeta
         title={t.metaTitle}
         description={t.metaDescription}
@@ -124,11 +124,12 @@ const Blog = () => {
       />
       <JsonLdBreadcrumb items={[{ name: t.breadcrumbHome, url: "/" }, { name: t.breadcrumbBlog, url: "/blog" }]} />
 
-      <section className="section-padding bg-surface-dark">
-        <div className="container-narrow">
+      <section className="section-padding relative overflow-hidden bg-surface-dark">
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,rgba(198,164,106,0.1),transparent_45%)]" aria-hidden />
+        <div className="container-narrow relative">
           <div className="accent-line mb-4" />
-          <h1 className="font-display text-3xl md:text-5xl font-bold text-primary-foreground mb-4">{t.title}</h1>
-          <p className="text-steel-light max-w-2xl text-lg">{t.intro}</p>
+          <h1 className="heading-safe mb-4 font-display text-3xl font-bold text-surface-dark-foreground md:text-5xl">{t.title}</h1>
+          <p className="prose-safe max-w-2xl text-lg text-surface-dark-foreground/75">{t.intro}</p>
         </div>
       </section>
 
@@ -151,7 +152,7 @@ const Blog = () => {
 
           {filter === "All" && filtered[0] && (
             <Link to={`/blog/${filtered[0].slug}`} className="group block mb-10">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-center bg-card border border-border rounded-lg overflow-hidden hover-lift">
+              <div className="luxury-card grid grid-cols-1 items-center gap-6 overflow-hidden hover-lift md:grid-cols-2">
                 <div className="aspect-[16/10] overflow-hidden">
                   <SmartImage src={filtered[0].image} alt={filtered[0].title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" width={800} height={500} />
                 </div>
@@ -170,7 +171,7 @@ const Blog = () => {
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {(filter === "All" ? filtered.slice(1) : filtered).map((post) => (
-              <Link key={post.id} to={`/blog/${post.slug}`} className="group rounded-lg overflow-hidden bg-card border border-border hover-lift">
+              <Link key={post.id} to={`/blog/${post.slug}`} className="group luxury-card overflow-hidden hover-lift">
                 <div className="aspect-[16/10] overflow-hidden">
                   <SmartImage src={post.image} alt={post.title} loading="lazy" width={600} height={400} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
                 </div>

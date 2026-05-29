@@ -17,9 +17,7 @@ interface IconCardItem {
 interface IconCardGridProps {
   items: IconCardItem[];
   columns?: 2 | 3 | 4;
-  /** If true, cards are left-aligned (default). If false, cards use centered text. */
   alignLeft?: boolean;
-  /** Layout mode: "vertical" = icon on top (default), "horizontal" = icon left + content right. */
   layout?: "vertical" | "horizontal";
 }
 
@@ -33,30 +31,28 @@ const IconCardGrid = ({ items, columns = 2, alignLeft = true, layout = "vertical
   const isHorizontal = layout === "horizontal";
 
   return (
-    <div className={`grid ${colClass} items-stretch gap-4 md:gap-5`}>
+    <div className={`card-grid grid ${colClass} gap-5`}>
       {items.map((item, i) => {
         const content = (
           <div
-            className={`group luxury-card-muted relative hover-lift h-full transition-colors hover:border-accent/30 ${
-              isHorizontal
-                ? "flex items-start gap-4 p-5 md:p-6"
-                : `p-6 md:p-7 ${alignLeft ? "" : "text-center"}`
+            className={`group luxury-card-muted relative h-full transition-colors hover:border-accent/30 hover-lift ${
+              isHorizontal ? "flex items-start gap-4 p-5 md:p-6" : `p-6 md:p-7 ${alignLeft ? "" : "text-center"}`
             }`}
           >
             <div
-              className={`rounded-md border border-border/70 bg-background/75 flex items-center justify-center transition-colors group-hover:border-accent/40 group-hover:bg-accent/10 ${
-                isHorizontal
-                  ? "w-10 h-10 shrink-0"
-                  : `w-12 h-12 mb-4 ${alignLeft ? "" : "mx-auto"}`
+              className={`flex items-center justify-center rounded-full border border-accent/20 bg-accent/10 transition-colors group-hover:border-accent/35 ${
+                isHorizontal ? "h-11 w-11 shrink-0" : `mb-4 h-12 w-12 ${alignLeft ? "" : "mx-auto"}`
               }`}
             >
-              <item.icon className="w-5 h-5 text-accent transition-transform duration-300 group-hover:scale-110" />
+              <item.icon className="h-5 w-5 text-gold" />
             </div>
-            <div className={isHorizontal ? "min-w-0 flex-1 flex flex-col" : ""}>
-              <h3 className={`font-display font-semibold text-base md:text-lg group-hover:text-accent transition-colors ${isHorizontal ? "mb-1" : "mb-2"}`}>
+            <div className={isHorizontal ? "flex min-w-0 flex-1 flex-col" : ""}>
+              <h3
+                className={`heading-safe font-display text-base font-semibold transition-colors group-hover:text-gold md:text-lg ${isHorizontal ? "mb-1" : "mb-2"}`}
+              >
                 {item.title}
               </h3>
-              <p className={`text-muted-foreground text-sm leading-relaxed ${isHorizontal ? "mt-auto" : ""}`}>{item.desc}</p>
+              <p className={`prose-safe text-sm text-muted-foreground ${isHorizontal ? "mt-auto" : ""}`}>{item.desc}</p>
             </div>
           </div>
         );

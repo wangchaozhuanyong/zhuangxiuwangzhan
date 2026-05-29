@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+﻿import { useMemo } from "react";
 import { CheckCircle } from "lucide-react";
 import Reveal from "@/components/Reveal";
 import PageMeta from "@/components/PageMeta";
@@ -78,7 +78,7 @@ const Process = () => {
   }, [publishedSteps, t.steps]);
 
   return (
-    <main className="pt-16">
+    <main className="pt-site-header">
       <PageMeta title={t.metaTitle} description={t.metaDescription} keywords={t.metaKeywords} canonicalPath="/process" />
       <JsonLdBreadcrumb items={[{ name: t.breadcrumbHome, url: "/" }, { name: t.breadcrumbProcess, url: "/process" }]} />
 
@@ -91,7 +91,7 @@ const Process = () => {
           <div className="mx-auto max-w-3xl space-y-6">
             {steps.map((step, index) => (
               <Reveal key={step.num} delay={index * 80}>
-                <div className="hover-lift relative flex gap-5 rounded-lg border border-border bg-card p-6 md:gap-7 md:p-8">
+                <div className="luxury-card hover-lift relative flex gap-5 p-6 md:gap-7 md:p-8">
                   <div className="shrink-0">
                     <div className="flex h-14 w-14 items-center justify-center rounded-full bg-accent font-display text-lg font-bold text-accent-foreground">
                       {step.num}

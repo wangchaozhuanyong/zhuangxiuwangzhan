@@ -50,17 +50,17 @@ const StatsSection = () => {
 
   return (
     <section className="bg-background py-10 md:py-14 lg:py-16 border-b border-border/70" id="trust">
-      <div className="container-narrow px-5 md:px-8">
+      <div className="container-narrow">
         <div className="grid grid-cols-1 items-stretch gap-5 sm:grid-cols-2 lg:grid-cols-4 md:gap-6">
           {display.map((stat: any, i: number) => {
             const Icon = stat.icon;
             return (
               <Reveal key={i} delay={i * 80}>
-                <div className="luxury-card h-full p-6 text-center hover-lift flex flex-col">
+                <div className="luxury-card-stats flex h-full flex-col p-6 text-center hover-lift">
                   <div className="mb-3 flex justify-center">
-                    <Icon className={`w-7 h-7 ${stat.iconClass}`} />
+                    <Icon className={`h-7 w-7 stroke-[1.25] ${stat.iconClass}`} />
                   </div>
-                  <div className="font-display text-2xl md:text-3xl font-bold mb-1">
+                  <div className="font-display mb-1 text-2xl font-bold md:text-4xl">
                     {stat.value}
                   </div>
                   <div className="font-semibold text-sm mb-2">{stat.label}</div>

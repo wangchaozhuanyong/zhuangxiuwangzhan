@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+﻿import { useMemo } from "react";
 import Link from "@/components/LocalizedLink";
 import { Button } from "@/components/ui/button";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
@@ -9,8 +9,8 @@ import WhatsAppIcon from "@/components/WhatsAppIcon";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { useSiteSettings } from "@/hooks/useSiteSettings";
 import { usePublishedFaqs } from "@/hooks/usePublishedContent";
-import SmartImage from "@/components/SmartImage";
 import heroImg from "@/assets/hero-faq.webp";
+import HeroBanner from "@/components/blocks/HeroBanner";
 
 const faqContent = {
   en: {
@@ -147,26 +147,12 @@ const FAQ = () => {
   }, [publishedFaqs, t.categories, language]);
 
   return (
-    <main className="pt-16">
+    <main className="pt-site-header">
       <PageMeta title={t.metaTitle} description={t.metaDescription} keywords={t.metaKeywords} canonicalPath="/faq" />
       <JsonLdFAQ faqs={categories.flatMap((cat) => cat.items.map((item) => ({ question: item.q, answer: item.a })))} />
       <JsonLdBreadcrumb items={[{ name: t.breadcrumbHome, url: "/" }, { name: t.breadcrumbFaq, url: "/faq" }]} />
 
-      <section className="relative min-h-[45vh] flex items-center overflow-hidden">
-        <div className="absolute inset-0">
-          <SmartImage src={heroImg} alt={t.heroAlt} className="w-full h-full object-cover" width={1920} height={800} loading="eager" fetchPriority="high" />
-          <div className="absolute inset-0 bg-gradient-to-r from-black/60 via-black/30 to-transparent" />
-        </div>
-        <div className="relative z-10 container-narrow px-5 md:px-8 py-20 md:py-28">
-          <p className="font-body font-semibold text-[11px] tracking-[0.3em] uppercase mb-4" style={{ color: "hsl(var(--gold))" }}>{t.eyebrow}</p>
-          <h1 className="font-display text-3xl md:text-5xl font-bold leading-tight mb-4 max-w-lg" style={{ color: "#fff", textShadow: "0 2px 8px rgba(0,0,0,0.5)" }}>
-            {t.title}
-          </h1>
-          <p className="max-w-xl text-base md:text-lg leading-relaxed" style={{ color: "rgba(255,255,255,0.9)", textShadow: "0 1px 4px rgba(0,0,0,0.4)" }}>
-            {t.intro}
-          </p>
-        </div>
-      </section>
+      <HeroBanner image={heroImg} imageAlt={t.heroAlt} label={t.eyebrow} title={t.title} description={t.intro} />
 
       <section className="section-padding bg-background">
         <div className="container-narrow max-w-3xl">
@@ -177,7 +163,7 @@ const FAQ = () => {
                 <h2 className="font-display text-xl font-bold mb-4">{category.category}</h2>
                 <Accordion type="single" collapsible className="space-y-2">
                   {category.items.map((item, index) => (
-                    <AccordionItem key={`${category.category}-${index}`} value={`${category.category}-${index}`} className="bg-card rounded-lg border border-border px-4">
+                    <AccordionItem key={`${category.category}-${index}`} value={`${category.category}-${index}`} className="rounded-card border border-border bg-card px-4 data-[state=open]:border-accent/25">
                       <AccordionTrigger className="text-left text-sm font-medium">{item.q}</AccordionTrigger>
                       <AccordionContent className="text-muted-foreground text-sm">{item.a}</AccordionContent>
                     </AccordionItem>
@@ -192,18 +178,21 @@ const FAQ = () => {
       <section className="section-padding bg-surface-dark text-center">
         <Reveal>
           <div className="container-narrow">
-            <div className="accent-line mx-auto mb-4" style={{ backgroundColor: "hsl(var(--gold))" }} />
-            <h2 className="font-display text-3xl font-bold mb-4 text-primary-foreground">{t.ctaTitle}</h2>
-            <p className="text-steel-light mb-6">{t.ctaText}</p>
-            <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center">
-              <Button size="lg" className="btn-press w-full sm:w-auto min-h-[3rem] text-sm font-bold tracking-wide rounded-md px-8 py-3 justify-center" asChild>
-                <Link to="/contact">{t.contact}</Link>
-              </Button>
-              <Button size="lg" className="btn-press w-full sm:w-auto min-h-[3rem] text-sm font-semibold bg-white text-neutral-800 border-0 hover:bg-white/90 shadow-md rounded-md px-8 py-3 justify-center" asChild>
-                <a href={settings.whatsapp_url()} target="_blank" rel="noopener noreferrer">
-                  <WhatsAppIcon className="w-[18px] h-[18px] mr-2 text-[#25D366]" /> {t.whatsapp}
-                </a>
-              </Button>
+            <div className="accent-line mx-auto mb-4" />
+            <h2 className="heading-safe mb-4 font-display text-3xl font-bold text-surface-dark-foreground">{t.ctaTitle}</h2>
+            <p className="mb-6 text-surface-dark-foreground/75">{t.ctaText}</p>
+            <div className="flex flex-col justify-center gap-3 sm:flex-row sm:gap-4">
+              <Link to="/contact" className="btn-on-dark-primary min-h-12 w-full justify-center px-8 sm:w-auto">
+                {t.contact}
+              </Link>
+              <a
+                href={settings.whatsapp_url()}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="btn-on-dark-secondary min-h-12 w-full justify-center px-8 sm:w-auto"
+              >
+                <WhatsAppIcon className="mr-2 h-[18px] w-[18px] text-whatsapp" /> {t.whatsapp}
+              </a>
             </div>
           </div>
         </Reveal>

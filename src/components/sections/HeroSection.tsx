@@ -24,37 +24,59 @@ const HeroSection = () => {
   const { data: slides } = usePublishedHeroSlides(language);
   const slide = slides?.[0] ?? null;
   const [reduceMotion, setReduceMotion] = useState(false);
+  const [saveData, setSaveData] = useState(false);
+  const [videoReady, setVideoReady] = useState(false);
 
   useEffect(() => {
-    const mediaQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
-    const updatePreference = () => setReduceMotion(mediaQuery.matches);
-    updatePreference();
-    mediaQuery.addEventListener("change", updatePreference);
-    return () => mediaQuery.removeEventListener("change", updatePreference);
+    const motionQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
+    const dataQuery = window.matchMedia("(prefers-reduced-data: reduce)");
+    const update = () => {
+      setReduceMotion(motionQuery.matches);
+      setSaveData(dataQuery.matches);
+    };
+    update();
+    motionQuery.addEventListener("change", update);
+    dataQuery.addEventListener("change", update);
+    return () => {
+      motionQuery.removeEventListener("change", update);
+      dataQuery.removeEventListener("change", update);
+    };
   }, []);
 
   const visualTitle = slide?.title || copy.title;
   const visualSubtitle = slide?.excerpt || copy.subtitle;
+  const showVideo = !reduceMotion && !saveData;
 
   return (
     <section
       className="relative min-h-[100svh] overflow-hidden bg-surface-dark"
       aria-labelledby="home-hero-title"
     >
-      <div className="absolute inset-0" aria-hidden="true">
+      <div className="absolute inset-0 bg-surface-dark" aria-hidden="true">
         <video
-          className="h-full w-full object-cover"
+          className={`h-full w-full object-cover transition-opacity duration-500 ${showVideo && videoReady ? "opacity-100" : "opacity-0"}`}
           poster="/videos/home-hero-poster.webp?v=20260526-hq"
-          autoPlay={!reduceMotion}
+          autoPlay={showVideo}
           muted
-          loop={!reduceMotion}
+          loop={showVideo}
           playsInline
-          preload="metadata"
+          preload={showVideo ? "metadata" : "none"}
           aria-label={copy.videoAlt}
+          onLoadedData={() => setVideoReady(true)}
         >
-          <source src="/videos/home-hero-mobile.mp4?v=20260526-hq" type="video/mp4" media="(max-width: 767px)" />
-          <source src="/videos/home-hero.mp4?v=20260526-hq" type="video/mp4" />
+          <source src="/videos/home-hero-mobile.webm?v=20260528" type="video/webm" media="(max-width: 767px)" />
+          <source src="/videos/home-hero-mobile.mp4?v=20260528" type="video/mp4" media="(max-width: 767px)" />
+          <source src="/videos/home-hero.webm?v=20260528" type="video/webm" />
+          <source src="/videos/home-hero.mp4?v=20260528" type="video/mp4" />
         </video>
+        <img
+          src="/videos/home-hero-poster.webp?v=20260526-hq"
+          alt=""
+          className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-500 ${!showVideo || !videoReady ? "opacity-100" : "opacity-0"}`}
+          fetchPriority="high"
+          decoding="async"
+        />
+        <div className="absolute inset-0 home-hero-overlay" />
       </div>
 
       <h1 id="home-hero-title" className="sr-only">

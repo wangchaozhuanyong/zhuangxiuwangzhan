@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Helmet } from "react-helmet-async";
 import { Navigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -55,6 +56,9 @@ const AdminLogin = () => {
 
   return (
     <main className="min-h-screen bg-muted pt-24 px-4">
+      <Helmet>
+        <meta name="robots" content="noindex, nofollow" />
+      </Helmet>
       <form onSubmit={handleSubmit} className="mx-auto max-w-md rounded-xl border border-border bg-card p-8 shadow-sm">
         <p className="text-xs font-semibold uppercase tracking-[0.25em] text-accent mb-2">{t.brand}</p>
         <h1 className="font-display text-2xl font-bold mb-6">{t.title}</h1>

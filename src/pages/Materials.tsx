@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+﻿import { useMemo } from "react";
 import Link from "@/components/LocalizedLink";
 import { Button } from "@/components/ui/button";
 import { ArrowRight } from "lucide-react";
@@ -12,6 +12,7 @@ import PageMeta from "@/components/PageMeta";
 import { JsonLdBreadcrumb } from "@/components/JsonLd";
 import { useSiteSettings } from "@/hooks/useSiteSettings";
 import heroImg from "@/assets/hero-materials.webp";
+import HeroBanner from "@/components/blocks/HeroBanner";
 import { translateMaterialCategory } from "@/i18n/displayLabels";
 
 const copy = {
@@ -74,27 +75,11 @@ const Materials = () => {
   const displayCategoryName = (value: string) => translateMaterialCategory(value, language);
 
   return (
-    <main className="pt-16">
+    <main className="pt-site-header">
       <PageMeta title={t.metaTitle} description={t.metaDescription} keywords={t.metaKeywords} canonicalPath="/materials" />
       <JsonLdBreadcrumb items={[{ name: t.breadcrumbHome, url: "/" }, { name: t.breadcrumbMaterials, url: "/materials" }]} />
 
-      <section className="relative flex min-h-[45vh] items-center overflow-hidden">
-        <div className="absolute inset-0">
-          <SmartImage src={heroImg} alt={t.heroAlt} className="h-full w-full object-cover" width={1920} height={800} loading="eager" fetchPriority="high" />
-          <div className="absolute inset-0 media-readable-overlay" />
-        </div>
-        <div className="relative z-10 container-narrow px-5 py-20 md:px-8 md:py-28">
-          <p className="mb-4 font-body text-[11px] font-semibold uppercase tracking-[0.3em] text-gold">
-            {t.eyebrow}
-          </p>
-          <h1 className="mb-4 max-w-lg font-display text-3xl font-bold leading-tight text-on-media md:text-5xl">
-            {t.title}
-          </h1>
-          <p className="max-w-xl text-base leading-relaxed text-on-media-muted md:text-lg">
-            {t.intro}
-          </p>
-        </div>
-      </section>
+      <HeroBanner image={heroImg} imageAlt={t.heroAlt} label={t.eyebrow} title={t.title} description={t.intro} />
 
       <section className="section-padding bg-background">
         <div className="container-narrow">
@@ -110,7 +95,7 @@ const Materials = () => {
             {categories.map((category, index) => (
               <Reveal key={category.slug} delay={index * 80}>
                 <Link to={`/materials/category/${category.slug}`} className="group block hover-lift">
-                  <div className="relative aspect-[4/3] overflow-hidden rounded-xl border border-border bg-muted">
+                  <div className="relative aspect-[4/3] overflow-hidden rounded-card-lg border border-border bg-muted img-zoom">
                     <SmartImage
                       src={category.image}
                       alt={category.alt || displayCategoryName(category.name)}
@@ -136,22 +121,24 @@ const Materials = () => {
         </div>
       </section>
 
-      <section className="section-padding bg-accent text-center text-accent-foreground">
+      <section className="section-padding relative overflow-hidden bg-surface-dark text-center">
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_0%,rgba(198,164,106,0.1),transparent_50%)]" aria-hidden />
         <Reveal>
-          <div className="container-narrow">
-            <h2 className="mb-4 font-display text-3xl font-bold">{t.ctaTitle}</h2>
-            <p className="mx-auto mb-6 max-w-lg text-accent-foreground/80">{t.ctaText}</p>
+          <div className="container-narrow relative">
+            <h2 className="heading-safe mb-4 font-display text-3xl font-bold text-surface-dark-foreground">{t.ctaTitle}</h2>
+            <p className="mx-auto mb-6 max-w-lg text-surface-dark-foreground/75">{t.ctaText}</p>
             <div className="flex flex-col justify-center gap-3 sm:flex-row sm:gap-4">
-              <Button variant="secondary" size="lg" className="btn-press w-full justify-center rounded-md px-8 py-3 text-sm font-bold tracking-wide min-h-[3rem] sm:w-auto" asChild>
-                <Link to="/quote">
-                  {t.quote} <ArrowRight className="ml-2 h-4 w-4" />
-                </Link>
-              </Button>
-              <Button size="lg" className="btn-press w-full justify-center rounded-md border-0 bg-card px-8 py-3 text-sm font-semibold text-card-foreground shadow-md hover:bg-card/90 min-h-[3rem] sm:w-auto" asChild>
-                <a href={settings.whatsapp_url()} target="_blank" rel="noopener noreferrer">
-                  <WhatsAppIcon className="mr-2 h-[18px] w-[18px] text-whatsapp" /> {t.whatsapp}
-                </a>
-              </Button>
+              <Link to="/quote" className="btn-on-dark-primary min-h-12 w-full justify-center px-8 sm:w-auto">
+                {t.quote} <ArrowRight className="h-4 w-4" />
+              </Link>
+              <a
+                href={settings.whatsapp_url()}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="btn-on-dark-secondary min-h-12 w-full justify-center px-8 sm:w-auto"
+              >
+                <WhatsAppIcon className="mr-2 h-[18px] w-[18px] text-whatsapp" /> {t.whatsapp}
+              </a>
             </div>
           </div>
         </Reveal>

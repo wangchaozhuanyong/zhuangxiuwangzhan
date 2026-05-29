@@ -1,4 +1,4 @@
-import Reveal from "@/components/Reveal";
+﻿import Reveal from "@/components/Reveal";
 import PageMeta from "@/components/PageMeta";
 import { JsonLdBreadcrumb } from "@/components/JsonLd";
 import { useLanguage } from "@/i18n/LanguageContext";
@@ -60,7 +60,7 @@ const Terms = () => {
   const phoneLabel = language === "zh" ? "电话：" : "Phone:";
 
   return (
-    <main className="pt-16">
+    <main className="pt-site-header">
       <PageMeta title={t.metaTitle} description={t.metaDescription} keywords={t.metaKeywords} canonicalPath="/terms" />
       <JsonLdBreadcrumb items={[{ name: t.breadcrumbHome, url: "/" }, { name: t.breadcrumbCurrent, url: "/terms" }]} />
 
@@ -84,7 +84,7 @@ const Terms = () => {
                     </ul>
                   ) : null}
                   {section.title.endsWith("Contact") || section.title.endsWith("联系") ? (
-                    <div className="bg-muted rounded-lg p-5 mt-3 text-sm text-muted-foreground space-y-1">
+                    <div className="rounded-card bg-muted p-5 mt-3 text-sm text-muted-foreground space-y-1">
                       <p><strong className="text-foreground">{contactLabel}</strong></p>
                       <p>{settings.company_name}</p>
                       <p>{settings.address}</p>

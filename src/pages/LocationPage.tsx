@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+﻿import { useMemo } from "react";
 import { useParams } from "react-router-dom";
 import Link from "@/components/LocalizedLink";
 import { Button } from "@/components/ui/button";
@@ -106,7 +106,7 @@ const LocationPage = () => {
 
   if (!location) {
     return (
-      <main className="pt-16 section-padding text-center">
+      <main className="pt-site-header section-padding text-center">
         <h1 className="font-display text-3xl font-bold mb-4">{t.notFound}</h1>
         <Button asChild><Link to="/">{t.backHome}</Link></Button>
       </main>
@@ -114,7 +114,7 @@ const LocationPage = () => {
   }
 
   return (
-    <main className="pt-16">
+    <main className="pt-site-header">
       <PageMeta
         title={location.metaTitle}
         description={stripHtml(location.description)}
@@ -140,27 +140,30 @@ const LocationPage = () => {
 
       <section className="section-padding bg-surface-dark">
         <div className="container-narrow">
-          <div className="flex items-center gap-2 text-steel text-sm mb-4">
-            <Link to="/" className="hover:text-accent">{t.breadcrumbHome}</Link>
+          <div className="mb-4 flex flex-wrap items-center gap-2 text-sm text-surface-dark-foreground/55">
+            <Link to="/" className="transition-colors hover:text-gold">{t.breadcrumbHome}</Link>
             <span>/</span>
-            <Link to="/" className="hover:text-accent">{t.breadcrumbLocations}</Link>
+            <Link to="/" className="transition-colors hover:text-gold">{t.breadcrumbLocations}</Link>
             <span>/</span>
-            <span className="text-steel-light">{location.name}</span>
+            <span className="text-surface-dark-foreground/80">{location.name}</span>
           </div>
           <div className="accent-line mb-4" />
-          <h1 className="font-display text-3xl md:text-5xl font-bold text-primary-foreground mb-4">
+          <h1 className="heading-safe mb-4 font-display text-3xl font-bold text-surface-dark-foreground md:text-5xl">
             {t.heroTitle(location.name)}
           </h1>
-                  <p className="text-steel-light max-w-2xl text-lg mb-2">{displayText(location.description)}</p>
-          <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 mt-8">
-            <Button size="lg" className="btn-press w-full sm:w-auto min-h-[3rem] text-sm font-bold tracking-wide shadow-xl shadow-accent/40 bg-accent hover:bg-accent/90 text-accent-foreground rounded-md px-8 py-3 justify-center" asChild>
-              <Link to="/quote">{t.quote} <ArrowRight className="w-4 h-4 ml-2" /></Link>
-            </Button>
-            <Button size="lg" className="btn-press w-full sm:w-auto min-h-[3rem] text-sm font-semibold bg-white text-neutral-800 border-0 hover:bg-white/90 shadow-md rounded-md px-8 py-3 justify-center" asChild>
-              <a href={settings.whatsapp_url()} target="_blank" rel="noopener noreferrer">
-                <WhatsAppIcon className="w-[18px] h-[18px] mr-2 text-[#25D366]" /> {t.whatsapp}
-              </a>
-            </Button>
+          <p className="prose-safe mb-2 max-w-2xl text-lg text-surface-dark-foreground/75">{displayText(location.description)}</p>
+          <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:gap-4">
+            <Link to="/quote" className="btn-on-dark-primary min-h-12 w-full justify-center px-8 sm:w-auto">
+              {t.quote} <ArrowRight className="h-4 w-4" />
+            </Link>
+            <a
+              href={settings.whatsapp_url()}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="btn-on-dark-secondary min-h-12 w-full justify-center px-8 sm:w-auto"
+            >
+              <WhatsAppIcon className="mr-2 h-[18px] w-[18px] text-whatsapp" /> {t.whatsapp}
+            </a>
           </div>
         </div>
       </section>
@@ -180,7 +183,7 @@ const LocationPage = () => {
                     __html: sanitizeHtml(isHtmlText(location.intro) ? location.intro : `<p>${location.intro}</p>`),
                   }}
                 />
-                <div className="bg-muted p-5 rounded-lg border border-border">
+                <div className="bg-muted p-5 rounded-card border border-border">
                   <h3 className="font-semibold text-sm mb-3">{t.propertyTypes}</h3>
                   <ul className="space-y-2">
                     {location.propertyTypes.map((propertyType: string) => (
@@ -198,7 +201,7 @@ const LocationPage = () => {
                 <h3 className="font-display font-semibold text-lg mb-4">{t.servicesIn(location.name)}</h3>
                 <div className="grid grid-cols-1 gap-3">
                   {servicesList.map((service) => (
-                    <Link key={service.link} to={service.link} className="flex items-center gap-3 p-3 bg-card border border-border rounded-lg hover:border-accent/30 transition-colors group">
+                    <Link key={service.link} to={service.link} className="flex items-center gap-3 p-3 bg-card border border-border rounded-card hover:border-accent/30 transition-colors group">
                       <div className="w-8 h-8 rounded-full bg-accent/10 flex items-center justify-center shrink-0">
                         <ArrowRight className="w-3.5 h-3.5 text-accent group-hover:translate-x-0.5 transition-transform" />
                       </div>
@@ -218,7 +221,7 @@ const LocationPage = () => {
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 max-w-3xl mx-auto">
                   {location.commonNeeds.map((need: string) => (
                     <Reveal key={need}>
-                      <div className="flex items-start gap-3 p-4 bg-background border border-border rounded-lg">
+                      <div className="flex items-start gap-3 p-4 bg-background border border-border rounded-card">
                         <CheckCircle className="w-4 h-4 text-accent mt-0.5 shrink-0" />
                   <span className="text-sm">{displayText(need)}</span>
                       </div>
@@ -227,7 +230,7 @@ const LocationPage = () => {
           </div>
           {location.constructionNotes && (
             <Reveal delay={200}>
-              <div className="mt-8 p-5 bg-accent/5 border border-accent/20 rounded-lg max-w-3xl mx-auto">
+              <div className="mt-8 p-5 bg-accent/5 border border-accent/20 rounded-card max-w-3xl mx-auto">
                 <h3 className="font-semibold text-sm mb-2">{t.permitNotes}</h3>
                 <div
                   className="text-muted-foreground text-sm leading-relaxed prose prose-sm max-w-none prose-p:my-3 prose-headings:mb-3 prose-headings:mt-6"
@@ -252,7 +255,7 @@ const LocationPage = () => {
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-5">
                   {location.projects.map((project: any, index: number) => (
                     <Reveal key={project.title} delay={index * 80}>
-                      <div className="rounded-lg overflow-hidden border border-border bg-card hover-lift">
+                      <div className="rounded-card overflow-hidden border border-border bg-card hover-lift">
                         <div className="aspect-[4/3] overflow-hidden">
                       <SmartImage src={project.image} alt={displayText(project.title)} loading="lazy" width={600} height={450} className="w-full h-full object-cover" />
                     </div>

@@ -41,7 +41,7 @@ const ProcessSection = () => {
           {displaySteps.map((step, i) => (
             <Reveal key={step.num} delay={i * 80}>
               <div className="luxury-card-muted p-6 hover-lift h-full">
-                <span className="font-display text-3xl font-bold text-gold/30 mb-2 block">{step.num}</span>
+                <span className="mb-2 block font-display text-5xl font-bold text-gold/20">{step.num}</span>
                 <h3 className="font-display text-lg font-semibold mb-2">{step.title}</h3>
                 <p className="text-muted-foreground text-sm leading-relaxed">{step.desc}</p>
               </div>

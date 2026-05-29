@@ -38,8 +38,8 @@ const HomeFAQSection = () => {
         <Reveal delay={100}>
           <Accordion type="single" collapsible className="space-y-2">
             {displayFaqs.map((f, i) => (
-              <AccordionItem key={i} value={`home-faq-${i}`} className="bg-card rounded-lg border border-border px-4">
-                <AccordionTrigger className="text-left font-medium text-sm md:text-base">{f.q}</AccordionTrigger>
+              <AccordionItem key={i} value={`home-faq-${i}`} className="rounded-card border border-border bg-card px-4 data-[state=open]:border-accent/25 data-[state=open]:bg-card/95">
+                <AccordionTrigger className="min-h-12 py-4 text-left text-sm font-medium md:text-base">{f.q}</AccordionTrigger>
                 <AccordionContent className="text-muted-foreground text-sm leading-relaxed">{f.a}</AccordionContent>
               </AccordionItem>
             ))}

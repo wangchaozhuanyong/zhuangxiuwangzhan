@@ -1,4 +1,4 @@
-import { useParams } from "react-router-dom";
+﻿import { useParams } from "react-router-dom";
 import Link from "@/components/LocalizedLink";
 import { Button } from "@/components/ui/button";
 import { ArrowRight } from "lucide-react";
@@ -80,7 +80,7 @@ const MaterialDetail = () => {
 
   if (!material || !category) {
     return (
-      <main className="pt-16 section-padding text-center">
+      <main className="pt-site-header section-padding text-center">
         <h1 className="font-display text-3xl font-bold mb-4">{t.notFound}</h1>
         <Button asChild><Link to="/materials">{t.viewAll}</Link></Button>
       </main>
@@ -90,7 +90,7 @@ const MaterialDetail = () => {
   const otherMaterials = category.items.filter((item: any) => item.slug !== slug);
 
   return (
-    <main className="pt-16">
+    <main className="pt-site-header">
       <PageMeta
         title={t.metaTitle(material.name)}
         description={t.metaDescription(material.description, material.suitableSpaces.map((space: string) => translateSpaceLabel(space, language)))}
@@ -112,7 +112,7 @@ const MaterialDetail = () => {
       <section className="section-padding bg-background">
         <div className="container-narrow">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
-            <div className="aspect-square rounded-lg overflow-hidden bg-muted border border-border">
+            <div className="aspect-square overflow-hidden rounded-card bg-muted border border-border">
               <SmartImage src={material.image} alt={material.alt || material.name} className="w-full h-full object-cover" width={800} height={600} loading="eager" />
             </div>
 
@@ -133,7 +133,7 @@ const MaterialDetail = () => {
                     { label: t.texture, value: material.texture },
                     { label: t.category, value: displayCategoryName },
                   ].map((item) => (
-                    <div key={item.label} className="p-3 bg-muted rounded-lg">
+                    <div key={item.label} className="p-3 bg-muted rounded-card">
                       <span className="text-xs text-muted-foreground block mb-1">{item.label}</span>
                       <span className="text-sm font-medium">{item.value || "-"}</span>
                     </div>
@@ -158,20 +158,23 @@ const MaterialDetail = () => {
               )}
 
               {material.note && (
-                <div className="p-4 bg-muted rounded-lg text-sm text-muted-foreground mb-6">
+                <div className="p-4 bg-muted rounded-card text-sm text-muted-foreground mb-6">
                   <strong className="text-foreground">{t.note}</strong> {material.note}
                 </div>
               )}
 
-              <div className="flex flex-col sm:flex-row gap-3">
-                <Button size="lg" asChild>
-                  <Link to="/quote">{t.enquire} <ArrowRight className="w-4 h-4 ml-2" /></Link>
-                </Button>
-                <Button size="lg" variant="outline" asChild>
-                  <a href={settings.whatsapp_url()} target="_blank" rel="noopener noreferrer">
-                    <WhatsAppIcon className="w-[18px] h-[18px] mr-2 text-[#25D366]" /> {t.whatsapp}
-                  </a>
-                </Button>
+              <div className="flex flex-col gap-3 sm:flex-row">
+                <Link to="/quote" className="btn-brand-primary min-h-12 justify-center px-8">
+                  {t.enquire} <ArrowRight className="h-4 w-4" />
+                </Link>
+                <a
+                  href={settings.whatsapp_url()}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="btn-brand-secondary min-h-12 justify-center px-8"
+                >
+                  <WhatsAppIcon className="mr-2 h-[18px] w-[18px] text-whatsapp" /> {t.whatsapp}
+                </a>
               </div>
             </div>
           </div>
@@ -185,7 +188,7 @@ const MaterialDetail = () => {
             <div className="flex gap-4 overflow-x-auto pb-4 -mx-4 px-4 snap-x">
               {otherMaterials.map((item: any) => (
                 <Link key={item.id} to={`/materials/${item.slug}`} className="snap-start shrink-0 w-[180px] md:w-[220px] group">
-                  <div className="aspect-square rounded-lg overflow-hidden mb-2 bg-card border border-border">
+                  <div className="aspect-square overflow-hidden rounded-card mb-2 bg-card border border-border">
                     <SmartImage src={item.image} alt={item.alt || item.name} loading="lazy" width={400} height={400} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
                   </div>
                   <h3 className="font-semibold text-sm">{item.name}</h3>

@@ -92,7 +92,7 @@ const ProjectsSection = () => {
                 <Reveal key={project.slug} delay={index * 80}>
                   <Link
                     to={`/projects/${project.slug}`}
-                    className="card-equal group block overflow-hidden rounded-xl border border-white/10 bg-white/[0.035] shadow-[0_24px_80px_rgba(0,0,0,0.22)] transition hover:-translate-y-1 hover:border-gold/45 hover:bg-white/[0.055]"
+                    className="card-equal group block overflow-hidden rounded-card-lg border border-white/10 bg-white/[0.04] shadow-luxury transition hover:-translate-y-1 hover:border-gold/40 hover:bg-white/[0.06]"
                   >
                     <div className="relative aspect-[4/3] overflow-hidden bg-white/5 img-zoom">
                       {project.thumbnail ? (
@@ -125,7 +125,7 @@ const ProjectsSection = () => {
             })}
           </div>
         ) : (
-          <div className="rounded-xl border border-white/10 bg-white/[0.035] p-8 text-center text-sm text-surface-dark-foreground/65">{copy.empty}</div>
+          <div className="rounded-card-lg border border-white/10 bg-white/[0.04] p-8 text-center text-sm text-surface-dark-foreground/65">{copy.empty}</div>
         )}
 
         <Reveal delay={500}>

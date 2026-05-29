@@ -1,4 +1,5 @@
 import { requireSupabase } from "@/lib/supabase";
+import type { FormGuardFields } from "@/lib/formGuard";
 
 export interface ContactSubmission {
   name: string;
@@ -22,63 +23,46 @@ export interface QuoteSubmission {
   sourcePath?: string;
 }
 
-const notifyLead = async (type: "contact" | "quote", id: string) => {
+const invokeSubmitLead = async (body: Record<string, unknown>) => {
   const supabase = requireSupabase();
-
-  try {
-    await supabase.functions.invoke("notify-lead", {
-      body: { type, id },
-    });
-  } catch (error) {
-    console.warn("Lead notification failed. Submission was still saved.", error);
+  const { data, error } = await supabase.functions.invoke("submit-lead", { body });
+  if (error) throw error;
+  if (data && typeof data === "object" && "error" in data && data.error) {
+    throw new Error(String(data.error));
   }
+  return data as { ok?: boolean; id?: string };
 };
 
-const createSubmissionId = () => crypto.randomUUID();
-
-export const submitContactLead = async (payload: ContactSubmission) => {
-  const supabase = requireSupabase();
-  const id = createSubmissionId();
-  const { error } = await supabase
-    .from("leads")
-    .insert({
-      id,
-      name: payload.name,
-      phone: payload.phone,
-      email: payload.email || null,
-      project_type: payload.projectType || null,
-      location: payload.location || null,
-      message: payload.message,
-      source: "website_contact",
-      source_path: payload.sourcePath || window.location.pathname,
-      status: "new",
-    });
-
-  if (error) throw error;
-  await notifyLead("contact", id);
-  return { id };
+export const submitContactLead = async (payload: ContactSubmission & FormGuardFields) => {
+  const data = await invokeSubmitLead({
+    type: "contact",
+    name: payload.name,
+    phone: payload.phone,
+    email: payload.email,
+    projectType: payload.projectType,
+    location: payload.location,
+    message: payload.message,
+    sourcePath: payload.sourcePath || (typeof window !== "undefined" ? window.location.pathname : ""),
+    website: payload.website,
+    startedAt: payload.startedAt,
+  });
+  return { id: data.id || "" };
 };
 
-export const submitQuoteRequest = async (payload: QuoteSubmission) => {
-  const supabase = requireSupabase();
-  const id = createSubmissionId();
-  const { error } = await supabase
-    .from("quote_requests")
-    .insert({
-      id,
-      customer_name: payload.name,
-      customer_phone: payload.phone,
-      customer_email: payload.email || null,
-      project_type: payload.projectType,
-      location: payload.location,
-      property_size: payload.propertySize || null,
-      estimated_budget: payload.budget || null,
-      project_details: payload.details || null,
-      source_path: payload.sourcePath || window.location.pathname,
-      status: "pending",
-    });
-
-  if (error) throw error;
-  await notifyLead("quote", id);
-  return { id };
+export const submitQuoteRequest = async (payload: QuoteSubmission & FormGuardFields) => {
+  const data = await invokeSubmitLead({
+    type: "quote",
+    name: payload.name,
+    phone: payload.phone,
+    email: payload.email,
+    projectType: payload.projectType,
+    location: payload.location,
+    propertySize: payload.propertySize,
+    budget: payload.budget,
+    details: payload.details,
+    sourcePath: payload.sourcePath || (typeof window !== "undefined" ? window.location.pathname : ""),
+    website: payload.website,
+    startedAt: payload.startedAt,
+  });
+  return { id: data.id || "" };
 };

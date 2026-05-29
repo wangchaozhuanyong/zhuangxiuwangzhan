@@ -1,4 +1,4 @@
-import { MapPin, CheckCircle } from "lucide-react";
+﻿import { MapPin, CheckCircle } from "lucide-react";
 import Reveal from "@/components/Reveal";
 import PageMeta from "@/components/PageMeta";
 import { JsonLdBreadcrumb } from "@/components/JsonLd";
@@ -177,7 +177,7 @@ const About = () => {
   }, [milestonesSection?.items]);
 
   return (
-    <main className="pt-16 overflow-x-hidden">
+    <main className="pt-site-header overflow-x-hidden">
       <PageMeta title={t.metaTitle} description={t.metaDescription} keywords={t.metaKeywords} canonicalPath="/about" />
       <JsonLdBreadcrumb items={[{ name: t.breadcrumbHome, url: "/" }, { name: t.breadcrumbAbout, url: "/about" }]} />
 
@@ -211,7 +211,7 @@ const About = () => {
             <Reveal direction="right" delay={150}>
               <div className="grid grid-cols-2 gap-5">
                 {(dynamicStats || localizedStats[language]).map((stat: any) => (
-                  <div key={stat.label} className="text-center p-6 bg-card rounded-lg border border-border group hover-lift">
+                  <div key={stat.label} className="text-center luxury-card p-6 group hover-lift">
                     <span className="font-display text-2xl md:text-3xl font-bold text-accent block mb-1">{stat.value}</span>
                     <span className="text-muted-foreground text-xs leading-relaxed">{stat.label}</span>
                   </div>
@@ -244,7 +244,7 @@ const About = () => {
               <Reveal key={milestone.year} delay={i * 60}>
                 <div className="flex gap-5 mb-6 last:mb-0">
                   <div className="flex flex-col items-center">
-                    <div className="w-10 h-10 rounded-full bg-accent text-accent-foreground flex items-center justify-center text-xs font-bold shrink-0">
+                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-accent/25 bg-accent/15 text-xs font-bold text-gold">
                       {milestone.year.slice(2)}
                     </div>
                     {i < localizedMilestones[language].length - 1 && <div className="w-px flex-1 bg-border mt-2" />}
@@ -268,7 +268,7 @@ const About = () => {
           <div className="container-narrow">
             <SectionHeader title={(officeSection?.title as string) || t.officeTitle} description={(officeSection?.content as string) || t.officeDescription} />
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-stretch max-w-3xl mx-auto">
-              <div className="bg-card p-8 rounded-lg text-center hover-lift flex flex-col items-center justify-center border border-border">
+              <div className="luxury-card flex flex-col items-center justify-center p-8 text-center hover-lift">
                 <div className="w-12 h-12 mx-auto mb-4 rounded-full bg-accent/10 flex items-center justify-center">
                   <MapPin className="w-5 h-5 text-accent" />
                 </div>
@@ -276,7 +276,7 @@ const About = () => {
                 <p className="text-muted-foreground text-sm mb-3 whitespace-pre-line">{settings.address}</p>
                 <p className="text-muted-foreground text-xs">{t.hours}</p>
               </div>
-              <div className="rounded-lg overflow-hidden bg-background border border-border min-h-[220px]">
+              <div className="min-h-[220px] overflow-hidden rounded-card-lg border border-border bg-background">
                 <iframe
                   src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3984.0!2d101.68!3d3.11!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zM8KwMDYnMzYuMCJOIDEwMcKwNDAnNDguMCJF!5e0!3m2!1sen!2smy!4v1600000000000"
                   width="100%"

@@ -1,6 +1,5 @@
 import { ReactNode, useState } from "react";
 import Link from "@/components/LocalizedLink";
-import { Button } from "@/components/ui/button";
 import { MapPin, Phone, Mail, ArrowRight, ChevronDown } from "lucide-react";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { useSiteSettings } from "@/hooks/useSiteSettings";
@@ -126,7 +125,7 @@ const MobileAccordion = ({
   onToggle: () => void;
 }) => (
   <div className="border-b border-white/[0.06]">
-    <button type="button" onClick={onToggle} className="flex w-full items-center justify-between px-1 py-5">
+    <button type="button" onClick={onToggle} className="flex min-h-12 w-full items-center justify-between px-1 py-4">
       <span className="text-[13px] font-semibold uppercase tracking-[0.2em] text-white/80">{title}</span>
       <ChevronDown className={`h-4 w-4 text-[hsl(var(--gold))]/60 transition-transform duration-300 ${isOpen ? "rotate-180" : ""}`} />
     </button>
@@ -149,22 +148,20 @@ const Footer = () => {
 
   return (
     <footer>
-      <div className="bg-accent">
-        <div className="container-narrow flex flex-col items-center gap-6 px-5 py-10 text-center md:flex-row md:justify-between md:px-8 md:py-14 md:text-left lg:px-16">
-          <div>
-            <h3 className="font-display text-2xl font-bold text-accent-foreground md:text-3xl">{t.ctaTitle}</h3>
-            <p className="mt-2 text-sm text-accent-foreground/70 md:text-base">{t.ctaText}</p>
+      <div className="footer-cta-bar">
+        <div className="site-container flex flex-col items-center gap-6 py-10 text-center md:flex-row md:justify-between md:py-14 md:text-left">
+          <div className="min-w-0">
+            <h3 className="heading-safe font-display text-2xl font-bold text-surface-dark-foreground md:text-3xl">{t.ctaTitle}</h3>
+            <p className="mt-2 text-sm text-surface-dark-foreground/70 md:text-base">{t.ctaText}</p>
           </div>
-          <Button asChild size="lg" className="btn-press w-full shrink-0 bg-white px-8 font-semibold text-accent hover:bg-white/90 md:w-auto">
-            <Link to="/quote" className="flex items-center justify-center gap-2">
-              {t.ctaButton} <ArrowRight className="h-4 w-4" />
-            </Link>
-          </Button>
+          <Link to="/quote" className="btn-on-dark-primary btn-press w-full shrink-0 md:w-auto">
+            {t.ctaButton} <ArrowRight className="h-4 w-4" />
+          </Link>
         </div>
       </div>
 
-      <div className="bg-[hsl(220,20%,7%)]">
-        <div className="container-narrow px-5 py-12 md:px-8 md:py-20 lg:px-16">
+      <div className="footer-surface">
+        <div className="site-container py-12 md:py-20">
           <div className="hidden gap-10 lg:grid grid-cols-12">
             <div className="col-span-4 pr-4">
               <div className="mb-6">

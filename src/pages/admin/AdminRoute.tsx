@@ -1,4 +1,5 @@
 import { useMemo } from "react";
+import { Helmet } from "react-helmet-async";
 import { Link, Navigate, Outlet } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/lib/supabase";
@@ -72,7 +73,14 @@ const AdminRoute = () => {
     );
   }
 
-  return <Outlet />;
+  return (
+    <>
+      <Helmet>
+        <meta name="robots" content="noindex, nofollow" />
+      </Helmet>
+      <Outlet />
+    </>
+  );
 };
 
 export default AdminRoute;

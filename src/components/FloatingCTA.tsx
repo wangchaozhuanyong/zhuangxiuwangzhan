@@ -32,6 +32,17 @@ const FloatingCTA = () => {
   const settings = useSiteSettings();
   const t = copy[language];
   const [showDesktopCta, setShowDesktopCta] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
+
+  useEffect(() => {
+    const syncMenuState = () => {
+      setMenuOpen(document.documentElement.dataset.menuOpen === "true");
+    };
+    syncMenuState();
+    const observer = new MutationObserver(syncMenuState);
+    observer.observe(document.documentElement, { attributes: true, attributeFilter: ["data-menu-open"] });
+    return () => observer.disconnect();
+  }, []);
 
   useEffect(() => {
     const dismissedAt = Number(localStorage.getItem("flashcast_cta_dismissed_at") || 0);
@@ -69,29 +80,44 @@ const FloatingCTA = () => {
     setShowDesktopCta(false);
   };
 
+  if (menuOpen) {
+    return null;
+  }
+
   return (
     <>
-      <div className="fixed inset-x-0 bottom-0 z-50 grid grid-cols-3 border-t border-border bg-background/95 pb-[env(safe-area-inset-bottom)] backdrop-blur md:hidden">
-        <a href={settings.whatsapp_url()} target="_blank" rel="noopener noreferrer" className="flex min-h-14 flex-col items-center justify-center text-[11px] font-semibold text-foreground">
+      <div className="fixed inset-x-0 bottom-0 z-40 grid h-16 grid-cols-3 border-t border-border/80 bg-background/96 pb-[env(safe-area-inset-bottom)] shadow-[0_-8px_32px_-12px_rgba(21,18,14,0.2)] backdrop-blur-md md:hidden">
+        <a
+          href={settings.whatsapp_url()}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="flex min-h-16 min-w-0 flex-col items-center justify-center border-r border-border/60 text-[11px] font-semibold text-foreground"
+        >
           <WhatsAppIcon className="mb-1 h-5 w-5 text-whatsapp" />
           {t.whatsapp}
         </a>
-        <a href={settings.phone_href} className="flex min-h-14 flex-col items-center justify-center border-x border-border text-[11px] font-semibold text-foreground">
-          <Phone className="mb-1 h-5 w-5 text-accent" />
+        <a
+          href={settings.phone_href}
+          className="flex min-h-16 min-w-0 flex-col items-center justify-center border-r border-border/60 text-[11px] font-semibold text-foreground"
+        >
+          <Phone className="mb-1 h-5 w-5 text-gold" />
           {t.call}
         </a>
-        <LocalizedLink to="/quote" className="flex min-h-14 flex-col items-center justify-center bg-accent text-[11px] font-bold text-accent-foreground">
+        <LocalizedLink
+          to="/quote"
+          className="flex min-h-16 min-w-0 flex-col items-center justify-center bg-[#15120E] text-[11px] font-bold text-[#C6A46A]"
+        >
           <span className="mb-1 text-base leading-none">RM</span>
           {t.quote}
         </LocalizedLink>
       </div>
 
-      <div className="fixed bottom-6 right-6 z-50 hidden w-[330px] lg:block">
+      <div className="fixed bottom-6 right-6 z-40 hidden w-[330px] lg:block">
         {showDesktopCta ? (
           <AdaptiveSurface
-            background="hsl(var(--surface-dark) / 0.92)"
+            background="hsl(var(--surface-dark) / 0.94)"
             foreground="hsl(var(--surface-dark-foreground))"
-            className="relative mb-3 rounded-2xl border border-white/18 p-4 shadow-2xl backdrop-blur-md animate-fade-up"
+            className="relative mb-3 animate-fade-up rounded-card-lg border border-white/12 p-4 shadow-luxury backdrop-blur-md"
           >
             <button
               type="button"
@@ -103,17 +129,14 @@ const FloatingCTA = () => {
             </button>
             <p className="pr-6 text-sm font-medium leading-6 text-surface-dark-foreground/90">{t.prompt}</p>
             <div className="mt-4 grid grid-cols-2 gap-2">
-              <LocalizedLink
-                to="/quote"
-                className="rounded-full bg-gold px-4 py-2 text-center text-sm font-semibold text-gold-foreground transition-transform hover:scale-[1.02]"
-              >
+              <LocalizedLink to="/quote" className="btn-on-dark-primary justify-center px-4 py-2.5 text-center text-sm">
                 {t.quote}
               </LocalizedLink>
               <a
                 href={settings.whatsapp_url("Floating desktop prompt")}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="rounded-full border border-white/25 px-4 py-2 text-center text-sm font-semibold text-surface-dark-foreground transition-colors hover:bg-white/10"
+                className="btn-on-dark-secondary justify-center px-4 py-2.5 text-center text-sm"
               >
                 WhatsApp
               </a>
@@ -125,7 +148,7 @@ const FloatingCTA = () => {
           target="_blank"
           rel="noopener noreferrer"
           aria-label={t.whatsappAria}
-          className="ml-auto flex w-fit translate-y-0 items-center justify-center rounded-full bg-whatsapp px-5 py-3 text-whatsapp-foreground shadow-xl transition-all duration-500 hover:scale-105 hover:shadow-2xl active:scale-95"
+          className="ml-auto flex w-fit items-center justify-center rounded-full bg-whatsapp px-5 py-3 text-whatsapp-foreground shadow-luxury transition-all duration-300 hover:scale-[1.02]"
         >
           <WhatsAppIcon className="h-5 w-5" />
           <span className="ml-2 text-sm font-semibold">{t.whatsappDesktop}</span>

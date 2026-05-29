@@ -1,5 +1,4 @@
 import Link from "@/components/LocalizedLink";
-import { Button } from "@/components/ui/button";
 import { ArrowRight } from "lucide-react";
 import WhatsAppIcon from "@/components/WhatsAppIcon";
 import Reveal from "@/components/Reveal";
@@ -41,39 +40,32 @@ const CTASection = () => {
   const primaryUrl = dynamic?.primary_url || "/quote";
 
   return (
-    <section className="bg-surface-dark section-padding relative overflow-hidden" id="cta">
+    <section className="section-padding relative overflow-hidden bg-surface-dark" id="cta">
       <div
-        className="absolute inset-0 bg-[linear-gradient(135deg,rgba(184,149,94,0.16),transparent_42%,rgba(255,255,255,0.04))]"
+        className="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,rgba(198,164,106,0.12),transparent_45%)]"
         aria-hidden="true"
       />
-      <div className="container-narrow">
+      <div className="container-narrow relative">
         <Reveal>
           <div className="relative mx-auto max-w-2xl text-center">
-            <h2 className="font-display text-3xl md:text-4xl font-bold mb-4 text-surface-dark-foreground">
+            <h2 className="heading-safe mb-4 font-display text-3xl font-bold text-surface-dark-foreground md:text-4xl">
               {title}
             </h2>
-            <p className="text-base md:text-lg mb-8 leading-relaxed text-surface-dark-foreground/80">
+            <p className="mb-8 text-base leading-relaxed text-surface-dark-foreground/80 md:text-lg">
               {description}
             </p>
-            <div className="flex flex-col sm:flex-row gap-3 justify-center">
-              <Button
-                size="lg"
-                className="btn-press min-h-[3rem] text-sm font-bold tracking-wide bg-card text-card-foreground hover:bg-card/90 rounded-md px-8 py-3"
-                asChild
+            <div className="flex flex-col justify-center gap-3 sm:flex-row">
+              <Link to={primaryUrl} className="btn-on-dark-primary min-h-12 justify-center px-8">
+                <ArrowRight className="h-4 w-4" /> {primaryLabel}
+              </Link>
+              <a
+                href={settings.whatsapp_url()}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="btn-on-dark-secondary min-h-12 justify-center px-8"
               >
-                <Link to={primaryUrl}>
-                  <ArrowRight className="w-4 h-4 mr-2" /> {primaryLabel}
-                </Link>
-              </Button>
-              <Button
-                size="lg"
-                className="btn-press min-h-[3rem] text-sm font-semibold bg-transparent border border-white/30 text-surface-dark-foreground hover:bg-white/10 rounded-md px-8 py-3"
-                asChild
-              >
-                <a href={settings.whatsapp_url()} target="_blank" rel="noopener noreferrer">
-                  <WhatsAppIcon className="w-[18px] h-[18px] mr-2 text-whatsapp" /> {t("cta.whatsapp")}
-                </a>
-              </Button>
+                <WhatsAppIcon className="h-[18px] w-[18px] text-whatsapp" /> {t("cta.whatsapp")}
+              </a>
             </div>
           </div>
         </Reveal>

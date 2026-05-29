@@ -145,7 +145,7 @@ const BeforeAfterSlider = ({
   return (
     <div
       ref={containerRef}
-      className="relative aspect-[4/3] rounded-lg overflow-hidden cursor-col-resize select-none [touch-action:pan-y] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2"
+      className="relative aspect-[4/3] cursor-col-resize select-none overflow-hidden rounded-card-lg [touch-action:pan-y] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2"
       role="slider"
       tabIndex={0}
       aria-valuemin={0}
@@ -182,16 +182,16 @@ const BeforeAfterSlider = ({
           sizes="(max-width: 768px) 92vw, 30vw"
         />
       </div>
-      <div className="absolute top-0 bottom-0 w-0.5 bg-white shadow-lg" style={{ left: `${position}%`, transform: "translateX(-50%)" }}>
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-10 h-10 bg-white rounded-full shadow-lg flex items-center justify-center">
-          <ChevronLeft className="w-4 h-4 text-foreground -mr-1" />
-          <ChevronRight className="w-4 h-4 text-foreground -ml-1" />
+      <div className="absolute bottom-0 top-0 w-0.5 bg-white/90 shadow-[0_0_20px_rgba(0,0,0,0.25)]" style={{ left: `${position}%`, transform: "translateX(-50%)" }}>
+        <div className="absolute left-1/2 top-1/2 flex h-11 w-11 min-h-[44px] min-w-[44px] -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full border border-white/80 bg-white shadow-luxury-soft">
+          <ChevronLeft className="-mr-1 h-4 w-4 text-foreground" />
+          <ChevronRight className="-ml-1 h-4 w-4 text-foreground" />
         </div>
       </div>
-      <span className="absolute top-3 left-3 bg-surface-dark/85 text-surface-dark-foreground text-[10px] font-bold uppercase tracking-widest px-2.5 py-1 rounded-sm">
+      <span className="absolute left-3 top-3 rounded-full border border-white/10 bg-black/45 px-2.5 py-1 text-[10px] font-bold uppercase tracking-widest text-white backdrop-blur-sm">
         {beforeLabel}
       </span>
-      <span className="absolute top-3 right-3 bg-white/90 text-foreground text-[10px] font-bold uppercase tracking-widest px-2.5 py-1 rounded-sm">
+      <span className="absolute right-3 top-3 rounded-full border border-white/20 bg-white/75 px-2.5 py-1 text-[10px] font-bold uppercase tracking-widest text-foreground backdrop-blur-sm">
         {afterLabel}
       </span>
     </div>
@@ -229,7 +229,7 @@ const BeforeAfterSection = () => {
   }[language];
 
   return (
-    <section className="section-padding-next bg-background" id="before-after">
+    <section className="section-padding bg-background" id="before-after">
       <div className="container-narrow">
         <Reveal>
           <div className="text-center mb-10 md:mb-14">
@@ -244,7 +244,7 @@ const BeforeAfterSection = () => {
         <div className="card-grid grid-cols-1 gap-6 md:grid-cols-3">
           {dynamicComparisons.map((item, i) => (
             <Reveal key={item.title} delay={i * 120}>
-              <div className="card-equal bg-card rounded-lg border border-border overflow-hidden hover-lift">
+              <div className="card-equal luxury-card overflow-hidden hover-lift">
                 <BeforeAfterSlider
                   before={item.before}
                   after={item.after}
