@@ -6,7 +6,7 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
 import { useToast } from "@/hooks/use-toast";
-import { isSupabaseConfigured, supabase } from "@/lib/supabase";
+import { supabase } from "@/lib/supabase";
 import type { NotificationSettings } from "@/lib/adminEditorData";
 import { useAdminNotificationSettings } from "@/lib/adminQueries";
 import { getAdminLang } from "@/lib/adminLocale";
@@ -54,6 +54,12 @@ const copy = {
     friday: "Friday",
     saturday: "Saturday",
     sunday: "Sunday",
+    dayLabel: "发送日期",
+    timeLabel: "发送时间",
+    timezoneLabel: "时区",
+    includeMonthly: "包含月度任务",
+    saveTip: "开关和输入项改完后，需要点击“保存设置”才会写入数据库。",
+    monthlyTip: "“包含月度任务”只用于发送测试提醒，不会保存到数据库。",
     sendReminder: "Send Reminder",
     testFailed: "Test failed",
     saveFailed: "Failed to save Telegram settings",
@@ -66,16 +72,16 @@ const copy = {
   zh: {
     notifications: "通知",
     leadAlerts: "Telegram 线索提醒",
-    leadDesc: "配置 Telegram Bot API，用于接收联系人线索和报价请求提醒。机器人令牌会保存在服务器端，保存后只显示部分遮罩内容。",
+    leadDesc: "配置 Telegram Bot API，用来接收联系人线索和报价请求提醒。机器人令牌会保存在服务端，保存后后台只显示部分遮罩内容。",
     savedToken: "已保存令牌",
-    noToken: "尚未保存机器人令牌",
+    noToken: "还没有保存机器人令牌",
     loading: "正在加载通知设置...",
     enableLead: "启用 Telegram 通知",
-    enableLeadDesc: "启用后，新的网站表单提交会发送到 Telegram。",
+    enableLeadDesc: "启用后，新的官网表单提交会发送到 Telegram。",
     botToken: "Telegram 机器人令牌",
-    botTokenPlaceholder: "粘贴 BotFather 令牌",
-    keepTokenPlaceholder: "留空以保留当前令牌",
-    chatId: "Telegram Chat ID",
+    botTokenPlaceholder: "粘贴 BotFather 给你的令牌",
+    keepTokenPlaceholder: "留空表示继续使用当前令牌",
+    chatId: "Telegram 聊天 ID",
     chatIdPlaceholder: "例如：123456789 或 -1001234567890",
     saving: "保存中...",
     save: "保存设置",
@@ -93,6 +99,12 @@ const copy = {
     friday: "周五",
     saturday: "周六",
     sunday: "周日",
+    dayLabel: "发送日期",
+    timeLabel: "发送时间",
+    timezoneLabel: "时区",
+    includeMonthly: "包含月度任务",
+    saveTip: "开关和输入项改完后，需要点击“保存设置”才会写入数据库。",
+    monthlyTip: "“包含月度任务”只用于发送测试提醒，不会保存到数据库。",
     sendReminder: "发送提醒",
     testFailed: "测试失败",
     saveFailed: "保存 Telegram 设置失败",
@@ -150,8 +162,6 @@ const AdminNotificationSettings = () => {
     if (!remoteSettings || formDirtyRef.current) return;
     applyNotificationForm(remoteSettings);
   }, [remoteSettings]);
-
-  const loading = isLoading;
 
   const saveSettings = async () => {
     setSaving(true);
@@ -228,7 +238,7 @@ const AdminNotificationSettings = () => {
           </div>
         </div>
 
-        {loading ? (
+        {isLoading ? (
           <div className="py-12 text-center text-sm text-muted-foreground">{t.loading}</div>
         ) : (
           <div className="grid gap-6 pt-6">
@@ -274,7 +284,7 @@ const AdminNotificationSettings = () => {
               />
             </div>
 
-            <p className="text-xs text-muted-foreground">开关和输入项改完后，要点一下“保存设置”才会真正写入数据库。</p>
+            <p className="text-xs text-muted-foreground">{t.saveTip}</p>
             <div className="flex flex-col gap-3 border-t border-border pt-5 sm:flex-row">
               <Button onClick={saveSettings} disabled={saving || testing}>
                 {saving ? t.saving : t.save}
@@ -315,7 +325,7 @@ const AdminNotificationSettings = () => {
           </div>
 
           <div className="grid gap-2">
-            <Label>{t.monday}</Label>
+            <Label>{t.dayLabel}</Label>
             <Select
               value={maintenanceDay}
               onValueChange={(value) => {
@@ -337,7 +347,7 @@ const AdminNotificationSettings = () => {
           </div>
 
           <div className="grid gap-2">
-            <Label htmlFor="maintenance-time">时间</Label>
+            <Label htmlFor="maintenance-time">{t.timeLabel}</Label>
             <Input
               id="maintenance-time"
               value={maintenanceTime}
@@ -349,7 +359,7 @@ const AdminNotificationSettings = () => {
           </div>
 
           <div className="grid gap-2">
-            <Label htmlFor="maintenance-timezone">时区</Label>
+            <Label htmlFor="maintenance-timezone">{t.timezoneLabel}</Label>
             <Input
               id="maintenance-timezone"
               value={maintenanceTimezone}
@@ -362,11 +372,11 @@ const AdminNotificationSettings = () => {
 
           <div className="flex items-center gap-3">
             <Switch id="include-monthly" checked={includeMonthly} onCheckedChange={setIncludeMonthly} />
-            <Label htmlFor="include-monthly">包含月度任务</Label>
+            <Label htmlFor="include-monthly">{t.includeMonthly}</Label>
           </div>
         </div>
 
-        <p className="text-xs text-muted-foreground">“包含月度任务”只用于发送测试提醒，不会保存到数据库。</p>
+        <p className="text-xs text-muted-foreground">{t.monthlyTip}</p>
         <div className="flex flex-col gap-3 border-t border-border pt-5 sm:flex-row">
           <Button onClick={saveSettings} disabled={saving || testingMaintenance}>
             {saving ? t.saving : t.save}

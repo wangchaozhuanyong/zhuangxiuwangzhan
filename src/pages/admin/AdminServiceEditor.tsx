@@ -243,7 +243,7 @@ export default function AdminServiceEditor() {
               <Link to="/admin/services">返回列表</Link>
             </Button>
             {record.status && <span className="text-xs text-muted-foreground">状态：{record.status}</span>}
-            {slugChecking && <span className="text-xs text-muted-foreground">slug 妫€鏌ヤ腑...</span>}
+            {slugChecking && <span className="text-xs text-muted-foreground">链接标识检查中...</span>}
             {slugError && <span className="text-xs text-destructive">{slugError}</span>}
           </>
         }
