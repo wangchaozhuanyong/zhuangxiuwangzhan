@@ -13,7 +13,7 @@ const createOrganizationData = (settings: ReturnType<typeof useSiteSettings>) =>
   name: settings.company_name,
   alternateName: settings.brand_name,
   url: siteConfig.url,
-  logo: settings.logo_url,
+  logo: settings.logo_url || siteConfig.logoUrl,
   contactPoint: {
     "@type": "ContactPoint",
     telephone: settings.phone_e164,
@@ -23,13 +23,20 @@ const createOrganizationData = (settings: ReturnType<typeof useSiteSettings>) =>
   },
   address: {
     "@type": "PostalAddress",
-    streetAddress: "94, Jalan Mega Mendung, Taman United",
+    streetAddress: settings.address_en || settings.address_zh || siteConfig.address,
     addressLocality: "Kuala Lumpur",
     postalCode: "58200",
     addressRegion: "Kuala Lumpur",
     addressCountry: "MY",
   },
-  sameAs: socialProfileUrls,
+  sameAs: [
+    settings.facebook_url,
+    settings.instagram_url,
+    settings.tiktok_url,
+    settings.xiaohongshu_url,
+    settings.linkedin_url,
+    ...socialProfileUrls,
+  ].filter(Boolean),
 });
 
 const createLocalBusinessData = (settings: ReturnType<typeof useSiteSettings>) => ({
@@ -38,14 +45,13 @@ const createLocalBusinessData = (settings: ReturnType<typeof useSiteSettings>) =
   "@id": `${siteConfig.url}/#localbusiness`,
   name: settings.company_name,
   alternateName: settings.brand_name,
-  description:
-    "Professional renovation, interior design, custom built-in furniture, kitchen renovation, bathroom renovation, office fit-out, and commercial renovation services in Kuala Lumpur and Selangor, Malaysia. SSM registered company with 10+ years experience and 200+ completed projects.",
+  description: settings.default_seo_description_en,
   url: siteConfig.url,
   telephone: settings.phone_e164,
   email: settings.email,
   address: {
     "@type": "PostalAddress",
-    streetAddress: "94, Jalan Mega Mendung, Taman United",
+    streetAddress: settings.address_en || settings.address_zh || siteConfig.address,
     addressLocality: "Kuala Lumpur",
     postalCode: "58200",
     addressRegion: "Kuala Lumpur",
@@ -53,8 +59,8 @@ const createLocalBusinessData = (settings: ReturnType<typeof useSiteSettings>) =
   },
   geo: {
     "@type": "GeoCoordinates",
-    latitude: "3.1100",
-    longitude: "101.6800",
+    latitude: settings.map_latitude || siteConfig.mapLatitude,
+    longitude: settings.map_longitude || siteConfig.mapLongitude,
   },
   areaServed: [
     { "@type": "City", name: "Kuala Lumpur" },
@@ -79,7 +85,7 @@ const createLocalBusinessData = (settings: ReturnType<typeof useSiteSettings>) =
     },
   ],
   priceRange: "$$",
-  image: settings.og_image_url,
+  image: settings.og_image_url || settings.logo_url || siteConfig.ogImage,
   hasOfferCatalog: {
     "@type": "OfferCatalog",
     name: "Renovation Services",
@@ -96,13 +102,14 @@ const createLocalBusinessData = (settings: ReturnType<typeof useSiteSettings>) =
       { "@type": "Offer", itemOffered: { "@type": "Service", name: "Permit & Drawing Support" } },
     ],
   },
-  aggregateRating: {
-    "@type": "AggregateRating",
-    ratingValue: "4.8",
-    reviewCount: "86",
-    bestRating: "5",
-  },
-  sameAs: socialProfileUrls,
+  sameAs: [
+    settings.facebook_url,
+    settings.instagram_url,
+    settings.tiktok_url,
+    settings.xiaohongshu_url,
+    settings.linkedin_url,
+    ...socialProfileUrls,
+  ].filter(Boolean),
   knowsAbout: [
     "renovation", "interior design", "built-in furniture", "kitchen renovation",
     "bathroom renovation", "office renovation", "commercial renovation",

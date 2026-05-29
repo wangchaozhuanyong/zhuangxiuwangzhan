@@ -8,6 +8,7 @@ import {
   getPublishedMaterials,
   getPublishedProjectBySlug,
   getPublishedProjects,
+  getPublishedServiceBySlug,
   getPublishedServiceAreaBySlug,
   getPublishedServices,
   getPublishedTestimonials,
@@ -20,6 +21,7 @@ import {
   getPublishedFaqs,
   getPublishedHomeSection,
   getPublishedProcessSteps,
+  getPublishedSitePage,
 } from "@/lib/homeContentApi";
 import { isSupabaseConfigured } from "@/lib/supabase";
 
@@ -145,6 +147,15 @@ export function usePublishedAboutSection(language: "en" | "zh", sectionKey: stri
   });
 }
 
+export function usePublishedSitePage(language: "en" | "zh", pageKey: string) {
+  return useQuery({
+    queryKey: ["published", "site_page", language, pageKey],
+    queryFn: () => getPublishedSitePage(language, pageKey),
+    enabled: isSupabaseConfigured,
+    ...queryDefaults,
+  });
+}
+
 export function usePublishedProjectBySlug(slug: string | undefined, language: "en" | "zh") {
   return useQuery({
     queryKey: ["published", "project", slug, language],
@@ -176,6 +187,15 @@ export function usePublishedServiceAreaBySlug(slug: string | undefined, language
   return useQuery({
     queryKey: ["published", "service_area", slug, language],
     queryFn: () => getPublishedServiceAreaBySlug(slug!, language),
+    enabled: Boolean(slug),
+    ...queryDefaults,
+  });
+}
+
+export function usePublishedServiceBySlug(slug: string | undefined, language: "en" | "zh") {
+  return useQuery({
+    queryKey: ["published", "service", slug, language],
+    queryFn: () => getPublishedServiceBySlug(slug!, language),
     enabled: Boolean(slug),
     ...queryDefaults,
   });

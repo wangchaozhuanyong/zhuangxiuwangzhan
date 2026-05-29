@@ -65,6 +65,24 @@ export type PublishedAboutSection = {
   items: any[];
 };
 
+export type PublishedSitePage = {
+  id: string;
+  page_key: string;
+  path: string;
+  title: string;
+  subtitle: string;
+  description: string;
+  content: string;
+  cta_title: string;
+  cta_description: string;
+  image_url?: string | null;
+  alt: string;
+  seo_title: string;
+  seo_description: string;
+  seo_keywords: string;
+  items: any[];
+};
+
 export const getPublishedBrandPartners = async (): Promise<PublishedBrandPartner[]> => {
   if (!isSupabaseConfigured) return [];
 
@@ -213,6 +231,39 @@ export const getPublishedAboutSection = async (
     subtitle: language === "zh" ? row.subtitle_zh || row.subtitle_en || "" : row.subtitle_en || row.subtitle_zh || "",
     content: language === "zh" ? row.content_zh || row.content_en || "" : row.content_en || row.content_zh || "",
     image_url: row.image_url,
+    items: (language === "zh" ? row.items_zh || row.items_en : row.items_en || row.items_zh) || [],
+  };
+};
+
+export const getPublishedSitePage = async (
+  language: "en" | "zh",
+  pageKey: string,
+): Promise<PublishedSitePage | null> => {
+  if (!isSupabaseConfigured) return null;
+  const { data, error } = await supabase!
+    .from("site_pages")
+    .select("*")
+    .eq("status", "published")
+    .eq("page_key", pageKey)
+    .limit(1);
+  if (error) return null;
+  const row: any = (data || [])[0];
+  if (!row) return null;
+  return {
+    id: row.id,
+    page_key: row.page_key,
+    path: row.path || "",
+    title: language === "zh" ? row.title_zh || row.title_en || "" : row.title_en || row.title_zh || "",
+    subtitle: language === "zh" ? row.subtitle_zh || row.subtitle_en || "" : row.subtitle_en || row.subtitle_zh || "",
+    description: language === "zh" ? row.description_zh || row.description_en || "" : row.description_en || row.description_zh || "",
+    content: language === "zh" ? row.content_zh || row.content_en || "" : row.content_en || row.content_zh || "",
+    cta_title: language === "zh" ? row.cta_title_zh || row.cta_title_en || "" : row.cta_title_en || row.cta_title_zh || "",
+    cta_description: language === "zh" ? row.cta_description_zh || row.cta_description_en || "" : row.cta_description_en || row.cta_description_zh || "",
+    image_url: row.image_url || null,
+    alt: language === "zh" ? row.alt_zh || row.alt_en || "" : row.alt_en || row.alt_zh || "",
+    seo_title: language === "zh" ? row.seo_title_zh || row.seo_title_en || "" : row.seo_title_en || row.seo_title_zh || "",
+    seo_description: language === "zh" ? row.seo_description_zh || row.seo_description_en || "" : row.seo_description_en || row.seo_description_zh || "",
+    seo_keywords: language === "zh" ? row.seo_keywords_zh || row.seo_keywords_en || "" : row.seo_keywords_en || row.seo_keywords_zh || "",
     items: (language === "zh" ? row.items_zh || row.items_en : row.items_en || row.items_zh) || [],
   };
 };

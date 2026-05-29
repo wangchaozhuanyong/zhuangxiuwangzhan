@@ -12,6 +12,7 @@ import AdminPageHeader from "@/components/admin/AdminPageHeader";
 import AdminFormSection from "@/components/admin/AdminFormSection";
 import AdminEmptyState from "@/components/admin/AdminEmptyState";
 import ImageField from "@/components/admin/ImageField";
+import { FaqListEditor, ProcessStepsEditor, TextListEditor } from "@/components/admin/StructuredArrayEditors";
 import { invalidateAdminContentDetail, invalidateAfterAdminContentSave } from "@/lib/adminInvalidate";
 import { useAdminServiceDetail } from "@/lib/adminQueries";
 import { publishStatusOptions } from "@/lib/adminLocale";
@@ -83,16 +84,15 @@ const slugify = (value: string) =>
     .replace(/[^a-z0-9]+/g, "-")
     .replace(/(^-|-$)/g, "");
 
-const parseLines = (value: string) => value.split("\n").map((s) => s.trim()).filter(Boolean);
-const formatLines = (value?: string[] | null) => (value || []).join("\n");
-
-const parseJsonArray = (value: string) => {
-  const raw = value.trim();
-  if (!raw) return [];
-  const parsed = JSON.parse(raw);
-  return Array.isArray(parsed) ? parsed : [];
-};
-const formatJsonArray = (value: any) => JSON.stringify(value || [], null, 2);
+const cleanLines = (value?: string[] | null) => (value || []).map((item) => item.trim()).filter(Boolean);
+const cleanProcessSteps = (value?: any[] | null) =>
+  (value || [])
+    .map((item) => ({ ...item, title: String(item?.title || "").trim(), desc: String(item?.desc || "").trim() }))
+    .filter((item) => item.title || item.desc);
+const cleanFaqs = (value?: any[] | null) =>
+  (value || [])
+    .map((item) => ({ ...item, q: String(item?.q || "").trim(), a: String(item?.a || "").trim() }))
+    .filter((item) => item.q || item.a);
 
 export default function AdminServiceEditor() {
   const queryClient = useQueryClient();
@@ -183,16 +183,16 @@ export default function AdminServiceEditor() {
       ...record,
       slug,
       status: nextStatus ?? record.status,
-      suitable_for_zh: record.suitable_for_zh || [],
-      suitable_for_en: record.suitable_for_en || [],
-      common_projects_zh: record.common_projects_zh || [],
-      common_projects_en: record.common_projects_en || [],
-      scope_items_zh: record.scope_items_zh || [],
-      scope_items_en: record.scope_items_en || [],
-      process_steps_zh: record.process_steps_zh || [],
-      process_steps_en: record.process_steps_en || [],
-      faqs_zh: record.faqs_zh || [],
-      faqs_en: record.faqs_en || [],
+      suitable_for_zh: cleanLines(record.suitable_for_zh),
+      suitable_for_en: cleanLines(record.suitable_for_en),
+      common_projects_zh: cleanLines(record.common_projects_zh),
+      common_projects_en: cleanLines(record.common_projects_en),
+      scope_items_zh: cleanLines(record.scope_items_zh),
+      scope_items_en: cleanLines(record.scope_items_en),
+      process_steps_zh: cleanProcessSteps(record.process_steps_zh),
+      process_steps_en: cleanProcessSteps(record.process_steps_en),
+      faqs_zh: cleanFaqs(record.faqs_zh),
+      faqs_en: cleanFaqs(record.faqs_en),
     };
     delete payload.id;
     delete payload.created_at;
@@ -391,58 +391,42 @@ export default function AdminServiceEditor() {
         <AdminFormSection title="业务字段（中文）" description="这些字段会被前台服务详情页读取。">
           <div className="grid gap-4 md:grid-cols-2">
             <div>
-              <label className="mb-1 block text-sm font-medium">适合场景 suitable_for_zh（一行一个）</label>
-              <Textarea
-                rows={5}
-                value={formatLines(record.suitable_for_zh)}
-                onChange={(e) => setRecord((r) => ({ ...r, suitable_for_zh: parseLines(e.target.value) }))}
+              <TextListEditor
+                label="适合场景 suitable_for_zh"
+                value={record.suitable_for_zh}
+                onChange={(value) => setRecord((r) => ({ ...r, suitable_for_zh: value }))}
+                placeholder="例如：公寓装修、旧屋翻新"
               />
             </div>
             <div>
-              <label className="mb-1 block text-sm font-medium">常见项目 common_projects_zh（一行一个）</label>
-              <Textarea
-                rows={5}
-                value={formatLines(record.common_projects_zh)}
-                onChange={(e) => setRecord((r) => ({ ...r, common_projects_zh: parseLines(e.target.value) }))}
+              <TextListEditor
+                label="常见项目 common_projects_zh"
+                value={record.common_projects_zh}
+                onChange={(value) => setRecord((r) => ({ ...r, common_projects_zh: value }))}
+                placeholder="例如：厨房翻新、浴室防水"
               />
             </div>
             <div className="md:col-span-2">
-              <label className="mb-1 block text-sm font-medium">服务范围 scope_items_zh（一行一个）</label>
-              <Textarea
-                rows={6}
-                value={formatLines(record.scope_items_zh)}
-                onChange={(e) => setRecord((r) => ({ ...r, scope_items_zh: parseLines(e.target.value) }))}
+              <TextListEditor
+                label="服务范围 scope_items_zh"
+                value={record.scope_items_zh}
+                onChange={(value) => setRecord((r) => ({ ...r, scope_items_zh: value }))}
+                placeholder="例如：水电工程、木作、油漆"
               />
             </div>
             <div className="md:col-span-2">
-              <label className="mb-1 block text-sm font-medium">服务步骤 process_steps_zh（JSON 数组）</label>
-              <Textarea
-                rows={7}
-                value={formatJsonArray(record.process_steps_zh)}
-                onChange={(e) => {
-                  try {
-                    setRecord((r) => ({ ...r, process_steps_zh: parseJsonArray(e.target.value) }));
-                  } catch {
-                    // keep raw string in UI by not updating; user can correct JSON then save
-                  }
-                }}
+              <ProcessStepsEditor
+                label="服务步骤 process_steps_zh"
+                value={record.process_steps_zh}
+                onChange={(value) => setRecord((r) => ({ ...r, process_steps_zh: value }))}
               />
-              <p className="mt-1 text-xs text-muted-foreground">下一步会替换成结构化编辑器（避免手写 JSON）。</p>
             </div>
             <div className="md:col-span-2">
-              <label className="mb-1 block text-sm font-medium">服务 FAQ faqs_zh（JSON 数组）</label>
-              <Textarea
-                rows={7}
-                value={formatJsonArray(record.faqs_zh)}
-                onChange={(e) => {
-                  try {
-                    setRecord((r) => ({ ...r, faqs_zh: parseJsonArray(e.target.value) }));
-                  } catch {
-                    // ignore
-                  }
-                }}
+              <FaqListEditor
+                label="服务 FAQ faqs_zh"
+                value={record.faqs_zh}
+                onChange={(value) => setRecord((r) => ({ ...r, faqs_zh: value }))}
               />
-              <p className="mt-1 text-xs text-muted-foreground">下一步会替换成结构化 FAQ 编辑器（避免手写 JSON）。</p>
             </div>
           </div>
         </AdminFormSection>
@@ -482,43 +466,41 @@ export default function AdminServiceEditor() {
             <AdminFormSection title="业务字段（英文）" description="可选；为空时自动 fallback。">
               <div className="grid gap-4 md:grid-cols-2">
                 <div>
-                  <label className="mb-1 block text-sm font-medium">suitable_for_en（一行一个）</label>
-                  <Textarea rows={5} value={formatLines(record.suitable_for_en)} onChange={(e) => setRecord((r) => ({ ...r, suitable_for_en: parseLines(e.target.value) }))} />
+                  <TextListEditor
+                    label="suitable_for_en"
+                    value={record.suitable_for_en}
+                    onChange={(value) => setRecord((r) => ({ ...r, suitable_for_en: value }))}
+                    placeholder="Example: Condo renovation"
+                  />
                 </div>
                 <div>
-                  <label className="mb-1 block text-sm font-medium">common_projects_en（一行一个）</label>
-                  <Textarea rows={5} value={formatLines(record.common_projects_en)} onChange={(e) => setRecord((r) => ({ ...r, common_projects_en: parseLines(e.target.value) }))} />
-                </div>
-                <div className="md:col-span-2">
-                  <label className="mb-1 block text-sm font-medium">scope_items_en（一行一个）</label>
-                  <Textarea rows={6} value={formatLines(record.scope_items_en)} onChange={(e) => setRecord((r) => ({ ...r, scope_items_en: parseLines(e.target.value) }))} />
-                </div>
-                <div className="md:col-span-2">
-                  <label className="mb-1 block text-sm font-medium">process_steps_en（JSON 数组）</label>
-                  <Textarea
-                    rows={7}
-                    value={formatJsonArray(record.process_steps_en)}
-                    onChange={(e) => {
-                      try {
-                        setRecord((r) => ({ ...r, process_steps_en: parseJsonArray(e.target.value) }));
-                      } catch {
-                        // ignore
-                      }
-                    }}
+                  <TextListEditor
+                    label="common_projects_en"
+                    value={record.common_projects_en}
+                    onChange={(value) => setRecord((r) => ({ ...r, common_projects_en: value }))}
+                    placeholder="Example: Kitchen upgrade"
                   />
                 </div>
                 <div className="md:col-span-2">
-                  <label className="mb-1 block text-sm font-medium">faqs_en（JSON 数组）</label>
-                  <Textarea
-                    rows={7}
-                    value={formatJsonArray(record.faqs_en)}
-                    onChange={(e) => {
-                      try {
-                        setRecord((r) => ({ ...r, faqs_en: parseJsonArray(e.target.value) }));
-                      } catch {
-                        // ignore
-                      }
-                    }}
+                  <TextListEditor
+                    label="scope_items_en"
+                    value={record.scope_items_en}
+                    onChange={(value) => setRecord((r) => ({ ...r, scope_items_en: value }))}
+                    placeholder="Example: Electrical works"
+                  />
+                </div>
+                <div className="md:col-span-2">
+                  <ProcessStepsEditor
+                    label="process_steps_en"
+                    value={record.process_steps_en}
+                    onChange={(value) => setRecord((r) => ({ ...r, process_steps_en: value }))}
+                  />
+                </div>
+                <div className="md:col-span-2">
+                  <FaqListEditor
+                    label="faqs_en"
+                    value={record.faqs_en}
+                    onChange={(value) => setRecord((r) => ({ ...r, faqs_en: value }))}
                   />
                 </div>
               </div>

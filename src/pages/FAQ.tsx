@@ -8,7 +8,7 @@ import { JsonLdFAQ, JsonLdBreadcrumb } from "@/components/JsonLd";
 import WhatsAppIcon from "@/components/WhatsAppIcon";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { useSiteSettings } from "@/hooks/useSiteSettings";
-import { usePublishedFaqs } from "@/hooks/usePublishedContent";
+import { usePublishedFaqs, usePublishedSitePage } from "@/hooks/usePublishedContent";
 import heroImg from "@/assets/hero-faq.webp";
 import HeroBanner from "@/components/blocks/HeroBanner";
 
@@ -73,7 +73,7 @@ const faqContent = {
   },
   zh: {
     metaTitle: "常见问题 | 吉隆坡装修问答 | FLASH CAST",
-    metaDescription: "FLASH CAST 整理马来西亚装修服务、报价、材料、定制家具和准证申请常见问题，服务 Kuala Lumpur 与 Selangor。",
+    metaDescription: "FLASH CAST 整理马来西亚装修服务、报价、材料、定制家具和准证申请常见问题，服务吉隆坡与雪兰莪。",
     metaKeywords: "马来西亚装修常见问题, 吉隆坡装修问答, 定制家具 FAQ, DBKL 装修准证",
     breadcrumbHome: "首页",
     breadcrumbFaq: "常见问题",
@@ -90,7 +90,7 @@ const faqContent = {
         category: "一般问题",
         items: [
           { q: "FLASH CAST 提供哪些装修服务？", a: "我们提供全屋装修、室内设计、定制内嵌家具、厨房装修、浴室装修、办公室装修、店铺装修、德国 Remmers 艺术墙面涂装、旧屋翻新和准证协调服务。" },
-          { q: "你们服务哪些地区？", a: "我们服务 Kuala Lumpur 与 Selangor，包括 Mont Kiara、Bangsar、Cheras、Petaling Jaya、Subang Jaya、Shah Alam、Puchong 和周边地区。" },
+          { q: "你们服务哪些地区？", a: "我们服务吉隆坡与雪兰莪，包括 Mont Kiara、Bangsar、Cheras、Petaling Jaya、Subang Jaya、Shah Alam、Puchong 和周边地区。" },
           { q: "FLASH CAST 是注册公司吗？", a: "是的，FLASH CAST SDN. BHD. 是 SSM 注册公司，办公室位于 Taman United, Kuala Lumpur。" },
         ],
       },
@@ -98,7 +98,7 @@ const faqContent = {
         category: "流程与报价",
         items: [
           { q: "如何获取装修报价？", a: "你可以通过 WhatsApp、电话或网站报价表单联系。我们会安排现场测量，并提供清楚的分项报价。" },
-          { q: "现场测量是免费的吗？", a: "KL 与 Selangor 项目可安排免费现场测量，作为报价流程的一部分。" },
+          { q: "现场测量是免费的吗？", a: "吉隆坡与雪兰莪项目可安排免费现场测量，作为报价流程的一部分。" },
           { q: "一般装修需要多久？", a: "住宅装修通常需要 6-12 周，厨房约 3-5 周，浴室约 2-3 周，办公室和店铺装修约 4-8 周，实际时间会根据范围确认。" },
           { q: "是否提供保固和售后？", a: "是的，装修工程会提供施工保固，并在交付后提供售后支援。" },
         ],
@@ -135,6 +135,7 @@ const FAQ = () => {
   const { language } = useLanguage();
   const settings = useSiteSettings();
   const t = faqContent[language];
+  const { data: pageContent } = usePublishedSitePage(language, "faq");
   const { data: publishedFaqs } = usePublishedFaqs(language, "general");
   const categories = useMemo(() => {
     if (!publishedFaqs?.length) return t.categories;
@@ -148,11 +149,22 @@ const FAQ = () => {
 
   return (
     <main className="pt-site-header">
-      <PageMeta title={t.metaTitle} description={t.metaDescription} keywords={t.metaKeywords} canonicalPath="/faq" />
+      <PageMeta
+        title={pageContent?.seo_title || t.metaTitle}
+        description={pageContent?.seo_description || t.metaDescription}
+        keywords={pageContent?.seo_keywords || t.metaKeywords}
+        canonicalPath="/faq"
+      />
       <JsonLdFAQ faqs={categories.flatMap((cat) => cat.items.map((item) => ({ question: item.q, answer: item.a })))} />
       <JsonLdBreadcrumb items={[{ name: t.breadcrumbHome, url: "/" }, { name: t.breadcrumbFaq, url: "/faq" }]} />
 
-      <HeroBanner image={heroImg} imageAlt={t.heroAlt} label={t.eyebrow} title={t.title} description={t.intro} />
+      <HeroBanner
+        image={pageContent?.image_url || heroImg}
+        imageAlt={pageContent?.alt || t.heroAlt}
+        label={pageContent?.subtitle || t.eyebrow}
+        title={pageContent?.title || t.title}
+        description={pageContent?.description || t.intro}
+      />
 
       <section className="section-padding bg-background">
         <div className="container-narrow max-w-3xl">
@@ -179,8 +191,8 @@ const FAQ = () => {
         <Reveal>
           <div className="container-narrow">
             <div className="accent-line mx-auto mb-4" />
-            <h2 className="heading-safe mb-4 font-display text-3xl font-bold text-surface-dark-foreground">{t.ctaTitle}</h2>
-            <p className="mb-6 text-surface-dark-foreground/75">{t.ctaText}</p>
+            <h2 className="heading-safe mb-4 font-display text-3xl font-bold text-surface-dark-foreground">{pageContent?.cta_title || t.ctaTitle}</h2>
+            <p className="mb-6 text-surface-dark-foreground/75">{pageContent?.cta_description || t.ctaText}</p>
             <div className="flex flex-col justify-center gap-3 sm:flex-row sm:gap-4">
               <Link to="/contact" className="btn-on-dark-primary min-h-12 w-full justify-center px-8 sm:w-auto">
                 {t.contact}

@@ -230,7 +230,10 @@ export const getPublishedServices = async (language: "en" | "zh" = "en") => {
 
   if (error || !data?.length) return getFallbackServices(language);
 
-  return data.map((item: any) => ({
+  return data.map((item: any) => mapPublishedService(item, language));
+};
+
+const mapPublishedService = (item: any, language: "en" | "zh") => ({
     id: item.id,
     title: item[`title_${language}`] || item.title_en || item.title_zh,
     slug: item.slug,
@@ -242,7 +245,23 @@ export const getPublishedServices = async (language: "en" | "zh" = "en") => {
     items: item[`scope_items_${language}`] || item.scope_items_en || item.scope_items_zh || [],
     faqs: item[`faqs_${language}`] || item.faqs_en || item.faqs_zh || [],
     image: item.image_url || "",
-  }));
+    seoTitle: item[`seo_title_${language}`] || item.seo_title_en || item.seo_title_zh || "",
+    seoDescription: item[`seo_description_${language}`] || item.seo_description_en || item.seo_description_zh || "",
+});
+
+export const getPublishedServiceBySlug = async (slug: string, language: "en" | "zh") => {
+  const fallbackServices = async () => (await getFallbackServices(language)).find((service: any) => service.slug === slug) || null;
+  if (!isSupabaseConfigured) return fallbackServices();
+
+  const { data, error } = await supabase!
+    .from("services")
+    .select("*")
+    .eq("status", "published")
+    .eq("slug", slug)
+    .single();
+
+  if (error || !data) return fallbackServices();
+  return mapPublishedService(data, language);
 };
 
 export const getPublishedProjectBySlug = async (slug: string, language: "en" | "zh") => {

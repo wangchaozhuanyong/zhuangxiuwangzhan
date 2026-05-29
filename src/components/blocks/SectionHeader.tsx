@@ -13,11 +13,11 @@ interface SectionHeaderProps {
 const SectionHeader = ({ title, description, className = "" }: SectionHeaderProps) => {
   return (
     <Reveal>
-      <div className={`text-center mb-10 md:mb-14 ${className}`}>
+      <div className={`mx-auto mb-10 max-w-3xl text-center md:mb-14 ${className}`}>
         <div className="accent-line mx-auto mb-4" />
-        <h2 className="font-display text-2xl md:text-3xl font-bold mb-3">{title}</h2>
+        <h2 className="heading-safe mb-3 font-display text-2xl font-bold md:text-4xl">{title}</h2>
         {description && (
-          <p className="text-muted-foreground max-w-lg mx-auto text-sm md:text-base">{description}</p>
+          <p className="mx-auto max-w-2xl text-sm leading-relaxed text-muted-foreground md:text-base">{description}</p>
         )}
       </div>
     </Reveal>

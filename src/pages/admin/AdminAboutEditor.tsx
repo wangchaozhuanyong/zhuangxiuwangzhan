@@ -10,6 +10,7 @@ import AdminPageHeader from "@/components/admin/AdminPageHeader";
 import AdminFormSection from "@/components/admin/AdminFormSection";
 import AdminEmptyState from "@/components/admin/AdminEmptyState";
 import ImageField from "@/components/admin/ImageField";
+import { AboutSectionItemsEditor } from "@/components/admin/StructuredArrayEditors";
 import { invalidatePublishedContent } from "@/lib/adminInvalidate";
 import { aboutSectionKeys, type AboutSectionKey, type AboutSectionRow, type CtaRow } from "@/lib/adminEditorData";
 import { useAdminAboutEditorData } from "@/lib/adminQueries";
@@ -21,11 +22,44 @@ const L = (field: string) => translateFieldLabel(field, getAdminLang());
 const sectionKeys = aboutSectionKeys;
 type SectionKey = AboutSectionKey;
 
-const jsonStringify = (value: any) => JSON.stringify(value ?? [], null, 2);
-const safeJsonParse = (value: string) => {
-  const raw = value.trim();
-  if (!raw) return [];
-  return JSON.parse(raw);
+const asArray = (value: unknown): any[] => (Array.isArray(value) ? value : []);
+
+const cleanAboutItems = (sectionKey: string, value: unknown[]) => {
+  const items = asArray(value);
+  if (sectionKey === "intro") {
+    return items
+      .map((item: any) => String(typeof item === "string" ? item : item?.title || ""))
+      .map((item) => item.trim())
+      .filter(Boolean);
+  }
+  if (sectionKey === "stats") {
+    return items
+      .map((item: any) => ({
+        value: String(item?.value || "").trim(),
+        label: String(item?.label || item?.label_zh || item?.label_en || "").trim(),
+        icon: String(item?.icon || "").trim(),
+      }))
+      .filter((item) => item.value && item.label);
+  }
+  if (sectionKey === "milestones") {
+    return items
+      .map((item: any) => ({
+        year: String(item?.year || "").trim(),
+        title: String(item?.title || "").trim(),
+        desc: String(item?.desc || "").trim(),
+      }))
+      .filter((item) => item.year && item.title && item.desc);
+  }
+  if (sectionKey === "core_values" || sectionKey === "team") {
+    return items
+      .map((item: any) => ({
+        title: String(item?.title || item?.title_zh || item?.title_en || "").trim(),
+        desc: String(item?.desc || item?.desc_zh || item?.desc_en || "").trim(),
+        icon: String(item?.icon || "").trim(),
+      }))
+      .filter((item) => item.title && item.desc);
+  }
+  return [];
 };
 
 export default function AdminAboutEditor() {
@@ -35,8 +69,8 @@ export default function AdminAboutEditor() {
   const loading = isFetching;
 
   const [sections, setSections] = useState<Record<string, AboutSectionRow | null>>({});
-  const [itemsZh, setItemsZh] = useState<Record<string, string>>({});
-  const [itemsEn, setItemsEn] = useState<Record<string, string>>({});
+  const [itemsZh, setItemsZh] = useState<Record<string, any[]>>({});
+  const [itemsEn, setItemsEn] = useState<Record<string, any[]>>({});
 
   const [ctaBlock, setCtaBlock] = useState<CtaRow | null>(null);
   const [editingCta, setEditingCta] = useState<CtaRow | null>(null);
@@ -55,11 +89,11 @@ export default function AdminAboutEditor() {
     if (!bundle) return;
     if (formDirtyRef.current) return;
     setSections(bundle.sections);
-    const zh: Record<string, string> = {};
-    const en: Record<string, string> = {};
+    const zh: Record<string, any[]> = {};
+    const en: Record<string, any[]> = {};
     sectionKeys.forEach((key) => {
-      zh[key] = jsonStringify(bundle.sections[key]?.items_zh || []);
-      en[key] = jsonStringify(bundle.sections[key]?.items_en || []);
+      zh[key] = asArray(bundle.sections[key]?.items_zh);
+      en[key] = asArray(bundle.sections[key]?.items_en);
     });
     setItemsZh(zh);
     setItemsEn(en);
@@ -86,8 +120,6 @@ export default function AdminAboutEditor() {
     }
 
     try {
-      const parsedZh = safeJsonParse(itemsZh[key] || "[]");
-      const parsedEn = safeJsonParse(itemsEn[key] || "[]");
       const payload: any = {
         section_key: key,
         title_zh: row.title_zh || null,
@@ -97,8 +129,8 @@ export default function AdminAboutEditor() {
         content_zh: row.content_zh || null,
         content_en: row.content_en || null,
         image_url: row.image_url || null,
-        items_zh: parsedZh,
-        items_en: parsedEn,
+        items_zh: cleanAboutItems(key, itemsZh[key] || []),
+        items_en: cleanAboutItems(key, itemsEn[key] || []),
         status: row.status || "published",
         sort_order: Number(row.sort_order || 0),
       };
@@ -108,7 +140,7 @@ export default function AdminAboutEditor() {
       toast({ title: "已保存" });
       await refreshEditor();
     } catch (e: any) {
-      toast({ title: "保存失败（JSON 格式错误）", description: e?.message || String(e), variant: "destructive" });
+      toast({ title: "保存失败", description: e?.message || String(e), variant: "destructive" });
     }
   };
 
@@ -202,7 +234,7 @@ export default function AdminAboutEditor() {
           const row = sections[key];
           return (
             <TabsContent key={key} value={key} className="space-y-6">
-              <AdminFormSection title={`about_sections: ${key}`} description="中英文可分别编辑；items 为 JSON 数组，用于列表/卡片/标签等。">
+              <AdminFormSection title={`about_sections: ${key}`} description="中英文可分别编辑；列表、卡片、标签等内容可以直接添加、删除和排序。">
                 {!row ? (
                   <div className="text-sm text-muted-foreground">加载中…</div>
                 ) : (
@@ -263,13 +295,27 @@ export default function AdminAboutEditor() {
                           usageType="hero"
                         />
                       </div>
-                      <div>
-                        <label className="mb-1 block text-sm font-medium">items_zh（JSON）</label>
-                        <Textarea rows={10} value={itemsZh[key] || "[]"} onChange={(e) => { markDirty(); setItemsZh((prev) => ({ ...prev, [key]: e.target.value })); }} />
+                      <div className="md:col-span-2">
+                        <AboutSectionItemsEditor
+                          label="中文列表/卡片内容"
+                          sectionKey={key}
+                          value={itemsZh[key] || []}
+                          onChange={(value) => {
+                            markDirty();
+                            setItemsZh((prev) => ({ ...prev, [key]: value }));
+                          }}
+                        />
                       </div>
-                      <div>
-                        <label className="mb-1 block text-sm font-medium">items_en（JSON）</label>
-                        <Textarea rows={10} value={itemsEn[key] || "[]"} onChange={(e) => { markDirty(); setItemsEn((prev) => ({ ...prev, [key]: e.target.value })); }} />
+                      <div className="md:col-span-2">
+                        <AboutSectionItemsEditor
+                          label="English list/card content"
+                          sectionKey={key}
+                          value={itemsEn[key] || []}
+                          onChange={(value) => {
+                            markDirty();
+                            setItemsEn((prev) => ({ ...prev, [key]: value }));
+                          }}
+                        />
                       </div>
                     </div>
                     <div className="mt-4 flex gap-2">

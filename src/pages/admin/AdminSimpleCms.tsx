@@ -1,4 +1,4 @@
-import { useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { invalidatePublishedContent } from "@/lib/adminInvalidate";
 import { useAdminSimpleCmsRows } from "@/lib/adminQueries";
@@ -9,10 +9,40 @@ import { isSupabaseConfigured, supabase } from "@/lib/supabase";
 import AdminImageUpload from "./AdminImageUpload";
 import { publishStatusOptions } from "@/lib/adminLocale";
 
-type ModuleKey = "home_sections" | "faqs" | "before_after_items" | "brand_partners";
+type ModuleKey = "site_pages" | "home_sections" | "faqs" | "before_after_items" | "brand_partners";
 type Field = { key: string; label: string; type?: "text" | "textarea" | "image" | "number" | "select" };
 
 const configs: Record<ModuleKey, { title: string; table: ModuleKey; labelField: string; fields: Field[] }> = {
+  site_pages: {
+    title: "页面级内容",
+    table: "site_pages",
+    labelField: "page_key",
+    fields: [
+      { key: "page_key", label: "页面标识 page_key" },
+      { key: "path", label: "前台路径 path" },
+      { key: "title_zh", label: "中文页面/首屏标题" },
+      { key: "title_en", label: "英文页面/首屏标题" },
+      { key: "subtitle_zh", label: "中文首屏小标题" },
+      { key: "subtitle_en", label: "英文首屏小标题" },
+      { key: "description_zh", label: "中文首屏/页面说明", type: "textarea" },
+      { key: "description_en", label: "英文首屏/页面说明", type: "textarea" },
+      { key: "content_zh", label: "中文正文/补充说明", type: "textarea" },
+      { key: "content_en", label: "英文正文/补充说明", type: "textarea" },
+      { key: "cta_title_zh", label: "中文 CTA 标题" },
+      { key: "cta_title_en", label: "英文 CTA 标题" },
+      { key: "cta_description_zh", label: "中文 CTA 描述", type: "textarea" },
+      { key: "cta_description_en", label: "英文 CTA 描述", type: "textarea" },
+      { key: "image_url", label: "首屏图片", type: "image" },
+      { key: "alt_zh", label: "中文图片 Alt" },
+      { key: "alt_en", label: "英文图片 Alt" },
+      { key: "seo_title_zh", label: "中文 SEO 标题" },
+      { key: "seo_title_en", label: "英文 SEO 标题" },
+      { key: "seo_description_zh", label: "中文 SEO 描述", type: "textarea" },
+      { key: "seo_description_en", label: "英文 SEO 描述", type: "textarea" },
+      { key: "seo_keywords_zh", label: "中文 SEO 关键词" },
+      { key: "seo_keywords_en", label: "英文 SEO 关键词" },
+    ],
+  },
   home_sections: {
     title: "首页模块",
     table: "home_sections",
@@ -73,6 +103,15 @@ const configs: Record<ModuleKey, { title: string; table: ModuleKey; labelField: 
 
 const emptyRecord = { status: "published", sort_order: 0 };
 
+const formatAdminError = (module: ModuleKey, error: unknown) => {
+  const record = error as { code?: string; message?: string; hint?: string; details?: string };
+  const message = record?.message || (error instanceof Error ? error.message : String(error));
+  if (module === "site_pages" && (record?.code === "PGRST205" || message.includes("site_pages"))) {
+    return "数据库还没有 site_pages 表，页面级内容暂时不能保存。请先执行迁移 supabase/migrations/202605290004_site_pages.sql。";
+  }
+  return [message, record?.hint, record?.details].filter(Boolean).join(" ");
+};
+
 const AdminSimpleCms = ({ module }: { module: ModuleKey }) => {
   const config = configs[module];
   const queryClient = useQueryClient();
@@ -80,6 +119,10 @@ const AdminSimpleCms = ({ module }: { module: ModuleKey }) => {
   const [record, setRecord] = useState<Record<string, any>>(emptyRecord);
   const recordDirtyRef = useRef(false);
   const [message, setMessage] = useState(error instanceof Error ? error.message : error ? String(error) : "");
+
+  useEffect(() => {
+    if (error) setMessage(formatAdminError(module, error));
+  }, [error, module]);
 
   const title = useMemo(() => record[config.labelField] || record.title_en || record.name || "新建", [config.labelField, record]);
   const update = (key: string, value: unknown) => {
@@ -100,20 +143,23 @@ const AdminSimpleCms = ({ module }: { module: ModuleKey }) => {
   const save = async () => {
     if (!isSupabaseConfigured) return;
     const payload = { ...record };
+    const recordId = payload.id;
+    delete payload.id;
     delete payload.created_at;
     delete payload.updated_at;
-    const request = payload.id
-      ? supabase!.from(config.table).update(payload).eq("id", payload.id)
-      : supabase!.from(config.table).insert(payload);
-    const { error } = await request;
+    const request = recordId
+      ? supabase!.from(config.table).update(payload).eq("id", recordId).select("*").single()
+      : supabase!.from(config.table).insert(payload).select("*").single();
+    const { data, error } = await request;
     if (error) {
       setMessage(error.message);
       return;
     }
     setMessage("已保存。");
+    recordDirtyRef.current = false;
+    setRecord((data as Record<string, any>) || emptyRecord);
     void invalidatePublishedContent(queryClient);
     void queryClient.invalidateQueries({ queryKey: ["admin", config.table, "rows"] });
-    resetRecord();
     await refetch();
   };
 

@@ -18,6 +18,7 @@ import { getAdminLang } from "@/lib/adminLocale";
 import { isSupabaseConfigured, supabase } from "@/lib/supabase";
 import AdminImageUpload from "./AdminImageUpload";
 import AdminProjectImages from "./AdminProjectImages";
+import { FaqListEditor, ProjectCardsEditor, TextListEditor } from "@/components/admin/StructuredArrayEditors";
 
 const editableTables = new Set([
   "services",
@@ -406,7 +407,7 @@ const getRecordMeta = (row: Record<string, any>, type: string, language: Languag
 
 const parseFieldValue = (field: string, value: any) => {
   if (arrayLikeFields.has(field)) {
-    if (Array.isArray(value)) return value;
+    if (Array.isArray(value)) return value.map((item) => String(item || "").trim()).filter(Boolean);
     return String(value || "").split("\n").map((item) => item.trim()).filter(Boolean);
   }
 
@@ -430,6 +431,19 @@ const formatFieldValue = (field: string, value: any) => {
   if (arrayLikeFields.has(field)) return Array.isArray(value) ? value.join("\n") : value || "";
   if (jsonFields.has(field)) return typeof value === "string" ? value : JSON.stringify(value || [], null, 2);
   return value || "";
+};
+
+const arrayValue = (field: string, value: any) => {
+  if (Array.isArray(value)) return value;
+  if (jsonFields.has(field)) {
+    try {
+      const parsed = value ? JSON.parse(String(value)) : [];
+      return Array.isArray(parsed) ? parsed : [];
+    } catch {
+      return [];
+    }
+  }
+  return String(value || "").split("\n").map((item) => item.trim()).filter(Boolean);
 };
 
 const csvEscape = (value: any) => {
@@ -577,7 +591,7 @@ const AdminContentEditor = () => {
 
     setStatus(t.generating);
     const { error } = await supabase!.functions.invoke("generate-english-content", {
-      body: { table: type, id: record.id },
+      body: { table: type, id: record.id, force: true },
     });
 
     if (error) {
@@ -677,25 +691,71 @@ const AdminContentEditor = () => {
           )}
           {status && <div className="mb-4 rounded-lg bg-muted p-3 text-sm">{status}</div>}
           <div className="grid gap-4 md:grid-cols-2">
-            {visibleFields.map((field) => (
-              <div key={field} className={field.includes("content") || field.includes("description") ? "md:col-span-2" : ""}>
-                <label className="mb-1 block text-sm font-medium">{translateFieldLabel(field, lang)}</label>
-                {readOnlyFields.has(field) ? (
-                  <Input value={formatFieldValue(field, record[field])} readOnly className="bg-muted text-muted-foreground" />
-                ) : field.includes("content") || field.includes("description") || longTextFields.has(field) ? (
-                  <Textarea rows={5} value={formatFieldValue(field, record[field])} onChange={(event) => setRecordField({ [field]: event.target.value })} />
-                ) : arrayLikeFields.has(field) || jsonFields.has(field) ? (
-                  <Textarea rows={4} value={formatFieldValue(field, record[field])} onChange={(event) => setRecordField({ [field]: event.target.value })} />
-                ) : imageFields.has(field) ? (
-                  <div className="space-y-3">
-                    <Input value={formatFieldValue(field, record[field])} onChange={(event) => setRecordField({ [field]: event.target.value })} />
-                    <AdminImageUpload value={record[field]} folder={`${type}/${record.id || "draft"}`} onUploaded={(url) => setRecordField({ [field]: url })} />
-                  </div>
-                ) : (
-                  <Input value={formatFieldValue(field, record[field])} onChange={(event) => setRecordField({ [field]: event.target.value })} />
-                )}
-              </div>
-            ))}
+            {visibleFields.map((field) => {
+              const label = translateFieldLabel(field, lang);
+              const isWide =
+                field.includes("content") ||
+                field.includes("description") ||
+                arrayLikeFields.has(field) ||
+                jsonFields.has(field) ||
+                imageFields.has(field);
+
+              return (
+                <div key={field} className={isWide ? "md:col-span-2" : ""}>
+                  {readOnlyFields.has(field) ? (
+                    <>
+                      <label className="mb-1 block text-sm font-medium">{label}</label>
+                      <Input value={formatFieldValue(field, record[field])} readOnly className="bg-muted text-muted-foreground" />
+                    </>
+                  ) : field === "faqs_zh" || field === "faqs_en" ? (
+                    <FaqListEditor label={label} value={arrayValue(field, record[field])} onChange={(value) => setRecordField({ [field]: value })} />
+                  ) : field === "projects" ? (
+                    <ProjectCardsEditor
+                      label={label}
+                      value={arrayValue(field, record[field])}
+                      onChange={(value) => setRecordField({ [field]: value })}
+                      folder={`${type}/${record.id || "draft"}/projects`}
+                      metaKey="type"
+                      metaLabel="项目类型"
+                    />
+                  ) : field === "related_projects" ? (
+                    <ProjectCardsEditor
+                      label={label}
+                      value={arrayValue(field, record[field])}
+                      onChange={(value) => setRecordField({ [field]: value })}
+                      folder={`${type}/${record.id || "draft"}/related-projects`}
+                      metaKey="location"
+                      metaLabel="项目地点"
+                    />
+                  ) : arrayLikeFields.has(field) ? (
+                    <TextListEditor label={label} value={arrayValue(field, record[field])} onChange={(value) => setRecordField({ [field]: value })} />
+                  ) : field.includes("content") || field.includes("description") || longTextFields.has(field) ? (
+                    <>
+                      <label className="mb-1 block text-sm font-medium">{label}</label>
+                      <Textarea rows={5} value={formatFieldValue(field, record[field])} onChange={(event) => setRecordField({ [field]: event.target.value })} />
+                    </>
+                  ) : jsonFields.has(field) ? (
+                    <>
+                      <label className="mb-1 block text-sm font-medium">{label}</label>
+                      <Textarea rows={4} value={formatFieldValue(field, record[field])} onChange={(event) => setRecordField({ [field]: event.target.value })} />
+                    </>
+                  ) : imageFields.has(field) ? (
+                    <>
+                      <label className="mb-1 block text-sm font-medium">{label}</label>
+                      <div className="space-y-3">
+                        <Input value={formatFieldValue(field, record[field])} onChange={(event) => setRecordField({ [field]: event.target.value })} />
+                        <AdminImageUpload value={record[field]} folder={`${type}/${record.id || "draft"}`} onUploaded={(url) => setRecordField({ [field]: url })} />
+                      </div>
+                    </>
+                  ) : (
+                    <>
+                      <label className="mb-1 block text-sm font-medium">{label}</label>
+                      <Input value={formatFieldValue(field, record[field])} onChange={(event) => setRecordField({ [field]: event.target.value })} />
+                    </>
+                  )}
+                </div>
+              );
+            })}
           </div>
           {type === "projects" && <AdminProjectImages projectId={record.id} />}
         </div>

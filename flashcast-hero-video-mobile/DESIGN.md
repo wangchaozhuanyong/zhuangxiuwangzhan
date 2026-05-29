@@ -1,21 +1,28 @@
 ## Style Prompt
 
-Clean mobile renovation hero video for FLASH CAST SDN. BHD. The vertical film should show the renovation imagery clearly first, with only short, readable text placed inside a safe mobile viewport. It should feel practical, premium, and bright, not dark or heavily treated.
+Premium mobile homepage hero film for FLASH CAST SDN. BHD. The vertical video must stay clear, readable, and high-end on phone screens. Show the renovation imagery first, then add short bilingual text in safe areas. It should feel bright, calm, and trustworthy, not dark or cramped.
 
 ## Colors
 
-- Warm white: `#FFF8EE` for readable video text.
-- Champagne gold: `#D4AD69` for brand labels.
-- Charcoal: `#11100E` only for text shadows and fallback canvas.
+- Charcoal black: `#0D0C0A` for shadows and safe text contrast.
+- Warm white: `#FFF7EA` for readable Chinese and English text.
+- Champagne gold: `#D1AD72` for company labels.
+- Walnut brown: `#6E4A30` for interior warmth.
 
 ## Typography
 
-- Display and body: `Noto Sans SC` for Chinese mobile readability.
-- Small labels: `Montserrat` for the company name and English category labels.
+- Chinese: `Noto Sans SC` for main mobile slogans.
+- Labels: `Montserrat` for company and category labels.
+
+## Motion
+
+- Slow vertical-friendly push-in.
+- Crossfade between scenes.
+- Keep text away from the top browser bar and bottom mobile action area.
 
 ## What NOT to Do
 
-- No dark full-screen overlays.
+- No desktop-sized typography squeezed into mobile.
 - No off-canvas text.
-- No tiny desktop typography.
-- No decorative effects that reduce image clarity.
+- No full dark wash that hides the renovation details.
+- No direct hard crop of landscape scenes where the subject gets cut off.

@@ -11,6 +11,7 @@ import { useSiteSettings } from "@/hooks/useSiteSettings";
 import SmartImage from "@/components/SmartImage";
 import { usePublicChrome } from "@/contexts/PublicChromeContext";
 import { PUBLIC_CHROME_Z } from "@/lib/publicChrome";
+import logoFallback from "@/assets/logo-flashcast.webp";
 
 interface NavItem {
   labelKey: string;
@@ -48,9 +49,8 @@ const Navbar = () => {
   const primaryLogoSrc = settings.logo_url || "";
   const brandText = settings.company_name || "FLASH CAST SDN. BHD.";
   const resolvedLogoState: "primary" | "fallback" | "none" =
-    logoState === "primary" && !primaryLogoSrc ? "fallback" : logoState;
-  const logoSrc =
-    resolvedLogoState === "primary" ? primaryLogoSrc : resolvedLogoState === "fallback" ? "/logo-flashcast.png" : "";
+    logoState === "primary" && primaryLogoSrc ? "primary" : logoState === "none" ? "none" : "fallback";
+  const logoSrc = resolvedLogoState === "primary" ? primaryLogoSrc : logoFallback;
 
   const changeLanguage = () => {
     const nextLanguage = language === "en" ? "zh" : "en";
@@ -66,7 +66,7 @@ const Navbar = () => {
 
   useEffect(() => {
     setIsOpen(false);
-  }, [location.pathname]);
+  }, [location.pathname, setIsOpen]);
 
   useEffect(() => {
     if (isOpen) {
@@ -92,7 +92,7 @@ const Navbar = () => {
 
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [isOpen]);
+  }, [isOpen, setIsOpen]);
 
   const languageAriaLabel = language === "zh" ? "切换语言" : "Switch language";
   const menuAriaLabel = language === "zh" ? "打开导航菜单" : "Toggle navigation menu";
@@ -107,31 +107,25 @@ const Navbar = () => {
         <div className="site-container flex h-16 flex-nowrap items-center gap-3 md:h-[72px]">
           <LocalizedLink
             to="/"
-            className="flex min-w-0 max-w-[min(52%,14rem)] shrink-0 items-center gap-2 sm:max-w-[13rem]"
+            className="flex h-11 w-[10.5rem] max-w-[54%] shrink-0 items-center md:h-12 md:w-48 md:max-w-[14rem]"
           >
             {resolvedLogoState !== "none" ? (
               <SmartImage
                 src={logoSrc}
                 alt=""
-                className="h-8 w-auto shrink-0 object-contain md:h-9"
-                width={160}
-                height={36}
+                className="h-full w-full object-contain object-left"
+                width={190}
+                height={48}
                 loading="eager"
                 decoding="async"
                 onError={() => setLogoState(resolvedLogoState === "primary" ? "fallback" : "none")}
               />
             ) : (
-              <span
-                aria-hidden="true"
-                className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-btn bg-muted text-[11px] font-bold tracking-wide text-foreground/80 md:h-9 md:w-9"
-              >
-                FC
+              <span className="min-w-0 truncate text-[15px] font-semibold tracking-wide text-foreground/90 md:text-base">
+                {brandText}
               </span>
             )}
             <span className="sr-only">{brandText}</span>
-            <span className="min-w-0 truncate text-[13px] font-semibold tracking-wide text-foreground/90 md:text-sm">
-              {brandText}
-            </span>
           </LocalizedLink>
 
           <nav className="hidden min-w-0 flex-1 items-center justify-center gap-1 xl:flex">
@@ -175,24 +169,27 @@ const Navbar = () => {
             </Button>
           </div>
 
-          <div className="ml-auto flex shrink-0 items-center gap-1.5 xl:hidden">
-            <button
-              onClick={changeLanguage}
-              className="site-header__control flex items-center gap-1 rounded-btn px-3 py-2 text-xs font-semibold text-foreground transition-colors"
-              aria-label={languageAriaLabel}
-            >
-              <Globe className="h-3.5 w-3.5" />
-              <span>{language === "en" ? "EN" : "中文"}</span>
-            </button>
-            <button
-              className="site-header__control flex h-10 w-10 items-center justify-center rounded-btn text-foreground transition-colors"
-              onClick={() => setIsOpen(!isOpen)}
-              aria-label={menuAriaLabel}
-              aria-expanded={isOpen}
-              aria-controls="mobile-navigation"
-            >
-              {isOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
-            </button>
+          <div className="ml-auto flex shrink-0 items-center xl:hidden">
+            <div className="flex h-11 items-center rounded-full border border-white/75 bg-white/85 p-1 shadow-[0_16px_42px_-32px_rgba(21,18,14,0.55)] backdrop-blur-md">
+              <button
+                onClick={changeLanguage}
+                className="flex h-9 items-center gap-1.5 rounded-full px-2.5 text-xs font-semibold text-foreground transition-colors active:bg-muted/70"
+                aria-label={languageAriaLabel}
+              >
+                <Globe className="h-3.5 w-3.5" />
+                <span>{language === "en" ? "EN" : "中文"}</span>
+              </button>
+              <span aria-hidden="true" className="mx-1 h-5 w-px bg-border/80" />
+              <button
+                className="flex h-9 w-9 items-center justify-center rounded-full text-foreground transition-colors active:bg-muted/70"
+                onClick={() => setIsOpen(!isOpen)}
+                aria-label={menuAriaLabel}
+                aria-expanded={isOpen}
+                aria-controls="mobile-navigation"
+              >
+                {isOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+              </button>
+            </div>
           </div>
         </div>
       </header>
@@ -201,11 +198,11 @@ const Navbar = () => {
         <div
           id="mobile-navigation"
           ref={mobileMenuRef}
-          className="fixed inset-x-0 bottom-0 top-16 flex flex-col border-t border-border/60 bg-background/98 backdrop-blur-xl md:top-[72px] xl:hidden"
+          className="fixed inset-x-0 bottom-0 top-16 flex flex-col border-t border-border/70 bg-[hsl(var(--background))] shadow-[0_-24px_80px_-56px_rgba(21,18,14,0.45)] md:top-[72px] xl:hidden"
           style={{ zIndex: PUBLIC_CHROME_Z.mobileMenu }}
         >
-          <div className="min-h-0 flex-1 overflow-y-auto px-5 py-4">
-            <div className="space-y-0.5">
+          <div className="min-h-0 flex-1 overflow-y-auto px-4 py-4">
+            <div className="space-y-2">
               {navItems.map((item, index) => {
                 const isActive = isActivePath(location.pathname, item.path);
                 const Icon = item.icon;
@@ -214,10 +211,14 @@ const Navbar = () => {
                     key={item.path}
                     to={item.path}
                     style={{ animationDelay: `${index * 40}ms` }}
-                    className={`flex min-h-[52px] items-center gap-3 rounded-card px-3 text-[15px] font-medium opacity-0 animate-fade-in [animation-fill-mode:forwards] ${isActive ? "bg-muted/45 text-foreground" : "text-foreground/85 active:bg-muted/60"}`}
+                    className={`flex min-h-[54px] items-center gap-3 rounded-card border px-3 text-[15px] font-medium opacity-0 shadow-[0_14px_34px_-30px_rgba(21,18,14,0.38)] animate-fade-in [animation-fill-mode:forwards] ${
+                      isActive
+                        ? "border-gold/30 bg-card text-foreground"
+                        : "border-border/60 bg-card/80 text-foreground/80 active:bg-card"
+                    }`}
                   >
                     <span
-                      className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-full border bg-card ${isActive ? "border-gold/35 bg-gold/10" : "border-border/70"}`}
+                      className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-full border ${isActive ? "border-gold/40 bg-gold/10" : "border-border/70 bg-background"}`}
                     >
                       <Icon className={`h-[18px] w-[18px] ${isActive ? "text-gold" : "text-muted-foreground"}`} />
                     </span>
@@ -229,7 +230,7 @@ const Navbar = () => {
             </div>
           </div>
 
-          <div className="shrink-0 space-y-3 border-t border-border bg-background/95 px-5 pb-[max(1rem,env(safe-area-inset-bottom))] pt-4 backdrop-blur-sm">
+          <div className="shrink-0 space-y-3 border-t border-border bg-[hsl(var(--background))] px-5 pb-[max(1rem,env(safe-area-inset-bottom))] pt-4">
             <Button size="lg" className="h-12 w-full justify-center text-sm font-semibold" asChild>
               <LocalizedLink to="/quote">{t("cta.getQuote")}</LocalizedLink>
             </Button>

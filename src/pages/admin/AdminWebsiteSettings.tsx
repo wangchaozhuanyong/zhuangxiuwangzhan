@@ -51,6 +51,8 @@ const fields: Array<{ key: keyof SiteSettings; label: string; group: "company" |
   { key: "address_en", label: "英文地址", group: "contact", textarea: true },
   { key: "short_address_zh", label: "中文短地址", group: "contact" },
   { key: "short_address_en", label: "英文短地址", group: "contact" },
+  { key: "map_latitude", label: "地图纬度（Latitude）", group: "contact" },
+  { key: "map_longitude", label: "地图经度（Longitude）", group: "contact" },
   { key: "logo_url", label: "Logo 图片地址", group: "media" },
   { key: "favicon_url", label: "网站图标地址", group: "media" },
   { key: "og_image_url", label: "默认分享预览图地址", group: "media" },

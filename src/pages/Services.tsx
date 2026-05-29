@@ -5,7 +5,7 @@ import { ArrowRight, CheckCircle } from "lucide-react";
 import WhatsAppIcon from "@/components/WhatsAppIcon";
 import { servicesData } from "@/data/services";
 import SmartImage from "@/components/SmartImage";
-import { usePublishedServices } from "@/hooks/usePublishedContent";
+import { usePublishedServices, usePublishedSitePage } from "@/hooks/usePublishedContent";
 import Reveal from "@/components/Reveal";
 import PageMeta from "@/components/PageMeta";
 import { JsonLdBreadcrumb } from "@/components/JsonLd";
@@ -28,6 +28,8 @@ const copy = {
     intro: "Comprehensive renovation services across Kuala Lumpur and Selangor, from interior design and custom built-in to commercial fit-out, artistic wall coating, and warehouse systems.",
     geoPrefix: "FLASH CAST SDN. BHD.",
     geoText: (count: number) => `provides ${count} core renovation services in`,
+    geoLocation: "Kuala Lumpur and Selangor, Malaysia",
+    geoConnector: ",",
     geoEnd: "covering residential homes, commercial spaces, industrial facilities, and specialty finishes including German Remmers artistic coatings.",
     suitableFor: "Suitable For:",
     more: "more",
@@ -44,21 +46,23 @@ const copy = {
   },
   zh: {
     metaTitle: "吉隆坡装修服务 | 室内装修、定制家具、商业空间 | FLASH CAST",
-    metaDescription: "FLASH CAST 提供 Kuala Lumpur 与 Selangor 装修服务：室内设计、定制家具、商业空间装修、艺术墙面涂装、外墙工程和仓储架系统。",
-    metaKeywords: "吉隆坡装修服务, 马来西亚室内设计, Selangor 商业装修, 定制家具, Remmers 艺术涂装",
+    metaDescription: "FLASH CAST 提供吉隆坡与雪兰莪装修服务：室内设计、定制家具、商业空间装修、艺术墙面涂装、外墙工程和仓储架系统。",
+    metaKeywords: "吉隆坡装修服务, 马来西亚室内设计, 雪兰莪商业装修, 定制家具, Remmers 艺术涂装",
     breadcrumbHome: "首页",
     breadcrumbServices: "服务项目",
     heroAlt: "FLASH CAST 吉隆坡装修服务",
     eyebrow: "服务范围",
     title: "服务项目",
-    intro: "覆盖 Kuala Lumpur 与 Selangor 的装修服务，从室内设计、定制内嵌家具到商业空间装修、艺术墙面涂装和仓储系统。",
+    intro: "覆盖吉隆坡与雪兰莪的装修服务，从室内设计、定制内嵌家具到商业空间装修、艺术墙面涂装和仓储系统。",
     geoPrefix: "FLASH CAST SDN. BHD.",
-    geoText: (count: number) => `在 Kuala Lumpur 与 Selangor 提供 ${count} 项核心装修服务，`,
+    geoText: (count: number) => `提供 ${count} 项核心装修服务，服务范围覆盖`,
+    geoLocation: "吉隆坡与雪兰莪",
+    geoConnector: "，",
     geoEnd: "涵盖住宅、商业空间、工业设施和德国 Remmers 艺术涂装等专业项目。",
     suitableFor: "适合：",
     more: "更多",
     details: "查看详情",
-    unsureTitle: "不确定需要哪种服务？",
+    unsureTitle: "需要确认适合的装修服务？",
     unsureText: "联系我们免费咨询，我们会根据你的空间和预算建议合适方案。",
     quote: "获取免费报价",
     whatsapp: "WhatsApp 咨询",
@@ -70,10 +74,16 @@ const copy = {
   },
 };
 
+const applyPageTemplate = (template: string | undefined, values: Record<string, string | number>) => {
+  if (!template) return "";
+  return Object.entries(values).reduce((text, [key, value]) => text.replaceAll(`{${key}}`, String(value)), template);
+};
+
 const Services = () => {
   const { language } = useLanguage();
   const settings = useSiteSettings();
   const t = copy[language];
+  const { data: pageContent } = usePublishedSitePage(language, "services");
   const displayText = (value: string) => translateDisplayText(value, language);
   const initialServices = useMemo(() => {
     const localize = (value: string) => translateDisplayText(value, language);
@@ -92,18 +102,44 @@ const Services = () => {
       : servicesData;
   }, [language]);
   const { data: services = initialServices } = usePublishedServices(language);
+  const geoText = applyPageTemplate(pageContent?.content, { count: services.length });
 
   return (
     <main className="pt-site-header">
-      <PageMeta title={t.metaTitle} description={t.metaDescription} keywords={t.metaKeywords} canonicalPath="/services" />
+      <PageMeta
+        title={pageContent?.seo_title || t.metaTitle}
+        description={pageContent?.seo_description || t.metaDescription}
+        keywords={pageContent?.seo_keywords || t.metaKeywords}
+        canonicalPath="/services"
+      />
       <JsonLdBreadcrumb items={[{ name: t.breadcrumbHome, url: "/" }, { name: t.breadcrumbServices, url: "/services" }]} />
 
-      <HeroBanner image={heroImg} imageAlt={t.heroAlt} label={t.eyebrow} title={t.title} description={t.intro} />
+      <HeroBanner
+        image={pageContent?.image_url || heroImg}
+        imageAlt={pageContent?.alt || t.heroAlt}
+        label={pageContent?.subtitle || t.eyebrow}
+        title={pageContent?.title || t.title}
+        description={pageContent?.description || t.intro}
+      />
 
       <section className="py-8 bg-muted border-b border-border">
         <div className="container-narrow">
           <p className="text-muted-foreground text-sm leading-relaxed text-center max-w-3xl mx-auto">
-            <strong className="text-foreground">{t.geoPrefix}</strong> {t.geoText(services.length)} <strong className="text-foreground">Kuala Lumpur</strong> and <strong className="text-foreground">Selangor</strong>, Malaysia, {t.geoEnd}
+            {geoText || (language === "zh" ? (
+              <>
+                <strong className="text-foreground">{t.geoPrefix}</strong>
+                {t.geoText(services.length)}
+                <strong className="text-foreground">{t.geoLocation}</strong>
+                {t.geoConnector}
+                {t.geoEnd}
+              </>
+            ) : (
+              <>
+                <strong className="text-foreground">{t.geoPrefix}</strong> {t.geoText(services.length)}{" "}
+                <strong className="text-foreground">{t.geoLocation}</strong>
+                {t.geoConnector} {t.geoEnd}
+              </>
+            ))}
           </p>
         </div>
       </section>
@@ -157,8 +193,8 @@ const Services = () => {
         <Reveal>
           <div className="container-narrow">
             <div className="accent-line mx-auto mb-4" />
-            <h2 className="heading-safe mb-4 font-display text-3xl font-bold text-surface-dark-foreground">{t.unsureTitle}</h2>
-            <p className="mb-6 mx-auto max-w-lg text-surface-dark-foreground/75">{t.unsureText}</p>
+            <h2 className="heading-safe mb-4 font-display text-3xl font-bold text-surface-dark-foreground">{pageContent?.cta_title || t.unsureTitle}</h2>
+            <p className="mb-6 mx-auto max-w-lg text-surface-dark-foreground/75">{pageContent?.cta_description || t.unsureText}</p>
             <div className="flex flex-col justify-center gap-3 sm:flex-row sm:gap-4">
               <Link to="/quote" className="btn-on-dark-primary min-h-12 w-full justify-center px-8 sm:w-auto">
                 {t.quote}

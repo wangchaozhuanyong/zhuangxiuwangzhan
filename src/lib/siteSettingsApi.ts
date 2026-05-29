@@ -1,5 +1,5 @@
-import { isSupabaseConfigured, supabase } from "@/lib/supabase";
 import { siteConfig } from "@/config/site";
+import { isSupabaseConfigured, supabase } from "@/lib/supabase";
 
 export type SiteSettings = {
   company_name: string;
@@ -13,6 +13,8 @@ export type SiteSettings = {
   address_en: string;
   short_address_zh: string;
   short_address_en: string;
+  map_latitude: string;
+  map_longitude: string;
   facebook_url: string;
   instagram_url: string;
   tiktok_url: string;
@@ -42,6 +44,8 @@ export const fallbackSiteSettings: SiteSettings = {
   address_en: siteConfig.address,
   short_address_zh: siteConfig.shortAddress,
   short_address_en: siteConfig.shortAddress,
+  map_latitude: siteConfig.mapLatitude,
+  map_longitude: siteConfig.mapLongitude,
   facebook_url: siteConfig.socialLinks.facebook,
   instagram_url: siteConfig.socialLinks.instagram,
   tiktok_url: siteConfig.socialLinks.tiktok,
@@ -53,7 +57,8 @@ export const fallbackSiteSettings: SiteSettings = {
   default_seo_title_zh: "吉隆坡装修公司 | FLASH CAST",
   default_seo_title_en: "Renovation Company Kuala Lumpur | FLASH CAST",
   default_seo_description_zh: "FLASH CAST 提供吉隆坡与雪兰莪住宅、商业空间、厨房、旧屋翻新和定制家具装修服务。",
-  default_seo_description_en: "FLASH CAST provides renovation, interior design, custom built-in furniture, and commercial fit-out services in Kuala Lumpur and Selangor.",
+  default_seo_description_en:
+    "FLASH CAST provides renovation, interior design, custom built-in furniture, and commercial fit-out services in Kuala Lumpur and Selangor.",
 };
 
 export type ResolvedSiteSettings = SiteSettings & {
@@ -63,7 +68,10 @@ export type ResolvedSiteSettings = SiteSettings & {
   short_address: string;
 };
 
-export const resolveSiteSettings = (settings: Partial<SiteSettings> | null | undefined, language: "en" | "zh" = "en"): ResolvedSiteSettings => {
+export const resolveSiteSettings = (
+  settings: Partial<SiteSettings> | null | undefined,
+  language: "en" | "zh" = "en",
+): ResolvedSiteSettings => {
   const merged = { ...fallbackSiteSettings, ...(settings || {}) };
   const phoneE164 = merged.phone_e164 || normalizePhoneHref(merged.phone_display);
   const whatsappNumber = merged.whatsapp_number || normalizeWhatsAppNumber(phoneE164);

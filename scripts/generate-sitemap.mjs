@@ -22,7 +22,16 @@ const staticPaths = [
   "/",
   "/about",
   "/services",
+  "/services/renovation",
+  "/services/design",
+  "/services/builtin",
+  "/services/kitchen",
+  "/services/bathroom",
+  "/services/office",
+  "/services/shoplot",
+  "/services/artistic-coating",
   "/services/old-house",
+  "/services/approval",
   "/materials",
   "/projects",
   "/process",
@@ -32,6 +41,18 @@ const staticPaths = [
   "/blog",
   "/privacy",
   "/terms",
+];
+
+const materialCategorySlugs = [
+  "kitchen-cabinets",
+  "whole-house-custom",
+  "furniture",
+  "bathroom",
+  "countertops-stone-surfaces",
+  "flooring",
+  "doors-windows",
+  "wall-panels",
+  "art-paint",
 ];
 
 const escapeXml = (value) =>
@@ -66,21 +87,24 @@ const urlEntry = (localizedPath) => {
 
 const unique = (items) => [...new Set(items)];
 
-const [projects, posts, materials, areas, landingPages] = await Promise.all([
+const [projects, posts, materials, areas, landingPages, services] = await Promise.all([
   fetchSlugs("projects"),
   fetchSlugs("blog_posts"),
   fetchSlugs("materials"),
   fetchSlugs("service_areas"),
   fetchSlugs("landing_pages"),
+  fetchSlugs("services"),
 ]);
 
 const paths = unique([
   ...staticPaths,
   ...projects.map((item) => `/projects/${item.slug}`),
   ...posts.map((item) => `/blog/${item.slug}`),
+  ...materialCategorySlugs.map((slug) => `/materials/category/${slug}`),
   ...materials.map((item) => `/materials/${item.slug}`),
   ...areas.map((item) => `/locations/${item.slug}`),
   ...landingPages.map((item) => `/landing/${item.slug}`),
+  ...services.map((item) => `/services/${item.slug}`),
 ]);
 
 const localizedPaths = paths.flatMap((path) => [`/en${path === "/" ? "" : path}`, `/zh${path === "/" ? "" : path}`]);

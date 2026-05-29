@@ -26,6 +26,7 @@ const headers = {
   "Content-Type": "application/json",
 };
 
+const FORCE_SEED = process.argv.includes("--force") || process.env.SEED_FORCE === "1";
 const site = process.env.VITE_SITE_URL || process.env.SITE_URL || "https://flashcast.com.my";
 const img = (path) => `${site}${path}`;
 const html = (paragraphs) => paragraphs.map((item) => `<p>${item}</p>`).join("");
@@ -49,7 +50,9 @@ const upsert = async (table, rows, conflict = "slug") => {
   if (!rows.length) return [];
   return request(`/rest/v1/${table}?on_conflict=${conflict}`, {
     method: "POST",
-    headers: { Prefer: "resolution=merge-duplicates,return=representation" },
+    headers: {
+      Prefer: `${FORCE_SEED ? "resolution=merge-duplicates" : "resolution=ignore-duplicates"},return=representation`,
+    },
     body: JSON.stringify(rows),
   });
 };
@@ -305,7 +308,7 @@ const blogPosts = [
     category: "Budget",
     tags: ["renovation cost", "Klang Valley", "budget"],
     cover: "/images/heroes/hero-projects.jpg",
-    content_zh: `<h2>先拆范围，再谈总价</h2><p>装修预算不能只看总价。建议先拆成拆除、湿作业、水电、木作、油漆、地板、洁具、灯具和软装，再判断哪些是必要工程，哪些是可选升级。</p><h2>马来西亚项目常见变量</h2><p>管理处审批、搬运路线、电梯保护、隐藏漏水、旧电线、墙地砖空鼓和材料交期都会影响预算。旧屋和商业空间通常需要预留更高缓冲。</p><h2>怎么降低追加风险？</h2><p>开工前准备平面图、照片、面积、预算和风格参考，让装修团队按现场条件做明细报价。FLASH CAST 可协助 KL 与 Selangor 业主先做预算方向判断。</p>`,
+    content_zh: `<h2>先拆范围，再谈总价</h2><p>装修预算不能只看总价。建议先拆成拆除、湿作业、水电、木作、油漆、地板、洁具、灯具和软装，再判断哪些是必要工程，哪些是可选升级。</p><h2>马来西亚项目常见变量</h2><p>管理处审批、搬运路线、电梯保护、隐藏漏水、旧电线、墙地砖空鼓和材料交期都会影响预算。旧屋和商业空间通常需要预留更高缓冲。</p><h2>怎么降低追加风险？</h2><p>开工前准备平面图、照片、面积、预算和风格参考，让装修团队按现场条件做明细报价。FLASH CAST 可协助吉隆坡与雪兰莪业主先做预算方向判断。</p>`,
     content_en: `<h2>Break down the scope before comparing totals</h2><p>A renovation budget should not be judged only by the final number. Split it into hacking, wet works, electrical, plumbing, carpentry, painting, flooring, fittings, lighting, and loose furniture.</p><h2>Common cost variables in Malaysia</h2><p>Management approval, delivery route, lift protection, hidden leakage, old wiring, hollow tiles, and material lead time can affect the final budget. Old houses and commercial spaces usually need a larger buffer.</p><h2>How to reduce variation risk</h2><p>Prepare layout plans, photos, size, budget, and reference style before requesting a quote. FLASH CAST can help owners in KL and Selangor estimate the right budget direction.</p>`,
   },
   {
@@ -400,7 +403,7 @@ const blogPosts = [
   },
   {
     slug: "area-guide-kl-selangor-renovation",
-    zh: "KL 与 Selangor 装修地区指南：不同区域要注意什么？",
+    zh: "吉隆坡与雪兰莪装修地区指南：不同区域要注意什么？",
     en: "KL and Selangor Renovation Area Guide",
     category: "Local SEO",
     tags: ["Kuala Lumpur", "Selangor", "area guide"],
@@ -423,7 +426,7 @@ const blogPosts = [
   alt_en: `${post.en} renovation guide cover`,
   seo_title_zh: `${post.zh} | FLASH CAST 装修指南`,
   seo_title_en: `${post.en} | FLASH CAST Guide`,
-  seo_description_zh: `${post.zh}，适合 KL 与 Selangor 业主参考，包含预算、材料、施工、审批和免费报价建议。`,
+  seo_description_zh: `${post.zh}，适合吉隆坡与雪兰莪业主参考，包含预算、材料、施工、审批和免费报价建议。`,
   seo_description_en: `${post.en}, with practical advice for KL and Selangor owners on budget, materials, construction, approval, and free quotation.`,
   status: "published",
   published_at: dateAt(26, index),

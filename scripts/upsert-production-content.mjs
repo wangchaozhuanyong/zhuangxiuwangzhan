@@ -11,6 +11,7 @@ const headers = {
   "Content-Type": "application/json",
 };
 
+const FORCE_SEED = process.argv.includes("--force") || process.env.SEED_FORCE === "1";
 const site = process.env.VITE_SITE_URL || process.env.SITE_URL || "https://flashcast.com.my";
 const whatsappNumber = process.env.VITE_SITE_WHATSAPP_NUMBER || process.env.SITE_WHATSAPP_NUMBER || "601128853888";
 const img = (path) => `${site}${path}`;
@@ -37,7 +38,9 @@ const upsert = async (table, rows, conflict = "slug") => {
   if (!rows.length) return [];
   return request(`/rest/v1/${table}?on_conflict=${conflict}`, {
     method: "POST",
-    headers: { Prefer: "resolution=merge-duplicates,return=representation" },
+    headers: {
+      Prefer: `${FORCE_SEED ? "resolution=merge-duplicates" : "resolution=ignore-duplicates"},return=representation`,
+    },
     body: JSON.stringify(rows),
   });
 };
@@ -49,6 +52,18 @@ const insertRows = async (table, rows) => {
     headers: { Prefer: "return=representation" },
     body: JSON.stringify(rows),
   });
+};
+
+const insertRowsIfEmpty = async (table, rows) => {
+  const existing = await request(`/rest/v1/${table}?select=id&limit=1`);
+  if (existing?.length && !FORCE_SEED) return [];
+  return insertRows(table, rows);
+};
+
+const selectRowsByValues = async (table, key, values, select = "*") => {
+  if (!values.length) return [];
+  const encoded = values.map((value) => encodeURIComponent(value)).join(",");
+  return request(`/rest/v1/${table}?select=${encodeURIComponent(select)}&${key}=in.(${encoded})`);
 };
 
 const html = (paragraphs) => paragraphs.map((item) => `<p>${item}</p>`).join("");
@@ -304,7 +319,7 @@ const projectImagesBySlug = Object.fromEntries(projectRows.map(([slug,,,,,,,, im
 
 const materials = [
   ["spc-flooring-natural-oak", "SPC 木纹地板", "Natural Oak SPC Flooring", "Flooring", "SPC Flooring", "SPC", "spc-vinyl-natural-oak.jpg", "RM8 - RM18 / sq ft"],
-  ["vinyl-plank-ash-grey", "灰橡木 Vinyl 地板", "Ash Grey Vinyl Plank", "Flooring", "Vinyl Flooring", "Vinyl", "vinyl-plank-ash-grey.jpg", "RM6 - RM15 / sq ft"],
+  ["vinyl-plank-ash-grey", "灰橡木乙烯基地板", "Ash Grey Vinyl Plank", "Flooring", "Vinyl Flooring", "Vinyl", "vinyl-plank-ash-grey.jpg", "RM6 - RM15 / sq ft"],
   ["quartz-countertop-white", "白色石英石台面", "White Quartz Countertop", "Kitchen Cabinet", "Countertop", "Quartz", "porcelain-carrara-white.jpg", "RM180 - RM380 / ft run"],
   ["melamine-cabinet-board", "Melamine 橱柜板材", "Melamine Cabinet Board", "Kitchen Cabinet", "Cabinet Board", "Melamine", "melamine-grey-oak.jpg", "From RM250 / ft run"],
   ["acrylic-cabinet-door", "高光 Acrylic 橱柜门板", "High Gloss Acrylic Cabinet Door", "Kitchen Cabinet", "Door Finish", "Acrylic", "acrylic-high-gloss-white.jpg", "From RM350 / ft run"],
@@ -393,7 +408,7 @@ const landingPages = landingSlugs.map(([slug, zh, en, image], index) => ({
   hero_image_url: img(image),
   alt_zh: `${zh}施工效果图`,
   alt_en: `${en} project image`,
-  benefits_zh: ["清楚报价范围", "材料建议实用", "施工流程透明", "适合 KL 与 Selangor 项目"],
+  benefits_zh: ["清楚报价范围", "材料建议实用", "施工流程透明", "适合吉隆坡与雪兰莪项目"],
   benefits_en: ["Clear quotation scope", "Practical material advice", "Transparent construction flow", "Suitable for KL and Selangor projects"],
   related_projects: [],
   faqs_zh: faq([["可以先咨询预算吗？", "可以。请提供地区、面积、项目类型和照片，我们会先给出方向性建议。"], ["是否提供材料建议？", "提供。我们会根据预算、使用频率和维护需求推荐材料。"]]),
@@ -423,7 +438,7 @@ const blogPosts = blogTopics.map(([slug, zh, en, category], index) => ({
   title_en: en,
   excerpt_zh: `${zh} 这篇文章帮助业主了解预算、材料、施工和沟通重点，减少装修过程中的不确定性。`,
   excerpt_en: `${en} helps owners understand budget, materials, construction, and communication points before starting renovation.`,
-  content_zh: `<h2>为什么这件事重要？</h2><p>装修不是只比较总价。业主需要确认范围、材料规格、现场限制、工期和售后责任，才能避免后期追加和沟通误差。</p><h2>建议怎么做？</h2><p>先整理房屋类型、面积、地区、预算和照片，再让装修团队根据现场条件拆分必要工程与可选升级。对于旧屋、浴室和商业空间，更要预留审批和隐藏问题的处理时间。</p><h2>FLASH CAST 可以怎么帮你？</h2><p>我们提供免费咨询、现场测量、材料建议、明细报价和施工管理，服务范围覆盖 Kuala Lumpur 与 Selangor。</p>`,
+  content_zh: `<h2>为什么这件事重要？</h2><p>装修不是只比较总价。业主需要确认范围、材料规格、现场限制、工期和售后责任，才能避免后期追加和沟通误差。</p><h2>建议怎么做？</h2><p>先整理房屋类型、面积、地区、预算和照片，再让装修团队根据现场条件拆分必要工程与可选升级。对于旧屋、浴室和商业空间，更要预留审批和隐藏问题的处理时间。</p><h2>FLASH CAST 可以怎么帮你？</h2><p>我们提供免费咨询、现场测量、材料建议、明细报价和施工管理，服务范围覆盖吉隆坡与雪兰莪。</p>`,
   content_en: `<h2>Why does this matter?</h2><p>Renovation is not only about comparing the total price. Owners should confirm scope, material specifications, site restrictions, timeline, and after-sales responsibility to avoid later additions and miscommunication.</p><h2>What should you prepare?</h2><p>Start with property type, area, location, budget, and photos. A renovation team can then split essential works from optional upgrades based on actual site condition. Old houses, bathrooms, and commercial spaces need extra allowance for approvals and hidden issues.</p><h2>How can FLASH CAST help?</h2><p>We provide free consultation, site measurement, material advice, itemized quotation, and project management across Kuala Lumpur and Selangor.</p>`,
   category,
   tags: ["Malaysia renovation", category, "FLASH CAST"],
@@ -454,25 +469,33 @@ const testimonials = [
 }));
 
 const run = async () => {
-  await request("/rest/v1/hero_slides?id=not.is.null", { method: "DELETE" });
-  await request("/rest/v1/testimonials?id=not.is.null", { method: "DELETE" });
-  await request("/rest/v1/projects?slug=in.(puchong-home-office-renovation,cheras-bathroom-waterproofing)", { method: "DELETE" });
-  await request("/rest/v1/materials?slug=eq.porcelain-bathroom-tile", { method: "DELETE" });
+  if (FORCE_SEED) {
+    await request("/rest/v1/hero_slides?id=not.is.null", { method: "DELETE" });
+    await request("/rest/v1/testimonials?id=not.is.null", { method: "DELETE" });
+    await request("/rest/v1/projects?slug=in.(puchong-home-office-renovation,cheras-bathroom-waterproofing)", { method: "DELETE" });
+    await request("/rest/v1/materials?slug=eq.porcelain-bathroom-tile", { method: "DELETE" });
+  }
 
-  await insertRows("hero_slides", heroSlides);
+  await insertRowsIfEmpty("hero_slides", heroSlides);
   await upsert("services", services);
   await upsert("service_areas", areas);
   await upsert("landing_pages", landingPages);
-  const savedProjects = await upsert("projects", projects);
+  await upsert("projects", projects);
   await upsert("materials", materials);
   await upsert("blog_posts", blogPosts);
-  await insertRows("testimonials", testimonials);
+  await insertRowsIfEmpty("testimonials", testimonials);
 
+  const savedProjects = await selectRowsByValues("projects", "slug", projects.map((project) => project.slug), "id,slug");
   const projectIdBySlug = Object.fromEntries(savedProjects.map((project) => [project.slug, project.id]));
   for (const [slug, files] of Object.entries(projectImagesBySlug)) {
     const projectId = projectIdBySlug[slug];
     if (!projectId) continue;
-    await request(`/rest/v1/project_images?project_id=eq.${projectId}`, { method: "DELETE" });
+    if (FORCE_SEED) {
+      await request(`/rest/v1/project_images?project_id=eq.${projectId}`, { method: "DELETE" });
+    } else {
+      const existingImages = await request(`/rest/v1/project_images?select=id&project_id=eq.${projectId}&limit=1`);
+      if (existingImages?.length) continue;
+    }
     const rows = files.map((file, index) => ({
       project_id: projectId,
       image_url: img(`/images/projects/${file}`),
@@ -490,6 +513,7 @@ const run = async () => {
 
   console.log(JSON.stringify({
     ok: true,
+    mode: FORCE_SEED ? "force-overwrite" : "safe-insert-missing",
     hero_slides: heroSlides.length,
     services: services.length,
     service_areas: areas.length,

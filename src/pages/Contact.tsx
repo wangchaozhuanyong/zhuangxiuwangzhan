@@ -14,6 +14,7 @@ import { submitContactLead } from "@/lib/leadApi";
 import { useFormGuard } from "@/hooks/useFormGuard";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { useSiteSettings } from "@/hooks/useSiteSettings";
+import { usePublishedSitePage } from "@/hooks/usePublishedContent";
 import heroImg from "@/assets/hero-contact.webp";
 import HeroBanner from "@/components/blocks/HeroBanner";
 
@@ -104,7 +105,7 @@ const copy = {
     sending: "Sending...",
     responseNote: "We will respond within 24 hours. No spam.",
     mapTitle: "Visit Our Office",
-    mapDescription: "Located in Taman United, Kuala Lumpur. Serving KL, Selangor, and the Klang Valley.",
+    mapDescription: "Office address: 94, Jalan Mega Mendung, Taman United, 58200 Kuala Lumpur, Malaysia.",
     mapFrameTitle: "FLASH CAST office location in Kuala Lumpur",
     navServices: "Our Services",
     navProjects: "Projects",
@@ -127,7 +128,7 @@ const copy = {
     breadcrumbCurrent: "联系我们",
     heroEyebrow: "联系我们",
     heroTitle: "联系我们",
-    heroText: "准备开始装修项目？欢迎联系 FLASH CAST。我们服务 Kuala Lumpur、Selangor 与 Klang Valley 周边地区。",
+    heroText: "准备开始装修项目？欢迎联系 FLASH CAST。我们服务吉隆坡、雪兰莪与巴生谷周边地区。",
     heroAlt: "联系 FLASH CAST 装修公司",
     infoTitle: "联系方式",
     addressTitle: "地址",
@@ -161,7 +162,7 @@ const copy = {
     sending: "发送中...",
     responseNote: "我们会在 24 小时内回复您。不骚扰。",
     mapTitle: "欢迎到访办公室",
-    mapDescription: "位于 Kuala Lumpur Taman United，服务 KL、Selangor 与 Klang Valley。",
+    mapDescription: "办公室地址：94, Jalan Mega Mendung, Taman United, 58200 Kuala Lumpur, Malaysia。",
     mapFrameTitle: "FLASH CAST 吉隆坡办公室位置",
     navServices: "服务项目",
     navProjects: "装修案例",
@@ -184,6 +185,7 @@ const Contact = () => {
   const { language } = useLanguage();
   const settings = useSiteSettings();
   const t = copy[language];
+  const { data: pageContent } = usePublishedSitePage(language, "contact");
   const [form, setForm] = useState({ name: "", phone: "", email: "", projectType: "", location: "", message: "" });
   const [errors, setErrors] = useState<FormErrors>({});
   const [status, setStatus] = useState<"idle" | "submitting" | "success" | "error">("idle");
@@ -244,10 +246,21 @@ const Contact = () => {
 
   return (
     <main className="pt-site-header">
-      <PageMeta title={t.metaTitle} description={t.metaDescription} keywords={t.metaKeywords} canonicalPath="/contact" />
+      <PageMeta
+        title={pageContent?.seo_title || t.metaTitle}
+        description={pageContent?.seo_description || t.metaDescription}
+        keywords={pageContent?.seo_keywords || t.metaKeywords}
+        canonicalPath="/contact"
+      />
       <JsonLdBreadcrumb items={[{ name: t.breadcrumbHome, url: "/" }, { name: t.breadcrumbCurrent, url: "/contact" }]} />
 
-      <HeroBanner image={heroImg} imageAlt={t.heroAlt} label={t.heroEyebrow} title={t.heroTitle} description={t.heroText} />
+      <HeroBanner
+        image={pageContent?.image_url || heroImg}
+        imageAlt={pageContent?.alt || t.heroAlt}
+        label={pageContent?.subtitle || t.heroEyebrow}
+        title={pageContent?.title || t.heroTitle}
+        description={pageContent?.description || t.heroText}
+      />
 
       <section className="section-padding bg-background">
         <div className="container-narrow">
@@ -258,9 +271,9 @@ const Contact = () => {
                 <h2 className="font-display text-2xl font-bold mb-6">{t.infoTitle}</h2>
                 <div className="space-y-5">
                   {contactItems.map((item) => (
-                    <div key={item.title} className="flex items-start gap-4 group p-4 rounded-card border border-border hover-lift">
-                      <div className="w-10 h-10 rounded-full bg-accent/10 flex items-center justify-center shrink-0">
-                        <item.icon className="w-4 h-4 text-accent" />
+                    <div key={item.title} className="group flex items-start gap-4 rounded-card border border-border/80 bg-card p-4 shadow-[0_18px_44px_-38px_rgba(21,18,14,0.38)] hover-lift">
+                      <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-gold/25 bg-gold/10">
+                        <item.icon className="h-4 w-4 text-gold" />
                       </div>
                       <div>
                         <h3 className="font-semibold text-sm mb-1">{item.title}</h3>
@@ -270,7 +283,7 @@ const Contact = () => {
                   ))}
                 </div>
 
-                <div className="mt-6 p-4 bg-muted rounded-card border border-border">
+                <div className="mt-6 rounded-card border border-border/80 bg-card p-4 shadow-[0_18px_44px_-38px_rgba(21,18,14,0.32)]">
                   <h3 className="font-semibold text-sm mb-3">{t.servicesTitle}</h3>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                     {serviceItems[language].map((service) => (
@@ -444,7 +457,7 @@ const Contact = () => {
         </div>
       </section>
 
-      <section className="section-padding bg-muted">
+      <section className="section-padding bg-background">
         <div className="container-narrow">
           <Reveal>
             <div className="text-center mb-8">
@@ -453,7 +466,7 @@ const Contact = () => {
               <p className="text-muted-foreground text-sm">{t.mapDescription}</p>
             </div>
           </Reveal>
-          <GoogleMapEmbed title={t.mapFrameTitle} addressLabel={mapAddress} height={350} />
+          <GoogleMapEmbed title={t.mapFrameTitle} addressLabel={mapAddress} height={390} />
         </div>
       </section>
 

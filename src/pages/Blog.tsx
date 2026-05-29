@@ -3,7 +3,7 @@ import SmartImage from "@/components/SmartImage";
 import Link from "@/components/LocalizedLink";
 import { Clock } from "lucide-react";
 import { blogPosts } from "@/data/blog";
-import { usePublishedBlogPosts } from "@/hooks/usePublishedContent";
+import { usePublishedBlogPosts, usePublishedSitePage } from "@/hooks/usePublishedContent";
 import { useLanguage } from "@/i18n/LanguageContext";
 import PageMeta from "@/components/PageMeta";
 import { JsonLdBreadcrumb } from "@/components/JsonLd";
@@ -86,7 +86,7 @@ const copy = {
   },
   zh: {
     metaTitle: "装修博客与指南 | 吉隆坡装修知识 | FLASH CAST",
-    metaDescription: "FLASH CAST 分享马来西亚装修预算、材料比较、设计灵感和施工注意事项，帮助 KL 与 Selangor 业主更好规划装修。",
+    metaDescription: "FLASH CAST 分享马来西亚装修预算、材料比较、设计灵感和施工注意事项，帮助吉隆坡与雪兰莪业主更好规划装修。",
     metaKeywords: "马来西亚装修博客, 吉隆坡装修指南, 装修材料比较, 雪兰莪装修知识",
     breadcrumbHome: "首页",
     breadcrumbBlog: "装修博客",
@@ -104,6 +104,7 @@ const copy = {
 const Blog = () => {
   const { language } = useLanguage();
   const t = copy[language];
+  const { data: pageContent } = usePublishedSitePage(language, "blog");
   const [filter, setFilter] = useState("All");
   const displayText = (value: string) => translateDisplayText(value, language);
   const { data: cmsPosts } = usePublishedBlogPosts(language);
@@ -117,9 +118,9 @@ const Blog = () => {
   return (
     <main className="pt-site-header">
       <PageMeta
-        title={t.metaTitle}
-        description={t.metaDescription}
-        keywords={t.metaKeywords}
+        title={pageContent?.seo_title || t.metaTitle}
+        description={pageContent?.seo_description || t.metaDescription}
+        keywords={pageContent?.seo_keywords || t.metaKeywords}
         canonicalPath="/blog"
       />
       <JsonLdBreadcrumb items={[{ name: t.breadcrumbHome, url: "/" }, { name: t.breadcrumbBlog, url: "/blog" }]} />
@@ -128,8 +129,8 @@ const Blog = () => {
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,rgba(198,164,106,0.1),transparent_45%)]" aria-hidden />
         <div className="container-narrow relative">
           <div className="accent-line mb-4" />
-          <h1 className="heading-safe mb-4 font-display text-3xl font-bold text-surface-dark-foreground md:text-5xl">{t.title}</h1>
-          <p className="prose-safe max-w-2xl text-lg text-surface-dark-foreground/75">{t.intro}</p>
+          <h1 className="heading-safe mb-4 font-display text-3xl font-bold text-surface-dark-foreground md:text-5xl">{pageContent?.title || t.title}</h1>
+          <p className="prose-safe max-w-2xl text-lg text-surface-dark-foreground/75">{pageContent?.description || t.intro}</p>
         </div>
       </section>
 

@@ -6,7 +6,16 @@ const staticPaths = [
   "/",
   "/about",
   "/services",
+  "/services/renovation",
+  "/services/design",
+  "/services/builtin",
+  "/services/kitchen",
+  "/services/bathroom",
+  "/services/office",
+  "/services/shoplot",
+  "/services/artistic-coating",
   "/services/old-house",
+  "/services/approval",
   "/materials",
   "/projects",
   "/process",
@@ -33,6 +42,18 @@ const staticPaths = [
   "/landing/old-house-renovation",
 ];
 
+const materialCategorySlugs = [
+  "kitchen-cabinets",
+  "whole-house-custom",
+  "furniture",
+  "bathroom",
+  "countertops-stone-surfaces",
+  "flooring",
+  "doors-windows",
+  "wall-panels",
+  "art-paint",
+];
+
 const urlEntry = (path: string) => `
   <url>
     <loc>${SITE_URL}${path}</loc>
@@ -51,22 +72,25 @@ serve(async () => {
   }
 
   const supabase = createClient(Deno.env.get("SUPABASE_URL")!, serviceRoleKey);
-  const [projects, posts, materials, areas, landingPages] = await Promise.all([
+  const [projects, posts, materials, areas, landingPages, services] = await Promise.all([
     supabase.from("projects").select("slug").eq("status", "published"),
     supabase.from("blog_posts").select("slug").eq("status", "published"),
     supabase.from("materials").select("slug").eq("status", "published"),
     supabase.from("service_areas").select("slug").eq("status", "published"),
     supabase.from("landing_pages").select("slug").eq("status", "published"),
+    supabase.from("services").select("slug").eq("status", "published"),
   ]);
 
-  const paths = [
+  const paths = [...new Set([
     ...staticPaths,
     ...(projects.data || []).map((item) => `/projects/${item.slug}`),
     ...(posts.data || []).map((item) => `/blog/${item.slug}`),
+    ...materialCategorySlugs.map((slug) => `/materials/category/${slug}`),
     ...(materials.data || []).map((item) => `/materials/${item.slug}`),
     ...(areas.data || []).map((item) => `/locations/${item.slug}`),
     ...(landingPages.data || []).map((item) => `/landing/${item.slug}`),
-  ];
+    ...(services.data || []).map((item) => `/services/${item.slug}`),
+  ])];
 
   const localizedPaths = paths.flatMap((path) => [`/en${path === "/" ? "" : path}`, `/zh${path === "/" ? "" : path}`]);
   const xml = `<?xml version="1.0" encoding="UTF-8"?>

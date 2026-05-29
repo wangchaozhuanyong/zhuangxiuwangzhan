@@ -1,30 +1,32 @@
 ## Style Prompt
 
-Quiet Luxury Renovation Film for FLASH CAST SDN. BHD. The video should feel like a premium Malaysian renovation studio: warm natural light, clean architectural lines, stone, timber, glass, metal details, and calm project-management confidence. The pacing is slow, cinematic, and deliberate. It should feel trustworthy and refined, not loud or sales-heavy.
+Quiet luxury homepage film for FLASH CAST SDN. BHD. The video should make visitors feel the company is premium, organized, and reliable within the first few seconds. Use refined Malaysian renovation imagery: custom built-ins, warm wood, natural stone, commercial fit-out, material selection, and controlled site-to-handover delivery. The tone is calm, cinematic, and expensive without looking fake or over-decorated.
 
 ## Colors
 
-- Charcoal black: `#11100E` for depth and premium contrast.
-- Warm white: `#F4EEE4` for text and soft highlights.
-- Champagne gold: `#B99A62` for restrained brand accents.
-- Warm greige: `#B7AA98` for overlays and architectural atmosphere.
-- Deep olive grey: `#343832` for subtle shadow tones.
+- Charcoal black: `#0D0C0A` for depth and text contrast.
+- Warm white: `#FFF7EA` for headline text.
+- Champagne gold: `#D1AD72` for brand accents and small labels.
+- Walnut brown: `#6E4A30` for interior warmth.
+- Stone greige: `#B7AA98` for quiet architectural balance.
 
 ## Typography
 
-- Display: `Playfair Display`, elegant serif for the brand-level lockup.
-- Body: `Montserrat`, clean uppercase sans for small production labels.
+- Display: `Playfair Display` for desktop luxury headlines.
+- Chinese: `Noto Sans SC` for readable Chinese slogan text.
+- Labels: `Montserrat` for compact uppercase company and category labels.
 
 ## Motion
 
-- Slow push-ins and lateral drifts only.
-- Crossfades and soft wipes, no flashy transitions.
-- Text should appear quietly with opacity and 20-40px vertical movement.
+- Slow push-in and subtle lateral drift only.
+- Soft crossfades between scenes.
+- Text enters with restrained opacity and vertical movement.
+- Keep every frame readable as a website hero, not a music-video montage.
 
 ## What NOT to Do
 
-- No loud black-gold luxury cliches.
-- No spinning logo, lens flare, neon, bokeh or glitter.
-- No fast TikTok-style cuts.
-- No crowded text cards or sales popups inside the video.
-- No fake oversized mansion feeling; stay close to real renovation materials and project delivery.
+- No loud black-gold cliches, glitter, neon, lens flare, or bokeh decoration.
+- No fast cuts, spinning logos, or aggressive sales text.
+- No overcrowded typography inside the video.
+- No fake palace/mansion mood; keep it premium but believable for KL/Selangor renovation clients.
+- No visuals that reduce clarity on desktop full-screen playback.

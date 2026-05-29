@@ -14,7 +14,7 @@ const heroCopy = {
     title: "马来西亚专业装修与空间改造公司",
     subtitle:
       "FLASH CAST 提供现场测量、空间规划、材料建议、施工管理与交付跟进，让住宅与商业装修更清楚、更安心。",
-    videoAlt: "FLASH CAST 高端装修宣传视频，展示室内空间、材料质感、施工管理与完工交付",
+    videoAlt: "FLASH CAST 高级装修宣传视频，展示室内空间、材料质感、施工管理与完工交付",
   },
 };
 
@@ -46,6 +46,7 @@ const HeroSection = () => {
   const visualTitle = slide?.title || copy.title;
   const visualSubtitle = slide?.excerpt || copy.subtitle;
   const showVideo = !reduceMotion && !saveData;
+  const posterFetchPriority = { fetchpriority: "high" } as const;
 
   return (
     <section
@@ -55,7 +56,7 @@ const HeroSection = () => {
       <div className="absolute inset-0 bg-surface-dark" aria-hidden="true">
         <video
           className={`h-full w-full object-cover transition-opacity duration-500 ${showVideo && videoReady ? "opacity-100" : "opacity-0"}`}
-          poster="/videos/home-hero-poster.webp?v=20260526-hq"
+          poster="/videos/home-hero-poster.webp?v=20260529-luxury"
           autoPlay={showVideo}
           muted
           loop={showVideo}
@@ -64,16 +65,16 @@ const HeroSection = () => {
           aria-label={copy.videoAlt}
           onLoadedData={() => setVideoReady(true)}
         >
-          <source src="/videos/home-hero-mobile.webm?v=20260528" type="video/webm" media="(max-width: 767px)" />
-          <source src="/videos/home-hero-mobile.mp4?v=20260528" type="video/mp4" media="(max-width: 767px)" />
-          <source src="/videos/home-hero.webm?v=20260528" type="video/webm" />
-          <source src="/videos/home-hero.mp4?v=20260528" type="video/mp4" />
+          <source src="/videos/home-hero-mobile.webm?v=20260529-luxury" type="video/webm" media="(max-width: 767px)" />
+          <source src="/videos/home-hero-mobile.mp4?v=20260529-luxury" type="video/mp4" media="(max-width: 767px)" />
+          <source src="/videos/home-hero.webm?v=20260529-luxury" type="video/webm" />
+          <source src="/videos/home-hero.mp4?v=20260529-luxury" type="video/mp4" />
         </video>
         <img
-          src="/videos/home-hero-poster.webp?v=20260526-hq"
+          src="/videos/home-hero-poster.webp?v=20260529-luxury"
           alt=""
           className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-500 ${!showVideo || !videoReady ? "opacity-100" : "opacity-0"}`}
-          fetchPriority="high"
+          {...posterFetchPriority}
           decoding="async"
         />
         <div className="absolute inset-0 home-hero-overlay" />

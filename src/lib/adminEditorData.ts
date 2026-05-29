@@ -1,4 +1,5 @@
 import { isSupabaseConfigured, supabase } from "@/lib/supabase";
+import { ensureAdminDefaultContent } from "@/lib/adminDefaultContent";
 
 export type HomeSectionRow = {
   id?: string;
@@ -146,6 +147,8 @@ export async function fetchAdminHomeEditorData(): Promise<AdminHomeEditorData> {
     return { stats: null, why: null, processSteps: [], faqRows: [], ctaBlock: null };
   }
 
+  await ensureAdminDefaultContent();
+
   const [stats, why, steps, faqs, cta] = await Promise.all([
     ensureHomeSection("stats"),
     ensureHomeSection("why_choose_us"),
@@ -167,6 +170,8 @@ export async function fetchAdminAboutEditorData(): Promise<AdminAboutEditorData>
   if (!isSupabaseConfigured || !supabase) {
     return { sections: {}, ctaBlock: null };
   }
+
+  await ensureAdminDefaultContent();
 
   const ensured = await Promise.all(aboutSectionKeys.map((key) => ensureAboutSection(key)));
   const sections: Record<string, AboutSectionRow | null> = {};

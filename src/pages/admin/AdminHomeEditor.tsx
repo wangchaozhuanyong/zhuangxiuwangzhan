@@ -11,6 +11,7 @@ import AdminPageHeader from "@/components/admin/AdminPageHeader";
 import AdminFormSection from "@/components/admin/AdminFormSection";
 import AdminEmptyState from "@/components/admin/AdminEmptyState";
 import ImageField from "@/components/admin/ImageField";
+import { HomeSectionItemsEditor } from "@/components/admin/StructuredArrayEditors";
 import { invalidatePublishedContent } from "@/lib/adminInvalidate";
 import type { CtaRow, FaqRow, HomeSectionRow, ProcessStepRow } from "@/lib/adminEditorData";
 import { useAdminHomeEditorData } from "@/lib/adminQueries";
@@ -19,14 +20,12 @@ import { adminStatusLabel, getAdminLang, publishStatusOptions } from "@/lib/admi
 
 const L = (field: string) => translateFieldLabel(field, getAdminLang());
 
-const safeJsonParse = (value: string) => {
-  const raw = value.trim();
-  if (!raw) return [];
-  const parsed = JSON.parse(raw);
-  return parsed;
+const mergeSectionItems = (itemsZh?: any[] | null, itemsEn?: any[] | null) => {
+  const zh = Array.isArray(itemsZh) ? itemsZh : [];
+  const en = Array.isArray(itemsEn) ? itemsEn : [];
+  const length = Math.max(zh.length, en.length);
+  return Array.from({ length }, (_, index) => ({ ...(en[index] || {}), ...(zh[index] || {}) }));
 };
-
-const jsonStringify = (value: any) => JSON.stringify(value ?? [], null, 2);
 
 export default function AdminHomeEditor() {
   const queryClient = useQueryClient();
@@ -40,10 +39,8 @@ export default function AdminHomeEditor() {
   const [faqRows, setFaqRows] = useState<FaqRow[]>([]);
   const [ctaBlock, setCtaBlock] = useState<CtaRow | null>(null);
 
-  const [statsItemsZh, setStatsItemsZh] = useState("");
-  const [statsItemsEn, setStatsItemsEn] = useState("");
-  const [whyItemsZh, setWhyItemsZh] = useState("");
-  const [whyItemsEn, setWhyItemsEn] = useState("");
+  const [statsItems, setStatsItems] = useState<any[]>([]);
+  const [whyItems, setWhyItems] = useState<any[]>([]);
   const formDirtyRef = useRef(false);
 
   const markDirty = () => {
@@ -58,14 +55,8 @@ export default function AdminHomeEditor() {
     setProcessSteps(bundle.processSteps);
     setFaqRows(bundle.faqRows);
     setCtaBlock(bundle.ctaBlock);
-    if (bundle.stats) {
-      setStatsItemsZh(jsonStringify(bundle.stats.items_zh || []));
-      setStatsItemsEn(jsonStringify(bundle.stats.items_en || []));
-    }
-    if (bundle.why) {
-      setWhyItemsZh(jsonStringify(bundle.why.items_zh || []));
-      setWhyItemsEn(jsonStringify(bundle.why.items_en || []));
-    }
+    setStatsItems(mergeSectionItems(bundle.stats?.items_zh as any[] | undefined, bundle.stats?.items_en as any[] | undefined));
+    setWhyItems(mergeSectionItems(bundle.why?.items_zh as any[] | undefined, bundle.why?.items_en as any[] | undefined));
   }, [bundle]);
 
   const refreshEditor = async () => {
@@ -74,25 +65,23 @@ export default function AdminHomeEditor() {
     await refetch();
   };
 
-  const saveHomeSectionItems = async (row: HomeSectionRow | null, items_zh: string, items_en: string) => {
+  const saveHomeSectionItems = async (row: HomeSectionRow | null, items: any[]) => {
     if (!supabase) return;
     if (!row?.id) {
       toast({ title: "无法保存", description: "首页模块数据尚未加载，请刷新页面后重试。", variant: "destructive" });
       return;
     }
-    try {
-      const parsedZh = safeJsonParse(items_zh);
-      const parsedEn = safeJsonParse(items_en);
-      const { error } = await supabase
-        .from("home_sections")
-        .update({ items_zh: parsedZh, items_en: parsedEn })
-        .eq("id", row.id);
-      if (error) throw error;
-      toast({ title: "已保存" });
-      await refreshEditor();
-    } catch (e: any) {
-      toast({ title: "保存失败（JSON 格式错误）", description: e?.message || String(e), variant: "destructive" });
+    const cleaned = items.filter((item) => Object.values(item || {}).some((value) => String(value || "").trim()));
+    const { error } = await supabase
+      .from("home_sections")
+      .update({ items_zh: cleaned, items_en: cleaned })
+      .eq("id", row.id);
+    if (error) {
+      toast({ title: "保存失败", description: error.message, variant: "destructive" });
+      return;
     }
+    toast({ title: "已保存" });
+    await refreshEditor();
   };
 
   const upsertProcessStep = async (draft: ProcessStepRow) => {
@@ -257,28 +246,20 @@ export default function AdminHomeEditor() {
         <TabsContent value="stats" className="space-y-6">
           <AdminFormSection
             title="统计数据（home_sections: stats）"
-            description="用于首页 StatsSection。items_zh/items_en 为 JSON 数组。"
+            description="用于首页 StatsSection。这里保存后，前台统计数据优先读取后台内容。"
           >
-            <div className="mb-3 rounded-lg border border-border bg-muted/30 p-3 text-xs text-muted-foreground">
-              <div className="font-medium text-foreground mb-1">items 示例</div>
-              <pre className="whitespace-pre-wrap">{`[
-  { "value": "200+", "label_zh": "完成项目", "label_en": "Completed Projects", "desc_zh": "…", "desc_en": "…", "icon": "star" }
-]`}</pre>
-            </div>
-
-            <div className="grid gap-4 md:grid-cols-2">
-              <div>
-                <label className="mb-1 block text-sm font-medium">{L("items_zh")}</label>
-                <Textarea rows={12} value={statsItemsZh} onChange={(e) => { markDirty(); setStatsItemsZh(e.target.value); }} />
-              </div>
-              <div>
-                <label className="mb-1 block text-sm font-medium">{L("items_en")}</label>
-                <Textarea rows={12} value={statsItemsEn} onChange={(e) => { markDirty(); setStatsItemsEn(e.target.value); }} />
-              </div>
-            </div>
+            <HomeSectionItemsEditor
+              label="统计项目"
+              variant="stats"
+              value={statsItems}
+              onChange={(value) => {
+                markDirty();
+                setStatsItems(value);
+              }}
+            />
 
             <div className="mt-4 flex gap-2">
-              <Button onClick={() => void saveHomeSectionItems(statsSection, statsItemsZh, statsItemsEn)}>保存</Button>
+              <Button onClick={() => void saveHomeSectionItems(statsSection, statsItems)}>保存</Button>
             </div>
           </AdminFormSection>
         </TabsContent>
@@ -286,28 +267,20 @@ export default function AdminHomeEditor() {
         <TabsContent value="why" className="space-y-6">
           <AdminFormSection
             title="为什么选择我们（home_sections: why_choose_us）"
-            description="用于首页 WhyChooseUsSection。items_zh/items_en 为 JSON 数组，支持 icon key。"
+            description="用于首页 WhyChooseUsSection。这里保存后，前台为什么选择我们模块优先读取后台内容。"
           >
-            <div className="mb-3 rounded-lg border border-border bg-muted/30 p-3 text-xs text-muted-foreground">
-              <div className="font-medium text-foreground mb-1">items 示例</div>
-              <pre className="whitespace-pre-wrap">{`[
-  { "title_zh": "设计规划", "title_en": "Design Planning", "desc_zh": "…", "desc_en": "…", "icon": "paintbrush" }
-]`}</pre>
-            </div>
-
-            <div className="grid gap-4 md:grid-cols-2">
-              <div>
-                <label className="mb-1 block text-sm font-medium">{L("items_zh")}</label>
-                <Textarea rows={12} value={whyItemsZh} onChange={(e) => setWhyItemsZh(e.target.value)} />
-              </div>
-              <div>
-                <label className="mb-1 block text-sm font-medium">{L("items_en")}</label>
-                <Textarea rows={12} value={whyItemsEn} onChange={(e) => { markDirty(); setWhyItemsEn(e.target.value); }} />
-              </div>
-            </div>
+            <HomeSectionItemsEditor
+              label="优势项目"
+              variant="why"
+              value={whyItems}
+              onChange={(value) => {
+                markDirty();
+                setWhyItems(value);
+              }}
+            />
 
             <div className="mt-4 flex gap-2">
-              <Button onClick={() => void saveHomeSectionItems(whySection, whyItemsZh, whyItemsEn)}>保存</Button>
+              <Button onClick={() => void saveHomeSectionItems(whySection, whyItems)}>保存</Button>
             </div>
           </AdminFormSection>
         </TabsContent>

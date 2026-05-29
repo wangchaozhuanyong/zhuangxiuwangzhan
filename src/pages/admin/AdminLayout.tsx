@@ -6,6 +6,7 @@ import { Sheet, SheetContent, SheetTitle, SheetTrigger } from "@/components/ui/s
 import { ChevronDown, Menu } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { adminPublicSitePath, getAdminLang } from "@/lib/adminLocale";
+import { useAdminDefaultContentSeed } from "@/lib/adminDefaultContent";
 
 const copy = {
   en: {
@@ -18,6 +19,7 @@ const copy = {
     groupMediaSeo: "Media & SEO",
     groupSystem: "System",
     home: "Home Page",
+    pages: "Page Content",
     about: "About Us",
     faqs: "FAQ",
     beforeAfter: "Before / After",
@@ -45,6 +47,9 @@ const copy = {
     checking: "Checking admin session...",
     accessRequired: "Admin access required",
     deniedBody: "Your account is signed in, but it is not listed as a FLASH CAST admin.",
+    seedRunning: "Checking default CMS content...",
+    seedDone: (inserted: number, updated: number) => `Default CMS content ready. Added ${inserted}, filled ${updated}.`,
+    seedError: (message: string) => `Default CMS content sync failed: ${message}`,
     signOut: "Sign out",
     brand: "FLASH CAST Admin",
     title: "Content & Lead Management",
@@ -59,6 +64,7 @@ const copy = {
     groupMediaSeo: "媒体与 SEO",
     groupSystem: "系统设置",
     home: "首页管理",
+    pages: "页面级内容",
     about: "关于我们",
     faqs: "常见问题",
     beforeAfter: "改造前后",
@@ -86,6 +92,9 @@ const copy = {
     checking: "正在检查管理员状态...",
     accessRequired: "需要管理员权限",
     deniedBody: "当前账号已登录，但未被列为 FLASH CAST 管理员。",
+    seedRunning: "正在检查后台默认内容...",
+    seedDone: (inserted: number, updated: number) => `后台默认内容已就绪：新增 ${inserted} 条，补齐 ${updated} 条。`,
+    seedError: (message: string) => `后台默认内容同步失败：${message}`,
     signOut: "退出登录",
     brand: "FLASH CAST 后台",
     title: "内容与线索管理",
@@ -104,6 +113,7 @@ const navGroups = [
     key: "groupWebsite",
     items: [
       { key: "home", path: "/admin/home" },
+      { key: "pages", path: "/admin/pages" },
       { key: "about", path: "/admin/about" },
       { key: "faqs", path: "/admin/faqs" },
       { key: "testimonials", path: "/admin/content/testimonials" },
@@ -165,7 +175,15 @@ const AdminLayout = () => {
   const location = useLocation();
   const lang = getAdminLang();
   const t = copy[lang];
+  const copyText = useMemo(
+    () => (key: string) => {
+      const value = t[key as keyof typeof t];
+      return typeof value === "string" ? value : key;
+    },
+    [t],
+  );
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
+  const seedSummary = useAdminDefaultContentSeed();
   const [navCollapsed, setNavCollapsed] = useState(() => {
     if (typeof window === "undefined") return false;
     try {
@@ -238,11 +256,11 @@ const AdminLayout = () => {
     const { pathname, hash } = location;
     for (const group of navGroups) {
       for (const item of group.items) {
-        if (isAdminNavItemActive(item.path, pathname, hash)) return t[item.key as keyof typeof t];
+        if (isAdminNavItemActive(item.path, pathname, hash)) return copyText(item.key);
       }
     }
-    return t.title;
-  }, [location, t]);
+    return copyText("title");
+  }, [copyText, location]);
 
   const websitePath = adminPublicSitePath();
 
@@ -269,8 +287,10 @@ const AdminLayout = () => {
         </Button>
       </div>
       <nav className={`space-y-4 p-3 ${navCollapsed ? "w-[72px]" : "w-[260px]"}`}>
-        {navGroups.map((group) => (
-          <div key={group.key}>
+        {navGroups.map((group) => {
+          const groupLabel = copyText(group.key);
+          return (
+            <div key={group.key}>
             <button
               type="button"
               className={[
@@ -285,7 +305,7 @@ const AdminLayout = () => {
                 }))
               }
             >
-              <span className={navCollapsed ? "sr-only" : ""}>{t[group.key as keyof typeof t]}</span>
+              <span className={navCollapsed ? "sr-only" : ""}>{groupLabel}</span>
               <ChevronDown
                 className={[
                   "h-4 w-4 transition-transform",
@@ -298,6 +318,7 @@ const AdminLayout = () => {
               <div className="mt-1 space-y-1">
                 {group.items.map((item) => {
                   const isActive = isAdminNavItemActive(item.path, location.pathname, location.hash);
+                  const label = copyText(item.key);
                   return (
                     <Link
                       key={item.path}
@@ -307,17 +328,18 @@ const AdminLayout = () => {
                         isActive ? "bg-accent text-accent-foreground" : "text-muted-foreground hover:bg-muted",
                         navCollapsed ? "px-2 text-center" : "",
                       ].join(" ")}
-                      title={t[item.key as keyof typeof t]}
+                      title={label}
                     >
-                      <span className={navCollapsed ? "sr-only" : ""}>{t[item.key as keyof typeof t]}</span>
-                      <span className={navCollapsed ? "text-[11px] font-semibold" : "hidden"}>{t[item.key as keyof typeof t].slice(0, 1)}</span>
+                      <span className={navCollapsed ? "sr-only" : ""}>{label}</span>
+                      <span className={navCollapsed ? "text-[11px] font-semibold" : "hidden"}>{label.slice(0, 1)}</span>
                     </Link>
                   );
                 })}
               </div>
             )}
           </div>
-        ))}
+          );
+        })}
       </nav>
     </aside>
   );
@@ -369,6 +391,21 @@ const AdminLayout = () => {
         </div>
         <section className="min-w-0">
           <div className="mx-auto w-full max-w-5xl">
+            {seedSummary.status === "running" && (
+              <div className="mb-4 rounded-lg border border-border bg-card px-4 py-3 text-sm text-muted-foreground">
+                {t.seedRunning}
+              </div>
+            )}
+            {seedSummary.status === "done" && (seedSummary.inserted > 0 || seedSummary.updated > 0) && (
+              <div className="mb-4 rounded-lg border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-800">
+                {t.seedDone(seedSummary.inserted, seedSummary.updated)}
+              </div>
+            )}
+            {seedSummary.status === "error" && (
+              <div className="mb-4 rounded-lg border border-destructive/30 bg-destructive/10 px-4 py-3 text-sm text-destructive">
+                {t.seedError(seedSummary.error || "Unknown error")}
+              </div>
+            )}
             <Suspense
               fallback={
                 <div className="space-y-4">

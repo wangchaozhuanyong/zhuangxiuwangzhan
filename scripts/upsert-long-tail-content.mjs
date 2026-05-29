@@ -25,6 +25,7 @@ const headers = {
   "Content-Type": "application/json",
 };
 
+const FORCE_SEED = process.argv.includes("--force") || process.env.SEED_FORCE === "1";
 const site = (process.env.VITE_SITE_URL || process.env.SITE_URL || "https://flashcast.com.my").replace(/\/$/, "");
 const img = (path) => `${site}${path}`;
 const html = (paragraphs) => paragraphs.map((item) => `<p>${item}</p>`).join("");
@@ -46,7 +47,9 @@ const upsert = async (table, rows, conflict = "slug") => {
   if (!rows.length) return [];
   return request(`/rest/v1/${table}?on_conflict=${conflict}`, {
     method: "POST",
-    headers: { Prefer: "resolution=merge-duplicates,return=representation" },
+    headers: {
+      Prefer: `${FORCE_SEED ? "resolution=merge-duplicates" : "resolution=ignore-duplicates"},return=representation`,
+    },
     body: JSON.stringify(rows),
   });
 };
@@ -69,7 +72,7 @@ const projects = projectRows.map(([slug, zh, en, location, area, duration, budge
   content_zh: html([
     `${zh} 位于 ${location}，面积约 ${area}。项目重点是把实际使用需求、预算和现场限制整理成可执行的施工范围。`,
     "FLASH CAST 在报价前会先确认尺寸、照片、管理处要求、材料偏好和关键工期，再拆分必要工程与可选升级，避免装修过程中频繁追加。",
-    "这个案例适合正在比较 KL 与 Selangor 装修公司、预算范围、定制柜、厨房浴室或商业空间 Fit-Out 的业主参考。",
+    "这个案例适合正在比较吉隆坡与雪兰莪装修公司、预算范围、定制柜、厨房浴室或商业空间 Fit-Out 的业主参考。",
   ]),
   content_en: html([
     `${en} is located in ${location}, around ${area}. The focus was to turn usage needs, budget, and site limitations into a practical renovation scope.`,
@@ -211,7 +214,7 @@ const blogPosts = blogRows.map(([slug, zh, en, category, zhBody, enBody], index)
   title_en: en,
   excerpt_zh: `${zh} 这篇文章帮助业主在询价前先理解预算、材料、审批和施工重点。`,
   excerpt_en: `${en} helps owners understand budget, materials, approval, and construction points before requesting quotation.`,
-  content_zh: `<h2>为什么这个主题重要？</h2><p>${zhBody}</p><h2>询价前要准备什么？</h2><p>建议准备地点、面积、照片、预算范围、期望工期和主要需求。如果是公寓、办公室或店铺，也要确认管理处或业主方的施工规定。</p><h2>FLASH CAST 可以怎么协助？</h2><p>我们会根据 KL 与 Selangor 的现场条件，提供材料建议、施工范围拆分、预算方向和免费报价。</p>`,
+  content_zh: `<h2>为什么这个主题重要？</h2><p>${zhBody}</p><h2>询价前要准备什么？</h2><p>建议准备地点、面积、照片、预算范围、期望工期和主要需求。如果是公寓、办公室或店铺，也要确认管理处或业主方的施工规定。</p><h2>FLASH CAST 可以怎么协助？</h2><p>我们会根据吉隆坡与雪兰莪的现场条件，提供材料建议、施工范围拆分、预算方向和免费报价。</p>`,
   content_en: `<h2>Why this topic matters</h2><p>${enBody}</p><h2>What to prepare before asking for a quote</h2><p>Prepare location, area, photos, budget range, expected timeline, and main requirements. For condos, offices, or shops, confirm management or landlord renovation rules too.</p><h2>How FLASH CAST can help</h2><p>We provide material advice, scope breakdown, budget direction, and free quotation based on KL and Selangor site conditions.</p>`,
   category,
   tags: ["FLASH CAST", category, "Malaysia renovation"],
@@ -220,7 +223,7 @@ const blogPosts = blogRows.map(([slug, zh, en, category, zhBody, enBody], index)
   alt_en: `${en} renovation blog cover`,
   seo_title_zh: `${zh} | FLASH CAST 装修指南`,
   seo_title_en: `${en} | FLASH CAST Renovation Guide`,
-  seo_description_zh: `${zh}，适合 KL 与 Selangor 业主参考，包含预算、材料、审批、施工和免费报价建议。`,
+  seo_description_zh: `${zh}，适合吉隆坡与雪兰莪业主参考，包含预算、材料、审批、施工和免费报价建议。`,
   seo_description_en: `${en}, with budget, material, approval, construction, and free quotation advice for KL and Selangor owners.`,
   status: "published",
   published_at: dateAt(27, index),

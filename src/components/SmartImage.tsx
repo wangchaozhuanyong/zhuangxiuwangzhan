@@ -20,6 +20,8 @@ type SmartImageProps = Omit<React.ImgHTMLAttributes<HTMLImageElement>, "src" | "
   resize?: "contain" | "cover" | "fill";
 };
 
+type NativeFetchPriority = "high" | "low" | "auto";
+
 const DEFAULT_SIZES = "100vw";
 
 export function SmartImage({
@@ -51,6 +53,8 @@ export function SmartImage({
   const resolvedSrc = isSupabase
     ? toSupabaseRenderImageUrl(src, { width: width ?? widths[0], height, quality, resize })
     : localSrc;
+  const resolvedFetchPriority: NativeFetchPriority = fetchPriority ?? (loading === "eager" ? "high" : "low");
+  const fetchPriorityAttr = { fetchpriority: resolvedFetchPriority } as { fetchpriority: NativeFetchPriority };
 
   return (
     <img
@@ -62,7 +66,7 @@ export function SmartImage({
       height={height}
       loading={loading ?? "lazy"}
       decoding={decoding ?? "async"}
-      fetchPriority={fetchPriority ?? (loading === "eager" ? "high" : "low")}
+      {...fetchPriorityAttr}
       className={cn(className)}
       {...rest}
     />

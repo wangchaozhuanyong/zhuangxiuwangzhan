@@ -3,76 +3,80 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>FLASH CAST Quiet Luxury Hero Film</title>
+    <title>FLASH CAST Luxury Homepage Hero Film</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500;600;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500;600;700;800&family=Noto+Sans+SC:wght@500;700;800&family=Playfair+Display:wght@600;700&display=swap"
+      rel="stylesheet"
+    />
   </head>
   <body>
     <div
       id="flashcast-hero-film"
       data-composition-id="flashcast-hero-film"
       data-start="0"
-      data-duration="18"
+      data-duration="21"
       data-width="1920"
       data-height="1080"
     >
       <div class="scene scene-1">
-        <img class="visual" src="assets/hero-living.jpg" alt="" />
-        <div class="veil"></div>
-        <div class="content content-bottom">
-          <div class="rule"></div>
+        <img class="visual" src="assets/hero-living-luxury.png" alt="" data-layout-allow-overflow />
+        <div class="shade shade-left"></div>
+        <div class="scene-content content-bottom-left">
+          <div class="hairline"></div>
           <p class="kicker">FLASH CAST SDN. BHD.</p>
-          <h1>Renovation With Control</h1>
-          <p class="caption">Site measurement, planning, materials, workmanship and handover.</p>
+          <h1>Premium Renovation & Interior Fit-Out</h1>
+          <p class="caption">Design, materials, site control and handover for homes and commercial spaces.</p>
         </div>
       </div>
 
       <div class="scene scene-2">
-        <img class="visual split-a" src="assets/stone-detail.jpg" alt="" />
-        <img class="visual split-b" src="assets/wood-detail.jpg" alt="" />
-        <div class="veil detail-veil"></div>
-        <div class="content content-left">
-          <p class="kicker">MATERIAL DIRECTION</p>
-          <h2>Texture, durability, daily use.</h2>
+        <img class="visual" src="assets/kitchen-builtins-luxury.png" alt="" data-layout-allow-overflow />
+        <div class="shade shade-right"></div>
+        <div class="scene-content content-right">
+          <p class="kicker">CUSTOM BUILT-IN</p>
+          <h2>Clean storage. Precise finishing.</h2>
+          <p class="caption">Kitchen, cabinets, wardrobes and fitted details planned around daily use.</p>
         </div>
       </div>
 
       <div class="scene scene-3">
-        <img class="visual" src="assets/kitchen.jpg" alt="" />
-        <div class="veil"></div>
-        <div class="content content-right">
-          <p class="kicker">BUILT-IN & KITCHEN WORKS</p>
-          <h2>Clean storage. Precise finishing.</h2>
+        <img class="visual" src="assets/material-detail-luxury.png" alt="" data-layout-allow-overflow />
+        <div class="shade shade-left"></div>
+        <div class="scene-content content-left">
+          <p class="kicker">MATERIAL DIRECTION</p>
+          <h2>Stone, timber, metal and texture with restraint.</h2>
         </div>
       </div>
 
       <div class="scene scene-4">
-        <img class="visual" src="assets/office.jpg" alt="" />
-        <div class="veil"></div>
-        <div class="content content-left">
+        <img class="visual" src="assets/commercial-fitout-luxury.png" alt="" data-layout-allow-overflow />
+        <div class="shade shade-right"></div>
+        <div class="scene-content content-right">
           <p class="kicker">COMMERCIAL FIT-OUT</p>
-          <h2>Workspaces planned for flow.</h2>
+          <h2>Business spaces made orderly, polished and ready to operate.</h2>
         </div>
       </div>
 
       <div class="scene scene-5">
-        <img class="visual" src="assets/commercial.jpg" alt="" />
-        <div class="veil"></div>
-        <div class="content content-right">
-          <p class="kicker">SITE TO HANDOVER</p>
-          <h2>Managed step by step.</h2>
+        <img class="visual" src="assets/project-control-luxury.png" alt="" data-layout-allow-overflow />
+        <div class="shade shade-left"></div>
+        <div class="scene-content content-left">
+          <p class="kicker">SITE MEASUREMENT · MATERIALS · PROJECT CONTROL</p>
+          <h2>有审美的设计，有把控的施工。</h2>
         </div>
       </div>
 
       <div class="scene scene-6">
-        <img class="visual" src="assets/condo-finish.jpg" alt="" />
-        <div class="veil final-veil"></div>
+        <img class="visual" src="assets/handover-finish-luxury.png" alt="" data-layout-allow-overflow />
+        <div class="shade shade-left final-shade"></div>
         <div class="brand-lockup">
           <img src="assets/logo-flashcast.png" alt="" />
-          <div>
+          <div class="brand-copy">
             <p class="kicker">FLASH CAST SDN. BHD.</p>
-            <h2>Clear Process. Better Finish.</h2>
+            <h2>Better Finish. Clearer Process.</h2>
+            <p class="caption zh">有质感的交付，让装修更安心。</p>
           </div>
         </div>
       </div>
@@ -83,8 +87,8 @@
           width: 100%;
           height: 100%;
           margin: 0;
-          background: #11100e;
           overflow: hidden;
+          background: #0d0c0a;
         }
 
         #flashcast-hero-film {
@@ -92,8 +96,8 @@
           width: 1920px;
           height: 1080px;
           overflow: hidden;
-          background: #11100e;
-          color: #f4eee4;
+          background: #0d0c0a;
+          color: #f6efe3;
           font-family: "Montserrat", sans-serif;
         }
 
@@ -102,7 +106,7 @@
           inset: 0;
           opacity: 0;
           overflow: hidden;
-          background: #11100e;
+          background: #0d0c0a;
         }
 
         .visual {
@@ -111,130 +115,150 @@
           width: 100%;
           height: 100%;
           object-fit: cover;
+          object-position: center;
           will-change: transform, opacity;
+          filter: contrast(1.04) saturate(1.04) brightness(0.98);
         }
 
-        .split-a {
-          width: 58%;
-          right: auto;
-          object-position: center;
+        .scene-3 .visual,
+        .scene-5 .visual {
+          filter: contrast(1.08) saturate(1.02) brightness(0.94);
         }
 
-        .split-b {
-          width: 54%;
-          left: auto;
-          object-position: center;
-          border-left: 1px solid rgba(244, 238, 228, 0.16);
-        }
-
-        .veil {
+        .shade {
           position: absolute;
           inset: 0;
-          background: linear-gradient(90deg, rgba(17, 16, 14, 0.18) 0%, rgba(17, 16, 14, 0.02) 52%, rgba(17, 16, 14, 0.06) 100%);
+          pointer-events: none;
         }
 
-        .detail-veil {
-          background: linear-gradient(90deg, rgba(17, 16, 14, 0.16), rgba(17, 16, 14, 0), rgba(17, 16, 14, 0.12));
+        .shade-left {
+          background:
+            linear-gradient(90deg, rgba(9, 8, 6, 0.76) 0%, rgba(9, 8, 6, 0.42) 31%, rgba(9, 8, 6, 0.1) 70%, rgba(9, 8, 6, 0.18) 100%),
+            linear-gradient(180deg, rgba(9, 8, 6, 0.02) 0%, rgba(9, 8, 6, 0.28) 100%);
         }
 
-        .final-veil {
-          background: linear-gradient(90deg, rgba(17, 16, 14, 0.22), rgba(17, 16, 14, 0.02), rgba(17, 16, 14, 0.16));
+        .shade-right {
+          background:
+            linear-gradient(270deg, rgba(9, 8, 6, 0.74) 0%, rgba(9, 8, 6, 0.4) 32%, rgba(9, 8, 6, 0.1) 72%, rgba(9, 8, 6, 0.14) 100%),
+            linear-gradient(180deg, rgba(9, 8, 6, 0.03) 0%, rgba(9, 8, 6, 0.25) 100%);
         }
 
-        .content {
+        .final-shade {
+          background:
+            linear-gradient(90deg, rgba(8, 7, 5, 0.8) 0%, rgba(8, 7, 5, 0.48) 37%, rgba(8, 7, 5, 0.08) 100%),
+            linear-gradient(180deg, rgba(8, 7, 5, 0.04), rgba(8, 7, 5, 0.34));
+        }
+
+        .scene-content {
           position: absolute;
+          z-index: 2;
+          box-sizing: border-box;
           display: flex;
           flex-direction: column;
-          box-sizing: border-box;
           gap: 18px;
-          width: min(700px, 42%);
-          z-index: 2;
+          width: min(760px, 43vw);
         }
 
-        .content-bottom {
-          left: 132px;
-          bottom: 108px;
+        .content-bottom-left {
+          left: 124px;
+          bottom: 112px;
         }
 
         .content-left {
-          left: 132px;
+          left: 124px;
           top: 50%;
-          justify-content: center;
+          transform: translateY(-50%);
         }
 
         .content-right {
-          right: 132px;
+          right: 124px;
           top: 50%;
-          justify-content: center;
-          text-align: right;
           align-items: flex-end;
+          text-align: right;
+          transform: translateY(-50%);
         }
 
-        .rule {
-          width: 86px;
+        .hairline {
+          width: 92px;
           height: 2px;
-          background: #b99a62;
+          background: #c5a46a;
+          box-shadow: 0 0 24px rgba(197, 164, 106, 0.25);
         }
 
         .kicker {
           margin: 0;
-          color: #b99a62;
-          font-size: 18px;
-          font-weight: 700;
-          letter-spacing: 0.22em;
+          color: #d1ad72;
+          font-size: 17px;
+          font-weight: 800;
+          letter-spacing: 0.2em;
+          line-height: 1.35;
           text-transform: uppercase;
+          text-shadow: 0 4px 18px rgba(0, 0, 0, 0.55);
         }
 
         h1,
         h2 {
           margin: 0;
-          color: #f4eee4;
-          font-family: "Playfair Display", serif;
+          color: #fff7ea;
+          font-family: "Playfair Display", "Noto Sans SC", serif;
           font-weight: 700;
           letter-spacing: 0;
-          line-height: 1.02;
-          text-shadow: 0 6px 24px rgba(0, 0, 0, 0.36);
+          line-height: 1.04;
+          text-shadow: 0 8px 30px rgba(0, 0, 0, 0.48);
         }
 
         h1 {
-          max-width: 820px;
-          font-size: 86px;
+          max-width: 780px;
+          font-size: 80px;
         }
 
         h2 {
-          max-width: 720px;
-          font-size: 64px;
+          max-width: 760px;
+          font-size: 62px;
         }
 
         .caption {
           margin: 0;
-          max-width: 680px;
-          color: rgba(244, 238, 228, 0.78);
-          font-size: 24px;
-          font-weight: 500;
-          line-height: 1.42;
+          max-width: 690px;
+          color: rgba(246, 239, 227, 0.88);
+          font-size: 23px;
+          font-weight: 600;
+          line-height: 1.48;
+          text-shadow: 0 5px 20px rgba(0, 0, 0, 0.52);
+        }
+
+        .zh {
+          font-family: "Noto Sans SC", sans-serif;
+          letter-spacing: 0;
         }
 
         .brand-lockup {
           position: absolute;
-          left: 132px;
-          right: 132px;
-          bottom: 128px;
+          left: 124px;
+          right: 124px;
+          bottom: 118px;
           z-index: 3;
           display: flex;
           align-items: center;
           gap: 34px;
+          box-sizing: border-box;
         }
 
         .brand-lockup img {
-          width: 146px;
-          height: 146px;
+          width: 138px;
+          height: 138px;
           object-fit: contain;
-          filter: brightness(1.08);
+          filter: drop-shadow(0 18px 38px rgba(0, 0, 0, 0.42)) brightness(1.08);
         }
 
-        .brand-lockup h2 {
-          font-size: 82px;
+        .brand-copy {
+          display: flex;
+          flex-direction: column;
+          gap: 14px;
+        }
+
+        .brand-copy h2 {
+          font-size: 76px;
         }
       </style>
 
@@ -243,48 +267,34 @@
         window.__timelines = window.__timelines || {};
 
         const tl = gsap.timeline({ paused: true });
-        gsap.set(".scene-1", { opacity: 1 });
-        gsap.set(".scene-1 .visual", { scale: 1.03, x: -18 });
-
-        const fromToIfPresent = (selector, fromVars, toVars, position) => {
+        const scenes = [".scene-1", ".scene-2", ".scene-3", ".scene-4", ".scene-5", ".scene-6"];
+        const sceneDuration = 3.5;
+        const fromIfPresent = (selector, vars, position) => {
           if (document.querySelector(selector)) {
-            tl.fromTo(selector, fromVars, toVars, position);
+            tl.from(selector, vars, position);
           }
         };
 
-        const scenes = [".scene-1", ".scene-2", ".scene-3", ".scene-4", ".scene-5", ".scene-6"];
         scenes.forEach((scene, index) => {
-          const start = index * 3;
-          if (index > 0) {
-            tl.to(scene, { opacity: 1, duration: 0.8, ease: "power1.inOut" }, start);
-          }
-          fromToIfPresent(
+          const start = index * sceneDuration;
+          tl.to(scene, { opacity: 1, duration: index === 0 ? 0.12 : 0.86, ease: "power1.inOut" }, start);
+          tl.fromTo(
             `${scene} .visual`,
-            { scale: 1.08, x: index % 2 === 0 ? -26 : 26, y: index === 1 ? 16 : 0 },
-            { scale: 1.0, x: index % 2 === 0 ? 18 : -18, y: 0, duration: 3.4, ease: "none" },
+            { scale: 1.09, x: index % 2 === 0 ? -34 : 34, y: index === 2 ? 18 : 0 },
+            { scale: 1.01, x: index % 2 === 0 ? 22 : -22, y: 0, duration: 4.15, ease: "none" },
             start
           );
-          fromToIfPresent(
-            `${scene} .kicker`,
-            { opacity: 0, y: 34 },
-            { opacity: 1, y: 0, duration: 0.72, ease: "power3.out" },
-            start + 0.36
-          );
-          fromToIfPresent(
-            `${scene} h1, ${scene} h2`,
-            { opacity: 0, y: 42 },
-            { opacity: 1, y: 0, duration: 0.86, ease: "power3.out" },
-            start + 0.58
-          );
-          fromToIfPresent(`${scene} .caption`, { opacity: 0, y: 28 }, { opacity: 1, y: 0, duration: 0.7, ease: "power3.out" }, start + 0.82);
-          fromToIfPresent(`${scene} .rule`, { opacity: 0, y: 28 }, { opacity: 1, y: 0, duration: 0.7, ease: "power3.out" }, start + 0.82);
-          fromToIfPresent(`${scene} .brand-lockup img`, { opacity: 0, y: 28 }, { opacity: 1, y: 0, duration: 0.7, ease: "power3.out" }, start + 0.82);
+          fromIfPresent(`${scene} .hairline`, { opacity: 0, x: -36, duration: 0.7, ease: "power2.out" }, start + 0.36);
+          fromIfPresent(`${scene} .kicker`, { opacity: 0, y: 30, duration: 0.68, ease: "power3.out" }, start + 0.42);
+          fromIfPresent(`${scene} h1, ${scene} h2`, { opacity: 0, y: 44, duration: 0.88, ease: "expo.out" }, start + 0.62);
+          fromIfPresent(`${scene} .caption`, { opacity: 0, y: 26, duration: 0.64, ease: "power2.out" }, start + 0.88);
+          fromIfPresent(`${scene} .brand-lockup img`, { opacity: 0, y: 28, scale: 0.96, duration: 0.74, ease: "back.out(1.2)" }, start + 0.48);
           if (index < scenes.length - 1) {
-            tl.to(scene, { opacity: 0, duration: 0.84, ease: "power1.inOut" }, start + 2.72);
+            tl.to(scene, { opacity: 0, duration: 0.86, ease: "power1.inOut" }, start + 2.86);
           }
         });
 
-        tl.to(".scene-6", { opacity: 0.98, duration: 0.7, ease: "power1.out" }, 17.2);
+        tl.to(".scene-6", { opacity: 0.98, duration: 0.2, ease: "power1.out" }, 20.8);
         window.__timelines["flashcast-hero-film"] = tl;
       </script>
     </div>

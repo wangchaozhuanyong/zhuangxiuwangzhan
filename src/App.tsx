@@ -17,7 +17,6 @@ import Index from "./pages/Index";
 import FAQ from "./pages/FAQ";
 import AdminRoute from "./pages/admin/AdminRoute";
 import AdminAuthProvider from "./pages/admin/AdminAuthProvider";
-import AdminLayout from "./pages/admin/AdminLayout";
 
 // Lazy-load all non-homepage routes
 const About = lazy(() => import("./pages/About"));
@@ -40,6 +39,7 @@ const Privacy = lazy(() => import("./pages/Privacy"));
 const Terms = lazy(() => import("./pages/Terms"));
 const OldHouseRenovation = lazy(() => import("./pages/OldHouseRenovation"));
 const AdminLogin = lazy(() => import("./pages/admin/AdminLogin"));
+const AdminLayout = lazy(() => import("./pages/admin/AdminLayout"));
 const AdminDashboard = lazy(() => import("./pages/admin/AdminDashboard"));
 const AdminContentEditor = lazy(() => import("./pages/admin/AdminContentEditor"));
 const AdminNotificationSettings = lazy(() => import("./pages/admin/AdminNotificationSettings"));
@@ -63,6 +63,7 @@ const AdminSeoManager = lazy(() => import("./pages/admin/AdminSeoManager"));
 const AdminUsers = lazy(() => import("./pages/admin/AdminUsers"));
 const AdminHomeEditor = lazy(() => import("./pages/admin/AdminHomeEditor"));
 const AdminAboutEditor = lazy(() => import("./pages/admin/AdminAboutEditor"));
+const AdminPages = lazy(() => import("./pages/admin/AdminSimpleCms").then((module) => ({ default: () => <module.default module="site_pages" /> })));
 const AdminFaqs = lazy(() => import("./pages/admin/AdminSimpleCms").then((module) => ({ default: () => <module.default module="faqs" /> })));
 const AdminBeforeAfter = lazy(() => import("./pages/admin/AdminSimpleCms").then((module) => ({ default: () => <module.default module="before_after_items" /> })));
 const AdminBrandPartners = lazy(() => import("./pages/admin/AdminSimpleCms").then((module) => ({ default: () => <module.default module="brand_partners" /> })));
@@ -120,6 +121,7 @@ const AppShell = () => {
                 <Route path="quotes" element={<AdminQuoteList />} />
                 <Route path="quotes/:id" element={<AdminQuoteDetail />} />
                 <Route path="home" element={<AdminHomeEditor />} />
+                <Route path="pages" element={<AdminPages />} />
                 <Route path="about" element={<AdminAboutEditor />} />
                 <Route path="faqs" element={<AdminFaqs />} />
                 <Route path="before-after" element={<AdminBeforeAfter />} />

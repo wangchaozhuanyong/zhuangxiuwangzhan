@@ -1,4 +1,5 @@
 ﻿import { MapPin, CheckCircle } from "lucide-react";
+import { Layers, MessageCircle, Paintbrush, ShieldCheck, Target, Users, Wrench } from "lucide-react";
 import GoogleMapEmbed from "@/components/GoogleMapEmbed";
 import Reveal from "@/components/Reveal";
 import PageMeta from "@/components/PageMeta";
@@ -11,7 +12,7 @@ import { companyMilestones, coreValues, teamHighlights, companyStats } from "@/d
 import { useLanguage } from "@/i18n/LanguageContext";
 import { useSiteSettings } from "@/hooks/useSiteSettings";
 import heroImg from "@/assets/hero-about.webp";
-import { usePublishedAboutSection, usePublishedCtaBlock } from "@/hooks/usePublishedContent";
+import { usePublishedAboutSection, usePublishedCtaBlock, usePublishedSitePage } from "@/hooks/usePublishedContent";
 import { useMemo } from "react";
 
 const aboutCopy = {
@@ -131,6 +132,33 @@ const localizedStats = {
   ],
 };
 
+const aboutIconMap = {
+  check: CheckCircle,
+  checkcircle: CheckCircle,
+  layers: Layers,
+  messagecircle: MessageCircle,
+  paintbrush: Paintbrush,
+  shieldcheck: ShieldCheck,
+  target: Target,
+  users: Users,
+  wrench: Wrench,
+};
+
+const normalizeIconCardItems = (items: unknown, fallback: Array<{ icon: any; title: string; desc: string }>) => {
+  if (!Array.isArray(items) || items.length === 0) return null;
+  const normalized = items
+    .map((item: any, index) => {
+      const iconKey = String(item?.icon || "").toLowerCase().replace(/[\s_-]+/g, "");
+      return {
+        icon: aboutIconMap[iconKey as keyof typeof aboutIconMap] || fallback[index]?.icon || CheckCircle,
+        title: String(item?.title || item?.title_zh || item?.title_en || "").trim(),
+        desc: String(item?.desc || item?.desc_zh || item?.desc_en || "").trim(),
+      };
+    })
+    .filter((item) => item.title && item.desc);
+  return normalized.length ? normalized : null;
+};
+
 const About = () => {
   const { language } = useLanguage();
   const t = aboutCopy[language];
@@ -144,6 +172,7 @@ const About = () => {
   const { data: milestonesSection } = usePublishedAboutSection(language, "milestones");
   const { data: officeSection } = usePublishedAboutSection(language, "office");
   const { data: ctaBlock } = usePublishedCtaBlock(language, "about_final");
+  const { data: pageContent } = usePublishedSitePage(language, "about");
 
   const dynamicIntroParagraphs = useMemo<string[] | null>(() => {
     const items = introSection?.items;
@@ -177,9 +206,18 @@ const About = () => {
     return normalized.length ? normalized : null;
   }, [milestonesSection?.items]);
 
+  const dynamicValues = useMemo(() => normalizeIconCardItems(valuesSection?.items, localizedValues[language]), [valuesSection?.items, language]);
+  const dynamicTeam = useMemo(() => normalizeIconCardItems(teamSection?.items, localizedTeam[language]), [teamSection?.items, language]);
+  const displayedMilestones = dynamicMilestones || localizedMilestones[language];
+
   return (
     <main className="pt-site-header overflow-x-hidden">
-      <PageMeta title={t.metaTitle} description={t.metaDescription} keywords={t.metaKeywords} canonicalPath="/about" />
+      <PageMeta
+        title={pageContent?.seo_title || t.metaTitle}
+        description={pageContent?.seo_description || t.metaDescription}
+        keywords={pageContent?.seo_keywords || t.metaKeywords}
+        canonicalPath="/about"
+      />
       <JsonLdBreadcrumb items={[{ name: t.breadcrumbHome, url: "/" }, { name: t.breadcrumbAbout, url: "/about" }]} />
 
       <HeroBanner
@@ -226,14 +264,14 @@ const About = () => {
       <section className="section-padding bg-muted">
         <div className="container-narrow">
           <SectionHeader title={(valuesSection?.title as string) || t.valuesTitle} description={(valuesSection?.content as string) || t.valuesDescription} />
-          <IconCardGrid items={localizedValues[language]} columns={2} layout="horizontal" />
+          <IconCardGrid items={dynamicValues || localizedValues[language]} columns={2} layout="horizontal" />
         </div>
       </section>
 
       <section className="section-padding bg-background">
         <div className="container-narrow">
           <SectionHeader title={(teamSection?.title as string) || t.teamTitle} description={(teamSection?.content as string) || t.teamDescription} />
-          <IconCardGrid items={localizedTeam[language]} columns={4} layout="horizontal" />
+          <IconCardGrid items={dynamicTeam || localizedTeam[language]} columns={4} layout="horizontal" />
         </div>
       </section>
 
@@ -241,14 +279,14 @@ const About = () => {
         <div className="container-narrow">
           <SectionHeader title={(milestonesSection?.title as string) || t.journeyTitle} description={(milestonesSection?.content as string) || t.journeyDescription} />
           <div className="max-w-2xl mx-auto">
-            {(dynamicMilestones || localizedMilestones[language]).map((milestone: any, i: number) => (
+            {displayedMilestones.map((milestone: any, i: number) => (
               <Reveal key={milestone.year} delay={i * 60}>
                 <div className="flex gap-5 mb-6 last:mb-0">
                   <div className="flex flex-col items-center">
                     <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-accent/25 bg-accent/15 text-xs font-bold text-gold">
                       {milestone.year.slice(2)}
                     </div>
-                    {i < localizedMilestones[language].length - 1 && <div className="w-px flex-1 bg-border mt-2" />}
+                    {i < displayedMilestones.length - 1 && <div className="w-px flex-1 bg-border mt-2" />}
                   </div>
                   <div className="pb-6">
                     <div className="flex items-baseline gap-2 mb-1">

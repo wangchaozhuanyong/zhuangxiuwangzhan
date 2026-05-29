@@ -15,7 +15,7 @@ export default {
     },
     extend: {
       maxWidth: {
-        site: "1180px",
+        site: "1320px",
       },
       fontFamily: {
         display: ['Playfair Display', 'Noto Sans SC', 'serif'],
@@ -87,9 +87,9 @@ export default {
         md: "calc(var(--radius) - 2px)",
         sm: "calc(var(--radius) - 4px)",
         btn: "10px",
-        card: "18px",
-        "card-lg": "24px",
-        hero: "28px",
+        card: "14px",
+        "card-lg": "18px",
+        hero: "22px",
       },
       boxShadow: {
         luxury: "0 24px 80px -52px rgba(21, 18, 14, 0.45)",

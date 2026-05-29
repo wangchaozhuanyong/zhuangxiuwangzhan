@@ -16,7 +16,7 @@ const AdminSeoManager = () => {
     if (!row.seo_description_en) issues.push("缺英文 SEO 描述");
     if (row.seo_description_zh && String(row.seo_description_zh).length < 50) issues.push("中文描述偏短");
     if (row.seo_description_en && String(row.seo_description_en).length < 50) issues.push("英文描述偏短");
-    if (!row.slug) issues.push("缺 slug");
+    if (row.table !== "site_pages" && !row.slug) issues.push("缺 slug");
     if ((row.image_url || row.cover_image_url || row.hero_image_url) && !row.alt_zh && !row.alt_en) issues.push("图片 alt 缺失");
     return { ...row, issues };
   }), [rows]);
@@ -66,16 +66,17 @@ const AdminSeoManager = () => {
 
         <div className="space-y-3">
           {filtered.map((row) => {
+            const rowRecord = row as typeof row & { path?: string; page_key?: string };
             const duplicate = row.slug && (duplicateSlugs.get(`${row.table}:${row.slug}`) || 0) > 1;
             const issues = duplicate ? [...row.issues, "slug 重复"] : row.issues;
-            const editUrl = `${row.source.route}/${row.id}`;
-            const frontUrl = row.slug ? `${row.source.front}/${row.slug}` : row.source.front;
+            const editUrl = row.table === "site_pages" ? row.source.route : `${row.source.route}/${row.id}`;
+            const frontUrl = row.table === "site_pages" ? String(rowRecord.path || row.source.front || "/") : row.slug ? `${row.source.front}/${row.slug}` : row.source.front;
             return (
               <article key={`${row.table}-${row.id || row.error}`} className="rounded-xl border border-border bg-card p-4">
                 <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
                   <div>
-                    <p className="font-semibold">{row.title_zh || row.title_en || row.name || row.slug || row.source.label}</p>
-                    <p className="mt-1 text-xs text-muted-foreground">{row.source.label} · {row.slug || "-"} · {row.status || "-"}</p>
+                    <p className="font-semibold">{row.title_zh || row.title_en || row.name || rowRecord.page_key || row.slug || row.source.label}</p>
+                    <p className="mt-1 text-xs text-muted-foreground">{row.source.label} · {rowRecord.path || row.slug || "-"} · {row.status || "-"}</p>
                     <div className="mt-2 flex flex-wrap gap-2">
                       {issues.length ? issues.map((issue) => <span key={issue} className="rounded-full bg-destructive/10 px-2 py-1 text-xs text-destructive">{issue}</span>) : <span className="rounded-full bg-accent/10 px-2 py-1 text-xs text-accent">SEO 通过</span>}
                     </div>

@@ -6,7 +6,7 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/
 import { ArrowRight, ArrowLeft, CheckCircle } from "lucide-react";
 import WhatsAppIcon from "@/components/WhatsAppIcon";
 import { servicesData } from "@/data/services";
-import { usePublishedServices } from "@/hooks/usePublishedContent";
+import { usePublishedServiceBySlug, usePublishedServices, usePublishedSitePage } from "@/hooks/usePublishedContent";
 import Reveal from "@/components/Reveal";
 import SmartImage from "@/components/SmartImage";
 import PageMeta from "@/components/PageMeta";
@@ -65,7 +65,7 @@ const copy = {
     materialLibrary: "材料库",
     faqLink: "常见问题",
     interested: (title: string) => `想了解 ${title}？`,
-    ctaText: "联系我们获取免费咨询与报价。我们服务 Kuala Lumpur、Selangor 与周边地区。",
+    ctaText: "联系我们获取免费咨询与报价。我们服务吉隆坡、雪兰莪与周边地区。",
     freeQuote: "获取免费报价",
   },
 };
@@ -92,7 +92,7 @@ const zhCopy = {
   materialLibrary: "材料库",
   faqLink: "常见问题",
   interested: (title: string) => `想了解 ${title}？`,
-  ctaText: "联系我们获取免费咨询与报价。我们服务 Kuala Lumpur、Selangor 与周边地区。",
+  ctaText: "联系我们获取免费咨询与报价。我们服务吉隆坡、雪兰莪与周边地区。",
   freeQuote: "获取免费报价",
 };
 
@@ -101,6 +101,8 @@ const ServiceDetail = () => {
   const { language } = useLanguage();
   const settings = useSiteSettings();
   const t = language === "zh" ? zhCopy : copy.en;
+  const { data: pageContent } = usePublishedSitePage(language, "service_detail");
+  const { data: cmsService, isLoading: isServiceLoading } = usePublishedServiceBySlug(slug, language);
   const displayText = (value: string) => translateDisplayText(value, language);
   const initialServices = language === "zh"
     ? servicesData.map((service) => ({
@@ -121,7 +123,15 @@ const ServiceDetail = () => {
     [cmsServices, initialServices],
   );
 
-  const service = services.find((item) => item.slug === slug);
+  const service = cmsService || services.find((item) => item.slug === slug);
+
+  if (isServiceLoading && !cmsService) {
+    return (
+      <main className="pt-site-header section-padding text-center">
+        <p className="text-sm text-muted-foreground">{language === "zh" ? "正在加载服务内容..." : "Loading service content..."}</p>
+      </main>
+    );
+  }
 
   if (!service) {
     return (
@@ -151,8 +161,8 @@ const ServiceDetail = () => {
   return (
     <main className="pt-site-header">
       <PageMeta
-        title={`${serviceTitle} Kuala Lumpur | ${t.metaSuffix}`}
-        description={stripHtml(serviceSummary)}
+        title={service.seoTitle || `${serviceTitle} Kuala Lumpur | ${t.metaSuffix}`}
+        description={service.seoDescription || stripHtml(serviceSummary)}
         keywords={t.metaKeywords(serviceTitle)}
         canonicalPath={`/services/${service.slug}`}
       />
@@ -307,7 +317,7 @@ const ServiceDetail = () => {
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_0%,rgba(198,164,106,0.1),transparent_50%)]" aria-hidden />
         <div className="container-narrow relative">
           <h2 className="heading-safe mb-4 font-display text-3xl font-bold text-surface-dark-foreground">{t.interested(serviceTitle)}</h2>
-          <p className="mb-6 text-surface-dark-foreground/75">{t.ctaText}</p>
+          <p className="mb-6 text-surface-dark-foreground/75">{pageContent?.cta_description || t.ctaText}</p>
           <div className="flex flex-col justify-center gap-3 sm:flex-row sm:gap-4">
             <Link to="/quote" className="btn-on-dark-primary min-h-12 w-full justify-center px-8 sm:w-auto">
               {t.freeQuote}

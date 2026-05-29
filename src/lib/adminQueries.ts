@@ -426,6 +426,7 @@ export function useAdminBusinessRecord(table: AdminContentTable, id: string | un
 }
 
 export const adminSeoSources = [
+  { table: "site_pages" as const, label: "页面级内容", route: "/admin/pages", front: "" },
   { table: "services" as const, label: "服务项目", route: "/admin/services", front: "/services" },
   { table: "projects" as const, label: "装修案例", route: "/admin/projects", front: "/projects" },
   { table: "materials" as const, label: "材料库", route: "/admin/materials", front: "/materials" },
@@ -440,6 +441,8 @@ export type AdminSeoAuditRow = Record<string, unknown> & {
   source: (typeof adminSeoSources)[number];
   error?: string;
   slug?: string;
+  page_key?: string;
+  path?: string;
   status?: string;
   title_zh?: string;
   title_en?: string;
@@ -481,7 +484,7 @@ export function useAdminTableRows(table: AdminContentTable, limit = 200) {
   });
 }
 
-export type AdminSimpleCmsTable = "home_sections" | "faqs" | "before_after_items" | "brand_partners";
+export type AdminSimpleCmsTable = "site_pages" | "home_sections" | "faqs" | "before_after_items" | "brand_partners";
 
 export function useAdminSimpleCmsRows(table: AdminSimpleCmsTable) {
   return useQuery({

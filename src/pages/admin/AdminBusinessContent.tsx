@@ -10,6 +10,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { isSupabaseConfigured, supabase } from "@/lib/supabase";
 import AdminImageUpload from "./AdminImageUpload";
 import AdminProjectImages from "./AdminProjectImages";
+import { FaqListEditor } from "@/components/admin/StructuredArrayEditors";
 
 type ModuleKey = "services" | "projects" | "materials" | "blog_posts";
 type FieldType = "text" | "textarea" | "number" | "date" | "image" | "array" | "json" | "select";
@@ -36,7 +37,7 @@ const moduleConfig: Record<ModuleKey, { title: string; route: string; table: Mod
       { key: "suitable_for_zh", label: "适合场景（一行一个）", type: "array", group: "details" },
       { key: "common_projects_zh", label: "常见项目（一行一个）", type: "array", group: "details" },
       { key: "scope_items_zh", label: "服务范围（一行一个）", type: "array", group: "details" },
-      { key: "faqs_zh", label: "FAQ JSON", type: "json", group: "details" },
+      { key: "faqs_zh", label: "FAQ 问答", type: "json", group: "details" },
       { key: "seo_title_zh", label: "中文 SEO 标题", group: "seo" },
       { key: "seo_description_zh", label: "中文 SEO 描述", type: "textarea", group: "seo" },
       { key: "title_en", label: "英文标题", group: "english" },
@@ -152,18 +153,30 @@ const normalizeValue = (field: FieldConfig, value: unknown) => {
     if (Array.isArray(value)) return value.join("\n");
     return String(value || "");
   }
-  if (jsonFields.has(field.key)) return typeof value === "string" ? value : JSON.stringify(value || [], null, 2);
+  if (jsonFields.has(field.key)) {
+    if (Array.isArray(value)) return value;
+    if (typeof value === "string") {
+      try {
+        return value.trim() ? JSON.parse(value) : [];
+      } catch {
+        return [];
+      }
+    }
+    return [];
+  }
   return String(value ?? "");
 };
 
 const parseValue = (field: FieldConfig, value: unknown) => {
   if (arrayFields.has(field.key)) return String(value || "").split("\n").map((item) => item.trim()).filter(Boolean);
   if (jsonFields.has(field.key)) {
-    try {
-      return String(value || "").trim() ? JSON.parse(String(value)) : [];
-    } catch {
-      return value;
-    }
+    const items = Array.isArray(value) ? value : [];
+    return items
+      .map((item: any) => ({
+        q: String(item?.q || "").trim(),
+        a: String(item?.a || "").trim(),
+      }))
+      .filter((item) => item.q && item.a);
   }
   if (field.type === "number") return Number(value || 0);
   return value || null;
@@ -280,17 +293,20 @@ export const AdminBusinessEditor = ({ module }: { module: ModuleKey }) => {
 
   const renderField = (field: FieldConfig) => {
     const value = normalizeValue(field, record[field.key]);
-    const common = { value, onChange: (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => update(field.key, event.target.value) };
+    const textValue = Array.isArray(value) ? "" : String(value ?? "");
+    const common = { value: textValue, onChange: (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => update(field.key, event.target.value) };
 
     return (
       <div key={field.key} className={field.type === "textarea" || field.type === "json" || field.type === "array" ? "md:col-span-2" : ""}>
         <label className="mb-1 block text-sm font-medium">{field.label}</label>
-        {field.type === "textarea" || field.type === "json" || field.type === "array" ? (
+        {field.type === "json" && field.key === "faqs_zh" ? (
+          <FaqListEditor label={field.label} value={Array.isArray(value) ? value : []} onChange={(items) => update(field.key, items)} />
+        ) : field.type === "textarea" || field.type === "json" || field.type === "array" ? (
           <Textarea rows={field.type === "json" ? 6 : 4} {...common} />
         ) : field.type === "image" ? (
           <div className="space-y-3">
             <Input {...common} />
-            <AdminImageUpload value={value} folder={`${module}/${record.id || "draft"}`} onUploaded={(url) => update(field.key, url)} />
+            <AdminImageUpload value={textValue} folder={`${module}/${record.id || "draft"}`} onUploaded={(url) => update(field.key, url)} />
           </div>
         ) : field.type === "date" ? (
           <Input type="datetime-local" {...common} />

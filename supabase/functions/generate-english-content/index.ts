@@ -67,6 +67,13 @@ type TranslateTask = {
 };
 
 const isHtmlText = (value: string) => /<\/?[a-z][\s\S]*>/i.test(value);
+const isBlankValue = (value: unknown) => {
+  if (value === null || value === undefined) return true;
+  if (typeof value === "string") return value.trim() === "";
+  if (Array.isArray(value)) return value.length === 0;
+  if (typeof value === "object") return Object.keys(value as Record<string, unknown>).length === 0;
+  return false;
+};
 
 const collectTranslateTasks = (value: unknown, path: TranslatePath = []): TranslateTask[] => {
   if (typeof value === "string") {
@@ -186,7 +193,7 @@ const translateValue = async (value: unknown) => {
 serve(async (req) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
 
-  const { table, id } = await req.json();
+  const { table, id, force = false } = await req.json();
   const serviceRoleKey = getServiceRoleKey();
   if (!serviceRoleKey) {
     return Response.json({ error: "Service role key is not configured" }, { status: 500, headers: corsHeaders });
@@ -224,6 +231,7 @@ serve(async (req) => {
   try {
     for (const [sourceKey, sourceValue] of Object.entries(translatable)) {
       const targetKey = sourceKey.replace(/_zh$/, "_en");
+      if (!force && !isBlankValue((record as Record<string, unknown>)[targetKey])) continue;
       translatedRaw[targetKey] = await translateValue(sourceValue);
     }
   } catch (error) {
@@ -235,6 +243,11 @@ serve(async (req) => {
   const translated = Object.fromEntries(
     Object.entries(translatedRaw).filter(([key]) => expectedKeys.includes(key)),
   );
+
+  if (Object.keys(translated).length === 0) {
+    await createJob(supabase, table, id, "completed");
+    return Response.json({ ok: true, translated: {}, skipped_existing_english: true }, { headers: corsHeaders });
+  }
 
   const { error: updateError } = await supabase.from(table).update(translated).eq("id", id);
   if (updateError) {
