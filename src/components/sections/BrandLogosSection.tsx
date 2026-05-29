@@ -1,13 +1,14 @@
-import { useEffect, useState } from "react";
 import Reveal from "@/components/Reveal";
-import { getPublishedBrandPartners, type PublishedBrandPartner } from "@/lib/homeContentApi";
+import SmartImage from "@/components/SmartImage";
+import { type PublishedBrandPartner } from "@/lib/homeContentApi";
+import { usePublishedBrandPartners } from "@/hooks/usePublishedContent";
 
-import remmersLogo from "@/assets/brands/remmers.png";
-import hafeleLogo from "@/assets/brands/hafele.png";
-import blumLogo from "@/assets/brands/blum.png";
-import nipponLogo from "@/assets/brands/nippon-paint.png";
-import boschLogo from "@/assets/brands/bosch.png";
-import groheLogo from "@/assets/brands/grohe.png";
+import remmersLogo from "@/assets/brands/remmers.webp";
+import hafeleLogo from "@/assets/brands/hafele.webp";
+import blumLogo from "@/assets/brands/blum.webp";
+import nipponLogo from "@/assets/brands/nippon-paint.webp";
+import boschLogo from "@/assets/brands/bosch.webp";
+import groheLogo from "@/assets/brands/grohe.webp";
 
 const fallbackBrands = [
   { id: "remmers", name: "Remmers", logo_url: remmersLogo },
@@ -19,13 +20,8 @@ const fallbackBrands = [
 ];
 
 const BrandLogosSection = () => {
-  const [brands, setBrands] = useState<PublishedBrandPartner[]>(fallbackBrands);
-
-  useEffect(() => {
-    void getPublishedBrandPartners().then((items) => {
-      if (items.length) setBrands(items);
-    });
-  }, []);
+  const { data: publishedBrands } = usePublishedBrandPartners();
+  const brands: PublishedBrandPartner[] = publishedBrands?.length ? publishedBrands : fallbackBrands;
 
   return (
     <section className="bg-muted py-10 md:py-12 lg:py-14 border-y border-border">
@@ -44,10 +40,12 @@ const BrandLogosSection = () => {
               rel={brand.website_url ? "noopener noreferrer" : undefined}
               className="grayscale opacity-60 hover:grayscale-0 hover:opacity-100 transition-all duration-300"
             >
-              <img
+              <SmartImage
                 src={brand.logo_url}
                 alt={`${brand.name} logo`}
                 className="h-8 md:h-10 w-auto object-contain"
+                width={160}
+                height={40}
                 loading="lazy"
               />
             </a>

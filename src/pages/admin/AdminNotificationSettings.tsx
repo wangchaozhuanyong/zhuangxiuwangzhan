@@ -1,4 +1,5 @@
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
+import { useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -6,23 +7,12 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Switch } from "@/components/ui/switch";
 import { useToast } from "@/hooks/use-toast";
 import { isSupabaseConfigured, supabase } from "@/lib/supabase";
-import AdminLayout from "./AdminLayout";
+import type { NotificationSettings } from "@/lib/adminEditorData";
+import { useAdminNotificationSettings } from "@/lib/adminQueries";
 
 const isZhBrowser = () => typeof navigator !== "undefined" && navigator.language.toLowerCase().startsWith("zh");
 
-type Settings = {
-  telegram_enabled: boolean;
-  telegram_bot_token_masked: string;
-  has_telegram_bot_token: boolean;
-  telegram_chat_id: string;
-  maintenance_reminders_enabled: boolean;
-  maintenance_reminder_day: string;
-  maintenance_reminder_time: string;
-  maintenance_timezone: string;
-  maintenance_last_sent_at: string | null;
-};
-
-const emptySettings: Settings = {
+const emptySettings: NotificationSettings = {
   telegram_enabled: false,
   telegram_bot_token_masked: "",
   has_telegram_bot_token: false,
@@ -117,9 +107,11 @@ const copy = {
 
 const AdminNotificationSettings = () => {
   const { toast } = useToast();
+  const queryClient = useQueryClient();
+  const { data: remoteSettings, isLoading, error, refetch } = useAdminNotificationSettings();
   const lang = "zh";
   const t = copy[lang];
-  const [settings, setSettings] = useState<Settings>(emptySettings);
+  const [settings, setSettings] = useState<NotificationSettings>(emptySettings);
   const [botToken, setBotToken] = useState("");
   const [chatId, setChatId] = useState("");
   const [enabled, setEnabled] = useState(false);
@@ -128,25 +120,18 @@ const AdminNotificationSettings = () => {
   const [maintenanceTime, setMaintenanceTime] = useState("09:00");
   const [maintenanceTimezone, setMaintenanceTimezone] = useState("Asia/Kuala_Lumpur");
   const [includeMonthly, setIncludeMonthly] = useState(false);
-  const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [testing, setTesting] = useState(false);
   const [testingMaintenance, setTestingMaintenance] = useState(false);
 
-  const loadSettings = useCallback(async () => {
-    if (!isSupabaseConfigured) return;
-    setLoading(true);
-    const { data, error } = await supabase!.functions.invoke("notification-settings", {
-      body: { action: "get" },
-    });
-
+  useEffect(() => {
     if (error) {
-      toast({ title: t.loadFailed, description: error.message, variant: "destructive" });
-      setLoading(false);
-      return;
+      toast({ title: t.loadFailed, description: error instanceof Error ? error.message : String(error), variant: "destructive" });
     }
+  }, [error, toast, t.loadFailed]);
 
-    const nextSettings = data.settings || emptySettings;
+  useEffect(() => {
+    const nextSettings = remoteSettings || emptySettings;
     setSettings(nextSettings);
     setEnabled(Boolean(nextSettings.telegram_enabled));
     setChatId(nextSettings.telegram_chat_id || "");
@@ -155,12 +140,9 @@ const AdminNotificationSettings = () => {
     setMaintenanceTime(nextSettings.maintenance_reminder_time || "09:00");
     setMaintenanceTimezone(nextSettings.maintenance_timezone || "Asia/Kuala_Lumpur");
     setBotToken("");
-    setLoading(false);
-  }, [toast, t.loadFailed]);
+  }, [remoteSettings]);
 
-  useEffect(() => {
-    void loadSettings();
-  }, [loadSettings]);
+  const loading = isLoading;
 
   const saveSettings = async () => {
     setSaving(true);
@@ -194,6 +176,8 @@ const AdminNotificationSettings = () => {
     setBotToken("");
     setSaving(false);
     toast({ title: t.saved });
+    void queryClient.invalidateQueries({ queryKey: ["admin", "notification_settings"] });
+    await refetch();
   };
 
   const testTelegram = async () => {
@@ -229,8 +213,7 @@ const AdminNotificationSettings = () => {
   };
 
   return (
-    <AdminLayout>
-      <div className="grid gap-6">
+    <div className="grid gap-6">
         <div className="rounded-xl border border-border bg-card p-6">
           <div className="flex flex-col gap-3 border-b border-border pb-5 md:flex-row md:items-start md:justify-between">
             <div>
@@ -354,7 +337,6 @@ const AdminNotificationSettings = () => {
           </div>
         </div>
       </div>
-    </AdminLayout>
   );
 };
 

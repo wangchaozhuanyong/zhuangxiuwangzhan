@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useLanguage } from "@/i18n/LanguageContext";
-import { getPublishedHeroSlides } from "@/lib/contentApi";
+import { usePublishedHeroSlides } from "@/hooks/usePublishedContent";
 
 const heroCopy = {
   en: {
@@ -21,12 +21,9 @@ const heroCopy = {
 const HeroSection = () => {
   const { language } = useLanguage();
   const copy = heroCopy[language];
-  const [slide, setSlide] = useState<any>(null);
+  const { data: slides } = usePublishedHeroSlides(language);
+  const slide = slides?.[0] ?? null;
   const [reduceMotion, setReduceMotion] = useState(false);
-
-  useEffect(() => {
-    void getPublishedHeroSlides(language).then((slides) => setSlide(slides[0] || null));
-  }, [language]);
 
   useEffect(() => {
     const mediaQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
@@ -47,7 +44,7 @@ const HeroSection = () => {
       <div className="absolute inset-0" aria-hidden="true">
         <video
           className="h-full w-full object-cover"
-          poster="/videos/home-hero-poster.jpg?v=20260526-hq"
+          poster="/videos/home-hero-poster.webp?v=20260526-hq"
           autoPlay={!reduceMotion}
           muted
           loop={!reduceMotion}

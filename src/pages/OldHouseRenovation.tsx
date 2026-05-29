@@ -3,15 +3,16 @@ import { Button } from "@/components/ui/button";
 import { ArrowRight, CheckCircle, AlertTriangle, Wrench, Droplets, Home } from "lucide-react";
 import WhatsAppIcon from "@/components/WhatsAppIcon";
 import Reveal from "@/components/Reveal";
+import SmartImage from "@/components/SmartImage";
 import PageMeta from "@/components/PageMeta";
 import { JsonLdBreadcrumb } from "@/components/JsonLd";
 import FAQSection from "@/components/blocks/FAQSection";
 import CTABanner from "@/components/blocks/CTABanner";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { useSiteSettings } from "@/hooks/useSiteSettings";
-import heroImg from "@/assets/old-house-hero.jpg";
-import beforeAfterImg from "@/assets/old-house-before-after.jpg";
-import oldHouseServiceImg from "@/assets/services/old-house-renovation.jpg";
+import heroImg from "@/assets/old-house-hero.webp";
+import beforeAfterImg from "@/assets/old-house-before-after.webp";
+import oldHouseServiceImg from "@/assets/services/old-house-renovation.webp";
 
 const content = {
   en: {
@@ -142,7 +143,7 @@ const OldHouseRenovation = () => {
 
       <section className="relative min-h-[54vh] flex items-center overflow-hidden">
         <div className="absolute inset-0">
-          <img src={heroImg} alt={t.heroAlt} className="w-full h-full object-cover" width={1920} height={720} fetchPriority="high" />
+          <SmartImage src={heroImg} alt={t.heroAlt} className="w-full h-full object-cover" width={1920} height={720} loading="eager" fetchPriority="high" />
           <div className="absolute inset-0 bg-gradient-to-r from-black/60 via-black/30 to-transparent" />
         </div>
         <div className="relative z-10 container-narrow px-5 md:px-8 py-20 md:py-32">
@@ -173,7 +174,7 @@ const OldHouseRenovation = () => {
             </div>
           </Reveal>
           <Reveal direction="right" delay={120}>
-            <img src={beforeAfterImg} alt={language === "zh" ? "旧屋翻新前后对比" : "Before and after old house renovation"} loading="lazy" width={1280} height={640} className="w-full object-cover rounded-lg" />
+            <SmartImage src={beforeAfterImg} alt={language === "zh" ? "旧屋翻新前后对比" : "Before and after old house renovation"} loading="lazy" width={1280} height={640} className="w-full object-cover rounded-lg" />
           </Reveal>
         </div>
       </section>
@@ -203,7 +204,7 @@ const OldHouseRenovation = () => {
       <section className="section-padding bg-background">
         <div className="container-narrow grid grid-cols-1 lg:grid-cols-2 gap-10 items-center">
           <Reveal direction="left">
-            <img src={oldHouseServiceImg} alt={language === "zh" ? "旧屋翻新施工现场" : "Old house renovation in progress"} loading="lazy" width={960} height={720} className="w-full object-cover aspect-[4/3] rounded-lg" />
+            <SmartImage src={oldHouseServiceImg} alt={language === "zh" ? "旧屋翻新施工现场" : "Old house renovation in progress"} loading="lazy" width={960} height={720} className="w-full object-cover aspect-[4/3] rounded-lg" />
           </Reveal>
           <Reveal direction="right" delay={120}>
             <div>

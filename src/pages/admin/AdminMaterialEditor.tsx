@@ -1,16 +1,18 @@
 import { FormEvent, useCallback, useEffect, useMemo, useState } from "react";
+import { useQueryClient } from "@tanstack/react-query";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { isSupabaseConfigured, supabase } from "@/lib/supabase";
 import { toast } from "@/hooks/use-toast";
-import AdminLayout from "./AdminLayout";
 import AdminStickyActionBar from "@/components/admin/AdminStickyActionBar";
 import AdminPageHeader from "@/components/admin/AdminPageHeader";
 import AdminFormSection from "@/components/admin/AdminFormSection";
 import AdminEmptyState from "@/components/admin/AdminEmptyState";
 import ImageField from "@/components/admin/ImageField";
+import { invalidateAdminContentDetail, invalidateAfterAdminContentSave } from "@/lib/adminInvalidate";
+import { useAdminMaterialDetail } from "@/lib/adminQueries";
 
 type MaterialRecord = {
   id?: string;
@@ -101,51 +103,45 @@ const parseLines = (value: string) => value.split("\n").map((s) => s.trim()).fil
 const formatLines = (value?: string[] | null) => (value || []).join("\n");
 
 export default function AdminMaterialEditor() {
+  const queryClient = useQueryClient();
   const navigate = useNavigate();
   const { id } = useParams<{ id: string }>();
   const isNew = id === "new";
   const [record, setRecord] = useState<MaterialRecord>(empty);
-  const [loading, setLoading] = useState(false);
   const [showEnglish, setShowEnglish] = useState(false);
   const [slugChecking, setSlugChecking] = useState(false);
   const [slugError, setSlugError] = useState<string>("");
   const [saveBusy, setSaveBusy] = useState(false);
 
+  const { data: loaded, isLoading, isError, error: loadError } = useAdminMaterialDetail(isNew ? undefined : id);
+
   useEffect(() => {
-    if (!isSupabaseConfigured) return;
     if (isNew) {
       setRecord(empty);
       return;
     }
-    if (!id) return;
-    setLoading(true);
-    void supabase!
-      .from("materials")
-      .select("*")
-      .eq("id", id)
-      .single()
-      .then(({ data, error }) => {
-        setLoading(false);
-        if (error) {
-          toast({ title: "加载失败", description: error.message, variant: "destructive" });
-          return;
-        }
-        setRecord({
-          ...empty,
-          ...(data as any),
-          suitable_spaces_zh: (data as any).suitable_spaces_zh || [],
-          suitable_spaces_en: (data as any).suitable_spaces_en || [],
-          pros_zh: (data as any).pros_zh || [],
-          pros_en: (data as any).pros_en || [],
-          cons_zh: (data as any).cons_zh || [],
-          cons_en: (data as any).cons_en || [],
-          recommended_pairing_zh: (data as any).recommended_pairing_zh || "",
-          recommended_pairing_en: (data as any).recommended_pairing_en || "",
-          note_zh: (data as any).note_zh || "",
-          note_en: (data as any).note_en || "",
-        });
-      });
-  }, [id, isNew]);
+    if (!loaded) return;
+    setRecord({
+      ...empty,
+      ...(loaded as any),
+      suitable_spaces_zh: (loaded as any).suitable_spaces_zh || [],
+      suitable_spaces_en: (loaded as any).suitable_spaces_en || [],
+      pros_zh: (loaded as any).pros_zh || [],
+      pros_en: (loaded as any).pros_en || [],
+      cons_zh: (loaded as any).cons_zh || [],
+      cons_en: (loaded as any).cons_en || [],
+      recommended_pairing_zh: (loaded as any).recommended_pairing_zh || "",
+      recommended_pairing_en: (loaded as any).recommended_pairing_en || "",
+      note_zh: (loaded as any).note_zh || "",
+      note_en: (loaded as any).note_en || "",
+    });
+  }, [isNew, loaded, id]);
+
+  useEffect(() => {
+    if (!isError || !loadError) return;
+    const message = loadError instanceof Error ? loadError.message : String(loadError);
+    toast({ title: "加载失败", description: message, variant: "destructive" });
+  }, [isError, loadError]);
 
   const checkSlugUnique = useCallback(
     async (slug: string) => {
@@ -226,6 +222,7 @@ export default function AdminMaterialEditor() {
     const savedId = (data as any)?.id;
     setRecord((r) => ({ ...r, id: savedId, slug, status: payload.status }));
     toast({ title: "已保存" });
+    void invalidateAfterAdminContentSave(queryClient);
 
     if (isNew) navigate(`/admin/materials/${savedId}`, { replace: true });
 
@@ -237,21 +234,18 @@ export default function AdminMaterialEditor() {
         toast({ title: "已保存，但生成英文失败", description: translationError.message, variant: "destructive" });
       } else {
         toast({ title: "已保存，并已发起英文生成" });
+        void invalidateAdminContentDetail(queryClient, "materials", savedId);
       }
     }
   };
 
   if (!isSupabaseConfigured) {
-    return (
-      <AdminLayout>
-        <AdminEmptyState title="Supabase 未配置" description="配置完成后才能使用材料后台编辑器。" />
-      </AdminLayout>
-    );
+    return <AdminEmptyState title="Supabase 未配置" description="配置完成后才能使用材料后台编辑器。" />;
   }
 
   return (
-    <AdminLayout>
-      <AdminStickyActionBar
+    <>
+    <AdminStickyActionBar
         left={
           <>
             <Button asChild variant="outline">
@@ -271,13 +265,13 @@ export default function AdminMaterialEditor() {
                 </a>
               </Button>
             )}
-            <Button type="button" variant="outline" onClick={() => void save("draft")} disabled={saveBusy || loading}>
+            <Button type="button" variant="outline" onClick={() => void save("draft")} disabled={saveBusy || isLoading}>
               保存草稿
             </Button>
-            <Button type="button" onClick={() => void save("published")} disabled={saveBusy || loading}>
+            <Button type="button" onClick={() => void save("published")} disabled={saveBusy || isLoading}>
               发布
             </Button>
-            <Button type="button" variant="outline" onClick={() => void save(undefined, true)} disabled={saveBusy || loading || !record.id}>
+            <Button type="button" variant="outline" onClick={() => void save(undefined, true)} disabled={saveBusy || isLoading || !record.id}>
               保存并生成英文
             </Button>
           </>
@@ -525,7 +519,7 @@ export default function AdminMaterialEditor() {
 
         <div className="pb-10" />
       </form>
-    </AdminLayout>
+    </>
   );
 }
 

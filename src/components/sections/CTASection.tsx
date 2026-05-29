@@ -6,8 +6,7 @@ import Reveal from "@/components/Reveal";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { useT } from "@/i18n/useT";
 import { useSiteSettings } from "@/hooks/useSiteSettings";
-import { useEffect, useState } from "react";
-import { getPublishedCtaBlock } from "@/lib/homeContentApi";
+import { usePublishedCtaBlock } from "@/hooks/usePublishedContent";
 
 const copy = {
   en: {
@@ -26,28 +25,15 @@ const CTASection = () => {
   const t = useT();
   const settings = useSiteSettings();
   const content = copy[language];
-  const [dynamic, setDynamic] = useState<{ title?: string; description?: string; primary_label?: string; primary_url?: string } | null>(null);
-
-  useEffect(() => {
-    let active = true;
-    setDynamic(null);
-    void getPublishedCtaBlock(language, "home_final").then((block) => {
-      if (!active) return;
-      if (!block) {
-        setDynamic({});
-        return;
+  const { data: ctaBlock } = usePublishedCtaBlock(language, "home_final");
+  const dynamic = ctaBlock
+    ? {
+        title: ctaBlock.title,
+        description: ctaBlock.description,
+        primary_label: ctaBlock.primary_label,
+        primary_url: ctaBlock.primary_url,
       }
-      setDynamic({
-        title: block.title,
-        description: block.description,
-        primary_label: block.primary_label,
-        primary_url: block.primary_url,
-      });
-    });
-    return () => {
-      active = false;
-    };
-  }, [language]);
+    : {};
 
   const title = dynamic?.title || content.title;
   const description = dynamic?.description || content.description;

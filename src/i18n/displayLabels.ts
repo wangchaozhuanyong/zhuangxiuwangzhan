@@ -4,6 +4,11 @@ type LabelPair = { en: string; zh: string };
 
 const normalizeKey = (value: string) => value.trim().toLowerCase();
 
+const humanize = (value: string) =>
+  value
+    .replace(/_/g, " ")
+    .replace(/\b\w/g, (char) => char.toUpperCase());
+
 const projectTypeLabels: Record<string, LabelPair> = {
   residential: { en: "Residential", zh: "住宅" },
   commercial: { en: "Commercial", zh: "商业" },

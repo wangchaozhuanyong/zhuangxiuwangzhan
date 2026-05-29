@@ -1,53 +1,19 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { isSupabaseConfigured, supabase } from "@/lib/supabase";
-import AdminLayout from "./AdminLayout";
+import { isSupabaseConfigured } from "@/lib/supabase";
+import { useAdminServices, type AdminServiceRow } from "@/lib/adminQueries";
 import AdminPageHeader from "@/components/admin/AdminPageHeader";
 import AdminDataTable, { type AdminDataTableColumn } from "@/components/admin/AdminDataTable";
 import AdminStatusBadge from "@/components/admin/AdminStatusBadge";
 import AdminEmptyState from "@/components/admin/AdminEmptyState";
 
-type ServiceRow = {
-  id: string;
-  title_zh: string | null;
-  title_en: string | null;
-  slug: string;
-  status: string | null;
-  sort_order: number | null;
-  updated_at?: string | null;
-  created_at?: string | null;
-};
-
 export default function AdminServiceList() {
-  const [rows, setRows] = useState<ServiceRow[]>([]);
+  const { data: rows = [], error, isFetching, refetch } = useAdminServices();
   const [status, setStatus] = useState<string>("all");
   const [search, setSearch] = useState("");
-  const [error, setError] = useState("");
-  const [loading, setLoading] = useState(false);
-
-  const load = useCallback(async () => {
-    if (!isSupabaseConfigured) return;
-    setLoading(true);
-    setError("");
-    const { data, error } = await supabase!
-      .from("services")
-      .select("id,title_zh,title_en,slug,status,sort_order,updated_at,created_at")
-      .order("sort_order", { ascending: true })
-      .order("updated_at", { ascending: false })
-      .limit(500);
-    setLoading(false);
-    if (error) {
-      setError(error.message);
-      return;
-    }
-    setRows((data || []) as ServiceRow[]);
-  }, []);
-
-  useEffect(() => {
-    void load();
-  }, [load]);
+  const errorMessage = error instanceof Error ? error.message : error ? String(error) : "";
 
   const filtered = useMemo(() => {
     const q = search.trim().toLowerCase();
@@ -60,7 +26,7 @@ export default function AdminServiceList() {
     });
   }, [rows, search, status]);
 
-  const columns: AdminDataTableColumn<ServiceRow>[] = [
+  const columns: AdminDataTableColumn<AdminServiceRow>[] = [
     {
       key: "title",
       header: "服务",
@@ -98,14 +64,14 @@ export default function AdminServiceList() {
   ];
 
   return (
-    <AdminLayout>
-      <AdminPageHeader
+    <>
+    <AdminPageHeader
         title="服务项目"
         description="管理服务列表与服务详情内容。保存后前台服务列表与详情会同步更新。"
         actions={
           <div className="flex flex-wrap gap-2">
-            <Button variant="outline" onClick={load} disabled={!isSupabaseConfigured || loading}>
-              {loading ? "刷新中..." : "刷新"}
+            <Button variant="outline" onClick={() => void refetch()} disabled={!isSupabaseConfigured || isFetching}>
+              {isFetching ? "刷新中..." : "刷新"}
             </Button>
             <Button asChild>
               <Link to="/admin/services/new">新建服务</Link>
@@ -128,7 +94,7 @@ export default function AdminServiceList() {
         </select>
       </div>
 
-      {error && <div className="mb-4 rounded-lg bg-muted p-3 text-sm">{error}</div>}
+      {errorMessage && <div className="mb-4 rounded-lg bg-muted p-3 text-sm">{errorMessage}</div>}
 
       <AdminDataTable
         columns={columns}
@@ -146,7 +112,6 @@ export default function AdminServiceList() {
           />
         }
       />
-    </AdminLayout>
+    </>
   );
 }
-

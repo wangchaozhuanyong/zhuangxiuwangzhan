@@ -6,12 +6,13 @@ import { Textarea } from "@/components/ui/textarea";
 import { MapPin, Phone, Mail, Clock, ArrowRight, CheckCircle, Loader2, AlertCircle } from "lucide-react";
 import WhatsAppIcon from "@/components/WhatsAppIcon";
 import Reveal from "@/components/Reveal";
+import SmartImage from "@/components/SmartImage";
 import PageMeta from "@/components/PageMeta";
 import { JsonLdBreadcrumb } from "@/components/JsonLd";
 import { submitContactLead } from "@/lib/leadApi";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { useSiteSettings } from "@/hooks/useSiteSettings";
-import heroImg from "@/assets/hero-contact.jpg";
+import heroImg from "@/assets/hero-contact.webp";
 
 const serviceItems = {
   en: [
@@ -242,7 +243,7 @@ const Contact = () => {
 
       <section className="relative min-h-[45vh] flex items-center overflow-hidden">
         <div className="absolute inset-0">
-          <img src={heroImg} alt={t.heroAlt} className="w-full h-full object-cover" width={1920} height={800} />
+          <SmartImage src={heroImg} alt={t.heroAlt} className="w-full h-full object-cover" width={1920} height={800} loading="eager" fetchPriority="high" />
           <div className="absolute inset-0 media-readable-overlay" />
         </div>
         <div className="relative z-10 container-narrow px-5 md:px-8 py-20 md:py-28">

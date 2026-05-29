@@ -1,4 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
+import { useQueryClient } from "@tanstack/react-query";
+import { invalidateAdminContentLists, invalidatePublishedContent } from "@/lib/adminInvalidate";
+import { useAdminEditorRows } from "@/lib/adminQueries";
 import { useParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -13,7 +16,6 @@ import {
 import type { Language } from "@/i18n/routes";
 import { isSupabaseConfigured, supabase } from "@/lib/supabase";
 import AdminImageUpload from "./AdminImageUpload";
-import AdminLayout from "./AdminLayout";
 import AdminProjectImages from "./AdminProjectImages";
 
 const editableTables = new Set([
@@ -456,17 +458,25 @@ const statusOptions: Record<string, string[]> = {
   default: ["draft", "published", "archived"],
 };
 
+const listContentTables = new Set(["services", "projects", "materials", "blog_posts"]);
+
 const AdminContentEditor = () => {
   const { type = "projects", id } = useParams<{ type: string; id?: string }>();
+  const queryClient = useQueryClient();
   const lang: Language = "zh";
   const t = copy[lang];
-  const [rows, setRows] = useState<any[]>([]);
   const [record, setRecord] = useState<Record<string, any>>({});
   const [status, setStatus] = useState("");
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
-  const [isLoading, setIsLoading] = useState(false);
   const canEdit = editableTables.has(type);
+  const { data: rows = [], isFetching, error: rowsError, refetch } = useAdminEditorRows(type, canEdit);
+  const isLoading = isFetching;
+
+  const refreshContentCaches = useCallback(() => {
+    void invalidatePublishedContent(queryClient);
+    if (listContentTables.has(type)) void invalidateAdminContentLists(queryClient);
+  }, [queryClient, type]);
 
   const visibleFields = useMemo(() => tableFields[type] || [...contentFields, ...englishFields, "slug", "status", "sort_order"], [type]);
   const availableStatuses = statusOptions[type] || statusOptions.default;
@@ -483,30 +493,17 @@ const AdminContentEditor = () => {
     });
   }, [rows, search, statusFilter, visibleFields]);
 
-  const loadRows = useCallback(async () => {
-    if (!isSupabaseConfigured || !canEdit) return;
-
-    setIsLoading(true);
-    const query = supabase!.from(type).select("*").order("created_at", { ascending: false }).limit(50);
-    const { data, error } = await query;
-    setIsLoading(false);
-
-    if (error) {
-      setStatus(error.message);
+  useEffect(() => {
+    if (rowsError) {
+      setStatus(rowsError instanceof Error ? rowsError.message : String(rowsError));
       return;
     }
-
-    setRows(data || []);
-    if (id && data) {
-      setRecord(data.find((item) => item.id === id) || {});
-    } else {
+    if (id && rows.length) {
+      setRecord(rows.find((item) => item.id === id) || {});
+    } else if (!id) {
       setRecord({});
     }
-  }, [canEdit, id, type]);
-
-  useEffect(() => {
-    void loadRows();
-  }, [loadRows]);
+  }, [id, rows, rowsError]);
 
   const save = async () => {
     setStatus(t.saving);
@@ -546,12 +543,15 @@ const AdminContentEditor = () => {
       const { data: translatedRecord } = await supabase!.from(type).select("*").eq("id", data.id).single();
       if (translatedRecord) setRecord(translatedRecord);
       setStatus(t.generated);
-      await loadRows();
+      refreshContentCaches();
+      await refetch();
       return;
     }
 
     setStatus(t.saved);
-    await loadRows();
+    refreshContentCaches();
+    void queryClient.invalidateQueries({ queryKey: ["admin", type, "rows"] });
+    await refetch();
   };
 
   const regenerateEnglish = async () => {
@@ -570,21 +570,22 @@ const AdminContentEditor = () => {
       return;
     }
 
+    const { data: translatedRecord } = await supabase!.from(type).select("*").eq("id", record.id).single();
+    if (translatedRecord) setRecord(translatedRecord);
     setStatus(t.regenerated);
-    await loadRows();
+    refreshContentCaches();
+    void queryClient.invalidateQueries({ queryKey: ["admin", type, "rows"] });
+    await refetch();
   };
 
   if (!canEdit) {
     return (
-      <AdminLayout>
-        <div className="rounded-xl border border-border bg-card p-6">{t.unsupported(type)}</div>
-      </AdminLayout>
+      <div className="rounded-xl border border-border bg-card p-6">{t.unsupported(type)}</div>
     );
   }
 
   return (
-    <AdminLayout>
-      <div className="grid gap-6 xl:grid-cols-[320px_1fr]">
+    <div className="grid gap-6 xl:grid-cols-[320px_1fr]">
         <div className="rounded-xl border border-border bg-card p-4">
           <h2 className="font-display mb-3 text-lg font-bold">{tableLabels[type]?.[lang] || type}</h2>
           {!readOnlyTables.has(type) && (
@@ -609,7 +610,7 @@ const AdminContentEditor = () => {
                 </option>
               ))}
             </select>
-            <Button className="w-full" variant="outline" onClick={() => void loadRows()} disabled={isLoading || !isSupabaseConfigured}>
+            <Button className="w-full" variant="outline" onClick={() => void refetch()} disabled={isLoading || !isSupabaseConfigured}>
               {isLoading ? t.refreshing : t.refresh}
             </Button>
           </div>
@@ -671,7 +672,6 @@ const AdminContentEditor = () => {
           {type === "projects" && <AdminProjectImages projectId={record.id} />}
         </div>
       </div>
-    </AdminLayout>
   );
 };
 

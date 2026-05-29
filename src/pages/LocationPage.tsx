@@ -1,10 +1,11 @@
-import { useEffect, useState } from "react";
+import { useMemo } from "react";
 import { useParams } from "react-router-dom";
 import Link from "@/components/LocalizedLink";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, CheckCircle } from "lucide-react";
 import WhatsAppIcon from "@/components/WhatsAppIcon";
 import Reveal from "@/components/Reveal";
+import SmartImage from "@/components/SmartImage";
 import PageMeta from "@/components/PageMeta";
 import { JsonLdBreadcrumb } from "@/components/JsonLd";
 import CTABanner from "@/components/blocks/CTABanner";
@@ -12,7 +13,7 @@ import FAQSection from "@/components/blocks/FAQSection";
 import SectionHeader from "@/components/blocks/SectionHeader";
 import { locationsData } from "@/data/locations";
 import { servicesData } from "@/data/services";
-import { getPublishedServiceAreaBySlug } from "@/lib/contentApi";
+import { usePublishedServiceAreaBySlug } from "@/hooks/usePublishedContent";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { withLanguagePrefix } from "@/i18n/routes";
 import { siteConfig } from "@/config/site";
@@ -89,12 +90,9 @@ const LocationPage = () => {
   const { language } = useLanguage();
   const settings = useSiteSettings();
   const t = copy[language];
-  const [location, setLocation] = useState(locationsData[slug || ""]);
-
-  useEffect(() => {
-    if (!slug) return;
-    void getPublishedServiceAreaBySlug(slug, language).then(setLocation);
-  }, [slug, language]);
+  const fallbackLocation = slug ? locationsData[slug] : undefined;
+  const { data: cmsLocation } = usePublishedServiceAreaBySlug(slug, language);
+  const location = useMemo(() => cmsLocation ?? fallbackLocation, [cmsLocation, fallbackLocation]);
 
   const servicesList = servicesData.map((service) => ({
     name: serviceNameMap[service.slug]?.[language] || translateDisplayText(service.title, language),
@@ -256,7 +254,7 @@ const LocationPage = () => {
                     <Reveal key={project.title} delay={index * 80}>
                       <div className="rounded-lg overflow-hidden border border-border bg-card hover-lift">
                         <div className="aspect-[4/3] overflow-hidden">
-                      <img src={project.image} alt={displayText(project.title)} loading="lazy" width={600} height={450} className="w-full h-full object-cover" />
+                      <SmartImage src={project.image} alt={displayText(project.title)} loading="lazy" width={600} height={450} className="w-full h-full object-cover" />
                     </div>
                     <div className="p-4">
                       <span className="text-accent text-[10px] font-bold uppercase tracking-widest bg-accent/10 px-2 py-0.5 rounded-sm">{translateProjectType(project.type, language)}</span>

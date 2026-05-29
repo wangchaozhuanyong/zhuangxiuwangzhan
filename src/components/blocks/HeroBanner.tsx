@@ -3,6 +3,7 @@
  */
 
 import Reveal from "@/components/Reveal";
+import SmartImage from "@/components/SmartImage";
 
 interface HeroBannerProps {
   image: string;
@@ -16,11 +17,12 @@ const HeroBanner = ({ image, imageAlt, label, title, description }: HeroBannerPr
   return (
     <section className="relative min-h-[45vh] flex items-center overflow-hidden">
       <div className="absolute inset-0">
-        <img
+        <SmartImage
           src={image}
           alt={imageAlt}
           className="w-full h-full object-cover"
           loading="eager"
+          fetchPriority="high"
           width={1920}
           height={800}
         />

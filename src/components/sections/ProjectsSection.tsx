@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useMemo } from "react";
 import Link from "@/components/LocalizedLink";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, MapPin } from "lucide-react";
@@ -6,7 +6,7 @@ import Reveal from "@/components/Reveal";
 import SmartImage from "@/components/SmartImage";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { useT } from "@/i18n/useT";
-import { getPublishedProjects } from "@/lib/contentApi";
+import { usePublishedProjects } from "@/hooks/usePublishedContent";
 import { translateDisplayText } from "@/i18n/displayLabels";
 
 type FeaturedProject = {
@@ -65,19 +65,8 @@ const ProjectsSection = () => {
   const { language } = useLanguage();
   const t = useT();
   const copy = sectionCopy[language];
-  const [featured, setFeatured] = useState<FeaturedProject[]>([]);
-
-  useEffect(() => {
-    let active = true;
-    void getPublishedProjects(language).then((projects) => {
-      if (!active) return;
-      setFeatured(projects.slice(0, 6));
-    });
-
-    return () => {
-      active = false;
-    };
-  }, [language]);
+  const { data: projects = [] } = usePublishedProjects(language);
+  const featured = useMemo(() => projects.slice(0, 6) as FeaturedProject[], [projects]);
 
   return (
     <section className="section-padding bg-surface-dark" id="projects">

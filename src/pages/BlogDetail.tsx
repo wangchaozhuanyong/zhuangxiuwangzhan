@@ -1,13 +1,14 @@
-import { useEffect, useState } from "react";
+import { useMemo } from "react";
 import { useParams } from "react-router-dom";
 import Link from "@/components/LocalizedLink";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, Clock, ArrowRight } from "lucide-react";
 import WhatsAppIcon from "@/components/WhatsAppIcon";
 import { blogPosts } from "@/data/blog";
-import { getPublishedBlogPostBySlug, getPublishedBlogPosts } from "@/lib/contentApi";
+import { usePublishedBlogPostBySlug, usePublishedBlogPosts } from "@/hooks/usePublishedContent";
 import { useLanguage } from "@/i18n/LanguageContext";
 import PageMeta from "@/components/PageMeta";
+import SmartImage from "@/components/SmartImage";
 import { JsonLdBreadcrumb } from "@/components/JsonLd";
 import { useSiteSettings } from "@/hooks/useSiteSettings";
 import { isHtmlText } from "@/lib/text";
@@ -86,14 +87,16 @@ const BlogDetail = () => {
         content: displayText(item.content),
       }))
     : blogPosts;
-  const [post, setPost] = useState(initialPosts.find((item) => item.slug === slug));
-  const [otherPosts, setOtherPosts] = useState(initialPosts.filter((item) => item.slug !== slug).slice(0, 3));
-
-  useEffect(() => {
-    if (!slug) return;
-    void getPublishedBlogPostBySlug(slug, language).then(setPost);
-    void getPublishedBlogPosts(language).then((posts) => setOtherPosts(posts.filter((item) => item.slug !== slug).slice(0, 3)));
-  }, [slug, language]);
+  const { data: cmsPost } = usePublishedBlogPostBySlug(slug, language);
+  const { data: cmsPosts } = usePublishedBlogPosts(language);
+  const post = useMemo(
+    () => cmsPost ?? initialPosts.find((item) => item.slug === slug),
+    [cmsPost, initialPosts, slug],
+  );
+  const otherPosts = useMemo(() => {
+    const source = cmsPosts?.length ? cmsPosts : initialPosts;
+    return source.filter((item) => item.slug !== slug).slice(0, 3);
+  }, [cmsPosts, initialPosts, slug]);
 
   if (!post) {
     return (
@@ -178,7 +181,7 @@ const BlogDetail = () => {
       </section>
 
       <div className="container-narrow max-w-3xl px-4 md:px-8 -mt-4">
-        <img src={post.image} alt={displayText(post.title)} className="w-full rounded-lg aspect-[2/1] object-cover" />
+        <SmartImage src={post.image} alt={displayText(post.title)} className="w-full rounded-lg aspect-[2/1] object-cover" width={1200} height={600} loading="eager" />
       </div>
 
       <section className="section-padding bg-background">
@@ -231,7 +234,7 @@ const BlogDetail = () => {
             {otherPosts.map((item) => (
               <Link key={item.id} to={`/blog/${item.slug}`} className="group rounded-lg overflow-hidden bg-card border border-border hover-lift">
                 <div className="aspect-[16/10] overflow-hidden">
-                  <img src={item.image} alt={item.title} loading="lazy" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+                  <SmartImage src={item.image} alt={item.title} loading="lazy" width={400} height={300} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
                 </div>
                 <div className="p-4">
                   <span className="text-accent text-xs font-medium">{item.category}</span>

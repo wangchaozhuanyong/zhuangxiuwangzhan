@@ -1,30 +1,28 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { isSupabaseConfigured, supabase } from "@/lib/supabase";
+import {
+  type AdminMediaAsset,
+  useAdminMediaAssets,
+  useCreateAdminMediaAsset,
+  useDeleteAdminMediaAsset,
+  useUpdateAdminMediaAsset,
+} from "@/lib/adminQueries";
+import SmartImage from "@/components/SmartImage";
 import AdminImageUpload from "./AdminImageUpload";
-import AdminLayout from "./AdminLayout";
 
 const usageTypes = ["all", "hero", "project", "material", "blog", "logo", "og", "before_after", "general"];
 
 const AdminMediaLibrary = () => {
-  const [assets, setAssets] = useState<any[]>([]);
+  const { data: assets = [], error } = useAdminMediaAssets();
   const [usageType, setUsageType] = useState("all");
   const [search, setSearch] = useState("");
-  const [editing, setEditing] = useState<Record<string, any> | null>(null);
+  const [editing, setEditing] = useState<AdminMediaAsset | null>(null);
   const [message, setMessage] = useState("");
-
-  const loadAssets = useCallback(async () => {
-    if (!isSupabaseConfigured) return;
-    const { data, error } = await supabase!.from("media_assets").select("*").order("created_at", { ascending: false }).limit(200);
-    if (error) setMessage(error.message);
-    else setAssets(data || []);
-  }, []);
-
-  useEffect(() => {
-    void loadAssets();
-  }, [loadAssets]);
+  const createMutation = useCreateAdminMediaAsset();
+  const updateMutation = useUpdateAdminMediaAsset();
+  const deleteMutation = useDeleteAdminMediaAsset();
 
   const filtered = useMemo(() => {
     const query = search.trim().toLowerCase();
@@ -36,50 +34,46 @@ const AdminMediaLibrary = () => {
   }, [assets, search, usageType]);
 
   const createAsset = async (url: string) => {
-    const { data: userData } = await supabase!.auth.getUser();
-    const fileName = url.split("/").pop() || "image";
-    const { error } = await supabase!.from("media_assets").insert({
-      file_url: url,
-      file_name: fileName,
-      usage_type: "general",
-      folder: "media",
-      created_by: userData.user?.id || null,
-    });
-    if (error) setMessage(error.message);
-    else await loadAssets();
+    setMessage("");
+    try {
+      await createMutation.mutateAsync({ url });
+    } catch (e) {
+      setMessage(e instanceof Error ? e.message : "创建媒体记录失败");
+    }
   };
 
   const saveAsset = async () => {
     if (!editing) return;
-    const { error } = await supabase!.from("media_assets").update({
-      alt_zh: editing.alt_zh || null,
-      alt_en: editing.alt_en || null,
-      usage_type: editing.usage_type || null,
-      folder: editing.folder || null,
-    }).eq("id", editing.id);
-    if (error) setMessage(error.message);
-    else {
+    setMessage("");
+    try {
+      await updateMutation.mutateAsync(editing);
       setEditing(null);
-      await loadAssets();
+    } catch (e) {
+      setMessage(e instanceof Error ? e.message : "保存失败");
     }
   };
 
   const deleteAsset = async (id: string) => {
-    const { error } = await supabase!.from("media_assets").delete().eq("id", id);
-    if (error) setMessage(error.message);
-    else await loadAssets();
+    setMessage("");
+    try {
+      await deleteMutation.mutateAsync(id);
+    } catch (e) {
+      setMessage(e instanceof Error ? e.message : "删除失败");
+    }
   };
 
+  const banner = message || (error ? (error as any).message : "");
+
   return (
-    <AdminLayout>
-      <div className="space-y-6">
+    <>
+    <div className="space-y-6">
         <div className="rounded-xl border border-border bg-card p-6">
           <h1 className="font-display text-2xl font-bold">媒体库</h1>
           <p className="mt-2 text-sm text-muted-foreground">上传图片、复制 URL，并管理 alt 文案与用途分类。</p>
           <div className="mt-5">
             <AdminImageUpload folder="media" onUploaded={(url) => void createAsset(url)} />
           </div>
-          {message && <p className="mt-4 rounded-lg bg-muted p-3 text-sm">{message}</p>}
+          {banner && <p className="mt-4 rounded-lg bg-muted p-3 text-sm">{banner}</p>}
         </div>
 
         <div className="rounded-xl border border-border bg-card p-4">
@@ -94,7 +88,13 @@ const AdminMediaLibrary = () => {
         <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
           {filtered.map((asset) => (
             <article key={asset.id} className="overflow-hidden rounded-xl border border-border bg-card">
-              <img src={asset.file_url} alt={asset.alt_zh || asset.alt_en || asset.file_name || "media"} className="h-48 w-full object-cover" />
+              <SmartImage
+                src={asset.file_url}
+                alt={asset.alt_zh || asset.alt_en || asset.file_name || "media"}
+                className="h-48 w-full object-cover"
+                width={640}
+                height={384}
+              />
               <div className="space-y-3 p-4 text-sm">
                 <p className="truncate font-medium">{asset.file_name || asset.file_url}</p>
                 <p className="text-xs text-muted-foreground">{asset.usage_type || "general"} · {asset.folder || "-"}</p>
@@ -127,8 +127,8 @@ const AdminMediaLibrary = () => {
             </div>
           </div>
         )}
-      </div>
-    </AdminLayout>
+    </div>
+  </>
   );
 };
 

@@ -1,8 +1,8 @@
 import Reveal from "@/components/Reveal";
 import { ShieldCheck, Star, Clock, Users } from "lucide-react";
 import { useLanguage } from "@/i18n/LanguageContext";
-import { useEffect, useMemo, useState } from "react";
-import { getPublishedHomeSection } from "@/lib/homeContentApi";
+import { useMemo } from "react";
+import { usePublishedHomeSection } from "@/hooks/usePublishedContent";
 
 const stats = {
   en: [
@@ -30,24 +30,11 @@ const iconMap: Record<string, any> = {
 
 const StatsSection = () => {
   const { language } = useLanguage();
-  const [items, setItems] = useState<any[] | null>(null);
-
-  useEffect(() => {
-    let active = true;
-    setItems(null);
-    void getPublishedHomeSection(language, "stats").then((section) => {
-      if (!active) return;
-      const list = Array.isArray(section?.items) ? section!.items : [];
-      setItems(list.length ? list : []);
-    });
-    return () => {
-      active = false;
-    };
-  }, [language]);
+  const { data: section } = usePublishedHomeSection(language, "stats");
 
   const display = useMemo(() => {
-    if (!items) return stats[language];
-    if (items.length === 0) return stats[language];
+    const items = Array.isArray(section?.items) ? section.items : [];
+    if (!items.length) return stats[language];
     return items.map((item: any) => {
       const key = String(item.icon || "").toLowerCase().replace(/\s+/g, "");
       const Icon = iconMap[key] || Star;
@@ -59,7 +46,7 @@ const StatsSection = () => {
         iconClass: "text-gold",
       };
     });
-  }, [items, language]);
+  }, [section, language]);
 
   return (
     <section className="bg-background py-10 md:py-14 lg:py-16 border-b border-border/70" id="trust">

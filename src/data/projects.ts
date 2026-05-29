@@ -1,21 +1,21 @@
 import { ProjectItem } from "./types";
 
-import proj1Img1 from "@/assets/projects/proj1-condo-1.jpg";
-import proj1Img2 from "@/assets/projects/proj1-condo-2.jpg";
-import proj2Img1 from "@/assets/projects/proj2-office-1.jpg";
-import proj2Img2 from "@/assets/projects/proj2-office-2.jpg";
-import proj3Img1 from "@/assets/projects/proj3-kitchen-1.jpg";
-import proj3Img2 from "@/assets/projects/proj3-kitchen-2.jpg";
-import proj4Img1 from "@/assets/projects/proj4-warehouse-1.jpg";
-import proj4Img2 from "@/assets/projects/proj4-warehouse-2.jpg";
-import proj5Img1 from "@/assets/projects/proj5-shopfront-1.jpg";
-import proj5Img2 from "@/assets/projects/proj5-shopfront-2.jpg";
-import proj6Img1 from "@/assets/projects/proj6-bedroom-1.jpg";
-import proj6Img2 from "@/assets/projects/proj6-bedroom-2.jpg";
-import proj7Img1 from "@/assets/projects/proj7-restaurant-1.jpg";
-import proj7Img2 from "@/assets/projects/proj7-restaurant-2.jpg";
-import proj8Img1 from "@/assets/projects/proj8-homeoffice-1.jpg";
-import proj8Img2 from "@/assets/projects/proj8-homeoffice-2.jpg";
+import proj1Img1 from "@/assets/projects/proj1-condo-1.webp";
+import proj1Img2 from "@/assets/projects/proj1-condo-2.webp";
+import proj2Img1 from "@/assets/projects/proj2-office-1.webp";
+import proj2Img2 from "@/assets/projects/proj2-office-2.webp";
+import proj3Img1 from "@/assets/projects/proj3-kitchen-1.webp";
+import proj3Img2 from "@/assets/projects/proj3-kitchen-2.webp";
+import proj4Img1 from "@/assets/projects/proj4-warehouse-1.webp";
+import proj4Img2 from "@/assets/projects/proj4-warehouse-2.webp";
+import proj5Img1 from "@/assets/projects/proj5-shopfront-1.webp";
+import proj5Img2 from "@/assets/projects/proj5-shopfront-2.webp";
+import proj6Img1 from "@/assets/projects/proj6-bedroom-1.webp";
+import proj6Img2 from "@/assets/projects/proj6-bedroom-2.webp";
+import proj7Img1 from "@/assets/projects/proj7-restaurant-1.webp";
+import proj7Img2 from "@/assets/projects/proj7-restaurant-2.webp";
+import proj8Img1 from "@/assets/projects/proj8-homeoffice-1.webp";
+import proj8Img2 from "@/assets/projects/proj8-homeoffice-2.webp";
 
 export const projectsData: ProjectItem[] = [
   {

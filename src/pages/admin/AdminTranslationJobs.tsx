@@ -1,23 +1,10 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { translateStatusLabel } from "@/i18n/displayLabels";
 import type { Language } from "@/i18n/routes";
-import { isSupabaseConfigured, supabase } from "@/lib/supabase";
-import AdminLayout from "./AdminLayout";
-
-type TranslationJob = {
-  id: string;
-  table_name: string | null;
-  record_id: string | null;
-  status: string | null;
-  error_message: string | null;
-  regenerated_at: string | null;
-  created_at: string | null;
-  updated_at: string | null;
-};
-
-const isZhBrowser = () => typeof navigator !== "undefined" && navigator.language.toLowerCase().startsWith("zh");
+import { isSupabaseConfigured } from "@/lib/supabase";
+import { useAdminTranslationJobs } from "@/lib/adminQueries";
 
 const tableLabels: Record<string, { en: string; zh: string }> = {
   hero_slides: { en: "Hero Slides", zh: "首页幻灯片" },
@@ -89,35 +76,10 @@ const getTableLabel = (table: string | null, language: Language) => {
 const AdminTranslationJobs = () => {
   const lang: Language = "zh";
   const t = copy[lang];
-  const [jobs, setJobs] = useState<TranslationJob[]>([]);
+  const { data: jobs = [], isFetching, error, refetch } = useAdminTranslationJobs();
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
-  const [message, setMessage] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
-
-  const loadJobs = useCallback(async () => {
-    if (!isSupabaseConfigured) return;
-
-    setIsLoading(true);
-    setMessage("");
-    const { data, error } = await supabase!
-      .from("translation_jobs")
-      .select("id, table_name, record_id, status, error_message, regenerated_at, created_at, updated_at")
-      .order("created_at", { ascending: false })
-      .limit(100);
-    setIsLoading(false);
-
-    if (error) {
-      setMessage(error.message);
-      return;
-    }
-
-    setJobs((data || []) as TranslationJob[]);
-  }, []);
-
-  useEffect(() => {
-    void loadJobs();
-  }, [loadJobs]);
+  const message = error instanceof Error ? error.message : error ? String(error) : "";
 
   const filteredJobs = useMemo(() => {
     const query = search.trim().toLowerCase();
@@ -129,75 +91,58 @@ const AdminTranslationJobs = () => {
   }, [jobs, search, statusFilter]);
 
   return (
-    <AdminLayout>
-      <div className="space-y-6">
-        <div className="rounded-xl border border-border bg-card p-6">
-          <div className="mb-5 flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
-            <div>
-              <h2 className="font-display text-2xl font-bold">{t.title}</h2>
-              <p className="mt-2 text-sm text-muted-foreground">{t.description}</p>
-            </div>
-            <Button variant="outline" onClick={() => void loadJobs()} disabled={isLoading || !isSupabaseConfigured}>
-              {isLoading ? t.refreshing : t.refresh}
-            </Button>
-          </div>
-          <div className="grid gap-3 md:grid-cols-[1fr_220px]">
-            <Input value={search} onChange={(event) => setSearch(event.target.value)} placeholder={t.searchPlaceholder} />
-            <select
-              value={statusFilter}
-              onChange={(event) => setStatusFilter(event.target.value)}
-              className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
-            >
-              <option value="all">{t.allStatuses}</option>
-              {statuses.map((status) => (
-                <option key={status} value={status}>
-                  {translateStatusLabel("translation_jobs", status, lang)}
-                </option>
-              ))}
-            </select>
-          </div>
-          {message && <div className="mt-4 rounded-lg bg-muted p-3 text-sm">{message}</div>}
-          <p className="mt-4 text-xs text-muted-foreground">{t.showing(filteredJobs.length, jobs.length)}</p>
+    <div className="space-y-6">
+      <div className="rounded-xl border border-border bg-card p-6">
+        <h1 className="font-display text-2xl font-bold">{t.title}</h1>
+        <p className="mt-2 text-sm text-muted-foreground">{t.description}</p>
+        <div className="mt-4 grid gap-3 md:grid-cols-[1fr_220px_auto]">
+          <Input value={search} onChange={(event) => setSearch(event.target.value)} placeholder={t.searchPlaceholder} />
+          <select
+            value={statusFilter}
+            onChange={(event) => setStatusFilter(event.target.value)}
+            className="flex h-10 rounded-md border border-input bg-background px-3 py-2 text-sm"
+          >
+            <option value="all">{t.allStatuses}</option>
+            {statuses.map((status) => (
+              <option key={status} value={status}>
+                {translateStatusLabel("translation_jobs", status, lang)}
+              </option>
+            ))}
+          </select>
+          <Button variant="outline" onClick={() => void refetch()} disabled={isFetching || !isSupabaseConfigured}>
+            {isFetching ? t.refreshing : t.refresh}
+          </Button>
         </div>
-
-        <div className="space-y-3">
-          {filteredJobs.map((job) => (
-            <article key={job.id} className="rounded-xl border border-border bg-card p-5">
-              <div className="mb-4 flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
-                <div>
-                  <p className="font-semibold">{getTableLabel(job.table_name, lang)}</p>
-                  <p className="mt-1 break-all text-xs text-muted-foreground">{job.record_id || "-"}</p>
-                </div>
-                <span className="w-fit rounded-full bg-muted px-3 py-1 text-xs font-medium">
-                  {translateStatusLabel("translation_jobs", job.status || "queued", lang)}
-                </span>
-              </div>
-              <dl className="grid gap-4 text-sm md:grid-cols-2 xl:grid-cols-4">
-                <div>
-                  <dt className="text-xs font-medium text-muted-foreground">{t.created}</dt>
-                  <dd>{formatDateTime(job.created_at, "-")}</dd>
-                </div>
-                <div>
-                  <dt className="text-xs font-medium text-muted-foreground">{t.updated}</dt>
-                  <dd>{formatDateTime(job.updated_at, "-")}</dd>
-                </div>
-                <div>
-                  <dt className="text-xs font-medium text-muted-foreground">{t.regenerated}</dt>
-                  <dd>{formatDateTime(job.regenerated_at, t.notRegenerated)}</dd>
-                </div>
-                <div>
-                  <dt className="text-xs font-medium text-muted-foreground">{t.error}</dt>
-                  <dd className="break-words">{job.error_message || t.noError}</dd>
-                </div>
-              </dl>
-            </article>
-          ))}
-          {!isLoading && filteredJobs.length === 0 && (
-            <div className="rounded-xl border border-border bg-card p-6 text-sm text-muted-foreground">{t.empty}</div>
-          )}
-        </div>
+        {message && <p className="mt-4 rounded-lg bg-muted p-3 text-sm">{message}</p>}
+        <p className="mt-4 text-xs text-muted-foreground">{t.showing(filteredJobs.length, jobs.length)}</p>
       </div>
-    </AdminLayout>
+
+      <div className="space-y-3">
+        {filteredJobs.map((job) => (
+          <article key={job.id} className="rounded-xl border border-border bg-card p-4">
+            <div className="flex flex-col gap-2 md:flex-row md:items-start md:justify-between">
+              <div>
+                <p className="font-semibold">{getTableLabel(job.table_name, lang)}</p>
+                <p className="mt-1 text-xs text-muted-foreground">
+                  {t.record}: {job.record_id || "-"} · {translateStatusLabel("translation_jobs", job.status || "queued", lang)}
+                </p>
+              </div>
+              <div className="text-xs text-muted-foreground">
+                <p>{t.created}: {formatDateTime(job.created_at, "-")}</p>
+                <p>{t.updated}: {formatDateTime(job.updated_at, "-")}</p>
+                <p>{t.regenerated}: {formatDateTime(job.regenerated_at, t.notRegenerated)}</p>
+              </div>
+            </div>
+            <p className="mt-3 text-sm text-muted-foreground">
+              {t.error}: {job.error_message || t.noError}
+            </p>
+          </article>
+        ))}
+        {!isFetching && filteredJobs.length === 0 && (
+          <div className="rounded-xl border border-border bg-card p-6 text-sm text-muted-foreground">{t.empty}</div>
+        )}
+      </div>
+    </div>
   );
 };
 

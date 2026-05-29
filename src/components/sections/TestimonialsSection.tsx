@@ -1,10 +1,10 @@
-import { useEffect, useMemo, useState } from "react";
+import { useMemo } from "react";
 import { Star } from "lucide-react";
 import Reveal from "@/components/Reveal";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { useT } from "@/i18n/useT";
 import { translateDisplayText } from "@/i18n/displayLabels";
-import { getPublishedTestimonials } from "@/lib/contentApi";
+import { usePublishedTestimonials } from "@/hooks/usePublishedContent";
 
 const fallbackTestimonials = {
   en: [
@@ -124,29 +124,18 @@ const formatTestimonialType = (value: string, language: "en" | "zh") => {
 const TestimonialsSection = () => {
   const { language } = useLanguage();
   const t = useT();
-  const [items, setItems] = useState(fallbackTestimonials[language]);
-
-  useEffect(() => {
-    let active = true;
-
-    void getPublishedTestimonials(language).then((data) => {
-      if (!active) return;
-
-      const fallbackItems = fallbackTestimonials[language];
-      const cmsItems = data.map((item, index) => ({
-              text: item.text,
-              client: item.client,
-              location: fallbackItems[index]?.location || "",
-              type: fallbackItems[index]?.type || "",
-            }));
-
-      setItems(data.length ? [...cmsItems, ...fallbackItems.slice(cmsItems.length)].slice(0, 6) : fallbackItems);
-    });
-
-    return () => {
-      active = false;
-    };
-  }, [language]);
+  const { data: publishedTestimonials } = usePublishedTestimonials(language);
+  const items = useMemo(() => {
+    const fallbackItems = fallbackTestimonials[language];
+    if (!publishedTestimonials?.length) return fallbackItems;
+    const cmsItems = publishedTestimonials.map((item, index) => ({
+      text: item.text,
+      client: item.client,
+      location: fallbackItems[index]?.location || "",
+      type: fallbackItems[index]?.type || "",
+    }));
+    return [...cmsItems, ...fallbackItems.slice(cmsItems.length)].slice(0, 6);
+  }, [language, publishedTestimonials]);
 
   const heading = useMemo(
     () => ({

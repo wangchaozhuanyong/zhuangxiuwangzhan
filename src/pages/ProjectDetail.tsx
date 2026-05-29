@@ -1,12 +1,12 @@
-import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import Link from "@/components/LocalizedLink";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, ArrowRight, MapPin, Clock, CheckCircle, Star, Wrench, Layers } from "lucide-react";
 import WhatsAppIcon from "@/components/WhatsAppIcon";
-import { getPublishedProjectBySlug, getPublishedProjects } from "@/lib/contentApi";
+import { usePublishedProjectBySlug, usePublishedProjects } from "@/hooks/usePublishedContent";
 import { useLanguage } from "@/i18n/LanguageContext";
 import Reveal from "@/components/Reveal";
+import SmartImage from "@/components/SmartImage";
 import PageMeta from "@/components/PageMeta";
 import { JsonLdBreadcrumb } from "@/components/JsonLd";
 import { useSiteSettings } from "@/hooks/useSiteSettings";
@@ -164,19 +164,13 @@ const ProjectDetail = () => {
   const { language } = useLanguage();
   const settings = useSiteSettings();
   const t = language === "zh" ? zhCopy : copy.en;
-  const [project, setProject] = useState<any | null | undefined>(undefined);
-  const [allProjects, setAllProjects] = useState<any[]>([]);
+  const { data: project, isPending: projectPending } = usePublishedProjectBySlug(slug, language);
+  const { data: allProjects = [] } = usePublishedProjects(language);
   const relatedProjects = allProjects.filter((item) => item.slug !== slug && item.type === project?.type).slice(0, 2);
   const otherProjects = allProjects.filter((item) => item.slug !== slug && item.type !== project?.type).slice(0, 1);
   const related = [...relatedProjects, ...otherProjects].slice(0, 3);
 
-  useEffect(() => {
-    if (!slug) return;
-    void getPublishedProjectBySlug(slug, language).then(setProject);
-    void getPublishedProjects(language).then(setAllProjects);
-  }, [slug, language]);
-
-  if (project === undefined) {
+  if (projectPending) {
     return (
       <main className="pt-16 section-padding text-center">
         <div className="mx-auto h-8 w-8 animate-spin rounded-full border-2 border-accent border-t-transparent" />
@@ -184,7 +178,7 @@ const ProjectDetail = () => {
     );
   }
 
-  if (!project) {
+  if (!projectPending && !project) {
     return (
       <main className="pt-16 section-padding text-center">
         <h1 className="font-display text-3xl font-bold mb-4">{t.notFound}</h1>
@@ -212,7 +206,7 @@ const ProjectDetail = () => {
 
       <section className="relative min-h-[50vh] flex items-end">
         <div className="absolute inset-0">
-          <img src={mainImage} alt={mainImageAlt} className="w-full h-full object-cover" />
+          <SmartImage src={mainImage} alt={mainImageAlt} className="w-full h-full object-cover" width={1920} height={800} loading="eager" fetchPriority="high" />
           <div className="absolute inset-0 bg-gradient-to-t from-foreground/90 via-foreground/40 to-transparent" />
         </div>
         <div className="relative z-10 container-narrow px-4 md:px-8 py-12">
@@ -271,7 +265,7 @@ const ProjectDetail = () => {
                 <div className="grid grid-cols-2 gap-3 mb-8">
                   {project.images.map((img: string, index: number) => (
                     <div key={img || index} className="aspect-[4/3] rounded-lg overflow-hidden bg-muted">
-                      <img src={img} alt={project.imageAlts?.[index] || `${project.title} - ${t.imageLabel} ${index + 1}`} loading="lazy" className="w-full h-full object-cover hover:scale-105 transition-transform duration-500" />
+                      <SmartImage src={img} alt={project.imageAlts?.[index] || `${project.title} - ${t.imageLabel} ${index + 1}`} loading="lazy" width={800} height={600} className="w-full h-full object-cover hover:scale-105 transition-transform duration-500" />
                     </div>
                   ))}
                 </div>
@@ -369,7 +363,7 @@ const ProjectDetail = () => {
             {related.map((item) => (
               <Link key={item.id} to={`/projects/${item.slug}`} className="group rounded-lg overflow-hidden bg-card border border-border hover-lift">
                 <div className="aspect-[4/3] overflow-hidden">
-                  <img src={item.images[0] || item.thumbnail} alt={item.imageAlts?.[0] || item.thumbnailAlt || item.title} loading="lazy" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                  <SmartImage src={item.images[0] || item.thumbnail} alt={item.imageAlts?.[0] || item.thumbnailAlt || item.title} loading="lazy" width={600} height={450} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
                 </div>
                 <div className="p-4">
                   <span className="text-accent text-xs font-medium uppercase tracking-wider">{translateProjectType(item.type, language)}</span>

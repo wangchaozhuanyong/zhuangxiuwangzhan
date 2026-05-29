@@ -1,16 +1,18 @@
 import { FormEvent, useCallback, useEffect, useMemo, useState } from "react";
+import { useQueryClient } from "@tanstack/react-query";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { isSupabaseConfigured, supabase } from "@/lib/supabase";
 import { toast } from "@/hooks/use-toast";
-import AdminLayout from "./AdminLayout";
 import AdminStickyActionBar from "@/components/admin/AdminStickyActionBar";
 import AdminPageHeader from "@/components/admin/AdminPageHeader";
 import AdminFormSection from "@/components/admin/AdminFormSection";
 import AdminEmptyState from "@/components/admin/AdminEmptyState";
 import ImageField from "@/components/admin/ImageField";
+import { invalidateAdminContentDetail, invalidateAfterAdminContentSave } from "@/lib/adminInvalidate";
+import { useAdminProjectDetail } from "@/lib/adminQueries";
 import AdminProjectImages from "./AdminProjectImages";
 
 type ProjectRecord = {
@@ -87,45 +89,39 @@ const parseLines = (value: string) => value.split("\n").map((s) => s.trim()).fil
 const formatLines = (value?: string[] | null) => (value || []).join("\n");
 
 export default function AdminProjectEditor() {
+  const queryClient = useQueryClient();
   const navigate = useNavigate();
   const { id } = useParams<{ id: string }>();
   const isNew = id === "new";
   const [record, setRecord] = useState<ProjectRecord>(empty);
-  const [loading, setLoading] = useState(false);
   const [showEnglish, setShowEnglish] = useState(false);
   const [slugChecking, setSlugChecking] = useState(false);
   const [slugError, setSlugError] = useState<string>("");
   const [saveBusy, setSaveBusy] = useState(false);
 
+  const { data: loaded, isLoading, isError, error: loadError } = useAdminProjectDetail(isNew ? undefined : id);
+
   useEffect(() => {
-    if (!isSupabaseConfigured) return;
     if (isNew) {
       setRecord(empty);
       return;
     }
-    if (!id) return;
-    setLoading(true);
-    void supabase!
-      .from("projects")
-      .select("*")
-      .eq("id", id)
-      .single()
-      .then(({ data, error }) => {
-        setLoading(false);
-        if (error) {
-          toast({ title: "加载失败", description: error.message, variant: "destructive" });
-          return;
-        }
-        setRecord({
-          ...empty,
-          ...(data as any),
-          materials: (data as any).materials || [],
-          scope: (data as any).scope || [],
-          highlights_zh: (data as any).highlights_zh || [],
-          highlights_en: (data as any).highlights_en || [],
-        });
-      });
-  }, [id, isNew]);
+    if (!loaded) return;
+    setRecord({
+      ...empty,
+      ...(loaded as any),
+      materials: (loaded as any).materials || [],
+      scope: (loaded as any).scope || [],
+      highlights_zh: (loaded as any).highlights_zh || [],
+      highlights_en: (loaded as any).highlights_en || [],
+    });
+  }, [isNew, loaded, id]);
+
+  useEffect(() => {
+    if (!isError || !loadError) return;
+    const message = loadError instanceof Error ? loadError.message : String(loadError);
+    toast({ title: "加载失败", description: message, variant: "destructive" });
+  }, [isError, loadError]);
 
   const checkSlugUnique = useCallback(
     async (slug: string) => {
@@ -199,6 +195,7 @@ export default function AdminProjectEditor() {
     const savedId = (data as any)?.id;
     setRecord((r) => ({ ...r, id: savedId, slug, status: payload.status }));
     toast({ title: "已保存" });
+    void invalidateAfterAdminContentSave(queryClient);
 
     if (isNew) navigate(`/admin/projects/${savedId}`, { replace: true });
 
@@ -210,21 +207,18 @@ export default function AdminProjectEditor() {
         toast({ title: "已保存，但生成英文失败", description: translationError.message, variant: "destructive" });
       } else {
         toast({ title: "已保存，并已发起英文生成" });
+        void invalidateAdminContentDetail(queryClient, "projects", savedId);
       }
     }
   };
 
   if (!isSupabaseConfigured) {
-    return (
-      <AdminLayout>
-        <AdminEmptyState title="Supabase 未配置" description="配置完成后才能使用案例后台编辑器。" />
-      </AdminLayout>
-    );
+    return <AdminEmptyState title="Supabase 未配置" description="配置完成后才能使用案例后台编辑器。" />;
   }
 
   return (
-    <AdminLayout>
-      <AdminStickyActionBar
+    <>
+    <AdminStickyActionBar
         left={
           <>
             <Button asChild variant="outline">
@@ -244,13 +238,13 @@ export default function AdminProjectEditor() {
                 </a>
               </Button>
             )}
-            <Button type="button" variant="outline" onClick={() => void save("draft")} disabled={saveBusy || loading}>
+            <Button type="button" variant="outline" onClick={() => void save("draft")} disabled={saveBusy || isLoading}>
               保存草稿
             </Button>
-            <Button type="button" onClick={() => void save("published")} disabled={saveBusy || loading}>
+            <Button type="button" onClick={() => void save("published")} disabled={saveBusy || isLoading}>
               发布
             </Button>
-            <Button type="button" variant="outline" onClick={() => void save(undefined, true)} disabled={saveBusy || loading || !record.id}>
+            <Button type="button" variant="outline" onClick={() => void save(undefined, true)} disabled={saveBusy || isLoading || !record.id}>
               保存并生成英文
             </Button>
           </>
@@ -463,7 +457,7 @@ export default function AdminProjectEditor() {
 
         <div className="pb-10" />
       </form>
-    </AdminLayout>
+    </>
   );
 }
 

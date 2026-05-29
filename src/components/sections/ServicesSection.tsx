@@ -1,10 +1,9 @@
-import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { ArrowRight } from "lucide-react";
 import Reveal from "@/components/Reveal";
 import { useT } from "@/i18n/useT";
 import { useLanguage } from "@/i18n/LanguageContext";
-import { getPublishedServices } from "@/lib/contentApi";
+import { usePublishedServices } from "@/hooks/usePublishedContent";
 import LocalizedLink from "@/components/LocalizedLink";
 import {
   Home, Paintbrush, Ruler, UtensilsCrossed, Bath, Briefcase, Store, Palette, Wrench, FileCheck,
@@ -47,11 +46,7 @@ const iconBySlug: Record<string, LucideIcon> = {
 const ServicesSection = () => {
   const t = useT();
   const { language } = useLanguage();
-  const [dynamicServices, setDynamicServices] = useState<any[]>([]);
-
-  useEffect(() => {
-    void getPublishedServices(language).then((items) => setDynamicServices(items));
-  }, [language]);
+  const { data: dynamicServices = [] } = usePublishedServices(language);
 
   const fallbackServices = serviceEntries.map((service) => ({
     icon: service.icon,

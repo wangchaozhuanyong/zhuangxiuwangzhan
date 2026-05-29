@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useMemo } from "react";
 import { useParams } from "react-router-dom";
 import Link from "@/components/LocalizedLink";
 import { Button } from "@/components/ui/button";
@@ -6,8 +6,9 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/
 import { ArrowRight, ArrowLeft, CheckCircle } from "lucide-react";
 import WhatsAppIcon from "@/components/WhatsAppIcon";
 import { servicesData } from "@/data/services";
-import { getPublishedServices } from "@/lib/contentApi";
+import { usePublishedServices } from "@/hooks/usePublishedContent";
 import Reveal from "@/components/Reveal";
+import SmartImage from "@/components/SmartImage";
 import PageMeta from "@/components/PageMeta";
 import { JsonLdService, JsonLdBreadcrumb, JsonLdFAQ } from "@/components/JsonLd";
 import { useLanguage } from "@/i18n/LanguageContext";
@@ -114,11 +115,11 @@ const ServiceDetail = () => {
         faqs: service.faqs.map((faq) => ({ q: displayText(faq.q), a: displayText(faq.a) })),
       }))
     : servicesData;
-  const [services, setServices] = useState(initialServices);
-
-  useEffect(() => {
-    void getPublishedServices(language).then(setServices);
-  }, [language]);
+  const { data: cmsServices } = usePublishedServices(language);
+  const services = useMemo(
+    () => (cmsServices?.length ? cmsServices : initialServices),
+    [cmsServices, initialServices],
+  );
 
   const service = services.find((item) => item.slug === slug);
 
@@ -161,7 +162,7 @@ const ServiceDetail = () => {
 
       <section className="relative min-h-[50vh] flex items-center overflow-hidden">
         <div className="absolute inset-0">
-          <img src={heroImage} alt={serviceTitle} className="w-full h-full object-cover scale-105 animate-[scale-up_1.2s_ease-out_forwards]" />
+          <SmartImage src={heroImage} alt={serviceTitle} className="w-full h-full object-cover scale-105 animate-[scale-up_1.2s_ease-out_forwards]" width={1920} height={800} loading="eager" fetchPriority="high" />
           <div className="absolute inset-0 bg-gradient-to-r from-black/60 via-black/30 to-transparent" />
         </div>
         <div className="relative z-10 container-narrow px-4 md:px-8 py-20">

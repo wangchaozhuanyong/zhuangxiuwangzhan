@@ -1,9 +1,12 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import { useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { isSupabaseConfigured, supabase } from "@/lib/supabase";
+import { useAdminMediaAssets } from "@/lib/adminQueries";
 import AdminImageUpload from "@/pages/admin/AdminImageUpload";
+import SmartImage from "@/components/SmartImage";
 
 type MediaAsset = {
   id: string;
@@ -34,30 +37,24 @@ export default function MediaPicker({
   title?: string;
   description?: string;
 }) {
-  const [assets, setAssets] = useState<MediaAsset[]>([]);
+  const queryClient = useQueryClient();
+  const { data: assets = [], isFetching, error, refetch } = useAdminMediaAssets();
   const [usageType, setUsageType] = useState<UsageType>(initialUsageType);
   const [search, setSearch] = useState("");
   const [message, setMessage] = useState("");
-  const [loading, setLoading] = useState(false);
-
-  const loadAssets = useCallback(async () => {
-    if (!isSupabaseConfigured || !supabase) return;
-    setLoading(true);
-    setMessage("");
-    const { data, error } = await supabase.from("media_assets").select("*").order("created_at", { ascending: false }).limit(200);
-    setLoading(false);
-    if (error) setMessage(error.message);
-    setAssets((data || []) as any);
-  }, []);
 
   useEffect(() => {
     if (!open) return;
-    void loadAssets();
-  }, [open, loadAssets]);
+    void refetch();
+  }, [open, refetch]);
+
+  useEffect(() => {
+    if (error) setMessage(error instanceof Error ? error.message : String(error));
+  }, [error]);
 
   const filtered = useMemo(() => {
     const q = search.trim().toLowerCase();
-    return assets.filter((asset) => {
+    return (assets as MediaAsset[]).filter((asset) => {
       const matchesType = usageType === "all" || asset.usage_type === usageType;
       const haystack = [asset.file_name, asset.folder, asset.usage_type, asset.alt_zh, asset.alt_en, asset.file_url].join(" ").toLowerCase();
       return matchesType && (!q || haystack.includes(q));
@@ -68,18 +65,19 @@ export default function MediaPicker({
     if (!supabase) return;
     const { data: userData } = await supabase.auth.getUser();
     const fileName = url.split("/").pop() || "image";
-    const { error } = await supabase.from("media_assets").insert({
+    const { error: insertError } = await supabase.from("media_assets").insert({
       file_url: url,
       file_name: fileName,
       usage_type: usageType === "all" ? "general" : usageType,
       folder: "media",
       created_by: userData.user?.id || null,
     });
-    if (error) {
-      setMessage(error.message);
+    if (insertError) {
+      setMessage(insertError.message);
       return;
     }
-    await loadAssets();
+    void queryClient.invalidateQueries({ queryKey: ["admin", "media_assets"] });
+    await refetch();
   };
 
   return (
@@ -96,53 +94,51 @@ export default function MediaPicker({
           </div>
         )}
 
-        <div className="grid gap-3 md:grid-cols-[1fr_220px]">
-          <Input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="搜索文件名、alt、分类..." />
-          <select
-            value={usageType}
-            onChange={(e) => setUsageType(e.target.value as UsageType)}
-            className="flex h-10 rounded-md border border-input bg-background px-3 py-2 text-sm"
-          >
-            {usageTypes.map((item) => (
-              <option key={item} value={item}>
-                {item}
-              </option>
-            ))}
-          </select>
-        </div>
+        {isSupabaseConfigured && (
+          <div className="space-y-4">
+            <div className="flex flex-col gap-2 sm:flex-row">
+              <Input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="搜索文件名、文件夹、用途..." />
+              <select
+                value={usageType}
+                onChange={(e) => setUsageType(e.target.value as UsageType)}
+                className="flex h-10 rounded-md border border-input bg-background px-3 py-2 text-sm"
+              >
+                {usageTypes.map((item) => (
+                  <option key={item} value={item}>
+                    {item}
+                  </option>
+                ))}
+              </select>
+            </div>
 
-        <div className="rounded-xl border border-border bg-card p-4">
-          <div className="mb-3 flex items-center justify-between gap-2">
-            <div className="text-sm font-medium">上传新图片</div>
-            <Button variant="outline" size="sm" onClick={loadAssets} disabled={!isSupabaseConfigured || loading}>
-              {loading ? "刷新中..." : "刷新"}
-            </Button>
+            {message && <p className="rounded-lg bg-muted p-3 text-sm">{message}</p>}
+            {isFetching && <p className="text-sm text-muted-foreground">加载中...</p>}
+
+            <div className="grid max-h-[50vh] grid-cols-2 gap-3 overflow-y-auto sm:grid-cols-3 md:grid-cols-4">
+              {filtered.map((asset) => (
+                <button
+                  key={asset.id}
+                  type="button"
+                  className="group overflow-hidden rounded-lg border border-border bg-muted text-left hover:ring-2 hover:ring-primary"
+                  onClick={() => {
+                    onSelect({ url: asset.file_url, alt_zh: asset.alt_zh, alt_en: asset.alt_en });
+                    onOpenChange(false);
+                  }}
+                >
+                  <div className="aspect-[4/3] w-full overflow-hidden">
+                    <SmartImage src={asset.file_url} alt={asset.alt_zh || asset.alt_en || asset.file_name || "media"} width={200} height={200} className="h-full w-full object-cover transition-transform group-hover:scale-105" />
+                  </div>
+                  <div className="p-2 text-xs text-muted-foreground truncate">{asset.file_name || asset.file_url}</div>
+                </button>
+              ))}
+            </div>
+
+            <div className="rounded-lg border border-border bg-muted/20 p-3">
+              <div className="mb-2 text-xs font-medium text-muted-foreground">上传新图片到媒体库</div>
+              <AdminImageUpload folder="media" onUploaded={(url) => void createAsset(url)} />
+            </div>
           </div>
-          <AdminImageUpload folder="media" onUploaded={(url) => void createAsset(url)} />
-          {message && <div className="mt-3 rounded-lg bg-muted p-3 text-sm">{message}</div>}
-        </div>
-
-        <div className="grid max-h-[52vh] grid-cols-2 gap-3 overflow-auto pr-1 sm:grid-cols-3 lg:grid-cols-4">
-          {filtered.map((asset) => (
-            <button
-              type="button"
-              key={asset.id}
-              className="group overflow-hidden rounded-xl border border-border bg-card text-left hover:border-accent"
-              onClick={() => {
-                onSelect({ url: asset.file_url, alt_zh: asset.alt_zh, alt_en: asset.alt_en });
-                onOpenChange(false);
-              }}
-            >
-              <div className="aspect-[4/3] overflow-hidden bg-muted">
-                <img src={asset.file_url} alt={asset.alt_zh || asset.alt_en || asset.file_name || "media"} className="h-full w-full object-cover transition-transform group-hover:scale-105" />
-              </div>
-              <div className="p-3">
-                <div className="truncate text-xs font-medium">{asset.file_name || asset.file_url}</div>
-                <div className="mt-1 truncate text-[11px] text-muted-foreground">{asset.usage_type || "general"} · {asset.folder || "-"}</div>
-              </div>
-            </button>
-          ))}
-        </div>
+        )}
 
         <DialogFooter>
           <Button variant="outline" onClick={() => onOpenChange(false)}>
@@ -153,4 +149,3 @@ export default function MediaPicker({
     </Dialog>
   );
 }
-

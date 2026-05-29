@@ -8,6 +8,7 @@ import { useT } from "@/i18n/useT";
 import { switchLanguagePath } from "@/i18n/routes";
 import LocalizedLink from "@/components/LocalizedLink";
 import { useSiteSettings } from "@/hooks/useSiteSettings";
+import SmartImage from "@/components/SmartImage";
 
 interface NavItem {
   labelKey: string;
@@ -99,10 +100,12 @@ const Navbar = () => {
         <div className="mx-auto flex h-[68px] w-full max-w-7xl flex-nowrap items-center gap-2 px-4 md:h-[72px] md:px-6 xl:px-8">
           <LocalizedLink to="/" className="flex min-w-0 flex-1 items-center gap-2 shrink-0">
             {resolvedLogoState !== "none" ? (
-              <img
+              <SmartImage
                 src={logoSrc}
                 alt=""
                 className="h-8 md:h-9 w-auto object-contain drop-shadow-[0_1px_1px_rgba(255,255,255,0.45)] shrink-0"
+                width={160}
+                height={36}
                 loading="eager"
                 decoding="async"
                 onError={() => setLogoState(resolvedLogoState === "primary" ? "fallback" : "none")}

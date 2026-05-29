@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef, useCallback } from "react";
+import { useMemo, useState, useRef, useCallback } from "react";
 import Link from "@/components/LocalizedLink";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, ChevronLeft, ChevronRight } from "lucide-react";
@@ -6,14 +6,14 @@ import Reveal from "@/components/Reveal";
 import SmartImage from "@/components/SmartImage";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { translateDisplayText } from "@/i18n/displayLabels";
-import { getPublishedBeforeAfterItems } from "@/lib/homeContentApi";
+import { usePublishedBeforeAfterItems } from "@/hooks/usePublishedContent";
 
-import beforeKitchen from "@/assets/before-after/before-kitchen.jpg";
-import afterKitchen from "@/assets/before-after/after-kitchen.jpg";
-import beforeLiving from "@/assets/before-after/before-living.jpg";
-import afterLiving from "@/assets/before-after/after-living.jpg";
-import beforeBathroom from "@/assets/before-after/before-bathroom.jpg";
-import afterBathroom from "@/assets/before-after/after-bathroom.jpg";
+import beforeKitchen from "@/assets/before-after/before-kitchen.webp";
+import afterKitchen from "@/assets/before-after/after-kitchen.webp";
+import beforeLiving from "@/assets/before-after/before-living.webp";
+import afterLiving from "@/assets/before-after/after-living.webp";
+import beforeBathroom from "@/assets/before-after/before-bathroom.webp";
+import afterBathroom from "@/assets/before-after/after-bathroom.webp";
 
 const comparisons = {
   en: [
@@ -200,7 +200,17 @@ const BeforeAfterSlider = ({
 
 const BeforeAfterSection = () => {
   const { language } = useLanguage();
-  const [dynamicComparisons, setDynamicComparisons] = useState(comparisons[language]);
+  const { data: publishedItems } = usePublishedBeforeAfterItems(language);
+  const dynamicComparisons = useMemo(() => {
+    if (!publishedItems?.length) return comparisons[language];
+    return publishedItems.map((item) => ({
+      before: item.before_image_url,
+      after: item.after_image_url,
+      title: item.title,
+      location: item.location,
+      desc: item.description,
+    }));
+  }, [language, publishedItems]);
   const sectionCopy = {
     en: {
       title: "See the Transformation",
@@ -217,20 +227,6 @@ const BeforeAfterSection = () => {
       after: "施工后",
     },
   }[language];
-
-  useEffect(() => {
-    setDynamicComparisons(comparisons[language]);
-    void getPublishedBeforeAfterItems(language).then((items) => {
-      if (!items.length) return;
-      setDynamicComparisons(items.map((item) => ({
-        before: item.before_image_url,
-        after: item.after_image_url,
-        title: item.title,
-        location: item.location,
-        desc: item.description,
-      })));
-    });
-  }, [language]);
 
   return (
     <section className="section-padding-next bg-background" id="before-after">

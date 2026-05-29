@@ -1,51 +1,21 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import { useQueryClient } from "@tanstack/react-query";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { isSupabaseConfigured, supabase } from "@/lib/supabase";
 import { toast } from "@/hooks/use-toast";
-import AdminLayout from "./AdminLayout";
 import AdminPageHeader from "@/components/admin/AdminPageHeader";
 import AdminFormSection from "@/components/admin/AdminFormSection";
 import AdminEmptyState from "@/components/admin/AdminEmptyState";
 import ImageField from "@/components/admin/ImageField";
+import { invalidatePublishedContent } from "@/lib/adminInvalidate";
+import { aboutSectionKeys, type AboutSectionKey, type AboutSectionRow, type CtaRow } from "@/lib/adminEditorData";
+import { useAdminAboutEditorData } from "@/lib/adminQueries";
 
-type AboutSectionRow = {
-  id?: string;
-  section_key: string;
-  title_zh?: string | null;
-  title_en?: string | null;
-  subtitle_zh?: string | null;
-  subtitle_en?: string | null;
-  content_zh?: string | null;
-  content_en?: string | null;
-  image_url?: string | null;
-  items_zh?: any;
-  items_en?: any;
-  status?: "draft" | "published" | "archived";
-  sort_order?: number;
-};
-
-type CtaRow = {
-  id?: string;
-  block_key: string;
-  title_zh?: string | null;
-  title_en?: string | null;
-  description_zh?: string | null;
-  description_en?: string | null;
-  primary_label_zh?: string | null;
-  primary_label_en?: string | null;
-  primary_url?: string | null;
-  secondary_label_zh?: string | null;
-  secondary_label_en?: string | null;
-  secondary_url?: string | null;
-  image_url?: string | null;
-  status?: "draft" | "published" | "archived";
-};
-
-const sectionKeys = ["hero", "intro", "stats", "core_values", "team", "milestones", "office"] as const;
-type SectionKey = (typeof sectionKeys)[number];
+const sectionKeys = aboutSectionKeys;
+type SectionKey = AboutSectionKey;
 
 const statusOptions = ["published", "draft", "archived"] as const;
 
@@ -56,24 +26,11 @@ const safeJsonParse = (value: string) => {
   return JSON.parse(raw);
 };
 
-const ensureAboutSection = async (section_key: string): Promise<AboutSectionRow | null> => {
-  if (!supabase) return null;
-  const { data, error } = await supabase.from("about_sections").select("*").eq("section_key", section_key).order("sort_order").limit(1);
-  if (error) return null;
-  const row = (data || [])[0];
-  if (row) return row as any;
-  const { data: inserted, error: insertError } = await supabase
-    .from("about_sections")
-    .insert({ section_key, status: "published", sort_order: 0 })
-    .select("*")
-    .single();
-  if (insertError) return null;
-  return inserted as any;
-};
-
 export default function AdminAboutEditor() {
+  const queryClient = useQueryClient();
+  const { data: bundle, isFetching, refetch } = useAdminAboutEditorData();
   const [activeTab, setActiveTab] = useState<SectionKey | "cta">("hero");
-  const [loading, setLoading] = useState(false);
+  const loading = isFetching;
 
   const [sections, setSections] = useState<Record<string, AboutSectionRow | null>>({});
   const [itemsZh, setItemsZh] = useState<Record<string, string>>({});
@@ -82,32 +39,24 @@ export default function AdminAboutEditor() {
   const [ctaBlock, setCtaBlock] = useState<CtaRow | null>(null);
   const [editingCta, setEditingCta] = useState<CtaRow | null>(null);
 
-  const load = useCallback(async () => {
-    if (!isSupabaseConfigured || !supabase) return;
-    setLoading(true);
-
-    const ensured = await Promise.all(sectionKeys.map((k) => ensureAboutSection(k)));
-    const map: Record<string, AboutSectionRow | null> = {};
+  useEffect(() => {
+    if (!bundle) return;
+    setSections(bundle.sections);
     const zh: Record<string, string> = {};
     const en: Record<string, string> = {};
-    sectionKeys.forEach((k, idx) => {
-      map[k] = ensured[idx];
-      zh[k] = jsonStringify((ensured[idx] as any)?.items_zh || []);
-      en[k] = jsonStringify((ensured[idx] as any)?.items_en || []);
+    sectionKeys.forEach((key) => {
+      zh[key] = jsonStringify(bundle.sections[key]?.items_zh || []);
+      en[key] = jsonStringify(bundle.sections[key]?.items_en || []);
     });
-    setSections(map);
     setItemsZh(zh);
     setItemsEn(en);
+    setCtaBlock(bundle.ctaBlock);
+  }, [bundle]);
 
-    const { data } = await supabase.from("cta_blocks").select("*").eq("block_key", "about_final").maybeSingle();
-    setCtaBlock((data || null) as any);
-
-    setLoading(false);
-  }, []);
-
-  useEffect(() => {
-    void load();
-  }, [load]);
+  const refreshEditor = async () => {
+    void invalidatePublishedContent(queryClient);
+    await refetch();
+  };
 
   const updateSection = (key: string, patch: Partial<AboutSectionRow>) =>
     setSections((prev) => ({ ...prev, [key]: { ...(prev[key] || ({ section_key: key } as any)), ...patch } }));
@@ -138,7 +87,7 @@ export default function AdminAboutEditor() {
       const { error } = await req;
       if (error) throw error;
       toast({ title: "已保存" });
-      await load();
+      await refreshEditor();
     } catch (e: any) {
       toast({ title: "保存失败（JSON 格式错误）", description: e?.message || String(e), variant: "destructive" });
     }
@@ -187,27 +136,24 @@ export default function AdminAboutEditor() {
     if (error) toast({ title: "保存失败", description: error.message, variant: "destructive" });
     else {
       toast({ title: "已保存" });
+      void invalidatePublishedContent(queryClient);
       setEditingCta(null);
-      await load();
+      await refreshEditor();
     }
   };
 
   if (!isSupabaseConfigured) {
-    return (
-      <AdminLayout>
-        <AdminEmptyState title="Supabase 未配置" description="配置完成后才能使用关于我们后台管理。" />
-      </AdminLayout>
-    );
+    return <AdminEmptyState title="Supabase 未配置" description="配置完成后才能使用关于我们后台管理。" />;
   }
 
   return (
-    <AdminLayout>
-      <AdminPageHeader
+    <>
+    <AdminPageHeader
         title="关于我们管理"
         description="管理关于我们页面的 Hero、介绍、统计、价值观、团队、里程碑、办公室与 CTA。前台会优先读取已发布内容，空则自动 fallback 静态内容。"
         actions={
           <div className="flex flex-wrap gap-2">
-            <Button variant="outline" onClick={load} disabled={loading}>
+            <Button variant="outline" onClick={() => void refetch()} disabled={loading}>
               {loading ? "刷新中..." : "刷新"}
             </Button>
             <Button asChild variant="outline">
@@ -390,7 +336,7 @@ export default function AdminAboutEditor() {
           </AdminFormSection>
         </TabsContent>
       </Tabs>
-    </AdminLayout>
+    </>
   );
 }
 

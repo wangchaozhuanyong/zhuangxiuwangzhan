@@ -1,6 +1,5 @@
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import AdminLayout from "./AdminLayout";
 
 const copy = {
   en: {
@@ -36,15 +35,13 @@ const AdminComingSoon = () => {
   const fallback = fallbackMap[window.location.pathname] || "/admin/dashboard";
 
   return (
-    <AdminLayout>
-      <div className="rounded-xl border border-border bg-card p-8">
+    <div className="rounded-xl border border-border bg-card p-8">
         <h1 className="font-display text-2xl font-bold">{t.title}</h1>
         <p className="mt-3 max-w-2xl text-sm leading-relaxed text-muted-foreground">{t.body}</p>
         <Button asChild className="mt-6">
           <Link to={fallback}>{t.fallback}</Link>
         </Button>
       </div>
-    </AdminLayout>
   );
 };
 

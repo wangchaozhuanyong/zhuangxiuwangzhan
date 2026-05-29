@@ -1,16 +1,18 @@
 import { FormEvent, useCallback, useEffect, useMemo, useState } from "react";
+import { useQueryClient } from "@tanstack/react-query";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { isSupabaseConfigured, supabase } from "@/lib/supabase";
 import { toast } from "@/hooks/use-toast";
-import AdminLayout from "./AdminLayout";
 import AdminStickyActionBar from "@/components/admin/AdminStickyActionBar";
 import AdminPageHeader from "@/components/admin/AdminPageHeader";
 import AdminFormSection from "@/components/admin/AdminFormSection";
 import AdminEmptyState from "@/components/admin/AdminEmptyState";
 import ImageField from "@/components/admin/ImageField";
+import { invalidateAdminContentDetail, invalidateAfterAdminContentSave } from "@/lib/adminInvalidate";
+import { useAdminBlogPostDetail } from "@/lib/adminQueries";
 
 type BlogRecord = {
   id?: string;
@@ -88,44 +90,38 @@ const fromLocalInput = (value: string) => {
 };
 
 export default function AdminBlogEditor() {
+  const queryClient = useQueryClient();
   const navigate = useNavigate();
   const { id } = useParams<{ id: string }>();
   const isNew = id === "new";
   const [record, setRecord] = useState<BlogRecord>(empty);
-  const [loading, setLoading] = useState(false);
   const [showEnglish, setShowEnglish] = useState(false);
   const [slugChecking, setSlugChecking] = useState(false);
   const [slugError, setSlugError] = useState<string>("");
   const [saveBusy, setSaveBusy] = useState(false);
 
+  const { data: loaded, isLoading, isError, error: loadError } = useAdminBlogPostDetail(isNew ? undefined : id);
+
   useEffect(() => {
-    if (!isSupabaseConfigured) return;
     if (isNew) {
       setRecord(empty);
       return;
     }
-    if (!id) return;
-    setLoading(true);
-    void supabase!
-      .from("blog_posts")
-      .select("*")
-      .eq("id", id)
-      .single()
-      .then(({ data, error }) => {
-        setLoading(false);
-        if (error) {
-          toast({ title: "加载失败", description: error.message, variant: "destructive" });
-          return;
-        }
-        setRecord({
-          ...empty,
-          ...(data as any),
-          tags: (data as any).tags || [],
-          published_at: (data as any).published_at || null,
-          sort_order: Number((data as any).sort_order || 0),
-        });
-      });
-  }, [id, isNew]);
+    if (!loaded) return;
+    setRecord({
+      ...empty,
+      ...(loaded as any),
+      tags: (loaded as any).tags || [],
+      published_at: (loaded as any).published_at || null,
+      sort_order: Number((loaded as any).sort_order || 0),
+    });
+  }, [isNew, loaded, id]);
+
+  useEffect(() => {
+    if (!isError || !loadError) return;
+    const message = loadError instanceof Error ? loadError.message : String(loadError);
+    toast({ title: "加载失败", description: message, variant: "destructive" });
+  }, [isError, loadError]);
 
   const checkSlugUnique = useCallback(
     async (slug: string) => {
@@ -197,6 +193,7 @@ export default function AdminBlogEditor() {
     const savedId = (data as any)?.id;
     setRecord((r) => ({ ...r, id: savedId, slug, status: payload.status }));
     toast({ title: "已保存" });
+    void invalidateAfterAdminContentSave(queryClient);
 
     if (isNew) navigate(`/admin/blog/${savedId}`, { replace: true });
 
@@ -208,21 +205,18 @@ export default function AdminBlogEditor() {
         toast({ title: "已保存，但生成英文失败", description: translationError.message, variant: "destructive" });
       } else {
         toast({ title: "已保存，并已发起英文生成" });
+        void invalidateAdminContentDetail(queryClient, "blog_posts", savedId);
       }
     }
   };
 
   if (!isSupabaseConfigured) {
-    return (
-      <AdminLayout>
-        <AdminEmptyState title="Supabase 未配置" description="配置完成后才能使用博客后台编辑器。" />
-      </AdminLayout>
-    );
+    return <AdminEmptyState title="Supabase 未配置" description="配置完成后才能使用博客后台编辑器。" />;
   }
 
   return (
-    <AdminLayout>
-      <AdminStickyActionBar
+    <>
+    <AdminStickyActionBar
         left={
           <>
             <Button asChild variant="outline">
@@ -242,7 +236,7 @@ export default function AdminBlogEditor() {
                 </a>
               </Button>
             )}
-            <Button type="button" variant="outline" onClick={() => void save("draft")} disabled={saveBusy || loading}>
+            <Button type="button" variant="outline" onClick={() => void save("draft")} disabled={saveBusy || isLoading}>
               保存草稿
             </Button>
             <Button
@@ -252,11 +246,11 @@ export default function AdminBlogEditor() {
                 setRecord((r) => ({ ...r, published_at: r.published_at || new Date().toISOString() }));
                 void save("published");
               }}
-              disabled={saveBusy || loading}
+              disabled={saveBusy || isLoading}
             >
               发布
             </Button>
-            <Button type="button" variant="outline" onClick={() => void save(undefined, true)} disabled={saveBusy || loading || !record.id}>
+            <Button type="button" variant="outline" onClick={() => void save(undefined, true)} disabled={saveBusy || isLoading || !record.id}>
               保存并生成英文
             </Button>
           </>
@@ -442,7 +436,7 @@ export default function AdminBlogEditor() {
 
         <div className="pb-10" />
       </form>
-    </AdminLayout>
+    </>
   );
 }
 

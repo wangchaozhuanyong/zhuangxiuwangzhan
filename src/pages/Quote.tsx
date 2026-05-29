@@ -9,9 +9,10 @@ import PageMeta from "@/components/PageMeta";
 import { JsonLdBreadcrumb } from "@/components/JsonLd";
 import { submitQuoteRequest } from "@/lib/leadApi";
 import Reveal from "@/components/Reveal";
+import SmartImage from "@/components/SmartImage";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { useSiteSettings } from "@/hooks/useSiteSettings";
-import heroImg from "@/assets/hero-quote.jpg";
+import heroImg from "@/assets/hero-quote.webp";
 
 const projectTypes = [
   { value: "Residential Renovation", en: "Residential Renovation", zh: "住宅装修" },
@@ -299,7 +300,7 @@ const Quote = () => {
 
       <section className="relative flex min-h-[45vh] items-center overflow-hidden">
         <div className="absolute inset-0">
-          <img src={heroImg} alt={t.heroAlt} className="h-full w-full object-cover" />
+          <SmartImage src={heroImg} alt={t.heroAlt} className="h-full w-full object-cover" width={1920} height={800} loading="eager" fetchPriority="high" />
           <div className="absolute inset-0 media-readable-overlay" />
         </div>
         <div className="relative z-10 container-narrow px-5 py-20 md:px-8 md:py-28">

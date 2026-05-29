@@ -1,21 +1,21 @@
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import Link from "@/components/LocalizedLink";
 import { Button } from "@/components/ui/button";
 import { MapPin, ArrowRight } from "lucide-react";
 import WhatsAppIcon from "@/components/WhatsAppIcon";
 import SmartImage from "@/components/SmartImage";
-import { getPublishedProjects } from "@/lib/contentApi";
+import { usePublishedProjects } from "@/hooks/usePublishedContent";
 import { useLanguage } from "@/i18n/LanguageContext";
 import Reveal from "@/components/Reveal";
 import PageMeta from "@/components/PageMeta";
 import { JsonLdBreadcrumb } from "@/components/JsonLd";
 import { useSiteSettings } from "@/hooks/useSiteSettings";
-import residentialImg from "@/assets/residential-renovation.jpg";
-import commercialImg from "@/assets/commercial-renovation.jpg";
-import kitchenImg from "@/assets/kitchen-cabinet.jpg";
-import warehouseImg from "@/assets/warehouse-shelving.jpg";
-import exteriorImg from "@/assets/exterior-works.jpg";
-import heroImg from "@/assets/hero-projects.jpg";
+import residentialImg from "@/assets/residential-renovation.webp";
+import commercialImg from "@/assets/commercial-renovation.webp";
+import kitchenImg from "@/assets/kitchen-cabinet.webp";
+import warehouseImg from "@/assets/warehouse-shelving.webp";
+import exteriorImg from "@/assets/exterior-works.webp";
+import heroImg from "@/assets/hero-projects.webp";
 import { translateDisplayText, translateProjectType } from "@/i18n/displayLabels";
 
 const typeImageMap: Record<string, string> = {
@@ -99,7 +99,7 @@ const Projects = () => {
   const [filter, setFilter] = useState<(typeof categories)[number]>("All");
   const { language } = useLanguage();
   const settings = useSiteSettings();
-  const [projects, setProjects] = useState<any[]>([]);
+  const { data: projects = [] } = usePublishedProjects(language);
   const categoryBarRef = useRef<HTMLDivElement | null>(null);
   const categoryButtonRefs = useRef<Record<(typeof categories)[number], HTMLButtonElement | null>>({
     All: null,
@@ -136,10 +136,6 @@ const Projects = () => {
     bar.scrollTo({ left: Math.max(0, nextLeft), behavior });
   };
 
-  useEffect(() => {
-    void getPublishedProjects(language).then(setProjects);
-  }, [language]);
-
   return (
     <main className="pt-16 pb-20 md:pb-0">
       <PageMeta
@@ -152,7 +148,7 @@ const Projects = () => {
 
       <section className="relative min-h-[45vh] flex items-center overflow-hidden">
         <div className="absolute inset-0">
-          <img src={heroImg} alt="FLASH CAST renovation projects portfolio" className="w-full h-full object-cover" />
+          <SmartImage src={heroImg} alt="FLASH CAST renovation projects portfolio" className="w-full h-full object-cover" loading="eager" fetchPriority="high" width={1920} height={1080} />
           <div className="absolute inset-0 media-readable-overlay" />
         </div>
         <div className="relative z-10 container-narrow px-5 md:px-8 py-20 md:py-28">

@@ -1,57 +1,20 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { isSupabaseConfigured, supabase } from "@/lib/supabase";
-import AdminLayout from "./AdminLayout";
+import { isSupabaseConfigured } from "@/lib/supabase";
+import { useAdminMaterials, type AdminMaterialRow } from "@/lib/adminQueries";
 import AdminPageHeader from "@/components/admin/AdminPageHeader";
 import AdminDataTable, { type AdminDataTableColumn } from "@/components/admin/AdminDataTable";
 import AdminStatusBadge from "@/components/admin/AdminStatusBadge";
 import AdminEmptyState from "@/components/admin/AdminEmptyState";
-
-type MaterialRow = {
-  id: string;
-  title_zh: string | null;
-  title_en: string | null;
-  slug: string;
-  status: string | null;
-  sort_order: number | null;
-  category?: string | null;
-  subcategory?: string | null;
-  material_type?: string | null;
-  image_url?: string | null;
-  updated_at?: string | null;
-  created_at?: string | null;
-};
+import SmartImage from "@/components/SmartImage";
 
 export default function AdminMaterialList() {
-  const [rows, setRows] = useState<MaterialRow[]>([]);
+  const { data: rows = [], error, isFetching, refetch } = useAdminMaterials();
   const [status, setStatus] = useState<string>("all");
   const [search, setSearch] = useState("");
-  const [error, setError] = useState("");
-  const [loading, setLoading] = useState(false);
-
-  const load = useCallback(async () => {
-    if (!isSupabaseConfigured) return;
-    setLoading(true);
-    setError("");
-    const { data, error } = await supabase!
-      .from("materials")
-      .select("id,title_zh,title_en,slug,status,sort_order,category,subcategory,material_type,image_url,updated_at,created_at")
-      .order("sort_order", { ascending: true })
-      .order("updated_at", { ascending: false })
-      .limit(500);
-    setLoading(false);
-    if (error) {
-      setError(error.message);
-      return;
-    }
-    setRows((data || []) as MaterialRow[]);
-  }, []);
-
-  useEffect(() => {
-    void load();
-  }, [load]);
+  const errorMessage = error instanceof Error ? error.message : error ? String(error) : "";
 
   const filtered = useMemo(() => {
     const q = search.trim().toLowerCase();
@@ -64,7 +27,7 @@ export default function AdminMaterialList() {
     });
   }, [rows, search, status]);
 
-  const columns: AdminDataTableColumn<MaterialRow>[] = [
+  const columns: AdminDataTableColumn<AdminMaterialRow>[] = [
     {
       key: "material",
       header: "材料",
@@ -73,7 +36,7 @@ export default function AdminMaterialList() {
         return (
           <div className="flex items-center gap-3">
             <div className="h-10 w-14 overflow-hidden rounded-md border border-border bg-muted">
-              {row.image_url ? <img src={row.image_url} alt={title} className="h-full w-full object-cover" /> : null}
+              {row.image_url ? <SmartImage src={row.image_url} alt={title} width={112} height={80} className="h-full w-full object-cover" /> : null}
             </div>
             <div className="min-w-0">
               <Link to={`/admin/materials/${row.id}`} className="font-medium hover:underline">
@@ -121,14 +84,14 @@ export default function AdminMaterialList() {
   ];
 
   return (
-    <AdminLayout>
-      <AdminPageHeader
+    <>
+    <AdminPageHeader
         title="材料库"
         description="管理材料分类、图片、详情、推荐搭配与 SEO。保存后前台材料库与详情会同步更新。"
         actions={
           <div className="flex flex-wrap gap-2">
-            <Button variant="outline" onClick={load} disabled={!isSupabaseConfigured || loading}>
-              {loading ? "刷新中..." : "刷新"}
+            <Button variant="outline" onClick={() => void refetch()} disabled={!isSupabaseConfigured || isFetching}>
+              {isFetching ? "刷新中..." : "刷新"}
             </Button>
             <Button asChild>
               <Link to="/admin/materials/new">新建材料</Link>
@@ -151,7 +114,7 @@ export default function AdminMaterialList() {
         </select>
       </div>
 
-      {error && <div className="mb-4 rounded-lg bg-muted p-3 text-sm">{error}</div>}
+      {errorMessage && <div className="mb-4 rounded-lg bg-muted p-3 text-sm">{errorMessage}</div>}
 
       <AdminDataTable
         columns={columns}
@@ -169,7 +132,7 @@ export default function AdminMaterialList() {
           />
         }
       />
-    </AdminLayout>
+    </>
   );
 }
 

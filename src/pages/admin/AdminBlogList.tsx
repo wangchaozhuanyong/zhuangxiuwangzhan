@@ -1,57 +1,20 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { isSupabaseConfigured, supabase } from "@/lib/supabase";
-import AdminLayout from "./AdminLayout";
+import { isSupabaseConfigured } from "@/lib/supabase";
+import { useAdminBlogPosts, type AdminBlogRow } from "@/lib/adminQueries";
 import AdminPageHeader from "@/components/admin/AdminPageHeader";
 import AdminDataTable, { type AdminDataTableColumn } from "@/components/admin/AdminDataTable";
 import AdminStatusBadge from "@/components/admin/AdminStatusBadge";
 import AdminEmptyState from "@/components/admin/AdminEmptyState";
-
-type BlogRow = {
-  id: string;
-  title_zh: string | null;
-  title_en: string | null;
-  slug: string;
-  status: string | null;
-  sort_order: number | null;
-  category?: string | null;
-  published_at?: string | null;
-  cover_image_url?: string | null;
-  updated_at?: string | null;
-  created_at?: string | null;
-};
+import SmartImage from "@/components/SmartImage";
 
 export default function AdminBlogList() {
-  const [rows, setRows] = useState<BlogRow[]>([]);
+  const { data: rows = [], error, isFetching, refetch } = useAdminBlogPosts();
   const [status, setStatus] = useState<string>("all");
   const [search, setSearch] = useState("");
-  const [error, setError] = useState("");
-  const [loading, setLoading] = useState(false);
-
-  const load = useCallback(async () => {
-    if (!isSupabaseConfigured) return;
-    setLoading(true);
-    setError("");
-    const { data, error } = await supabase!
-      .from("blog_posts")
-      .select("id,title_zh,title_en,slug,status,sort_order,category,published_at,cover_image_url,updated_at,created_at")
-      .order("sort_order", { ascending: true })
-      .order("published_at", { ascending: false, nullsFirst: false })
-      .order("updated_at", { ascending: false })
-      .limit(500);
-    setLoading(false);
-    if (error) {
-      setError(error.message);
-      return;
-    }
-    setRows((data || []) as BlogRow[]);
-  }, []);
-
-  useEffect(() => {
-    void load();
-  }, [load]);
+  const errorMessage = error instanceof Error ? error.message : error ? String(error) : "";
 
   const filtered = useMemo(() => {
     const q = search.trim().toLowerCase();
@@ -64,7 +27,7 @@ export default function AdminBlogList() {
     });
   }, [rows, search, status]);
 
-  const columns: AdminDataTableColumn<BlogRow>[] = [
+  const columns: AdminDataTableColumn<AdminBlogRow>[] = [
     {
       key: "post",
       header: "文章",
@@ -73,7 +36,7 @@ export default function AdminBlogList() {
         return (
           <div className="flex items-center gap-3">
             <div className="h-10 w-14 overflow-hidden rounded-md border border-border bg-muted">
-              {row.cover_image_url ? <img src={row.cover_image_url} alt={title} className="h-full w-full object-cover" /> : null}
+              {row.cover_image_url ? <SmartImage src={row.cover_image_url} alt={title} className="h-full w-full object-cover" width={112} height={80} /> : null}
             </div>
             <div className="min-w-0">
               <Link to={`/admin/blog/${row.id}`} className="font-medium hover:underline">
@@ -120,14 +83,14 @@ export default function AdminBlogList() {
   ];
 
   return (
-    <AdminLayout>
-      <AdminPageHeader
+    <>
+    <AdminPageHeader
         title="博客文章"
         description="管理博客列表、封面图、发布时间、SEO 与发布状态。发布后前台 /blog 生效。"
         actions={
           <div className="flex flex-wrap gap-2">
-            <Button variant="outline" onClick={load} disabled={!isSupabaseConfigured || loading}>
-              {loading ? "刷新中..." : "刷新"}
+            <Button variant="outline" onClick={() => void refetch()} disabled={!isSupabaseConfigured || isFetching}>
+              {isFetching ? "刷新中..." : "刷新"}
             </Button>
             <Button asChild>
               <Link to="/admin/blog/new">新建文章</Link>
@@ -150,7 +113,7 @@ export default function AdminBlogList() {
         </select>
       </div>
 
-      {error && <div className="mb-4 rounded-lg bg-muted p-3 text-sm">{error}</div>}
+      {errorMessage && <div className="mb-4 rounded-lg bg-muted p-3 text-sm">{errorMessage}</div>}
 
       <AdminDataTable
         columns={columns}
@@ -168,7 +131,7 @@ export default function AdminBlogList() {
           />
         }
       />
-    </AdminLayout>
+    </>
   );
 }
 

@@ -9,9 +9,9 @@ import IconCardGrid from "@/components/blocks/IconCardGrid";
 import { companyMilestones, coreValues, teamHighlights, companyStats } from "@/data/siteContent";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { useSiteSettings } from "@/hooks/useSiteSettings";
-import heroImg from "@/assets/hero-about.jpg";
-import { getPublishedAboutSection, getPublishedCtaBlock } from "@/lib/homeContentApi";
-import { useEffect, useMemo, useState } from "react";
+import heroImg from "@/assets/hero-about.webp";
+import { usePublishedAboutSection, usePublishedCtaBlock } from "@/hooks/usePublishedContent";
+import { useMemo } from "react";
 
 const aboutCopy = {
   en: {
@@ -135,42 +135,14 @@ const About = () => {
   const t = aboutCopy[language];
   const settings = useSiteSettings();
 
-  const [heroSection, setHeroSection] = useState<any | null>(null);
-  const [introSection, setIntroSection] = useState<any | null>(null);
-  const [statsSection, setStatsSection] = useState<any | null>(null);
-  const [valuesSection, setValuesSection] = useState<any | null>(null);
-  const [teamSection, setTeamSection] = useState<any | null>(null);
-  const [milestonesSection, setMilestonesSection] = useState<any | null>(null);
-  const [officeSection, setOfficeSection] = useState<any | null>(null);
-  const [ctaBlock, setCtaBlock] = useState<any | null>(null);
-
-  useEffect(() => {
-    let active = true;
-    void Promise.all([
-      getPublishedAboutSection(language, "hero"),
-      getPublishedAboutSection(language, "intro"),
-      getPublishedAboutSection(language, "stats"),
-      getPublishedAboutSection(language, "core_values"),
-      getPublishedAboutSection(language, "team"),
-      getPublishedAboutSection(language, "milestones"),
-      getPublishedAboutSection(language, "office"),
-      getPublishedCtaBlock(language, "about_final"),
-    ]).then(([hero, intro, stats, values, team, milestones, office, cta]) => {
-      if (!active) return;
-      setHeroSection(hero);
-      setIntroSection(intro);
-      setStatsSection(stats);
-      setValuesSection(values);
-      setTeamSection(team);
-      setMilestonesSection(milestones);
-      setOfficeSection(office);
-      setCtaBlock(cta);
-    });
-
-    return () => {
-      active = false;
-    };
-  }, [language]);
+  const { data: heroSection } = usePublishedAboutSection(language, "hero");
+  const { data: introSection } = usePublishedAboutSection(language, "intro");
+  const { data: statsSection } = usePublishedAboutSection(language, "stats");
+  const { data: valuesSection } = usePublishedAboutSection(language, "core_values");
+  const { data: teamSection } = usePublishedAboutSection(language, "team");
+  const { data: milestonesSection } = usePublishedAboutSection(language, "milestones");
+  const { data: officeSection } = usePublishedAboutSection(language, "office");
+  const { data: ctaBlock } = usePublishedCtaBlock(language, "about_final");
 
   const dynamicIntroParagraphs = useMemo<string[] | null>(() => {
     const items = introSection?.items;

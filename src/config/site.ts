@@ -18,7 +18,7 @@ export const siteConfig = {
   whatsappNumber,
   address: env.VITE_SITE_ADDRESS || "94, Jalan Mega Mendung, Taman United, 58200 Kuala Lumpur, Malaysia",
   shortAddress: env.VITE_SITE_SHORT_ADDRESS || "94, Jalan Mega Mendung, 58200",
-  ogImage: `${env.VITE_SITE_URL || "https://flashcast.com.my"}/og-image.jpg`,
+  ogImage: `${env.VITE_SITE_URL || "https://flashcast.com.my"}/og-image.webp`,
   logoUrl: `${env.VITE_SITE_URL || "https://flashcast.com.my"}/logo-flashcast.png`,
   socialLinks: {
     facebook: env.VITE_SOCIAL_FACEBOOK || "",

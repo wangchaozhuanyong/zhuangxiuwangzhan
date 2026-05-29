@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useMemo } from "react";
 import Link from "@/components/LocalizedLink";
 import { Button } from "@/components/ui/button";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
@@ -8,8 +8,9 @@ import { JsonLdFAQ, JsonLdBreadcrumb } from "@/components/JsonLd";
 import WhatsAppIcon from "@/components/WhatsAppIcon";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { useSiteSettings } from "@/hooks/useSiteSettings";
-import { getPublishedFaqs } from "@/lib/homeContentApi";
-import heroImg from "@/assets/hero-faq.jpg";
+import { usePublishedFaqs } from "@/hooks/usePublishedContent";
+import SmartImage from "@/components/SmartImage";
+import heroImg from "@/assets/hero-faq.webp";
 
 const faqContent = {
   en: {
@@ -134,21 +135,16 @@ const FAQ = () => {
   const { language } = useLanguage();
   const settings = useSiteSettings();
   const t = faqContent[language];
-  const [dynamicFaqs, setDynamicFaqs] = useState<typeof faqContent.en.categories>([]);
-  const categories = useMemo(() => dynamicFaqs.length ? dynamicFaqs : t.categories, [dynamicFaqs, t.categories]);
-
-  useEffect(() => {
-    setDynamicFaqs([]);
-    void getPublishedFaqs(language).then((items) => {
-      if (!items.length) return;
-      setDynamicFaqs([
-        {
-          category: language === "zh" ? "常见问题" : "General",
-          items: items.map((item) => ({ q: item.question, a: item.answer })),
-        },
-      ]);
-    });
-  }, [language]);
+  const { data: publishedFaqs } = usePublishedFaqs(language, "general");
+  const categories = useMemo(() => {
+    if (!publishedFaqs?.length) return t.categories;
+    return [
+      {
+        category: language === "zh" ? "常见问题" : "General",
+        items: publishedFaqs.map((item) => ({ q: item.question, a: item.answer })),
+      },
+    ];
+  }, [publishedFaqs, t.categories, language]);
 
   return (
     <main className="pt-16">
@@ -158,7 +154,7 @@ const FAQ = () => {
 
       <section className="relative min-h-[45vh] flex items-center overflow-hidden">
         <div className="absolute inset-0">
-          <img src={heroImg} alt={t.heroAlt} className="w-full h-full object-cover" />
+          <SmartImage src={heroImg} alt={t.heroAlt} className="w-full h-full object-cover" width={1920} height={800} loading="eager" fetchPriority="high" />
           <div className="absolute inset-0 bg-gradient-to-r from-black/60 via-black/30 to-transparent" />
         </div>
         <div className="relative z-10 container-narrow px-5 md:px-8 py-20 md:py-28">

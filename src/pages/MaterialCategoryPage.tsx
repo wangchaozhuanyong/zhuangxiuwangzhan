@@ -1,13 +1,13 @@
-import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import Link from "@/components/LocalizedLink";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, ArrowLeft } from "lucide-react";
 import WhatsAppIcon from "@/components/WhatsAppIcon";
 import { materialsData } from "@/data/materials";
-import { getPublishedMaterials } from "@/lib/contentApi";
+import { usePublishedMaterials } from "@/hooks/usePublishedContent";
 import { useLanguage } from "@/i18n/LanguageContext";
 import Reveal from "@/components/Reveal";
+import SmartImage from "@/components/SmartImage";
 import PageMeta from "@/components/PageMeta";
 import { JsonLdBreadcrumb } from "@/components/JsonLd";
 import { useSiteSettings } from "@/hooks/useSiteSettings";
@@ -55,13 +55,10 @@ const MaterialCategoryPage = () => {
   const { language } = useLanguage();
   const settings = useSiteSettings();
   const t = copy[language];
-  const [categories, setCategories] = useState(materialsData);
+  const { data: publishedCategories } = usePublishedMaterials(language);
+  const categories = publishedCategories?.length ? publishedCategories : materialsData;
   const category = categories.find((item) => item.slug === categorySlug);
   const displayCategoryName = category ? translateMaterialCategory(category.name, language) : "";
-
-  useEffect(() => {
-    void getPublishedMaterials(language).then(setCategories);
-  }, [language]);
 
   if (!category) {
     return (
@@ -84,7 +81,7 @@ const MaterialCategoryPage = () => {
 
       <section className="relative overflow-hidden">
         <div className="absolute inset-0">
-          <img src={category.image} alt={category.alt || displayCategoryName} className="w-full h-full object-cover" />
+          <SmartImage src={category.image} alt={category.alt || displayCategoryName} className="w-full h-full object-cover" width={1200} height={500} loading="eager" />
           <div className="absolute inset-0 bg-gradient-to-r from-black/65 via-black/35 to-transparent" />
         </div>
         <div className="relative z-10 section-padding">
@@ -111,7 +108,7 @@ const MaterialCategoryPage = () => {
               <Reveal key={subcategory.slug} delay={index * 60} direction="none">
                 <Link to={`/materials/category/${category.slug}/${subcategory.slug}`} className="snap-start shrink-0 w-44 sm:w-48 md:w-auto group block hover-lift">
                   <div className="relative overflow-hidden rounded-xl aspect-square bg-muted border border-border">
-                    <img src={subcategory.image} alt={subcategory.alt || translateMaterialSubcategory(subcategory.name, language)} loading="lazy" width={300} height={300} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                    <SmartImage src={subcategory.image} alt={subcategory.alt || translateMaterialSubcategory(subcategory.name, language)} loading="lazy" width={300} height={300} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
                     <div className="absolute bottom-0 left-0 right-0 p-3">
                       <h3 className="font-semibold text-sm leading-tight" style={{ color: "#fff", textShadow: "0 1px 3px rgba(0,0,0,0.5)" }}>
@@ -137,7 +134,7 @@ const MaterialCategoryPage = () => {
                 <Reveal key={item.id} delay={index * 60} direction="none">
                   <Link to={`/materials/${item.slug}`} className="group block hover-lift">
                     <div className="relative overflow-hidden rounded-lg aspect-square mb-3 bg-card border border-border img-zoom">
-                      <img src={item.image} alt={item.alt || item.name} loading="lazy" width={400} height={400} className="w-full h-full object-cover" />
+                      <SmartImage src={item.image} alt={item.alt || item.name} loading="lazy" width={400} height={400} className="w-full h-full object-cover" />
                     </div>
                     <h3 className="font-semibold text-sm mb-1 group-hover:text-accent transition-colors">{item.name}</h3>
                     <p className="text-muted-foreground text-xs">{t.color} {item.color}</p>

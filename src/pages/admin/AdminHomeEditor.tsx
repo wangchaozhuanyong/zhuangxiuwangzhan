@@ -1,4 +1,5 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import { useQueryClient } from "@tanstack/react-query";
 import { Link } from "react-router-dom";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
@@ -6,67 +7,13 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { isSupabaseConfigured, supabase } from "@/lib/supabase";
 import { toast } from "@/hooks/use-toast";
-import AdminLayout from "./AdminLayout";
 import AdminPageHeader from "@/components/admin/AdminPageHeader";
 import AdminFormSection from "@/components/admin/AdminFormSection";
 import AdminEmptyState from "@/components/admin/AdminEmptyState";
 import ImageField from "@/components/admin/ImageField";
-
-type HomeSectionRow = {
-  id?: string;
-  section_key: string;
-  title_zh?: string | null;
-  title_en?: string | null;
-  subtitle_zh?: string | null;
-  subtitle_en?: string | null;
-  content_zh?: string | null;
-  content_en?: string | null;
-  image_url?: string | null;
-  items_zh?: any;
-  items_en?: any;
-  status?: "draft" | "published" | "archived";
-  sort_order?: number;
-};
-
-type ProcessStepRow = {
-  id?: string;
-  step_number: number;
-  title_zh?: string | null;
-  title_en?: string | null;
-  description_zh?: string | null;
-  description_en?: string | null;
-  icon_key?: string | null;
-  status?: "draft" | "published" | "archived";
-  sort_order?: number;
-};
-
-type FaqRow = {
-  id?: string;
-  page_key: string;
-  question_zh?: string | null;
-  answer_zh?: string | null;
-  question_en?: string | null;
-  answer_en?: string | null;
-  status?: "draft" | "published" | "archived";
-  sort_order?: number;
-};
-
-type CtaRow = {
-  id?: string;
-  block_key: string;
-  title_zh?: string | null;
-  title_en?: string | null;
-  description_zh?: string | null;
-  description_en?: string | null;
-  primary_label_zh?: string | null;
-  primary_label_en?: string | null;
-  primary_url?: string | null;
-  secondary_label_zh?: string | null;
-  secondary_label_en?: string | null;
-  secondary_url?: string | null;
-  image_url?: string | null;
-  status?: "draft" | "published" | "archived";
-};
+import { invalidatePublishedContent } from "@/lib/adminInvalidate";
+import type { CtaRow, FaqRow, HomeSectionRow, ProcessStepRow } from "@/lib/adminEditorData";
+import { useAdminHomeEditorData } from "@/lib/adminQueries";
 
 const statusOptions = ["published", "draft", "archived"] as const;
 
@@ -79,24 +26,11 @@ const safeJsonParse = (value: string) => {
 
 const jsonStringify = (value: any) => JSON.stringify(value ?? [], null, 2);
 
-const ensureHomeSection = async (section_key: string): Promise<HomeSectionRow | null> => {
-  if (!supabase) return null;
-  const { data, error } = await supabase.from("home_sections").select("*").eq("section_key", section_key).order("sort_order").limit(1);
-  if (error) return null;
-  const row = (data || [])[0];
-  if (row) return row as any;
-  const { data: inserted, error: insertError } = await supabase
-    .from("home_sections")
-    .insert({ section_key, status: "published", sort_order: 0 })
-    .select("*")
-    .single();
-  if (insertError) return null;
-  return inserted as any;
-};
-
 export default function AdminHomeEditor() {
+  const queryClient = useQueryClient();
+  const { data: bundle, isFetching, refetch } = useAdminHomeEditorData();
   const [activeTab, setActiveTab] = useState("hero");
-  const [loading, setLoading] = useState(false);
+  const loading = isFetching;
 
   const [statsSection, setStatsSection] = useState<HomeSectionRow | null>(null);
   const [whySection, setWhySection] = useState<HomeSectionRow | null>(null);
@@ -109,39 +43,27 @@ export default function AdminHomeEditor() {
   const [whyItemsZh, setWhyItemsZh] = useState("");
   const [whyItemsEn, setWhyItemsEn] = useState("");
 
-  const load = useCallback(async () => {
-    if (!isSupabaseConfigured || !supabase) return;
-    setLoading(true);
-
-    const [stats, why, steps, faqs, cta] = await Promise.all([
-      ensureHomeSection("stats"),
-      ensureHomeSection("why_choose_us"),
-      supabase.from("process_steps").select("*").order("sort_order").order("step_number"),
-      supabase.from("faqs").select("*").eq("page_key", "home").order("sort_order"),
-      supabase.from("cta_blocks").select("*").eq("block_key", "home_final").maybeSingle(),
-    ]);
-
-    setStatsSection(stats);
-    setWhySection(why);
-    setProcessSteps(((steps as any).data || []) as any);
-    setFaqRows(((faqs as any).data || []) as any);
-    setCtaBlock(((cta as any).data || null) as any);
-
-    if (stats) {
-      setStatsItemsZh(jsonStringify((stats as any).items_zh || []));
-      setStatsItemsEn(jsonStringify((stats as any).items_en || []));
-    }
-    if (why) {
-      setWhyItemsZh(jsonStringify((why as any).items_zh || []));
-      setWhyItemsEn(jsonStringify((why as any).items_en || []));
-    }
-
-    setLoading(false);
-  }, []);
-
   useEffect(() => {
-    void load();
-  }, [load]);
+    if (!bundle) return;
+    setStatsSection(bundle.stats);
+    setWhySection(bundle.why);
+    setProcessSteps(bundle.processSteps);
+    setFaqRows(bundle.faqRows);
+    setCtaBlock(bundle.ctaBlock);
+    if (bundle.stats) {
+      setStatsItemsZh(jsonStringify(bundle.stats.items_zh || []));
+      setStatsItemsEn(jsonStringify(bundle.stats.items_en || []));
+    }
+    if (bundle.why) {
+      setWhyItemsZh(jsonStringify(bundle.why.items_zh || []));
+      setWhyItemsEn(jsonStringify(bundle.why.items_en || []));
+    }
+  }, [bundle]);
+
+  const refreshEditor = async () => {
+    void invalidatePublishedContent(queryClient);
+    await refetch();
+  };
 
   const saveHomeSectionItems = async (row: HomeSectionRow | null, items_zh: string, items_en: string) => {
     if (!row?.id || !supabase) return;
@@ -154,7 +76,7 @@ export default function AdminHomeEditor() {
         .eq("id", row.id);
       if (error) throw error;
       toast({ title: "已保存" });
-      await load();
+      await refreshEditor();
     } catch (e: any) {
       toast({ title: "保存失败（JSON 格式错误）", description: e?.message || String(e), variant: "destructive" });
     }
@@ -179,7 +101,7 @@ export default function AdminHomeEditor() {
     if (error) toast({ title: "保存失败", description: error.message, variant: "destructive" });
     else {
       toast({ title: "已保存" });
-      await load();
+      await refreshEditor();
     }
   };
 
@@ -189,7 +111,7 @@ export default function AdminHomeEditor() {
     if (error) toast({ title: "删除失败", description: error.message, variant: "destructive" });
     else {
       toast({ title: "已删除" });
-      await load();
+      await refreshEditor();
     }
   };
 
@@ -209,7 +131,7 @@ export default function AdminHomeEditor() {
     if (error) toast({ title: "保存失败", description: error.message, variant: "destructive" });
     else {
       toast({ title: "已保存" });
-      await load();
+      await refreshEditor();
     }
   };
 
@@ -219,7 +141,7 @@ export default function AdminHomeEditor() {
     if (error) toast({ title: "删除失败", description: error.message, variant: "destructive" });
     else {
       toast({ title: "已删除" });
-      await load();
+      await refreshEditor();
     }
   };
 
@@ -246,7 +168,7 @@ export default function AdminHomeEditor() {
     if (error) toast({ title: "保存失败", description: error.message, variant: "destructive" });
     else {
       toast({ title: "已保存" });
-      await load();
+      await refreshEditor();
     }
   };
 
@@ -275,20 +197,16 @@ export default function AdminHomeEditor() {
   const [editingCta, setEditingCta] = useState<CtaRow | null>(null);
 
   if (!isSupabaseConfigured) {
-    return (
-      <AdminLayout>
-        <AdminEmptyState title="Supabase 未配置" description="配置完成后才能使用首页后台管理。" />
-      </AdminLayout>
-    );
+    return <AdminEmptyState title="Supabase 未配置" description="配置完成后才能使用首页后台管理。" />;
   }
 
   return (
-    <AdminLayout>
-      <AdminPageHeader
+    <>
+    <AdminPageHeader
         title="首页管理"
         description="这里管理首页关键区块：统计数据 / 为什么选择我们 / 施工流程 / 首页 FAQ / 首页 CTA。Hero、客户评价、Before/After 可通过对应入口管理。"
         actions={
-          <Button variant="outline" onClick={load} disabled={loading}>
+          <Button variant="outline" onClick={() => void refetch()} disabled={loading}>
             {loading ? "刷新中..." : "刷新"}
           </Button>
         }
@@ -686,7 +604,7 @@ export default function AdminHomeEditor() {
           </AdminFormSection>
         </TabsContent>
       </Tabs>
-    </AdminLayout>
+    </>
   );
 }
 

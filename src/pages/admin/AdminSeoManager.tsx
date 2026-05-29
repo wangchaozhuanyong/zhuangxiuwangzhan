@@ -1,40 +1,15 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { isSupabaseConfigured, supabase } from "@/lib/supabase";
-import AdminLayout from "./AdminLayout";
-
-const sources = [
-  { table: "services", label: "服务项目", route: "/admin/services", front: "/services" },
-  { table: "projects", label: "装修案例", route: "/admin/projects", front: "/projects" },
-  { table: "materials", label: "材料库", route: "/admin/materials", front: "/materials" },
-  { table: "blog_posts", label: "博客文章", route: "/admin/blog", front: "/blog" },
-  { table: "service_areas", label: "服务地区", route: "/admin/content/service_areas", front: "/locations" },
-  { table: "landing_pages", label: "落地页", route: "/admin/content/landing_pages", front: "/landing" },
-];
+import { useAdminSeoAudit } from "@/lib/adminQueries";
 
 const AdminSeoManager = () => {
-  const [rows, setRows] = useState<any[]>([]);
-  const [message, setMessage] = useState("");
+  const { data: rows = [], isFetching, isError, error, refetch } = useAdminSeoAudit();
   const [status, setStatus] = useState("all");
 
-  const loadRows = useCallback(async () => {
-    if (!isSupabaseConfigured) return;
-    const entries = await Promise.all(sources.map(async (source) => {
-      const { data, error } = await supabase!.from(source.table).select("*").limit(200);
-      if (error) return [{ table: source.table, source, error: error.message }];
-      return (data || []).map((row) => ({ ...row, source, table: source.table }));
-    }));
-    setRows(entries.flat());
-  }, []);
-
-  useEffect(() => {
-    void loadRows();
-  }, [loadRows]);
-
   const checkedRows = useMemo(() => rows.map((row) => {
-    const issues = [];
-    if (row.error) issues.push(row.error);
+    const issues: string[] = [];
+    if (row.error) issues.push(String(row.error));
     if (!row.seo_title_zh) issues.push("缺中文 SEO 标题");
     if (!row.seo_description_zh) issues.push("缺中文 SEO 描述");
     if (!row.seo_title_en) issues.push("缺英文 SEO 标题");
@@ -60,22 +35,33 @@ const AdminSeoManager = () => {
     return seen;
   }, [checkedRows]);
 
+  const loadMessage = isError
+    ? (error instanceof Error ? error.message : String(error))
+    : isFetching
+      ? "正在加载 SEO 数据..."
+      : "";
+
   return (
-    <AdminLayout>
-      <div className="space-y-6">
+    <>
+    <div className="space-y-6">
         <div className="rounded-xl border border-border bg-card p-6">
           <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
             <div>
               <h1 className="font-display text-2xl font-bold">SEO 管理</h1>
               <p className="mt-2 text-sm text-muted-foreground">检查服务、案例、材料、博客、地区和落地页的 SEO 缺失项。</p>
             </div>
-            <select value={status} onChange={(event) => setStatus(event.target.value)} className="flex h-10 rounded-md border border-input bg-background px-3 py-2 text-sm">
-              <option value="all">全部</option>
-              <option value="missing">只看缺失</option>
-              <option value="ok">只看通过</option>
-            </select>
+            <div className="flex flex-wrap gap-2">
+              <Button type="button" variant="outline" size="sm" onClick={() => void refetch()} disabled={isFetching}>
+                {isFetching ? "刷新中..." : "刷新"}
+              </Button>
+              <select value={status} onChange={(event) => setStatus(event.target.value)} className="flex h-10 rounded-md border border-input bg-background px-3 py-2 text-sm">
+                <option value="all">全部</option>
+                <option value="missing">只看缺失</option>
+                <option value="ok">只看通过</option>
+              </select>
+            </div>
           </div>
-          {message && <p className="mt-4 rounded-lg bg-muted p-3 text-sm">{message}</p>}
+          {loadMessage && <p className="mt-4 rounded-lg bg-muted p-3 text-sm">{loadMessage}</p>}
         </div>
 
         <div className="space-y-3">
@@ -104,7 +90,7 @@ const AdminSeoManager = () => {
           })}
         </div>
       </div>
-    </AdminLayout>
+  </>
   );
 };
 

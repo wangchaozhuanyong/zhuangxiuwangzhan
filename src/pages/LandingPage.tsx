@@ -1,5 +1,5 @@
 import { useParams } from "react-router-dom";
-import { useEffect, useState } from "react";
+import { useMemo } from "react";
 import Link from "@/components/LocalizedLink";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, CheckCircle, MapPin, Star } from "lucide-react";
@@ -8,9 +8,10 @@ import Reveal from "@/components/Reveal";
 import CTABanner from "@/components/blocks/CTABanner";
 import FAQSection from "@/components/blocks/FAQSection";
 import PageMeta from "@/components/PageMeta";
+import SmartImage from "@/components/SmartImage";
 import { landingPages } from "@/data/landings";
 import { useLanguage } from "@/i18n/LanguageContext";
-import { getPublishedLandingPageBySlug } from "@/lib/contentApi";
+import { usePublishedLandingPageBySlug } from "@/hooks/usePublishedContent";
 import { useSiteSettings } from "@/hooks/useSiteSettings";
 import { isHtmlText, stripHtml } from "@/lib/text";
 import { sanitizeHtml } from "@/lib/sanitizeHtml";
@@ -61,21 +62,10 @@ const LandingPage = () => {
   const { language } = useLanguage();
   const settings = useSiteSettings();
   const t = language === "zh" ? zhShellCopy : shellCopy.en;
-  const fallbackPage = landingPages[slug || ""];
-  const [page, setPage] = useState(fallbackPage || null);
+  const fallbackPage = slug ? landingPages[slug] : undefined;
+  const { data: cmsPage } = usePublishedLandingPageBySlug(slug, language);
+  const page = useMemo(() => cmsPage ?? fallbackPage ?? null, [cmsPage, fallbackPage]);
   const displayText = (value: string) => translateDisplayText(value, language);
-
-  useEffect(() => {
-    if (!slug) return;
-    let active = true;
-    void getPublishedLandingPageBySlug(slug, language).then((item) => {
-      if (active) setPage(item);
-    });
-
-    return () => {
-      active = false;
-    };
-  }, [slug, language]);
 
   if (!page) {
     return (
@@ -115,7 +105,7 @@ const LandingPage = () => {
       />
       <section className="relative min-h-[60vh] flex items-center">
         <div className="absolute inset-0">
-          <img src={page.heroImage} alt={landingPage.heroAlt || landingPage.title} className="w-full h-full object-cover" loading="eager" width={1920} height={800} />
+          <SmartImage src={page.heroImage} alt={landingPage.heroAlt || landingPage.title} className="w-full h-full object-cover" loading="eager" width={1920} height={800} fetchPriority="high" />
           <div className="absolute inset-0 bg-gradient-to-r from-foreground/90 via-foreground/75 to-foreground/40" />
         </div>
         <div className="relative z-10 container-narrow px-4 md:px-8 py-24">
@@ -184,7 +174,7 @@ const LandingPage = () => {
                 <Reveal key={p.title} delay={i * 80}>
                   <div className="rounded-lg overflow-hidden border border-border bg-background hover-lift">
                     <div className="aspect-[4/3] overflow-hidden">
-                      <img src={p.image} alt={p.title} loading="lazy" width={600} height={450} className="w-full h-full object-cover" />
+                      <SmartImage src={p.image} alt={p.title} loading="lazy" width={600} height={450} className="w-full h-full object-cover" />
                     </div>
                     <div className="p-4">
                       <h3 className="font-semibold text-sm mb-1">{p.title}</h3>

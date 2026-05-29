@@ -1,46 +1,28 @@
 import Reveal from "@/components/Reveal";
 import { useT } from "@/i18n/useT";
-import { useEffect, useState } from "react";
 import { useLanguage } from "@/i18n/LanguageContext";
-import { getPublishedProcessSteps } from "@/lib/homeContentApi";
+import { usePublishedProcessSteps } from "@/hooks/usePublishedContent";
 
 const ProcessSection = () => {
   const t = useT();
   const { language } = useLanguage();
-  const [dynamicSteps, setDynamicSteps] = useState<{ num: string; title: string; desc: string }[] | null>(null);
-
   const steps = Array.from({ length: 6 }, (_, i) => ({
     num: String(i + 1).padStart(2, "0"),
     title: t(`process.step${i + 1}.title`),
     desc: t(`process.step${i + 1}.desc`),
   }));
 
-  useEffect(() => {
-    let active = true;
-    setDynamicSteps(null);
-    void getPublishedProcessSteps(language).then((rows) => {
-      if (!active) return;
-      if (!rows.length) {
-        setDynamicSteps([]);
-        return;
-      }
-      setDynamicSteps(
-        rows
-          .slice()
-          .sort((a, b) => (a.sort_order ?? 0) - (b.sort_order ?? 0))
-          .map((row, idx) => ({
-            num: String(row.step_number || idx + 1).padStart(2, "0"),
-            title: row.title,
-            desc: row.description,
-          })),
-      );
-    });
-    return () => {
-      active = false;
-    };
-  }, [language]);
-
-  const displaySteps = dynamicSteps && dynamicSteps.length ? dynamicSteps : steps;
+  const { data: publishedSteps } = usePublishedProcessSteps(language);
+  const displaySteps = publishedSteps?.length
+    ? publishedSteps
+        .slice()
+        .sort((a, b) => (a.sort_order ?? 0) - (b.sort_order ?? 0))
+        .map((row, idx) => ({
+          num: String(row.step_number || idx + 1).padStart(2, "0"),
+          title: row.title,
+          desc: row.description,
+        }))
+    : steps;
 
   return (
     <section className="section-padding bg-background" id="process">

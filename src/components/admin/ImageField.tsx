@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 import MediaPicker from "@/components/admin/MediaPicker";
+import SmartImage from "@/components/SmartImage";
 import AdminImageUpload from "@/pages/admin/AdminImageUpload";
 
 export default function ImageField({
@@ -44,7 +45,7 @@ export default function ImageField({
 
       {value && (
         <div className="overflow-hidden rounded-lg border border-border bg-muted">
-          <img src={value} alt={previewAlt} className="h-40 w-full object-cover" />
+          <SmartImage src={value} alt={previewAlt} className="h-40 w-full object-cover" width={640} height={320} />
         </div>
       )}
 

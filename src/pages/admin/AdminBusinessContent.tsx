@@ -1,11 +1,13 @@
-import { FormEvent, useCallback, useEffect, useMemo, useState } from "react";
+import { FormEvent, useEffect, useMemo, useState } from "react";
+import { useQueryClient } from "@tanstack/react-query";
+import { invalidateAdminContentDetail, invalidateAfterAdminContentSave } from "@/lib/adminInvalidate";
+import { useAdminBusinessRecord, useAdminTableRows, type AdminContentTable } from "@/lib/adminQueries";
 import { Link, useParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { isSupabaseConfigured, supabase } from "@/lib/supabase";
 import AdminImageUpload from "./AdminImageUpload";
-import AdminLayout from "./AdminLayout";
 import AdminProjectImages from "./AdminProjectImages";
 
 type ModuleKey = "services" | "projects" | "materials" | "blog_posts";
@@ -168,21 +170,10 @@ const parseValue = (field: FieldConfig, value: unknown) => {
 
 export const AdminBusinessList = ({ module }: { module: ModuleKey }) => {
   const config = moduleConfig[module];
-  const [rows, setRows] = useState<any[]>([]);
+  const { data: rows = [], error } = useAdminTableRows(config.table as AdminContentTable);
   const [search, setSearch] = useState("");
   const [status, setStatus] = useState("all");
-  const [message, setMessage] = useState("");
-
-  const loadRows = useCallback(async () => {
-    if (!isSupabaseConfigured) return;
-    const { data, error } = await supabase!.from(config.table).select("*").order("created_at", { ascending: false }).limit(200);
-    if (error) setMessage(error.message);
-    else setRows(data || []);
-  }, [config.table]);
-
-  useEffect(() => {
-    void loadRows();
-  }, [loadRows]);
+  const message = error instanceof Error ? error.message : error ? String(error) : "";
 
   const filtered = useMemo(() => {
     const query = search.trim().toLowerCase();
@@ -194,8 +185,8 @@ export const AdminBusinessList = ({ module }: { module: ModuleKey }) => {
   }, [rows, search, status]);
 
   return (
-    <AdminLayout>
-      <div className="space-y-6">
+    <>
+    <div className="space-y-6">
         <div className="rounded-xl border border-border bg-card p-6">
           <div className="mb-4 flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
             <h1 className="font-display text-2xl font-bold">{config.title}</h1>
@@ -220,7 +211,7 @@ export const AdminBusinessList = ({ module }: { module: ModuleKey }) => {
           ))}
         </div>
       </div>
-    </AdminLayout>
+    </>
   );
 };
 
@@ -228,20 +219,25 @@ export const AdminBusinessEditor = ({ module }: { module: ModuleKey }) => {
   const { id } = useParams<{ id: string }>();
   const config = moduleConfig[module];
   const isNew = id === "new";
+  const queryClient = useQueryClient();
   const [record, setRecord] = useState<Record<string, any>>(emptyRecord);
   const [showEnglish, setShowEnglish] = useState(false);
   const [status, setStatus] = useState("");
 
+  const { data: loaded, isError, error: loadError } = useAdminBusinessRecord(config.table, isNew ? undefined : id);
+
   useEffect(() => {
-    if (!id || isNew || !isSupabaseConfigured) {
+    if (isNew || !id) {
       setRecord(emptyRecord);
       return;
     }
-    void supabase!.from(config.table).select("*").eq("id", id).single().then(({ data, error }) => {
-      if (error) setStatus(error.message);
-      else setRecord(data || emptyRecord);
-    });
-  }, [config.table, id, isNew]);
+    if (loaded) setRecord(loaded);
+  }, [config.table, id, isNew, loaded]);
+
+  useEffect(() => {
+    if (!isError || !loadError) return;
+    setStatus(loadError instanceof Error ? loadError.message : String(loadError));
+  }, [isError, loadError]);
 
   const update = (key: string, value: unknown) => setRecord((current) => ({ ...current, [key]: value }));
 
@@ -264,11 +260,17 @@ export const AdminBusinessEditor = ({ module }: { module: ModuleKey }) => {
     const savedId = data.id;
     setRecord((current) => ({ ...current, id: savedId }));
     setStatus("已保存。");
+    void invalidateAfterAdminContentSave(queryClient);
     if (generateEnglish) {
       const { error: translationError } = await supabase!.functions.invoke("generate-english-content", {
         body: { table: config.table, id: savedId },
       });
-      setStatus(translationError ? `已保存，但生成英文失败：${translationError.message}` : "已保存，并已发起英文生成。");
+      if (translationError) {
+        setStatus(`已保存，但生成英文失败：${translationError.message}`);
+      } else {
+        setStatus("已保存，并已发起英文生成。");
+        void invalidateAdminContentDetail(queryClient, config.table, savedId);
+      }
     }
     if (isNew) window.history.replaceState(null, "", `${config.route}/${savedId}`);
   };
@@ -308,8 +310,7 @@ export const AdminBusinessEditor = ({ module }: { module: ModuleKey }) => {
   };
 
   return (
-    <AdminLayout>
-      <form onSubmit={(event: FormEvent) => { event.preventDefault(); void save(false); }} className="space-y-6">
+    <form onSubmit={(event: FormEvent) => { event.preventDefault(); void save(false); }} className="space-y-6">
         <div className="rounded-xl border border-border bg-card p-6">
           <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
             <div>
@@ -347,6 +348,5 @@ export const AdminBusinessEditor = ({ module }: { module: ModuleKey }) => {
         {renderGroup("seo", "SEO")}
         {renderGroup("english", "英文内容")}
       </form>
-    </AdminLayout>
   );
 };

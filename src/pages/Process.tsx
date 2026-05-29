@@ -1,3 +1,4 @@
+import { useMemo } from "react";
 import { CheckCircle } from "lucide-react";
 import Reveal from "@/components/Reveal";
 import PageMeta from "@/components/PageMeta";
@@ -6,7 +7,8 @@ import HeroBanner from "@/components/blocks/HeroBanner";
 import CTABanner from "@/components/blocks/CTABanner";
 import SectionHeader from "@/components/blocks/SectionHeader";
 import { useLanguage } from "@/i18n/LanguageContext";
-import heroImg from "@/assets/hero-process.jpg";
+import { usePublishedProcessSteps } from "@/hooks/usePublishedContent";
+import heroImg from "@/assets/hero-process.webp";
 
 const content = {
   en: {
@@ -64,6 +66,16 @@ const content = {
 const Process = () => {
   const { language } = useLanguage();
   const t = content[language];
+  const { data: publishedSteps } = usePublishedProcessSteps(language);
+  const steps = useMemo(() => {
+    if (!publishedSteps?.length) return t.steps;
+    return publishedSteps.map((row, index) => ({
+      num: String(row.step_number || index + 1).padStart(2, "0"),
+      title: row.title,
+      desc: row.description,
+      details: t.steps[index]?.details?.length ? t.steps[index].details : row.description ? [row.description] : [],
+    }));
+  }, [publishedSteps, t.steps]);
 
   return (
     <main className="pt-16">
@@ -77,7 +89,7 @@ const Process = () => {
           <SectionHeader title={t.sectionTitle} description={t.sectionDescription} />
 
           <div className="mx-auto max-w-3xl space-y-6">
-            {t.steps.map((step, index) => (
+            {steps.map((step, index) => (
               <Reveal key={step.num} delay={index * 80}>
                 <div className="hover-lift relative flex gap-5 rounded-lg border border-border bg-card p-6 md:gap-7 md:p-8">
                   <div className="shrink-0">

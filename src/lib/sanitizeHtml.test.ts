@@ -11,6 +11,15 @@ describe("sanitizeHtml", () => {
     expect(out).not.toMatch(/javascript:/i);
   });
 
+  it("keeps safe images and prefers webp for local paths", () => {
+    const input = `<p>Text</p><img src="/images/foo.jpg" alt="Foo" onerror="alert(1)">`;
+    const out = sanitizeHtml(input);
+    expect(out).toContain('src="/images/foo.webp"');
+    expect(out).toContain('alt="Foo"');
+    expect(out).toContain('loading="lazy"');
+    expect(out).not.toMatch(/onerror/i);
+  });
+
   it("keeps basic formatting tags", () => {
     const input = `<h2>Title</h2><p><strong>Bold</strong> <em>Em</em><br/>Line</p><ul><li>A</li></ul>`;
     const out = sanitizeHtml(input);

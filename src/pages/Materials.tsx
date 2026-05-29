@@ -1,16 +1,17 @@
-import { useEffect, useState } from "react";
+import { useMemo } from "react";
 import Link from "@/components/LocalizedLink";
 import { Button } from "@/components/ui/button";
 import { ArrowRight } from "lucide-react";
 import WhatsAppIcon from "@/components/WhatsAppIcon";
 import { materialsData } from "@/data/materials";
-import { getPublishedMaterials } from "@/lib/contentApi";
+import { usePublishedMaterials } from "@/hooks/usePublishedContent";
+import SmartImage from "@/components/SmartImage";
 import { useLanguage } from "@/i18n/LanguageContext";
 import Reveal from "@/components/Reveal";
 import PageMeta from "@/components/PageMeta";
 import { JsonLdBreadcrumb } from "@/components/JsonLd";
 import { useSiteSettings } from "@/hooks/useSiteSettings";
-import heroImg from "@/assets/hero-materials.jpg";
+import heroImg from "@/assets/hero-materials.webp";
 import { translateMaterialCategory } from "@/i18n/displayLabels";
 
 const copy = {
@@ -56,22 +57,21 @@ const Materials = () => {
   const { language } = useLanguage();
   const settings = useSiteSettings();
   const t = copy[language];
-  const [categories, setCategories] = useState(materialsData);
+  const { data: publishedCategories } = usePublishedMaterials(language);
+  const categories = useMemo(() => {
+    const items = publishedCategories ?? [];
+    const hasCountertopCategory = items.some(
+      (category) => category.slug === "countertops-stone-surfaces" || /countertop|stone surface/i.test(category.name),
+    );
+    const countertopCategory = materialsData.find((category) => category.slug === "countertops-stone-surfaces");
+
+    if (items.length < 8 && !hasCountertopCategory && countertopCategory) {
+      return [...items, countertopCategory];
+    }
+    if (!items.length) return materialsData;
+    return items;
+  }, [publishedCategories]);
   const displayCategoryName = (value: string) => translateMaterialCategory(value, language);
-
-  useEffect(() => {
-    void getPublishedMaterials(language).then((items) => {
-      const hasCountertopCategory = items.some((category) => category.slug === "countertops-stone-surfaces" || /countertop|stone surface/i.test(category.name));
-      const countertopCategory = materialsData.find((category) => category.slug === "countertops-stone-surfaces");
-
-      if (items.length < 8 && !hasCountertopCategory && countertopCategory) {
-        setCategories([...items, countertopCategory]);
-        return;
-      }
-
-      setCategories(items);
-    });
-  }, [language]);
 
   return (
     <main className="pt-16">
@@ -80,7 +80,7 @@ const Materials = () => {
 
       <section className="relative flex min-h-[45vh] items-center overflow-hidden">
         <div className="absolute inset-0">
-          <img src={heroImg} alt={t.heroAlt} className="h-full w-full object-cover" />
+          <SmartImage src={heroImg} alt={t.heroAlt} className="h-full w-full object-cover" width={1920} height={800} loading="eager" fetchPriority="high" />
           <div className="absolute inset-0 media-readable-overlay" />
         </div>
         <div className="relative z-10 container-narrow px-5 py-20 md:px-8 md:py-28">
@@ -111,7 +111,7 @@ const Materials = () => {
               <Reveal key={category.slug} delay={index * 80}>
                 <Link to={`/materials/category/${category.slug}`} className="group block hover-lift">
                   <div className="relative aspect-[4/3] overflow-hidden rounded-xl border border-border bg-muted">
-                    <img
+                    <SmartImage
                       src={category.image}
                       alt={category.alt || displayCategoryName(category.name)}
                       loading="lazy"

@@ -1,10 +1,12 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
+import { useQueryClient } from "@tanstack/react-query";
+import { invalidatePublishedContent } from "@/lib/adminInvalidate";
+import { useAdminSimpleCmsRows } from "@/lib/adminQueries";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { isSupabaseConfigured, supabase } from "@/lib/supabase";
 import AdminImageUpload from "./AdminImageUpload";
-import AdminLayout from "./AdminLayout";
 
 type ModuleKey = "home_sections" | "faqs" | "before_after_items" | "brand_partners";
 type Field = { key: string; label: string; type?: "text" | "textarea" | "image" | "number" | "select" };
@@ -72,20 +74,10 @@ const emptyRecord = { status: "published", sort_order: 0 };
 
 const AdminSimpleCms = ({ module }: { module: ModuleKey }) => {
   const config = configs[module];
-  const [rows, setRows] = useState<any[]>([]);
+  const queryClient = useQueryClient();
+  const { data: rows = [], error, refetch } = useAdminSimpleCmsRows(config.table);
   const [record, setRecord] = useState<Record<string, any>>(emptyRecord);
-  const [message, setMessage] = useState("");
-
-  const loadRows = useCallback(async () => {
-    if (!isSupabaseConfigured) return;
-    const { data, error } = await supabase!.from(config.table).select("*").order("sort_order").order("created_at", { ascending: false });
-    if (error) setMessage(error.message);
-    else setRows(data || []);
-  }, [config.table]);
-
-  useEffect(() => {
-    void loadRows();
-  }, [loadRows]);
+  const [message, setMessage] = useState(error instanceof Error ? error.message : error ? String(error) : "");
 
   const title = useMemo(() => record[config.labelField] || record.title_en || record.name || "新建", [config.labelField, record]);
   const update = (key: string, value: unknown) => setRecord((current) => ({ ...current, [key]: value }));
@@ -104,8 +96,10 @@ const AdminSimpleCms = ({ module }: { module: ModuleKey }) => {
       return;
     }
     setMessage("已保存。");
+    void invalidatePublishedContent(queryClient);
+    void queryClient.invalidateQueries({ queryKey: ["admin", config.table, "rows"] });
     setRecord(emptyRecord);
-    await loadRows();
+    await refetch();
   };
 
   const remove = async (id: string) => {
@@ -114,7 +108,9 @@ const AdminSimpleCms = ({ module }: { module: ModuleKey }) => {
     if (error) setMessage(error.message);
     else {
       setMessage("已删除。");
-      await loadRows();
+      void invalidatePublishedContent(queryClient);
+      void queryClient.invalidateQueries({ queryKey: ["admin", config.table, "rows"] });
+      await refetch();
     }
   };
 
@@ -138,8 +134,7 @@ const AdminSimpleCms = ({ module }: { module: ModuleKey }) => {
   };
 
   return (
-    <AdminLayout>
-      <div className="grid gap-6 xl:grid-cols-[1fr_420px]">
+    <div className="grid gap-6 xl:grid-cols-[1fr_420px]">
         <section className="rounded-xl border border-border bg-card p-6">
           <div className="mb-5 flex items-start justify-between gap-4">
             <div>
@@ -184,7 +179,6 @@ const AdminSimpleCms = ({ module }: { module: ModuleKey }) => {
           <Button type="button" className="mt-5 w-full" onClick={() => void save()}>保存</Button>
         </section>
       </div>
-    </AdminLayout>
   );
 };
 

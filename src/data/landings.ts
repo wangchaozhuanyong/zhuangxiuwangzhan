@@ -1,8 +1,8 @@
-﻿/** * Landing page data for SEO-targeted service/product pages. * To add a new landing page, simply add a new entry here - no code changes needed. */ import residentialImg from "@/assets/residential-renovation.jpg";
-import commercialImg from "@/assets/commercial-renovation.jpg";
-import kitchenImg from "@/assets/kitchen-cabinet.jpg";
-import warehouseImg from "@/assets/warehouse-shelving.jpg";
-import exteriorImg from "@/assets/exterior-works.jpg";
+﻿/** * Landing page data for SEO-targeted service/product pages. * To add a new landing page, simply add a new entry here - no code changes needed. */ import residentialImg from "@/assets/residential-renovation.webp";
+import commercialImg from "@/assets/commercial-renovation.webp";
+import kitchenImg from "@/assets/kitchen-cabinet.webp";
+import warehouseImg from "@/assets/warehouse-shelving.webp";
+import exteriorImg from "@/assets/exterior-works.webp";
 export interface LandingProject {
   title: string;
   location: string;

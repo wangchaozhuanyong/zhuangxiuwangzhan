@@ -1,10 +1,14 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useState } from "react";
+import { useQueryClient } from "@tanstack/react-query";
+import { invalidateAfterAdminContentSave } from "@/lib/adminInvalidate";
+import { useAdminProjectImages } from "@/lib/adminQueries";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { supabase } from "@/lib/supabase";
 import AdminImageUpload from "./AdminImageUpload";
+import SmartImage from "@/components/SmartImage";
 import type { Language } from "@/i18n/routes";
 
 const isZhBrowser = () => typeof navigator !== "undefined" && navigator.language.toLowerCase().startsWith("zh");
@@ -79,21 +83,17 @@ const formatImageType = (value: string, language: Language) =>
   imageTypeLabels[value]?.[language] || value;
 
 const AdminProjectImages = ({ projectId }: AdminProjectImagesProps) => {
+  const queryClient = useQueryClient();
   const lang = "zh";
   const t = copy[lang];
-  const [images, setImages] = useState<any[]>([]);
+  const { data: images = [], refetch } = useAdminProjectImages(projectId);
   const [draft, setDraft] = useState<any>(emptyImage);
   const [status, setStatus] = useState("");
 
-  const loadImages = useCallback(async () => {
-    if (!projectId || !supabase) return;
-    const { data } = await supabase.from("project_images").select("*").eq("project_id", projectId).order("sort_order");
-    setImages(data || []);
-  }, [projectId]);
-
-  useEffect(() => {
-    void loadImages();
-  }, [loadImages]);
+  const refreshProjectCaches = useCallback(() => {
+    void invalidateAfterAdminContentSave(queryClient);
+    void queryClient.invalidateQueries({ queryKey: ["admin", "project_images", projectId] });
+  }, [queryClient, projectId]);
 
   const addImage = async () => {
     if (!projectId || !draft.image_url) {
@@ -114,14 +114,17 @@ const AdminProjectImages = ({ projectId }: AdminProjectImagesProps) => {
 
     setDraft(emptyImage);
     setStatus(t.added);
-    await loadImages();
+    refreshProjectCaches();
+    await refetch();
   };
 
   const updateImage = async (image: any, patch: Record<string, any>) => {
-    const next = { ...image, ...patch };
-    setImages((items) => items.map((item) => (item.id === image.id ? next : item)));
     const { error } = await supabase!.from("project_images").update(patch).eq("id", image.id);
     if (error) setStatus(error.message);
+    else {
+      refreshProjectCaches();
+      await refetch();
+    }
   };
 
   const setAsCover = async (image: any) => {
@@ -138,7 +141,7 @@ const AdminProjectImages = ({ projectId }: AdminProjectImagesProps) => {
       return;
     }
     await updateImage(image, { image_type: "cover", sort_order: 0 });
-    await loadImages();
+    refreshProjectCaches();
     setStatus(lang === "zh" ? "已设为封面（前台列表将优先显示该图）。" : "Cover image updated.");
   };
 
@@ -148,7 +151,8 @@ const AdminProjectImages = ({ projectId }: AdminProjectImagesProps) => {
       setStatus(error.message);
       return;
     }
-    setImages((items) => items.filter((item) => item.id !== id));
+    refreshProjectCaches();
+    await refetch();
   };
 
   if (!projectId) {
@@ -206,7 +210,7 @@ const AdminProjectImages = ({ projectId }: AdminProjectImagesProps) => {
         <TableBody>
           {images.map((image) => (
             <TableRow key={image.id}>
-              <TableCell><img src={image.image_url} alt={image.alt_en || image.alt_zh || "项目图片"} className="h-16 w-24 rounded object-cover" /></TableCell>
+              <TableCell><SmartImage src={image.image_url} alt={image.alt_en || image.alt_zh || "项目图片"} width={96} height={64} className="h-16 w-24 rounded object-cover" /></TableCell>
               <TableCell>{formatImageType(image.image_type, lang as Language)}</TableCell>
               <TableCell className="max-w-xs text-xs text-muted-foreground">{image.alt_zh}<br />{image.alt_en}</TableCell>
               <TableCell>

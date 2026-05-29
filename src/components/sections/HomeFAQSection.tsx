@@ -4,37 +4,21 @@ import { Button } from "@/components/ui/button";
 import { ArrowRight } from "lucide-react";
 import Reveal from "@/components/Reveal";
 import { useT } from "@/i18n/useT";
-import { useEffect, useState } from "react";
 import { useLanguage } from "@/i18n/LanguageContext";
-import { getPublishedFaqs } from "@/lib/homeContentApi";
+import { usePublishedFaqs } from "@/hooks/usePublishedContent";
 
 const HomeFAQSection = () => {
   const t = useT();
   const { language } = useLanguage();
-  const [dynamicFaqs, setDynamicFaqs] = useState<{ q: string; a: string }[] | null>(null);
-
   const faqs = Array.from({ length: 7 }, (_, i) => ({
     q: t(`faq.q${i + 1}`),
     a: t(`faq.a${i + 1}`),
   }));
 
-  useEffect(() => {
-    let active = true;
-    setDynamicFaqs(null);
-    void getPublishedFaqs(language, "home").then((rows) => {
-      if (!active) return;
-      if (!rows.length) {
-        setDynamicFaqs([]);
-        return;
-      }
-      setDynamicFaqs(rows.map((r) => ({ q: r.question, a: r.answer })));
-    });
-    return () => {
-      active = false;
-    };
-  }, [language]);
-
-  const displayFaqs = dynamicFaqs && dynamicFaqs.length ? dynamicFaqs : faqs;
+  const { data: publishedFaqs } = usePublishedFaqs(language, "home");
+  const displayFaqs = publishedFaqs?.length
+    ? publishedFaqs.map((r) => ({ q: r.question, a: r.answer }))
+    : faqs;
 
   return (
     <section className="section-padding bg-background" id="faq">

@@ -1,3 +1,5 @@
+import { optimizeContentImageSrc } from "@/lib/imageUrl";
+
 const ALLOWED_TAGS = new Set([
   "a",
   "b",
@@ -10,6 +12,7 @@ const ALLOWED_TAGS = new Set([
   "h3",
   "h4",
   "hr",
+  "img",
   "i",
   "li",
   "ol",
@@ -46,6 +49,7 @@ const ALLOWED_ATTRS: Record<string, Set<string>> = {
   h2: new Set(["class"]),
   h3: new Set(["class"]),
   h4: new Set(["class"]),
+  img: new Set(["src", "alt", "width", "height", "loading", "decoding"]),
 };
 
 const isSafeUrl = (value: string) => {
@@ -89,10 +93,22 @@ const cleanNode = (node: Node) => {
         continue;
       }
 
-      if (tag === "a" && name === "href") {
+      if ((tag === "a" && name === "href") || (tag === "img" && name === "src")) {
         if (!isSafeUrl(attr.value)) {
           el.removeAttribute(attr.name);
         }
+      }
+    }
+
+    if (tag === "img") {
+      const src = el.getAttribute("src");
+      if (src && isSafeUrl(src)) {
+        el.setAttribute("src", optimizeContentImageSrc(src));
+        if (!el.getAttribute("loading")) el.setAttribute("loading", "lazy");
+        if (!el.getAttribute("decoding")) el.setAttribute("decoding", "async");
+      } else {
+        el.remove();
+        return;
       }
     }
 

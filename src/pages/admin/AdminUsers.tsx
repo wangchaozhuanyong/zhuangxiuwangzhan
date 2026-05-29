@@ -1,53 +1,51 @@
-import { FormEvent, useCallback, useEffect, useState } from "react";
+import { FormEvent, useState } from "react";
+import { useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { isSupabaseConfigured, supabase } from "@/lib/supabase";
-import AdminLayout from "./AdminLayout";
+import { useAdminUsers } from "@/lib/adminQueries";
 
 const AdminUsers = () => {
-  const [users, setUsers] = useState<any[]>([]);
+  const queryClient = useQueryClient();
+  const { data: users = [], error, refetch } = useAdminUsers();
   const [form, setForm] = useState({ user_id: "", email: "" });
-  const [message, setMessage] = useState("");
+  const [message, setMessage] = useState(error instanceof Error ? error.message : error ? String(error) : "");
 
-  const loadUsers = useCallback(async () => {
-    if (!isSupabaseConfigured) return;
-    const { data, error } = await supabase!.from("admin_users").select("*").order("created_at", { ascending: false });
-    if (error) setMessage(error.message);
-    else setUsers(data || []);
-  }, []);
-
-  useEffect(() => {
-    void loadUsers();
-  }, [loadUsers]);
+  const refreshUsers = () => queryClient.invalidateQueries({ queryKey: ["admin", "users"] });
 
   const addUser = async (event: FormEvent) => {
     event.preventDefault();
     if (!form.user_id.trim()) return;
-    const { error } = await supabase!.from("admin_users").upsert({
+    const { error: upsertError } = await supabase!.from("admin_users").upsert({
       user_id: form.user_id.trim(),
       email: form.email.trim() || null,
       active: true,
     });
-    if (error) setMessage(error.message);
+    if (upsertError) setMessage(upsertError.message);
     else {
       setForm({ user_id: "", email: "" });
-      await loadUsers();
+      await refreshUsers();
+      await refetch();
     }
   };
 
-  const toggleActive = async (user: any) => {
-    const { error } = await supabase!.from("admin_users").update({ active: !user.active }).eq("user_id", user.user_id);
-    if (error) setMessage(error.message);
-    else await loadUsers();
+  const toggleActive = async (user: { user_id: string; active: boolean }) => {
+    const { error: updateError } = await supabase!.from("admin_users").update({ active: !user.active }).eq("user_id", user.user_id);
+    if (updateError) setMessage(updateError.message);
+    else {
+      await refreshUsers();
+      await refetch();
+    }
   };
 
   return (
-    <AdminLayout>
-      <div className="space-y-6">
+    <>
+    <div className="space-y-6">
         <div className="rounded-xl border border-border bg-card p-6">
           <h1 className="font-display text-2xl font-bold">管理员账号</h1>
           <p className="mt-2 text-sm text-muted-foreground">只管理后台白名单。不会显示或使用 service role key。</p>
           {message && <p className="mt-4 rounded-lg bg-muted p-3 text-sm">{message}</p>}
+          {!isSupabaseConfigured && <p className="mt-4 rounded-lg bg-muted p-3 text-sm">Supabase 未配置。</p>}
         </div>
 
         <form onSubmit={addUser} className="rounded-xl border border-border bg-card p-6">
@@ -61,7 +59,7 @@ const AdminUsers = () => {
               <label className="mb-1 block text-sm font-medium">邮箱</label>
               <Input type="email" value={form.email} onChange={(event) => setForm({ ...form, email: event.target.value })} placeholder="admin@example.com" />
             </div>
-            <Button type="submit">添加</Button>
+            <Button type="submit" disabled={!isSupabaseConfigured}>添加</Button>
           </div>
         </form>
 
@@ -80,7 +78,7 @@ const AdminUsers = () => {
           ))}
         </div>
       </div>
-    </AdminLayout>
+    </>
   );
 };
 

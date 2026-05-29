@@ -1,29 +1,17 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { isSupabaseConfigured, supabase } from "@/lib/supabase";
-import AdminLayout from "./AdminLayout";
+import { useAdminQuotes } from "@/lib/adminQueries";
 
 const statuses = ["all", "pending", "contacted", "site_visit_scheduled", "quoted", "accepted", "rejected", "closed"];
 const csvEscape = (value: unknown) => `"${String(value ?? "").replaceAll('"', '""')}"`;
 
 const AdminQuoteList = () => {
-  const [rows, setRows] = useState<any[]>([]);
+  const { data: rows = [], error } = useAdminQuotes();
   const [search, setSearch] = useState("");
   const [status, setStatus] = useState("all");
-  const [message, setMessage] = useState("");
-
-  const loadRows = useCallback(async () => {
-    if (!isSupabaseConfigured) return;
-    const { data, error } = await supabase!.from("quote_requests").select("*").order("created_at", { ascending: false }).limit(200);
-    if (error) setMessage(error.message);
-    else setRows(data || []);
-  }, []);
-
-  useEffect(() => {
-    void loadRows();
-  }, [loadRows]);
+  const message = error ? (error as Error).message : "";
 
   const filtered = useMemo(() => {
     const query = search.trim().toLowerCase();
@@ -46,8 +34,8 @@ const AdminQuoteList = () => {
   };
 
   return (
-    <AdminLayout>
-      <div className="space-y-6">
+    <>
+    <div className="space-y-6">
         <div className="rounded-xl border border-border bg-card p-6">
           <div className="mb-4 flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
             <h1 className="font-display text-2xl font-bold">报价请求</h1>
@@ -79,7 +67,7 @@ const AdminQuoteList = () => {
           ))}
         </div>
       </div>
-    </AdminLayout>
+  </>
   );
 };
 

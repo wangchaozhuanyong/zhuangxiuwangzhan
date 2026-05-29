@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { MapPin, Phone, Mail, ArrowRight, ChevronDown } from "lucide-react";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { useSiteSettings } from "@/hooks/useSiteSettings";
+import SmartImage from "@/components/SmartImage";
 
 const locationLinks = [
   { name: "Kuala Lumpur", slug: "kuala-lumpur" },
@@ -167,7 +168,7 @@ const Footer = () => {
           <div className="hidden gap-10 lg:grid grid-cols-12">
             <div className="col-span-4 pr-4">
               <div className="mb-6">
-                <img src={settings.logo_url} alt={settings.company_name} className="h-10 w-auto opacity-90" />
+                <SmartImage src={settings.logo_url} alt={settings.company_name} className="h-10 w-auto opacity-90" width={160} height={40} />
               </div>
               <p className="mb-3 max-w-[300px] text-sm leading-relaxed text-white/40">{t.brandText}</p>
               <p className="mb-8 max-w-[300px] text-xs text-white/25">{t.trustLine}</p>
@@ -227,7 +228,7 @@ const Footer = () => {
           <div className="flex flex-col gap-2 lg:hidden">
             <div className="mb-2 border-b border-white/[0.08] pb-3">
               <div className="mb-4 flex items-center gap-3">
-                <img src={settings.logo_url} alt={settings.company_name} className="h-9 w-auto opacity-90" />
+                <SmartImage src={settings.logo_url} alt={settings.company_name} className="h-9 w-auto opacity-90" width={144} height={36} />
               </div>
               <p className="mb-3 text-sm leading-relaxed text-white/40">{t.brandText}</p>
             </div>

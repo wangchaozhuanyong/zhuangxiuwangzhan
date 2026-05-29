@@ -1,16 +1,17 @@
-import { useEffect, useState } from "react";
+import { useMemo } from "react";
 import Link from "@/components/LocalizedLink";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, CheckCircle } from "lucide-react";
 import WhatsAppIcon from "@/components/WhatsAppIcon";
 import { servicesData } from "@/data/services";
-import { getPublishedServices } from "@/lib/contentApi";
+import SmartImage from "@/components/SmartImage";
+import { usePublishedServices } from "@/hooks/usePublishedContent";
 import Reveal from "@/components/Reveal";
 import PageMeta from "@/components/PageMeta";
 import { JsonLdBreadcrumb } from "@/components/JsonLd";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { useSiteSettings } from "@/hooks/useSiteSettings";
-import heroImg from "@/assets/hero-services.jpg";
+import heroImg from "@/assets/hero-services.webp";
 import { translateDisplayText } from "@/i18n/displayLabels";
 
 const copy = {
@@ -73,24 +74,23 @@ const Services = () => {
   const settings = useSiteSettings();
   const t = copy[language];
   const displayText = (value: string) => translateDisplayText(value, language);
-  const initialServices = language === "zh"
-    ? servicesData.map((service) => ({
-        ...service,
-        title: displayText(service.title),
-        summary: displayText(service.summary),
-        description: displayText(service.description),
-        suitableFor: service.suitableFor.map((item) => displayText(item)),
-        commonProjects: service.commonProjects.map((item) => displayText(item)),
-        processSteps: service.processSteps.map((step) => ({ title: displayText(step.title), desc: displayText(step.desc) })),
-        items: service.items.map((item) => displayText(item)),
-        faqs: service.faqs.map((faq) => ({ q: displayText(faq.q), a: displayText(faq.a) })),
-      }))
-    : servicesData;
-  const [services, setServices] = useState(initialServices);
-
-  useEffect(() => {
-    void getPublishedServices(language).then(setServices);
+  const initialServices = useMemo(() => {
+    const localize = (value: string) => translateDisplayText(value, language);
+    return language === "zh"
+      ? servicesData.map((service) => ({
+          ...service,
+          title: localize(service.title),
+          summary: localize(service.summary),
+          description: localize(service.description),
+          suitableFor: service.suitableFor.map((item) => localize(item)),
+          commonProjects: service.commonProjects.map((item) => localize(item)),
+          processSteps: service.processSteps.map((step) => ({ title: localize(step.title), desc: localize(step.desc) })),
+          items: service.items.map((item) => localize(item)),
+          faqs: service.faqs.map((faq) => ({ q: localize(faq.q), a: localize(faq.a) })),
+        }))
+      : servicesData;
   }, [language]);
+  const { data: services = initialServices } = usePublishedServices(language);
 
   return (
     <main className="pt-16">
@@ -99,7 +99,7 @@ const Services = () => {
 
       <section className="relative min-h-[45vh] flex items-center overflow-hidden">
         <div className="absolute inset-0">
-          <img src={heroImg} alt={t.heroAlt} className="w-full h-full object-cover" />
+          <SmartImage src={heroImg} alt={t.heroAlt} className="w-full h-full object-cover" loading="eager" fetchPriority="high" width={1920} height={1080} />
           <div className="absolute inset-0 media-readable-overlay" />
         </div>
         <div className="relative z-10 container-narrow px-5 md:px-8 py-20 md:py-28">
@@ -158,7 +158,7 @@ const Services = () => {
               </Reveal>
               <Reveal direction={index % 2 !== 0 ? "left" : "right"} delay={150}>
                 <div className={`${index % 2 !== 0 ? "lg:order-1" : ""} overflow-hidden rounded-lg img-zoom`}>
-                  <img src={service.image} alt={`${displayText(service.title)} service by FLASH CAST in Kuala Lumpur`} loading="lazy" width={800} height={600} className="w-full object-cover aspect-[4/3]" />
+                  <SmartImage src={service.image} alt={`${displayText(service.title)} service by FLASH CAST in Kuala Lumpur`} loading="lazy" width={800} height={600} className="w-full object-cover aspect-[4/3]" />
                 </div>
               </Reveal>
             </div>

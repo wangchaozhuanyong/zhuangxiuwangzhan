@@ -1,8 +1,9 @@
-import { useEffect, useState } from "react";
+import { useMemo, useState } from "react";
+import SmartImage from "@/components/SmartImage";
 import Link from "@/components/LocalizedLink";
 import { Clock } from "lucide-react";
 import { blogPosts } from "@/data/blog";
-import { getPublishedBlogPosts } from "@/lib/contentApi";
+import { usePublishedBlogPosts } from "@/hooks/usePublishedContent";
 import { useLanguage } from "@/i18n/LanguageContext";
 import PageMeta from "@/components/PageMeta";
 import { JsonLdBreadcrumb } from "@/components/JsonLd";
@@ -105,18 +106,13 @@ const Blog = () => {
   const t = copy[language];
   const [filter, setFilter] = useState("All");
   const displayText = (value: string) => translateDisplayText(value, language);
-  const initialPosts = localizeFallbackPosts(language);
-  const [posts, setPosts] = useState(initialPosts);
-  const filtered = posts.filter((post) => matchesCategory(post.category, filter));
-
-  useEffect(() => {
+  const { data: cmsPosts } = usePublishedBlogPosts(language);
+  const posts = useMemo(() => {
     const fallbackPosts = localizeFallbackPosts(language);
-    setPosts(fallbackPosts);
-
-    void getPublishedBlogPosts(language).then((cmsPosts) => {
-      setPosts(mergeWithFallbackCategories(cmsPosts, fallbackPosts));
-    });
-  }, [language]);
+    if (!cmsPosts?.length) return fallbackPosts;
+    return mergeWithFallbackCategories(cmsPosts, fallbackPosts);
+  }, [cmsPosts, language]);
+  const filtered = posts.filter((post) => matchesCategory(post.category, filter));
 
   return (
     <main className="pt-16">
@@ -157,7 +153,7 @@ const Blog = () => {
             <Link to={`/blog/${filtered[0].slug}`} className="group block mb-10">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-center bg-card border border-border rounded-lg overflow-hidden hover-lift">
                 <div className="aspect-[16/10] overflow-hidden">
-                  <img src={filtered[0].image} alt={filtered[0].title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                  <SmartImage src={filtered[0].image} alt={filtered[0].title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" width={800} height={500} />
                 </div>
                 <div className="p-6">
                   <span className="text-accent text-xs font-medium uppercase tracking-wider">{translateBlogCategory(filtered[0].category, language)}</span>
@@ -176,7 +172,7 @@ const Blog = () => {
             {(filter === "All" ? filtered.slice(1) : filtered).map((post) => (
               <Link key={post.id} to={`/blog/${post.slug}`} className="group rounded-lg overflow-hidden bg-card border border-border hover-lift">
                 <div className="aspect-[16/10] overflow-hidden">
-                  <img src={post.image} alt={post.title} loading="lazy" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                  <SmartImage src={post.image} alt={post.title} loading="lazy" width={600} height={400} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
                 </div>
                 <div className="p-4">
                   <div className="flex items-center gap-3 mb-2">

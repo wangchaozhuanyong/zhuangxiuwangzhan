@@ -1,13 +1,13 @@
-import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import Link from "@/components/LocalizedLink";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, ArrowRight } from "lucide-react";
 import WhatsAppIcon from "@/components/WhatsAppIcon";
 import { materialsData } from "@/data/materials";
-import { getPublishedMaterials } from "@/lib/contentApi";
+import { usePublishedMaterials } from "@/hooks/usePublishedContent";
 import { useLanguage } from "@/i18n/LanguageContext";
 import Reveal from "@/components/Reveal";
+import SmartImage from "@/components/SmartImage";
 import PageMeta from "@/components/PageMeta";
 import { JsonLdBreadcrumb } from "@/components/JsonLd";
 import { useSiteSettings } from "@/hooks/useSiteSettings";
@@ -53,17 +53,14 @@ const MaterialSubcategoryPage = () => {
   const { language } = useLanguage();
   const settings = useSiteSettings();
   const t = copy[language];
-  const [categories, setCategories] = useState(materialsData);
+  const { data: publishedCategories } = usePublishedMaterials(language);
+  const categories = publishedCategories?.length ? publishedCategories : materialsData;
 
   const category = categories.find((item) => item.slug === categorySlug);
   const subcategory = category?.subcategories.find((item) => item.slug === subcategorySlug);
   const items = category?.items.filter((item) => item.subcategory === subcategorySlug) || [];
   const displayCategoryName = category ? translateMaterialCategory(category.name, language) : "";
   const displaySubcategoryName = subcategory ? translateMaterialSubcategory(subcategory.name, language) : "";
-
-  useEffect(() => {
-    void getPublishedMaterials(language).then(setCategories);
-  }, [language]);
 
   if (!category || !subcategory) {
     return (
@@ -105,7 +102,7 @@ const MaterialSubcategoryPage = () => {
                 <Reveal key={item.id} delay={index * 60} direction="none">
                   <Link to={`/materials/${item.slug}`} className="group block hover-lift">
                     <div className="relative overflow-hidden rounded-lg aspect-square mb-3 bg-muted border border-border img-zoom">
-                      <img src={item.image} alt={item.alt || item.name} loading="lazy" width={400} height={400} className="w-full h-full object-cover" />
+                      <SmartImage src={item.image} alt={item.alt || item.name} loading="lazy" width={400} height={400} className="w-full h-full object-cover" />
                     </div>
                     <h3 className="font-semibold text-sm mb-1 group-hover:text-accent transition-colors">{item.name}</h3>
                     <p className="text-muted-foreground text-xs">{t.color} {item.color}</p>

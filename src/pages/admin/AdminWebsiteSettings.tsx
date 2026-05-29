@@ -1,9 +1,11 @@
 import { useEffect, useState } from "react";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { fetchSiteSettings, fallbackSiteSettings, saveSiteSettings, type SiteSettings } from "@/lib/siteSettingsApi";
-import AdminLayout from "./AdminLayout";
+import { invalidateSiteSettings } from "@/lib/adminInvalidate";
+import SmartImage from "@/components/SmartImage";
 import AdminImageUpload from "./AdminImageUpload";
 
 const isZhBrowser = () => typeof navigator !== "undefined" && navigator.language.toLowerCase().startsWith("zh");
@@ -66,13 +68,19 @@ const fields: Array<{ key: keyof SiteSettings; label: string; group: "company" |
 const AdminWebsiteSettings = () => {
   const lang = "zh";
   const t = copy[lang];
+  const queryClient = useQueryClient();
+  const { data: remoteSettings } = useQuery({
+    queryKey: ["site-settings"],
+    queryFn: fetchSiteSettings,
+    initialData: fallbackSiteSettings,
+  });
   const [settings, setSettings] = useState<SiteSettings>(fallbackSiteSettings);
   const [status, setStatus] = useState("");
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
-    void fetchSiteSettings().then(setSettings);
-  }, []);
+    if (remoteSettings) setSettings(remoteSettings);
+  }, [remoteSettings]);
 
   const updateField = (key: keyof SiteSettings, value: string) => {
     setSettings((current) => ({ ...current, [key]: value }));
@@ -83,6 +91,7 @@ const AdminWebsiteSettings = () => {
     setStatus(t.saving);
     try {
       await saveSiteSettings(settings);
+      await invalidateSiteSettings(queryClient);
       setStatus(t.saved);
     } catch (error) {
       setStatus(error instanceof Error ? error.message : String(error));
@@ -109,7 +118,7 @@ const AdminWebsiteSettings = () => {
                   onUploaded={(url) => updateField(field.key, url)}
                 />
                 {settings[field.key] ? (
-                  <img src={settings[field.key]} alt={field.label} className="max-h-20 max-w-xs rounded border border-border bg-muted object-contain p-2" />
+                  <SmartImage src={settings[field.key]} alt={field.label} className="max-h-20 max-w-xs rounded border border-border bg-muted object-contain p-2" width={320} height={80} />
                 ) : null}
               </div>
             ) : (
@@ -122,8 +131,8 @@ const AdminWebsiteSettings = () => {
   );
 
   return (
-    <AdminLayout>
-      <div className="space-y-6">
+    <>
+    <div className="space-y-6">
         <div className="flex flex-col gap-4 rounded-xl border border-border bg-card p-6 md:flex-row md:items-start md:justify-between">
           <div>
             <h1 className="font-display text-2xl font-bold">{t.title}</h1>
@@ -138,7 +147,7 @@ const AdminWebsiteSettings = () => {
         {renderGroup("social")}
         {renderGroup("seo")}
       </div>
-    </AdminLayout>
+  </>
   );
 };
 

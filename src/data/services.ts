@@ -1,18 +1,18 @@
 import { ServiceItem } from "./types";
 
-import designImg from "@/assets/services/design-services.jpg";
-import builtinImg from "@/assets/services/builtin-solutions.jpg";
-import renovationImg from "@/assets/services/renovation-works.jpg";
-import commercialImg from "@/assets/services/commercial-works.jpg";
-import exteriorImg from "@/assets/services/exterior-works.jpg";
-import warehouseImg from "@/assets/services/warehouse-shelving.jpg";
-import approvalImg from "@/assets/services/approval-docs.jpg";
-import artisticCoatingImg from "@/assets/services/artistic-coating.jpg";
-import oldHouseImg from "@/assets/services/old-house-renovation.jpg";
-import kitchenImg from "@/assets/services/kitchen-renovation.jpg";
-import bathroomImg from "@/assets/services/bathroom-renovation.jpg";
-import officeImg from "@/assets/services/office-renovation.jpg";
-import shoplotImg from "@/assets/services/shoplot-renovation.jpg";
+import designImg from "@/assets/services/design-services.webp";
+import builtinImg from "@/assets/services/builtin-solutions.webp";
+import renovationImg from "@/assets/services/renovation-works.webp";
+import commercialImg from "@/assets/services/commercial-works.webp";
+import exteriorImg from "@/assets/services/exterior-works.webp";
+import warehouseImg from "@/assets/services/warehouse-shelving.webp";
+import approvalImg from "@/assets/services/approval-docs.webp";
+import artisticCoatingImg from "@/assets/services/artistic-coating.webp";
+import oldHouseImg from "@/assets/services/old-house-renovation.webp";
+import kitchenImg from "@/assets/services/kitchen-renovation.webp";
+import bathroomImg from "@/assets/services/bathroom-renovation.webp";
+import officeImg from "@/assets/services/office-renovation.webp";
+import shoplotImg from "@/assets/services/shoplot-renovation.webp";
 
 export const servicesData: ServiceItem[] = [
   {

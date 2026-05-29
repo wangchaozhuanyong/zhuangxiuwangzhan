@@ -1,10 +1,11 @@
-import { FormEvent, useCallback, useEffect, useState } from "react";
+import { FormEvent, useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
+import { useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { isSupabaseConfigured, supabase } from "@/lib/supabase";
-import AdminLayout from "./AdminLayout";
+import { supabase } from "@/lib/supabase";
+import { useAdminQuote } from "@/lib/adminQueries";
 
 const statuses = ["pending", "contacted", "site_visit_scheduled", "quoted", "accepted", "rejected", "closed"];
 const followupTypes = ["note", "call", "whatsapp", "site_visit", "quotation", "closed"];
@@ -19,33 +20,28 @@ const followupTypeLabels: Record<string, string> = {
 
 const AdminQuoteDetail = () => {
   const { id } = useParams<{ id: string }>();
+  const queryClient = useQueryClient();
+  const { data, error } = useAdminQuote(id);
   const [quote, setQuote] = useState<any>(null);
-  const [followups, setFollowups] = useState<any[]>([]);
   const [content, setContent] = useState("");
   const [followupType, setFollowupType] = useState("note");
   const [nextFollowUpAt, setNextFollowUpAt] = useState("");
   const [message, setMessage] = useState("");
 
-  const load = useCallback(async () => {
-    if (!isSupabaseConfigured || !id) return;
-    const [{ data: quoteData, error: quoteError }, { data: followupData }] = await Promise.all([
-      supabase!.from("quote_requests").select("*").eq("id", id).single(),
-      supabase!.from("lead_followups").select("*").eq("quote_request_id", id).order("created_at", { ascending: false }),
-    ]);
-    if (quoteError) setMessage(quoteError.message);
-    else setQuote(quoteData);
-    setFollowups(followupData || []);
-  }, [id]);
-
   useEffect(() => {
-    void load();
-  }, [load]);
+    if (data?.quote) setQuote(data.quote);
+  }, [data?.quote]);
+
+  const followups = data?.followups ?? [];
+  const loadError = error instanceof Error ? error.message : error ? String(error) : "";
+
+  const refresh = () => queryClient.invalidateQueries({ queryKey: ["admin", "quotes", id] });
 
   const updateQuote = async (patch: Record<string, unknown>) => {
     if (!id) return;
-    const { error } = await supabase!.from("quote_requests").update(patch).eq("id", id);
-    if (error) setMessage(error.message);
-    else await load();
+    const { error: updateError } = await supabase!.from("quote_requests").update(patch).eq("id", id);
+    if (updateError) setMessage(updateError.message);
+    else await refresh();
   };
 
   const addFollowup = async (event: FormEvent) => {
@@ -63,14 +59,14 @@ const AdminQuoteDetail = () => {
     else {
       setContent("");
       setNextFollowUpAt("");
-      await load();
+      await refresh();
     }
   };
 
   return (
-    <AdminLayout>
-      <div className="space-y-6">
-        {message && <div className="rounded-xl border border-border bg-card p-4 text-sm">{message}</div>}
+    <>
+    <div className="space-y-6">
+        {(message || loadError) && <div className="rounded-xl border border-border bg-card p-4 text-sm">{message || loadError}</div>}
         {quote && (
           <>
             <div className="rounded-xl border border-border bg-card p-6">
@@ -144,7 +140,7 @@ const AdminQuoteDetail = () => {
           </>
         )}
       </div>
-    </AdminLayout>
+  </>
   );
 };
 

@@ -1,13 +1,13 @@
-import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import Link from "@/components/LocalizedLink";
 import { Button } from "@/components/ui/button";
 import { ArrowRight } from "lucide-react";
 import WhatsAppIcon from "@/components/WhatsAppIcon";
 import { materialsData } from "@/data/materials";
-import { getPublishedMaterialBySlug } from "@/lib/contentApi";
+import { usePublishedMaterialBySlug } from "@/hooks/usePublishedContent";
 import { useLanguage } from "@/i18n/LanguageContext";
 import PageMeta from "@/components/PageMeta";
+import SmartImage from "@/components/SmartImage";
 import { JsonLdBreadcrumb } from "@/components/JsonLd";
 import { useSiteSettings } from "@/hooks/useSiteSettings";
 import { isHtmlText, stripHtml } from "@/lib/text";
@@ -72,18 +72,11 @@ const MaterialDetail = () => {
     }
   }
 
-  const [material, setMaterial] = useState<any>(fallbackMaterial);
-  const [category, setCategory] = useState<any>(fallbackCategory);
+  const { data: published } = usePublishedMaterialBySlug(slug, language);
+  const material = published?.material ?? fallbackMaterial;
+  const category = published?.category ?? fallbackCategory;
   const displayCategoryName = category ? translateMaterialCategory(category.name, language) : "";
   const displayMaterialType = material ? translateMaterialType(material.type || "", language) : "";
-
-  useEffect(() => {
-    if (!slug) return;
-    void getPublishedMaterialBySlug(slug, language).then((result) => {
-      setMaterial(result.material);
-      setCategory(result.category);
-    });
-  }, [slug, language]);
 
   if (!material || !category) {
     return (
@@ -120,7 +113,7 @@ const MaterialDetail = () => {
         <div className="container-narrow">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
             <div className="aspect-square rounded-lg overflow-hidden bg-muted border border-border">
-              <img src={material.image} alt={material.alt || material.name} className="w-full h-full object-cover" />
+              <SmartImage src={material.image} alt={material.alt || material.name} className="w-full h-full object-cover" width={800} height={600} loading="eager" />
             </div>
 
             <div>
@@ -193,7 +186,7 @@ const MaterialDetail = () => {
               {otherMaterials.map((item: any) => (
                 <Link key={item.id} to={`/materials/${item.slug}`} className="snap-start shrink-0 w-[180px] md:w-[220px] group">
                   <div className="aspect-square rounded-lg overflow-hidden mb-2 bg-card border border-border">
-                    <img src={item.image} alt={item.alt || item.name} loading="lazy" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+                    <SmartImage src={item.image} alt={item.alt || item.name} loading="lazy" width={400} height={400} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
                   </div>
                   <h3 className="font-semibold text-sm">{item.name}</h3>
                   <p className="text-muted-foreground text-xs">{translateMaterialType(item.type, language)} / {item.color || displayCategoryName}</p>

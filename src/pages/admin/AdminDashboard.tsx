@@ -1,13 +1,9 @@
-import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { isSupabaseConfigured, supabase } from "@/lib/supabase";
-import AdminLayout from "./AdminLayout";
+import { useAdminDashboardStats } from "@/lib/adminQueries";
 import AdminPageHeader from "@/components/admin/AdminPageHeader";
 import AdminStatCard from "@/components/admin/AdminStatCard";
 import AdminEmptyState from "@/components/admin/AdminEmptyState";
-
-const isZhBrowser = () => typeof navigator !== "undefined" && navigator.language.toLowerCase().startsWith("zh");
 
 const copy = {
   en: {
@@ -77,62 +73,25 @@ const copy = {
 const AdminDashboard = () => {
   const lang = "zh";
   const t = copy[lang];
-  const [counts, setCounts] = useState<Record<string, number>>({});
-  const [recentLeads, setRecentLeads] = useState<any[]>([]);
-  const [recentQuotes, setRecentQuotes] = useState<any[]>([]);
-
-  useEffect(() => {
-    if (!isSupabaseConfigured) return;
-
-    const now = new Date();
-    const dayStart = new Date(now);
-    dayStart.setHours(0, 0, 0, 0);
-    const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
-    const since24h = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
-    const todayIso = dayStart.toISOString();
-    const monthIso = monthStart.toISOString();
-
-    void Promise.all([
-      supabase!.from("leads").select("*", { count: "exact", head: true }).eq("status", "new"),
-      supabase!.from("quote_requests").select("*", { count: "exact", head: true }).eq("status", "pending"),
-      supabase!.from("leads").select("*", { count: "exact", head: true }).eq("status", "new").lt("created_at", since24h),
-      supabase!.from("translation_jobs").select("*", { count: "exact", head: true }).eq("status", "failed"),
-      supabase!.from("projects").select("*", { count: "exact", head: true }).eq("status", "published"),
-      supabase!.from("services").select("*", { count: "exact", head: true }).eq("status", "published"),
-      supabase!.from("blog_posts").select("*", { count: "exact", head: true }).eq("status", "published"),
-      supabase!.from("services").select("*", { count: "exact", head: true }).or("seo_title_zh.is.null,seo_description_zh.is.null"),
-      supabase!.from("leads").select("*", { count: "exact", head: true }).gte("created_at", todayIso),
-      supabase!.from("quote_requests").select("*", { count: "exact", head: true }).gte("created_at", monthIso),
-      supabase!.from("leads").select("*", { count: "exact", head: true }).gte("created_at", monthIso),
-      supabase!.from("leads").select("*", { count: "exact", head: true }).not("next_follow_up_at", "is", null).lte("next_follow_up_at", now.toISOString()),
-      supabase!.from("leads").select("*", { count: "exact", head: true }).eq("status", "new").lt("created_at", since24h),
-      supabase!.from("quote_requests").select("*", { count: "exact", head: true }).in("status", ["pending", "contacted"]),
-      supabase!.from("leads").select("id,name,phone,status,created_at,source_path").order("created_at", { ascending: false }).limit(10),
-      supabase!.from("quote_requests").select("id,customer_name,customer_phone,status,created_at,project_type").order("created_at", { ascending: false }).limit(10),
-    ]).then(([newLeads, pendingQuotes, staleLeads, failedTranslations, projects, services, blog, seoMissing, todayLeads, monthQuotes, monthLeads, dueFollowUps, staleUnfollowed, toQuote, leads, quotes]) => {
-      setCounts({
-        todayLeads: todayLeads.count || 0,
-        newLeads: newLeads.count || 0,
-        pendingQuotes: pendingQuotes.count || 0,
-        staleLeads: staleLeads.count || 0,
-        dueFollowUps: dueFollowUps.count || 0,
-        monthLeads: monthLeads.count || 0,
-        monthQuotes: monthQuotes.count || 0,
-        toQuote: toQuote.count || 0,
-        staleUnfollowed: staleUnfollowed.count || 0,
-        failedTranslations: failedTranslations.count || 0,
-        projects: projects.count || 0,
-        services: services.count || 0,
-        blog: blog.count || 0,
-        seoMissing: seoMissing.count || 0,
-      });
-      setRecentLeads(leads.data || []);
-      setRecentQuotes(quotes.data || []);
-    });
-  }, []);
+  const { data } = useAdminDashboardStats();
+  const counts = data?.counts ?? {};
+  const recentLeads = (data?.recentLeads ?? []) as Array<{
+    id: string;
+    name?: string;
+    phone?: string;
+    status?: string;
+    source_path?: string;
+  }>;
+  const recentQuotes = (data?.recentQuotes ?? []) as Array<{
+    id: string;
+    customer_name?: string;
+    customer_phone?: string;
+    status?: string;
+    project_type?: string;
+  }>;
 
   return (
-    <AdminLayout>
+    <>
       <AdminPageHeader
         title={t.title}
         description={t.body}
@@ -206,7 +165,7 @@ const AdminDashboard = () => {
           ))}
         </div>
       </div>
-    </AdminLayout>
+    </>
   );
 };
 

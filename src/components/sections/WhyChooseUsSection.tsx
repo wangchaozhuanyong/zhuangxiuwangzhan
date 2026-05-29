@@ -2,14 +2,14 @@ import Reveal from "@/components/Reveal";
 import IconCardGrid from "@/components/blocks/IconCardGrid";
 import { useT } from "@/i18n/useT";
 import { Paintbrush, MessageCircle, Layers, Target, Wrench, ShieldCheck } from "lucide-react";
-import { useEffect, useMemo, useState } from "react";
+import { useMemo } from "react";
 import { useLanguage } from "@/i18n/LanguageContext";
-import { getPublishedHomeSection } from "@/lib/homeContentApi";
+import { usePublishedHomeSection } from "@/hooks/usePublishedContent";
 
 const WhyChooseUsSection = () => {
   const t = useT();
   const { language } = useLanguage();
-  const [items, setItems] = useState<any[] | null>(null);
+  const { data: section } = usePublishedHomeSection(language, "why_choose_us");
 
   const reasons = useMemo(
     () => [
@@ -23,7 +23,7 @@ const WhyChooseUsSection = () => {
     [t],
   );
 
-  const iconMap: Record<string, any> = useMemo(
+  const iconMap: Record<string, typeof Paintbrush> = useMemo(
     () => ({
       paintbrush: Paintbrush,
       "message-circle": MessageCircle,
@@ -37,23 +37,10 @@ const WhyChooseUsSection = () => {
     [],
   );
 
-  useEffect(() => {
-    let active = true;
-    setItems(null);
-    void getPublishedHomeSection(language, "why_choose_us").then((section) => {
-      if (!active) return;
-      const list = Array.isArray(section?.items) ? section!.items : [];
-      setItems(list.length ? list : []);
-    });
-    return () => {
-      active = false;
-    };
-  }, [language]);
-
   const displayReasons = useMemo(() => {
-    if (!items) return reasons;
-    if (items.length === 0) return reasons;
-    return items.map((item: any) => {
+    const items = Array.isArray(section?.items) ? section.items : [];
+    if (!items.length) return reasons;
+    return items.map((item: Record<string, string>) => {
       const key = String(item.icon || "").toLowerCase().replace(/\s+/g, "");
       const Icon = iconMap[key] || Paintbrush;
       return {
@@ -62,7 +49,7 @@ const WhyChooseUsSection = () => {
         desc: language === "zh" ? String(item.desc_zh || item.desc_en || "") : String(item.desc_en || item.desc_zh || ""),
       };
     });
-  }, [items, reasons, language, iconMap]);
+  }, [section?.items, reasons, language, iconMap]);
 
   return (
     <section className="section-padding bg-muted" id="why-us">

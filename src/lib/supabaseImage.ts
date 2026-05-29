@@ -3,6 +3,7 @@ export type SupabaseRenderOptions = {
   height?: number;
   quality?: number;
   resize?: "contain" | "cover" | "fill";
+  format?: "origin" | "webp";
 };
 
 const DEFAULT_QUALITY = 75;
@@ -32,6 +33,7 @@ export function toSupabaseRenderImageUrl(url: string, opts: SupabaseRenderOption
   if (opts.width) params.set("width", String(Math.round(opts.width)));
   if (opts.height) params.set("height", String(Math.round(opts.height)));
   if (opts.resize) params.set("resize", opts.resize);
+  if (opts.format) params.set("format", opts.format);
 
   const qs = params.toString();
   return qs ? `${renderBase}${renderBase.includes("?") ? "&" : "?"}${qs}` : renderBase;

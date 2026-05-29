@@ -37,6 +37,7 @@ export type PublishedHomeSection = {
 export type PublishedProcessStep = {
   id: string;
   step_number: number;
+  sort_order?: number;
   title: string;
   description: string;
   icon_key?: string | null;
@@ -159,6 +160,7 @@ export const getPublishedProcessSteps = async (language: "en" | "zh"): Promise<P
   return (data || []).map((row: any) => ({
     id: row.id,
     step_number: Number(row.step_number || 0),
+    sort_order: Number(row.sort_order ?? row.step_number ?? 0),
     title: language === "zh" ? row.title_zh || row.title_en || "" : row.title_en || row.title_zh || "",
     description: language === "zh" ? row.description_zh || row.description_en || "" : row.description_en || row.description_zh || "",
     icon_key: row.icon_key || null,

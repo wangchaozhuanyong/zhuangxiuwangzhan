@@ -1,10 +1,11 @@
-import { FormEvent, useCallback, useEffect, useState } from "react";
+import { FormEvent, useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
+import { useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
-import { isSupabaseConfigured, supabase } from "@/lib/supabase";
-import AdminLayout from "./AdminLayout";
+import { supabase } from "@/lib/supabase";
+import { useAdminLead } from "@/lib/adminQueries";
 
 const statuses = ["new", "contacted", "site_visit_scheduled", "quoted", "converted", "closed", "spam"];
 const followupTypes = ["note", "call", "whatsapp", "site_visit", "quotation", "closed"];
@@ -19,62 +20,54 @@ const followupTypeLabels: Record<string, string> = {
 
 const AdminLeadDetail = () => {
   const { id } = useParams<{ id: string }>();
+  const queryClient = useQueryClient();
+  const { data, error } = useAdminLead(id);
   const [lead, setLead] = useState<any>(null);
-  const [followups, setFollowups] = useState<any[]>([]);
   const [content, setContent] = useState("");
   const [followupType, setFollowupType] = useState("note");
   const [nextFollowUpAt, setNextFollowUpAt] = useState("");
   const [message, setMessage] = useState("");
 
-  const load = useCallback(async () => {
-    if (!isSupabaseConfigured || !id) return;
-    const [{ data: leadData, error: leadError }, { data: followupData }] = await Promise.all([
-      supabase!.from("leads").select("*").eq("id", id).single(),
-      supabase!.from("lead_followups").select("*").eq("lead_id", id).order("created_at", { ascending: false }),
-    ]);
-    if (leadError) {
-      setMessage(leadError.message);
-      return;
-    }
-    setLead(leadData);
-    setFollowups(followupData || []);
-  }, [id]);
-
   useEffect(() => {
-    void load();
-  }, [load]);
+    if (data?.lead) setLead(data.lead);
+  }, [data?.lead]);
+
+  const followups = data?.followups ?? [];
+  const loadError = error instanceof Error ? error.message : error ? String(error) : "";
+
+  const refresh = () => queryClient.invalidateQueries({ queryKey: ["admin", "leads", id] });
 
   const updateLead = async (patch: Record<string, unknown>) => {
     if (!id) return;
-    const { error } = await supabase!.from("leads").update(patch).eq("id", id);
-    if (error) setMessage(error.message);
-    else await load();
+    const { error: updateError } = await supabase!.from("leads").update(patch).eq("id", id);
+    if (updateError) setMessage(updateError.message);
+    else await refresh();
   };
 
   const addFollowup = async (event: FormEvent) => {
     event.preventDefault();
     if (!id || !content.trim()) return;
     const { data: userData } = await supabase!.auth.getUser();
-    const { error } = await supabase!.from("lead_followups").insert({
+    const { error: insertError } = await supabase!.from("lead_followups").insert({
       lead_id: id,
       followup_type: followupType,
       content,
       next_follow_up_at: nextFollowUpAt || null,
       created_by: userData.user?.id || null,
     });
-    if (error) {
-      setMessage(error.message);
+    if (insertError) {
+      setMessage(insertError.message);
       return;
     }
     setContent("");
     setNextFollowUpAt("");
-    await load();
+    await refresh();
   };
 
   return (
-    <AdminLayout>
-      <div className="space-y-6">
-        {message && <div className="rounded-xl border border-border bg-card p-4 text-sm">{message}</div>}
+    <>
+    <div className="space-y-6">
+        {(message || loadError) && <div className="rounded-xl border border-border bg-card p-4 text-sm">{message || loadError}</div>}
         {lead && (
           <>
             <div className="rounded-xl border border-border bg-card p-6">
@@ -96,16 +89,20 @@ const AdminLeadDetail = () => {
                 <h2 className="mb-4 font-display text-xl font-bold">线索详情</h2>
                 <div className="grid gap-4 text-sm md:grid-cols-2">
                   <div><span className="text-muted-foreground">项目类型：</span> {lead.project_type || "-"}</div>
-                  <div><span className="text-muted-foreground">地点：</span> {lead.location || "-"}</div>
+                  <div><span className="text-muted-foreground">预算：</span> {lead.budget_range || "-"}</div>
                   <div className="md:col-span-2"><span className="text-muted-foreground">留言：</span><p className="mt-1 whitespace-pre-wrap">{lead.message || "-"}</p></div>
-                  <div className="md:col-span-2">
+                  <div>
                     <label className="mb-1 block text-sm font-medium">状态</label>
                     <select value={lead.status || "new"} onChange={(event) => void updateLead({ status: event.target.value })} className="flex h-10 rounded-md border border-input bg-background px-3 py-2 text-sm">
                       {statuses.map((item) => <option key={item} value={item}>{item}</option>)}
                     </select>
                   </div>
+                  <div>
+                    <label className="mb-1 block text-sm font-medium">下次跟进</label>
+                    <Input type="datetime-local" value={lead.next_follow_up_at ? lead.next_follow_up_at.slice(0, 16) : ""} onChange={(event) => setLead({ ...lead, next_follow_up_at: event.target.value })} onBlur={() => void updateLead({ next_follow_up_at: lead.next_follow_up_at || null })} />
+                  </div>
                   <div className="md:col-span-2">
-                    <label className="mb-1 block text-sm font-medium">内部备注</label>
+                    <label className="mb-1 block text-sm font-medium">备注</label>
                     <Textarea rows={4} value={lead.notes || ""} onChange={(event) => setLead({ ...lead, notes: event.target.value })} onBlur={() => void updateLead({ notes: lead.notes || null })} />
                   </div>
                 </div>
@@ -139,7 +136,7 @@ const AdminLeadDetail = () => {
           </>
         )}
       </div>
-    </AdminLayout>
+    </>
   );
 };
 
