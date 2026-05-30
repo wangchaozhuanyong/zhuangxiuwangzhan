@@ -122,6 +122,14 @@ type NavGroup = {
 
 const NAV_EXPANDED_KEY = "flashcast_admin_nav_expanded_groups";
 const NAV_COLLAPSED_KEY = "flashcast_admin_nav_collapsed";
+const ADMIN_ENTRY_RE = /\/assets\/index-[^"']+\.js/;
+
+const getCurrentAdminEntry = () => {
+  const current = Array.from(document.scripts)
+    .map((script) => script.getAttribute("src") || "")
+    .find((src) => src.includes("/assets/index-"));
+  return current ? current.replace(window.location.origin, "") : "";
+};
 
 const copy: Record<AdminLang, AdminCopy> = {
   en: {
@@ -363,6 +371,39 @@ const AdminLayout = () => {
   const [expandedGroups, setExpandedGroups] = useState<Record<string, boolean>>(() => readExpandedGroups());
   const seedSummary = useAdminDefaultContentSeed();
   const t = copy[adminLang];
+
+  useEffect(() => {
+    let cancelled = false;
+
+    const checkFreshBuild = async () => {
+      try {
+        const response = await fetch(`/admin?version_check=${Date.now()}`, {
+          cache: "no-store",
+          headers: { "Cache-Control": "no-cache" },
+        });
+        const html = await response.text();
+        const latestEntry = html.match(ADMIN_ENTRY_RE)?.[0] || "";
+        const currentEntry = getCurrentAdminEntry();
+
+        if (!cancelled && latestEntry && currentEntry && latestEntry !== currentEntry) {
+          window.location.reload();
+        }
+      } catch {
+        // Keep the admin usable if the lightweight version check fails.
+      }
+    };
+
+    void checkFreshBuild();
+    const onFocus = () => void checkFreshBuild();
+    window.addEventListener("focus", onFocus);
+    document.addEventListener("visibilitychange", onFocus);
+
+    return () => {
+      cancelled = true;
+      window.removeEventListener("focus", onFocus);
+      document.removeEventListener("visibilitychange", onFocus);
+    };
+  }, []);
 
   const copyText = useMemo(
     () => (key: keyof AdminCopy) => {
