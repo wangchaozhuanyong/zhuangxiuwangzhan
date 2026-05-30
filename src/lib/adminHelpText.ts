@@ -78,7 +78,7 @@ const tableHelp: Record<string, string> = {
   testimonials: "管理首页客户评价。",
   service_areas: "管理地区页，例如 Kuala Lumpur、Selangor 等服务区域页面。",
   landing_pages: "管理 SEO 落地页，例如厨房、办公室、仓库货架等专题页。",
-  leads: "管理联系页提交的客户线索。",
+  leads: "管理联系页提交的客户咨询。",
   quote_requests: "管理报价页提交的报价请求。",
   translation_jobs: "查看自动翻译任务记录，通常只看状态和错误信息。",
 };

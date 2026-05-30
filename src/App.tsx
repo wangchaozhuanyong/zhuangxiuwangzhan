@@ -10,6 +10,7 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import FloatingCTA from "@/components/FloatingCTA";
 import DynamicBrandHead from "@/components/DynamicBrandHead";
+import { AppErrorBoundary } from "@/components/AppErrorBoundary";
 import { LanguageRouteSync, LegacyLanguageRedirect, RootLanguageRedirect } from "@/components/LanguageRouteSync";
 import { PublicChromeProvider } from "@/contexts/PublicChromeContext";
 import ScrollToTop from "./components/ScrollToTop";
@@ -61,6 +62,7 @@ const AdminBlogEditor = lazy(() => import("./pages/admin/AdminBlogEditor"));
 const AdminMediaLibrary = lazy(() => import("./pages/admin/AdminMediaLibrary"));
 const AdminSeoManager = lazy(() => import("./pages/admin/AdminSeoManager"));
 const AdminUsers = lazy(() => import("./pages/admin/AdminUsers"));
+const AdminSystemLogs = lazy(() => import("./pages/admin/AdminSystemLogs"));
 const AdminHomeEditor = lazy(() => import("./pages/admin/AdminHomeEditor"));
 const AdminAboutEditor = lazy(() => import("./pages/admin/AdminAboutEditor"));
 const AdminPages = lazy(() => import("./pages/admin/AdminSimpleCms").then((module) => ({ default: () => <module.default module="site_pages" /> })));
@@ -102,6 +104,7 @@ const AppShell = () => {
       )}
       {!isAdminRoute && <Navbar />}
       <div id="main-content" tabIndex={-1}>
+        <AppErrorBoundary isAdminRoute={isAdminRoute}>
         <Suspense fallback={<PageLoader />}>
           <Routes>
             <Route path="/" element={<RootLanguageRedirect />} />
@@ -143,6 +146,7 @@ const AppShell = () => {
                 <Route path="seo" element={<AdminSeoManager />} />
                 <Route path="users" element={<AdminUsers />} />
                 <Route path="notifications" element={<AdminNotificationSettings />} />
+                <Route path="system-logs" element={<AdminSystemLogs />} />
                 <Route path="content/translation_jobs" element={<AdminTranslationJobs />} />
                 <Route path="content/translation_jobs/:id" element={<AdminTranslationJobs />} />
                 <Route path="content/:type/:id?" element={<AdminContentEditor />} />
@@ -189,6 +193,7 @@ const AppShell = () => {
             <Route path="*" element={<NotFound />} />
           </Routes>
         </Suspense>
+        </AppErrorBoundary>
       </div>
       {!isAdminRoute && <Footer />}
       {!isAdminRoute && <FloatingCTA />}

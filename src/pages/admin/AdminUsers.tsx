@@ -77,7 +77,7 @@ const AdminUsers = () => {
             >
               <option value="super_admin">超级管理员</option>
               <option value="content_editor">内容编辑</option>
-              <option value="lead_manager">线索客服</option>
+              <option value="lead_manager">咨询客服</option>
               <option value="viewer">只读查看</option>
             </select>
           </div>
@@ -102,7 +102,7 @@ const AdminUsers = () => {
                 >
                   <option value="super_admin">超级管理员</option>
                   <option value="content_editor">内容编辑</option>
-                  <option value="lead_manager">线索客服</option>
+                  <option value="lead_manager">咨询客服</option>
                   <option value="viewer">只读查看</option>
                 </select>
                 <Button variant="outline" onClick={() => void toggleActive(user)}>{user.active ? "停用" : "启用"}</Button>

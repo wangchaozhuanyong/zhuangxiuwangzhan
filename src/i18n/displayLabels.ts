@@ -216,13 +216,13 @@ const statusLabels: Record<string, Record<string, LabelPair>> = {
     archived: { en: "Archived", zh: "已归档" },
   },
   leads: {
-    new: { en: "New", zh: "新线索" },
+    new: { en: "New", zh: "新咨询" },
     contacted: { en: "Contacted", zh: "已联系" },
     site_visit_scheduled: { en: "Site Visit Scheduled", zh: "已安排上门" },
     quoted: { en: "Quoted", zh: "已报价" },
     converted: { en: "Converted", zh: "已成交" },
     closed: { en: "Closed", zh: "已关闭" },
-    spam: { en: "Spam", zh: "垃圾线索" },
+    spam: { en: "Spam", zh: "垃圾咨询" },
   },
   quote_requests: {
     pending: { en: "Pending", zh: "待处理" },

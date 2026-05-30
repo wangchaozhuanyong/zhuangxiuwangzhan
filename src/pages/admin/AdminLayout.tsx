@@ -26,6 +26,7 @@ import {
   Newspaper,
   PanelLeftClose,
   PanelLeftOpen,
+  ScrollText,
   Search,
   Settings,
   Sparkles,
@@ -86,6 +87,7 @@ type AdminCopy = {
   websiteSettings: string;
   translationJobs: string;
   notificationSettings: string;
+  systemLogs: string;
   backToWebsite: string;
   seedRunning: string;
   seedDone: (inserted: number, updated: number) => string;
@@ -153,6 +155,7 @@ const copy: Record<AdminLang, AdminCopy> = {
     websiteSettings: "Website Settings",
     translationJobs: "Translation Jobs",
     notificationSettings: "Notification Settings",
+    systemLogs: "System Logs",
     backToWebsite: "View website",
     seedRunning: "Checking default CMS content...",
     seedDone: (inserted, updated) => `Default CMS content ready. Added ${inserted}, filled ${updated}.`,
@@ -194,7 +197,7 @@ const copy: Record<AdminLang, AdminCopy> = {
     testimonials: "客户评价",
     serviceAreas: "服务区域",
     landingPages: "落地页",
-    leads: "线索",
+    leads: "客户咨询",
     quoteRequests: "报价请求",
     media: "媒体库",
     seo: "SEO 设置",
@@ -203,13 +206,14 @@ const copy: Record<AdminLang, AdminCopy> = {
     websiteSettings: "网站基础设置",
     translationJobs: "翻译任务",
     notificationSettings: "通知设置",
+    systemLogs: "\u7cfb\u7edf\u65e5\u5fd7",
     backToWebsite: "查看网站",
     seedRunning: "正在检查后台默认内容...",
     seedDone: (inserted, updated) => `后台默认内容已就绪：新增 ${inserted} 条，补齐 ${updated} 条。`,
     seedError: (message) => `后台默认内容同步失败：${message}`,
     signOut: "退出登录",
     brand: "FLASH CAST 后台",
-    title: "内容与线索管理",
+    title: "内容与咨询管理",
     subtitle: "管理网站内容、客户咨询、媒体素材、SEO 和系统设置。",
     menu: "打开后台菜单",
     collapseNav: "收起导航",
@@ -281,6 +285,7 @@ const navGroups: NavGroup[] = [
     items: [
       { key: "websiteSettings", path: "/admin/settings", icon: Settings },
       { key: "notificationSettings", path: "/admin/notifications", icon: Bell },
+      { key: "systemLogs", path: "/admin/system-logs", icon: ScrollText },
       { key: "translationJobs", path: "/admin/content/translation_jobs", icon: Languages },
       { key: "users", path: "/admin/users", icon: UserCog },
     ],

@@ -226,7 +226,7 @@ const copy = {
     showing: (filtered: number, total: number) => "显示 " + filtered + " / " + total + " 条最新记录",
     bilingualTitle: "中文优先，英文可复查",
     bilingualDesc: "先填写中文字段并保存，然后查看或编辑系统生成的英文字段。",
-    leadTip: "线索处理提示：通话、WhatsApp 跟进、上门测量、报价或结案后，请更新状态和备注。",
+    leadTip: "咨询处理提示：通话、WhatsApp 跟进、上门测量、报价或结案后，请更新状态和备注。",
     save: "保存",
     regenerate: "重新生成英文",
   },
@@ -241,7 +241,7 @@ const tableLabels: Record<string, { en: string; zh: string }> = {
   testimonials: { en: "Testimonials", zh: "客户评价" },
   service_areas: { en: "Service Areas", zh: "服务区域" },
   landing_pages: { en: "Landing Pages", zh: "落地页" },
-  leads: { en: "Leads", zh: "线索" },
+  leads: { en: "Leads", zh: "客户咨询" },
   quote_requests: { en: "Quote Requests", zh: "报价请求" },
   translation_jobs: { en: "Translation Jobs", zh: "翻译任务" },
 };
@@ -324,13 +324,13 @@ const statusLabels: Record<string, Record<string, { en: string; zh: string }>> =
     archived: { en: "Archived", zh: "已归档" },
   },
   leads: {
-    new: { en: "New", zh: "新线索" },
+    new: { en: "New", zh: "新咨询" },
     contacted: { en: "Contacted", zh: "已联系" },
     site_visit_scheduled: { en: "Site Visit Scheduled", zh: "已安排上门" },
     quoted: { en: "Quoted", zh: "已报价" },
     converted: { en: "Converted", zh: "已成交" },
     closed: { en: "Closed", zh: "已关闭" },
-    spam: { en: "Spam", zh: "垃圾线索" },
+    spam: { en: "Spam", zh: "垃圾咨询" },
   },
   quote_requests: {
     pending: { en: "Pending", zh: "待处理" },
@@ -370,7 +370,7 @@ const getTableLabel = (table: string, language: Language) => tableLabels[table]?
 
 const getRecordLabel = (row: Record<string, any>, type: string, language: Language) => {
   if (type === "leads") {
-    const name = row.name || (language === "zh" ? "线索" : "Lead");
+    const name = row.name || (language === "zh" ? "咨询" : "Lead");
     const phone = row.phone || (language === "zh" ? "无电话" : "No phone");
     return name + " · " + phone;
   }

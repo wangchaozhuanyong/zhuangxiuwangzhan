@@ -10,7 +10,7 @@ const statuses = ["all", "new", "contacted", "site_visit_scheduled", "quoted", "
 
 const copy = {
   en: { title: "Contact Leads", search: "Search name, phone, email...", status: "Status", statusAll: "All statuses", exportCsv: "Export CSV", empty: "No leads found.", whatsapp: "WhatsApp", call: "Call" },
-  zh: { title: "联系线索", search: "搜索姓名、电话、邮箱...", status: "状态", statusAll: "全部状态", exportCsv: "导出 CSV", empty: "暂无线索。", whatsapp: "WhatsApp 联系", call: "拨打电话" },
+  zh: { title: "客户咨询", search: "搜索姓名、电话、邮箱...", status: "状态", statusAll: "全部状态", exportCsv: "导出 CSV", empty: "暂时没有咨询记录。", whatsapp: "WhatsApp 联系", call: "拨打电话" },
 };
 
 const csvEscape = (value: unknown) => `"${String(value ?? "").replaceAll('"', '""')}"`;
