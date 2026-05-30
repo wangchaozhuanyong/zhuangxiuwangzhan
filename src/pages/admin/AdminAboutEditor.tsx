@@ -12,6 +12,8 @@ import AdminEmptyState from "@/components/admin/AdminEmptyState";
 import ImageField from "@/components/admin/ImageField";
 import { AboutSectionItemsEditor } from "@/components/admin/StructuredArrayEditors";
 import { invalidatePublishedContent } from "@/lib/adminInvalidate";
+import { formatAdminMutationError, saveAdminRecord } from "@/lib/adminMutation";
+import { useUnsavedChangesWarning } from "@/hooks/useUnsavedChangesWarning";
 import { aboutSectionKeys, type AboutSectionKey, type AboutSectionRow, type CtaRow } from "@/lib/adminEditorData";
 import { useAdminAboutEditorData } from "@/lib/adminQueries";
 import { translateFieldLabel } from "@/i18n/displayLabels";
@@ -85,10 +87,13 @@ export default function AdminAboutEditor() {
   const [ctaBlock, setCtaBlock] = useState<CtaRow | null>(null);
   const [editingCta, setEditingCta] = useState<CtaRow | null>(null);
   const formDirtyRef = useRef(false);
+  const [formDirty, setFormDirty] = useState(false);
 
   const markDirty = () => {
     formDirtyRef.current = true;
+    setFormDirty(true);
   };
+  useUnsavedChangesWarning(formDirty);
 
   const touchEditingCta: typeof setEditingCta = (value) => {
     markDirty();
@@ -112,6 +117,7 @@ export default function AdminAboutEditor() {
 
   const refreshEditor = async () => {
     formDirtyRef.current = false;
+    setFormDirty(false);
     void invalidatePublishedContent(queryClient);
     await refetch();
   };
@@ -148,13 +154,17 @@ export default function AdminAboutEditor() {
         status: row.status || "published",
         sort_order: Number(row.sort_order || 0),
       };
-      const req = row.id ? supabase.from("about_sections").update(payload).eq("id", row.id) : supabase.from("about_sections").insert(payload);
-      const { error } = await req;
-      if (error) throw error;
+      await saveAdminRecord({
+        table: "about_sections",
+        payload,
+        id: row.id,
+        expectedUpdatedAt: row.updated_at || null,
+        queryClient,
+      });
       toast({ title: "已保存" });
       await refreshEditor();
-    } catch (e: any) {
-      toast({ title: "保存失败", description: e?.message || String(e), variant: "destructive" });
+    } catch (error) {
+      toast({ title: "\u4fdd\u5b58\u5931\u8d25", description: formatAdminMutationError(error), variant: "destructive" });
     }
   };
 
@@ -196,10 +206,16 @@ export default function AdminAboutEditor() {
       image_url: ctaDraft.image_url || null,
       status: ctaDraft.status || "published",
     };
-    const req = ctaDraft.id ? supabase.from("cta_blocks").update(payload).eq("id", ctaDraft.id) : supabase.from("cta_blocks").insert(payload);
-    const { error } = await req;
-    if (error) {
-      toast({ title: "保存失败", description: error.message, variant: "destructive" });
+    try {
+      await saveAdminRecord({
+        table: "cta_blocks",
+        payload,
+        id: ctaDraft.id,
+        expectedUpdatedAt: ctaDraft.updated_at || null,
+        queryClient,
+      });
+    } catch (error) {
+      toast({ title: "\u4fdd\u5b58\u5931\u8d25", description: formatAdminMutationError(error), variant: "destructive" });
       return;
     }
 

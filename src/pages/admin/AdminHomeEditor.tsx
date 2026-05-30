@@ -123,7 +123,7 @@ export default function AdminHomeEditor() {
 
   const deleteProcessStep = async (id: string) => {
     if (!supabase) return;
-    if (!window.confirm("?????/??????????")) return;
+    if (!window.confirm("\u786e\u8ba4\u8981\u5f52\u6863/\u5220\u9664\u8fd9\u4e2a\u6d41\u7a0b\u6b65\u9aa4\u5417\uff1f")) return;
     try {
       await archiveOrDeleteAdminRecord({ table: "process_steps", id, queryClient });
       toast({ title: "已删除" });
@@ -161,7 +161,7 @@ export default function AdminHomeEditor() {
 
   const deleteFaq = async (id: string) => {
     if (!supabase) return;
-    if (!window.confirm("?????/???? FAQ ??")) return;
+    if (!window.confirm("\u786e\u8ba4\u8981\u5f52\u6863/\u5220\u9664\u8fd9\u4e2a FAQ \u5417\uff1f")) return;
     try {
       await archiveOrDeleteAdminRecord({ table: "faqs", id, queryClient });
       toast({ title: "已删除" });
