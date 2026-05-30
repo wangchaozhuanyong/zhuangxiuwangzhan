@@ -1,20 +1,26 @@
-name: Deploy to Cloudflare Pages (manual)
+name: Deploy to Cloudflare Pages
 
 on:
   workflow_dispatch: {}
+  workflow_run:
+    workflows: ["Prelaunch verification"]
+    types: [completed]
 
 concurrency:
-  group: cloudflare-pages-prod-${{ github.ref }}
+  group: cloudflare-pages-prod-${{ github.event.workflow_run.head_branch || github.ref }}
   cancel-in-progress: true
 
 jobs:
   deploy:
+    if: ${{ github.event_name == 'workflow_dispatch' || (github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.head_branch == 'main') }}
     runs-on: ubuntu-latest
     permissions:
       contents: read
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.workflow_run.head_sha || github.sha }}
 
       - name: Setup Node
         uses: actions/setup-node@v4
@@ -56,4 +62,3 @@ jobs:
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           projectName: ${{ secrets.CLOUDFLARE_PAGES_PROJECT_NAME }}
           directory: dist
-

@@ -104,6 +104,13 @@ npm.cmd run verify:env
 
 ## Deployment And Rollback
 
+Automatic production deployment:
+
+- Pushes to `main` run the `Prelaunch verification` workflow first.
+- When `Prelaunch verification` succeeds on `main`, the `Deploy to Cloudflare Pages` workflow publishes the same commit to Cloudflare Pages.
+- `Prelaunch verification` only checks the release. It is not a production deployment by itself.
+- Manual deployment is still available through the `Deploy to Cloudflare Pages` workflow if an operator needs to republish a known commit.
+
 Before deployment:
 
 - Confirm the target environment is not connected to the wrong database.
