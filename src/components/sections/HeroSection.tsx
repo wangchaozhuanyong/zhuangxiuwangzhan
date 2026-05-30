@@ -170,9 +170,14 @@ const HeroSection = ({ pageContent }: HeroSectionProps) => {
         onClick={handleScrollCue}
         aria-label={language === "zh" ? "继续向下浏览" : "Scroll to next section"}
       >
-        <span className="home-hero-scroll-cue__line" aria-hidden="true" />
-        <span className="home-hero-scroll-cue__dot" aria-hidden="true" />
-        <ChevronDown className="home-hero-scroll-cue__icon" aria-hidden="true" />
+        <span className="home-hero-scroll-cue__label">{language === "zh" ? "继续探索" : "Explore"}</span>
+        <span className="home-hero-scroll-cue__track" aria-hidden="true">
+          <span className="home-hero-scroll-cue__runner" />
+        </span>
+        <span className="home-hero-scroll-cue__arrow-stack" aria-hidden="true">
+          <ChevronDown className="home-hero-scroll-cue__icon home-hero-scroll-cue__icon--top" />
+          <ChevronDown className="home-hero-scroll-cue__icon home-hero-scroll-cue__icon--bottom" />
+        </span>
       </button>
     </section>
   );

@@ -17,7 +17,7 @@ export const useSiteSettings = () => {
     staleTime: 5 * 60 * 1000,
     gcTime: 30 * 60 * 1000,
     refetchOnWindowFocus: false,
-    initialData: fallbackSiteSettings,
+    placeholderData: fallbackSiteSettings,
   });
 
   return useMemo(() => resolveSiteSettings(settings, language), [language, settings]);

@@ -9,14 +9,9 @@ export function preferWebpSrc(src: string): string {
 
 export function isLocalImageSrc(src: string): boolean {
   if (!src) return false;
-  if (src.startsWith("/")) return true;
+  if (src.startsWith("/") && !src.startsWith("//")) return true;
   if (src.startsWith("data:") || src.startsWith("blob:")) return false;
-  try {
-    const url = new URL(src, "https://example.com");
-    return url.pathname.startsWith("/") && !url.hostname.includes("supabase");
-  } catch {
-    return false;
-  }
+  return false;
 }
 
 /** Optimize inline CMS image URLs: local paths → WebP, Supabase → render endpoint with WebP. */

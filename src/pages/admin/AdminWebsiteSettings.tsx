@@ -8,8 +8,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { fetchSiteSettings, fallbackSiteSettings, type SiteSettings } from "@/lib/siteSettingsApi";
 import { invalidateSiteSettings } from "@/lib/adminInvalidate";
 import { formatAdminMutationError, saveAdminRecord } from "@/lib/adminMutation";
-import SmartImage from "@/components/SmartImage";
-import AdminImageUpload from "./AdminImageUpload";
+import AdminImageUpload, { getAdminImagePreviewVariant } from "./AdminImageUpload";
 import { getAdminLang } from "@/lib/adminLocale";
 
 const copy = {
@@ -128,11 +127,9 @@ const AdminWebsiteSettings = () => {
                 <AdminImageUpload
                   folder="site-settings"
                   value={settings[field.key] || ""}
+                  previewVariant={getAdminImagePreviewVariant(String(field.key))}
                   onUploaded={(url) => updateField(field.key, url)}
                 />
-                {settings[field.key] ? (
-                  <SmartImage src={settings[field.key]} alt={field.label} className="max-h-20 max-w-xs rounded border border-border bg-muted object-contain p-2" width={320} height={80} />
-                ) : null}
               </div>
             ) : (
               <Input value={settings[field.key] || ""} onChange={(event) => updateField(field.key, event.target.value)} />

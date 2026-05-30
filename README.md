@@ -99,6 +99,7 @@ npm.cmd run lint
 npm.cmd test -- --run
 npm.cmd run build
 npm.cmd run verify:admin-foundation
+npm.cmd run verify:env
 ```
 
 ## Deployment And Rollback
@@ -115,6 +116,7 @@ After deployment:
 - Check `/`, `/zh/services`, `/zh/projects`, `/zh/quote`, `/zh/process`, and `/admin`.
 - Confirm an admin save appears on the public page after refresh.
 - Confirm media upload works with a small test image.
+- Confirm `https://<project-ref>.functions.supabase.co/health-check` returns `ok: true`.
 
 Rollback:
 
@@ -133,6 +135,16 @@ Minimum backup scope:
 - Deployment version record.
 
 Backups must be private. A backup is only useful after recovery has been tested at least once.
+
+Create and verify an app-level content/media backup:
+
+```powershell
+npm.cmd run backup:supabase
+npm.cmd run verify:backup
+npm.cmd run restore:backup:dry-run
+```
+
+On a machine with Docker, set `USE_SUPABASE_CLI_DUMP=1` to create SQL dump files too. Without a service role key, the REST backup covers public content and media. With `SUPABASE_SERVICE_ROLE_KEY`, it also covers protected admin/customer tables.
 
 ## Troubleshooting
 

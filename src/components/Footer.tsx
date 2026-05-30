@@ -1,4 +1,4 @@
-import { ReactNode, useState } from "react";
+import { ReactNode, useEffect, useState } from "react";
 import Link from "@/components/LocalizedLink";
 import { ArrowRight, ChevronDown, Mail, MapPin, Phone } from "lucide-react";
 import { useLanguage } from "@/i18n/LanguageContext";
@@ -158,6 +158,10 @@ const Footer = () => {
   const areas = language === "zh" ? locationLinksZh : locationLinks;
   const serviceLinks = normalizeFooterServiceLinks(t.serviceLinks, language);
   const logoSrc = !logoFailed && settings.logo_url ? addCacheBuster(settings.logo_url, settings.updated_at) : logoFallback;
+
+  useEffect(() => {
+    setLogoFailed(false);
+  }, [settings.logo_url, settings.updated_at]);
 
   const contactItems = [
     { icon: MapPin, text: settings.address, start: true },

@@ -16,7 +16,7 @@ import {
 import type { Language } from "@/i18n/routes";
 import { getAdminLang } from "@/lib/adminLocale";
 import { isSupabaseConfigured, supabase } from "@/lib/supabase";
-import AdminImageUpload from "./AdminImageUpload";
+import AdminImageUpload, { getAdminImagePreviewVariant } from "./AdminImageUpload";
 import AdminProjectImages from "./AdminProjectImages";
 import { FaqListEditor, ProjectCardsEditor, TextListEditor } from "@/components/admin/StructuredArrayEditors";
 import { AdminFieldLabel } from "@/components/admin/AdminHelpTip";
@@ -765,7 +765,12 @@ const AdminContentEditor = () => {
                       <AdminFieldLabel label={label} help={getAdminFieldHelp(field)} />
                       <div className="space-y-3">
                         <Input value={formatFieldValue(field, record[field])} onChange={(event) => setRecordField({ [field]: event.target.value })} />
-                        <AdminImageUpload value={record[field]} folder={`${type}/${record.id || "draft"}`} onUploaded={(url) => setRecordField({ [field]: url })} />
+                        <AdminImageUpload
+                          value={record[field]}
+                          folder={`${type}/${record.id || "draft"}`}
+                          previewVariant={getAdminImagePreviewVariant(field)}
+                          onUploaded={(url) => setRecordField({ [field]: url })}
+                        />
                       </div>
                     </>
                   ) : (

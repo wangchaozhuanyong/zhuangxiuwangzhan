@@ -19,24 +19,48 @@ const checks = [
     ],
   },
   {
+    file: "supabase/migrations/202605300002_security_ops_hardening.sql",
+    patterns: ["system_event_logs", "storage.buckets", "file_size_limit = 5242880"],
+  },
+  {
     file: "src/lib/adminMutation.ts",
-    patterns: ["saveAdminRecord", "archiveOrDeleteAdminRecord", "AdminMutationError", "admin_audit_logs"],
+    patterns: ["saveAdminRecord", "archiveOrDeleteAdminRecord", "AdminMutationError", "admin_audit_logs", "expectedUpdatedAt"],
+  },
+  {
+    file: "src/lib/systemLog.ts",
+    patterns: ["logSystemEvent", "system_event_logs"],
+  },
+  {
+    file: "src/hooks/useUnsavedChangesWarning.ts",
+    patterns: ["DEFAULT_MESSAGE", "beforeunload"],
   },
   {
     file: "src/pages/admin/AdminCmsBuilder.tsx",
-    patterns: ["通用页面搭建器", "cms_pages", "cms_sections", "cms_revisions", "restoreRevision"],
+    patterns: ["cms_pages", "cms_sections", "cms_revisions", "restoreRevision"],
+  },
+  {
+    file: "src/pages/admin/AdminSystemLogs.tsx",
+    patterns: ["system_event_logs", "最近 100 条"],
   },
   {
     file: "src/pages/admin/AdminImageUpload.tsx",
     patterns: ["MAX_UPLOAD_BYTES", "ALLOWED_IMAGE_TYPES", "sanitizeFolder"],
   },
   {
+    file: "scripts/backup-supabase.mjs",
+    patterns: ["backupViaRest", "site-images", "manifest.json"],
+  },
+  {
+    file: "scripts/restore-supabase-backup.mjs",
+    patterns: ["RESTORE_CONFIRM", "--dry-run"],
+  },
+  {
     file: "README.md",
-    patterns: ["Checks Before Release", "Deployment And Rollback", "Backup And Recovery"],
+    patterns: ["Checks Before Release", "Deployment And Rollback", "Backup And Recovery", "restore:backup:dry-run"],
   },
   {
     file: "docs/admin-foundation.md",
-    patterns: ["Professional Admin Foundation", "Release Checklist", "Recovery"],
+    patterns: ["Professional Admin Foundation", "Release Checklist", "Recovery", "Backup Checks"],
   },
 ];
 

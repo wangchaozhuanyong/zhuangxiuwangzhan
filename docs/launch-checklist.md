@@ -62,6 +62,8 @@ Run:
 
 ```powershell
 npm.cmd run build
+npm.cmd run verify:admin-foundation
+npm.cmd run verify:env
 npm.cmd run preview -- --host 127.0.0.1 --port 4191 --strictPort
 $env:PREVIEW_URL="http://127.0.0.1:4191"
 npm.cmd run verify:preview
@@ -98,3 +100,18 @@ Confirm:
 - Admin panel shows the submitted record.
 - Telegram message is received if Telegram is enabled.
 - Mobile bottom CTA opens WhatsApp, phone, and quote page correctly.
+
+## 7. Backup And Health Check
+
+Run before launch:
+
+```powershell
+npm.cmd run backup:supabase
+npm.cmd run verify:backup
+npm.cmd run restore:backup:dry-run
+```
+
+Then confirm:
+
+- `https://<project-ref>.functions.supabase.co/health-check` returns `ok: true`.
+- `/admin/system-logs` loads for an admin account.

@@ -56,6 +56,7 @@ Deploy these functions:
 - `notify-lead`
 - `maintenance-reminder`
 - `sitemap`
+- `health-check`
 
 `generate-english-content` is intentionally limited to CMS tables that contain Chinese `_zh` fields. It currently supports `services`, `projects`, `project_images`, `blog_posts`, `materials`, `testimonials`, `hero_slides`, `service_areas`, and `landing_pages`. The function now uses Google Translate's public web translation endpoint, so it does not require an OpenAI key or Google Cloud Translation API key.
 
@@ -100,6 +101,16 @@ LEAD_NOTIFICATION_WEBHOOK_URL=
 SITE_URL=https://flashcast.com.my
 MAINTENANCE_REMINDER_CRON_SECRET=
 ```
+
+## Health Check
+
+After deploying functions, confirm:
+
+```text
+GET https://<project-ref>.functions.supabase.co/health-check
+```
+
+The response should return `ok: true` and include checks for `cms_pages`, `site_settings`, and the `site-images` storage bucket.
 
 Automatic English generation uses Google Translate's public web translation endpoint and does not need a translation API secret. Telegram notifications are configured in the admin panel at `/admin/notifications`; `TELEGRAM_BOT_TOKEN` and `TELEGRAM_CHAT_ID` can still be set as optional environment fallbacks, but the preferred production path is the admin settings page. `LEAD_NOTIFICATION_WEBHOOK_URL` is optional and can point to Make, Zapier, a WhatsApp Business API relay, or another CRM.
 

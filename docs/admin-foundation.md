@@ -25,8 +25,10 @@ Database RLS must remain the real permission layer. Frontend button hiding is on
 - Long forms must keep user input after save failure.
 - Important saves should use optimistic conflict checks with `updated_at`.
 - Important writes should create an `admin_audit_logs` row.
+- Critical frontend/admin errors should create a `system_event_logs` row.
 - Important deletes should archive first when the table supports `status`.
 - Page/module edits should create CMS revisions automatically.
+- Long editors should warn before refresh/close when there are unsaved changes.
 
 ## CMS Builder
 
@@ -66,6 +68,8 @@ npm.cmd run lint
 npm.cmd test -- --run
 npm.cmd run build
 npm.cmd run verify:admin-foundation
+npm.cmd run verify:env
+npm.cmd run verify:backup
 ```
 
 Manual checks:
@@ -77,10 +81,25 @@ Manual checks:
 - A stale edit shows a conflict message.
 - A small image upload succeeds.
 - A large or unsupported file is rejected.
+- `/admin/system-logs` loads for admins.
+- The health check function returns `ok: true`.
+
+## Backup Checks
+
+Run:
+
+```powershell
+npm.cmd run backup:supabase
+npm.cmd run verify:backup
+npm.cmd run restore:backup:dry-run
+```
+
+If `SUPABASE_SERVICE_ROLE_KEY` is not set, the backup is a public content/media backup. For a full production backup, run the same script with `SUPABASE_SERVICE_ROLE_KEY` in a private environment, or run `USE_SUPABASE_CLI_DUMP=1` on a machine with Docker.
 
 ## Recovery
 
 - For wrong content: use CMS revision restore.
 - For deleted content: check archived rows first.
 - For database damage: restore from Supabase backup.
+- For app content damage: restore a verified backup package to staging first, then production.
 - For bad deployment: roll back the frontend build before touching data.

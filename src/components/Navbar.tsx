@@ -54,6 +54,10 @@ const Navbar = () => {
     logoState === "primary" && primaryLogoSrc ? "primary" : logoState === "none" ? "none" : "fallback";
   const logoSrc = resolvedLogoState === "primary" ? primaryLogoSrc : logoFallback;
 
+  useEffect(() => {
+    setLogoState("primary");
+  }, [primaryLogoSrc]);
+
   const changeLanguage = () => {
     const nextLanguage = language === "en" ? "zh" : "en";
     setLanguage(nextLanguage);

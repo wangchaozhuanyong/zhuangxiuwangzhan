@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { isSupabaseConfigured } from "@/lib/supabase";
-import AdminImageUpload from "./AdminImageUpload";
+import AdminImageUpload, { getAdminImagePreviewVariant } from "./AdminImageUpload";
 import { adminStatusLabel, publishStatusOptions } from "@/lib/adminLocale";
 import { AdminFieldLabel } from "@/components/admin/AdminHelpTip";
 import { TextListEditor } from "@/components/admin/StructuredArrayEditors";
@@ -245,7 +245,12 @@ const AdminSimpleCms = ({ module }: { module: ModuleKey }) => {
         ) : field.type === "image" ? (
           <div className="space-y-3">
             <Input value={value} onChange={(event) => update(field.key, event.target.value)} />
-            <AdminImageUpload folder={config.table} value={value} onUploaded={(url) => update(field.key, url)} />
+            <AdminImageUpload
+              folder={config.table}
+              value={value}
+              previewVariant={getAdminImagePreviewVariant(field.key)}
+              onUploaded={(url) => update(field.key, url)}
+            />
           </div>
         ) : (
           <Input value={value} onChange={(event) => update(field.key, event.target.value)} />

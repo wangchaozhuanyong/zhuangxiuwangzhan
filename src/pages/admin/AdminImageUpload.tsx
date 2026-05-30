@@ -4,10 +4,14 @@ import { Input } from "@/components/ui/input";
 import SmartImage from "@/components/SmartImage";
 import { supabase } from "@/lib/supabase";
 import { getAdminLang } from "@/lib/adminLocale";
+import { cn } from "@/lib/utils";
+
+export type AdminImagePreviewVariant = "cover" | "logo" | "icon" | "og";
 
 interface AdminImageUploadProps {
   value?: string;
   folder?: string;
+  previewVariant?: AdminImagePreviewVariant;
   onUploaded: (url: string) => void;
 }
 
@@ -90,11 +94,65 @@ const sanitizeFolder = (value: string) =>
     .filter(Boolean)
     .join("/") || "content";
 
-const AdminImageUpload = ({ value, folder = "content", onUploaded }: AdminImageUploadProps) => {
+export const getAdminImagePreviewVariant = (key: string): AdminImagePreviewVariant => {
+  const normalized = key.toLowerCase();
+  if (normalized.includes("favicon") || normalized.includes("icon")) return "icon";
+  if (normalized.includes("og_image") || normalized.includes("share")) return "og";
+  if (normalized.includes("logo")) return "logo";
+  return "cover";
+};
+
+const previewConfig: Record<
+  AdminImagePreviewVariant,
+  {
+    frameClassName: string;
+    imageClassName: string;
+    width: number;
+    height: number;
+    resize: "contain" | "cover";
+    sizes: string;
+  }
+> = {
+  cover: {
+    frameClassName: "h-36 overflow-hidden bg-muted",
+    imageClassName: "h-full w-full object-cover",
+    width: 640,
+    height: 360,
+    resize: "cover",
+    sizes: "(max-width: 768px) 100vw, 640px",
+  },
+  logo: {
+    frameClassName: "flex min-h-32 items-center justify-center bg-muted/35 p-6",
+    imageClassName: "h-auto max-h-20 max-w-full object-contain",
+    width: 420,
+    height: 160,
+    resize: "contain",
+    sizes: "(max-width: 768px) 80vw, 420px",
+  },
+  icon: {
+    frameClassName: "flex min-h-32 items-center justify-center bg-muted/35 p-5",
+    imageClassName: "h-16 w-16 rounded-lg object-contain",
+    width: 96,
+    height: 96,
+    resize: "contain",
+    sizes: "96px",
+  },
+  og: {
+    frameClassName: "aspect-[1200/630] overflow-hidden bg-muted",
+    imageClassName: "h-full w-full object-cover",
+    width: 640,
+    height: 336,
+    resize: "cover",
+    sizes: "(max-width: 768px) 100vw, 640px",
+  },
+};
+
+const AdminImageUpload = ({ value, folder = "content", previewVariant = "cover", onUploaded }: AdminImageUploadProps) => {
   const lang = getAdminLang();
   const t = copy[lang];
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState("");
+  const preview = previewConfig[previewVariant];
 
   const upload = async (input?: File) => {
     const file = input;
@@ -136,8 +194,16 @@ const AdminImageUpload = ({ value, folder = "content", onUploaded }: AdminImageU
   return (
     <div className="space-y-2">
       {value && (
-        <div className="overflow-hidden rounded-lg border border-border bg-muted">
-          <SmartImage src={value} alt={t.previewAlt} className="h-36 w-full object-cover" width={640} height={360} />
+        <div className={cn("rounded-lg border border-border", preview.frameClassName)}>
+          <SmartImage
+            src={value}
+            alt={t.previewAlt}
+            className={preview.imageClassName}
+            width={preview.width}
+            height={preview.height}
+            resize={preview.resize}
+            sizes={preview.sizes}
+          />
         </div>
       )}
       <div className="flex flex-col gap-2 sm:flex-row">
