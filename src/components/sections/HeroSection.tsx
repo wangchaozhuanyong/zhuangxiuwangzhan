@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, ChevronDown } from "lucide-react";
 import Link from "@/components/LocalizedLink";
 import WhatsAppIcon from "@/components/WhatsAppIcon";
 import { useLanguage } from "@/i18n/LanguageContext";
@@ -45,6 +45,10 @@ const HeroSection = ({ pageContent }: HeroSectionProps) => {
     "home-hero-action group relative inline-flex h-11 w-full max-w-[260px] items-center justify-center gap-2 overflow-hidden rounded-full border px-5 text-sm font-semibold leading-none shadow-[0_18px_50px_-28px_rgba(0,0,0,0.85)] backdrop-blur-md transition duration-300 ease-out hover:-translate-y-0.5 active:translate-y-0 sm:w-auto sm:min-w-[148px] sm:max-w-[210px]";
   const primaryButtonClass = `${heroButtonClass} home-hero-action-primary border-white/70 bg-white/[0.92] text-[#17130e] hover:bg-white`;
   const secondaryButtonClass = `${heroButtonClass} home-hero-action-secondary border-white/35 bg-black/[0.18] text-white hover:border-white/50 hover:bg-black/[0.28]`;
+  const handleScrollCue = useCallback(() => {
+    document.getElementById("trust")?.scrollIntoView({ behavior: "smooth", block: "start" });
+  }, []);
+
   const requestHeroVideoPlay = useCallback(() => {
     const video = videoRef.current;
     if (!video || document.visibilityState === "hidden") return;
@@ -159,6 +163,17 @@ const HeroSection = ({ pageContent }: HeroSectionProps) => {
           </div>
         </div>
       </div>
+
+      <button
+        type="button"
+        className="home-hero-scroll-cue"
+        onClick={handleScrollCue}
+        aria-label={language === "zh" ? "继续向下浏览" : "Scroll to next section"}
+      >
+        <span className="home-hero-scroll-cue__line" aria-hidden="true" />
+        <span className="home-hero-scroll-cue__dot" aria-hidden="true" />
+        <ChevronDown className="home-hero-scroll-cue__icon" aria-hidden="true" />
+      </button>
     </section>
   );
 };
