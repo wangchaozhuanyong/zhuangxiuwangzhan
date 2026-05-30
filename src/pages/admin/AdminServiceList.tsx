@@ -82,7 +82,7 @@ export default function AdminServiceList() {
       />
 
       <div className="mb-4 grid gap-3 md:grid-cols-[1fr_220px]">
-        <Input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="搜索标题或 slug..." />
+        <Input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="搜索标题或链接标识..." />
         <select
           value={status}
           onChange={(e) => setStatus(e.target.value)}
@@ -106,7 +106,7 @@ export default function AdminServiceList() {
         empty={
           <AdminEmptyState
             title="暂无服务"
-            description="先新建一个服务项目，发布后前台 /services 会显示。"
+            description="先新建一个服务项目，发布后前台服务页会显示。"
             action={
               <Button asChild>
                 <Link to="/admin/services/new">新建服务</Link>

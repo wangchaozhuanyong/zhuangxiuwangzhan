@@ -345,7 +345,7 @@ export const AboutSectionItemsEditor = ({
               <div className="grid gap-3 md:grid-cols-3">
                 <Input value={item.value || ""} onChange={(event) => update(index, { value: event.target.value })} placeholder="数字或短语，例如 200+" />
                 <Input value={item.label || ""} onChange={(event) => update(index, { label: event.target.value })} placeholder="标签" />
-                <Input value={item.icon || ""} onChange={(event) => update(index, { icon: event.target.value })} placeholder="图标 key，例如 star" />
+                <Input value={item.icon || ""} onChange={(event) => update(index, { icon: event.target.value })} placeholder="图标代号，例如 star" />
               </div>
             ) : isMilestone ? (
               <div className="grid gap-3 md:grid-cols-2">
@@ -356,7 +356,7 @@ export const AboutSectionItemsEditor = ({
             ) : (
               <div className="grid gap-3 md:grid-cols-2">
                 <Input value={item.title || ""} onChange={(event) => update(index, { title: event.target.value })} placeholder="标题" />
-                <Input value={item.icon || ""} onChange={(event) => update(index, { icon: event.target.value })} placeholder="图标 key，例如 paintbrush" />
+                <Input value={item.icon || ""} onChange={(event) => update(index, { icon: event.target.value })} placeholder="图标代号，例如 paintbrush" />
                 <Textarea className="md:col-span-2" value={item.desc || ""} onChange={(event) => update(index, { desc: event.target.value })} placeholder="说明" rows={3} />
               </div>
             )}
@@ -410,7 +410,7 @@ export const HomeSectionItemsEditor = ({
               {variant === "stats" ? (
                 <>
                   <Input value={item.value || ""} onChange={(event) => update(index, { value: event.target.value })} placeholder="数字或短语，例如 200+" />
-                  <Input value={item.icon || ""} onChange={(event) => update(index, { icon: event.target.value })} placeholder="图标 key，例如 star" />
+                  <Input value={item.icon || ""} onChange={(event) => update(index, { icon: event.target.value })} placeholder="图标代号，例如 star" />
                   <Input value={item.label_zh || ""} onChange={(event) => update(index, { label_zh: event.target.value })} placeholder="中文标签" />
                   <Input value={item.label_en || ""} onChange={(event) => update(index, { label_en: event.target.value })} placeholder="英文标签" />
                 </>
@@ -418,7 +418,7 @@ export const HomeSectionItemsEditor = ({
                 <>
                   <Input value={item.title_zh || ""} onChange={(event) => update(index, { title_zh: event.target.value })} placeholder="中文标题" />
                   <Input value={item.title_en || ""} onChange={(event) => update(index, { title_en: event.target.value })} placeholder="英文标题" />
-                  <Input value={item.icon || ""} onChange={(event) => update(index, { icon: event.target.value })} placeholder="图标 key，例如 paintbrush" />
+                  <Input value={item.icon || ""} onChange={(event) => update(index, { icon: event.target.value })} placeholder="图标代号，例如 paintbrush" />
                 </>
               )}
               <Textarea value={item.desc_zh || ""} onChange={(event) => update(index, { desc_zh: event.target.value })} placeholder="中文说明" rows={3} />

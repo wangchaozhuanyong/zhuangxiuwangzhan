@@ -105,7 +105,7 @@ const Services = () => {
   const geoText = applyPageTemplate(pageContent?.content, { count: services.length });
 
   return (
-    <main className="pt-site-header">
+    <main className="overflow-x-hidden pt-site-header">
       <PageMeta
         title={pageContent?.seo_title || t.metaTitle}
         description={pageContent?.seo_description || t.metaDescription}
@@ -145,7 +145,7 @@ const Services = () => {
       </section>
 
       {services.map((service, index) => (
-        <section key={service.id} className={`section-padding ${index % 2 === 0 ? "bg-background" : "bg-muted"}`}>
+        <section key={service.id} className={`section-padding overflow-x-hidden ${index % 2 === 0 ? "bg-background" : "bg-muted"}`}>
           <div className="container-narrow">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 items-center">
               <Reveal direction={index % 2 !== 0 ? "right" : "left"}>

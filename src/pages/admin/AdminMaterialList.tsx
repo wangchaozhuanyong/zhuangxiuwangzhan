@@ -102,7 +102,7 @@ export default function AdminMaterialList() {
       />
 
       <div className="mb-4 grid gap-3 md:grid-cols-[1fr_220px]">
-        <Input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="搜索标题、slug、分类、类型..." />
+        <Input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="搜索标题、链接标识、分类、类型..." />
         <select
           value={status}
           onChange={(e) => setStatus(e.target.value)}
@@ -126,7 +126,7 @@ export default function AdminMaterialList() {
         empty={
           <AdminEmptyState
             title="暂无材料"
-            description="先新建一条材料并发布，前台 /materials 才会显示。"
+            description="先新建一条材料并发布，前台材料页才会显示。"
             action={
               <Button asChild>
                 <Link to="/admin/materials/new">新建材料</Link>

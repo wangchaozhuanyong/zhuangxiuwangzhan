@@ -109,7 +109,7 @@ export default function AdminProjectList() {
       />
 
       <div className="mb-4 grid gap-3 md:grid-cols-[1fr_220px]">
-        <Input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="搜索标题、slug、地区、类型..." />
+        <Input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="搜索标题、链接标识、地区、类型..." />
         <select
           value={status}
           onChange={(e) => setStatus(e.target.value)}
@@ -133,7 +133,7 @@ export default function AdminProjectList() {
         empty={
           <AdminEmptyState
             title="暂无案例"
-            description="先新建一个案例并发布，前台 /projects 才会显示。"
+            description="先新建一个案例并发布，前台案例页才会显示。"
             action={
               <Button asChild>
                 <Link to="/admin/projects/new">新建案例</Link>

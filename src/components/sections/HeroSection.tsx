@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { ArrowRight } from "lucide-react";
 import Link from "@/components/LocalizedLink";
 import WhatsAppIcon from "@/components/WhatsAppIcon";
@@ -30,6 +31,7 @@ const HeroSection = ({ pageContent }: HeroSectionProps) => {
   const { language } = useLanguage();
   const settings = useSiteSettings();
   const copy = heroCopy[language];
+  const [videoLoaded, setVideoLoaded] = useState(false);
   const { data: slides } = usePublishedHeroSlides(language);
   const slide = slides?.[0] ?? null;
   const posterImage = "/videos/home-hero-poster.webp?v=20260529-luxury";
@@ -38,18 +40,27 @@ const HeroSection = ({ pageContent }: HeroSectionProps) => {
   const primaryIsExternal = isExternalUrl(primaryUrl);
   const heroTitle = slide?.title || pageContent?.title || "FLASH CAST";
   const heroButtonClass =
-    "group inline-flex h-11 w-full max-w-[280px] items-center justify-center gap-2 rounded-full border px-5 text-sm font-semibold leading-none shadow-[0_18px_50px_-28px_rgba(0,0,0,0.85)] backdrop-blur-md transition duration-300 ease-out hover:-translate-y-0.5 active:translate-y-0 sm:w-auto sm:min-w-[148px] sm:max-w-[220px]";
-  const primaryButtonClass = `${heroButtonClass} border-white/65 bg-white/90 text-[#17130e] hover:bg-white`;
-  const secondaryButtonClass = `${heroButtonClass} border-white/30 bg-black/20 text-white hover:border-white/45 hover:bg-black/30`;
+    "home-hero-action group relative inline-flex h-11 w-full max-w-[260px] items-center justify-center gap-2 overflow-hidden rounded-full border px-5 text-sm font-semibold leading-none shadow-[0_18px_50px_-28px_rgba(0,0,0,0.85)] backdrop-blur-md transition duration-300 ease-out hover:-translate-y-0.5 active:translate-y-0 sm:w-auto sm:min-w-[148px] sm:max-w-[210px]";
+  const primaryButtonClass = `${heroButtonClass} home-hero-action-primary border-white/70 bg-white/[0.92] text-[#17130e] hover:bg-white`;
+  const secondaryButtonClass = `${heroButtonClass} home-hero-action-secondary border-white/35 bg-black/[0.18] text-white hover:border-white/50 hover:bg-black/[0.28]`;
 
   return (
     <section
-      className="relative min-h-[100svh] overflow-hidden bg-surface-dark"
+      className="home-hero-section relative min-h-[100svh] overflow-hidden bg-surface-dark"
       aria-labelledby="home-hero-title"
     >
       <div className="absolute inset-0 bg-surface-dark" aria-hidden="true">
+        <img
+          src={posterImage}
+          alt=""
+          className="home-hero-media absolute inset-0 h-full w-full object-cover"
+          loading="eager"
+          fetchPriority="high"
+        />
         <video
-          className="h-full w-full object-cover"
+          className={`home-hero-media absolute inset-0 h-full w-full object-cover transition-opacity duration-700 ease-out ${
+            videoLoaded ? "opacity-100" : "opacity-0"
+          }`}
           poster={posterImage}
           autoPlay
           muted
@@ -57,6 +68,10 @@ const HeroSection = ({ pageContent }: HeroSectionProps) => {
           playsInline
           preload="metadata"
           aria-label={copy.videoAlt}
+          onLoadedData={() => setVideoLoaded(true)}
+          onCanPlay={() => setVideoLoaded(true)}
+          onError={() => setVideoLoaded(false)}
+          onStalled={() => setVideoLoaded(false)}
         >
           <source src="/videos/home-hero-mobile.webm?v=20260529-luxury" type="video/webm" media="(max-width: 767px)" />
           <source src="/videos/home-hero-mobile.mp4?v=20260529-luxury" type="video/mp4" media="(max-width: 767px)" />
@@ -67,7 +82,7 @@ const HeroSection = ({ pageContent }: HeroSectionProps) => {
       </div>
 
       <div className="relative z-10 flex min-h-[100svh] items-center justify-center px-4 py-24">
-        <div className="flex w-full max-w-[520px] flex-col items-center justify-center gap-3 sm:w-auto sm:max-w-none sm:flex-row">
+        <div className="home-hero-actions flex w-full max-w-[500px] flex-col items-center justify-center gap-3 sm:w-auto sm:max-w-none sm:flex-row">
           <h1 id="home-hero-title" className="sr-only">
             {heroTitle}
           </h1>

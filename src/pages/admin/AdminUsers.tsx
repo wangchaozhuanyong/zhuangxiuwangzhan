@@ -42,7 +42,7 @@ const AdminUsers = () => {
     <div className="space-y-6">
       <div className="rounded-xl border border-border bg-card p-6">
         <h1 className="font-display text-2xl font-bold">管理员账户</h1>
-        <p className="mt-2 text-sm text-muted-foreground">这里只管理后台白名单，不会显示或使用 service role key。</p>
+        <p className="mt-2 text-sm text-muted-foreground">这里只管理后台白名单，不会显示或使用服务端密钥。</p>
         {message && <p className="mt-4 rounded-lg bg-muted p-3 text-sm">{message}</p>}
         {!isSupabaseConfigured && <p className="mt-4 rounded-lg bg-muted p-3 text-sm">Supabase 未配置。</p>}
       </div>
@@ -51,8 +51,8 @@ const AdminUsers = () => {
         <h2 className="mb-4 font-display text-xl font-bold">新增管理员</h2>
         <div className="grid gap-4 md:grid-cols-[1fr_1fr_auto] md:items-end">
           <div>
-            <label className="mb-1 block text-sm font-medium">Auth 用户 ID</label>
-            <Input value={form.user_id} onChange={(event) => setForm({ ...form, user_id: event.target.value })} placeholder="Supabase Auth 用户 UUID" />
+            <label className="mb-1 block text-sm font-medium">认证用户 ID</label>
+            <Input value={form.user_id} onChange={(event) => setForm({ ...form, user_id: event.target.value })} placeholder="填写 Supabase 认证用户 UUID" />
           </div>
           <div>
             <label className="mb-1 block text-sm font-medium">邮箱</label>

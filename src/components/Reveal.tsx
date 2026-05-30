@@ -18,8 +18,8 @@ const Reveal = ({ children, className, delay = 0, direction = "up" }: RevealProp
 
   const directionStyles = {
     up: "translate-y-8",
-    left: "translate-x-8",
-    right: "-translate-x-8",
+    left: "translate-x-4 md:translate-x-8",
+    right: "-translate-x-4 md:-translate-x-8",
     none: "",
   };
 
@@ -27,7 +27,7 @@ const Reveal = ({ children, className, delay = 0, direction = "up" }: RevealProp
     <div
       ref={ref}
       className={cn(
-        "transition-all duration-700 ease-out",
+        "transform-gpu transition-all duration-700 ease-out will-change-transform",
         isVisible
           ? "opacity-100 translate-y-0 translate-x-0"
           : `opacity-0 ${directionStyles[direction]}`,

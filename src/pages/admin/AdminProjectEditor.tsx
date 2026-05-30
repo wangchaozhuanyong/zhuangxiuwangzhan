@@ -140,7 +140,7 @@ export default function AdminProjectEditor() {
       }
       const exists = (data || []).some((row: any) => row.id !== record.id);
       if (exists) {
-        setSlugError("slug 已被占用，请更换");
+        setSlugError("链接标识已被占用，请更换");
         return false;
       }
       return true;
@@ -159,12 +159,12 @@ export default function AdminProjectEditor() {
     if (!isSupabaseConfigured) return;
     const slug = slugify(record.slug || record.title_zh);
     if (!slug) {
-      toast({ title: "请填写 slug 或中文标题", variant: "destructive" });
+      toast({ title: "请填写链接标识或中文标题", variant: "destructive" });
       return;
     }
     const ok = await checkSlugUnique(slug);
     if (!ok) {
-      toast({ title: "slug 不可用", description: slugError || "请修改后再保存", variant: "destructive" });
+      toast({ title: "链接标识不可用", description: slugError || "请修改后再保存", variant: "destructive" });
       return;
     }
 
@@ -262,15 +262,15 @@ export default function AdminProjectEditor() {
       >
         <AdminPageHeader
           title={isNew ? "新建案例" : "编辑案例"}
-          description="封面 / 图库 / Before-After 请在“项目图片”模块里管理，前台缩略图优先使用 cover。"
+          description="封面、图库和改造前后图片请在“项目图片”模块里管理，前台缩略图优先使用封面图。"
           actions={
             <Button type="button" variant="outline" onClick={() => setShowEnglish((v) => !v)}>
-              {showEnglish ? "隐藏英文" : "显示英文"}
+              {showEnglish ? "隐藏英文内容" : "显示英文内容"}
             </Button>
           }
         />
 
-        <AdminFormSection title="发布与排序" description="草稿不对外展示；发布后前台 /projects 生效。" helpText="控制案例是否在前台显示，以及它在案例列表里的排序。">
+        <AdminFormSection title="发布与排序" description="草稿不对外展示；发布后会在前台案例页生效。" helpText="控制案例是否在前台显示，以及它在案例列表里的排序。">
           <div className="grid gap-4 md:grid-cols-3">
             <div>
               <label className="mb-1 block text-sm font-medium">状态</label>
@@ -287,7 +287,7 @@ export default function AdminProjectEditor() {
               </select>
             </div>
             <div>
-              <label className="mb-1 block text-sm font-medium">排序 sort_order</label>
+              <label className="mb-1 block text-sm font-medium">排序</label>
               <Input type="number" value={record.sort_order} onChange={(e) => setRecord((r) => ({ ...r, sort_order: Number(e.target.value || 0) }))} />
             </div>
           </div>
@@ -296,13 +296,13 @@ export default function AdminProjectEditor() {
         <AdminFormSection title="基础信息（中文）" description="用于案例列表卡片与详情页标题/摘要。" helpText="管理案例中文标题、摘要、正文和基础展示信息。">
           <div className="grid gap-4 md:grid-cols-2">
             <div className="md:col-span-2">
-              <label className="mb-1 block text-sm font-medium">案例标题 title_zh</label>
+              <label className="mb-1 block text-sm font-medium">案例标题</label>
               <Input value={record.title_zh} onChange={(e) => setRecord((r) => ({ ...r, title_zh: e.target.value }))} />
             </div>
 
             <div className="md:col-span-2">
               <div className="flex items-center justify-between gap-2">
-                <label className="mb-1 block text-sm font-medium">Slug（链接标识）</label>
+                <label className="mb-1 block text-sm font-medium">链接标识</label>
                 <div className="flex items-center gap-2">
                   <Button
                     type="button"
@@ -317,7 +317,7 @@ export default function AdminProjectEditor() {
                     自动生成
                   </Button>
                   <Button type="button" variant="outline" size="sm" onClick={() => void checkSlugUnique(record.slug)}>
-                    检查唯一
+                    检查是否重复
                   </Button>
                 </div>
               </div>
@@ -335,12 +335,12 @@ export default function AdminProjectEditor() {
             </div>
 
             <div className="md:col-span-2">
-              <label className="mb-1 block text-sm font-medium">案例摘要 excerpt_zh</label>
+              <label className="mb-1 block text-sm font-medium">案例摘要</label>
               <Textarea rows={3} value={record.excerpt_zh} onChange={(e) => setRecord((r) => ({ ...r, excerpt_zh: e.target.value }))} />
             </div>
 
             <div className="md:col-span-2">
-              <label className="mb-1 block text-sm font-medium">项目描述 content_zh</label>
+              <label className="mb-1 block text-sm font-medium">项目描述</label>
               <Textarea rows={10} value={record.content_zh} onChange={(e) => setRecord((r) => ({ ...r, content_zh: e.target.value }))} />
             </div>
           </div>
@@ -349,54 +349,54 @@ export default function AdminProjectEditor() {
         <AdminFormSection title="项目资料（中文）" description="用于详情页的项目资料展示。" helpText="管理项目地点、面积、周期、预算、类型、材料、范围和亮点。">
           <div className="grid gap-4 md:grid-cols-2">
             <div>
-              <label className="mb-1 block text-sm font-medium">项目类型 project_type</label>
+              <label className="mb-1 block text-sm font-medium">项目类型</label>
               <Input value={record.project_type} onChange={(e) => setRecord((r) => ({ ...r, project_type: e.target.value }))} />
             </div>
             <div>
-              <label className="mb-1 block text-sm font-medium">地区 location</label>
+              <label className="mb-1 block text-sm font-medium">地区</label>
               <Input value={record.location} onChange={(e) => setRecord((r) => ({ ...r, location: e.target.value }))} />
             </div>
             <div>
-              <label className="mb-1 block text-sm font-medium">面积 area</label>
+              <label className="mb-1 block text-sm font-medium">面积</label>
               <Input value={record.area} onChange={(e) => setRecord((r) => ({ ...r, area: e.target.value }))} />
             </div>
             <div>
-              <label className="mb-1 block text-sm font-medium">工期 duration</label>
+              <label className="mb-1 block text-sm font-medium">工期</label>
               <Input value={record.duration} onChange={(e) => setRecord((r) => ({ ...r, duration: e.target.value }))} />
             </div>
             <div>
-              <label className="mb-1 block text-sm font-medium">预算 budget</label>
+              <label className="mb-1 block text-sm font-medium">预算</label>
               <Input value={record.budget} onChange={(e) => setRecord((r) => ({ ...r, budget: e.target.value }))} />
             </div>
             <div className="md:col-span-2">
-              <label className="mb-1 block text-sm font-medium">客户需求 client_need_zh</label>
+              <label className="mb-1 block text-sm font-medium">客户需求</label>
               <Textarea rows={4} value={record.client_need_zh} onChange={(e) => setRecord((r) => ({ ...r, client_need_zh: e.target.value }))} />
             </div>
             <div>
-              <label className="mb-1 block text-sm font-medium">使用材料 materials（每行一个）</label>
+              <label className="mb-1 block text-sm font-medium">使用材料（每行一个）</label>
               <Textarea rows={6} value={formatLines(record.materials)} onChange={(e) => setRecord((r) => ({ ...r, materials: parseLines(e.target.value) }))} />
             </div>
             <div>
-              <label className="mb-1 block text-sm font-medium">施工范围 scope（每行一个）</label>
+              <label className="mb-1 block text-sm font-medium">施工范围（每行一个）</label>
               <Textarea rows={6} value={formatLines(record.scope)} onChange={(e) => setRecord((r) => ({ ...r, scope: parseLines(e.target.value) }))} />
             </div>
             <div className="md:col-span-2">
-              <label className="mb-1 block text-sm font-medium">项目亮点 highlights_zh（每行一个）</label>
+              <label className="mb-1 block text-sm font-medium">项目亮点（每行一个）</label>
               <Textarea rows={6} value={formatLines(record.highlights_zh)} onChange={(e) => setRecord((r) => ({ ...r, highlights_zh: parseLines(e.target.value) }))} />
             </div>
           </div>
         </AdminFormSection>
 
-        <AdminFormSection title="封面兜底（legacy）" description="仅作为兜底：当没有 project_images 封面/图库时，前台会回退到这里。建议还是在“项目图片”里设置 cover。" helpText="这是旧封面字段。优先去项目图片里设置 cover，这里只做备用。">
+        <AdminFormSection title="备用封面" description="仅作为兜底：当没有项目图片封面或图库时，前台会回退到这里。建议还是在“项目图片”里设置封面图。" helpText="这是旧封面字段。优先去项目图片里设置封面图，这里只做备用。">
           <div className="grid gap-4 md:grid-cols-2">
             <div className="md:col-span-2">
               <ImageField
-                label="projects.image_url（兜底封面）"
+                label="兜底封面图"
                 value={record.image_url}
                 onChange={(url) => setRecord((r) => ({ ...r, image_url: url }))}
                 folder={`projects/${record.id || "draft"}`}
                 usageType="project"
-                helpText="注意：前台优先使用 project_images 的 cover/gallery；这里只作为兜底。"
+                helpText="注意：前台优先使用项目图片里的封面图和图库；这里只作为兜底。"
               />
             </div>
           </div>
@@ -404,14 +404,14 @@ export default function AdminProjectEditor() {
 
         <AdminProjectImages projectId={record.id} />
 
-        <AdminFormSection title="SEO（中文）" description="用于前台 meta title / description，留空时前台会回退默认值。" helpText="管理中文案例详情页的搜索标题和搜索描述。">
+        <AdminFormSection title="SEO（中文）" description="用于前台页面标题和页面描述，留空时前台会回退默认值。" helpText="管理中文案例详情页的搜索标题和搜索描述。">
           <div className="grid gap-4 md:grid-cols-2">
             <div className="md:col-span-2">
-              <label className="mb-1 block text-sm font-medium">SEO 标题 seo_title_zh</label>
+              <label className="mb-1 block text-sm font-medium">中文 SEO 标题</label>
               <Input value={record.seo_title_zh} onChange={(e) => setRecord((r) => ({ ...r, seo_title_zh: e.target.value }))} />
             </div>
             <div className="md:col-span-2">
-              <label className="mb-1 block text-sm font-medium">SEO 描述 seo_description_zh</label>
+              <label className="mb-1 block text-sm font-medium">中文 SEO 描述</label>
               <Textarea rows={3} value={record.seo_description_zh} onChange={(e) => setRecord((r) => ({ ...r, seo_description_zh: e.target.value }))} />
             </div>
           </div>
@@ -422,36 +422,36 @@ export default function AdminProjectEditor() {
             <AdminFormSection title="英文内容（可折叠）" description="英文为空时前台英文页会回退中文。" helpText="管理英文案例内容，没填英文时，英文前台会回退显示中文。">
               <div className="grid gap-4 md:grid-cols-2">
                 <div className="md:col-span-2">
-                  <label className="mb-1 block text-sm font-medium">英文标题 title_en</label>
+                  <label className="mb-1 block text-sm font-medium">英文标题</label>
                   <Input value={record.title_en} onChange={(e) => setRecord((r) => ({ ...r, title_en: e.target.value }))} />
                 </div>
                 <div className="md:col-span-2">
-                  <label className="mb-1 block text-sm font-medium">英文摘要 excerpt_en</label>
+                  <label className="mb-1 block text-sm font-medium">英文摘要</label>
                   <Textarea rows={3} value={record.excerpt_en} onChange={(e) => setRecord((r) => ({ ...r, excerpt_en: e.target.value }))} />
                 </div>
                 <div className="md:col-span-2">
-                  <label className="mb-1 block text-sm font-medium">英文正文 content_en</label>
+                  <label className="mb-1 block text-sm font-medium">英文正文</label>
                   <Textarea rows={10} value={record.content_en} onChange={(e) => setRecord((r) => ({ ...r, content_en: e.target.value }))} />
                 </div>
                 <div className="md:col-span-2">
-                  <label className="mb-1 block text-sm font-medium">客户需求 client_need_en</label>
+                  <label className="mb-1 block text-sm font-medium">客户需求（英文）</label>
                   <Textarea rows={4} value={record.client_need_en} onChange={(e) => setRecord((r) => ({ ...r, client_need_en: e.target.value }))} />
                 </div>
                 <div className="md:col-span-2">
-                  <label className="mb-1 block text-sm font-medium">项目亮点 highlights_en（每行一个）</label>
+                  <label className="mb-1 block text-sm font-medium">项目亮点（英文，每行一个）</label>
                   <Textarea rows={6} value={formatLines(record.highlights_en)} onChange={(e) => setRecord((r) => ({ ...r, highlights_en: parseLines(e.target.value) }))} />
                 </div>
               </div>
             </AdminFormSection>
 
-            <AdminFormSection title="SEO（英文）" description="可选；为空时前台会回退。" helpText="管理英文案例详情页 SEO 文案。为空时前台会自动回退。">
+            <AdminFormSection title="SEO（英文）" description="可选；为空时前台会回退。" helpText="管理英文案例详情页的搜索文案。为空时前台会自动回退。">
               <div className="grid gap-4 md:grid-cols-2">
                 <div className="md:col-span-2">
-                  <label className="mb-1 block text-sm font-medium">seo_title_en</label>
+                  <label className="mb-1 block text-sm font-medium">英文 SEO 标题</label>
                   <Input value={record.seo_title_en} onChange={(e) => setRecord((r) => ({ ...r, seo_title_en: e.target.value }))} />
                 </div>
                 <div className="md:col-span-2">
-                  <label className="mb-1 block text-sm font-medium">seo_description_en</label>
+                  <label className="mb-1 block text-sm font-medium">英文 SEO 描述</label>
                   <Textarea rows={3} value={record.seo_description_en} onChange={(e) => setRecord((r) => ({ ...r, seo_description_en: e.target.value }))} />
                 </div>
               </div>

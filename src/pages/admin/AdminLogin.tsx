@@ -123,7 +123,7 @@ const AdminLogin = () => {
             <ToggleButton active={language === "zh"} label="中文" onClick={() => changeLanguage("zh")}>
               中文
             </ToggleButton>
-            <ToggleButton active={language === "en"} label="English" onClick={() => changeLanguage("en")}>
+            <ToggleButton active={language === "en"} label="英文" onClick={() => changeLanguage("en")}>
               EN
             </ToggleButton>
           </div>

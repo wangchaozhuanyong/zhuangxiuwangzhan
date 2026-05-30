@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { isSupabaseConfigured, supabase } from "@/lib/supabase";
 import AdminImageUpload from "./AdminImageUpload";
-import { publishStatusOptions } from "@/lib/adminLocale";
+import { adminStatusLabel, publishStatusOptions } from "@/lib/adminLocale";
 import { AdminFieldLabel } from "@/components/admin/AdminHelpTip";
 import { TextListEditor } from "@/components/admin/StructuredArrayEditors";
 import { getAdminFieldHelp, getAdminTableHelp } from "@/lib/adminHelpText";
@@ -21,8 +21,8 @@ const configs: Record<ModuleKey, { title: string; table: ModuleKey; labelField: 
     table: "site_pages",
     labelField: "page_key",
     fields: [
-      { key: "page_key", label: "页面标识 page_key" },
-      { key: "path", label: "前台路径 path" },
+      { key: "page_key", label: "页面标识" },
+      { key: "path", label: "前台路径" },
       { key: "title_zh", label: "中文页面/首页标题" },
       { key: "title_en", label: "英文页面/首页标题" },
       { key: "subtitle_zh", label: "中文首页副标题" },
@@ -31,13 +31,13 @@ const configs: Record<ModuleKey, { title: string; table: ModuleKey; labelField: 
       { key: "description_en", label: "英文首页/页面说明", type: "textarea" },
       { key: "content_zh", label: "中文正文/补充说明", type: "textarea" },
       { key: "content_en", label: "英文正文/补充说明", type: "textarea" },
-      { key: "cta_title_zh", label: "中文 CTA 标题" },
-      { key: "cta_title_en", label: "英文 CTA 标题" },
-      { key: "cta_description_zh", label: "中文 CTA 描述", type: "textarea" },
-      { key: "cta_description_en", label: "英文 CTA 描述", type: "textarea" },
+      { key: "cta_title_zh", label: "中文行动引导标题" },
+      { key: "cta_title_en", label: "英文行动引导标题" },
+      { key: "cta_description_zh", label: "中文行动引导说明", type: "textarea" },
+      { key: "cta_description_en", label: "英文行动引导说明", type: "textarea" },
       { key: "image_url", label: "页面图片（首页首屏视频不使用）", type: "image" },
-      { key: "alt_zh", label: "中文图片 Alt" },
-      { key: "alt_en", label: "英文图片 Alt" },
+      { key: "alt_zh", label: "中文图片说明" },
+      { key: "alt_en", label: "英文图片说明" },
       { key: "seo_title_zh", label: "中文 SEO 标题" },
       { key: "seo_title_en", label: "英文 SEO 标题" },
       { key: "seo_description_zh", label: "中文 SEO 描述", type: "textarea" },
@@ -45,7 +45,7 @@ const configs: Record<ModuleKey, { title: string; table: ModuleKey; labelField: 
       { key: "seo_keywords_zh", label: "中文 SEO 关键词" },
       { key: "seo_keywords_en", label: "英文 SEO 关键词" },
       { key: "items_zh", label: "中文扩展列表", type: "textList" },
-      { key: "items_en", label: "English extra list", type: "textList" },
+      { key: "items_en", label: "英文扩展列表", type: "textList" },
     ],
   },
   home_sections: {
@@ -63,7 +63,7 @@ const configs: Record<ModuleKey, { title: string; table: ModuleKey; labelField: 
       { key: "image_url", label: "图片", type: "image" },
       { key: "button_label_zh", label: "中文按钮" },
       { key: "button_label_en", label: "英文按钮" },
-      { key: "button_url", label: "按钮链接（URL）" },
+      { key: "button_url", label: "按钮链接" },
     ],
   },
   faqs: {
@@ -71,7 +71,7 @@ const configs: Record<ModuleKey, { title: string; table: ModuleKey; labelField: 
     table: "faqs",
     labelField: "question_zh",
     fields: [
-      { key: "page_key", label: "页面标识（page_key）" },
+      { key: "page_key", label: "页面标识" },
       { key: "question_zh", label: "中文问题", type: "textarea" },
       { key: "question_en", label: "英文问题", type: "textarea" },
       { key: "answer_zh", label: "中文答案", type: "textarea" },
@@ -90,8 +90,8 @@ const configs: Record<ModuleKey, { title: string; table: ModuleKey; labelField: 
       { key: "description_en", label: "英文描述", type: "textarea" },
       { key: "before_image_url", label: "改造前图片", type: "image" },
       { key: "after_image_url", label: "改造后图片", type: "image" },
-      { key: "alt_zh", label: "中文 Alt 文本" },
-      { key: "alt_en", label: "英文 Alt 文本" },
+      { key: "alt_zh", label: "中文图片说明" },
+      { key: "alt_en", label: "英文图片说明" },
     ],
   },
   brand_partners: {
@@ -100,8 +100,8 @@ const configs: Record<ModuleKey, { title: string; table: ModuleKey; labelField: 
     labelField: "name",
     fields: [
       { key: "name", label: "名称" },
-      { key: "logo_url", label: "Logo", type: "image" },
-      { key: "website_url", label: "官网链接（URL）" },
+      { key: "logo_url", label: "品牌图标", type: "image" },
+      { key: "website_url", label: "官网链接" },
     ],
   },
 };
@@ -112,7 +112,7 @@ const formatAdminError = (module: ModuleKey, error: unknown) => {
   const record = error as { code?: string; message?: string; hint?: string; details?: string };
   const message = record?.message || (error instanceof Error ? error.message : String(error));
   if (module === "site_pages" && (record?.code === "PGRST205" || message.includes("site_pages"))) {
-    return "数据库还没有 site_pages 表，页面内容暂时不能保存。请先执行迁移 supabase/migrations/202605290004_site_pages.sql。";
+    return "数据库里还没有 `site_pages` 表，页面内容暂时不能保存。请先执行迁移 `supabase/migrations/202605290004_site_pages.sql`。";
   }
   return [message, record?.hint, record?.details].filter(Boolean).join(" ");
 };
@@ -254,7 +254,7 @@ const AdminSimpleCms = ({ module }: { module: ModuleKey }) => {
             <div key={row.id} className="flex flex-col gap-3 rounded-lg border border-border p-4 md:flex-row md:items-center md:justify-between">
               <div>
                 <p className="font-semibold">{row[config.labelField] || row.title_en || row.name || row.id}</p>
-                <p className="text-xs text-muted-foreground">{row.status || "-"} | 排序 {row.sort_order || 0}</p>
+                <p className="text-xs text-muted-foreground">状态：{adminStatusLabel("default", row.status || "-")} | 排序 {row.sort_order || 0}</p>
               </div>
               <div className="flex gap-2">
                 <Button type="button" variant="outline" size="sm" onClick={() => loadRecord(row)}>

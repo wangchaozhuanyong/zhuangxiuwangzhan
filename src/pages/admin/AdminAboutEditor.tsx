@@ -22,6 +22,16 @@ const L = (field: string) => translateFieldLabel(field, getAdminLang());
 const sectionKeys = aboutSectionKeys;
 type SectionKey = AboutSectionKey;
 
+const sectionTabLabels: Record<SectionKey, string> = {
+  hero: "首屏",
+  intro: "公司介绍",
+  stats: "统计数据",
+  core_values: "核心价值",
+  team: "团队亮点",
+  milestones: "公司历程",
+  office: "办公环境",
+};
+
 const asArray = (value: unknown): any[] => (Array.isArray(value) ? value : []);
 
 const cleanAboutItems = (sectionKey: string, value: unknown[]) => {
@@ -115,7 +125,11 @@ export default function AdminAboutEditor() {
     if (!supabase) return;
     const row = sections[key];
     if (!row) {
-      toast({ title: "无法保存", description: "区块数据还没加载出来，请先刷新页面再试。", variant: "destructive" });
+      toast({
+        title: "无法保存",
+        description: "区块数据还没有加载出来，请先刷新页面后再试。",
+        variant: "destructive",
+      });
       return;
     }
 
@@ -156,7 +170,7 @@ export default function AdminAboutEditor() {
         primary_label_zh: "获取免费报价",
         primary_label_en: "Get a Free Quote",
         primary_url: "/quote",
-        secondary_label_zh: "WhatsApp 咨询",
+        secondary_label_zh: "WhatsApp 联系",
         secondary_label_en: "WhatsApp Us",
         secondary_url: "",
         image_url: "",
@@ -184,24 +198,26 @@ export default function AdminAboutEditor() {
     };
     const req = ctaDraft.id ? supabase.from("cta_blocks").update(payload).eq("id", ctaDraft.id) : supabase.from("cta_blocks").insert(payload);
     const { error } = await req;
-    if (error) toast({ title: "保存失败", description: error.message, variant: "destructive" });
-    else {
-      toast({ title: "已保存" });
-      void invalidatePublishedContent(queryClient);
-      setEditingCta(null);
-      await refreshEditor();
+    if (error) {
+      toast({ title: "保存失败", description: error.message, variant: "destructive" });
+      return;
     }
+
+    toast({ title: "已保存" });
+    void invalidatePublishedContent(queryClient);
+    setEditingCta(null);
+    await refreshEditor();
   };
 
   if (!isSupabaseConfigured) {
-    return <AdminEmptyState title="Supabase 未配置" description="配置完成后才能使用关于我们后台管理。" />;
+    return <AdminEmptyState title="Supabase 未配置" description="配置完成后，才能使用关于我们后台管理。" />;
   }
 
   return (
     <>
       <AdminPageHeader
         title="关于我们管理"
-        description="管理关于我们页面的 Hero、介绍、统计、价值观、团队、里程碑、办公室与 CTA。前台会优先读取已发布内容，空则自动 fallback 静态内容。"
+        description="管理关于我们页面的首屏、介绍、统计、价值观、团队、历程、办公环境和行动引导区。前台会优先读取已发布内容，留空时自动使用静态默认内容。"
         actions={
           <div className="flex flex-wrap gap-2">
             <Button variant="outline" onClick={() => void refetch()} disabled={loading}>
@@ -209,7 +225,7 @@ export default function AdminAboutEditor() {
             </Button>
             <Button asChild variant="outline">
               <a href="/zh/about" target="_blank" rel="noreferrer">
-                预览（中文）
+                预览中文页
               </a>
             </Button>
           </div>
@@ -219,14 +235,12 @@ export default function AdminAboutEditor() {
       <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as any)}>
         <div className="mb-4 overflow-auto">
           <TabsList className="w-max">
-            <TabsTrigger value="hero">首屏</TabsTrigger>
-            <TabsTrigger value="intro">公司介绍</TabsTrigger>
-            <TabsTrigger value="stats">统计数据</TabsTrigger>
-            <TabsTrigger value="core_values">核心价值</TabsTrigger>
-            <TabsTrigger value="team">团队亮点</TabsTrigger>
-            <TabsTrigger value="milestones">公司历程</TabsTrigger>
-            <TabsTrigger value="office">办公区</TabsTrigger>
-            <TabsTrigger value="cta">行动号召</TabsTrigger>
+            {sectionKeys.map((key) => (
+              <TabsTrigger key={key} value={key}>
+                {sectionTabLabels[key]}
+              </TabsTrigger>
+            ))}
+            <TabsTrigger value="cta">行动引导区</TabsTrigger>
           </TabsList>
         </div>
 
@@ -235,9 +249,9 @@ export default function AdminAboutEditor() {
           return (
             <TabsContent key={key} value={key} className="space-y-6">
               <AdminFormSection
-                title={"关于我们区块：" + key}
-                description="中英文可分别编辑，列表、卡片、标签等内容可以直接添加、删除和排序。"
-                helpText="管理关于我们页面的一个内容区块。保存后，对应区块会在前台关于我们页面同步更新。"
+                title={`关于我们区块：${sectionTabLabels[key]}`}
+                description="中文和英文可以分开编辑，列表、卡片、标签等内容可以直接添加、删除和排序。"
+                helpText="保存后，对应区块会同步更新到前台关于我们页面。"
               >
                 {!row ? (
                   <div className="text-sm text-muted-foreground">加载中...</div>
@@ -259,7 +273,7 @@ export default function AdminAboutEditor() {
                         </select>
                       </div>
                       <div>
-                        <label className="mb-1 block text-sm font-medium">排序 sort_order</label>
+                        <label className="mb-1 block text-sm font-medium">排序</label>
                         <Input
                           type="number"
                           value={row.sort_order ?? 0}
@@ -292,7 +306,7 @@ export default function AdminAboutEditor() {
                       </div>
                       <div className="md:col-span-2">
                         <ImageField
-                          label="image_url（可选）"
+                          label="图片地址（可选）"
                           value={row.image_url || ""}
                           onChange={(url) => updateSection(key, { image_url: url })}
                           folder={"about_sections/" + key}
@@ -302,7 +316,7 @@ export default function AdminAboutEditor() {
                       <div className="md:col-span-2">
                         <AboutSectionItemsEditor
                           label="中文列表 / 卡片内容"
-                          helpText="管理当前区块的中文列表或卡片内容。不同区块会按自己的页面样式展示。"
+                          helpText="管理当前区块的中文列表或卡片内容，不同区块会按自己的页面样式展示。"
                           sectionKey={key}
                           value={itemsZh[key] || []}
                           onChange={(value) => {
@@ -313,8 +327,8 @@ export default function AdminAboutEditor() {
                       </div>
                       <div className="md:col-span-2">
                         <AboutSectionItemsEditor
-                          label="English list/card content"
-                          helpText="管理当前区块的英文列表或卡片内容。英文为空时前台会尽量回退显示中文。"
+                          label="英文列表 / 卡片内容"
+                          helpText="管理当前区块的英文列表或卡片内容。英文为空时，前台会尽量回退显示中文。"
                           sectionKey={key}
                           value={itemsEn[key] || []}
                           onChange={(value) => {
@@ -335,7 +349,11 @@ export default function AdminAboutEditor() {
         })}
 
         <TabsContent value="cta" className="space-y-6">
-          <AdminFormSection title="关于我们 CTA（cta_blocks: about_final）" description="用于关于我们页面底部 CTA。" helpText="管理关于我们页面底部的联系/报价引导区，包含标题、说明、按钮和图片。">
+          <AdminFormSection
+            title="关于我们行动引导区"
+            description="用于关于我们页面底部的行动引导区域。"
+            helpText="管理底部联系和报价引导区，包含标题、说明、按钮和图片。"
+          >
             <div className="grid gap-4 md:grid-cols-2">
               <div className="md:col-span-2">
                 <label className="mb-1 block text-sm font-medium">状态</label>
@@ -393,7 +411,7 @@ export default function AdminAboutEditor() {
               </div>
               <div className="md:col-span-2">
                 <ImageField
-                  label="image_url（可选）"
+                  label="图片地址（可选）"
                   value={ctaDraft.image_url || ""}
                   onChange={(url) => touchEditingCta((v) => ({ ...(v || ctaDraft), image_url: url }))}
                   folder="cta_blocks"

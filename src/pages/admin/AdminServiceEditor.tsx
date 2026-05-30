@@ -151,7 +151,7 @@ export default function AdminServiceEditor() {
       }
       const exists = (data || []).some((row: any) => row.id !== record.id);
       if (exists) {
-        setSlugError("slug 已被占用，请更换");
+        setSlugError("链接标识已被占用，请更换");
         return false;
       }
       return true;
@@ -170,12 +170,12 @@ export default function AdminServiceEditor() {
     if (!isSupabaseConfigured) return;
     const slug = slugify(record.slug || record.title_zh);
     if (!slug) {
-      toast({ title: "请填写 slug 或中文标题", variant: "destructive" });
+      toast({ title: "请填写链接标识或中文标题", variant: "destructive" });
       return;
     }
     const ok = await checkSlugUnique(slug);
     if (!ok) {
-      toast({ title: "slug 不可用", description: slugError || "请修改后再保存", variant: "destructive" });
+      toast({ title: "链接标识不可用", description: slugError || "请修改后再保存。", variant: "destructive" });
       return;
     }
 
@@ -231,12 +231,12 @@ export default function AdminServiceEditor() {
   };
 
   if (!isSupabaseConfigured) {
-    return <AdminEmptyState title="Supabase 未配置" description="配置完成后才能使用服务后台编辑器。" />;
+    return <AdminEmptyState title="Supabase 未配置" description="配置完成后，才能使用服务后台编辑器。" />;
   }
 
   return (
     <>
-    <AdminStickyActionBar
+      <AdminStickyActionBar
         left={
           <>
             <Button asChild variant="outline">
@@ -278,15 +278,19 @@ export default function AdminServiceEditor() {
       >
         <AdminPageHeader
           title={isNew ? "新建服务" : "编辑服务"}
-          description="中文优先编辑；英文可自动生成后再复查。保存、发布、预览统一在顶部操作栏。"
+          description="优先编辑中文内容，英文内容可以自动生成后再复查。保存、发布、预览都在顶部操作栏。"
           actions={
             <Button type="button" variant="outline" onClick={() => setShowEnglish((v) => !v)}>
-              {showEnglish ? "隐藏英文" : "显示英文"}
+              {showEnglish ? "隐藏英文内容" : "显示英文内容"}
             </Button>
           }
         />
 
-        <AdminFormSection title="发布与排序" description="草稿不对外展示；发布后前台 /services 生效。" helpText="控制服务是否在前台显示，以及它在服务列表里的排序。">
+        <AdminFormSection
+          title="发布与排序"
+          description="草稿不会对外展示，发布后会在前台服务页面生效。"
+          helpText="控制服务是否在前台显示，以及它在服务列表里的排序。"
+        >
           <div className="grid gap-4 md:grid-cols-3">
             <div>
               <label className="mb-1 block text-sm font-medium">状态</label>
@@ -303,26 +307,26 @@ export default function AdminServiceEditor() {
               </select>
             </div>
             <div>
-              <label className="mb-1 block text-sm font-medium">排序 sort_order</label>
-              <Input
-                type="number"
-                value={record.sort_order}
-                onChange={(e) => setRecord((r) => ({ ...r, sort_order: Number(e.target.value || 0) }))}
-              />
+              <label className="mb-1 block text-sm font-medium">排序</label>
+              <Input type="number" value={record.sort_order} onChange={(e) => setRecord((r) => ({ ...r, sort_order: Number(e.target.value || 0) }))} />
             </div>
           </div>
         </AdminFormSection>
 
-        <AdminFormSection title="基础信息（中文）" description="用于服务列表卡片与详情页标题/摘要。" helpText="管理服务中文标题、摘要和正文。前台中文服务列表和详情页会读取这里。">
+        <AdminFormSection
+          title="基础信息（中文）"
+          description="用于服务列表卡片和详情页标题、摘要。"
+          helpText="管理服务中文标题、摘要和正文。前台中文服务列表和详情页会读取这里。"
+        >
           <div className="grid gap-4 md:grid-cols-2">
             <div className="md:col-span-2">
-              <label className="mb-1 block text-sm font-medium">中文标题 title_zh</label>
+              <label className="mb-1 block text-sm font-medium">中文标题</label>
               <Input value={record.title_zh} onChange={(e) => setRecord((r) => ({ ...r, title_zh: e.target.value }))} />
             </div>
 
             <div className="md:col-span-2">
               <div className="flex items-center justify-between gap-2">
-                <label className="mb-1 block text-sm font-medium">Slug（链接标识）</label>
+                <label className="mb-1 block text-sm font-medium">链接标识</label>
                 <div className="flex items-center gap-2">
                   <Button
                     type="button"
@@ -337,7 +341,7 @@ export default function AdminServiceEditor() {
                     自动生成
                   </Button>
                   <Button type="button" variant="outline" size="sm" onClick={() => void checkSlugUnique(record.slug)}>
-                    检查唯一
+                    检查是否重复
                   </Button>
                 </div>
               </div>
@@ -355,22 +359,26 @@ export default function AdminServiceEditor() {
             </div>
 
             <div className="md:col-span-2">
-              <label className="mb-1 block text-sm font-medium">中文摘要 excerpt_zh</label>
+              <label className="mb-1 block text-sm font-medium">中文摘要</label>
               <Textarea rows={3} value={record.excerpt_zh} onChange={(e) => setRecord((r) => ({ ...r, excerpt_zh: e.target.value }))} />
             </div>
 
             <div className="md:col-span-2">
-              <label className="mb-1 block text-sm font-medium">中文详情 content_zh</label>
+              <label className="mb-1 block text-sm font-medium">中文详情</label>
               <Textarea rows={10} value={record.content_zh} onChange={(e) => setRecord((r) => ({ ...r, content_zh: e.target.value }))} />
             </div>
           </div>
         </AdminFormSection>
 
-        <AdminFormSection title="图片" description="支持粘贴 URL 或直接上传，后续会接入媒体库选择器。" helpText="管理服务封面图，服务列表卡片和详情页头图会优先使用这里。">
+        <AdminFormSection
+          title="图片"
+          description="支持粘贴图片地址，也可以直接上传。"
+          helpText="管理服务封面图，服务列表卡片和详情页头图会优先使用这里。"
+        >
           <div className="grid gap-4 md:grid-cols-2">
             <div className="md:col-span-2">
               <ImageField
-                label="封面图 image_url"
+                label="封面图"
                 value={record.image_url}
                 onChange={(url) => setRecord((r) => ({ ...r, image_url: url }))}
                 folder={`services/${record.id || "draft"}`}
@@ -382,27 +390,31 @@ export default function AdminServiceEditor() {
             </div>
             {showEnglish && (
               <div>
-                <label className="mb-1 block text-sm font-medium">图片 alt_en</label>
+                <label className="mb-1 block text-sm font-medium">英文图片说明</label>
                 <Input value={record.alt_en} onChange={(e) => setRecord((r) => ({ ...r, alt_en: e.target.value }))} />
               </div>
             )}
           </div>
         </AdminFormSection>
 
-        <AdminFormSection title="业务字段（中文）" description="这些字段会被前台服务详情页读取。" helpText="管理适合场景、常见项目、服务范围、流程和 FAQ，都会显示在服务详情页。">
+        <AdminFormSection
+          title="业务字段（中文）"
+          description="这些字段会被前台服务详情页读取。"
+          helpText="管理适合场景、常见项目、服务范围、流程和常见问题，都会显示在服务详情页。"
+        >
           <div className="grid gap-4 md:grid-cols-2">
             <div>
               <TextListEditor
-                label="适合场景 suitable_for_zh"
+                label="适合场景"
                 helpText={getAdminFieldHelp("suitable_for_zh")}
                 value={record.suitable_for_zh}
                 onChange={(value) => setRecord((r) => ({ ...r, suitable_for_zh: value }))}
-                placeholder="例如：公寓装修、旧屋翻新"
+                placeholder="例如：公寓装修、旧房翻新"
               />
             </div>
             <div>
               <TextListEditor
-                label="常见项目 common_projects_zh"
+                label="常见项目"
                 helpText={getAdminFieldHelp("common_projects_zh")}
                 value={record.common_projects_zh}
                 onChange={(value) => setRecord((r) => ({ ...r, common_projects_zh: value }))}
@@ -411,7 +423,7 @@ export default function AdminServiceEditor() {
             </div>
             <div className="md:col-span-2">
               <TextListEditor
-                label="服务范围 scope_items_zh"
+                label="服务范围"
                 helpText={getAdminFieldHelp("scope_items_zh")}
                 value={record.scope_items_zh}
                 onChange={(value) => setRecord((r) => ({ ...r, scope_items_zh: value }))}
@@ -420,7 +432,7 @@ export default function AdminServiceEditor() {
             </div>
             <div className="md:col-span-2">
               <ProcessStepsEditor
-                label="服务步骤 process_steps_zh"
+                label="服务步骤"
                 helpText={getAdminFieldHelp("process_steps_zh")}
                 value={record.process_steps_zh}
                 onChange={(value) => setRecord((r) => ({ ...r, process_steps_zh: value }))}
@@ -428,7 +440,7 @@ export default function AdminServiceEditor() {
             </div>
             <div className="md:col-span-2">
               <FaqListEditor
-                label="服务 FAQ faqs_zh"
+                label="服务问答"
                 helpText={getAdminFieldHelp("faqs_zh")}
                 value={record.faqs_zh}
                 onChange={(value) => setRecord((r) => ({ ...r, faqs_zh: value }))}
@@ -437,14 +449,18 @@ export default function AdminServiceEditor() {
           </div>
         </AdminFormSection>
 
-        <AdminFormSection title="SEO（中文）" description="用于前台 meta title / description，留空时前台会回退默认值。" helpText="管理中文页面在浏览器标题、搜索结果和分享卡片里的文案。">
+        <AdminFormSection
+          title="SEO（中文）"
+          description="用于前台页面标题和页面描述，留空时前台会回退默认值。"
+          helpText="管理中文页面在浏览器标题、搜索结果和分享卡片里的文案。"
+        >
           <div className="grid gap-4 md:grid-cols-2">
             <div className="md:col-span-2">
-              <label className="mb-1 block text-sm font-medium">SEO 标题 seo_title_zh</label>
+              <label className="mb-1 block text-sm font-medium">SEO 标题</label>
               <Input value={record.seo_title_zh} onChange={(e) => setRecord((r) => ({ ...r, seo_title_zh: e.target.value }))} />
             </div>
             <div className="md:col-span-2">
-              <label className="mb-1 block text-sm font-medium">SEO 描述 seo_description_zh</label>
+              <label className="mb-1 block text-sm font-medium">SEO 描述</label>
               <Textarea rows={3} value={record.seo_description_zh} onChange={(e) => setRecord((r) => ({ ...r, seo_description_zh: e.target.value }))} />
             </div>
           </div>
@@ -452,55 +468,63 @@ export default function AdminServiceEditor() {
 
         {showEnglish && (
           <>
-            <AdminFormSection title="英文内容（可折叠）" description="英文为空时前台英文页会回退中文。" helpText="管理英文服务内容，没填英文时，英文前台会回退显示中文。">
+            <AdminFormSection
+              title="英文内容（可选）"
+              description="英文为空时，英文前台页面会回退显示中文。"
+              helpText="管理英文服务内容。没有填写英文时，英文前台会自动回退显示中文。"
+            >
               <div className="grid gap-4 md:grid-cols-2">
                 <div className="md:col-span-2">
-                  <label className="mb-1 block text-sm font-medium">英文标题 title_en</label>
+                  <label className="mb-1 block text-sm font-medium">英文标题</label>
                   <Input value={record.title_en} onChange={(e) => setRecord((r) => ({ ...r, title_en: e.target.value }))} />
                 </div>
                 <div className="md:col-span-2">
-                  <label className="mb-1 block text-sm font-medium">英文摘要 excerpt_en</label>
+                  <label className="mb-1 block text-sm font-medium">英文摘要</label>
                   <Textarea rows={3} value={record.excerpt_en} onChange={(e) => setRecord((r) => ({ ...r, excerpt_en: e.target.value }))} />
                 </div>
                 <div className="md:col-span-2">
-                  <label className="mb-1 block text-sm font-medium">英文正文 content_en</label>
+                  <label className="mb-1 block text-sm font-medium">英文正文</label>
                   <Textarea rows={10} value={record.content_en} onChange={(e) => setRecord((r) => ({ ...r, content_en: e.target.value }))} />
                 </div>
               </div>
             </AdminFormSection>
 
-        <AdminFormSection title="业务字段（英文）" description="可选；为空时自动回退。" helpText="管理英文服务详情页的列表、流程和 FAQ。">
+            <AdminFormSection
+              title="业务字段（英文）"
+              description="可选；为空时自动回退中文。"
+              helpText="管理英文服务详情页的列表、流程和常见问题。"
+            >
               <div className="grid gap-4 md:grid-cols-2">
                 <div>
                   <TextListEditor
-                    label="suitable_for_en"
+                    label="适合场景（英文）"
                     helpText={getAdminFieldHelp("suitable_for_en")}
                     value={record.suitable_for_en}
                     onChange={(value) => setRecord((r) => ({ ...r, suitable_for_en: value }))}
-                    placeholder="Example: Condo renovation"
+                    placeholder="例如：Condo renovation"
                   />
                 </div>
                 <div>
                   <TextListEditor
-                    label="common_projects_en"
+                    label="常见项目（英文）"
                     helpText={getAdminFieldHelp("common_projects_en")}
                     value={record.common_projects_en}
                     onChange={(value) => setRecord((r) => ({ ...r, common_projects_en: value }))}
-                    placeholder="Example: Kitchen upgrade"
+                    placeholder="例如：Kitchen upgrade"
                   />
                 </div>
                 <div className="md:col-span-2">
                   <TextListEditor
-                    label="scope_items_en"
+                    label="服务范围（英文）"
                     helpText={getAdminFieldHelp("scope_items_en")}
                     value={record.scope_items_en}
                     onChange={(value) => setRecord((r) => ({ ...r, scope_items_en: value }))}
-                    placeholder="Example: Electrical works"
+                    placeholder="例如：Electrical works"
                   />
                 </div>
                 <div className="md:col-span-2">
                   <ProcessStepsEditor
-                    label="process_steps_en"
+                    label="服务步骤（英文）"
                     helpText={getAdminFieldHelp("process_steps_en")}
                     value={record.process_steps_en}
                     onChange={(value) => setRecord((r) => ({ ...r, process_steps_en: value }))}
@@ -508,7 +532,7 @@ export default function AdminServiceEditor() {
                 </div>
                 <div className="md:col-span-2">
                   <FaqListEditor
-                    label="faqs_en"
+                    label="服务问答（英文）"
                     helpText={getAdminFieldHelp("faqs_en")}
                     value={record.faqs_en}
                     onChange={(value) => setRecord((r) => ({ ...r, faqs_en: value }))}
@@ -517,14 +541,18 @@ export default function AdminServiceEditor() {
               </div>
             </AdminFormSection>
 
-        <AdminFormSection title="SEO（英文）" description="可选；为空时前台会回退。" helpText="管理英文页面 SEO 文案。为空时前台会自动回退。">
+            <AdminFormSection
+              title="SEO（英文）"
+              description="可选；为空时前台会自动回退。"
+              helpText="管理英文页面的搜索文案。为空时前台会自动回退。"
+            >
               <div className="grid gap-4 md:grid-cols-2">
                 <div className="md:col-span-2">
-                  <label className="mb-1 block text-sm font-medium">seo_title_en</label>
+                  <label className="mb-1 block text-sm font-medium">英文 SEO 标题</label>
                   <Input value={record.seo_title_en} onChange={(e) => setRecord((r) => ({ ...r, seo_title_en: e.target.value }))} />
                 </div>
                 <div className="md:col-span-2">
-                  <label className="mb-1 block text-sm font-medium">seo_description_en</label>
+                  <label className="mb-1 block text-sm font-medium">英文 SEO 描述</label>
                   <Textarea rows={3} value={record.seo_description_en} onChange={(e) => setRecord((r) => ({ ...r, seo_description_en: e.target.value }))} />
                 </div>
               </div>

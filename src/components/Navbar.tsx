@@ -49,6 +49,7 @@ const Navbar = () => {
   const settings = useSiteSettings();
   const primaryLogoSrc = addCacheBuster(settings.logo_url || "", settings.updated_at);
   const brandText = settings.company_name || "FLASH CAST SDN. BHD.";
+  const isHomePage = /^\/(en|zh)\/?$/.test(location.pathname);
   const resolvedLogoState: "primary" | "fallback" | "none" =
     logoState === "primary" && primaryLogoSrc ? "primary" : logoState === "none" ? "none" : "fallback";
   const logoSrc = resolvedLogoState === "primary" ? primaryLogoSrc : logoFallback;
@@ -102,13 +103,14 @@ const Navbar = () => {
     <>
       <header
         data-scrolled={scrolled ? "true" : "false"}
+        data-home={isHomePage ? "true" : "false"}
         className="site-header fixed top-0 left-0 right-0 transition-all duration-300"
         style={{ zIndex: PUBLIC_CHROME_Z.header }}
       >
-        <div className="site-container flex h-16 flex-nowrap items-center gap-3 md:h-[72px]">
+        <div className="site-container flex h-12 flex-nowrap items-center gap-3 md:h-16">
           <LocalizedLink
             to="/"
-            className="flex h-11 w-[10.5rem] max-w-[54%] shrink-0 items-center md:h-12 md:w-48 md:max-w-[14rem]"
+            className="flex h-8 w-[7.75rem] max-w-[42%] shrink-0 items-center md:h-10 md:w-40 md:max-w-[12rem]"
           >
             {resolvedLogoState !== "none" ? (
               <SmartImage
@@ -171,24 +173,22 @@ const Navbar = () => {
           </div>
 
           <div className="ml-auto flex shrink-0 items-center xl:hidden">
-            <div className="flex h-11 items-center rounded-full border border-white/75 bg-white/85 p-1 shadow-[0_16px_42px_-32px_rgba(21,18,14,0.55)] backdrop-blur-md">
+            <div className="flex h-9 items-center gap-1 rounded-full border border-white/75 bg-white/85 p-0.5 shadow-[0_16px_42px_-32px_rgba(21,18,14,0.55)] backdrop-blur-md">
               <button
                 onClick={changeLanguage}
-                className="flex h-9 items-center gap-1.5 rounded-full px-2.5 text-xs font-semibold text-foreground transition-colors active:bg-muted/70"
+                className="flex h-8 w-8 items-center justify-center rounded-full text-[11px] font-bold text-foreground transition-colors active:bg-muted/70"
                 aria-label={languageAriaLabel}
               >
-                <Globe className="h-3.5 w-3.5" />
-                <span>{language === "en" ? "EN" : "中文"}</span>
+                <span>{language === "en" ? "EN" : "中"}</span>
               </button>
-              <span aria-hidden="true" className="mx-1 h-5 w-px bg-border/80" />
               <button
-                className="flex h-9 w-9 items-center justify-center rounded-full text-foreground transition-colors active:bg-muted/70"
+                className="flex h-8 w-8 items-center justify-center rounded-full text-foreground transition-colors active:bg-muted/70"
                 onClick={() => setIsOpen(!isOpen)}
                 aria-label={menuAriaLabel}
                 aria-expanded={isOpen}
                 aria-controls="mobile-navigation"
               >
-                {isOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+                {isOpen ? <X className="h-4 w-4" /> : <Menu className="h-4 w-4" />}
               </button>
             </div>
           </div>
@@ -199,7 +199,7 @@ const Navbar = () => {
         <div
           id="mobile-navigation"
           ref={mobileMenuRef}
-          className="fixed inset-x-0 bottom-0 top-16 flex flex-col border-t border-border/70 bg-[hsl(var(--background))] shadow-[0_-24px_80px_-56px_rgba(21,18,14,0.45)] md:top-[72px] xl:hidden"
+          className="fixed inset-x-0 bottom-0 top-12 flex flex-col border-t border-border/70 bg-[hsl(var(--background))] shadow-[0_-24px_80px_-56px_rgba(21,18,14,0.45)] md:top-16 xl:hidden"
           style={{ zIndex: PUBLIC_CHROME_Z.mobileMenu }}
         >
           <div className="min-h-0 flex-1 overflow-y-auto px-4 py-4">

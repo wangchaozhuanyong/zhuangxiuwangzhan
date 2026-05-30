@@ -87,7 +87,7 @@ export default function AdminBlogList() {
     <>
       <AdminPageHeader
         title="博客文章"
-        description="管理博客列表、封面图、发布时间、SEO 与发布状态。发布后前台 /blog 生效。"
+        description="管理博客列表、封面图、发布时间、SEO 与发布状态。发布后会在前台博客页生效。"
         actions={
           <div className="flex flex-wrap gap-2">
             <Button variant="outline" onClick={() => void refetch()} disabled={!isSupabaseConfigured || isFetching}>
@@ -101,7 +101,7 @@ export default function AdminBlogList() {
       />
 
       <div className="mb-4 grid gap-3 md:grid-cols-[1fr_220px]">
-        <Input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="搜索标题、slug、分类..." />
+        <Input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="搜索标题、链接标识、分类..." />
         <select
           value={status}
           onChange={(e) => setStatus(e.target.value)}
@@ -125,7 +125,7 @@ export default function AdminBlogList() {
         empty={
           <AdminEmptyState
             title="暂无文章"
-            description="先新建一篇文章并发布，前台 /blog 将显示。"
+            description="先新建一篇文章并发布，前台博客页会显示。"
             action={
               <Button asChild>
                 <Link to="/admin/blog/new">新建文章</Link>

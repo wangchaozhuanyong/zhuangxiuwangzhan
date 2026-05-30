@@ -25,7 +25,7 @@ const copy = {
   },
   zh: {
     title: "网站基础设置",
-    description: "管理公司联系方式、社交媒体链接、Logo 地址和默认 SEO 文案。",
+    description: "管理公司联系方式、社交媒体链接、品牌图标地址和默认 SEO 文案。",
     company: "公司信息",
     contact: "联系方式",
     media: "品牌媒体",
@@ -53,7 +53,7 @@ const fields: Array<{ key: keyof SiteSettings; label: string; group: "company" |
   { key: "short_address_en", label: "英文短地址", group: "contact" },
   { key: "map_latitude", label: "地图纬度（Latitude）", group: "contact" },
   { key: "map_longitude", label: "地图经度（Longitude）", group: "contact" },
-  { key: "logo_url", label: "Logo 图片地址", group: "media" },
+  { key: "logo_url", label: "品牌图标地址", group: "media" },
   { key: "favicon_url", label: "网站图标地址", group: "media" },
   { key: "og_image_url", label: "默认分享预览图地址", group: "media" },
   { key: "facebook_url", label: "Facebook 链接", group: "social" },

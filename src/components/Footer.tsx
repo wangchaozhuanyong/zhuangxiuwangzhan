@@ -167,7 +167,7 @@ const Footer = () => {
   return (
     <footer>
       <div className="footer-cta-bar hidden md:block">
-        <div className="site-container flex flex-col items-center gap-6 py-10 text-center md:flex-row md:justify-between md:py-14 md:text-left">
+        <div className="site-container relative z-10 flex flex-col items-center gap-6 py-10 text-center md:flex-row md:justify-between md:py-14 md:text-left">
           <div className="min-w-0">
             <h3 className="heading-safe font-display text-2xl font-bold text-surface-dark-foreground md:text-3xl">{t.ctaTitle}</h3>
             <p className="mt-2 text-sm text-surface-dark-foreground/75 md:text-base">{t.ctaText}</p>
@@ -179,7 +179,7 @@ const Footer = () => {
       </div>
 
       <div className="footer-surface">
-        <div className="site-container py-12 md:py-20">
+        <div className="footer-content site-container py-12 md:py-20">
           <div className="hidden grid-cols-12 gap-10 lg:grid">
             <div className="col-span-4 pr-4">
               <div className="mb-6 inline-flex h-12 w-48 items-center overflow-hidden">

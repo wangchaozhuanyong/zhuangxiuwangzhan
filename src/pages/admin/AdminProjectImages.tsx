@@ -78,8 +78,8 @@ const copy = {
     before: "施工前",
     after: "施工后",
     coverRuleTitle: "封面图规则，已和前台统一：",
-    coverRulePrimary: "前台列表和详情缩略图，会优先使用 image_type 为 cover 的图片。",
-    coverRuleFallback: "如果没有封面图，会依次使用第一张图库图片、projects.image_url、默认图片。",
+    coverRulePrimary: "前台列表和详情缩略图，会优先使用类型为“封面”的图片。",
+    coverRuleFallback: "如果没有封面图，会依次使用第一张图库图片、备用封面图、默认图片。",
   },
 };
 

@@ -59,7 +59,7 @@ const copy = {
       { key: "projects", label: "已发布案例", href: "/admin/projects" },
       { key: "services", label: "已发布服务", href: "/admin/services" },
       { key: "blog", label: "已发布博客", href: "/admin/blog" },
-      { key: "seoMissing", label: "SEO 缺失项", href: "/admin/seo" },
+      { key: "seoMissing", label: "搜索优化缺失项", href: "/admin/seo" },
     ],
     actions: [
       { label: "新建案例", href: "/admin/projects/new" },

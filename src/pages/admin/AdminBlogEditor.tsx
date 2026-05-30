@@ -140,7 +140,7 @@ export default function AdminBlogEditor() {
       }
       const exists = (data || []).some((row: any) => row.id !== record.id);
       if (exists) {
-        setSlugError("slug 已被占用，请更换");
+        setSlugError("链接标识已被占用，请更换");
         return false;
       }
       return true;
@@ -159,12 +159,12 @@ export default function AdminBlogEditor() {
     if (!isSupabaseConfigured) return;
     const slug = slugify(record.slug || record.title_zh);
     if (!slug) {
-      toast({ title: "请填写 slug 或中文标题", variant: "destructive" });
+      toast({ title: "请填写链接标识或中文标题", variant: "destructive" });
       return;
     }
     const ok = await checkSlugUnique(slug);
     if (!ok) {
-      toast({ title: "slug 不可用", description: slugError || "请修改后再保存", variant: "destructive" });
+      toast({ title: "链接标识不可用", description: slugError || "请修改后再保存", variant: "destructive" });
       return;
     }
 
@@ -268,15 +268,15 @@ export default function AdminBlogEditor() {
       >
         <AdminPageHeader
           title={isNew ? "新建博客文章" : "编辑博客文章"}
-          description="支持草稿/发布、预览、发布时间、排序与 SEO。中文优先编辑，英文可自动生成后复查。"
+          description="支持草稿、发布、预览、发布时间、排序与 SEO。中文优先编辑，英文可自动生成后复查。"
           actions={
             <Button type="button" variant="outline" onClick={() => setShowEnglish((v) => !v)}>
-              {showEnglish ? "隐藏英文" : "显示英文"}
+              {showEnglish ? "隐藏英文内容" : "显示英文内容"}
             </Button>
           }
         />
 
-        <AdminFormSection title="发布与排序" description="发布后前台 /blog 生效；发布时间用于前台排序与展示。" helpText="控制文章是否在博客列表显示，以及文章排序和发布时间。">
+        <AdminFormSection title="发布与排序" description="发布后会在前台博客页生效；发布时间用于前台排序与展示。" helpText="控制文章是否在博客列表显示，以及文章排序和发布时间。">
           <div className="grid gap-4 md:grid-cols-3">
             <div>
               <label className="mb-1 block text-sm font-medium">状态</label>
@@ -293,11 +293,11 @@ export default function AdminBlogEditor() {
               </select>
             </div>
             <div>
-              <label className="mb-1 block text-sm font-medium">排序 sort_order</label>
+              <label className="mb-1 block text-sm font-medium">排序</label>
               <Input type="number" value={record.sort_order} onChange={(e) => setRecord((r) => ({ ...r, sort_order: Number(e.target.value || 0) }))} />
             </div>
             <div>
-              <label className="mb-1 block text-sm font-medium">发布时间 published_at</label>
+              <label className="mb-1 block text-sm font-medium">发布时间</label>
               <Input
                 type="datetime-local"
                 value={toLocalInput(record.published_at)}
@@ -310,13 +310,13 @@ export default function AdminBlogEditor() {
         <AdminFormSection title="基础信息（中文）" description="用于博客列表卡片与详情页标题/摘要。" helpText="管理中文博客标题、摘要、正文、分类和标签。">
           <div className="grid gap-4 md:grid-cols-2">
             <div className="md:col-span-2">
-              <label className="mb-1 block text-sm font-medium">标题 title_zh</label>
+              <label className="mb-1 block text-sm font-medium">中文标题</label>
               <Input value={record.title_zh} onChange={(e) => setRecord((r) => ({ ...r, title_zh: e.target.value }))} />
             </div>
 
             <div className="md:col-span-2">
               <div className="flex items-center justify-between gap-2">
-                <label className="mb-1 block text-sm font-medium">Slug（链接标识）</label>
+                <label className="mb-1 block text-sm font-medium">链接标识</label>
                 <div className="flex items-center gap-2">
                   <Button
                     type="button"
@@ -331,7 +331,7 @@ export default function AdminBlogEditor() {
                     自动生成
                   </Button>
                   <Button type="button" variant="outline" size="sm" onClick={() => void checkSlugUnique(record.slug)}>
-                    检查唯一
+                    检查是否重复
                   </Button>
                 </div>
               </div>
@@ -349,31 +349,31 @@ export default function AdminBlogEditor() {
             </div>
 
             <div>
-              <label className="mb-1 block text-sm font-medium">分类 category</label>
-              <Input value={record.category} onChange={(e) => setRecord((r) => ({ ...r, category: e.target.value }))} placeholder="Guides / Materials / Inspiration..." />
+              <label className="mb-1 block text-sm font-medium">分类</label>
+              <Input value={record.category} onChange={(e) => setRecord((r) => ({ ...r, category: e.target.value }))} placeholder="例如：指南 / 材料 / 灵感" />
             </div>
             <div>
-              <label className="mb-1 block text-sm font-medium">标签 tags（每行一个）</label>
+              <label className="mb-1 block text-sm font-medium">标签（每行一个）</label>
               <Textarea rows={3} value={formatLines(record.tags)} onChange={(e) => setRecord((r) => ({ ...r, tags: parseLines(e.target.value) }))} />
             </div>
 
             <div className="md:col-span-2">
-              <label className="mb-1 block text-sm font-medium">摘要 excerpt_zh</label>
+              <label className="mb-1 block text-sm font-medium">中文摘要</label>
               <Textarea rows={3} value={record.excerpt_zh} onChange={(e) => setRecord((r) => ({ ...r, excerpt_zh: e.target.value }))} />
             </div>
 
             <div className="md:col-span-2">
-              <label className="mb-1 block text-sm font-medium">正文 content_zh</label>
+              <label className="mb-1 block text-sm font-medium">中文正文</label>
               <Textarea rows={14} value={record.content_zh} onChange={(e) => setRecord((r) => ({ ...r, content_zh: e.target.value }))} />
             </div>
           </div>
         </AdminFormSection>
 
-        <AdminFormSection title="封面图" description="用于博客列表与详情页头图，支持粘贴 URL 或直接上传，后续会接入媒体库选择器。" helpText="管理博客封面图，列表卡片和详情页头图会读取这里。">
+        <AdminFormSection title="封面图" description="用于博客列表与详情页头图，支持粘贴图片链接或直接上传，后续会接入媒体库选择器。" helpText="管理博客封面图，列表卡片和详情页头图会读取这里。">
           <div className="grid gap-4 md:grid-cols-2">
             <div className="md:col-span-2">
               <ImageField
-                label="封面图 cover_image_url"
+                label="封面图"
                 value={record.cover_image_url}
                 onChange={(url) => setRecord((r) => ({ ...r, cover_image_url: url }))}
                 folder={`blog_posts/${record.id || "draft"}`}
@@ -384,21 +384,21 @@ export default function AdminBlogEditor() {
             </div>
             {showEnglish && (
               <div>
-                <label className="mb-1 block text-sm font-medium">图片 alt_en</label>
+                <label className="mb-1 block text-sm font-medium">英文图片说明</label>
                 <Input value={record.alt_en} onChange={(e) => setRecord((r) => ({ ...r, alt_en: e.target.value }))} />
               </div>
             )}
           </div>
         </AdminFormSection>
 
-        <AdminFormSection title="SEO（中文）" description="用于前台 meta title / description，留空时前台会回退到默认值。" helpText="管理中文博客文章的搜索标题和搜索描述。">
+        <AdminFormSection title="SEO（中文）" description="用于前台页面标题和页面描述，留空时前台会回退到默认值。" helpText="管理中文博客文章的搜索标题和搜索描述。">
           <div className="grid gap-4 md:grid-cols-2">
             <div className="md:col-span-2">
-              <label className="mb-1 block text-sm font-medium">SEO 标题 seo_title_zh</label>
+              <label className="mb-1 block text-sm font-medium">中文 SEO 标题</label>
               <Input value={record.seo_title_zh} onChange={(e) => setRecord((r) => ({ ...r, seo_title_zh: e.target.value }))} />
             </div>
             <div className="md:col-span-2">
-              <label className="mb-1 block text-sm font-medium">SEO 描述 seo_description_zh</label>
+              <label className="mb-1 block text-sm font-medium">中文 SEO 描述</label>
               <Textarea rows={3} value={record.seo_description_zh} onChange={(e) => setRecord((r) => ({ ...r, seo_description_zh: e.target.value }))} />
             </div>
           </div>
@@ -409,28 +409,28 @@ export default function AdminBlogEditor() {
             <AdminFormSection title="英文内容（可折叠）" description="英文为空时前台英文页会回退中文。" helpText="管理英文博客内容，没填英文时，英文前台会回退显示中文。">
               <div className="grid gap-4 md:grid-cols-2">
                 <div className="md:col-span-2">
-                  <label className="mb-1 block text-sm font-medium">英文标题 title_en</label>
+                  <label className="mb-1 block text-sm font-medium">英文标题</label>
                   <Input value={record.title_en} onChange={(e) => setRecord((r) => ({ ...r, title_en: e.target.value }))} />
                 </div>
                 <div className="md:col-span-2">
-                  <label className="mb-1 block text-sm font-medium">英文摘要 excerpt_en</label>
+                  <label className="mb-1 block text-sm font-medium">英文摘要</label>
                   <Textarea rows={3} value={record.excerpt_en} onChange={(e) => setRecord((r) => ({ ...r, excerpt_en: e.target.value }))} />
                 </div>
                 <div className="md:col-span-2">
-                  <label className="mb-1 block text-sm font-medium">英文正文 content_en</label>
+                  <label className="mb-1 block text-sm font-medium">英文正文</label>
                   <Textarea rows={14} value={record.content_en} onChange={(e) => setRecord((r) => ({ ...r, content_en: e.target.value }))} />
                 </div>
               </div>
             </AdminFormSection>
 
-            <AdminFormSection title="SEO（英文）" description="可选；为空时前台会自动回退。" helpText="管理英文博客文章 SEO 文案。为空时前台会自动回退。">
+            <AdminFormSection title="SEO（英文）" description="可选；为空时前台会自动回退。" helpText="管理英文博客文章的搜索文案。为空时前台会自动回退。">
               <div className="grid gap-4 md:grid-cols-2">
                 <div className="md:col-span-2">
-                  <label className="mb-1 block text-sm font-medium">seo_title_en</label>
+                  <label className="mb-1 block text-sm font-medium">英文 SEO 标题</label>
                   <Input value={record.seo_title_en} onChange={(e) => setRecord((r) => ({ ...r, seo_title_en: e.target.value }))} />
                 </div>
                 <div className="md:col-span-2">
-                  <label className="mb-1 block text-sm font-medium">seo_description_en</label>
+                  <label className="mb-1 block text-sm font-medium">英文 SEO 描述</label>
                   <Textarea rows={3} value={record.seo_description_en} onChange={(e) => setRecord((r) => ({ ...r, seo_description_en: e.target.value }))} />
                 </div>
               </div>

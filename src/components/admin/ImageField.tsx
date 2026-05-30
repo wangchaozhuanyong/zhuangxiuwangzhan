@@ -41,7 +41,7 @@ export default function ImageField({
         </div>
       </div>
 
-      <Input value={value} onChange={(e) => onChange(e.target.value)} placeholder="粘贴图片 URL，或从媒体库选择 / 上传" />
+      <Input value={value} onChange={(e) => onChange(e.target.value)} placeholder="粘贴图片链接，或从媒体库选择 / 上传" />
 
       {value && (
         <div className="overflow-hidden rounded-lg border border-border bg-muted">
@@ -56,7 +56,7 @@ export default function ImageField({
 
       {typeof altValue === "string" && onAltChange && (
         <div>
-          <label className="mb-1 block text-sm font-medium">图片 alt</label>
+          <label className="mb-1 block text-sm font-medium">图片说明</label>
           <Input value={altValue} onChange={(e) => onAltChange(e.target.value)} placeholder="建议：描述图片内容与场景" />
         </div>
       )}
@@ -76,4 +76,3 @@ export default function ImageField({
     </div>
   );
 }
-

@@ -45,7 +45,7 @@ const AdminNotice = ({
           FC
         </div>
         <div className="min-w-0">
-          <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-accent">FLASH CAST Admin</p>
+          <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-accent">FLASH CAST 后台</p>
           <h1 className="mt-1 text-2xl font-semibold tracking-normal">{title}</h1>
         </div>
       </div>

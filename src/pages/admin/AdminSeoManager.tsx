@@ -2,6 +2,7 @@ import { useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { useAdminSeoAudit } from "@/lib/adminQueries";
+import { adminStatusLabel } from "@/lib/adminLocale";
 
 const AdminSeoManager = () => {
   const { data: rows = [], isFetching, isError, error, refetch } = useAdminSeoAudit();
@@ -16,8 +17,8 @@ const AdminSeoManager = () => {
     if (!row.seo_description_en) issues.push("缺英文 SEO 描述");
     if (row.seo_description_zh && String(row.seo_description_zh).length < 50) issues.push("中文描述偏短");
     if (row.seo_description_en && String(row.seo_description_en).length < 50) issues.push("英文描述偏短");
-    if (row.table !== "site_pages" && !row.slug) issues.push("缺 slug");
-    if ((row.image_url || row.cover_image_url || row.hero_image_url) && !row.alt_zh && !row.alt_en) issues.push("图片 alt 缺失");
+    if (row.table !== "site_pages" && !row.slug) issues.push("缺链接标识");
+    if ((row.image_url || row.cover_image_url || row.hero_image_url) && !row.alt_zh && !row.alt_en) issues.push("图片说明缺失");
     return { ...row, issues };
   }), [rows]);
 
@@ -46,8 +47,8 @@ const AdminSeoManager = () => {
       <div className="rounded-xl border border-border bg-card p-6">
         <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
           <div>
-            <h1 className="font-display text-2xl font-bold">SEO 管理</h1>
-            <p className="mt-2 text-sm text-muted-foreground">检查服务、案例、材料、博客、地区和落地页的 SEO 缺失项。</p>
+            <h1 className="font-display text-2xl font-bold">搜索优化管理</h1>
+            <p className="mt-2 text-sm text-muted-foreground">检查服务、案例、材料、博客、地区和落地页的搜索优化缺失项。</p>
           </div>
           <div className="flex flex-wrap gap-2">
             <Button type="button" variant="outline" size="sm" onClick={() => void refetch()} disabled={isFetching}>
@@ -67,7 +68,7 @@ const AdminSeoManager = () => {
         {filtered.map((row) => {
           const rowRecord = row as typeof row & { path?: string; page_key?: string };
           const duplicate = row.slug && (duplicateSlugs.get(`${row.table}:${row.slug}`) || 0) > 1;
-          const issues = duplicate ? [...row.issues, "slug 重复"] : row.issues;
+          const issues = duplicate ? [...row.issues, "链接标识重复"] : row.issues;
           const editUrl = row.table === "site_pages" ? row.source.route : `${row.source.route}/${row.id}`;
           const frontUrl = row.table === "site_pages" ? String(rowRecord.path || row.source.front || "/") : row.slug ? `${row.source.front}/${row.slug}` : row.source.front;
           return (
@@ -75,14 +76,16 @@ const AdminSeoManager = () => {
               <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
                 <div>
                   <p className="font-semibold">{row.title_zh || row.title_en || row.name || rowRecord.page_key || row.slug || row.source.label}</p>
-                  <p className="mt-1 text-xs text-muted-foreground">{row.source.label} · {rowRecord.path || row.slug || "-"} · {row.status || "-"}</p>
+                  <p className="mt-1 text-xs text-muted-foreground">
+                    {row.source.label} · {rowRecord.path || row.slug || "-"} · {adminStatusLabel("default", row.status || "-")}
+                  </p>
                   <div className="mt-2 flex flex-wrap gap-2">
-                    {issues.length ? issues.map((issue) => <span key={issue} className="rounded-full bg-destructive/10 px-2 py-1 text-xs text-destructive">{issue}</span>) : <span className="rounded-full bg-accent/10 px-2 py-1 text-xs text-accent">SEO 通过</span>}
+                    {issues.length ? issues.map((issue) => <span key={issue} className="rounded-full bg-destructive/10 px-2 py-1 text-xs text-destructive">{issue}</span>) : <span className="rounded-full bg-accent/10 px-2 py-1 text-xs text-accent">搜索优化通过</span>}
                   </div>
                 </div>
                 <div className="flex gap-2">
                   <Button asChild size="sm" variant="outline"><Link to={editUrl}>编辑</Link></Button>
-                  <Button asChild size="sm" variant="outline"><Link to={frontUrl}>前台</Link></Button>
+                  <Button asChild size="sm" variant="outline"><Link to={frontUrl}>前台页</Link></Button>
                 </div>
               </div>
             </article>

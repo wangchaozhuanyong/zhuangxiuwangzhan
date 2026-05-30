@@ -36,7 +36,7 @@ const Index = () => {
   const metaKeywords = pageContent?.seo_keywords || copy.keywords;
 
   return (
-    <main>
+    <main className="home-page overflow-x-hidden">
       <PageMeta
         title={metaTitle}
         description={metaDescription}
@@ -46,16 +46,18 @@ const Index = () => {
       <JsonLdLocalBusiness />
       <JsonLdOrganization />
       <HeroSection pageContent={pageContent} />
-      <StatsSection />
-      <BrandLogosSection />
-      <ServicesSection />
-      <ProjectsSection />
-      <WhyChooseUsSection />
-      <ProcessSection />
-      <BeforeAfterSection />
-      <TestimonialsSection />
-      <HomeFAQSection />
-      <CTASection />
+      <div className="home-art-canvas">
+        <StatsSection />
+        <BrandLogosSection />
+        <ServicesSection />
+        <ProjectsSection />
+        <WhyChooseUsSection />
+        <ProcessSection />
+        <BeforeAfterSection />
+        <TestimonialsSection />
+        <HomeFAQSection />
+        <CTASection />
+      </div>
     </main>
   );
 };

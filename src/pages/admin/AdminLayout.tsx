@@ -132,9 +132,9 @@ const copy: Record<AdminLang, AdminCopy> = {
     home: "Home Page",
     pages: "Page Content",
     about: "About Us",
-    faqs: "FAQ",
+    faqs: "常见问题",
     beforeAfter: "Before / After",
-    brandLogos: "Brand Logos",
+    brandLogos: "品牌合作",
     services: "Services",
     projects: "Projects",
     blog: "Blog",
@@ -146,7 +146,7 @@ const copy: Record<AdminLang, AdminCopy> = {
     quoteRequests: "Quote Requests",
     media: "Media Library",
     seo: "SEO Settings",
-    sitemap: "Sitemap / Robots",
+    sitemap: "站点地图 / Robots",
     users: "Admin Users",
     websiteSettings: "Website Settings",
     translationJobs: "Translation Jobs",
@@ -176,7 +176,7 @@ const copy: Record<AdminLang, AdminCopy> = {
     groupWebsite: "网站内容",
     groupBusiness: "业务内容",
     groupCustomers: "客户管理",
-    groupMediaSeo: "媒体与 SEO",
+    groupMediaSeo: "媒体与搜索优化",
     groupSystem: "系统设置",
     home: "首页管理",
     pages: "页面内容",
@@ -195,7 +195,7 @@ const copy: Record<AdminLang, AdminCopy> = {
     quoteRequests: "报价请求",
     media: "媒体库",
     seo: "SEO 设置",
-    sitemap: "Sitemap / Robots",
+    sitemap: "站点地图 / Robots",
     users: "管理员账户",
     websiteSettings: "网站基础设置",
     translationJobs: "翻译任务",
@@ -581,7 +581,7 @@ const AdminLayout = () => {
                   <ControlButton active={adminLang === "zh"} label="中文" onClick={() => changeLanguage("zh")}>
                     中
                   </ControlButton>
-                  <ControlButton active={adminLang === "en"} label="English" onClick={() => changeLanguage("en")}>
+                  <ControlButton active={adminLang === "en"} label="英文" onClick={() => changeLanguage("en")}>
                     EN
                   </ControlButton>
                 </div>

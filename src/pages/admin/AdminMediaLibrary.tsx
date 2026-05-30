@@ -20,7 +20,7 @@ const usageTypeLabels: Record<(typeof usageTypes)[number], string> = {
   project: "案例",
   material: "材料",
   blog: "博客",
-  logo: "品牌 Logo",
+  logo: "品牌图标",
   og: "分享预览图",
   before_after: "改造前后",
   general: "通用",
@@ -80,7 +80,7 @@ const AdminMediaLibrary = () => {
     <div className="space-y-6">
       <div className="rounded-xl border border-border bg-card p-6">
         <h1 className="font-display text-2xl font-bold">媒体库</h1>
-        <p className="mt-2 text-sm text-muted-foreground">上传图片、复制 URL，并管理 alt 文案与用途分类。</p>
+        <p className="mt-2 text-sm text-muted-foreground">上传图片、复制链接，并管理图片说明与用途分类。</p>
         <div className="mt-5">
           <AdminImageUpload folder="media" onUploaded={(url) => void createAsset(url)} />
         </div>
@@ -89,7 +89,7 @@ const AdminMediaLibrary = () => {
 
       <div className="rounded-xl border border-border bg-card p-4">
         <div className="grid gap-3 md:grid-cols-[1fr_220px]">
-          <Input value={search} onChange={(event) => setSearch(event.target.value)} placeholder="搜索文件名、alt、分类..." />
+          <Input value={search} onChange={(event) => setSearch(event.target.value)} placeholder="搜索文件名、图片说明、分类..." />
           <select value={usageType} onChange={(event) => setUsageType(event.target.value)} className="flex h-10 rounded-md border border-input bg-background px-3 py-2 text-sm">
             {usageTypes.map((item) => <option key={item} value={item}>{usageTypeLabels[item]}</option>)}
           </select>
@@ -110,7 +110,7 @@ const AdminMediaLibrary = () => {
               <p className="truncate font-medium">{asset.file_name || asset.file_url}</p>
               <p className="text-xs text-muted-foreground">{usageTypeLabels[(asset.usage_type as keyof typeof usageTypeLabels) || "general"] || asset.usage_type || "通用"} · {asset.folder || "-"}</p>
               <div className="flex flex-wrap gap-2">
-                <Button size="sm" variant="outline" onClick={() => navigator.clipboard.writeText(asset.file_url)}>复制 URL</Button>
+                <Button size="sm" variant="outline" onClick={() => navigator.clipboard.writeText(asset.file_url)}>复制链接</Button>
                 <Button size="sm" variant="outline" onClick={() => setEditing(asset)}>编辑</Button>
                 <Button size="sm" variant="outline" onClick={() => void deleteAsset(asset.id)}>删除记录</Button>
               </div>
@@ -130,8 +130,8 @@ const AdminMediaLibrary = () => {
                   <option key={item} value={item}>{usageTypeLabels[item]}</option>
                 ))}
               </select>
-              <Textarea rows={3} value={editing.alt_zh || ""} onChange={(event) => setEditing({ ...editing, alt_zh: event.target.value })} placeholder="中文 Alt 文本" />
-              <Textarea rows={3} value={editing.alt_en || ""} onChange={(event) => setEditing({ ...editing, alt_en: event.target.value })} placeholder="英文 Alt 文本" />
+              <Textarea rows={3} value={editing.alt_zh || ""} onChange={(event) => setEditing({ ...editing, alt_zh: event.target.value })} placeholder="中文图片说明" />
+              <Textarea rows={3} value={editing.alt_en || ""} onChange={(event) => setEditing({ ...editing, alt_en: event.target.value })} placeholder="英文图片说明" />
             </div>
             <div className="mt-5 flex justify-end gap-2">
               <Button variant="outline" onClick={() => setEditing(null)}>取消</Button>

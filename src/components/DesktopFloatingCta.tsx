@@ -32,6 +32,7 @@ const DesktopFloatingCta = () => {
   const { menuOpen } = usePublicChrome();
   const t = copy[language];
   const [showPrompt, setShowPrompt] = useState(false);
+  const [footerInView, setFooterInView] = useState(false);
 
   useEffect(() => {
     const dismissedAt = Number(localStorage.getItem("flashcast_cta_dismissed_at") || 0);
@@ -60,12 +61,27 @@ const DesktopFloatingCta = () => {
     };
   }, []);
 
+  useEffect(() => {
+    const footer = document.querySelector("footer");
+    if (!footer || typeof IntersectionObserver === "undefined") {
+      return;
+    }
+
+    const observer = new IntersectionObserver(
+      ([entry]) => setFooterInView(entry.isIntersecting),
+      { threshold: 0.08 }
+    );
+
+    observer.observe(footer);
+    return () => observer.disconnect();
+  }, []);
+
   const dismissPrompt = () => {
     localStorage.setItem("flashcast_cta_dismissed_at", String(Date.now()));
     setShowPrompt(false);
   };
 
-  if (menuOpen) {
+  if (menuOpen || footerInView) {
     return null;
   }
 
