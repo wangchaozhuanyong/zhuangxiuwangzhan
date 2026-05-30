@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import AdminEmptyState from "@/components/admin/AdminEmptyState";
+import AdminPageHeader from "@/components/admin/AdminPageHeader";
 import AdminFormSection from "@/components/admin/AdminFormSection";
 import AdminStatusBadge from "@/components/admin/AdminStatusBadge";
 import { AdminFieldLabel } from "@/components/admin/AdminHelpTip";
@@ -365,6 +366,12 @@ export default function AdminCmsBuilder() {
       </section>
 
       <div className="space-y-6">
+        <AdminPageHeader
+          title="通用页面搭建器"
+          description="管理页面、模块、草稿、发布和版本恢复。"
+          helpText="这里适合做更自由的页面搭建。先建页面，再给页面加模块，最后发布到前台。"
+        />
+
         <AdminFormSection title="页面基础信息" description="控制页面路径、标题、SEO、状态和排序。" helpText="保存页面后，才能给它添加模块。published 会给正式前台读取；draft 只适合后台预览。">
           <div className="grid gap-4 md:grid-cols-2">
             <div>
@@ -499,7 +506,7 @@ export default function AdminCmsBuilder() {
                   <Textarea rows={8} value={contentZhText} onChange={(event) => { setDirty(true); setContentZhText(event.target.value); }} />
                 </div>
                 <div>
-                  <AdminFieldLabel label="英文内容 JSON" help="模块英文内容。英文为空时前台可以按页面规则回退。" />
+                  <AdminFieldLabel label="英文内容 JSON" help="模块英文内容。英文为空时，英文站可能显示空内容或最后兜底内容。" />
                   <Textarea rows={8} value={contentEnText} onChange={(event) => { setDirty(true); setContentEnText(event.target.value); }} />
                 </div>
                 <div>

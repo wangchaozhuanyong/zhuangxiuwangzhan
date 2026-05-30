@@ -234,6 +234,7 @@ export default function AdminAboutEditor() {
       <AdminPageHeader
         title="关于我们管理"
         description="管理关于我们页面的首屏、介绍、统计、价值观、团队、历程、办公环境和行动引导区。前台会优先读取已发布内容，留空时自动使用静态默认内容。"
+        helpText="这里主要编辑关于我们页面的各个区块和底部行动引导。"
         actions={
           <div className="flex flex-wrap gap-2">
             <Button variant="outline" onClick={() => void refetch()} disabled={loading}>
@@ -344,7 +345,7 @@ export default function AdminAboutEditor() {
                       <div className="md:col-span-2">
                         <AboutSectionItemsEditor
                           label="英文列表 / 卡片内容"
-                          helpText="管理当前区块的英文列表或卡片内容。英文为空时，前台会尽量回退显示中文。"
+                          helpText="管理当前区块的英文列表或卡片内容。英文为空时，英文站可能显示空内容或最后兜底内容。"
                           sectionKey={key}
                           value={itemsEn[key] || []}
                           onChange={(value) => {

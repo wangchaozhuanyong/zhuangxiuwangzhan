@@ -1,6 +1,7 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+﻿import { useEffect, useMemo, useRef, useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { useAdminSimpleCmsRows } from "@/lib/adminQueries";
+import AdminPageHeader from "@/components/admin/AdminPageHeader";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -261,6 +262,12 @@ const AdminSimpleCms = ({ module }: { module: ModuleKey }) => {
 
   return (
     <div className="grid gap-6 xl:grid-cols-[1fr_420px]">
+      <AdminPageHeader
+        title={config.title}
+        description={getAdminTableHelp(config.table)}
+        helpText="这里是轻量内容管理区，适合快速改标题、图片、列表和基础文案。"
+      />
+
       <section className="rounded-xl border border-border bg-card p-6">
         <div className="mb-5 flex items-start justify-between gap-4">
           <div>
@@ -324,3 +331,5 @@ const AdminSimpleCms = ({ module }: { module: ModuleKey }) => {
 };
 
 export default AdminSimpleCms;
+
+

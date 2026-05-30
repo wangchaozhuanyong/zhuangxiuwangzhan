@@ -6,7 +6,7 @@ Run the migrations in `supabase/migrations` against the target Supabase project.
 
 Required objects include:
 
-- CMS tables: `services`, `projects`, `project_images`, `blog_posts`, `materials`, `testimonials`, `hero_slides`, `service_areas`, `landing_pages`
+- CMS tables: `services`, `projects`, `project_images`, `blog_posts`, `materials`, `testimonials`, `hero_slides`, `service_areas`, `landing_pages`, `home_sections`, `about_sections`, `faqs`, `cta_blocks`, `site_pages`, `cms_pages`, `cms_sections`, `cms_content_entries`
 - Lead tables: `leads`, `quote_requests`, including workflow statuses and quote follow-up notes from the latest migrations
 - Translation tracking: `translation_jobs`
 - Notification settings: `notification_settings`
@@ -58,7 +58,7 @@ Deploy these functions:
 - `sitemap`
 - `health-check`
 
-`generate-english-content` is intentionally limited to CMS tables that contain Chinese `_zh` fields. It currently supports `services`, `projects`, `project_images`, `blog_posts`, `materials`, `testimonials`, `hero_slides`, `service_areas`, and `landing_pages`. The function now uses Google Translate's public web translation endpoint, so it does not require an OpenAI key or Google Cloud Translation API key.
+`generate-english-content` is intentionally limited to CMS tables that contain Chinese `_zh` fields. It currently supports `services`, `projects`, `project_images`, `blog_posts`, `materials`, `testimonials`, `hero_slides`, `service_areas`, `landing_pages`, `home_sections`, `about_sections`, `faqs`, `cta_blocks`, `site_pages`, `cms_pages`, `cms_sections`, and `cms_content_entries`. It only fills empty English fields by default; use `force: true` only when an admin confirms that existing English can be overwritten. The function now uses Google Translate's public web translation endpoint, so it does not require an OpenAI key or Google Cloud Translation API key.
 
 ## Required Frontend Env
 

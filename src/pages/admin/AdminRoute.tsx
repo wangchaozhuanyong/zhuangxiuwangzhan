@@ -1,6 +1,7 @@
 import { useEffect, type ReactNode } from "react";
 import { Helmet } from "react-helmet-async";
 import { Link, Navigate, Outlet } from "react-router-dom";
+import AdminHelpTip from "@/components/admin/AdminHelpTip";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/lib/supabase";
 import { useAdminAuth } from "@/pages/admin/AdminAuthProvider";
@@ -32,10 +33,12 @@ const copy = {
 const AdminNotice = ({
   title,
   body,
+  helpText,
   children,
 }: {
   title: string;
   body?: string;
+  helpText?: string;
   children?: ReactNode;
 }) => (
   <main className="flex min-h-screen items-center justify-center bg-background px-4 py-10 text-foreground">
@@ -46,7 +49,10 @@ const AdminNotice = ({
         </div>
         <div className="min-w-0">
           <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-accent">FLASH CAST 后台</p>
-          <h1 className="mt-1 text-2xl font-semibold tracking-normal">{title}</h1>
+          <h1 className="mt-1 flex items-center gap-2 text-2xl font-semibold tracking-normal">
+            <span>{title}</span>
+            <AdminHelpTip text={helpText} />
+          </h1>
         </div>
       </div>
       {body && <p className="mb-5 text-sm leading-6 text-muted-foreground">{body}</p>}
@@ -69,7 +75,7 @@ const AdminRoute = () => {
 
   if (!isSupabaseConfigured) {
     return (
-      <AdminNotice title={t.notConfiguredTitle} body={t.notConfiguredBody}>
+      <AdminNotice title={t.notConfiguredTitle} body={t.notConfiguredBody} helpText="先检查环境变量和数据库配置，没配好时后台不会开放。">
         <Button asChild variant="outline" className="rounded-lg">
           <Link to={sitePath}>{t.backToWebsite}</Link>
         </Button>
@@ -95,7 +101,7 @@ const AdminRoute = () => {
 
   if (authState === "denied") {
     return (
-      <AdminNotice title={t.accessRequired} body={t.deniedBody}>
+      <AdminNotice title={t.accessRequired} body={t.deniedBody} helpText="已经登录但不是后台白名单账号，所以会被拦住。">
         <Button
           className="rounded-lg"
           onClick={async () => {

@@ -16,6 +16,14 @@ const allowedTables = new Set([
   "hero_slides",
   "service_areas",
   "landing_pages",
+  "home_sections",
+  "about_sections",
+  "faqs",
+  "cta_blocks",
+  "site_pages",
+  "cms_pages",
+  "cms_sections",
+  "cms_content_entries",
 ]);
 
 const getServiceRoleKey = () =>

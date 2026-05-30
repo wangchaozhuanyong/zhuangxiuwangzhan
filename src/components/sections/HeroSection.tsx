@@ -128,17 +128,17 @@ const HeroSection = ({ pageContent }: HeroSectionProps) => {
       </div>
 
       <div className="relative z-10 flex min-h-[100svh] items-center justify-center px-4 py-24">
-        <div className="home-hero-content flex w-full max-w-4xl flex-col items-center text-center">
-          <h1 id="home-hero-title" className="heading-safe max-w-3xl text-3xl font-bold leading-tight text-on-media md:text-5xl lg:text-6xl">
+        <div className="home-hero-content flex w-full max-w-4xl flex-col items-center justify-center text-center">
+          <h1 id="home-hero-title" className="sr-only">
             {heroTitle}
           </h1>
           {heroDescription && (
-            <p className="prose-safe mt-4 max-w-2xl text-sm leading-relaxed text-on-media-muted md:text-lg">
+            <p className="sr-only">
               {heroDescription}
             </p>
           )}
 
-          <div className="home-hero-actions mt-7 flex w-full max-w-[500px] flex-col items-center justify-center gap-3 sm:w-auto sm:max-w-none sm:flex-row">
+          <div className="home-hero-actions flex w-full max-w-[500px] flex-col items-center justify-center gap-3 sm:w-auto sm:max-w-none sm:flex-row">
             {primaryIsExternal ? (
               <a href={primaryUrl} target="_blank" rel="noopener noreferrer" className={primaryButtonClass}>
                 <span className="min-w-0 truncate">{primaryLabel}</span>

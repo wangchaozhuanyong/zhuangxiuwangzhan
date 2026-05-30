@@ -13,6 +13,7 @@ import DynamicBrandHead from "@/components/DynamicBrandHead";
 import { AppErrorBoundary } from "@/components/AppErrorBoundary";
 import { LanguageRouteSync, LegacyLanguageRedirect, RootLanguageRedirect } from "@/components/LanguageRouteSync";
 import { PublicChromeProvider } from "@/contexts/PublicChromeContext";
+import { stripLanguagePrefix } from "@/i18n/routes";
 import ScrollToTop from "./components/ScrollToTop";
 import Index from "./pages/Index";
 import FAQ from "./pages/FAQ";
@@ -92,9 +93,10 @@ const AppShell = () => {
   const location = useLocation();
   const { language } = useLanguage();
   const isAdminRoute = location.pathname.startsWith("/admin");
+  const isHomeRoute = !isAdminRoute && stripLanguagePrefix(location.pathname) === "/";
 
   return (
-    <PublicChromeProvider isAdminRoute={isAdminRoute}>
+    <PublicChromeProvider isAdminRoute={isAdminRoute} isHomeRoute={isHomeRoute}>
       <DynamicBrandHead />
       <ScrollToTop />
       {!isAdminRoute && (

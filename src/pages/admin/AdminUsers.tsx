@@ -1,8 +1,10 @@
 import { FormEvent, useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
+import AdminPageHeader from "@/components/admin/AdminPageHeader";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { isSupabaseConfigured, supabase } from "@/lib/supabase";
+import type { AdminUserRow } from "@/lib/adminEditorData";
 import { useAdminUsers } from "@/lib/adminQueries";
 
 const AdminUsers = () => {
@@ -30,7 +32,7 @@ const AdminUsers = () => {
     }
   };
 
-  const toggleActive = async (user: { user_id: string; active: boolean }) => {
+  const toggleActive = async (user: Pick<AdminUserRow, "user_id" | "active">) => {
     const { error: updateError } = await supabase!.from("admin_users").update({ active: !user.active }).eq("user_id", user.user_id);
     if (updateError) setMessage(updateError.message);
     else {
@@ -39,7 +41,7 @@ const AdminUsers = () => {
     }
   };
 
-  const updateRole = async (user: { user_id: string }, role: string) => {
+  const updateRole = async (user: Pick<AdminUserRow, "user_id">, role: string) => {
     const { error: updateError } = await supabase!.from("admin_users").update({ role }).eq("user_id", user.user_id);
     if (updateError) setMessage(updateError.message);
     else {
@@ -50,9 +52,13 @@ const AdminUsers = () => {
 
   return (
     <div className="space-y-6">
+      <AdminPageHeader
+        title="管理员账户"
+        description="这里只管理后台白名单，不会显示或使用服务端密钥。"
+        helpText="这里是控制谁能进后台的地方。先填认证用户 ID，再选角色和启用状态。"
+      />
+
       <div className="rounded-xl border border-border bg-card p-6">
-        <h1 className="font-display text-2xl font-bold">管理员账户</h1>
-        <p className="mt-2 text-sm text-muted-foreground">这里只管理后台白名单，不会显示或使用服务端密钥。</p>
         {message && <p className="mt-4 rounded-lg bg-muted p-3 text-sm">{message}</p>}
         {!isSupabaseConfigured && <p className="mt-4 rounded-lg bg-muted p-3 text-sm">Supabase 未配置。</p>}
       </div>
@@ -90,9 +96,7 @@ const AdminUsers = () => {
           <article key={user.user_id} className="rounded-xl border border-border bg-card p-4">
             <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
               <div>
-                <p className="font-semibold">{user.email || user.user_id}</p>
-                <p className="mt-1 break-all text-xs text-muted-foreground">{user.user_id}</p>
-                <p className="mt-1 text-xs text-muted-foreground">{user.active ? "启用" : "停用"} · 角色：{user.role || "super_admin"} · {new Date(user.created_at).toLocaleString()}</p>
+                <p className="font-semibold break-all">{user.email || "未设置账号"}</p>
               </div>
               <div className="flex flex-wrap gap-2">
                 <select

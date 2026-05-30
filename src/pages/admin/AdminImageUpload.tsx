@@ -138,12 +138,12 @@ const previewConfig: Record<
     sizes: "96px",
   },
   og: {
-    frameClassName: "aspect-[1200/630] overflow-hidden bg-muted",
-    imageClassName: "h-full w-full object-cover",
-    width: 640,
-    height: 336,
-    resize: "cover",
-    sizes: "(max-width: 768px) 100vw, 640px",
+    frameClassName: "aspect-[1200/630] overflow-hidden bg-muted/35 p-2",
+    imageClassName: "h-full w-full object-contain",
+    width: 1200,
+    height: 630,
+    resize: "contain",
+    sizes: "(max-width: 768px) 100vw, 1200px",
   },
 };
 

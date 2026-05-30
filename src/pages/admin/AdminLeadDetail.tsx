@@ -6,6 +6,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
 import { supabase } from "@/lib/supabase";
 import { useAdminLead } from "@/lib/adminQueries";
+import AdminPageHeader from "@/components/admin/AdminPageHeader";
 import { getAdminLang } from "@/lib/adminLocale";
 import { translateStatusLabel } from "@/i18n/displayLabels";
 
@@ -70,6 +71,12 @@ const AdminLeadDetail = () => {
   return (
     <>
     <div className="space-y-6">
+        <AdminPageHeader
+          title="咨询详情"
+          description="查看客户咨询内容、更新状态、补跟进记录。"
+          helpText="这里是单条咨询的处理页面。你可以在这里改状态、记备注、安排下一次跟进。"
+        />
+
         {(message || loadError) && <div className="rounded-xl border border-border bg-card p-4 text-sm">{message || loadError}</div>}
         {lead && (
           <>

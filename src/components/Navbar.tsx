@@ -1,11 +1,11 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, type MouseEvent } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { ArrowRight, BookOpen, FolderOpen, GitBranch, ChevronRight, Globe, HelpCircle, Home, Info, Layers, LucideIcon, Mail, Menu, Wrench, X } from "lucide-react";
 import WhatsAppIcon from "@/components/WhatsAppIcon";
 import { Button } from "@/components/ui/button";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { useT } from "@/i18n/useT";
-import { switchLanguagePath } from "@/i18n/routes";
+import { stripLanguagePrefix, switchLanguagePath, withLanguagePrefix } from "@/i18n/routes";
 import LocalizedLink from "@/components/LocalizedLink";
 import { useSiteSettings } from "@/hooks/useSiteSettings";
 import SmartImage from "@/components/SmartImage";
@@ -103,6 +103,25 @@ const Navbar = () => {
   const languageAriaLabel = language === "zh" ? "切换语言" : "Switch language";
   const menuAriaLabel = language === "zh" ? "打开导航菜单" : "Toggle navigation menu";
 
+  const currentPageLabel = language === "zh" ? "当前" : "Current";
+
+  const handleNavClick = (event: MouseEvent<HTMLAnchorElement>, itemPath: string) => {
+    const targetPath = withLanguagePrefix(itemPath, language);
+    const isSamePath = stripLanguagePrefix(location.pathname) === itemPath;
+
+    if (!isSamePath) {
+      setIsOpen(false);
+      return;
+    }
+
+    event.preventDefault();
+    setIsOpen(false);
+    navigate(targetPath);
+    window.requestAnimationFrame(() => {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    });
+  };
+
   return (
     <>
       <header
@@ -142,6 +161,8 @@ const Navbar = () => {
                 <LocalizedLink
                   key={item.path}
                   to={item.path}
+                  onClick={(event) => handleNavClick(event, item.path)}
+                  aria-current={isActive ? "page" : undefined}
                   className={`relative whitespace-nowrap px-3 py-2.5 text-xs font-medium transition-colors 2xl:text-[13px] ${isActive ? "text-foreground" : "text-foreground/70 hover:text-foreground"}`}
                 >
                   {t(item.labelKey)}
@@ -177,16 +198,16 @@ const Navbar = () => {
           </div>
 
           <div className="ml-auto flex shrink-0 items-center xl:hidden">
-            <div className="flex h-9 items-center gap-1 rounded-full border border-white/75 bg-white/85 p-0.5 shadow-[0_16px_42px_-32px_rgba(21,18,14,0.55)] backdrop-blur-md">
+            <div className="site-header__mobile-controls flex h-9 items-center gap-1 rounded-full border border-white/75 bg-white/85 p-0.5 shadow-[0_16px_42px_-32px_rgba(21,18,14,0.55)] backdrop-blur-md">
               <button
                 onClick={changeLanguage}
-                className="flex h-8 w-8 items-center justify-center rounded-full text-[11px] font-bold text-foreground transition-colors active:bg-muted/70"
+                className="site-header__mobile-button flex h-8 w-8 items-center justify-center rounded-full text-[11px] font-bold text-foreground transition-colors active:bg-muted/70"
                 aria-label={languageAriaLabel}
               >
                 <span>{language === "en" ? "EN" : "中"}</span>
               </button>
               <button
-                className="flex h-8 w-8 items-center justify-center rounded-full text-foreground transition-colors active:bg-muted/70"
+                className="site-header__mobile-button flex h-8 w-8 items-center justify-center rounded-full text-foreground transition-colors active:bg-muted/70"
                 onClick={() => setIsOpen(!isOpen)}
                 aria-label={menuAriaLabel}
                 aria-expanded={isOpen}
@@ -215,20 +236,28 @@ const Navbar = () => {
                   <LocalizedLink
                     key={item.path}
                     to={item.path}
+                    onClick={(event) => handleNavClick(event, item.path)}
+                    aria-current={isActive ? "page" : undefined}
                     style={{ animationDelay: `${index * 40}ms` }}
-                    className={`flex min-h-[54px] items-center gap-3 rounded-card border px-3 text-[15px] font-medium opacity-0 shadow-[0_14px_34px_-30px_rgba(21,18,14,0.38)] animate-fade-in [animation-fill-mode:forwards] ${
+                    className={`relative flex min-h-[62px] items-center gap-3 overflow-hidden rounded-card border px-3 text-[15px] font-medium opacity-0 shadow-[0_14px_34px_-30px_rgba(21,18,14,0.38)] animate-fade-in [animation-fill-mode:forwards] ${
                       isActive
-                        ? "border-gold/30 bg-card text-foreground"
+                        ? "border-gold/45 bg-[#17120d] text-white shadow-[0_18px_48px_-32px_rgba(21,18,14,0.82)]"
                         : "border-border/60 bg-card/80 text-foreground/80 active:bg-card"
                     }`}
                   >
+                    {isActive && <span className="absolute inset-y-3 left-0 w-1 rounded-r-full bg-gold" aria-hidden="true" />}
                     <span
-                      className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-full border ${isActive ? "border-gold/40 bg-gold/10" : "border-border/70 bg-background"}`}
+                      className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-full border ${isActive ? "border-gold/45 bg-gold/15" : "border-border/70 bg-background"}`}
                     >
                       <Icon className={`h-[18px] w-[18px] ${isActive ? "text-gold" : "text-muted-foreground"}`} />
                     </span>
                     <span className={`min-w-0 flex-1 ${isActive ? "font-semibold" : ""}`}>{t(item.labelKey)}</span>
-                    <ChevronRight className={`h-4 w-4 shrink-0 ${isActive ? "text-gold/60" : "text-muted-foreground/50"}`} />
+                    {isActive && (
+                      <span className="shrink-0 rounded-full border border-gold/30 bg-gold/10 px-2 py-1 text-[10px] font-bold leading-none text-gold">
+                        {currentPageLabel}
+                      </span>
+                    )}
+                    <ChevronRight className={`h-4 w-4 shrink-0 ${isActive ? "text-gold/80" : "text-muted-foreground/50"}`} />
                   </LocalizedLink>
                 );
               })}

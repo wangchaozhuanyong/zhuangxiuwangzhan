@@ -89,6 +89,7 @@ export default function AdminMaterialList() {
       <AdminPageHeader
         title="材料库"
         description="管理材料分类、图片、详情、推荐搭配与 SEO。保存后前台材料库与详情会同步更新。"
+        helpText="这里主要管材料条目的图片、分类、详情和发布状态。"
         actions={
           <div className="flex flex-wrap gap-2">
             <Button variant="outline" onClick={() => void refetch()} disabled={!isSupabaseConfigured || isFetching}>

@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { supabase } from "@/lib/supabase";
 import { useAdminQuote } from "@/lib/adminQueries";
+import AdminPageHeader from "@/components/admin/AdminPageHeader";
 import { getAdminLang } from "@/lib/adminLocale";
 import { translateStatusLabel } from "@/i18n/displayLabels";
 
@@ -69,6 +70,12 @@ const AdminQuoteDetail = () => {
   return (
     <>
     <div className="space-y-6">
+        <AdminPageHeader
+          title="报价详情"
+          description="查看报价请求、填写报价金额、更新状态和跟进记录。"
+          helpText="这里是单条报价请求的处理页面。你可以在这里填报价、安排上门、补说明。"
+        />
+
         {(message || loadError) && <div className="rounded-xl border border-border bg-card p-4 text-sm">{message || loadError}</div>}
         {quote && (
           <>

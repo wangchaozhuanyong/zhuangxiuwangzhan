@@ -17,6 +17,7 @@ import { invalidateAdminContentDetail, invalidateAfterAdminContentSave } from "@
 import { useAdminBlogPostDetail } from "@/lib/adminQueries";
 import { publishStatusOptions } from "@/lib/adminLocale";
 import { formatAdminMutationError, saveAdminRecord } from "@/lib/adminMutation";
+import { autoEnglishDescription, englishMissingHint, hasAnyMissingEnglish } from "@/lib/adminTranslation";
 
 type BlogRecord = {
   id?: string;
@@ -69,6 +70,14 @@ const empty: BlogRecord = {
   seo_description_en: "",
 };
 
+const blogEnglishFields = [
+  "title_en",
+  "excerpt_en",
+  "content_en",
+  "seo_title_en",
+  "seo_description_en",
+];
+
 const slugify = (value: string) =>
   value
     .trim()
@@ -100,7 +109,7 @@ export default function AdminBlogEditor() {
   const navigate = useNavigate();
   const { id } = useParams<{ id: string }>();
   const isNew = id === "new";
-  const [showEnglish, setShowEnglish] = useState(false);
+  const [showEnglish, setShowEnglish] = useState(true);
   const [slugChecking, setSlugChecking] = useState(false);
   const [slugError, setSlugError] = useState<string>("");
   const [saveBusy, setSaveBusy] = useState(false);
@@ -122,6 +131,7 @@ export default function AdminBlogEditor() {
     resetKey: id ?? "new",
     initial: empty,
   });
+  const englishMissing = hasAnyMissingEnglish(record as unknown as Record<string, unknown>, blogEnglishFields);
   useUnsavedChangesWarning(dirty && !saveBusy);
 
   useEffect(() => {
@@ -160,7 +170,7 @@ export default function AdminBlogEditor() {
     return `/${lang}/blog/${slug}`;
   }, [record.slug]);
 
-  const save = async (nextStatus?: BlogRecord["status"], generateEnglish?: boolean) => {
+  const save = async (nextStatus?: BlogRecord["status"], generateEnglish?: boolean, forceEnglish?: boolean) => {
     if (!isSupabaseConfigured) return;
     const slug = slugify(record.slug || record.title_zh);
     if (!slug) {
@@ -209,12 +219,12 @@ export default function AdminBlogEditor() {
 
     if (generateEnglish) {
       const { error: translationError } = await supabase!.functions.invoke("generate-english-content", {
-        body: { table: "blog_posts", id: savedId },
+        body: { table: "blog_posts", id: savedId, force: Boolean(forceEnglish) },
       });
       if (translationError) {
         toast({ title: "已保存，但生成英文失败", description: translationError.message, variant: "destructive" });
       } else {
-        toast({ title: "已保存，并已发起英文生成" });
+        toast({ title: "已保存，并已自动生成英文" });
         void invalidateAdminContentDetail(queryClient, "blog_posts", savedId);
       }
     }
@@ -261,7 +271,15 @@ export default function AdminBlogEditor() {
               发布
             </Button>
             <Button type="button" variant="outline" onClick={() => void save(undefined, true)} disabled={saveBusy || isLoading || !record.id}>
-              保存并生成英文
+              保存并自动生成英文
+            </Button>
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => window.confirm("这会覆盖已有英文内容，确定要重新生成吗？") && void save(undefined, true, true)}
+              disabled={saveBusy || isLoading || !record.id}
+            >
+              强制重新生成英文
             </Button>
           </>
         }
@@ -277,12 +295,19 @@ export default function AdminBlogEditor() {
         <AdminPageHeader
           title={isNew ? "新建博客文章" : "编辑博客文章"}
           description="支持草稿、发布、预览、发布时间、排序与 SEO。中文优先编辑，英文可自动生成后复查。"
+          helpText="这里主要编辑博客正文、标题、封面、分类、标签和搜索优化。"
           actions={
             <Button type="button" variant="outline" onClick={() => setShowEnglish((v) => !v)}>
               {showEnglish ? "隐藏英文内容" : "显示英文内容"}
             </Button>
           }
         />
+
+        {englishMissing && (
+          <div className="rounded-lg border border-amber-500/30 bg-amber-500/10 px-4 py-3 text-sm text-amber-800 dark:text-amber-200">
+            {englishMissingHint}
+          </div>
+        )}
 
         <AdminFormSection title="发布与排序" description="发布后会在前台博客页生效；发布时间用于前台排序与展示。" helpText="控制文章是否在博客列表显示，以及文章排序和发布时间。">
           <div className="grid gap-4 md:grid-cols-3">
@@ -414,7 +439,7 @@ export default function AdminBlogEditor() {
 
         {showEnglish && (
           <>
-            <AdminFormSection title="英文内容（可折叠）" description="英文为空时前台英文页会回退中文。" helpText="管理英文博客内容，没填英文时，英文前台会回退显示中文。">
+            <AdminFormSection title="自动英文，可手动微调" description={autoEnglishDescription} helpText="英文站优先显示这里。没有英文时，后台会提示你生成英文。" collapsible defaultOpen={false}>
               <div className="grid gap-4 md:grid-cols-2">
                 <div className="md:col-span-2">
                   <label className="mb-1 block text-sm font-medium">英文标题</label>
@@ -431,7 +456,7 @@ export default function AdminBlogEditor() {
               </div>
             </AdminFormSection>
 
-            <AdminFormSection title="SEO（英文）" description="可选；为空时前台会自动回退。" helpText="管理英文博客文章的搜索文案。为空时前台会自动回退。">
+            <AdminFormSection title="英文 SEO，可手动微调" description={autoEnglishDescription} helpText="管理英文博客文章的搜索文案。正式英文 SEO 建议补齐。" collapsible defaultOpen={false}>
               <div className="grid gap-4 md:grid-cols-2">
                 <div className="md:col-span-2">
                   <label className="mb-1 block text-sm font-medium">英文 SEO 标题</label>

@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
+import { createContext, useContext, useEffect, useLayoutEffect, useMemo, useState, type ReactNode } from "react";
 
 type PublicChromeContextValue = {
   menuOpen: boolean;
@@ -11,14 +11,45 @@ const PublicChromeContext = createContext<PublicChromeContextValue | null>(null)
 
 export function PublicChromeProvider({
   isAdminRoute,
+  isHomeRoute,
   children,
 }: {
   isAdminRoute: boolean;
+  isHomeRoute: boolean;
   children: ReactNode;
 }) {
   const [menuOpen, setMenuOpen] = useState(false);
+  const [homeHeroPassed, setHomeHeroPassed] = useState(false);
 
-  const showMobileActionBar = !isAdminRoute && !menuOpen;
+  useLayoutEffect(() => {
+    if (!isHomeRoute) {
+      setHomeHeroPassed(false);
+      return;
+    }
+
+    const updateHomeHeroPassed = () => {
+      const hero = document.querySelector<HTMLElement>(".home-hero-section");
+      const heroTop = hero ? hero.getBoundingClientRect().top + window.scrollY : 0;
+      const heroHeight = hero?.offsetHeight || window.innerHeight;
+      const triggerY = heroTop + heroHeight * 0.76;
+
+      setHomeHeroPassed(window.scrollY >= triggerY);
+    };
+
+    updateHomeHeroPassed();
+    const frame = window.requestAnimationFrame(updateHomeHeroPassed);
+
+    window.addEventListener("scroll", updateHomeHeroPassed, { passive: true });
+    window.addEventListener("resize", updateHomeHeroPassed);
+
+    return () => {
+      window.cancelAnimationFrame(frame);
+      window.removeEventListener("scroll", updateHomeHeroPassed);
+      window.removeEventListener("resize", updateHomeHeroPassed);
+    };
+  }, [isHomeRoute]);
+
+  const showMobileActionBar = !isAdminRoute && !menuOpen && (!isHomeRoute || homeHeroPassed);
 
   useEffect(() => {
     if (menuOpen) {

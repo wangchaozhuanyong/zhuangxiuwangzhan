@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
+import AdminPageHeader from "@/components/admin/AdminPageHeader";
 import { useAdminFormState } from "@/hooks/useAdminFormState";
 import { useUnsavedChangesWarning } from "@/hooks/useUnsavedChangesWarning";
 import { Button } from "@/components/ui/button";
@@ -142,6 +143,12 @@ const AdminWebsiteSettings = () => {
 
   return (
     <div className="space-y-6">
+      <AdminPageHeader
+        title={t.title}
+        description={t.description}
+        helpText="这里管理公司联系方式、品牌图标、社交链接和默认 SEO。"
+      />
+
       <div className="flex flex-col gap-4 rounded-xl border border-border bg-card p-6 md:flex-row md:items-start md:justify-between">
         <div>
           <h1 className="font-display text-2xl font-bold">{t.title}</h1>

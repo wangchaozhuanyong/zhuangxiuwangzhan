@@ -1,5 +1,6 @@
 import { useMemo, useState } from "react";
 import { Link } from "react-router-dom";
+import AdminPageHeader from "@/components/admin/AdminPageHeader";
 import { Button } from "@/components/ui/button";
 import { useAdminSeoAudit } from "@/lib/adminQueries";
 import { adminStatusLabel } from "@/lib/adminLocale";
@@ -44,12 +45,11 @@ const AdminSeoManager = () => {
 
   return (
     <div className="space-y-6">
-      <div className="rounded-xl border border-border bg-card p-6">
-        <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
-          <div>
-            <h1 className="font-display text-2xl font-bold">搜索优化管理</h1>
-            <p className="mt-2 text-sm text-muted-foreground">检查服务、案例、材料、博客、地区和落地页的搜索优化缺失项。</p>
-          </div>
+      <AdminPageHeader
+        title="搜索优化管理"
+        description="检查服务、案例、材料、博客、地区和落地页的搜索优化缺失项。"
+        helpText="这里用来检查每个页面有没有补齐标题、描述、链接标识和图片说明。"
+        actions={
           <div className="flex flex-wrap gap-2">
             <Button type="button" variant="outline" size="sm" onClick={() => void refetch()} disabled={isFetching}>
               {isFetching ? "刷新中..." : "刷新"}
@@ -60,9 +60,10 @@ const AdminSeoManager = () => {
               <option value="ok">只看通过</option>
             </select>
           </div>
-        </div>
-        {loadMessage && <p className="mt-4 rounded-lg bg-muted p-3 text-sm">{loadMessage}</p>}
-      </div>
+        }
+      />
+
+      {loadMessage && <p className="rounded-lg bg-muted p-3 text-sm">{loadMessage}</p>}
 
       <div className="space-y-3">
         {filtered.map((row) => {

@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Helmet } from "react-helmet-async";
 import { Navigate } from "react-router-dom";
 import { Moon, ShieldCheck, Sun } from "lucide-react";
+import AdminPageHeader from "@/components/admin/AdminPageHeader";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { isSupabaseConfigured, supabase } from "@/lib/supabase";
@@ -118,6 +119,12 @@ const AdminLogin = () => {
       </Helmet>
 
       <div className="w-full max-w-md">
+        <AdminPageHeader
+          title={t.title}
+          description={t.description}
+          helpText="这里是后台登录入口，只用来进入管理系统，不负责内容编辑。"
+        />
+
         <div className="mb-4 flex items-center justify-end gap-2">
           <div className="inline-flex h-10 items-center gap-1 rounded-full border border-border bg-muted/60 p-1" aria-label={t.language}>
             <ToggleButton active={language === "zh"} label="中文" onClick={() => changeLanguage("zh")}>

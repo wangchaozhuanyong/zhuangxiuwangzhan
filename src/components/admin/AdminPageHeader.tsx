@@ -1,6 +1,7 @@
 import { ReactNode } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
+import AdminHelpTip from "@/components/admin/AdminHelpTip";
 import { cn } from "@/lib/utils";
 
 type Breadcrumb = { label: string; href?: string };
@@ -8,11 +9,13 @@ type Breadcrumb = { label: string; href?: string };
 export default function AdminPageHeader({
   title,
   description,
+  helpText,
   breadcrumbs,
   actions,
 }: {
   title: string;
   description?: ReactNode;
+  helpText?: string | null;
   breadcrumbs?: Breadcrumb[];
   actions?: ReactNode;
 }) {
@@ -37,7 +40,10 @@ export default function AdminPageHeader({
 
       <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
         <div className="min-w-0">
-          <h1 className="text-2xl font-semibold leading-tight tracking-normal">{title}</h1>
+          <h1 className="flex items-center gap-2 text-2xl font-semibold leading-tight tracking-normal">
+            <span>{title}</span>
+            <AdminHelpTip text={helpText} />
+          </h1>
           {description && <div className="mt-2 max-w-3xl text-sm leading-6 text-muted-foreground">{description}</div>}
         </div>
         {actions && <div className="flex shrink-0 flex-wrap items-center justify-start gap-2 sm:justify-end">{actions}</div>}

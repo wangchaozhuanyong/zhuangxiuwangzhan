@@ -83,6 +83,24 @@ export type PublishedSitePage = {
   items: any[];
 };
 
+const pickLocalizedValue = <T = any>(row: any, field: string, language: "en" | "zh", fallback: T): T => {
+  const value = row?.[`${field}_${language}`];
+  return value === null || value === undefined || value === "" ? fallback : value;
+};
+
+const pickLocalizedText = (row: any, field: string, language: "en" | "zh", fallback = ""): string =>
+  String(pickLocalizedValue(row, field, language, fallback) || "");
+
+const pickLocalizedList = <T = any>(row: any, field: string, language: "en" | "zh"): T[] => {
+  const value = row?.[`${field}_${language}`];
+  return Array.isArray(value) ? value : [];
+};
+
+const pickLocalizedObject = (row: any, field: string, language: "en" | "zh"): Record<string, any> => {
+  const value = row?.[`${field}_${language}`];
+  return value && typeof value === "object" && !Array.isArray(value) ? value : {};
+};
+
 export const getPublishedBrandPartners = async (): Promise<PublishedBrandPartner[]> => {
   if (!isSupabaseConfigured) return [];
 
@@ -111,12 +129,12 @@ export const getPublishedBeforeAfterItems = async (language: "en" | "zh"): Promi
     .filter((item) => item.before_image_url && item.after_image_url)
     .map((item) => ({
       id: item.id,
-      title: language === "zh" ? item.title_zh || item.title_en : item.title_en || item.title_zh,
+      title: pickLocalizedText(item, "title", language),
       location: item.location || "",
-      description: language === "zh" ? item.description_zh || item.description_en : item.description_en || item.description_zh,
+      description: pickLocalizedText(item, "description", language),
       before_image_url: item.before_image_url,
       after_image_url: item.after_image_url,
-      alt: language === "zh" ? item.alt_zh || item.title_zh || item.title_en : item.alt_en || item.title_en || item.title_zh,
+      alt: pickLocalizedText(item, "alt", language, pickLocalizedText(item, "title", language)),
     }));
 };
 
@@ -135,8 +153,8 @@ export const getPublishedFaqs = async (language: "en" | "zh", pageKey = "general
   return (data || []).map((item) => ({
     id: item.id,
     category: item.page_key || "general",
-    question: language === "zh" ? item.question_zh || item.question_en : item.question_en || item.question_zh,
-    answer: language === "zh" ? item.answer_zh || item.answer_en : item.answer_en || item.answer_zh,
+    question: pickLocalizedText(item, "question", language),
+    answer: pickLocalizedText(item, "answer", language),
   }));
 };
 
@@ -158,11 +176,11 @@ export const getPublishedHomeSection = async (
   return {
     id: row.id,
     section_key: row.section_key,
-    title: language === "zh" ? row.title_zh || row.title_en || "" : row.title_en || row.title_zh || "",
-    subtitle: language === "zh" ? row.subtitle_zh || row.subtitle_en || "" : row.subtitle_en || row.subtitle_zh || "",
-    content: language === "zh" ? row.content_zh || row.content_en || "" : row.content_en || row.content_zh || "",
+    title: pickLocalizedText(row, "title", language),
+    subtitle: pickLocalizedText(row, "subtitle", language),
+    content: pickLocalizedText(row, "content", language),
     image_url: row.image_url,
-    items: (language === "zh" ? row.items_zh || row.items_en : row.items_en || row.items_zh) || [],
+    items: pickLocalizedList(row, "items", language),
   };
 };
 
@@ -179,8 +197,8 @@ export const getPublishedProcessSteps = async (language: "en" | "zh"): Promise<P
     id: row.id,
     step_number: Number(row.step_number || 0),
     sort_order: Number(row.sort_order ?? row.step_number ?? 0),
-    title: language === "zh" ? row.title_zh || row.title_en || "" : row.title_en || row.title_zh || "",
-    description: language === "zh" ? row.description_zh || row.description_en || "" : row.description_en || row.description_zh || "",
+    title: pickLocalizedText(row, "title", language),
+    description: pickLocalizedText(row, "description", language),
     icon_key: row.icon_key || null,
   }));
 };
@@ -199,11 +217,11 @@ export const getPublishedCtaBlock = async (language: "en" | "zh", blockKey: stri
   return {
     id: row.id,
     block_key: row.block_key,
-    title: language === "zh" ? row.title_zh || row.title_en || "" : row.title_en || row.title_zh || "",
-    description: language === "zh" ? row.description_zh || row.description_en || "" : row.description_en || row.description_zh || "",
-    primary_label: language === "zh" ? row.primary_label_zh || row.primary_label_en || "" : row.primary_label_en || row.primary_label_zh || "",
+    title: pickLocalizedText(row, "title", language),
+    description: pickLocalizedText(row, "description", language),
+    primary_label: pickLocalizedText(row, "primary_label", language),
     primary_url: row.primary_url || "/quote",
-    secondary_label: language === "zh" ? row.secondary_label_zh || row.secondary_label_en || "" : row.secondary_label_en || row.secondary_label_zh || "",
+    secondary_label: pickLocalizedText(row, "secondary_label", language),
     secondary_url: row.secondary_url || "",
     image_url: row.image_url || null,
   };
@@ -227,11 +245,11 @@ export const getPublishedAboutSection = async (
   return {
     id: row.id,
     section_key: row.section_key,
-    title: language === "zh" ? row.title_zh || row.title_en || "" : row.title_en || row.title_zh || "",
-    subtitle: language === "zh" ? row.subtitle_zh || row.subtitle_en || "" : row.subtitle_en || row.subtitle_zh || "",
-    content: language === "zh" ? row.content_zh || row.content_en || "" : row.content_en || row.content_zh || "",
+    title: pickLocalizedText(row, "title", language),
+    subtitle: pickLocalizedText(row, "subtitle", language),
+    content: pickLocalizedText(row, "content", language),
     image_url: row.image_url,
-    items: (language === "zh" ? row.items_zh || row.items_en : row.items_en || row.items_zh) || [],
+    items: pickLocalizedList(row, "items", language),
   };
 };
 
@@ -252,18 +270,18 @@ export const getPublishedSitePage = async (
         id: row.id,
         page_key: row.page_key,
         path: row.path || "",
-        title: language === "zh" ? row.title_zh || row.title_en || "" : row.title_en || row.title_zh || "",
-        subtitle: language === "zh" ? row.subtitle_zh || row.subtitle_en || "" : row.subtitle_en || row.subtitle_zh || "",
-        description: language === "zh" ? row.description_zh || row.description_en || "" : row.description_en || row.description_zh || "",
-        content: language === "zh" ? row.content_zh || row.content_en || "" : row.content_en || row.content_zh || "",
-        cta_title: language === "zh" ? row.cta_title_zh || row.cta_title_en || "" : row.cta_title_en || row.cta_title_zh || "",
-        cta_description: language === "zh" ? row.cta_description_zh || row.cta_description_en || "" : row.cta_description_en || row.cta_description_zh || "",
+        title: pickLocalizedText(row, "title", language),
+        subtitle: pickLocalizedText(row, "subtitle", language),
+        description: pickLocalizedText(row, "description", language),
+        content: pickLocalizedText(row, "content", language),
+        cta_title: pickLocalizedText(row, "cta_title", language),
+        cta_description: pickLocalizedText(row, "cta_description", language),
         image_url: row.image_url || null,
-        alt: language === "zh" ? row.alt_zh || row.alt_en || "" : row.alt_en || row.alt_zh || "",
-        seo_title: language === "zh" ? row.seo_title_zh || row.seo_title_en || "" : row.seo_title_en || row.seo_title_zh || "",
-        seo_description: language === "zh" ? row.seo_description_zh || row.seo_description_en || "" : row.seo_description_en || row.seo_description_zh || "",
-        seo_keywords: language === "zh" ? row.seo_keywords_zh || row.seo_keywords_en || "" : row.seo_keywords_en || row.seo_keywords_zh || "",
-        items: (language === "zh" ? row.items_zh || row.items_en : row.items_en || row.items_zh) || [],
+        alt: pickLocalizedText(row, "alt", language),
+        seo_title: pickLocalizedText(row, "seo_title", language),
+        seo_description: pickLocalizedText(row, "seo_description", language),
+        seo_keywords: pickLocalizedText(row, "seo_keywords", language),
+        items: pickLocalizedList(row, "items", language),
       }
     : null;
 
@@ -282,7 +300,7 @@ export const getPublishedSitePage = async (
   const sections = ((cmsRow.cms_sections || []) as any[])
     .filter((section) => section.status === "published" && !section.deleted_at)
     .sort((a, b) => (a.sort_order || 0) - (b.sort_order || 0));
-  const pickContent = (section: any) => (language === "zh" ? section?.content_zh || section?.content_en : section?.content_en || section?.content_zh) || {};
+  const pickContent = (section: any) => pickLocalizedObject(section, "content", language);
   const hero = sections.find((section) => String(section.section_type || "").toLowerCase() === "hero" || section.section_key === "hero");
   const richText = sections.find((section) => String(section.section_type || "").toLowerCase() === "rich_text");
   const cta = sections.find((section) => String(section.section_type || "").toLowerCase() === "cta" || String(section.section_key || "").includes("cta"));
@@ -296,7 +314,7 @@ export const getPublishedSitePage = async (
     id: cmsRow.id,
     page_key: cmsRow.page_key,
     path: cmsRow.path || legacy?.path || "",
-    title: (language === "zh" ? cmsRow.title_zh || cmsRow.title_en : cmsRow.title_en || cmsRow.title_zh) || heroContent.title || legacy?.title || "",
+    title: pickLocalizedText(cmsRow, "title", language) || heroContent.title || legacy?.title || "",
     subtitle: heroContent.subtitle || legacy?.subtitle || "",
     description: heroContent.description || heroContent.excerpt || legacy?.description || "",
     content: richContent.content || heroContent.content || legacy?.content || "",
@@ -304,12 +322,9 @@ export const getPublishedSitePage = async (
     cta_description: ctaContent.description || ctaSettings.description || legacy?.cta_description || "",
     image_url: heroContent.image_url || heroSettings.image_url || legacy?.image_url || null,
     alt: heroContent.alt || heroSettings.alt || legacy?.alt || "",
-    seo_title: (language === "zh" ? cmsRow.seo_title_zh || cmsRow.seo_title_en : cmsRow.seo_title_en || cmsRow.seo_title_zh) || legacy?.seo_title || "",
-    seo_description:
-      (language === "zh" ? cmsRow.seo_description_zh || cmsRow.seo_description_en : cmsRow.seo_description_en || cmsRow.seo_description_zh) ||
-      legacy?.seo_description ||
-      "",
-    seo_keywords: (language === "zh" ? cmsRow.seo_keywords_zh || cmsRow.seo_keywords_en : cmsRow.seo_keywords_en || cmsRow.seo_keywords_zh) || legacy?.seo_keywords || "",
+    seo_title: pickLocalizedText(cmsRow, "seo_title", language) || legacy?.seo_title || "",
+    seo_description: pickLocalizedText(cmsRow, "seo_description", language) || legacy?.seo_description || "",
+    seo_keywords: pickLocalizedText(cmsRow, "seo_keywords", language) || legacy?.seo_keywords || "",
     items: heroContent.items || richContent.items || legacy?.items || [],
   };
 };

@@ -88,6 +88,7 @@ export default function AdminBlogList() {
       <AdminPageHeader
         title="博客文章"
         description="管理博客列表、封面图、发布时间、SEO 与发布状态。发布后会在前台博客页生效。"
+        helpText="这里主要管博客文章的发布、排序、封面、分类和搜索优化。"
         actions={
           <div className="flex flex-wrap gap-2">
             <Button variant="outline" onClick={() => void refetch()} disabled={!isSupabaseConfigured || isFetching}>

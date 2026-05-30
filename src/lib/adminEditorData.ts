@@ -110,11 +110,19 @@ export type TranslationJob = {
   id: string;
   table_name: string | null;
   record_id: string | null;
+  record_label?: string | null;
   status: string | null;
   error_message: string | null;
   regenerated_at: string | null;
   created_at: string | null;
   updated_at: string | null;
+};
+
+export type AdminUserRow = {
+  user_id: string;
+  email: string | null;
+  role: string | null;
+  active: boolean;
 };
 
 async function ensureHomeSection(section_key: string): Promise<HomeSectionRow | null> {
@@ -207,11 +215,68 @@ export async function fetchTranslationJobs(limit = 100): Promise<TranslationJob[
     .order("created_at", { ascending: false })
     .limit(limit);
   if (error) throw error;
-  return (data || []) as TranslationJob[];
+
+  const jobs = (data || []) as TranslationJob[];
+  const labelSelects: Record<string, string> = {
+    services: "id,title_zh,title_en,slug",
+    projects: "id,title_zh,title_en,slug",
+    materials: "id,title_zh,title_en,slug",
+    blog_posts: "id,title_zh,title_en,slug",
+    testimonials: "id,customer_name,content_zh,content_en",
+    hero_slides: "id,title_zh,title_en",
+    service_areas: "id,title_zh,title_en,area_name,slug",
+    landing_pages: "id,title_zh,title_en,slug",
+    home_sections: "id,title_zh,title_en,section_key",
+    about_sections: "id,title_zh,title_en,section_key",
+    faqs: "id,question_zh,question_en,page_key",
+    cta_blocks: "id,title_zh,title_en,block_key",
+    site_pages: "id,title_zh,title_en,page_key,path",
+    cms_pages: "id,title_zh,title_en,page_key,path",
+    cms_sections: "id,section_key,section_type,page_id",
+    cms_content_entries: "id,title_zh,title_en,entry_type,slug",
+    project_images: "id,alt_zh,alt_en,image_type",
+  };
+
+  const labels = new Map<string, string>();
+  await Promise.all(
+    Object.entries(labelSelects).map(async ([table, select]) => {
+      const ids = jobs.filter((job) => job.table_name === table && job.record_id).map((job) => job.record_id as string);
+      if (ids.length === 0) return;
+      const { data: rows } = await supabase!.from(table).select(select).in("id", ids);
+      for (const row of ((rows || []) as Array<Record<string, any>>)) {
+        const label =
+          row.title_zh ||
+          row.title_en ||
+          row.question_zh ||
+          row.question_en ||
+          row.customer_name ||
+          row.area_name ||
+          row.alt_zh ||
+          row.alt_en ||
+          row.section_key ||
+          row.block_key ||
+          row.page_key ||
+          row.slug ||
+          row.path ||
+          row.entry_type ||
+          row.image_type ||
+          row.id;
+        labels.set(`${table}:${row.id}`, String(label));
+      }
+    }),
+  );
+
+  return jobs.map((job) => ({
+    ...job,
+    record_label: job.table_name && job.record_id ? labels.get(`${job.table_name}:${job.record_id}`) || null : null,
+  }));
 }
 
-export async function fetchAdminUsers() {
-  const { data, error } = await supabase!.from("admin_users").select("*").order("created_at", { ascending: false });
+export async function fetchAdminUsers(): Promise<AdminUserRow[]> {
+  const { data, error } = await supabase!
+    .from("admin_users")
+    .select("user_id, email, role, active")
+    .order("created_at", { ascending: false });
   if (error) throw error;
-  return data ?? [];
+  return (data ?? []) as AdminUserRow[];
 }

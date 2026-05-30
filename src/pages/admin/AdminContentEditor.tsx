@@ -191,7 +191,7 @@ const copy = {
     generating: "Generating English...",
     generatingEnglish: "Saved. Generating English...",
     generationFailed: (message: string) => "Saved, but English generation failed: " + message,
-    generated: "Saved and English generated. You can review or manually edit the English fields below.",
+    generated: "Saved and English auto-generated. You can review or fine-tune the English fields below.",
     saveFirst: "Save this record before generating English.",
     regenerated: "English regenerated. Refresh or reselect the record to review it.",
     createRecord: "Create New Record",
@@ -205,7 +205,7 @@ const copy = {
     bilingualDesc: "Fill Chinese fields, save, then review or edit generated English fields.",
     leadTip: "Lead workflow tip: update the status and notes after call, WhatsApp follow-up, site visit scheduling, quotation, or closing.",
     save: "Save",
-    regenerate: "Regenerate English",
+    regenerate: "Force Regenerate English",
   },
   zh: {
     unsupported: (table: string) => "不支持的数据表：" + table,
@@ -214,7 +214,7 @@ const copy = {
     generating: "正在生成英文...",
     generatingEnglish: "已保存，正在生成英文...",
     generationFailed: (message: string) => "已保存，但英文生成失败：" + message,
-    generated: "已保存并生成英文。你可以在下面查看或手动修改英文内容。",
+    generated: "已保存并自动生成英文。你可以在下面查看或手动微调英文内容。",
     saveFirst: "请先保存这条记录，再生成英文。",
     regenerated: "英文已重新生成。请刷新或重新选择记录查看。",
     createRecord: "新建记录",
@@ -228,7 +228,7 @@ const copy = {
     bilingualDesc: "先填写中文字段并保存，然后查看或编辑系统生成的英文字段。",
     leadTip: "咨询处理提示：通话、WhatsApp 跟进、上门测量、报价或结案后，请更新状态和备注。",
     save: "保存",
-    regenerate: "重新生成英文",
+    regenerate: "强制重新生成英文",
   },
 };
 
@@ -243,7 +243,7 @@ const tableLabels: Record<string, { en: string; zh: string }> = {
   landing_pages: { en: "Landing Pages", zh: "落地页" },
   leads: { en: "Leads", zh: "客户咨询" },
   quote_requests: { en: "Quote Requests", zh: "报价请求" },
-  translation_jobs: { en: "Translation Jobs", zh: "翻译任务" },
+  translation_jobs: { en: "Translation Records", zh: "翻译记录" },
 };
 
 const fieldLabels: Record<string, { en: string; zh: string }> = {
@@ -410,7 +410,7 @@ const getRecordMeta = (row: Record<string, any>, type: string, language: Languag
     );
   }
 
-  if (type === "translation_jobs") return row.error_message || row.record_id || (language === "zh" ? "翻译任务" : "Translation job");
+  if (type === "translation_jobs") return row.error_message || row.record_id || (language === "zh" ? "翻译记录" : "Translation record");
   return translateStatusLabel(type, row.status || "saved", language);
 };
 

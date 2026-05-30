@@ -25,7 +25,7 @@ const MobileActionBar = () => {
   return (
     <nav
       aria-label={language === "zh" ? "快捷联系" : "Quick contact"}
-      className="fixed inset-x-0 bottom-0 grid h-16 grid-cols-3 border-t border-border/80 bg-background/96 pb-[env(safe-area-inset-bottom)] shadow-[0_-8px_32px_-12px_rgba(21,18,14,0.2)] backdrop-blur-md md:hidden"
+      className="mobile-action-bar fixed inset-x-0 bottom-0 grid h-16 grid-cols-3 border-t border-border/80 bg-background/96 pb-[env(safe-area-inset-bottom)] shadow-[0_-8px_32px_-12px_rgba(21,18,14,0.2)] backdrop-blur-md md:hidden"
       style={{ zIndex: PUBLIC_CHROME_Z.mobileActionBar }}
     >
       <a

@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
+import AdminPageHeader from "@/components/admin/AdminPageHeader";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -226,6 +227,12 @@ const AdminNotificationSettings = () => {
 
   return (
     <div className="grid gap-6">
+      <AdminPageHeader
+        title={t.notifications}
+        description="设置 Telegram 通知、维护提醒和测试消息。"
+        helpText="这里控制哪些后台事件会发到 Telegram，比如新咨询、报价请求和每周维护提醒。"
+      />
+
       <div className="rounded-xl border border-border bg-card p-6">
         <div className="flex flex-col gap-3 border-b border-border pb-5 md:flex-row md:items-start md:justify-between">
           <div>

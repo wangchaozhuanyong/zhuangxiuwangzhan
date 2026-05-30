@@ -237,6 +237,7 @@ export default function AdminHomeEditor() {
       <AdminPageHeader
         title="首页管理"
         description="这里管理首页关键区块：统计数据、为什么选择我们、施工流程、首页常见问题和首页行动引导区。首页首屏固定播放视频，后台只管理按钮文案和链接，避免图片覆盖视频。"
+        helpText="这里主要编辑首页的视频首屏按钮、内容模块和底部行动引导。"
         actions={
           <Button variant="outline" onClick={() => void refetch()} disabled={loading}>
             {loading ? "刷新中..." : "刷新"}
@@ -498,7 +499,7 @@ export default function AdminHomeEditor() {
           </AdminFormSection>
 
           {editingFaq && (
-            <AdminFormSection title="编辑常见问题" description="中文优先；英文可为空，前台会自动回退。" helpText="填写问题、答案、排序和状态。英文没填时英文前台会回退显示中文。">
+            <AdminFormSection title="编辑常见问题" description="中文优先；英文可由系统自动生成。" helpText="填写问题、答案、排序和状态。英文没填时，英文站可能显示空内容或最后兜底内容。">
               <div className="grid gap-4 md:grid-cols-2">
                 <div>
                   <label className="mb-1 block text-sm font-medium">{L("sort_order")}</label>

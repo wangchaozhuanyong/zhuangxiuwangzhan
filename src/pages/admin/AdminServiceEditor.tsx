@@ -19,6 +19,7 @@ import { useAdminServiceDetail } from "@/lib/adminQueries";
 import { publishStatusOptions } from "@/lib/adminLocale";
 import { getAdminFieldHelp } from "@/lib/adminHelpText";
 import { formatAdminMutationError, saveAdminRecord } from "@/lib/adminMutation";
+import { autoEnglishDescription, englishMissingHint, hasAnyMissingEnglish } from "@/lib/adminTranslation";
 
 type ServiceRecord = {
   id?: string;
@@ -81,6 +82,19 @@ const empty: ServiceRecord = {
   seo_description_en: "",
 };
 
+const serviceEnglishFields = [
+  "title_en",
+  "excerpt_en",
+  "content_en",
+  "suitable_for_en",
+  "common_projects_en",
+  "scope_items_en",
+  "process_steps_en",
+  "faqs_en",
+  "seo_title_en",
+  "seo_description_en",
+];
+
 const slugify = (value: string) =>
   value
     .trim()
@@ -104,7 +118,7 @@ export default function AdminServiceEditor() {
   const navigate = useNavigate();
   const { id } = useParams<{ id: string }>();
   const isNew = id === "new";
-  const [showEnglish, setShowEnglish] = useState(false);
+  const [showEnglish, setShowEnglish] = useState(true);
   const [slugChecking, setSlugChecking] = useState(false);
   const [slugError, setSlugError] = useState<string>("");
   const [saveBusy, setSaveBusy] = useState(false);
@@ -133,6 +147,7 @@ export default function AdminServiceEditor() {
     resetKey: id ?? "new",
     initial: empty,
   });
+  const englishMissing = hasAnyMissingEnglish(record as unknown as Record<string, unknown>, serviceEnglishFields);
   useUnsavedChangesWarning(dirty && !saveBusy);
 
   useEffect(() => {
@@ -171,7 +186,7 @@ export default function AdminServiceEditor() {
     return `/${lang}/services/${slug}`;
   }, [record.slug]);
 
-  const save = async (nextStatus?: ServiceRecord["status"], generateEnglish?: boolean) => {
+  const save = async (nextStatus?: ServiceRecord["status"], generateEnglish?: boolean, forceEnglish?: boolean) => {
     if (!isSupabaseConfigured) return;
     const slug = slugify(record.slug || record.title_zh);
     if (!slug) {
@@ -227,12 +242,12 @@ export default function AdminServiceEditor() {
 
     if (generateEnglish) {
       const { error: translationError } = await supabase!.functions.invoke("generate-english-content", {
-        body: { table: "services", id: savedId },
+        body: { table: "services", id: savedId, force: Boolean(forceEnglish) },
       });
       if (translationError) {
         toast({ title: "已保存，但生成英文失败", description: translationError.message, variant: "destructive" });
       } else {
-        toast({ title: "已保存，并已发起英文生成" });
+        toast({ title: "已保存，并已自动生成英文" });
         void invalidateAdminContentDetail(queryClient, "services", savedId);
       }
     }
@@ -271,7 +286,15 @@ export default function AdminServiceEditor() {
               发布
             </Button>
             <Button type="button" variant="outline" onClick={() => void save(undefined, true)} disabled={saveBusy || isLoading || !record.id}>
-              保存并生成英文
+              保存并自动生成英文
+            </Button>
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => window.confirm("这会覆盖已有英文内容，确定要重新生成吗？") && void save(undefined, true, true)}
+              disabled={saveBusy || isLoading || !record.id}
+            >
+              强制重新生成英文
             </Button>
           </>
         }
@@ -287,12 +310,19 @@ export default function AdminServiceEditor() {
         <AdminPageHeader
           title={isNew ? "新建服务" : "编辑服务"}
           description="优先编辑中文内容，英文内容可以自动生成后再复查。保存、发布、预览都在顶部操作栏。"
+          helpText="这里主要编辑服务介绍、服务范围、按钮文案和搜索优化。"
           actions={
             <Button type="button" variant="outline" onClick={() => setShowEnglish((v) => !v)}>
               {showEnglish ? "隐藏英文内容" : "显示英文内容"}
             </Button>
           }
         />
+
+        {englishMissing && (
+          <div className="rounded-lg border border-amber-500/30 bg-amber-500/10 px-4 py-3 text-sm text-amber-800 dark:text-amber-200">
+            {englishMissingHint}
+          </div>
+        )}
 
         <AdminFormSection
           title="发布与排序"
@@ -477,9 +507,11 @@ export default function AdminServiceEditor() {
         {showEnglish && (
           <>
             <AdminFormSection
-              title="英文内容（可选）"
-              description="英文为空时，英文前台页面会回退显示中文。"
-              helpText="管理英文服务内容。没有填写英文时，英文前台会自动回退显示中文。"
+              title="自动英文，可手动微调"
+              description={autoEnglishDescription}
+              helpText="英文站优先显示这里。没有英文时，后台会提示你生成英文。"
+              collapsible
+              defaultOpen={false}
             >
               <div className="grid gap-4 md:grid-cols-2">
                 <div className="md:col-span-2">
@@ -498,9 +530,11 @@ export default function AdminServiceEditor() {
             </AdminFormSection>
 
             <AdminFormSection
-              title="业务字段（英文）"
-              description="可选；为空时自动回退中文。"
+              title="自动英文业务字段，可手动微调"
+              description={autoEnglishDescription}
               helpText="管理英文服务详情页的列表、流程和常见问题。"
+              collapsible
+              defaultOpen={false}
             >
               <div className="grid gap-4 md:grid-cols-2">
                 <div>
@@ -550,9 +584,11 @@ export default function AdminServiceEditor() {
             </AdminFormSection>
 
             <AdminFormSection
-              title="SEO（英文）"
-              description="可选；为空时前台会自动回退。"
-              helpText="管理英文页面的搜索文案。为空时前台会自动回退。"
+              title="英文 SEO，可手动微调"
+              description={autoEnglishDescription}
+              helpText="管理英文页面的搜索文案。正式英文 SEO 建议补齐。"
+              collapsible
+              defaultOpen={false}
             >
               <div className="grid gap-4 md:grid-cols-2">
                 <div className="md:col-span-2">

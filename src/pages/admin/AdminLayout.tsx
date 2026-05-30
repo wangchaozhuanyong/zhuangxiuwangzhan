@@ -38,6 +38,7 @@ import {
   type LucideIcon,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import AdminHelpTip from "@/components/admin/AdminHelpTip";
 import { Sheet, SheetContent, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { Skeleton } from "@/components/ui/skeleton";
 import { supabase } from "@/lib/supabase";
@@ -153,7 +154,7 @@ const copy: Record<AdminLang, AdminCopy> = {
     sitemap: "站点地图 / Robots",
     users: "Admin Users",
     websiteSettings: "Website Settings",
-    translationJobs: "Translation Jobs",
+    translationJobs: "Translation Records",
     notificationSettings: "Notification Settings",
     systemLogs: "System Logs",
     backToWebsite: "View website",
@@ -204,7 +205,7 @@ const copy: Record<AdminLang, AdminCopy> = {
     sitemap: "站点地图 / Robots",
     users: "管理员账户",
     websiteSettings: "网站基础设置",
-    translationJobs: "翻译任务",
+    translationJobs: "翻译记录",
     notificationSettings: "通知设置",
     systemLogs: "\u7cfb\u7edf\u65e5\u5fd7",
     backToWebsite: "查看网站",
@@ -415,6 +416,56 @@ const AdminLayout = () => {
     return copyText("title");
   }, [copyText, location.hash, location.pathname]);
 
+  const activeNavKey = useMemo(() => {
+    for (const group of navGroups) {
+      for (const item of group.items) {
+        if (isAdminNavItemActive(item.path, location.pathname, location.hash)) return item.key;
+      }
+    }
+    return "dashboard" as const;
+  }, [location.hash, location.pathname]);
+
+  const activeNavHelp = useMemo(() => {
+    const zh = adminLang === "zh";
+    switch (activeNavKey) {
+      case "dashboard":
+        return zh ? "先看咨询、报价和内容状态，再决定今天优先处理什么。" : "Start with enquiries, quotes, and content health.";
+      case "home":
+        return zh ? "这里管理首页首屏按钮、流程、常见问题和底部行动引导。" : "Manage the homepage hero buttons, process, FAQ, and CTA blocks.";
+      case "cmsBuilder":
+      case "pages":
+        return zh ? "这里管理页面结构、模块和页面级内容。" : "Manage page structure, modules, and page-level content.";
+      case "about":
+        return zh ? "这里管理关于我们页面的各个区块。" : "Manage the About page sections.";
+      case "services":
+      case "projects":
+      case "materials":
+      case "blog":
+        return zh ? "这里管理前台业务内容的标题、图片、正文和发布状态。" : "Manage titles, images, content, and publish state for public business pages.";
+      case "leads":
+        return zh ? "这里查看客户咨询，并记录跟进、电话和备注。" : "Review enquiries and record follow-ups, calls, and notes.";
+      case "quoteRequests":
+        return zh ? "这里查看报价请求，并填写报价和处理状态。" : "Review quote requests and fill in pricing and status.";
+      case "media":
+        return zh ? "这里集中管理上传图片、用途分类和图片说明。" : "Manage uploaded images, usage categories, and image alt text.";
+      case "seo":
+      case "sitemap":
+        return zh ? "这里检查搜索优化字段、站点地图和 Robots 设置。" : "Check SEO fields, sitemap, and Robots settings.";
+      case "websiteSettings":
+        return zh ? "这里管理公司联系方式、品牌图标和默认 SEO。" : "Manage company contact info, brand assets, and default SEO.";
+      case "notificationSettings":
+        return zh ? "这里设置 Telegram 通知、测试消息和维护提醒。" : "Set up Telegram alerts, test messages, and maintenance reminders.";
+      case "translationJobs":
+        return zh ? "这里查看自动生成英文的记录和失败原因，不在这里直接编辑正文。" : "Review automatic English generation records and errors. Edit the actual content in its own editor.";
+      case "users":
+        return zh ? "这里管理后台白名单、角色和启用状态。" : "Manage the admin whitelist, roles, and active status.";
+      case "systemLogs":
+        return zh ? "这里查看后台和前台的关键错误日志。" : "Review critical logs from the admin and public site.";
+      default:
+        return zh ? "这里管理当前页面对应的内容。" : "Manage the content for the current page.";
+    }
+  }, [activeNavKey, adminLang]);
+
   const websitePath = adminPublicSitePath(adminLang);
 
   const changeLanguage = (nextLanguage: AdminLang) => {
@@ -581,7 +632,10 @@ const AdminLayout = () => {
 
                 <div className="min-w-0">
                   <p className="text-[11px] font-bold uppercase tracking-[0.16em] text-muted-foreground">{t.currentPage}</p>
-                  <h1 className="truncate text-base font-semibold leading-6 sm:text-lg">{activeNavLabel}</h1>
+                  <h1 className="flex items-center gap-2 truncate text-base font-semibold leading-6 sm:text-lg">
+                    <span className="truncate">{activeNavLabel}</span>
+                    <AdminHelpTip text={activeNavHelp} />
+                  </h1>
                 </div>
               </div>
 

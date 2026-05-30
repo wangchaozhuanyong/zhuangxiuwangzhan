@@ -1,4 +1,5 @@
 import { useMemo, useState } from "react";
+import AdminPageHeader from "@/components/admin/AdminPageHeader";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -78,9 +79,13 @@ const AdminMediaLibrary = () => {
 
   return (
     <div className="space-y-6">
+      <AdminPageHeader
+        title="媒体库"
+        description="上传图片、复制链接，并管理图片说明与用途分类。"
+        helpText="这里是所有图片的集中管理区。上传后可以给图片补说明、改分类，方便前台各页面复用。"
+      />
+
       <div className="rounded-xl border border-border bg-card p-6">
-        <h1 className="font-display text-2xl font-bold">媒体库</h1>
-        <p className="mt-2 text-sm text-muted-foreground">上传图片、复制链接，并管理图片说明与用途分类。</p>
         <div className="mt-5">
           <AdminImageUpload folder="media" onUploaded={(url) => void createAsset(url)} />
         </div>

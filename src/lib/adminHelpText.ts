@@ -80,7 +80,7 @@ const tableHelp: Record<string, string> = {
   landing_pages: "管理 SEO 落地页，例如厨房、办公室、仓库货架等专题页。",
   leads: "管理联系页提交的客户咨询。",
   quote_requests: "管理报价页提交的报价请求。",
-  translation_jobs: "查看自动翻译任务记录，通常只看状态和错误信息。",
+  translation_jobs: "查看自动生成英文的记录、失败原因和重试入口。正文内容请到对应内容编辑页修改。",
 };
 
 export const getAdminFieldHelp = (field: string) => {

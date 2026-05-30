@@ -69,6 +69,7 @@ export default function AdminServiceList() {
       <AdminPageHeader
         title="服务项目"
         description="管理服务列表与服务详情内容。保存后前台服务列表与详情会同步更新。"
+        helpText="这里主要管服务项目的标题、排序、发布状态和前台展示。"
         actions={
           <div className="flex flex-wrap gap-2">
             <Button variant="outline" onClick={() => void refetch()} disabled={!isSupabaseConfigured || isFetching}>

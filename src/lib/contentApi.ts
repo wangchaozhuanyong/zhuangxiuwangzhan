@@ -99,6 +99,19 @@ const getFallbackServices = async (language: "en" | "zh" = "en") => {
   }));
 };
 
+const pickLocalizedValue = <T = any>(item: any, field: string, language: "en" | "zh", fallback: T): T => {
+  const value = item?.[`${field}_${language}`];
+  return value === null || value === undefined || value === "" ? fallback : value;
+};
+
+const pickLocalizedText = (item: any, field: string, language: "en" | "zh", fallback = ""): string =>
+  String(pickLocalizedValue(item, field, language, fallback) || "");
+
+const pickLocalizedList = <T = any>(item: any, field: string, language: "en" | "zh"): T[] => {
+  const value = item?.[`${field}_${language}`];
+  return Array.isArray(value) ? value : [];
+};
+
 export const getPublishedProjects = async (language: "en" | "zh") => {
   if (!isSupabaseConfigured) return getFallbackProjects(language);
 
@@ -120,18 +133,16 @@ export const getPublishedProjects = async (language: "en" | "zh") => {
     // - finally fallback to projects.image_url if DB images are empty
     id: item.id,
     slug: item.slug,
-    title: localize(item[`title_${language}`] || item.title_en || item.title_zh || ""),
+    title: localize(pickLocalizedText(item, "title", language)),
     type: normalizeProjectType(item.project_type || "Renovation"),
     location: item.location || "",
     description:
-      localize(item[`excerpt_${language}`] || "") ||
-      item.excerpt_en ||
-      item.excerpt_zh ||
-      localize(stripHtml(item[`content_${language}`] || item.content_en || item.content_zh || "")),
-    clientNeed: localize(item[`client_need_${language}`] || item.client_need_en || item.client_need_zh || ""),
+      localize(pickLocalizedText(item, "excerpt", language)) ||
+      localize(stripHtml(pickLocalizedText(item, "content", language))),
+    clientNeed: localize(pickLocalizedText(item, "client_need", language)),
     materialsUsed: item.materials || [],
     scope: item.scope || [],
-    highlights: (item[`highlights_${language}`] || item.highlights_en || item.highlights_zh || []).map((value: string) => localize(value)),
+    highlights: pickLocalizedList<string>(item, "highlights", language).map((value: string) => localize(value)),
     duration: item.duration || "",
     images: (() => {
       const all = (item.project_images || []).slice().sort((a: any, b: any) => a.sort_order - b.sort_order);
@@ -147,9 +158,9 @@ export const getPublishedProjects = async (language: "en" | "zh") => {
       const gallery = all.filter((img: any) => img.image_type === "gallery");
       const beforeAfter = all.filter((img: any) => img.image_type === "before" || img.image_type === "after");
       const ordered = [...cover, ...gallery, ...beforeAfter];
-      const fallbackAlt = item[`title_${language}`] || item.title_en || item.title_zh;
+      const fallbackAlt = pickLocalizedText(item, "title", language);
       const alts = ordered
-        .map((img: any) => img[`alt_${language}`] || img.alt_en || img.alt_zh || fallbackAlt)
+        .map((img: any) => pickLocalizedText(img, "alt", language, fallbackAlt))
         .filter(Boolean);
       return alts.length ? alts : fallbackAlt ? [fallbackAlt] : [];
     })(),
@@ -165,12 +176,8 @@ export const getPublishedProjects = async (language: "en" | "zh") => {
       const galleryFirst = all.find((img: any) => img.image_type === "gallery");
       const chosen = cover || galleryFirst;
       return (
-        chosen?.[`alt_${language}`] ||
-        chosen?.alt_en ||
-        chosen?.alt_zh ||
-        item[`title_${language}`] ||
-        item.title_en ||
-        item.title_zh
+        pickLocalizedText(chosen, "alt", language) ||
+        pickLocalizedText(item, "title", language)
       );
     })(),
   }));
@@ -189,12 +196,12 @@ export const getPublishedHeroSlides = async (language: "en" | "zh" = "en") => {
 
   return data.map((item: any) => ({
     id: item.id,
-    title: item[`title_${language}`] || item.title_en || item.title_zh,
-    excerpt: item[`excerpt_${language}`] || item.excerpt_en || item.excerpt_zh,
-    buttonLabel: item[`button_label_${language}`] || item.button_label_en || item.button_label_zh,
+    title: pickLocalizedText(item, "title", language),
+    excerpt: pickLocalizedText(item, "excerpt", language),
+    buttonLabel: pickLocalizedText(item, "button_label", language),
     buttonUrl: item.button_url || "/quote",
     image: item.image_url,
-    alt: item[`alt_${language}`] || item.alt_en || item.alt_zh || item.title_en || item.title_zh,
+    alt: pickLocalizedText(item, "alt", language, pickLocalizedText(item, "title", language)),
   }));
 };
 
@@ -211,7 +218,7 @@ export const getPublishedTestimonials = async (language: "en" | "zh" = "en") => 
 
   return data.map((item: any) => ({
     id: item.id,
-    text: item[`content_${language}`] || item.content_en || item.content_zh,
+    text: pickLocalizedText(item, "content", language),
     client: item.customer_name || "FLASH CAST Client",
     type: "Renovation",
     location: "",
@@ -235,18 +242,18 @@ export const getPublishedServices = async (language: "en" | "zh" = "en") => {
 
 const mapPublishedService = (item: any, language: "en" | "zh") => ({
     id: item.id,
-    title: item[`title_${language}`] || item.title_en || item.title_zh,
+    title: pickLocalizedText(item, "title", language),
     slug: item.slug,
-    summary: item[`excerpt_${language}`] || item.excerpt_en || item.excerpt_zh || "",
-    description: item[`content_${language}`] || item.content_en || item.content_zh || "",
-    suitableFor: item[`suitable_for_${language}`] || item.suitable_for_en || item.suitable_for_zh || [],
-    commonProjects: item[`common_projects_${language}`] || item.common_projects_en || item.common_projects_zh || [],
-    processSteps: item[`process_steps_${language}`] || item.process_steps_en || item.process_steps_zh || [],
-    items: item[`scope_items_${language}`] || item.scope_items_en || item.scope_items_zh || [],
-    faqs: item[`faqs_${language}`] || item.faqs_en || item.faqs_zh || [],
+    summary: pickLocalizedText(item, "excerpt", language),
+    description: pickLocalizedText(item, "content", language),
+    suitableFor: pickLocalizedList(item, "suitable_for", language),
+    commonProjects: pickLocalizedList(item, "common_projects", language),
+    processSteps: pickLocalizedList(item, "process_steps", language),
+    items: pickLocalizedList(item, "scope_items", language),
+    faqs: pickLocalizedList(item, "faqs", language),
     image: item.image_url || "",
-    seoTitle: item[`seo_title_${language}`] || item.seo_title_en || item.seo_title_zh || "",
-    seoDescription: item[`seo_description_${language}`] || item.seo_description_en || item.seo_description_zh || "",
+    seoTitle: pickLocalizedText(item, "seo_title", language),
+    seoDescription: pickLocalizedText(item, "seo_description", language),
 });
 
 export const getPublishedServiceBySlug = async (slug: string, language: "en" | "zh") => {
@@ -283,24 +290,24 @@ export const getPublishedProjectBySlug = async (slug: string, language: "en" | "
   const beforeAfter = orderedImages.filter((img: any) => img.image_type === "before" || img.image_type === "after");
   const imageRecords = [...cover, ...gallery, ...beforeAfter];
   const fallbackUrl = data.image_url ? [data.image_url] : [];
-  const fallbackAlt = data[`title_${language}`] || data.title_en || data.title_zh;
+  const fallbackAlt = pickLocalizedText(data, "title", language);
 
   const images = imageRecords.map((img: any) => img.image_url).filter(Boolean);
   const imageAlts = imageRecords
-    .map((img: any) => img[`alt_${language}`] || img.alt_en || img.alt_zh || fallbackAlt)
+    .map((img: any) => pickLocalizedText(img, "alt", language, fallbackAlt))
     .filter(Boolean);
 
   return {
     id: data.id,
     slug: data.slug,
-    title: language === "zh" ? translateDisplayText(data[`title_${language}`] || data.title_en || data.title_zh || "", language) : data[`title_${language}`] || data.title_en || data.title_zh,
+    title: language === "zh" ? translateDisplayText(pickLocalizedText(data, "title", language), language) : pickLocalizedText(data, "title", language),
     type: normalizeProjectType(data.project_type || "Renovation"),
     location: data.location || "",
-    description: language === "zh" ? translateDisplayText(data[`content_${language}`] || data.content_en || data.content_zh || "", language) : data[`content_${language}`] || data.content_en || data.content_zh || "",
-    clientNeed: language === "zh" ? translateDisplayText(data[`client_need_${language}`] || data.client_need_en || data.client_need_zh || "", language) : data[`client_need_${language}`] || data.client_need_en || data.client_need_zh || "",
+    description: language === "zh" ? translateDisplayText(pickLocalizedText(data, "content", language), language) : pickLocalizedText(data, "content", language),
+    clientNeed: language === "zh" ? translateDisplayText(pickLocalizedText(data, "client_need", language), language) : pickLocalizedText(data, "client_need", language),
     materialsUsed: data.materials || [],
     scope: data.scope || [],
-    highlights: (data[`highlights_${language}`] || data.highlights_en || data.highlights_zh || []).map((value: string) => (language === "zh" ? translateDisplayText(value, language) : value)),
+    highlights: pickLocalizedList<string>(data, "highlights", language).map((value: string) => (language === "zh" ? translateDisplayText(value, language) : value)),
     duration: data.duration || "",
     budget: data.budget || "",
     area: data.area || "",
@@ -309,12 +316,8 @@ export const getPublishedProjectBySlug = async (slug: string, language: "en" | "
     imageAlts: imageAlts.length ? imageAlts : fallbackAlt ? [fallbackAlt] : [],
     thumbnail: (cover[0]?.image_url || gallery[0]?.image_url || images[0] || data.image_url || ""),
     thumbnailAlt:
-      (cover[0]?.[`alt_${language}`] ||
-        cover[0]?.alt_en ||
-        cover[0]?.alt_zh ||
-        gallery[0]?.[`alt_${language}`] ||
-        gallery[0]?.alt_en ||
-        gallery[0]?.alt_zh ||
+      (pickLocalizedText(cover[0], "alt", language) ||
+        pickLocalizedText(gallery[0], "alt", language) ||
         imageAlts[0] ||
         fallbackAlt),
   };
@@ -336,9 +339,9 @@ export const getPublishedMaterials = async (language: "en" | "zh" = "en") => {
       category = {
         name: categoryName,
         slug: categorySlug,
-        description: item[`excerpt_${language}`] || item.excerpt_en || item.excerpt_zh || "",
+        description: pickLocalizedText(item, "excerpt", language),
         image: item.image_url || "",
-        alt: item[`alt_${language}`] || item.alt_en || item.alt_zh || item[`title_${language}`] || item.title_en || item.title_zh || categoryName,
+        alt: pickLocalizedText(item, "alt", language, pickLocalizedText(item, "title", language, categoryName)),
         subcategories: [],
         items: [],
       };
@@ -349,29 +352,29 @@ export const getPublishedMaterials = async (language: "en" | "zh" = "en") => {
       category.subcategories.push({
         name: subcategoryName,
         slug: subcategorySlug,
-        description: item[`excerpt_${language}`] || item.excerpt_en || item.excerpt_zh || "",
+        description: pickLocalizedText(item, "excerpt", language),
         image: item.image_url || category.image,
-        alt: item[`alt_${language}`] || item.alt_en || item.alt_zh || subcategoryName,
+        alt: pickLocalizedText(item, "alt", language, subcategoryName),
       });
     }
 
     category.items.push({
       id: item.id,
-      name: item[`title_${language}`] || item.title_en || item.title_zh,
+      name: pickLocalizedText(item, "title", language),
       slug: item.slug,
       category: categoryName,
       subcategory: subcategorySlug,
       type: item.material_type || categoryName,
       color: item.color || "",
       texture: item.texture || "",
-      suitableSpaces: item[`suitable_spaces_${language}`] || item.suitable_spaces_en || item.suitable_spaces_zh || [],
-      recommendedPairing: item[`recommended_pairing_${language}`] || item.recommended_pairing_en || item.recommended_pairing_zh || "",
-      pros: item[`pros_${language}`] || item.pros_en || item.pros_zh || [],
-      cons: item[`cons_${language}`] || item.cons_en || item.cons_zh || [],
-      description: item[`content_${language}`] || item.content_en || item.content_zh || item[`excerpt_${language}`] || "",
-      note: item[`note_${language}`] || item.note_en || item.note_zh || item.reference_price || "",
+      suitableSpaces: pickLocalizedList(item, "suitable_spaces", language),
+      recommendedPairing: pickLocalizedText(item, "recommended_pairing", language),
+      pros: pickLocalizedList(item, "pros", language),
+      cons: pickLocalizedList(item, "cons", language),
+      description: pickLocalizedText(item, "content", language) || pickLocalizedText(item, "excerpt", language),
+      note: pickLocalizedText(item, "note", language) || item.reference_price || "",
       image: item.image_url || "",
-      alt: item[`alt_${language}`] || item.alt_en || item.alt_zh || item[`title_${language}`] || item.title_en || item.title_zh,
+      alt: pickLocalizedText(item, "alt", language, pickLocalizedText(item, "title", language)),
     });
 
     return acc;
@@ -399,9 +402,9 @@ export const getPublishedBlogPosts = async (language: "en" | "zh" = "en") => {
   return data.map((item: any) => ({
     id: item.id,
     slug: item.slug,
-    title: localize(item[`title_${language}`] || item.title_en || item.title_zh || ""),
-    excerpt: localize(item[`excerpt_${language}`] || item.excerpt_en || item.excerpt_zh || ""),
-    content: localize(item[`content_${language}`] || item.content_en || item.content_zh || ""),
+    title: localize(pickLocalizedText(item, "title", language)),
+    excerpt: localize(pickLocalizedText(item, "excerpt", language)),
+    content: localize(pickLocalizedText(item, "content", language)),
     category: localize(item.category || "Renovation"),
     date: item.published_at || item.created_at,
     readTime: "5 min read",
@@ -426,9 +429,9 @@ export const getPublishedBlogPostBySlug = async (slug: string, language: "en" | 
   return {
     id: data.id,
     slug: data.slug,
-    title: language === "zh" ? translateDisplayText(data[`title_${language}`] || data.title_en || data.title_zh || "", language) : data[`title_${language}`] || data.title_en || data.title_zh,
-    excerpt: language === "zh" ? translateDisplayText(data[`excerpt_${language}`] || data.excerpt_en || data.excerpt_zh || "", language) : data[`excerpt_${language}`] || data.excerpt_en || data.excerpt_zh,
-    content: language === "zh" ? translateDisplayText(data[`content_${language}`] || data.content_en || data.content_zh || "", language) : data[`content_${language}`] || data.content_en || data.content_zh,
+    title: language === "zh" ? translateDisplayText(pickLocalizedText(data, "title", language), language) : pickLocalizedText(data, "title", language),
+    excerpt: language === "zh" ? translateDisplayText(pickLocalizedText(data, "excerpt", language), language) : pickLocalizedText(data, "excerpt", language),
+    content: language === "zh" ? translateDisplayText(pickLocalizedText(data, "content", language), language) : pickLocalizedText(data, "content", language),
     category: language === "zh" ? translateDisplayText(data.category || "Renovation", language) : data.category || "Renovation",
     date: data.published_at || data.created_at,
     readTime: "5 min read",
@@ -456,16 +459,16 @@ export const getPublishedServiceAreaBySlug = async (slug: string, language: "en"
   const localize = (value: string) => (language === "zh" ? translateDisplayText(value, language) : value);
 
   return {
-    name: localize(data.area_name || data[`title_${language}`] || data.title_en || data.title_zh || ""),
+    name: localize(data.area_name || pickLocalizedText(data, "title", language)),
     slug: data.slug,
-    metaTitle: localize(data[`seo_title_${language}`] || data.seo_title_en || data.seo_title_zh || data.area_name || ""),
-    description: localize(data[`seo_description_${language}`] || data.seo_description_en || data.seo_description_zh || data[`excerpt_${language}`] || ""),
-    intro: localize(data[`content_${language}`] || data.content_en || data.content_zh || ""),
+    metaTitle: localize(pickLocalizedText(data, "seo_title", language) || data.area_name || ""),
+    description: localize(pickLocalizedText(data, "seo_description", language) || pickLocalizedText(data, "excerpt", language)),
+    intro: localize(pickLocalizedText(data, "content", language)),
     propertyTypes: (data.property_types || []).map((value: string) => localize(value)),
     commonNeeds: (data.common_needs || []).map((value: string) => localize(value)),
-    constructionNotes: localize(data[`construction_notes_${language}`] || data.construction_notes_en || data.construction_notes_zh || ""),
+    constructionNotes: localize(pickLocalizedText(data, "construction_notes", language)),
     projects: (data.projects || []).map((project: any) => ({ ...project, title: localize(project.title || ""), image: project.image })),
-    faqs: (data[`faqs_${language}`] || data.faqs_en || data.faqs_zh || []).map((faq: any) => ({ q: localize(faq.q || ""), a: localize(faq.a || "") })),
+    faqs: pickLocalizedList<any>(data, "faqs", language).map((faq: any) => ({ q: localize(faq.q || ""), a: localize(faq.a || "") })),
   };
 };
 
@@ -509,15 +512,15 @@ export const getPublishedLandingPageBySlug = async (slug: string, language: "en"
   const localize = (value: string) => (language === "zh" ? translateDisplayText(value, language) : value);
 
   return {
-    title: localize(data[`title_${language}`] || data.title_en || data.title_zh || ""),
-    subtitle: localize(data[`excerpt_${language}`] || data.excerpt_en || data.excerpt_zh || ""),
+    title: localize(pickLocalizedText(data, "title", language)),
+    subtitle: localize(pickLocalizedText(data, "excerpt", language)),
     heroImage: data.hero_image_url || "",
-    heroAlt: localize(data[`alt_${language}`] || data.alt_en || data.alt_zh || data[`title_${language}`] || data.title_en || data.title_zh || ""),
-    description: localize(data[`content_${language}`] || data.content_en || data.content_zh || ""),
-    benefits: (data[`benefits_${language}`] || data.benefits_en || data.benefits_zh || []).map((item: string) => localize(item)),
+    heroAlt: localize(pickLocalizedText(data, "alt", language, pickLocalizedText(data, "title", language))),
+    description: localize(pickLocalizedText(data, "content", language)),
+    benefits: pickLocalizedList<string>(data, "benefits", language).map((item: string) => localize(item)),
     relatedProjects: data.related_projects || [],
-    faqs: (data[`faqs_${language}`] || data.faqs_en || data.faqs_zh || []).map((faq: any) => ({ q: localize(faq.q || ""), a: localize(faq.a || "") })),
-    seoTitle: localize(data[`seo_title_${language}`] || data.seo_title_en || data.seo_title_zh || ""),
-    seoDescription: localize(data[`seo_description_${language}`] || data.seo_description_en || data.seo_description_zh || ""),
+    faqs: pickLocalizedList<any>(data, "faqs", language).map((faq: any) => ({ q: localize(faq.q || ""), a: localize(faq.a || "") })),
+    seoTitle: localize(pickLocalizedText(data, "seo_title", language)),
+    seoDescription: localize(pickLocalizedText(data, "seo_description", language)),
   };
 };

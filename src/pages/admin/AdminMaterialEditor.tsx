@@ -17,6 +17,7 @@ import { invalidateAdminContentDetail, invalidateAfterAdminContentSave } from "@
 import { useAdminMaterialDetail } from "@/lib/adminQueries";
 import { publishStatusOptions } from "@/lib/adminLocale";
 import { formatAdminMutationError, saveAdminRecord } from "@/lib/adminMutation";
+import { autoEnglishDescription, englishMissingHint, hasAnyMissingEnglish } from "@/lib/adminTranslation";
 
 type MaterialRecord = {
   id?: string;
@@ -97,6 +98,19 @@ const empty: MaterialRecord = {
   seo_description_en: "",
 };
 
+const materialEnglishFields = [
+  "title_en",
+  "excerpt_en",
+  "content_en",
+  "suitable_spaces_en",
+  "pros_en",
+  "cons_en",
+  "recommended_pairing_en",
+  "note_en",
+  "seo_title_en",
+  "seo_description_en",
+];
+
 const slugify = (value: string) =>
   value
     .trim()
@@ -113,7 +127,7 @@ export default function AdminMaterialEditor() {
   const navigate = useNavigate();
   const { id } = useParams<{ id: string }>();
   const isNew = id === "new";
-  const [showEnglish, setShowEnglish] = useState(false);
+  const [showEnglish, setShowEnglish] = useState(true);
   const [slugChecking, setSlugChecking] = useState(false);
   const [slugError, setSlugError] = useState<string>("");
   const [saveBusy, setSaveBusy] = useState(false);
@@ -142,6 +156,7 @@ export default function AdminMaterialEditor() {
     resetKey: id ?? "new",
     initial: empty,
   });
+  const englishMissing = hasAnyMissingEnglish(record as unknown as Record<string, unknown>, materialEnglishFields);
   useUnsavedChangesWarning(dirty && !saveBusy);
 
   useEffect(() => {
@@ -180,7 +195,7 @@ export default function AdminMaterialEditor() {
     return `/${lang}/materials/${slug}`;
   }, [record.slug]);
 
-  const save = async (nextStatus?: MaterialRecord["status"], generateEnglish?: boolean) => {
+  const save = async (nextStatus?: MaterialRecord["status"], generateEnglish?: boolean, forceEnglish?: boolean) => {
     if (!isSupabaseConfigured) return;
     const slug = slugify(record.slug || record.title_zh);
     if (!slug) {
@@ -238,12 +253,12 @@ export default function AdminMaterialEditor() {
 
     if (generateEnglish) {
       const { error: translationError } = await supabase!.functions.invoke("generate-english-content", {
-        body: { table: "materials", id: savedId },
+        body: { table: "materials", id: savedId, force: Boolean(forceEnglish) },
       });
       if (translationError) {
         toast({ title: "已保存，但生成英文失败", description: translationError.message, variant: "destructive" });
       } else {
-        toast({ title: "已保存，并已发起英文生成" });
+        toast({ title: "已保存，并已自动生成英文" });
         void invalidateAdminContentDetail(queryClient, "materials", savedId);
       }
     }
@@ -282,7 +297,15 @@ export default function AdminMaterialEditor() {
               发布
             </Button>
             <Button type="button" variant="outline" onClick={() => void save(undefined, true)} disabled={saveBusy || isLoading || !record.id}>
-              保存并生成英文
+              保存并自动生成英文
+            </Button>
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => window.confirm("这会覆盖已有英文内容，确定要重新生成吗？") && void save(undefined, true, true)}
+              disabled={saveBusy || isLoading || !record.id}
+            >
+              强制重新生成英文
             </Button>
           </>
         }
@@ -298,12 +321,19 @@ export default function AdminMaterialEditor() {
         <AdminPageHeader
           title={isNew ? "新建材料" : "编辑材料"}
           description="推荐搭配和备注字段使用纯文本，不会再存成数组，避免数据库结构冲突。"
+          helpText="这里主要编辑材料名称、分类、图片、推荐搭配和搜索优化。"
           actions={
             <Button type="button" variant="outline" onClick={() => setShowEnglish((v) => !v)}>
               {showEnglish ? "隐藏英文内容" : "显示英文内容"}
             </Button>
           }
         />
+
+        {englishMissing && (
+          <div className="rounded-lg border border-amber-500/30 bg-amber-500/10 px-4 py-3 text-sm text-amber-800 dark:text-amber-200">
+            {englishMissingHint}
+          </div>
+        )}
 
         <AdminFormSection title="发布与排序" description="草稿不对外展示；发布后会在前台材料页生效。" helpText="控制材料是否在前台材料库显示，以及它在列表里的排序。">
           <div className="grid gap-4 md:grid-cols-3">
@@ -472,7 +502,7 @@ export default function AdminMaterialEditor() {
 
         {showEnglish && (
           <>
-            <AdminFormSection title="英文内容（可折叠）" description="英文为空时前台英文页会回退中文。" helpText="管理英文材料内容，没填英文时，英文前台会回退显示中文。">
+            <AdminFormSection title="自动英文，可手动微调" description={autoEnglishDescription} helpText="英文站优先显示这里。没有英文时，后台会提示你生成英文。" collapsible defaultOpen={false}>
               <div className="grid gap-4 md:grid-cols-2">
                 <div className="md:col-span-2">
                   <label className="mb-1 block text-sm font-medium">英文标题</label>
@@ -489,7 +519,7 @@ export default function AdminMaterialEditor() {
               </div>
             </AdminFormSection>
 
-        <AdminFormSection title="适用与评价（英文）" description="可选；为空时自动回退。" helpText="管理英文适用空间、优缺点、搭配建议和备注。">
+        <AdminFormSection title="自动英文适用与评价，可手动微调" description={autoEnglishDescription} helpText="管理英文适用空间、优缺点、搭配建议和备注。" collapsible defaultOpen={false}>
               <div className="grid gap-4 md:grid-cols-2">
                 <div>
                   <label className="mb-1 block text-sm font-medium">适用空间（英文，每行一个）</label>
@@ -514,7 +544,7 @@ export default function AdminMaterialEditor() {
               </div>
             </AdminFormSection>
 
-            <AdminFormSection title="SEO（英文）" description="可选；为空时前台会回退。" helpText="管理英文材料详情页的搜索文案。为空时前台会自动回退。">
+            <AdminFormSection title="英文 SEO，可手动微调" description={autoEnglishDescription} helpText="管理英文材料详情页的搜索文案。正式英文 SEO 建议补齐。" collapsible defaultOpen={false}>
               <div className="grid gap-4 md:grid-cols-2">
                 <div className="md:col-span-2">
                   <label className="mb-1 block text-sm font-medium">英文 SEO 标题</label>

@@ -96,6 +96,7 @@ export default function AdminProjectList() {
       <AdminPageHeader
         title="装修案例"
         description="管理案例列表、封面、图库/Before-After 图片、SEO 与发布状态。"
+        helpText="这里主要管案例列表、封面、图库和前台显示顺序。"
         actions={
           <div className="flex flex-wrap gap-2">
             <Button variant="outline" onClick={() => void refetch()} disabled={!isSupabaseConfigured || isFetching}>

@@ -18,6 +18,7 @@ import { useAdminProjectDetail } from "@/lib/adminQueries";
 import { publishStatusOptions } from "@/lib/adminLocale";
 import AdminProjectImages from "./AdminProjectImages";
 import { formatAdminMutationError, saveAdminRecord } from "@/lib/adminMutation";
+import { autoEnglishDescription, englishMissingHint, hasAnyMissingEnglish } from "@/lib/adminTranslation";
 
 type ProjectRecord = {
   id?: string;
@@ -83,6 +84,16 @@ const empty: ProjectRecord = {
   seo_description_en: "",
 };
 
+const projectEnglishFields = [
+  "title_en",
+  "excerpt_en",
+  "content_en",
+  "client_need_en",
+  "highlights_en",
+  "seo_title_en",
+  "seo_description_en",
+];
+
 const slugify = (value: string) =>
   value
     .trim()
@@ -99,7 +110,7 @@ export default function AdminProjectEditor() {
   const navigate = useNavigate();
   const { id } = useParams<{ id: string }>();
   const isNew = id === "new";
-  const [showEnglish, setShowEnglish] = useState(false);
+  const [showEnglish, setShowEnglish] = useState(true);
   const [slugChecking, setSlugChecking] = useState(false);
   const [slugError, setSlugError] = useState<string>("");
   const [saveBusy, setSaveBusy] = useState(false);
@@ -122,6 +133,7 @@ export default function AdminProjectEditor() {
     resetKey: id ?? "new",
     initial: empty,
   });
+  const englishMissing = hasAnyMissingEnglish(record as unknown as Record<string, unknown>, projectEnglishFields);
   useUnsavedChangesWarning(dirty && !saveBusy);
 
   useEffect(() => {
@@ -160,7 +172,7 @@ export default function AdminProjectEditor() {
     return `/${lang}/projects/${slug}`;
   }, [record.slug]);
 
-  const save = async (nextStatus?: ProjectRecord["status"], generateEnglish?: boolean) => {
+  const save = async (nextStatus?: ProjectRecord["status"], generateEnglish?: boolean, forceEnglish?: boolean) => {
     if (!isSupabaseConfigured) return;
     const slug = slugify(record.slug || record.title_zh);
     if (!slug) {
@@ -211,12 +223,12 @@ export default function AdminProjectEditor() {
 
     if (generateEnglish) {
       const { error: translationError } = await supabase!.functions.invoke("generate-english-content", {
-        body: { table: "projects", id: savedId },
+        body: { table: "projects", id: savedId, force: Boolean(forceEnglish) },
       });
       if (translationError) {
         toast({ title: "已保存，但生成英文失败", description: translationError.message, variant: "destructive" });
       } else {
-        toast({ title: "已保存，并已发起英文生成" });
+        toast({ title: "已保存，并已自动生成英文" });
         void invalidateAdminContentDetail(queryClient, "projects", savedId);
       }
     }
@@ -255,7 +267,15 @@ export default function AdminProjectEditor() {
               发布
             </Button>
             <Button type="button" variant="outline" onClick={() => void save(undefined, true)} disabled={saveBusy || isLoading || !record.id}>
-              保存并生成英文
+              保存并自动生成英文
+            </Button>
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => window.confirm("这会覆盖已有英文内容，确定要重新生成吗？") && void save(undefined, true, true)}
+              disabled={saveBusy || isLoading || !record.id}
+            >
+              强制重新生成英文
             </Button>
           </>
         }
@@ -271,12 +291,19 @@ export default function AdminProjectEditor() {
         <AdminPageHeader
           title={isNew ? "新建案例" : "编辑案例"}
           description="封面、图库和改造前后图片请在“项目图片”模块里管理，前台缩略图优先使用封面图。"
+          helpText="这里主要编辑案例正文、标题、地点、类型和搜索优化。"
           actions={
             <Button type="button" variant="outline" onClick={() => setShowEnglish((v) => !v)}>
               {showEnglish ? "隐藏英文内容" : "显示英文内容"}
             </Button>
           }
         />
+
+        {englishMissing && (
+          <div className="rounded-lg border border-amber-500/30 bg-amber-500/10 px-4 py-3 text-sm text-amber-800 dark:text-amber-200">
+            {englishMissingHint}
+          </div>
+        )}
 
         <AdminFormSection title="发布与排序" description="草稿不对外展示；发布后会在前台案例页生效。" helpText="控制案例是否在前台显示，以及它在案例列表里的排序。">
           <div className="grid gap-4 md:grid-cols-3">
@@ -427,7 +454,7 @@ export default function AdminProjectEditor() {
 
         {showEnglish && (
           <>
-            <AdminFormSection title="英文内容（可折叠）" description="英文为空时前台英文页会回退中文。" helpText="管理英文案例内容，没填英文时，英文前台会回退显示中文。">
+            <AdminFormSection title="自动英文，可手动微调" description={autoEnglishDescription} helpText="英文站优先显示这里。没有英文时，后台会提示你生成英文。" collapsible defaultOpen={false}>
               <div className="grid gap-4 md:grid-cols-2">
                 <div className="md:col-span-2">
                   <label className="mb-1 block text-sm font-medium">英文标题</label>
@@ -452,7 +479,7 @@ export default function AdminProjectEditor() {
               </div>
             </AdminFormSection>
 
-            <AdminFormSection title="SEO（英文）" description="可选；为空时前台会回退。" helpText="管理英文案例详情页的搜索文案。为空时前台会自动回退。">
+            <AdminFormSection title="英文 SEO，可手动微调" description={autoEnglishDescription} helpText="管理英文案例详情页的搜索文案。正式英文 SEO 建议补齐。" collapsible defaultOpen={false}>
               <div className="grid gap-4 md:grid-cols-2">
                 <div className="md:col-span-2">
                   <label className="mb-1 block text-sm font-medium">英文 SEO 标题</label>

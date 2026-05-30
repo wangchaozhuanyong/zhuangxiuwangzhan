@@ -2,6 +2,7 @@ import { useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import AdminPageHeader from "@/components/admin/AdminPageHeader";
 import { useAdminQuotes } from "@/lib/adminQueries";
 import { getAdminLang } from "@/lib/adminLocale";
 import { translateStatusLabel } from "@/i18n/displayLabels";
@@ -44,23 +45,28 @@ const AdminQuoteList = () => {
 
   return (
     <div className="space-y-6">
-      <div className="rounded-xl border border-border bg-card p-6">
-        <div className="mb-4 flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
-          <h1 className="font-display text-2xl font-bold">{t.title}</h1>
-          <Button variant="outline" onClick={exportCsv} disabled={filtered.length === 0}>{t.exportCsv}</Button>
-        </div>
-        <div className="grid gap-3 md:grid-cols-[1fr_220px]">
-          <Input value={search} onChange={(event) => setSearch(event.target.value)} placeholder={t.search} />
-          <select value={status} onChange={(event) => setStatus(event.target.value)} className="flex h-10 rounded-md border border-input bg-background px-3 py-2 text-sm">
-            {statuses.map((item) => (
-              <option key={item} value={item}>
-                {item === "all" ? t.statusAll : translateStatusLabel("quote_requests", item, lang)}
-              </option>
-            ))}
-          </select>
-        </div>
-        {message && <p className="mt-4 rounded-lg bg-muted p-3 text-sm">{message}</p>}
+      <AdminPageHeader
+        title={t.title}
+        description="查看报价请求，适合先看项目类型、地区和预算，再安排报价回复。"
+        helpText="这里收的是用户主动提交的报价表单，信息比咨询页更完整，方便直接做预算判断。"
+        actions={
+          <Button variant="outline" onClick={exportCsv} disabled={filtered.length === 0}>
+            {t.exportCsv}
+          </Button>
+        }
+      />
+
+      <div className="grid gap-3 md:grid-cols-[1fr_220px]">
+        <Input value={search} onChange={(event) => setSearch(event.target.value)} placeholder={t.search} />
+        <select value={status} onChange={(event) => setStatus(event.target.value)} className="flex h-10 rounded-md border border-input bg-background px-3 py-2 text-sm">
+          {statuses.map((item) => (
+            <option key={item} value={item}>
+              {item === "all" ? t.statusAll : translateStatusLabel("quote_requests", item, lang)}
+            </option>
+          ))}
+        </select>
       </div>
+      {message && <p className="rounded-lg bg-muted p-3 text-sm">{message}</p>}
 
       <div className="space-y-3">
         {filtered.map((quote) => (

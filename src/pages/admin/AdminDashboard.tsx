@@ -24,7 +24,7 @@ const copy = {
       { key: "staleLeads", label: "24h Unfollowed Leads", href: "/admin/leads" },
       { key: "monthLeads", label: "Leads This Month", href: "/admin/leads" },
       { key: "monthQuotes", label: "Quotes This Month", href: "/admin/quotes" },
-      { key: "failedTranslations", label: "Failed Translations", href: "/admin/content/translation_jobs" },
+      { key: "failedTranslations", label: "Failed English Generation", href: "/admin/content/translation_jobs" },
       { key: "projects", label: "Published Projects", href: "/admin/projects" },
       { key: "services", label: "Published Services", href: "/admin/services" },
       { key: "blog", label: "Published Blog Posts", href: "/admin/blog" },
@@ -47,19 +47,19 @@ const copy = {
     quickActions: "快捷入口",
     empty: "暂无记录。",
     cards: [
-      { key: "todayLeads", label: "今日新咨询", href: "/admin/leads" },
-      { key: "newLeads", label: "新咨询", href: "/admin/leads" },
-      { key: "pendingQuotes", label: "待处理报价", href: "/admin/quotes" },
-      { key: "toQuote", label: "待报价", href: "/admin/quotes" },
-      { key: "dueFollowUps", label: "今日待跟进咨询", href: "/admin/leads" },
-      { key: "staleLeads", label: "24 小时未跟进咨询", href: "/admin/leads" },
-      { key: "monthLeads", label: "本月咨询数", href: "/admin/leads" },
-      { key: "monthQuotes", label: "本月报价数", href: "/admin/quotes" },
-      { key: "failedTranslations", label: "翻译失败任务", href: "/admin/content/translation_jobs" },
-      { key: "projects", label: "已发布案例", href: "/admin/projects" },
-      { key: "services", label: "已发布服务", href: "/admin/services" },
-      { key: "blog", label: "已发布博客", href: "/admin/blog" },
-      { key: "seoMissing", label: "搜索优化缺失项", href: "/admin/seo" },
+      { key: "todayLeads", label: "今日新咨询", help: "今天提交到后台的新客户咨询数量。", href: "/admin/leads" },
+      { key: "newLeads", label: "新咨询", help: "还没有处理过的客户咨询数量。", href: "/admin/leads" },
+      { key: "pendingQuotes", label: "待处理报价", help: "已经收到、但还在等待处理的报价请求数量。", href: "/admin/quotes" },
+      { key: "toQuote", label: "待报价", help: "需要尽快整理并回复客户的报价请求数量。", href: "/admin/quotes" },
+      { key: "dueFollowUps", label: "今日待跟进咨询", help: "今天应该优先跟进的客户咨询数量。", href: "/admin/leads" },
+      { key: "staleLeads", label: "24 小时未跟进咨询", help: "超过 24 小时还没跟进的客户咨询数量。", href: "/admin/leads" },
+      { key: "monthLeads", label: "本月咨询数", help: "本月累计收到的客户咨询数量。", href: "/admin/leads" },
+      { key: "monthQuotes", label: "本月报价数", help: "本月累计收到的报价请求数量。", href: "/admin/quotes" },
+      { key: "failedTranslations", label: "英文生成失败", help: "需要重试或修正的自动英文生成记录数量。", href: "/admin/content/translation_jobs" },
+      { key: "projects", label: "已发布案例", help: "已经发布到前台的案例数量。", href: "/admin/projects" },
+      { key: "services", label: "已发布服务", help: "已经发布到前台的服务数量。", href: "/admin/services" },
+      { key: "blog", label: "已发布博客", help: "已经发布到前台的博客数量。", href: "/admin/blog" },
+      { key: "seoMissing", label: "搜索优化缺失项", help: "还没补齐的 SEO 字段数量。", href: "/admin/seo" },
     ],
     actions: [
       { label: "新建案例", href: "/admin/projects/new" },
@@ -97,6 +97,7 @@ const AdminDashboard = () => {
       <AdminPageHeader
         title={t.title}
         description={t.body}
+        helpText="这里是后台总览，先看咨询和报价，再看内容、翻译和搜索优化是否正常。"
         actions={
           <Button asChild variant="outline">
             <Link to="/admin/media">上传图片</Link>
@@ -106,7 +107,7 @@ const AdminDashboard = () => {
 
       <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
         {t.cards.map((card) => (
-          <AdminStatCard key={card.key} label={card.label} value={counts[card.key] ?? "-"} href={card.href} />
+          <AdminStatCard key={card.key} label={card.label} value={counts[card.key] ?? "-"} href={card.href} helpText={card.help} />
         ))}
       </div>
 

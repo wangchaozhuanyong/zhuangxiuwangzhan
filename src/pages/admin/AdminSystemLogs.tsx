@@ -37,6 +37,7 @@ const AdminSystemLogs = () => {
       <AdminPageHeader
         title="系统日志"
         description="这里记录后台和前台关键错误，方便排查问题。只显示最近 100 条。"
+        helpText="这里是排错区，不是日常编辑区。发现页面报错、接口异常时先来这里看。"
         actions={
           <button className="rounded-md border px-3 py-2 text-sm" onClick={() => void refetch()} disabled={isFetching}>
             {isFetching ? "刷新中..." : "刷新"}
