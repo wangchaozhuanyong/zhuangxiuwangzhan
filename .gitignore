@@ -13,6 +13,7 @@ dist-ssr
 test-results
 backups
 .wrangler
+tmp-wrangler-pages.pid
 *.local
 .env
 .env.*
