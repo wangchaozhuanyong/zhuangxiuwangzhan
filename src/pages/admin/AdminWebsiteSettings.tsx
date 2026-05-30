@@ -1,11 +1,13 @@
 import { useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useAdminFormState } from "@/hooks/useAdminFormState";
+import { useUnsavedChangesWarning } from "@/hooks/useUnsavedChangesWarning";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { fetchSiteSettings, fallbackSiteSettings, saveSiteSettings, type SiteSettings } from "@/lib/siteSettingsApi";
+import { fetchSiteSettings, fallbackSiteSettings, type SiteSettings } from "@/lib/siteSettingsApi";
 import { invalidateSiteSettings } from "@/lib/adminInvalidate";
+import { formatAdminMutationError, saveAdminRecord } from "@/lib/adminMutation";
 import SmartImage from "@/components/SmartImage";
 import AdminImageUpload from "./AdminImageUpload";
 import { getAdminLang } from "@/lib/adminLocale";
@@ -75,12 +77,13 @@ const AdminWebsiteSettings = () => {
     queryKey: ["site-settings"],
     queryFn: fetchSiteSettings,
   });
-  const { state: settings, setForm: setSettings, applyRemote } = useAdminFormState<SiteSettings>(
+  const { state: settings, setForm: setSettings, applyRemote, dirty } = useAdminFormState<SiteSettings>(
     isFetched ? remoteSettings ?? fallbackSiteSettings : undefined,
     { initial: fallbackSiteSettings },
   );
   const [status, setStatus] = useState("");
   const [saving, setSaving] = useState(false);
+  useUnsavedChangesWarning(dirty && !saving);
 
   const updateField = (key: keyof SiteSettings, value: string) => {
     setSettings((current) => ({ ...current, [key]: value }));
@@ -90,13 +93,21 @@ const AdminWebsiteSettings = () => {
     setSaving(true);
     setStatus(t.saving);
     try {
-      await saveSiteSettings(settings);
+      const saved = await saveAdminRecord<SiteSettings>({
+        table: "site_settings",
+        id: "default",
+        payload: { id: "default", ...settings },
+        expectedUpdatedAt: settings.updated_at || null,
+        action: "update_settings",
+        queryClient,
+        invalidate: "published",
+      });
       await invalidateSiteSettings(queryClient);
-      const fresh = await fetchSiteSettings();
+      const fresh = { ...fallbackSiteSettings, ...saved };
       applyRemote(fresh);
       setStatus(t.saved);
     } catch (error) {
-      setStatus(error instanceof Error ? error.message : String(error));
+      setStatus(formatAdminMutationError(error));
     } finally {
       setSaving(false);
     }

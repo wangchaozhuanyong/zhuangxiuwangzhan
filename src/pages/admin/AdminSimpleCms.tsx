@@ -1,16 +1,16 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
-import { invalidatePublishedContent } from "@/lib/adminInvalidate";
 import { useAdminSimpleCmsRows } from "@/lib/adminQueries";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { isSupabaseConfigured, supabase } from "@/lib/supabase";
+import { isSupabaseConfigured } from "@/lib/supabase";
 import AdminImageUpload from "./AdminImageUpload";
 import { adminStatusLabel, publishStatusOptions } from "@/lib/adminLocale";
 import { AdminFieldLabel } from "@/components/admin/AdminHelpTip";
 import { TextListEditor } from "@/components/admin/StructuredArrayEditors";
 import { getAdminFieldHelp, getAdminTableHelp } from "@/lib/adminHelpText";
+import { archiveOrDeleteAdminRecord, formatAdminMutationError, saveAdminRecord } from "@/lib/adminMutation";
 
 type ModuleKey = "site_pages" | "home_sections" | "faqs" | "before_after_items" | "brand_partners";
 type Field = { key: string; label: string; type?: "text" | "textarea" | "image" | "number" | "select" | "textList" };
@@ -124,6 +124,8 @@ const AdminSimpleCms = ({ module }: { module: ModuleKey }) => {
   const [record, setRecord] = useState<Record<string, any>>(emptyRecord);
   const recordDirtyRef = useRef(false);
   const [message, setMessage] = useState(error instanceof Error ? error.message : error ? String(error) : "");
+  const [saving, setSaving] = useState(false);
+  const [deletingId, setDeletingId] = useState<string | null>(null);
 
   useEffect(() => {
     if (error) setMessage(formatAdminError(module, error));
@@ -147,7 +149,8 @@ const AdminSimpleCms = ({ module }: { module: ModuleKey }) => {
   };
 
   const save = async () => {
-    if (!isSupabaseConfigured) return;
+    if (!isSupabaseConfigured || saving) return;
+    setSaving(true);
     const payload = { ...record };
     for (const field of config.fields) {
       if (field.type === "textList") {
@@ -161,37 +164,52 @@ const AdminSimpleCms = ({ module }: { module: ModuleKey }) => {
       }
     }
     const recordId = payload.id;
+    const expectedUpdatedAt = payload.updated_at || null;
     delete payload.id;
     delete payload.created_at;
     delete payload.updated_at;
 
-    const request = recordId
-      ? supabase!.from(config.table).update(payload).eq("id", recordId).select("*").single()
-      : supabase!.from(config.table).insert(payload).select("*").single();
-
-    const { data, error } = await request;
-    if (error) {
-      setMessage(error.message);
-      return;
+    try {
+      const data = await saveAdminRecord<Record<string, any>>({
+        table: config.table,
+        id: recordId,
+        expectedUpdatedAt,
+        payload,
+        queryClient,
+        invalidate: "admin-content",
+      });
+      setMessage("已保存。");
+      recordDirtyRef.current = false;
+      setRecord(data || emptyRecord);
+      void queryClient.invalidateQueries({ queryKey: ["admin", config.table, "rows"] });
+      await refetch();
+    } catch (saveError) {
+      setMessage(formatAdminMutationError(saveError));
+    } finally {
+      setSaving(false);
     }
-
-    setMessage("已保存。");
-    recordDirtyRef.current = false;
-    setRecord((data as Record<string, any>) || emptyRecord);
-    void invalidatePublishedContent(queryClient);
-    void queryClient.invalidateQueries({ queryKey: ["admin", config.table, "rows"] });
-    await refetch();
   };
 
   const remove = async (id: string) => {
-    if (!isSupabaseConfigured) return;
-    const { error } = await supabase!.from(config.table).delete().eq("id", id);
-    if (error) setMessage(error.message);
-    else {
-      setMessage("已删除。");
-      void invalidatePublishedContent(queryClient);
+    if (!isSupabaseConfigured || deletingId) return;
+    if (!window.confirm("确认要归档/删除这条内容吗？重要内容会优先归档，避免误删。")) return;
+    const current = rows.find((row) => String(row.id) === String(id)) as Record<string, any> | undefined;
+    setDeletingId(id);
+    try {
+      await archiveOrDeleteAdminRecord({
+        table: config.table,
+        id,
+        expectedUpdatedAt: current?.updated_at || null,
+        queryClient,
+        softDelete: true,
+      });
+      setMessage("已归档/删除。");
       void queryClient.invalidateQueries({ queryKey: ["admin", config.table, "rows"] });
       await refetch();
+    } catch (deleteError) {
+      setMessage(formatAdminMutationError(deleteError));
+    } finally {
+      setDeletingId(null);
     }
   };
 
@@ -260,7 +278,7 @@ const AdminSimpleCms = ({ module }: { module: ModuleKey }) => {
                 <Button type="button" variant="outline" size="sm" onClick={() => loadRecord(row)}>
                   编辑
                 </Button>
-                <Button type="button" variant="destructive" size="sm" onClick={() => void remove(row.id)}>
+                <Button type="button" variant="destructive" size="sm" disabled={deletingId === row.id} onClick={() => void remove(row.id)}>
                   删除
                 </Button>
               </div>
@@ -292,8 +310,8 @@ const AdminSimpleCms = ({ module }: { module: ModuleKey }) => {
             <Input type="number" value={record.sort_order || 0} onChange={(event) => update("sort_order", Number(event.target.value || 0))} />
           </div>
         </div>
-        <Button type="button" className="mt-5 w-full" onClick={() => void save()}>
-          保存
+        <Button type="button" className="mt-5 w-full" disabled={saving} onClick={() => void save()}>
+          {saving ? "保存中..." : "保存"}
         </Button>
       </section>
     </div>

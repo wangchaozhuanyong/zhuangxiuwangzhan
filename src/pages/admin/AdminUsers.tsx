@@ -8,7 +8,7 @@ import { useAdminUsers } from "@/lib/adminQueries";
 const AdminUsers = () => {
   const queryClient = useQueryClient();
   const { data: users = [], error, refetch } = useAdminUsers();
-  const [form, setForm] = useState({ user_id: "", email: "" });
+  const [form, setForm] = useState({ user_id: "", email: "", role: "content_editor" });
   const [message, setMessage] = useState(error instanceof Error ? error.message : error ? String(error) : "");
 
   const refreshUsers = () => queryClient.invalidateQueries({ queryKey: ["admin", "users"] });
@@ -19,11 +19,12 @@ const AdminUsers = () => {
     const { error: upsertError } = await supabase!.from("admin_users").upsert({
       user_id: form.user_id.trim(),
       email: form.email.trim() || null,
+      role: form.role,
       active: true,
     });
     if (upsertError) setMessage(upsertError.message);
     else {
-      setForm({ user_id: "", email: "" });
+      setForm({ user_id: "", email: "", role: "content_editor" });
       await refreshUsers();
       await refetch();
     }
@@ -31,6 +32,15 @@ const AdminUsers = () => {
 
   const toggleActive = async (user: { user_id: string; active: boolean }) => {
     const { error: updateError } = await supabase!.from("admin_users").update({ active: !user.active }).eq("user_id", user.user_id);
+    if (updateError) setMessage(updateError.message);
+    else {
+      await refreshUsers();
+      await refetch();
+    }
+  };
+
+  const updateRole = async (user: { user_id: string }, role: string) => {
+    const { error: updateError } = await supabase!.from("admin_users").update({ role }).eq("user_id", user.user_id);
     if (updateError) setMessage(updateError.message);
     else {
       await refreshUsers();
@@ -49,7 +59,7 @@ const AdminUsers = () => {
 
       <form onSubmit={addUser} className="rounded-xl border border-border bg-card p-6">
         <h2 className="mb-4 font-display text-xl font-bold">新增管理员</h2>
-        <div className="grid gap-4 md:grid-cols-[1fr_1fr_auto] md:items-end">
+        <div className="grid gap-4 md:grid-cols-[1fr_1fr_180px_auto] md:items-end">
           <div>
             <label className="mb-1 block text-sm font-medium">认证用户 ID</label>
             <Input value={form.user_id} onChange={(event) => setForm({ ...form, user_id: event.target.value })} placeholder="填写 Supabase 认证用户 UUID" />
@@ -57,6 +67,19 @@ const AdminUsers = () => {
           <div>
             <label className="mb-1 block text-sm font-medium">邮箱</label>
             <Input type="email" value={form.email} onChange={(event) => setForm({ ...form, email: event.target.value })} placeholder="admin@example.com" />
+          </div>
+          <div>
+            <label className="mb-1 block text-sm font-medium">角色</label>
+            <select
+              value={form.role}
+              onChange={(event) => setForm({ ...form, role: event.target.value })}
+              className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+            >
+              <option value="super_admin">超级管理员</option>
+              <option value="content_editor">内容编辑</option>
+              <option value="lead_manager">线索客服</option>
+              <option value="viewer">只读查看</option>
+            </select>
           </div>
           <Button type="submit" disabled={!isSupabaseConfigured}>添加</Button>
         </div>
@@ -69,9 +92,21 @@ const AdminUsers = () => {
               <div>
                 <p className="font-semibold">{user.email || user.user_id}</p>
                 <p className="mt-1 break-all text-xs text-muted-foreground">{user.user_id}</p>
-                <p className="mt-1 text-xs text-muted-foreground">{user.active ? "启用" : "停用"} · {new Date(user.created_at).toLocaleString()}</p>
+                <p className="mt-1 text-xs text-muted-foreground">{user.active ? "启用" : "停用"} · 角色：{user.role || "super_admin"} · {new Date(user.created_at).toLocaleString()}</p>
               </div>
-              <Button variant="outline" onClick={() => void toggleActive(user)}>{user.active ? "停用" : "启用"}</Button>
+              <div className="flex flex-wrap gap-2">
+                <select
+                  value={user.role || "super_admin"}
+                  onChange={(event) => void updateRole(user, event.target.value)}
+                  className="flex h-10 rounded-md border border-input bg-background px-3 py-2 text-sm"
+                >
+                  <option value="super_admin">超级管理员</option>
+                  <option value="content_editor">内容编辑</option>
+                  <option value="lead_manager">线索客服</option>
+                  <option value="viewer">只读查看</option>
+                </select>
+                <Button variant="outline" onClick={() => void toggleActive(user)}>{user.active ? "停用" : "启用"}</Button>
+              </div>
             </div>
           </article>
         ))}

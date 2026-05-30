@@ -1,5 +1,6 @@
 import { FormEvent, useCallback, useEffect, useMemo, useState } from "react";
 import { useAdminFormState } from "@/hooks/useAdminFormState";
+import { useUnsavedChangesWarning } from "@/hooks/useUnsavedChangesWarning";
 import { useQueryClient } from "@tanstack/react-query";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -16,9 +17,12 @@ import { invalidateAdminContentDetail, invalidateAfterAdminContentSave } from "@
 import { useAdminProjectDetail } from "@/lib/adminQueries";
 import { publishStatusOptions } from "@/lib/adminLocale";
 import AdminProjectImages from "./AdminProjectImages";
+import { formatAdminMutationError, saveAdminRecord } from "@/lib/adminMutation";
 
 type ProjectRecord = {
   id?: string;
+  created_at?: string | null;
+  updated_at?: string | null;
   slug: string;
   status: "draft" | "published" | "archived";
   sort_order: number;
@@ -114,10 +118,11 @@ export default function AdminProjectEditor() {
     };
   }, [isNew, loaded]);
 
-  const { state: record, setForm: setRecord, applyRemote } = useAdminFormState<ProjectRecord>(loadedRecord, {
+  const { state: record, setForm: setRecord, applyRemote, dirty } = useAdminFormState<ProjectRecord>(loadedRecord, {
     resetKey: id ?? "new",
     initial: empty,
   });
+  useUnsavedChangesWarning(dirty && !saveBusy);
 
   useEffect(() => {
     if (!isError || !loadError) return;
@@ -179,25 +184,28 @@ export default function AdminProjectEditor() {
       highlights_zh: record.highlights_zh || [],
       highlights_en: record.highlights_en || [],
     };
-    delete payload.id;
-    delete payload.created_at;
-    delete payload.updated_at;
 
-    const request = record.id
-      ? supabase!.from("projects").update(payload).eq("id", record.id).select("id").single()
-      : supabase!.from("projects").insert(payload).select("id").single();
-
-    const { data, error } = await request;
-    setSaveBusy(false);
-    if (error) {
-      toast({ title: "保存失败", description: error.message, variant: "destructive" });
+    let saved: any;
+    try {
+      saved = await saveAdminRecord({
+        table: "projects",
+        payload,
+        id: record.id,
+        expectedUpdatedAt: record.updated_at || null,
+        action: nextStatus === "published" ? "publish" : record.id ? "update" : "insert",
+        queryClient,
+      });
+    } catch (error) {
+      toast({ title: "\u4fdd\u5b58\u5931\u8d25", description: formatAdminMutationError(error), variant: "destructive" });
+      setSaveBusy(false);
       return;
     }
 
-    const savedId = (data as any)?.id;
-    applyRemote({ ...record, id: savedId, slug, status: payload.status });
+    const savedId = saved?.id;
+    applyRemote({ ...record, ...saved, id: savedId, slug, status: payload.status });
     toast({ title: "已保存" });
-    void invalidateAfterAdminContentSave(queryClient);
+    await invalidateAfterAdminContentSave(queryClient);
+    setSaveBusy(false);
 
     if (isNew) navigate(`/admin/projects/${savedId}`, { replace: true });
 

@@ -64,6 +64,7 @@ type AdminCopy = {
   groupMediaSeo: string;
   groupSystem: string;
   home: string;
+  cmsBuilder: string;
   pages: string;
   about: string;
   faqs: string;
@@ -130,6 +131,7 @@ const copy: Record<AdminLang, AdminCopy> = {
     groupMediaSeo: "Media & SEO",
     groupSystem: "System",
     home: "Home Page",
+    cmsBuilder: "CMS Builder",
     pages: "Page Content",
     about: "About Us",
     faqs: "常见问题",
@@ -179,6 +181,7 @@ const copy: Record<AdminLang, AdminCopy> = {
     groupMediaSeo: "媒体与搜索优化",
     groupSystem: "系统设置",
     home: "首页管理",
+    cmsBuilder: "通用页面搭建",
     pages: "页面内容",
     about: "关于我们",
     faqs: "常见问题",
@@ -234,6 +237,7 @@ const navGroups: NavGroup[] = [
     icon: Globe2,
     items: [
       { key: "home", path: "/admin/home", icon: Home },
+      { key: "cmsBuilder", path: "/admin/cms", icon: LayoutDashboard },
       { key: "pages", path: "/admin/pages", icon: FileText },
       { key: "about", path: "/admin/about", icon: Building2 },
       { key: "faqs", path: "/admin/faqs", icon: MessageSquareText },

@@ -26,6 +26,9 @@ const Reveal = ({ children, className, delay = 0, direction = "up" }: RevealProp
   return (
     <div
       ref={ref}
+      data-reveal
+      data-reveal-direction={direction}
+      data-reveal-state={isVisible ? "visible" : "hidden"}
       className={cn(
         "transform-gpu transition-all duration-700 ease-out will-change-transform",
         isVisible

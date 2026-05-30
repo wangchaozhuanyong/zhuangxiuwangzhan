@@ -74,24 +74,24 @@ const faqContent = {
   zh: {
     metaTitle: "常见问题 | 吉隆坡装修问答 | FLASH CAST",
     metaDescription: "FLASH CAST 整理马来西亚装修服务、报价、材料、定制家具和准证申请常见问题，服务吉隆坡与雪兰莪。",
-    metaKeywords: "马来西亚装修常见问题, 吉隆坡装修问答, 定制家具 FAQ, DBKL 装修准证",
+    metaKeywords: "马来西亚装修常见问题, 吉隆坡装修问答, 定制家具常见问题, DBKL 装修准证",
     breadcrumbHome: "首页",
     breadcrumbFaq: "常见问题",
-    heroAlt: "FLASH CAST 装修常见问题",
+    heroAlt: "FLASH CAST 常见问题页",
     eyebrow: "帮助中心",
     title: "常见问题",
     intro: "关于装修服务、流程、报价、材料和准证的常见问题整理。",
     ctaTitle: "还有其他问题？",
     ctaText: "欢迎直接联系我们，我们会根据你的项目情况给出建议。",
     contact: "联系我们",
-    whatsapp: "WhatsApp 咨询",
+    whatsapp: "WhatsApp 联系",
     categories: [
       {
         category: "一般问题",
         items: [
           { q: "FLASH CAST 提供哪些装修服务？", a: "我们提供全屋装修、室内设计、定制内嵌家具、厨房装修、浴室装修、办公室装修、店铺装修、德国 Remmers 艺术墙面涂装、旧屋翻新和准证协调服务。" },
           { q: "你们服务哪些地区？", a: "我们服务吉隆坡与雪兰莪，包括 Mont Kiara、Bangsar、Cheras、Petaling Jaya、Subang Jaya、Shah Alam、Puchong 和周边地区。" },
-          { q: "FLASH CAST 是注册公司吗？", a: "是的，FLASH CAST SDN. BHD. 是 SSM 注册公司，办公室位于 Taman United, Kuala Lumpur。" },
+          { q: "FLASH CAST 是注册公司吗？", a: "是的，FLASH CAST SDN. BHD. 是 SSM 注册公司，办公室位于 Taman United，吉隆坡。" },
         ],
       },
       {

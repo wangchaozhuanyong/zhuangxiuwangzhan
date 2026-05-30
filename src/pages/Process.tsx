@@ -51,7 +51,7 @@ const content = {
     ctaTitle: "准备开始了吗？",
     ctaDescription: "立即联系我们，第一步只是一次简单沟通。",
     quoteLabel: "获取免费报价",
-    whatsappLabel: "WhatsApp 咨询",
+    whatsappLabel: "WhatsApp 联系",
     steps: [
       { num: "01", title: "初步咨询", desc: "了解您的目标、空间、风格与预算。", details: ["通过网站、WhatsApp 或电话提交咨询", "沟通需求、时间安排与预算", "获取初步建议与方向"] },
       { num: "02", title: "上门测量", desc: "我们会到现场进行精确测量。吉隆坡与雪兰莪咨询可享免费上门测量。", details: ["现场测量", "评估现有条件与限制", "拍照记录，供设计参考"] },

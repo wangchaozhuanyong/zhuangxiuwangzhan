@@ -71,7 +71,7 @@ const copy = {
       services: "Services",
       materials: "Materials",
       blog: "Blog",
-      faq: "FAQ",
+      faq: "常见问题",
       contact: "Contact",
     },
   },
@@ -89,7 +89,7 @@ const copy = {
     ctaTitle: "也想做类似项目？",
     ctaText: "告诉我们您的装修需求，我们会根据空间、预算和工期提供合适方案。",
     quote: "获取免费报价",
-    whatsapp: "WhatsApp 咨询",
+    whatsapp: "WhatsApp 联系",
     links: {
       services: "服务项目",
       materials: "材料库",

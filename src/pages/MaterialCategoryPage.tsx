@@ -47,7 +47,7 @@ const copy = {
     interested: (name: string) => `对 ${name} 感兴趣？`,
     ctaText: "联系我们索取样板、确认供应情况，或获取项目报价。",
     quote: "索取报价",
-    whatsapp: "WhatsApp 咨询",
+    whatsapp: "WhatsApp 联系",
   },
 };
 

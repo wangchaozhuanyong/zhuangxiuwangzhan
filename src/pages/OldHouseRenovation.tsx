@@ -61,8 +61,8 @@ const content = {
       { type: "Full Interior Renovation", range: "Site-based", desc: "Whole-house interior upgrade with electrical, plumbing, carpentry, and finishing." },
       { type: "Structural + Full Renovation", range: "Assessment needed", desc: "Major repair, roof, waterproofing, full M&E, and complete interior transformation." },
     ],
-    faqTitle: "Old House Renovation FAQ",
-    faqDescription: "Common questions about renovating older properties in Malaysia.",
+    faqTitle: "旧屋翻新常见问题",
+    faqDescription: "关于马来西亚旧屋翻新的常见问题。",
     faqs: [
       { q: "How much does an old house renovation cost in KL?", a: "Old house renovation cost depends on property size, structure, wiring, plumbing, waterproofing, materials, and confirmed scope. We provide an itemized quotation after site assessment." },
       { q: "How long does it take?", a: "A complete terrace house renovation usually takes 10-16 weeks, depending on structural repairs, approvals, and interior scope." },
@@ -84,7 +84,7 @@ const content = {
     description: "为老排屋、半独立和独立式住宅提供完整翻新，从结构修复、电线水管、防水，到厨房浴室和室内设计施工。",
     heroAlt: "吉隆坡旧排屋翻新完成效果",
     assessment: "获取免费评估",
-    whatsapp: "WhatsApp 咨询",
+    whatsapp: "WhatsApp 联系",
     introTitle: "为什么旧屋需要系统化翻新？",
     intro: [
       "许多马来西亚旧屋建于 1970-1990 年代，常见问题包括墙裂、漏水、电线老旧、水管生锈、白蚁和空间布局不符合现代生活。",

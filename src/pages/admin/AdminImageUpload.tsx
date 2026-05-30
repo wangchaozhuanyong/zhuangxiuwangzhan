@@ -14,6 +14,9 @@ interface AdminImageUploadProps {
 const BUCKET = "site-images";
 const MAX_EDGE = 2400;
 const WEBP_QUALITY = 0.82;
+const MAX_UPLOAD_BYTES = 5 * 1024 * 1024;
+const ALLOWED_IMAGE_TYPES = new Set(["image/jpeg", "image/png", "image/webp", "image/gif"]);
+const ALLOWED_EXTENSIONS = new Set(["jpg", "jpeg", "png", "webp", "gif"]);
 
 const copy = {
   en: {
@@ -32,10 +35,17 @@ const copy = {
 
 async function prepareUploadFile(file: File): Promise<{ file: File; width?: number; height?: number; converted: boolean }> {
   const mime = file.type || "";
-  if (mime === "image/gif" || mime === "image/svg+xml") {
-    return { file, converted: false };
+  const ext = file.name.split(".").pop()?.toLowerCase() || "";
+
+  if (file.size > MAX_UPLOAD_BYTES) {
+    throw new Error("图片不能超过 5MB，请先压缩后再上传。");
   }
-  if (!(mime.startsWith("image/") || /\.(png|jpe?g)$/i.test(file.name))) {
+
+  if (!ALLOWED_IMAGE_TYPES.has(mime) || !ALLOWED_EXTENSIONS.has(ext)) {
+    throw new Error("只允许上传 JPG、PNG、WebP 或 GIF 图片。");
+  }
+
+  if (mime === "image/gif") {
     return { file, converted: false };
   }
 
@@ -68,6 +78,18 @@ async function prepareUploadFile(file: File): Promise<{ file: File; width?: numb
   return { file: out, width: targetW, height: targetH, converted: true };
 }
 
+const sanitizeFolder = (value: string) =>
+  value
+    .split("/")
+    .map((part) =>
+      part
+        .toLowerCase()
+        .replace(/[^a-z0-9_-]+/g, "-")
+        .replace(/(^-|-$)/g, ""),
+    )
+    .filter(Boolean)
+    .join("/") || "content";
+
 const AdminImageUpload = ({ value, folder = "content", onUploaded }: AdminImageUploadProps) => {
   const lang = getAdminLang();
   const t = copy[lang];
@@ -88,7 +110,7 @@ const AdminImageUpload = ({ value, folder = "content", onUploaded }: AdminImageU
         .replace(/[^a-z0-9]+/g, "-")
         .replace(/(^-|-$)/g, "");
       const ext = prepared.converted ? "webp" : prepared.file.name.split(".").pop() || "jpg";
-      const path = `${folder}/${Date.now()}-${safeName}.${ext}`;
+      const path = `${sanitizeFolder(folder)}/${Date.now()}-${safeName || "image"}.${ext}`;
 
       const { error: uploadError } = await supabase.storage.from(BUCKET).upload(path, prepared.file, {
         cacheControl: "31536000",
@@ -97,7 +119,7 @@ const AdminImageUpload = ({ value, folder = "content", onUploaded }: AdminImageU
       });
 
       if (uploadError) {
-        setError(uploadError.message);
+        setError(uploadError.message || "上传失败，请稍后再试。");
         setUploading(false);
         return;
       }
@@ -105,7 +127,7 @@ const AdminImageUpload = ({ value, folder = "content", onUploaded }: AdminImageU
       const { data } = supabase.storage.from(BUCKET).getPublicUrl(path);
       onUploaded(data.publicUrl);
     } catch (e) {
-      setError(e instanceof Error ? e.message : "上传失败");
+      setError(e instanceof Error ? e.message : "上传失败，请稍后再试。");
     } finally {
       setUploading(false);
     }
@@ -119,7 +141,7 @@ const AdminImageUpload = ({ value, folder = "content", onUploaded }: AdminImageU
         </div>
       )}
       <div className="flex flex-col gap-2 sm:flex-row">
-        <Input type="file" accept="image/*" onChange={(event) => upload(event.target.files?.[0])} disabled={uploading} />
+        <Input type="file" accept="image/jpeg,image/png,image/webp,image/gif" onChange={(event) => upload(event.target.files?.[0])} disabled={uploading} />
         <Button type="button" variant="outline" disabled={uploading}>
           {uploading ? t.uploading : t.upload}
         </Button>

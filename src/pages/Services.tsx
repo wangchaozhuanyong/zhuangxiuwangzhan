@@ -41,7 +41,7 @@ const copy = {
     internalProjects: "Projects",
     internalMaterials: "Materials",
     internalBlog: "Blog",
-    internalFaq: "FAQ",
+    internalFaq: "常见问题",
     internalContact: "Contact",
   },
   zh: {
@@ -65,7 +65,7 @@ const copy = {
     unsureTitle: "需要确认适合的装修服务？",
     unsureText: "联系我们免费咨询，我们会根据你的空间和预算建议合适方案。",
     quote: "获取免费报价",
-    whatsapp: "WhatsApp 咨询",
+    whatsapp: "WhatsApp 联系",
     internalProjects: "装修案例",
     internalMaterials: "材料库",
     internalBlog: "装修博客",

@@ -16,6 +16,7 @@
     "verify:preview": "node scripts/verify-preview.mjs",
     "verify:seo-html": "node scripts/verify-seo-html.mjs",
     "verify:preview:server": "node scripts/verify-preview-with-server.mjs",
+    "verify:admin-foundation": "node scripts/verify-admin-foundation.mjs",
     "generate:sitemap": "node scripts/generate-sitemap.mjs",
     "images:webp": "node scripts/convert-images-to-webp.mjs",
     "images:prune": "node scripts/prune-duplicate-images.mjs",

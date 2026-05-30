@@ -41,6 +41,7 @@ const OldHouseRenovation = lazy(() => import("./pages/OldHouseRenovation"));
 const AdminLogin = lazy(() => import("./pages/admin/AdminLogin"));
 const AdminLayout = lazy(() => import("./pages/admin/AdminLayout"));
 const AdminDashboard = lazy(() => import("./pages/admin/AdminDashboard"));
+const AdminCmsBuilder = lazy(() => import("./pages/admin/AdminCmsBuilder"));
 const AdminContentEditor = lazy(() => import("./pages/admin/AdminContentEditor"));
 const AdminNotificationSettings = lazy(() => import("./pages/admin/AdminNotificationSettings"));
 const AdminTranslationJobs = lazy(() => import("./pages/admin/AdminTranslationJobs"));
@@ -114,6 +115,7 @@ const AppShell = () => {
             >
               <Route path="/admin" element={<AdminLayout />}>
                 <Route path="dashboard" element={<AdminDashboard />} />
+                <Route path="cms" element={<AdminCmsBuilder />} />
                 <Route path="settings" element={<AdminWebsiteSettings />} />
                 <Route path="leads" element={<AdminLeadList />} />
                 <Route path="leads/:id" element={<AdminLeadDetail />} />

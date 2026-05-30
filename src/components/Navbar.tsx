@@ -110,7 +110,7 @@ const Navbar = () => {
         <div className="site-container flex h-12 flex-nowrap items-center gap-3 md:h-16">
           <LocalizedLink
             to="/"
-            className="flex h-8 w-[7.75rem] max-w-[42%] shrink-0 items-center md:h-10 md:w-40 md:max-w-[12rem]"
+            className="site-header__brand flex h-8 w-[7.75rem] max-w-[42%] shrink-0 items-center md:h-10 md:w-40 md:max-w-[12rem]"
           >
             {resolvedLogoState !== "none" ? (
               <SmartImage

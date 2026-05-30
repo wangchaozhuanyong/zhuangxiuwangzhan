@@ -1201,18 +1201,6 @@
     <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/materials/frameless-glass-clear" />
   </url>
   <url>
-    <loc>https://flashcast.com.my/en/materials/solid-wood-cabinet-teak</loc>
-    <xhtml:link rel="alternate" hreflang="en" href="https://flashcast.com.my/en/materials/solid-wood-cabinet-teak" />
-    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://flashcast.com.my/zh/materials/solid-wood-cabinet-teak" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/materials/solid-wood-cabinet-teak" />
-  </url>
-  <url>
-    <loc>https://flashcast.com.my/zh/materials/solid-wood-cabinet-teak</loc>
-    <xhtml:link rel="alternate" hreflang="en" href="https://flashcast.com.my/en/materials/solid-wood-cabinet-teak" />
-    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://flashcast.com.my/zh/materials/solid-wood-cabinet-teak" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/materials/solid-wood-cabinet-teak" />
-  </url>
-  <url>
     <loc>https://flashcast.com.my/en/materials/quartz-countertop-carrara-white</loc>
     <xhtml:link rel="alternate" hreflang="en" href="https://flashcast.com.my/en/materials/quartz-countertop-carrara-white" />
     <xhtml:link rel="alternate" hreflang="zh-CN" href="https://flashcast.com.my/zh/materials/quartz-countertop-carrara-white" />
@@ -1247,18 +1235,6 @@
     <xhtml:link rel="alternate" hreflang="en" href="https://flashcast.com.my/en/materials/spc-flooring-natural-oak" />
     <xhtml:link rel="alternate" hreflang="zh-CN" href="https://flashcast.com.my/zh/materials/spc-flooring-natural-oak" />
     <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/materials/spc-flooring-natural-oak" />
-  </url>
-  <url>
-    <loc>https://flashcast.com.my/en/materials/subway-tile-white</loc>
-    <xhtml:link rel="alternate" hreflang="en" href="https://flashcast.com.my/en/materials/subway-tile-white" />
-    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://flashcast.com.my/zh/materials/subway-tile-white" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/materials/subway-tile-white" />
-  </url>
-  <url>
-    <loc>https://flashcast.com.my/zh/materials/subway-tile-white</loc>
-    <xhtml:link rel="alternate" hreflang="en" href="https://flashcast.com.my/en/materials/subway-tile-white" />
-    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://flashcast.com.my/zh/materials/subway-tile-white" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/materials/subway-tile-white" />
   </url>
   <url>
     <loc>https://flashcast.com.my/en/materials/quartz-countertop-white</loc>
@@ -1297,18 +1273,6 @@
     <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/materials/melamine-cabinet-board" />
   </url>
   <url>
-    <loc>https://flashcast.com.my/en/materials/spc-vinyl-natural-oak</loc>
-    <xhtml:link rel="alternate" hreflang="en" href="https://flashcast.com.my/en/materials/spc-vinyl-natural-oak" />
-    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://flashcast.com.my/zh/materials/spc-vinyl-natural-oak" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/materials/spc-vinyl-natural-oak" />
-  </url>
-  <url>
-    <loc>https://flashcast.com.my/zh/materials/spc-vinyl-natural-oak</loc>
-    <xhtml:link rel="alternate" hreflang="en" href="https://flashcast.com.my/en/materials/spc-vinyl-natural-oak" />
-    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://flashcast.com.my/zh/materials/spc-vinyl-natural-oak" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/materials/spc-vinyl-natural-oak" />
-  </url>
-  <url>
     <loc>https://flashcast.com.my/en/materials/lime-wash-paint</loc>
     <xhtml:link rel="alternate" hreflang="en" href="https://flashcast.com.my/en/materials/lime-wash-paint" />
     <xhtml:link rel="alternate" hreflang="zh-CN" href="https://flashcast.com.my/zh/materials/lime-wash-paint" />
@@ -1345,6 +1309,18 @@
     <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/materials/frameless-glass-screen" />
   </url>
   <url>
+    <loc>https://flashcast.com.my/en/materials/subway-tile-white</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://flashcast.com.my/en/materials/subway-tile-white" />
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://flashcast.com.my/zh/materials/subway-tile-white" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/materials/subway-tile-white" />
+  </url>
+  <url>
+    <loc>https://flashcast.com.my/zh/materials/subway-tile-white</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://flashcast.com.my/en/materials/subway-tile-white" />
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://flashcast.com.my/zh/materials/subway-tile-white" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/materials/subway-tile-white" />
+  </url>
+  <url>
     <loc>https://flashcast.com.my/en/materials/solid-timber-walnut</loc>
     <xhtml:link rel="alternate" hreflang="en" href="https://flashcast.com.my/en/materials/solid-timber-walnut" />
     <xhtml:link rel="alternate" hreflang="zh-CN" href="https://flashcast.com.my/zh/materials/solid-timber-walnut" />
@@ -1369,6 +1345,18 @@
     <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/materials/aluminium-sliding-door" />
   </url>
   <url>
+    <loc>https://flashcast.com.my/en/materials/spc-vinyl-natural-oak</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://flashcast.com.my/en/materials/spc-vinyl-natural-oak" />
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://flashcast.com.my/zh/materials/spc-vinyl-natural-oak" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/materials/spc-vinyl-natural-oak" />
+  </url>
+  <url>
+    <loc>https://flashcast.com.my/zh/materials/spc-vinyl-natural-oak</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://flashcast.com.my/en/materials/spc-vinyl-natural-oak" />
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://flashcast.com.my/zh/materials/spc-vinyl-natural-oak" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/materials/spc-vinyl-natural-oak" />
+  </url>
+  <url>
     <loc>https://flashcast.com.my/en/materials/art-metallic-paint</loc>
     <xhtml:link rel="alternate" hreflang="en" href="https://flashcast.com.my/en/materials/art-metallic-paint" />
     <xhtml:link rel="alternate" hreflang="zh-CN" href="https://flashcast.com.my/zh/materials/art-metallic-paint" />
@@ -1391,6 +1379,18 @@
     <xhtml:link rel="alternate" hreflang="en" href="https://flashcast.com.my/en/materials/art-microcement" />
     <xhtml:link rel="alternate" hreflang="zh-CN" href="https://flashcast.com.my/zh/materials/art-microcement" />
     <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/materials/art-microcement" />
+  </url>
+  <url>
+    <loc>https://flashcast.com.my/en/materials/solid-wood-cabinet-teak</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://flashcast.com.my/en/materials/solid-wood-cabinet-teak" />
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://flashcast.com.my/zh/materials/solid-wood-cabinet-teak" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/materials/solid-wood-cabinet-teak" />
+  </url>
+  <url>
+    <loc>https://flashcast.com.my/zh/materials/solid-wood-cabinet-teak</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://flashcast.com.my/en/materials/solid-wood-cabinet-teak" />
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://flashcast.com.my/zh/materials/solid-wood-cabinet-teak" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/materials/solid-wood-cabinet-teak" />
   </url>
   <url>
     <loc>https://flashcast.com.my/en/materials/laminate-door-white-oak</loc>
@@ -1513,30 +1513,6 @@
     <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/materials/timber-cladding-oak" />
   </url>
   <url>
-    <loc>https://flashcast.com.my/en/materials/aluminium-sliding-black</loc>
-    <xhtml:link rel="alternate" hreflang="en" href="https://flashcast.com.my/en/materials/aluminium-sliding-black" />
-    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://flashcast.com.my/zh/materials/aluminium-sliding-black" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/materials/aluminium-sliding-black" />
-  </url>
-  <url>
-    <loc>https://flashcast.com.my/zh/materials/aluminium-sliding-black</loc>
-    <xhtml:link rel="alternate" hreflang="en" href="https://flashcast.com.my/en/materials/aluminium-sliding-black" />
-    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://flashcast.com.my/zh/materials/aluminium-sliding-black" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/materials/aluminium-sliding-black" />
-  </url>
-  <url>
-    <loc>https://flashcast.com.my/en/materials/fluted-panel-charcoal</loc>
-    <xhtml:link rel="alternate" hreflang="en" href="https://flashcast.com.my/en/materials/fluted-panel-charcoal" />
-    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://flashcast.com.my/zh/materials/fluted-panel-charcoal" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/materials/fluted-panel-charcoal" />
-  </url>
-  <url>
-    <loc>https://flashcast.com.my/zh/materials/fluted-panel-charcoal</loc>
-    <xhtml:link rel="alternate" hreflang="en" href="https://flashcast.com.my/en/materials/fluted-panel-charcoal" />
-    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://flashcast.com.my/zh/materials/fluted-panel-charcoal" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/materials/fluted-panel-charcoal" />
-  </url>
-  <url>
     <loc>https://flashcast.com.my/en/materials/melamine-grey-oak</loc>
     <xhtml:link rel="alternate" hreflang="en" href="https://flashcast.com.my/en/materials/melamine-grey-oak" />
     <xhtml:link rel="alternate" hreflang="zh-CN" href="https://flashcast.com.my/zh/materials/melamine-grey-oak" />
@@ -1559,6 +1535,30 @@
     <xhtml:link rel="alternate" hreflang="en" href="https://flashcast.com.my/en/materials/hexagon-grey-matte" />
     <xhtml:link rel="alternate" hreflang="zh-CN" href="https://flashcast.com.my/zh/materials/hexagon-grey-matte" />
     <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/materials/hexagon-grey-matte" />
+  </url>
+  <url>
+    <loc>https://flashcast.com.my/en/materials/aluminium-sliding-black</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://flashcast.com.my/en/materials/aluminium-sliding-black" />
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://flashcast.com.my/zh/materials/aluminium-sliding-black" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/materials/aluminium-sliding-black" />
+  </url>
+  <url>
+    <loc>https://flashcast.com.my/zh/materials/aluminium-sliding-black</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://flashcast.com.my/en/materials/aluminium-sliding-black" />
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://flashcast.com.my/zh/materials/aluminium-sliding-black" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/materials/aluminium-sliding-black" />
+  </url>
+  <url>
+    <loc>https://flashcast.com.my/en/materials/fluted-panel-charcoal</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://flashcast.com.my/en/materials/fluted-panel-charcoal" />
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://flashcast.com.my/zh/materials/fluted-panel-charcoal" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/materials/fluted-panel-charcoal" />
+  </url>
+  <url>
+    <loc>https://flashcast.com.my/zh/materials/fluted-panel-charcoal</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://flashcast.com.my/en/materials/fluted-panel-charcoal" />
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://flashcast.com.my/zh/materials/fluted-panel-charcoal" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/materials/fluted-panel-charcoal" />
   </url>
   <url>
     <loc>https://flashcast.com.my/en/materials/melamine-cabinet-grey-oak</loc>

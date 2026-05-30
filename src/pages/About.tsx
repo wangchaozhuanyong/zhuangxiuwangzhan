@@ -72,13 +72,13 @@ const aboutCopy = {
     journeyTitle: "公司发展",
     journeyDescription: "从住宅装修团队，发展为覆盖吉隆坡与雪兰莪的一站式设计施工公司。",
     officeTitle: "欢迎到访办公室",
-    officeDescription: "办公室位于 Taman United, Kuala Lumpur。",
+    officeDescription: "办公室位于 Taman United，吉隆坡。",
     hours: "星期一至星期六：上午 9:00 - 下午 6:00",
     mapTitle: "FLASH CAST 吉隆坡办公室位置",
     ctaTitle: "让我们一起规划你的项目",
     ctaDescription: "无论是住宅翻新、办公室装修或仓储空间规划，我们都可以协助评估并提供报价。",
     quoteLabel: "获取免费报价",
-    whatsappLabel: "WhatsApp 咨询",
+    whatsappLabel: "WhatsApp 联系",
   },
 };
 
@@ -125,8 +125,8 @@ const localizedMilestones = {
 const localizedStats = {
   en: companyStats,
   zh: [
-    { value: "Scope", label: "清楚规划范围" },
-    { value: "KL & Selangor", label: "本地服务区域" },
+    { value: "范围", label: "清楚规划范围" },
+    { value: "吉隆坡与雪兰莪", label: "本地服务区域" },
     { value: "住宅", label: "住宅项目沟通" },
     { value: "商业", label: "商业项目沟通" },
   ],

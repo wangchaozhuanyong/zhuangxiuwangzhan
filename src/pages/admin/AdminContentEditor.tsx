@@ -21,6 +21,8 @@ import AdminProjectImages from "./AdminProjectImages";
 import { FaqListEditor, ProjectCardsEditor, TextListEditor } from "@/components/admin/StructuredArrayEditors";
 import { AdminFieldLabel } from "@/components/admin/AdminHelpTip";
 import { getAdminFieldHelp, getAdminTableHelp } from "@/lib/adminHelpText";
+import { formatAdminMutationError, saveAdminRecord } from "@/lib/adminMutation";
+import { useUnsavedChangesWarning } from "@/hooks/useUnsavedChangesWarning";
 
 const editableTables = new Set([
   "services",
@@ -488,14 +490,17 @@ const AdminContentEditor = () => {
   const t = copy[lang];
   const [record, setRecord] = useState<Record<string, any>>({});
   const recordDirtyRef = useRef(false);
+  const [recordDirty, setRecordDirty] = useState(false);
   const [status, setStatus] = useState("");
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
 
   const setRecordField = useCallback((patch: Record<string, any> | ((prev: Record<string, any>) => Record<string, any>)) => {
     recordDirtyRef.current = true;
+    setRecordDirty(true);
     setRecord((prev) => (typeof patch === "function" ? patch(prev) : { ...prev, ...patch }));
   }, []);
+  useUnsavedChangesWarning(recordDirty);
   const canEdit = editableTables.has(type);
   const { data: rows = [], isFetching, error: rowsError, refetch } = useAdminEditorRows(type, canEdit);
   const isLoading = isFetching;
@@ -522,6 +527,7 @@ const AdminContentEditor = () => {
 
   useEffect(() => {
     recordDirtyRef.current = false;
+    setRecordDirty(false);
   }, [id, type]);
 
   useEffect(() => {
@@ -540,32 +546,33 @@ const AdminContentEditor = () => {
   const save = async () => {
     setStatus(t.saving);
     const payload = { ...record };
-    delete payload.id;
-    delete payload.created_at;
-    delete payload.updated_at;
     for (const field of Object.keys(payload)) {
       payload[field] = parseFieldValue(field, payload[field]);
     }
 
-    const request = record.id
-      ? supabase!.from(type).update(payload).eq("id", record.id).select("id").single()
-      : supabase!.from(type).insert(payload).select("id").single();
-
-    const { data, error } = await request;
-    if (error) {
-      setStatus(error.message);
+    let savedRecord: Record<string, any>;
+    try {
+      savedRecord = await saveAdminRecord({
+        table: type,
+        payload,
+        id: record.id,
+        expectedUpdatedAt: record.updated_at || null,
+        queryClient,
+      });
+    } catch (error) {
+      setStatus(formatAdminMutationError(error));
       return;
     }
 
-    const savedRecord = { ...record, id: data.id };
     recordDirtyRef.current = false;
+    setRecordDirty(false);
     setRecord(savedRecord);
 
     const hasChineseContent = Object.keys(payload).some((field) => field.endsWith("_zh") && payload[field]);
     if (autoTranslateTables.has(type) && hasChineseContent) {
       setStatus(t.generatingEnglish);
       const { error: translationError } = await supabase!.functions.invoke("generate-english-content", {
-        body: { table: type, id: data.id },
+        body: { table: type, id: savedRecord.id },
       });
 
       if (translationError) {
@@ -573,9 +580,10 @@ const AdminContentEditor = () => {
         return;
       }
 
-      const { data: translatedRecord } = await supabase!.from(type).select("*").eq("id", data.id).single();
+      const { data: translatedRecord } = await supabase!.from(type).select("*").eq("id", savedRecord.id).single();
       if (translatedRecord) {
         recordDirtyRef.current = false;
+        setRecordDirty(false);
         setRecord(translatedRecord);
       }
       setStatus(t.generated);
@@ -607,10 +615,11 @@ const AdminContentEditor = () => {
     }
 
     const { data: translatedRecord } = await supabase!.from(type).select("*").eq("id", record.id).single();
-    if (translatedRecord) {
-      recordDirtyRef.current = false;
-      setRecord(translatedRecord);
-    }
+      if (translatedRecord) {
+        recordDirtyRef.current = false;
+        setRecordDirty(false);
+        setRecord(translatedRecord);
+      }
     setStatus(t.regenerated);
     refreshContentCaches();
     void queryClient.invalidateQueries({ queryKey: ["admin", type, "rows"] });
@@ -633,6 +642,7 @@ const AdminContentEditor = () => {
               className="mb-4 w-full"
               onClick={() => {
                 recordDirtyRef.current = false;
+                setRecordDirty(false);
                 setRecord({ status: type === "leads" ? "new" : type === "quote_requests" ? "pending" : "draft", sort_order: 0 });
               }}
             >
@@ -670,6 +680,7 @@ const AdminContentEditor = () => {
                 className="block w-full rounded-lg border border-border p-3 text-left text-sm hover:bg-muted"
                 onClick={() => {
                   recordDirtyRef.current = false;
+                  setRecordDirty(false);
                   setRecord(row);
                 }}
               >

@@ -54,7 +54,7 @@ const copy = {
     cons: "注意点",
     note: "备注：",
     enquire: "咨询此材料",
-    whatsapp: "WhatsApp 咨询",
+    whatsapp: "WhatsApp 联系",
     more: (name: string) => `更多 ${name}`,
   },
 };

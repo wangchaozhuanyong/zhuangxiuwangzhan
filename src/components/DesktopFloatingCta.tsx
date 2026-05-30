@@ -32,7 +32,7 @@ const DesktopFloatingCta = () => {
   const { menuOpen } = usePublicChrome();
   const t = copy[language];
   const [showPrompt, setShowPrompt] = useState(false);
-  const [footerInView, setFooterInView] = useState(false);
+  const [contentOverlapZone, setContentOverlapZone] = useState(false);
 
   useEffect(() => {
     const dismissedAt = Number(localStorage.getItem("flashcast_cta_dismissed_at") || 0);
@@ -62,18 +62,29 @@ const DesktopFloatingCta = () => {
   }, []);
 
   useEffect(() => {
-    const footer = document.querySelector("footer");
-    if (!footer || typeof IntersectionObserver === "undefined") {
-      return;
-    }
+    const updateFooterState = () => {
+      const overlapTargets = Array.from(document.querySelectorAll(".projects-showcase-section, .site-footer-art, footer"));
+      if (!overlapTargets.length) {
+        setContentOverlapZone(false);
+        return;
+      }
 
-    const observer = new IntersectionObserver(
-      ([entry]) => setFooterInView(entry.isIntersecting),
-      { threshold: 0.08 }
-    );
+      const shouldHide = overlapTargets.some((target) => {
+        const rect = target.getBoundingClientRect();
+        const earlyHideBuffer = target.classList.contains("site-footer-art") || target.tagName.toLowerCase() === "footer" ? 260 : 80;
+        return rect.top < window.innerHeight + earlyHideBuffer && rect.bottom > 120;
+      });
 
-    observer.observe(footer);
-    return () => observer.disconnect();
+      setContentOverlapZone(shouldHide);
+    };
+
+    updateFooterState();
+    window.addEventListener("scroll", updateFooterState, { passive: true });
+    window.addEventListener("resize", updateFooterState);
+    return () => {
+      window.removeEventListener("scroll", updateFooterState);
+      window.removeEventListener("resize", updateFooterState);
+    };
   }, []);
 
   const dismissPrompt = () => {
@@ -81,7 +92,7 @@ const DesktopFloatingCta = () => {
     setShowPrompt(false);
   };
 
-  if (menuOpen || footerInView) {
+  if (menuOpen || contentOverlapZone) {
     return null;
   }
 

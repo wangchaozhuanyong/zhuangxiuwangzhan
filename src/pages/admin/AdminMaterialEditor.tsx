@@ -1,5 +1,6 @@
 import { FormEvent, useCallback, useEffect, useMemo, useState } from "react";
 import { useAdminFormState } from "@/hooks/useAdminFormState";
+import { useUnsavedChangesWarning } from "@/hooks/useUnsavedChangesWarning";
 import { useQueryClient } from "@tanstack/react-query";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -15,9 +16,12 @@ import ImageField from "@/components/admin/ImageField";
 import { invalidateAdminContentDetail, invalidateAfterAdminContentSave } from "@/lib/adminInvalidate";
 import { useAdminMaterialDetail } from "@/lib/adminQueries";
 import { publishStatusOptions } from "@/lib/adminLocale";
+import { formatAdminMutationError, saveAdminRecord } from "@/lib/adminMutation";
 
 type MaterialRecord = {
   id?: string;
+  created_at?: string | null;
+  updated_at?: string | null;
   slug: string;
   status: "draft" | "published" | "archived";
   sort_order: number;
@@ -134,10 +138,11 @@ export default function AdminMaterialEditor() {
     };
   }, [isNew, loaded]);
 
-  const { state: record, setForm: setRecord, applyRemote } = useAdminFormState<MaterialRecord>(loadedRecord, {
+  const { state: record, setForm: setRecord, applyRemote, dirty } = useAdminFormState<MaterialRecord>(loadedRecord, {
     resetKey: id ?? "new",
     initial: empty,
   });
+  useUnsavedChangesWarning(dirty && !saveBusy);
 
   useEffect(() => {
     if (!isError || !loadError) return;
@@ -206,25 +211,28 @@ export default function AdminMaterialEditor() {
       note_zh: record.note_zh || "",
       note_en: record.note_en || "",
     };
-    delete payload.id;
-    delete payload.created_at;
-    delete payload.updated_at;
 
-    const request = record.id
-      ? supabase!.from("materials").update(payload).eq("id", record.id).select("id").single()
-      : supabase!.from("materials").insert(payload).select("id").single();
-
-    const { data, error } = await request;
-    setSaveBusy(false);
-    if (error) {
-      toast({ title: "保存失败", description: error.message, variant: "destructive" });
+    let saved: any;
+    try {
+      saved = await saveAdminRecord({
+        table: "materials",
+        payload,
+        id: record.id,
+        expectedUpdatedAt: record.updated_at || null,
+        action: nextStatus === "published" ? "publish" : record.id ? "update" : "insert",
+        queryClient,
+      });
+    } catch (error) {
+      toast({ title: "\u4fdd\u5b58\u5931\u8d25", description: formatAdminMutationError(error), variant: "destructive" });
+      setSaveBusy(false);
       return;
     }
 
-    const savedId = (data as any)?.id;
-    applyRemote({ ...record, id: savedId, slug, status: payload.status });
+    const savedId = saved?.id;
+    applyRemote({ ...record, ...saved, id: savedId, slug, status: payload.status });
     toast({ title: "已保存" });
-    void invalidateAfterAdminContentSave(queryClient);
+    await invalidateAfterAdminContentSave(queryClient);
+    setSaveBusy(false);
 
     if (isNew) navigate(`/admin/materials/${savedId}`, { replace: true });
 

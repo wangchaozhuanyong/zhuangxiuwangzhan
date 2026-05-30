@@ -50,7 +50,7 @@ const copy = {
     ctaTitle: "对某种材料感兴趣？",
     ctaText: "欢迎联系我们索取样板、确认库存，或获取项目报价。",
     quote: "索取报价",
-    whatsapp: "WhatsApp 咨询",
+    whatsapp: "WhatsApp 联系",
   },
 };
 

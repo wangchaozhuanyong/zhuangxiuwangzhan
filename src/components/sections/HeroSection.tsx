@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { ArrowRight } from "lucide-react";
 import Link from "@/components/LocalizedLink";
 import WhatsAppIcon from "@/components/WhatsAppIcon";
@@ -16,7 +16,7 @@ const heroCopy = {
   },
   zh: {
     quote: "获取免费报价",
-    whatsapp: "WhatsApp 咨询",
+    whatsapp: "WhatsApp 联系",
     videoAlt: "FLASH CAST 装修项目视频，展示室内空间、材料质感、施工管理与完工交付",
   },
 };
@@ -31,6 +31,7 @@ const HeroSection = ({ pageContent }: HeroSectionProps) => {
   const { language } = useLanguage();
   const settings = useSiteSettings();
   const copy = heroCopy[language];
+  const videoRef = useRef<HTMLVideoElement | null>(null);
   const [videoLoaded, setVideoLoaded] = useState(false);
   const { data: slides } = usePublishedHeroSlides(language);
   const slide = slides?.[0] ?? null;
@@ -39,10 +40,41 @@ const HeroSection = ({ pageContent }: HeroSectionProps) => {
   const primaryUrl = slide?.buttonUrl || "/quote";
   const primaryIsExternal = isExternalUrl(primaryUrl);
   const heroTitle = slide?.title || pageContent?.title || "FLASH CAST";
+  const heroDescription = slide?.excerpt || pageContent?.description || "";
   const heroButtonClass =
     "home-hero-action group relative inline-flex h-11 w-full max-w-[260px] items-center justify-center gap-2 overflow-hidden rounded-full border px-5 text-sm font-semibold leading-none shadow-[0_18px_50px_-28px_rgba(0,0,0,0.85)] backdrop-blur-md transition duration-300 ease-out hover:-translate-y-0.5 active:translate-y-0 sm:w-auto sm:min-w-[148px] sm:max-w-[210px]";
   const primaryButtonClass = `${heroButtonClass} home-hero-action-primary border-white/70 bg-white/[0.92] text-[#17130e] hover:bg-white`;
   const secondaryButtonClass = `${heroButtonClass} home-hero-action-secondary border-white/35 bg-black/[0.18] text-white hover:border-white/50 hover:bg-black/[0.28]`;
+  const requestHeroVideoPlay = useCallback(() => {
+    const video = videoRef.current;
+    if (!video || document.visibilityState === "hidden") return;
+
+    video.muted = true;
+    video.playsInline = true;
+    const playPromise = video.play();
+    if (playPromise && typeof playPromise.catch === "function") {
+      playPromise.catch(() => {
+        setVideoLoaded(false);
+      });
+    }
+  }, []);
+
+  useEffect(() => {
+    const replayWhenVisible = () => {
+      if (document.visibilityState === "visible") requestHeroVideoPlay();
+    };
+
+    requestHeroVideoPlay();
+    document.addEventListener("visibilitychange", replayWhenVisible);
+    window.addEventListener("focus", requestHeroVideoPlay);
+    window.addEventListener("pageshow", requestHeroVideoPlay);
+
+    return () => {
+      document.removeEventListener("visibilitychange", replayWhenVisible);
+      window.removeEventListener("focus", requestHeroVideoPlay);
+      window.removeEventListener("pageshow", requestHeroVideoPlay);
+    };
+  }, [requestHeroVideoPlay]);
 
   return (
     <section
@@ -58,6 +90,7 @@ const HeroSection = ({ pageContent }: HeroSectionProps) => {
           fetchPriority="high"
         />
         <video
+          ref={videoRef}
           className={`home-hero-media absolute inset-0 h-full w-full object-cover transition-opacity duration-700 ease-out ${
             videoLoaded ? "opacity-100" : "opacity-0"
           }`}
@@ -66,12 +99,21 @@ const HeroSection = ({ pageContent }: HeroSectionProps) => {
           muted
           loop
           playsInline
-          preload="metadata"
+          preload="auto"
           aria-label={copy.videoAlt}
-          onLoadedData={() => setVideoLoaded(true)}
-          onCanPlay={() => setVideoLoaded(true)}
+          onLoadedData={() => {
+            setVideoLoaded(true);
+            requestHeroVideoPlay();
+          }}
+          onCanPlay={() => {
+            setVideoLoaded(true);
+            requestHeroVideoPlay();
+          }}
           onError={() => setVideoLoaded(false)}
           onStalled={() => setVideoLoaded(false)}
+          onPause={() => {
+            if (document.visibilityState === "visible") window.setTimeout(requestHeroVideoPlay, 150);
+          }}
         >
           <source src="/videos/home-hero-mobile.webm?v=20260529-luxury" type="video/webm" media="(max-width: 767px)" />
           <source src="/videos/home-hero-mobile.mp4?v=20260529-luxury" type="video/mp4" media="(max-width: 767px)" />
@@ -82,32 +124,39 @@ const HeroSection = ({ pageContent }: HeroSectionProps) => {
       </div>
 
       <div className="relative z-10 flex min-h-[100svh] items-center justify-center px-4 py-24">
-        <div className="home-hero-actions flex w-full max-w-[500px] flex-col items-center justify-center gap-3 sm:w-auto sm:max-w-none sm:flex-row">
-          <h1 id="home-hero-title" className="sr-only">
+        <div className="home-hero-content flex w-full max-w-4xl flex-col items-center text-center">
+          <h1 id="home-hero-title" className="heading-safe max-w-3xl text-3xl font-bold leading-tight text-on-media md:text-5xl lg:text-6xl">
             {heroTitle}
           </h1>
-
-          {primaryIsExternal ? (
-            <a href={primaryUrl} target="_blank" rel="noopener noreferrer" className={primaryButtonClass}>
-              <span className="min-w-0 truncate">{primaryLabel}</span>
-              <ArrowRight className="h-4 w-4 shrink-0 transition-transform duration-300 group-hover:translate-x-0.5" />
-            </a>
-          ) : (
-            <Link to={primaryUrl} className={primaryButtonClass}>
-              <span className="min-w-0 truncate">{primaryLabel}</span>
-              <ArrowRight className="h-4 w-4 shrink-0 transition-transform duration-300 group-hover:translate-x-0.5" />
-            </Link>
+          {heroDescription && (
+            <p className="prose-safe mt-4 max-w-2xl text-sm leading-relaxed text-on-media-muted md:text-lg">
+              {heroDescription}
+            </p>
           )}
 
-          <a
-            href={settings.whatsapp_url("Homepage hero")}
-            target="_blank"
-            rel="noopener noreferrer"
-            className={secondaryButtonClass}
-          >
-            <WhatsAppIcon className="h-[17px] w-[17px] shrink-0 text-whatsapp" />
-            <span className="min-w-0 truncate">{copy.whatsapp}</span>
-          </a>
+          <div className="home-hero-actions mt-7 flex w-full max-w-[500px] flex-col items-center justify-center gap-3 sm:w-auto sm:max-w-none sm:flex-row">
+            {primaryIsExternal ? (
+              <a href={primaryUrl} target="_blank" rel="noopener noreferrer" className={primaryButtonClass}>
+                <span className="min-w-0 truncate">{primaryLabel}</span>
+                <ArrowRight className="h-4 w-4 shrink-0 transition-transform duration-300 group-hover:translate-x-0.5" />
+              </a>
+            ) : (
+              <Link to={primaryUrl} className={primaryButtonClass}>
+                <span className="min-w-0 truncate">{primaryLabel}</span>
+                <ArrowRight className="h-4 w-4 shrink-0 transition-transform duration-300 group-hover:translate-x-0.5" />
+              </Link>
+            )}
+
+            <a
+              href={settings.whatsapp_url("Homepage hero")}
+              target="_blank"
+              rel="noopener noreferrer"
+              className={secondaryButtonClass}
+            >
+              <WhatsAppIcon className="h-[17px] w-[17px] shrink-0 text-whatsapp" />
+              <span className="min-w-0 truncate">{copy.whatsapp}</span>
+            </a>
+          </div>
         </div>
       </div>
     </section>

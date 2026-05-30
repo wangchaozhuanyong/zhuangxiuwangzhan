@@ -240,30 +240,76 @@ export const getPublishedSitePage = async (
   pageKey: string,
 ): Promise<PublishedSitePage | null> => {
   if (!isSupabaseConfigured) return null;
-  const { data, error } = await supabase!
+  const legacyResponse = await supabase!
     .from("site_pages")
     .select("*")
     .eq("status", "published")
     .eq("page_key", pageKey)
     .limit(1);
-  if (error) return null;
-  const row: any = (data || [])[0];
-  if (!row) return null;
+  const row: any = legacyResponse.error ? null : (legacyResponse.data || [])[0];
+  const legacy: PublishedSitePage | null = row
+    ? {
+        id: row.id,
+        page_key: row.page_key,
+        path: row.path || "",
+        title: language === "zh" ? row.title_zh || row.title_en || "" : row.title_en || row.title_zh || "",
+        subtitle: language === "zh" ? row.subtitle_zh || row.subtitle_en || "" : row.subtitle_en || row.subtitle_zh || "",
+        description: language === "zh" ? row.description_zh || row.description_en || "" : row.description_en || row.description_zh || "",
+        content: language === "zh" ? row.content_zh || row.content_en || "" : row.content_en || row.content_zh || "",
+        cta_title: language === "zh" ? row.cta_title_zh || row.cta_title_en || "" : row.cta_title_en || row.cta_title_zh || "",
+        cta_description: language === "zh" ? row.cta_description_zh || row.cta_description_en || "" : row.cta_description_en || row.cta_description_zh || "",
+        image_url: row.image_url || null,
+        alt: language === "zh" ? row.alt_zh || row.alt_en || "" : row.alt_en || row.alt_zh || "",
+        seo_title: language === "zh" ? row.seo_title_zh || row.seo_title_en || "" : row.seo_title_en || row.seo_title_zh || "",
+        seo_description: language === "zh" ? row.seo_description_zh || row.seo_description_en || "" : row.seo_description_en || row.seo_description_zh || "",
+        seo_keywords: language === "zh" ? row.seo_keywords_zh || row.seo_keywords_en || "" : row.seo_keywords_en || row.seo_keywords_zh || "",
+        items: (language === "zh" ? row.items_zh || row.items_en : row.items_en || row.items_zh) || [],
+      }
+    : null;
+
+  const cmsResponse = await supabase!
+    .from("cms_pages")
+    .select("*, cms_sections(*)")
+    .eq("status", "published")
+    .is("deleted_at", null)
+    .eq("page_key", pageKey)
+    .limit(1);
+
+  if (cmsResponse.error) return legacy;
+  const cmsRow: any = (cmsResponse.data || [])[0];
+  if (!cmsRow) return legacy;
+
+  const sections = ((cmsRow.cms_sections || []) as any[])
+    .filter((section) => section.status === "published" && !section.deleted_at)
+    .sort((a, b) => (a.sort_order || 0) - (b.sort_order || 0));
+  const pickContent = (section: any) => (language === "zh" ? section?.content_zh || section?.content_en : section?.content_en || section?.content_zh) || {};
+  const hero = sections.find((section) => String(section.section_type || "").toLowerCase() === "hero" || section.section_key === "hero");
+  const richText = sections.find((section) => String(section.section_type || "").toLowerCase() === "rich_text");
+  const cta = sections.find((section) => String(section.section_type || "").toLowerCase() === "cta" || String(section.section_key || "").includes("cta"));
+  const heroContent = pickContent(hero);
+  const richContent = pickContent(richText);
+  const ctaContent = pickContent(cta);
+  const heroSettings = hero?.settings || {};
+  const ctaSettings = cta?.settings || {};
+
   return {
-    id: row.id,
-    page_key: row.page_key,
-    path: row.path || "",
-    title: language === "zh" ? row.title_zh || row.title_en || "" : row.title_en || row.title_zh || "",
-    subtitle: language === "zh" ? row.subtitle_zh || row.subtitle_en || "" : row.subtitle_en || row.subtitle_zh || "",
-    description: language === "zh" ? row.description_zh || row.description_en || "" : row.description_en || row.description_zh || "",
-    content: language === "zh" ? row.content_zh || row.content_en || "" : row.content_en || row.content_zh || "",
-    cta_title: language === "zh" ? row.cta_title_zh || row.cta_title_en || "" : row.cta_title_en || row.cta_title_zh || "",
-    cta_description: language === "zh" ? row.cta_description_zh || row.cta_description_en || "" : row.cta_description_en || row.cta_description_zh || "",
-    image_url: row.image_url || null,
-    alt: language === "zh" ? row.alt_zh || row.alt_en || "" : row.alt_en || row.alt_zh || "",
-    seo_title: language === "zh" ? row.seo_title_zh || row.seo_title_en || "" : row.seo_title_en || row.seo_title_zh || "",
-    seo_description: language === "zh" ? row.seo_description_zh || row.seo_description_en || "" : row.seo_description_en || row.seo_description_zh || "",
-    seo_keywords: language === "zh" ? row.seo_keywords_zh || row.seo_keywords_en || "" : row.seo_keywords_en || row.seo_keywords_zh || "",
-    items: (language === "zh" ? row.items_zh || row.items_en : row.items_en || row.items_zh) || [],
+    id: cmsRow.id,
+    page_key: cmsRow.page_key,
+    path: cmsRow.path || legacy?.path || "",
+    title: (language === "zh" ? cmsRow.title_zh || cmsRow.title_en : cmsRow.title_en || cmsRow.title_zh) || heroContent.title || legacy?.title || "",
+    subtitle: heroContent.subtitle || legacy?.subtitle || "",
+    description: heroContent.description || heroContent.excerpt || legacy?.description || "",
+    content: richContent.content || heroContent.content || legacy?.content || "",
+    cta_title: ctaContent.title || ctaSettings.title || legacy?.cta_title || "",
+    cta_description: ctaContent.description || ctaSettings.description || legacy?.cta_description || "",
+    image_url: heroContent.image_url || heroSettings.image_url || legacy?.image_url || null,
+    alt: heroContent.alt || heroSettings.alt || legacy?.alt || "",
+    seo_title: (language === "zh" ? cmsRow.seo_title_zh || cmsRow.seo_title_en : cmsRow.seo_title_en || cmsRow.seo_title_zh) || legacy?.seo_title || "",
+    seo_description:
+      (language === "zh" ? cmsRow.seo_description_zh || cmsRow.seo_description_en : cmsRow.seo_description_en || cmsRow.seo_description_zh) ||
+      legacy?.seo_description ||
+      "",
+    seo_keywords: (language === "zh" ? cmsRow.seo_keywords_zh || cmsRow.seo_keywords_en : cmsRow.seo_keywords_en || cmsRow.seo_keywords_zh) || legacy?.seo_keywords || "",
+    items: heroContent.items || richContent.items || legacy?.items || [],
   };
 };

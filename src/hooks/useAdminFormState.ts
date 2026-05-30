@@ -13,6 +13,7 @@ type Options<T> = {
 export function useAdminFormState<T>(remote: T | undefined, options: Options<T> = {}) {
   const { resetKey = "", initial } = options;
   const [state, setState] = useState<T>(() => (remote ?? initial) as T);
+  const [dirty, setDirty] = useState(false);
   const dirtyRef = useRef(false);
   const resetKeyRef = useRef(resetKey);
 
@@ -20,6 +21,7 @@ export function useAdminFormState<T>(remote: T | undefined, options: Options<T> 
     if (resetKeyRef.current !== resetKey) {
       resetKeyRef.current = resetKey;
       dirtyRef.current = false;
+      setDirty(false);
     }
   }, [resetKey]);
 
@@ -31,19 +33,22 @@ export function useAdminFormState<T>(remote: T | undefined, options: Options<T> 
 
   const setForm = useCallback((value: T | ((prev: T) => T)) => {
     dirtyRef.current = true;
+    setDirty(true);
     setState(value);
   }, []);
 
   const applyRemote = useCallback((value: T) => {
     dirtyRef.current = false;
+    setDirty(false);
     setState(value);
   }, []);
 
   const markPristine = useCallback(() => {
     dirtyRef.current = false;
+    setDirty(false);
   }, []);
 
   const isDirty = useCallback(() => dirtyRef.current, []);
 
-  return { state, setForm, applyRemote, markPristine, isDirty };
+  return { state, setForm, applyRemote, markPristine, isDirty, dirty };
 }

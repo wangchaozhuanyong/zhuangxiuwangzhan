@@ -69,18 +69,18 @@ const ProjectsSection = () => {
   const featured = useMemo(() => projects.slice(0, 6) as FeaturedProject[], [projects]);
 
   return (
-    <section className="section-padding bg-surface-dark" id="projects">
-      <div className="container-narrow">
+    <section className="section-padding projects-showcase-section" id="projects">
+      <div className="container-narrow projects-showcase-inner">
         <Reveal>
-          <div className="mb-10 text-center md:mb-14">
-            <p className="mb-3 text-[11px] font-bold uppercase tracking-[0.28em] text-gold">{copy.eyebrow}</p>
-            <h2 className="font-display mb-3 text-3xl font-bold text-surface-dark-foreground md:text-4xl">{copy.title}</h2>
-            <p className="mx-auto max-w-2xl text-sm text-surface-dark-foreground/65 md:text-base">{copy.subtitle}</p>
+          <div className="projects-showcase-header mb-10 text-center md:mb-14">
+            <p className="projects-showcase-eyebrow">{copy.eyebrow}</p>
+            <h2 className="projects-showcase-title font-display">{copy.title}</h2>
+            <p className="projects-showcase-subtitle">{copy.subtitle}</p>
           </div>
         </Reveal>
 
         {featured.length ? (
-          <div className="card-grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="projects-showcase-grid card-grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
             {featured.map((project, index) => {
               const typeKey = normalizeTypeKey(project.type || "renovation");
               const label = typeLabels[language][typeKey as keyof (typeof typeLabels)[typeof language]] || project.type || typeLabels[language].renovation;
@@ -92,32 +92,33 @@ const ProjectsSection = () => {
                 <Reveal key={project.slug} delay={index * 80}>
                   <Link
                     to={`/projects/${project.slug}`}
-                    className="card-equal group block overflow-hidden rounded-card-lg border border-white/10 bg-white/[0.04] shadow-luxury transition hover:-translate-y-1 hover:border-gold/40 hover:bg-white/[0.06]"
+                    className="projects-showcase-card card-equal group block overflow-hidden rounded-card-lg"
                   >
-                    <div className="relative aspect-[4/3] overflow-hidden bg-white/5 img-zoom">
+                    <div className="projects-showcase-media relative aspect-[4/3] overflow-hidden img-zoom">
                       {project.thumbnail ? (
                         <SmartImage
                           src={project.thumbnail}
                           alt={project.thumbnailAlt || `${title} - ${location}`}
                           width={800}
                           height={600}
+                          loading={index < 3 ? "eager" : "lazy"}
                           sizes="(max-width: 640px) 92vw, (max-width: 1024px) 45vw, 30vw"
                           className="h-full w-full object-cover"
                         />
                       ) : (
-                        <div className="flex h-full items-center justify-center px-6 text-center text-sm text-surface-dark-foreground/55">FLASH CAST</div>
+                        <div className="projects-showcase-placeholder flex h-full items-center justify-center px-6 text-center text-sm">FLASH CAST</div>
                       )}
-                      <span className="absolute left-3 top-3 rounded-sm border border-white/20 bg-surface-dark/70 px-2.5 py-1 text-[10px] font-bold uppercase tracking-widest text-surface-dark-foreground backdrop-blur-sm">
+                      <span className="projects-showcase-chip absolute left-3 top-3">
                         {label}
                       </span>
                     </div>
-                    <div className="card-equal-body p-5">
-                      <h3 className="mb-2 font-display text-base font-semibold text-surface-dark-foreground transition-colors group-hover:text-gold">{title}</h3>
-                      <p className="mb-3 flex items-center gap-1.5 text-xs text-surface-dark-foreground/55">
-                        <MapPin className="h-3.5 w-3.5 text-gold" />
+                    <div className="projects-showcase-body card-equal-body p-5">
+                      <h3 className="projects-showcase-card-title mb-2 font-display text-base font-semibold transition-colors">{title}</h3>
+                      <p className="projects-showcase-location mb-3 flex items-center gap-1.5 text-xs">
+                        <MapPin className="h-3.5 w-3.5" />
                         {location}
                       </p>
-                      <p className="line-clamp-2 text-xs leading-relaxed text-surface-dark-foreground/62">{description}</p>
+                      <p className="projects-showcase-description line-clamp-2 text-xs leading-relaxed">{description}</p>
                     </div>
                   </Link>
                 </Reveal>
@@ -125,12 +126,12 @@ const ProjectsSection = () => {
             })}
           </div>
         ) : (
-          <div className="rounded-card-lg border border-white/10 bg-white/[0.04] p-8 text-center text-sm text-surface-dark-foreground/65">{copy.empty}</div>
+          <div className="projects-showcase-empty rounded-card-lg p-8 text-center text-sm">{copy.empty}</div>
         )}
 
         <Reveal delay={500}>
           <div className="mt-10 text-center">
-            <Button variant="outline" className="btn-press border-white/25 bg-white/5 text-surface-dark-foreground hover:bg-white/12 hover:text-surface-dark-foreground" asChild>
+            <Button variant="outline" className="projects-showcase-button btn-press" asChild>
               <Link to="/projects">
                 {t("cta.viewAllProjects")} <ArrowRight className="ml-2 h-4 w-4" />
               </Link>

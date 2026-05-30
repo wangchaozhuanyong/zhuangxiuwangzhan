@@ -4,6 +4,7 @@ import { ArrowRight, ChevronDown, Mail, MapPin, Phone } from "lucide-react";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { useSiteSettings } from "@/hooks/useSiteSettings";
 import SmartImage from "@/components/SmartImage";
+import WhatsAppIcon from "@/components/WhatsAppIcon";
 import { addCacheBuster } from "@/lib/siteSettingsApi";
 import logoFallback from "@/assets/logo-flashcast.webp";
 
@@ -101,9 +102,9 @@ const footerCopy = {
 };
 
 const SectionTitle = ({ children }: { children: ReactNode }) => (
-  <div className="mb-5 flex items-center gap-3">
-    <span className="h-1.5 w-1.5 rounded-full bg-gold shadow-[0_0_0_5px_hsl(var(--gold)/0.12)]" aria-hidden />
-    <h4 className="text-[12px] font-semibold uppercase tracking-[0.2em] text-white/80">{children}</h4>
+  <div className="footer-column-title">
+    <span aria-hidden />
+    <h4>{children}</h4>
   </div>
 );
 
@@ -122,7 +123,7 @@ const normalizeFooterServiceLinks = (links: { name: string; slug: string }[], la
 
 const FooterLink = ({ to, children }: { to: string; children: ReactNode }) => (
   <li>
-    <Link to={to} className="text-[13px] leading-relaxed text-white/60 transition-colors duration-200 hover:text-gold">
+    <Link to={to} className="footer-link">
       {children}
     </Link>
   </li>
@@ -139,12 +140,12 @@ const MobileAccordion = ({
   isOpen: boolean;
   onToggle: () => void;
 }) => (
-  <div className="border-b border-white/[0.08]">
-    <button type="button" onClick={onToggle} className="flex min-h-12 w-full items-center justify-between py-4">
-      <span className="text-[13px] font-semibold uppercase tracking-[0.18em] text-white/80">{title}</span>
-      <ChevronDown className={`h-4 w-4 text-gold/75 transition-transform duration-300 ${isOpen ? "rotate-180" : ""}`} />
+  <div className={`footer-mobile-panel ${isOpen ? "is-open" : ""}`}>
+    <button type="button" onClick={onToggle} aria-expanded={isOpen}>
+      <span>{title}</span>
+      <ChevronDown className={`h-4 w-4 transition-transform duration-300 ${isOpen ? "rotate-180" : ""}`} />
     </button>
-    <div className={`overflow-hidden transition-all duration-300 ${isOpen ? "max-h-96 pb-5" : "max-h-0"}`}>{children}</div>
+    <div className={`footer-mobile-panel-body ${isOpen ? "max-h-96 pb-5" : "max-h-0"}`}>{children}</div>
   </div>
 );
 
@@ -165,155 +166,187 @@ const Footer = () => {
   ];
 
   return (
-    <footer>
+    <footer className="site-footer-art">
       <div className="footer-cta-bar hidden md:block">
-        <div className="site-container relative z-10 flex flex-col items-center gap-6 py-10 text-center md:flex-row md:justify-between md:py-14 md:text-left">
-          <div className="min-w-0">
-            <h3 className="heading-safe font-display text-2xl font-bold text-surface-dark-foreground md:text-3xl">{t.ctaTitle}</h3>
-            <p className="mt-2 text-sm text-surface-dark-foreground/75 md:text-base">{t.ctaText}</p>
+        <div className="site-container relative z-10 py-12">
+          <div className="footer-cta-shell">
+            <div className="min-w-0">
+              <p className="footer-cta-kicker">{settings.company_name}</p>
+              <h3 className="heading-safe font-display text-2xl font-bold text-surface-dark-foreground md:text-4xl">{t.ctaTitle}</h3>
+              <p className="mt-3 max-w-2xl text-sm leading-relaxed text-surface-dark-foreground/72 md:text-base">{t.ctaText}</p>
+            </div>
+            <div className="footer-cta-actions">
+              <Link to="/quote" className="footer-cta-primary">
+                {t.ctaButton} <ArrowRight className="h-4 w-4" />
+              </Link>
+              <a
+                href={settings.whatsapp_url("Footer CTA")}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="footer-cta-secondary"
+              >
+                <WhatsAppIcon className="h-[18px] w-[18px] text-whatsapp" />
+                WhatsApp
+              </a>
+            </div>
           </div>
-          <Link to="/quote" className="btn-on-dark-primary btn-press w-full shrink-0 md:w-auto">
-            {t.ctaButton} <ArrowRight className="h-4 w-4" />
-          </Link>
         </div>
       </div>
 
       <div className="footer-surface">
-        <div className="footer-content site-container py-12 md:py-20">
-          <div className="hidden grid-cols-12 gap-10 lg:grid">
-            <div className="col-span-4 pr-4">
-              <div className="mb-6 inline-flex h-12 w-48 items-center overflow-hidden">
-                <SmartImage
-                  src={logoSrc}
-                  alt=""
-                  className="h-full w-full object-contain object-left brightness-0 invert opacity-80"
-                  width={190}
-                  height={48}
-                  onError={() => setLogoFailed(true)}
-                />
-                <span className="sr-only">{settings.company_name}</span>
+        <div className="footer-content site-container py-10 md:py-16 lg:py-20">
+          <div className="footer-workbench hidden lg:grid">
+            <div className="footer-brand-panel">
+              <div className="footer-logo-row">
+                <span className="footer-logo-rule" aria-hidden />
+                <div className="footer-logo-card">
+                  <SmartImage
+                    src={logoSrc}
+                    alt=""
+                    className="h-full w-full object-contain object-left brightness-0 invert opacity-90"
+                    width={190}
+                    height={48}
+                    onError={() => setLogoFailed(true)}
+                  />
+                  <span className="sr-only">{settings.company_name}</span>
+                </div>
               </div>
-              <p className="mb-3 max-w-[360px] text-sm leading-relaxed text-white/70">{t.brandText}</p>
-              <p className="mb-8 max-w-[360px] text-xs text-white/50">{t.trustLine}</p>
+              <p className="footer-brand-copy">{t.brandText}</p>
+              <p className="footer-trust-line">{t.trustLine}</p>
 
-              <div className="mb-5 flex flex-col gap-4 text-sm text-white/60">
+              <div className="footer-contact-list">
                 {contactItems.map((item) => (
-                  <span key={item.text} className={`group flex gap-3 ${item.start ? "items-start" : "items-center"}`}>
-                    <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-white/[0.09] bg-white/[0.05] transition-colors group-hover:border-gold/30">
-                      <item.icon className="h-3.5 w-3.5 text-gold" />
+                  <span key={item.text} className="footer-contact-item">
+                    <span>
+                      <item.icon className="h-3.5 w-3.5" />
                     </span>
-                    <span className="pt-1.5 leading-relaxed">{item.text}</span>
+                    <span>{item.text}</span>
                   </span>
                 ))}
               </div>
 
-              <p className="text-[11px] uppercase tracking-[0.12em] text-white/40">{t.hours}</p>
+              <p className="footer-hours">{t.hours}</p>
             </div>
 
-            <div className="col-span-2">
-              <SectionTitle>{t.servicesTitle}</SectionTitle>
-              <ul className="space-y-3">
-                {serviceLinks.map((item) => (
-                  <FooterLink key={item.slug} to={`/services/${item.slug}`}>
-                    {item.name}
-                  </FooterLink>
-                ))}
-              </ul>
-            </div>
-
-            <div className="col-span-2">
-              <SectionTitle>{t.companyTitle}</SectionTitle>
-              <ul className="space-y-3">
-                {t.companyLinks.map((item) => (
-                  <FooterLink key={item.path} to={item.path}>
-                    {item.name}
-                  </FooterLink>
-                ))}
-              </ul>
-            </div>
-
-            <div className="col-span-4">
-              <SectionTitle>{t.areasTitle}</SectionTitle>
-              <div className="flex flex-wrap gap-2">
-                {areas.map((area) => (
-                  <Link
-                    key={area.slug}
-                    to={`/locations/${area.slug}`}
-                    className="rounded-full border border-white/[0.09] bg-white/[0.05] px-3 py-1.5 text-xs text-white/70 transition-colors hover:border-gold/30 hover:text-gold"
-                  >
-                    {area.name}
-                  </Link>
-                ))}
+            <nav className="footer-link-board" aria-label="Footer navigation">
+              <div className="footer-link-column">
+                <SectionTitle>{t.servicesTitle}</SectionTitle>
+                <ul>
+                  {serviceLinks.map((item) => (
+                    <FooterLink key={item.slug} to={`/services/${item.slug}`}>
+                      {item.name}
+                    </FooterLink>
+                  ))}
+                </ul>
               </div>
-            </div>
+
+              <div className="footer-link-column">
+                <SectionTitle>{t.companyTitle}</SectionTitle>
+                <ul>
+                  {t.companyLinks.map((item) => (
+                    <FooterLink key={item.path} to={item.path}>
+                      {item.name}
+                    </FooterLink>
+                  ))}
+                </ul>
+              </div>
+
+              <div className="footer-link-column">
+                <SectionTitle>{t.areasTitle}</SectionTitle>
+                <div className="footer-area-chips">
+                  {areas.map((area) => (
+                    <Link key={area.slug} to={`/locations/${area.slug}`}>
+                      {area.name}
+                    </Link>
+                  ))}
+                </div>
+              </div>
+            </nav>
           </div>
 
-          <div className="flex flex-col gap-2 lg:hidden">
-            <div className="mb-2 border-b border-white/[0.08] pb-5">
-              <div className="mb-4 inline-flex h-11 w-[10.5rem] items-center overflow-hidden">
-                <SmartImage
-                  src={logoSrc}
-                  alt=""
-                  className="h-full w-full object-contain object-left brightness-0 invert opacity-80"
-                  width={170}
-                  height={44}
-                  onError={() => setLogoFailed(true)}
-                />
-                <span className="sr-only">{settings.company_name}</span>
+          <div className="footer-mobile-stack lg:hidden">
+            <section className="footer-brand-panel footer-brand-panel-mobile">
+              <div className="footer-logo-row">
+                <span className="footer-logo-rule" aria-hidden />
+                <div className="footer-logo-card">
+                  <SmartImage
+                    src={logoSrc}
+                    alt=""
+                    className="h-full w-full object-contain object-left brightness-0 invert opacity-90"
+                    width={170}
+                    height={44}
+                    onError={() => setLogoFailed(true)}
+                  />
+                  <span className="sr-only">{settings.company_name}</span>
+                </div>
               </div>
-              <p className="mb-4 text-sm leading-relaxed text-white/70">{t.brandText}</p>
-              <div className="space-y-3 text-sm text-white/70">
+              <p className="footer-brand-copy">{t.brandText}</p>
+              <p className="footer-trust-line">{t.trustLine}</p>
+              <div className="footer-contact-list">
                 {contactItems.map((item) => (
-                  <span key={item.text} className={`flex gap-3 ${item.start ? "items-start" : "items-center"}`}>
-                    <item.icon className="mt-0.5 h-4 w-4 shrink-0 text-gold" />
-                    <span className="leading-relaxed">{item.text}</span>
+                  <span key={item.text} className="footer-contact-item">
+                    <span>
+                      <item.icon className="h-3.5 w-3.5" />
+                    </span>
+                    <span>{item.text}</span>
                   </span>
                 ))}
               </div>
+              <p className="footer-hours">{t.hours}</p>
+            </section>
+
+            <div className="footer-mobile-nav">
+              <MobileAccordion
+                title={t.servicesTitle}
+                isOpen={openSection === "services"}
+                onToggle={() => setOpenSection(openSection === "services" ? null : "services")}
+              >
+                <ul className="footer-mobile-link-list">
+                  {serviceLinks.map((item) => (
+                    <FooterLink key={item.slug} to={`/services/${item.slug}`}>
+                      {item.name}
+                    </FooterLink>
+                  ))}
+                </ul>
+              </MobileAccordion>
+
+              <MobileAccordion
+                title={t.companyTitle}
+                isOpen={openSection === "company"}
+                onToggle={() => setOpenSection(openSection === "company" ? null : "company")}
+              >
+                <ul className="footer-mobile-link-list">
+                  {t.companyLinks.map((item) => (
+                    <FooterLink key={item.path} to={item.path}>
+                      {item.name}
+                    </FooterLink>
+                  ))}
+                </ul>
+              </MobileAccordion>
+
+              <MobileAccordion
+                title={t.areasTitle}
+                isOpen={openSection === "areas"}
+                onToggle={() => setOpenSection(openSection === "areas" ? null : "areas")}
+              >
+                <div className="footer-area-chips">
+                  {areas.map((area) => (
+                    <Link key={area.slug} to={`/locations/${area.slug}`}>
+                      {area.name}
+                    </Link>
+                  ))}
+                </div>
+              </MobileAccordion>
             </div>
-
-            <MobileAccordion title={t.servicesTitle} isOpen={openSection === "services"} onToggle={() => setOpenSection(openSection === "services" ? null : "services")}>
-              <ul className="space-y-3">
-                {serviceLinks.map((item) => (
-                  <FooterLink key={item.slug} to={`/services/${item.slug}`}>
-                    {item.name}
-                  </FooterLink>
-                ))}
-              </ul>
-            </MobileAccordion>
-
-            <MobileAccordion title={t.companyTitle} isOpen={openSection === "company"} onToggle={() => setOpenSection(openSection === "company" ? null : "company")}>
-              <ul className="space-y-3">
-                {t.companyLinks.map((item) => (
-                  <FooterLink key={item.path} to={item.path}>
-                    {item.name}
-                  </FooterLink>
-                ))}
-              </ul>
-            </MobileAccordion>
-
-            <MobileAccordion title={t.areasTitle} isOpen={openSection === "areas"} onToggle={() => setOpenSection(openSection === "areas" ? null : "areas")}>
-              <div className="flex flex-wrap gap-2">
-                {areas.map((area) => (
-                  <Link
-                    key={area.slug}
-                    to={`/locations/${area.slug}`}
-                    className="rounded-full border border-white/[0.09] bg-white/[0.05] px-3 py-1.5 text-xs text-white/70 transition-colors hover:border-gold/30 hover:text-gold"
-                  >
-                    {area.name}
-                  </Link>
-                ))}
-              </div>
-            </MobileAccordion>
           </div>
 
-          <div className="mt-10 flex flex-col items-start justify-between gap-4 border-t border-white/[0.1] pt-6 text-xs text-white/40 sm:flex-row sm:items-center">
+          <div className="footer-legal">
             <p>© {new Date().getFullYear()} {settings.company_name} {t.rights}</p>
-            <div className="flex items-center gap-4">
-              <Link to="/privacy" className="transition-colors hover:text-white">
+            <div>
+              <Link to="/privacy">
                 {t.privacy}
               </Link>
-              <Link to="/terms" className="transition-colors hover:text-white">
+              <Link to="/terms">
                 {t.terms}
               </Link>
             </div>
