@@ -1,6 +1,5 @@
 import { useMemo } from "react";
 import Link from "@/components/LocalizedLink";
-import { Button } from "@/components/ui/button";
 import { ArrowRight, MapPin } from "lucide-react";
 import Reveal from "@/components/Reveal";
 import SmartImage from "@/components/SmartImage";
@@ -131,11 +130,10 @@ const ProjectsSection = () => {
 
         <Reveal delay={500}>
           <div className="mt-10 text-center">
-            <Button variant="outline" className="projects-showcase-button btn-press" asChild>
-              <Link to="/projects">
-                {t("cta.viewAllProjects")} <ArrowRight className="ml-2 h-4 w-4" />
-              </Link>
-            </Button>
+            <Link to="/projects" className="projects-showcase-button btn-press">
+              <span>{t("cta.viewAllProjects")}</span>
+              <ArrowRight className="h-4 w-4" />
+            </Link>
           </div>
         </Reveal>
       </div>

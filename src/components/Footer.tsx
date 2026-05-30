@@ -1,4 +1,5 @@
 import { ReactNode, useEffect, useState } from "react";
+import { useLocation } from "react-router-dom";
 import Link from "@/components/LocalizedLink";
 import { ArrowRight, ChevronDown, Mail, MapPin, Phone } from "lucide-react";
 import { useLanguage } from "@/i18n/LanguageContext";
@@ -6,6 +7,7 @@ import { useSiteSettings } from "@/hooks/useSiteSettings";
 import SmartImage from "@/components/SmartImage";
 import WhatsAppIcon from "@/components/WhatsAppIcon";
 import { addCacheBuster } from "@/lib/siteSettingsApi";
+import { stripLanguagePrefix } from "@/i18n/routes";
 import logoFallback from "@/assets/logo-flashcast.webp";
 
 const locationLinks = [
@@ -151,6 +153,7 @@ const MobileAccordion = ({
 
 const Footer = () => {
   const { language } = useLanguage();
+  const location = useLocation();
   const settings = useSiteSettings();
   const t = footerCopy[language];
   const [openSection, setOpenSection] = useState<string | null>(null);
@@ -158,6 +161,7 @@ const Footer = () => {
   const areas = language === "zh" ? locationLinksZh : locationLinks;
   const serviceLinks = normalizeFooterServiceLinks(t.serviceLinks, language);
   const logoSrc = !logoFailed && settings.logo_url ? addCacheBuster(settings.logo_url, settings.updated_at) : logoFallback;
+  const showFooterCta = stripLanguagePrefix(location.pathname) !== "/";
 
   useEffect(() => {
     setLogoFailed(false);
@@ -171,7 +175,7 @@ const Footer = () => {
 
   return (
     <footer className="site-footer-art">
-      <div className="footer-cta-bar hidden md:block">
+      {showFooterCta && <div className="footer-cta-bar hidden md:block">
         <div className="site-container relative z-10 py-12">
           <div className="footer-cta-shell">
             <div className="min-w-0">
@@ -195,7 +199,7 @@ const Footer = () => {
             </div>
           </div>
         </div>
-      </div>
+      </div>}
 
       <div className="footer-surface">
         <div className="footer-content site-container py-10 md:py-16 lg:py-20">

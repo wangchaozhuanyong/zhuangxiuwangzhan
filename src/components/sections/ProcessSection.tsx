@@ -2,6 +2,9 @@ import Reveal from "@/components/Reveal";
 import { useT } from "@/i18n/useT";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { usePublishedProcessSteps } from "@/hooks/usePublishedContent";
+import { CheckCircle2, ClipboardList, DraftingCompass, Hammer, MessageCircle, Ruler } from "lucide-react";
+
+const stepIcons = [MessageCircle, Ruler, DraftingCompass, ClipboardList, Hammer, CheckCircle2];
 
 const ProcessSection = () => {
   const t = useT();
@@ -25,7 +28,7 @@ const ProcessSection = () => {
     : steps;
 
   return (
-    <section className="section-padding bg-background" id="process">
+    <section className="home-process-section section-padding bg-background" id="process">
       <div className="container-narrow">
         <Reveal>
           <div className="text-center mb-10 md:mb-14">
@@ -37,14 +40,26 @@ const ProcessSection = () => {
           </div>
         </Reveal>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+        <div className="process-blueprint">
           {displaySteps.map((step, i) => (
             <Reveal key={step.num} delay={i * 80}>
-              <div className="luxury-card-muted p-6 hover-lift h-full">
-                <span className="mb-2 block font-display text-5xl font-bold text-gold/20">{step.num}</span>
-                <h3 className="font-display text-lg font-semibold mb-2">{step.title}</h3>
-                <p className="text-muted-foreground text-sm leading-relaxed">{step.desc}</p>
-              </div>
+              <article className="process-blueprint-card hover-lift">
+                <div className="process-blueprint-node" aria-hidden="true">
+                  {(() => {
+                    const Icon = stepIcons[i % stepIcons.length];
+                    return <Icon className="h-5 w-5" />;
+                  })()}
+                </div>
+
+                <div className="process-blueprint-content">
+                  <div className="process-blueprint-kicker">
+                    <span>{step.num}</span>
+                    <span>{language === "zh" ? "步骤" : "Step"}</span>
+                  </div>
+                  <h3>{step.title}</h3>
+                  <p>{step.desc}</p>
+                </div>
+              </article>
             </Reveal>
           ))}
         </div>

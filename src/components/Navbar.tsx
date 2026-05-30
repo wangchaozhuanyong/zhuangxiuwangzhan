@@ -130,7 +130,7 @@ const Navbar = () => {
         className="site-header fixed top-0 left-0 right-0 transition-all duration-300"
         style={{ zIndex: PUBLIC_CHROME_Z.header }}
       >
-        <div className="site-container flex h-12 flex-nowrap items-center gap-3 md:h-16">
+        <div className="site-header__inner site-container flex h-12 flex-nowrap items-center gap-3 md:h-16">
           <LocalizedLink
             to="/"
             className="site-header__brand flex h-8 w-[7.75rem] max-w-[42%] shrink-0 items-center md:h-10 md:w-40 md:max-w-[12rem]"

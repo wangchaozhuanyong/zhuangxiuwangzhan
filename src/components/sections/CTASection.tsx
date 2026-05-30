@@ -24,6 +24,7 @@ const CTASection = () => {
   const t = useT();
   const settings = useSiteSettings();
   const content = copy[language];
+  const eyebrow = language === "zh" ? "项目咨询" : "Project Consultation";
   const { data: ctaBlock } = usePublishedCtaBlock(language, "home_final");
   const dynamic = ctaBlock
     ? {
@@ -40,31 +41,30 @@ const CTASection = () => {
   const primaryUrl = dynamic?.primary_url || "/quote";
 
   return (
-    <section className="section-padding relative overflow-hidden bg-surface-dark" id="cta">
-      <div
-        className="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,rgba(198,164,106,0.12),transparent_45%)]"
-        aria-hidden="true"
-      />
-      <div className="container-narrow relative">
+    <section className="home-footer-prelude section-padding" id="cta">
+      <div className="home-footer-prelude__beam" aria-hidden="true" />
+      <div className="container-narrow relative z-10">
         <Reveal>
-          <div className="relative mx-auto max-w-2xl text-center">
-            <h2 className="heading-safe mb-4 font-display text-3xl font-bold text-surface-dark-foreground md:text-4xl">
-              {title}
-            </h2>
-            <p className="mb-8 text-base leading-relaxed text-surface-dark-foreground/80 md:text-lg">
-              {description}
-            </p>
-            <div className="flex flex-col justify-center gap-3 sm:flex-row">
-              <Link to={primaryUrl} className="btn-on-dark-primary min-h-12 justify-center px-8">
-                <ArrowRight className="h-4 w-4" /> {primaryLabel}
+          <div className="home-footer-prelude__panel">
+            <span className="home-footer-prelude__rule" aria-hidden="true" />
+            <div className="home-footer-prelude__copy">
+              <p className="home-footer-prelude__eyebrow">{eyebrow}</p>
+              <h2 className="home-footer-prelude__title">{title}</h2>
+              <p className="home-footer-prelude__text">{description}</p>
+            </div>
+            <div className="home-footer-prelude__actions">
+              <Link to={primaryUrl} className="home-footer-prelude__button home-footer-prelude__button--primary">
+                <ArrowRight className="h-4 w-4" />
+                <span>{primaryLabel}</span>
               </Link>
               <a
                 href={settings.whatsapp_url()}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="btn-on-dark-secondary min-h-12 justify-center px-8"
+                className="home-footer-prelude__button home-footer-prelude__button--secondary"
               >
-                <WhatsAppIcon className="h-[18px] w-[18px] text-whatsapp" /> {t("cta.whatsapp")}
+                <WhatsAppIcon className="h-[18px] w-[18px] text-whatsapp" />
+                <span>{t("cta.whatsapp")}</span>
               </a>
             </div>
           </div>
