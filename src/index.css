@@ -535,13 +535,16 @@
         linear-gradient(180deg, #1a1712 0%, #2f2a22 48%, #15120e 100%);
     }
 
-    .home-hero-section .home-hero-media {
-      object-fit: contain;
+    .home-hero-section img.home-hero-media {
+      object-fit: cover;
       object-position: center center;
     }
 
     .home-hero-section video.home-hero-media {
-      background: transparent;
+      background:
+        radial-gradient(circle at 50% 18%, rgba(218, 190, 138, 0.14), transparent 18rem),
+        linear-gradient(180deg, #1a1712 0%, #2b261e 52%, #15120e 100%);
+      object-fit: contain;
       object-position: center center;
       transform: scale(1);
       transform-origin: center center;

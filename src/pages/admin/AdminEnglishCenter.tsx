@@ -6,7 +6,7 @@ import AdminStatCard from "@/components/admin/AdminStatCard";
 import AdminStatusBadge from "@/components/admin/AdminStatusBadge";
 import { Button } from "@/components/ui/button";
 import { toast } from "@/hooks/use-toast";
-import { useAdminContentHealth, useAdminTranslationJobs } from "@/lib/adminQueries";
+import { getAdminHealthFieldLabel, useAdminContentHealth, useAdminTranslationJobs } from "@/lib/adminQueries";
 import { translationEnabledTables } from "@/lib/adminTranslation";
 import { isSupabaseConfigured, supabase } from "@/lib/supabase";
 
@@ -102,7 +102,7 @@ export default function AdminEnglishCenter() {
                     <AdminStatusBadge status={item.status} />
                     <span className="rounded-full bg-muted px-2.5 py-1 text-xs text-muted-foreground">{item.tableLabel}</span>
                   </div>
-                  <p className="mt-2 text-sm text-amber-700 dark:text-amber-300">缺失字段：{item.missingEnglish.join("、")}</p>
+                  <p className="mt-2 text-sm text-amber-700 dark:text-amber-300">缺失字段：{item.missingEnglish.map(getAdminHealthFieldLabel).join("、")}</p>
                 </div>
                 <div className="flex flex-wrap gap-2">
                   <Button asChild size="sm" variant="outline">

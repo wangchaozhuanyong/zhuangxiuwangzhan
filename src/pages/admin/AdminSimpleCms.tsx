@@ -283,7 +283,7 @@ const AdminSimpleCms = ({ module }: { module: ModuleKey }) => {
           {rows.map((row) => (
             <div key={row.id} className="flex flex-col gap-3 rounded-lg border border-border p-4 md:flex-row md:items-center md:justify-between">
               <div>
-                <p className="font-semibold">{row[config.labelField] || row.title_en || row.name || row.id}</p>
+                <p className="font-semibold">{row[config.labelField] || row.title_en || row.name || "未命名内容"}</p>
                 <p className="text-xs text-muted-foreground">状态：{adminStatusLabel("default", row.status || "-")} | 排序 {row.sort_order || 0}</p>
               </div>
               <div className="flex gap-2">

@@ -18,6 +18,15 @@ type SiteSettingsHead = {
   updated_at?: string | null;
 };
 
+type PagesEnv = {
+  [key: string]: unknown;
+  VITE_SUPABASE_URL?: string;
+  VITE_SUPABASE_ANON_KEY?: string;
+  ASSETS?: {
+    fetch: (input: Request | string | URL, init?: RequestInit) => Promise<Response>;
+  };
+};
+
 const DEFAULT_OG_IMAGE = (manifest as Record<string, SeoEntry>)["/en"]?.ogImage ?? "";
 const DEFAULT_FAVICON = "/favicon.ico";
 
@@ -140,7 +149,7 @@ const isAssetPath = (pathname: string) => /\.[a-z0-9]+$/i.test(pathname) && !pat
 export const onRequest: PagesFunction = async (context) => {
   const { request, next } = context;
   const url = new URL(request.url);
-  const env = (context as unknown as { env?: Record<string, string | undefined> }).env ?? {};
+  const env = ((context as unknown as { env?: PagesEnv }).env ?? {}) as PagesEnv;
 
   if (request.method !== "GET" && request.method !== "HEAD") {
     return next();
@@ -150,7 +159,12 @@ export const onRequest: PagesFunction = async (context) => {
     return next();
   }
 
-  const response = await next();
+  const appShellUrl = new URL(request.url);
+  appShellUrl.pathname = "/";
+  appShellUrl.search = "";
+  const response = env.ASSETS
+    ? await env.ASSETS.fetch(new Request(appShellUrl.toString(), request))
+    : await next("/");
   const contentType = response.headers.get("content-type") || "";
   if (!contentType.includes("text/html")) {
     return response;
@@ -169,7 +183,7 @@ export const onRequest: PagesFunction = async (context) => {
 
   const key = normalizePath(url.pathname);
   const meta = (manifest as Record<string, SeoEntry>)[key];
-  const siteSettings = await fetchSiteSettings(env);
+  const siteSettings = await fetchSiteSettings(env as Record<string, string | undefined>);
 
   const html = await response.text();
   const transformed = meta ? injectSeo(html, meta, siteSettings) : injectBrandAssets(html, siteSettings);

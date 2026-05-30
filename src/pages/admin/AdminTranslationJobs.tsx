@@ -15,7 +15,7 @@ const copy = {
   en: {
     title: "Translation Records",
     description: "This page only shows automatic English generation records. Edit real content in the related content editor.",
-    searchPlaceholder: "Search table, content name, record ID, or error...",
+    searchPlaceholder: "Search source, content name, status, or error...",
     allStatuses: "All statuses",
     refresh: "Refresh",
     refreshing: "Refreshing...",
@@ -33,12 +33,12 @@ const copy = {
     retry: "Regenerate English",
     retrying: "Generating...",
     retryOk: "English generation has been retried.",
-    retryBlocked: "This record has no source table or record ID.",
+    retryBlocked: "This record is missing the source content needed for retry.",
   },
   zh: {
     title: "翻译记录",
     description: "这里不是编辑英文的地方，只用来查看自动生成英文有没有成功、哪里失败，以及手动重试。",
-    searchPlaceholder: "搜索来源、内容名称、记录 ID 或错误...",
+    searchPlaceholder: "搜索来源、内容名称、状态或错误...",
     allStatuses: "全部状态",
     refresh: "刷新",
     refreshing: "刷新中...",
@@ -56,7 +56,7 @@ const copy = {
     retry: "重新生成英文",
     retrying: "生成中...",
     retryOk: "已重新发起英文生成。",
-    retryBlocked: "这条记录没有来源表或记录 ID，不能重试。",
+    retryBlocked: "这条记录缺少可重试的来源内容，不能重试。",
   },
 };
 
@@ -89,7 +89,7 @@ const AdminTranslationJobs = () => {
     const query = search.trim().toLowerCase();
     return jobs.filter((job) => {
       const matchesStatus = statusFilter === "all" || job.status === statusFilter;
-      const haystack = [job.table_name, job.record_id, job.record_label, job.status, job.error_message].join(" ").toLowerCase();
+      const haystack = [job.table_name, job.record_label, job.status, job.error_message].join(" ").toLowerCase();
       return matchesStatus && (!query || haystack.includes(query));
     });
   }, [jobs, search, statusFilter]);
@@ -152,7 +152,7 @@ const AdminTranslationJobs = () => {
               <div className="min-w-0">
                 <p className="font-semibold">{getTableLabel(job.table_name, lang)}</p>
                 <p className="mt-1 text-sm text-foreground">
-                  {t.record}: {job.record_label || job.record_id || "-"}
+                  {t.record}: {job.record_label || "-"}
                 </p>
                 <p className="mt-1 text-xs text-muted-foreground">{t.status}: {translateStatusLabel("translation_jobs", job.status || "queued", lang)}</p>
               </div>

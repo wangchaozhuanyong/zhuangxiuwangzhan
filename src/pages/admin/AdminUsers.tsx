@@ -55,7 +55,7 @@ const AdminUsers = () => {
       <AdminPageHeader
         title="管理员账户"
         description="这里只管理后台白名单，不会显示或使用服务端密钥。"
-        helpText="这里是控制谁能进后台的地方。先填认证用户 ID，再选角色和启用状态。"
+        helpText="这里是控制谁能进后台的地方。先填认证用户编号，再选角色和启用状态。"
       />
 
       <div className="rounded-xl border border-border bg-card p-6">
@@ -67,8 +67,8 @@ const AdminUsers = () => {
         <h2 className="mb-4 font-display text-xl font-bold">新增管理员</h2>
         <div className="grid gap-4 md:grid-cols-[1fr_1fr_180px_auto] md:items-end">
           <div>
-            <label className="mb-1 block text-sm font-medium">认证用户 ID</label>
-            <Input value={form.user_id} onChange={(event) => setForm({ ...form, user_id: event.target.value })} placeholder="填写 Supabase 认证用户 UUID" />
+            <label className="mb-1 block text-sm font-medium">认证用户编号</label>
+            <Input value={form.user_id} onChange={(event) => setForm({ ...form, user_id: event.target.value })} placeholder="填写从 Supabase 用户资料复制来的编号" />
           </div>
           <div>
             <label className="mb-1 block text-sm font-medium">邮箱</label>

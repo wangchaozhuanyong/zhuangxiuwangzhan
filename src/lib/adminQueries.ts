@@ -19,7 +19,6 @@ export type AdminMediaAsset = {
   alt_zh: string | null;
   alt_en: string | null;
   created_at: string | null;
-  created_by: string | null;
 };
 
 export function useAdminLeads() {
@@ -54,7 +53,11 @@ export function useAdminMediaAssets() {
     enabled,
     placeholderData: keepPreviousData,
     queryFn: async () => {
-      const { data, error } = await supabase!.from("media_assets").select("*").order("created_at", { ascending: false }).limit(200);
+      const { data, error } = await supabase!
+        .from("media_assets")
+        .select("id,file_url,file_name,usage_type,folder,alt_zh,alt_en,created_at")
+        .order("created_at", { ascending: false })
+        .limit(200);
       if (error) throw error;
       return (data ?? []) as AdminMediaAsset[];
     },
@@ -341,6 +344,47 @@ const healthSelectFields = (source: HealthSource) => {
   return Array.from(fields).join(",");
 };
 
+const adminHealthFieldLabels: Record<string, string> = {
+  alt_en: "英文图片说明",
+  alt_zh: "中文图片说明",
+  answer_en: "英文答案",
+  answer_zh: "中文答案",
+  block_key: "区块标识",
+  content_en: "英文正文",
+  content_zh: "中文正文",
+  cover_image_url: "封面图片",
+  description_en: "英文说明",
+  description_zh: "中文说明",
+  excerpt_en: "英文摘要",
+  excerpt_zh: "中文摘要",
+  image_url: "图片",
+  items_en: "英文列表内容",
+  page_key: "页面标识",
+  path: "前台路径",
+  primary_label_en: "英文主按钮文案",
+  question_en: "英文问题",
+  question_zh: "中文问题",
+  secondary_label_en: "英文次按钮文案",
+  section_key: "模块标识",
+  seo_description_en: "英文 SEO 描述",
+  seo_description_zh: "中文 SEO 描述",
+  seo_title_en: "英文 SEO 标题",
+  seo_title_zh: "中文 SEO 标题",
+  slug: "链接标识",
+  status: "发布状态",
+  title_en: "英文标题",
+  title_zh: "中文标题",
+};
+
+export const getAdminHealthFieldLabel = (field: string) =>
+  adminHealthFieldLabels[field] ||
+  field
+    .replace(/_zh$/, "（中文）")
+    .replace(/_en$/, "（英文）")
+    .replace(/_/g, " ");
+
+const formatHealthIssue = (type: string, field: string) => `${type}：${getAdminHealthFieldLabel(field)}`;
+
 export type AdminContentHealthItem = {
   id: string;
   table: string;
@@ -355,7 +399,6 @@ export type AdminContentHealthItem = {
   missingSeo: string[];
   missingMedia: string[];
   issues: string[];
-  raw: Record<string, unknown>;
 };
 
 const buildEditHref = (source: HealthSource, row: Record<string, unknown>) => {
@@ -380,10 +423,10 @@ const buildHealthItem = (source: HealthSource, row: Record<string, unknown>): Ad
   const missingSeo = source.seoFields.filter((field) => isBlankAdminValue(row[field]));
   const missingMedia = source.imageFields.length > 0 && source.imageFields.every((field) => isBlankAdminValue(row[field])) ? source.imageFields : [];
   const issues = [
-    ...missingRequired.map((field) => `必填缺失：${field}`),
-    ...missingEnglish.map((field) => `英文缺失：${field}`),
-    ...missingSeo.map((field) => `SEO 缺失：${field}`),
-    ...missingMedia.map((field) => `图片缺失：${field}`),
+    ...missingRequired.map((field) => formatHealthIssue("必填缺失", field)),
+    ...missingEnglish.map((field) => formatHealthIssue("英文缺失", field)),
+    ...missingSeo.map((field) => formatHealthIssue("SEO 缺失", field)),
+    ...missingMedia.map((field) => formatHealthIssue("图片缺失", field)),
   ];
 
   return {
@@ -400,7 +443,6 @@ const buildHealthItem = (source: HealthSource, row: Record<string, unknown>): Ad
     missingSeo,
     missingMedia,
     issues,
-    raw: row,
   };
 };
 

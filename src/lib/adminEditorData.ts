@@ -259,9 +259,8 @@ export async function fetchTranslationJobs(limit = 100): Promise<TranslationJob[
           row.slug ||
           row.path ||
           row.entry_type ||
-          row.image_type ||
-          row.id;
-        labels.set(`${table}:${row.id}`, String(label));
+          row.image_type;
+        if (label) labels.set(`${table}:${row.id}`, String(label));
       }
     }),
   );

@@ -1,1 +1,1 @@
-/* /index.html 200
+# Keep SPA fallback in functions/_middleware.ts so hashed asset misses return 404 instead of index.html.

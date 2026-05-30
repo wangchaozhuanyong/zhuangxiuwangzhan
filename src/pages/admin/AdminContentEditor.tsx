@@ -35,7 +35,6 @@ const editableTables = new Set([
   "landing_pages",
   "leads",
   "quote_requests",
-  "translation_jobs",
 ]);
 
 const contentFields = ["title_zh", "excerpt_zh", "content_zh", "seo_title_zh", "seo_description_zh", "alt_zh"];
@@ -108,7 +107,7 @@ const tableFields: Record<string, string[]> = {
     "sort_order",
   ],
   blog_posts: [...contentFields, ...englishFields, "slug", "category", "tags", "cover_image_url", "status", "published_at"],
-  testimonials: ["customer_name", "content_zh", "content_en", "rating", "project_id", "status", "sort_order"],
+  testimonials: ["customer_name", "content_zh", "content_en", "rating", "status", "sort_order"],
   service_areas: [
     ...contentFields,
     "construction_notes_zh",
@@ -144,7 +143,6 @@ const tableFields: Record<string, string[]> = {
     "created_at",
     "updated_at",
   ],
-  translation_jobs: ["table_name", "record_id", "status", "error_message", "regenerated_at", "created_at", "updated_at"],
 };
 
 const arrayLikeFields = new Set([
@@ -178,7 +176,7 @@ const imageFields = new Set(["image_url", "cover_image_url", "hero_image_url"]);
 // materials.recommended_pairing_zh/en are TEXT columns (not text[]). Keep them as textarea.
 const longTextFields = new Set(["recommended_pairing_zh", "recommended_pairing_en", "note_zh", "note_en"]);
 const autoTranslateTables = new Set(["services", "projects", "blog_posts", "materials", "testimonials", "hero_slides", "service_areas", "landing_pages"]);
-const readOnlyTables = new Set(["translation_jobs"]);
+const readOnlyTables = new Set<string>();
 const readOnlyFields = new Set(["created_at", "updated_at", "regenerated_at"]);
 
 const humanize = (value: string) => value.replace(/_/g, " ").replace(/\b\w/g, (char) => char.toUpperCase());
@@ -243,7 +241,6 @@ const tableLabels: Record<string, { en: string; zh: string }> = {
   landing_pages: { en: "Landing Pages", zh: "落地页" },
   leads: { en: "Leads", zh: "客户咨询" },
   quote_requests: { en: "Quote Requests", zh: "报价请求" },
-  translation_jobs: { en: "Translation Records", zh: "翻译记录" },
 };
 
 const fieldLabels: Record<string, { en: string; zh: string }> = {
@@ -304,9 +301,7 @@ const fieldLabels: Record<string, { en: string; zh: string }> = {
   published_at: { en: "Published At", zh: "发布时间" },
   tags: { en: "Tags", zh: "标签" },
   rating: { en: "Rating", zh: "评分" },
-  project_id: { en: "Project ID", zh: "项目 ID" },
   table_name: { en: "Table Name", zh: "表名" },
-  record_id: { en: "Record ID", zh: "记录 ID" },
   error_message: { en: "Error Message", zh: "错误信息" },
   regenerated_at: { en: "Regenerated At", zh: "重新生成时间" },
   property_size: { en: "Property Size", zh: "面积/户型" },
@@ -385,8 +380,8 @@ const getRecordLabel = (row: Record<string, any>, type: string, language: Langua
     return getTableLabel(row.table_name || "translation", language) + " · " + translateStatusLabel("translation_jobs", row.status || "unknown", language);
   }
 
-  const text = row.title_zh || row.title_en || row.name || row.customer_name || row.id;
-  return translateDisplayText(String(text || ""), language);
+  const text = row.title_zh || row.title_en || row.name || row.customer_name;
+  return text ? translateDisplayText(String(text), language) : getTableLabel(type, language);
 };
 
 const getRecordMeta = (row: Record<string, any>, type: string, language: Language) => {
@@ -410,7 +405,7 @@ const getRecordMeta = (row: Record<string, any>, type: string, language: Languag
     );
   }
 
-  if (type === "translation_jobs") return row.error_message || row.record_id || (language === "zh" ? "翻译记录" : "Translation record");
+  if (type === "translation_jobs") return row.error_message || (language === "zh" ? "翻译记录" : "Translation record");
   return translateStatusLabel(type, row.status || "saved", language);
 };
 
@@ -477,7 +472,6 @@ const exportRowsAsCsv = (type: string, fields: string[], rows: any[]) => {
 const statusOptions: Record<string, string[]> = {
   leads: ["new", "contacted", "site_visit_scheduled", "quoted", "converted", "closed", "spam"],
   quote_requests: ["pending", "contacted", "site_visit_scheduled", "quoted", "accepted", "rejected", "closed"],
-  translation_jobs: ["processing", "completed", "failed"],
   default: ["draft", "published", "archived"],
 };
 
