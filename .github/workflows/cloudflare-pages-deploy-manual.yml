@@ -62,3 +62,5 @@ jobs:
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           projectName: ${{ secrets.CLOUDFLARE_PAGES_PROJECT_NAME }}
           directory: dist
+          branch: main
+          commitHash: ${{ github.event.workflow_run.head_sha || github.sha }}
