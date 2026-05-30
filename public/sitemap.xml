@@ -1609,6 +1609,18 @@
     <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/materials/subway-wall-tile" />
   </url>
   <url>
+    <loc>https://flashcast.com.my/en/materials/solid-surface-warm-white</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://flashcast.com.my/en/materials/solid-surface-warm-white" />
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://flashcast.com.my/zh/materials/solid-surface-warm-white" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/materials/solid-surface-warm-white" />
+  </url>
+  <url>
+    <loc>https://flashcast.com.my/zh/materials/solid-surface-warm-white</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://flashcast.com.my/en/materials/solid-surface-warm-white" />
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://flashcast.com.my/zh/materials/solid-surface-warm-white" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/materials/solid-surface-warm-white" />
+  </url>
+  <url>
     <loc>https://flashcast.com.my/en/materials/art-venetian-plaster</loc>
     <xhtml:link rel="alternate" hreflang="en" href="https://flashcast.com.my/en/materials/art-venetian-plaster" />
     <xhtml:link rel="alternate" hreflang="zh-CN" href="https://flashcast.com.my/zh/materials/art-venetian-plaster" />
@@ -1631,18 +1643,6 @@
     <xhtml:link rel="alternate" hreflang="en" href="https://flashcast.com.my/en/materials/barn-door-dark-wood" />
     <xhtml:link rel="alternate" hreflang="zh-CN" href="https://flashcast.com.my/zh/materials/barn-door-dark-wood" />
     <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/materials/barn-door-dark-wood" />
-  </url>
-  <url>
-    <loc>https://flashcast.com.my/en/materials/solid-surface-warm-white</loc>
-    <xhtml:link rel="alternate" hreflang="en" href="https://flashcast.com.my/en/materials/solid-surface-warm-white" />
-    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://flashcast.com.my/zh/materials/solid-surface-warm-white" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/materials/solid-surface-warm-white" />
-  </url>
-  <url>
-    <loc>https://flashcast.com.my/zh/materials/solid-surface-warm-white</loc>
-    <xhtml:link rel="alternate" hreflang="en" href="https://flashcast.com.my/en/materials/solid-surface-warm-white" />
-    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://flashcast.com.my/zh/materials/solid-surface-warm-white" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/materials/solid-surface-warm-white" />
   </url>
   <url>
     <loc>https://flashcast.com.my/en/materials/acrylic-cabinet-door</loc>

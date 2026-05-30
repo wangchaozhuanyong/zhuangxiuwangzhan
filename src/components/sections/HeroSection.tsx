@@ -91,7 +91,7 @@ const HeroSection = ({ pageContent }: HeroSectionProps) => {
           alt=""
           className="home-hero-media absolute inset-0 h-full w-full object-cover"
           loading="eager"
-          fetchPriority="high"
+          {...({ fetchpriority: "high" } as { fetchpriority: "high" })}
         />
         <video
           ref={videoRef}

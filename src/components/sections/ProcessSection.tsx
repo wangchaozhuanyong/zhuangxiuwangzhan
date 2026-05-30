@@ -41,27 +41,28 @@ const ProcessSection = () => {
         </Reveal>
 
         <div className="process-blueprint">
-          {displaySteps.map((step, i) => (
-            <Reveal key={step.num} delay={i * 80}>
-              <article className="process-blueprint-card hover-lift">
-                <div className="process-blueprint-node" aria-hidden="true">
-                  {(() => {
-                    const Icon = stepIcons[i % stepIcons.length];
-                    return <Icon className="h-5 w-5" />;
-                  })()}
-                </div>
+          {displaySteps.map((step, i) => {
+            const Icon = stepIcons[i % stepIcons.length];
 
-                <div className="process-blueprint-content">
-                  <div className="process-blueprint-kicker">
-                    <span>{step.num}</span>
-                    <span>{language === "zh" ? "步骤" : "Step"}</span>
+            return (
+              <Reveal key={step.num} delay={i * 80}>
+                <article className="process-blueprint-card hover-lift">
+                  <div className="process-blueprint-node" aria-hidden="true">
+                    <Icon className="h-5 w-5" />
                   </div>
-                  <h3>{step.title}</h3>
-                  <p>{step.desc}</p>
-                </div>
-              </article>
-            </Reveal>
-          ))}
+
+                  <div className="process-blueprint-content">
+                    <div className="process-blueprint-kicker">
+                      <span>{step.num}</span>
+                      <span>{language === "zh" ? "步骤" : "Step"}</span>
+                    </div>
+                    <h3>{step.title}</h3>
+                    <p>{step.desc}</p>
+                  </div>
+                </article>
+              </Reveal>
+            );
+          })}
         </div>
       </div>
     </section>
