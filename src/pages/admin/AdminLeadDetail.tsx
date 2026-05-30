@@ -76,7 +76,7 @@ const AdminLeadDetail = () => {
             <div className="rounded-xl border border-border bg-card p-6">
               <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
                 <div>
-                  <h1 className="font-display text-2xl font-bold">{lead.name || "线索"}</h1>
+                  <h1 className="font-display text-2xl font-bold">{lead.name || "咨询"}</h1>
                   <p className="mt-1 text-sm text-muted-foreground">{lead.phone} · {lead.email || "-"}</p>
                   <p className="mt-1 text-sm text-muted-foreground">{lead.source_path || "-"} · {new Date(lead.created_at).toLocaleString()}</p>
                 </div>
@@ -89,7 +89,7 @@ const AdminLeadDetail = () => {
 
             <div className="grid gap-6 lg:grid-cols-[1fr_360px]">
               <section className="rounded-xl border border-border bg-card p-6">
-                <h2 className="mb-4 font-display text-xl font-bold">线索详情</h2>
+                <h2 className="mb-4 font-display text-xl font-bold">咨询详情</h2>
                 <div className="grid gap-4 text-sm md:grid-cols-2">
                   <div><span className="text-muted-foreground">项目类型：</span> {lead.project_type || "-"}</div>
                   <div><span className="text-muted-foreground">预算：</span> {lead.budget_range || "-"}</div>

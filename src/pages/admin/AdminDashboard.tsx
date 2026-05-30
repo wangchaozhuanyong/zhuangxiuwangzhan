@@ -41,19 +41,19 @@ const copy = {
   },
   zh: {
     title: "运营工作台",
-    body: "集中查看询盘、报价、内容健康度和翻译异常。",
-    recentLeads: "最近线索",
+    body: "集中查看咨询、报价、内容健康度和翻译异常。",
+    recentLeads: "最近咨询",
     recentQuotes: "最近报价请求",
     quickActions: "快捷入口",
     empty: "暂无记录。",
     cards: [
-      { key: "todayLeads", label: "今日新线索", href: "/admin/leads" },
-      { key: "newLeads", label: "新线索", href: "/admin/leads" },
+      { key: "todayLeads", label: "今日新咨询", href: "/admin/leads" },
+      { key: "newLeads", label: "新咨询", href: "/admin/leads" },
       { key: "pendingQuotes", label: "待处理报价", href: "/admin/quotes" },
       { key: "toQuote", label: "待报价", href: "/admin/quotes" },
-      { key: "dueFollowUps", label: "今日待跟进", href: "/admin/leads" },
-      { key: "staleLeads", label: "24 小时未跟进", href: "/admin/leads" },
-      { key: "monthLeads", label: "本月线索数", href: "/admin/leads" },
+      { key: "dueFollowUps", label: "今日待跟进咨询", href: "/admin/leads" },
+      { key: "staleLeads", label: "24 小时未跟进咨询", href: "/admin/leads" },
+      { key: "monthLeads", label: "本月咨询数", href: "/admin/leads" },
       { key: "monthQuotes", label: "本月报价数", href: "/admin/quotes" },
       { key: "failedTranslations", label: "翻译失败任务", href: "/admin/content/translation_jobs" },
       { key: "projects", label: "已发布案例", href: "/admin/projects" },
@@ -66,7 +66,7 @@ const copy = {
       { label: "新建服务", href: "/admin/services/new" },
       { label: "新建博客", href: "/admin/blog/new" },
       { label: "上传图片", href: "/admin/media" },
-      { label: "查看新线索", href: "/admin/leads" },
+      { label: "查看新咨询", href: "/admin/leads" },
       { label: "设置 WhatsApp", href: "/admin/settings" },
     ],
   },
@@ -116,7 +116,7 @@ const AdminDashboard = () => {
           <div className="space-y-3">
             {recentLeads.map((lead) => (
               <Link key={lead.id} to={`/admin/leads/${lead.id}`} className="block rounded-lg border border-border p-3 text-sm hover:bg-muted">
-                <span className="font-medium">{lead.name || "线索"} · {lead.phone || "-"}</span>
+                <span className="font-medium">{lead.name || "咨询"} · {lead.phone || "-"}</span>
                 <span className="block text-xs text-muted-foreground">
                   {adminStatusLabel("leads", lead.status || "new")} · {lead.source_path || "-"}
                 </span>
@@ -128,7 +128,7 @@ const AdminDashboard = () => {
                 description="当有新联系表单提交后会显示在这里。"
                 action={
                   <Button asChild variant="outline">
-                    <Link to="/admin/leads">查看线索</Link>
+                    <Link to="/admin/leads">查看咨询</Link>
                   </Button>
                 }
               />
