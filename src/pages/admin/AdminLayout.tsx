@@ -123,6 +123,7 @@ type NavGroup = {
 const NAV_EXPANDED_KEY = "flashcast_admin_nav_expanded_groups";
 const NAV_COLLAPSED_KEY = "flashcast_admin_nav_collapsed";
 const ADMIN_ENTRY_RE = /\/assets\/index-[^"']+\.js/;
+const ADMIN_BUILD_VERSION = String(import.meta.env.VITE_APP_VERSION || "local").slice(0, 7);
 
 const getCurrentAdminEntry = () => {
   const current = Array.from(document.scripts)
@@ -553,9 +554,10 @@ const AdminLayout = () => {
             FC
           </div>
           <div className={cn("min-w-0 flex-1", compact && "sr-only")}>
-            <p className="truncate text-[11px] font-bold uppercase tracking-[0.18em] text-accent">{t.brand}</p>
-            <p className="truncate text-sm font-semibold text-sidebar-foreground">{t.title}</p>
-          </div>
+                <p className="truncate text-[11px] font-bold uppercase tracking-[0.18em] text-accent">{t.brand}</p>
+                <p className="truncate text-sm font-semibold text-sidebar-foreground">{t.title}</p>
+                <p className="mt-1 truncate text-[10px] font-semibold text-sidebar-foreground/45">v{ADMIN_BUILD_VERSION}</p>
+              </div>
           {variant === "desktop" && (
             <Button
               type="button"

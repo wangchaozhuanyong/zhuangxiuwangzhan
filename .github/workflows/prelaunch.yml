@@ -34,6 +34,7 @@ jobs:
           VITE_SITE_SSM_NUMBER: "202501027419 (1628831-M)"
           VITE_SITE_ADDRESS: "94, Jalan Mega Mendung, Taman United, 58200 Kuala Lumpur, Malaysia"
           VITE_SITE_SHORT_ADDRESS: "94, Jalan Mega Mendung, 58200"
+          VITE_APP_VERSION: ${{ github.sha }}
         run: npm run build
 
       - name: Lint
