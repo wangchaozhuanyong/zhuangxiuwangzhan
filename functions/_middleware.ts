@@ -144,7 +144,11 @@ const injectBrandAssets = (html: string, siteSettings?: SiteSettingsHead | null)
   return out;
 };
 
-const isAssetPath = (pathname: string) => /\.[a-z0-9]+$/i.test(pathname) && !pathname.endsWith(".html");
+const STATIC_PATH_PREFIXES = ["/assets/", "/images/", "/videos/"];
+
+const isAssetPath = (pathname: string) =>
+  STATIC_PATH_PREFIXES.some((prefix) => pathname.startsWith(prefix)) ||
+  (/\.[a-z0-9]+$/i.test(pathname) && !pathname.endsWith(".html"));
 
 export const onRequest: PagesFunction = async (context) => {
   const { request, next } = context;
