@@ -13,6 +13,8 @@ import AdminEmptyState from "@/components/admin/AdminEmptyState";
 import ImageField from "@/components/admin/ImageField";
 import { HomeSectionItemsEditor } from "@/components/admin/StructuredArrayEditors";
 import { invalidatePublishedContent } from "@/lib/adminInvalidate";
+import { archiveOrDeleteAdminRecord, formatAdminMutationError, saveAdminRecord } from "@/lib/adminMutation";
+import { useUnsavedChangesWarning } from "@/hooks/useUnsavedChangesWarning";
 import type { CtaRow, FaqRow, HomeSectionRow, ProcessStepRow } from "@/lib/adminEditorData";
 import { useAdminHomeEditorData } from "@/lib/adminQueries";
 import { translateFieldLabel } from "@/i18n/displayLabels";
@@ -42,10 +44,13 @@ export default function AdminHomeEditor() {
   const [statsItems, setStatsItems] = useState<any[]>([]);
   const [whyItems, setWhyItems] = useState<any[]>([]);
   const formDirtyRef = useRef(false);
+  const [formDirty, setFormDirty] = useState(false);
 
   const markDirty = () => {
     formDirtyRef.current = true;
+    setFormDirty(true);
   };
+  useUnsavedChangesWarning(formDirty);
 
   useEffect(() => {
     if (!bundle) return;
@@ -61,6 +66,7 @@ export default function AdminHomeEditor() {
 
   const refreshEditor = async () => {
     formDirtyRef.current = false;
+    setFormDirty(false);
     void invalidatePublishedContent(queryClient);
     await refetch();
   };
@@ -72,12 +78,16 @@ export default function AdminHomeEditor() {
       return;
     }
     const cleaned = items.filter((item) => Object.values(item || {}).some((value) => String(value || "").trim()));
-    const { error } = await supabase
-      .from("home_sections")
-      .update({ items_zh: cleaned, items_en: cleaned })
-      .eq("id", row.id);
-    if (error) {
-      toast({ title: "保存失败", description: error.message, variant: "destructive" });
+    try {
+      await saveAdminRecord({
+        table: "home_sections",
+        payload: { items_zh: cleaned, items_en: cleaned },
+        id: row.id,
+        expectedUpdatedAt: row.updated_at || null,
+        queryClient,
+      });
+    } catch (error) {
+      toast({ title: "\u4fdd\u5b58\u5931\u8d25", description: formatAdminMutationError(error), variant: "destructive" });
       return;
     }
     toast({ title: "已保存" });
@@ -96,24 +106,30 @@ export default function AdminHomeEditor() {
       status: draft.status || "published",
       sort_order: Number(draft.sort_order || 0),
     };
-    const req = draft.id
-      ? supabase.from("process_steps").update(payload).eq("id", draft.id)
-      : supabase.from("process_steps").insert(payload);
-    const { error } = await req;
-    if (error) toast({ title: "保存失败", description: error.message, variant: "destructive" });
-    else {
+    try {
+      await saveAdminRecord({
+        table: "process_steps",
+        payload,
+        id: draft.id,
+        expectedUpdatedAt: draft.updated_at || null,
+        queryClient,
+      });
       toast({ title: "已保存" });
       await refreshEditor();
+    } catch (error) {
+      toast({ title: "\u4fdd\u5b58\u5931\u8d25", description: formatAdminMutationError(error), variant: "destructive" });
     }
   };
 
   const deleteProcessStep = async (id: string) => {
     if (!supabase) return;
-    const { error } = await supabase.from("process_steps").delete().eq("id", id);
-    if (error) toast({ title: "删除失败", description: error.message, variant: "destructive" });
-    else {
+    if (!window.confirm("?????/??????????")) return;
+    try {
+      await archiveOrDeleteAdminRecord({ table: "process_steps", id, queryClient });
       toast({ title: "已删除" });
       await refreshEditor();
+    } catch (error) {
+      toast({ title: "\u5220\u9664\u5931\u8d25", description: formatAdminMutationError(error), variant: "destructive" });
     }
   };
 
@@ -128,22 +144,30 @@ export default function AdminHomeEditor() {
       status: draft.status || "published",
       sort_order: Number(draft.sort_order || 0),
     };
-    const req = draft.id ? supabase.from("faqs").update(payload).eq("id", draft.id) : supabase.from("faqs").insert(payload);
-    const { error } = await req;
-    if (error) toast({ title: "保存失败", description: error.message, variant: "destructive" });
-    else {
+    try {
+      await saveAdminRecord({
+        table: "faqs",
+        payload,
+        id: draft.id,
+        expectedUpdatedAt: draft.updated_at || null,
+        queryClient,
+      });
       toast({ title: "已保存" });
       await refreshEditor();
+    } catch (error) {
+      toast({ title: "\u4fdd\u5b58\u5931\u8d25", description: formatAdminMutationError(error), variant: "destructive" });
     }
   };
 
   const deleteFaq = async (id: string) => {
     if (!supabase) return;
-    const { error } = await supabase.from("faqs").delete().eq("id", id);
-    if (error) toast({ title: "删除失败", description: error.message, variant: "destructive" });
-    else {
+    if (!window.confirm("?????/???? FAQ ??")) return;
+    try {
+      await archiveOrDeleteAdminRecord({ table: "faqs", id, queryClient });
       toast({ title: "已删除" });
       await refreshEditor();
+    } catch (error) {
+      toast({ title: "\u5220\u9664\u5931\u8d25", description: formatAdminMutationError(error), variant: "destructive" });
     }
   };
 
@@ -165,12 +189,18 @@ export default function AdminHomeEditor() {
       status: draft.status || "published",
     };
 
-    const req = draft.id ? supabase.from("cta_blocks").update(payload).eq("id", draft.id) : supabase.from("cta_blocks").insert(payload);
-    const { error } = await req;
-    if (error) toast({ title: "保存失败", description: error.message, variant: "destructive" });
-    else {
+    try {
+      await saveAdminRecord({
+        table: "cta_blocks",
+        payload,
+        id: draft.id,
+        expectedUpdatedAt: draft.updated_at || null,
+        queryClient,
+      });
       toast({ title: "已保存" });
       await refreshEditor();
+    } catch (error) {
+      toast({ title: "\u4fdd\u5b58\u5931\u8d25", description: formatAdminMutationError(error), variant: "destructive" });
     }
   };
 

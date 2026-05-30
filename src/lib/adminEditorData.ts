@@ -3,6 +3,7 @@ import { ensureAdminDefaultContent } from "@/lib/adminDefaultContent";
 
 export type HomeSectionRow = {
   id?: string;
+  updated_at?: string | null;
   section_key: string;
   title_zh?: string | null;
   title_en?: string | null;
@@ -19,6 +20,7 @@ export type HomeSectionRow = {
 
 export type ProcessStepRow = {
   id?: string;
+  updated_at?: string | null;
   step_number: number;
   title_zh?: string | null;
   title_en?: string | null;
@@ -31,6 +33,7 @@ export type ProcessStepRow = {
 
 export type FaqRow = {
   id?: string;
+  updated_at?: string | null;
   page_key: string;
   question_zh?: string | null;
   answer_zh?: string | null;
@@ -42,6 +45,7 @@ export type FaqRow = {
 
 export type CtaRow = {
   id?: string;
+  updated_at?: string | null;
   block_key: string;
   title_zh?: string | null;
   title_en?: string | null;
@@ -59,6 +63,7 @@ export type CtaRow = {
 
 export type AboutSectionRow = {
   id?: string;
+  updated_at?: string | null;
   section_key: string;
   title_zh?: string | null;
   title_en?: string | null;
