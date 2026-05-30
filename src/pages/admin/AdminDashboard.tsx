@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { useAdminDashboardStats } from "@/lib/adminQueries";
+import { useAdminContentHealth, useAdminDashboardStats } from "@/lib/adminQueries";
 import AdminPageHeader from "@/components/admin/AdminPageHeader";
 import AdminStatCard from "@/components/admin/AdminStatCard";
 import AdminEmptyState from "@/components/admin/AdminEmptyState";
@@ -76,7 +76,11 @@ const AdminDashboard = () => {
   const lang = getAdminLang();
   const t = copy[lang];
   const { data } = useAdminDashboardStats();
+  const { data: healthItems = [] } = useAdminContentHealth();
   const counts = data?.counts ?? {};
+  const contentIssues = healthItems.filter((item) => item.issues.length > 0).length;
+  const missingEnglish = healthItems.filter((item) => item.missingEnglish.length > 0).length;
+  const draftContent = healthItems.filter((item) => item.status === "draft").length;
   const recentLeads = (data?.recentLeads ?? []) as Array<{
     id: string;
     name?: string;
@@ -104,6 +108,27 @@ const AdminDashboard = () => {
           </Button>
         }
       />
+
+      <div className="mb-6 grid gap-4 lg:grid-cols-3">
+        <AdminStatCard
+          label="内容健康检查"
+          value={contentIssues}
+          href="/admin/content-health"
+          helpText="集中查看缺英文、缺 SEO、缺图片和必填缺失。数字越低越好。"
+        />
+        <AdminStatCard
+          label="发布中心"
+          value={draftContent}
+          href="/admin/publish-center"
+          helpText="集中查看草稿、已发布、归档和发布前风险。"
+        />
+        <AdminStatCard
+          label="英文生成中心"
+          value={missingEnglish}
+          href="/admin/english-center"
+          helpText="集中扫描缺英文内容，并支持批量自动生成英文。"
+        />
+      </div>
 
       <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
         {t.cards.map((card) => (

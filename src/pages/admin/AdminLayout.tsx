@@ -9,6 +9,7 @@ import {
   ChevronDown,
   ClipboardList,
   ExternalLink,
+  FileCheck2,
   FileSearch,
   FileText,
   FolderKanban,
@@ -26,6 +27,7 @@ import {
   Newspaper,
   PanelLeftClose,
   PanelLeftOpen,
+  Rocket,
   ScrollText,
   Search,
   Settings,
@@ -34,6 +36,7 @@ import {
   Sun,
   UserCog,
   Users,
+  WandSparkles,
   Wrench,
   type LucideIcon,
 } from "lucide-react";
@@ -59,6 +62,9 @@ import { cn } from "@/lib/utils";
 type AdminCopy = {
   dashboard: string;
   todayTasks: string;
+  contentHealth: string;
+  publishCenter: string;
+  englishCenter: string;
   groupWorkspace: string;
   groupWebsite: string;
   groupBusiness: string;
@@ -136,6 +142,9 @@ const copy: Record<AdminLang, AdminCopy> = {
   en: {
     dashboard: "Dashboard",
     todayTasks: "Today's Tasks",
+    contentHealth: "Content Health",
+    publishCenter: "Publish Center",
+    englishCenter: "English Center",
     groupWorkspace: "Workspace",
     groupWebsite: "Website Content",
     groupBusiness: "Business Content",
@@ -187,6 +196,9 @@ const copy: Record<AdminLang, AdminCopy> = {
   zh: {
     dashboard: "总览",
     todayTasks: "今日待办",
+    contentHealth: "内容健康检查",
+    publishCenter: "发布中心",
+    englishCenter: "英文生成中心",
     groupWorkspace: "工作区",
     groupWebsite: "网站内容",
     groupBusiness: "业务内容",
@@ -244,6 +256,9 @@ const navGroups: NavGroup[] = [
     icon: LayoutDashboard,
     items: [
       { key: "dashboard", path: "/admin/dashboard", icon: BarChart3 },
+      { key: "contentHealth", path: "/admin/content-health", icon: FileCheck2 },
+      { key: "publishCenter", path: "/admin/publish-center", icon: Rocket },
+      { key: "englishCenter", path: "/admin/english-center", icon: WandSparkles },
     ],
   },
   {
@@ -472,6 +487,12 @@ const AdminLayout = () => {
     switch (activeNavKey) {
       case "dashboard":
         return zh ? "先看咨询、报价和内容状态，再决定今天优先处理什么。" : "Start with enquiries, quotes, and content health.";
+      case "contentHealth":
+        return zh ? "这里集中检查缺英文、缺 SEO、缺图片和必填缺失。" : "Check missing English, SEO, images, and required fields.";
+      case "publishCenter":
+        return zh ? "这里集中查看草稿、已发布、归档和发布前风险。" : "Review drafts, published content, archives, and pre-publish risks.";
+      case "englishCenter":
+        return zh ? "这里扫描缺英文内容，并批量发起自动英文生成。" : "Find missing English content and run automatic generation in batches.";
       case "home":
         return zh ? "这里管理首页首屏按钮、流程、常见问题和底部行动引导。" : "Manage the homepage hero buttons, process, FAQ, and CTA blocks.";
       case "cmsBuilder":

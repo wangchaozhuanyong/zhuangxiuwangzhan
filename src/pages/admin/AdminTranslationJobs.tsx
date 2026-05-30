@@ -154,9 +154,7 @@ const AdminTranslationJobs = () => {
                 <p className="mt-1 text-sm text-foreground">
                   {t.record}: {job.record_label || job.record_id || "-"}
                 </p>
-                <p className="mt-1 text-xs text-muted-foreground">
-                  ID: {job.record_id || "-"} / {t.status}: {translateStatusLabel("translation_jobs", job.status || "queued", lang)}
-                </p>
+                <p className="mt-1 text-xs text-muted-foreground">{t.status}: {translateStatusLabel("translation_jobs", job.status || "queued", lang)}</p>
               </div>
               <div className="flex flex-col gap-2 text-xs text-muted-foreground md:items-end">
                 <p>{t.created}: {formatDateTime(job.created_at, "-")}</p>
