@@ -5,14 +5,13 @@ import Reveal from "@/components/Reveal";
 import PageMeta from "@/components/PageMeta";
 import { JsonLdBreadcrumb } from "@/components/JsonLd";
 import HeroBanner from "@/components/blocks/HeroBanner";
-import CTABanner from "@/components/blocks/CTABanner";
 import SectionHeader from "@/components/blocks/SectionHeader";
 import IconCardGrid from "@/components/blocks/IconCardGrid";
 import { companyMilestones, coreValues, teamHighlights, companyStats } from "@/data/siteContent";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { useSiteSettings } from "@/hooks/useSiteSettings";
 import heroImg from "@/assets/hero-about.webp";
-import { usePublishedAboutSection, usePublishedCtaBlock, usePublishedSitePage } from "@/hooks/usePublishedContent";
+import { usePublishedAboutSection, usePublishedSitePage } from "@/hooks/usePublishedContent";
 import { useMemo } from "react";
 
 const aboutCopy = {
@@ -171,7 +170,6 @@ const About = () => {
   const { data: teamSection } = usePublishedAboutSection(language, "team");
   const { data: milestonesSection } = usePublishedAboutSection(language, "milestones");
   const { data: officeSection } = usePublishedAboutSection(language, "office");
-  const { data: ctaBlock } = usePublishedCtaBlock(language, "about_final");
   const { data: pageContent } = usePublishedSitePage(language, "about");
 
   const dynamicIntroParagraphs = useMemo<string[] | null>(() => {
@@ -320,14 +318,6 @@ const About = () => {
           </div>
         </Reveal>
       </section>
-
-      <CTABanner
-        title={(ctaBlock?.title as string) || t.ctaTitle}
-        description={(ctaBlock?.description as string) || t.ctaDescription}
-        quoteLabel={(ctaBlock?.primary_label as string) || t.quoteLabel}
-        whatsappLabel={(ctaBlock?.secondary_label as string) || t.whatsappLabel}
-        quotePath={(ctaBlock?.primary_url as string) || "/quote"}
-      />
     </main>
   );
 };

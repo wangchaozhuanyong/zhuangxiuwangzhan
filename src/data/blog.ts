@@ -38,7 +38,7 @@ A well-planned renovation leads to better results. Take time to plan, choose the
     category: "Guides",
     date: "2025-12-15",
     readTime: "5 min",
-    image: "https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?w=800&h=400&fit=crop",
+    image: "/images/projects/residential-renovation.webp",
     tags: ["renovation", "condo", "kuala lumpur", "planning", "guide"],
   },
   {
@@ -77,7 +77,7 @@ Contact FLASH CAST to see physical samples and discuss the best option for your 
     category: "Materials",
     date: "2025-11-20",
     readTime: "4 min",
-    image: "https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=800&h=400&fit=crop",
+    image: "/images/services/kitchen-renovation.webp",
     tags: ["kitchen", "cabinets", "materials", "melamine", "acrylic"],
   },
   {
@@ -118,7 +118,7 @@ We handle the entire permit process for our clients — from drawing preparation
     category: "Guides",
     date: "2025-10-08",
     readTime: "4 min",
-    image: "https://images.unsplash.com/photo-1450101499163-c8848c66ca85?w=800&h=400&fit=crop",
+    image: "/images/services/approval-docs.webp",
     tags: ["permit", "DBKL", "kuala lumpur", "renovation", "compliance"],
   },
   {
@@ -161,7 +161,7 @@ Visit FLASH CAST to compare samples side by side.`,
     category: "Materials",
     date: "2025-09-15",
     readTime: "3 min",
-    image: "https://images.unsplash.com/photo-1558618666-fcd25c85f82e?w=800&h=400&fit=crop",
+    image: "/images/materials/spc-vinyl-natural-oak.webp",
     tags: ["flooring", "SPC vinyl", "laminate", "comparison", "malaysia"],
   },
   {
@@ -210,7 +210,7 @@ Need help planning your office renovation? Contact FLASH CAST for a free consult
     category: "Guides",
     date: "2025-08-22",
     readTime: "4 min",
-    image: "https://images.unsplash.com/photo-1497366216548-37526070297c?w=800&h=400&fit=crop",
+    image: "/images/services/office-renovation.webp",
     tags: ["office", "renovation", "checklist", "commercial", "malaysia"],
   },
   {
@@ -248,7 +248,7 @@ Contact us to discuss feature wall options for your home.`,
     category: "Inspiration",
     date: "2025-07-10",
     readTime: "3 min",
-    image: "https://images.unsplash.com/photo-1541123603104-512919d6a96c?w=800&h=400&fit=crop",
+    image: "/images/materials/art-venetian-plaster.webp",
     tags: ["feature wall", "interior design", "trends", "2025", "inspiration"],
   },
   {
@@ -288,7 +288,7 @@ Use lighter cabinet colours, handle-less doors, and consistent panel lines to ma
     category: "Inspiration",
     date: "2026-03-18",
     readTime: "4 min",
-    image: "https://images.unsplash.com/photo-1617103996702-96ff29b1c467?w=800&h=400&fit=crop",
+    image: "/images/services/builtin-solutions.webp",
     tags: ["condo", "storage", "built-in", "interior design", "inspiration"],
   },
   {
@@ -328,7 +328,7 @@ The best warm minimalist homes are not just beautiful in photos; they are easy t
     category: "Inspiration",
     date: "2026-04-02",
     readTime: "4 min",
-    image: "https://images.unsplash.com/photo-1600210492493-0946911123ea?w=800&h=400&fit=crop",
+    image: "/images/heroes/hero-luxury-living.webp",
     tags: ["minimalist", "interior design", "lighting", "materials", "inspiration"],
   },
   {
@@ -380,7 +380,7 @@ Contact FLASH CAST with your location, photos, and scope so the team can review 
     category: "Guides",
     date: "2026-01-20",
     readTime: "6 min",
-    image: "https://images.unsplash.com/photo-1560518883-ce09059eeffa?w=800&h=400&fit=crop",
+    image: "/images/services/renovation-works.webp",
     tags: ["renovation cost", "malaysia", "budget", "pricing", "2025"],
   },
   {
@@ -433,7 +433,7 @@ Take your time to evaluate contractors. A good contractor will be transparent, p
     category: "Guides",
     date: "2026-02-05",
     readTime: "5 min",
-    image: "https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=800&h=400&fit=crop",
+    image: "/images/services/commercial-renovation.webp",
     tags: ["contractor", "kuala lumpur", "hiring", "tips", "renovation"],
   },
   {
@@ -498,7 +498,7 @@ Contact us to see physical samples and discuss artistic coating options for your
     category: "Materials",
     date: "2026-03-01",
     readTime: "5 min",
-    image: "https://images.unsplash.com/photo-1615529328331-f8917597711f?w=800&h=400&fit=crop",
+    image: "/images/services/artistic-coating.webp",
     tags: ["artistic coating", "Remmers", "wall coating", "feature wall", "germany"],
   },
   {
@@ -556,7 +556,7 @@ Contact FLASH CAST with your measurements, photos, and requirements so the team 
     category: "Guides",
     date: "2026-02-20",
     readTime: "5 min",
-    image: "https://images.unsplash.com/photo-1616046229478-9901c5536a45?w=800&h=400&fit=crop",
+    image: "/images/materials/kitchen-melamine-cabinets.webp",
     tags: ["built-in cabinet", "cost", "malaysia", "wardrobe", "kitchen cabinet"],
   },
 ];

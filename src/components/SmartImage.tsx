@@ -1,5 +1,5 @@
 import * as React from "react";
-import { isLocalImageSrc, preferWebpSrc } from "@/lib/imageUrl";
+import { isLocalImageSrc, preferWebpSrc, toLocalStaticImageSrc } from "@/lib/imageUrl";
 import { buildSupabaseSrcSet, isSupabasePublicObjectUrl, toSupabaseRenderImageUrl } from "@/lib/supabaseImage";
 import { cn } from "@/lib/utils";
 
@@ -40,7 +40,8 @@ export function SmartImage({
   ...rest
 }: SmartImageProps) {
   const isSupabase = isSupabasePublicObjectUrl(src);
-  const localSrc = !isSupabase && isLocalImageSrc(src) ? preferWebpSrc(src) : src;
+  const normalizedSrc = isSupabase ? src : toLocalStaticImageSrc(src);
+  const localSrc = !isSupabase && isLocalImageSrc(normalizedSrc) ? preferWebpSrc(normalizedSrc) : normalizedSrc;
 
   const resolvedSizes = sizes ?? DEFAULT_SIZES;
   const widths =

@@ -1,11 +1,11 @@
 import { ReactNode, useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
 import Link from "@/components/LocalizedLink";
-import { ArrowRight, ChevronDown, Mail, MapPin, Phone } from "lucide-react";
+import { ChevronDown, Mail, MapPin, Phone } from "lucide-react";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { useSiteSettings } from "@/hooks/useSiteSettings";
 import SmartImage from "@/components/SmartImage";
-import WhatsAppIcon from "@/components/WhatsAppIcon";
+import FooterPreludeCta from "@/components/blocks/FooterPreludeCta";
 import { addCacheBuster } from "@/lib/siteSettingsApi";
 import { stripLanguagePrefix } from "@/i18n/routes";
 import logoFallback from "@/assets/logo-flashcast.webp";
@@ -175,31 +175,18 @@ const Footer = () => {
 
   return (
     <footer className="site-footer-art">
-      {showFooterCta && <div className="footer-cta-bar hidden md:block">
-        <div className="site-container relative z-10 py-12">
-          <div className="footer-cta-shell">
-            <div className="min-w-0">
-              <p className="footer-cta-kicker">{settings.company_name}</p>
-              <h3 className="heading-safe font-display text-2xl font-bold text-surface-dark-foreground md:text-4xl">{t.ctaTitle}</h3>
-              <p className="mt-3 max-w-2xl text-sm leading-relaxed text-surface-dark-foreground/72 md:text-base">{t.ctaText}</p>
-            </div>
-            <div className="footer-cta-actions">
-              <Link to="/quote" className="footer-cta-primary">
-                {t.ctaButton} <ArrowRight className="h-4 w-4" />
-              </Link>
-              <a
-                href={settings.whatsapp_url("Footer CTA")}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="footer-cta-secondary"
-              >
-                <WhatsAppIcon className="h-[18px] w-[18px] text-whatsapp" />
-                WhatsApp
-              </a>
-            </div>
-          </div>
-        </div>
-      </div>}
+      {showFooterCta && (
+        <FooterPreludeCta
+          className="site-footer-prelude"
+          eyebrow={language === "zh" ? "项目咨询" : settings.company_name}
+          title={t.ctaTitle}
+          description={t.ctaText}
+          quoteLabel={t.ctaButton}
+          whatsappLabel={language === "zh" ? "WhatsApp 咨询" : "WhatsApp"}
+          quotePath="/quote"
+          whatsappSource="Footer CTA"
+        />
+      )}
 
       <div className="footer-surface">
         <div className="footer-content site-container py-10 md:py-16 lg:py-20">

@@ -150,6 +150,15 @@ const isAssetPath = (pathname: string) =>
   STATIC_PATH_PREFIXES.some((prefix) => pathname.startsWith(prefix)) ||
   (/\.[a-z0-9]+$/i.test(pathname) && !pathname.endsWith(".html"));
 
+const applyHtmlNoStoreHeaders = (headers: Headers) => {
+  headers.set("content-type", "text/html; charset=utf-8");
+  headers.set("cache-control", "no-store, no-cache, must-revalidate, max-age=0");
+  headers.set("cdn-cache-control", "no-store");
+  headers.set("cloudflare-cdn-cache-control", "no-store");
+  headers.set("pragma", "no-cache");
+  headers.set("expires", "0");
+};
+
 export const onRequest: PagesFunction = async (context) => {
   const { request, next } = context;
   const url = new URL(request.url);
@@ -181,7 +190,7 @@ export const onRequest: PagesFunction = async (context) => {
       ? html
       : html.replace("</head>", `    ${robotsTag}\n  </head>`);
     const headers = new Headers(response.headers);
-    headers.set("content-type", "text/html; charset=utf-8");
+    applyHtmlNoStoreHeaders(headers);
     return new Response(transformed, { status: response.status, headers });
   }
 
@@ -192,6 +201,6 @@ export const onRequest: PagesFunction = async (context) => {
   const html = await response.text();
   const transformed = meta ? injectSeo(html, meta, siteSettings) : injectBrandAssets(html, siteSettings);
   const headers = new Headers(response.headers);
-  headers.set("content-type", "text/html; charset=utf-8");
+  applyHtmlNoStoreHeaders(headers);
   return new Response(transformed, { status: response.status, headers });
 };

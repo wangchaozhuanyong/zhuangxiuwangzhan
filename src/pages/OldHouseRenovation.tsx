@@ -7,7 +7,6 @@ import SmartImage from "@/components/SmartImage";
 import PageMeta from "@/components/PageMeta";
 import { JsonLdBreadcrumb } from "@/components/JsonLd";
 import FAQSection from "@/components/blocks/FAQSection";
-import CTABanner from "@/components/blocks/CTABanner";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { useSiteSettings } from "@/hooks/useSiteSettings";
 import heroImg from "@/assets/old-house-hero.webp";
@@ -271,7 +270,6 @@ const OldHouseRenovation = () => {
       </section>
 
       <FAQSection title={t.faqTitle} description={t.faqDescription} faqs={t.faqs} />
-      <CTABanner title={t.ctaTitle} description={t.ctaDescription} quoteLabel={t.assessment} whatsappLabel={t.whatsapp} />
 
       <section className="py-8 bg-background border-t border-border">
         <div className="container-narrow text-center">

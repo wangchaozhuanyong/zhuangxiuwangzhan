@@ -2,6 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import AdminEmptyState from "@/components/admin/AdminEmptyState";
 import AdminPageHeader from "@/components/admin/AdminPageHeader";
 import { Badge } from "@/components/ui/badge";
+import { getFriendlySystemMessage } from "@/lib/chunkLoadRecovery";
 import { isSupabaseConfigured, supabase } from "@/lib/supabase";
 
 type SystemLogRow = {
@@ -12,6 +13,25 @@ type SystemLogRow = {
   message: string;
   created_at: string;
 };
+
+const severityLabels: Record<string, string> = {
+  debug: "调试",
+  info: "信息",
+  warn: "警告",
+  error: "错误",
+  critical: "严重",
+};
+
+const sourceLabels: Record<string, string> = {
+  admin: "后台",
+  frontend: "前台",
+};
+
+const eventTypeLabels: Record<string, string> = {
+  react_render_error: "页面渲染错误",
+};
+
+const getDisplayMessage = (row: SystemLogRow) => getFriendlySystemMessage(row.message, row.event_type);
 
 const AdminSystemLogs = () => {
   const { data = [], isFetching, error, refetch } = useQuery({
@@ -65,11 +85,13 @@ const AdminSystemLogs = () => {
                 <tr key={row.id} className="border-t border-border">
                   <td className="px-4 py-3 text-muted-foreground">{new Date(row.created_at).toLocaleString()}</td>
                   <td className="px-4 py-3">
-                    <Badge variant={row.severity === "error" || row.severity === "critical" ? "destructive" : "secondary"}>{row.severity}</Badge>
+                    <Badge variant={row.severity === "error" || row.severity === "critical" ? "destructive" : "secondary"}>
+                      {severityLabels[row.severity] || row.severity}
+                    </Badge>
                   </td>
-                  <td className="px-4 py-3">{row.source}</td>
-                  <td className="px-4 py-3">{row.event_type}</td>
-                  <td className="px-4 py-3">{row.message}</td>
+                  <td className="px-4 py-3">{sourceLabels[row.source] || row.source}</td>
+                  <td className="px-4 py-3">{eventTypeLabels[row.event_type] || row.event_type}</td>
+                  <td className="px-4 py-3">{getDisplayMessage(row)}</td>
                 </tr>
               ))}
             </tbody>

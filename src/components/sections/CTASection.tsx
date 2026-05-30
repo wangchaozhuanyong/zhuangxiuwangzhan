@@ -1,10 +1,6 @@
-import Link from "@/components/LocalizedLink";
-import { ArrowRight } from "lucide-react";
-import WhatsAppIcon from "@/components/WhatsAppIcon";
-import Reveal from "@/components/Reveal";
+import FooterPreludeCta from "@/components/blocks/FooterPreludeCta";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { useT } from "@/i18n/useT";
-import { useSiteSettings } from "@/hooks/useSiteSettings";
 import { usePublishedCtaBlock } from "@/hooks/usePublishedContent";
 
 const copy = {
@@ -22,7 +18,6 @@ const copy = {
 const CTASection = () => {
   const { language } = useLanguage();
   const t = useT();
-  const settings = useSiteSettings();
   const content = copy[language];
   const eyebrow = language === "zh" ? "项目咨询" : "Project Consultation";
   const { data: ctaBlock } = usePublishedCtaBlock(language, "home_final");
@@ -41,36 +36,16 @@ const CTASection = () => {
   const primaryUrl = dynamic?.primary_url || "/quote";
 
   return (
-    <section className="home-footer-prelude section-padding" id="cta">
-      <div className="home-footer-prelude__beam" aria-hidden="true" />
-      <div className="container-narrow relative z-10">
-        <Reveal>
-          <div className="home-footer-prelude__panel">
-            <span className="home-footer-prelude__rule" aria-hidden="true" />
-            <div className="home-footer-prelude__copy">
-              <p className="home-footer-prelude__eyebrow">{eyebrow}</p>
-              <h2 className="home-footer-prelude__title">{title}</h2>
-              <p className="home-footer-prelude__text">{description}</p>
-            </div>
-            <div className="home-footer-prelude__actions">
-              <Link to={primaryUrl} className="home-footer-prelude__button home-footer-prelude__button--primary">
-                <ArrowRight className="h-4 w-4" />
-                <span>{primaryLabel}</span>
-              </Link>
-              <a
-                href={settings.whatsapp_url()}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="home-footer-prelude__button home-footer-prelude__button--secondary"
-              >
-                <WhatsAppIcon className="h-[18px] w-[18px] text-whatsapp" />
-                <span>{t("cta.whatsapp")}</span>
-              </a>
-            </div>
-          </div>
-        </Reveal>
-      </div>
-    </section>
+    <FooterPreludeCta
+      id="cta"
+      eyebrow={eyebrow}
+      title={title}
+      description={description}
+      quoteLabel={primaryLabel}
+      quotePath={primaryUrl}
+      whatsappLabel={t("cta.whatsapp")}
+      whatsappSource="Home CTA"
+    />
   );
 };
 

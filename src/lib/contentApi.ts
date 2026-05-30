@@ -265,7 +265,7 @@ export const getPublishedServiceBySlug = async (slug: string, language: "en" | "
     .select("*")
     .eq("status", "published")
     .eq("slug", slug)
-    .single();
+    .maybeSingle();
 
   if (error || !data) return fallbackServices();
   return mapPublishedService(data, language);
@@ -280,7 +280,7 @@ export const getPublishedProjectBySlug = async (slug: string, language: "en" | "
     .select("*, project_images(*)")
     .eq("status", "published")
     .eq("slug", slug)
-    .single();
+    .maybeSingle();
 
   if (error || !data) return fallbackProjects();
 
@@ -422,7 +422,7 @@ export const getPublishedBlogPostBySlug = async (slug: string, language: "en" | 
     .select("*")
     .eq("status", "published")
     .eq("slug", slug)
-    .single();
+    .maybeSingle();
 
   if (error || !data) return fallbackPost();
 
@@ -452,7 +452,7 @@ export const getPublishedServiceAreaBySlug = async (slug: string, language: "en"
     .select("*")
     .eq("status", "published")
     .eq("slug", slug)
-    .single();
+    .maybeSingle();
 
   if (error || !data) return fallback();
 
@@ -505,7 +505,7 @@ export const getPublishedLandingPageBySlug = async (slug: string, language: "en"
     .select("*")
     .eq("status", "published")
     .eq("slug", slug)
-    .single();
+    .maybeSingle();
 
   if (error || !data) return fallback();
 

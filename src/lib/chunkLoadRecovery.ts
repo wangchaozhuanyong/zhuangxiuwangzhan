@@ -39,8 +39,8 @@ export const getErrorMessage = (value: unknown) => {
   }
 };
 
-export const getFriendlySystemMessage = (message: string, eventType?: string) => {
-  if (eventType === "react_render_error" && isChunkLoadError(message)) {
+export const getFriendlySystemMessage = (message: string, _eventType?: string) => {
+  if (isChunkLoadError(message)) {
     return "前端版本文件加载失败，通常是浏览器缓存了旧版本页面导致。系统会尝试自动刷新一次。";
   }
 
@@ -72,11 +72,7 @@ export const recoverFromChunkLoadError = (value: unknown) => {
   const path = window.location.pathname;
   const now = Date.now();
   const previous = readRecoveryState();
-  const alreadyRetried =
-    previous &&
-    previous.path === path &&
-    previous.message === message &&
-    now - previous.timestamp < RETRY_WINDOW_MS;
+  const alreadyRetried = previous && previous.path === path && now - previous.timestamp < RETRY_WINDOW_MS;
 
   if (alreadyRetried) return false;
 
@@ -90,6 +86,13 @@ export const installChunkLoadRecovery = () => {
 
   window.addEventListener("unhandledrejection", (event) => {
     if (recoverFromChunkLoadError(event.reason)) {
+      event.preventDefault();
+    }
+  });
+
+  window.addEventListener("vite:preloadError", (event) => {
+    const preloadEvent = event as Event & { payload?: unknown };
+    if (recoverFromChunkLoadError(preloadEvent.payload || preloadEvent)) {
       event.preventDefault();
     }
   });

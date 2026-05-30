@@ -97,6 +97,11 @@ const AppShell = () => {
   const { language } = useLanguage();
   const isAdminRoute = location.pathname.startsWith("/admin");
   const isHomeRoute = !isAdminRoute && stripLanguagePrefix(location.pathname) === "/";
+  const publicMainClass = isAdminRoute
+    ? undefined
+    : isHomeRoute
+      ? "public-main public-main--home"
+      : "public-main public-main--subpage";
 
   return (
     <PublicChromeProvider isAdminRoute={isAdminRoute} isHomeRoute={isHomeRoute}>
@@ -108,7 +113,7 @@ const AppShell = () => {
         </a>
       )}
       {!isAdminRoute && <Navbar />}
-      <div id="main-content" tabIndex={-1}>
+      <div id="main-content" tabIndex={-1} className={publicMainClass}>
         <AppErrorBoundary isAdminRoute={isAdminRoute}>
         <Suspense fallback={<PageLoader />}>
           <Routes>

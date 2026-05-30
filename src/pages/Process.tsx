@@ -4,7 +4,6 @@ import Reveal from "@/components/Reveal";
 import PageMeta from "@/components/PageMeta";
 import { JsonLdBreadcrumb } from "@/components/JsonLd";
 import HeroBanner from "@/components/blocks/HeroBanner";
-import CTABanner from "@/components/blocks/CTABanner";
 import SectionHeader from "@/components/blocks/SectionHeader";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { usePublishedProcessSteps, usePublishedSitePage } from "@/hooks/usePublishedContent";
@@ -127,13 +126,6 @@ const Process = () => {
           </div>
         </div>
       </section>
-
-      <CTABanner
-        title={pageContent?.cta_title || t.ctaTitle}
-        description={pageContent?.cta_description || t.ctaDescription}
-        quoteLabel={t.quoteLabel}
-        whatsappLabel={t.whatsappLabel}
-      />
     </main>
   );
 };

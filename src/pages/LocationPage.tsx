@@ -8,7 +8,6 @@ import Reveal from "@/components/Reveal";
 import SmartImage from "@/components/SmartImage";
 import PageMeta from "@/components/PageMeta";
 import { JsonLdBreadcrumb } from "@/components/JsonLd";
-import CTABanner from "@/components/blocks/CTABanner";
 import FAQSection from "@/components/blocks/FAQSection";
 import SectionHeader from "@/components/blocks/SectionHeader";
 import { locationsData } from "@/data/locations";
@@ -272,13 +271,6 @@ const LocationPage = () => {
       )}
 
       <FAQSection title={t.faqTitle(location.name)} faqs={localizedFaqs} />
-
-      <CTABanner
-        title={t.ctaTitle(location.name)}
-        description={t.ctaDescription(location.name)}
-        quoteLabel={t.quote}
-        whatsappLabel={t.whatsapp}
-      />
 
       <section className="py-8 bg-background border-t border-border">
         <div className="container-narrow text-center">

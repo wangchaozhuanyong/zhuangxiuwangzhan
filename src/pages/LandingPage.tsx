@@ -5,7 +5,6 @@ import { Button } from "@/components/ui/button";
 import { ArrowRight, CheckCircle, MapPin, Star } from "lucide-react";
 import WhatsAppIcon from "@/components/WhatsAppIcon";
 import Reveal from "@/components/Reveal";
-import CTABanner from "@/components/blocks/CTABanner";
 import FAQSection from "@/components/blocks/FAQSection";
 import PageMeta from "@/components/PageMeta";
 import SmartImage from "@/components/SmartImage";
@@ -193,9 +192,6 @@ const LandingPage = () => {
 
       {/* FAQ */}
       <FAQSection faqs={landingPage.faqs} className="section-padding bg-background" />
-
-      {/* CTA */}
-      <CTABanner title={t.ctaTitle} description={t.ctaDescription} quoteLabel={t.quote} whatsappLabel={t.whatsapp} />
     </main>
   );
 };
