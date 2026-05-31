@@ -34,6 +34,7 @@ const invokeSubmitLead = async (body: Record<string, unknown>) => {
 };
 
 export const submitContactLead = async (payload: ContactSubmission & FormGuardFields) => {
+  const elapsedMs = Math.max(0, Date.now() - payload.startedAt);
   const data = await invokeSubmitLead({
     type: "contact",
     name: payload.name,
@@ -45,11 +46,13 @@ export const submitContactLead = async (payload: ContactSubmission & FormGuardFi
     sourcePath: payload.sourcePath || (typeof window !== "undefined" ? window.location.pathname : ""),
     website: payload.website,
     startedAt: payload.startedAt,
+    elapsedMs,
   });
   return { id: data.id || "" };
 };
 
 export const submitQuoteRequest = async (payload: QuoteSubmission & FormGuardFields) => {
+  const elapsedMs = Math.max(0, Date.now() - payload.startedAt);
   const data = await invokeSubmitLead({
     type: "quote",
     name: payload.name,
@@ -63,6 +66,7 @@ export const submitQuoteRequest = async (payload: QuoteSubmission & FormGuardFie
     sourcePath: payload.sourcePath || (typeof window !== "undefined" ? window.location.pathname : ""),
     website: payload.website,
     startedAt: payload.startedAt,
+    elapsedMs,
   });
   return { id: data.id || "" };
 };

@@ -114,6 +114,59 @@ const pickLocalizedObject = (row: any, field: string, language: "en" | "zh"): Re
 
 const normalizeCmsSectionType = (value: string) => value.trim().toLowerCase().replace(/-/g, "_");
 
+const mapPublishedCmsPage = (
+  cmsRow: any,
+  language: "en" | "zh",
+  legacy: PublishedSitePage | null = null,
+): PublishedSitePage => {
+  const sections = ((cmsRow.cms_sections || []) as any[])
+    .filter((section) => section.status === "published" && !section.deleted_at)
+    .sort((a, b) => (a.sort_order || 0) - (b.sort_order || 0));
+  const pickContent = (section: any) => pickLocalizedObject(section, "content", language);
+  const typeMatches = (section: any, types: string[]) => types.includes(normalizeCmsSectionType(String(section.section_type || "")));
+  const hero = sections.find((section) => typeMatches(section, ["hero"]) || section.section_key === "hero");
+  const richText = sections.find((section) => typeMatches(section, ["rich_text", "text", "content"]));
+  const cta = sections.find((section) => typeMatches(section, ["cta"]) || String(section.section_key || "").includes("cta"));
+  const listSection = sections.find((section) => {
+    const content = pickContent(section);
+    return Array.isArray(content.items) && content.items.length > 0;
+  });
+  const heroContent = pickContent(hero);
+  const richContent = pickContent(richText);
+  const ctaContent = pickContent(cta);
+  const listContent = pickContent(listSection);
+  const heroSettings = hero?.settings || {};
+  const ctaSettings = cta?.settings || {};
+  const publishedSections: PublishedCmsSection[] = sections.map((section) => ({
+    id: section.id,
+    section_key: section.section_key,
+    section_type: section.section_type,
+    title: pickLocalizedText(section, "title", language),
+    content: pickContent(section),
+    settings: section.settings || {},
+    sort_order: Number(section.sort_order || 0),
+  }));
+
+  return {
+    id: cmsRow.id,
+    page_key: cmsRow.page_key,
+    path: cmsRow.path || legacy?.path || "",
+    title: pickLocalizedText(cmsRow, "title", language) || heroContent.title || legacy?.title || "",
+    subtitle: heroContent.subtitle || legacy?.subtitle || "",
+    description: heroContent.description || heroContent.excerpt || legacy?.description || "",
+    content: richContent.content || heroContent.content || legacy?.content || "",
+    cta_title: ctaContent.title || ctaSettings.title || legacy?.cta_title || "",
+    cta_description: ctaContent.description || ctaSettings.description || legacy?.cta_description || "",
+    image_url: heroContent.image_url || heroSettings.image_url || legacy?.image_url || null,
+    alt: heroContent.alt || heroSettings.alt || legacy?.alt || "",
+    seo_title: pickLocalizedText(cmsRow, "seo_title", language) || legacy?.seo_title || "",
+    seo_description: pickLocalizedText(cmsRow, "seo_description", language) || legacy?.seo_description || "",
+    seo_keywords: pickLocalizedText(cmsRow, "seo_keywords", language) || legacy?.seo_keywords || "",
+    items: listContent.items || heroContent.items || richContent.items || legacy?.items || [],
+    sections: publishedSections,
+  };
+};
+
 export const getPublishedBrandPartners = async (): Promise<PublishedBrandPartner[]> => {
   if (!isSupabaseConfigured) return [];
 
@@ -310,50 +363,24 @@ export const getPublishedSitePage = async (
   const cmsRow: any = (cmsResponse.data || [])[0];
   if (!cmsRow) return legacy;
 
-  const sections = ((cmsRow.cms_sections || []) as any[])
-    .filter((section) => section.status === "published" && !section.deleted_at)
-    .sort((a, b) => (a.sort_order || 0) - (b.sort_order || 0));
-  const pickContent = (section: any) => pickLocalizedObject(section, "content", language);
-  const typeMatches = (section: any, types: string[]) => types.includes(normalizeCmsSectionType(String(section.section_type || "")));
-  const hero = sections.find((section) => typeMatches(section, ["hero"]) || section.section_key === "hero");
-  const richText = sections.find((section) => typeMatches(section, ["rich_text", "text", "content"]));
-  const cta = sections.find((section) => typeMatches(section, ["cta"]) || String(section.section_key || "").includes("cta"));
-  const listSection = sections.find((section) => {
-    const content = pickContent(section);
-    return Array.isArray(content.items) && content.items.length > 0;
-  });
-  const heroContent = pickContent(hero);
-  const richContent = pickContent(richText);
-  const ctaContent = pickContent(cta);
-  const listContent = pickContent(listSection);
-  const heroSettings = hero?.settings || {};
-  const ctaSettings = cta?.settings || {};
-  const publishedSections: PublishedCmsSection[] = sections.map((section) => ({
-    id: section.id,
-    section_key: section.section_key,
-    section_type: section.section_type,
-    title: pickLocalizedText(section, "title", language),
-    content: pickContent(section),
-    settings: section.settings || {},
-    sort_order: Number(section.sort_order || 0),
-  }));
+  return mapPublishedCmsPage(cmsRow, language, legacy);
+};
 
-  return {
-    id: cmsRow.id,
-    page_key: cmsRow.page_key,
-    path: cmsRow.path || legacy?.path || "",
-    title: pickLocalizedText(cmsRow, "title", language) || heroContent.title || legacy?.title || "",
-    subtitle: heroContent.subtitle || legacy?.subtitle || "",
-    description: heroContent.description || heroContent.excerpt || legacy?.description || "",
-    content: richContent.content || heroContent.content || legacy?.content || "",
-    cta_title: ctaContent.title || ctaSettings.title || legacy?.cta_title || "",
-    cta_description: ctaContent.description || ctaSettings.description || legacy?.cta_description || "",
-    image_url: heroContent.image_url || heroSettings.image_url || legacy?.image_url || null,
-    alt: heroContent.alt || heroSettings.alt || legacy?.alt || "",
-    seo_title: pickLocalizedText(cmsRow, "seo_title", language) || legacy?.seo_title || "",
-    seo_description: pickLocalizedText(cmsRow, "seo_description", language) || legacy?.seo_description || "",
-    seo_keywords: pickLocalizedText(cmsRow, "seo_keywords", language) || legacy?.seo_keywords || "",
-    items: listContent.items || heroContent.items || richContent.items || legacy?.items || [],
-    sections: publishedSections,
-  };
+export const getPublishedCmsPageByPath = async (
+  language: "en" | "zh",
+  path: string,
+): Promise<PublishedSitePage | null> => {
+  if (!isSupabaseConfigured) return null;
+  const normalizedPath = `/${String(path || "").replace(/^\/+/, "").replace(/\/+$/, "")}`;
+  const { data, error } = await supabase!
+    .from("cms_pages")
+    .select("*, cms_sections(*)")
+    .eq("status", "published")
+    .is("deleted_at", null)
+    .eq("path", normalizedPath)
+    .limit(1);
+
+  if (error) return null;
+  const cmsRow: any = (data || [])[0];
+  return cmsRow ? mapPublishedCmsPage(cmsRow, language) : null;
 };

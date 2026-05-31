@@ -459,8 +459,10 @@ export const getPublishedServiceAreaBySlug = async (slug: string, language: "en"
 
   const localize = (value: string) => (language === "zh" ? translateDisplayText(value, language) : value);
 
+  const localizedTitle = pickLocalizedText(data, "title", language);
+
   return {
-    name: localize(data.area_name || pickLocalizedText(data, "title", language)),
+    name: localize(localizedTitle || data.area_name || ""),
     slug: data.slug,
     metaTitle: localize(pickLocalizedText(data, "seo_title", language) || data.area_name || ""),
     description: localize(pickLocalizedText(data, "seo_description", language) || pickLocalizedText(data, "excerpt", language)),

@@ -37,6 +37,7 @@ const Blog = lazy(() => import("./pages/Blog"));
 const BlogDetail = lazy(() => import("./pages/BlogDetail"));
 const LocationPage = lazy(() => import("./pages/LocationPage"));
 const LandingPage = lazy(() => import("./pages/LandingPage"));
+const CmsDynamicPage = lazy(() => import("./pages/CmsDynamicPage"));
 const Privacy = lazy(() => import("./pages/Privacy"));
 const Terms = lazy(() => import("./pages/Terms"));
 const OldHouseRenovation = lazy(() => import("./pages/OldHouseRenovation"));
@@ -238,6 +239,7 @@ const AppShell = () => {
               <Route path="/landing/*" element={<LegacyLanguageRedirect />} />
               <Route path="/privacy" element={<LegacyLanguageRedirect />} />
               <Route path="/terms" element={<LegacyLanguageRedirect />} />
+              <Route path="/:lang/*" element={<><LanguageRouteSync /><CmsDynamicPage /></>} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </Suspense>

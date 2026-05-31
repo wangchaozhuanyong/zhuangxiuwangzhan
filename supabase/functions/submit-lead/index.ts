@@ -21,6 +21,7 @@ type ContactBody = {
   sourcePath?: string;
   website?: string;
   startedAt?: number;
+  elapsedMs?: number;
 };
 
 type QuoteBody = {
@@ -36,6 +37,7 @@ type QuoteBody = {
   sourcePath?: string;
   website?: string;
   startedAt?: number;
+  elapsedMs?: number;
 };
 
 type SubmitBody = ContactBody | QuoteBody;
@@ -131,7 +133,10 @@ serve(async (req) => {
   }
 
   const startedAt = Number(body.startedAt || 0);
-  if (!startedAt || Date.now() - startedAt < MIN_SUBMIT_MS) {
+  const elapsedMs = Number(body.elapsedMs || 0);
+  const serverAgeMs = startedAt ? Date.now() - startedAt : 0;
+  const isTooFast = elapsedMs > 0 ? elapsedMs < MIN_SUBMIT_MS : !startedAt || serverAgeMs < MIN_SUBMIT_MS;
+  if (isTooFast) {
     return json({ error: "Please wait a moment before submitting." }, 400);
   }
 
