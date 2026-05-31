@@ -1,6 +1,6 @@
 import { expect, test } from "@playwright/test";
 
-const publicPaths = ["/zh", "/zh/services", "/zh/projects", "/zh/quote", "/zh/process"];
+const publicPaths = ["/zh", "/zh/services", "/zh/materials", "/zh/projects", "/zh/quote", "/zh/contact", "/zh/process"];
 
 const viewports = [
   { name: "desktop", width: 1440, height: 1000 },
