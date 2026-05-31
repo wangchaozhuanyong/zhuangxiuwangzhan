@@ -45,7 +45,6 @@ const pages = [
 
 const suspiciousPatterns = [
   /\?{3,}/,
-  /Frequently Asked Questions/,
   /旧屋翻新常见问题/,
   /关于马来西亚旧屋翻新/,
   /Corporate Office in KL Sentral/,
@@ -90,7 +89,10 @@ for (const route of pages) {
         .filter((img) => img.naturalWidth === 0 || img.naturalHeight === 0)
         .map((img) => ({ src: img.currentSrc || img.src, alt: img.alt })),
     );
-    const matches = suspiciousPatterns
+    const patterns = route.startsWith("/zh/")
+      ? [/Frequently Asked Questions/, ...suspiciousPatterns]
+      : suspiciousPatterns;
+    const matches = patterns
       .map((pattern) => {
         const match = text.match(pattern);
         return match ? match[0] : null;

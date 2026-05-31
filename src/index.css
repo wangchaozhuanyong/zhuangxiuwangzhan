@@ -3371,6 +3371,34 @@
     font-weight: 700;
   }
 
+  .material-card-action {
+    display: inline-flex;
+    min-height: 2.35rem;
+    align-items: center;
+    justify-content: center;
+    gap: 0.35rem;
+    flex: 0 0 auto;
+    border-radius: 999px;
+    background: #15120e;
+    color: #f8f3ea;
+    font-size: 0.78rem;
+    font-weight: 800;
+    line-height: 1;
+    padding: 0.55rem 0.78rem;
+    text-decoration: none;
+    transition:
+      transform 180ms ease,
+      background 180ms ease,
+      box-shadow 180ms ease;
+  }
+
+  .material-card-action:hover {
+    transform: translateY(-1px);
+    background: #241d15;
+    color: #fffaf0;
+    box-shadow: 0 14px 30px -22px rgba(21, 18, 14, 0.75);
+  }
+
   .material-directory-card:hover .material-directory-card__title {
     color: hsl(var(--accent));
   }
@@ -3429,6 +3457,16 @@
 
   .material-depth-card__meta + .material-depth-card__meta {
     -webkit-line-clamp: 1;
+  }
+
+  .material-depth-card__actions {
+    display: flex;
+    margin-top: auto;
+    padding-top: 0.8rem;
+  }
+
+  .material-depth-card__actions .material-card-action {
+    width: 100%;
   }
 
   .material-depth-card:hover .material-depth-card__title {
@@ -3688,6 +3726,29 @@
   .public-main--subpage .img-zoom:hover img {
     transform: scale(1.045);
     filter: saturate(1.07) contrast(1.05);
+  }
+
+  .public-main--subpage .material-directory-card .img-zoom::before,
+  .public-main--subpage .material-depth-card .img-zoom::before,
+  .public-main--subpage .material-detail-media__frame.img-zoom::before {
+    content: none;
+    display: none;
+  }
+
+  .public-main--subpage .material-directory-card .img-zoom img,
+  .public-main--subpage .material-depth-card .img-zoom img,
+  .public-main--subpage .material-detail-media__frame.img-zoom img {
+    transform: none;
+    filter: saturate(1.08) contrast(1.06);
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    .public-main--subpage .material-directory-card:hover .img-zoom img,
+    .public-main--subpage .material-depth-card:hover .img-zoom img,
+    .public-main--subpage .material-detail-media__frame.img-zoom:hover img {
+      transform: scale(1.025);
+      filter: saturate(1.12) contrast(1.08);
+    }
   }
 
   .service-category-nav {
