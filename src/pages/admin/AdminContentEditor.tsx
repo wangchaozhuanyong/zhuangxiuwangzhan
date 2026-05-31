@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useDeferredValue, useEffect, useMemo, useRef, useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { invalidateAdminContentLists, invalidatePublishedContent } from "@/lib/adminInvalidate";
 import { useAdminEditorRows } from "@/lib/adminQueries";
@@ -488,6 +488,7 @@ const AdminContentEditor = () => {
   const [status, setStatus] = useState("");
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
+  const deferredSearch = useDeferredValue(search);
 
   const setRecordField = useCallback((patch: Record<string, any> | ((prev: Record<string, any>) => Record<string, any>)) => {
     recordDirtyRef.current = true;
@@ -511,13 +512,13 @@ const AdminContentEditor = () => {
     [availableStatuses, lang, type],
   );
   const filteredRows = useMemo(() => {
-    const query = search.trim().toLowerCase();
+    const query = deferredSearch.trim().toLowerCase();
     return rows.filter((row) => {
       const matchesSearch = !query || visibleFields.some((field) => String(row[field] ?? "").toLowerCase().includes(query));
       const matchesStatus = statusFilter === "all" || row.status === statusFilter;
       return matchesSearch && matchesStatus;
     });
-  }, [rows, search, statusFilter, visibleFields]);
+  }, [rows, deferredSearch, statusFilter, visibleFields]);
 
   useEffect(() => {
     recordDirtyRef.current = false;

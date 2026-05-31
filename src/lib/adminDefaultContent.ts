@@ -30,6 +30,9 @@ type SeedSummary = {
 
 type DbRow = Record<string, any>;
 
+const AUTO_SEED_CACHE_KEY = "flashcast_admin_default_seed_checked_at";
+const AUTO_SEED_CACHE_MS = 12 * 60 * 60 * 1000;
+
 const zh = (value: string) => translateDisplayText(value || "", "zh");
 const tr = (key: string, lang: "en" | "zh") => translations[key]?.[lang] || key;
 
@@ -71,6 +74,46 @@ const omitReadonly = (row: DbRow) => {
   delete copy.created_at;
   delete copy.updated_at;
   return copy;
+};
+
+const getAutoSeedCacheTime = () => {
+  if (typeof window === "undefined") return 0;
+  try {
+    const value = Number(window.localStorage.getItem(AUTO_SEED_CACHE_KEY) || "0");
+    return Number.isFinite(value) ? value : 0;
+  } catch {
+    return 0;
+  }
+};
+
+const shouldSkipAutoSeed = () => {
+  const checkedAt = getAutoSeedCacheTime();
+  return checkedAt > 0 && Date.now() - checkedAt < AUTO_SEED_CACHE_MS;
+};
+
+const rememberAutoSeed = () => {
+  if (typeof window === "undefined") return;
+  try {
+    window.localStorage.setItem(AUTO_SEED_CACHE_KEY, String(Date.now()));
+  } catch {
+    // Ignore storage failures. The seed still completed; only the browser-side skip cache failed.
+  }
+};
+
+const scheduleIdleWork = (callback: () => void) => {
+  if (typeof window === "undefined") return () => undefined;
+  const browserWindow = window as typeof window & {
+    requestIdleCallback?: (cb: () => void, options?: { timeout: number }) => number;
+    cancelIdleCallback?: (id: number) => void;
+  };
+
+  if (browserWindow.requestIdleCallback) {
+    const idleId = browserWindow.requestIdleCallback(callback, { timeout: 3500 });
+    return () => browserWindow.cancelIdleCallback?.(idleId);
+  }
+
+  const timeoutId = window.setTimeout(callback, 1800);
+  return () => window.clearTimeout(timeoutId);
 };
 
 const buildBlankPatch = (current: DbRow, defaults: DbRow) => {
@@ -837,7 +880,14 @@ const testimonialRows = testimonials.map((item, index) => ({
 }));
 
 const patchOrInsertByKey = async (table: string, key: string, rows: DbRow[]) => {
-  const { data, error } = await supabase!.from(table).select("*");
+  const fields = Array.from(
+    new Set([
+      "id",
+      key,
+      ...rows.flatMap((row) => Object.keys(omitReadonly(row))),
+    ]),
+  );
+  const { data, error } = await supabase!.from(table).select(fields.join(","));
   if (error) throw error;
 
   let inserted = 0;
@@ -964,6 +1014,7 @@ export async function ensureAdminDefaultContent(): Promise<SeedSummary> {
     add(await insertIfGroupEmpty("brand_partners", brandPartnerRows));
     add(await insertIfGroupEmpty("testimonials", testimonialRows));
 
+    rememberAutoSeed();
     return { status: "done" as const, inserted, updated };
   })().catch((error) => {
     seedPromise = null;
@@ -984,19 +1035,30 @@ export function useAdminDefaultContentSeed() {
 
   useEffect(() => {
     let active = true;
-    setSummary((current) => ({ ...current, status: "running" }));
-    void ensureAdminDefaultContent().then((result) => {
+    if (shouldSkipAutoSeed()) {
+      setSummary({ status: "done", inserted: 0, updated: 0 });
+      return () => {
+        active = false;
+      };
+    }
+
+    const cancelIdleWork = scheduleIdleWork(() => {
       if (!active) return;
-      setSummary(result);
-      if (result.status === "done" && (result.inserted || result.updated)) {
-        void queryClient.invalidateQueries({ queryKey: ["admin"] });
-        void queryClient.invalidateQueries({ queryKey: ["published"] });
-        void queryClient.invalidateQueries({ queryKey: ["site-settings"] });
-      }
+      setSummary((current) => ({ ...current, status: "running" }));
+      void ensureAdminDefaultContent().then((result) => {
+        if (!active) return;
+        setSummary(result);
+        if (result.status === "done" && (result.inserted || result.updated)) {
+          void queryClient.invalidateQueries({ queryKey: ["admin"], refetchType: "inactive" });
+          void queryClient.invalidateQueries({ queryKey: ["published"], refetchType: "inactive" });
+          void queryClient.invalidateQueries({ queryKey: ["site-settings"], refetchType: "inactive" });
+        }
+      });
     });
 
     return () => {
       active = false;
+      cancelIdleWork();
     };
   }, [queryClient]);
 

@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { useAdminContentHealth, useAdminDashboardStats } from "@/lib/adminQueries";
@@ -75,12 +76,19 @@ const copy = {
 const AdminDashboard = () => {
   const lang = getAdminLang();
   const t = copy[lang];
+  const [loadHealthCards, setLoadHealthCards] = useState(false);
   const { data } = useAdminDashboardStats();
-  const { data: healthItems = [] } = useAdminContentHealth();
+  const { data: healthItems = [] } = useAdminContentHealth({ enabled: loadHealthCards });
   const counts = data?.counts ?? {};
+  const healthValue = (value: number) => (loadHealthCards ? value : "…");
   const contentIssues = healthItems.filter((item) => item.issues.length > 0).length;
   const missingEnglish = healthItems.filter((item) => item.missingEnglish.length > 0).length;
   const draftContent = healthItems.filter((item) => item.status === "draft").length;
+
+  useEffect(() => {
+    const timer = window.setTimeout(() => setLoadHealthCards(true), 900);
+    return () => window.clearTimeout(timer);
+  }, []);
   const recentLeads = (data?.recentLeads ?? []) as Array<{
     id: string;
     name?: string;
@@ -112,19 +120,19 @@ const AdminDashboard = () => {
       <div className="mb-6 grid gap-4 lg:grid-cols-3">
         <AdminStatCard
           label="内容健康检查"
-          value={contentIssues}
+          value={healthValue(contentIssues)}
           href="/admin/content-health"
           helpText="集中查看缺英文、缺 SEO、缺图片和必填缺失。数字越低越好。"
         />
         <AdminStatCard
           label="发布中心"
-          value={draftContent}
+          value={healthValue(draftContent)}
           href="/admin/publish-center"
           helpText="集中查看草稿、已发布、归档和发布前风险。"
         />
         <AdminStatCard
           label="英文生成中心"
-          value={missingEnglish}
+          value={healthValue(missingEnglish)}
           href="/admin/english-center"
           helpText="集中扫描缺英文内容，并支持批量自动生成英文。"
         />

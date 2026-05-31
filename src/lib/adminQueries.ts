@@ -9,6 +9,9 @@ import {
 import { isSupabaseConfigured, supabase } from "@/lib/supabase";
 
 const enabled = isSupabaseConfigured && Boolean(supabase);
+const ADMIN_LIST_STALE_TIME = 5 * 60 * 1000;
+const ADMIN_HEAVY_STALE_TIME = 10 * 60 * 1000;
+const ADMIN_QUERY_GC_TIME = 30 * 60 * 1000;
 
 export type AdminMediaAsset = {
   id: string;
@@ -26,6 +29,8 @@ export function useAdminLeads() {
     queryKey: ["admin", "leads", { limit: 200 }],
     enabled,
     placeholderData: keepPreviousData,
+    staleTime: ADMIN_LIST_STALE_TIME,
+    gcTime: ADMIN_QUERY_GC_TIME,
     queryFn: async () => {
       const { data, error } = await supabase!.from("leads").select("*").order("created_at", { ascending: false }).limit(200);
       if (error) throw error;
@@ -39,6 +44,8 @@ export function useAdminQuotes() {
     queryKey: ["admin", "quotes", { limit: 200 }],
     enabled,
     placeholderData: keepPreviousData,
+    staleTime: ADMIN_LIST_STALE_TIME,
+    gcTime: ADMIN_QUERY_GC_TIME,
     queryFn: async () => {
       const { data, error } = await supabase!.from("quote_requests").select("*").order("created_at", { ascending: false }).limit(200);
       if (error) throw error;
@@ -52,6 +59,8 @@ export function useAdminMediaAssets() {
     queryKey: ["admin", "media_assets", { limit: 200 }],
     enabled,
     placeholderData: keepPreviousData,
+    staleTime: ADMIN_LIST_STALE_TIME,
+    gcTime: ADMIN_QUERY_GC_TIME,
     queryFn: async () => {
       const { data, error } = await supabase!
         .from("media_assets")
@@ -135,6 +144,8 @@ export function useAdminDashboardStats() {
     queryKey: ["admin", "dashboard", "stats"],
     enabled,
     placeholderData: keepPreviousData,
+    staleTime: 2 * 60 * 1000,
+    gcTime: ADMIN_QUERY_GC_TIME,
     queryFn: async (): Promise<AdminDashboardStats> => {
       const now = new Date();
       const dayStart = new Date(now);
@@ -445,11 +456,13 @@ const buildHealthItem = (source: HealthSource, row: Record<string, unknown>): Ad
   };
 };
 
-export function useAdminContentHealth() {
+export function useAdminContentHealth(options: { enabled?: boolean } = {}) {
   return useQuery({
     queryKey: ["admin", "content_health"],
-    enabled,
+    enabled: enabled && options.enabled !== false,
     placeholderData: keepPreviousData,
+    staleTime: ADMIN_HEAVY_STALE_TIME,
+    gcTime: ADMIN_QUERY_GC_TIME,
     queryFn: async (): Promise<AdminContentHealthItem[]> => {
       const results = await Promise.all(
         healthSources.map(async (source) => {
@@ -577,6 +590,8 @@ export function useAdminServices() {
     queryKey: ["admin", "services", { limit: 500 }],
     enabled,
     placeholderData: keepPreviousData,
+    staleTime: ADMIN_LIST_STALE_TIME,
+    gcTime: ADMIN_QUERY_GC_TIME,
     queryFn: async () => {
       const { data, error } = await supabase!
         .from("services")
@@ -595,6 +610,8 @@ export function useAdminProjects() {
     queryKey: ["admin", "projects", { limit: 500 }],
     enabled,
     placeholderData: keepPreviousData,
+    staleTime: ADMIN_LIST_STALE_TIME,
+    gcTime: ADMIN_QUERY_GC_TIME,
     queryFn: async () => {
       const { data, error } = await supabase!
         .from("projects")
@@ -615,6 +632,8 @@ export function useAdminMaterials() {
     queryKey: ["admin", "materials", { limit: 500 }],
     enabled,
     placeholderData: keepPreviousData,
+    staleTime: ADMIN_LIST_STALE_TIME,
+    gcTime: ADMIN_QUERY_GC_TIME,
     queryFn: async () => {
       const { data, error } = await supabase!
         .from("materials")
@@ -633,6 +652,8 @@ export function useAdminBlogPosts() {
     queryKey: ["admin", "blog_posts", { limit: 500 }],
     enabled,
     placeholderData: keepPreviousData,
+    staleTime: ADMIN_LIST_STALE_TIME,
+    gcTime: ADMIN_QUERY_GC_TIME,
     queryFn: async () => {
       const { data, error } = await supabase!
         .from("blog_posts")
@@ -738,6 +759,8 @@ export function useAdminSeoAudit() {
     queryKey: ["admin", "seo", "audit"],
     enabled,
     placeholderData: keepPreviousData,
+    staleTime: ADMIN_HEAVY_STALE_TIME,
+    gcTime: ADMIN_QUERY_GC_TIME,
     queryFn: async (): Promise<AdminSeoAuditRow[]> => {
       const entries = await Promise.all(
         adminSeoSources.map(async (source) => {
@@ -756,6 +779,8 @@ export function useAdminTableRows(table: AdminContentTable, limit = 200) {
     queryKey: ["admin", table, "rows", { limit }],
     enabled,
     placeholderData: keepPreviousData,
+    staleTime: ADMIN_LIST_STALE_TIME,
+    gcTime: ADMIN_QUERY_GC_TIME,
     queryFn: async () => {
       const { data, error } = await supabase!
         .from(table)
@@ -775,6 +800,8 @@ export function useAdminSimpleCmsRows(table: AdminSimpleCmsTable) {
     queryKey: ["admin", table, "rows"],
     enabled,
     placeholderData: keepPreviousData,
+    staleTime: ADMIN_LIST_STALE_TIME,
+    gcTime: ADMIN_QUERY_GC_TIME,
     queryFn: async () => {
       const { data, error } = await supabase!
         .from(table)
@@ -792,6 +819,8 @@ export function useAdminEditorRows(type: string, canLoad: boolean, limit = 50) {
     queryKey: ["admin", type, "rows", { limit }],
     enabled: enabled && canLoad && Boolean(type),
     placeholderData: keepPreviousData,
+    staleTime: ADMIN_LIST_STALE_TIME,
+    gcTime: ADMIN_QUERY_GC_TIME,
     queryFn: async () => {
       const { data, error } = await supabase!
         .from(type)

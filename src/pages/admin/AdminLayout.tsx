@@ -1,4 +1,4 @@
-import { Suspense, useEffect, useMemo, useState } from "react";
+import { Suspense, useEffect, useMemo, useRef, useState } from "react";
 import { Link, Outlet, useLocation } from "react-router-dom";
 import {
   BarChart3,
@@ -130,6 +130,29 @@ const NAV_EXPANDED_KEY = "flashcast_admin_nav_expanded_groups";
 const NAV_COLLAPSED_KEY = "flashcast_admin_nav_collapsed";
 const ADMIN_ENTRY_RE = /\/assets\/index-[^"']+\.js/;
 const ADMIN_BUILD_VERSION = String(import.meta.env.VITE_APP_VERSION || "local").slice(0, 7);
+const BUILD_CHECK_INTERVAL_MS = 60 * 1000;
+
+const adminRoutePreloads = [
+  () => import("./AdminDashboard"),
+  () => import("./AdminContentHealth"),
+  () => import("./AdminPublishCenter"),
+  () => import("./AdminEnglishCenter"),
+  () => import("./AdminContentEditor"),
+  () => import("./AdminSimpleCms"),
+  () => import("./AdminWebsiteSettings"),
+  () => import("./AdminLeadList"),
+  () => import("./AdminQuoteList"),
+  () => import("./AdminServiceList"),
+  () => import("./AdminProjectList"),
+  () => import("./AdminMaterialList"),
+  () => import("./AdminBlogList"),
+  () => import("./AdminMediaLibrary"),
+  () => import("./AdminSeoManager"),
+  () => import("./AdminTranslationJobs"),
+  () => import("./AdminSystemLogs"),
+];
+
+let adminRoutePreloadStarted = false;
 
 const getCurrentAdminEntry = () => {
   const current = Array.from(document.scripts)
@@ -386,12 +409,17 @@ const AdminLayout = () => {
   const [navCollapsed, setNavCollapsed] = useState(() => readNavCollapsed());
   const [expandedGroups, setExpandedGroups] = useState<Record<string, boolean>>(() => readExpandedGroups());
   const seedSummary = useAdminDefaultContentSeed();
+  const lastBuildCheckAtRef = useRef(0);
   const t = copy[adminLang];
 
   useEffect(() => {
     let cancelled = false;
 
-    const checkFreshBuild = async () => {
+    const checkFreshBuild = async (force = false) => {
+      const now = Date.now();
+      if (!force && now - lastBuildCheckAtRef.current < BUILD_CHECK_INTERVAL_MS) return;
+      lastBuildCheckAtRef.current = now;
+
       try {
         const response = await fetch(`/admin?version_check=${Date.now()}`, {
           cache: "no-store",
@@ -409,8 +437,11 @@ const AdminLayout = () => {
       }
     };
 
-    void checkFreshBuild();
-    const onFocus = () => void checkFreshBuild();
+    void checkFreshBuild(true);
+    const onFocus = () => {
+      if (document.visibilityState === "hidden") return;
+      void checkFreshBuild();
+    };
     window.addEventListener("focus", onFocus);
     document.addEventListener("visibilitychange", onFocus);
 
@@ -418,6 +449,35 @@ const AdminLayout = () => {
       cancelled = true;
       window.removeEventListener("focus", onFocus);
       document.removeEventListener("visibilitychange", onFocus);
+    };
+  }, []);
+
+  useEffect(() => {
+    let cancelled = false;
+    let idleId: number | undefined;
+    const browserWindow = window as typeof window & {
+      requestIdleCallback?: (cb: () => void, options?: { timeout: number }) => number;
+      cancelIdleCallback?: (id: number) => void;
+    };
+
+    const preload = () => {
+      if (cancelled || adminRoutePreloadStarted) return;
+      adminRoutePreloadStarted = true;
+      void Promise.allSettled(adminRoutePreloads.map((load) => load()));
+    };
+
+    const timer = window.setTimeout(() => {
+      if (browserWindow.requestIdleCallback) {
+        idleId = browserWindow.requestIdleCallback(preload, { timeout: 5000 });
+        return;
+      }
+      preload();
+    }, 1200);
+
+    return () => {
+      cancelled = true;
+      window.clearTimeout(timer);
+      if (idleId !== undefined) browserWindow.cancelIdleCallback?.(idleId);
     };
   }, []);
 
@@ -749,18 +809,6 @@ const AdminLayout = () => {
 
           <main className="min-w-0 px-4 py-5 sm:px-6 lg:px-8">
             <div className="mx-auto w-full max-w-[1480px] space-y-5">
-              {seedSummary.status === "running" && (
-                <div className="rounded-lg border border-border bg-card px-4 py-3 text-sm text-muted-foreground shadow-sm">
-                  <span className="font-semibold text-foreground">{t.contentReady}</span>
-                  <span className="mx-2 text-border">/</span>
-                  {t.seedRunning}
-                </div>
-              )}
-              {seedSummary.status === "done" && (seedSummary.inserted > 0 || seedSummary.updated > 0) && (
-                <div className="rounded-lg border border-emerald-500/25 bg-emerald-500/10 px-4 py-3 text-sm text-emerald-700 dark:text-emerald-300">
-                  {t.seedDone(seedSummary.inserted, seedSummary.updated)}
-                </div>
-              )}
               {seedSummary.status === "error" && (
                 <div className="rounded-lg border border-destructive/30 bg-destructive/10 px-4 py-3 text-sm text-destructive">
                   {t.seedError(seedSummary.error || "Unknown error")}
