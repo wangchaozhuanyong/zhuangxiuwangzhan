@@ -1,5 +1,5 @@
 import { isSupabaseConfigured, supabase } from "@/lib/supabase";
-import { getFriendlySystemMessage, isChunkLoadError } from "@/lib/chunkLoadRecovery";
+import { getFriendlySystemMessage, getSystemEventCategory, isChunkLoadError } from "@/lib/chunkLoadRecovery";
 
 type SystemEvent = {
   event_type: string;
@@ -28,13 +28,20 @@ export async function logSystemEvent(event: SystemEvent) {
     const { data: userData } = await supabase.auth.getUser();
     const rawMessage = truncate(event.message, 1000);
     const friendlyMessage = getFriendlySystemMessage(rawMessage, event.event_type);
+    const category = getSystemEventCategory(rawMessage, event.event_type);
     const metadata =
       friendlyMessage === rawMessage
-        ? event.metadata
+        ? {
+            ...event.metadata,
+            category: event.metadata?.category ?? category.key,
+            categoryLabel: event.metadata?.categoryLabel ?? category.label,
+          }
         : {
             ...event.metadata,
             originalMessage: event.metadata?.originalMessage ?? rawMessage,
             isChunkLoadError: event.metadata?.isChunkLoadError ?? isChunkLoadError(rawMessage),
+            category: event.metadata?.category ?? category.key,
+            categoryLabel: event.metadata?.categoryLabel ?? category.label,
           };
 
     await supabase.from("system_event_logs").insert({

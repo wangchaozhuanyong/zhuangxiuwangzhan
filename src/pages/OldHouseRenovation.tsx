@@ -9,9 +9,9 @@ import { JsonLdBreadcrumb } from "@/components/JsonLd";
 import FAQSection from "@/components/blocks/FAQSection";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { useSiteSettings } from "@/hooks/useSiteSettings";
-import heroImg from "@/assets/old-house-hero.webp";
 import beforeAfterImg from "@/assets/old-house-before-after.webp";
 import oldHouseServiceImg from "@/assets/services/old-house-renovation.webp";
+import { pageHeroImages } from "@/lib/pageHeroImages";
 
 const content = {
   en: {
@@ -140,10 +140,13 @@ const OldHouseRenovation = () => {
       <PageMeta title={t.metaTitle} description={t.metaDescription} keywords={t.metaKeywords} canonicalPath="/services/old-house" />
       <JsonLdBreadcrumb items={[{ name: t.breadcrumbHome, url: "/" }, { name: t.breadcrumbServices, url: "/services" }, { name: t.breadcrumbCurrent, url: "/services/old-house" }]} />
 
-      <section className="page-hero lg:min-h-[600px]">
-        <div className="absolute inset-0">
-          <SmartImage src={heroImg} alt={t.heroAlt} className="h-full w-full object-cover" width={1920} height={720} loading="eager" fetchPriority="high" />
-          <div className="absolute inset-0 media-readable-overlay" aria-hidden="true" />
+      <section className="page-hero">
+        <div className="page-hero__media absolute inset-0">
+          <picture className="block h-full w-full">
+            <source media="(max-width: 767px)" srcSet={pageHeroImages.oldHouse.mobile} />
+            <SmartImage src={pageHeroImages.oldHouse.desktop} alt={t.heroAlt} className="page-hero__image h-full w-full object-cover" width={1920} height={720} loading="eager" fetchPriority="high" />
+          </picture>
+          <div className="page-hero__overlay absolute inset-0 media-readable-overlay" aria-hidden="true" />
         </div>
         <div className="page-hero__content site-container">
           <p className="mb-4 font-body text-[11px] font-semibold uppercase tracking-[0.28em] text-gold">{t.label}</p>
@@ -271,7 +274,7 @@ const OldHouseRenovation = () => {
 
       <FAQSection title={t.faqTitle} description={t.faqDescription} faqs={t.faqs} />
 
-      <section className="py-8 bg-background border-t border-border">
+      <section className="subpage-link-band py-8">
         <div className="container-narrow text-center">
           <p className="text-muted-foreground text-sm">
             <Link to="/services" className="text-accent hover:underline">{t.internalLinks[0]}</Link>{" / "}

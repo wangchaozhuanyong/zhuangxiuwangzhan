@@ -11,9 +11,9 @@ import Reveal from "@/components/Reveal";
 import PageMeta from "@/components/PageMeta";
 import { JsonLdBreadcrumb } from "@/components/JsonLd";
 import { useSiteSettings } from "@/hooks/useSiteSettings";
-import heroImg from "@/assets/hero-materials.webp";
 import HeroBanner from "@/components/blocks/HeroBanner";
 import { translateMaterialCategory } from "@/i18n/displayLabels";
+import { pageHeroImages, resolvePageHeroImage } from "@/lib/pageHeroImages";
 
 const copy = {
   en: {
@@ -74,6 +74,7 @@ const Materials = () => {
     return items;
   }, [publishedCategories]);
   const displayCategoryName = (value: string) => translateMaterialCategory(value, language);
+  const heroImage = resolvePageHeroImage(pageContent?.image_url, pageHeroImages.materials);
 
   return (
     <main className="pt-site-header">
@@ -86,7 +87,8 @@ const Materials = () => {
       <JsonLdBreadcrumb items={[{ name: t.breadcrumbHome, url: "/" }, { name: t.breadcrumbMaterials, url: "/materials" }]} />
 
       <HeroBanner
-        image={pageContent?.image_url || heroImg}
+        image={heroImage.desktop}
+        imageMobile={heroImage.mobile}
         imageAlt={pageContent?.alt || t.heroAlt}
         label={pageContent?.subtitle || t.eyebrow}
         title={pageContent?.title || t.title}

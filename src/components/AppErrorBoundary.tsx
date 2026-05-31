@@ -30,16 +30,18 @@ export class AppErrorBoundary extends Component<Props, State> {
   }
 
   componentDidCatch(error: Error, info: ErrorInfo) {
-    const friendlyMessage = getFriendlySystemMessage(error.message || "React render error", "react_render_error");
+    const isChunkError = isChunkLoadError(error);
+    const eventType = isChunkError ? "frontend_deploy_cache_mismatch" : "react_render_error";
+    const friendlyMessage = getFriendlySystemMessage(error.message || "React render error", eventType);
 
     void logSystemEvent({
-      event_type: "react_render_error",
+      event_type: eventType,
       severity: "error",
       source: this.props.isAdminRoute ? "admin" : "frontend",
       message: friendlyMessage,
       metadata: {
         originalMessage: error.message,
-        isChunkLoadError: isChunkLoadError(error),
+        isChunkLoadError: isChunkError,
         stack: error.stack,
         componentStack: info.componentStack,
         path: window.location.pathname,

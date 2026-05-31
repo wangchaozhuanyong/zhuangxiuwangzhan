@@ -11,9 +11,9 @@ import PageMeta from "@/components/PageMeta";
 import { JsonLdBreadcrumb } from "@/components/JsonLd";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { useSiteSettings } from "@/hooks/useSiteSettings";
-import heroImg from "@/assets/hero-services.webp";
 import HeroBanner from "@/components/blocks/HeroBanner";
 import { translateDisplayText } from "@/i18n/displayLabels";
+import { pageHeroImages, resolvePageHeroImage } from "@/lib/pageHeroImages";
 
 const copy = {
   en: {
@@ -103,6 +103,7 @@ const Services = () => {
   }, [language]);
   const { data: services = initialServices } = usePublishedServices(language);
   const geoText = applyPageTemplate(pageContent?.content, { count: services.length });
+  const heroImage = resolvePageHeroImage(pageContent?.image_url, pageHeroImages.services);
 
   return (
     <main className="overflow-x-hidden pt-site-header">
@@ -115,14 +116,15 @@ const Services = () => {
       <JsonLdBreadcrumb items={[{ name: t.breadcrumbHome, url: "/" }, { name: t.breadcrumbServices, url: "/services" }]} />
 
       <HeroBanner
-        image={pageContent?.image_url || heroImg}
+        image={heroImage.desktop}
+        imageMobile={heroImage.mobile}
         imageAlt={pageContent?.alt || t.heroAlt}
         label={pageContent?.subtitle || t.eyebrow}
         title={pageContent?.title || t.title}
         description={pageContent?.description || t.intro}
       />
 
-      <section className="py-8 bg-muted border-b border-border">
+      <section className="subpage-info-band py-8">
         <div className="container-narrow">
           <p className="text-muted-foreground text-sm leading-relaxed text-center max-w-3xl mx-auto">
             {geoText || (language === "zh" ? (
@@ -174,7 +176,7 @@ const Services = () => {
                       <li className="text-sm text-muted-foreground">+{service.items.length - 8} {t.more}</li>
                     )}
                   </ul>
-                  <Button className="btn-press" asChild>
+                  <Button className="btn-brand-primary" asChild>
                     <Link to={`/services/${service.slug}`}>{t.details} <ArrowRight className="ml-2 w-4 h-4" /></Link>
                   </Button>
                 </div>
@@ -212,7 +214,7 @@ const Services = () => {
         </Reveal>
       </section>
 
-      <section className="py-8 bg-background border-t border-border">
+      <section className="subpage-link-band py-8">
         <div className="container-narrow text-center">
           <p className="text-muted-foreground text-sm">
             <Link to="/projects" className="text-accent hover:underline">{t.internalProjects}</Link>{" / "}

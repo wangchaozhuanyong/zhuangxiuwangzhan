@@ -49,12 +49,16 @@ Current module templates:
 - `faq`
 - `cta`
 - `gallery`
+- `team`
+- `testimonials`
+
+The CMS Builder should prefer visual field editors for common modules. Advanced JSON editing remains available only for unusual fields.
 
 ## Media Upload Rules
 
-- Allowed types: JPG, PNG, WebP, GIF.
+- Allowed types: JPG, PNG, WebP.
 - Max size: 5 MB.
-- SVG and unknown MIME types are rejected.
+- SVG, GIF, and unknown MIME types are rejected for the public media library.
 - Folder names are sanitized before upload.
 - Public media should always have meaningful alt text.
 
@@ -82,6 +86,7 @@ Manual checks:
 - A small image upload succeeds.
 - A large or unsupported file is rejected.
 - `/admin/system-logs` loads for admins.
+- `/admin/system-health` shows the health check and backup reminders.
 - The health check function returns `ok: true`.
 
 ## Backup Checks

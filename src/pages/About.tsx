@@ -10,7 +10,7 @@ import IconCardGrid from "@/components/blocks/IconCardGrid";
 import { companyMilestones, coreValues, teamHighlights, companyStats } from "@/data/siteContent";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { useSiteSettings } from "@/hooks/useSiteSettings";
-import heroImg from "@/assets/hero-about.webp";
+import { pageHeroImages, resolvePageHeroImage } from "@/lib/pageHeroImages";
 import { usePublishedAboutSection, usePublishedSitePage } from "@/hooks/usePublishedContent";
 import { useMemo } from "react";
 
@@ -207,6 +207,7 @@ const About = () => {
   const dynamicValues = useMemo(() => normalizeIconCardItems(valuesSection?.items, localizedValues[language]), [valuesSection?.items, language]);
   const dynamicTeam = useMemo(() => normalizeIconCardItems(teamSection?.items, localizedTeam[language]), [teamSection?.items, language]);
   const displayedMilestones = dynamicMilestones || localizedMilestones[language];
+  const heroImage = resolvePageHeroImage(heroSection?.image_url as string | undefined, pageHeroImages.about);
 
   return (
     <main className="pt-site-header overflow-x-hidden">
@@ -219,7 +220,8 @@ const About = () => {
       <JsonLdBreadcrumb items={[{ name: t.breadcrumbHome, url: "/" }, { name: t.breadcrumbAbout, url: "/about" }]} />
 
       <HeroBanner
-        image={(heroSection?.image_url as string) || heroImg}
+        image={heroImage.desktop}
+        imageMobile={heroImage.mobile}
         imageAlt={t.imageAlt}
         label={t.label}
         title={(heroSection?.title as string) || t.title}

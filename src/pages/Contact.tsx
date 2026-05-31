@@ -15,8 +15,8 @@ import { useFormGuard } from "@/hooks/useFormGuard";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { useSiteSettings } from "@/hooks/useSiteSettings";
 import { usePublishedSitePage } from "@/hooks/usePublishedContent";
-import heroImg from "@/assets/hero-contact.webp";
 import HeroBanner from "@/components/blocks/HeroBanner";
+import { pageHeroImages, resolvePageHeroImage } from "@/lib/pageHeroImages";
 
 const serviceItems = {
   en: [
@@ -186,6 +186,7 @@ const Contact = () => {
   const settings = useSiteSettings();
   const t = copy[language];
   const { data: pageContent } = usePublishedSitePage(language, "contact");
+  const heroImage = resolvePageHeroImage(pageContent?.image_url, pageHeroImages.contact);
   const [form, setForm] = useState({ name: "", phone: "", email: "", projectType: "", location: "", message: "" });
   const [errors, setErrors] = useState<FormErrors>({});
   const [status, setStatus] = useState<"idle" | "submitting" | "success" | "error">("idle");
@@ -255,7 +256,8 @@ const Contact = () => {
       <JsonLdBreadcrumb items={[{ name: t.breadcrumbHome, url: "/" }, { name: t.breadcrumbCurrent, url: "/contact" }]} />
 
       <HeroBanner
-        image={pageContent?.image_url || heroImg}
+        image={heroImage.desktop}
+        imageMobile={heroImage.mobile}
         imageAlt={pageContent?.alt || t.heroAlt}
         label={pageContent?.subtitle || t.heroEyebrow}
         title={pageContent?.title || t.heroTitle}
@@ -312,7 +314,7 @@ const Contact = () => {
             </Reveal>
 
             <Reveal direction="right" delay={150}>
-              <div className="rounded-card border border-border bg-card p-6 md:p-8">
+              <div className="subpage-form-panel p-6 md:p-8">
                 {status === "success" ? (
                   <div className="text-center py-8">
                     <div className="w-14 h-14 mx-auto mb-5 rounded-full bg-accent/10 flex items-center justify-center">
@@ -470,7 +472,7 @@ const Contact = () => {
         </div>
       </section>
 
-      <section className="py-8 bg-background border-t border-border">
+      <section className="subpage-link-band py-8">
         <div className="container-narrow text-center">
           <p className="text-muted-foreground text-sm">
             <Link to="/services" className="text-accent hover:underline">{t.navServices}</Link>{" / "}

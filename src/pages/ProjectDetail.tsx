@@ -211,10 +211,10 @@ const ProjectDetail = () => {
       <JsonLdBreadcrumb items={[{ name: t.breadcrumbHome, url: "/" }, { name: t.breadcrumbProjects, url: "/projects" }, { name: project.title, url: `/projects/${project.slug}` }]} />
 
       <section className="page-hero items-end">
-        <div className="absolute inset-0">
-          <SmartImage src={mainImage} alt={mainImageAlt} className="h-full w-full object-cover" width={1920} height={800} loading="eager" fetchPriority="high" />
+        <div className="page-hero__media absolute inset-0">
+          <SmartImage src={mainImage} alt={mainImageAlt} className="page-hero__image h-full w-full object-cover" width={1920} height={800} loading="eager" fetchPriority="high" />
           <div
-            className="absolute inset-0 bg-gradient-to-t from-[rgba(13,12,9,0.88)] via-[rgba(13,12,9,0.45)] to-[rgba(13,12,9,0.15)]"
+            className="page-hero__overlay absolute inset-0 bg-gradient-to-t from-[rgba(13,12,9,0.88)] via-[rgba(13,12,9,0.45)] to-[rgba(13,12,9,0.15)]"
             aria-hidden="true"
           />
         </div>
@@ -390,7 +390,7 @@ const ProjectDetail = () => {
         </div>
       </section>
 
-      <section className="py-8 bg-background border-t border-border">
+      <section className="subpage-link-band py-8">
         <div className="container-narrow text-center">
           <p className="text-muted-foreground text-sm">
             <Link to="/services" className="text-accent hover:underline">{t.internalServices}</Link>{" / "}

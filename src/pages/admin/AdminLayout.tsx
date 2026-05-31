@@ -1,6 +1,7 @@
 import { Suspense, useEffect, useMemo, useRef, useState } from "react";
 import { Link, Outlet, useLocation } from "react-router-dom";
 import {
+  Activity,
   BarChart3,
   Bell,
   BookOpen,
@@ -94,6 +95,7 @@ type AdminCopy = {
   websiteSettings: string;
   translationJobs: string;
   notificationSettings: string;
+  systemHealth: string;
   systemLogs: string;
   backToWebsite: string;
   seedRunning: string;
@@ -175,6 +177,7 @@ const copy: Record<AdminLang, AdminCopy> = {
     websiteSettings: "Website Settings",
     translationJobs: "Translation Records",
     notificationSettings: "Notification Settings",
+    systemHealth: "System Health",
     systemLogs: "System Logs",
     backToWebsite: "View website",
     seedRunning: "Checking default CMS content...",
@@ -229,6 +232,7 @@ const copy: Record<AdminLang, AdminCopy> = {
     websiteSettings: "网站基础设置",
     translationJobs: "翻译记录",
     notificationSettings: "通知设置",
+    systemHealth: "系统健康",
     systemLogs: "\u7cfb\u7edf\u65e5\u5fd7",
     backToWebsite: "查看网站",
     seedRunning: "正在检查后台默认内容...",
@@ -311,6 +315,7 @@ const navGroups: NavGroup[] = [
     items: [
       { key: "websiteSettings", path: "/admin/settings", icon: Settings },
       { key: "notificationSettings", path: "/admin/notifications", icon: Bell },
+      { key: "systemHealth", path: "/admin/system-health", icon: Activity },
       { key: "systemLogs", path: "/admin/system-logs", icon: ScrollText },
       { key: "translationJobs", path: "/admin/content/translation_jobs", icon: Languages },
       { key: "users", path: "/admin/users", icon: UserCog },
@@ -531,6 +536,8 @@ const AdminLayout = () => {
         return zh ? "这里查看自动生成英文的记录和失败原因，不在这里直接编辑正文。" : "Review automatic English generation records and errors. Edit the actual content in its own editor.";
       case "users":
         return zh ? "这里管理后台白名单、角色和启用状态。" : "Manage the admin whitelist, roles, and active status.";
+      case "systemHealth":
+        return zh ? "这里检查后台、数据库、存储、日志和备份流程是否正常。" : "Check admin service, database, storage, logs, and backup flow.";
       case "systemLogs":
         return zh ? "这里查看后台和前台的关键错误日志。" : "Review critical logs from the admin and public site.";
       default:

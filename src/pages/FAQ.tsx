@@ -9,8 +9,8 @@ import WhatsAppIcon from "@/components/WhatsAppIcon";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { useSiteSettings } from "@/hooks/useSiteSettings";
 import { usePublishedFaqs, usePublishedSitePage } from "@/hooks/usePublishedContent";
-import heroImg from "@/assets/hero-faq.webp";
 import HeroBanner from "@/components/blocks/HeroBanner";
+import { pageHeroImages, resolvePageHeroImage } from "@/lib/pageHeroImages";
 
 const faqContent = {
   en: {
@@ -150,6 +150,7 @@ const FAQ = () => {
       },
     ];
   }, [generalFaqs, homeFaqs, t.categories, language]);
+  const heroImage = resolvePageHeroImage(pageContent?.image_url, pageHeroImages.faq);
 
   return (
     <main className="pt-site-header">
@@ -163,7 +164,8 @@ const FAQ = () => {
       <JsonLdBreadcrumb items={[{ name: t.breadcrumbHome, url: "/" }, { name: t.breadcrumbFaq, url: "/faq" }]} />
 
       <HeroBanner
-        image={pageContent?.image_url || heroImg}
+        image={heroImage.desktop}
+        imageMobile={heroImage.mobile}
         imageAlt={pageContent?.alt || t.heroAlt}
         label={pageContent?.subtitle || t.eyebrow}
         title={pageContent?.title || t.title}

@@ -57,6 +57,7 @@ Important migrations:
 - `202605240005_admin_access_policies.sql`: admin access and RLS foundation.
 - `202605290004_site_pages.sql`: page-level content table.
 - `202605300001_professional_admin_foundation.sql`: generic CMS, roles, revisions, indexes, optimistic conflict foundation.
+- `202605310004_admin_role_policy_hardening.sql`: role-specific database policies for content, leads, media, settings, and uploads.
 
 Apply migrations in order in the Supabase project before using new admin features.
 
@@ -71,7 +72,7 @@ Main admin areas:
 - Business content: services, projects, materials, blog, landing pages.
 - Customers: leads and quote requests.
 - Media and SEO: media library and SEO audit.
-- System: website settings, notifications, translation jobs, admin users.
+- System: website settings, notifications, system health, logs, translation records, admin users.
 
 Admin content saves should use the shared admin mutation helper where possible so saves include:
 
@@ -87,7 +88,7 @@ Admin content saves should use the shared admin mutation helper where possible s
 - Admin writes must be protected by Supabase RLS or Edge Function auth checks.
 - Default content may create missing records or fill blank fields, but must not overwrite manually saved content.
 - Important delete actions should archive first instead of hard deleting.
-- Media upload allows only JPG, PNG, WebP, or GIF and rejects files over 5 MB.
+- Media upload allows only JPG, PNG, or WebP and rejects files over 5 MB. GIF, SVG, and unknown MIME types are rejected.
 
 ## Checks Before Release
 
@@ -98,6 +99,7 @@ npm.cmd run typecheck
 npm.cmd run lint
 npm.cmd test -- --run
 npm.cmd run build
+npm.cmd run verify:deploy-cache
 npm.cmd run verify:admin-foundation
 npm.cmd run verify:env
 ```
@@ -110,6 +112,8 @@ Automatic production deployment:
 - When `Prelaunch verification` succeeds on `main`, the `Deploy to Cloudflare Pages` workflow publishes the same commit to Cloudflare Pages.
 - `Prelaunch verification` only checks the release. It is not a production deployment by itself.
 - Manual deployment is still available through the `Deploy to Cloudflare Pages` workflow if an operator needs to republish a known commit.
+- The production deploy workflow restores retained hashed assets, builds the new app, merges previous assets into `dist/assets`, verifies cache consistency, then deploys. This keeps old SPA HTML from breaking if it still points at the previous hashed JS chunks.
+- HTML responses must stay `no-store`; `/assets/*`, `/images/*`, and `/videos/*` stay `public, max-age=31536000, immutable`.
 
 Before deployment:
 
@@ -123,6 +127,7 @@ After deployment:
 - Check `/`, `/zh/services`, `/zh/projects`, `/zh/quote`, `/zh/process`, and `/admin`.
 - Confirm an admin save appears on the public page after refresh.
 - Confirm media upload works with a small test image.
+- Check `/admin/system-health` and confirm core checks are green.
 - Confirm `https://<project-ref>.functions.supabase.co/health-check` returns `ok: true`.
 
 Rollback:

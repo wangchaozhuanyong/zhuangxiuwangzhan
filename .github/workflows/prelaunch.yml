@@ -37,6 +37,9 @@ jobs:
           VITE_APP_VERSION: ${{ github.sha }}
         run: npm run build
 
+      - name: Verify deployment cache consistency
+        run: npm run verify:deploy-cache
+
       - name: Lint
         run: npm run lint
 

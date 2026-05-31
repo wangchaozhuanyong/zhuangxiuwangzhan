@@ -23,6 +23,10 @@ const checks = [
     patterns: ["system_event_logs", "storage.buckets", "file_size_limit = 5242880"],
   },
   {
+    file: "supabase/migrations/202605310004_admin_role_policy_hardening.sql",
+    patterns: ["Content roles can write services", "Lead roles can write leads", "Content roles can upload site images"],
+  },
+  {
     file: "src/lib/adminMutation.ts",
     patterns: ["saveAdminRecord", "archiveOrDeleteAdminRecord", "AdminMutationError", "admin_audit_logs", "expectedUpdatedAt"],
   },
@@ -36,7 +40,11 @@ const checks = [
   },
   {
     file: "src/pages/admin/AdminCmsBuilder.tsx",
-    patterns: ["cms_pages", "cms_sections", "cms_revisions", "restoreRevision"],
+    patterns: ["cms_pages", "cms_sections", "cms_revisions", "restoreRevision", "SectionContentEditor", "service_grid", "testimonials"],
+  },
+  {
+    file: "src/pages/admin/AdminSystemHealth.tsx",
+    patterns: ["health-check", "备份和恢复状态", "system_event_logs"],
   },
   {
     file: "src/pages/admin/AdminSystemLogs.tsx",

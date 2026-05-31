@@ -15,9 +15,9 @@ import commercialImg from "@/assets/commercial-renovation.webp";
 import kitchenImg from "@/assets/kitchen-cabinet.webp";
 import warehouseImg from "@/assets/warehouse-shelving.webp";
 import exteriorImg from "@/assets/exterior-works.webp";
-import heroImg from "@/assets/hero-projects.webp";
 import HeroBanner from "@/components/blocks/HeroBanner";
 import { translateDisplayText, translateProjectType } from "@/i18n/displayLabels";
+import { pageHeroImages, resolvePageHeroImage } from "@/lib/pageHeroImages";
 
 const typeImageMap: Record<string, string> = {
   Residential: residentialImg,
@@ -121,6 +121,7 @@ const Projects = () => {
   const displayProjectType = (value: string) => translateProjectType(value, language);
   const displayProjectTitle = (value: string) => translateDisplayText(value, language);
   const displayProjectLocation = (value: string) => translateDisplayText(value, language);
+  const heroImage = resolvePageHeroImage(pageContent?.image_url, pageHeroImages.projects);
   const displayProjectDescription = (project: any) =>
     language === "zh" ? String(project.description || "").replace(new RegExp(String(project.type || "").replace(/[.*+?^${}()|[\]\\]/g, "\\$&"), "gi"), displayProjectType(project.type)) : project.description;
 
@@ -153,7 +154,8 @@ const Projects = () => {
       <JsonLdBreadcrumb items={[{ name: pageCopy.breadcrumbHome, url: "/" }, { name: pageCopy.breadcrumbProjects, url: "/projects" }]} />
 
       <HeroBanner
-        image={pageContent?.image_url || heroImg}
+        image={heroImage.desktop}
+        imageMobile={heroImage.mobile}
         imageAlt={pageContent?.alt || pageCopy.heroAlt}
         label={pageContent?.subtitle || pageCopy.eyebrow}
         title={pageContent?.title || pageCopy.title}
@@ -163,10 +165,10 @@ const Projects = () => {
       <section className="section-padding bg-background">
         <div className="container-narrow">
           <Reveal>
-            <div className="-mx-5 md:mx-0 mb-8">
+            <div>
               <div
                 ref={categoryBarRef}
-                className="flex gap-2 overflow-x-auto scrollbar-hide scroll-fade-right px-5 md:px-0 py-1 md:flex-wrap md:justify-center md:overflow-visible md:[mask-image:none] md:[-webkit-mask-image:none]"
+                className="subpage-filter-bar md:mx-0 md:flex-wrap md:justify-center md:overflow-visible md:[mask-image:none] md:[-webkit-mask-image:none]"
                 role="tablist"
                 aria-label={language === "zh" ? "项目分类筛选" : "Project category filter"}
               >
@@ -182,11 +184,8 @@ const Projects = () => {
                   }}
                   role="tab"
                   aria-selected={filter === category}
-                  className={`shrink-0 px-4 py-2 rounded-full text-sm font-medium transition-all duration-300 btn-press ${
-                    filter === category
-                      ? "bg-accent text-accent-foreground shadow-md"
-                      : "bg-muted text-muted-foreground hover:bg-accent/10"
-                  }`}
+                  data-active={filter === category}
+                  className="subpage-filter-button btn-press"
                 >
                   {categoryLabels[language][category]}
                 </button>
@@ -256,7 +255,7 @@ const Projects = () => {
         </Reveal>
       </section>
 
-      <section className="py-8 bg-background border-t border-border">
+      <section className="subpage-link-band py-8">
         <div className="container-narrow text-center">
           <p className="text-muted-foreground text-sm">
             <Link to="/services" className="text-accent hover:underline">{pageCopy.links.services}</Link>{" / "}

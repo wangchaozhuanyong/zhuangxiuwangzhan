@@ -102,10 +102,10 @@ const LandingPage = () => {
         description={landingPage.seoDescription || stripHtml(landingPage.description)}
         canonicalPath={`/landing/${slug || ""}`}
       />
-      <section className="page-hero lg:min-h-[600px]">
-        <div className="absolute inset-0">
-          <SmartImage src={page.heroImage} alt={landingPage.heroAlt || landingPage.title} className="h-full w-full object-cover" loading="eager" width={1920} height={800} fetchPriority="high" />
-          <div className="absolute inset-0 media-readable-overlay" aria-hidden="true" />
+      <section className="page-hero">
+        <div className="page-hero__media absolute inset-0">
+          <SmartImage src={page.heroImage} alt={landingPage.heroAlt || landingPage.title} className="page-hero__image h-full w-full object-cover" loading="eager" width={1920} height={800} fetchPriority="high" />
+          <div className="page-hero__overlay absolute inset-0 media-readable-overlay" aria-hidden="true" />
         </div>
         <div className="page-hero__content site-container">
           <div className="max-w-xl min-w-0">

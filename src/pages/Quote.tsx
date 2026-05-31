@@ -10,16 +10,15 @@ import { JsonLdBreadcrumb } from "@/components/JsonLd";
 import { submitQuoteRequest } from "@/lib/leadApi";
 import { useFormGuard } from "@/hooks/useFormGuard";
 import Reveal from "@/components/Reveal";
-import SmartImage from "@/components/SmartImage";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { useSiteSettings } from "@/hooks/useSiteSettings";
 import { usePublishedSitePage } from "@/hooks/usePublishedContent";
-import heroImg from "@/assets/hero-quote.webp";
 import HeroBanner from "@/components/blocks/HeroBanner";
+import { pageHeroImages, resolvePageHeroImage } from "@/lib/pageHeroImages";
 
 const projectTypes = [
   { value: "Residential Renovation", en: "Residential Renovation", zh: "住宅装修" },
-  { value: "Commercial / Office Fit-Out", en: "Commercial / Office Fit-Out", zh: "商业 / 办公室装潢" },
+  { value: "Commercial / Office Fit-Out", en: "Commercial / Office Fit-Out", zh: "商业 / 办公室装修" },
   { value: "Custom Built-In Furniture", en: "Custom Built-In Furniture", zh: "定制内嵌家具" },
   { value: "Kitchen Cabinet", en: "Kitchen Cabinet", zh: "厨房橱柜" },
   { value: "Shop Renovation", en: "Shop Renovation", zh: "店铺装修" },
@@ -35,7 +34,7 @@ const budgetRanges = [
   { value: "RM 60,000 - RM 100,000", en: "RM 60,000 - RM 100,000", zh: "RM 60,000 - RM 100,000" },
   { value: "RM 100,000 - RM 200,000", en: "RM 100,000 - RM 200,000", zh: "RM 100,000 - RM 200,000" },
   { value: "Above RM 200,000", en: "Above RM 200,000", zh: "RM 200,000 以上" },
-  { value: "Not sure yet", en: "Not sure yet", zh: "暂不确定" },
+  { value: "Not sure yet", en: "Not sure yet", zh: "暂时不确定" },
 ];
 
 const getLocalizedOptionLabel = (options: { value: string; en: string; zh: string }[], value: string, language: "en" | "zh") => {
@@ -105,11 +104,10 @@ const copy = {
     contactLabel: "Phone / WhatsApp",
     hours: "Mon - Sat: 9 AM - 6 PM",
     sunday: "Sun: By Appointment",
-    office: "Taman United，吉隆坡",
-    address: "",
+    office: "Taman United, Kuala Lumpur",
     navServices: "Our Services",
     navProjects: "Projects",
-    navFaq: "常见问题",
+    navFaq: "FAQ",
     requiredName: "Please enter your name",
     requiredPhone: "Please enter your phone number",
     invalidPhone: "Please enter a valid phone number",
@@ -125,15 +123,15 @@ const copy = {
     breadcrumbCurrent: "获取报价",
     heroEyebrow: "免费咨询",
     heroTitle: "获取免费报价",
-    heroText: "告诉我们您的装修需求，我们会先查看项目地点、照片、范围和预算，再建议下一步咨询或现场查看。",
+    heroText: "告诉我们你的装修需求，我们会先查看项目地点、照片、范围和预算，再建议下一步咨询或现场查看。",
     heroAlt: "FLASH CAST 免费装修报价咨询",
-    formTitle: "请告诉我们您的项目",
+    formTitle: "请告诉我们你的项目",
     errorTitle: "提交失败",
     errorText: "请稍后重试，或直接通过 WhatsApp 联系我们。",
     name: "姓名",
     phone: "电话 / WhatsApp",
-    email: "邮箱",
-    optional: "可选",
+    email: "电邮",
+    optional: "选填",
     projectType: "项目类型",
     budgetRange: "预算范围",
     location: "项目地点",
@@ -142,20 +140,20 @@ const copy = {
     details: "项目详情",
     selectProjectType: "请选择项目类型",
     selectBudgetRange: "请选择预算范围",
-    namePlaceholder: "请输入您的全名",
+    namePlaceholder: "请输入你的姓名",
     emailPlaceholder: "your@email.com",
-    locationPlaceholder: "例如 Mont Kiara，吉隆坡",
+    locationPlaceholder: "例如 Mont Kiara, KL",
     sizePlaceholder: "例如 1,200 平方英尺",
-    detailsPlaceholder: "请描述您的项目：需要装修的房间、偏好的材料、风格、工期，或其他特殊需求。",
+    detailsPlaceholder: "请描述你的项目：需要装修的空间、材料偏好、风格、工期，或其他特别需求。",
     photoTitle: "有现场照片吗？",
-    photoText: "提交后，您可以通过",
-    photoTextEnd: "发送现场照片，这样我们能提供更准确的报价。照片有助于我们更了解您的空间。",
+    photoText: "提交后，你也可以通过",
+    photoTextEnd: "发送现场照片，这样我们可以更准确了解空间和报价范围。",
     submit: "提交报价请求",
     submitting: "提交中...",
-    privacyNote: "我们会在营业时间查看你的需求并跟进。无垃圾信息、无强制消费。",
+    privacyNote: "我们会在营业时间查看你的需求并跟进。不会骚扰，也不会强制消费。",
     successTitle: "报价请求已提交！",
-    successIntro: "谢谢您",
-    successReceived: "我们已经收到您的项目资料。",
+    successIntro: "谢谢你",
+    successReceived: "我们已经收到你的项目资料。",
     successFollowUp: "我们的团队会在",
     successFollowUpHours: "营业时间",
     successFollowUpEnd: "查看资料并建议下一步。",
@@ -164,28 +162,27 @@ const copy = {
     successBudget: "预算：",
     whatsappFast: "通过 WhatsApp 获取更快回复",
     backHome: "返回首页",
-    trustTitle: "您将获得什么",
+    trustTitle: "你将获得什么",
     trustPoints: [
       "可按预约安排现场查看与咨询",
-      "按确认范围整理分项报价",
-      "施工前可讨论 3D 设计效果图需求",
-      "SSM 注册公司，售后条款以报价或合约为准",
+      "根据确认范围整理清楚的分项报价",
+      "施工前可讨论设计效果图和材料方向",
+      "SSM 注册公司，售后条款会在报价或项目文件中确认",
     ],
     chatTitle: "想先聊一聊？",
-    chatText: "您可以直接通过 WhatsApp 发送项目资料，我们会在营业时间内回复。",
+    chatText: "你可以直接通过 WhatsApp 发送项目资料，我们会在营业时间内回复。",
     whatsappNow: "立即 WhatsApp 联系",
     contactLabel: "电话 / WhatsApp",
     hours: "周一至周六：上午 9 点至下午 6 点",
     sunday: "周日：预约制",
     office: "Taman United，吉隆坡",
-    address: "",
-    navServices: "我们的服务",
+    navServices: "服务项目",
     navProjects: "装修案例",
     navFaq: "常见问题",
-    requiredName: "请输入您的姓名",
-    requiredPhone: "请输入您的电话号码",
+    requiredName: "请输入姓名",
+    requiredPhone: "请输入电话号码",
     invalidPhone: "请输入有效的电话号码",
-    invalidEmail: "请输入有效的邮箱",
+    invalidEmail: "请输入有效的电邮",
     requiredProject: "请选择项目类型",
     requiredLocation: "请输入项目地点",
   },
@@ -198,6 +195,7 @@ const Quote = () => {
   const settings = useSiteSettings();
   const t = copy[language];
   const { data: pageContent } = usePublishedSitePage(language, "quote");
+  const heroImage = resolvePageHeroImage(pageContent?.image_url, pageHeroImages.quote);
   const [form, setForm] = useState({
     name: "",
     phone: "",
@@ -256,46 +254,51 @@ const Quote = () => {
       <main className="pt-site-header">
         <PageMeta title={t.successTitle} description={pageContent?.seo_description || t.metaDescription} canonicalPath="/quote" />
         <section className="section-padding flex min-h-[70vh] items-center bg-background">
-          <div className="container-narrow mx-auto max-w-lg text-center">
-            <div className="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-full bg-accent/10">
-              <CheckCircle className="h-8 w-8 text-accent" />
-            </div>
-            <h1 className="mb-4 font-display text-3xl font-bold">{t.successTitle}</h1>
-            <p className="mb-2 text-muted-foreground">
-              {t.successIntro}, <strong className="text-foreground">{form.name}</strong>. {t.successReceived}
-            </p>
-            <p className="mb-2 text-muted-foreground">
-              {t.successFollowUp} <strong className="text-foreground">{t.successFollowUpHours}</strong> {t.successFollowUpEnd}
-            </p>
-
-            <div className="luxury-card mt-8 p-6 text-left">
-              <h2 className="mb-4 font-display text-xl font-semibold">{t.whatsappFast}</h2>
-              <div className="space-y-3">
-                <p className="flex items-center gap-2 text-sm text-muted-foreground">
-                  <Phone className="h-4 w-4 text-accent" />
-                  {t.contactLabel}: {settings.phone_display}
-                </p>
-                <p className="flex items-center gap-2 text-sm text-muted-foreground">
-                  <MapPin className="h-4 w-4 text-accent" />
-                  {t.office}
-                </p>
-                <p className="flex items-center gap-2 text-sm text-muted-foreground">
-                  <Clock className="h-4 w-4 text-accent" />
-                  {t.hours}
-                </p>
-                <p className="text-sm text-muted-foreground">{t.sunday}</p>
+          <div className="container-narrow mx-auto max-w-xl text-center">
+            <div className="subpage-form-panel p-6 md:p-8">
+              <div className="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-full border border-gold/25 bg-gold/10">
+                <CheckCircle className="h-8 w-8 text-gold" />
               </div>
-            </div>
+              <h1 className="mb-4 font-display text-3xl font-bold">{t.successTitle}</h1>
+              <p className="mb-2 text-muted-foreground">
+                {t.successIntro}, <strong className="text-foreground">{form.name}</strong>. {t.successReceived}
+              </p>
+              <p className="mb-6 text-muted-foreground">
+                {t.successFollowUp} <strong className="text-foreground">{t.successFollowUpHours}</strong> {t.successFollowUpEnd}
+              </p>
 
-            <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-              <Button asChild size="lg" className="flex-1">
-                <LocalizedLink to="/">{t.backHome}</LocalizedLink>
-              </Button>
-              <Button asChild size="lg" variant="outline" className="flex-1">
-                <a href={settings.whatsapp_url()} target="_blank" rel="noreferrer">
-                  <WhatsAppIcon className="mr-2 h-4 w-4" /> {t.whatsappNow}
-                </a>
-              </Button>
+              <div className="luxury-card-muted p-5 text-left">
+                <h2 className="mb-4 font-display text-xl font-semibold">{t.whatsappFast}</h2>
+                <div className="space-y-3">
+                  <p className="flex items-center gap-2 text-sm text-muted-foreground">
+                    <Phone className="h-4 w-4 text-accent" />
+                    {t.contactLabel}: {settings.phone_display}
+                  </p>
+                  <p className="flex items-center gap-2 text-sm text-muted-foreground">
+                    <MapPin className="h-4 w-4 text-accent" />
+                    {t.office}
+                  </p>
+                  <p className="flex items-center gap-2 text-sm text-muted-foreground">
+                    <Clock className="h-4 w-4 text-accent" />
+                    {t.hours}
+                  </p>
+                  <p className="text-sm text-muted-foreground">{t.sunday}</p>
+                  {form.projectType ? <p className="text-sm text-muted-foreground">{t.successProject} {getLocalizedOptionLabel(projectTypes, form.projectType, language)}</p> : null}
+                  {form.location ? <p className="text-sm text-muted-foreground">{t.successLocation} {form.location}</p> : null}
+                  {form.budget ? <p className="text-sm text-muted-foreground">{t.successBudget} {getLocalizedOptionLabel(budgetRanges, form.budget, language)}</p> : null}
+                </div>
+              </div>
+
+              <div className="mt-8 flex flex-col gap-3 sm:flex-row">
+                <Button asChild size="lg" className="btn-brand-primary flex-1">
+                  <LocalizedLink to="/">{t.backHome}</LocalizedLink>
+                </Button>
+                <Button asChild size="lg" variant="outline" className="btn-brand-secondary flex-1">
+                  <a href={settings.whatsapp_url()} target="_blank" rel="noreferrer">
+                    <WhatsAppIcon className="mr-2 h-4 w-4" /> {t.whatsappNow}
+                  </a>
+                </Button>
+              </div>
             </div>
           </div>
         </section>
@@ -314,7 +317,8 @@ const Quote = () => {
       <JsonLdBreadcrumb items={[{ name: t.breadcrumbHome, url: "/" }, { name: t.breadcrumbCurrent, url: "/quote" }]} />
 
       <HeroBanner
-        image={pageContent?.image_url || heroImg}
+        image={heroImage.desktop}
+        imageMobile={heroImage.mobile}
         imageAlt={pageContent?.alt || t.heroAlt}
         label={pageContent?.subtitle || t.heroEyebrow}
         title={pageContent?.title || t.heroTitle}
@@ -324,11 +328,12 @@ const Quote = () => {
       <section className="section-padding bg-background pb-24 md:pb-28">
         <div className="container-narrow grid gap-10 lg:grid-cols-[1.1fr_0.9fr]">
           <Reveal>
-            <div>
+            <div className="subpage-form-panel p-5 md:p-8">
+              <div className="accent-line mb-4" />
               <h2 className="mb-6 font-display text-2xl font-bold md:text-3xl">{t.formTitle}</h2>
 
               {status === "error" && (
-                <div role="alert" aria-live="polite" className="mb-6 flex items-start gap-3 rounded-lg border border-destructive/20 bg-destructive/5 p-4 text-sm">
+                <div role="alert" aria-live="polite" className="mb-6 flex items-start gap-3 rounded-card border border-destructive/20 bg-destructive/5 p-4 text-sm">
                   <AlertCircle className="mt-0.5 h-4 w-4 text-destructive" />
                   <div>
                     <p className="font-medium text-destructive">{t.errorTitle}</p>
@@ -340,12 +345,12 @@ const Quote = () => {
               <form onSubmit={handleSubmit} className="space-y-4">
                 <div className="grid gap-4 md:grid-cols-2">
                   <div>
-                    <label htmlFor="quote-name" className="mb-1 block text-sm font-medium">{t.name}</label>
+                    <label htmlFor="quote-name" className="mb-1.5 block text-sm">{t.name}</label>
                     <Input id="quote-name" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} placeholder={t.namePlaceholder} aria-invalid={Boolean(errors.name)} aria-describedby={errors.name ? "quote-name-error" : undefined} />
                     {errors.name && <p id="quote-name-error" role="alert" className="mt-1 text-xs text-destructive">{errors.name}</p>}
                   </div>
                   <div>
-                    <label htmlFor="quote-phone" className="mb-1 block text-sm font-medium">{t.phone}</label>
+                    <label htmlFor="quote-phone" className="mb-1.5 block text-sm">{t.phone}</label>
                     <Input id="quote-phone" type="tel" value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} placeholder={t.contactLabel} aria-invalid={Boolean(errors.phone)} aria-describedby={errors.phone ? "quote-phone-error" : undefined} />
                     {errors.phone && <p id="quote-phone-error" role="alert" className="mt-1 text-xs text-destructive">{errors.phone}</p>}
                   </div>
@@ -353,14 +358,14 @@ const Quote = () => {
 
                 <div className="grid gap-4 md:grid-cols-2">
                   <div>
-                    <label htmlFor="quote-email" className="mb-1 block text-sm font-medium">
+                    <label htmlFor="quote-email" className="mb-1.5 block text-sm">
                       {t.email} <span className="text-muted-foreground">({t.optional})</span>
                     </label>
                     <Input id="quote-email" type="email" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} placeholder={t.emailPlaceholder} aria-invalid={Boolean(errors.email)} aria-describedby={errors.email ? "quote-email-error" : undefined} />
                     {errors.email && <p id="quote-email-error" role="alert" className="mt-1 text-xs text-destructive">{errors.email}</p>}
                   </div>
                   <div>
-                    <label htmlFor="quote-location" className="mb-1 block text-sm font-medium">{t.location}</label>
+                    <label htmlFor="quote-location" className="mb-1.5 block text-sm">{t.location}</label>
                     <Input id="quote-location" value={form.location} onChange={(e) => setForm({ ...form, location: e.target.value })} placeholder={t.locationPlaceholder} aria-invalid={Boolean(errors.location)} aria-describedby={errors.location ? "quote-location-error" : undefined} />
                     {errors.location && <p id="quote-location-error" role="alert" className="mt-1 text-xs text-destructive">{errors.location}</p>}
                   </div>
@@ -368,7 +373,7 @@ const Quote = () => {
 
                 <div className="grid gap-4 md:grid-cols-2">
                   <div>
-                    <label htmlFor="quote-project-type" className="mb-1 block text-sm font-medium">{t.projectType}</label>
+                    <label htmlFor="quote-project-type" className="mb-1.5 block text-sm">{t.projectType}</label>
                     <select
                       id="quote-project-type"
                       className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
@@ -387,7 +392,7 @@ const Quote = () => {
                     {errors.projectType && <p id="quote-project-type-error" role="alert" className="mt-1 text-xs text-destructive">{errors.projectType}</p>}
                   </div>
                   <div>
-                    <label htmlFor="quote-budget" className="mb-1 block text-sm font-medium">{t.budgetRange}</label>
+                    <label htmlFor="quote-budget" className="mb-1.5 block text-sm">{t.budgetRange}</label>
                     <select
                       id="quote-budget"
                       className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
@@ -405,14 +410,14 @@ const Quote = () => {
                 </div>
 
                 <div>
-                  <label htmlFor="quote-property-size" className="mb-1 block text-sm font-medium">
+                  <label htmlFor="quote-property-size" className="mb-1.5 block text-sm">
                     {t.propertySize} <span className="text-muted-foreground">({t.approx})</span>
                   </label>
                   <Input id="quote-property-size" value={form.propertySize} onChange={(e) => setForm({ ...form, propertySize: e.target.value })} placeholder={t.sizePlaceholder} />
                 </div>
 
                 <div>
-                  <label htmlFor="quote-details" className="mb-1 block text-sm font-medium">{t.details}</label>
+                  <label htmlFor="quote-details" className="mb-1.5 block text-sm">{t.details}</label>
                   <Textarea
                     id="quote-details"
                     rows={5}
@@ -422,7 +427,7 @@ const Quote = () => {
                   />
                 </div>
 
-                <div className="rounded-lg border border-border bg-muted/30 p-4 text-sm text-muted-foreground">
+                <div className="luxury-card-muted p-4 text-sm text-muted-foreground">
                   <p className="mb-1 font-medium text-foreground">{t.photoTitle}</p>
                   <p>
                     {t.photoText}{" "}
@@ -447,7 +452,7 @@ const Quote = () => {
                 </div>
 
                 <div className="pt-2">
-                  <Button type="submit" size="lg" className="w-full md:w-auto" disabled={status === "submitting"} aria-busy={status === "submitting"}>
+                  <Button type="submit" size="lg" className="btn-brand-primary h-12 w-full md:w-auto" disabled={status === "submitting"} aria-busy={status === "submitting"}>
                     {status === "submitting" ? (
                       <>
                         <Loader2 className="mr-2 h-4 w-4 animate-spin" /> {t.submitting}
@@ -466,7 +471,7 @@ const Quote = () => {
 
           <Reveal delay={120}>
             <div className="lg:sticky lg:top-24">
-              <div className="rounded-2xl border border-border bg-card p-6 shadow-sm">
+              <div className="subpage-side-panel p-6">
                 <h2 className="mb-4 font-display text-2xl font-bold">{t.trustTitle}</h2>
                 <ul className="space-y-3">
                   {t.trustPoints.map((point) => (
@@ -478,17 +483,17 @@ const Quote = () => {
                 </ul>
               </div>
 
-              <div className="mt-6 rounded-2xl border border-border bg-muted/30 p-6">
+              <div className="subpage-side-panel mt-6 p-6">
                 <h3 className="mb-3 font-display text-xl font-bold">{t.chatTitle}</h3>
                 <p className="mb-5 text-sm text-muted-foreground">{t.chatText}</p>
-                <Button asChild className="w-full">
+                <Button asChild className="btn-brand-primary w-full">
                   <a href={settings.whatsapp_url()} target="_blank" rel="noreferrer">
                     <WhatsAppIcon className="mr-2 h-4 w-4" /> {t.whatsappNow}
                   </a>
                 </Button>
               </div>
 
-              <div className="mt-6 rounded-2xl border border-border bg-card p-6">
+              <div className="subpage-side-panel mt-6 p-6">
                 <h3 className="mb-3 font-display text-lg font-bold">{t.navServices}</h3>
                 <div className="space-y-2 text-sm text-muted-foreground">
                   <p>{t.navProjects}</p>

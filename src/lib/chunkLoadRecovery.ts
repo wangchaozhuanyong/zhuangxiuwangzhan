@@ -1,5 +1,11 @@
 const CHUNK_RELOAD_KEY = "flashcast:chunk-load-recovery";
+const CHUNK_REFRESH_PARAM = "__flashcast_refresh";
 const RETRY_WINDOW_MS = 60 * 60 * 1000;
+const CHUNK_LOAD_MESSAGE = "前端版本文件加载失败：浏览器或 CDN 还保留着旧的 SPA 入口 HTML，旧 HTML 引用了已经被新部署替换的 hashed JS chunk。系统会自动刷新一次并重新拉取最新入口。";
+
+type ChunkRecoveryWindow = Window & {
+  __flashcastChunkLoadRecoveryInstalled?: boolean;
+};
 
 type ChunkRecoveryState = {
   message: string;
@@ -41,10 +47,31 @@ export const getErrorMessage = (value: unknown) => {
 
 export const getFriendlySystemMessage = (message: string, _eventType?: string) => {
   if (isChunkLoadError(message)) {
-    return "前端版本文件加载失败，通常是浏览器缓存了旧版本页面导致。系统会尝试自动刷新一次。";
+    return CHUNK_LOAD_MESSAGE;
   }
 
   return message;
+};
+
+export const getSystemEventCategory = (message: string, eventType?: string) => {
+  if (eventType === "frontend_deploy_cache_mismatch" || isChunkLoadError(message)) {
+    return {
+      key: "frontend_deploy_cache_mismatch",
+      label: "前端生产部署缓存不一致",
+    };
+  }
+
+  if (eventType === "react_render_error") {
+    return {
+      key: "react_render_error",
+      label: "页面渲染错误",
+    };
+  }
+
+  return {
+    key: eventType || "system_event",
+    label: "系统事件",
+  };
 };
 
 const readRecoveryState = (): ChunkRecoveryState | null => {
@@ -77,12 +104,18 @@ export const recoverFromChunkLoadError = (value: unknown) => {
   if (alreadyRetried) return false;
 
   writeRecoveryState({ message, path, timestamp: now });
-  window.location.reload();
+
+  const nextUrl = new URL(window.location.href);
+  nextUrl.searchParams.set(CHUNK_REFRESH_PARAM, String(now));
+  window.location.replace(nextUrl.toString());
   return true;
 };
 
 export const installChunkLoadRecovery = () => {
   if (typeof window === "undefined") return;
+  const recoveryWindow = window as ChunkRecoveryWindow;
+  if (recoveryWindow.__flashcastChunkLoadRecoveryInstalled) return;
+  recoveryWindow.__flashcastChunkLoadRecoveryInstalled = true;
 
   window.addEventListener("unhandledrejection", (event) => {
     if (recoverFromChunkLoadError(event.reason)) {

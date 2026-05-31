@@ -7,7 +7,9 @@ import { usePublishedBlogPosts, usePublishedSitePage } from "@/hooks/usePublishe
 import { useLanguage } from "@/i18n/LanguageContext";
 import PageMeta from "@/components/PageMeta";
 import { JsonLdBreadcrumb } from "@/components/JsonLd";
+import HeroBanner from "@/components/blocks/HeroBanner";
 import { translateBlogCategory, translateDisplayText, translateKeywordLabel } from "@/i18n/displayLabels";
+import { pageHeroImages, resolvePageHeroImage } from "@/lib/pageHeroImages";
 
 const categories = [
   { value: "All", en: "All", zh: "全部" },
@@ -75,6 +77,8 @@ const copy = {
     metaKeywords: "renovation blog Malaysia, interior design tips KL, renovation guide Kuala Lumpur",
     breadcrumbHome: "Home",
     breadcrumbBlog: "Blog",
+    heroAlt: "FLASH CAST renovation blog and design planning desk",
+    eyebrow: "Renovation Insights",
     title: "Blog & Insights",
     intro: "Renovation guides, material comparisons, design tips, and industry insights for homeowners and businesses in Malaysia.",
     internalServices: "Services",
@@ -90,6 +94,8 @@ const copy = {
     metaKeywords: "马来西亚装修博客, 吉隆坡装修指南, 装修材料比较, 雪兰莪装修知识",
     breadcrumbHome: "首页",
     breadcrumbBlog: "装修博客",
+    heroAlt: "FLASH CAST 装修博客与设计规划",
+    eyebrow: "装修知识",
     title: "装修博客与指南",
     intro: "整理装修预算、材料比较、设计灵感和施工注意事项，帮助你更清楚规划马来西亚装修项目。",
     internalServices: "服务项目",
@@ -114,6 +120,7 @@ const Blog = () => {
     return mergeWithFallbackCategories(cmsPosts, fallbackPosts);
   }, [cmsPosts, language]);
   const filtered = posts.filter((post) => matchesCategory(post.category, filter));
+  const heroImage = resolvePageHeroImage(pageContent?.image_url, pageHeroImages.blog);
 
   return (
     <main className="pt-site-header">
@@ -125,26 +132,25 @@ const Blog = () => {
       />
       <JsonLdBreadcrumb items={[{ name: t.breadcrumbHome, url: "/" }, { name: t.breadcrumbBlog, url: "/blog" }]} />
 
-      <section className="section-padding relative overflow-hidden bg-surface-dark">
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,rgba(198,164,106,0.1),transparent_45%)]" aria-hidden />
-        <div className="container-narrow relative">
-          <div className="accent-line mb-4" />
-          <h1 className="heading-safe mb-4 font-display text-3xl font-bold text-surface-dark-foreground md:text-5xl">{pageContent?.title || t.title}</h1>
-          <p className="prose-safe max-w-2xl text-lg text-surface-dark-foreground/75">{pageContent?.description || t.intro}</p>
-        </div>
-      </section>
+      <HeroBanner
+        image={heroImage.desktop}
+        imageMobile={heroImage.mobile}
+        imageAlt={pageContent?.alt || t.heroAlt}
+        label={pageContent?.subtitle || t.eyebrow}
+        title={pageContent?.title || t.title}
+        description={pageContent?.description || t.intro}
+      />
 
       <section className="section-padding bg-background">
         <div className="container-narrow">
-          <div className="flex gap-2 overflow-x-auto pb-4 mb-8 -mx-4 px-4">
+          <div className="subpage-filter-bar">
             {categories.map((category) => (
               <button
                 type="button"
                 key={category.value}
                 onClick={() => setFilter(category.value)}
-                className={`shrink-0 px-4 py-2 rounded-full text-sm font-medium transition-colors ${
-                  filter === category.value ? "bg-accent text-accent-foreground" : "bg-muted text-muted-foreground hover:bg-muted/80"
-                }`}
+                data-active={filter === category.value}
+                className="subpage-filter-button"
               >
                 {category[language]}
               </button>
@@ -195,7 +201,7 @@ const Blog = () => {
         </div>
       </section>
 
-      <section className="py-8 bg-muted border-t border-border">
+      <section className="subpage-link-band py-8">
         <div className="container-narrow text-center">
           <p className="text-muted-foreground text-sm">
             <Link to="/services" className="text-accent hover:underline">{t.internalServices}</Link>{" / "}

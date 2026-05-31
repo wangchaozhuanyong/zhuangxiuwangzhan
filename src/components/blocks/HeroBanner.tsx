@@ -8,6 +8,7 @@ import SmartImage from "@/components/SmartImage";
 
 interface HeroBannerProps {
   image: string;
+  imageMobile?: string;
   imageAlt: string;
   label?: string;
   title: string;
@@ -16,19 +17,22 @@ interface HeroBannerProps {
   backLabel?: string;
 }
 
-const HeroBanner = ({ image, imageAlt, label, title, description, backTo, backLabel }: HeroBannerProps) => {
+const HeroBanner = ({ image, imageMobile, imageAlt, label, title, description, backTo, backLabel }: HeroBannerProps) => {
   return (
     <section className="page-hero">
       <div className="page-hero__media absolute inset-0">
-        <SmartImage
-          src={image}
-          alt={imageAlt}
-          className="page-hero__image h-full w-full object-cover"
-          loading="eager"
-          fetchPriority="high"
-          width={1920}
-          height={800}
-        />
+        <picture className="block h-full w-full">
+          {imageMobile ? <source media="(max-width: 767px)" srcSet={imageMobile} /> : null}
+          <SmartImage
+            src={image}
+            alt={imageAlt}
+            className="page-hero__image h-full w-full object-cover"
+            loading="eager"
+            fetchPriority="high"
+            width={1920}
+            height={800}
+          />
+        </picture>
         <div className="page-hero__overlay absolute inset-0 media-readable-overlay" aria-hidden="true" />
       </div>
       <div className="page-hero__content site-container">

@@ -166,23 +166,23 @@ const BlogDetail = () => {
       />
       <JsonLdBreadcrumb items={[{ name: t.breadcrumbHome, url: "/" }, { name: t.breadcrumbBlog, url: "/blog" }, { name: displayText(post.title), url: `/blog/${post.slug}` }]} />
 
-      <section className="section-padding bg-surface-dark">
-        <div className="container-narrow max-w-3xl">
-          <Link to="/blog" className="inline-flex items-center gap-1 text-steel text-sm hover:text-accent transition-colors mb-6">
+      <section className="page-hero">
+        <div className="page-hero__media absolute inset-0">
+          <SmartImage src={post.image} alt={displayText(post.title)} className="page-hero__image h-full w-full object-cover" width={1920} height={800} loading="eager" fetchPriority="high" />
+          <div className="page-hero__overlay absolute inset-0 media-readable-overlay" aria-hidden="true" />
+        </div>
+        <div className="page-hero__content site-container max-w-3xl">
+          <Link to="/blog" className="page-hero__back mb-6 inline-flex items-center gap-1.5 text-sm text-on-media-muted transition-colors hover:text-gold">
             <ArrowLeft className="w-3.5 h-3.5" /> {t.backToBlog}
           </Link>
-          <span className="text-accent text-xs font-medium uppercase tracking-wider block mb-3">{translateBlogCategory(post.category, language)}</span>
-          <h1 className="heading-safe mb-4 font-display text-3xl font-bold text-surface-dark-foreground md:text-4xl">{displayText(post.title)}</h1>
-          <div className="flex items-center gap-4 text-sm text-surface-dark-foreground/65">
+          <span className="page-hero__label mb-3 block font-body text-[11px] font-semibold uppercase tracking-[0.28em] text-gold">{translateBlogCategory(post.category, language)}</span>
+          <h1 className="page-hero__title heading-safe mb-4 max-w-3xl font-display text-3xl font-bold text-on-media md:text-5xl">{displayText(post.title)}</h1>
+          <div className="flex items-center gap-4 text-sm text-on-media-muted">
             <span className="flex items-center gap-1"><Clock className="w-3.5 h-3.5" /> {readTime}</span>
             <span>{post.date}</span>
           </div>
         </div>
       </section>
-
-      <div className="container-narrow max-w-3xl px-4 md:px-8 -mt-4">
-        <SmartImage src={post.image} alt={displayText(post.title)} className="aspect-[2/1] w-full rounded-card-lg object-cover shadow-luxury" width={1200} height={600} loading="eager" />
-      </div>
 
       <section className="section-padding bg-background">
         <div className="container-narrow max-w-3xl">

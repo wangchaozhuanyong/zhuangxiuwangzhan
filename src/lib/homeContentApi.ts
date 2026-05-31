@@ -81,6 +81,17 @@ export type PublishedSitePage = {
   seo_description: string;
   seo_keywords: string;
   items: any[];
+  sections?: PublishedCmsSection[];
+};
+
+export type PublishedCmsSection = {
+  id: string;
+  section_key: string;
+  section_type: string;
+  title: string;
+  content: Record<string, any>;
+  settings: Record<string, any>;
+  sort_order: number;
 };
 
 const pickLocalizedValue = <T = any>(row: any, field: string, language: "en" | "zh", fallback: T): T => {
@@ -100,6 +111,8 @@ const pickLocalizedObject = (row: any, field: string, language: "en" | "zh"): Re
   const value = row?.[`${field}_${language}`];
   return value && typeof value === "object" && !Array.isArray(value) ? value : {};
 };
+
+const normalizeCmsSectionType = (value: string) => value.trim().toLowerCase().replace(/-/g, "_");
 
 export const getPublishedBrandPartners = async (): Promise<PublishedBrandPartner[]> => {
   if (!isSupabaseConfigured) return [];
@@ -301,14 +314,29 @@ export const getPublishedSitePage = async (
     .filter((section) => section.status === "published" && !section.deleted_at)
     .sort((a, b) => (a.sort_order || 0) - (b.sort_order || 0));
   const pickContent = (section: any) => pickLocalizedObject(section, "content", language);
-  const hero = sections.find((section) => String(section.section_type || "").toLowerCase() === "hero" || section.section_key === "hero");
-  const richText = sections.find((section) => String(section.section_type || "").toLowerCase() === "rich_text");
-  const cta = sections.find((section) => String(section.section_type || "").toLowerCase() === "cta" || String(section.section_key || "").includes("cta"));
+  const typeMatches = (section: any, types: string[]) => types.includes(normalizeCmsSectionType(String(section.section_type || "")));
+  const hero = sections.find((section) => typeMatches(section, ["hero"]) || section.section_key === "hero");
+  const richText = sections.find((section) => typeMatches(section, ["rich_text", "text", "content"]));
+  const cta = sections.find((section) => typeMatches(section, ["cta"]) || String(section.section_key || "").includes("cta"));
+  const listSection = sections.find((section) => {
+    const content = pickContent(section);
+    return Array.isArray(content.items) && content.items.length > 0;
+  });
   const heroContent = pickContent(hero);
   const richContent = pickContent(richText);
   const ctaContent = pickContent(cta);
+  const listContent = pickContent(listSection);
   const heroSettings = hero?.settings || {};
   const ctaSettings = cta?.settings || {};
+  const publishedSections: PublishedCmsSection[] = sections.map((section) => ({
+    id: section.id,
+    section_key: section.section_key,
+    section_type: section.section_type,
+    title: pickLocalizedText(section, "title", language),
+    content: pickContent(section),
+    settings: section.settings || {},
+    sort_order: Number(section.sort_order || 0),
+  }));
 
   return {
     id: cmsRow.id,
@@ -325,6 +353,7 @@ export const getPublishedSitePage = async (
     seo_title: pickLocalizedText(cmsRow, "seo_title", language) || legacy?.seo_title || "",
     seo_description: pickLocalizedText(cmsRow, "seo_description", language) || legacy?.seo_description || "",
     seo_keywords: pickLocalizedText(cmsRow, "seo_keywords", language) || legacy?.seo_keywords || "",
-    items: heroContent.items || richContent.items || legacy?.items || [],
+    items: listContent.items || heroContent.items || richContent.items || legacy?.items || [],
+    sections: publishedSections,
   };
 };

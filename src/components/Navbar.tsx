@@ -198,22 +198,22 @@ const Navbar = () => {
           </div>
 
           <div className="ml-auto flex shrink-0 items-center xl:hidden">
-            <div className="site-header__mobile-controls flex h-9 items-center gap-1 rounded-full border border-white/75 bg-white/85 p-0.5 shadow-[0_16px_42px_-32px_rgba(21,18,14,0.55)] backdrop-blur-md">
+            <div className="site-header__mobile-controls flex h-11 items-center gap-1 rounded-full border border-white/75 bg-white/85 p-0.5 shadow-[0_16px_42px_-32px_rgba(21,18,14,0.55)] backdrop-blur-md">
               <button
                 onClick={changeLanguage}
-                className="site-header__mobile-button flex h-8 w-8 items-center justify-center rounded-full text-[11px] font-bold text-foreground transition-colors active:bg-muted/70"
+                className="site-header__mobile-button flex h-10 w-10 items-center justify-center rounded-full text-[11px] font-bold text-foreground transition-colors active:bg-muted/70"
                 aria-label={languageAriaLabel}
               >
                 <span>{language === "en" ? "EN" : "中"}</span>
               </button>
               <button
-                className="site-header__mobile-button flex h-8 w-8 items-center justify-center rounded-full text-foreground transition-colors active:bg-muted/70"
+                className="site-header__mobile-button flex h-10 w-10 items-center justify-center rounded-full text-foreground transition-colors active:bg-muted/70"
                 onClick={() => setIsOpen(!isOpen)}
                 aria-label={menuAriaLabel}
                 aria-expanded={isOpen}
                 aria-controls="mobile-navigation"
               >
-                {isOpen ? <X className="h-4 w-4" /> : <Menu className="h-4 w-4" />}
+                {isOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
               </button>
             </div>
           </div>

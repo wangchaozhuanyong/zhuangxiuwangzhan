@@ -177,9 +177,9 @@ const ServiceDetail = () => {
       {serviceFaqs.length > 0 && <JsonLdFAQ faqs={serviceFaqs.map((faq: any) => ({ question: faq.q, answer: faq.a }))} />}
 
       <section className="page-hero">
-        <div className="absolute inset-0">
-          <SmartImage src={heroImage} alt={serviceTitle} className="h-full w-full object-cover" width={1920} height={800} loading="eager" fetchPriority="high" />
-          <div className="absolute inset-0 media-readable-overlay" aria-hidden="true" />
+        <div className="page-hero__media absolute inset-0">
+          <SmartImage src={heroImage} alt={serviceTitle} className="page-hero__image h-full w-full object-cover" width={1920} height={800} loading="eager" fetchPriority="high" />
+          <div className="page-hero__overlay absolute inset-0 media-readable-overlay" aria-hidden="true" />
         </div>
         <div className="page-hero__content site-container">
           <Link to="/services" className="mb-6 inline-flex items-center gap-1 text-sm text-on-media-muted transition-colors hover:text-gold">

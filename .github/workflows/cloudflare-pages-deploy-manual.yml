@@ -35,6 +35,14 @@ jobs:
       - name: Install Playwright Chromium
         run: npx playwright install --with-deps chromium
 
+      - name: Restore retained hashed assets
+        uses: actions/cache/restore@v4
+        with:
+          path: .deploy-cache/assets
+          key: cloudflare-pages-assets-${{ github.run_id }}
+          restore-keys: |
+            cloudflare-pages-assets-
+
       - name: Build
         env:
           VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
@@ -49,6 +57,12 @@ jobs:
           VITE_SITE_SHORT_ADDRESS: "94, Jalan Mega Mendung, 58200"
           VITE_APP_VERSION: ${{ github.event.workflow_run.head_sha || github.sha }}
         run: npm run build
+
+      - name: Retain previous hashed assets
+        run: npm run deploy:retain-assets -- --cache .deploy-cache/assets --dist dist/assets --max-files 3000
+
+      - name: Verify deployment cache consistency
+        run: npm run verify:deploy-cache
 
       - name: Lint and test
         run: |
@@ -65,3 +79,9 @@ jobs:
           directory: dist
           branch: main
           commitHash: ${{ github.event.workflow_run.head_sha || github.sha }}
+
+      - name: Save retained hashed assets
+        uses: actions/cache/save@v4
+        with:
+          path: .deploy-cache/assets
+          key: cloudflare-pages-assets-${{ github.run_id }}

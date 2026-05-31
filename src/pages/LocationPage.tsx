@@ -272,7 +272,7 @@ const LocationPage = () => {
 
       <FAQSection title={t.faqTitle(location.name)} faqs={localizedFaqs} />
 
-      <section className="py-8 bg-background border-t border-border">
+      <section className="subpage-link-band py-8">
         <div className="container-narrow text-center">
           <p className="text-muted-foreground text-sm">
             <Link to="/services" className="text-accent hover:underline">{t.internalServices}</Link>{" / "}

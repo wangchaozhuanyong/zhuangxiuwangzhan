@@ -13,7 +13,7 @@ interface SectionHeaderProps {
 const SectionHeader = ({ title, description, className = "" }: SectionHeaderProps) => {
   return (
     <Reveal>
-      <div className={`mx-auto mb-10 max-w-3xl text-center md:mb-14 ${className}`}>
+      <div className={`section-header mx-auto max-w-3xl ${className}`}>
         <div className="accent-line mx-auto mb-4" />
         <h2 className="heading-safe mb-3 font-display text-2xl font-bold md:text-4xl">{title}</h2>
         {description && (

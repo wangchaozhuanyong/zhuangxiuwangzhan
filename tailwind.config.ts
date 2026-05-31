@@ -18,8 +18,8 @@ export default {
         site: "1320px",
       },
       fontFamily: {
-        display: ['Playfair Display', 'Noto Sans SC', 'serif'],
-        body: ['Inter', 'Noto Sans SC', 'sans-serif'],
+        display: ['Playfair Display', 'Noto Serif SC', 'Noto Sans SC', 'serif'],
+        body: ['Inter', 'Noto Sans SC', 'Microsoft YaHei UI', 'PingFang SC', 'sans-serif'],
       },
       colors: {
         border: "hsl(var(--border))",
