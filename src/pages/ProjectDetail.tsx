@@ -65,7 +65,7 @@ const copy = {
     internalServices: "Services",
     internalMaterials: "Materials",
     internalBlog: "Blog",
-    internalFaq: "常见问题",
+    internalFaq: "FAQ",
     internalContact: "Contact",
     imageLabel: "Image",
   },

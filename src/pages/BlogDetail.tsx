@@ -31,7 +31,7 @@ const copy = {
     internalServices: "Our Services",
     internalProjects: "Projects",
     internalMaterials: "Materials",
-    internalFaq: "常见问题",
+    internalFaq: "FAQ",
     internalContact: "Contact",
     moreArticles: "More Articles",
   },

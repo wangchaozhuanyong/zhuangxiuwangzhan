@@ -39,7 +39,7 @@ const copy = {
     relatedServices: "Related Services",
     viewProjects: "View Projects",
     materialLibrary: "Material Library",
-    faqLink: "常见问题",
+    faqLink: "FAQ",
     interested: (title: string) => `Interested in ${title}?`,
     ctaText: "Contact us for a free consultation and quotation. We serve Kuala Lumpur, Selangor, and surrounding areas.",
     freeQuote: "Get a Free Quote",

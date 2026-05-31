@@ -71,7 +71,7 @@ const copy = {
       services: "Services",
       materials: "Materials",
       blog: "Blog",
-      faq: "常见问题",
+      faq: "FAQ",
       contact: "Contact",
     },
   },

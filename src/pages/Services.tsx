@@ -122,7 +122,7 @@ const copy = {
     internalProjects: "Projects",
     internalMaterials: "Materials",
     internalBlog: "Blog",
-    internalFaq: "常见问题",
+    internalFaq: "FAQ",
     internalContact: "Contact",
   },
   zh: {
