@@ -123,7 +123,7 @@ const Projects = () => {
   const displayProjectLocation = (value: string) => translateDisplayText(value, language);
   const heroImage = resolvePageHeroImage(pageContent?.image_url, pageHeroImages.projects);
   const displayProjectDescription = (project: any) =>
-    language === "zh" ? String(project.description || "").replace(new RegExp(String(project.type || "").replace(/[.*+?^${}()|[\]\\]/g, "\\$&"), "gi"), displayProjectType(project.type)) : project.description;
+    translateDisplayText(String(project.description || ""), language);
 
   const scrollCategoryIntoView = (category: (typeof categories)[number]) => {
     const bar = categoryBarRef.current;

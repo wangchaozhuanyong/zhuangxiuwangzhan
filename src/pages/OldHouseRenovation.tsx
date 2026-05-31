@@ -140,7 +140,7 @@ const OldHouseRenovation = () => {
       <PageMeta title={t.metaTitle} description={t.metaDescription} keywords={t.metaKeywords} canonicalPath="/services/old-house" />
       <JsonLdBreadcrumb items={[{ name: t.breadcrumbHome, url: "/" }, { name: t.breadcrumbServices, url: "/services" }, { name: t.breadcrumbCurrent, url: "/services/old-house" }]} />
 
-      <section className="page-hero">
+      <section className="page-hero page-hero--detail">
         <div className="page-hero__media absolute inset-0">
           <picture className="block h-full w-full">
             <source media="(max-width: 767px)" srcSet={pageHeroImages.oldHouse.mobile} />
