@@ -114,6 +114,116 @@ const pickLocalizedList = <T = unknown>(item: UnknownRecord | null | undefined, 
   return toArray<T>(value);
 };
 
+const PROJECT_SUMMARY_SELECT = [
+  "id",
+  "slug",
+  "title_en",
+  "title_zh",
+  "project_type",
+  "location",
+  "excerpt_en",
+  "excerpt_zh",
+  "content_en",
+  "content_zh",
+  "image_url",
+  "sort_order",
+  "project_images(id,image_url,image_type,sort_order,alt_en,alt_zh)",
+].join(",");
+
+const SERVICE_SUMMARY_SELECT = [
+  "id",
+  "slug",
+  "title_en",
+  "title_zh",
+  "excerpt_en",
+  "excerpt_zh",
+  "content_en",
+  "content_zh",
+  "image_url",
+  "sort_order",
+].join(",");
+
+const getOrderedProjectImages = (item: any) => {
+  const all = (item.project_images || []).slice().sort((a: any, b: any) => (a.sort_order || 0) - (b.sort_order || 0));
+  const cover = all.filter((img: any) => img.image_type === "cover");
+  const gallery = all.filter((img: any) => img.image_type === "gallery");
+  const beforeAfter = all.filter((img: any) => img.image_type === "before" || img.image_type === "after");
+  return [...cover, ...gallery, ...beforeAfter];
+};
+
+const mapPublishedProjectSummary = (item: any, language: "en" | "zh") => {
+  const localize = (value: string) => (language === "zh" ? translateDisplayText(value, language) : value);
+  const orderedImages = getOrderedProjectImages(item);
+  const images = orderedImages.map((img: any) => img.image_url).filter(Boolean);
+  const fallbackAlt = pickLocalizedText(item, "title", language);
+  const imageAlts = orderedImages
+    .map((img: any) => pickLocalizedText(img, "alt", language, fallbackAlt))
+    .filter(Boolean);
+  const thumbnail = images[0] || item.image_url || "";
+
+  return {
+    id: item.id,
+    slug: item.slug,
+    title: localize(pickLocalizedText(item, "title", language)),
+    type: normalizeProjectType(item.project_type || "Renovation"),
+    location: item.location || "",
+    description:
+      localize(pickLocalizedText(item, "excerpt", language)) ||
+      localize(stripHtml(pickLocalizedText(item, "content", language))),
+    images: thumbnail ? [thumbnail] : [],
+    imageAlts: imageAlts.length ? [imageAlts[0]] : fallbackAlt ? [fallbackAlt] : [],
+    thumbnail,
+    thumbnailAlt: imageAlts[0] || fallbackAlt,
+  };
+};
+
+const applyLimit = <T extends { limit: (count: number) => T }>(query: T, limit?: number) =>
+  limit && limit > 0 ? query.limit(limit) : query;
+
+export const getPublishedProjectSummaries = async (language: "en" | "zh", limit?: number) => {
+  const fallbackProjects = async () => {
+    const projects = await getFallbackProjects(language);
+    return limit && limit > 0 ? projects.slice(0, limit) : projects;
+  };
+
+  if (!isSupabaseConfigured) return fallbackProjects();
+
+  const query = applyLimit(
+    supabase!
+      .from("projects")
+      .select(PROJECT_SUMMARY_SELECT)
+      .eq("status", "published")
+      .order("sort_order", { ascending: true }),
+    limit,
+  );
+  const { data, error } = await query;
+
+  if (error || !data?.length) return fallbackProjects();
+  return data.map((item: any) => mapPublishedProjectSummary(item, language));
+};
+
+export const getPublishedServiceSummaries = async (language: "en" | "zh" = "en", limit?: number) => {
+  const fallbackServices = async () => {
+    const services = await getFallbackServices(language);
+    return limit && limit > 0 ? services.slice(0, limit) : services;
+  };
+
+  if (!isSupabaseConfigured) return fallbackServices();
+
+  const query = applyLimit(
+    supabase!
+      .from("services")
+      .select(SERVICE_SUMMARY_SELECT)
+      .eq("status", "published")
+      .order("sort_order", { ascending: true }),
+    limit,
+  );
+  const { data, error } = await query;
+
+  if (error || !data?.length) return fallbackServices();
+  return data.map((item: any) => mapPublishedService(item, language));
+};
+
 export const getPublishedProjects = async (language: "en" | "zh") => {
   if (!isSupabaseConfigured) return getFallbackProjects(language);
 

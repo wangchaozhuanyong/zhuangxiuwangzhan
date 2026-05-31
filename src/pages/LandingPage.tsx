@@ -26,6 +26,7 @@ const shellCopy = {
     overview: "Overview",
     whyChoose: "Why Choose Us",
     relatedProjects: "Related Projects",
+    faqTitle: "Frequently Asked Questions",
     ctaTitle: "Ready to Get Started?",
     ctaDescription: "Contact us today for a free consultation and quotation.",
     metaSuffix: "FLASH CAST SDN. BHD.",
@@ -52,6 +53,7 @@ const zhShellCopy = {
   overview: "服务概览",
   whyChoose: "为什么选择我们",
   relatedProjects: "相关案例",
+  faqTitle: "常见问题",
   ctaTitle: "准备开始规划项目？",
   ctaDescription: "欢迎联系我们，获取免费咨询和装修报价。",
   metaSuffix: "FLASH CAST SDN. BHD.",
@@ -194,7 +196,7 @@ const LandingPage = () => {
       )}
 
       {/* FAQ */}
-      <FAQSection faqs={landingPage.faqs} className="section-padding bg-background" />
+      <FAQSection title={t.faqTitle} faqs={landingPage.faqs} className="section-padding bg-background" />
 
       <CTABanner
         title={t.ctaTitle}

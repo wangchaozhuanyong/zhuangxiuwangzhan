@@ -7,9 +7,11 @@ import {
   getPublishedMaterialBySlug,
   getPublishedMaterials,
   getPublishedProjectBySlug,
+  getPublishedProjectSummaries,
   getPublishedProjects,
   getPublishedServiceBySlug,
   getPublishedServiceAreaBySlug,
+  getPublishedServiceSummaries,
   getPublishedServices,
   getPublishedTestimonials,
 } from "@/lib/contentApi";
@@ -42,10 +44,26 @@ export function usePublishedServices(language: "en" | "zh") {
   });
 }
 
+export function usePublishedServiceSummaries(language: "en" | "zh", limit?: number) {
+  return useQuery({
+    queryKey: ["published", "service_summaries", language, limit ?? "all"],
+    queryFn: () => getPublishedServiceSummaries(language, limit),
+    ...queryDefaults,
+  });
+}
+
 export function usePublishedProjects(language: "en" | "zh") {
   return useQuery({
     queryKey: ["published", "projects", language],
     queryFn: () => getPublishedProjects(language),
+    ...queryDefaults,
+  });
+}
+
+export function usePublishedProjectSummaries(language: "en" | "zh", limit?: number) {
+  return useQuery({
+    queryKey: ["published", "project_summaries", language, limit ?? "all"],
+    queryFn: () => getPublishedProjectSummaries(language, limit),
     ...queryDefaults,
   });
 }

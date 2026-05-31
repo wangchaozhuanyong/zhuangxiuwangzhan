@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { ArrowLeft, ArrowRight, MapPin, Clock, CheckCircle, Star, Wrench, Layers } from "lucide-react";
 import WhatsAppIcon from "@/components/WhatsAppIcon";
 import { projectsData } from "@/data/projects";
-import { usePublishedProjectBySlug, usePublishedProjects } from "@/hooks/usePublishedContent";
+import { usePublishedProjectBySlug, usePublishedProjectSummaries } from "@/hooks/usePublishedContent";
 import { useLanguage } from "@/i18n/LanguageContext";
 import Reveal from "@/components/Reveal";
 import SmartImage from "@/components/SmartImage";
@@ -168,7 +168,7 @@ const ProjectDetail = () => {
   const t = language === "zh" ? zhCopy : copy.en;
   const fallbackProject = projectsData.find((item) => item.slug === slug);
   const { data: publishedProject, isPending: projectPending } = usePublishedProjectBySlug(slug, language);
-  const { data: publishedProjects = [] } = usePublishedProjects(language);
+  const { data: publishedProjects = [] } = usePublishedProjectSummaries(language);
   const project = publishedProject ?? fallbackProject;
   const allProjects = publishedProjects.length ? publishedProjects : projectsData;
   const relatedProjects = allProjects.filter((item) => item.slug !== slug && item.type === project?.type).slice(0, 2);

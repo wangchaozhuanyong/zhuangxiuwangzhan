@@ -3,7 +3,7 @@ import Link from "@/components/LocalizedLink";
 import { Button } from "@/components/ui/button";
 import { MapPin } from "lucide-react";
 import SmartImage from "@/components/SmartImage";
-import { usePublishedProjects, usePublishedSitePage } from "@/hooks/usePublishedContent";
+import { usePublishedProjectSummaries, usePublishedSitePage } from "@/hooks/usePublishedContent";
 import { useLanguage } from "@/i18n/LanguageContext";
 import Reveal from "@/components/Reveal";
 import PageMeta from "@/components/PageMeta";
@@ -102,7 +102,7 @@ const copy = {
 const Projects = () => {
   const [filter, setFilter] = useState<(typeof categories)[number]>("All");
   const { language } = useLanguage();
-  const { data: projects = [] } = usePublishedProjects(language);
+  const { data: projects = [] } = usePublishedProjectSummaries(language);
   const { data: pageContent } = usePublishedSitePage(language, "projects");
   const categoryBarRef = useRef<HTMLDivElement | null>(null);
   const categoryButtonRefs = useRef<Record<(typeof categories)[number], HTMLButtonElement | null>>({

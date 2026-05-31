@@ -105,9 +105,8 @@ const Materials = () => {
 
           <div className="material-directory-grid">
             {categories.map((category) => (
-              <Link
+              <article
                 key={category.slug}
-                to={`/materials/category/${category.slug}`}
                 className="material-directory-card luxury-card group hover-lift"
               >
                 <div className="material-directory-card__media img-zoom">
@@ -130,12 +129,12 @@ const Materials = () => {
                     <span>
                       {category.subcategories.length} {t.subcategories}
                     </span>
-                    <span className="inline-flex items-center gap-1 text-accent">
+                    <Link to={`/materials/category/${category.slug}`} className="material-card-action">
                       {t.view} <ArrowRight className="h-3.5 w-3.5" />
-                    </span>
+                    </Link>
                   </div>
                 </div>
-              </Link>
+              </article>
             ))}
           </div>
         </div>

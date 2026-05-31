@@ -5,7 +5,7 @@ import Reveal from "@/components/Reveal";
 import SmartImage from "@/components/SmartImage";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { useT } from "@/i18n/useT";
-import { usePublishedProjects } from "@/hooks/usePublishedContent";
+import { usePublishedProjectSummaries } from "@/hooks/usePublishedContent";
 import { translateDisplayText } from "@/i18n/displayLabels";
 
 type FeaturedProject = {
@@ -64,7 +64,7 @@ const ProjectsSection = () => {
   const { language } = useLanguage();
   const t = useT();
   const copy = sectionCopy[language];
-  const { data: projects = [] } = usePublishedProjects(language);
+  const { data: projects = [] } = usePublishedProjectSummaries(language, 6);
   const featured = useMemo(() => projects.slice(0, 6) as FeaturedProject[], [projects]);
 
   return (
@@ -100,7 +100,7 @@ const ProjectsSection = () => {
                           alt={project.thumbnailAlt || `${title} - ${location}`}
                           width={800}
                           height={600}
-                          loading={index < 3 ? "eager" : "lazy"}
+                          loading="lazy"
                           sizes="(max-width: 640px) 92vw, (max-width: 1024px) 45vw, 30vw"
                           className="h-full w-full object-cover"
                         />

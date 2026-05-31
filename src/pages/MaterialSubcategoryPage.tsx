@@ -27,6 +27,7 @@ const copy = {
     comingSoon: "Products coming soon for this category.",
     products: (name: string) => `${name} Options`,
     enquireText: (name: string) => `Contact us to enquire about ${name.toLowerCase()} options.`,
+    view: "View",
     quote: "Request a Quote",
     interested: (name: string) => `Interested in ${name}?`,
     ctaText: "Contact us to request samples, check availability, or get a quotation for your project.",
@@ -44,6 +45,7 @@ const copy = {
     comingSoon: "此分类的产品即将更新。",
     products: (name: string) => `${name} 材料选项`,
     enquireText: (name: string) => `欢迎联系我们咨询 ${name} 材料选项。`,
+    view: "查看",
     quote: "索取报价",
     interested: (name: string) => `对 ${name} 感兴趣？`,
     ctaText: "联系我们索取样板、确认供应情况，或获取项目报价。",
@@ -105,7 +107,7 @@ const MaterialSubcategoryPage = () => {
             <div className="card-grid grid-cols-2 gap-4 md:grid-cols-3 md:gap-6 lg:grid-cols-4">
               {items.map((item, index) => (
                 <Reveal key={item.id} delay={index * 60} direction="none">
-                  <Link to={`/materials/${item.slug}`} className="material-depth-card luxury-card group hover-lift">
+                  <article className="material-depth-card luxury-card group hover-lift">
                     <div className="material-depth-card__media img-zoom">
                       <SmartImage src={item.image} alt={item.alt || translateDisplayText(item.name, language)} loading="lazy" width={400} height={400} className="w-full h-full object-cover" />
                     </div>
@@ -113,8 +115,13 @@ const MaterialSubcategoryPage = () => {
                       <h3 className="material-depth-card__title">{translateDisplayText(item.name, language)}</h3>
                       <p className="material-depth-card__meta">{t.color} {translateDisplayText(item.color, language)}</p>
                       <p className="material-depth-card__meta">{t.suitable} {item.suitableSpaces.map((space: string) => translateSpaceLabel(space, language)).join(", ")}</p>
+                      <div className="material-depth-card__actions">
+                        <Link to={`/materials/${item.slug}`} className="material-card-action">
+                          {t.view} <ArrowRight className="h-3.5 w-3.5" />
+                        </Link>
+                      </div>
                     </div>
-                  </Link>
+                  </article>
                 </Reveal>
               ))}
             </div>

@@ -1,9 +1,10 @@
 import { Button } from "@/components/ui/button";
 import { ArrowRight } from "lucide-react";
 import Reveal from "@/components/Reveal";
+import SmartImage from "@/components/SmartImage";
 import { useT } from "@/i18n/useT";
 import { useLanguage } from "@/i18n/LanguageContext";
-import { usePublishedServices } from "@/hooks/usePublishedContent";
+import { usePublishedServiceSummaries } from "@/hooks/usePublishedContent";
 import LocalizedLink from "@/components/LocalizedLink";
 import residentialRenovation from "@/assets/residential-renovation.webp";
 import builtinSolutions from "@/assets/services/builtin-solutions.webp";
@@ -74,7 +75,7 @@ const getServiceVisual = (linkOrSlug: string) => {
 const ServicesSection = () => {
   const t = useT();
   const { language } = useLanguage();
-  const { data: dynamicServices = [] } = usePublishedServices(language);
+  const { data: dynamicServices = [] } = usePublishedServiceSummaries(language, 8);
 
   const fallbackServices = serviceEntries.map((service) => ({
     icon: service.icon,
@@ -125,7 +126,14 @@ const ServicesSection = () => {
                 >
                   {service.visual && (
                     <span className="service-catalog-media" aria-hidden="true">
-                      <img src={service.visual} alt="" loading="lazy" />
+                      <SmartImage
+                        src={service.visual}
+                        alt=""
+                        loading="lazy"
+                        width={600}
+                        height={420}
+                        sizes="(max-width: 640px) 92vw, (max-width: 1024px) 45vw, 24vw"
+                      />
                     </span>
                   )}
                   <span className="service-catalog-icon" aria-hidden="true">

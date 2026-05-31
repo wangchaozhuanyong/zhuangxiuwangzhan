@@ -1,6 +1,7 @@
 ﻿import { useParams } from "react-router-dom";
 import Link from "@/components/LocalizedLink";
 import { Button } from "@/components/ui/button";
+import { ArrowRight } from "lucide-react";
 import HeroBanner from "@/components/blocks/HeroBanner";
 import SectionHeader from "@/components/blocks/SectionHeader";
 import CTABanner from "@/components/blocks/CTABanner";
@@ -24,6 +25,7 @@ const copy = {
     allMaterials: "All Materials",
     browseSubcategories: "Browse Subcategories",
     allProducts: (name: string) => `All ${name} Products`,
+    view: "View",
     color: "Color:",
     suitable: "Suitable:",
     interested: (name: string) => `Interested in ${name}?`,
@@ -41,6 +43,7 @@ const copy = {
     allMaterials: "全部材料",
     browseSubcategories: "浏览子分类",
     allProducts: (name: string) => `全部 ${name} 产品`,
+    view: "查看",
     color: "颜色：",
     suitable: "适合：",
     interested: (name: string) => `对 ${name} 感兴趣？`,
@@ -141,15 +144,20 @@ const MaterialCategoryPage = () => {
           <div className="card-grid grid-cols-2 gap-4 md:grid-cols-3 md:gap-5 lg:grid-cols-4">
             {category.subcategories.map((subcategory, index) => (
               <Reveal key={subcategory.slug} delay={index * 60} direction="none">
-                <Link to={`/materials/category/${category.slug}/${subcategory.slug}`} className="material-depth-card luxury-card-muted group hover-lift">
+                <article className="material-depth-card luxury-card-muted group hover-lift">
                   <div className="material-depth-card__media img-zoom">
                     <SmartImage src={subcategory.image} alt={subcategory.alt || translateMaterialSubcategory(subcategory.name, language)} loading="lazy" width={360} height={360} className="h-full w-full object-cover" />
                   </div>
                   <div className="material-depth-card__body">
                     <h3 className="material-depth-card__title">{translateMaterialSubcategory(subcategory.name, language)}</h3>
                     <p className="material-depth-card__meta">{translateDisplayText(subcategory.description, language)}</p>
+                    <div className="material-depth-card__actions">
+                      <Link to={`/materials/category/${category.slug}/${subcategory.slug}`} className="material-card-action">
+                        {t.view} <ArrowRight className="h-3.5 w-3.5" />
+                      </Link>
+                    </div>
                   </div>
-                </Link>
+                </article>
               </Reveal>
             ))}
           </div>
@@ -163,7 +171,7 @@ const MaterialCategoryPage = () => {
             <div className="card-grid grid-cols-2 gap-4 md:grid-cols-3 md:gap-5 lg:grid-cols-4">
               {category.items.map((item, index) => (
                 <Reveal key={item.id} delay={index * 60} direction="none">
-                  <Link to={`/materials/${item.slug}`} className="material-depth-card luxury-card group hover-lift">
+                  <article className="material-depth-card luxury-card group hover-lift">
                     <div className="material-depth-card__media img-zoom">
                       <SmartImage src={item.image} alt={item.alt || translateMaterialDisplay(item.name, language)} loading="lazy" width={400} height={400} className="w-full h-full object-cover" />
                     </div>
@@ -171,8 +179,13 @@ const MaterialCategoryPage = () => {
                       <h3 className="material-depth-card__title">{translateMaterialDisplay(item.name, language)}</h3>
                       <p className="material-depth-card__meta">{t.color} {translateMaterialDisplay(item.color, language)}</p>
                       <p className="material-depth-card__meta">{t.suitable} {item.suitableSpaces.map((space) => translateMaterialDisplay(space, language)).join(", ")}</p>
+                      <div className="material-depth-card__actions">
+                        <Link to={`/materials/${item.slug}`} className="material-card-action">
+                          {t.view} <ArrowRight className="h-3.5 w-3.5" />
+                        </Link>
+                      </div>
                     </div>
-                  </Link>
+                  </article>
                 </Reveal>
               ))}
             </div>

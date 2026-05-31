@@ -67,7 +67,7 @@ const BrandLogosSection = () => {
                     className="brand-board-logo"
                     width={260}
                     height={120}
-                    loading={index < 8 ? "eager" : "lazy"}
+                    loading="lazy"
                     resize="contain"
                   />
                 </div>

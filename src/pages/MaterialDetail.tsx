@@ -37,6 +37,7 @@ const copy = {
     enquire: "Enquire About This Material",
     whatsapp: "WhatsApp",
     more: (name: string) => `More ${name}`,
+    view: "View",
   },
   zh: {
     notFound: "材料不存在",
@@ -58,6 +59,7 @@ const copy = {
     enquire: "咨询此材料",
     whatsapp: "WhatsApp 联系",
     more: (name: string) => `更多 ${name}`,
+    view: "查看",
   },
 };
 
@@ -247,15 +249,20 @@ const MaterialDetail = () => {
             </div>
             <div className="card-grid grid-cols-2 gap-4 md:grid-cols-4 md:gap-5">
               {otherMaterials.map((item: any) => (
-                <Link key={item.id} to={`/materials/${item.slug}`} className="material-depth-card luxury-card group hover-lift">
+                <article key={item.id} className="material-depth-card luxury-card group hover-lift">
                   <div className="material-depth-card__media img-zoom">
                     <SmartImage src={item.image} alt={item.alt || translateDisplayText(item.name, language)} loading="lazy" width={400} height={400} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
                   </div>
                   <div className="material-depth-card__body">
                     <h3 className="material-depth-card__title">{translateDisplayText(item.name, language)}</h3>
                     <p className="material-depth-card__meta">{translateMaterialType(item.type, language)} / {translateDisplayText(item.color || displayCategoryName, language)}</p>
+                    <div className="material-depth-card__actions">
+                      <Link to={`/materials/${item.slug}`} className="material-card-action">
+                        {t.view} <ArrowRight className="h-3.5 w-3.5" />
+                      </Link>
+                    </div>
                   </div>
-                </Link>
+                </article>
               ))}
             </div>
           </div>
