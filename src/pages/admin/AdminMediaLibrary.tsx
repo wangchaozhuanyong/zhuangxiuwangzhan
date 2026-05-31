@@ -1,5 +1,6 @@
-import { useMemo, useState } from "react";
+import { useDeferredValue, useEffect, useState } from "react";
 import AdminPageHeader from "@/components/admin/AdminPageHeader";
+import AdminListPager from "@/components/admin/AdminListPager";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -28,23 +29,23 @@ const usageTypeLabels: Record<(typeof usageTypes)[number], string> = {
 };
 
 const AdminMediaLibrary = () => {
-  const { data: assets = [], error } = useAdminMediaAssets();
   const [usageType, setUsageType] = useState("all");
   const [search, setSearch] = useState("");
+  const [page, setPage] = useState(0);
+  const deferredSearch = useDeferredValue(search);
+  const { data, error, isFetching } = useAdminMediaAssets({ page, usageType, search: deferredSearch });
+  const assets = data?.rows ?? [];
+  const total = data?.count ?? 0;
+  const pageSize = data?.pageSize ?? 30;
   const [editing, setEditing] = useState<AdminMediaAsset | null>(null);
   const [message, setMessage] = useState("");
   const createMutation = useCreateAdminMediaAsset();
   const updateMutation = useUpdateAdminMediaAsset();
   const deleteMutation = useDeleteAdminMediaAsset();
 
-  const filtered = useMemo(() => {
-    const query = search.trim().toLowerCase();
-    return assets.filter((asset) => {
-      const matchesType = usageType === "all" || asset.usage_type === usageType;
-      const haystack = [asset.file_name, asset.folder, asset.usage_type, asset.alt_zh, asset.alt_en].join(" ").toLowerCase();
-      return matchesType && (!query || haystack.includes(query));
-    });
-  }, [assets, search, usageType]);
+  useEffect(() => {
+    setPage(0);
+  }, [deferredSearch, usageType]);
 
   const createAsset = async (url: string) => {
     setMessage("");
@@ -102,7 +103,7 @@ const AdminMediaLibrary = () => {
       </div>
 
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
-        {filtered.map((asset) => (
+        {assets.map((asset) => (
           <article key={asset.id} className="overflow-hidden rounded-xl border border-border bg-card">
             <SmartImage
               src={asset.file_url}
@@ -123,6 +124,7 @@ const AdminMediaLibrary = () => {
           </article>
         ))}
       </div>
+      <AdminListPager page={page} pageSize={pageSize} total={total} isFetching={isFetching} itemLabel="张图片" onPageChange={setPage} />
 
       {editing && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">

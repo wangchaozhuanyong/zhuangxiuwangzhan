@@ -2,10 +2,13 @@ import React, { createContext, useContext, useEffect, useMemo, useRef, useState 
 import { isSupabaseConfigured, supabase } from "@/lib/supabase";
 
 type AdminAuthState = "checking" | "signed-in" | "signed-out" | "denied";
+export type AdminRole = "super_admin" | "content_editor" | "lead_manager" | "viewer";
 
 type AdminAuthContextValue = {
   state: AdminAuthState;
   isSupabaseConfigured: boolean;
+  role: AdminRole | null;
+  isSuperAdmin: boolean;
 };
 
 const AdminAuthContext = createContext<AdminAuthContextValue | null>(null);
@@ -18,6 +21,7 @@ export function useAdminAuth() {
 
 export default function AdminAuthProvider({ children }: { children: React.ReactNode }) {
   const [state, setState] = useState<AdminAuthState>("checking");
+  const [role, setRole] = useState<AdminRole | null>(null);
   const lastSessionIdRef = useRef<string | null>(null);
 
   useEffect(() => {
@@ -35,6 +39,7 @@ export default function AdminAuthProvider({ children }: { children: React.ReactN
       const session = data.session;
       if (!session) {
         lastSessionIdRef.current = null;
+        setRole(null);
         setState("signed-out");
         return;
       }
@@ -45,9 +50,18 @@ export default function AdminAuthProvider({ children }: { children: React.ReactN
       }
 
       lastSessionIdRef.current = session.access_token;
-      const { data: isAdmin, error } = await supabase!.rpc("is_admin");
+      const [{ data: isAdmin, error }, { data: adminRole, error: roleError }] = await Promise.all([
+        supabase!.rpc("is_admin"),
+        supabase!.rpc("admin_role"),
+      ]);
       if (!active) return;
-      setState(!error && Boolean(isAdmin) ? "signed-in" : "denied");
+      if (!error && Boolean(isAdmin)) {
+        setRole(!roleError && adminRole ? (adminRole as AdminRole) : "super_admin");
+        setState("signed-in");
+      } else {
+        setRole(null);
+        setState("denied");
+      }
     };
 
     void check();
@@ -64,10 +78,9 @@ export default function AdminAuthProvider({ children }: { children: React.ReactN
   }, []);
 
   const value = useMemo<AdminAuthContextValue>(
-    () => ({ state, isSupabaseConfigured }),
-    [state],
+    () => ({ state, isSupabaseConfigured, role, isSuperAdmin: role === "super_admin" }),
+    [state, role],
   );
 
   return <AdminAuthContext.Provider value={value}>{children}</AdminAuthContext.Provider>;
 }
-

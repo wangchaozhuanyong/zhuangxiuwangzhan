@@ -19,8 +19,8 @@ const BUCKET = "site-images";
 const MAX_EDGE = 2400;
 const WEBP_QUALITY = 0.82;
 const MAX_UPLOAD_BYTES = 5 * 1024 * 1024;
-const ALLOWED_IMAGE_TYPES = new Set(["image/jpeg", "image/png", "image/webp", "image/gif"]);
-const ALLOWED_EXTENSIONS = new Set(["jpg", "jpeg", "png", "webp", "gif"]);
+const ALLOWED_IMAGE_TYPES = new Set(["image/jpeg", "image/png", "image/webp"]);
+const ALLOWED_EXTENSIONS = new Set(["jpg", "jpeg", "png", "webp"]);
 
 const copy = {
   en: {
@@ -46,11 +46,7 @@ async function prepareUploadFile(file: File): Promise<{ file: File; width?: numb
   }
 
   if (!ALLOWED_IMAGE_TYPES.has(mime) || !ALLOWED_EXTENSIONS.has(ext)) {
-    throw new Error("只允许上传 JPG、PNG、WebP 或 GIF 图片。");
-  }
-
-  if (mime === "image/gif") {
-    return { file, converted: false };
+    throw new Error("只允许上传 JPG、PNG、WebP 图片。GIF 动图暂时不进入公开媒体库，避免体积过大或安全风险。");
   }
 
   const bitmap = await createImageBitmap(file);
@@ -207,7 +203,7 @@ const AdminImageUpload = ({ value, folder = "content", previewVariant = "cover",
         </div>
       )}
       <div className="flex flex-col gap-2 sm:flex-row">
-        <Input type="file" accept="image/jpeg,image/png,image/webp,image/gif" onChange={(event) => upload(event.target.files?.[0])} disabled={uploading} />
+        <Input type="file" accept="image/jpeg,image/png,image/webp" onChange={(event) => upload(event.target.files?.[0])} disabled={uploading} />
         <Button type="button" variant="outline" disabled={uploading}>
           {uploading ? t.uploading : t.upload}
         </Button>

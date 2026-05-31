@@ -1,8 +1,9 @@
-import { useEffect, useMemo, useState } from "react";
+import { useDeferredValue, useEffect, useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import AdminListPager from "@/components/admin/AdminListPager";
 import { isSupabaseConfigured, supabase } from "@/lib/supabase";
 import { useAdminMediaAssets } from "@/lib/adminQueries";
 import AdminImageUpload from "@/pages/admin/AdminImageUpload";
@@ -38,9 +39,14 @@ export default function MediaPicker({
   description?: string;
 }) {
   const queryClient = useQueryClient();
-  const { data: assets = [], isFetching, error, refetch } = useAdminMediaAssets();
   const [usageType, setUsageType] = useState<UsageType>(initialUsageType);
   const [search, setSearch] = useState("");
+  const [page, setPage] = useState(0);
+  const deferredSearch = useDeferredValue(search);
+  const { data, isFetching, error, refetch } = useAdminMediaAssets({ page, pageSize: 40, usageType, search: deferredSearch });
+  const assets = (data?.rows ?? []) as MediaAsset[];
+  const total = data?.count ?? 0;
+  const pageSize = data?.pageSize ?? 40;
   const [message, setMessage] = useState("");
 
   useEffect(() => {
@@ -52,14 +58,9 @@ export default function MediaPicker({
     if (error) setMessage(error instanceof Error ? error.message : String(error));
   }, [error]);
 
-  const filtered = useMemo(() => {
-    const q = search.trim().toLowerCase();
-    return (assets as MediaAsset[]).filter((asset) => {
-      const matchesType = usageType === "all" || asset.usage_type === usageType;
-      const haystack = [asset.file_name, asset.folder, asset.usage_type, asset.alt_zh, asset.alt_en, asset.file_url].join(" ").toLowerCase();
-      return matchesType && (!q || haystack.includes(q));
-    });
-  }, [assets, usageType, search]);
+  useEffect(() => {
+    setPage(0);
+  }, [deferredSearch, usageType]);
 
   const createAsset = async (url: string) => {
     if (!supabase) return;
@@ -115,7 +116,7 @@ export default function MediaPicker({
             {isFetching && <p className="text-sm text-muted-foreground">加载中...</p>}
 
             <div className="grid max-h-[50vh] grid-cols-2 gap-3 overflow-y-auto sm:grid-cols-3 md:grid-cols-4">
-              {filtered.map((asset) => (
+              {assets.map((asset) => (
                 <button
                   key={asset.id}
                   type="button"
@@ -132,6 +133,7 @@ export default function MediaPicker({
                 </button>
               ))}
             </div>
+            <AdminListPager page={page} pageSize={pageSize} total={total} isFetching={isFetching} itemLabel="张图片" onPageChange={setPage} />
 
             <div className="rounded-lg border border-border bg-muted/20 p-3">
               <div className="mb-2 text-xs font-medium text-muted-foreground">上传新图片到媒体库</div>

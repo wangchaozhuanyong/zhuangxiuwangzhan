@@ -27,7 +27,7 @@ export default function AdminDataTable<T>({
   const emptyText = getAdminLang() === "zh" ? "暂无数据" : "No data";
 
   return (
-    <Card className={cn("overflow-hidden rounded-lg border-border bg-card shadow-sm", className)}>
+    <Card className={cn("overflow-x-auto rounded-lg border-border bg-card shadow-sm", className)}>
       <Table className="min-w-[760px]">
         <TableHeader>
           <TableRow className="bg-muted/60 hover:bg-muted/60">

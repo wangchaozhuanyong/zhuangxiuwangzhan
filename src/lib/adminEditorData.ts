@@ -123,6 +123,9 @@ export type AdminUserRow = {
   email: string | null;
   role: string | null;
   active: boolean;
+  created_at?: string | null;
+  updated_at?: string | null;
+  version?: number | null;
 };
 
 async function ensureHomeSection(section_key: string): Promise<HomeSectionRow | null> {
@@ -272,9 +275,15 @@ export async function fetchTranslationJobs(limit = 100): Promise<TranslationJob[
 }
 
 export async function fetchAdminUsers(): Promise<AdminUserRow[]> {
+  const withVersion = await supabase!
+    .from("admin_users")
+    .select("user_id, email, role, active, created_at, updated_at, version")
+    .order("created_at", { ascending: false });
+  if (!withVersion.error) return (withVersion.data ?? []) as AdminUserRow[];
+
   const { data, error } = await supabase!
     .from("admin_users")
-    .select("user_id, email, role, active")
+    .select("user_id, email, role, active, created_at")
     .order("created_at", { ascending: false });
   if (error) throw error;
   return (data ?? []) as AdminUserRow[];

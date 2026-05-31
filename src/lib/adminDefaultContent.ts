@@ -31,7 +31,7 @@ type SeedSummary = {
 type DbRow = Record<string, any>;
 
 const AUTO_SEED_CACHE_KEY = "flashcast_admin_default_seed_checked_at";
-const AUTO_SEED_CACHE_MS = 12 * 60 * 60 * 1000;
+const AUTO_SEED_CACHE_MS = 7 * 24 * 60 * 60 * 1000;
 
 const zh = (value: string) => translateDisplayText(value || "", "zh");
 const tr = (key: string, lang: "en" | "zh") => translations[key]?.[lang] || key;
@@ -108,11 +108,11 @@ const scheduleIdleWork = (callback: () => void) => {
   };
 
   if (browserWindow.requestIdleCallback) {
-    const idleId = browserWindow.requestIdleCallback(callback, { timeout: 3500 });
+    const idleId = browserWindow.requestIdleCallback(callback, { timeout: 6000 });
     return () => browserWindow.cancelIdleCallback?.(idleId);
   }
 
-  const timeoutId = window.setTimeout(callback, 1800);
+  const timeoutId = window.setTimeout(callback, 3500);
   return () => window.clearTimeout(timeoutId);
 };
 
@@ -1029,12 +1029,19 @@ export async function ensureAdminDefaultContent(): Promise<SeedSummary> {
   return seedPromise;
 }
 
-export function useAdminDefaultContentSeed() {
+export function useAdminDefaultContentSeed(options: { enabled?: boolean } = {}) {
   const queryClient = useQueryClient();
   const [summary, setSummary] = useState<SeedSummary>({ status: "idle", inserted: 0, updated: 0 });
 
   useEffect(() => {
     let active = true;
+    if (options.enabled === false) {
+      setSummary({ status: "idle", inserted: 0, updated: 0 });
+      return () => {
+        active = false;
+      };
+    }
+
     if (shouldSkipAutoSeed()) {
       setSummary({ status: "done", inserted: 0, updated: 0 });
       return () => {
@@ -1060,7 +1067,7 @@ export function useAdminDefaultContentSeed() {
       active = false;
       cancelIdleWork();
     };
-  }, [queryClient]);
+  }, [queryClient, options.enabled]);
 
   return summary;
 }

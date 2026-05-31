@@ -12,6 +12,83 @@ const enabled = isSupabaseConfigured && Boolean(supabase);
 const ADMIN_LIST_STALE_TIME = 5 * 60 * 1000;
 const ADMIN_HEAVY_STALE_TIME = 10 * 60 * 1000;
 const ADMIN_QUERY_GC_TIME = 30 * 60 * 1000;
+export const ADMIN_DEFAULT_PAGE_SIZE = 30;
+const ADMIN_MAX_PAGE_SIZE = 80;
+
+export type AdminListQuery = {
+  page?: number;
+  pageSize?: number;
+  status?: string;
+  search?: string;
+};
+
+export type AdminListPage<T> = {
+  rows: T[];
+  count: number;
+  page: number;
+  pageSize: number;
+};
+
+const clampPage = (value?: number) => Math.max(0, Number.isFinite(value || 0) ? Math.floor(value || 0) : 0);
+
+const clampPageSize = (value?: number) => {
+  if (!Number.isFinite(value || 0)) return ADMIN_DEFAULT_PAGE_SIZE;
+  return Math.min(ADMIN_MAX_PAGE_SIZE, Math.max(10, Math.floor(value || ADMIN_DEFAULT_PAGE_SIZE)));
+};
+
+const normalizeAdminSearch = (value?: string) =>
+  String(value || "")
+    .trim()
+    .replace(/[%,()]/g, " ")
+    .replace(/\s+/g, " ")
+    .slice(0, 60);
+
+const applyAdminSearch = (query: any, fields: string[], search?: string) => {
+  const q = normalizeAdminSearch(search);
+  if (!q) return query;
+  return query.or(fields.map((field) => `${field}.ilike.%${q}%`).join(","));
+};
+
+async function fetchAdminListPage<T>({
+  table,
+  select,
+  page,
+  pageSize,
+  status,
+  search,
+  searchFields,
+  orders,
+}: {
+  table: string;
+  select: string;
+  page?: number;
+  pageSize?: number;
+  status?: string;
+  search?: string;
+  searchFields: string[];
+  orders: Array<{ column: string; options?: Record<string, unknown> }>;
+}): Promise<AdminListPage<T>> {
+  const safePage = clampPage(page);
+  const safePageSize = clampPageSize(pageSize);
+  const from = safePage * safePageSize;
+  const to = from + safePageSize - 1;
+
+  let query = supabase!.from(table).select(select, { count: "exact" });
+  if (status && status !== "all") query = query.eq("status", status);
+  query = applyAdminSearch(query, searchFields, search);
+  orders.forEach(({ column, options }) => {
+    query = query.order(column, options as any);
+  });
+
+  const { data, error, count } = await query.range(from, to);
+  if (error) throw error;
+  return {
+    rows: (data ?? []) as T[],
+    count: count ?? (data?.length || 0),
+    page: safePage,
+    pageSize: safePageSize,
+  };
+}
 
 export type AdminMediaAsset = {
   id: string;
@@ -24,51 +101,81 @@ export type AdminMediaAsset = {
   created_at: string | null;
 };
 
-export function useAdminLeads() {
+export function useAdminLeads(options: AdminListQuery = {}) {
+  const search = normalizeAdminSearch(options.search);
+  const page = clampPage(options.page);
+  const pageSize = clampPageSize(options.pageSize);
   return useQuery({
-    queryKey: ["admin", "leads", { limit: 200 }],
+    queryKey: ["admin", "leads", { page, pageSize, status: options.status || "all", search }],
     enabled,
     placeholderData: keepPreviousData,
     staleTime: ADMIN_LIST_STALE_TIME,
     gcTime: ADMIN_QUERY_GC_TIME,
-    queryFn: async () => {
-      const { data, error } = await supabase!.from("leads").select("*").order("created_at", { ascending: false }).limit(200);
-      if (error) throw error;
-      return data ?? [];
-    },
+    queryFn: () =>
+      fetchAdminListPage<Record<string, any>>({
+        table: "leads",
+        select: "*",
+        page,
+        pageSize,
+        status: options.status,
+        search,
+        searchFields: ["name", "phone", "email", "location", "source_path", "project_type"],
+        orders: [{ column: "created_at", options: { ascending: false } }],
+      }),
   });
 }
 
-export function useAdminQuotes() {
+export function useAdminQuotes(options: AdminListQuery = {}) {
+  const search = normalizeAdminSearch(options.search);
+  const page = clampPage(options.page);
+  const pageSize = clampPageSize(options.pageSize);
   return useQuery({
-    queryKey: ["admin", "quotes", { limit: 200 }],
+    queryKey: ["admin", "quotes", { page, pageSize, status: options.status || "all", search }],
     enabled,
     placeholderData: keepPreviousData,
     staleTime: ADMIN_LIST_STALE_TIME,
     gcTime: ADMIN_QUERY_GC_TIME,
-    queryFn: async () => {
-      const { data, error } = await supabase!.from("quote_requests").select("*").order("created_at", { ascending: false }).limit(200);
-      if (error) throw error;
-      return data ?? [];
-    },
+    queryFn: () =>
+      fetchAdminListPage<Record<string, any>>({
+        table: "quote_requests",
+        select: "*",
+        page,
+        pageSize,
+        status: options.status,
+        search,
+        searchFields: ["customer_name", "customer_phone", "customer_email", "location", "project_type"],
+        orders: [{ column: "created_at", options: { ascending: false } }],
+      }),
   });
 }
 
-export function useAdminMediaAssets() {
+export function useAdminMediaAssets(options: Omit<AdminListQuery, "status"> & { usageType?: string } = {}) {
+  const search = normalizeAdminSearch(options.search);
+  const page = clampPage(options.page);
+  const pageSize = clampPageSize(options.pageSize);
+  const usageType = options.usageType || "all";
   return useQuery({
-    queryKey: ["admin", "media_assets", { limit: 200 }],
+    queryKey: ["admin", "media_assets", { page, pageSize, usageType, search }],
     enabled,
     placeholderData: keepPreviousData,
     staleTime: ADMIN_LIST_STALE_TIME,
     gcTime: ADMIN_QUERY_GC_TIME,
     queryFn: async () => {
-      const { data, error } = await supabase!
+      let query = supabase!
         .from("media_assets")
-        .select("id,file_url,file_name,usage_type,folder,alt_zh,alt_en,created_at")
-        .order("created_at", { ascending: false })
-        .limit(200);
+        .select("id,file_url,file_name,usage_type,folder,alt_zh,alt_en,created_at", { count: "exact" })
+        .order("created_at", { ascending: false });
+      if (usageType !== "all") query = query.eq("usage_type", usageType);
+      query = applyAdminSearch(query, ["file_name", "folder", "usage_type", "alt_zh", "alt_en"], search);
+      const from = page * pageSize;
+      const { data, error, count } = await query.range(from, from + pageSize - 1);
       if (error) throw error;
-      return (data ?? []) as AdminMediaAsset[];
+      return {
+        rows: (data ?? []) as AdminMediaAsset[],
+        count: count ?? (data?.length || 0),
+        page,
+        pageSize,
+      };
     },
   });
 }
@@ -585,86 +692,113 @@ export type AdminBlogRow = {
   created_at?: string | null;
 };
 
-export function useAdminServices() {
+export function useAdminServices(options: AdminListQuery = {}) {
+  const search = normalizeAdminSearch(options.search);
+  const page = clampPage(options.page);
+  const pageSize = clampPageSize(options.pageSize);
   return useQuery({
-    queryKey: ["admin", "services", { limit: 500 }],
+    queryKey: ["admin", "services", { page, pageSize, status: options.status || "all", search }],
     enabled,
     placeholderData: keepPreviousData,
     staleTime: ADMIN_LIST_STALE_TIME,
     gcTime: ADMIN_QUERY_GC_TIME,
-    queryFn: async () => {
-      const { data, error } = await supabase!
-        .from("services")
-        .select("id,title_zh,title_en,slug,status,sort_order,updated_at,created_at")
-        .order("sort_order", { ascending: true })
-        .order("updated_at", { ascending: false })
-        .limit(500);
-      if (error) throw error;
-      return (data ?? []) as AdminServiceRow[];
-    },
+    queryFn: () =>
+      fetchAdminListPage<AdminServiceRow>({
+        table: "services",
+        select: "id,title_zh,title_en,slug,status,sort_order,updated_at,created_at",
+        page,
+        pageSize,
+        status: options.status,
+        search,
+        searchFields: ["title_zh", "title_en", "slug"],
+        orders: [
+          { column: "sort_order", options: { ascending: true } },
+          { column: "updated_at", options: { ascending: false } },
+        ],
+      }),
   });
 }
 
-export function useAdminProjects() {
+export function useAdminProjects(options: AdminListQuery = {}) {
+  const search = normalizeAdminSearch(options.search);
+  const page = clampPage(options.page);
+  const pageSize = clampPageSize(options.pageSize);
   return useQuery({
-    queryKey: ["admin", "projects", { limit: 500 }],
+    queryKey: ["admin", "projects", { page, pageSize, status: options.status || "all", search }],
     enabled,
     placeholderData: keepPreviousData,
     staleTime: ADMIN_LIST_STALE_TIME,
     gcTime: ADMIN_QUERY_GC_TIME,
-    queryFn: async () => {
-      const { data, error } = await supabase!
-        .from("projects")
-        .select(
+    queryFn: () =>
+      fetchAdminListPage<AdminProjectRow>({
+        table: "projects",
+        select:
           "id,title_zh,title_en,slug,status,sort_order,location,project_type,image_url,updated_at,created_at,project_images(image_url,image_type,sort_order,alt_zh,alt_en)",
-        )
-        .order("sort_order", { ascending: true })
-        .order("updated_at", { ascending: false })
-        .limit(500);
-      if (error) throw error;
-      return (data ?? []) as AdminProjectRow[];
-    },
+        page,
+        pageSize,
+        status: options.status,
+        search,
+        searchFields: ["title_zh", "title_en", "slug", "location", "project_type"],
+        orders: [
+          { column: "sort_order", options: { ascending: true } },
+          { column: "updated_at", options: { ascending: false } },
+        ],
+      }),
   });
 }
 
-export function useAdminMaterials() {
+export function useAdminMaterials(options: AdminListQuery = {}) {
+  const search = normalizeAdminSearch(options.search);
+  const page = clampPage(options.page);
+  const pageSize = clampPageSize(options.pageSize);
   return useQuery({
-    queryKey: ["admin", "materials", { limit: 500 }],
+    queryKey: ["admin", "materials", { page, pageSize, status: options.status || "all", search }],
     enabled,
     placeholderData: keepPreviousData,
     staleTime: ADMIN_LIST_STALE_TIME,
     gcTime: ADMIN_QUERY_GC_TIME,
-    queryFn: async () => {
-      const { data, error } = await supabase!
-        .from("materials")
-        .select("id,title_zh,title_en,slug,status,sort_order,category,subcategory,material_type,image_url,updated_at,created_at")
-        .order("sort_order", { ascending: true })
-        .order("updated_at", { ascending: false })
-        .limit(500);
-      if (error) throw error;
-      return (data ?? []) as AdminMaterialRow[];
-    },
+    queryFn: () =>
+      fetchAdminListPage<AdminMaterialRow>({
+        table: "materials",
+        select: "id,title_zh,title_en,slug,status,sort_order,category,subcategory,material_type,image_url,updated_at,created_at",
+        page,
+        pageSize,
+        status: options.status,
+        search,
+        searchFields: ["title_zh", "title_en", "slug", "category", "subcategory", "material_type"],
+        orders: [
+          { column: "sort_order", options: { ascending: true } },
+          { column: "updated_at", options: { ascending: false } },
+        ],
+      }),
   });
 }
 
-export function useAdminBlogPosts() {
+export function useAdminBlogPosts(options: AdminListQuery = {}) {
+  const search = normalizeAdminSearch(options.search);
+  const page = clampPage(options.page);
+  const pageSize = clampPageSize(options.pageSize);
   return useQuery({
-    queryKey: ["admin", "blog_posts", { limit: 500 }],
+    queryKey: ["admin", "blog_posts", { page, pageSize, status: options.status || "all", search }],
     enabled,
     placeholderData: keepPreviousData,
     staleTime: ADMIN_LIST_STALE_TIME,
     gcTime: ADMIN_QUERY_GC_TIME,
-    queryFn: async () => {
-      const { data, error } = await supabase!
-        .from("blog_posts")
-        .select("id,title_zh,title_en,slug,status,sort_order,category,published_at,cover_image_url,updated_at,created_at")
-        .order("sort_order", { ascending: true })
-        .order("published_at", { ascending: false, nullsFirst: false })
-        .order("updated_at", { ascending: false })
-        .limit(500);
-      if (error) throw error;
-      return (data ?? []) as AdminBlogRow[];
-    },
+    queryFn: () =>
+      fetchAdminListPage<AdminBlogRow>({
+        table: "blog_posts",
+        select: "id,title_zh,title_en,slug,status,sort_order,category,published_at,cover_image_url,updated_at,created_at",
+        page,
+        pageSize,
+        status: options.status,
+        search,
+        searchFields: ["title_zh", "title_en", "slug", "category"],
+        orders: [
+          { column: "sort_order", options: { ascending: true } },
+          { column: "published_at", options: { ascending: false, nullsFirst: false } },
+          { column: "updated_at", options: { ascending: false } },
+        ],
+      }),
   });
 }
 

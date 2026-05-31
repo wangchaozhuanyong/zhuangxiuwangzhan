@@ -42,7 +42,7 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import AdminHelpTip from "@/components/admin/AdminHelpTip";
-import { Sheet, SheetContent, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
+import { Sheet, SheetContent, SheetDescription, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { Skeleton } from "@/components/ui/skeleton";
 import { supabase } from "@/lib/supabase";
 import {
@@ -131,28 +131,6 @@ const NAV_COLLAPSED_KEY = "flashcast_admin_nav_collapsed";
 const ADMIN_ENTRY_RE = /\/assets\/index-[^"']+\.js/;
 const ADMIN_BUILD_VERSION = String(import.meta.env.VITE_APP_VERSION || "local").slice(0, 7);
 const BUILD_CHECK_INTERVAL_MS = 60 * 1000;
-
-const adminRoutePreloads = [
-  () => import("./AdminDashboard"),
-  () => import("./AdminContentHealth"),
-  () => import("./AdminPublishCenter"),
-  () => import("./AdminEnglishCenter"),
-  () => import("./AdminContentEditor"),
-  () => import("./AdminSimpleCms"),
-  () => import("./AdminWebsiteSettings"),
-  () => import("./AdminLeadList"),
-  () => import("./AdminQuoteList"),
-  () => import("./AdminServiceList"),
-  () => import("./AdminProjectList"),
-  () => import("./AdminMaterialList"),
-  () => import("./AdminBlogList"),
-  () => import("./AdminMediaLibrary"),
-  () => import("./AdminSeoManager"),
-  () => import("./AdminTranslationJobs"),
-  () => import("./AdminSystemLogs"),
-];
-
-let adminRoutePreloadStarted = false;
 
 const getCurrentAdminEntry = () => {
   const current = Array.from(document.scripts)
@@ -408,7 +386,7 @@ const AdminLayout = () => {
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
   const [navCollapsed, setNavCollapsed] = useState(() => readNavCollapsed());
   const [expandedGroups, setExpandedGroups] = useState<Record<string, boolean>>(() => readExpandedGroups());
-  const seedSummary = useAdminDefaultContentSeed();
+  const seedSummary = useAdminDefaultContentSeed({ enabled: location.pathname === "/admin/dashboard" });
   const lastBuildCheckAtRef = useRef(0);
   const t = copy[adminLang];
 
@@ -449,35 +427,6 @@ const AdminLayout = () => {
       cancelled = true;
       window.removeEventListener("focus", onFocus);
       document.removeEventListener("visibilitychange", onFocus);
-    };
-  }, []);
-
-  useEffect(() => {
-    let cancelled = false;
-    let idleId: number | undefined;
-    const browserWindow = window as typeof window & {
-      requestIdleCallback?: (cb: () => void, options?: { timeout: number }) => number;
-      cancelIdleCallback?: (id: number) => void;
-    };
-
-    const preload = () => {
-      if (cancelled || adminRoutePreloadStarted) return;
-      adminRoutePreloadStarted = true;
-      void Promise.allSettled(adminRoutePreloads.map((load) => load()));
-    };
-
-    const timer = window.setTimeout(() => {
-      if (browserWindow.requestIdleCallback) {
-        idleId = browserWindow.requestIdleCallback(preload, { timeout: 5000 });
-        return;
-      }
-      preload();
-    }, 1200);
-
-    return () => {
-      cancelled = true;
-      window.clearTimeout(timer);
-      if (idleId !== undefined) browserWindow.cancelIdleCallback?.(idleId);
     };
   }, []);
 
@@ -750,6 +699,7 @@ const AdminLayout = () => {
                   </SheetTrigger>
                   <SheetContent side="left" className="w-[320px] max-w-[88vw] border-sidebar-border bg-sidebar p-0 text-sidebar-foreground">
                     <SheetTitle className="sr-only">{t.brand}</SheetTitle>
+                    <SheetDescription className="sr-only">{t.subtitle}</SheetDescription>
                     <Nav variant="mobile" />
                   </SheetContent>
                 </Sheet>

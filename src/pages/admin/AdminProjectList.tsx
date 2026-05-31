@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useDeferredValue, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -6,6 +6,7 @@ import { isSupabaseConfigured } from "@/lib/supabase";
 import { useAdminProjects, type AdminProjectRow } from "@/lib/adminQueries";
 import AdminPageHeader from "@/components/admin/AdminPageHeader";
 import AdminDataTable, { type AdminDataTableColumn } from "@/components/admin/AdminDataTable";
+import AdminListPager from "@/components/admin/AdminListPager";
 import AdminStatusBadge from "@/components/admin/AdminStatusBadge";
 import AdminEmptyState from "@/components/admin/AdminEmptyState";
 import SmartImage from "@/components/SmartImage";
@@ -19,21 +20,19 @@ const pickThumbnail = (row: AdminProjectRow) => {
 };
 
 export default function AdminProjectList() {
-  const { data: rows = [], error, isFetching, refetch } = useAdminProjects();
   const [status, setStatus] = useState<string>("all");
   const [search, setSearch] = useState("");
+  const [page, setPage] = useState(0);
+  const deferredSearch = useDeferredValue(search);
+  const { data, error, isFetching, refetch } = useAdminProjects({ page, status, search: deferredSearch });
+  const rows = data?.rows ?? [];
+  const total = data?.count ?? 0;
+  const pageSize = data?.pageSize ?? 30;
   const errorMessage = error instanceof Error ? error.message : error ? String(error) : "";
 
-  const filtered = useMemo(() => {
-    const q = search.trim().toLowerCase();
-    return rows.filter((row) => {
-      const matchesStatus = status === "all" || (row.status || "draft") === status;
-      if (!matchesStatus) return false;
-      if (!q) return true;
-      const haystack = [row.title_zh, row.title_en, row.slug, row.location, row.project_type].filter(Boolean).join(" ").toLowerCase();
-      return haystack.includes(q);
-    });
-  }, [rows, search, status]);
+  useEffect(() => {
+    setPage(0);
+  }, [deferredSearch, status]);
 
   const columns: AdminDataTableColumn<AdminProjectRow>[] = [
     {
@@ -129,7 +128,7 @@ export default function AdminProjectList() {
 
       <AdminDataTable
         columns={columns}
-        rows={filtered}
+        rows={rows}
         rowKey={(r) => r.id}
         empty={
           <AdminEmptyState
@@ -143,6 +142,7 @@ export default function AdminProjectList() {
           />
         }
       />
+      <AdminListPager page={page} pageSize={pageSize} total={total} isFetching={isFetching} itemLabel="个案例" onPageChange={setPage} />
     </>
   );
 }

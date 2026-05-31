@@ -1,8 +1,9 @@
-import { useMemo, useState } from "react";
+import { useDeferredValue, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import AdminPageHeader from "@/components/admin/AdminPageHeader";
+import AdminListPager from "@/components/admin/AdminListPager";
 import { useAdminLeads } from "@/lib/adminQueries";
 import { getAdminLang } from "@/lib/adminLocale";
 import { translateStatusLabel } from "@/i18n/displayLabels";
@@ -19,23 +20,23 @@ const csvEscape = (value: unknown) => `"${String(value ?? "").replaceAll('"', '"
 const AdminLeadList = () => {
   const lang = getAdminLang();
   const t = copy[lang];
-  const { data: rows = [], error } = useAdminLeads();
   const [search, setSearch] = useState("");
   const [status, setStatus] = useState("all");
+  const [page, setPage] = useState(0);
+  const deferredSearch = useDeferredValue(search);
+  const { data, error, isFetching } = useAdminLeads({ page, status, search: deferredSearch });
+  const rows = data?.rows ?? [];
+  const total = data?.count ?? 0;
+  const pageSize = data?.pageSize ?? 30;
   const message = error ? (error as Error).message : "";
 
-  const filtered = useMemo(() => {
-    const query = search.trim().toLowerCase();
-    return rows.filter((row) => {
-      const matchesStatus = status === "all" || row.status === status;
-      const haystack = [row.name, row.phone, row.email, row.location, row.source_path].join(" ").toLowerCase();
-      return matchesStatus && (!query || haystack.includes(query));
-    });
-  }, [rows, search, status]);
+  useEffect(() => {
+    setPage(0);
+  }, [deferredSearch, status]);
 
   const exportCsv = () => {
     const fields = ["created_at", "name", "phone", "email", "project_type", "location", "status", "source_path", "message", "notes"];
-    const csv = [fields.join(","), ...filtered.map((row) => fields.map((field) => csvEscape(row[field])).join(","))].join("\n");
+    const csv = [fields.join(","), ...rows.map((row) => fields.map((field) => csvEscape(row[field])).join(","))].join("\n");
     const url = URL.createObjectURL(new Blob([csv], { type: "text/csv;charset=utf-8" }));
     const link = document.createElement("a");
     link.href = url;
@@ -51,7 +52,7 @@ const AdminLeadList = () => {
         description="查看联系页提交的客户咨询，筛选状态后可以直接跟进、拨号或导出。"
         helpText="这里收的是客户自己在联系页留下的信息，适合先沟通需求、再安排跟进。"
         actions={
-          <Button variant="outline" onClick={exportCsv} disabled={filtered.length === 0}>
+          <Button variant="outline" onClick={exportCsv} disabled={rows.length === 0}>
             {t.exportCsv}
           </Button>
         }
@@ -70,7 +71,7 @@ const AdminLeadList = () => {
       {message && <p className="rounded-lg bg-muted p-3 text-sm">{message}</p>}
 
       <div className="space-y-3">
-        {filtered.map((lead) => (
+        {rows.map((lead) => (
           <div key={lead.id} className="rounded-xl border border-border bg-card p-4">
             <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
               <Link to={`/admin/leads/${lead.id}`} className="min-w-0">
@@ -84,8 +85,9 @@ const AdminLeadList = () => {
             </div>
           </div>
         ))}
-        {filtered.length === 0 && <div className="rounded-xl border border-border bg-card p-6 text-sm text-muted-foreground">{t.empty}</div>}
+        {rows.length === 0 && <div className="rounded-xl border border-border bg-card p-6 text-sm text-muted-foreground">{t.empty}</div>}
       </div>
+      <AdminListPager page={page} pageSize={pageSize} total={total} isFetching={isFetching} itemLabel="条咨询" onPageChange={setPage} />
     </div>
   );
 };

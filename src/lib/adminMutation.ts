@@ -13,6 +13,7 @@ type SaveAdminRecordOptions = {
   action?: string;
   queryClient?: QueryClient;
   invalidate?: "published" | "admin-content" | "none";
+  audit?: boolean;
 };
 
 type DeleteAdminRecordOptions = {
@@ -103,6 +104,7 @@ export async function saveAdminRecord<T extends DbRecord = DbRecord>({
   action,
   queryClient,
   invalidate = "admin-content",
+  audit = true,
 }: SaveAdminRecordOptions): Promise<T> {
   const supabase = requireSupabase();
   const isUpdate = id !== undefined && id !== null && id !== "";
@@ -127,16 +129,18 @@ export async function saveAdminRecord<T extends DbRecord = DbRecord>({
   const { data: saved, error } = await request;
   if (error) throw new AdminMutationError("database", formatAdminMutationError(error));
 
-  try {
-    await writeAuditLog({
-      table,
-      action: action || (isUpdate ? "update" : "insert"),
-      id: (saved as DbRecord)?.[idField] ?? id,
-      oldValue: before,
-      newValue: saved as DbRecord,
-    });
-  } catch {
-    // Audit logging should not erase a successful save in the UI.
+  if (audit) {
+    try {
+      await writeAuditLog({
+        table,
+        action: action || (isUpdate ? "update" : "insert"),
+        id: (saved as DbRecord)?.[idField] ?? id,
+        oldValue: before,
+        newValue: saved as DbRecord,
+      });
+    } catch {
+      // Audit logging should not erase a successful save in the UI.
+    }
   }
 
   await invalidateAfterMutation(queryClient, invalidate);
