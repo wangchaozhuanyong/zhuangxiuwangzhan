@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { ArrowRight } from "lucide-react";
 import Reveal from "@/components/Reveal";
-import SmartImage from "@/components/SmartImage";
+import DeferredSmartImage from "@/components/DeferredSmartImage";
 import { useT } from "@/i18n/useT";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { usePublishedServiceSummaries } from "@/hooks/usePublishedContent";
@@ -126,13 +126,14 @@ const ServicesSection = () => {
                 >
                   {service.visual && (
                     <span className="service-catalog-media" aria-hidden="true">
-                      <SmartImage
+                      <DeferredSmartImage
                         src={service.visual}
                         alt=""
                         loading="lazy"
                         width={600}
                         height={420}
                         sizes="(max-width: 640px) 92vw, (max-width: 1024px) 45vw, 24vw"
+                        rootMargin="240px"
                       />
                     </span>
                   )}

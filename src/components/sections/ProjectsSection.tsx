@@ -2,7 +2,7 @@ import { useMemo } from "react";
 import Link from "@/components/LocalizedLink";
 import { ArrowRight, MapPin } from "lucide-react";
 import Reveal from "@/components/Reveal";
-import SmartImage from "@/components/SmartImage";
+import DeferredSmartImage from "@/components/DeferredSmartImage";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { useT } from "@/i18n/useT";
 import { usePublishedProjectSummaries } from "@/hooks/usePublishedContent";
@@ -95,13 +95,14 @@ const ProjectsSection = () => {
                   >
                     <div className="projects-showcase-media relative aspect-[4/3] overflow-hidden img-zoom">
                       {project.thumbnail ? (
-                        <SmartImage
+                        <DeferredSmartImage
                           src={project.thumbnail}
                           alt={project.thumbnailAlt || `${title} - ${location}`}
                           width={800}
                           height={600}
                           loading="lazy"
                           sizes="(max-width: 640px) 92vw, (max-width: 1024px) 45vw, 30vw"
+                          rootMargin="320px"
                           className="h-full w-full object-cover"
                         />
                       ) : (

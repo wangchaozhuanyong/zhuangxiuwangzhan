@@ -1,5 +1,5 @@
 import Reveal from "@/components/Reveal";
-import SmartImage from "@/components/SmartImage";
+import DeferredSmartImage from "@/components/DeferredSmartImage";
 import { usePublishedBrandPartners } from "@/hooks/usePublishedContent";
 import { useLanguage } from "@/i18n/LanguageContext";
 
@@ -61,7 +61,7 @@ const BrandLogosSection = () => {
             const logo = (
               <div className="brand-board-card">
                 <div className="brand-board-logo-frame">
-                  <SmartImage
+                  <DeferredSmartImage
                     src={item.logo_url}
                     alt={item.name}
                     className="brand-board-logo"
@@ -69,6 +69,7 @@ const BrandLogosSection = () => {
                     height={120}
                     loading="lazy"
                     resize="contain"
+                    rootMargin="240px"
                   />
                 </div>
                 <div className="brand-board-copy">

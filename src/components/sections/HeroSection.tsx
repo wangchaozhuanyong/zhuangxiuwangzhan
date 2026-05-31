@@ -52,20 +52,17 @@ const HeroSection = ({ pageContent }: HeroSectionProps) => {
   const mediaByVariant = {
     desktop: {
       poster: `/videos/home-hero-poster.webp?v=${mediaVersion}`,
-      webm: `/videos/home-hero.webm?v=${mediaVersion}`,
       mp4: `/videos/home-hero.mp4?v=${mediaVersion}`,
     },
     tablet: {
       poster: `/videos/home-hero-poster-tablet.webp?v=${mediaVersion}`,
-      webm: `/videos/home-hero-tablet.webm?v=${mediaVersion}`,
       mp4: `/videos/home-hero-tablet.mp4?v=${mediaVersion}`,
     },
     mobile: {
       poster: `/videos/home-hero-poster-mobile.webp?v=${mediaVersion}`,
-      webm: `/videos/home-hero-mobile.webm?v=${mediaVersion}`,
       mp4: `/videos/home-hero-mobile.mp4?v=${mediaVersion}`,
     },
-  } satisfies Record<HeroMediaVariant, { poster: string; webm: string; mp4: string }>;
+  } satisfies Record<HeroMediaVariant, { poster: string; mp4: string }>;
   const activeMedia = mediaByVariant[mediaVariant];
   const primaryLabel = slide?.buttonLabel || copy.quote;
   const primaryUrl = slide?.buttonUrl || "/quote";
@@ -226,11 +223,13 @@ const HeroSection = ({ pageContent }: HeroSectionProps) => {
             videoLoaded ? "opacity-100" : "opacity-0"
           }`}
           poster={activeMedia.poster}
+          src={shouldLoadVideo ? activeMedia.mp4 : undefined}
           autoPlay
           muted
           loop
           playsInline
-          preload={shouldLoadVideo ? "metadata" : "none"}
+          preload={shouldLoadVideo ? "auto" : "none"}
+          data-video-variant={mediaVariant}
           aria-hidden="true"
           tabIndex={-1}
           onLoadedMetadata={markHeroVideoReady}
@@ -250,14 +249,7 @@ const HeroSection = ({ pageContent }: HeroSectionProps) => {
           onPause={() => {
             if (document.visibilityState === "visible") window.setTimeout(requestHeroVideoPlay, 150);
           }}
-        >
-          {shouldLoadVideo && (
-            <>
-              <source src={activeMedia.webm} type="video/webm" />
-              <source src={activeMedia.mp4} type="video/mp4" />
-            </>
-          )}
-        </video>
+        />
         <div className="absolute inset-0 home-hero-overlay" />
       </div>
 
