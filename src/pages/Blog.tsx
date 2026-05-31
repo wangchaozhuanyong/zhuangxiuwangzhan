@@ -172,8 +172,8 @@ const Blog = () => {
                   </div>
                   <div className="p-6">
                     <span className="text-accent text-xs font-medium uppercase tracking-wider">{translateBlogCategory(filtered[0].category, language)}</span>
-                    <h2 className="font-display text-2xl font-bold mt-2 mb-3 group-hover:text-accent transition-colors">{displayText(filtered[0].title)}</h2>
-                    <p className="text-muted-foreground text-sm mb-4 line-clamp-3">{displayText(filtered[0].excerpt)}</p>
+                    <h2 className="text-limit-2 font-display text-2xl font-bold mt-2 mb-3 group-hover:text-accent transition-colors">{displayText(filtered[0].title)}</h2>
+                    <p className="text-limit-3 text-muted-foreground text-sm mb-4">{displayText(filtered[0].excerpt)}</p>
                     <div className="flex items-center gap-4 text-xs text-muted-foreground">
                       <span className="flex items-center gap-1"><Clock className="w-3 h-3" /> {displayReadTime(filtered[0].readTime)}</span>
                       <span>{displayDate(filtered[0].date)}</span>
@@ -184,21 +184,21 @@ const Blog = () => {
             </Reveal>
           )}
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="card-grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
             {(filter === "All" ? filtered.slice(1) : filtered).map((post, index) => (
               <Reveal key={post.id} delay={index * 70} direction="none">
-                <Link to={`/blog/${post.slug}`} className="group luxury-card block overflow-hidden hover-lift">
+                <Link to={`/blog/${post.slug}`} className="card-equal group luxury-card block hover-lift">
                   <div className="aspect-[16/10] overflow-hidden img-zoom">
                     <SmartImage src={post.image} alt={post.title} loading="lazy" width={600} height={400} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
                   </div>
-                  <div className="p-4">
+                  <div className="card-equal-body p-4">
                     <div className="flex items-center gap-3 mb-2">
                       <span className="text-accent text-xs font-medium uppercase tracking-wider">{translateBlogCategory(post.category, language)}</span>
                       <span className="text-muted-foreground text-xs">{displayReadTime(post.readTime)}</span>
                     </div>
-                    <h3 className="font-display text-base font-semibold mb-2 group-hover:text-accent transition-colors line-clamp-2">{displayText(post.title)}</h3>
-                    <p className="text-muted-foreground text-sm line-clamp-2">{displayText(post.excerpt)}</p>
-                    <div className="mt-3 flex flex-wrap gap-1">
+                    <h3 className="text-limit-2 font-display text-base font-semibold mb-2 group-hover:text-accent transition-colors">{displayText(post.title)}</h3>
+                    <p className="text-limit-2 text-muted-foreground text-sm">{displayText(post.excerpt)}</p>
+                    <div className="module-card-footer flex flex-wrap gap-1 pt-3">
                       {post.tags.slice(0, 3).map((tag) => (
                         <span key={tag} className="text-xs px-2 py-0.5 bg-muted rounded text-muted-foreground">#{translateKeywordLabel(tag, language)}</span>
                       ))}

@@ -2,9 +2,11 @@
  * Hero banner component for sub-pages.
  */
 
+import type { ReactNode } from "react";
 import { ArrowLeft } from "lucide-react";
 import LocalizedLink from "@/components/LocalizedLink";
 import SmartImage from "@/components/SmartImage";
+import { cn } from "@/lib/utils";
 
 interface HeroBannerProps {
   image: string;
@@ -15,11 +17,37 @@ interface HeroBannerProps {
   description?: string;
   backTo?: string;
   backLabel?: string;
+  actions?: ReactNode;
+  meta?: ReactNode;
+  variant?: "standard" | "compact" | "detail" | "legal";
+  align?: "start" | "center" | "end";
+  className?: string;
 }
 
-const HeroBanner = ({ image, imageMobile, imageAlt, label, title, description, backTo, backLabel }: HeroBannerProps) => {
+const HeroBanner = ({
+  image,
+  imageMobile,
+  imageAlt,
+  label,
+  title,
+  description,
+  backTo,
+  backLabel,
+  actions,
+  meta,
+  variant = "standard",
+  align = "start",
+  className,
+}: HeroBannerProps) => {
   return (
-    <section className="page-hero">
+    <section
+      className={cn(
+        "page-hero",
+        variant !== "standard" && `page-hero--${variant}`,
+        align !== "start" && `page-hero--align-${align}`,
+        className,
+      )}
+    >
       <div className="page-hero__media absolute inset-0">
         <picture className="block h-full w-full">
           {imageMobile ? <source media="(max-width: 767px)" srcSet={imageMobile} /> : null}
@@ -52,6 +80,8 @@ const HeroBanner = ({ image, imageMobile, imageAlt, label, title, description, b
         {description ? (
           <p className="page-hero__description prose-safe max-w-xl text-base leading-relaxed text-on-media-muted md:text-lg">{description}</p>
         ) : null}
+        {meta ? <div className="page-hero__meta">{meta}</div> : null}
+        {actions ? <div className="page-hero__actions">{actions}</div> : null}
       </div>
     </section>
   );

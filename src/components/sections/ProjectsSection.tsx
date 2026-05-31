@@ -114,8 +114,8 @@ const ProjectsSection = () => {
                     <div className="projects-showcase-body card-equal-body p-5">
                       <h3 className="projects-showcase-card-title mb-2 font-display text-base font-semibold transition-colors">{title}</h3>
                       <p className="projects-showcase-location mb-3 flex items-center gap-1.5 text-xs">
-                        <MapPin className="h-3.5 w-3.5" />
-                        {location}
+                        <MapPin className="h-3.5 w-3.5 shrink-0" />
+                        <span className="min-w-0 truncate">{location}</span>
                       </p>
                       <p className="projects-showcase-description line-clamp-2 text-xs leading-relaxed">{description}</p>
                     </div>

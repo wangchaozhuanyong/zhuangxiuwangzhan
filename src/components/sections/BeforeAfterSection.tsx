@@ -255,9 +255,9 @@ const BeforeAfterSection = () => {
                   afterLabel={sectionCopy.after}
                 />
                 <div className="card-equal-body p-5">
-                  <h3 className="font-display text-lg font-semibold mb-1">{item.title}</h3>
-                  <p className="text-muted-foreground text-xs mb-2">{translateDisplayText(item.location, language)}</p>
-                  <p className="text-muted-foreground text-sm leading-relaxed">{item.desc}</p>
+                  <h3 className="text-limit-2 font-display text-lg font-semibold mb-1">{item.title}</h3>
+                  <p className="text-limit-1 text-muted-foreground text-xs mb-2">{translateDisplayText(item.location, language)}</p>
+                  <p className="text-limit-3 text-muted-foreground text-sm leading-relaxed">{item.desc}</p>
                 </div>
               </div>
             </Reveal>

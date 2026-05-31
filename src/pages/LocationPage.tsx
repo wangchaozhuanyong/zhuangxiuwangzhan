@@ -253,16 +253,16 @@ const LocationPage = () => {
         <section className="section-padding bg-background">
           <div className="container-narrow">
             <SectionHeader title={t.featuredProjects(location.name)} />
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-5">
+            <div className="card-grid grid-cols-1 gap-5 sm:grid-cols-2 md:grid-cols-3">
                   {location.projects.map((project: any, index: number) => (
                     <Reveal key={project.title} delay={index * 80}>
-                      <div className="rounded-card overflow-hidden border border-border bg-card hover-lift">
+                      <div className="card-equal rounded-card border border-border bg-card hover-lift">
                         <div className="aspect-[4/3] overflow-hidden img-zoom">
                       <SmartImage src={project.image} alt={displayText(project.title)} loading="lazy" width={600} height={450} className="w-full h-full object-cover" />
                     </div>
-                    <div className="p-4">
-                      <span className="text-accent text-[10px] font-bold uppercase tracking-widest bg-accent/10 px-2 py-0.5 rounded-sm">{translateProjectType(project.type, language)}</span>
-                      <h3 className="font-semibold text-sm mt-2">{displayText(project.title)}</h3>
+                    <div className="card-equal-body p-4">
+                      <span className="text-limit-1 rounded-sm bg-accent/10 px-2 py-0.5 text-[10px] font-bold uppercase tracking-widest text-accent">{translateProjectType(project.type, language)}</span>
+                      <h3 className="text-limit-2 mt-2 text-sm font-semibold">{displayText(project.title)}</h3>
                     </div>
                       </div>
                     </Reveal>

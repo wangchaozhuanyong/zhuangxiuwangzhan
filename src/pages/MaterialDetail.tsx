@@ -231,7 +231,7 @@ const MaterialDetail = () => {
         <section className="section-padding bg-muted">
           <div className="container-narrow">
             <h2 className="font-display text-2xl font-bold mb-6">{t.more(displayCategoryName)}</h2>
-            <div className="grid grid-cols-2 gap-4 md:grid-cols-4 md:gap-5">
+            <div className="card-grid grid-cols-2 gap-4 md:grid-cols-4 md:gap-5">
               {otherMaterials.map((item: any) => (
                 <Link key={item.id} to={`/materials/${item.slug}`} className="material-depth-card luxury-card group hover-lift">
                   <div className="material-depth-card__media img-zoom">

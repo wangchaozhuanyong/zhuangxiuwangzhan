@@ -109,7 +109,7 @@ const Materials = () => {
             </div>
           </Reveal>
 
-          <div className="grid grid-cols-2 items-stretch gap-4 md:grid-cols-4 md:gap-6">
+          <div className="card-grid grid-cols-2 gap-4 md:grid-cols-4 md:gap-6">
             {categories.map((category, index) => (
               <Link
                 key={category.slug}
@@ -128,14 +128,14 @@ const Materials = () => {
                 </div>
                 <div className="flex flex-1 flex-col gap-2 p-3 md:p-4">
                   <div className="flex items-start justify-between gap-2">
-                    <h3 className="font-display text-base font-bold leading-tight text-foreground md:text-lg">
+                    <h3 className="text-limit-2 font-display text-base font-bold leading-tight text-foreground md:text-lg">
                       {displayCategoryName(category.name)}
                     </h3>
                     <span className="shrink-0 rounded-full border border-accent/25 bg-accent/10 px-2 py-0.5 text-[10px] font-semibold leading-5 text-accent">
                       {String(index + 1).padStart(2, "0")}
                     </span>
                   </div>
-                  <p className="line-clamp-2 min-h-10 text-xs leading-5 text-muted-foreground md:text-sm">
+                  <p className="text-limit-2 min-h-10 text-xs leading-5 text-muted-foreground md:text-sm">
                     {displayCategoryDescription(category.description)}
                   </p>
                   <div className="mt-auto flex items-center justify-between gap-2 border-t border-border/70 pt-2 text-[11px] font-medium text-muted-foreground md:text-xs">

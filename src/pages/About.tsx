@@ -263,11 +263,11 @@ const About = () => {
               </div>
             </Reveal>
             <Reveal direction="right" delay={150}>
-              <div className="grid grid-cols-2 gap-5">
+              <div className="card-grid grid-cols-2 gap-5">
                 {(dynamicStats || localizedStats[language]).map((stat: any) => (
                   <div key={stat.label} className="text-center luxury-card p-6 group hover-lift">
-                    <span className="font-display text-2xl md:text-3xl font-bold text-accent block mb-1">{stat.value}</span>
-                    <span className="text-muted-foreground text-xs leading-relaxed">{stat.label}</span>
+                    <span className="text-limit-1 font-display text-2xl md:text-3xl font-bold text-accent mb-1">{stat.value}</span>
+                    <span className="text-limit-2 text-muted-foreground text-xs leading-relaxed">{stat.label}</span>
                   </div>
                 ))}
               </div>

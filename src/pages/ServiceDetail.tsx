@@ -251,7 +251,7 @@ const ServiceDetail = () => {
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3">
             {serviceCommonProjects.map((project: string, index: number) => (
               <Reveal key={project} delay={index * 55} direction="none">
-                <div className="rounded-card border border-border bg-background p-4 text-center text-sm font-medium">
+                <div className="text-limit-2 rounded-card border border-border bg-background p-4 text-center text-sm font-medium">
                   {project}
                 </div>
               </Reveal>
@@ -310,7 +310,7 @@ const ServiceDetail = () => {
           <Reveal>
             <h2 className="font-display text-2xl font-bold mb-6 text-center">{t.relatedServices}</h2>
           </Reveal>
-          <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+          <div className="card-grid grid-cols-2 gap-4 md:grid-cols-3">
             {services
               .filter((item) => item.slug !== service.slug)
               .slice(0, 3)
@@ -318,12 +318,12 @@ const ServiceDetail = () => {
                 <Reveal key={item.slug} delay={index * 70} direction="none">
                   <Link
                     to={`/services/${item.slug}`}
-                    className="group p-5 rounded-card border border-border bg-card hover-lift text-center block transition-colors hover:border-accent/30"
+                    className="card-equal group rounded-card border border-border bg-card p-5 text-center transition-colors hover:border-accent/30 hover-lift"
                   >
-                    <h3 className="font-display font-semibold text-sm mb-1 group-hover:text-accent transition-colors">
+                    <h3 className="text-limit-2 font-display font-semibold text-sm mb-1 group-hover:text-accent transition-colors">
                       {displayText(item.title)}
                     </h3>
-                    <p className="text-muted-foreground text-xs leading-relaxed line-clamp-2">{displayText(item.summary)}</p>
+                    <p className="text-limit-2 text-muted-foreground text-xs leading-relaxed">{displayText(item.summary)}</p>
                   </Link>
                 </Reveal>
               ))}

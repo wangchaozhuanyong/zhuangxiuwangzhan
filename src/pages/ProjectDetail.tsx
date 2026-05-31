@@ -383,18 +383,18 @@ const ProjectDetail = () => {
           <Reveal>
             <h2 className="font-display text-2xl font-bold mb-8">{t.moreProjects}</h2>
           </Reveal>
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
+          <div className="card-grid grid-cols-1 gap-5 sm:grid-cols-3">
             {related.map((item, index) => (
               <Reveal key={item.id} delay={index * 80} direction="none">
-                <Link to={`/projects/${item.slug}`} className="group block luxury-card overflow-hidden hover-lift">
+                <Link to={`/projects/${item.slug}`} className="card-equal group block luxury-card hover-lift">
                   <div className="aspect-[4/3] overflow-hidden img-zoom">
                     <SmartImage src={item.images[0] || item.thumbnail} alt={item.imageAlts?.[0] || item.thumbnailAlt || item.title} loading="lazy" width={600} height={450} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
                   </div>
-                  <div className="p-4">
-                    <span className="text-accent text-xs font-medium uppercase tracking-wider">{translateProjectType(item.type, language)}</span>
-                      <h3 className="font-display text-base font-semibold mt-1">{translateDisplayText(item.title, language)}</h3>
-                    <p className="text-muted-foreground text-xs flex items-center gap-1 mt-1">
-                      <MapPin className="w-3 h-3" /> {translateDisplayText(item.location, language)}
+                  <div className="card-equal-body p-4">
+                    <span className="text-limit-1 text-accent text-xs font-medium uppercase tracking-wider">{translateProjectType(item.type, language)}</span>
+                      <h3 className="text-limit-2 font-display text-base font-semibold mt-1">{translateDisplayText(item.title, language)}</h3>
+                    <p className="mt-1 flex min-w-0 items-center gap-1 text-xs text-muted-foreground">
+                      <MapPin className="w-3 h-3 shrink-0" /> <span className="min-w-0 truncate">{translateDisplayText(item.location, language)}</span>
                     </p>
                   </div>
                 </Link>

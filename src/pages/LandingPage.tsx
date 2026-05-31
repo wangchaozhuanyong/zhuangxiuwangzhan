@@ -172,7 +172,7 @@ const LandingPage = () => {
                 <h2 className="font-display text-2xl md:text-3xl font-bold mb-3">{t.relatedProjects}</h2>
               </div>
             </Reveal>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 max-w-2xl mx-auto">
+            <div className="card-grid mx-auto max-w-2xl grid-cols-1 gap-5 sm:grid-cols-2">
               {landingPage.relatedProjects.map((p, i) => (
                 <Reveal key={p.title} delay={i * 80}>
                   <div className="material-depth-card luxury-card overflow-hidden hover-lift">
@@ -181,7 +181,7 @@ const LandingPage = () => {
                     </div>
                     <div className="material-depth-card__body">
                       <h3 className="material-depth-card__title">{p.title}</h3>
-                      <p className="material-depth-card__meta flex items-center gap-1"><MapPin className="w-3 h-3" /> {p.location}</p>
+                      <p className="material-depth-card__meta flex items-center gap-1"><MapPin className="w-3 h-3 shrink-0" /> <span className="min-w-0 truncate">{p.location}</span></p>
                     </div>
                   </div>
                 </Reveal>

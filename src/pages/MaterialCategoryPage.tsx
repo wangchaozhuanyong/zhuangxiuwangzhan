@@ -140,7 +140,7 @@ const MaterialCategoryPage = () => {
         <div className="container-narrow">
           <SectionHeader title={t.browseSubcategories} description={categoryDescription} />
 
-          <div className="grid grid-cols-2 gap-4 md:grid-cols-3 md:gap-5 lg:grid-cols-4">
+          <div className="card-grid grid-cols-2 gap-4 md:grid-cols-3 md:gap-5 lg:grid-cols-4">
             {category.subcategories.map((subcategory, index) => (
               <Reveal key={subcategory.slug} delay={index * 60} direction="none">
                 <Link to={`/materials/category/${category.slug}/${subcategory.slug}`} className="material-depth-card luxury-card-muted group hover-lift">
@@ -162,7 +162,7 @@ const MaterialCategoryPage = () => {
         <section className="section-padding bg-muted">
           <div className="container-narrow">
             <SectionHeader title={t.allProducts(displayCategoryName)} />
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-5">
+            <div className="card-grid grid-cols-2 gap-4 md:grid-cols-3 md:gap-5 lg:grid-cols-4">
               {category.items.map((item, index) => (
                 <Reveal key={item.id} delay={index * 60} direction="none">
                   <Link to={`/materials/${item.slug}`} className="material-depth-card luxury-card group hover-lift">

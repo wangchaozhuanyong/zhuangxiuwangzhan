@@ -102,7 +102,7 @@ const MaterialSubcategoryPage = () => {
         <div className="container-narrow">
           <SectionHeader title={t.products(displaySubcategoryName)} description={subcategory.description} />
           {items.length > 0 ? (
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
+            <div className="card-grid grid-cols-2 gap-4 md:grid-cols-3 md:gap-6 lg:grid-cols-4">
               {items.map((item, index) => (
                 <Reveal key={item.id} delay={index * 60} direction="none">
                   <Link to={`/materials/${item.slug}`} className="material-depth-card luxury-card group hover-lift">

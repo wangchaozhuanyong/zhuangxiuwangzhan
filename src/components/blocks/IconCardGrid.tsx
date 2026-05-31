@@ -48,11 +48,11 @@ const IconCardGrid = ({ items, columns = 2, alignLeft = true, layout = "vertical
             </div>
             <div className={isHorizontal ? "flex min-w-0 flex-1 flex-col" : ""}>
               <h3
-                className={`heading-safe font-display text-base font-semibold transition-colors group-hover:text-gold md:text-lg ${isHorizontal ? "mb-1" : "mb-2"}`}
+                className={`text-limit-2 heading-safe font-display text-base font-semibold transition-colors group-hover:text-gold md:text-lg ${isHorizontal ? "mb-1" : "mb-2"}`}
               >
                 {item.title}
               </h3>
-              <p className={`prose-safe text-sm text-muted-foreground ${isHorizontal ? "mt-auto" : ""}`}>{item.desc}</p>
+              <p className={`text-limit-3 text-sm leading-relaxed text-muted-foreground ${isHorizontal ? "mt-auto" : ""}`}>{item.desc}</p>
             </div>
           </div>
         );

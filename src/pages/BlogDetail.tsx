@@ -241,16 +241,16 @@ const BlogDetail = () => {
           <Reveal>
             <h2 className="font-display text-2xl font-bold mb-8">{t.moreArticles}</h2>
           </Reveal>
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
+          <div className="card-grid grid-cols-1 gap-5 sm:grid-cols-3">
             {otherPosts.map((item, index) => (
               <Reveal key={item.id} delay={index * 70} direction="none">
-                <Link to={`/blog/${item.slug}`} className="group block luxury-card overflow-hidden hover-lift">
+                <Link to={`/blog/${item.slug}`} className="card-equal group block luxury-card hover-lift">
                   <div className="aspect-[16/10] overflow-hidden img-zoom">
                     <SmartImage src={item.image} alt={item.title} loading="lazy" width={400} height={300} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
                   </div>
-                  <div className="p-4">
-                    <span className="text-accent text-xs font-medium">{item.category}</span>
-                    <h3 className="font-semibold text-sm mt-1 line-clamp-2">{displayText(item.title)}</h3>
+                  <div className="card-equal-body p-4">
+                    <span className="text-limit-1 text-accent text-xs font-medium">{item.category}</span>
+                    <h3 className="text-limit-2 font-semibold text-sm mt-1">{displayText(item.title)}</h3>
                   </div>
                 </Link>
               </Reveal>

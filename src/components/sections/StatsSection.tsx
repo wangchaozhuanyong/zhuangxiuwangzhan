@@ -60,11 +60,11 @@ const StatsSection = () => {
                   <div className="mb-3 flex justify-center">
                     <Icon className={`h-7 w-7 stroke-[1.25] ${stat.iconClass}`} />
                   </div>
-                  <div className="font-display mb-1 text-2xl font-bold md:text-4xl">
+                  <div className="text-limit-1 font-display mb-1 text-2xl font-bold md:text-4xl">
                     {stat.value}
                   </div>
-                  <div className="font-semibold text-sm mb-2">{stat.label}</div>
-                  <p className="mt-auto text-muted-foreground text-xs leading-relaxed">{stat.desc}</p>
+                  <div className="text-limit-2 font-semibold text-sm mb-2">{stat.label}</div>
+                  <p className="text-limit-3 mt-auto text-muted-foreground text-xs leading-relaxed">{stat.desc}</p>
                 </div>
               </Reveal>
             );

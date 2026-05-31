@@ -197,12 +197,12 @@ const OldHouseRenovation = () => {
               <p className="text-muted-foreground max-w-2xl mx-auto text-sm md:text-base">{t.challengesDescription}</p>
             </div>
           </Reveal>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+          <div className="card-grid grid-cols-1 gap-5 sm:grid-cols-2">
             {t.challenges.map((item, i) => (
               <Reveal key={item.title} delay={i * 80}>
-                <div className="flex gap-4 p-5 bg-card rounded-card border border-border hover-lift">
+                <div className="flex h-full min-w-0 gap-4 overflow-hidden rounded-card border border-border bg-card p-5 hover-lift">
                   <div className="w-12 h-12 rounded-full bg-destructive/10 flex items-center justify-center shrink-0"><item.icon className="w-5 h-5 text-destructive" /></div>
-                  <div><h3 className="font-semibold text-sm md:text-base mb-1">{item.title}</h3><p className="text-muted-foreground text-sm leading-relaxed">{item.desc}</p></div>
+                  <div className="min-w-0"><h3 className="text-limit-2 font-semibold text-sm md:text-base mb-1">{item.title}</h3><p className="text-limit-3 text-muted-foreground text-sm leading-relaxed">{item.desc}</p></div>
                 </div>
               </Reveal>
             ))}
@@ -239,13 +239,13 @@ const OldHouseRenovation = () => {
               <p className="text-sm md:text-base max-w-2xl mx-auto text-steel">{t.processDescription}</p>
             </div>
           </Reveal>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+          <div className="card-grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-5">
             {t.process.map((step, i) => (
               <Reveal key={step.num} delay={i * 80}>
                 <div className="h-full rounded-card border border-white/10 bg-white/[0.03] p-5 text-center">
                   <span className="text-gold font-display text-3xl font-bold">{step.num}</span>
-                  <h3 className="font-semibold mt-2 mb-1.5 text-sm md:text-base text-surface-dark-foreground">{step.title}</h3>
-                  <p className="text-xs md:text-sm leading-relaxed text-steel">{step.desc}</p>
+                  <h3 className="text-limit-2 font-semibold mt-2 mb-1.5 text-sm md:text-base text-surface-dark-foreground">{step.title}</h3>
+                  <p className="text-limit-3 text-xs md:text-sm leading-relaxed text-steel">{step.desc}</p>
                 </div>
               </Reveal>
             ))}
@@ -262,13 +262,13 @@ const OldHouseRenovation = () => {
               <p className="text-muted-foreground text-sm max-w-lg mx-auto">{t.priceDescription}</p>
             </div>
           </Reveal>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-5 max-w-4xl mx-auto">
+          <div className="card-grid mx-auto max-w-4xl grid-cols-1 gap-5 md:grid-cols-3">
             {t.prices.map((item, i) => (
               <Reveal key={item.type} delay={i * 80}>
                 <div className="bg-card p-6 rounded-card border border-border hover-lift text-center h-full flex flex-col">
-                  <h3 className="font-display text-lg font-semibold mb-2">{item.type}</h3>
-                  <p className="text-gold font-display text-2xl font-bold mb-3">{item.range}</p>
-                  <p className="text-muted-foreground text-sm leading-relaxed flex-1">{item.desc}</p>
+                  <h3 className="text-limit-2 font-display text-lg font-semibold mb-2">{item.type}</h3>
+                  <p className="text-limit-1 text-gold font-display text-2xl font-bold mb-3">{item.range}</p>
+                  <p className="text-limit-4 text-muted-foreground text-sm leading-relaxed flex-1">{item.desc}</p>
                 </div>
               </Reveal>
             ))}

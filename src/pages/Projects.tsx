@@ -194,12 +194,12 @@ const Projects = () => {
             </div>
           </Reveal>
 
-          <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+          <div className="card-grid grid-cols-1 gap-6 md:grid-cols-2">
             {filtered.map((project, index) => (
               <Reveal key={project.id} delay={index * 80}>
                 <Link
                   to={`/projects/${project.slug}`}
-                  className="group block h-full rounded-card border border-border/80 bg-card p-3 shadow-[0_22px_64px_-52px_rgba(21,18,14,0.42)] hover-lift"
+                  className="card-equal group block rounded-card border border-border/80 bg-card p-3 shadow-[0_22px_64px_-52px_rgba(21,18,14,0.42)] hover-lift"
                 >
                   <div className="relative aspect-[4/3] overflow-hidden rounded-card img-zoom">
                     <SmartImage
@@ -214,12 +214,12 @@ const Projects = () => {
                       <span className="bg-accent/90 text-accent-foreground text-xs font-medium px-3 py-1 rounded-full backdrop-blur-sm">{displayProjectType(project.type)}</span>
                     </div>
                   </div>
-                  <div className="px-1 pb-2 pt-4">
-                  <h3 className="font-display text-lg font-semibold mb-1 group-hover:text-accent transition-colors">{displayProjectTitle(project.title)}</h3>
-                    <span className="flex items-center gap-1 text-muted-foreground text-sm mb-2">
-                    <MapPin className="w-3 h-3" /> {displayProjectLocation(project.location)}
+                  <div className="card-equal-body px-1 pb-2 pt-4">
+                  <h3 className="text-limit-2 font-display text-lg font-semibold mb-1 group-hover:text-accent transition-colors">{displayProjectTitle(project.title)}</h3>
+                    <span className="mb-2 flex min-w-0 items-center gap-1 text-sm text-muted-foreground">
+                    <MapPin className="w-3 h-3 shrink-0" /> <span className="min-w-0 truncate">{displayProjectLocation(project.location)}</span>
                   </span>
-                  <p className="text-muted-foreground text-sm line-clamp-2">{displayProjectDescription(project)}</p>
+                  <p className="text-limit-2 text-muted-foreground text-sm">{displayProjectDescription(project)}</p>
                   </div>
                 </Link>
               </Reveal>
