@@ -3,6 +3,7 @@ import Link from "@/components/LocalizedLink";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, ArrowRight, MapPin, Clock, CheckCircle, Star, Wrench, Layers } from "lucide-react";
 import WhatsAppIcon from "@/components/WhatsAppIcon";
+import { projectsData } from "@/data/projects";
 import { usePublishedProjectBySlug, usePublishedProjects } from "@/hooks/usePublishedContent";
 import { useLanguage } from "@/i18n/LanguageContext";
 import Reveal from "@/components/Reveal";
@@ -165,13 +166,16 @@ const ProjectDetail = () => {
   const { language } = useLanguage();
   const settings = useSiteSettings();
   const t = language === "zh" ? zhCopy : copy.en;
-  const { data: project, isPending: projectPending } = usePublishedProjectBySlug(slug, language);
-  const { data: allProjects = [] } = usePublishedProjects(language);
+  const fallbackProject = projectsData.find((item) => item.slug === slug);
+  const { data: publishedProject, isPending: projectPending } = usePublishedProjectBySlug(slug, language);
+  const { data: publishedProjects = [] } = usePublishedProjects(language);
+  const project = publishedProject ?? fallbackProject;
+  const allProjects = publishedProjects.length ? publishedProjects : projectsData;
   const relatedProjects = allProjects.filter((item) => item.slug !== slug && item.type === project?.type).slice(0, 2);
   const otherProjects = allProjects.filter((item) => item.slug !== slug && item.type !== project?.type).slice(0, 1);
   const related = [...relatedProjects, ...otherProjects].slice(0, 3);
 
-  if (projectPending) {
+  if (projectPending && !fallbackProject) {
     return (
       <PublicLoadingState
         label="FLASH CAST"
