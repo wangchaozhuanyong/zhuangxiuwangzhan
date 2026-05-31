@@ -87,8 +87,8 @@ export default {
         md: "calc(var(--radius) - 2px)",
         sm: "calc(var(--radius) - 4px)",
         btn: "10px",
-        card: "14px",
-        "card-lg": "18px",
+        card: "8px",
+        "card-lg": "10px",
         hero: "22px",
       },
       boxShadow: {
