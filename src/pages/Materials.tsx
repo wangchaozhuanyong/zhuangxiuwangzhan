@@ -12,7 +12,7 @@ import PageMeta from "@/components/PageMeta";
 import { JsonLdBreadcrumb } from "@/components/JsonLd";
 import { useSiteSettings } from "@/hooks/useSiteSettings";
 import HeroBanner from "@/components/blocks/HeroBanner";
-import { translateMaterialCategory } from "@/i18n/displayLabels";
+import { translateDisplayText, translateMaterialCategory } from "@/i18n/displayLabels";
 import { pageHeroImages, resolvePageHeroImage } from "@/lib/pageHeroImages";
 
 const copy = {
@@ -29,6 +29,7 @@ const copy = {
     choose: "Choose by Category",
     chooseText: "Select a category to explore options for your project",
     subcategories: "subcategories",
+    view: "View",
     ctaTitle: "Interested in a Material?",
     ctaText: "Contact us to request samples, check availability, or get a quotation for your project.",
     quote: "Request a Quote",
@@ -47,6 +48,7 @@ const copy = {
     choose: "按分类浏览",
     chooseText: "选择一个分类，查看适合您项目的材料选项",
     subcategories: "个子分类",
+    view: "查看",
     ctaTitle: "对某种材料感兴趣？",
     ctaText: "欢迎联系我们索取样板、确认库存，或获取项目报价。",
     quote: "索取报价",
@@ -74,6 +76,8 @@ const Materials = () => {
     return items;
   }, [publishedCategories]);
   const displayCategoryName = (value: string) => translateMaterialCategory(value, language);
+  const displayCategoryDescription = (value?: string) =>
+    language === "zh" ? translateDisplayText(value || "", language) : value || "";
   const heroImage = resolvePageHeroImage(pageContent?.image_url, pageHeroImages.materials);
 
   return (
@@ -105,31 +109,45 @@ const Materials = () => {
             </div>
           </Reveal>
 
-          <div className="grid grid-cols-2 gap-4 md:grid-cols-4 md:gap-6">
+          <div className="grid grid-cols-2 items-stretch gap-4 md:grid-cols-4 md:gap-6">
             {categories.map((category, index) => (
-              <Reveal key={category.slug} delay={index * 80}>
-                <Link to={`/materials/category/${category.slug}`} className="group block hover-lift">
-                  <div className="relative aspect-[4/3] overflow-hidden rounded-card-lg border border-border bg-muted img-zoom">
-                    <SmartImage
-                      src={category.image}
-                      alt={category.alt || displayCategoryName(category.name)}
-                      loading="lazy"
-                      width={400}
-                      height={300}
-                      className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
-                    <div className="absolute bottom-0 left-0 right-0 p-4">
-                      <h3 className="font-display text-sm font-bold leading-tight text-on-media md:text-base">
-                        {displayCategoryName(category.name)}
-                      </h3>
-                      <p className="mt-1.5 text-[10px] text-on-media-muted md:text-xs">
-                        {category.subcategories.length} {t.subcategories}
-                      </p>
-                    </div>
+              <Link
+                key={category.slug}
+                to={`/materials/category/${category.slug}`}
+                className="group flex h-full min-h-[17rem] flex-col overflow-hidden rounded-card-lg border border-border bg-card shadow-sm transition-colors hover:border-accent/40 hover-lift"
+              >
+                <div className="relative aspect-[4/3] overflow-hidden bg-muted img-zoom">
+                  <SmartImage
+                    src={category.image}
+                    alt={category.alt || displayCategoryName(category.name)}
+                    loading="lazy"
+                    width={400}
+                    height={300}
+                    className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+                  />
+                </div>
+                <div className="flex flex-1 flex-col gap-2 p-3 md:p-4">
+                  <div className="flex items-start justify-between gap-2">
+                    <h3 className="font-display text-base font-bold leading-tight text-foreground md:text-lg">
+                      {displayCategoryName(category.name)}
+                    </h3>
+                    <span className="shrink-0 rounded-full border border-accent/25 bg-accent/10 px-2 py-0.5 text-[10px] font-semibold leading-5 text-accent">
+                      {String(index + 1).padStart(2, "0")}
+                    </span>
                   </div>
-                </Link>
-              </Reveal>
+                  <p className="line-clamp-2 min-h-10 text-xs leading-5 text-muted-foreground md:text-sm">
+                    {displayCategoryDescription(category.description)}
+                  </p>
+                  <div className="mt-auto flex items-center justify-between gap-2 border-t border-border/70 pt-2 text-[11px] font-medium text-muted-foreground md:text-xs">
+                    <span>
+                      {category.subcategories.length} {t.subcategories}
+                    </span>
+                    <span className="inline-flex items-center gap-1 text-accent">
+                      {t.view} <ArrowRight className="h-3.5 w-3.5" />
+                    </span>
+                  </div>
+                </div>
+              </Link>
             ))}
           </div>
         </div>
