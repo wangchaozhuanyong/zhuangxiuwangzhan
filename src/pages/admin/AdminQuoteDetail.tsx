@@ -7,9 +7,11 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { supabase } from "@/lib/supabase";
 import { useAdminQuote } from "@/lib/adminQueries";
+import { formatAdminMutationError } from "@/lib/adminMutation";
 import AdminPageHeader from "@/components/admin/AdminPageHeader";
 import { getAdminLang } from "@/lib/adminLocale";
 import { translateStatusLabel } from "@/i18n/displayLabels";
+import { telHrefFromPhone, whatsappHrefFromPhone } from "@/lib/contactLinks";
 
 const statuses = ["pending", "contacted", "site_visit_scheduled", "quoted", "accepted", "rejected", "closed"];
 const followupTypes = ["note", "call", "whatsapp", "site_visit", "quotation", "closed"];
@@ -32,6 +34,7 @@ const AdminQuoteDetail = () => {
   const [followupType, setFollowupType] = useState("note");
   const [nextFollowUpAt, setNextFollowUpAt] = useState("");
   const [message, setMessage] = useState("");
+  const [savingFollowup, setSavingFollowup] = useState(false);
 
   useEffect(() => {
     if (data?.quote) setQuote(data.quote);
@@ -39,32 +42,61 @@ const AdminQuoteDetail = () => {
 
   const followups = data?.followups ?? [];
   const loadError = error instanceof Error ? error.message : error ? String(error) : "";
+  const whatsappHref = quote ? whatsappHrefFromPhone(quote.customer_phone) : "";
+  const telHref = quote ? telHrefFromPhone(quote.customer_phone) : "";
 
-  const refresh = () => queryClient.invalidateQueries({ queryKey: ["admin", "quotes", id] });
+  const refresh = async () => {
+    await Promise.all([
+      queryClient.invalidateQueries({ queryKey: ["admin", "quotes"] }),
+      queryClient.invalidateQueries({ queryKey: ["admin", "dashboard"] }),
+    ]);
+  };
 
   const updateQuote = async (patch: Record<string, unknown>) => {
     if (!id) return;
+    setMessage("");
     const { error: updateError } = await supabase!.from("quote_requests").update(patch).eq("id", id);
-    if (updateError) setMessage(updateError.message);
-    else await refresh();
+    if (updateError) {
+      setMessage(formatAdminMutationError(updateError));
+      return;
+    }
+    await refresh();
   };
 
   const addFollowup = async (event: FormEvent) => {
     event.preventDefault();
-    if (!id || !content.trim()) return;
-    const { data: userData } = await supabase!.auth.getUser();
-    const { error } = await supabase!.from("lead_followups").insert({
-      quote_request_id: id,
-      followup_type: followupType,
-      content,
-      next_follow_up_at: nextFollowUpAt || null,
-      created_by: userData.user?.id || null,
-    });
-    if (error) setMessage(error.message);
-    else {
+    if (!id || savingFollowup) return;
+    if (!content.trim()) {
+      setMessage("请先填写跟进内容。");
+      return;
+    }
+    setSavingFollowup(true);
+    setMessage("");
+    try {
+      const { data: userData } = await supabase!.auth.getUser();
+      const { error } = await supabase!.from("lead_followups").insert({
+        quote_request_id: id,
+        followup_type: followupType,
+        content: content.trim(),
+        next_follow_up_at: nextFollowUpAt || null,
+        created_by: userData.user?.id || null,
+      });
+      if (error) {
+        setMessage(formatAdminMutationError(error));
+        return;
+      }
+      if (nextFollowUpAt) {
+        const { error: followUpSyncError } = await supabase!.from("quote_requests").update({ next_follow_up_at: nextFollowUpAt }).eq("id", id);
+        if (followUpSyncError) {
+          setMessage(`跟进已保存，但下次跟进时间同步失败：${formatAdminMutationError(followUpSyncError)}`);
+          return;
+        }
+      }
       setContent("");
       setNextFollowUpAt("");
       await refresh();
+    } finally {
+      setSavingFollowup(false);
     }
   };
 
@@ -85,11 +117,11 @@ const AdminQuoteDetail = () => {
                 <div>
                   <h1 className="font-display text-2xl font-bold">{quote.customer_name || "报价请求"}</h1>
                   <p className="mt-1 text-sm text-muted-foreground">{quote.customer_phone} · {quote.customer_email || "-"}</p>
-                  <p className="mt-1 text-sm text-muted-foreground">{quote.project_type || "-"} · {new Date(quote.created_at).toLocaleString()}</p>
+                  <p className="mt-1 text-sm text-muted-foreground">{quote.project_type || "-"} · {quote.source_path || "-"} · {new Date(quote.created_at).toLocaleString()}</p>
                 </div>
                 <div className="flex gap-2">
-                  <Button asChild variant="outline"><a href={`https://wa.me/${String(quote.customer_phone || "").replace(/[^\d]/g, "")}`} target="_blank" rel="noreferrer">WhatsApp</a></Button>
-                  <Button asChild variant="outline"><a href={`tel:${String(quote.customer_phone || "").replace(/[^\d+]/g, "")}`}>拨打电话</a></Button>
+                  {whatsappHref ? <Button asChild variant="outline"><a href={whatsappHref} target="_blank" rel="noreferrer">WhatsApp</a></Button> : <Button variant="outline" disabled>WhatsApp</Button>}
+                  {telHref ? <Button asChild variant="outline"><a href={telHref}>拨打电话</a></Button> : <Button variant="outline" disabled>拨打电话</Button>}
                 </div>
               </div>
             </div>
@@ -120,6 +152,10 @@ const AdminQuoteDetail = () => {
                     <label className="mb-1 block text-sm font-medium">有效期至</label>
                     <Input type="date" value={quote.valid_until || ""} onChange={(event) => setQuote({ ...quote, valid_until: event.target.value })} onBlur={() => void updateQuote({ valid_until: quote.valid_until || null })} />
                   </div>
+                  <div>
+                    <label className="mb-1 block text-sm font-medium">下次跟进</label>
+                    <Input type="datetime-local" value={quote.next_follow_up_at ? quote.next_follow_up_at.slice(0, 16) : ""} onChange={(event) => setQuote({ ...quote, next_follow_up_at: event.target.value })} onBlur={() => void updateQuote({ next_follow_up_at: quote.next_follow_up_at || null })} />
+                  </div>
                   <div className="md:col-span-2">
                     <label className="mb-1 block text-sm font-medium">备注</label>
                     <Textarea rows={4} value={quote.notes || ""} onChange={(event) => setQuote({ ...quote, notes: event.target.value })} onBlur={() => void updateQuote({ notes: quote.notes || null })} />
@@ -135,7 +171,9 @@ const AdminQuoteDetail = () => {
                   </select>
                   <Textarea rows={4} value={content} onChange={(event) => setContent(event.target.value)} placeholder="跟进记录..." />
                   <Input type="datetime-local" value={nextFollowUpAt} onChange={(event) => setNextFollowUpAt(event.target.value)} />
-                  <AdminActionButton action="lead.write" type="submit" className="w-full">保存跟进</AdminActionButton>
+                  <AdminActionButton action="lead.write" type="submit" className="w-full" disabled={savingFollowup} aria-busy={savingFollowup}>
+                    {savingFollowup ? "保存中..." : "保存跟进"}
+                  </AdminActionButton>
                 </form>
               </section>
             </div>

@@ -49,8 +49,11 @@ async function scanUrl(context, url, viewportName) {
   const page = await context.newPage();
   const badImageResponses = [];
   page.on("response", (response) => {
-    if (response.request().resourceType() === "image" && response.status() >= 400) {
-      badImageResponses.push({ status: response.status(), url: response.url() });
+    if (response.request().resourceType() === "image") {
+      const contentType = response.headers()["content-type"] || "";
+      if (response.status() >= 400 || (contentType && !contentType.startsWith("image/"))) {
+        badImageResponses.push({ status: response.status(), contentType, url: response.url() });
+      }
     }
   });
 

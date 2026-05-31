@@ -18,6 +18,7 @@ import { useSiteSettings } from "@/hooks/useSiteSettings";
 import { isHtmlText, stripHtml } from "@/lib/text";
 import { sanitizeHtml } from "@/lib/sanitizeHtml";
 import { translateDisplayText } from "@/i18n/displayLabels";
+import { buildQuotePath, quoteProjectTypeFromServiceSlug } from "@/lib/quoteContext";
 
 const copy = {
   en: {
@@ -127,7 +128,7 @@ const ServiceDetail = () => {
 
   const service = cmsService || services.find((item) => item.slug === slug);
 
-  if (isServiceLoading && !cmsService) {
+  if (isServiceLoading && !cmsService && !service) {
     return (
       <PublicLoadingState
         label="FLASH CAST"
@@ -167,6 +168,11 @@ const ServiceDetail = () => {
     q: displayText(faq.q),
     a: displayText(faq.a),
   })).filter((faq: any) => faq.q && faq.a);
+  const quotePath = buildQuotePath({
+    source: "service",
+    title: serviceTitle,
+    projectType: quoteProjectTypeFromServiceSlug(service.slug, serviceTitle),
+  });
 
   return (
     <main className="pt-site-header">
@@ -193,7 +199,7 @@ const ServiceDetail = () => {
           <h1 className="page-hero__title heading-safe mb-4 max-w-2xl text-3xl font-bold text-on-media md:text-5xl">{serviceTitle}</h1>
           <p className="page-hero__description prose-safe mb-8 max-w-2xl text-base text-on-media-muted md:text-lg">{serviceSummary}</p>
           <div className="flex flex-col gap-3 sm:flex-row">
-            <Link to="/quote" className="btn-on-dark-primary min-h-12 justify-center px-8 sm:w-auto">
+            <Link to={quotePath} className="btn-on-dark-primary min-h-12 justify-center px-8 sm:w-auto">
               {t.getQuote} <ArrowRight className="h-4 w-4" />
             </Link>
             <a
@@ -354,6 +360,7 @@ const ServiceDetail = () => {
         title={t.interested(serviceTitle)}
         description={pageContent?.cta_description || t.ctaText}
         quoteLabel={t.freeQuote}
+        quotePath={quotePath}
         whatsappLabel={t.whatsapp}
         whatsappSource="Service Detail CTA"
       />

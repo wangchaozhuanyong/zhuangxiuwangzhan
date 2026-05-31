@@ -8,6 +8,7 @@ import AdminStatCard from "@/components/admin/AdminStatCard";
 import AdminEmptyState from "@/components/admin/AdminEmptyState";
 import { ga4PagesReportUrl, isAnalyticsEnabled } from "@/lib/analytics";
 import { adminStatusLabel, getAdminLang } from "@/lib/adminLocale";
+import { buildAdminWorkflowHref } from "@/lib/adminLeadWorkflow";
 import { translateProjectType } from "@/i18n/displayLabels";
 
 const copy = {
@@ -19,12 +20,14 @@ const copy = {
     quickActions: "Quick Actions",
     empty: "No records yet.",
     cards: [
-      { key: "todayLeads", label: "Today's New Leads", href: "/admin/leads" },
-      { key: "newLeads", label: "New Leads", href: "/admin/leads" },
-      { key: "pendingQuotes", label: "Pending Quotes", href: "/admin/quotes" },
-      { key: "toQuote", label: "To Quote", href: "/admin/quotes" },
-      { key: "dueFollowUps", label: "Follow-ups Due", href: "/admin/leads" },
-      { key: "staleLeads", label: "24h Unfollowed Leads", href: "/admin/leads" },
+      { key: "todayLeads", label: "Today's New Leads", href: buildAdminWorkflowHref("/admin/leads", { filter: "today" }) },
+      { key: "newLeads", label: "New Leads", href: buildAdminWorkflowHref("/admin/leads", { status: "new" }) },
+      { key: "pendingQuotes", label: "Pending Quotes", href: buildAdminWorkflowHref("/admin/quotes", { status: "pending" }) },
+      { key: "toQuote", label: "To Quote", href: buildAdminWorkflowHref("/admin/quotes", { filter: "to_quote" }) },
+      { key: "dueLeadFollowUps", label: "Lead Follow-ups Due", href: buildAdminWorkflowHref("/admin/leads", { filter: "due_followups" }) },
+      { key: "dueQuoteFollowUps", label: "Quote Follow-ups Due", href: buildAdminWorkflowHref("/admin/quotes", { filter: "due_followups" }) },
+      { key: "staleLeads", label: "24h Unhandled Leads", href: buildAdminWorkflowHref("/admin/leads", { filter: "stale24" }) },
+      { key: "staleQuotes", label: "24h Unhandled Quotes", href: buildAdminWorkflowHref("/admin/quotes", { filter: "stale24" }) },
       { key: "monthLeads", label: "Leads This Month", href: "/admin/leads" },
       { key: "monthQuotes", label: "Quotes This Month", href: "/admin/quotes" },
       { key: "failedTranslations", label: "Failed English Generation", href: "/admin/content/translation_jobs" },
@@ -50,12 +53,14 @@ const copy = {
     quickActions: "快捷入口",
     empty: "暂无记录。",
     cards: [
-      { key: "todayLeads", label: "今日新咨询", help: "今天提交到后台的新客户咨询数量。", href: "/admin/leads" },
-      { key: "newLeads", label: "新咨询", help: "还没有处理过的客户咨询数量。", href: "/admin/leads" },
-      { key: "pendingQuotes", label: "待处理报价", help: "已经收到、但还在等待处理的报价请求数量。", href: "/admin/quotes" },
-      { key: "toQuote", label: "待报价", help: "需要尽快整理并回复客户的报价请求数量。", href: "/admin/quotes" },
-      { key: "dueFollowUps", label: "今日待跟进咨询", help: "今天应该优先跟进的客户咨询数量。", href: "/admin/leads" },
-      { key: "staleLeads", label: "24 小时未跟进咨询", help: "超过 24 小时还没跟进的客户咨询数量。", href: "/admin/leads" },
+      { key: "todayLeads", label: "今日新咨询", help: "今天提交到后台的新客户咨询数量。", href: buildAdminWorkflowHref("/admin/leads", { filter: "today" }) },
+      { key: "newLeads", label: "新咨询", help: "还没有处理过的客户咨询数量。", href: buildAdminWorkflowHref("/admin/leads", { status: "new" }) },
+      { key: "pendingQuotes", label: "待处理报价", help: "已经收到、但还在等待处理的报价请求数量。", href: buildAdminWorkflowHref("/admin/quotes", { status: "pending" }) },
+      { key: "toQuote", label: "待报价", help: "需要尽快整理并回复客户的报价请求数量。", href: buildAdminWorkflowHref("/admin/quotes", { filter: "to_quote" }) },
+      { key: "dueLeadFollowUps", label: "待跟进咨询", help: "已经到跟进时间、今天应该优先处理的客户咨询。", href: buildAdminWorkflowHref("/admin/leads", { filter: "due_followups" }) },
+      { key: "dueQuoteFollowUps", label: "待跟进报价", help: "已经到跟进时间、需要继续回复的报价请求。", href: buildAdminWorkflowHref("/admin/quotes", { filter: "due_followups" }) },
+      { key: "staleLeads", label: "24小时未处理咨询", help: "超过 24 小时仍是新咨询的记录。", href: buildAdminWorkflowHref("/admin/leads", { filter: "stale24" }) },
+      { key: "staleQuotes", label: "24小时未处理报价", help: "超过 24 小时仍待处理的报价请求。", href: buildAdminWorkflowHref("/admin/quotes", { filter: "stale24" }) },
       { key: "monthLeads", label: "本月咨询数", help: "本月累计收到的客户咨询数量。", href: "/admin/leads" },
       { key: "monthQuotes", label: "本月报价数", help: "本月累计收到的报价请求数量。", href: "/admin/quotes" },
       { key: "failedTranslations", label: "英文生成失败", help: "需要重试或修正的自动英文生成记录数量。", href: "/admin/content/translation_jobs" },
@@ -102,6 +107,7 @@ const AdminDashboard = () => {
     phone?: string;
     status?: string;
     source_path?: string;
+    next_follow_up_at?: string | null;
   }>;
   const recentQuotes = (data?.recentQuotes ?? []) as Array<{
     id: string;
@@ -109,6 +115,8 @@ const AdminDashboard = () => {
     customer_phone?: string;
     status?: string;
     project_type?: string;
+    source_path?: string;
+    next_follow_up_at?: string | null;
   }>;
 
   return (
@@ -185,6 +193,7 @@ const AdminDashboard = () => {
                 <span className="block text-xs text-muted-foreground">
                   {adminStatusLabel("quote_requests", quote.status || "pending")}
                   {quote.project_type ? ` · ${translateProjectType(quote.project_type, lang)}` : ""}
+                  {quote.source_path ? ` · ${quote.source_path}` : ""}
                 </span>
               </Link>
             ))}

@@ -15,6 +15,7 @@ import { useSiteSettings } from "@/hooks/useSiteSettings";
 import { isHtmlText, stripHtml } from "@/lib/text";
 import { sanitizeHtml } from "@/lib/sanitizeHtml";
 import { translateDisplayText, translateMaterialCategory, translateMaterialType, translateSpaceLabel } from "@/i18n/displayLabels";
+import { buildQuotePath } from "@/lib/quoteContext";
 
 const copy = {
   en: {
@@ -104,6 +105,11 @@ const MaterialDetail = () => {
   const otherMaterials = category.items.filter((item: any) => item.slug !== slug);
   const pros = Array.isArray((material as any).pros) ? (material as any).pros.filter(Boolean) : [];
   const cons = Array.isArray((material as any).cons) ? (material as any).cons.filter(Boolean) : [];
+  const quotePath = buildQuotePath({
+    source: "material",
+    title: displayMaterialName,
+    projectType: "Others",
+  });
 
   return (
     <main className="pt-site-header">
@@ -222,7 +228,7 @@ const MaterialDetail = () => {
               )}
 
               <div className="flex flex-col gap-3 sm:flex-row">
-                <Link to="/quote" className="btn-brand-primary min-h-12 justify-center px-8">
+                <Link to={quotePath} className="btn-brand-primary min-h-12 justify-center px-8">
                   {t.enquire} <ArrowRight className="h-4 w-4" />
                 </Link>
                 <a

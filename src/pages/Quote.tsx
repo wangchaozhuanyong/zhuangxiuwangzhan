@@ -1,4 +1,5 @@
-import { FormEvent, useState } from "react";
+import { FormEvent, useMemo, useState } from "react";
+import { useSearchParams } from "react-router-dom";
 import LocalizedLink from "@/components/LocalizedLink";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -16,6 +17,7 @@ import { usePublishedSitePage } from "@/hooks/usePublishedContent";
 import HeroBanner from "@/components/blocks/HeroBanner";
 import { trackCtaClick, trackQuoteFormSubmit } from "@/lib/analytics";
 import { pageHeroImages, resolvePageHeroImage } from "@/lib/pageHeroImages";
+import { formatQuoteContextLabel, parseQuoteContext } from "@/lib/quoteContext";
 
 const projectTypes = [
   { value: "Residential Renovation", en: "Residential Renovation", zh: "住宅装修" },
@@ -81,6 +83,7 @@ const copy = {
     submit: "Submit Quote Request",
     submitting: "Submitting...",
     privacyNote: "We will review your request and follow up during business hours. No spam, no obligation.",
+    contextNotice: "We have carried over the page you came from, so our team can understand your request faster.",
     successTitle: "Quote Request Submitted!",
     successIntro: "Thank you",
     successReceived: "We have received your project details.",
@@ -152,6 +155,7 @@ const copy = {
     submit: "提交报价请求",
     submitting: "提交中...",
     privacyNote: "我们会在营业时间查看你的需求并跟进。不会骚扰，也不会强制消费。",
+    contextNotice: "系统已带入您刚才浏览的页面，方便团队更快了解您的需求。",
     successTitle: "报价请求已提交！",
     successIntro: "谢谢你",
     successReceived: "我们已经收到你的项目资料。",
@@ -210,8 +214,11 @@ const focusFirstQuoteError = (errors: FormErrors) => {
 
 const Quote = () => {
   const { language } = useLanguage();
+  const [searchParams] = useSearchParams();
   const settings = useSiteSettings();
   const t = copy[language];
+  const quoteContext = useMemo(() => parseQuoteContext(searchParams, language), [language, searchParams]);
+  const contextLabel = formatQuoteContextLabel(quoteContext, language);
   const { data: pageContent } = usePublishedSitePage(language, "quote");
   const heroImage = resolvePageHeroImage(pageContent?.image_url, pageHeroImages.quote);
   const officeAddress = settings.short_address || settings.address || t.office;
@@ -219,11 +226,11 @@ const Quote = () => {
     name: "",
     phone: "",
     email: "",
-    projectType: "",
-    location: "",
+    projectType: quoteContext.projectType,
+    location: quoteContext.location,
     propertySize: "",
     budget: "",
-    details: "",
+    details: quoteContext.details,
   });
   const [errors, setErrors] = useState<FormErrors>({});
   const [status, setStatus] = useState<"idle" | "submitting" | "success" | "error">("idle");
@@ -273,7 +280,7 @@ const Quote = () => {
         propertySize: form.propertySize,
         budget: form.budget,
         details: form.details,
-        sourcePath: window.location.pathname,
+        sourcePath: `${window.location.pathname}${window.location.search}`,
         website: honeypot,
         startedAt: formGuard.startedAt,
       });
@@ -389,6 +396,13 @@ const Quote = () => {
                     <p className="font-medium text-destructive">{t.errorTitle}</p>
                     <p className="text-muted-foreground">{t.errorText}</p>
                   </div>
+                </div>
+              )}
+
+              {contextLabel && (
+                <div className="mb-6 rounded-card border border-accent/20 bg-accent/5 p-4 text-sm">
+                  <p className="font-medium text-foreground">{contextLabel}</p>
+                  <p className="mt-1 text-muted-foreground">{t.contextNotice}</p>
                 </div>
               )}
 

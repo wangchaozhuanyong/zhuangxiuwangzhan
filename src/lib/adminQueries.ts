@@ -6,6 +6,13 @@ import {
   fetchNotificationSettings,
   fetchTranslationJobs,
 } from "@/lib/adminEditorData";
+import {
+  adminDayStartIso,
+  adminSince24hIso,
+  normalizeAdminWorkflowFilter,
+  type AdminLeadListKind,
+  type AdminWorkflowFilter,
+} from "@/lib/adminLeadWorkflow";
 import { buildMediaAssetInsert, type AdminUploadedMedia } from "@/lib/adminMedia";
 import { isSupabaseConfigured, supabase } from "@/lib/supabase";
 
@@ -21,6 +28,7 @@ export type AdminListQuery = {
   pageSize?: number;
   status?: string;
   search?: string;
+  workflow?: AdminWorkflowFilter | string;
 };
 
 export type AdminListPage<T> = {
@@ -50,21 +58,57 @@ const applyAdminSearch = (query: any, fields: string[], search?: string) => {
   return query.or(fields.map((field) => `${field}.ilike.%${q}%`).join(","));
 };
 
+const applyAdminWorkflowFilter = (
+  query: any,
+  kind: AdminLeadListKind | undefined,
+  workflow: AdminWorkflowFilter | undefined,
+) => {
+  if (!kind || !workflow || workflow === "all") return query;
+  const now = new Date();
+
+  if (workflow === "today") {
+    return query.gte("created_at", adminDayStartIso(now));
+  }
+
+  if (workflow === "due_followups") {
+    return query.not("next_follow_up_at", "is", null).lte("next_follow_up_at", now.toISOString());
+  }
+
+  if (workflow === "stale24") {
+    const since24h = adminSince24hIso(now);
+    return kind === "leads"
+      ? query.eq("status", "new").lt("created_at", since24h)
+      : query.in("status", ["pending", "contacted"]).lt("created_at", since24h);
+  }
+
+  if (workflow === "to_quote") {
+    return kind === "leads"
+      ? query.in("status", ["contacted", "site_visit_scheduled"])
+      : query.in("status", ["pending", "contacted", "site_visit_scheduled"]);
+  }
+
+  return query;
+};
+
 async function fetchAdminListPage<T>({
   table,
+  kind,
   select,
   page,
   pageSize,
   status,
+  workflow,
   search,
   searchFields,
   orders,
 }: {
   table: string;
+  kind?: AdminLeadListKind;
   select: string;
   page?: number;
   pageSize?: number;
   status?: string;
+  workflow?: AdminWorkflowFilter;
   search?: string;
   searchFields: string[];
   orders: Array<{ column: string; options?: Record<string, unknown> }>;
@@ -76,6 +120,7 @@ async function fetchAdminListPage<T>({
 
   let query = supabase!.from(table).select(select, { count: "exact" });
   if (status && status !== "all") query = query.eq("status", status);
+  query = applyAdminWorkflowFilter(query, kind, workflow);
   query = applyAdminSearch(query, searchFields, search);
   orders.forEach(({ column, options }) => {
     query = query.order(column, options as any);
@@ -119,8 +164,9 @@ export function useAdminLeads(options: AdminListQuery = {}) {
   const search = normalizeAdminSearch(options.search);
   const page = clampPage(options.page);
   const pageSize = clampPageSize(options.pageSize);
+  const workflow = normalizeAdminWorkflowFilter(options.workflow, "leads");
   return useQuery({
-    queryKey: ["admin", "leads", { page, pageSize, status: options.status || "all", search }],
+    queryKey: ["admin", "leads", { page, pageSize, status: options.status || "all", workflow, search }],
     enabled,
     placeholderData: keepPreviousData,
     staleTime: ADMIN_LIST_STALE_TIME,
@@ -128,10 +174,12 @@ export function useAdminLeads(options: AdminListQuery = {}) {
     queryFn: () =>
       fetchAdminListPage<Record<string, any>>({
         table: "leads",
+        kind: "leads",
         select: "*",
         page,
         pageSize,
         status: options.status,
+        workflow,
         search,
         searchFields: ["name", "phone", "email", "location", "source_path", "project_type"],
         orders: [{ column: "created_at", options: { ascending: false } }],
@@ -143,8 +191,9 @@ export function useAdminQuotes(options: AdminListQuery = {}) {
   const search = normalizeAdminSearch(options.search);
   const page = clampPage(options.page);
   const pageSize = clampPageSize(options.pageSize);
+  const workflow = normalizeAdminWorkflowFilter(options.workflow, "quote_requests");
   return useQuery({
-    queryKey: ["admin", "quotes", { page, pageSize, status: options.status || "all", search }],
+    queryKey: ["admin", "quotes", { page, pageSize, status: options.status || "all", workflow, search }],
     enabled,
     placeholderData: keepPreviousData,
     staleTime: ADMIN_LIST_STALE_TIME,
@@ -152,10 +201,12 @@ export function useAdminQuotes(options: AdminListQuery = {}) {
     queryFn: () =>
       fetchAdminListPage<Record<string, any>>({
         table: "quote_requests",
+        kind: "quote_requests",
         select: "*",
         page,
         pageSize,
         status: options.status,
+        workflow,
         search,
         searchFields: ["customer_name", "customer_phone", "customer_email", "location", "project_type"],
         orders: [{ column: "created_at", options: { ascending: false } }],
@@ -284,6 +335,7 @@ export function useAdminDashboardStats() {
         newLeads,
         pendingQuotes,
         staleLeads,
+        staleQuotes,
         failedTranslations,
         projects,
         services,
@@ -292,8 +344,8 @@ export function useAdminDashboardStats() {
         todayLeads,
         monthQuotes,
         monthLeads,
-        dueFollowUps,
-        staleUnfollowed,
+        dueLeadFollowUps,
+        dueQuoteFollowUps,
         toQuote,
         leads,
         quotes,
@@ -301,6 +353,7 @@ export function useAdminDashboardStats() {
         supabase!.from("leads").select("*", { count: "exact", head: true }).eq("status", "new"),
         supabase!.from("quote_requests").select("*", { count: "exact", head: true }).eq("status", "pending"),
         supabase!.from("leads").select("*", { count: "exact", head: true }).eq("status", "new").lt("created_at", since24h),
+        supabase!.from("quote_requests").select("*", { count: "exact", head: true }).in("status", ["pending", "contacted"]).lt("created_at", since24h),
         supabase!.from("translation_jobs").select("*", { count: "exact", head: true }).eq("status", "failed"),
         supabase!.from("projects").select("*", { count: "exact", head: true }).eq("status", "published"),
         supabase!.from("services").select("*", { count: "exact", head: true }).eq("status", "published"),
@@ -310,10 +363,10 @@ export function useAdminDashboardStats() {
         supabase!.from("quote_requests").select("*", { count: "exact", head: true }).gte("created_at", monthIso),
         supabase!.from("leads").select("*", { count: "exact", head: true }).gte("created_at", monthIso),
         supabase!.from("leads").select("*", { count: "exact", head: true }).not("next_follow_up_at", "is", null).lte("next_follow_up_at", now.toISOString()),
-        supabase!.from("leads").select("*", { count: "exact", head: true }).eq("status", "new").lt("created_at", since24h),
-        supabase!.from("quote_requests").select("*", { count: "exact", head: true }).in("status", ["pending", "contacted"]),
-        supabase!.from("leads").select("id,name,phone,status,created_at,source_path").order("created_at", { ascending: false }).limit(10),
-        supabase!.from("quote_requests").select("id,customer_name,customer_phone,status,created_at,project_type").order("created_at", { ascending: false }).limit(10),
+        supabase!.from("quote_requests").select("*", { count: "exact", head: true }).not("next_follow_up_at", "is", null).lte("next_follow_up_at", now.toISOString()),
+        supabase!.from("quote_requests").select("*", { count: "exact", head: true }).in("status", ["pending", "contacted", "site_visit_scheduled"]),
+        supabase!.from("leads").select("id,name,phone,status,created_at,source_path,next_follow_up_at").order("created_at", { ascending: false }).limit(10),
+        supabase!.from("quote_requests").select("id,customer_name,customer_phone,status,created_at,project_type,source_path,next_follow_up_at").order("created_at", { ascending: false }).limit(10),
       ]);
 
       return {
@@ -322,11 +375,14 @@ export function useAdminDashboardStats() {
           newLeads: newLeads.count || 0,
           pendingQuotes: pendingQuotes.count || 0,
           staleLeads: staleLeads.count || 0,
-          dueFollowUps: dueFollowUps.count || 0,
+          staleQuotes: staleQuotes.count || 0,
+          dueLeadFollowUps: dueLeadFollowUps.count || 0,
+          dueQuoteFollowUps: dueQuoteFollowUps.count || 0,
+          dueFollowUps: (dueLeadFollowUps.count || 0) + (dueQuoteFollowUps.count || 0),
           monthLeads: monthLeads.count || 0,
           monthQuotes: monthQuotes.count || 0,
           toQuote: toQuote.count || 0,
-          staleUnfollowed: staleUnfollowed.count || 0,
+          staleUnfollowed: (staleLeads.count || 0) + (staleQuotes.count || 0),
           failedTranslations: failedTranslations.count || 0,
           projects: projects.count || 0,
           services: services.count || 0,

@@ -252,7 +252,7 @@ const Contact = () => {
         projectType: form.projectType,
         location: form.location,
         message: form.message,
-        sourcePath: window.location.pathname,
+        sourcePath: `${window.location.pathname}${window.location.search}`,
         website: honeypot,
         startedAt: formGuard.startedAt,
       });

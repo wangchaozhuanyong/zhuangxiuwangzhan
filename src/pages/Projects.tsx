@@ -17,6 +17,7 @@ import HeroBanner from "@/components/blocks/HeroBanner";
 import CTABanner from "@/components/blocks/CTABanner";
 import { translateDisplayText, translateProjectType } from "@/i18n/displayLabels";
 import { pageHeroImages, resolvePageHeroImage } from "@/lib/pageHeroImages";
+import { buildQuotePath } from "@/lib/quoteContext";
 
 const typeImageMap: Record<string, string> = {
   Residential: residentialImg,
@@ -234,6 +235,7 @@ const Projects = () => {
         title={pageContent?.cta_title || pageCopy.ctaTitle}
         description={pageContent?.cta_description || pageCopy.ctaText}
         quoteLabel={pageCopy.quote}
+        quotePath={buildQuotePath({ source: "projects" })}
         whatsappLabel={pageCopy.whatsapp}
         whatsappSource="Projects CTA"
       />

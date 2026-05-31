@@ -23,6 +23,11 @@ export interface QuoteSubmission {
   sourcePath?: string;
 }
 
+const currentPathWithSearch = () => {
+  if (typeof window === "undefined") return "";
+  return `${window.location.pathname}${window.location.search}`;
+};
+
 const invokeSubmitLead = async (body: Record<string, unknown>) => {
   const supabase = requireSupabase();
   const { data, error } = await supabase.functions.invoke("submit-lead", { body });
@@ -43,7 +48,7 @@ export const submitContactLead = async (payload: ContactSubmission & FormGuardFi
     projectType: payload.projectType,
     location: payload.location,
     message: payload.message,
-    sourcePath: payload.sourcePath || (typeof window !== "undefined" ? window.location.pathname : ""),
+    sourcePath: payload.sourcePath || currentPathWithSearch(),
     website: payload.website,
     startedAt: payload.startedAt,
     elapsedMs,
@@ -63,7 +68,7 @@ export const submitQuoteRequest = async (payload: QuoteSubmission & FormGuardFie
     propertySize: payload.propertySize,
     budget: payload.budget,
     details: payload.details,
-    sourcePath: payload.sourcePath || (typeof window !== "undefined" ? window.location.pathname : ""),
+    sourcePath: payload.sourcePath || currentPathWithSearch(),
     website: payload.website,
     startedAt: payload.startedAt,
     elapsedMs,

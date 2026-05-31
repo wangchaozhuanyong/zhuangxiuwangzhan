@@ -7,9 +7,11 @@ import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
 import { supabase } from "@/lib/supabase";
 import { useAdminLead } from "@/lib/adminQueries";
+import { formatAdminMutationError } from "@/lib/adminMutation";
 import AdminPageHeader from "@/components/admin/AdminPageHeader";
 import { getAdminLang } from "@/lib/adminLocale";
 import { translateStatusLabel } from "@/i18n/displayLabels";
+import { telHrefFromPhone, whatsappHrefFromPhone } from "@/lib/contactLinks";
 
 const statuses = ["new", "contacted", "site_visit_scheduled", "quoted", "converted", "closed", "spam"];
 const followupTypes = ["note", "call", "whatsapp", "site_visit", "quotation", "closed"];
@@ -32,6 +34,7 @@ const AdminLeadDetail = () => {
   const [followupType, setFollowupType] = useState("note");
   const [nextFollowUpAt, setNextFollowUpAt] = useState("");
   const [message, setMessage] = useState("");
+  const [savingFollowup, setSavingFollowup] = useState(false);
 
   useEffect(() => {
     if (data?.lead) setLead(data.lead);
@@ -39,34 +42,62 @@ const AdminLeadDetail = () => {
 
   const followups = data?.followups ?? [];
   const loadError = error instanceof Error ? error.message : error ? String(error) : "";
+  const whatsappHref = lead ? whatsappHrefFromPhone(lead.phone) : "";
+  const telHref = lead ? telHrefFromPhone(lead.phone) : "";
 
-  const refresh = () => queryClient.invalidateQueries({ queryKey: ["admin", "leads", id] });
+  const refresh = async () => {
+    await Promise.all([
+      queryClient.invalidateQueries({ queryKey: ["admin", "leads"] }),
+      queryClient.invalidateQueries({ queryKey: ["admin", "dashboard"] }),
+    ]);
+  };
 
   const updateLead = async (patch: Record<string, unknown>) => {
     if (!id) return;
+    setMessage("");
     const { error: updateError } = await supabase!.from("leads").update(patch).eq("id", id);
-    if (updateError) setMessage(updateError.message);
-    else await refresh();
+    if (updateError) {
+      setMessage(formatAdminMutationError(updateError));
+      return;
+    }
+    await refresh();
   };
 
   const addFollowup = async (event: FormEvent) => {
     event.preventDefault();
-    if (!id || !content.trim()) return;
-    const { data: userData } = await supabase!.auth.getUser();
-    const { error: insertError } = await supabase!.from("lead_followups").insert({
-      lead_id: id,
-      followup_type: followupType,
-      content,
-      next_follow_up_at: nextFollowUpAt || null,
-      created_by: userData.user?.id || null,
-    });
-    if (insertError) {
-      setMessage(insertError.message);
+    if (!id || savingFollowup) return;
+    if (!content.trim()) {
+      setMessage("请先填写跟进内容。");
       return;
     }
-    setContent("");
-    setNextFollowUpAt("");
-    await refresh();
+    setSavingFollowup(true);
+    setMessage("");
+    try {
+      const { data: userData } = await supabase!.auth.getUser();
+      const { error: insertError } = await supabase!.from("lead_followups").insert({
+        lead_id: id,
+        followup_type: followupType,
+        content: content.trim(),
+        next_follow_up_at: nextFollowUpAt || null,
+        created_by: userData.user?.id || null,
+      });
+      if (insertError) {
+        setMessage(formatAdminMutationError(insertError));
+        return;
+      }
+      if (nextFollowUpAt) {
+        const { error: followUpSyncError } = await supabase!.from("leads").update({ next_follow_up_at: nextFollowUpAt }).eq("id", id);
+        if (followUpSyncError) {
+          setMessage(`跟进已保存，但下次跟进时间同步失败：${formatAdminMutationError(followUpSyncError)}`);
+          return;
+        }
+      }
+      setContent("");
+      setNextFollowUpAt("");
+      await refresh();
+    } finally {
+      setSavingFollowup(false);
+    }
   };
 
   return (
@@ -89,8 +120,8 @@ const AdminLeadDetail = () => {
                   <p className="mt-1 text-sm text-muted-foreground">{lead.source_path || "-"} · {new Date(lead.created_at).toLocaleString()}</p>
                 </div>
                 <div className="flex gap-2">
-                  <Button asChild variant="outline"><a href={`https://wa.me/${String(lead.phone || "").replace(/[^\d]/g, "")}`} target="_blank" rel="noreferrer">WhatsApp</a></Button>
-                  <Button asChild variant="outline"><a href={`tel:${String(lead.phone || "").replace(/[^\d+]/g, "")}`}>拨打电话</a></Button>
+                  {whatsappHref ? <Button asChild variant="outline"><a href={whatsappHref} target="_blank" rel="noreferrer">WhatsApp</a></Button> : <Button variant="outline" disabled>WhatsApp</Button>}
+                  {telHref ? <Button asChild variant="outline"><a href={telHref}>拨打电话</a></Button> : <Button variant="outline" disabled>拨打电话</Button>}
                 </div>
               </div>
             </div>
@@ -131,7 +162,9 @@ const AdminLeadDetail = () => {
                   </select>
                   <Textarea rows={4} value={content} onChange={(event) => setContent(event.target.value)} placeholder="跟进记录..." />
                   <Input type="datetime-local" value={nextFollowUpAt} onChange={(event) => setNextFollowUpAt(event.target.value)} />
-                  <AdminActionButton action="lead.write" type="submit" className="w-full">保存跟进</AdminActionButton>
+                  <AdminActionButton action="lead.write" type="submit" className="w-full" disabled={savingFollowup} aria-busy={savingFollowup}>
+                    {savingFollowup ? "保存中..." : "保存跟进"}
+                  </AdminActionButton>
                 </form>
               </section>
             </div>

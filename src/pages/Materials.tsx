@@ -13,6 +13,7 @@ import SectionHeader from "@/components/blocks/SectionHeader";
 import CTABanner from "@/components/blocks/CTABanner";
 import { translateDisplayText, translateMaterialCategory } from "@/i18n/displayLabels";
 import { pageHeroImages, resolvePageHeroImage } from "@/lib/pageHeroImages";
+import { buildQuotePath } from "@/lib/quoteContext";
 
 const copy = {
   en: {
@@ -144,6 +145,7 @@ const Materials = () => {
         title={pageContent?.cta_title || t.ctaTitle}
         description={pageContent?.cta_description || t.ctaText}
         quoteLabel={t.quote}
+        quotePath={buildQuotePath({ source: "materials" })}
         whatsappLabel={t.whatsapp}
         whatsappSource="Materials CTA"
       />
