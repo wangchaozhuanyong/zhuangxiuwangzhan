@@ -134,6 +134,7 @@ const MaterialCategoryPage = () => {
         description={categoryDescription}
         backTo="/materials"
         backLabel={t.allMaterials}
+        variant="detail"
       />
 
       <section className="section-padding bg-background">
@@ -149,7 +150,7 @@ const MaterialCategoryPage = () => {
                   </div>
                   <div className="material-depth-card__body">
                     <h3 className="material-depth-card__title">{translateMaterialSubcategory(subcategory.name, language)}</h3>
-                    <p className="material-depth-card__meta">{subcategory.description}</p>
+                    <p className="material-depth-card__meta">{translateDisplayText(subcategory.description, language)}</p>
                   </div>
                 </Link>
               </Reveal>

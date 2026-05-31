@@ -65,6 +65,7 @@ const MaterialSubcategoryPage = () => {
   const items = category?.items.filter((item) => item.subcategory === subcategorySlug) || [];
   const displayCategoryName = category ? translateMaterialCategory(category.name, language) : "";
   const displaySubcategoryName = subcategory ? translateMaterialSubcategory(subcategory.name, language) : "";
+  const displaySubcategoryDescription = subcategory ? translateDisplayText(subcategory.description, language) : "";
 
   if (!category || !subcategory) {
     return (
@@ -83,7 +84,7 @@ const MaterialSubcategoryPage = () => {
     <main className="pt-site-header">
       <PageMeta
         title={`${displaySubcategoryName} | ${displayCategoryName} | FLASH CAST`}
-        description={t.metaDescription(subcategory.description, displaySubcategoryName)}
+        description={t.metaDescription(displaySubcategoryDescription, displaySubcategoryName)}
         keywords={t.metaKeywords(displaySubcategoryName, displayCategoryName)}
         canonicalPath={`/materials/category/${category.slug}/${subcategory.slug}`}
       />
@@ -93,21 +94,22 @@ const MaterialSubcategoryPage = () => {
         image={subcategory.image}
         imageAlt={subcategory.alt || displaySubcategoryName}
         title={displaySubcategoryName}
-        description={subcategory.description}
+        description={displaySubcategoryDescription}
         backTo={`/materials/category/${category.slug}`}
         backLabel={displayCategoryName}
+        variant="detail"
       />
 
       <section className="section-padding bg-background">
         <div className="container-narrow">
-          <SectionHeader title={t.products(displaySubcategoryName)} description={subcategory.description} />
+          <SectionHeader title={t.products(displaySubcategoryName)} description={displaySubcategoryDescription} />
           {items.length > 0 ? (
             <div className="card-grid grid-cols-2 gap-4 md:grid-cols-3 md:gap-6 lg:grid-cols-4">
               {items.map((item, index) => (
                 <Reveal key={item.id} delay={index * 60} direction="none">
                   <Link to={`/materials/${item.slug}`} className="material-depth-card luxury-card group hover-lift">
                     <div className="material-depth-card__media img-zoom">
-                      <SmartImage src={item.image} alt={item.alt || item.name} loading="lazy" width={400} height={400} className="w-full h-full object-cover" />
+                      <SmartImage src={item.image} alt={item.alt || translateDisplayText(item.name, language)} loading="lazy" width={400} height={400} className="w-full h-full object-cover" />
                     </div>
                     <div className="material-depth-card__body">
                       <h3 className="material-depth-card__title">{translateDisplayText(item.name, language)}</h3>

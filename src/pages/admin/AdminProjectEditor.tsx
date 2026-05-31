@@ -330,7 +330,7 @@ export default function AdminProjectEditor() {
           </div>
         </AdminFormSection>
 
-        <AdminFormSection title="基础信息（中文）" description="用于案例列表卡片与详情页标题/摘要。" helpText="管理案例中文标题、摘要、正文和基础展示信息。">
+        <AdminFormSection title="基础信息（中文）" description="用于案例列表卡片与详情页标题/摘要。前台卡片会自动限制标题和摘要行数，详情页会完整显示正文。" helpText="管理案例中文标题、摘要、正文和基础展示信息。">
           <div className="grid gap-4 md:grid-cols-2">
             <div className="md:col-span-2">
               <label className="mb-1 block text-sm font-medium">案例标题</label>

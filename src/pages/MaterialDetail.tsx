@@ -9,11 +9,12 @@ import { useLanguage } from "@/i18n/LanguageContext";
 import PageMeta from "@/components/PageMeta";
 import SmartImage from "@/components/SmartImage";
 import Reveal from "@/components/Reveal";
+import HeroBanner from "@/components/blocks/HeroBanner";
 import { JsonLdBreadcrumb } from "@/components/JsonLd";
 import { useSiteSettings } from "@/hooks/useSiteSettings";
 import { isHtmlText, stripHtml } from "@/lib/text";
 import { sanitizeHtml } from "@/lib/sanitizeHtml";
-import { translateMaterialCategory, translateMaterialType, translateSpaceLabel } from "@/i18n/displayLabels";
+import { translateDisplayText, translateMaterialCategory, translateMaterialType, translateSpaceLabel } from "@/i18n/displayLabels";
 
 const copy = {
   en: {
@@ -81,6 +82,8 @@ const MaterialDetail = () => {
   const material = published?.material ?? fallbackMaterial;
   const category = published?.category ?? fallbackCategory;
   const displayCategoryName = category ? translateMaterialCategory(category.name, language) : "";
+  const displayMaterialName = material ? translateDisplayText(material.name, language) : "";
+  const displayMaterialDescription = material ? translateDisplayText(material.description, language) : "";
   const displayMaterialType = material ? translateMaterialType(material.type || "", language) : "";
 
   if (!material || !category) {
@@ -103,22 +106,30 @@ const MaterialDetail = () => {
   return (
     <main className="pt-site-header">
       <PageMeta
-        title={t.metaTitle(material.name)}
-        description={t.metaDescription(material.description, material.suitableSpaces.map((space: string) => translateSpaceLabel(space, language)))}
-        keywords={t.metaKeywords(material.name, displayCategoryName)}
+        title={t.metaTitle(displayMaterialName)}
+        description={t.metaDescription(displayMaterialDescription, material.suitableSpaces.map((space: string) => translateSpaceLabel(space, language)))}
+        keywords={t.metaKeywords(displayMaterialName, displayCategoryName)}
         canonicalPath={`/materials/${material.slug}`}
       />
-      <JsonLdBreadcrumb items={[{ name: t.breadcrumbHome, url: "/" }, { name: t.breadcrumbMaterials, url: "/materials" }, { name: displayCategoryName, url: `/materials/category/${category.slug}` }, { name: material.name, url: `/materials/${material.slug}` }]} />
+      <JsonLdBreadcrumb items={[{ name: t.breadcrumbHome, url: "/" }, { name: t.breadcrumbMaterials, url: "/materials" }, { name: displayCategoryName, url: `/materials/category/${category.slug}` }, { name: displayMaterialName, url: `/materials/${material.slug}` }]} />
 
-      <section className="subpage-info-band px-4 py-3 md:px-8">
-        <div className="container-narrow flex items-center gap-2 text-sm text-muted-foreground">
-          <Link to="/materials" className="hover:text-accent">{t.breadcrumbMaterials}</Link>
-          <span>/</span>
-          <Link to={`/materials/category/${category.slug}`} className="hover:text-accent">{displayCategoryName}</Link>
-          <span>/</span>
-          <span className="text-foreground">{material.name}</span>
-        </div>
-      </section>
+      <HeroBanner
+        image={material.image}
+        imageAlt={material.alt || displayMaterialName}
+        label={displayCategoryName}
+        title={displayMaterialName}
+        description={displayMaterialDescription}
+        backTo={`/materials/category/${category.slug}`}
+        backLabel={displayCategoryName}
+        variant="detail"
+        meta={
+          <>
+            <span>{t.type}: {displayMaterialType || translateDisplayText(material.type || "", language)}</span>
+            <span>{t.color}: {translateDisplayText(material.color || "-", language)}</span>
+            <span>{t.texture}: {translateDisplayText(material.texture || "-", language)}</span>
+          </>
+        }
+      />
 
       <section className="section-padding bg-background">
         <div className="container-narrow">
@@ -126,27 +137,27 @@ const MaterialDetail = () => {
             <Reveal direction="left">
               <div className="material-detail-media luxury-card">
                 <div className="material-detail-media__frame img-zoom">
-                  <SmartImage src={material.image} alt={material.alt || material.name} className="w-full h-full object-cover" width={900} height={900} loading="eager" />
+                  <SmartImage src={material.image} alt={material.alt || displayMaterialName} className="w-full h-full object-cover" width={900} height={900} loading="eager" />
                 </div>
               </div>
             </Reveal>
 
             <Reveal direction="right" delay={120}>
-            <div className="subpage-side-panel p-5 md:p-7">
+              <div className="subpage-side-panel p-5 md:p-7">
               <span className="text-accent text-xs font-medium uppercase tracking-wider">{displayCategoryName}</span>
-              <h1 className="font-display text-2xl md:text-3xl font-bold mt-2 mb-4">{material.name}</h1>
-              {isHtmlText(material.description) ? (
-                <div className="prose prose-neutral max-w-none text-muted-foreground mb-6" dangerouslySetInnerHTML={{ __html: sanitizeHtml(material.description) }} />
+              <h1 className="font-display text-2xl md:text-3xl font-bold mt-2 mb-4">{displayMaterialName}</h1>
+              {isHtmlText(displayMaterialDescription) ? (
+                <div className="prose prose-neutral max-w-none text-muted-foreground mb-6" dangerouslySetInnerHTML={{ __html: sanitizeHtml(displayMaterialDescription) }} />
               ) : (
-                <p className="text-muted-foreground leading-relaxed mb-6">{material.description}</p>
+                <p className="text-muted-foreground leading-relaxed mb-6">{displayMaterialDescription}</p>
               )}
 
               <div className="space-y-4 mb-8">
                 <div className="material-detail-spec-grid">
                   {[
                     { label: t.type, value: displayMaterialType || material.type },
-                    { label: t.color, value: material.color },
-                    { label: t.texture, value: material.texture },
+                    { label: t.color, value: translateDisplayText(material.color || "", language) },
+                    { label: t.texture, value: translateDisplayText(material.texture || "", language) },
                     { label: t.category, value: displayCategoryName },
                   ].map((item) => (
                     <div key={item.label} className="luxury-card-muted p-3">
@@ -169,7 +180,7 @@ const MaterialDetail = () => {
               {material.recommendedPairing && (
                 <div className="mb-6">
                   <h3 className="font-semibold mb-2">{t.recommendedPairing}</h3>
-                  <p className="text-muted-foreground text-sm">{material.recommendedPairing}</p>
+                  <p className="text-muted-foreground text-sm">{translateDisplayText(material.recommendedPairing, language)}</p>
                 </div>
               )}
 
@@ -182,7 +193,7 @@ const MaterialDetail = () => {
                       </h3>
                       <ul className="space-y-2 text-sm text-muted-foreground">
                         {pros.map((item: string) => (
-                          <li key={item} className="leading-relaxed">{item}</li>
+                          <li key={item} className="leading-relaxed">{translateDisplayText(item, language)}</li>
                         ))}
                       </ul>
                     </div>
@@ -194,7 +205,7 @@ const MaterialDetail = () => {
                       </h3>
                       <ul className="space-y-2 text-sm text-muted-foreground">
                         {cons.map((item: string) => (
-                          <li key={item} className="leading-relaxed">{item}</li>
+                          <li key={item} className="leading-relaxed">{translateDisplayText(item, language)}</li>
                         ))}
                       </ul>
                     </div>
@@ -204,7 +215,7 @@ const MaterialDetail = () => {
 
               {material.note && (
                 <div className="luxury-card-muted p-4 text-sm text-muted-foreground mb-6">
-                  <strong className="text-foreground">{t.note}</strong> {material.note}
+                  <strong className="text-foreground">{t.note}</strong> {translateDisplayText(material.note, language)}
                 </div>
               )}
 
@@ -235,11 +246,11 @@ const MaterialDetail = () => {
               {otherMaterials.map((item: any) => (
                 <Link key={item.id} to={`/materials/${item.slug}`} className="material-depth-card luxury-card group hover-lift">
                   <div className="material-depth-card__media img-zoom">
-                    <SmartImage src={item.image} alt={item.alt || item.name} loading="lazy" width={400} height={400} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+                    <SmartImage src={item.image} alt={item.alt || translateDisplayText(item.name, language)} loading="lazy" width={400} height={400} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
                   </div>
                   <div className="material-depth-card__body">
-                    <h3 className="material-depth-card__title">{item.name}</h3>
-                    <p className="material-depth-card__meta">{translateMaterialType(item.type, language)} / {item.color || displayCategoryName}</p>
+                    <h3 className="material-depth-card__title">{translateDisplayText(item.name, language)}</h3>
+                    <p className="material-depth-card__meta">{translateMaterialType(item.type, language)} / {translateDisplayText(item.color || displayCategoryName, language)}</p>
                   </div>
                 </Link>
               ))}

@@ -9,6 +9,7 @@ import SmartImage from "@/components/SmartImage";
 import PageMeta from "@/components/PageMeta";
 import { JsonLdBreadcrumb } from "@/components/JsonLd";
 import FAQSection from "@/components/blocks/FAQSection";
+import HeroBanner from "@/components/blocks/HeroBanner";
 import SectionHeader from "@/components/blocks/SectionHeader";
 import { locationsData } from "@/data/locations";
 import { servicesData } from "@/data/services";
@@ -20,6 +21,7 @@ import { useSiteSettings } from "@/hooks/useSiteSettings";
 import { isHtmlText, stripHtml } from "@/lib/text";
 import { sanitizeHtml } from "@/lib/sanitizeHtml";
 import { translateDisplayText, translateProjectType } from "@/i18n/displayLabels";
+import { pageHeroImages } from "@/lib/pageHeroImages";
 
 const copy = {
   en: {
@@ -98,7 +100,7 @@ const LocationPage = () => {
     link: `/services/${service.slug}`,
   }));
   const displayText = (value: string) => translateDisplayText(value, language);
-  const localizedFaqs = location.faqs.map((faq) => ({
+  const localizedFaqs = (location?.faqs ?? []).map((faq) => ({
     q: displayText(faq.q),
     a: displayText(faq.a),
   }));
@@ -137,37 +139,30 @@ const LocationPage = () => {
         }}
       />
 
-      <section className="section-padding bg-surface-dark">
-        <Reveal>
-          <div className="container-narrow">
-            <div className="mb-4 flex flex-wrap items-center gap-2 text-sm text-surface-dark-foreground/55">
-              <Link to="/" className="transition-colors hover:text-gold">{t.breadcrumbHome}</Link>
-              <span>/</span>
-              <Link to="/" className="transition-colors hover:text-gold">{t.breadcrumbLocations}</Link>
-              <span>/</span>
-              <span className="text-surface-dark-foreground/80">{location.name}</span>
-            </div>
-            <div className="accent-line mb-4" />
-            <h1 className="heading-safe mb-4 font-display text-3xl font-bold text-surface-dark-foreground md:text-5xl">
-              {t.heroTitle(location.name)}
-            </h1>
-            <p className="prose-safe mb-2 max-w-2xl text-lg text-surface-dark-foreground/75">{displayText(location.description)}</p>
-            <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:gap-4">
-              <Link to="/quote" className="btn-on-dark-primary min-h-12 w-full justify-center px-8 sm:w-auto">
-                {t.quote} <ArrowRight className="h-4 w-4" />
-              </Link>
-              <a
-                href={settings.whatsapp_url()}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="btn-on-dark-secondary min-h-12 w-full justify-center px-8 sm:w-auto"
-              >
-                <WhatsAppIcon className="mr-2 h-[18px] w-[18px] text-whatsapp" /> {t.whatsapp}
-              </a>
-            </div>
-          </div>
-        </Reveal>
-      </section>
+      <HeroBanner
+        image={pageHeroImages.services.desktop}
+        imageMobile={pageHeroImages.services.mobile}
+        imageAlt={`${location.name} renovation services`}
+        label={t.breadcrumbLocations}
+        title={t.heroTitle(location.name)}
+        description={displayText(location.description)}
+        variant="detail"
+        actions={
+          <>
+            <Link to="/quote" className="btn-on-dark-primary min-h-12 w-full justify-center px-8 sm:w-auto">
+              {t.quote} <ArrowRight className="h-4 w-4" />
+            </Link>
+            <a
+              href={settings.whatsapp_url()}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="btn-on-dark-secondary min-h-12 w-full justify-center px-8 sm:w-auto"
+            >
+              <WhatsAppIcon className="mr-2 h-[18px] w-[18px] text-whatsapp" /> {t.whatsapp}
+            </a>
+          </>
+        }
+      />
 
       <section className="section-padding bg-background">
         <div className="container-narrow">
@@ -184,7 +179,7 @@ const LocationPage = () => {
                     __html: sanitizeHtml(isHtmlText(location.intro) ? location.intro : `<p>${location.intro}</p>`),
                   }}
                 />
-                <div className="bg-muted p-5 rounded-card border border-border">
+                <div className="luxury-card-muted p-5">
                   <h3 className="font-semibold text-sm mb-3">{t.propertyTypes}</h3>
                   <ul className="space-y-2">
                     {location.propertyTypes.map((propertyType: string) => (
@@ -202,7 +197,7 @@ const LocationPage = () => {
                 <h3 className="font-display font-semibold text-lg mb-4">{t.servicesIn(location.name)}</h3>
                 <div className="grid grid-cols-1 gap-3">
                   {servicesList.map((service) => (
-                    <Link key={service.link} to={service.link} className="flex items-center gap-3 p-3 bg-card border border-border rounded-card hover:border-accent/30 transition-colors group">
+                    <Link key={service.link} to={service.link} className="group flex items-center gap-3 rounded-card border border-border bg-card p-3 transition-colors hover:border-accent/30">
                       <div className="w-8 h-8 rounded-full bg-accent/10 flex items-center justify-center shrink-0">
                         <ArrowRight className="w-3.5 h-3.5 text-accent group-hover:translate-x-0.5 transition-transform" />
                       </div>
@@ -222,7 +217,7 @@ const LocationPage = () => {
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 max-w-3xl mx-auto">
                   {location.commonNeeds.map((need: string) => (
                     <Reveal key={need}>
-                      <div className="flex items-start gap-3 p-4 bg-background border border-border rounded-card">
+                      <div className="luxury-card-muted flex items-start gap-3 p-4">
                         <CheckCircle className="w-4 h-4 text-accent mt-0.5 shrink-0" />
                   <span className="text-sm">{displayText(need)}</span>
                       </div>
@@ -231,7 +226,7 @@ const LocationPage = () => {
           </div>
           {location.constructionNotes && (
             <Reveal delay={200}>
-              <div className="mt-8 p-5 bg-accent/5 border border-accent/20 rounded-card max-w-3xl mx-auto">
+              <div className="luxury-card-muted mx-auto mt-8 max-w-3xl p-5">
                 <h3 className="font-semibold text-sm mb-2">{t.permitNotes}</h3>
                 <div
                   className="text-muted-foreground text-sm leading-relaxed prose prose-sm max-w-none prose-p:my-3 prose-headings:mb-3 prose-headings:mt-6"

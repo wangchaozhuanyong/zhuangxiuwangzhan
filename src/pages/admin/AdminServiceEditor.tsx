@@ -355,7 +355,7 @@ export default function AdminServiceEditor() {
 
         <AdminFormSection
           title="基础信息（中文）"
-          description="用于服务列表卡片和详情页标题、摘要。"
+          description="用于服务列表卡片和详情页标题、摘要。前台卡片会自动限制标题和摘要行数，详情页会完整显示正文。"
           helpText="管理服务中文标题、摘要和正文。前台中文服务列表和详情页会读取这里。"
         >
           <div className="grid gap-4 md:grid-cols-2">
