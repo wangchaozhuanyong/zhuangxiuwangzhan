@@ -164,7 +164,7 @@ const BlogDetail = () => {
       />
       <JsonLdBreadcrumb items={[{ name: t.breadcrumbHome, url: "/" }, { name: t.breadcrumbBlog, url: "/blog" }, { name: displayText(post.title), url: `/blog/${post.slug}` }]} />
 
-      <section className="page-hero">
+      <section className="page-hero page-hero--detail">
         <div className="page-hero__media absolute inset-0">
           <SmartImage src={post.image} alt={displayText(post.title)} className="page-hero__image h-full w-full object-cover" width={1920} height={800} loading="eager" fetchPriority="high" />
           <div className="page-hero__overlay absolute inset-0 media-readable-overlay" aria-hidden="true" />

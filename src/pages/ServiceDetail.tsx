@@ -10,6 +10,7 @@ import { usePublishedServiceBySlug, usePublishedServices, usePublishedSitePage }
 import Reveal from "@/components/Reveal";
 import SmartImage from "@/components/SmartImage";
 import PageMeta from "@/components/PageMeta";
+import PublicLoadingState from "@/components/blocks/PublicLoadingState";
 import { JsonLdService, JsonLdBreadcrumb, JsonLdFAQ } from "@/components/JsonLd";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { useSiteSettings } from "@/hooks/useSiteSettings";
@@ -127,9 +128,11 @@ const ServiceDetail = () => {
 
   if (isServiceLoading && !cmsService) {
     return (
-      <main className="pt-site-header section-padding text-center">
-        <p className="text-sm text-muted-foreground">{language === "zh" ? "正在加载服务内容..." : "Loading service content..."}</p>
-      </main>
+      <PublicLoadingState
+        label="FLASH CAST"
+        title={language === "zh" ? "正在准备服务内容" : "Loading service"}
+        description={language === "zh" ? "服务图片和介绍正在载入，马上就好。" : "Service details are loading."}
+      />
     );
   }
 
@@ -176,7 +179,7 @@ const ServiceDetail = () => {
       <JsonLdBreadcrumb items={[{ name: t.breadcrumbHome, url: "/" }, { name: t.breadcrumbServices, url: "/services" }, { name: serviceTitle, url: `/services/${service.slug}` }]} />
       {serviceFaqs.length > 0 && <JsonLdFAQ faqs={serviceFaqs.map((faq: any) => ({ question: faq.q, answer: faq.a }))} />}
 
-      <section className="page-hero">
+      <section className="page-hero page-hero--detail">
         <div className="page-hero__media absolute inset-0">
           <SmartImage src={heroImage} alt={serviceTitle} className="page-hero__image h-full w-full object-cover" width={1920} height={800} loading="eager" fetchPriority="high" />
           <div className="page-hero__overlay absolute inset-0 media-readable-overlay" aria-hidden="true" />

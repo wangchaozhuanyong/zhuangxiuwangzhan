@@ -8,6 +8,7 @@ import { useLanguage } from "@/i18n/LanguageContext";
 import Reveal from "@/components/Reveal";
 import SmartImage from "@/components/SmartImage";
 import PageMeta from "@/components/PageMeta";
+import PublicLoadingState from "@/components/blocks/PublicLoadingState";
 import { JsonLdBreadcrumb } from "@/components/JsonLd";
 import { useSiteSettings } from "@/hooks/useSiteSettings";
 import { isHtmlText, stripHtml } from "@/lib/text";
@@ -172,9 +173,11 @@ const ProjectDetail = () => {
 
   if (projectPending) {
     return (
-      <main className="pt-site-header section-padding text-center">
-        <div className="mx-auto h-8 w-8 animate-spin rounded-full border-2 border-accent border-t-transparent" />
-      </main>
+      <PublicLoadingState
+        label="FLASH CAST"
+        title={language === "zh" ? "正在准备案例内容" : "Loading project"}
+        description={language === "zh" ? "案例图片和文字正在载入，马上就好。" : "Project images and details are loading."}
+      />
     );
   }
 
@@ -194,23 +197,31 @@ const ProjectDetail = () => {
   }
 
   const mainImage = project.images[0] || project.thumbnail;
-  const mainImageAlt = project.imageAlts?.[0] || project.thumbnailAlt || project.title;
+  const mainImageAlt = translateDisplayText(project.imageAlts?.[0] || project.thumbnailAlt || project.title, language);
   const relatedService = typeToService[project.type];
   const relatedServiceName = relatedService?.[language];
   const projectTypeLabel = translateProjectType(project.type, language);
+  const projectTitleLabel = translateDisplayText(project.title, language);
   const projectLocationLabel = translateDisplayText(project.location, language);
+  const projectDurationLabel = translateDisplayText(project.duration, language);
+  const projectDescription = translateDisplayText(project.description, language);
+  const projectClientNeed = translateDisplayText(project.clientNeed, language);
+  const projectHighlights = project.highlights.map((highlight: string) => translateDisplayText(highlight, language));
+  const projectScope = project.scope.map((scope: string) => translateDisplayText(scope, language));
+  const projectMaterialsUsed = project.materialsUsed.map((material: string) => translateDisplayText(material, language));
+  const projectTestimonial = project.testimonial ? translateDisplayText(project.testimonial, language) : "";
 
   return (
     <main className="pt-site-header">
       <PageMeta
-        title={`${project.title} | ${project.location} | ${t.metaSuffix}`}
-        description={t.metaDescription(projectTypeLabel, projectLocationLabel, project.clientNeed)}
-        keywords={t.metaKeywords(projectTypeLabel, projectLocationLabel, project.title)}
+        title={`${projectTitleLabel} | ${projectLocationLabel} | ${t.metaSuffix}`}
+        description={t.metaDescription(projectTypeLabel, projectLocationLabel, projectClientNeed)}
+        keywords={t.metaKeywords(projectTypeLabel, projectLocationLabel, projectTitleLabel)}
         canonicalPath={`/projects/${project.slug}`}
       />
-      <JsonLdBreadcrumb items={[{ name: t.breadcrumbHome, url: "/" }, { name: t.breadcrumbProjects, url: "/projects" }, { name: project.title, url: `/projects/${project.slug}` }]} />
+      <JsonLdBreadcrumb items={[{ name: t.breadcrumbHome, url: "/" }, { name: t.breadcrumbProjects, url: "/projects" }, { name: projectTitleLabel, url: `/projects/${project.slug}` }]} />
 
-      <section className="page-hero items-end">
+      <section className="page-hero page-hero--detail items-end">
         <div className="page-hero__media absolute inset-0">
           <SmartImage src={mainImage} alt={mainImageAlt} className="page-hero__image h-full w-full object-cover" width={1920} height={800} loading="eager" fetchPriority="high" />
           <div
@@ -223,10 +234,10 @@ const ProjectDetail = () => {
             <ArrowLeft className="h-3.5 w-3.5" /> {t.allProjects}
           </Link>
           <span className="page-hero__label mb-2 block text-xs font-medium uppercase tracking-wider text-gold">{projectTypeLabel}</span>
-          <h1 className="page-hero__title heading-safe mb-2 text-3xl font-bold text-on-media md:text-4xl">{project.title}</h1>
+          <h1 className="page-hero__title heading-safe mb-2 text-3xl font-bold text-on-media md:text-4xl">{projectTitleLabel}</h1>
           <div className="flex flex-wrap items-center gap-4 text-sm text-on-media-muted">
             <span className="flex items-center gap-1"><MapPin className="w-3.5 h-3.5" /> {projectLocationLabel}</span>
-            <span className="flex items-center gap-1"><Clock className="w-3.5 h-3.5" /> {project.duration}</span>
+            <span className="flex items-center gap-1"><Clock className="w-3.5 h-3.5" /> {projectDurationLabel}</span>
           </div>
         </div>
       </section>
@@ -238,29 +249,29 @@ const ProjectDetail = () => {
               <Reveal>
                 <div className="p-5 bg-muted rounded-card border border-border mb-8">
                   <p className="text-muted-foreground text-sm leading-relaxed">
-                    <strong className="text-foreground">{t.summaryLabel}</strong> {t.summary(project.title, projectTypeLabel, project.location, project.duration, project.scope)}
+                    <strong className="text-foreground">{t.summaryLabel}</strong> {t.summary(projectTitleLabel, projectTypeLabel, projectLocationLabel, projectDurationLabel, projectScope)}
                   </p>
                 </div>
               </Reveal>
 
               <Reveal>
                 <h2 className="font-display text-2xl font-bold mb-4">{t.overview}</h2>
-                {isHtmlText(project.description) ? (
-                  <div className="prose prose-neutral max-w-none text-muted-foreground mb-8" dangerouslySetInnerHTML={{ __html: sanitizeHtml(project.description) }} />
+                {isHtmlText(projectDescription) ? (
+                  <div className="prose prose-neutral max-w-none text-muted-foreground mb-8" dangerouslySetInnerHTML={{ __html: sanitizeHtml(projectDescription) }} />
                 ) : (
-                  <p className="text-muted-foreground leading-relaxed mb-8">{project.description}</p>
+                  <p className="text-muted-foreground leading-relaxed mb-8">{projectDescription}</p>
                 )}
               </Reveal>
 
               <Reveal delay={100}>
                 <h3 className="font-display text-xl font-bold mb-3">{t.clientRequirements}</h3>
-                <p className="text-muted-foreground mb-8 leading-relaxed">{project.clientNeed}</p>
+                <p className="text-muted-foreground mb-8 leading-relaxed">{projectClientNeed}</p>
               </Reveal>
 
               <Reveal delay={150}>
                 <h3 className="font-display text-xl font-bold mb-3">{t.solution}</h3>
                 <ul className="space-y-3 mb-8">
-                  {project.highlights.map((highlight: string) => (
+                  {projectHighlights.map((highlight: string) => (
                     <li key={highlight} className="flex items-start gap-3 text-muted-foreground">
                       <CheckCircle className="w-4 h-4 text-accent mt-0.5 shrink-0" />
                       <span className="leading-relaxed">{highlight}</span>
@@ -274,7 +285,7 @@ const ProjectDetail = () => {
                 <div className="grid grid-cols-2 gap-3 mb-8">
                   {project.images.map((img: string, index: number) => (
                     <div key={img || index} className="aspect-[4/3] overflow-hidden rounded-card bg-muted img-zoom">
-                      <SmartImage src={img} alt={project.imageAlts?.[index] || `${project.title} - ${t.imageLabel} ${index + 1}`} loading="lazy" width={800} height={600} className="w-full h-full object-cover hover:scale-105 transition-transform duration-500" />
+                      <SmartImage src={img} alt={translateDisplayText(project.imageAlts?.[index] || `${project.title} - ${t.imageLabel} ${index + 1}`, language)} loading="lazy" width={800} height={600} className="w-full h-full object-cover hover:scale-105 transition-transform duration-500" />
                     </div>
                   ))}
                 </div>
@@ -284,7 +295,7 @@ const ProjectDetail = () => {
                 <Reveal delay={250}>
                   <div className="p-6 bg-muted rounded-card border border-border mb-8">
                     <Star className="w-5 h-5 text-gold mb-3" />
-                    <p className="italic text-foreground mb-3 leading-relaxed">"{project.testimonial}"</p>
+                    <p className="italic text-foreground mb-3 leading-relaxed">"{projectTestimonial}"</p>
                     <p className="text-sm text-muted-foreground font-medium">{t.testimonialBy(projectLocationLabel)}</p>
                   </div>
                 </Reveal>
@@ -294,7 +305,7 @@ const ProjectDetail = () => {
                 <div className="rounded-card border border-accent/20 bg-accent/5 p-5">
                   <h3 className="font-display text-lg font-bold mb-2">{t.resultTitle}</h3>
                   <p className="text-muted-foreground text-sm leading-relaxed">
-                    {t.resultIntro(projectTypeLabel, project.location, project.duration, project.scope.length, project.materialsUsed.length)}
+                    {t.resultIntro(projectTypeLabel, projectLocationLabel, projectDurationLabel, projectScope.length, projectMaterialsUsed.length)}
                     {project.testimonial && ` ${t.satisfied}`}
                     {relatedService && <> {t.similarPrompt} <Link to={`/services/${relatedService.slug}`} className="text-accent hover:underline font-medium">{relatedServiceName}</Link> {t.serviceWord}</>}
                   </p>
@@ -308,9 +319,9 @@ const ProjectDetail = () => {
                   <h3 className="font-semibold mb-4">{t.details}</h3>
                   <div className="space-y-3 text-sm">
                     <div className="flex justify-between gap-3"><span className="text-muted-foreground">{t.type}</span><span className="font-medium text-right">{projectTypeLabel}</span></div>
-                    <div className="flex justify-between gap-3"><span className="text-muted-foreground">{t.location}</span><span className="font-medium text-right">{project.location}</span></div>
-                    <div className="flex justify-between gap-3"><span className="text-muted-foreground">{t.duration}</span><span className="font-medium text-right">{project.duration}</span></div>
-                    <div className="flex justify-between gap-3"><span className="text-muted-foreground">{t.scopeItems}</span><span className="font-medium text-right">{project.scope.length} {t.items}</span></div>
+                    <div className="flex justify-between gap-3"><span className="text-muted-foreground">{t.location}</span><span className="font-medium text-right">{projectLocationLabel}</span></div>
+                    <div className="flex justify-between gap-3"><span className="text-muted-foreground">{t.duration}</span><span className="font-medium text-right">{projectDurationLabel}</span></div>
+                    <div className="flex justify-between gap-3"><span className="text-muted-foreground">{t.scopeItems}</span><span className="font-medium text-right">{projectScope.length} {t.items}</span></div>
                   </div>
                 </div>
               </Reveal>
@@ -322,7 +333,7 @@ const ProjectDetail = () => {
                     <h3 className="font-semibold">{t.scope}</h3>
                   </div>
                   <ul className="space-y-2">
-                    {project.scope.map((scope: string) => (
+                    {projectScope.map((scope: string) => (
                       <li key={scope} className="flex items-center gap-2 text-sm text-muted-foreground">
                         <span className="w-1.5 h-1.5 rounded-full bg-accent shrink-0" />{scope}
                       </li>
@@ -338,7 +349,7 @@ const ProjectDetail = () => {
                     <h3 className="font-semibold">{t.materials}</h3>
                   </div>
                   <ul className="space-y-2">
-                    {project.materialsUsed.map((material: string) => (
+                    {projectMaterialsUsed.map((material: string) => (
                       <li key={material} className="text-sm text-muted-foreground">{material}</li>
                     ))}
                   </ul>
