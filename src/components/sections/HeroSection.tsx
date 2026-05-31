@@ -44,6 +44,7 @@ const HeroSection = ({ pageContent }: HeroSectionProps) => {
   const copy = heroCopy[language];
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const [videoLoaded, setVideoLoaded] = useState(false);
+  const [shouldLoadVideo, setShouldLoadVideo] = useState(false);
   const [mediaVariant, setMediaVariant] = useState<HeroMediaVariant>(getHeroMediaVariant);
   const { data: slides } = usePublishedHeroSlides(language);
   const slide = slides?.[0] ?? null;
@@ -92,7 +93,7 @@ const HeroSection = ({ pageContent }: HeroSectionProps) => {
 
   const requestHeroVideoPlay = useCallback(() => {
     const video = videoRef.current;
-    if (!video || document.visibilityState === "hidden") return;
+    if (!shouldLoadVideo || !video || document.visibilityState === "hidden") return;
 
     video.muted = true;
     video.playsInline = true;
@@ -101,7 +102,36 @@ const HeroSection = ({ pageContent }: HeroSectionProps) => {
     if (playPromise && typeof playPromise.catch === "function") {
       playPromise.then(markHeroVideoReady).catch(() => setVideoLoaded(false));
     }
-  }, [markHeroVideoReady]);
+  }, [markHeroVideoReady, shouldLoadVideo]);
+
+  useEffect(() => {
+    const connection = (navigator as Navigator & { connection?: { saveData?: boolean } }).connection;
+    if (connection?.saveData) return;
+
+    let timeoutId: number | undefined;
+    let idleId: number | undefined;
+    const startVideoLoad = () => setShouldLoadVideo(true);
+    const scheduleVideoLoad = () => {
+      const requestIdle = window.requestIdleCallback;
+      if (requestIdle) {
+        idleId = requestIdle(startVideoLoad, { timeout: 1800 });
+      } else {
+        timeoutId = window.setTimeout(startVideoLoad, 900);
+      }
+    };
+
+    if (document.readyState === "complete") {
+      scheduleVideoLoad();
+    } else {
+      window.addEventListener("load", scheduleVideoLoad, { once: true });
+    }
+
+    return () => {
+      window.removeEventListener("load", scheduleVideoLoad);
+      if (timeoutId) window.clearTimeout(timeoutId);
+      if (idleId && window.cancelIdleCallback) window.cancelIdleCallback(idleId);
+    };
+  }, []);
 
   useEffect(() => {
     const mediaQueries = [
@@ -112,18 +142,38 @@ const HeroSection = ({ pageContent }: HeroSectionProps) => {
       const nextVariant = getHeroMediaVariant();
       setMediaVariant((currentVariant) => (currentVariant === nextVariant ? currentVariant : nextVariant));
     };
+    const addMediaQueryListener = (query: MediaQueryList) => {
+      if (typeof query.addEventListener === "function") {
+        query.addEventListener("change", syncMediaVariant);
+      } else {
+        query.addListener(syncMediaVariant);
+      }
+    };
+    const removeMediaQueryListener = (query: MediaQueryList) => {
+      if (typeof query.removeEventListener === "function") {
+        query.removeEventListener("change", syncMediaVariant);
+      } else {
+        query.removeListener(syncMediaVariant);
+      }
+    };
 
     syncMediaVariant();
-    mediaQueries.forEach((query) => query.addEventListener("change", syncMediaVariant));
+    mediaQueries.forEach(addMediaQueryListener);
 
     return () => {
-      mediaQueries.forEach((query) => query.removeEventListener("change", syncMediaVariant));
+      mediaQueries.forEach(removeMediaQueryListener);
     };
   }, []);
 
   useEffect(() => {
     setVideoLoaded(false);
   }, [mediaVariant]);
+
+  useEffect(() => {
+    if (!shouldLoadVideo) return;
+    videoRef.current?.load();
+    requestHeroVideoPlay();
+  }, [mediaVariant, requestHeroVideoPlay, shouldLoadVideo]);
 
   useEffect(() => {
     const replayWhenVisible = () => {
@@ -175,7 +225,7 @@ const HeroSection = ({ pageContent }: HeroSectionProps) => {
           muted
           loop
           playsInline
-          preload="auto"
+          preload={shouldLoadVideo ? "metadata" : "none"}
           aria-hidden="true"
           tabIndex={-1}
           onLoadedMetadata={markHeroVideoReady}
@@ -196,8 +246,12 @@ const HeroSection = ({ pageContent }: HeroSectionProps) => {
             if (document.visibilityState === "visible") window.setTimeout(requestHeroVideoPlay, 150);
           }}
         >
-          <source src={activeMedia.webm} type="video/webm" />
-          <source src={activeMedia.mp4} type="video/mp4" />
+          {shouldLoadVideo && (
+            <>
+              <source src={activeMedia.webm} type="video/webm" />
+              <source src={activeMedia.mp4} type="video/mp4" />
+            </>
+          )}
         </video>
         <div className="absolute inset-0 home-hero-overlay" />
       </div>
