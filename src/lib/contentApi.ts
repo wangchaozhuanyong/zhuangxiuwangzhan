@@ -1,6 +1,7 @@
 import { isSupabaseConfigured, supabase } from "@/lib/supabase";
 import { stripHtml } from "@/lib/text";
 import { translateDisplayText } from "@/i18n/displayLabels";
+import { formatBlogReadTime } from "@/lib/blogMeta";
 
 const byCreatedAtDesc = { ascending: false };
 
@@ -407,7 +408,7 @@ export const getPublishedBlogPosts = async (language: "en" | "zh" = "en") => {
     content: localize(pickLocalizedText(item, "content", language)),
     category: localize(item.category || "Renovation"),
     date: item.published_at || item.created_at,
-    readTime: "5 min read",
+    readTime: formatBlogReadTime(null, language),
     image: item.cover_image_url || "",
     tags: (item.tags || []).map((tag: string) => localize(tag)),
   }));
@@ -434,7 +435,7 @@ export const getPublishedBlogPostBySlug = async (slug: string, language: "en" | 
     content: language === "zh" ? translateDisplayText(pickLocalizedText(data, "content", language), language) : pickLocalizedText(data, "content", language),
     category: language === "zh" ? translateDisplayText(data.category || "Renovation", language) : data.category || "Renovation",
     date: data.published_at || data.created_at,
-    readTime: "5 min read",
+    readTime: formatBlogReadTime(null, language),
     image: data.cover_image_url || "",
     tags: (data.tags || []).map((tag: string) => (language === "zh" ? translateDisplayText(tag, language) : tag)),
   };

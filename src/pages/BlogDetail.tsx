@@ -14,6 +14,7 @@ import { useSiteSettings } from "@/hooks/useSiteSettings";
 import { isHtmlText } from "@/lib/text";
 import { sanitizeHtml } from "@/lib/sanitizeHtml";
 import { translateBlogCategory, translateKeywordLabel, translateDisplayText } from "@/i18n/displayLabels";
+import { formatBlogDate, formatBlogReadTime } from "@/lib/blogMeta";
 
 const copy = {
   en: {
@@ -22,7 +23,6 @@ const copy = {
     breadcrumbHome: "Home",
     breadcrumbBlog: "Blog",
     metaSuffix: "FLASH CAST Renovation Blog",
-    readSuffix: "read",
     ctaTitle: "Ready to Start Your Project?",
     ctaText: "Get a free consultation and quotation from FLASH CAST.",
     quote: "Get a Free Quote",
@@ -40,7 +40,6 @@ const copy = {
     breadcrumbHome: "首页",
     breadcrumbBlog: "装修博客",
     metaSuffix: "FLASH CAST 装修博客",
-    readSuffix: "阅读",
     ctaTitle: "准备开始你的装修项目？",
     ctaText: "联系 FLASH CAST 获取免费装修咨询与报价。",
     quote: "获取免费报价",
@@ -60,7 +59,6 @@ const zhCopy = {
   breadcrumbHome: "首页",
   breadcrumbBlog: "装修博客",
   metaSuffix: "FLASH CAST 装修博客",
-  readSuffix: "阅读",
   ctaTitle: "准备开始你的装修项目？",
   ctaText: "联系 FLASH CAST 获取免费装修咨询与报价。",
   quote: "获取免费报价",
@@ -107,9 +105,8 @@ const BlogDetail = () => {
     );
   }
 
-  const readTime = post.readTime.includes("read") || post.readTime.includes("阅读")
-    ? post.readTime
-    : `${post.readTime} ${t.readSuffix}`;
+  const readTime = formatBlogReadTime(post.readTime, language);
+  const publishDate = formatBlogDate(post.date, language);
 
   const renderContent = (content: string) => {
     if (isHtmlText(content)) {
@@ -179,7 +176,7 @@ const BlogDetail = () => {
           <h1 className="page-hero__title heading-safe mb-4 max-w-3xl font-display text-3xl font-bold text-on-media md:text-5xl">{displayText(post.title)}</h1>
           <div className="flex items-center gap-4 text-sm text-on-media-muted">
             <span className="flex items-center gap-1"><Clock className="w-3.5 h-3.5" /> {readTime}</span>
-            <span>{post.date}</span>
+            <span>{publishDate}</span>
           </div>
         </div>
       </section>

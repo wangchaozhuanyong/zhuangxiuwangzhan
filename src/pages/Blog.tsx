@@ -10,6 +10,7 @@ import { JsonLdBreadcrumb } from "@/components/JsonLd";
 import HeroBanner from "@/components/blocks/HeroBanner";
 import { translateBlogCategory, translateDisplayText, translateKeywordLabel } from "@/i18n/displayLabels";
 import { pageHeroImages, resolvePageHeroImage } from "@/lib/pageHeroImages";
+import { formatBlogDate, formatBlogReadTime } from "@/lib/blogMeta";
 
 const categories = [
   { value: "All", en: "All", zh: "全部" },
@@ -113,6 +114,8 @@ const Blog = () => {
   const { data: pageContent } = usePublishedSitePage(language, "blog");
   const [filter, setFilter] = useState("All");
   const displayText = (value: string) => translateDisplayText(value, language);
+  const displayReadTime = (value: string) => formatBlogReadTime(value, language);
+  const displayDate = (value: string) => formatBlogDate(value, language);
   const { data: cmsPosts } = usePublishedBlogPosts(language);
   const posts = useMemo(() => {
     const fallbackPosts = localizeFallbackPosts(language);
@@ -168,8 +171,8 @@ const Blog = () => {
                   <h2 className="font-display text-2xl font-bold mt-2 mb-3 group-hover:text-accent transition-colors">{displayText(filtered[0].title)}</h2>
                   <p className="text-muted-foreground text-sm mb-4 line-clamp-3">{displayText(filtered[0].excerpt)}</p>
                   <div className="flex items-center gap-4 text-xs text-muted-foreground">
-                    <span className="flex items-center gap-1"><Clock className="w-3 h-3" /> {filtered[0].readTime}</span>
-                    <span>{filtered[0].date}</span>
+                    <span className="flex items-center gap-1"><Clock className="w-3 h-3" /> {displayReadTime(filtered[0].readTime)}</span>
+                    <span>{displayDate(filtered[0].date)}</span>
                   </div>
                 </div>
               </div>
@@ -185,7 +188,7 @@ const Blog = () => {
                 <div className="p-4">
                   <div className="flex items-center gap-3 mb-2">
                     <span className="text-accent text-xs font-medium uppercase tracking-wider">{translateBlogCategory(post.category, language)}</span>
-                    <span className="text-muted-foreground text-xs">{post.readTime}</span>
+                    <span className="text-muted-foreground text-xs">{displayReadTime(post.readTime)}</span>
                   </div>
                   <h3 className="font-display text-base font-semibold mb-2 group-hover:text-accent transition-colors line-clamp-2">{displayText(post.title)}</h3>
                   <p className="text-muted-foreground text-sm line-clamp-2">{displayText(post.excerpt)}</p>
