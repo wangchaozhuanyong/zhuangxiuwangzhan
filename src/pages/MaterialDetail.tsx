@@ -8,6 +8,7 @@ import { usePublishedMaterialBySlug } from "@/hooks/usePublishedContent";
 import { useLanguage } from "@/i18n/LanguageContext";
 import PageMeta from "@/components/PageMeta";
 import SmartImage from "@/components/SmartImage";
+import Reveal from "@/components/Reveal";
 import { JsonLdBreadcrumb } from "@/components/JsonLd";
 import { useSiteSettings } from "@/hooks/useSiteSettings";
 import { isHtmlText, stripHtml } from "@/lib/text";
@@ -85,8 +86,12 @@ const MaterialDetail = () => {
   if (!material || !category) {
     return (
       <main className="pt-site-header section-padding text-center">
-        <h1 className="font-display text-3xl font-bold mb-4">{t.notFound}</h1>
-        <Button asChild><Link to="/materials">{t.viewAll}</Link></Button>
+        <div className="container-narrow mx-auto max-w-lg">
+          <div className="subpage-form-panel p-6 md:p-8">
+            <h1 className="font-display text-3xl font-bold mb-4">{t.notFound}</h1>
+            <Button asChild className="btn-brand-primary"><Link to="/materials">{t.viewAll}</Link></Button>
+          </div>
+        </div>
       </main>
     );
   }
@@ -105,7 +110,7 @@ const MaterialDetail = () => {
       />
       <JsonLdBreadcrumb items={[{ name: t.breadcrumbHome, url: "/" }, { name: t.breadcrumbMaterials, url: "/materials" }, { name: displayCategoryName, url: `/materials/category/${category.slug}` }, { name: material.name, url: `/materials/${material.slug}` }]} />
 
-      <section className="bg-muted px-4 md:px-8 py-3">
+      <section className="subpage-info-band px-4 py-3 md:px-8">
         <div className="container-narrow flex items-center gap-2 text-sm text-muted-foreground">
           <Link to="/materials" className="hover:text-accent">{t.breadcrumbMaterials}</Link>
           <span>/</span>
@@ -117,12 +122,17 @@ const MaterialDetail = () => {
 
       <section className="section-padding bg-background">
         <div className="container-narrow">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
-            <div className="aspect-square overflow-hidden rounded-card bg-muted border border-border">
-              <SmartImage src={material.image} alt={material.alt || material.name} className="w-full h-full object-cover" width={800} height={600} loading="eager" />
-            </div>
+          <div className="material-detail-showcase">
+            <Reveal direction="left">
+              <div className="material-detail-media luxury-card">
+                <div className="material-detail-media__frame img-zoom">
+                  <SmartImage src={material.image} alt={material.alt || material.name} className="w-full h-full object-cover" width={900} height={900} loading="eager" />
+                </div>
+              </div>
+            </Reveal>
 
-            <div>
+            <Reveal direction="right" delay={120}>
+            <div className="subpage-side-panel p-5 md:p-7">
               <span className="text-accent text-xs font-medium uppercase tracking-wider">{displayCategoryName}</span>
               <h1 className="font-display text-2xl md:text-3xl font-bold mt-2 mb-4">{material.name}</h1>
               {isHtmlText(material.description) ? (
@@ -132,14 +142,14 @@ const MaterialDetail = () => {
               )}
 
               <div className="space-y-4 mb-8">
-                <div className="grid grid-cols-2 gap-4">
+                <div className="material-detail-spec-grid">
                   {[
                     { label: t.type, value: displayMaterialType || material.type },
                     { label: t.color, value: material.color },
                     { label: t.texture, value: material.texture },
                     { label: t.category, value: displayCategoryName },
                   ].map((item) => (
-                    <div key={item.label} className="p-3 bg-muted rounded-card">
+                    <div key={item.label} className="luxury-card-muted p-3">
                       <span className="text-xs text-muted-foreground block mb-1">{item.label}</span>
                       <span className="text-sm font-medium">{item.value || "-"}</span>
                     </div>
@@ -166,7 +176,7 @@ const MaterialDetail = () => {
               {(pros.length > 0 || cons.length > 0) && (
                 <div className="mb-6 grid gap-4 md:grid-cols-2">
                   {pros.length > 0 && (
-                    <div className="rounded-card border border-accent/20 bg-accent/5 p-4">
+                    <div className="luxury-card-muted p-4">
                       <h3 className="mb-3 flex items-center gap-2 text-sm font-semibold">
                         <CheckCircle2 className="h-4 w-4 text-accent" /> {t.pros}
                       </h3>
@@ -178,7 +188,7 @@ const MaterialDetail = () => {
                     </div>
                   )}
                   {cons.length > 0 && (
-                    <div className="rounded-card border border-border bg-muted/70 p-4">
+                    <div className="luxury-card-muted p-4">
                       <h3 className="mb-3 flex items-center gap-2 text-sm font-semibold">
                         <AlertCircle className="h-4 w-4 text-muted-foreground" /> {t.cons}
                       </h3>
@@ -193,7 +203,7 @@ const MaterialDetail = () => {
               )}
 
               {material.note && (
-                <div className="p-4 bg-muted rounded-card text-sm text-muted-foreground mb-6">
+                <div className="luxury-card-muted p-4 text-sm text-muted-foreground mb-6">
                   <strong className="text-foreground">{t.note}</strong> {material.note}
                 </div>
               )}
@@ -212,6 +222,7 @@ const MaterialDetail = () => {
                 </a>
               </div>
             </div>
+            </Reveal>
           </div>
         </div>
       </section>
@@ -220,14 +231,16 @@ const MaterialDetail = () => {
         <section className="section-padding bg-muted">
           <div className="container-narrow">
             <h2 className="font-display text-2xl font-bold mb-6">{t.more(displayCategoryName)}</h2>
-            <div className="flex gap-4 overflow-x-auto pb-4 -mx-4 px-4 snap-x">
+            <div className="grid grid-cols-2 gap-4 md:grid-cols-4 md:gap-5">
               {otherMaterials.map((item: any) => (
-                <Link key={item.id} to={`/materials/${item.slug}`} className="snap-start shrink-0 w-[180px] md:w-[220px] group">
-                  <div className="aspect-square overflow-hidden rounded-card mb-2 bg-card border border-border">
+                <Link key={item.id} to={`/materials/${item.slug}`} className="material-depth-card luxury-card group hover-lift">
+                  <div className="material-depth-card__media img-zoom">
                     <SmartImage src={item.image} alt={item.alt || item.name} loading="lazy" width={400} height={400} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
                   </div>
-                  <h3 className="font-semibold text-sm">{item.name}</h3>
-                  <p className="text-muted-foreground text-xs">{translateMaterialType(item.type, language)} / {item.color || displayCategoryName}</p>
+                  <div className="material-depth-card__body">
+                    <h3 className="material-depth-card__title">{item.name}</h3>
+                    <p className="material-depth-card__meta">{translateMaterialType(item.type, language)} / {item.color || displayCategoryName}</p>
+                  </div>
                 </Link>
               ))}
             </div>
