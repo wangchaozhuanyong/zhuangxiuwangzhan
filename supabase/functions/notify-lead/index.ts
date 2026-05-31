@@ -172,6 +172,79 @@ const sendTelegramMessage = async (message: string, settings: Awaited<ReturnType
   };
 };
 
+const sendLeadWebhook = async (
+  type: "contact" | "quote",
+  id: string,
+  table: string,
+  data: Record<string, unknown>,
+  summary: string,
+) => {
+  const webhookUrl = Deno.env.get("LEAD_NOTIFICATION_WEBHOOK_URL")?.trim();
+  if (!webhookUrl) {
+    return {
+      skipped: true,
+      reason: "LEAD_NOTIFICATION_WEBHOOK_URL is not configured",
+    };
+  }
+
+  try {
+    const response = await fetch(webhookUrl, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        source: "flashcast_website",
+        type,
+        id,
+        table,
+        summary,
+        lead: data,
+        submitted_at: cleanValue(data.created_at) || cleanValue(data.inserted_at) || null,
+      }),
+    });
+
+    if (!response.ok) {
+      return {
+        skipped: false,
+        ok: false,
+        status: response.status,
+        error: await response.text(),
+      };
+    }
+
+    return { skipped: false, ok: true, status: response.status };
+  } catch (error) {
+    return {
+      skipped: false,
+      ok: false,
+      error: error instanceof Error ? error.message : "Webhook request failed",
+    };
+  }
+};
+
+const logSystemEvent = async (
+  supabase: ReturnType<typeof createClient>,
+  severity: "warn" | "error",
+  message: string,
+  metadata: Record<string, unknown>,
+) => {
+  const { error } = await supabase.from("system_event_logs").insert({
+    event_type: "lead_notification_delivery_failed",
+    severity,
+    source: "edge_function",
+    message,
+    metadata: {
+      category: "notifications",
+      categoryLabel: "通知",
+      ...metadata,
+    },
+  });
+
+  if (error) console.error("Failed to write system event log", error.message);
+};
+
+const shouldLogDeliveryResult = (result: { skipped?: boolean; ok?: boolean; reason?: string }) =>
+  result.ok === false || (result.skipped === true && result.reason !== "Telegram notification is disabled");
+
 serve(async (req) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
 
@@ -197,11 +270,31 @@ serve(async (req) => {
     const telegramMessage = buildTelegramMessage(type, data);
     const telegramSettings = await getTelegramSettings(supabase);
     const telegramResult = await sendTelegramMessage(telegramMessage, telegramSettings);
+    const webhookResult = await sendLeadWebhook(type, id, table, data, telegramMessage);
+
+    if (shouldLogDeliveryResult(telegramResult)) {
+      await logSystemEvent(
+        supabase,
+        telegramResult.ok === false ? "error" : "warn",
+        `Lead Telegram notification was not delivered for ${type}:${id}`,
+        { channel: "telegram", type, id, table, result: telegramResult },
+      );
+    }
+
+    if (webhookResult.ok === false) {
+      await logSystemEvent(
+        supabase,
+        "error",
+        `Lead webhook notification was not delivered for ${type}:${id}`,
+        { channel: "webhook", type, id, table, result: webhookResult },
+      );
+    }
 
     return Response.json(
       {
         ok: true,
         telegram: telegramResult,
+        webhook: webhookResult,
       },
       { headers: corsHeaders },
     );

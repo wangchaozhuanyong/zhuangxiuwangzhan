@@ -42,6 +42,11 @@ const copy = {
     action: "Actions",
     delete: "Delete",
     setCover: "Set as cover",
+    addBusy: "Adding...",
+    coverBusy: "Setting...",
+    deleteBusy: "Deleting...",
+    confirmDelete: "Delete this image? The public project page will no longer use it.",
+    empty: "No project images yet. Add a cover or gallery image first.",
     saveProjectFirst: "Save the project and upload/select an image first.",
     added: "Image added.",
     coverSet: "Set as cover. The public project list will use this image first.",
@@ -70,6 +75,11 @@ const copy = {
     action: "操作",
     delete: "删除",
     setCover: "设为封面",
+    addBusy: "添加中...",
+    coverBusy: "设置中...",
+    deleteBusy: "删除中...",
+    confirmDelete: "确认删除这张图片吗？删除后前台案例页将不再使用它。",
+    empty: "还没有项目图片，请先添加封面或图库图片。",
     saveProjectFirst: "请先保存项目，并上传或填写图片地址。",
     added: "图片已添加。",
     coverSet: "已设为封面，前台案例列表会优先显示这张图。",
@@ -100,6 +110,9 @@ const AdminProjectImages = ({ projectId }: AdminProjectImagesProps) => {
   const { data: images = [], refetch } = useAdminProjectImages(projectId);
   const [draft, setDraft] = useState<any>(emptyImage);
   const [status, setStatus] = useState("");
+  const [adding, setAdding] = useState(false);
+  const [coverBusyId, setCoverBusyId] = useState<string | null>(null);
+  const [deletingId, setDeletingId] = useState<string | null>(null);
 
   const refreshProjectCaches = useCallback(() => {
     void invalidateAfterAdminContentSave(queryClient);
@@ -107,62 +120,86 @@ const AdminProjectImages = ({ projectId }: AdminProjectImagesProps) => {
   }, [queryClient, projectId]);
 
   const addImage = async () => {
+    if (adding) return;
     if (!projectId || !draft.image_url) {
       setStatus(t.saveProjectFirst);
       return;
     }
 
-    const { error } = await supabase!.from("project_images").insert({
-      ...draft,
-      project_id: projectId,
-      sort_order: Number(draft.sort_order || 0),
-    });
+    setAdding(true);
+    setStatus("");
+    try {
+      const { error } = await supabase!.from("project_images").insert({
+        ...draft,
+        project_id: projectId,
+        sort_order: Number(draft.sort_order || 0),
+      });
 
-    if (error) {
-      setStatus(error.message);
-      return;
+      if (error) {
+        setStatus(error.message);
+        return;
+      }
+
+      setDraft(emptyImage);
+      setStatus(t.added);
+      refreshProjectCaches();
+      await refetch();
+    } finally {
+      setAdding(false);
     }
-
-    setDraft(emptyImage);
-    setStatus(t.added);
-    refreshProjectCaches();
-    await refetch();
   };
 
   const updateImage = async (image: any, patch: Record<string, any>) => {
     const { error } = await supabase!.from("project_images").update(patch).eq("id", image.id);
-    if (error) setStatus(error.message);
-    else {
-      refreshProjectCaches();
-      await refetch();
-    }
-  };
-
-  const setAsCover = async (image: any) => {
-    if (!projectId) return;
-    setStatus("");
-    const { error: resetError } = await supabase!
-      .from("project_images")
-      .update({ image_type: "gallery" })
-      .eq("project_id", projectId)
-      .eq("image_type", "cover");
-    if (resetError) {
-      setStatus(resetError.message);
-      return;
-    }
-    await updateImage(image, { image_type: "cover", sort_order: 0 });
-    refreshProjectCaches();
-    setStatus(t.coverSet);
-  };
-
-  const deleteImage = async (id: string) => {
-    const { error } = await supabase!.from("project_images").delete().eq("id", id);
     if (error) {
       setStatus(error.message);
-      return;
+      return false;
     }
     refreshProjectCaches();
     await refetch();
+    return true;
+  };
+
+  const setAsCover = async (image: any) => {
+    if (!projectId || coverBusyId) return;
+    setCoverBusyId(image.id);
+    setStatus("");
+    try {
+      const { error: resetError } = await supabase!
+        .from("project_images")
+        .update({ image_type: "gallery" })
+        .eq("project_id", projectId)
+        .eq("image_type", "cover");
+      if (resetError) {
+        setStatus(resetError.message);
+        return;
+      }
+      const updated = await updateImage(image, { image_type: "cover", sort_order: 0 });
+      if (updated) {
+        refreshProjectCaches();
+        setStatus(t.coverSet);
+      }
+    } finally {
+      setCoverBusyId(null);
+    }
+  };
+
+  const deleteImage = async (id: string) => {
+    if (deletingId) return;
+    if (!window.confirm(t.confirmDelete)) return;
+    setDeletingId(id);
+    setStatus("");
+    try {
+      const { error } = await supabase!.from("project_images").delete().eq("id", id);
+      if (error) {
+        setStatus(error.message);
+        return;
+      }
+      refreshProjectCaches();
+      await refetch();
+    } finally {
+      setDeletingId(null);
+    }
   };
 
   if (!projectId) {
@@ -203,7 +240,9 @@ const AdminProjectImages = ({ projectId }: AdminProjectImagesProps) => {
           <Input placeholder={t.altZh} value={draft.alt_zh} onChange={(event) => setDraft({ ...draft, alt_zh: event.target.value })} />
           <Input placeholder={t.altEn} value={draft.alt_en} onChange={(event) => setDraft({ ...draft, alt_en: event.target.value })} />
           <Input type="number" placeholder={t.sortOrder} value={draft.sort_order} onChange={(event) => setDraft({ ...draft, sort_order: event.target.value })} />
-          <Button type="button" onClick={addImage}>{t.addImage}</Button>
+          <Button type="button" onClick={addImage} disabled={adding} aria-busy={adding}>
+            {adding ? t.addBusy : t.addImage}
+          </Button>
         </div>
       </div>
       <Table>
@@ -218,7 +257,13 @@ const AdminProjectImages = ({ projectId }: AdminProjectImagesProps) => {
           </TableRow>
         </TableHeader>
         <TableBody>
-          {images.map((image) => (
+          {images.length === 0 ? (
+            <TableRow>
+              <TableCell colSpan={6} className="py-6 text-center text-sm text-muted-foreground">
+                {t.empty}
+              </TableCell>
+            </TableRow>
+          ) : images.map((image) => (
             <TableRow key={image.id}>
               <TableCell><SmartImage src={image.image_url} alt={image.alt_en || image.alt_zh || "项目图片"} width={96} height={64} className="h-16 w-24 rounded object-cover" /></TableCell>
               <TableCell>{formatImageType(image.image_type, lang as Language)}</TableCell>
@@ -228,13 +273,29 @@ const AdminProjectImages = ({ projectId }: AdminProjectImagesProps) => {
               </TableCell>
               <TableCell>
                 <div className="flex flex-wrap gap-2">
-                  <Button type="button" variant="outline" size="sm" onClick={() => void setAsCover(image)} disabled={image.image_type === "cover"}>
-                    {t.setCover}
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={() => void setAsCover(image)}
+                    disabled={image.image_type === "cover" || coverBusyId === image.id}
+                    aria-busy={coverBusyId === image.id}
+                  >
+                    {coverBusyId === image.id ? t.coverBusy : t.setCover}
                   </Button>
                 </div>
               </TableCell>
               <TableCell className="text-right">
-                <Button type="button" variant="destructive" size="sm" onClick={() => deleteImage(image.id)}>{t.delete}</Button>
+                <Button
+                  type="button"
+                  variant="destructive"
+                  size="sm"
+                  onClick={() => void deleteImage(image.id)}
+                  disabled={deletingId === image.id}
+                  aria-busy={deletingId === image.id}
+                >
+                  {deletingId === image.id ? t.deleteBusy : t.delete}
+                </Button>
               </TableCell>
             </TableRow>
           ))}

@@ -182,6 +182,21 @@ const copy = {
 
 type FormErrors = Partial<Record<string, string>>;
 
+const contactFieldIds: Record<string, string> = {
+  name: "contact-name",
+  phone: "contact-phone",
+  email: "contact-email",
+  projectType: "contact-project-type",
+  location: "contact-location",
+  message: "contact-message",
+};
+
+const focusFirstContactError = (errors: FormErrors) => {
+  const firstKey = Object.keys(errors)[0];
+  if (!firstKey || typeof window === "undefined") return;
+  window.setTimeout(() => document.getElementById(contactFieldIds[firstKey] || firstKey)?.focus(), 0);
+};
+
 const Contact = () => {
   const { language } = useLanguage();
   const settings = useSiteSettings();
@@ -194,6 +209,16 @@ const Contact = () => {
   const formGuard = useFormGuard();
   const [honeypot, setHoneypot] = useState("");
 
+  const updateForm = (key: keyof typeof form, value: string) => {
+    setForm((current) => ({ ...current, [key]: value }));
+    setErrors((current) => {
+      const next = { ...current };
+      delete next[key];
+      return next;
+    });
+    if (status === "error") setStatus("idle");
+  };
+
   const validate = (): boolean => {
     const e: FormErrors = {};
     if (!form.name.trim()) e.name = t.requiredName;
@@ -202,12 +227,15 @@ const Contact = () => {
     if (form.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email.trim())) e.email = t.invalidEmail;
     if (!form.message.trim()) e.message = t.requiredMessage;
     else if (form.message.trim().length < 10) e.message = t.shortMessage;
+    const hasErrors = Object.keys(e).length > 0;
     setErrors(e);
-    return Object.keys(e).length === 0;
+    if (hasErrors) focusFirstContactError(e);
+    return !hasErrors;
   };
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
+    if (status === "submitting") return;
     if (!validate()) {
       trackEvent("contact_form_submit", {
         form_status: "validation_error",
@@ -402,7 +430,7 @@ const Contact = () => {
                           className={errors.name ? "border-destructive" : ""}
                           aria-invalid={Boolean(errors.name)}
                           aria-describedby={errors.name ? "contact-name-error" : undefined}
-                          onChange={(e) => { setForm({ ...form, name: e.target.value }); setErrors({ ...errors, name: undefined }); }}
+                          onChange={(e) => updateForm("name", e.target.value)}
                         />
                         <FieldError id="contact-name-error" msg={errors.name} />
                       </div>
@@ -414,7 +442,7 @@ const Contact = () => {
                           className={errors.phone ? "border-destructive" : ""}
                           aria-invalid={Boolean(errors.phone)}
                           aria-describedby={errors.phone ? "contact-phone-error" : undefined}
-                          onChange={(e) => { setForm({ ...form, phone: e.target.value }); setErrors({ ...errors, phone: undefined }); }}
+                          onChange={(e) => updateForm("phone", e.target.value)}
                         />
                         <FieldError id="contact-phone-error" msg={errors.phone} />
                       </div>
@@ -426,7 +454,7 @@ const Contact = () => {
                           className={errors.email ? "border-destructive" : ""}
                           aria-invalid={Boolean(errors.email)}
                           aria-describedby={errors.email ? "contact-email-error" : undefined}
-                          onChange={(e) => { setForm({ ...form, email: e.target.value }); setErrors({ ...errors, email: undefined }); }}
+                          onChange={(e) => updateForm("email", e.target.value)}
                         />
                         <FieldError id="contact-email-error" msg={errors.email} />
                       </div>
@@ -437,7 +465,7 @@ const Contact = () => {
                             id="contact-project-type"
                             className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                             value={form.projectType}
-                            onChange={(e) => setForm({ ...form, projectType: e.target.value })}
+                            onChange={(e) => updateForm("projectType", e.target.value)}
                           >
                             <option value="">{t.selectType}</option>
                             {projectTypeOptions.map((option) => <option key={option.value} value={option.value}>{option[language]}</option>)}
@@ -449,7 +477,7 @@ const Contact = () => {
                             id="contact-location"
                             className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                             value={form.location}
-                            onChange={(e) => setForm({ ...form, location: e.target.value })}
+                            onChange={(e) => updateForm("location", e.target.value)}
                           >
                             <option value="">{t.selectArea}</option>
                             {locationOptions.map((option) => <option key={option.value} value={option.value}>{option[language]}</option>)}
@@ -465,7 +493,7 @@ const Contact = () => {
                           className={errors.message ? "border-destructive" : ""}
                           aria-invalid={Boolean(errors.message)}
                           aria-describedby={errors.message ? "contact-message-error" : undefined}
-                          onChange={(e) => { setForm({ ...form, message: e.target.value }); setErrors({ ...errors, message: undefined }); }}
+                          onChange={(e) => updateForm("message", e.target.value)}
                         />
                         <FieldError id="contact-message-error" msg={errors.message} />
                       </div>

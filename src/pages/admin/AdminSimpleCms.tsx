@@ -12,6 +12,7 @@ import { AdminFieldLabel } from "@/components/admin/AdminHelpTip";
 import { TextListEditor } from "@/components/admin/StructuredArrayEditors";
 import { getAdminFieldHelp, getAdminTableHelp } from "@/lib/adminHelpText";
 import { archiveOrDeleteAdminRecord, formatAdminMutationError, saveAdminRecord } from "@/lib/adminMutation";
+import { useUnsavedChangesWarning } from "@/hooks/useUnsavedChangesWarning";
 
 type ModuleKey = "site_pages" | "home_sections" | "faqs" | "before_after_items" | "brand_partners";
 type Field = { key: string; label: string; type?: "text" | "textarea" | "image" | "number" | "select" | "textList" };
@@ -127,6 +128,9 @@ const AdminSimpleCms = ({ module }: { module: ModuleKey }) => {
   const [message, setMessage] = useState(error instanceof Error ? error.message : error ? String(error) : "");
   const [saving, setSaving] = useState(false);
   const [deletingId, setDeletingId] = useState<string | null>(null);
+  const [recordDirty, setRecordDirty] = useState(false);
+
+  useUnsavedChangesWarning(recordDirty && !saving);
 
   useEffect(() => {
     if (error) setMessage(formatAdminError(module, error));
@@ -137,19 +141,34 @@ const AdminSimpleCms = ({ module }: { module: ModuleKey }) => {
     return String(current[config.labelField] || current["title_en"] || current["name"] || "新建");
   }, [config.labelField, record]);
 
-  const update = (key: string, value: unknown) => {
+  const markRecordDirty = () => {
     recordDirtyRef.current = true;
+    setRecordDirty(true);
+  };
+
+  const markRecordClean = () => {
+    recordDirtyRef.current = false;
+    setRecordDirty(false);
+  };
+
+  const confirmDiscardUnsaved = () =>
+    !recordDirtyRef.current || window.confirm("当前内容还没有保存，继续切换会丢失这些修改。确定继续吗？");
+
+  const update = (key: string, value: unknown) => {
+    markRecordDirty();
     setRecord((current) => ({ ...current, [key]: value }));
   };
 
   const loadRecord = (row: Record<string, any>) => {
-    recordDirtyRef.current = false;
+    if (!confirmDiscardUnsaved()) return;
+    markRecordClean();
     setRecord(row);
   };
 
   const resetRecord = () => {
-    recordDirtyRef.current = false;
-    setRecord(emptyRecord);
+    if (!confirmDiscardUnsaved()) return;
+    markRecordClean();
+    setRecord({ ...emptyRecord });
   };
 
   const save = async () => {
@@ -183,7 +202,7 @@ const AdminSimpleCms = ({ module }: { module: ModuleKey }) => {
         invalidate: "admin-content",
       });
       setMessage("已保存。");
-      recordDirtyRef.current = false;
+      markRecordClean();
       setRecord(data || emptyRecord);
       void queryClient.invalidateQueries({ queryKey: ["admin", config.table, "rows"] });
       await refetch();
@@ -314,6 +333,7 @@ const AdminSimpleCms = ({ module }: { module: ModuleKey }) => {
 
       <section className="rounded-xl border border-border bg-card p-6">
         <h2 className="mb-4 font-display text-xl font-bold">{String(title)}</h2>
+        {recordDirty && <p className="-mt-2 mb-4 rounded-lg bg-amber-50 p-3 text-sm text-amber-800">当前内容有未保存修改，离开或切换前请先保存。</p>}
         <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-1">
           {config.fields.map(renderField)}
           <div>

@@ -26,6 +26,14 @@ type ReminderItem = {
   sort_order: number;
 };
 
+type AdminCheck = {
+  ok: boolean;
+  status: number;
+  error: string | null;
+  mode: "admin" | "cron";
+  role?: string | null;
+};
+
 const categoryLabelMap: Record<string, string> = {
   "Traffic and SEO": "流量与 SEO",
   "Lead Handling": "线索处理",
@@ -60,7 +68,7 @@ const siteUrl = () => Deno.env.get("SITE_URL") || "https://flashcast.com.my";
 const requireAdmin = async (
   req: Request,
   supabase: ReturnType<typeof createClient>,
-) => {
+): Promise<AdminCheck> => {
   const cronSecret = Deno.env.get("MAINTENANCE_REMINDER_CRON_SECRET");
   const incomingSecret = req.headers.get("x-cron-secret");
   if (cronSecret && incomingSecret && incomingSecret === cronSecret) {
@@ -75,16 +83,20 @@ const requireAdmin = async (
     return { ok: false, status: 401, error: "Invalid authorization token", mode: "admin" };
   }
 
+  const jwtRole = userData.user.app_metadata?.role === "admin" ? "super_admin" : null;
   const { data: adminRow, error: adminError } = await supabase
     .from("admin_users")
-    .select("user_id")
+    .select("user_id,role,active")
     .eq("user_id", userData.user.id)
     .maybeSingle();
 
   if (adminError) return { ok: false, status: 500, error: adminError.message, mode: "admin" };
-  if (!adminRow) return { ok: false, status: 403, error: "Admin access required", mode: "admin" };
+  if (!adminRow && !jwtRole) return { ok: false, status: 403, error: "Admin access required", mode: "admin" };
+  if (adminRow && adminRow.active === false && !jwtRole) {
+    return { ok: false, status: 403, error: "Admin account is disabled", mode: "admin" };
+  }
 
-  return { ok: true, status: 200, error: null, mode: "admin" };
+  return { ok: true, status: 200, error: null, mode: "admin", role: jwtRole || adminRow?.role || null };
 };
 
 const getSettings = async (supabase: ReturnType<typeof createClient>) => {
@@ -173,11 +185,24 @@ const groupItems = (items: ReminderItem[]) => {
   return grouped;
 };
 
-const buildMessage = (items: ReminderItem[], metrics: Awaited<ReturnType<typeof collectMetrics>>, includeMonthly: boolean) => {
+const buildMessage = (
+  items: ReminderItem[],
+  metrics: Awaited<ReturnType<typeof collectMetrics>>,
+  includeMonthly: boolean,
+  timezone: string,
+) => {
+  const reminderTime = (() => {
+    try {
+      return new Date().toLocaleString("zh-CN", { timeZone: timezone });
+    } catch {
+      return new Date().toLocaleString("zh-CN", { timeZone: "Asia/Kuala_Lumpur" });
+    }
+  })();
+
   const lines = [
     "FLASH CAST 本周维护提醒",
     includeMonthly ? "这次包含：每周检查 + 每月内容任务" : "这次包含：每周检查",
-    `时间：${new Date().toLocaleString("zh-CN", { timeZone: "Asia/Kuala_Lumpur" })}`,
+    `时间：${reminderTime}`,
     "",
     "先看这几个重点",
     `- 新联系线索：${metrics.newLeads ?? "?"}，超过 24 小时未处理：${metrics.newLeadsOlderThan24h ?? "?"}`,
@@ -228,6 +253,30 @@ const sendTelegramMessage = async (settings: TelegramSettings, message: string) 
   return { skipped: false, ok: true };
 };
 
+const logSystemEvent = async (
+  supabase: ReturnType<typeof createClient>,
+  severity: "warn" | "error",
+  message: string,
+  metadata: Record<string, unknown>,
+) => {
+  const { error } = await supabase.from("system_event_logs").insert({
+    event_type: "maintenance_reminder_delivery_failed",
+    severity,
+    source: "edge_function",
+    message,
+    metadata: {
+      category: "notifications",
+      categoryLabel: "通知",
+      ...metadata,
+    },
+  });
+
+  if (error) console.error("Failed to write system event log", error.message);
+};
+
+const shouldLogTelegramResult = (result: { skipped?: boolean; ok?: boolean; reason?: string }) =>
+  result.ok === false || (result.skipped === true && result.reason !== "Telegram notification is disabled");
+
 serve(async (req) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
 
@@ -241,6 +290,9 @@ serve(async (req) => {
     const adminCheck = await requireAdmin(req, supabase);
     if (!adminCheck.ok) {
       return Response.json({ error: adminCheck.error }, { status: adminCheck.status, headers: corsHeaders });
+    }
+    if (adminCheck.mode === "admin" && adminCheck.role !== "super_admin") {
+      return Response.json({ error: "Super admin access required" }, { status: 403, headers: corsHeaders });
     }
 
     const body = req.method === "GET" ? {} : await req.json().catch(() => ({}));
@@ -256,8 +308,17 @@ serve(async (req) => {
       getReminderItems(supabase, includeMonthly),
       collectMetrics(supabase),
     ]);
-    const message = buildMessage(items, metrics, includeMonthly);
+    const message = buildMessage(items, metrics, includeMonthly, settings?.maintenance_timezone || "Asia/Kuala_Lumpur");
     const telegram = await sendTelegramMessage(settings || {}, message);
+
+    if (shouldLogTelegramResult(telegram)) {
+      await logSystemEvent(
+        supabase,
+        telegram.ok === false ? "error" : "warn",
+        "Maintenance reminder Telegram notification was not delivered",
+        { channel: "telegram", mode: adminCheck.mode, include_monthly: includeMonthly, test: isTest, result: telegram },
+      );
+    }
 
     if (!isTest && telegram.ok) {
       await supabase

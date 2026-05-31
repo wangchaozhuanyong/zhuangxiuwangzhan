@@ -191,6 +191,23 @@ const copy = {
 
 type FormErrors = Partial<Record<string, string>>;
 
+const quoteFieldIds: Record<string, string> = {
+  name: "quote-name",
+  phone: "quote-phone",
+  email: "quote-email",
+  projectType: "quote-project-type",
+  location: "quote-location",
+  budget: "quote-budget",
+  propertySize: "quote-property-size",
+  details: "quote-details",
+};
+
+const focusFirstQuoteError = (errors: FormErrors) => {
+  const firstKey = Object.keys(errors)[0];
+  if (!firstKey || typeof window === "undefined") return;
+  window.setTimeout(() => document.getElementById(quoteFieldIds[firstKey] || firstKey)?.focus(), 0);
+};
+
 const Quote = () => {
   const { language } = useLanguage();
   const settings = useSiteSettings();
@@ -215,7 +232,12 @@ const Quote = () => {
 
   const updateForm = (key: keyof typeof form, value: string) => {
     setForm((current) => ({ ...current, [key]: value }));
-    setErrors((current) => ({ ...current, [key]: undefined }));
+    setErrors((current) => {
+      const next = { ...current };
+      delete next[key];
+      return next;
+    });
+    if (status === "error") setStatus("idle");
   };
 
   const validate = (): boolean => {
@@ -226,12 +248,15 @@ const Quote = () => {
     if (form.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email.trim())) next.email = t.invalidEmail;
     if (!form.projectType) next.projectType = t.requiredProject;
     if (!form.location.trim()) next.location = t.requiredLocation;
+    const hasErrors = Object.keys(next).length > 0;
     setErrors(next);
-    return Object.keys(next).length === 0;
+    if (hasErrors) focusFirstQuoteError(next);
+    return !hasErrors;
   };
 
   const handleSubmit = async (event: FormEvent) => {
     event.preventDefault();
+    if (status === "submitting") return;
     if (!validate()) {
       trackQuoteFormSubmit("validation_error");
       return;

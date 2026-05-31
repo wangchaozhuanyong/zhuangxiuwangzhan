@@ -1,9 +1,10 @@
 import { useParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
-import { ArrowRight } from "lucide-react";
+import { AlertCircle, ArrowRight, RefreshCw } from "lucide-react";
 import Link from "@/components/LocalizedLink";
 import PageMeta from "@/components/PageMeta";
 import SmartImage from "@/components/SmartImage";
+import PublicLoadingState from "@/components/blocks/PublicLoadingState";
 import { Button } from "@/components/ui/button";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { getPublishedCmsPageByPath, type PublishedCmsSection } from "@/lib/homeContentApi";
@@ -14,11 +15,21 @@ import NotFound from "@/pages/NotFound";
 const copy = {
   en: {
     loading: "Loading page...",
+    loadingTitle: "Loading content",
+    loadingDescription: "Please wait while the page content is loaded.",
+    errorTitle: "Page content failed to load",
+    errorDescription: "The content service did not respond correctly. You can retry or return to the main site.",
+    retry: "Retry",
     quote: "Get a Free Quote",
     fallbackDescription: "Company information and service details.",
   },
   zh: {
     loading: "页面加载中...",
+    loadingTitle: "正在加载页面内容",
+    loadingDescription: "请稍等，系统正在读取这页的内容。",
+    errorTitle: "页面内容加载失败",
+    errorDescription: "内容服务暂时没有正确返回结果，可以重试一次，或先返回其它页面。",
+    retry: "重新加载",
     quote: "获取免费报价",
     fallbackDescription: "公司介绍和服务内容。",
   },
@@ -90,7 +101,7 @@ export default function CmsDynamicPage() {
   const { language } = useLanguage();
   const t = copy[language];
   const cmsPath = cmsPathFromSplat(params["*"]);
-  const { data: page, isLoading } = useQuery({
+  const { data: page, isError, isLoading, refetch } = useQuery({
     queryKey: ["published", "cms_path", language, cmsPath],
     queryFn: () => getPublishedCmsPageByPath(language, cmsPath),
     enabled: cmsPath !== "/",
@@ -99,8 +110,31 @@ export default function CmsDynamicPage() {
   if (isLoading) {
     return (
       <main className="pt-site-header">
-        <section className="section-padding">
-          <div className="container-narrow text-center text-muted-foreground">{t.loading}</div>
+        <PublicLoadingState label={t.loading} title={t.loadingTitle} description={t.loadingDescription} />
+      </main>
+    );
+  }
+
+  if (isError) {
+    return (
+      <main className="pt-site-header">
+        <PageMeta title={t.errorTitle} description={t.errorDescription} canonicalPath={cmsPath} />
+        <section className="section-padding bg-background">
+          <div className="container-narrow">
+            <div role="alert" className="rounded-xl border border-destructive/20 bg-destructive/5 p-6">
+              <div className="mb-4 flex items-start gap-3">
+                <AlertCircle className="mt-1 h-5 w-5 shrink-0 text-destructive" />
+                <div>
+                  <h1 className="font-display text-2xl font-bold">{t.errorTitle}</h1>
+                  <p className="mt-2 text-sm leading-6 text-muted-foreground">{t.errorDescription}</p>
+                </div>
+              </div>
+              <Button type="button" variant="outline" onClick={() => void refetch()}>
+                <RefreshCw className="h-4 w-4" />
+                {t.retry}
+              </Button>
+            </div>
+          </div>
         </section>
       </main>
     );

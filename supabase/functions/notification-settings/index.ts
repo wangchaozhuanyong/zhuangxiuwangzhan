@@ -17,6 +17,13 @@ type TelegramSettings = {
   maintenance_last_sent_at?: string | null;
 };
 
+type AdminCheck = {
+  ok: boolean;
+  status: number;
+  error: string | null;
+  role?: string | null;
+};
+
 const getServiceRoleKey = () =>
   Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") || Deno.env.get("SERVICE_ROLE_KEY");
 
@@ -41,23 +48,35 @@ const sanitizeSettings = (settings: TelegramSettings | null) => ({
 const requireAdmin = async (
   req: Request,
   supabase: ReturnType<typeof createClient>,
-) => {
+): Promise<AdminCheck> => {
   const token = req.headers.get("Authorization")?.replace(/^Bearer\s+/i, "");
   if (!token) return { ok: false, status: 401, error: "Missing authorization token" };
 
   const { data: userData, error: userError } = await supabase.auth.getUser(token);
   if (userError || !userData.user) return { ok: false, status: 401, error: "Invalid authorization token" };
 
+  const jwtRole = userData.user.app_metadata?.role === "admin" ? "super_admin" : null;
   const { data: adminRow, error: adminError } = await supabase
     .from("admin_users")
-    .select("user_id")
+    .select("user_id,role,active")
     .eq("user_id", userData.user.id)
     .maybeSingle();
 
   if (adminError) return { ok: false, status: 500, error: adminError.message };
-  if (!adminRow) return { ok: false, status: 403, error: "Admin access required" };
+  if (!adminRow && !jwtRole) return { ok: false, status: 403, error: "Admin access required" };
+  if (adminRow && adminRow.active === false && !jwtRole) {
+    return { ok: false, status: 403, error: "Admin account is disabled" };
+  }
 
-  return { ok: true, status: 200, error: null };
+  return { ok: true, status: 200, error: null, role: jwtRole || adminRow?.role || null };
+};
+
+const requireSuperAdmin = (adminCheck: AdminCheck) => {
+  if (!adminCheck.ok) return adminCheck;
+  if (adminCheck.role !== "super_admin") {
+    return { ok: false, status: 403, error: "Super admin access required" };
+  }
+  return adminCheck;
 };
 
 const getSettings = async (supabase: ReturnType<typeof createClient>) => {
@@ -106,6 +125,27 @@ const sendTelegramTest = async (settings: TelegramSettings) => {
   return { ok: true };
 };
 
+const validReminderDays = new Set([
+  "monday",
+  "tuesday",
+  "wednesday",
+  "thursday",
+  "friday",
+  "saturday",
+  "sunday",
+]);
+
+const isValidTime = (value: string) => /^([01]\d|2[0-3]):[0-5]\d$/.test(value);
+
+const isValidTimezone = (value: string) => {
+  try {
+    new Intl.DateTimeFormat("en-US", { timeZone: value }).format(new Date());
+    return true;
+  } catch {
+    return false;
+  }
+};
+
 serve(async (req) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
 
@@ -116,13 +156,17 @@ serve(async (req) => {
     }
 
     const supabase = createClient(Deno.env.get("SUPABASE_URL")!, serviceRoleKey);
-    const adminCheck = await requireAdmin(req, supabase);
-    if (!adminCheck.ok) {
-      return Response.json({ error: adminCheck.error }, { status: adminCheck.status, headers: corsHeaders });
-    }
-
-    const body = req.method === "GET" ? { action: "get" } : await req.json();
+    const body = req.method === "GET" ? { action: "get" } : await req.json().catch(() => ({ action: "get" }));
     const action = body.action || "get";
+    const adminCheck = await requireAdmin(req, supabase);
+    const permissionCheck = action === "get" ? adminCheck : requireSuperAdmin(adminCheck);
+
+    if (!permissionCheck.ok) {
+      return Response.json(
+        { error: permissionCheck.error },
+        { status: permissionCheck.status, headers: corsHeaders },
+      );
+    }
 
     if (action === "get") {
       const settings = await getSettings(supabase);
@@ -146,6 +190,25 @@ serve(async (req) => {
         maintenance_reminder_time: typeof body.maintenance_reminder_time === "string" ? body.maintenance_reminder_time : current?.maintenance_reminder_time || "09:00",
         maintenance_timezone: typeof body.maintenance_timezone === "string" ? body.maintenance_timezone : current?.maintenance_timezone || "Asia/Kuala_Lumpur",
       };
+
+      if (payload.telegram_enabled && (!payload.telegram_bot_token || !payload.telegram_chat_id)) {
+        return Response.json(
+          { error: "Telegram Bot Token and Chat ID are required before enabling notifications" },
+          { status: 400, headers: corsHeaders },
+        );
+      }
+
+      if (!validReminderDays.has(payload.maintenance_reminder_day)) {
+        return Response.json({ error: "Invalid maintenance reminder day" }, { status: 400, headers: corsHeaders });
+      }
+
+      if (!isValidTime(payload.maintenance_reminder_time)) {
+        return Response.json({ error: "Invalid maintenance reminder time. Use HH:mm." }, { status: 400, headers: corsHeaders });
+      }
+
+      if (!isValidTimezone(payload.maintenance_timezone)) {
+        return Response.json({ error: "Invalid maintenance reminder timezone" }, { status: 400, headers: corsHeaders });
+      }
 
       const { data, error } = await supabase
         .from("notification_settings")
