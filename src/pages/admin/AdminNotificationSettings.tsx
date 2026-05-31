@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import AdminPageHeader from "@/components/admin/AdminPageHeader";
-import { Button } from "@/components/ui/button";
+import { AdminActionButton, AdminPermissionHint, useAdminPermission } from "@/components/admin/AdminPermission";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -61,6 +61,10 @@ const copy = {
     includeMonthly: "包含月度任务",
     saveTip: "开关和输入项改完后，需要点击“保存设置”才会写入数据库。",
     monthlyTip: "“包含月度任务”只用于发送测试提醒，不会保存到数据库。",
+    cronNotice: "This page saves the preferred reminder day, time, and timezone. Automatic delivery still needs an external scheduler such as GitHub Actions, Cloudflare Cron, or a Supabase scheduled caller.",
+    missingTelegramConfig: "Add a Telegram Bot Token and Chat ID before enabling Telegram notifications.",
+    invalidMaintenanceTime: "Use a valid reminder time in HH:mm format, for example 09:00.",
+    invalidMaintenanceTimezone: "Use a valid timezone name, for example Asia/Kuala_Lumpur.",
     sendReminder: "Send Reminder",
     testFailed: "Test failed",
     saveFailed: "Failed to save Telegram settings",
@@ -106,6 +110,10 @@ const copy = {
     includeMonthly: "包含月度任务",
     saveTip: "开关和输入项改完后，需要点击“保存设置”才会写入数据库。",
     monthlyTip: "“包含月度任务”只用于发送测试提醒，不会保存到数据库。",
+    cronNotice: "这里会保存你偏好的提醒日期、时间和时区；真正自动发送还需要外部定时任务来调用，例如 GitHub Actions、Cloudflare Cron 或 Supabase 定时调用。",
+    missingTelegramConfig: "要启用 Telegram 通知，必须先填写 Telegram Bot Token 和 Chat ID。",
+    invalidMaintenanceTime: "维护提醒时间格式不正确，请使用 09:00 这种 HH:mm 格式。",
+    invalidMaintenanceTimezone: "维护提醒时区不正确，请使用 Asia/Kuala_Lumpur 这种时区名称。",
     sendReminder: "发送提醒",
     testFailed: "测试失败",
     saveFailed: "保存 Telegram 设置失败",
@@ -121,8 +129,10 @@ const AdminNotificationSettings = () => {
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const { data: remoteSettings, isLoading, error, refetch } = useAdminNotificationSettings();
+  const settingsPermission = useAdminPermission("settings.write");
   const lang = getAdminLang();
   const t = copy[lang];
+  const canManageSettings = settingsPermission.allowed;
   const [settings, setSettings] = useState<NotificationSettings>(emptySettings);
   const [botToken, setBotToken] = useState("");
   const [chatId, setChatId] = useState("");
@@ -165,17 +175,36 @@ const AdminNotificationSettings = () => {
   }, [remoteSettings]);
 
   const saveSettings = async () => {
+    if (!canManageSettings) return;
+
+    if (enabled && (!chatId.trim() || (!botToken.trim() && !settings.has_telegram_bot_token))) {
+      toast({ title: t.saveFailed, description: t.missingTelegramConfig, variant: "destructive" });
+      return;
+    }
+
+    if (!/^([01]\d|2[0-3]):[0-5]\d$/.test(maintenanceTime.trim())) {
+      toast({ title: t.saveFailed, description: t.invalidMaintenanceTime, variant: "destructive" });
+      return;
+    }
+
+    try {
+      new Intl.DateTimeFormat("en-US", { timeZone: maintenanceTimezone.trim() }).format(new Date());
+    } catch {
+      toast({ title: t.saveFailed, description: t.invalidMaintenanceTimezone, variant: "destructive" });
+      return;
+    }
+
     setSaving(true);
     const { data, error } = await supabase!.functions.invoke("notification-settings", {
       body: {
         action: "save",
         telegram_enabled: enabled,
         telegram_bot_token: botToken,
-        telegram_chat_id: chatId,
+        telegram_chat_id: chatId.trim(),
         maintenance_reminders_enabled: maintenanceEnabled,
         maintenance_reminder_day: maintenanceDay,
-        maintenance_reminder_time: maintenanceTime,
-        maintenance_timezone: maintenanceTimezone,
+        maintenance_reminder_time: maintenanceTime.trim(),
+        maintenance_timezone: maintenanceTimezone.trim(),
       },
     });
 
@@ -194,6 +223,7 @@ const AdminNotificationSettings = () => {
   };
 
   const testTelegram = async () => {
+    if (!canManageSettings) return;
     setTesting(true);
     const { error } = await supabase!.functions.invoke("notification-settings", {
       body: { action: "test" },
@@ -210,6 +240,7 @@ const AdminNotificationSettings = () => {
   };
 
   const testMaintenanceReminder = async () => {
+    if (!canManageSettings) return;
     setTestingMaintenance(true);
     const { error } = await supabase!.functions.invoke("maintenance-reminder", {
       body: { test: true, include_monthly: includeMonthly },
@@ -232,6 +263,8 @@ const AdminNotificationSettings = () => {
         description="设置 Telegram 通知、维护提醒和测试消息。"
         helpText="这里控制哪些后台事件会发到 Telegram，比如新咨询、报价请求和每周维护提醒。"
       />
+
+      {!canManageSettings && <AdminPermissionHint action="settings.write" />}
 
       <div className="rounded-xl border border-border bg-card p-6">
         <div className="flex flex-col gap-3 border-b border-border pb-5 md:flex-row md:items-start md:justify-between">
@@ -257,6 +290,7 @@ const AdminNotificationSettings = () => {
               <Switch
                 id="telegram-enabled"
                 checked={enabled}
+                disabled={!canManageSettings}
                 onCheckedChange={(value) => {
                   markDirty();
                   setEnabled(value);
@@ -270,6 +304,7 @@ const AdminNotificationSettings = () => {
                 id="telegram-bot-token"
                 type="password"
                 value={botToken}
+                disabled={!canManageSettings}
                 placeholder={settings.has_telegram_bot_token ? t.keepTokenPlaceholder : t.botTokenPlaceholder}
                 onChange={(event) => {
                   markDirty();
@@ -283,6 +318,7 @@ const AdminNotificationSettings = () => {
               <Input
                 id="telegram-chat-id"
                 value={chatId}
+                disabled={!canManageSettings}
                 placeholder={t.chatIdPlaceholder}
                 onChange={(event) => {
                   markDirty();
@@ -293,12 +329,12 @@ const AdminNotificationSettings = () => {
 
             <p className="text-xs text-muted-foreground">{t.saveTip}</p>
             <div className="flex flex-col gap-3 border-t border-border pt-5 sm:flex-row">
-              <Button onClick={saveSettings} disabled={saving || testing}>
+              <AdminActionButton action="settings.write" onClick={saveSettings} disabled={saving || testing} showDeniedHint={false}>
                 {saving ? t.saving : t.save}
-              </Button>
-              <Button variant="outline" onClick={testTelegram} disabled={saving || testing || !settings.has_telegram_bot_token || !settings.telegram_chat_id}>
+              </AdminActionButton>
+              <AdminActionButton action="settings.write" variant="outline" onClick={testTelegram} disabled={saving || testing || !settings.has_telegram_bot_token || !settings.telegram_chat_id} showDeniedHint={false}>
                 {testing ? t.sending : t.test}
-              </Button>
+              </AdminActionButton>
             </div>
           </div>
         )}
@@ -309,6 +345,9 @@ const AdminNotificationSettings = () => {
           <p className="text-xs font-semibold uppercase tracking-[0.25em] text-accent">{t.ops}</p>
           <h2 className="font-display text-2xl font-bold">{t.maintenance}</h2>
           <p className="mt-2 max-w-2xl text-sm text-muted-foreground">{t.maintenanceDesc}</p>
+          <p className="mt-3 max-w-2xl rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-xs leading-5 text-amber-900">
+            {t.cronNotice}
+          </p>
           {settings.maintenance_last_sent_at && (
             <p className="mt-2 text-xs text-muted-foreground">
               {t.lastSent}: {new Date(settings.maintenance_last_sent_at).toLocaleString()}
@@ -324,6 +363,7 @@ const AdminNotificationSettings = () => {
             <Switch
               id="maintenance-enabled"
               checked={maintenanceEnabled}
+              disabled={!canManageSettings}
               onCheckedChange={(value) => {
                 markDirty();
                 setMaintenanceEnabled(value);
@@ -335,6 +375,7 @@ const AdminNotificationSettings = () => {
             <Label>{t.dayLabel}</Label>
             <Select
               value={maintenanceDay}
+              disabled={!canManageSettings}
               onValueChange={(value) => {
                 markDirty();
                 setMaintenanceDay(value);
@@ -357,7 +398,9 @@ const AdminNotificationSettings = () => {
             <Label htmlFor="maintenance-time">{t.timeLabel}</Label>
             <Input
               id="maintenance-time"
+              type="time"
               value={maintenanceTime}
+              disabled={!canManageSettings}
               onChange={(e) => {
                 markDirty();
                 setMaintenanceTime(e.target.value);
@@ -370,6 +413,7 @@ const AdminNotificationSettings = () => {
             <Input
               id="maintenance-timezone"
               value={maintenanceTimezone}
+              disabled={!canManageSettings}
               onChange={(e) => {
                 markDirty();
                 setMaintenanceTimezone(e.target.value);
@@ -378,19 +422,19 @@ const AdminNotificationSettings = () => {
           </div>
 
           <div className="flex items-center gap-3">
-            <Switch id="include-monthly" checked={includeMonthly} onCheckedChange={setIncludeMonthly} />
+            <Switch id="include-monthly" checked={includeMonthly} disabled={!canManageSettings} onCheckedChange={setIncludeMonthly} />
             <Label htmlFor="include-monthly">{t.includeMonthly}</Label>
           </div>
         </div>
 
         <p className="text-xs text-muted-foreground">{t.monthlyTip}</p>
         <div className="flex flex-col gap-3 border-t border-border pt-5 sm:flex-row">
-          <Button onClick={saveSettings} disabled={saving || testingMaintenance}>
+          <AdminActionButton action="settings.write" onClick={saveSettings} disabled={saving || testingMaintenance} showDeniedHint={false}>
             {saving ? t.saving : t.save}
-          </Button>
-          <Button variant="outline" onClick={testMaintenanceReminder} disabled={testingMaintenance}>
+          </AdminActionButton>
+          <AdminActionButton action="settings.write" variant="outline" onClick={testMaintenanceReminder} disabled={testingMaintenance} showDeniedHint={false}>
             {testingMaintenance ? t.sending : t.sendReminder}
-          </Button>
+          </AdminActionButton>
         </div>
       </div>
     </div>
