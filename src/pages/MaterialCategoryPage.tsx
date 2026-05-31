@@ -3,6 +3,7 @@ import Link from "@/components/LocalizedLink";
 import { Button } from "@/components/ui/button";
 import { ArrowRight } from "lucide-react";
 import HeroBanner from "@/components/blocks/HeroBanner";
+import SectionHeader from "@/components/blocks/SectionHeader";
 import WhatsAppIcon from "@/components/WhatsAppIcon";
 import { materialsData } from "@/data/materials";
 import { usePublishedMaterials, usePublishedSitePage } from "@/hooks/usePublishedContent";
@@ -106,8 +107,12 @@ const MaterialCategoryPage = () => {
   if (!category) {
     return (
       <main className="pt-site-header section-padding text-center">
-        <h1 className="font-display text-3xl font-bold mb-4">{t.notFound}</h1>
-        <Button asChild><Link to="/materials">{t.viewAll}</Link></Button>
+        <div className="container-narrow mx-auto max-w-lg">
+          <div className="subpage-form-panel p-6 md:p-8">
+            <h1 className="font-display text-3xl font-bold mb-4">{t.notFound}</h1>
+            <Button asChild className="btn-brand-primary"><Link to="/materials">{t.viewAll}</Link></Button>
+          </div>
+        </div>
       </main>
     );
   }
@@ -133,22 +138,18 @@ const MaterialCategoryPage = () => {
 
       <section className="section-padding bg-background">
         <div className="container-narrow">
-          <Reveal>
-            <h2 className="font-display text-xl md:text-2xl font-bold mb-6">{t.browseSubcategories}</h2>
-          </Reveal>
+          <SectionHeader title={t.browseSubcategories} description={categoryDescription} />
 
-          <div className="flex gap-4 overflow-x-auto pb-4 -mx-4 px-4 snap-x snap-mandatory scrollbar-hide md:grid md:grid-cols-3 lg:grid-cols-4 md:overflow-visible md:mx-0 md:px-0 md:pb-0 md:gap-5">
+          <div className="grid grid-cols-2 gap-4 md:grid-cols-3 md:gap-5 lg:grid-cols-4">
             {category.subcategories.map((subcategory, index) => (
               <Reveal key={subcategory.slug} delay={index * 60} direction="none">
-                <Link to={`/materials/category/${category.slug}/${subcategory.slug}`} className="snap-start shrink-0 w-44 sm:w-48 md:w-auto group block hover-lift">
-                  <div className="relative aspect-square overflow-hidden rounded-card border border-border bg-muted">
-                    <SmartImage src={subcategory.image} alt={subcategory.alt || translateMaterialSubcategory(subcategory.name, language)} loading="lazy" width={300} height={300} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
-                    <div className="absolute bottom-0 left-0 right-0 p-3">
-                      <h3 className="text-sm font-semibold leading-tight text-on-media">
-                        {translateMaterialSubcategory(subcategory.name, language)}
-                      </h3>
-                    </div>
+                <Link to={`/materials/category/${category.slug}/${subcategory.slug}`} className="material-depth-card luxury-card-muted group hover-lift">
+                  <div className="material-depth-card__media img-zoom">
+                    <SmartImage src={subcategory.image} alt={subcategory.alt || translateMaterialSubcategory(subcategory.name, language)} loading="lazy" width={360} height={360} className="h-full w-full object-cover" />
+                  </div>
+                  <div className="material-depth-card__body">
+                    <h3 className="material-depth-card__title">{translateMaterialSubcategory(subcategory.name, language)}</h3>
+                    <p className="material-depth-card__meta">{subcategory.description}</p>
                   </div>
                 </Link>
               </Reveal>
@@ -160,19 +161,19 @@ const MaterialCategoryPage = () => {
       {category.items.length > 0 && (
         <section className="section-padding bg-muted">
           <div className="container-narrow">
-            <Reveal>
-              <h2 className="font-display text-xl md:text-2xl font-bold mb-6">{t.allProducts(displayCategoryName)}</h2>
-            </Reveal>
+            <SectionHeader title={t.allProducts(displayCategoryName)} />
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-5">
               {category.items.map((item, index) => (
                 <Reveal key={item.id} delay={index * 60} direction="none">
-                  <Link to={`/materials/${item.slug}`} className="group block hover-lift">
-                    <div className="relative aspect-square overflow-hidden rounded-card mb-3 bg-card border border-border img-zoom">
+                  <Link to={`/materials/${item.slug}`} className="material-depth-card luxury-card group hover-lift">
+                    <div className="material-depth-card__media img-zoom">
                       <SmartImage src={item.image} alt={item.alt || translateMaterialDisplay(item.name, language)} loading="lazy" width={400} height={400} className="w-full h-full object-cover" />
                     </div>
-                    <h3 className="font-semibold text-sm mb-1 group-hover:text-accent transition-colors">{translateMaterialDisplay(item.name, language)}</h3>
-                    <p className="text-muted-foreground text-xs">{t.color} {translateMaterialDisplay(item.color, language)}</p>
-                    <p className="text-muted-foreground text-xs">{t.suitable} {item.suitableSpaces.map((space) => translateMaterialDisplay(space, language)).join(", ")}</p>
+                    <div className="material-depth-card__body">
+                      <h3 className="material-depth-card__title">{translateMaterialDisplay(item.name, language)}</h3>
+                      <p className="material-depth-card__meta">{t.color} {translateMaterialDisplay(item.color, language)}</p>
+                      <p className="material-depth-card__meta">{t.suitable} {item.suitableSpaces.map((space) => translateMaterialDisplay(space, language)).join(", ")}</p>
+                    </div>
                   </Link>
                 </Reveal>
               ))}

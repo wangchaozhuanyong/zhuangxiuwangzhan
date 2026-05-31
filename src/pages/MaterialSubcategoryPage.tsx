@@ -3,6 +3,7 @@ import Link from "@/components/LocalizedLink";
 import { Button } from "@/components/ui/button";
 import { ArrowRight } from "lucide-react";
 import HeroBanner from "@/components/blocks/HeroBanner";
+import SectionHeader from "@/components/blocks/SectionHeader";
 import WhatsAppIcon from "@/components/WhatsAppIcon";
 import { materialsData } from "@/data/materials";
 import { usePublishedMaterials } from "@/hooks/usePublishedContent";
@@ -12,7 +13,7 @@ import SmartImage from "@/components/SmartImage";
 import PageMeta from "@/components/PageMeta";
 import { JsonLdBreadcrumb } from "@/components/JsonLd";
 import { useSiteSettings } from "@/hooks/useSiteSettings";
-import { translateMaterialCategory, translateMaterialSubcategory } from "@/i18n/displayLabels";
+import { translateDisplayText, translateMaterialCategory, translateMaterialSubcategory, translateSpaceLabel } from "@/i18n/displayLabels";
 
 const copy = {
   en: {
@@ -25,6 +26,7 @@ const copy = {
     color: "Color:",
     suitable: "Suitable:",
     comingSoon: "Products coming soon for this category.",
+    products: (name: string) => `${name} Options`,
     enquireText: (name: string) => `Contact us to enquire about ${name.toLowerCase()} options.`,
     quote: "Request a Quote",
     interested: (name: string) => `Interested in ${name}?`,
@@ -41,6 +43,7 @@ const copy = {
     color: "颜色：",
     suitable: "适合：",
     comingSoon: "此分类的产品即将更新。",
+    products: (name: string) => `${name} 材料选项`,
     enquireText: (name: string) => `欢迎联系我们咨询 ${name} 材料选项。`,
     quote: "索取报价",
     interested: (name: string) => `对 ${name} 感兴趣？`,
@@ -66,8 +69,12 @@ const MaterialSubcategoryPage = () => {
   if (!category || !subcategory) {
     return (
       <main className="pt-site-header section-padding text-center">
-        <h1 className="font-display text-3xl font-bold mb-4">{t.notFound}</h1>
-        <Button asChild><Link to="/materials">{t.viewAll}</Link></Button>
+        <div className="container-narrow mx-auto max-w-lg">
+          <div className="subpage-form-panel p-6 md:p-8">
+            <h1 className="font-display text-3xl font-bold mb-4">{t.notFound}</h1>
+            <Button asChild className="btn-brand-primary"><Link to="/materials">{t.viewAll}</Link></Button>
+          </div>
+        </div>
       </main>
     );
   }
@@ -93,26 +100,29 @@ const MaterialSubcategoryPage = () => {
 
       <section className="section-padding bg-background">
         <div className="container-narrow">
+          <SectionHeader title={t.products(displaySubcategoryName)} description={subcategory.description} />
           {items.length > 0 ? (
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
               {items.map((item, index) => (
                 <Reveal key={item.id} delay={index * 60} direction="none">
-                  <Link to={`/materials/${item.slug}`} className="group block hover-lift">
-                    <div className="relative aspect-square overflow-hidden rounded-card mb-3 bg-muted border border-border img-zoom">
+                  <Link to={`/materials/${item.slug}`} className="material-depth-card luxury-card group hover-lift">
+                    <div className="material-depth-card__media img-zoom">
                       <SmartImage src={item.image} alt={item.alt || item.name} loading="lazy" width={400} height={400} className="w-full h-full object-cover" />
                     </div>
-                    <h3 className="font-semibold text-sm mb-1 group-hover:text-accent transition-colors">{item.name}</h3>
-                    <p className="text-muted-foreground text-xs">{t.color} {item.color}</p>
-                    <p className="text-muted-foreground text-xs">{t.suitable} {item.suitableSpaces.join(", ")}</p>
+                    <div className="material-depth-card__body">
+                      <h3 className="material-depth-card__title">{translateDisplayText(item.name, language)}</h3>
+                      <p className="material-depth-card__meta">{t.color} {translateDisplayText(item.color, language)}</p>
+                      <p className="material-depth-card__meta">{t.suitable} {item.suitableSpaces.map((space: string) => translateSpaceLabel(space, language)).join(", ")}</p>
+                    </div>
                   </Link>
                 </Reveal>
               ))}
             </div>
           ) : (
-            <div className="text-center py-16">
+            <div className="subpage-form-panel mx-auto max-w-xl p-6 text-center md:p-8">
               <p className="text-muted-foreground mb-2">{t.comingSoon}</p>
               <p className="text-sm text-muted-foreground mb-6">{t.enquireText(displaySubcategoryName)}</p>
-              <Button asChild>
+              <Button asChild className="btn-brand-primary">
                 <Link to="/quote">{t.quote} <ArrowRight className="ml-2 w-4 h-4" /></Link>
               </Button>
             </div>
