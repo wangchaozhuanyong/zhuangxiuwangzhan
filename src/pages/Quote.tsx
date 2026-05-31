@@ -330,8 +330,10 @@ const Quote = () => {
         <div className="container-narrow grid gap-10 lg:grid-cols-[1.1fr_0.9fr]">
           <Reveal>
             <div className="subpage-form-panel p-5 md:p-8">
-              <div className="accent-line mb-4" />
-              <h2 className="mb-6 font-display text-2xl font-bold md:text-3xl">{t.formTitle}</h2>
+              <div className="subpage-local-heading">
+                <div className="accent-line mb-4" />
+                <h2 className="font-display text-2xl font-bold md:text-3xl">{t.formTitle}</h2>
+              </div>
 
               {status === "error" && (
                 <div role="alert" aria-live="polite" className="mb-6 flex items-start gap-3 rounded-card border border-destructive/20 bg-destructive/5 p-4 text-sm">

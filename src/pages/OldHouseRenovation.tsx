@@ -172,8 +172,10 @@ const OldHouseRenovation = () => {
         <div className="container-narrow grid grid-cols-1 lg:grid-cols-2 gap-10 items-center">
           <Reveal direction="left">
             <div>
-              <div className="accent-line mb-4" />
-              <h2 className="font-display text-2xl md:text-3xl font-bold mb-4">{t.introTitle}</h2>
+              <div className="subpage-local-heading--balanced">
+                <div className="accent-line mb-4" />
+                <h2 className="font-display text-2xl md:text-3xl font-bold">{t.introTitle}</h2>
+              </div>
               {t.intro.map((paragraph) => <p key={paragraph} className="text-muted-foreground mb-4 leading-relaxed">{paragraph}</p>)}
               <div className="flex flex-wrap gap-3 mt-6">
                 {t.tags.map((tag) => <span key={tag} className="inline-flex items-center gap-1.5 text-xs font-medium bg-accent/10 text-accent px-3 py-1.5 rounded-full"><CheckCircle className="w-3 h-3" /> {tag}</span>)}
@@ -219,8 +221,10 @@ const OldHouseRenovation = () => {
           </Reveal>
           <Reveal direction="right" delay={120}>
             <div>
-              <div className="accent-line mb-4" />
-              <h2 className="font-display text-2xl md:text-3xl font-bold mb-4">{t.scopeTitle}</h2>
+              <div className="subpage-local-heading--balanced">
+                <div className="accent-line mb-4" />
+                <h2 className="font-display text-2xl md:text-3xl font-bold">{t.scopeTitle}</h2>
+              </div>
               <p className="text-muted-foreground mb-6">{t.scopeDescription}</p>
               <ul className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                 {t.scope.map((item) => <li key={item} className="flex items-center gap-2 text-sm"><CheckCircle className="w-3.5 h-3.5 text-gold shrink-0" /> {item}</li>)}

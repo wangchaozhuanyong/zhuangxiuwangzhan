@@ -1,10 +1,9 @@
 ﻿import { useParams } from "react-router-dom";
 import Link from "@/components/LocalizedLink";
 import { Button } from "@/components/ui/button";
-import { ArrowRight } from "lucide-react";
 import HeroBanner from "@/components/blocks/HeroBanner";
 import SectionHeader from "@/components/blocks/SectionHeader";
-import WhatsAppIcon from "@/components/WhatsAppIcon";
+import CTABanner from "@/components/blocks/CTABanner";
 import { materialsData } from "@/data/materials";
 import { usePublishedMaterials, usePublishedSitePage } from "@/hooks/usePublishedContent";
 import { useLanguage } from "@/i18n/LanguageContext";
@@ -12,7 +11,6 @@ import Reveal from "@/components/Reveal";
 import SmartImage from "@/components/SmartImage";
 import PageMeta from "@/components/PageMeta";
 import { JsonLdBreadcrumb } from "@/components/JsonLd";
-import { useSiteSettings } from "@/hooks/useSiteSettings";
 import { translateDisplayText, translateMaterialCategory, translateMaterialSubcategory } from "@/i18n/displayLabels";
 
 const copy = {
@@ -91,7 +89,6 @@ const translateMaterialDisplay = (value: string, language: "en" | "zh") => {
 const MaterialCategoryPage = () => {
   const { categorySlug } = useParams<{ categorySlug: string }>();
   const { language } = useLanguage();
-  const settings = useSiteSettings();
   const t = copy[language];
   const { data: pageContent } = usePublishedSitePage(language, "materials_category");
   const { data: publishedCategories } = usePublishedMaterials(language);
@@ -183,32 +180,13 @@ const MaterialCategoryPage = () => {
         </section>
       )}
 
-      <section className="section-padding relative overflow-hidden bg-surface-dark text-center">
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_0%,rgba(198,164,106,0.1),transparent_50%)]" aria-hidden />
-        <Reveal>
-          <div className="container-narrow relative">
-            <h2 className="heading-safe mb-4 font-display text-3xl font-bold text-surface-dark-foreground">
-              {applyPageTemplate(pageContent?.cta_title, { category: displayCategoryName, description: categoryDescription }) || t.interested(displayCategoryName)}
-            </h2>
-            <p className="mx-auto mb-6 max-w-lg text-surface-dark-foreground/75">
-              {applyPageTemplate(pageContent?.cta_description, { category: displayCategoryName, description: categoryDescription }) || t.ctaText}
-            </p>
-            <div className="flex flex-col justify-center gap-3 sm:flex-row sm:gap-4">
-              <Link to="/quote" className="btn-on-dark-primary min-h-12 w-full justify-center px-8 sm:w-auto">
-                {t.quote} <ArrowRight className="h-4 w-4" />
-              </Link>
-              <a
-                href={settings.whatsapp_url()}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="btn-on-dark-secondary min-h-12 w-full justify-center px-8 sm:w-auto"
-              >
-                <WhatsAppIcon className="mr-2 h-[18px] w-[18px] text-whatsapp" /> {t.whatsapp}
-              </a>
-            </div>
-          </div>
-        </Reveal>
-      </section>
+      <CTABanner
+        title={applyPageTemplate(pageContent?.cta_title, { category: displayCategoryName, description: categoryDescription }) || t.interested(displayCategoryName)}
+        description={applyPageTemplate(pageContent?.cta_description, { category: displayCategoryName, description: categoryDescription }) || t.ctaText}
+        quoteLabel={t.quote}
+        whatsappLabel={t.whatsapp}
+        whatsappSource="Material Category CTA"
+      />
     </main>
   );
 };

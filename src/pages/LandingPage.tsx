@@ -136,8 +136,10 @@ const LandingPage = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-10 items-start">
             <Reveal direction="left">
               <div className="subpage-side-panel p-5 md:p-7">
-                <div className="accent-line mb-4" />
-                <h2 className="font-display text-2xl md:text-3xl font-bold mb-4">{t.overview}</h2>
+                <div className="subpage-local-heading--balanced">
+                  <div className="accent-line mb-4" />
+                  <h2 className="font-display text-2xl md:text-3xl font-bold">{t.overview}</h2>
+                </div>
                 {isHtmlText(landingPage.description) ? (
                   <div className="prose prose-neutral max-w-none text-muted-foreground" dangerouslySetInnerHTML={{ __html: sanitizeHtml(landingPage.description) }} />
                 ) : (

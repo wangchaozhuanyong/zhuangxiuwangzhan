@@ -63,3 +63,14 @@ export const friendlyTranslationError = (message?: string | null) => {
   if (/google translate|translation failed|request failed/i.test(raw)) return "自动翻译服务暂时不可用，可以稍后重试。";
   return raw;
 };
+
+export const classifyTranslationFailure = (message?: string | null) => {
+  const raw = String(message || "").trim();
+  if (!raw) return "未知原因";
+  if (/service role key/i.test(raw)) return "服务配置问题";
+  if (/not enabled for table/i.test(raw)) return "内容表未接入";
+  if (/No Chinese fields/i.test(raw)) return "没有中文源内容";
+  if (/authorization|jwt|token|Admin access/i.test(raw)) return "权限或登录问题";
+  if (/google translate|translation failed|request failed|fetch|network/i.test(raw)) return "翻译服务不可用";
+  return "其它失败";
+};

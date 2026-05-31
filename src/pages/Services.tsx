@@ -1,7 +1,6 @@
 ﻿import { useMemo } from "react";
 import Link from "@/components/LocalizedLink";
 import { ArrowRight } from "lucide-react";
-import WhatsAppIcon from "@/components/WhatsAppIcon";
 import { servicesData } from "@/data/services";
 import SmartImage from "@/components/SmartImage";
 import { usePublishedServices, usePublishedSitePage } from "@/hooks/usePublishedContent";
@@ -9,9 +8,9 @@ import Reveal from "@/components/Reveal";
 import PageMeta from "@/components/PageMeta";
 import { JsonLdBreadcrumb } from "@/components/JsonLd";
 import { useLanguage } from "@/i18n/LanguageContext";
-import { useSiteSettings } from "@/hooks/useSiteSettings";
 import HeroBanner from "@/components/blocks/HeroBanner";
 import SectionHeader from "@/components/blocks/SectionHeader";
+import CTABanner from "@/components/blocks/CTABanner";
 import { translateDisplayText } from "@/i18n/displayLabels";
 import { pageHeroImages, resolvePageHeroImage } from "@/lib/pageHeroImages";
 
@@ -340,7 +339,6 @@ const getGroupForService = (key: string): ServiceGroupId => {
 
 const Services = () => {
   const { language } = useLanguage();
-  const settings = useSiteSettings();
   const t = copy[language];
   const { data: pageContent } = usePublishedSitePage(language, "services");
   const displayText = (value: string) => translateDisplayText(value, language);
@@ -507,28 +505,13 @@ const Services = () => {
         );
       })}
 
-      <section className="section-padding bg-surface-dark text-center">
-        <Reveal>
-          <div className="container-narrow">
-            <div className="accent-line mx-auto mb-4" />
-            <h2 className="heading-safe mb-4 font-display text-3xl font-bold text-surface-dark-foreground">{pageContent?.cta_title || t.unsureTitle}</h2>
-            <p className="mb-6 mx-auto max-w-lg text-surface-dark-foreground/75">{pageContent?.cta_description || t.unsureText}</p>
-            <div className="flex flex-col justify-center gap-3 sm:flex-row sm:gap-4">
-              <Link to="/quote" className="btn-on-dark-primary min-h-12 w-full justify-center px-8 sm:w-auto">
-                {t.quote}
-              </Link>
-              <a
-                href={settings.whatsapp_url()}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="btn-on-dark-secondary min-h-12 w-full justify-center px-8 sm:w-auto"
-              >
-                <WhatsAppIcon className="mr-2 h-[18px] w-[18px] text-whatsapp" /> {t.whatsapp}
-              </a>
-            </div>
-          </div>
-        </Reveal>
-      </section>
+      <CTABanner
+        title={pageContent?.cta_title || t.unsureTitle}
+        description={pageContent?.cta_description || t.unsureText}
+        quoteLabel={t.quote}
+        whatsappLabel={t.whatsapp}
+        whatsappSource="Services CTA"
+      />
 
       <section className="subpage-link-band py-8">
         <div className="container-narrow text-center">

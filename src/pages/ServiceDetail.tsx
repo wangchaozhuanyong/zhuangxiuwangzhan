@@ -11,6 +11,7 @@ import Reveal from "@/components/Reveal";
 import SmartImage from "@/components/SmartImage";
 import PageMeta from "@/components/PageMeta";
 import PublicLoadingState from "@/components/blocks/PublicLoadingState";
+import CTABanner from "@/components/blocks/CTABanner";
 import { JsonLdService, JsonLdBreadcrumb, JsonLdFAQ } from "@/components/JsonLd";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { useSiteSettings } from "@/hooks/useSiteSettings";
@@ -212,7 +213,10 @@ const ServiceDetail = () => {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
             <Reveal direction="left">
               <div>
-                <h2 className="font-display text-2xl md:text-3xl font-bold mb-4">{t.overview}</h2>
+                <div className="subpage-local-heading--balanced">
+                  <div className="accent-line mb-4" />
+                  <h2 className="font-display text-2xl md:text-3xl font-bold">{t.overview}</h2>
+                </div>
                 {isHtmlText(serviceDescription) ? (
                   <div className="prose prose-neutral max-w-none text-muted-foreground mb-6" dangerouslySetInnerHTML={{ __html: sanitizeHtml(serviceDescription) }} />
                 ) : (
@@ -249,7 +253,10 @@ const ServiceDetail = () => {
       <section className="section-padding bg-muted">
         <div className="container-narrow">
           <Reveal>
-            <h2 className="font-display text-2xl font-bold mb-6">{t.commonProjects}</h2>
+            <div className="subpage-local-heading">
+              <div className="accent-line mb-4" />
+              <h2 className="font-display text-2xl font-bold">{t.commonProjects}</h2>
+            </div>
           </Reveal>
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3">
             {serviceCommonProjects.map((project: string, index: number) => (
@@ -343,28 +350,13 @@ const ServiceDetail = () => {
         </div>
       </section>
 
-      <section className="section-padding relative overflow-hidden bg-surface-dark text-center">
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_0%,rgba(198,164,106,0.1),transparent_50%)]" aria-hidden />
-        <Reveal>
-          <div className="container-narrow relative">
-            <h2 className="heading-safe mb-4 font-display text-3xl font-bold text-surface-dark-foreground">{t.interested(serviceTitle)}</h2>
-            <p className="mb-6 text-surface-dark-foreground/75">{pageContent?.cta_description || t.ctaText}</p>
-            <div className="flex flex-col justify-center gap-3 sm:flex-row sm:gap-4">
-              <Link to="/quote" className="btn-on-dark-primary min-h-12 w-full justify-center px-8 sm:w-auto">
-                {t.freeQuote}
-              </Link>
-              <a
-                href={settings.whatsapp_url()}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="btn-on-dark-secondary min-h-12 w-full justify-center px-8 sm:w-auto"
-              >
-                <WhatsAppIcon className="mr-2 h-[18px] w-[18px] text-whatsapp" /> {t.whatsapp}
-              </a>
-            </div>
-          </div>
-        </Reveal>
-      </section>
+      <CTABanner
+        title={t.interested(serviceTitle)}
+        description={pageContent?.cta_description || t.ctaText}
+        quoteLabel={t.freeQuote}
+        whatsappLabel={t.whatsapp}
+        whatsappSource="Service Detail CTA"
+      />
     </main>
   );
 };

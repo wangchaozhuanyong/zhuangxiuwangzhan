@@ -169,10 +169,12 @@ const LocationPage = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-10 items-start">
             <Reveal direction="left">
               <div>
-                <div className="accent-line mb-4" />
-                <h2 className="font-display text-2xl md:text-3xl font-bold mb-4">
-                  {t.trusted(location.name)}
-                </h2>
+                <div className="subpage-local-heading--balanced">
+                  <div className="accent-line mb-4" />
+                  <h2 className="font-display text-2xl md:text-3xl font-bold">
+                    {t.trusted(location.name)}
+                  </h2>
+                </div>
                 <div
                   className="text-muted-foreground leading-relaxed mb-6 prose prose-sm max-w-none prose-p:my-3 prose-headings:mb-3 prose-headings:mt-6"
                   dangerouslySetInnerHTML={{

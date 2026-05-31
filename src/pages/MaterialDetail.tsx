@@ -241,7 +241,10 @@ const MaterialDetail = () => {
       {otherMaterials.length > 0 && (
         <section className="section-padding bg-muted">
           <div className="container-narrow">
-            <h2 className="font-display text-2xl font-bold mb-6">{t.more(displayCategoryName)}</h2>
+            <div className="subpage-local-heading">
+              <div className="accent-line mb-4" />
+              <h2 className="font-display text-2xl font-bold">{t.more(displayCategoryName)}</h2>
+            </div>
             <div className="card-grid grid-cols-2 gap-4 md:grid-cols-4 md:gap-5">
               {otherMaterials.map((item: any) => (
                 <Link key={item.id} to={`/materials/${item.slug}`} className="material-depth-card luxury-card group hover-lift">

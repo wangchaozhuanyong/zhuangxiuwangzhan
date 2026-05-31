@@ -7,6 +7,7 @@ import SmartImage from "@/components/SmartImage";
 import { Button } from "@/components/ui/button";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { getPublishedCmsPageByPath, type PublishedCmsSection } from "@/lib/homeContentApi";
+import { toText } from "@/lib/recordUtils";
 import { sanitizeHtml } from "@/lib/sanitizeHtml";
 import NotFound from "@/pages/NotFound";
 
@@ -66,7 +67,12 @@ const CmsSection = ({ section }: { section: PublishedCmsSection }) => {
   return (
     <section className="section-padding bg-background">
       <div className="container-narrow">
-        {title && <h2 className="font-display text-2xl font-bold tracking-normal md:text-3xl">{title}</h2>}
+        {title && (
+          <div className="subpage-local-heading">
+            <div className="accent-line mb-4" />
+            <h2 className="font-display text-2xl font-bold tracking-normal md:text-3xl">{title}</h2>
+          </div>
+        )}
         {body && (
           <div
             className="prose prose-neutral mt-4 max-w-none text-muted-foreground"
@@ -102,7 +108,8 @@ export default function CmsDynamicPage() {
 
   if (!page) return <NotFound />;
 
-  const heroImage = page.image_url || page.sections?.find((section) => section.settings?.image_url)?.settings.image_url || "";
+  const sectionHeroImage = page.sections?.find((section) => section.settings?.image_url)?.settings.image_url;
+  const heroImage = page.image_url || toText(sectionHeroImage);
   const heroAlt = page.alt || page.title;
   const sections = page.sections || [];
 

@@ -1,15 +1,12 @@
 ﻿import { useMemo } from "react";
-import Link from "@/components/LocalizedLink";
-import { Button } from "@/components/ui/button";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import Reveal from "@/components/Reveal";
 import PageMeta from "@/components/PageMeta";
 import { JsonLdFAQ, JsonLdBreadcrumb } from "@/components/JsonLd";
-import WhatsAppIcon from "@/components/WhatsAppIcon";
 import { useLanguage } from "@/i18n/LanguageContext";
-import { useSiteSettings } from "@/hooks/useSiteSettings";
 import { usePublishedFaqs, usePublishedSitePage } from "@/hooks/usePublishedContent";
 import HeroBanner from "@/components/blocks/HeroBanner";
+import CTABanner from "@/components/blocks/CTABanner";
 import { pageHeroImages, resolvePageHeroImage } from "@/lib/pageHeroImages";
 
 const faqContent = {
@@ -133,7 +130,6 @@ const faqContent = {
 
 const FAQ = () => {
   const { language } = useLanguage();
-  const settings = useSiteSettings();
   const t = faqContent[language];
   const { data: pageContent } = usePublishedSitePage(language, "faq");
   const { data: generalFaqs } = usePublishedFaqs(language, "general");
@@ -177,8 +173,10 @@ const FAQ = () => {
           {categories.map((category, categoryIndex) => (
             <Reveal key={category.category} delay={categoryIndex * 100}>
               <div className="mb-10">
-                <div className="accent-line mb-3" />
-                <h2 className="font-display text-xl font-bold mb-4">{category.category}</h2>
+                <div className="subpage-local-heading">
+                  <div className="accent-line mb-3" />
+                  <h2 className="font-display text-xl font-bold">{category.category}</h2>
+                </div>
                 <Accordion type="single" collapsible className="space-y-2">
                   {category.items.map((item, index) => (
                     <AccordionItem key={`${category.category}-${index}`} value={`${category.category}-${index}`} className="rounded-card border border-border bg-card px-4 data-[state=open]:border-accent/25">
@@ -193,28 +191,14 @@ const FAQ = () => {
         </div>
       </section>
 
-      <section className="section-padding bg-surface-dark text-center">
-        <Reveal>
-          <div className="container-narrow">
-            <div className="accent-line mx-auto mb-4" />
-            <h2 className="heading-safe mb-4 font-display text-3xl font-bold text-surface-dark-foreground">{pageContent?.cta_title || t.ctaTitle}</h2>
-            <p className="mb-6 text-surface-dark-foreground/75">{pageContent?.cta_description || t.ctaText}</p>
-            <div className="flex flex-col justify-center gap-3 sm:flex-row sm:gap-4">
-              <Link to="/contact" className="btn-on-dark-primary min-h-12 w-full justify-center px-8 sm:w-auto">
-                {t.contact}
-              </Link>
-              <a
-                href={settings.whatsapp_url()}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="btn-on-dark-secondary min-h-12 w-full justify-center px-8 sm:w-auto"
-              >
-                <WhatsAppIcon className="mr-2 h-[18px] w-[18px] text-whatsapp" /> {t.whatsapp}
-              </a>
-            </div>
-          </div>
-        </Reveal>
-      </section>
+      <CTABanner
+        title={pageContent?.cta_title || t.ctaTitle}
+        description={pageContent?.cta_description || t.ctaText}
+        quoteLabel={t.contact}
+        quotePath="/contact"
+        whatsappLabel={t.whatsapp}
+        whatsappSource="FAQ CTA"
+      />
     </main>
   );
 };

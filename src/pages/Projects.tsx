@@ -1,21 +1,20 @@
 ﻿import { useRef, useState } from "react";
 import Link from "@/components/LocalizedLink";
 import { Button } from "@/components/ui/button";
-import { MapPin, ArrowRight } from "lucide-react";
-import WhatsAppIcon from "@/components/WhatsAppIcon";
+import { MapPin } from "lucide-react";
 import SmartImage from "@/components/SmartImage";
 import { usePublishedProjects, usePublishedSitePage } from "@/hooks/usePublishedContent";
 import { useLanguage } from "@/i18n/LanguageContext";
 import Reveal from "@/components/Reveal";
 import PageMeta from "@/components/PageMeta";
 import { JsonLdBreadcrumb } from "@/components/JsonLd";
-import { useSiteSettings } from "@/hooks/useSiteSettings";
 import residentialImg from "@/assets/residential-renovation.webp";
 import commercialImg from "@/assets/commercial-renovation.webp";
 import kitchenImg from "@/assets/kitchen-cabinet.webp";
 import warehouseImg from "@/assets/warehouse-shelving.webp";
 import exteriorImg from "@/assets/exterior-works.webp";
 import HeroBanner from "@/components/blocks/HeroBanner";
+import CTABanner from "@/components/blocks/CTABanner";
 import { translateDisplayText, translateProjectType } from "@/i18n/displayLabels";
 import { pageHeroImages, resolvePageHeroImage } from "@/lib/pageHeroImages";
 
@@ -103,7 +102,6 @@ const copy = {
 const Projects = () => {
   const [filter, setFilter] = useState<(typeof categories)[number]>("All");
   const { language } = useLanguage();
-  const settings = useSiteSettings();
   const { data: projects = [] } = usePublishedProjects(language);
   const { data: pageContent } = usePublishedSitePage(language, "projects");
   const categoryBarRef = useRef<HTMLDivElement | null>(null);
@@ -232,28 +230,13 @@ const Projects = () => {
         </div>
       </section>
 
-      <section className="section-padding relative overflow-hidden bg-surface-dark text-center">
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_0%,rgba(198,164,106,0.1),transparent_50%)]" aria-hidden />
-        <Reveal>
-          <div className="container-narrow relative">
-            <h2 className="heading-safe mb-4 font-display text-3xl font-bold text-surface-dark-foreground">{pageContent?.cta_title || pageCopy.ctaTitle}</h2>
-            <p className="mx-auto mb-6 max-w-lg text-surface-dark-foreground/75">{pageContent?.cta_description || pageCopy.ctaText}</p>
-            <div className="flex flex-col justify-center gap-3 sm:flex-row sm:gap-4">
-              <Link to="/quote" className="btn-on-dark-primary min-h-12 w-full justify-center px-8 sm:w-auto">
-                {pageCopy.quote} <ArrowRight className="h-4 w-4" />
-              </Link>
-              <a
-                href={settings.whatsapp_url()}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="btn-on-dark-secondary min-h-12 w-full justify-center px-8 sm:w-auto"
-              >
-                <WhatsAppIcon className="mr-2 h-[18px] w-[18px] text-whatsapp" /> {pageCopy.whatsapp}
-              </a>
-            </div>
-          </div>
-        </Reveal>
-      </section>
+      <CTABanner
+        title={pageContent?.cta_title || pageCopy.ctaTitle}
+        description={pageContent?.cta_description || pageCopy.ctaText}
+        quoteLabel={pageCopy.quote}
+        whatsappLabel={pageCopy.whatsapp}
+        whatsappSource="Projects CTA"
+      />
 
       <section className="subpage-link-band py-8">
         <div className="container-narrow text-center">

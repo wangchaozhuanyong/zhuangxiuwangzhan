@@ -361,7 +361,7 @@ const ProjectDetail = () => {
               </Reveal>
 
               <Reveal direction="right" delay={240}>
-                <div className="rounded-card border border-border/80 bg-surface-dark p-5 text-center">
+                <div className="subpage-dark-card rounded-card border border-border/80 bg-surface-dark p-5 text-center">
                   <h3 className="mb-2 font-semibold text-surface-dark-foreground">{t.similarTitle}</h3>
                   <p className="mb-4 text-sm text-surface-dark-foreground/75">{t.similarText}</p>
                   <Link to="/quote" className="btn-on-dark-primary mb-2 w-full min-h-11 justify-center px-6 text-sm">
@@ -396,7 +396,10 @@ const ProjectDetail = () => {
       <section className="section-padding bg-muted">
         <div className="container-narrow">
           <Reveal>
-            <h2 className="font-display text-2xl font-bold mb-8">{t.moreProjects}</h2>
+            <div className="subpage-local-heading">
+              <div className="accent-line mb-4" />
+              <h2 className="font-display text-2xl font-bold">{t.moreProjects}</h2>
+            </div>
           </Reveal>
           <div className="card-grid grid-cols-1 gap-5 sm:grid-cols-3">
             {related.map((item, index) => (

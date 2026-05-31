@@ -274,8 +274,10 @@ const Contact = () => {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
             <Reveal direction="left">
               <div>
-                <div className="accent-line mb-4" />
-                <h2 className="font-display text-2xl font-bold mb-6">{t.infoTitle}</h2>
+                <div className="subpage-local-heading">
+                  <div className="accent-line mb-4" />
+                  <h2 className="font-display text-2xl font-bold">{t.infoTitle}</h2>
+                </div>
                 <div className="space-y-5">
                   {contactItems.map((item) => (
                     <div key={item.title} className="group flex items-start gap-4 rounded-card border border-border/80 bg-card p-4 shadow-[0_18px_44px_-38px_rgba(21,18,14,0.38)] hover-lift">

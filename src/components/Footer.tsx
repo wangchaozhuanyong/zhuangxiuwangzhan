@@ -163,7 +163,16 @@ const Footer = () => {
   const areas = language === "zh" ? locationLinksZh : locationLinks;
   const serviceLinks = normalizeFooterServiceLinks(t.serviceLinks, language);
   const logoSrc = !logoFailed && settings.logo_url ? addCacheBuster(settings.logo_url, settings.updated_at) : logoFallback;
-  const showFooterCta = stripLanguagePrefix(location.pathname) !== "/";
+  const normalizedPath = stripLanguagePrefix(location.pathname);
+  const hasDedicatedSubpageCta =
+    normalizedPath === "/services" ||
+    normalizedPath.startsWith("/services/") ||
+    normalizedPath === "/projects" ||
+    normalizedPath === "/materials" ||
+    normalizedPath.startsWith("/materials/category/") ||
+    normalizedPath === "/faq" ||
+    normalizedPath.startsWith("/landing/");
+  const showFooterCta = normalizedPath !== "/" && !hasDedicatedSubpageCta;
   const footerCtaTitle = globalCtaBlock?.title || t.ctaTitle;
   const footerCtaDescription = globalCtaBlock?.description || t.ctaText;
   const footerCtaButton = globalCtaBlock?.primary_label || t.ctaButton;

@@ -1,7 +1,6 @@
 ﻿import { useMemo } from "react";
 import Link from "@/components/LocalizedLink";
 import { ArrowRight } from "lucide-react";
-import WhatsAppIcon from "@/components/WhatsAppIcon";
 import { materialsData } from "@/data/materials";
 import { usePublishedMaterials, usePublishedSitePage } from "@/hooks/usePublishedContent";
 import SmartImage from "@/components/SmartImage";
@@ -9,9 +8,9 @@ import { useLanguage } from "@/i18n/LanguageContext";
 import Reveal from "@/components/Reveal";
 import PageMeta from "@/components/PageMeta";
 import { JsonLdBreadcrumb } from "@/components/JsonLd";
-import { useSiteSettings } from "@/hooks/useSiteSettings";
 import HeroBanner from "@/components/blocks/HeroBanner";
 import SectionHeader from "@/components/blocks/SectionHeader";
+import CTABanner from "@/components/blocks/CTABanner";
 import { translateDisplayText, translateMaterialCategory } from "@/i18n/displayLabels";
 import { pageHeroImages, resolvePageHeroImage } from "@/lib/pageHeroImages";
 
@@ -60,7 +59,6 @@ const copy = {
 
 const Materials = () => {
   const { language } = useLanguage();
-  const settings = useSiteSettings();
   const t = copy[language];
   const { data: publishedCategories } = usePublishedMaterials(language);
   const { data: pageContent } = usePublishedSitePage(language, "materials");
@@ -143,28 +141,13 @@ const Materials = () => {
         </div>
       </section>
 
-      <section className="section-padding relative overflow-hidden bg-surface-dark text-center">
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_0%,rgba(198,164,106,0.1),transparent_50%)]" aria-hidden />
-        <Reveal>
-          <div className="container-narrow relative">
-            <h2 className="heading-safe mb-4 font-display text-3xl font-bold text-surface-dark-foreground">{pageContent?.cta_title || t.ctaTitle}</h2>
-            <p className="mx-auto mb-6 max-w-lg text-surface-dark-foreground/75">{pageContent?.cta_description || t.ctaText}</p>
-            <div className="flex flex-col justify-center gap-3 sm:flex-row sm:gap-4">
-              <Link to="/quote" className="btn-on-dark-primary min-h-12 w-full justify-center px-8 sm:w-auto">
-                {t.quote} <ArrowRight className="h-4 w-4" />
-              </Link>
-              <a
-                href={settings.whatsapp_url()}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="btn-on-dark-secondary min-h-12 w-full justify-center px-8 sm:w-auto"
-              >
-                <WhatsAppIcon className="mr-2 h-[18px] w-[18px] text-whatsapp" /> {t.whatsapp}
-              </a>
-            </div>
-          </div>
-        </Reveal>
-      </section>
+      <CTABanner
+        title={pageContent?.cta_title || t.ctaTitle}
+        description={pageContent?.cta_description || t.ctaText}
+        quoteLabel={t.quote}
+        whatsappLabel={t.whatsapp}
+        whatsappSource="Materials CTA"
+      />
     </main>
   );
 };

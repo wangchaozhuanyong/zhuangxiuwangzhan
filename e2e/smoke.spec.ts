@@ -2,14 +2,17 @@ import { test, expect } from "@playwright/test";
 
 test.describe("public site smoke", () => {
   test("zh homepage loads without replacement characters", async ({ page }) => {
-    await page.goto("/zh", { waitUntil: "networkidle" });
+    await page.goto("/zh", { waitUntil: "domcontentloaded" });
+    await page.waitForLoadState("load");
     await expect(page).toHaveTitle(/FLASH CAST/);
     const bodyText = await page.locator("body").innerText();
     expect(bodyText).not.toContain("�");
   });
 
   test("hreflang links exist on a content page", async ({ page }) => {
-    await page.goto("/zh/quote", { waitUntil: "networkidle" });
+    await page.goto("/zh/quote", { waitUntil: "domcontentloaded" });
+    await page.waitForLoadState("load");
+    await expect(page.locator('link[rel="alternate"]')).toHaveCount(3);
     const hreflangs = await page
       .locator('link[rel="alternate"]')
       .evaluateAll((nodes) => nodes.map((node) => node.getAttribute("hreflang")));
@@ -39,7 +42,8 @@ test.describe("admin authenticated smoke", () => {
     await page.getByRole("button", { name: /登录|Sign in/i }).click();
     await page.waitForURL("**/admin/dashboard", { timeout: 20_000 });
 
-    await page.goto("/admin/system-health", { waitUntil: "networkidle" });
+    await page.goto("/admin/system-health", { waitUntil: "domcontentloaded" });
+    await page.waitForLoadState("load");
     await expect(page.getByText(/系统健康|System Health/i)).toBeVisible();
     await expect(page.getByText(/备份和恢复状态|Backup/i)).toBeVisible();
   });

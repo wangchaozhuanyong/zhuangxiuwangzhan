@@ -517,6 +517,18 @@
     <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/projects/cheras-glass-shopfront-facade" />
   </url>
   <url>
+    <loc>https://flashcast.com.my/en/projects/restaurant-fitout-subang</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://flashcast.com.my/en/projects/restaurant-fitout-subang" />
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://flashcast.com.my/zh/projects/restaurant-fitout-subang" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/projects/restaurant-fitout-subang" />
+  </url>
+  <url>
+    <loc>https://flashcast.com.my/zh/projects/restaurant-fitout-subang</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://flashcast.com.my/en/projects/restaurant-fitout-subang" />
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://flashcast.com.my/zh/projects/restaurant-fitout-subang" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/projects/restaurant-fitout-subang" />
+  </url>
+  <url>
     <loc>https://flashcast.com.my/en/projects/setia-alam-gate-wall-feature</loc>
     <xhtml:link rel="alternate" hreflang="en" href="https://flashcast.com.my/en/projects/setia-alam-gate-wall-feature" />
     <xhtml:link rel="alternate" hreflang="zh-CN" href="https://flashcast.com.my/zh/projects/setia-alam-gate-wall-feature" />
@@ -529,6 +541,30 @@
     <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/projects/setia-alam-gate-wall-feature" />
   </url>
   <url>
+    <loc>https://flashcast.com.my/en/projects/shopfront-renovation-cheras</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://flashcast.com.my/en/projects/shopfront-renovation-cheras" />
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://flashcast.com.my/zh/projects/shopfront-renovation-cheras" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/projects/shopfront-renovation-cheras" />
+  </url>
+  <url>
+    <loc>https://flashcast.com.my/zh/projects/shopfront-renovation-cheras</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://flashcast.com.my/en/projects/shopfront-renovation-cheras" />
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://flashcast.com.my/zh/projects/shopfront-renovation-cheras" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/projects/shopfront-renovation-cheras" />
+  </url>
+  <url>
+    <loc>https://flashcast.com.my/en/projects/warehouse-racking-shah-alam</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://flashcast.com.my/en/projects/warehouse-racking-shah-alam" />
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://flashcast.com.my/zh/projects/warehouse-racking-shah-alam" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/projects/warehouse-racking-shah-alam" />
+  </url>
+  <url>
+    <loc>https://flashcast.com.my/zh/projects/warehouse-racking-shah-alam</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://flashcast.com.my/en/projects/warehouse-racking-shah-alam" />
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://flashcast.com.my/zh/projects/warehouse-racking-shah-alam" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/projects/warehouse-racking-shah-alam" />
+  </url>
+  <url>
     <loc>https://flashcast.com.my/en/projects/mont-kiara-consulting-office-suite</loc>
     <xhtml:link rel="alternate" hreflang="en" href="https://flashcast.com.my/en/projects/mont-kiara-consulting-office-suite" />
     <xhtml:link rel="alternate" hreflang="zh-CN" href="https://flashcast.com.my/zh/projects/mont-kiara-consulting-office-suite" />
@@ -539,6 +575,30 @@
     <xhtml:link rel="alternate" hreflang="en" href="https://flashcast.com.my/en/projects/mont-kiara-consulting-office-suite" />
     <xhtml:link rel="alternate" hreflang="zh-CN" href="https://flashcast.com.my/zh/projects/mont-kiara-consulting-office-suite" />
     <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/projects/mont-kiara-consulting-office-suite" />
+  </url>
+  <url>
+    <loc>https://flashcast.com.my/en/projects/modern-condo-mont-kiara</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://flashcast.com.my/en/projects/modern-condo-mont-kiara" />
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://flashcast.com.my/zh/projects/modern-condo-mont-kiara" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/projects/modern-condo-mont-kiara" />
+  </url>
+  <url>
+    <loc>https://flashcast.com.my/zh/projects/modern-condo-mont-kiara</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://flashcast.com.my/en/projects/modern-condo-mont-kiara" />
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://flashcast.com.my/zh/projects/modern-condo-mont-kiara" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/projects/modern-condo-mont-kiara" />
+  </url>
+  <url>
+    <loc>https://flashcast.com.my/en/projects/corporate-office-petaling-jaya</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://flashcast.com.my/en/projects/corporate-office-petaling-jaya" />
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://flashcast.com.my/zh/projects/corporate-office-petaling-jaya" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/projects/corporate-office-petaling-jaya" />
+  </url>
+  <url>
+    <loc>https://flashcast.com.my/zh/projects/corporate-office-petaling-jaya</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://flashcast.com.my/en/projects/corporate-office-petaling-jaya" />
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://flashcast.com.my/zh/projects/corporate-office-petaling-jaya" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/projects/corporate-office-petaling-jaya" />
   </url>
   <url>
     <loc>https://flashcast.com.my/en/projects/kota-damansara-clinic-fit-out</loc>
@@ -623,6 +683,42 @@
     <xhtml:link rel="alternate" hreflang="en" href="https://flashcast.com.my/en/projects/sri-petaling-beauty-salon-fit-out" />
     <xhtml:link rel="alternate" hreflang="zh-CN" href="https://flashcast.com.my/zh/projects/sri-petaling-beauty-salon-fit-out" />
     <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/projects/sri-petaling-beauty-salon-fit-out" />
+  </url>
+  <url>
+    <loc>https://flashcast.com.my/en/projects/home-office-puchong</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://flashcast.com.my/en/projects/home-office-puchong" />
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://flashcast.com.my/zh/projects/home-office-puchong" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/projects/home-office-puchong" />
+  </url>
+  <url>
+    <loc>https://flashcast.com.my/zh/projects/home-office-puchong</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://flashcast.com.my/en/projects/home-office-puchong" />
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://flashcast.com.my/zh/projects/home-office-puchong" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/projects/home-office-puchong" />
+  </url>
+  <url>
+    <loc>https://flashcast.com.my/en/projects/luxury-master-bedroom-damansara</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://flashcast.com.my/en/projects/luxury-master-bedroom-damansara" />
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://flashcast.com.my/zh/projects/luxury-master-bedroom-damansara" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/projects/luxury-master-bedroom-damansara" />
+  </url>
+  <url>
+    <loc>https://flashcast.com.my/zh/projects/luxury-master-bedroom-damansara</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://flashcast.com.my/en/projects/luxury-master-bedroom-damansara" />
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://flashcast.com.my/zh/projects/luxury-master-bedroom-damansara" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/projects/luxury-master-bedroom-damansara" />
+  </url>
+  <url>
+    <loc>https://flashcast.com.my/en/projects/custom-kitchen-bangsar</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://flashcast.com.my/en/projects/custom-kitchen-bangsar" />
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://flashcast.com.my/zh/projects/custom-kitchen-bangsar" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/projects/custom-kitchen-bangsar" />
+  </url>
+  <url>
+    <loc>https://flashcast.com.my/zh/projects/custom-kitchen-bangsar</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://flashcast.com.my/en/projects/custom-kitchen-bangsar" />
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://flashcast.com.my/zh/projects/custom-kitchen-bangsar" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/projects/custom-kitchen-bangsar" />
   </url>
   <url>
     <loc>https://flashcast.com.my/en/blog/renovation-cost-malaysia-2025</loc>
@@ -1705,18 +1801,6 @@
     <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/materials/kitchen-solid-wood-cabinets" />
   </url>
   <url>
-    <loc>https://flashcast.com.my/en/locations/selangor</loc>
-    <xhtml:link rel="alternate" hreflang="en" href="https://flashcast.com.my/en/locations/selangor" />
-    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://flashcast.com.my/zh/locations/selangor" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/locations/selangor" />
-  </url>
-  <url>
-    <loc>https://flashcast.com.my/zh/locations/selangor</loc>
-    <xhtml:link rel="alternate" hreflang="en" href="https://flashcast.com.my/en/locations/selangor" />
-    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://flashcast.com.my/zh/locations/selangor" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/locations/selangor" />
-  </url>
-  <url>
     <loc>https://flashcast.com.my/en/locations/subang-jaya</loc>
     <xhtml:link rel="alternate" hreflang="en" href="https://flashcast.com.my/en/locations/subang-jaya" />
     <xhtml:link rel="alternate" hreflang="zh-CN" href="https://flashcast.com.my/zh/locations/subang-jaya" />
@@ -1727,18 +1811,6 @@
     <xhtml:link rel="alternate" hreflang="en" href="https://flashcast.com.my/en/locations/subang-jaya" />
     <xhtml:link rel="alternate" hreflang="zh-CN" href="https://flashcast.com.my/zh/locations/subang-jaya" />
     <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/locations/subang-jaya" />
-  </url>
-  <url>
-    <loc>https://flashcast.com.my/en/locations/bangsar</loc>
-    <xhtml:link rel="alternate" hreflang="en" href="https://flashcast.com.my/en/locations/bangsar" />
-    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://flashcast.com.my/zh/locations/bangsar" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/locations/bangsar" />
-  </url>
-  <url>
-    <loc>https://flashcast.com.my/zh/locations/bangsar</loc>
-    <xhtml:link rel="alternate" hreflang="en" href="https://flashcast.com.my/en/locations/bangsar" />
-    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://flashcast.com.my/zh/locations/bangsar" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/locations/bangsar" />
   </url>
   <url>
     <loc>https://flashcast.com.my/en/locations/klang</loc>
@@ -1763,6 +1835,18 @@
     <xhtml:link rel="alternate" hreflang="en" href="https://flashcast.com.my/en/locations/shah-alam" />
     <xhtml:link rel="alternate" hreflang="zh-CN" href="https://flashcast.com.my/zh/locations/shah-alam" />
     <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/locations/shah-alam" />
+  </url>
+  <url>
+    <loc>https://flashcast.com.my/en/locations/bangsar</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://flashcast.com.my/en/locations/bangsar" />
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://flashcast.com.my/zh/locations/bangsar" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/locations/bangsar" />
+  </url>
+  <url>
+    <loc>https://flashcast.com.my/zh/locations/bangsar</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://flashcast.com.my/en/locations/bangsar" />
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://flashcast.com.my/zh/locations/bangsar" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/locations/bangsar" />
   </url>
   <url>
     <loc>https://flashcast.com.my/en/locations/setapak</loc>
@@ -1933,18 +2017,6 @@
     <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/locations/seri-kembangan" />
   </url>
   <url>
-    <loc>https://flashcast.com.my/en/locations/petaling-jaya</loc>
-    <xhtml:link rel="alternate" hreflang="en" href="https://flashcast.com.my/en/locations/petaling-jaya" />
-    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://flashcast.com.my/zh/locations/petaling-jaya" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/locations/petaling-jaya" />
-  </url>
-  <url>
-    <loc>https://flashcast.com.my/zh/locations/petaling-jaya</loc>
-    <xhtml:link rel="alternate" hreflang="en" href="https://flashcast.com.my/en/locations/petaling-jaya" />
-    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://flashcast.com.my/zh/locations/petaling-jaya" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/locations/petaling-jaya" />
-  </url>
-  <url>
     <loc>https://flashcast.com.my/en/locations/balakong</loc>
     <xhtml:link rel="alternate" hreflang="en" href="https://flashcast.com.my/en/locations/balakong" />
     <xhtml:link rel="alternate" hreflang="zh-CN" href="https://flashcast.com.my/zh/locations/balakong" />
@@ -2005,18 +2077,6 @@
     <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/locations/bukit-jalil" />
   </url>
   <url>
-    <loc>https://flashcast.com.my/en/locations/kuala-lumpur</loc>
-    <xhtml:link rel="alternate" hreflang="en" href="https://flashcast.com.my/en/locations/kuala-lumpur" />
-    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://flashcast.com.my/zh/locations/kuala-lumpur" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/locations/kuala-lumpur" />
-  </url>
-  <url>
-    <loc>https://flashcast.com.my/zh/locations/kuala-lumpur</loc>
-    <xhtml:link rel="alternate" hreflang="en" href="https://flashcast.com.my/en/locations/kuala-lumpur" />
-    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://flashcast.com.my/zh/locations/kuala-lumpur" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/locations/kuala-lumpur" />
-  </url>
-  <url>
     <loc>https://flashcast.com.my/en/locations/puchong</loc>
     <xhtml:link rel="alternate" hreflang="en" href="https://flashcast.com.my/en/locations/puchong" />
     <xhtml:link rel="alternate" hreflang="zh-CN" href="https://flashcast.com.my/zh/locations/puchong" />
@@ -2027,18 +2087,6 @@
     <xhtml:link rel="alternate" hreflang="en" href="https://flashcast.com.my/en/locations/puchong" />
     <xhtml:link rel="alternate" hreflang="zh-CN" href="https://flashcast.com.my/zh/locations/puchong" />
     <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/locations/puchong" />
-  </url>
-  <url>
-    <loc>https://flashcast.com.my/en/locations/cheras</loc>
-    <xhtml:link rel="alternate" hreflang="en" href="https://flashcast.com.my/en/locations/cheras" />
-    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://flashcast.com.my/zh/locations/cheras" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/locations/cheras" />
-  </url>
-  <url>
-    <loc>https://flashcast.com.my/zh/locations/cheras</loc>
-    <xhtml:link rel="alternate" hreflang="en" href="https://flashcast.com.my/en/locations/cheras" />
-    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://flashcast.com.my/zh/locations/cheras" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/locations/cheras" />
   </url>
   <url>
     <loc>https://flashcast.com.my/en/locations/mont-kiara</loc>
@@ -2063,6 +2111,54 @@
     <xhtml:link rel="alternate" hreflang="en" href="https://flashcast.com.my/en/locations/wangsa-maju" />
     <xhtml:link rel="alternate" hreflang="zh-CN" href="https://flashcast.com.my/zh/locations/wangsa-maju" />
     <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/locations/wangsa-maju" />
+  </url>
+  <url>
+    <loc>https://flashcast.com.my/en/locations/selangor</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://flashcast.com.my/en/locations/selangor" />
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://flashcast.com.my/zh/locations/selangor" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/locations/selangor" />
+  </url>
+  <url>
+    <loc>https://flashcast.com.my/zh/locations/selangor</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://flashcast.com.my/en/locations/selangor" />
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://flashcast.com.my/zh/locations/selangor" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/locations/selangor" />
+  </url>
+  <url>
+    <loc>https://flashcast.com.my/en/locations/petaling-jaya</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://flashcast.com.my/en/locations/petaling-jaya" />
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://flashcast.com.my/zh/locations/petaling-jaya" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/locations/petaling-jaya" />
+  </url>
+  <url>
+    <loc>https://flashcast.com.my/zh/locations/petaling-jaya</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://flashcast.com.my/en/locations/petaling-jaya" />
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://flashcast.com.my/zh/locations/petaling-jaya" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/locations/petaling-jaya" />
+  </url>
+  <url>
+    <loc>https://flashcast.com.my/en/locations/kuala-lumpur</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://flashcast.com.my/en/locations/kuala-lumpur" />
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://flashcast.com.my/zh/locations/kuala-lumpur" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/locations/kuala-lumpur" />
+  </url>
+  <url>
+    <loc>https://flashcast.com.my/zh/locations/kuala-lumpur</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://flashcast.com.my/en/locations/kuala-lumpur" />
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://flashcast.com.my/zh/locations/kuala-lumpur" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/locations/kuala-lumpur" />
+  </url>
+  <url>
+    <loc>https://flashcast.com.my/en/locations/cheras</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://flashcast.com.my/en/locations/cheras" />
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://flashcast.com.my/zh/locations/cheras" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/locations/cheras" />
+  </url>
+  <url>
+    <loc>https://flashcast.com.my/zh/locations/cheras</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://flashcast.com.my/en/locations/cheras" />
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://flashcast.com.my/zh/locations/cheras" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/locations/cheras" />
   </url>
   <url>
     <loc>https://flashcast.com.my/en/landing/flooring</loc>

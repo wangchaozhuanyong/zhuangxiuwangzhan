@@ -2,6 +2,7 @@ import { isSupabaseConfigured, supabase } from "@/lib/supabase";
 import { stripHtml } from "@/lib/text";
 import { translateDisplayText } from "@/i18n/displayLabels";
 import { formatBlogReadTime } from "@/lib/blogMeta";
+import { toArray, toText, type UnknownRecord } from "@/lib/recordUtils";
 
 const byCreatedAtDesc = { ascending: false };
 
@@ -100,17 +101,17 @@ const getFallbackServices = async (language: "en" | "zh" = "en") => {
   }));
 };
 
-const pickLocalizedValue = <T = any>(item: any, field: string, language: "en" | "zh", fallback: T): T => {
+const pickLocalizedValue = <T = unknown>(item: UnknownRecord | null | undefined, field: string, language: "en" | "zh", fallback: T): T => {
   const value = item?.[`${field}_${language}`];
-  return value === null || value === undefined || value === "" ? fallback : value;
+  return value === null || value === undefined || value === "" ? fallback : (value as T);
 };
 
-const pickLocalizedText = (item: any, field: string, language: "en" | "zh", fallback = ""): string =>
-  String(pickLocalizedValue(item, field, language, fallback) || "");
+const pickLocalizedText = (item: UnknownRecord | null | undefined, field: string, language: "en" | "zh", fallback = ""): string =>
+  toText(pickLocalizedValue(item, field, language, fallback));
 
-const pickLocalizedList = <T = any>(item: any, field: string, language: "en" | "zh"): T[] => {
+const pickLocalizedList = <T = unknown>(item: UnknownRecord | null | undefined, field: string, language: "en" | "zh"): T[] => {
   const value = item?.[`${field}_${language}`];
-  return Array.isArray(value) ? value : [];
+  return toArray<T>(value);
 };
 
 export const getPublishedProjects = async (language: "en" | "zh") => {

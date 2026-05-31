@@ -25,19 +25,22 @@ export default function AdminPublishCenter() {
   const [filter, setFilter] = useState("all");
 
   const summary = useMemo(
-    () => ({
-      total: items.length,
-      draft: items.filter((item) => item.status === "draft").length,
-      published: items.filter((item) => item.status === "published").length,
-      archived: items.filter((item) => item.status === "archived").length,
-      issues: items.filter((item) => item.issues.length > 0).length,
-    }),
+    () => {
+      const publishableItems = items.filter((item) => item.status !== "archived");
+      return {
+        total: items.length,
+        draft: items.filter((item) => item.status === "draft").length,
+        published: items.filter((item) => item.status === "published").length,
+        archived: items.filter((item) => item.status === "archived").length,
+        issues: publishableItems.filter((item) => item.issues.length > 0).length,
+      };
+    },
     [items],
   );
 
   const filtered = useMemo(() => {
     return items
-      .filter((item) => filter === "all" || (filter === "issues" ? item.issues.length > 0 : item.status === filter))
+      .filter((item) => filter === "all" || (filter === "issues" ? item.status !== "archived" && item.issues.length > 0 : item.status === filter))
       .sort((a, b) => String(b.updated_at || "").localeCompare(String(a.updated_at || "")));
   }, [filter, items]);
 
@@ -59,7 +62,7 @@ export default function AdminPublishCenter() {
         <AdminStatCard label="草稿" value={summary.draft} helpText="还没有正式发布到前台的内容。" />
         <AdminStatCard label="已发布" value={summary.published} helpText="理论上前台可以读取到的内容。" />
         <AdminStatCard label="已归档" value={summary.archived} helpText="已从正常展示流程移出的内容。" />
-        <AdminStatCard label="发布风险" value={summary.issues} helpText="发布前建议先修复这些缺失项。" href="/admin/content-health" />
+        <AdminStatCard label="发布风险" value={summary.issues} helpText="只统计草稿和已发布内容的缺失项，已归档内容不算发布风险。" href="/admin/content-health" />
       </div>
 
       <div className="flex flex-wrap gap-2 rounded-xl border border-border bg-card p-5">

@@ -62,12 +62,13 @@ export default function AdminContentHealth() {
         }
       />
 
-      <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-6">
+      <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-7">
         <AdminStatCard label="总内容" value={summary.total} helpText="后台可检查的动态内容总数。" />
-        <AdminStatCard label="有问题" value={summary.broken} helpText="存在任意缺失项的内容数量。" className={summary.broken ? "border-destructive/30" : ""} />
+        <AdminStatCard label="有问题" value={summary.broken} helpText="存在任意缺失项的内容数量，包含缺必填、缺英文、缺 SEO 和缺图片。" className={summary.broken ? "border-destructive/30" : ""} />
         <AdminStatCard label="缺必填" value={summary.required} helpText="标题、链接、状态等关键字段缺失。" />
         <AdminStatCard label="缺英文" value={summary.english} helpText="英文站需要的字段还没生成或没填写。" href="/admin/english-center" />
         <AdminStatCard label="缺 SEO" value={summary.seo} helpText="搜索标题或描述还没补齐。" href="/admin/seo" />
+        <AdminStatCard label="缺图片" value={summary.media} helpText="前台卡片、封面或页面区块需要的图片还没设置。" />
         <AdminStatCard label="健康" value={summary.ok} helpText="基础字段都已经补齐的内容。" />
       </div>
 

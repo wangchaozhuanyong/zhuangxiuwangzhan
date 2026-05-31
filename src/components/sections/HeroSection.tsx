@@ -25,6 +25,17 @@ type HeroSectionProps = {
   pageContent?: PublishedSitePage | null;
 };
 
+type HeroMediaVariant = "desktop" | "tablet" | "mobile";
+
+const getHeroMediaVariant = (): HeroMediaVariant => {
+  if (typeof window === "undefined") return "desktop";
+  if (window.matchMedia("(max-width: 767px)").matches) return "mobile";
+  if (window.matchMedia("(min-width: 768px) and (max-width: 1180px) and (orientation: portrait)").matches) {
+    return "tablet";
+  }
+  return "desktop";
+};
+
 const isExternalUrl = (url: string) => /^(https?:)?\/\//i.test(url) || url.startsWith("mailto:") || url.startsWith("tel:");
 
 const HeroSection = ({ pageContent }: HeroSectionProps) => {
@@ -33,17 +44,40 @@ const HeroSection = ({ pageContent }: HeroSectionProps) => {
   const copy = heroCopy[language];
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const [videoLoaded, setVideoLoaded] = useState(false);
+  const [mediaVariant, setMediaVariant] = useState<HeroMediaVariant>(getHeroMediaVariant);
   const { data: slides } = usePublishedHeroSlides(language);
   const slide = slides?.[0] ?? null;
-  const mediaVersion = "20260531-desktop-hd";
-  const posterImage = `/videos/home-hero-poster.webp?v=${mediaVersion}`;
-  const mobilePosterImage = `/videos/home-hero-poster-mobile.webp?v=${mediaVersion}`;
-  const tabletPosterImage = `/videos/home-hero-poster-tablet.webp?v=${mediaVersion}`;
+  const mediaVersion = "20260531-mobile-source-fix";
+  const mediaByVariant = {
+    desktop: {
+      poster: `/videos/home-hero-poster.webp?v=${mediaVersion}`,
+      webm: `/videos/home-hero.webm?v=${mediaVersion}`,
+      mp4: `/videos/home-hero.mp4?v=${mediaVersion}`,
+    },
+    tablet: {
+      poster: `/videos/home-hero-poster-tablet.webp?v=${mediaVersion}`,
+      webm: `/videos/home-hero-tablet.webm?v=${mediaVersion}`,
+      mp4: `/videos/home-hero-tablet.mp4?v=${mediaVersion}`,
+    },
+    mobile: {
+      poster: `/videos/home-hero-poster-mobile.webp?v=${mediaVersion}`,
+      webm: `/videos/home-hero-mobile.webm?v=${mediaVersion}`,
+      mp4: `/videos/home-hero-mobile.mp4?v=${mediaVersion}`,
+    },
+  } satisfies Record<HeroMediaVariant, { poster: string; webm: string; mp4: string }>;
+  const activeMedia = mediaByVariant[mediaVariant];
   const primaryLabel = slide?.buttonLabel || copy.quote;
   const primaryUrl = slide?.buttonUrl || "/quote";
   const primaryIsExternal = isExternalUrl(primaryUrl);
-  const heroTitle = slide?.title || pageContent?.title || "FLASH CAST";
-  const heroDescription = slide?.excerpt || pageContent?.description || "";
+  const heroTitle =
+    slide?.title ||
+    (language === "zh" ? "马来西亚专业装修与空间改造公司" : "Renovation & Interior Fit-Out in Malaysia");
+  const heroDescription =
+    slide?.excerpt ||
+    pageContent?.description ||
+    (language === "zh"
+      ? "从现场测量、空间规划、材料建议到施工交付，FLASH CAST 让住宅与商业装修更清楚、更安心。"
+      : "FLASH CAST manages measurement, planning, material advice, renovation works, and handover follow-up for residential and commercial projects.");
   const heroButtonClass =
     "home-hero-action group relative inline-flex h-11 w-full max-w-[260px] items-center justify-center gap-2 overflow-hidden rounded-full border px-5 text-sm font-semibold leading-none shadow-[0_18px_50px_-28px_rgba(0,0,0,0.85)] backdrop-blur-md transition duration-300 ease-out hover:-translate-y-0.5 active:translate-y-0 sm:w-auto sm:min-w-[148px] sm:max-w-[210px]";
   const primaryButtonClass = `${heroButtonClass} home-hero-action-primary border-white/70 bg-white/[0.92] text-[#17130e] hover:bg-white`;
@@ -70,8 +104,34 @@ const HeroSection = ({ pageContent }: HeroSectionProps) => {
   }, [markHeroVideoReady]);
 
   useEffect(() => {
+    const mediaQueries = [
+      window.matchMedia("(max-width: 767px)"),
+      window.matchMedia("(min-width: 768px) and (max-width: 1180px) and (orientation: portrait)"),
+    ];
+    const syncMediaVariant = () => {
+      const nextVariant = getHeroMediaVariant();
+      setMediaVariant((currentVariant) => (currentVariant === nextVariant ? currentVariant : nextVariant));
+    };
+
+    syncMediaVariant();
+    mediaQueries.forEach((query) => query.addEventListener("change", syncMediaVariant));
+
+    return () => {
+      mediaQueries.forEach((query) => query.removeEventListener("change", syncMediaVariant));
+    };
+  }, []);
+
+  useEffect(() => {
+    setVideoLoaded(false);
+  }, [mediaVariant]);
+
+  useEffect(() => {
     const replayWhenVisible = () => {
-      if (document.visibilityState === "visible") requestHeroVideoPlay();
+      if (document.visibilityState === "visible") {
+        requestHeroVideoPlay();
+      } else {
+        videoRef.current?.pause();
+      }
     };
 
     requestHeroVideoPlay();
@@ -94,10 +154,10 @@ const HeroSection = ({ pageContent }: HeroSectionProps) => {
     >
       <div className="absolute inset-0 bg-surface-dark" aria-hidden="true">
         <picture>
-          <source srcSet={mobilePosterImage} media="(max-width: 767px)" />
-          <source srcSet={tabletPosterImage} media="(min-width: 768px) and (max-width: 1180px) and (orientation: portrait)" />
+          <source srcSet={mediaByVariant.mobile.poster} media="(max-width: 767px)" />
+          <source srcSet={mediaByVariant.tablet.poster} media="(min-width: 768px) and (max-width: 1180px) and (orientation: portrait)" />
           <img
-            src={posterImage}
+            src={mediaByVariant.desktop.poster}
             alt=""
             className="home-hero-media absolute inset-0 h-full w-full object-cover"
             loading="eager"
@@ -105,17 +165,19 @@ const HeroSection = ({ pageContent }: HeroSectionProps) => {
           />
         </picture>
         <video
+          key={mediaVariant}
           ref={videoRef}
           className={`home-hero-media absolute inset-0 h-full w-full object-cover transition-opacity duration-700 ease-out ${
             videoLoaded ? "opacity-100" : "opacity-0"
           }`}
-          poster={posterImage}
+          poster={activeMedia.poster}
           autoPlay
           muted
           loop
           playsInline
           preload="auto"
-          aria-label={copy.videoAlt}
+          aria-hidden="true"
+          tabIndex={-1}
           onLoadedMetadata={markHeroVideoReady}
           onLoadedData={() => {
             setVideoLoaded(true);
@@ -134,34 +196,25 @@ const HeroSection = ({ pageContent }: HeroSectionProps) => {
             if (document.visibilityState === "visible") window.setTimeout(requestHeroVideoPlay, 150);
           }}
         >
-          <source src={`/videos/home-hero-mobile.webm?v=${mediaVersion}`} type="video/webm" media="(max-width: 767px)" />
-          <source src={`/videos/home-hero-mobile.mp4?v=${mediaVersion}`} type="video/mp4" media="(max-width: 767px)" />
-          <source
-            src={`/videos/home-hero-tablet.webm?v=${mediaVersion}`}
-            type="video/webm"
-            media="(min-width: 768px) and (max-width: 1180px) and (orientation: portrait)"
-          />
-          <source
-            src={`/videos/home-hero-tablet.mp4?v=${mediaVersion}`}
-            type="video/mp4"
-            media="(min-width: 768px) and (max-width: 1180px) and (orientation: portrait)"
-          />
-          <source src={`/videos/home-hero.webm?v=${mediaVersion}`} type="video/webm" />
-          <source src={`/videos/home-hero.mp4?v=${mediaVersion}`} type="video/mp4" />
+          <source src={activeMedia.webm} type="video/webm" />
+          <source src={activeMedia.mp4} type="video/mp4" />
         </video>
         <div className="absolute inset-0 home-hero-overlay" />
       </div>
 
       <div className="relative z-10 flex min-h-[100svh] items-center justify-center px-4 py-24">
         <div className="home-hero-content flex w-full max-w-4xl flex-col items-center justify-center text-center">
-          <h1 id="home-hero-title" className="sr-only">
-            {heroTitle}
-          </h1>
-          {heroDescription && (
-            <p className="sr-only">
-              {heroDescription}
-            </p>
-          )}
+          <div className="home-hero-copy">
+            <p className="home-hero-kicker">FLASH CAST SDN. BHD.</p>
+            <h1 id="home-hero-title" className="home-hero-title">
+              {heroTitle}
+            </h1>
+            {heroDescription && (
+              <p className="home-hero-description">
+                {heroDescription}
+              </p>
+            )}
+          </div>
 
           <div className="home-hero-actions flex w-full max-w-[500px] flex-col items-center justify-center gap-3 sm:w-auto sm:max-w-none sm:flex-row">
             {primaryIsExternal ? (

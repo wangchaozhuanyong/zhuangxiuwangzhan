@@ -1,4 +1,5 @@
 import { isSupabaseConfigured, supabase } from "@/lib/supabase";
+import { toArray, toRecord, toText, type UnknownRecord } from "@/lib/recordUtils";
 
 export type PublishedBrandPartner = {
   id: string;
@@ -89,30 +90,46 @@ export type PublishedCmsSection = {
   section_key: string;
   section_type: string;
   title: string;
-  content: Record<string, any>;
-  settings: Record<string, any>;
+  content: UnknownRecord;
+  settings: UnknownRecord;
   sort_order: number;
 };
 
-const pickLocalizedValue = <T = any>(row: any, field: string, language: "en" | "zh", fallback: T): T => {
+const pickLocalizedValue = <T = unknown>(row: UnknownRecord | null | undefined, field: string, language: "en" | "zh", fallback: T): T => {
   const value = row?.[`${field}_${language}`];
-  return value === null || value === undefined || value === "" ? fallback : value;
+  return value === null || value === undefined || value === "" ? fallback : (value as T);
 };
 
-const pickLocalizedText = (row: any, field: string, language: "en" | "zh", fallback = ""): string =>
-  String(pickLocalizedValue(row, field, language, fallback) || "");
+const pickLocalizedText = (row: UnknownRecord | null | undefined, field: string, language: "en" | "zh", fallback = ""): string =>
+  toText(pickLocalizedValue(row, field, language, fallback));
 
 const pickLocalizedList = <T = any>(row: any, field: string, language: "en" | "zh"): T[] => {
   const value = row?.[`${field}_${language}`];
-  return Array.isArray(value) ? value : [];
+  return toArray<T>(value);
 };
 
-const pickLocalizedObject = (row: any, field: string, language: "en" | "zh"): Record<string, any> => {
+const pickLocalizedObject = (row: UnknownRecord | null | undefined, field: string, language: "en" | "zh"): UnknownRecord => {
   const value = row?.[`${field}_${language}`];
-  return value && typeof value === "object" && !Array.isArray(value) ? value : {};
+  return toRecord(value);
 };
 
 const normalizeCmsSectionType = (value: string) => value.trim().toLowerCase().replace(/-/g, "_");
+
+const firstText = (...values: unknown[]) => {
+  for (const value of values) {
+    const text = toText(value);
+    if (text) return text;
+  }
+  return "";
+};
+
+const firstList = <T = any>(...values: unknown[]): T[] => {
+  for (const value of values) {
+    const list = toArray<T>(value);
+    if (list.length) return list;
+  }
+  return [];
+};
 
 const mapPublishedCmsPage = (
   cmsRow: any,
@@ -143,7 +160,7 @@ const mapPublishedCmsPage = (
     section_type: section.section_type,
     title: pickLocalizedText(section, "title", language),
     content: pickContent(section),
-    settings: section.settings || {},
+    settings: toRecord(section.settings),
     sort_order: Number(section.sort_order || 0),
   }));
 
@@ -151,18 +168,18 @@ const mapPublishedCmsPage = (
     id: cmsRow.id,
     page_key: cmsRow.page_key,
     path: cmsRow.path || legacy?.path || "",
-    title: pickLocalizedText(cmsRow, "title", language) || heroContent.title || legacy?.title || "",
-    subtitle: heroContent.subtitle || legacy?.subtitle || "",
-    description: heroContent.description || heroContent.excerpt || legacy?.description || "",
-    content: richContent.content || heroContent.content || legacy?.content || "",
-    cta_title: ctaContent.title || ctaSettings.title || legacy?.cta_title || "",
-    cta_description: ctaContent.description || ctaSettings.description || legacy?.cta_description || "",
-    image_url: heroContent.image_url || heroSettings.image_url || legacy?.image_url || null,
-    alt: heroContent.alt || heroSettings.alt || legacy?.alt || "",
+    title: firstText(pickLocalizedText(cmsRow, "title", language), heroContent.title, legacy?.title),
+    subtitle: firstText(heroContent.subtitle, legacy?.subtitle),
+    description: firstText(heroContent.description, heroContent.excerpt, legacy?.description),
+    content: firstText(richContent.content, heroContent.content, legacy?.content),
+    cta_title: firstText(ctaContent.title, ctaSettings.title, legacy?.cta_title),
+    cta_description: firstText(ctaContent.description, ctaSettings.description, legacy?.cta_description),
+    image_url: firstText(heroContent.image_url, heroSettings.image_url, legacy?.image_url) || null,
+    alt: firstText(heroContent.alt, heroSettings.alt, legacy?.alt),
     seo_title: pickLocalizedText(cmsRow, "seo_title", language) || legacy?.seo_title || "",
     seo_description: pickLocalizedText(cmsRow, "seo_description", language) || legacy?.seo_description || "",
     seo_keywords: pickLocalizedText(cmsRow, "seo_keywords", language) || legacy?.seo_keywords || "",
-    items: listContent.items || heroContent.items || richContent.items || legacy?.items || [],
+    items: firstList(listContent.items, heroContent.items, richContent.items, legacy?.items),
     sections: publishedSections,
   };
 };

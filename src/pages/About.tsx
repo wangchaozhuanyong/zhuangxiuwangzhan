@@ -248,8 +248,10 @@ const About = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
             <Reveal direction="left">
               <div>
-                <div className="accent-line mb-4" />
-                <h2 className="font-display text-2xl md:text-3xl font-bold mb-4">{(introSection?.title as string) || t.introTitle}</h2>
+                <div className="subpage-local-heading--balanced">
+                  <div className="accent-line mb-4" />
+                  <h2 className="font-display text-2xl md:text-3xl font-bold">{(introSection?.title as string) || t.introTitle}</h2>
+                </div>
                 {(dynamicIntroParagraphs || fallbackIntro).map((paragraph) => (
                   <p key={paragraph} className="text-muted-foreground mb-4">{paragraph}</p>
                 ))}
