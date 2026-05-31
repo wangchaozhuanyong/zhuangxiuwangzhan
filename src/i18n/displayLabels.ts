@@ -459,13 +459,104 @@ const displayTextReplacements = Object.entries({
   .sort((a, b) => b[0].length - a[0].length)
   .map(([key, value]) => ({ key, value }));
 
+const extraZhTextReplacements: Record<string, string> = {
+  "Frequently Asked Questions": "常见问题",
+  "Corporate Office in KL Sentral": "吉隆坡中环企业办公室",
+  "Co-Working Space in PJ": "八打灵再也共享办公室",
+  "Retail Shop in Bangsar": "孟沙零售店铺",
+  "Cafe Renovation in SS2": "SS2 咖啡店装修",
+  "Storage System for Logistics Co.": "物流公司仓储系统",
+  "Bangsar Condo Kitchen Cabinet": "孟沙公寓厨房橱柜",
+  "Subang Jaya Open Kitchen Renovation": "梳邦再也开放式厨房装修",
+  "Mont Kiara Condo SPC Flooring": "满家乐公寓 SPC 地板",
+  "Petaling Jaya Office Laminate Flooring": "八打灵再也办公室复合地板",
+  "KL Sentral Corporate Office Renovation": "吉隆坡中环企业办公室装修",
+  "Petaling Jaya Coworking Space Planning": "八打灵再也共享办公空间规划",
+  "Bangsar Retail Shopfront Renovation": "孟沙零售店面翻新",
+  "SS2 Cafe Renovation": "SS2 咖啡店装修",
+  "Shah Alam Warehouse Racking": "莎阿南仓库货架",
+  "Puchong Logistics Storage System": "蒲种物流仓储系统",
+  "fit-out": "装修施工",
+  "Fit-Out": "装修施工",
+  "opening timeline": "开业时间表",
+  "retail fit-out": "零售空间装修",
+  "material only": "仅材料参考",
+  "Subway": "地铁砖",
+  "High-performance": "高性能",
+  "heavy-use": "高频使用",
+  "surface": "表面材料",
+  "counters": "台面",
+  "Smooth": "光滑",
+  "seamless joining": "无缝拼接",
+  "easy repair": "易修补",
+  "bathrooms": "浴室",
+  "basins": "洗手盆",
+  "Integrated cable management system": "整合电线收纳系统",
+  "Floor-to-ceiling bookshelf with LED strips": "到顶书架搭配灯带",
+  "Window seat with hidden storage": "窗边座位暗藏收纳",
+  "Acoustic panel on one wall": "一面墙加入吸音板",
+  "Drawer island": "中岛抽屉",
+  "Lighting integration": "灯光整合",
+  "Glass doors": "玻璃门",
+  "Dark walnut veneer": "深胡桃木饰面",
+  "Tinted glass": "茶色玻璃",
+  "Stone countertop": "石材台面",
+  "Brushed metal": "拉丝金属",
+  "Bedroom refurbishment": "卧室翻新",
+  "Wardrobe entry": "衣柜入口",
+  "Wall panels": "墙板",
+  "Lighting upgrade": "灯光升级",
+  "Upholstered panels": "软包墙板",
+  "Timber veneer": "木饰面",
+  "Marble side surfaces": "大理石边几台面",
+  "Material displays": "材料展示",
+  "Consultation table": "洽谈桌",
+  "Storage wall": "收纳墙",
+  "Gallery lighting": "展厅灯光",
+  "Marble slabs": "大理石样板",
+  "Metal frames": "金属框架",
+  "Glass partitions": "玻璃隔间",
+  "Living room renovation": "客厅翻新",
+  "Built-in storage": "定制收纳",
+  "Lighting coordination": "灯光协调",
+  "Sintered stone": "岩板",
+  "Walnut veneer": "胡桃木饰面",
+  "Matte laminate": "哑光板材",
+  "Warm LED lighting": "暖色灯带",
+  "Salon reception": "沙龙接待区",
+  "Styling zone": "造型区",
+  "Display shelving": "展示层板",
+  "Lighting design": "灯光设计",
+  "Microcement": "微水泥",
+  "Terrazzo": "水磨石",
+  "Ribbed glass": "长虹玻璃",
+  "Champagne metal": "香槟金属",
+  "Commercial Kitchen Setup": "商业厨房设置",
+  "Dining Area Design": "用餐区设计",
+  "Bar Counter": "吧台",
+  "Feature Ceiling": "特色天花",
+  "Flooring & Tiling": "地板与瓷砖",
+  "Electrical & Plumbing": "电工与水喉",
+  "Signage": "招牌",
+  "Shopfront Glass Works": "店面玻璃工程",
+  "3D Signage Fabrication & Installation": "立体招牌制作与安装",
+  "Roller Shutter Replacement": "卷闸门更换",
+  "Interior Display Counter": "室内展示柜台",
+  "Exterior Painting": "外墙油漆",
+  "Electrical": "电工",
+};
+
 export const translateDisplayText = (value: string, language: Language) => {
   if (language !== "zh" || !value) return value;
+
+  const withExtraReplacements = Object.entries(extraZhTextReplacements).reduce((text, [key, replacement]) => {
+    return text.replace(new RegExp(key.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"), "gi"), replacement);
+  }, value);
 
   const translated = displayTextReplacements.reduce((text, entry) => {
     const replacement = entry.value.zh;
     return text.replace(new RegExp(entry.key.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"), "gi"), replacement);
-  }, value);
+  }, withExtraReplacements);
 
   return translated
     .replace(/\s+([，。！？；：、])/g, "$1")

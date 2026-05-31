@@ -60,8 +60,8 @@ const content = {
       { type: "Full Interior Renovation", range: "Site-based", desc: "Whole-house interior upgrade with electrical, plumbing, carpentry, and finishing." },
       { type: "Structural + Full Renovation", range: "Assessment needed", desc: "Major repair, roof, waterproofing, full M&E, and complete interior transformation." },
     ],
-    faqTitle: "旧屋翻新常见问题",
-    faqDescription: "关于马来西亚旧屋翻新的常见问题。",
+    faqTitle: "Old House Renovation FAQ",
+    faqDescription: "Common questions about old house renovation budget, timeline, and work scope in Malaysia.",
     faqs: [
       { q: "How much does an old house renovation cost in KL?", a: "Old house renovation cost depends on property size, structure, wiring, plumbing, waterproofing, materials, and confirmed scope. We provide an itemized quotation after site assessment." },
       { q: "How long does it take?", a: "A complete terrace house renovation usually takes 10-16 weeks, depending on structural repairs, approvals, and interior scope." },
