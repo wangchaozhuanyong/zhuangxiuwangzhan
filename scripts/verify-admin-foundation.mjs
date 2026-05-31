@@ -40,7 +40,11 @@ const checks = [
   },
   {
     file: "src/pages/admin/AdminCmsBuilder.tsx",
-    patterns: ["cms_pages", "cms_sections", "cms_revisions", "restoreRevision", "SectionContentEditor", "service_grid", "testimonials"],
+    patterns: ["cms_pages", "cms_sections", "cms_revisions", "restoreRevision", "SectionContentEditor", "service_grid", "testimonials", "draggable", "section_reorder"],
+  },
+  {
+    file: "src/components/admin/AdminPermission.tsx",
+    patterns: ["AdminActionButton", "useAdminPermission", "content.publish", "lead.write", "users.manage"],
   },
   {
     file: "src/pages/admin/AdminSystemHealth.tsx",

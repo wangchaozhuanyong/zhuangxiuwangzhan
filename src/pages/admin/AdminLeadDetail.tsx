@@ -2,6 +2,7 @@ import { FormEvent, useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
+import { AdminActionButton } from "@/components/admin/AdminPermission";
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
 import { supabase } from "@/lib/supabase";
@@ -130,7 +131,7 @@ const AdminLeadDetail = () => {
                   </select>
                   <Textarea rows={4} value={content} onChange={(event) => setContent(event.target.value)} placeholder="跟进记录..." />
                   <Input type="datetime-local" value={nextFollowUpAt} onChange={(event) => setNextFollowUpAt(event.target.value)} />
-                  <Button type="submit" className="w-full">保存跟进</Button>
+                  <AdminActionButton action="lead.write" type="submit" className="w-full">保存跟进</AdminActionButton>
                 </form>
               </section>
             </div>

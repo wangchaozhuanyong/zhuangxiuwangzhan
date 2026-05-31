@@ -20,6 +20,13 @@ Supported admin roles:
 
 Database RLS must remain the real permission layer. Frontend button hiding is only a user-experience layer.
 
+Button-level permission hints are implemented with the shared admin permission helper:
+
+- Content buttons such as save, publish, archive, restore, and reorder require `super_admin` or `content_editor`.
+- Lead follow-up buttons require `super_admin` or `lead_manager`.
+- Admin account management buttons require `super_admin`.
+- Disabled buttons should explain the missing role in plain language.
+
 ## Editing Rules
 
 - Long forms must keep user input after save failure.
@@ -53,6 +60,8 @@ Current module templates:
 - `testimonials`
 
 The CMS Builder should prefer visual field editors for common modules. Advanced JSON editing remains available only for unusual fields.
+
+Module order must be editable through drag-and-drop and keyboard-friendly up/down buttons. Saving order changes should write audit logs, refresh admin data, and invalidate public content caches.
 
 ## Media Upload Rules
 

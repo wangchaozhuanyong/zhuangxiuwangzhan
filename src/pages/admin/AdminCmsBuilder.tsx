@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { ArrowDown, ArrowUp, ExternalLink, Plus, RotateCcw, Trash2 } from "lucide-react";
+import { ArrowDown, ArrowUp, ExternalLink, GripVertical, Plus, RotateCcw, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -10,6 +10,7 @@ import AdminPageHeader from "@/components/admin/AdminPageHeader";
 import AdminFormSection from "@/components/admin/AdminFormSection";
 import AdminStatusBadge from "@/components/admin/AdminStatusBadge";
 import { AdminFieldLabel } from "@/components/admin/AdminHelpTip";
+import { AdminActionButton, AdminPermissionHint, useAdminPermission } from "@/components/admin/AdminPermission";
 import { archiveOrDeleteAdminRecord, formatAdminMutationError, saveAdminRecord } from "@/lib/adminMutation";
 import { adminStatusLabel, publishStatusOptions } from "@/lib/adminLocale";
 import { isSupabaseConfigured, supabase } from "@/lib/supabase";
@@ -395,6 +396,10 @@ export default function AdminCmsBuilder() {
   const [settingsText, setSettingsText] = useState("{}");
   const [dirty, setDirty] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [sectionOrder, setSectionOrder] = useState<string[]>([]);
+  const [draggingSectionId, setDraggingSectionId] = useState<string | null>(null);
+  const [reordering, setReordering] = useState(false);
+  const reorderPermission = useAdminPermission("content.reorder");
 
   useEffect(() => {
     if (!dirty) return;
@@ -466,6 +471,16 @@ export default function AdminCmsBuilder() {
   });
 
   const pages = useMemo(() => pagesQuery.data || [], [pagesQuery.data]);
+  const sections = useMemo(() => sectionsQuery.data || [], [sectionsQuery.data]);
+  const orderedSections = useMemo(() => {
+    if (!sectionOrder.length) return sections;
+    const sectionMap = new Map(sections.map((section) => [section.id, section]));
+    const ordered = sectionOrder
+      .map((id) => sectionMap.get(id))
+      .filter(Boolean) as CmsSection[];
+    const missing = sections.filter((section) => !section.id || !sectionOrder.includes(section.id));
+    return [...ordered, ...missing];
+  }, [sectionOrder, sections]);
   const selectedPage = useMemo(() => pages.find((page) => page.id === selectedPageId) || null, [pages, selectedPageId]);
 
   useEffect(() => {
@@ -478,6 +493,10 @@ export default function AdminCmsBuilder() {
       setDirty(false);
     }
   }, [selectedPage]);
+
+  useEffect(() => {
+    setSectionOrder(sections.map((section) => section.id).filter(Boolean) as string[]);
+  }, [sections]);
 
   const selectSection = (section: CmsSection) => {
     setSectionDraft(section);
@@ -575,6 +594,72 @@ export default function AdminCmsBuilder() {
     }
   };
 
+  const persistSectionOrder = async (nextSections: CmsSection[]) => {
+    if (!reorderPermission.allowed) {
+      setMessage(reorderPermission.reason);
+      return;
+    }
+    if (reordering) return;
+
+    setReordering(true);
+    setMessage("");
+    try {
+      const changedSections = nextSections
+        .map((section, index) => ({ section, sortOrder: (index + 1) * 10 }))
+        .filter(({ section, sortOrder }) => section.id && Number(section.sort_order || 0) !== sortOrder);
+
+      for (const { section, sortOrder } of changedSections) {
+        await saveAdminRecord<CmsSection>({
+          table: "cms_sections",
+          id: section.id,
+          expectedUpdatedAt: section.updated_at || null,
+          payload: { ...section, sort_order: sortOrder },
+          action: "section_reorder",
+          queryClient,
+          invalidate: "none",
+        });
+      }
+
+      setSectionOrder(nextSections.map((section) => section.id).filter(Boolean) as string[]);
+      setMessage(changedSections.length ? "模块顺序已保存，前台会按新顺序读取。" : "模块顺序没有变化。");
+      await Promise.all([
+        queryClient.invalidateQueries({ queryKey: ["admin", "cms_sections", selectedPageId] }),
+        queryClient.invalidateQueries({ queryKey: ["admin", "cms_revisions", selectedPageId] }),
+        queryClient.invalidateQueries({ queryKey: ["published"] }),
+      ]);
+    } catch (error) {
+      setMessage(formatAdminMutationError(error));
+      await queryClient.invalidateQueries({ queryKey: ["admin", "cms_sections", selectedPageId] });
+    } finally {
+      setReordering(false);
+      setDraggingSectionId(null);
+    }
+  };
+
+  const reorderSectionById = (sourceId: string, targetId: string) => {
+    if (sourceId === targetId) return;
+    const nextSections = [...orderedSections];
+    const sourceIndex = nextSections.findIndex((section) => section.id === sourceId);
+    const targetIndex = nextSections.findIndex((section) => section.id === targetId);
+    if (sourceIndex < 0 || targetIndex < 0) return;
+    const [moved] = nextSections.splice(sourceIndex, 1);
+    nextSections.splice(targetIndex, 0, moved);
+    setSectionOrder(nextSections.map((section) => section.id).filter(Boolean) as string[]);
+    void persistSectionOrder(nextSections);
+  };
+
+  const moveSection = (section: CmsSection, direction: -1 | 1) => {
+    if (!section.id) return;
+    const currentIndex = orderedSections.findIndex((item) => item.id === section.id);
+    const nextIndex = currentIndex + direction;
+    if (currentIndex < 0 || nextIndex < 0 || nextIndex >= orderedSections.length) return;
+    const nextSections = [...orderedSections];
+    const [moved] = nextSections.splice(currentIndex, 1);
+    nextSections.splice(nextIndex, 0, moved);
+    setSectionOrder(nextSections.map((item) => item.id).filter(Boolean) as string[]);
+    void persistSectionOrder(nextSections);
+  };
+
   const archivePage = async () => {
     if (!pageDraft.id || !window.confirm("确认归档这个页面吗？正式前台将不再显示它。")) return;
     try {
@@ -640,10 +725,10 @@ export default function AdminCmsBuilder() {
             <h1 className="font-display text-2xl font-bold">通用页面搭建器</h1>
             <p className="mt-1 text-sm text-muted-foreground">管理页面、模块、草稿、发布和版本恢复。</p>
           </div>
-          <Button type="button" size="sm" onClick={newPage}>
+          <AdminActionButton action="content.write" type="button" size="sm" onClick={newPage}>
             <Plus className="mr-2 h-4 w-4" />
             新页面
-          </Button>
+          </AdminActionButton>
         </div>
         {message && <div className="mb-4 rounded-lg bg-muted p-3 text-sm">{message}</div>}
         <div className="space-y-2">
@@ -712,7 +797,7 @@ export default function AdminCmsBuilder() {
             </div>
           </div>
           <div className="mt-4 flex flex-wrap gap-2">
-            <Button type="button" disabled={saving} onClick={() => void savePage()}>{saving ? "保存中..." : "保存页面"}</Button>
+            <AdminActionButton action="content.write" type="button" disabled={saving} onClick={() => void savePage()}>{saving ? "保存中..." : "保存页面"}</AdminActionButton>
             {pageDraft.path && (
               <Button asChild type="button" variant="outline">
                 <a href={pageDraft.path} target="_blank" rel="noreferrer">
@@ -722,38 +807,93 @@ export default function AdminCmsBuilder() {
               </Button>
             )}
             {pageDraft.id && (
-              <Button type="button" variant="destructive" onClick={() => void archivePage()}>
+              <AdminActionButton action="content.archive" type="button" variant="destructive" onClick={() => void archivePage()}>
                 <Trash2 className="mr-2 h-4 w-4" />
                 归档页面
-              </Button>
+              </AdminActionButton>
             )}
           </div>
         </AdminFormSection>
 
         <AdminFormSection title="页面模块" description="一个页面可以由多个模块组成，模块排序会影响前台显示顺序。" helpText="模块类型决定前台渲染方式；模块内容用 JSON 保存，适合不同公司官网复用。">
           <div className="mb-4 flex flex-wrap gap-2">
-            <Button type="button" variant="outline" onClick={newSection}>
+            <AdminActionButton action="content.write" type="button" variant="outline" onClick={newSection}>
               <Plus className="mr-2 h-4 w-4" />
               新模块
-            </Button>
+            </AdminActionButton>
           </div>
           <div className="grid gap-4 lg:grid-cols-[320px_1fr]">
             <div className="space-y-2">
-              {(sectionsQuery.data || []).map((section) => (
-                <button
+              <AdminPermissionHint action="content.reorder" />
+              {orderedSections.map((section, index) => (
+                <div
                   key={section.id}
-                  type="button"
-                  onClick={() => selectSection(section)}
-                  className={`w-full rounded-lg border p-3 text-left ${sectionDraft?.id === section.id ? "border-accent bg-accent/10" : "border-border bg-background hover:bg-muted"}`}
+                  draggable={reorderPermission.allowed && Boolean(section.id) && !reordering}
+                  onDragStart={(event) => {
+                    if (!section.id || !reorderPermission.allowed) return;
+                    setDraggingSectionId(section.id);
+                    event.dataTransfer.effectAllowed = "move";
+                    event.dataTransfer.setData("text/plain", section.id);
+                  }}
+                  onDragOver={(event) => {
+                    if (!reorderPermission.allowed || !draggingSectionId || draggingSectionId === section.id) return;
+                    event.preventDefault();
+                    event.dataTransfer.dropEffect = "move";
+                  }}
+                  onDrop={(event) => {
+                    event.preventDefault();
+                    const sourceId = event.dataTransfer.getData("text/plain") || draggingSectionId;
+                    if (sourceId && section.id) reorderSectionById(sourceId, section.id);
+                  }}
+                  onDragEnd={() => setDraggingSectionId(null)}
+                  className={`rounded-lg border p-3 transition ${sectionDraft?.id === section.id ? "border-accent bg-accent/10" : "border-border bg-background hover:bg-muted"} ${draggingSectionId === section.id ? "opacity-55" : ""}`}
                 >
-                  <div className="flex items-center justify-between gap-2">
-                    <span className="font-medium">{section.title_zh || section.title_en || section.section_key}</span>
-                    <AdminStatusBadge status={section.status} />
+                  <div className="flex items-start gap-2">
+                    <button
+                      type="button"
+                      title={reorderPermission.allowed ? "按住拖动可以调整模块顺序" : reorderPermission.reason}
+                      className="mt-0.5 rounded-md p-1 text-muted-foreground hover:bg-muted"
+                      aria-label="拖拽调整模块顺序"
+                      disabled={!reorderPermission.allowed || reordering}
+                    >
+                      <GripVertical className="h-4 w-4" />
+                    </button>
+                    <button type="button" onClick={() => selectSection(section)} className="min-w-0 flex-1 text-left">
+                      <div className="flex items-center justify-between gap-2">
+                        <span className="truncate font-medium">{section.title_zh || section.title_en || section.section_key}</span>
+                        <AdminStatusBadge status={section.status} />
+                      </div>
+                      <p className="mt-1 text-xs text-muted-foreground">{section.section_type} · 排序 {section.sort_order}</p>
+                    </button>
+                    <div className="flex shrink-0 gap-1">
+                      <Button
+                        type="button"
+                        size="icon"
+                        variant="outline"
+                        title={reorderPermission.reason}
+                        disabled={!reorderPermission.allowed || reordering || index === 0}
+                        onClick={() => moveSection(section, -1)}
+                        aria-label="模块上移"
+                      >
+                        <ArrowUp className="h-4 w-4" />
+                      </Button>
+                      <Button
+                        type="button"
+                        size="icon"
+                        variant="outline"
+                        title={reorderPermission.reason}
+                        disabled={!reorderPermission.allowed || reordering || index === orderedSections.length - 1}
+                        onClick={() => moveSection(section, 1)}
+                        aria-label="模块下移"
+                      >
+                        <ArrowDown className="h-4 w-4" />
+                      </Button>
+                    </div>
                   </div>
-                  <p className="mt-1 text-xs text-muted-foreground">{section.section_type} · 排序 {section.sort_order}</p>
-                </button>
+                </div>
               ))}
-              {selectedPageId && !(sectionsQuery.data || []).length && <p className="text-sm text-muted-foreground">这个页面还没有模块。</p>}
+              {selectedPageId && !orderedSections.length && <p className="text-sm text-muted-foreground">这个页面还没有模块。</p>}
+              {reordering && <p className="text-xs text-muted-foreground">正在保存模块顺序...</p>}
             </div>
 
             {sectionDraft ? (
@@ -820,12 +960,12 @@ export default function AdminCmsBuilder() {
                   <Textarea rows={5} value={settingsText} onChange={(event) => { setDirty(true); setSettingsText(event.target.value); }} />
                 </div>
                 <div className="flex flex-wrap gap-2">
-                  <Button type="button" disabled={saving} onClick={() => void saveSection()}>{saving ? "保存中..." : "保存模块"}</Button>
+                  <AdminActionButton action="content.write" type="button" disabled={saving} onClick={() => void saveSection()}>{saving ? "保存中..." : "保存模块"}</AdminActionButton>
                   {sectionDraft.id && (
-                    <Button type="button" variant="destructive" onClick={() => void archiveSection(sectionDraft)}>
+                    <AdminActionButton action="content.archive" type="button" variant="destructive" onClick={() => void archiveSection(sectionDraft)}>
                       <Trash2 className="mr-2 h-4 w-4" />
                       归档模块
-                    </Button>
+                    </AdminActionButton>
                   )}
                 </div>
               </div>
@@ -843,10 +983,10 @@ export default function AdminCmsBuilder() {
                   <p className="text-sm font-medium">{revision.entity_table} · {revision.action} · v{revision.version || "-"}</p>
                   <p className="text-xs text-muted-foreground">{new Date(revision.created_at).toLocaleString("zh-CN")}</p>
                 </div>
-                <Button type="button" variant="outline" size="sm" onClick={() => void restoreRevision(revision)}>
+                <AdminActionButton action="content.restore" type="button" variant="outline" size="sm" onClick={() => void restoreRevision(revision)}>
                   <RotateCcw className="mr-2 h-4 w-4" />
                   恢复
-                </Button>
+                </AdminActionButton>
               </div>
             ))}
             {!(revisionsQuery.data || []).length && <p className="text-sm text-muted-foreground">暂无版本记录。</p>}

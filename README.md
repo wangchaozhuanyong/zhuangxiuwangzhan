@@ -82,10 +82,17 @@ Admin content saves should use the shared admin mutation helper where possible s
 - clear error messages,
 - no form reset on failure.
 
+High-risk admin buttons should use the shared permission helper so each role gets a clear disabled reason:
+
+- content editors can save, publish, archive, restore, and reorder content;
+- lead managers can update leads and quote follow-ups;
+- only super admins can manage admin accounts and sensitive system settings.
+
 ## Safety Rules
 
 - Public pages read published content only.
 - Admin writes must be protected by Supabase RLS or Edge Function auth checks.
+- Frontend button-level permission hints are UX only; database RLS remains the real protection.
 - Default content may create missing records or fill blank fields, but must not overwrite manually saved content.
 - Important delete actions should archive first instead of hard deleting.
 - Media upload allows only JPG, PNG, or WebP and rejects files over 5 MB. GIF, SVG, and unknown MIME types are rejected.

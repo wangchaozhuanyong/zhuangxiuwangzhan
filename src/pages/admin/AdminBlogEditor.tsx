@@ -4,6 +4,7 @@ import { useUnsavedChangesWarning } from "@/hooks/useUnsavedChangesWarning";
 import { useQueryClient } from "@tanstack/react-query";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
+import { AdminActionButton } from "@/components/admin/AdminPermission";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { isSupabaseConfigured, supabase } from "@/lib/supabase";
@@ -256,10 +257,11 @@ export default function AdminBlogEditor() {
                 </a>
               </Button>
             )}
-            <Button type="button" variant="outline" onClick={() => void save("draft")} disabled={saveBusy || isLoading}>
+            <AdminActionButton action="content.write" type="button" variant="outline" onClick={() => void save("draft")} disabled={saveBusy || isLoading}>
               保存草稿
-            </Button>
-            <Button
+            </AdminActionButton>
+            <AdminActionButton
+              action="content.publish"
               type="button"
               onClick={() => {
                 // If publishing without a published_at, set it to now.
@@ -269,18 +271,19 @@ export default function AdminBlogEditor() {
               disabled={saveBusy || isLoading}
             >
               发布
-            </Button>
-            <Button type="button" variant="outline" onClick={() => void save(undefined, true)} disabled={saveBusy || isLoading || !record.id}>
+            </AdminActionButton>
+            <AdminActionButton action="content.write" type="button" variant="outline" onClick={() => void save(undefined, true)} disabled={saveBusy || isLoading || !record.id}>
               保存并自动生成英文
-            </Button>
-            <Button
+            </AdminActionButton>
+            <AdminActionButton
+              action="content.write"
               type="button"
               variant="outline"
               onClick={() => window.confirm("这会覆盖已有英文内容，确定要重新生成吗？") && void save(undefined, true, true)}
               disabled={saveBusy || isLoading || !record.id}
             >
               强制重新生成英文
-            </Button>
+            </AdminActionButton>
           </>
         }
       />

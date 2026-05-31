@@ -3,6 +3,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import AdminPageHeader from "@/components/admin/AdminPageHeader";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { AdminActionButton } from "@/components/admin/AdminPermission";
 import { isSupabaseConfigured, supabase } from "@/lib/supabase";
 import type { AdminUserRow } from "@/lib/adminEditorData";
 import { useAdminUsers } from "@/lib/adminQueries";
@@ -181,9 +182,9 @@ const AdminUsers = () => {
                 ))}
               </select>
             </div>
-            <Button type="submit" disabled={!isSupabaseConfigured || savingKey === "add"}>
+            <AdminActionButton action="users.manage" type="submit" disabled={!isSupabaseConfigured || savingKey === "add"}>
               {savingKey === "add" ? "保存中..." : "保存管理员"}
-            </Button>
+            </AdminActionButton>
           </div>
         </form>
       )}
@@ -211,13 +212,14 @@ const AdminUsers = () => {
                     </option>
                   ))}
                 </select>
-                <Button
+                <AdminActionButton
+                  action="users.manage"
                   variant="outline"
                   onClick={() => void toggleActive(user)}
                   disabled={!isSuperAdmin || savingKey === `active:${user.user_id}`}
                 >
                   {savingKey === `active:${user.user_id}` ? "处理中..." : user.active ? "停用" : "启用"}
-                </Button>
+                </AdminActionButton>
               </div>
             </div>
           </article>
