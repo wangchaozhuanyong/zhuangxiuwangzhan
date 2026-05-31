@@ -12,6 +12,7 @@ dist
 dist-ssr
 test-results
 backups
+tmp/
 .wrangler
 .deploy-cache
 tmp-wrangler-pages.pid
