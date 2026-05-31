@@ -64,16 +64,21 @@ const Terms = () => {
       <PageMeta title={t.metaTitle} description={t.metaDescription} keywords={t.metaKeywords} canonicalPath="/terms" />
       <JsonLdBreadcrumb items={[{ name: t.breadcrumbHome, url: "/" }, { name: t.breadcrumbCurrent, url: "/terms" }]} />
 
+      <section className="legal-hero section-padding">
+        <div className="container-narrow max-w-3xl text-center">
+          <Reveal>
+            <div className="accent-line mb-4 mx-auto" />
+            <p className="mb-3 text-xs font-semibold uppercase tracking-[0.28em] text-gold">{t.breadcrumbCurrent}</p>
+            <h1 className="font-display text-3xl md:text-5xl font-bold mb-3">{t.title}</h1>
+            <p className="text-sm text-surface-dark-foreground/70">{t.updated}</p>
+          </Reveal>
+        </div>
+      </section>
+
       <section className="section-padding bg-background">
         <div className="container-narrow max-w-3xl">
           <Reveal>
-            <div className="accent-line mb-4 mx-auto" />
-            <h1 className="font-display text-3xl md:text-4xl font-bold mb-2 text-center">{t.title}</h1>
-            <p className="text-muted-foreground text-sm text-center mb-10">{t.updated}</p>
-          </Reveal>
-
-          <Reveal>
-            <div className="prose prose-neutral dark:prose-invert max-w-none space-y-8">
+            <article className="legal-document subpage-form-panel">
               {t.sections.map((section) => (
                 <section key={section.title}>
                   <h2 className="font-display text-xl font-bold mb-3">{section.title}</h2>
@@ -84,7 +89,7 @@ const Terms = () => {
                     </ul>
                   ) : null}
                   {section.title.endsWith("Contact") || section.title.endsWith("联系") ? (
-                    <div className="rounded-card bg-muted p-5 mt-3 text-sm text-muted-foreground space-y-1">
+                    <div className="luxury-card-muted p-5 mt-3 text-sm text-muted-foreground space-y-1">
                       <p><strong className="text-foreground">{contactLabel}</strong></p>
                       <p>{settings.company_name}</p>
                       <p>{settings.address}</p>
@@ -94,7 +99,7 @@ const Terms = () => {
                   ) : null}
                 </section>
               ))}
-            </div>
+            </article>
           </Reveal>
         </div>
       </section>
