@@ -1,6 +1,5 @@
 ﻿import { useMemo } from "react";
 import Link from "@/components/LocalizedLink";
-import { Button } from "@/components/ui/button";
 import { ArrowRight, CheckCircle } from "lucide-react";
 import WhatsAppIcon from "@/components/WhatsAppIcon";
 import { servicesData } from "@/data/services";
@@ -12,6 +11,7 @@ import { JsonLdBreadcrumb } from "@/components/JsonLd";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { useSiteSettings } from "@/hooks/useSiteSettings";
 import HeroBanner from "@/components/blocks/HeroBanner";
+import SectionHeader from "@/components/blocks/SectionHeader";
 import { translateDisplayText } from "@/i18n/displayLabels";
 import { pageHeroImages, resolvePageHeroImage } from "@/lib/pageHeroImages";
 
@@ -34,6 +34,27 @@ const copy = {
     suitableFor: "Suitable For:",
     more: "more",
     details: "View Full Details",
+    directoryTitle: "Choose the Right Service",
+    directoryText: "Browse our renovation services by project type so you can quickly find the scope that fits your home, shop, office, or specialist finish.",
+    groupKicker: "Service Category",
+    groups: {
+      residential: {
+        title: "Residential Renovation",
+        description: "Core renovation services for condos, landed homes, kitchens, bathrooms, and custom built-in storage.",
+        short: "Homes",
+      },
+      commercial: {
+        title: "Commercial Spaces",
+        description: "Fit-out and construction support for offices, shops, retail spaces, restaurants, and warehouse systems.",
+        short: "Business",
+      },
+      specialty: {
+        title: "Specialist Support",
+        description: "Premium finishes, wall coating, permit coordination, drawings, and documentation support.",
+        short: "Specialist",
+      },
+    },
+    scopeTitle: "Core Scope",
     unsureTitle: "Not Sure What You Need?",
     unsureText: "Contact us for a free consultation. We will assess your space and recommend the right approach.",
     quote: "Get a Free Quote",
@@ -62,6 +83,27 @@ const copy = {
     suitableFor: "适合：",
     more: "更多",
     details: "查看详情",
+    directoryTitle: "按类型选择服务",
+    directoryText: "把住宅、商业空间和专项支持分清楚，客户进来就能快速找到自己需要的服务。",
+    groupKicker: "服务分类",
+    groups: {
+      residential: {
+        title: "住宅装修",
+        description: "适合公寓、排屋、独立式住宅、厨房、浴室、旧屋翻新和定制收纳。",
+        short: "住宅",
+      },
+      commercial: {
+        title: "商业空间",
+        description: "适合办公室、店铺、零售空间、餐饮空间和仓储货架等商业项目。",
+        short: "商业",
+      },
+      specialty: {
+        title: "专项支持",
+        description: "包含艺术墙面涂装、装修准证、图纸协调和文件支持等专项服务。",
+        short: "专项",
+      },
+    },
+    scopeTitle: "核心范围",
     unsureTitle: "需要确认适合的装修服务？",
     unsureText: "联系我们免费咨询，我们会根据你的空间和预算建议合适方案。",
     quote: "获取免费报价",
@@ -77,6 +119,89 @@ const copy = {
 const applyPageTemplate = (template: string | undefined, values: Record<string, string | number>) => {
   if (!template) return "";
   return Object.entries(values).reduce((text, [key, value]) => text.replaceAll(`{${key}}`, String(value)), template);
+};
+
+type ServiceGroupId = "residential" | "commercial" | "specialty";
+type DisplayService = (typeof servicesData)[number];
+
+const serviceOrder = [
+  "renovation",
+  "old-house",
+  "kitchen",
+  "bathroom",
+  "builtin",
+  "design",
+  "office",
+  "shop",
+  "warehouse",
+  "artistic-coating",
+  "approval",
+];
+
+const preferredServiceSlugs: Record<string, string[]> = {
+  office: ["office-renovation", "office"],
+  shop: ["shop-renovation", "shoplot", "commercial"],
+};
+
+const serviceGroups: Array<{ id: ServiceGroupId; keys: string[] }> = [
+  { id: "residential", keys: ["renovation", "old-house", "kitchen", "bathroom", "builtin", "design"] },
+  { id: "commercial", keys: ["office", "shop", "warehouse"] },
+  { id: "specialty", keys: ["artistic-coating", "approval"] },
+];
+
+const getServiceKey = (service: { slug: string; title: string }) => {
+  const slug = service.slug.toLowerCase();
+  const title = service.title.toLowerCase();
+  const text = `${slug} ${title}`;
+
+  if (text.includes("office") || text.includes("办公室")) return "office";
+  if (text.includes("shop") || text.includes("retail") || text.includes("店铺") || text.includes("零售")) return "shop";
+  if (text.includes("warehouse") || text.includes("仓储") || text.includes("货架")) return "warehouse";
+  if (text.includes("artistic") || text.includes("coating") || text.includes("remmers") || text.includes("艺术") || text.includes("涂装")) return "artistic-coating";
+  if (text.includes("approval") || text.includes("permit") || text.includes("drawing") || text.includes("准证") || text.includes("图纸")) return "approval";
+  if (text.includes("old-house") || text.includes("旧屋") || text.includes("old house")) return "old-house";
+  if (text.includes("kitchen") || text.includes("厨房")) return "kitchen";
+  if (text.includes("bathroom") || text.includes("浴室")) return "bathroom";
+  if (text.includes("builtin") || text.includes("built-in") || text.includes("内嵌") || text.includes("收纳")) return "builtin";
+  if (text.includes("design") || text.includes("设计")) return "design";
+  if (text.includes("renovation") || text.includes("装修")) return "renovation";
+
+  return slug;
+};
+
+const serviceRank = (key: string) => {
+  const index = serviceOrder.indexOf(key);
+  return index === -1 ? 999 : index;
+};
+
+const shouldReplaceService = (key: string, current: { slug: string }, next: { slug: string }) => {
+  const preferred = preferredServiceSlugs[key];
+  if (!preferred) return false;
+  const currentRank = preferred.indexOf(current.slug);
+  const nextRank = preferred.indexOf(next.slug);
+  const currentScore = currentRank === -1 ? 999 : currentRank;
+  const nextScore = nextRank === -1 ? 999 : nextRank;
+  return nextScore < currentScore;
+};
+
+const normalizeServices = (services: DisplayService[]) => {
+  const byKey = new Map<string, DisplayService>();
+
+  services.forEach((service) => {
+    const key = getServiceKey(service);
+    const current = byKey.get(key);
+    if (!current || shouldReplaceService(key, current, service)) {
+      byKey.set(key, service);
+    }
+  });
+
+  return Array.from(byKey.entries())
+    .sort(([a], [b]) => serviceRank(a) - serviceRank(b))
+    .map(([key, service]) => ({ key, service }));
+};
+
+const getGroupForService = (key: string): ServiceGroupId => {
+  return serviceGroups.find((group) => group.keys.includes(key))?.id || "specialty";
 };
 
 const Services = () => {
@@ -102,7 +227,14 @@ const Services = () => {
       : servicesData;
   }, [language]);
   const { data: services = initialServices } = usePublishedServices(language);
-  const geoText = applyPageTemplate(pageContent?.content, { count: services.length });
+  const normalizedServices = useMemo(() => normalizeServices(services as DisplayService[]), [services]);
+  const groupedServices = useMemo(() => {
+    return serviceGroups.map((group) => ({
+      ...group,
+      services: normalizedServices.filter(({ key }) => getGroupForService(key) === group.id),
+    }));
+  }, [normalizedServices]);
+  const geoText = applyPageTemplate(pageContent?.content, { count: normalizedServices.length });
   const heroImage = resolvePageHeroImage(pageContent?.image_url, pageHeroImages.services);
 
   return (
@@ -130,14 +262,14 @@ const Services = () => {
             {geoText || (language === "zh" ? (
               <>
                 <strong className="text-foreground">{t.geoPrefix}</strong>
-                {t.geoText(services.length)}
+                {t.geoText(normalizedServices.length)}
                 <strong className="text-foreground">{t.geoLocation}</strong>
                 {t.geoConnector}
                 {t.geoEnd}
               </>
             ) : (
               <>
-                <strong className="text-foreground">{t.geoPrefix}</strong> {t.geoText(services.length)}{" "}
+                <strong className="text-foreground">{t.geoPrefix}</strong> {t.geoText(normalizedServices.length)}{" "}
                 <strong className="text-foreground">{t.geoLocation}</strong>
                 {t.geoConnector} {t.geoEnd}
               </>
@@ -146,50 +278,105 @@ const Services = () => {
         </div>
       </section>
 
-      {services.map((service, index) => (
-        <section key={service.id} className={`section-padding overflow-x-hidden ${index % 2 === 0 ? "bg-background" : "bg-muted"}`}>
+      <section className="section-padding bg-background">
+        <div className="container-narrow">
+          <SectionHeader title={t.directoryTitle} description={t.directoryText} />
+
+          <div className="service-overview-grid">
+            {groupedServices.map((group, index) => {
+              const groupCopy = t.groups[group.id];
+
+              return (
+                <Reveal key={group.id} delay={index * 70} direction="none">
+                  <a className="service-overview-card luxury-card-muted hover-lift" href={`#service-group-${group.id}`}>
+                    <span className="service-overview-card__count">{String(group.services.length).padStart(2, "0")}</span>
+                    <span className="service-overview-card__label">{groupCopy.short}</span>
+                    <strong>{groupCopy.title}</strong>
+                    <span>{groupCopy.description}</span>
+                  </a>
+                </Reveal>
+              );
+            })}
+          </div>
+        </div>
+      </section>
+
+      {groupedServices.map((group, groupIndex) => {
+        const groupCopy = t.groups[group.id];
+        if (!group.services.length) return null;
+
+        return (
+          <section
+            key={group.id}
+            id={`service-group-${group.id}`}
+            className={`service-directory-section section-padding ${groupIndex % 2 === 0 ? "bg-muted" : "bg-background"}`}
+          >
           <div className="container-narrow">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 items-center">
-              <Reveal direction={index % 2 !== 0 ? "right" : "left"}>
-                <div className={index % 2 !== 0 ? "lg:order-2" : ""}>
-                  <div className="accent-line mb-4" />
-                  <h2 className="font-display text-2xl md:text-3xl font-bold mb-4">{displayText(service.title)}</h2>
-                  <p className="text-muted-foreground mb-4 leading-relaxed">{displayText(service.summary)}</p>
+            <Reveal>
+              <div className="service-group-heading">
+                <p>{t.groupKicker}</p>
+                <h2>{groupCopy.title}</h2>
+                <span>{groupCopy.description}</span>
+              </div>
+            </Reveal>
 
-                  <div className="mb-4">
-                    <h3 className="font-semibold text-sm mb-2">{t.suitableFor}</h3>
-                    <div className="flex flex-wrap gap-2">
-                      {service.suitableFor.slice(0, 4).map((item: string) => (
-                        <span key={item} className="text-xs px-3 py-1 bg-accent/10 text-accent rounded-full">{displayText(item)}</span>
-                      ))}
+            <div className="service-directory-grid">
+              {group.services.map(({ key, service }, index) => (
+                <Reveal key={`${key}-${service.slug}`} delay={index * 70} direction="none">
+                  <article className="service-directory-card luxury-card group hover-lift">
+                    <Link to={`/services/${service.slug}`} className="service-directory-card__media img-zoom">
+                      <SmartImage
+                        src={service.image}
+                        alt={`${displayText(service.title)} service by FLASH CAST in Kuala Lumpur`}
+                        loading="lazy"
+                        width={800}
+                        height={600}
+                        className="h-full w-full object-cover"
+                      />
+                    </Link>
+
+                    <div className="service-directory-card__body">
+                      <div className="service-directory-card__meta">
+                        <span>{String(serviceRank(key) + 1).padStart(2, "0")}</span>
+                        <span>{groupCopy.short}</span>
+                      </div>
+
+                      <h3>{displayText(service.title)}</h3>
+                      <p>{displayText(service.summary)}</p>
+
+                      {service.suitableFor.length > 0 ? (
+                        <div className="service-directory-card__chips" aria-label={t.suitableFor}>
+                          {service.suitableFor.slice(0, 3).map((item: string) => (
+                            <span key={item}>{displayText(item)}</span>
+                          ))}
+                        </div>
+                      ) : null}
+
+                      <div className="service-directory-card__scope">
+                        <strong>{t.scopeTitle}</strong>
+                        <ul>
+                          {service.items.slice(0, 4).map((item: string) => (
+                            <li key={item}>
+                              <CheckCircle className="h-3.5 w-3.5" />
+                              <span>{displayText(item)}</span>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+
+                      <Link to={`/services/${service.slug}`} className="service-directory-card__link">
+                        <span>{t.details}</span>
+                        <ArrowRight className="h-4 w-4" />
+                      </Link>
                     </div>
-                  </div>
-
-                  <ul className="grid grid-cols-1 sm:grid-cols-2 gap-2 mb-6">
-                    {service.items.slice(0, 8).map((item: string) => (
-                      <li key={item} className="flex items-center gap-2 text-sm">
-                        <CheckCircle className="w-3.5 h-3.5 text-accent shrink-0" />
-                        {displayText(item)}
-                      </li>
-                    ))}
-                    {service.items.length > 8 && (
-                      <li className="text-sm text-muted-foreground">+{service.items.length - 8} {t.more}</li>
-                    )}
-                  </ul>
-                  <Button className="btn-brand-primary" asChild>
-                    <Link to={`/services/${service.slug}`}>{t.details} <ArrowRight className="ml-2 w-4 h-4" /></Link>
-                  </Button>
-                </div>
-              </Reveal>
-              <Reveal direction={index % 2 !== 0 ? "left" : "right"} delay={150}>
-                <div className={`${index % 2 !== 0 ? "lg:order-1" : ""} overflow-hidden rounded-card-lg img-zoom`}>
-                  <SmartImage src={service.image} alt={`${displayText(service.title)} service by FLASH CAST in Kuala Lumpur`} loading="lazy" width={800} height={600} className="w-full object-cover aspect-[4/3]" />
-                </div>
-              </Reveal>
+                  </article>
+                </Reveal>
+              ))}
             </div>
           </div>
         </section>
-      ))}
+        );
+      })}
 
       <section className="section-padding bg-surface-dark text-center">
         <Reveal>

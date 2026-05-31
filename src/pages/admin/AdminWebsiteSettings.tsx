@@ -9,6 +9,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { fetchSiteSettings, fallbackSiteSettings, type SiteSettings } from "@/lib/siteSettingsApi";
 import { invalidateSiteSettings } from "@/lib/adminInvalidate";
 import { formatAdminMutationError, saveAdminRecord } from "@/lib/adminMutation";
+import { geocodeAddress } from "@/lib/geocodeApi";
 import AdminImageUpload, { getAdminImagePreviewVariant } from "./AdminImageUpload";
 import { getAdminLang } from "@/lib/adminLocale";
 
@@ -40,6 +41,9 @@ const copy = {
 };
 
 const mediaFields = new Set<keyof SiteSettings>(["logo_url", "favicon_url", "og_image_url"]);
+const coordinateFields = new Set<keyof SiteSettings>(["map_latitude", "map_longitude"]);
+
+const normalizeComparableText = (value?: string | null) => String(value || "").trim().replace(/\s+/g, " ");
 
 const fields: Array<{ key: keyof SiteSettings; label: string; group: "company" | "contact" | "media" | "seo" | "social"; textarea?: boolean }> = [
   { key: "company_name", label: "公司名称", group: "company" },
@@ -84,6 +88,10 @@ const AdminWebsiteSettings = () => {
   const [status, setStatus] = useState("");
   const [saving, setSaving] = useState(false);
   useUnsavedChangesWarning(dirty && !saving);
+  const coordinateHelp =
+    lang === "zh"
+      ? "修改地址并保存后，系统会自动更新地图坐标；如果定位不准，也可以手动覆盖。"
+      : "When the address changes, saving will auto-update map coordinates. You can still override them manually.";
 
   const updateField = (key: keyof SiteSettings, value: string) => {
     setSettings((current) => ({ ...current, [key]: value }));
@@ -93,10 +101,55 @@ const AdminWebsiteSettings = () => {
     setSaving(true);
     setStatus(t.saving);
     try {
+      const original = remoteSettings ?? fallbackSiteSettings;
+      const addressChanged =
+        normalizeComparableText(settings.address_zh) !== normalizeComparableText(original.address_zh) ||
+        normalizeComparableText(settings.address_en) !== normalizeComparableText(original.address_en);
+      const coordinatesChanged =
+        normalizeComparableText(settings.map_latitude) !== normalizeComparableText(original.map_latitude) ||
+        normalizeComparableText(settings.map_longitude) !== normalizeComparableText(original.map_longitude);
+      const coordinatesMissing = !normalizeComparableText(settings.map_latitude) || !normalizeComparableText(settings.map_longitude);
+      const shouldAutoGeocode = (addressChanged && !coordinatesChanged) || coordinatesMissing;
+      const addressForGeocode = normalizeComparableText(settings.address_en || settings.address_zh);
+      let payload: SiteSettings = { ...settings };
+      let geocodeStatus: "updated" | "skipped" | "failed" = "skipped";
+
+      if (shouldAutoGeocode && addressForGeocode) {
+        setStatus(
+          lang === "zh"
+            ? "正在根据新地址自动更新地图坐标..."
+            : "Updating map coordinates from the current address...",
+        );
+        try {
+          const geocoded = await geocodeAddress(addressForGeocode);
+          payload = {
+            ...payload,
+            map_latitude: geocoded.latitude,
+            map_longitude: geocoded.longitude,
+          };
+          geocodeStatus = "updated";
+        } catch (error) {
+          geocodeStatus = "failed";
+          if (addressChanged && !coordinatesChanged) {
+            payload = {
+              ...payload,
+              map_latitude: "",
+              map_longitude: "",
+            };
+          }
+          const message = error instanceof Error ? error.message : String(error || "");
+          setStatus(
+            lang === "zh"
+              ? `自动定位失败，仍会保存地址；旧坐标会先清空，前台地图会按地址文字显示。原因：${message}`
+              : `Automatic coordinate lookup failed; the address will still be saved and old coordinates will be cleared so the map falls back to the address. Reason: ${message}`,
+          );
+        }
+      }
+
       const saved = await saveAdminRecord<SiteSettings>({
         table: "site_settings",
         id: "default",
-        payload: { id: "default", ...settings },
+        payload: { id: "default", ...payload },
         expectedUpdatedAt: settings.updated_at || null,
         action: "update_settings",
         queryClient,
@@ -105,7 +158,13 @@ const AdminWebsiteSettings = () => {
       await invalidateSiteSettings(queryClient);
       const fresh = { ...fallbackSiteSettings, ...saved };
       applyRemote(fresh);
-      setStatus(t.saved);
+      if (geocodeStatus === "updated") {
+        setStatus(lang === "zh" ? "设置已保存，地图坐标已根据当前地址自动更新。" : "Settings saved. Map coordinates were updated automatically.");
+      } else if (geocodeStatus === "failed") {
+        setStatus(lang === "zh" ? "设置已保存，但自动定位失败。旧坐标已清空，请检查地址是否完整，或手动填写经纬度。" : "Settings saved, but automatic coordinate lookup failed. Old coordinates were cleared. Please check the address or fill latitude/longitude manually.");
+      } else {
+        setStatus(t.saved);
+      }
     } catch (error) {
       setStatus(formatAdminMutationError(error));
     } finally {
@@ -135,6 +194,7 @@ const AdminWebsiteSettings = () => {
             ) : (
               <Input value={settings[field.key] || ""} onChange={(event) => updateField(field.key, event.target.value)} />
             )}
+            {coordinateFields.has(field.key) ? <p className="mt-1 text-xs text-muted-foreground">{coordinateHelp}</p> : null}
           </div>
         ))}
       </div>

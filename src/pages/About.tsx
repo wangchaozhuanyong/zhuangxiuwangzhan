@@ -208,6 +208,21 @@ const About = () => {
   const dynamicTeam = useMemo(() => normalizeIconCardItems(teamSection?.items, localizedTeam[language]), [teamSection?.items, language]);
   const displayedMilestones = dynamicMilestones || localizedMilestones[language];
   const heroImage = resolvePageHeroImage(heroSection?.image_url as string | undefined, pageHeroImages.about);
+  const fallbackIntro = useMemo(() => {
+    const intro = [...t.intro];
+    if (settings.address) {
+      intro[1] =
+        language === "zh"
+          ? `公司已在 SSM 注册，办公室位于 ${settings.address}。团队可统筹装修流程中的设计、预算、材料、施工和交付。`
+          : `We are SSM-registered and operate from our office at ${settings.address}. Our team handles every aspect of the renovation process.`;
+    }
+    return intro;
+  }, [language, settings.address, t.intro]);
+  const officeDescription = settings.address
+    ? language === "zh"
+      ? `办公室地址：${settings.address}`
+      : `Office address: ${settings.address}`
+    : t.officeDescription;
 
   return (
     <main className="pt-site-header overflow-x-hidden">
@@ -235,7 +250,7 @@ const About = () => {
               <div>
                 <div className="accent-line mb-4" />
                 <h2 className="font-display text-2xl md:text-3xl font-bold mb-4">{(introSection?.title as string) || t.introTitle}</h2>
-                {(dynamicIntroParagraphs || t.intro).map((paragraph) => (
+                {(dynamicIntroParagraphs || fallbackIntro).map((paragraph) => (
                   <p key={paragraph} className="text-muted-foreground mb-4">{paragraph}</p>
                 ))}
                 <div className="flex flex-wrap gap-3">
@@ -305,7 +320,7 @@ const About = () => {
       <section className="section-padding bg-background">
         <Reveal>
           <div className="container-narrow">
-            <SectionHeader title={(officeSection?.title as string) || t.officeTitle} description={(officeSection?.content as string) || t.officeDescription} />
+            <SectionHeader title={(officeSection?.title as string) || t.officeTitle} description={(officeSection?.content as string) || officeDescription} />
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-stretch max-w-3xl mx-auto">
               <div className="luxury-card flex flex-col items-center justify-center p-8 text-center hover-lift">
                 <div className="w-12 h-12 mx-auto mb-4 rounded-full bg-accent/10 flex items-center justify-center">
@@ -315,7 +330,14 @@ const About = () => {
                 <p className="text-muted-foreground text-sm mb-3 whitespace-pre-line">{settings.address}</p>
                 <p className="text-muted-foreground text-xs">{t.hours}</p>
               </div>
-              <GoogleMapEmbed title={t.mapTitle} addressLabel={settings.address} height={220} className="min-h-[220px]" />
+              <GoogleMapEmbed
+                title={t.mapTitle}
+                addressLabel={settings.address}
+                latitude={settings.map_latitude}
+                longitude={settings.map_longitude}
+                height={220}
+                className="min-h-[220px]"
+              />
             </div>
           </div>
         </Reveal>

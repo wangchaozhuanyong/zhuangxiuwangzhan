@@ -1495,6 +1495,7 @@
     max-width: 68rem;
     margin-inline: auto;
     gap: 1.25rem;
+    justify-items: center;
     overflow: hidden;
     border: 1px solid rgba(255, 255, 255, 0.12);
     border-radius: 8px;
@@ -1531,12 +1532,15 @@
     display: block;
     width: 3.2rem;
     height: 2px;
+    margin-inline: auto;
     border-radius: 999px;
     background: linear-gradient(90deg, rgba(198, 164, 106, 0.12), rgba(198, 164, 106, 0.94), rgba(198, 164, 106, 0.18));
   }
 
   .home-footer-prelude__copy {
     max-width: 42rem;
+    margin-inline: auto;
+    text-align: center;
   }
 
   .home-footer-prelude__eyebrow {
@@ -1552,6 +1556,7 @@
   .home-footer-prelude__title {
     margin: 0;
     max-width: 38rem;
+    margin-inline: auto;
     color: rgba(255, 250, 238, 0.96);
     font-family: var(--font-display);
     font-size: clamp(1.85rem, 7vw, 3rem);
@@ -1564,6 +1569,7 @@
   .home-footer-prelude__text {
     margin-top: 0.85rem;
     max-width: 40rem;
+    margin-inline: auto;
     color: rgba(255, 250, 238, 0.68);
     font-size: 0.95rem;
     line-height: 1.75;
@@ -2853,9 +2859,9 @@
 
   .public-main--subpage .page-hero__overlay {
     background:
-      radial-gradient(circle at 72% 32%, rgba(233, 206, 158, 0.15), transparent 36%),
-      linear-gradient(90deg, rgba(13, 12, 9, 0.38) 0%, rgba(13, 12, 9, 0.16) 44%, rgba(13, 12, 9, 0.02) 100%),
-      linear-gradient(180deg, rgba(13, 12, 9, 0.02) 0%, rgba(13, 12, 9, 0.18) 72%, rgba(239, 235, 226, 0.08) 100%);
+      radial-gradient(circle at 72% 32%, rgba(233, 206, 158, 0.17), transparent 38%),
+      linear-gradient(90deg, rgba(13, 12, 9, 0.32) 0%, rgba(13, 12, 9, 0.12) 44%, rgba(13, 12, 9, 0.015) 100%),
+      linear-gradient(180deg, rgba(13, 12, 9, 0.015) 0%, rgba(13, 12, 9, 0.14) 72%, rgba(239, 235, 226, 0.08) 100%);
   }
 
   .public-main--subpage .page-hero__content {
@@ -3355,9 +3361,9 @@
 
     .public-main--subpage .page-hero__overlay {
       background:
-        radial-gradient(circle at 72% 24%, rgba(233, 206, 158, 0.13), transparent 38%),
-        linear-gradient(180deg, rgba(13, 12, 9, 0.02) 0%, rgba(13, 12, 9, 0.16) 46%, rgba(13, 12, 9, 0.42) 100%),
-        linear-gradient(90deg, rgba(13, 12, 9, 0.28) 0%, rgba(13, 12, 9, 0.08) 100%);
+        radial-gradient(circle at 72% 24%, rgba(233, 206, 158, 0.15), transparent 40%),
+        linear-gradient(180deg, rgba(13, 12, 9, 0.015) 0%, rgba(13, 12, 9, 0.12) 46%, rgba(13, 12, 9, 0.36) 100%),
+        linear-gradient(90deg, rgba(13, 12, 9, 0.22) 0%, rgba(13, 12, 9, 0.06) 100%);
     }
 
     .public-main--subpage .page-hero__image {
@@ -3818,7 +3824,7 @@
   .footer-legal {
     display: flex;
     flex-direction: column;
-    align-items: flex-start;
+    align-items: center;
     gap: 0.8rem;
     margin-top: 1rem;
     border-top: 1px solid rgba(255, 255, 255, 0.1);
@@ -3826,12 +3832,14 @@
     color: rgba(255, 255, 255, 0.38);
     font-size: 0.75rem;
     line-height: 1.5;
+    text-align: center;
   }
 
   .footer-legal div {
     display: flex;
     flex-wrap: wrap;
     gap: 1rem;
+    justify-content: center;
   }
 
   .footer-legal a {
@@ -3845,9 +3853,8 @@
 
   @media (min-width: 640px) {
     .footer-legal {
-      flex-direction: row;
-      align-items: center;
-      justify-content: space-between;
+      flex-direction: column;
+      justify-content: center;
     }
   }
 

@@ -196,6 +196,7 @@ const Quote = () => {
   const t = copy[language];
   const { data: pageContent } = usePublishedSitePage(language, "quote");
   const heroImage = resolvePageHeroImage(pageContent?.image_url, pageHeroImages.quote);
+  const officeAddress = settings.short_address || settings.address || t.office;
   const [form, setForm] = useState({
     name: "",
     phone: "",
@@ -276,7 +277,7 @@ const Quote = () => {
                   </p>
                   <p className="flex items-center gap-2 text-sm text-muted-foreground">
                     <MapPin className="h-4 w-4 text-accent" />
-                    {t.office}
+                    {officeAddress}
                   </p>
                   <p className="flex items-center gap-2 text-sm text-muted-foreground">
                     <Clock className="h-4 w-4 text-accent" />

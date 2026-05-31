@@ -236,6 +236,11 @@ const Contact = () => {
   ];
 
   const mapAddress = settings.address || t.addressText;
+  const mapDescription = mapAddress
+    ? language === "zh"
+      ? `办公室地址：${mapAddress}`
+      : `Office address: ${mapAddress}`
+    : t.mapDescription;
 
   const FieldError = ({ id, msg }: { id: string; msg?: string }) =>
     msg ? (
@@ -465,10 +470,16 @@ const Contact = () => {
             <div className="text-center mb-8">
               <div className="accent-line mx-auto mb-4" />
               <h2 className="font-display text-2xl md:text-3xl font-bold mb-3">{t.mapTitle}</h2>
-              <p className="text-muted-foreground text-sm">{t.mapDescription}</p>
+              <p className="text-muted-foreground text-sm">{mapDescription}</p>
             </div>
           </Reveal>
-          <GoogleMapEmbed title={t.mapFrameTitle} addressLabel={mapAddress} height={390} />
+          <GoogleMapEmbed
+            title={t.mapFrameTitle}
+            addressLabel={mapAddress}
+            latitude={settings.map_latitude}
+            longitude={settings.map_longitude}
+            height={390}
+          />
         </div>
       </section>
 

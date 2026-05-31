@@ -7,6 +7,8 @@ import { cn } from "@/lib/utils";
 type GoogleMapEmbedProps = {
   title: string;
   addressLabel?: string;
+  latitude?: string | number | null;
+  longitude?: string | number | null;
   height?: number;
   className?: string;
 };
@@ -24,15 +26,15 @@ const copy = {
   },
 };
 
-const GoogleMapEmbed = ({ title, addressLabel, height = 380, className }: GoogleMapEmbedProps) => {
+const GoogleMapEmbed = ({ title, addressLabel, latitude, longitude, height = 380, className }: GoogleMapEmbedProps) => {
   const { language } = useLanguage();
   const t = copy[language];
   const containerRef = useRef<HTMLDivElement>(null);
   const [shouldLoad, setShouldLoad] = useState(false);
   const [isLoaded, setIsLoaded] = useState(false);
 
-  const embedSrc = buildGoogleMapEmbedSrc(addressLabel);
-  const openUrl = buildGoogleMapOpenUrl(addressLabel);
+  const embedSrc = buildGoogleMapEmbedSrc(addressLabel, undefined, latitude, longitude);
+  const openUrl = buildGoogleMapOpenUrl(addressLabel, latitude, longitude);
 
   useEffect(() => {
     const node = containerRef.current;
