@@ -2853,8 +2853,9 @@
 
   .public-main--subpage .page-hero__overlay {
     background:
-      linear-gradient(90deg, rgba(13, 12, 9, 0.52) 0%, rgba(13, 12, 9, 0.24) 42%, rgba(13, 12, 9, 0.03) 100%),
-      linear-gradient(180deg, rgba(13, 12, 9, 0.03) 0%, rgba(13, 12, 9, 0.28) 100%);
+      radial-gradient(circle at 72% 32%, rgba(233, 206, 158, 0.15), transparent 36%),
+      linear-gradient(90deg, rgba(13, 12, 9, 0.38) 0%, rgba(13, 12, 9, 0.16) 44%, rgba(13, 12, 9, 0.02) 100%),
+      linear-gradient(180deg, rgba(13, 12, 9, 0.02) 0%, rgba(13, 12, 9, 0.18) 72%, rgba(239, 235, 226, 0.08) 100%);
   }
 
   .public-main--subpage .page-hero__content {
@@ -3354,8 +3355,9 @@
 
     .public-main--subpage .page-hero__overlay {
       background:
-        linear-gradient(180deg, rgba(13, 12, 9, 0.05) 0%, rgba(13, 12, 9, 0.56) 100%),
-        linear-gradient(90deg, rgba(13, 12, 9, 0.42) 0%, rgba(13, 12, 9, 0.1) 100%);
+        radial-gradient(circle at 72% 24%, rgba(233, 206, 158, 0.13), transparent 38%),
+        linear-gradient(180deg, rgba(13, 12, 9, 0.02) 0%, rgba(13, 12, 9, 0.16) 46%, rgba(13, 12, 9, 0.42) 100%),
+        linear-gradient(90deg, rgba(13, 12, 9, 0.28) 0%, rgba(13, 12, 9, 0.08) 100%);
     }
 
     .public-main--subpage .page-hero__image {
