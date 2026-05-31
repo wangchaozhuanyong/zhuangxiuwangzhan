@@ -16,7 +16,7 @@ const PublicLoadingState = ({
       <section className="public-loading-state section-padding">
         <div className="container-narrow">
           <Reveal>
-            <div className="public-loading-state__panel">
+            <div className="public-loading-state__panel" role="status" aria-live="polite">
               <span className="public-loading-state__label">{label}</span>
               <h1>{title}</h1>
               <p>{description}</p>

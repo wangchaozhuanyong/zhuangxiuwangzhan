@@ -305,7 +305,7 @@ const SectionContentEditor = ({
         <div key={id} className="space-y-3">
           <AdminFieldLabel label={field.label} help={field.help} />
           <Input value={value} placeholder={field.placeholder || "/images/example.webp"} onChange={(event) => onValueChange(event.target.value)} />
-          <AdminImageUpload value={value} folder={`cms-${normalizeSectionType(sectionType) || "custom"}`} onUploaded={onValueChange} />
+          <AdminImageUpload value={value} folder={`cms-${normalizeSectionType(sectionType) || "custom"}`} recordAsset assetUsageType="general" onUploaded={onValueChange} />
         </div>
       );
     }

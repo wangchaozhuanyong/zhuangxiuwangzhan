@@ -274,7 +274,7 @@ export const ProjectCardsEditor = ({
               <Input value={String(item[metaKey] || "")} onChange={(event) => update(index, { [metaKey]: event.target.value })} placeholder={metaLabel} />
               <div className="space-y-3 md:col-span-2">
                 <Input value={item.image || ""} onChange={(event) => update(index, { image: event.target.value })} placeholder="图片地址" />
-                <AdminImageUpload value={item.image || ""} folder={folder} onUploaded={(url) => update(index, { image: url })} />
+                <AdminImageUpload value={item.image || ""} folder={folder} recordAsset assetUsageType="general" onUploaded={(url) => update(index, { image: url })} />
               </div>
             </div>
           </div>

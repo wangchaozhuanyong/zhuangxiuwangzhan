@@ -188,7 +188,7 @@ const AdminProjectImages = ({ projectId }: AdminProjectImagesProps) => {
       </div>
       {status && <div className="mb-4 rounded-lg bg-muted p-3 text-sm">{status}</div>}
       <div className="mb-6 grid gap-4 md:grid-cols-2">
-        <AdminImageUpload folder={`projects/${projectId}`} value={draft.image_url} onUploaded={(url) => setDraft({ ...draft, image_url: url })} />
+        <AdminImageUpload folder={`projects/${projectId}`} value={draft.image_url} recordAsset assetUsageType="project" onUploaded={(url) => setDraft({ ...draft, image_url: url })} />
         <div className="space-y-3">
           <Input placeholder={t.imageUrl} value={draft.image_url} onChange={(event) => setDraft({ ...draft, image_url: event.target.value })} />
           <Select value={draft.image_type} onValueChange={(value) => setDraft({ ...draft, image_type: value })}>

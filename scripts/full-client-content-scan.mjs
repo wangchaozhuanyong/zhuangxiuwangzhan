@@ -61,7 +61,7 @@ async function scanUrl(context, url, viewportName) {
     const text = await page.locator("body").innerText({ timeout: 10000 });
     const brokenImages = await page.locator("img").evaluateAll((imgs) =>
       imgs
-        .filter((img) => img.naturalWidth === 0 || img.naturalHeight === 0)
+        .filter((img) => img.complete && (img.naturalWidth === 0 || img.naturalHeight === 0))
         .map((img) => ({ src: img.currentSrc || img.src, alt: img.alt })),
     );
     const overflowX = await page.evaluate(() => Math.max(0, document.documentElement.scrollWidth - document.documentElement.clientWidth));
@@ -109,7 +109,7 @@ const report = {
   sitemapUrl,
   urlCount: urls.length,
   checked: results.length,
-  failed: failed.length,
+  failedCount: failed.length,
   failedByViewport: failed.reduce((acc, item) => {
     acc[item.viewportName] = (acc[item.viewportName] || 0) + 1;
     return acc;
@@ -118,7 +118,7 @@ const report = {
 };
 fs.writeFileSync(reportPath, JSON.stringify(report, null, 2));
 console.log(reportPath);
-console.log(JSON.stringify({ urlCount: report.urlCount, checked: report.checked, failed: report.failed, failedByViewport: report.failedByViewport }, null, 2));
+console.log(JSON.stringify({ urlCount: report.urlCount, checked: report.checked, failedCount: report.failedCount, failedByViewport: report.failedByViewport }, null, 2));
 for (const item of failed.slice(0, 40)) {
   console.log(`${item.viewportName} ${new URL(item.url).pathname} ${JSON.stringify({ error: item.error, badImageResponses: item.badImageResponses?.length, brokenImages: item.brokenImages?.length, matches: item.matches, overflowX: item.overflowX })}`);
 }

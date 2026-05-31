@@ -1,0 +1,93 @@
+@layer components {
+  .btn-brand-primary {
+    @apply btn-press inline-flex items-center justify-center gap-2 rounded-full px-6 py-2.5 text-sm font-semibold transition-all;
+    background: #15120e;
+    color: #f8f3ea;
+    border: 1px solid rgba(198, 164, 106, 0.28);
+  }
+
+  .btn-brand-primary:hover {
+    background: #2a2118;
+    box-shadow: 0 14px 32px -22px rgba(21, 18, 14, 0.7);
+  }
+
+  .btn-brand-secondary {
+    @apply btn-press inline-flex items-center justify-center gap-2 rounded-full px-6 py-2.5 text-sm font-semibold transition-all;
+    background: transparent;
+    color: hsl(var(--foreground));
+    border: 1px solid #d8cbb8;
+  }
+
+  .btn-brand-secondary:hover {
+    border-color: hsl(var(--accent));
+    background: hsl(var(--accent) / 0.08);
+  }
+
+  .btn-on-dark-primary {
+    @apply btn-press inline-flex items-center justify-center gap-2 rounded-full px-6 py-2.5 text-sm font-semibold transition-all;
+    background: #f8f3ea;
+    color: #15120e;
+  }
+
+  .btn-on-dark-primary:hover {
+    background: #fffdf8;
+    box-shadow: 0 14px 32px -22px rgba(0, 0, 0, 0.45);
+  }
+
+  .btn-on-dark-secondary {
+    @apply btn-press inline-flex items-center justify-center gap-2 rounded-full px-6 py-2.5 text-sm font-semibold transition-all;
+    background: transparent;
+    color: #fff;
+    border: 1px solid rgba(255, 255, 255, 0.28);
+  }
+
+  .btn-on-dark-secondary:hover {
+    background: rgba(255, 255, 255, 0.08);
+    border-color: rgba(255, 255, 255, 0.4);
+  }
+
+  .btn-brand-primary,
+  .btn-brand-secondary,
+  .btn-on-dark-primary,
+  .btn-on-dark-secondary {
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+    font-family: var(--font-body);
+    font-weight: 700;
+    letter-spacing: 0;
+  }
+
+  .btn-brand-primary::before,
+  .btn-brand-secondary::before,
+  .btn-on-dark-primary::before,
+  .btn-on-dark-secondary::before {
+    content: "";
+    position: absolute;
+    inset: 1px;
+    z-index: 0;
+    border-radius: inherit;
+    background: linear-gradient(110deg, transparent 22%, rgba(255, 255, 255, 0.28) 45%, transparent 66%);
+    opacity: 0;
+    transform: translateX(-58%) skewX(-14deg);
+    transition:
+      opacity 220ms ease,
+      transform 620ms cubic-bezier(0.19, 1, 0.22, 1);
+  }
+
+  .btn-brand-primary:hover::before,
+  .btn-brand-secondary:hover::before,
+  .btn-on-dark-primary:hover::before,
+  .btn-on-dark-secondary:hover::before {
+    opacity: 1;
+    transform: translateX(58%) skewX(-14deg);
+  }
+
+  .btn-brand-primary > *,
+  .btn-brand-secondary > *,
+  .btn-on-dark-primary > *,
+  .btn-on-dark-secondary > * {
+    position: relative;
+    z-index: 1;
+  }
+}

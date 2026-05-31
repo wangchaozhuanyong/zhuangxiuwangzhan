@@ -188,6 +188,8 @@ const AdminWebsiteSettings = () => {
                   folder="site-settings"
                   value={settings[field.key] || ""}
                   previewVariant={getAdminImagePreviewVariant(String(field.key))}
+                  recordAsset
+                  assetUsageType={getAdminImagePreviewVariant(String(field.key)) === "logo" ? "logo" : getAdminImagePreviewVariant(String(field.key)) === "og" ? "og" : "general"}
                   onUploaded={(url) => updateField(field.key, url)}
                 />
               </div>

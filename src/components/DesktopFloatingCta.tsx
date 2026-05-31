@@ -7,6 +7,7 @@ import { useLanguage } from "@/i18n/LanguageContext";
 import { PUBLIC_CHROME_Z } from "@/lib/publicChrome";
 import { useSiteSettings } from "@/hooks/useSiteSettings";
 import { usePublicChrome } from "@/contexts/PublicChromeContext";
+import { trackCtaClick } from "@/lib/analytics";
 
 const copy = {
   en: {
@@ -118,7 +119,11 @@ const DesktopFloatingCta = () => {
             </button>
             <p className="pr-6 text-sm font-medium leading-6 text-surface-dark-foreground/90">{t.prompt}</p>
             <div className="mt-4 grid grid-cols-2 gap-2">
-              <LocalizedLink to="/quote" className="btn-on-dark-primary justify-center px-4 py-2.5 text-center text-sm">
+              <LocalizedLink
+                to="/quote"
+                className="btn-on-dark-primary justify-center px-4 py-2.5 text-center text-sm"
+                onClick={() => trackCtaClick("quote", "floating_desktop_prompt", { destination: "/quote" })}
+              >
                 {t.quote}
               </LocalizedLink>
               <a
@@ -126,6 +131,7 @@ const DesktopFloatingCta = () => {
                 target="_blank"
                 rel="noopener noreferrer"
                 className="btn-on-dark-secondary justify-center px-4 py-2.5 text-center text-sm"
+                onClick={() => trackCtaClick("whatsapp", "floating_desktop_prompt", { destination: "whatsapp" })}
               >
                 WhatsApp
               </a>
@@ -138,6 +144,7 @@ const DesktopFloatingCta = () => {
           rel="noopener noreferrer"
           aria-label={t.whatsappAria}
           className="ml-auto flex w-fit items-center justify-center rounded-full bg-whatsapp px-5 py-3 text-whatsapp-foreground shadow-luxury transition-all duration-300 hover:scale-[1.02]"
+          onClick={() => trackCtaClick("whatsapp", "floating_desktop_button", { destination: "whatsapp" })}
         >
           <WhatsAppIcon className="h-5 w-5" />
           <span className="ml-2 text-sm font-semibold">{t.whatsappDesktop}</span>

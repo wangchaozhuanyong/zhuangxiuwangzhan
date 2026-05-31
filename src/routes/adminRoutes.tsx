@@ -1,5 +1,8 @@
 import { lazy } from "react";
-import { Navigate, Route } from "react-router-dom";
+import { Link, Navigate, Route } from "react-router-dom";
+import AdminEmptyState from "@/components/admin/AdminEmptyState";
+import { Button } from "@/components/ui/button";
+import { getAdminLang } from "@/lib/adminLocale";
 import AdminRoute from "@/pages/admin/AdminRoute";
 import AdminAuthProvider from "@/pages/admin/AdminAuthProvider";
 
@@ -37,6 +40,22 @@ const AdminPages = lazy(() => import("@/pages/admin/AdminSimpleCms").then((modul
 const AdminFaqs = lazy(() => import("@/pages/admin/AdminSimpleCms").then((module) => ({ default: () => <module.default module="faqs" /> })));
 const AdminBeforeAfter = lazy(() => import("@/pages/admin/AdminSimpleCms").then((module) => ({ default: () => <module.default module="before_after_items" /> })));
 const AdminBrandPartners = lazy(() => import("@/pages/admin/AdminSimpleCms").then((module) => ({ default: () => <module.default module="brand_partners" /> })));
+
+const AdminNotFound = () => {
+  const zh = getAdminLang() === "zh";
+
+  return (
+    <AdminEmptyState
+      title={zh ? "后台页面不存在" : "Admin page not found"}
+      description={zh ? "这个后台页面不存在，可能是地址写错了，或者功能已经移动到其他菜单。" : "This admin page does not exist. The address may be incorrect or the feature may have moved."}
+      action={
+        <Button asChild className="rounded-lg">
+          <Link to="/admin/dashboard">{zh ? "返回总览" : "Back to dashboard"}</Link>
+        </Button>
+      }
+    />
+  );
+};
 
 export const adminRoutes = (
   <>
@@ -86,6 +105,7 @@ export const adminRoutes = (
         <Route path="content/translation_jobs" element={<AdminTranslationJobs />} />
         <Route path="content/translation_jobs/:id" element={<AdminTranslationJobs />} />
         <Route path="content/:type/:id?" element={<AdminContentEditor />} />
+        <Route path="*" element={<AdminNotFound />} />
       </Route>
     </Route>
     <Route path="/admin/content/leads" element={<Navigate to="/admin/leads" replace />} />

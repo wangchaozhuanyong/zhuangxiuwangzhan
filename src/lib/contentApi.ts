@@ -396,17 +396,20 @@ export const getPublishedProjectBySlug = async (slug: string, language: "en" | "
 
   if (error || !data) return fallbackProjects();
 
-  const orderedImages = (data.project_images || []).slice().sort((a: any, b: any) => a.sort_order - b.sort_order);
-  const cover = orderedImages.filter((img: any) => img.image_type === "cover");
-  const gallery = orderedImages.filter((img: any) => img.image_type === "gallery");
-  const beforeAfter = orderedImages.filter((img: any) => img.image_type === "before" || img.image_type === "after");
+  const projectRecord = data as UnknownRecord;
+  const orderedImages = toArray<UnknownRecord>(projectRecord.project_images)
+    .slice()
+    .sort((a, b) => Number(a.sort_order || 0) - Number(b.sort_order || 0));
+  const cover = orderedImages.filter((img) => img.image_type === "cover");
+  const gallery = orderedImages.filter((img) => img.image_type === "gallery");
+  const beforeAfter = orderedImages.filter((img) => img.image_type === "before" || img.image_type === "after");
   const imageRecords = [...cover, ...gallery, ...beforeAfter];
   const fallbackUrl = data.image_url ? [data.image_url] : [];
   const fallbackAlt = pickLocalizedText(data, "title", language);
 
-  const images = imageRecords.map((img: any) => img.image_url).filter(Boolean);
+  const images = imageRecords.map((img) => toText(img.image_url)).filter(Boolean);
   const imageAlts = imageRecords
-    .map((img: any) => pickLocalizedText(img, "alt", language, fallbackAlt))
+    .map((img) => pickLocalizedText(img, "alt", language, fallbackAlt))
     .filter(Boolean);
 
   return {
@@ -581,7 +584,11 @@ export const getPublishedServiceAreaBySlug = async (slug: string, language: "en"
     propertyTypes: (data.property_types || []).map((value: string) => localize(value)),
     commonNeeds: (data.common_needs || []).map((value: string) => localize(value)),
     constructionNotes: localize(pickLocalizedText(data, "construction_notes", language)),
-    projects: (data.projects || []).map((project: any) => ({ ...project, title: localize(project.title || ""), image: project.image })),
+    projects: toArray<UnknownRecord>(data.projects).map((project) => ({
+      ...project,
+      title: localize(toText(project.title)),
+      image: project.image,
+    })),
     faqs: pickLocalizedList<any>(data, "faqs", language).map((faq: any) => ({ q: localize(faq.q || ""), a: localize(faq.a || "") })),
   };
 };

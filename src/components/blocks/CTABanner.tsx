@@ -3,6 +3,7 @@ import Reveal from "@/components/Reveal";
 import WhatsAppIcon from "@/components/WhatsAppIcon";
 import { useSiteSettings } from "@/hooks/useSiteSettings";
 import { useLanguage } from "@/i18n/LanguageContext";
+import { trackCtaClick } from "@/lib/analytics";
 import { cn } from "@/lib/utils";
 import { ArrowRight } from "lucide-react";
 
@@ -44,7 +45,11 @@ const CTABanner = ({
               <p className="subpage-cta__text">{description}</p>
             </div>
             <div className="subpage-cta__actions">
-              <Link to={quotePath} className="subpage-cta__button subpage-cta__button--primary">
+              <Link
+                to={quotePath}
+                className="subpage-cta__button subpage-cta__button--primary"
+                onClick={() => trackCtaClick("quote", whatsappSource, { destination: quotePath })}
+              >
                 <ArrowRight className="h-4 w-4" />
                 <span>{quoteLabel}</span>
               </Link>
@@ -53,6 +58,7 @@ const CTABanner = ({
                 target="_blank"
                 rel="noopener noreferrer"
                 className="subpage-cta__button subpage-cta__button--secondary"
+                onClick={() => trackCtaClick("whatsapp", whatsappSource, { destination: "whatsapp" })}
               >
                 <WhatsAppIcon className="h-[18px] w-[18px] text-whatsapp" />
                 <span>{whatsappLabel}</span>

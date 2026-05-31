@@ -14,6 +14,7 @@ import { useLanguage } from "@/i18n/LanguageContext";
 import { useSiteSettings } from "@/hooks/useSiteSettings";
 import { usePublishedSitePage } from "@/hooks/usePublishedContent";
 import HeroBanner from "@/components/blocks/HeroBanner";
+import { trackCtaClick, trackQuoteFormSubmit } from "@/lib/analytics";
 import { pageHeroImages, resolvePageHeroImage } from "@/lib/pageHeroImages";
 
 const projectTypes = [
@@ -212,6 +213,11 @@ const Quote = () => {
   const formGuard = useFormGuard();
   const [honeypot, setHoneypot] = useState("");
 
+  const updateForm = (key: keyof typeof form, value: string) => {
+    setForm((current) => ({ ...current, [key]: value }));
+    setErrors((current) => ({ ...current, [key]: undefined }));
+  };
+
   const validate = (): boolean => {
     const next: FormErrors = {};
     if (!form.name.trim()) next.name = t.requiredName;
@@ -226,7 +232,10 @@ const Quote = () => {
 
   const handleSubmit = async (event: FormEvent) => {
     event.preventDefault();
-    if (!validate()) return;
+    if (!validate()) {
+      trackQuoteFormSubmit("validation_error");
+      return;
+    }
     setStatus("submitting");
 
     try {
@@ -243,9 +252,17 @@ const Quote = () => {
         website: honeypot,
         startedAt: formGuard.startedAt,
       });
+      trackQuoteFormSubmit("success", {
+        project_type: form.projectType,
+        budget_range: form.budget,
+      });
       setStatus("success");
     } catch (error) {
       console.error(error);
+      trackQuoteFormSubmit("error", {
+        project_type: form.projectType,
+        budget_range: form.budget,
+      });
       setStatus("error");
     }
   };
@@ -295,7 +312,12 @@ const Quote = () => {
                   <LocalizedLink to="/">{t.backHome}</LocalizedLink>
                 </Button>
                 <Button asChild size="lg" variant="outline" className="btn-brand-secondary flex-1">
-                  <a href={settings.whatsapp_url()} target="_blank" rel="noreferrer">
+                  <a
+                    href={settings.whatsapp_url()}
+                    target="_blank"
+                    rel="noreferrer"
+                    onClick={() => trackCtaClick("whatsapp", "quote_success", { destination: "whatsapp" })}
+                  >
                     <WhatsAppIcon className="mr-2 h-4 w-4" /> {t.whatsappNow}
                   </a>
                 </Button>
@@ -345,16 +367,16 @@ const Quote = () => {
                 </div>
               )}
 
-              <form onSubmit={handleSubmit} className="space-y-4">
+              <form onSubmit={handleSubmit} className="space-y-4" noValidate>
                 <div className="grid gap-4 md:grid-cols-2">
                   <div>
                     <label htmlFor="quote-name" className="mb-1.5 block text-sm">{t.name}</label>
-                    <Input id="quote-name" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} placeholder={t.namePlaceholder} aria-invalid={Boolean(errors.name)} aria-describedby={errors.name ? "quote-name-error" : undefined} />
+                    <Input id="quote-name" value={form.name} onChange={(e) => updateForm("name", e.target.value)} placeholder={t.namePlaceholder} aria-invalid={Boolean(errors.name)} aria-describedby={errors.name ? "quote-name-error" : undefined} />
                     {errors.name && <p id="quote-name-error" role="alert" className="mt-1 text-xs text-destructive">{errors.name}</p>}
                   </div>
                   <div>
                     <label htmlFor="quote-phone" className="mb-1.5 block text-sm">{t.phone}</label>
-                    <Input id="quote-phone" type="tel" value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} placeholder={t.contactLabel} aria-invalid={Boolean(errors.phone)} aria-describedby={errors.phone ? "quote-phone-error" : undefined} />
+                    <Input id="quote-phone" type="tel" value={form.phone} onChange={(e) => updateForm("phone", e.target.value)} placeholder={t.contactLabel} aria-invalid={Boolean(errors.phone)} aria-describedby={errors.phone ? "quote-phone-error" : undefined} />
                     {errors.phone && <p id="quote-phone-error" role="alert" className="mt-1 text-xs text-destructive">{errors.phone}</p>}
                   </div>
                 </div>
@@ -364,12 +386,12 @@ const Quote = () => {
                     <label htmlFor="quote-email" className="mb-1.5 block text-sm">
                       {t.email} <span className="text-muted-foreground">({t.optional})</span>
                     </label>
-                    <Input id="quote-email" type="email" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} placeholder={t.emailPlaceholder} aria-invalid={Boolean(errors.email)} aria-describedby={errors.email ? "quote-email-error" : undefined} />
+                    <Input id="quote-email" type="email" value={form.email} onChange={(e) => updateForm("email", e.target.value)} placeholder={t.emailPlaceholder} aria-invalid={Boolean(errors.email)} aria-describedby={errors.email ? "quote-email-error" : undefined} />
                     {errors.email && <p id="quote-email-error" role="alert" className="mt-1 text-xs text-destructive">{errors.email}</p>}
                   </div>
                   <div>
                     <label htmlFor="quote-location" className="mb-1.5 block text-sm">{t.location}</label>
-                    <Input id="quote-location" value={form.location} onChange={(e) => setForm({ ...form, location: e.target.value })} placeholder={t.locationPlaceholder} aria-invalid={Boolean(errors.location)} aria-describedby={errors.location ? "quote-location-error" : undefined} />
+                    <Input id="quote-location" value={form.location} onChange={(e) => updateForm("location", e.target.value)} placeholder={t.locationPlaceholder} aria-invalid={Boolean(errors.location)} aria-describedby={errors.location ? "quote-location-error" : undefined} />
                     {errors.location && <p id="quote-location-error" role="alert" className="mt-1 text-xs text-destructive">{errors.location}</p>}
                   </div>
                 </div>
@@ -381,7 +403,7 @@ const Quote = () => {
                       id="quote-project-type"
                       className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
                       value={form.projectType}
-                      onChange={(e) => setForm({ ...form, projectType: e.target.value })}
+                      onChange={(e) => updateForm("projectType", e.target.value)}
                       aria-invalid={Boolean(errors.projectType)}
                       aria-describedby={errors.projectType ? "quote-project-type-error" : undefined}
                     >
@@ -400,7 +422,7 @@ const Quote = () => {
                       id="quote-budget"
                       className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
                       value={form.budget}
-                      onChange={(e) => setForm({ ...form, budget: e.target.value })}
+                      onChange={(e) => updateForm("budget", e.target.value)}
                     >
                       <option value="">{t.selectBudgetRange}</option>
                       {budgetRanges.map((item) => (
@@ -416,7 +438,7 @@ const Quote = () => {
                   <label htmlFor="quote-property-size" className="mb-1.5 block text-sm">
                     {t.propertySize} <span className="text-muted-foreground">({t.approx})</span>
                   </label>
-                  <Input id="quote-property-size" value={form.propertySize} onChange={(e) => setForm({ ...form, propertySize: e.target.value })} placeholder={t.sizePlaceholder} />
+                  <Input id="quote-property-size" value={form.propertySize} onChange={(e) => updateForm("propertySize", e.target.value)} placeholder={t.sizePlaceholder} />
                 </div>
 
                 <div>
@@ -425,7 +447,7 @@ const Quote = () => {
                     id="quote-details"
                     rows={5}
                     value={form.details}
-                    onChange={(e) => setForm({ ...form, details: e.target.value })}
+                    onChange={(e) => updateForm("details", e.target.value)}
                     placeholder={t.detailsPlaceholder}
                   />
                 </div>
@@ -434,7 +456,13 @@ const Quote = () => {
                   <p className="mb-1 font-medium text-foreground">{t.photoTitle}</p>
                   <p>
                     {t.photoText}{" "}
-                    <a href={settings.whatsapp_url()} target="_blank" rel="noreferrer" className="font-medium text-accent hover:underline">
+                    <a
+                      href={settings.whatsapp_url()}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="font-medium text-accent hover:underline"
+                      onClick={() => trackCtaClick("whatsapp", "quote_photo_hint", { destination: "whatsapp" })}
+                    >
                       WhatsApp
                     </a>{" "}
                     {t.photoTextEnd}
@@ -490,7 +518,12 @@ const Quote = () => {
                 <h3 className="mb-3 font-display text-xl font-bold">{t.chatTitle}</h3>
                 <p className="mb-5 text-sm text-muted-foreground">{t.chatText}</p>
                 <Button asChild className="btn-brand-primary w-full">
-                  <a href={settings.whatsapp_url()} target="_blank" rel="noreferrer">
+                  <a
+                    href={settings.whatsapp_url()}
+                    target="_blank"
+                    rel="noreferrer"
+                    onClick={() => trackCtaClick("whatsapp", "quote_sidebar", { destination: "whatsapp" })}
+                  >
                     <WhatsAppIcon className="mr-2 h-4 w-4" /> {t.whatsappNow}
                   </a>
                 </Button>

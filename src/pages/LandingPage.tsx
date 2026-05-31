@@ -16,6 +16,7 @@ import { useSiteSettings } from "@/hooks/useSiteSettings";
 import { isHtmlText, stripHtml } from "@/lib/text";
 import { sanitizeHtml } from "@/lib/sanitizeHtml";
 import { translateDisplayText } from "@/i18n/displayLabels";
+import { toArray, toRecord, toText } from "@/lib/recordUtils";
 
 const shellCopy = {
   en: {
@@ -86,17 +87,42 @@ const LandingPage = () => {
         subtitle: displayText(page.subtitle),
         heroAlt: displayText(page.heroAlt || page.title),
         description: displayText(page.description),
-        benefits: page.benefits.map((item) => displayText(item)),
-        relatedProjects: page.relatedProjects.map((item) => ({
-          ...item,
-          title: displayText(item.title),
-          location: displayText(item.location),
-        })),
-        faqs: page.faqs.map((faq) => ({ q: displayText(faq.q), a: displayText(faq.a) })),
+        benefits: toArray(page.benefits).map((item) => displayText(toText(item))),
+        relatedProjects: toArray(page.relatedProjects).map((item) => {
+          const project = toRecord(item);
+          return {
+            ...project,
+            title: displayText(toText(project.title)),
+            location: displayText(toText(project.location)),
+          };
+        }),
+        faqs: toArray(page.faqs).map((item) => {
+          const faq = toRecord(item);
+          return {
+            q: displayText(toText(faq.q)),
+            a: displayText(toText(faq.a)),
+          };
+        }),
         seoTitle: displayText(page.seoTitle || ""),
         seoDescription: displayText(page.seoDescription || ""),
       }
     : page;
+  const landingBenefits = toArray(landingPage.benefits).map((item) => toText(item)).filter(Boolean);
+  const landingRelatedProjects = toArray(landingPage.relatedProjects).map((item) => {
+    const project = toRecord(item);
+    return {
+      title: toText(project.title),
+      location: toText(project.location),
+      image: toText(project.image),
+    };
+  });
+  const landingFaqs = toArray(landingPage.faqs).map((item) => {
+    const faq = toRecord(item);
+    return {
+      q: toText(faq.q),
+      a: toText(faq.a),
+    };
+  });
 
   return (
     <main className="pt-site-header">
@@ -153,7 +179,7 @@ const LandingPage = () => {
               <div className="subpage-side-panel p-5 md:p-7">
                 <h3 className="font-semibold text-base mb-4">{t.whyChoose}</h3>
                 <ul className="space-y-3">
-                  {landingPage.benefits.map((b) => (
+                  {landingBenefits.map((b) => (
                     <li key={b} className="flex items-start gap-3">
                       <CheckCircle className="w-4 h-4 text-accent mt-0.5 shrink-0" />
                       <span className="text-sm">{b}</span>
@@ -167,7 +193,7 @@ const LandingPage = () => {
       </section>
 
       {/* Related Projects */}
-      {landingPage.relatedProjects.length > 0 && (
+      {landingRelatedProjects.length > 0 && (
         <section className="section-padding bg-muted">
           <div className="container-narrow">
             <Reveal>
@@ -177,7 +203,7 @@ const LandingPage = () => {
               </div>
             </Reveal>
             <div className="card-grid mx-auto max-w-2xl grid-cols-1 gap-5 sm:grid-cols-2">
-              {landingPage.relatedProjects.map((p, i) => (
+              {landingRelatedProjects.map((p, i) => (
                 <Reveal key={p.title} delay={i * 80}>
                   <div className="material-depth-card luxury-card overflow-hidden hover-lift">
                     <div className="material-depth-card__media img-zoom aspect-[4/3]">
@@ -196,7 +222,7 @@ const LandingPage = () => {
       )}
 
       {/* FAQ */}
-      <FAQSection title={t.faqTitle} faqs={landingPage.faqs} className="section-padding bg-background" />
+      <FAQSection title={t.faqTitle} faqs={landingFaqs} className="section-padding bg-background" />
 
       <CTABanner
         title={t.ctaTitle}

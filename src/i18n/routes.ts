@@ -2,7 +2,7 @@ export type Language = "en" | "zh";
 
 export const supportedLanguages: Language[] = ["en", "zh"];
 
-export const isLanguage = (value?: string): value is Language =>
+export const isLanguage = (value?: string | null): value is Language =>
   value === "en" || value === "zh";
 
 export const getLanguageFromPath = (pathname = window.location.pathname): Language | null => {

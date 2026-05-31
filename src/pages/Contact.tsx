@@ -16,6 +16,7 @@ import { useLanguage } from "@/i18n/LanguageContext";
 import { useSiteSettings } from "@/hooks/useSiteSettings";
 import { usePublishedSitePage } from "@/hooks/usePublishedContent";
 import HeroBanner from "@/components/blocks/HeroBanner";
+import { trackCtaClick, trackEvent } from "@/lib/analytics";
 import { pageHeroImages, resolvePageHeroImage } from "@/lib/pageHeroImages";
 
 const serviceItems = {
@@ -207,7 +208,13 @@ const Contact = () => {
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
-    if (!validate()) return;
+    if (!validate()) {
+      trackEvent("contact_form_submit", {
+        form_status: "validation_error",
+        page_path: window.location.pathname,
+      });
+      return;
+    }
     setStatus("submitting");
     try {
       await submitContactLead({
@@ -221,9 +228,21 @@ const Contact = () => {
         website: honeypot,
         startedAt: formGuard.startedAt,
       });
+      trackEvent("contact_form_submit", {
+        form_status: "success",
+        page_path: window.location.pathname,
+        project_type: form.projectType,
+        location: form.location,
+      });
       setStatus("success");
     } catch (error) {
       console.error(error);
+      trackEvent("contact_form_submit", {
+        form_status: "error",
+        page_path: window.location.pathname,
+        project_type: form.projectType,
+        location: form.location,
+      });
       setStatus("error");
     }
   };
@@ -305,7 +324,11 @@ const Contact = () => {
                 </div>
 
                 <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:gap-4">
-                  <Link to="/quote" className="btn-brand-primary min-h-12 w-full justify-center px-8 sm:w-auto">
+                  <Link
+                    to="/quote"
+                    className="btn-brand-primary min-h-12 w-full justify-center px-8 sm:w-auto"
+                    onClick={() => trackCtaClick("quote", "contact_info", { destination: "/quote" })}
+                  >
                     {t.quoteCta} <ArrowRight className="h-4 w-4" />
                   </Link>
                   <a
@@ -313,6 +336,7 @@ const Contact = () => {
                     target="_blank"
                     rel="noopener noreferrer"
                     className="btn-brand-secondary min-h-12 w-full justify-center px-8 sm:w-auto"
+                    onClick={() => trackCtaClick("whatsapp", "contact_info", { destination: "whatsapp" })}
                   >
                     <WhatsAppIcon className="mr-2 h-[18px] w-[18px] text-whatsapp" /> {t.whatsappCta}
                   </a>
@@ -345,13 +369,21 @@ const Contact = () => {
                           <p className="text-sm text-destructive">{t.errorText}</p>
                           <div className="flex flex-wrap gap-2">
                             <Button size="sm" className="btn-press" asChild>
-                              <a href={settings.whatsapp_url()} target="_blank" rel="noopener noreferrer">
+                              <a
+                                href={settings.whatsapp_url()}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                onClick={() => trackCtaClick("whatsapp", "contact_error", { destination: "whatsapp" })}
+                              >
                                 <WhatsAppIcon className="w-4 h-4 mr-1.5" />
                                 {t.whatsappCta}
                               </a>
                             </Button>
                             <Button size="sm" variant="outline" className="btn-press" asChild>
-                              <a href={settings.phone_href}>
+                              <a
+                                href={settings.phone_href}
+                                onClick={() => trackCtaClick("phone", "contact_error", { destination: "phone" })}
+                              >
                                 <Phone className="w-4 h-4 mr-1.5" />
                                 {t.phoneTitle}
                               </a>

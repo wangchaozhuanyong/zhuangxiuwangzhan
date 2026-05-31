@@ -209,7 +209,10 @@ export const getPublishedBeforeAfterItems = async (language: "en" | "zh"): Promi
   if (error) return [];
 
   return (data || [])
-    .filter((item) => item.before_image_url && item.after_image_url)
+    .filter(
+      (item): item is typeof item & { before_image_url: string; after_image_url: string } =>
+        Boolean(item.before_image_url && item.after_image_url)
+    )
     .map((item) => ({
       id: item.id,
       title: pickLocalizedText(item, "title", language),

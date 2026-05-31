@@ -432,7 +432,7 @@ export const translateKeywordLabel = (value: string, language: Language) =>
   readLabel(keywordLabels, value, language);
 
 export const translateStatusLabel = (table: string, value: string, language: Language) => {
-  const tableMap = statusLabels[table] || statusLabels.default;
+  const tableMap = statusLabels[table] || statusLabels.default || {};
   return tableMap[value]?.[language] || value;
 };
 

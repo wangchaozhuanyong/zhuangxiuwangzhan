@@ -13,6 +13,7 @@ import DynamicBrandHead from "@/components/DynamicBrandHead";
 import { AppErrorBoundary } from "@/components/AppErrorBoundary";
 import { PublicChromeProvider, usePublicChrome } from "@/contexts/PublicChromeContext";
 import { stripLanguagePrefix } from "@/i18n/routes";
+import { initAnalytics, trackPageView } from "@/lib/analytics";
 import { adminRoutes } from "@/routes/adminRoutes";
 import { publicRoutes } from "@/routes/publicRoutes";
 import ScrollToTop from "./components/ScrollToTop";
@@ -28,11 +29,43 @@ const queryClient = new QueryClient({
   },
 });
 
-const PageLoader = () => (
-  <div className="min-h-[60vh] flex items-center justify-center">
-    <div className="w-8 h-8 border-2 border-accent border-t-transparent rounded-full animate-spin" />
-  </div>
-);
+const PageLoader = () => {
+  const { language } = useLanguage();
+  const label = language === "zh" ? "页面加载中" : "Loading page";
+
+  return (
+    <div className="min-h-[60vh] flex items-center justify-center" role="status" aria-live="polite" aria-label={label}>
+      <div className="w-8 h-8 border-2 border-accent border-t-transparent rounded-full animate-spin" aria-hidden="true" />
+      <span className="sr-only">{label}</span>
+    </div>
+  );
+};
+
+const AnalyticsRouteTracker = () => {
+  const location = useLocation();
+  const { language } = useLanguage();
+
+  useEffect(() => {
+    initAnalytics();
+  }, []);
+
+  useEffect(() => {
+    if (location.pathname.startsWith("/admin")) return;
+
+    const path = `${location.pathname}${location.search}`;
+    const timer = window.setTimeout(() => {
+      trackPageView({
+        path,
+        title: document.title,
+        language,
+      });
+    }, 0);
+
+    return () => window.clearTimeout(timer);
+  }, [language, location.pathname, location.search]);
+
+  return null;
+};
 
 const PublicPageFrame = ({ isAdminRoute, children }: { isAdminRoute: boolean; children: ReactNode }) => {
   const { menuOpen } = usePublicChrome();
@@ -113,6 +146,7 @@ const App = () => (
         <Toaster />
         <Sonner />
         <BrowserRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
+          <AnalyticsRouteTracker />
           <AppShell />
         </BrowserRouter>
       </TooltipProvider>

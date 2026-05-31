@@ -5,6 +5,8 @@ import { cn } from "@/lib/utils";
 import MediaPicker from "@/components/admin/MediaPicker";
 import SmartImage from "@/components/SmartImage";
 import AdminImageUpload from "@/pages/admin/AdminImageUpload";
+import { useCreateAdminMediaAsset } from "@/lib/adminQueries";
+import type { AdminUploadedMedia } from "@/lib/adminMedia";
 
 export default function ImageField({
   label,
@@ -28,7 +30,24 @@ export default function ImageField({
   className?: string;
 }) {
   const [pickerOpen, setPickerOpen] = useState(false);
+  const [mediaMessage, setMediaMessage] = useState("");
+  const createMediaAsset = useCreateAdminMediaAsset();
   const previewAlt = useMemo(() => (altValue ? altValue : label), [altValue, label]);
+
+  const handleUploaded = async (url: string, upload?: AdminUploadedMedia) => {
+    onChange(url);
+    setMediaMessage("");
+    try {
+      await createMediaAsset.mutateAsync({
+        url,
+        upload,
+        usageType: usageType || "general",
+        folder,
+      });
+    } catch (e) {
+      setMediaMessage(e instanceof Error ? `图片已上传，但媒体库记录创建失败：${e.message}` : "图片已上传，但媒体库记录创建失败。");
+    }
+  };
 
   return (
     <div className={cn("space-y-2", className)}>
@@ -51,8 +70,9 @@ export default function ImageField({
 
       <div className="rounded-lg border border-border bg-muted/20 p-3">
         <div className="mb-2 text-xs font-medium text-muted-foreground">上传新图片</div>
-        <AdminImageUpload value={value} folder={folder} onUploaded={(url) => onChange(url)} />
+        <AdminImageUpload value={value} folder={folder} onUploaded={(url, upload) => void handleUploaded(url, upload)} />
       </div>
+      {mediaMessage && <p className="text-xs text-amber-700">{mediaMessage}</p>}
 
       {typeof altValue === "string" && onAltChange && (
         <div>
@@ -69,7 +89,6 @@ export default function ImageField({
         initialUsageType={usageType || "all"}
         onSelect={({ url, alt_zh }) => {
           onChange(url);
-          // If alt is empty, use media alt as hint.
           if (typeof altValue === "string" && onAltChange && !altValue && alt_zh) onAltChange(String(alt_zh));
         }}
       />

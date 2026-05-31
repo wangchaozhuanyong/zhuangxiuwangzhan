@@ -6,13 +6,19 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import AdminListPager from "@/components/admin/AdminListPager";
 import { isSupabaseConfigured, supabase } from "@/lib/supabase";
 import { useAdminMediaAssets } from "@/lib/adminQueries";
+import { buildMediaAssetInsert, formatBytes, formatDimensions, inferMediaKind, type AdminUploadedMedia } from "@/lib/adminMedia";
 import AdminImageUpload from "@/pages/admin/AdminImageUpload";
 import SmartImage from "@/components/SmartImage";
 
 type MediaAsset = {
   id: string;
   file_url: string;
+  file_path?: string | null;
   file_name?: string | null;
+  mime_type?: string | null;
+  size_bytes?: number | null;
+  width?: number | null;
+  height?: number | null;
   folder?: string | null;
   usage_type?: string | null;
   alt_zh?: string | null;
@@ -62,16 +68,17 @@ export default function MediaPicker({
     setPage(0);
   }, [deferredSearch, usageType]);
 
-  const createAsset = async (url: string) => {
+  const createAsset = async (url: string, upload?: AdminUploadedMedia) => {
     if (!supabase) return;
     const { data: userData } = await supabase.auth.getUser();
-    const fileName = url.split("/").pop() || "image";
     const { error: insertError } = await supabase.from("media_assets").insert({
-      file_url: url,
-      file_name: fileName,
-      usage_type: usageType === "all" ? "general" : usageType,
-      folder: "media",
-      created_by: userData.user?.id || null,
+      ...buildMediaAssetInsert({
+        url,
+        upload,
+        usageType: usageType === "all" ? "general" : usageType,
+        folder: "media",
+        createdBy: userData.user?.id || null,
+      }),
     });
     if (insertError) {
       setMessage(insertError.message);
@@ -80,6 +87,8 @@ export default function MediaPicker({
     void queryClient.invalidateQueries({ queryKey: ["admin", "media_assets"] });
     await refetch();
   };
+
+  const imageAssets = assets.filter((asset) => inferMediaKind({ mimeType: asset.mime_type, url: asset.file_url }) !== "video");
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -116,7 +125,7 @@ export default function MediaPicker({
             {isFetching && <p className="text-sm text-muted-foreground">加载中...</p>}
 
             <div className="grid max-h-[50vh] grid-cols-2 gap-3 overflow-y-auto sm:grid-cols-3 md:grid-cols-4">
-              {assets.map((asset) => (
+              {imageAssets.map((asset) => (
                 <button
                   key={asset.id}
                   type="button"
@@ -129,7 +138,10 @@ export default function MediaPicker({
                   <div className="aspect-[4/3] w-full overflow-hidden">
                     <SmartImage src={asset.file_url} alt={asset.alt_zh || asset.alt_en || asset.file_name || "media"} width={200} height={200} className="h-full w-full object-cover transition-transform group-hover:scale-105" />
                   </div>
-                  <div className="p-2 text-xs text-muted-foreground truncate">{asset.file_name || asset.file_url}</div>
+                  <div className="space-y-1 p-2 text-xs text-muted-foreground">
+                    <div className="truncate">{asset.file_name || asset.file_url}</div>
+                    <div className="truncate">{formatDimensions(asset.width, asset.height)} · {formatBytes(asset.size_bytes)}</div>
+                  </div>
                 </button>
               ))}
             </div>
@@ -137,7 +149,7 @@ export default function MediaPicker({
 
             <div className="rounded-lg border border-border bg-muted/20 p-3">
               <div className="mb-2 text-xs font-medium text-muted-foreground">上传新图片到媒体库</div>
-              <AdminImageUpload folder="media" onUploaded={(url) => void createAsset(url)} />
+              <AdminImageUpload folder="media" onUploaded={(url, upload) => void createAsset(url, upload)} />
             </div>
           </div>
         )}

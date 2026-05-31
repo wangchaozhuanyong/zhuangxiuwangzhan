@@ -8,6 +8,7 @@
     "prebuild": "node scripts/validate-env.mjs --strict && node scripts/convert-images-to-webp.mjs && node scripts/prune-duplicate-images.mjs && node scripts/generate-sitemap.mjs && node scripts/generate-seo-manifest.mjs",
     "build": "vite build",
     "typecheck": "tsc -p tsconfig.app.json --noEmit",
+    "typecheck:strict-core": "tsc -p tsconfig.strict-core.json --noEmit",
     "build:dev": "vite build --mode development",
     "lint": "eslint .",
     "preview": "vite preview",

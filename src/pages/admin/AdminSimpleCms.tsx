@@ -132,7 +132,10 @@ const AdminSimpleCms = ({ module }: { module: ModuleKey }) => {
     if (error) setMessage(formatAdminError(module, error));
   }, [error, module]);
 
-  const title = useMemo(() => record[config.labelField] || record.title_en || record.name || "新建", [config.labelField, record]);
+  const title = useMemo(() => {
+    const current = record as Record<string, unknown>;
+    return String(current[config.labelField] || current["title_en"] || current["name"] || "新建");
+  }, [config.labelField, record]);
 
   const update = (key: string, value: unknown) => {
     recordDirtyRef.current = true;
@@ -250,6 +253,8 @@ const AdminSimpleCms = ({ module }: { module: ModuleKey }) => {
               folder={config.table}
               value={value}
               previewVariant={getAdminImagePreviewVariant(field.key)}
+              recordAsset
+              assetUsageType="general"
               onUploaded={(url) => update(field.key, url)}
             />
           </div>
@@ -280,27 +285,35 @@ const AdminSimpleCms = ({ module }: { module: ModuleKey }) => {
           </Button>
         </div>
         <div className="space-y-3">
-          {rows.map((row) => (
-            <div key={row.id} className="flex flex-col gap-3 rounded-lg border border-border p-4 md:flex-row md:items-center md:justify-between">
-              <div>
-                <p className="font-semibold">{row[config.labelField] || row.title_en || row.name || "未命名内容"}</p>
-                <p className="text-xs text-muted-foreground">状态：{adminStatusLabel("default", row.status || "-")} | 排序 {row.sort_order || 0}</p>
+          {rows.map((row) => {
+            const rowRecord = row as Record<string, unknown>;
+            const rowId = String(rowRecord.id || "");
+            const label = rowRecord[config.labelField] || rowRecord["title_en"] || rowRecord["name"] || "未命名内容";
+            const status = String(rowRecord.status || "-");
+            const sortOrder = rowRecord.sort_order || 0;
+
+            return (
+              <div key={rowId} className="flex flex-col gap-3 rounded-lg border border-border p-4 md:flex-row md:items-center md:justify-between">
+                <div>
+                  <p className="font-semibold">{String(label)}</p>
+                  <p className="text-xs text-muted-foreground">状态：{adminStatusLabel("default", status)} | 排序 {String(sortOrder)}</p>
+                </div>
+                <div className="flex gap-2">
+                  <Button type="button" variant="outline" size="sm" onClick={() => loadRecord(row)}>
+                    编辑
+                  </Button>
+                  <Button type="button" variant="destructive" size="sm" disabled={deletingId === rowId} onClick={() => void remove(rowId)}>
+                    删除
+                  </Button>
+                </div>
               </div>
-              <div className="flex gap-2">
-                <Button type="button" variant="outline" size="sm" onClick={() => loadRecord(row)}>
-                  编辑
-                </Button>
-                <Button type="button" variant="destructive" size="sm" disabled={deletingId === row.id} onClick={() => void remove(row.id)}>
-                  删除
-                </Button>
-              </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       </section>
 
       <section className="rounded-xl border border-border bg-card p-6">
-        <h2 className="mb-4 font-display text-xl font-bold">{title}</h2>
+        <h2 className="mb-4 font-display text-xl font-bold">{String(title)}</h2>
         <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-1">
           {config.fields.map(renderField)}
           <div>

@@ -7,6 +7,7 @@ import { PUBLIC_CHROME_Z } from "@/lib/publicChrome";
 import { useSiteSettings } from "@/hooks/useSiteSettings";
 import { usePublicChrome } from "@/contexts/PublicChromeContext";
 import { getReadableTextColor } from "@/lib/colorContrast";
+import { trackCtaClick } from "@/lib/analytics";
 
 const copy = {
   en: { whatsapp: "WhatsApp", call: "Call", quote: "Free Quote" },
@@ -44,19 +45,28 @@ const MobileActionBar = () => {
           target="_blank"
           rel="noopener noreferrer"
           className="mobile-action-bar__item mobile-action-bar__item--whatsapp"
+          onClick={() => trackCtaClick("whatsapp", "mobile_action_bar", { destination: "whatsapp" })}
         >
           <span className="mobile-action-bar__icon" aria-hidden="true">
             <WhatsAppIcon className="h-5 w-5" />
           </span>
           <span className="mobile-action-bar__label">{t.whatsapp}</span>
         </a>
-        <a href={settings.phone_href} className="mobile-action-bar__item mobile-action-bar__item--call">
+        <a
+          href={settings.phone_href}
+          className="mobile-action-bar__item mobile-action-bar__item--call"
+          onClick={() => trackCtaClick("phone", "mobile_action_bar", { destination: "phone" })}
+        >
           <span className="mobile-action-bar__icon" aria-hidden="true">
             <Phone className="h-5 w-5" />
           </span>
           <span className="mobile-action-bar__label">{t.call}</span>
         </a>
-        <LocalizedLink to="/quote" className="mobile-action-bar__item mobile-action-bar__item--quote">
+        <LocalizedLink
+          to="/quote"
+          className="mobile-action-bar__item mobile-action-bar__item--quote"
+          onClick={() => trackCtaClick("quote", "mobile_action_bar", { destination: "/quote" })}
+        >
           <span className="mobile-action-bar__icon" aria-hidden="true">
             <ClipboardList className="h-5 w-5" />
           </span>

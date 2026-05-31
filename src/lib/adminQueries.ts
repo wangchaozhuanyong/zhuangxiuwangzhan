@@ -6,6 +6,7 @@ import {
   fetchNotificationSettings,
   fetchTranslationJobs,
 } from "@/lib/adminEditorData";
+import { buildMediaAssetInsert, type AdminUploadedMedia } from "@/lib/adminMedia";
 import { isSupabaseConfigured, supabase } from "@/lib/supabase";
 
 const enabled = isSupabaseConfigured && Boolean(supabase);
@@ -93,7 +94,20 @@ async function fetchAdminListPage<T>({
 export type AdminMediaAsset = {
   id: string;
   file_url: string;
+  file_path: string | null;
   file_name: string | null;
+  mime_type: string | null;
+  size_bytes: number | null;
+  width: number | null;
+  height: number | null;
+  poster_url?: string | null;
+  duration_seconds?: number | null;
+  original_file_path?: string | null;
+  original_mime_type?: string | null;
+  original_size_bytes?: number | null;
+  original_width?: number | null;
+  original_height?: number | null;
+  processing_status?: string | null;
   usage_type: string | null;
   folder: string | null;
   alt_zh: string | null;
@@ -163,10 +177,13 @@ export function useAdminMediaAssets(options: Omit<AdminListQuery, "status"> & { 
     queryFn: async () => {
       let query = supabase!
         .from("media_assets")
-        .select("id,file_url,file_name,usage_type,folder,alt_zh,alt_en,created_at", { count: "exact" })
+        .select(
+          "id,file_url,file_path,file_name,mime_type,size_bytes,width,height,poster_url,duration_seconds,original_file_path,original_mime_type,original_size_bytes,original_width,original_height,processing_status,usage_type,folder,alt_zh,alt_en,created_at",
+          { count: "exact" },
+        )
         .order("created_at", { ascending: false });
       if (usageType !== "all") query = query.eq("usage_type", usageType);
-      query = applyAdminSearch(query, ["file_name", "folder", "usage_type", "alt_zh", "alt_en"], search);
+      query = applyAdminSearch(query, ["file_name", "folder", "usage_type", "mime_type", "alt_zh", "alt_en"], search);
       const from = page * pageSize;
       const { data, error, count } = await query.range(from, from + pageSize - 1);
       if (error) throw error;
@@ -183,15 +200,16 @@ export function useAdminMediaAssets(options: Omit<AdminListQuery, "status"> & { 
 export function useCreateAdminMediaAsset() {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: async ({ url }: { url: string }) => {
+    mutationFn: async ({ url, upload, usageType = "general", folder = "media" }: { url: string; upload?: AdminUploadedMedia; usageType?: string; folder?: string }) => {
       const { data: userData } = await supabase!.auth.getUser();
-      const fileName = url.split("/").pop() || "image";
       const { error } = await supabase!.from("media_assets").insert({
-        file_url: url,
-        file_name: fileName,
-        usage_type: "general",
-        folder: "media",
-        created_by: userData.user?.id || null,
+        ...buildMediaAssetInsert({
+          url,
+          upload,
+          usageType,
+          folder,
+          createdBy: userData.user?.id || null,
+        }),
       });
       if (error) throw error;
       return true;

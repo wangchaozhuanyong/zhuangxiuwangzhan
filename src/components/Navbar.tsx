@@ -10,6 +10,7 @@ import LocalizedLink from "@/components/LocalizedLink";
 import { useSiteSettings } from "@/hooks/useSiteSettings";
 import SmartImage from "@/components/SmartImage";
 import { usePublicChrome } from "@/contexts/PublicChromeContext";
+import { trackCtaClick } from "@/lib/analytics";
 import { PUBLIC_CHROME_Z } from "@/lib/publicChrome";
 import { addCacheBuster } from "@/lib/siteSettingsApi";
 import logoFallback from "@/assets/logo-flashcast.webp";
@@ -186,12 +187,21 @@ const Navbar = () => {
               <span className={language === "zh" ? "font-semibold text-foreground" : ""}>中文</span>
             </button>
             <Button variant="ghost" size="sm" className="whitespace-nowrap text-muted-foreground" asChild>
-              <a href={settings.whatsapp_url()} target="_blank" rel="noopener noreferrer">
+              <a
+                href={settings.whatsapp_url()}
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={() => trackCtaClick("whatsapp", "desktop_header", { destination: "whatsapp" })}
+              >
                 <WhatsAppIcon className="mr-1.5 h-4 w-4 text-whatsapp" /> WhatsApp
               </a>
             </Button>
             <Button size="sm" className="font-semibold" asChild>
-              <LocalizedLink to="/quote" className="whitespace-nowrap">
+              <LocalizedLink
+                to="/quote"
+                className="whitespace-nowrap"
+                onClick={() => trackCtaClick("quote", "desktop_header", { destination: "/quote" })}
+              >
                 {t("cta.getQuote")} <ArrowRight className="ml-1 h-3.5 w-3.5" />
               </LocalizedLink>
             </Button>
@@ -266,10 +276,20 @@ const Navbar = () => {
 
           <div className="shrink-0 space-y-3 border-t border-border bg-[hsl(var(--background))] px-5 pb-[max(1rem,env(safe-area-inset-bottom))] pt-4">
             <Button size="lg" className="h-12 w-full justify-center text-sm font-semibold" asChild>
-              <LocalizedLink to="/quote">{t("cta.getQuote")}</LocalizedLink>
+              <LocalizedLink
+                to="/quote"
+                onClick={() => trackCtaClick("quote", "mobile_menu", { destination: "/quote" })}
+              >
+                {t("cta.getQuote")}
+              </LocalizedLink>
             </Button>
             <Button size="lg" variant="outline" className="h-12 w-full justify-center text-sm font-medium" asChild>
-              <a href={settings.whatsapp_url()} target="_blank" rel="noopener noreferrer">
+              <a
+                href={settings.whatsapp_url()}
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={() => trackCtaClick("whatsapp", "mobile_menu", { destination: "whatsapp" })}
+              >
                 <WhatsAppIcon className="mr-1.5 h-4 w-4 text-whatsapp" />
                 {t("cta.whatsapp")}
               </a>

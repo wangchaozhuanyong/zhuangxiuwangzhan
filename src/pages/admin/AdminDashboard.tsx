@@ -1,10 +1,12 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import { ExternalLink } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAdminContentHealth, useAdminDashboardStats } from "@/lib/adminQueries";
 import AdminPageHeader from "@/components/admin/AdminPageHeader";
 import AdminStatCard from "@/components/admin/AdminStatCard";
 import AdminEmptyState from "@/components/admin/AdminEmptyState";
+import { ga4PagesReportUrl, isAnalyticsEnabled } from "@/lib/analytics";
 import { adminStatusLabel, getAdminLang } from "@/lib/adminLocale";
 import { translateProjectType } from "@/i18n/displayLabels";
 
@@ -84,6 +86,11 @@ const AdminDashboard = () => {
   const contentIssues = healthItems.filter((item) => item.issues.length > 0).length;
   const missingEnglish = healthItems.filter((item) => item.missingEnglish.length > 0).length;
   const draftContent = healthItems.filter((item) => item.status === "draft").length;
+  const ga4ActionLabel = lang === "zh" ? "GA4 页面访问统计" : "GA4 Page Views";
+  const ga4SetupHint =
+    lang === "zh"
+      ? "提示：还没填写 VITE_GA_MEASUREMENT_ID 时，按钮仍会打开 GA4；上线前填好后才会正式记录访问量。"
+      : "Tip: the button still opens GA4 before VITE_GA_MEASUREMENT_ID is set; tracking starts after the ID is configured.";
 
   useEffect(() => {
     const timer = window.setTimeout(() => setLoadHealthCards(true), 900);
@@ -199,12 +206,19 @@ const AdminDashboard = () => {
       <div id="tasks" className="mt-6 rounded-xl border border-border bg-card p-6">
         <h2 className="mb-4 font-display text-xl font-bold">{t.quickActions}</h2>
         <div className="flex flex-wrap gap-3">
+          <Button asChild variant="outline">
+            <a href={ga4PagesReportUrl} target="_blank" rel="noopener noreferrer">
+              {ga4ActionLabel}
+              <ExternalLink className="ml-2 h-4 w-4" />
+            </a>
+          </Button>
           {t.actions.map((action) => (
             <Button key={action.href} asChild variant="outline">
               <Link to={action.href}>{action.label}</Link>
             </Button>
           ))}
         </div>
+        {!isAnalyticsEnabled && <p className="mt-3 text-xs leading-5 text-muted-foreground">{ga4SetupHint}</p>}
       </div>
     </>
   );

@@ -189,7 +189,7 @@ const projectImageRowsBySlug = Object.fromEntries(
     project.slug,
     project.images.map((image, index) => ({
       image_url: asPublicImage(image, "projects"),
-      image_type: index === 0 ? "cover" : "gallery",
+      image_type: index === 0 ? ("cover" as const) : ("gallery" as const),
       alt_en: `${project.title} image ${index + 1}`,
       alt_zh: `${zh(project.title)} 图片 ${index + 1}`,
       sort_order: (index + 1) * 10,

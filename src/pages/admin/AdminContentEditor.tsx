@@ -764,6 +764,8 @@ const AdminContentEditor = () => {
                           value={record[field]}
                           folder={`${type}/${record.id || "draft"}`}
                           previewVariant={getAdminImagePreviewVariant(field)}
+                          recordAsset
+                          assetUsageType={type === "projects" ? "project" : type === "materials" ? "material" : type === "blog_posts" ? "blog" : "general"}
                           onUploaded={(url) => setRecordField({ [field]: url })}
                         />
                       </div>

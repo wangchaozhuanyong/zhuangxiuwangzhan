@@ -30,7 +30,7 @@ const Reveal = ({ children, className, delay = 0, direction = "up" }: RevealProp
       data-reveal-direction={direction}
       data-reveal-state={isVisible ? "visible" : "hidden"}
       className={cn(
-        "transform-gpu transition-all duration-700 ease-out will-change-transform",
+        "transform-gpu transition-[opacity,transform] duration-700 ease-out will-change-transform",
         isVisible
           ? "opacity-100 translate-y-0 translate-x-0"
           : `opacity-0 ${directionStyles[direction]}`,

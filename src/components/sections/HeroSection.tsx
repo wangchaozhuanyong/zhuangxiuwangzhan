@@ -5,6 +5,7 @@ import WhatsAppIcon from "@/components/WhatsAppIcon";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { usePublishedHeroSlides } from "@/hooks/usePublishedContent";
 import { useSiteSettings } from "@/hooks/useSiteSettings";
+import { trackCtaClick } from "@/lib/analytics";
 import type { PublishedSitePage } from "@/lib/homeContentApi";
 
 const heroCopy = {
@@ -52,17 +53,20 @@ const HeroSection = ({ pageContent }: HeroSectionProps) => {
   const mediaByVariant = {
     desktop: {
       poster: `/videos/home-hero-poster.webp?v=${mediaVersion}`,
+      webm: `/videos/home-hero.webm?v=${mediaVersion}`,
       mp4: `/videos/home-hero.mp4?v=${mediaVersion}`,
     },
     tablet: {
       poster: `/videos/home-hero-poster-tablet.webp?v=${mediaVersion}`,
+      webm: `/videos/home-hero-tablet.webm?v=${mediaVersion}`,
       mp4: `/videos/home-hero-tablet.mp4?v=${mediaVersion}`,
     },
     mobile: {
       poster: `/videos/home-hero-poster-mobile.webp?v=${mediaVersion}`,
+      webm: `/videos/home-hero-mobile.webm?v=${mediaVersion}`,
       mp4: `/videos/home-hero-mobile.mp4?v=${mediaVersion}`,
     },
-  } satisfies Record<HeroMediaVariant, { poster: string; mp4: string }>;
+  } satisfies Record<HeroMediaVariant, { poster: string; webm: string; mp4: string }>;
   const activeMedia = mediaByVariant[mediaVariant];
   const primaryLabel = slide?.buttonLabel || copy.quote;
   const primaryUrl = slide?.buttonUrl || "/quote";
@@ -80,7 +84,14 @@ const HeroSection = ({ pageContent }: HeroSectionProps) => {
     "home-hero-action group relative inline-flex h-11 w-full max-w-[260px] items-center justify-center gap-2 overflow-hidden rounded-full border px-5 text-sm font-semibold leading-none shadow-[0_18px_50px_-28px_rgba(0,0,0,0.85)] backdrop-blur-md transition duration-300 ease-out hover:-translate-y-0.5 active:translate-y-0 sm:w-auto sm:min-w-[148px] sm:max-w-[210px]";
   const primaryButtonClass = `${heroButtonClass} home-hero-action-primary border-white/70 bg-white/[0.92] text-[#17130e] hover:bg-white`;
   const secondaryButtonClass = `${heroButtonClass} home-hero-action-secondary border-white/35 bg-black/[0.18] text-white hover:border-white/50 hover:bg-black/[0.28]`;
+  const trackPrimaryClick = () => {
+    trackCtaClick(primaryUrl === "/quote" ? "quote" : "hero_primary", "home_hero", { destination: primaryUrl });
+  };
+  const trackWhatsAppClick = () => {
+    trackCtaClick("whatsapp", "home_hero", { destination: "whatsapp" });
+  };
   const handleScrollCue = useCallback(() => {
+    trackCtaClick("scroll_cue", "home_hero");
     document.getElementById("trust")?.scrollIntoView({ behavior: "smooth", block: "start" });
   }, []);
 
@@ -223,12 +234,11 @@ const HeroSection = ({ pageContent }: HeroSectionProps) => {
             videoLoaded ? "opacity-100" : "opacity-0"
           }`}
           poster={activeMedia.poster}
-          src={shouldLoadVideo ? activeMedia.mp4 : undefined}
           autoPlay
           muted
           loop
           playsInline
-          preload={shouldLoadVideo ? "auto" : "none"}
+          preload={shouldLoadVideo ? "metadata" : "none"}
           data-video-variant={mediaVariant}
           aria-hidden="true"
           tabIndex={-1}
@@ -249,32 +259,36 @@ const HeroSection = ({ pageContent }: HeroSectionProps) => {
           onPause={() => {
             if (document.visibilityState === "visible") window.setTimeout(requestHeroVideoPlay, 150);
           }}
-        />
+        >
+          {shouldLoadVideo && (
+            <>
+              <source src={activeMedia.webm} type="video/webm" />
+              <source src={activeMedia.mp4} type="video/mp4" />
+            </>
+          )}
+        </video>
         <div className="absolute inset-0 home-hero-overlay" />
       </div>
 
       <div className="relative z-10 flex min-h-[100svh] items-center justify-center px-4 py-24">
         <div className="home-hero-content flex w-full max-w-4xl flex-col items-center justify-center text-center">
-          <div className="home-hero-copy">
-            <p className="home-hero-kicker">FLASH CAST SDN. BHD.</p>
-            <h1 id="home-hero-title" className="home-hero-title">
-              {heroTitle}
-            </h1>
-            {heroDescription && (
-              <p className="home-hero-description">
-                {heroDescription}
-              </p>
-            )}
-          </div>
+          <h1 id="home-hero-title" className="sr-only">
+            {heroTitle}
+          </h1>
+          {heroDescription && (
+            <p className="sr-only">
+              {heroDescription}
+            </p>
+          )}
 
           <div className="home-hero-actions flex w-full max-w-[500px] flex-col items-center justify-center gap-3 sm:w-auto sm:max-w-none sm:flex-row">
             {primaryIsExternal ? (
-              <a href={primaryUrl} target="_blank" rel="noopener noreferrer" className={primaryButtonClass}>
+              <a href={primaryUrl} target="_blank" rel="noopener noreferrer" className={primaryButtonClass} onClick={trackPrimaryClick}>
                 <span className="min-w-0 truncate">{primaryLabel}</span>
                 <ArrowRight className="h-4 w-4 shrink-0 transition-transform duration-300 group-hover:translate-x-0.5" />
               </a>
             ) : (
-              <Link to={primaryUrl} className={primaryButtonClass}>
+              <Link to={primaryUrl} className={primaryButtonClass} onClick={trackPrimaryClick}>
                 <span className="min-w-0 truncate">{primaryLabel}</span>
                 <ArrowRight className="h-4 w-4 shrink-0 transition-transform duration-300 group-hover:translate-x-0.5" />
               </Link>
@@ -285,6 +299,7 @@ const HeroSection = ({ pageContent }: HeroSectionProps) => {
               target="_blank"
               rel="noopener noreferrer"
               className={secondaryButtonClass}
+              onClick={trackWhatsAppClick}
             >
               <WhatsAppIcon className="h-[17px] w-[17px] shrink-0 text-whatsapp" />
               <span className="min-w-0 truncate">{copy.whatsapp}</span>
