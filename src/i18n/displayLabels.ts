@@ -271,9 +271,11 @@ const keywordLabels: Record<string, LabelPair> = {
   renovation: { en: "Renovation", zh: "装修" },
   "full renovation": { en: "Full Renovation", zh: "全屋装修" },
   "complete renovation": { en: "Complete Renovation", zh: "完整装修" },
+  "modern condo full renovation": { en: "Modern Condo Full Renovation", zh: "现代公寓全屋装修" },
   kitchen: { en: "Kitchen", zh: "厨房" },
   "kitchen cabinet": { en: "Kitchen Cabinet", zh: "厨房橱柜" },
   "kitchen cabinets": { en: "Kitchen Cabinets", zh: "厨房橱柜" },
+  kitchens: { en: "Kitchens", zh: "厨房" },
   "custom cabinets": { en: "Custom Cabinets", zh: "定制柜" },
   cabinetry: { en: "Cabinetry", zh: "柜体" },
   "custom wardrobes": { en: "Custom Wardrobes", zh: "定制衣柜" },
@@ -333,6 +335,11 @@ const keywordLabels: Record<string, LabelPair> = {
   "flooring solutions in kuala lumpur": { en: "Flooring Solutions in Kuala Lumpur", zh: "吉隆坡地板解决方案" },
   "warehouse shelving & racking in malaysia": { en: "Warehouse Shelving & Racking in Malaysia", zh: "马来西亚仓库货架与仓储系统" },
   "how to plan your condo renovation in kl": { en: "How to Plan Your Condo Renovation in KL", zh: "吉隆坡公寓装修规划指南" },
+  "how to plan your condo renovation in kuala lumpur": { en: "How to Plan Your Condo Renovation in Kuala Lumpur", zh: "如何规划吉隆坡公寓装修？" },
+  "a step-by-step guide to planning a condo renovation in kl — from setting a budget and getting permits to choosing materials and hiring a contractor.": {
+    en: "A step-by-step guide to planning a condo renovation in KL — from setting a budget and getting permits to choosing materials and hiring a contractor.",
+    zh: "这是一份吉隆坡公寓装修规划指南，涵盖预算、管理处批准、材料选择和装修承包商筛选。",
+  },
   "shoplot renovation": { en: "Shoplot Renovation", zh: "店铺装修" },
   "old house renovation": { en: "Old House Renovation", zh: "旧屋翻新" },
   "condo renovation": { en: "Condo Renovation", zh: "公寓装修" },
@@ -374,6 +381,8 @@ const keywordLabels: Record<string, LabelPair> = {
   "melamine cabinet - grey oak": { en: "Melamine Cabinet - Grey Oak", zh: "美耐板橱柜 - 灰橡木" },
   "acrylic cabinet - high gloss white": { en: "Acrylic Cabinet - High Gloss White", zh: "亚克力橱柜 - 高光白" },
   "solid wood cabinet - natural teak": { en: "Solid Wood Cabinet - Natural Teak", zh: "实木橱柜 - 天然柚木" },
+  "solid wood cabinet - teak": { en: "Solid Wood Cabinet - Teak", zh: "实木橱柜 - 柚木" },
+  "most popular choice for hdb and condo kitchens.": { en: "Most popular choice for HDB and condo kitchens.", zh: "HDB 和公寓厨房最常见的选择。" },
   "white oak": { en: "White Oak", zh: "白橡木" },
   "natural oak": { en: "Natural Oak", zh: "天然橡木" },
   "grey stone": { en: "Grey Stone", zh: "灰石纹" },
@@ -462,6 +471,7 @@ export const translateDisplayText = (value: string, language: Language) => {
     .replace(/\s+([，。！？；：、])/g, "$1")
     .replace(/([（【])\s+/g, "$1")
     .replace(/\s+([）】])/g, "$1")
+    .replace(/([\u4e00-\u9fff])\s+([\u4e00-\u9fff])/g, "$1$2")
     .replace(/\s{2,}/g, " ")
     .trim();
 };
