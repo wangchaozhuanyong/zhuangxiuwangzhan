@@ -112,12 +112,14 @@ const HeroSection = ({ pageContent }: HeroSectionProps) => {
     let idleId: number | undefined;
     const startVideoLoad = () => setShouldLoadVideo(true);
     const scheduleVideoLoad = () => {
-      const requestIdle = window.requestIdleCallback;
-      if (requestIdle) {
-        idleId = requestIdle(startVideoLoad, { timeout: 1800 });
-      } else {
-        timeoutId = window.setTimeout(startVideoLoad, 900);
-      }
+      timeoutId = window.setTimeout(() => {
+        const requestIdle = window.requestIdleCallback;
+        if (requestIdle) {
+          idleId = requestIdle(startVideoLoad, { timeout: 1200 });
+        } else {
+          startVideoLoad();
+        }
+      }, 1200);
     };
 
     if (document.readyState === "complete") {
@@ -128,8 +130,8 @@ const HeroSection = ({ pageContent }: HeroSectionProps) => {
 
     return () => {
       window.removeEventListener("load", scheduleVideoLoad);
-      if (timeoutId) window.clearTimeout(timeoutId);
-      if (idleId && window.cancelIdleCallback) window.cancelIdleCallback(idleId);
+      if (timeoutId !== undefined) window.clearTimeout(timeoutId);
+      if (idleId !== undefined && window.cancelIdleCallback) window.cancelIdleCallback(idleId);
     };
   }, []);
 
@@ -167,7 +169,10 @@ const HeroSection = ({ pageContent }: HeroSectionProps) => {
 
   useEffect(() => {
     setVideoLoaded(false);
-  }, [mediaVariant]);
+    videoRef.current?.load();
+    const playTimer = window.setTimeout(requestHeroVideoPlay, 50);
+    return () => window.clearTimeout(playTimer);
+  }, [mediaVariant, requestHeroVideoPlay]);
 
   useEffect(() => {
     if (!shouldLoadVideo) return;
