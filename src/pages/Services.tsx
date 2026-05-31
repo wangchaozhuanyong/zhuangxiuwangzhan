@@ -1,6 +1,6 @@
 ﻿import { useMemo } from "react";
 import Link from "@/components/LocalizedLink";
-import { ArrowRight, CheckCircle } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import WhatsAppIcon from "@/components/WhatsAppIcon";
 import { servicesData } from "@/data/services";
 import SmartImage from "@/components/SmartImage";
@@ -42,19 +42,79 @@ const copy = {
         title: "Residential Renovation",
         description: "Core renovation services for condos, landed homes, kitchens, bathrooms, and custom built-in storage.",
         short: "Homes",
+        hint: "Condo / Landed / Kitchen",
       },
       commercial: {
         title: "Commercial Spaces",
         description: "Fit-out and construction support for offices, shops, retail spaces, restaurants, and warehouse systems.",
         short: "Business",
+        hint: "Office / Shop / Warehouse",
       },
       specialty: {
         title: "Specialist Support",
         description: "Premium finishes, wall coating, permit coordination, drawings, and documentation support.",
         short: "Specialist",
+        hint: "Coating / Permit / Drawings",
       },
     },
     scopeTitle: "Core Scope",
+    serviceCards: {
+      renovation: {
+        title: "Full Renovation",
+        summary: "Complete renovation for condos and landed homes, covering demolition, electrical, plumbing, carpentry, painting, and finishing.",
+        tags: ["Condo", "Landed"],
+      },
+      "old-house": {
+        title: "Old House Renovation",
+        summary: "Upgrade aging homes with structural repair, rewiring, replumbing, waterproofing, and full interior renewal.",
+        tags: ["Old Homes", "Repair"],
+      },
+      kitchen: {
+        title: "Kitchen Renovation",
+        summary: "Cabinet replacement, countertop upgrade, tiling, plumbing, electrical, and appliance integration for modern kitchens.",
+        tags: ["Cabinets", "Countertops"],
+      },
+      bathroom: {
+        title: "Bathroom Renovation",
+        summary: "Waterproofing, tiling, vanity installation, shower systems, sanitary ware, and plumbing works for clean modern bathrooms.",
+        tags: ["Waterproofing", "Tiling"],
+      },
+      builtin: {
+        title: "Custom Built-In Furniture",
+        summary: "Made-to-measure wardrobes, kitchen cabinets, TV consoles, vanities, and storage systems for better space usage.",
+        tags: ["Wardrobe", "Storage"],
+      },
+      design: {
+        title: "Interior Design",
+        summary: "Space planning, concept design, 3D visualization, and construction drawings for residential and commercial projects.",
+        tags: ["Layout", "3D Design"],
+      },
+      office: {
+        title: "Office Renovation",
+        summary: "Office layout planning, partitions, furniture, data cabling, lighting, flooring, and professional fit-out works.",
+        tags: ["Office", "Fit-Out"],
+      },
+      shop: {
+        title: "Shop Renovation",
+        summary: "Shopfront design, interior fit-out, display systems, counter setup, signage, and business-ready renovation works.",
+        tags: ["Retail", "Signage"],
+      },
+      warehouse: {
+        title: "Warehouse & Industrial Systems",
+        summary: "Warehouse shelving, storage layout, industrial support works, and practical upgrades for operational spaces.",
+        tags: ["Shelving", "Storage"],
+      },
+      "artistic-coating": {
+        title: "Artistic Wall Coating",
+        summary: "German Remmers artistic coatings for feature walls, interiors, showrooms, restaurants, and premium commercial spaces.",
+        tags: ["Feature Wall", "Texture"],
+      },
+      approval: {
+        title: "Permit & Drawing Support",
+        summary: "Renovation permit applications, management office coordination, drawings, and documentation support.",
+        tags: ["Permit", "Drawings"],
+      },
+    },
     unsureTitle: "Not Sure What You Need?",
     unsureText: "Contact us for a free consultation. We will assess your space and recommend the right approach.",
     quote: "Get a Free Quote",
@@ -91,19 +151,79 @@ const copy = {
         title: "住宅装修",
         description: "适合公寓、排屋、独立式住宅、厨房、浴室、旧屋翻新和定制收纳。",
         short: "住宅",
+        hint: "公寓 / 排屋 / 厨房",
       },
       commercial: {
         title: "商业空间",
         description: "适合办公室、店铺、零售空间、餐饮空间和仓储货架等商业项目。",
         short: "商业",
+        hint: "办公室 / 店铺 / 仓库",
       },
       specialty: {
         title: "专项支持",
         description: "包含艺术墙面涂装、装修准证、图纸协调和文件支持等专项服务。",
         short: "专项",
+        hint: "涂装 / 准证 / 图纸",
       },
     },
     scopeTitle: "核心范围",
+    serviceCards: {
+      renovation: {
+        title: "全屋装修",
+        summary: "适合公寓、排屋和独立式住宅的一站式装修，包含拆除、水电、泥水、木工、油漆和收尾。",
+        tags: ["公寓", "排屋"],
+      },
+      "old-house": {
+        title: "旧屋翻新",
+        summary: "适合老屋、排屋和独立式住宅翻新，重点处理结构、水电、漏水、防水和整体翻新。",
+        tags: ["旧屋", "维修"],
+      },
+      kitchen: {
+        title: "厨房装修",
+        summary: "包含厨柜、台面、瓷砖、水电、排烟和电器嵌入，让厨房更耐用也更好用。",
+        tags: ["厨柜", "台面"],
+      },
+      bathroom: {
+        title: "浴室装修",
+        summary: "包含防水、瓷砖、浴室柜、淋浴区、洁具和管道处理，减少漏水风险，提升日常体验。",
+        tags: ["防水", "瓷砖"],
+      },
+      builtin: {
+        title: "定制内嵌家具",
+        summary: "定制衣柜、厨柜、电视柜、鞋柜、浴室柜和收纳系统，让空间更整齐、更好收纳。",
+        tags: ["衣柜", "收纳"],
+      },
+      design: {
+        title: "室内设计",
+        summary: "包含空间规划、风格方案、3D 效果图和施工图，让装修前先看清楚整体效果。",
+        tags: ["布局", "3D 设计"],
+      },
+      office: {
+        title: "办公室装修",
+        summary: "适合办公室规划、隔间、会议室、前台、灯光、地板、网络布线和整体商业形象升级。",
+        tags: ["办公", "隔间"],
+      },
+      shop: {
+        title: "店铺装修",
+        summary: "适合零售、餐饮、美容、诊所和服务业店铺，包含门面、动线、柜台、展示和招牌。",
+        tags: ["零售", "招牌"],
+      },
+      warehouse: {
+        title: "仓储货架与工业空间",
+        summary: "适合仓库货架、储物规划、工业空间整理和实用型施工，让空间更安全、更好管理。",
+        tags: ["货架", "仓储"],
+      },
+      "artistic-coating": {
+        title: "艺术墙面涂装",
+        summary: "适合背景墙、展示区、餐厅、酒店和商业空间，做出比普通油漆更有质感的墙面效果。",
+        tags: ["背景墙", "肌理"],
+      },
+      approval: {
+        title: "装修准证与图纸支持",
+        summary: "协助管理处、政府部门、装修准证、图纸和文件流程，减少客户自己跑流程的麻烦。",
+        tags: ["准证", "图纸"],
+      },
+    },
     unsureTitle: "需要确认适合的装修服务？",
     unsureText: "联系我们免费咨询，我们会根据你的空间和预算建议合适方案。",
     quote: "获取免费报价",
@@ -149,9 +269,23 @@ const serviceGroups: Array<{ id: ServiceGroupId; keys: string[] }> = [
   { id: "specialty", keys: ["artistic-coating", "approval"] },
 ];
 
-const getServiceKey = (service: { slug: string; title: string }) => {
+const getServiceKey = (service: { id?: string; slug: string; title: string }) => {
+  const code = (service.id || service.slug).toLowerCase();
   const slug = service.slug.toLowerCase();
   const title = service.title.toLowerCase();
+
+  if (code === "renovation" || slug === "renovation") return "renovation";
+  if (code === "old-house" || slug === "old-house") return "old-house";
+  if (code === "kitchen" || slug === "kitchen") return "kitchen";
+  if (code === "bathroom" || slug === "bathroom") return "bathroom";
+  if (code === "builtin" || slug === "builtin") return "builtin";
+  if (code === "design" || slug === "design") return "design";
+  if (code === "office" || slug === "office" || slug === "office-renovation") return "office";
+  if (code === "shop" || code === "shoplot" || slug === "shoplot" || slug === "shop-renovation") return "shop";
+  if (code === "warehouse" || slug === "warehouse") return "warehouse";
+  if (code === "artistic-coating" || slug === "artistic-coating") return "artistic-coating";
+  if (code === "approval" || slug === "approval") return "approval";
+
   const text = `${slug} ${title}`;
 
   if (text.includes("office") || text.includes("办公室")) return "office";
@@ -282,22 +416,26 @@ const Services = () => {
         <div className="container-narrow">
           <SectionHeader title={t.directoryTitle} description={t.directoryText} />
 
-          <div className="service-overview-grid">
-            {groupedServices.map((group, index) => {
-              const groupCopy = t.groups[group.id];
+          <Reveal direction="none">
+            <nav className="service-category-nav" aria-label={t.directoryTitle}>
+              {groupedServices.map((group, index) => {
+                const groupCopy = t.groups[group.id];
 
-              return (
-                <Reveal key={group.id} delay={index * 70} direction="none">
-                  <a className="service-overview-card luxury-card-muted hover-lift" href={`#service-group-${group.id}`}>
-                    <span className="service-overview-card__count">{String(group.services.length).padStart(2, "0")}</span>
-                    <span className="service-overview-card__label">{groupCopy.short}</span>
+                return (
+                  <a
+                    key={group.id}
+                    className="service-category-nav__item"
+                    href={`#service-group-${group.id}`}
+                    style={{ animationDelay: `${index * 70}ms` }}
+                  >
+                    <span className="service-category-nav__label">{groupCopy.short}</span>
                     <strong>{groupCopy.title}</strong>
-                    <span>{groupCopy.description}</span>
+                    <span>{groupCopy.hint}</span>
                   </a>
-                </Reveal>
-              );
-            })}
-          </div>
+                );
+              })}
+            </nav>
+          </Reveal>
         </div>
       </section>
 
@@ -314,64 +452,55 @@ const Services = () => {
           <div className="container-narrow">
             <Reveal>
               <div className="service-group-heading">
-                <p>{t.groupKicker}</p>
+                <span className="service-group-heading__rule" aria-hidden="true" />
                 <h2>{groupCopy.title}</h2>
                 <span>{groupCopy.description}</span>
               </div>
             </Reveal>
 
             <div className="service-directory-grid">
-              {group.services.map(({ key, service }, index) => (
-                <Reveal key={`${key}-${service.slug}`} delay={index * 70} direction="none">
-                  <article className="service-directory-card luxury-card group hover-lift">
-                    <Link to={`/services/${service.slug}`} className="service-directory-card__media img-zoom">
-                      <SmartImage
-                        src={service.image}
-                        alt={`${displayText(service.title)} service by FLASH CAST in Kuala Lumpur`}
-                        loading="lazy"
-                        width={800}
-                        height={600}
-                        className="h-full w-full object-cover"
-                      />
-                    </Link>
+              {group.services.map(({ key, service }, index) => {
+                const cardCopy = t.serviceCards[key as keyof typeof t.serviceCards];
+                const cardTitle = cardCopy?.title || displayText(service.title);
+                const cardSummary = cardCopy?.summary || displayText(service.summary);
+                const cardTags = cardCopy?.tags || service.suitableFor.slice(0, 2).map((item: string) => displayText(item));
 
-                    <div className="service-directory-card__body">
-                      <div className="service-directory-card__meta">
-                        <span>{String(serviceRank(key) + 1).padStart(2, "0")}</span>
-                        <span>{groupCopy.short}</span>
-                      </div>
-
-                      <h3>{displayText(service.title)}</h3>
-                      <p>{displayText(service.summary)}</p>
-
-                      {service.suitableFor.length > 0 ? (
-                        <div className="service-directory-card__chips" aria-label={t.suitableFor}>
-                          {service.suitableFor.slice(0, 3).map((item: string) => (
-                            <span key={item}>{displayText(item)}</span>
-                          ))}
-                        </div>
-                      ) : null}
-
-                      <div className="service-directory-card__scope">
-                        <strong>{t.scopeTitle}</strong>
-                        <ul>
-                          {service.items.slice(0, 4).map((item: string) => (
-                            <li key={item}>
-                              <CheckCircle className="h-3.5 w-3.5" />
-                              <span>{displayText(item)}</span>
-                            </li>
-                          ))}
-                        </ul>
-                      </div>
-
-                      <Link to={`/services/${service.slug}`} className="service-directory-card__link">
-                        <span>{t.details}</span>
-                        <ArrowRight className="h-4 w-4" />
+                return (
+                  <Reveal key={`${key}-${service.slug}`} delay={index * 70} direction="none">
+                    <article className="service-directory-card luxury-card group hover-lift">
+                      <Link to={`/services/${service.slug}`} className="service-directory-card__media img-zoom">
+                        <SmartImage
+                          src={service.image}
+                          alt={`${cardTitle} service by FLASH CAST in Kuala Lumpur`}
+                          loading="lazy"
+                          width={800}
+                          height={600}
+                          className="h-full w-full object-cover"
+                        />
                       </Link>
-                    </div>
-                  </article>
-                </Reveal>
-              ))}
+
+                      <div className="service-directory-card__body">
+                        <span className="service-directory-card__type">{groupCopy.short}</span>
+                        <h3>{cardTitle}</h3>
+                        <p>{cardSummary}</p>
+
+                        {cardTags.length > 0 ? (
+                          <div className="service-directory-card__chips" aria-label={t.suitableFor}>
+                            {cardTags.map((item: string) => (
+                              <span key={item}>{item}</span>
+                            ))}
+                          </div>
+                        ) : null}
+
+                        <Link to={`/services/${service.slug}`} className="service-directory-card__link">
+                          <span>{t.details}</span>
+                          <ArrowRight className="h-4 w-4" />
+                        </Link>
+                      </div>
+                    </article>
+                  </Reveal>
+                );
+              })}
             </div>
           </div>
         </section>

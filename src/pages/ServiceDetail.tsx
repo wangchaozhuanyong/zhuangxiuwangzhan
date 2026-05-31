@@ -182,12 +182,12 @@ const ServiceDetail = () => {
           <div className="page-hero__overlay absolute inset-0 media-readable-overlay" aria-hidden="true" />
         </div>
         <div className="page-hero__content site-container">
-          <Link to="/services" className="mb-6 inline-flex items-center gap-1 text-sm text-on-media-muted transition-colors hover:text-gold">
+          <Link to="/services" className="page-hero__back mb-6 inline-flex items-center gap-1 text-sm text-on-media-muted transition-colors hover:text-gold">
             <ArrowLeft className="h-3.5 w-3.5" /> {t.allServices}
           </Link>
-          <p className="mb-4 font-body text-[11px] font-semibold uppercase tracking-[0.28em] text-gold">{t.services}</p>
-          <h1 className="heading-safe mb-4 max-w-2xl text-3xl font-bold text-on-media md:text-5xl">{serviceTitle}</h1>
-          <p className="prose-safe mb-8 max-w-2xl text-base text-on-media-muted md:text-lg">{serviceSummary}</p>
+          <p className="page-hero__label mb-4 font-body text-[11px] font-semibold uppercase tracking-[0.28em] text-gold">{t.services}</p>
+          <h1 className="page-hero__title heading-safe mb-4 max-w-2xl text-3xl font-bold text-on-media md:text-5xl">{serviceTitle}</h1>
+          <p className="page-hero__description prose-safe mb-8 max-w-2xl text-base text-on-media-muted md:text-lg">{serviceSummary}</p>
           <div className="flex flex-col gap-3 sm:flex-row">
             <Link to="/quote" className="btn-on-dark-primary min-h-12 justify-center px-8 sm:w-auto">
               {t.getQuote} <ArrowRight className="h-4 w-4" />
@@ -245,12 +245,16 @@ const ServiceDetail = () => {
 
       <section className="section-padding bg-muted">
         <div className="container-narrow">
-          <h2 className="font-display text-2xl font-bold mb-6">{t.commonProjects}</h2>
+          <Reveal>
+            <h2 className="font-display text-2xl font-bold mb-6">{t.commonProjects}</h2>
+          </Reveal>
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3">
-            {serviceCommonProjects.map((project: string) => (
-              <div key={project} className="rounded-card border border-border bg-background p-4 text-center text-sm font-medium">
-                {project}
-              </div>
+            {serviceCommonProjects.map((project: string, index: number) => (
+              <Reveal key={project} delay={index * 55} direction="none">
+                <div className="rounded-card border border-border bg-background p-4 text-center text-sm font-medium">
+                  {project}
+                </div>
+              </Reveal>
             ))}
           </div>
         </div>
@@ -259,18 +263,22 @@ const ServiceDetail = () => {
       {serviceProcessSteps.length > 0 && (
         <section className="section-padding bg-background">
           <div className="container-narrow max-w-3xl">
-            <h2 className="font-display text-2xl md:text-3xl font-bold mb-8 text-center">{t.process}</h2>
+            <Reveal>
+              <h2 className="font-display text-2xl md:text-3xl font-bold mb-8 text-center">{t.process}</h2>
+            </Reveal>
             <div className="space-y-6">
               {serviceProcessSteps.map((step: any, index: number) => (
-                <div key={`${step.title}-${index}`} className="flex gap-4">
-                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-accent/25 bg-accent/15 text-sm font-bold text-gold">
-                    {index + 1}
+                <Reveal key={`${step.title}-${index}`} delay={index * 75}>
+                  <div className="flex gap-4">
+                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-accent/25 bg-accent/15 text-sm font-bold text-gold">
+                      {index + 1}
+                    </div>
+                    <div className="pt-1">
+                      <h3 className="font-semibold mb-1">{step.title}</h3>
+                      <p className="text-muted-foreground text-sm">{step.desc}</p>
+                    </div>
                   </div>
-                  <div className="pt-1">
-                    <h3 className="font-semibold mb-1">{step.title}</h3>
-                    <p className="text-muted-foreground text-sm">{step.desc}</p>
-                  </div>
-                </div>
+                </Reveal>
               ))}
             </div>
           </div>
@@ -280,68 +288,79 @@ const ServiceDetail = () => {
       {serviceFaqs.length > 0 && (
         <section className="section-padding bg-muted">
           <div className="container-narrow max-w-3xl">
-            <h2 className="font-display text-2xl font-bold mb-6 text-center">{t.faq}</h2>
-            <Accordion type="single" collapsible className="space-y-2">
-              {serviceFaqs.map((faq: any, index: number) => (
-                <AccordionItem key={`${faq.q}-${index}`} value={`faq-${index}`} className="bg-background rounded-card border border-border px-4">
-                  <AccordionTrigger className="text-left font-medium text-sm md:text-base">{faq.q}</AccordionTrigger>
-                  <AccordionContent className="text-muted-foreground text-sm">{faq.a}</AccordionContent>
-                </AccordionItem>
-              ))}
-            </Accordion>
+            <Reveal>
+              <h2 className="font-display text-2xl font-bold mb-6 text-center">{t.faq}</h2>
+            </Reveal>
+            <Reveal delay={100}>
+              <Accordion type="single" collapsible className="space-y-2">
+                {serviceFaqs.map((faq: any, index: number) => (
+                  <AccordionItem key={`${faq.q}-${index}`} value={`faq-${index}`} className="bg-background rounded-card border border-border px-4">
+                    <AccordionTrigger className="text-left font-medium text-sm md:text-base">{faq.q}</AccordionTrigger>
+                    <AccordionContent className="text-muted-foreground text-sm">{faq.a}</AccordionContent>
+                  </AccordionItem>
+                ))}
+              </Accordion>
+            </Reveal>
           </div>
         </section>
       )}
 
       <section className="section-padding bg-background">
         <div className="container-narrow">
-          <h2 className="font-display text-2xl font-bold mb-6 text-center">{t.relatedServices}</h2>
+          <Reveal>
+            <h2 className="font-display text-2xl font-bold mb-6 text-center">{t.relatedServices}</h2>
+          </Reveal>
           <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
             {services
               .filter((item) => item.slug !== service.slug)
               .slice(0, 3)
-              .map((item) => (
-                <Link
-                  key={item.slug}
-                  to={`/services/${item.slug}`}
-                  className="group p-5 rounded-card border border-border bg-card hover-lift text-center block transition-colors hover:border-accent/30"
-                >
-                  <h3 className="font-display font-semibold text-sm mb-1 group-hover:text-accent transition-colors">
-                    {displayText(item.title)}
-                  </h3>
-                  <p className="text-muted-foreground text-xs leading-relaxed line-clamp-2">{displayText(item.summary)}</p>
-                </Link>
+              .map((item, index) => (
+                <Reveal key={item.slug} delay={index * 70} direction="none">
+                  <Link
+                    to={`/services/${item.slug}`}
+                    className="group p-5 rounded-card border border-border bg-card hover-lift text-center block transition-colors hover:border-accent/30"
+                  >
+                    <h3 className="font-display font-semibold text-sm mb-1 group-hover:text-accent transition-colors">
+                      {displayText(item.title)}
+                    </h3>
+                    <p className="text-muted-foreground text-xs leading-relaxed line-clamp-2">{displayText(item.summary)}</p>
+                  </Link>
+                </Reveal>
               ))}
           </div>
-          <div className="flex flex-wrap justify-center gap-3 mt-6 text-sm">
-            <Link to="/projects" className="text-accent hover:underline">{t.viewProjects}</Link>
-            <span className="text-border">|</span>
-            <Link to="/materials" className="text-accent hover:underline">{t.materialLibrary}</Link>
-            <span className="text-border">|</span>
-            <Link to="/faq" className="text-accent hover:underline">{t.faqLink}</Link>
-          </div>
+          <Reveal delay={240}>
+            <div className="flex flex-wrap justify-center gap-3 mt-6 text-sm">
+              <Link to="/projects" className="text-accent hover:underline">{t.viewProjects}</Link>
+              <span className="text-border">|</span>
+              <Link to="/materials" className="text-accent hover:underline">{t.materialLibrary}</Link>
+              <span className="text-border">|</span>
+              <Link to="/faq" className="text-accent hover:underline">{t.faqLink}</Link>
+            </div>
+          </Reveal>
         </div>
       </section>
 
       <section className="section-padding relative overflow-hidden bg-surface-dark text-center">
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_0%,rgba(198,164,106,0.1),transparent_50%)]" aria-hidden />
-        <div className="container-narrow relative">
-          <h2 className="heading-safe mb-4 font-display text-3xl font-bold text-surface-dark-foreground">{t.interested(serviceTitle)}</h2>
-          <p className="mb-6 text-surface-dark-foreground/75">{pageContent?.cta_description || t.ctaText}</p>
-          <div className="flex flex-col justify-center gap-3 sm:flex-row sm:gap-4">
-            <Link to="/quote" className="btn-on-dark-primary min-h-12 w-full justify-center px-8 sm:w-auto">
-              {t.freeQuote}
-            </Link>
-            <a
-              href={settings.whatsapp_url()}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="btn-on-dark-secondary min-h-12 w-full justify-center px-8 sm:w-auto"
-            >
-              <WhatsAppIcon className="mr-2 h-[18px] w-[18px] text-whatsapp" /> {t.whatsapp}
-            </a>
+        <Reveal>
+          <div className="container-narrow relative">
+            <h2 className="heading-safe mb-4 font-display text-3xl font-bold text-surface-dark-foreground">{t.interested(serviceTitle)}</h2>
+            <p className="mb-6 text-surface-dark-foreground/75">{pageContent?.cta_description || t.ctaText}</p>
+            <div className="flex flex-col justify-center gap-3 sm:flex-row sm:gap-4">
+              <Link to="/quote" className="btn-on-dark-primary min-h-12 w-full justify-center px-8 sm:w-auto">
+                {t.freeQuote}
+              </Link>
+              <a
+                href={settings.whatsapp_url()}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="btn-on-dark-secondary min-h-12 w-full justify-center px-8 sm:w-auto"
+              >
+                <WhatsAppIcon className="mr-2 h-[18px] w-[18px] text-whatsapp" /> {t.whatsapp}
+              </a>
+            </div>
           </div>
-        </div>
+        </Reveal>
       </section>
     </main>
   );

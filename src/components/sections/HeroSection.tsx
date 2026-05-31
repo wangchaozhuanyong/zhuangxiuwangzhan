@@ -35,7 +35,7 @@ const HeroSection = ({ pageContent }: HeroSectionProps) => {
   const [videoLoaded, setVideoLoaded] = useState(false);
   const { data: slides } = usePublishedHeroSlides(language);
   const slide = slides?.[0] ?? null;
-  const mediaVersion = "20260531-responsive";
+  const mediaVersion = "20260531-desktop-hd";
   const posterImage = `/videos/home-hero-poster.webp?v=${mediaVersion}`;
   const mobilePosterImage = `/videos/home-hero-poster-mobile.webp?v=${mediaVersion}`;
   const tabletPosterImage = `/videos/home-hero-poster-tablet.webp?v=${mediaVersion}`;
@@ -52,19 +52,22 @@ const HeroSection = ({ pageContent }: HeroSectionProps) => {
     document.getElementById("trust")?.scrollIntoView({ behavior: "smooth", block: "start" });
   }, []);
 
+  const markHeroVideoReady = useCallback(() => {
+    if ((videoRef.current?.readyState || 0) >= 2) setVideoLoaded(true);
+  }, []);
+
   const requestHeroVideoPlay = useCallback(() => {
     const video = videoRef.current;
     if (!video || document.visibilityState === "hidden") return;
 
     video.muted = true;
     video.playsInline = true;
+    if (video.readyState >= 2) setVideoLoaded(true);
     const playPromise = video.play();
     if (playPromise && typeof playPromise.catch === "function") {
-      playPromise.catch(() => {
-        setVideoLoaded(false);
-      });
+      playPromise.then(markHeroVideoReady).catch(() => setVideoLoaded(false));
     }
-  }, []);
+  }, [markHeroVideoReady]);
 
   useEffect(() => {
     const replayWhenVisible = () => {
@@ -72,6 +75,7 @@ const HeroSection = ({ pageContent }: HeroSectionProps) => {
     };
 
     requestHeroVideoPlay();
+    markHeroVideoReady();
     document.addEventListener("visibilitychange", replayWhenVisible);
     window.addEventListener("focus", requestHeroVideoPlay);
     window.addEventListener("pageshow", requestHeroVideoPlay);
@@ -81,7 +85,7 @@ const HeroSection = ({ pageContent }: HeroSectionProps) => {
       window.removeEventListener("focus", requestHeroVideoPlay);
       window.removeEventListener("pageshow", requestHeroVideoPlay);
     };
-  }, [requestHeroVideoPlay]);
+  }, [markHeroVideoReady, requestHeroVideoPlay]);
 
   return (
     <section
@@ -112,6 +116,7 @@ const HeroSection = ({ pageContent }: HeroSectionProps) => {
           playsInline
           preload="auto"
           aria-label={copy.videoAlt}
+          onLoadedMetadata={markHeroVideoReady}
           onLoadedData={() => {
             setVideoLoaded(true);
             requestHeroVideoPlay();
@@ -120,8 +125,11 @@ const HeroSection = ({ pageContent }: HeroSectionProps) => {
             setVideoLoaded(true);
             requestHeroVideoPlay();
           }}
+          onPlaying={markHeroVideoReady}
           onError={() => setVideoLoaded(false)}
-          onStalled={() => setVideoLoaded(false)}
+          onStalled={() => {
+            if ((videoRef.current?.readyState || 0) < 2) setVideoLoaded(false);
+          }}
           onPause={() => {
             if (document.visibilityState === "visible") window.setTimeout(requestHeroVideoPlay, 150);
           }}

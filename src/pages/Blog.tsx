@@ -8,6 +8,7 @@ import { useLanguage } from "@/i18n/LanguageContext";
 import PageMeta from "@/components/PageMeta";
 import { JsonLdBreadcrumb } from "@/components/JsonLd";
 import HeroBanner from "@/components/blocks/HeroBanner";
+import Reveal from "@/components/Reveal";
 import { translateBlogCategory, translateDisplayText, translateKeywordLabel } from "@/i18n/displayLabels";
 import { pageHeroImages, resolvePageHeroImage } from "@/lib/pageHeroImages";
 import { formatBlogDate, formatBlogReadTime } from "@/lib/blogMeta";
@@ -146,59 +147,65 @@ const Blog = () => {
 
       <section className="section-padding bg-background">
         <div className="container-narrow">
-          <div className="subpage-filter-bar">
-            {categories.map((category) => (
-              <button
-                type="button"
-                key={category.value}
-                onClick={() => setFilter(category.value)}
-                data-active={filter === category.value}
-                className="subpage-filter-button"
-              >
-                {category[language]}
-              </button>
-            ))}
-          </div>
+          <Reveal direction="none">
+            <div className="subpage-filter-bar">
+              {categories.map((category) => (
+                <button
+                  type="button"
+                  key={category.value}
+                  onClick={() => setFilter(category.value)}
+                  data-active={filter === category.value}
+                  className="subpage-filter-button"
+                >
+                  {category[language]}
+                </button>
+              ))}
+            </div>
+          </Reveal>
 
           {filter === "All" && filtered[0] && (
-            <Link to={`/blog/${filtered[0].slug}`} className="group block mb-10">
-              <div className="luxury-card grid grid-cols-1 items-center gap-6 overflow-hidden hover-lift md:grid-cols-2">
-                <div className="aspect-[16/10] overflow-hidden">
-                  <SmartImage src={filtered[0].image} alt={filtered[0].title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" width={800} height={500} />
-                </div>
-                <div className="p-6">
-                  <span className="text-accent text-xs font-medium uppercase tracking-wider">{translateBlogCategory(filtered[0].category, language)}</span>
-                  <h2 className="font-display text-2xl font-bold mt-2 mb-3 group-hover:text-accent transition-colors">{displayText(filtered[0].title)}</h2>
-                  <p className="text-muted-foreground text-sm mb-4 line-clamp-3">{displayText(filtered[0].excerpt)}</p>
-                  <div className="flex items-center gap-4 text-xs text-muted-foreground">
-                    <span className="flex items-center gap-1"><Clock className="w-3 h-3" /> {displayReadTime(filtered[0].readTime)}</span>
-                    <span>{displayDate(filtered[0].date)}</span>
+            <Reveal delay={80}>
+              <Link to={`/blog/${filtered[0].slug}`} className="group block mb-10">
+                <div className="luxury-card grid grid-cols-1 items-center gap-6 overflow-hidden hover-lift md:grid-cols-2">
+                  <div className="aspect-[16/10] overflow-hidden img-zoom">
+                    <SmartImage src={filtered[0].image} alt={filtered[0].title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" width={800} height={500} />
                   </div>
-                </div>
-              </div>
-            </Link>
-          )}
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {(filter === "All" ? filtered.slice(1) : filtered).map((post) => (
-              <Link key={post.id} to={`/blog/${post.slug}`} className="group luxury-card overflow-hidden hover-lift">
-                <div className="aspect-[16/10] overflow-hidden">
-                  <SmartImage src={post.image} alt={post.title} loading="lazy" width={600} height={400} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
-                </div>
-                <div className="p-4">
-                  <div className="flex items-center gap-3 mb-2">
-                    <span className="text-accent text-xs font-medium uppercase tracking-wider">{translateBlogCategory(post.category, language)}</span>
-                    <span className="text-muted-foreground text-xs">{displayReadTime(post.readTime)}</span>
-                  </div>
-                  <h3 className="font-display text-base font-semibold mb-2 group-hover:text-accent transition-colors line-clamp-2">{displayText(post.title)}</h3>
-                  <p className="text-muted-foreground text-sm line-clamp-2">{displayText(post.excerpt)}</p>
-                  <div className="mt-3 flex flex-wrap gap-1">
-                    {post.tags.slice(0, 3).map((tag) => (
-                      <span key={tag} className="text-xs px-2 py-0.5 bg-muted rounded text-muted-foreground">#{translateKeywordLabel(tag, language)}</span>
-                    ))}
+                  <div className="p-6">
+                    <span className="text-accent text-xs font-medium uppercase tracking-wider">{translateBlogCategory(filtered[0].category, language)}</span>
+                    <h2 className="font-display text-2xl font-bold mt-2 mb-3 group-hover:text-accent transition-colors">{displayText(filtered[0].title)}</h2>
+                    <p className="text-muted-foreground text-sm mb-4 line-clamp-3">{displayText(filtered[0].excerpt)}</p>
+                    <div className="flex items-center gap-4 text-xs text-muted-foreground">
+                      <span className="flex items-center gap-1"><Clock className="w-3 h-3" /> {displayReadTime(filtered[0].readTime)}</span>
+                      <span>{displayDate(filtered[0].date)}</span>
+                    </div>
                   </div>
                 </div>
               </Link>
+            </Reveal>
+          )}
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {(filter === "All" ? filtered.slice(1) : filtered).map((post, index) => (
+              <Reveal key={post.id} delay={index * 70} direction="none">
+                <Link to={`/blog/${post.slug}`} className="group luxury-card block overflow-hidden hover-lift">
+                  <div className="aspect-[16/10] overflow-hidden img-zoom">
+                    <SmartImage src={post.image} alt={post.title} loading="lazy" width={600} height={400} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                  </div>
+                  <div className="p-4">
+                    <div className="flex items-center gap-3 mb-2">
+                      <span className="text-accent text-xs font-medium uppercase tracking-wider">{translateBlogCategory(post.category, language)}</span>
+                      <span className="text-muted-foreground text-xs">{displayReadTime(post.readTime)}</span>
+                    </div>
+                    <h3 className="font-display text-base font-semibold mb-2 group-hover:text-accent transition-colors line-clamp-2">{displayText(post.title)}</h3>
+                    <p className="text-muted-foreground text-sm line-clamp-2">{displayText(post.excerpt)}</p>
+                    <div className="mt-3 flex flex-wrap gap-1">
+                      {post.tags.slice(0, 3).map((tag) => (
+                        <span key={tag} className="text-xs px-2 py-0.5 bg-muted rounded text-muted-foreground">#{translateKeywordLabel(tag, language)}</span>
+                      ))}
+                    </div>
+                  </div>
+                </Link>
+              </Reveal>
             ))}
           </div>
         </div>

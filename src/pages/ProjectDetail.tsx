@@ -219,11 +219,11 @@ const ProjectDetail = () => {
           />
         </div>
         <div className="page-hero__content site-container pb-12 pt-16">
-          <Link to="/projects" className="mb-4 inline-flex items-center gap-1 text-sm text-on-media-muted transition-colors hover:text-gold">
+          <Link to="/projects" className="page-hero__back mb-4 inline-flex items-center gap-1 text-sm text-on-media-muted transition-colors hover:text-gold">
             <ArrowLeft className="h-3.5 w-3.5" /> {t.allProjects}
           </Link>
-          <span className="mb-2 block text-xs font-medium uppercase tracking-wider text-gold">{projectTypeLabel}</span>
-          <h1 className="heading-safe mb-2 text-3xl font-bold text-on-media md:text-4xl">{project.title}</h1>
+          <span className="page-hero__label mb-2 block text-xs font-medium uppercase tracking-wider text-gold">{projectTypeLabel}</span>
+          <h1 className="page-hero__title heading-safe mb-2 text-3xl font-bold text-on-media md:text-4xl">{project.title}</h1>
           <div className="flex flex-wrap items-center gap-4 text-sm text-on-media-muted">
             <span className="flex items-center gap-1"><MapPin className="w-3.5 h-3.5" /> {projectLocationLabel}</span>
             <span className="flex items-center gap-1"><Clock className="w-3.5 h-3.5" /> {project.duration}</span>
@@ -273,7 +273,7 @@ const ProjectDetail = () => {
                 <h3 className="font-display text-xl font-bold mb-4">{t.gallery}</h3>
                 <div className="grid grid-cols-2 gap-3 mb-8">
                   {project.images.map((img: string, index: number) => (
-                    <div key={img || index} className="aspect-[4/3] overflow-hidden rounded-card bg-muted">
+                    <div key={img || index} className="aspect-[4/3] overflow-hidden rounded-card bg-muted img-zoom">
                       <SmartImage src={img} alt={project.imageAlts?.[index] || `${project.title} - ${t.imageLabel} ${index + 1}`} loading="lazy" width={800} height={600} className="w-full h-full object-cover hover:scale-105 transition-transform duration-500" />
                     </div>
                   ))}
@@ -303,65 +303,75 @@ const ProjectDetail = () => {
             </div>
 
             <div className="space-y-6">
-              <div className="rounded-card border border-border bg-card p-5">
-                <h3 className="font-semibold mb-4">{t.details}</h3>
-                <div className="space-y-3 text-sm">
-                  <div className="flex justify-between gap-3"><span className="text-muted-foreground">{t.type}</span><span className="font-medium text-right">{projectTypeLabel}</span></div>
-                  <div className="flex justify-between gap-3"><span className="text-muted-foreground">{t.location}</span><span className="font-medium text-right">{project.location}</span></div>
-                  <div className="flex justify-between gap-3"><span className="text-muted-foreground">{t.duration}</span><span className="font-medium text-right">{project.duration}</span></div>
-                  <div className="flex justify-between gap-3"><span className="text-muted-foreground">{t.scopeItems}</span><span className="font-medium text-right">{project.scope.length} {t.items}</span></div>
+              <Reveal direction="right">
+                <div className="rounded-card border border-border bg-card p-5">
+                  <h3 className="font-semibold mb-4">{t.details}</h3>
+                  <div className="space-y-3 text-sm">
+                    <div className="flex justify-between gap-3"><span className="text-muted-foreground">{t.type}</span><span className="font-medium text-right">{projectTypeLabel}</span></div>
+                    <div className="flex justify-between gap-3"><span className="text-muted-foreground">{t.location}</span><span className="font-medium text-right">{project.location}</span></div>
+                    <div className="flex justify-between gap-3"><span className="text-muted-foreground">{t.duration}</span><span className="font-medium text-right">{project.duration}</span></div>
+                    <div className="flex justify-between gap-3"><span className="text-muted-foreground">{t.scopeItems}</span><span className="font-medium text-right">{project.scope.length} {t.items}</span></div>
+                  </div>
                 </div>
-              </div>
+              </Reveal>
 
-              <div className="rounded-card border border-border bg-card p-5">
-                <div className="flex items-center gap-2 mb-3">
-                  <Wrench className="w-4 h-4 text-accent" />
-                  <h3 className="font-semibold">{t.scope}</h3>
+              <Reveal direction="right" delay={80}>
+                <div className="rounded-card border border-border bg-card p-5">
+                  <div className="flex items-center gap-2 mb-3">
+                    <Wrench className="w-4 h-4 text-accent" />
+                    <h3 className="font-semibold">{t.scope}</h3>
+                  </div>
+                  <ul className="space-y-2">
+                    {project.scope.map((scope: string) => (
+                      <li key={scope} className="flex items-center gap-2 text-sm text-muted-foreground">
+                        <span className="w-1.5 h-1.5 rounded-full bg-accent shrink-0" />{scope}
+                      </li>
+                    ))}
+                  </ul>
                 </div>
-                <ul className="space-y-2">
-                  {project.scope.map((scope: string) => (
-                    <li key={scope} className="flex items-center gap-2 text-sm text-muted-foreground">
-                      <span className="w-1.5 h-1.5 rounded-full bg-accent shrink-0" />{scope}
-                    </li>
-                  ))}
-                </ul>
-              </div>
+              </Reveal>
 
-              <div className="rounded-card border border-border bg-card p-5">
-                <div className="flex items-center gap-2 mb-3">
-                  <Layers className="w-4 h-4 text-accent" />
-                  <h3 className="font-semibold">{t.materials}</h3>
+              <Reveal direction="right" delay={160}>
+                <div className="rounded-card border border-border bg-card p-5">
+                  <div className="flex items-center gap-2 mb-3">
+                    <Layers className="w-4 h-4 text-accent" />
+                    <h3 className="font-semibold">{t.materials}</h3>
+                  </div>
+                  <ul className="space-y-2">
+                    {project.materialsUsed.map((material: string) => (
+                      <li key={material} className="text-sm text-muted-foreground">{material}</li>
+                    ))}
+                  </ul>
                 </div>
-                <ul className="space-y-2">
-                  {project.materialsUsed.map((material: string) => (
-                    <li key={material} className="text-sm text-muted-foreground">{material}</li>
-                  ))}
-                </ul>
-              </div>
+              </Reveal>
 
-              <div className="rounded-card border border-border/80 bg-surface-dark p-5 text-center">
-                <h3 className="mb-2 font-semibold text-surface-dark-foreground">{t.similarTitle}</h3>
-                <p className="mb-4 text-sm text-surface-dark-foreground/75">{t.similarText}</p>
-                <Link to="/quote" className="btn-on-dark-primary mb-2 w-full min-h-11 justify-center px-6 text-sm">
-                  {t.quote} <ArrowRight className="h-3.5 w-3.5" />
-                </Link>
-                <a
-                  href={settings.whatsapp_url()}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="btn-on-dark-secondary w-full min-h-11 justify-center px-6 text-sm"
-                >
-                  <WhatsAppIcon className="mr-1 h-4 w-4 text-whatsapp" /> {t.whatsapp}
-                </a>
-              </div>
+              <Reveal direction="right" delay={240}>
+                <div className="rounded-card border border-border/80 bg-surface-dark p-5 text-center">
+                  <h3 className="mb-2 font-semibold text-surface-dark-foreground">{t.similarTitle}</h3>
+                  <p className="mb-4 text-sm text-surface-dark-foreground/75">{t.similarText}</p>
+                  <Link to="/quote" className="btn-on-dark-primary mb-2 w-full min-h-11 justify-center px-6 text-sm">
+                    {t.quote} <ArrowRight className="h-3.5 w-3.5" />
+                  </Link>
+                  <a
+                    href={settings.whatsapp_url()}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="btn-on-dark-secondary w-full min-h-11 justify-center px-6 text-sm"
+                  >
+                    <WhatsAppIcon className="mr-1 h-4 w-4 text-whatsapp" /> {t.whatsapp}
+                  </a>
+                </div>
+              </Reveal>
 
               {relatedService && (
-                <div className="rounded-card border border-border bg-card p-5">
-                  <h3 className="font-semibold text-sm mb-2">{t.relatedService}</h3>
-                  <Link to={`/services/${relatedService.slug}`} className="text-accent hover:underline text-sm font-medium flex items-center gap-1">
-                    {relatedServiceName} <ArrowRight className="w-3.5 h-3.5" />
-                  </Link>
-                </div>
+                <Reveal direction="right" delay={320}>
+                  <div className="rounded-card border border-border bg-card p-5">
+                    <h3 className="font-semibold text-sm mb-2">{t.relatedService}</h3>
+                    <Link to={`/services/${relatedService.slug}`} className="text-accent hover:underline text-sm font-medium flex items-center gap-1">
+                      {relatedServiceName} <ArrowRight className="w-3.5 h-3.5" />
+                    </Link>
+                  </div>
+                </Reveal>
               )}
             </div>
           </div>
@@ -370,21 +380,25 @@ const ProjectDetail = () => {
 
       <section className="section-padding bg-muted">
         <div className="container-narrow">
-          <h2 className="font-display text-2xl font-bold mb-8">{t.moreProjects}</h2>
+          <Reveal>
+            <h2 className="font-display text-2xl font-bold mb-8">{t.moreProjects}</h2>
+          </Reveal>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
-            {related.map((item) => (
-              <Link key={item.id} to={`/projects/${item.slug}`} className="group luxury-card overflow-hidden hover-lift">
-                <div className="aspect-[4/3] overflow-hidden">
-                  <SmartImage src={item.images[0] || item.thumbnail} alt={item.imageAlts?.[0] || item.thumbnailAlt || item.title} loading="lazy" width={600} height={450} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
-                </div>
-                <div className="p-4">
-                  <span className="text-accent text-xs font-medium uppercase tracking-wider">{translateProjectType(item.type, language)}</span>
-                    <h3 className="font-display text-base font-semibold mt-1">{translateDisplayText(item.title, language)}</h3>
-                  <p className="text-muted-foreground text-xs flex items-center gap-1 mt-1">
-                    <MapPin className="w-3 h-3" /> {translateDisplayText(item.location, language)}
-                  </p>
-                </div>
-              </Link>
+            {related.map((item, index) => (
+              <Reveal key={item.id} delay={index * 80} direction="none">
+                <Link to={`/projects/${item.slug}`} className="group block luxury-card overflow-hidden hover-lift">
+                  <div className="aspect-[4/3] overflow-hidden img-zoom">
+                    <SmartImage src={item.images[0] || item.thumbnail} alt={item.imageAlts?.[0] || item.thumbnailAlt || item.title} loading="lazy" width={600} height={450} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                  </div>
+                  <div className="p-4">
+                    <span className="text-accent text-xs font-medium uppercase tracking-wider">{translateProjectType(item.type, language)}</span>
+                      <h3 className="font-display text-base font-semibold mt-1">{translateDisplayText(item.title, language)}</h3>
+                    <p className="text-muted-foreground text-xs flex items-center gap-1 mt-1">
+                      <MapPin className="w-3 h-3" /> {translateDisplayText(item.location, language)}
+                    </p>
+                  </div>
+                </Link>
+              </Reveal>
             ))}
           </div>
         </div>

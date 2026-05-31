@@ -11,6 +11,7 @@ import PageMeta from "@/components/PageMeta";
 import SmartImage from "@/components/SmartImage";
 import { JsonLdBreadcrumb } from "@/components/JsonLd";
 import { useSiteSettings } from "@/hooks/useSiteSettings";
+import Reveal from "@/components/Reveal";
 import { isHtmlText } from "@/lib/text";
 import { sanitizeHtml } from "@/lib/sanitizeHtml";
 import { translateBlogCategory, translateKeywordLabel, translateDisplayText } from "@/i18n/displayLabels";
@@ -183,65 +184,77 @@ const BlogDetail = () => {
 
       <section className="section-padding bg-background">
         <div className="container-narrow max-w-3xl">
-          <div className="prose-sm">
-            {renderContent(displayText(post.content))}
-          </div>
-
-          <div className="mt-10 pt-6 border-t border-border">
-            <div className="flex flex-wrap gap-2">
-              {post.tags.map((tag) => (
-                <span key={tag} className="text-xs px-3 py-1 bg-muted rounded-full text-muted-foreground">#{translateKeywordLabel(tag, language)}</span>
-              ))}
+          <Reveal>
+            <div className="prose-sm">
+              {renderContent(displayText(post.content))}
             </div>
-          </div>
+          </Reveal>
 
-          <div className="luxury-card-muted mt-10 p-6 text-center">
-            <h3 className="heading-safe mb-2 font-display text-xl font-bold">{t.ctaTitle}</h3>
-            <p className="mb-4 text-sm text-muted-foreground">{t.ctaText}</p>
-            <div className="flex flex-col justify-center gap-3 sm:flex-row sm:gap-4">
-              <Link to="/quote" className="btn-brand-primary min-h-12 w-full justify-center px-8 sm:w-auto">
-                {t.quote} <ArrowRight className="h-4 w-4" />
-              </Link>
-              <a
-                href={settings.whatsapp_url()}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="btn-brand-secondary min-h-12 w-full justify-center px-8 sm:w-auto"
-              >
-                <WhatsAppIcon className="mr-2 h-[18px] w-[18px] text-whatsapp" /> {t.whatsapp}
-              </a>
+          <Reveal delay={80}>
+            <div className="mt-10 pt-6 border-t border-border">
+              <div className="flex flex-wrap gap-2">
+                {post.tags.map((tag) => (
+                  <span key={tag} className="text-xs px-3 py-1 bg-muted rounded-full text-muted-foreground">#{translateKeywordLabel(tag, language)}</span>
+                ))}
+              </div>
             </div>
-          </div>
+          </Reveal>
 
-          <div className="mt-6 flex flex-wrap gap-3 justify-center text-sm">
-            <Link to="/services" className="text-accent hover:underline">{t.internalServices}</Link>
-            <span className="text-border">/</span>
-            <Link to="/projects" className="text-accent hover:underline">{t.internalProjects}</Link>
-            <span className="text-border">/</span>
-            <Link to="/materials" className="text-accent hover:underline">{t.internalMaterials}</Link>
-            <span className="text-border">/</span>
-            <Link to="/faq" className="text-accent hover:underline">{t.internalFaq}</Link>
-            <span className="text-border">/</span>
-            <Link to="/contact" className="text-accent hover:underline">{t.internalContact}</Link>
-          </div>
+          <Reveal delay={160}>
+            <div className="luxury-card-muted mt-10 p-6 text-center">
+              <h3 className="heading-safe mb-2 font-display text-xl font-bold">{t.ctaTitle}</h3>
+              <p className="mb-4 text-sm text-muted-foreground">{t.ctaText}</p>
+              <div className="flex flex-col justify-center gap-3 sm:flex-row sm:gap-4">
+                <Link to="/quote" className="btn-brand-primary min-h-12 w-full justify-center px-8 sm:w-auto">
+                  {t.quote} <ArrowRight className="h-4 w-4" />
+                </Link>
+                <a
+                  href={settings.whatsapp_url()}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="btn-brand-secondary min-h-12 w-full justify-center px-8 sm:w-auto"
+                >
+                  <WhatsAppIcon className="mr-2 h-[18px] w-[18px] text-whatsapp" /> {t.whatsapp}
+                </a>
+              </div>
+            </div>
+          </Reveal>
+
+          <Reveal delay={220}>
+            <div className="mt-6 flex flex-wrap gap-3 justify-center text-sm">
+              <Link to="/services" className="text-accent hover:underline">{t.internalServices}</Link>
+              <span className="text-border">/</span>
+              <Link to="/projects" className="text-accent hover:underline">{t.internalProjects}</Link>
+              <span className="text-border">/</span>
+              <Link to="/materials" className="text-accent hover:underline">{t.internalMaterials}</Link>
+              <span className="text-border">/</span>
+              <Link to="/faq" className="text-accent hover:underline">{t.internalFaq}</Link>
+              <span className="text-border">/</span>
+              <Link to="/contact" className="text-accent hover:underline">{t.internalContact}</Link>
+            </div>
+          </Reveal>
         </div>
       </section>
 
       <section className="section-padding bg-muted">
         <div className="container-narrow">
-          <h2 className="font-display text-2xl font-bold mb-8">{t.moreArticles}</h2>
+          <Reveal>
+            <h2 className="font-display text-2xl font-bold mb-8">{t.moreArticles}</h2>
+          </Reveal>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
-            {otherPosts.map((item) => (
-              <Link key={item.id} to={`/blog/${item.slug}`} className="group luxury-card overflow-hidden hover-lift">
-                <div className="aspect-[16/10] overflow-hidden">
-                  <SmartImage src={item.image} alt={item.title} loading="lazy" width={400} height={300} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
-                </div>
-                <div className="p-4">
-                  <span className="text-accent text-xs font-medium">{item.category}</span>
-                <h3 className="font-semibold text-sm mt-1 line-clamp-2">{displayText(item.title)}</h3>
-              </div>
-            </Link>
-          ))}
+            {otherPosts.map((item, index) => (
+              <Reveal key={item.id} delay={index * 70} direction="none">
+                <Link to={`/blog/${item.slug}`} className="group block luxury-card overflow-hidden hover-lift">
+                  <div className="aspect-[16/10] overflow-hidden img-zoom">
+                    <SmartImage src={item.image} alt={item.title} loading="lazy" width={400} height={300} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+                  </div>
+                  <div className="p-4">
+                    <span className="text-accent text-xs font-medium">{item.category}</span>
+                    <h3 className="font-semibold text-sm mt-1 line-clamp-2">{displayText(item.title)}</h3>
+                  </div>
+                </Link>
+              </Reveal>
+            ))}
           </div>
         </div>
       </section>

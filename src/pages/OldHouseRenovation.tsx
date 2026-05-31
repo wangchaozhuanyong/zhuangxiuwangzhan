@@ -149,9 +149,9 @@ const OldHouseRenovation = () => {
           <div className="page-hero__overlay absolute inset-0 media-readable-overlay" aria-hidden="true" />
         </div>
         <div className="page-hero__content site-container">
-          <p className="mb-4 font-body text-[11px] font-semibold uppercase tracking-[0.28em] text-gold">{t.label}</p>
-          <h1 className="heading-safe mb-5 max-w-2xl text-3xl font-bold text-on-media md:text-5xl">{t.title}</h1>
-          <p className="prose-safe mb-8 max-w-xl text-base text-on-media-muted md:text-lg">{t.description}</p>
+          <p className="page-hero__label mb-4 font-body text-[11px] font-semibold uppercase tracking-[0.28em] text-gold">{t.label}</p>
+          <h1 className="page-hero__title heading-safe mb-5 max-w-2xl text-3xl font-bold text-on-media md:text-5xl">{t.title}</h1>
+          <p className="page-hero__description prose-safe mb-8 max-w-xl text-base text-on-media-muted md:text-lg">{t.description}</p>
           <div className="flex flex-col gap-3 sm:flex-row sm:gap-4">
             <Link to="/quote" className="btn-on-dark-primary min-h-12 w-full justify-center px-8 sm:w-auto">
               <ArrowRight className="h-4 w-4" /> {t.assessment}
@@ -181,7 +181,9 @@ const OldHouseRenovation = () => {
             </div>
           </Reveal>
           <Reveal direction="right" delay={120}>
-            <SmartImage src={beforeAfterImg} alt={language === "zh" ? "旧屋翻新前后对比" : "Before and after old house renovation"} loading="lazy" width={1280} height={640} className="w-full rounded-card-lg object-cover" />
+            <div className="img-zoom overflow-hidden rounded-card-lg">
+              <SmartImage src={beforeAfterImg} alt={language === "zh" ? "旧屋翻新前后对比" : "Before and after old house renovation"} loading="lazy" width={1280} height={640} className="w-full object-cover" />
+            </div>
           </Reveal>
         </div>
       </section>
@@ -211,7 +213,9 @@ const OldHouseRenovation = () => {
       <section className="section-padding bg-background">
         <div className="container-narrow grid grid-cols-1 lg:grid-cols-2 gap-10 items-center">
           <Reveal direction="left">
-            <SmartImage src={oldHouseServiceImg} alt={language === "zh" ? "旧屋翻新施工现场" : "Old house renovation in progress"} loading="lazy" width={960} height={720} className="aspect-[4/3] w-full rounded-card-lg object-cover" />
+            <div className="img-zoom overflow-hidden rounded-card-lg">
+              <SmartImage src={oldHouseServiceImg} alt={language === "zh" ? "旧屋翻新施工现场" : "Old house renovation in progress"} loading="lazy" width={960} height={720} className="aspect-[4/3] w-full object-cover" />
+            </div>
           </Reveal>
           <Reveal direction="right" delay={120}>
             <div>

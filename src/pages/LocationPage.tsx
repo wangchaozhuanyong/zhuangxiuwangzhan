@@ -138,33 +138,35 @@ const LocationPage = () => {
       />
 
       <section className="section-padding bg-surface-dark">
-        <div className="container-narrow">
-          <div className="mb-4 flex flex-wrap items-center gap-2 text-sm text-surface-dark-foreground/55">
-            <Link to="/" className="transition-colors hover:text-gold">{t.breadcrumbHome}</Link>
-            <span>/</span>
-            <Link to="/" className="transition-colors hover:text-gold">{t.breadcrumbLocations}</Link>
-            <span>/</span>
-            <span className="text-surface-dark-foreground/80">{location.name}</span>
+        <Reveal>
+          <div className="container-narrow">
+            <div className="mb-4 flex flex-wrap items-center gap-2 text-sm text-surface-dark-foreground/55">
+              <Link to="/" className="transition-colors hover:text-gold">{t.breadcrumbHome}</Link>
+              <span>/</span>
+              <Link to="/" className="transition-colors hover:text-gold">{t.breadcrumbLocations}</Link>
+              <span>/</span>
+              <span className="text-surface-dark-foreground/80">{location.name}</span>
+            </div>
+            <div className="accent-line mb-4" />
+            <h1 className="heading-safe mb-4 font-display text-3xl font-bold text-surface-dark-foreground md:text-5xl">
+              {t.heroTitle(location.name)}
+            </h1>
+            <p className="prose-safe mb-2 max-w-2xl text-lg text-surface-dark-foreground/75">{displayText(location.description)}</p>
+            <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:gap-4">
+              <Link to="/quote" className="btn-on-dark-primary min-h-12 w-full justify-center px-8 sm:w-auto">
+                {t.quote} <ArrowRight className="h-4 w-4" />
+              </Link>
+              <a
+                href={settings.whatsapp_url()}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="btn-on-dark-secondary min-h-12 w-full justify-center px-8 sm:w-auto"
+              >
+                <WhatsAppIcon className="mr-2 h-[18px] w-[18px] text-whatsapp" /> {t.whatsapp}
+              </a>
+            </div>
           </div>
-          <div className="accent-line mb-4" />
-          <h1 className="heading-safe mb-4 font-display text-3xl font-bold text-surface-dark-foreground md:text-5xl">
-            {t.heroTitle(location.name)}
-          </h1>
-          <p className="prose-safe mb-2 max-w-2xl text-lg text-surface-dark-foreground/75">{displayText(location.description)}</p>
-          <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:gap-4">
-            <Link to="/quote" className="btn-on-dark-primary min-h-12 w-full justify-center px-8 sm:w-auto">
-              {t.quote} <ArrowRight className="h-4 w-4" />
-            </Link>
-            <a
-              href={settings.whatsapp_url()}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="btn-on-dark-secondary min-h-12 w-full justify-center px-8 sm:w-auto"
-            >
-              <WhatsAppIcon className="mr-2 h-[18px] w-[18px] text-whatsapp" /> {t.whatsapp}
-            </a>
-          </div>
-        </div>
+        </Reveal>
       </section>
 
       <section className="section-padding bg-background">
@@ -255,7 +257,7 @@ const LocationPage = () => {
                   {location.projects.map((project: any, index: number) => (
                     <Reveal key={project.title} delay={index * 80}>
                       <div className="rounded-card overflow-hidden border border-border bg-card hover-lift">
-                        <div className="aspect-[4/3] overflow-hidden">
+                        <div className="aspect-[4/3] overflow-hidden img-zoom">
                       <SmartImage src={project.image} alt={displayText(project.title)} loading="lazy" width={600} height={450} className="w-full h-full object-cover" />
                     </div>
                     <div className="p-4">

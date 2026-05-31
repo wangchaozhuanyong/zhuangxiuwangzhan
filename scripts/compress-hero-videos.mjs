@@ -15,10 +15,10 @@ if (!hasFfmpeg) {
 
 const dir = "public/videos";
 const jobs = [
-  { in: "home-hero.mp4", out: "home-hero.mp4", scale: "1920:-2", crf: "24" },
+  { in: "home-hero.mp4", out: "home-hero.mp4", scale: "1920:-2:flags=lanczos", crf: "19", sharpen: true },
   { in: "home-hero-mobile.mp4", out: "home-hero-mobile.mp4", scale: "1080:-2", crf: "24" },
   { in: "home-hero-tablet.mp4", out: "home-hero-tablet.mp4", scale: "1536:-2", crf: "25" },
-  { in: "home-hero.mp4", out: "home-hero.webm", scale: "1920:-2", crf: "30", webm: true },
+  { in: "home-hero.mp4", out: "home-hero.webm", scale: "1920:-2:flags=lanczos", crf: "24", webm: true, sharpen: true },
   { in: "home-hero-mobile.mp4", out: "home-hero-mobile.webm", scale: "1080:-2", crf: "30", webm: true },
   { in: "home-hero-tablet.mp4", out: "home-hero-tablet.webm", scale: "1536:-2", crf: "31", webm: true },
 ];
@@ -32,14 +32,18 @@ for (const job of jobs) {
   }
   const tmp = job.webm ? `${output}.tmp.webm` : `${output}.tmp.mp4`;
   const crf = job.crf || (job.webm ? "30" : "24");
-  const codec = job.webm ? ["-c:v", "libvpx-vp9", "-b:v", "0"] : ["-c:v", "libx264", "-preset", "slow", "-crf", crf];
+  const codec = job.webm
+    ? ["-c:v", "libvpx-vp9", "-b:v", "0", "-deadline", "good", "-cpu-used", "2", "-row-mt", "1"]
+    : ["-c:v", "libx264", "-preset", "slow", "-crf", crf, "-pix_fmt", "yuv420p"];
   const format = job.webm ? ["-f", "webm"] : ["-f", "mp4", "-movflags", "+faststart"];
+  const filters = [`scale=${job.scale}`];
+  if (job.sharpen) filters.push("unsharp=5:5:0.45:3:3:0.18");
   const args = [
     "-y",
     "-i",
     input,
     "-vf",
-    `scale=${job.scale}`,
+    filters.join(","),
     ...codec,
     "-an",
     ...format,
