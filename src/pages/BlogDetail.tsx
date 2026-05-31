@@ -244,7 +244,7 @@ const BlogDetail = () => {
           <div className="card-grid grid-cols-1 gap-5 sm:grid-cols-3">
             {otherPosts.map((item, index) => (
               <Reveal key={item.id} delay={index * 70} direction="none">
-                <Link to={`/blog/${item.slug}`} className="card-equal group block luxury-card hover-lift">
+                <Link to={`/blog/${item.slug}`} className="card-equal group luxury-card hover-lift">
                   <div className="aspect-[16/10] overflow-hidden img-zoom">
                     <SmartImage src={item.image} alt={item.title} loading="lazy" width={400} height={300} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
                   </div>

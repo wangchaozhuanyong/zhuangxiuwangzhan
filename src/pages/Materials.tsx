@@ -1,6 +1,5 @@
 ﻿import { useMemo } from "react";
 import Link from "@/components/LocalizedLink";
-import { Button } from "@/components/ui/button";
 import { ArrowRight } from "lucide-react";
 import WhatsAppIcon from "@/components/WhatsAppIcon";
 import { materialsData } from "@/data/materials";
@@ -12,6 +11,7 @@ import PageMeta from "@/components/PageMeta";
 import { JsonLdBreadcrumb } from "@/components/JsonLd";
 import { useSiteSettings } from "@/hooks/useSiteSettings";
 import HeroBanner from "@/components/blocks/HeroBanner";
+import SectionHeader from "@/components/blocks/SectionHeader";
 import { translateDisplayText, translateMaterialCategory } from "@/i18n/displayLabels";
 import { pageHeroImages, resolvePageHeroImage } from "@/lib/pageHeroImages";
 
@@ -101,44 +101,32 @@ const Materials = () => {
 
       <section className="section-padding bg-background">
         <div className="container-narrow">
-          <Reveal>
-            <div className="mb-10 text-center">
-              <div className="accent-line mx-auto mb-4" />
-              <h2 className="mb-2 font-display text-2xl font-bold md:text-3xl">{t.choose}</h2>
-              <p className="text-sm text-muted-foreground">{t.chooseText}</p>
-            </div>
-          </Reveal>
+          <SectionHeader title={t.choose} description={t.chooseText} />
 
-          <div className="card-grid grid-cols-2 gap-4 md:grid-cols-4 md:gap-6">
-            {categories.map((category, index) => (
+          <div className="material-directory-grid">
+            {categories.map((category) => (
               <Link
                 key={category.slug}
                 to={`/materials/category/${category.slug}`}
-                className="group flex h-full min-h-[17rem] flex-col overflow-hidden rounded-card-lg border border-border bg-card shadow-sm transition-colors hover:border-accent/40 hover-lift"
+                className="material-directory-card luxury-card group hover-lift"
               >
-                <div className="relative aspect-[4/3] overflow-hidden bg-muted">
+                <div className="material-directory-card__media img-zoom">
                   <SmartImage
                     src={category.image}
                     alt={category.alt || displayCategoryName(category.name)}
                     loading="lazy"
                     width={400}
                     height={300}
-                    className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+                    className="h-full w-full object-cover"
                   />
                 </div>
-                <div className="flex flex-1 flex-col gap-2 p-3 md:p-4">
-                  <div className="flex items-start justify-between gap-2">
-                    <h3 className="text-limit-2 font-display text-base font-bold leading-tight text-foreground md:text-lg">
-                      {displayCategoryName(category.name)}
-                    </h3>
-                    <span className="shrink-0 rounded-full border border-accent/25 bg-accent/10 px-2 py-0.5 text-[10px] font-semibold leading-5 text-accent">
-                      {String(index + 1).padStart(2, "0")}
-                    </span>
-                  </div>
-                  <p className="text-limit-2 min-h-10 text-xs leading-5 text-muted-foreground md:text-sm">
+                <div className="material-directory-card__body">
+                  <span className="material-directory-card__eyebrow">{t.view}</span>
+                  <h3 className="material-directory-card__title">{displayCategoryName(category.name)}</h3>
+                  <p className="material-directory-card__text">
                     {displayCategoryDescription(category.description)}
                   </p>
-                  <div className="mt-auto flex items-center justify-between gap-2 border-t border-border/70 pt-2 text-[11px] font-medium text-muted-foreground md:text-xs">
+                  <div className="material-directory-card__footer">
                     <span>
                       {category.subcategories.length} {t.subcategories}
                     </span>

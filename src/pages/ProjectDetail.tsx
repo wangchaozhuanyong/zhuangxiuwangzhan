@@ -386,7 +386,7 @@ const ProjectDetail = () => {
           <div className="card-grid grid-cols-1 gap-5 sm:grid-cols-3">
             {related.map((item, index) => (
               <Reveal key={item.id} delay={index * 80} direction="none">
-                <Link to={`/projects/${item.slug}`} className="card-equal group block luxury-card hover-lift">
+                <Link to={`/projects/${item.slug}`} className="card-equal group luxury-card hover-lift">
                   <div className="aspect-[4/3] overflow-hidden img-zoom">
                     <SmartImage src={item.images[0] || item.thumbnail} alt={item.imageAlts?.[0] || item.thumbnailAlt || item.title} loading="lazy" width={600} height={450} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
                   </div>

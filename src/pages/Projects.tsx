@@ -199,7 +199,7 @@ const Projects = () => {
               <Reveal key={project.id} delay={index * 80}>
                 <Link
                   to={`/projects/${project.slug}`}
-                  className="card-equal group block rounded-card border border-border/80 bg-card p-3 shadow-[0_22px_64px_-52px_rgba(21,18,14,0.42)] hover-lift"
+                  className="card-equal group rounded-card border border-border/80 bg-card p-3 shadow-[0_22px_64px_-52px_rgba(21,18,14,0.42)] hover-lift"
                 >
                   <div className="relative aspect-[4/3] overflow-hidden rounded-card img-zoom">
                     <SmartImage

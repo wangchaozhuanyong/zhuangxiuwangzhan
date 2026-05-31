@@ -91,7 +91,7 @@ const ProjectsSection = () => {
                 <Reveal key={project.slug} delay={index * 80}>
                   <Link
                     to={`/projects/${project.slug}`}
-                    className="projects-showcase-card card-equal group block overflow-hidden rounded-card-lg"
+                    className="projects-showcase-card card-equal group rounded-card-lg"
                   >
                     <div className="projects-showcase-media relative aspect-[4/3] overflow-hidden img-zoom">
                       {project.thumbnail ? (
