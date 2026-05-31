@@ -295,11 +295,20 @@ const keywordLabels: Record<string, LabelPair> = {
   month: { en: "Month", zh: "个月" },
   "kuala lumpur": { en: "Kuala Lumpur", zh: "吉隆坡" },
   "mont kiara": { en: "Mont Kiara", zh: "满家乐" },
+  "klang valley": { en: "Klang Valley", zh: "巴生谷" },
+  "kl & selangor": { en: "KL & Selangor", zh: "吉隆坡与雪兰莪" },
+  "kl sentral": { en: "KL Sentral", zh: "吉隆坡中环" },
+  "damansara heights": { en: "Damansara Heights", zh: "白沙罗高地" },
+  "taman tun dr ismail": { en: "Taman Tun Dr Ismail", zh: "敦依斯迈花园" },
+  heights: { en: "Heights", zh: "高地" },
   selangor: { en: "Selangor", zh: "雪兰莪" },
   "petaling jaya": { en: "Petaling Jaya", zh: "八打灵再也" },
   cheras: { en: "Cheras", zh: "蕉赖" },
   bangsar: { en: "Bangsar", zh: "孟沙" },
   puchong: { en: "Puchong", zh: "蒲种" },
+  "shah alam": { en: "Shah Alam", zh: "莎阿南" },
+  "subang jaya": { en: "Subang Jaya", zh: "梳邦再也" },
+  "setia alam": { en: "Setia Alam", zh: "实达阿南" },
   bathroom: { en: "Bathroom", zh: "浴室" },
   office: { en: "Office", zh: "办公室" },
   residential: { en: "Residential", zh: "住宅" },
@@ -320,15 +329,53 @@ const keywordLabels: Record<string, LabelPair> = {
   "condo renovation": { en: "Condo Renovation", zh: "公寓装修" },
   "office fit-out": { en: "Office Fit-Out", zh: "办公室装潢" },
   "shop renovation": { en: "Shop Renovation", zh: "店铺装修" },
+  contractor: { en: "Contractor", zh: "装修承包商" },
+  hiring: { en: "Hiring", zh: "筛选" },
+  tips: { en: "Tips", zh: "技巧" },
+  rental: { en: "Rental", zh: "出租" },
+  malaysia: { en: "Malaysia", zh: "马来西亚" },
+  "malaysia renovation": { en: "Malaysia Renovation", zh: "马来西亚装修" },
+  waterproofing: { en: "Waterproofing", zh: "防水工程" },
+  shop: { en: "Shop", zh: "店铺" },
+  "retail shop": { en: "Retail Shop", zh: "零售店铺" },
+  "open kitchen": { en: "Open Kitchen", zh: "开放式厨房" },
+  "open kitchen concept": { en: "Open Kitchen Concept", zh: "开放式厨房设计" },
+  "open-concept kitchen": { en: "Open-concept Kitchen", zh: "开放式厨房" },
+  "open-concept": { en: "Open-concept", zh: "开放式" },
+  "complete renovation of a 1,500 sqft condo including custom built-in wardrobes, kitchen cabinets, feature wall, new flooring, and full electrical rewiring. the client wanted a modern minimalist design with warm wood tones.": {
+    en: "Complete renovation of a 1,500 sqft condo including custom built-in wardrobes, kitchen cabinets, feature wall, new flooring, and full electrical rewiring. The client wanted a modern minimalist design with warm wood tones.",
+    zh: "这个约 1,500 平方英尺的公寓完整装修项目，包含定制衣柜、厨房橱柜、电视背景墙、新地板和全屋电线重拉。客户希望打造带有温暖木色的现代极简空间。",
+  },
+  "the homeowner wanted to transform a dated unit into a modern living space with maximum storage and clean lines.": {
+    en: "The homeowner wanted to transform a dated unit into a modern living space with maximum storage and clean lines.",
+    zh: "屋主希望把旧公寓改造成收纳充足、线条干净的现代居住空间。",
+  },
+  "open-concept kitchen with island counter": { en: "Open-concept kitchen with island counter", zh: "开放式厨房搭配岛台" },
+  "1,500 sqft": { en: "1,500 sqft", zh: "约 1,500 平方英尺" },
+  sqft: { en: "sqft", zh: "平方英尺" },
+  "island counter": { en: "Island Counter", zh: "岛台" },
   condo: { en: "Condo", zh: "公寓" },
   custom: { en: "Custom", zh: "定制" },
   "grey oak": { en: "Grey Oak", zh: "灰橡木" },
+  grey: { en: "Grey", zh: "灰色" },
+  gray: { en: "Gray", zh: "灰色" },
   "wood grain": { en: "Wood Grain", zh: "木纹" },
   "high gloss white": { en: "High Gloss White", zh: "高光白" },
   "natural teak": { en: "Natural Teak", zh: "天然柚木" },
+  "white oak": { en: "White Oak", zh: "白橡木" },
+  "natural oak": { en: "Natural Oak", zh: "天然橡木" },
+  "grey stone": { en: "Grey Stone", zh: "灰石纹" },
+  "stone pattern": { en: "Stone Pattern", zh: "石纹" },
+  "marble look": { en: "Marble Look", zh: "大理石纹" },
+  smooth: { en: "Smooth", zh: "光滑" },
+  matte: { en: "Matte", zh: "哑光" },
   "soft-close hinges": { en: "Soft-close Hinges", zh: "缓冲铰链" },
+  "with soft-close hinges": { en: "with Soft-close Hinges", zh: "搭配缓冲铰链" },
   "18mm melamine-faced particleboard": { en: "18mm melamine-faced particleboard", zh: "18mm 美耐板颗粒板" },
+  "melamine-faced particleboard": { en: "Melamine-faced Particleboard", zh: "美耐板颗粒板" },
+  particleboard: { en: "Particleboard", zh: "颗粒板" },
   "pairs well with quartz countertops": { en: "Pairs well with quartz countertops", zh: "适合搭配石英石台面" },
+  "pairs well with": { en: "Pairs well with", zh: "适合搭配" },
   "budget-friendly and durable": { en: "Budget-friendly and durable", zh: "价格亲民，耐用度稳定" },
 };
 
@@ -394,8 +441,15 @@ const displayTextReplacements = Object.entries({
 export const translateDisplayText = (value: string, language: Language) => {
   if (language !== "zh" || !value) return value;
 
-  return displayTextReplacements.reduce((text, entry) => {
+  const translated = displayTextReplacements.reduce((text, entry) => {
     const replacement = entry.value.zh;
     return text.replace(new RegExp(entry.key.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"), "gi"), replacement);
   }, value);
+
+  return translated
+    .replace(/\s+([，。！？；：、])/g, "$1")
+    .replace(/([（【])\s+/g, "$1")
+    .replace(/\s+([）】])/g, "$1")
+    .replace(/\s{2,}/g, " ")
+    .trim();
 };

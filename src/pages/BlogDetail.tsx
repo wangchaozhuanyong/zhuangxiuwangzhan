@@ -249,7 +249,7 @@ const BlogDetail = () => {
                     <SmartImage src={item.image} alt={item.title} loading="lazy" width={400} height={300} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
                   </div>
                   <div className="card-equal-body p-4">
-                    <span className="text-limit-1 text-accent text-xs font-medium">{item.category}</span>
+                    <span className="text-limit-1 text-accent text-xs font-medium">{translateBlogCategory(item.category, language)}</span>
                     <h3 className="text-limit-2 font-semibold text-sm mt-1">{displayText(item.title)}</h3>
                   </div>
                 </Link>

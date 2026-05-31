@@ -1,4 +1,4 @@
-﻿import { useMemo, useState } from "react";
+﻿import { useEffect, useMemo, useState } from "react";
 import SmartImage from "@/components/SmartImage";
 import Link from "@/components/LocalizedLink";
 import { Clock } from "lucide-react";
@@ -21,6 +21,7 @@ const categories = [
 ];
 
 const normalizeCategory = (value: string) => value.trim().toLowerCase();
+const BLOG_PAGE_SIZE = 9;
 
 const matchesCategory = (postCategory: string, filter: string) => {
   if (filter === "All") return true;
@@ -89,6 +90,7 @@ const copy = {
     internalFaq: "FAQ",
     internalContact: "Contact",
     internalQuote: "Get a Quote",
+    loadMore: "Load More Articles",
   },
   zh: {
     metaTitle: "装修博客与指南 | 吉隆坡装修知识 | FLASH CAST",
@@ -106,6 +108,7 @@ const copy = {
     internalFaq: "常见问题",
     internalContact: "联系我们",
     internalQuote: "免费报价",
+    loadMore: "查看更多文章",
   },
 };
 
@@ -114,6 +117,7 @@ const Blog = () => {
   const t = copy[language];
   const { data: pageContent } = usePublishedSitePage(language, "blog");
   const [filter, setFilter] = useState("All");
+  const [visibleCount, setVisibleCount] = useState(BLOG_PAGE_SIZE);
   const displayText = (value: string) => translateDisplayText(value, language);
   const displayReadTime = (value: string) => formatBlogReadTime(value, language);
   const displayDate = (value: string) => formatBlogDate(value, language);
@@ -124,7 +128,14 @@ const Blog = () => {
     return mergeWithFallbackCategories(cmsPosts, fallbackPosts);
   }, [cmsPosts, language]);
   const filtered = posts.filter((post) => matchesCategory(post.category, filter));
+  const gridPosts = filter === "All" ? filtered.slice(1) : filtered;
+  const visiblePosts = gridPosts.slice(0, visibleCount);
+  const hasMorePosts = visibleCount < gridPosts.length;
   const heroImage = resolvePageHeroImage(pageContent?.image_url, pageHeroImages.blog);
+
+  useEffect(() => {
+    setVisibleCount(BLOG_PAGE_SIZE);
+  }, [filter]);
 
   return (
     <main className="pt-site-header">
@@ -185,7 +196,7 @@ const Blog = () => {
           )}
 
           <div className="card-grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {(filter === "All" ? filtered.slice(1) : filtered).map((post, index) => (
+            {visiblePosts.map((post, index) => (
               <Reveal key={post.id} delay={index * 70} direction="none">
                 <Link to={`/blog/${post.slug}`} className="card-equal group luxury-card hover-lift">
                   <div className="aspect-[16/10] overflow-hidden img-zoom">
@@ -208,6 +219,20 @@ const Blog = () => {
               </Reveal>
             ))}
           </div>
+
+          {hasMorePosts ? (
+            <Reveal delay={120}>
+              <div className="mt-8 flex justify-center">
+                <button
+                  type="button"
+                  className="btn-brand-secondary min-h-12 px-8"
+                  onClick={() => setVisibleCount((count) => count + BLOG_PAGE_SIZE)}
+                >
+                  {t.loadMore}
+                </button>
+              </div>
+            </Reveal>
+          ) : null}
         </div>
       </section>
 
