@@ -23,48 +23,73 @@
       <div class="scene scene-1">
         <img class="visual" src="assets/mobile-living-luxury.png" alt="" data-layout-allow-overflow />
         <div class="shade shade-bottom"></div>
-        <div class="content bottom">
-          <p class="kicker">FLASH CAST SDN. BHD.</p>
-          <h1>马来西亚装修与空间改造</h1>
-          <p class="caption">高级住宅 · 商业空间 · 定制柜 · 项目管理</p>
+        <div class="scene-content content-bottom">
+          <div class="copy-panel">
+            <p class="kicker">FLASH CAST SDN. BHD.</p>
+            <h1 class="title-zh">马来西亚装修与空间改造</h1>
+            <p class="title-en">Renovation & Interior Fit-Out in Malaysia</p>
+          </div>
         </div>
       </div>
 
       <div class="scene scene-2">
         <img class="visual" src="assets/mobile-kitchen-luxury.png" alt="" data-layout-allow-overflow />
         <div class="shade shade-top"></div>
-        <div class="content top">
-          <p class="kicker">CUSTOM BUILT-IN</p>
-          <h2>收纳干净，细节到位。</h2>
+        <div class="scene-content content-top">
+          <div class="copy-panel">
+            <p class="kicker">CUSTOM BUILT-IN</p>
+            <h2 class="title-zh">收纳干净，细节到位</h2>
+            <p class="title-en">Clean Storage. Precise Finishing.</p>
+          </div>
         </div>
       </div>
 
       <div class="scene scene-3">
-        <img class="visual" src="assets/mobile-commercial-luxury.png" alt="" data-layout-allow-overflow />
+        <img class="visual material-visual" src="assets/material-detail-luxury.png" alt="" data-layout-allow-overflow />
         <div class="shade shade-bottom"></div>
-        <div class="content bottom">
-          <p class="kicker">COMMERCIAL FIT-OUT</p>
-          <h2>商业空间，做得更有秩序。</h2>
+        <div class="scene-content content-bottom">
+          <div class="copy-panel">
+            <p class="kicker">MATERIAL DIRECTION</p>
+            <h2 class="title-zh">材料搭配，质感克制</h2>
+            <p class="title-en">Refined Materials. Calm Texture.</p>
+          </div>
         </div>
       </div>
 
       <div class="scene scene-4">
-        <img class="visual" src="assets/mobile-project-control-luxury.png" alt="" data-layout-allow-overflow />
+        <img class="visual" src="assets/mobile-commercial-luxury.png" alt="" data-layout-allow-overflow />
         <div class="shade shade-bottom"></div>
-        <div class="content bottom">
-          <p class="kicker">SITE TO HANDOVER</p>
-          <h2>有审美的设计，有把控的施工。</h2>
-          <p class="caption">让装修更清楚，也更安心。</p>
+        <div class="scene-content content-bottom">
+          <div class="copy-panel">
+            <p class="kicker">COMMERCIAL FIT-OUT</p>
+            <h2 class="title-zh">商业空间，更有秩序</h2>
+            <p class="title-en">Business Spaces, Polished & Ready.</p>
+          </div>
         </div>
       </div>
 
       <div class="scene scene-5">
+        <img class="visual" src="assets/mobile-project-control-luxury.png" alt="" data-layout-allow-overflow />
+        <div class="shade shade-top"></div>
+        <div class="scene-content content-top">
+          <div class="copy-panel">
+            <p class="kicker">DESIGN TO BUILD</p>
+            <h2 class="title-zh">有审美的设计，有把控的施工</h2>
+            <p class="title-en">Designed with Taste. Built with Control.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="scene scene-6">
         <img class="visual" src="assets/handover-finish-luxury.png" alt="" data-layout-allow-overflow />
         <div class="shade shade-brand"></div>
-        <div class="brand-lockup">
-          <img src="assets/logo-flashcast.png" alt="" />
-          <p class="kicker">FLASH CAST SDN. BHD.</p>
-          <h2>Better Finish. Clearer Process.</h2>
+        <div class="scene-content content-bottom">
+          <div class="brand-lockup">
+            <img src="assets/logo-flashcast.png" alt="" />
+            <p class="kicker">FLASH CAST SDN. BHD.</p>
+            <h2 class="title-zh">有质感的交付，让装修更安心</h2>
+            <p class="title-en">Better Finish. Clearer Process.</p>
+          </div>
         </div>
       </div>
 
@@ -107,7 +132,8 @@
           will-change: transform, opacity;
         }
 
-        .scene-5 .visual {
+        .scene-6 .visual,
+        .material-visual {
           width: 178%;
           left: -42%;
           object-position: center;
@@ -137,24 +163,34 @@
             linear-gradient(90deg, rgba(8, 7, 5, 0.62), rgba(8, 7, 5, 0.14), rgba(8, 7, 5, 0.32));
         }
 
-        .content {
+        .scene-content {
           position: absolute;
-          left: 150px;
-          right: 150px;
+          inset: 0;
           z-index: 2;
           display: flex;
           flex-direction: column;
-          gap: 18px;
+          width: 100%;
+          height: 100%;
+          padding: 190px 122px 310px;
           box-sizing: border-box;
           text-shadow: 0 8px 28px rgba(0, 0, 0, 0.58);
         }
 
-        .top {
-          top: 190px;
+        .copy-panel,
+        .brand-lockup {
+          display: flex;
+          flex-direction: column;
+          align-items: flex-start;
+          gap: 18px;
+          max-width: 836px;
         }
 
-        .bottom {
-          bottom: 260px;
+        .content-top {
+          justify-content: flex-start;
+        }
+
+        .content-bottom {
+          justify-content: flex-end;
         }
 
         .kicker {
@@ -168,43 +204,31 @@
           text-transform: uppercase;
         }
 
-        h1,
-        h2 {
+        .title-zh {
           margin: 0;
           max-width: 900px;
           color: #fff7ea;
           font-weight: 800;
           letter-spacing: 0;
-          line-height: 1.12;
+          line-height: 1.14;
         }
 
-        h1 {
+        .title-zh {
           font-size: 66px;
         }
 
-        h2 {
-          font-size: 64px;
-        }
-
-        .caption {
+        .title-en {
           margin: 0;
           max-width: 880px;
           color: rgba(255, 247, 234, 0.92);
-          font-size: 30px;
+          font-family: "Montserrat", sans-serif;
+          font-size: 32px;
           font-weight: 700;
-          line-height: 1.45;
+          line-height: 1.28;
         }
 
         .brand-lockup {
-          position: absolute;
-          left: 150px;
-          right: 150px;
-          bottom: 240px;
           z-index: 3;
-          display: flex;
-          flex-direction: column;
-          align-items: flex-start;
-          gap: 20px;
           text-shadow: 0 8px 28px rgba(0, 0, 0, 0.62);
         }
 
@@ -215,10 +239,9 @@
           filter: drop-shadow(0 16px 32px rgba(0, 0, 0, 0.46)) brightness(1.08);
         }
 
-        .brand-lockup h2 {
-          font-family: "Montserrat", sans-serif;
+        .brand-lockup .title-zh {
           font-size: 58px;
-          line-height: 1.08;
+          line-height: 1.16;
         }
       </style>
 
@@ -227,8 +250,8 @@
         window.__timelines = window.__timelines || {};
 
         const tl = gsap.timeline({ paused: true });
-        const scenes = [".scene-1", ".scene-2", ".scene-3", ".scene-4", ".scene-5"];
-        const sceneDuration = 4.2;
+        const scenes = [".scene-1", ".scene-2", ".scene-3", ".scene-4", ".scene-5", ".scene-6"];
+        const sceneDuration = 3.5;
         const fromIfPresent = (selector, vars, position) => {
           if (document.querySelector(selector)) {
             tl.from(selector, vars, position);
@@ -240,16 +263,16 @@
           tl.to(scene, { opacity: 1, duration: index === 0 ? 0.12 : 0.76, ease: "power1.inOut" }, start);
           tl.fromTo(
             `${scene} .visual`,
-            { scale: 1.08, y: index % 2 === 0 ? -24 : 24, x: index === 4 ? -18 : 0 },
-            { scale: 1.01, y: 0, x: index === 4 ? 18 : 0, duration: 4.85, ease: "none" },
+            { scale: 1.08, y: index % 2 === 0 ? -24 : 24, x: index === 5 ? -18 : 0 },
+            { scale: 1.01, y: 0, x: index === 5 ? 18 : 0, duration: 4.15, ease: "none" },
             start
           );
           fromIfPresent(`${scene} .kicker`, { opacity: 0, y: 28, duration: 0.62, ease: "power3.out" }, start + 0.38);
           fromIfPresent(`${scene} h1, ${scene} h2`, { opacity: 0, y: 42, duration: 0.78, ease: "expo.out" }, start + 0.58);
-          fromIfPresent(`${scene} .caption`, { opacity: 0, y: 26, duration: 0.6, ease: "power2.out" }, start + 0.84);
+          fromIfPresent(`${scene} .title-en`, { opacity: 0, y: 26, duration: 0.6, ease: "power2.out" }, start + 0.84);
           fromIfPresent(`${scene} .brand-lockup img`, { opacity: 0, y: 28, scale: 0.96, duration: 0.7, ease: "back.out(1.2)" }, start + 0.38);
           if (index < scenes.length - 1) {
-            tl.to(scene, { opacity: 0, duration: 0.76, ease: "power1.inOut" }, start + 3.48);
+            tl.to(scene, { opacity: 0, duration: 0.76, ease: "power1.inOut" }, start + 2.86);
           }
         });
 

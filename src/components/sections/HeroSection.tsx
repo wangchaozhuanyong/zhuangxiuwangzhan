@@ -35,7 +35,10 @@ const HeroSection = ({ pageContent }: HeroSectionProps) => {
   const [videoLoaded, setVideoLoaded] = useState(false);
   const { data: slides } = usePublishedHeroSlides(language);
   const slide = slides?.[0] ?? null;
-  const posterImage = "/videos/home-hero-poster.webp?v=20260529-luxury";
+  const mediaVersion = "20260531-responsive";
+  const posterImage = `/videos/home-hero-poster.webp?v=${mediaVersion}`;
+  const mobilePosterImage = `/videos/home-hero-poster-mobile.webp?v=${mediaVersion}`;
+  const tabletPosterImage = `/videos/home-hero-poster-tablet.webp?v=${mediaVersion}`;
   const primaryLabel = slide?.buttonLabel || copy.quote;
   const primaryUrl = slide?.buttonUrl || "/quote";
   const primaryIsExternal = isExternalUrl(primaryUrl);
@@ -86,13 +89,17 @@ const HeroSection = ({ pageContent }: HeroSectionProps) => {
       aria-labelledby="home-hero-title"
     >
       <div className="absolute inset-0 bg-surface-dark" aria-hidden="true">
-        <img
-          src={posterImage}
-          alt=""
-          className="home-hero-media absolute inset-0 h-full w-full object-cover"
-          loading="eager"
-          {...({ fetchpriority: "high" } as { fetchpriority: "high" })}
-        />
+        <picture>
+          <source srcSet={mobilePosterImage} media="(max-width: 767px)" />
+          <source srcSet={tabletPosterImage} media="(min-width: 768px) and (max-width: 1180px) and (orientation: portrait)" />
+          <img
+            src={posterImage}
+            alt=""
+            className="home-hero-media absolute inset-0 h-full w-full object-cover"
+            loading="eager"
+            {...({ fetchpriority: "high" } as { fetchpriority: "high" })}
+          />
+        </picture>
         <video
           ref={videoRef}
           className={`home-hero-media absolute inset-0 h-full w-full object-cover transition-opacity duration-700 ease-out ${
@@ -119,10 +126,20 @@ const HeroSection = ({ pageContent }: HeroSectionProps) => {
             if (document.visibilityState === "visible") window.setTimeout(requestHeroVideoPlay, 150);
           }}
         >
-          <source src="/videos/home-hero-mobile.webm?v=20260529-luxury" type="video/webm" media="(max-width: 767px)" />
-          <source src="/videos/home-hero-mobile.mp4?v=20260529-luxury" type="video/mp4" media="(max-width: 767px)" />
-          <source src="/videos/home-hero.webm?v=20260529-luxury" type="video/webm" />
-          <source src="/videos/home-hero.mp4?v=20260529-luxury" type="video/mp4" />
+          <source src={`/videos/home-hero-mobile.webm?v=${mediaVersion}`} type="video/webm" media="(max-width: 767px)" />
+          <source src={`/videos/home-hero-mobile.mp4?v=${mediaVersion}`} type="video/mp4" media="(max-width: 767px)" />
+          <source
+            src={`/videos/home-hero-tablet.webm?v=${mediaVersion}`}
+            type="video/webm"
+            media="(min-width: 768px) and (max-width: 1180px) and (orientation: portrait)"
+          />
+          <source
+            src={`/videos/home-hero-tablet.mp4?v=${mediaVersion}`}
+            type="video/mp4"
+            media="(min-width: 768px) and (max-width: 1180px) and (orientation: portrait)"
+          />
+          <source src={`/videos/home-hero.webm?v=${mediaVersion}`} type="video/webm" />
+          <source src={`/videos/home-hero.mp4?v=${mediaVersion}`} type="video/mp4" />
         </video>
         <div className="absolute inset-0 home-hero-overlay" />
       </div>

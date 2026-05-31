@@ -525,9 +525,9 @@
   }
 
   .home-hero-section video.home-hero-media {
-    object-position: right center;
-    transform: scale(1.48);
-    transform-origin: right center;
+    object-position: center center;
+    transform: scale(1);
+    transform-origin: center center;
   }
 
   .home-hero-section::after {
@@ -569,6 +569,23 @@
       height: clamp(38px, 7vh, 72px);
       background:
         linear-gradient(180deg, rgba(239, 235, 226, 0) 0%, rgba(239, 235, 226, 0.08) 62%, rgba(239, 235, 226, 0.5) 100%);
+    }
+  }
+
+  @media (min-width: 768px) and (max-width: 1180px) and (orientation: portrait) {
+    .home-hero-section {
+      background:
+        radial-gradient(circle at 50% 18%, rgba(218, 190, 138, 0.14), transparent 24rem),
+        radial-gradient(circle at 72% 78%, rgba(114, 108, 90, 0.2), transparent 26rem),
+        linear-gradient(180deg, #1a1712 0%, #2f2a22 48%, #15120e 100%);
+    }
+
+    .home-hero-section img.home-hero-media,
+    .home-hero-section video.home-hero-media {
+      object-fit: cover;
+      object-position: center center;
+      transform: scale(1);
+      transform-origin: center center;
     }
   }
 

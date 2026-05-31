@@ -24,6 +24,13 @@ public/videos/*
 !public/videos/home-hero.webm
 !public/videos/home-hero-mobile.webm
 !public/videos/home-hero-poster.jpg
+!public/videos/home-hero-poster.webp
+!public/videos/home-hero-poster-mobile.jpg
+!public/videos/home-hero-poster-mobile.webp
+!public/videos/home-hero-poster-tablet.jpg
+!public/videos/home-hero-poster-tablet.webp
+!public/videos/home-hero-tablet.mp4
+!public/videos/home-hero-tablet.webm
 
 # Editor directories and files
 .vscode/*

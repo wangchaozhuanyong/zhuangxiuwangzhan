@@ -1,0 +1,9 @@
+{
+  "name": "flashcast-hero-video-tablet",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "check": "npx --yes hyperframes@0.6.46 lint && npx --yes hyperframes@0.6.46 validate && npx --yes hyperframes@0.6.46 inspect",
+    "render": "npx --yes hyperframes@0.6.46 render"
+  }
+}
