@@ -324,23 +324,22 @@ const healthSources: HealthSource[] = [
 ];
 
 const healthSelectFields = (source: HealthSource) => {
-  const fields = new Set([
+  const sharedFields = [
     "id",
-    "slug",
-    "page_key",
-    "section_key",
-    "block_key",
-    "path",
     "status",
-    "sort_order",
     "updated_at",
     "created_at",
+  ];
+  const fields = new Set([
+    ...sharedFields,
     ...source.titleFields,
     ...source.requiredFields,
     ...source.englishFields,
     ...source.seoFields,
     ...source.imageFields,
   ]);
+  if (source.frontBase) fields.add("slug");
+  if (source.table === "site_pages" || source.table === "cms_pages") fields.add("path");
   return Array.from(fields).join(",");
 };
 

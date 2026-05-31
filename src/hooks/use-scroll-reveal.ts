@@ -9,7 +9,7 @@ type SharedObserverEntry = {
 
 const sharedObservers = new Map<string, SharedObserverEntry>();
 
-const getObserverKey = (opts: RevealOptions) => `${opts.threshold ?? 0.15}::${opts.rootMargin ?? "0px 0px -40px 0px"}`;
+const getObserverKey = (opts: RevealOptions) => `${opts.threshold ?? 0.08}::${opts.rootMargin ?? "0px 0px 96px 0px"}`;
 
 const getSharedObserver = (opts: RevealOptions) => {
   const key = getObserverKey(opts);
@@ -25,8 +25,8 @@ const getSharedObserver = (opts: RevealOptions) => {
       }
     },
     {
-      threshold: opts.threshold ?? 0.15,
-      rootMargin: opts.rootMargin ?? "0px 0px -40px 0px",
+      threshold: opts.threshold ?? 0.08,
+      rootMargin: opts.rootMargin ?? "0px 0px 96px 0px",
     }
   );
 
@@ -48,8 +48,8 @@ export function useScrollReveal<T extends HTMLElement = HTMLDivElement>(
 
   const opts = useMemo(
     () => ({
-      threshold: options?.threshold ?? 0.15,
-      rootMargin: options?.rootMargin ?? "0px 0px -40px 0px",
+      threshold: options?.threshold ?? 0.08,
+      rootMargin: options?.rootMargin ?? "0px 0px 96px 0px",
     }),
     [options?.threshold, options?.rootMargin]
   );

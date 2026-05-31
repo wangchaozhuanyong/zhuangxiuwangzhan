@@ -10,8 +10,8 @@ const copy = {
       "Tell us about your project, location, budget range, and timeline. We will review the details and follow up during business hours.",
   },
   zh: {
-    title: "正在规划住宅或办公室装修？",
-    description: "立即获取免费咨询和报价。告诉我们您的项目需求，我们会在 24 小时内与您联系。",
+    title: "计划装修您的住宅或办公室？",
+    description: "立即获取免费咨询和报价。我们服务吉隆坡、雪兰莪及周边地区。",
   },
 };
 

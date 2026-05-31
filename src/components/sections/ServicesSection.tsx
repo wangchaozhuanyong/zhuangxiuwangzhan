@@ -5,6 +5,12 @@ import { useT } from "@/i18n/useT";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { usePublishedServices } from "@/hooks/usePublishedContent";
 import LocalizedLink from "@/components/LocalizedLink";
+import residentialRenovation from "@/assets/residential-renovation.webp";
+import builtinSolutions from "@/assets/services/builtin-solutions.webp";
+import bathroomRenovation from "@/assets/services/bathroom-renovation.webp";
+import commercialWorks from "@/assets/services/commercial-works.webp";
+import kitchenRenovation from "@/assets/services/kitchen-renovation.webp";
+import officeRenovation from "@/assets/services/office-renovation.webp";
 import {
   Home, Paintbrush, Ruler, UtensilsCrossed, Bath, Briefcase, Store, Palette, Wrench, FileCheck,
   LucideIcon,
@@ -43,6 +49,28 @@ const iconBySlug: Record<string, LucideIcon> = {
   approval: FileCheck,
 };
 
+const serviceVisualBySlug: Record<string, string> = {
+  renovation: residentialRenovation,
+  "residential-renovation": residentialRenovation,
+  design: commercialWorks,
+  builtin: builtinSolutions,
+  "builtin-solutions": builtinSolutions,
+  kitchen: kitchenRenovation,
+  "kitchen-renovation": kitchenRenovation,
+  bathroom: bathroomRenovation,
+  "bathroom-renovation": bathroomRenovation,
+  office: officeRenovation,
+  "office-renovation": officeRenovation,
+  shoplot: commercialWorks,
+  "shop-renovation": commercialWorks,
+  "commercial-works": commercialWorks,
+};
+
+const getServiceVisual = (linkOrSlug: string) => {
+  const slug = linkOrSlug.split("/").filter(Boolean).pop() || linkOrSlug;
+  return serviceVisualBySlug[slug];
+};
+
 const ServicesSection = () => {
   const t = useT();
   const { language } = useLanguage();
@@ -53,6 +81,7 @@ const ServicesSection = () => {
     title: t(service.titleKey),
     desc: t(service.descKey),
     link: service.link,
+    visual: getServiceVisual(service.link),
   }));
 
   const mappedDynamicServices = dynamicServices.map((service) => ({
@@ -60,6 +89,7 @@ const ServicesSection = () => {
         title: service.title,
         desc: service.summary || service.description,
         link: service.slug === "old-house" ? "/services/old-house" : `/services/${service.slug}`,
+        visual: getServiceVisual(service.slug),
       }));
 
   const services = (
@@ -93,6 +123,11 @@ const ServicesSection = () => {
                   to={service.link}
                   className="service-catalog-card group"
                 >
+                  {service.visual && (
+                    <span className="service-catalog-media" aria-hidden="true">
+                      <img src={service.visual} alt="" loading="lazy" />
+                    </span>
+                  )}
                   <span className="service-catalog-icon" aria-hidden="true">
                     <Icon className="h-5 w-5" />
                   </span>

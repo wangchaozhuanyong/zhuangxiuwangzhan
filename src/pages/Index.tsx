@@ -48,9 +48,9 @@ const Index = () => {
       <HeroSection pageContent={pageContent} />
       <div className="home-art-canvas">
         <StatsSection />
+        <ProjectsSection />
         <BrandLogosSection />
         <ServicesSection />
-        <ProjectsSection />
         <WhyChooseUsSection />
         <ProcessSection />
         <BeforeAfterSection />

@@ -4,6 +4,7 @@ import Link from "@/components/LocalizedLink";
 import { ChevronDown, Mail, MapPin, Phone } from "lucide-react";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { useSiteSettings } from "@/hooks/useSiteSettings";
+import { usePublishedCtaBlock } from "@/hooks/usePublishedContent";
 import SmartImage from "@/components/SmartImage";
 import FooterPreludeCta from "@/components/blocks/FooterPreludeCta";
 import { addCacheBuster } from "@/lib/siteSettingsApi";
@@ -34,8 +35,8 @@ const locationLinksZh = [
 
 const footerCopy = {
   en: {
-    ctaTitle: "Ready to Plan Your Renovation?",
-    ctaText: "Talk to FLASH CAST about your space, budget, timeline, and renovation scope.",
+    ctaTitle: "Planning to Renovate Your Home or Office?",
+    ctaText: "Get a free consultation and quotation. We serve Kuala Lumpur, Selangor, and surrounding areas.",
     ctaButton: "Get Free Quote",
     brandText:
       "FLASH CAST SDN. BHD. provides residential renovation, commercial fit-out, custom built-in furniture, and premium wall finishing services in Kuala Lumpur and Selangor.",
@@ -68,8 +69,8 @@ const footerCopy = {
     ],
   },
   zh: {
-    ctaTitle: "准备开始装修规划？",
-    ctaText: "把空间、预算、工期和需求告诉 FLASH CAST，我们会给你清楚的装修建议。",
+    ctaTitle: "计划装修您的住宅或办公室？",
+    ctaText: "立即获取免费咨询和报价。我们服务吉隆坡、雪兰莪及周边地区。",
     ctaButton: "获取免费报价",
     brandText:
       "FLASH CAST SDN. BHD. 专注吉隆坡与雪兰莪住宅装修、商业空间装修、定制内嵌家具和高级墙面涂装服务。",
@@ -158,10 +159,15 @@ const Footer = () => {
   const t = footerCopy[language];
   const [openSection, setOpenSection] = useState<string | null>(null);
   const [logoFailed, setLogoFailed] = useState(false);
+  const { data: globalCtaBlock } = usePublishedCtaBlock(language, "home_final");
   const areas = language === "zh" ? locationLinksZh : locationLinks;
   const serviceLinks = normalizeFooterServiceLinks(t.serviceLinks, language);
   const logoSrc = !logoFailed && settings.logo_url ? addCacheBuster(settings.logo_url, settings.updated_at) : logoFallback;
   const showFooterCta = stripLanguagePrefix(location.pathname) !== "/";
+  const footerCtaTitle = globalCtaBlock?.title || t.ctaTitle;
+  const footerCtaDescription = globalCtaBlock?.description || t.ctaText;
+  const footerCtaButton = globalCtaBlock?.primary_label || t.ctaButton;
+  const footerCtaPath = globalCtaBlock?.primary_url || "/quote";
 
   useEffect(() => {
     setLogoFailed(false);
@@ -179,11 +185,11 @@ const Footer = () => {
         <FooterPreludeCta
           className="site-footer-prelude"
           eyebrow={language === "zh" ? "项目咨询" : settings.company_name}
-          title={t.ctaTitle}
-          description={t.ctaText}
-          quoteLabel={t.ctaButton}
+          title={footerCtaTitle}
+          description={footerCtaDescription}
+          quoteLabel={footerCtaButton}
           whatsappLabel={language === "zh" ? "WhatsApp 咨询" : "WhatsApp"}
-          quotePath="/quote"
+          quotePath={footerCtaPath}
           whatsappSource="Footer CTA"
         />
       )}
