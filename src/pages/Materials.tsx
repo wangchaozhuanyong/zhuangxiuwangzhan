@@ -116,7 +116,7 @@ const Materials = () => {
                 to={`/materials/category/${category.slug}`}
                 className="group flex h-full min-h-[17rem] flex-col overflow-hidden rounded-card-lg border border-border bg-card shadow-sm transition-colors hover:border-accent/40 hover-lift"
               >
-                <div className="relative aspect-[4/3] overflow-hidden bg-muted img-zoom">
+                <div className="relative aspect-[4/3] overflow-hidden bg-muted">
                   <SmartImage
                     src={category.image}
                     alt={category.alt || displayCategoryName(category.name)}
