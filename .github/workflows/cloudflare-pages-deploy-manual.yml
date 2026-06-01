@@ -10,6 +10,9 @@ concurrency:
   group: cloudflare-pages-prod-${{ github.event.workflow_run.head_branch || github.ref }}
   cancel-in-progress: true
 
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
 jobs:
   deploy:
     if: ${{ github.event_name == 'workflow_dispatch' || (github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.head_branch == 'main') }}
@@ -78,7 +81,6 @@ jobs:
           projectName: ${{ secrets.CLOUDFLARE_PAGES_PROJECT_NAME }}
           directory: dist
           branch: main
-          commitHash: ${{ github.event.workflow_run.head_sha || github.sha }}
 
       - name: Save retained hashed assets
         uses: actions/cache/save@v4
