@@ -185,8 +185,7 @@
     line-height: 1.75;
   }
 
-  .footer-trust-line,
-  .footer-hours {
+  .footer-trust-line {
     margin-top: 0.75rem;
     color: rgba(255, 255, 255, 0.42);
     font-size: 0.72rem;
@@ -211,6 +210,8 @@
     color: rgba(255, 255, 255, 0.68);
     font-size: 0.86rem;
     line-height: 1.55;
+    text-decoration: none;
+    transition: color 200ms ease, transform 200ms ease;
   }
 
   .footer-contact-item > span:first-child {
@@ -223,6 +224,50 @@
     border-radius: 999px;
     background: rgba(255, 255, 255, 0.045);
     color: rgba(198, 164, 106, 0.9);
+  }
+
+  .footer-contact-item > span:last-child {
+    overflow-wrap: anywhere;
+  }
+
+  a.footer-contact-item:hover {
+    color: rgba(255, 255, 255, 0.88);
+    transform: translateX(2px);
+  }
+
+  .footer-social-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, 2rem);
+    align-items: center;
+    gap: 0.45rem;
+    margin-top: 0.85rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+    padding-top: 0.85rem;
+  }
+
+  .footer-social-link {
+    display: inline-flex;
+    width: 2rem;
+    height: 2rem;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid rgba(198, 164, 106, 0.26);
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.045);
+    color: rgba(255, 255, 255, 0.72);
+    transition: border-color 200ms ease, background 200ms ease, color 200ms ease, transform 200ms ease;
+  }
+
+  .footer-social-link:hover {
+    border-color: rgba(198, 164, 106, 0.62);
+    background: rgba(198, 164, 106, 0.12);
+    color: hsl(var(--gold));
+    transform: translateY(-1px);
+  }
+
+  .footer-social-link:focus-visible {
+    outline: 2px solid rgba(198, 164, 106, 0.78);
+    outline-offset: 3px;
   }
 
   .footer-link-board {

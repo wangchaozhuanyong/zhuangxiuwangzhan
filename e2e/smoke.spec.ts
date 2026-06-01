@@ -9,6 +9,13 @@ test.describe("public site smoke", () => {
     expect(bodyText).not.toContain("�");
   });
 
+  test("zh homepage exposes a first-screen phone link on mobile", async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.goto("/zh", { waitUntil: "domcontentloaded" });
+    await page.waitForLoadState("load");
+    await expect(page.locator('.site-header__mobile-controls a[href^="tel:"]')).toBeVisible();
+  });
+
   test("hreflang links exist on a content page", async ({ page }) => {
     await page.goto("/zh/quote", { waitUntil: "domcontentloaded" });
     await page.waitForLoadState("load");

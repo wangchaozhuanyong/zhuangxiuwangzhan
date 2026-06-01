@@ -1,7 +1,7 @@
 import { ReactNode, useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
 import Link from "@/components/LocalizedLink";
-import { ChevronDown, Mail, MapPin, Phone } from "lucide-react";
+import { ChevronDown, Clock, ExternalLink, Facebook, Instagram, Linkedin, Mail, MapPin, Music2, Phone, type LucideIcon } from "lucide-react";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { useSiteSettings } from "@/hooks/useSiteSettings";
 import { usePublishedCtaBlock } from "@/hooks/usePublishedContent";
@@ -9,6 +9,7 @@ import SmartImage from "@/components/SmartImage";
 import FooterPreludeCta from "@/components/blocks/FooterPreludeCta";
 import { addCacheBuster } from "@/lib/siteSettingsApi";
 import { stripLanguagePrefix } from "@/i18n/routes";
+import { trackCtaClick } from "@/lib/analytics";
 import logoFallback from "@/assets/logo-flashcast.webp";
 
 const locationLinks = [
@@ -132,6 +133,48 @@ const FooterLink = ({ to, children }: { to: string; children: ReactNode }) => (
   </li>
 );
 
+type FooterContactItem = {
+  icon: LucideIcon;
+  text: string;
+  href?: string;
+  external?: boolean;
+  track?: string;
+};
+
+const normalizeSocialHref = (url: string) => {
+  const trimmed = url.trim();
+  if (!trimmed) return "";
+  if (/^https?:\/\//i.test(trimmed)) return trimmed;
+  if (/^\/\//.test(trimmed)) return `https:${trimmed}`;
+  return `https://${trimmed.replace(/^\/+/, "")}`;
+};
+
+const SocialLinkList = ({
+  links,
+}: {
+  links: Array<{ name: string; href: string; icon: LucideIcon }>;
+}) => {
+  if (!links.length) return null;
+
+  return (
+    <nav className="footer-social-list" aria-label="Social media">
+      {links.map((item) => (
+        <a
+          key={item.name}
+          href={item.href}
+          className="footer-social-link"
+          target="_blank"
+          rel="noopener noreferrer"
+          aria-label={item.name}
+          title={item.name}
+        >
+          <item.icon className="h-4 w-4" aria-hidden="true" />
+        </a>
+      ))}
+    </nav>
+  );
+};
+
 const MobileAccordion = ({
   title,
   children,
@@ -177,16 +220,30 @@ const Footer = () => {
   const footerCtaDescription = globalCtaBlock?.description || t.ctaText;
   const footerCtaButton = globalCtaBlock?.primary_label || t.ctaButton;
   const footerCtaPath = globalCtaBlock?.primary_url || "/quote";
+  const mapHref =
+    settings.map_latitude && settings.map_longitude
+      ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${settings.map_latitude},${settings.map_longitude}`)}`
+      : `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(settings.address)}`;
 
   useEffect(() => {
     setLogoFailed(false);
   }, [settings.logo_url, settings.updated_at]);
 
-  const contactItems = [
-    { icon: MapPin, text: settings.address, start: true },
-    { icon: Phone, text: settings.phone_display },
-    { icon: Mail, text: settings.email },
+  const contactItems: FooterContactItem[] = [
+    { icon: MapPin, text: settings.address, href: mapHref, external: true, track: "map" },
+    { icon: Phone, text: settings.phone_display, href: settings.phone_href, track: "phone" },
+    { icon: Mail, text: settings.email, href: `mailto:${settings.email}`, track: "email" },
+    { icon: Clock, text: t.hours },
   ];
+  const socialLinks = [
+    { name: "Facebook", url: settings.facebook_url, icon: Facebook },
+    { name: "Instagram", url: settings.instagram_url, icon: Instagram },
+    { name: "TikTok", url: settings.tiktok_url, icon: Music2 },
+    { name: "Xiaohongshu", url: settings.xiaohongshu_url, icon: ExternalLink },
+    { name: "LinkedIn", url: settings.linkedin_url, icon: Linkedin },
+  ]
+    .map((item) => ({ name: item.name, href: normalizeSocialHref(item.url || ""), icon: item.icon }))
+    .filter((item) => item.href);
 
   return (
     <footer className="site-footer-art">
@@ -225,17 +282,37 @@ const Footer = () => {
               <p className="footer-trust-line">{t.trustLine}</p>
 
               <div className="footer-contact-list">
-                {contactItems.map((item) => (
-                  <span key={item.text} className="footer-contact-item">
-                    <span>
-                      <item.icon className="h-3.5 w-3.5" />
+                {contactItems.map((item) => {
+                  const Icon = item.icon;
+                  const content = (
+                    <>
+                      <span>
+                        <Icon className="h-3.5 w-3.5" />
+                      </span>
+                      <span>{item.text}</span>
+                    </>
+                  );
+
+                  return item.href ? (
+                    <a
+                      key={item.text}
+                      href={item.href}
+                      className="footer-contact-item"
+                      target={item.external ? "_blank" : undefined}
+                      rel={item.external ? "noopener noreferrer" : undefined}
+                      onClick={() => trackCtaClick(item.track || "contact", "footer_contact", { destination: item.track })}
+                    >
+                      {content}
+                    </a>
+                  ) : (
+                    <span key={item.text} className="footer-contact-item">
+                      {content}
                     </span>
-                    <span>{item.text}</span>
-                  </span>
-                ))}
+                  );
+                })}
               </div>
 
-              <p className="footer-hours">{t.hours}</p>
+              <SocialLinkList links={socialLinks} />
             </div>
 
             <nav className="footer-link-board" aria-label="Footer navigation">
@@ -293,16 +370,36 @@ const Footer = () => {
               <p className="footer-brand-copy">{t.brandText}</p>
               <p className="footer-trust-line">{t.trustLine}</p>
               <div className="footer-contact-list">
-                {contactItems.map((item) => (
-                  <span key={item.text} className="footer-contact-item">
-                    <span>
-                      <item.icon className="h-3.5 w-3.5" />
+                {contactItems.map((item) => {
+                  const Icon = item.icon;
+                  const content = (
+                    <>
+                      <span>
+                        <Icon className="h-3.5 w-3.5" />
+                      </span>
+                      <span>{item.text}</span>
+                    </>
+                  );
+
+                  return item.href ? (
+                    <a
+                      key={item.text}
+                      href={item.href}
+                      className="footer-contact-item"
+                      target={item.external ? "_blank" : undefined}
+                      rel={item.external ? "noopener noreferrer" : undefined}
+                      onClick={() => trackCtaClick(item.track || "contact", "footer_contact", { destination: item.track })}
+                    >
+                      {content}
+                    </a>
+                  ) : (
+                    <span key={item.text} className="footer-contact-item">
+                      {content}
                     </span>
-                    <span>{item.text}</span>
-                  </span>
-                ))}
+                  );
+                })}
               </div>
-              <p className="footer-hours">{t.hours}</p>
+              <SocialLinkList links={socialLinks} />
             </section>
 
             <div className="footer-mobile-nav">

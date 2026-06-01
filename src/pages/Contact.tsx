@@ -275,14 +275,18 @@ const Contact = () => {
     }
   };
 
+  const mapAddress = settings.address || t.addressText;
+  const mapHref =
+    settings.map_latitude && settings.map_longitude
+      ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${settings.map_latitude},${settings.map_longitude}`)}`
+      : `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(mapAddress)}`;
   const contactItems = [
-    { icon: MapPin, title: t.addressTitle, text: settings.address || t.addressText },
-    { icon: Phone, title: t.phoneTitle, text: settings.phone_display },
-    { icon: Mail, title: t.emailTitle, text: settings.email },
+    { icon: MapPin, title: t.addressTitle, text: mapAddress, href: mapHref, external: true, track: "map" },
+    { icon: Phone, title: t.phoneTitle, text: settings.phone_display, href: settings.phone_href, track: "phone" },
+    { icon: Mail, title: t.emailTitle, text: settings.email, href: `mailto:${settings.email}`, track: "email" },
     { icon: Clock, title: t.hoursTitle, text: t.hoursText },
   ];
 
-  const mapAddress = settings.address || t.addressText;
   const mapDescription = mapAddress
     ? language === "zh"
       ? `办公室地址：${mapAddress}`
@@ -326,17 +330,37 @@ const Contact = () => {
                   <h2 className="font-display text-2xl font-bold">{t.infoTitle}</h2>
                 </div>
                 <div className="space-y-5">
-                  {contactItems.map((item) => (
-                    <div key={item.title} className="group flex items-start gap-4 rounded-card border border-border/80 bg-card p-4 shadow-[0_18px_44px_-38px_rgba(21,18,14,0.38)] hover-lift">
-                      <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-gold/25 bg-gold/10">
-                        <item.icon className="h-4 w-4 text-gold" />
+                  {contactItems.map((item) => {
+                    const Icon = item.icon;
+                    const content = (
+                      <>
+                        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-gold/25 bg-gold/10">
+                          <Icon className="h-4 w-4 text-gold" />
+                        </div>
+                        <div>
+                          <h3 className="font-semibold text-sm mb-1">{item.title}</h3>
+                          <p className="text-muted-foreground text-sm whitespace-pre-line">{item.text}</p>
+                        </div>
+                      </>
+                    );
+
+                    return item.href ? (
+                      <a
+                        key={item.title}
+                        href={item.href}
+                        target={item.external ? "_blank" : undefined}
+                        rel={item.external ? "noopener noreferrer" : undefined}
+                        className="group flex items-start gap-4 rounded-card border border-border/80 bg-card p-4 shadow-[0_18px_44px_-38px_rgba(21,18,14,0.38)] hover-lift"
+                        onClick={() => trackCtaClick(item.track, "contact_info_card", { destination: item.track })}
+                      >
+                        {content}
+                      </a>
+                    ) : (
+                      <div key={item.title} className="group flex items-start gap-4 rounded-card border border-border/80 bg-card p-4 shadow-[0_18px_44px_-38px_rgba(21,18,14,0.38)] hover-lift">
+                        {content}
                       </div>
-                      <div>
-                        <h3 className="font-semibold text-sm mb-1">{item.title}</h3>
-                        <p className="text-muted-foreground text-sm whitespace-pre-line">{item.text}</p>
-                      </div>
-                    </div>
-                  ))}
+                    );
+                  })}
                 </div>
 
                 <div className="mt-6 overflow-hidden rounded-card border border-border/80 bg-card shadow-[0_22px_55px_-42px_rgba(21,18,14,0.38)]">

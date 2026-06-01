@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState, type MouseEvent } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { ArrowRight, BookOpen, FolderOpen, GitBranch, ChevronRight, Globe, HelpCircle, Home, Info, Layers, LucideIcon, Mail, Menu, Wrench, X } from "lucide-react";
+import { ArrowRight, BookOpen, FolderOpen, GitBranch, ChevronRight, Globe, HelpCircle, Home, Info, Layers, LucideIcon, Mail, Menu, Phone, Wrench, X } from "lucide-react";
 import WhatsAppIcon from "@/components/WhatsAppIcon";
 import { Button } from "@/components/ui/button";
 import { useLanguage } from "@/i18n/LanguageContext";
@@ -103,6 +103,7 @@ const Navbar = () => {
 
   const languageAriaLabel = language === "zh" ? "切换语言" : "Switch language";
   const menuAriaLabel = language === "zh" ? "打开导航菜单" : "Toggle navigation menu";
+  const callAriaLabel = language === "zh" ? "拨打电话" : "Call FLASH CAST";
 
   const currentPageLabel = language === "zh" ? "当前" : "Current";
 
@@ -188,6 +189,15 @@ const Navbar = () => {
             </button>
             <Button variant="ghost" size="sm" className="whitespace-nowrap text-muted-foreground" asChild>
               <a
+                href={settings.phone_href}
+                aria-label={callAriaLabel}
+                onClick={() => trackCtaClick("phone", "desktop_header", { destination: "phone" })}
+              >
+                <Phone className="mr-1.5 h-4 w-4" /> {language === "zh" ? "电话" : "Call"}
+              </a>
+            </Button>
+            <Button variant="ghost" size="sm" className="whitespace-nowrap text-muted-foreground" asChild>
+              <a
                 href={settings.whatsapp_url()}
                 target="_blank"
                 rel="noopener noreferrer"
@@ -216,6 +226,14 @@ const Navbar = () => {
               >
                 <span>{language === "en" ? "EN" : "中"}</span>
               </button>
+              <a
+                href={settings.phone_href}
+                className="site-header__mobile-button flex h-10 w-10 items-center justify-center rounded-full text-foreground transition-colors active:bg-muted/70"
+                aria-label={callAriaLabel}
+                onClick={() => trackCtaClick("phone", "mobile_header", { destination: "phone" })}
+              >
+                <Phone className="h-5 w-5" />
+              </a>
               <button
                 className="site-header__mobile-button flex h-10 w-10 items-center justify-center rounded-full text-foreground transition-colors active:bg-muted/70"
                 onClick={() => setIsOpen(!isOpen)}
@@ -282,6 +300,15 @@ const Navbar = () => {
               >
                 {t("cta.getQuote")}
               </LocalizedLink>
+            </Button>
+            <Button size="lg" variant="outline" className="h-12 w-full justify-center text-sm font-medium" asChild>
+              <a
+                href={settings.phone_href}
+                onClick={() => trackCtaClick("phone", "mobile_menu", { destination: "phone" })}
+              >
+                <Phone className="mr-1.5 h-4 w-4" />
+                {language === "zh" ? "电话咨询" : "Call Us"}
+              </a>
             </Button>
             <Button size="lg" variant="outline" className="h-12 w-full justify-center text-sm font-medium" asChild>
               <a

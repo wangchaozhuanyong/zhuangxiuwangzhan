@@ -39,7 +39,7 @@
     }
 
     .site-header__mobile-controls {
-      width: 5.55rem;
+      width: 8.35rem;
       height: 2.75rem;
     }
 
@@ -138,7 +138,7 @@
   }
 
   .site-header__mobile-controls {
-    width: 5.55rem;
+    width: 8.35rem;
     justify-content: center;
     transition:
       background-color 260ms ease,
