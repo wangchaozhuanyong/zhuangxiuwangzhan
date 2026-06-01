@@ -339,13 +339,21 @@ const Contact = () => {
                   ))}
                 </div>
 
-                <div className="mt-6 rounded-card border border-border/80 bg-card p-4 shadow-[0_18px_44px_-38px_rgba(21,18,14,0.32)]">
-                  <h3 className="font-semibold text-sm mb-3">{t.servicesTitle}</h3>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                <div className="mt-6 overflow-hidden rounded-card border border-border/80 bg-card shadow-[0_22px_55px_-42px_rgba(21,18,14,0.38)]">
+                  <div className="flex items-center gap-3 border-b border-border/70 px-4 py-3">
+                    <h3 className="shrink-0 text-sm font-semibold">{t.servicesTitle}</h3>
+                    <div className="hidden h-px flex-1 bg-gradient-to-r from-gold/45 via-border to-transparent min-[460px]:block" aria-hidden="true" />
+                  </div>
+                  <div className="grid grid-cols-1 gap-2.5 p-4 min-[460px]:grid-cols-2">
                     {serviceItems[language].map((service) => (
-                      <div key={service} className="flex items-center gap-2 text-xs text-muted-foreground">
-                        <CheckCircle className="w-3.5 h-3.5 text-accent shrink-0" />
-                        {service}
+                      <div
+                        key={service}
+                        className="group flex min-h-11 items-center gap-2.5 rounded-lg border border-border/70 bg-background/75 px-3 py-2.5 text-sm font-medium text-foreground/75 shadow-[0_12px_28px_-26px_rgba(21,18,14,0.38)] transition-colors hover:border-gold/35 hover:bg-gold/5 hover:text-foreground"
+                      >
+                        <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full border border-gold/25 bg-gold/10">
+                          <CheckCircle className="h-3.5 w-3.5 text-gold" />
+                        </span>
+                        <span className="leading-snug">{service}</span>
                       </div>
                     ))}
                   </div>
