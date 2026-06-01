@@ -1,4 +1,4 @@
-import { Builder, By } from "selenium-webdriver";
+import { Builder } from "selenium-webdriver";
 
 const username = process.env.BROWSERSTACK_USERNAME;
 const accessKey = process.env.BROWSERSTACK_ACCESS_KEY;
@@ -120,19 +120,31 @@ const setSessionStatus = async (driver, status, reason) => {
 
 const waitForVisible = async (driver, selector, timeoutMs = waitTimeoutMs) => {
   await driver.wait(async () => {
-    const elements = await driver.findElements(By.css(selector));
+    return driver.executeScript((cssSelector) => {
+      const elements = Array.from(document.querySelectorAll(cssSelector));
 
-    for (const element of elements) {
-      try {
-        if (await element.isDisplayed()) return true;
-      } catch {
-        // The SPA can replace nodes while BrowserStack is still settling.
-      }
-    }
-
-    return false;
+      return elements.some((element) => {
+        const style = window.getComputedStyle(element);
+        const rect = element.getBoundingClientRect();
+        return style.display !== "none" && style.visibility !== "hidden" && rect.width > 1 && rect.height > 1;
+      });
+    }, selector);
   }, timeoutMs, `${selector} did not become visible within ${timeoutMs}ms`);
 };
+
+const getPageDiagnostics = async (driver, selector) =>
+  driver.executeScript((cssSelector) => {
+    const bodyText = document.body?.innerText || "";
+    return {
+      url: window.location.href,
+      title: document.title,
+      readyState: document.readyState,
+      selectorCount: document.querySelectorAll(cssSelector).length,
+      mainCount: document.querySelectorAll("main").length,
+      bodyTextLength: bodyText.trim().length,
+      bodyTextStart: bodyText.trim().slice(0, 180),
+    };
+  }, selector);
 
 const runPageChecks = async (driver, page) => {
   await driver.get(`${baseUrl}${page.path}`);
@@ -141,7 +153,10 @@ const runPageChecks = async (driver, page) => {
     try {
       await waitForVisible(driver, selector);
     } catch (error) {
-      throw new Error(`${page.path}: ${selector} not visible (${error instanceof Error ? error.message : String(error)})`);
+      const diagnostics = await getPageDiagnostics(driver, selector);
+      throw new Error(
+        `${page.path}: ${selector} not visible (${error instanceof Error ? error.message : String(error)}; diagnostics=${JSON.stringify(diagnostics)})`,
+      );
     }
   }
 
