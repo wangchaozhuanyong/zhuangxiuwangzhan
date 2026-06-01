@@ -123,21 +123,41 @@ const SourceTable = ({
 }) => {
   const t = copy[language].table;
   return (
-    <div className="overflow-x-auto rounded-lg border border-border">
-      <table className="w-full min-w-[760px] text-sm">
-        <thead className="bg-muted/60 text-left text-xs uppercase text-muted-foreground">
-          <tr>
-            <th className="px-4 py-3 font-semibold">{t.source}</th>
-            <th className="px-4 py-3 font-semibold">{t.total}</th>
-            <th className="px-4 py-3 font-semibold">{t.leads}</th>
-            <th className="px-4 py-3 font-semibold">{t.quotes}</th>
-            <th className="px-4 py-3 font-semibold">{t.quoted}</th>
-            <th className="px-4 py-3 font-semibold">{t.won}</th>
-            <th className="px-4 py-3 font-semibold">{t.closeRate}</th>
-            <th className="px-4 py-3 font-semibold">{t.value}</th>
-          </tr>
-        </thead>
-        <tbody>
+    <div className="overflow-hidden rounded-lg border border-border">
+      <div className="divide-y divide-border md:hidden">
+        {rows.map((row) => (
+          <article key={row.key} className="space-y-3 p-4">
+            <div>
+              <p className="font-medium">{row.label}</p>
+              <p className="truncate text-xs text-muted-foreground">{row.sourcePath || "-"}</p>
+            </div>
+            <div className="grid grid-cols-2 gap-3 text-sm">
+              <div><span className="text-muted-foreground">{t.total}</span><p className="font-medium">{row.total}</p></div>
+              <div><span className="text-muted-foreground">{t.leads}</span><p className="font-medium">{row.leads}</p></div>
+              <div><span className="text-muted-foreground">{t.quotes}</span><p className="font-medium">{row.quotes}</p></div>
+              <div><span className="text-muted-foreground">{t.quoted}</span><p className="font-medium">{row.quoted}</p></div>
+              <div><span className="text-muted-foreground">{t.won}</span><p className="font-medium">{row.won}</p></div>
+              <div><span className="text-muted-foreground">{t.closeRate}</span><p className="font-medium">{formatPercent(row.closeRate)}</p></div>
+              <div className="col-span-2"><span className="text-muted-foreground">{t.value}</span><p className="font-medium">{formatMoney(row.wonValue || row.quotedValue, language)}</p></div>
+            </div>
+          </article>
+        ))}
+      </div>
+      <div className="hidden overflow-x-auto md:block">
+        <table className="w-full min-w-[760px] text-sm">
+          <thead className="bg-muted/60 text-left text-xs uppercase text-muted-foreground">
+            <tr>
+              <th className="px-4 py-3 font-semibold">{t.source}</th>
+              <th className="px-4 py-3 font-semibold">{t.total}</th>
+              <th className="px-4 py-3 font-semibold">{t.leads}</th>
+              <th className="px-4 py-3 font-semibold">{t.quotes}</th>
+              <th className="px-4 py-3 font-semibold">{t.quoted}</th>
+              <th className="px-4 py-3 font-semibold">{t.won}</th>
+              <th className="px-4 py-3 font-semibold">{t.closeRate}</th>
+              <th className="px-4 py-3 font-semibold">{t.value}</th>
+            </tr>
+          </thead>
+          <tbody>
           {rows.map((row) => (
             <tr key={row.key} className="border-t border-border">
               <td className="max-w-[320px] px-4 py-3">
@@ -153,8 +173,9 @@ const SourceTable = ({
               <td className="px-4 py-3">{formatMoney(row.wonValue || row.quotedValue, language)}</td>
             </tr>
           ))}
-        </tbody>
-      </table>
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 };
@@ -168,19 +189,34 @@ const ProjectTypeTable = ({
 }) => {
   const t = copy[language].table;
   return (
-    <div className="overflow-x-auto rounded-lg border border-border">
-      <table className="w-full min-w-[620px] text-sm">
-        <thead className="bg-muted/60 text-left text-xs uppercase text-muted-foreground">
-          <tr>
-            <th className="px-4 py-3 font-semibold">{t.projectType}</th>
-            <th className="px-4 py-3 font-semibold">{t.total}</th>
-            <th className="px-4 py-3 font-semibold">{t.quotes}</th>
-            <th className="px-4 py-3 font-semibold">{t.won}</th>
-            <th className="px-4 py-3 font-semibold">{t.closeRate}</th>
-            <th className="px-4 py-3 font-semibold">{t.value}</th>
-          </tr>
-        </thead>
-        <tbody>
+    <div className="overflow-hidden rounded-lg border border-border">
+      <div className="divide-y divide-border md:hidden">
+        {rows.map((row) => (
+          <article key={row.key} className="space-y-3 p-4">
+            <p className="font-medium">{row.label}</p>
+            <div className="grid grid-cols-2 gap-3 text-sm">
+              <div><span className="text-muted-foreground">{t.total}</span><p className="font-medium">{row.total}</p></div>
+              <div><span className="text-muted-foreground">{t.quotes}</span><p className="font-medium">{row.quotes}</p></div>
+              <div><span className="text-muted-foreground">{t.won}</span><p className="font-medium">{row.won}</p></div>
+              <div><span className="text-muted-foreground">{t.closeRate}</span><p className="font-medium">{formatPercent(row.closeRate)}</p></div>
+              <div className="col-span-2"><span className="text-muted-foreground">{t.value}</span><p className="font-medium">{formatMoney(row.quotedValue, language)}</p></div>
+            </div>
+          </article>
+        ))}
+      </div>
+      <div className="hidden overflow-x-auto md:block">
+        <table className="w-full min-w-[620px] text-sm">
+          <thead className="bg-muted/60 text-left text-xs uppercase text-muted-foreground">
+            <tr>
+              <th className="px-4 py-3 font-semibold">{t.projectType}</th>
+              <th className="px-4 py-3 font-semibold">{t.total}</th>
+              <th className="px-4 py-3 font-semibold">{t.quotes}</th>
+              <th className="px-4 py-3 font-semibold">{t.won}</th>
+              <th className="px-4 py-3 font-semibold">{t.closeRate}</th>
+              <th className="px-4 py-3 font-semibold">{t.value}</th>
+            </tr>
+          </thead>
+          <tbody>
           {rows.map((row) => (
             <tr key={row.key} className="border-t border-border">
               <td className="px-4 py-3 font-medium">{row.label}</td>
@@ -191,8 +227,9 @@ const ProjectTypeTable = ({
               <td className="px-4 py-3">{formatMoney(row.quotedValue, language)}</td>
             </tr>
           ))}
-        </tbody>
-      </table>
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 };

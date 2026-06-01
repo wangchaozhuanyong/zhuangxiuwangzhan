@@ -2,7 +2,8 @@ import { FormEvent, useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
-import { AdminActionButton } from "@/components/admin/AdminPermission";
+import { AdminActionButton, useAdminPermission } from "@/components/admin/AdminPermission";
+import { AdminReadOnlyNotice } from "@/components/admin/AdminRoleGate";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { supabase } from "@/lib/supabase";
@@ -36,6 +37,8 @@ const AdminQuoteDetail = () => {
   const [message, setMessage] = useState("");
   const [savingFollowup, setSavingFollowup] = useState(false);
   const [savingField, setSavingField] = useState<string | null>(null);
+  const leadWritePermission = useAdminPermission("lead.write");
+  const canWriteLead = leadWritePermission.allowed;
 
   useEffect(() => {
     if (data?.quote) setQuote(data.quote);
@@ -55,6 +58,10 @@ const AdminQuoteDetail = () => {
 
   const updateQuote = async (patch: Record<string, unknown>, label = "内容") => {
     if (!id) return;
+    if (!canWriteLead) {
+      setMessage("当前账号是只读角色，不能修改报价内容。");
+      return;
+    }
     setSavingField(label);
     setMessage(`${label}保存中...`);
     try {
@@ -72,6 +79,10 @@ const AdminQuoteDetail = () => {
 
   const addFollowup = async (event: FormEvent) => {
     event.preventDefault();
+    if (!canWriteLead) {
+      setMessage("当前账号是只读角色，不能新增跟进记录。");
+      return;
+    }
     if (!id || savingFollowup) return;
     if (!content.trim()) {
       setMessage("请先填写跟进内容。");
@@ -116,6 +127,7 @@ const AdminQuoteDetail = () => {
           description="查看报价请求、填写报价金额、更新状态和跟进记录。"
           helpText="这里是单条报价请求的处理页面。你可以在这里填报价、安排上门、补说明。"
         />
+        {!canWriteLead && <AdminReadOnlyNotice />}
 
         {(message || loadError) && <div role="status" aria-live="polite" className="rounded-xl border border-border bg-card p-4 text-sm">{message || loadError}</div>}
         {quote && (
@@ -143,7 +155,7 @@ const AdminQuoteDetail = () => {
                   <div><span className="text-muted-foreground">预算预估：</span> {quote.estimated_budget || "-"}</div>
                   <div>
                     <label className="mb-1 block text-sm font-medium">报价金额</label>
-                    <Input type="number" value={quote.quoted_amount || ""} onChange={(event) => setQuote({ ...quote, quoted_amount: event.target.value })} onBlur={() => void updateQuote({ quoted_amount: quote.quoted_amount || null }, "报价金额")} disabled={savingField === "报价金额"} />
+                    <Input type="number" value={quote.quoted_amount || ""} onChange={(event) => setQuote({ ...quote, quoted_amount: event.target.value })} onBlur={() => void updateQuote({ quoted_amount: quote.quoted_amount || null }, "报价金额")} disabled={!canWriteLead || savingField === "报价金额"} />
                   </div>
                   <div className="md:col-span-2"><span className="text-muted-foreground">项目详情：</span><p className="mt-1 whitespace-pre-wrap">{quote.project_details || "-"}</p></div>
                   <div>
@@ -151,11 +163,12 @@ const AdminQuoteDetail = () => {
                     <select
                       value={quote.status || "pending"}
                       onChange={(event) => {
+                        if (!canWriteLead) return;
                         const nextStatus = event.target.value;
                         setQuote({ ...quote, status: nextStatus });
                         void updateQuote({ status: nextStatus }, "状态");
                       }}
-                      disabled={savingField === "状态"}
+                      disabled={!canWriteLead || savingField === "状态"}
                       className="flex h-10 rounded-md border border-input bg-background px-3 py-2 text-sm"
                     >
                       {statuses.map((item) => (
@@ -167,15 +180,15 @@ const AdminQuoteDetail = () => {
                   </div>
                   <div>
                     <label className="mb-1 block text-sm font-medium">有效期至</label>
-                    <Input type="date" value={quote.valid_until || ""} onChange={(event) => setQuote({ ...quote, valid_until: event.target.value })} onBlur={() => void updateQuote({ valid_until: quote.valid_until || null }, "有效期")} disabled={savingField === "有效期"} />
+                    <Input type="date" value={quote.valid_until || ""} onChange={(event) => setQuote({ ...quote, valid_until: event.target.value })} onBlur={() => void updateQuote({ valid_until: quote.valid_until || null }, "有效期")} disabled={!canWriteLead || savingField === "有效期"} />
                   </div>
                   <div>
                     <label className="mb-1 block text-sm font-medium">下次跟进</label>
-                    <Input type="datetime-local" value={quote.next_follow_up_at ? quote.next_follow_up_at.slice(0, 16) : ""} onChange={(event) => setQuote({ ...quote, next_follow_up_at: event.target.value })} onBlur={() => void updateQuote({ next_follow_up_at: quote.next_follow_up_at || null }, "下次跟进")} disabled={savingField === "下次跟进"} />
+                    <Input type="datetime-local" value={quote.next_follow_up_at ? quote.next_follow_up_at.slice(0, 16) : ""} onChange={(event) => setQuote({ ...quote, next_follow_up_at: event.target.value })} onBlur={() => void updateQuote({ next_follow_up_at: quote.next_follow_up_at || null }, "下次跟进")} disabled={!canWriteLead || savingField === "下次跟进"} />
                   </div>
                   <div className="md:col-span-2">
                     <label className="mb-1 block text-sm font-medium">备注</label>
-                    <Textarea rows={4} value={quote.notes || ""} onChange={(event) => setQuote({ ...quote, notes: event.target.value })} onBlur={() => void updateQuote({ notes: quote.notes || null }, "备注")} disabled={savingField === "备注"} />
+                    <Textarea rows={4} value={quote.notes || ""} onChange={(event) => setQuote({ ...quote, notes: event.target.value })} onBlur={() => void updateQuote({ notes: quote.notes || null }, "备注")} disabled={!canWriteLead || savingField === "备注"} />
                   </div>
                 </div>
               </section>
@@ -183,11 +196,11 @@ const AdminQuoteDetail = () => {
               <section className="rounded-xl border border-border bg-card p-6">
                 <h2 className="mb-4 font-display text-xl font-bold">新增跟进</h2>
                 <form onSubmit={addFollowup} className="space-y-3">
-                  <select value={followupType} onChange={(event) => setFollowupType(event.target.value)} className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm">
+                  <select value={followupType} onChange={(event) => setFollowupType(event.target.value)} disabled={!canWriteLead} className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm">
                     {followupTypes.map((item) => <option key={item} value={item}>{followupTypeLabels[item] || item}</option>)}
                   </select>
-                  <Textarea rows={4} value={content} onChange={(event) => setContent(event.target.value)} placeholder="跟进记录..." />
-                  <Input type="datetime-local" value={nextFollowUpAt} onChange={(event) => setNextFollowUpAt(event.target.value)} />
+                  <Textarea rows={4} value={content} onChange={(event) => setContent(event.target.value)} placeholder="跟进记录..." disabled={!canWriteLead} />
+                  <Input type="datetime-local" value={nextFollowUpAt} onChange={(event) => setNextFollowUpAt(event.target.value)} disabled={!canWriteLead} />
                   <AdminActionButton action="lead.write" type="submit" className="w-full" disabled={savingFollowup} aria-busy={savingFollowup}>
                     {savingFollowup ? "保存中..." : "保存跟进"}
                   </AdminActionButton>

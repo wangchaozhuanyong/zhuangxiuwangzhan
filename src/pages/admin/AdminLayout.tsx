@@ -59,7 +59,9 @@ import {
   type AdminTheme,
 } from "@/lib/adminLocale";
 import { useAdminDefaultContentSeed } from "@/lib/adminDefaultContent";
+import { ADMIN_ROLE_GROUPS, canAdminRoleAccess, type AdminAllowedRoles } from "@/lib/adminRoleAccess";
 import { cn } from "@/lib/utils";
+import { useAdminAuth } from "@/pages/admin/AdminAuthProvider";
 
 type AdminCopy = {
   dashboard: string;
@@ -122,6 +124,7 @@ type NavItem = {
   key: keyof AdminCopy;
   path: string;
   icon: LucideIcon;
+  allowedRoles?: AdminAllowedRoles;
 };
 
 type NavGroup = {
@@ -264,66 +267,66 @@ const navGroups: NavGroup[] = [
     key: "groupWorkspace",
     icon: LayoutDashboard,
     items: [
-      { key: "dashboard", path: "/admin/dashboard", icon: BarChart3 },
-      { key: "contentHealth", path: "/admin/content-health", icon: FileCheck2 },
-      { key: "publishCenter", path: "/admin/publish-center", icon: Rocket },
-      { key: "englishCenter", path: "/admin/english-center", icon: WandSparkles },
+      { key: "dashboard", path: "/admin/dashboard", icon: BarChart3, allowedRoles: ADMIN_ROLE_GROUPS.all },
+      { key: "contentHealth", path: "/admin/content-health", icon: FileCheck2, allowedRoles: ADMIN_ROLE_GROUPS.contentRead },
+      { key: "publishCenter", path: "/admin/publish-center", icon: Rocket, allowedRoles: ADMIN_ROLE_GROUPS.contentWrite },
+      { key: "englishCenter", path: "/admin/english-center", icon: WandSparkles, allowedRoles: ADMIN_ROLE_GROUPS.contentWrite },
     ],
   },
   {
     key: "groupWebsite",
     icon: Globe2,
     items: [
-      { key: "home", path: "/admin/home", icon: Home },
-      { key: "cmsBuilder", path: "/admin/cms", icon: LayoutDashboard },
-      { key: "pages", path: "/admin/pages", icon: FileText },
-      { key: "about", path: "/admin/about", icon: Building2 },
-      { key: "faqs", path: "/admin/faqs", icon: MessageSquareText },
-      { key: "testimonials", path: "/admin/content/testimonials", icon: Star },
-      { key: "brandLogos", path: "/admin/brand-partners", icon: Sparkles },
-      { key: "beforeAfter", path: "/admin/before-after", icon: Images },
+      { key: "home", path: "/admin/home", icon: Home, allowedRoles: ADMIN_ROLE_GROUPS.contentWrite },
+      { key: "cmsBuilder", path: "/admin/cms", icon: LayoutDashboard, allowedRoles: ADMIN_ROLE_GROUPS.contentWrite },
+      { key: "pages", path: "/admin/pages", icon: FileText, allowedRoles: ADMIN_ROLE_GROUPS.contentWrite },
+      { key: "about", path: "/admin/about", icon: Building2, allowedRoles: ADMIN_ROLE_GROUPS.contentWrite },
+      { key: "faqs", path: "/admin/faqs", icon: MessageSquareText, allowedRoles: ADMIN_ROLE_GROUPS.contentWrite },
+      { key: "testimonials", path: "/admin/content/testimonials", icon: Star, allowedRoles: ADMIN_ROLE_GROUPS.contentWrite },
+      { key: "brandLogos", path: "/admin/brand-partners", icon: Sparkles, allowedRoles: ADMIN_ROLE_GROUPS.contentWrite },
+      { key: "beforeAfter", path: "/admin/before-after", icon: Images, allowedRoles: ADMIN_ROLE_GROUPS.contentWrite },
     ],
   },
   {
     key: "groupBusiness",
     icon: BriefcaseBusiness,
     items: [
-      { key: "services", path: "/admin/services", icon: Wrench },
-      { key: "projects", path: "/admin/projects", icon: FolderKanban },
-      { key: "materials", path: "/admin/materials", icon: BookOpen },
-      { key: "blog", path: "/admin/blog", icon: Newspaper },
-      { key: "serviceAreas", path: "/admin/content/service_areas", icon: MapPinned },
-      { key: "landingPages", path: "/admin/content/landing_pages", icon: Globe2 },
+      { key: "services", path: "/admin/services", icon: Wrench, allowedRoles: ADMIN_ROLE_GROUPS.contentWrite },
+      { key: "projects", path: "/admin/projects", icon: FolderKanban, allowedRoles: ADMIN_ROLE_GROUPS.contentWrite },
+      { key: "materials", path: "/admin/materials", icon: BookOpen, allowedRoles: ADMIN_ROLE_GROUPS.contentWrite },
+      { key: "blog", path: "/admin/blog", icon: Newspaper, allowedRoles: ADMIN_ROLE_GROUPS.contentWrite },
+      { key: "serviceAreas", path: "/admin/content/service_areas", icon: MapPinned, allowedRoles: ADMIN_ROLE_GROUPS.contentWrite },
+      { key: "landingPages", path: "/admin/content/landing_pages", icon: Globe2, allowedRoles: ADMIN_ROLE_GROUPS.contentWrite },
     ],
   },
   {
     key: "groupCustomers",
     icon: Users,
     items: [
-      { key: "leads", path: "/admin/leads", icon: Users },
-      { key: "quoteRequests", path: "/admin/quotes", icon: ClipboardList },
-      { key: "leadReports", path: "/admin/lead-reports", icon: BarChart3 },
+      { key: "leads", path: "/admin/leads", icon: Users, allowedRoles: ADMIN_ROLE_GROUPS.leadRead },
+      { key: "quoteRequests", path: "/admin/quotes", icon: ClipboardList, allowedRoles: ADMIN_ROLE_GROUPS.leadRead },
+      { key: "leadReports", path: "/admin/lead-reports", icon: BarChart3, allowedRoles: ADMIN_ROLE_GROUPS.leadRead },
     ],
   },
   {
     key: "groupMediaSeo",
     icon: Image,
     items: [
-      { key: "media", path: "/admin/media", icon: Image },
-      { key: "seo", path: "/admin/seo", icon: Search },
-      { key: "sitemap", path: "/admin/seo#sitemap", icon: FileSearch },
+      { key: "media", path: "/admin/media", icon: Image, allowedRoles: ADMIN_ROLE_GROUPS.contentWrite },
+      { key: "seo", path: "/admin/seo", icon: Search, allowedRoles: ADMIN_ROLE_GROUPS.contentWrite },
+      { key: "sitemap", path: "/admin/seo#sitemap", icon: FileSearch, allowedRoles: ADMIN_ROLE_GROUPS.contentWrite },
     ],
   },
   {
     key: "groupSystem",
     icon: Settings,
     items: [
-      { key: "websiteSettings", path: "/admin/settings", icon: Settings },
-      { key: "notificationSettings", path: "/admin/notifications", icon: Bell },
-      { key: "systemHealth", path: "/admin/system-health", icon: Activity },
-      { key: "systemLogs", path: "/admin/system-logs", icon: ScrollText },
-      { key: "translationJobs", path: "/admin/content/translation_jobs", icon: Languages },
-      { key: "users", path: "/admin/users", icon: UserCog },
+      { key: "websiteSettings", path: "/admin/settings", icon: Settings, allowedRoles: ADMIN_ROLE_GROUPS.system },
+      { key: "notificationSettings", path: "/admin/notifications", icon: Bell, allowedRoles: ADMIN_ROLE_GROUPS.system },
+      { key: "systemHealth", path: "/admin/system-health", icon: Activity, allowedRoles: ADMIN_ROLE_GROUPS.system },
+      { key: "systemLogs", path: "/admin/system-logs", icon: ScrollText, allowedRoles: ADMIN_ROLE_GROUPS.system },
+      { key: "translationJobs", path: "/admin/content/translation_jobs", icon: Languages, allowedRoles: ADMIN_ROLE_GROUPS.contentWrite },
+      { key: "users", path: "/admin/users", icon: UserCog, allowedRoles: ADMIN_ROLE_GROUPS.system },
     ],
   },
 ];
@@ -428,6 +431,7 @@ const ControlButton = ({
 
 const AdminLayout = () => {
   const location = useLocation();
+  const { role } = useAdminAuth();
   const [adminLang, setAdminLangState] = useState<AdminLang>(() => getAdminLang());
   const [theme, setTheme] = useState<AdminTheme>(() => getAdminTheme());
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
@@ -485,12 +489,23 @@ const AdminLayout = () => {
     [t],
   );
 
-  const activeGroupKeys = useMemo(
+  const visibleNavGroups = useMemo(
     () =>
       navGroups
+        .map((group) => ({
+          ...group,
+          items: group.items.filter((item) => canAdminRoleAccess(role, item.allowedRoles)),
+        }))
+        .filter((group) => group.items.length > 0),
+    [role],
+  );
+
+  const activeGroupKeys = useMemo(
+    () =>
+      visibleNavGroups
         .filter((group) => group.items.some((item) => item.path.split("#")[0] === location.pathname))
         .map((group) => group.key),
-    [location.pathname],
+    [location.pathname, visibleNavGroups],
   );
 
   useEffect(() => {
@@ -684,7 +699,7 @@ const AdminLayout = () => {
         )}
 
         <nav className={cn("min-h-0 flex-1 overflow-y-auto px-3 py-4", compact ? "space-y-4" : "space-y-2.5")} aria-label={t.menu}>
-          {navGroups.map((group) => {
+          {visibleNavGroups.map((group) => {
             const groupLabel = copyText(group.key);
             const GroupIcon = group.icon;
             const isExpanded = Boolean(expandedGroups[group.key]);

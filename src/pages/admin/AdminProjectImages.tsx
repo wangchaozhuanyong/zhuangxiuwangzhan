@@ -251,62 +251,105 @@ const AdminProjectImages = ({ projectId }: AdminProjectImagesProps) => {
           </Button>
         </div>
       </div>
-      <Table>
-        <TableHeader>
-          <TableRow>
-            <TableHead>{t.preview}</TableHead>
-            <TableHead>{t.type}</TableHead>
-            <TableHead>{t.alt}</TableHead>
-            <TableHead>{t.sort}</TableHead>
-            <TableHead>{t.action}</TableHead>
-            <TableHead />
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {images.length === 0 ? (
+      <div className="space-y-3 md:hidden">
+        {images.length === 0 ? (
+          <div className="rounded-lg border border-border p-4 text-center text-sm text-muted-foreground">{t.empty}</div>
+        ) : images.map((image) => (
+          <article key={image.id} className="rounded-lg border border-border p-3">
+            <div className="flex gap-3">
+              <SmartImage src={image.image_url} alt={image.alt_en || image.alt_zh || "项目图片"} width={144} height={96} className="h-20 w-28 shrink-0 rounded object-cover" />
+              <div className="min-w-0 flex-1 text-sm">
+                <p className="font-medium">{formatImageType(image.image_type, lang as Language)}</p>
+                <p className="mt-1 line-clamp-2 text-xs text-muted-foreground">{image.alt_zh || image.alt_en || "-"}</p>
+                <div className="mt-3 flex items-center gap-2">
+                  <span className="text-xs text-muted-foreground">{t.sort}</span>
+                  <Input className="h-9 w-20" type="number" value={image.sort_order || 0} onChange={(event) => void updateImage(image, { sort_order: Number(event.target.value || 0) })} />
+                </div>
+              </div>
+            </div>
+            <div className="mt-3 grid grid-cols-2 gap-2">
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={() => void setAsCover(image)}
+                disabled={image.image_type === "cover" || coverBusyId === image.id}
+                aria-busy={coverBusyId === image.id}
+              >
+                {coverBusyId === image.id ? t.coverBusy : t.setCover}
+              </Button>
+              <Button
+                type="button"
+                variant="destructive"
+                size="sm"
+                onClick={() => void deleteImage(image.id)}
+                disabled={deletingId === image.id}
+                aria-busy={deletingId === image.id}
+              >
+                {deletingId === image.id ? t.deleteBusy : t.delete}
+              </Button>
+            </div>
+          </article>
+        ))}
+      </div>
+      <div className="hidden overflow-x-auto md:block">
+        <Table>
+          <TableHeader>
             <TableRow>
-              <TableCell colSpan={6} className="py-6 text-center text-sm text-muted-foreground">
-                {t.empty}
-              </TableCell>
+              <TableHead>{t.preview}</TableHead>
+              <TableHead>{t.type}</TableHead>
+              <TableHead>{t.alt}</TableHead>
+              <TableHead>{t.sort}</TableHead>
+              <TableHead>{t.action}</TableHead>
+              <TableHead />
             </TableRow>
-          ) : images.map((image) => (
-            <TableRow key={image.id}>
-              <TableCell><SmartImage src={image.image_url} alt={image.alt_en || image.alt_zh || "项目图片"} width={96} height={64} className="h-16 w-24 rounded object-cover" /></TableCell>
-              <TableCell>{formatImageType(image.image_type, lang as Language)}</TableCell>
-              <TableCell className="max-w-xs text-xs text-muted-foreground">{image.alt_zh}<br />{image.alt_en}</TableCell>
-              <TableCell>
-                <Input className="w-20" type="number" value={image.sort_order || 0} onChange={(event) => updateImage(image, { sort_order: Number(event.target.value || 0) })} />
-              </TableCell>
-              <TableCell>
-                <div className="flex flex-wrap gap-2">
+          </TableHeader>
+          <TableBody>
+            {images.length === 0 ? (
+              <TableRow>
+                <TableCell colSpan={6} className="py-6 text-center text-sm text-muted-foreground">
+                  {t.empty}
+                </TableCell>
+              </TableRow>
+            ) : images.map((image) => (
+              <TableRow key={image.id}>
+                <TableCell><SmartImage src={image.image_url} alt={image.alt_en || image.alt_zh || "项目图片"} width={96} height={64} className="h-16 w-24 rounded object-cover" /></TableCell>
+                <TableCell>{formatImageType(image.image_type, lang as Language)}</TableCell>
+                <TableCell className="max-w-xs text-xs text-muted-foreground">{image.alt_zh}<br />{image.alt_en}</TableCell>
+                <TableCell>
+                  <Input className="w-20" type="number" value={image.sort_order || 0} onChange={(event) => void updateImage(image, { sort_order: Number(event.target.value || 0) })} />
+                </TableCell>
+                <TableCell>
+                  <div className="flex flex-wrap gap-2">
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      onClick={() => void setAsCover(image)}
+                      disabled={image.image_type === "cover" || coverBusyId === image.id}
+                      aria-busy={coverBusyId === image.id}
+                    >
+                      {coverBusyId === image.id ? t.coverBusy : t.setCover}
+                    </Button>
+                  </div>
+                </TableCell>
+                <TableCell className="text-right">
                   <Button
                     type="button"
-                    variant="outline"
+                    variant="destructive"
                     size="sm"
-                    onClick={() => void setAsCover(image)}
-                    disabled={image.image_type === "cover" || coverBusyId === image.id}
-                    aria-busy={coverBusyId === image.id}
+                    onClick={() => void deleteImage(image.id)}
+                    disabled={deletingId === image.id}
+                    aria-busy={deletingId === image.id}
                   >
-                    {coverBusyId === image.id ? t.coverBusy : t.setCover}
+                    {deletingId === image.id ? t.deleteBusy : t.delete}
                   </Button>
-                </div>
-              </TableCell>
-              <TableCell className="text-right">
-                <Button
-                  type="button"
-                  variant="destructive"
-                  size="sm"
-                  onClick={() => void deleteImage(image.id)}
-                  disabled={deletingId === image.id}
-                  aria-busy={deletingId === image.id}
-                >
-                  {deletingId === image.id ? t.deleteBusy : t.delete}
-                </Button>
-              </TableCell>
-            </TableRow>
-          ))}
-        </TableBody>
-      </Table>
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </div>
     </div>
   );
 };

@@ -2,6 +2,7 @@ import type { ComponentProps, ReactNode } from "react";
 import { LockKeyhole } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAdminAuth, type AdminRole } from "@/pages/admin/AdminAuthProvider";
+import { getAdminAllowedRoleText, getAdminRoleLabel } from "@/lib/adminRoleAccess";
 import { cn } from "@/lib/utils";
 
 export type AdminAction =
@@ -14,13 +15,6 @@ export type AdminAction =
   | "media.upload"
   | "settings.write"
   | "users.manage";
-
-const roleLabels: Record<AdminRole, string> = {
-  super_admin: "超级管理员",
-  content_editor: "内容编辑",
-  lead_manager: "线索客服",
-  viewer: "只读查看",
-};
 
 const actionLabels: Record<AdminAction, string> = {
   "content.write": "保存内容",
@@ -49,12 +43,12 @@ const actionAllowedRoles: Record<AdminAction, AdminRole[]> = {
 export const getAdminActionInfo = (action: AdminAction, role: AdminRole | null) => {
   const allowedRoles = actionAllowedRoles[action];
   const allowed = Boolean(role && allowedRoles.includes(role));
-  const allowedRoleText = allowedRoles.map((item) => roleLabels[item]).join("、");
+  const allowedRoleText = getAdminAllowedRoleText(allowedRoles);
   return {
     allowed,
     actionLabel: actionLabels[action],
     allowedRoleText,
-    roleLabel: role ? roleLabels[role] : "未识别角色",
+    roleLabel: getAdminRoleLabel(role),
     reason: allowed
       ? `当前角色可以${actionLabels[action]}。`
       : `当前角色不能${actionLabels[action]}。需要角色：${allowedRoleText}。`,

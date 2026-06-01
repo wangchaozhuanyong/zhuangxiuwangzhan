@@ -400,7 +400,7 @@ export const getPublishedCmsPageByPath = async (
     .eq("path", normalizedPath)
     .limit(1);
 
-  if (error) return null;
+  if (error) throw error;
   const cmsRow: any = (data || [])[0];
   return cmsRow ? mapPublishedCmsPage(cmsRow, language) : null;
 };

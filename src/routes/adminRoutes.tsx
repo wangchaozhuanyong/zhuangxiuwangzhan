@@ -1,8 +1,10 @@
 import { lazy } from "react";
 import { Link, Navigate, Route } from "react-router-dom";
 import AdminEmptyState from "@/components/admin/AdminEmptyState";
+import AdminRoleGate from "@/components/admin/AdminRoleGate";
 import { Button } from "@/components/ui/button";
 import { getAdminLang } from "@/lib/adminLocale";
+import { ADMIN_ROLE_GROUPS, type AdminAllowedRoles } from "@/lib/adminRoleAccess";
 import AdminRoute from "@/pages/admin/AdminRoute";
 import AdminAuthProvider from "@/pages/admin/AdminAuthProvider";
 
@@ -42,6 +44,10 @@ const AdminFaqs = lazy(() => import("@/pages/admin/AdminSimpleCms").then((module
 const AdminBeforeAfter = lazy(() => import("@/pages/admin/AdminSimpleCms").then((module) => ({ default: () => <module.default module="before_after_items" /> })));
 const AdminBrandPartners = lazy(() => import("@/pages/admin/AdminSimpleCms").then((module) => ({ default: () => <module.default module="brand_partners" /> })));
 
+const withRoleGate = (element: JSX.Element, allowedRoles: AdminAllowedRoles) => (
+  <AdminRoleGate allowedRoles={allowedRoles}>{element}</AdminRoleGate>
+);
+
 const AdminNotFound = () => {
   const zh = getAdminLang() === "zh";
 
@@ -69,44 +75,44 @@ export const adminRoutes = (
       }
     >
       <Route path="/admin" element={<AdminLayout />}>
-        <Route path="dashboard" element={<AdminDashboard />} />
-        <Route path="content-health" element={<AdminContentHealth />} />
-        <Route path="publish-center" element={<AdminPublishCenter />} />
-        <Route path="english-center" element={<AdminEnglishCenter />} />
-        <Route path="cms" element={<AdminCmsBuilder />} />
-        <Route path="settings" element={<AdminWebsiteSettings />} />
-        <Route path="leads" element={<AdminLeadList />} />
-        <Route path="leads/:id" element={<AdminLeadDetail />} />
-        <Route path="quotes" element={<AdminQuoteList />} />
-        <Route path="quotes/:id" element={<AdminQuoteDetail />} />
-        <Route path="lead-reports" element={<AdminLeadReports />} />
-        <Route path="home" element={<AdminHomeEditor />} />
-        <Route path="pages" element={<AdminPages />} />
-        <Route path="about" element={<AdminAboutEditor />} />
-        <Route path="faqs" element={<AdminFaqs />} />
-        <Route path="before-after" element={<AdminBeforeAfter />} />
-        <Route path="brand-partners" element={<AdminBrandPartners />} />
-        <Route path="services" element={<AdminServiceList />} />
-        <Route path="services/new" element={<AdminServiceEditor />} />
-        <Route path="services/:id" element={<AdminServiceEditor />} />
-        <Route path="projects" element={<AdminProjectList />} />
-        <Route path="projects/new" element={<AdminProjectEditor />} />
-        <Route path="projects/:id" element={<AdminProjectEditor />} />
-        <Route path="materials" element={<AdminMaterialList />} />
-        <Route path="materials/new" element={<AdminMaterialEditor />} />
-        <Route path="materials/:id" element={<AdminMaterialEditor />} />
-        <Route path="blog" element={<AdminBlogList />} />
-        <Route path="blog/new" element={<AdminBlogEditor />} />
-        <Route path="blog/:id" element={<AdminBlogEditor />} />
-        <Route path="media" element={<AdminMediaLibrary />} />
-        <Route path="seo" element={<AdminSeoManager />} />
-        <Route path="users" element={<AdminUsers />} />
-        <Route path="notifications" element={<AdminNotificationSettings />} />
-        <Route path="system-health" element={<AdminSystemHealth />} />
-        <Route path="system-logs" element={<AdminSystemLogs />} />
-        <Route path="content/translation_jobs" element={<AdminTranslationJobs />} />
-        <Route path="content/translation_jobs/:id" element={<AdminTranslationJobs />} />
-        <Route path="content/:type/:id?" element={<AdminContentEditor />} />
+        <Route path="dashboard" element={withRoleGate(<AdminDashboard />, ADMIN_ROLE_GROUPS.all)} />
+        <Route path="content-health" element={withRoleGate(<AdminContentHealth />, ADMIN_ROLE_GROUPS.contentRead)} />
+        <Route path="publish-center" element={withRoleGate(<AdminPublishCenter />, ADMIN_ROLE_GROUPS.contentWrite)} />
+        <Route path="english-center" element={withRoleGate(<AdminEnglishCenter />, ADMIN_ROLE_GROUPS.contentWrite)} />
+        <Route path="cms" element={withRoleGate(<AdminCmsBuilder />, ADMIN_ROLE_GROUPS.contentWrite)} />
+        <Route path="settings" element={withRoleGate(<AdminWebsiteSettings />, ADMIN_ROLE_GROUPS.system)} />
+        <Route path="leads" element={withRoleGate(<AdminLeadList />, ADMIN_ROLE_GROUPS.leadRead)} />
+        <Route path="leads/:id" element={withRoleGate(<AdminLeadDetail />, ADMIN_ROLE_GROUPS.leadRead)} />
+        <Route path="quotes" element={withRoleGate(<AdminQuoteList />, ADMIN_ROLE_GROUPS.leadRead)} />
+        <Route path="quotes/:id" element={withRoleGate(<AdminQuoteDetail />, ADMIN_ROLE_GROUPS.leadRead)} />
+        <Route path="lead-reports" element={withRoleGate(<AdminLeadReports />, ADMIN_ROLE_GROUPS.leadRead)} />
+        <Route path="home" element={withRoleGate(<AdminHomeEditor />, ADMIN_ROLE_GROUPS.contentWrite)} />
+        <Route path="pages" element={withRoleGate(<AdminPages />, ADMIN_ROLE_GROUPS.contentWrite)} />
+        <Route path="about" element={withRoleGate(<AdminAboutEditor />, ADMIN_ROLE_GROUPS.contentWrite)} />
+        <Route path="faqs" element={withRoleGate(<AdminFaqs />, ADMIN_ROLE_GROUPS.contentWrite)} />
+        <Route path="before-after" element={withRoleGate(<AdminBeforeAfter />, ADMIN_ROLE_GROUPS.contentWrite)} />
+        <Route path="brand-partners" element={withRoleGate(<AdminBrandPartners />, ADMIN_ROLE_GROUPS.contentWrite)} />
+        <Route path="services" element={withRoleGate(<AdminServiceList />, ADMIN_ROLE_GROUPS.contentWrite)} />
+        <Route path="services/new" element={withRoleGate(<AdminServiceEditor />, ADMIN_ROLE_GROUPS.contentWrite)} />
+        <Route path="services/:id" element={withRoleGate(<AdminServiceEditor />, ADMIN_ROLE_GROUPS.contentWrite)} />
+        <Route path="projects" element={withRoleGate(<AdminProjectList />, ADMIN_ROLE_GROUPS.contentWrite)} />
+        <Route path="projects/new" element={withRoleGate(<AdminProjectEditor />, ADMIN_ROLE_GROUPS.contentWrite)} />
+        <Route path="projects/:id" element={withRoleGate(<AdminProjectEditor />, ADMIN_ROLE_GROUPS.contentWrite)} />
+        <Route path="materials" element={withRoleGate(<AdminMaterialList />, ADMIN_ROLE_GROUPS.contentWrite)} />
+        <Route path="materials/new" element={withRoleGate(<AdminMaterialEditor />, ADMIN_ROLE_GROUPS.contentWrite)} />
+        <Route path="materials/:id" element={withRoleGate(<AdminMaterialEditor />, ADMIN_ROLE_GROUPS.contentWrite)} />
+        <Route path="blog" element={withRoleGate(<AdminBlogList />, ADMIN_ROLE_GROUPS.contentWrite)} />
+        <Route path="blog/new" element={withRoleGate(<AdminBlogEditor />, ADMIN_ROLE_GROUPS.contentWrite)} />
+        <Route path="blog/:id" element={withRoleGate(<AdminBlogEditor />, ADMIN_ROLE_GROUPS.contentWrite)} />
+        <Route path="media" element={withRoleGate(<AdminMediaLibrary />, ADMIN_ROLE_GROUPS.contentWrite)} />
+        <Route path="seo" element={withRoleGate(<AdminSeoManager />, ADMIN_ROLE_GROUPS.contentWrite)} />
+        <Route path="users" element={withRoleGate(<AdminUsers />, ADMIN_ROLE_GROUPS.system)} />
+        <Route path="notifications" element={withRoleGate(<AdminNotificationSettings />, ADMIN_ROLE_GROUPS.system)} />
+        <Route path="system-health" element={withRoleGate(<AdminSystemHealth />, ADMIN_ROLE_GROUPS.system)} />
+        <Route path="system-logs" element={withRoleGate(<AdminSystemLogs />, ADMIN_ROLE_GROUPS.system)} />
+        <Route path="content/translation_jobs" element={withRoleGate(<AdminTranslationJobs />, ADMIN_ROLE_GROUPS.contentWrite)} />
+        <Route path="content/translation_jobs/:id" element={withRoleGate(<AdminTranslationJobs />, ADMIN_ROLE_GROUPS.contentWrite)} />
+        <Route path="content/:type/:id?" element={withRoleGate(<AdminContentEditor />, ADMIN_ROLE_GROUPS.contentWrite)} />
         <Route path="*" element={<AdminNotFound />} />
       </Route>
     </Route>
