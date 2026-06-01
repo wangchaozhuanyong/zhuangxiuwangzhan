@@ -15,6 +15,7 @@
     "test": "vitest run",
     "test:e2e": "playwright test",
     "test:real-browsers": "node scripts/run-browserstack-compat.mjs",
+    "test:installed-browsers": "node scripts/run-installed-browser-compat.mjs",
     "verify:preview": "node scripts/verify-preview.mjs",
     "verify:deploy-cache": "node scripts/verify-deploy-cache-consistency.mjs",
     "verify:seo-html": "node scripts/verify-seo-html.mjs",
