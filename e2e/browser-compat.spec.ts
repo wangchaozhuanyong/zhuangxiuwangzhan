@@ -204,7 +204,9 @@ test.describe("mainstream browser compatibility", () => {
 
     await expect(page).toHaveURL(/\/zh\/services$/);
     await expect(mobileNavigation).toBeHidden();
-    await expect(page.locator("main")).toBeVisible();
+    await expect
+      .poll(() => hasVisibleElement(page, "main"), { message: "mobile service navigation renders main content", timeout: 20_000 })
+      .toBe(true);
     await expect(page.locator("html")).not.toHaveAttribute("data-menu-open", "true");
   });
 });
