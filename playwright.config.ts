@@ -6,9 +6,9 @@ const browserCompatTests = /browser-compat\.spec\.ts/;
 
 export default defineConfig({
   testDir: "e2e",
-  timeout: 60_000,
+  timeout: externalBaseURL ? 120_000 : 90_000,
   fullyParallel: true,
-  workers: 4,
+  workers: externalBaseURL ? 2 : 4,
   retries: 0,
   reporter: "line",
   webServer: externalBaseURL

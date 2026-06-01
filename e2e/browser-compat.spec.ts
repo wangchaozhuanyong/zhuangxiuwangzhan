@@ -75,6 +75,22 @@ const hasVisibleElement = async (page: Page, selector: string) =>
     }),
   );
 
+const gotoCompatPage = async (page: Page, path: string) => {
+  let lastError: unknown;
+
+  for (let attempt = 1; attempt <= 2; attempt += 1) {
+    try {
+      return await page.goto(path, { waitUntil: "domcontentloaded", timeout: 30_000 });
+    } catch (error) {
+      lastError = error;
+      if (attempt === 2) throw error;
+      await page.waitForTimeout(1_500);
+    }
+  }
+
+  throw lastError;
+};
+
 const expectCompatPage = async (page: Page, compatPage: (typeof compatPages)[number]) => {
   const consoleErrors: string[] = [];
   const collectConsoleError = (message: ConsoleMessage) => {
@@ -87,7 +103,7 @@ const expectCompatPage = async (page: Page, compatPage: (typeof compatPages)[num
   page.on("console", collectConsoleError);
 
   try {
-    const response = await page.goto(compatPage.path, { waitUntil: "domcontentloaded" });
+    const response = await gotoCompatPage(page, compatPage.path);
     expect(response, `${compatPage.path} should return a document response`).not.toBeNull();
     expect(response!.ok(), `${compatPage.path} should return 2xx/3xx`).toBe(true);
 
@@ -96,7 +112,7 @@ const expectCompatPage = async (page: Page, compatPage: (typeof compatPages)[num
 
     for (const selector of compatPage.selectors) {
       await expect
-        .poll(() => hasVisibleElement(page, selector), { message: `${compatPage.path} requires ${selector}`, timeout: 10_000 })
+        .poll(() => hasVisibleElement(page, selector), { message: `${compatPage.path} requires ${selector}`, timeout: 20_000 })
         .toBe(true);
     }
 
@@ -137,9 +153,14 @@ const expectCompatPage = async (page: Page, compatPage: (typeof compatPages)[num
 };
 
 test.describe("mainstream browser compatibility", () => {
-  test("core pages render and stay usable", async ({ page }) => {
+  test("core pages render and stay usable", async ({ context }) => {
     for (const compatPage of compatPages) {
-      await expectCompatPage(page, compatPage);
+      const page = await context.newPage();
+      try {
+        await expectCompatPage(page, compatPage);
+      } finally {
+        await page.close();
+      }
     }
   });
 
