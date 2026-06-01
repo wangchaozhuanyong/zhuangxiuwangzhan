@@ -47,3 +47,6 @@ Disallow: /admin
 Disallow: /admin/
 
 Sitemap: https://flashcast.com.my/sitemap.xml
+
+# AI-readable site summary
+# https://flashcast.com.my/llms.txt

@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "prebuild": "node scripts/validate-env.mjs --strict && node scripts/convert-images-to-webp.mjs && node scripts/prune-duplicate-images.mjs && node scripts/generate-sitemap.mjs && node scripts/generate-seo-manifest.mjs",
+    "prebuild": "node scripts/validate-env.mjs --strict && node scripts/convert-images-to-webp.mjs && node scripts/prune-duplicate-images.mjs && node scripts/generate-sitemap.mjs && node scripts/generate-seo-manifest.mjs && node scripts/generate-llms.mjs",
     "build": "vite build",
     "typecheck": "tsc -p tsconfig.app.json --noEmit",
     "typecheck:strict-core": "tsc -p tsconfig.strict-core.json --noEmit",
@@ -25,6 +25,7 @@
     "deploy:retain-assets": "node scripts/retain-deploy-assets.mjs",
     "restore:backup:dry-run": "node scripts/restore-supabase-backup.mjs --dry-run",
     "generate:sitemap": "node scripts/generate-sitemap.mjs",
+    "generate:llms": "node scripts/generate-llms.mjs",
     "images:webp": "node scripts/convert-images-to-webp.mjs",
     "images:prune": "node scripts/prune-duplicate-images.mjs",
     "videos:compress": "node scripts/compress-hero-videos.mjs",

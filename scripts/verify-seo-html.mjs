@@ -1,10 +1,12 @@
 /**
  * Fetch key URLs and assert raw HTML contains expected SEO tags (no JS).
  */
-import { readFileSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
 
 const BASE = (process.env.PREVIEW_URL || process.env.SITE_URL || "https://flashcast.com.my").replace(/\/$/, "");
 const RUN_EDGE_CHECKS = process.env.VERIFY_EDGE_SEO === "1";
+const RUN_GEO_CHECKS = process.env.VERIFY_GEO_HTML === "1";
+const RUN_CONTENT_MATCH_CHECKS = process.env.VERIFY_CONTENT_MATCH === "1";
 
 const paths = [
   "/zh",
@@ -19,6 +21,25 @@ const paths = [
 
 const failures = [];
 const warnings = [];
+const manifest = JSON.parse(readFileSync("public/seo-manifest.json", "utf8"));
+
+const decodeHtml = (value = "") =>
+  value
+    .replace(/&quot;/g, '"')
+    .replace(/&#39;/g, "'")
+    .replace(/&amp;/g, "&")
+    .replace(/&lt;/g, "<")
+    .replace(/&gt;/g, ">");
+
+const getTitle = (html) => decodeHtml((html.match(/<title[^>]*>([\s\S]*?)<\/title>/i) || [])[1] || "");
+
+const getMetaContent = (html, attr, value) => {
+  const tags = html.match(/<meta\b[^>]*>/gi) || [];
+  const tag = tags.find((item) => new RegExp(`\\b${attr}=["']${value}["']`, "i").test(item));
+  return decodeHtml((tag?.match(/\bcontent=["']([^"']*)["']/i) || [])[1] || "");
+};
+
+const normalizePath = (path) => path.replace(/\/+$/, "") || "/";
 
 const fetchText = async (url, init = {}) => {
   const res = await fetch(url, { headers: { "user-agent": "flashcast-seo-verify" }, ...init });
@@ -39,6 +60,27 @@ for (const path of paths) {
   if (!html.includes('hreflang="en"') || !html.includes('hreflang="zh-CN"')) failures.push(`${path}: missing hreflang`);
   if (!html.includes(expectedLang)) failures.push(`${path}: expected ${expectedLang} on <html>`);
   if (!html.includes('property="og:title"')) failures.push(`${path}: missing og:title`);
+
+  const expected = manifest[normalizePath(path)];
+  if (!expected) failures.push(`${path}: missing route in seo manifest`);
+
+  if (RUN_CONTENT_MATCH_CHECKS && expected) {
+    const title = getTitle(html);
+    const description = getMetaContent(html, "name", "description");
+    const ogDescription = getMetaContent(html, "property", "og:description");
+
+    if (title !== expected.title) failures.push(`${path}: title does not match manifest`);
+    if (description !== expected.description) failures.push(`${path}: description does not match manifest`);
+    if (ogDescription !== expected.description) failures.push(`${path}: og:description does not match manifest`);
+  }
+
+  if (RUN_GEO_CHECKS) {
+    if (!html.includes('type="application/ld+json"')) failures.push(`${path}: missing JSON-LD in raw HTML`);
+    if (!html.includes("data-flashcast-edge-schema")) failures.push(`${path}: missing edge schema marker`);
+    if (!html.includes("data-flashcast-geo-summary")) failures.push(`${path}: missing noscript GEO summary`);
+    if (!html.includes('"@type":"WebPage"')) failures.push(`${path}: missing WebPage schema`);
+    if (!html.includes('"@type":"HomeAndConstructionBusiness"')) failures.push(`${path}: missing business schema`);
+  }
 }
 
 const sitemapXml = readFileSync("public/sitemap.xml", "utf8");
@@ -53,6 +95,27 @@ if (duplicateLocs.length) failures.push(`sitemap: duplicate URLs: ${[...new Set(
 if (nonCanonicalLocs.length) failures.push(`sitemap: non-canonical host URLs: ${nonCanonicalLocs.slice(0, 5).join(", ")}`);
 if (legacyLocs.length) failures.push(`sitemap: URLs without /en or /zh prefix: ${legacyLocs.slice(0, 5).join(", ")}`);
 if (queryLocs.length) failures.push(`sitemap: query URLs should not be listed: ${queryLocs.slice(0, 5).join(", ")}`);
+
+const manifestLocs = Object.keys(manifest).map((path) => `https://flashcast.com.my${normalizePath(path)}`);
+const sitemapSet = new Set(sitemapLocs);
+const manifestSet = new Set(manifestLocs);
+const missingInManifest = sitemapLocs.filter((loc) => !manifestSet.has(loc));
+const missingInSitemap = manifestLocs.filter((loc) => !sitemapSet.has(loc));
+
+if (missingInManifest.length) failures.push(`manifest: sitemap URLs missing from manifest: ${missingInManifest.slice(0, 5).join(", ")}`);
+if (missingInSitemap.length) failures.push(`sitemap: manifest URLs missing from sitemap: ${missingInSitemap.slice(0, 5).join(", ")}`);
+
+if (!existsSync("public/llms.txt")) {
+  failures.push("llms: public/llms.txt is missing");
+} else {
+  const llms = readFileSync("public/llms.txt", "utf8");
+  if (!llms.includes("FLASH CAST SDN. BHD.")) failures.push("llms: missing site identity");
+  if (!llms.includes("https://flashcast.com.my/sitemap.xml")) failures.push("llms: missing sitemap reference");
+  if (!llms.includes("## Canonical URL List")) failures.push("llms: missing canonical URL list");
+}
+
+const robotsTxt = readFileSync("public/robots.txt", "utf8");
+if (!robotsTxt.includes("https://flashcast.com.my/llms.txt")) failures.push("robots: missing llms.txt reference");
 
 if (RUN_EDGE_CHECKS) {
   const legacy = await fetch(`${BASE}/about`, { redirect: "manual", headers: { "user-agent": "flashcast-seo-verify" } });
@@ -79,6 +142,14 @@ if (RUN_EDGE_CHECKS) {
   }
 } else {
   warnings.push("edge redirect/404 checks skipped; set VERIFY_EDGE_SEO=1 against a deployed preview or production URL after deploy");
+}
+
+if (!RUN_CONTENT_MATCH_CHECKS) {
+  warnings.push("content match checks skipped; set VERIFY_CONTENT_MATCH=1 after the deployed edge middleware is current");
+}
+
+if (!RUN_GEO_CHECKS) {
+  warnings.push("raw GEO JSON-LD checks skipped; set VERIFY_GEO_HTML=1 after deploying the edge middleware");
 }
 
 if (failures.length) {

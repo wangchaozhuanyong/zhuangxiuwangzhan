@@ -1,0 +1,438 @@
+# FLASH CAST SDN. BHD.
+
+FLASH CAST SDN. BHD. is a Kuala Lumpur renovation, interior design, custom built-in furniture, and commercial fit-out company serving Kuala Lumpur, Selangor, and Klang Valley.
+
+## Official Sources
+- Website: https://flashcast.com.my
+- Sitemap: https://flashcast.com.my/sitemap.xml
+- Robots: https://flashcast.com.my/robots.txt
+- AI-readable index: https://flashcast.com.my/llms.txt
+
+## Content Scope
+- Residential renovation, old house renovation, kitchen renovation, bathroom renovation, office renovation, shoplot renovation, warehouse shelving, exterior works, permit and drawing support.
+- Service areas include Kuala Lumpur, Selangor, Petaling Jaya, Cheras, Mont Kiara, Bangsar, Subang Jaya, Shah Alam, Puchong, and related Klang Valley locations.
+- The site is bilingual. English pages use /en paths. Chinese pages use /zh paths.
+
+## Route Inventory
+- about: 2 localized URLs
+- blog: 78 localized URLs
+- contact: 2 localized URLs
+- faq: 2 localized URLs
+- home: 2 localized URLs
+- landing: 16 localized URLs
+- locations: 60 localized URLs
+- materials: 106 localized URLs
+- privacy: 2 localized URLs
+- process: 2 localized URLs
+- projects: 78 localized URLs
+- quote: 2 localized URLs
+- services: 28 localized URLs
+- terms: 2 localized URLs
+
+## Priority Pages
+- https://flashcast.com.my/en: Renovation Company Kuala Lumpur | Condo, Landed & Commercial | FLASH CAST - FLASH CAST SDN. BHD. provides professional renovation, interior design, custom built-in furniture, and commercial fit-out services in Kuala Lumpur and Selangor.
+- https://flashcast.com.my/zh: 吉隆坡装修公司 | 住宅、商业空间与定制家具 | FLASH CAST - FLASH CAST SDN. BHD. 提供吉隆坡与雪兰莪住宅装修、室内设计、定制家具、厨房浴室翻新和商业空间装修服务。
+- https://flashcast.com.my/en/blog: Renovation Blog & Insights | Tips & Guides | FLASH CAST Kuala Lumpur - Renovation guides, material comparisons, design tips, and industry insights for homeowners and businesses in Kuala Lumpur and Malaysia by FLASH CAST.
+- https://flashcast.com.my/en/locations/kuala-lumpur: Kuala Lumpur Renovation Contractor | FLASH CAST SDN. BHD. - FLASH CAST provides Kuala Lumpur renovation services for homes, old houses, kitchen cabinets, bathroom waterproofing, offices, shops, custom cabinets, and free quotation.
+- https://flashcast.com.my/en/materials: Renovation Materials Library | Flooring, Cabinets, Bathroom | Kuala Lumpur | FLASH CAST SDN. BHD. - Browse FLASH CAST's curated material library for custom cabinets, furniture, bathroom fittings, flooring, doors, windows, and wall panels for renovation projects in Kuala Lumpur.
+- https://flashcast.com.my/en/projects: Renovation Projects Kuala Lumpur & Selangor | FLASH CAST Portfolio - Explore renovation project references by FLASH CAST across Kuala Lumpur and Selangor - residential condos, commercial offices, custom kitchens, warehouses, and shopfront works.
+- https://flashcast.com.my/en/services: Renovation Services Kuala Lumpur | Interior, Built-In, Commercial & Artistic Coating | FLASH CAST SDN. BHD. - Explore FLASH CAST's comprehensive renovation services in Kuala Lumpur and Selangor: interior design, custom built-in furniture, commercial fit-out, artistic wall coating, exterior works, and warehouse solutions.
+- https://flashcast.com.my/zh/blog: 装修博客与指南 | 吉隆坡装修知识 | FLASH CAST - FLASH CAST 分享马来西亚装修预算、材料比较、设计灵感和施工注意事项，帮助吉隆坡与雪兰莪业主更好规划装修。
+- https://flashcast.com.my/zh/locations/kuala-lumpur: Kuala Lumpur 装修公司 | FLASH CAST SDN. BHD. - FLASH CAST 提供 Kuala Lumpur 装修服务，覆盖住宅装修、旧屋翻新、厨房橱柜、浴室防水、办公室、店铺、定制柜和免费报价。
+- https://flashcast.com.my/zh/materials: 装修材料库 | 地板、橱柜、浴室 | FLASH CAST - 浏览 FLASH CAST 精选材料库，了解定制橱柜、家具、浴室配件、地板、门窗与墙板等马来西亚装修常用材料。
+- https://flashcast.com.my/zh/projects: 吉隆坡与雪兰莪装修案例 | FLASH CAST 项目作品 - 浏览 FLASH CAST 在吉隆坡和雪兰莪发布的装修项目参考，包括公寓、住宅、办公室、厨房、仓储和店铺装修。
+- https://flashcast.com.my/zh/services: 吉隆坡装修服务 | 室内装修、定制家具、商业空间 | FLASH CAST - FLASH CAST 提供吉隆坡与雪兰莪装修服务：室内设计、定制家具、商业空间装修、艺术墙面涂装、外墙工程和仓储架系统。
+- https://flashcast.com.my/en/contact: Contact FLASH CAST | Renovation Company Kuala Lumpur - Get in touch with FLASH CAST SDN. BHD. for your renovation project in Kuala Lumpur and Selangor.
+- https://flashcast.com.my/en/quote: Get a Free Renovation Quote | Kuala Lumpur & Selangor | FLASH CAST - Request a renovation quotation from FLASH CAST SDN. BHD. Site review and consultation can be arranged for Kuala Lumpur and Selangor projects.
+- https://flashcast.com.my/zh/contact: 联系 FLASH CAST | 吉隆坡装修公司 - 联系 FLASH CAST SDN. BHD. 咨询吉隆坡与雪兰莪住宅、商业空间、厨房、旧屋翻新和定制家具装修。
+- https://flashcast.com.my/zh/quote: 免费装修报价 | 吉隆坡与雪兰莪 | FLASH CAST - 向 FLASH CAST SDN. BHD. 申请装修报价。我们会根据项目地点、照片、范围和预算，建议下一步咨询或现场查看。
+
+## Canonical URL List
+- https://flashcast.com.my/en
+- https://flashcast.com.my/zh
+- https://flashcast.com.my/en/blog
+- https://flashcast.com.my/en/blog/area-guide-kl-selangor-renovation
+- https://flashcast.com.my/en/blog/artistic-wall-coating-guide-remmers
+- https://flashcast.com.my/en/blog/bathroom-leakage-renovation-malaysia
+- https://flashcast.com.my/en/blog/bathroom-waterproofing-guide
+- https://flashcast.com.my/en/blog/built-in-cabinet-cost-malaysia
+- https://flashcast.com.my/en/blog/built-in-furniture-small-condo-storage
+- https://flashcast.com.my/en/blog/condo-renovation-management-approval-malaysia
+- https://flashcast.com.my/en/blog/custom-wardrobe-price-malaysia
+- https://flashcast.com.my/en/blog/dry-wet-kitchen-renovation-malaysia
+- https://flashcast.com.my/en/blog/feature-wall-ideas-2025
+- https://flashcast.com.my/en/blog/how-to-choose-renovation-contractor-kl
+- https://flashcast.com.my/en/blog/how-to-plan-condo-renovation-kl
+- https://flashcast.com.my/en/blog/kitchen-cabinet-material-guide
+- https://flashcast.com.my/en/blog/kitchen-cabinet-price-malaysia
+- https://flashcast.com.my/en/blog/kl-condo-renovation-approval
+- https://flashcast.com.my/en/blog/klang-valley-renovation-cost-2026
+- https://flashcast.com.my/en/blog/landed-house-renovation-selangor
+- https://flashcast.com.my/en/blog/malaysia-renovation-budget-guide
+- https://flashcast.com.my/en/blog/modern-warm-minimalist-home-design-malaysia
+- https://flashcast.com.my/en/blog/office-fit-out-checklist-selangor
+- https://flashcast.com.my/en/blog/office-reinstatement-vs-renovation
+- https://flashcast.com.my/en/blog/office-renovation-checklist-malaysia
+- https://flashcast.com.my/en/blog/old-house-renovation-checklist
+- https://flashcast.com.my/en/blog/old-house-renovation-hidden-costs-malaysia
+- https://flashcast.com.my/en/blog/renovation-cost-malaysia-2025
+- https://flashcast.com.my/en/blog/renovation-materials-for-malaysia-climate
+- https://flashcast.com.my/en/blog/renovation-materials-malaysia
+- https://flashcast.com.my/en/blog/renovation-payment-schedule-malaysia
+- https://flashcast.com.my/en/blog/renovation-permit-dbkl-guide
+- https://flashcast.com.my/en/blog/renovation-quotation-checklist-malaysia
+- https://flashcast.com.my/en/blog/rental-unit-renovation-kl
+- https://flashcast.com.my/en/blog/selangor-office-fit-out-tips
+- https://flashcast.com.my/en/blog/shop-renovation-before-opening
+- https://flashcast.com.my/en/blog/shop-renovation-opening-timeline-malaysia
+- https://flashcast.com.my/en/blog/shoplot-renovation-permit-malaysia
+- https://flashcast.com.my/en/blog/small-condo-storage-design-ideas
+- https://flashcast.com.my/en/blog/spc-vinyl-vs-laminate-flooring
+- https://flashcast.com.my/en/blog/spc-vs-vinyl-flooring-malaysia
+- https://flashcast.com.my/en/landing/bathroom-renovation
+- https://flashcast.com.my/en/landing/custom-built-in
+- https://flashcast.com.my/en/landing/flooring
+- https://flashcast.com.my/en/landing/kitchen-cabinet
+- https://flashcast.com.my/en/landing/office-renovation
+- https://flashcast.com.my/en/landing/old-house-renovation
+- https://flashcast.com.my/en/landing/shop-renovation
+- https://flashcast.com.my/en/landing/warehouse-shelving
+- https://flashcast.com.my/en/locations/ampang
+- https://flashcast.com.my/en/locations/ara-damansara
+- https://flashcast.com.my/en/locations/balakong
+- https://flashcast.com.my/en/locations/bangsar
+- https://flashcast.com.my/en/locations/bukit-jalil
+- https://flashcast.com.my/en/locations/cheras
+- https://flashcast.com.my/en/locations/cyberjaya
+- https://flashcast.com.my/en/locations/damansara
+- https://flashcast.com.my/en/locations/desa-parkcity
+- https://flashcast.com.my/en/locations/kajang
+- https://flashcast.com.my/en/locations/kepong
+- https://flashcast.com.my/en/locations/klang
+- https://flashcast.com.my/en/locations/kota-damansara
+- https://flashcast.com.my/en/locations/kuala-lumpur
+- https://flashcast.com.my/en/locations/mont-kiara
+- https://flashcast.com.my/en/locations/petaling-jaya
+- https://flashcast.com.my/en/locations/puchong
+- https://flashcast.com.my/en/locations/putrajaya
+- https://flashcast.com.my/en/locations/rawang
+- https://flashcast.com.my/en/locations/selangor
+- https://flashcast.com.my/en/locations/semenyih
+- https://flashcast.com.my/en/locations/seri-kembangan
+- https://flashcast.com.my/en/locations/setapak
+- https://flashcast.com.my/en/locations/setia-alam
+- https://flashcast.com.my/en/locations/shah-alam
+- https://flashcast.com.my/en/locations/sri-petaling
+- https://flashcast.com.my/en/locations/subang-jaya
+- https://flashcast.com.my/en/locations/sungai-buloh
+- https://flashcast.com.my/en/locations/taman-tun-dr-ismail
+- https://flashcast.com.my/en/locations/wangsa-maju
+- https://flashcast.com.my/en/materials
+- https://flashcast.com.my/en/materials/acrylic-cabinet-door
+- https://flashcast.com.my/en/materials/acrylic-cabinet-gloss-white
+- https://flashcast.com.my/en/materials/acrylic-high-gloss-white
+- https://flashcast.com.my/en/materials/aluminium-sliding-black
+- https://flashcast.com.my/en/materials/aluminium-sliding-door
+- https://flashcast.com.my/en/materials/anti-slip-bathroom-tile
+- https://flashcast.com.my/en/materials/art-metallic-paint
+- https://flashcast.com.my/en/materials/art-microcement
+- https://flashcast.com.my/en/materials/art-texture-paint
+- https://flashcast.com.my/en/materials/art-venetian-plaster
+- https://flashcast.com.my/en/materials/barn-door-dark-wood
+- https://flashcast.com.my/en/materials/category-bathroom
+- https://flashcast.com.my/en/materials/category-doors-windows
+- https://flashcast.com.my/en/materials/category-whole-house-custom
+- https://flashcast.com.my/en/materials/category/art-paint
+- https://flashcast.com.my/en/materials/category/bathroom
+- https://flashcast.com.my/en/materials/category/countertops-stone-surfaces
+- https://flashcast.com.my/en/materials/category/doors-windows
+- https://flashcast.com.my/en/materials/category/flooring
+- https://flashcast.com.my/en/materials/category/furniture
+- https://flashcast.com.my/en/materials/category/kitchen-cabinets
+- https://flashcast.com.my/en/materials/category/wall-panels
+- https://flashcast.com.my/en/materials/category/whole-house-custom
+- https://flashcast.com.my/en/materials/engineered-walnut-herringbone
+- https://flashcast.com.my/en/materials/fluted-panel-charcoal
+- https://flashcast.com.my/en/materials/fluted-wall-panel
+- https://flashcast.com.my/en/materials/frameless-glass-clear
+- https://flashcast.com.my/en/materials/frameless-glass-screen
+- https://flashcast.com.my/en/materials/hexagon-grey-matte
+- https://flashcast.com.my/en/materials/kitchen-acrylic-cabinets
+- https://flashcast.com.my/en/materials/kitchen-melamine-cabinets
+- https://flashcast.com.my/en/materials/kitchen-solid-wood-cabinets
+- https://flashcast.com.my/en/materials/laminate-door-white-oak
+- https://flashcast.com.my/en/materials/laminate-grey-stone
+- https://flashcast.com.my/en/materials/lime-wash-paint
+- https://flashcast.com.my/en/materials/melamine-cabinet-board
+- https://flashcast.com.my/en/materials/melamine-cabinet-grey-oak
+- https://flashcast.com.my/en/materials/melamine-grey-oak
+- https://flashcast.com.my/en/materials/porcelain-carrara-white
+- https://flashcast.com.my/en/materials/quartz-countertop-carrara-white
+- https://flashcast.com.my/en/materials/quartz-countertop-white
+- https://flashcast.com.my/en/materials/sintered-stone-grey
+- https://flashcast.com.my/en/materials/solid-surface-warm-white
+- https://flashcast.com.my/en/materials/solid-timber-walnut
+- https://flashcast.com.my/en/materials/solid-wood-cabinet-teak
+- https://flashcast.com.my/en/materials/solid-wood-teak
+- https://flashcast.com.my/en/materials/spc-flooring-natural-oak
+- https://flashcast.com.my/en/materials/spc-vinyl-natural-oak
+- https://flashcast.com.my/en/materials/subway-tile-white
+- https://flashcast.com.my/en/materials/subway-wall-tile
+- https://flashcast.com.my/en/materials/timber-cladding-oak
+- https://flashcast.com.my/en/materials/vinyl-plank-ash-grey
+- https://flashcast.com.my/en/projects
+- https://flashcast.com.my/en/projects/ampang-landed-exterior-repaint
+- https://flashcast.com.my/en/projects/balakong-warehouse-office-corner
+- https://flashcast.com.my/en/projects/bangsar-coworking-space-planning
+- https://flashcast.com.my/en/projects/bangsar-walk-in-wardrobe-system
+- https://flashcast.com.my/en/projects/bukit-jalil-family-condo-upgrade
+- https://flashcast.com.my/en/projects/cheras-glass-shopfront-facade
+- https://flashcast.com.my/en/projects/cheras-retail-boutique-renovation
+- https://flashcast.com.my/en/projects/cheras-stockroom-shelving-system
+- https://flashcast.com.my/en/projects/corporate-office-petaling-jaya
+- https://flashcast.com.my/en/projects/custom-kitchen-bangsar
+- https://flashcast.com.my/en/projects/cyberjaya-tech-office-renovation
+- https://flashcast.com.my/en/projects/damansara-heights-semi-d-refurbishment
+- https://flashcast.com.my/en/projects/home-office-puchong
+- https://flashcast.com.my/en/projects/kajang-landed-house-modern-renovation
+- https://flashcast.com.my/en/projects/kepong-tv-feature-wall-storage
+- https://flashcast.com.my/en/projects/kl-sentral-meeting-room-pantry-upgrade
+- https://flashcast.com.my/en/projects/kl-showroom-gallery-renovation
+- https://flashcast.com.my/en/projects/klang-industrial-storage-upgrade
+- https://flashcast.com.my/en/projects/kota-damansara-clinic-fit-out
+- https://flashcast.com.my/en/projects/luxury-master-bedroom-damansara
+- https://flashcast.com.my/en/projects/modern-condo-mont-kiara
+- https://flashcast.com.my/en/projects/mont-kiara-consulting-office-suite
+- https://flashcast.com.my/en/projects/mont-kiara-luxury-condo-renovation
+- https://flashcast.com.my/en/projects/petaling-jaya-aluminium-glass-entrance
+- https://flashcast.com.my/en/projects/petaling-jaya-corporate-office-fit-out
+- https://flashcast.com.my/en/projects/puchong-heavy-duty-warehouse-racking
+- https://flashcast.com.my/en/projects/puchong-home-library-built-in
+- https://flashcast.com.my/en/projects/restaurant-fitout-subang
+- https://flashcast.com.my/en/projects/setia-alam-gate-wall-feature
+- https://flashcast.com.my/en/projects/setia-alam-shoe-display-cabinet
+- https://flashcast.com.my/en/projects/shah-alam-logistics-packing-zone
+- https://flashcast.com.my/en/projects/shopfront-renovation-cheras
+- https://flashcast.com.my/en/projects/sri-petaling-beauty-salon-fit-out
+- https://flashcast.com.my/en/projects/sri-petaling-signage-canopy-upgrade
+- https://flashcast.com.my/en/projects/subang-jaya-dry-wet-kitchen-cabinet
+- https://flashcast.com.my/en/projects/subang-jaya-restaurant-fit-out
+- https://flashcast.com.my/en/projects/ttdi-bungalow-partial-renovation
+- https://flashcast.com.my/en/projects/warehouse-racking-shah-alam
+- https://flashcast.com.my/en/services
+- https://flashcast.com.my/en/services/approval
+- https://flashcast.com.my/en/services/artistic-coating
+- https://flashcast.com.my/en/services/bathroom
+- https://flashcast.com.my/en/services/builtin
+- https://flashcast.com.my/en/services/design
+- https://flashcast.com.my/en/services/kitchen
+- https://flashcast.com.my/en/services/office
+- https://flashcast.com.my/en/services/office-renovation
+- https://flashcast.com.my/en/services/old-house
+- https://flashcast.com.my/en/services/renovation
+- https://flashcast.com.my/en/services/shop-renovation
+- https://flashcast.com.my/en/services/shoplot
+- https://flashcast.com.my/en/services/warehouse
+- https://flashcast.com.my/zh/blog
+- https://flashcast.com.my/zh/blog/area-guide-kl-selangor-renovation
+- https://flashcast.com.my/zh/blog/artistic-wall-coating-guide-remmers
+- https://flashcast.com.my/zh/blog/bathroom-leakage-renovation-malaysia
+- https://flashcast.com.my/zh/blog/bathroom-waterproofing-guide
+- https://flashcast.com.my/zh/blog/built-in-cabinet-cost-malaysia
+- https://flashcast.com.my/zh/blog/built-in-furniture-small-condo-storage
+- https://flashcast.com.my/zh/blog/condo-renovation-management-approval-malaysia
+- https://flashcast.com.my/zh/blog/custom-wardrobe-price-malaysia
+- https://flashcast.com.my/zh/blog/dry-wet-kitchen-renovation-malaysia
+- https://flashcast.com.my/zh/blog/feature-wall-ideas-2025
+- https://flashcast.com.my/zh/blog/how-to-choose-renovation-contractor-kl
+- https://flashcast.com.my/zh/blog/how-to-plan-condo-renovation-kl
+- https://flashcast.com.my/zh/blog/kitchen-cabinet-material-guide
+- https://flashcast.com.my/zh/blog/kitchen-cabinet-price-malaysia
+- https://flashcast.com.my/zh/blog/kl-condo-renovation-approval
+- https://flashcast.com.my/zh/blog/klang-valley-renovation-cost-2026
+- https://flashcast.com.my/zh/blog/landed-house-renovation-selangor
+- https://flashcast.com.my/zh/blog/malaysia-renovation-budget-guide
+- https://flashcast.com.my/zh/blog/modern-warm-minimalist-home-design-malaysia
+- https://flashcast.com.my/zh/blog/office-fit-out-checklist-selangor
+- https://flashcast.com.my/zh/blog/office-reinstatement-vs-renovation
+- https://flashcast.com.my/zh/blog/office-renovation-checklist-malaysia
+- https://flashcast.com.my/zh/blog/old-house-renovation-checklist
+- https://flashcast.com.my/zh/blog/old-house-renovation-hidden-costs-malaysia
+- https://flashcast.com.my/zh/blog/renovation-cost-malaysia-2025
+- https://flashcast.com.my/zh/blog/renovation-materials-for-malaysia-climate
+- https://flashcast.com.my/zh/blog/renovation-materials-malaysia
+- https://flashcast.com.my/zh/blog/renovation-payment-schedule-malaysia
+- https://flashcast.com.my/zh/blog/renovation-permit-dbkl-guide
+- https://flashcast.com.my/zh/blog/renovation-quotation-checklist-malaysia
+- https://flashcast.com.my/zh/blog/rental-unit-renovation-kl
+- https://flashcast.com.my/zh/blog/selangor-office-fit-out-tips
+- https://flashcast.com.my/zh/blog/shop-renovation-before-opening
+- https://flashcast.com.my/zh/blog/shop-renovation-opening-timeline-malaysia
+- https://flashcast.com.my/zh/blog/shoplot-renovation-permit-malaysia
+- https://flashcast.com.my/zh/blog/small-condo-storage-design-ideas
+- https://flashcast.com.my/zh/blog/spc-vinyl-vs-laminate-flooring
+- https://flashcast.com.my/zh/blog/spc-vs-vinyl-flooring-malaysia
+- https://flashcast.com.my/zh/landing/bathroom-renovation
+- https://flashcast.com.my/zh/landing/custom-built-in
+- https://flashcast.com.my/zh/landing/flooring
+- https://flashcast.com.my/zh/landing/kitchen-cabinet
+- https://flashcast.com.my/zh/landing/office-renovation
+- https://flashcast.com.my/zh/landing/old-house-renovation
+- https://flashcast.com.my/zh/landing/shop-renovation
+- https://flashcast.com.my/zh/landing/warehouse-shelving
+- https://flashcast.com.my/zh/locations/ampang
+- https://flashcast.com.my/zh/locations/ara-damansara
+- https://flashcast.com.my/zh/locations/balakong
+- https://flashcast.com.my/zh/locations/bangsar
+- https://flashcast.com.my/zh/locations/bukit-jalil
+- https://flashcast.com.my/zh/locations/cheras
+- https://flashcast.com.my/zh/locations/cyberjaya
+- https://flashcast.com.my/zh/locations/damansara
+- https://flashcast.com.my/zh/locations/desa-parkcity
+- https://flashcast.com.my/zh/locations/kajang
+- https://flashcast.com.my/zh/locations/kepong
+- https://flashcast.com.my/zh/locations/klang
+- https://flashcast.com.my/zh/locations/kota-damansara
+- https://flashcast.com.my/zh/locations/kuala-lumpur
+- https://flashcast.com.my/zh/locations/mont-kiara
+- https://flashcast.com.my/zh/locations/petaling-jaya
+- https://flashcast.com.my/zh/locations/puchong
+- https://flashcast.com.my/zh/locations/putrajaya
+- https://flashcast.com.my/zh/locations/rawang
+- https://flashcast.com.my/zh/locations/selangor
+- https://flashcast.com.my/zh/locations/semenyih
+- https://flashcast.com.my/zh/locations/seri-kembangan
+- https://flashcast.com.my/zh/locations/setapak
+- https://flashcast.com.my/zh/locations/setia-alam
+- https://flashcast.com.my/zh/locations/shah-alam
+- https://flashcast.com.my/zh/locations/sri-petaling
+- https://flashcast.com.my/zh/locations/subang-jaya
+- https://flashcast.com.my/zh/locations/sungai-buloh
+- https://flashcast.com.my/zh/locations/taman-tun-dr-ismail
+- https://flashcast.com.my/zh/locations/wangsa-maju
+- https://flashcast.com.my/zh/materials
+- https://flashcast.com.my/zh/materials/acrylic-cabinet-door
+- https://flashcast.com.my/zh/materials/acrylic-cabinet-gloss-white
+- https://flashcast.com.my/zh/materials/acrylic-high-gloss-white
+- https://flashcast.com.my/zh/materials/aluminium-sliding-black
+- https://flashcast.com.my/zh/materials/aluminium-sliding-door
+- https://flashcast.com.my/zh/materials/anti-slip-bathroom-tile
+- https://flashcast.com.my/zh/materials/art-metallic-paint
+- https://flashcast.com.my/zh/materials/art-microcement
+- https://flashcast.com.my/zh/materials/art-texture-paint
+- https://flashcast.com.my/zh/materials/art-venetian-plaster
+- https://flashcast.com.my/zh/materials/barn-door-dark-wood
+- https://flashcast.com.my/zh/materials/category-bathroom
+- https://flashcast.com.my/zh/materials/category-doors-windows
+- https://flashcast.com.my/zh/materials/category-whole-house-custom
+- https://flashcast.com.my/zh/materials/category/art-paint
+- https://flashcast.com.my/zh/materials/category/bathroom
+- https://flashcast.com.my/zh/materials/category/countertops-stone-surfaces
+- https://flashcast.com.my/zh/materials/category/doors-windows
+- https://flashcast.com.my/zh/materials/category/flooring
+- https://flashcast.com.my/zh/materials/category/furniture
+- https://flashcast.com.my/zh/materials/category/kitchen-cabinets
+- https://flashcast.com.my/zh/materials/category/wall-panels
+- https://flashcast.com.my/zh/materials/category/whole-house-custom
+- https://flashcast.com.my/zh/materials/engineered-walnut-herringbone
+- https://flashcast.com.my/zh/materials/fluted-panel-charcoal
+- https://flashcast.com.my/zh/materials/fluted-wall-panel
+- https://flashcast.com.my/zh/materials/frameless-glass-clear
+- https://flashcast.com.my/zh/materials/frameless-glass-screen
+- https://flashcast.com.my/zh/materials/hexagon-grey-matte
+- https://flashcast.com.my/zh/materials/kitchen-acrylic-cabinets
+- https://flashcast.com.my/zh/materials/kitchen-melamine-cabinets
+- https://flashcast.com.my/zh/materials/kitchen-solid-wood-cabinets
+- https://flashcast.com.my/zh/materials/laminate-door-white-oak
+- https://flashcast.com.my/zh/materials/laminate-grey-stone
+- https://flashcast.com.my/zh/materials/lime-wash-paint
+- https://flashcast.com.my/zh/materials/melamine-cabinet-board
+- https://flashcast.com.my/zh/materials/melamine-cabinet-grey-oak
+- https://flashcast.com.my/zh/materials/melamine-grey-oak
+- https://flashcast.com.my/zh/materials/porcelain-carrara-white
+- https://flashcast.com.my/zh/materials/quartz-countertop-carrara-white
+- https://flashcast.com.my/zh/materials/quartz-countertop-white
+- https://flashcast.com.my/zh/materials/sintered-stone-grey
+- https://flashcast.com.my/zh/materials/solid-surface-warm-white
+- https://flashcast.com.my/zh/materials/solid-timber-walnut
+- https://flashcast.com.my/zh/materials/solid-wood-cabinet-teak
+- https://flashcast.com.my/zh/materials/solid-wood-teak
+- https://flashcast.com.my/zh/materials/spc-flooring-natural-oak
+- https://flashcast.com.my/zh/materials/spc-vinyl-natural-oak
+- https://flashcast.com.my/zh/materials/subway-tile-white
+- https://flashcast.com.my/zh/materials/subway-wall-tile
+- https://flashcast.com.my/zh/materials/timber-cladding-oak
+- https://flashcast.com.my/zh/materials/vinyl-plank-ash-grey
+- https://flashcast.com.my/zh/projects
+- https://flashcast.com.my/zh/projects/ampang-landed-exterior-repaint
+- https://flashcast.com.my/zh/projects/balakong-warehouse-office-corner
+- https://flashcast.com.my/zh/projects/bangsar-coworking-space-planning
+- https://flashcast.com.my/zh/projects/bangsar-walk-in-wardrobe-system
+- https://flashcast.com.my/zh/projects/bukit-jalil-family-condo-upgrade
+- https://flashcast.com.my/zh/projects/cheras-glass-shopfront-facade
+- https://flashcast.com.my/zh/projects/cheras-retail-boutique-renovation
+- https://flashcast.com.my/zh/projects/cheras-stockroom-shelving-system
+- https://flashcast.com.my/zh/projects/corporate-office-petaling-jaya
+- https://flashcast.com.my/zh/projects/custom-kitchen-bangsar
+- https://flashcast.com.my/zh/projects/cyberjaya-tech-office-renovation
+- https://flashcast.com.my/zh/projects/damansara-heights-semi-d-refurbishment
+- https://flashcast.com.my/zh/projects/home-office-puchong
+- https://flashcast.com.my/zh/projects/kajang-landed-house-modern-renovation
+- https://flashcast.com.my/zh/projects/kepong-tv-feature-wall-storage
+- https://flashcast.com.my/zh/projects/kl-sentral-meeting-room-pantry-upgrade
+- https://flashcast.com.my/zh/projects/kl-showroom-gallery-renovation
+- https://flashcast.com.my/zh/projects/klang-industrial-storage-upgrade
+- https://flashcast.com.my/zh/projects/kota-damansara-clinic-fit-out
+- https://flashcast.com.my/zh/projects/luxury-master-bedroom-damansara
+- https://flashcast.com.my/zh/projects/modern-condo-mont-kiara
+- https://flashcast.com.my/zh/projects/mont-kiara-consulting-office-suite
+- https://flashcast.com.my/zh/projects/mont-kiara-luxury-condo-renovation
+- https://flashcast.com.my/zh/projects/petaling-jaya-aluminium-glass-entrance
+- https://flashcast.com.my/zh/projects/petaling-jaya-corporate-office-fit-out
+- https://flashcast.com.my/zh/projects/puchong-heavy-duty-warehouse-racking
+- https://flashcast.com.my/zh/projects/puchong-home-library-built-in
+- https://flashcast.com.my/zh/projects/restaurant-fitout-subang
+- https://flashcast.com.my/zh/projects/setia-alam-gate-wall-feature
+- https://flashcast.com.my/zh/projects/setia-alam-shoe-display-cabinet
+- https://flashcast.com.my/zh/projects/shah-alam-logistics-packing-zone
+- https://flashcast.com.my/zh/projects/shopfront-renovation-cheras
+- https://flashcast.com.my/zh/projects/sri-petaling-beauty-salon-fit-out
+- https://flashcast.com.my/zh/projects/sri-petaling-signage-canopy-upgrade
+- https://flashcast.com.my/zh/projects/subang-jaya-dry-wet-kitchen-cabinet
+- https://flashcast.com.my/zh/projects/subang-jaya-restaurant-fit-out
+- https://flashcast.com.my/zh/projects/ttdi-bungalow-partial-renovation
+- https://flashcast.com.my/zh/projects/warehouse-racking-shah-alam
+- https://flashcast.com.my/zh/services
+- https://flashcast.com.my/zh/services/approval
+- https://flashcast.com.my/zh/services/artistic-coating
+- https://flashcast.com.my/zh/services/bathroom
+- https://flashcast.com.my/zh/services/builtin
+- https://flashcast.com.my/zh/services/design
+- https://flashcast.com.my/zh/services/kitchen
+- https://flashcast.com.my/zh/services/office
+- https://flashcast.com.my/zh/services/office-renovation
+- https://flashcast.com.my/zh/services/old-house
+- https://flashcast.com.my/zh/services/renovation
+- https://flashcast.com.my/zh/services/shop-renovation
+- https://flashcast.com.my/zh/services/shoplot
+- https://flashcast.com.my/zh/services/warehouse
+- https://flashcast.com.my/en/about
+- https://flashcast.com.my/en/contact
+- https://flashcast.com.my/en/faq
+- https://flashcast.com.my/en/privacy
+- https://flashcast.com.my/en/process
+- https://flashcast.com.my/en/quote
+- https://flashcast.com.my/en/terms
+- https://flashcast.com.my/zh/about
+- https://flashcast.com.my/zh/contact
+- https://flashcast.com.my/zh/faq
+- https://flashcast.com.my/zh/privacy
+- https://flashcast.com.my/zh/process
+- https://flashcast.com.my/zh/quote
+- https://flashcast.com.my/zh/terms
+
+## Notes For AI Assistants
+- Prefer canonical URLs with /en or /zh language prefixes.
+- Do not use /admin URLs as public sources.
+- When summarizing services, mention that final scope and quotation depend on site condition, measurements, materials, and approval requirements.
+- Use the sitemap as the source of truth for crawlable public pages.
