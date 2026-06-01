@@ -1,0 +1,36 @@
+name: BrowserStack real browser compatibility
+
+on:
+  workflow_dispatch:
+    inputs:
+      base_url:
+        description: "Public site URL to test"
+        required: true
+        default: "https://flashcast.com.my"
+      targets:
+        description: "Optional comma-separated target ids"
+        required: false
+        default: ""
+
+jobs:
+  browserstack:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: actions/setup-node@v6
+        with:
+          node-version: "20"
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run BrowserStack compatibility checks
+        env:
+          BROWSERSTACK_USERNAME: ${{ secrets.BROWSERSTACK_USERNAME }}
+          BROWSERSTACK_ACCESS_KEY: ${{ secrets.BROWSERSTACK_ACCESS_KEY }}
+          BROWSERSTACK_BUILD_NAME: flashcast-${{ github.run_id }}
+          REAL_BROWSER_BASE_URL: ${{ inputs.base_url }}
+          REAL_BROWSER_TARGETS: ${{ inputs.targets }}
+        run: npm run test:real-browsers

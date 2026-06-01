@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, type MouseEvent } from "react";
+import { useCallback, useEffect, useRef, useState, type MouseEvent } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { ArrowRight, BookOpen, FolderOpen, GitBranch, ChevronRight, Globe, HelpCircle, Home, Info, Layers, LucideIcon, Mail, Menu, Phone, Wrench, X } from "lucide-react";
 import WhatsAppIcon from "@/components/WhatsAppIcon";
@@ -33,6 +33,31 @@ const navItems: NavItem[] = [
   { labelKey: "nav.contact", path: "/contact", icon: Mail },
 ];
 
+const MOBILE_MENU_CLOSE_MS = 190;
+
+const routePreloaders: Partial<Record<string, () => Promise<unknown>>> = {
+  "/about": () => import("@/pages/About"),
+  "/services": () => import("@/pages/Services"),
+  "/materials": () => import("@/pages/Materials"),
+  "/projects": () => import("@/pages/Projects"),
+  "/process": () => import("@/pages/Process"),
+  "/blog": () => import("@/pages/Blog"),
+  "/contact": () => import("@/pages/Contact"),
+  "/quote": () => import("@/pages/Quote"),
+};
+
+const preloadPublicRoute = (path: string) => {
+  const preload = routePreloaders[path];
+  if (!preload) return;
+
+  void preload().catch(() => undefined);
+};
+
+const getMobileMenuCloseDelay = () => {
+  if (typeof window === "undefined" || !window.matchMedia) return MOBILE_MENU_CLOSE_MS;
+  return window.matchMedia("(prefers-reduced-motion: reduce)").matches ? 0 : MOBILE_MENU_CLOSE_MS;
+};
+
 const isActivePath = (pathname: string, itemPath: string) => {
   if (itemPath === "/") return /^\/(en|zh)\/?$/.test(pathname);
   return pathname.endsWith(itemPath) || pathname.includes(`${itemPath}/`);
@@ -41,8 +66,11 @@ const isActivePath = (pathname: string, itemPath: string) => {
 const Navbar = () => {
   const { menuOpen: isOpen, setMenuOpen: setIsOpen } = usePublicChrome();
   const [scrolled, setScrolled] = useState(false);
+  const [isMenuClosing, setIsMenuClosing] = useState(false);
+  const [pendingPath, setPendingPath] = useState<string | null>(null);
   const [logoState, setLogoState] = useState<"primary" | "fallback" | "none">("primary");
   const mobileMenuRef = useRef<HTMLDivElement>(null);
+  const mobileCloseTimerRef = useRef<number | null>(null);
   const location = useLocation();
   const navigate = useNavigate();
   const { language, setLanguage } = useLanguage();
@@ -59,6 +87,40 @@ const Navbar = () => {
     setLogoState("primary");
   }, [primaryLogoSrc]);
 
+  const clearMobileCloseTimer = useCallback(() => {
+    if (mobileCloseTimerRef.current === null) return;
+    window.clearTimeout(mobileCloseTimerRef.current);
+    mobileCloseTimerRef.current = null;
+  }, []);
+
+  const openMobileMenu = useCallback(() => {
+    clearMobileCloseTimer();
+    setPendingPath(null);
+    setIsMenuClosing(false);
+    setIsOpen(true);
+  }, [clearMobileCloseTimer, setIsOpen]);
+
+  const closeMobileMenu = useCallback((afterClose?: () => void) => {
+    if (!isOpen) {
+      afterClose?.();
+      return;
+    }
+
+    clearMobileCloseTimer();
+    mobileMenuRef.current?.setAttribute("data-state", "closing");
+    setIsMenuClosing(true);
+
+    mobileCloseTimerRef.current = window.setTimeout(() => {
+      setIsOpen(false);
+      setIsMenuClosing(false);
+      setPendingPath(null);
+      mobileCloseTimerRef.current = null;
+      afterClose?.();
+    }, getMobileMenuCloseDelay());
+  }, [clearMobileCloseTimer, isOpen, setIsOpen]);
+
+  useEffect(() => () => clearMobileCloseTimer(), [clearMobileCloseTimer]);
+
   const changeLanguage = () => {
     const nextLanguage = language === "en" ? "zh" : "en";
     setLanguage(nextLanguage);
@@ -72,8 +134,11 @@ const Navbar = () => {
   }, []);
 
   useEffect(() => {
+    clearMobileCloseTimer();
+    setIsMenuClosing(false);
+    setPendingPath(null);
     setIsOpen(false);
-  }, [location.pathname, setIsOpen]);
+  }, [clearMobileCloseTimer, location.pathname, setIsOpen]);
 
   useEffect(() => {
     if (isOpen) {
@@ -93,13 +158,13 @@ const Navbar = () => {
 
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === "Escape") {
-        setIsOpen(false);
+        closeMobileMenu();
       }
     };
 
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [isOpen, setIsOpen]);
+  }, [closeMobileMenu, isOpen]);
 
   const languageAriaLabel = language === "zh" ? "切换语言" : "Switch language";
   const menuAriaLabel = language === "zh" ? "打开导航菜单" : "Toggle navigation menu";
@@ -110,6 +175,24 @@ const Navbar = () => {
   const handleNavClick = (event: MouseEvent<HTMLAnchorElement>, itemPath: string) => {
     const targetPath = withLanguagePrefix(itemPath, language);
     const isSamePath = stripLanguagePrefix(location.pathname) === itemPath;
+
+    preloadPublicRoute(itemPath);
+
+    if (isOpen) {
+      event.preventDefault();
+      setPendingPath(itemPath);
+      closeMobileMenu(() => {
+        if (!isSamePath) {
+          navigate(targetPath);
+          return;
+        }
+
+        window.requestAnimationFrame(() => {
+          window.scrollTo({ top: 0, behavior: "smooth" });
+        });
+      });
+      return;
+    }
 
     if (!isSamePath) {
       setIsOpen(false);
@@ -164,6 +247,8 @@ const Navbar = () => {
                   key={item.path}
                   to={item.path}
                   onClick={(event) => handleNavClick(event, item.path)}
+                  onFocus={() => preloadPublicRoute(item.path)}
+                  onPointerEnter={() => preloadPublicRoute(item.path)}
                   aria-current={isActive ? "page" : undefined}
                   className={`relative whitespace-nowrap px-3 py-2.5 text-xs font-medium transition-colors 2xl:text-[13px] ${isActive ? "text-foreground" : "text-foreground/70 hover:text-foreground"}`}
                 >
@@ -236,7 +321,7 @@ const Navbar = () => {
               </a>
               <button
                 className="site-header__mobile-button flex h-10 w-10 items-center justify-center rounded-full text-foreground transition-colors active:bg-muted/70"
-                onClick={() => setIsOpen(!isOpen)}
+                onClick={() => (isOpen ? closeMobileMenu() : openMobileMenu())}
                 aria-label={menuAriaLabel}
                 aria-expanded={isOpen}
                 aria-controls="mobile-navigation"
@@ -252,7 +337,8 @@ const Navbar = () => {
         <div
           id="mobile-navigation"
           ref={mobileMenuRef}
-          className="fixed inset-x-0 bottom-0 top-12 flex flex-col border-t border-border/70 bg-[hsl(var(--background))] shadow-[0_-24px_80px_-56px_rgba(21,18,14,0.45)] md:top-16 xl:hidden"
+          data-state={isMenuClosing ? "closing" : "open"}
+          className="mobile-navigation fixed inset-x-0 bottom-0 top-12 flex flex-col border-t border-border/70 bg-[hsl(var(--background))] shadow-[0_-24px_80px_-56px_rgba(21,18,14,0.45)] md:top-16 xl:hidden"
           style={{ zIndex: PUBLIC_CHROME_Z.mobileMenu }}
         >
           <div className="min-h-0 flex-1 overflow-y-auto px-4 py-4">
@@ -265,13 +351,16 @@ const Navbar = () => {
                     key={item.path}
                     to={item.path}
                     onClick={(event) => handleNavClick(event, item.path)}
+                    onFocus={() => preloadPublicRoute(item.path)}
+                    onPointerEnter={() => preloadPublicRoute(item.path)}
+                    onTouchStart={() => preloadPublicRoute(item.path)}
                     aria-current={isActive ? "page" : undefined}
                     style={{ animationDelay: `${index * 40}ms` }}
-                    className={`relative flex min-h-[62px] items-center gap-3 overflow-hidden rounded-card border px-3 text-[15px] font-medium opacity-0 shadow-[0_14px_34px_-30px_rgba(21,18,14,0.38)] animate-fade-in [animation-fill-mode:forwards] ${
+                    className={`mobile-nav-link relative flex min-h-[62px] items-center gap-3 overflow-hidden rounded-card border px-3 text-[15px] font-medium opacity-0 shadow-[0_14px_34px_-30px_rgba(21,18,14,0.38)] animate-fade-in [animation-fill-mode:forwards] ${
                       isActive
                         ? "border-gold/45 bg-[#17120d] text-white shadow-[0_18px_48px_-32px_rgba(21,18,14,0.82)]"
                         : "border-border/60 bg-card/80 text-foreground/80 active:bg-card"
-                    }`}
+                    } ${pendingPath === item.path ? "mobile-nav-link--pending" : ""}`}
                   >
                     {isActive && <span className="absolute inset-y-3 left-0 w-1 rounded-r-full bg-gold" aria-hidden="true" />}
                     <span
@@ -296,7 +385,13 @@ const Navbar = () => {
             <Button size="lg" className="h-12 w-full justify-center text-sm font-semibold" asChild>
               <LocalizedLink
                 to="/quote"
-                onClick={() => trackCtaClick("quote", "mobile_menu", { destination: "/quote" })}
+                onClick={(event) => {
+                  trackCtaClick("quote", "mobile_menu", { destination: "/quote" });
+                  handleNavClick(event, "/quote");
+                }}
+                onFocus={() => preloadPublicRoute("/quote")}
+                onPointerEnter={() => preloadPublicRoute("/quote")}
+                onTouchStart={() => preloadPublicRoute("/quote")}
               >
                 {t("cta.getQuote")}
               </LocalizedLink>

@@ -9,6 +9,39 @@
   }
 }
 
+@keyframes mobile-menu-enter {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 0.85rem, 0);
+  }
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+@keyframes mobile-menu-exit {
+  from {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+  to {
+    opacity: 0;
+    transform: translate3d(0, 0.7rem, 0);
+  }
+}
+
+@keyframes page-soft-enter {
+  from {
+    opacity: 0.94;
+    transform: translate3d(0, 0.45rem, 0);
+  }
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+}
+
 @keyframes page-hero-image-in {
   from {
     opacity: 0.92;
@@ -205,6 +238,37 @@ html {
   scroll-behavior: smooth;
 }
 
+.mobile-navigation {
+  animation: mobile-menu-enter 260ms cubic-bezier(0.19, 1, 0.22, 1) both;
+  will-change: opacity, transform;
+}
+
+.mobile-navigation[data-state="closing"] {
+  pointer-events: none;
+  animation: mobile-menu-exit 190ms cubic-bezier(0.4, 0, 0.2, 1) both;
+}
+
+.mobile-nav-link {
+  transform: translate3d(0, 0, 0);
+  transition:
+    transform 180ms ease,
+    background-color 180ms ease,
+    border-color 180ms ease,
+    box-shadow 180ms ease;
+}
+
+.mobile-nav-link--pending {
+  transform: translate3d(0, 1px, 0) scale(0.992);
+  border-color: hsl(var(--gold) / 0.38);
+  background: hsl(var(--card) / 0.96);
+  box-shadow: 0 18px 42px -32px rgba(21, 18, 14, 0.62);
+}
+
+.public-main-transition {
+  animation: page-soft-enter 280ms 40ms cubic-bezier(0.19, 1, 0.22, 1) both;
+  will-change: opacity, transform;
+}
+
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,
@@ -216,5 +280,11 @@ html {
 
   html {
     scroll-behavior: auto;
+  }
+
+  .mobile-navigation,
+  .mobile-navigation[data-state="closing"],
+  .public-main-transition {
+    animation: none !important;
   }
 }

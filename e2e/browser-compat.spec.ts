@@ -188,4 +188,23 @@ test.describe("mainstream browser compatibility", () => {
     await expect(page.locator("#quote-location")).toHaveValue("Kuala Lumpur");
     await expect(page.locator("#quote-details")).toHaveValue("Compatibility smoke test");
   });
+
+  test("mobile menu navigation closes cleanly before route change", async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.goto("/zh", { waitUntil: "domcontentloaded" });
+    await page.waitForLoadState("load");
+
+    const mobileMenuButton = page.locator('button[aria-controls="mobile-navigation"]');
+    await expect(mobileMenuButton).toBeVisible();
+    await mobileMenuButton.click();
+
+    const mobileNavigation = page.locator("#mobile-navigation");
+    await expect(mobileNavigation).toBeVisible();
+    await mobileNavigation.locator('a[href*="/services"]').first().click();
+
+    await expect(page).toHaveURL(/\/zh\/services$/);
+    await expect(mobileNavigation).toBeHidden();
+    await expect(page.locator("main")).toBeVisible();
+    await expect(page.locator("html")).not.toHaveAttribute("data-menu-open", "true");
+  });
 });

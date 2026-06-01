@@ -108,6 +108,9 @@ const AppShell = () => {
     : isHomeRoute
       ? "public-main public-main--home"
       : "public-main public-main--subpage";
+  const publicMainTransitionClass = !isAdminRoute ? "public-main-transition" : undefined;
+  const mainContentClass = [publicMainClass, publicMainTransitionClass].filter(Boolean).join(" ") || undefined;
+  const mainContentKey = isAdminRoute ? "admin-main-content" : location.pathname;
 
   return (
     <PublicChromeProvider isAdminRoute={isAdminRoute} isHomeRoute={isHomeRoute}>
@@ -120,7 +123,7 @@ const AppShell = () => {
       )}
       {!isAdminRoute && <Navbar />}
       <PublicPageFrame isAdminRoute={isAdminRoute}>
-        <div id="main-content" tabIndex={-1} className={publicMainClass}>
+        <div key={mainContentKey} id="main-content" tabIndex={-1} className={mainContentClass}>
           <AppErrorBoundary isAdminRoute={isAdminRoute}>
           <Suspense fallback={<PageLoader />}>
             <Routes>

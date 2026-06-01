@@ -262,7 +262,6 @@
   .public-page-frame[data-menu-inert="true"] {
     pointer-events: none;
     user-select: none;
-    visibility: hidden;
   }
 
   @supports not (mix-blend-mode: difference) {
