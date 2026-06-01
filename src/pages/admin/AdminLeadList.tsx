@@ -15,6 +15,7 @@ import {
 } from "@/lib/adminLeadWorkflow";
 import { translateStatusLabel } from "@/i18n/displayLabels";
 import { telHrefFromPhone, whatsappHrefFromPhone } from "@/lib/contactLinks";
+import { toast } from "@/hooks/use-toast";
 
 const statuses = ["all", "new", "contacted", "site_visit_scheduled", "quoted", "converted", "closed", "spam"];
 
@@ -85,6 +86,7 @@ const AdminLeadList = () => {
     link.download = `leads-${new Date().toISOString().slice(0, 10)}.csv`;
     link.click();
     URL.revokeObjectURL(url);
+    toast({ title: "已导出当前页 CSV", description: `本次导出 ${rows.length} 条，当前筛选结果共 ${total} 条。` });
   };
 
   return (
@@ -94,8 +96,8 @@ const AdminLeadList = () => {
         description="查看联系页提交的客户咨询，筛选状态后可以直接跟进、拨号或导出。"
         helpText="这里收的是客户自己在联系页留下的信息，适合先沟通需求、再安排跟进。"
         actions={
-          <Button variant="outline" onClick={exportCsv} disabled={rows.length === 0}>
-            {t.exportCsv}
+          <Button type="button" variant="outline" onClick={exportCsv} disabled={rows.length === 0} title={`导出当前页 ${rows.length} 条，不是全部 ${total} 条。`}>
+            {lang === "zh" ? `导出当前页 CSV（${rows.length}/${total}）` : `${t.exportCsv} current page (${rows.length}/${total})`}
           </Button>
         }
       />

@@ -31,6 +31,7 @@ const tables = [
   "before_after_items",
   "cta_blocks",
   "cms_pages",
+  "site_settings",
 ];
 
 const genericPatterns = [
@@ -40,6 +41,7 @@ const genericPatterns = [
   /Quote by size/i,
   /material only/i,
   /coming soon|lorem ipsum|TODO|TBD/i,
+  /[鍝绯闂澧榫甯鐢閫犵煶]{2,}/,
 ];
 
 const importantTextFields = [
@@ -95,9 +97,8 @@ async function urlOk(url) {
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), 9000);
   try {
-    const cleanUrl = url.replace(/\?.*$/, "");
-    let response = await fetch(cleanUrl, { method: "HEAD", signal: controller.signal });
-    if (!response.ok || response.status === 405) response = await fetch(cleanUrl, { method: "GET", signal: controller.signal });
+    let response = await fetch(url, { method: "HEAD", signal: controller.signal });
+    if (!response.ok || response.status === 405) response = await fetch(url, { method: "GET", signal: controller.signal });
     return response.ok && response.headers.get("content-type")?.startsWith("image/");
   } catch {
     return false;
@@ -182,6 +183,17 @@ for (const table of tables) {
       textIndex.set(key, list);
     }
   }
+}
+
+const publishedBrandCount = (rowsByTable.brand_partners || []).filter((row) => row.status === "published" && normalizeUrl(row.logo_url)).length;
+if (publishedBrandCount < 8) {
+  issues.push({
+    severity: "review",
+    type: "brand_grid_incomplete",
+    table: "brand_partners",
+    expected: 8,
+    count: publishedBrandCount,
+  });
 }
 
 for (const [key, rows] of textIndex.entries()) {

@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { isSupabaseConfigured } from "@/lib/supabase";
 import AdminImageUpload, { getAdminImagePreviewVariant } from "./AdminImageUpload";
+import { adminConfirm } from "@/components/admin/AdminConfirmProvider";
 import { adminStatusLabel, publishStatusOptions } from "@/lib/adminLocale";
 import { AdminFieldLabel } from "@/components/admin/AdminHelpTip";
 import { TextListEditor } from "@/components/admin/StructuredArrayEditors";
@@ -151,22 +152,28 @@ const AdminSimpleCms = ({ module }: { module: ModuleKey }) => {
     setRecordDirty(false);
   };
 
-  const confirmDiscardUnsaved = () =>
-    !recordDirtyRef.current || window.confirm("当前内容还没有保存，继续切换会丢失这些修改。确定继续吗？");
+  const confirmDiscardUnsaved = async () => {
+    if (!recordDirtyRef.current) return true;
+    return adminConfirm({
+      title: "当前内容还没有保存",
+      description: "继续切换会丢失这些修改。建议先保存；如果确定不需要这次修改，可以继续切换。",
+      confirmLabel: "继续切换",
+    });
+  };
 
   const update = (key: string, value: unknown) => {
     markRecordDirty();
     setRecord((current) => ({ ...current, [key]: value }));
   };
 
-  const loadRecord = (row: Record<string, any>) => {
-    if (!confirmDiscardUnsaved()) return;
+  const loadRecord = async (row: Record<string, any>) => {
+    if (!(await confirmDiscardUnsaved())) return;
     markRecordClean();
     setRecord(row);
   };
 
-  const resetRecord = () => {
-    if (!confirmDiscardUnsaved()) return;
+  const resetRecord = async () => {
+    if (!(await confirmDiscardUnsaved())) return;
     markRecordClean();
     setRecord({ ...emptyRecord });
   };
@@ -215,7 +222,12 @@ const AdminSimpleCms = ({ module }: { module: ModuleKey }) => {
 
   const remove = async (id: string) => {
     if (!isSupabaseConfigured || deletingId) return;
-    if (!window.confirm("确认要归档/删除这条内容吗？重要内容会优先归档，避免误删。")) return;
+    const confirmed = await adminConfirm({
+      title: "确认归档/删除内容？",
+      description: "重要内容会优先归档，避免误删。操作后前台展示可能会变化，请确认当前内容不再需要展示。",
+      confirmLabel: "归档/删除",
+    });
+    if (!confirmed) return;
     const current = rows.find((row) => String(row.id) === String(id)) as Record<string, any> | undefined;
     setDeletingId(id);
     try {
@@ -299,7 +311,7 @@ const AdminSimpleCms = ({ module }: { module: ModuleKey }) => {
             <p className="mt-1 text-sm text-muted-foreground">{getAdminTableHelp(config.table)}</p>
             {message && <p className="mt-2 rounded-lg bg-muted p-3 text-sm">{message}</p>}
           </div>
-          <Button type="button" variant="outline" onClick={resetRecord}>
+          <Button type="button" variant="outline" onClick={() => void resetRecord()}>
             新建
           </Button>
         </div>
@@ -318,7 +330,7 @@ const AdminSimpleCms = ({ module }: { module: ModuleKey }) => {
                   <p className="text-xs text-muted-foreground">状态：{adminStatusLabel("default", status)} | 排序 {String(sortOrder)}</p>
                 </div>
                 <div className="flex gap-2">
-                  <Button type="button" variant="outline" size="sm" onClick={() => loadRecord(row)}>
+                  <Button type="button" variant="outline" size="sm" onClick={() => void loadRecord(row)}>
                     编辑
                   </Button>
                   <Button type="button" variant="destructive" size="sm" disabled={deletingId === rowId} onClick={() => void remove(rowId)}>

@@ -46,6 +46,11 @@ test.describe("admin access guard", () => {
     await page.goto("/admin/system-health", { waitUntil: "domcontentloaded" });
     await page.waitForURL("**/admin", { timeout: 15_000 });
   });
+
+  test("unauthenticated lead reports page redirects to /admin", async ({ page }) => {
+    await page.goto("/admin/lead-reports", { waitUntil: "domcontentloaded" });
+    await page.waitForURL("**/admin", { timeout: 15_000 });
+  });
 });
 
 test.describe("admin authenticated smoke", () => {

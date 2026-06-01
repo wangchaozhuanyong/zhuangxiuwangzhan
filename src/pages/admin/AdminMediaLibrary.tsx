@@ -21,6 +21,9 @@ import {
 import SmartImage from "@/components/SmartImage";
 import AdminImageUpload from "./AdminImageUpload";
 import AdminVideoUpload from "./AdminVideoUpload";
+import AdminConfirmDialog from "@/components/admin/AdminConfirmDialog";
+import { toast } from "@/hooks/use-toast";
+import { formatAdminMutationError } from "@/lib/adminMutation";
 
 const usageTypes = ["all", "hero", "project", "material", "blog", "logo", "og", "before_after", "video", "general"] as const;
 type UsageType = (typeof usageTypes)[number];
@@ -55,6 +58,7 @@ const AdminMediaLibrary = () => {
   const total = data?.count ?? 0;
   const pageSize = data?.pageSize ?? 30;
   const [editing, setEditing] = useState<AdminMediaAsset | null>(null);
+  const [assetToDelete, setAssetToDelete] = useState<AdminMediaAsset | null>(null);
   const [message, setMessage] = useState("");
   const createMutation = useCreateAdminMediaAsset();
   const updateMutation = useUpdateAdminMediaAsset();
@@ -73,8 +77,9 @@ const AdminMediaLibrary = () => {
         usageType: usageType === "all" ? (upload?.kind === "video" ? "video" : "general") : usageType,
         folder: upload?.kind === "video" ? "videos" : "media",
       });
+      toast({ title: "媒体记录已创建" });
     } catch (e) {
-      setMessage(e instanceof Error ? e.message : "创建媒体记录失败");
+      setMessage(formatAdminMutationError(e));
     }
   };
 
@@ -84,17 +89,30 @@ const AdminMediaLibrary = () => {
     try {
       await updateMutation.mutateAsync(editing);
       setEditing(null);
+      toast({ title: "媒体信息已保存" });
     } catch (e) {
-      setMessage(e instanceof Error ? e.message : "保存失败");
+      setMessage(formatAdminMutationError(e));
     }
   };
 
-  const deleteAsset = async (id: string) => {
+  const deleteAsset = async () => {
+    if (!assetToDelete) return;
     setMessage("");
     try {
-      await deleteMutation.mutateAsync(id);
+      await deleteMutation.mutateAsync(assetToDelete.id);
+      toast({ title: "媒体记录已删除", description: "这里只删除后台媒体记录，不会自动删除已经上传的真实文件。" });
+      setAssetToDelete(null);
     } catch (e) {
-      setMessage(e instanceof Error ? e.message : "删除失败");
+      setMessage(formatAdminMutationError(e));
+    }
+  };
+
+  const copyAssetUrl = async (url: string) => {
+    try {
+      await navigator.clipboard.writeText(url);
+      toast({ title: "链接已复制" });
+    } catch {
+      setMessage("复制失败，请手动复制图片地址。");
     }
   };
 
@@ -167,9 +185,9 @@ const AdminMediaLibrary = () => {
                   <div>{status.detail}</div>
                 </div>
                 <div className="flex flex-wrap gap-2">
-                  <Button size="sm" variant="outline" onClick={() => navigator.clipboard.writeText(asset.file_url)}>复制链接</Button>
-                  <Button size="sm" variant="outline" onClick={() => setEditing(asset)}>编辑</Button>
-                  <Button size="sm" variant="outline" onClick={() => void deleteAsset(asset.id)}>删除记录</Button>
+                  <Button type="button" size="sm" variant="outline" onClick={() => void copyAssetUrl(asset.file_url)}>复制链接</Button>
+                  <Button type="button" size="sm" variant="outline" onClick={() => setEditing(asset)}>编辑</Button>
+                  <Button type="button" size="sm" variant="outline" onClick={() => setAssetToDelete(asset)}>删除记录</Button>
                 </div>
               </div>
             </article>
@@ -193,12 +211,25 @@ const AdminMediaLibrary = () => {
               <Textarea rows={3} value={editing.alt_en || ""} onChange={(event) => setEditing({ ...editing, alt_en: event.target.value })} placeholder="英文图片说明" />
             </div>
             <div className="mt-5 flex justify-end gap-2">
-              <Button variant="outline" onClick={() => setEditing(null)}>取消</Button>
-              <Button onClick={() => void saveAsset()}>保存</Button>
+              <Button type="button" variant="outline" onClick={() => setEditing(null)}>取消</Button>
+              <Button type="button" onClick={() => void saveAsset()} disabled={updateMutation.isPending} aria-busy={updateMutation.isPending}>
+                {updateMutation.isPending ? "保存中..." : "保存"}
+              </Button>
             </div>
           </div>
         </div>
       )}
+      <AdminConfirmDialog
+        open={Boolean(assetToDelete)}
+        onOpenChange={(open) => {
+          if (!open) setAssetToDelete(null);
+        }}
+        title="确认删除媒体记录？"
+        description="这一步只删除后台媒体库里的记录，不会自动删除已经上传到存储桶的真实文件。删除前请确认前台页面没有继续依赖这条媒体记录。"
+        confirmLabel="删除记录"
+        loading={deleteMutation.isPending}
+        onConfirm={deleteAsset}
+      />
     </div>
   );
 };

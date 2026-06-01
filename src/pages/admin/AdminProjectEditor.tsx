@@ -13,6 +13,7 @@ import AdminStickyActionBar from "@/components/admin/AdminStickyActionBar";
 import AdminPageHeader from "@/components/admin/AdminPageHeader";
 import AdminFormSection from "@/components/admin/AdminFormSection";
 import AdminEmptyState from "@/components/admin/AdminEmptyState";
+import { adminConfirm } from "@/components/admin/AdminConfirmProvider";
 import ImageField from "@/components/admin/ImageField";
 import { invalidateAdminContentDetail, invalidateAfterAdminContentSave } from "@/lib/adminInvalidate";
 import { useAdminProjectDetail } from "@/lib/adminQueries";
@@ -235,6 +236,17 @@ export default function AdminProjectEditor() {
     }
   };
 
+  const forceRegenerateEnglish = async () => {
+    const confirmed = await adminConfirm({
+      title: "确认重新生成英文？",
+      description: "这会覆盖已有英文内容。建议只在当前英文内容明显不准，或中文内容大幅调整后使用。",
+      confirmLabel: "重新生成",
+    });
+    if (confirmed) {
+      await save(undefined, true, true);
+    }
+  };
+
   if (!isSupabaseConfigured) {
     return <AdminEmptyState title="Supabase 未配置" description="配置完成后才能使用案例后台编辑器。" />;
   }
@@ -274,7 +286,7 @@ export default function AdminProjectEditor() {
               action="content.write"
               type="button"
               variant="outline"
-              onClick={() => window.confirm("这会覆盖已有英文内容，确定要重新生成吗？") && void save(undefined, true, true)}
+              onClick={() => void forceRegenerateEnglish()}
               disabled={saveBusy || isLoading || !record.id}
             >
               强制重新生成英文

@@ -19,6 +19,7 @@ import type { CtaRow, FaqRow, HomeSectionRow, ProcessStepRow } from "@/lib/admin
 import { useAdminHomeEditorData } from "@/lib/adminQueries";
 import { translateFieldLabel } from "@/i18n/displayLabels";
 import { adminStatusLabel, getAdminLang, publishStatusOptions } from "@/lib/adminLocale";
+import { adminConfirm } from "@/components/admin/AdminConfirmProvider";
 
 const L = (field: string) => translateFieldLabel(field, getAdminLang());
 
@@ -33,7 +34,8 @@ export default function AdminHomeEditor() {
   const queryClient = useQueryClient();
   const { data: bundle, isFetching, refetch } = useAdminHomeEditorData();
   const [activeTab, setActiveTab] = useState("hero");
-  const loading = isFetching;
+  const [manualRefreshing, setManualRefreshing] = useState(false);
+  const initialLoading = !bundle && isFetching;
 
   const [statsSection, setStatsSection] = useState<HomeSectionRow | null>(null);
   const [whySection, setWhySection] = useState<HomeSectionRow | null>(null);
@@ -69,6 +71,15 @@ export default function AdminHomeEditor() {
     setFormDirty(false);
     void invalidatePublishedContent(queryClient);
     await refetch();
+  };
+
+  const handleManualRefresh = async () => {
+    setManualRefreshing(true);
+    try {
+      await refreshEditor();
+    } finally {
+      setManualRefreshing(false);
+    }
   };
 
   const saveHomeSectionItems = async (row: HomeSectionRow | null, items: any[]) => {
@@ -123,7 +134,12 @@ export default function AdminHomeEditor() {
 
   const deleteProcessStep = async (id: string) => {
     if (!supabase) return;
-    if (!window.confirm("\u786e\u8ba4\u8981\u5f52\u6863/\u5220\u9664\u8fd9\u4e2a\u6d41\u7a0b\u6b65\u9aa4\u5417\uff1f")) return;
+    const confirmed = await adminConfirm({
+      title: "确认归档或删除流程步骤？",
+      description: "这个步骤会从首页流程模块中移除。请确认它不是当前前台正在使用的重要内容。",
+      confirmLabel: "继续处理",
+    });
+    if (!confirmed) return;
     try {
       await archiveOrDeleteAdminRecord({ table: "process_steps", id, queryClient });
       toast({ title: "已删除" });
@@ -161,7 +177,12 @@ export default function AdminHomeEditor() {
 
   const deleteFaq = async (id: string) => {
     if (!supabase) return;
-    if (!window.confirm("\u786e\u8ba4\u8981\u5f52\u6863/\u5220\u9664\u8fd9\u4e2a FAQ \u5417\uff1f")) return;
+    const confirmed = await adminConfirm({
+      title: "确认归档或删除 FAQ？",
+      description: "这个 FAQ 会从首页常见问题模块中移除。请确认前台不再需要它。",
+      confirmLabel: "继续处理",
+    });
+    if (!confirmed) return;
     try {
       await archiveOrDeleteAdminRecord({ table: "faqs", id, queryClient });
       toast({ title: "已删除" });
@@ -239,8 +260,8 @@ export default function AdminHomeEditor() {
         description="这里管理首页关键区块：统计数据、为什么选择我们、施工流程、首页常见问题和首页行动引导区。首页首屏固定播放视频，后台只管理按钮文案和链接，避免图片覆盖视频。"
         helpText="这里主要编辑首页的视频首屏按钮、内容模块和底部行动引导。"
         actions={
-          <Button variant="outline" onClick={() => void refetch()} disabled={loading}>
-            {loading ? "刷新中..." : "刷新"}
+          <Button type="button" variant="outline" onClick={() => void handleManualRefresh()} disabled={initialLoading || manualRefreshing}>
+            {manualRefreshing ? "刷新中..." : initialLoading ? "加载中..." : "刷新"}
           </Button>
         }
       />

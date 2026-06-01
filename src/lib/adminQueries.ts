@@ -13,8 +13,15 @@ import {
   type AdminLeadListKind,
   type AdminWorkflowFilter,
 } from "@/lib/adminLeadWorkflow";
+import {
+  buildAdminLeadReport,
+  getAdminLeadReportStartIso,
+  normalizeAdminLeadReportPeriod,
+  type AdminLeadReportPeriod,
+} from "@/lib/adminLeadReports";
 import { buildMediaAssetInsert, type AdminUploadedMedia } from "@/lib/adminMedia";
 import { isSupabaseConfigured, supabase } from "@/lib/supabase";
+import type { Language } from "@/i18n/routes";
 
 const enabled = isSupabaseConfigured && Boolean(supabase);
 const ADMIN_LIST_STALE_TIME = 5 * 60 * 1000;
@@ -208,7 +215,7 @@ export function useAdminQuotes(options: AdminListQuery = {}) {
         status: options.status,
         workflow,
         search,
-        searchFields: ["customer_name", "customer_phone", "customer_email", "location", "project_type"],
+        searchFields: ["customer_name", "customer_phone", "customer_email", "location", "project_type", "source_path"],
         orders: [{ column: "created_at", options: { ascending: false } }],
       }),
   });
@@ -392,6 +399,50 @@ export function useAdminDashboardStats() {
         recentLeads: leads.data || [],
         recentQuotes: quotes.data || [],
       };
+    },
+  });
+}
+
+export function useAdminLeadReport(options: { period?: AdminLeadReportPeriod | string; language?: Language } = {}) {
+  const period = normalizeAdminLeadReportPeriod(options.period);
+  const language = options.language || "zh";
+  return useQuery({
+    queryKey: ["admin", "lead-report", { period, language }],
+    enabled,
+    placeholderData: keepPreviousData,
+    staleTime: 2 * 60 * 1000,
+    gcTime: ADMIN_QUERY_GC_TIME,
+    queryFn: async () => {
+      const startIso = getAdminLeadReportStartIso(period);
+      let leadsQuery = supabase!
+        .from("leads")
+        .select("id,name,status,source,source_path,project_type,location,deal_value,created_at")
+        .order("created_at", { ascending: false })
+        .limit(1000);
+      let quotesQuery = supabase!
+        .from("quote_requests")
+        .select("id,customer_name,status,source_path,project_type,location,quoted_amount,created_at")
+        .order("created_at", { ascending: false })
+        .limit(1000);
+
+      if (startIso) {
+        leadsQuery = leadsQuery.gte("created_at", startIso);
+        quotesQuery = quotesQuery.gte("created_at", startIso);
+      }
+
+      const [{ data: leads, error: leadsError }, { data: quotes, error: quotesError }] = await Promise.all([
+        leadsQuery,
+        quotesQuery,
+      ]);
+      if (leadsError) throw leadsError;
+      if (quotesError) throw quotesError;
+
+      return buildAdminLeadReport({
+        leads: leads || [],
+        quotes: quotes || [],
+        period,
+        language,
+      });
     },
   });
 }

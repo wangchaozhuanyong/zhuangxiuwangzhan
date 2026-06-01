@@ -301,6 +301,18 @@
     <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/projects/corporate-office-petaling-jaya" />
   </url>
   <url>
+    <loc>https://flashcast.com.my/en/projects/home-office-puchong</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://flashcast.com.my/en/projects/home-office-puchong" />
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://flashcast.com.my/zh/projects/home-office-puchong" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/projects/home-office-puchong" />
+  </url>
+  <url>
+    <loc>https://flashcast.com.my/zh/projects/home-office-puchong</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://flashcast.com.my/en/projects/home-office-puchong" />
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://flashcast.com.my/zh/projects/home-office-puchong" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/projects/home-office-puchong" />
+  </url>
+  <url>
     <loc>https://flashcast.com.my/en/projects/puchong-home-library-built-in</loc>
     <xhtml:link rel="alternate" hreflang="en" href="https://flashcast.com.my/en/projects/puchong-home-library-built-in" />
     <xhtml:link rel="alternate" hreflang="zh-CN" href="https://flashcast.com.my/zh/projects/puchong-home-library-built-in" />
@@ -311,18 +323,6 @@
     <xhtml:link rel="alternate" hreflang="en" href="https://flashcast.com.my/en/projects/puchong-home-library-built-in" />
     <xhtml:link rel="alternate" hreflang="zh-CN" href="https://flashcast.com.my/zh/projects/puchong-home-library-built-in" />
     <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/projects/puchong-home-library-built-in" />
-  </url>
-  <url>
-    <loc>https://flashcast.com.my/en/projects/custom-kitchen-bangsar</loc>
-    <xhtml:link rel="alternate" hreflang="en" href="https://flashcast.com.my/en/projects/custom-kitchen-bangsar" />
-    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://flashcast.com.my/zh/projects/custom-kitchen-bangsar" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/projects/custom-kitchen-bangsar" />
-  </url>
-  <url>
-    <loc>https://flashcast.com.my/zh/projects/custom-kitchen-bangsar</loc>
-    <xhtml:link rel="alternate" hreflang="en" href="https://flashcast.com.my/en/projects/custom-kitchen-bangsar" />
-    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://flashcast.com.my/zh/projects/custom-kitchen-bangsar" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/projects/custom-kitchen-bangsar" />
   </url>
   <url>
     <loc>https://flashcast.com.my/en/projects/puchong-heavy-duty-warehouse-racking</loc>
@@ -359,6 +359,18 @@
     <xhtml:link rel="alternate" hreflang="en" href="https://flashcast.com.my/en/projects/modern-condo-mont-kiara" />
     <xhtml:link rel="alternate" hreflang="zh-CN" href="https://flashcast.com.my/zh/projects/modern-condo-mont-kiara" />
     <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/projects/modern-condo-mont-kiara" />
+  </url>
+  <url>
+    <loc>https://flashcast.com.my/en/projects/custom-kitchen-bangsar</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://flashcast.com.my/en/projects/custom-kitchen-bangsar" />
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://flashcast.com.my/zh/projects/custom-kitchen-bangsar" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/projects/custom-kitchen-bangsar" />
+  </url>
+  <url>
+    <loc>https://flashcast.com.my/zh/projects/custom-kitchen-bangsar</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://flashcast.com.my/en/projects/custom-kitchen-bangsar" />
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://flashcast.com.my/zh/projects/custom-kitchen-bangsar" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/projects/custom-kitchen-bangsar" />
   </url>
   <url>
     <loc>https://flashcast.com.my/en/projects/cheras-stockroom-shelving-system</loc>
@@ -589,18 +601,6 @@
     <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/projects/warehouse-racking-shah-alam" />
   </url>
   <url>
-    <loc>https://flashcast.com.my/en/projects/setia-alam-gate-wall-feature</loc>
-    <xhtml:link rel="alternate" hreflang="en" href="https://flashcast.com.my/en/projects/setia-alam-gate-wall-feature" />
-    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://flashcast.com.my/zh/projects/setia-alam-gate-wall-feature" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/projects/setia-alam-gate-wall-feature" />
-  </url>
-  <url>
-    <loc>https://flashcast.com.my/zh/projects/setia-alam-gate-wall-feature</loc>
-    <xhtml:link rel="alternate" hreflang="en" href="https://flashcast.com.my/en/projects/setia-alam-gate-wall-feature" />
-    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://flashcast.com.my/zh/projects/setia-alam-gate-wall-feature" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/projects/setia-alam-gate-wall-feature" />
-  </url>
-  <url>
     <loc>https://flashcast.com.my/en/projects/shopfront-renovation-cheras</loc>
     <xhtml:link rel="alternate" hreflang="en" href="https://flashcast.com.my/en/projects/shopfront-renovation-cheras" />
     <xhtml:link rel="alternate" hreflang="zh-CN" href="https://flashcast.com.my/zh/projects/shopfront-renovation-cheras" />
@@ -611,6 +611,18 @@
     <xhtml:link rel="alternate" hreflang="en" href="https://flashcast.com.my/en/projects/shopfront-renovation-cheras" />
     <xhtml:link rel="alternate" hreflang="zh-CN" href="https://flashcast.com.my/zh/projects/shopfront-renovation-cheras" />
     <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/projects/shopfront-renovation-cheras" />
+  </url>
+  <url>
+    <loc>https://flashcast.com.my/en/projects/setia-alam-gate-wall-feature</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://flashcast.com.my/en/projects/setia-alam-gate-wall-feature" />
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://flashcast.com.my/zh/projects/setia-alam-gate-wall-feature" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/projects/setia-alam-gate-wall-feature" />
+  </url>
+  <url>
+    <loc>https://flashcast.com.my/zh/projects/setia-alam-gate-wall-feature</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://flashcast.com.my/en/projects/setia-alam-gate-wall-feature" />
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://flashcast.com.my/zh/projects/setia-alam-gate-wall-feature" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/projects/setia-alam-gate-wall-feature" />
   </url>
   <url>
     <loc>https://flashcast.com.my/en/projects/mont-kiara-consulting-office-suite</loc>
@@ -709,18 +721,6 @@
     <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/projects/bukit-jalil-family-condo-upgrade" />
   </url>
   <url>
-    <loc>https://flashcast.com.my/en/projects/home-office-puchong</loc>
-    <xhtml:link rel="alternate" hreflang="en" href="https://flashcast.com.my/en/projects/home-office-puchong" />
-    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://flashcast.com.my/zh/projects/home-office-puchong" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/projects/home-office-puchong" />
-  </url>
-  <url>
-    <loc>https://flashcast.com.my/zh/projects/home-office-puchong</loc>
-    <xhtml:link rel="alternate" hreflang="en" href="https://flashcast.com.my/en/projects/home-office-puchong" />
-    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://flashcast.com.my/zh/projects/home-office-puchong" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/projects/home-office-puchong" />
-  </url>
-  <url>
     <loc>https://flashcast.com.my/en/blog/shop-renovation-opening-timeline-malaysia</loc>
     <xhtml:link rel="alternate" hreflang="en" href="https://flashcast.com.my/en/blog/shop-renovation-opening-timeline-malaysia" />
     <xhtml:link rel="alternate" hreflang="zh-CN" href="https://flashcast.com.my/zh/blog/shop-renovation-opening-timeline-malaysia" />
@@ -755,18 +755,6 @@
     <xhtml:link rel="alternate" hreflang="en" href="https://flashcast.com.my/en/blog/modern-warm-minimalist-home-design-malaysia" />
     <xhtml:link rel="alternate" hreflang="zh-CN" href="https://flashcast.com.my/zh/blog/modern-warm-minimalist-home-design-malaysia" />
     <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/blog/modern-warm-minimalist-home-design-malaysia" />
-  </url>
-  <url>
-    <loc>https://flashcast.com.my/en/blog/malaysia-renovation-budget-guide</loc>
-    <xhtml:link rel="alternate" hreflang="en" href="https://flashcast.com.my/en/blog/malaysia-renovation-budget-guide" />
-    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://flashcast.com.my/zh/blog/malaysia-renovation-budget-guide" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/blog/malaysia-renovation-budget-guide" />
-  </url>
-  <url>
-    <loc>https://flashcast.com.my/zh/blog/malaysia-renovation-budget-guide</loc>
-    <xhtml:link rel="alternate" hreflang="en" href="https://flashcast.com.my/en/blog/malaysia-renovation-budget-guide" />
-    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://flashcast.com.my/zh/blog/malaysia-renovation-budget-guide" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/blog/malaysia-renovation-budget-guide" />
   </url>
   <url>
     <loc>https://flashcast.com.my/en/blog/artistic-wall-coating-guide-remmers</loc>
@@ -805,16 +793,16 @@
     <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/blog/built-in-cabinet-cost-malaysia" />
   </url>
   <url>
-    <loc>https://flashcast.com.my/en/blog/bathroom-waterproofing-guide</loc>
-    <xhtml:link rel="alternate" hreflang="en" href="https://flashcast.com.my/en/blog/bathroom-waterproofing-guide" />
-    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://flashcast.com.my/zh/blog/bathroom-waterproofing-guide" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/blog/bathroom-waterproofing-guide" />
+    <loc>https://flashcast.com.my/en/blog/kitchen-cabinet-material-guide</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://flashcast.com.my/en/blog/kitchen-cabinet-material-guide" />
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://flashcast.com.my/zh/blog/kitchen-cabinet-material-guide" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/blog/kitchen-cabinet-material-guide" />
   </url>
   <url>
-    <loc>https://flashcast.com.my/zh/blog/bathroom-waterproofing-guide</loc>
-    <xhtml:link rel="alternate" hreflang="en" href="https://flashcast.com.my/en/blog/bathroom-waterproofing-guide" />
-    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://flashcast.com.my/zh/blog/bathroom-waterproofing-guide" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/blog/bathroom-waterproofing-guide" />
+    <loc>https://flashcast.com.my/zh/blog/kitchen-cabinet-material-guide</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://flashcast.com.my/en/blog/kitchen-cabinet-material-guide" />
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://flashcast.com.my/zh/blog/kitchen-cabinet-material-guide" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/blog/kitchen-cabinet-material-guide" />
   </url>
   <url>
     <loc>https://flashcast.com.my/en/blog/kl-condo-renovation-approval</loc>
@@ -829,6 +817,18 @@
     <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/blog/kl-condo-renovation-approval" />
   </url>
   <url>
+    <loc>https://flashcast.com.my/en/blog/malaysia-renovation-budget-guide</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://flashcast.com.my/en/blog/malaysia-renovation-budget-guide" />
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://flashcast.com.my/zh/blog/malaysia-renovation-budget-guide" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/blog/malaysia-renovation-budget-guide" />
+  </url>
+  <url>
+    <loc>https://flashcast.com.my/zh/blog/malaysia-renovation-budget-guide</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://flashcast.com.my/en/blog/malaysia-renovation-budget-guide" />
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://flashcast.com.my/zh/blog/malaysia-renovation-budget-guide" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/blog/malaysia-renovation-budget-guide" />
+  </url>
+  <url>
     <loc>https://flashcast.com.my/en/blog/condo-renovation-management-approval-malaysia</loc>
     <xhtml:link rel="alternate" hreflang="en" href="https://flashcast.com.my/en/blog/condo-renovation-management-approval-malaysia" />
     <xhtml:link rel="alternate" hreflang="zh-CN" href="https://flashcast.com.my/zh/blog/condo-renovation-management-approval-malaysia" />
@@ -841,16 +841,16 @@
     <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/blog/condo-renovation-management-approval-malaysia" />
   </url>
   <url>
-    <loc>https://flashcast.com.my/en/blog/shop-renovation-before-opening</loc>
-    <xhtml:link rel="alternate" hreflang="en" href="https://flashcast.com.my/en/blog/shop-renovation-before-opening" />
-    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://flashcast.com.my/zh/blog/shop-renovation-before-opening" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/blog/shop-renovation-before-opening" />
+    <loc>https://flashcast.com.my/en/blog/bathroom-waterproofing-guide</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://flashcast.com.my/en/blog/bathroom-waterproofing-guide" />
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://flashcast.com.my/zh/blog/bathroom-waterproofing-guide" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/blog/bathroom-waterproofing-guide" />
   </url>
   <url>
-    <loc>https://flashcast.com.my/zh/blog/shop-renovation-before-opening</loc>
-    <xhtml:link rel="alternate" hreflang="en" href="https://flashcast.com.my/en/blog/shop-renovation-before-opening" />
-    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://flashcast.com.my/zh/blog/shop-renovation-before-opening" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/blog/shop-renovation-before-opening" />
+    <loc>https://flashcast.com.my/zh/blog/bathroom-waterproofing-guide</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://flashcast.com.my/en/blog/bathroom-waterproofing-guide" />
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://flashcast.com.my/zh/blog/bathroom-waterproofing-guide" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/blog/bathroom-waterproofing-guide" />
   </url>
   <url>
     <loc>https://flashcast.com.my/en/blog/bathroom-leakage-renovation-malaysia</loc>
@@ -863,6 +863,18 @@
     <xhtml:link rel="alternate" hreflang="en" href="https://flashcast.com.my/en/blog/bathroom-leakage-renovation-malaysia" />
     <xhtml:link rel="alternate" hreflang="zh-CN" href="https://flashcast.com.my/zh/blog/bathroom-leakage-renovation-malaysia" />
     <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/blog/bathroom-leakage-renovation-malaysia" />
+  </url>
+  <url>
+    <loc>https://flashcast.com.my/en/blog/shop-renovation-before-opening</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://flashcast.com.my/en/blog/shop-renovation-before-opening" />
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://flashcast.com.my/zh/blog/shop-renovation-before-opening" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/blog/shop-renovation-before-opening" />
+  </url>
+  <url>
+    <loc>https://flashcast.com.my/zh/blog/shop-renovation-before-opening</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://flashcast.com.my/en/blog/shop-renovation-before-opening" />
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://flashcast.com.my/zh/blog/shop-renovation-before-opening" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/blog/shop-renovation-before-opening" />
   </url>
   <url>
     <loc>https://flashcast.com.my/en/blog/renovation-materials-for-malaysia-climate</loc>
@@ -889,6 +901,18 @@
     <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/blog/built-in-furniture-small-condo-storage" />
   </url>
   <url>
+    <loc>https://flashcast.com.my/en/blog/renovation-materials-malaysia</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://flashcast.com.my/en/blog/renovation-materials-malaysia" />
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://flashcast.com.my/zh/blog/renovation-materials-malaysia" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/blog/renovation-materials-malaysia" />
+  </url>
+  <url>
+    <loc>https://flashcast.com.my/zh/blog/renovation-materials-malaysia</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://flashcast.com.my/en/blog/renovation-materials-malaysia" />
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://flashcast.com.my/zh/blog/renovation-materials-malaysia" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/blog/renovation-materials-malaysia" />
+  </url>
+  <url>
     <loc>https://flashcast.com.my/en/blog/dry-wet-kitchen-renovation-malaysia</loc>
     <xhtml:link rel="alternate" hreflang="en" href="https://flashcast.com.my/en/blog/dry-wet-kitchen-renovation-malaysia" />
     <xhtml:link rel="alternate" hreflang="zh-CN" href="https://flashcast.com.my/zh/blog/dry-wet-kitchen-renovation-malaysia" />
@@ -899,6 +923,18 @@
     <xhtml:link rel="alternate" hreflang="en" href="https://flashcast.com.my/en/blog/dry-wet-kitchen-renovation-malaysia" />
     <xhtml:link rel="alternate" hreflang="zh-CN" href="https://flashcast.com.my/zh/blog/dry-wet-kitchen-renovation-malaysia" />
     <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/blog/dry-wet-kitchen-renovation-malaysia" />
+  </url>
+  <url>
+    <loc>https://flashcast.com.my/en/blog/selangor-office-fit-out-tips</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://flashcast.com.my/en/blog/selangor-office-fit-out-tips" />
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://flashcast.com.my/zh/blog/selangor-office-fit-out-tips" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/blog/selangor-office-fit-out-tips" />
+  </url>
+  <url>
+    <loc>https://flashcast.com.my/zh/blog/selangor-office-fit-out-tips</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://flashcast.com.my/en/blog/selangor-office-fit-out-tips" />
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://flashcast.com.my/zh/blog/selangor-office-fit-out-tips" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/blog/selangor-office-fit-out-tips" />
   </url>
   <url>
     <loc>https://flashcast.com.my/en/blog/spc-vs-vinyl-flooring-malaysia</loc>
@@ -935,18 +971,6 @@
     <xhtml:link rel="alternate" hreflang="en" href="https://flashcast.com.my/en/blog/how-to-plan-condo-renovation-kl" />
     <xhtml:link rel="alternate" hreflang="zh-CN" href="https://flashcast.com.my/zh/blog/how-to-plan-condo-renovation-kl" />
     <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/blog/how-to-plan-condo-renovation-kl" />
-  </url>
-  <url>
-    <loc>https://flashcast.com.my/en/blog/renovation-materials-malaysia</loc>
-    <xhtml:link rel="alternate" hreflang="en" href="https://flashcast.com.my/en/blog/renovation-materials-malaysia" />
-    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://flashcast.com.my/zh/blog/renovation-materials-malaysia" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/blog/renovation-materials-malaysia" />
-  </url>
-  <url>
-    <loc>https://flashcast.com.my/zh/blog/renovation-materials-malaysia</loc>
-    <xhtml:link rel="alternate" hreflang="en" href="https://flashcast.com.my/en/blog/renovation-materials-malaysia" />
-    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://flashcast.com.my/zh/blog/renovation-materials-malaysia" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/blog/renovation-materials-malaysia" />
   </url>
   <url>
     <loc>https://flashcast.com.my/en/blog/old-house-renovation-checklist</loc>
@@ -1103,30 +1127,6 @@
     <xhtml:link rel="alternate" hreflang="en" href="https://flashcast.com.my/en/blog/renovation-payment-schedule-malaysia" />
     <xhtml:link rel="alternate" hreflang="zh-CN" href="https://flashcast.com.my/zh/blog/renovation-payment-schedule-malaysia" />
     <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/blog/renovation-payment-schedule-malaysia" />
-  </url>
-  <url>
-    <loc>https://flashcast.com.my/en/blog/kitchen-cabinet-material-guide</loc>
-    <xhtml:link rel="alternate" hreflang="en" href="https://flashcast.com.my/en/blog/kitchen-cabinet-material-guide" />
-    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://flashcast.com.my/zh/blog/kitchen-cabinet-material-guide" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/blog/kitchen-cabinet-material-guide" />
-  </url>
-  <url>
-    <loc>https://flashcast.com.my/zh/blog/kitchen-cabinet-material-guide</loc>
-    <xhtml:link rel="alternate" hreflang="en" href="https://flashcast.com.my/en/blog/kitchen-cabinet-material-guide" />
-    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://flashcast.com.my/zh/blog/kitchen-cabinet-material-guide" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/blog/kitchen-cabinet-material-guide" />
-  </url>
-  <url>
-    <loc>https://flashcast.com.my/en/blog/selangor-office-fit-out-tips</loc>
-    <xhtml:link rel="alternate" hreflang="en" href="https://flashcast.com.my/en/blog/selangor-office-fit-out-tips" />
-    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://flashcast.com.my/zh/blog/selangor-office-fit-out-tips" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/blog/selangor-office-fit-out-tips" />
-  </url>
-  <url>
-    <loc>https://flashcast.com.my/zh/blog/selangor-office-fit-out-tips</loc>
-    <xhtml:link rel="alternate" hreflang="en" href="https://flashcast.com.my/en/blog/selangor-office-fit-out-tips" />
-    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://flashcast.com.my/zh/blog/selangor-office-fit-out-tips" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/blog/selangor-office-fit-out-tips" />
   </url>
   <url>
     <loc>https://flashcast.com.my/en/blog/klang-valley-renovation-cost-2026</loc>
@@ -1309,16 +1309,16 @@
     <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/materials/subway-wall-tile" />
   </url>
   <url>
-    <loc>https://flashcast.com.my/en/materials/sintered-stone-grey</loc>
-    <xhtml:link rel="alternate" hreflang="en" href="https://flashcast.com.my/en/materials/sintered-stone-grey" />
-    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://flashcast.com.my/zh/materials/sintered-stone-grey" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/materials/sintered-stone-grey" />
+    <loc>https://flashcast.com.my/en/materials/solid-wood-cabinet-teak</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://flashcast.com.my/en/materials/solid-wood-cabinet-teak" />
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://flashcast.com.my/zh/materials/solid-wood-cabinet-teak" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/materials/solid-wood-cabinet-teak" />
   </url>
   <url>
-    <loc>https://flashcast.com.my/zh/materials/sintered-stone-grey</loc>
-    <xhtml:link rel="alternate" hreflang="en" href="https://flashcast.com.my/en/materials/sintered-stone-grey" />
-    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://flashcast.com.my/zh/materials/sintered-stone-grey" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/materials/sintered-stone-grey" />
+    <loc>https://flashcast.com.my/zh/materials/solid-wood-cabinet-teak</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://flashcast.com.my/en/materials/solid-wood-cabinet-teak" />
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://flashcast.com.my/zh/materials/solid-wood-cabinet-teak" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/materials/solid-wood-cabinet-teak" />
   </url>
   <url>
     <loc>https://flashcast.com.my/en/materials/frameless-glass-clear</loc>
@@ -1513,6 +1513,18 @@
     <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/materials/laminate-door-white-oak" />
   </url>
   <url>
+    <loc>https://flashcast.com.my/en/materials/melamine-grey-oak</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://flashcast.com.my/en/materials/melamine-grey-oak" />
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://flashcast.com.my/zh/materials/melamine-grey-oak" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/materials/melamine-grey-oak" />
+  </url>
+  <url>
+    <loc>https://flashcast.com.my/zh/materials/melamine-grey-oak</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://flashcast.com.my/en/materials/melamine-grey-oak" />
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://flashcast.com.my/zh/materials/melamine-grey-oak" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/materials/melamine-grey-oak" />
+  </url>
+  <url>
     <loc>https://flashcast.com.my/en/materials/anti-slip-bathroom-tile</loc>
     <xhtml:link rel="alternate" hreflang="en" href="https://flashcast.com.my/en/materials/anti-slip-bathroom-tile" />
     <xhtml:link rel="alternate" hreflang="zh-CN" href="https://flashcast.com.my/zh/materials/anti-slip-bathroom-tile" />
@@ -1537,18 +1549,6 @@
     <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/materials/acrylic-high-gloss-white" />
   </url>
   <url>
-    <loc>https://flashcast.com.my/en/materials/melamine-grey-oak</loc>
-    <xhtml:link rel="alternate" hreflang="en" href="https://flashcast.com.my/en/materials/melamine-grey-oak" />
-    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://flashcast.com.my/zh/materials/melamine-grey-oak" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/materials/melamine-grey-oak" />
-  </url>
-  <url>
-    <loc>https://flashcast.com.my/zh/materials/melamine-grey-oak</loc>
-    <xhtml:link rel="alternate" hreflang="en" href="https://flashcast.com.my/en/materials/melamine-grey-oak" />
-    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://flashcast.com.my/zh/materials/melamine-grey-oak" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/materials/melamine-grey-oak" />
-  </url>
-  <url>
     <loc>https://flashcast.com.my/en/materials/kitchen-acrylic-cabinets</loc>
     <xhtml:link rel="alternate" hreflang="en" href="https://flashcast.com.my/en/materials/kitchen-acrylic-cabinets" />
     <xhtml:link rel="alternate" hreflang="zh-CN" href="https://flashcast.com.my/zh/materials/kitchen-acrylic-cabinets" />
@@ -1559,6 +1559,42 @@
     <xhtml:link rel="alternate" hreflang="en" href="https://flashcast.com.my/en/materials/kitchen-acrylic-cabinets" />
     <xhtml:link rel="alternate" hreflang="zh-CN" href="https://flashcast.com.my/zh/materials/kitchen-acrylic-cabinets" />
     <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/materials/kitchen-acrylic-cabinets" />
+  </url>
+  <url>
+    <loc>https://flashcast.com.my/en/materials/acrylic-cabinet-gloss-white</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://flashcast.com.my/en/materials/acrylic-cabinet-gloss-white" />
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://flashcast.com.my/zh/materials/acrylic-cabinet-gloss-white" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/materials/acrylic-cabinet-gloss-white" />
+  </url>
+  <url>
+    <loc>https://flashcast.com.my/zh/materials/acrylic-cabinet-gloss-white</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://flashcast.com.my/en/materials/acrylic-cabinet-gloss-white" />
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://flashcast.com.my/zh/materials/acrylic-cabinet-gloss-white" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/materials/acrylic-cabinet-gloss-white" />
+  </url>
+  <url>
+    <loc>https://flashcast.com.my/en/materials/subway-tile-white</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://flashcast.com.my/en/materials/subway-tile-white" />
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://flashcast.com.my/zh/materials/subway-tile-white" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/materials/subway-tile-white" />
+  </url>
+  <url>
+    <loc>https://flashcast.com.my/zh/materials/subway-tile-white</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://flashcast.com.my/en/materials/subway-tile-white" />
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://flashcast.com.my/zh/materials/subway-tile-white" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/materials/subway-tile-white" />
+  </url>
+  <url>
+    <loc>https://flashcast.com.my/en/materials/quartz-countertop-carrara-white</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://flashcast.com.my/en/materials/quartz-countertop-carrara-white" />
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://flashcast.com.my/zh/materials/quartz-countertop-carrara-white" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/materials/quartz-countertop-carrara-white" />
+  </url>
+  <url>
+    <loc>https://flashcast.com.my/zh/materials/quartz-countertop-carrara-white</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://flashcast.com.my/en/materials/quartz-countertop-carrara-white" />
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://flashcast.com.my/zh/materials/quartz-countertop-carrara-white" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/materials/quartz-countertop-carrara-white" />
   </url>
   <url>
     <loc>https://flashcast.com.my/en/materials/solid-wood-teak</loc>
@@ -1633,6 +1669,18 @@
     <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/materials/vinyl-plank-ash-grey" />
   </url>
   <url>
+    <loc>https://flashcast.com.my/en/materials/solid-surface-warm-white</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://flashcast.com.my/en/materials/solid-surface-warm-white" />
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://flashcast.com.my/zh/materials/solid-surface-warm-white" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/materials/solid-surface-warm-white" />
+  </url>
+  <url>
+    <loc>https://flashcast.com.my/zh/materials/solid-surface-warm-white</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://flashcast.com.my/en/materials/solid-surface-warm-white" />
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://flashcast.com.my/zh/materials/solid-surface-warm-white" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/materials/solid-surface-warm-white" />
+  </url>
+  <url>
     <loc>https://flashcast.com.my/en/materials/timber-cladding-oak</loc>
     <xhtml:link rel="alternate" hreflang="en" href="https://flashcast.com.my/en/materials/timber-cladding-oak" />
     <xhtml:link rel="alternate" hreflang="zh-CN" href="https://flashcast.com.my/zh/materials/timber-cladding-oak" />
@@ -1643,30 +1691,6 @@
     <xhtml:link rel="alternate" hreflang="en" href="https://flashcast.com.my/en/materials/timber-cladding-oak" />
     <xhtml:link rel="alternate" hreflang="zh-CN" href="https://flashcast.com.my/zh/materials/timber-cladding-oak" />
     <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/materials/timber-cladding-oak" />
-  </url>
-  <url>
-    <loc>https://flashcast.com.my/en/materials/subway-tile-white</loc>
-    <xhtml:link rel="alternate" hreflang="en" href="https://flashcast.com.my/en/materials/subway-tile-white" />
-    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://flashcast.com.my/zh/materials/subway-tile-white" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/materials/subway-tile-white" />
-  </url>
-  <url>
-    <loc>https://flashcast.com.my/zh/materials/subway-tile-white</loc>
-    <xhtml:link rel="alternate" hreflang="en" href="https://flashcast.com.my/en/materials/subway-tile-white" />
-    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://flashcast.com.my/zh/materials/subway-tile-white" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/materials/subway-tile-white" />
-  </url>
-  <url>
-    <loc>https://flashcast.com.my/en/materials/aluminium-sliding-black</loc>
-    <xhtml:link rel="alternate" hreflang="en" href="https://flashcast.com.my/en/materials/aluminium-sliding-black" />
-    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://flashcast.com.my/zh/materials/aluminium-sliding-black" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/materials/aluminium-sliding-black" />
-  </url>
-  <url>
-    <loc>https://flashcast.com.my/zh/materials/aluminium-sliding-black</loc>
-    <xhtml:link rel="alternate" hreflang="en" href="https://flashcast.com.my/en/materials/aluminium-sliding-black" />
-    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://flashcast.com.my/zh/materials/aluminium-sliding-black" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/materials/aluminium-sliding-black" />
   </url>
   <url>
     <loc>https://flashcast.com.my/en/materials/fluted-panel-charcoal</loc>
@@ -1693,40 +1717,16 @@
     <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/materials/melamine-cabinet-grey-oak" />
   </url>
   <url>
-    <loc>https://flashcast.com.my/en/materials/solid-wood-cabinet-teak</loc>
-    <xhtml:link rel="alternate" hreflang="en" href="https://flashcast.com.my/en/materials/solid-wood-cabinet-teak" />
-    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://flashcast.com.my/zh/materials/solid-wood-cabinet-teak" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/materials/solid-wood-cabinet-teak" />
+    <loc>https://flashcast.com.my/en/materials/aluminium-sliding-black</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://flashcast.com.my/en/materials/aluminium-sliding-black" />
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://flashcast.com.my/zh/materials/aluminium-sliding-black" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/materials/aluminium-sliding-black" />
   </url>
   <url>
-    <loc>https://flashcast.com.my/zh/materials/solid-wood-cabinet-teak</loc>
-    <xhtml:link rel="alternate" hreflang="en" href="https://flashcast.com.my/en/materials/solid-wood-cabinet-teak" />
-    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://flashcast.com.my/zh/materials/solid-wood-cabinet-teak" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/materials/solid-wood-cabinet-teak" />
-  </url>
-  <url>
-    <loc>https://flashcast.com.my/en/materials/solid-surface-warm-white</loc>
-    <xhtml:link rel="alternate" hreflang="en" href="https://flashcast.com.my/en/materials/solid-surface-warm-white" />
-    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://flashcast.com.my/zh/materials/solid-surface-warm-white" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/materials/solid-surface-warm-white" />
-  </url>
-  <url>
-    <loc>https://flashcast.com.my/zh/materials/solid-surface-warm-white</loc>
-    <xhtml:link rel="alternate" hreflang="en" href="https://flashcast.com.my/en/materials/solid-surface-warm-white" />
-    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://flashcast.com.my/zh/materials/solid-surface-warm-white" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/materials/solid-surface-warm-white" />
-  </url>
-  <url>
-    <loc>https://flashcast.com.my/en/materials/acrylic-cabinet-gloss-white</loc>
-    <xhtml:link rel="alternate" hreflang="en" href="https://flashcast.com.my/en/materials/acrylic-cabinet-gloss-white" />
-    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://flashcast.com.my/zh/materials/acrylic-cabinet-gloss-white" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/materials/acrylic-cabinet-gloss-white" />
-  </url>
-  <url>
-    <loc>https://flashcast.com.my/zh/materials/acrylic-cabinet-gloss-white</loc>
-    <xhtml:link rel="alternate" hreflang="en" href="https://flashcast.com.my/en/materials/acrylic-cabinet-gloss-white" />
-    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://flashcast.com.my/zh/materials/acrylic-cabinet-gloss-white" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/materials/acrylic-cabinet-gloss-white" />
+    <loc>https://flashcast.com.my/zh/materials/aluminium-sliding-black</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://flashcast.com.my/en/materials/aluminium-sliding-black" />
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://flashcast.com.my/zh/materials/aluminium-sliding-black" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/materials/aluminium-sliding-black" />
   </url>
   <url>
     <loc>https://flashcast.com.my/en/materials/spc-vinyl-natural-oak</loc>
@@ -1753,16 +1753,16 @@
     <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/materials/art-venetian-plaster" />
   </url>
   <url>
-    <loc>https://flashcast.com.my/en/materials/quartz-countertop-carrara-white</loc>
-    <xhtml:link rel="alternate" hreflang="en" href="https://flashcast.com.my/en/materials/quartz-countertop-carrara-white" />
-    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://flashcast.com.my/zh/materials/quartz-countertop-carrara-white" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/materials/quartz-countertop-carrara-white" />
+    <loc>https://flashcast.com.my/en/materials/sintered-stone-grey</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://flashcast.com.my/en/materials/sintered-stone-grey" />
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://flashcast.com.my/zh/materials/sintered-stone-grey" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/materials/sintered-stone-grey" />
   </url>
   <url>
-    <loc>https://flashcast.com.my/zh/materials/quartz-countertop-carrara-white</loc>
-    <xhtml:link rel="alternate" hreflang="en" href="https://flashcast.com.my/en/materials/quartz-countertop-carrara-white" />
-    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://flashcast.com.my/zh/materials/quartz-countertop-carrara-white" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/materials/quartz-countertop-carrara-white" />
+    <loc>https://flashcast.com.my/zh/materials/sintered-stone-grey</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://flashcast.com.my/en/materials/sintered-stone-grey" />
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://flashcast.com.my/zh/materials/sintered-stone-grey" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/materials/sintered-stone-grey" />
   </url>
   <url>
     <loc>https://flashcast.com.my/en/materials/acrylic-cabinet-door</loc>
@@ -1801,16 +1801,40 @@
     <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/materials/kitchen-solid-wood-cabinets" />
   </url>
   <url>
-    <loc>https://flashcast.com.my/en/locations/subang-jaya</loc>
-    <xhtml:link rel="alternate" hreflang="en" href="https://flashcast.com.my/en/locations/subang-jaya" />
-    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://flashcast.com.my/zh/locations/subang-jaya" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/locations/subang-jaya" />
+    <loc>https://flashcast.com.my/en/locations/kepong</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://flashcast.com.my/en/locations/kepong" />
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://flashcast.com.my/zh/locations/kepong" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/locations/kepong" />
   </url>
   <url>
-    <loc>https://flashcast.com.my/zh/locations/subang-jaya</loc>
-    <xhtml:link rel="alternate" hreflang="en" href="https://flashcast.com.my/en/locations/subang-jaya" />
-    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://flashcast.com.my/zh/locations/subang-jaya" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/locations/subang-jaya" />
+    <loc>https://flashcast.com.my/zh/locations/kepong</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://flashcast.com.my/en/locations/kepong" />
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://flashcast.com.my/zh/locations/kepong" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/locations/kepong" />
+  </url>
+  <url>
+    <loc>https://flashcast.com.my/en/locations/semenyih</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://flashcast.com.my/en/locations/semenyih" />
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://flashcast.com.my/zh/locations/semenyih" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/locations/semenyih" />
+  </url>
+  <url>
+    <loc>https://flashcast.com.my/zh/locations/semenyih</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://flashcast.com.my/en/locations/semenyih" />
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://flashcast.com.my/zh/locations/semenyih" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/locations/semenyih" />
+  </url>
+  <url>
+    <loc>https://flashcast.com.my/en/locations/cheras</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://flashcast.com.my/en/locations/cheras" />
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://flashcast.com.my/zh/locations/cheras" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/locations/cheras" />
+  </url>
+  <url>
+    <loc>https://flashcast.com.my/zh/locations/cheras</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://flashcast.com.my/en/locations/cheras" />
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://flashcast.com.my/zh/locations/cheras" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/locations/cheras" />
   </url>
   <url>
     <loc>https://flashcast.com.my/en/locations/klang</loc>
@@ -1825,40 +1849,16 @@
     <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/locations/klang" />
   </url>
   <url>
-    <loc>https://flashcast.com.my/en/locations/bangsar</loc>
-    <xhtml:link rel="alternate" hreflang="en" href="https://flashcast.com.my/en/locations/bangsar" />
-    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://flashcast.com.my/zh/locations/bangsar" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/locations/bangsar" />
+    <loc>https://flashcast.com.my/en/locations/balakong</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://flashcast.com.my/en/locations/balakong" />
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://flashcast.com.my/zh/locations/balakong" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/locations/balakong" />
   </url>
   <url>
-    <loc>https://flashcast.com.my/zh/locations/bangsar</loc>
-    <xhtml:link rel="alternate" hreflang="en" href="https://flashcast.com.my/en/locations/bangsar" />
-    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://flashcast.com.my/zh/locations/bangsar" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/locations/bangsar" />
-  </url>
-  <url>
-    <loc>https://flashcast.com.my/en/locations/ampang</loc>
-    <xhtml:link rel="alternate" hreflang="en" href="https://flashcast.com.my/en/locations/ampang" />
-    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://flashcast.com.my/zh/locations/ampang" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/locations/ampang" />
-  </url>
-  <url>
-    <loc>https://flashcast.com.my/zh/locations/ampang</loc>
-    <xhtml:link rel="alternate" hreflang="en" href="https://flashcast.com.my/en/locations/ampang" />
-    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://flashcast.com.my/zh/locations/ampang" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/locations/ampang" />
-  </url>
-  <url>
-    <loc>https://flashcast.com.my/en/locations/sri-petaling</loc>
-    <xhtml:link rel="alternate" hreflang="en" href="https://flashcast.com.my/en/locations/sri-petaling" />
-    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://flashcast.com.my/zh/locations/sri-petaling" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/locations/sri-petaling" />
-  </url>
-  <url>
-    <loc>https://flashcast.com.my/zh/locations/sri-petaling</loc>
-    <xhtml:link rel="alternate" hreflang="en" href="https://flashcast.com.my/en/locations/sri-petaling" />
-    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://flashcast.com.my/zh/locations/sri-petaling" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/locations/sri-petaling" />
+    <loc>https://flashcast.com.my/zh/locations/balakong</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://flashcast.com.my/en/locations/balakong" />
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://flashcast.com.my/zh/locations/balakong" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/locations/balakong" />
   </url>
   <url>
     <loc>https://flashcast.com.my/en/locations/setapak</loc>
@@ -1885,6 +1885,66 @@
     <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/locations/putrajaya" />
   </url>
   <url>
+    <loc>https://flashcast.com.my/en/locations/puchong</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://flashcast.com.my/en/locations/puchong" />
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://flashcast.com.my/zh/locations/puchong" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/locations/puchong" />
+  </url>
+  <url>
+    <loc>https://flashcast.com.my/zh/locations/puchong</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://flashcast.com.my/en/locations/puchong" />
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://flashcast.com.my/zh/locations/puchong" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/locations/puchong" />
+  </url>
+  <url>
+    <loc>https://flashcast.com.my/en/locations/subang-jaya</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://flashcast.com.my/en/locations/subang-jaya" />
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://flashcast.com.my/zh/locations/subang-jaya" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/locations/subang-jaya" />
+  </url>
+  <url>
+    <loc>https://flashcast.com.my/zh/locations/subang-jaya</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://flashcast.com.my/en/locations/subang-jaya" />
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://flashcast.com.my/zh/locations/subang-jaya" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/locations/subang-jaya" />
+  </url>
+  <url>
+    <loc>https://flashcast.com.my/en/locations/setia-alam</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://flashcast.com.my/en/locations/setia-alam" />
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://flashcast.com.my/zh/locations/setia-alam" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/locations/setia-alam" />
+  </url>
+  <url>
+    <loc>https://flashcast.com.my/zh/locations/setia-alam</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://flashcast.com.my/en/locations/setia-alam" />
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://flashcast.com.my/zh/locations/setia-alam" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/locations/setia-alam" />
+  </url>
+  <url>
+    <loc>https://flashcast.com.my/en/locations/bangsar</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://flashcast.com.my/en/locations/bangsar" />
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://flashcast.com.my/zh/locations/bangsar" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/locations/bangsar" />
+  </url>
+  <url>
+    <loc>https://flashcast.com.my/zh/locations/bangsar</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://flashcast.com.my/en/locations/bangsar" />
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://flashcast.com.my/zh/locations/bangsar" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/locations/bangsar" />
+  </url>
+  <url>
+    <loc>https://flashcast.com.my/en/locations/ampang</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://flashcast.com.my/en/locations/ampang" />
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://flashcast.com.my/zh/locations/ampang" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/locations/ampang" />
+  </url>
+  <url>
+    <loc>https://flashcast.com.my/zh/locations/ampang</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://flashcast.com.my/en/locations/ampang" />
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://flashcast.com.my/zh/locations/ampang" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/locations/ampang" />
+  </url>
+  <url>
     <loc>https://flashcast.com.my/en/locations/kajang</loc>
     <xhtml:link rel="alternate" hreflang="en" href="https://flashcast.com.my/en/locations/kajang" />
     <xhtml:link rel="alternate" hreflang="zh-CN" href="https://flashcast.com.my/zh/locations/kajang" />
@@ -1895,6 +1955,18 @@
     <xhtml:link rel="alternate" hreflang="en" href="https://flashcast.com.my/en/locations/kajang" />
     <xhtml:link rel="alternate" hreflang="zh-CN" href="https://flashcast.com.my/zh/locations/kajang" />
     <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/locations/kajang" />
+  </url>
+  <url>
+    <loc>https://flashcast.com.my/en/locations/sri-petaling</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://flashcast.com.my/en/locations/sri-petaling" />
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://flashcast.com.my/zh/locations/sri-petaling" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/locations/sri-petaling" />
+  </url>
+  <url>
+    <loc>https://flashcast.com.my/zh/locations/sri-petaling</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://flashcast.com.my/en/locations/sri-petaling" />
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://flashcast.com.my/zh/locations/sri-petaling" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/locations/sri-petaling" />
   </url>
   <url>
     <loc>https://flashcast.com.my/en/locations/rawang</loc>
@@ -1909,28 +1981,16 @@
     <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/locations/rawang" />
   </url>
   <url>
-    <loc>https://flashcast.com.my/en/locations/semenyih</loc>
-    <xhtml:link rel="alternate" hreflang="en" href="https://flashcast.com.my/en/locations/semenyih" />
-    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://flashcast.com.my/zh/locations/semenyih" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/locations/semenyih" />
+    <loc>https://flashcast.com.my/en/locations/cyberjaya</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://flashcast.com.my/en/locations/cyberjaya" />
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://flashcast.com.my/zh/locations/cyberjaya" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/locations/cyberjaya" />
   </url>
   <url>
-    <loc>https://flashcast.com.my/zh/locations/semenyih</loc>
-    <xhtml:link rel="alternate" hreflang="en" href="https://flashcast.com.my/en/locations/semenyih" />
-    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://flashcast.com.my/zh/locations/semenyih" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/locations/semenyih" />
-  </url>
-  <url>
-    <loc>https://flashcast.com.my/en/locations/setia-alam</loc>
-    <xhtml:link rel="alternate" hreflang="en" href="https://flashcast.com.my/en/locations/setia-alam" />
-    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://flashcast.com.my/zh/locations/setia-alam" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/locations/setia-alam" />
-  </url>
-  <url>
-    <loc>https://flashcast.com.my/zh/locations/setia-alam</loc>
-    <xhtml:link rel="alternate" hreflang="en" href="https://flashcast.com.my/en/locations/setia-alam" />
-    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://flashcast.com.my/zh/locations/setia-alam" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/locations/setia-alam" />
+    <loc>https://flashcast.com.my/zh/locations/cyberjaya</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://flashcast.com.my/en/locations/cyberjaya" />
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://flashcast.com.my/zh/locations/cyberjaya" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/locations/cyberjaya" />
   </url>
   <url>
     <loc>https://flashcast.com.my/en/locations/kota-damansara</loc>
@@ -1957,16 +2017,16 @@
     <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/locations/seri-kembangan" />
   </url>
   <url>
-    <loc>https://flashcast.com.my/en/locations/balakong</loc>
-    <xhtml:link rel="alternate" hreflang="en" href="https://flashcast.com.my/en/locations/balakong" />
-    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://flashcast.com.my/zh/locations/balakong" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/locations/balakong" />
+    <loc>https://flashcast.com.my/en/locations/petaling-jaya</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://flashcast.com.my/en/locations/petaling-jaya" />
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://flashcast.com.my/zh/locations/petaling-jaya" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/locations/petaling-jaya" />
   </url>
   <url>
-    <loc>https://flashcast.com.my/zh/locations/balakong</loc>
-    <xhtml:link rel="alternate" hreflang="en" href="https://flashcast.com.my/en/locations/balakong" />
-    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://flashcast.com.my/zh/locations/balakong" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/locations/balakong" />
+    <loc>https://flashcast.com.my/zh/locations/petaling-jaya</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://flashcast.com.my/en/locations/petaling-jaya" />
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://flashcast.com.my/zh/locations/petaling-jaya" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/locations/petaling-jaya" />
   </url>
   <url>
     <loc>https://flashcast.com.my/en/locations/sungai-buloh</loc>
@@ -1981,18 +2041,6 @@
     <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/locations/sungai-buloh" />
   </url>
   <url>
-    <loc>https://flashcast.com.my/en/locations/cyberjaya</loc>
-    <xhtml:link rel="alternate" hreflang="en" href="https://flashcast.com.my/en/locations/cyberjaya" />
-    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://flashcast.com.my/zh/locations/cyberjaya" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/locations/cyberjaya" />
-  </url>
-  <url>
-    <loc>https://flashcast.com.my/zh/locations/cyberjaya</loc>
-    <xhtml:link rel="alternate" hreflang="en" href="https://flashcast.com.my/en/locations/cyberjaya" />
-    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://flashcast.com.my/zh/locations/cyberjaya" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/locations/cyberjaya" />
-  </url>
-  <url>
     <loc>https://flashcast.com.my/en/locations/bukit-jalil</loc>
     <xhtml:link rel="alternate" hreflang="en" href="https://flashcast.com.my/en/locations/bukit-jalil" />
     <xhtml:link rel="alternate" hreflang="zh-CN" href="https://flashcast.com.my/zh/locations/bukit-jalil" />
@@ -2003,18 +2051,6 @@
     <xhtml:link rel="alternate" hreflang="en" href="https://flashcast.com.my/en/locations/bukit-jalil" />
     <xhtml:link rel="alternate" hreflang="zh-CN" href="https://flashcast.com.my/zh/locations/bukit-jalil" />
     <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/locations/bukit-jalil" />
-  </url>
-  <url>
-    <loc>https://flashcast.com.my/en/locations/puchong</loc>
-    <xhtml:link rel="alternate" hreflang="en" href="https://flashcast.com.my/en/locations/puchong" />
-    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://flashcast.com.my/zh/locations/puchong" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/locations/puchong" />
-  </url>
-  <url>
-    <loc>https://flashcast.com.my/zh/locations/puchong</loc>
-    <xhtml:link rel="alternate" hreflang="en" href="https://flashcast.com.my/en/locations/puchong" />
-    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://flashcast.com.my/zh/locations/puchong" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/locations/puchong" />
   </url>
   <url>
     <loc>https://flashcast.com.my/en/locations/mont-kiara</loc>
@@ -2041,18 +2077,6 @@
     <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/locations/selangor" />
   </url>
   <url>
-    <loc>https://flashcast.com.my/en/locations/petaling-jaya</loc>
-    <xhtml:link rel="alternate" hreflang="en" href="https://flashcast.com.my/en/locations/petaling-jaya" />
-    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://flashcast.com.my/zh/locations/petaling-jaya" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/locations/petaling-jaya" />
-  </url>
-  <url>
-    <loc>https://flashcast.com.my/zh/locations/petaling-jaya</loc>
-    <xhtml:link rel="alternate" hreflang="en" href="https://flashcast.com.my/en/locations/petaling-jaya" />
-    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://flashcast.com.my/zh/locations/petaling-jaya" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/locations/petaling-jaya" />
-  </url>
-  <url>
     <loc>https://flashcast.com.my/en/locations/kuala-lumpur</loc>
     <xhtml:link rel="alternate" hreflang="en" href="https://flashcast.com.my/en/locations/kuala-lumpur" />
     <xhtml:link rel="alternate" hreflang="zh-CN" href="https://flashcast.com.my/zh/locations/kuala-lumpur" />
@@ -2065,18 +2089,6 @@
     <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/locations/kuala-lumpur" />
   </url>
   <url>
-    <loc>https://flashcast.com.my/en/locations/cheras</loc>
-    <xhtml:link rel="alternate" hreflang="en" href="https://flashcast.com.my/en/locations/cheras" />
-    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://flashcast.com.my/zh/locations/cheras" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/locations/cheras" />
-  </url>
-  <url>
-    <loc>https://flashcast.com.my/zh/locations/cheras</loc>
-    <xhtml:link rel="alternate" hreflang="en" href="https://flashcast.com.my/en/locations/cheras" />
-    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://flashcast.com.my/zh/locations/cheras" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/locations/cheras" />
-  </url>
-  <url>
     <loc>https://flashcast.com.my/en/locations/shah-alam</loc>
     <xhtml:link rel="alternate" hreflang="en" href="https://flashcast.com.my/en/locations/shah-alam" />
     <xhtml:link rel="alternate" hreflang="zh-CN" href="https://flashcast.com.my/zh/locations/shah-alam" />
@@ -2087,18 +2099,6 @@
     <xhtml:link rel="alternate" hreflang="en" href="https://flashcast.com.my/en/locations/shah-alam" />
     <xhtml:link rel="alternate" hreflang="zh-CN" href="https://flashcast.com.my/zh/locations/shah-alam" />
     <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/locations/shah-alam" />
-  </url>
-  <url>
-    <loc>https://flashcast.com.my/en/locations/kepong</loc>
-    <xhtml:link rel="alternate" hreflang="en" href="https://flashcast.com.my/en/locations/kepong" />
-    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://flashcast.com.my/zh/locations/kepong" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/locations/kepong" />
-  </url>
-  <url>
-    <loc>https://flashcast.com.my/zh/locations/kepong</loc>
-    <xhtml:link rel="alternate" hreflang="en" href="https://flashcast.com.my/en/locations/kepong" />
-    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://flashcast.com.my/zh/locations/kepong" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/locations/kepong" />
   </url>
   <url>
     <loc>https://flashcast.com.my/en/locations/desa-parkcity</loc>
@@ -2173,28 +2173,16 @@
     <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/landing/flooring" />
   </url>
   <url>
-    <loc>https://flashcast.com.my/en/landing/kitchen-cabinet</loc>
-    <xhtml:link rel="alternate" hreflang="en" href="https://flashcast.com.my/en/landing/kitchen-cabinet" />
-    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://flashcast.com.my/zh/landing/kitchen-cabinet" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/landing/kitchen-cabinet" />
+    <loc>https://flashcast.com.my/en/landing/bathroom-renovation</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://flashcast.com.my/en/landing/bathroom-renovation" />
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://flashcast.com.my/zh/landing/bathroom-renovation" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/landing/bathroom-renovation" />
   </url>
   <url>
-    <loc>https://flashcast.com.my/zh/landing/kitchen-cabinet</loc>
-    <xhtml:link rel="alternate" hreflang="en" href="https://flashcast.com.my/en/landing/kitchen-cabinet" />
-    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://flashcast.com.my/zh/landing/kitchen-cabinet" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/landing/kitchen-cabinet" />
-  </url>
-  <url>
-    <loc>https://flashcast.com.my/en/landing/shop-renovation</loc>
-    <xhtml:link rel="alternate" hreflang="en" href="https://flashcast.com.my/en/landing/shop-renovation" />
-    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://flashcast.com.my/zh/landing/shop-renovation" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/landing/shop-renovation" />
-  </url>
-  <url>
-    <loc>https://flashcast.com.my/zh/landing/shop-renovation</loc>
-    <xhtml:link rel="alternate" hreflang="en" href="https://flashcast.com.my/en/landing/shop-renovation" />
-    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://flashcast.com.my/zh/landing/shop-renovation" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/landing/shop-renovation" />
+    <loc>https://flashcast.com.my/zh/landing/bathroom-renovation</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://flashcast.com.my/en/landing/bathroom-renovation" />
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://flashcast.com.my/zh/landing/bathroom-renovation" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/landing/bathroom-renovation" />
   </url>
   <url>
     <loc>https://flashcast.com.my/en/landing/warehouse-shelving</loc>
@@ -2209,16 +2197,16 @@
     <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/landing/warehouse-shelving" />
   </url>
   <url>
-    <loc>https://flashcast.com.my/en/landing/bathroom-renovation</loc>
-    <xhtml:link rel="alternate" hreflang="en" href="https://flashcast.com.my/en/landing/bathroom-renovation" />
-    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://flashcast.com.my/zh/landing/bathroom-renovation" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/landing/bathroom-renovation" />
+    <loc>https://flashcast.com.my/en/landing/shop-renovation</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://flashcast.com.my/en/landing/shop-renovation" />
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://flashcast.com.my/zh/landing/shop-renovation" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/landing/shop-renovation" />
   </url>
   <url>
-    <loc>https://flashcast.com.my/zh/landing/bathroom-renovation</loc>
-    <xhtml:link rel="alternate" hreflang="en" href="https://flashcast.com.my/en/landing/bathroom-renovation" />
-    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://flashcast.com.my/zh/landing/bathroom-renovation" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/landing/bathroom-renovation" />
+    <loc>https://flashcast.com.my/zh/landing/shop-renovation</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://flashcast.com.my/en/landing/shop-renovation" />
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://flashcast.com.my/zh/landing/shop-renovation" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/landing/shop-renovation" />
   </url>
   <url>
     <loc>https://flashcast.com.my/en/landing/office-renovation</loc>
@@ -2243,6 +2231,18 @@
     <xhtml:link rel="alternate" hreflang="en" href="https://flashcast.com.my/en/landing/old-house-renovation" />
     <xhtml:link rel="alternate" hreflang="zh-CN" href="https://flashcast.com.my/zh/landing/old-house-renovation" />
     <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/landing/old-house-renovation" />
+  </url>
+  <url>
+    <loc>https://flashcast.com.my/en/landing/kitchen-cabinet</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://flashcast.com.my/en/landing/kitchen-cabinet" />
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://flashcast.com.my/zh/landing/kitchen-cabinet" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/landing/kitchen-cabinet" />
+  </url>
+  <url>
+    <loc>https://flashcast.com.my/zh/landing/kitchen-cabinet</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://flashcast.com.my/en/landing/kitchen-cabinet" />
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://flashcast.com.my/zh/landing/kitchen-cabinet" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/landing/kitchen-cabinet" />
   </url>
   <url>
     <loc>https://flashcast.com.my/en/landing/custom-built-in</loc>

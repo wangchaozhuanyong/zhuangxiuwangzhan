@@ -862,6 +862,8 @@ const brandPartnerRows = [
   ["Nippon Paint", "/images/brands/nippon-paint.webp"],
   ["Bosch", "/images/brands/bosch.webp"],
   ["GROHE", "/images/brands/grohe.webp"],
+  ["Hettich", "/images/brands/hettich.webp"],
+  ["JOTUN", "/images/brands/jotun.webp"],
 ].map(([name, logo_url], index) => ({
   name,
   logo_url,

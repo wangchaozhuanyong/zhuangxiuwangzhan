@@ -19,8 +19,11 @@ const urls = [...sitemapXml.matchAll(/<loc>(.*?)<\/loc>/g)]
     return target.toString();
   });
 
+const mojibakePattern = /[鍝绯闂澧榫甯鐢閫犵煶]{2,}/;
+
 const zhSuspicious = [
   /\?{3,}/,
+  mojibakePattern,
   /Frequently Asked Questions/,
   /Corporate Office in KL Sentral/,
   /Co-Working Space in PJ/,
@@ -40,10 +43,25 @@ const zhSuspicious = [
 ];
 
 const enSuspicious = [
+  mojibakePattern,
   /旧屋翻新常见问题/,
   /关于马来西亚旧屋翻新/,
   /\?{3,}/,
 ];
+
+async function gotoWithRetry(page, url, attempts = 2) {
+  let lastError;
+  for (let attempt = 1; attempt <= attempts; attempt += 1) {
+    try {
+      await page.goto(url, { waitUntil: "commit", timeout: 45000 });
+      return attempt;
+    } catch (error) {
+      lastError = error;
+      if (attempt < attempts) await page.waitForTimeout(1000);
+    }
+  }
+  throw lastError;
+}
 
 async function scanUrl(context, url, viewportName) {
   const page = await context.newPage();
@@ -58,9 +76,12 @@ async function scanUrl(context, url, viewportName) {
   });
 
   try {
-    await page.goto(url, { waitUntil: "networkidle", timeout: 45000 });
+    const navigationAttempts = await gotoWithRetry(page, url);
+    await page.waitForLoadState("domcontentloaded", { timeout: 15000 }).catch(() => {});
+    await page.waitForLoadState("load", { timeout: 15000 }).catch(() => {});
+    await page.waitForFunction(() => document.body?.innerText.trim().length > 80, { timeout: 15000 }).catch(() => {});
     await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight));
-    await page.waitForTimeout(500);
+    await page.waitForTimeout(1000);
     const text = await page.locator("body").innerText({ timeout: 10000 });
     const brokenImages = await page.locator("img").evaluateAll((imgs) =>
       imgs
@@ -73,7 +94,7 @@ async function scanUrl(context, url, viewportName) {
     const matches = patterns
       .map((pattern) => text.match(pattern)?.[0] || null)
       .filter(Boolean);
-    return { viewportName, url, ok: !badImageResponses.length && !brokenImages.length && !matches.length && overflowX <= 2, badImageResponses, brokenImages, matches, overflowX };
+    return { viewportName, url, ok: !badImageResponses.length && !brokenImages.length && !matches.length && overflowX <= 2, navigationAttempts, badImageResponses, brokenImages, matches, overflowX };
   } catch (error) {
     return { viewportName, url, ok: false, error: error.message };
   } finally {

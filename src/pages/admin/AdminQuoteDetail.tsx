@@ -35,6 +35,7 @@ const AdminQuoteDetail = () => {
   const [nextFollowUpAt, setNextFollowUpAt] = useState("");
   const [message, setMessage] = useState("");
   const [savingFollowup, setSavingFollowup] = useState(false);
+  const [savingField, setSavingField] = useState<string | null>(null);
 
   useEffect(() => {
     if (data?.quote) setQuote(data.quote);
@@ -52,15 +53,21 @@ const AdminQuoteDetail = () => {
     ]);
   };
 
-  const updateQuote = async (patch: Record<string, unknown>) => {
+  const updateQuote = async (patch: Record<string, unknown>, label = "内容") => {
     if (!id) return;
-    setMessage("");
-    const { error: updateError } = await supabase!.from("quote_requests").update(patch).eq("id", id);
-    if (updateError) {
-      setMessage(formatAdminMutationError(updateError));
-      return;
+    setSavingField(label);
+    setMessage(`${label}保存中...`);
+    try {
+      const { error: updateError } = await supabase!.from("quote_requests").update(patch).eq("id", id);
+      if (updateError) {
+        setMessage(`${label}保存失败：${formatAdminMutationError(updateError)}`);
+        return;
+      }
+      setMessage(`${label}已保存。`);
+      await refresh();
+    } finally {
+      setSavingField(null);
     }
-    await refresh();
   };
 
   const addFollowup = async (event: FormEvent) => {
@@ -94,6 +101,7 @@ const AdminQuoteDetail = () => {
       }
       setContent("");
       setNextFollowUpAt("");
+      setMessage("跟进记录已保存。");
       await refresh();
     } finally {
       setSavingFollowup(false);
@@ -109,7 +117,7 @@ const AdminQuoteDetail = () => {
           helpText="这里是单条报价请求的处理页面。你可以在这里填报价、安排上门、补说明。"
         />
 
-        {(message || loadError) && <div className="rounded-xl border border-border bg-card p-4 text-sm">{message || loadError}</div>}
+        {(message || loadError) && <div role="status" aria-live="polite" className="rounded-xl border border-border bg-card p-4 text-sm">{message || loadError}</div>}
         {quote && (
           <>
             <div className="rounded-xl border border-border bg-card p-6">
@@ -135,12 +143,21 @@ const AdminQuoteDetail = () => {
                   <div><span className="text-muted-foreground">预算预估：</span> {quote.estimated_budget || "-"}</div>
                   <div>
                     <label className="mb-1 block text-sm font-medium">报价金额</label>
-                    <Input type="number" value={quote.quoted_amount || ""} onChange={(event) => setQuote({ ...quote, quoted_amount: event.target.value })} onBlur={() => void updateQuote({ quoted_amount: quote.quoted_amount || null })} />
+                    <Input type="number" value={quote.quoted_amount || ""} onChange={(event) => setQuote({ ...quote, quoted_amount: event.target.value })} onBlur={() => void updateQuote({ quoted_amount: quote.quoted_amount || null }, "报价金额")} disabled={savingField === "报价金额"} />
                   </div>
                   <div className="md:col-span-2"><span className="text-muted-foreground">项目详情：</span><p className="mt-1 whitespace-pre-wrap">{quote.project_details || "-"}</p></div>
                   <div>
                     <label className="mb-1 block text-sm font-medium">状态</label>
-                    <select value={quote.status || "pending"} onChange={(event) => void updateQuote({ status: event.target.value })} className="flex h-10 rounded-md border border-input bg-background px-3 py-2 text-sm">
+                    <select
+                      value={quote.status || "pending"}
+                      onChange={(event) => {
+                        const nextStatus = event.target.value;
+                        setQuote({ ...quote, status: nextStatus });
+                        void updateQuote({ status: nextStatus }, "状态");
+                      }}
+                      disabled={savingField === "状态"}
+                      className="flex h-10 rounded-md border border-input bg-background px-3 py-2 text-sm"
+                    >
                       {statuses.map((item) => (
                         <option key={item} value={item}>
                           {translateStatusLabel("quote_requests", item, lang)}
@@ -150,15 +167,15 @@ const AdminQuoteDetail = () => {
                   </div>
                   <div>
                     <label className="mb-1 block text-sm font-medium">有效期至</label>
-                    <Input type="date" value={quote.valid_until || ""} onChange={(event) => setQuote({ ...quote, valid_until: event.target.value })} onBlur={() => void updateQuote({ valid_until: quote.valid_until || null })} />
+                    <Input type="date" value={quote.valid_until || ""} onChange={(event) => setQuote({ ...quote, valid_until: event.target.value })} onBlur={() => void updateQuote({ valid_until: quote.valid_until || null }, "有效期")} disabled={savingField === "有效期"} />
                   </div>
                   <div>
                     <label className="mb-1 block text-sm font-medium">下次跟进</label>
-                    <Input type="datetime-local" value={quote.next_follow_up_at ? quote.next_follow_up_at.slice(0, 16) : ""} onChange={(event) => setQuote({ ...quote, next_follow_up_at: event.target.value })} onBlur={() => void updateQuote({ next_follow_up_at: quote.next_follow_up_at || null })} />
+                    <Input type="datetime-local" value={quote.next_follow_up_at ? quote.next_follow_up_at.slice(0, 16) : ""} onChange={(event) => setQuote({ ...quote, next_follow_up_at: event.target.value })} onBlur={() => void updateQuote({ next_follow_up_at: quote.next_follow_up_at || null }, "下次跟进")} disabled={savingField === "下次跟进"} />
                   </div>
                   <div className="md:col-span-2">
                     <label className="mb-1 block text-sm font-medium">备注</label>
-                    <Textarea rows={4} value={quote.notes || ""} onChange={(event) => setQuote({ ...quote, notes: event.target.value })} onBlur={() => void updateQuote({ notes: quote.notes || null })} />
+                    <Textarea rows={4} value={quote.notes || ""} onChange={(event) => setQuote({ ...quote, notes: event.target.value })} onBlur={() => void updateQuote({ notes: quote.notes || null }, "备注")} disabled={savingField === "备注"} />
                   </div>
                 </div>
               </section>

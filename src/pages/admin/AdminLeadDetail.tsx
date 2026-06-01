@@ -35,6 +35,7 @@ const AdminLeadDetail = () => {
   const [nextFollowUpAt, setNextFollowUpAt] = useState("");
   const [message, setMessage] = useState("");
   const [savingFollowup, setSavingFollowup] = useState(false);
+  const [savingField, setSavingField] = useState<string | null>(null);
 
   useEffect(() => {
     if (data?.lead) setLead(data.lead);
@@ -52,15 +53,21 @@ const AdminLeadDetail = () => {
     ]);
   };
 
-  const updateLead = async (patch: Record<string, unknown>) => {
+  const updateLead = async (patch: Record<string, unknown>, label = "内容") => {
     if (!id) return;
-    setMessage("");
-    const { error: updateError } = await supabase!.from("leads").update(patch).eq("id", id);
-    if (updateError) {
-      setMessage(formatAdminMutationError(updateError));
-      return;
+    setSavingField(label);
+    setMessage(`${label}保存中...`);
+    try {
+      const { error: updateError } = await supabase!.from("leads").update(patch).eq("id", id);
+      if (updateError) {
+        setMessage(`${label}保存失败：${formatAdminMutationError(updateError)}`);
+        return;
+      }
+      setMessage(`${label}已保存。`);
+      await refresh();
+    } finally {
+      setSavingField(null);
     }
-    await refresh();
   };
 
   const addFollowup = async (event: FormEvent) => {
@@ -94,6 +101,7 @@ const AdminLeadDetail = () => {
       }
       setContent("");
       setNextFollowUpAt("");
+      setMessage("跟进记录已保存。");
       await refresh();
     } finally {
       setSavingFollowup(false);
@@ -109,7 +117,7 @@ const AdminLeadDetail = () => {
           helpText="这里是单条咨询的处理页面。你可以在这里改状态、记备注、安排下一次跟进。"
         />
 
-        {(message || loadError) && <div className="rounded-xl border border-border bg-card p-4 text-sm">{message || loadError}</div>}
+        {(message || loadError) && <div role="status" aria-live="polite" className="rounded-xl border border-border bg-card p-4 text-sm">{message || loadError}</div>}
         {lead && (
           <>
             <div className="rounded-xl border border-border bg-card p-6">
@@ -135,7 +143,16 @@ const AdminLeadDetail = () => {
                   <div className="md:col-span-2"><span className="text-muted-foreground">留言：</span><p className="mt-1 whitespace-pre-wrap">{lead.message || "-"}</p></div>
                   <div>
                     <label className="mb-1 block text-sm font-medium">状态</label>
-                    <select value={lead.status || "new"} onChange={(event) => void updateLead({ status: event.target.value })} className="flex h-10 rounded-md border border-input bg-background px-3 py-2 text-sm">
+                    <select
+                      value={lead.status || "new"}
+                      onChange={(event) => {
+                        const nextStatus = event.target.value;
+                        setLead({ ...lead, status: nextStatus });
+                        void updateLead({ status: nextStatus }, "状态");
+                      }}
+                      disabled={savingField === "状态"}
+                      className="flex h-10 rounded-md border border-input bg-background px-3 py-2 text-sm"
+                    >
                       {statuses.map((item) => (
                         <option key={item} value={item}>
                           {translateStatusLabel("leads", item, lang)}
@@ -145,11 +162,11 @@ const AdminLeadDetail = () => {
                   </div>
                   <div>
                     <label className="mb-1 block text-sm font-medium">下次跟进</label>
-                    <Input type="datetime-local" value={lead.next_follow_up_at ? lead.next_follow_up_at.slice(0, 16) : ""} onChange={(event) => setLead({ ...lead, next_follow_up_at: event.target.value })} onBlur={() => void updateLead({ next_follow_up_at: lead.next_follow_up_at || null })} />
+                    <Input type="datetime-local" value={lead.next_follow_up_at ? lead.next_follow_up_at.slice(0, 16) : ""} onChange={(event) => setLead({ ...lead, next_follow_up_at: event.target.value })} onBlur={() => void updateLead({ next_follow_up_at: lead.next_follow_up_at || null }, "下次跟进")} disabled={savingField === "下次跟进"} />
                   </div>
                   <div className="md:col-span-2">
                     <label className="mb-1 block text-sm font-medium">备注</label>
-                    <Textarea rows={4} value={lead.notes || ""} onChange={(event) => setLead({ ...lead, notes: event.target.value })} onBlur={() => void updateLead({ notes: lead.notes || null })} />
+                    <Textarea rows={4} value={lead.notes || ""} onChange={(event) => setLead({ ...lead, notes: event.target.value })} onBlur={() => void updateLead({ notes: lead.notes || null }, "备注")} disabled={savingField === "备注"} />
                   </div>
                 </div>
               </section>

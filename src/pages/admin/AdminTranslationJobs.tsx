@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { useQueryClient } from "@tanstack/react-query";
 import AdminPageHeader from "@/components/admin/AdminPageHeader";
 import AdminStatCard from "@/components/admin/AdminStatCard";
+import { adminConfirm } from "@/components/admin/AdminConfirmProvider";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { translateStatusLabel } from "@/i18n/displayLabels";
@@ -188,7 +189,13 @@ const AdminTranslationJobs = () => {
       toast({ title: t.retryBlocked, variant: "destructive" });
       return;
     }
-    if (!window.confirm(t.retryAllConfirm)) return;
+    const confirmed = await adminConfirm({
+      title: lang === "zh" ? "确认重试全部失败记录？" : "Retry all failed records?",
+      description: t.retryAllConfirm,
+      confirmLabel: lang === "zh" ? "开始重试" : "Retry",
+      confirmVariant: "default",
+    });
+    if (!confirmed) return;
 
     setRetryAllBusy(true);
     setRetryAllProgress({ total: targets.length, done: 0, failed: 0 });

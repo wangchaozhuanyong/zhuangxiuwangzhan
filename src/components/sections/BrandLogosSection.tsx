@@ -13,7 +13,7 @@ const copy = {
   },
   zh: {
     eyebrow: "常用品牌",
-    title: "甄选材料与五金品牌",
+    title: "精选材料与五金品牌",
     subtitle: "我们根据项目预算、风格和施工需求，选用适合住宅、商业空间、定制家具与墙面系统的材料和五金。",
     fallbackCategory: "可选材料品牌",
   },

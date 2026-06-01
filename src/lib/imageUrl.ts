@@ -28,6 +28,7 @@ export function toLocalStaticImageSrc(src: string): string {
 export function preferWebpSrc(src: string): string {
   if (!src || src.startsWith("data:") || src.startsWith("blob:")) return src;
   if (/\.webp(\?|#|$)/i.test(src)) return src;
+  if (ROOT_STATIC_IMAGE_PATTERN.test(src)) return src;
   return src.replace(/\.(jpe?g|png)(\?[^#]*)?($|#)/i, ".webp$2$3");
 }
 

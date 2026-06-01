@@ -1,5 +1,6 @@
 import { useCallback, useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
+import { adminConfirm } from "@/components/admin/AdminConfirmProvider";
 import { invalidateAfterAdminContentSave } from "@/lib/adminInvalidate";
 import { useAdminProjectImages } from "@/lib/adminQueries";
 import { Button } from "@/components/ui/button";
@@ -186,7 +187,12 @@ const AdminProjectImages = ({ projectId }: AdminProjectImagesProps) => {
 
   const deleteImage = async (id: string) => {
     if (deletingId) return;
-    if (!window.confirm(t.confirmDelete)) return;
+    const confirmed = await adminConfirm({
+      title: lang === "zh" ? "确认删除项目图片？" : "Delete project image?",
+      description: t.confirmDelete,
+      confirmLabel: lang === "zh" ? "删除图片" : "Delete",
+    });
+    if (!confirmed) return;
     setDeletingId(id);
     setStatus("");
     try {

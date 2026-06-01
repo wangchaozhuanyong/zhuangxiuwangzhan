@@ -1,5 +1,7 @@
 import { BlogPost } from "./types";
 
+const STATIC_PROJECT_ASSET_VERSION = "20260601-content";
+
 export const blogPosts: BlogPost[] = [
   {
     id: "blog-1",
@@ -38,7 +40,7 @@ A well-planned renovation leads to better results. Take time to plan, choose the
     category: "Guides",
     date: "2025-12-15",
     readTime: "5 min",
-    image: "/images/projects/residential-renovation.webp",
+    image: `/images/projects/residential-renovation.webp?v=${STATIC_PROJECT_ASSET_VERSION}`,
     tags: ["renovation", "condo", "kuala lumpur", "planning", "guide"],
   },
   {

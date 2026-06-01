@@ -21,6 +21,7 @@ const AdminLeadList = lazy(() => import("@/pages/admin/AdminLeadList"));
 const AdminLeadDetail = lazy(() => import("@/pages/admin/AdminLeadDetail"));
 const AdminQuoteList = lazy(() => import("@/pages/admin/AdminQuoteList"));
 const AdminQuoteDetail = lazy(() => import("@/pages/admin/AdminQuoteDetail"));
+const AdminLeadReports = lazy(() => import("@/pages/admin/AdminLeadReports"));
 const AdminServiceList = lazy(() => import("@/pages/admin/AdminServiceList"));
 const AdminServiceEditor = lazy(() => import("@/pages/admin/AdminServiceEditor"));
 const AdminProjectList = lazy(() => import("@/pages/admin/AdminProjectList"));
@@ -78,6 +79,7 @@ export const adminRoutes = (
         <Route path="leads/:id" element={<AdminLeadDetail />} />
         <Route path="quotes" element={<AdminQuoteList />} />
         <Route path="quotes/:id" element={<AdminQuoteDetail />} />
+        <Route path="lead-reports" element={<AdminLeadReports />} />
         <Route path="home" element={<AdminHomeEditor />} />
         <Route path="pages" element={<AdminPages />} />
         <Route path="about" element={<AdminAboutEditor />} />

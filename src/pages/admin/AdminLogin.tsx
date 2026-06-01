@@ -72,6 +72,23 @@ const ToggleButton = ({
   </button>
 );
 
+const formatAdminLoginError = (message: string, language: AdminLang) => {
+  const normalized = message.toLowerCase();
+  if (normalized.includes("invalid login credentials")) {
+    return language === "zh" ? "邮箱或密码不正确，请检查后再试。" : "The email or password is incorrect. Please check and try again.";
+  }
+  if (normalized.includes("email not confirmed")) {
+    return language === "zh" ? "这个邮箱还没有完成验证，请先完成邮箱验证。" : "This email has not been confirmed yet.";
+  }
+  if (normalized.includes("too many") || normalized.includes("rate")) {
+    return language === "zh" ? "尝试次数太多，请稍后再试。" : "Too many attempts. Please try again later.";
+  }
+  if (normalized.includes("network") || normalized.includes("fetch")) {
+    return language === "zh" ? "网络连接异常，请检查网络后再试。" : "Network error. Please check your connection and try again.";
+  }
+  return language === "zh" ? "登录失败，请检查账号、密码或后台权限。" : message || "Sign in failed. Please check your account and permission.";
+};
+
 const AdminLogin = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -105,7 +122,7 @@ const AdminLogin = () => {
     setLoading(false);
 
     if (signInError) {
-      setError(signInError.message);
+      setError(formatAdminLoginError(signInError.message, language));
       return;
     }
 
@@ -115,6 +132,7 @@ const AdminLogin = () => {
   return (
     <main className="flex min-h-screen items-center justify-center bg-background px-4 py-10 text-foreground">
       <Helmet>
+        <title>{`${t.title} | FLASH CAST 后台管理`}</title>
         <meta name="robots" content="noindex, nofollow" />
       </Helmet>
 
@@ -159,16 +177,40 @@ const AdminLogin = () => {
             </div>
           </div>
 
-          {error && <div className="mb-4 rounded-lg border border-destructive/20 bg-destructive/10 p-3 text-sm text-destructive">{error}</div>}
+          {error && (
+            <div role="alert" className="mb-4 rounded-lg border border-destructive/20 bg-destructive/10 p-3 text-sm text-destructive">
+              {error}
+            </div>
+          )}
 
           <div className="space-y-4">
             <div>
-              <label className="mb-1.5 block text-sm font-medium">{t.email}</label>
-              <Input type="email" value={email} onChange={(event) => setEmail(event.target.value)} required />
+              <label htmlFor="admin-login-email" className="mb-1.5 block text-sm font-medium">{t.email}</label>
+              <Input
+                id="admin-login-email"
+                type="email"
+                value={email}
+                onChange={(event) => {
+                  setEmail(event.target.value);
+                  if (error) setError("");
+                }}
+                autoComplete="username"
+                required
+              />
             </div>
             <div>
-              <label className="mb-1.5 block text-sm font-medium">{t.password}</label>
-              <Input type="password" value={password} onChange={(event) => setPassword(event.target.value)} required />
+              <label htmlFor="admin-login-password" className="mb-1.5 block text-sm font-medium">{t.password}</label>
+              <Input
+                id="admin-login-password"
+                type="password"
+                value={password}
+                onChange={(event) => {
+                  setPassword(event.target.value);
+                  if (error) setError("");
+                }}
+                autoComplete="current-password"
+                required
+              />
             </div>
             <Button type="submit" className="h-11 w-full rounded-lg" disabled={loading}>
               {loading ? t.signingIn : t.signIn}

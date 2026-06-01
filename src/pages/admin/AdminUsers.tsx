@@ -9,6 +9,7 @@ import type { AdminUserRow } from "@/lib/adminEditorData";
 import { useAdminUsers } from "@/lib/adminQueries";
 import { formatAdminMutationError, saveAdminRecord } from "@/lib/adminMutation";
 import { useAdminAuth } from "@/pages/admin/AdminAuthProvider";
+import { adminConfirm } from "@/components/admin/AdminConfirmProvider";
 
 const roleLabels: Record<string, string> = {
   super_admin: "超级管理员",
@@ -95,7 +96,12 @@ const AdminUsers = () => {
     if (!isSuperAdmin) return;
     const nextActive = !user.active;
     const actionText = nextActive ? "启用" : "停用";
-    if (!window.confirm(`确认要${actionText}这个管理员吗？这会影响他是否能进入后台。`)) return;
+    const confirmed = await adminConfirm({
+      title: `确认${actionText}管理员？`,
+      description: `这会影响 ${user.email || user.user_id} 是否能进入后台。权限操作会记录日志，请确认后再继续。`,
+      confirmLabel: actionText,
+    });
+    if (!confirmed) return;
 
     setSavingKey(`active:${user.user_id}`);
     setMessage("");
@@ -112,7 +118,12 @@ const AdminUsers = () => {
 
   const updateRole = async (user: AdminUserRow, nextRole: string) => {
     if (!isSuperAdmin || nextRole === user.role) return;
-    if (!window.confirm(`确认把 ${user.email || user.user_id} 的角色改成“${roleLabels[nextRole] || nextRole}”吗？`)) return;
+    const confirmed = await adminConfirm({
+      title: "确认修改管理员角色？",
+      description: `确认把 ${user.email || user.user_id} 的角色改成“${roleLabels[nextRole] || nextRole}”吗？这会改变他能看到和能操作的后台范围。`,
+      confirmLabel: "修改角色",
+    });
+    if (!confirmed) return;
 
     setSavingKey(`role:${user.user_id}`);
     setMessage("");

@@ -43,6 +43,7 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import AdminHelpTip from "@/components/admin/AdminHelpTip";
+import AdminConfirmProvider from "@/components/admin/AdminConfirmProvider";
 import { Sheet, SheetContent, SheetDescription, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { Skeleton } from "@/components/ui/skeleton";
 import { supabase } from "@/lib/supabase";
@@ -88,6 +89,7 @@ type AdminCopy = {
   landingPages: string;
   leads: string;
   quoteRequests: string;
+  leadReports: string;
   media: string;
   seo: string;
   sitemap: string;
@@ -170,6 +172,7 @@ const copy: Record<AdminLang, AdminCopy> = {
     landingPages: "Landing Pages",
     leads: "Leads",
     quoteRequests: "Quote Requests",
+    leadReports: "Lead Reports",
     media: "Media Library",
     seo: "SEO Settings",
     sitemap: "站点地图 / Robots",
@@ -225,6 +228,7 @@ const copy: Record<AdminLang, AdminCopy> = {
     landingPages: "落地页",
     leads: "客户咨询",
     quoteRequests: "报价请求",
+    leadReports: "线索报表",
     media: "媒体库",
     seo: "SEO 设置",
     sitemap: "站点地图 / Robots",
@@ -298,6 +302,7 @@ const navGroups: NavGroup[] = [
     items: [
       { key: "leads", path: "/admin/leads", icon: Users },
       { key: "quoteRequests", path: "/admin/quotes", icon: ClipboardList },
+      { key: "leadReports", path: "/admin/lead-reports", icon: BarChart3 },
     ],
   },
   {
@@ -342,6 +347,7 @@ const readExpandedGroups = () => {
 const normalizeHash = (hash: string) => hash.replace(/^#/, "");
 
 const navItems = navGroups.flatMap((group) => group.items);
+const ADMIN_TITLE_SUFFIX = "FLASH CAST 后台管理";
 
 const hasExactHashNavItem = (pathname: string, hash: string) => {
   const activeHash = normalizeHash(hash);
@@ -354,9 +360,45 @@ const hasExactHashNavItem = (pathname: string, hash: string) => {
 
 const isAdminNavItemActive = (itemPath: string, pathname: string, hash: string) => {
   const [path, fragment] = itemPath.split("#");
-  if (pathname !== path) return false;
+  if (pathname !== path && !(!fragment && pathname.startsWith(`${path}/`))) return false;
   if (fragment) return normalizeHash(hash) === fragment;
   return !hasExactHashNavItem(pathname, hash);
+};
+
+const ensureAdminFormAccessibility = () => {
+  if (typeof document === "undefined") return;
+  let fieldIndex = 0;
+  const fields = Array.from(
+    document.querySelectorAll<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>(
+      "main input:not([type='hidden']):not([type='submit']):not([type='button']), main textarea, main select",
+    ),
+  );
+
+  fields.forEach((field) => {
+    const hasAccessibleName = Boolean(field.labels?.length || field.getAttribute("aria-label") || field.getAttribute("aria-labelledby"));
+    if (hasAccessibleName) return;
+
+    const parent = field.parentElement;
+    let label: HTMLLabelElement | null = null;
+    let cursor = field.previousElementSibling;
+    while (cursor && !label) {
+      if (cursor instanceof HTMLLabelElement) label = cursor;
+      cursor = cursor.previousElementSibling;
+    }
+    label = label || parent?.querySelector("label:not([for])") || null;
+
+    const labelText = label?.textContent?.replace(/\s+/g, " ").trim();
+    const fallbackLabel = labelText || field.getAttribute("placeholder") || field.getAttribute("name") || "后台表单字段";
+
+    if (label) {
+      if (!field.id) {
+        field.id = `admin-field-${Date.now().toString(36)}-${fieldIndex}`;
+      }
+      label.htmlFor = field.id;
+    }
+    field.setAttribute("aria-label", fallbackLabel);
+    fieldIndex += 1;
+  });
 };
 
 const ControlButton = ({
@@ -496,6 +538,19 @@ const AdminLayout = () => {
     return "dashboard" as const;
   }, [location.hash, location.pathname]);
 
+  useEffect(() => {
+    document.title = `${activeNavLabel} | ${ADMIN_TITLE_SUFFIX}`;
+  }, [activeNavLabel]);
+
+  useEffect(() => {
+    ensureAdminFormAccessibility();
+    const main = document.querySelector("main");
+    if (!main) return;
+    const observer = new MutationObserver(() => ensureAdminFormAccessibility());
+    observer.observe(main, { childList: true, subtree: true });
+    return () => observer.disconnect();
+  }, [location.pathname, location.hash, adminLang]);
+
   const activeNavHelp = useMemo(() => {
     const zh = adminLang === "zh";
     switch (activeNavKey) {
@@ -523,6 +578,8 @@ const AdminLayout = () => {
         return zh ? "这里查看客户咨询，并记录跟进、电话和备注。" : "Review enquiries and record follow-ups, calls, and notes.";
       case "quoteRequests":
         return zh ? "这里查看报价请求，并填写报价和处理状态。" : "Review quote requests and fill in pricing and status.";
+      case "leadReports":
+        return zh ? "这里看线索来源、报价表现和装修项目成交漏斗。" : "Review lead sources, quote performance, and renovation conversion funnel.";
       case "media":
         return zh ? "这里集中管理上传图片、用途分类和图片说明。" : "Manage uploaded images, usage categories, and image alt text.";
       case "seo":
@@ -688,6 +745,7 @@ const AdminLayout = () => {
 
   return (
     <div className="min-h-screen bg-background text-foreground">
+      <AdminConfirmProvider />
       <div className="lg:grid lg:min-h-screen lg:grid-cols-[auto_minmax(0,1fr)]">
         <div className="hidden lg:block lg:sticky lg:top-0 lg:h-screen">
           <Nav variant="desktop" />
@@ -750,6 +808,7 @@ const AdminLayout = () => {
                 </Button>
 
                 <Button
+                  type="button"
                   variant="outline"
                   className="h-10 rounded-lg px-3 sm:px-4"
                   onClick={async () => {

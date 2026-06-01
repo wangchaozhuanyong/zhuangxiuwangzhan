@@ -13,4 +13,10 @@ describe("imageUrl", () => {
       "/images/services/renovation-works.webp",
     );
   });
+
+  it("does not rewrite root logo PNG to WebP", () => {
+    expect(optimizeContentImageSrc("https://flashcast.com.my/logo-flashcast.png")).toBe(
+      "/logo-flashcast.png",
+    );
+  });
 });

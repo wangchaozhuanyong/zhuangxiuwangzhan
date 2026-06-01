@@ -4,6 +4,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import AdminPageHeader from "@/components/admin/AdminPageHeader";
 import AdminStatCard from "@/components/admin/AdminStatCard";
 import AdminStatusBadge from "@/components/admin/AdminStatusBadge";
+import { adminConfirm } from "@/components/admin/AdminConfirmProvider";
 import { Button } from "@/components/ui/button";
 import { toast } from "@/hooks/use-toast";
 import { getAdminHealthFieldLabel, useAdminContentHealth, useAdminTranslationJobs } from "@/lib/adminQueries";
@@ -244,9 +245,16 @@ export default function AdminEnglishCenter() {
                     size="sm"
                     variant="outline"
                     onClick={() => {
-                      if (window.confirm("这会覆盖已有英文内容，确定要强制重新生成吗？")) {
-                        void generateEnglish(item.table, item.id, true);
-                      }
+                      void (async () => {
+                        const confirmed = await adminConfirm({
+                          title: "确认强制重新生成英文？",
+                          description: "这会覆盖已有英文内容。建议只在英文内容明显不准确，或需要统一重写时使用。",
+                          confirmLabel: "重新生成",
+                        });
+                        if (confirmed) {
+                          void generateEnglish(item.table, item.id, true);
+                        }
+                      })();
                     }}
                     disabled={busyId === key || batchBusy}
                   >

@@ -14,6 +14,7 @@ import { AdminActionButton, AdminPermissionHint, useAdminPermission } from "@/co
 import { archiveOrDeleteAdminRecord, formatAdminMutationError, saveAdminRecord } from "@/lib/adminMutation";
 import { adminStatusLabel, publishStatusOptions } from "@/lib/adminLocale";
 import { isSupabaseConfigured, supabase } from "@/lib/supabase";
+import { adminConfirm } from "@/components/admin/AdminConfirmProvider";
 
 type CmsPage = {
   id?: string;
@@ -661,7 +662,13 @@ export default function AdminCmsBuilder() {
   };
 
   const archivePage = async () => {
-    if (!pageDraft.id || !window.confirm("确认归档这个页面吗？正式前台将不再显示它。")) return;
+    if (!pageDraft.id) return;
+    const confirmed = await adminConfirm({
+      title: "确认归档这个页面？",
+      description: "归档后正式前台将不再显示它。请确认这个页面不是当前客户需要访问的页面。",
+      confirmLabel: "归档页面",
+    });
+    if (!confirmed) return;
     try {
       await archiveOrDeleteAdminRecord({ table: "cms_pages", id: pageDraft.id, expectedUpdatedAt: pageDraft.updated_at || null, queryClient });
       setMessage("页面已归档。");
@@ -673,7 +680,13 @@ export default function AdminCmsBuilder() {
   };
 
   const archiveSection = async (section: CmsSection) => {
-    if (!section.id || !window.confirm("确认归档这个模块吗？正式前台将不再显示它。")) return;
+    if (!section.id) return;
+    const confirmed = await adminConfirm({
+      title: "确认归档这个模块？",
+      description: "归档后正式前台将不再显示这个页面模块。请确认前台不再需要它。",
+      confirmLabel: "归档模块",
+    });
+    if (!confirmed) return;
     try {
       await archiveOrDeleteAdminRecord({ table: "cms_sections", id: section.id, expectedUpdatedAt: section.updated_at || null, queryClient });
       setMessage("模块已归档。");
@@ -685,7 +698,12 @@ export default function AdminCmsBuilder() {
   };
 
   const restoreRevision = async (revision: CmsRevision) => {
-    if (!window.confirm("确认恢复这个版本吗？当前内容会被该版本覆盖。")) return;
+    const confirmed = await adminConfirm({
+      title: "确认恢复这个版本？",
+      description: "当前内容会被这个历史版本覆盖。建议确认版本时间和内容后再恢复。",
+      confirmLabel: "恢复版本",
+    });
+    if (!confirmed) return;
     const snapshot = { ...revision.snapshot, deleted_at: null } as Record<string, any>;
     try {
       await saveAdminRecord({
