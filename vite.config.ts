@@ -2,10 +2,10 @@ import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react-swc";
 import path from "path";
 import { preferWebpAssets } from "./scripts/vite-prefer-webp.mjs";
-import { SITE_CSP_POLICY } from "./scripts/site-csp.mjs";
+import { LOCAL_SITE_CSP_POLICY } from "./scripts/site-csp.mjs";
 
 const securityHeaders = {
-  "Content-Security-Policy": SITE_CSP_POLICY,
+  "Content-Security-Policy": LOCAL_SITE_CSP_POLICY,
   "X-Frame-Options": "DENY",
   "X-Content-Type-Options": "nosniff",
   "Referrer-Policy": "strict-origin-when-cross-origin",

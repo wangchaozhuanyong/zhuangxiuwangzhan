@@ -7,3 +7,5 @@ export const SITE_CSP_POLICY =
   "img-src 'self' data: blob: https:; media-src 'self' blob: https:; " +
   "connect-src 'self' https://*.supabase.co wss://*.supabase.co https://api.telegram.org https://cloudflareinsights.com https://static.cloudflareinsights.com; " +
   "frame-src https://www.google.com; form-action 'self'; upgrade-insecure-requests";
+
+export const LOCAL_SITE_CSP_POLICY = SITE_CSP_POLICY.replace(/;\s*upgrade-insecure-requests$/, "");
