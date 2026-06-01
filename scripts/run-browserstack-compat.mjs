@@ -1,9 +1,10 @@
-import { Builder, By, until } from "selenium-webdriver";
+import { Builder, By } from "selenium-webdriver";
 
 const username = process.env.BROWSERSTACK_USERNAME;
 const accessKey = process.env.BROWSERSTACK_ACCESS_KEY;
 const baseUrl = (process.env.REAL_BROWSER_BASE_URL || "https://flashcast.com.my").replace(/\/$/, "");
 const buildName = process.env.BROWSERSTACK_BUILD_NAME || `flashcast-real-browser-${new Date().toISOString()}`;
+const waitTimeoutMs = Number(process.env.REAL_BROWSER_WAIT_TIMEOUT_MS || 60_000);
 const selectedTargets = (process.env.REAL_BROWSER_TARGETS || "")
   .split(",")
   .map((target) => target.trim())
@@ -117,17 +118,31 @@ const setSessionStatus = async (driver, status, reason) => {
   }
 };
 
-const waitForVisible = async (driver, selector, timeoutMs = 20_000) => {
-  const element = await driver.wait(until.elementLocated(By.css(selector)), timeoutMs);
-  await driver.wait(async () => element.isDisplayed(), timeoutMs);
-  return element;
+const waitForVisible = async (driver, selector, timeoutMs = waitTimeoutMs) => {
+  await driver.wait(async () => {
+    const elements = await driver.findElements(By.css(selector));
+
+    for (const element of elements) {
+      try {
+        if (await element.isDisplayed()) return true;
+      } catch {
+        // The SPA can replace nodes while BrowserStack is still settling.
+      }
+    }
+
+    return false;
+  }, timeoutMs, `${selector} did not become visible within ${timeoutMs}ms`);
 };
 
 const runPageChecks = async (driver, page) => {
   await driver.get(`${baseUrl}${page.path}`);
 
   for (const selector of page.selectors) {
-    await waitForVisible(driver, selector);
+    try {
+      await waitForVisible(driver, selector);
+    } catch (error) {
+      throw new Error(`${page.path}: ${selector} not visible (${error instanceof Error ? error.message : String(error)})`);
+    }
   }
 
   const result = await driver.executeScript(() => {
@@ -190,6 +205,8 @@ const runTarget = async (target) => {
     .build();
 
   try {
+    await driver.manage().setTimeouts({ pageLoad: 90_000, script: 45_000 });
+
     for (const page of pages) {
       await runPageChecks(driver, page);
     }
