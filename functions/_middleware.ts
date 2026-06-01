@@ -125,8 +125,9 @@ const injectSeo = (html: string, meta: SeoEntry, siteSettings?: SiteSettingsHead
 
   let out = html.replace(/<html\s+lang="[^"]*"/i, `<html lang="${lang}"`);
   out = out.replace(/<title[^>]*>[\s\S]*?<\/title>/i, `<title>${title}</title>`);
-  out = out.replace(
-    /<meta\s+name="description"\s+content="[^"]*"\s*\/?>/i,
+  out = replaceOrInsertTag(
+    out,
+    /<meta\b(?=[^>]*\bname="description")[^>]*>/i,
     `<meta name="description" content="${description}" />`,
   );
 
