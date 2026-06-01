@@ -29,10 +29,15 @@ export default function AdminDataTable<T>({
   const mobileColumns = columns.filter((col) => !col.mobileHidden);
 
   return (
-    <Card className={cn("overflow-hidden rounded-lg border-border bg-card shadow-sm", className)}>
-      <div className="divide-y divide-border md:hidden">
+    <Card
+      className={cn(
+        "overflow-hidden rounded-xl border-border bg-card shadow-sm [&_a]:rounded-md [&_a]:focus-visible:outline-none [&_a]:focus-visible:ring-2 [&_a]:focus-visible:ring-ring max-md:[&_a]:inline-flex max-md:[&_a]:min-h-10 max-md:[&_a]:items-center",
+        className,
+      )}
+    >
+      <div className="divide-y divide-border md:hidden" role="list">
         {rows.map((row) => (
-          <article key={rowKey(row)} className="p-4">
+          <article key={rowKey(row)} className="bg-card p-4 transition-colors hover:bg-muted/35" role="listitem">
             {mobileColumns.map((col, index) => (
               <div
                 key={col.key}
@@ -46,7 +51,7 @@ export default function AdminDataTable<T>({
                 ) : (
                   <>
                     <div className="text-xs font-semibold uppercase tracking-[0.08em] text-muted-foreground">{col.header}</div>
-                    <div className="min-w-0 text-right text-sm sm:text-left">{col.cell(row)}</div>
+                    <div className="min-w-0 text-right text-sm leading-6 sm:text-left">{col.cell(row)}</div>
                   </>
                 )}
               </div>
@@ -56,7 +61,7 @@ export default function AdminDataTable<T>({
         {rows.length === 0 && <div className="p-5">{empty ?? <div className="text-sm text-muted-foreground">{emptyText}</div>}</div>}
       </div>
 
-      <div className="hidden overflow-x-auto md:block">
+      <div className="hidden overflow-x-auto md:block" role="region" aria-label={getAdminLang() === "zh" ? "后台数据表" : "Admin data table"}>
         <Table className="min-w-[760px]">
           <TableHeader>
             <TableRow className="bg-muted/60 hover:bg-muted/60">
@@ -72,9 +77,9 @@ export default function AdminDataTable<T>({
           </TableHeader>
           <TableBody>
             {rows.map((row) => (
-              <TableRow key={rowKey(row)} className="hover:bg-muted/45">
+              <TableRow key={rowKey(row)} className="transition-colors hover:bg-muted/45">
                 {columns.map((col) => (
-                  <TableCell key={col.key} className={cn("min-w-0", col.className)}>
+                  <TableCell key={col.key} className={cn("min-w-0 align-top", col.className)}>
                     {col.cell(row)}
                   </TableCell>
                 ))}

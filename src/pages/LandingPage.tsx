@@ -73,7 +73,7 @@ const LandingPage = () => {
   if (!page) {
     return (
       <main className="pt-site-header section-padding text-center">
-        <PageMeta title={`${t.notFound} | ${t.metaSuffix}`} description={t.notFound} canonicalPath={`/landing/${slug || ""}`} />
+        <PageMeta title={`${t.notFound} | ${t.metaSuffix}`} description={t.notFound} canonicalPath={`/landing/${slug || ""}`} noIndex />
         <h1 className="font-display text-3xl font-bold mb-4">{t.notFound}</h1>
         <Button asChild><Link to="/">{t.backHome}</Link></Button>
       </main>
@@ -178,11 +178,13 @@ const LandingPage = () => {
             <Reveal direction="right" delay={100}>
               <div className="subpage-side-panel p-5 md:p-7">
                 <h3 className="font-semibold text-base mb-4">{t.whyChoose}</h3>
-                <ul className="space-y-3">
+                <ul className="subpage-copy-list">
                   {landingBenefits.map((b) => (
-                    <li key={b} className="flex items-start gap-3">
-                      <CheckCircle className="w-4 h-4 text-accent mt-0.5 shrink-0" />
-                      <span className="text-sm">{b}</span>
+                    <li key={b} className="subpage-copy-item">
+                      <span className="subpage-copy-icon">
+                        <CheckCircle className="h-3.5 w-3.5" />
+                      </span>
+                      <span className="subpage-copy-text">{b}</span>
                     </li>
                   ))}
                 </ul>

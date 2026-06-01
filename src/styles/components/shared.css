@@ -93,6 +93,13 @@
     transform: translateY(-2px);
   }
 
+  .service-catalog-card:focus-visible,
+  .brand-board-link:focus-visible,
+  .projects-showcase-card:focus-visible {
+    outline: 2px solid rgba(184, 150, 93, 0.72);
+    outline-offset: 3px;
+  }
+
   .service-catalog-card:hover::before {
     opacity: 1;
     transform: translateX(28%);

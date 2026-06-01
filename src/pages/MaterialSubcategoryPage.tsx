@@ -70,6 +70,7 @@ const MaterialSubcategoryPage = () => {
   if (!category || !subcategory) {
     return (
       <main className="pt-site-header section-padding text-center">
+        <PageMeta title={t.notFound} description={t.notFound} canonicalPath={`/materials/category/${categorySlug || ""}/${subcategorySlug || ""}`} noIndex />
         <div className="container-narrow mx-auto max-w-lg">
           <div className="subpage-form-panel p-6 md:p-8">
             <h1 className="font-display text-3xl font-bold mb-4">{t.notFound}</h1>

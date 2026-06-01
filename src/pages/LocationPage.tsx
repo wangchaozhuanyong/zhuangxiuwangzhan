@@ -108,6 +108,7 @@ const LocationPage = () => {
   if (!location) {
     return (
       <main className="pt-site-header section-padding text-center">
+        <PageMeta title={t.notFound} description={t.notFound} canonicalPath={`/locations/${slug || ""}`} noIndex />
         <h1 className="font-display text-3xl font-bold mb-4">{t.notFound}</h1>
         <Button asChild><Link to="/">{t.backHome}</Link></Button>
       </main>
@@ -183,11 +184,13 @@ const LocationPage = () => {
                 />
                 <div className="luxury-card-muted p-5">
                   <h3 className="font-semibold text-sm mb-3">{t.propertyTypes}</h3>
-                  <ul className="space-y-2">
+                  <ul className="subpage-copy-list">
                     {location.propertyTypes.map((propertyType: string) => (
-                      <li key={propertyType} className="flex items-start gap-2 text-sm text-muted-foreground">
-                        <CheckCircle className="w-4 h-4 text-accent mt-0.5 shrink-0" />
-                        <span>{displayText(propertyType)}</span>
+                      <li key={propertyType} className="subpage-copy-item">
+                        <span className="subpage-copy-icon">
+                          <CheckCircle className="h-3.5 w-3.5" />
+                        </span>
+                        <span className="subpage-copy-text">{displayText(propertyType)}</span>
                       </li>
                     ))}
                   </ul>
@@ -219,9 +222,11 @@ const LocationPage = () => {
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 max-w-3xl mx-auto">
                   {location.commonNeeds.map((need: string) => (
                     <Reveal key={need}>
-                      <div className="luxury-card-muted flex items-start gap-3 p-4">
-                        <CheckCircle className="w-4 h-4 text-accent mt-0.5 shrink-0" />
-                  <span className="text-sm">{displayText(need)}</span>
+                      <div className="subpage-copy-item">
+                        <span className="subpage-copy-icon">
+                          <CheckCircle className="h-3.5 w-3.5" />
+                        </span>
+                        <span className="subpage-copy-text">{displayText(need)}</span>
                       </div>
                     </Reveal>
                   ))}

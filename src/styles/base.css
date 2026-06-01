@@ -170,7 +170,7 @@
   /* 仅移动端为底部固定行动栏预留空间，避免与页脚/内容重叠 */
   @media (max-width: 767px) {
     html[data-mobile-action-bar="true"] body {
-      padding-bottom: calc(5.7rem + env(safe-area-inset-bottom, 0px));
+      padding-bottom: calc(5.25rem + env(safe-area-inset-bottom, 0px));
     }
   }
 

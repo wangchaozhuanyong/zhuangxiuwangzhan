@@ -172,7 +172,7 @@ const AdminLogin = () => {
             </div>
             <div className="min-w-0">
               <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-accent">{t.brand}</p>
-              <h1 className="mt-1 text-2xl font-semibold tracking-normal">{t.title}</h1>
+              <h2 className="mt-1 text-2xl font-semibold tracking-normal">{t.title}</h2>
               <p className="mt-2 text-sm leading-6 text-muted-foreground">{t.description}</p>
             </div>
           </div>

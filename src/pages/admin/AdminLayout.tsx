@@ -421,7 +421,7 @@ const ControlButton = ({
     aria-label={label}
     onClick={onClick}
     className={cn(
-      "h-8 rounded-full px-3 text-xs font-semibold transition-colors",
+      "h-10 min-w-10 rounded-full px-3 text-xs font-semibold transition-colors",
       active ? "bg-primary text-primary-foreground shadow-sm" : "text-muted-foreground hover:bg-background hover:text-foreground",
     )}
   >
@@ -635,7 +635,7 @@ const AdminLayout = () => {
         title={label}
         aria-current={isActive ? "page" : undefined}
         className={cn(
-          "group flex min-h-9 min-w-0 items-center gap-2.5 rounded-md border border-transparent px-3 py-2 text-sm font-semibold transition-colors",
+          "group flex min-h-10 min-w-0 items-center gap-2.5 rounded-md border border-transparent px-3 py-2 text-sm font-semibold transition-colors",
           isActive
             ? "border border-accent/25 bg-accent/15 text-sidebar-accent-foreground shadow-sm"
             : "text-sidebar-foreground/76 hover:bg-sidebar-accent hover:text-sidebar-accent-foreground",
@@ -786,15 +786,15 @@ const AdminLayout = () => {
 
                 <div className="min-w-0">
                   <p className="text-[11px] font-bold uppercase tracking-[0.16em] text-muted-foreground">{t.currentPage}</p>
-                  <h1 className="flex items-center gap-2 truncate text-base font-semibold leading-6 sm:text-lg">
+                  <div className="flex items-center gap-2 truncate text-base font-semibold leading-6 sm:text-lg">
                     <span className="truncate">{activeNavLabel}</span>
                     <AdminHelpTip text={activeNavHelp} />
-                  </h1>
+                  </div>
                 </div>
               </div>
 
               <div className="flex shrink-0 flex-wrap items-center justify-end gap-2">
-                <div className="hidden h-10 items-center gap-1 rounded-full border border-border bg-muted/60 p-1 sm:inline-flex" aria-label={t.language}>
+                <div className="hidden min-h-12 items-center gap-1 rounded-full border border-border bg-muted/60 p-1 sm:inline-flex" aria-label={t.language}>
                   <ControlButton active={adminLang === "zh"} label="中文" onClick={() => changeLanguage("zh")}>
                     中
                   </ControlButton>
@@ -855,7 +855,7 @@ const AdminLayout = () => {
                   </div>
                 }
               >
-                <div key={adminLang} className="min-w-0">
+                <div key={adminLang} className="min-w-0 [&_a.inline-flex]:min-h-10 [&_button]:min-h-10">
                   <Outlet />
                 </div>
               </Suspense>

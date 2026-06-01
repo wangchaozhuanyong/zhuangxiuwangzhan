@@ -1,3 +1,5 @@
+import { applyHumanizedBlogContent } from "./humanized-blog-content.mjs";
+
 const SUPABASE_URL = process.env.VITE_SUPABASE_URL || process.env.SUPABASE_URL;
 const SERVICE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SERVICE_ROLE_KEY;
 
@@ -482,6 +484,7 @@ const run = async () => {
   await upsert("landing_pages", landingPages);
   await upsert("projects", projects);
   await upsert("materials", materials);
+  const humanizedBlogCount = applyHumanizedBlogContent(blogPosts);
   await upsert("blog_posts", blogPosts);
   await insertRowsIfEmpty("testimonials", testimonials);
 
@@ -521,6 +524,7 @@ const run = async () => {
     projects: projects.length,
     materials: materials.length,
     blog_posts: blogPosts.length,
+    blog_posts_humanized: humanizedBlogCount,
     testimonials: testimonials.length,
   }, null, 2));
 };

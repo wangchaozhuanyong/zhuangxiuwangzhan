@@ -92,6 +92,7 @@ const MaterialDetail = () => {
   if (!material || !category) {
     return (
       <main className="pt-site-header section-padding text-center">
+        <PageMeta title={t.notFound} description={t.notFound} canonicalPath={`/materials/${slug || ""}`} noIndex />
         <div className="container-narrow mx-auto max-w-lg">
           <div className="subpage-form-panel p-6 md:p-8">
             <h1 className="font-display text-3xl font-bold mb-4">{t.notFound}</h1>
@@ -199,9 +200,14 @@ const MaterialDetail = () => {
                       <h3 className="mb-3 flex items-center gap-2 text-sm font-semibold">
                         <CheckCircle2 className="h-4 w-4 text-accent" /> {t.pros}
                       </h3>
-                      <ul className="space-y-2 text-sm text-muted-foreground">
+                      <ul className="subpage-copy-list subpage-copy-list--compact">
                         {pros.map((item: string) => (
-                          <li key={item} className="leading-relaxed">{translateDisplayText(item, language)}</li>
+                          <li key={item} className="subpage-copy-item">
+                            <span className="subpage-copy-icon">
+                              <CheckCircle2 className="h-3.5 w-3.5" />
+                            </span>
+                            <span className="subpage-copy-text">{translateDisplayText(item, language)}</span>
+                          </li>
                         ))}
                       </ul>
                     </div>
@@ -211,9 +217,12 @@ const MaterialDetail = () => {
                       <h3 className="mb-3 flex items-center gap-2 text-sm font-semibold">
                         <AlertCircle className="h-4 w-4 text-muted-foreground" /> {t.cons}
                       </h3>
-                      <ul className="space-y-2 text-sm text-muted-foreground">
+                      <ul className="subpage-copy-list subpage-copy-list--compact">
                         {cons.map((item: string) => (
-                          <li key={item} className="leading-relaxed">{translateDisplayText(item, language)}</li>
+                          <li key={item} className="subpage-copy-item subpage-copy-item--soft">
+                            <span className="subpage-copy-dot" />
+                            <span className="subpage-copy-text">{translateDisplayText(item, language)}</span>
+                          </li>
                         ))}
                       </ul>
                     </div>

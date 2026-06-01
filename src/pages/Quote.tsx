@@ -4,7 +4,7 @@ import LocalizedLink from "@/components/LocalizedLink";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { ArrowRight, CheckCircle, Phone, Clock, MapPin, Loader2, AlertCircle } from "lucide-react";
+import { ArrowRight, CheckCircle, Phone, Clock, MapPin, Loader2, AlertCircle, Images, HelpCircle } from "lucide-react";
 import WhatsAppIcon from "@/components/WhatsAppIcon";
 import PageMeta from "@/components/PageMeta";
 import { JsonLdBreadcrumb } from "@/components/JsonLd";
@@ -109,9 +109,12 @@ const copy = {
     hours: "Mon - Sat: 9 AM - 6 PM",
     sunday: "Sun: By Appointment",
     office: "Taman United, Kuala Lumpur",
-    navServices: "Our Services",
+    navServices: "Quick Links",
     navProjects: "Projects",
     navFaq: "FAQ",
+    navProjectsHint: "View completed renovation work",
+    navFaqHint: "Pricing, process, and warranty questions",
+    navPhoneTitle: "Call / WhatsApp",
     requiredName: "Please enter your name",
     requiredPhone: "Please enter your phone number",
     invalidPhone: "Please enter a valid phone number",
@@ -181,9 +184,12 @@ const copy = {
     hours: "周一至周六：上午 9 点至下午 6 点",
     sunday: "周日：预约制",
     office: "Taman United，吉隆坡",
-    navServices: "服务项目",
+    navServices: "快速入口",
     navProjects: "装修案例",
     navFaq: "常见问题",
+    navProjectsHint: "查看真实装修项目",
+    navFaqHint: "了解报价、流程与售后",
+    navPhoneTitle: "电话咨询",
     requiredName: "请输入姓名",
     requiredPhone: "请输入电话号码",
     invalidPhone: "请输入有效的电话号码",
@@ -541,19 +547,21 @@ const Quote = () => {
 
           <Reveal delay={120}>
             <div className="lg:sticky lg:top-24">
-              <div className="subpage-side-panel p-6">
+              <div className="subpage-side-panel subpage-side-panel--centered p-6">
                 <h2 className="mb-4 font-display text-2xl font-bold">{t.trustTitle}</h2>
-                <ul className="space-y-3">
+                <ul className="subpage-copy-list">
                   {t.trustPoints.map((point) => (
-                    <li key={point} className="flex items-start gap-3 text-sm text-muted-foreground">
-                      <CheckCircle className="mt-0.5 h-4 w-4 shrink-0 text-accent" />
-                      <span>{point}</span>
+                    <li key={point} className="subpage-copy-item">
+                      <span className="subpage-copy-icon">
+                        <CheckCircle className="h-3.5 w-3.5" />
+                      </span>
+                      <span className="subpage-copy-text">{point}</span>
                     </li>
                   ))}
                 </ul>
               </div>
 
-              <div className="subpage-side-panel mt-6 p-6">
+              <div className="subpage-side-panel subpage-side-panel--centered mt-6 p-6">
                 <h3 className="mb-3 font-display text-xl font-bold">{t.chatTitle}</h3>
                 <p className="mb-5 text-sm text-muted-foreground">{t.chatText}</p>
                 <Button asChild className="btn-brand-primary w-full">
@@ -568,16 +576,52 @@ const Quote = () => {
                 </Button>
               </div>
 
-              <div className="subpage-side-panel mt-6 p-6">
+              <div className="subpage-side-panel subpage-side-panel--centered mt-6 p-6">
                 <h3 className="mb-3 font-display text-lg font-bold">{t.navServices}</h3>
-                <div className="space-y-2 text-sm text-muted-foreground">
-                  <p>{t.navProjects}</p>
-                  <p>{t.navFaq}</p>
-                  <p className="flex items-center gap-2">
-                    <Phone className="h-4 w-4 text-accent" />
-                    {t.contactLabel}: {settings.phone_display}
-                  </p>
-                </div>
+                <nav className="quote-side-nav" aria-label={t.navServices}>
+                  <LocalizedLink
+                    to="/projects"
+                    className="quote-side-nav__link"
+                    onClick={() => trackCtaClick("navigation", "quote_sidebar_projects", { destination: "/projects" })}
+                  >
+                    <span className="quote-side-nav__icon">
+                      <Images className="h-4 w-4" />
+                    </span>
+                    <span className="quote-side-nav__copy">
+                      <span className="quote-side-nav__title">{t.navProjects}</span>
+                      <span className="quote-side-nav__hint">{t.navProjectsHint}</span>
+                    </span>
+                    <ArrowRight className="quote-side-nav__arrow h-4 w-4" />
+                  </LocalizedLink>
+                  <LocalizedLink
+                    to="/faq"
+                    className="quote-side-nav__link"
+                    onClick={() => trackCtaClick("navigation", "quote_sidebar_faq", { destination: "/faq" })}
+                  >
+                    <span className="quote-side-nav__icon">
+                      <HelpCircle className="h-4 w-4" />
+                    </span>
+                    <span className="quote-side-nav__copy">
+                      <span className="quote-side-nav__title">{t.navFaq}</span>
+                      <span className="quote-side-nav__hint">{t.navFaqHint}</span>
+                    </span>
+                    <ArrowRight className="quote-side-nav__arrow h-4 w-4" />
+                  </LocalizedLink>
+                  <a
+                    href={settings.phone_href}
+                    className="quote-side-nav__link"
+                    onClick={() => trackCtaClick("phone", "quote_sidebar_phone", { destination: "tel" })}
+                  >
+                    <span className="quote-side-nav__icon">
+                      <Phone className="h-4 w-4" />
+                    </span>
+                    <span className="quote-side-nav__copy">
+                      <span className="quote-side-nav__title">{t.navPhoneTitle}</span>
+                      <span className="quote-side-nav__hint">{settings.phone_display}</span>
+                    </span>
+                    <ArrowRight className="quote-side-nav__arrow h-4 w-4" />
+                  </a>
+                </nav>
               </div>
             </div>
           </Reveal>

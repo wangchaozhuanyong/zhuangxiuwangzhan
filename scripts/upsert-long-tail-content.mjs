@@ -1,4 +1,5 @@
 import { readFileSync, existsSync } from "node:fs";
+import { applyHumanizedBlogContent } from "./humanized-blog-content.mjs";
 
 const loadEnv = () => {
   if (!existsSync(".env")) return;
@@ -233,6 +234,7 @@ const run = async () => {
   const savedProjects = await upsert("projects", projects);
   await upsert("materials", materials);
   await upsert("service_areas", areas);
+  const humanizedBlogCount = applyHumanizedBlogContent(blogPosts);
   await upsert("blog_posts", blogPosts);
 
   const projectIdBySlug = Object.fromEntries(savedProjects.map((project) => [project.slug, project.id]));
@@ -267,6 +269,7 @@ const run = async () => {
     materials_added_or_updated: materials.length,
     service_areas_added_or_updated: areas.length,
     blog_posts_added_or_updated: blogPosts.length,
+    blog_posts_humanized: humanizedBlogCount,
   }, null, 2));
 };
 

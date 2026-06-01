@@ -155,6 +155,17 @@
       transform 180ms ease;
   }
 
+  .site-header a:focus-visible,
+  .site-header button:focus-visible {
+    outline: 2px solid hsl(var(--gold) / 0.78);
+    outline-offset: 3px;
+  }
+
+  .site-header__control:active,
+  .site-header__mobile-button:active {
+    transform: scale(0.97);
+  }
+
   .site-header[data-home="true"][data-scrolled="false"] nav a,
   .site-header[data-home="true"][data-scrolled="false"] .site-header__control {
     color: #fff;
@@ -267,6 +278,10 @@
   .section-padding {
     padding-top: var(--site-section-y);
     padding-bottom: var(--site-section-y);
+  }
+
+  .section-padding.section-padding--continued {
+    padding-top: 0;
   }
 
   .section-header {

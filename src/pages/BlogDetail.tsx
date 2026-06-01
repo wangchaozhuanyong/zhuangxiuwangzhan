@@ -100,6 +100,7 @@ const BlogDetail = () => {
   if (!post) {
     return (
       <main className="pt-site-header section-padding text-center">
+        <PageMeta title={t.notFound} description={t.notFound} canonicalPath={`/blog/${slug || ""}`} noIndex />
         <h1 className="font-display text-3xl font-bold mb-4">{t.notFound}</h1>
         <Button asChild><Link to="/blog">{t.backToBlog}</Link></Button>
       </main>

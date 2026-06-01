@@ -534,7 +534,7 @@ const Contact = () => {
         </div>
       </section>
 
-      <section className="section-padding bg-background">
+      <section className="section-padding section-padding--continued bg-background">
         <div className="container-narrow">
           <Reveal>
             <div className="text-center mb-8">

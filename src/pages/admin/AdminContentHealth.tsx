@@ -1,5 +1,7 @@
 import { useMemo, useState } from "react";
 import { Link } from "react-router-dom";
+import { RefreshCw, Search } from "lucide-react";
+import AdminEmptyState from "@/components/admin/AdminEmptyState";
 import AdminPageHeader from "@/components/admin/AdminPageHeader";
 import AdminStatCard from "@/components/admin/AdminStatCard";
 import AdminStatusBadge from "@/components/admin/AdminStatusBadge";
@@ -56,7 +58,8 @@ export default function AdminContentHealth() {
         description="这里集中检查后台内容有没有缺中文、缺英文、缺 SEO、缺图片。先处理红色和黄色问题，前台展示会更稳定。"
         helpText="这个页面不会直接改内容，只帮你找问题。点击每条内容的“编辑”回到原来的编辑页面修改。"
         actions={
-          <Button type="button" variant="outline" onClick={() => void refetch()} disabled={isFetching}>
+          <Button type="button" variant="outline" onClick={() => void refetch()} disabled={isFetching} aria-busy={isFetching}>
+            <RefreshCw className={isFetching ? "h-4 w-4 animate-spin" : "h-4 w-4"} aria-hidden="true" />
             {isFetching ? "检查中..." : "重新检查"}
           </Button>
         }
@@ -72,21 +75,46 @@ export default function AdminContentHealth() {
         <AdminStatCard label="健康" value={summary.ok} helpText="基础字段都已经补齐的内容。" />
       </div>
 
-      <div className="rounded-xl border border-border bg-card p-5">
-        <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
-          <Input value={search} onChange={(event) => setSearch(event.target.value)} placeholder="搜索内容名称、来源表或问题..." className="lg:max-w-md" />
-          <div className="flex flex-wrap gap-2">
+      <section className="rounded-xl border border-border bg-card p-5 shadow-sm" aria-labelledby="content-health-filter-title">
+        <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+          <div className="min-w-0">
+            <h2 id="content-health-filter-title" className="text-base font-semibold">筛选内容</h2>
+            <p className="mt-1 text-sm text-muted-foreground" aria-live="polite">
+              当前显示 {filtered.length} / {items.length} 条内容。
+            </p>
+          </div>
+          <div className="flex flex-1 flex-col gap-3 lg:max-w-4xl lg:flex-row lg:items-center lg:justify-end">
+            <div className="relative min-w-0 lg:w-80">
+              <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" aria-hidden="true" />
+              <Input
+                value={search}
+                onChange={(event) => setSearch(event.target.value)}
+                placeholder="搜索内容名称、来源表或问题..."
+                aria-label="搜索内容健康记录"
+                className="min-h-10 pl-9"
+              />
+            </div>
+            <div className="flex flex-wrap gap-2" role="group" aria-label="内容健康筛选">
             {filters.map((item) => (
-              <Button key={item.key} type="button" variant={filter === item.key ? "default" : "outline"} size="sm" onClick={() => setFilter(item.key)}>
+              <Button
+                key={item.key}
+                type="button"
+                variant={filter === item.key ? "default" : "outline"}
+                size="sm"
+                className="min-h-10"
+                aria-pressed={filter === item.key}
+                onClick={() => setFilter(item.key)}
+              >
                 {item.label}
               </Button>
             ))}
+            </div>
           </div>
         </div>
-      </div>
+      </section>
 
-      <div className="overflow-hidden rounded-xl border border-border bg-card">
-        <div className="grid grid-cols-[1.2fr_0.8fr_0.6fr_1.6fr_auto] gap-3 border-b border-border bg-muted/50 px-4 py-3 text-xs font-bold text-muted-foreground max-lg:hidden">
+      <section className="overflow-hidden rounded-xl border border-border bg-card shadow-sm" aria-label="内容健康结果">
+        <div className="grid grid-cols-[1.2fr_0.8fr_0.6fr_1.6fr_auto] gap-3 border-b border-border bg-muted/60 px-4 py-3 text-xs font-bold text-muted-foreground max-lg:hidden">
           <span>内容</span>
           <span>来源</span>
           <span>状态</span>
@@ -94,12 +122,18 @@ export default function AdminContentHealth() {
           <span>操作</span>
         </div>
         {filtered.map((item) => (
-          <article key={`${item.table}-${item.id}`} className="grid gap-3 border-b border-border px-4 py-4 last:border-b-0 lg:grid-cols-[1.2fr_0.8fr_0.6fr_1.6fr_auto] lg:items-start">
+          <article
+            key={`${item.table}-${item.id}`}
+            className="grid gap-3 border-b border-border px-4 py-4 transition-colors last:border-b-0 hover:bg-muted/35 lg:grid-cols-[1.2fr_0.8fr_0.6fr_1.6fr_auto] lg:items-start"
+          >
             <div className="min-w-0">
-              <p className="truncate font-semibold">{item.title}</p>
+              <p className="truncate font-semibold text-foreground">{item.title}</p>
+              <p className="mt-1 text-xs text-muted-foreground lg:hidden">{item.tableLabel}</p>
             </div>
-            <p className="text-sm text-muted-foreground">{item.tableLabel}</p>
-            <AdminStatusBadge status={item.status} />
+            <p className="hidden text-sm text-muted-foreground lg:block">{item.tableLabel}</p>
+            <div>
+              <AdminStatusBadge status={item.status} />
+            </div>
             <div className="flex flex-wrap gap-2">
               {item.issues.length ? (
                 item.issues.slice(0, 6).map((issue) => (
@@ -114,19 +148,23 @@ export default function AdminContentHealth() {
               )}
             </div>
             <div className="flex flex-wrap gap-2 lg:justify-end">
-              <Button asChild size="sm" variant="outline">
-                <Link to={item.editHref}>编辑</Link>
+              <Button asChild size="sm" variant="outline" className="min-h-10">
+                <Link to={item.editHref} aria-label={`编辑 ${item.title}`}>编辑</Link>
               </Button>
               {item.frontHref && (
-                <Button asChild size="sm" variant="ghost">
-                  <Link to={item.frontHref}>前台</Link>
+                <Button asChild size="sm" variant="ghost" className="min-h-10">
+                  <Link to={item.frontHref} aria-label={`查看前台 ${item.title}`}>前台</Link>
                 </Button>
               )}
             </div>
           </article>
         ))}
-        {filtered.length === 0 && <div className="p-8 text-sm text-muted-foreground">没有符合条件的内容。</div>}
-      </div>
+        {filtered.length === 0 && (
+          <div className="p-6">
+            <AdminEmptyState title="没有符合条件的内容" description="可以换一个筛选条件，或清空搜索关键词后再检查。" />
+          </div>
+        )}
+      </section>
     </div>
   );
 }

@@ -89,6 +89,27 @@ const normalizePath = (pathname: string) => {
   return cleaned;
 };
 
+const redirect = (to: URL) =>
+  new Response(null, {
+    status: 301,
+    headers: {
+      Location: to.toString(),
+      "Cache-Control": "public, max-age=3600",
+    },
+  });
+
+const isLanguagePrefixedPath = (pathname: string) => /^\/(en|zh)(?:\/|$)/.test(pathname);
+
+const getLegacyCanonicalPath = (pathname: string) => {
+  const cleaned = pathname.replace(/\/+$/, "") || "/";
+  if (isLanguagePrefixedPath(cleaned) || cleaned === "/admin" || cleaned.startsWith("/admin/")) {
+    return null;
+  }
+
+  const englishPath = cleaned === "/" ? "/en" : `/en${cleaned}`;
+  return (manifest as Record<string, SeoEntry>)[englishPath] ? englishPath : null;
+};
+
 const injectSeo = (html: string, meta: SeoEntry, siteSettings?: SiteSettingsHead | null) => {
   const title = escapeHtml(meta.title);
   const description = escapeHtml(meta.description);
@@ -125,6 +146,14 @@ const injectSeo = (html: string, meta: SeoEntry, siteSettings?: SiteSettingsHead
   out = replaceOrInsertTag(out, /<link\b[^>]*rel="apple-touch-icon"[^>]*>/i, `<link rel="apple-touch-icon" href="${favicon}" />`);
 
   return out;
+};
+
+const injectNoIndexNotFound = (html: string, siteSettings?: SiteSettingsHead | null) => {
+  const siteName = escapeHtml(siteSettings?.company_name || siteSettings?.brand_name || "FLASH CAST SDN. BHD.");
+  let out = html.replace(/<title[^>]*>[\s\S]*?<\/title>/i, `<title>Page not found | ${siteName}</title>`);
+  out = replaceOrInsertTag(out, /<meta\b[^>]*name="description"[^>]*>/i, `<meta name="description" content="The requested page was not found." />`);
+  out = replaceOrInsertTag(out, /<meta\b[^>]*name="robots"[^>]*>/i, `<meta name="robots" content="noindex, nofollow" />`);
+  return injectBrandAssets(out, siteSettings);
 };
 
 const injectBrandAssets = (html: string, siteSettings?: SiteSettingsHead | null) => {
@@ -168,8 +197,20 @@ export const onRequest: PagesFunction = async (context) => {
     return next();
   }
 
+  if (url.hostname === "www.flashcast.com.my") {
+    url.hostname = "flashcast.com.my";
+    url.protocol = "https:";
+    return redirect(url);
+  }
+
   if (isAssetPath(url.pathname)) {
     return next();
+  }
+
+  const legacyCanonicalPath = getLegacyCanonicalPath(url.pathname);
+  if (legacyCanonicalPath) {
+    url.pathname = legacyCanonicalPath;
+    return redirect(url);
   }
 
   const appShellUrl = new URL(request.url);
@@ -199,8 +240,8 @@ export const onRequest: PagesFunction = async (context) => {
   const siteSettings = await fetchSiteSettings(env as Record<string, string | undefined>);
 
   const html = await response.text();
-  const transformed = meta ? injectSeo(html, meta, siteSettings) : injectBrandAssets(html, siteSettings);
+  const transformed = meta ? injectSeo(html, meta, siteSettings) : injectNoIndexNotFound(html, siteSettings);
   const headers = new Headers(response.headers);
   applyHtmlNoStoreHeaders(headers);
-  return new Response(transformed, { status: response.status, headers });
+  return new Response(transformed, { status: meta ? response.status : 404, headers });
 };

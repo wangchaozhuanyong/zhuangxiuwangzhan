@@ -16,12 +16,12 @@ export default function AdminHelpTip({ text, className }: AdminHelpTipProps) {
         <button
           type="button"
           className={cn(
-            "inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-full text-muted-foreground transition-colors hover:bg-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+            "inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-muted-foreground transition-colors hover:bg-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
             className,
           )}
           aria-label="使用说明"
         >
-          <CircleHelp className="h-3.5 w-3.5" />
+          <CircleHelp className="h-4 w-4" aria-hidden="true" />
         </button>
       </TooltipTrigger>
       <TooltipContent side="top" className="max-w-xs leading-5">

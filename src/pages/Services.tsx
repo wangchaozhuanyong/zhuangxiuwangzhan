@@ -467,7 +467,11 @@ const Services = () => {
                 return (
                   <Reveal key={`${key}-${service.slug}`} delay={index * 70} direction="none">
                     <article className="service-directory-card luxury-card group hover-lift">
-                      <Link to={`/services/${service.slug}`} className="service-directory-card__media img-zoom">
+                      <Link
+                        to={`/services/${service.slug}`}
+                        className="service-directory-card__media img-zoom"
+                        aria-label={`${t.details}: ${cardTitle}`}
+                      >
                         <SmartImage
                           src={service.image}
                           alt={`${cardTitle} service by FLASH CAST in Kuala Lumpur`}
@@ -493,7 +497,7 @@ const Services = () => {
 
                         <Link to={`/services/${service.slug}`} className="service-directory-card__link">
                           <span>{t.details}</span>
-                          <ArrowRight className="h-4 w-4" />
+                          <ArrowRight className="h-4 w-4" aria-hidden="true" />
                         </Link>
                       </div>
                     </article>

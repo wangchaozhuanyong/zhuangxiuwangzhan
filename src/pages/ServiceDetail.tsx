@@ -229,11 +229,13 @@ const ServiceDetail = () => {
                   <p className="text-muted-foreground leading-relaxed mb-6">{serviceDescription}</p>
                 )}
                 <h3 className="font-semibold mb-3">{t.suitableFor}</h3>
-                <ul className="space-y-2 mb-6">
+                <ul className="subpage-copy-list subpage-copy-list--two mb-6">
                   {serviceSuitableFor.map((item: string) => (
-                    <li key={item} className="flex items-start gap-2 text-sm text-muted-foreground">
-                      <CheckCircle className="w-4 h-4 text-accent mt-0.5 shrink-0" />
-                      {item}
+                    <li key={item} className="subpage-copy-item">
+                      <span className="subpage-copy-icon">
+                        <CheckCircle className="h-3.5 w-3.5" />
+                      </span>
+                      <span className="subpage-copy-text">{item}</span>
                     </li>
                   ))}
                 </ul>
@@ -242,11 +244,11 @@ const ServiceDetail = () => {
             <Reveal direction="right" delay={150}>
               <div>
                 <h3 className="font-semibold mb-3">{t.offer}</h3>
-                <div className="grid grid-cols-1 gap-2">
+                <div className="subpage-copy-list">
                   {serviceItems.map((item: string) => (
-                    <div key={item} className="flex items-center gap-2 py-2.5 px-4 bg-muted rounded-md text-sm transition-colors hover:bg-accent/10">
-                      <span className="w-1.5 h-1.5 rounded-full bg-accent shrink-0" />
-                      {item}
+                    <div key={item} className="subpage-copy-item subpage-copy-item--soft">
+                      <span className="subpage-copy-dot" />
+                      <span className="subpage-copy-text">{item}</span>
                     </div>
                   ))}
                 </div>

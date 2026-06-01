@@ -47,8 +47,8 @@
 
 @keyframes page-hero-copy-in {
   from {
-    opacity: 0;
-    transform: translateY(18px);
+    opacity: 0.86;
+    transform: translateY(10px);
   }
   to {
     opacity: 1;

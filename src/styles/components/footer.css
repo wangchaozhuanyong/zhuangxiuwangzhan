@@ -266,6 +266,10 @@
 
   .footer-link {
     display: inline-flex;
+    min-height: 2.25rem;
+    align-items: center;
+    border-radius: 999px;
+    padding-block: 0.18rem;
     color: rgba(255, 255, 255, 0.58);
     font-size: 0.84rem;
     line-height: 1.45;
@@ -285,6 +289,9 @@
 
   .footer-area-chips a {
     display: inline-flex;
+    min-height: 2.35rem;
+    align-items: center;
+    justify-content: center;
     border: 1px solid rgba(255, 255, 255, 0.1);
     border-radius: 999px;
     background: rgba(255, 255, 255, 0.045);
@@ -370,6 +377,9 @@
   }
 
   .footer-legal a {
+    display: inline-flex;
+    min-height: 2.25rem;
+    align-items: center;
     color: rgba(255, 255, 255, 0.42);
     transition: color 200ms ease;
   }

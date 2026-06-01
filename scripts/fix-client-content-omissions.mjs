@@ -1,3 +1,7 @@
+// Deprecated one-off production repair script.
+// Keep for audit/history only. Do not run against production without a fresh backup
+// and explicit owner approval; current content maintenance should use the admin UI
+// or the documented seed scripts in package.json.
 import fs from "node:fs";
 import path from "node:path";
 import { createClient } from "@supabase/supabase-js";

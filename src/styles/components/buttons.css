@@ -58,6 +58,17 @@
     letter-spacing: 0;
   }
 
+  .btn-brand-primary:focus-visible,
+  .btn-brand-secondary:focus-visible,
+  .btn-on-dark-primary:focus-visible,
+  .btn-on-dark-secondary:focus-visible {
+    outline: 2px solid hsl(var(--gold) / 0.76);
+    outline-offset: 3px;
+    box-shadow:
+      0 0 0 6px hsl(var(--gold) / 0.12),
+      0 18px 42px -30px rgba(21, 18, 14, 0.58);
+  }
+
   .btn-brand-primary::before,
   .btn-brand-secondary::before,
   .btn-on-dark-primary::before,

@@ -281,11 +281,13 @@ const ProjectDetail = () => {
 
               <Reveal delay={150}>
                 <h3 className="font-display text-xl font-bold mb-3">{t.solution}</h3>
-                <ul className="space-y-3 mb-8">
+                <ul className="subpage-copy-list mb-8">
                   {projectHighlights.map((highlight: string) => (
-                    <li key={highlight} className="flex items-start gap-3 text-muted-foreground">
-                      <CheckCircle className="w-4 h-4 text-accent mt-0.5 shrink-0" />
-                      <span className="leading-relaxed">{highlight}</span>
+                    <li key={highlight} className="subpage-copy-item">
+                      <span className="subpage-copy-icon">
+                        <CheckCircle className="h-3.5 w-3.5" />
+                      </span>
+                      <span className="subpage-copy-text">{highlight}</span>
                     </li>
                   ))}
                 </ul>
@@ -343,10 +345,11 @@ const ProjectDetail = () => {
                     <Wrench className="w-4 h-4 text-accent" />
                     <h3 className="font-semibold">{t.scope}</h3>
                   </div>
-                  <ul className="space-y-2">
+                  <ul className="subpage-copy-list subpage-copy-list--compact">
                     {projectScope.map((scope: string) => (
-                      <li key={scope} className="flex items-center gap-2 text-sm text-muted-foreground">
-                        <span className="w-1.5 h-1.5 rounded-full bg-accent shrink-0" />{scope}
+                      <li key={scope} className="subpage-copy-item subpage-copy-item--soft">
+                        <span className="subpage-copy-dot" />
+                        <span className="subpage-copy-text">{scope}</span>
                       </li>
                     ))}
                   </ul>
@@ -359,9 +362,12 @@ const ProjectDetail = () => {
                     <Layers className="w-4 h-4 text-accent" />
                     <h3 className="font-semibold">{t.materials}</h3>
                   </div>
-                  <ul className="space-y-2">
+                  <ul className="subpage-copy-list subpage-copy-list--compact">
                     {projectMaterialsUsed.map((material: string) => (
-                      <li key={material} className="text-sm text-muted-foreground">{material}</li>
+                      <li key={material} className="subpage-copy-item subpage-copy-item--soft">
+                        <span className="subpage-copy-dot" />
+                        <span className="subpage-copy-text">{material}</span>
+                      </li>
                     ))}
                   </ul>
                 </div>

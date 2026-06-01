@@ -1,3 +1,4 @@
+import { Loader2 } from "lucide-react";
 import { Button, type ButtonProps } from "@/components/ui/button";
 import {
   Dialog,
@@ -32,16 +33,17 @@ const AdminConfirmDialog = ({
   onConfirm,
 }: AdminConfirmDialogProps) => (
   <Dialog open={open} onOpenChange={loading ? undefined : onOpenChange}>
-    <DialogContent className="max-w-md rounded-lg">
+    <DialogContent className="max-w-md rounded-xl">
       <DialogHeader>
         <DialogTitle>{title}</DialogTitle>
         <DialogDescription className="leading-6">{description}</DialogDescription>
       </DialogHeader>
-      <DialogFooter>
-        <Button type="button" variant="outline" onClick={() => onOpenChange(false)} disabled={loading}>
+      <DialogFooter className="gap-2 sm:gap-2">
+        <Button type="button" variant="outline" className="min-h-10" onClick={() => onOpenChange(false)} disabled={loading}>
           {cancelLabel}
         </Button>
-        <Button type="button" variant={confirmVariant} onClick={() => void onConfirm()} disabled={loading} aria-busy={loading}>
+        <Button type="button" variant={confirmVariant} className="min-h-10" onClick={() => void onConfirm()} disabled={loading} aria-busy={loading}>
+          {loading && <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />}
           {loading ? "处理中..." : confirmLabel}
         </Button>
       </DialogFooter>

@@ -226,8 +226,15 @@ const OldHouseRenovation = () => {
                 <h2 className="font-display text-2xl md:text-3xl font-bold">{t.scopeTitle}</h2>
               </div>
               <p className="text-muted-foreground mb-6">{t.scopeDescription}</p>
-              <ul className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                {t.scope.map((item) => <li key={item} className="flex items-center gap-2 text-sm"><CheckCircle className="w-3.5 h-3.5 text-gold shrink-0" /> {item}</li>)}
+              <ul className="subpage-copy-list subpage-copy-list--two">
+                {t.scope.map((item) => (
+                  <li key={item} className="subpage-copy-item">
+                    <span className="subpage-copy-icon">
+                      <CheckCircle className="h-3.5 w-3.5" />
+                    </span>
+                    <span className="subpage-copy-text">{item}</span>
+                  </li>
+                ))}
               </ul>
             </div>
           </Reveal>
