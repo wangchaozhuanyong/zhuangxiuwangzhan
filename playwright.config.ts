@@ -2,6 +2,8 @@ import { defineConfig, devices } from "@playwright/test";
 
 const localBaseURL = "http://127.0.0.1:4191";
 const externalBaseURL = process.env.PLAYWRIGHT_BASE_URL;
+const npmCommand = process.platform === "win32" ? "npm.cmd" : "npm";
+const chromiumChannel = process.env.PLAYWRIGHT_CHROMIUM_CHANNEL;
 const browserCompatTests = /browser-compat\.spec\.ts/;
 
 export default defineConfig({
@@ -14,7 +16,7 @@ export default defineConfig({
   webServer: externalBaseURL
     ? undefined
     : {
-        command: "npm.cmd run preview -- --host 127.0.0.1 --port 4191 --strictPort",
+        command: `${npmCommand} run preview -- --host 127.0.0.1 --port 4191 --strictPort`,
         url: localBaseURL,
         reuseExistingServer: true,
         timeout: 120_000,
@@ -27,7 +29,7 @@ export default defineConfig({
   projects: [
     {
       name: "chromium",
-      use: { ...devices["Desktop Chrome"] },
+      use: { ...devices["Desktop Chrome"], ...(chromiumChannel ? { channel: chromiumChannel } : {}) },
     },
     {
       name: "compat-firefox-desktop",
