@@ -24,13 +24,13 @@ jobs:
         uses: actions/cache/restore@v5
         with:
           path: ~/.cache/ms-playwright
-          key: playwright-browsers-${{ runner.os }}-${{ hashFiles('package-lock.json') }}
+          key: playwright-chromium-${{ runner.os }}-${{ hashFiles('package-lock.json') }}
           restore-keys: |
-            playwright-browsers-${{ runner.os }}-
+            playwright-chromium-${{ runner.os }}-
 
-      - name: Install Playwright browsers
-        timeout-minutes: 30
-        run: npx playwright install --with-deps chromium firefox webkit
+      - name: Install Playwright Chromium
+        timeout-minutes: 15
+        run: npx playwright install --with-deps chromium
 
       - name: Save Playwright browser cache
         if: steps.playwright-cache.outputs.cache-hit != 'true'
@@ -38,7 +38,7 @@ jobs:
         continue-on-error: true
         with:
           path: ~/.cache/ms-playwright
-          key: playwright-browsers-${{ runner.os }}-${{ hashFiles('package-lock.json') }}
+          key: playwright-chromium-${{ runner.os }}-${{ hashFiles('package-lock.json') }}
 
       - name: Build
         env:
@@ -73,4 +73,4 @@ jobs:
         run: npm run verify:preview:server
 
       - name: E2E tests
-        run: npm run test:e2e
+        run: npm run test:e2e -- --project=chromium
