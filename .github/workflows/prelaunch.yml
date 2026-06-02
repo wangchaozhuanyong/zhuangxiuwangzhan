@@ -52,6 +52,8 @@ jobs:
           npm run typecheck:strict-core
 
       - name: Preview verification
+        env:
+          PLAYWRIGHT_CHROMIUM_CHANNEL: chrome
         run: npm run verify:preview:server
 
       - name: E2E tests

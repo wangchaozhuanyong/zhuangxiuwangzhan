@@ -1,6 +1,7 @@
 import { chromium } from "@playwright/test";
 
 const baseUrl = process.env.PREVIEW_URL || "http://127.0.0.1:4191";
+const chromiumChannel = process.env.PLAYWRIGHT_CHROMIUM_CHANNEL;
 
 const paths = [
   "/admin",
@@ -15,7 +16,7 @@ const paths = [
   "/zh/contact",
 ];
 
-const browser = await chromium.launch({ headless: true });
+const browser = await chromium.launch({ headless: true, ...(chromiumChannel ? { channel: chromiumChannel } : {}) });
 const results = [];
 
 for (const path of paths) {
