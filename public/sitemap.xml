@@ -265,6 +265,18 @@
     <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/terms" />
   </url>
   <url>
+    <loc>https://flashcast.com.my/en/projects/corporate-office-petaling-jaya</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://flashcast.com.my/en/projects/corporate-office-petaling-jaya" />
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://flashcast.com.my/zh/projects/corporate-office-petaling-jaya" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/projects/corporate-office-petaling-jaya" />
+  </url>
+  <url>
+    <loc>https://flashcast.com.my/zh/projects/corporate-office-petaling-jaya</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://flashcast.com.my/en/projects/corporate-office-petaling-jaya" />
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://flashcast.com.my/zh/projects/corporate-office-petaling-jaya" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/projects/corporate-office-petaling-jaya" />
+  </url>
+  <url>
     <loc>https://flashcast.com.my/en/projects/damansara-heights-semi-d-refurbishment</loc>
     <xhtml:link rel="alternate" hreflang="en" href="https://flashcast.com.my/en/projects/damansara-heights-semi-d-refurbishment" />
     <xhtml:link rel="alternate" hreflang="zh-CN" href="https://flashcast.com.my/zh/projects/damansara-heights-semi-d-refurbishment" />
@@ -287,18 +299,6 @@
     <xhtml:link rel="alternate" hreflang="en" href="https://flashcast.com.my/en/projects/kepong-tv-feature-wall-storage" />
     <xhtml:link rel="alternate" hreflang="zh-CN" href="https://flashcast.com.my/zh/projects/kepong-tv-feature-wall-storage" />
     <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/projects/kepong-tv-feature-wall-storage" />
-  </url>
-  <url>
-    <loc>https://flashcast.com.my/en/projects/corporate-office-petaling-jaya</loc>
-    <xhtml:link rel="alternate" hreflang="en" href="https://flashcast.com.my/en/projects/corporate-office-petaling-jaya" />
-    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://flashcast.com.my/zh/projects/corporate-office-petaling-jaya" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/projects/corporate-office-petaling-jaya" />
-  </url>
-  <url>
-    <loc>https://flashcast.com.my/zh/projects/corporate-office-petaling-jaya</loc>
-    <xhtml:link rel="alternate" hreflang="en" href="https://flashcast.com.my/en/projects/corporate-office-petaling-jaya" />
-    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://flashcast.com.my/zh/projects/corporate-office-petaling-jaya" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/projects/corporate-office-petaling-jaya" />
   </url>
   <url>
     <loc>https://flashcast.com.my/en/projects/puchong-home-library-built-in</loc>
@@ -337,18 +337,6 @@
     <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/projects/home-office-puchong" />
   </url>
   <url>
-    <loc>https://flashcast.com.my/en/projects/balakong-warehouse-office-corner</loc>
-    <xhtml:link rel="alternate" hreflang="en" href="https://flashcast.com.my/en/projects/balakong-warehouse-office-corner" />
-    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://flashcast.com.my/zh/projects/balakong-warehouse-office-corner" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/projects/balakong-warehouse-office-corner" />
-  </url>
-  <url>
-    <loc>https://flashcast.com.my/zh/projects/balakong-warehouse-office-corner</loc>
-    <xhtml:link rel="alternate" hreflang="en" href="https://flashcast.com.my/en/projects/balakong-warehouse-office-corner" />
-    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://flashcast.com.my/zh/projects/balakong-warehouse-office-corner" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/projects/balakong-warehouse-office-corner" />
-  </url>
-  <url>
     <loc>https://flashcast.com.my/en/projects/modern-condo-mont-kiara</loc>
     <xhtml:link rel="alternate" hreflang="en" href="https://flashcast.com.my/en/projects/modern-condo-mont-kiara" />
     <xhtml:link rel="alternate" hreflang="zh-CN" href="https://flashcast.com.my/zh/projects/modern-condo-mont-kiara" />
@@ -359,6 +347,18 @@
     <xhtml:link rel="alternate" hreflang="en" href="https://flashcast.com.my/en/projects/modern-condo-mont-kiara" />
     <xhtml:link rel="alternate" hreflang="zh-CN" href="https://flashcast.com.my/zh/projects/modern-condo-mont-kiara" />
     <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/projects/modern-condo-mont-kiara" />
+  </url>
+  <url>
+    <loc>https://flashcast.com.my/en/projects/balakong-warehouse-office-corner</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://flashcast.com.my/en/projects/balakong-warehouse-office-corner" />
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://flashcast.com.my/zh/projects/balakong-warehouse-office-corner" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/projects/balakong-warehouse-office-corner" />
+  </url>
+  <url>
+    <loc>https://flashcast.com.my/zh/projects/balakong-warehouse-office-corner</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://flashcast.com.my/en/projects/balakong-warehouse-office-corner" />
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://flashcast.com.my/zh/projects/balakong-warehouse-office-corner" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/projects/balakong-warehouse-office-corner" />
   </url>
   <url>
     <loc>https://flashcast.com.my/en/projects/custom-kitchen-bangsar</loc>
@@ -397,18 +397,6 @@
     <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/projects/ampang-landed-exterior-repaint" />
   </url>
   <url>
-    <loc>https://flashcast.com.my/en/projects/sri-petaling-signage-canopy-upgrade</loc>
-    <xhtml:link rel="alternate" hreflang="en" href="https://flashcast.com.my/en/projects/sri-petaling-signage-canopy-upgrade" />
-    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://flashcast.com.my/zh/projects/sri-petaling-signage-canopy-upgrade" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/projects/sri-petaling-signage-canopy-upgrade" />
-  </url>
-  <url>
-    <loc>https://flashcast.com.my/zh/projects/sri-petaling-signage-canopy-upgrade</loc>
-    <xhtml:link rel="alternate" hreflang="en" href="https://flashcast.com.my/en/projects/sri-petaling-signage-canopy-upgrade" />
-    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://flashcast.com.my/zh/projects/sri-petaling-signage-canopy-upgrade" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/projects/sri-petaling-signage-canopy-upgrade" />
-  </url>
-  <url>
     <loc>https://flashcast.com.my/en/projects/luxury-master-bedroom-damansara</loc>
     <xhtml:link rel="alternate" hreflang="en" href="https://flashcast.com.my/en/projects/luxury-master-bedroom-damansara" />
     <xhtml:link rel="alternate" hreflang="zh-CN" href="https://flashcast.com.my/zh/projects/luxury-master-bedroom-damansara" />
@@ -419,6 +407,18 @@
     <xhtml:link rel="alternate" hreflang="en" href="https://flashcast.com.my/en/projects/luxury-master-bedroom-damansara" />
     <xhtml:link rel="alternate" hreflang="zh-CN" href="https://flashcast.com.my/zh/projects/luxury-master-bedroom-damansara" />
     <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/projects/luxury-master-bedroom-damansara" />
+  </url>
+  <url>
+    <loc>https://flashcast.com.my/en/projects/sri-petaling-signage-canopy-upgrade</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://flashcast.com.my/en/projects/sri-petaling-signage-canopy-upgrade" />
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://flashcast.com.my/zh/projects/sri-petaling-signage-canopy-upgrade" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/projects/sri-petaling-signage-canopy-upgrade" />
+  </url>
+  <url>
+    <loc>https://flashcast.com.my/zh/projects/sri-petaling-signage-canopy-upgrade</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://flashcast.com.my/en/projects/sri-petaling-signage-canopy-upgrade" />
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://flashcast.com.my/zh/projects/sri-petaling-signage-canopy-upgrade" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/projects/sri-petaling-signage-canopy-upgrade" />
   </url>
   <url>
     <loc>https://flashcast.com.my/en/projects/petaling-jaya-corporate-office-fit-out</loc>
@@ -2077,18 +2077,6 @@
     <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/locations/putrajaya" />
   </url>
   <url>
-    <loc>https://flashcast.com.my/en/locations/selangor</loc>
-    <xhtml:link rel="alternate" hreflang="en" href="https://flashcast.com.my/en/locations/selangor" />
-    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://flashcast.com.my/zh/locations/selangor" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/locations/selangor" />
-  </url>
-  <url>
-    <loc>https://flashcast.com.my/zh/locations/selangor</loc>
-    <xhtml:link rel="alternate" hreflang="en" href="https://flashcast.com.my/en/locations/selangor" />
-    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://flashcast.com.my/zh/locations/selangor" />
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/locations/selangor" />
-  </url>
-  <url>
     <loc>https://flashcast.com.my/en/locations/kuala-lumpur</loc>
     <xhtml:link rel="alternate" hreflang="en" href="https://flashcast.com.my/en/locations/kuala-lumpur" />
     <xhtml:link rel="alternate" hreflang="zh-CN" href="https://flashcast.com.my/zh/locations/kuala-lumpur" />
@@ -2111,6 +2099,18 @@
     <xhtml:link rel="alternate" hreflang="en" href="https://flashcast.com.my/en/locations/wangsa-maju" />
     <xhtml:link rel="alternate" hreflang="zh-CN" href="https://flashcast.com.my/zh/locations/wangsa-maju" />
     <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/locations/wangsa-maju" />
+  </url>
+  <url>
+    <loc>https://flashcast.com.my/en/locations/selangor</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://flashcast.com.my/en/locations/selangor" />
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://flashcast.com.my/zh/locations/selangor" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/locations/selangor" />
+  </url>
+  <url>
+    <loc>https://flashcast.com.my/zh/locations/selangor</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://flashcast.com.my/en/locations/selangor" />
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://flashcast.com.my/zh/locations/selangor" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/locations/selangor" />
   </url>
   <url>
     <loc>https://flashcast.com.my/en/locations/desa-parkcity</loc>
