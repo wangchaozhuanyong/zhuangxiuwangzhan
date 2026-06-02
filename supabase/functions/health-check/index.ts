@@ -15,6 +15,13 @@ type TableCheck = CheckResult & {
   category: string;
 };
 
+type HealthTableDefinition = {
+  table: string;
+  label: string;
+  category: string;
+  selectColumn?: string;
+};
+
 type SystemEventRow = {
   id: string;
   event_type: string;
@@ -70,7 +77,7 @@ const adminTables = [
   { table: "leads", label: "客户线索", category: "客户数据" },
   { table: "quote_requests", label: "报价请求", category: "客户数据" },
   { table: "notification_settings", label: "通知设置", category: "系统配置" },
-  { table: "admin_users", label: "管理员账户", category: "权限系统" },
+  { table: "admin_users", label: "管理员账户", category: "权限系统", selectColumn: "user_id" },
   { table: "system_event_logs", label: "系统日志", category: "运维日志" },
 ];
 
@@ -113,8 +120,8 @@ const summarizeEvent = (row: SystemEventRow): SystemEventSummary => ({
 const isRecent = (event: SystemEventSummary | null, maxHours = BACKUP_RECENT_HOURS) =>
   Boolean(event && typeof event.age_hours === "number" && event.age_hours <= maxHours);
 
-const checkTable = async (supabase: ReturnType<typeof createClient>, item: { table: string; label: string; category: string }): Promise<TableCheck> => {
-  const { count, error } = await supabase.from(item.table).select("id", { count: "exact", head: true });
+const checkTable = async (supabase: ReturnType<typeof createClient>, item: HealthTableDefinition): Promise<TableCheck> => {
+  const { count, error } = await supabase.from(item.table).select(item.selectColumn || "id", { count: "exact", head: true });
   return {
     table: item.table,
     label: item.label,
