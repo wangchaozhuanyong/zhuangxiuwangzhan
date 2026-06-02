@@ -50,7 +50,8 @@ const json = (body: unknown, status = 200) =>
 
 const clean = (value: unknown, max = 500) => String(value ?? "").trim().slice(0, max);
 
-const phoneOk = (phone: string) => /^[+]?[\d\s-]{7,20}$/.test(phone);
+const phoneOk = (phone: string) => /^(?=.{7,20}$)[+]?\d[\d\s-]*$/.test(phone);
+const emailOk = (email: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 
 const hashText = async (value: string) => {
   const data = new TextEncoder().encode(value);
@@ -140,11 +141,17 @@ serve(async (req) => {
     return json({ error: "Please wait a moment before submitting." }, 400);
   }
 
+  if (body.type !== "contact" && body.type !== "quote") {
+    return json({ error: "Unknown form type" }, 400);
+  }
+
   const supabase = createClient(supabaseUrl, serviceKey);
   const ipHash = await hashText(getClientIp(req));
   const phone = clean(body.phone, 40);
   if (!phoneOk(phone)) return json({ error: "Invalid phone number" }, 400);
   const phoneHash = await hashText(phone);
+  const email = clean(body.email, 200);
+  if (email && !emailOk(email)) return json({ error: "Invalid email" }, 400);
 
   const rate = await checkRateLimit(supabase, body.type, ipHash, phoneHash);
   if (!rate.ok) return json({ error: rate.message }, 429);
@@ -159,7 +166,7 @@ serve(async (req) => {
       id,
       name,
       phone,
-      email: clean(body.email, 200) || null,
+      email: email || null,
       project_type: clean(body.projectType, 120) || null,
       location: clean(body.location, 200) || null,
       message,
@@ -188,7 +195,7 @@ serve(async (req) => {
       id,
       customer_name: name,
       customer_phone: phone,
-      customer_email: clean(body.email, 200) || null,
+      customer_email: email || null,
       project_type: projectType,
       location,
       property_size: clean(body.propertySize, 80) || null,

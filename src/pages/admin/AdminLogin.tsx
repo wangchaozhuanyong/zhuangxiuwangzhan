@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { Helmet } from "react-helmet-async";
 import { Navigate } from "react-router-dom";
 import { Moon, ShieldCheck, Sun } from "lucide-react";
@@ -95,21 +95,27 @@ const AdminLogin = () => {
   const [loading, setLoading] = useState(false);
   const [language, setLanguage] = useState<AdminLang>(() => getAdminLang());
   const [theme, setTheme] = useState<AdminTheme>(() => getAdminTheme());
+  const pendingLanguageRef = useRef(language);
   const t = copy[language];
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     applyAdminTheme(theme, language);
     setAdminTheme(theme);
-    return () => clearAdminTheme();
   }, [theme, language]);
+
+  useEffect(() => {
+    return () => clearAdminTheme();
+  }, []);
 
   if (!isSupabaseConfigured) {
     return <Navigate to="/admin/dashboard" replace />;
   }
 
   const changeLanguage = (nextLanguage: AdminLang) => {
-    setAdminLang(nextLanguage);
+    if (pendingLanguageRef.current === nextLanguage) return;
+    pendingLanguageRef.current = nextLanguage;
     setLanguage(nextLanguage);
+    setAdminLang(nextLanguage);
   };
 
   const handleSubmit = async (event: React.FormEvent) => {

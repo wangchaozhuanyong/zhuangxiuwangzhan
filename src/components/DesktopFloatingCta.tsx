@@ -8,6 +8,9 @@ import { PUBLIC_CHROME_Z } from "@/lib/publicChrome";
 import { useSiteSettings } from "@/hooks/useSiteSettings";
 import { usePublicChrome } from "@/contexts/PublicChromeContext";
 import { trackCtaClick } from "@/lib/analytics";
+import { readBrowserPreference, writeBrowserPreference } from "@/lib/browserPreference";
+
+const CTA_DISMISSED_KEY = "flashcast_cta_dismissed_at";
 
 const copy = {
   en: {
@@ -36,7 +39,7 @@ const DesktopFloatingCta = () => {
   const [contentOverlapZone, setContentOverlapZone] = useState(false);
 
   useEffect(() => {
-    const dismissedAt = Number(localStorage.getItem("flashcast_cta_dismissed_at") || 0);
+    const dismissedAt = Number(readBrowserPreference(CTA_DISMISSED_KEY) || 0);
     const dismissedRecently = Date.now() - dismissedAt < 24 * 60 * 60 * 1000;
     if (dismissedRecently) {
       return;
@@ -91,7 +94,7 @@ const DesktopFloatingCta = () => {
   }, []);
 
   const dismissPrompt = () => {
-    localStorage.setItem("flashcast_cta_dismissed_at", String(Date.now()));
+    writeBrowserPreference(CTA_DISMISSED_KEY, String(Date.now()));
     setShowPrompt(false);
   };
 

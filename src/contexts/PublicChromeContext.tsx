@@ -22,6 +22,7 @@ export function PublicChromeProvider({
 }) {
   const [menuOpen, setMenuOpen] = useState(false);
   const [homeHeroPassed, setHomeHeroPassed] = useState(false);
+  const [subpageHeroPassed, setSubpageHeroPassed] = useState(false);
 
   useLayoutEffect(() => {
     if (!isHomeRoute) {
@@ -51,7 +52,37 @@ export function PublicChromeProvider({
     };
   }, [isHomeRoute]);
 
-  const showMobileActionBar = !isAdminRoute && !suppressMobileActionBar && !menuOpen && (!isHomeRoute || homeHeroPassed);
+  useLayoutEffect(() => {
+    if (isAdminRoute || isHomeRoute || suppressMobileActionBar) {
+      setSubpageHeroPassed(false);
+      return;
+    }
+
+    const updateSubpageHeroPassed = () => {
+      const hero = document.querySelector<HTMLElement>(".page-hero");
+      const fallbackTriggerY = Math.min(window.innerHeight * 0.45, 320);
+      const heroTop = hero ? hero.getBoundingClientRect().top + window.scrollY : 0;
+      const heroHeight = hero?.offsetHeight || fallbackTriggerY;
+      const triggerY = hero ? heroTop + heroHeight * 0.82 : fallbackTriggerY;
+
+      setSubpageHeroPassed(window.scrollY >= triggerY);
+    };
+
+    updateSubpageHeroPassed();
+    const frame = window.requestAnimationFrame(updateSubpageHeroPassed);
+
+    window.addEventListener("scroll", updateSubpageHeroPassed, { passive: true });
+    window.addEventListener("resize", updateSubpageHeroPassed);
+
+    return () => {
+      window.cancelAnimationFrame(frame);
+      window.removeEventListener("scroll", updateSubpageHeroPassed);
+      window.removeEventListener("resize", updateSubpageHeroPassed);
+    };
+  }, [isAdminRoute, isHomeRoute, suppressMobileActionBar]);
+
+  const showMobileActionBar =
+    !isAdminRoute && !suppressMobileActionBar && !menuOpen && (isHomeRoute ? homeHeroPassed : subpageHeroPassed);
 
   useEffect(() => {
     if (menuOpen) {

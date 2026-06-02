@@ -1,6 +1,12 @@
+import { readBrowserPreference, writeBrowserPreference } from "@/lib/browserPreference";
+
 export type Language = "en" | "zh";
 
 export const supportedLanguages: Language[] = ["en", "zh"];
+const PUBLIC_LANG_KEY = "fc-lang";
+const PUBLIC_LANG_COOKIE = "flashcast_lang";
+
+let inMemoryLanguage: Language | null = null;
 
 export const isLanguage = (value?: string | null): value is Language =>
   value === "en" || value === "zh";
@@ -11,10 +17,17 @@ export const getLanguageFromPath = (pathname = window.location.pathname): Langua
 };
 
 export const getDefaultLanguage = (): Language => {
-  const saved = localStorage.getItem("fc-lang");
+  if (isLanguage(inMemoryLanguage)) return inMemoryLanguage;
+
+  const saved = readBrowserPreference(PUBLIC_LANG_KEY, PUBLIC_LANG_COOKIE);
   if (isLanguage(saved)) return saved;
 
   return navigator.language.toLowerCase().startsWith("zh") ? "zh" : "en";
+};
+
+export const rememberLanguage = (language: Language) => {
+  inMemoryLanguage = language;
+  writeBrowserPreference(PUBLIC_LANG_KEY, language, PUBLIC_LANG_COOKIE);
 };
 
 export const stripLanguagePrefix = (pathname: string) => {
@@ -29,5 +42,5 @@ export const withLanguagePrefix = (path: string, language: Language) => {
   return strippedPath === "/" ? `/${language}` : `/${language}${strippedPath}`;
 };
 
-export const switchLanguagePath = (pathname: string, nextLanguage: Language) =>
-  withLanguagePrefix(stripLanguagePrefix(pathname), nextLanguage);
+export const switchLanguagePath = (pathname: string, nextLanguage: Language, search = "", hash = "") =>
+  `${withLanguagePrefix(stripLanguagePrefix(pathname), nextLanguage)}${search}${hash}`;

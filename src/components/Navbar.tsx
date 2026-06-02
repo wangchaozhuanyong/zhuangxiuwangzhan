@@ -76,6 +76,7 @@ const Navbar = () => {
   const mobileMenuRef = useRef<HTMLDivElement>(null);
   const desktopMoreRef = useRef<HTMLDivElement>(null);
   const mobileCloseTimerRef = useRef<number | null>(null);
+  const languageClickTimerRef = useRef<number | null>(null);
   const location = useLocation();
   const navigate = useNavigate();
   const { language, setLanguage } = useLanguage();
@@ -96,6 +97,12 @@ const Navbar = () => {
     if (mobileCloseTimerRef.current === null) return;
     window.clearTimeout(mobileCloseTimerRef.current);
     mobileCloseTimerRef.current = null;
+  }, []);
+
+  const clearLanguageClickTimer = useCallback(() => {
+    if (languageClickTimerRef.current === null) return;
+    window.clearTimeout(languageClickTimerRef.current);
+    languageClickTimerRef.current = null;
   }, []);
 
   const openMobileMenu = useCallback(() => {
@@ -124,12 +131,22 @@ const Navbar = () => {
     }, getMobileMenuCloseDelay());
   }, [clearMobileCloseTimer, isOpen, setIsOpen]);
 
-  useEffect(() => () => clearMobileCloseTimer(), [clearMobileCloseTimer]);
+  useEffect(() => {
+    return () => {
+      clearMobileCloseTimer();
+      clearLanguageClickTimer();
+    };
+  }, [clearLanguageClickTimer, clearMobileCloseTimer]);
 
   const changeLanguage = () => {
+    if (languageClickTimerRef.current !== null) return;
+
     const nextLanguage = language === "en" ? "zh" : "en";
+    languageClickTimerRef.current = window.setTimeout(() => {
+      languageClickTimerRef.current = null;
+    }, 360);
     setLanguage(nextLanguage);
-    navigate(switchLanguagePath(location.pathname, nextLanguage));
+    navigate(switchLanguagePath(location.pathname, nextLanguage, location.search, location.hash));
   };
 
   useEffect(() => {

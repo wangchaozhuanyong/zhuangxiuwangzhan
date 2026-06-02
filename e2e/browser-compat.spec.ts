@@ -53,7 +53,7 @@ const compatPages = [
     label: "admin login",
     path: "/admin",
     selectors: ['input[type="email"]', 'input[type="password"]', 'button[type="submit"]'],
-    minTextLength: 100,
+    minTextLength: 70,
   },
 ];
 

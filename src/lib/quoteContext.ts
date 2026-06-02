@@ -5,12 +5,14 @@ const knownProjectTypes = new Set([
   "Commercial / Office Fit-Out",
   "Custom Built-In Furniture",
   "Kitchen Cabinet",
+  "Bathroom Renovation",
   "Shop Renovation",
   "Office Renovation",
+  "Old House Renovation",
   "Warehouse & Shelving",
   "Exterior Works",
   "Artistic Wall / Coating",
-  "Others",
+  "Other",
 ]);
 
 const serviceSlugProjectType: Record<string, string> = {
@@ -18,13 +20,13 @@ const serviceSlugProjectType: Record<string, string> = {
   design: "Residential Renovation",
   builtin: "Custom Built-In Furniture",
   kitchen: "Kitchen Cabinet",
-  bathroom: "Residential Renovation",
+  bathroom: "Bathroom Renovation",
   office: "Office Renovation",
   shoplot: "Shop Renovation",
   "shop-renovation": "Shop Renovation",
   "artistic-coating": "Artistic Wall / Coating",
-  "old-house": "Residential Renovation",
-  approval: "Others",
+  "old-house": "Old House Renovation",
+  approval: "Other",
   warehouse: "Warehouse & Shelving",
   exterior: "Exterior Works",
 };
@@ -32,13 +34,29 @@ const serviceSlugProjectType: Record<string, string> = {
 const projectTypeMap: Record<string, string> = {
   residential: "Residential Renovation",
   commercial: "Commercial / Office Fit-Out",
+  "commercial / office fit-out": "Commercial / Office Fit-Out",
   "built-in": "Custom Built-In Furniture",
   builtin: "Custom Built-In Furniture",
+  "custom built-in furniture": "Custom Built-In Furniture",
+  kitchen: "Kitchen Cabinet",
+  "kitchen cabinet": "Kitchen Cabinet",
+  bathroom: "Bathroom Renovation",
   warehouse: "Warehouse & Shelving",
+  "warehouse & shelving": "Warehouse & Shelving",
   exterior: "Exterior Works",
+  "exterior / shopfront works": "Exterior Works",
   office: "Office Renovation",
+  "office renovation": "Office Renovation",
   shop: "Shop Renovation",
   shoplot: "Shop Renovation",
+  "shop renovation": "Shop Renovation",
+  "old house renovation": "Old House Renovation",
+  "artistic coating": "Artistic Wall / Coating",
+  "artistic wall coating": "Artistic Wall / Coating",
+  "artistic wall coating (remmers)": "Artistic Wall / Coating",
+  "artistic wall / coating": "Artistic Wall / Coating",
+  other: "Other",
+  others: "Other",
 };
 
 export type QuoteSource = "service" | "project" | "material" | "services" | "projects" | "materials" | "floating" | "general";
@@ -63,7 +81,8 @@ const clean = (value?: string | null) => String(value || "").trim();
 
 const validProjectType = (value?: string | null) => {
   const text = clean(value);
-  return knownProjectTypes.has(text) ? text : "";
+  if (knownProjectTypes.has(text)) return text;
+  return projectTypeMap[text.toLowerCase()] || "";
 };
 
 export const quoteProjectTypeFromServiceSlug = (slug?: string, fallbackTitle?: string) => {
@@ -83,7 +102,7 @@ export const quoteProjectTypeFromServiceSlug = (slug?: string, fallbackTitle?: s
 
 export const quoteProjectTypeFromProjectType = (projectType?: string) => {
   const key = clean(projectType).toLowerCase();
-  return projectTypeMap[key] || validProjectType(projectType) || "Others";
+  return projectTypeMap[key] || validProjectType(projectType) || "Other";
 };
 
 export const buildQuotePath = (context: QuoteContextInput = {}) => {

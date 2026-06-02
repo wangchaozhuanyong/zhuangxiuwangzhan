@@ -1,35 +1,49 @@
 import { translateStatusLabel } from "@/i18n/displayLabels";
 import type { Language } from "@/i18n/routes";
+import { readBrowserPreference, writeBrowserPreference } from "@/lib/browserPreference";
 
 export type AdminLang = Language;
 export type AdminTheme = "light" | "dark";
 
 export const ADMIN_LANG_KEY = "flashcast_admin_lang";
 export const ADMIN_THEME_KEY = "flashcast_admin_theme";
+const ADMIN_LANG_COOKIE = "flashcast_admin_lang";
+const ADMIN_THEME_COOKIE = "flashcast_admin_theme";
+
+let inMemoryAdminLang: AdminLang | null = null;
+let inMemoryAdminTheme: AdminTheme | null = null;
 
 const isAdminLang = (value: string | null): value is AdminLang => value === "zh" || value === "en";
 const isAdminTheme = (value: string | null): value is AdminTheme => value === "light" || value === "dark";
 
 export const getAdminLang = (): AdminLang => {
-  if (typeof window === "undefined") return "zh";
-  const stored = window.localStorage.getItem(ADMIN_LANG_KEY);
-  return isAdminLang(stored) ? stored : "zh";
+  if (isAdminLang(inMemoryAdminLang)) return inMemoryAdminLang;
+  const stored = readBrowserPreference(ADMIN_LANG_KEY, ADMIN_LANG_COOKIE);
+  if (isAdminLang(stored)) {
+    inMemoryAdminLang = stored;
+    return stored;
+  }
+  return "zh";
 };
 
 export const setAdminLang = (language: AdminLang) => {
-  if (typeof window === "undefined") return;
-  window.localStorage.setItem(ADMIN_LANG_KEY, language);
+  inMemoryAdminLang = language;
+  writeBrowserPreference(ADMIN_LANG_KEY, language, ADMIN_LANG_COOKIE);
 };
 
 export const getAdminTheme = (): AdminTheme => {
-  if (typeof window === "undefined") return "light";
-  const stored = window.localStorage.getItem(ADMIN_THEME_KEY);
-  return isAdminTheme(stored) ? stored : "light";
+  if (isAdminTheme(inMemoryAdminTheme)) return inMemoryAdminTheme;
+  const stored = readBrowserPreference(ADMIN_THEME_KEY, ADMIN_THEME_COOKIE);
+  if (isAdminTheme(stored)) {
+    inMemoryAdminTheme = stored;
+    return stored;
+  }
+  return "light";
 };
 
 export const setAdminTheme = (theme: AdminTheme) => {
-  if (typeof window === "undefined") return;
-  window.localStorage.setItem(ADMIN_THEME_KEY, theme);
+  inMemoryAdminTheme = theme;
+  writeBrowserPreference(ADMIN_THEME_KEY, theme, ADMIN_THEME_COOKIE);
 };
 
 export const applyAdminTheme = (theme: AdminTheme, language: AdminLang = getAdminLang()) => {

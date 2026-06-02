@@ -16,17 +16,21 @@ import { useSiteSettings } from "@/hooks/useSiteSettings";
 import { usePublishedSitePage } from "@/hooks/usePublishedContent";
 import HeroBanner from "@/components/blocks/HeroBanner";
 import { trackCtaClick, trackQuoteFormSubmit } from "@/lib/analytics";
+import { isValidLeadEmail, isValidLeadPhone } from "@/lib/leadValidation";
 import { pageHeroImages, resolvePageHeroImage } from "@/lib/pageHeroImages";
 import { formatQuoteContextLabel, parseQuoteContext } from "@/lib/quoteContext";
 
 const projectTypes = [
   { value: "Residential Renovation", en: "Residential Renovation", zh: "住宅装修" },
   { value: "Commercial / Office Fit-Out", en: "Commercial / Office Fit-Out", zh: "商业 / 办公室装修" },
+  { value: "Office Renovation", en: "Office Renovation", zh: "办公室装修" },
   { value: "Custom Built-In Furniture", en: "Custom Built-In Furniture", zh: "定制内嵌家具" },
   { value: "Kitchen Cabinet", en: "Kitchen Cabinet", zh: "厨房橱柜" },
+  { value: "Bathroom Renovation", en: "Bathroom Renovation", zh: "浴室装修" },
   { value: "Shop Renovation", en: "Shop Renovation", zh: "店铺装修" },
-  { value: "Artistic Wall Coating (Remmers)", en: "Artistic Wall Coating (Remmers)", zh: "艺术墙面涂装（Remmers）" },
-  { value: "Exterior / Shopfront Works", en: "Exterior / Shopfront Works", zh: "外墙 / 门面工程" },
+  { value: "Old House Renovation", en: "Old House Renovation", zh: "老房翻新" },
+  { value: "Artistic Wall / Coating", en: "Artistic Wall / Coating", zh: "艺术墙面涂装" },
+  { value: "Exterior Works", en: "Exterior / Shopfront Works", zh: "外墙 / 门面工程" },
   { value: "Warehouse & Shelving", en: "Warehouse & Shelving", zh: "仓库与货架工程" },
   { value: "Other", en: "Other", zh: "其他" },
 ];
@@ -257,8 +261,8 @@ const Quote = () => {
     const next: FormErrors = {};
     if (!form.name.trim()) next.name = t.requiredName;
     if (!form.phone.trim()) next.phone = t.requiredPhone;
-    else if (!/^[+]?\d[\d\s-]{6,}$/.test(form.phone.trim())) next.phone = t.invalidPhone;
-    if (form.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email.trim())) next.email = t.invalidEmail;
+    else if (!isValidLeadPhone(form.phone)) next.phone = t.invalidPhone;
+    if (form.email && !isValidLeadEmail(form.email)) next.email = t.invalidEmail;
     if (!form.projectType) next.projectType = t.requiredProject;
     if (!form.location.trim()) next.location = t.requiredLocation;
     const hasErrors = Object.keys(next).length > 0;

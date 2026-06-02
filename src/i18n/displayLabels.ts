@@ -12,14 +12,27 @@ const humanize = (value: string) =>
 const projectTypeLabels: Record<string, LabelPair> = {
   residential: { en: "Residential", zh: "住宅" },
   commercial: { en: "Commercial", zh: "商业" },
+  "residential renovation": { en: "Residential Renovation", zh: "住宅装修" },
+  "commercial / office fit-out": { en: "Commercial / Office Fit-Out", zh: "商业 / 办公室装修" },
   "built-in": { en: "Built-In", zh: "定制内嵌家具" },
   builtin: { en: "Built-In", zh: "定制内嵌家具" },
+  "custom built-in furniture": { en: "Custom Built-In Furniture", zh: "定制内嵌家具" },
   warehouse: { en: "Warehouse", zh: "仓库" },
+  "warehouse & shelving": { en: "Warehouse & Shelving", zh: "仓库与货架工程" },
   exterior: { en: "Exterior", zh: "外墙" },
+  "exterior works": { en: "Exterior Works", zh: "外墙 / 门面工程" },
   office: { en: "Office", zh: "办公室" },
+  "office renovation": { en: "Office Renovation", zh: "办公室装修" },
   kitchen: { en: "Kitchen", zh: "厨房" },
+  "kitchen cabinet": { en: "Kitchen Cabinet", zh: "厨房橱柜" },
   bathroom: { en: "Bathroom", zh: "浴室" },
+  "bathroom renovation": { en: "Bathroom Renovation", zh: "浴室装修" },
   retail: { en: "Retail", zh: "零售" },
+  "shop renovation": { en: "Shop Renovation", zh: "店铺装修" },
+  "old house renovation": { en: "Old House Renovation", zh: "老房翻新" },
+  "artistic wall / coating": { en: "Artistic Wall / Coating", zh: "艺术墙面涂装" },
+  other: { en: "Other", zh: "其他" },
+  others: { en: "Other", zh: "其他" },
 };
 
 const materialCategoryLabels: Record<string, LabelPair> = {

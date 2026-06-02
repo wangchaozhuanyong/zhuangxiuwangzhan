@@ -1,4 +1,4 @@
-import { useEffect, type ReactNode } from "react";
+import { useEffect, useLayoutEffect, useRef, type ReactNode } from "react";
 import { Helmet } from "react-helmet-async";
 import { Link, Navigate, Outlet } from "react-router-dom";
 import AdminHelpTip from "@/components/admin/AdminHelpTip";
@@ -67,11 +67,23 @@ const AdminRoute = () => {
   const theme = getAdminTheme();
   const t = copy[lang];
   const sitePath = adminPublicSitePath(lang);
+  const ownsAdminThemeRef = useRef(false);
+  const shouldOwnAdminTheme = authState !== "signed-in";
+
+  useLayoutEffect(() => {
+    if (!shouldOwnAdminTheme) {
+      ownsAdminThemeRef.current = false;
+      return;
+    }
+    ownsAdminThemeRef.current = true;
+    applyAdminTheme(theme, lang);
+  }, [shouldOwnAdminTheme, theme, lang]);
 
   useEffect(() => {
-    applyAdminTheme(theme, lang);
-    return () => clearAdminTheme();
-  }, [theme, lang]);
+    return () => {
+      if (ownsAdminThemeRef.current) clearAdminTheme();
+    };
+  }, []);
 
   if (!isSupabaseConfigured) {
     return (

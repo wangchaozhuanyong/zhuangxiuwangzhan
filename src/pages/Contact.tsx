@@ -17,6 +17,7 @@ import { useSiteSettings } from "@/hooks/useSiteSettings";
 import { usePublishedSitePage } from "@/hooks/usePublishedContent";
 import HeroBanner from "@/components/blocks/HeroBanner";
 import { trackCtaClick, trackEvent } from "@/lib/analytics";
+import { isValidLeadEmail, isValidLeadPhone } from "@/lib/leadValidation";
 import { pageHeroImages, resolvePageHeroImage } from "@/lib/pageHeroImages";
 
 const serviceItems = {
@@ -223,8 +224,8 @@ const Contact = () => {
     const e: FormErrors = {};
     if (!form.name.trim()) e.name = t.requiredName;
     if (!form.phone.trim()) e.phone = t.requiredPhone;
-    else if (!/^[+]?\d[\d\s-]{6,}$/.test(form.phone.trim())) e.phone = t.invalidPhone;
-    if (form.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email.trim())) e.email = t.invalidEmail;
+    else if (!isValidLeadPhone(form.phone)) e.phone = t.invalidPhone;
+    if (form.email && !isValidLeadEmail(form.email)) e.email = t.invalidEmail;
     if (!form.message.trim()) e.message = t.requiredMessage;
     else if (form.message.trim().length < 10) e.message = t.shortMessage;
     const hasErrors = Object.keys(e).length > 0;

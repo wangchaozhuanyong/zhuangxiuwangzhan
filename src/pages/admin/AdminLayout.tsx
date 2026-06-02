@@ -1,4 +1,4 @@
-import { Suspense, useEffect, useMemo, useRef, useState } from "react";
+import { Suspense, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Link, Outlet, useLocation } from "react-router-dom";
 import {
@@ -336,7 +336,11 @@ const navGroups: NavGroup[] = [
 
 const readNavCollapsed = () => {
   if (typeof window === "undefined") return false;
-  return window.localStorage.getItem(NAV_COLLAPSED_KEY) === "1";
+  try {
+    return window.localStorage.getItem(NAV_COLLAPSED_KEY) === "1";
+  } catch {
+    return false;
+  }
 };
 
 const readExpandedGroups = () => {
@@ -447,6 +451,7 @@ const AdminLayout = () => {
   const [adminBrandIconFailed, setAdminBrandIconFailed] = useState(false);
   const seedSummary = useAdminDefaultContentSeed({ enabled: location.pathname === "/admin/dashboard" });
   const lastBuildCheckAtRef = useRef(0);
+  const pendingAdminLangRef = useRef(adminLang);
   const t = copy[adminLang];
   const { data: adminSiteSettings = fallbackSiteSettings } = useQuery({
     queryKey: ["site-settings"],
@@ -530,12 +535,14 @@ const AdminLayout = () => {
     [location.pathname, visibleNavGroups],
   );
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     applyAdminTheme(theme, adminLang);
     setAdminTheme(theme);
-
-    return () => clearAdminTheme();
   }, [theme, adminLang]);
+
+  useEffect(() => {
+    return () => clearAdminTheme();
+  }, []);
 
   useEffect(() => {
     if (!activeGroupKeys.length) return;
@@ -546,11 +553,19 @@ const AdminLayout = () => {
     const keys = Object.entries(expandedGroups)
       .filter(([, value]) => Boolean(value))
       .map(([key]) => key);
-    window.localStorage.setItem(NAV_EXPANDED_KEY, JSON.stringify(keys));
+    try {
+      window.localStorage.setItem(NAV_EXPANDED_KEY, JSON.stringify(keys));
+    } catch {
+      // Keep the admin usable in browser modes that block localStorage writes.
+    }
   }, [expandedGroups]);
 
   useEffect(() => {
-    window.localStorage.setItem(NAV_COLLAPSED_KEY, navCollapsed ? "1" : "0");
+    try {
+      window.localStorage.setItem(NAV_COLLAPSED_KEY, navCollapsed ? "1" : "0");
+    } catch {
+      // Navigation state is optional; a storage failure should not break language switching.
+    }
   }, [navCollapsed]);
 
   useEffect(() => {
@@ -682,8 +697,10 @@ const AdminLayout = () => {
   const websitePath = adminPublicSitePath(adminLang);
 
   const changeLanguage = (nextLanguage: AdminLang) => {
-    setAdminLang(nextLanguage);
+    if (pendingAdminLangRef.current === nextLanguage) return;
+    pendingAdminLangRef.current = nextLanguage;
     setAdminLangState(nextLanguage);
+    setAdminLang(nextLanguage);
   };
 
   const NavLink = ({ item, compact }: { item: NavItem; compact: boolean }) => {
@@ -930,7 +947,7 @@ const AdminLayout = () => {
                   </div>
                 }
               >
-                <div key={adminLang} className="min-w-0 [&_a.inline-flex]:min-h-10 [&_button]:min-h-10">
+                <div data-admin-language={adminLang} className="min-w-0 [&_a.inline-flex]:min-h-10 [&_button]:min-h-10">
                   <Outlet />
                 </div>
               </Suspense>
