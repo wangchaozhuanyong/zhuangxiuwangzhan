@@ -28,8 +28,6 @@ const copy = {
     intro: "Browse our curated selection for your renovation project, from custom cabinetry to furniture, bathroom fittings, flooring, and more.",
     choose: "Choose by Category",
     chooseText: "Select a category to explore options for your project",
-    categoryLabel: "Category",
-    subcategories: "subcategories",
     view: "View",
     ctaTitle: "Interested in a Material?",
     ctaText: "Contact us to request samples, check availability, or get a quotation for your project.",
@@ -48,8 +46,6 @@ const copy = {
     intro: "浏览适合您装修项目的精选材料，从定制橱柜、家具到浴室配件、地板等，一站式查看。",
     choose: "按分类浏览",
     chooseText: "选择一个分类，查看适合您项目的材料选项",
-    categoryLabel: "材料分类",
-    subcategories: "个子分类",
     view: "查看",
     ctaTitle: "对某种材料感兴趣？",
     ctaText: "欢迎联系我们索取样板、确认库存，或获取项目报价。",
@@ -121,16 +117,16 @@ const Materials = () => {
                   />
                 </div>
                 <div className="material-directory-card__body">
-                  <span className="material-directory-card__eyebrow">{t.categoryLabel}</span>
                   <h3 className="material-directory-card__title">{displayCategoryName(category.name)}</h3>
                   <p className="material-directory-card__text">
                     {displayCategoryDescription(category.description)}
                   </p>
                   <div className="material-directory-card__footer">
-                    <span>
-                      {category.subcategories.length} {t.subcategories}
-                    </span>
-                    <Link to={`/materials/category/${category.slug}`} className="material-card-action">
+                    <Link
+                      to={`/materials/category/${category.slug}`}
+                      className="material-card-action"
+                      aria-label={`${t.view} ${displayCategoryName(category.name)}`}
+                    >
                       {t.view} <ArrowRight className="h-3.5 w-3.5" />
                     </Link>
                   </div>

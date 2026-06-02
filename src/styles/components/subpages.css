@@ -828,21 +828,6 @@
     padding: 0.9rem 0.4rem 0.25rem;
   }
 
-  .material-directory-card__eyebrow {
-    width: fit-content;
-    max-width: 100%;
-    overflow: hidden;
-    border-radius: 999px;
-    background: rgba(198, 164, 106, 0.12);
-    color: rgba(112, 83, 40, 0.9);
-    font-size: 0.68rem;
-    font-weight: 800;
-    line-height: 1.2;
-    padding: 0.32rem 0.58rem;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-  }
-
   .material-directory-card__title {
     display: -webkit-box;
     margin: 0;
@@ -874,21 +859,10 @@
     display: flex;
     min-width: 0;
     align-items: center;
-    justify-content: space-between;
-    gap: 0.8rem;
+    justify-content: stretch;
     margin-top: auto;
     border-top: 1px solid rgba(184, 150, 93, 0.16);
     padding-top: 0.75rem;
-    color: hsl(var(--muted-foreground));
-    font-size: 0.76rem;
-    font-weight: 700;
-  }
-
-  .material-directory-card__footer > span {
-    min-width: 0;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
   }
 
   .material-card-action {
@@ -917,6 +891,18 @@
     background: #241d15;
     color: #fffaf0;
     box-shadow: 0 14px 30px -22px rgba(21, 18, 14, 0.75);
+  }
+
+  .material-directory-card .material-card-action {
+    width: 100%;
+    min-width: 0;
+    min-height: 2.65rem;
+    padding-inline: 1rem;
+    white-space: nowrap;
+  }
+
+  .material-directory-card .material-card-action svg {
+    flex: 0 0 auto;
   }
 
   .material-directory-card:hover .material-directory-card__title {
