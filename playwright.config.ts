@@ -10,7 +10,7 @@ export default defineConfig({
   testDir: "e2e",
   timeout: externalBaseURL ? 120_000 : 90_000,
   fullyParallel: true,
-  workers: externalBaseURL ? 2 : 4,
+  workers: externalBaseURL ? 1 : 4,
   retries: 0,
   reporter: "line",
   webServer: externalBaseURL
