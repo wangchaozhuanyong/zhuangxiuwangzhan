@@ -88,7 +88,7 @@ export const resolveSiteSettings = (
 ): ResolvedSiteSettings => {
   const merged = { ...fallbackSiteSettings, ...(settings || {}) };
   const phoneE164 = merged.phone_e164 || normalizePhoneHref(merged.phone_display);
-  const whatsappNumber = merged.whatsapp_number || normalizeWhatsAppNumber(phoneE164);
+  const whatsappNumber = normalizeWhatsAppNumber(merged.whatsapp_number || phoneE164);
   const address = language === "zh" ? merged.address_zh || merged.address_en : merged.address_en || merged.address_zh;
   const shortAddress = language === "zh" ? merged.short_address_zh || merged.short_address_en : merged.short_address_en || merged.short_address_zh;
 

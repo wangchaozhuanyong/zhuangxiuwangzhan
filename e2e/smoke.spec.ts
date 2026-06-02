@@ -73,6 +73,88 @@ test.describe("public site smoke", () => {
     await expect(page.locator("#quote-details")).toHaveValue("我想做类似案例：Mont Kiara Condo。");
   });
 
+  test("quote form can reach success state without duplicate data writes", async ({ page }) => {
+    let submitCount = 0;
+    await page.route("**/functions/v1/submit-lead", async (route) => {
+      submitCount += 1;
+      await route.fulfill({
+        status: 200,
+        contentType: "application/json",
+        body: JSON.stringify({ ok: true, id: "quote-e2e" }),
+      });
+    });
+
+    await gotoSmokePage(page, "/zh/quote");
+    await page.waitForLoadState("load");
+    await page.locator("#quote-name").fill("验收测试");
+    await page.locator("#quote-phone").fill("+601128853888");
+    await page.locator("#quote-email").fill("customer@example.com");
+    await page.locator("#quote-location").fill("Kuala Lumpur");
+    await page.locator("#quote-project-type").selectOption("Residential Renovation");
+    await page.locator("#quote-details").fill("这是一次报价流程验收测试，不会写入真实数据。");
+    await page.getByRole("button", { name: "提交报价请求" }).click();
+
+    await expect(page.getByRole("heading", { name: "报价请求已提交！" })).toBeVisible();
+    expect(submitCount).toBe(1);
+  });
+
+  test("quote form shows backend error state and fallback contact actions", async ({ page }) => {
+    await page.route("**/functions/v1/submit-lead", async (route) => {
+      await route.fulfill({
+        status: 400,
+        contentType: "application/json",
+        body: JSON.stringify({ error: "Invalid form data" }),
+      });
+    });
+
+    await gotoSmokePage(page, "/zh/quote");
+    await page.waitForLoadState("load");
+    await page.locator("#quote-name").fill("验收测试");
+    await page.locator("#quote-phone").fill("+601128853888");
+    await page.locator("#quote-location").fill("Kuala Lumpur");
+    await page.locator("#quote-project-type").selectOption("Residential Renovation");
+    await page.getByRole("button", { name: "提交报价请求" }).click();
+
+    await expect(page.getByText("提交失败")).toBeVisible();
+    await expect(page.locator('a[href^="https://wa.me/"]').first()).toBeVisible();
+  });
+
+  test("contact form validates empty required fields before submit", async ({ page }) => {
+    let submitCount = 0;
+    await page.route("**/functions/v1/submit-lead", async (route) => {
+      submitCount += 1;
+      await route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify({ ok: true }) });
+    });
+
+    await gotoSmokePage(page, "/zh/contact");
+    await page.waitForLoadState("load");
+    await page.getByRole("button", { name: "发送信息" }).click();
+
+    await expect(page.getByText("请输入姓名")).toBeVisible();
+    await expect(page.getByText("请输入电话号码")).toBeVisible();
+    await expect(page.getByText("请输入留言内容")).toBeVisible();
+    expect(submitCount).toBe(0);
+  });
+
+  test("quote form rejects phone values that backend also rejects", async ({ page }) => {
+    let submitCount = 0;
+    await page.route("**/functions/v1/submit-lead", async (route) => {
+      submitCount += 1;
+      await route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify({ ok: true }) });
+    });
+
+    await gotoSmokePage(page, "/zh/quote");
+    await page.waitForLoadState("load");
+    await page.locator("#quote-name").fill("验收测试");
+    await page.locator("#quote-phone").fill("+601128853888999999999");
+    await page.locator("#quote-location").fill("Kuala Lumpur");
+    await page.locator("#quote-project-type").selectOption("Residential Renovation");
+    await page.getByRole("button", { name: "提交报价请求" }).click();
+
+    await expect(page.getByText("请输入有效的电话号码")).toBeVisible();
+    expect(submitCount).toBe(0);
+  });
+
   test("service detail exposes contextual quote links", async ({ page }) => {
     await gotoSmokePage(page, "/zh/services/renovation");
     await page.waitForLoadState("load");
@@ -109,7 +191,7 @@ test.describe("admin authenticated smoke", () => {
 
     await gotoSmokePage(page, "/admin/system-health");
     await page.waitForLoadState("load");
-    await expect(page.getByText(/系统健康|System Health/i)).toBeVisible();
-    await expect(page.getByText(/备份和恢复状态|Backup/i)).toBeVisible();
+    await expect(page.getByRole("heading", { name: /系统健康|System Health/i })).toBeVisible();
+    await expect(page.getByRole("heading", { name: /备份和恢复状态|Backup/i })).toBeVisible();
   });
 });

@@ -5,7 +5,7 @@ const normalizeWhatsAppNumber = (phone: string) => phone.replace(/[^\d]/g, "");
 
 const phoneDisplay = env.VITE_SITE_PHONE_DISPLAY || "+60 11-2885 3888";
 const phoneE164 = env.VITE_SITE_PHONE_E164 || "+601128853888";
-const whatsappNumber = env.VITE_SITE_WHATSAPP_NUMBER || normalizeWhatsAppNumber(phoneE164);
+const whatsappNumber = normalizeWhatsAppNumber(env.VITE_SITE_WHATSAPP_NUMBER || phoneE164);
 
 export const siteConfig = {
   name: "FLASH CAST SDN. BHD.",
