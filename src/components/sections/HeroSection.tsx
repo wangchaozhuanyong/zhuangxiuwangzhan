@@ -272,11 +272,11 @@ const HeroSection = ({ pageContent }: HeroSectionProps) => {
 
       <div className="relative z-10 flex min-h-[100svh] items-center justify-center px-4 py-24">
         <div className="home-hero-content flex w-full max-w-4xl flex-col items-center justify-center text-center">
-          <h1 id="home-hero-title" className="sr-only">
+          <h1 id="home-hero-title" className="home-hero-title">
             {heroTitle}
           </h1>
           {heroDescription && (
-            <p className="sr-only">
+            <p className="home-hero-description">
               {heroDescription}
             </p>
           )}

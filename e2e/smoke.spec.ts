@@ -59,6 +59,20 @@ test.describe("public site smoke", () => {
     await expect(page.locator("#quote-details")).toHaveValue(/Mont Kiara Condo/);
   });
 
+  test("language switch keeps quote query context", async ({ page }) => {
+    await page.setViewportSize({ width: 1440, height: 1000 });
+    await gotoSmokePage(page, "/en/quote?source=project&title=Mont%20Kiara%20Condo&projectType=Residential%20Renovation&location=Mont%20Kiara#quote-name");
+    await page.waitForLoadState("load");
+
+    await page.getByRole("button", { name: "Switch language" }).click();
+
+    await expect(page).toHaveURL(/\/zh\/quote\?source=project&title=Mont%20Kiara%20Condo&projectType=Residential%20Renovation&location=Mont%20Kiara#quote-name$/);
+    await expect(page.getByText("已带入案例：Mont Kiara Condo")).toBeVisible();
+    await expect(page.locator("#quote-project-type")).toHaveValue("Residential Renovation");
+    await expect(page.locator("#quote-location")).toHaveValue("Mont Kiara");
+    await expect(page.locator("#quote-details")).toHaveValue("我想做类似案例：Mont Kiara Condo。");
+  });
+
   test("service detail exposes contextual quote links", async ({ page }) => {
     await gotoSmokePage(page, "/zh/services/renovation");
     await page.waitForLoadState("load");

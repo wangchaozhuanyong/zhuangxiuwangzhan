@@ -1,4 +1,4 @@
-import { FormEvent, useMemo, useState } from "react";
+import { FormEvent, useEffect, useMemo, useRef, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import LocalizedLink from "@/components/LocalizedLink";
 import { Button } from "@/components/ui/button";
@@ -228,6 +228,7 @@ const Quote = () => {
   const settings = useSiteSettings();
   const t = copy[language];
   const quoteContext = useMemo(() => parseQuoteContext(searchParams, language), [language, searchParams]);
+  const previousQuoteContextRef = useRef(quoteContext);
   const contextLabel = formatQuoteContextLabel(quoteContext, language);
   const { data: pageContent } = usePublishedSitePage(language, "quote");
   const heroImage = resolvePageHeroImage(pageContent?.image_url, pageHeroImages.quote);
@@ -246,6 +247,21 @@ const Quote = () => {
   const [status, setStatus] = useState<"idle" | "submitting" | "success" | "error">("idle");
   const formGuard = useFormGuard();
   const [honeypot, setHoneypot] = useState("");
+
+  useEffect(() => {
+    const previous = previousQuoteContextRef.current;
+
+    setForm((current) => {
+      return {
+        ...current,
+        projectType: current.projectType === previous.projectType ? quoteContext.projectType : current.projectType,
+        location: current.location === previous.location ? quoteContext.location : current.location,
+        details: current.details === previous.details ? quoteContext.details : current.details,
+      };
+    });
+
+    previousQuoteContextRef.current = quoteContext;
+  }, [quoteContext]);
 
   const updateForm = (key: keyof typeof form, value: string) => {
     setForm((current) => ({ ...current, [key]: value }));
