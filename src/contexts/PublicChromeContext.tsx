@@ -12,10 +12,12 @@ const PublicChromeContext = createContext<PublicChromeContextValue | null>(null)
 export function PublicChromeProvider({
   isAdminRoute,
   isHomeRoute,
+  suppressMobileActionBar = false,
   children,
 }: {
   isAdminRoute: boolean;
   isHomeRoute: boolean;
+  suppressMobileActionBar?: boolean;
   children: ReactNode;
 }) {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -49,7 +51,7 @@ export function PublicChromeProvider({
     };
   }, [isHomeRoute]);
 
-  const showMobileActionBar = !isAdminRoute && !menuOpen && (!isHomeRoute || homeHeroPassed);
+  const showMobileActionBar = !isAdminRoute && !suppressMobileActionBar && !menuOpen && (!isHomeRoute || homeHeroPassed);
 
   useEffect(() => {
     if (menuOpen) {

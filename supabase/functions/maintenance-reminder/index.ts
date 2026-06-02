@@ -1,5 +1,7 @@
 import { serve } from "https://deno.land/std@0.224.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { getServiceRoleKey, requireAdminAccess, requireSuperAdminAccess } from "../_shared/admin-auth.ts";
+import { formatAdminDateTime } from "../_shared/admin-notification-format.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -24,14 +26,6 @@ type ReminderItem = {
   description: string;
   frequency: "weekly" | "monthly";
   sort_order: number;
-};
-
-type AdminCheck = {
-  ok: boolean;
-  status: number;
-  error: string | null;
-  mode: "admin" | "cron";
-  role?: string | null;
 };
 
 const categoryLabelMap: Record<string, string> = {
@@ -60,44 +54,7 @@ const itemTitleMap: Record<string, string> = {
   "monthly-location-material": "扩充一个地区页或材料页",
 };
 
-const getServiceRoleKey = () =>
-  Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") || Deno.env.get("SERVICE_ROLE_KEY");
-
 const siteUrl = () => Deno.env.get("SITE_URL") || "https://flashcast.com.my";
-
-const requireAdmin = async (
-  req: Request,
-  supabase: ReturnType<typeof createClient>,
-): Promise<AdminCheck> => {
-  const cronSecret = Deno.env.get("MAINTENANCE_REMINDER_CRON_SECRET");
-  const incomingSecret = req.headers.get("x-cron-secret");
-  if (cronSecret && incomingSecret && incomingSecret === cronSecret) {
-    return { ok: true, status: 200, error: null, mode: "cron" };
-  }
-
-  const token = req.headers.get("Authorization")?.replace(/^Bearer\s+/i, "");
-  if (!token) return { ok: false, status: 401, error: "Missing authorization token", mode: "admin" };
-
-  const { data: userData, error: userError } = await supabase.auth.getUser(token);
-  if (userError || !userData.user) {
-    return { ok: false, status: 401, error: "Invalid authorization token", mode: "admin" };
-  }
-
-  const jwtRole = userData.user.app_metadata?.role === "admin" ? "super_admin" : null;
-  const { data: adminRow, error: adminError } = await supabase
-    .from("admin_users")
-    .select("user_id,role,active")
-    .eq("user_id", userData.user.id)
-    .maybeSingle();
-
-  if (adminError) return { ok: false, status: 500, error: adminError.message, mode: "admin" };
-  if (!adminRow && !jwtRole) return { ok: false, status: 403, error: "Admin access required", mode: "admin" };
-  if (adminRow && adminRow.active === false && !jwtRole) {
-    return { ok: false, status: 403, error: "Admin account is disabled", mode: "admin" };
-  }
-
-  return { ok: true, status: 200, error: null, mode: "admin", role: jwtRole || adminRow?.role || null };
-};
 
 const getSettings = async (supabase: ReturnType<typeof createClient>) => {
   const { data, error } = await supabase
@@ -191,13 +148,7 @@ const buildMessage = (
   includeMonthly: boolean,
   timezone: string,
 ) => {
-  const reminderTime = (() => {
-    try {
-      return new Date().toLocaleString("zh-CN", { timeZone: timezone });
-    } catch {
-      return new Date().toLocaleString("zh-CN", { timeZone: "Asia/Kuala_Lumpur" });
-    }
-  })();
+  const reminderTime = formatAdminDateTime(new Date(), timezone);
 
   const lines = [
     "FLASH CAST 本周维护提醒",
@@ -241,7 +192,7 @@ const sendTelegramMessage = async (settings: TelegramSettings, message: string) 
 
   const response = await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers: { "Content-Type": "application/json; charset=utf-8" },
     body: JSON.stringify({
       chat_id: chatId,
       text: message.slice(0, 3900),
@@ -287,12 +238,11 @@ serve(async (req) => {
     }
 
     const supabase = createClient(Deno.env.get("SUPABASE_URL")!, serviceRoleKey);
-    const adminCheck = await requireAdmin(req, supabase);
+    const adminCheck = requireSuperAdminAccess(
+      await requireAdminAccess(req, supabase, { cronSecretEnv: "MAINTENANCE_REMINDER_CRON_SECRET" }),
+    );
     if (!adminCheck.ok) {
       return Response.json({ error: adminCheck.error }, { status: adminCheck.status, headers: corsHeaders });
-    }
-    if (adminCheck.mode === "admin" && adminCheck.role !== "super_admin") {
-      return Response.json({ error: "Super admin access required" }, { status: 403, headers: corsHeaders });
     }
 
     const body = req.method === "GET" ? {} : await req.json().catch(() => ({}));

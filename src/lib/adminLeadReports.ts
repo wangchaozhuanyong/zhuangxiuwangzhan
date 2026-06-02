@@ -160,8 +160,10 @@ const inferSourceTypeFromPath = (pathname: string) => {
   return "unknown";
 };
 
+const unknownSourceLabel: Record<Language, string> = { en: "Unknown source", zh: "未知来源" };
+
 const sourceTypeLabel = (sourceType: string, language: Language) =>
-  sourceLabels[sourceType]?.[language] || sourceLabels.unknown[language];
+  sourceLabels[sourceType]?.[language] || sourceLabels.unknown?.[language] || unknownSourceLabel[language];
 
 const readSourceInfo = (
   sourcePath: string | null | undefined,

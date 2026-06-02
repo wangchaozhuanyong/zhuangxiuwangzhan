@@ -102,7 +102,9 @@ const AppShell = () => {
   const location = useLocation();
   const { language } = useLanguage();
   const isAdminRoute = location.pathname.startsWith("/admin");
-  const isHomeRoute = !isAdminRoute && stripLanguagePrefix(location.pathname) === "/";
+  const publicPath = stripLanguagePrefix(location.pathname);
+  const isHomeRoute = !isAdminRoute && publicPath === "/";
+  const suppressMobileActionBar = !isAdminRoute && (publicPath === "/quote" || publicPath === "/contact");
   const publicMainClass = isAdminRoute
     ? undefined
     : isHomeRoute
@@ -113,7 +115,7 @@ const AppShell = () => {
   const mainContentKey = isAdminRoute ? "admin-main-content" : location.pathname;
 
   return (
-    <PublicChromeProvider isAdminRoute={isAdminRoute} isHomeRoute={isHomeRoute}>
+    <PublicChromeProvider isAdminRoute={isAdminRoute} isHomeRoute={isHomeRoute} suppressMobileActionBar={suppressMobileActionBar}>
       <DynamicBrandHead />
       <ScrollToTop />
       {!isAdminRoute && (

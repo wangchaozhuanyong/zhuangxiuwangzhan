@@ -1,5 +1,7 @@
 import { serve } from "https://deno.land/std@0.224.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { getServiceRoleKey, requireAdminAccess, requireSuperAdminAccess } from "../_shared/admin-auth.ts";
+import { buildTelegramTestMessage } from "../_shared/admin-notification-format.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -16,16 +18,6 @@ type TelegramSettings = {
   maintenance_timezone?: string;
   maintenance_last_sent_at?: string | null;
 };
-
-type AdminCheck = {
-  ok: boolean;
-  status: number;
-  error: string | null;
-  role?: string | null;
-};
-
-const getServiceRoleKey = () =>
-  Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") || Deno.env.get("SERVICE_ROLE_KEY");
 
 const maskToken = (token?: string | null) => {
   if (!token) return "";
@@ -44,40 +36,6 @@ const sanitizeSettings = (settings: TelegramSettings | null) => ({
   maintenance_timezone: settings?.maintenance_timezone || "Asia/Kuala_Lumpur",
   maintenance_last_sent_at: settings?.maintenance_last_sent_at || null,
 });
-
-const requireAdmin = async (
-  req: Request,
-  supabase: ReturnType<typeof createClient>,
-): Promise<AdminCheck> => {
-  const token = req.headers.get("Authorization")?.replace(/^Bearer\s+/i, "");
-  if (!token) return { ok: false, status: 401, error: "Missing authorization token" };
-
-  const { data: userData, error: userError } = await supabase.auth.getUser(token);
-  if (userError || !userData.user) return { ok: false, status: 401, error: "Invalid authorization token" };
-
-  const jwtRole = userData.user.app_metadata?.role === "admin" ? "super_admin" : null;
-  const { data: adminRow, error: adminError } = await supabase
-    .from("admin_users")
-    .select("user_id,role,active")
-    .eq("user_id", userData.user.id)
-    .maybeSingle();
-
-  if (adminError) return { ok: false, status: 500, error: adminError.message };
-  if (!adminRow && !jwtRole) return { ok: false, status: 403, error: "Admin access required" };
-  if (adminRow && adminRow.active === false && !jwtRole) {
-    return { ok: false, status: 403, error: "Admin account is disabled" };
-  }
-
-  return { ok: true, status: 200, error: null, role: jwtRole || adminRow?.role || null };
-};
-
-const requireSuperAdmin = (adminCheck: AdminCheck) => {
-  if (!adminCheck.ok) return adminCheck;
-  if (adminCheck.role !== "super_admin") {
-    return { ok: false, status: 403, error: "Super admin access required" };
-  }
-  return adminCheck;
-};
 
 const getSettings = async (supabase: ReturnType<typeof createClient>) => {
   const { data, error } = await supabase
@@ -103,14 +61,10 @@ const sendTelegramTest = async (settings: TelegramSettings) => {
 
   const response = await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers: { "Content-Type": "application/json; charset=utf-8" },
     body: JSON.stringify({
       chat_id: chatId,
-      text: [
-        "FLASH CAST 测试通知",
-        "Telegram 推送已连接成功。",
-        `时间：${new Date().toISOString()}`,
-      ].join("\n"),
+      text: buildTelegramTestMessage(),
       disable_web_page_preview: true,
     }),
   });
@@ -158,8 +112,8 @@ serve(async (req) => {
     const supabase = createClient(Deno.env.get("SUPABASE_URL")!, serviceRoleKey);
     const body = req.method === "GET" ? { action: "get" } : await req.json().catch(() => ({ action: "get" }));
     const action = body.action || "get";
-    const adminCheck = await requireAdmin(req, supabase);
-    const permissionCheck = action === "get" ? adminCheck : requireSuperAdmin(adminCheck);
+    const adminCheck = await requireAdminAccess(req, supabase);
+    const permissionCheck = action === "get" ? adminCheck : requireSuperAdminAccess(adminCheck);
 
     if (!permissionCheck.ok) {
       return Response.json(

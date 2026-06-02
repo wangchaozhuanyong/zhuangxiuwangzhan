@@ -1,5 +1,6 @@
 import { readFile, stat } from "node:fs/promises";
 import path from "node:path";
+import { SITE_CSP_POLICY } from "./site-csp.mjs";
 
 const ROOT = process.cwd();
 const DIST = path.join(ROOT, "dist");
@@ -41,6 +42,8 @@ const main = async () => {
   assert(/\/\s+Cache-Control:\s*no-store,\s*no-cache,\s*must-revalidate,\s*max-age=0/i.test(headers), "Root HTML no-store header is missing.");
   assert(/\/admin\/\*\s+Cache-Control:\s*no-store,\s*no-cache,\s*must-revalidate,\s*max-age=0/i.test(headers), "Admin HTML no-store header is missing.");
   assert(/\/assets\/\*\s+Cache-Control:\s*public,\s*max-age=31536000,\s*immutable/i.test(headers), "Immutable assets cache header is missing.");
+  assert(headers.includes(`Content-Security-Policy: ${SITE_CSP_POLICY}`), "public/_headers CSP is not in sync with scripts/site-csp.mjs.");
+  assert(!SITE_CSP_POLICY.includes("'unsafe-eval'"), "Production CSP must not include unsafe-eval.");
   assert(!/^\/\*\s+\/index\.html\s+200\b/m.test(redirects), "Global SPA redirect would turn missing hashed assets into HTML.");
   assert(await pathExists(path.join(DIST, "404.html")), "dist/404.html is missing.");
 
@@ -51,6 +54,7 @@ const main = async () => {
         assetRefCount: assetRefs.length,
         htmlCache: "no-store",
         assetCache: "public, max-age=31536000, immutable",
+        productionCsp: "synced without unsafe-eval",
         spaFallback: "functions/_middleware.ts",
       },
       null,

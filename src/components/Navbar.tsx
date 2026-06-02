@@ -239,7 +239,7 @@ const Navbar = () => {
             <span className="sr-only">{brandText}</span>
           </LocalizedLink>
 
-          <nav className="hidden min-w-0 flex-1 items-center justify-center gap-1 xl:flex">
+          <nav className="hidden min-w-0 flex-1 items-center justify-center gap-1 min-[1440px]:flex">
             {navItems.map((item) => {
               const isActive = isActivePath(location.pathname, item.path);
               return (
@@ -261,7 +261,7 @@ const Navbar = () => {
             })}
           </nav>
 
-          <div className="hidden shrink-0 items-center gap-2.5 xl:flex">
+          <div className="hidden shrink-0 items-center gap-2.5 min-[1440px]:flex">
             <button
               onClick={changeLanguage}
               className="site-header__control flex items-center gap-1 rounded-full px-3 py-2 text-xs font-medium text-foreground/75 transition-colors hover:text-foreground"
@@ -302,7 +302,7 @@ const Navbar = () => {
             </Button>
           </div>
 
-          <div className="ml-auto flex shrink-0 items-center xl:hidden">
+          <div className="ml-auto flex shrink-0 items-center min-[1440px]:hidden">
             <div className="site-header__mobile-controls flex h-11 items-center gap-1 rounded-full border border-white/75 bg-white/85 p-0.5 shadow-[0_16px_42px_-32px_rgba(21,18,14,0.55)] backdrop-blur-md">
               <button
                 onClick={changeLanguage}
@@ -338,7 +338,7 @@ const Navbar = () => {
           id="mobile-navigation"
           ref={mobileMenuRef}
           data-state={isMenuClosing ? "closing" : "open"}
-          className="mobile-navigation fixed inset-x-0 bottom-0 top-12 flex flex-col border-t border-border/70 bg-[hsl(var(--background))] shadow-[0_-24px_80px_-56px_rgba(21,18,14,0.45)] md:top-16 xl:hidden"
+          className="mobile-navigation fixed inset-x-0 bottom-0 top-12 flex flex-col border-t border-border/70 bg-[hsl(var(--background))] shadow-[0_-24px_80px_-56px_rgba(21,18,14,0.45)] md:top-16 min-[1440px]:hidden"
           style={{ zIndex: PUBLIC_CHROME_Z.mobileMenu }}
         >
           <div className="min-h-0 flex-1 overflow-y-auto px-4 py-4">

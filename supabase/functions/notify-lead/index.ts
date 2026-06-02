@@ -1,38 +1,10 @@
 import { serve } from "https://deno.land/std@0.224.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { buildLeadTelegramMessage } from "../_shared/admin-notification-format.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
-};
-
-const labelMap: Record<string, string> = {
-  name: "姓名",
-  phone: "电话",
-  email: "邮箱",
-  message: "留言内容",
-  project_type: "项目类型",
-  location: "所在地区",
-  source_path: "来源页面",
-  customer_name: "姓名",
-  customer_phone: "电话",
-  customer_email: "邮箱",
-  property_size: "房屋面积",
-  estimated_budget: "预算",
-  quoted_amount: "报价金额",
-  valid_until: "报价有效期",
-  project_details: "项目详情",
-  status: "状态",
-  notes: "备注",
-  area: "区域",
-  budget: "预算",
-  size: "面积",
-  details: "详情",
-};
-
-const telegramKeyMap: Record<string, string> = {
-  contact: "新线索来了",
-  quote: "新报价请求来了",
 };
 
 const getServiceRoleKey = () =>
@@ -59,75 +31,6 @@ const cleanValue = (value: unknown) => {
   return String(value).trim();
 };
 
-const formatSummaryLines = (type: string, data: Record<string, unknown>) => {
-  const preferredKeys =
-    type === "quote"
-      ? [
-          "customer_name",
-          "customer_phone",
-          "customer_email",
-          "project_type",
-          "location",
-          "property_size",
-          "estimated_budget",
-          "quoted_amount",
-          "valid_until",
-          "source_path",
-          "project_details",
-          "message",
-          "notes",
-        ]
-      : [
-          "name",
-          "phone",
-          "email",
-          "project_type",
-          "location",
-          "source_path",
-          "message",
-          "notes",
-        ];
-
-  const seen = new Set<string>();
-  const lines = preferredKeys
-    .map((key) => {
-      seen.add(key);
-      const value = cleanValue(data[key]);
-      if (!value) return "";
-      return `${labelMap[key] || key}：${value}`;
-    })
-    .filter(Boolean);
-
-  for (const [key, value] of Object.entries(data)) {
-    if (seen.has(key)) continue;
-    if (!labelMap[key]) continue;
-    const cleaned = cleanValue(value);
-    if (!cleaned) continue;
-    lines.push(`${labelMap[key]}：${cleaned}`);
-  }
-
-  return lines;
-};
-
-const truncateText = (text: string, limit = 3800) =>
-  text.length <= limit ? text : `${text.slice(0, limit - 20)}\n\n[消息已截断]`;
-
-const buildTelegramMessage = (type: string, data: Record<string, unknown>) => {
-  const title = telegramKeyMap[type] || "FLASH CAST 新线索";
-  const lines = formatSummaryLines(type, data);
-
-  const message = [
-    "FLASH CAST",
-    title,
-    `编号：${cleanValue(data.id) || "-"}`,
-    `提交时间：${cleanValue(data.created_at) || cleanValue(data.inserted_at) || "-"}`,
-    "",
-    ...lines,
-  ].join("\n");
-
-  return truncateText(message);
-};
-
 const sendTelegramMessage = async (message: string, settings: Awaited<ReturnType<typeof getTelegramSettings>>) => {
   const token = settings.token?.trim();
   const chatId = settings.chatId?.trim();
@@ -149,7 +52,7 @@ const sendTelegramMessage = async (message: string, settings: Awaited<ReturnType
   const response = await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
     method: "POST",
     headers: {
-      "Content-Type": "application/json",
+      "Content-Type": "application/json; charset=utf-8",
     },
     body: JSON.stringify({
       chat_id: chatId,
@@ -267,7 +170,7 @@ serve(async (req) => {
       return Response.json({ error: error.message }, { status: 400, headers: corsHeaders });
     }
 
-    const telegramMessage = buildTelegramMessage(type, data);
+    const telegramMessage = buildLeadTelegramMessage(type, data);
     const telegramSettings = await getTelegramSettings(supabase);
     const telegramResult = await sendTelegramMessage(telegramMessage, telegramSettings);
     const webhookResult = await sendLeadWebhook(type, id, table, data, telegramMessage);

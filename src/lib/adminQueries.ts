@@ -29,6 +29,7 @@ const ADMIN_HEAVY_STALE_TIME = 10 * 60 * 1000;
 const ADMIN_QUERY_GC_TIME = 30 * 60 * 1000;
 export const ADMIN_DEFAULT_PAGE_SIZE = 30;
 const ADMIN_MAX_PAGE_SIZE = 80;
+const COUNT_ONLY_SELECT = "id";
 
 export type AdminListQuery = {
   page?: number;
@@ -357,21 +358,21 @@ export function useAdminDashboardStats() {
         leads,
         quotes,
       ] = await Promise.all([
-        supabase!.from("leads").select("*", { count: "exact", head: true }).eq("status", "new"),
-        supabase!.from("quote_requests").select("*", { count: "exact", head: true }).eq("status", "pending"),
-        supabase!.from("leads").select("*", { count: "exact", head: true }).eq("status", "new").lt("created_at", since24h),
-        supabase!.from("quote_requests").select("*", { count: "exact", head: true }).in("status", ["pending", "contacted"]).lt("created_at", since24h),
-        supabase!.from("translation_jobs").select("*", { count: "exact", head: true }).eq("status", "failed"),
-        supabase!.from("projects").select("*", { count: "exact", head: true }).eq("status", "published"),
-        supabase!.from("services").select("*", { count: "exact", head: true }).eq("status", "published"),
-        supabase!.from("blog_posts").select("*", { count: "exact", head: true }).eq("status", "published"),
-        supabase!.from("services").select("*", { count: "exact", head: true }).or("seo_title_zh.is.null,seo_description_zh.is.null"),
-        supabase!.from("leads").select("*", { count: "exact", head: true }).gte("created_at", todayIso),
-        supabase!.from("quote_requests").select("*", { count: "exact", head: true }).gte("created_at", monthIso),
-        supabase!.from("leads").select("*", { count: "exact", head: true }).gte("created_at", monthIso),
-        supabase!.from("leads").select("*", { count: "exact", head: true }).not("next_follow_up_at", "is", null).lte("next_follow_up_at", now.toISOString()),
-        supabase!.from("quote_requests").select("*", { count: "exact", head: true }).not("next_follow_up_at", "is", null).lte("next_follow_up_at", now.toISOString()),
-        supabase!.from("quote_requests").select("*", { count: "exact", head: true }).in("status", ["pending", "contacted", "site_visit_scheduled"]),
+        supabase!.from("leads").select(COUNT_ONLY_SELECT, { count: "exact", head: true }).eq("status", "new"),
+        supabase!.from("quote_requests").select(COUNT_ONLY_SELECT, { count: "exact", head: true }).eq("status", "pending"),
+        supabase!.from("leads").select(COUNT_ONLY_SELECT, { count: "exact", head: true }).eq("status", "new").lt("created_at", since24h),
+        supabase!.from("quote_requests").select(COUNT_ONLY_SELECT, { count: "exact", head: true }).in("status", ["pending", "contacted"]).lt("created_at", since24h),
+        supabase!.from("translation_jobs").select(COUNT_ONLY_SELECT, { count: "exact", head: true }).eq("status", "failed"),
+        supabase!.from("projects").select(COUNT_ONLY_SELECT, { count: "exact", head: true }).eq("status", "published"),
+        supabase!.from("services").select(COUNT_ONLY_SELECT, { count: "exact", head: true }).eq("status", "published"),
+        supabase!.from("blog_posts").select(COUNT_ONLY_SELECT, { count: "exact", head: true }).eq("status", "published"),
+        supabase!.from("services").select(COUNT_ONLY_SELECT, { count: "exact", head: true }).or("seo_title_zh.is.null,seo_description_zh.is.null"),
+        supabase!.from("leads").select(COUNT_ONLY_SELECT, { count: "exact", head: true }).gte("created_at", todayIso),
+        supabase!.from("quote_requests").select(COUNT_ONLY_SELECT, { count: "exact", head: true }).gte("created_at", monthIso),
+        supabase!.from("leads").select(COUNT_ONLY_SELECT, { count: "exact", head: true }).gte("created_at", monthIso),
+        supabase!.from("leads").select(COUNT_ONLY_SELECT, { count: "exact", head: true }).not("next_follow_up_at", "is", null).lte("next_follow_up_at", now.toISOString()),
+        supabase!.from("quote_requests").select(COUNT_ONLY_SELECT, { count: "exact", head: true }).not("next_follow_up_at", "is", null).lte("next_follow_up_at", now.toISOString()),
+        supabase!.from("quote_requests").select(COUNT_ONLY_SELECT, { count: "exact", head: true }).in("status", ["pending", "contacted", "site_visit_scheduled"]),
         supabase!.from("leads").select("id,name,phone,status,created_at,source_path,next_follow_up_at").order("created_at", { ascending: false }).limit(10),
         supabase!.from("quote_requests").select("id,customer_name,customer_phone,status,created_at,project_type,source_path,next_follow_up_at").order("created_at", { ascending: false }).limit(10),
       ]);
@@ -985,50 +986,6 @@ export function useAdminBusinessRecord(table: AdminContentTable, id: string | un
       const { data, error } = await supabase!.from(table).select("*").eq("id", id!).single();
       if (error) throw error;
       return data;
-    },
-  });
-}
-
-export const adminSeoSources = [
-  { table: "site_pages" as const, label: "页面级内容", route: "/admin/pages", front: "" },
-  { table: "services" as const, label: "服务项目", route: "/admin/services", front: "/services" },
-  { table: "projects" as const, label: "装修案例", route: "/admin/projects", front: "/projects" },
-  { table: "materials" as const, label: "材料库", route: "/admin/materials", front: "/materials" },
-  { table: "blog_posts" as const, label: "博客文章", route: "/admin/blog", front: "/blog" },
-  { table: "service_areas" as const, label: "服务地区", route: "/admin/content/service_areas", front: "/locations" },
-  { table: "landing_pages" as const, label: "落地页", route: "/admin/content/landing_pages", front: "/landing" },
-];
-
-export type AdminSeoAuditRow = Record<string, unknown> & {
-  id?: string;
-  table: string;
-  source: (typeof adminSeoSources)[number];
-  error?: string;
-  slug?: string;
-  page_key?: string;
-  path?: string;
-  status?: string;
-  title_zh?: string;
-  title_en?: string;
-  name?: string;
-};
-
-export function useAdminSeoAudit() {
-  return useQuery({
-    queryKey: ["admin", "seo", "audit"],
-    enabled,
-    placeholderData: keepPreviousData,
-    staleTime: ADMIN_HEAVY_STALE_TIME,
-    gcTime: ADMIN_QUERY_GC_TIME,
-    queryFn: async (): Promise<AdminSeoAuditRow[]> => {
-      const entries = await Promise.all(
-        adminSeoSources.map(async (source) => {
-          const { data, error } = await supabase!.from(source.table).select("*").limit(200);
-          if (error) return [{ table: source.table, source, error: error.message }] as AdminSeoAuditRow[];
-          return (data || []).map((row) => ({ ...row, source, table: source.table })) as AdminSeoAuditRow[];
-        }),
-      );
-      return entries.flat();
     },
   });
 }

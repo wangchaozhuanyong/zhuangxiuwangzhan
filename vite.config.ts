@@ -1,5 +1,5 @@
 import { defineConfig } from "vite";
-import react from "@vitejs/plugin-react-swc";
+import react from "@vitejs/plugin-react";
 import path from "path";
 import { preferWebpAssets } from "./scripts/vite-prefer-webp.mjs";
 import { LOCAL_SITE_CSP_POLICY } from "./scripts/site-csp.mjs";

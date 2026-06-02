@@ -2,7 +2,7 @@ import { useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import AdminPageHeader from "@/components/admin/AdminPageHeader";
 import { Button } from "@/components/ui/button";
-import { useAdminSeoAudit } from "@/lib/adminQueries";
+import { useAdminSeoAudit } from "@/lib/adminSeoAudit";
 import { adminStatusLabel } from "@/lib/adminLocale";
 
 const AdminSeoManager = () => {

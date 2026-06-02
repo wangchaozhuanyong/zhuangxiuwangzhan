@@ -192,7 +192,7 @@ export async function fetchAdminAboutEditorData(): Promise<AdminAboutEditorData>
   const ensured = await Promise.all(aboutSectionKeys.map((key) => ensureAboutSection(key)));
   const sections: Record<string, AboutSectionRow | null> = {};
   aboutSectionKeys.forEach((key, index) => {
-    sections[key] = ensured[index];
+    sections[key] = ensured[index] ?? null;
   });
 
   const { data } = await supabase.from("cta_blocks").select("*").eq("block_key", "about_final").maybeSingle();

@@ -13,8 +13,12 @@
     "src/lib/database.types.ts",
     "src/lib/supabase.ts",
     "src/lib/recordUtils.ts",
+    "src/lib/adminMutation.ts",
+    "src/lib/adminSeoAudit.ts",
+    "src/lib/adminCmsBuilderModel.ts",
     "src/lib/contentApi.ts",
     "src/lib/homeContentApi.ts",
-    "src/pages/CmsDynamicPage.tsx"
+    "src/pages/CmsDynamicPage.tsx",
+    "src/pages/admin/AdminCmsSectionContentEditor.tsx"
   ]
 }

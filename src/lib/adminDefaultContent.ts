@@ -567,6 +567,15 @@ const cmsPageRows = [
   },
 ];
 
+const whyUsItemKeys = [
+  ["paintbrush", "whyUs.design.title", "whyUs.design.desc"],
+  ["message-circle", "whyUs.quotation.title", "whyUs.quotation.desc"],
+  ["layers", "whyUs.material.title", "whyUs.material.desc"],
+  ["target", "whyUs.supervision.title", "whyUs.supervision.desc"],
+  ["wrench", "whyUs.workmanship.title", "whyUs.workmanship.desc"],
+  ["shieldcheck", "whyUs.ssm.title", "whyUs.ssm.desc"],
+] as const;
+
 const homeSections = [
   {
     section_key: "stats",
@@ -599,22 +608,8 @@ const homeSections = [
     subtitle_zh: tr("whyUs.subtitle", "zh"),
     content_en: tr("whyUs.subtitle", "en"),
     content_zh: tr("whyUs.subtitle", "zh"),
-    items_en: [
-      ["paintbrush", "whyUs.design.title", "whyUs.design.desc"],
-      ["message-circle", "whyUs.quotation.title", "whyUs.quotation.desc"],
-      ["layers", "whyUs.material.title", "whyUs.material.desc"],
-      ["target", "whyUs.supervision.title", "whyUs.supervision.desc"],
-      ["wrench", "whyUs.workmanship.title", "whyUs.workmanship.desc"],
-      ["shieldcheck", "whyUs.ssm.title", "whyUs.ssm.desc"],
-    ].map(([icon, titleKey, descKey]) => ({ icon, title_en: tr(titleKey, "en"), desc_en: tr(descKey, "en") })),
-    items_zh: [
-      ["paintbrush", "whyUs.design.title", "whyUs.design.desc"],
-      ["message-circle", "whyUs.quotation.title", "whyUs.quotation.desc"],
-      ["layers", "whyUs.material.title", "whyUs.material.desc"],
-      ["target", "whyUs.supervision.title", "whyUs.supervision.desc"],
-      ["wrench", "whyUs.workmanship.title", "whyUs.workmanship.desc"],
-      ["shieldcheck", "whyUs.ssm.title", "whyUs.ssm.desc"],
-    ].map(([icon, titleKey, descKey]) => ({ icon, title_zh: tr(titleKey, "zh"), desc_zh: tr(descKey, "zh") })),
+    items_en: whyUsItemKeys.map(([icon, titleKey, descKey]) => ({ icon, title_en: tr(titleKey, "en"), desc_en: tr(descKey, "en") })),
+    items_zh: whyUsItemKeys.map(([icon, titleKey, descKey]) => ({ icon, title_zh: tr(titleKey, "zh"), desc_zh: tr(descKey, "zh") })),
     image_url: "/images/heroes/hero-luxury-living.webp",
     status: "published",
     sort_order: 20,
