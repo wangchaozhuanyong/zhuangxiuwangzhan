@@ -23,9 +23,32 @@ const CHUNK_LOAD_PATTERNS = [
 ];
 
 export const isChunkLoadError = (value: unknown) => {
-  const text = getErrorMessage(value);
+  const text = getErrorSearchText(value);
   if (!text) return false;
-  return CHUNK_LOAD_PATTERNS.some((pattern) => pattern.test(text));
+  const hasChunkSignal = CHUNK_LOAD_PATTERNS.some((pattern) => pattern.test(text));
+  const looksLikeLazyDefaultFailure = /Cannot read propert(?:y|ies) of (?:undefined|null) \(reading ['"]default['"]\)/i.test(text);
+
+  return hasChunkSignal || (looksLikeLazyDefaultFailure && /\/assets\/[^ "'<>]+\.js/i.test(text));
+};
+
+const getErrorSearchText = (value: unknown): string => {
+  if (value instanceof Error) {
+    const maybeCause = (value as Error & { cause?: unknown }).cause;
+    return [value.name, value.message, value.stack, getErrorSearchText(maybeCause)]
+      .filter(Boolean)
+      .join("\n");
+  }
+
+  if (typeof value === "string") return value;
+  if (value && typeof value === "object") {
+    const maybeError = value as { message?: unknown; reason?: unknown; error?: unknown; stack?: unknown };
+    return [maybeError.message, maybeError.stack, maybeError.reason, maybeError.error]
+      .map((item) => getErrorSearchText(item))
+      .filter(Boolean)
+      .join("\n");
+  }
+
+  return "";
 };
 
 export const getErrorMessage = (value: unknown) => {
@@ -45,8 +68,8 @@ export const getErrorMessage = (value: unknown) => {
   }
 };
 
-export const getFriendlySystemMessage = (message: string, _eventType?: string) => {
-  if (isChunkLoadError(message)) {
+export const getFriendlySystemMessage = (message: string, eventType?: string) => {
+  if (eventType === "frontend_deploy_cache_mismatch" || isChunkLoadError(message)) {
     return CHUNK_LOAD_MESSAGE;
   }
 

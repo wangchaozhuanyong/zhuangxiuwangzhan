@@ -297,80 +297,86 @@ const AdminSimpleCms = ({ module }: { module: ModuleKey }) => {
   };
 
   return (
-    <div className="grid gap-6 xl:grid-cols-[1fr_420px]">
+    <div>
       <AdminPageHeader
         title={config.title}
         description={getAdminTableHelp(config.table)}
         helpText="这里是轻量内容管理区，适合快速改标题、图片、列表和基础文案。"
       />
 
-      <section className="rounded-xl border border-border bg-card p-6">
-        <div className="mb-5 flex items-start justify-between gap-4">
-          <div>
+      <div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_420px] xl:items-start">
+        <section className="rounded-xl border border-border bg-card p-6">
+          <div className="mb-5 flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+            <div className="min-w-0">
+              <p className="text-xs font-semibold uppercase tracking-normal text-muted-foreground">当前编辑</p>
+              <h2 className="mt-1 font-display text-2xl font-bold">{String(title)}</h2>
+            </div>
+            <Button type="button" variant="outline" onClick={() => void resetRecord()}>
+              新建
+            </Button>
+          </div>
+          {message && <p className="mb-4 rounded-lg bg-muted p-3 text-sm">{message}</p>}
+          {recordDirty && <p className="mb-4 rounded-lg bg-amber-50 p-3 text-sm text-amber-800">当前内容有未保存修改，离开或切换前请先保存。</p>}
+          <div className="grid gap-4 md:grid-cols-2">
+            {config.fields.map(renderField)}
+            <div>
+              <AdminFieldLabel label="状态" help={getAdminFieldHelp("status")} />
+              <select
+                value={record.status || "published"}
+                onChange={(event) => update("status", event.target.value)}
+                className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+              >
+                {publishStatusOptions().map(({ value, label }) => (
+                  <option key={value} value={value}>
+                    {label}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div>
+              <AdminFieldLabel label="排序" help={getAdminFieldHelp("sort_order")} />
+              <Input type="number" value={record.sort_order || 0} onChange={(event) => update("sort_order", Number(event.target.value || 0))} />
+            </div>
+          </div>
+          <Button type="button" className="mt-5 w-full" disabled={saving} onClick={() => void save()}>
+            {saving ? "保存中..." : "保存"}
+          </Button>
+        </section>
+
+        <section className="rounded-xl border border-border bg-card p-6">
+          <div className="mb-5">
             <h1 className="font-display text-2xl font-bold">{config.title}</h1>
             <p className="mt-1 text-sm text-muted-foreground">{getAdminTableHelp(config.table)}</p>
-            {message && <p className="mt-2 rounded-lg bg-muted p-3 text-sm">{message}</p>}
           </div>
-          <Button type="button" variant="outline" onClick={() => void resetRecord()}>
-            新建
-          </Button>
-        </div>
-        <div className="space-y-3">
-          {rows.map((row) => {
-            const rowRecord = row as Record<string, unknown>;
-            const rowId = String(rowRecord.id || "");
-            const label = rowRecord[config.labelField] || rowRecord["title_en"] || rowRecord["name"] || "未命名内容";
-            const status = String(rowRecord.status || "-");
-            const sortOrder = rowRecord.sort_order || 0;
+          <div className="space-y-3">
+            {rows.map((row) => {
+              const rowRecord = row as Record<string, unknown>;
+              const rowId = String(rowRecord.id || "");
+              const label = rowRecord[config.labelField] || rowRecord["title_en"] || rowRecord["name"] || "未命名内容";
+              const status = String(rowRecord.status || "-");
+              const sortOrder = rowRecord.sort_order || 0;
 
-            return (
-              <div key={rowId} className="flex flex-col gap-3 rounded-lg border border-border p-4 md:flex-row md:items-center md:justify-between">
-                <div>
-                  <p className="font-semibold">{String(label)}</p>
-                  <p className="text-xs text-muted-foreground">状态：{adminStatusLabel("default", status)} | 排序 {String(sortOrder)}</p>
+              return (
+                <div key={rowId} className="flex flex-col gap-3 rounded-lg border border-border p-4 md:flex-row md:items-center md:justify-between xl:flex-col xl:items-stretch">
+                  <div>
+                    <p className="font-semibold">{String(label)}</p>
+                    <p className="text-xs text-muted-foreground">状态：{adminStatusLabel("default", status)} | 排序 {String(sortOrder)}</p>
+                  </div>
+                  <div className="flex gap-2 xl:justify-end">
+                    <Button type="button" variant="outline" size="sm" onClick={() => void loadRecord(row)}>
+                      编辑
+                    </Button>
+                    <Button type="button" variant="destructive" size="sm" disabled={deletingId === rowId} onClick={() => void remove(rowId)}>
+                      删除
+                    </Button>
+                  </div>
                 </div>
-                <div className="flex gap-2">
-                  <Button type="button" variant="outline" size="sm" onClick={() => void loadRecord(row)}>
-                    编辑
-                  </Button>
-                  <Button type="button" variant="destructive" size="sm" disabled={deletingId === rowId} onClick={() => void remove(rowId)}>
-                    删除
-                  </Button>
-                </div>
-              </div>
-            );
-          })}
-        </div>
-      </section>
-
-      <section className="rounded-xl border border-border bg-card p-6">
-        <h2 className="mb-4 font-display text-xl font-bold">{String(title)}</h2>
-        {recordDirty && <p className="-mt-2 mb-4 rounded-lg bg-amber-50 p-3 text-sm text-amber-800">当前内容有未保存修改，离开或切换前请先保存。</p>}
-        <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-1">
-          {config.fields.map(renderField)}
-          <div>
-            <AdminFieldLabel label="状态" help={getAdminFieldHelp("status")} />
-            <select
-              value={record.status || "published"}
-              onChange={(event) => update("status", event.target.value)}
-              className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
-            >
-              {publishStatusOptions().map(({ value, label }) => (
-                <option key={value} value={value}>
-                  {label}
-                </option>
-              ))}
-            </select>
+              );
+            })}
+            {rows.length === 0 && <p className="rounded-lg border border-dashed border-border p-4 text-sm text-muted-foreground">暂无内容，左侧可以直接新建第一条。</p>}
           </div>
-          <div>
-            <AdminFieldLabel label="排序" help={getAdminFieldHelp("sort_order")} />
-            <Input type="number" value={record.sort_order || 0} onChange={(event) => update("sort_order", Number(event.target.value || 0))} />
-          </div>
-        </div>
-        <Button type="button" className="mt-5 w-full" disabled={saving} onClick={() => void save()}>
-          {saving ? "保存中..." : "保存"}
-        </Button>
-      </section>
+        </section>
+      </div>
     </div>
   );
 };

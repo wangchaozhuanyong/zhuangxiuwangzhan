@@ -2,6 +2,7 @@ import { spawnSync } from "node:child_process";
 import fs from "node:fs";
 import path from "node:path";
 import { createClient } from "@supabase/supabase-js";
+import { logSystemHealthEvent } from "./lib/system-health-events.mjs";
 
 const root = process.cwd();
 const timestamp = new Date().toISOString().replace(/[:.]/g, "-");
@@ -187,4 +188,19 @@ manifest.project = "rbsnyexjifounogswrjp";
 manifest.restore_note = "Restore only to staging first. SQL dumps use psql. REST JSON backups can be replayed table by table with service role access.";
 
 fs.writeFileSync(path.join(backupRoot, "manifest.json"), JSON.stringify(manifest, null, 2));
+await logSystemHealthEvent({
+  event_type: "backup_supabase_completed",
+  severity: manifest.full_access ? "info" : "warn",
+  message: manifest.full_access ? "Supabase backup completed." : "Supabase public-content backup completed without service role access.",
+  metadata: {
+    backup_folder: path.basename(backupRoot),
+    backup_type: manifest.backup_type,
+    full_access: Boolean(manifest.full_access),
+    table_count: Array.isArray(manifest.tables) ? manifest.tables.length : null,
+    table_failures: Array.isArray(manifest.tables) ? manifest.tables.filter((item) => item && item.ok === false).map((item) => item.table) : [],
+    storage_bucket: manifest.storage_bucket || null,
+    storage_file_count: typeof manifest.storage_file_count === "number" ? manifest.storage_file_count : null,
+    created_at: manifest.created_at,
+  },
+}, root);
 console.log(`[backup-supabase] Backup written to ${backupRoot}`);

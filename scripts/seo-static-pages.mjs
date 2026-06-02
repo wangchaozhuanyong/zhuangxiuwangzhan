@@ -13,7 +13,7 @@ const page = (lang, path, title, description, keywords = "") => ({
 
 const staticDefs = [
   page("en", "/", "Renovation Company Kuala Lumpur | Condo, Landed & Commercial | FLASH CAST", "FLASH CAST SDN. BHD. provides professional renovation, interior design, custom built-in furniture, and commercial fit-out services in Kuala Lumpur and Selangor."),
-  page("zh", "/", "吉隆坡装修公司 | 住宅、商业空间与定制家具 | FLASH CAST", "FLASH CAST SDN. BHD. 提供吉隆坡与雪兰莪住宅装修、室内设计、定制家具、厨房浴室翻新和商业空间装修服务。"),
+  page("zh", "/", "吉隆坡装修公司 | 住宅商业装修与定制家具 | FLASH CAST", "FLASH CAST 服务吉隆坡、雪兰莪与巴生谷，提供住宅装修、商业空间装修、厨房翻新、旧屋翻新、定制家具、材料建议与项目管理。"),
   page("en", "/about", "About FLASH CAST | Renovation Company Kuala Lumpur", "Learn about FLASH CAST SDN. BHD., a Kuala Lumpur renovation company specializing in residential, commercial, and custom interior projects."),
   page("zh", "/about", "关于 FLASH CAST | 吉隆坡装修公司", "了解 FLASH CAST SDN. BHD.，专注住宅、商业与定制室内工程的吉隆坡装修公司。"),
   page("en", "/services", "Renovation Services Kuala Lumpur | Interior, Built-In, Commercial & Artistic Coating", "Explore FLASH CAST's comprehensive renovation services in Kuala Lumpur and Selangor."),

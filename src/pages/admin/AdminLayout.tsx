@@ -1,4 +1,5 @@
 import { Suspense, useEffect, useMemo, useRef, useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { Link, Outlet, useLocation } from "react-router-dom";
 import {
   Activity,
@@ -46,6 +47,7 @@ import AdminHelpTip from "@/components/admin/AdminHelpTip";
 import AdminConfirmProvider from "@/components/admin/AdminConfirmProvider";
 import { Sheet, SheetContent, SheetDescription, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { Skeleton } from "@/components/ui/skeleton";
+import SmartImage from "@/components/SmartImage";
 import { supabase } from "@/lib/supabase";
 import {
   adminPublicSitePath,
@@ -60,6 +62,7 @@ import {
 } from "@/lib/adminLocale";
 import { useAdminDefaultContentSeed } from "@/lib/adminDefaultContent";
 import { ADMIN_ROLE_GROUPS, canAdminRoleAccess, type AdminAllowedRoles } from "@/lib/adminRoleAccess";
+import { addCacheBuster, fallbackSiteSettings, fetchSiteSettings } from "@/lib/siteSettingsApi";
 import { cn } from "@/lib/utils";
 import { useAdminAuth } from "@/pages/admin/AdminAuthProvider";
 
@@ -157,7 +160,7 @@ const copy: Record<AdminLang, AdminCopy> = {
     groupWebsite: "Website Content",
     groupBusiness: "Business Content",
     groupCustomers: "Customers",
-    groupMediaSeo: "Media & SEO",
+    groupMediaSeo: "Media & SEO/GEO",
     groupSystem: "System",
     home: "Home Page",
     cmsBuilder: "CMS Builder",
@@ -177,8 +180,8 @@ const copy: Record<AdminLang, AdminCopy> = {
     quoteRequests: "Quote Requests",
     leadReports: "Lead Reports",
     media: "Media Library",
-    seo: "SEO Settings",
-    sitemap: "站点地图 / Robots",
+    seo: "SEO / GEO Settings",
+    sitemap: "Sitemap / Robots / llms.txt",
     users: "Admin Users",
     websiteSettings: "Website Settings",
     translationJobs: "Translation Records",
@@ -192,7 +195,7 @@ const copy: Record<AdminLang, AdminCopy> = {
     signOut: "Sign out",
     brand: "FLASH CAST Admin",
     title: "Content & Lead Management",
-    subtitle: "Manage website content, enquiries, media, SEO and settings.",
+    subtitle: "Manage website content, enquiries, media, SEO/GEO and settings.",
     menu: "Open admin menu",
     collapseNav: "Collapse navigation",
     expandNav: "Expand navigation",
@@ -213,7 +216,7 @@ const copy: Record<AdminLang, AdminCopy> = {
     groupWebsite: "网站内容",
     groupBusiness: "业务内容",
     groupCustomers: "客户管理",
-    groupMediaSeo: "媒体与搜索优化",
+    groupMediaSeo: "媒体与 SEO/GEO",
     groupSystem: "系统设置",
     home: "首页管理",
     cmsBuilder: "通用页面搭建",
@@ -233,8 +236,8 @@ const copy: Record<AdminLang, AdminCopy> = {
     quoteRequests: "报价请求",
     leadReports: "线索报表",
     media: "媒体库",
-    seo: "SEO 设置",
-    sitemap: "站点地图 / Robots",
+    seo: "SEO/GEO 设置",
+    sitemap: "站点地图 / Robots / llms.txt",
     users: "管理员账户",
     websiteSettings: "网站基础设置",
     translationJobs: "翻译记录",
@@ -248,7 +251,7 @@ const copy: Record<AdminLang, AdminCopy> = {
     signOut: "退出登录",
     brand: "FLASH CAST 后台",
     title: "内容与咨询管理",
-    subtitle: "管理网站内容、客户咨询、媒体素材、SEO 和系统设置。",
+    subtitle: "管理网站内容、客户咨询、媒体素材、SEO/GEO 和系统设置。",
     menu: "打开后台菜单",
     collapseNav: "收起导航",
     expandNav: "展开导航",
@@ -368,18 +371,21 @@ const isAdminNavItemActive = (itemPath: string, pathname: string, hash: string) 
   return !hasExactHashNavItem(pathname, hash);
 };
 
-const ensureAdminFormAccessibility = () => {
+const ensureAdminFormAccessibility = (root: ParentNode = document, force = false) => {
   if (typeof document === "undefined") return;
   let fieldIndex = 0;
-  const fields = Array.from(
-    document.querySelectorAll<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>(
-      "main input:not([type='hidden']):not([type='submit']):not([type='button']), main textarea, main select",
-    ),
-  );
+  const fieldSelector = "input:not([type='hidden']):not([type='submit']):not([type='button']), textarea, select";
+  const scope = root instanceof Document ? root.querySelector("main") : root;
+  if (!scope) return;
+  const fields = Array.from(scope.querySelectorAll<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>(fieldSelector));
 
   fields.forEach((field) => {
+    if (!force && field.dataset.adminA11yChecked === "1") return;
     const hasAccessibleName = Boolean(field.labels?.length || field.getAttribute("aria-label") || field.getAttribute("aria-labelledby"));
-    if (hasAccessibleName) return;
+    if (hasAccessibleName) {
+      field.dataset.adminA11yChecked = "1";
+      return;
+    }
 
     const parent = field.parentElement;
     let label: HTMLLabelElement | null = null;
@@ -400,6 +406,7 @@ const ensureAdminFormAccessibility = () => {
       label.htmlFor = field.id;
     }
     field.setAttribute("aria-label", fallbackLabel);
+    field.dataset.adminA11yChecked = "1";
     fieldIndex += 1;
   });
 };
@@ -437,9 +444,24 @@ const AdminLayout = () => {
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
   const [navCollapsed, setNavCollapsed] = useState(() => readNavCollapsed());
   const [expandedGroups, setExpandedGroups] = useState<Record<string, boolean>>(() => readExpandedGroups());
+  const [adminBrandIconFailed, setAdminBrandIconFailed] = useState(false);
   const seedSummary = useAdminDefaultContentSeed({ enabled: location.pathname === "/admin/dashboard" });
   const lastBuildCheckAtRef = useRef(0);
   const t = copy[adminLang];
+  const { data: adminSiteSettings = fallbackSiteSettings } = useQuery({
+    queryKey: ["site-settings"],
+    queryFn: fetchSiteSettings,
+    staleTime: 5 * 60 * 1000,
+    placeholderData: fallbackSiteSettings,
+  });
+  const adminBrandIconSrc = addCacheBuster(
+    adminSiteSettings.favicon_url || adminSiteSettings.logo_url || "",
+    adminSiteSettings.updated_at,
+  );
+
+  useEffect(() => {
+    setAdminBrandIconFailed(false);
+  }, [adminBrandIconSrc]);
 
   useEffect(() => {
     let cancelled = false;
@@ -558,12 +580,52 @@ const AdminLayout = () => {
   }, [activeNavLabel]);
 
   useEffect(() => {
-    ensureAdminFormAccessibility();
     const main = document.querySelector("main");
     if (!main) return;
-    const observer = new MutationObserver(() => ensureAdminFormAccessibility());
+
+    let cancelled = false;
+    let idleId: number | null = null;
+    let timeoutId: number | null = null;
+    const browserWindow = window as typeof window & {
+      requestIdleCallback?: (callback: () => void, options?: { timeout: number }) => number;
+      cancelIdleCallback?: (id: number) => void;
+    };
+
+    const clearScheduledScan = () => {
+      if (idleId !== null) {
+        browserWindow.cancelIdleCallback?.(idleId);
+        idleId = null;
+      }
+      if (timeoutId !== null) {
+        window.clearTimeout(timeoutId);
+        timeoutId = null;
+      }
+    };
+
+    const scheduleAccessibilityScan = (force = false) => {
+      if (cancelled || idleId !== null || timeoutId !== null) return;
+      const run = () => {
+        idleId = null;
+        timeoutId = null;
+        if (!cancelled) ensureAdminFormAccessibility(main, force);
+      };
+
+      if (browserWindow.requestIdleCallback) {
+        idleId = browserWindow.requestIdleCallback(run, { timeout: 900 });
+        return;
+      }
+
+      timeoutId = window.setTimeout(run, 120);
+    };
+
+    scheduleAccessibilityScan(true);
+    const observer = new MutationObserver(() => scheduleAccessibilityScan(false));
     observer.observe(main, { childList: true, subtree: true });
-    return () => observer.disconnect();
+    return () => {
+      cancelled = true;
+      clearScheduledScan();
+      observer.disconnect();
+    };
   }, [location.pathname, location.hash, adminLang]);
 
   const activeNavHelp = useMemo(() => {
@@ -599,9 +661,9 @@ const AdminLayout = () => {
         return zh ? "这里集中管理上传图片、用途分类和图片说明。" : "Manage uploaded images, usage categories, and image alt text.";
       case "seo":
       case "sitemap":
-        return zh ? "这里检查搜索优化字段、站点地图和 Robots 设置。" : "Check SEO fields, sitemap, and Robots settings.";
+        return zh ? "这里检查中文 SEO/GEO、站点地图、Robots 和 AI 可读文件。" : "Check SEO/GEO fields, sitemap, Robots, and AI-readable files.";
       case "websiteSettings":
-        return zh ? "这里管理公司联系方式、品牌图标和默认 SEO。" : "Manage company contact info, brand assets, and default SEO.";
+        return zh ? "这里管理公司联系方式、品牌图标和默认 SEO/GEO 兜底文案。" : "Manage company contact info, brand assets, and default SEO/GEO fallback content.";
       case "notificationSettings":
         return zh ? "这里设置 Telegram 通知、测试消息和维护提醒。" : "Set up Telegram alerts, test messages, and maintenance reminders.";
       case "translationJobs":
@@ -659,8 +721,21 @@ const AdminLayout = () => {
         )}
       >
         <div className={cn("flex min-h-[76px] items-center gap-3 border-b border-sidebar-border px-4", compact && "justify-center px-3")}>
-          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-primary text-sm font-bold tracking-wide text-primary-foreground">
-            FC
+          <div className="flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-lg bg-primary text-sm font-bold tracking-wide text-primary-foreground">
+            {adminBrandIconSrc && !adminBrandIconFailed ? (
+              <SmartImage
+                src={adminBrandIconSrc}
+                alt=""
+                className="h-full w-full object-contain p-1.5"
+                width={40}
+                height={40}
+                resize="contain"
+                sizes="40px"
+                onError={() => setAdminBrandIconFailed(true)}
+              />
+            ) : (
+              "FC"
+            )}
           </div>
           <div className={cn("min-w-0 flex-1", compact && "sr-only")}>
                 <p className="truncate text-[11px] font-bold uppercase tracking-[0.18em] text-accent">{t.brand}</p>

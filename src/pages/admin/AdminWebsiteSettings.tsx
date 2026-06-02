@@ -16,11 +16,11 @@ import { getAdminLang } from "@/lib/adminLocale";
 const copy = {
   en: {
     title: "Website Settings",
-    description: "Manage company contact details, social links, logo URLs, and default SEO fallback content.",
+    description: "Manage company contact details, social links, logo URLs, and default SEO/GEO fallback content.",
     company: "Company",
     contact: "Contact",
     media: "Brand Media",
-    seo: "Default SEO",
+    seo: "Default SEO / GEO",
     social: "Social Links",
     save: "Save Settings",
     saving: "Saving...",
@@ -28,11 +28,11 @@ const copy = {
   },
   zh: {
     title: "网站基础设置",
-    description: "管理公司联系方式、社交媒体链接、品牌图标地址和默认 SEO 文案。",
+    description: "管理公司联系方式、社交媒体链接、品牌 Logo、浏览器标签图标和默认 SEO/GEO 兜底文案。",
     company: "公司信息",
     contact: "联系方式",
     media: "品牌媒体",
-    seo: "默认 SEO",
+    seo: "默认 SEO / GEO",
     social: "社交媒体",
     save: "保存设置",
     saving: "保存中...",
@@ -45,7 +45,7 @@ const coordinateFields = new Set<keyof SiteSettings>(["map_latitude", "map_longi
 
 const normalizeComparableText = (value?: string | null) => String(value || "").trim().replace(/\s+/g, " ");
 
-const fields: Array<{ key: keyof SiteSettings; label: string; group: "company" | "contact" | "media" | "seo" | "social"; textarea?: boolean }> = [
+const fields: Array<{ key: keyof SiteSettings; label: string; group: "company" | "contact" | "media" | "seo" | "social"; textarea?: boolean; help?: string }> = [
   { key: "company_name", label: "公司名称", group: "company" },
   { key: "brand_name", label: "品牌名称", group: "company" },
   { key: "ssm_number", label: "SSM 注册编号", group: "company" },
@@ -53,23 +53,23 @@ const fields: Array<{ key: keyof SiteSettings; label: string; group: "company" |
   { key: "phone_display", label: "显示电话", group: "contact" },
   { key: "phone_e164", label: "电话（E.164 国际格式）", group: "contact" },
   { key: "whatsapp_number", label: "WhatsApp 号码", group: "contact" },
-  { key: "address_zh", label: "中文地址", group: "contact", textarea: true },
+  { key: "address_zh", label: "中文地址", group: "contact", textarea: true, help: "中文地址会影响前台联系页、结构化数据和本地 GEO 信号，建议写完整到城市/州。" },
   { key: "address_en", label: "英文地址", group: "contact", textarea: true },
-  { key: "short_address_zh", label: "中文短地址", group: "contact" },
+  { key: "short_address_zh", label: "中文短地址", group: "contact", help: "短地址适合页脚、CTA 和 AI 摘要快速识别服务地区。" },
   { key: "short_address_en", label: "英文短地址", group: "contact" },
   { key: "map_latitude", label: "地图纬度（Latitude）", group: "contact" },
   { key: "map_longitude", label: "地图经度（Longitude）", group: "contact" },
-  { key: "logo_url", label: "品牌图标地址", group: "media" },
-  { key: "favicon_url", label: "网站图标地址", group: "media" },
-  { key: "og_image_url", label: "默认分享预览图地址", group: "media" },
+  { key: "logo_url", label: "品牌 Logo 地址", group: "media", help: "用于前台首页左上角、页眉、页脚等较大的品牌 Logo 展示。" },
+  { key: "favicon_url", label: "浏览器标签图标（favicon）地址", group: "media", help: "用于浏览器标签页、收藏夹、手机书签和后台侧边栏小图标；它不会替换首页左上角的大 Logo，显示很小是正常的。" },
+  { key: "og_image_url", label: "默认分享预览图地址", group: "media", help: "用于社交平台或搜索预览图，不建议用小图标。" },
   { key: "facebook_url", label: "Facebook 链接", group: "social" },
   { key: "instagram_url", label: "Instagram 链接", group: "social" },
   { key: "tiktok_url", label: "TikTok 链接", group: "social" },
   { key: "xiaohongshu_url", label: "小红书链接", group: "social" },
   { key: "linkedin_url", label: "LinkedIn 链接", group: "social" },
-  { key: "default_seo_title_zh", label: "默认中文 SEO 标题", group: "seo" },
+  { key: "default_seo_title_zh", label: "默认中文 SEO/GEO 标题", group: "seo", help: "全站兜底标题。建议包含吉隆坡、雪兰莪或巴生谷，以及装修/室内设计/定制家具等核心服务。" },
   { key: "default_seo_title_en", label: "默认英文 SEO 标题", group: "seo" },
-  { key: "default_seo_description_zh", label: "默认中文 SEO 描述", group: "seo", textarea: true },
+  { key: "default_seo_description_zh", label: "默认中文 SEO/GEO 描述", group: "seo", textarea: true, help: "全站兜底描述。请写成自然中文，交代服务地区、服务类型、适合客户和咨询下一步。" },
   { key: "default_seo_description_en", label: "默认英文 SEO 描述", group: "seo", textarea: true },
 ];
 
@@ -95,6 +95,13 @@ const AdminWebsiteSettings = () => {
 
   const updateField = (key: keyof SiteSettings, value: string) => {
     setSettings((current) => ({ ...current, [key]: value }));
+  };
+
+  const getMediaUsageType = (key: keyof SiteSettings) => {
+    if (key === "logo_url") return "logo";
+    if (key === "favicon_url") return "icon";
+    if (key === "og_image_url") return "og";
+    return "general";
   };
 
   const handleSave = async () => {
@@ -175,6 +182,12 @@ const AdminWebsiteSettings = () => {
   const renderGroup = (group: "company" | "contact" | "media" | "seo" | "social") => (
     <section className="rounded-xl border border-border bg-card p-5">
       <h2 className="mb-4 font-display text-xl font-bold">{t[group]}</h2>
+      {group === "seo" && (
+        <div className="mb-4 rounded-lg bg-muted/40 p-3 text-sm text-muted-foreground">
+          <p className="font-medium text-foreground">中文默认 SEO/GEO 是全站兜底，不替代每个页面自己的 SEO。</p>
+          <p className="mt-1">建议写法：地区 + 核心服务 + 品牌。描述里要讲清服务范围，例如吉隆坡、雪兰莪、巴生谷，以及住宅装修、商业装修、厨房翻新、旧屋翻新和定制家具。</p>
+        </div>
+      )}
       <div className="grid gap-4 md:grid-cols-2">
         {fields.filter((field) => field.group === group).map((field) => (
           <div key={field.key} className={field.textarea ? "md:col-span-2" : ""}>
@@ -189,13 +202,14 @@ const AdminWebsiteSettings = () => {
                   value={settings[field.key] || ""}
                   previewVariant={getAdminImagePreviewVariant(String(field.key))}
                   recordAsset
-                  assetUsageType={getAdminImagePreviewVariant(String(field.key)) === "logo" ? "logo" : getAdminImagePreviewVariant(String(field.key)) === "og" ? "og" : "general"}
+                  assetUsageType={getMediaUsageType(field.key)}
                   onUploaded={(url) => updateField(field.key, url)}
                 />
               </div>
             ) : (
               <Input value={settings[field.key] || ""} onChange={(event) => updateField(field.key, event.target.value)} />
             )}
+            {field.help ? <p className="mt-1 text-xs text-muted-foreground">{field.help}</p> : null}
             {coordinateFields.has(field.key) ? <p className="mt-1 text-xs text-muted-foreground">{coordinateHelp}</p> : null}
           </div>
         ))}
@@ -208,7 +222,7 @@ const AdminWebsiteSettings = () => {
       <AdminPageHeader
         title={t.title}
         description={t.description}
-        helpText="这里管理公司联系方式、品牌图标、社交链接和默认 SEO。"
+        helpText="这里管理公司联系方式、品牌图标、社交链接和默认 SEO/GEO。默认文案只负责兜底，重点页面仍要在对应内容编辑页单独写中文 SEO。"
       />
 
       <div className="flex flex-col gap-4 rounded-xl border border-border bg-card p-6 md:flex-row md:items-start md:justify-between">

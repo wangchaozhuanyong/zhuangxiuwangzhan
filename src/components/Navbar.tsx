@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState, type MouseEvent } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { ArrowRight, BookOpen, FolderOpen, GitBranch, ChevronRight, Globe, HelpCircle, Home, Info, Layers, LucideIcon, Mail, Menu, Phone, Wrench, X } from "lucide-react";
+import { ArrowRight, BookOpen, ChevronDown, FileText, FolderOpen, GitBranch, ChevronRight, Globe, HelpCircle, Home, Info, Layers, LucideIcon, Mail, Menu, Phone, Wrench, X } from "lucide-react";
 import WhatsAppIcon from "@/components/WhatsAppIcon";
 import { Button } from "@/components/ui/button";
 import { useLanguage } from "@/i18n/LanguageContext";
@@ -32,6 +32,9 @@ const navItems: NavItem[] = [
   { labelKey: "nav.faq", path: "/faq", icon: HelpCircle },
   { labelKey: "nav.contact", path: "/contact", icon: Mail },
 ];
+
+const primaryDesktopNavItems = navItems.slice(0, 6);
+const secondaryDesktopNavItems = navItems.slice(6);
 
 const MOBILE_MENU_CLOSE_MS = 190;
 
@@ -68,8 +71,10 @@ const Navbar = () => {
   const [scrolled, setScrolled] = useState(false);
   const [isMenuClosing, setIsMenuClosing] = useState(false);
   const [pendingPath, setPendingPath] = useState<string | null>(null);
+  const [desktopMoreOpen, setDesktopMoreOpen] = useState(false);
   const [logoState, setLogoState] = useState<"primary" | "fallback" | "none">("primary");
   const mobileMenuRef = useRef<HTMLDivElement>(null);
+  const desktopMoreRef = useRef<HTMLDivElement>(null);
   const mobileCloseTimerRef = useRef<number | null>(null);
   const location = useLocation();
   const navigate = useNavigate();
@@ -154,7 +159,7 @@ const Navbar = () => {
   useEffect(() => {
     if (!isOpen) return;
 
-    mobileMenuRef.current?.querySelector<HTMLElement>("a, button")?.focus();
+    mobileMenuRef.current?.querySelector<HTMLElement>("[data-mobile-menu-initial-focus]")?.focus();
 
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === "Escape") {
@@ -166,11 +171,34 @@ const Navbar = () => {
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [closeMobileMenu, isOpen]);
 
+  useEffect(() => {
+    if (!desktopMoreOpen) return;
+
+    const handlePointerDown = (event: PointerEvent) => {
+      if (!desktopMoreRef.current?.contains(event.target as Node)) {
+        setDesktopMoreOpen(false);
+      }
+    };
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        setDesktopMoreOpen(false);
+      }
+    };
+
+    window.addEventListener("pointerdown", handlePointerDown);
+    window.addEventListener("keydown", handleKeyDown);
+    return () => {
+      window.removeEventListener("pointerdown", handlePointerDown);
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [desktopMoreOpen]);
+
   const languageAriaLabel = language === "zh" ? "切换语言" : "Switch language";
   const menuAriaLabel = language === "zh" ? "打开导航菜单" : "Toggle navigation menu";
   const callAriaLabel = language === "zh" ? "拨打电话" : "Call FLASH CAST";
 
-  const currentPageLabel = language === "zh" ? "当前" : "Current";
+  const moreLabel = language === "zh" ? "更多" : "More";
+  const desktopMoreActive = secondaryDesktopNavItems.some((item) => isActivePath(location.pathname, item.path));
 
   const handleNavClick = (event: MouseEvent<HTMLAnchorElement>, itemPath: string) => {
     const targetPath = withLanguagePrefix(itemPath, language);
@@ -239,8 +267,8 @@ const Navbar = () => {
             <span className="sr-only">{brandText}</span>
           </LocalizedLink>
 
-          <nav className="hidden min-w-0 flex-1 items-center justify-center gap-1 min-[1440px]:flex">
-            {navItems.map((item) => {
+          <nav className="site-header__desktop-nav hidden min-w-0 flex-1 items-center justify-center min-[1180px]:flex" aria-label={language === "zh" ? "主导航" : "Main navigation"}>
+            {primaryDesktopNavItems.map((item) => {
               const isActive = isActivePath(location.pathname, item.path);
               return (
                 <LocalizedLink
@@ -250,21 +278,56 @@ const Navbar = () => {
                   onFocus={() => preloadPublicRoute(item.path)}
                   onPointerEnter={() => preloadPublicRoute(item.path)}
                   aria-current={isActive ? "page" : undefined}
-                  className={`relative whitespace-nowrap px-3 py-2.5 text-xs font-medium transition-colors 2xl:text-[13px] ${isActive ? "text-foreground" : "text-foreground/70 hover:text-foreground"}`}
+                  className={`site-header__nav-link ${isActive ? "site-header__nav-link--active" : ""}`}
                 >
                   {t(item.labelKey)}
-                  {isActive && (
-                    <span className="absolute bottom-1 left-3 right-3 h-px rounded-full bg-accent shadow-[0_0_10px_hsl(var(--accent)/0.4)]" />
-                  )}
                 </LocalizedLink>
               );
             })}
+            <div ref={desktopMoreRef} className="site-header__more">
+              <button
+                type="button"
+                className={`site-header__nav-link site-header__more-button ${desktopMoreActive ? "site-header__nav-link--active" : ""}`}
+                aria-haspopup="menu"
+                aria-expanded={desktopMoreOpen}
+                onClick={() => setDesktopMoreOpen((open) => !open)}
+              >
+                {moreLabel}
+                <ChevronDown className={`h-3.5 w-3.5 transition-transform ${desktopMoreOpen ? "rotate-180" : ""}`} />
+              </button>
+              {desktopMoreOpen && (
+                <div className="site-header__more-menu" role="menu">
+                  {secondaryDesktopNavItems.map((item) => {
+                    const isActive = isActivePath(location.pathname, item.path);
+                    const Icon = item.icon;
+                    return (
+                      <LocalizedLink
+                        key={item.path}
+                        to={item.path}
+                        role="menuitem"
+                        onClick={(event) => {
+                          setDesktopMoreOpen(false);
+                          handleNavClick(event, item.path);
+                        }}
+                        onFocus={() => preloadPublicRoute(item.path)}
+                        onPointerEnter={() => preloadPublicRoute(item.path)}
+                        aria-current={isActive ? "page" : undefined}
+                        className={`site-header__more-link ${isActive ? "site-header__more-link--active" : ""}`}
+                      >
+                        <Icon className="h-4 w-4" />
+                        <span>{t(item.labelKey)}</span>
+                      </LocalizedLink>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
           </nav>
 
-          <div className="hidden shrink-0 items-center gap-2.5 min-[1440px]:flex">
+          <div className="site-header__desktop-actions hidden shrink-0 items-center min-[1180px]:flex">
             <button
               onClick={changeLanguage}
-              className="site-header__control flex items-center gap-1 rounded-full px-3 py-2 text-xs font-medium text-foreground/75 transition-colors hover:text-foreground"
+              className="site-header__control site-header__language-control"
               aria-label={languageAriaLabel}
             >
               <Globe className="h-3.5 w-3.5" />
@@ -272,26 +335,29 @@ const Navbar = () => {
               <span className="text-muted-foreground/40">|</span>
               <span className={language === "zh" ? "font-semibold text-foreground" : ""}>中文</span>
             </button>
-            <Button variant="ghost" size="sm" className="whitespace-nowrap text-muted-foreground" asChild>
+            <Button variant="ghost" size="icon" className="site-header__icon-action" asChild>
               <a
                 href={settings.phone_href}
                 aria-label={callAriaLabel}
+                title={language === "zh" ? "电话" : "Call"}
                 onClick={() => trackCtaClick("phone", "desktop_header", { destination: "phone" })}
               >
-                <Phone className="mr-1.5 h-4 w-4" /> {language === "zh" ? "电话" : "Call"}
+                <Phone className="h-4 w-4" />
               </a>
             </Button>
-            <Button variant="ghost" size="sm" className="whitespace-nowrap text-muted-foreground" asChild>
+            <Button variant="ghost" size="icon" className="site-header__icon-action" asChild>
               <a
                 href={settings.whatsapp_url()}
                 target="_blank"
                 rel="noopener noreferrer"
+                aria-label={language === "zh" ? "WhatsApp 咨询" : "WhatsApp Us"}
+                title={language === "zh" ? "WhatsApp 咨询" : "WhatsApp Us"}
                 onClick={() => trackCtaClick("whatsapp", "desktop_header", { destination: "whatsapp" })}
               >
-                <WhatsAppIcon className="mr-1.5 h-4 w-4 text-whatsapp" /> WhatsApp
+                <WhatsAppIcon className="h-4 w-4 text-whatsapp" />
               </a>
             </Button>
-            <Button size="sm" className="font-semibold" asChild>
+            <Button size="sm" className="site-header__quote-button font-semibold" asChild>
               <LocalizedLink
                 to="/quote"
                 className="whitespace-nowrap"
@@ -302,7 +368,7 @@ const Navbar = () => {
             </Button>
           </div>
 
-          <div className="ml-auto flex shrink-0 items-center min-[1440px]:hidden">
+          <div className="ml-auto flex shrink-0 items-center min-[1180px]:hidden">
             <div className="site-header__mobile-controls flex h-11 items-center gap-1 rounded-full border border-white/75 bg-white/85 p-0.5 shadow-[0_16px_42px_-32px_rgba(21,18,14,0.55)] backdrop-blur-md">
               <button
                 onClick={changeLanguage}
@@ -338,11 +404,13 @@ const Navbar = () => {
           id="mobile-navigation"
           ref={mobileMenuRef}
           data-state={isMenuClosing ? "closing" : "open"}
-          className="mobile-navigation fixed inset-x-0 bottom-0 top-12 flex flex-col border-t border-border/70 bg-[hsl(var(--background))] shadow-[0_-24px_80px_-56px_rgba(21,18,14,0.45)] md:top-16 min-[1440px]:hidden"
+          className="mobile-navigation fixed inset-x-0 bottom-0 top-12 flex flex-col border-t border-border/70 bg-[hsl(var(--background))] shadow-[0_-24px_80px_-56px_rgba(21,18,14,0.45)] md:top-16 min-[1180px]:hidden"
           style={{ zIndex: PUBLIC_CHROME_Z.mobileMenu }}
+          tabIndex={-1}
+          data-mobile-menu-initial-focus
         >
-          <div className="min-h-0 flex-1 overflow-y-auto px-4 py-4">
-            <div className="space-y-2">
+          <div className="mobile-navigation__body">
+            <nav className="mobile-navigation__list" aria-label={language === "zh" ? "导航" : "Navigation"}>
               {navItems.map((item, index) => {
                 const isActive = isActivePath(location.pathname, item.path);
                 const Icon = item.icon;
@@ -356,66 +424,60 @@ const Navbar = () => {
                     onTouchStart={() => preloadPublicRoute(item.path)}
                     aria-current={isActive ? "page" : undefined}
                     style={{ animationDelay: `${index * 40}ms` }}
-                    className={`mobile-nav-link relative flex min-h-[62px] items-center gap-3 overflow-hidden rounded-card border px-3 text-[15px] font-medium opacity-0 shadow-[0_14px_34px_-30px_rgba(21,18,14,0.38)] animate-fade-in [animation-fill-mode:forwards] ${
-                      isActive
-                        ? "border-gold/45 bg-[#17120d] text-white shadow-[0_18px_48px_-32px_rgba(21,18,14,0.82)]"
-                        : "border-border/60 bg-card/80 text-foreground/80 active:bg-card"
-                    } ${pendingPath === item.path ? "mobile-nav-link--pending" : ""}`}
+                    className={`mobile-nav-link mobile-navigation__link ${isActive ? "mobile-navigation__link--active" : ""} ${pendingPath === item.path ? "mobile-nav-link--pending" : ""}`}
                   >
-                    {isActive && <span className="absolute inset-y-3 left-0 w-1 rounded-r-full bg-gold" aria-hidden="true" />}
-                    <span
-                      className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-full border ${isActive ? "border-gold/45 bg-gold/15" : "border-border/70 bg-background"}`}
-                    >
-                      <Icon className={`h-[18px] w-[18px] ${isActive ? "text-gold" : "text-muted-foreground"}`} />
+                    <span className="mobile-navigation__link-icon">
+                      <Icon className="h-[1.35rem] w-[1.35rem]" />
                     </span>
-                    <span className={`min-w-0 flex-1 ${isActive ? "font-semibold" : ""}`}>{t(item.labelKey)}</span>
-                    {isActive && (
-                      <span className="shrink-0 rounded-full border border-gold/30 bg-gold/10 px-2 py-1 text-[10px] font-bold leading-none text-gold">
-                        {currentPageLabel}
-                      </span>
-                    )}
-                    <ChevronRight className={`h-4 w-4 shrink-0 ${isActive ? "text-gold/80" : "text-muted-foreground/50"}`} />
+                    <span className="mobile-navigation__link-text">{t(item.labelKey)}</span>
+                    <ChevronRight className="mobile-navigation__link-arrow h-5 w-5" />
                   </LocalizedLink>
                 );
               })}
-            </div>
+            </nav>
           </div>
 
-          <div className="shrink-0 space-y-3 border-t border-border bg-[hsl(var(--background))] px-5 pb-[max(1rem,env(safe-area-inset-bottom))] pt-4">
-            <Button size="lg" className="h-12 w-full justify-center text-sm font-semibold" asChild>
-              <LocalizedLink
-                to="/quote"
-                onClick={(event) => {
-                  trackCtaClick("quote", "mobile_menu", { destination: "/quote" });
-                  handleNavClick(event, "/quote");
-                }}
-                onFocus={() => preloadPublicRoute("/quote")}
-                onPointerEnter={() => preloadPublicRoute("/quote")}
-                onTouchStart={() => preloadPublicRoute("/quote")}
-              >
-                {t("cta.getQuote")}
-              </LocalizedLink>
-            </Button>
-            <Button size="lg" variant="outline" className="h-12 w-full justify-center text-sm font-medium" asChild>
+          <div className="mobile-navigation__footer">
+            <LocalizedLink
+              to="/quote"
+              className="mobile-navigation__quote"
+              onClick={(event) => {
+                trackCtaClick("quote", "mobile_menu", { destination: "/quote" });
+                handleNavClick(event, "/quote");
+              }}
+              onFocus={() => preloadPublicRoute("/quote")}
+              onPointerEnter={() => preloadPublicRoute("/quote")}
+              onTouchStart={() => preloadPublicRoute("/quote")}
+            >
+              <FileText className="h-5 w-5" />
+              <span>{t("cta.getQuote")}</span>
+              <ArrowRight className="h-5 w-5" />
+            </LocalizedLink>
+            <div className="mobile-navigation__divider" aria-hidden="true">
+              <span />
+              <b>✦</b>
+              <span />
+            </div>
+            <div className="mobile-navigation__contact-row">
               <a
                 href={settings.phone_href}
+                className="mobile-navigation__contact-action"
                 onClick={() => trackCtaClick("phone", "mobile_menu", { destination: "phone" })}
               >
-                <Phone className="mr-1.5 h-4 w-4" />
-                {language === "zh" ? "电话咨询" : "Call Us"}
+                <Phone className="h-4 w-4" />
+                <span>{language === "zh" ? "电话咨询" : "Call Us"}</span>
               </a>
-            </Button>
-            <Button size="lg" variant="outline" className="h-12 w-full justify-center text-sm font-medium" asChild>
               <a
                 href={settings.whatsapp_url()}
                 target="_blank"
                 rel="noopener noreferrer"
+                className="mobile-navigation__contact-action"
                 onClick={() => trackCtaClick("whatsapp", "mobile_menu", { destination: "whatsapp" })}
               >
-                <WhatsAppIcon className="mr-1.5 h-4 w-4 text-whatsapp" />
-                {t("cta.whatsapp")}
+                <WhatsAppIcon className="h-4 w-4 text-whatsapp" />
+                <span>{t("cta.whatsapp")}</span>
               </a>
-            </Button>
+            </div>
           </div>
         </div>
       )}

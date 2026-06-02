@@ -8,7 +8,7 @@ const paths = [
   "/zh",
   "/en",
   "/zh/materials/spc-flooring-natural-oak",
-  "/zh/projects/mont-kiara-condo-renovation",
+  "/zh/projects/mont-kiara-luxury-condo-renovation",
   "/zh/services/kitchen",
   "/zh/blog/malaysia-renovation-budget-guide",
   "/zh/landing/kitchen-cabinet",

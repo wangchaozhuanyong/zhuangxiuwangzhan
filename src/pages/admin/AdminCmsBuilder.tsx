@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { ArrowDown, ArrowUp, ExternalLink, GripVertical, Plus, RotateCcw, Trash2 } from "lucide-react";
+import { AlertTriangle, ArrowDown, ArrowUp, ExternalLink, Globe2, GripVertical, Info, Plus, RotateCcw, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -15,7 +15,33 @@ import { adminStatusLabel, publishStatusOptions } from "@/lib/adminLocale";
 import { isSupabaseConfigured, supabase } from "@/lib/supabase";
 import { adminConfirm } from "@/components/admin/AdminConfirmProvider";
 import { SectionContentEditor } from "@/pages/admin/AdminCmsSectionContentEditor";
-import { emptyPage, makeSectionKey, parseJson, prettyJson, type CmsPage, type CmsRevision, type CmsSection, type CmsTemplate } from "@/lib/adminCmsBuilderModel";
+import {
+  buildCmsLocalizedPath,
+  cmsPathHasLanguagePrefix,
+  createCmsPageDraft,
+  emptyPage,
+  isCmsPathHandledByStaticRoute,
+  isValidCmsPageKey,
+  makeSectionKey,
+  normalizeCmsPageKey,
+  normalizeCmsPagePath,
+  parseJson,
+  prettyJson,
+  shouldAutoSelectFirstCmsPage,
+  type CmsPage,
+  type CmsRevision,
+  type CmsSection,
+  type CmsTemplate,
+} from "@/lib/adminCmsBuilderModel";
+
+const fallbackCmsSectionTemplates: CmsTemplate[] = [
+  { template_key: "hero", label: "Hero 首屏", description: "页面顶部的大标题、说明、按钮和主图。" },
+  { template_key: "rich_text", label: "富文本内容", description: "公司介绍、服务说明或长段落正文。" },
+  { template_key: "service_grid", label: "服务卡片", description: "展示多个服务项目。" },
+  { template_key: "testimonials", label: "客户评价", description: "展示客户评价列表。" },
+  { template_key: "faq", label: "常见问题", description: "维护问答列表。" },
+  { template_key: "cta", label: "行动引导 CTA", description: "联系、报价、预约等转化区域。" },
+];
 
 export default function AdminCmsBuilder() {
   const queryClient = useQueryClient();
@@ -103,6 +129,12 @@ export default function AdminCmsBuilder() {
   });
 
   const pages = useMemo(() => pagesQuery.data || [], [pagesQuery.data]);
+  const cmsSectionTemplates = useMemo(() => {
+    const byKey = new Map<string, CmsTemplate>();
+    fallbackCmsSectionTemplates.forEach((template) => byKey.set(template.template_key, template));
+    (templatesQuery.data || []).forEach((template) => byKey.set(template.template_key, template));
+    return Array.from(byKey.values());
+  }, [templatesQuery.data]);
   const sections = useMemo(() => sectionsQuery.data || [], [sectionsQuery.data]);
   const orderedSections = useMemo(() => {
     if (!sectionOrder.length) return sections;
@@ -114,10 +146,24 @@ export default function AdminCmsBuilder() {
     return [...ordered, ...missing];
   }, [sectionOrder, sections]);
   const selectedPage = useMemo(() => pages.find((page) => page.id === selectedPageId) || null, [pages, selectedPageId]);
+  const normalizedDraftPath = normalizeCmsPagePath(pageDraft.path || "/");
+  const zhPreviewPath = buildCmsLocalizedPath(normalizedDraftPath, "zh");
+  const enPreviewPath = buildCmsLocalizedPath(normalizedDraftPath, "en");
+  const normalizedPageKey = normalizeCmsPageKey(pageDraft.page_key || "");
+  const isKnownStaticPage = ["home", "about", "services", "materials", "projects", "process", "faq", "contact", "quote", "blog", "privacy", "terms"].includes(normalizedPageKey);
+  const pathWarning = useMemo(() => {
+    if (!pageDraft.path.trim()) return "";
+    if (cmsPathHasLanguagePrefix(pageDraft.path)) return "这里不用写 /zh 或 /en，系统会自动生成中文和英文访问地址。";
+    if (normalizedDraftPath === "/" && normalizedPageKey && normalizedPageKey !== "home") return "只有首页应该使用 /，新页面请换成自己的路径，例如 /company-profile。";
+    if (isCmsPathHandledByStaticRoute(normalizedDraftPath) && !isKnownStaticPage) {
+      return "这个路径会被已有固定页面接管。新建自由页面建议换一个路径，例如 /company-profile。";
+    }
+    return "";
+  }, [isKnownStaticPage, normalizedDraftPath, normalizedPageKey, pageDraft.path]);
 
   useEffect(() => {
-    if (!selectedPageId && pages[0]?.id) setSelectedPageId(pages[0].id);
-  }, [pages, selectedPageId]);
+    if (shouldAutoSelectFirstCmsPage(selectedPageId, dirty, pages[0]?.id)) setSelectedPageId(pages[0].id);
+  }, [dirty, pages, selectedPageId]);
 
   useEffect(() => {
     if (selectedPage) {
@@ -140,9 +186,10 @@ export default function AdminCmsBuilder() {
 
   const newPage = () => {
     setSelectedPageId(null);
-    setPageDraft({ ...emptyPage });
+    setPageDraft(createCmsPageDraft(pages.length));
     setSectionDraft(null);
     setDirty(true);
+    setMessage("已创建新页面草稿。确认页面路径、标题和状态后保存。");
   };
 
   const newSection = () => {
@@ -150,7 +197,7 @@ export default function AdminCmsBuilder() {
       setMessage("请先保存或选择一个页面，再添加模块。");
       return;
     }
-    const template = templatesQuery.data?.[0]?.template_key || "rich_text";
+    const template = cmsSectionTemplates[0]?.template_key || "rich_text";
     const draft: CmsSection = {
       page_id: selectedPageId,
       section_key: makeSectionKey(template),
@@ -174,13 +221,18 @@ export default function AdminCmsBuilder() {
     if (saving) return;
     setSaving(true);
     try {
-      if (!pageDraft.page_key.trim()) throw new Error("页面标识不能为空。");
-      if (!pageDraft.path.trim().startsWith("/")) throw new Error("前台路径必须以 / 开头。");
+      const normalizedKey = normalizeCmsPageKey(pageDraft.page_key);
+      const normalizedPath = normalizeCmsPagePath(pageDraft.path);
+      if (!normalizedKey) throw new Error("页面标识不能为空。");
+      if (!isValidCmsPageKey(normalizedKey)) throw new Error("页面标识只能使用小写英文、数字、下划线或短横线。");
+      if (cmsPathHasLanguagePrefix(normalizedPath)) throw new Error("前台路径不要写 /zh 或 /en。保存 /company-profile 后，系统会生成 /zh/company-profile 和 /en/company-profile。");
+      if (normalizedPath === "/" && normalizedKey !== "home") throw new Error("只有首页可以使用 /，新页面请换成自己的路径。");
+      const payload = { ...pageDraft, page_key: normalizedKey, path: normalizedPath };
       const saved = await saveAdminRecord<CmsPage>({
         table: "cms_pages",
         id: pageDraft.id,
         expectedUpdatedAt: pageDraft.updated_at || null,
-        payload: pageDraft,
+        payload,
         queryClient,
         invalidate: "admin-content",
       });
@@ -367,20 +419,26 @@ export default function AdminCmsBuilder() {
   }
 
   return (
-    <div className="grid gap-6 xl:grid-cols-[340px_1fr]">
-      <section className="rounded-xl border border-border bg-card p-5">
-        <div className="mb-4 flex items-center justify-between gap-3">
+    <div className="grid gap-6 xl:grid-cols-[300px_minmax(0,1fr)]">
+      <section className="rounded-xl border border-border bg-card p-4 shadow-sm xl:sticky xl:top-24 xl:max-h-[calc(100vh-7rem)] xl:overflow-y-auto">
+        <div className="mb-4 space-y-3">
           <div>
-            <h1 className="font-display text-2xl font-bold">通用页面搭建器</h1>
-            <p className="mt-1 text-sm text-muted-foreground">管理页面、模块、草稿、发布和版本恢复。</p>
+            <h2 className="font-display text-xl font-bold leading-tight">页面列表</h2>
+            <p className="mt-1 text-sm leading-6 text-muted-foreground">选择已有页面，或新建一个自由页面草稿。</p>
           </div>
-          <AdminActionButton action="content.write" type="button" size="sm" onClick={newPage}>
+          <AdminActionButton action="content.write" type="button" size="sm" className="w-full justify-center whitespace-nowrap" onClick={newPage}>
             <Plus className="mr-2 h-4 w-4" />
             新页面
           </AdminActionButton>
         </div>
         {message && <div className="mb-4 rounded-lg bg-muted p-3 text-sm">{message}</div>}
         <div className="space-y-2">
+          {!pageDraft.id && dirty && (
+            <div className="rounded-lg border border-dashed border-accent bg-accent/10 p-3 text-sm">
+              <div className="font-medium">{pageDraft.title_zh || pageDraft.page_key || "新页面草稿"}</div>
+              <p className="mt-1 break-all text-xs text-muted-foreground">{normalizedDraftPath}</p>
+            </div>
+          )}
           {pages.map((page) => (
             <button
               type="button"
@@ -388,11 +446,11 @@ export default function AdminCmsBuilder() {
               onClick={() => setSelectedPageId(page.id || null)}
               className={`w-full rounded-lg border p-3 text-left transition ${selectedPageId === page.id ? "border-accent bg-accent/10" : "border-border bg-background hover:bg-muted"}`}
             >
-              <div className="flex items-center justify-between gap-3">
-                <span className="font-medium">{page.title_zh || page.title_en || page.page_key}</span>
-                <AdminStatusBadge status={page.status} />
+              <div className="flex min-w-0 items-center justify-between gap-3">
+                <span className="min-w-0 truncate font-medium">{page.title_zh || page.title_en || page.page_key}</span>
+                <AdminStatusBadge status={page.status} className="shrink-0" />
               </div>
-              <p className="mt-1 text-xs text-muted-foreground">{page.path}</p>
+              <p className="mt-1 break-all text-xs text-muted-foreground">{page.path}</p>
             </button>
           ))}
           {!pages.length && <p className="text-sm text-muted-foreground">暂无 CMS 页面。可以先执行默认内容同步，或手动新建。</p>}
@@ -402,9 +460,51 @@ export default function AdminCmsBuilder() {
       <div className="space-y-6">
         <AdminPageHeader
           title="通用页面搭建器"
-          description="管理页面、模块、草稿、发布和版本恢复。"
-          helpText="这里适合做更自由的页面搭建。先建页面，再给页面加模块，最后发布到前台。"
+          description={
+            <div className="space-y-2">
+              <p>用于管理可复用页面、模块、草稿、发布和版本恢复。新建自由页面发布后，通过中文站和英文站访问。</p>
+              <div className="flex flex-wrap gap-2 text-xs">
+                <span className="inline-flex items-center gap-1 rounded-full border border-border bg-background px-3 py-1 text-foreground">
+                  <Globe2 className="h-3.5 w-3.5" />
+                  中文：{zhPreviewPath}
+                </span>
+                <span className="inline-flex items-center gap-1 rounded-full border border-border bg-background px-3 py-1 text-foreground">
+                  <Globe2 className="h-3.5 w-3.5" />
+                  English：{enPreviewPath}
+                </span>
+              </div>
+            </div>
+          }
+          helpText="这里适合新增不占用固定路由的自由页面。后台 path 保存为 /company-profile，前台实际访问 /zh/company-profile 和 /en/company-profile。"
+          actions={
+            pageDraft.path ? (
+              <>
+                <Button asChild type="button" variant="outline" size="sm">
+                  <a href={zhPreviewPath} target="_blank" rel="noreferrer">
+                    <ExternalLink className="h-4 w-4" />
+                    预览中文
+                  </a>
+                </Button>
+                <Button asChild type="button" variant="outline" size="sm">
+                  <a href={enPreviewPath} target="_blank" rel="noreferrer">
+                    <ExternalLink className="h-4 w-4" />
+                    Preview EN
+                  </a>
+                </Button>
+              </>
+            ) : null
+          }
         />
+
+        <div className="rounded-xl border border-accent/30 bg-accent/10 p-4 text-sm leading-6 text-foreground">
+          <div className="flex gap-3">
+            <Info className="mt-0.5 h-4 w-4 shrink-0 text-accent" />
+            <div>
+              <p className="font-semibold">这个功能可以新增页面，但路径不要直接访问 `/xxx`。</p>
+              <p className="mt-1 text-muted-foreground">后台保存的 path 是不带语言前缀的基础路径；正式前台会使用 `{zhPreviewPath}` 和 `{enPreviewPath}`。</p>
+            </div>
+          </div>
+        </div>
 
         <AdminFormSection title="页面基础信息" description="控制页面路径、标题、SEO、状态和排序。" helpText="保存页面后，才能给它添加模块。published 会给正式前台读取；draft 只适合后台预览。">
           <div className="grid gap-4 md:grid-cols-2">
@@ -413,8 +513,24 @@ export default function AdminCmsBuilder() {
               <Input value={pageDraft.page_key} onChange={(event) => { setDirty(true); setPageDraft((page) => ({ ...page, page_key: event.target.value })); }} />
             </div>
             <div>
-              <AdminFieldLabel label="前台路径 path" help="必须以 / 开头，例如 /about、/services。" />
+              <AdminFieldLabel label="前台路径 path" help="保存不带语言前缀的基础路径，例如 /company-profile。正式访问地址会自动加 /zh 或 /en。" />
               <Input value={pageDraft.path} onChange={(event) => { setDirty(true); setPageDraft((page) => ({ ...page, path: event.target.value })); }} />
+              <div className="mt-2 grid gap-2 text-xs sm:grid-cols-2">
+                <div className="rounded-lg border border-border bg-muted/30 px-3 py-2">
+                  <span className="text-muted-foreground">中文地址</span>
+                  <p className="mt-1 break-all font-medium text-foreground">{zhPreviewPath}</p>
+                </div>
+                <div className="rounded-lg border border-border bg-muted/30 px-3 py-2">
+                  <span className="text-muted-foreground">英文地址</span>
+                  <p className="mt-1 break-all font-medium text-foreground">{enPreviewPath}</p>
+                </div>
+              </div>
+              {pathWarning && (
+                <div className="mt-2 flex gap-2 rounded-lg border border-amber-300/60 bg-amber-50 px-3 py-2 text-xs leading-5 text-amber-900">
+                  <AlertTriangle className="mt-0.5 h-3.5 w-3.5 shrink-0" />
+                  <span>{pathWarning}</span>
+                </div>
+              )}
             </div>
             <div>
               <AdminFieldLabel label="中文标题" help="前台中文页面可读取的标题。" />
@@ -449,9 +565,17 @@ export default function AdminCmsBuilder() {
             <AdminActionButton action="content.write" type="button" disabled={saving} onClick={() => void savePage()}>{saving ? "保存中..." : "保存页面"}</AdminActionButton>
             {pageDraft.path && (
               <Button asChild type="button" variant="outline">
-                <a href={pageDraft.path} target="_blank" rel="noreferrer">
+                <a href={zhPreviewPath} target="_blank" rel="noreferrer">
                   <ExternalLink className="mr-2 h-4 w-4" />
-                  预览正式路径
+                  预览中文页
+                </a>
+              </Button>
+            )}
+            {pageDraft.path && (
+              <Button asChild type="button" variant="outline">
+                <a href={enPreviewPath} target="_blank" rel="noreferrer">
+                  <ExternalLink className="mr-2 h-4 w-4" />
+                  预览英文页
                 </a>
               </Button>
             )}
@@ -559,10 +683,9 @@ export default function AdminCmsBuilder() {
                       onChange={(event) => { setDirty(true); setSectionDraft((section) => section ? { ...section, section_type: event.target.value } : section); }}
                       className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
                     >
-                      {(templatesQuery.data || []).map((template) => (
+                      {cmsSectionTemplates.map((template) => (
                         <option key={template.template_key} value={template.template_key}>{template.label}</option>
                       ))}
-                      {!templatesQuery.data?.length && <option value="rich_text">Rich Text</option>}
                     </select>
                   </div>
                   <div>

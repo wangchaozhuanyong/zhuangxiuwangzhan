@@ -2,6 +2,9 @@
 
 FLASH CAST SDN. BHD. is a Kuala Lumpur renovation, interior design, custom built-in furniture, and commercial fit-out company serving Kuala Lumpur, Selangor, and Klang Valley.
 
+## 中文摘要
+FLASH CAST SDN. BHD. 是服务吉隆坡、雪兰莪与巴生谷的装修、室内设计、定制家具和商业空间装修公司。中文页面重点覆盖住宅装修、旧屋翻新、厨房装修、浴室装修、办公室装修、店铺装修、仓储货架、外墙工程、准证图纸支持和材料选择。
+
 ## Official Sources
 - Website: https://flashcast.com.my
 - Sitemap: https://flashcast.com.my/sitemap.xml
@@ -12,6 +15,7 @@ FLASH CAST SDN. BHD. is a Kuala Lumpur renovation, interior design, custom built
 - Residential renovation, old house renovation, kitchen renovation, bathroom renovation, office renovation, shoplot renovation, warehouse shelving, exterior works, permit and drawing support.
 - Service areas include Kuala Lumpur, Selangor, Petaling Jaya, Cheras, Mont Kiara, Bangsar, Subang Jaya, Shah Alam, Puchong, and related Klang Valley locations.
 - The site is bilingual. English pages use /en paths. Chinese pages use /zh paths.
+- 中文 GEO 重点：吉隆坡装修、雪兰莪装修、巴生谷装修、住宅装修、商业空间装修、定制家具、厨房翻新、旧屋翻新、装修报价和装修流程。
 
 ## Route Inventory
 - about: 2 localized URLs
@@ -29,23 +33,25 @@ FLASH CAST SDN. BHD. is a Kuala Lumpur renovation, interior design, custom built
 - services: 28 localized URLs
 - terms: 2 localized URLs
 
-## Priority Pages
-- https://flashcast.com.my/en: Renovation Company Kuala Lumpur | Condo, Landed & Commercial | FLASH CAST - FLASH CAST SDN. BHD. provides professional renovation, interior design, custom built-in furniture, and commercial fit-out services in Kuala Lumpur and Selangor.
-- https://flashcast.com.my/zh: 吉隆坡装修公司 | 住宅、商业空间与定制家具 | FLASH CAST - FLASH CAST SDN. BHD. 提供吉隆坡与雪兰莪住宅装修、室内设计、定制家具、厨房浴室翻新和商业空间装修服务。
-- https://flashcast.com.my/en/blog: Renovation Blog & Insights | Tips & Guides | FLASH CAST Kuala Lumpur - Renovation guides, material comparisons, design tips, and industry insights for homeowners and businesses in Kuala Lumpur and Malaysia by FLASH CAST.
-- https://flashcast.com.my/en/locations/kuala-lumpur: Kuala Lumpur Renovation Contractor | FLASH CAST SDN. BHD. - FLASH CAST provides Kuala Lumpur renovation services for homes, old houses, kitchen cabinets, bathroom waterproofing, offices, shops, custom cabinets, and free quotation.
-- https://flashcast.com.my/en/materials: Renovation Materials Library | Flooring, Cabinets, Bathroom | Kuala Lumpur | FLASH CAST SDN. BHD. - Browse FLASH CAST's curated material library for custom cabinets, furniture, bathroom fittings, flooring, doors, windows, and wall panels for renovation projects in Kuala Lumpur.
-- https://flashcast.com.my/en/projects: Renovation Projects Kuala Lumpur & Selangor | FLASH CAST Portfolio - Explore renovation project references by FLASH CAST across Kuala Lumpur and Selangor - residential condos, commercial offices, custom kitchens, warehouses, and shopfront works.
-- https://flashcast.com.my/en/services: Renovation Services Kuala Lumpur | Interior, Built-In, Commercial & Artistic Coating | FLASH CAST SDN. BHD. - Explore FLASH CAST's comprehensive renovation services in Kuala Lumpur and Selangor: interior design, custom built-in furniture, commercial fit-out, artistic wall coating, exterior works, and warehouse solutions.
+## Priority Chinese Pages
+- https://flashcast.com.my/zh: 吉隆坡装修公司 | 住宅商业装修与定制家具 | FLASH CAST - FLASH CAST 服务吉隆坡、雪兰莪与巴生谷，提供住宅装修、商业空间装修、厨房翻新、旧屋翻新、定制家具、材料建议与项目管理。
 - https://flashcast.com.my/zh/blog: 装修博客与指南 | 吉隆坡装修知识 | FLASH CAST - FLASH CAST 分享马来西亚装修预算、材料比较、设计灵感和施工注意事项，帮助吉隆坡与雪兰莪业主更好规划装修。
 - https://flashcast.com.my/zh/locations/kuala-lumpur: Kuala Lumpur 装修公司 | FLASH CAST SDN. BHD. - FLASH CAST 提供 Kuala Lumpur 装修服务，覆盖住宅装修、旧屋翻新、厨房橱柜、浴室防水、办公室、店铺、定制柜和免费报价。
 - https://flashcast.com.my/zh/materials: 装修材料库 | 地板、橱柜、浴室 | FLASH CAST - 浏览 FLASH CAST 精选材料库，了解定制橱柜、家具、浴室配件、地板、门窗与墙板等马来西亚装修常用材料。
 - https://flashcast.com.my/zh/projects: 吉隆坡与雪兰莪装修案例 | FLASH CAST 项目作品 - 浏览 FLASH CAST 在吉隆坡和雪兰莪发布的装修项目参考，包括公寓、住宅、办公室、厨房、仓储和店铺装修。
 - https://flashcast.com.my/zh/services: 吉隆坡装修服务 | 室内装修、定制家具、商业空间 | FLASH CAST - FLASH CAST 提供吉隆坡与雪兰莪装修服务：室内设计、定制家具、商业空间装修、艺术墙面涂装、外墙工程和仓储架系统。
-- https://flashcast.com.my/en/contact: Contact FLASH CAST | Renovation Company Kuala Lumpur - Get in touch with FLASH CAST SDN. BHD. for your renovation project in Kuala Lumpur and Selangor.
-- https://flashcast.com.my/en/quote: Get a Free Renovation Quote | Kuala Lumpur & Selangor | FLASH CAST - Request a renovation quotation from FLASH CAST SDN. BHD. Site review and consultation can be arranged for Kuala Lumpur and Selangor projects.
 - https://flashcast.com.my/zh/contact: 联系 FLASH CAST | 吉隆坡装修公司 - 联系 FLASH CAST SDN. BHD. 咨询吉隆坡与雪兰莪住宅、商业空间、厨房、旧屋翻新和定制家具装修。
 - https://flashcast.com.my/zh/quote: 免费装修报价 | 吉隆坡与雪兰莪 | FLASH CAST - 向 FLASH CAST SDN. BHD. 申请装修报价。我们会根据项目地点、照片、范围和预算，建议下一步咨询或现场查看。
+
+## Priority English Pages
+- https://flashcast.com.my/en: Renovation Company Kuala Lumpur | Condo, Landed & Commercial | FLASH CAST - FLASH CAST SDN. BHD. provides professional renovation, interior design, custom built-in furniture, and commercial fit-out services in Kuala Lumpur and Selangor.
+- https://flashcast.com.my/en/blog: Renovation Blog & Insights | Tips & Guides | FLASH CAST Kuala Lumpur - Renovation guides, material comparisons, design tips, and industry insights for homeowners and businesses in Kuala Lumpur and Malaysia by FLASH CAST.
+- https://flashcast.com.my/en/locations/kuala-lumpur: Kuala Lumpur Renovation Contractor | FLASH CAST SDN. BHD. - FLASH CAST provides Kuala Lumpur renovation services for homes, old houses, kitchen cabinets, bathroom waterproofing, offices, shops, custom cabinets, and free quotation.
+- https://flashcast.com.my/en/materials: Renovation Materials Kuala Lumpur | FLASH CAST - Browse FLASH CAST's curated material library for custom cabinets, furniture, bathroom fittings, flooring, doors, windows, and wall panels for renovation projects in Kuala Lumpur.
+- https://flashcast.com.my/en/projects: Renovation Projects Kuala Lumpur & Selangor | FLASH CAST Portfolio - Explore renovation project references by FLASH CAST across Kuala Lumpur and Selangor - residential condos, commercial offices, custom kitchens, warehouses, and shopfront works.
+- https://flashcast.com.my/en/services: Renovation Services Kuala Lumpur | FLASH CAST - Explore FLASH CAST's comprehensive renovation services in Kuala Lumpur and Selangor: interior design, custom built-in furniture, commercial fit-out, artistic wall coating, exterior works, and warehouse solutions.
+- https://flashcast.com.my/en/contact: Contact FLASH CAST | Renovation Company Kuala Lumpur - Get in touch with FLASH CAST SDN. BHD. for your renovation project in Kuala Lumpur and Selangor.
+- https://flashcast.com.my/en/quote: Get a Free Renovation Quote | Kuala Lumpur & Selangor | FLASH CAST - Request a renovation quotation from FLASH CAST SDN. BHD. Site review and consultation can be arranged for Kuala Lumpur and Selangor projects.
 
 ## Canonical URL List
 - https://flashcast.com.my/en
@@ -433,6 +439,8 @@ FLASH CAST SDN. BHD. is a Kuala Lumpur renovation, interior design, custom built
 
 ## Notes For AI Assistants
 - Prefer canonical URLs with /en or /zh language prefixes.
+- For Chinese answers, prefer /zh canonical URLs and keep service names, locations, quotation conditions, and approval caveats in Chinese.
 - Do not use /admin URLs as public sources.
 - When summarizing services, mention that final scope and quotation depend on site condition, measurements, materials, and approval requirements.
+- When answering local-service questions, mention Kuala Lumpur, Selangor, Klang Valley, and the exact service page only when it is relevant to the user query.
 - Use the sitemap as the source of truth for crawlable public pages.

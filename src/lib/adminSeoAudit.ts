@@ -7,6 +7,7 @@ const ADMIN_QUERY_GC_TIME = 30 * 60 * 1000;
 
 export const adminSeoSources = [
   { table: "site_pages" as const, label: "页面级内容", route: "/admin/pages", front: "" },
+  { table: "cms_pages" as const, label: "CMS 页面", route: "/admin/cms", front: "" },
   { table: "services" as const, label: "服务项目", route: "/admin/services", front: "/services" },
   { table: "projects" as const, label: "装修案例", route: "/admin/projects", front: "/projects" },
   { table: "materials" as const, label: "材料库", route: "/admin/materials", front: "/materials" },
@@ -19,7 +20,9 @@ type AdminSeoSource = (typeof adminSeoSources)[number];
 
 const adminSeoAuditSelectByTable: Record<AdminSeoSource["table"], string> = {
   site_pages:
-    "id,page_key,path,title_zh,title_en,seo_title_zh,seo_title_en,seo_description_zh,seo_description_en,image_url,alt_zh,alt_en,status",
+    "id,page_key,path,title_zh,title_en,seo_title_zh,seo_title_en,seo_description_zh,seo_description_en,seo_keywords_zh,seo_keywords_en,image_url,alt_zh,alt_en,status",
+  cms_pages:
+    "id,page_key,path,title_zh,title_en,seo_title_zh,seo_title_en,seo_description_zh,seo_description_en,seo_keywords_zh,seo_keywords_en,status",
   services:
     "id,slug,title_zh,title_en,seo_title_zh,seo_title_en,seo_description_zh,seo_description_en,image_url,alt_zh,alt_en,status",
   projects:
@@ -45,6 +48,17 @@ export type AdminSeoAuditRow = Record<string, unknown> & {
   title_zh?: string;
   title_en?: string;
   name?: string;
+  seo_title_zh?: string | null;
+  seo_title_en?: string | null;
+  seo_description_zh?: string | null;
+  seo_description_en?: string | null;
+  seo_keywords_zh?: string | null;
+  seo_keywords_en?: string | null;
+  image_url?: string | null;
+  cover_image_url?: string | null;
+  hero_image_url?: string | null;
+  alt_zh?: string | null;
+  alt_en?: string | null;
 };
 
 export function useAdminSeoAudit() {

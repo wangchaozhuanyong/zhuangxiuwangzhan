@@ -25,7 +25,7 @@ import AdminConfirmDialog from "@/components/admin/AdminConfirmDialog";
 import { toast } from "@/hooks/use-toast";
 import { formatAdminMutationError } from "@/lib/adminMutation";
 
-const usageTypes = ["all", "hero", "project", "material", "blog", "logo", "og", "before_after", "video", "general"] as const;
+const usageTypes = ["all", "hero", "project", "material", "blog", "logo", "icon", "og", "before_after", "video", "general"] as const;
 type UsageType = (typeof usageTypes)[number];
 
 const usageTypeLabels: Record<UsageType, string> = {
@@ -35,6 +35,7 @@ const usageTypeLabels: Record<UsageType, string> = {
   material: "材料",
   blog: "博客",
   logo: "品牌图标",
+  icon: "网站图标",
   og: "分享预览图",
   before_after: "改造前后",
   video: "视频",

@@ -65,11 +65,12 @@ export const fallbackSiteSettings: SiteSettings = {
   xiaohongshu_url: siteConfig.socialLinks.xiaohongshu,
   linkedin_url: siteConfig.socialLinks.linkedin,
   logo_url: siteConfig.logoUrl,
-  favicon_url: "/favicon.ico",
+  favicon_url: "/favicon-transparent-20260602.png",
   og_image_url: siteConfig.ogImage,
-  default_seo_title_zh: "吉隆坡装修公司 | FLASH CAST",
+  default_seo_title_zh: "吉隆坡装修公司 | 住宅商业装修与定制家具 | FLASH CAST",
   default_seo_title_en: "Renovation Company Kuala Lumpur | FLASH CAST",
-  default_seo_description_zh: "FLASH CAST 提供吉隆坡与雪兰莪住宅、商业空间、厨房、旧屋翻新和定制家具装修服务。",
+  default_seo_description_zh:
+    "FLASH CAST 服务吉隆坡、雪兰莪与巴生谷，提供住宅装修、商业空间装修、厨房翻新、旧屋翻新、定制家具、材料建议与项目管理。",
   default_seo_description_en:
     "FLASH CAST provides renovation, interior design, custom built-in furniture, and commercial fit-out services in Kuala Lumpur and Selangor.",
 };

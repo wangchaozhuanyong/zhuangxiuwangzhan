@@ -87,6 +87,7 @@ const MaterialDetail = () => {
   const displayCategoryName = category ? translateMaterialCategory(category.name, language) : "";
   const displayMaterialName = material ? translateDisplayText(material.name, language) : "";
   const displayMaterialDescription = material ? translateDisplayText(material.description, language) : "";
+  const displayMaterialSummary = stripHtml(displayMaterialDescription);
   const displayMaterialType = material ? translateMaterialType(material.type || "", language) : "";
 
   if (!material || !category) {
@@ -127,7 +128,7 @@ const MaterialDetail = () => {
         imageAlt={material.alt || displayMaterialName}
         label={displayCategoryName}
         title={displayMaterialName}
-        description={displayMaterialDescription}
+        description={displayMaterialSummary}
         backTo={`/materials/category/${category.slug}`}
         backLabel={displayCategoryName}
         variant="detail"

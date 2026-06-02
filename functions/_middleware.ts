@@ -276,6 +276,13 @@ const normalizePath = (pathname: string) => {
   return cleaned;
 };
 
+const EXACT_LEGACY_REDIRECTS: Record<string, string> = {
+  "/en/materials/spc-vinyl-natural-oak": "/en/materials/spc-flooring-natural-oak",
+  "/zh/materials/spc-vinyl-natural-oak": "/zh/materials/spc-flooring-natural-oak",
+  "/en/projects/mont-kiara-condo-renovation": "/en/projects/mont-kiara-luxury-condo-renovation",
+  "/zh/projects/mont-kiara-condo-renovation": "/zh/projects/mont-kiara-luxury-condo-renovation",
+};
+
 const redirect = (to: URL) =>
   new Response(null, {
     status: 301,
@@ -295,6 +302,11 @@ const getLegacyCanonicalPath = (pathname: string) => {
 
   const englishPath = cleaned === "/" ? "/en" : `/en${cleaned}`;
   return (manifest as Record<string, SeoEntry>)[englishPath] ? englishPath : null;
+};
+
+const getExactLegacyRedirectPath = (pathname: string) => {
+  const cleaned = pathname.replace(/\/+$/, "") || "/";
+  return EXACT_LEGACY_REDIRECTS[cleaned] || null;
 };
 
 const injectSeo = (html: string, meta: SeoEntry, siteSettings?: SiteSettingsHead | null) => {
@@ -390,6 +402,12 @@ export const onRequest: PagesFunction = async (context) => {
   if (url.hostname === "www.flashcast.com.my") {
     url.hostname = "flashcast.com.my";
     url.protocol = "https:";
+    return redirect(url);
+  }
+
+  const exactLegacyRedirectPath = getExactLegacyRedirectPath(url.pathname);
+  if (exactLegacyRedirectPath) {
+    url.pathname = exactLegacyRedirectPath;
     return redirect(url);
   }
 

@@ -1,5 +1,6 @@
 import fs from "node:fs";
 import path from "node:path";
+import { logSystemHealthEvent } from "./lib/system-health-events.mjs";
 
 const root = process.cwd();
 const backupArg = process.argv[2];
@@ -10,9 +11,13 @@ const latestBackup = () => {
   const entries = fs
     .readdirSync(backupsDir, { withFileTypes: true })
     .filter((entry) => entry.isDirectory())
-    .map((entry) => path.join(backupsDir, entry.name))
-    .sort();
-  return entries.at(-1) || null;
+    .map((entry) => {
+      const fullPath = path.join(backupsDir, entry.name);
+      return { fullPath, mtimeMs: fs.statSync(fullPath).mtimeMs };
+    })
+    .filter((entry) => /^\d{4}-\d{2}-\d{2}T/.test(path.basename(entry.fullPath)) && fs.existsSync(path.join(entry.fullPath, "manifest.json")))
+    .sort((a, b) => b.mtimeMs - a.mtimeMs);
+  return entries[0]?.fullPath || null;
 };
 
 const backupPath = backupArg ? path.resolve(root, backupArg) : latestBackup();
@@ -54,38 +59,64 @@ if (manifest.backup_type === "rest-json") {
     process.exit(1);
   }
 
+  await logSystemHealthEvent({
+    event_type: "backup_package_verified",
+    severity: "info",
+    message: "Backup package verification completed.",
+    metadata: {
+      backup_folder: path.basename(backupPath),
+      backup_type: manifest.backup_type,
+      full_access: Boolean(manifest.full_access),
+      required_tables: requiredTables,
+      storage_bucket: manifest.storage_bucket || null,
+      storage_file_count: manifest.storage_file_count,
+      verified_at: new Date().toISOString(),
+    },
+  }, root);
   console.log(`[verify-backup-package] OK: ${backupPath}`);
-  process.exit(0);
+} else {
+  const schema = requireFile(manifest.schema_file || "public-schema.sql");
+  const data = requireFile(manifest.data_file || "public-data.sql");
+
+  const requiredSchemaMarkers = [
+    "CREATE TABLE",
+    "cms_pages",
+    "cms_sections",
+    "admin_users",
+    "system_event_logs",
+  ];
+
+  const requiredDataMarkers = ["COPY", "cms_pages"];
+  const failures = [];
+
+  for (const marker of requiredSchemaMarkers) {
+    if (!schema.includes(marker)) failures.push(`schema missing ${marker}`);
+  }
+  for (const marker of requiredDataMarkers) {
+    if (!data.includes(marker)) failures.push(`data missing ${marker}`);
+  }
+
+  if (!manifest.storage_bucket) failures.push("manifest missing storage bucket");
+  if (typeof manifest.storage_file_count !== "number") failures.push("manifest missing storage file count");
+
+  if (failures.length) {
+    console.error("[verify-backup-package] Backup is not restorable enough:");
+    for (const failure of failures) console.error(`  - ${failure}`);
+    process.exit(1);
+  }
+
+  await logSystemHealthEvent({
+    event_type: "backup_package_verified",
+    severity: "info",
+    message: "Backup package verification completed.",
+    metadata: {
+      backup_folder: path.basename(backupPath),
+      backup_type: manifest.backup_type || "sql-dump",
+      full_access: Boolean(manifest.full_access),
+      storage_bucket: manifest.storage_bucket || null,
+      storage_file_count: manifest.storage_file_count,
+      verified_at: new Date().toISOString(),
+    },
+  }, root);
+  console.log(`[verify-backup-package] OK: ${backupPath}`);
 }
-
-const schema = requireFile(manifest.schema_file || "public-schema.sql");
-const data = requireFile(manifest.data_file || "public-data.sql");
-
-const requiredSchemaMarkers = [
-  "CREATE TABLE",
-  "cms_pages",
-  "cms_sections",
-  "admin_users",
-  "system_event_logs",
-];
-
-const requiredDataMarkers = ["COPY", "cms_pages"];
-const failures = [];
-
-for (const marker of requiredSchemaMarkers) {
-  if (!schema.includes(marker)) failures.push(`schema missing ${marker}`);
-}
-for (const marker of requiredDataMarkers) {
-  if (!data.includes(marker)) failures.push(`data missing ${marker}`);
-}
-
-if (!manifest.storage_bucket) failures.push("manifest missing storage bucket");
-if (typeof manifest.storage_file_count !== "number") failures.push("manifest missing storage file count");
-
-if (failures.length) {
-  console.error("[verify-backup-package] Backup is not restorable enough:");
-  for (const failure of failures) console.error(`  - ${failure}`);
-  process.exit(1);
-}
-
-console.log(`[verify-backup-package] OK: ${backupPath}`);

@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 import { Helmet } from "react-helmet-async";
 import { Navigate } from "react-router-dom";
 import { Moon, ShieldCheck, Sun } from "lucide-react";
-import AdminPageHeader from "@/components/admin/AdminPageHeader";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { isSupabaseConfigured, supabase } from "@/lib/supabase";
@@ -136,44 +135,40 @@ const AdminLogin = () => {
         <meta name="robots" content="noindex, nofollow" />
       </Helmet>
 
-      <div className="w-full max-w-md">
-        <AdminPageHeader
-          title={t.title}
-          description={t.description}
-          helpText="这里是后台登录入口，只用来进入管理系统，不负责内容编辑。"
-        />
-
-        <div className="mb-4 flex items-center justify-end gap-2">
-          <div className="inline-flex h-10 items-center gap-1 rounded-full border border-border bg-muted/60 p-1" aria-label={t.language}>
-            <ToggleButton active={language === "zh"} label="中文" onClick={() => changeLanguage("zh")}>
-              中文
-            </ToggleButton>
-            <ToggleButton active={language === "en"} label="英文" onClick={() => changeLanguage("en")}>
-              EN
-            </ToggleButton>
-          </div>
-          <Button
-            type="button"
-            variant="outline"
-            size="icon"
-            className="h-10 w-10 rounded-lg"
-            aria-label={theme === "dark" ? t.lightTheme : t.darkTheme}
-            title={theme === "dark" ? t.lightTheme : t.darkTheme}
-            onClick={() => setTheme((value) => (value === "dark" ? "light" : "dark"))}
-          >
-            {theme === "dark" ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
-          </Button>
-        </div>
-
+      <div className="w-full max-w-lg">
         <form onSubmit={handleSubmit} className="rounded-lg border border-border bg-card p-6 shadow-sm sm:p-8">
-          <div className="mb-6 flex items-start gap-4">
-            <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-primary text-sm font-bold text-primary-foreground">
-              FC
+          <div className="mb-6 flex flex-col gap-5 sm:flex-row sm:items-start sm:justify-between">
+            <div className="flex min-w-0 items-start gap-4">
+              <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-primary text-sm font-bold text-primary-foreground">
+                FC
+              </div>
+              <div className="min-w-0">
+                <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-accent">{t.brand}</p>
+                <h1 className="mt-1 text-2xl font-semibold tracking-normal">{t.title}</h1>
+                <p className="mt-2 text-sm leading-6 text-muted-foreground">{t.description}</p>
+              </div>
             </div>
-            <div className="min-w-0">
-              <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-accent">{t.brand}</p>
-              <h2 className="mt-1 text-2xl font-semibold tracking-normal">{t.title}</h2>
-              <p className="mt-2 text-sm leading-6 text-muted-foreground">{t.description}</p>
+
+            <div className="flex shrink-0 items-center justify-end gap-2">
+              <div className="inline-flex h-10 items-center gap-1 rounded-full border border-border bg-muted/60 p-1" aria-label={t.language}>
+                <ToggleButton active={language === "zh"} label="中文" onClick={() => changeLanguage("zh")}>
+                  中文
+                </ToggleButton>
+                <ToggleButton active={language === "en"} label="英文" onClick={() => changeLanguage("en")}>
+                  EN
+                </ToggleButton>
+              </div>
+              <Button
+                type="button"
+                variant="outline"
+                size="icon"
+                className="h-10 w-10 rounded-lg"
+                aria-label={theme === "dark" ? t.lightTheme : t.darkTheme}
+                title={theme === "dark" ? t.lightTheme : t.darkTheme}
+                onClick={() => setTheme((value) => (value === "dark" ? "light" : "dark"))}
+              >
+                {theme === "dark" ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+              </Button>
             </div>
           </div>
 

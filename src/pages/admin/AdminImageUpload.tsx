@@ -32,6 +32,9 @@ type PreparedUpload = {
 const BUCKET = "site-images";
 const ORIGINAL_BUCKET = "site-media-originals";
 const MAX_EDGE = 2400;
+const ICON_OUTPUT_SIZE = 512;
+const ICON_MARK_SIZE = 468;
+const ICON_MARK_COLOR = { r: 199, g: 166, b: 103 };
 const WEBP_QUALITY = 0.82;
 const MAX_SOURCE_BYTES = 20 * 1024 * 1024;
 const MAX_UPLOAD_BYTES = 5 * 1024 * 1024;
@@ -68,7 +71,131 @@ const sanitizeName = (value: string, fallback = "image") =>
     .replace(/[^a-z0-9]+/g, "-")
     .replace(/(^-|-$)/g, "") || fallback;
 
-async function prepareUploadFile(file: File): Promise<PreparedUpload> {
+type PixelBounds = {
+  minX: number;
+  minY: number;
+  maxX: number;
+  maxY: number;
+  mode: "alpha" | "non-white";
+};
+
+const getFaviconBounds = (imageData: ImageData): PixelBounds | null => {
+  const { data, width, height } = imageData;
+  let alphaVisible = 0;
+  let transparent = 0;
+  let alphaBounds: PixelBounds | null = null;
+  let nonWhiteBounds: PixelBounds | null = null;
+
+  const include = (bounds: PixelBounds | null, x: number, y: number, mode: PixelBounds["mode"]) => {
+    if (!bounds) return { minX: x, minY: y, maxX: x, maxY: y, mode };
+    bounds.minX = Math.min(bounds.minX, x);
+    bounds.minY = Math.min(bounds.minY, y);
+    bounds.maxX = Math.max(bounds.maxX, x);
+    bounds.maxY = Math.max(bounds.maxY, y);
+    return bounds;
+  };
+
+  for (let y = 0; y < height; y += 1) {
+    for (let x = 0; x < width; x += 1) {
+      const index = (y * width + x) * 4;
+      const r = data[index] ?? 0;
+      const g = data[index + 1] ?? 0;
+      const b = data[index + 2] ?? 0;
+      const a = data[index + 3] ?? 0;
+      if (a <= 8) {
+        transparent += 1;
+        continue;
+      }
+
+      alphaVisible += 1;
+      alphaBounds = include(alphaBounds, x, y, "alpha");
+      const nearWhite = r > 245 && g > 245 && b > 245;
+      if (!nearWhite) nonWhiteBounds = include(nonWhiteBounds, x, y, "non-white");
+    }
+  }
+
+  if (!alphaVisible) return null;
+  const transparentRatio = transparent / (width * height);
+  return transparentRatio > 0.05 ? alphaBounds : nonWhiteBounds || alphaBounds;
+};
+
+const prepareIconUploadFile = async (file: File, bitmap: ImageBitmap): Promise<PreparedUpload> => {
+  const sourceCanvas = document.createElement("canvas");
+  sourceCanvas.width = bitmap.width;
+  sourceCanvas.height = bitmap.height;
+  const sourceCtx = sourceCanvas.getContext("2d");
+  if (!sourceCtx) throw new Error("浏览器不支持图片处理画布");
+  sourceCtx.drawImage(bitmap, 0, 0);
+
+  const sourceData = sourceCtx.getImageData(0, 0, sourceCanvas.width, sourceCanvas.height);
+  const bounds = getFaviconBounds(sourceData) || {
+    minX: 0,
+    minY: 0,
+    maxX: sourceCanvas.width - 1,
+    maxY: sourceCanvas.height - 1,
+    mode: "alpha" as const,
+  };
+  const sourceW = Math.max(1, bounds.maxX - bounds.minX + 1);
+  const sourceH = Math.max(1, bounds.maxY - bounds.minY + 1);
+  const scale = Math.min(ICON_MARK_SIZE / sourceW, ICON_MARK_SIZE / sourceH);
+  const targetW = Math.max(1, Math.round(sourceW * scale));
+  const targetH = Math.max(1, Math.round(sourceH * scale));
+
+  const markCanvas = document.createElement("canvas");
+  markCanvas.width = targetW;
+  markCanvas.height = targetH;
+  const markCtx = markCanvas.getContext("2d");
+  if (!markCtx) throw new Error("浏览器不支持图片处理画布");
+  markCtx.drawImage(sourceCanvas, bounds.minX, bounds.minY, sourceW, sourceH, 0, 0, targetW, targetH);
+
+  const markData = markCtx.getImageData(0, 0, targetW, targetH);
+  for (let index = 0; index < markData.data.length; index += 4) {
+    const r = markData.data[index] ?? 0;
+    const g = markData.data[index + 1] ?? 0;
+    const b = markData.data[index + 2] ?? 0;
+    const nearWhite = r > 245 && g > 245 && b > 245;
+    if (bounds.mode === "non-white" && nearWhite) {
+      markData.data[index + 3] = 0;
+      continue;
+    }
+    markData.data[index] = ICON_MARK_COLOR.r;
+    markData.data[index + 1] = ICON_MARK_COLOR.g;
+    markData.data[index + 2] = ICON_MARK_COLOR.b;
+  }
+  markCtx.putImageData(markData, 0, 0);
+
+  const canvas = document.createElement("canvas");
+  canvas.width = ICON_OUTPUT_SIZE;
+  canvas.height = ICON_OUTPUT_SIZE;
+  const ctx = canvas.getContext("2d");
+  if (!ctx) throw new Error("浏览器不支持图片处理画布");
+  ctx.drawImage(markCanvas, Math.round((ICON_OUTPUT_SIZE - targetW) / 2), Math.round((ICON_OUTPUT_SIZE - targetH) / 2));
+
+  const blob: Blob = await new Promise((resolve, reject) => {
+    canvas.toBlob(
+      (b) => (b ? resolve(b) : reject(new Error("WebP 编码失败"))),
+      "image/webp",
+      WEBP_QUALITY,
+    );
+  });
+
+  if (blob.size > MAX_UPLOAD_BYTES) {
+    throw new Error("自动处理后的展示图仍超过 5MB。请换一张更合理的素材，或后续交给服务端处理队列。");
+  }
+
+  const out = new File([blob], `${sanitizeName(file.name, "favicon")}.webp`, { type: "image/webp" });
+  return {
+    file: out,
+    width: ICON_OUTPUT_SIZE,
+    height: ICON_OUTPUT_SIZE,
+    originalWidth: bitmap.width,
+    originalHeight: bitmap.height,
+    converted: true,
+    resized: true,
+  };
+};
+
+async function prepareUploadFile(file: File, variant: AdminImagePreviewVariant = "cover"): Promise<PreparedUpload> {
   const mime = file.type || "";
   const ext = file.name.split(".").pop()?.toLowerCase() || "";
 
@@ -83,6 +210,15 @@ async function prepareUploadFile(file: File): Promise<PreparedUpload> {
   const bitmap = await createImageBitmap(file);
   const originalWidth = bitmap.width;
   const originalHeight = bitmap.height;
+
+  if (variant === "icon") {
+    try {
+      return await prepareIconUploadFile(file, bitmap);
+    } finally {
+      bitmap.close?.();
+    }
+  }
+
   const scale = Math.min(1, MAX_EDGE / Math.max(originalWidth, originalHeight));
   const targetW = Math.max(1, Math.round(originalWidth * scale));
   const targetH = Math.max(1, Math.round(originalHeight * scale));
@@ -168,12 +304,12 @@ const previewConfig: Record<
     sizes: "(max-width: 768px) 80vw, 420px",
   },
   icon: {
-    frameClassName: "flex min-h-32 items-center justify-center bg-muted/35 p-5",
-    imageClassName: "h-16 w-16 rounded-lg object-contain",
-    width: 96,
-    height: 96,
+    frameClassName: "flex min-h-36 items-center justify-center bg-muted/35 p-5",
+    imageClassName: "h-24 w-24 rounded-xl object-contain",
+    width: 160,
+    height: 160,
     resize: "contain",
-    sizes: "96px",
+    sizes: "160px",
   },
   og: {
     frameClassName: "aspect-[1200/630] overflow-hidden bg-muted/35 p-2",
@@ -216,7 +352,7 @@ const AdminImageUpload = ({ value, folder = "content", previewVariant = "cover",
     setNotes([]);
 
     try {
-      const prepared = await prepareUploadFile(file);
+      const prepared = await prepareUploadFile(file, previewVariant);
       const folderPath = sanitizeFolder(folder);
       const stamp = Date.now();
       const originalPath = await tryUploadOriginalCopy({ file, folderPath, stamp });

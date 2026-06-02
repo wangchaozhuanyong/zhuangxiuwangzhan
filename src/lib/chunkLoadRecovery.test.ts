@@ -8,6 +8,27 @@ describe("chunkLoadRecovery", () => {
     ).toBe(true);
   });
 
+  it("detects React lazy module default failures from built assets", () => {
+    const error = new TypeError("Cannot read properties of undefined (reading 'default')");
+    error.stack = "TypeError: Cannot read properties of undefined (reading 'default')\n    at le (http://127.0.0.1:4174/assets/ui-1_PRuCWQ.js:1:3721)";
+
+    expect(isChunkLoadError(error)).toBe(true);
+  });
+
+  it("does not treat unrelated default property errors as chunk failures", () => {
+    expect(isChunkLoadError("Cannot read properties of undefined (reading 'default')")).toBe(false);
+  });
+
+  it("uses the cache mismatch friendly message when the event is already categorized", () => {
+    const friendly = getFriendlySystemMessage(
+      "Cannot read properties of undefined (reading 'default')",
+      "frontend_deploy_cache_mismatch",
+    );
+
+    expect(friendly).not.toContain("Cannot read properties");
+    expect(friendly.length).toBeGreaterThan(20);
+  });
+
   it("shows a friendly Chinese system log message for chunk failures", () => {
     expect(
       getFriendlySystemMessage("Failed to fetch dynamically imported module: /assets/AdminLayout-yH2aL-YC.js"),

@@ -64,7 +64,9 @@ const DesktopFloatingCta = () => {
 
   useEffect(() => {
     const updateFooterState = () => {
-      const overlapTargets = Array.from(document.querySelectorAll(".projects-showcase-section, .site-footer-art, footer"));
+      const overlapTargets = Array.from(
+        document.querySelectorAll(".projects-showcase-section, .material-directory-grid, .site-footer-art, footer"),
+      );
       if (!overlapTargets.length) {
         setContentOverlapZone(false);
         return;
