@@ -7,7 +7,8 @@ import AdminStatusBadge from "@/components/admin/AdminStatusBadge";
 import { adminConfirm } from "@/components/admin/AdminConfirmProvider";
 import { Button } from "@/components/ui/button";
 import { toast } from "@/hooks/use-toast";
-import { getAdminHealthFieldLabel, useAdminContentHealth, useAdminTranslationJobs } from "@/lib/adminQueries";
+import { getAdminHealthFieldLabel, useAdminContentHealth } from "@/lib/adminContentHealth";
+import { useAdminTranslationJobs } from "@/lib/adminQueries";
 import { friendlyTranslationError, translationEnabledTables } from "@/lib/adminTranslation";
 import { isSupabaseConfigured, supabase } from "@/lib/supabase";
 

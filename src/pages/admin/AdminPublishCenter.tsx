@@ -4,7 +4,7 @@ import AdminPageHeader from "@/components/admin/AdminPageHeader";
 import AdminStatCard from "@/components/admin/AdminStatCard";
 import AdminStatusBadge from "@/components/admin/AdminStatusBadge";
 import { Button } from "@/components/ui/button";
-import { useAdminContentHealth } from "@/lib/adminQueries";
+import { useAdminContentHealth } from "@/lib/adminContentHealth";
 
 const statusFilters = [
   { key: "all", label: "全部" },
