@@ -311,27 +311,27 @@ const injectSeo = (html: string, meta: SeoEntry, siteSettings?: SiteSettingsHead
   const lang = meta.lang === "zh" ? "zh-CN" : "en";
 
   let out = html.replace(/<html\s+lang="[^"]*"/i, `<html lang="${lang}"`);
-  out = out.replace(/<title[^>]*>[\s\S]*?<\/title>/i, `<title>${title}</title>`);
+  out = out.replace(/<title[^>]*>[\s\S]*?<\/title>/i, `<title data-rh="true">${title}</title>`);
   out = replaceOrInsertTag(
     out,
     /<meta\b(?=[^>]*\bname="description")[^>]*>/i,
-    `<meta name="description" content="${description}" />`,
+    `<meta data-rh="true" name="description" content="${description}" />`,
   );
 
-  out = replaceOrInsertTag(out, /<link\b[^>]*rel="canonical"[^>]*>/i, `<link rel="canonical" href="${canonical}" />`);
-  out = replaceOrInsertTag(out, /<link\b[^>]*hreflang="zh-CN"[^>]*>/i, `<link rel="alternate" hreflang="zh-CN" href="${escapeHtml(meta.hreflang.zh)}" />`);
-  out = replaceOrInsertTag(out, /<link\b[^>]*hreflang="en"[^>]*>/i, `<link rel="alternate" hreflang="en" href="${escapeHtml(meta.hreflang.en)}" />`);
-  out = replaceOrInsertTag(out, /<link\b[^>]*hreflang="x-default"[^>]*>/i, `<link rel="alternate" hreflang="x-default" href="${escapeHtml(meta.hreflang.xDefault)}" />`);
-  out = replaceOrInsertTag(out, /<meta\b[^>]*property="og:site_name"[^>]*>/i, `<meta property="og:site_name" content="${siteName}" />`);
-  out = replaceOrInsertTag(out, /<meta\b[^>]*property="og:title"[^>]*>/i, `<meta property="og:title" content="${title}" />`);
-  out = replaceOrInsertTag(out, /<meta\b[^>]*property="og:description"[^>]*>/i, `<meta property="og:description" content="${description}" />`);
-  out = replaceOrInsertTag(out, /<meta\b[^>]*property="og:image"[^>]*>/i, `<meta property="og:image" content="${ogImage}" />`);
-  out = replaceOrInsertTag(out, /<meta\b[^>]*property="og:url"[^>]*>/i, `<meta property="og:url" content="${canonical}" />`);
-  out = replaceOrInsertTag(out, /<meta\b[^>]*name="twitter:title"[^>]*>/i, `<meta name="twitter:title" content="${title}" />`);
-  out = replaceOrInsertTag(out, /<meta\b[^>]*name="twitter:description"[^>]*>/i, `<meta name="twitter:description" content="${description}" />`);
-  out = replaceOrInsertTag(out, /<meta\b[^>]*name="twitter:image"[^>]*>/i, `<meta name="twitter:image" content="${ogImage}" />`);
-  out = replaceOrInsertTag(out, /<link\b[^>]*rel="icon"[^>]*>/i, `<link rel="icon" href="${favicon}" />`);
-  out = replaceOrInsertTag(out, /<link\b[^>]*rel="apple-touch-icon"[^>]*>/i, `<link rel="apple-touch-icon" href="${favicon}" />`);
+  out = replaceOrInsertTag(out, /<link\b[^>]*rel="canonical"[^>]*>/i, `<link data-rh="true" rel="canonical" href="${canonical}" />`);
+  out = replaceOrInsertTag(out, /<link\b[^>]*hreflang="zh-CN"[^>]*>/i, `<link data-rh="true" rel="alternate" hreflang="zh-CN" href="${escapeHtml(meta.hreflang.zh)}" />`);
+  out = replaceOrInsertTag(out, /<link\b[^>]*hreflang="en"[^>]*>/i, `<link data-rh="true" rel="alternate" hreflang="en" href="${escapeHtml(meta.hreflang.en)}" />`);
+  out = replaceOrInsertTag(out, /<link\b[^>]*hreflang="x-default"[^>]*>/i, `<link data-rh="true" rel="alternate" hreflang="x-default" href="${escapeHtml(meta.hreflang.xDefault)}" />`);
+  out = replaceOrInsertTag(out, /<meta\b[^>]*property="og:site_name"[^>]*>/i, `<meta data-rh="true" property="og:site_name" content="${siteName}" />`);
+  out = replaceOrInsertTag(out, /<meta\b[^>]*property="og:title"[^>]*>/i, `<meta data-rh="true" property="og:title" content="${title}" />`);
+  out = replaceOrInsertTag(out, /<meta\b[^>]*property="og:description"[^>]*>/i, `<meta data-rh="true" property="og:description" content="${description}" />`);
+  out = replaceOrInsertTag(out, /<meta\b[^>]*property="og:image"[^>]*>/i, `<meta data-rh="true" property="og:image" content="${ogImage}" />`);
+  out = replaceOrInsertTag(out, /<meta\b[^>]*property="og:url"[^>]*>/i, `<meta data-rh="true" property="og:url" content="${canonical}" />`);
+  out = replaceOrInsertTag(out, /<meta\b[^>]*name="twitter:title"[^>]*>/i, `<meta data-rh="true" name="twitter:title" content="${title}" />`);
+  out = replaceOrInsertTag(out, /<meta\b[^>]*name="twitter:description"[^>]*>/i, `<meta data-rh="true" name="twitter:description" content="${description}" />`);
+  out = replaceOrInsertTag(out, /<meta\b[^>]*name="twitter:image"[^>]*>/i, `<meta data-rh="true" name="twitter:image" content="${ogImage}" />`);
+  out = replaceOrInsertTag(out, /<link\b[^>]*rel="icon"[^>]*>/i, `<link data-rh="true" rel="icon" href="${favicon}" />`);
+  out = replaceOrInsertTag(out, /<link\b[^>]*rel="apple-touch-icon"[^>]*>/i, `<link data-rh="true" rel="apple-touch-icon" href="${favicon}" />`);
   out = injectEdgeStructuredData(out, meta, siteSettings);
   out = injectGeoSummary(out, meta);
 
@@ -340,9 +340,9 @@ const injectSeo = (html: string, meta: SeoEntry, siteSettings?: SiteSettingsHead
 
 const injectNoIndexNotFound = (html: string, siteSettings?: SiteSettingsHead | null) => {
   const siteName = escapeHtml(siteSettings?.company_name || siteSettings?.brand_name || "FLASH CAST SDN. BHD.");
-  let out = html.replace(/<title[^>]*>[\s\S]*?<\/title>/i, `<title>Page not found | ${siteName}</title>`);
-  out = replaceOrInsertTag(out, /<meta\b[^>]*name="description"[^>]*>/i, `<meta name="description" content="The requested page was not found." />`);
-  out = replaceOrInsertTag(out, /<meta\b[^>]*name="robots"[^>]*>/i, `<meta name="robots" content="noindex, nofollow" />`);
+  let out = html.replace(/<title[^>]*>[\s\S]*?<\/title>/i, `<title data-rh="true">Page not found | ${siteName}</title>`);
+  out = replaceOrInsertTag(out, /<meta\b[^>]*name="description"[^>]*>/i, `<meta data-rh="true" name="description" content="The requested page was not found." />`);
+  out = replaceOrInsertTag(out, /<meta\b[^>]*name="robots"[^>]*>/i, `<meta data-rh="true" name="robots" content="noindex, nofollow" />`);
   return injectBrandAssets(out, siteSettings);
 };
 
@@ -355,11 +355,11 @@ const injectBrandAssets = (html: string, siteSettings?: SiteSettingsHead | null)
   const siteName = escapeHtml(siteSettings.company_name || siteSettings.brand_name || "FLASH CAST SDN. BHD.");
 
   let out = html;
-  out = replaceOrInsertTag(out, /<meta\b[^>]*property="og:site_name"[^>]*>/i, `<meta property="og:site_name" content="${siteName}" />`);
-  out = replaceOrInsertTag(out, /<meta\b[^>]*property="og:image"[^>]*>/i, `<meta property="og:image" content="${ogImage}" />`);
-  out = replaceOrInsertTag(out, /<meta\b[^>]*name="twitter:image"[^>]*>/i, `<meta name="twitter:image" content="${ogImage}" />`);
-  out = replaceOrInsertTag(out, /<link\b[^>]*rel="icon"[^>]*>/i, `<link rel="icon" href="${favicon}" />`);
-  out = replaceOrInsertTag(out, /<link\b[^>]*rel="apple-touch-icon"[^>]*>/i, `<link rel="apple-touch-icon" href="${favicon}" />`);
+  out = replaceOrInsertTag(out, /<meta\b[^>]*property="og:site_name"[^>]*>/i, `<meta data-rh="true" property="og:site_name" content="${siteName}" />`);
+  out = replaceOrInsertTag(out, /<meta\b[^>]*property="og:image"[^>]*>/i, `<meta data-rh="true" property="og:image" content="${ogImage}" />`);
+  out = replaceOrInsertTag(out, /<meta\b[^>]*name="twitter:image"[^>]*>/i, `<meta data-rh="true" name="twitter:image" content="${ogImage}" />`);
+  out = replaceOrInsertTag(out, /<link\b[^>]*rel="icon"[^>]*>/i, `<link data-rh="true" rel="icon" href="${favicon}" />`);
+  out = replaceOrInsertTag(out, /<link\b[^>]*rel="apple-touch-icon"[^>]*>/i, `<link data-rh="true" rel="apple-touch-icon" href="${favicon}" />`);
   return out;
 };
 
@@ -416,7 +416,7 @@ export const onRequest: PagesFunction = async (context) => {
 
   if (url.pathname === "/admin" || url.pathname.startsWith("/admin/")) {
     const html = await response.text();
-    const robotsTag = '<meta name="robots" content="noindex, nofollow" />';
+    const robotsTag = '<meta data-rh="true" name="robots" content="noindex, nofollow" />';
     const transformed = html.includes("noindex")
       ? html
       : html.replace("</head>", `    ${robotsTag}\n  </head>`);
