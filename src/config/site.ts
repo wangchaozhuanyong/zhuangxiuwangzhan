@@ -33,9 +33,4 @@ export const siteConfig = {
   },
 };
 
-export const whatsappUrl = (message?: string) => {
-  const baseUrl = `https://wa.me/${siteConfig.whatsappNumber}`;
-  return message ? `${baseUrl}?text=${encodeURIComponent(message)}` : baseUrl;
-};
-
 export const socialProfileUrls = Object.values(siteConfig.socialLinks).filter(Boolean);

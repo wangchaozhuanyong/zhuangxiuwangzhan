@@ -22,6 +22,14 @@ jobs:
       - name: Verify system Chrome
         run: google-chrome --version
 
+      - name: Restore retained hashed assets
+        uses: actions/cache/restore@v5
+        with:
+          path: .deploy-cache/assets
+          key: cloudflare-pages-assets-prelaunch-${{ github.run_id }}
+          restore-keys: |
+            cloudflare-pages-assets-
+
       - name: Build
         env:
           VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
@@ -36,6 +44,9 @@ jobs:
           VITE_SITE_SHORT_ADDRESS: "94, Jalan Mega Mendung, 58200"
           VITE_APP_VERSION: ${{ github.sha }}
         run: npm run build
+
+      - name: Merge retained hashed assets into dist
+        run: npm run deploy:retain-assets -- --cache .deploy-cache/assets --dist dist/assets --max-files 3000
 
       - name: Verify deployment cache consistency
         run: npm run verify:deploy-cache

@@ -32,7 +32,7 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Restore retained hashed assets
+      - name: Restore retained hashed assets cache
         uses: actions/cache/restore@v5
         with:
           path: .deploy-cache/assets
@@ -55,7 +55,7 @@ jobs:
           VITE_APP_VERSION: ${{ github.event.workflow_run.head_sha || github.sha }}
         run: npm run build
 
-      - name: Retain previous hashed assets
+      - name: Merge retained hashed assets into dist
         run: npm run deploy:retain-assets -- --cache .deploy-cache/assets --dist dist/assets --max-files 3000
 
       - name: Verify deployment cache consistency

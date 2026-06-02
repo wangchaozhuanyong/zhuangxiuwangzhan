@@ -1,12 +1,6 @@
 import { siteConfig, socialProfileUrls } from "@/config/site";
 import { useSiteSettings } from "@/hooks/useSiteSettings";
 
-interface JsonLdProps {
-  type: "LocalBusiness" | "FAQPage" | "Service" | "WebPage";
-  data?: Record<string, unknown>;
-  faqs?: { question: string; answer: string }[];
-}
-
 const createOrganizationData = (settings: ReturnType<typeof useSiteSettings>) => ({
   "@context": "https://schema.org",
   "@type": "Organization",
@@ -206,42 +200,6 @@ export const JsonLdBreadcrumb = ({ items }: { items: { name: string; url: string
       name: item.name,
       item: `${siteConfig.url}${item.url}`,
     })),
-  };
-
-  return (
-    <script
-      type="application/ld+json"
-      dangerouslySetInnerHTML={{ __html: JSON.stringify(data) }}
-    />
-  );
-};
-
-export const JsonLdWebPage = ({
-  name,
-  description,
-  url,
-}: {
-  name: string;
-  description: string;
-  url: string;
-}) => {
-  const settings = useSiteSettings();
-  const data = {
-    "@context": "https://schema.org",
-    "@type": "WebPage",
-    name,
-    description,
-    url: `${siteConfig.url}${url}`,
-    isPartOf: {
-      "@type": "WebSite",
-      name: "FLASH CAST",
-      url: siteConfig.url,
-    },
-    provider: {
-      "@type": "HomeAndConstructionBusiness",
-      name: settings.company_name,
-      "@id": `${siteConfig.url}/#localbusiness`,
-    },
   };
 
   return (

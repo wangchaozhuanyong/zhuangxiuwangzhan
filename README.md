@@ -106,6 +106,7 @@ npm.cmd run typecheck
 npm.cmd run lint
 npm.cmd test -- --run
 npm.cmd run build
+npm.cmd run deploy:retain-assets
 npm.cmd run verify:deploy-cache
 npm.cmd run verify:admin-foundation
 npm.cmd run verify:env
@@ -120,7 +121,7 @@ Automatic production deployment:
 - `Prelaunch verification` only checks the release. It is not a production deployment by itself.
 - Manual deployment is still available through the `Deploy to Cloudflare Pages` workflow if an operator needs to republish a known commit.
 - The production deploy workflow restores retained hashed assets, builds the new app, merges previous assets into `dist/assets`, verifies cache consistency, then deploys. This keeps old SPA HTML from breaking if it still points at the previous hashed JS chunks.
-- HTML responses must stay `no-store`; `/assets/*`, `/images/*`, and `/videos/*` stay `public, max-age=31536000, immutable`.
+- HTML responses for `/`, `/index.html`, `/admin`, `/zh`, and `/en` must stay `no-store` at both browser and CDN level. `/assets/*`, `/images/*`, and `/videos/*` stay `public, max-age=31536000, immutable`, and old hashed files are retained in `dist/assets` during deployment.
 
 Before deployment:
 

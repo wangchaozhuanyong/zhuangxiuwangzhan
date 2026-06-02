@@ -1,9 +1,12 @@
-import { readFile, stat } from "node:fs/promises";
+import { readFile, readdir, stat } from "node:fs/promises";
 import path from "node:path";
 import { SITE_CSP_POLICY } from "./site-csp.mjs";
 
 const ROOT = process.cwd();
 const DIST = path.join(ROOT, "dist");
+const RETAINED_ASSET_CACHE = path.join(ROOT, ".deploy-cache/assets");
+const HTML_NO_STORE_PATHS = ["/", "/index.html", "/*.html", "/admin", "/admin/*", "/zh", "/zh/*", "/en", "/en/*"];
+const IMMUTABLE_ASSET_PATHS = ["/assets/*", "/images/*", "/videos/*", "/*.webp", "/*.jpg", "/*.png"];
 
 const pathExists = async (target) => {
   try {
@@ -25,10 +28,84 @@ const assert = (condition, message) => {
   if (!condition) throw new Error(message);
 };
 
+const listAssetFiles = async (root) => {
+  if (!(await pathExists(root))) return [];
+
+  const walk = async (dir) => {
+    const entries = await readdir(dir, { withFileTypes: true });
+    const files = await Promise.all(
+      entries.map(async (entry) => {
+        const fullPath = path.join(dir, entry.name);
+        if (entry.isDirectory()) return walk(fullPath);
+        if (!entry.isFile()) return [];
+        return [{ fullPath, relativePath: path.relative(root, fullPath) }];
+      }),
+    );
+
+    return files.flat();
+  };
+
+  return walk(root);
+};
+
+const parseHeaderBlocks = (headers) => {
+  const blocks = new Map();
+  let currentPath = null;
+
+  for (const line of headers.split(/\r?\n/)) {
+    if (!line.trim() || line.trimStart().startsWith("#")) continue;
+
+    if (/^\s/.test(line)) {
+      if (!currentPath) continue;
+      const separatorIndex = line.indexOf(":");
+      if (separatorIndex === -1) continue;
+      const name = line.slice(0, separatorIndex).trim().toLowerCase();
+      const value = line.slice(separatorIndex + 1).trim();
+      blocks.get(currentPath).set(name, value);
+      continue;
+    }
+
+    currentPath = line.trim();
+    if (!blocks.has(currentPath)) blocks.set(currentPath, new Map());
+  }
+
+  return blocks;
+};
+
+const assertHeaderBlock = (headerBlocks, headerPath) => {
+  const block = headerBlocks.get(headerPath);
+  assert(block, `public/_headers is missing a block for ${headerPath}.`);
+  return block;
+};
+
+const assertHtmlNoStoreHeaders = (headerBlocks, headerPath) => {
+  const block = assertHeaderBlock(headerBlocks, headerPath);
+  assert(
+    /^no-store,\s*no-cache,\s*must-revalidate,\s*max-age=0$/i.test(block.get("cache-control") || ""),
+    `${headerPath} must set HTML Cache-Control to no-store, no-cache, must-revalidate, max-age=0.`,
+  );
+  assert(/^no-store$/i.test(block.get("cdn-cache-control") || ""), `${headerPath} must set CDN-Cache-Control: no-store.`);
+  assert(
+    /^no-store$/i.test(block.get("cloudflare-cdn-cache-control") || ""),
+    `${headerPath} must set Cloudflare-CDN-Cache-Control: no-store.`,
+  );
+  assert(/^no-cache$/i.test(block.get("pragma") || ""), `${headerPath} must set Pragma: no-cache.`);
+  assert(/^0$/.test(block.get("expires") || ""), `${headerPath} must set Expires: 0.`);
+};
+
+const assertImmutableAssetHeaders = (headerBlocks, headerPath) => {
+  const block = assertHeaderBlock(headerBlocks, headerPath);
+  assert(
+    /^public,\s*max-age=31536000,\s*immutable$/i.test(block.get("cache-control") || ""),
+    `${headerPath} must keep immutable long-term asset caching.`,
+  );
+};
+
 const main = async () => {
   const indexHtml = await readDistFile("index.html");
   const headers = await readDistFile("_headers");
   const redirects = (await readDistFile("_redirects").catch(() => "")).trim();
+  const headerBlocks = parseHeaderBlocks(headers);
   const assetRefs = findAssetRefs(indexHtml);
   const missingAssets = [];
 
@@ -39,21 +116,35 @@ const main = async () => {
 
   assert(assetRefs.length > 0, "dist/index.html does not reference any /assets files.");
   assert(missingAssets.length === 0, `dist/index.html references missing assets: ${missingAssets.join(", ")}`);
-  assert(/\/\s+Cache-Control:\s*no-store,\s*no-cache,\s*must-revalidate,\s*max-age=0/i.test(headers), "Root HTML no-store header is missing.");
-  assert(/\/admin\/\*\s+Cache-Control:\s*no-store,\s*no-cache,\s*must-revalidate,\s*max-age=0/i.test(headers), "Admin HTML no-store header is missing.");
-  assert(/\/assets\/\*\s+Cache-Control:\s*public,\s*max-age=31536000,\s*immutable/i.test(headers), "Immutable assets cache header is missing.");
+  for (const headerPath of HTML_NO_STORE_PATHS) assertHtmlNoStoreHeaders(headerBlocks, headerPath);
+  for (const headerPath of IMMUTABLE_ASSET_PATHS) assertImmutableAssetHeaders(headerBlocks, headerPath);
   assert(headers.includes(`Content-Security-Policy: ${SITE_CSP_POLICY}`), "public/_headers CSP is not in sync with scripts/site-csp.mjs.");
   assert(!SITE_CSP_POLICY.includes("'unsafe-eval'"), "Production CSP must not include unsafe-eval.");
   assert(!/^\/\*\s+\/index\.html\s+200\b/m.test(redirects), "Global SPA redirect would turn missing hashed assets into HTML.");
   assert(await pathExists(path.join(DIST, "404.html")), "dist/404.html is missing.");
+
+  const retainedCacheFiles = await listAssetFiles(RETAINED_ASSET_CACHE);
+  const missingRetainedAssets = [];
+  for (const file of retainedCacheFiles) {
+    if (!(await pathExists(path.join(DIST, "assets", file.relativePath)))) {
+      missingRetainedAssets.push(file.relativePath);
+    }
+  }
+  assert(
+    missingRetainedAssets.length === 0,
+    `Retained hashed assets were not merged into dist/assets: ${missingRetainedAssets.slice(0, 20).join(", ")}`,
+  );
 
   console.log(
     JSON.stringify(
       {
         ok: true,
         assetRefCount: assetRefs.length,
+        retainedAssetCount: retainedCacheFiles.length,
         htmlCache: "no-store",
+        htmlNoStorePaths: HTML_NO_STORE_PATHS,
         assetCache: "public, max-age=31536000, immutable",
+        immutableAssetPaths: IMMUTABLE_ASSET_PATHS,
         productionCsp: "synced without unsafe-eval",
         spaFallback: "functions/_middleware.ts",
       },

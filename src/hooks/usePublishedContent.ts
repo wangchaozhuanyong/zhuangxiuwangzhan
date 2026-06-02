@@ -8,7 +8,6 @@ import {
   getPublishedMaterials,
   getPublishedProjectBySlug,
   getPublishedProjectSummaries,
-  getPublishedProjects,
   getPublishedServiceBySlug,
   getPublishedServiceAreaBySlug,
   getPublishedServiceSummaries,
@@ -48,14 +47,6 @@ export function usePublishedServiceSummaries(language: "en" | "zh", limit?: numb
   return useQuery({
     queryKey: ["published", "service_summaries", language, limit ?? "all"],
     queryFn: () => getPublishedServiceSummaries(language, limit),
-    ...queryDefaults,
-  });
-}
-
-export function usePublishedProjects(language: "en" | "zh") {
-  return useQuery({
-    queryKey: ["published", "projects", language],
-    queryFn: () => getPublishedProjects(language),
     ...queryDefaults,
   });
 }

@@ -185,6 +185,3 @@ export const locationsData: Record<string, LocationData> = {
     ],
   },
 };
-
-/** All location slugs for navigation and sitemap */
-export const locationSlugs = Object.keys(locationsData);

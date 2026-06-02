@@ -1,10 +1,27 @@
-import { describe, expect, it } from "vitest";
-import { getFriendlySystemMessage, getSystemEventCategory, isChunkLoadError } from "@/lib/chunkLoadRecovery";
+import { beforeEach, describe, expect, it } from "vitest";
+import {
+  consumePendingChunkRecoveryLog,
+  getFriendlySystemMessage,
+  getSystemEventCategory,
+  isChunkLoadError,
+} from "@/lib/chunkLoadRecovery";
 
 describe("chunkLoadRecovery", () => {
+  beforeEach(() => {
+    window.sessionStorage.clear();
+  });
+
   it("detects missing dynamic import chunks", () => {
     expect(
       isChunkLoadError("Failed to fetch dynamically imported module: /assets/AdminLayout-yH2aL-YC.js"),
+    ).toBe(true);
+  });
+
+  it("detects module script MIME mismatch from stale SPA fallback HTML", () => {
+    expect(
+      isChunkLoadError(
+        'Failed to load module script: Expected a JavaScript-or-Wasm module script but the server responded with a MIME type of "text/html". /assets/AdminLayout-yH2aL-YC.js',
+      ),
     ).toBe(true);
   });
 
@@ -42,5 +59,27 @@ describe("chunkLoadRecovery", () => {
       key: "frontend_deploy_cache_mismatch",
       label: "前端生产部署缓存不一致",
     });
+  });
+
+  it("consumes one pending recovery log for backend Chinese classification", () => {
+    window.sessionStorage.setItem(
+      "flashcast:chunk-load-recovery-log",
+      JSON.stringify({
+        eventType: "frontend_deploy_cache_mismatch",
+        message: "Failed to fetch dynamically imported module: /assets/AdminLayout-yH2aL-YC.js",
+        path: "/admin",
+        url: "https://flashcast.com.my/admin",
+        timestamp: 1760000000000,
+      }),
+    );
+
+    expect(consumePendingChunkRecoveryLog()).toEqual({
+      eventType: "frontend_deploy_cache_mismatch",
+      message: "Failed to fetch dynamically imported module: /assets/AdminLayout-yH2aL-YC.js",
+      path: "/admin",
+      url: "https://flashcast.com.my/admin",
+      timestamp: 1760000000000,
+    });
+    expect(consumePendingChunkRecoveryLog()).toBeNull();
   });
 });

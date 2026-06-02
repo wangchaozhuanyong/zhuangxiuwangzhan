@@ -228,5 +228,4 @@ export const landingPages: Record<string, LandingData> = {
       },
     ],
   },
-}; /** All landing page slugs for navigation and sitemap */
-export const landingSlugs = Object.keys(landingPages);
+};
