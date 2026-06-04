@@ -803,6 +803,51 @@ const waitForHealthy = async (url, timeoutMs) => {
   throw new Error(`Runtime locale scan server did not become ready at ${url} within ${timeoutMs}ms.`);
 };
 
+const waitForExit = async (child, timeoutMs = 3000) => {
+  if (child.exitCode !== null || child.signalCode !== null) return;
+
+  await new Promise((resolve) => {
+    const timeout = setTimeout(resolve, timeoutMs);
+    child.once("exit", () => {
+      clearTimeout(timeout);
+      resolve();
+    });
+  });
+};
+
+const stopChildProcess = async (child) => {
+  if (child.exitCode !== null || child.signalCode !== null) return;
+
+  const pid = child.pid;
+  if (!pid) return;
+
+  try {
+    if (process.platform === "win32") {
+      child.kill();
+    } else {
+      process.kill(-pid, "SIGTERM");
+    }
+  } catch {
+    child.kill();
+  }
+
+  await waitForExit(child);
+
+  if (child.exitCode !== null || child.signalCode !== null) return;
+
+  try {
+    if (process.platform === "win32") {
+      child.kill("SIGKILL");
+    } else {
+      process.kill(-pid, "SIGKILL");
+    }
+  } catch {
+    child.kill("SIGKILL");
+  }
+
+  await waitForExit(child);
+};
+
 const launchRuntimeServer = async () => {
   const baseUrl = process.env.I18N_RUNTIME_BASE_URL || config.runtime.baseUrl;
 
@@ -815,6 +860,7 @@ const launchRuntimeServer = async () => {
     cwd: rootDir,
     shell: true,
     stdio: ["ignore", "pipe", "pipe"],
+    detached: process.platform !== "win32",
     env: {
       ...process.env,
       BROWSER: "none",
@@ -834,15 +880,14 @@ const launchRuntimeServer = async () => {
   try {
     await waitForHealthy(baseUrl, config.runtime.startupTimeoutMs || 45_000);
   } catch (error) {
-    child.kill();
+    await stopChildProcess(child);
     throw new Error(`${error.message}\nServer output:\n${output}`);
   }
 
   return {
     baseUrl,
     stop: async () => {
-      child.kill();
-      await new Promise((resolve) => setTimeout(resolve, 300));
+      await stopChildProcess(child);
     },
   };
 };
