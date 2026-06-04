@@ -11,6 +11,7 @@ import { JsonLdBreadcrumb } from "@/components/JsonLd";
 import FAQSection from "@/components/blocks/FAQSection";
 import HeroBanner from "@/components/blocks/HeroBanner";
 import SectionHeader from "@/components/blocks/SectionHeader";
+import PublicLoadingState from "@/components/blocks/PublicLoadingState";
 import { locationsData } from "@/data/locations";
 import { servicesData } from "@/data/services";
 import { usePublishedServiceAreaBySlug } from "@/hooks/usePublishedContent";
@@ -22,59 +23,9 @@ import { isHtmlText, stripHtml } from "@/lib/text";
 import { sanitizeHtml } from "@/lib/sanitizeHtml";
 import { translateDisplayText, translateProjectType } from "@/i18n/displayLabels";
 import { pageHeroImages } from "@/lib/pageHeroImages";
+import { locationPageText } from "@/i18n/locationPageText";
 
-const copy = {
-  en: {
-    notFound: "Location Not Found",
-    backHome: "Back to Home",
-    breadcrumbHome: "Home",
-    breadcrumbLocations: "Locations",
-    keywords: (name: string) => `renovation ${name}, interior design ${name}, custom built-in ${name}`,
-    heroTitle: (name: string) => `Renovation Services in ${name}`,
-    quote: "Get a Free Quote",
-    whatsapp: "WhatsApp Us",
-    trusted: (name: string) => `Your Trusted Renovation Partner in ${name}`,
-    propertyTypes: "Common Property Types:",
-    servicesIn: (name: string) => `Our Services in ${name}`,
-    commonNeeds: (name: string) => `Common Renovation Needs in ${name}`,
-    permitNotes: "Construction & Permit Notes:",
-    featuredProjects: (name: string) => `Featured Projects in ${name}`,
-    faqTitle: (name: string) => `${name} Renovation FAQ`,
-    ctaTitle: (name: string) => `Start Your ${name} Renovation Project`,
-    ctaDescription: (name: string) => `Free consultation and site measurement for projects in ${name} and surrounding areas.`,
-    internalServices: "Services",
-    internalMaterials: "Materials",
-    internalProjects: "Projects",
-    internalBlog: "Blog",
-    internalFaq: "FAQ",
-    internalContact: "Contact",
-  },
-  zh: {
-    notFound: "地区页面不存在",
-    backHome: "返回首页",
-    breadcrumbHome: "首页",
-    breadcrumbLocations: "服务地区",
-    keywords: (name: string) => `${name} 装修, ${name} 室内设计, ${name} 定制家具`,
-    heroTitle: (name: string) => `${name} 装修服务`,
-    quote: "获取免费报价",
-    whatsapp: "WhatsApp 联系",
-    trusted: (name: string) => `${name} 值得信赖的装修伙伴`,
-    propertyTypes: "常见房产类型：",
-    servicesIn: (name: string) => `${name} 服务项目`,
-    commonNeeds: (name: string) => `${name} 常见装修需求`,
-    permitNotes: "施工与准证注意事项：",
-    featuredProjects: (name: string) => `${name} 相关案例`,
-    faqTitle: (name: string) => `${name} 装修常见问题`,
-    ctaTitle: (name: string) => `开始规划你的 ${name} 装修项目`,
-    ctaDescription: (name: string) => `${name} 与周边地区可预约免费咨询和现场测量。`,
-    internalServices: "服务项目",
-    internalMaterials: "材料库",
-    internalProjects: "装修案例",
-    internalBlog: "装修博客",
-    internalFaq: "常见问题",
-    internalContact: "联系我们",
-  },
-};
+
 
 const serviceNameMap: Record<string, { en: string; zh: string }> = {
   renovation: { en: "Interior Renovation", zh: "室内装修" },
@@ -90,9 +41,9 @@ const LocationPage = () => {
   const { slug } = useParams<{ slug: string }>();
   const { language } = useLanguage();
   const settings = useSiteSettings();
-  const t = copy[language];
+  const t = locationPageText[language];
   const fallbackLocation = slug ? locationsData[slug] : undefined;
-  const { data: cmsLocation } = usePublishedServiceAreaBySlug(slug, language);
+  const { data: cmsLocation, isPending: locationPending } = usePublishedServiceAreaBySlug(slug, language);
   const location = useMemo(() => cmsLocation ?? fallbackLocation, [cmsLocation, fallbackLocation]);
 
   const servicesList = servicesData.map((service) => ({
@@ -104,6 +55,16 @@ const LocationPage = () => {
     q: displayText(faq.q),
     a: displayText(faq.a),
   }));
+
+  if (locationPending && !fallbackLocation) {
+    return (
+      <PublicLoadingState
+        label="FLASH CAST"
+        title={t.loadingTitle}
+        description={t.loadingDescription}
+      />
+    );
+  }
 
   if (!location) {
     return (

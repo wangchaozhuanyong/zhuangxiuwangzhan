@@ -1,7 +1,14 @@
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
-import { isSupabaseConfigured, supabase } from "@/lib/supabase";
+import {
+  adminContentHealthCoreText,
+  adminContentHealthFieldLabels,
+  adminContentHealthSourceLabels,
+} from "@/i18n/adminContentHealthText";
+import { fetchAdminContentHealthRows } from "@/backend/modules/cms/repository/contentHealthRepository";
+import { getAdminLang } from "@/lib/adminLocale";
+import { adminQueriesEnabled } from "@/lib/adminQueryCore";
 
-const enabled = isSupabaseConfigured && Boolean(supabase);
+const enabled = adminQueriesEnabled;
 const ADMIN_HEAVY_STALE_TIME = 10 * 60 * 1000;
 const ADMIN_QUERY_GC_TIME = 30 * 60 * 1000;
 
@@ -15,7 +22,6 @@ const isBlankAdminValue = (value: unknown) => {
 
 type HealthSource = {
   table: string;
-  label: string;
   editBase: string;
   frontBase?: string;
   titleFields: string[];
@@ -28,7 +34,6 @@ type HealthSource = {
 const healthSources: HealthSource[] = [
   {
     table: "services",
-    label: "服务项目",
     editBase: "/admin/services",
     frontBase: "/services",
     titleFields: ["title_zh", "title_en", "slug"],
@@ -39,7 +44,6 @@ const healthSources: HealthSource[] = [
   },
   {
     table: "projects",
-    label: "装修案例",
     editBase: "/admin/projects",
     frontBase: "/projects",
     titleFields: ["title_zh", "title_en", "slug"],
@@ -50,7 +54,6 @@ const healthSources: HealthSource[] = [
   },
   {
     table: "materials",
-    label: "材料库",
     editBase: "/admin/materials",
     frontBase: "/materials",
     titleFields: ["title_zh", "title_en", "slug"],
@@ -61,7 +64,6 @@ const healthSources: HealthSource[] = [
   },
   {
     table: "blog_posts",
-    label: "博客文章",
     editBase: "/admin/blog",
     frontBase: "/blog",
     titleFields: ["title_zh", "title_en", "slug"],
@@ -72,7 +74,6 @@ const healthSources: HealthSource[] = [
   },
   {
     table: "site_pages",
-    label: "页面内容",
     editBase: "/admin/pages",
     titleFields: ["title_zh", "title_en", "page_key", "path"],
     requiredFields: ["page_key", "status"],
@@ -82,7 +83,6 @@ const healthSources: HealthSource[] = [
   },
   {
     table: "home_sections",
-    label: "首页区块",
     editBase: "/admin/home",
     titleFields: ["title_zh", "title_en", "section_key"],
     requiredFields: ["section_key", "status"],
@@ -92,7 +92,6 @@ const healthSources: HealthSource[] = [
   },
   {
     table: "about_sections",
-    label: "关于区块",
     editBase: "/admin/about",
     titleFields: ["title_zh", "title_en", "section_key"],
     requiredFields: ["section_key", "status"],
@@ -102,7 +101,6 @@ const healthSources: HealthSource[] = [
   },
   {
     table: "faqs",
-    label: "常见问题",
     editBase: "/admin/faqs",
     titleFields: ["question_zh", "question_en", "page_key"],
     requiredFields: ["question_zh", "answer_zh", "page_key", "status"],
@@ -112,7 +110,6 @@ const healthSources: HealthSource[] = [
   },
   {
     table: "cta_blocks",
-    label: "行动引导",
     editBase: "/admin/home",
     titleFields: ["title_zh", "title_en", "block_key"],
     requiredFields: ["block_key", "status"],
@@ -122,7 +119,6 @@ const healthSources: HealthSource[] = [
   },
   {
     table: "cms_pages",
-    label: "通用 CMS 页面",
     editBase: "/admin/cms",
     titleFields: ["title_zh", "title_en", "page_key", "path"],
     requiredFields: ["page_key", "path", "status"],
@@ -147,46 +143,23 @@ const healthSelectFields = (source: HealthSource) => {
   return Array.from(fields).join(",");
 };
 
-const adminHealthFieldLabels: Record<string, string> = {
-  alt_en: "英文图片说明",
-  alt_zh: "中文图片说明",
-  answer_en: "英文答案",
-  answer_zh: "中文答案",
-  block_key: "区块标识",
-  content_en: "英文正文",
-  content_zh: "中文正文",
-  cover_image_url: "封面图片",
-  description_en: "英文说明",
-  description_zh: "中文说明",
-  excerpt_en: "英文摘要",
-  excerpt_zh: "中文摘要",
-  image_url: "图片",
-  items_en: "英文列表内容",
-  page_key: "页面标识",
-  path: "前台路径",
-  primary_label_en: "英文主按钮文案",
-  question_en: "英文问题",
-  question_zh: "中文问题",
-  secondary_label_en: "英文次按钮文案",
-  section_key: "模块标识",
-  seo_description_en: "英文 SEO 描述",
-  seo_description_zh: "中文 SEO 描述",
-  seo_title_en: "英文 SEO 标题",
-  seo_title_zh: "中文 SEO 标题",
-  slug: "链接标识",
-  status: "发布状态",
-  title_en: "英文标题",
-  title_zh: "中文标题",
+const formatAdminContentHealthText = (text: string, values: Record<string, string | number>) =>
+  text.replace(/\{(\w+)\}/g, (_, key: string) => String(values[key] ?? ""));
+
+const getAdminContentHealthSourceLabel = (table: string) => {
+  const labels = adminContentHealthSourceLabels[getAdminLang()] as Record<string, string>;
+  return labels[table] || table;
 };
 
 export const getAdminHealthFieldLabel = (field: string) =>
-  adminHealthFieldLabels[field] ||
+  (adminContentHealthFieldLabels[getAdminLang()] as Record<string, string>)[field] ||
   field
-    .replace(/_zh$/, "（中文）")
-    .replace(/_en$/, "（英文）")
+    .replace(/_zh$/, adminContentHealthCoreText[getAdminLang()].chineseSuffix)
+    .replace(/_en$/, adminContentHealthCoreText[getAdminLang()].englishSuffix)
     .replace(/_/g, " ");
 
-const formatHealthIssue = (type: string, field: string) => `${type}：${getAdminHealthFieldLabel(field)}`;
+const formatHealthIssue = (type: string, field: string) =>
+  `${type}${adminContentHealthCoreText[getAdminLang()].issueSeparator}${getAdminHealthFieldLabel(field)}`;
 
 export type AdminContentHealthItem = {
   id: string;
@@ -227,6 +200,7 @@ const buildFrontHref = (source: HealthSource, row: Record<string, unknown>) => {
 };
 
 const buildHealthItem = (source: HealthSource, row: Record<string, unknown>): AdminContentHealthItem => {
+  const text = adminContentHealthCoreText[getAdminLang()];
   const title = source.titleFields.map((field) => row[field]).find((value) => !isBlankAdminValue(value));
   const missingRequired = source.requiredFields.filter((field) => isBlankAdminValue(row[field]));
   const missingEnglish = source.englishFields.filter((field) => isBlankAdminValue(row[field]));
@@ -236,17 +210,17 @@ const buildHealthItem = (source: HealthSource, row: Record<string, unknown>): Ad
       ? source.imageFields
       : [];
   const issues = [
-    ...missingRequired.map((field) => formatHealthIssue("必填缺失", field)),
-    ...missingEnglish.map((field) => formatHealthIssue("英文缺失", field)),
-    ...missingSeo.map((field) => formatHealthIssue("SEO 缺失", field)),
-    ...missingMedia.map((field) => formatHealthIssue("图片缺失", field)),
+    ...missingRequired.map((field) => formatHealthIssue(text.requiredMissing, field)),
+    ...missingEnglish.map((field) => formatHealthIssue(text.englishMissing, field)),
+    ...missingSeo.map((field) => formatHealthIssue(text.seoMissing, field)),
+    ...missingMedia.map((field) => formatHealthIssue(text.imageMissing, field)),
   ];
 
   return {
     id: String(row.id || `${source.table}-${String(title || "row")}`),
     table: source.table,
-    tableLabel: source.label,
-    title: String(title || "未命名内容"),
+    tableLabel: getAdminContentHealthSourceLabel(source.table),
+    title: String(title || text.unnamedContent),
     status: String(row.status || "draft"),
     updated_at: typeof row.updated_at === "string" ? row.updated_at : null,
     editHref: buildEditHref(source, row),
@@ -269,23 +243,21 @@ export function useAdminContentHealth(options: { enabled?: boolean } = {}) {
     queryFn: async (): Promise<AdminContentHealthItem[]> => {
       const results = await Promise.all(
         healthSources.map(async (source) => {
-          const { data, error } = await supabase!
-            .from(source.table)
-            .select(healthSelectFields(source))
-            .order("updated_at", { ascending: false, nullsFirst: false })
-            .limit(300);
-          if (error) {
+          try {
+            const rows = await fetchAdminContentHealthRows(source.table, healthSelectFields(source));
+            return rows.map((row) => buildHealthItem(source, row));
+          } catch {
             return [
               buildHealthItem(source, {
                 id: `${source.table}-error`,
                 status: "error",
-                title_zh: `${source.label} 读取失败`,
+                title_zh: formatAdminContentHealthText(adminContentHealthCoreText[getAdminLang()].readFailed, {
+                  label: getAdminContentHealthSourceLabel(source.table),
+                }),
                 updated_at: null,
               }),
             ];
           }
-          const rows = (data || []) as unknown as Array<Record<string, unknown>>;
-          return rows.map((row) => buildHealthItem(source, row));
         }),
       );
       return results.flat();

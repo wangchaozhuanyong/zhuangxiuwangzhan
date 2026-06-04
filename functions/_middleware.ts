@@ -26,6 +26,10 @@ type SiteSettingsHead = {
   updated_at?: string | null;
 };
 
+type ProjectSummaryRow = Record<string, unknown>;
+type ProjectDetailRow = Record<string, unknown>;
+type HomeContentBundleRow = Record<string, unknown>;
+
 type PagesEnv = {
   [key: string]: unknown;
   VITE_SUPABASE_URL?: string;
@@ -36,12 +40,68 @@ type PagesEnv = {
 };
 
 const DEFAULT_OG_IMAGE = (manifest as Record<string, SeoEntry>)["/en"]?.ogImage ?? "";
-const DEFAULT_FAVICON = "/favicon.ico";
+const DEFAULT_FAVICON = "/favicon-20260604.png";
+const DEFAULT_TOUCH_ICON = "/apple-touch-icon-20260604.png";
 const DEFAULT_ADDRESS = "94, Jalan Mega Mendung, Taman United, 58200 Kuala Lumpur, Malaysia";
 const DEFAULT_PHONE = "+601128853888";
 const DEFAULT_EMAIL = "info@flashcast.com.my";
 const DEFAULT_MAP_LATITUDE = "3.0830403";
 const DEFAULT_MAP_LONGITUDE = "101.6708234";
+const PUBLIC_HTML_BROWSER_TTL_SECONDS = 60;
+const PUBLIC_HTML_EDGE_TTL_SECONDS = 300;
+const SITE_SETTINGS_CACHE_TTL_MS = 5 * 60 * 1000;
+const PUBLIC_PROJECT_SUMMARIES_CACHE_TTL_MS = 5 * 60 * 1000;
+const PUBLIC_PROJECT_DETAIL_CACHE_TTL_MS = 5 * 60 * 1000;
+const PUBLIC_HOME_BUNDLE_CACHE_TTL_MS = 5 * 60 * 1000;
+const HERO_MEDIA_VERSION = "20260531-mobile-source-fix";
+const HTML_CACHE_DEBUG_HEADER = "x-flashcast-html-cache";
+type HtmlCacheDebugState = "hit" | "miss" | "bypass-admin" | "bypass-not-found";
+
+let siteSettingsCache:
+  | {
+      key: string;
+      value: SiteSettingsHead | null;
+      expiresAt: number;
+    }
+  | null = null;
+
+let projectSummariesCache:
+  | {
+      key: string;
+      value: ProjectSummaryRow[] | null;
+      expiresAt: number;
+    }
+  | null = null;
+
+let projectDetailCache:
+  | {
+      key: string;
+      value: ProjectDetailRow | null;
+      expiresAt: number;
+    }
+  | null = null;
+
+let homeContentBundleCache:
+  | {
+      key: string;
+      value: HomeContentBundleRow | null;
+      expiresAt: number;
+    }
+  | null = null;
+
+const PROJECT_SUMMARY_SELECT = [
+  "id",
+  "slug",
+  "title_en",
+  "title_zh",
+  "project_type",
+  "location",
+  "excerpt_en",
+  "excerpt_zh",
+  "image_url",
+  "sort_order",
+  "project_images(id,image_url,image_type,sort_order,alt_en,alt_zh)",
+].join(",");
 
 const escapeHtml = (value: string) =>
   value
@@ -62,12 +122,99 @@ const addCacheBuster = (url: string, version?: string | null) => {
   }
 };
 
+const HEAD_ICON_LINK_PATTERN =
+  /<link\b(?=[^>]*\brel=(?:"(?:icon|shortcut icon|apple-touch-icon)"|'(?:icon|shortcut icon|apple-touch-icon)'))[^>]*>\s*/gi;
+
+const hasIconExtension = (url: string | null | undefined, extensions: string[]) => {
+  if (!url) return false;
+
+  try {
+    const parsed = new URL(url, "https://example.com");
+    const pathname = parsed.pathname.toLowerCase();
+    return extensions.some((extension) => pathname.endsWith(`.${extension}`));
+  } catch {
+    const [withoutQuery = ""] = url.split(/[?#]/);
+    const normalized = withoutQuery.toLowerCase();
+    return extensions.some((extension) => normalized.endsWith(`.${extension}`));
+  }
+};
+
+const resolveHeadIcons = (siteSettings?: SiteSettingsHead | null) => {
+  const version = siteSettings?.updated_at || undefined;
+  const isCustomFavicon = Boolean(siteSettings?.favicon_url && siteSettings.favicon_url !== DEFAULT_FAVICON);
+  const faviconSource = hasIconExtension(siteSettings?.favicon_url, ["ico", "png", "svg"])
+    ? siteSettings?.favicon_url || DEFAULT_FAVICON
+    : DEFAULT_FAVICON;
+  const touchIconSource = isCustomFavicon && hasIconExtension(siteSettings?.favicon_url, ["png"])
+    ? siteSettings?.favicon_url || DEFAULT_TOUCH_ICON
+    : DEFAULT_TOUCH_ICON;
+
+  return {
+    favicon: escapeHtml(addCacheBuster(faviconSource, version)),
+    touchIcon: escapeHtml(addCacheBuster(touchIconSource, version)),
+  };
+};
+
+const injectHeadIcons = (html: string, favicon: string, touchIcon: string) => {
+  const cleaned = html.replace(HEAD_ICON_LINK_PATTERN, "");
+  const tags = [
+    `<link data-rh="true" rel="icon" href="/favicon.ico" sizes="any" />`,
+    `<link data-rh="true" rel="icon" type="image/png" sizes="512x512" href="${favicon}" />`,
+    `<link data-rh="true" rel="apple-touch-icon" sizes="180x180" href="${touchIcon}" />`,
+  ].join("\n    ");
+
+  if (/<\/head>/i.test(cleaned)) {
+    return cleaned.replace(/<\/head>/i, `    ${tags}\n  </head>`);
+  }
+
+  return `${tags}\n${cleaned}`;
+};
+
 const replaceOrInsertTag = (html: string, pattern: RegExp, replacement: string) => {
   if (pattern.test(html)) {
     return html.replace(pattern, replacement);
   }
 
   return html.replace("</head>", `    ${replacement}\n  </head>`);
+};
+
+const getSupabaseOrigin = (env: Record<string, string | undefined>) => {
+  const supabaseUrl = env.VITE_SUPABASE_URL;
+  if (!supabaseUrl) return "";
+
+  try {
+    return new URL(supabaseUrl).origin;
+  } catch {
+    return "";
+  }
+};
+
+const injectPerformanceHints = (html: string, env: Record<string, string | undefined>) => {
+  if (html.includes("data-flashcast-performance-hints")) return html;
+
+  const supabaseOrigin = getSupabaseOrigin(env);
+  const hints = [
+    '<meta data-flashcast-performance-hints="true" />',
+    supabaseOrigin ? `<link rel="preconnect" href="${escapeHtml(supabaseOrigin)}" crossorigin />` : "",
+    supabaseOrigin ? `<link rel="dns-prefetch" href="//${escapeHtml(new URL(supabaseOrigin).hostname)}" />` : "",
+    `<link rel="preload" as="image" href="/videos/home-hero-poster-mobile.webp?v=${HERO_MEDIA_VERSION}" media="(max-width: 767px)" fetchpriority="high" />`,
+    `<link rel="preload" as="image" href="/videos/home-hero-poster-tablet.webp?v=${HERO_MEDIA_VERSION}" media="(min-width: 768px) and (max-width: 1180px) and (orientation: portrait)" fetchpriority="high" />`,
+    `<link rel="preload" as="image" href="/videos/home-hero-poster.webp?v=${HERO_MEDIA_VERSION}" media="(min-width: 768px) and (orientation: landscape), (min-width: 1181px)" fetchpriority="high" />`,
+  ].filter(Boolean);
+
+  return html.replace("</head>", `    ${hints.join("\n    ")}\n  </head>`);
+};
+
+const injectPublicData = (html: string, payload: unknown) => {
+  const script = `<script type="application/json" id="flashcast-public-data">${escapeJsonForHtml(payload)}</script>`;
+  if (html.includes('id="flashcast-public-data"')) {
+    return html.replace(
+      /<script\b(?=[^>]*\bid="flashcast-public-data")[^>]*>[\s\S]*?<\/script>/i,
+      script,
+    );
+  }
+
+  return html.replace("</head>", `    ${script}\n  </head>`);
 };
 
 const escapeJsonForHtml = (value: unknown) =>
@@ -249,6 +396,11 @@ const fetchSiteSettings = async (env: Record<string, string | undefined>) => {
   const supabaseAnonKey = env.VITE_SUPABASE_ANON_KEY;
 
   if (!supabaseUrl || !supabaseAnonKey) return null;
+  const cacheKey = supabaseUrl;
+  const now = Date.now();
+  if (siteSettingsCache?.key === cacheKey && siteSettingsCache.expiresAt > now) {
+    return siteSettingsCache.value;
+  }
 
   try {
     const response = await fetch(
@@ -264,7 +416,128 @@ const fetchSiteSettings = async (env: Record<string, string | undefined>) => {
     if (!response.ok) return null;
 
     const rows = (await response.json()) as SiteSettingsHead[];
-    return rows[0] ?? null;
+    const value = rows[0] ?? null;
+    siteSettingsCache = {
+      key: cacheKey,
+      value,
+      expiresAt: now + SITE_SETTINGS_CACHE_TTL_MS,
+    };
+    return value;
+  } catch {
+    return null;
+  }
+};
+
+const fetchProjectSummaries = async (env: Record<string, string | undefined>) => {
+  const supabaseUrl = env.VITE_SUPABASE_URL;
+  const supabaseAnonKey = env.VITE_SUPABASE_ANON_KEY;
+
+  if (!supabaseUrl || !supabaseAnonKey) return null;
+  const cacheKey = `${supabaseUrl}:project_summaries`;
+  const now = Date.now();
+  if (projectSummariesCache?.key === cacheKey && projectSummariesCache.expiresAt > now) {
+    return projectSummariesCache.value;
+  }
+
+  try {
+    const url = new URL(`${supabaseUrl}/rest/v1/projects`);
+    url.searchParams.set("select", PROJECT_SUMMARY_SELECT);
+    url.searchParams.set("status", "eq.published");
+    url.searchParams.set("order", "sort_order.asc");
+
+    const response = await fetch(url.toString(), {
+      headers: {
+        apikey: supabaseAnonKey,
+        Authorization: `Bearer ${supabaseAnonKey}`,
+      },
+    });
+
+    if (!response.ok) return null;
+
+    const value = (await response.json()) as ProjectSummaryRow[];
+    projectSummariesCache = {
+      key: cacheKey,
+      value,
+      expiresAt: now + PUBLIC_PROJECT_SUMMARIES_CACHE_TTL_MS,
+    };
+    return value;
+  } catch {
+    return null;
+  }
+};
+
+const fetchHomeContentBundle = async (env: Record<string, string | undefined>) => {
+  const supabaseUrl = env.VITE_SUPABASE_URL;
+  const supabaseAnonKey = env.VITE_SUPABASE_ANON_KEY;
+
+  if (!supabaseUrl || !supabaseAnonKey) return null;
+  const cacheKey = `${supabaseUrl}:home_content_bundle`;
+  const now = Date.now();
+  if (homeContentBundleCache?.key === cacheKey && homeContentBundleCache.expiresAt > now) {
+    return homeContentBundleCache.value;
+  }
+
+  try {
+    const response = await fetch(`${supabaseUrl}/rest/v1/rpc/get_public_home_bundle`, {
+      method: "POST",
+      headers: {
+        apikey: supabaseAnonKey,
+        Authorization: `Bearer ${supabaseAnonKey}`,
+        "Content-Type": "application/json",
+        Accept: "application/json",
+      },
+      body: "{}",
+    });
+
+    if (!response.ok) return null;
+
+    const value = (await response.json()) as HomeContentBundleRow;
+    homeContentBundleCache = {
+      key: cacheKey,
+      value,
+      expiresAt: now + PUBLIC_HOME_BUNDLE_CACHE_TTL_MS,
+    };
+    return value;
+  } catch {
+    return null;
+  }
+};
+
+const fetchProjectDetailBySlug = async (env: Record<string, string | undefined>, slug: string) => {
+  const supabaseUrl = env.VITE_SUPABASE_URL;
+  const supabaseAnonKey = env.VITE_SUPABASE_ANON_KEY;
+
+  if (!supabaseUrl || !supabaseAnonKey || !slug) return null;
+  const cacheKey = `${supabaseUrl}:project_detail:${slug}`;
+  const now = Date.now();
+  if (projectDetailCache?.key === cacheKey && projectDetailCache.expiresAt > now) {
+    return projectDetailCache.value;
+  }
+
+  try {
+    const url = new URL(`${supabaseUrl}/rest/v1/projects`);
+    url.searchParams.set("select", "*,project_images(*)");
+    url.searchParams.set("status", "eq.published");
+    url.searchParams.set("slug", `eq.${slug}`);
+    url.searchParams.set("limit", "1");
+
+    const response = await fetch(url.toString(), {
+      headers: {
+        apikey: supabaseAnonKey,
+        Authorization: `Bearer ${supabaseAnonKey}`,
+      },
+    });
+
+    if (!response.ok) return null;
+
+    const rows = (await response.json()) as ProjectDetailRow[];
+    const value = rows[0] ?? null;
+    projectDetailCache = {
+      key: cacheKey,
+      value,
+      expiresAt: now + PUBLIC_PROJECT_DETAIL_CACHE_TTL_MS,
+    };
+    return value;
   } catch {
     return null;
   }
@@ -274,6 +547,18 @@ const normalizePath = (pathname: string) => {
   const cleaned = pathname.replace(/\/+$/, "") || "/";
   if (cleaned === "/") return "/en";
   return cleaned;
+};
+
+const isHomePageKey = (key: string) => key === "/en" || key === "/zh";
+
+const getProjectDetailSlugFromKey = (key: string) => {
+  const match = key.match(/^\/(?:en|zh)\/projects\/([^/]+)$/);
+  if (!match?.[1]) return null;
+  try {
+    return decodeURIComponent(match[1]);
+  } catch {
+    return match[1];
+  }
 };
 
 const EXACT_LEGACY_REDIRECTS: Record<string, string> = {
@@ -315,7 +600,7 @@ const injectSeo = (html: string, meta: SeoEntry, siteSettings?: SiteSettingsHead
   const canonical = escapeHtml(meta.canonical);
   const siteName = escapeHtml(siteSettings?.company_name || siteSettings?.brand_name || "FLASH CAST SDN. BHD.");
   const version = siteSettings?.updated_at || undefined;
-  const favicon = escapeHtml(addCacheBuster(siteSettings?.favicon_url || siteSettings?.logo_url || DEFAULT_FAVICON, version));
+  const { favicon, touchIcon } = resolveHeadIcons(siteSettings);
   const ogImage =
     meta.ogImage === DEFAULT_OG_IMAGE
       ? escapeHtml(addCacheBuster(siteSettings?.og_image_url || siteSettings?.logo_url || meta.ogImage, version))
@@ -342,8 +627,7 @@ const injectSeo = (html: string, meta: SeoEntry, siteSettings?: SiteSettingsHead
   out = replaceOrInsertTag(out, /<meta\b[^>]*name="twitter:title"[^>]*>/i, `<meta data-rh="true" name="twitter:title" content="${title}" />`);
   out = replaceOrInsertTag(out, /<meta\b[^>]*name="twitter:description"[^>]*>/i, `<meta data-rh="true" name="twitter:description" content="${description}" />`);
   out = replaceOrInsertTag(out, /<meta\b[^>]*name="twitter:image"[^>]*>/i, `<meta data-rh="true" name="twitter:image" content="${ogImage}" />`);
-  out = replaceOrInsertTag(out, /<link\b[^>]*rel="icon"[^>]*>/i, `<link data-rh="true" rel="icon" href="${favicon}" />`);
-  out = replaceOrInsertTag(out, /<link\b[^>]*rel="apple-touch-icon"[^>]*>/i, `<link data-rh="true" rel="apple-touch-icon" href="${favicon}" />`);
+  out = injectHeadIcons(out, favicon, touchIcon);
   out = injectEdgeStructuredData(out, meta, siteSettings);
   out = injectGeoSummary(out, meta);
 
@@ -362,7 +646,7 @@ const injectBrandAssets = (html: string, siteSettings?: SiteSettingsHead | null)
   if (!siteSettings) return html;
 
   const version = siteSettings.updated_at || undefined;
-  const favicon = escapeHtml(addCacheBuster(siteSettings.favicon_url || siteSettings.logo_url || DEFAULT_FAVICON, version));
+  const { favicon, touchIcon } = resolveHeadIcons(siteSettings);
   const ogImage = escapeHtml(addCacheBuster(siteSettings.og_image_url || siteSettings.logo_url || DEFAULT_OG_IMAGE, version));
   const siteName = escapeHtml(siteSettings.company_name || siteSettings.brand_name || "FLASH CAST SDN. BHD.");
 
@@ -370,9 +654,7 @@ const injectBrandAssets = (html: string, siteSettings?: SiteSettingsHead | null)
   out = replaceOrInsertTag(out, /<meta\b[^>]*property="og:site_name"[^>]*>/i, `<meta data-rh="true" property="og:site_name" content="${siteName}" />`);
   out = replaceOrInsertTag(out, /<meta\b[^>]*property="og:image"[^>]*>/i, `<meta data-rh="true" property="og:image" content="${ogImage}" />`);
   out = replaceOrInsertTag(out, /<meta\b[^>]*name="twitter:image"[^>]*>/i, `<meta data-rh="true" name="twitter:image" content="${ogImage}" />`);
-  out = replaceOrInsertTag(out, /<link\b[^>]*rel="icon"[^>]*>/i, `<link data-rh="true" rel="icon" href="${favicon}" />`);
-  out = replaceOrInsertTag(out, /<link\b[^>]*rel="apple-touch-icon"[^>]*>/i, `<link data-rh="true" rel="apple-touch-icon" href="${favicon}" />`);
-  return out;
+  return injectHeadIcons(out, favicon, touchIcon);
 };
 
 const STATIC_PATH_PREFIXES = ["/assets/", "/images/", "/videos/"];
@@ -388,6 +670,40 @@ const applyHtmlNoStoreHeaders = (headers: Headers) => {
   headers.set("cloudflare-cdn-cache-control", "no-store");
   headers.set("pragma", "no-cache");
   headers.set("expires", "0");
+};
+
+const applyPublicHtmlCacheHeaders = (headers: Headers) => {
+  headers.set("content-type", "text/html; charset=utf-8");
+  headers.set(
+    "cache-control",
+    `public, max-age=${PUBLIC_HTML_BROWSER_TTL_SECONDS}, stale-while-revalidate=${PUBLIC_HTML_EDGE_TTL_SECONDS}`,
+  );
+  headers.set("cdn-cache-control", `public, max-age=${PUBLIC_HTML_EDGE_TTL_SECONDS}`);
+  headers.set("cloudflare-cdn-cache-control", `public, max-age=${PUBLIC_HTML_EDGE_TTL_SECONDS}`);
+  headers.delete("pragma");
+  headers.delete("expires");
+};
+
+const withHtmlCacheDebugHeader = (response: Response, state: HtmlCacheDebugState) => {
+  const headers = new Headers(response.headers);
+  headers.set(HTML_CACHE_DEBUG_HEADER, state);
+  return new Response(response.body, {
+    status: response.status,
+    statusText: response.statusText,
+    headers,
+  });
+};
+
+const getEdgeCache = () => {
+  if (typeof caches === "undefined" || !caches.default) return null;
+  return caches.default;
+};
+
+const getPublicHtmlCacheRequest = (request: Request) => {
+  const cacheUrl = new URL(request.url);
+  cacheUrl.search = "";
+  cacheUrl.hash = "";
+  return new Request(cacheUrl.toString(), { method: "GET" });
 };
 
 export const onRequest: PagesFunction = async (context) => {
@@ -421,6 +737,15 @@ export const onRequest: PagesFunction = async (context) => {
     return redirect(url);
   }
 
+  const key = normalizePath(url.pathname);
+  const meta = (manifest as Record<string, SeoEntry>)[key];
+  const edgeCache = meta && request.method === "GET" ? getEdgeCache() : null;
+  const publicHtmlCacheRequest = edgeCache ? getPublicHtmlCacheRequest(request) : null;
+  const cachedPublicHtml = edgeCache && publicHtmlCacheRequest ? await edgeCache.match(publicHtmlCacheRequest) : null;
+  if (cachedPublicHtml) {
+    return withHtmlCacheDebugHeader(cachedPublicHtml, "hit");
+  }
+
   const appShellUrl = new URL(request.url);
   appShellUrl.pathname = "/";
   appShellUrl.search = "";
@@ -440,16 +765,63 @@ export const onRequest: PagesFunction = async (context) => {
       : html.replace("</head>", `    ${robotsTag}\n  </head>`);
     const headers = new Headers(response.headers);
     applyHtmlNoStoreHeaders(headers);
-    return new Response(transformed, { status: response.status, headers });
+    return withHtmlCacheDebugHeader(new Response(transformed, { status: response.status, headers }), "bypass-admin");
   }
 
-  const key = normalizePath(url.pathname);
-  const meta = (manifest as Record<string, SeoEntry>)[key];
-  const siteSettings = await fetchSiteSettings(env as Record<string, string | undefined>);
+  const projectDetailSlug = getProjectDetailSlugFromKey(key);
+  const shouldInjectHomeBundle = Boolean(meta && isHomePageKey(key));
+  const shouldInjectProjectSummaries = Boolean(meta && (key === "/en/projects" || key === "/zh/projects" || projectDetailSlug));
+  const [siteSettings, homeContentBundle, projectSummaries, projectDetail] = await Promise.all([
+    fetchSiteSettings(env as Record<string, string | undefined>),
+    shouldInjectHomeBundle ? fetchHomeContentBundle(env as Record<string, string | undefined>) : Promise.resolve(null),
+    shouldInjectProjectSummaries ? fetchProjectSummaries(env as Record<string, string | undefined>) : Promise.resolve(null),
+    projectDetailSlug ? fetchProjectDetailBySlug(env as Record<string, string | undefined>, projectDetailSlug) : Promise.resolve(null),
+  ]);
 
   const html = await response.text();
-  const transformed = meta ? injectSeo(html, meta, siteSettings) : injectNoIndexNotFound(html, siteSettings);
+  let transformed = meta ? injectSeo(html, meta, siteSettings) : injectNoIndexNotFound(html, siteSettings);
+  const publicDataPayload: Record<string, unknown> = {};
+  if (homeContentBundle && Object.keys(homeContentBundle).length) {
+    publicDataPayload.homeContentBundle = homeContentBundle;
+  }
+  if (shouldInjectProjectSummaries && projectSummaries?.length) {
+    publicDataPayload.projectSummaries = projectSummaries;
+  }
+  if (projectDetailSlug && projectDetail) {
+    publicDataPayload.projectDetails = {
+      [projectDetailSlug]: projectDetail,
+    };
+  }
+  if (Object.keys(publicDataPayload).length) {
+    transformed = injectPublicData(transformed, {
+      ...publicDataPayload,
+      generatedAt: new Date().toISOString(),
+    });
+  }
+  transformed = injectPerformanceHints(
+    transformed,
+    env as Record<string, string | undefined>,
+  );
   const headers = new Headers(response.headers);
-  applyHtmlNoStoreHeaders(headers);
-  return new Response(transformed, { status: meta ? response.status : 404, headers });
+  if (meta) {
+    applyPublicHtmlCacheHeaders(headers);
+  } else {
+    applyHtmlNoStoreHeaders(headers);
+  }
+
+  const finalResponse = withHtmlCacheDebugHeader(
+    new Response(transformed, { status: meta ? response.status : 404, headers }),
+    meta ? "miss" : "bypass-not-found",
+  );
+  if (edgeCache && publicHtmlCacheRequest) {
+    const putPromise = edgeCache.put(publicHtmlCacheRequest, finalResponse.clone());
+    const waitUntil = (context as unknown as { waitUntil?: (promise: Promise<unknown>) => void }).waitUntil;
+    if (typeof waitUntil === "function") {
+      waitUntil(putPromise);
+    } else {
+      await putPromise.catch(() => undefined);
+    }
+  }
+
+  return finalResponse;
 };

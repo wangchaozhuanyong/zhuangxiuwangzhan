@@ -22,12 +22,12 @@ export default function AdminFormSection({
 }) {
   if (collapsible) {
     return (
-      <details open={defaultOpen} className={cn("group rounded-xl border border-border bg-card p-5 shadow-sm sm:p-6", className)}>
+      <details open={defaultOpen} className={cn("group min-w-0 overflow-hidden rounded-lg border border-border bg-card p-4 shadow-sm sm:rounded-xl sm:p-6", className)}>
         <summary className="cursor-pointer list-none rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2">
-          <div className="flex items-start justify-between gap-3">
+          <div className="flex min-w-0 items-start justify-between gap-3">
             <div className="min-w-0">
               <h2 className="flex items-center gap-2 text-lg font-semibold tracking-normal">
-                <span>{title}</span>
+                <span className="min-w-0 [overflow-wrap:anywhere]">{title}</span>
                 <AdminHelpTip text={helpText} />
               </h2>
               {description && <div className="mt-1 max-w-3xl text-sm leading-6 text-muted-foreground">{description}</div>}
@@ -43,10 +43,10 @@ export default function AdminFormSection({
   }
 
   return (
-    <section className={cn("rounded-xl border border-border bg-card p-5 shadow-sm sm:p-6", className)}>
+    <section className={cn("min-w-0 overflow-hidden rounded-lg border border-border bg-card p-4 shadow-sm sm:rounded-xl sm:p-6", className)}>
       <div className="mb-4">
         <h2 className="flex items-center gap-2 text-lg font-semibold tracking-normal text-foreground">
-          <span>{title}</span>
+          <span className="min-w-0 [overflow-wrap:anywhere]">{title}</span>
           <AdminHelpTip text={helpText} />
         </h2>
         {description && <div className="mt-1 max-w-3xl text-sm leading-6 text-muted-foreground">{description}</div>}

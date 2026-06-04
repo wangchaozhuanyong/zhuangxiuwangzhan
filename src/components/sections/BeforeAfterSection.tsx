@@ -6,7 +6,9 @@ import Reveal from "@/components/Reveal";
 import SmartImage from "@/components/SmartImage";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { translateDisplayText } from "@/i18n/displayLabels";
+import { formatHomeSectionText, homeSectionText } from "@/i18n/homeSectionsText";
 import { usePublishedBeforeAfterItems } from "@/hooks/usePublishedContent";
+import type { PublishedBeforeAfterItem } from "@/lib/homeContentApi";
 
 import beforeKitchen from "@/assets/before-after/before-kitchen.webp";
 import afterKitchen from "@/assets/before-after/after-kitchen.webp";
@@ -15,54 +17,11 @@ import afterLiving from "@/assets/before-after/after-living.webp";
 import beforeBathroom from "@/assets/before-after/before-bathroom.webp";
 import afterBathroom from "@/assets/before-after/after-bathroom.webp";
 
-const comparisons = {
-  en: [
-    {
-      before: beforeKitchen,
-      after: afterKitchen,
-      title: "Kitchen Renovation",
-      location: "Mont Kiara, KL",
-      desc: "From dated cabinets to a sleek modern kitchen with marble countertops and integrated appliances.",
-    },
-    {
-      before: beforeLiving,
-      after: afterLiving,
-      title: "Living Room Transformation",
-      location: "Damansara Heights, KL",
-      desc: "Complete overhaul with new flooring, built-in TV wall, ambient lighting, and premium finishes.",
-    },
-    {
-      before: beforeBathroom,
-      after: afterBathroom,
-      title: "Bathroom Upgrade",
-      location: "Bangsar, KL",
-      desc: "From old fixtures to a luxury marble bathroom with rain shower and floating vanity.",
-    },
-  ],
-  zh: [
-    {
-      before: beforeKitchen,
-      after: afterKitchen,
-      title: "厨房翻新",
-      location: "Mont Kiara, KL",
-      desc: "从老旧橱柜升级为现代感厨房，搭配大理石台面与内嵌式电器。",
-    },
-    {
-      before: beforeLiving,
-      after: afterLiving,
-      title: "客厅改造",
-      location: "Damansara Heights, KL",
-      desc: "整体升级，包括新地板、电视背景墙、氛围灯光与更高质感的收口。",
-    },
-    {
-      before: beforeBathroom,
-      after: afterBathroom,
-      title: "浴室升级",
-      location: "Bangsar, KL",
-      desc: "从旧洁具升级为大理石质感浴室，配备顶喷淋浴与悬浮洗手台。",
-    },
-  ],
-};
+const fallbackComparisonMedia = [
+  { before: beforeKitchen, after: afterKitchen },
+  { before: beforeLiving, after: afterLiving },
+  { before: beforeBathroom, after: afterBathroom },
+];
 
 const BeforeAfterSlider = ({
   before,
@@ -70,12 +29,16 @@ const BeforeAfterSlider = ({
   alt,
   beforeLabel,
   afterLabel,
+  beforeAltTemplate,
+  afterAltTemplate,
 }: {
   before: string;
   after: string;
   alt: string;
   beforeLabel: string;
   afterLabel: string;
+  beforeAltTemplate: string;
+  afterAltTemplate: string;
 }) => {
   const [position, setPosition] = useState(50);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -165,7 +128,7 @@ const BeforeAfterSlider = ({
     >
       <SmartImage
         src={after}
-        alt={`After: ${alt}`}
+        alt={formatHomeSectionText(afterAltTemplate, { alt })}
         className="absolute inset-0 w-full h-full object-cover"
         width={800}
         height={600}
@@ -174,7 +137,7 @@ const BeforeAfterSlider = ({
       <div className="absolute inset-0 overflow-hidden" style={{ width: `${position}%` }}>
         <SmartImage
           src={before}
-          alt={`Before: ${alt}`}
+          alt={formatHomeSectionText(beforeAltTemplate, { alt })}
           className="absolute inset-0 w-full h-full object-cover"
           style={{ minWidth: containerRef.current ? `${containerRef.current.offsetWidth}px` : "100%" }}
           width={800}
@@ -198,9 +161,14 @@ const BeforeAfterSlider = ({
   );
 };
 
-const BeforeAfterSection = () => {
+type BeforeAfterSectionProps = {
+  items?: PublishedBeforeAfterItem[];
+};
+
+const BeforeAfterSection = ({ items: providedItems }: BeforeAfterSectionProps) => {
   const { language } = useLanguage();
-  const { data: publishedItems } = usePublishedBeforeAfterItems(language);
+  const { data: fetchedItems } = usePublishedBeforeAfterItems(language, { enabled: providedItems === undefined });
+  const publishedItems = providedItems === undefined ? fetchedItems : providedItems;
   const dynamicComparisons = useMemo(() => {
     if (!publishedItems?.length) return [];
     return publishedItems.map((item) => ({
@@ -212,21 +180,12 @@ const BeforeAfterSection = () => {
     }));
   }, [publishedItems]);
   const sectionCopy = {
-    en: {
-      title: "See the Transformation",
-      subtitle: "Drag the slider to compare before and after renovation references by FLASH CAST.",
-      viewAll: "View All Projects",
-      before: "Before",
-      after: "After",
-    },
-    zh: {
-      title: "看看变化前后",
-      subtitle: "拖动滑块对比施工前后，查看 FLASH CAST 的装修参考效果。",
-      viewAll: "查看全部案例",
-      before: "施工前",
-      after: "施工后",
-    },
-  }[language];
+    ...homeSectionText.beforeAfter[language],
+    comparisons: homeSectionText.beforeAfter[language].comparisons.map((item, index) => ({
+      ...item,
+      ...(fallbackComparisonMedia[index] || {}),
+    })),
+  };
 
   if (!dynamicComparisons.length) return null;
 
@@ -253,6 +212,8 @@ const BeforeAfterSection = () => {
                   alt={item.title}
                   beforeLabel={sectionCopy.before}
                   afterLabel={sectionCopy.after}
+                  beforeAltTemplate={sectionCopy.beforeAlt}
+                  afterAltTemplate={sectionCopy.afterAlt}
                 />
                 <div className="card-equal-body p-5">
                   <h3 className="text-limit-2 font-display text-lg font-semibold mb-1">{item.title}</h3>

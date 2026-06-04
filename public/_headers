@@ -12,6 +12,41 @@
   Pragma: no-cache
   Expires: 0
 
+/favicon-20260604.png
+  Cache-Control: no-store, no-cache, must-revalidate, max-age=0
+  CDN-Cache-Control: no-store
+  Cloudflare-CDN-Cache-Control: no-store
+  Pragma: no-cache
+  Expires: 0
+
+/favicon-transparent-20260602.png
+  Cache-Control: no-store, no-cache, must-revalidate, max-age=0
+  CDN-Cache-Control: no-store
+  Cloudflare-CDN-Cache-Control: no-store
+  Pragma: no-cache
+  Expires: 0
+
+/favicon-transparent-20260602.webp
+  Cache-Control: no-store, no-cache, must-revalidate, max-age=0
+  CDN-Cache-Control: no-store
+  Cloudflare-CDN-Cache-Control: no-store
+  Pragma: no-cache
+  Expires: 0
+
+/apple-touch-icon.png
+  Cache-Control: no-store, no-cache, must-revalidate, max-age=0
+  CDN-Cache-Control: no-store
+  Cloudflare-CDN-Cache-Control: no-store
+  Pragma: no-cache
+  Expires: 0
+
+/apple-touch-icon-20260604.png
+  Cache-Control: no-store, no-cache, must-revalidate, max-age=0
+  CDN-Cache-Control: no-store
+  Cloudflare-CDN-Cache-Control: no-store
+  Pragma: no-cache
+  Expires: 0
+
 /admin
   Cache-Control: no-store, no-cache, must-revalidate, max-age=0
   CDN-Cache-Control: no-store
@@ -27,53 +62,39 @@
   Expires: 0
 
 /
-  Cache-Control: no-store, no-cache, must-revalidate, max-age=0
-  CDN-Cache-Control: no-store
-  Cloudflare-CDN-Cache-Control: no-store
-  Pragma: no-cache
-  Expires: 0
+  Cache-Control: public, max-age=60, stale-while-revalidate=300
+  CDN-Cache-Control: public, max-age=300
+  Cloudflare-CDN-Cache-Control: public, max-age=300
 
 /index.html
-  Cache-Control: no-store, no-cache, must-revalidate, max-age=0
-  CDN-Cache-Control: no-store
-  Cloudflare-CDN-Cache-Control: no-store
-  Pragma: no-cache
-  Expires: 0
+  Cache-Control: public, max-age=60, stale-while-revalidate=300
+  CDN-Cache-Control: public, max-age=300
+  Cloudflare-CDN-Cache-Control: public, max-age=300
 
 /*.html
-  Cache-Control: no-store, no-cache, must-revalidate, max-age=0
-  CDN-Cache-Control: no-store
-  Cloudflare-CDN-Cache-Control: no-store
-  Pragma: no-cache
-  Expires: 0
+  Cache-Control: public, max-age=60, stale-while-revalidate=300
+  CDN-Cache-Control: public, max-age=300
+  Cloudflare-CDN-Cache-Control: public, max-age=300
 
 /zh
-  Cache-Control: no-store, no-cache, must-revalidate, max-age=0
-  CDN-Cache-Control: no-store
-  Cloudflare-CDN-Cache-Control: no-store
-  Pragma: no-cache
-  Expires: 0
+  Cache-Control: public, max-age=60, stale-while-revalidate=300
+  CDN-Cache-Control: public, max-age=300
+  Cloudflare-CDN-Cache-Control: public, max-age=300
 
 /zh/*
-  Cache-Control: no-store, no-cache, must-revalidate, max-age=0
-  CDN-Cache-Control: no-store
-  Cloudflare-CDN-Cache-Control: no-store
-  Pragma: no-cache
-  Expires: 0
+  Cache-Control: public, max-age=60, stale-while-revalidate=300
+  CDN-Cache-Control: public, max-age=300
+  Cloudflare-CDN-Cache-Control: public, max-age=300
 
 /en
-  Cache-Control: no-store, no-cache, must-revalidate, max-age=0
-  CDN-Cache-Control: no-store
-  Cloudflare-CDN-Cache-Control: no-store
-  Pragma: no-cache
-  Expires: 0
+  Cache-Control: public, max-age=60, stale-while-revalidate=300
+  CDN-Cache-Control: public, max-age=300
+  Cloudflare-CDN-Cache-Control: public, max-age=300
 
 /en/*
-  Cache-Control: no-store, no-cache, must-revalidate, max-age=0
-  CDN-Cache-Control: no-store
-  Cloudflare-CDN-Cache-Control: no-store
-  Pragma: no-cache
-  Expires: 0
+  Cache-Control: public, max-age=60, stale-while-revalidate=300
+  CDN-Cache-Control: public, max-age=300
+  Cloudflare-CDN-Cache-Control: public, max-age=300
 
 /assets/*
   Cache-Control: public, max-age=31536000, immutable

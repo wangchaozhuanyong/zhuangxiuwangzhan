@@ -3,16 +3,12 @@ import { ClipboardList, Phone } from "lucide-react";
 import WhatsAppIcon from "@/components/WhatsAppIcon";
 import LocalizedLink from "@/components/LocalizedLink";
 import { useLanguage } from "@/i18n/LanguageContext";
+import { mobileActionBarText } from "@/i18n/mobileActionBarText";
 import { PUBLIC_CHROME_Z } from "@/lib/publicChrome";
 import { useSiteSettings } from "@/hooks/useSiteSettings";
 import { usePublicChrome } from "@/contexts/PublicChromeContext";
 import { getReadableTextColor } from "@/lib/colorContrast";
 import { trackCtaClick } from "@/lib/analytics";
-
-const copy = {
-  en: { whatsapp: "WhatsApp", call: "Call", quote: "Free Quote" },
-  zh: { whatsapp: "WhatsApp", call: "电话", quote: "免费报价" },
-};
 
 const mobileActionBackground = "hsl(38 33% 97% / 0.98)";
 const mobileActionForeground = getReadableTextColor("hsl(38 33% 97%)");
@@ -21,7 +17,7 @@ const MobileActionBar = () => {
   const { language } = useLanguage();
   const settings = useSiteSettings();
   const { showMobileActionBar } = usePublicChrome();
-  const t = copy[language];
+  const t = mobileActionBarText[language];
 
   if (!showMobileActionBar) {
     return null;
@@ -29,7 +25,7 @@ const MobileActionBar = () => {
 
   return (
     <nav
-      aria-label={language === "zh" ? "快捷联系" : "Quick contact"}
+      aria-label={t.aria}
       className="adaptive-surface mobile-action-bar fixed inset-x-0 bottom-0 px-3 pb-[calc(0.7rem+env(safe-area-inset-bottom))] pt-2 md:hidden"
       style={
         {

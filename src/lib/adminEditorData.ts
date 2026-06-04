@@ -1,5 +1,17 @@
-import { isSupabaseConfigured, supabase } from "@/lib/supabase";
 import { ensureAdminDefaultContent } from "@/lib/adminDefaultContent";
+import {
+  ensureAboutSectionRecord,
+  ensureHomeSectionRecord,
+  fetchAboutEditorCtaBlock,
+  fetchHomeEditorAuxiliaryRows,
+  hasAdminEditorDatabaseClient,
+} from "@/backend/modules/cms/repository/adminEditorRepository";
+import {
+  fetchAdminUserRows,
+  fetchTranslationJobRows,
+  fetchTranslationLabelRows,
+  invokeNotificationSettingsGet,
+} from "@/backend/modules/system/repository/adminSystemDataRepository";
 
 export type HomeSectionRow = {
   id?: string;
@@ -129,61 +141,39 @@ export type AdminUserRow = {
 };
 
 async function ensureHomeSection(section_key: string): Promise<HomeSectionRow | null> {
-  if (!supabase) return null;
-  const { data, error } = await supabase.from("home_sections").select("*").eq("section_key", section_key).order("sort_order").limit(1);
-  if (error) return null;
-  const row = (data || [])[0];
-  if (row) return row as HomeSectionRow;
-  const { data: inserted, error: insertError } = await supabase
-    .from("home_sections")
-    .insert({ section_key, status: "published", sort_order: 0 })
-    .select("*")
-    .single();
-  if (insertError) return null;
-  return inserted as HomeSectionRow;
+  const row = await ensureHomeSectionRecord(section_key);
+  return (row as HomeSectionRow | null) || null;
 }
 
 async function ensureAboutSection(section_key: string): Promise<AboutSectionRow | null> {
-  if (!supabase) return null;
-  const { data, error } = await supabase.from("about_sections").select("*").eq("section_key", section_key).order("sort_order").limit(1);
-  if (error) return null;
-  const row = (data || [])[0];
-  if (row) return row as AboutSectionRow;
-  const { data: inserted, error: insertError } = await supabase
-    .from("about_sections")
-    .insert({ section_key, status: "published", sort_order: 0 })
-    .select("*")
-    .single();
-  if (insertError) return null;
-  return inserted as AboutSectionRow;
+  const row = await ensureAboutSectionRecord(section_key);
+  return (row as AboutSectionRow | null) || null;
 }
 
 export async function fetchAdminHomeEditorData(): Promise<AdminHomeEditorData> {
-  if (!isSupabaseConfigured || !supabase) {
+  if (!hasAdminEditorDatabaseClient()) {
     return { stats: null, why: null, processSteps: [], faqRows: [], ctaBlock: null };
   }
 
   await ensureAdminDefaultContent();
 
-  const [stats, why, steps, faqs, cta] = await Promise.all([
+  const [stats, why, auxiliary] = await Promise.all([
     ensureHomeSection("stats"),
     ensureHomeSection("why_choose_us"),
-    supabase.from("process_steps").select("*").order("sort_order").order("step_number"),
-    supabase.from("faqs").select("*").eq("page_key", "home").order("sort_order"),
-    supabase.from("cta_blocks").select("*").eq("block_key", "home_final").maybeSingle(),
+    fetchHomeEditorAuxiliaryRows(),
   ]);
 
   return {
     stats,
     why,
-    processSteps: ((steps.data || []) as ProcessStepRow[]) ?? [],
-    faqRows: ((faqs.data || []) as FaqRow[]) ?? [],
-    ctaBlock: (cta.data as CtaRow | null) ?? null,
+    processSteps: (auxiliary.processSteps as ProcessStepRow[]) ?? [],
+    faqRows: (auxiliary.faqRows as FaqRow[]) ?? [],
+    ctaBlock: (auxiliary.ctaBlock as CtaRow | null) ?? null,
   };
 }
 
 export async function fetchAdminAboutEditorData(): Promise<AdminAboutEditorData> {
-  if (!isSupabaseConfigured || !supabase) {
+  if (!hasAdminEditorDatabaseClient()) {
     return { sections: {}, ctaBlock: null };
   }
 
@@ -195,7 +185,7 @@ export async function fetchAdminAboutEditorData(): Promise<AdminAboutEditorData>
     sections[key] = ensured[index] ?? null;
   });
 
-  const { data } = await supabase.from("cta_blocks").select("*").eq("block_key", "about_final").maybeSingle();
+  const data = await fetchAboutEditorCtaBlock();
 
   return {
     sections,
@@ -204,22 +194,12 @@ export async function fetchAdminAboutEditorData(): Promise<AdminAboutEditorData>
 }
 
 export async function fetchNotificationSettings(): Promise<NotificationSettings> {
-  const { data, error } = await supabase!.functions.invoke("notification-settings", {
-    body: { action: "get" },
-  });
-  if (error) throw error;
+  const data = await invokeNotificationSettingsGet();
   return (data?.settings || {}) as NotificationSettings;
 }
 
 export async function fetchTranslationJobs(limit = 100): Promise<TranslationJob[]> {
-  const { data, error } = await supabase!
-    .from("translation_jobs")
-    .select("id, table_name, record_id, status, error_message, regenerated_at, created_at, updated_at")
-    .order("created_at", { ascending: false })
-    .limit(limit);
-  if (error) throw error;
-
-  const jobs = (data || []) as TranslationJob[];
+  const jobs = (await fetchTranslationJobRows(limit)) as TranslationJob[];
   const labelSelects: Record<string, string> = {
     services: "id,title_zh,title_en,slug",
     projects: "id,title_zh,title_en,slug",
@@ -245,8 +225,8 @@ export async function fetchTranslationJobs(limit = 100): Promise<TranslationJob[
     Object.entries(labelSelects).map(async ([table, select]) => {
       const ids = jobs.filter((job) => job.table_name === table && job.record_id).map((job) => job.record_id as string);
       if (ids.length === 0) return;
-      const { data: rows } = await supabase!.from(table).select(select).in("id", ids);
-      for (const row of ((rows || []) as Array<Record<string, any>>)) {
+      const rows = await fetchTranslationLabelRows(table, select, ids);
+      for (const row of rows) {
         const label =
           row.title_zh ||
           row.title_en ||
@@ -275,16 +255,5 @@ export async function fetchTranslationJobs(limit = 100): Promise<TranslationJob[
 }
 
 export async function fetchAdminUsers(): Promise<AdminUserRow[]> {
-  const withVersion = await supabase!
-    .from("admin_users")
-    .select("user_id, email, role, active, created_at, updated_at, version")
-    .order("created_at", { ascending: false });
-  if (!withVersion.error) return (withVersion.data ?? []) as AdminUserRow[];
-
-  const { data, error } = await supabase!
-    .from("admin_users")
-    .select("user_id, email, role, active, created_at")
-    .order("created_at", { ascending: false });
-  if (error) throw error;
-  return (data ?? []) as AdminUserRow[];
+  return (await fetchAdminUserRows()) as AdminUserRow[];
 }

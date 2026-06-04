@@ -1,0 +1,156 @@
+export const adminSystemLogsText = {
+  en: {
+    noSupabaseTitle: "Supabase is not configured",
+    noSupabaseDescription: "Configure Supabase before viewing system logs.",
+    title: "System logs",
+    description: "Key admin and frontend errors are recorded here for troubleshooting. Only the latest 100 rows are shown.",
+    helpText:
+      "Frontend version file load failures are grouped as frontend production deployment cache mismatches. They usually mean old entry HTML referenced replaced hashed JS chunks.",
+    refreshing: "Refreshing...",
+    refresh: "Refresh",
+    loadFailedTitle: "Log loading failed",
+    loadFailedDescription: "System logs are temporarily unavailable. Check Supabase configuration or try again later.",
+    emptyTitle: "No system logs",
+    emptyDescription: "No error logs is a good sign. Future page errors will be recorded here automatically.",
+    timeHeader: "Time",
+    levelHeader: "Level",
+    sourceHeader: "Source",
+    categoryHeader: "Category",
+    typeHeader: "Type",
+    messageHeader: "Message",
+    unknownSeverity: "Unknown level",
+    unknownSource: "Unknown source",
+    unknownCategory: "Unknown system event",
+    unknownEventType: "Unknown event type",
+    unknownMessage: "This system message has no display text configured.",
+  },
+  zh: {
+    noSupabaseTitle: "Supabase 未配置",
+    noSupabaseDescription: "配置 Supabase 后才能查看系统日志。",
+    title: "系统日志",
+    description: "这里记录后台和前台关键错误，方便排查问题。只显示最近 100 条。",
+    helpText: "前端版本文件加载失败会归类为“前端生产部署缓存不一致”，通常是旧入口 HTML 引用了已替换的 hashed JS chunk。",
+    refreshing: "刷新中...",
+    refresh: "刷新",
+    loadFailedTitle: "日志加载失败",
+    loadFailedDescription: "系统日志暂时不可用，请检查 Supabase 配置或稍后重试。",
+    emptyTitle: "暂无系统日志",
+    emptyDescription: "没有错误日志是好事。后续页面错误会自动记录到这里。",
+    timeHeader: "时间",
+    levelHeader: "级别",
+    sourceHeader: "来源",
+    categoryHeader: "归类",
+    typeHeader: "类型",
+    messageHeader: "信息",
+    unknownSeverity: "未知级别",
+    unknownSource: "未知来源",
+    unknownCategory: "未知系统事件",
+    unknownEventType: "未知事件类型",
+    unknownMessage: "这条系统消息还没有配置显示文案。",
+  },
+} as const;
+
+export const adminSystemLogSeverityLabels = {
+  en: {
+    debug: "Debug",
+    info: "Info",
+    warn: "Warning",
+    error: "Error",
+    critical: "Critical",
+  },
+  zh: {
+    debug: "调试",
+    info: "信息",
+    warn: "警告",
+    error: "错误",
+    critical: "严重",
+  },
+} as const;
+
+export const adminSystemLogSourceLabels = {
+  en: {
+    admin: "Admin",
+    frontend: "Frontend",
+    "health-check": "Health check",
+    ops: "Operations script",
+    "form-attempts-maintenance": "Anti-spam cleanup",
+    "maintenance-reminder": "Maintenance reminder",
+    "notify-lead": "Lead notification",
+  },
+  zh: {
+    admin: "后台",
+    frontend: "前台",
+    "health-check": "健康检查",
+    ops: "运维脚本",
+    "form-attempts-maintenance": "防刷清理",
+    "maintenance-reminder": "维护提醒",
+    "notify-lead": "线索通知",
+  },
+} as const;
+
+export const adminSystemLogCategoryLabels = {
+  en: {
+    frontend_deploy_cache_mismatch: "Frontend deployment",
+    react_render_error: "Frontend runtime",
+    system_health_check: "System health",
+    backup_supabase_completed: "Backup",
+    backup_package_verified: "Backup",
+    backup_restore_dry_run_completed: "Backup restore test",
+    backup_restore_completed: "Backup restore",
+    form_submission_attempts_cleanup: "Anti-spam records",
+    maintenance_reminder_delivery_failed: "Notification",
+    lead_notification_delivery_failed: "Notification",
+  },
+  zh: {
+    frontend_deploy_cache_mismatch: "前端部署",
+    react_render_error: "前端运行",
+    system_health_check: "系统健康",
+    backup_supabase_completed: "备份",
+    backup_package_verified: "备份",
+    backup_restore_dry_run_completed: "备份恢复演练",
+    backup_restore_completed: "备份恢复",
+    form_submission_attempts_cleanup: "防刷记录",
+    maintenance_reminder_delivery_failed: "通知",
+    lead_notification_delivery_failed: "通知",
+  },
+} as const;
+
+export const adminSystemLogEventTypeLabels = {
+  en: {
+    frontend_deploy_cache_mismatch: "Frontend production deployment cache mismatch",
+    react_render_error: "Page render error",
+    system_health_check: "System health check",
+    backup_supabase_completed: "Database and file backup",
+    backup_package_verified: "Backup package verification",
+    backup_restore_dry_run_completed: "Restore dry run",
+    backup_restore_completed: "Backup restore",
+    form_submission_attempts_cleanup: "Old anti-spam records cleaned",
+    maintenance_reminder_delivery_failed: "Maintenance reminder delivery failed",
+    lead_notification_delivery_failed: "Lead notification delivery failed",
+  },
+  zh: {
+    frontend_deploy_cache_mismatch: "前端生产部署缓存不一致",
+    react_render_error: "页面渲染错误",
+    system_health_check: "系统健康检查",
+    backup_supabase_completed: "数据库和文件备份",
+    backup_package_verified: "备份包验证",
+    backup_restore_dry_run_completed: "恢复演练",
+    backup_restore_completed: "备份恢复",
+    form_submission_attempts_cleanup: "旧防刷记录清理",
+    maintenance_reminder_delivery_failed: "维护提醒发送失败",
+    lead_notification_delivery_failed: "线索通知发送失败",
+  },
+} as const;
+
+export const adminSystemLogMessageLabels = {
+  en: {
+    "System health check passed.": "System health check passed.",
+    "System health check needs attention.": "System health check needs attention.",
+    "One or more health checks need attention.": "One or more health checks need attention.",
+  },
+  zh: {
+    "System health check passed.": "系统健康检查通过。",
+    "System health check needs attention.": "系统健康检查需要处理。",
+    "One or more health checks need attention.": "有一项或多项健康检查需要处理。",
+  },
+} as const;

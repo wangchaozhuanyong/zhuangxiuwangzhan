@@ -4,8 +4,10 @@ import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 import MediaPicker from "@/components/admin/MediaPicker";
 import SmartImage from "@/components/SmartImage";
+import { adminSharedText, formatAdminSharedText } from "@/i18n/adminSharedText";
 import AdminImageUpload from "@/pages/admin/AdminImageUpload";
-import { useCreateAdminMediaAsset } from "@/lib/adminQueries";
+import { getAdminLang } from "@/lib/adminLocale";
+import { useCreateAdminMediaAsset } from "@/lib/adminMediaQueries";
 import type { AdminUploadedMedia } from "@/lib/adminMedia";
 
 export default function ImageField({
@@ -33,6 +35,7 @@ export default function ImageField({
   const [mediaMessage, setMediaMessage] = useState("");
   const createMediaAsset = useCreateAdminMediaAsset();
   const previewAlt = useMemo(() => (altValue ? altValue : label), [altValue, label]);
+  const text = adminSharedText[getAdminLang()];
 
   const handleUploaded = async (url: string, upload?: AdminUploadedMedia) => {
     onChange(url);
@@ -45,7 +48,11 @@ export default function ImageField({
         folder,
       });
     } catch (e) {
-      setMediaMessage(e instanceof Error ? `图片已上传，但媒体库记录创建失败：${e.message}` : "图片已上传，但媒体库记录创建失败。");
+      setMediaMessage(
+        e instanceof Error
+          ? formatAdminSharedText(text.mediaCreateFailedWithMessage, { message: e.message })
+          : text.mediaCreateFailed,
+      );
     }
   };
 
@@ -54,13 +61,11 @@ export default function ImageField({
       <div className="flex flex-wrap items-center justify-between gap-2">
         <label className="block text-sm font-medium">{label}</label>
         <div className="flex flex-wrap gap-2">
-          <Button type="button" variant="outline" size="sm" onClick={() => setPickerOpen(true)}>
-            从媒体库选择
-          </Button>
+          <Button type="button" variant="outline" size="sm" onClick={() => setPickerOpen(true)}>{text.chooseFromMedia}</Button>
         </div>
       </div>
 
-      <Input value={value} onChange={(e) => onChange(e.target.value)} placeholder="粘贴图片链接，或从媒体库选择 / 上传" />
+      <Input value={value} onChange={(e) => onChange(e.target.value)} placeholder={text.imagePlaceholder} />
 
       {value && (
         <div className="overflow-hidden rounded-lg border border-border bg-muted">
@@ -69,15 +74,15 @@ export default function ImageField({
       )}
 
       <div className="rounded-lg border border-border bg-muted/20 p-3">
-        <div className="mb-2 text-xs font-medium text-muted-foreground">上传新图片</div>
+        <div className="mb-2 text-xs font-medium text-muted-foreground">{text.uploadNewImage}</div>
         <AdminImageUpload value={value} folder={folder} onUploaded={(url, upload) => void handleUploaded(url, upload)} />
       </div>
       {mediaMessage && <p className="text-xs text-amber-700">{mediaMessage}</p>}
 
       {typeof altValue === "string" && onAltChange && (
         <div>
-          <label className="mb-1 block text-sm font-medium">图片说明</label>
-          <Input value={altValue} onChange={(e) => onAltChange(e.target.value)} placeholder="建议：描述图片内容与场景" />
+          <label className="mb-1 block text-sm font-medium">{text.altLabel}</label>
+          <Input value={altValue} onChange={(e) => onAltChange(e.target.value)} placeholder={text.altPlaceholder} />
         </div>
       )}
 

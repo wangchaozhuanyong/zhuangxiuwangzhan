@@ -9,6 +9,14 @@ type SharedObserverEntry = {
 
 const sharedObservers = new Map<string, SharedObserverEntry>();
 
+const canUseIntersectionObserver = () =>
+  typeof window !== "undefined" && typeof window.IntersectionObserver === "function";
+
+const prefersReducedMotion = () =>
+  typeof window !== "undefined" &&
+  typeof window.matchMedia === "function" &&
+  window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
 const getObserverKey = (opts: RevealOptions) => `${opts.threshold ?? 0.08}::${opts.rootMargin ?? "0px 0px 96px 0px"}`;
 
 const getSharedObserver = (opts: RevealOptions) => {
@@ -44,7 +52,11 @@ export function useScrollReveal<T extends HTMLElement = HTMLDivElement>(
   options?: RevealOptions
 ) {
   const ref = useRef<T>(null);
-  const [isVisible, setIsVisible] = useState(false);
+  const [isVisible, setIsVisible] = useState(() => {
+    if (typeof window === "undefined") return true;
+    if (!canUseIntersectionObserver()) return true;
+    return prefersReducedMotion();
+  });
 
   const opts = useMemo(
     () => ({
@@ -59,6 +71,14 @@ export function useScrollReveal<T extends HTMLElement = HTMLDivElement>(
     if (!el) return;
 
     if (isVisible) return;
+    if (!canUseIntersectionObserver()) {
+      setIsVisible(true);
+      return;
+    }
+    if (prefersReducedMotion()) {
+      setIsVisible(true);
+      return;
+    }
 
     const { observer, callbacks } = getSharedObserver(opts);
     callbacks.set(el, (entry) => {

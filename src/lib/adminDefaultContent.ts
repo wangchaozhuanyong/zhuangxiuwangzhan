@@ -16,7 +16,22 @@ import {
 } from "@/data/siteContent";
 import { translations } from "@/i18n/translations";
 import { translateDisplayText } from "@/i18n/displayLabels";
-import { isSupabaseConfigured, supabase } from "@/lib/supabase";
+import { adminDefaultContentSeedText } from "@/i18n/adminDefaultContentSeedText";
+import { formatUserFacingError } from "@/lib/userFacingText";
+import {
+  countDefaultContentProjectImages,
+  countDefaultContentSeedRows,
+  fetchDefaultContentProjects,
+  fetchDefaultContentSeedRows,
+  fetchDefaultSiteSettings,
+  hasDefaultContentDatabaseClient,
+  insertDefaultContentProjectImages,
+  insertDefaultContentSeedRow,
+  insertDefaultContentSeedRows,
+  insertDefaultSiteSettings,
+  updateDefaultContentSeedRow,
+  updateDefaultSiteSettings,
+} from "@/backend/modules/cms/repository/defaultContentRepository";
 import { fallbackSiteSettings } from "@/lib/siteSettingsApi";
 
 type SeedStatus = "idle" | "running" | "done" | "error";
@@ -731,12 +746,7 @@ const aboutSections = [
     subtitle_en: "Simple numbers that reflect our focus and service coverage.",
     image_url: "/images/heroes/hero-projects.webp",
     items_en: companyStats,
-    items_zh: [
-      { value: "范围", label: "清楚规划范围" },
-      { value: "吉隆坡与雪兰莪", label: "本地服务区域" },
-      { value: "住宅", label: "住宅项目沟通" },
-      { value: "商业", label: "商业项目沟通" },
-    ],
+    items_zh: adminDefaultContentSeedText.zh.companyStats,
     status: "published",
     sort_order: 30,
   },
@@ -748,12 +758,7 @@ const aboutSections = [
     content_en: "These principles guide every project we take on.",
     content_zh: "这些原则帮助我们把每个装修项目做得更清楚、更可靠。",
     items_en: coreValues.map(({ title, desc }) => ({ title, desc })),
-    items_zh: [
-      { title: "品质工艺", desc: "每个项目都重视细节、材料和施工方法，让空间不只好看，也经得起长期使用。" },
-      { title: "透明沟通", desc: "报价清楚、过程透明，施工期间保持进度沟通，减少预算和时间上的不确定。" },
-      { title: "按时交付", desc: "通过项目管理和节点安排，让装修进度更容易被跟踪和控制。" },
-      { title: "以客户需求为先", desc: "我们会先理解你的生活方式、预算和目标，再给出适合项目的专业建议。" },
-    ],
+    items_zh: adminDefaultContentSeedText.zh.coreValues,
     image_url: "/images/heroes/hero-process.webp",
     status: "published",
     sort_order: 40,
@@ -766,12 +771,7 @@ const aboutSections = [
     content_en: "A dedicated in-house team of professionals with coordinated project delivery.",
     content_zh: "由设计、项目管理、木工和专业施工人员组成的协作团队。",
     items_en: teamHighlights.map(({ title, desc }) => ({ title, desc })),
-    items_zh: [
-      { title: "专业木工团队", desc: "负责定制柜、衣柜、电视柜、储物和木作细节。" },
-      { title: "设计顾问", desc: "把需求转化为空间布局、风格方向和实用设计方案。" },
-      { title: "项目经理", desc: "协调准证、材料、工种和现场品质检查。" },
-      { title: "艺术涂料施工人员", desc: "接受 Remmers 艺术涂料施工培训，负责特色墙和高级墙面效果。" },
-    ],
+    items_zh: adminDefaultContentSeedText.zh.teamHighlights,
     image_url: "/images/heroes/hero-services.webp",
     status: "published",
     sort_order: 50,
@@ -784,14 +784,7 @@ const aboutSections = [
     content_en: "From a small residential renovation team to a full-service design-and-build company serving Kuala Lumpur and Selangor.",
     content_zh: "从住宅装修团队，发展为覆盖吉隆坡与雪兰莪的一站式设计施工公司。",
     items_en: companyMilestones,
-    items_zh: [
-      { year: "2015", title: "公司成立", desc: "FLASH CAST SDN. BHD. 于吉隆坡成立，初期专注住宅装修项目。" },
-      { year: "2017", title: "拓展商业项目", desc: "开始承接商业空间、办公室装修和企业客户项目。" },
-      { year: "2019", title: "Remmers 合作", desc: "成为德国 Remmers 艺术墙面涂料在马来西亚的授权施工团队。" },
-      { year: "2021", title: "工业空间服务", desc: "新增仓储架与工业空间规划服务，支持制造与物流客户。" },
-      { year: "2023", title: "项目范围扩大", desc: "持续扩展住宅、商业和部分工业空间的装修服务范围。" },
-      { year: "2025", title: "区域覆盖扩大", desc: "服务范围覆盖吉隆坡与雪兰莪主要区域。" },
-    ],
+    items_zh: adminDefaultContentSeedText.zh.milestones,
     image_url: "/images/heroes/hero-about.webp",
     status: "published",
     sort_order: 60,
@@ -884,27 +877,23 @@ const patchOrInsertByKey = async (table: string, key: string, rows: DbRow[]) => 
       ...rows.flatMap((row) => Object.keys(omitReadonly(row))),
     ]),
   );
-  const { data, error } = await supabase!.from(table).select(fields.join(","));
-  if (error) throw error;
 
   let inserted = 0;
   let updated = 0;
-  const existingRows = (data || []) as DbRow[];
+  const existingRows = await fetchDefaultContentSeedRows(table, fields);
   const existingByKey = new Map(existingRows.map((row) => [String(row[key]), row]));
 
   for (const row of rows) {
     const existing = existingByKey.get(String(row[key]));
     if (!existing) {
-      const { error: insertError } = await supabase!.from(table).insert(omitReadonly(row));
-      if (insertError) throw insertError;
+      await insertDefaultContentSeedRow(table, omitReadonly(row));
       inserted += 1;
       continue;
     }
 
     const patch = buildBlankPatch(existing, row);
     if (Object.keys(patch).length) {
-      const { error: updateError } = await supabase!.from(table).update(patch).eq("id", existing.id);
-      if (updateError) throw updateError;
+      await updateDefaultContentSeedRow(table, existing.id, patch);
       updated += 1;
     }
   }
@@ -913,35 +902,25 @@ const patchOrInsertByKey = async (table: string, key: string, rows: DbRow[]) => 
 };
 
 const insertIfGroupEmpty = async (table: string, rows: DbRow[], filter?: { key: string; value: string }) => {
-  let query = supabase!.from(table).select("id", { count: "exact", head: true });
-  if (filter) query = query.eq(filter.key, filter.value);
-  const { count, error } = await query;
-  if (error) throw error;
+  const count = await countDefaultContentSeedRows(table, filter);
   if (count && count > 0) return { inserted: 0, updated: 0 };
-  const { error: insertError } = await supabase!.from(table).insert(rows.map(omitReadonly));
-  if (insertError) throw insertError;
+  await insertDefaultContentSeedRows(table, rows.map(omitReadonly));
   return { inserted: rows.length, updated: 0 };
 };
 
 const seedProjectImages = async () => {
-  const { data: projects, error } = await supabase!.from("projects").select("id,slug");
-  if (error) throw error;
+  const projects = await fetchDefaultContentProjects();
   let inserted = 0;
 
-  for (const project of (projects || []) as Array<{ id: string; slug: string }>) {
+  for (const project of projects) {
     const defaults = projectImageRowsBySlug[project.slug];
     if (!defaults?.length) continue;
-    const { count, error: countError } = await supabase!
-      .from("project_images")
-      .select("id", { count: "exact", head: true })
-      .eq("project_id", project.id);
-    if (countError) throw countError;
+    const count = await countDefaultContentProjectImages(project.id);
     if (count && count > 0) continue;
 
-    const { error: insertError } = await supabase!.from("project_images").insert(
+    await insertDefaultContentProjectImages(
       defaults.map((image) => ({ ...image, project_id: project.id })),
     );
-    if (insertError) throw insertError;
     inserted += defaults.length;
   }
 
@@ -949,18 +928,15 @@ const seedProjectImages = async () => {
 };
 
 const seedSiteSettings = async () => {
-  const { data, error } = await supabase!.from("site_settings").select("*").eq("id", "default").maybeSingle();
-  if (error) throw error;
+  const data = await fetchDefaultSiteSettings();
   if (!data) {
-    const { error: insertError } = await supabase!.from("site_settings").insert({ id: "default", ...fallbackSiteSettings });
-    if (insertError) throw insertError;
+    await insertDefaultSiteSettings(fallbackSiteSettings);
     return { inserted: 1, updated: 0 };
   }
 
   const patch = buildBlankPatch(data, fallbackSiteSettings);
   if (Object.keys(patch).length) {
-    const { error: updateError } = await supabase!.from("site_settings").update(patch).eq("id", "default");
-    if (updateError) throw updateError;
+    await updateDefaultSiteSettings(patch);
     return { inserted: 0, updated: 1 };
   }
   return { inserted: 0, updated: 0 };
@@ -970,15 +946,15 @@ let seedPromise: Promise<SeedSummary> | null = null;
 
 const formatSeedError = (error: unknown) => {
   const record = error as { code?: string; message?: string; hint?: string; details?: string };
-  const message = record?.message || (error instanceof Error ? error.message : String(error));
+  const message = typeof record?.message === "string" ? record.message : "";
   if (record?.code === "PGRST205" && message.includes("site_pages")) {
     return "数据库还没有 site_pages 表，请先执行迁移 supabase/migrations/202605290004_site_pages.sql，然后再回到后台同步默认内容。";
   }
-  return [message, record?.hint, record?.details].filter(Boolean).join(" ");
+  return formatUserFacingError([message, record?.hint, record?.details].filter(Boolean).join(" "), "zh");
 };
 
 export async function ensureAdminDefaultContent(): Promise<SeedSummary> {
-  if (!isSupabaseConfigured || !supabase) return { status: "done", inserted: 0, updated: 0 };
+  if (!hasDefaultContentDatabaseClient()) return { status: "done", inserted: 0, updated: 0 };
 
   if (seedPromise) return seedPromise;
 

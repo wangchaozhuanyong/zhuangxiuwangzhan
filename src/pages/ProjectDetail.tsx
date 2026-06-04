@@ -16,6 +16,7 @@ import { isHtmlText, stripHtml } from "@/lib/text";
 import { sanitizeHtml } from "@/lib/sanitizeHtml";
 import { translateDisplayText, translateProjectType } from "@/i18n/displayLabels";
 import { buildQuotePath, quoteProjectTypeFromProjectType } from "@/lib/quoteContext";
+import { projectDetailPageText } from "@/i18n/projectDetailPageText";
 
 const typeToService: Record<string, { en: string; zh: string; slug: string }> = {
   Residential: { en: "Interior Renovation", zh: "室内装修", slug: "renovation" },
@@ -26,147 +27,14 @@ const typeToService: Record<string, { en: string; zh: string; slug: string }> = 
   Office: { en: "Office Renovation", zh: "办公室装修", slug: "office-renovation" },
 };
 
-const copy = {
-  en: {
-    notFound: "Project Not Found",
-    viewAll: "View All Projects",
-    breadcrumbHome: "Home",
-    breadcrumbProjects: "Projects",
-    metaSuffix: "FLASH CAST Renovation",
-    metaDescription: (type: string, location: string, need: string) => `${type} renovation project reference in ${location} by FLASH CAST: ${need}`,
-    metaKeywords: (type: string, location: string, title: string) => `${type} renovation ${location}, ${title}, renovation project Malaysia`,
-    allProjects: "All Projects",
-    summaryLabel: "Project Summary:",
-    summary: (title: string, type: string, location: string, duration: string, scope: string[]) =>
-      `${title} is a ${type.toLowerCase()} renovation project reference by FLASH CAST SDN. BHD. in ${location}, Malaysia. The listed scope includes ${scope.slice(0, 3).join(", ")}, and more.`,
-    overview: "Project Overview",
-    clientRequirements: "Client's Requirements",
-    solution: "Our Solution & Highlights",
-    gallery: "Project Gallery",
-    testimonialBy: (location: string) => `Client, ${location}`,
-    resultTitle: "Project Result",
-    resultIntro: (type: string, location: string, duration: string, scopeCount: number, materialCount: number) =>
-      `This ${type.toLowerCase()} project page outlines the renovation scope in ${location}, with ${scopeCount} work items and ${materialCount} selected material categories.`,
-    satisfied: "The client feedback shown above is linked to this published project record.",
-    similarPrompt: "Looking for a similar project? Explore our",
-    serviceWord: "service.",
-    details: "Project Details",
-    type: "Type",
-    location: "Location",
-    duration: "Duration",
-    scopeItems: "Scope Items",
-    items: "items",
-    scope: "Scope of Work",
-    materials: "Materials Used",
-    similarTitle: "Want Something Similar?",
-    similarText: "Get a free consultation and quotation for your project.",
-    quote: "Get a Free Quote",
-    whatsapp: "WhatsApp Us",
-    relatedService: "Related Service",
-    moreProjects: "More Projects",
-    internalServices: "Services",
-    internalMaterials: "Materials",
-    internalBlog: "Blog",
-    internalFaq: "FAQ",
-    internalContact: "Contact",
-    imageLabel: "Image",
-  },
-  zh: {
-    notFound: "案例不存在",
-    viewAll: "查看全部案例",
-    breadcrumbHome: "首页",
-    breadcrumbProjects: "装修案例",
-    metaSuffix: "FLASH CAST 装修案例",
-    metaDescription: (type: string, location: string, need: string) => `FLASH CAST 在 ${location} 的 ${type} 装修项目参考：${need}`,
-    metaKeywords: (type: string, location: string, title: string) => `${location} ${type} 装修案例, ${title}, 马来西亚装修公司`,
-    allProjects: "全部案例",
-    summaryLabel: "项目摘要：",
-    summary: (title: string, type: string, location: string, duration: string, scope: string[]) =>
-      `${title} 是 FLASH CAST SDN. BHD. 在 ${location} 发布的 ${type} 项目参考，施工内容包括 ${scope.slice(0, 3).join("、")} 等。`,
-    overview: "项目概览",
-    clientRequirements: "客户需求",
-    solution: "解决方案与项目亮点",
-    gallery: "项目图片",
-    testimonialBy: (location: string) => `${location} 客户`,
-    resultTitle: "项目成果",
-    resultIntro: (type: string, location: string, duration: string, scopeCount: number, materialCount: number) =>
-      `这个位于 ${location} 的 ${type} 项目页面说明了装修范围，共涵盖 ${scopeCount} 项施工内容，并使用 ${materialCount} 类材料。`,
-    satisfied: "上方客户反馈来自该已发布项目记录。",
-    similarPrompt: "想做类似项目？可以先了解我们的",
-    serviceWord: "服务。",
-    details: "项目资料",
-    type: "类型",
-    location: "地区",
-    duration: "工期",
-    scopeItems: "施工项目",
-    items: "项",
-    scope: "施工内容",
-    materials: "使用材料",
-    similarTitle: "想做类似装修？",
-    similarText: "联系我们获取免费咨询和项目报价。",
-    quote: "获取免费报价",
-    whatsapp: "WhatsApp 联系",
-    relatedService: "相关服务",
-    moreProjects: "更多案例",
-    internalServices: "服务项目",
-    internalMaterials: "材料库",
-    internalBlog: "装修博客",
-    internalFaq: "常见问题",
-    internalContact: "联系我们",
-    imageLabel: "图片",
-  },
-};
-
-const zhCopy = {
-  notFound: "案例不存在",
-  viewAll: "查看全部案例",
-  breadcrumbHome: "首页",
-  breadcrumbProjects: "装修案例",
-  metaSuffix: "FLASH CAST 装修案例",
-  metaDescription: (type: string, location: string, need: string) => `FLASH CAST 在 ${location} 的 ${type} 装修项目参考：${stripHtml(need)}`,
-  metaKeywords: (type: string, location: string, title: string) => `${location} ${type} 装修案例, ${title}, 马来西亚装修公司`,
-  allProjects: "全部案例",
-  summaryLabel: "项目摘要：",
-  summary: (title: string, type: string, location: string, duration: string, scope: string[]) =>
-    `${title} 是 FLASH CAST SDN. BHD. 在 ${location} 发布的 ${type} 项目参考，施工内容包括 ${scope.slice(0, 3).join("、")} 等。`,
-  overview: "项目概览",
-  clientRequirements: "客户需求",
-  solution: "解决方案与项目亮点",
-  gallery: "项目图片",
-  testimonialBy: (location: string) => `${location} 客户`,
-  resultTitle: "项目成果",
-  resultIntro: (type: string, location: string, duration: string, scopeCount: number, materialCount: number) =>
-    `这个位于 ${location} 的 ${type} 项目页面说明了装修范围，共涵盖 ${scopeCount} 项施工内容，并使用 ${materialCount} 类材料。`,
-  satisfied: "上方客户反馈来自该已发布项目记录。",
-  similarPrompt: "想做类似项目？可以先了解我们的",
-  serviceWord: "服务。",
-  details: "项目资料",
-  type: "类型",
-  location: "地区",
-  duration: "工期",
-  scopeItems: "施工项目",
-  items: "项",
-  scope: "施工内容",
-  materials: "使用材料",
-  similarTitle: "想做类似装修？",
-  similarText: "联系我们获取免费咨询和项目报价。",
-  quote: "获取免费报价",
-  whatsapp: "WhatsApp 联系",
-  relatedService: "相关服务",
-  moreProjects: "更多案例",
-  internalServices: "服务项目",
-  internalMaterials: "材料库",
-  internalBlog: "装修博客",
-  internalFaq: "常见问题",
-  internalContact: "联系我们",
-  imageLabel: "图片",
-};
+const PROJECT_GALLERY_IMAGE_WIDTHS = [360, 560, 720, 900];
+const RELATED_PROJECT_IMAGE_WIDTHS = [360, 560, 720];
 
 const ProjectDetail = () => {
   const { slug } = useParams<{ slug: string }>();
   const { language } = useLanguage();
   const settings = useSiteSettings();
-  const t = language === "zh" ? zhCopy : copy.en;
+  const t = projectDetailPageText[language];
   const fallbackProject = projectsData.find((item) => item.slug === slug);
   const { data: publishedProject, isPending: projectPending } = usePublishedProjectBySlug(slug, language);
   const { data: publishedProjects = [] } = usePublishedProjectSummaries(language);
@@ -180,8 +48,8 @@ const ProjectDetail = () => {
     return (
       <PublicLoadingState
         label="FLASH CAST"
-        title={language === "zh" ? "正在准备案例内容" : "Loading project"}
-        description={language === "zh" ? "案例图片和文字正在载入，马上就好。" : "Project images and details are loading."}
+        title={t.loadingTitle}
+        description={t.loadingDescription}
       />
     );
   }
@@ -191,7 +59,7 @@ const ProjectDetail = () => {
       <main className="pt-site-header section-padding text-center">
         <PageMeta
           title={t.notFound}
-          description={language === "zh" ? "这个装修案例页面暂时不存在，请返回案例列表查看已发布内容。" : "This renovation project page is not available. Please return to the project list."}
+          description={t.notFoundDescription}
           canonicalPath="/projects"
           noIndex
         />
@@ -298,7 +166,7 @@ const ProjectDetail = () => {
                 <div className="grid grid-cols-2 gap-3 mb-8">
                   {project.images.map((img: string, index: number) => (
                     <div key={img || index} className="aspect-[4/3] overflow-hidden rounded-card bg-muted img-zoom">
-                      <SmartImage src={img} alt={translateDisplayText(project.imageAlts?.[index] || `${project.title} - ${t.imageLabel} ${index + 1}`, language)} loading="lazy" width={800} height={600} className="w-full h-full object-cover hover:scale-105 transition-transform duration-500" />
+                      <SmartImage src={img} alt={translateDisplayText(project.imageAlts?.[index] || `${project.title} - ${t.imageLabel} ${index + 1}`, language)} loading="lazy" width={800} height={600} sizes="(max-width: 768px) 46vw, 390px" candidateWidths={PROJECT_GALLERY_IMAGE_WIDTHS} quality={72} className="w-full h-full object-cover hover:scale-105 transition-transform duration-500" />
                     </div>
                   ))}
                 </div>
@@ -419,7 +287,7 @@ const ProjectDetail = () => {
               <Reveal key={item.id} delay={index * 80} direction="none">
                 <Link to={`/projects/${item.slug}`} className="card-equal group luxury-card hover-lift">
                   <div className="aspect-[4/3] overflow-hidden img-zoom">
-                    <SmartImage src={item.images[0] || item.thumbnail} alt={item.imageAlts?.[0] || item.thumbnailAlt || item.title} loading="lazy" width={600} height={450} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                    <SmartImage src={item.images[0] || item.thumbnail} alt={item.imageAlts?.[0] || item.thumbnailAlt || item.title} loading="lazy" width={600} height={450} sizes="(max-width: 640px) 92vw, 30vw" candidateWidths={RELATED_PROJECT_IMAGE_WIDTHS} quality={72} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
                   </div>
                   <div className="card-equal-body p-4">
                     <span className="text-limit-1 text-accent text-xs font-medium uppercase tracking-wider">{translateProjectType(item.type, language)}</span>

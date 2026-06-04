@@ -1,5 +1,11 @@
 import * as React from "react";
 import { isLocalImageSrc, preferWebpSrc, toLocalStaticImageSrc } from "@/lib/imageUrl";
+import {
+  buildLocalResponsiveSrcSet,
+  isLocalResponsiveImageCandidate,
+  normalizeLocalResponsiveImageWidths,
+  toLocalResponsiveImageSrc,
+} from "@/lib/localResponsiveImage";
 import { buildSupabaseSrcSet, isSupabasePublicObjectUrl, toSupabaseRenderImageUrl } from "@/lib/supabaseImage";
 import { cn } from "@/lib/utils";
 
@@ -44,17 +50,27 @@ export function SmartImage({
   const localSrc = !isSupabase && isLocalImageSrc(normalizedSrc) ? preferWebpSrc(normalizedSrc) : normalizedSrc;
 
   const resolvedSizes = sizes ?? DEFAULT_SIZES;
-  const widths =
+  const widths: number[] =
     candidateWidths ??
     (width
       ? [width, Math.min(width * 2, 2400)]
       : [480, 768, 1024, 1440]);
+  const fallbackWidth = width ?? widths[0] ?? 480;
 
-  const srcSet = isSupabase ? buildSupabaseSrcSet(src, widths, { height, quality, resize }) : undefined;
+  const localResponsiveWidths =
+    !isSupabase && candidateWidths && isLocalResponsiveImageCandidate(localSrc)
+      ? normalizeLocalResponsiveImageWidths(widths)
+      : [];
+  const localResponsiveSrcSet = localResponsiveWidths.length
+    ? buildLocalResponsiveSrcSet(localSrc, localResponsiveWidths)
+    : undefined;
+  const srcSet = isSupabase ? buildSupabaseSrcSet(src, widths, { height, quality, resize }) : localResponsiveSrcSet;
   const resolvedSrc = isSupabase
-    ? toSupabaseRenderImageUrl(src, { width: width ?? widths[0], height, quality, resize })
+    ? toSupabaseRenderImageUrl(src, { width: fallbackWidth, height, quality, resize })
+    : localResponsiveWidths.length
+      ? toLocalResponsiveImageSrc(localSrc, localResponsiveWidths[0] ?? fallbackWidth)
     : localSrc;
-  const resolvedFetchPriority: NativeFetchPriority = fetchPriority ?? (loading === "eager" ? "high" : "low");
+  const resolvedFetchPriority: NativeFetchPriority = fetchPriority ?? (loading === "eager" ? "high" : "auto");
   const fetchPriorityAttr = { fetchpriority: resolvedFetchPriority } as { fetchpriority: NativeFetchPriority };
 
   return (

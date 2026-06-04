@@ -3,16 +3,22 @@ import { Link } from "react-router-dom";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { isSupabaseConfigured } from "@/lib/supabase";
-import { useAdminMaterials, type AdminMaterialRow } from "@/lib/adminQueries";
+import { useAdminMaterials, type AdminMaterialRow } from "@/lib/adminBusinessContentQueries";
 import AdminPageHeader from "@/components/admin/AdminPageHeader";
 import AdminDataTable, { type AdminDataTableColumn } from "@/components/admin/AdminDataTable";
 import AdminListPager from "@/components/admin/AdminListPager";
 import AdminStatusBadge from "@/components/admin/AdminStatusBadge";
 import AdminEmptyState from "@/components/admin/AdminEmptyState";
 import SmartImage from "@/components/SmartImage";
-import { publishStatusOptions } from "@/lib/adminLocale";
+import { adminMaterialListText } from "@/i18n/adminMaterialListText";
+import { getAdminLang, publishStatusOptions } from "@/lib/adminLocale";
+import { formatUserFacingError } from "@/lib/userFacingText";
+
+type AdminMaterialListTextKey = keyof typeof adminMaterialListText;
 
 export default function AdminMaterialList() {
+  const language = getAdminLang();
+  const A = (key: AdminMaterialListTextKey) => adminMaterialListText[key][language];
   const [status, setStatus] = useState<string>("all");
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(0);
@@ -21,7 +27,7 @@ export default function AdminMaterialList() {
   const rows = data?.rows ?? [];
   const total = data?.count ?? 0;
   const pageSize = data?.pageSize ?? 30;
-  const errorMessage = error instanceof Error ? error.message : error ? String(error) : "";
+  const errorMessage = error ? formatUserFacingError(error, language) : "";
 
   useEffect(() => {
     setPage(0);
@@ -30,7 +36,7 @@ export default function AdminMaterialList() {
   const columns: AdminDataTableColumn<AdminMaterialRow>[] = [
     {
       key: "material",
-      header: "材料",
+      header: A("materialHeader"),
       cell: (row) => {
         const title = row.title_zh || row.title_en || row.slug;
         return (
@@ -50,7 +56,7 @@ export default function AdminMaterialList() {
     },
     {
       key: "meta",
-      header: "分类",
+      header: A("categoryHeader"),
       cell: (row) => (
         <div className="text-xs text-muted-foreground">
           <div>{row.category || "-"}</div>
@@ -61,19 +67,19 @@ export default function AdminMaterialList() {
     },
     {
       key: "status",
-      header: "状态",
+      header: A("statusHeader"),
       className: "w-[120px]",
       cell: (row) => <AdminStatusBadge status={row.status || "draft"} />,
     },
     {
       key: "sort",
-      header: "排序",
+      header: A("sortHeader"),
       className: "w-[100px]",
       cell: (row) => <span className="tabular-nums text-sm text-muted-foreground">{row.sort_order ?? 0}</span>,
     },
     {
       key: "updated",
-      header: "更新",
+      header: A("updatedHeader"),
       className: "w-[180px]",
       cell: (row) => (
         <span className="text-xs text-muted-foreground">
@@ -86,29 +92,29 @@ export default function AdminMaterialList() {
   return (
     <>
       <AdminPageHeader
-        title="材料库"
-        description="管理材料分类、图片、详情、推荐搭配与 SEO。保存后前台材料库与详情会同步更新。"
-        helpText="这里主要管材料条目的图片、分类、详情和发布状态。"
+        title={A("title")}
+        description={A("description")}
+        helpText={A("helpText")}
         actions={
-          <div className="flex flex-wrap gap-2">
+          <div data-admin-mobile-actions className="flex flex-wrap gap-2">
             <Button variant="outline" onClick={() => void refetch()} disabled={!isSupabaseConfigured || isFetching}>
-              {isFetching ? "刷新中..." : "刷新"}
+              {isFetching ? A("refreshing") : A("refresh")}
             </Button>
             <Button asChild>
-              <Link to="/admin/materials/new">新建材料</Link>
+              <Link to="/admin/materials/new">{A("newMaterial")}</Link>
             </Button>
           </div>
         }
       />
 
-      <div className="mb-4 grid gap-3 md:grid-cols-[1fr_220px]">
-        <Input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="搜索标题、链接标识、分类、类型..." />
+      <div data-admin-filter-bar className="mb-4 grid gap-3 md:grid-cols-[1fr_220px]">
+        <Input value={search} onChange={(e) => setSearch(e.target.value)} placeholder={A("searchPlaceholder")} />
         <select
           value={status}
           onChange={(e) => setStatus(e.target.value)}
-          className="flex h-10 rounded-md border border-input bg-background px-3 py-2 text-sm"
+          className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
         >
-          <option value="all">全部状态</option>
+          <option value="all">{A("allStatuses")}</option>
           {publishStatusOptions().map(({ value, label }) => (
             <option key={value} value={value}>
               {label}
@@ -125,17 +131,17 @@ export default function AdminMaterialList() {
         rowKey={(r) => r.id}
         empty={
           <AdminEmptyState
-            title="暂无材料"
-            description="先新建一条材料并发布，前台材料页才会显示。"
+            title={A("emptyTitle")}
+            description={A("emptyDescription")}
             action={
               <Button asChild>
-                <Link to="/admin/materials/new">新建材料</Link>
+                <Link to="/admin/materials/new">{A("newMaterial")}</Link>
               </Button>
             }
           />
         }
       />
-      <AdminListPager page={page} pageSize={pageSize} total={total} isFetching={isFetching} itemLabel="条材料" onPageChange={setPage} />
+      <AdminListPager page={page} pageSize={pageSize} total={total} isFetching={isFetching} itemLabel={A("itemLabel")} onPageChange={setPage} />
     </>
   );
 }

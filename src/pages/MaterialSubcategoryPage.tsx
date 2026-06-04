@@ -5,60 +5,25 @@ import { ArrowRight } from "lucide-react";
 import HeroBanner from "@/components/blocks/HeroBanner";
 import SectionHeader from "@/components/blocks/SectionHeader";
 import CTABanner from "@/components/blocks/CTABanner";
-import { materialsData } from "@/data/materials";
 import { usePublishedMaterials } from "@/hooks/usePublishedContent";
 import { useLanguage } from "@/i18n/LanguageContext";
 import Reveal from "@/components/Reveal";
 import SmartImage from "@/components/SmartImage";
 import PageMeta from "@/components/PageMeta";
+import PublicLoadingState from "@/components/blocks/PublicLoadingState";
 import { JsonLdBreadcrumb } from "@/components/JsonLd";
 import { translateDisplayText, translateMaterialCategory, translateMaterialSubcategory, translateSpaceLabel } from "@/i18n/displayLabels";
+import { mergeMaterialCategoriesWithFallback } from "@/lib/materialCatalog";
+import { materialSubcategoryPageText } from "@/i18n/materialSubcategoryPageText";
 
-const copy = {
-  en: {
-    notFound: "Subcategory Not Found",
-    viewAll: "View All Materials",
-    breadcrumbHome: "Home",
-    breadcrumbMaterials: "Materials",
-    metaDescription: (description: string, name: string) => `${description} Browse ${name.toLowerCase()} for your renovation project in Kuala Lumpur.`,
-    metaKeywords: (name: string, category: string) => `${name} KL, ${name.toLowerCase()} Malaysia, ${category.toLowerCase()} renovation`,
-    color: "Color:",
-    suitable: "Suitable:",
-    comingSoon: "Products coming soon for this category.",
-    products: (name: string) => `${name} Options`,
-    enquireText: (name: string) => `Contact us to enquire about ${name.toLowerCase()} options.`,
-    view: "View",
-    quote: "Request a Quote",
-    interested: (name: string) => `Interested in ${name}?`,
-    ctaText: "Contact us to request samples, check availability, or get a quotation for your project.",
-    whatsapp: "WhatsApp Us",
-  },
-  zh: {
-    notFound: "子分类不存在",
-    viewAll: "查看全部材料",
-    breadcrumbHome: "首页",
-    breadcrumbMaterials: "材料库",
-    metaDescription: (description: string, name: string) => `${description} 浏览 ${name} 材料选项，适用于吉隆坡装修项目。`,
-    metaKeywords: (name: string, category: string) => `${name} 吉隆坡, ${name} 马来西亚, ${category} 装修材料`,
-    color: "颜色：",
-    suitable: "适合：",
-    comingSoon: "此分类的产品即将更新。",
-    products: (name: string) => `${name} 材料选项`,
-    enquireText: (name: string) => `欢迎联系我们咨询 ${name} 材料选项。`,
-    view: "查看",
-    quote: "索取报价",
-    interested: (name: string) => `对 ${name} 感兴趣？`,
-    ctaText: "联系我们索取样板、确认供应情况，或获取项目报价。",
-    whatsapp: "WhatsApp 联系",
-  },
-};
+
 
 const MaterialSubcategoryPage = () => {
   const { categorySlug, subcategorySlug } = useParams<{ categorySlug: string; subcategorySlug: string }>();
   const { language } = useLanguage();
-  const t = copy[language];
-  const { data: publishedCategories } = usePublishedMaterials(language);
-  const categories = publishedCategories?.length ? publishedCategories : materialsData;
+  const t = materialSubcategoryPageText[language];
+  const { data: publishedCategories, isPending: materialsPending } = usePublishedMaterials(language);
+  const categories = mergeMaterialCategoriesWithFallback(publishedCategories);
 
   const category = categories.find((item) => item.slug === categorySlug);
   const subcategory = category?.subcategories.find((item) => item.slug === subcategorySlug);
@@ -66,6 +31,16 @@ const MaterialSubcategoryPage = () => {
   const displayCategoryName = category ? translateMaterialCategory(category.name, language) : "";
   const displaySubcategoryName = subcategory ? translateMaterialSubcategory(subcategory.name, language) : "";
   const displaySubcategoryDescription = subcategory ? translateDisplayText(subcategory.description, language) : "";
+
+  if (materialsPending && (!category || !subcategory)) {
+    return (
+      <PublicLoadingState
+        label="FLASH CAST"
+        title={t.loadingTitle}
+        description={t.loadingDescription}
+      />
+    );
+  }
 
   if (!category || !subcategory) {
     return (
@@ -84,7 +59,7 @@ const MaterialSubcategoryPage = () => {
   return (
     <main className="pt-site-header">
       <PageMeta
-        title={`${displaySubcategoryName} | ${displayCategoryName} | FLASH CAST`}
+        title={t.metaTitle(displaySubcategoryName, displayCategoryName)}
         description={t.metaDescription(displaySubcategoryDescription, displaySubcategoryName)}
         keywords={t.metaKeywords(displaySubcategoryName, displayCategoryName)}
         canonicalPath={`/materials/category/${category.slug}/${subcategory.slug}`}

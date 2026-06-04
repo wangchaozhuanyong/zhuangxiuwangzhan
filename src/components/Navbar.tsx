@@ -1,11 +1,12 @@
 import { useCallback, useEffect, useRef, useState, type MouseEvent } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { ArrowRight, BookOpen, ChevronDown, FileText, FolderOpen, GitBranch, ChevronRight, Globe, HelpCircle, Home, Info, Layers, LucideIcon, Mail, Menu, Phone, Wrench, X } from "lucide-react";
 import WhatsAppIcon from "@/components/WhatsAppIcon";
 import { Button } from "@/components/ui/button";
 import { useLanguage } from "@/i18n/LanguageContext";
+import { navbarText } from "@/i18n/navbarText";
 import { useT } from "@/i18n/useT";
-import { stripLanguagePrefix, switchLanguagePath, withLanguagePrefix } from "@/i18n/routes";
+import { getLanguageFromPath, stripLanguagePrefix, switchLanguagePath, withLanguagePrefix, type Language } from "@/i18n/routes";
 import LocalizedLink from "@/components/LocalizedLink";
 import { useSiteSettings } from "@/hooks/useSiteSettings";
 import SmartImage from "@/components/SmartImage";
@@ -42,7 +43,6 @@ const routePreloaders: Partial<Record<string, () => Promise<unknown>>> = {
   "/about": () => import("@/pages/About"),
   "/services": () => import("@/pages/Services"),
   "/materials": () => import("@/pages/Materials"),
-  "/projects": () => import("@/pages/Projects"),
   "/process": () => import("@/pages/Process"),
   "/blog": () => import("@/pages/Blog"),
   "/contact": () => import("@/pages/Contact"),
@@ -66,6 +66,77 @@ const isActivePath = (pathname: string, itemPath: string) => {
   return pathname.endsWith(itemPath) || pathname.includes(`${itemPath}/`);
 };
 
+const getOppositeLanguage = (language: Language): Language => (language === "en" ? "zh" : "en");
+
+const languageLabel = {
+  en: { short: "EN", long: "EN" },
+  zh: { short: "中", long: "中文" },
+} satisfies Record<Language, { short: string; long: string }>;
+
+interface LanguageSwitchLinkProps {
+  variant: "desktop" | "mobile";
+  className: string;
+}
+
+const LanguageSwitchLink = ({ variant, className }: LanguageSwitchLinkProps) => {
+  const location = useLocation();
+  const { language } = useLanguage();
+  const routeLanguage = getLanguageFromPath(location.pathname);
+  const currentLanguage = routeLanguage ?? language;
+  const text = navbarText[currentLanguage];
+  const [optimisticLanguage, setOptimisticLanguage] = useState<Language | null>(null);
+  const displayedLanguage = optimisticLanguage ?? currentLanguage;
+  const nextLanguage = getOppositeLanguage(currentLanguage);
+  const displayedTargetLanguage = getOppositeLanguage(displayedLanguage);
+  const targetPath = switchLanguagePath(location.pathname, nextLanguage, location.search, location.hash);
+  const ariaLabel = text.switchLanguage;
+
+  useEffect(() => {
+    setOptimisticLanguage(null);
+  }, [location.pathname, location.search, location.hash]);
+
+  const previewNextState = () => {
+    setOptimisticLanguage(nextLanguage);
+  };
+
+  if (variant === "mobile") {
+    return (
+      <Link
+        to={targetPath}
+        onPointerDown={previewNextState}
+        onClick={previewNextState}
+        className={className}
+        aria-label={ariaLabel}
+      >
+        <span className="site-header__mobile-language-label" aria-hidden="true">
+          <span className="site-header__mobile-language-text">{languageLabel[displayedTargetLanguage].short}</span>
+        </span>
+      </Link>
+    );
+  }
+
+  return (
+    <Link
+      to={targetPath}
+      onPointerDown={previewNextState}
+      onClick={previewNextState}
+      className={className}
+      aria-label={ariaLabel}
+    >
+      <Globe className="h-3.5 w-3.5" aria-hidden="true" />
+      <span className="site-header__language-option" data-active={displayedLanguage === "en" ? "true" : "false"}>
+        {languageLabel.en.long}
+      </span>
+      <span className="site-header__language-divider" aria-hidden="true">
+        |
+      </span>
+      <span className="site-header__language-option site-header__language-option--zh" data-active={displayedLanguage === "zh" ? "true" : "false"}>
+        {languageLabel.zh.long}
+      </span>
+    </Link>
+  );
+};
+
 const Navbar = () => {
   const { menuOpen: isOpen, setMenuOpen: setIsOpen } = usePublicChrome();
   const [scrolled, setScrolled] = useState(false);
@@ -76,11 +147,11 @@ const Navbar = () => {
   const mobileMenuRef = useRef<HTMLDivElement>(null);
   const desktopMoreRef = useRef<HTMLDivElement>(null);
   const mobileCloseTimerRef = useRef<number | null>(null);
-  const languageClickTimerRef = useRef<number | null>(null);
   const location = useLocation();
   const navigate = useNavigate();
-  const { language, setLanguage } = useLanguage();
+  const { language } = useLanguage();
   const t = useT();
+  const navText = navbarText[language];
   const settings = useSiteSettings();
   const primaryLogoSrc = addCacheBuster(settings.logo_url || "", settings.updated_at);
   const brandText = settings.company_name || "FLASH CAST SDN. BHD.";
@@ -97,12 +168,6 @@ const Navbar = () => {
     if (mobileCloseTimerRef.current === null) return;
     window.clearTimeout(mobileCloseTimerRef.current);
     mobileCloseTimerRef.current = null;
-  }, []);
-
-  const clearLanguageClickTimer = useCallback(() => {
-    if (languageClickTimerRef.current === null) return;
-    window.clearTimeout(languageClickTimerRef.current);
-    languageClickTimerRef.current = null;
   }, []);
 
   const openMobileMenu = useCallback(() => {
@@ -134,20 +199,8 @@ const Navbar = () => {
   useEffect(() => {
     return () => {
       clearMobileCloseTimer();
-      clearLanguageClickTimer();
     };
-  }, [clearLanguageClickTimer, clearMobileCloseTimer]);
-
-  const changeLanguage = () => {
-    if (languageClickTimerRef.current !== null) return;
-
-    const nextLanguage = language === "en" ? "zh" : "en";
-    languageClickTimerRef.current = window.setTimeout(() => {
-      languageClickTimerRef.current = null;
-    }, 360);
-    setLanguage(nextLanguage);
-    navigate(switchLanguagePath(location.pathname, nextLanguage, location.search, location.hash));
-  };
+  }, [clearMobileCloseTimer]);
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 20);
@@ -210,11 +263,10 @@ const Navbar = () => {
     };
   }, [desktopMoreOpen]);
 
-  const languageAriaLabel = language === "zh" ? "切换语言" : "Switch language";
-  const menuAriaLabel = language === "zh" ? "打开导航菜单" : "Toggle navigation menu";
-  const callAriaLabel = language === "zh" ? "拨打电话" : "Call FLASH CAST";
+  const menuAriaLabel = navText.openMenu;
+  const callAriaLabel = navText.callAria;
 
-  const moreLabel = language === "zh" ? "更多" : "More";
+  const moreLabel = navText.more;
   const desktopMoreActive = secondaryDesktopNavItems.some((item) => isActivePath(location.pathname, item.path));
 
   const handleNavClick = (event: MouseEvent<HTMLAnchorElement>, itemPath: string) => {
@@ -284,7 +336,7 @@ const Navbar = () => {
             <span className="sr-only">{brandText}</span>
           </LocalizedLink>
 
-          <nav className="site-header__desktop-nav hidden min-w-0 flex-1 items-center justify-center min-[1180px]:flex" aria-label={language === "zh" ? "主导航" : "Main navigation"}>
+          <nav className="site-header__desktop-nav hidden min-w-0 flex-1 items-center justify-center min-[1180px]:flex" aria-label={navText.mainNav}>
             {primaryDesktopNavItems.map((item) => {
               const isActive = isActivePath(location.pathname, item.path);
               return (
@@ -342,21 +394,15 @@ const Navbar = () => {
           </nav>
 
           <div className="site-header__desktop-actions hidden shrink-0 items-center min-[1180px]:flex">
-            <button
-              onClick={changeLanguage}
+            <LanguageSwitchLink
+              variant="desktop"
               className="site-header__control site-header__language-control"
-              aria-label={languageAriaLabel}
-            >
-              <Globe className="h-3.5 w-3.5" />
-              <span className={language === "en" ? "font-semibold text-foreground" : ""}>EN</span>
-              <span className="text-muted-foreground/40">|</span>
-              <span className={language === "zh" ? "font-semibold text-foreground" : ""}>中文</span>
-            </button>
+            />
             <Button variant="ghost" size="icon" className="site-header__icon-action" asChild>
               <a
                 href={settings.phone_href}
                 aria-label={callAriaLabel}
-                title={language === "zh" ? "电话" : "Call"}
+                title={navText.phoneTitle}
                 onClick={() => trackCtaClick("phone", "desktop_header", { destination: "phone" })}
               >
                 <Phone className="h-4 w-4" />
@@ -367,8 +413,8 @@ const Navbar = () => {
                 href={settings.whatsapp_url()}
                 target="_blank"
                 rel="noopener noreferrer"
-                aria-label={language === "zh" ? "WhatsApp 咨询" : "WhatsApp Us"}
-                title={language === "zh" ? "WhatsApp 咨询" : "WhatsApp Us"}
+                aria-label={navText.whatsappAria}
+                title={navText.whatsappAria}
                 onClick={() => trackCtaClick("whatsapp", "desktop_header", { destination: "whatsapp" })}
               >
                 <WhatsAppIcon className="h-4 w-4 text-whatsapp" />
@@ -387,13 +433,10 @@ const Navbar = () => {
 
           <div className="ml-auto flex shrink-0 items-center min-[1180px]:hidden">
             <div className="site-header__mobile-controls flex h-11 items-center gap-1 rounded-full border border-white/75 bg-white/85 p-0.5 shadow-[0_16px_42px_-32px_rgba(21,18,14,0.55)] backdrop-blur-md">
-              <button
-                onClick={changeLanguage}
-                className="site-header__mobile-button flex h-10 w-10 items-center justify-center rounded-full text-[11px] font-bold text-foreground transition-colors active:bg-muted/70"
-                aria-label={languageAriaLabel}
-              >
-                <span>{language === "en" ? "EN" : "中"}</span>
-              </button>
+              <LanguageSwitchLink
+                variant="mobile"
+                className="site-header__mobile-button site-header__mobile-language-button flex h-10 w-10 items-center justify-center rounded-full text-[11px] font-bold text-foreground"
+              />
               <a
                 href={settings.phone_href}
                 className="site-header__mobile-button flex h-10 w-10 items-center justify-center rounded-full text-foreground transition-colors active:bg-muted/70"
@@ -427,7 +470,7 @@ const Navbar = () => {
           data-mobile-menu-initial-focus
         >
           <div className="mobile-navigation__body">
-            <nav className="mobile-navigation__list" aria-label={language === "zh" ? "导航" : "Navigation"}>
+            <nav className="mobile-navigation__list" aria-label={navText.mobileNav}>
               {navItems.map((item, index) => {
                 const isActive = isActivePath(location.pathname, item.path);
                 const Icon = item.icon;
@@ -482,7 +525,7 @@ const Navbar = () => {
                 onClick={() => trackCtaClick("phone", "mobile_menu", { destination: "phone" })}
               >
                 <Phone className="h-4 w-4" />
-                <span>{language === "zh" ? "电话咨询" : "Call Us"}</span>
+                <span>{navText.callConsult}</span>
               </a>
               <a
                 href={settings.whatsapp_url()}

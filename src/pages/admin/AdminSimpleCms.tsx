@@ -1,6 +1,6 @@
-﻿import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
-import { useAdminSimpleCmsRows } from "@/lib/adminQueries";
+import { useAdminSimpleCmsRows } from "@/lib/adminCmsQueries";
 import AdminPageHeader from "@/components/admin/AdminPageHeader";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -8,125 +8,126 @@ import { Textarea } from "@/components/ui/textarea";
 import { isSupabaseConfigured } from "@/lib/supabase";
 import AdminImageUpload, { getAdminImagePreviewVariant } from "./AdminImageUpload";
 import { adminConfirm } from "@/components/admin/AdminConfirmProvider";
-import { adminStatusLabel, publishStatusOptions } from "@/lib/adminLocale";
+import { adminSimpleCmsConfigText, adminSimpleCmsText } from "@/i18n/adminSimpleCmsText";
+import { adminStatusLabel, getAdminLang, publishStatusOptions } from "@/lib/adminLocale";
 import { AdminFieldLabel } from "@/components/admin/AdminHelpTip";
 import { TextListEditor } from "@/components/admin/StructuredArrayEditors";
 import { getAdminFieldHelp, getAdminTableHelp } from "@/lib/adminHelpText";
 import { archiveOrDeleteAdminRecord, formatAdminMutationError, saveAdminRecord } from "@/lib/adminMutation";
 import { useUnsavedChangesWarning } from "@/hooks/useUnsavedChangesWarning";
+import { formatUserFacingError } from "@/lib/userFacingText";
 
 type ModuleKey = "site_pages" | "home_sections" | "faqs" | "before_after_items" | "brand_partners";
-type Field = { key: string; label: string; type?: "text" | "textarea" | "image" | "number" | "select" | "textList" };
+type Field = { key: string; type?: "text" | "textarea" | "image" | "number" | "select" | "textList" };
+type AdminSimpleCmsTextKey = keyof typeof adminSimpleCmsText.en;
 
-const configs: Record<ModuleKey, { title: string; table: ModuleKey; labelField: string; fields: Field[] }> = {
+const configs: Record<ModuleKey, { table: ModuleKey; labelField: string; fields: Field[] }> = {
   site_pages: {
-    title: "页面内容",
     table: "site_pages",
     labelField: "page_key",
     fields: [
-      { key: "page_key", label: "页面标识" },
-      { key: "path", label: "前台路径" },
-      { key: "title_zh", label: "中文页面/首页标题" },
-      { key: "title_en", label: "英文页面/首页标题" },
-      { key: "subtitle_zh", label: "中文首页副标题" },
-      { key: "subtitle_en", label: "英文首页副标题" },
-      { key: "description_zh", label: "中文首页/页面说明", type: "textarea" },
-      { key: "description_en", label: "英文首页/页面说明", type: "textarea" },
-      { key: "content_zh", label: "中文正文/补充说明", type: "textarea" },
-      { key: "content_en", label: "英文正文/补充说明", type: "textarea" },
-      { key: "cta_title_zh", label: "中文行动引导标题" },
-      { key: "cta_title_en", label: "英文行动引导标题" },
-      { key: "cta_description_zh", label: "中文行动引导说明", type: "textarea" },
-      { key: "cta_description_en", label: "英文行动引导说明", type: "textarea" },
-      { key: "image_url", label: "页面图片（首页首屏视频不使用）", type: "image" },
-      { key: "alt_zh", label: "中文图片说明" },
-      { key: "alt_en", label: "英文图片说明" },
-      { key: "seo_title_zh", label: "中文 SEO 标题" },
-      { key: "seo_title_en", label: "英文 SEO 标题" },
-      { key: "seo_description_zh", label: "中文 SEO 描述", type: "textarea" },
-      { key: "seo_description_en", label: "英文 SEO 描述", type: "textarea" },
-      { key: "seo_keywords_zh", label: "中文 SEO 关键词" },
-      { key: "seo_keywords_en", label: "英文 SEO 关键词" },
-      { key: "items_zh", label: "中文扩展列表", type: "textList" },
-      { key: "items_en", label: "英文扩展列表", type: "textList" },
+      { key: "page_key" },
+      { key: "path" },
+      { key: "title_zh" },
+      { key: "title_en" },
+      { key: "subtitle_zh" },
+      { key: "subtitle_en" },
+      { key: "description_zh", type: "textarea" },
+      { key: "description_en", type: "textarea" },
+      { key: "content_zh", type: "textarea" },
+      { key: "content_en", type: "textarea" },
+      { key: "cta_title_zh" },
+      { key: "cta_title_en" },
+      { key: "cta_description_zh", type: "textarea" },
+      { key: "cta_description_en", type: "textarea" },
+      { key: "image_url", type: "image" },
+      { key: "alt_zh" },
+      { key: "alt_en" },
+      { key: "seo_title_zh" },
+      { key: "seo_title_en" },
+      { key: "seo_description_zh", type: "textarea" },
+      { key: "seo_description_en", type: "textarea" },
+      { key: "seo_keywords_zh" },
+      { key: "seo_keywords_en" },
+      { key: "items_zh", type: "textList" },
+      { key: "items_en", type: "textList" },
     ],
   },
   home_sections: {
-    title: "首页模块",
     table: "home_sections",
     labelField: "section_key",
     fields: [
-      { key: "section_key", label: "模块标识（section_key）" },
-      { key: "title_zh", label: "中文标题" },
-      { key: "title_en", label: "英文标题" },
-      { key: "subtitle_zh", label: "中文副标题", type: "textarea" },
-      { key: "subtitle_en", label: "英文副标题", type: "textarea" },
-      { key: "content_zh", label: "中文内容", type: "textarea" },
-      { key: "content_en", label: "英文内容", type: "textarea" },
-      { key: "image_url", label: "图片", type: "image" },
-      { key: "button_label_zh", label: "中文按钮" },
-      { key: "button_label_en", label: "英文按钮" },
-      { key: "button_url", label: "按钮链接" },
+      { key: "section_key" },
+      { key: "title_zh" },
+      { key: "title_en" },
+      { key: "subtitle_zh", type: "textarea" },
+      { key: "subtitle_en", type: "textarea" },
+      { key: "content_zh", type: "textarea" },
+      { key: "content_en", type: "textarea" },
+      { key: "image_url", type: "image" },
+      { key: "button_label_zh" },
+      { key: "button_label_en" },
+      { key: "button_url" },
     ],
   },
   faqs: {
-    title: "常见问题",
     table: "faqs",
     labelField: "question_zh",
     fields: [
-      { key: "page_key", label: "页面标识" },
-      { key: "question_zh", label: "中文问题", type: "textarea" },
-      { key: "question_en", label: "英文问题", type: "textarea" },
-      { key: "answer_zh", label: "中文答案", type: "textarea" },
-      { key: "answer_en", label: "英文答案", type: "textarea" },
+      { key: "page_key" },
+      { key: "question_zh", type: "textarea" },
+      { key: "question_en", type: "textarea" },
+      { key: "answer_zh", type: "textarea" },
+      { key: "answer_en", type: "textarea" },
     ],
   },
   before_after_items: {
-    title: "改造前后",
     table: "before_after_items",
     labelField: "title_zh",
     fields: [
-      { key: "title_zh", label: "中文标题" },
-      { key: "title_en", label: "英文标题" },
-      { key: "location", label: "地点" },
-      { key: "description_zh", label: "中文描述", type: "textarea" },
-      { key: "description_en", label: "英文描述", type: "textarea" },
-      { key: "before_image_url", label: "改造前图片", type: "image" },
-      { key: "after_image_url", label: "改造后图片", type: "image" },
-      { key: "alt_zh", label: "中文图片说明" },
-      { key: "alt_en", label: "英文图片说明" },
+      { key: "title_zh" },
+      { key: "title_en" },
+      { key: "location" },
+      { key: "description_zh", type: "textarea" },
+      { key: "description_en", type: "textarea" },
+      { key: "before_image_url", type: "image" },
+      { key: "after_image_url", type: "image" },
+      { key: "alt_zh" },
+      { key: "alt_en" },
     ],
   },
   brand_partners: {
-    title: "品牌合作",
     table: "brand_partners",
     labelField: "name",
     fields: [
-      { key: "name", label: "名称" },
-      { key: "logo_url", label: "品牌图标", type: "image" },
-      { key: "website_url", label: "官网链接" },
+      { key: "name" },
+      { key: "logo_url", type: "image" },
+      { key: "website_url" },
     ],
   },
 };
 
 const emptyRecord = { status: "published", sort_order: 0 };
 
-const formatAdminError = (module: ModuleKey, error: unknown) => {
+const formatAdminError = (module: ModuleKey, error: unknown, language: "en" | "zh") => {
   const record = error as { code?: string; message?: string; hint?: string; details?: string };
-  const message = record?.message || (error instanceof Error ? error.message : String(error));
+  const message = typeof record?.message === "string" ? record.message : "";
   if (module === "site_pages" && (record?.code === "PGRST205" || message.includes("site_pages"))) {
-    return "数据库里还没有 `site_pages` 表，页面内容暂时不能保存。请先执行迁移 `supabase/migrations/202605290004_site_pages.sql`。";
+    return adminSimpleCmsText[language].sitePagesMissingTable;
   }
-  return [message, record?.hint, record?.details].filter(Boolean).join(" ");
+  return formatUserFacingError([message, record?.hint, record?.details].filter(Boolean).join(" "), language);
 };
 
 const AdminSimpleCms = ({ module }: { module: ModuleKey }) => {
+  const language = getAdminLang();
+  const t = adminSimpleCmsText[language];
+  const configText = adminSimpleCmsConfigText[language][module];
   const config = configs[module];
   const queryClient = useQueryClient();
   const { data: rows = [], error, refetch } = useAdminSimpleCmsRows(config.table);
   const [record, setRecord] = useState<Record<string, any>>(emptyRecord);
   const recordDirtyRef = useRef(false);
-  const [message, setMessage] = useState(error instanceof Error ? error.message : error ? String(error) : "");
+  const [message, setMessage] = useState(error ? formatAdminError(module, error, language) : "");
   const [saving, setSaving] = useState(false);
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const [recordDirty, setRecordDirty] = useState(false);
@@ -134,13 +135,21 @@ const AdminSimpleCms = ({ module }: { module: ModuleKey }) => {
   useUnsavedChangesWarning(recordDirty && !saving);
 
   useEffect(() => {
-    if (error) setMessage(formatAdminError(module, error));
-  }, [error, module]);
+    if (error) setMessage(formatAdminError(module, error, language));
+  }, [error, language, module]);
 
   const title = useMemo(() => {
     const current = record as Record<string, unknown>;
-    return String(current[config.labelField] || current["title_en"] || current["name"] || "新建");
-  }, [config.labelField, record]);
+    return String(current[config.labelField] || current["title_en"] || current["name"] || t.newRecord);
+  }, [config.labelField, record, t.newRecord]);
+
+  const fieldLabel = (fieldKey: string) => {
+    const labels = configText.fields as Record<string, string>;
+    return labels[fieldKey] || fieldKey;
+  };
+
+  const formatText = (key: AdminSimpleCmsTextKey, values: Record<string, string>) =>
+    Object.entries(values).reduce((text, [name, value]) => text.replaceAll(`{${name}}`, value), t[key]);
 
   const markRecordDirty = () => {
     recordDirtyRef.current = true;
@@ -155,9 +164,9 @@ const AdminSimpleCms = ({ module }: { module: ModuleKey }) => {
   const confirmDiscardUnsaved = async () => {
     if (!recordDirtyRef.current) return true;
     return adminConfirm({
-      title: "当前内容还没有保存",
-      description: "继续切换会丢失这些修改。建议先保存；如果确定不需要这次修改，可以继续切换。",
-      confirmLabel: "继续切换",
+      title: t.discardTitle,
+      description: t.discardDescription,
+      confirmLabel: t.discardConfirm,
     });
   };
 
@@ -208,7 +217,7 @@ const AdminSimpleCms = ({ module }: { module: ModuleKey }) => {
         queryClient,
         invalidate: "admin-content",
       });
-      setMessage("已保存。");
+      setMessage(t.saved);
       markRecordClean();
       setRecord(data || emptyRecord);
       void queryClient.invalidateQueries({ queryKey: ["admin", config.table, "rows"] });
@@ -223,9 +232,9 @@ const AdminSimpleCms = ({ module }: { module: ModuleKey }) => {
   const remove = async (id: string) => {
     if (!isSupabaseConfigured || deletingId) return;
     const confirmed = await adminConfirm({
-      title: "确认归档/删除内容？",
-      description: "重要内容会优先归档，避免误删。操作后前台展示可能会变化，请确认当前内容不再需要展示。",
-      confirmLabel: "归档/删除",
+      title: t.archiveTitle,
+      description: t.archiveDescription,
+      confirmLabel: t.archiveConfirm,
     });
     if (!confirmed) return;
     const current = rows.find((row) => String(row.id) === String(id)) as Record<string, any> | undefined;
@@ -238,7 +247,7 @@ const AdminSimpleCms = ({ module }: { module: ModuleKey }) => {
         queryClient,
         softDelete: true,
       });
-      setMessage("已归档/删除。");
+      setMessage(t.archived);
       void queryClient.invalidateQueries({ queryKey: ["admin", config.table, "rows"] });
       await refetch();
     } catch (deleteError) {
@@ -260,12 +269,12 @@ const AdminSimpleCms = ({ module }: { module: ModuleKey }) => {
       return (
         <div key={field.key} className="md:col-span-2">
           <TextListEditor
-            label={field.label}
+            label={fieldLabel(field.key)}
             helpText={getAdminFieldHelp(field.key)}
             value={listValue}
             onChange={(nextValue) => update(field.key, nextValue)}
-            placeholder="填写一条前台会显示的列表内容"
-            addLabel="添加一条"
+            placeholder={t.textListPlaceholder}
+            addLabel={t.textListAdd}
           />
           <p className="mt-1 text-xs text-muted-foreground">{getAdminFieldHelp(field.key)}</p>
         </div>
@@ -274,7 +283,7 @@ const AdminSimpleCms = ({ module }: { module: ModuleKey }) => {
 
     return (
       <div key={field.key} className={field.type === "textarea" || field.type === "image" ? "md:col-span-2" : ""}>
-        <AdminFieldLabel label={field.label} help={getAdminFieldHelp(field.key)} />
+        <AdminFieldLabel label={fieldLabel(field.key)} help={getAdminFieldHelp(field.key)} />
         {field.type === "textarea" ? (
           <Textarea rows={4} value={value} onChange={(event) => update(field.key, event.target.value)} />
         ) : field.type === "image" ? (
@@ -299,28 +308,26 @@ const AdminSimpleCms = ({ module }: { module: ModuleKey }) => {
   return (
     <div>
       <AdminPageHeader
-        title={config.title}
+        title={configText.title}
         description={getAdminTableHelp(config.table)}
-        helpText="这里是轻量内容管理区，适合快速改标题、图片、列表和基础文案。"
+        helpText={t.pageHelpText}
       />
 
-      <div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_420px] xl:items-start">
-        <section className="rounded-xl border border-border bg-card p-6">
+      <div className="grid min-w-0 gap-5 sm:gap-6 xl:grid-cols-[minmax(0,1fr)_420px] xl:items-start">
+        <section className="min-w-0 rounded-xl border border-border bg-card p-4 sm:p-6">
           <div className="mb-5 flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
             <div className="min-w-0">
-              <p className="text-xs font-semibold uppercase tracking-normal text-muted-foreground">当前编辑</p>
-              <h2 className="mt-1 font-display text-2xl font-bold">{String(title)}</h2>
+              <p className="text-xs font-semibold uppercase tracking-normal text-muted-foreground">{t.currentEditing}</p>
+              <h2 className="mt-1 font-display text-xl font-bold sm:text-2xl">{String(title)}</h2>
             </div>
-            <Button type="button" variant="outline" onClick={() => void resetRecord()}>
-              新建
-            </Button>
+            <Button type="button" variant="outline" onClick={() => void resetRecord()}>{t.newRecord}</Button>
           </div>
           {message && <p className="mb-4 rounded-lg bg-muted p-3 text-sm">{message}</p>}
-          {recordDirty && <p className="mb-4 rounded-lg bg-amber-50 p-3 text-sm text-amber-800">当前内容有未保存修改，离开或切换前请先保存。</p>}
+          {recordDirty && <p className="mb-4 rounded-lg bg-amber-50 p-3 text-sm text-amber-800">{t.unsavedWarning}</p>}
           <div className="grid gap-4 md:grid-cols-2">
             {config.fields.map(renderField)}
             <div>
-              <AdminFieldLabel label="状态" help={getAdminFieldHelp("status")} />
+              <AdminFieldLabel label={t.status} help={getAdminFieldHelp("status")} />
               <select
                 value={record.status || "published"}
                 onChange={(event) => update("status", event.target.value)}
@@ -334,46 +341,46 @@ const AdminSimpleCms = ({ module }: { module: ModuleKey }) => {
               </select>
             </div>
             <div>
-              <AdminFieldLabel label="排序" help={getAdminFieldHelp("sort_order")} />
+              <AdminFieldLabel label={t.sort} help={getAdminFieldHelp("sort_order")} />
               <Input type="number" value={record.sort_order || 0} onChange={(event) => update("sort_order", Number(event.target.value || 0))} />
             </div>
           </div>
           <Button type="button" className="mt-5 w-full" disabled={saving} onClick={() => void save()}>
-            {saving ? "保存中..." : "保存"}
+            {saving ? t.saving : t.save}
           </Button>
         </section>
 
-        <section className="rounded-xl border border-border bg-card p-6">
+        <section className="min-w-0 rounded-xl border border-border bg-card p-4 sm:p-6">
           <div className="mb-5">
-            <h1 className="font-display text-2xl font-bold">{config.title}</h1>
+            <h1 className="font-display text-xl font-bold sm:text-2xl">{configText.title}</h1>
             <p className="mt-1 text-sm text-muted-foreground">{getAdminTableHelp(config.table)}</p>
           </div>
           <div className="space-y-3">
             {rows.map((row) => {
               const rowRecord = row as Record<string, unknown>;
               const rowId = String(rowRecord.id || "");
-              const label = rowRecord[config.labelField] || rowRecord["title_en"] || rowRecord["name"] || "未命名内容";
+              const label = rowRecord[config.labelField] || rowRecord["title_en"] || rowRecord["name"] || t.unnamed;
               const status = String(rowRecord.status || "-");
               const sortOrder = rowRecord.sort_order || 0;
 
               return (
-                <div key={rowId} className="flex flex-col gap-3 rounded-lg border border-border p-4 md:flex-row md:items-center md:justify-between xl:flex-col xl:items-stretch">
-                  <div>
+                <div key={rowId} className="flex min-w-0 flex-col gap-3 rounded-lg border border-border p-4 md:flex-row md:items-center md:justify-between xl:flex-col xl:items-stretch">
+                  <div className="min-w-0">
                     <p className="font-semibold">{String(label)}</p>
-                    <p className="text-xs text-muted-foreground">状态：{adminStatusLabel("default", status)} | 排序 {String(sortOrder)}</p>
+                    <p className="text-xs text-muted-foreground">{formatText("rowMeta", { status: adminStatusLabel("default", status), sort: String(sortOrder) })}</p>
                   </div>
-                  <div className="flex gap-2 xl:justify-end">
+                  <div data-admin-card-actions className="flex gap-2 xl:justify-end">
                     <Button type="button" variant="outline" size="sm" onClick={() => void loadRecord(row)}>
-                      编辑
+                      {t.edit}
                     </Button>
                     <Button type="button" variant="destructive" size="sm" disabled={deletingId === rowId} onClick={() => void remove(rowId)}>
-                      删除
+                      {t.delete}
                     </Button>
                   </div>
                 </div>
               );
             })}
-            {rows.length === 0 && <p className="rounded-lg border border-dashed border-border p-4 text-sm text-muted-foreground">暂无内容，左侧可以直接新建第一条。</p>}
+            {rows.length === 0 && <p className="rounded-lg border border-dashed border-border p-4 text-sm text-muted-foreground">{t.emptyList}</p>}
           </div>
         </section>
       </div>

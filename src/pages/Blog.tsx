@@ -12,13 +12,7 @@ import Reveal from "@/components/Reveal";
 import { translateBlogCategory, translateDisplayText, translateKeywordLabel } from "@/i18n/displayLabels";
 import { pageHeroImages, resolvePageHeroImage } from "@/lib/pageHeroImages";
 import { formatBlogDate, formatBlogReadTime } from "@/lib/blogMeta";
-
-const categories = [
-  { value: "All", en: "All", zh: "全部" },
-  { value: "Guides", en: "Guides", zh: "装修指南" },
-  { value: "Materials", en: "Materials", zh: "材料知识" },
-  { value: "Inspiration", en: "Inspiration", zh: "设计灵感" },
-];
+import { blogCategoryFilters, blogPageText } from "@/i18n/blogPageText";
 
 const normalizeCategory = (value: string) => value.trim().toLowerCase();
 const BLOG_PAGE_SIZE = 9;
@@ -26,7 +20,7 @@ const BLOG_PAGE_SIZE = 9;
 const matchesCategory = (postCategory: string, filter: string) => {
   if (filter === "All") return true;
 
-  const selectedCategory = categories.find((category) => category.value === filter);
+  const selectedCategory = blogCategoryFilters.find((category) => category.value === filter);
   const aliases = [
     filter,
     selectedCategory?.en,
@@ -56,7 +50,7 @@ const mergeWithFallbackCategories = (cmsPosts: typeof blogPosts, fallbackPosts: 
   const merged = [...cmsPosts];
   const existingSlugs = new Set(merged.map((post) => post.slug));
 
-  categories
+  blogCategoryFilters
     .filter((category) => category.value !== "All")
     .forEach((category) => {
       if (merged.some((post) => matchesCategory(post.category, category.value))) return;
@@ -73,48 +67,11 @@ const mergeWithFallbackCategories = (cmsPosts: typeof blogPosts, fallbackPosts: 
   return merged;
 };
 
-const copy = {
-  en: {
-    metaTitle: "Renovation Blog & Insights | Tips & Guides | FLASH CAST Kuala Lumpur",
-    metaDescription: "Renovation guides, material comparisons, design tips, and industry insights for homeowners and businesses in Kuala Lumpur and Malaysia by FLASH CAST.",
-    metaKeywords: "renovation blog Malaysia, interior design tips KL, renovation guide Kuala Lumpur",
-    breadcrumbHome: "Home",
-    breadcrumbBlog: "Blog",
-    heroAlt: "FLASH CAST renovation blog and design planning desk",
-    eyebrow: "Renovation Insights",
-    title: "Blog & Insights",
-    intro: "Renovation guides, material comparisons, design tips, and industry insights for homeowners and businesses in Malaysia.",
-    internalServices: "Services",
-    internalProjects: "Projects",
-    internalMaterials: "Materials",
-    internalFaq: "FAQ",
-    internalContact: "Contact",
-    internalQuote: "Get a Quote",
-    loadMore: "Load More Articles",
-  },
-  zh: {
-    metaTitle: "装修博客与指南 | 吉隆坡装修知识 | FLASH CAST",
-    metaDescription: "FLASH CAST 分享马来西亚装修预算、材料比较、设计灵感和施工注意事项，帮助吉隆坡与雪兰莪业主更好规划装修。",
-    metaKeywords: "马来西亚装修博客, 吉隆坡装修指南, 装修材料比较, 雪兰莪装修知识",
-    breadcrumbHome: "首页",
-    breadcrumbBlog: "装修博客",
-    heroAlt: "FLASH CAST 装修博客与设计规划",
-    eyebrow: "装修知识",
-    title: "装修博客与指南",
-    intro: "整理装修预算、材料比较、设计灵感和施工注意事项，帮助你更清楚规划马来西亚装修项目。",
-    internalServices: "服务项目",
-    internalProjects: "装修案例",
-    internalMaterials: "材料库",
-    internalFaq: "常见问题",
-    internalContact: "联系我们",
-    internalQuote: "免费报价",
-    loadMore: "查看更多文章",
-  },
-};
+
 
 const Blog = () => {
   const { language } = useLanguage();
-  const t = copy[language];
+  const t = blogPageText[language];
   const { data: pageContent } = usePublishedSitePage(language, "blog");
   const [filter, setFilter] = useState("All");
   const [visibleCount, setVisibleCount] = useState(BLOG_PAGE_SIZE);
@@ -160,7 +117,7 @@ const Blog = () => {
         <div className="container-narrow">
           <Reveal direction="none">
             <div className="subpage-filter-bar">
-              {categories.map((category) => (
+              {blogCategoryFilters.map((category) => (
                 <button
                   type="button"
                   key={category.value}

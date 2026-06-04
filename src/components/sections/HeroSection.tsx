@@ -3,27 +3,15 @@ import { ArrowRight, ChevronDown } from "lucide-react";
 import Link from "@/components/LocalizedLink";
 import WhatsAppIcon from "@/components/WhatsAppIcon";
 import { useLanguage } from "@/i18n/LanguageContext";
+import { homeSectionText } from "@/i18n/homeSectionsText";
 import { usePublishedHeroSlides } from "@/hooks/usePublishedContent";
 import { useSiteSettings } from "@/hooks/useSiteSettings";
 import { trackCtaClick } from "@/lib/analytics";
 import type { PublishedSitePage } from "@/lib/homeContentApi";
 
-const heroCopy = {
-  en: {
-    quote: "Get Free Quote",
-    whatsapp: "WhatsApp Us",
-    videoAlt:
-      "FLASH CAST premium renovation project film featuring interiors, materials, construction and handover",
-  },
-  zh: {
-    quote: "获取免费报价",
-    whatsapp: "WhatsApp 联系",
-    videoAlt: "FLASH CAST 装修项目视频，展示室内空间、材料质感、施工管理与完工交付",
-  },
-};
-
 type HeroSectionProps = {
   pageContent?: PublishedSitePage | null;
+  heroSlides?: any[];
 };
 
 type HeroMediaVariant = "desktop" | "tablet" | "mobile";
@@ -39,15 +27,18 @@ const getHeroMediaVariant = (): HeroMediaVariant => {
 
 const isExternalUrl = (url: string) => /^(https?:)?\/\//i.test(url) || url.startsWith("mailto:") || url.startsWith("tel:");
 
-const HeroSection = ({ pageContent }: HeroSectionProps) => {
+const HeroSection = ({ pageContent, heroSlides }: HeroSectionProps) => {
   const { language } = useLanguage();
   const settings = useSiteSettings();
-  const copy = heroCopy[language];
+  const copy = homeSectionText.hero[language];
+  const heroRef = useRef<HTMLElement | null>(null);
   const videoRef = useRef<HTMLVideoElement | null>(null);
+  const videoLoadStartedRef = useRef(false);
   const [videoLoaded, setVideoLoaded] = useState(false);
   const [shouldLoadVideo, setShouldLoadVideo] = useState(false);
   const [mediaVariant, setMediaVariant] = useState<HeroMediaVariant>(getHeroMediaVariant);
-  const { data: slides } = usePublishedHeroSlides(language);
+  const { data: fetchedSlides } = usePublishedHeroSlides(language, { enabled: heroSlides === undefined });
+  const slides = heroSlides === undefined ? fetchedSlides : heroSlides;
   const slide = slides?.[0] ?? null;
   const mediaVersion = "20260531-mobile-source-fix";
   const mediaByVariant = {
@@ -73,13 +64,11 @@ const HeroSection = ({ pageContent }: HeroSectionProps) => {
   const primaryIsExternal = isExternalUrl(primaryUrl);
   const heroTitle =
     slide?.title ||
-    (language === "zh" ? "马来西亚专业装修与空间改造公司" : "Renovation & Interior Fit-Out in Malaysia");
+    copy.fallbackTitle;
   const heroDescription =
     slide?.excerpt ||
     pageContent?.description ||
-    (language === "zh"
-      ? "从现场测量、空间规划、材料建议到施工交付，FLASH CAST 让住宅与商业装修更清楚、更安心。"
-      : "FLASH CAST manages measurement, planning, material advice, renovation works, and handover follow-up for residential and commercial projects.");
+    copy.fallbackDescription;
   const heroButtonClass =
     "home-hero-action group relative inline-flex h-11 w-full max-w-[260px] items-center justify-center gap-2 overflow-hidden rounded-full border px-5 text-sm font-semibold leading-none shadow-[0_18px_50px_-28px_rgba(0,0,0,0.85)] backdrop-blur-md transition duration-300 ease-out hover:-translate-y-0.5 active:translate-y-0 sm:w-auto sm:min-w-[148px] sm:max-w-[210px]";
   const primaryButtonClass = `${heroButtonClass} home-hero-action-primary border-white/70 bg-white/[0.92] text-[#17130e] hover:bg-white`;
@@ -93,6 +82,13 @@ const HeroSection = ({ pageContent }: HeroSectionProps) => {
   const handleScrollCue = useCallback(() => {
     trackCtaClick("scroll_cue", "home_hero");
     document.getElementById("trust")?.scrollIntoView({ behavior: "smooth", block: "start" });
+  }, []);
+
+  const isHeroStillRelevant = useCallback(() => {
+    const hero = heroRef.current;
+    if (!hero || typeof window === "undefined") return true;
+    const rect = hero.getBoundingClientRect();
+    return rect.top < window.innerHeight * 0.85 && rect.bottom > window.innerHeight * 0.35;
   }, []);
 
   const markHeroVideoReady = useCallback(() => {
@@ -118,7 +114,14 @@ const HeroSection = ({ pageContent }: HeroSectionProps) => {
 
     let timeoutId: number | undefined;
     let idleId: number | undefined;
-    const startVideoLoad = () => setShouldLoadVideo(true);
+    const startVideoLoad = () => {
+      if (videoLoadStartedRef.current || !isHeroStillRelevant()) return;
+      videoLoadStartedRef.current = true;
+      setShouldLoadVideo(true);
+    };
+    const startVideoLoadWhenVisible = () => {
+      if (document.visibilityState === "visible") startVideoLoad();
+    };
     const scheduleVideoLoad = () => {
       timeoutId = window.setTimeout(() => {
         const requestIdle = window.requestIdleCallback;
@@ -135,13 +138,19 @@ const HeroSection = ({ pageContent }: HeroSectionProps) => {
     } else {
       window.addEventListener("load", scheduleVideoLoad, { once: true });
     }
+    window.addEventListener("scroll", startVideoLoad, { passive: true });
+    window.addEventListener("focus", startVideoLoadWhenVisible);
+    window.addEventListener("pageshow", startVideoLoadWhenVisible);
 
     return () => {
       window.removeEventListener("load", scheduleVideoLoad);
+      window.removeEventListener("scroll", startVideoLoad);
+      window.removeEventListener("focus", startVideoLoadWhenVisible);
+      window.removeEventListener("pageshow", startVideoLoadWhenVisible);
       if (timeoutId !== undefined) window.clearTimeout(timeoutId);
       if (idleId !== undefined && window.cancelIdleCallback) window.cancelIdleCallback(idleId);
     };
-  }, []);
+  }, [isHeroStillRelevant]);
 
   useEffect(() => {
     const mediaQueries = [
@@ -212,6 +221,7 @@ const HeroSection = ({ pageContent }: HeroSectionProps) => {
 
   return (
     <section
+      ref={heroRef}
       className="home-hero-section relative min-h-[100svh] overflow-hidden bg-surface-dark"
       aria-labelledby="home-hero-title"
     >
@@ -312,9 +322,9 @@ const HeroSection = ({ pageContent }: HeroSectionProps) => {
         type="button"
         className="home-hero-scroll-cue"
         onClick={handleScrollCue}
-        aria-label={language === "zh" ? "继续向下浏览" : "Scroll to next section"}
+        aria-label={copy.scrollAria}
       >
-        <span className="home-hero-scroll-cue__label">{language === "zh" ? "继续探索" : "Explore"}</span>
+        <span className="home-hero-scroll-cue__label">{copy.scrollLabel}</span>
         <span className="home-hero-scroll-cue__track" aria-hidden="true">
           <span className="home-hero-scroll-cue__runner" />
         </span>

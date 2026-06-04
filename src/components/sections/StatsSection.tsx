@@ -1,23 +1,10 @@
 import Reveal from "@/components/Reveal";
 import { ShieldCheck, Star, Clock, Users } from "lucide-react";
 import { useLanguage } from "@/i18n/LanguageContext";
+import { homeSectionText } from "@/i18n/homeSectionsText";
 import { useMemo } from "react";
 import { usePublishedHomeSection } from "@/hooks/usePublishedContent";
-
-const stats = {
-  en: [
-    { icon: Star, value: "Scope", label: "Clear Project Planning", desc: "Site condition, usage needs, materials, budget, and timeline are reviewed before quotation.", iconClass: "text-gold" },
-    { icon: Clock, value: "KL & Selangor", label: "Local Service Areas", desc: "Renovation enquiries are handled for Kuala Lumpur, Selangor, and nearby Klang Valley areas.", iconClass: "text-gold" },
-    { icon: Users, value: "Homes & Businesses", label: "Residential and Commercial", desc: "Support for home renovation, office fit-out, shop renovation, built-in furniture, and selected industrial spaces.", iconClass: "text-gold" },
-    { icon: ShieldCheck, value: "SSM", label: "Registered Company", desc: "Company registration and contact details are shown clearly for client verification.", iconClass: "text-gold" },
-  ],
-  zh: [
-    { icon: Star, value: "Scope", label: "清楚规划范围", desc: "报价前先了解现场情况、使用需求、材料、预算和时间安排。", iconClass: "text-gold" },
-    { icon: Clock, value: "KL & Selangor", label: "本地服务区域", desc: "主要处理 Kuala Lumpur、Selangor 和附近 Klang Valley 区域的装修咨询。", iconClass: "text-gold" },
-    { icon: Users, value: "住宅与商业", label: "住宅和商业项目", desc: "可按需求沟通住宅装修、办公室装修、店铺装修、定制柜体和部分工业空间。", iconClass: "text-gold" },
-    { icon: ShieldCheck, value: "SSM", label: "注册公司", desc: "网站清楚展示公司注册、地址和联系方式，方便客户核对。", iconClass: "text-gold" },
-  ],
-};
+import type { PublishedHomeSection } from "@/lib/homeContentApi";
 
 const iconMap: Record<string, any> = {
   star: Star,
@@ -28,13 +15,24 @@ const iconMap: Record<string, any> = {
   shield: ShieldCheck,
 };
 
-const StatsSection = () => {
+type StatsSectionProps = {
+  section?: PublishedHomeSection | null;
+};
+
+const StatsSection = ({ section: providedSection }: StatsSectionProps) => {
   const { language } = useLanguage();
-  const { data: section } = usePublishedHomeSection(language, "stats");
+  const { data: fetchedSection } = usePublishedHomeSection(language, "stats", { enabled: providedSection === undefined });
+  const section = providedSection === undefined ? fetchedSection : providedSection;
 
   const display = useMemo(() => {
     const items = Array.isArray(section?.items) ? section.items : [];
-    if (!items.length) return stats[language];
+    if (!items.length) {
+      return homeSectionText.stats[language].map((item) => ({
+        ...item,
+        icon: iconMap[item.icon] || Star,
+        iconClass: "text-gold",
+      }));
+    }
     return items.map((item: any) => {
       const key = String(item.icon || "").toLowerCase().replace(/\s+/g, "");
       const Icon = iconMap[key] || Star;

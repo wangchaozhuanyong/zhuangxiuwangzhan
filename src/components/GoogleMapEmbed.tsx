@@ -26,6 +26,9 @@ const copy = {
   },
 };
 
+const canUseIntersectionObserver = () =>
+  typeof window !== "undefined" && typeof window.IntersectionObserver === "function";
+
 const GoogleMapEmbed = ({ title, addressLabel, latitude, longitude, height = 380, className }: GoogleMapEmbedProps) => {
   const { language } = useLanguage();
   const t = copy[language];
@@ -39,6 +42,11 @@ const GoogleMapEmbed = ({ title, addressLabel, latitude, longitude, height = 380
   useEffect(() => {
     const node = containerRef.current;
     if (!node) return;
+
+    if (!canUseIntersectionObserver()) {
+      setShouldLoad(true);
+      return;
+    }
 
     const observer = new IntersectionObserver(
       ([entry]) => {

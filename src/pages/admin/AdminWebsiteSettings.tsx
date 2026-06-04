@@ -12,70 +12,48 @@ import { formatAdminMutationError, saveAdminRecord } from "@/lib/adminMutation";
 import { geocodeAddress } from "@/lib/geocodeApi";
 import AdminImageUpload, { getAdminImagePreviewVariant } from "./AdminImageUpload";
 import { getAdminLang } from "@/lib/adminLocale";
-
-const copy = {
-  en: {
-    title: "Website Settings",
-    description: "Manage company contact details, social links, logo URLs, and default SEO/GEO fallback content.",
-    company: "Company",
-    contact: "Contact",
-    media: "Brand Media",
-    seo: "Default SEO / GEO",
-    social: "Social Links",
-    save: "Save Settings",
-    saving: "Saving...",
-    saved: "Settings saved.",
-  },
-  zh: {
-    title: "网站基础设置",
-    description: "管理公司联系方式、社交媒体链接、品牌 Logo、浏览器标签图标和默认 SEO/GEO 兜底文案。",
-    company: "公司信息",
-    contact: "联系方式",
-    media: "品牌媒体",
-    seo: "默认 SEO / GEO",
-    social: "社交媒体",
-    save: "保存设置",
-    saving: "保存中...",
-    saved: "设置已保存。",
-  },
-};
+import { adminWebsiteSettingsFieldText, adminWebsiteSettingsText } from "@/i18n/adminWebsiteSettingsText";
+import { formatUserFacingError } from "@/lib/userFacingText";
 
 const mediaFields = new Set<keyof SiteSettings>(["logo_url", "favicon_url", "og_image_url"]);
 const coordinateFields = new Set<keyof SiteSettings>(["map_latitude", "map_longitude"]);
 
 const normalizeComparableText = (value?: string | null) => String(value || "").trim().replace(/\s+/g, " ");
+const formatText = (text: string, values: Record<string, string | number>) =>
+  Object.entries(values).reduce((current, [key, value]) => current.replaceAll(`{${key}}`, String(value)), text);
 
-const fields: Array<{ key: keyof SiteSettings; label: string; group: "company" | "contact" | "media" | "seo" | "social"; textarea?: boolean; help?: string }> = [
-  { key: "company_name", label: "公司名称", group: "company" },
-  { key: "brand_name", label: "品牌名称", group: "company" },
-  { key: "ssm_number", label: "SSM 注册编号", group: "company" },
-  { key: "email", label: "邮箱", group: "contact" },
-  { key: "phone_display", label: "显示电话", group: "contact" },
-  { key: "phone_e164", label: "电话（E.164 国际格式）", group: "contact" },
-  { key: "whatsapp_number", label: "WhatsApp 号码", group: "contact" },
-  { key: "address_zh", label: "中文地址", group: "contact", textarea: true, help: "中文地址会影响前台联系页、结构化数据和本地 GEO 信号，建议写完整到城市/州。" },
-  { key: "address_en", label: "英文地址", group: "contact", textarea: true },
-  { key: "short_address_zh", label: "中文短地址", group: "contact", help: "短地址适合页脚、CTA 和 AI 摘要快速识别服务地区。" },
-  { key: "short_address_en", label: "英文短地址", group: "contact" },
-  { key: "map_latitude", label: "地图纬度（Latitude）", group: "contact" },
-  { key: "map_longitude", label: "地图经度（Longitude）", group: "contact" },
-  { key: "logo_url", label: "品牌 Logo 地址", group: "media", help: "用于前台首页左上角、页眉、页脚等较大的品牌 Logo 展示。" },
-  { key: "favicon_url", label: "浏览器标签图标（favicon）地址", group: "media", help: "用于浏览器标签页、收藏夹、手机书签和后台侧边栏小图标；它不会替换首页左上角的大 Logo，显示很小是正常的。" },
-  { key: "og_image_url", label: "默认分享预览图地址", group: "media", help: "用于社交平台或搜索预览图，不建议用小图标。" },
-  { key: "facebook_url", label: "Facebook 链接", group: "social" },
-  { key: "instagram_url", label: "Instagram 链接", group: "social" },
-  { key: "tiktok_url", label: "TikTok 链接", group: "social" },
-  { key: "xiaohongshu_url", label: "小红书链接", group: "social" },
-  { key: "linkedin_url", label: "LinkedIn 链接", group: "social" },
-  { key: "default_seo_title_zh", label: "默认中文 SEO/GEO 标题", group: "seo", help: "全站兜底标题。建议包含吉隆坡、雪兰莪或巴生谷，以及装修/室内设计/定制家具等核心服务。" },
-  { key: "default_seo_title_en", label: "默认英文 SEO 标题", group: "seo" },
-  { key: "default_seo_description_zh", label: "默认中文 SEO/GEO 描述", group: "seo", textarea: true, help: "全站兜底描述。请写成自然中文，交代服务地区、服务类型、适合客户和咨询下一步。" },
-  { key: "default_seo_description_en", label: "默认英文 SEO 描述", group: "seo", textarea: true },
+const fields: Array<{ key: keyof SiteSettings; group: "company" | "contact" | "media" | "seo" | "social"; textarea?: boolean }> = [
+  { key: "company_name", group: "company" },
+  { key: "brand_name", group: "company" },
+  { key: "ssm_number", group: "company" },
+  { key: "email", group: "contact" },
+  { key: "phone_display", group: "contact" },
+  { key: "phone_e164", group: "contact" },
+  { key: "whatsapp_number", group: "contact" },
+  { key: "address_zh", group: "contact", textarea: true },
+  { key: "address_en", group: "contact", textarea: true },
+  { key: "short_address_zh", group: "contact" },
+  { key: "short_address_en", group: "contact" },
+  { key: "map_latitude", group: "contact" },
+  { key: "map_longitude", group: "contact" },
+  { key: "logo_url", group: "media" },
+  { key: "favicon_url", group: "media" },
+  { key: "og_image_url", group: "media" },
+  { key: "facebook_url", group: "social" },
+  { key: "instagram_url", group: "social" },
+  { key: "tiktok_url", group: "social" },
+  { key: "xiaohongshu_url", group: "social" },
+  { key: "linkedin_url", group: "social" },
+  { key: "default_seo_title_zh", group: "seo" },
+  { key: "default_seo_title_en", group: "seo" },
+  { key: "default_seo_description_zh", group: "seo", textarea: true },
+  { key: "default_seo_description_en", group: "seo", textarea: true },
 ];
 
 const AdminWebsiteSettings = () => {
   const lang = getAdminLang();
-  const t = copy[lang];
+  const t = adminWebsiteSettingsText[lang];
+  const fieldText = adminWebsiteSettingsFieldText[lang];
   const queryClient = useQueryClient();
   const { data: remoteSettings, isFetched } = useQuery({
     queryKey: ["site-settings"],
@@ -88,10 +66,6 @@ const AdminWebsiteSettings = () => {
   const [status, setStatus] = useState("");
   const [saving, setSaving] = useState(false);
   useUnsavedChangesWarning(dirty && !saving);
-  const coordinateHelp =
-    lang === "zh"
-      ? "修改地址并保存后，系统会自动更新地图坐标；如果定位不准，也可以手动覆盖。"
-      : "When the address changes, saving will auto-update map coordinates. You can still override them manually.";
 
   const updateField = (key: keyof SiteSettings, value: string) => {
     setSettings((current) => ({ ...current, [key]: value }));
@@ -122,11 +96,7 @@ const AdminWebsiteSettings = () => {
       let geocodeStatus: "updated" | "skipped" | "failed" = "skipped";
 
       if (shouldAutoGeocode && addressForGeocode) {
-        setStatus(
-          lang === "zh"
-            ? "正在根据新地址自动更新地图坐标..."
-            : "Updating map coordinates from the current address...",
-        );
+        setStatus(t.geocodeUpdating);
         try {
           const geocoded = await geocodeAddress(addressForGeocode);
           payload = {
@@ -144,12 +114,8 @@ const AdminWebsiteSettings = () => {
               map_longitude: "",
             };
           }
-          const message = error instanceof Error ? error.message : String(error || "");
-          setStatus(
-            lang === "zh"
-              ? `自动定位失败，仍会保存地址；旧坐标会先清空，前台地图会按地址文字显示。原因：${message}`
-              : `Automatic coordinate lookup failed; the address will still be saved and old coordinates will be cleared so the map falls back to the address. Reason: ${message}`,
-          );
+          const message = formatUserFacingError(error, lang);
+          setStatus(formatText(t.geocodeFailed, { message }));
         }
       }
 
@@ -166,9 +132,9 @@ const AdminWebsiteSettings = () => {
       const fresh = { ...fallbackSiteSettings, ...saved };
       applyRemote(fresh);
       if (geocodeStatus === "updated") {
-        setStatus(lang === "zh" ? "设置已保存，地图坐标已根据当前地址自动更新。" : "Settings saved. Map coordinates were updated automatically.");
+        setStatus(t.savedGeocodeUpdated);
       } else if (geocodeStatus === "failed") {
-        setStatus(lang === "zh" ? "设置已保存，但自动定位失败。旧坐标已清空，请检查地址是否完整，或手动填写经纬度。" : "Settings saved, but automatic coordinate lookup failed. Old coordinates were cleared. Please check the address or fill latitude/longitude manually.");
+        setStatus(t.savedGeocodeFailed);
       } else {
         setStatus(t.saved);
       }
@@ -180,18 +146,20 @@ const AdminWebsiteSettings = () => {
   };
 
   const renderGroup = (group: "company" | "contact" | "media" | "seo" | "social") => (
-    <section className="rounded-xl border border-border bg-card p-5">
+    <section className="rounded-xl border border-border bg-card p-4 sm:p-5">
       <h2 className="mb-4 font-display text-xl font-bold">{t[group]}</h2>
       {group === "seo" && (
         <div className="mb-4 rounded-lg bg-muted/40 p-3 text-sm text-muted-foreground">
-          <p className="font-medium text-foreground">中文默认 SEO/GEO 是全站兜底，不替代每个页面自己的 SEO。</p>
-          <p className="mt-1">建议写法：地区 + 核心服务 + 品牌。描述里要讲清服务范围，例如吉隆坡、雪兰莪、巴生谷，以及住宅装修、商业装修、厨房翻新、旧屋翻新和定制家具。</p>
+          <p className="font-medium text-foreground">{t.seoNoticeTitle}</p>
+          <p className="mt-1">{t.seoNoticeBody}</p>
         </div>
       )}
       <div className="grid gap-4 md:grid-cols-2">
-        {fields.filter((field) => field.group === group).map((field) => (
+        {fields.filter((field) => field.group === group).map((field) => {
+          const copy = fieldText[field.key as keyof typeof fieldText];
+          return (
           <div key={field.key} className={field.textarea ? "md:col-span-2" : ""}>
-            <label className="mb-1 block text-sm font-medium">{field.label}</label>
+            <label className="mb-1 block text-sm font-medium">{copy.label}</label>
             {field.textarea ? (
               <Textarea rows={3} value={settings[field.key] || ""} onChange={(event) => updateField(field.key, event.target.value)} />
             ) : mediaFields.has(field.key) ? (
@@ -209,10 +177,10 @@ const AdminWebsiteSettings = () => {
             ) : (
               <Input value={settings[field.key] || ""} onChange={(event) => updateField(field.key, event.target.value)} />
             )}
-            {field.help ? <p className="mt-1 text-xs text-muted-foreground">{field.help}</p> : null}
-            {coordinateFields.has(field.key) ? <p className="mt-1 text-xs text-muted-foreground">{coordinateHelp}</p> : null}
+            {"help" in copy && copy.help ? <p className="mt-1 text-xs text-muted-foreground">{copy.help}</p> : null}
+            {coordinateFields.has(field.key) ? <p className="mt-1 text-xs text-muted-foreground">{t.coordinateHelp}</p> : null}
           </div>
-        ))}
+        )})}
       </div>
     </section>
   );
@@ -222,16 +190,16 @@ const AdminWebsiteSettings = () => {
       <AdminPageHeader
         title={t.title}
         description={t.description}
-        helpText="这里管理公司联系方式、品牌图标、社交链接和默认 SEO/GEO。默认文案只负责兜底，重点页面仍要在对应内容编辑页单独写中文 SEO。"
+        helpText={t.pageHelp}
       />
 
-      <div className="flex flex-col gap-4 rounded-xl border border-border bg-card p-6 md:flex-row md:items-start md:justify-between">
-        <div>
-          <h1 className="font-display text-2xl font-bold">{t.title}</h1>
+      <div className="flex flex-col gap-4 rounded-xl border border-border bg-card p-4 md:flex-row md:items-start md:justify-between sm:p-6">
+        <div className="min-w-0">
+          <h1 className="font-display text-xl font-bold sm:text-2xl">{t.title}</h1>
           <p className="mt-2 text-sm text-muted-foreground">{t.description}</p>
           {status && <p className="mt-3 rounded-lg bg-muted p-3 text-sm">{status}</p>}
         </div>
-        <Button onClick={handleSave} disabled={saving}>{saving ? t.saving : t.save}</Button>
+        <Button className="w-full md:w-auto" onClick={handleSave} disabled={saving}>{saving ? t.saving : t.save}</Button>
       </div>
       {renderGroup("company")}
       {renderGroup("contact")}

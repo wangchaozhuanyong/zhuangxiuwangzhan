@@ -20,6 +20,7 @@ import {
   getPublishedAboutSection,
   getPublishedCtaBlock,
   getPublishedFaqs,
+  getPublishedHomeContentBundle,
   getPublishedHomeSection,
   getPublishedProcessSteps,
   getPublishedSitePage,
@@ -35,132 +36,154 @@ const queryDefaults = {
   refetchOnWindowFocus: false as const,
 };
 
-export function usePublishedServices(language: "en" | "zh") {
+type PublicQueryOptions = {
+  enabled?: boolean;
+};
+
+const isEnabled = (options?: PublicQueryOptions) => options?.enabled ?? true;
+const isSupabaseQueryEnabled = (options?: PublicQueryOptions) => isEnabled(options) && isSupabaseConfigured;
+
+export function usePublishedHomeContentBundle(language: "en" | "zh", options?: PublicQueryOptions) {
+  return useQuery({
+    queryKey: ["published", "home_bundle", language],
+    queryFn: () => getPublishedHomeContentBundle(language),
+    enabled: isEnabled(options),
+    ...queryDefaults,
+  });
+}
+
+export function usePublishedServices(language: "en" | "zh", options?: PublicQueryOptions) {
   return useQuery({
     queryKey: ["published", "services", language],
     queryFn: () => getPublishedServices(language),
+    enabled: isEnabled(options),
     ...queryDefaults,
   });
 }
 
-export function usePublishedServiceSummaries(language: "en" | "zh", limit?: number) {
+export function usePublishedServiceSummaries(language: "en" | "zh", limit?: number, options?: PublicQueryOptions) {
   return useQuery({
     queryKey: ["published", "service_summaries", language, limit ?? "all"],
     queryFn: () => getPublishedServiceSummaries(language, limit),
+    enabled: isEnabled(options),
     ...queryDefaults,
   });
 }
 
-export function usePublishedProjectSummaries(language: "en" | "zh", limit?: number) {
+export function usePublishedProjectSummaries(language: "en" | "zh", limit?: number, options?: PublicQueryOptions) {
   return useQuery({
     queryKey: ["published", "project_summaries", language, limit ?? "all"],
     queryFn: () => getPublishedProjectSummaries(language, limit),
+    enabled: isEnabled(options),
     ...queryDefaults,
   });
 }
 
-export function usePublishedMaterials(language: "en" | "zh") {
+export function usePublishedMaterials(language: "en" | "zh", options?: PublicQueryOptions) {
   return useQuery({
     queryKey: ["published", "materials", language],
     queryFn: () => getPublishedMaterials(language),
+    enabled: isEnabled(options),
     ...queryDefaults,
   });
 }
 
-export function usePublishedBlogPosts(language: "en" | "zh") {
+export function usePublishedBlogPosts(language: "en" | "zh", options?: PublicQueryOptions) {
   return useQuery({
     queryKey: ["published", "blog", language],
     queryFn: () => getPublishedBlogPosts(language),
+    enabled: isEnabled(options),
     ...queryDefaults,
   });
 }
 
-export function usePublishedFaqs(language: "en" | "zh", pageKey = "general") {
+export function usePublishedFaqs(language: "en" | "zh", pageKey = "general", options?: PublicQueryOptions) {
   return useQuery({
     queryKey: ["published", "faqs", language, pageKey],
     queryFn: () => getPublishedFaqs(language, pageKey),
+    enabled: isEnabled(options),
     ...queryDefaults,
   });
 }
 
-export function usePublishedHeroSlides(language: "en" | "zh") {
+export function usePublishedHeroSlides(language: "en" | "zh", options?: PublicQueryOptions) {
   return useQuery({
     queryKey: ["published", "hero_slides", language],
     queryFn: () => getPublishedHeroSlides(language),
-    enabled: isSupabaseConfigured,
+    enabled: isSupabaseQueryEnabled(options),
     ...queryDefaults,
   });
 }
 
-export function usePublishedTestimonials(language: "en" | "zh") {
+export function usePublishedTestimonials(language: "en" | "zh", options?: PublicQueryOptions) {
   return useQuery({
     queryKey: ["published", "testimonials", language],
     queryFn: () => getPublishedTestimonials(language),
-    enabled: isSupabaseConfigured,
+    enabled: isSupabaseQueryEnabled(options),
     ...queryDefaults,
   });
 }
 
-export function usePublishedBrandPartners() {
+export function usePublishedBrandPartners(options?: PublicQueryOptions) {
   return useQuery({
     queryKey: ["published", "brand_partners"],
     queryFn: () => getPublishedBrandPartners(),
-    enabled: isSupabaseConfigured,
+    enabled: isSupabaseQueryEnabled(options),
     ...queryDefaults,
   });
 }
 
-export function usePublishedBeforeAfterItems(language: "en" | "zh") {
+export function usePublishedBeforeAfterItems(language: "en" | "zh", options?: PublicQueryOptions) {
   return useQuery({
     queryKey: ["published", "before_after", language],
     queryFn: () => getPublishedBeforeAfterItems(language),
-    enabled: isSupabaseConfigured,
+    enabled: isSupabaseQueryEnabled(options),
     ...queryDefaults,
   });
 }
 
-export function usePublishedHomeSection(language: "en" | "zh", sectionKey: string) {
+export function usePublishedHomeSection(language: "en" | "zh", sectionKey: string, options?: PublicQueryOptions) {
   return useQuery({
     queryKey: ["published", "home_section", language, sectionKey],
     queryFn: () => getPublishedHomeSection(language, sectionKey),
-    enabled: isSupabaseConfigured,
+    enabled: isSupabaseQueryEnabled(options),
     ...queryDefaults,
   });
 }
 
-export function usePublishedProcessSteps(language: "en" | "zh") {
+export function usePublishedProcessSteps(language: "en" | "zh", options?: PublicQueryOptions) {
   return useQuery({
     queryKey: ["published", "process_steps", language],
     queryFn: () => getPublishedProcessSteps(language),
-    enabled: isSupabaseConfigured,
+    enabled: isSupabaseQueryEnabled(options),
     ...queryDefaults,
   });
 }
 
-export function usePublishedCtaBlock(language: "en" | "zh", blockKey: string) {
+export function usePublishedCtaBlock(language: "en" | "zh", blockKey: string, options?: PublicQueryOptions) {
   return useQuery({
     queryKey: ["published", "cta", language, blockKey],
     queryFn: () => getPublishedCtaBlock(language, blockKey),
-    enabled: isSupabaseConfigured,
+    enabled: isSupabaseQueryEnabled(options),
     retry: false,
     ...queryDefaults,
   });
 }
 
-export function usePublishedAboutSection(language: "en" | "zh", sectionKey: string) {
+export function usePublishedAboutSection(language: "en" | "zh", sectionKey: string, options?: PublicQueryOptions) {
   return useQuery({
     queryKey: ["published", "about_section", language, sectionKey],
     queryFn: () => getPublishedAboutSection(language, sectionKey),
-    enabled: isSupabaseConfigured,
+    enabled: isSupabaseQueryEnabled(options),
     ...queryDefaults,
   });
 }
 
-export function usePublishedSitePage(language: "en" | "zh", pageKey: string) {
+export function usePublishedSitePage(language: "en" | "zh", pageKey: string, options?: PublicQueryOptions) {
   return useQuery({
     queryKey: ["published", "site_page", language, pageKey],
     queryFn: () => getPublishedSitePage(language, pageKey),
-    enabled: isSupabaseConfigured,
+    enabled: isSupabaseQueryEnabled(options),
     ...queryDefaults,
   });
 }

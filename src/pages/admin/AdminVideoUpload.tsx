@@ -1,9 +1,15 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { supabase } from "@/lib/supabase";
+import {
+  getMediaStoragePublicUrl,
+  hasMediaStorageClient,
+  uploadAdminMediaObject,
+} from "@/backend/modules/media/service/mediaService";
 import type { AdminUploadedMedia } from "@/lib/adminMedia";
 import { formatBytes } from "@/lib/adminMedia";
+import { adminVideoUploadText } from "@/i18n/adminVideoUploadText";
+import { getAdminLang } from "@/lib/adminLocale";
 
 interface AdminVideoUploadProps {
   folder?: string;
@@ -23,6 +29,10 @@ const MAX_VIDEO_BYTES = 100 * 1024 * 1024;
 const POSTER_QUALITY = 0.82;
 const ALLOWED_VIDEO_TYPES = new Set(["video/mp4", "video/webm", "video/quicktime"]);
 const ALLOWED_VIDEO_EXTENSIONS = new Set(["mp4", "webm", "mov", "m4v"]);
+type AdminVideoUploadText = Record<keyof typeof adminVideoUploadText.en, string>;
+
+const formatText = (text: string, values: Record<string, string | number>) =>
+  Object.entries(values).reduce((current, [key, value]) => current.replaceAll(`{${key}}`, String(value)), text);
 
 const sanitizeName = (value: string, fallback = "video") =>
   value
@@ -43,7 +53,7 @@ const sanitizeFolder = (value: string) =>
     .filter(Boolean)
     .join("/") || "videos";
 
-const getPosterBlob = (video: HTMLVideoElement) =>
+const getPosterBlob = (video: HTMLVideoElement, text: AdminVideoUploadText) =>
   new Promise<Blob>((resolve, reject) => {
     const width = Math.max(1, video.videoWidth || 1280);
     const height = Math.max(1, video.videoHeight || 720);
@@ -52,23 +62,23 @@ const getPosterBlob = (video: HTMLVideoElement) =>
     canvas.height = height;
     const ctx = canvas.getContext("2d");
     if (!ctx) {
-      reject(new Error("浏览器不支持视频封面处理"));
+      reject(new Error(text.posterUnsupported));
       return;
     }
     ctx.drawImage(video, 0, 0, width, height);
-    canvas.toBlob((blob) => (blob ? resolve(blob) : reject(new Error("视频封面生成失败"))), "image/webp", POSTER_QUALITY);
+    canvas.toBlob((blob) => (blob ? resolve(blob) : reject(new Error(text.posterFailed))), "image/webp", POSTER_QUALITY);
   });
 
-async function prepareVideo(file: File): Promise<PreparedVideo> {
+async function prepareVideo(file: File, text: AdminVideoUploadText): Promise<PreparedVideo> {
   const mime = file.type || "";
   const ext = file.name.split(".").pop()?.toLowerCase() || "";
 
   if (file.size > MAX_VIDEO_BYTES) {
-    throw new Error(`视频不能超过 ${formatBytes(MAX_VIDEO_BYTES)}。更大的视频建议走服务端转码队列或视频云服务。`);
+    throw new Error(formatText(text.tooLarge, { max: formatBytes(MAX_VIDEO_BYTES) }));
   }
 
   if (!ALLOWED_VIDEO_TYPES.has(mime) || !ALLOWED_VIDEO_EXTENSIONS.has(ext)) {
-    throw new Error("只允许上传 MP4、WebM、MOV 视频。");
+    throw new Error(text.invalidType);
   }
 
   const objectUrl = URL.createObjectURL(file);
@@ -80,7 +90,7 @@ async function prepareVideo(file: File): Promise<PreparedVideo> {
   try {
     await new Promise<void>((resolve, reject) => {
       video.onloadedmetadata = () => resolve();
-      video.onerror = () => reject(new Error("视频读取失败，请确认文件没有损坏。"));
+      video.onerror = () => reject(new Error(text.readFailed));
       video.src = objectUrl;
     });
 
@@ -89,12 +99,12 @@ async function prepareVideo(file: File): Promise<PreparedVideo> {
     if (seekTime > 0) {
       await new Promise<void>((resolve, reject) => {
         video.onseeked = () => resolve();
-        video.onerror = () => reject(new Error("视频封面截取失败。"));
+        video.onerror = () => reject(new Error(text.seekFailed));
         video.currentTime = seekTime;
       });
     }
 
-    const posterBlob = await getPosterBlob(video);
+    const posterBlob = await getPosterBlob(video, text);
     const poster = new File([posterBlob], `${sanitizeName(file.name)}-poster.webp`, { type: "image/webp" });
     return {
       width: video.videoWidth || 0,
@@ -108,19 +118,20 @@ async function prepareVideo(file: File): Promise<PreparedVideo> {
 }
 
 const AdminVideoUpload = ({ folder = "videos", onUploaded }: AdminVideoUploadProps) => {
+  const text = adminVideoUploadText[getAdminLang()];
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState("");
   const [message, setMessage] = useState("");
 
   const upload = async (input?: File) => {
     const file = input;
-    if (!file || !supabase) return;
+    if (!file || !hasMediaStorageClient()) return;
     setUploading(true);
     setError("");
     setMessage("");
 
     try {
-      const prepared = await prepareVideo(file);
+      const prepared = await prepareVideo(file, text);
       const folderPath = sanitizeFolder(folder);
       const stamp = Date.now();
       const safeName = sanitizeName(file.name);
@@ -128,24 +139,22 @@ const AdminVideoUpload = ({ folder = "videos", onUploaded }: AdminVideoUploadPro
       const videoPath = `${folderPath}/${stamp}-${safeName}.${ext}`;
       const posterPath = `${folderPath}/posters/${stamp}-${safeName}.webp`;
 
-      const { error: posterError } = await supabase.storage.from(POSTER_BUCKET).upload(posterPath, prepared.poster, {
+      await uploadAdminMediaObject(POSTER_BUCKET, posterPath, prepared.poster, {
         cacheControl: "31536000",
         upsert: false,
         contentType: "image/webp",
       });
-      if (posterError) throw posterError;
 
-      const { error: videoError } = await supabase.storage.from(VIDEO_BUCKET).upload(videoPath, file, {
+      await uploadAdminMediaObject(VIDEO_BUCKET, videoPath, file, {
         cacheControl: "31536000",
         upsert: false,
         contentType: file.type || undefined,
       });
-      if (videoError) throw videoError;
 
-      const { data: videoData } = supabase.storage.from(VIDEO_BUCKET).getPublicUrl(videoPath);
-      const { data: posterData } = supabase.storage.from(POSTER_BUCKET).getPublicUrl(posterPath);
+      const videoUrl = getMediaStoragePublicUrl(VIDEO_BUCKET, videoPath);
+      const posterUrl = getMediaStoragePublicUrl(POSTER_BUCKET, posterPath);
       const uploadInfo: AdminUploadedMedia = {
-        url: videoData.publicUrl,
+        url: videoUrl,
         bucket: VIDEO_BUCKET,
         path: videoPath,
         fileName: file.name,
@@ -155,7 +164,7 @@ const AdminVideoUpload = ({ folder = "videos", onUploaded }: AdminVideoUploadPro
         width: prepared.width,
         height: prepared.height,
         durationSeconds: prepared.durationSeconds,
-        posterUrl: posterData.publicUrl,
+        posterUrl,
         posterPath,
         originalPath: videoPath,
         originalName: file.name,
@@ -165,10 +174,10 @@ const AdminVideoUpload = ({ folder = "videos", onUploaded }: AdminVideoUploadPro
         originalHeight: prepared.height,
       };
 
-      setMessage("视频已上传，并已自动生成 WebP 封面。前台使用时请保持 poster 优先和延迟加载。");
-      onUploaded(videoData.publicUrl, uploadInfo);
+      setMessage(text.uploaded);
+      onUploaded(videoUrl, uploadInfo);
     } catch (e) {
-      setError(e instanceof Error ? e.message : "视频上传失败，请稍后再试。");
+      setError(e instanceof Error ? e.message : text.uploadFailed);
     } finally {
       setUploading(false);
     }
@@ -176,13 +185,13 @@ const AdminVideoUpload = ({ folder = "videos", onUploaded }: AdminVideoUploadPro
 
   return (
     <div className="space-y-2">
-      <div className="flex flex-col gap-2 sm:flex-row">
+      <div data-admin-filter-bar className="flex flex-col gap-2 sm:flex-row">
         <Input type="file" accept="video/mp4,video/webm,video/quicktime" onChange={(event) => upload(event.target.files?.[0])} disabled={uploading} />
-        <Button type="button" variant="outline" disabled={uploading}>
-          {uploading ? "上传中..." : "上传视频"}
+        <Button type="button" variant="outline" className="w-full sm:w-auto" disabled={uploading}>
+          {uploading ? text.uploading : text.upload}
         </Button>
       </div>
-      <p className="text-xs text-muted-foreground">上传后会自动读取视频宽高、时长、大小，并截取 WebP 封面。视频本体不会被删，也不会改像素。</p>
+      <p className="text-xs text-muted-foreground">{text.helpText}</p>
       {message && <p className="rounded-md bg-emerald-50 px-3 py-2 text-xs text-emerald-800">{message}</p>}
       {error && <p className="text-xs text-destructive">{error}</p>}
     </div>

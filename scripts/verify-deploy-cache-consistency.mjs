@@ -5,7 +5,8 @@ import { SITE_CSP_POLICY } from "./site-csp.mjs";
 const ROOT = process.cwd();
 const DIST = path.join(ROOT, "dist");
 const RETAINED_ASSET_CACHE = path.join(ROOT, ".deploy-cache/assets");
-const HTML_NO_STORE_PATHS = ["/", "/index.html", "/*.html", "/admin", "/admin/*", "/zh", "/zh/*", "/en", "/en/*"];
+const PUBLIC_HTML_CACHE_PATHS = ["/", "/index.html", "/*.html", "/zh", "/zh/*", "/en", "/en/*"];
+const HTML_NO_STORE_PATHS = ["/admin", "/admin/*"];
 const IMMUTABLE_ASSET_PATHS = ["/assets/*", "/images/*", "/videos/*", "/*.webp", "/*.jpg", "/*.png"];
 
 const pathExists = async (target) => {
@@ -93,6 +94,21 @@ const assertHtmlNoStoreHeaders = (headerBlocks, headerPath) => {
   assert(/^0$/.test(block.get("expires") || ""), `${headerPath} must set Expires: 0.`);
 };
 
+const assertPublicHtmlCacheHeaders = (headerBlocks, headerPath) => {
+  const block = assertHeaderBlock(headerBlocks, headerPath);
+  assert(
+    /^public,\s*max-age=60,\s*stale-while-revalidate=300$/i.test(block.get("cache-control") || ""),
+    `${headerPath} must set public HTML Cache-Control to public, max-age=60, stale-while-revalidate=300.`,
+  );
+  assert(/^public,\s*max-age=300$/i.test(block.get("cdn-cache-control") || ""), `${headerPath} must set CDN-Cache-Control: public, max-age=300.`);
+  assert(
+    /^public,\s*max-age=300$/i.test(block.get("cloudflare-cdn-cache-control") || ""),
+    `${headerPath} must set Cloudflare-CDN-Cache-Control: public, max-age=300.`,
+  );
+  assert(!block.has("pragma"), `${headerPath} must not keep Pragma after public HTML caching is enabled.`);
+  assert(!block.has("expires"), `${headerPath} must not keep Expires after public HTML caching is enabled.`);
+};
+
 const assertImmutableAssetHeaders = (headerBlocks, headerPath) => {
   const block = assertHeaderBlock(headerBlocks, headerPath);
   assert(
@@ -116,6 +132,7 @@ const main = async () => {
 
   assert(assetRefs.length > 0, "dist/index.html does not reference any /assets files.");
   assert(missingAssets.length === 0, `dist/index.html references missing assets: ${missingAssets.join(", ")}`);
+  for (const headerPath of PUBLIC_HTML_CACHE_PATHS) assertPublicHtmlCacheHeaders(headerBlocks, headerPath);
   for (const headerPath of HTML_NO_STORE_PATHS) assertHtmlNoStoreHeaders(headerBlocks, headerPath);
   for (const headerPath of IMMUTABLE_ASSET_PATHS) assertImmutableAssetHeaders(headerBlocks, headerPath);
   assert(headers.includes(`Content-Security-Policy: ${SITE_CSP_POLICY}`), "public/_headers CSP is not in sync with scripts/site-csp.mjs.");
@@ -141,7 +158,9 @@ const main = async () => {
         ok: true,
         assetRefCount: assetRefs.length,
         retainedAssetCount: retainedCacheFiles.length,
-        htmlCache: "no-store",
+        publicHtmlCache: "public, max-age=60, stale-while-revalidate=300",
+        publicHtmlCachePaths: PUBLIC_HTML_CACHE_PATHS,
+        adminHtmlCache: "no-store",
         htmlNoStorePaths: HTML_NO_STORE_PATHS,
         assetCache: "public, max-age=31536000, immutable",
         immutableAssetPaths: IMMUTABLE_ASSET_PATHS,

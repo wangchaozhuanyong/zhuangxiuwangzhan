@@ -7,7 +7,6 @@ import { Button } from "@/components/ui/button";
 import { AdminActionButton } from "@/components/admin/AdminPermission";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { isSupabaseConfigured, supabase } from "@/lib/supabase";
 import { toast } from "@/hooks/use-toast";
 import AdminStickyActionBar from "@/components/admin/AdminStickyActionBar";
 import AdminPageHeader from "@/components/admin/AdminPageHeader";
@@ -16,10 +15,23 @@ import AdminEmptyState from "@/components/admin/AdminEmptyState";
 import { adminConfirm } from "@/components/admin/AdminConfirmProvider";
 import ImageField from "@/components/admin/ImageField";
 import { invalidateAdminContentDetail, invalidateAfterAdminContentSave } from "@/lib/adminInvalidate";
-import { useAdminBlogPostDetail } from "@/lib/adminQueries";
-import { publishStatusOptions } from "@/lib/adminLocale";
-import { formatAdminMutationError, saveAdminRecord } from "@/lib/adminMutation";
+import { useAdminBlogPostDetail } from "@/lib/adminBusinessContentQueries";
+import { adminStatusLabel, getAdminLang, publishStatusOptions } from "@/lib/adminLocale";
+import { formatAdminMutationError } from "@/lib/adminMutation";
+import { isNewAdminRouteRecord } from "@/lib/adminRouteParams";
 import { autoEnglishDescription, englishMissingHint, hasAnyMissingEnglish } from "@/lib/adminTranslation";
+import { formatUserFacingError } from "@/lib/userFacingText";
+import { adminBlogEditorText } from "@/i18n/adminBlogEditorText";
+import {
+  checkAdminBlogSlugUnique,
+  generateAdminBlogEnglish,
+  hasBlogBackendConfig,
+  normalizeBlogSlug,
+  saveAdminBlogPost,
+} from "@/backend/modules/blog/service/blogService";
+
+type AdminBlogEditorTextKey = keyof typeof adminBlogEditorText;
+const A = (key: AdminBlogEditorTextKey) => adminBlogEditorText[key][getAdminLang()];
 
 type BlogRecord = {
   id?: string;
@@ -80,14 +92,6 @@ const blogEnglishFields = [
   "seo_description_en",
 ];
 
-const slugify = (value: string) =>
-  value
-    .trim()
-    .toLowerCase()
-    .replace(/['"]/g, "")
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/(^-|-$)/g, "");
-
 const parseLines = (value: string) => value.split("\n").map((s) => s.trim()).filter(Boolean);
 const formatLines = (value?: string[] | null) => (value || []).join("\n");
 
@@ -109,8 +113,8 @@ const fromLocalInput = (value: string) => {
 export default function AdminBlogEditor() {
   const queryClient = useQueryClient();
   const navigate = useNavigate();
-  const { id } = useParams<{ id: string }>();
-  const isNew = id === "new";
+  const { id } = useParams<{ id?: string }>();
+  const isNew = isNewAdminRouteRecord(id);
   const [showEnglish, setShowEnglish] = useState(true);
   const [slugChecking, setSlugChecking] = useState(false);
   const [slugError, setSlugError] = useState<string>("");
@@ -138,113 +142,101 @@ export default function AdminBlogEditor() {
 
   useEffect(() => {
     if (!isError || !loadError) return;
-    const message = loadError instanceof Error ? loadError.message : String(loadError);
-    toast({ title: "加载失败", description: message, variant: "destructive" });
+    const message = formatUserFacingError(loadError, getAdminLang());
+    toast({ title: A("loadFailed"), description: message, variant: "destructive" });
   }, [isError, loadError]);
 
   const checkSlugUnique = useCallback(
     async (slug: string) => {
-      if (!isSupabaseConfigured) return true;
-      const value = slugify(slug);
+      if (!hasBlogBackendConfig()) return true;
+      const value = normalizeBlogSlug(slug);
       if (!value) return false;
       setSlugChecking(true);
       setSlugError("");
-      const { data, error } = await supabase!.from("blog_posts").select("id").eq("slug", value).limit(1);
-      setSlugChecking(false);
-      if (error) {
-        setSlugError(error.message);
+      try {
+        const isUnique = await checkAdminBlogSlugUnique(value, record.id);
+        if (!isUnique) {
+          setSlugError(A("slugTaken"));
+          return false;
+        }
+        return true;
+      } catch (error) {
+        setSlugError(formatUserFacingError(error, getAdminLang()));
         return false;
+      } finally {
+        setSlugChecking(false);
       }
-      const exists = (data || []).some((row: any) => row.id !== record.id);
-      if (exists) {
-        setSlugError("链接标识已被占用，请更换");
-        return false;
-      }
-      return true;
     },
     [record.id],
   );
 
   const previewUrl = useMemo(() => {
     const lang = "zh";
-    const slug = record.slug ? slugify(record.slug) : "";
+    const slug = record.slug ? normalizeBlogSlug(record.slug) : "";
     if (!slug) return "";
     return `/${lang}/blog/${slug}`;
   }, [record.slug]);
 
   const save = async (nextStatus?: BlogRecord["status"], generateEnglish?: boolean, forceEnglish?: boolean) => {
-    if (!isSupabaseConfigured) return;
-    const slug = slugify(record.slug || record.title_zh);
+    if (!hasBlogBackendConfig()) return;
+    const slug = normalizeBlogSlug(record.slug || record.title_zh);
     if (!slug) {
-      toast({ title: "请填写链接标识或中文标题", variant: "destructive" });
+      toast({ title: A("slugOrTitleRequired"), variant: "destructive" });
       return;
     }
     const ok = await checkSlugUnique(slug);
     if (!ok) {
-      toast({ title: "链接标识不可用", description: slugError || "请修改后再保存", variant: "destructive" });
+      toast({ title: A("slugUnavailable"), description: slugError || A("editBeforeSaving"), variant: "destructive" });
       return;
     }
 
     setSaveBusy(true);
-    const payload: any = {
-      ...record,
-      slug,
-      status: nextStatus ?? record.status,
-      sort_order: Number(record.sort_order || 0),
-      tags: record.tags || [],
-      published_at: nextStatus === "published" ? record.published_at || new Date().toISOString() : record.published_at || null,
-    };
-
-    let saved: any;
+    let savedResult: Awaited<ReturnType<typeof saveAdminBlogPost>>;
     try {
-      saved = await saveAdminRecord({
-        table: "blog_posts",
-        payload,
-        id: record.id,
-        expectedUpdatedAt: record.updated_at || null,
-        action: nextStatus === "published" ? "publish" : record.id ? "update" : "insert",
+      savedResult = await saveAdminBlogPost({
+        record,
+        nextStatus,
         queryClient,
       });
     } catch (error) {
-      toast({ title: "\u4fdd\u5b58\u5931\u8d25", description: formatAdminMutationError(error), variant: "destructive" });
+      toast({ title: A("saveFailed"), description: formatAdminMutationError(error), variant: "destructive" });
       setSaveBusy(false);
       return;
     }
 
-    const savedId = saved?.id;
-    applyRemote({ ...record, ...saved, id: savedId, slug, status: payload.status });
-    toast({ title: "已保存" });
+    const { saved, savedId } = savedResult;
+    applyRemote({ ...record, ...saved, id: savedId, slug: savedResult.slug, status: savedResult.status });
+    toast({ title: A("saved") });
     await invalidateAfterAdminContentSave(queryClient);
     setSaveBusy(false);
 
     if (isNew) navigate(`/admin/blog/${savedId}`, { replace: true });
 
     if (generateEnglish) {
-      const { error: translationError } = await supabase!.functions.invoke("generate-english-content", {
-        body: { table: "blog_posts", id: savedId, force: Boolean(forceEnglish) },
-      });
-      if (translationError) {
-        toast({ title: "已保存，但生成英文失败", description: translationError.message, variant: "destructive" });
-      } else {
-        toast({ title: "已保存，并已自动生成英文" });
+      try {
+        await generateAdminBlogEnglish(savedId, Boolean(forceEnglish));
+        toast({ title: A("savedAndEnglishGenerated") });
         void invalidateAdminContentDetail(queryClient, "blog_posts", savedId);
+      } catch (translationError) {
+        const description = formatUserFacingError(translationError, getAdminLang());
+        toast({ title: A("savedButEnglishFailed"), description, variant: "destructive" });
       }
     }
   };
 
   const forceRegenerateEnglish = async () => {
     const confirmed = await adminConfirm({
-      title: "确认重新生成英文？",
-      description: "这会覆盖已有英文内容。建议只在当前英文内容明显不准，或中文内容大幅调整后使用。",
-      confirmLabel: "重新生成",
+      title: A("confirmRegenerateEnglishTitle"),
+      description: A("confirmRegenerateEnglishDescription"),
+      confirmLabel: A("regenerate"),
     });
     if (confirmed) {
       await save(undefined, true, true);
     }
   };
 
-  if (!isSupabaseConfigured) {
-    return <AdminEmptyState title="Supabase 未配置" description="配置完成后才能使用博客后台编辑器。" />;
+  if (!hasBlogBackendConfig()) {
+    return <AdminEmptyState title={A("supabaseNotConfigured")} description={A("supabaseNotConfiguredDescription")} />;
   }
 
   return (
@@ -253,10 +245,10 @@ export default function AdminBlogEditor() {
         left={
           <>
             <Button asChild variant="outline">
-              <Link to="/admin/blog">返回列表</Link>
+              <Link to="/admin/blog">{A("backToList")}</Link>
             </Button>
-            {record.status && <span className="text-xs text-muted-foreground">状态：{record.status}</span>}
-            {slugChecking && <span className="text-xs text-muted-foreground">链接标识检查中...</span>}
+            {record.status && <span className="text-xs text-muted-foreground">{A("statusInline").replace("{status}", adminStatusLabel("default", record.status))}</span>}
+            {slugChecking && <span className="text-xs text-muted-foreground">{A("checkingSlug")}</span>}
             {slugError && <span className="text-xs text-destructive">{slugError}</span>}
           </>
         }
@@ -265,12 +257,12 @@ export default function AdminBlogEditor() {
             {previewUrl && (
               <Button asChild variant="outline">
                 <a href={previewUrl} target="_blank" rel="noreferrer">
-                  预览
+                  {A("preview")}
                 </a>
               </Button>
             )}
             <AdminActionButton action="content.write" type="button" variant="outline" onClick={() => void save("draft")} disabled={saveBusy || isLoading}>
-              保存草稿
+              {A("saveDraft")}
             </AdminActionButton>
             <AdminActionButton
               action="content.publish"
@@ -282,10 +274,10 @@ export default function AdminBlogEditor() {
               }}
               disabled={saveBusy || isLoading}
             >
-              发布
+              {A("publish")}
             </AdminActionButton>
             <AdminActionButton action="content.write" type="button" variant="outline" onClick={() => void save(undefined, true)} disabled={saveBusy || isLoading || !record.id}>
-              保存并自动生成英文
+              {A("saveAndGenerateEnglish")}
             </AdminActionButton>
             <AdminActionButton
               action="content.write"
@@ -294,7 +286,7 @@ export default function AdminBlogEditor() {
               onClick={() => void forceRegenerateEnglish()}
               disabled={saveBusy || isLoading || !record.id}
             >
-              强制重新生成英文
+              {A("forceRegenerateEnglish")}
             </AdminActionButton>
           </>
         }
@@ -308,12 +300,12 @@ export default function AdminBlogEditor() {
         className="space-y-6"
       >
         <AdminPageHeader
-          title={isNew ? "新建博客文章" : "编辑博客文章"}
-          description="支持草稿、发布、预览、发布时间、排序与 SEO。中文优先编辑，英文可自动生成后复查。"
-          helpText="这里主要编辑博客正文、标题、封面、分类、标签和搜索优化。"
+          title={isNew ? A("newPageTitle") : A("editPageTitle")}
+          description={A("pageDescription")}
+          helpText={A("pageHelpText")}
           actions={
             <Button type="button" variant="outline" onClick={() => setShowEnglish((v) => !v)}>
-              {showEnglish ? "隐藏英文内容" : "显示英文内容"}
+              {showEnglish ? A("hideEnglish") : A("showEnglish")}
             </Button>
           }
         />
@@ -324,10 +316,10 @@ export default function AdminBlogEditor() {
           </div>
         )}
 
-        <AdminFormSection title="发布与排序" description="发布后会在前台博客页生效；发布时间用于前台排序与展示。" helpText="控制文章是否在博客列表显示，以及文章排序和发布时间。">
+        <AdminFormSection title={A("publishSectionTitle")} description={A("publishSectionDescription")} helpText={A("publishSectionHelpText")}>
           <div className="grid gap-4 md:grid-cols-3">
             <div>
-              <label className="mb-1 block text-sm font-medium">状态</label>
+              <label className="mb-1 block text-sm font-medium">{A("status")}</label>
               <select
                 value={record.status}
                 onChange={(e) => setRecord((r) => ({ ...r, status: e.target.value as any }))}
@@ -341,11 +333,11 @@ export default function AdminBlogEditor() {
               </select>
             </div>
             <div>
-              <label className="mb-1 block text-sm font-medium">排序</label>
+              <label className="mb-1 block text-sm font-medium">{A("sortOrder")}</label>
               <Input type="number" value={record.sort_order} onChange={(e) => setRecord((r) => ({ ...r, sort_order: Number(e.target.value || 0) }))} />
             </div>
             <div>
-              <label className="mb-1 block text-sm font-medium">发布时间</label>
+              <label className="mb-1 block text-sm font-medium">{A("publishTime")}</label>
               <Input
                 type="datetime-local"
                 value={toLocalInput(record.published_at)}
@@ -355,32 +347,28 @@ export default function AdminBlogEditor() {
           </div>
         </AdminFormSection>
 
-        <AdminFormSection title="基础信息（中文）" description="用于博客列表卡片与详情页标题/摘要。前台卡片会自动限制标题和摘要行数，详情页会完整显示正文。" helpText="管理中文博客标题、摘要、正文、分类和标签。">
+        <AdminFormSection title={A("zhBasicSectionTitle")} description={A("zhBasicSectionDescription")} helpText={A("zhBasicSectionHelpText")}>
           <div className="grid gap-4 md:grid-cols-2">
             <div className="md:col-span-2">
-              <label className="mb-1 block text-sm font-medium">中文标题</label>
+              <label className="mb-1 block text-sm font-medium">{A("zhTitle")}</label>
               <Input value={record.title_zh} onChange={(e) => setRecord((r) => ({ ...r, title_zh: e.target.value }))} />
             </div>
 
             <div className="md:col-span-2">
               <div className="flex items-center justify-between gap-2">
-                <label className="mb-1 block text-sm font-medium">链接标识</label>
+                <label className="mb-1 block text-sm font-medium">{A("slug")}</label>
                 <div className="flex items-center gap-2">
                   <Button
                     type="button"
                     variant="outline"
                     size="sm"
                     onClick={async () => {
-                      const next = slugify(record.slug || record.title_zh);
+                      const next = normalizeBlogSlug(record.slug || record.title_zh);
                       setRecord((r) => ({ ...r, slug: next }));
                       void checkSlugUnique(next);
                     }}
-                  >
-                    自动生成
-                  </Button>
-                  <Button type="button" variant="outline" size="sm" onClick={() => void checkSlugUnique(record.slug)}>
-                    检查是否重复
-                  </Button>
+                  >{A("autoGenerate")}</Button>
+                  <Button type="button" variant="outline" size="sm" onClick={() => void checkSlugUnique(record.slug)}>{A("checkDuplicate")}</Button>
                 </div>
               </div>
               <Input
@@ -391,37 +379,37 @@ export default function AdminBlogEditor() {
                   setSlugError("");
                 }}
                 onBlur={() => void checkSlugUnique(record.slug)}
-                placeholder="例如：renovation-cost-kl"
+                placeholder={A("slugPlaceholder")}
               />
-              {previewUrl && <div className="mt-1 text-xs text-muted-foreground">前台路径：{previewUrl}</div>}
+              {previewUrl && <div className="mt-1 text-xs text-muted-foreground">{A("publicPath").replace("{path}", previewUrl)}</div>}
             </div>
 
             <div>
-              <label className="mb-1 block text-sm font-medium">分类</label>
-              <Input value={record.category} onChange={(e) => setRecord((r) => ({ ...r, category: e.target.value }))} placeholder="例如：指南 / 材料 / 灵感" />
+              <label className="mb-1 block text-sm font-medium">{A("category")}</label>
+              <Input value={record.category} onChange={(e) => setRecord((r) => ({ ...r, category: e.target.value }))} placeholder={A("categoryPlaceholder")} />
             </div>
             <div>
-              <label className="mb-1 block text-sm font-medium">标签（每行一个）</label>
+              <label className="mb-1 block text-sm font-medium">{A("tags")}</label>
               <Textarea rows={3} value={formatLines(record.tags)} onChange={(e) => setRecord((r) => ({ ...r, tags: parseLines(e.target.value) }))} />
             </div>
 
             <div className="md:col-span-2">
-              <label className="mb-1 block text-sm font-medium">中文摘要</label>
+              <label className="mb-1 block text-sm font-medium">{A("zhExcerpt")}</label>
               <Textarea rows={3} value={record.excerpt_zh} onChange={(e) => setRecord((r) => ({ ...r, excerpt_zh: e.target.value }))} />
             </div>
 
             <div className="md:col-span-2">
-              <label className="mb-1 block text-sm font-medium">中文正文</label>
+              <label className="mb-1 block text-sm font-medium">{A("zhContent")}</label>
               <Textarea rows={14} value={record.content_zh} onChange={(e) => setRecord((r) => ({ ...r, content_zh: e.target.value }))} />
             </div>
           </div>
         </AdminFormSection>
 
-        <AdminFormSection title="封面图" description="用于博客列表与详情页头图，支持粘贴图片链接或直接上传，后续会接入媒体库选择器。" helpText="管理博客封面图，列表卡片和详情页头图会读取这里。">
+        <AdminFormSection title={A("coverSectionTitle")} description={A("coverSectionDescription")} helpText={A("coverSectionHelpText")}>
           <div className="grid gap-4 md:grid-cols-2">
             <div className="md:col-span-2">
               <ImageField
-                label="封面图"
+                label={A("coverImage")}
                 value={record.cover_image_url}
                 onChange={(url) => setRecord((r) => ({ ...r, cover_image_url: url }))}
                 folder={`blog_posts/${record.id || "draft"}`}
@@ -432,21 +420,21 @@ export default function AdminBlogEditor() {
             </div>
             {showEnglish && (
               <div>
-                <label className="mb-1 block text-sm font-medium">英文图片说明</label>
+                <label className="mb-1 block text-sm font-medium">{A("enImageAlt")}</label>
                 <Input value={record.alt_en} onChange={(e) => setRecord((r) => ({ ...r, alt_en: e.target.value }))} />
               </div>
             )}
           </div>
         </AdminFormSection>
 
-        <AdminFormSection title="SEO（中文）" description="用于前台页面标题和页面描述，留空时前台会回退到默认值。" helpText="管理中文博客文章的搜索标题和搜索描述。">
+        <AdminFormSection title={A("zhSeoSectionTitle")} description={A("zhSeoSectionDescription")} helpText={A("zhSeoSectionHelpText")}>
           <div className="grid gap-4 md:grid-cols-2">
             <div className="md:col-span-2">
-              <label className="mb-1 block text-sm font-medium">中文 SEO 标题</label>
+              <label className="mb-1 block text-sm font-medium">{A("zhSeoTitle")}</label>
               <Input value={record.seo_title_zh} onChange={(e) => setRecord((r) => ({ ...r, seo_title_zh: e.target.value }))} />
             </div>
             <div className="md:col-span-2">
-              <label className="mb-1 block text-sm font-medium">中文 SEO 描述</label>
+              <label className="mb-1 block text-sm font-medium">{A("zhSeoDescription")}</label>
               <Textarea rows={3} value={record.seo_description_zh} onChange={(e) => setRecord((r) => ({ ...r, seo_description_zh: e.target.value }))} />
             </div>
           </div>
@@ -454,31 +442,31 @@ export default function AdminBlogEditor() {
 
         {showEnglish && (
           <>
-            <AdminFormSection title="自动英文，可手动微调" description={autoEnglishDescription} helpText="英文站优先显示这里。没有英文时，后台会提示你生成英文。" collapsible defaultOpen={false}>
+            <AdminFormSection title={A("englishSectionTitle")} description={autoEnglishDescription} helpText={A("englishSectionHelpText")} collapsible defaultOpen={false}>
               <div className="grid gap-4 md:grid-cols-2">
                 <div className="md:col-span-2">
-                  <label className="mb-1 block text-sm font-medium">英文标题</label>
+                  <label className="mb-1 block text-sm font-medium">{A("enTitle")}</label>
                   <Input value={record.title_en} onChange={(e) => setRecord((r) => ({ ...r, title_en: e.target.value }))} />
                 </div>
                 <div className="md:col-span-2">
-                  <label className="mb-1 block text-sm font-medium">英文摘要</label>
+                  <label className="mb-1 block text-sm font-medium">{A("enExcerpt")}</label>
                   <Textarea rows={3} value={record.excerpt_en} onChange={(e) => setRecord((r) => ({ ...r, excerpt_en: e.target.value }))} />
                 </div>
                 <div className="md:col-span-2">
-                  <label className="mb-1 block text-sm font-medium">英文正文</label>
+                  <label className="mb-1 block text-sm font-medium">{A("enContent")}</label>
                   <Textarea rows={14} value={record.content_en} onChange={(e) => setRecord((r) => ({ ...r, content_en: e.target.value }))} />
                 </div>
               </div>
             </AdminFormSection>
 
-            <AdminFormSection title="英文 SEO，可手动微调" description={autoEnglishDescription} helpText="管理英文博客文章的搜索文案。正式英文 SEO 建议补齐。" collapsible defaultOpen={false}>
+            <AdminFormSection title={A("enSeoSectionTitle")} description={autoEnglishDescription} helpText={A("enSeoSectionHelpText")} collapsible defaultOpen={false}>
               <div className="grid gap-4 md:grid-cols-2">
                 <div className="md:col-span-2">
-                  <label className="mb-1 block text-sm font-medium">英文 SEO 标题</label>
+                  <label className="mb-1 block text-sm font-medium">{A("enSeoTitle")}</label>
                   <Input value={record.seo_title_en} onChange={(e) => setRecord((r) => ({ ...r, seo_title_en: e.target.value }))} />
                 </div>
                 <div className="md:col-span-2">
-                  <label className="mb-1 block text-sm font-medium">英文 SEO 描述</label>
+                  <label className="mb-1 block text-sm font-medium">{A("enSeoDescription")}</label>
                   <Textarea rows={3} value={record.seo_description_en} onChange={(e) => setRecord((r) => ({ ...r, seo_description_en: e.target.value }))} />
                 </div>
               </div>

@@ -31,6 +31,7 @@ import {
   Wrench,
   type LucideIcon,
 } from "lucide-react";
+import { adminLayoutText } from "@/i18n/adminLayoutText";
 import type { AdminLang } from "@/lib/adminLocale";
 import { ADMIN_ROLE_GROUPS, type AdminAllowedRoles } from "@/lib/adminRoleAccess";
 
@@ -163,8 +164,8 @@ export const copy: Record<AdminLang, AdminCopy> = {
     seedError: (message) => `Default CMS content sync failed: ${message}`,
     signOut: "Sign out",
     brand: "FLASH CAST Admin",
-    title: "Content & Lead Management",
-    subtitle: "Manage website content, enquiries, media, SEO/GEO and settings.",
+    title: adminLayoutText.en.title,
+    subtitle: adminLayoutText.en.subtitle,
     menu: "Open admin menu",
     collapseNav: "Collapse navigation",
     expandNav: "Expand navigation",
@@ -219,8 +220,8 @@ export const copy: Record<AdminLang, AdminCopy> = {
     seedError: (message) => `后台默认内容同步失败：${message}`,
     signOut: "退出登录",
     brand: "FLASH CAST 后台",
-    title: "内容与咨询管理",
-    subtitle: "管理网站内容、客户咨询、媒体素材、SEO/GEO 和系统设置。",
+    title: adminLayoutText.zh.title,
+    subtitle: adminLayoutText.zh.subtitle,
     menu: "打开后台菜单",
     collapseNav: "收起导航",
     expandNav: "展开导航",

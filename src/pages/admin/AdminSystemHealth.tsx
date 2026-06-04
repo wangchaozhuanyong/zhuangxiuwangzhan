@@ -1,5 +1,5 @@
-import { useMemo } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useMemo, useState } from "react";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import {
   Activity,
   AlertTriangle,
@@ -11,11 +11,26 @@ import {
   History,
   RefreshCw,
   ShieldCheck,
+  Trash2,
 } from "lucide-react";
 import AdminFormSection from "@/components/admin/AdminFormSection";
 import AdminPageHeader from "@/components/admin/AdminPageHeader";
+import { adminConfirm } from "@/components/admin/AdminConfirmProvider";
 import { Button } from "@/components/ui/button";
-import { isSupabaseConfigured, supabase } from "@/lib/supabase";
+import { Input } from "@/components/ui/input";
+import { useToast } from "@/hooks/use-toast";
+import {
+  adminSystemHealthCheckLabels,
+  adminSystemHealthEventLabels,
+  adminSystemHealthText,
+} from "@/i18n/adminSystemHealthText";
+import { getAdminLang } from "@/lib/adminLocale";
+import { isSupabaseConfigured } from "@/lib/supabase";
+import {
+  cleanupAdminFormAttempts,
+  fetchAdminSystemHealth,
+} from "@/backend/modules/system/service/systemHealthService";
+import { formatUserFacingError } from "@/lib/userFacingText";
 
 type HealthCheckValue = boolean | { ok?: boolean; count?: number; label?: string; message?: string } | string | number | null;
 
@@ -60,19 +75,20 @@ type HealthPayload = {
   reminders?: string[];
 };
 
+type FormAttemptsCleanupPayload = {
+  ok?: boolean;
+  error?: string;
+  retention_days?: number;
+  cutoff_at?: string;
+  total_count?: number;
+  eligible_count?: number;
+  deleted_count?: number;
+  recent_protected_count?: number;
+};
+
 const RECENT_HOURS = 24 * 7;
 
-const checkLabels: Record<string, string> = {
-  edge_function: "Edge Function",
-  storage_site_images: "图片存储桶",
-};
-
-const eventLabels: Record<string, string> = {
-  backup_supabase_completed: "数据库和文件备份",
-  backup_package_verified: "备份包验证",
-  backup_restore_dry_run_completed: "恢复演练",
-  system_health_check: "系统健康检查",
-};
+type AdminSystemHealthText = Record<keyof typeof adminSystemHealthText.en, string>;
 
 const statusClass = (ok: boolean) =>
   ok ? "border-emerald-200 bg-emerald-50 text-emerald-800" : "border-destructive/25 bg-destructive/10 text-destructive";
@@ -83,80 +99,96 @@ const parseCheckOk = (value: HealthCheckValue) => {
   return Boolean(value);
 };
 
-const formatDateTime = (value?: string | null) => {
-  if (!value) return "暂无记录";
+const formatText = (text: string, values: Record<string, string | number>) =>
+  Object.entries(values).reduce((current, [key, value]) => current.replaceAll(`{${key}}`, String(value)), text);
+
+const formatDateTime = (value: string | null | undefined, language: "en" | "zh", text: AdminSystemHealthText) => {
+  if (!value) return text.noRecord;
   const date = new Date(value);
-  if (Number.isNaN(date.getTime())) return "时间格式异常";
-  return date.toLocaleString("zh-CN");
+  if (Number.isNaN(date.getTime())) return text.invalidTime;
+  return date.toLocaleString(language === "en" ? "en-US" : "zh-CN");
 };
 
-const formatAge = (hours?: number | null) => {
-  if (typeof hours !== "number") return "时间未知";
-  if (hours < 1) return "1 小时内";
-  if (hours < 24) return `${Math.round(hours)} 小时前`;
-  return `${Math.round(hours / 24)} 天前`;
+const formatAge = (hours: number | null | undefined, text: AdminSystemHealthText) => {
+  if (typeof hours !== "number") return text.unknownTime;
+  if (hours < 1) return text.withinHour;
+  if (hours < 24) return formatText(text.hoursAgo, { hours: Math.round(hours) });
+  return formatText(text.daysAgo, { days: Math.round(hours / 24) });
 };
 
-const describeCheck = (value: HealthCheckValue) => {
+const describeCheck = (value: HealthCheckValue, text: AdminSystemHealthText) => {
   if (value && typeof value === "object") {
     const parts = [];
-    if ("count" in value && typeof value.count === "number") parts.push(`${value.count} 条`);
+    if ("count" in value && typeof value.count === "number") parts.push(formatText(text.countItems, { count: value.count }));
     if ("message" in value && value.message) parts.push(String(value.message));
-    return parts.join("，") || (parseCheckOk(value) ? "正常" : "异常");
+    return parts.join("，") || (parseCheckOk(value) ? text.ok : text.abnormal);
   }
   return String(value ?? "");
 };
 
-const getCheckLabel = (name: string, value: HealthCheckValue) => {
+const getCheckLabel = (name: string, value: HealthCheckValue, labels: Record<string, string>) => {
   if (value && typeof value === "object" && "label" in value && value.label) return String(value.label);
-  return checkLabels[name] || name;
+  return labels[name] || name;
 };
 
-const readFunctionErrorPayload = async (error: unknown): Promise<HealthPayload | null> => {
+const readFunctionJsonPayload = async <T,>(error: unknown): Promise<T | null> => {
   const response = (error as { context?: Response }).context;
   if (!response || typeof response.clone !== "function") return null;
   try {
-    return (await response.clone().json()) as HealthPayload;
+    return (await response.clone().json()) as T;
   } catch {
     return null;
   }
 };
 
-const getEventMetaLine = (event: HealthEventSummary | null) => {
+const readFunctionErrorPayload = (error: unknown): Promise<HealthPayload | null> =>
+  readFunctionJsonPayload<HealthPayload>(error);
+
+const getEventMetaLine = (event: HealthEventSummary | null, text: AdminSystemHealthText) => {
   if (!event?.metadata) return "";
   const meta = event.metadata;
   const parts = [];
-  if (typeof meta.backup_folder === "string") parts.push(`备份：${meta.backup_folder}`);
-  if (typeof meta.table_count === "number") parts.push(`${meta.table_count} 张表`);
-  if (typeof meta.total_rows === "number") parts.push(`${meta.total_rows} 行`);
-  if (typeof meta.storage_file_count === "number") parts.push(`${meta.storage_file_count} 个文件`);
-  if (meta.full_access === false) parts.push("非完整备份");
+  if (typeof meta.backup_folder === "string") parts.push(formatText(text.backupMetaFolder, { folder: meta.backup_folder }));
+  if (typeof meta.table_count === "number") parts.push(formatText(text.tableCount, { count: meta.table_count }));
+  if (typeof meta.total_rows === "number") parts.push(formatText(text.rowCount, { count: meta.total_rows }));
+  if (typeof meta.storage_file_count === "number") parts.push(formatText(text.storageFileCount, { count: meta.storage_file_count }));
+  if (meta.full_access === false) parts.push(text.incompleteBackup);
   return parts.join(" · ");
 };
 
-const getHistoryMessage = (event: HealthEventSummary) => {
-  if (event.message.includes("passed")) return "本次检查通过";
-  if (event.message.includes("attention")) return "本次检查需要处理";
-  return eventLabels[event.event_type] || event.message;
+const getHistoryMessage = (event: HealthEventSummary, text: AdminSystemHealthText, labels: Record<string, string>) => {
+  if (event.message.includes("passed")) return text.historyPassed;
+  if (event.message.includes("attention")) return text.historyAttention;
+  return labels[event.event_type] || event.message;
 };
 
-const CheckRow = ({ name, value }: { name: string; value: HealthCheckValue }) => {
+const CheckRow = ({
+  name,
+  value,
+  labels,
+  text,
+}: {
+  name: string;
+  value: HealthCheckValue;
+  labels: Record<string, string>;
+  text: AdminSystemHealthText;
+}) => {
   const ok = parseCheckOk(value);
   return (
     <div className="flex flex-wrap items-center justify-between gap-3 rounded-lg border border-border bg-background p-3">
       <div className="min-w-0">
-        <p className="break-words text-sm font-semibold">{getCheckLabel(name, value)}</p>
-        <p className="mt-1 break-words text-xs text-muted-foreground">{describeCheck(value) || (ok ? "正常" : "异常")}</p>
+        <p className="break-words text-sm font-semibold">{getCheckLabel(name, value, labels)}</p>
+        <p className="mt-1 break-words text-xs text-muted-foreground">{describeCheck(value, text) || (ok ? text.ok : text.abnormal)}</p>
       </div>
       <span className={`inline-flex shrink-0 items-center gap-1 rounded-full border px-2.5 py-1 text-xs font-semibold ${statusClass(ok)}`}>
         {ok ? <CheckCircle2 className="h-3.5 w-3.5" /> : <AlertTriangle className="h-3.5 w-3.5" />}
-        {ok ? "正常" : "异常"}
+        {ok ? text.ok : text.abnormal}
       </span>
     </div>
   );
 };
 
-const TableCard = ({ item }: { item: TableCheck }) => (
+const TableCard = ({ item, text }: { item: TableCheck; text: AdminSystemHealthText }) => (
   <div className="rounded-lg border border-border bg-background p-4">
     <div className="flex items-start justify-between gap-3">
       <div className="min-w-0">
@@ -164,7 +196,7 @@ const TableCard = ({ item }: { item: TableCheck }) => (
         <p className="mt-1 break-all text-xs text-muted-foreground">{item.category} · {item.table}</p>
       </div>
       <span className={`shrink-0 rounded-full border px-2.5 py-1 text-xs font-semibold ${statusClass(item.ok)}`}>
-        {item.ok ? "可读取" : "异常"}
+        {item.ok ? text.readable : text.abnormal}
       </span>
     </div>
     <p className="mt-3 text-2xl font-bold">{item.ok ? item.count ?? 0 : "-"}</p>
@@ -176,10 +208,14 @@ const BackupCard = ({
   title,
   event,
   icon,
+  language,
+  text,
 }: {
   title: string;
   event: HealthEventSummary | null | undefined;
   icon: React.ReactNode;
+  language: "en" | "zh";
+  text: AdminSystemHealthText;
 }) => {
   const fresh = Boolean(event && typeof event.age_hours === "number" && event.age_hours <= RECENT_HOURS);
   const ok = fresh && event?.severity !== "error" && event?.severity !== "critical";
@@ -188,28 +224,34 @@ const BackupCard = ({
       <div className="flex items-start justify-between gap-3">
         <div className="text-accent">{icon}</div>
         <span className={`rounded-full border px-2.5 py-1 text-xs font-semibold ${statusClass(ok)}`}>
-          {ok ? "已记录" : "需确认"}
+          {ok ? text.recorded : text.needsConfirmation}
         </span>
       </div>
       <p className="mt-3 font-semibold">{title}</p>
-      <p className="mt-2 text-sm leading-6 text-muted-foreground">{event ? `${formatDateTime(event.created_at)}，${formatAge(event.age_hours)}` : "还没有可读取的执行记录。"}</p>
-      {event && <p className="mt-2 break-words text-xs text-muted-foreground">{getEventMetaLine(event)}</p>}
+      <p className="mt-2 text-sm leading-6 text-muted-foreground">{event ? `${formatDateTime(event.created_at, language, text)}，${formatAge(event.age_hours, text)}` : text.noExecutionRecord}</p>
+      {event && <p className="mt-2 break-words text-xs text-muted-foreground">{getEventMetaLine(event, text)}</p>}
     </div>
   );
 };
 
 export default function AdminSystemHealth() {
+  const language = getAdminLang();
+  const text = adminSystemHealthText[language];
+  const checkLabels = adminSystemHealthCheckLabels[language];
+  const eventLabels = adminSystemHealthEventLabels[language];
+  const { toast } = useToast();
+  const [attemptRetentionDays, setAttemptRetentionDays] = useState(30);
   const healthQuery = useQuery({
     queryKey: ["admin", "system-health"],
     enabled: isSupabaseConfigured,
     queryFn: async () => {
-      const { data, error } = await supabase!.functions.invoke<HealthPayload>("health-check", { method: "GET" });
-      if (error) {
+      try {
+        return await fetchAdminSystemHealth<HealthPayload>();
+      } catch (error) {
         const payload = await readFunctionErrorPayload(error);
         if (payload) return payload;
         throw error;
       }
-      return data || {};
     },
   });
 
@@ -221,6 +263,44 @@ export default function AdminSystemHealth() {
   const overallOk = Boolean(payload?.ok);
   const isAdminMode = payload?.mode === "admin";
 
+  const cleanupAttemptsMutation = useMutation({
+    mutationFn: async () => {
+      try {
+        return await cleanupAdminFormAttempts<FormAttemptsCleanupPayload>(attemptRetentionDays);
+      } catch (error) {
+        const payload = await readFunctionJsonPayload<FormAttemptsCleanupPayload>(error);
+        throw new Error(formatUserFacingError(payload?.error || error, language, text.cleanupFailureFallback));
+      }
+    },
+    onSuccess: (data) => {
+      toast({
+        title: text.cleanupSuccessTitle,
+        description: formatText(text.cleanupSuccessDescription, {
+          deleted: data.deleted_count ?? 0,
+          protected: data.recent_protected_count ?? 0,
+        }),
+      });
+      void healthQuery.refetch();
+    },
+    onError: (error) => {
+      toast({
+        title: text.cleanupFailureTitle,
+        description: formatUserFacingError(error, language, text.cleanupFailureFallback),
+        variant: "destructive",
+      });
+    },
+  });
+
+  const runAttemptsCleanup = async () => {
+    const confirmed = await adminConfirm({
+      title: text.cleanupConfirmTitle,
+      description: formatText(text.cleanupConfirmDescription, { days: attemptRetentionDays }),
+      confirmLabel: text.cleanupConfirmLabel,
+    });
+    if (!confirmed) return;
+    cleanupAttemptsMutation.mutate();
+  };
+
   const tableSummary = useMemo(() => {
     const failed = tableChecks.filter((item) => !item.ok).length;
     return { total: tableChecks.length, failed };
@@ -229,9 +309,9 @@ export default function AdminSystemHealth() {
   if (!isSupabaseConfigured) {
     return (
       <AdminPageHeader
-        title="系统健康"
-        description="Supabase 环境变量还没配置，暂时不能检查线上数据库和存储。"
-        helpText="这里用于检查后台底层服务是否正常。"
+        title={text.pageTitle}
+        description={text.noSupabaseDescription}
+        helpText={text.noSupabaseHelp}
       />
     );
   }
@@ -239,13 +319,13 @@ export default function AdminSystemHealth() {
   return (
     <div className="space-y-6">
       <AdminPageHeader
-        title="系统健康"
-        description="集中检查后台、数据库、存储、日志、备份和恢复流程，方便上线前确认系统是否稳定。"
-        helpText="绿色代表当前检查通过；如果出现黄色或红色，请优先处理异常提醒。"
+        title={text.pageTitle}
+        description={text.pageDescription}
+        helpText={text.pageHelp}
         actions={
           <Button type="button" variant="outline" onClick={() => void healthQuery.refetch()} disabled={healthQuery.isFetching}>
             {healthQuery.isFetching ? <RefreshCw className="mr-2 h-4 w-4 animate-spin" /> : <Activity className="mr-2 h-4 w-4" />}
-            {healthQuery.isFetching ? "检查中" : "重新检查"}
+            {healthQuery.isFetching ? text.checking : text.recheck}
           </Button>
         }
       />
@@ -255,13 +335,13 @@ export default function AdminSystemHealth() {
           <div className="flex min-w-0 items-start gap-3">
             {overallOk ? <CheckCircle2 className="mt-0.5 h-5 w-5 shrink-0" /> : <AlertTriangle className="mt-0.5 h-5 w-5 shrink-0" />}
             <div className="min-w-0">
-              <p className="font-semibold">{overallOk ? "系统健康当前正常" : "系统健康需要处理"}</p>
-              <p className="mt-1 text-sm">{payload?.checked_at ? `最后检查时间：${formatDateTime(payload.checked_at)}` : "正在读取健康检查结果。"}</p>
+              <p className="font-semibold">{overallOk ? text.overallOk : text.overallNeedsAction}</p>
+              <p className="mt-1 text-sm">{payload?.checked_at ? formatText(text.lastChecked, { time: formatDateTime(payload.checked_at, language, text) }) : text.readingHealth}</p>
             </div>
           </div>
           <div className="flex flex-wrap gap-2 text-xs font-semibold">
-            <span className="rounded-full border bg-background/70 px-3 py-1">表检查 {tableSummary.total - tableSummary.failed}/{tableSummary.total}</span>
-            <span className="rounded-full border bg-background/70 px-3 py-1">{isAdminMode ? "超级管理员完整报告" : "公开基础报告"}</span>
+            <span className="rounded-full border bg-background/70 px-3 py-1">{text.tableCheckBadge}{tableSummary.total - tableSummary.failed}/{tableSummary.total}</span>
+            <span className="rounded-full border bg-background/70 px-3 py-1">{isAdminMode ? text.adminFullReport : text.publicBasicReport}</span>
           </div>
         </div>
       </div>
@@ -271,18 +351,20 @@ export default function AdminSystemHealth() {
           <div className="flex items-start gap-3">
             <AlertTriangle className="mt-0.5 h-5 w-5 shrink-0" />
             <div>
-              <p className="font-semibold">当前只拿到公开健康结果</p>
-              <p className="mt-1 text-sm leading-6">完整报告需要超级管理员登录态传到 Edge Function。请确认当前账号是超级管理员，并重新检查。</p>
+              <p className="font-semibold">{text.publicOnlyTitle}</p>
+              <p className="mt-1 text-sm leading-6">{text.publicOnlyDescription}</p>
             </div>
           </div>
         </div>
       )}
 
-      <AdminFormSection title="异常提醒" description="把最需要处理的问题集中放在这里，避免只看绿色卡片漏掉风险。" helpText="没有提醒不代表永远不会出问题，只代表本次检查没有发现明确异常。">
+      <AdminFormSection title={text.alertsTitle} description={text.alertsDescription} helpText={text.alertsHelp}>
         {healthQuery.isLoading ? (
-          <p className="text-sm text-muted-foreground">正在检查...</p>
+          <p className="text-sm text-muted-foreground">{text.checkingEllipsis}</p>
         ) : healthQuery.isError ? (
-          <p className="text-sm text-destructive">健康检查失败：{healthQuery.error instanceof Error ? healthQuery.error.message : "未知错误"}</p>
+          <p className="text-sm text-destructive">
+            {formatText(text.healthFailed, { message: formatUserFacingError(healthQuery.error, language, text.unknownError) })}
+          </p>
         ) : reminders.length ? (
           <div className="space-y-3">
             {reminders.map((item) => (
@@ -295,42 +377,68 @@ export default function AdminSystemHealth() {
         ) : (
           <div className="flex gap-3 rounded-lg border border-emerald-200 bg-emerald-50 p-3 text-sm text-emerald-800">
             <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0" />
-            <p>本次没有发现需要立刻处理的异常。</p>
+            <p>{text.noAlerts}</p>
           </div>
         )}
       </AdminFormSection>
 
-      <AdminFormSection title="线上服务检查" description="来自 Supabase Edge Function 的基础检查结果。" helpText="这里主要看 Edge Function 和图片存储桶是否正常。">
+      <AdminFormSection title={text.onlineServiceTitle} description={text.onlineServiceDescription} helpText={text.onlineServiceHelp}>
         <div className="space-y-3">
           {Object.entries(payload?.checks || {}).map(([name, value]) => (
-            <CheckRow key={name} name={name} value={value} />
+            <CheckRow key={name} name={name} value={value} labels={checkLabels} text={text} />
           ))}
         </div>
       </AdminFormSection>
 
-      <AdminFormSection title="核心数据表检查" description="检查后台和业务关键表是否能读取，避免只检查 CMS 却漏掉客户数据。" helpText="这些数量不是业务报表，只用于判断表是否存在、权限是否正常、数据是否能读取。">
+      <AdminFormSection title={text.cleanupSectionTitle} description={text.cleanupSectionDescription} helpText={text.cleanupSectionHelp}>
+        <div className="flex flex-col gap-3 rounded-lg border border-border bg-background p-4 md:flex-row md:items-end md:justify-between">
+          <div className="max-w-xl min-w-0">
+            <label htmlFor="form-attempt-retention-days" className="mb-1.5 block text-sm font-medium">{text.retentionDays}</label>
+            <Input
+              id="form-attempt-retention-days"
+              type="number"
+              min={2}
+              max={365}
+              value={attemptRetentionDays}
+              onChange={(event) => {
+                const next = Number(event.target.value);
+                setAttemptRetentionDays(Number.isFinite(next) ? Math.min(365, Math.max(2, Math.floor(next))) : 30);
+              }}
+              className="w-full md:w-40"
+            />
+            <p className="mt-2 text-xs leading-5 text-muted-foreground">{text.retentionHelp}</p>
+          </div>
+          <Button type="button" variant="outline" className="w-full md:w-auto" onClick={() => void runAttemptsCleanup()} disabled={!isAdminMode || cleanupAttemptsMutation.isPending}>
+            {cleanupAttemptsMutation.isPending ? <RefreshCw className="mr-2 h-4 w-4 animate-spin" /> : <Trash2 className="mr-2 h-4 w-4" />}
+            {cleanupAttemptsMutation.isPending ? text.cleanupInProgress : text.cleanupButton}
+          </Button>
+        </div>
+        {!isAdminMode && <p className="mt-2 text-xs text-muted-foreground">{text.cleanupDisabled}</p>}
+      </AdminFormSection>
+
+      <AdminFormSection title={text.tableSectionTitle} description={text.tableSectionDescription} helpText={text.tableSectionHelp}>
         <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
           {tableChecks.map((item) => (
-            <TableCard key={item.table} item={item} />
+            <TableCard key={item.table} item={item} text={text} />
           ))}
         </div>
       </AdminFormSection>
 
-      <AdminFormSection title="备份和恢复状态" description="读取系统日志里的最近备份、备份验证和恢复演练记录。" helpText="这些记录来自 `backup:supabase`、`verify:backup` 和 `restore:backup:dry-run` 脚本。">
+      <AdminFormSection title={text.backupSectionTitle} description={text.backupSectionDescription} helpText={text.backupSectionHelp}>
         <div className="grid gap-3 md:grid-cols-3">
-          <BackupCard title="数据库和文件备份" event={backupStatus?.latest_backup} icon={<Database className="h-5 w-5" />} />
-          <BackupCard title="备份包验证" event={backupStatus?.latest_verify} icon={<FileCheck2 className="h-5 w-5" />} />
-          <BackupCard title="恢复演练" event={backupStatus?.latest_restore_dry_run} icon={<ShieldCheck className="h-5 w-5" />} />
+          <BackupCard title={text.backupDatabaseTitle} event={backupStatus?.latest_backup} icon={<Database className="h-5 w-5" />} language={language} text={text} />
+          <BackupCard title={text.backupVerifyTitle} event={backupStatus?.latest_verify} icon={<FileCheck2 className="h-5 w-5" />} language={language} text={text} />
+          <BackupCard title={text.backupRestoreTitle} event={backupStatus?.latest_restore_dry_run} icon={<ShieldCheck className="h-5 w-5" />} language={language} text={text} />
         </div>
         <div className={`mt-3 rounded-lg border p-3 text-sm ${statusClass(Boolean(backupStatus?.ok))}`}>
           <div className="flex items-start gap-2">
             <HardDrive className="mt-0.5 h-4 w-4 shrink-0" />
-            <p className="break-words">{backupStatus?.message || "还没有读取到备份状态。运行备份、验证和恢复演练脚本后，这里会显示真实记录。"}</p>
+            <p className="break-words">{backupStatus?.message || text.backupStatusFallback}</p>
           </div>
         </div>
       </AdminFormSection>
 
-      <AdminFormSection title="健康检查历史" description="显示最近 5 次完整健康检查记录，方便判断问题是不是反复出现。" helpText="记录保存在 system_event_logs；公开访问不会写入历史记录，只有超级管理员完整检查会记录。">
+      <AdminFormSection title={text.historyTitle} description={text.historyDescription} helpText={text.historyHelp}>
         {healthHistory.length ? (
           <div className="space-y-3">
             {healthHistory.map((event) => {
@@ -340,20 +448,20 @@ export default function AdminSystemHealth() {
                   <div className="min-w-0">
                     <div className="flex flex-wrap items-center gap-2">
                       <History className="h-4 w-4 text-accent" />
-                      <p className="font-semibold">{getHistoryMessage(event)}</p>
+                      <p className="font-semibold">{getHistoryMessage(event, text, eventLabels)}</p>
                     </div>
                     <p className="mt-1 text-xs text-muted-foreground">
                       <Clock className="mr-1 inline h-3.5 w-3.5" />
-                      {formatDateTime(event.created_at)}，{formatAge(event.age_hours)}
+                      {formatDateTime(event.created_at, language, text)}，{formatAge(event.age_hours, text)}
                     </p>
                   </div>
-                  <span className={`rounded-full border px-2.5 py-1 text-xs font-semibold ${statusClass(ok)}`}>{ok ? "通过" : "需处理"}</span>
+                  <span className={`rounded-full border px-2.5 py-1 text-xs font-semibold ${statusClass(ok)}`}>{ok ? text.passed : text.needsAction}</span>
                 </div>
               );
             })}
           </div>
         ) : (
-          <p className="text-sm text-muted-foreground">暂无健康检查历史。完成一次超级管理员完整检查后，这里会自动出现记录。</p>
+          <p className="text-sm text-muted-foreground">{text.noHistory}</p>
         )}
       </AdminFormSection>
     </div>

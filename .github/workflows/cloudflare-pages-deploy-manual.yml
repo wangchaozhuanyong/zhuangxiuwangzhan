@@ -40,7 +40,7 @@ jobs:
           restore-keys: |
             cloudflare-pages-assets-
 
-      - name: Build
+      - name: Stable release check
         env:
           VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
           VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
@@ -53,20 +53,7 @@ jobs:
           VITE_SITE_ADDRESS: "94, Jalan Mega Mendung, Taman United, 58200 Kuala Lumpur, Malaysia"
           VITE_SITE_SHORT_ADDRESS: "94, Jalan Mega Mendung, 58200"
           VITE_APP_VERSION: ${{ github.event.workflow_run.head_sha || github.sha }}
-        run: npm run build
-
-      - name: Merge retained hashed assets into dist
-        run: npm run deploy:retain-assets -- --cache .deploy-cache/assets --dist dist/assets --max-files 3000
-
-      - name: Verify deployment cache consistency
-        run: npm run verify:deploy-cache
-
-      - name: Lint and test
-        run: |
-          npm run lint
-          npm run test
-          npm run typecheck
-          npm run typecheck:strict-core
+        run: npm run release:check
 
       - name: Deploy (Cloudflare Pages)
         env:

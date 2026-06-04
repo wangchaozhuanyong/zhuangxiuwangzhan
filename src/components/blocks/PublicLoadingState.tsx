@@ -1,5 +1,3 @@
-import Reveal from "@/components/Reveal";
-
 interface PublicLoadingStateProps {
   label?: string;
   title?: string;
@@ -15,14 +13,12 @@ const PublicLoadingState = ({
     <main className="pt-site-header">
       <section className="public-loading-state section-padding">
         <div className="container-narrow">
-          <Reveal>
-            <div className="public-loading-state__panel" role="status" aria-live="polite">
-              <span className="public-loading-state__label">{label}</span>
-              <h1>{title}</h1>
-              <p>{description}</p>
-              <div className="public-loading-state__bar" aria-hidden="true" />
-            </div>
-          </Reveal>
+          <div className="public-loading-state__panel" role="status" aria-live="polite">
+            <span className="public-loading-state__label">{label}</span>
+            <h1>{title}</h1>
+            <p>{description}</p>
+            <div className="public-loading-state__bar" aria-hidden="true" />
+          </div>
         </div>
       </section>
     </main>

@@ -69,9 +69,9 @@ export function AdminPermissionHint({
 }) {
   const info = useAdminPermission(action);
   return (
-    <div className={cn("flex items-center gap-1.5 text-xs", info.allowed ? "text-muted-foreground" : "text-destructive", className)}>
+    <div className={cn("flex min-w-0 items-start gap-1.5 text-xs sm:items-center", info.allowed ? "text-muted-foreground" : "text-destructive", className)}>
       {!info.allowed && <LockKeyhole className="h-3.5 w-3.5 shrink-0" />}
-      <span>{info.reason}</span>
+      <span className="min-w-0 break-words">{info.reason}</span>
     </div>
   );
 }
@@ -97,7 +97,7 @@ export function AdminActionButton({
         {!info.allowed && <LockKeyhole className="mr-2 h-4 w-4" />}
         {children}
       </Button>
-      {!info.allowed && showDeniedHint && <span className="max-w-[220px] text-xs leading-5 text-destructive">{info.reason}</span>}
+      {!info.allowed && showDeniedHint && <span className="max-w-[220px] break-words text-xs leading-5 text-destructive">{info.reason}</span>}
     </span>
   );
 }

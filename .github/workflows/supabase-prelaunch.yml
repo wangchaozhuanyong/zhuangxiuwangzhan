@@ -1,4 +1,4 @@
-name: Supabase prelaunch (migration + submit-lead)
+name: Supabase prelaunch (migration + edge functions)
 
 on:
   workflow_dispatch: {}
@@ -13,17 +13,58 @@ jobs:
         with:
           version: latest
 
+      - name: Check required secrets
+        env:
+          SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+          SUPABASE_DB_PASSWORD: ${{ secrets.SUPABASE_DB_PASSWORD }}
+        run: |
+          test -n "$SUPABASE_ACCESS_TOKEN"
+          test -n "$SUPABASE_DB_PASSWORD"
+
       - name: Link project
         env:
           SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
-        run: supabase link --project-ref rbsnyexjifounogswrjp
+          SUPABASE_DB_PASSWORD: ${{ secrets.SUPABASE_DB_PASSWORD }}
+        run: supabase link --project-ref rbsnyexjifounogswrjp --password "$SUPABASE_DB_PASSWORD"
+
+      - name: List migrations before push
+        env:
+          SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+          SUPABASE_DB_PASSWORD: ${{ secrets.SUPABASE_DB_PASSWORD }}
+        run: supabase migration list --linked --password "$SUPABASE_DB_PASSWORD"
 
       - name: Apply migrations
         env:
           SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
-        run: supabase db push
+          SUPABASE_DB_PASSWORD: ${{ secrets.SUPABASE_DB_PASSWORD }}
+        run: supabase db push --linked --password "$SUPABASE_DB_PASSWORD"
 
-      - name: Deploy submit-lead
+      - name: List migrations after push
         env:
           SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
-        run: supabase functions deploy submit-lead --project-ref rbsnyexjifounogswrjp --no-verify-jwt
+          SUPABASE_DB_PASSWORD: ${{ secrets.SUPABASE_DB_PASSWORD }}
+        run: supabase migration list --linked --password "$SUPABASE_DB_PASSWORD"
+
+      - name: Deploy public Edge Functions
+        env:
+          SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+        run: |
+          supabase functions deploy submit-lead --project-ref rbsnyexjifounogswrjp --no-verify-jwt --use-api
+          supabase functions deploy notify-lead --project-ref rbsnyexjifounogswrjp --no-verify-jwt --use-api
+          supabase functions deploy health-check --project-ref rbsnyexjifounogswrjp --no-verify-jwt --use-api
+          supabase functions deploy sitemap --project-ref rbsnyexjifounogswrjp --no-verify-jwt --use-api
+
+      - name: Deploy protected Edge Functions
+        env:
+          SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+        run: |
+          supabase functions deploy notification-settings --project-ref rbsnyexjifounogswrjp --use-api
+          supabase functions deploy maintenance-reminder --project-ref rbsnyexjifounogswrjp --use-api
+          supabase functions deploy generate-english-content --project-ref rbsnyexjifounogswrjp --use-api
+          supabase functions deploy geocode-address --project-ref rbsnyexjifounogswrjp --use-api
+          supabase functions deploy form-attempts-maintenance --project-ref rbsnyexjifounogswrjp --use-api
+
+      - name: Verify public Edge Functions
+        run: |
+          curl --fail --show-error --silent https://rbsnyexjifounogswrjp.supabase.co/functions/v1/health-check > /tmp/health-check.json
+          curl --fail --show-error --silent https://rbsnyexjifounogswrjp.supabase.co/functions/v1/sitemap > /tmp/sitemap.xml

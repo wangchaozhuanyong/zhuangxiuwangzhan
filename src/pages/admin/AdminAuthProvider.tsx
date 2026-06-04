@@ -1,8 +1,14 @@
 import React, { createContext, useContext, useEffect, useMemo, useRef, useState } from "react";
-import { isSupabaseConfigured, supabase } from "@/lib/supabase";
+import {
+  getAdminRoleStatus,
+  getAdminSession,
+  hasAdminAuthConfig,
+  onAdminAuthStateChange,
+  type AdminRole,
+} from "@/backend/modules/admin-auth/service/adminAuthService";
 
 type AdminAuthState = "checking" | "signed-in" | "signed-out" | "denied";
-export type AdminRole = "super_admin" | "content_editor" | "lead_manager" | "viewer";
+export type { AdminRole };
 
 type AdminAuthContextValue = {
   state: AdminAuthState;
@@ -22,10 +28,16 @@ export function useAdminAuth() {
 export default function AdminAuthProvider({ children }: { children: React.ReactNode }) {
   const [state, setState] = useState<AdminAuthState>("checking");
   const [role, setRole] = useState<AdminRole | null>(null);
+  const roleRef = useRef<AdminRole | null>(null);
   const lastSessionIdRef = useRef<string | null>(null);
 
+  const applyRole = (nextRole: AdminRole | null) => {
+    roleRef.current = nextRole;
+    setRole(nextRole);
+  };
+
   useEffect(() => {
-    if (!isSupabaseConfigured) {
+    if (!hasAdminAuthConfig()) {
       setState("denied");
       return;
     }
@@ -33,52 +45,48 @@ export default function AdminAuthProvider({ children }: { children: React.ReactN
     let active = true;
 
     const check = async () => {
-      const { data } = await supabase!.auth.getSession();
+      const session = await getAdminSession();
       if (!active) return;
 
-      const session = data.session;
       if (!session) {
         lastSessionIdRef.current = null;
-        setRole(null);
+        applyRole(null);
         setState("signed-out");
         return;
       }
 
-      if (lastSessionIdRef.current === session.access_token) {
+      if (lastSessionIdRef.current === session.access_token && roleRef.current) {
         setState((prev) => (prev === "checking" ? "signed-in" : prev));
         return;
       }
 
       lastSessionIdRef.current = session.access_token;
-      const [{ data: isAdmin, error }, { data: adminRole, error: roleError }] = await Promise.all([
-        supabase!.rpc("is_admin"),
-        supabase!.rpc("admin_role"),
-      ]);
+      const { isAdmin, role: adminRole } = await getAdminRoleStatus();
       if (!active) return;
-      if (!error && Boolean(isAdmin)) {
-        setRole(!roleError && adminRole ? (adminRole as AdminRole) : "super_admin");
+      if (isAdmin) {
+        applyRole(adminRole || "super_admin");
         setState("signed-in");
       } else {
-        setRole(null);
+        applyRole(null);
         setState("denied");
       }
     };
 
     void check();
 
-    const { data: listener } = supabase!.auth.onAuthStateChange(() => {
+    const unsubscribe = onAdminAuthStateChange(() => {
       setState("checking");
       void check();
     });
 
     return () => {
       active = false;
-      listener.subscription.unsubscribe();
+      unsubscribe();
     };
   }, []);
 
   const value = useMemo<AdminAuthContextValue>(
-    () => ({ state, isSupabaseConfigured, role, isSuperAdmin: role === "super_admin" }),
+    () => ({ state, isSupabaseConfigured: hasAdminAuthConfig(), role, isSuperAdmin: role === "super_admin" }),
     [state, role],
   );
 

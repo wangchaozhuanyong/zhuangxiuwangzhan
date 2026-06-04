@@ -102,14 +102,17 @@ High-risk admin buttons should use the shared permission helper so each role get
 Run these before deployment:
 
 ```bash
-npm.cmd run typecheck
-npm.cmd run lint
-npm.cmd test -- --run
-npm.cmd run build
-npm.cmd run deploy:retain-assets
-npm.cmd run verify:deploy-cache
+npm.cmd run release:check
 npm.cmd run verify:admin-foundation
 npm.cmd run verify:env
+```
+
+`release:check` refuses to run when the Git working tree is dirty. Commit or stash local changes first so the code deployed to production always matches a Git commit. If you are validating a work-in-progress locally, use `npm.cmd run release:check:dirty`, but do not deploy from that state.
+
+Dynamic image and scrolling performance checks are separated from stable release checks because online measurements can vary by network and cache state:
+
+```bash
+npm.cmd run release:performance
 ```
 
 ## Deployment And Rollback
@@ -121,7 +124,8 @@ Automatic production deployment:
 - `Prelaunch verification` only checks the release. It is not a production deployment by itself.
 - Manual deployment is still available through the `Deploy to Cloudflare Pages` workflow if an operator needs to republish a known commit.
 - The production deploy workflow restores retained hashed assets, builds the new app, merges previous assets into `dist/assets`, verifies cache consistency, then deploys. This keeps old SPA HTML from breaking if it still points at the previous hashed JS chunks.
-- HTML responses for `/`, `/index.html`, `/admin`, `/zh`, and `/en` must stay `no-store` at both browser and CDN level. `/assets/*`, `/images/*`, and `/videos/*` stay `public, max-age=31536000, immutable`, and old hashed files are retained in `dist/assets` during deployment.
+- Public HTML responses for `/`, `/index.html`, `/zh`, `/zh/*`, `/en`, and `/en/*` use short cache headers: `public, max-age=60, stale-while-revalidate=300`, with CDN cache up to 300 seconds. Admin HTML responses for `/admin` and `/admin/*` must stay `no-store`. `/assets/*`, `/images/*`, and `/videos/*` stay `public, max-age=31536000, immutable`, and old hashed files are retained in `dist/assets` during deployment.
+- Do not deploy from a dirty local working tree. If a local manual Pages deploy is unavoidable, record the commit hash, deployment URL, and dirty status, then commit the changes before any GitHub Actions deployment can run.
 
 Before deployment:
 
@@ -129,6 +133,7 @@ Before deployment:
 - Apply database migrations in a staging/test environment first.
 - Run the release checks above.
 - Record the deployment time, commit/version, migration list, and operator.
+- Confirm `git status --short` is clean before production deployment.
 
 After deployment:
 
@@ -137,6 +142,7 @@ After deployment:
 - Confirm media upload works with a small test image.
 - Check `/admin/system-health` and confirm core checks are green.
 - Confirm `https://<project-ref>.functions.supabase.co/health-check` returns `ok: true`.
+- Confirm public pages return `x-flashcast-html-cache: hit` after a second request, while `/admin` returns `x-flashcast-html-cache: bypass-admin`.
 
 Rollback:
 

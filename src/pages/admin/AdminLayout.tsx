@@ -1,4 +1,4 @@
-import { Suspense, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
+import { lazy, Suspense, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Link, Outlet, useLocation } from "react-router-dom";
 import {
@@ -17,7 +17,7 @@ import AdminConfirmProvider from "@/components/admin/AdminConfirmProvider";
 import { Sheet, SheetContent, SheetDescription, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { Skeleton } from "@/components/ui/skeleton";
 import SmartImage from "@/components/SmartImage";
-import { supabase } from "@/lib/supabase";
+import { signOutAdmin } from "@/backend/modules/admin-auth/service/adminAuthService";
 import {
   adminPublicSitePath,
   applyAdminTheme,
@@ -29,7 +29,6 @@ import {
   type AdminLang,
   type AdminTheme,
 } from "@/lib/adminLocale";
-import { useAdminDefaultContentSeed } from "@/lib/adminDefaultContent";
 import {
   ADMIN_BUILD_VERSION,
   ADMIN_ENTRY_RE,
@@ -52,6 +51,52 @@ import { canAdminRoleAccess } from "@/lib/adminRoleAccess";
 import { addCacheBuster, fallbackSiteSettings, fetchSiteSettings } from "@/lib/siteSettingsApi";
 import { cn } from "@/lib/utils";
 import { useAdminAuth } from "@/pages/admin/AdminAuthProvider";
+
+const AdminDefaultContentSeedStatus = lazy(() => import("@/components/admin/AdminDefaultContentSeedStatus"));
+
+const adminRoutePreloaders: Array<[RegExp, () => Promise<unknown>]> = [
+  [/^\/admin\/dashboard$/, () => import("@/pages/admin/AdminDashboard")],
+  [/^\/admin\/content-health$/, () => import("@/pages/admin/AdminContentHealth")],
+  [/^\/admin\/publish-center$/, () => import("@/pages/admin/AdminPublishCenter")],
+  [/^\/admin\/english-center$/, () => import("@/pages/admin/AdminEnglishCenter")],
+  [/^\/admin\/cms$/, () => import("@/pages/admin/AdminCmsBuilder")],
+  [/^\/admin\/settings$/, () => import("@/pages/admin/AdminWebsiteSettings")],
+  [/^\/admin\/leads(?:\/|$)/, () => import("@/pages/admin/AdminLeadList")],
+  [/^\/admin\/quotes(?:\/|$)/, () => import("@/pages/admin/AdminQuoteList")],
+  [/^\/admin\/lead-reports$/, () => import("@/pages/admin/AdminLeadReports")],
+  [/^\/admin\/home$/, () => import("@/pages/admin/AdminHomeEditor")],
+  [/^\/admin\/pages$/, () => import("@/pages/admin/AdminSimpleCms")],
+  [/^\/admin\/about$/, () => import("@/pages/admin/AdminAboutEditor")],
+  [/^\/admin\/faqs$/, () => import("@/pages/admin/AdminSimpleCms")],
+  [/^\/admin\/before-after$/, () => import("@/pages/admin/AdminSimpleCms")],
+  [/^\/admin\/brand-partners$/, () => import("@/pages/admin/AdminSimpleCms")],
+  [/^\/admin\/services(?:\/|$)/, () => import("@/pages/admin/AdminServiceList")],
+  [/^\/admin\/projects(?:\/|$)/, () => import("@/pages/admin/AdminProjectList")],
+  [/^\/admin\/materials(?:\/|$)/, () => import("@/pages/admin/AdminMaterialList")],
+  [/^\/admin\/blog(?:\/|$)/, () => import("@/pages/admin/AdminBlogList")],
+  [/^\/admin\/media$/, () => import("@/pages/admin/AdminMediaLibrary")],
+  [/^\/admin\/seo$/, () => import("@/pages/admin/AdminSeoManager")],
+  [/^\/admin\/users$/, () => import("@/pages/admin/AdminUsers")],
+  [/^\/admin\/notifications$/, () => import("@/pages/admin/AdminNotificationSettings")],
+  [/^\/admin\/system-health$/, () => import("@/pages/admin/AdminSystemHealth")],
+  [/^\/admin\/system-logs$/, () => import("@/pages/admin/AdminSystemLogs")],
+  [/^\/admin\/content\/translation_jobs(?:\/|$)/, () => import("@/pages/admin/AdminTranslationJobs")],
+  [/^\/admin\/content\//, () => import("@/pages/admin/AdminContentEditor")],
+];
+
+const preloadedAdminRoutes = new Set<string>();
+
+const preloadAdminRoute = (path: string) => {
+  const normalizedPath = path.split("#")[0] || path;
+  if (preloadedAdminRoutes.has(normalizedPath)) return;
+  const loader = adminRoutePreloaders.find(([pattern]) => pattern.test(normalizedPath))?.[1];
+  if (!loader) return;
+
+  preloadedAdminRoutes.add(normalizedPath);
+  void loader().catch(() => {
+    preloadedAdminRoutes.delete(normalizedPath);
+  });
+};
 
 const ControlButton = ({
   active,
@@ -87,10 +132,10 @@ const AdminLayout = () => {
   const [navCollapsed, setNavCollapsed] = useState(() => readNavCollapsed());
   const [expandedGroups, setExpandedGroups] = useState<Record<string, boolean>>(() => readExpandedGroups());
   const [adminBrandIconFailed, setAdminBrandIconFailed] = useState(false);
-  const seedSummary = useAdminDefaultContentSeed({ enabled: location.pathname === "/admin/dashboard" });
   const lastBuildCheckAtRef = useRef(0);
   const pendingAdminLangRef = useRef(adminLang);
   const t = copy[adminLang];
+  const showDefaultContentSeedStatus = location.pathname === "/admin/dashboard";
   const { data: adminSiteSettings = fallbackSiteSettings } = useQuery({
     queryKey: ["site-settings"],
     queryFn: fetchSiteSettings,
@@ -302,6 +347,9 @@ const AdminLayout = () => {
         to={item.path}
         title={label}
         aria-current={isActive ? "page" : undefined}
+        onFocus={() => preloadAdminRoute(item.path)}
+        onPointerEnter={() => preloadAdminRoute(item.path)}
+        onTouchStart={() => preloadAdminRoute(item.path)}
         className={cn(
           "group flex min-h-10 min-w-0 items-center gap-2.5 rounded-md border border-transparent px-3 py-2 text-sm font-semibold transition-colors",
           isActive
@@ -440,17 +488,17 @@ const AdminLayout = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background text-foreground">
+    <div data-admin-shell className="min-h-screen overflow-x-clip bg-background text-foreground">
       <AdminConfirmProvider />
       <div className="lg:grid lg:min-h-screen lg:grid-cols-[auto_minmax(0,1fr)]">
         <div className="hidden lg:block lg:sticky lg:top-0 lg:h-screen">
           <Nav variant="desktop" />
         </div>
 
-        <div className="min-w-0">
+        <div className="min-w-0 overflow-x-clip">
           <header className="sticky top-0 z-40 border-b border-border bg-card/95 backdrop-blur-xl">
-            <div className="flex min-h-[72px] items-center justify-between gap-3 px-4 sm:px-6 lg:px-8">
-              <div className="flex min-w-0 flex-1 items-center gap-3">
+            <div className="flex min-h-16 items-center justify-between gap-2 px-3 py-2 sm:min-h-[72px] sm:gap-3 sm:px-6 lg:px-8">
+              <div className="flex min-w-0 flex-1 items-center gap-2 sm:gap-3">
                 <Sheet open={mobileNavOpen} onOpenChange={setMobileNavOpen}>
                   <SheetTrigger asChild>
                     <Button type="button" variant="outline" size="icon" className="h-10 w-10 shrink-0 rounded-lg lg:hidden">
@@ -458,7 +506,7 @@ const AdminLayout = () => {
                       <span className="sr-only">{t.menu}</span>
                     </Button>
                   </SheetTrigger>
-                  <SheetContent side="left" className="w-[320px] max-w-[88vw] border-sidebar-border bg-sidebar p-0 text-sidebar-foreground">
+                  <SheetContent side="left" className="w-[calc(100vw-1rem)] max-w-none border-sidebar-border bg-sidebar p-0 text-sidebar-foreground sm:w-80">
                     <SheetTitle className="sr-only">{t.brand}</SheetTitle>
                     <SheetDescription className="sr-only">{t.subtitle}</SheetDescription>
                     <Nav variant="mobile" />
@@ -466,15 +514,15 @@ const AdminLayout = () => {
                 </Sheet>
 
                 <div className="min-w-0">
-                  <p className="text-[11px] font-bold uppercase tracking-[0.16em] text-muted-foreground">{t.currentPage}</p>
-                  <div className="flex items-center gap-2 truncate text-base font-semibold leading-6 sm:text-lg">
+                  <p className="hidden text-[11px] font-bold uppercase tracking-[0.16em] text-muted-foreground sm:block">{t.currentPage}</p>
+                  <div className="flex min-w-0 items-center gap-1.5 text-sm font-semibold leading-5 sm:gap-2 sm:text-lg sm:leading-6">
                     <span className="truncate">{activeNavLabel}</span>
                     <AdminHelpTip text={activeNavHelp} />
                   </div>
                 </div>
               </div>
 
-              <div className="flex shrink-0 flex-wrap items-center justify-end gap-2">
+              <div className="flex shrink-0 items-center justify-end gap-1.5 sm:gap-2">
                 <div className="hidden min-h-12 items-center gap-1 rounded-full border border-border bg-muted/60 p-1 sm:inline-flex" aria-label={t.language}>
                   <ControlButton active={adminLang === "zh"} label="中文" onClick={() => changeLanguage("zh")}>
                     中
@@ -506,9 +554,9 @@ const AdminLayout = () => {
                 <Button
                   type="button"
                   variant="outline"
-                  className="h-10 rounded-lg px-3 sm:px-4"
+                  className="h-10 w-10 rounded-lg px-0 sm:w-auto sm:px-4"
                   onClick={async () => {
-                    await supabase?.auth.signOut();
+                    await signOutAdmin();
                     window.location.href = "/admin";
                   }}
                 >
@@ -519,12 +567,12 @@ const AdminLayout = () => {
             </div>
           </header>
 
-          <main className="min-w-0 px-4 py-5 sm:px-6 lg:px-8">
+          <main className="min-w-0 px-3 py-4 sm:px-6 sm:py-5 lg:px-8">
             <div className="mx-auto w-full max-w-[1480px] space-y-5">
-              {seedSummary.status === "error" && (
-                <div className="rounded-lg border border-destructive/30 bg-destructive/10 px-4 py-3 text-sm text-destructive">
-                  {t.seedError(seedSummary.error || "Unknown error")}
-                </div>
+              {showDefaultContentSeedStatus && (
+                <Suspense fallback={null}>
+                  <AdminDefaultContentSeedStatus formatError={t.seedError} />
+                </Suspense>
               )}
 
               <Suspense
@@ -536,7 +584,10 @@ const AdminLayout = () => {
                   </div>
                 }
               >
-                <div data-admin-language={adminLang} className="min-w-0 [&_a.inline-flex]:min-h-10 [&_button]:min-h-10">
+                <div
+                  data-admin-language={adminLang}
+                  className="min-w-0 overflow-x-clip [overflow-wrap:anywhere] [&_a.inline-flex]:min-h-10 [&_button]:min-h-10 max-md:[&_select]:min-h-10"
+                >
                   <Outlet />
                 </div>
               </Suspense>

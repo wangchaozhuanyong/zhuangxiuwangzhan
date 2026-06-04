@@ -1,5 +1,9 @@
 import { siteConfig } from "@/config/site";
-import { isSupabaseConfigured, supabase } from "@/lib/supabase";
+import {
+  fetchDefaultSiteSettingsRecord,
+  hasSiteSettingsDatabaseClient,
+  upsertDefaultSiteSettingsRecord,
+} from "@/backend/modules/settings/repository/siteSettingsRepository";
 
 export type SiteSettings = {
   updated_at?: string;
@@ -42,6 +46,40 @@ export const addCacheBuster = (url: string, version?: string) => {
   }
 };
 
+export const DEFAULT_FAVICON_URL = "/favicon-20260604.png";
+export const DEFAULT_TOUCH_ICON_URL = "/apple-touch-icon-20260604.png";
+
+const hasIconExtension = (url: string | null | undefined, extensions: string[]) => {
+  if (!url) return false;
+
+  try {
+    const parsed = new URL(url, "https://example.com");
+    const pathname = parsed.pathname.toLowerCase();
+    return extensions.some((extension) => pathname.endsWith(`.${extension}`));
+  } catch {
+    const [withoutQuery = ""] = url.split(/[?#]/);
+    const normalized = withoutQuery.toLowerCase();
+    return extensions.some((extension) => normalized.endsWith(`.${extension}`));
+  }
+};
+
+export const resolveBrowserFaviconUrl = (
+  settings: Partial<Pick<SiteSettings, "favicon_url" | "updated_at">> | null | undefined,
+) => {
+  const faviconUrl = settings?.favicon_url;
+  const source = hasIconExtension(faviconUrl, ["ico", "png", "svg"]) ? faviconUrl || DEFAULT_FAVICON_URL : DEFAULT_FAVICON_URL;
+  return addCacheBuster(source, settings?.updated_at);
+};
+
+export const resolveAppleTouchIconUrl = (
+  settings: Partial<Pick<SiteSettings, "favicon_url" | "updated_at">> | null | undefined,
+) => {
+  const faviconUrl = settings?.favicon_url;
+  const isCustomFavicon = Boolean(faviconUrl && faviconUrl !== DEFAULT_FAVICON_URL);
+  const source = isCustomFavicon && hasIconExtension(faviconUrl, ["png"]) ? faviconUrl || DEFAULT_TOUCH_ICON_URL : DEFAULT_TOUCH_ICON_URL;
+  return addCacheBuster(source, settings?.updated_at);
+};
+
 const normalizePhoneHref = (phone: string) => `tel:${phone.replace(/[^\d+]/g, "")}`;
 const normalizeWhatsAppNumber = (phone: string) => phone.replace(/[^\d]/g, "");
 
@@ -65,7 +103,7 @@ export const fallbackSiteSettings: SiteSettings = {
   xiaohongshu_url: siteConfig.socialLinks.xiaohongshu,
   linkedin_url: siteConfig.socialLinks.linkedin,
   logo_url: siteConfig.logoUrl,
-  favicon_url: "/favicon-transparent-20260602.png",
+  favicon_url: DEFAULT_FAVICON_URL,
   og_image_url: siteConfig.ogImage,
   default_seo_title_zh: "吉隆坡装修公司 | 住宅商业装修与定制家具 | FLASH CAST",
   default_seo_title_en: "Renovation Company Kuala Lumpur | FLASH CAST",
@@ -105,24 +143,13 @@ export const resolveSiteSettings = (
 };
 
 export const fetchSiteSettings = async () => {
-  if (!isSupabaseConfigured) return fallbackSiteSettings;
+  if (!hasSiteSettingsDatabaseClient()) return fallbackSiteSettings;
 
-  const { data, error } = await supabase!
-    .from("site_settings")
-    .select("*")
-    .eq("id", "default")
-    .maybeSingle();
-
-  if (error || !data) return fallbackSiteSettings;
+  const data = await fetchDefaultSiteSettingsRecord();
+  if (!data) return fallbackSiteSettings;
   return { ...fallbackSiteSettings, ...data } as SiteSettings;
 };
 
 export const saveSiteSettings = async (settings: SiteSettings) => {
-  if (!isSupabaseConfigured) throw new Error("Supabase is not configured.");
-
-  const { error } = await supabase!
-    .from("site_settings")
-    .upsert({ id: "default", ...settings }, { onConflict: "id" });
-
-  if (error) throw error;
+  await upsertDefaultSiteSettingsRecord(settings);
 };

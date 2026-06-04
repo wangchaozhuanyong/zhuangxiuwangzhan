@@ -1,10 +1,27 @@
-import { isSupabaseConfigured, supabase } from "@/lib/supabase";
+import {
+  fetchPublishedBlogPostRowBySlug,
+  fetchPublishedBlogPostRows,
+  fetchPublishedHeroSlideRows,
+  fetchPublishedLandingPageRowBySlug,
+  fetchPublishedMaterialRows,
+  fetchPublishedProjectRowBySlug,
+  fetchPublishedProjectSummaryRows,
+  fetchPublishedProjectSummaryRowsWithContent,
+  fetchPublishedServiceAreaRowBySlug,
+  fetchPublishedServiceRowBySlug,
+  fetchPublishedServiceRows,
+  fetchPublishedServiceSummaryRows,
+  fetchPublishedTestimonialRows,
+  hasPublicContentDatabaseClient,
+} from "@/backend/modules/cms/repository/publicContentRepository";
 import { stripHtml } from "@/lib/text";
 import { translateDisplayText } from "@/i18n/displayLabels";
 import { formatBlogReadTime } from "@/lib/blogMeta";
+import { readPreloadedPublicData } from "@/lib/publicPreload";
 import { toArray, toText, type UnknownRecord } from "@/lib/recordUtils";
 
-const byCreatedAtDesc = { ascending: false };
+const applyOptionalLimit = <T>(items: T[], limit?: number) =>
+  limit && limit > 0 ? items.slice(0, limit) : items;
 
 const normalizeProjectType = (value: string) => {
   const type = value.trim().toLowerCase();
@@ -23,7 +40,7 @@ const normalizeProjectType = (value: string) => {
   return value;
 };
 
-const getFallbackProjects = async (language: "en" | "zh" = "en") => {
+export const getFallbackProjects = async (language: "en" | "zh" = "en") => {
   const { projectsData } = await import("@/data/projects");
   if (language !== "zh") return projectsData;
 
@@ -79,7 +96,7 @@ const getFallbackLocations = async (language: "en" | "zh" = "en") => {
     ])
   );
 };
-const getFallbackServices = async (language: "en" | "zh" = "en") => {
+export const getFallbackServices = async (language: "en" | "zh" = "en") => {
   const { servicesData } = await import("@/data/services");
   if (language !== "zh") return servicesData;
 
@@ -114,35 +131,6 @@ const pickLocalizedList = <T = unknown>(item: UnknownRecord | null | undefined, 
   return toArray<T>(value);
 };
 
-const PROJECT_SUMMARY_SELECT = [
-  "id",
-  "slug",
-  "title_en",
-  "title_zh",
-  "project_type",
-  "location",
-  "excerpt_en",
-  "excerpt_zh",
-  "content_en",
-  "content_zh",
-  "image_url",
-  "sort_order",
-  "project_images(id,image_url,image_type,sort_order,alt_en,alt_zh)",
-].join(",");
-
-const SERVICE_SUMMARY_SELECT = [
-  "id",
-  "slug",
-  "title_en",
-  "title_zh",
-  "excerpt_en",
-  "excerpt_zh",
-  "content_en",
-  "content_zh",
-  "image_url",
-  "sort_order",
-].join(",");
-
 const getOrderedProjectImages = (item: any) => {
   const all = (item.project_images || []).slice().sort((a: any, b: any) => (a.sort_order || 0) - (b.sort_order || 0));
   const cover = all.filter((img: any) => img.image_type === "cover");
@@ -151,7 +139,7 @@ const getOrderedProjectImages = (item: any) => {
   return [...cover, ...gallery, ...beforeAfter];
 };
 
-const mapPublishedProjectSummary = (item: any, language: "en" | "zh") => {
+export const mapPublishedProjectSummary = (item: any, language: "en" | "zh") => {
   const localize = (value: string) => (language === "zh" ? translateDisplayText(value, language) : value);
   const orderedImages = getOrderedProjectImages(item);
   const images = orderedImages.map((img: any) => img.image_url).filter(Boolean);
@@ -177,8 +165,8 @@ const mapPublishedProjectSummary = (item: any, language: "en" | "zh") => {
   };
 };
 
-const applyLimit = <T extends { limit: (count: number) => T }>(query: T, limit?: number) =>
-  limit && limit > 0 ? query.limit(limit) : query;
+const needsProjectSummaryContentFallback = (item: UnknownRecord, language: "en" | "zh") =>
+  !pickLocalizedText(item, "excerpt", language);
 
 export const getPublishedProjectSummaries = async (language: "en" | "zh", limit?: number) => {
   const fallbackProjects = async () => {
@@ -186,20 +174,23 @@ export const getPublishedProjectSummaries = async (language: "en" | "zh", limit?
     return limit && limit > 0 ? projects.slice(0, limit) : projects;
   };
 
-  if (!isSupabaseConfigured) return fallbackProjects();
+  const preloadedRows = readPreloadedPublicData()?.projectSummaries;
+  if (Array.isArray(preloadedRows) && preloadedRows.length) {
+    const summaryRows = applyOptionalLimit(preloadedRows, limit);
+    if (!summaryRows.some((item) => needsProjectSummaryContentFallback(item, language))) {
+      return summaryRows.map((item) => mapPublishedProjectSummary(item, language));
+    }
+  }
 
-  const query = applyLimit(
-    supabase!
-      .from("projects")
-      .select(PROJECT_SUMMARY_SELECT)
-      .eq("status", "published")
-      .order("sort_order", { ascending: true }),
-    limit,
-  );
-  const { data, error } = await query;
+  if (!hasPublicContentDatabaseClient()) return fallbackProjects();
 
-  if (error || !data?.length) return fallbackProjects();
-  return data.map((item: any) => mapPublishedProjectSummary(item, language));
+  const data = await fetchPublishedProjectSummaryRows(limit);
+  if (!data?.length) return fallbackProjects();
+  let summaryRows = data as unknown as UnknownRecord[];
+  if (summaryRows.some((item) => needsProjectSummaryContentFallback(item, language))) {
+    summaryRows = ((await fetchPublishedProjectSummaryRowsWithContent(limit)) as unknown as UnknownRecord[] | null) || summaryRows;
+  }
+  return summaryRows.map((item) => mapPublishedProjectSummary(item, language));
 };
 
 export const getPublishedServiceSummaries = async (language: "en" | "zh" = "en", limit?: number) => {
@@ -208,34 +199,22 @@ export const getPublishedServiceSummaries = async (language: "en" | "zh" = "en",
     return limit && limit > 0 ? services.slice(0, limit) : services;
   };
 
-  if (!isSupabaseConfigured) return fallbackServices();
+  if (!hasPublicContentDatabaseClient()) return fallbackServices();
 
-  const query = applyLimit(
-    supabase!
-      .from("services")
-      .select(SERVICE_SUMMARY_SELECT)
-      .eq("status", "published")
-      .order("sort_order", { ascending: true }),
-    limit,
-  );
-  const { data, error } = await query;
-
-  if (error || !data?.length) return fallbackServices();
+  const data = await fetchPublishedServiceSummaryRows(limit);
+  if (!data?.length) return fallbackServices();
   return data.map((item: any) => mapPublishedService(item, language));
 };
 
 export const getPublishedHeroSlides = async (language: "en" | "zh" = "en") => {
-  if (!isSupabaseConfigured) return [];
+  if (!hasPublicContentDatabaseClient()) return [];
 
-  const { data, error } = await supabase!
-    .from("hero_slides")
-    .select("*")
-    .eq("status", "published")
-    .order("sort_order", { ascending: true });
+  const data = await fetchPublishedHeroSlideRows();
+  if (!data?.length) return [];
+  return data.map((item: any) => mapPublishedHeroSlide(item, language));
+};
 
-  if (error || !data?.length) return [];
-
-  return data.map((item: any) => ({
+export const mapPublishedHeroSlide = (item: any, language: "en" | "zh" = "en") => ({
     id: item.id,
     title: pickLocalizedText(item, "title", language),
     excerpt: pickLocalizedText(item, "excerpt", language),
@@ -243,45 +222,35 @@ export const getPublishedHeroSlides = async (language: "en" | "zh" = "en") => {
     buttonUrl: item.button_url || "/quote",
     image: item.image_url,
     alt: pickLocalizedText(item, "alt", language, pickLocalizedText(item, "title", language)),
-  }));
-};
+});
 
 export const getPublishedTestimonials = async (language: "en" | "zh" = "en") => {
-  if (!isSupabaseConfigured) return [];
+  if (!hasPublicContentDatabaseClient()) return [];
 
-  const { data, error } = await supabase!
-    .from("testimonials")
-    .select("*")
-    .eq("status", "published")
-    .order("sort_order", { ascending: true });
+  const data = await fetchPublishedTestimonialRows();
+  if (!data?.length) return [];
+  return data.map((item: any) => mapPublishedTestimonial(item, language));
+};
 
-  if (error || !data?.length) return [];
-
-  return data.map((item: any) => ({
+export const mapPublishedTestimonial = (item: any, language: "en" | "zh" = "en") => ({
     id: item.id,
     text: pickLocalizedText(item, "content", language),
     client: item.customer_name || "FLASH CAST Client",
     type: "Renovation",
     location: "",
     rating: item.rating || 5,
-  }));
-};
+});
 
 export const getPublishedServices = async (language: "en" | "zh" = "en") => {
-  if (!isSupabaseConfigured) return getFallbackServices(language);
+  if (!hasPublicContentDatabaseClient()) return getFallbackServices(language);
 
-  const { data, error } = await supabase!
-    .from("services")
-    .select("*")
-    .eq("status", "published")
-    .order("sort_order", { ascending: true });
-
-  if (error || !data?.length) return getFallbackServices(language);
+  const data = await fetchPublishedServiceRows();
+  if (!data?.length) return getFallbackServices(language);
 
   return data.map((item: any) => mapPublishedService(item, language));
 };
 
-const mapPublishedService = (item: any, language: "en" | "zh") => ({
+export const mapPublishedService = (item: any, language: "en" | "zh") => ({
     id: item.id,
     title: pickLocalizedText(item, "title", language),
     slug: item.slug,
@@ -299,32 +268,27 @@ const mapPublishedService = (item: any, language: "en" | "zh") => ({
 
 export const getPublishedServiceBySlug = async (slug: string, language: "en" | "zh") => {
   const fallbackServices = async () => (await getFallbackServices(language)).find((service: any) => service.slug === slug) || null;
-  if (!isSupabaseConfigured) return fallbackServices();
+  if (!hasPublicContentDatabaseClient()) return fallbackServices();
 
-  const { data, error } = await supabase!
-    .from("services")
-    .select("*")
-    .eq("status", "published")
-    .eq("slug", slug)
-    .maybeSingle();
-
-  if (error || !data) return fallbackServices();
+  const data = await fetchPublishedServiceRowBySlug(slug);
+  if (!data) return fallbackServices();
   return mapPublishedService(data, language);
 };
 
 export const getPublishedProjectBySlug = async (slug: string, language: "en" | "zh") => {
   const fallbackProjects = async () => (await getFallbackProjects(language)).find((project) => project.slug === slug) || null;
-  if (!isSupabaseConfigured) return fallbackProjects();
+  const preloadedProject = readPreloadedPublicData()?.projectDetails?.[slug];
+  if (preloadedProject) return mapPublishedProjectDetail(preloadedProject, language);
 
-  const { data, error } = await supabase!
-    .from("projects")
-    .select("*, project_images(*)")
-    .eq("status", "published")
-    .eq("slug", slug)
-    .maybeSingle();
+  if (!hasPublicContentDatabaseClient()) return fallbackProjects();
 
-  if (error || !data) return fallbackProjects();
+  const data = await fetchPublishedProjectRowBySlug(slug);
+  if (!data) return fallbackProjects();
 
+  return mapPublishedProjectDetail(data, language);
+};
+
+export function mapPublishedProjectDetail(data: any, language: "en" | "zh") {
   const projectRecord = data as UnknownRecord;
   const orderedImages = toArray<UnknownRecord>(projectRecord.project_images)
     .slice()
@@ -365,12 +329,12 @@ export const getPublishedProjectBySlug = async (slug: string, language: "en" | "
         imageAlts[0] ||
         fallbackAlt),
   };
-};
+}
 
 export const getPublishedMaterials = async (language: "en" | "zh" = "en") => {
-  if (!isSupabaseConfigured) return getFallbackMaterials();
-  const { data, error } = await supabase!.from("materials").select("*").eq("status", "published").order("sort_order");
-  if (error || !data?.length) return getFallbackMaterials();
+  if (!hasPublicContentDatabaseClient()) return getFallbackMaterials();
+  const data = await fetchPublishedMaterialRows();
+  if (!data?.length) return getFallbackMaterials();
 
   const grouped = data.reduce((acc: any[], item: any) => {
     const categoryName = item.category || "Materials";
@@ -437,9 +401,9 @@ export const getPublishedMaterialBySlug = async (slug: string, language: "en" | 
 };
 
 export const getPublishedBlogPosts = async (language: "en" | "zh" = "en") => {
-  if (!isSupabaseConfigured) return getFallbackBlogPosts(language);
-  const { data, error } = await supabase!.from("blog_posts").select("*").eq("status", "published").order("published_at", byCreatedAtDesc);
-  if (error || !data?.length) return getFallbackBlogPosts(language);
+  if (!hasPublicContentDatabaseClient()) return getFallbackBlogPosts(language);
+  const data = await fetchPublishedBlogPostRows();
+  if (!data?.length) return getFallbackBlogPosts(language);
 
   const localize = (value: string) => (language === "zh" ? translateDisplayText(value, language) : value);
 
@@ -459,16 +423,10 @@ export const getPublishedBlogPosts = async (language: "en" | "zh" = "en") => {
 
 export const getPublishedBlogPostBySlug = async (slug: string, language: "en" | "zh" = "en") => {
   const fallbackPost = async () => (await getFallbackBlogPosts(language)).find((post) => post.slug === slug) || null;
-  if (!isSupabaseConfigured) return fallbackPost();
+  if (!hasPublicContentDatabaseClient()) return fallbackPost();
 
-  const { data, error } = await supabase!
-    .from("blog_posts")
-    .select("*")
-    .eq("status", "published")
-    .eq("slug", slug)
-    .maybeSingle();
-
-  if (error || !data) return fallbackPost();
+  const data = await fetchPublishedBlogPostRowBySlug(slug);
+  if (!data) return fallbackPost();
 
   return {
     id: data.id,
@@ -489,23 +447,18 @@ export const getPublishedServiceAreaBySlug = async (slug: string, language: "en"
     const locationsData = await getFallbackLocations(language);
     return locationsData[slug] || null;
   };
-  if (!isSupabaseConfigured) return fallback();
+  if (!hasPublicContentDatabaseClient()) return fallback();
 
-  const { data, error } = await supabase!
-    .from("service_areas")
-    .select("*")
-    .eq("status", "published")
-    .eq("slug", slug)
-    .maybeSingle();
-
-  if (error || !data) return fallback();
+  const data = await fetchPublishedServiceAreaRowBySlug(slug);
+  if (!data) return fallback();
 
   const localize = (value: string) => (language === "zh" ? translateDisplayText(value, language) : value);
 
   const localizedTitle = pickLocalizedText(data, "title", language);
+  const areaName = data.area_name || localizedTitle || "";
 
   return {
-    name: localize(localizedTitle || data.area_name || ""),
+    name: localize(areaName),
     slug: data.slug,
     metaTitle: localize(pickLocalizedText(data, "seo_title", language) || data.area_name || ""),
     description: localize(pickLocalizedText(data, "seo_description", language) || pickLocalizedText(data, "excerpt", language)),
@@ -548,16 +501,10 @@ export const getPublishedLandingPageBySlug = async (slug: string, language: "en"
     };
   };
 
-  if (!isSupabaseConfigured) return fallback();
+  if (!hasPublicContentDatabaseClient()) return fallback();
 
-  const { data, error } = await supabase!
-    .from("landing_pages")
-    .select("*")
-    .eq("status", "published")
-    .eq("slug", slug)
-    .maybeSingle();
-
-  if (error || !data) return fallback();
+  const data = await fetchPublishedLandingPageRowBySlug(slug);
+  if (!data) return fallback();
 
   const localize = (value: string) => (language === "zh" ? translateDisplayText(value, language) : value);
 

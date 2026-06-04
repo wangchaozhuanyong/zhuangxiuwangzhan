@@ -2,11 +2,16 @@ import Reveal from "@/components/Reveal";
 import { useT } from "@/i18n/useT";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { usePublishedProcessSteps } from "@/hooks/usePublishedContent";
+import type { PublishedProcessStep } from "@/lib/homeContentApi";
 import { CheckCircle2, ClipboardList, DraftingCompass, Hammer, MessageCircle, Ruler } from "lucide-react";
 
 const stepIcons = [MessageCircle, Ruler, DraftingCompass, ClipboardList, Hammer, CheckCircle2];
 
-const ProcessSection = () => {
+type ProcessSectionProps = {
+  processSteps?: PublishedProcessStep[];
+};
+
+const ProcessSection = ({ processSteps: providedSteps }: ProcessSectionProps) => {
   const t = useT();
   const { language } = useLanguage();
   const steps = Array.from({ length: 6 }, (_, i) => ({
@@ -15,7 +20,8 @@ const ProcessSection = () => {
     desc: t(`process.step${i + 1}.desc`),
   }));
 
-  const { data: publishedSteps } = usePublishedProcessSteps(language);
+  const { data: fetchedSteps } = usePublishedProcessSteps(language, { enabled: providedSteps === undefined });
+  const publishedSteps = providedSteps === undefined ? fetchedSteps : providedSteps;
   const displaySteps = publishedSteps?.length
     ? publishedSteps
         .slice()

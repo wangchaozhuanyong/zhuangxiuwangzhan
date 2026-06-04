@@ -4,7 +4,8 @@ import { Navigate } from "react-router-dom";
 import { Moon, ShieldCheck, Sun } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { isSupabaseConfigured, supabase } from "@/lib/supabase";
+import { adminLoginText } from "@/i18n/adminLoginText";
+import { hasAdminAuthConfig, signInAdmin } from "@/backend/modules/admin-auth/service/adminAuthService";
 import {
   applyAdminTheme,
   clearAdminTheme,
@@ -17,34 +18,7 @@ import {
 } from "@/lib/adminLocale";
 import { cn } from "@/lib/utils";
 
-const copy = {
-  en: {
-    brand: "FLASH CAST Admin",
-    title: "Admin Login",
-    description: "Sign in to manage website content, enquiries, media and SEO.",
-    email: "Email",
-    password: "Password",
-    signIn: "Sign in",
-    signingIn: "Signing in...",
-    language: "Language",
-    lightTheme: "Light",
-    darkTheme: "Dark",
-    security: "Protected admin area",
-  },
-  zh: {
-    brand: "FLASH CAST 后台",
-    title: "管理员登录",
-    description: "登录后可以管理网站内容、客户询盘、媒体素材和 SEO。",
-    email: "邮箱",
-    password: "密码",
-    signIn: "登录",
-    signingIn: "登录中...",
-    language: "语言",
-    lightTheme: "浅色",
-    darkTheme: "深色",
-    security: "受保护的后台区域",
-  },
-};
+const copy = adminLoginText;
 
 const ToggleButton = ({
   active,
@@ -73,19 +47,20 @@ const ToggleButton = ({
 
 const formatAdminLoginError = (message: string, language: AdminLang) => {
   const normalized = message.toLowerCase();
+  const t = copy[language].errors;
   if (normalized.includes("invalid login credentials")) {
-    return language === "zh" ? "邮箱或密码不正确，请检查后再试。" : "The email or password is incorrect. Please check and try again.";
+    return t.invalidCredentials;
   }
   if (normalized.includes("email not confirmed")) {
-    return language === "zh" ? "这个邮箱还没有完成验证，请先完成邮箱验证。" : "This email has not been confirmed yet.";
+    return t.emailNotConfirmed;
   }
   if (normalized.includes("too many") || normalized.includes("rate")) {
-    return language === "zh" ? "尝试次数太多，请稍后再试。" : "Too many attempts. Please try again later.";
+    return t.tooManyAttempts;
   }
   if (normalized.includes("network") || normalized.includes("fetch")) {
-    return language === "zh" ? "网络连接异常，请检查网络后再试。" : "Network error. Please check your connection and try again.";
+    return t.network;
   }
-  return language === "zh" ? "登录失败，请检查账号、密码或后台权限。" : message || "Sign in failed. Please check your account and permission.";
+  return language === "en" ? message || t.fallback : t.fallback;
 };
 
 const AdminLogin = () => {
@@ -107,7 +82,7 @@ const AdminLogin = () => {
     return () => clearAdminTheme();
   }, []);
 
-  if (!isSupabaseConfigured) {
+  if (!hasAdminAuthConfig()) {
     return <Navigate to="/admin/dashboard" replace />;
   }
 
@@ -123,11 +98,16 @@ const AdminLogin = () => {
     setError("");
     setLoading(true);
 
-    const { error: signInError } = await supabase!.auth.signInWithPassword({ email, password });
+    let signInError: unknown = null;
+    try {
+      await signInAdmin(email, password);
+    } catch (error) {
+      signInError = error;
+    }
     setLoading(false);
 
     if (signInError) {
-      setError(formatAdminLoginError(signInError.message, language));
+      setError(formatAdminLoginError(signInError instanceof Error ? signInError.message : String(signInError), language));
       return;
     }
 
@@ -135,33 +115,33 @@ const AdminLogin = () => {
   };
 
   return (
-    <main className="flex min-h-screen items-center justify-center bg-background px-4 py-10 text-foreground">
+    <main className="flex min-h-screen items-center justify-center overflow-x-clip bg-background px-3 py-6 text-foreground sm:px-4 sm:py-10">
       <Helmet>
-        <title>{`${t.title} | FLASH CAST 后台管理`}</title>
+        <title>{`${t.title} | ${t.helmetTitle}`}</title>
         <meta name="robots" content="noindex, nofollow" />
       </Helmet>
 
       <div className="w-full max-w-lg">
-        <form onSubmit={handleSubmit} className="rounded-lg border border-border bg-card p-6 shadow-sm sm:p-8">
+        <form onSubmit={handleSubmit} className="rounded-lg border border-border bg-card p-4 shadow-sm sm:p-8">
           <div className="mb-6 flex flex-col gap-5 sm:flex-row sm:items-start sm:justify-between">
-            <div className="flex min-w-0 items-start gap-4">
+            <div className="flex min-w-0 items-start gap-3 sm:gap-4">
               <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-primary text-sm font-bold text-primary-foreground">
                 FC
               </div>
               <div className="min-w-0">
                 <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-accent">{t.brand}</p>
-                <h1 className="mt-1 text-2xl font-semibold tracking-normal">{t.title}</h1>
-                <p className="mt-2 text-sm leading-6 text-muted-foreground">{t.description}</p>
+                <h1 className="mt-1 break-words text-xl font-semibold tracking-normal sm:text-2xl">{t.title}</h1>
+                <p className="mt-2 break-words text-sm leading-6 text-muted-foreground">{t.description}</p>
               </div>
             </div>
 
-            <div className="flex shrink-0 items-center justify-end gap-2">
-              <div className="inline-flex h-10 items-center gap-1 rounded-full border border-border bg-muted/60 p-1" aria-label={t.language}>
-                <ToggleButton active={language === "zh"} label="中文" onClick={() => changeLanguage("zh")}>
-                  中文
+            <div className="flex w-full shrink-0 items-center justify-end gap-2 sm:w-auto">
+              <div className="inline-flex h-10 min-w-0 flex-1 items-center justify-center gap-1 rounded-full border border-border bg-muted/60 p-1 sm:flex-none" aria-label={t.language}>
+                <ToggleButton active={language === "zh"} label={t.zhLanguageLabel} onClick={() => changeLanguage("zh")}>
+                  {t.zhLanguageButton}
                 </ToggleButton>
-                <ToggleButton active={language === "en"} label="英文" onClick={() => changeLanguage("en")}>
-                  EN
+                <ToggleButton active={language === "en"} label={t.enLanguageLabel} onClick={() => changeLanguage("en")}>
+                  {t.enLanguageButton}
                 </ToggleButton>
               </div>
               <Button
@@ -218,9 +198,9 @@ const AdminLogin = () => {
             </Button>
           </div>
 
-          <div className="mt-5 flex items-center gap-2 rounded-lg border border-border bg-muted/55 px-3 py-2 text-xs text-muted-foreground">
+          <div className="mt-5 flex items-start gap-2 rounded-lg border border-border bg-muted/55 px-3 py-2 text-xs text-muted-foreground sm:items-center">
             <ShieldCheck className="h-4 w-4 shrink-0 text-accent" />
-            <span>{t.security}</span>
+            <span className="min-w-0 break-words">{t.security}</span>
           </div>
         </form>
       </div>

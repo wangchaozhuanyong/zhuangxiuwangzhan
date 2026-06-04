@@ -6,8 +6,13 @@ import Reveal from "@/components/Reveal";
 import { useT } from "@/i18n/useT";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { usePublishedFaqs } from "@/hooks/usePublishedContent";
+import type { PublishedFaq } from "@/lib/homeContentApi";
 
-const HomeFAQSection = () => {
+type HomeFAQSectionProps = {
+  faqs?: PublishedFaq[];
+};
+
+const HomeFAQSection = ({ faqs: providedFaqs }: HomeFAQSectionProps) => {
   const t = useT();
   const { language } = useLanguage();
   const faqs = Array.from({ length: 7 }, (_, i) => ({
@@ -15,7 +20,8 @@ const HomeFAQSection = () => {
     a: t(`faq.a${i + 1}`),
   }));
 
-  const { data: publishedFaqs } = usePublishedFaqs(language, "home");
+  const { data: fetchedFaqs } = usePublishedFaqs(language, "home", { enabled: providedFaqs === undefined });
+  const publishedFaqs = providedFaqs === undefined ? fetchedFaqs : providedFaqs;
   const displayFaqs = publishedFaqs?.length
     ? publishedFaqs.map((r) => ({ q: r.question, a: r.answer }))
     : faqs;

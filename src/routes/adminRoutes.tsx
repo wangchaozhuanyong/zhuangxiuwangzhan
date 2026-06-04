@@ -4,6 +4,7 @@ import AdminEmptyState from "@/components/admin/AdminEmptyState";
 import AdminPageHeader from "@/components/admin/AdminPageHeader";
 import AdminRoleGate from "@/components/admin/AdminRoleGate";
 import { Button } from "@/components/ui/button";
+import { adminRouteText } from "@/i18n/adminRouteText";
 import { getAdminLang } from "@/lib/adminLocale";
 import { ADMIN_ROLE_GROUPS, type AdminAllowedRoles } from "@/lib/adminRoleAccess";
 import AdminRoute from "@/pages/admin/AdminRoute";
@@ -50,21 +51,17 @@ const withRoleGate = (element: JSX.Element, allowedRoles: AdminAllowedRoles) => 
 );
 
 const AdminNotFound = () => {
-  const zh = getAdminLang() === "zh";
-  const title = zh ? "后台页面不存在" : "Admin page not found";
-  const description = zh
-    ? "这个后台页面不存在，可能是地址写错了，或者功能已经移动到其他菜单。"
-    : "This admin page does not exist. The address may be incorrect or the feature may have moved.";
+  const text = adminRouteText[getAdminLang()];
 
   return (
     <div className="space-y-5">
-      <AdminPageHeader title={title} description={description} />
+      <AdminPageHeader title={text.notFoundTitle} description={text.notFoundDescription} />
       <AdminEmptyState
-        title={zh ? "建议下一步" : "Recommended next step"}
-        description={zh ? "返回工作台后，可以从左侧菜单重新进入需要管理的功能。" : "Go back to the dashboard and choose the correct admin tool from the navigation."}
+        title={text.notFoundNextTitle}
+        description={text.notFoundNextDescription}
         action={
           <Button asChild className="rounded-lg">
-            <Link to="/admin/dashboard">{zh ? "返回总览" : "Back to dashboard"}</Link>
+            <Link to="/admin/dashboard">{text.backDashboard}</Link>
           </Button>
         }
       />

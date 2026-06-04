@@ -236,6 +236,16 @@ const statusLabels: Record<string, Record<string, LabelPair>> = {
     draft: { en: "Draft", zh: "草稿" },
     published: { en: "Published", zh: "已发布" },
     archived: { en: "Archived", zh: "已归档" },
+    active: { en: "Active", zh: "启用中" },
+    inactive: { en: "Inactive", zh: "已停用" },
+    saved: { en: "Saved", zh: "已保存" },
+    done: { en: "Done", zh: "已完成" },
+    running: { en: "Running", zh: "运行中" },
+    failed: { en: "Failed", zh: "失败" },
+    error: { en: "Error", zh: "错误" },
+    success: { en: "Success", zh: "成功" },
+    pending: { en: "Pending", zh: "待处理" },
+    unknown: { en: "Unknown status", zh: "未知状态" },
   },
   leads: {
     new: { en: "New", zh: "新咨询" },
@@ -262,6 +272,7 @@ const statusLabels: Record<string, Record<string, LabelPair>> = {
     failed: { en: "Failed", zh: "失败" },
   },
 };
+const fallbackStatusLabel: LabelPair = statusLabels.default?.unknown ?? { en: "Unknown status", zh: "Unknown status" };
 
 const locationLabels: Record<string, LabelPair> = {
   "kuala-lumpur": { en: "Kuala Lumpur", zh: "吉隆坡" },
@@ -456,7 +467,9 @@ export const translateKeywordLabel = (value: string, language: Language) =>
 
 export const translateStatusLabel = (table: string, value: string, language: Language) => {
   const tableMap = statusLabels[table] || statusLabels.default || {};
-  return tableMap[value]?.[language] || value;
+  const normalized = normalizeKey(value || "");
+  if (!normalized || normalized === "-" || normalized === "all") return value;
+  return tableMap[normalized]?.[language] || fallbackStatusLabel[language];
 };
 
 export const translateFieldLabel = (field: string, language: Language) => {

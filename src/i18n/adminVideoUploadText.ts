@@ -1,0 +1,28 @@
+export const adminVideoUploadText = {
+  en: {
+    posterUnsupported: "The browser does not support video poster processing.",
+    posterFailed: "Video poster generation failed.",
+    tooLarge: "Video cannot exceed {max}. Larger videos should use a server transcoding queue or video cloud service.",
+    invalidType: "Only MP4, WebM, and MOV videos can be uploaded.",
+    readFailed: "Video read failed. Confirm the file is not corrupted.",
+    seekFailed: "Video poster capture failed.",
+    uploaded: "Video uploaded and a WebP poster was generated automatically. Keep poster-first loading and lazy loading on the frontend.",
+    uploadFailed: "Video upload failed. Please try again later.",
+    uploading: "Uploading...",
+    upload: "Upload video",
+    helpText: "After upload, video width, height, duration, and size are read automatically, and a WebP poster is captured. The original video is not deleted and pixels are not changed.",
+  },
+  zh: {
+    posterUnsupported: "浏览器不支持视频封面处理",
+    posterFailed: "视频封面生成失败",
+    tooLarge: "视频不能超过 {max}。更大的视频建议走服务端转码队列或视频云服务。",
+    invalidType: "只允许上传 MP4、WebM、MOV 视频。",
+    readFailed: "视频读取失败，请确认文件没有损坏。",
+    seekFailed: "视频封面截取失败。",
+    uploaded: "视频已上传，并已自动生成 WebP 封面。前台使用时请保持 poster 优先和延迟加载。",
+    uploadFailed: "视频上传失败，请稍后再试。",
+    uploading: "上传中...",
+    upload: "上传视频",
+    helpText: "上传后会自动读取视频宽高、时长、大小，并截取 WebP 封面。视频本体不会被删，也不会改像素。",
+  },
+} as const;

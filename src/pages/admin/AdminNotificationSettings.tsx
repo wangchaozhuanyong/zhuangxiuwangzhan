@@ -7,10 +7,15 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
 import { useToast } from "@/hooks/use-toast";
-import { supabase } from "@/lib/supabase";
 import type { NotificationSettings } from "@/lib/adminEditorData";
-import { useAdminNotificationSettings } from "@/lib/adminQueries";
+import { useAdminNotificationSettings } from "@/lib/adminSystemQueries";
 import { getAdminLang } from "@/lib/adminLocale";
+import {
+  saveAdminNotificationSettings,
+  testAdminMaintenanceReminder,
+  testAdminTelegramNotification,
+} from "@/backend/modules/settings/service/notificationSettingsService";
+import { formatUserFacingError } from "@/lib/userFacingText";
 
 const emptySettings: NotificationSettings = {
   telegram_enabled: false,
@@ -165,9 +170,9 @@ const AdminNotificationSettings = () => {
 
   useEffect(() => {
     if (error) {
-      toast({ title: t.loadFailed, description: error instanceof Error ? error.message : String(error), variant: "destructive" });
+      toast({ title: t.loadFailed, description: formatUserFacingError(error, lang), variant: "destructive" });
     }
-  }, [error, toast, t.loadFailed]);
+  }, [error, lang, toast, t.loadFailed]);
 
   useEffect(() => {
     if (!remoteSettings || formDirtyRef.current) return;
@@ -195,9 +200,8 @@ const AdminNotificationSettings = () => {
     }
 
     setSaving(true);
-    const { data, error } = await supabase!.functions.invoke("notification-settings", {
-      body: {
-        action: "save",
+    try {
+      const nextSettings = await saveAdminNotificationSettings({
         telegram_enabled: enabled,
         telegram_bot_token: botToken,
         telegram_chat_id: chatId.trim(),
@@ -205,55 +209,43 @@ const AdminNotificationSettings = () => {
         maintenance_reminder_day: maintenanceDay,
         maintenance_reminder_time: maintenanceTime.trim(),
         maintenance_timezone: maintenanceTimezone.trim(),
-      },
-    });
+      });
 
-    if (error) {
-      toast({ title: t.saveFailed, description: error.message, variant: "destructive" });
+      applyNotificationForm(nextSettings || emptySettings);
       setSaving(false);
-      return;
+      toast({ title: t.saved });
+      void queryClient.invalidateQueries({ queryKey: ["admin", "notification_settings"] });
+      await refetch();
+    } catch (error) {
+      toast({ title: t.saveFailed, description: formatUserFacingError(error, lang), variant: "destructive" });
+      setSaving(false);
     }
-
-    const nextSettings = data.settings || emptySettings;
-    applyNotificationForm(nextSettings);
-    setSaving(false);
-    toast({ title: t.saved });
-    void queryClient.invalidateQueries({ queryKey: ["admin", "notification_settings"] });
-    await refetch();
   };
 
   const testTelegram = async () => {
     if (!canManageSettings) return;
     setTesting(true);
-    const { error } = await supabase!.functions.invoke("notification-settings", {
-      body: { action: "test" },
-    });
-
-    if (error) {
-      toast({ title: t.testFailed, description: error.message, variant: "destructive" });
+    try {
+      await testAdminTelegramNotification();
       setTesting(false);
-      return;
+      toast({ title: t.testSent });
+    } catch (error) {
+      toast({ title: t.testFailed, description: formatUserFacingError(error, lang), variant: "destructive" });
+      setTesting(false);
     }
-
-    setTesting(false);
-    toast({ title: t.testSent });
   };
 
   const testMaintenanceReminder = async () => {
     if (!canManageSettings) return;
     setTestingMaintenance(true);
-    const { error } = await supabase!.functions.invoke("maintenance-reminder", {
-      body: { test: true, include_monthly: includeMonthly },
-    });
-
-    if (error) {
-      toast({ title: t.maintenanceTestFailed, description: error.message, variant: "destructive" });
+    try {
+      await testAdminMaintenanceReminder(includeMonthly);
       setTestingMaintenance(false);
-      return;
+      toast({ title: t.maintenanceSent });
+    } catch (error) {
+      toast({ title: t.maintenanceTestFailed, description: formatUserFacingError(error, lang), variant: "destructive" });
+      setTestingMaintenance(false);
     }
-
-    setTestingMaintenance(false);
-    toast({ title: t.maintenanceSent });
   };
 
   return (
@@ -266,7 +258,7 @@ const AdminNotificationSettings = () => {
 
       {!canManageSettings && <AdminPermissionHint action="settings.write" />}
 
-      <div className="rounded-xl border border-border bg-card p-6">
+      <div className="rounded-xl border border-border bg-card p-4 sm:p-6">
         <div className="flex flex-col gap-3 border-b border-border pb-5 md:flex-row md:items-start md:justify-between">
           <div>
             <p className="text-xs font-semibold uppercase tracking-[0.25em] text-accent">{t.notifications}</p>
@@ -282,8 +274,8 @@ const AdminNotificationSettings = () => {
           <div className="py-12 text-center text-sm text-muted-foreground">{t.loading}</div>
         ) : (
           <div className="grid gap-6 pt-6">
-            <div className="flex items-center justify-between rounded-lg border border-border p-4">
-              <div>
+            <div className="flex items-center justify-between gap-3 rounded-lg border border-border p-4">
+              <div className="min-w-0">
                 <Label htmlFor="telegram-enabled">{t.enableLead}</Label>
                 <p className="mt-1 text-sm text-muted-foreground">{t.enableLeadDesc}</p>
               </div>
@@ -328,7 +320,7 @@ const AdminNotificationSettings = () => {
             </div>
 
             <p className="text-xs text-muted-foreground">{t.saveTip}</p>
-            <div className="flex flex-col gap-3 border-t border-border pt-5 sm:flex-row">
+            <div data-admin-mobile-actions className="flex flex-col gap-3 border-t border-border pt-5 sm:flex-row">
               <AdminActionButton action="settings.write" onClick={saveSettings} disabled={saving || testing} showDeniedHint={false}>
                 {saving ? t.saving : t.save}
               </AdminActionButton>
@@ -340,7 +332,7 @@ const AdminNotificationSettings = () => {
         )}
       </div>
 
-      <div className="rounded-xl border border-border bg-card p-6">
+      <div className="rounded-xl border border-border bg-card p-4 sm:p-6">
         <div className="border-b border-border pb-5">
           <p className="text-xs font-semibold uppercase tracking-[0.25em] text-accent">{t.ops}</p>
           <h2 className="font-display text-2xl font-bold">{t.maintenance}</h2>
@@ -356,8 +348,8 @@ const AdminNotificationSettings = () => {
         </div>
 
         <div className="grid gap-4 pt-6 md:grid-cols-2">
-          <div className="flex items-center justify-between rounded-lg border border-border p-4">
-            <div>
+          <div className="flex items-center justify-between gap-3 rounded-lg border border-border p-4">
+            <div className="min-w-0">
               <Label htmlFor="maintenance-enabled">{t.enableMaintenance}</Label>
             </div>
             <Switch
@@ -428,7 +420,7 @@ const AdminNotificationSettings = () => {
         </div>
 
         <p className="text-xs text-muted-foreground">{t.monthlyTip}</p>
-        <div className="flex flex-col gap-3 border-t border-border pt-5 sm:flex-row">
+        <div data-admin-mobile-actions className="flex flex-col gap-3 border-t border-border pt-5 sm:flex-row">
           <AdminActionButton action="settings.write" onClick={saveSettings} disabled={saving || testingMaintenance} showDeniedHint={false}>
             {saving ? t.saving : t.save}
           </AdminActionButton>

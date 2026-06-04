@@ -4,6 +4,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import AdminHelpTip from "@/components/admin/AdminHelpTip";
+import { adminSharedText, formatAdminSharedText } from "@/i18n/adminSharedText";
+import { getAdminLang } from "@/lib/adminLocale";
 
 type TextItem = string;
 type ProcessStep = { title?: string; desc?: string; [key: string]: unknown };
@@ -32,8 +34,8 @@ type HomeSectionItem = {
 type EditorHelp = { helpText?: string | null };
 
 const EditorLabel = ({ label, helpText }: { label: string; helpText?: string | null }) => (
-  <label className="flex items-center gap-1.5 text-sm font-medium">
-    <span>{label}</span>
+  <label className="flex min-w-0 items-center gap-1.5 text-sm font-medium">
+    <span className="min-w-0 [overflow-wrap:anywhere]">{label}</span>
     <AdminHelpTip text={helpText} />
   </label>
 );
@@ -90,26 +92,30 @@ const RowActions = ({
   length: number;
   onMove: (direction: -1 | 1) => void;
   onRemove: () => void;
-}) => (
-  <div className="flex shrink-0 gap-2">
-    <Button type="button" variant="outline" size="icon" onClick={() => onMove(-1)} disabled={index === 0} aria-label="上移">
-      <ArrowUp className="h-4 w-4" />
-    </Button>
-    <Button type="button" variant="outline" size="icon" onClick={() => onMove(1)} disabled={index === length - 1} aria-label="下移">
-      <ArrowDown className="h-4 w-4" />
-    </Button>
-    <Button type="button" variant="outline" size="icon" onClick={onRemove} aria-label="删除">
-      <Trash2 className="h-4 w-4" />
-    </Button>
-  </div>
-);
+}) => {
+  const text = adminSharedText[getAdminLang()];
+
+  return (
+    <div className="grid shrink-0 grid-cols-3 gap-2 sm:flex">
+      <Button type="button" variant="outline" size="icon" onClick={() => onMove(-1)} disabled={index === 0} aria-label={text.moveUp}>
+        <ArrowUp className="h-4 w-4" />
+      </Button>
+      <Button type="button" variant="outline" size="icon" onClick={() => onMove(1)} disabled={index === length - 1} aria-label={text.moveDown}>
+        <ArrowDown className="h-4 w-4" />
+      </Button>
+      <Button type="button" variant="outline" size="icon" onClick={onRemove} aria-label={text.delete}>
+        <Trash2 className="h-4 w-4" />
+      </Button>
+    </div>
+  );
+};
 
 export const TextListEditor = ({
   label,
   value,
   onChange,
-  placeholder = "填写一条内容",
-  addLabel = "添加一条",
+  placeholder,
+  addLabel,
   helpText,
 }: {
   label: string;
@@ -118,7 +124,10 @@ export const TextListEditor = ({
   placeholder?: string;
   addLabel?: string;
 } & EditorHelp) => {
+  const text = adminSharedText[getAdminLang()];
   const items = normalizeTextItems(value);
+  const effectivePlaceholder = placeholder || text.textPlaceholder;
+  const effectiveAddLabel = addLabel || text.textAdd;
   const update = (index: number, nextValue: string) => onChange(items.map((item, i) => (i === index ? nextValue : item)));
   const remove = (index: number) => onChange(items.filter((_, i) => i !== index));
 
@@ -127,8 +136,8 @@ export const TextListEditor = ({
       <EditorLabel label={label} helpText={helpText} />
       <div className="space-y-2">
         {items.map((item, index) => (
-          <div key={`${label}-${index}`} className="flex gap-2 rounded-lg border border-border bg-background p-3">
-            <Input value={item} onChange={(event) => update(index, event.target.value)} placeholder={placeholder} />
+          <div key={`${label}-${index}`} className="flex min-w-0 flex-col gap-2 rounded-lg border border-border bg-background p-3 sm:flex-row">
+            <Input className="min-w-0" value={item} onChange={(event) => update(index, event.target.value)} placeholder={effectivePlaceholder} />
             <RowActions
               index={index}
               length={items.length}
@@ -140,7 +149,7 @@ export const TextListEditor = ({
       </div>
       <Button type="button" variant="outline" size="sm" onClick={() => onChange([...items, ""])}>
         <Plus className="mr-2 h-4 w-4" />
-        {addLabel}
+        {effectiveAddLabel}
       </Button>
     </div>
   );
@@ -156,6 +165,7 @@ export const ProcessStepsEditor = ({
   value?: ProcessStep[];
   onChange: (value: ProcessStep[]) => void;
 } & EditorHelp) => {
+  const text = adminSharedText[getAdminLang()];
   const items = normalizeProcessSteps(value);
   const update = (index: number, patch: Partial<ProcessStep>) => onChange(items.map((item, i) => (i === index ? { ...item, ...patch } : item)));
   const remove = (index: number) => onChange(items.filter((_, i) => i !== index));
@@ -166,8 +176,8 @@ export const ProcessStepsEditor = ({
       <div className="space-y-3">
         {items.map((item, index) => (
           <div key={`${label}-${index}`} className="rounded-lg border border-border bg-background p-4">
-            <div className="mb-3 flex items-center justify-between gap-3">
-              <span className="text-sm font-medium">步骤 {index + 1}</span>
+            <div className="mb-3 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+              <span className="text-sm font-medium">{formatAdminSharedText(text.stepLabel, { index: index + 1 })}</span>
               <RowActions
                 index={index}
                 length={items.length}
@@ -176,16 +186,14 @@ export const ProcessStepsEditor = ({
               />
             </div>
             <div className="grid gap-3 md:grid-cols-2">
-              <Input value={item.title || ""} onChange={(event) => update(index, { title: event.target.value })} placeholder="步骤标题" />
-              <Textarea value={item.desc || ""} onChange={(event) => update(index, { desc: event.target.value })} placeholder="步骤说明" rows={3} />
+              <Input value={item.title || ""} onChange={(event) => update(index, { title: event.target.value })} placeholder={text.stepTitlePlaceholder} />
+              <Textarea value={item.desc || ""} onChange={(event) => update(index, { desc: event.target.value })} placeholder={text.stepDescPlaceholder} rows={3} />
             </div>
           </div>
         ))}
       </div>
       <Button type="button" variant="outline" size="sm" onClick={() => onChange([...items, { title: "", desc: "" }])}>
-        <Plus className="mr-2 h-4 w-4" />
-        添加步骤
-      </Button>
+        <Plus className="mr-2 h-4 w-4" />{text.addStep}</Button>
     </div>
   );
 };
@@ -200,6 +208,7 @@ export const FaqListEditor = ({
   value?: FaqItem[];
   onChange: (value: FaqItem[]) => void;
 } & EditorHelp) => {
+  const text = adminSharedText[getAdminLang()];
   const items = normalizeFaqs(value);
   const update = (index: number, patch: Partial<FaqItem>) => onChange(items.map((item, i) => (i === index ? { ...item, ...patch } : item)));
   const remove = (index: number) => onChange(items.filter((_, i) => i !== index));
@@ -210,8 +219,8 @@ export const FaqListEditor = ({
       <div className="space-y-3">
         {items.map((item, index) => (
           <div key={`${label}-${index}`} className="rounded-lg border border-border bg-background p-4">
-            <div className="mb-3 flex items-center justify-between gap-3">
-              <span className="text-sm font-medium">问题 {index + 1}</span>
+            <div className="mb-3 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+              <span className="text-sm font-medium">{formatAdminSharedText(text.questionLabel, { index: index + 1 })}</span>
               <RowActions
                 index={index}
                 length={items.length}
@@ -220,16 +229,14 @@ export const FaqListEditor = ({
               />
             </div>
             <div className="space-y-3">
-              <Textarea value={item.q || ""} onChange={(event) => update(index, { q: event.target.value })} placeholder="问题" rows={2} />
-              <Textarea value={item.a || ""} onChange={(event) => update(index, { a: event.target.value })} placeholder="答案" rows={4} />
+              <Textarea value={item.q || ""} onChange={(event) => update(index, { q: event.target.value })} placeholder={text.questionPlaceholder} rows={2} />
+              <Textarea value={item.a || ""} onChange={(event) => update(index, { a: event.target.value })} placeholder={text.answerPlaceholder} rows={4} />
             </div>
           </div>
         ))}
       </div>
       <Button type="button" variant="outline" size="sm" onClick={() => onChange([...items, { q: "", a: "" }])}>
-        <Plus className="mr-2 h-4 w-4" />
-        添加问答
-      </Button>
+        <Plus className="mr-2 h-4 w-4" />{text.addFaq}</Button>
     </div>
   );
 };
@@ -250,6 +257,7 @@ export const ProjectCardsEditor = ({
   metaKey: "type" | "location";
   metaLabel: string;
 } & EditorHelp) => {
+  const text = adminSharedText[getAdminLang()];
   const items = normalizeProjectCards(value);
   const update = (index: number, patch: Partial<ProjectCard>) => onChange(items.map((item, i) => (i === index ? { ...item, ...patch } : item)));
   const remove = (index: number) => onChange(items.filter((_, i) => i !== index));
@@ -260,8 +268,8 @@ export const ProjectCardsEditor = ({
       <div className="space-y-3">
         {items.map((item, index) => (
           <div key={`${label}-${index}`} className="rounded-lg border border-border bg-background p-4">
-            <div className="mb-3 flex items-center justify-between gap-3">
-              <span className="text-sm font-medium">项目卡片 {index + 1}</span>
+            <div className="mb-3 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+              <span className="text-sm font-medium">{formatAdminSharedText(text.projectCardLabel, { index: index + 1 })}</span>
               <RowActions
                 index={index}
                 length={items.length}
@@ -270,10 +278,10 @@ export const ProjectCardsEditor = ({
               />
             </div>
             <div className="grid gap-3 md:grid-cols-2">
-              <Input value={item.title || ""} onChange={(event) => update(index, { title: event.target.value })} placeholder="项目标题" />
+              <Input value={item.title || ""} onChange={(event) => update(index, { title: event.target.value })} placeholder={text.projectTitlePlaceholder} />
               <Input value={String(item[metaKey] || "")} onChange={(event) => update(index, { [metaKey]: event.target.value })} placeholder={metaLabel} />
               <div className="space-y-3 md:col-span-2">
-                <Input value={item.image || ""} onChange={(event) => update(index, { image: event.target.value })} placeholder="图片地址" />
+                <Input value={item.image || ""} onChange={(event) => update(index, { image: event.target.value })} placeholder={text.imageUrlPlaceholder} />
                 <AdminImageUpload value={item.image || ""} folder={folder} recordAsset assetUsageType="general" onUploaded={(url) => update(index, { image: url })} />
               </div>
             </div>
@@ -281,9 +289,7 @@ export const ProjectCardsEditor = ({
         ))}
       </div>
       <Button type="button" variant="outline" size="sm" onClick={() => onChange([...items, { title: "", [metaKey]: "", image: "" }])}>
-        <Plus className="mr-2 h-4 w-4" />
-        添加项目卡片
-      </Button>
+        <Plus className="mr-2 h-4 w-4" />{text.addProjectCard}</Button>
     </div>
   );
 };
@@ -300,6 +306,7 @@ export const AboutSectionItemsEditor = ({
   value?: AboutSectionItem[];
   onChange: (value: AboutSectionItem[]) => void;
 } & EditorHelp) => {
+  const text = adminSharedText[getAdminLang()];
   const items = normalizeAboutItems(value);
   const update = (index: number, patch: Partial<AboutSectionItem>) => onChange(items.map((item, i) => (i === index ? { ...item, ...patch } : item)));
   const remove = (index: number) => onChange(items.filter((_, i) => i !== index));
@@ -319,7 +326,7 @@ export const AboutSectionItemsEditor = ({
     return (
       <div className="space-y-2">
         <EditorLabel label={label} helpText={helpText} />
-        <p className="text-sm text-muted-foreground">这个区块暂时不需要列表内容，标题、正文和图片在上面编辑即可。</p>
+        <p className="text-sm text-muted-foreground">{text.noListNeeded}</p>
       </div>
     );
   }
@@ -330,8 +337,8 @@ export const AboutSectionItemsEditor = ({
       <div className="space-y-3">
         {items.map((item, index) => (
           <div key={`${label}-${index}`} className="rounded-lg border border-border bg-background p-4">
-            <div className="mb-3 flex items-center justify-between gap-3">
-              <span className="text-sm font-medium">项目 {index + 1}</span>
+            <div className="mb-3 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+              <span className="text-sm font-medium">{formatAdminSharedText(text.itemLabel, { index: index + 1 })}</span>
               <RowActions
                 index={index}
                 length={items.length}
@@ -340,33 +347,31 @@ export const AboutSectionItemsEditor = ({
               />
             </div>
             {isIntro ? (
-              <Textarea value={item.title || ""} onChange={(event) => update(index, { title: event.target.value })} placeholder="段落内容" rows={4} />
+              <Textarea value={item.title || ""} onChange={(event) => update(index, { title: event.target.value })} placeholder={text.paragraphPlaceholder} rows={4} />
             ) : isStats ? (
               <div className="grid gap-3 md:grid-cols-3">
-                <Input value={item.value || ""} onChange={(event) => update(index, { value: event.target.value })} placeholder="数字或短语，例如 200+" />
-                <Input value={item.label || ""} onChange={(event) => update(index, { label: event.target.value })} placeholder="标签" />
-                <Input value={item.icon || ""} onChange={(event) => update(index, { icon: event.target.value })} placeholder="图标代号，例如 star" />
+                <Input value={item.value || ""} onChange={(event) => update(index, { value: event.target.value })} placeholder={text.statValuePlaceholder} />
+                <Input value={item.label || ""} onChange={(event) => update(index, { label: event.target.value })} placeholder={text.labelPlaceholder} />
+                <Input value={item.icon || ""} onChange={(event) => update(index, { icon: event.target.value })} placeholder={text.iconPlaceholder} />
               </div>
             ) : isMilestone ? (
               <div className="grid gap-3 md:grid-cols-2">
-                <Input value={item.year || ""} onChange={(event) => update(index, { year: event.target.value })} placeholder="年份，例如 2025" />
-                <Input value={item.title || ""} onChange={(event) => update(index, { title: event.target.value })} placeholder="标题" />
-                <Textarea className="md:col-span-2" value={item.desc || ""} onChange={(event) => update(index, { desc: event.target.value })} placeholder="说明" rows={3} />
+                <Input value={item.year || ""} onChange={(event) => update(index, { year: event.target.value })} placeholder={text.yearPlaceholder} />
+                <Input value={item.title || ""} onChange={(event) => update(index, { title: event.target.value })} placeholder={text.titlePlaceholder} />
+                <Textarea className="md:col-span-2" value={item.desc || ""} onChange={(event) => update(index, { desc: event.target.value })} placeholder={text.descriptionPlaceholder} rows={3} />
               </div>
             ) : (
               <div className="grid gap-3 md:grid-cols-2">
-                <Input value={item.title || ""} onChange={(event) => update(index, { title: event.target.value })} placeholder="标题" />
-                <Input value={item.icon || ""} onChange={(event) => update(index, { icon: event.target.value })} placeholder="图标代号，例如 paintbrush" />
-                <Textarea className="md:col-span-2" value={item.desc || ""} onChange={(event) => update(index, { desc: event.target.value })} placeholder="说明" rows={3} />
+                <Input value={item.title || ""} onChange={(event) => update(index, { title: event.target.value })} placeholder={text.titlePlaceholder} />
+                <Input value={item.icon || ""} onChange={(event) => update(index, { icon: event.target.value })} placeholder={text.iconPaintbrushPlaceholder} />
+                <Textarea className="md:col-span-2" value={item.desc || ""} onChange={(event) => update(index, { desc: event.target.value })} placeholder={text.descriptionPlaceholder} rows={3} />
               </div>
             )}
           </div>
         ))}
       </div>
       <Button type="button" variant="outline" size="sm" onClick={() => onChange([...items, addItem])}>
-        <Plus className="mr-2 h-4 w-4" />
-        添加项目
-      </Button>
+        <Plus className="mr-2 h-4 w-4" />{text.addItem}</Button>
     </div>
   );
 };
@@ -383,6 +388,7 @@ export const HomeSectionItemsEditor = ({
   onChange: (value: HomeSectionItem[]) => void;
   variant: "stats" | "why";
 } & EditorHelp) => {
+  const text = adminSharedText[getAdminLang()];
   const items = normalizeHomeItems(value);
   const update = (index: number, patch: Partial<HomeSectionItem>) => onChange(items.map((item, i) => (i === index ? { ...item, ...patch } : item)));
   const remove = (index: number) => onChange(items.filter((_, i) => i !== index));
@@ -397,8 +403,8 @@ export const HomeSectionItemsEditor = ({
       <div className="space-y-3">
         {items.map((item, index) => (
           <div key={`${label}-${index}`} className="rounded-lg border border-border bg-background p-4">
-            <div className="mb-3 flex items-center justify-between gap-3">
-              <span className="text-sm font-medium">项目 {index + 1}</span>
+            <div className="mb-3 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+              <span className="text-sm font-medium">{formatAdminSharedText(text.itemLabel, { index: index + 1 })}</span>
               <RowActions
                 index={index}
                 length={items.length}
@@ -409,28 +415,26 @@ export const HomeSectionItemsEditor = ({
             <div className="grid gap-3 md:grid-cols-2">
               {variant === "stats" ? (
                 <>
-                  <Input value={item.value || ""} onChange={(event) => update(index, { value: event.target.value })} placeholder="数字或短语，例如 200+" />
-                  <Input value={item.icon || ""} onChange={(event) => update(index, { icon: event.target.value })} placeholder="图标代号，例如 star" />
-                  <Input value={item.label_zh || ""} onChange={(event) => update(index, { label_zh: event.target.value })} placeholder="中文标签" />
-                  <Input value={item.label_en || ""} onChange={(event) => update(index, { label_en: event.target.value })} placeholder="英文标签" />
+                  <Input value={item.value || ""} onChange={(event) => update(index, { value: event.target.value })} placeholder={text.statValuePlaceholder} />
+                  <Input value={item.icon || ""} onChange={(event) => update(index, { icon: event.target.value })} placeholder={text.iconPlaceholder} />
+                  <Input value={item.label_zh || ""} onChange={(event) => update(index, { label_zh: event.target.value })} placeholder={text.zhLabelPlaceholder} />
+                  <Input value={item.label_en || ""} onChange={(event) => update(index, { label_en: event.target.value })} placeholder={text.enLabelPlaceholder} />
                 </>
               ) : (
                 <>
-                  <Input value={item.title_zh || ""} onChange={(event) => update(index, { title_zh: event.target.value })} placeholder="中文标题" />
-                  <Input value={item.title_en || ""} onChange={(event) => update(index, { title_en: event.target.value })} placeholder="英文标题" />
-                  <Input value={item.icon || ""} onChange={(event) => update(index, { icon: event.target.value })} placeholder="图标代号，例如 paintbrush" />
+                  <Input value={item.title_zh || ""} onChange={(event) => update(index, { title_zh: event.target.value })} placeholder={text.zhTitlePlaceholder} />
+                  <Input value={item.title_en || ""} onChange={(event) => update(index, { title_en: event.target.value })} placeholder={text.enTitlePlaceholder} />
+                  <Input value={item.icon || ""} onChange={(event) => update(index, { icon: event.target.value })} placeholder={text.iconPaintbrushPlaceholder} />
                 </>
               )}
-              <Textarea value={item.desc_zh || ""} onChange={(event) => update(index, { desc_zh: event.target.value })} placeholder="中文说明" rows={3} />
-              <Textarea value={item.desc_en || ""} onChange={(event) => update(index, { desc_en: event.target.value })} placeholder="英文说明" rows={3} />
+              <Textarea value={item.desc_zh || ""} onChange={(event) => update(index, { desc_zh: event.target.value })} placeholder={text.zhDescPlaceholder} rows={3} />
+              <Textarea value={item.desc_en || ""} onChange={(event) => update(index, { desc_en: event.target.value })} placeholder={text.enDescPlaceholder} rows={3} />
             </div>
           </div>
         ))}
       </div>
       <Button type="button" variant="outline" size="sm" onClick={() => onChange([...items, addItem])}>
-        <Plus className="mr-2 h-4 w-4" />
-        添加项目
-      </Button>
+        <Plus className="mr-2 h-4 w-4" />{text.addItem}</Button>
     </div>
   );
 };

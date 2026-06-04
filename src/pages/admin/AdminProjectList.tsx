@@ -3,14 +3,19 @@ import { Link } from "react-router-dom";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { isSupabaseConfigured } from "@/lib/supabase";
-import { useAdminProjects, type AdminProjectRow } from "@/lib/adminQueries";
+import { useAdminProjects, type AdminProjectRow } from "@/lib/adminBusinessContentQueries";
 import AdminPageHeader from "@/components/admin/AdminPageHeader";
 import AdminDataTable, { type AdminDataTableColumn } from "@/components/admin/AdminDataTable";
 import AdminListPager from "@/components/admin/AdminListPager";
 import AdminStatusBadge from "@/components/admin/AdminStatusBadge";
 import AdminEmptyState from "@/components/admin/AdminEmptyState";
 import SmartImage from "@/components/SmartImage";
-import { publishStatusOptions } from "@/lib/adminLocale";
+import { adminProjectListText } from "@/i18n/adminProjectListText";
+import { translateProjectType } from "@/i18n/displayLabels";
+import { getAdminLang, publishStatusOptions } from "@/lib/adminLocale";
+import { formatUserFacingError } from "@/lib/userFacingText";
+
+type AdminProjectListTextKey = keyof typeof adminProjectListText;
 
 const pickThumbnail = (row: AdminProjectRow) => {
   const images = (row.project_images || []).slice().sort((a, b) => (a.sort_order || 0) - (b.sort_order || 0));
@@ -20,6 +25,8 @@ const pickThumbnail = (row: AdminProjectRow) => {
 };
 
 export default function AdminProjectList() {
+  const language = getAdminLang();
+  const A = (key: AdminProjectListTextKey) => adminProjectListText[key][language];
   const [status, setStatus] = useState<string>("all");
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(0);
@@ -28,7 +35,7 @@ export default function AdminProjectList() {
   const rows = data?.rows ?? [];
   const total = data?.count ?? 0;
   const pageSize = data?.pageSize ?? 30;
-  const errorMessage = error instanceof Error ? error.message : error ? String(error) : "";
+  const errorMessage = error ? formatUserFacingError(error, language) : "";
 
   useEffect(() => {
     setPage(0);
@@ -37,7 +44,7 @@ export default function AdminProjectList() {
   const columns: AdminDataTableColumn<AdminProjectRow>[] = [
     {
       key: "project",
-      header: "案例",
+      header: A("projectHeader"),
       cell: (row) => {
         const thumb = pickThumbnail(row);
         const title = row.title_zh || row.title_en || row.slug;
@@ -58,29 +65,29 @@ export default function AdminProjectList() {
     },
     {
       key: "meta",
-      header: "类型 / 地区",
+      header: A("metaHeader"),
       cell: (row) => (
         <div className="text-xs text-muted-foreground">
-          <div>{row.project_type || "-"}</div>
+          <div>{row.project_type ? translateProjectType(row.project_type, language) : "-"}</div>
           <div>{row.location || "-"}</div>
         </div>
       ),
     },
     {
       key: "status",
-      header: "状态",
+      header: A("statusHeader"),
       className: "w-[120px]",
       cell: (row) => <AdminStatusBadge status={row.status || "draft"} />,
     },
     {
       key: "sort",
-      header: "排序",
+      header: A("sortHeader"),
       className: "w-[100px]",
       cell: (row) => <span className="tabular-nums text-sm text-muted-foreground">{row.sort_order ?? 0}</span>,
     },
     {
       key: "updated",
-      header: "更新",
+      header: A("updatedHeader"),
       className: "w-[180px]",
       cell: (row) => (
         <span className="text-xs text-muted-foreground">
@@ -93,29 +100,29 @@ export default function AdminProjectList() {
   return (
     <>
       <AdminPageHeader
-        title="装修案例"
-        description="管理案例列表、封面、图库/Before-After 图片、SEO 与发布状态。"
-        helpText="这里主要管案例列表、封面、图库和前台显示顺序。"
+        title={A("title")}
+        description={A("description")}
+        helpText={A("helpText")}
         actions={
-          <div className="flex flex-wrap gap-2">
+          <div data-admin-mobile-actions className="flex flex-wrap gap-2">
             <Button variant="outline" onClick={() => void refetch()} disabled={!isSupabaseConfigured || isFetching}>
-              {isFetching ? "刷新中..." : "刷新"}
+              {isFetching ? A("refreshing") : A("refresh")}
             </Button>
             <Button asChild>
-              <Link to="/admin/projects/new">新建案例</Link>
+              <Link to="/admin/projects/new">{A("newProject")}</Link>
             </Button>
           </div>
         }
       />
 
-      <div className="mb-4 grid gap-3 md:grid-cols-[1fr_220px]">
-        <Input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="搜索标题、链接标识、地区、类型..." />
+      <div data-admin-filter-bar className="mb-4 grid gap-3 md:grid-cols-[1fr_220px]">
+        <Input value={search} onChange={(e) => setSearch(e.target.value)} placeholder={A("searchPlaceholder")} />
         <select
           value={status}
           onChange={(e) => setStatus(e.target.value)}
-          className="flex h-10 rounded-md border border-input bg-background px-3 py-2 text-sm"
+          className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
         >
-          <option value="all">全部状态</option>
+          <option value="all">{A("allStatuses")}</option>
           {publishStatusOptions().map(({ value, label }) => (
             <option key={value} value={value}>
               {label}
@@ -132,17 +139,17 @@ export default function AdminProjectList() {
         rowKey={(r) => r.id}
         empty={
           <AdminEmptyState
-            title="暂无案例"
-            description="先新建一个案例并发布，前台案例页才会显示。"
+            title={A("emptyTitle")}
+            description={A("emptyDescription")}
             action={
               <Button asChild>
-                <Link to="/admin/projects/new">新建案例</Link>
+                <Link to="/admin/projects/new">{A("newProject")}</Link>
               </Button>
             }
           />
         }
       />
-      <AdminListPager page={page} pageSize={pageSize} total={total} isFetching={isFetching} itemLabel="个案例" onPageChange={setPage} />
+      <AdminListPager page={page} pageSize={pageSize} total={total} isFetching={isFetching} itemLabel={A("itemLabel")} onPageChange={setPage} />
     </>
   );
 }

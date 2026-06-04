@@ -6,27 +6,28 @@ import { AdminActionButton, useAdminPermission } from "@/components/admin/AdminP
 import { AdminReadOnlyNotice } from "@/components/admin/AdminRoleGate";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { supabase } from "@/lib/supabase";
-import { useAdminQuote } from "@/lib/adminQueries";
+import { useAdminQuote } from "@/lib/adminLeadQueries";
 import { formatAdminMutationError } from "@/lib/adminMutation";
+import { addAdminQuoteFollowup, updateAdminQuote } from "@/backend/modules/quotes/service/quoteService";
 import AdminPageHeader from "@/components/admin/AdminPageHeader";
+import { adminQuoteDetailText, adminQuoteFollowupTypeLabels } from "@/i18n/adminQuoteDetailText";
 import { getAdminLang } from "@/lib/adminLocale";
-import { translateStatusLabel } from "@/i18n/displayLabels";
+import { translateProjectType, translateStatusLabel } from "@/i18n/displayLabels";
 import { telHrefFromPhone, whatsappHrefFromPhone } from "@/lib/contactLinks";
+import { formatSourcePath, formatUserFacingError } from "@/lib/userFacingText";
 
 const statuses = ["pending", "contacted", "site_visit_scheduled", "quoted", "accepted", "rejected", "closed"];
 const followupTypes = ["note", "call", "whatsapp", "site_visit", "quotation", "closed"];
-const followupTypeLabels: Record<string, string> = {
-  note: "备注",
-  call: "电话",
-  whatsapp: "WhatsApp",
-  site_visit: "上门/测量",
-  quotation: "报价",
-  closed: "结案",
-};
+type AdminQuoteDetailTextKey = keyof typeof adminQuoteDetailText;
+type AdminQuoteFollowupType = keyof typeof adminQuoteFollowupTypeLabels;
 
 const AdminQuoteDetail = () => {
   const lang = getAdminLang();
+  const A = (key: AdminQuoteDetailTextKey) => adminQuoteDetailText[key][lang];
+  const formatA = (key: AdminQuoteDetailTextKey, values: Record<string, string>) =>
+    Object.entries(values).reduce((text, [name, value]) => text.replaceAll(`{${name}}`, value), A(key));
+  const followupTypeLabel = (type: string) =>
+    adminQuoteFollowupTypeLabels[type as AdminQuoteFollowupType]?.[lang] || type;
   const { id } = useParams<{ id: string }>();
   const queryClient = useQueryClient();
   const { data, error } = useAdminQuote(id);
@@ -45,7 +46,7 @@ const AdminQuoteDetail = () => {
   }, [data?.quote]);
 
   const followups = data?.followups ?? [];
-  const loadError = error instanceof Error ? error.message : error ? String(error) : "";
+  const loadError = error ? formatUserFacingError(error, lang) : "";
   const whatsappHref = quote ? whatsappHrefFromPhone(quote.customer_phone) : "";
   const telHref = quote ? telHrefFromPhone(quote.customer_phone) : "";
 
@@ -56,22 +57,20 @@ const AdminQuoteDetail = () => {
     ]);
   };
 
-  const updateQuote = async (patch: Record<string, unknown>, label = "内容") => {
+  const updateQuote = async (patch: Record<string, unknown>, label = A("defaultFieldLabel")) => {
     if (!id) return;
     if (!canWriteLead) {
-      setMessage("当前账号是只读角色，不能修改报价内容。");
+      setMessage(A("readOnlyQuote"));
       return;
     }
     setSavingField(label);
-    setMessage(`${label}保存中...`);
+    setMessage(formatA("savingField", { label }));
     try {
-      const { error: updateError } = await supabase!.from("quote_requests").update(patch).eq("id", id);
-      if (updateError) {
-        setMessage(`${label}保存失败：${formatAdminMutationError(updateError)}`);
-        return;
-      }
-      setMessage(`${label}已保存。`);
+      await updateAdminQuote(id, patch);
+      setMessage(formatA("savedField", { label }));
       await refresh();
+    } catch (updateError) {
+      setMessage(formatA("saveFieldFailed", { label, reason: formatAdminMutationError(updateError) }));
     } finally {
       setSavingField(null);
     }
@@ -80,40 +79,33 @@ const AdminQuoteDetail = () => {
   const addFollowup = async (event: FormEvent) => {
     event.preventDefault();
     if (!canWriteLead) {
-      setMessage("当前账号是只读角色，不能新增跟进记录。");
+      setMessage(A("readOnlyFollowup"));
       return;
     }
     if (!id || savingFollowup) return;
     if (!content.trim()) {
-      setMessage("请先填写跟进内容。");
+      setMessage(A("followupContentRequired"));
       return;
     }
     setSavingFollowup(true);
     setMessage("");
     try {
-      const { data: userData } = await supabase!.auth.getUser();
-      const { error } = await supabase!.from("lead_followups").insert({
-        quote_request_id: id,
-        followup_type: followupType,
-        content: content.trim(),
-        next_follow_up_at: nextFollowUpAt || null,
-        created_by: userData.user?.id || null,
+      const result = await addAdminQuoteFollowup({
+        quoteRequestId: id,
+        followupType,
+        content,
+        nextFollowUpAt,
       });
-      if (error) {
-        setMessage(formatAdminMutationError(error));
+      if (result.syncError) {
+        setMessage(formatA("followupSavedSyncFailed", { reason: formatAdminMutationError(result.syncError) }));
         return;
-      }
-      if (nextFollowUpAt) {
-        const { error: followUpSyncError } = await supabase!.from("quote_requests").update({ next_follow_up_at: nextFollowUpAt }).eq("id", id);
-        if (followUpSyncError) {
-          setMessage(`跟进已保存，但下次跟进时间同步失败：${formatAdminMutationError(followUpSyncError)}`);
-          return;
-        }
       }
       setContent("");
       setNextFollowUpAt("");
-      setMessage("跟进记录已保存。");
+      setMessage(A("followupSaved"));
       await refresh();
+    } catch (error) {
+      setMessage(formatAdminMutationError(error));
     } finally {
       setSavingFollowup(false);
     }
@@ -123,53 +115,53 @@ const AdminQuoteDetail = () => {
     <>
     <div className="space-y-6">
         <AdminPageHeader
-          title="报价详情"
-          description="查看报价请求、填写报价金额、更新状态和跟进记录。"
-          helpText="这里是单条报价请求的处理页面。你可以在这里填报价、安排上门、补说明。"
+          title={A("pageTitle")}
+          description={A("pageDescription")}
+          helpText={A("pageHelpText")}
         />
         {!canWriteLead && <AdminReadOnlyNotice />}
 
         {(message || loadError) && <div role="status" aria-live="polite" className="rounded-xl border border-border bg-card p-4 text-sm">{message || loadError}</div>}
         {quote && (
           <>
-            <div className="rounded-xl border border-border bg-card p-6">
+            <div className="rounded-xl border border-border bg-card p-4 sm:p-6">
               <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
-                <div>
-                  <h1 className="font-display text-2xl font-bold">{quote.customer_name || "报价请求"}</h1>
-                  <p className="mt-1 text-sm text-muted-foreground">{quote.customer_phone} · {quote.customer_email || "-"}</p>
-                  <p className="mt-1 text-sm text-muted-foreground">{quote.project_type || "-"} · {quote.source_path || "-"} · {new Date(quote.created_at).toLocaleString()}</p>
+                <div className="min-w-0">
+                  <h1 className="font-display text-xl font-bold sm:text-2xl">{quote.customer_name || A("quoteFallback")}</h1>
+                  <p className="mt-1 break-words text-sm text-muted-foreground">{quote.customer_phone} · {quote.customer_email || "-"}</p>
+                  <p className="mt-1 break-words text-sm text-muted-foreground">{quote.project_type ? translateProjectType(quote.project_type, lang) : "-"} · {formatSourcePath(quote.source_path, lang)} · {new Date(quote.created_at).toLocaleString()}</p>
                 </div>
-                <div className="flex gap-2">
+                <div data-admin-card-actions className="flex gap-2">
                   {whatsappHref ? <Button asChild variant="outline"><a href={whatsappHref} target="_blank" rel="noreferrer">WhatsApp</a></Button> : <Button variant="outline" disabled>WhatsApp</Button>}
-                  {telHref ? <Button asChild variant="outline"><a href={telHref}>拨打电话</a></Button> : <Button variant="outline" disabled>拨打电话</Button>}
+                  {telHref ? <Button asChild variant="outline"><a href={telHref}>{A("call")}</a></Button> : <Button variant="outline" disabled>{A("call")}</Button>}
                 </div>
               </div>
             </div>
 
             <div className="grid gap-6 lg:grid-cols-[1fr_360px]">
-              <section className="rounded-xl border border-border bg-card p-6">
-                <h2 className="mb-4 font-display text-xl font-bold">报价详情</h2>
+              <section className="rounded-xl border border-border bg-card p-4 sm:p-6">
+                <h2 className="mb-4 font-display text-xl font-bold">{A("detailSection")}</h2>
                 <div className="grid gap-4 text-sm md:grid-cols-2">
-                  <div><span className="text-muted-foreground">地点：</span> {quote.location || "-"}</div>
-                  <div><span className="text-muted-foreground">面积/户型：</span> {quote.property_size || "-"}</div>
-                  <div><span className="text-muted-foreground">预算预估：</span> {quote.estimated_budget || "-"}</div>
+                  <div><span className="text-muted-foreground">{A("location")}</span> {quote.location || "-"}</div>
+                  <div><span className="text-muted-foreground">{A("propertySize")}</span> {quote.property_size || "-"}</div>
+                  <div><span className="text-muted-foreground">{A("estimatedBudget")}</span> {quote.estimated_budget || "-"}</div>
                   <div>
-                    <label className="mb-1 block text-sm font-medium">报价金额</label>
-                    <Input type="number" value={quote.quoted_amount || ""} onChange={(event) => setQuote({ ...quote, quoted_amount: event.target.value })} onBlur={() => void updateQuote({ quoted_amount: quote.quoted_amount || null }, "报价金额")} disabled={!canWriteLead || savingField === "报价金额"} />
+                    <label className="mb-1 block text-sm font-medium">{A("quotedAmount")}</label>
+                    <Input type="number" value={quote.quoted_amount || ""} onChange={(event) => setQuote({ ...quote, quoted_amount: event.target.value })} onBlur={() => void updateQuote({ quoted_amount: quote.quoted_amount || null }, A("quotedAmount"))} disabled={!canWriteLead || savingField === A("quotedAmount")} />
                   </div>
-                  <div className="md:col-span-2"><span className="text-muted-foreground">项目详情：</span><p className="mt-1 whitespace-pre-wrap">{quote.project_details || "-"}</p></div>
+                  <div className="md:col-span-2"><span className="text-muted-foreground">{A("projectDetails")}</span><p className="mt-1 whitespace-pre-wrap">{quote.project_details || "-"}</p></div>
                   <div>
-                    <label className="mb-1 block text-sm font-medium">状态</label>
+                    <label className="mb-1 block text-sm font-medium">{A("status")}</label>
                     <select
                       value={quote.status || "pending"}
                       onChange={(event) => {
                         if (!canWriteLead) return;
                         const nextStatus = event.target.value;
                         setQuote({ ...quote, status: nextStatus });
-                        void updateQuote({ status: nextStatus }, "状态");
+                        void updateQuote({ status: nextStatus }, A("status"));
                       }}
-                      disabled={!canWriteLead || savingField === "状态"}
-                      className="flex h-10 rounded-md border border-input bg-background px-3 py-2 text-sm"
+                      disabled={!canWriteLead || savingField === A("status")}
+                      className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
                     >
                       {statuses.map((item) => (
                         <option key={item} value={item}>
@@ -179,43 +171,43 @@ const AdminQuoteDetail = () => {
                     </select>
                   </div>
                   <div>
-                    <label className="mb-1 block text-sm font-medium">有效期至</label>
-                    <Input type="date" value={quote.valid_until || ""} onChange={(event) => setQuote({ ...quote, valid_until: event.target.value })} onBlur={() => void updateQuote({ valid_until: quote.valid_until || null }, "有效期")} disabled={!canWriteLead || savingField === "有效期"} />
+                    <label className="mb-1 block text-sm font-medium">{A("validUntil")}</label>
+                    <Input type="date" value={quote.valid_until || ""} onChange={(event) => setQuote({ ...quote, valid_until: event.target.value })} onBlur={() => void updateQuote({ valid_until: quote.valid_until || null }, A("validUntilField"))} disabled={!canWriteLead || savingField === A("validUntilField")} />
                   </div>
                   <div>
-                    <label className="mb-1 block text-sm font-medium">下次跟进</label>
-                    <Input type="datetime-local" value={quote.next_follow_up_at ? quote.next_follow_up_at.slice(0, 16) : ""} onChange={(event) => setQuote({ ...quote, next_follow_up_at: event.target.value })} onBlur={() => void updateQuote({ next_follow_up_at: quote.next_follow_up_at || null }, "下次跟进")} disabled={!canWriteLead || savingField === "下次跟进"} />
+                    <label className="mb-1 block text-sm font-medium">{A("nextFollowUp")}</label>
+                    <Input type="datetime-local" value={quote.next_follow_up_at ? quote.next_follow_up_at.slice(0, 16) : ""} onChange={(event) => setQuote({ ...quote, next_follow_up_at: event.target.value })} onBlur={() => void updateQuote({ next_follow_up_at: quote.next_follow_up_at || null }, A("nextFollowUp"))} disabled={!canWriteLead || savingField === A("nextFollowUp")} />
                   </div>
                   <div className="md:col-span-2">
-                    <label className="mb-1 block text-sm font-medium">备注</label>
-                    <Textarea rows={4} value={quote.notes || ""} onChange={(event) => setQuote({ ...quote, notes: event.target.value })} onBlur={() => void updateQuote({ notes: quote.notes || null }, "备注")} disabled={!canWriteLead || savingField === "备注"} />
+                    <label className="mb-1 block text-sm font-medium">{A("notes")}</label>
+                    <Textarea rows={4} value={quote.notes || ""} onChange={(event) => setQuote({ ...quote, notes: event.target.value })} onBlur={() => void updateQuote({ notes: quote.notes || null }, A("notes"))} disabled={!canWriteLead || savingField === A("notes")} />
                   </div>
                 </div>
               </section>
 
-              <section className="rounded-xl border border-border bg-card p-6">
-                <h2 className="mb-4 font-display text-xl font-bold">新增跟进</h2>
+              <section className="rounded-xl border border-border bg-card p-4 sm:p-6">
+                <h2 className="mb-4 font-display text-xl font-bold">{A("addFollowup")}</h2>
                 <form onSubmit={addFollowup} className="space-y-3">
                   <select value={followupType} onChange={(event) => setFollowupType(event.target.value)} disabled={!canWriteLead} className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm">
-                    {followupTypes.map((item) => <option key={item} value={item}>{followupTypeLabels[item] || item}</option>)}
+                    {followupTypes.map((item) => <option key={item} value={item}>{followupTypeLabel(item)}</option>)}
                   </select>
-                  <Textarea rows={4} value={content} onChange={(event) => setContent(event.target.value)} placeholder="跟进记录..." disabled={!canWriteLead} />
+                  <Textarea rows={4} value={content} onChange={(event) => setContent(event.target.value)} placeholder={A("followupPlaceholder")} disabled={!canWriteLead} />
                   <Input type="datetime-local" value={nextFollowUpAt} onChange={(event) => setNextFollowUpAt(event.target.value)} disabled={!canWriteLead} />
                   <AdminActionButton action="lead.write" type="submit" className="w-full" disabled={savingFollowup} aria-busy={savingFollowup}>
-                    {savingFollowup ? "保存中..." : "保存跟进"}
+                    {savingFollowup ? A("saving") : A("saveFollowup")}
                   </AdminActionButton>
                 </form>
               </section>
             </div>
 
-            <section className="rounded-xl border border-border bg-card p-6">
-              <h2 className="mb-4 font-display text-xl font-bold">时间线</h2>
+            <section className="rounded-xl border border-border bg-card p-4 sm:p-6">
+              <h2 className="mb-4 font-display text-xl font-bold">{A("timeline")}</h2>
               <div className="space-y-3">
                 {followups.map((item) => (
                   <div key={item.id} className="rounded-lg border border-border p-4 text-sm">
                     <p className="font-medium">{item.followup_type} · {new Date(item.created_at).toLocaleString()}</p>
                     <p className="mt-2 whitespace-pre-wrap text-muted-foreground">{item.content}</p>
-                    {item.next_follow_up_at && <p className="mt-2 text-xs text-accent">下次跟进：{new Date(item.next_follow_up_at).toLocaleString()}</p>}
+                    {item.next_follow_up_at && <p className="mt-2 text-xs text-accent">{formatA("nextFollowUpAt", { time: new Date(item.next_follow_up_at).toLocaleString() })}</p>}
                   </div>
                 ))}
               </div>

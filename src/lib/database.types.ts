@@ -689,6 +689,10 @@ export type Database = {
         };
         Returns: boolean;
       };
+      get_public_home_bundle: {
+        Args: Record<PropertyKey, never>;
+        Returns: Json;
+      };
       is_admin: {
         Args: Record<PropertyKey, never>;
         Returns: boolean;

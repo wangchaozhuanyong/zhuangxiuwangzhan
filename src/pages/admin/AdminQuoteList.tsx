@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import AdminPageHeader from "@/components/admin/AdminPageHeader";
 import AdminListPager from "@/components/admin/AdminListPager";
-import { useAdminQuotes } from "@/lib/adminQueries";
+import { useAdminQuotes } from "@/lib/adminLeadQueries";
 import { getAdminLang } from "@/lib/adminLocale";
 import {
   getAdminWorkflowBadges,
@@ -13,21 +13,21 @@ import {
   normalizeAdminWorkflowFilter,
   type AdminWorkflowFilter,
 } from "@/lib/adminLeadWorkflow";
-import { translateStatusLabel } from "@/i18n/displayLabels";
+import { adminQuoteListText } from "@/i18n/adminQuoteListText";
+import { translateProjectType, translateStatusLabel } from "@/i18n/displayLabels";
 import { telHrefFromPhone, whatsappHrefFromPhone } from "@/lib/contactLinks";
 import { toast } from "@/hooks/use-toast";
+import { formatSourcePath, formatUserFacingError } from "@/lib/userFacingText";
 
 const statuses = ["all", "pending", "contacted", "site_visit_scheduled", "quoted", "accepted", "rejected", "closed"];
 const csvEscape = (value: unknown) => `"${String(value ?? "").replaceAll('"', '""')}"`;
-
-const copy = {
-  en: { title: "Quote Requests", search: "Search customer, phone, project, location...", statusAll: "All statuses", exportCsv: "Export CSV", empty: "No quote requests found.", whatsapp: "WhatsApp", call: "Call" },
-  zh: { title: "报价请求", search: "搜索客户、电话、项目、地区...", statusAll: "全部状态", exportCsv: "导出 CSV", empty: "暂无报价请求。", whatsapp: "WhatsApp 联系", call: "拨打电话" },
-};
+type AdminQuoteListTextKey = keyof typeof adminQuoteListText;
 
 const AdminQuoteList = () => {
   const lang = getAdminLang();
-  const t = copy[lang];
+  const A = (key: AdminQuoteListTextKey) => adminQuoteListText[key][lang];
+  const formatA = (key: AdminQuoteListTextKey, values: Record<string, string>) =>
+    Object.entries(values).reduce((text, [name, value]) => text.replaceAll(`{${name}}`, value), A(key));
   const [searchParams, setSearchParams] = useSearchParams();
   const [search, setSearch] = useState("");
   const [status, setStatus] = useState(searchParams.get("status") || "all");
@@ -38,7 +38,7 @@ const AdminQuoteList = () => {
   const rows = data?.rows ?? [];
   const total = data?.count ?? 0;
   const pageSize = data?.pageSize ?? 30;
-  const message = error ? (error as Error).message : "";
+  const message = error ? formatUserFacingError(error, lang) : "";
   const workflowOptions = getAdminWorkflowOptions("quote_requests", lang);
 
   useEffect(() => {
@@ -85,33 +85,36 @@ const AdminQuoteList = () => {
     link.download = `quote-requests-${new Date().toISOString().slice(0, 10)}.csv`;
     link.click();
     URL.revokeObjectURL(url);
-    toast({ title: "已导出当前页 CSV", description: `本次导出 ${rows.length} 条，当前筛选结果共 ${total} 条。` });
+    toast({
+      title: A("exportSuccess"),
+      description: formatA("exportSuccessDescription", { rows: String(rows.length), total: String(total) }),
+    });
   };
 
   return (
     <div className="space-y-6">
       <AdminPageHeader
-        title={t.title}
-        description="查看报价请求，适合先看项目类型、地区和预算，再安排报价回复。"
-        helpText="这里收的是用户主动提交的报价表单，信息比咨询页更完整，方便直接做预算判断。"
+        title={A("title")}
+        description={A("description")}
+        helpText={A("helpText")}
         actions={
-          <Button type="button" variant="outline" onClick={exportCsv} disabled={rows.length === 0} title={`导出当前页 ${rows.length} 条，不是全部 ${total} 条。`}>
-            {lang === "zh" ? `导出当前页 CSV（${rows.length}/${total}）` : `${t.exportCsv} current page (${rows.length}/${total})`}
+          <Button type="button" variant="outline" onClick={exportCsv} disabled={rows.length === 0} title={formatA("exportCurrentTitle", { rows: String(rows.length), total: String(total) })}>
+            {formatA("exportCurrentButton", { rows: String(rows.length), total: String(total) })}
           </Button>
         }
       />
 
-      <div className="grid gap-3 md:grid-cols-[1fr_220px]">
-        <Input value={search} onChange={(event) => setSearch(event.target.value)} placeholder={t.search} />
-        <select value={status} onChange={(event) => handleStatusChange(event.target.value)} className="flex h-10 rounded-md border border-input bg-background px-3 py-2 text-sm">
+      <div data-admin-filter-bar className="grid gap-3 md:grid-cols-[1fr_220px]">
+        <Input value={search} onChange={(event) => setSearch(event.target.value)} placeholder={A("search")} />
+        <select value={status} onChange={(event) => handleStatusChange(event.target.value)} className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm">
           {statuses.map((item) => (
             <option key={item} value={item}>
-              {item === "all" ? t.statusAll : translateStatusLabel("quote_requests", item, lang)}
+              {item === "all" ? A("statusAll") : translateStatusLabel("quote_requests", item, lang)}
             </option>
           ))}
         </select>
       </div>
-      <div className="flex flex-wrap gap-2">
+      <div data-admin-card-actions className="flex flex-wrap gap-2">
         {workflowOptions.map((item) => (
           <Button
             key={item.value}
@@ -133,11 +136,11 @@ const AdminQuoteList = () => {
           const telHref = telHrefFromPhone(quote.customer_phone);
           const badges = getAdminWorkflowBadges("quote_requests", quote, lang);
           return (
-            <div key={quote.id} className="rounded-xl border border-border bg-card p-4">
+            <div key={quote.id} className="rounded-xl border border-border bg-card p-3 sm:p-4">
               <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
                 <Link to={`/admin/quotes/${quote.id}`} className="min-w-0">
-                  <p className="font-semibold">{quote.customer_name || "-"} · {quote.customer_phone || "-"}</p>
-                  <p className="truncate text-xs text-muted-foreground">{translateStatusLabel("quote_requests", quote.status || "pending", lang)} · {quote.project_type || "-"} · {quote.location || "-"} · {quote.source_path || "-"} · {new Date(quote.created_at).toLocaleString("zh-CN")}</p>
+                  <p className="break-words font-semibold">{quote.customer_name || "-"} · {quote.customer_phone || "-"}</p>
+                  <p className="break-words text-xs text-muted-foreground md:truncate">{translateStatusLabel("quote_requests", quote.status || "pending", lang)} · {quote.project_type ? translateProjectType(quote.project_type, lang) : "-"} · {quote.location || "-"} · {formatSourcePath(quote.source_path, lang)} · {new Date(quote.created_at).toLocaleString("zh-CN")}</p>
                   {badges.length > 0 && (
                     <div className="mt-2 flex flex-wrap gap-2">
                       {badges.map((badge) => (
@@ -148,17 +151,17 @@ const AdminQuoteList = () => {
                     </div>
                   )}
                 </Link>
-                <div className="flex gap-2">
-                  {whatsappHref ? <Button asChild size="sm" variant="outline"><a href={whatsappHref} target="_blank" rel="noreferrer">{t.whatsapp}</a></Button> : <Button size="sm" variant="outline" disabled>{t.whatsapp}</Button>}
-                  {telHref ? <Button asChild size="sm" variant="outline"><a href={telHref}>{t.call}</a></Button> : <Button size="sm" variant="outline" disabled>{t.call}</Button>}
+                <div data-admin-card-actions className="flex gap-2 md:justify-end">
+                  {whatsappHref ? <Button asChild size="sm" variant="outline"><a href={whatsappHref} target="_blank" rel="noreferrer">{A("whatsapp")}</a></Button> : <Button size="sm" variant="outline" disabled>{A("whatsapp")}</Button>}
+                  {telHref ? <Button asChild size="sm" variant="outline"><a href={telHref}>{A("call")}</a></Button> : <Button size="sm" variant="outline" disabled>{A("call")}</Button>}
                 </div>
               </div>
             </div>
           );
         })}
-        {rows.length === 0 && <div className="rounded-xl border border-border bg-card p-6 text-sm text-muted-foreground">{t.empty}</div>}
+        {rows.length === 0 && <div className="rounded-xl border border-border bg-card p-6 text-sm text-muted-foreground">{A("empty")}</div>}
       </div>
-      <AdminListPager page={page} pageSize={pageSize} total={total} isFetching={isFetching} itemLabel="条报价" onPageChange={setPage} />
+      <AdminListPager page={page} pageSize={pageSize} total={total} isFetching={isFetching} itemLabel={A("itemLabel")} onPageChange={setPage} />
     </div>
   );
 };

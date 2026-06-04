@@ -7,8 +7,11 @@ type DeferredSmartImageProps = React.ComponentProps<typeof SmartImage> & {
   placeholderClassName?: string;
 };
 
+const canUseIntersectionObserver = () =>
+  typeof window !== "undefined" && typeof window.IntersectionObserver === "function";
+
 export function DeferredSmartImage({
-  rootMargin = "320px",
+  rootMargin = "1000px",
   placeholderClassName,
   className,
   ...imageProps
@@ -21,7 +24,7 @@ export function DeferredSmartImage({
     const node = placeholderRef.current;
     if (!node) return;
 
-    if (!("IntersectionObserver" in window)) {
+    if (!canUseIntersectionObserver()) {
       setShouldRender(true);
       return;
     }

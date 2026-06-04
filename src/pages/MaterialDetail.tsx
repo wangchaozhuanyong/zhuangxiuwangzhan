@@ -3,92 +3,67 @@ import Link from "@/components/LocalizedLink";
 import { Button } from "@/components/ui/button";
 import { AlertCircle, ArrowRight, CheckCircle2 } from "lucide-react";
 import WhatsAppIcon from "@/components/WhatsAppIcon";
-import { materialsData } from "@/data/materials";
 import { usePublishedMaterialBySlug } from "@/hooks/usePublishedContent";
 import { useLanguage } from "@/i18n/LanguageContext";
 import PageMeta from "@/components/PageMeta";
 import SmartImage from "@/components/SmartImage";
 import Reveal from "@/components/Reveal";
 import HeroBanner from "@/components/blocks/HeroBanner";
+import PublicLoadingState from "@/components/blocks/PublicLoadingState";
 import { JsonLdBreadcrumb } from "@/components/JsonLd";
 import { useSiteSettings } from "@/hooks/useSiteSettings";
 import { isHtmlText, stripHtml } from "@/lib/text";
 import { sanitizeHtml } from "@/lib/sanitizeHtml";
 import { translateDisplayText, translateMaterialCategory, translateMaterialType, translateSpaceLabel } from "@/i18n/displayLabels";
 import { buildQuotePath } from "@/lib/quoteContext";
+import { materialDetailPageText } from "@/i18n/materialDetailPageText";
+import {
+  mergeMaterialCategoriesWithFallback,
+  type MaterialCatalogCategory,
+  type MaterialCatalogItem,
+} from "@/lib/materialCatalog";
 
-const copy = {
-  en: {
-    notFound: "Material Not Found",
-    viewAll: "View All Materials",
-    breadcrumbHome: "Home",
-    breadcrumbMaterials: "Materials",
-    metaTitle: (name: string) => `${name} | Renovation Material in Kuala Lumpur`,
-    metaDescription: (description: string, spaces: string[]) => `${stripHtml(description)} Suitable for: ${spaces.join(", ")}. Available at FLASH CAST, Kuala Lumpur.`,
-    metaKeywords: (name: string, category: string) => `${name}, ${category} KL, renovation material Malaysia`,
-    type: "Type",
-    color: "Color",
-    texture: "Texture",
-    category: "Category",
-    suitableSpaces: "Suitable Spaces",
-    recommendedPairing: "Recommended Pairing",
-    pros: "Advantages",
-    cons: "Things to Note",
-    note: "Note:",
-    enquire: "Enquire About This Material",
-    whatsapp: "WhatsApp",
-    more: (name: string) => `More ${name}`,
-    view: "View",
-  },
-  zh: {
-    notFound: "材料不存在",
-    viewAll: "查看全部材料",
-    breadcrumbHome: "首页",
-    breadcrumbMaterials: "材料库",
-    metaTitle: (name: string) => `${name} | 吉隆坡装修材料`,
-    metaDescription: (description: string, spaces: string[]) => `${stripHtml(description)} 适用空间：${spaces.join("、")}。可向 FLASH CAST 咨询材料搭配和报价。`,
-    metaKeywords: (name: string, category: string) => `${name}, ${category} 吉隆坡, 马来西亚装修材料`,
-    type: "类型",
-    color: "颜色",
-    texture: "质感",
-    category: "分类",
-    suitableSpaces: "适用空间",
-    recommendedPairing: "推荐搭配",
-    pros: "优点",
-    cons: "注意点",
-    note: "备注：",
-    enquire: "咨询此材料",
-    whatsapp: "WhatsApp 联系",
-    more: (name: string) => `更多 ${name}`,
-    view: "查看",
-  },
-};
+const formatText = (text: string, values: Record<string, string | number>) =>
+  Object.entries(values).reduce((current, [key, value]) => current.replaceAll(`{${key}}`, String(value)), text);
+
 
 const MaterialDetail = () => {
   const { slug } = useParams<{ slug: string }>();
   const { language } = useLanguage();
   const settings = useSiteSettings();
-  const t = copy[language];
+  const t = materialDetailPageText[language];
 
-  let fallbackMaterial = null;
-  let fallbackCategory = null;
-  for (const categoryItem of materialsData) {
+  let mergedMaterial: MaterialCatalogItem | null = null;
+  let mergedCategory: MaterialCatalogCategory | null = null;
+  const { data: published, isPending: materialPending } = usePublishedMaterialBySlug(slug, language);
+  const mergedCategories = mergeMaterialCategoriesWithFallback(published?.category ? [published.category] : undefined);
+
+  for (const categoryItem of mergedCategories) {
     const found = categoryItem.items.find((materialItem) => materialItem.slug === slug);
     if (found) {
-      fallbackMaterial = found;
-      fallbackCategory = categoryItem;
+      mergedMaterial = found;
+      mergedCategory = categoryItem;
       break;
     }
   }
 
-  const { data: published } = usePublishedMaterialBySlug(slug, language);
-  const material = published?.material ?? fallbackMaterial;
-  const category = published?.category ?? fallbackCategory;
+  const material = mergedMaterial;
+  const category = mergedCategory;
   const displayCategoryName = category ? translateMaterialCategory(category.name, language) : "";
   const displayMaterialName = material ? translateDisplayText(material.name, language) : "";
   const displayMaterialDescription = material ? translateDisplayText(material.description, language) : "";
   const displayMaterialSummary = stripHtml(displayMaterialDescription);
   const displayMaterialType = material ? translateMaterialType(material.type || "", language) : "";
+
+  if (materialPending && (!material || !category)) {
+    return (
+      <PublicLoadingState
+        label="FLASH CAST"
+        title={t.loadingTitle}
+        description={t.loadingDescription}
+      />
+    );
+  }
 
   if (!material || !category) {
     return (
@@ -104,9 +79,9 @@ const MaterialDetail = () => {
     );
   }
 
-  const otherMaterials = category.items.filter((item: any) => item.slug !== slug);
-  const pros = Array.isArray((material as any).pros) ? (material as any).pros.filter(Boolean) : [];
-  const cons = Array.isArray((material as any).cons) ? (material as any).cons.filter(Boolean) : [];
+  const otherMaterials = category.items.filter((item) => item.slug !== slug);
+  const pros = Array.isArray(material.pros) ? material.pros.filter(Boolean) : [];
+  const cons = Array.isArray(material.cons) ? material.cons.filter(Boolean) : [];
   const quotePath = buildQuotePath({
     source: "material",
     title: displayMaterialName,
@@ -116,9 +91,12 @@ const MaterialDetail = () => {
   return (
     <main className="pt-site-header">
       <PageMeta
-        title={t.metaTitle(displayMaterialName)}
-        description={t.metaDescription(displayMaterialDescription, material.suitableSpaces.map((space: string) => translateSpaceLabel(space, language)))}
-        keywords={t.metaKeywords(displayMaterialName, displayCategoryName)}
+        title={formatText(t.metaTitle, { name: displayMaterialName })}
+        description={formatText(t.metaDescription, {
+          description: displayMaterialSummary,
+          spaces: material.suitableSpaces.map((space: string) => translateSpaceLabel(space, language)).join(language === "zh" ? "、" : ", "),
+        })}
+        keywords={formatText(t.metaKeywords, { name: displayMaterialName, category: displayCategoryName })}
         canonicalPath={`/materials/${material.slug}`}
       />
       <JsonLdBreadcrumb items={[{ name: t.breadcrumbHome, url: "/" }, { name: t.breadcrumbMaterials, url: "/materials" }, { name: displayCategoryName, url: `/materials/category/${category.slug}` }, { name: displayMaterialName, url: `/materials/${material.slug}` }]} />
@@ -261,7 +239,7 @@ const MaterialDetail = () => {
           <div className="container-narrow">
             <div className="subpage-local-heading">
               <div className="accent-line mb-4" />
-              <h2 className="font-display text-2xl font-bold">{t.more(displayCategoryName)}</h2>
+              <h2 className="font-display text-2xl font-bold">{formatText(t.more, { name: displayCategoryName })}</h2>
             </div>
             <div className="card-grid grid-cols-2 gap-4 md:grid-cols-4 md:gap-5">
               {otherMaterials.map((item: any) => (

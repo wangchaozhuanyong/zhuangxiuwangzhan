@@ -22,6 +22,9 @@ jobs:
       - name: Verify system Chrome
         run: google-chrome --version
 
+      - name: Architecture check
+        run: npm run arch:check
+
       - name: Restore retained hashed assets
         uses: actions/cache/restore@v5
         with:
@@ -30,7 +33,7 @@ jobs:
           restore-keys: |
             cloudflare-pages-assets-
 
-      - name: Build
+      - name: Stable release check
         env:
           VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
           VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
@@ -43,24 +46,7 @@ jobs:
           VITE_SITE_ADDRESS: "94, Jalan Mega Mendung, Taman United, 58200 Kuala Lumpur, Malaysia"
           VITE_SITE_SHORT_ADDRESS: "94, Jalan Mega Mendung, 58200"
           VITE_APP_VERSION: ${{ github.sha }}
-        run: npm run build
-
-      - name: Merge retained hashed assets into dist
-        run: npm run deploy:retain-assets -- --cache .deploy-cache/assets --dist dist/assets --max-files 3000
-
-      - name: Verify deployment cache consistency
-        run: npm run verify:deploy-cache
-
-      - name: Lint
-        run: npm run lint
-
-      - name: Unit tests
-        run: npm test
-
-      - name: Typecheck
-        run: |
-          npm run typecheck
-          npm run typecheck:strict-core
+        run: npm run release:check
 
       - name: Preview verification
         env:

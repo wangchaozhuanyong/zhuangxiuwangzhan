@@ -1,4 +1,4 @@
-import { Suspense, useEffect, useRef, type ReactNode } from "react";
+import { lazy, Suspense, useEffect, useRef, type ReactNode } from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, useLocation } from "react-router-dom";
 import { HelmetProvider } from "react-helmet-async";
@@ -13,15 +13,17 @@ import { AppErrorBoundary } from "@/components/AppErrorBoundary";
 import { PublicChromeProvider, usePublicChrome } from "@/contexts/PublicChromeContext";
 import { stripLanguagePrefix } from "@/i18n/routes";
 import { initAnalytics, trackPageView } from "@/lib/analytics";
-import { adminRoutes } from "@/routes/adminRoutes";
 import { publicRoutes } from "@/routes/publicRoutes";
 import ScrollToTop from "./components/ScrollToTop";
+
+const AdminRouteTree = lazy(() => import("@/routes/AdminRouteTree"));
+const AdminLoginPage = lazy(() => import("@/pages/admin/AdminLogin"));
 
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
-      staleTime: 60 * 1000,
-      gcTime: 10 * 60 * 1000,
+      staleTime: 2 * 60 * 1000,
+      gcTime: 30 * 60 * 1000,
       refetchOnWindowFocus: false,
       retry: 1,
     },
@@ -33,9 +35,24 @@ const PageLoader = () => {
   const label = language === "zh" ? "页面加载中" : "Loading page";
 
   return (
-    <div className="min-h-[60vh] flex items-center justify-center" role="status" aria-live="polite" aria-label={label}>
-      <div className="w-8 h-8 border-2 border-accent border-t-transparent rounded-full animate-spin" aria-hidden="true" />
-      <span className="sr-only">{label}</span>
+    <div
+      className="flex min-h-[60vh] items-center justify-center px-6 py-24"
+      role="status"
+      aria-live="polite"
+      aria-busy="true"
+      aria-label={language === "zh" ? "页面加载中" : label}
+    >
+      <div className="flex w-full max-w-md flex-col items-center gap-4 rounded-card border border-border bg-card/95 px-6 py-8 text-center shadow-luxury">
+        <div className="h-8 w-8 rounded-full border-2 border-accent border-t-transparent animate-spin" aria-hidden="true" />
+        <div className="space-y-2">
+          <p className="text-base font-semibold text-foreground">
+            {language === "zh" ? "正在加载页面内容" : "Loading page content"}
+          </p>
+          <p className="text-sm leading-relaxed text-muted-foreground">
+            {language === "zh" ? "请稍等，页面正在准备。" : "Please wait while the page is prepared."}
+          </p>
+        </div>
+      </div>
     </div>
   );
 };
@@ -102,6 +119,7 @@ const AppShell = () => {
   const location = useLocation();
   const { language } = useLanguage();
   const isAdminRoute = location.pathname.startsWith("/admin");
+  const isAdminLoginRoute = /^\/admin\/?$/.test(location.pathname);
   const publicPath = stripLanguagePrefix(location.pathname);
   const isHomeRoute = !isAdminRoute && publicPath === "/";
   const suppressMobileActionBar = !isAdminRoute && (publicPath === "/quote" || publicPath === "/contact");
@@ -128,10 +146,17 @@ const AppShell = () => {
         <div key={mainContentKey} id="main-content" tabIndex={-1} className={mainContentClass}>
           <AppErrorBoundary isAdminRoute={isAdminRoute}>
           <Suspense fallback={<PageLoader />}>
-            <Routes>
-              {publicRoutes}
-              {adminRoutes}
-            </Routes>
+            {isAdminRoute ? (
+              isAdminLoginRoute ? (
+                <AdminLoginPage />
+              ) : (
+                <AdminRouteTree />
+              )
+            ) : (
+              <Routes>
+                {publicRoutes}
+              </Routes>
+            )}
           </Suspense>
           </AppErrorBoundary>
         </div>

@@ -1,0 +1,88 @@
+@layer components {
+  [data-admin-shell] {
+    min-width: 0;
+    overflow-x: clip;
+    overflow-wrap: anywhere;
+  }
+
+  [data-admin-shell] *,
+  [data-admin-shell] *::before,
+  [data-admin-shell] *::after {
+    min-width: 0;
+  }
+
+  [data-admin-shell] img,
+  [data-admin-shell] video,
+  [data-admin-shell] canvas,
+  [data-admin-shell] svg {
+    max-width: 100%;
+  }
+
+  [data-admin-shell] input,
+  [data-admin-shell] textarea,
+  [data-admin-shell] select {
+    max-width: 100%;
+  }
+
+  [data-admin-shell] textarea {
+    resize: vertical;
+  }
+
+  [data-admin-shell] code,
+  [data-admin-shell] pre {
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+  }
+
+  [data-admin-shell] [data-admin-mobile-actions] > * {
+    min-width: 0;
+  }
+
+  @media (max-width: 767px) {
+    [data-admin-shell] {
+      --admin-header-height: 64px;
+    }
+
+    [data-admin-shell] [data-admin-mobile-actions] {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      width: 100%;
+      gap: 0.5rem;
+    }
+
+    [data-admin-shell] [data-admin-mobile-actions] > *,
+    [data-admin-shell] [data-admin-mobile-actions] > a,
+    [data-admin-shell] [data-admin-mobile-actions] > button,
+    [data-admin-shell] [data-admin-mobile-actions] > span > button {
+      width: 100%;
+      justify-content: center;
+      white-space: normal;
+    }
+
+    [data-admin-shell] [data-admin-filter-bar] {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr);
+      gap: 0.75rem;
+    }
+
+    [data-admin-shell] [data-admin-card-actions] {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      width: 100%;
+      gap: 0.5rem;
+    }
+
+    [data-admin-shell] [data-admin-card-actions] > *,
+    [data-admin-shell] [data-admin-card-actions] > a,
+    [data-admin-shell] [data-admin-card-actions] > button,
+    [data-admin-shell] [data-admin-card-actions] > span > button {
+      width: 100%;
+      justify-content: center;
+      white-space: normal;
+    }
+
+    [data-admin-shell] [data-admin-full-mobile] {
+      width: 100%;
+    }
+  }
+}

@@ -1,26 +1,20 @@
 import FooterPreludeCta from "@/components/blocks/FooterPreludeCta";
 import { useLanguage } from "@/i18n/LanguageContext";
+import { homeSectionText } from "@/i18n/homeSectionsText";
 import { useT } from "@/i18n/useT";
 import { usePublishedCtaBlock } from "@/hooks/usePublishedContent";
+import type { PublishedCtaBlock } from "@/lib/homeContentApi";
 
-const copy = {
-  en: {
-    title: "Planning to Renovate Your Home or Office?",
-    description:
-      "Tell us about your project, location, budget range, and timeline. We will review the details and follow up during business hours.",
-  },
-  zh: {
-    title: "计划装修您的住宅或办公室？",
-    description: "立即获取免费咨询和报价。我们服务吉隆坡、雪兰莪及周边地区。",
-  },
+type CTASectionProps = {
+  ctaBlock?: PublishedCtaBlock | null;
 };
 
-const CTASection = () => {
+const CTASection = ({ ctaBlock: providedCtaBlock }: CTASectionProps) => {
   const { language } = useLanguage();
   const t = useT();
-  const content = copy[language];
-  const eyebrow = language === "zh" ? "项目咨询" : "Project Consultation";
-  const { data: ctaBlock } = usePublishedCtaBlock(language, "home_final");
+  const content = homeSectionText.cta[language];
+  const { data: fetchedCtaBlock } = usePublishedCtaBlock(language, "home_final", { enabled: providedCtaBlock === undefined });
+  const ctaBlock = providedCtaBlock === undefined ? fetchedCtaBlock : providedCtaBlock;
   const dynamic = ctaBlock
     ? {
         title: ctaBlock.title,
@@ -38,7 +32,7 @@ const CTASection = () => {
   return (
     <FooterPreludeCta
       id="cta"
-      eyebrow={eyebrow}
+      eyebrow={content.eyebrow}
       title={title}
       description={description}
       quoteLabel={primaryLabel}

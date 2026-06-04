@@ -2,44 +2,35 @@ import Reveal from "@/components/Reveal";
 import DeferredSmartImage from "@/components/DeferredSmartImage";
 import { usePublishedBrandPartners } from "@/hooks/usePublishedContent";
 import { useLanguage } from "@/i18n/LanguageContext";
-
-const copy = {
-  en: {
-    eyebrow: "Common Brands",
-    title: "Curated Materials & Hardware Partners",
-    subtitle:
-      "We select suitable materials, fittings, and hardware for residential, commercial, built-in furniture, and wall finishing projects.",
-    fallbackCategory: "Material option",
-  },
-  zh: {
-    eyebrow: "常用品牌",
-    title: "精选材料与五金品牌",
-    subtitle: "我们根据项目预算、风格和施工需求，选用适合住宅、商业空间、定制家具与墙面系统的材料和五金。",
-    fallbackCategory: "可选材料品牌",
-  },
-};
+import { homeSectionText } from "@/i18n/homeSectionsText";
+import type { PublishedBrandPartner } from "@/lib/homeContentApi";
 
 const brandCategories = [
-  { test: /blum/i, en: "Cabinet hardware", zh: "定制柜五金" },
-  { test: /h[aä]fele|hafele/i, en: "Hardware systems", zh: "五金系统" },
-  { test: /hettich/i, en: "Furniture fittings", zh: "家具五金" },
-  { test: /remmers/i, en: "Wood protection", zh: "木作保护" },
-  { test: /nippon|jotun|dulux/i, en: "Wall coatings", zh: "墙面涂料" },
-  { test: /grohe/i, en: "Bath fittings", zh: "卫浴龙头" },
-  { test: /kohler|toto/i, en: "Bathroom fixtures", zh: "卫浴洁具" },
-  { test: /bosch|makita|hilti/i, en: "Tool systems", zh: "工具系统" },
+  { test: /blum/i, key: "blum" },
+  { test: /h[aä]fele|hafele/i, key: "hafele" },
+  { test: /hettich/i, key: "hettich" },
+  { test: /remmers/i, key: "remmers" },
+  { test: /nippon|jotun|dulux/i, key: "paint" },
+  { test: /grohe/i, key: "grohe" },
+  { test: /kohler|toto/i, key: "bathroom" },
+  { test: /bosch|makita|hilti/i, key: "tools" },
 ] as const;
 
 const getBrandCategory = (name: string, language: "en" | "zh", fallback: string) => {
   const match = brandCategories.find((item) => item.test.test(name));
-  return match ? match[language] : fallback;
+  return match ? homeSectionText.brandLogos[language].categories[match.key] : fallback;
 };
 
-const BrandLogosSection = () => {
+type BrandLogosSectionProps = {
+  brandPartners?: PublishedBrandPartner[];
+};
+
+const BrandLogosSection = ({ brandPartners: providedBrands }: BrandLogosSectionProps) => {
   const { language } = useLanguage();
-  const { data: publishedBrands } = usePublishedBrandPartners();
+  const { data: fetchedBrands } = usePublishedBrandPartners({ enabled: providedBrands === undefined });
+  const publishedBrands = providedBrands === undefined ? fetchedBrands : providedBrands;
   const items = publishedBrands?.filter((item) => item.logo_url && item.name) ?? [];
-  const t = copy[language];
+  const t = homeSectionText.brandLogos[language];
 
   if (!items.length) return null;
 
@@ -69,7 +60,7 @@ const BrandLogosSection = () => {
                     height={120}
                     loading="lazy"
                     resize="contain"
-                    rootMargin="240px"
+                    rootMargin="1200px"
                   />
                 </div>
                 <div className="brand-board-copy">

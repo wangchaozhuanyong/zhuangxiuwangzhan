@@ -7,7 +7,6 @@ import { Button } from "@/components/ui/button";
 import { AdminActionButton } from "@/components/admin/AdminPermission";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { isSupabaseConfigured, supabase } from "@/lib/supabase";
 import { toast } from "@/hooks/use-toast";
 import AdminStickyActionBar from "@/components/admin/AdminStickyActionBar";
 import AdminPageHeader from "@/components/admin/AdminPageHeader";
@@ -16,12 +15,22 @@ import AdminEmptyState from "@/components/admin/AdminEmptyState";
 import { adminConfirm } from "@/components/admin/AdminConfirmProvider";
 import ImageField from "@/components/admin/ImageField";
 import { FaqListEditor, ProcessStepsEditor, TextListEditor } from "@/components/admin/StructuredArrayEditors";
+import { adminServiceEditorText } from "@/i18n/adminServiceEditorText";
 import { invalidateAdminContentDetail, invalidateAfterAdminContentSave } from "@/lib/adminInvalidate";
-import { useAdminServiceDetail } from "@/lib/adminQueries";
-import { publishStatusOptions } from "@/lib/adminLocale";
+import { useAdminServiceDetail } from "@/lib/adminBusinessContentQueries";
+import { adminStatusLabel, getAdminLang, publishStatusOptions } from "@/lib/adminLocale";
 import { getAdminFieldHelp } from "@/lib/adminHelpText";
-import { formatAdminMutationError, saveAdminRecord } from "@/lib/adminMutation";
+import { formatAdminMutationError } from "@/lib/adminMutation";
+import { isNewAdminRouteRecord } from "@/lib/adminRouteParams";
 import { autoEnglishDescription, englishMissingHint, hasAnyMissingEnglish } from "@/lib/adminTranslation";
+import { formatUserFacingError } from "@/lib/userFacingText";
+import {
+  checkAdminServiceSlugUnique,
+  generateAdminServiceEnglish,
+  hasServiceBackendConfig,
+  normalizeServiceSlug,
+  saveAdminService,
+} from "@/backend/modules/services/service/serviceService";
 
 type ServiceRecord = {
   id?: string;
@@ -97,29 +106,20 @@ const serviceEnglishFields = [
   "seo_description_en",
 ];
 
-const slugify = (value: string) =>
-  value
-    .trim()
-    .toLowerCase()
-    .replace(/['"]/g, "")
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/(^-|-$)/g, "");
-
-const cleanLines = (value?: string[] | null) => (value || []).map((item) => item.trim()).filter(Boolean);
-const cleanProcessSteps = (value?: any[] | null) =>
-  (value || [])
-    .map((item) => ({ ...item, title: String(item?.title || "").trim(), desc: String(item?.desc || "").trim() }))
-    .filter((item) => item.title || item.desc);
-const cleanFaqs = (value?: any[] | null) =>
-  (value || [])
-    .map((item) => ({ ...item, q: String(item?.q || "").trim(), a: String(item?.a || "").trim() }))
-    .filter((item) => item.q || item.a);
+type AdminServiceEditorTextKey = keyof typeof adminServiceEditorText;
 
 export default function AdminServiceEditor() {
+  const language = getAdminLang();
+  const A = useCallback((key: AdminServiceEditorTextKey): string => adminServiceEditorText[key][language], [language]);
+  const formatA = useCallback(
+    (key: AdminServiceEditorTextKey, values: Record<string, string>): string =>
+      Object.entries(values).reduce<string>((text, [name, value]) => text.replaceAll(`{${name}}`, value), A(key)),
+    [A],
+  );
   const queryClient = useQueryClient();
   const navigate = useNavigate();
-  const { id } = useParams<{ id: string }>();
-  const isNew = id === "new";
+  const { id } = useParams<{ id?: string }>();
+  const isNew = isNewAdminRouteRecord(id);
   const [showEnglish, setShowEnglish] = useState(true);
   const [slugChecking, setSlugChecking] = useState(false);
   const [slugError, setSlugError] = useState<string>("");
@@ -154,120 +154,101 @@ export default function AdminServiceEditor() {
 
   useEffect(() => {
     if (!isError || !loadError) return;
-    const message = loadError instanceof Error ? loadError.message : String(loadError);
-    toast({ title: "加载失败", description: message, variant: "destructive" });
-  }, [isError, loadError]);
+    const message = formatUserFacingError(loadError, language);
+    toast({ title: A("loadFailed"), description: message, variant: "destructive" });
+  }, [A, isError, language, loadError]);
 
   const checkSlugUnique = useCallback(
     async (slug: string) => {
-      if (!isSupabaseConfigured) return true;
-      const value = slugify(slug);
+      if (!hasServiceBackendConfig()) return true;
+      const value = normalizeServiceSlug(slug);
       if (!value) return false;
       setSlugChecking(true);
       setSlugError("");
-      const { data, error } = await supabase!.from("services").select("id").eq("slug", value).limit(1);
-      setSlugChecking(false);
-      if (error) {
-        setSlugError(error.message);
+      try {
+        const isUnique = await checkAdminServiceSlugUnique(value, record.id);
+        if (!isUnique) {
+          setSlugError(A("slugTaken"));
+          return false;
+        }
+        return true;
+      } catch (error) {
+        setSlugError(formatUserFacingError(error, language));
         return false;
+      } finally {
+        setSlugChecking(false);
       }
-      const exists = (data || []).some((row: any) => row.id !== record.id);
-      if (exists) {
-        setSlugError("链接标识已被占用，请更换");
-        return false;
-      }
-      return true;
     },
-    [record.id],
+    [A, language, record.id],
   );
 
   const previewUrl = useMemo(() => {
     const lang = "zh";
-    const slug = record.slug ? slugify(record.slug) : "";
+    const slug = record.slug ? normalizeServiceSlug(record.slug) : "";
     if (!slug) return "";
     return `/${lang}/services/${slug}`;
   }, [record.slug]);
 
   const save = async (nextStatus?: ServiceRecord["status"], generateEnglish?: boolean, forceEnglish?: boolean) => {
-    if (!isSupabaseConfigured) return;
-    const slug = slugify(record.slug || record.title_zh);
+    if (!hasServiceBackendConfig()) return;
+    const slug = normalizeServiceSlug(record.slug || record.title_zh);
     if (!slug) {
-      toast({ title: "请填写链接标识或中文标题", variant: "destructive" });
+      toast({ title: A("slugRequired"), variant: "destructive" });
       return;
     }
     const ok = await checkSlugUnique(slug);
     if (!ok) {
-      toast({ title: "链接标识不可用", description: slugError || "请修改后再保存。", variant: "destructive" });
+      toast({ title: A("slugUnavailable"), description: slugError || A("slugFixThenSave"), variant: "destructive" });
       return;
     }
 
     setSaveBusy(true);
-    const payload: any = {
-      ...record,
-      slug,
-      status: nextStatus ?? record.status,
-      suitable_for_zh: cleanLines(record.suitable_for_zh),
-      suitable_for_en: cleanLines(record.suitable_for_en),
-      common_projects_zh: cleanLines(record.common_projects_zh),
-      common_projects_en: cleanLines(record.common_projects_en),
-      scope_items_zh: cleanLines(record.scope_items_zh),
-      scope_items_en: cleanLines(record.scope_items_en),
-      process_steps_zh: cleanProcessSteps(record.process_steps_zh),
-      process_steps_en: cleanProcessSteps(record.process_steps_en),
-      faqs_zh: cleanFaqs(record.faqs_zh),
-      faqs_en: cleanFaqs(record.faqs_en),
-    };
-
-    let saved: any;
+    let savedResult: Awaited<ReturnType<typeof saveAdminService>>;
     try {
-      saved = await saveAdminRecord({
-        table: "services",
-        payload,
-        id: record.id,
-        expectedUpdatedAt: record.updated_at || null,
-        action: nextStatus === "published" ? "publish" : record.id ? "update" : "insert",
+      savedResult = await saveAdminService({
+        record,
+        nextStatus,
         queryClient,
       });
     } catch (error) {
-      toast({ title: "\u4fdd\u5b58\u5931\u8d25", description: formatAdminMutationError(error), variant: "destructive" });
+      toast({ title: A("saveFailed"), description: formatAdminMutationError(error), variant: "destructive" });
       setSaveBusy(false);
       return;
     }
 
-    const savedId = saved?.id;
-    applyRemote({ ...record, ...saved, id: savedId, slug, status: payload.status });
-    toast({ title: "已保存" });
+    const { saved, savedId } = savedResult;
+    applyRemote({ ...record, ...saved, id: savedId, slug: savedResult.slug, status: savedResult.status });
+    toast({ title: A("saved") });
     await invalidateAfterAdminContentSave(queryClient);
     setSaveBusy(false);
 
     if (isNew) navigate(`/admin/services/${savedId}`, { replace: true });
 
     if (generateEnglish) {
-      const { error: translationError } = await supabase!.functions.invoke("generate-english-content", {
-        body: { table: "services", id: savedId, force: Boolean(forceEnglish) },
-      });
-      if (translationError) {
-        toast({ title: "已保存，但生成英文失败", description: translationError.message, variant: "destructive" });
-      } else {
-        toast({ title: "已保存，并已自动生成英文" });
+      try {
+        await generateAdminServiceEnglish(savedId, Boolean(forceEnglish));
+        toast({ title: A("savedGenerateSuccess") });
         void invalidateAdminContentDetail(queryClient, "services", savedId);
+      } catch (translationError) {
+        const description = formatUserFacingError(translationError, language);
+        toast({ title: A("savedGenerateFailed"), description, variant: "destructive" });
       }
     }
   };
 
   const forceRegenerateEnglish = async () => {
     const confirmed = await adminConfirm({
-      title: "确认重新生成英文？",
-      description: "这会覆盖已有英文内容。建议只在当前英文内容明显不准，或中文内容大幅调整后使用。",
-      confirmLabel: "重新生成",
+      title: A("confirmForceTitle"),
+      description: A("confirmForceDescription"),
+      confirmLabel: A("confirmForceLabel"),
     });
     if (confirmed) {
       await save(undefined, true, true);
     }
   };
 
-  if (!isSupabaseConfigured) {
-    return <AdminEmptyState title="Supabase 未配置" description="配置完成后，才能使用服务后台编辑器。" />;
+  if (!hasServiceBackendConfig()) {
+    return <AdminEmptyState title={A("supabaseMissingTitle")} description={A("supabaseMissingDescription")} />;
   }
 
   return (
@@ -276,10 +257,10 @@ export default function AdminServiceEditor() {
         left={
           <>
             <Button asChild variant="outline">
-              <Link to="/admin/services">返回列表</Link>
+              <Link to="/admin/services">{A("backToList")}</Link>
             </Button>
-            {record.status && <span className="text-xs text-muted-foreground">状态：{record.status}</span>}
-            {slugChecking && <span className="text-xs text-muted-foreground">链接标识检查中...</span>}
+            {record.status && <span className="text-xs text-muted-foreground">{formatA("statusPrefix", { status: adminStatusLabel("default", record.status) })}</span>}
+            {slugChecking && <span className="text-xs text-muted-foreground">{A("slugChecking")}</span>}
             {slugError && <span className="text-xs text-destructive">{slugError}</span>}
           </>
         }
@@ -288,18 +269,18 @@ export default function AdminServiceEditor() {
             {previewUrl && (
               <Button asChild variant="outline">
                 <a href={previewUrl} target="_blank" rel="noreferrer">
-                  预览
+                  {A("preview")}
                 </a>
               </Button>
             )}
             <AdminActionButton action="content.write" type="button" variant="outline" onClick={() => void save("draft")} disabled={saveBusy || isLoading}>
-              保存草稿
+              {A("saveDraft")}
             </AdminActionButton>
             <AdminActionButton action="content.publish" type="button" onClick={() => void save("published")} disabled={saveBusy || isLoading}>
-              发布
+              {A("publish")}
             </AdminActionButton>
             <AdminActionButton action="content.write" type="button" variant="outline" onClick={() => void save(undefined, true)} disabled={saveBusy || isLoading || !record.id}>
-              保存并自动生成英文
+              {A("saveAndGenerateEnglish")}
             </AdminActionButton>
             <AdminActionButton
               action="content.write"
@@ -308,7 +289,7 @@ export default function AdminServiceEditor() {
               onClick={() => void forceRegenerateEnglish()}
               disabled={saveBusy || isLoading || !record.id}
             >
-              强制重新生成英文
+              {A("forceRegenerateEnglish")}
             </AdminActionButton>
           </>
         }
@@ -322,12 +303,12 @@ export default function AdminServiceEditor() {
         className="space-y-6"
       >
         <AdminPageHeader
-          title={isNew ? "新建服务" : "编辑服务"}
-          description="优先编辑中文内容，英文内容可以自动生成后再复查。保存、发布、预览都在顶部操作栏。"
-          helpText="这里主要编辑服务介绍、服务范围、按钮文案和搜索优化。"
+          title={isNew ? A("newTitle") : A("editTitle")}
+          description={A("pageDescription")}
+          helpText={A("pageHelpText")}
           actions={
             <Button type="button" variant="outline" onClick={() => setShowEnglish((v) => !v)}>
-              {showEnglish ? "隐藏英文内容" : "显示英文内容"}
+              {showEnglish ? A("hideEnglish") : A("showEnglish")}
             </Button>
           }
         />
@@ -339,13 +320,13 @@ export default function AdminServiceEditor() {
         )}
 
         <AdminFormSection
-          title="发布与排序"
-          description="草稿不会对外展示，发布后会在前台服务页面生效。"
-          helpText="控制服务是否在前台显示，以及它在服务列表里的排序。"
+          title={A("publishSectionTitle")}
+          description={A("publishSectionDescription")}
+          helpText={A("publishSectionHelp")}
         >
           <div className="grid gap-4 md:grid-cols-3">
             <div>
-              <label className="mb-1 block text-sm font-medium">状态</label>
+              <label className="mb-1 block text-sm font-medium">{A("status")}</label>
               <select
                 value={record.status}
                 onChange={(e) => setRecord((r) => ({ ...r, status: e.target.value as any }))}
@@ -359,42 +340,38 @@ export default function AdminServiceEditor() {
               </select>
             </div>
             <div>
-              <label className="mb-1 block text-sm font-medium">排序</label>
+              <label className="mb-1 block text-sm font-medium">{A("sortOrder")}</label>
               <Input type="number" value={record.sort_order} onChange={(e) => setRecord((r) => ({ ...r, sort_order: Number(e.target.value || 0) }))} />
             </div>
           </div>
         </AdminFormSection>
 
         <AdminFormSection
-          title="基础信息（中文）"
-          description="用于服务列表卡片和详情页标题、摘要。前台卡片会自动限制标题和摘要行数，详情页会完整显示正文。"
-          helpText="管理服务中文标题、摘要和正文。前台中文服务列表和详情页会读取这里。"
+          title={A("basicZhTitle")}
+          description={A("basicZhDescription")}
+          helpText={A("basicZhHelp")}
         >
           <div className="grid gap-4 md:grid-cols-2">
             <div className="md:col-span-2">
-              <label className="mb-1 block text-sm font-medium">中文标题</label>
+              <label className="mb-1 block text-sm font-medium">{A("titleZh")}</label>
               <Input value={record.title_zh} onChange={(e) => setRecord((r) => ({ ...r, title_zh: e.target.value }))} />
             </div>
 
             <div className="md:col-span-2">
               <div className="flex items-center justify-between gap-2">
-                <label className="mb-1 block text-sm font-medium">链接标识</label>
+                <label className="mb-1 block text-sm font-medium">{A("slug")}</label>
                 <div className="flex items-center gap-2">
                   <Button
                     type="button"
                     variant="outline"
                     size="sm"
                     onClick={async () => {
-                      const next = slugify(record.slug || record.title_zh);
+                      const next = normalizeServiceSlug(record.slug || record.title_zh);
                       setRecord((r) => ({ ...r, slug: next }));
                       void checkSlugUnique(next);
                     }}
-                  >
-                    自动生成
-                  </Button>
-                  <Button type="button" variant="outline" size="sm" onClick={() => void checkSlugUnique(record.slug)}>
-                    检查是否重复
-                  </Button>
+                  >{A("autoGenerate")}</Button>
+                  <Button type="button" variant="outline" size="sm" onClick={() => void checkSlugUnique(record.slug)}>{A("checkDuplicate")}</Button>
                 </div>
               </div>
               <Input
@@ -405,44 +382,44 @@ export default function AdminServiceEditor() {
                   setSlugError("");
                 }}
                 onBlur={() => void checkSlugUnique(record.slug)}
-                placeholder="例如：kitchen-renovation"
+                placeholder={A("slugPlaceholder")}
               />
-              {previewUrl && <div className="mt-1 text-xs text-muted-foreground">前台路径：{previewUrl}</div>}
+              {previewUrl && <div className="mt-1 text-xs text-muted-foreground">{formatA("frontendPath", { path: previewUrl })}</div>}
             </div>
 
             <div className="md:col-span-2">
-              <label className="mb-1 block text-sm font-medium">中文摘要</label>
+              <label className="mb-1 block text-sm font-medium">{A("excerptZh")}</label>
               <Textarea rows={3} value={record.excerpt_zh} onChange={(e) => setRecord((r) => ({ ...r, excerpt_zh: e.target.value }))} />
             </div>
 
             <div className="md:col-span-2">
-              <label className="mb-1 block text-sm font-medium">中文详情</label>
+              <label className="mb-1 block text-sm font-medium">{A("contentZh")}</label>
               <Textarea rows={10} value={record.content_zh} onChange={(e) => setRecord((r) => ({ ...r, content_zh: e.target.value }))} />
             </div>
           </div>
         </AdminFormSection>
 
         <AdminFormSection
-          title="图片"
-          description="支持粘贴图片地址，也可以直接上传。"
-          helpText="管理服务封面图，服务列表卡片和详情页头图会优先使用这里。"
+          title={A("imageTitle")}
+          description={A("imageDescription")}
+          helpText={A("imageHelp")}
         >
           <div className="grid gap-4 md:grid-cols-2">
             <div className="md:col-span-2">
               <ImageField
-                label="封面图"
+                label={A("coverImage")}
                 value={record.image_url}
                 onChange={(url) => setRecord((r) => ({ ...r, image_url: url }))}
                 folder={`services/${record.id || "draft"}`}
                 usageType="hero"
                 altValue={record.alt_zh}
                 onAltChange={(alt) => setRecord((r) => ({ ...r, alt_zh: alt }))}
-                helpText="提示：服务列表与详情页会使用这个封面图。"
+                helpText={A("coverImageHelp")}
               />
             </div>
             {showEnglish && (
               <div>
-                <label className="mb-1 block text-sm font-medium">英文图片说明</label>
+                <label className="mb-1 block text-sm font-medium">{A("englishImageAlt")}</label>
                 <Input value={record.alt_en} onChange={(e) => setRecord((r) => ({ ...r, alt_en: e.target.value }))} />
               </div>
             )}
@@ -450,41 +427,41 @@ export default function AdminServiceEditor() {
         </AdminFormSection>
 
         <AdminFormSection
-          title="业务字段（中文）"
-          description="这些字段会被前台服务详情页读取。"
-          helpText="管理适合场景、常见项目、服务范围、流程和常见问题，都会显示在服务详情页。"
+          title={A("businessZhTitle")}
+          description={A("businessZhDescription")}
+          helpText={A("businessZhHelp")}
         >
           <div className="grid gap-4 md:grid-cols-2">
             <div>
               <TextListEditor
-                label="适合场景"
+                label={A("suitableForZh")}
                 helpText={getAdminFieldHelp("suitable_for_zh")}
                 value={record.suitable_for_zh}
                 onChange={(value) => setRecord((r) => ({ ...r, suitable_for_zh: value }))}
-                placeholder="例如：公寓装修、旧房翻新"
+                placeholder={A("suitableForZhPlaceholder")}
               />
             </div>
             <div>
               <TextListEditor
-                label="常见项目"
+                label={A("commonProjectsZh")}
                 helpText={getAdminFieldHelp("common_projects_zh")}
                 value={record.common_projects_zh}
                 onChange={(value) => setRecord((r) => ({ ...r, common_projects_zh: value }))}
-                placeholder="例如：厨房翻新、浴室防水"
+                placeholder={A("commonProjectsZhPlaceholder")}
               />
             </div>
             <div className="md:col-span-2">
               <TextListEditor
-                label="服务范围"
+                label={A("scopeItemsZh")}
                 helpText={getAdminFieldHelp("scope_items_zh")}
                 value={record.scope_items_zh}
                 onChange={(value) => setRecord((r) => ({ ...r, scope_items_zh: value }))}
-                placeholder="例如：水电工程、木作、油漆"
+                placeholder={A("scopeItemsZhPlaceholder")}
               />
             </div>
             <div className="md:col-span-2">
               <ProcessStepsEditor
-                label="服务步骤"
+                label={A("processStepsZh")}
                 helpText={getAdminFieldHelp("process_steps_zh")}
                 value={record.process_steps_zh}
                 onChange={(value) => setRecord((r) => ({ ...r, process_steps_zh: value }))}
@@ -492,7 +469,7 @@ export default function AdminServiceEditor() {
             </div>
             <div className="md:col-span-2">
               <FaqListEditor
-                label="服务问答"
+                label={A("faqsZh")}
                 helpText={getAdminFieldHelp("faqs_zh")}
                 value={record.faqs_zh}
                 onChange={(value) => setRecord((r) => ({ ...r, faqs_zh: value }))}
@@ -502,17 +479,17 @@ export default function AdminServiceEditor() {
         </AdminFormSection>
 
         <AdminFormSection
-          title="SEO（中文）"
-          description="用于前台页面标题和页面描述，留空时前台会回退默认值。"
-          helpText="管理中文页面在浏览器标题、搜索结果和分享卡片里的文案。"
+          title={A("seoZhTitle")}
+          description={A("seoZhDescription")}
+          helpText={A("seoZhHelp")}
         >
           <div className="grid gap-4 md:grid-cols-2">
             <div className="md:col-span-2">
-              <label className="mb-1 block text-sm font-medium">SEO 标题</label>
+              <label className="mb-1 block text-sm font-medium">{A("seoTitle")}</label>
               <Input value={record.seo_title_zh} onChange={(e) => setRecord((r) => ({ ...r, seo_title_zh: e.target.value }))} />
             </div>
             <div className="md:col-span-2">
-              <label className="mb-1 block text-sm font-medium">SEO 描述</label>
+              <label className="mb-1 block text-sm font-medium">{A("seoDescription")}</label>
               <Textarea rows={3} value={record.seo_description_zh} onChange={(e) => setRecord((r) => ({ ...r, seo_description_zh: e.target.value }))} />
             </div>
           </div>
@@ -521,66 +498,66 @@ export default function AdminServiceEditor() {
         {showEnglish && (
           <>
             <AdminFormSection
-              title="自动英文，可手动微调"
+              title={A("autoEnglishTitle")}
               description={autoEnglishDescription}
-              helpText="英文站优先显示这里。没有英文时，后台会提示你生成英文。"
+              helpText={A("autoEnglishHelp")}
               collapsible
               defaultOpen={false}
             >
               <div className="grid gap-4 md:grid-cols-2">
                 <div className="md:col-span-2">
-                  <label className="mb-1 block text-sm font-medium">英文标题</label>
+                  <label className="mb-1 block text-sm font-medium">{A("englishTitle")}</label>
                   <Input value={record.title_en} onChange={(e) => setRecord((r) => ({ ...r, title_en: e.target.value }))} />
                 </div>
                 <div className="md:col-span-2">
-                  <label className="mb-1 block text-sm font-medium">英文摘要</label>
+                  <label className="mb-1 block text-sm font-medium">{A("englishExcerpt")}</label>
                   <Textarea rows={3} value={record.excerpt_en} onChange={(e) => setRecord((r) => ({ ...r, excerpt_en: e.target.value }))} />
                 </div>
                 <div className="md:col-span-2">
-                  <label className="mb-1 block text-sm font-medium">英文正文</label>
+                  <label className="mb-1 block text-sm font-medium">{A("englishBody")}</label>
                   <Textarea rows={10} value={record.content_en} onChange={(e) => setRecord((r) => ({ ...r, content_en: e.target.value }))} />
                 </div>
               </div>
             </AdminFormSection>
 
             <AdminFormSection
-              title="自动英文业务字段，可手动微调"
+              title={A("autoEnglishBusinessTitle")}
               description={autoEnglishDescription}
-              helpText="管理英文服务详情页的列表、流程和常见问题。"
+              helpText={A("autoEnglishBusinessHelp")}
               collapsible
               defaultOpen={false}
             >
               <div className="grid gap-4 md:grid-cols-2">
                 <div>
                   <TextListEditor
-                    label="适合场景（英文）"
+                    label={A("suitableForEn")}
                     helpText={getAdminFieldHelp("suitable_for_en")}
                     value={record.suitable_for_en}
                     onChange={(value) => setRecord((r) => ({ ...r, suitable_for_en: value }))}
-                    placeholder="例如：Condo renovation"
+                    placeholder={A("suitableForEnPlaceholder")}
                   />
                 </div>
                 <div>
                   <TextListEditor
-                    label="常见项目（英文）"
+                    label={A("commonProjectsEn")}
                     helpText={getAdminFieldHelp("common_projects_en")}
                     value={record.common_projects_en}
                     onChange={(value) => setRecord((r) => ({ ...r, common_projects_en: value }))}
-                    placeholder="例如：Kitchen upgrade"
+                    placeholder={A("commonProjectsEnPlaceholder")}
                   />
                 </div>
                 <div className="md:col-span-2">
                   <TextListEditor
-                    label="服务范围（英文）"
+                    label={A("scopeItemsEn")}
                     helpText={getAdminFieldHelp("scope_items_en")}
                     value={record.scope_items_en}
                     onChange={(value) => setRecord((r) => ({ ...r, scope_items_en: value }))}
-                    placeholder="例如：Electrical works"
+                    placeholder={A("scopeItemsEnPlaceholder")}
                   />
                 </div>
                 <div className="md:col-span-2">
                   <ProcessStepsEditor
-                    label="服务步骤（英文）"
+                    label={A("processStepsEn")}
                     helpText={getAdminFieldHelp("process_steps_en")}
                     value={record.process_steps_en}
                     onChange={(value) => setRecord((r) => ({ ...r, process_steps_en: value }))}
@@ -588,7 +565,7 @@ export default function AdminServiceEditor() {
                 </div>
                 <div className="md:col-span-2">
                   <FaqListEditor
-                    label="服务问答（英文）"
+                    label={A("faqsEn")}
                     helpText={getAdminFieldHelp("faqs_en")}
                     value={record.faqs_en}
                     onChange={(value) => setRecord((r) => ({ ...r, faqs_en: value }))}
@@ -598,19 +575,19 @@ export default function AdminServiceEditor() {
             </AdminFormSection>
 
             <AdminFormSection
-              title="英文 SEO，可手动微调"
+              title={A("englishSeoTitle")}
               description={autoEnglishDescription}
-              helpText="管理英文页面的搜索文案。正式英文 SEO 建议补齐。"
+              helpText={A("englishSeoHelp")}
               collapsible
               defaultOpen={false}
             >
               <div className="grid gap-4 md:grid-cols-2">
                 <div className="md:col-span-2">
-                  <label className="mb-1 block text-sm font-medium">英文 SEO 标题</label>
+                  <label className="mb-1 block text-sm font-medium">{A("seoTitleEn")}</label>
                   <Input value={record.seo_title_en} onChange={(e) => setRecord((r) => ({ ...r, seo_title_en: e.target.value }))} />
                 </div>
                 <div className="md:col-span-2">
-                  <label className="mb-1 block text-sm font-medium">英文 SEO 描述</label>
+                  <label className="mb-1 block text-sm font-medium">{A("seoDescriptionEn")}</label>
                   <Textarea rows={3} value={record.seo_description_en} onChange={(e) => setRecord((r) => ({ ...r, seo_description_en: e.target.value }))} />
                 </div>
               </div>

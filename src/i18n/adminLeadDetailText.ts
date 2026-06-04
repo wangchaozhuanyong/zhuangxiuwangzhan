@@ -1,0 +1,43 @@
+export const adminLeadDetailText = {
+  defaultFieldLabel: { en: "Content", zh: "内容" },
+  readOnlyLead: { en: "This account has a read-only role and cannot edit lead content.", zh: "当前账号是只读角色，不能修改咨询内容。" },
+  savingField: { en: "{label} saving...", zh: "{label}保存中..." },
+  saveFieldFailed: { en: "{label} save failed: {reason}", zh: "{label}保存失败：{reason}" },
+  savedField: { en: "{label} saved.", zh: "{label}已保存。" },
+  readOnlyFollowup: { en: "This account has a read-only role and cannot add follow-up records.", zh: "当前账号是只读角色，不能新增跟进记录。" },
+  followupContentRequired: { en: "Fill in follow-up content first.", zh: "请先填写跟进内容。" },
+  followupSavedSyncFailed: {
+    en: "Follow-up saved, but next follow-up time sync failed: {reason}",
+    zh: "跟进已保存，但下次跟进时间同步失败：{reason}",
+  },
+  followupSaved: { en: "Follow-up record saved.", zh: "跟进记录已保存。" },
+  pageTitle: { en: "Lead details", zh: "咨询详情" },
+  pageDescription: { en: "View customer enquiry content, update status, and add follow-up records.", zh: "查看客户咨询内容、更新状态、补跟进记录。" },
+  pageHelpText: {
+    en: "This is the handling page for one lead. You can update status, leave notes, and schedule the next follow-up here.",
+    zh: "这里是单条咨询的处理页面。你可以在这里改状态、记备注、安排下一次跟进。",
+  },
+  leadFallback: { en: "Lead", zh: "咨询" },
+  call: { en: "Call", zh: "拨打电话" },
+  projectType: { en: "Project type:", zh: "项目类型：" },
+  budget: { en: "Budget:", zh: "预算：" },
+  message: { en: "Message:", zh: "留言：" },
+  status: { en: "Status", zh: "状态" },
+  nextFollowUp: { en: "Next follow-up", zh: "下次跟进" },
+  notes: { en: "Notes", zh: "备注" },
+  addFollowup: { en: "Add follow-up", zh: "新增跟进" },
+  followupPlaceholder: { en: "Follow-up record...", zh: "跟进记录..." },
+  saving: { en: "Saving...", zh: "保存中..." },
+  saveFollowup: { en: "Save follow-up", zh: "保存跟进" },
+  timeline: { en: "Timeline", zh: "时间线" },
+  nextFollowUpAt: { en: "Next follow-up: {time}", zh: "下次跟进：{time}" },
+} as const;
+
+export const adminLeadFollowupTypeLabels = {
+  note: { en: "Note", zh: "备注" },
+  call: { en: "Call", zh: "电话" },
+  whatsapp: { en: "WhatsApp", zh: "WhatsApp" },
+  site_visit: { en: "Site visit / measurement", zh: "上门/测量" },
+  quotation: { en: "Quotation", zh: "报价" },
+  closed: { en: "Closed", zh: "结案" },
+} as const;

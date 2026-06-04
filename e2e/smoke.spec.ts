@@ -64,7 +64,7 @@ test.describe("public site smoke", () => {
     await gotoSmokePage(page, "/en/quote?source=project&title=Mont%20Kiara%20Condo&projectType=Residential%20Renovation&location=Mont%20Kiara#quote-name");
     await page.waitForLoadState("load");
 
-    await page.getByRole("button", { name: "Switch language" }).click();
+    await page.getByRole("link", { name: "Switch language" }).click();
 
     await expect(page).toHaveURL(/\/zh\/quote\?source=project&title=Mont%20Kiara%20Condo&projectType=Residential%20Renovation&location=Mont%20Kiara#quote-name$/);
     await expect(page.getByText("已带入案例：Mont Kiara Condo")).toBeVisible();

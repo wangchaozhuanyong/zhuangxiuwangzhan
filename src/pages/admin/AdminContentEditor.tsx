@@ -1,7 +1,7 @@
 import { useCallback, useDeferredValue, useEffect, useMemo, useRef, useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { invalidateAdminContentLists, invalidatePublishedContent } from "@/lib/adminInvalidate";
-import { useAdminEditorRows } from "@/lib/adminQueries";
+import { useAdminEditorRows } from "@/lib/adminCmsQueries";
 import { useParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -31,7 +31,7 @@ import {
   tableFields,
   tableLabels,
 } from "@/lib/adminContentEditorUtils";
-import { isSupabaseConfigured, supabase } from "@/lib/supabase";
+import { isSupabaseConfigured } from "@/lib/supabase";
 import AdminImageUpload, { getAdminImagePreviewVariant } from "./AdminImageUpload";
 import AdminProjectImages from "./AdminProjectImages";
 import { FaqListEditor, ProjectCardsEditor, TextListEditor } from "@/components/admin/StructuredArrayEditors";
@@ -39,6 +39,10 @@ import { AdminFieldLabel } from "@/components/admin/AdminHelpTip";
 import { getAdminFieldHelp, getAdminTableHelp } from "@/lib/adminHelpText";
 import { formatAdminMutationError, saveAdminRecord } from "@/lib/adminMutation";
 import { useUnsavedChangesWarning } from "@/hooks/useUnsavedChangesWarning";
+import { generateAdminContentEnglish } from "@/backend/modules/cms/service/cmsService";
+import { formatUserFacingError } from "@/lib/userFacingText";
+
+const formatGenerationError = (error: unknown, language: "en" | "zh") => formatUserFacingError(error, language);
 
 const AdminContentEditor = () => {
   const { type = "projects", id } = useParams<{ type: string; id?: string }>();
@@ -90,7 +94,7 @@ const AdminContentEditor = () => {
 
   useEffect(() => {
     if (rowsError) {
-      setStatus(rowsError instanceof Error ? rowsError.message : String(rowsError));
+      setStatus(formatUserFacingError(rowsError, lang));
       return;
     }
     if (recordDirtyRef.current) return;
@@ -99,7 +103,7 @@ const AdminContentEditor = () => {
     } else if (!id) {
       setRecord({});
     }
-  }, [id, rows, rowsError]);
+  }, [id, lang, rows, rowsError]);
 
   const save = async () => {
     setStatus(t.saving);
@@ -129,16 +133,14 @@ const AdminContentEditor = () => {
     const hasChineseContent = Object.keys(payload).some((field) => field.endsWith("_zh") && payload[field]);
     if (autoTranslateTables.has(type) && hasChineseContent) {
       setStatus(t.generatingEnglish);
-      const { error: translationError } = await supabase!.functions.invoke("generate-english-content", {
-        body: { table: type, id: savedRecord.id },
-      });
-
-      if (translationError) {
-        setStatus(t.generationFailed(translationError.message));
+      let translatedRecord: Record<string, any> | null;
+      try {
+        translatedRecord = await generateAdminContentEnglish<Record<string, any>>(type, savedRecord.id, false);
+      } catch (error) {
+        setStatus(t.generationFailed(formatGenerationError(error, lang)));
         return;
       }
 
-      const { data: translatedRecord } = await supabase!.from(type).select("*").eq("id", savedRecord.id).single();
       if (translatedRecord) {
         recordDirtyRef.current = false;
         setRecordDirty(false);
@@ -163,21 +165,19 @@ const AdminContentEditor = () => {
     }
 
     setStatus(t.generating);
-    const { error } = await supabase!.functions.invoke("generate-english-content", {
-      body: { table: type, id: record.id, force: true },
-    });
-
-    if (error) {
-      setStatus(error.message);
+    let translatedRecord: Record<string, any> | null;
+    try {
+      translatedRecord = await generateAdminContentEnglish<Record<string, any>>(type, record.id, true);
+    } catch (error) {
+      setStatus(formatGenerationError(error, lang));
       return;
     }
 
-    const { data: translatedRecord } = await supabase!.from(type).select("*").eq("id", record.id).single();
-      if (translatedRecord) {
-        recordDirtyRef.current = false;
-        setRecordDirty(false);
-        setRecord(translatedRecord);
-      }
+    if (translatedRecord) {
+      recordDirtyRef.current = false;
+      setRecordDirty(false);
+      setRecord(translatedRecord);
+    }
     setStatus(t.regenerated);
     refreshContentCaches();
     void queryClient.invalidateQueries({ queryKey: ["admin", type, "rows"] });
@@ -191,8 +191,8 @@ const AdminContentEditor = () => {
   }
 
   return (
-    <div className="grid gap-6 xl:grid-cols-[320px_1fr]">
-        <div className="rounded-xl border border-border bg-card p-4">
+    <div className="grid min-w-0 gap-5 sm:gap-6 xl:grid-cols-[320px_1fr]">
+        <div className="min-w-0 rounded-xl border border-border bg-card p-4">
           <h2 className="font-display mb-3 text-lg font-bold">{tableLabels[type]?.[lang] || type}</h2>
           <p className="mb-3 text-xs leading-5 text-muted-foreground">{getAdminTableHelp(type)}</p>
           {!readOnlyTables.has(type) && (
@@ -248,13 +248,13 @@ const AdminContentEditor = () => {
             ))}
           </div>
         </div>
-        <div className="rounded-xl border border-border bg-card p-6">
-          <div className="mb-5 flex items-start justify-between gap-4">
-            <div>
+        <div className="min-w-0 rounded-xl border border-border bg-card p-4 sm:p-6">
+          <div className="mb-5 flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+            <div className="min-w-0">
               <h2 className="font-display text-xl font-bold">{t.bilingualTitle}</h2>
               <p className="text-sm text-muted-foreground">{t.bilingualDesc}</p>
             </div>
-            <div className="flex flex-col gap-2 sm:flex-row">
+            <div data-admin-mobile-actions className="flex flex-col gap-2 sm:flex-row">
               <Button variant="outline" onClick={regenerateEnglish} disabled={!isSupabaseConfigured || !record.id}>
                 {t.regenerate}
               </Button>
@@ -267,7 +267,7 @@ const AdminContentEditor = () => {
             <div className="mb-4 rounded-lg border border-accent/20 bg-accent/5 p-3 text-sm text-muted-foreground">{t.leadTip}</div>
           )}
           {status && <div className="mb-4 rounded-lg bg-muted p-3 text-sm">{status}</div>}
-          <div className="grid gap-4 md:grid-cols-2">
+          <div className="grid min-w-0 gap-4 md:grid-cols-2">
             {visibleFields.map((field) => {
               const label = translateFieldLabel(field, lang);
               const isWide =

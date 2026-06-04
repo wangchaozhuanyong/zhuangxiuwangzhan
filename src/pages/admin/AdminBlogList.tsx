@@ -3,14 +3,19 @@ import { Link } from "react-router-dom";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { isSupabaseConfigured } from "@/lib/supabase";
-import { useAdminBlogPosts, type AdminBlogRow } from "@/lib/adminQueries";
+import { useAdminBlogPosts, type AdminBlogRow } from "@/lib/adminBusinessContentQueries";
 import AdminPageHeader from "@/components/admin/AdminPageHeader";
 import AdminDataTable, { type AdminDataTableColumn } from "@/components/admin/AdminDataTable";
 import AdminListPager from "@/components/admin/AdminListPager";
 import AdminStatusBadge from "@/components/admin/AdminStatusBadge";
 import AdminEmptyState from "@/components/admin/AdminEmptyState";
 import SmartImage from "@/components/SmartImage";
-import { publishStatusOptions } from "@/lib/adminLocale";
+import { getAdminLang, publishStatusOptions } from "@/lib/adminLocale";
+import { adminBlogListText } from "@/i18n/adminBlogListText";
+import { formatUserFacingError } from "@/lib/userFacingText";
+
+type AdminBlogListTextKey = keyof typeof adminBlogListText;
+const A = (key: AdminBlogListTextKey) => adminBlogListText[key][getAdminLang()];
 
 export default function AdminBlogList() {
   const [status, setStatus] = useState<string>("all");
@@ -21,7 +26,7 @@ export default function AdminBlogList() {
   const rows = data?.rows ?? [];
   const total = data?.count ?? 0;
   const pageSize = data?.pageSize ?? 30;
-  const errorMessage = error instanceof Error ? error.message : error ? String(error) : "";
+  const errorMessage = error ? formatUserFacingError(error, getAdminLang()) : "";
 
   useEffect(() => {
     setPage(0);
@@ -30,7 +35,7 @@ export default function AdminBlogList() {
   const columns: AdminDataTableColumn<AdminBlogRow>[] = [
     {
       key: "post",
-      header: "文章",
+      header: A("columnPost"),
       cell: (row) => {
         const title = row.title_zh || row.title_en || row.slug;
         return (
@@ -50,7 +55,7 @@ export default function AdminBlogList() {
     },
     {
       key: "meta",
-      header: "分类 / 发布时间",
+      header: A("columnMeta"),
       cell: (row) => (
         <div className="text-xs text-muted-foreground">
           <div>{row.category || "-"}</div>
@@ -60,19 +65,19 @@ export default function AdminBlogList() {
     },
     {
       key: "status",
-      header: "状态",
+      header: A("columnStatus"),
       className: "w-[120px]",
       cell: (row) => <AdminStatusBadge status={row.status || "draft"} />,
     },
     {
       key: "sort",
-      header: "排序",
+      header: A("columnSort"),
       className: "w-[100px]",
       cell: (row) => <span className="tabular-nums text-sm text-muted-foreground">{row.sort_order ?? 0}</span>,
     },
     {
       key: "updated",
-      header: "更新",
+      header: A("columnUpdated"),
       className: "w-[180px]",
       cell: (row) => (
         <span className="text-xs text-muted-foreground">
@@ -85,29 +90,29 @@ export default function AdminBlogList() {
   return (
     <>
       <AdminPageHeader
-        title="博客文章"
-        description="管理博客列表、封面图、发布时间、SEO 与发布状态。发布后会在前台博客页生效。"
-        helpText="这里主要管博客文章的发布、排序、封面、分类和搜索优化。"
+        title={A("pageTitle")}
+        description={A("pageDescription")}
+        helpText={A("pageHelpText")}
         actions={
-          <div className="flex flex-wrap gap-2">
+          <div data-admin-mobile-actions className="flex flex-wrap gap-2">
             <Button variant="outline" onClick={() => void refetch()} disabled={!isSupabaseConfigured || isFetching}>
-              {isFetching ? "刷新中..." : "刷新"}
+              {isFetching ? A("refreshing") : A("refresh")}
             </Button>
             <Button asChild>
-              <Link to="/admin/blog/new">新建文章</Link>
+              <Link to="/admin/blog/new">{A("newPost")}</Link>
             </Button>
           </div>
         }
       />
 
-      <div className="mb-4 grid gap-3 md:grid-cols-[1fr_220px]">
-        <Input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="搜索标题、链接标识、分类..." />
+      <div data-admin-filter-bar className="mb-4 grid gap-3 md:grid-cols-[1fr_220px]">
+        <Input value={search} onChange={(e) => setSearch(e.target.value)} placeholder={A("searchPlaceholder")} />
         <select
           value={status}
           onChange={(e) => setStatus(e.target.value)}
-          className="flex h-10 rounded-md border border-input bg-background px-3 py-2 text-sm"
+          className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
         >
-          <option value="all">全部状态</option>
+          <option value="all">{A("allStatuses")}</option>
           {publishStatusOptions().map(({ value, label }) => (
             <option key={value} value={value}>
               {label}
@@ -124,17 +129,17 @@ export default function AdminBlogList() {
         rowKey={(r) => r.id}
         empty={
           <AdminEmptyState
-            title="暂无文章"
-            description="先新建一篇文章并发布，前台博客页会显示。"
+            title={A("emptyTitle")}
+            description={A("emptyDescription")}
             action={
               <Button asChild>
-                <Link to="/admin/blog/new">新建文章</Link>
+                <Link to="/admin/blog/new">{A("newPost")}</Link>
               </Button>
             }
           />
         }
       />
-      <AdminListPager page={page} pageSize={pageSize} total={total} isFetching={isFetching} itemLabel="篇文章" onPageChange={setPage} />
+      <AdminListPager page={page} pageSize={pageSize} total={total} isFetching={isFetching} itemLabel={A("pagerItemLabel")} onPageChange={setPage} />
     </>
   );
 }

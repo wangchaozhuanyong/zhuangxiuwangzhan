@@ -15,13 +15,19 @@ import { HomeSectionItemsEditor } from "@/components/admin/StructuredArrayEditor
 import { invalidatePublishedContent } from "@/lib/adminInvalidate";
 import { archiveOrDeleteAdminRecord, formatAdminMutationError, saveAdminRecord } from "@/lib/adminMutation";
 import { useUnsavedChangesWarning } from "@/hooks/useUnsavedChangesWarning";
+import { adminHomeEditorText } from "@/i18n/adminHomeEditorText";
 import type { CtaRow, FaqRow, HomeSectionRow, ProcessStepRow } from "@/lib/adminEditorData";
-import { useAdminHomeEditorData } from "@/lib/adminQueries";
+import { useAdminHomeEditorData } from "@/lib/adminCmsQueries";
 import { translateFieldLabel } from "@/i18n/displayLabels";
 import { adminStatusLabel, getAdminLang, publishStatusOptions } from "@/lib/adminLocale";
 import { adminConfirm } from "@/components/admin/AdminConfirmProvider";
 
+type AdminHomeEditorTextKey = keyof typeof adminHomeEditorText;
+
 const L = (field: string) => translateFieldLabel(field, getAdminLang());
+const A = (key: AdminHomeEditorTextKey) => adminHomeEditorText[key][getAdminLang()];
+const formatA = (key: AdminHomeEditorTextKey, values: Record<string, string>) =>
+  Object.entries(values).reduce((text, [name, value]) => text.replaceAll(`{${name}}`, value), A(key));
 
 const mergeSectionItems = (itemsZh?: any[] | null, itemsEn?: any[] | null) => {
   const zh = Array.isArray(itemsZh) ? itemsZh : [];
@@ -85,7 +91,7 @@ export default function AdminHomeEditor() {
   const saveHomeSectionItems = async (row: HomeSectionRow | null, items: any[]) => {
     if (!supabase) return;
     if (!row?.id) {
-      toast({ title: "无法保存", description: "首页模块数据还没加载出来，请先刷新页面再试。", variant: "destructive" });
+      toast({ title: A("cannotSave"), description: A("homeDataNotLoaded"), variant: "destructive" });
       return;
     }
     const cleaned = items.filter((item) => Object.values(item || {}).some((value) => String(value || "").trim()));
@@ -98,10 +104,10 @@ export default function AdminHomeEditor() {
         queryClient,
       });
     } catch (error) {
-      toast({ title: "\u4fdd\u5b58\u5931\u8d25", description: formatAdminMutationError(error), variant: "destructive" });
+      toast({ title: A("saveFailed"), description: formatAdminMutationError(error), variant: "destructive" });
       return;
     }
-    toast({ title: "已保存" });
+    toast({ title: A("saved") });
     await refreshEditor();
   };
 
@@ -125,27 +131,27 @@ export default function AdminHomeEditor() {
         expectedUpdatedAt: draft.updated_at || null,
         queryClient,
       });
-      toast({ title: "已保存" });
+      toast({ title: A("saved") });
       await refreshEditor();
     } catch (error) {
-      toast({ title: "\u4fdd\u5b58\u5931\u8d25", description: formatAdminMutationError(error), variant: "destructive" });
+      toast({ title: A("saveFailed"), description: formatAdminMutationError(error), variant: "destructive" });
     }
   };
 
   const deleteProcessStep = async (id: string) => {
     if (!supabase) return;
     const confirmed = await adminConfirm({
-      title: "确认归档或删除流程步骤？",
-      description: "这个步骤会从首页流程模块中移除。请确认它不是当前前台正在使用的重要内容。",
-      confirmLabel: "继续处理",
+      title: A("deleteStepTitle"),
+      description: A("deleteStepDescription"),
+      confirmLabel: A("continueProcessing"),
     });
     if (!confirmed) return;
     try {
       await archiveOrDeleteAdminRecord({ table: "process_steps", id, queryClient });
-      toast({ title: "已删除" });
+      toast({ title: A("deleted") });
       await refreshEditor();
     } catch (error) {
-      toast({ title: "\u5220\u9664\u5931\u8d25", description: formatAdminMutationError(error), variant: "destructive" });
+      toast({ title: A("deleteFailed"), description: formatAdminMutationError(error), variant: "destructive" });
     }
   };
 
@@ -168,27 +174,27 @@ export default function AdminHomeEditor() {
         expectedUpdatedAt: draft.updated_at || null,
         queryClient,
       });
-      toast({ title: "已保存" });
+      toast({ title: A("saved") });
       await refreshEditor();
     } catch (error) {
-      toast({ title: "\u4fdd\u5b58\u5931\u8d25", description: formatAdminMutationError(error), variant: "destructive" });
+      toast({ title: A("saveFailed"), description: formatAdminMutationError(error), variant: "destructive" });
     }
   };
 
   const deleteFaq = async (id: string) => {
     if (!supabase) return;
     const confirmed = await adminConfirm({
-      title: "确认归档或删除 FAQ？",
-      description: "这个 FAQ 会从首页常见问题模块中移除。请确认前台不再需要它。",
-      confirmLabel: "继续处理",
+      title: A("deleteFaqTitle"),
+      description: A("deleteFaqDescription"),
+      confirmLabel: A("continueProcessing"),
     });
     if (!confirmed) return;
     try {
       await archiveOrDeleteAdminRecord({ table: "faqs", id, queryClient });
-      toast({ title: "已删除" });
+      toast({ title: A("deleted") });
       await refreshEditor();
     } catch (error) {
-      toast({ title: "\u5220\u9664\u5931\u8d25", description: formatAdminMutationError(error), variant: "destructive" });
+      toast({ title: A("deleteFailed"), description: formatAdminMutationError(error), variant: "destructive" });
     }
   };
 
@@ -218,10 +224,10 @@ export default function AdminHomeEditor() {
         expectedUpdatedAt: draft.updated_at || null,
         queryClient,
       });
-      toast({ title: "已保存" });
+      toast({ title: A("saved") });
       await refreshEditor();
     } catch (error) {
-      toast({ title: "\u4fdd\u5b58\u5931\u8d25", description: formatAdminMutationError(error), variant: "destructive" });
+      toast({ title: A("saveFailed"), description: formatAdminMutationError(error), variant: "destructive" });
     }
   };
 
@@ -250,18 +256,18 @@ export default function AdminHomeEditor() {
   const [editingCta, setEditingCta] = useState<CtaRow | null>(null);
 
   if (!isSupabaseConfigured) {
-    return <AdminEmptyState title="Supabase 未配置" description="配置完成后才能使用首页后台管理。" />;
+    return <AdminEmptyState title={A("supabaseMissingTitle")} description={A("supabaseMissingDescription")} />;
   }
 
   return (
     <>
       <AdminPageHeader
-        title="首页管理"
-        description="这里管理首页关键区块：统计数据、为什么选择我们、施工流程、首页常见问题和首页行动引导区。首页首屏固定播放视频，后台只管理按钮文案和链接，避免图片覆盖视频。"
-        helpText="这里主要编辑首页的视频首屏按钮、内容模块和底部行动引导。"
+        title={A("pageTitle")}
+        description={A("pageDescription")}
+        helpText={A("pageHelpText")}
         actions={
           <Button type="button" variant="outline" onClick={() => void handleManualRefresh()} disabled={initialLoading || manualRefreshing}>
-            {manualRefreshing ? "刷新中..." : initialLoading ? "加载中..." : "刷新"}
+            {manualRefreshing ? A("refreshing") : initialLoading ? A("loading") : A("refresh")}
           </Button>
         }
       />
@@ -269,27 +275,25 @@ export default function AdminHomeEditor() {
       <Tabs value={activeTab} onValueChange={setActiveTab}>
         <div className="mb-4 overflow-auto">
           <TabsList className="w-max">
-            <TabsTrigger value="hero">首屏按钮</TabsTrigger>
-            <TabsTrigger value="stats">统计数据</TabsTrigger>
-            <TabsTrigger value="why">为什么选择我们</TabsTrigger>
-            <TabsTrigger value="process">施工流程</TabsTrigger>
-            <TabsTrigger value="beforeAfter">改造前后</TabsTrigger>
-            <TabsTrigger value="testimonials">客户评价</TabsTrigger>
-            <TabsTrigger value="faq">首页常见问题</TabsTrigger>
-            <TabsTrigger value="cta">首页行动引导</TabsTrigger>
+            <TabsTrigger value="hero">{A("tabHero")}</TabsTrigger>
+            <TabsTrigger value="stats">{A("tabStats")}</TabsTrigger>
+            <TabsTrigger value="why">{A("tabWhy")}</TabsTrigger>
+            <TabsTrigger value="process">{A("tabProcess")}</TabsTrigger>
+            <TabsTrigger value="beforeAfter">{A("tabBeforeAfter")}</TabsTrigger>
+            <TabsTrigger value="testimonials">{A("tabTestimonials")}</TabsTrigger>
+            <TabsTrigger value="faq">{A("tabFaq")}</TabsTrigger>
+            <TabsTrigger value="cta">{A("tabCta")}</TabsTrigger>
           </TabsList>
         </div>
 
         <TabsContent value="hero" className="space-y-6">
-          <AdminFormSection title="首页首屏按钮（固定视频）" description="首页最上方只播放固定视频，不再读取后台图片或轮播图。" helpText="这里最多管理首屏中间的报价按钮文案和跳转链接。图片、标题、副标题不会再覆盖首页视频，避免前后台逻辑冲突。">
-            <div className="flex flex-wrap gap-2">
+          <AdminFormSection title={A("heroTitle")} description={A("heroDescription")} helpText={A("heroHelpText")}>
+            <div data-admin-card-actions className="flex flex-wrap gap-2">
               <Button asChild>
-                <Link to="/admin/content/hero_slides">管理首屏按钮文案</Link>
+                <Link to="/admin/content/hero_slides">{A("manageHeroButtons")}</Link>
               </Button>
               <Button asChild variant="outline">
-                <a href="/zh" target="_blank" rel="noreferrer">
-                  预览首页（中文）
-                </a>
+                <a href="/zh" target="_blank" rel="noreferrer">{A("previewHomeZh")}</a>
               </Button>
             </div>
           </AdminFormSection>
@@ -297,13 +301,13 @@ export default function AdminHomeEditor() {
 
         <TabsContent value="stats" className="space-y-6">
           <AdminFormSection
-            title="统计数据"
-            description="用于首页统计模块。这里保存后，前台统计数据优先读取后台内容。"
-            helpText="管理首页统计数字和说明，例如服务范围、地区、信任背书等。保存后首页统计模块会同步更新。"
+            title={A("statsTitle")}
+            description={A("statsDescription")}
+            helpText={A("statsHelpText")}
           >
             <HomeSectionItemsEditor
-              label="统计项目"
-              helpText="每一条统计都会显示成首页统计卡片，可以设置图标、数字、标题和说明。"
+              label={A("statsItemsLabel")}
+              helpText={A("statsItemsHelp")}
               variant="stats"
               value={statsItems}
               onChange={(value) => {
@@ -312,21 +316,21 @@ export default function AdminHomeEditor() {
               }}
             />
 
-            <div className="mt-4 flex gap-2">
-              <Button onClick={() => void saveHomeSectionItems(statsSection, statsItems)}>保存</Button>
+            <div data-admin-card-actions className="mt-4 flex gap-2">
+              <Button onClick={() => void saveHomeSectionItems(statsSection, statsItems)}>{A("save")}</Button>
             </div>
           </AdminFormSection>
         </TabsContent>
 
         <TabsContent value="why" className="space-y-6">
           <AdminFormSection
-            title="为什么选择我们"
-            description="用于首页优势模块。这里保存后，前台为什么选择我们模块优先读取后台内容。"
-            helpText="管理首页优势卖点卡片。每一条都是前台首页的一个优势说明。"
+            title={A("whyTitle")}
+            description={A("whyDescription")}
+            helpText={A("whyHelpText")}
           >
             <HomeSectionItemsEditor
-              label="优势项目"
-              helpText="每一条优势都会显示成首页优势卡片，可以设置图标、标题和说明。"
+              label={A("whyItemsLabel")}
+              helpText={A("whyItemsHelp")}
               variant="why"
               value={whyItems}
               onChange={(value) => {
@@ -335,15 +339,15 @@ export default function AdminHomeEditor() {
               }}
             />
 
-            <div className="mt-4 flex gap-2">
-              <Button onClick={() => void saveHomeSectionItems(whySection, whyItems)}>保存</Button>
+            <div data-admin-card-actions className="mt-4 flex gap-2">
+              <Button onClick={() => void saveHomeSectionItems(whySection, whyItems)}>{A("save")}</Button>
             </div>
           </AdminFormSection>
         </TabsContent>
 
         <TabsContent value="process" className="space-y-6">
-          <AdminFormSection title="施工流程" description="用于首页流程模块与流程页。" helpText="管理施工流程步骤。保存后首页流程模块和流程页步骤列表都会读取这里。">
-            <div className="flex flex-wrap gap-2">
+          <AdminFormSection title={A("processTitle")} description={A("processDescription")} helpText={A("processHelpText")}>
+            <div data-admin-card-actions className="flex flex-wrap gap-2">
               <Button
                 type="button"
                 onClick={() =>
@@ -358,9 +362,7 @@ export default function AdminHomeEditor() {
                     sort_order: processSteps.length,
                   })
                 }
-              >
-                添加步骤
-              </Button>
+              >{A("addStep")}</Button>
             </div>
 
             <div className="mt-4 space-y-3">
@@ -369,28 +371,28 @@ export default function AdminHomeEditor() {
                   <div className="flex flex-wrap items-start justify-between gap-3">
                     <div>
                       <div className="font-medium">
-                        #{s.step_number} · {s.title_zh || s.title_en || "(未命名)"}{" "}
+                        #{s.step_number} · {s.title_zh || s.title_en || A("unnamed")}{" "}
                         <span className="text-xs text-muted-foreground">({adminStatusLabel("default", s.status || "published")})</span>
                       </div>
-                      <div className="text-xs text-muted-foreground">排序：{s.sort_order ?? 0} · 图标代号：{s.icon_key || "-"}</div>
+                      <div className="text-xs text-muted-foreground">{formatA("processMeta", { sort: String(s.sort_order ?? 0), icon: s.icon_key || "-" })}</div>
                     </div>
-                    <div className="flex gap-2">
+                    <div data-admin-card-actions className="flex gap-2">
                       <Button variant="outline" size="sm" onClick={() => setEditingStep(s)}>
-                        编辑
+                        {A("edit")}
                       </Button>
                       <Button variant="destructive" size="sm" onClick={() => void deleteProcessStep(String(s.id))}>
-                        删除
+                        {A("delete")}
                       </Button>
                     </div>
                   </div>
                 </div>
               ))}
-              {processSteps.length === 0 && <div className="text-sm text-muted-foreground">暂无步骤。添加后首页流程模块将优先显示后台数据。</div>}
+              {processSteps.length === 0 && <div className="text-sm text-muted-foreground">{A("noSteps")}</div>}
             </div>
           </AdminFormSection>
 
           {editingStep && (
-            <AdminFormSection title="编辑步骤" description="保存后会立刻影响首页流程模块。" helpText="填写步骤编号、标题、说明、图标和状态。只有已发布内容会在前台显示。">
+            <AdminFormSection title={A("editStepTitle")} description={A("editStepDescription")} helpText={A("editStepHelpText")}>
               <div className="grid gap-4 md:grid-cols-2">
                 <div>
                   <label className="mb-1 block text-sm font-medium">{L("step_number")}</label>
@@ -426,7 +428,7 @@ export default function AdminHomeEditor() {
                 </div>
                 <div>
                   <label className="mb-1 block text-sm font-medium">{L("icon_key")}</label>
-                  <Input value={editingStep.icon_key || ""} onChange={(e) => setEditingStep((v) => (v ? { ...v, icon_key: e.target.value } : v))} placeholder="可选，例如 ruler / message-circle" />
+                  <Input value={editingStep.icon_key || ""} onChange={(e) => setEditingStep((v) => (v ? { ...v, icon_key: e.target.value } : v))} placeholder={A("iconPlaceholder")} />
                 </div>
                 <div>
                   <label className="mb-1 block text-sm font-medium">{L("status")}</label>
@@ -443,10 +445,10 @@ export default function AdminHomeEditor() {
                   </select>
                 </div>
               </div>
-              <div className="mt-4 flex gap-2">
-                <Button onClick={() => void upsertProcessStep(editingStep)}>保存</Button>
+              <div data-admin-card-actions className="mt-4 flex gap-2">
+                <Button onClick={() => void upsertProcessStep(editingStep)}>{A("save")}</Button>
                 <Button variant="outline" onClick={() => setEditingStep(null)}>
-                  取消
+                  {A("cancel")}
                 </Button>
               </div>
             </AdminFormSection>
@@ -454,28 +456,28 @@ export default function AdminHomeEditor() {
         </TabsContent>
 
         <TabsContent value="beforeAfter" className="space-y-6">
-          <AdminFormSection title="改造前后" description="用于首页改造前后展示区块。" helpText="管理首页改造前/改造后对比内容，通常用于展示施工效果。">
-            <div className="flex flex-wrap gap-2">
+          <AdminFormSection title={A("beforeAfterTitle")} description={A("beforeAfterDescription")} helpText={A("beforeAfterHelpText")}>
+            <div data-admin-card-actions className="flex flex-wrap gap-2">
               <Button asChild>
-                <Link to="/admin/before-after">管理改造前后</Link>
+                <Link to="/admin/before-after">{A("manageBeforeAfter")}</Link>
               </Button>
             </div>
           </AdminFormSection>
         </TabsContent>
 
         <TabsContent value="testimonials" className="space-y-6">
-          <AdminFormSection title="客户评价" description="用于首页客户评价模块。" helpText="管理首页客户评价内容，发布后的评价会显示在前台首页。">
-            <div className="flex flex-wrap gap-2">
+          <AdminFormSection title={A("testimonialsTitle")} description={A("testimonialsDescription")} helpText={A("testimonialsHelpText")}>
+            <div data-admin-card-actions className="flex flex-wrap gap-2">
               <Button asChild>
-                <Link to="/admin/content/testimonials">管理客户评价</Link>
+                <Link to="/admin/content/testimonials">{A("manageTestimonials")}</Link>
               </Button>
             </div>
           </AdminFormSection>
         </TabsContent>
 
         <TabsContent value="faq" className="space-y-6">
-          <AdminFormSection title="首页常见问题" description="用于首页常见问题模块。" helpText="管理首页底部常见问题。这里只影响首页常见问题模块。">
-            <div className="flex flex-wrap gap-2">
+          <AdminFormSection title={A("faqTitle")} description={A("faqDescription")} helpText={A("faqHelpText")}>
+            <div data-admin-card-actions className="flex flex-wrap gap-2">
               <Button
                 type="button"
                 onClick={() =>
@@ -489,9 +491,7 @@ export default function AdminHomeEditor() {
                     sort_order: faqRows.length,
                   })
                 }
-              >
-                新建问题
-              </Button>
+              >{A("newQuestion")}</Button>
             </div>
 
             <div className="mt-4 space-y-3">
@@ -499,28 +499,28 @@ export default function AdminHomeEditor() {
                 <div key={f.id} className="rounded-lg border border-border bg-background p-4">
                   <div className="flex flex-wrap items-start justify-between gap-3">
                     <div className="min-w-0">
-                      <div className="font-medium truncate">{f.question_zh || f.question_en || "(未填写问题)"}</div>
+                      <div className="font-medium truncate">{f.question_zh || f.question_en || A("unnamedQuestion")}</div>
                       <div className="text-xs text-muted-foreground">
-                        排序：{f.sort_order ?? 0} · 状态：{adminStatusLabel("default", f.status || "published")}
+                        {formatA("faqMeta", { sort: String(f.sort_order ?? 0), status: adminStatusLabel("default", f.status || "published") })}
                       </div>
                     </div>
-                    <div className="flex gap-2">
+                    <div data-admin-card-actions className="flex gap-2">
                       <Button variant="outline" size="sm" onClick={() => setEditingFaq(f)}>
-                        编辑
+                        {A("edit")}
                       </Button>
                       <Button variant="destructive" size="sm" onClick={() => void deleteFaq(String(f.id))}>
-                        删除
+                        {A("delete")}
                       </Button>
                     </div>
                   </div>
                 </div>
               ))}
-              {faqRows.length === 0 && <div className="text-sm text-muted-foreground">暂无常见问题。添加后首页模块将优先显示后台数据。</div>}
+              {faqRows.length === 0 && <div className="text-sm text-muted-foreground">{A("noFaq")}</div>}
             </div>
           </AdminFormSection>
 
           {editingFaq && (
-            <AdminFormSection title="编辑常见问题" description="中文优先；英文可由系统自动生成。" helpText="填写问题、答案、排序和状态。英文没填时，英文站可能显示空内容或最后兜底内容。">
+            <AdminFormSection title={A("editFaqTitle")} description={A("editFaqDescription")} helpText={A("editFaqHelpText")}>
               <div className="grid gap-4 md:grid-cols-2">
                 <div>
                   <label className="mb-1 block text-sm font-medium">{L("sort_order")}</label>
@@ -561,10 +561,10 @@ export default function AdminHomeEditor() {
                   <Textarea rows={4} value={editingFaq.answer_en || ""} onChange={(e) => setEditingFaq((v) => (v ? { ...v, answer_en: e.target.value } : v))} />
                 </div>
               </div>
-              <div className="mt-4 flex gap-2">
-                <Button onClick={() => void upsertFaq(editingFaq)}>保存</Button>
+              <div data-admin-card-actions className="mt-4 flex gap-2">
+                <Button onClick={() => void upsertFaq(editingFaq)}>{A("save")}</Button>
                 <Button variant="outline" onClick={() => setEditingFaq(null)}>
-                  取消
+                  {A("cancel")}
                 </Button>
               </div>
             </AdminFormSection>
@@ -572,10 +572,10 @@ export default function AdminHomeEditor() {
         </TabsContent>
 
         <TabsContent value="cta" className="space-y-6">
-          <AdminFormSection title="首页行动引导" description="用于首页行动引导模块。" helpText="管理首页底部联系/报价引导区，包括标题、说明、按钮文字、按钮链接和图片。">
+          <AdminFormSection title={A("ctaTitle")} description={A("ctaDescription")} helpText={A("ctaHelpText")}>
             <div className="grid gap-4 md:grid-cols-2">
               <div className="md:col-span-2">
-                <label className="mb-1 block text-sm font-medium">状态</label>
+                <label className="mb-1 block text-sm font-medium">{A("status")}</label>
                 <select
                   value={(editingCta || ctaDraft).status || "published"}
                   onChange={(e) => setEditingCta((v) => ({ ...(v || ctaDraft), status: e.target.value as any }))}
@@ -633,7 +633,7 @@ export default function AdminHomeEditor() {
 
               <div className="md:col-span-2">
                 <ImageField
-                  label="图片地址（可选）"
+                  label={A("imageUrlOptional")}
                   value={(editingCta || ctaDraft).image_url || ""}
                   onChange={(url) => setEditingCta((v) => ({ ...(v || ctaDraft), image_url: url }))}
                   folder="cta_blocks"
@@ -642,8 +642,8 @@ export default function AdminHomeEditor() {
               </div>
             </div>
 
-            <div className="mt-4 flex gap-2">
-              <Button onClick={() => void upsertCta(editingCta || ctaDraft)}>保存</Button>
+            <div data-admin-card-actions className="mt-4 flex gap-2">
+              <Button onClick={() => void upsertCta(editingCta || ctaDraft)}>{A("save")}</Button>
             </div>
           </AdminFormSection>
         </TabsContent>

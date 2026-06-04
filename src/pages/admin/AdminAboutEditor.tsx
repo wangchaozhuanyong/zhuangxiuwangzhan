@@ -15,8 +15,9 @@ import { invalidatePublishedContent } from "@/lib/adminInvalidate";
 import { formatAdminMutationError, saveAdminRecord } from "@/lib/adminMutation";
 import { useUnsavedChangesWarning } from "@/hooks/useUnsavedChangesWarning";
 import { aboutSectionKeys, type AboutSectionKey, type AboutSectionRow, type CtaRow } from "@/lib/adminEditorData";
-import { useAdminAboutEditorData } from "@/lib/adminQueries";
+import { useAdminAboutEditorData } from "@/lib/adminCmsQueries";
 import { translateFieldLabel } from "@/i18n/displayLabels";
+import { adminAboutEditorSectionTabLabels, adminAboutEditorText } from "@/i18n/adminAboutEditorText";
 import { getAdminLang, publishStatusOptions } from "@/lib/adminLocale";
 
 const L = (field: string) => translateFieldLabel(field, getAdminLang());
@@ -24,15 +25,9 @@ const L = (field: string) => translateFieldLabel(field, getAdminLang());
 const sectionKeys = aboutSectionKeys;
 type SectionKey = AboutSectionKey;
 
-const sectionTabLabels: Record<SectionKey, string> = {
-  hero: "首屏",
-  intro: "公司介绍",
-  stats: "统计数据",
-  core_values: "核心价值",
-  team: "团队亮点",
-  milestones: "公司历程",
-  office: "办公环境",
-};
+type AdminAboutEditorTextKey = keyof typeof adminAboutEditorText;
+const A = (key: AdminAboutEditorTextKey) => adminAboutEditorText[key][getAdminLang()];
+const sectionTabLabel = (key: SectionKey) => adminAboutEditorSectionTabLabels[key][getAdminLang()];
 
 const asArray = (value: unknown): any[] => (Array.isArray(value) ? value : []);
 
@@ -132,8 +127,8 @@ export default function AdminAboutEditor() {
     const row = sections[key];
     if (!row) {
       toast({
-        title: "无法保存",
-        description: "区块数据还没有加载出来，请先刷新页面后再试。",
+        title: A("saveUnavailable"),
+        description: A("sectionDataNotLoaded"),
         variant: "destructive",
       });
       return;
@@ -161,10 +156,10 @@ export default function AdminAboutEditor() {
         expectedUpdatedAt: row.updated_at || null,
         queryClient,
       });
-      toast({ title: "已保存" });
+      toast({ title: A("saved") });
       await refreshEditor();
     } catch (error) {
-      toast({ title: "\u4fdd\u5b58\u5931\u8d25", description: formatAdminMutationError(error), variant: "destructive" });
+      toast({ title: A("saveFailed"), description: formatAdminMutationError(error), variant: "destructive" });
     }
   };
 
@@ -177,11 +172,11 @@ export default function AdminAboutEditor() {
         title_en: "",
         description_zh: "",
         description_en: "",
-        primary_label_zh: "获取免费报价",
-        primary_label_en: "Get a Free Quote",
+        primary_label_zh: adminAboutEditorText.defaultPrimaryLabel.zh,
+        primary_label_en: adminAboutEditorText.defaultPrimaryLabel.en,
         primary_url: "/quote",
-        secondary_label_zh: "WhatsApp 联系",
-        secondary_label_en: "WhatsApp Us",
+        secondary_label_zh: adminAboutEditorText.defaultSecondaryLabel.zh,
+        secondary_label_en: adminAboutEditorText.defaultSecondaryLabel.en,
         secondary_url: "",
         image_url: "",
         status: "published",
@@ -215,34 +210,34 @@ export default function AdminAboutEditor() {
         queryClient,
       });
     } catch (error) {
-      toast({ title: "\u4fdd\u5b58\u5931\u8d25", description: formatAdminMutationError(error), variant: "destructive" });
+      toast({ title: A("saveFailed"), description: formatAdminMutationError(error), variant: "destructive" });
       return;
     }
 
-    toast({ title: "已保存" });
+    toast({ title: A("saved") });
     void invalidatePublishedContent(queryClient);
     setEditingCta(null);
     await refreshEditor();
   };
 
   if (!isSupabaseConfigured) {
-    return <AdminEmptyState title="Supabase 未配置" description="配置完成后，才能使用关于我们后台管理。" />;
+    return <AdminEmptyState title={A("supabaseNotConfigured")} description={A("supabaseNotConfiguredDescription")} />;
   }
 
   return (
     <>
       <AdminPageHeader
-        title="关于我们管理"
-        description="管理关于我们页面的首屏、介绍、统计、价值观、团队、历程、办公环境和行动引导区。前台会优先读取已发布内容，留空时自动使用静态默认内容。"
-        helpText="这里主要编辑关于我们页面的各个区块和底部行动引导。"
+        title={A("pageTitle")}
+        description={A("pageDescription")}
+        helpText={A("pageHelpText")}
         actions={
           <div className="flex flex-wrap gap-2">
             <Button variant="outline" onClick={() => void refetch()} disabled={loading}>
-              {loading ? "刷新中..." : "刷新"}
+              {loading ? A("refreshing") : A("refresh")}
             </Button>
             <Button asChild variant="outline">
               <a href="/zh/about" target="_blank" rel="noreferrer">
-                预览中文页
+                {A("previewZhPage")}
               </a>
             </Button>
           </div>
@@ -254,10 +249,10 @@ export default function AdminAboutEditor() {
           <TabsList className="w-max">
             {sectionKeys.map((key) => (
               <TabsTrigger key={key} value={key}>
-                {sectionTabLabels[key]}
+                {sectionTabLabel(key)}
               </TabsTrigger>
             ))}
-            <TabsTrigger value="cta">行动引导区</TabsTrigger>
+            <TabsTrigger value="cta">{A("ctaTab")}</TabsTrigger>
           </TabsList>
         </div>
 
@@ -266,17 +261,17 @@ export default function AdminAboutEditor() {
           return (
             <TabsContent key={key} value={key} className="space-y-6">
               <AdminFormSection
-                title={`关于我们区块：${sectionTabLabels[key]}`}
-                description="中文和英文可以分开编辑，列表、卡片、标签等内容可以直接添加、删除和排序。"
-                helpText="保存后，对应区块会同步更新到前台关于我们页面。"
+                title={A("aboutSectionTitle").replace("{label}", sectionTabLabel(key))}
+                description={A("sectionDescription")}
+                helpText={A("sectionHelpText")}
               >
                 {!row ? (
-                  <div className="text-sm text-muted-foreground">加载中...</div>
+                  <div className="text-sm text-muted-foreground">{A("loading")}</div>
                 ) : (
                   <>
                     <div className="grid gap-4 md:grid-cols-2">
                       <div>
-                        <label className="mb-1 block text-sm font-medium">状态</label>
+                        <label className="mb-1 block text-sm font-medium">{A("status")}</label>
                         <select
                           value={row.status || "published"}
                           onChange={(e) => updateSection(key, { status: e.target.value as any })}
@@ -290,7 +285,7 @@ export default function AdminAboutEditor() {
                         </select>
                       </div>
                       <div>
-                        <label className="mb-1 block text-sm font-medium">排序</label>
+                        <label className="mb-1 block text-sm font-medium">{A("sortOrder")}</label>
                         <Input
                           type="number"
                           value={row.sort_order ?? 0}
@@ -323,7 +318,7 @@ export default function AdminAboutEditor() {
                       </div>
                       <div className="md:col-span-2">
                         <ImageField
-                          label="图片地址（可选）"
+                          label={A("optionalImageUrl")}
                           value={row.image_url || ""}
                           onChange={(url) => updateSection(key, { image_url: url })}
                           folder={"about_sections/" + key}
@@ -332,8 +327,8 @@ export default function AdminAboutEditor() {
                       </div>
                       <div className="md:col-span-2">
                         <AboutSectionItemsEditor
-                          label="中文列表 / 卡片内容"
-                          helpText="管理当前区块的中文列表或卡片内容，不同区块会按自己的页面样式展示。"
+                          label={A("zhItemsLabel")}
+                          helpText={A("zhItemsHelp")}
                           sectionKey={key}
                           value={itemsZh[key] || []}
                           onChange={(value) => {
@@ -344,8 +339,8 @@ export default function AdminAboutEditor() {
                       </div>
                       <div className="md:col-span-2">
                         <AboutSectionItemsEditor
-                          label="英文列表 / 卡片内容"
-                          helpText="管理当前区块的英文列表或卡片内容。英文为空时，英文站可能显示空内容或最后兜底内容。"
+                          label={A("enItemsLabel")}
+                          helpText={A("enItemsHelp")}
                           sectionKey={key}
                           value={itemsEn[key] || []}
                           onChange={(value) => {
@@ -355,8 +350,8 @@ export default function AdminAboutEditor() {
                         />
                       </div>
                     </div>
-                    <div className="mt-4 flex gap-2">
-                      <Button onClick={() => void saveSection(key)}>保存</Button>
+                    <div data-admin-card-actions className="mt-4 flex gap-2">
+                      <Button onClick={() => void saveSection(key)}>{A("save")}</Button>
                     </div>
                   </>
                 )}
@@ -367,13 +362,13 @@ export default function AdminAboutEditor() {
 
         <TabsContent value="cta" className="space-y-6">
           <AdminFormSection
-            title="关于我们行动引导区"
-            description="用于关于我们页面底部的行动引导区域。"
-            helpText="管理底部联系和报价引导区，包含标题、说明、按钮和图片。"
+            title={A("ctaSectionTitle")}
+            description={A("ctaSectionDescription")}
+            helpText={A("ctaSectionHelpText")}
           >
             <div className="grid gap-4 md:grid-cols-2">
               <div className="md:col-span-2">
-                <label className="mb-1 block text-sm font-medium">状态</label>
+                <label className="mb-1 block text-sm font-medium">{A("status")}</label>
                 <select
                   value={ctaDraft.status || "published"}
                   onChange={(e) => touchEditingCta((v) => ({ ...(v || ctaDraft), status: e.target.value as any }))}
@@ -428,7 +423,7 @@ export default function AdminAboutEditor() {
               </div>
               <div className="md:col-span-2">
                 <ImageField
-                  label="图片地址（可选）"
+                  label={A("optionalImageUrl")}
                   value={ctaDraft.image_url || ""}
                   onChange={(url) => touchEditingCta((v) => ({ ...(v || ctaDraft), image_url: url }))}
                   folder="cta_blocks"
@@ -436,8 +431,8 @@ export default function AdminAboutEditor() {
                 />
               </div>
             </div>
-            <div className="mt-4 flex gap-2">
-              <Button onClick={() => void saveCta()}>保存</Button>
+            <div data-admin-card-actions className="mt-4 flex gap-2">
+              <Button onClick={() => void saveCta()}>{A("save")}</Button>
             </div>
           </AdminFormSection>
         </TabsContent>

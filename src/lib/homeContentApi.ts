@@ -1,4 +1,31 @@
-import { isSupabaseConfigured, supabase } from "@/lib/supabase";
+import {
+  fetchPublicHomeBundleData,
+  fetchPublishedAboutSectionRow,
+  fetchPublishedBeforeAfterRows,
+  fetchPublishedBrandPartnerRows,
+  fetchPublishedCmsPageByPageKey,
+  fetchPublishedCmsPageByPath,
+  fetchPublishedCtaBlockRow,
+  fetchPublishedFaqRows,
+  fetchPublishedHomeSectionRow,
+  fetchPublishedLegacySitePageRow,
+  fetchPublishedProcessStepRows,
+  hasPublicContentDatabaseClient,
+} from "@/backend/modules/cms/repository/publicContentRepository";
+import {
+  getFallbackProjects,
+  getFallbackServices,
+  mapPublishedHeroSlide,
+  mapPublishedProjectSummary,
+  mapPublishedService,
+  mapPublishedTestimonial,
+} from "@/lib/contentApi";
+import {
+  createLocalFallbackContent,
+  createRemoteContent,
+  type PublicContentResult,
+} from "@/lib/publicContentStatus";
+import { readPreloadedPublicData } from "@/lib/publicPreload";
 import { toArray, toRecord, toText, type UnknownRecord } from "@/lib/recordUtils";
 
 export type PublishedBrandPartner = {
@@ -95,6 +122,21 @@ export type PublishedCmsSection = {
   sort_order: number;
 };
 
+export type PublishedHomeContentBundle = {
+  pageContent: PublishedSitePage | null;
+  heroSlides: any[];
+  statsSection: PublishedHomeSection | null;
+  whyChooseUsSection: PublishedHomeSection | null;
+  projects: any[];
+  brandPartners: PublishedBrandPartner[];
+  services: any[];
+  processSteps: PublishedProcessStep[];
+  beforeAfterItems: PublishedBeforeAfterItem[];
+  testimonials: any[];
+  faqs: PublishedFaq[];
+  ctaBlock: PublishedCtaBlock | null;
+};
+
 const pickLocalizedValue = <T = unknown>(row: UnknownRecord | null | undefined, field: string, language: "en" | "zh", fallback: T): T => {
   const value = row?.[`${field}_${language}`];
   return value === null || value === undefined || value === "" ? fallback : (value as T);
@@ -184,30 +226,182 @@ const mapPublishedCmsPage = (
   };
 };
 
+const mapLegacySitePage = (row: any, language: "en" | "zh"): PublishedSitePage => ({
+  id: row.id,
+  page_key: row.page_key,
+  path: row.path || "",
+  title: pickLocalizedText(row, "title", language),
+  subtitle: pickLocalizedText(row, "subtitle", language),
+  description: pickLocalizedText(row, "description", language),
+  content: pickLocalizedText(row, "content", language),
+  cta_title: pickLocalizedText(row, "cta_title", language),
+  cta_description: pickLocalizedText(row, "cta_description", language),
+  image_url: row.image_url || null,
+  alt: pickLocalizedText(row, "alt", language),
+  seo_title: pickLocalizedText(row, "seo_title", language),
+  seo_description: pickLocalizedText(row, "seo_description", language),
+  seo_keywords: pickLocalizedText(row, "seo_keywords", language),
+  items: pickLocalizedList(row, "items", language),
+});
+
+const mapSitePageRows = (payload: UnknownRecord, language: "en" | "zh") => {
+  const legacyRow = toArray<any>(payload.site_pages)[0];
+  const legacy = legacyRow ? mapLegacySitePage(legacyRow, language) : null;
+  const cmsRow = toArray<any>(payload.cms_pages)[0];
+  return cmsRow ? mapPublishedCmsPage(cmsRow, language, legacy) : legacy;
+};
+
+const mapPublishedHomeSectionRow = (row: any, language: "en" | "zh"): PublishedHomeSection => ({
+  id: row.id,
+  section_key: row.section_key,
+  title: pickLocalizedText(row, "title", language),
+  subtitle: pickLocalizedText(row, "subtitle", language),
+  content: pickLocalizedText(row, "content", language),
+  image_url: row.image_url,
+  items: pickLocalizedList(row, "items", language),
+});
+
+const mapPublishedBeforeAfterItem = (item: any, language: "en" | "zh"): PublishedBeforeAfterItem => ({
+  id: item.id,
+  title: pickLocalizedText(item, "title", language),
+  location: item.location || "",
+  description: pickLocalizedText(item, "description", language),
+  before_image_url: item.before_image_url,
+  after_image_url: item.after_image_url,
+  alt: pickLocalizedText(item, "alt", language, pickLocalizedText(item, "title", language)),
+});
+
+const mapPublishedFaq = (item: any, language: "en" | "zh"): PublishedFaq => ({
+  id: item.id,
+  category: item.page_key || "general",
+  question: pickLocalizedText(item, "question", language),
+  answer: pickLocalizedText(item, "answer", language),
+});
+
+const mapPublishedProcessStep = (row: any, language: "en" | "zh"): PublishedProcessStep => ({
+  id: row.id,
+  step_number: Number(row.step_number || 0),
+  sort_order: Number(row.sort_order ?? row.step_number ?? 0),
+  title: pickLocalizedText(row, "title", language),
+  description: pickLocalizedText(row, "description", language),
+  icon_key: row.icon_key || null,
+});
+
+const mapPublishedCtaBlockRow = (row: any, language: "en" | "zh"): PublishedCtaBlock => ({
+  id: row.id,
+  block_key: row.block_key,
+  title: pickLocalizedText(row, "title", language),
+  description: pickLocalizedText(row, "description", language),
+  primary_label: pickLocalizedText(row, "primary_label", language),
+  primary_url: row.primary_url || "/quote",
+  secondary_label: pickLocalizedText(row, "secondary_label", language),
+  secondary_url: row.secondary_url || "",
+  image_url: row.image_url || null,
+});
+
+const emptyHomeContentBundle = (): PublishedHomeContentBundle => ({
+  pageContent: null,
+  heroSlides: [],
+  statsSection: null,
+  whyChooseUsSection: null,
+  projects: [],
+  brandPartners: [],
+  services: [],
+  processSteps: [],
+  beforeAfterItems: [],
+  testimonials: [],
+  faqs: [],
+  ctaBlock: null,
+});
+
+const getLocalHomeContentBundle = async (language: "en" | "zh"): Promise<PublishedHomeContentBundle> => {
+  const [{ testimonials, homeFAQs }, projects, services] = await Promise.all([
+    import("@/data/siteContent"),
+    getFallbackProjects(language),
+    getFallbackServices(language),
+  ]);
+
+  return {
+    ...emptyHomeContentBundle(),
+    projects: projects.slice(0, 6),
+    services: services.slice(0, 8),
+    testimonials: testimonials.map((item, index) => ({
+      id: `local-testimonial-${index}`,
+      text: item.text,
+      client: item.client,
+      type: item.type,
+      location: item.location,
+      rating: 5,
+    })),
+    faqs: homeFAQs.map((item, index) => ({
+      id: `local-home-faq-${index}`,
+      category: "home",
+      question: item.q,
+      answer: item.a,
+    })),
+  };
+};
+
+const mapRemoteHomeContentBundle = (payload: UnknownRecord, language: "en" | "zh"): PublishedHomeContentBundle => {
+  const homeSections = toArray<any>(payload.home_sections).map((row) => mapPublishedHomeSectionRow(row, language));
+  const findHomeSection = (sectionKey: string) => homeSections.find((section) => section.section_key === sectionKey) || null;
+
+  return {
+    pageContent: mapSitePageRows(payload, language),
+    heroSlides: toArray<any>(payload.hero_slides).map((item) => mapPublishedHeroSlide(item, language)),
+    statsSection: findHomeSection("stats"),
+    whyChooseUsSection: findHomeSection("why_choose_us"),
+    projects: toArray<any>(payload.projects).map((item) => mapPublishedProjectSummary(item, language)),
+    brandPartners: toArray<PublishedBrandPartner>(payload.brand_partners).filter((item) => item.logo_url && item.name),
+    services: toArray<any>(payload.services).map((item) => mapPublishedService(item, language)),
+    processSteps: toArray<any>(payload.process_steps).map((row) => mapPublishedProcessStep(row, language)),
+    beforeAfterItems: toArray<any>(payload.before_after_items)
+      .filter((item): item is typeof item & { before_image_url: string; after_image_url: string } =>
+        Boolean(item.before_image_url && item.after_image_url)
+      )
+      .map((item) => mapPublishedBeforeAfterItem(item, language)),
+    testimonials: toArray<any>(payload.testimonials).map((item) => mapPublishedTestimonial(item, language)),
+    faqs: toArray<any>(payload.faqs).map((item) => mapPublishedFaq(item, language)),
+    ctaBlock: toArray<any>(payload.cta_blocks)[0]
+      ? mapPublishedCtaBlockRow(toArray<any>(payload.cta_blocks)[0], language)
+      : null,
+  };
+};
+
+export const getPublishedHomeContentBundle = async (
+  language: "en" | "zh",
+): Promise<PublicContentResult<PublishedHomeContentBundle>> => {
+  const fallback = async (reason: "supabase-not-configured" | "remote-empty" | "remote-error", error?: unknown) =>
+    createLocalFallbackContent(await getLocalHomeContentBundle(language), reason, error);
+
+  const preloadedHomeBundle = toRecord(readPreloadedPublicData()?.homeContentBundle);
+  if (Object.keys(preloadedHomeBundle).length) {
+    return createRemoteContent(mapRemoteHomeContentBundle(preloadedHomeBundle, language));
+  }
+
+  if (!hasPublicContentDatabaseClient()) return fallback("supabase-not-configured");
+
+  try {
+    const data = await fetchPublicHomeBundleData();
+    const payload = toRecord(data);
+    if (!Object.keys(payload).length) return fallback("remote-empty");
+
+    return createRemoteContent(mapRemoteHomeContentBundle(payload, language));
+  } catch (error) {
+    return fallback("remote-error", error);
+  }
+};
+
 export const getPublishedBrandPartners = async (): Promise<PublishedBrandPartner[]> => {
-  if (!isSupabaseConfigured) return [];
-
-  const { data, error } = await supabase!
-    .from("brand_partners")
-    .select("id,name,logo_url,website_url")
-    .eq("status", "published")
-    .order("sort_order");
-
-  if (error) return [];
+  if (!hasPublicContentDatabaseClient()) return [];
+  const data = await fetchPublishedBrandPartnerRows();
   return data || [];
 };
 
 export const getPublishedBeforeAfterItems = async (language: "en" | "zh"): Promise<PublishedBeforeAfterItem[]> => {
-  if (!isSupabaseConfigured) return [];
+  if (!hasPublicContentDatabaseClient()) return [];
 
-  const { data, error } = await supabase!
-    .from("before_after_items")
-    .select("*")
-    .eq("status", "published")
-    .order("sort_order");
-
-  if (error) return [];
-
+  const data = await fetchPublishedBeforeAfterRows();
   return (data || [])
     .filter(
       (item): item is typeof item & { before_image_url: string; after_image_url: string } =>
@@ -225,17 +419,9 @@ export const getPublishedBeforeAfterItems = async (language: "en" | "zh"): Promi
 };
 
 export const getPublishedFaqs = async (language: "en" | "zh", pageKey = "general"): Promise<PublishedFaq[]> => {
-  if (!isSupabaseConfigured) return [];
+  if (!hasPublicContentDatabaseClient()) return [];
 
-  const { data, error } = await supabase!
-    .from("faqs")
-    .select("*")
-    .eq("status", "published")
-    .eq("page_key", pageKey)
-    .order("sort_order");
-
-  if (error) return [];
-
+  const data = await fetchPublishedFaqRows(pageKey);
   return (data || []).map((item) => ({
     id: item.id,
     category: item.page_key || "general",
@@ -248,16 +434,8 @@ export const getPublishedHomeSection = async (
   language: "en" | "zh",
   sectionKey: string,
 ): Promise<PublishedHomeSection | null> => {
-  if (!isSupabaseConfigured) return null;
-  const { data, error } = await supabase!
-    .from("home_sections")
-    .select("*")
-    .eq("status", "published")
-    .eq("section_key", sectionKey)
-    .order("sort_order")
-    .limit(1);
-  if (error) return null;
-  const row: any = (data || [])[0];
+  if (!hasPublicContentDatabaseClient()) return null;
+  const row: any = await fetchPublishedHomeSectionRow(sectionKey);
   if (!row) return null;
   return {
     id: row.id,
@@ -271,14 +449,8 @@ export const getPublishedHomeSection = async (
 };
 
 export const getPublishedProcessSteps = async (language: "en" | "zh"): Promise<PublishedProcessStep[]> => {
-  if (!isSupabaseConfigured) return [];
-  const { data, error } = await supabase!
-    .from("process_steps")
-    .select("*")
-    .eq("status", "published")
-    .order("sort_order")
-    .order("step_number");
-  if (error) return [];
+  if (!hasPublicContentDatabaseClient()) return [];
+  const data = await fetchPublishedProcessStepRows();
   return (data || []).map((row: any) => ({
     id: row.id,
     step_number: Number(row.step_number || 0),
@@ -290,15 +462,8 @@ export const getPublishedProcessSteps = async (language: "en" | "zh"): Promise<P
 };
 
 export const getPublishedCtaBlock = async (language: "en" | "zh", blockKey: string): Promise<PublishedCtaBlock | null> => {
-  if (!isSupabaseConfigured) return null;
-  const { data, error } = await supabase!
-    .from("cta_blocks")
-    .select("*")
-    .eq("status", "published")
-    .eq("block_key", blockKey)
-    .limit(1);
-  if (error) return null;
-  const row: any = (data || [])[0];
+  if (!hasPublicContentDatabaseClient()) return null;
+  const row: any = await fetchPublishedCtaBlockRow(blockKey);
   if (!row) return null;
   return {
     id: row.id,
@@ -317,16 +482,8 @@ export const getPublishedAboutSection = async (
   language: "en" | "zh",
   sectionKey: string,
 ): Promise<PublishedAboutSection | null> => {
-  if (!isSupabaseConfigured) return null;
-  const { data, error } = await supabase!
-    .from("about_sections")
-    .select("*")
-    .eq("status", "published")
-    .eq("section_key", sectionKey)
-    .order("sort_order")
-    .limit(1);
-  if (error) return null;
-  const row: any = (data || [])[0];
+  if (!hasPublicContentDatabaseClient()) return null;
+  const row: any = await fetchPublishedAboutSectionRow(sectionKey);
   if (!row) return null;
   return {
     id: row.id,
@@ -343,14 +500,8 @@ export const getPublishedSitePage = async (
   language: "en" | "zh",
   pageKey: string,
 ): Promise<PublishedSitePage | null> => {
-  if (!isSupabaseConfigured) return null;
-  const legacyResponse = await supabase!
-    .from("site_pages")
-    .select("*")
-    .eq("status", "published")
-    .eq("page_key", pageKey)
-    .limit(1);
-  const row: any = legacyResponse.error ? null : (legacyResponse.data || [])[0];
+  if (!hasPublicContentDatabaseClient()) return null;
+  const row: any = await fetchPublishedLegacySitePageRow(pageKey);
   const legacy: PublishedSitePage | null = row
     ? {
         id: row.id,
@@ -371,16 +522,7 @@ export const getPublishedSitePage = async (
       }
     : null;
 
-  const cmsResponse = await supabase!
-    .from("cms_pages")
-    .select("*, cms_sections(*)")
-    .eq("status", "published")
-    .is("deleted_at", null)
-    .eq("page_key", pageKey)
-    .limit(1);
-
-  if (cmsResponse.error) return legacy;
-  const cmsRow: any = (cmsResponse.data || [])[0];
+  const cmsRow: any = await fetchPublishedCmsPageByPageKey(pageKey);
   if (!cmsRow) return legacy;
 
   return mapPublishedCmsPage(cmsRow, language, legacy);
@@ -390,17 +532,8 @@ export const getPublishedCmsPageByPath = async (
   language: "en" | "zh",
   path: string,
 ): Promise<PublishedSitePage | null> => {
-  if (!isSupabaseConfigured) return null;
+  if (!hasPublicContentDatabaseClient()) return null;
   const normalizedPath = `/${String(path || "").replace(/^\/+/, "").replace(/\/+$/, "")}`;
-  const { data, error } = await supabase!
-    .from("cms_pages")
-    .select("*, cms_sections(*)")
-    .eq("status", "published")
-    .is("deleted_at", null)
-    .eq("path", normalizedPath)
-    .limit(1);
-
-  if (error) throw error;
-  const cmsRow: any = (data || [])[0];
+  const cmsRow: any = await fetchPublishedCmsPageByPath(normalizedPath);
   return cmsRow ? mapPublishedCmsPage(cmsRow, language) : null;
 };

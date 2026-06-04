@@ -7,6 +7,7 @@ export type SupabaseRenderOptions = {
 };
 
 const DEFAULT_QUALITY = 75;
+const DEFAULT_FORMAT: SupabaseRenderOptions["format"] = "webp";
 
 const isHttpUrl = (value: string) => /^https?:\/\//i.test(value);
 
@@ -33,7 +34,8 @@ export function toSupabaseRenderImageUrl(url: string, opts: SupabaseRenderOption
   if (opts.width) params.set("width", String(Math.round(opts.width)));
   if (opts.height) params.set("height", String(Math.round(opts.height)));
   if (opts.resize) params.set("resize", opts.resize);
-  if (opts.format) params.set("format", opts.format);
+  const format = opts.format ?? DEFAULT_FORMAT;
+  if (format) params.set("format", format);
 
   const qs = params.toString();
   return qs ? `${renderBase}${renderBase.includes("?") ? "&" : "?"}${qs}` : renderBase;

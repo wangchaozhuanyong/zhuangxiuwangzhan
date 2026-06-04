@@ -5,11 +5,17 @@ import { Paintbrush, MessageCircle, Layers, Target, Wrench, ShieldCheck } from "
 import { useMemo } from "react";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { usePublishedHomeSection } from "@/hooks/usePublishedContent";
+import type { PublishedHomeSection } from "@/lib/homeContentApi";
 
-const WhyChooseUsSection = () => {
+type WhyChooseUsSectionProps = {
+  section?: PublishedHomeSection | null;
+};
+
+const WhyChooseUsSection = ({ section: providedSection }: WhyChooseUsSectionProps) => {
   const t = useT();
   const { language } = useLanguage();
-  const { data: section } = usePublishedHomeSection(language, "why_choose_us");
+  const { data: fetchedSection } = usePublishedHomeSection(language, "why_choose_us", { enabled: providedSection === undefined });
+  const section = providedSection === undefined ? fetchedSection : providedSection;
 
   const reasons = useMemo(
     () => [

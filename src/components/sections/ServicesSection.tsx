@@ -72,10 +72,20 @@ const getServiceVisual = (linkOrSlug: string) => {
   return serviceVisualBySlug[slug];
 };
 
-const ServicesSection = () => {
+type ServicesSectionProps = {
+  services?: Array<{
+    slug: string;
+    title: string;
+    summary?: string;
+    description?: string;
+  }>;
+};
+
+const ServicesSection = ({ services: providedServices }: ServicesSectionProps) => {
   const t = useT();
   const { language } = useLanguage();
-  const { data: dynamicServices = [] } = usePublishedServiceSummaries(language, 8);
+  const { data: fetchedServices = [] } = usePublishedServiceSummaries(language, 8, { enabled: providedServices === undefined });
+  const dynamicServices = providedServices === undefined ? fetchedServices : providedServices;
 
   const fallbackServices = serviceEntries.map((service) => ({
     icon: service.icon,
@@ -133,7 +143,7 @@ const ServicesSection = () => {
                         width={600}
                         height={420}
                         sizes="(max-width: 640px) 92vw, (max-width: 1024px) 45vw, 24vw"
-                        rootMargin="240px"
+                        rootMargin="1200px"
                       />
                     </span>
                   )}

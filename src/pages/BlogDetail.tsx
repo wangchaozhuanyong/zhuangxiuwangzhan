@@ -8,6 +8,7 @@ import { blogPosts } from "@/data/blog";
 import { usePublishedBlogPostBySlug, usePublishedBlogPosts } from "@/hooks/usePublishedContent";
 import { useLanguage } from "@/i18n/LanguageContext";
 import PageMeta from "@/components/PageMeta";
+import PublicLoadingState from "@/components/blocks/PublicLoadingState";
 import SmartImage from "@/components/SmartImage";
 import { JsonLdBreadcrumb } from "@/components/JsonLd";
 import { useSiteSettings } from "@/hooks/useSiteSettings";
@@ -16,67 +17,17 @@ import { isHtmlText } from "@/lib/text";
 import { sanitizeHtml } from "@/lib/sanitizeHtml";
 import { translateBlogCategory, translateKeywordLabel, translateDisplayText } from "@/i18n/displayLabels";
 import { formatBlogDate, formatBlogReadTime } from "@/lib/blogMeta";
+import { blogDetailPageText } from "@/i18n/blogDetailPageText";
 
-const copy = {
-  en: {
-    notFound: "Article Not Found",
-    backToBlog: "Back to Blog",
-    breadcrumbHome: "Home",
-    breadcrumbBlog: "Blog",
-    metaSuffix: "FLASH CAST Renovation Blog",
-    ctaTitle: "Ready to Start Your Project?",
-    ctaText: "Get a free consultation and quotation from FLASH CAST.",
-    quote: "Get a Free Quote",
-    whatsapp: "WhatsApp Us",
-    internalServices: "Our Services",
-    internalProjects: "Projects",
-    internalMaterials: "Materials",
-    internalFaq: "FAQ",
-    internalContact: "Contact",
-    moreArticles: "More Articles",
-  },
-  zh: {
-    notFound: "文章不存在",
-    backToBlog: "返回装修博客",
-    breadcrumbHome: "首页",
-    breadcrumbBlog: "装修博客",
-    metaSuffix: "FLASH CAST 装修博客",
-    ctaTitle: "准备开始你的装修项目？",
-    ctaText: "联系 FLASH CAST 获取免费装修咨询与报价。",
-    quote: "获取免费报价",
-    whatsapp: "WhatsApp 联系",
-    internalServices: "服务项目",
-    internalProjects: "装修案例",
-    internalMaterials: "材料库",
-    internalFaq: "常见问题",
-    internalContact: "联系我们",
-    moreArticles: "更多文章",
-  },
-};
 
-const zhCopy = {
-  notFound: "文章不存在",
-  backToBlog: "返回装修博客",
-  breadcrumbHome: "首页",
-  breadcrumbBlog: "装修博客",
-  metaSuffix: "FLASH CAST 装修博客",
-  ctaTitle: "准备开始你的装修项目？",
-  ctaText: "联系 FLASH CAST 获取免费装修咨询与报价。",
-  quote: "获取免费报价",
-  whatsapp: "WhatsApp 联系",
-  internalServices: "服务项目",
-  internalProjects: "装修案例",
-  internalMaterials: "材料库",
-  internalFaq: "常见问题",
-  internalContact: "联系我们",
-  moreArticles: "更多文章",
-};
+
+
 
 const BlogDetail = () => {
   const { slug } = useParams<{ slug: string }>();
   const { language } = useLanguage();
   const settings = useSiteSettings();
-  const t = language === "zh" ? zhCopy : copy.en;
+  const t = blogDetailPageText[language];
   const displayText = (value: string) => translateDisplayText(value, language);
   const initialPosts = language === "zh"
     ? blogPosts.map((item) => ({
@@ -86,16 +37,27 @@ const BlogDetail = () => {
         content: displayText(item.content),
       }))
     : blogPosts;
-  const { data: cmsPost } = usePublishedBlogPostBySlug(slug, language);
+  const fallbackPost = initialPosts.find((item) => item.slug === slug);
+  const { data: cmsPost, isPending: postPending } = usePublishedBlogPostBySlug(slug, language);
   const { data: cmsPosts } = usePublishedBlogPosts(language);
   const post = useMemo(
-    () => cmsPost ?? initialPosts.find((item) => item.slug === slug),
-    [cmsPost, initialPosts, slug],
+    () => cmsPost ?? fallbackPost,
+    [cmsPost, fallbackPost],
   );
   const otherPosts = useMemo(() => {
     const source = cmsPosts?.length ? cmsPosts : initialPosts;
     return source.filter((item) => item.slug !== slug).slice(0, 3);
   }, [cmsPosts, initialPosts, slug]);
+
+  if (postPending && !fallbackPost) {
+    return (
+      <PublicLoadingState
+        label="FLASH CAST"
+        title={t.loadingTitle}
+        description={t.loadingDescription}
+      />
+    );
+  }
 
   if (!post) {
     return (

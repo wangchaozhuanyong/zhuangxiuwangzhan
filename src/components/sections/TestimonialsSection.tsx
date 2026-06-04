@@ -4,10 +4,22 @@ import { useLanguage } from "@/i18n/LanguageContext";
 import { useT } from "@/i18n/useT";
 import { usePublishedTestimonials } from "@/hooks/usePublishedContent";
 
-const TestimonialsSection = () => {
+type TestimonialsSectionProps = {
+  testimonials?: Array<{
+    id?: string;
+    text?: string;
+    client?: string;
+    type?: string;
+    location?: string;
+    rating?: number;
+  }>;
+};
+
+const TestimonialsSection = ({ testimonials: providedTestimonials }: TestimonialsSectionProps) => {
   const { language } = useLanguage();
   const t = useT();
-  const { data: publishedTestimonials } = usePublishedTestimonials(language);
+  const { data: fetchedTestimonials } = usePublishedTestimonials(language, { enabled: providedTestimonials === undefined });
+  const publishedTestimonials = providedTestimonials === undefined ? fetchedTestimonials : providedTestimonials;
   const items = publishedTestimonials?.filter((item) => item.text && item.client) ?? [];
 
   if (!items.length) return null;

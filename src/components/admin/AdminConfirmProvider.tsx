@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import AdminConfirmDialog from "@/components/admin/AdminConfirmDialog";
 import type { ButtonProps } from "@/components/ui/button";
+import { adminSharedText } from "@/i18n/adminSharedText";
+import { getAdminLang } from "@/lib/adminLocale";
 
 const ADMIN_CONFIRM_EVENT = "flashcast-admin-confirm";
 
@@ -42,6 +44,7 @@ export const adminConfirm = (options: string | AdminConfirmOptions) => {
 
 const AdminConfirmProvider = () => {
   const [request, setRequest] = useState<AdminConfirmRequest | null>(null);
+  const text = adminSharedText[getAdminLang()];
 
   useEffect(() => {
     window.__FLASHCAST_ADMIN_CONFIRM_READY__ = true;
@@ -66,10 +69,10 @@ const AdminConfirmProvider = () => {
       onOpenChange={(open) => {
         if (!open) close(false);
       }}
-      title={request?.title || "确认操作？"}
+      title={request?.title || text.confirmTitle}
       description={request?.description || ""}
-      confirmLabel={request?.confirmLabel || "确认"}
-      cancelLabel={request?.cancelLabel || "取消"}
+      confirmLabel={request?.confirmLabel || text.confirmDefault}
+      cancelLabel={request?.cancelLabel || text.cancelDefault}
       confirmVariant={request?.confirmVariant || "destructive"}
       onConfirm={() => close(true)}
     />

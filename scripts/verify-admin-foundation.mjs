@@ -28,11 +28,23 @@ const checks = [
   },
   {
     file: "src/lib/adminMutation.ts",
-    patterns: ["saveAdminRecord", "archiveOrDeleteAdminRecord", "AdminMutationError", "admin_audit_logs", "expectedUpdatedAt"],
+    patterns: ["saveAdminRecord", "archiveOrDeleteAdminRecord", "AdminMutationError"],
+  },
+  {
+    file: "src/backend/modules/system/service/adminMutationService.ts",
+    patterns: ["saveAdminRecord", "archiveOrDeleteAdminRecord", "expectedUpdatedAt", "insertAdminAuditLog"],
+  },
+  {
+    file: "src/backend/modules/system/repository/adminMutationRepository.ts",
+    patterns: ["admin_audit_logs", "fetchAdminMutationRecord", "archiveAdminMutationRecord"],
   },
   {
     file: "src/lib/systemLog.ts",
-    patterns: ["logSystemEvent", "system_event_logs"],
+    patterns: ["logSystemEvent"],
+  },
+  {
+    file: "src/backend/modules/system/repository/systemEventRepository.ts",
+    patterns: ["system_event_logs", "fetchSystemEventLogs", "insertSystemEventLog"],
   },
   {
     file: "src/hooks/useUnsavedChangesWarning.ts",
@@ -40,7 +52,11 @@ const checks = [
   },
   {
     file: "src/pages/admin/AdminCmsBuilder.tsx",
-    patterns: ["cms_pages", "cms_sections", "cms_revisions", "restoreRevision", "SectionContentEditor", "service_grid", "testimonials", "draggable", "section_reorder"],
+    patterns: ["cms_pages", "cms_sections", "cms_revisions", "restoreRevision", "SectionContentEditor", "draggable", "section_reorder"],
+  },
+  {
+    file: "src/i18n/adminCmsBuilderText.ts",
+    patterns: ["service_grid", "testimonials"],
   },
   {
     file: "src/components/admin/AdminPermission.tsx",
@@ -48,11 +64,23 @@ const checks = [
   },
   {
     file: "src/pages/admin/AdminSystemHealth.tsx",
-    patterns: ["health-check", "备份和恢复状态", "system_event_logs"],
+    patterns: ["adminSystemHealthText", "fetchAdminSystemHealth"],
+  },
+  {
+    file: "src/backend/modules/system/repository/systemHealthRepository.ts",
+    patterns: ["health-check", "form-attempts-maintenance"],
+  },
+  {
+    file: "src/i18n/adminSystemHealthText.ts",
+    patterns: ["backupSectionTitle", "system_event_logs"],
   },
   {
     file: "src/pages/admin/AdminSystemLogs.tsx",
-    patterns: ["system_event_logs", "最近 100 条"],
+    patterns: ["system_event_logs", "adminSystemLogsText"],
+  },
+  {
+    file: "src/i18n/adminSystemLogsText.ts",
+    patterns: ["latest 100 rows"],
   },
   {
     file: "src/pages/admin/AdminImageUpload.tsx",

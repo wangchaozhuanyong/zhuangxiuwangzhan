@@ -1,4 +1,6 @@
 import { Button } from "@/components/ui/button";
+import { adminSharedText, formatAdminSharedText } from "@/i18n/adminSharedText";
+import { getAdminLang } from "@/lib/adminLocale";
 
 type AdminListPagerProps = {
   page: number;
@@ -14,27 +16,33 @@ export default function AdminListPager({
   pageSize,
   total,
   isFetching,
-  itemLabel = "条",
+  itemLabel,
   onPageChange,
 }: AdminListPagerProps) {
+  const text = adminSharedText[getAdminLang()];
+  const effectiveItemLabel = itemLabel || text.itemUnit;
   const pageCount = Math.max(1, Math.ceil(total / pageSize));
   const safePage = Math.min(page, pageCount - 1);
   const from = total === 0 ? 0 : safePage * pageSize + 1;
   const to = Math.min(total, (safePage + 1) * pageSize);
-  const prevLabel = itemLabel === "条" ? "上一页" : "上一页";
-  const nextLabel = itemLabel === "条" ? "下一页" : "下一页";
+  const summary = formatAdminSharedText(text.pagerSummary, {
+    from,
+    to,
+    total,
+    itemLabel: effectiveItemLabel,
+  });
 
   return (
     <nav
-      className="mt-4 flex flex-col gap-3 rounded-xl border border-border bg-card px-4 py-3 text-sm text-muted-foreground shadow-sm sm:flex-row sm:items-center sm:justify-between"
-      aria-label="Pagination"
+      className="mt-4 flex min-w-0 flex-col gap-3 rounded-lg border border-border bg-card px-3 py-3 text-sm text-muted-foreground shadow-sm sm:flex-row sm:items-center sm:justify-between sm:rounded-xl sm:px-4"
+      aria-label={text.paginationAria}
     >
-      <div aria-live="polite">
-        {isFetching ? "正在加载..." : `显示 ${from}-${to} / ${total} ${itemLabel}`}
+      <div className="min-w-0" aria-live="polite">
+        {isFetching ? text.loading : summary}
       </div>
-      <div className="flex items-center gap-2">
-        <Button type="button" variant="outline" size="sm" className="min-h-10" disabled={safePage <= 0 || isFetching} onClick={() => onPageChange(safePage - 1)}>
-          {prevLabel}
+      <div className="grid grid-cols-[minmax(0,1fr)_4rem_minmax(0,1fr)] items-center gap-2 sm:flex">
+        <Button type="button" variant="outline" size="sm" className="min-h-10 w-full sm:w-auto" disabled={safePage <= 0 || isFetching} onClick={() => onPageChange(safePage - 1)}>
+          {text.previousPage}
         </Button>
         <span className="min-w-16 text-center text-xs font-semibold">
           {safePage + 1} / {pageCount}
@@ -43,11 +51,11 @@ export default function AdminListPager({
           type="button"
           variant="outline"
           size="sm"
-          className="min-h-10"
+          className="min-h-10 w-full sm:w-auto"
           disabled={safePage >= pageCount - 1 || isFetching}
           onClick={() => onPageChange(safePage + 1)}
         >
-          {nextLabel}
+          {text.nextPage}
         </Button>
       </div>
     </nav>

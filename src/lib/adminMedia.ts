@@ -1,3 +1,6 @@
+import { adminMediaPerformanceText } from "@/i18n/adminMediaLibraryText";
+import { getAdminLang } from "@/lib/adminLocale";
+
 export type AdminMediaKind = "image" | "video" | "unknown";
 
 export type AdminUploadedMedia = {
@@ -135,6 +138,7 @@ export function buildMediaAssetInsert({
 }
 
 export function getMediaPerformanceStatus(asset: AdminMediaAssetLike): MediaPerformanceStatus {
+  const text = adminMediaPerformanceText[getAdminLang()];
   const kind = inferMediaKind({ mimeType: asset.mime_type, url: asset.file_url });
   const size = Number(asset.size_bytes || 0);
   const width = Number(asset.width || 0);
@@ -145,28 +149,28 @@ export function getMediaPerformanceStatus(asset: AdminMediaAssetLike): MediaPerf
     if (!asset.poster_url) {
       return {
         tone: "danger",
-        label: "缺少封面",
-        detail: "视频没有 poster，客户端容易一上来就等视频画面。",
+        label: text.missingPoster.label,
+        detail: text.missingPoster.detail,
       };
     }
     if (size > 60 * 1024 * 1024) {
       return {
         tone: "danger",
-        label: "视频过大",
-        detail: "建议给前台单独生成轻量 MP4/WebM 版本。",
+        label: text.videoTooLarge.label,
+        detail: text.videoTooLarge.detail,
       };
     }
     if (size > 25 * 1024 * 1024) {
       return {
         tone: "warning",
-        label: "视频偏大",
-        detail: "可以上传，但前台必须 poster 优先、延迟加载。",
+        label: text.videoLarge.label,
+        detail: text.videoLarge.detail,
       };
     }
     return {
       tone: "ok",
-      label: "视频可控",
-      detail: "有封面，适合配合延迟加载使用。",
+      label: text.videoOk.label,
+      detail: text.videoOk.detail,
     };
   }
 
@@ -174,41 +178,41 @@ export function getMediaPerformanceStatus(asset: AdminMediaAssetLike): MediaPerf
     if (!size || !width || !height) {
       return {
         tone: "warning",
-        label: "缺少记录",
-        detail: "缺少尺寸或大小，后台无法判断这张图是否拖慢客户端。",
+        label: text.missingRecord.label,
+        detail: text.missingRecord.detail,
       };
     }
     if (mime && mime !== "image/webp") {
       return {
         tone: "warning",
-        label: "格式待优化",
-        detail: "建议走后台上传，让系统生成 WebP 展示版。",
+        label: text.formatNeedsOptimization.label,
+        detail: text.formatNeedsOptimization.detail,
       };
     }
     if (size > 3 * 1024 * 1024) {
       return {
         tone: "danger",
-        label: "图片过大",
-        detail: "前台不应该直接使用这个文件。",
+        label: text.imageTooLarge.label,
+        detail: text.imageTooLarge.detail,
       };
     }
     if (size > 1024 * 1024 || width > 2400 || height > 2400) {
       return {
         tone: "warning",
-        label: "图片偏大",
-        detail: "可以用，但列表和移动端必须加载较小展示版本。",
+        label: text.imageLarge.label,
+        detail: text.imageLarge.detail,
       };
     }
     return {
       tone: "ok",
-      label: "已优化",
-      detail: "尺寸和体积适合通过 SmartImage 响应式加载。",
+      label: text.optimized.label,
+      detail: text.optimized.detail,
     };
   }
 
   return {
     tone: "info",
-    label: "未知类型",
-    detail: "建议重新通过媒体库上传，让后台补齐文件信息。",
+    label: text.unknownType.label,
+    detail: text.unknownType.detail,
   };
 }

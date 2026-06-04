@@ -1,5 +1,7 @@
 import { CircleHelp } from "lucide-react";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
+import { adminSharedText } from "@/i18n/adminSharedText";
+import { getAdminLang } from "@/lib/adminLocale";
 import { cn } from "@/lib/utils";
 
 type AdminHelpTipProps = {
@@ -9,6 +11,7 @@ type AdminHelpTipProps = {
 
 export default function AdminHelpTip({ text, className }: AdminHelpTipProps) {
   if (!text) return null;
+  const sharedText = adminSharedText[getAdminLang()];
 
   return (
     <Tooltip>
@@ -19,7 +22,7 @@ export default function AdminHelpTip({ text, className }: AdminHelpTipProps) {
             "inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-muted-foreground transition-colors hover:bg-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
             className,
           )}
-          aria-label="使用说明"
+          aria-label={sharedText.helpTipAria}
         >
           <CircleHelp className="h-4 w-4" aria-hidden="true" />
         </button>

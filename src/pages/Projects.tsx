@@ -3,6 +3,7 @@ import Link from "@/components/LocalizedLink";
 import { Button } from "@/components/ui/button";
 import { MapPin } from "lucide-react";
 import SmartImage from "@/components/SmartImage";
+import DeferredSmartImage from "@/components/DeferredSmartImage";
 import { usePublishedProjectSummaries, usePublishedSitePage } from "@/hooks/usePublishedContent";
 import { useLanguage } from "@/i18n/LanguageContext";
 import Reveal from "@/components/Reveal";
@@ -18,6 +19,7 @@ import CTABanner from "@/components/blocks/CTABanner";
 import { translateDisplayText, translateProjectType } from "@/i18n/displayLabels";
 import { pageHeroImages, resolvePageHeroImage } from "@/lib/pageHeroImages";
 import { buildQuotePath } from "@/lib/quoteContext";
+import { projectsPageText } from "@/i18n/projectsPageText";
 
 const typeImageMap: Record<string, string> = {
   Residential: residentialImg,
@@ -29,6 +31,10 @@ const typeImageMap: Record<string, string> = {
 };
 
 const categories = ["All", "Residential", "Commercial", "Built-In", "Warehouse", "Exterior", "Office"] as const;
+const PROJECT_INITIAL_EAGER_IMAGES = 4;
+const PROJECT_IMAGE_ROOT_MARGIN = "1800px";
+const PROJECT_CARD_IMAGE_WIDTHS = [360, 560, 720, 900];
+const getProjectRevealDelay = (index: number) => (index % 4) * 60;
 
 const categoryLabels = {
   en: {
@@ -51,54 +57,7 @@ const categoryLabels = {
   },
 };
 
-const copy = {
-  en: {
-    metaTitle: "Renovation Projects Kuala Lumpur & Selangor | FLASH CAST Portfolio",
-    metaDescription: "Explore renovation project references by FLASH CAST across Kuala Lumpur and Selangor - residential condos, commercial offices, custom kitchens, warehouses, and shopfront works.",
-    metaKeywords: "renovation projects KL, condo renovation Kuala Lumpur, office fit-out Selangor, kitchen renovation Malaysia",
-    breadcrumbHome: "Home",
-    breadcrumbProjects: "Projects",
-    heroAlt: "FLASH CAST renovation projects portfolio",
-    eyebrow: "Portfolio",
-    title: "Our Projects",
-    intro: "Renovation project references across Kuala Lumpur and Selangor - from residential homes to commercial spaces and warehouses.",
-    empty: "No projects found in this category.",
-    ctaTitle: "Have a Similar Project?",
-    ctaText: "Share your requirements and we'll provide a tailored proposal with accurate pricing.",
-    quote: "Get a Free Quote",
-    whatsapp: "WhatsApp Us",
-    links: {
-      services: "Services",
-      materials: "Materials",
-      blog: "Blog",
-      faq: "FAQ",
-      contact: "Contact",
-    },
-  },
-  zh: {
-    metaTitle: "吉隆坡与雪兰莪装修案例 | FLASH CAST 项目作品",
-    metaDescription: "浏览 FLASH CAST 在吉隆坡和雪兰莪发布的装修项目参考，包括公寓、住宅、办公室、厨房、仓储和店铺装修。",
-    metaKeywords: "吉隆坡装修案例, 雪兰莪装修项目, 马来西亚室内装修, 店铺装修 KL",
-    breadcrumbHome: "首页",
-    breadcrumbProjects: "装修案例",
-    heroAlt: "FLASH CAST 装修案例作品",
-    eyebrow: "案例作品",
-    title: "装修案例",
-    intro: "查看我们在吉隆坡和雪兰莪发布的住宅、商业空间、定制家具和仓储装修项目参考。",
-    empty: "这个分类暂时没有项目案例。",
-    ctaTitle: "也想做类似项目？",
-    ctaText: "告诉我们您的装修需求，我们会根据空间、预算和工期提供合适方案。",
-    quote: "获取免费报价",
-    whatsapp: "WhatsApp 联系",
-    links: {
-      services: "服务项目",
-      materials: "材料库",
-      blog: "装修博客",
-      faq: "常见问题",
-      contact: "联系我们",
-    },
-  },
-};
+
 
 const Projects = () => {
   const [filter, setFilter] = useState<(typeof categories)[number]>("All");
@@ -115,7 +74,7 @@ const Projects = () => {
     Exterior: null,
     Office: null,
   });
-  const pageCopy = copy[language];
+  const pageCopy = projectsPageText[language];
   const filtered = filter === "All" ? projects : projects.filter((project) => project.type === filter);
   const displayProjectType = (value: string) => translateProjectType(value, language);
   const displayProjectTitle = (value: string) => translateDisplayText(value, language);
@@ -123,6 +82,28 @@ const Projects = () => {
   const heroImage = resolvePageHeroImage(pageContent?.image_url, pageHeroImages.projects);
   const displayProjectDescription = (project: any) =>
     translateDisplayText(String(project.description || ""), language);
+
+  const renderProjectImage = (project: any, index: number) => {
+    const shouldRenderImmediately = index < PROJECT_INITIAL_EAGER_IMAGES;
+    const imageProps = {
+      src: project.thumbnail || typeImageMap[project.type] || residentialImg,
+      alt: project.thumbnailAlt || `${project.title} - ${displayProjectType(project.type)} renovation in ${project.location}`,
+      width: 800,
+      height: 500,
+      sizes: "(max-width: 768px) 92vw, 45vw",
+      candidateWidths: PROJECT_CARD_IMAGE_WIDTHS,
+      quality: 70,
+      loading: "eager" as const,
+      fetchPriority: index < 2 ? ("high" as const) : ("auto" as const),
+      className: "w-full h-full object-cover",
+    };
+
+    if (shouldRenderImmediately) {
+      return <SmartImage {...imageProps} />;
+    }
+
+    return <DeferredSmartImage {...imageProps} rootMargin={PROJECT_IMAGE_ROOT_MARGIN} />;
+  };
 
   const scrollCategoryIntoView = (category: (typeof categories)[number]) => {
     const bar = categoryBarRef.current;
@@ -169,7 +150,7 @@ const Projects = () => {
                 ref={categoryBarRef}
                 className="subpage-filter-bar md:mx-0 md:flex-wrap md:justify-center md:overflow-visible md:[mask-image:none] md:[-webkit-mask-image:none]"
                 role="tablist"
-                aria-label={language === "zh" ? "项目分类筛选" : "Project category filter"}
+                aria-label={pageCopy.categoryFilterAria}
               >
               {categories.map((category) => (
                 <button
@@ -195,20 +176,13 @@ const Projects = () => {
 
           <div className="card-grid grid-cols-1 gap-6 md:grid-cols-2">
             {filtered.map((project, index) => (
-              <Reveal key={project.id} delay={index * 80}>
+              <Reveal key={project.id} delay={getProjectRevealDelay(index)}>
                 <Link
                   to={`/projects/${project.slug}`}
                   className="card-equal group rounded-card border border-border/80 bg-card p-3 shadow-[0_22px_64px_-52px_rgba(21,18,14,0.42)] hover-lift"
                 >
                   <div className="relative aspect-[4/3] overflow-hidden rounded-card img-zoom">
-                    <SmartImage
-                      src={project.thumbnail || typeImageMap[project.type] || residentialImg}
-                      alt={project.thumbnailAlt || `${project.title} - ${displayProjectType(project.type)} renovation in ${project.location}`}
-                      width={800}
-                      height={500}
-                      sizes="(max-width: 768px) 92vw, 45vw"
-                      className="w-full h-full object-cover"
-                    />
+                    {renderProjectImage(project, index)}
                     <div className="absolute top-3 left-3">
                       <span className="bg-accent/90 text-accent-foreground text-xs font-medium px-3 py-1 rounded-full backdrop-blur-sm">{displayProjectType(project.type)}</span>
                     </div>

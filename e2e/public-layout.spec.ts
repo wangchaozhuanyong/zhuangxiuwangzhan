@@ -31,4 +31,38 @@ test.describe("public responsive layout", () => {
       });
     }
   }
+
+  test("mobile header keeps stable height when language changes", async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.goto("/zh", { waitUntil: "domcontentloaded" });
+    await page.waitForLoadState("load");
+    await page.locator(".site-header__mobile-controls").waitFor({ state: "visible" });
+
+    const readHeaderMetrics = () =>
+      page.evaluate(() => {
+        const measure = (selector: string) => {
+          const element = document.querySelector(selector);
+          if (!element) throw new Error(`Missing ${selector}`);
+          const rect = element.getBoundingClientRect();
+          return Math.round(rect.height);
+        };
+
+        return {
+          header: measure(".site-header"),
+          inner: measure(".site-header__inner"),
+          controls: measure(".site-header__mobile-controls"),
+          languageButton: measure(".site-header__mobile-button"),
+        };
+      });
+
+    const before = await readHeaderMetrics();
+
+    await page.locator(".site-header__mobile-button").first().click();
+    await expect(page).toHaveURL(/\/en$/);
+    await page.locator(".site-header__mobile-controls").waitFor({ state: "visible" });
+
+    const after = await readHeaderMetrics();
+
+    expect(after).toEqual(before);
+  });
 });

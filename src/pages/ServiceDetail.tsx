@@ -19,91 +19,17 @@ import { isHtmlText, stripHtml } from "@/lib/text";
 import { sanitizeHtml } from "@/lib/sanitizeHtml";
 import { translateDisplayText } from "@/i18n/displayLabels";
 import { buildQuotePath, quoteProjectTypeFromServiceSlug } from "@/lib/quoteContext";
+import { serviceDetailPageText } from "@/i18n/serviceDetailPageText";
 
-const copy = {
-  en: {
-    notFound: "Service Not Found",
-    viewAll: "View All Services",
-    metaSuffix: "FLASH CAST Renovation Services",
-    metaKeywords: (title: string) => `${title} KL, ${title} Malaysia, renovation Kuala Lumpur`,
-    breadcrumbHome: "Home",
-    breadcrumbServices: "Services",
-    allServices: "All Services",
-    services: "Services",
-    getQuote: "Get a Quote",
-    whatsapp: "WhatsApp Us",
-    overview: "Overview",
-    suitableFor: "Suitable For",
-    offer: "What We Offer",
-    commonProjects: "Common Projects",
-    process: "Our Process",
-    faq: "Frequently Asked Questions",
-    relatedServices: "Related Services",
-    viewProjects: "View Projects",
-    materialLibrary: "Material Library",
-    faqLink: "FAQ",
-    interested: (title: string) => `Interested in ${title}?`,
-    ctaText: "Contact us for a free consultation and quotation. We serve Kuala Lumpur, Selangor, and surrounding areas.",
-    freeQuote: "Get a Free Quote",
-  },
-  zh: {
-    notFound: "服务不存在",
-    viewAll: "查看全部服务",
-    metaSuffix: "FLASH CAST 装修服务",
-    metaKeywords: (title: string) => `${title} 吉隆坡, ${title} 马来西亚, 吉隆坡装修服务`,
-    breadcrumbHome: "首页",
-    breadcrumbServices: "服务项目",
-    allServices: "全部服务",
-    services: "服务项目",
-    getQuote: "获取报价",
-    whatsapp: "WhatsApp 联系",
-    overview: "服务概览",
-    suitableFor: "适合空间",
-    offer: "我们提供",
-    commonProjects: "常见项目",
-    process: "服务流程",
-    faq: "常见问题",
-    relatedServices: "相关服务",
-    viewProjects: "查看案例",
-    materialLibrary: "材料库",
-    faqLink: "常见问题",
-    interested: (title: string) => `想了解 ${title}？`,
-    ctaText: "联系我们获取免费咨询与报价。我们服务吉隆坡、雪兰莪与周边地区。",
-    freeQuote: "获取免费报价",
-  },
-};
 
-const zhCopy = {
-  notFound: "服务不存在",
-  viewAll: "查看全部服务",
-  metaSuffix: "FLASH CAST 装修服务",
-  metaKeywords: (title: string) => `${title} 吉隆坡, ${title} 马来西亚, 吉隆坡装修服务`,
-  breadcrumbHome: "首页",
-  breadcrumbServices: "服务项目",
-  allServices: "全部服务",
-  services: "服务项目",
-  getQuote: "获取报价",
-  whatsapp: "WhatsApp 联系",
-  overview: "服务概览",
-  suitableFor: "适合空间",
-  offer: "我们提供",
-  commonProjects: "常见项目",
-  process: "服务流程",
-  faq: "常见问题",
-  relatedServices: "相关服务",
-  viewProjects: "查看案例",
-  materialLibrary: "材料库",
-  faqLink: "常见问题",
-  interested: (title: string) => `想了解 ${title}？`,
-  ctaText: "联系我们获取免费咨询与报价。我们服务吉隆坡、雪兰莪与周边地区。",
-  freeQuote: "获取免费报价",
-};
+
+
 
 const ServiceDetail = () => {
   const { slug } = useParams<{ slug: string }>();
   const { language } = useLanguage();
   const settings = useSiteSettings();
-  const t = language === "zh" ? zhCopy : copy.en;
+  const t = serviceDetailPageText[language];
   const { data: pageContent } = usePublishedSitePage(language, "service_detail");
   const { data: cmsService, isLoading: isServiceLoading } = usePublishedServiceBySlug(slug, language);
   const displayText = (value: string) => translateDisplayText(value, language);
@@ -132,8 +58,8 @@ const ServiceDetail = () => {
     return (
       <PublicLoadingState
         label="FLASH CAST"
-        title={language === "zh" ? "正在准备服务内容" : "Loading service"}
-        description={language === "zh" ? "服务图片和介绍正在载入，马上就好。" : "Service details are loading."}
+        title={t.loadingTitle}
+        description={t.loadingDescription}
       />
     );
   }
@@ -143,7 +69,7 @@ const ServiceDetail = () => {
       <main className="pt-site-header section-padding text-center">
         <PageMeta
           title={t.notFound}
-          description={language === "zh" ? "这个服务页面暂时不存在，请返回服务列表查看已发布装修服务。" : "This service page is not available. Please return to the service list."}
+          description={t.notFoundDescription}
           canonicalPath="/services"
           noIndex
         />
@@ -177,7 +103,7 @@ const ServiceDetail = () => {
   return (
     <main className="pt-site-header">
       <PageMeta
-        title={service.seoTitle || `${serviceTitle} Kuala Lumpur | ${t.metaSuffix}`}
+        title={service.seoTitle || t.metaTitleFallback(serviceTitle, t.metaSuffix)}
         description={service.seoDescription || stripHtml(serviceSummary)}
         keywords={t.metaKeywords(serviceTitle)}
         canonicalPath={`/services/${service.slug}`}

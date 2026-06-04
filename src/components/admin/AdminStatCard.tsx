@@ -27,12 +27,12 @@ export default function AdminStatCard({
         className,
       )}
     >
-      <CardContent className="relative p-5 pr-12">
+      <CardContent className="relative p-4 pr-12 sm:p-5 sm:pr-12">
         <div className="pointer-events-none absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-accent/70 via-accent/20 to-transparent opacity-70" />
         <div className="flex items-start justify-between gap-3">
           <div className="min-w-0">
-            <p className="text-sm font-semibold leading-5 text-muted-foreground">{label}</p>
-            <p className="mt-3 font-display text-3xl font-bold leading-none text-foreground">{value}</p>
+            <p className="break-words text-sm font-semibold leading-5 text-muted-foreground">{label}</p>
+            <p className="mt-3 break-words font-display text-2xl font-bold leading-tight text-foreground sm:text-3xl sm:leading-none">{value}</p>
           </div>
           {icon && (
             <div className="mt-1 flex h-10 w-10 shrink-0 items-center justify-center rounded-lg border border-border bg-muted/60 text-muted-foreground transition-colors group-hover:border-accent/35 group-hover:text-accent">

@@ -7,6 +7,7 @@ import WhatsAppIcon from "@/components/WhatsAppIcon";
 import Reveal from "@/components/Reveal";
 import FAQSection from "@/components/blocks/FAQSection";
 import CTABanner from "@/components/blocks/CTABanner";
+import PublicLoadingState from "@/components/blocks/PublicLoadingState";
 import PageMeta from "@/components/PageMeta";
 import SmartImage from "@/components/SmartImage";
 import { landingPages } from "@/data/landings";
@@ -17,58 +18,31 @@ import { isHtmlText, stripHtml } from "@/lib/text";
 import { sanitizeHtml } from "@/lib/sanitizeHtml";
 import { translateDisplayText } from "@/i18n/displayLabels";
 import { toArray, toRecord, toText } from "@/lib/recordUtils";
+import { landingPageText } from "@/i18n/landingPageText";
 
-const shellCopy = {
-  en: {
-    notFound: "Page Not Found",
-    backHome: "Back to Home",
-    quote: "Get a Free Quote",
-    whatsapp: "WhatsApp Us",
-    overview: "Overview",
-    whyChoose: "Why Choose Us",
-    relatedProjects: "Related Projects",
-    faqTitle: "Frequently Asked Questions",
-    ctaTitle: "Ready to Get Started?",
-    ctaDescription: "Contact us today for a free consultation and quotation.",
-    metaSuffix: "FLASH CAST SDN. BHD.",
-  },
-  zh: {
-    notFound: "页面不存在",
-    backHome: "返回首页",
-    quote: "获取免费报价",
-    whatsapp: "WhatsApp 联系",
-    overview: "服务概览",
-    whyChoose: "为什么选择我们",
-    relatedProjects: "相关案例",
-    ctaTitle: "准备开始规划项目？",
-    ctaDescription: "欢迎联系我们，获取免费咨询和装修报价。",
-    metaSuffix: "FLASH CAST SDN. BHD.",
-  },
-};
 
-const zhShellCopy = {
-  notFound: "页面不存在",
-  backHome: "返回首页",
-  quote: "获取免费报价",
-  whatsapp: "WhatsApp 联系",
-  overview: "服务概览",
-  whyChoose: "为什么选择我们",
-  relatedProjects: "相关案例",
-  faqTitle: "常见问题",
-  ctaTitle: "准备开始规划项目？",
-  ctaDescription: "欢迎联系我们，获取免费咨询和装修报价。",
-  metaSuffix: "FLASH CAST SDN. BHD.",
-};
+
+
 
 const LandingPage = () => {
   const { slug } = useParams<{ slug: string }>();
   const { language } = useLanguage();
   const settings = useSiteSettings();
-  const t = language === "zh" ? zhShellCopy : shellCopy.en;
+  const t = landingPageText[language];
   const fallbackPage = slug ? landingPages[slug] : undefined;
-  const { data: cmsPage } = usePublishedLandingPageBySlug(slug, language);
+  const { data: cmsPage, isPending: pagePending } = usePublishedLandingPageBySlug(slug, language);
   const page = useMemo(() => cmsPage ?? fallbackPage ?? null, [cmsPage, fallbackPage]);
   const displayText = (value: string) => translateDisplayText(value, language);
+
+  if (pagePending && !fallbackPage) {
+    return (
+      <PublicLoadingState
+        label="FLASH CAST"
+        title={t.loadingTitle}
+        description={t.loadingDescription}
+      />
+    );
+  }
 
   if (!page) {
     return (

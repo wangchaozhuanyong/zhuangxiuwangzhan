@@ -4,11 +4,15 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import AdminListPager from "@/components/admin/AdminListPager";
-import { isSupabaseConfigured, supabase } from "@/lib/supabase";
-import { useAdminMediaAssets } from "@/lib/adminQueries";
-import { buildMediaAssetInsert, formatBytes, formatDimensions, inferMediaKind, type AdminUploadedMedia } from "@/lib/adminMedia";
+import { adminSharedText } from "@/i18n/adminSharedText";
+import { getAdminLang } from "@/lib/adminLocale";
+import { isSupabaseConfigured } from "@/lib/supabase";
+import { useAdminMediaAssets } from "@/lib/adminMediaQueries";
+import { formatBytes, formatDimensions, inferMediaKind, type AdminUploadedMedia } from "@/lib/adminMedia";
+import { createAdminMediaAsset } from "@/backend/modules/media/service/mediaService";
 import AdminImageUpload from "@/pages/admin/AdminImageUpload";
 import SmartImage from "@/components/SmartImage";
+import { formatUserFacingError } from "@/lib/userFacingText";
 
 type MediaAsset = {
   id: string;
@@ -34,8 +38,8 @@ export default function MediaPicker({
   onOpenChange,
   onSelect,
   initialUsageType = "all",
-  title = "选择图片",
-  description = "从媒体库选择图片，或直接上传后选择。",
+  title,
+  description,
 }: {
   open: boolean;
   onOpenChange: (open: boolean) => void;
@@ -45,6 +49,8 @@ export default function MediaPicker({
   description?: string;
 }) {
   const queryClient = useQueryClient();
+  const language = getAdminLang();
+  const text = adminSharedText[language];
   const [usageType, setUsageType] = useState<UsageType>(initialUsageType);
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(0);
@@ -61,27 +67,23 @@ export default function MediaPicker({
   }, [open, refetch]);
 
   useEffect(() => {
-    if (error) setMessage(error instanceof Error ? error.message : String(error));
-  }, [error]);
+    if (error) setMessage(formatUserFacingError(error, language));
+  }, [error, language]);
 
   useEffect(() => {
     setPage(0);
   }, [deferredSearch, usageType]);
 
   const createAsset = async (url: string, upload?: AdminUploadedMedia) => {
-    if (!supabase) return;
-    const { data: userData } = await supabase.auth.getUser();
-    const { error: insertError } = await supabase.from("media_assets").insert({
-      ...buildMediaAssetInsert({
+    try {
+      await createAdminMediaAsset({
         url,
         upload,
         usageType: usageType === "all" ? "general" : usageType,
         folder: "media",
-        createdBy: userData.user?.id || null,
-      }),
-    });
-    if (insertError) {
-      setMessage(insertError.message);
+      });
+    } catch (insertError) {
+      setMessage(formatUserFacingError(insertError, language));
       return;
     }
     void queryClient.invalidateQueries({ queryKey: ["admin", "media_assets"] });
@@ -92,26 +94,26 @@ export default function MediaPicker({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-4xl">
+      <DialogContent className="sm:max-w-4xl">
         <DialogHeader>
-          <DialogTitle>{title}</DialogTitle>
-          <DialogDescription>{description}</DialogDescription>
+          <DialogTitle>{title || text.mediaPickerTitle}</DialogTitle>
+          <DialogDescription>{description || text.mediaPickerDescription}</DialogDescription>
         </DialogHeader>
 
         {!isSupabaseConfigured && (
           <div className="rounded-lg border border-border bg-muted p-3 text-sm text-muted-foreground">
-            Supabase 未配置，无法使用媒体库。
+            {text.supabaseNotConfigured}
           </div>
         )}
 
         {isSupabaseConfigured && (
           <div className="space-y-4">
-            <div className="flex flex-col gap-2 sm:flex-row">
-              <Input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="搜索文件名、文件夹、用途..." />
+            <div data-admin-filter-bar className="flex flex-col gap-2 sm:flex-row">
+              <Input value={search} onChange={(e) => setSearch(e.target.value)} placeholder={text.searchMediaPlaceholder} />
               <select
                 value={usageType}
                 onChange={(e) => setUsageType(e.target.value as UsageType)}
-                className="flex h-10 rounded-md border border-input bg-background px-3 py-2 text-sm"
+                className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
               >
                 {usageTypes.map((item) => (
                   <option key={item} value={item}>
@@ -122,9 +124,9 @@ export default function MediaPicker({
             </div>
 
             {message && <p className="rounded-lg bg-muted p-3 text-sm">{message}</p>}
-            {isFetching && <p className="text-sm text-muted-foreground">加载中...</p>}
+            {isFetching && <p className="text-sm text-muted-foreground">{text.mediaLoading}</p>}
 
-            <div className="grid max-h-[50vh] grid-cols-2 gap-3 overflow-y-auto sm:grid-cols-3 md:grid-cols-4">
+            <div className="grid max-h-[48dvh] grid-cols-2 gap-3 overflow-y-auto pr-1 sm:grid-cols-3 md:grid-cols-4">
               {imageAssets.map((asset) => (
                 <button
                   key={asset.id}
@@ -145,19 +147,17 @@ export default function MediaPicker({
                 </button>
               ))}
             </div>
-            <AdminListPager page={page} pageSize={pageSize} total={total} isFetching={isFetching} itemLabel="张图片" onPageChange={setPage} />
+            <AdminListPager page={page} pageSize={pageSize} total={total} isFetching={isFetching} itemLabel={text.imageUnit} onPageChange={setPage} />
 
             <div className="rounded-lg border border-border bg-muted/20 p-3">
-              <div className="mb-2 text-xs font-medium text-muted-foreground">上传新图片到媒体库</div>
+              <div className="mb-2 text-xs font-medium text-muted-foreground">{text.uploadNewMediaImage}</div>
               <AdminImageUpload folder="media" onUploaded={(url, upload) => void createAsset(url, upload)} />
             </div>
           </div>
         )}
 
         <DialogFooter>
-          <Button variant="outline" onClick={() => onOpenChange(false)}>
-            关闭
-          </Button>
+          <Button variant="outline" onClick={() => onOpenChange(false)}>{text.close}</Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>

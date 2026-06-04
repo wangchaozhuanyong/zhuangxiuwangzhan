@@ -1,8 +1,11 @@
+import { chunkLoadRecoveryText } from "@/i18n/chunkLoadRecoveryText";
+import { getLanguageFromPath } from "@/i18n/routes";
+import { getAdminLang } from "@/lib/adminLocale";
+
 const CHUNK_RELOAD_KEY = "flashcast:chunk-load-recovery";
 const CHUNK_LOG_KEY = "flashcast:chunk-load-recovery-log";
 const CHUNK_REFRESH_PARAM = "__flashcast_refresh";
 const RETRY_WINDOW_MS = 60 * 60 * 1000;
-const CHUNK_LOAD_MESSAGE = "前端版本文件加载失败：浏览器或 CDN 还保留着旧的 SPA 入口 HTML，旧 HTML 引用了已经被新部署替换的 hashed JS chunk。系统会自动刷新一次并重新拉取最新入口。";
 
 type ChunkRecoveryWindow = Window & {
   __flashcastChunkLoadRecoveryInstalled?: boolean;
@@ -78,30 +81,37 @@ export const getErrorMessage = (value: unknown) => {
 
 export const getFriendlySystemMessage = (message: string, eventType?: string) => {
   if (eventType === "frontend_deploy_cache_mismatch" || isChunkLoadError(message)) {
-    return CHUNK_LOAD_MESSAGE;
+    return chunkLoadRecoveryText[getRecoveryLanguage()].loadMessage;
   }
 
   return message;
 };
 
+const getRecoveryLanguage = () => {
+  if (typeof window === "undefined") return "zh";
+  return getLanguageFromPath(window.location.pathname) || getAdminLang();
+};
+
 export const getSystemEventCategory = (message: string, eventType?: string) => {
+  const text = chunkLoadRecoveryText[getRecoveryLanguage()];
+
   if (eventType === "frontend_deploy_cache_mismatch" || isChunkLoadError(message)) {
     return {
       key: "frontend_deploy_cache_mismatch",
-      label: "前端生产部署缓存不一致",
+      label: text.deployCacheMismatch,
     };
   }
 
   if (eventType === "react_render_error") {
     return {
       key: "react_render_error",
-      label: "页面渲染错误",
+      label: text.reactRenderError,
     };
   }
 
   return {
     key: eventType || "system_event",
-    label: "系统事件",
+    label: text.systemEvent,
   };
 };
 
