@@ -56,4 +56,6 @@ jobs:
       - name: E2E tests
         env:
           PLAYWRIGHT_CHROMIUM_CHANNEL: chrome
+          PLAYWRIGHT_PORT: "4192"
+          PLAYWRIGHT_REUSE_SERVER: "1"
         run: npm run test:e2e -- --project=chromium
