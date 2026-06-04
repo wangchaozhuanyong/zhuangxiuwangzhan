@@ -19,6 +19,10 @@ const SUPABASE_ANON_KEY = process.env.VITE_SUPABASE_ANON_KEY;
 const manifest = buildStaticManifest();
 
 const legacyRedirectPaths = new Set([
+  "/en/materials/acrylic-high-gloss-white",
+  "/zh/materials/acrylic-high-gloss-white",
+  "/en/materials/melamine-grey-oak",
+  "/zh/materials/melamine-grey-oak",
   "/en/materials/spc-vinyl-natural-oak",
   "/zh/materials/spc-vinyl-natural-oak",
 ]);

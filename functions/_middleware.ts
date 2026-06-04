@@ -562,6 +562,10 @@ const getProjectDetailSlugFromKey = (key: string) => {
 };
 
 const EXACT_LEGACY_REDIRECTS: Record<string, string> = {
+  "/en/materials/acrylic-high-gloss-white": "/en/materials/acrylic-cabinet-gloss-white",
+  "/zh/materials/acrylic-high-gloss-white": "/zh/materials/acrylic-cabinet-gloss-white",
+  "/en/materials/melamine-grey-oak": "/en/materials/melamine-cabinet-grey-oak",
+  "/zh/materials/melamine-grey-oak": "/zh/materials/melamine-cabinet-grey-oak",
   "/en/materials/spc-vinyl-natural-oak": "/en/materials/spc-flooring-natural-oak",
   "/zh/materials/spc-vinyl-natural-oak": "/zh/materials/spc-flooring-natural-oak",
   "/en/projects/mont-kiara-condo-renovation": "/en/projects/mont-kiara-luxury-condo-renovation",
