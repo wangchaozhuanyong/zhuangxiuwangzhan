@@ -18,6 +18,11 @@ const SUPABASE_URL = process.env.VITE_SUPABASE_URL;
 const SUPABASE_ANON_KEY = process.env.VITE_SUPABASE_ANON_KEY;
 const SITE_URL = (process.env.VITE_SITE_URL || "https://flashcast.com.my").replace(/\/$/, "");
 
+const legacyRedirectPaths = new Set([
+  "/en/materials/spc-vinyl-natural-oak",
+  "/zh/materials/spc-vinyl-natural-oak",
+]);
+
 const staticPaths = [
   "/",
   "/about",
@@ -107,7 +112,9 @@ const paths = unique([
   ...services.map((item) => `/services/${item.slug}`),
 ]);
 
-const localizedPaths = paths.flatMap((path) => [`/en${path === "/" ? "" : path}`, `/zh${path === "/" ? "" : path}`]);
+const localizedPaths = paths
+  .flatMap((path) => [`/en${path === "/" ? "" : path}`, `/zh${path === "/" ? "" : path}`])
+  .filter((path) => !legacyRedirectPaths.has(path));
 
 const xml = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">

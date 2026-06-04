@@ -18,6 +18,11 @@ const SUPABASE_ANON_KEY = process.env.VITE_SUPABASE_ANON_KEY;
 
 const manifest = buildStaticManifest();
 
+const legacyRedirectPaths = new Set([
+  "/en/materials/spc-vinyl-natural-oak",
+  "/zh/materials/spc-vinyl-natural-oak",
+]);
+
 const materialCategories = [
   {
     slug: "kitchen-cabinets",
@@ -102,6 +107,7 @@ const fetchRows = async (table, select) => {
 const addDynamic = (lang, basePath, slug, title, description) => {
   const path = `${basePath}/${slug}`;
   const localized = `/${lang}${path}`;
+  if (legacyRedirectPaths.has(localized)) return;
   const enPath = `/en${path}`;
   const zhPath = `/zh${path}`;
   manifest[localized] = {

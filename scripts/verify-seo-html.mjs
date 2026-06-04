@@ -7,6 +7,7 @@ const BASE = (process.env.PREVIEW_URL || process.env.SITE_URL || "https://flashc
 const RUN_EDGE_CHECKS = process.env.VERIFY_EDGE_SEO === "1";
 const RUN_GEO_CHECKS = process.env.VERIFY_GEO_HTML === "1";
 const RUN_CONTENT_MATCH_CHECKS = process.env.VERIFY_CONTENT_MATCH === "1";
+const RUN_SITEMAP_CRAWL_CHECKS = process.env.VERIFY_SITEMAP_CRAWL === "1";
 
 const paths = [
   "/zh",
@@ -95,6 +96,47 @@ if (duplicateLocs.length) failures.push(`sitemap: duplicate URLs: ${[...new Set(
 if (nonCanonicalLocs.length) failures.push(`sitemap: non-canonical host URLs: ${nonCanonicalLocs.slice(0, 5).join(", ")}`);
 if (legacyLocs.length) failures.push(`sitemap: URLs without /en or /zh prefix: ${legacyLocs.slice(0, 5).join(", ")}`);
 if (queryLocs.length) failures.push(`sitemap: query URLs should not be listed: ${queryLocs.slice(0, 5).join(", ")}`);
+
+if (RUN_SITEMAP_CRAWL_CHECKS) {
+  const crawlSitemapUrl = async (loc) => {
+    const response = await fetch(loc, {
+      redirect: "manual",
+      headers: { "user-agent": "flashcast-seo-verify" },
+    });
+    return {
+      loc,
+      status: response.status,
+      location: response.headers.get("location") || "",
+    };
+  };
+  const sitemapCrawlResults = [];
+  const concurrency = 12;
+  for (let index = 0; index < sitemapLocs.length; index += concurrency) {
+    const batch = sitemapLocs.slice(index, index + concurrency);
+    sitemapCrawlResults.push(...(await Promise.all(batch.map(crawlSitemapUrl))));
+  }
+  const sitemapRedirects = sitemapCrawlResults.filter((item) => item.status >= 300 && item.status < 400);
+  const sitemapErrors = sitemapCrawlResults.filter((item) => item.status >= 400 || item.status === 0);
+
+  if (sitemapRedirects.length) {
+    failures.push(
+      `sitemap: URLs should resolve directly without redirects: ${sitemapRedirects
+        .slice(0, 5)
+        .map((item) => `${item.loc} -> ${item.status} ${item.location}`)
+        .join(", ")}`,
+    );
+  }
+  if (sitemapErrors.length) {
+    failures.push(
+      `sitemap: URLs should not return errors: ${sitemapErrors
+        .slice(0, 5)
+        .map((item) => `${item.loc} -> ${item.status}`)
+        .join(", ")}`,
+    );
+  }
+} else {
+  warnings.push("sitemap crawl checks skipped; set VERIFY_SITEMAP_CRAWL=1 before validating Google indexing fixes");
+}
 
 const manifestLocs = Object.keys(manifest).map((path) => `https://flashcast.com.my${normalizePath(path)}`);
 const sitemapSet = new Set(sitemapLocs);
