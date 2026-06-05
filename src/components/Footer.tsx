@@ -101,7 +101,9 @@ const MobileAccordion = ({
       <span>{title}</span>
       <ChevronDown className={`h-4 w-4 transition-transform duration-300 ${isOpen ? "rotate-180" : ""}`} />
     </button>
-    <div className={`footer-mobile-panel-body ${isOpen ? "max-h-96 pb-5" : "max-h-0"}`}>{children}</div>
+    <div className={`footer-mobile-panel-body ${isOpen ? "max-h-96 pb-5" : "max-h-0"}`} aria-hidden={!isOpen}>
+      {children}
+    </div>
   </div>
 );
 

@@ -65,4 +65,24 @@ test.describe("public responsive layout", () => {
 
     expect(after).toEqual(before);
   });
+
+  test("mobile footer contact link opens the contact page from the company panel", async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.goto("/zh", { waitUntil: "domcontentloaded" });
+    await page.waitForLoadState("load");
+
+    await page.locator("footer").scrollIntoViewIfNeeded();
+    const companyPanel = page.locator(".footer-mobile-panel").filter({
+      has: page.locator('a[href$="/zh/contact"]'),
+    });
+
+    await expect(companyPanel.locator(".footer-mobile-panel-body")).toHaveAttribute("aria-hidden", "true");
+    await companyPanel.getByRole("button").click();
+    await expect(companyPanel.locator(".footer-mobile-panel-body")).toHaveAttribute("aria-hidden", "false");
+
+    await companyPanel.locator('a[href$="/zh/contact"]').click();
+
+    await expect(page).toHaveURL(/\/zh\/contact$/);
+    await expect(page.locator("#contact-name")).toBeVisible();
+  });
 });

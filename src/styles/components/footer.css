@@ -400,6 +400,16 @@
     transition: max-height 300ms ease, padding-bottom 300ms ease;
   }
 
+  .footer-mobile-panel:not(.is-open) .footer-mobile-panel-body {
+    pointer-events: none;
+    visibility: hidden;
+  }
+
+  .footer-mobile-panel.is-open .footer-mobile-panel-body {
+    pointer-events: auto;
+    visibility: visible;
+  }
+
   .footer-legal {
     display: flex;
     flex-direction: column;
