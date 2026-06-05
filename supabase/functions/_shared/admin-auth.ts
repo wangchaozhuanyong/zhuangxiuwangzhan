@@ -40,12 +40,15 @@ export const requireAdminAccess = async (
     .maybeSingle();
 
   if (adminError) return { ok: false, status: 500, error: adminError.message, mode: "admin" };
-  if (!adminRow && !jwtRole) return { ok: false, status: 403, error: "Admin access required", mode: "admin" };
-  if (adminRow && adminRow.active === false && !jwtRole) {
+  if (adminRow?.active === false) {
     return { ok: false, status: 403, error: "Admin account is disabled", mode: "admin" };
   }
+  if (adminRow) {
+    return { ok: true, status: 200, error: null, mode: "admin", role: adminRow.role || null };
+  }
+  if (jwtRole) return { ok: true, status: 200, error: null, mode: "admin", role: jwtRole };
 
-  return { ok: true, status: 200, error: null, mode: "admin", role: jwtRole || adminRow?.role || null };
+  return { ok: false, status: 403, error: "Admin access required", mode: "admin" };
 };
 
 export const requireSuperAdminAccess = (adminCheck: EdgeAdminCheck): EdgeAdminCheck => {

@@ -1,4 +1,4 @@
-import { BACKUP_RECENT_HOURS, adminTables, backupEventTypes, edgeFunctionChecks, publicTables } from "./config.ts";
+import { BACKUP_RECENT_HOURS, adminTables, backupEventTypes, edgeFunctionChecks } from "./config.ts";
 import {
   checkTable,
   fetchBackupEvents,
@@ -20,11 +20,8 @@ export const missingServerCredentialsResult = (checkedAt: string): HealthCheckRe
   body: {
     ok: false,
     mode: "public",
-    message: "Supabase server credentials are not configured.",
+    message: "Health check is not available.",
     checked_at: checkedAt,
-    checks: edgeFunctionChecks(),
-    table_checks: [],
-    reminders: ["Supabase Edge Function 缺少服务端密钥，无法检查数据库。"],
   },
 });
 
@@ -63,8 +60,8 @@ const getBackupStatus = async (client: HealthClient): Promise<BackupStatus> => {
       latest_verify: latestVerify,
       latest_restore_dry_run: latestRestoreDryRun,
       message: ok
-        ? "最近备份、备份验证和恢复演练都有记录。"
-        : "备份、验证或恢复演练记录不完整，建议按发布清单重新执行。",
+        ? "Recent backup, backup verification, and restore drill records are complete."
+        : "Backup, verification, or restore drill records are incomplete. Run the release checklist again.",
     };
   } catch (error) {
     return {
@@ -72,7 +69,7 @@ const getBackupStatus = async (client: HealthClient): Promise<BackupStatus> => {
       latest_backup: null,
       latest_verify: null,
       latest_restore_dry_run: null,
-      message: `备份日志读取失败：${error instanceof Error ? error.message : String(error)}`,
+      message: `Backup log read failed: ${error instanceof Error ? error.message : String(error)}`,
     };
   }
 };
@@ -95,56 +92,55 @@ export async function runHealthCheck(req: Request, client: HealthClient, checked
   const checks: Record<string, CheckResult | boolean> = edgeFunctionChecks();
   const adminRole = await getAdminRole(client, getBearerToken(req));
   const adminMode = adminRole === "super_admin";
-  const tableDefinitions = adminMode ? adminTables : publicTables;
-  const tableChecks = await Promise.all(tableDefinitions.map((item) => checkTable(client, item)));
 
   if (!adminMode) {
-    for (const item of tableChecks) {
-      checks[item.table] = {
-        ok: item.ok,
-        label: item.label,
-        count: item.count,
-        message: item.message,
-      };
-    }
+    return {
+      status: 200,
+      body: {
+        ok: true,
+        mode: "public",
+        message: "Health check endpoint is available.",
+        checked_at: checkedAt,
+        checks: {
+          edge_function: checks.edge_function,
+        },
+      },
+    };
   }
 
+  const tableChecks = await Promise.all(adminTables.map((item) => checkTable(client, item)));
   const bucket = await getStorageBucketCheck(client, "site-images");
   checks.storage_site_images = bucket.error
-    ? { ok: false, label: "图片存储桶", message: bucket.error.message }
-    : { ok: true, label: "图片存储桶", message: "site-images 存储桶可读取。" };
+    ? { ok: false, label: "Image storage bucket", message: bucket.error.message }
+    : { ok: true, label: "Image storage bucket", message: "site-images bucket is readable." };
 
-  let backupStatus: BackupStatus | null = null;
-  let healthHistory: SystemEventSummary[] = [];
   const failedTables = tableChecks.filter((item) => !item.ok).map((item) => item.table);
   const failedChecks = Object.values(checks).filter(
     (item): item is CheckResult => typeof item === "object" && Boolean(item) && !item.ok,
   );
   const reminders = [
-    ...tableChecks.filter((item) => !item.ok).map((item) => `${item.label} 读取失败，请检查迁移、权限或数据库状态。`),
-    ...failedChecks.map((item) => `${item.label} 异常：${item.message || "请检查 Supabase 配置。"}`),
+    ...tableChecks
+      .filter((item) => !item.ok)
+      .map((item) => `${item.label} read failed. Check migrations, permissions, or database status.`),
+    ...failedChecks.map((item) => `${item.label} is abnormal: ${item.message || "Check Supabase configuration."}`),
   ];
 
-  if (adminMode) {
-    backupStatus = await getBackupStatus(client);
-    if (!backupStatus.ok) reminders.push(backupStatus.message);
-  }
+  const backupStatus = await getBackupStatus(client);
+  if (!backupStatus.ok) reminders.push(backupStatus.message);
 
   const checksOk = Object.values(checks).every((item) => (typeof item === "boolean" ? item : item.ok));
   const tablesOk = tableChecks.every((item) => item.ok);
-  const backupsOk = adminMode ? Boolean(backupStatus?.ok) : true;
+  const backupsOk = Boolean(backupStatus.ok);
   const overallOk = checksOk && tablesOk && backupsOk;
 
-  if (adminMode) {
-    await logHealthCheck(client, overallOk, failedTables, reminders, checkedAt);
-    healthHistory = (await fetchHealthHistory(client)).map(summarizeEvent);
-  }
+  await logHealthCheck(client, overallOk, failedTables, reminders, checkedAt);
+  const healthHistory = (await fetchHealthHistory(client)).map(summarizeEvent);
 
   return {
     status: overallOk ? 200 : 503,
     body: {
       ok: overallOk,
-      mode: adminMode ? "admin" : "public",
+      mode: "admin",
       admin_role: adminRole,
       message: overallOk ? "System health check passed." : "One or more health checks need attention.",
       checked_at: checkedAt,

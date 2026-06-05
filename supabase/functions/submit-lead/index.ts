@@ -1,5 +1,6 @@
 import { serve } from "https://deno.land/std@0.224.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { BodyTooLargeError, readJsonBody } from "../_shared/request-body.ts";
 import { submitLead } from "./service.ts";
 import type { SubmitBody } from "./types.ts";
 
@@ -7,6 +8,8 @@ const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
+
+const MAX_BODY_BYTES = 32 * 1024;
 
 const json = (body: unknown, status = 200) =>
   new Response(JSON.stringify(body), {
@@ -26,8 +29,11 @@ serve(async (req) => {
 
   let body: SubmitBody;
   try {
-    body = await req.json();
-  } catch {
+    body = await readJsonBody<SubmitBody>(req, MAX_BODY_BYTES);
+  } catch (error) {
+    if (error instanceof BodyTooLargeError) {
+      return json({ error: "Request body too large" }, 413);
+    }
     return json({ error: "Invalid JSON body" }, 400);
   }
 
