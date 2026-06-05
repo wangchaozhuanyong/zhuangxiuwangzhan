@@ -462,20 +462,15 @@ export const getPublishedProcessSteps = async (language: "en" | "zh"): Promise<P
 };
 
 export const getPublishedCtaBlock = async (language: "en" | "zh", blockKey: string): Promise<PublishedCtaBlock | null> => {
+  const preloadedBlock = readPreloadedPublicData()?.ctaBlocks?.[blockKey];
+  if (preloadedBlock) {
+    return mapPublishedCtaBlockRow(preloadedBlock, language);
+  }
+
   if (!hasPublicContentDatabaseClient()) return null;
   const row: any = await fetchPublishedCtaBlockRow(blockKey);
   if (!row) return null;
-  return {
-    id: row.id,
-    block_key: row.block_key,
-    title: pickLocalizedText(row, "title", language),
-    description: pickLocalizedText(row, "description", language),
-    primary_label: pickLocalizedText(row, "primary_label", language),
-    primary_url: row.primary_url || "/quote",
-    secondary_label: pickLocalizedText(row, "secondary_label", language),
-    secondary_url: row.secondary_url || "",
-    image_url: row.image_url || null,
-  };
+  return mapPublishedCtaBlockRow(row, language);
 };
 
 export const getPublishedAboutSection = async (
@@ -500,6 +495,11 @@ export const getPublishedSitePage = async (
   language: "en" | "zh",
   pageKey: string,
 ): Promise<PublishedSitePage | null> => {
+  const preloadedPageBundle = toRecord(readPreloadedPublicData()?.sitePages?.[pageKey]);
+  if (Object.keys(preloadedPageBundle).length) {
+    return mapSitePageRows(preloadedPageBundle, language);
+  }
+
   if (!hasPublicContentDatabaseClient()) return null;
   const row: any = await fetchPublishedLegacySitePageRow(pageKey);
   const legacy: PublishedSitePage | null = row

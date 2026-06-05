@@ -199,6 +199,11 @@ export const getPublishedServiceSummaries = async (language: "en" | "zh" = "en",
     return limit && limit > 0 ? services.slice(0, limit) : services;
   };
 
+  const preloadedRows = readPreloadedPublicData()?.services;
+  if (Array.isArray(preloadedRows) && preloadedRows.length) {
+    return applyOptionalLimit(preloadedRows, limit).map((item: any) => mapPublishedService(item, language));
+  }
+
   if (!hasPublicContentDatabaseClient()) return fallbackServices();
 
   const data = await fetchPublishedServiceSummaryRows(limit);
@@ -242,6 +247,11 @@ export const mapPublishedTestimonial = (item: any, language: "en" | "zh" = "en")
 });
 
 export const getPublishedServices = async (language: "en" | "zh" = "en") => {
+  const preloadedRows = readPreloadedPublicData()?.services;
+  if (Array.isArray(preloadedRows) && preloadedRows.length) {
+    return preloadedRows.map((item: any) => mapPublishedService(item, language));
+  }
+
   if (!hasPublicContentDatabaseClient()) return getFallbackServices(language);
 
   const data = await fetchPublishedServiceRows();
@@ -332,11 +342,20 @@ export function mapPublishedProjectDetail(data: any, language: "en" | "zh") {
 }
 
 export const getPublishedMaterials = async (language: "en" | "zh" = "en") => {
+  const preloadedRows = readPreloadedPublicData()?.materials;
+  if (Array.isArray(preloadedRows) && preloadedRows.length) {
+    return mapPublishedMaterialRows(preloadedRows, language);
+  }
+
   if (!hasPublicContentDatabaseClient()) return getFallbackMaterials();
   const data = await fetchPublishedMaterialRows();
   if (!data?.length) return getFallbackMaterials();
 
-  const grouped = data.reduce((acc: any[], item: any) => {
+  return mapPublishedMaterialRows(data, language);
+};
+
+const mapPublishedMaterialRows = (rows: any[], language: "en" | "zh" = "en") =>
+  rows.reduce((acc: any[], item: any) => {
     const categoryName = item.category || "Materials";
     const categorySlug = categoryName.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
     const subcategoryName = item.subcategory || categoryName;
@@ -388,9 +407,6 @@ export const getPublishedMaterials = async (language: "en" | "zh" = "en") => {
     return acc;
   }, []);
 
-  return grouped;
-};
-
 export const getPublishedMaterialBySlug = async (slug: string, language: "en" | "zh" = "en") => {
   const categories = await getPublishedMaterials(language);
   for (const category of categories) {
@@ -401,13 +417,22 @@ export const getPublishedMaterialBySlug = async (slug: string, language: "en" | 
 };
 
 export const getPublishedBlogPosts = async (language: "en" | "zh" = "en") => {
+  const preloadedRows = readPreloadedPublicData()?.blogPosts;
+  if (Array.isArray(preloadedRows) && preloadedRows.length) {
+    return mapPublishedBlogPostRows(preloadedRows, language);
+  }
+
   if (!hasPublicContentDatabaseClient()) return getFallbackBlogPosts(language);
   const data = await fetchPublishedBlogPostRows();
   if (!data?.length) return getFallbackBlogPosts(language);
 
+  return mapPublishedBlogPostRows(data, language);
+};
+
+const mapPublishedBlogPostRows = (rows: any[], language: "en" | "zh" = "en") => {
   const localize = (value: string) => (language === "zh" ? translateDisplayText(value, language) : value);
 
-  return data.map((item: any) => ({
+  return rows.map((item: any) => ({
     id: item.id,
     slug: item.slug,
     title: localize(pickLocalizedText(item, "title", language)),

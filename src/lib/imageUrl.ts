@@ -3,6 +3,8 @@ import { isSupabasePublicObjectUrl, toSupabaseRenderImageUrl } from "@/lib/supab
 const STATIC_SITE_HOSTS = new Set(["flashcast.com.my", "www.flashcast.com.my"]);
 const STATIC_IMAGE_PATH_PATTERN = /^\/(?:images|videos)\//i;
 const ROOT_STATIC_IMAGE_PATTERN = /^\/(?:logo-flashcast|og-image)\.(?:webp|png|jpe?g)$/i;
+const BUILT_IN_ROOT_LOGO_PATTERN = /^\/logo-flashcast\.(?:webp|png)([?#].*)?$/i;
+const BUILT_IN_VERSIONED_LOGO_PATH = "/logo-flashcast-20260605.webp";
 
 export function toLocalStaticImageSrc(src: string): string {
   if (!src || src.startsWith("data:") || src.startsWith("blob:")) return src;
@@ -27,8 +29,9 @@ export function toLocalStaticImageSrc(src: string): string {
 /** Prefer .webp for local/static image URLs when the path uses jpg/jpeg/png. */
 export function preferWebpSrc(src: string): string {
   if (!src || src.startsWith("data:") || src.startsWith("blob:")) return src;
+  const builtInLogoMatch = src.match(BUILT_IN_ROOT_LOGO_PATTERN);
+  if (builtInLogoMatch) return `${BUILT_IN_VERSIONED_LOGO_PATH}${builtInLogoMatch[1] ?? ""}`;
   if (/\.webp(\?|#|$)/i.test(src)) return src;
-  if (ROOT_STATIC_IMAGE_PATTERN.test(src)) return src;
   return src.replace(/\.(jpe?g|png)(\?[^#]*)?($|#)/i, ".webp$2$3");
 }
 

@@ -1,9 +1,15 @@
 import type { UnknownRecord } from "@/lib/recordUtils";
 
 export type PublicDataPayload = {
+  siteSettings?: UnknownRecord;
   projectSummaries?: UnknownRecord[];
   projectDetails?: Record<string, UnknownRecord>;
   homeContentBundle?: UnknownRecord;
+  sitePages?: Record<string, UnknownRecord>;
+  services?: UnknownRecord[];
+  materials?: UnknownRecord[];
+  blogPosts?: UnknownRecord[];
+  ctaBlocks?: Record<string, UnknownRecord>;
 };
 
 let preloadedPublicData: PublicDataPayload | null | undefined;

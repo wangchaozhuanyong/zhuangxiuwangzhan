@@ -2,8 +2,10 @@ import fs from "node:fs";
 import path from "node:path";
 
 const ROOT = process.cwd();
-const SOURCE_ROOT = path.join(ROOT, "public", "images", "projects");
-const OUTPUT_ROOT = path.join(ROOT, "public", "images", "_responsive", "projects");
+const IMAGE_FOLDERS = (process.env.RESPONSIVE_IMAGE_FOLDERS || "projects,services,materials,heroes,before-after")
+  .split(",")
+  .map((value) => value.trim())
+  .filter(Boolean);
 const WIDTHS = (process.env.PROJECT_IMAGE_WIDTHS || "360,560,720,900,1200")
   .split(",")
   .map((value) => Number(value.trim()))
@@ -38,33 +40,36 @@ const isFresh = (source, target) => {
 };
 
 async function generateVariant(source, width) {
-  const relative = path.relative(SOURCE_ROOT, source);
-  const target = path.join(OUTPUT_ROOT, `w${width}`, relative);
+  const relative = path.relative(source.root, source.file);
+  const target = path.join(ROOT, "public", "images", "_responsive", source.folder, `w${width}`, relative);
 
-  if (isFresh(source, target)) {
-    report.skipped.push({ source: path.relative(ROOT, source), target: path.relative(ROOT, target), width });
+  if (isFresh(source.file, target)) {
+    report.skipped.push({ source: path.relative(ROOT, source.file), target: path.relative(ROOT, target), width });
     return;
   }
 
   try {
     fs.mkdirSync(path.dirname(target), { recursive: true });
-    await sharp(source)
+    await sharp(source.file)
       .resize({ width, withoutEnlargement: true })
       .webp({ quality: QUALITY, effort: 4 })
       .toFile(target);
-    report.generated.push({ source: path.relative(ROOT, source), target: path.relative(ROOT, target), width });
+    report.generated.push({ source: path.relative(ROOT, source.file), target: path.relative(ROOT, target), width });
   } catch (error) {
     report.failed.push({
-      source: path.relative(ROOT, source),
+      source: path.relative(ROOT, source.file),
       width,
       error: error instanceof Error ? error.message : String(error),
     });
   }
 }
 
-for (const source of walk(SOURCE_ROOT)) {
-  for (const width of WIDTHS) {
-    await generateVariant(source, width);
+for (const folder of IMAGE_FOLDERS) {
+  const root = path.join(ROOT, "public", "images", folder);
+  for (const file of walk(root)) {
+    for (const width of WIDTHS) {
+      await generateVariant({ folder, root, file }, width);
+    }
   }
 }
 
@@ -72,6 +77,7 @@ console.log(
   JSON.stringify(
     {
       ok: report.failed.length === 0,
+      folders: IMAGE_FOLDERS,
       widths: WIDTHS,
       quality: QUALITY,
       summary: {

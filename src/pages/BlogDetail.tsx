@@ -19,6 +19,8 @@ import { translateBlogCategory, translateKeywordLabel, translateDisplayText } fr
 import { formatBlogDate, formatBlogReadTime } from "@/lib/blogMeta";
 import { blogDetailPageText } from "@/i18n/blogDetailPageText";
 
+const BLOG_HERO_IMAGE_WIDTHS = [720, 900, 1200];
+const RELATED_BLOG_IMAGE_WIDTHS = [360, 560, 720];
 
 
 
@@ -129,7 +131,7 @@ const BlogDetail = () => {
 
       <section className="page-hero page-hero--detail">
         <div className="page-hero__media absolute inset-0">
-          <SmartImage src={post.image} alt={displayText(post.title)} className="page-hero__image h-full w-full object-cover" width={1920} height={800} loading="eager" fetchPriority="high" />
+          <SmartImage src={post.image} alt={displayText(post.title)} className="page-hero__image h-full w-full object-cover" width={1920} height={800} loading="eager" fetchPriority="high" sizes="100vw" candidateWidths={BLOG_HERO_IMAGE_WIDTHS} quality={76} />
           <div className="page-hero__overlay absolute inset-0 media-readable-overlay" aria-hidden="true" />
         </div>
         <div className="page-hero__content site-container max-w-3xl">
@@ -212,7 +214,7 @@ const BlogDetail = () => {
               <Reveal key={item.id} delay={index * 70} direction="none">
                 <Link to={`/blog/${item.slug}`} className="card-equal group luxury-card hover-lift">
                   <div className="aspect-[16/10] overflow-hidden img-zoom">
-                    <SmartImage src={item.image} alt={item.title} loading="lazy" width={400} height={300} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+                    <SmartImage src={item.image} alt={item.title} loading="lazy" width={400} height={300} sizes="(max-width: 640px) 92vw, 30vw" candidateWidths={RELATED_BLOG_IMAGE_WIDTHS} quality={72} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
                   </div>
                   <div className="card-equal-body p-4">
                     <span className="text-limit-1 text-accent text-xs font-medium">{translateBlogCategory(item.category, language)}</span>

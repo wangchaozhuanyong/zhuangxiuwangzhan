@@ -4,6 +4,8 @@ import {
   hasSiteSettingsDatabaseClient,
   upsertDefaultSiteSettingsRecord,
 } from "@/backend/modules/settings/repository/siteSettingsRepository";
+import { readPreloadedPublicData } from "@/lib/publicPreload";
+import { toRecord } from "@/lib/recordUtils";
 
 export type SiteSettings = {
   updated_at?: string;
@@ -48,6 +50,50 @@ export const addCacheBuster = (url: string, version?: string) => {
 
 export const DEFAULT_FAVICON_URL = "/favicon-20260604.png";
 export const DEFAULT_TOUCH_ICON_URL = "/apple-touch-icon-20260604.png";
+const DEFAULT_LOGO_PNG_PATH = "/logo-flashcast.png";
+const DEFAULT_LOGO_WEBP_PATH = "/logo-flashcast.webp";
+const DEFAULT_LOGO_VERSIONED_WEBP_PATH = "/logo-flashcast-20260605.webp";
+const STATIC_SITE_HOSTS = new Set(["flashcast.com.my", "www.flashcast.com.my"]);
+
+const getConfiguredSiteHost = () => {
+  try {
+    return new URL(siteConfig.url).hostname.toLowerCase();
+  } catch {
+    return "";
+  }
+};
+
+export const normalizeBuiltInLogoUrl = (url: string) => {
+  if (!url) return url;
+
+  const trimmed = url.trim();
+  const isRootRelative = trimmed.startsWith("/") && !trimmed.startsWith("//");
+
+  try {
+    const parsed = new URL(trimmed, siteConfig.url);
+    const host = parsed.hostname.toLowerCase();
+    const configuredSiteHost = getConfiguredSiteHost();
+    const isKnownSiteLogo =
+      isRootRelative ||
+      STATIC_SITE_HOSTS.has(host) ||
+      (configuredSiteHost ? host === configuredSiteHost : false);
+
+    if (
+      isKnownSiteLogo &&
+      (parsed.pathname.toLowerCase() === DEFAULT_LOGO_PNG_PATH ||
+        parsed.pathname.toLowerCase() === DEFAULT_LOGO_WEBP_PATH)
+    ) {
+      parsed.pathname = DEFAULT_LOGO_VERSIONED_WEBP_PATH;
+      return isRootRelative ? `${parsed.pathname}${parsed.search}${parsed.hash}` : parsed.toString();
+    }
+  } catch {
+    if (/^\/logo-flashcast\.(?:png|webp)(?:[?#]|$)/i.test(trimmed)) {
+      return trimmed.replace(/\/logo-flashcast\.(?:png|webp)/i, DEFAULT_LOGO_VERSIONED_WEBP_PATH);
+    }
+  }
+
+  return url;
+};
 
 const hasIconExtension = (url: string | null | undefined, extensions: string[]) => {
   if (!url) return false;
@@ -129,9 +175,11 @@ export const resolveSiteSettings = (
   const whatsappNumber = normalizeWhatsAppNumber(merged.whatsapp_number || phoneE164);
   const address = language === "zh" ? merged.address_zh || merged.address_en : merged.address_en || merged.address_zh;
   const shortAddress = language === "zh" ? merged.short_address_zh || merged.short_address_en : merged.short_address_en || merged.short_address_zh;
+  const logoUrl = normalizeBuiltInLogoUrl(merged.logo_url);
 
   return {
     ...merged,
+    logo_url: logoUrl,
     phone_href: normalizePhoneHref(phoneE164),
     whatsapp_url: (message?: string) => {
       const baseUrl = `https://wa.me/${whatsappNumber}`;
@@ -143,6 +191,11 @@ export const resolveSiteSettings = (
 };
 
 export const fetchSiteSettings = async () => {
+  const preloadedSiteSettings = toRecord(readPreloadedPublicData()?.siteSettings);
+  if (Object.keys(preloadedSiteSettings).length) {
+    return { ...fallbackSiteSettings, ...preloadedSiteSettings } as SiteSettings;
+  }
+
   if (!hasSiteSettingsDatabaseClient()) return fallbackSiteSettings;
 
   const data = await fetchDefaultSiteSettingsRecord();

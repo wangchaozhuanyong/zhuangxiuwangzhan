@@ -6,6 +6,7 @@ import type { ReactNode } from "react";
 import { ArrowLeft } from "lucide-react";
 import LocalizedLink from "@/components/LocalizedLink";
 import SmartImage from "@/components/SmartImage";
+import { buildLocalResponsiveSrcSet, isLocalResponsiveImageCandidate } from "@/lib/localResponsiveImage";
 import { cn } from "@/lib/utils";
 
 interface HeroBannerProps {
@@ -24,6 +25,9 @@ interface HeroBannerProps {
   className?: string;
 }
 
+const HERO_IMAGE_WIDTHS = [720, 900, 1200];
+const HERO_MOBILE_IMAGE_WIDTHS = [560, 720, 900];
+
 const HeroBanner = ({
   image,
   imageMobile,
@@ -39,6 +43,11 @@ const HeroBanner = ({
   align = "start",
   className,
 }: HeroBannerProps) => {
+  const mobileSrcSet =
+    imageMobile && isLocalResponsiveImageCandidate(imageMobile)
+      ? buildLocalResponsiveSrcSet(imageMobile, HERO_MOBILE_IMAGE_WIDTHS) ?? imageMobile
+      : imageMobile;
+
   return (
     <section
       className={cn(
@@ -50,7 +59,7 @@ const HeroBanner = ({
     >
       <div className="page-hero__media absolute inset-0">
         <picture className="block h-full w-full">
-          {imageMobile ? <source media="(max-width: 767px)" srcSet={imageMobile} /> : null}
+          {imageMobile ? <source media="(max-width: 767px)" srcSet={mobileSrcSet} sizes="100vw" /> : null}
           <SmartImage
             src={image}
             alt={imageAlt}
@@ -59,6 +68,9 @@ const HeroBanner = ({
             fetchPriority="high"
             width={1920}
             height={800}
+            sizes="100vw"
+            candidateWidths={HERO_IMAGE_WIDTHS}
+            quality={76}
           />
         </picture>
         <div className="page-hero__overlay absolute inset-0 media-readable-overlay" aria-hidden="true" />

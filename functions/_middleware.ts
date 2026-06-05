@@ -29,6 +29,7 @@ type SiteSettingsHead = {
 type ProjectSummaryRow = Record<string, unknown>;
 type ProjectDetailRow = Record<string, unknown>;
 type HomeContentBundleRow = Record<string, unknown>;
+type PublicDataRow = Record<string, unknown>;
 
 type PagesEnv = {
   [key: string]: unknown;
@@ -40,6 +41,9 @@ type PagesEnv = {
 };
 
 const DEFAULT_OG_IMAGE = (manifest as Record<string, SeoEntry>)["/en"]?.ogImage ?? "";
+const DEFAULT_LOGO_PNG_PATH = "/logo-flashcast.png";
+const DEFAULT_LOGO_WEBP_PATH = "/logo-flashcast.webp";
+const DEFAULT_LOGO_VERSIONED_WEBP_PATH = "/logo-flashcast-20260605.webp";
 const DEFAULT_FAVICON = "/favicon-20260604.png";
 const DEFAULT_TOUCH_ICON = "/apple-touch-icon-20260604.png";
 const DEFAULT_ADDRESS = "94, Jalan Mega Mendung, Taman United, 58200 Kuala Lumpur, Malaysia";
@@ -53,6 +57,7 @@ const SITE_SETTINGS_CACHE_TTL_MS = 5 * 60 * 1000;
 const PUBLIC_PROJECT_SUMMARIES_CACHE_TTL_MS = 5 * 60 * 1000;
 const PUBLIC_PROJECT_DETAIL_CACHE_TTL_MS = 5 * 60 * 1000;
 const PUBLIC_HOME_BUNDLE_CACHE_TTL_MS = 5 * 60 * 1000;
+const PUBLIC_PAGE_DATA_CACHE_TTL_MS = 5 * 60 * 1000;
 const HERO_MEDIA_VERSION = "20260531-mobile-source-fix";
 const HTML_CACHE_DEBUG_HEADER = "x-flashcast-html-cache";
 type HtmlCacheDebugState = "hit" | "miss" | "bypass-admin" | "bypass-not-found";
@@ -89,6 +94,8 @@ let homeContentBundleCache:
     }
   | null = null;
 
+const publicRowsCache = new Map<string, { value: PublicDataRow[] | null; expiresAt: number }>();
+
 const PROJECT_SUMMARY_SELECT = [
   "id",
   "slug",
@@ -120,6 +127,35 @@ const addCacheBuster = (url: string, version?: string | null) => {
   } catch {
     return url;
   }
+};
+
+const normalizeBuiltInLogoUrl = (url: string | null | undefined, origin = "https://flashcast.com.my") => {
+  if (!url) return url;
+
+  const trimmed = url.trim();
+  const isRootRelative = trimmed.startsWith("/") && !trimmed.startsWith("//");
+
+  try {
+    const parsed = new URL(trimmed, origin);
+    const originHost = new URL(origin).hostname.toLowerCase();
+    const host = parsed.hostname.toLowerCase();
+    const isKnownSiteLogo = isRootRelative || host === originHost || host === "flashcast.com.my" || host === "www.flashcast.com.my";
+
+    if (
+      isKnownSiteLogo &&
+      (parsed.pathname.toLowerCase() === DEFAULT_LOGO_PNG_PATH ||
+        parsed.pathname.toLowerCase() === DEFAULT_LOGO_WEBP_PATH)
+    ) {
+      parsed.pathname = DEFAULT_LOGO_VERSIONED_WEBP_PATH;
+      return isRootRelative ? `${parsed.pathname}${parsed.search}${parsed.hash}` : parsed.toString();
+    }
+  } catch {
+    if (/^\/logo-flashcast\.(?:png|webp)(?:[?#]|$)/i.test(trimmed)) {
+      return trimmed.replace(/\/logo-flashcast\.(?:png|webp)/i, DEFAULT_LOGO_VERSIONED_WEBP_PATH);
+    }
+  }
+
+  return url;
 };
 
 const HEAD_ICON_LINK_PATTERN =
@@ -282,7 +318,7 @@ const buildEdgeStructuredData = (meta: SeoEntry, siteSettings?: SiteSettingsHead
   const canonical = new URL(meta.canonical);
   const origin = canonical.origin;
   const siteName = siteSettings?.company_name || siteSettings?.brand_name || "FLASH CAST SDN. BHD.";
-  const logo = siteSettings?.logo_url || `${origin}/logo-flashcast.png`;
+  const logo = normalizeBuiltInLogoUrl(siteSettings?.logo_url, origin) || `${origin}${DEFAULT_LOGO_VERSIONED_WEBP_PATH}`;
   const image = siteSettings?.og_image_url || meta.ogImage || DEFAULT_OG_IMAGE;
   const lang = meta.lang === "zh" ? "zh-CN" : "en";
   const businessId = `${origin}/#localbusiness`;
@@ -416,7 +452,8 @@ const fetchSiteSettings = async (env: Record<string, string | undefined>) => {
     if (!response.ok) return null;
 
     const rows = (await response.json()) as SiteSettingsHead[];
-    const value = rows[0] ?? null;
+    const row = rows[0] ?? null;
+    const value = row ? { ...row, logo_url: normalizeBuiltInLogoUrl(row.logo_url) } : null;
     siteSettingsCache = {
       key: cacheKey,
       value,
@@ -503,6 +540,102 @@ const fetchHomeContentBundle = async (env: Record<string, string | undefined>) =
   }
 };
 
+const fetchPublicRows = async (
+  env: Record<string, string | undefined>,
+  cacheKey: string,
+  table: string,
+  configureUrl: (url: URL) => void,
+) => {
+  const supabaseUrl = env.VITE_SUPABASE_URL;
+  const supabaseAnonKey = env.VITE_SUPABASE_ANON_KEY;
+
+  if (!supabaseUrl || !supabaseAnonKey) return null;
+  const key = `${supabaseUrl}:${cacheKey}`;
+  const now = Date.now();
+  const cached = publicRowsCache.get(key);
+  if (cached && cached.expiresAt > now) {
+    return cached.value;
+  }
+
+  try {
+    const url = new URL(`${supabaseUrl}/rest/v1/${table}`);
+    configureUrl(url);
+
+    const response = await fetch(url.toString(), {
+      headers: {
+        apikey: supabaseAnonKey,
+        Authorization: `Bearer ${supabaseAnonKey}`,
+      },
+    });
+
+    if (!response.ok) return null;
+
+    const value = (await response.json()) as PublicDataRow[];
+    publicRowsCache.set(key, {
+      value,
+      expiresAt: now + PUBLIC_PAGE_DATA_CACHE_TTL_MS,
+    });
+    return value;
+  } catch {
+    return null;
+  }
+};
+
+const fetchPublicServices = async (env: Record<string, string | undefined>) =>
+  fetchPublicRows(env, "services", "services", (url) => {
+    url.searchParams.set("select", "*");
+    url.searchParams.set("status", "eq.published");
+    url.searchParams.set("order", "sort_order.asc");
+  });
+
+const fetchPublicMaterials = async (env: Record<string, string | undefined>) =>
+  fetchPublicRows(env, "materials", "materials", (url) => {
+    url.searchParams.set("select", "*");
+    url.searchParams.set("status", "eq.published");
+    url.searchParams.set("order", "sort_order.asc");
+  });
+
+const fetchPublicBlogPosts = async (env: Record<string, string | undefined>) =>
+  fetchPublicRows(env, "blog_posts", "blog_posts", (url) => {
+    url.searchParams.set("select", "*");
+    url.searchParams.set("status", "eq.published");
+    url.searchParams.set("order", "published_at.desc");
+  });
+
+const fetchPublicSitePageBundle = async (env: Record<string, string | undefined>, pageKey: string) => {
+  if (!pageKey) return null;
+  const [legacyRows, cmsRows] = await Promise.all([
+    fetchPublicRows(env, `site_pages:${pageKey}`, "site_pages", (url) => {
+      url.searchParams.set("select", "*");
+      url.searchParams.set("status", "eq.published");
+      url.searchParams.set("page_key", `eq.${pageKey}`);
+      url.searchParams.set("limit", "1");
+    }),
+    fetchPublicRows(env, `cms_pages:${pageKey}`, "cms_pages", (url) => {
+      url.searchParams.set("select", "*,cms_sections(*)");
+      url.searchParams.set("status", "eq.published");
+      url.searchParams.set("deleted_at", "is.null");
+      url.searchParams.set("page_key", `eq.${pageKey}`);
+      url.searchParams.set("limit", "1");
+    }),
+  ]);
+
+  const bundle: PublicDataRow = {};
+  if (legacyRows?.length) bundle.site_pages = legacyRows;
+  if (cmsRows?.length) bundle.cms_pages = cmsRows;
+  return Object.keys(bundle).length ? bundle : null;
+};
+
+const fetchPublicCtaBlock = async (env: Record<string, string | undefined>, blockKey: string) => {
+  const rows = await fetchPublicRows(env, `cta_blocks:${blockKey}`, "cta_blocks", (url) => {
+    url.searchParams.set("select", "*");
+    url.searchParams.set("status", "eq.published");
+    url.searchParams.set("block_key", `eq.${blockKey}`);
+    url.searchParams.set("limit", "1");
+  });
+  return rows?.[0] ?? null;
+};
+
 const fetchProjectDetailBySlug = async (env: Record<string, string | undefined>, slug: string) => {
   const supabaseUrl = env.VITE_SUPABASE_URL;
   const supabaseAnonKey = env.VITE_SUPABASE_ANON_KEY;
@@ -551,6 +684,33 @@ const normalizePath = (pathname: string) => {
 
 const isHomePageKey = (key: string) => key === "/en" || key === "/zh";
 
+const getTopLevelPublicPageKey = (key: string) => {
+  const parts = key.split("/").filter(Boolean);
+  if (parts.length !== 2) return null;
+  const pageKey = parts[1];
+  return pageKey === "services" || pageKey === "materials" || pageKey === "blog" || pageKey === "projects" ? pageKey : null;
+};
+
+const getPathWithoutLanguage = (key: string) => {
+  const parts = key.split("/").filter(Boolean);
+  const pathParts = parts.slice(1);
+  return pathParts.length ? `/${pathParts.join("/")}` : "/";
+};
+
+const shouldPreloadFooterCtaBlock = (key: string) => {
+  const path = getPathWithoutLanguage(key);
+  const hasDedicatedSubpageCta =
+    path === "/services" ||
+    path.startsWith("/services/") ||
+    path === "/projects" ||
+    path === "/materials" ||
+    path.startsWith("/materials/category/") ||
+    path === "/faq" ||
+    path.startsWith("/landing/");
+
+  return path !== "/" && !hasDedicatedSubpageCta;
+};
+
 const getProjectDetailSlugFromKey = (key: string) => {
   const match = key.match(/^\/(?:en|zh)\/projects\/([^/]+)$/);
   if (!match?.[1]) return null;
@@ -585,11 +745,17 @@ const isLanguagePrefixedPath = (pathname: string) => /^\/(en|zh)(?:\/|$)/.test(p
 
 const getLegacyCanonicalPath = (pathname: string) => {
   const cleaned = pathname.replace(/\/+$/, "") || "/";
+  // Keep the root document crawlable for ownership verification bots. The SPA
+  // still sends visitors to the default language route after hydration.
+  if (cleaned === "/") {
+    return null;
+  }
+
   if (isLanguagePrefixedPath(cleaned) || cleaned === "/admin" || cleaned.startsWith("/admin/")) {
     return null;
   }
 
-  const englishPath = cleaned === "/" ? "/en" : `/en${cleaned}`;
+  const englishPath = `/en${cleaned}`;
   return (manifest as Record<string, SeoEntry>)[englishPath] ? englishPath : null;
 };
 
@@ -605,9 +771,10 @@ const injectSeo = (html: string, meta: SeoEntry, siteSettings?: SiteSettingsHead
   const siteName = escapeHtml(siteSettings?.company_name || siteSettings?.brand_name || "FLASH CAST SDN. BHD.");
   const version = siteSettings?.updated_at || undefined;
   const { favicon, touchIcon } = resolveHeadIcons(siteSettings);
+  const defaultOgImage = siteSettings?.og_image_url || normalizeBuiltInLogoUrl(siteSettings?.logo_url, canonical.origin) || meta.ogImage;
   const ogImage =
     meta.ogImage === DEFAULT_OG_IMAGE
-      ? escapeHtml(addCacheBuster(siteSettings?.og_image_url || siteSettings?.logo_url || meta.ogImage, version))
+      ? escapeHtml(addCacheBuster(defaultOgImage, version))
       : escapeHtml(meta.ogImage);
   const lang = meta.lang === "zh" ? "zh-CN" : "en";
 
@@ -651,7 +818,7 @@ const injectBrandAssets = (html: string, siteSettings?: SiteSettingsHead | null)
 
   const version = siteSettings.updated_at || undefined;
   const { favicon, touchIcon } = resolveHeadIcons(siteSettings);
-  const ogImage = escapeHtml(addCacheBuster(siteSettings.og_image_url || siteSettings.logo_url || DEFAULT_OG_IMAGE, version));
+  const ogImage = escapeHtml(addCacheBuster(siteSettings.og_image_url || normalizeBuiltInLogoUrl(siteSettings.logo_url) || DEFAULT_OG_IMAGE, version));
   const siteName = escapeHtml(siteSettings.company_name || siteSettings.brand_name || "FLASH CAST SDN. BHD.");
 
   let out = html;
@@ -662,8 +829,14 @@ const injectBrandAssets = (html: string, siteSettings?: SiteSettingsHead | null)
 };
 
 const STATIC_PATH_PREFIXES = ["/assets/", "/images/", "/videos/"];
+const BAIDU_VERIFY_PATH = "/baidu_verify_codeva-XKTTMi4PYh.html";
+const BAIDU_VERIFY_HTML = "codeva-XKTTMi4PYh";
+const STATIC_FILE_PATHS = new Set([
+  BAIDU_VERIFY_PATH,
+]);
 
 const isAssetPath = (pathname: string) =>
+  STATIC_FILE_PATHS.has(pathname) ||
   STATIC_PATH_PREFIXES.some((prefix) => pathname.startsWith(prefix)) ||
   (/\.[a-z0-9]+$/i.test(pathname) && !pathname.endsWith(".html"));
 
@@ -731,6 +904,15 @@ export const onRequest: PagesFunction = async (context) => {
     return redirect(url);
   }
 
+  if (url.pathname === BAIDU_VERIFY_PATH) {
+    return new Response(BAIDU_VERIFY_HTML, {
+      headers: {
+        "content-type": "text/plain; charset=utf-8",
+        "cache-control": "public, max-age=60, stale-while-revalidate=300",
+      },
+    });
+  }
+
   if (isAssetPath(url.pathname)) {
     return next();
   }
@@ -773,18 +955,44 @@ export const onRequest: PagesFunction = async (context) => {
   }
 
   const projectDetailSlug = getProjectDetailSlugFromKey(key);
+  const topLevelPublicPageKey = getTopLevelPublicPageKey(key);
   const shouldInjectHomeBundle = Boolean(meta && isHomePageKey(key));
   const shouldInjectProjectSummaries = Boolean(meta && (key === "/en/projects" || key === "/zh/projects" || projectDetailSlug));
-  const [siteSettings, homeContentBundle, projectSummaries, projectDetail] = await Promise.all([
+  const shouldInjectPublicPageBundle = Boolean(meta && topLevelPublicPageKey);
+  const shouldInjectServices = topLevelPublicPageKey === "services";
+  const shouldInjectMaterials = topLevelPublicPageKey === "materials";
+  const shouldInjectBlogPosts = topLevelPublicPageKey === "blog";
+  const shouldInjectGlobalCtaBlock = Boolean(meta && shouldPreloadFooterCtaBlock(key));
+  const [
+    siteSettings,
+    homeContentBundle,
+    projectSummaries,
+    projectDetail,
+    publicPageBundle,
+    services,
+    materials,
+    blogPosts,
+    footerCtaBlock,
+  ] = await Promise.all([
     fetchSiteSettings(env as Record<string, string | undefined>),
     shouldInjectHomeBundle ? fetchHomeContentBundle(env as Record<string, string | undefined>) : Promise.resolve(null),
     shouldInjectProjectSummaries ? fetchProjectSummaries(env as Record<string, string | undefined>) : Promise.resolve(null),
     projectDetailSlug ? fetchProjectDetailBySlug(env as Record<string, string | undefined>, projectDetailSlug) : Promise.resolve(null),
+    shouldInjectPublicPageBundle && topLevelPublicPageKey
+      ? fetchPublicSitePageBundle(env as Record<string, string | undefined>, topLevelPublicPageKey)
+      : Promise.resolve(null),
+    shouldInjectServices ? fetchPublicServices(env as Record<string, string | undefined>) : Promise.resolve(null),
+    shouldInjectMaterials ? fetchPublicMaterials(env as Record<string, string | undefined>) : Promise.resolve(null),
+    shouldInjectBlogPosts ? fetchPublicBlogPosts(env as Record<string, string | undefined>) : Promise.resolve(null),
+    shouldInjectGlobalCtaBlock ? fetchPublicCtaBlock(env as Record<string, string | undefined>, "home_final") : Promise.resolve(null),
   ]);
 
   const html = await response.text();
   let transformed = meta ? injectSeo(html, meta, siteSettings) : injectNoIndexNotFound(html, siteSettings);
   const publicDataPayload: Record<string, unknown> = {};
+  if (siteSettings) {
+    publicDataPayload.siteSettings = siteSettings;
+  }
   if (homeContentBundle && Object.keys(homeContentBundle).length) {
     publicDataPayload.homeContentBundle = homeContentBundle;
   }
@@ -794,6 +1002,25 @@ export const onRequest: PagesFunction = async (context) => {
   if (projectDetailSlug && projectDetail) {
     publicDataPayload.projectDetails = {
       [projectDetailSlug]: projectDetail,
+    };
+  }
+  if (topLevelPublicPageKey && publicPageBundle) {
+    publicDataPayload.sitePages = {
+      [topLevelPublicPageKey]: publicPageBundle,
+    };
+  }
+  if (services?.length) {
+    publicDataPayload.services = services;
+  }
+  if (materials?.length) {
+    publicDataPayload.materials = materials;
+  }
+  if (blogPosts?.length) {
+    publicDataPayload.blogPosts = blogPosts;
+  }
+  if (footerCtaBlock) {
+    publicDataPayload.ctaBlocks = {
+      home_final: footerCtaBlock,
     };
   }
   if (Object.keys(publicDataPayload).length) {

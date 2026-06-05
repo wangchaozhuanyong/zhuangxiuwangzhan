@@ -10,12 +10,13 @@ import { formatHomeSectionText, homeSectionText } from "@/i18n/homeSectionsText"
 import { usePublishedBeforeAfterItems } from "@/hooks/usePublishedContent";
 import type { PublishedBeforeAfterItem } from "@/lib/homeContentApi";
 
-import beforeKitchen from "@/assets/before-after/before-kitchen.webp";
-import afterKitchen from "@/assets/before-after/after-kitchen.webp";
-import beforeLiving from "@/assets/before-after/before-living.webp";
-import afterLiving from "@/assets/before-after/after-living.webp";
-import beforeBathroom from "@/assets/before-after/before-bathroom.webp";
-import afterBathroom from "@/assets/before-after/after-bathroom.webp";
+const beforeKitchen = "/images/before-after/before-kitchen.webp";
+const afterKitchen = "/images/before-after/after-kitchen.webp";
+const beforeLiving = "/images/before-after/before-living.webp";
+const afterLiving = "/images/before-after/after-living.webp";
+const beforeBathroom = "/images/before-after/before-bathroom.webp";
+const afterBathroom = "/images/before-after/after-bathroom.webp";
+const BEFORE_AFTER_IMAGE_WIDTHS = [360, 560, 720];
 
 const fallbackComparisonMedia = [
   { before: beforeKitchen, after: afterKitchen },
@@ -133,6 +134,8 @@ const BeforeAfterSlider = ({
         width={800}
         height={600}
         sizes="(max-width: 768px) 92vw, 30vw"
+        candidateWidths={BEFORE_AFTER_IMAGE_WIDTHS}
+        quality={72}
       />
       <div className="absolute inset-0 overflow-hidden" style={{ width: `${position}%` }}>
         <SmartImage
@@ -143,6 +146,8 @@ const BeforeAfterSlider = ({
           width={800}
           height={600}
           sizes="(max-width: 768px) 92vw, 30vw"
+          candidateWidths={BEFORE_AFTER_IMAGE_WIDTHS}
+          quality={72}
         />
       </div>
       <div className="absolute bottom-0 top-0 w-0.5 bg-white/90 shadow-[0_0_20px_rgba(0,0,0,0.25)]" style={{ left: `${position}%`, transform: "translateX(-50%)" }}>

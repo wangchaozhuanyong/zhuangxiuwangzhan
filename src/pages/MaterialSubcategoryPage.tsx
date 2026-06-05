@@ -16,6 +16,7 @@ import { translateDisplayText, translateMaterialCategory, translateMaterialSubca
 import { mergeMaterialCategoriesWithFallback } from "@/lib/materialCatalog";
 import { materialSubcategoryPageText } from "@/i18n/materialSubcategoryPageText";
 
+const MATERIAL_TILE_IMAGE_WIDTHS = [360, 560, 720];
 
 
 const MaterialSubcategoryPage = () => {
@@ -85,7 +86,7 @@ const MaterialSubcategoryPage = () => {
                 <Reveal key={item.id} delay={index * 60} direction="none">
                   <article className="material-depth-card luxury-card group hover-lift">
                     <div className="material-depth-card__media img-zoom">
-                      <SmartImage src={item.image} alt={item.alt || translateDisplayText(item.name, language)} loading="lazy" width={400} height={400} className="w-full h-full object-cover" />
+                      <SmartImage src={item.image} alt={item.alt || translateDisplayText(item.name, language)} loading="lazy" width={400} height={400} sizes="(max-width: 640px) 46vw, (max-width: 1024px) 30vw, 23vw" candidateWidths={MATERIAL_TILE_IMAGE_WIDTHS} quality={72} className="w-full h-full object-cover" />
                     </div>
                     <div className="material-depth-card__body">
                       <h3 className="material-depth-card__title">{translateDisplayText(item.name, language)}</h3>

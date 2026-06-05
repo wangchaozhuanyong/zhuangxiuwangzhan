@@ -10,9 +10,14 @@ import FAQSection from "@/components/blocks/FAQSection";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { useSiteSettings } from "@/hooks/useSiteSettings";
 import beforeAfterImg from "@/assets/old-house-before-after.webp";
-import oldHouseServiceImg from "@/assets/services/old-house-renovation.webp";
 import { pageHeroImages } from "@/lib/pageHeroImages";
+import { buildLocalResponsiveSrcSet } from "@/lib/localResponsiveImage";
 import { oldHouseRenovationPageText } from "@/i18n/oldHouseRenovationPageText";
+
+const OLD_HOUSE_HERO_IMAGE_WIDTHS = [720, 900, 1200];
+const OLD_HOUSE_MOBILE_HERO_IMAGE_WIDTHS = [560, 720, 900];
+const OLD_HOUSE_CONTENT_IMAGE_WIDTHS = [560, 720, 900];
+const oldHouseServiceImg = "/images/services/old-house-renovation.webp";
 
 const challengeIcons = {
   alert: AlertTriangle,
@@ -25,6 +30,9 @@ const OldHouseRenovation = () => {
   const { language } = useLanguage();
   const settings = useSiteSettings();
   const t = oldHouseRenovationPageText[language];
+  const mobileHeroSrcSet =
+    buildLocalResponsiveSrcSet(pageHeroImages.oldHouse.mobile, OLD_HOUSE_MOBILE_HERO_IMAGE_WIDTHS) ??
+    pageHeroImages.oldHouse.mobile;
 
   return (
     <main className="pt-site-header">
@@ -34,8 +42,8 @@ const OldHouseRenovation = () => {
       <section className="page-hero page-hero--detail">
         <div className="page-hero__media absolute inset-0">
           <picture className="block h-full w-full">
-            <source media="(max-width: 767px)" srcSet={pageHeroImages.oldHouse.mobile} />
-            <SmartImage src={pageHeroImages.oldHouse.desktop} alt={t.heroAlt} className="page-hero__image h-full w-full object-cover" width={1920} height={720} loading="eager" fetchPriority="high" />
+            <source media="(max-width: 767px)" srcSet={mobileHeroSrcSet} sizes="100vw" />
+            <SmartImage src={pageHeroImages.oldHouse.desktop} alt={t.heroAlt} className="page-hero__image h-full w-full object-cover" width={1920} height={720} loading="eager" fetchPriority="high" sizes="100vw" candidateWidths={OLD_HOUSE_HERO_IMAGE_WIDTHS} quality={76} />
           </picture>
           <div className="page-hero__overlay absolute inset-0 media-readable-overlay" aria-hidden="true" />
         </div>
@@ -110,7 +118,7 @@ const OldHouseRenovation = () => {
         <div className="container-narrow grid grid-cols-1 lg:grid-cols-2 gap-10 items-center">
           <Reveal direction="left">
             <div className="img-zoom overflow-hidden rounded-card-lg">
-              <SmartImage src={oldHouseServiceImg} alt={t.serviceAlt} loading="lazy" width={960} height={720} className="aspect-[4/3] w-full object-cover" />
+              <SmartImage src={oldHouseServiceImg} alt={t.serviceAlt} loading="lazy" width={960} height={720} sizes="(max-width: 1024px) 92vw, 45vw" candidateWidths={OLD_HOUSE_CONTENT_IMAGE_WIDTHS} quality={72} className="aspect-[4/3] w-full object-cover" />
             </div>
           </Reveal>
           <Reveal direction="right" delay={120}>

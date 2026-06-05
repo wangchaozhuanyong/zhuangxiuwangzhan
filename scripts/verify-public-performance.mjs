@@ -12,31 +12,61 @@ const pages = [
   {
     name: "home",
     path: "/zh",
+    requireSiteSettingsPreload: true,
     requireHomeBundlePreload: true,
     maxHomeBundleFetches: 0,
+    maxSupabaseRestFetches: 0,
     highRiskDynamicImages: true,
     minSupabaseImagesBeforeLateThreshold: 4,
   },
   {
     name: "projects",
     path: "/zh/projects",
+    requireSiteSettingsPreload: true,
+    requireSitePagePreload: "projects",
     requireProjectSummariesPreload: true,
     maxProjectRestFetches: 0,
+    maxSupabaseRestFetches: 0,
     highRiskDynamicImages: true,
     minSupabaseImagesBeforeLateThreshold: 12,
   },
   {
     name: "project-detail",
     path: projectDetailPath,
+    requireSiteSettingsPreload: true,
     requireProjectDetailPreload: true,
     requireProjectSummariesPreload: true,
+    requireCtaBlockPreload: "home_final",
     maxProjectRestFetches: 0,
+    maxSupabaseRestFetches: 0,
     highRiskDynamicImages: true,
     minSupabaseImagesBeforeLateThreshold: 3,
   },
-  { name: "services", path: "/zh/services" },
-  { name: "materials", path: "/zh/materials" },
-  { name: "blog", path: "/zh/blog" },
+  {
+    name: "services",
+    path: "/zh/services",
+    requireSiteSettingsPreload: true,
+    requireSitePagePreload: "services",
+    requireServicesPreload: true,
+    maxSupabaseRestFetches: 0,
+  },
+  {
+    name: "materials",
+    path: "/zh/materials",
+    requireSiteSettingsPreload: true,
+    requireSitePagePreload: "materials",
+    requireMaterialsPreload: true,
+    maxSupabaseRestFetches: 0,
+  },
+  {
+    name: "blog",
+    path: "/zh/blog",
+    requireSiteSettingsPreload: true,
+    requireSitePagePreload: "blog",
+    requireBlogPostsPreload: true,
+    requireCtaBlockPreload: "home_final",
+    maxSupabaseRestFetches: 0,
+  },
 ];
 
 const normalizeResourcePath = (resourceUrl) => {
@@ -97,7 +127,13 @@ const collectPageMetrics = async (page, lateThreshold) =>
 
     return {
       preloadKeys: preload ? Object.keys(preload).sort() : [],
+      hasSiteSettings: Boolean(preload?.siteSettings),
       hasHomeBundle: Boolean(preload?.homeContentBundle),
+      sitePageKeys: preload?.sitePages ? Object.keys(preload.sitePages).sort() : [],
+      services: Array.isArray(preload?.services) ? preload.services.length : 0,
+      materials: Array.isArray(preload?.materials) ? preload.materials.length : 0,
+      blogPosts: Array.isArray(preload?.blogPosts) ? preload.blogPosts.length : 0,
+      ctaBlockKeys: preload?.ctaBlocks ? Object.keys(preload.ctaBlocks).sort() : [],
       projectSummaries: Array.isArray(preload?.projectSummaries) ? preload.projectSummaries.length : 0,
       projectDetailSlugs: preload?.projectDetails ? Object.keys(preload.projectDetails) : [],
       imageCount: document.images.length,
@@ -179,7 +215,17 @@ for (const pageSpec of pages) {
   if (result.pageErrorCount > 0) addFailure(`页面运行错误：${result.pageErrors.join(" | ")}`);
   if (result.failedAssetCount > 0) addFailure(`资源请求失败：${JSON.stringify(result.failedAssets)}`);
 
+  if (pageSpec.requireSiteSettingsPreload && !result.hasSiteSettings) addFailure("缺少 HTML 预注入 siteSettings。");
   if (pageSpec.requireHomeBundlePreload && !result.hasHomeBundle) addFailure("首页缺少 HTML 预注入 homeContentBundle。");
+  if (pageSpec.requireSitePagePreload && !result.sitePageKeys.includes(pageSpec.requireSitePagePreload)) {
+    addFailure(`缺少 HTML 预注入 sitePages.${pageSpec.requireSitePagePreload}。`);
+  }
+  if (pageSpec.requireServicesPreload && result.services <= 0) addFailure("服务页缺少 HTML 预注入 services。");
+  if (pageSpec.requireMaterialsPreload && result.materials <= 0) addFailure("材料页缺少 HTML 预注入 materials。");
+  if (pageSpec.requireBlogPostsPreload && result.blogPosts <= 0) addFailure("博客页缺少 HTML 预注入 blogPosts。");
+  if (pageSpec.requireCtaBlockPreload && !result.ctaBlockKeys.includes(pageSpec.requireCtaBlockPreload)) {
+    addFailure(`缺少 HTML 预注入 ctaBlocks.${pageSpec.requireCtaBlockPreload}。`);
+  }
   if (pageSpec.requireProjectSummariesPreload && result.projectSummaries <= 0) addFailure("缺少 HTML 预注入 projectSummaries。");
   if (pageSpec.requireProjectDetailPreload && result.projectDetailSlugs.length <= 0) addFailure("项目详情页缺少 HTML 预注入 projectDetails。");
   if (typeof pageSpec.maxHomeBundleFetches === "number" && result.homeBundleFetchCount > pageSpec.maxHomeBundleFetches) {
@@ -187,6 +233,9 @@ for (const pageSpec of pages) {
   }
   if (typeof pageSpec.maxProjectRestFetches === "number" && result.projectRestFetchCount > pageSpec.maxProjectRestFetches) {
     addFailure(`浏览器端重复请求 projects：${result.projectRestFetchCount}`);
+  }
+  if (typeof pageSpec.maxSupabaseRestFetches === "number" && result.supabaseRestFetchCount > pageSpec.maxSupabaseRestFetches) {
+    addFailure(`浏览器端仍有 Supabase REST 请求：${result.supabaseRestFetchCount} > ${pageSpec.maxSupabaseRestFetches}`);
   }
 
   const shouldCheckDynamicImages = pageSpec.highRiskDynamicImages || result.supabaseRenderImageCount >= 6;

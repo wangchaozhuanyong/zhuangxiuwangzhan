@@ -50,6 +50,7 @@ const serviceGroups: Array<{ id: ServiceGroupId; keys: string[] }> = [
   { id: "commercial", keys: ["office", "shop", "warehouse"] },
   { id: "specialty", keys: ["artistic-coating", "approval"] },
 ];
+const SERVICE_CARD_IMAGE_WIDTHS = [360, 560, 720];
 
 const getServiceKey = (service: { id?: string; slug: string; title: string }) => {
   const code = (service.id || service.slug).toLowerCase();
@@ -260,6 +261,9 @@ const Services = () => {
                           loading="lazy"
                           width={800}
                           height={600}
+                          sizes="(max-width: 768px) 86vw, (max-width: 1024px) 45vw, 31vw"
+                          candidateWidths={SERVICE_CARD_IMAGE_WIDTHS}
+                          quality={72}
                           className="h-full w-full object-cover"
                         />
                       </Link>

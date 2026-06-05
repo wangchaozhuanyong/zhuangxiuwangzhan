@@ -9,11 +9,6 @@ import { useLanguage } from "@/i18n/LanguageContext";
 import Reveal from "@/components/Reveal";
 import PageMeta from "@/components/PageMeta";
 import { JsonLdBreadcrumb } from "@/components/JsonLd";
-import residentialImg from "@/assets/residential-renovation.webp";
-import commercialImg from "@/assets/commercial-renovation.webp";
-import kitchenImg from "@/assets/kitchen-cabinet.webp";
-import warehouseImg from "@/assets/warehouse-shelving.webp";
-import exteriorImg from "@/assets/exterior-works.webp";
 import HeroBanner from "@/components/blocks/HeroBanner";
 import CTABanner from "@/components/blocks/CTABanner";
 import { translateDisplayText, translateProjectType } from "@/i18n/displayLabels";
@@ -22,12 +17,12 @@ import { buildQuotePath } from "@/lib/quoteContext";
 import { projectsPageText } from "@/i18n/projectsPageText";
 
 const typeImageMap: Record<string, string> = {
-  Residential: residentialImg,
-  Commercial: commercialImg,
-  "Built-In": kitchenImg,
-  Warehouse: warehouseImg,
-  Exterior: exteriorImg,
-  Office: commercialImg,
+  Residential: "/images/projects/residential-renovation.webp",
+  Commercial: "/images/projects/commercial-renovation.webp",
+  "Built-In": "/images/projects/kitchen-cabinet.webp",
+  Warehouse: "/images/services/warehouse-shelving.webp",
+  Exterior: "/images/services/exterior-works.webp",
+  Office: "/images/projects/commercial-renovation.webp",
 };
 
 const categories = ["All", "Residential", "Commercial", "Built-In", "Warehouse", "Exterior", "Office"] as const;
@@ -86,7 +81,7 @@ const Projects = () => {
   const renderProjectImage = (project: any, index: number) => {
     const shouldRenderImmediately = index < PROJECT_INITIAL_EAGER_IMAGES;
     const imageProps = {
-      src: project.thumbnail || typeImageMap[project.type] || residentialImg,
+      src: project.thumbnail || typeImageMap[project.type] || typeImageMap.Residential,
       alt: project.thumbnailAlt || `${project.title} - ${displayProjectType(project.type)} renovation in ${project.location}`,
       width: 800,
       height: 500,

@@ -6,16 +6,17 @@ import { useT } from "@/i18n/useT";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { usePublishedServiceSummaries } from "@/hooks/usePublishedContent";
 import LocalizedLink from "@/components/LocalizedLink";
-import residentialRenovation from "@/assets/residential-renovation.webp";
-import builtinSolutions from "@/assets/services/builtin-solutions.webp";
-import bathroomRenovation from "@/assets/services/bathroom-renovation.webp";
-import commercialWorks from "@/assets/services/commercial-works.webp";
-import kitchenRenovation from "@/assets/services/kitchen-renovation.webp";
-import officeRenovation from "@/assets/services/office-renovation.webp";
 import {
   Home, Paintbrush, Ruler, UtensilsCrossed, Bath, Briefcase, Store, Palette, Wrench, FileCheck,
   LucideIcon,
 } from "lucide-react";
+
+const residentialRenovation = "/images/services/residential-renovation.webp";
+const builtinSolutions = "/images/services/builtin-solutions.webp";
+const bathroomRenovation = "/images/services/bathroom-renovation.webp";
+const commercialWorks = "/images/services/commercial-works.webp";
+const kitchenRenovation = "/images/services/kitchen-renovation.webp";
+const officeRenovation = "/images/services/office-renovation.webp";
 
 interface ServiceEntry {
   icon: LucideIcon;
@@ -66,6 +67,7 @@ const serviceVisualBySlug: Record<string, string> = {
   "shop-renovation": commercialWorks,
   "commercial-works": commercialWorks,
 };
+const SERVICE_SECTION_IMAGE_WIDTHS = [360, 560, 720];
 
 const getServiceVisual = (linkOrSlug: string) => {
   const slug = linkOrSlug.split("/").filter(Boolean).pop() || linkOrSlug;
@@ -143,6 +145,8 @@ const ServicesSection = ({ services: providedServices }: ServicesSectionProps) =
                         width={600}
                         height={420}
                         sizes="(max-width: 640px) 92vw, (max-width: 1024px) 45vw, 24vw"
+                        candidateWidths={SERVICE_SECTION_IMAGE_WIDTHS}
+                        quality={72}
                         rootMargin="1200px"
                       />
                     </span>

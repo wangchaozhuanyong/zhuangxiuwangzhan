@@ -1,18 +1,18 @@
 import { ServiceItem } from "./types";
 
-import designImg from "@/assets/services/design-services.webp";
-import builtinImg from "@/assets/services/builtin-solutions.webp";
-import renovationImg from "@/assets/services/renovation-works.webp";
-import commercialImg from "@/assets/services/commercial-works.webp";
-import exteriorImg from "@/assets/services/exterior-works.webp";
-import warehouseImg from "@/assets/services/warehouse-shelving.webp";
-import approvalImg from "@/assets/services/approval-docs.webp";
-import artisticCoatingImg from "@/assets/services/artistic-coating.webp";
-import oldHouseImg from "@/assets/services/old-house-renovation.webp";
-import kitchenImg from "@/assets/services/kitchen-renovation.webp";
-import bathroomImg from "@/assets/services/bathroom-renovation.webp";
-import officeImg from "@/assets/services/office-renovation.webp";
-import shoplotImg from "@/assets/services/shoplot-renovation.webp";
+const designImg = "/images/services/design-services.webp";
+const builtinImg = "/images/services/builtin-solutions.webp";
+const renovationImg = "/images/services/renovation-works.webp";
+const commercialImg = "/images/services/commercial-works.webp";
+const exteriorImg = "/images/services/exterior-works.webp";
+const warehouseImg = "/images/services/warehouse-shelving.webp";
+const approvalImg = "/images/services/approval-docs.webp";
+const artisticCoatingImg = "/images/services/artistic-coating.webp";
+const oldHouseImg = "/images/services/old-house-renovation.webp";
+const kitchenImg = "/images/services/kitchen-renovation.webp";
+const bathroomImg = "/images/services/bathroom-renovation.webp";
+const officeImg = "/images/services/office-renovation.webp";
+const shoplotImg = "/images/services/shoplot-renovation.webp";
 
 export const servicesData: ServiceItem[] = [
   {

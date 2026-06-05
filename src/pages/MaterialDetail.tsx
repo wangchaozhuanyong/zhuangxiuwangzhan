@@ -23,6 +23,9 @@ import {
   type MaterialCatalogItem,
 } from "@/lib/materialCatalog";
 
+const MATERIAL_DETAIL_IMAGE_WIDTHS = [560, 720, 900, 1200];
+const MATERIAL_RELATED_IMAGE_WIDTHS = [360, 560, 720];
+
 const formatText = (text: string, values: Record<string, string | number>) =>
   Object.entries(values).reduce((current, [key, value]) => current.replaceAll(`{${key}}`, String(value)), text);
 
@@ -125,7 +128,7 @@ const MaterialDetail = () => {
             <Reveal direction="left">
               <div className="material-detail-media luxury-card">
                 <div className="material-detail-media__frame img-zoom">
-                  <SmartImage src={material.image} alt={material.alt || displayMaterialName} className="w-full h-full object-cover" width={900} height={900} loading="eager" />
+                  <SmartImage src={material.image} alt={material.alt || displayMaterialName} className="w-full h-full object-cover" width={900} height={900} loading="eager" sizes="(max-width: 1024px) 92vw, 45vw" candidateWidths={MATERIAL_DETAIL_IMAGE_WIDTHS} quality={74} />
                 </div>
               </div>
             </Reveal>
@@ -245,7 +248,7 @@ const MaterialDetail = () => {
               {otherMaterials.map((item: any) => (
                 <article key={item.id} className="material-depth-card luxury-card group hover-lift">
                   <div className="material-depth-card__media img-zoom">
-                    <SmartImage src={item.image} alt={item.alt || translateDisplayText(item.name, language)} loading="lazy" width={400} height={400} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+                    <SmartImage src={item.image} alt={item.alt || translateDisplayText(item.name, language)} loading="lazy" width={400} height={400} sizes="(max-width: 640px) 46vw, (max-width: 1024px) 24vw, 22vw" candidateWidths={MATERIAL_RELATED_IMAGE_WIDTHS} quality={72} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
                   </div>
                   <div className="material-depth-card__body">
                     <h3 className="material-depth-card__title">{translateDisplayText(item.name, language)}</h3>

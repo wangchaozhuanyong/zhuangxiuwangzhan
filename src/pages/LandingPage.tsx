@@ -20,6 +20,8 @@ import { translateDisplayText } from "@/i18n/displayLabels";
 import { toArray, toRecord, toText } from "@/lib/recordUtils";
 import { landingPageText } from "@/i18n/landingPageText";
 
+const LANDING_HERO_IMAGE_WIDTHS = [720, 900, 1200];
+const LANDING_PROJECT_IMAGE_WIDTHS = [360, 560, 720];
 
 
 
@@ -107,7 +109,7 @@ const LandingPage = () => {
       />
       <section className="page-hero page-hero--detail">
         <div className="page-hero__media absolute inset-0">
-          <SmartImage src={page.heroImage} alt={landingPage.heroAlt || landingPage.title} className="page-hero__image h-full w-full object-cover" loading="eager" width={1920} height={800} fetchPriority="high" />
+          <SmartImage src={page.heroImage} alt={landingPage.heroAlt || landingPage.title} className="page-hero__image h-full w-full object-cover" loading="eager" width={1920} height={800} fetchPriority="high" sizes="100vw" candidateWidths={LANDING_HERO_IMAGE_WIDTHS} quality={76} />
           <div className="page-hero__overlay absolute inset-0 media-readable-overlay" aria-hidden="true" />
         </div>
         <div className="page-hero__content site-container">
@@ -183,7 +185,7 @@ const LandingPage = () => {
                 <Reveal key={p.title} delay={i * 80}>
                   <div className="material-depth-card luxury-card overflow-hidden hover-lift">
                     <div className="material-depth-card__media img-zoom aspect-[4/3]">
-                      <SmartImage src={p.image} alt={p.title} loading="lazy" width={600} height={450} className="w-full h-full object-cover" />
+                      <SmartImage src={p.image} alt={p.title} loading="lazy" width={600} height={450} sizes="(max-width: 640px) 92vw, 45vw" candidateWidths={LANDING_PROJECT_IMAGE_WIDTHS} quality={72} className="w-full h-full object-cover" />
                     </div>
                     <div className="material-depth-card__body">
                       <h3 className="material-depth-card__title">{p.title}</h3>

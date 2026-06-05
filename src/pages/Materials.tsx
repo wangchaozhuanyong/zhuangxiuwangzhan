@@ -16,6 +16,7 @@ import { pageHeroImages, resolvePageHeroImage } from "@/lib/pageHeroImages";
 import { buildQuotePath } from "@/lib/quoteContext";
 import { materialsPageText } from "@/i18n/materialsPageText";
 
+const MATERIAL_CARD_IMAGE_WIDTHS = [360, 560, 720];
 
 
 const Materials = () => {
@@ -77,6 +78,9 @@ const Materials = () => {
                     loading="lazy"
                     width={400}
                     height={300}
+                    sizes="(max-width: 640px) 92vw, (max-width: 1024px) 45vw, 31vw"
+                    candidateWidths={MATERIAL_CARD_IMAGE_WIDTHS}
+                    quality={72}
                     className="h-full w-full object-cover"
                   />
                 </div>

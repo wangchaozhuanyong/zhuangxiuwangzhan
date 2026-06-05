@@ -314,7 +314,7 @@ const summary = {
 
 for (const row of backup.site_settings) {
   const body = {};
-  if (row.logo_url !== "/logo-flashcast.png") body.logo_url = "/logo-flashcast.png";
+  if (row.logo_url !== "/logo-flashcast-20260605.webp") body.logo_url = "/logo-flashcast-20260605.webp";
   if (Object.keys(body).length) {
     await patchById("site_settings", row.id, body);
     summary.siteSettingsUpdates += 1;

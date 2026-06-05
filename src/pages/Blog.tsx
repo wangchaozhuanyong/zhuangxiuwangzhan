@@ -16,6 +16,8 @@ import { blogCategoryFilters, blogPageText } from "@/i18n/blogPageText";
 
 const normalizeCategory = (value: string) => value.trim().toLowerCase();
 const BLOG_PAGE_SIZE = 9;
+const BLOG_FEATURED_IMAGE_WIDTHS = [560, 720, 900, 1200];
+const BLOG_CARD_IMAGE_WIDTHS = [360, 560, 720];
 
 const matchesCategory = (postCategory: string, filter: string) => {
   if (filter === "All") return true;
@@ -136,7 +138,7 @@ const Blog = () => {
               <Link to={`/blog/${filtered[0].slug}`} className="group block mb-10">
                 <div className="luxury-card grid grid-cols-1 items-center gap-6 overflow-hidden hover-lift md:grid-cols-2">
                   <div className="aspect-[16/10] overflow-hidden img-zoom">
-                    <SmartImage src={filtered[0].image} alt={filtered[0].title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" width={800} height={500} />
+                    <SmartImage src={filtered[0].image} alt={filtered[0].title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" width={800} height={500} sizes="(max-width: 768px) 92vw, 45vw" candidateWidths={BLOG_FEATURED_IMAGE_WIDTHS} quality={72} />
                   </div>
                   <div className="p-6">
                     <span className="text-accent text-xs font-medium uppercase tracking-wider">{translateBlogCategory(filtered[0].category, language)}</span>
@@ -157,7 +159,7 @@ const Blog = () => {
               <Reveal key={post.id} delay={index * 70} direction="none">
                 <Link to={`/blog/${post.slug}`} className="card-equal group luxury-card hover-lift">
                   <div className="aspect-[16/10] overflow-hidden img-zoom">
-                    <SmartImage src={post.image} alt={post.title} loading="lazy" width={600} height={400} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                    <SmartImage src={post.image} alt={post.title} loading="lazy" width={600} height={400} sizes="(max-width: 640px) 92vw, (max-width: 1024px) 45vw, 30vw" candidateWidths={BLOG_CARD_IMAGE_WIDTHS} quality={72} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
                   </div>
                   <div className="card-equal-body p-4">
                     <div className="flex items-center gap-3 mb-2">

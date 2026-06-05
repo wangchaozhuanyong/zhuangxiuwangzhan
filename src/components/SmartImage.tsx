@@ -18,7 +18,7 @@ type SmartImageProps = Omit<React.ImgHTMLAttributes<HTMLImageElement>, "src" | "
    */
   sizes?: string;
   /**
-   * Candidate widths (w descriptors) used for srcset generation (Supabase only).
+   * Candidate widths (w descriptors) used for srcset generation (Supabase and supported local images).
    * If omitted, falls back to [width, width*2] when width is provided.
    */
   candidateWidths?: number[];

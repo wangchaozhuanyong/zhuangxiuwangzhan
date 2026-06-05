@@ -1,5 +1,5 @@
-const RESPONSIVE_PROJECT_IMAGE_PREFIX = "/images/_responsive/projects";
-const PROJECT_IMAGE_PATTERN = /^\/images\/projects\/(.+\.webp)([?#].*)?$/i;
+const RESPONSIVE_IMAGE_PREFIX = "/images/_responsive";
+const LOCAL_RESPONSIVE_IMAGE_PATTERN = /^\/images\/(projects|services|materials|heroes|before-after)\/(.+\.webp)([?#].*)?$/i;
 
 export const LOCAL_RESPONSIVE_IMAGE_WIDTHS = [360, 560, 720, 900, 1200] as const;
 const FALLBACK_LOCAL_RESPONSIVE_IMAGE_WIDTH = 1200;
@@ -10,8 +10,8 @@ const chooseGeneratedWidth = (width: number) =>
   FALLBACK_LOCAL_RESPONSIVE_IMAGE_WIDTH;
 
 export function isLocalResponsiveImageCandidate(src: string) {
-  if (!src || src.startsWith(RESPONSIVE_PROJECT_IMAGE_PREFIX)) return false;
-  return PROJECT_IMAGE_PATTERN.test(src);
+  if (!src || src.startsWith(RESPONSIVE_IMAGE_PREFIX)) return false;
+  return LOCAL_RESPONSIVE_IMAGE_PATTERN.test(src);
 }
 
 export function normalizeLocalResponsiveImageWidths(widths: number[]) {
@@ -25,14 +25,15 @@ export function normalizeLocalResponsiveImageWidths(widths: number[]) {
 }
 
 export function toLocalResponsiveImageSrc(src: string, width: number) {
-  const match = src.match(PROJECT_IMAGE_PATTERN);
+  const match = src.match(LOCAL_RESPONSIVE_IMAGE_PATTERN);
   if (!match) return src;
 
-  const relativePath = match[1];
+  const folder = match[1];
+  const relativePath = match[2];
   if (!relativePath) return src;
-  const suffix = match[2] ?? "";
+  const suffix = match[3] ?? "";
   const generatedWidth = chooseGeneratedWidth(Math.round(width));
-  return `${RESPONSIVE_PROJECT_IMAGE_PREFIX}/w${generatedWidth}/${relativePath}${suffix}`;
+  return `${RESPONSIVE_IMAGE_PREFIX}/${folder}/w${generatedWidth}/${relativePath}${suffix}`;
 }
 
 export function buildLocalResponsiveSrcSet(src: string, widths: number[]) {

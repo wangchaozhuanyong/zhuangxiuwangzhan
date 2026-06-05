@@ -16,6 +16,7 @@ import { translateDisplayText, translateMaterialCategory, translateMaterialSubca
 import { mergeMaterialCategoriesWithFallback } from "@/lib/materialCatalog";
 import { materialCategoryPageText } from "@/i18n/materialCategoryPageText";
 
+const MATERIAL_TILE_IMAGE_WIDTHS = [360, 560, 720];
 
 
 const applyPageTemplate = (template: string | undefined, values: Record<string, string>) => {
@@ -122,7 +123,7 @@ const MaterialCategoryPage = () => {
               <Reveal key={subcategory.slug} delay={index * 60} direction="none">
                 <article className="material-depth-card luxury-card-muted group hover-lift">
                   <div className="material-depth-card__media img-zoom">
-                    <SmartImage src={subcategory.image} alt={subcategory.alt || translateMaterialSubcategory(subcategory.name, language)} loading="lazy" width={360} height={360} className="h-full w-full object-cover" />
+                    <SmartImage src={subcategory.image} alt={subcategory.alt || translateMaterialSubcategory(subcategory.name, language)} loading="lazy" width={360} height={360} sizes="(max-width: 640px) 46vw, (max-width: 1024px) 30vw, 23vw" candidateWidths={MATERIAL_TILE_IMAGE_WIDTHS} quality={72} className="h-full w-full object-cover" />
                   </div>
                   <div className="material-depth-card__body">
                     <h3 className="material-depth-card__title">{translateMaterialSubcategory(subcategory.name, language)}</h3>
@@ -149,7 +150,7 @@ const MaterialCategoryPage = () => {
                 <Reveal key={item.id} delay={index * 60} direction="none">
                   <article className="material-depth-card luxury-card group hover-lift">
                     <div className="material-depth-card__media img-zoom">
-                      <SmartImage src={item.image} alt={item.alt || translateMaterialDisplay(item.name, language)} loading="lazy" width={400} height={400} className="w-full h-full object-cover" />
+                      <SmartImage src={item.image} alt={item.alt || translateMaterialDisplay(item.name, language)} loading="lazy" width={400} height={400} sizes="(max-width: 640px) 46vw, (max-width: 1024px) 30vw, 23vw" candidateWidths={MATERIAL_TILE_IMAGE_WIDTHS} quality={72} className="w-full h-full object-cover" />
                     </div>
                     <div className="material-depth-card__body">
                       <h3 className="material-depth-card__title">{translateMaterialDisplay(item.name, language)}</h3>

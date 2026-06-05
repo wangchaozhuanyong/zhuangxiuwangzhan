@@ -1,4 +1,5 @@
 const env = import.meta.env;
+const siteUrl = env.VITE_SITE_URL || "https://flashcast.com.my";
 
 const normalizePhoneHref = (phone: string) => `tel:${phone.replace(/[^\d+]/g, "")}`;
 const normalizeWhatsAppNumber = (phone: string) => phone.replace(/[^\d]/g, "");
@@ -10,7 +11,7 @@ const whatsappNumber = normalizeWhatsAppNumber(env.VITE_SITE_WHATSAPP_NUMBER || 
 export const siteConfig = {
   name: "FLASH CAST SDN. BHD.",
   ssmNumber: env.VITE_SITE_SSM_NUMBER || "202501027419 (1628831-M)",
-  url: env.VITE_SITE_URL || "https://flashcast.com.my",
+  url: siteUrl,
   email: env.VITE_SITE_EMAIL || "info@flashcast.com.my",
   phoneDisplay,
   phoneHref: env.VITE_SITE_PHONE_HREF || normalizePhoneHref(phoneE164),
@@ -22,8 +23,8 @@ export const siteConfig = {
   mapLatitude: env.VITE_SITE_MAP_LAT || "3.0830403",
   mapLongitude: env.VITE_SITE_MAP_LNG || "101.6708234",
   mapZoom: Number(env.VITE_SITE_MAP_ZOOM || 16),
-  ogImage: `${env.VITE_SITE_URL || "https://flashcast.com.my"}/og-image.webp`,
-  logoUrl: `${env.VITE_SITE_URL || "https://flashcast.com.my"}/logo-flashcast.png`,
+  ogImage: `${siteUrl}/og-image.webp`,
+  logoUrl: `${siteUrl}/logo-flashcast-20260605.webp`,
   socialLinks: {
     facebook: env.VITE_SOCIAL_FACEBOOK || "",
     instagram: env.VITE_SOCIAL_INSTAGRAM || "",

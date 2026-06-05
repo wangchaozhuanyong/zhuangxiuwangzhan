@@ -25,6 +25,7 @@ import { translateDisplayText, translateProjectType } from "@/i18n/displayLabels
 import { pageHeroImages } from "@/lib/pageHeroImages";
 import { locationPageText } from "@/i18n/locationPageText";
 
+const LOCATION_PROJECT_IMAGE_WIDTHS = [360, 560, 720];
 
 
 const serviceNameMap: Record<string, { en: string; zh: string }> = {
@@ -221,7 +222,7 @@ const LocationPage = () => {
                     <Reveal key={project.title} delay={index * 80}>
                       <div className="card-equal rounded-card border border-border bg-card hover-lift">
                         <div className="aspect-[4/3] overflow-hidden img-zoom">
-                      <SmartImage src={project.image} alt={displayText(project.title)} loading="lazy" width={600} height={450} className="w-full h-full object-cover" />
+                      <SmartImage src={project.image} alt={displayText(project.title)} loading="lazy" width={600} height={450} sizes="(max-width: 640px) 92vw, (max-width: 1024px) 45vw, 30vw" candidateWidths={LOCATION_PROJECT_IMAGE_WIDTHS} quality={72} className="w-full h-full object-cover" />
                     </div>
                     <div className="card-equal-body p-4">
                       <span className="text-limit-1 rounded-sm bg-accent/10 px-2 py-0.5 text-[10px] font-bold uppercase tracking-widest text-accent">{translateProjectType(project.type, language)}</span>

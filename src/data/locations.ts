@@ -3,9 +3,9 @@
  * To add a new location, simply add a new entry here — no code changes needed.
  */
 
-import residentialImg from "@/assets/residential-renovation.webp";
-import commercialImg from "@/assets/commercial-renovation.webp";
-import kitchenImg from "@/assets/kitchen-cabinet.webp";
+const residentialImg = "/images/projects/residential-renovation.webp";
+const commercialImg = "/images/projects/commercial-renovation.webp";
+const kitchenImg = "/images/projects/kitchen-cabinet.webp";
 
 export interface LocationProject {
   title: string;
