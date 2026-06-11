@@ -3,6 +3,7 @@ export type EdgeAdminCheck = {
   status: number;
   error: string | null;
   mode: "admin" | "cron";
+  userId?: string | null;
   role?: string | null;
 };
 
@@ -63,9 +64,9 @@ export const requireAdminAccess = async (
     return { ok: false, status: 403, error: "Admin account is disabled", mode: "admin" };
   }
   if (adminRow) {
-    return { ok: true, status: 200, error: null, mode: "admin", role: adminRow.role || null };
+    return { ok: true, status: 200, error: null, mode: "admin", userId: userData.user.id, role: adminRow.role || null };
   }
-  if (jwtRole) return { ok: true, status: 200, error: null, mode: "admin", role: jwtRole };
+  if (jwtRole) return { ok: true, status: 200, error: null, mode: "admin", userId: userData.user.id, role: jwtRole };
 
   return { ok: false, status: 403, error: "Admin access required", mode: "admin" };
 };

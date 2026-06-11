@@ -48,6 +48,60 @@ Supabase Edge Function secrets must be configured in Supabase, not committed to 
 
 Do not commit real passwords, tokens, service role keys, or production secrets.
 
+## Admin Content Publish API
+
+SEO/GEO automation and approved content imports must not write database tables directly. Use the protected Supabase Edge Function `content-publish`, which acts as the backend publishing API for admin-approved content.
+
+Current first version:
+
+- Endpoint: `<SUPABASE_URL>/functions/v1/content-publish`
+- Method: `POST`
+- Auth: `Authorization: Bearer <admin user access token>`
+- Allowed roles: `super_admin`, `content_editor`
+- Supported content type: `service`
+- Dry run mode validates and previews the cleaned admin payload without writing.
+- Publish mode requires `ownerApproved: true` and `explicitExecution: true`.
+- Sync behavior: writes through the backend admin publishing flow, records `admin_audit_logs`, and returns SEO/QA next steps.
+
+Example dry run body:
+
+```json
+{
+  "contentType": "service",
+  "mode": "dry-run",
+  "nextStatus": "draft",
+  "record": {
+    "slug": "kitchen",
+    "title_zh": "厨房装修与橱柜定制",
+    "title_en": "Kitchen Renovation and Cabinet Planning",
+    "content_zh": "<p>中文页面建议文案</p>",
+    "content_en": "<p>English page copy</p>",
+    "seo_title_zh": "厨房装修与橱柜定制 | FLASH CAST",
+    "seo_title_en": "Kitchen Renovation Malaysia | FLASH CAST"
+  }
+}
+```
+
+Example approved publish body:
+
+```json
+{
+  "contentType": "service",
+  "mode": "publish",
+  "nextStatus": "published",
+  "ownerApproved": true,
+  "explicitExecution": true,
+  "approvalId": "owner-approved-YYYY-MM-DD",
+  "record": {
+    "slug": "kitchen",
+    "title_zh": "厨房装修与橱柜定制",
+    "title_en": "Kitchen Renovation and Cabinet Planning"
+  }
+}
+```
+
+After any approved publish, regenerate SEO artifacts and verify the public `/zh` and `/en` service pages before deployment.
+
 ## Database Migrations
 
 All schema changes must be added under `supabase/migrations`.
