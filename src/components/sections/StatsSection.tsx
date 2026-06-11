@@ -1,12 +1,12 @@
 import Reveal from "@/components/Reveal";
-import { ShieldCheck, Star, Clock, Users } from "lucide-react";
+import { ShieldCheck, Star, Clock, Users, type LucideIcon } from "lucide-react";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { homeSectionText } from "@/i18n/homeSectionsText";
 import { useMemo } from "react";
 import { usePublishedHomeSection } from "@/hooks/usePublishedContent";
 import type { PublishedHomeSection } from "@/lib/homeContentApi";
 
-const iconMap: Record<string, any> = {
+const iconMap: Record<string, LucideIcon> = {
   star: Star,
   clock: Clock,
   users: Users,
@@ -17,6 +17,14 @@ const iconMap: Record<string, any> = {
 
 type StatsSectionProps = {
   section?: PublishedHomeSection | null;
+};
+
+type StatsItem = {
+  icon: LucideIcon;
+  value: string;
+  label: string;
+  desc: string;
+  iconClass: string;
 };
 
 const StatsSection = ({ section: providedSection }: StatsSectionProps) => {
@@ -33,14 +41,15 @@ const StatsSection = ({ section: providedSection }: StatsSectionProps) => {
         iconClass: "text-gold",
       }));
     }
-    return items.map((item: any) => {
-      const key = String(item.icon || "").toLowerCase().replace(/\s+/g, "");
+    return items.map((item): StatsItem => {
+      const record = item as Record<string, unknown>;
+      const key = String(record.icon || "").toLowerCase().replace(/\s+/g, "");
       const Icon = iconMap[key] || Star;
       return {
         icon: Icon,
-        value: String(item.value || ""),
-        label: language === "zh" ? String(item.label_zh || item.label_en || "") : String(item.label_en || item.label_zh || ""),
-        desc: language === "zh" ? String(item.desc_zh || item.desc_en || "") : String(item.desc_en || item.desc_zh || ""),
+        value: String(record.value || ""),
+        label: language === "zh" ? String(record.label_zh || record.label_en || "") : String(record.label_en || record.label_zh || ""),
+        desc: language === "zh" ? String(record.desc_zh || record.desc_en || "") : String(record.desc_en || record.desc_zh || ""),
         iconClass: "text-gold",
       };
     });
@@ -50,7 +59,7 @@ const StatsSection = ({ section: providedSection }: StatsSectionProps) => {
     <section className="bg-background py-10 md:py-14 lg:py-16 border-b border-border/70" id="trust">
       <div className="container-narrow">
         <div className="grid grid-cols-1 items-stretch gap-5 sm:grid-cols-2 lg:grid-cols-4 md:gap-6">
-          {display.map((stat: any, i: number) => {
+          {display.map((stat, i: number) => {
             const Icon = stat.icon;
             return (
               <Reveal key={i} delay={i * 80}>

@@ -37,14 +37,16 @@ const ServiceDetail = () => {
   const initialServices = language === "zh"
     ? servicesData.map((service) => ({
         ...service,
-        title: displayText(service.title),
-        summary: displayText(service.summary),
-        description: displayText(service.description),
-        suitableFor: service.suitableFor.map((item) => displayText(item)),
-        commonProjects: service.commonProjects.map((item) => displayText(item)),
-        processSteps: service.processSteps.map((step) => ({ title: displayText(step.title), desc: displayText(step.desc) })),
-        items: service.items.map((item) => displayText(item)),
-        faqs: service.faqs.map((faq) => ({ q: displayText(faq.q), a: displayText(faq.a) })),
+        title: service.titleZh || displayText(service.title),
+        summary: service.summaryZh || displayText(service.summary),
+        description: service.descriptionZh || displayText(service.description),
+        suitableFor: service.suitableForZh || service.suitableFor.map((item) => displayText(item)),
+        commonProjects: service.commonProjectsZh || service.commonProjects.map((item) => displayText(item)),
+        processSteps: service.processStepsZh || service.processSteps.map((step) => ({ title: displayText(step.title), desc: displayText(step.desc) })),
+        items: service.itemsZh || service.items.map((item) => displayText(item)),
+        faqs: service.faqsZh || service.faqs.map((faq) => ({ q: displayText(faq.q), a: displayText(faq.a) })),
+        seoTitle: service.seoTitleZh || service.seoTitle,
+        seoDescription: service.seoDescriptionZh || service.seoDescription,
       }))
     : servicesData;
   const { data: cmsServices } = usePublishedServices(language);
@@ -87,14 +89,14 @@ const ServiceDetail = () => {
   const serviceSuitableFor = service.suitableFor.map((item: string) => displayText(item));
   const serviceItems = service.items.map((item: string) => displayText(item));
   const serviceCommonProjects = service.commonProjects.map((item: string) => displayText(item));
-  const serviceProcessSteps = service.processSteps.map((step: any) => ({
+  const serviceProcessSteps = service.processSteps.map((step) => ({
     title: displayText(step.title),
     desc: displayText(step.desc),
-  })).filter((step: any) => step.title || step.desc);
-  const serviceFaqs = service.faqs.map((faq: any) => ({
+  })).filter((step) => step.title || step.desc);
+  const serviceFaqs = service.faqs.map((faq) => ({
     q: displayText(faq.q),
     a: displayText(faq.a),
-  })).filter((faq: any) => faq.q && faq.a);
+  })).filter((faq) => faq.q && faq.a);
   const quotePath = buildQuotePath({
     source: "service",
     title: serviceTitle,
@@ -111,7 +113,7 @@ const ServiceDetail = () => {
       />
       <JsonLdService name={serviceTitle} description={serviceSummary} />
       <JsonLdBreadcrumb items={[{ name: t.breadcrumbHome, url: "/" }, { name: t.breadcrumbServices, url: "/services" }, { name: serviceTitle, url: `/services/${service.slug}` }]} />
-      {serviceFaqs.length > 0 && <JsonLdFAQ faqs={serviceFaqs.map((faq: any) => ({ question: faq.q, answer: faq.a }))} />}
+      {serviceFaqs.length > 0 && <JsonLdFAQ faqs={serviceFaqs.map((faq) => ({ question: faq.q, answer: faq.a }))} />}
 
       <section className="page-hero page-hero--detail">
         <div className="page-hero__media absolute inset-0">
@@ -212,7 +214,7 @@ const ServiceDetail = () => {
               <h2 className="font-display text-2xl md:text-3xl font-bold mb-8 text-center">{t.process}</h2>
             </Reveal>
             <div className="space-y-6">
-              {serviceProcessSteps.map((step: any, index: number) => (
+              {serviceProcessSteps.map((step, index: number) => (
                 <Reveal key={`${step.title}-${index}`} delay={index * 75}>
                   <div className="flex gap-4">
                     <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-accent/25 bg-accent/15 text-sm font-bold text-gold">
@@ -238,7 +240,7 @@ const ServiceDetail = () => {
             </Reveal>
             <Reveal delay={100}>
               <Accordion type="single" collapsible className="space-y-2">
-                {serviceFaqs.map((faq: any, index: number) => (
+                {serviceFaqs.map((faq, index: number) => (
                   <AccordionItem key={`${faq.q}-${index}`} value={`faq-${index}`} className="bg-background rounded-card border border-border px-4">
                     <AccordionTrigger className="text-left font-medium text-sm md:text-base">{faq.q}</AccordionTrigger>
                     <AccordionContent className="text-muted-foreground text-sm">{faq.a}</AccordionContent>

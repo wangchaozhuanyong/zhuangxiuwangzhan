@@ -23,7 +23,7 @@ type ContentAuditColumns = {
 export type Database = {
   public: {
     Tables: {
-      [key: string]: Table<any>;
+      [key: string]: Table<Record<string, unknown>>;
       about_sections: Table<
         ContentAuditColumns & {
           id: string;

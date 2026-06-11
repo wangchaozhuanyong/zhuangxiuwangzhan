@@ -15,12 +15,17 @@ import {
   type AdminProjectListInput,
 } from "@/backend/modules/projects/repository/projectRepository";
 
-type AdminProjectRecord = Record<string, any> & {
+type AdminProjectRecord = Record<string, unknown> & {
   id?: string;
   updated_at?: string | null;
   slug?: string;
   status?: "draft" | "published" | "archived";
   title_zh?: string;
+  sort_order?: string | number | null;
+  materials?: unknown[] | null;
+  scope?: unknown[] | null;
+  highlights_zh?: unknown[] | null;
+  highlights_en?: unknown[] | null;
 };
 
 export type SaveAdminProjectInput = {
@@ -121,7 +126,7 @@ export function deleteAdminProjectImage(imageId: string) {
   return deleteProjectImageRecord(imageId);
 }
 
-export function loadAdminProjectList<T extends Record<string, any>>(input: AdminProjectListInput) {
+export function loadAdminProjectList<T extends Record<string, unknown>>(input: AdminProjectListInput) {
   return fetchAdminProjectList<T>(input);
 }
 

@@ -126,6 +126,11 @@ type AdminMaterialEditorTextKey = keyof typeof adminMaterialEditorText;
 
 const parseLines = (value: string) => value.split("\n").map((s) => s.trim()).filter(Boolean);
 const formatLines = (value?: string[] | null) => (value || []).join("\n");
+const toPublishStatus = (value: string): MaterialRecord["status"] =>
+  value === "published" || value === "archived" ? value : "draft";
+const toStringArray = (value: unknown): string[] =>
+  Array.isArray(value) ? value.map((item) => String(item).trim()).filter(Boolean) : [];
+const toText = (value: unknown): string => (typeof value === "string" ? value : "");
 
 export default function AdminMaterialEditor() {
   const language = getAdminLang();
@@ -148,19 +153,20 @@ export default function AdminMaterialEditor() {
 
   const loadedRecord = useMemo<MaterialRecord | undefined>(() => {
     if (isNew || !loaded) return isNew ? empty : undefined;
+    const loadedRecordData = loaded as Partial<MaterialRecord>;
     return {
       ...empty,
-      ...(loaded as any),
-      suitable_spaces_zh: (loaded as any).suitable_spaces_zh || [],
-      suitable_spaces_en: (loaded as any).suitable_spaces_en || [],
-      pros_zh: (loaded as any).pros_zh || [],
-      pros_en: (loaded as any).pros_en || [],
-      cons_zh: (loaded as any).cons_zh || [],
-      cons_en: (loaded as any).cons_en || [],
-      recommended_pairing_zh: (loaded as any).recommended_pairing_zh || "",
-      recommended_pairing_en: (loaded as any).recommended_pairing_en || "",
-      note_zh: (loaded as any).note_zh || "",
-      note_en: (loaded as any).note_en || "",
+      ...loadedRecordData,
+      suitable_spaces_zh: toStringArray(loadedRecordData.suitable_spaces_zh),
+      suitable_spaces_en: toStringArray(loadedRecordData.suitable_spaces_en),
+      pros_zh: toStringArray(loadedRecordData.pros_zh),
+      pros_en: toStringArray(loadedRecordData.pros_en),
+      cons_zh: toStringArray(loadedRecordData.cons_zh),
+      cons_en: toStringArray(loadedRecordData.cons_en),
+      recommended_pairing_zh: toText(loadedRecordData.recommended_pairing_zh),
+      recommended_pairing_en: toText(loadedRecordData.recommended_pairing_en),
+      note_zh: toText(loadedRecordData.note_zh),
+      note_en: toText(loadedRecordData.note_en),
     };
   }, [isNew, loaded]);
 
@@ -344,7 +350,7 @@ export default function AdminMaterialEditor() {
               <label className="mb-1 block text-sm font-medium">{A("status")}</label>
               <select
                 value={record.status}
-                onChange={(e) => setRecord((r) => ({ ...r, status: e.target.value as any }))}
+                onChange={(e) => setRecord((r) => ({ ...r, status: toPublishStatus(e.target.value) }))}
                 className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
               >
                 {publishStatusOptions().map(({ value, label }) => (

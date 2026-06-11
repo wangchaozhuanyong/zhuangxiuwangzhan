@@ -245,7 +245,7 @@ const MaterialDetail = () => {
               <h2 className="font-display text-2xl font-bold">{formatText(t.more, { name: displayCategoryName })}</h2>
             </div>
             <div className="card-grid grid-cols-2 gap-4 md:grid-cols-4 md:gap-5">
-              {otherMaterials.map((item: any) => (
+              {otherMaterials.map((item) => (
                 <article key={item.id} className="material-depth-card luxury-card group hover-lift">
                   <div className="material-depth-card__media img-zoom">
                     <SmartImage src={item.image} alt={item.alt || translateDisplayText(item.name, language)} loading="lazy" width={400} height={400} sizes="(max-width: 640px) 46vw, (max-width: 1024px) 24vw, 22vw" candidateWidths={MATERIAL_RELATED_IMAGE_WIDTHS} quality={72} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />

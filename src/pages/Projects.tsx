@@ -1,6 +1,5 @@
 ﻿import { useRef, useState } from "react";
 import Link from "@/components/LocalizedLink";
-import { Button } from "@/components/ui/button";
 import { MapPin } from "lucide-react";
 import SmartImage from "@/components/SmartImage";
 import DeferredSmartImage from "@/components/DeferredSmartImage";
@@ -14,6 +13,7 @@ import CTABanner from "@/components/blocks/CTABanner";
 import { translateDisplayText, translateProjectType } from "@/i18n/displayLabels";
 import { pageHeroImages, resolvePageHeroImage } from "@/lib/pageHeroImages";
 import { buildQuotePath } from "@/lib/quoteContext";
+import type { PublishedProjectSummary } from "@/lib/contentApi";
 import { projectsPageText } from "@/i18n/projectsPageText";
 
 const typeImageMap: Record<string, string> = {
@@ -75,10 +75,10 @@ const Projects = () => {
   const displayProjectTitle = (value: string) => translateDisplayText(value, language);
   const displayProjectLocation = (value: string) => translateDisplayText(value, language);
   const heroImage = resolvePageHeroImage(pageContent?.image_url, pageHeroImages.projects);
-  const displayProjectDescription = (project: any) =>
+  const displayProjectDescription = (project: PublishedProjectSummary) =>
     translateDisplayText(String(project.description || ""), language);
 
-  const renderProjectImage = (project: any, index: number) => {
+  const renderProjectImage = (project: PublishedProjectSummary, index: number) => {
     const shouldRenderImmediately = index < PROJECT_INITIAL_EAGER_IMAGES;
     const imageProps = {
       src: project.thumbnail || typeImageMap[project.type] || typeImageMap.Residential,

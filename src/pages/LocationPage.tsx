@@ -218,7 +218,7 @@ const LocationPage = () => {
           <div className="container-narrow">
             <SectionHeader title={t.featuredProjects(location.name)} />
             <div className="card-grid grid-cols-1 gap-5 sm:grid-cols-2 md:grid-cols-3">
-                  {location.projects.map((project: any, index: number) => (
+                  {location.projects.map((project, index: number) => (
                     <Reveal key={project.title} delay={index * 80}>
                       <div className="card-equal rounded-card border border-border bg-card hover-lift">
                         <div className="aspect-[4/3] overflow-hidden img-zoom">

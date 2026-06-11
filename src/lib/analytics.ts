@@ -9,10 +9,15 @@ declare global {
 }
 
 const measurementId = String(import.meta.env.VITE_GA_MEASUREMENT_ID || "").trim();
+const googleAdsId = String(import.meta.env.VITE_GOOGLE_ADS_ID || "").trim();
+const quoteConversionLabel = String(import.meta.env.VITE_GOOGLE_ADS_QUOTE_CONVERSION_LABEL || "").trim();
+const contactConversionLabel = String(import.meta.env.VITE_GOOGLE_ADS_CONTACT_CONVERSION_LABEL || "").trim();
 const configuredPagesReportUrl = String(import.meta.env.VITE_GA4_PAGES_REPORT_URL || "").trim();
-const googleTagScriptId = "flashcast-ga4-tag";
+const googleTagScriptId = "flashcast-google-tag";
+const googleTagIds = [measurementId, googleAdsId].filter(Boolean);
+const primaryGoogleTagId = googleTagIds[0] || "";
 
-export const isAnalyticsEnabled = Boolean(measurementId);
+export const isAnalyticsEnabled = googleTagIds.length > 0;
 export const ga4PagesReportUrl =
   configuredPagesReportUrl || "https://analytics.google.com/analytics/web/#/report/pages-and-screens";
 
@@ -27,12 +32,12 @@ const sanitizeParams = (params: AnalyticsParams) =>
   );
 
 const ensureGoogleTagScript = () => {
-  if (!canUseBrowserAnalytics() || document.getElementById(googleTagScriptId)) return;
+  if (!canUseBrowserAnalytics() || !primaryGoogleTagId || document.getElementById(googleTagScriptId)) return;
 
   const script = document.createElement("script");
   script.id = googleTagScriptId;
   script.async = true;
-  script.src = `https://www.googletagmanager.com/gtag/js?id=${encodeURIComponent(measurementId)}`;
+  script.src = `https://www.googletagmanager.com/gtag/js?id=${encodeURIComponent(primaryGoogleTagId)}`;
   document.head.appendChild(script);
 };
 
@@ -47,7 +52,8 @@ export const initAnalytics = () => {
     };
 
   window.gtag("js", new Date());
-  window.gtag("config", measurementId, { send_page_view: false });
+  if (measurementId) window.gtag("config", measurementId, { send_page_view: false });
+  if (googleAdsId) window.gtag("config", googleAdsId);
   ensureGoogleTagScript();
   initialized = true;
 };
@@ -94,10 +100,40 @@ export const trackCtaClick = (ctaName: string, ctaLocation: string, params: Anal
   });
 };
 
+export const trackGoogleAdsConversion = (conversionLabel: string, params: AnalyticsParams = {}) => {
+  if (!canUseBrowserAnalytics() || !googleAdsId || !conversionLabel) return;
+
+  initAnalytics();
+  window.gtag?.(
+    "event",
+    "conversion",
+    sanitizeParams({
+      send_to: `${googleAdsId}/${conversionLabel}`,
+      ...params,
+    }),
+  );
+};
+
 export const trackQuoteFormSubmit = (status: "success" | "error" | "validation_error", params: AnalyticsParams = {}) => {
   trackEvent("quote_form_submit", {
     form_status: status,
     page_path: typeof window !== "undefined" ? window.location.pathname : "",
     ...params,
   });
+
+  if (status === "success") {
+    trackGoogleAdsConversion(quoteConversionLabel, params);
+  }
+};
+
+export const trackContactFormSubmit = (status: "success" | "error" | "validation_error", params: AnalyticsParams = {}) => {
+  trackEvent("contact_form_submit", {
+    form_status: status,
+    page_path: typeof window !== "undefined" ? window.location.pathname : "",
+    ...params,
+  });
+
+  if (status === "success") {
+    trackGoogleAdsConversion(contactConversionLabel, params);
+  }
 };

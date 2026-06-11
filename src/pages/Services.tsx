@@ -131,14 +131,14 @@ const Services = () => {
     return language === "zh"
       ? servicesData.map((service) => ({
           ...service,
-          title: localize(service.title),
-          summary: localize(service.summary),
-          description: localize(service.description),
-          suitableFor: service.suitableFor.map((item) => localize(item)),
-          commonProjects: service.commonProjects.map((item) => localize(item)),
-          processSteps: service.processSteps.map((step) => ({ title: localize(step.title), desc: localize(step.desc) })),
-          items: service.items.map((item) => localize(item)),
-          faqs: service.faqs.map((faq) => ({ q: localize(faq.q), a: localize(faq.a) })),
+          title: service.titleZh || localize(service.title),
+          summary: service.summaryZh || localize(service.summary),
+          description: service.descriptionZh || localize(service.description),
+          suitableFor: service.suitableForZh || service.suitableFor.map((item) => localize(item)),
+          commonProjects: service.commonProjectsZh || service.commonProjects.map((item) => localize(item)),
+          processSteps: service.processStepsZh || service.processSteps.map((step) => ({ title: localize(step.title), desc: localize(step.desc) })),
+          items: service.itemsZh || service.items.map((item) => localize(item)),
+          faqs: service.faqsZh || service.faqs.map((faq) => ({ q: localize(faq.q), a: localize(faq.a) })),
         }))
       : servicesData;
   }, [language]);

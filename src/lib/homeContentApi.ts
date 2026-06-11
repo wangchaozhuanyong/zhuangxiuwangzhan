@@ -19,6 +19,9 @@ import {
   mapPublishedProjectSummary,
   mapPublishedService,
   mapPublishedTestimonial,
+  type PublishedHeroSlide,
+  type PublishedProjectSummary,
+  type PublishedServiceSummary,
 } from "@/lib/contentApi";
 import {
   createLocalFallbackContent,
@@ -27,6 +30,11 @@ import {
 } from "@/lib/publicContentStatus";
 import { readPreloadedPublicData } from "@/lib/publicPreload";
 import { toArray, toRecord, toText, type UnknownRecord } from "@/lib/recordUtils";
+
+type Language = "en" | "zh";
+
+const readText = (record: UnknownRecord | null | undefined, field: string, fallback = "") => toText(record?.[field], fallback);
+const readRecordArray = (value: unknown): UnknownRecord[] => toArray<UnknownRecord>(value).map(toRecord);
 
 export type PublishedBrandPartner = {
   id: string;
@@ -59,7 +67,7 @@ export type PublishedHomeSection = {
   subtitle: string;
   content: string;
   image_url?: string | null;
-  items: any[];
+  items: unknown[];
 };
 
 export type PublishedProcessStep = {
@@ -90,7 +98,7 @@ export type PublishedAboutSection = {
   subtitle: string;
   content: string;
   image_url?: string | null;
-  items: any[];
+  items: unknown[];
 };
 
 export type PublishedSitePage = {
@@ -108,7 +116,7 @@ export type PublishedSitePage = {
   seo_title: string;
   seo_description: string;
   seo_keywords: string;
-  items: any[];
+  items: unknown[];
   sections?: PublishedCmsSection[];
 };
 
@@ -124,15 +132,22 @@ export type PublishedCmsSection = {
 
 export type PublishedHomeContentBundle = {
   pageContent: PublishedSitePage | null;
-  heroSlides: any[];
+  heroSlides: PublishedHeroSlide[];
   statsSection: PublishedHomeSection | null;
   whyChooseUsSection: PublishedHomeSection | null;
-  projects: any[];
+  projects: PublishedProjectSummary[];
   brandPartners: PublishedBrandPartner[];
-  services: any[];
+  services: PublishedServiceSummary[];
   processSteps: PublishedProcessStep[];
   beforeAfterItems: PublishedBeforeAfterItem[];
-  testimonials: any[];
+  testimonials: Array<{
+    id: string;
+    text: string;
+    client: string;
+    type: string;
+    location: string;
+    rating: number;
+  }>;
   faqs: PublishedFaq[];
   ctaBlock: PublishedCtaBlock | null;
 };
@@ -145,7 +160,7 @@ const pickLocalizedValue = <T = unknown>(row: UnknownRecord | null | undefined, 
 const pickLocalizedText = (row: UnknownRecord | null | undefined, field: string, language: "en" | "zh", fallback = ""): string =>
   toText(pickLocalizedValue(row, field, language, fallback));
 
-const pickLocalizedList = <T = any>(row: any, field: string, language: "en" | "zh"): T[] => {
+const pickLocalizedList = <T = unknown>(row: UnknownRecord | null | undefined, field: string, language: Language): T[] => {
   const value = row?.[`${field}_${language}`];
   return toArray<T>(value);
 };
@@ -165,7 +180,7 @@ const firstText = (...values: unknown[]) => {
   return "";
 };
 
-const firstList = <T = any>(...values: unknown[]): T[] => {
+const firstList = <T = unknown>(...values: unknown[]): T[] => {
   for (const value of values) {
     const list = toArray<T>(value);
     if (list.length) return list;
@@ -174,15 +189,15 @@ const firstList = <T = any>(...values: unknown[]): T[] => {
 };
 
 const mapPublishedCmsPage = (
-  cmsRow: any,
-  language: "en" | "zh",
+  cmsRow: UnknownRecord,
+  language: Language,
   legacy: PublishedSitePage | null = null,
 ): PublishedSitePage => {
-  const sections = ((cmsRow.cms_sections || []) as any[])
+  const sections = readRecordArray(cmsRow.cms_sections)
     .filter((section) => section.status === "published" && !section.deleted_at)
-    .sort((a, b) => (a.sort_order || 0) - (b.sort_order || 0));
-  const pickContent = (section: any) => pickLocalizedObject(section, "content", language);
-  const typeMatches = (section: any, types: string[]) => types.includes(normalizeCmsSectionType(String(section.section_type || "")));
+    .sort((a, b) => Number(a.sort_order || 0) - Number(b.sort_order || 0));
+  const pickContent = (section: UnknownRecord | undefined) => pickLocalizedObject(section, "content", language);
+  const typeMatches = (section: UnknownRecord, types: string[]) => types.includes(normalizeCmsSectionType(String(section.section_type || "")));
   const hero = sections.find((section) => typeMatches(section, ["hero"]) || section.section_key === "hero");
   const richText = sections.find((section) => typeMatches(section, ["rich_text", "text", "content"]));
   const cta = sections.find((section) => typeMatches(section, ["cta"]) || String(section.section_key || "").includes("cta"));
@@ -194,12 +209,12 @@ const mapPublishedCmsPage = (
   const richContent = pickContent(richText);
   const ctaContent = pickContent(cta);
   const listContent = pickContent(listSection);
-  const heroSettings = hero?.settings || {};
-  const ctaSettings = cta?.settings || {};
+  const heroSettings = toRecord(hero?.settings);
+  const ctaSettings = toRecord(cta?.settings);
   const publishedSections: PublishedCmsSection[] = sections.map((section) => ({
-    id: section.id,
-    section_key: section.section_key,
-    section_type: section.section_type,
+    id: readText(section, "id"),
+    section_key: readText(section, "section_key"),
+    section_type: readText(section, "section_type"),
     title: pickLocalizedText(section, "title", language),
     content: pickContent(section),
     settings: toRecord(section.settings),
@@ -207,9 +222,9 @@ const mapPublishedCmsPage = (
   }));
 
   return {
-    id: cmsRow.id,
-    page_key: cmsRow.page_key,
-    path: cmsRow.path || legacy?.path || "",
+    id: readText(cmsRow, "id"),
+    page_key: readText(cmsRow, "page_key"),
+    path: readText(cmsRow, "path", legacy?.path || ""),
     title: firstText(pickLocalizedText(cmsRow, "title", language), heroContent.title, legacy?.title),
     subtitle: firstText(heroContent.subtitle, legacy?.subtitle),
     description: firstText(heroContent.description, heroContent.excerpt, legacy?.description),
@@ -226,17 +241,17 @@ const mapPublishedCmsPage = (
   };
 };
 
-const mapLegacySitePage = (row: any, language: "en" | "zh"): PublishedSitePage => ({
-  id: row.id,
-  page_key: row.page_key,
-  path: row.path || "",
+const mapLegacySitePage = (row: UnknownRecord, language: Language): PublishedSitePage => ({
+  id: readText(row, "id"),
+  page_key: readText(row, "page_key"),
+  path: readText(row, "path"),
   title: pickLocalizedText(row, "title", language),
   subtitle: pickLocalizedText(row, "subtitle", language),
   description: pickLocalizedText(row, "description", language),
   content: pickLocalizedText(row, "content", language),
   cta_title: pickLocalizedText(row, "cta_title", language),
   cta_description: pickLocalizedText(row, "cta_description", language),
-  image_url: row.image_url || null,
+  image_url: readText(row, "image_url") || null,
   alt: pickLocalizedText(row, "alt", language),
   seo_title: pickLocalizedText(row, "seo_title", language),
   seo_description: pickLocalizedText(row, "seo_description", language),
@@ -245,58 +260,58 @@ const mapLegacySitePage = (row: any, language: "en" | "zh"): PublishedSitePage =
 });
 
 const mapSitePageRows = (payload: UnknownRecord, language: "en" | "zh") => {
-  const legacyRow = toArray<any>(payload.site_pages)[0];
+  const legacyRow = readRecordArray(payload.site_pages)[0];
   const legacy = legacyRow ? mapLegacySitePage(legacyRow, language) : null;
-  const cmsRow = toArray<any>(payload.cms_pages)[0];
+  const cmsRow = readRecordArray(payload.cms_pages)[0];
   return cmsRow ? mapPublishedCmsPage(cmsRow, language, legacy) : legacy;
 };
 
-const mapPublishedHomeSectionRow = (row: any, language: "en" | "zh"): PublishedHomeSection => ({
-  id: row.id,
-  section_key: row.section_key,
+const mapPublishedHomeSectionRow = (row: UnknownRecord, language: Language): PublishedHomeSection => ({
+  id: readText(row, "id"),
+  section_key: readText(row, "section_key"),
   title: pickLocalizedText(row, "title", language),
   subtitle: pickLocalizedText(row, "subtitle", language),
   content: pickLocalizedText(row, "content", language),
-  image_url: row.image_url,
+  image_url: readText(row, "image_url") || null,
   items: pickLocalizedList(row, "items", language),
 });
 
-const mapPublishedBeforeAfterItem = (item: any, language: "en" | "zh"): PublishedBeforeAfterItem => ({
-  id: item.id,
+const mapPublishedBeforeAfterItem = (item: UnknownRecord, language: Language): PublishedBeforeAfterItem => ({
+  id: readText(item, "id"),
   title: pickLocalizedText(item, "title", language),
-  location: item.location || "",
+  location: readText(item, "location"),
   description: pickLocalizedText(item, "description", language),
-  before_image_url: item.before_image_url,
-  after_image_url: item.after_image_url,
+  before_image_url: readText(item, "before_image_url"),
+  after_image_url: readText(item, "after_image_url"),
   alt: pickLocalizedText(item, "alt", language, pickLocalizedText(item, "title", language)),
 });
 
-const mapPublishedFaq = (item: any, language: "en" | "zh"): PublishedFaq => ({
-  id: item.id,
-  category: item.page_key || "general",
+const mapPublishedFaq = (item: UnknownRecord, language: Language): PublishedFaq => ({
+  id: readText(item, "id"),
+  category: readText(item, "page_key", "general"),
   question: pickLocalizedText(item, "question", language),
   answer: pickLocalizedText(item, "answer", language),
 });
 
-const mapPublishedProcessStep = (row: any, language: "en" | "zh"): PublishedProcessStep => ({
-  id: row.id,
+const mapPublishedProcessStep = (row: UnknownRecord, language: Language): PublishedProcessStep => ({
+  id: readText(row, "id"),
   step_number: Number(row.step_number || 0),
   sort_order: Number(row.sort_order ?? row.step_number ?? 0),
   title: pickLocalizedText(row, "title", language),
   description: pickLocalizedText(row, "description", language),
-  icon_key: row.icon_key || null,
+  icon_key: readText(row, "icon_key") || null,
 });
 
-const mapPublishedCtaBlockRow = (row: any, language: "en" | "zh"): PublishedCtaBlock => ({
-  id: row.id,
-  block_key: row.block_key,
+const mapPublishedCtaBlockRow = (row: UnknownRecord, language: Language): PublishedCtaBlock => ({
+  id: readText(row, "id"),
+  block_key: readText(row, "block_key"),
   title: pickLocalizedText(row, "title", language),
   description: pickLocalizedText(row, "description", language),
   primary_label: pickLocalizedText(row, "primary_label", language),
-  primary_url: row.primary_url || "/quote",
+  primary_url: readText(row, "primary_url", "/quote"),
   secondary_label: pickLocalizedText(row, "secondary_label", language),
-  secondary_url: row.secondary_url || "",
-  image_url: row.image_url || null,
+  secondary_url: readText(row, "secondary_url"),
+  image_url: readText(row, "image_url") || null,
 });
 
 const emptyHomeContentBundle = (): PublishedHomeContentBundle => ({
@@ -343,27 +358,28 @@ const getLocalHomeContentBundle = async (language: "en" | "zh"): Promise<Publish
 };
 
 const mapRemoteHomeContentBundle = (payload: UnknownRecord, language: "en" | "zh"): PublishedHomeContentBundle => {
-  const homeSections = toArray<any>(payload.home_sections).map((row) => mapPublishedHomeSectionRow(row, language));
+  const homeSections = readRecordArray(payload.home_sections).map((row) => mapPublishedHomeSectionRow(row, language));
   const findHomeSection = (sectionKey: string) => homeSections.find((section) => section.section_key === sectionKey) || null;
+  const ctaBlocks = readRecordArray(payload.cta_blocks);
 
   return {
     pageContent: mapSitePageRows(payload, language),
-    heroSlides: toArray<any>(payload.hero_slides).map((item) => mapPublishedHeroSlide(item, language)),
+    heroSlides: readRecordArray(payload.hero_slides).map((item) => mapPublishedHeroSlide(item, language)),
     statsSection: findHomeSection("stats"),
     whyChooseUsSection: findHomeSection("why_choose_us"),
-    projects: toArray<any>(payload.projects).map((item) => mapPublishedProjectSummary(item, language)),
+    projects: readRecordArray(payload.projects).map((item) => mapPublishedProjectSummary(item, language)),
     brandPartners: toArray<PublishedBrandPartner>(payload.brand_partners).filter((item) => item.logo_url && item.name),
-    services: toArray<any>(payload.services).map((item) => mapPublishedService(item, language)),
-    processSteps: toArray<any>(payload.process_steps).map((row) => mapPublishedProcessStep(row, language)),
-    beforeAfterItems: toArray<any>(payload.before_after_items)
+    services: readRecordArray(payload.services).map((item) => mapPublishedService(item, language)),
+    processSteps: readRecordArray(payload.process_steps).map((row) => mapPublishedProcessStep(row, language)),
+    beforeAfterItems: readRecordArray(payload.before_after_items)
       .filter((item): item is typeof item & { before_image_url: string; after_image_url: string } =>
         Boolean(item.before_image_url && item.after_image_url)
       )
       .map((item) => mapPublishedBeforeAfterItem(item, language)),
-    testimonials: toArray<any>(payload.testimonials).map((item) => mapPublishedTestimonial(item, language)),
-    faqs: toArray<any>(payload.faqs).map((item) => mapPublishedFaq(item, language)),
-    ctaBlock: toArray<any>(payload.cta_blocks)[0]
-      ? mapPublishedCtaBlockRow(toArray<any>(payload.cta_blocks)[0], language)
+    testimonials: readRecordArray(payload.testimonials).map((item) => mapPublishedTestimonial(item, language)),
+    faqs: readRecordArray(payload.faqs).map((item) => mapPublishedFaq(item, language)),
+    ctaBlock: ctaBlocks[0]
+      ? mapPublishedCtaBlockRow(ctaBlocks[0], language)
       : null,
   };
 };
@@ -435,30 +451,16 @@ export const getPublishedHomeSection = async (
   sectionKey: string,
 ): Promise<PublishedHomeSection | null> => {
   if (!hasPublicContentDatabaseClient()) return null;
-  const row: any = await fetchPublishedHomeSectionRow(sectionKey);
+  const row = toRecord(await fetchPublishedHomeSectionRow(sectionKey));
+  if (!Object.keys(row).length) return null;
   if (!row) return null;
-  return {
-    id: row.id,
-    section_key: row.section_key,
-    title: pickLocalizedText(row, "title", language),
-    subtitle: pickLocalizedText(row, "subtitle", language),
-    content: pickLocalizedText(row, "content", language),
-    image_url: row.image_url,
-    items: pickLocalizedList(row, "items", language),
-  };
+  return mapPublishedHomeSectionRow(row, language);
 };
 
 export const getPublishedProcessSteps = async (language: "en" | "zh"): Promise<PublishedProcessStep[]> => {
   if (!hasPublicContentDatabaseClient()) return [];
   const data = await fetchPublishedProcessStepRows();
-  return (data || []).map((row: any) => ({
-    id: row.id,
-    step_number: Number(row.step_number || 0),
-    sort_order: Number(row.sort_order ?? row.step_number ?? 0),
-    title: pickLocalizedText(row, "title", language),
-    description: pickLocalizedText(row, "description", language),
-    icon_key: row.icon_key || null,
-  }));
+  return ((data || []) as unknown as UnknownRecord[]).map((row) => mapPublishedProcessStep(row, language));
 };
 
 export const getPublishedCtaBlock = async (language: "en" | "zh", blockKey: string): Promise<PublishedCtaBlock | null> => {
@@ -468,8 +470,8 @@ export const getPublishedCtaBlock = async (language: "en" | "zh", blockKey: stri
   }
 
   if (!hasPublicContentDatabaseClient()) return null;
-  const row: any = await fetchPublishedCtaBlockRow(blockKey);
-  if (!row) return null;
+  const row = toRecord(await fetchPublishedCtaBlockRow(blockKey));
+  if (!Object.keys(row).length) return null;
   return mapPublishedCtaBlockRow(row, language);
 };
 
@@ -478,15 +480,15 @@ export const getPublishedAboutSection = async (
   sectionKey: string,
 ): Promise<PublishedAboutSection | null> => {
   if (!hasPublicContentDatabaseClient()) return null;
-  const row: any = await fetchPublishedAboutSectionRow(sectionKey);
-  if (!row) return null;
+  const row = toRecord(await fetchPublishedAboutSectionRow(sectionKey));
+  if (!Object.keys(row).length) return null;
   return {
-    id: row.id,
-    section_key: row.section_key,
+    id: readText(row, "id"),
+    section_key: readText(row, "section_key"),
     title: pickLocalizedText(row, "title", language),
     subtitle: pickLocalizedText(row, "subtitle", language),
     content: pickLocalizedText(row, "content", language),
-    image_url: row.image_url,
+    image_url: readText(row, "image_url") || null,
     items: pickLocalizedList(row, "items", language),
   };
 };
@@ -501,29 +503,29 @@ export const getPublishedSitePage = async (
   }
 
   if (!hasPublicContentDatabaseClient()) return null;
-  const row: any = await fetchPublishedLegacySitePageRow(pageKey);
-  const legacy: PublishedSitePage | null = row
+  const row = toRecord(await fetchPublishedLegacySitePageRow(pageKey));
+  const legacy: PublishedSitePage | null = Object.keys(row).length
     ? {
-        id: row.id,
-        page_key: row.page_key,
-        path: row.path || "",
+        id: readText(row, "id"),
+        page_key: readText(row, "page_key"),
+        path: readText(row, "path"),
         title: pickLocalizedText(row, "title", language),
         subtitle: pickLocalizedText(row, "subtitle", language),
         description: pickLocalizedText(row, "description", language),
         content: pickLocalizedText(row, "content", language),
         cta_title: pickLocalizedText(row, "cta_title", language),
         cta_description: pickLocalizedText(row, "cta_description", language),
-        image_url: row.image_url || null,
+        image_url: readText(row, "image_url") || null,
         alt: pickLocalizedText(row, "alt", language),
         seo_title: pickLocalizedText(row, "seo_title", language),
         seo_description: pickLocalizedText(row, "seo_description", language),
         seo_keywords: pickLocalizedText(row, "seo_keywords", language),
         items: pickLocalizedList(row, "items", language),
-      }
+    }
     : null;
 
-  const cmsRow: any = await fetchPublishedCmsPageByPageKey(pageKey);
-  if (!cmsRow) return legacy;
+  const cmsRow = toRecord(await fetchPublishedCmsPageByPageKey(pageKey));
+  if (!Object.keys(cmsRow).length) return legacy;
 
   return mapPublishedCmsPage(cmsRow, language, legacy);
 };
@@ -534,6 +536,6 @@ export const getPublishedCmsPageByPath = async (
 ): Promise<PublishedSitePage | null> => {
   if (!hasPublicContentDatabaseClient()) return null;
   const normalizedPath = `/${String(path || "").replace(/^\/+/, "").replace(/\/+$/, "")}`;
-  const cmsRow: any = await fetchPublishedCmsPageByPath(normalizedPath);
-  return cmsRow ? mapPublishedCmsPage(cmsRow, language) : null;
+  const cmsRow = toRecord(await fetchPublishedCmsPageByPath(normalizedPath));
+  return Object.keys(cmsRow).length ? mapPublishedCmsPage(cmsRow, language) : null;
 };

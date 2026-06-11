@@ -32,6 +32,18 @@ import {
   saveAdminService,
 } from "@/backend/modules/services/service/serviceService";
 
+type ProcessStepRecord = {
+  title?: string;
+  desc?: string;
+  [key: string]: unknown;
+};
+
+type FaqRecord = {
+  q?: string;
+  a?: string;
+  [key: string]: unknown;
+};
+
 type ServiceRecord = {
   id?: string;
   created_at?: string | null;
@@ -47,8 +59,8 @@ type ServiceRecord = {
   suitable_for_zh: string[];
   common_projects_zh: string[];
   scope_items_zh: string[];
-  process_steps_zh: any[];
-  faqs_zh: any[];
+  process_steps_zh: ProcessStepRecord[];
+  faqs_zh: FaqRecord[];
   seo_title_zh: string;
   seo_description_zh: string;
   title_en: string;
@@ -58,8 +70,8 @@ type ServiceRecord = {
   suitable_for_en: string[];
   common_projects_en: string[];
   scope_items_en: string[];
-  process_steps_en: any[];
-  faqs_en: any[];
+  process_steps_en: ProcessStepRecord[];
+  faqs_en: FaqRecord[];
   seo_title_en: string;
   seo_description_en: string;
 };
@@ -107,6 +119,14 @@ const serviceEnglishFields = [
 ];
 
 type AdminServiceEditorTextKey = keyof typeof adminServiceEditorText;
+const toPublishStatus = (value: string): ServiceRecord["status"] =>
+  value === "published" || value === "archived" ? value : "draft";
+const toStringArray = (value: unknown): string[] =>
+  Array.isArray(value) ? value.map((item) => String(item).trim()).filter(Boolean) : [];
+const toRecordArray = <T extends Record<string, unknown>>(value: unknown): T[] =>
+  Array.isArray(value)
+    ? value.filter((item): item is T => Boolean(item) && typeof item === "object" && !Array.isArray(item))
+    : [];
 
 export default function AdminServiceEditor() {
   const language = getAdminLang();
@@ -129,19 +149,20 @@ export default function AdminServiceEditor() {
 
   const loadedRecord = useMemo<ServiceRecord | undefined>(() => {
     if (isNew || !loaded) return isNew ? empty : undefined;
+    const loadedRecordData = loaded as Partial<ServiceRecord>;
     return {
       ...empty,
-      ...(loaded as any),
-      suitable_for_zh: (loaded as any).suitable_for_zh || [],
-      suitable_for_en: (loaded as any).suitable_for_en || [],
-      common_projects_zh: (loaded as any).common_projects_zh || [],
-      common_projects_en: (loaded as any).common_projects_en || [],
-      scope_items_zh: (loaded as any).scope_items_zh || [],
-      scope_items_en: (loaded as any).scope_items_en || [],
-      process_steps_zh: (loaded as any).process_steps_zh || [],
-      process_steps_en: (loaded as any).process_steps_en || [],
-      faqs_zh: (loaded as any).faqs_zh || [],
-      faqs_en: (loaded as any).faqs_en || [],
+      ...loadedRecordData,
+      suitable_for_zh: toStringArray(loadedRecordData.suitable_for_zh),
+      suitable_for_en: toStringArray(loadedRecordData.suitable_for_en),
+      common_projects_zh: toStringArray(loadedRecordData.common_projects_zh),
+      common_projects_en: toStringArray(loadedRecordData.common_projects_en),
+      scope_items_zh: toStringArray(loadedRecordData.scope_items_zh),
+      scope_items_en: toStringArray(loadedRecordData.scope_items_en),
+      process_steps_zh: toRecordArray<ProcessStepRecord>(loadedRecordData.process_steps_zh),
+      process_steps_en: toRecordArray<ProcessStepRecord>(loadedRecordData.process_steps_en),
+      faqs_zh: toRecordArray<FaqRecord>(loadedRecordData.faqs_zh),
+      faqs_en: toRecordArray<FaqRecord>(loadedRecordData.faqs_en),
     };
   }, [isNew, loaded]);
 
@@ -329,7 +350,7 @@ export default function AdminServiceEditor() {
               <label className="mb-1 block text-sm font-medium">{A("status")}</label>
               <select
                 value={record.status}
-                onChange={(e) => setRecord((r) => ({ ...r, status: e.target.value as any }))}
+                onChange={(e) => setRecord((r) => ({ ...r, status: toPublishStatus(e.target.value) }))}
                 className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
               >
                 {publishStatusOptions().map(({ value, label }) => (

@@ -1,5 +1,4 @@
 ﻿import Link from "@/components/LocalizedLink";
-import { Button } from "@/components/ui/button";
 import { ArrowRight, CheckCircle, AlertTriangle, Wrench, Droplets, Home } from "lucide-react";
 import WhatsAppIcon from "@/components/WhatsAppIcon";
 import Reveal from "@/components/Reveal";
@@ -193,12 +192,13 @@ const OldHouseRenovation = () => {
 
       <section className="subpage-link-band py-8">
         <div className="container-narrow text-center">
-          <p className="text-muted-foreground text-sm">
-            <Link to="/services" className="text-accent hover:underline">{t.internalLinks[0]}</Link>{" / "}
-            <Link to="/projects" className="text-accent hover:underline">{t.internalLinks[1]}</Link>{" / "}
-            <Link to="/quote" className="text-accent hover:underline">{t.internalLinks[2]}</Link>{" / "}
-            <Link to="/contact" className="text-accent hover:underline">{t.internalLinks[3]}</Link>
-          </p>
+          <div className="flex flex-wrap justify-center gap-x-4 gap-y-2 text-sm text-muted-foreground">
+            {t.internalLinks.map((item) => (
+              <Link key={item.to} to={item.to} className="text-accent hover:underline">
+                {item.label}
+              </Link>
+            ))}
+          </div>
         </div>
       </section>
     </main>

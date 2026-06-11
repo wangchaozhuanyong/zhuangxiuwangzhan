@@ -1,6 +1,7 @@
 import { requireSupabase } from "@/lib/supabase";
+import type { Json } from "@/lib/database.types";
 
-export type AdminMutationDbRecord = Record<string, any>;
+export type AdminMutationDbRecord = Record<string, unknown>;
 
 export async function insertAdminAuditLog(args: {
   table: string;
@@ -16,8 +17,8 @@ export async function insertAdminAuditLog(args: {
     action: args.action,
     table_name: args.table,
     record_id: args.id == null ? null : String(args.id),
-    old_value: (args.oldValue || null) as any,
-    new_value: (args.newValue || null) as any,
+    old_value: (args.oldValue || null) as Json | null,
+    new_value: (args.newValue || null) as Json | null,
   });
 }
 

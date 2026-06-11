@@ -7,11 +7,12 @@ import { homeSectionText } from "@/i18n/homeSectionsText";
 import { usePublishedHeroSlides } from "@/hooks/usePublishedContent";
 import { useSiteSettings } from "@/hooks/useSiteSettings";
 import { trackCtaClick } from "@/lib/analytics";
+import type { PublishedHeroSlide } from "@/lib/contentApi";
 import type { PublishedSitePage } from "@/lib/homeContentApi";
 
 type HeroSectionProps = {
   pageContent?: PublishedSitePage | null;
-  heroSlides?: any[];
+  heroSlides?: PublishedHeroSlide[];
 };
 
 type HeroMediaVariant = "desktop" | "tablet" | "mobile";

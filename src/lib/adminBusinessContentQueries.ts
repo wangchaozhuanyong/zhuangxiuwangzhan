@@ -77,30 +77,31 @@ export type AdminBlogRow = {
 };
 
 export type AdminContentTable = "services" | "projects" | "materials" | "blog_posts";
+export type AdminBusinessRecord = Record<string, unknown>;
 
-const loadAdminBusinessRecord = async (table: AdminContentTable, id: string): Promise<Record<string, any>> => {
+const loadAdminBusinessRecord = async (table: AdminContentTable, id: string): Promise<AdminBusinessRecord> => {
   switch (table) {
     case "services":
-      return (await loadAdminServiceDetail(id)) as Record<string, any>;
+      return (await loadAdminServiceDetail(id)) as AdminBusinessRecord;
     case "projects":
-      return (await loadAdminProjectDetail(id)) as Record<string, any>;
+      return (await loadAdminProjectDetail(id)) as AdminBusinessRecord;
     case "materials":
-      return (await loadAdminMaterialDetail(id)) as Record<string, any>;
+      return (await loadAdminMaterialDetail(id)) as AdminBusinessRecord;
     case "blog_posts":
-      return (await loadAdminBlogPostDetail(id)) as Record<string, any>;
+      return (await loadAdminBlogPostDetail(id)) as AdminBusinessRecord;
   }
 };
 
-const loadAdminBusinessRows = async (table: AdminContentTable, limit: number): Promise<Record<string, any>[]> => {
+const loadAdminBusinessRows = async (table: AdminContentTable, limit: number): Promise<AdminBusinessRecord[]> => {
   switch (table) {
     case "services":
-      return (await loadAdminServiceRows(limit)) as Record<string, any>[];
+      return (await loadAdminServiceRows(limit)) as AdminBusinessRecord[];
     case "projects":
-      return (await loadAdminProjectRows(limit)) as Record<string, any>[];
+      return (await loadAdminProjectRows(limit)) as AdminBusinessRecord[];
     case "materials":
-      return (await loadAdminMaterialRows(limit)) as Record<string, any>[];
+      return (await loadAdminMaterialRows(limit)) as AdminBusinessRecord[];
     case "blog_posts":
-      return (await loadAdminBlogPostRows(limit)) as Record<string, any>[];
+      return (await loadAdminBlogPostRows(limit)) as AdminBusinessRecord[];
   }
 };
 

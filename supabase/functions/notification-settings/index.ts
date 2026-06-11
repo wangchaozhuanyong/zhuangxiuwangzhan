@@ -1,15 +1,16 @@
 import { serve } from "https://deno.land/std@0.224.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { getServiceRoleKey, requireAdminAccess, requireSuperAdminAccess } from "../_shared/admin-auth.ts";
+import { corsHeadersFor, handleCorsPreflight, isAllowedCorsOrigin } from "../_shared/cors.ts";
 import { handleNotificationSettingsAction } from "./service.ts";
 
-const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
-};
-
 serve(async (req) => {
-  if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
+  const corsHeaders = corsHeadersFor(req, { methods: "GET, POST, OPTIONS" });
+  if (req.method === "OPTIONS") return handleCorsPreflight(req, { methods: "GET, POST, OPTIONS" });
+  if (!isAllowedCorsOrigin(req)) return Response.json({ error: "Origin not allowed" }, { status: 403, headers: corsHeaders });
+  if (req.method !== "GET" && req.method !== "POST") {
+    return Response.json({ error: "Method not allowed" }, { status: 405, headers: corsHeaders });
+  }
 
   try {
     const serviceRoleKey = getServiceRoleKey();

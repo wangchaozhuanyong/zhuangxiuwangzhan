@@ -29,7 +29,12 @@ const emptyImage = {
   image_type: "gallery",
   alt_zh: "",
   alt_en: "",
-  sort_order: 0,
+  sort_order: 0 as string | number,
+};
+
+type AdminProjectImageDraft = typeof emptyImage;
+type AdminProjectImageRow = AdminProjectImageDraft & {
+  id: string;
 };
 
 const copy = adminProjectImagesText;
@@ -42,7 +47,7 @@ const AdminProjectImages = ({ projectId }: AdminProjectImagesProps) => {
   const lang = getAdminLang();
   const t = copy[lang];
   const { data: images = [], refetch } = useAdminProjectImages(projectId);
-  const [draft, setDraft] = useState<any>(emptyImage);
+  const [draft, setDraft] = useState<AdminProjectImageDraft>(emptyImage);
   const [status, setStatus] = useState("");
   const [adding, setAdding] = useState(false);
   const [coverBusyId, setCoverBusyId] = useState<string | null>(null);
@@ -75,7 +80,7 @@ const AdminProjectImages = ({ projectId }: AdminProjectImagesProps) => {
     }
   };
 
-  const updateImage = async (image: any, patch: Record<string, any>) => {
+  const updateImage = async (image: AdminProjectImageRow, patch: Record<string, unknown>) => {
     try {
       await updateAdminProjectImage(image.id, patch);
       refreshProjectCaches();
@@ -87,7 +92,7 @@ const AdminProjectImages = ({ projectId }: AdminProjectImagesProps) => {
     }
   };
 
-  const setAsCover = async (image: any) => {
+  const setAsCover = async (image: AdminProjectImageRow) => {
     if (!projectId || coverBusyId) return;
     setCoverBusyId(image.id);
     setStatus("");

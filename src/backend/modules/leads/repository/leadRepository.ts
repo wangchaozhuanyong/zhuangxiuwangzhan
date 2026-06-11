@@ -1,5 +1,8 @@
 import { requireSupabase } from "@/lib/supabase";
 import { adminDayStartIso, adminSince24hIso, type AdminWorkflowFilter } from "@/lib/adminLeadWorkflow";
+import type { Database } from "@/lib/database.types";
+
+type LeadStatus = NonNullable<Database["public"]["Tables"]["leads"]["Row"]["status"]>;
 
 export type LeadUpdatePatch = Record<string, unknown>;
 
@@ -16,23 +19,6 @@ export type AdminListPage<T> = {
   count: number;
   page: number;
   pageSize: number;
-};
-
-const applySearch = (query: any, fields: string[], search?: string) => {
-  if (!search) return query;
-  return query.or(fields.map((field) => `${field}.ilike.%${search}%`).join(","));
-};
-
-const applyLeadWorkflowFilter = (query: any, workflow?: AdminWorkflowFilter) => {
-  if (!workflow || workflow === "all") return query;
-  const now = new Date();
-
-  if (workflow === "today") return query.gte("created_at", adminDayStartIso(now));
-  if (workflow === "due_followups") return query.not("next_follow_up_at", "is", null).lte("next_follow_up_at", now.toISOString());
-  if (workflow === "stale24") return query.eq("status", "new").lt("created_at", adminSince24hIso(now));
-  if (workflow === "to_quote") return query.in("status", ["contacted", "site_visit_scheduled"]);
-
-  return query;
 };
 
 export async function updateLeadRecord(leadId: string, patch: LeadUpdatePatch) {
@@ -53,15 +39,29 @@ export async function invokeSubmitLeadFunction(body: Record<string, unknown>) {
   return data as { ok?: boolean; id?: string };
 }
 
-export async function fetchAdminLeadList<T extends Record<string, any>>(input: AdminLeadListRepositoryInput): Promise<AdminListPage<T>> {
+export async function fetchAdminLeadList<T extends Record<string, unknown>>(input: AdminLeadListRepositoryInput): Promise<AdminListPage<T>> {
   const supabase = requireSupabase();
   const from = input.page * input.pageSize;
   const to = from + input.pageSize - 1;
 
   let query = supabase.from("leads").select("*", { count: "exact" });
-  if (input.status && input.status !== "all") query = query.eq("status", input.status as any);
-  query = applyLeadWorkflowFilter(query, input.workflow);
-  query = applySearch(query, ["name", "phone", "email", "location", "source_path", "project_type"], input.search);
+  if (input.status && input.status !== "all") query = query.eq("status", input.status as LeadStatus);
+  if (input.workflow && input.workflow !== "all") {
+    const now = new Date();
+    if (input.workflow === "today") query = query.gte("created_at", adminDayStartIso(now));
+    if (input.workflow === "due_followups") {
+      query = query.not("next_follow_up_at", "is", null).lte("next_follow_up_at", now.toISOString());
+    }
+    if (input.workflow === "stale24") query = query.eq("status", "new").lt("created_at", adminSince24hIso(now));
+    if (input.workflow === "to_quote") query = query.in("status", ["contacted", "site_visit_scheduled"]);
+  }
+  if (input.search) {
+    query = query.or(
+      ["name", "phone", "email", "location", "source_path", "project_type"]
+        .map((field) => `${field}.ilike.%${input.search}%`)
+        .join(","),
+    );
+  }
   query = query.order("created_at", { ascending: false });
 
   const { data, error, count } = await query.range(from, to);

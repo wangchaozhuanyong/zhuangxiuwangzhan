@@ -2,7 +2,7 @@
 import { useMemo } from "react";
 import Link from "@/components/LocalizedLink";
 import { Button } from "@/components/ui/button";
-import { ArrowRight, CheckCircle, MapPin, Star } from "lucide-react";
+import { ArrowRight, CheckCircle, MapPin } from "lucide-react";
 import WhatsAppIcon from "@/components/WhatsAppIcon";
 import Reveal from "@/components/Reveal";
 import FAQSection from "@/components/blocks/FAQSection";

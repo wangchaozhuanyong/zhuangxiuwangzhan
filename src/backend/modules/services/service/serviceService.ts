@@ -10,12 +10,30 @@ import {
   type AdminServiceListInput,
 } from "@/backend/modules/services/repository/serviceRepository";
 
-type AdminServiceRecord = Record<string, any> & {
+type TextPairItem = {
+  title?: string | null;
+  desc?: string | null;
+  q?: string | null;
+  a?: string | null;
+  [key: string]: unknown;
+};
+
+type AdminServiceRecord = Record<string, unknown> & {
   id?: string;
   updated_at?: string | null;
   slug?: string;
   status?: "draft" | "published" | "archived";
   title_zh?: string;
+  suitable_for_zh?: string[] | null;
+  suitable_for_en?: string[] | null;
+  common_projects_zh?: string[] | null;
+  common_projects_en?: string[] | null;
+  scope_items_zh?: string[] | null;
+  scope_items_en?: string[] | null;
+  process_steps_zh?: TextPairItem[] | null;
+  process_steps_en?: TextPairItem[] | null;
+  faqs_zh?: TextPairItem[] | null;
+  faqs_en?: TextPairItem[] | null;
 };
 
 export type SaveAdminServiceInput = {
@@ -36,12 +54,12 @@ export const normalizeServiceSlug = (value: string) =>
 
 const cleanLines = (value?: string[] | null) => (value || []).map((item) => item.trim()).filter(Boolean);
 
-const cleanProcessSteps = (value?: any[] | null) =>
+const cleanProcessSteps = (value?: TextPairItem[] | null) =>
   (value || [])
     .map((item) => ({ ...item, title: String(item?.title || "").trim(), desc: String(item?.desc || "").trim() }))
     .filter((item) => item.title || item.desc);
 
-const cleanFaqs = (value?: any[] | null) =>
+const cleanFaqs = (value?: TextPairItem[] | null) =>
   (value || [])
     .map((item) => ({ ...item, q: String(item?.q || "").trim(), a: String(item?.a || "").trim() }))
     .filter((item) => item.q || item.a);
@@ -99,7 +117,7 @@ export function generateAdminServiceEnglish(serviceId: string, force: boolean) {
   return invokeServiceEnglishGeneration(serviceId, force);
 }
 
-export function loadAdminServiceList<T extends Record<string, any>>(input: AdminServiceListInput) {
+export function loadAdminServiceList<T extends Record<string, unknown>>(input: AdminServiceListInput) {
   return fetchAdminServiceList<T>(input);
 }
 

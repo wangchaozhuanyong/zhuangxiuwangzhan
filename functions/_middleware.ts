@@ -53,6 +53,7 @@ const DEFAULT_MAP_LATITUDE = "3.0830403";
 const DEFAULT_MAP_LONGITUDE = "101.6708234";
 const PUBLIC_HTML_BROWSER_TTL_SECONDS = 60;
 const PUBLIC_HTML_EDGE_TTL_SECONDS = 300;
+const PUBLIC_HTML_CACHE_VERSION = "20260610-google-ads-tag";
 const SITE_SETTINGS_CACHE_TTL_MS = 5 * 60 * 1000;
 const PUBLIC_PROJECT_SUMMARIES_CACHE_TTL_MS = 5 * 60 * 1000;
 const PUBLIC_PROJECT_DETAIL_CACHE_TTL_MS = 5 * 60 * 1000;
@@ -60,6 +61,43 @@ const PUBLIC_HOME_BUNDLE_CACHE_TTL_MS = 5 * 60 * 1000;
 const PUBLIC_PAGE_DATA_CACHE_TTL_MS = 5 * 60 * 1000;
 const HERO_MEDIA_VERSION = "20260531-mobile-source-fix";
 const HTML_CACHE_DEBUG_HEADER = "x-flashcast-html-cache";
+const PRODUCTION_SCRIPT_SRC = [
+  "'self'",
+  "https://challenges.cloudflare.com",
+  "https://static.cloudflareinsights.com",
+  "https://www.googletagmanager.com",
+];
+const CSP_DIRECTIVES = (scriptSrc: string[]) => [
+  ["default-src", "'self'"],
+  ["base-uri", "'self'"],
+  ["object-src", "'none'"],
+  ["frame-ancestors", "'none'"],
+  ["script-src", ...scriptSrc],
+  ["style-src", "'self'", "'unsafe-inline'", "https://fonts.googleapis.com"],
+  ["font-src", "'self'", "https://fonts.gstatic.com", "data:"],
+  ["img-src", "'self'", "data:", "blob:", "https:"],
+  ["media-src", "'self'", "blob:", "https:"],
+  [
+    "connect-src",
+    "'self'",
+    "https://*.supabase.co",
+    "wss://*.supabase.co",
+    "https://api.telegram.org",
+    "https://nominatim.openstreetmap.org",
+    "https://cloudflareinsights.com",
+    "https://challenges.cloudflare.com",
+    "https://static.cloudflareinsights.com",
+    "https://www.google-analytics.com",
+    "https://analytics.google.com",
+    "https://www.googleadservices.com",
+    "https://googleads.g.doubleclick.net",
+    "https://stats.g.doubleclick.net",
+    "https://region1.google-analytics.com",
+  ],
+  ["frame-src", "https://www.google.com", "https://maps.google.com", "https://challenges.cloudflare.com"],
+  ["form-action", "'self'"],
+];
+const INLINE_SCRIPT_PATTERN = /<script\b(?![^>]*\bsrc=)[^>]*>([\s\S]*?)<\/script>/gi;
 type HtmlCacheDebugState = "hit" | "miss" | "bypass-admin" | "bypass-not-found";
 
 let siteSettingsCache:
@@ -116,6 +154,41 @@ const escapeHtml = (value: string) =>
     .replace(/</g, "&lt;")
     .replace(/>/g, "&gt;")
     .replace(/"/g, "&quot;");
+
+const serializeCsp = (items: string[][]) => items.map(([name, ...values]) => `${name} ${values.join(" ")}`).join("; ");
+
+const toBase64 = (buffer: ArrayBuffer) => {
+  const bytes = new Uint8Array(buffer);
+  let binary = "";
+  for (const byte of bytes) {
+    binary += String.fromCharCode(byte);
+  }
+  return btoa(binary);
+};
+
+const getInlineScriptHashes = async (html: string) => {
+  const hashes = new Set<string>();
+  const encoder = new TextEncoder();
+
+  for (const match of html.matchAll(INLINE_SCRIPT_PATTERN)) {
+    const content = match[1] ?? "";
+    if (!content.trim()) continue;
+    const digest = await crypto.subtle.digest("SHA-256", encoder.encode(content));
+    hashes.add(`'sha256-${toBase64(digest)}'`);
+  }
+
+  return [...hashes];
+};
+
+const buildHtmlContentSecurityPolicy = async (html: string) => {
+  const inlineScriptHashes = await getInlineScriptHashes(html);
+  return `${serializeCsp(CSP_DIRECTIVES([...PRODUCTION_SCRIPT_SRC, ...inlineScriptHashes]))}; upgrade-insecure-requests`;
+};
+
+const applyHtmlSecurityHeaders = async (headers: Headers, html: string) => {
+  headers.delete("access-control-allow-origin");
+  headers.set("content-security-policy", await buildHtmlContentSecurityPolicy(html));
+};
 
 const addCacheBuster = (url: string, version?: string | null) => {
   if (!url || !version) return url;
@@ -730,6 +803,10 @@ const EXACT_LEGACY_REDIRECTS: Record<string, string> = {
   "/zh/materials/spc-vinyl-natural-oak": "/zh/materials/spc-flooring-natural-oak",
   "/en/projects/mont-kiara-condo-renovation": "/en/projects/mont-kiara-luxury-condo-renovation",
   "/zh/projects/mont-kiara-condo-renovation": "/zh/projects/mont-kiara-luxury-condo-renovation",
+  "/en/services/office": "/en/services/office-renovation",
+  "/zh/services/office": "/zh/services/office-renovation",
+  "/en/services/shoplot": "/en/services/shop-renovation",
+  "/zh/services/shoplot": "/zh/services/shop-renovation",
 };
 
 const redirect = (to: URL) =>
@@ -879,6 +956,7 @@ const getEdgeCache = () => {
 const getPublicHtmlCacheRequest = (request: Request) => {
   const cacheUrl = new URL(request.url);
   cacheUrl.search = "";
+  cacheUrl.searchParams.set("__flashcast_html_v", PUBLIC_HTML_CACHE_VERSION);
   cacheUrl.hash = "";
   return new Request(cacheUrl.toString(), { method: "GET" });
 };
@@ -943,16 +1021,17 @@ export const onRequest: PagesFunction = async (context) => {
     return response;
   }
 
-  if (url.pathname === "/admin" || url.pathname.startsWith("/admin/")) {
-    const html = await response.text();
-    const robotsTag = '<meta data-rh="true" name="robots" content="noindex, nofollow" />';
-    const transformed = html.includes("noindex")
-      ? html
-      : html.replace("</head>", `    ${robotsTag}\n  </head>`);
-    const headers = new Headers(response.headers);
-    applyHtmlNoStoreHeaders(headers);
-    return withHtmlCacheDebugHeader(new Response(transformed, { status: response.status, headers }), "bypass-admin");
-  }
+	  if (url.pathname === "/admin" || url.pathname.startsWith("/admin/")) {
+	    const html = await response.text();
+	    const robotsTag = '<meta data-rh="true" name="robots" content="noindex, nofollow" />';
+	    const transformed = html.includes("noindex")
+	      ? html
+	      : html.replace("</head>", `    ${robotsTag}\n  </head>`);
+	    const headers = new Headers(response.headers);
+	    applyHtmlNoStoreHeaders(headers);
+	    await applyHtmlSecurityHeaders(headers, transformed);
+	    return withHtmlCacheDebugHeader(new Response(transformed, { status: response.status, headers }), "bypass-admin");
+	  }
 
   const projectDetailSlug = getProjectDetailSlugFromKey(key);
   const topLevelPublicPageKey = getTopLevelPublicPageKey(key);
@@ -1034,13 +1113,14 @@ export const onRequest: PagesFunction = async (context) => {
     env as Record<string, string | undefined>,
   );
   const headers = new Headers(response.headers);
-  if (meta) {
-    applyPublicHtmlCacheHeaders(headers);
-  } else {
-    applyHtmlNoStoreHeaders(headers);
-  }
+	  if (meta) {
+	    applyPublicHtmlCacheHeaders(headers);
+	  } else {
+	    applyHtmlNoStoreHeaders(headers);
+	  }
+	  await applyHtmlSecurityHeaders(headers, transformed);
 
-  const finalResponse = withHtmlCacheDebugHeader(
+	  const finalResponse = withHtmlCacheDebugHeader(
     new Response(transformed, { status: meta ? response.status : 404, headers }),
     meta ? "miss" : "bypass-not-found",
   );

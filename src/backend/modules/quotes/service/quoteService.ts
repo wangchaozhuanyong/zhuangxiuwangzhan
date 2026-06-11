@@ -23,7 +23,7 @@ export function updateAdminQuote(quoteRequestId: string, patch: QuoteUpdatePatch
   return updateQuoteRecord(quoteRequestId, patch);
 }
 
-export function loadAdminQuotes<T extends Record<string, any>>(input: AdminQuoteListRepositoryInput) {
+export function loadAdminQuotes<T extends Record<string, unknown>>(input: AdminQuoteListRepositoryInput) {
   return fetchAdminQuoteList<T>(input);
 }
 

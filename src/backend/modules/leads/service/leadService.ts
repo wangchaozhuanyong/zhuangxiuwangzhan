@@ -9,6 +9,7 @@ import {
   type LeadUpdatePatch,
 } from "@/backend/modules/leads/repository/leadRepository";
 import type { FormGuardFields } from "@/lib/formGuard";
+import { getTurnstileToken } from "@/lib/turnstile";
 
 export type AddAdminLeadFollowupInput = {
   leadId: string;
@@ -52,7 +53,7 @@ export function updateAdminLead(leadId: string, patch: LeadUpdatePatch) {
   return updateLeadRecord(leadId, patch);
 }
 
-export function loadAdminLeads<T extends Record<string, any>>(input: AdminLeadListRepositoryInput) {
+export function loadAdminLeads<T extends Record<string, unknown>>(input: AdminLeadListRepositoryInput) {
   return fetchAdminLeadList<T>(input);
 }
 
@@ -66,6 +67,7 @@ export function loadAdminLeadReportRows(startIso?: string | null) {
 
 export const submitContactLead = async (payload: ContactSubmission & FormGuardFields) => {
   const elapsedMs = Math.max(0, Date.now() - payload.startedAt);
+  const turnstileToken = await getTurnstileToken("contact");
   const data = await invokeSubmitLeadFunction({
     type: "contact",
     name: payload.name,
@@ -78,12 +80,14 @@ export const submitContactLead = async (payload: ContactSubmission & FormGuardFi
     website: payload.website,
     startedAt: payload.startedAt,
     elapsedMs,
+    turnstileToken,
   });
   return { id: data.id || "" };
 };
 
 export const submitQuoteRequest = async (payload: QuoteSubmission & FormGuardFields) => {
   const elapsedMs = Math.max(0, Date.now() - payload.startedAt);
+  const turnstileToken = await getTurnstileToken("quote");
   const data = await invokeSubmitLeadFunction({
     type: "quote",
     name: payload.name,
@@ -98,6 +102,7 @@ export const submitQuoteRequest = async (payload: QuoteSubmission & FormGuardFie
     website: payload.website,
     startedAt: payload.startedAt,
     elapsedMs,
+    turnstileToken,
   });
   return { id: data.id || "" };
 };

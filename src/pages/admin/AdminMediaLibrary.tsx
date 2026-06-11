@@ -114,7 +114,7 @@ const AdminMediaLibrary = () => {
     }
   };
 
-  const banner = message || (error ? (error as any).message : "");
+  const banner = message || (error instanceof Error ? error.message : error ? String(error) : "");
 
   return (
     <div className="space-y-6">

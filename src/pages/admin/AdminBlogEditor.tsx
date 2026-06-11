@@ -94,6 +94,10 @@ const blogEnglishFields = [
 
 const parseLines = (value: string) => value.split("\n").map((s) => s.trim()).filter(Boolean);
 const formatLines = (value?: string[] | null) => (value || []).join("\n");
+const toPublishStatus = (value: string): BlogRecord["status"] =>
+  value === "published" || value === "archived" ? value : "draft";
+const toStringArray = (value: unknown): string[] =>
+  Array.isArray(value) ? value.map((item) => String(item).trim()).filter(Boolean) : [];
 
 // Convert timestamptz -> datetime-local value (no timezone support in input)
 const toLocalInput = (iso: string | null | undefined) => {
@@ -124,12 +128,13 @@ export default function AdminBlogEditor() {
 
   const loadedRecord = useMemo<BlogRecord | undefined>(() => {
     if (isNew || !loaded) return isNew ? empty : undefined;
+    const loadedRecordData = loaded as Partial<BlogRecord>;
     return {
       ...empty,
-      ...(loaded as any),
-      tags: (loaded as any).tags || [],
-      published_at: (loaded as any).published_at || null,
-      sort_order: Number((loaded as any).sort_order || 0),
+      ...loadedRecordData,
+      tags: toStringArray(loadedRecordData.tags),
+      published_at: loadedRecordData.published_at || null,
+      sort_order: Number(loadedRecordData.sort_order || 0),
     };
   }, [isNew, loaded]);
 
@@ -322,7 +327,7 @@ export default function AdminBlogEditor() {
               <label className="mb-1 block text-sm font-medium">{A("status")}</label>
               <select
                 value={record.status}
-                onChange={(e) => setRecord((r) => ({ ...r, status: e.target.value as any }))}
+                onChange={(e) => setRecord((r) => ({ ...r, status: toPublishStatus(e.target.value) }))}
                 className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
               >
                 {publishStatusOptions().map(({ value, label }) => (

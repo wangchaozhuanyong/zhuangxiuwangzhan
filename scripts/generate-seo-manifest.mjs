@@ -25,7 +25,15 @@ const legacyRedirectPaths = new Set([
   "/zh/materials/melamine-grey-oak",
   "/en/materials/spc-vinyl-natural-oak",
   "/zh/materials/spc-vinyl-natural-oak",
+  "/en/services/office",
+  "/zh/services/office",
+  "/en/services/shoplot",
+  "/zh/services/shoplot",
 ]);
+
+for (const path of legacyRedirectPaths) {
+  delete manifest[path];
+}
 
 const materialCategories = [
   {

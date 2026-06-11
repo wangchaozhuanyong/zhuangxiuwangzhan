@@ -43,7 +43,7 @@ type SeedSummary = {
   error?: string;
 };
 
-type DbRow = Record<string, any>;
+type DbRow = Record<string, unknown>;
 
 const AUTO_SEED_CACHE_KEY = "flashcast_admin_default_seed_checked_at";
 const AUTO_SEED_CACHE_MS = 7 * 24 * 60 * 60 * 1000;
@@ -145,28 +145,28 @@ const buildBlankPatch = (current: DbRow, defaults: DbRow) => {
 const serviceRows = servicesData.map((service, index) => ({
   slug: service.slug,
   title_en: service.title,
-  title_zh: zh(service.title),
+  title_zh: service.titleZh || zh(service.title),
   excerpt_en: service.summary,
-  excerpt_zh: zh(service.summary),
+  excerpt_zh: service.summaryZh || zh(service.summary),
   content_en: paragraphsToHtml(service.description),
-  content_zh: paragraphsToHtml(zh(service.description)),
+  content_zh: paragraphsToHtml(service.descriptionZh || zh(service.description)),
   image_url: asPublicImage(service.image, "services"),
   alt_en: service.title,
-  alt_zh: zh(service.title),
+  alt_zh: service.titleZh || zh(service.title),
   suitable_for_en: service.suitableFor,
-  suitable_for_zh: service.suitableFor.map(zh),
+  suitable_for_zh: service.suitableForZh || service.suitableFor.map(zh),
   common_projects_en: service.commonProjects,
-  common_projects_zh: service.commonProjects.map(zh),
+  common_projects_zh: service.commonProjectsZh || service.commonProjects.map(zh),
   process_steps_en: service.processSteps,
-  process_steps_zh: service.processSteps.map((step) => ({ title: zh(step.title), desc: zh(step.desc) })),
+  process_steps_zh: service.processStepsZh || service.processSteps.map((step) => ({ title: zh(step.title), desc: zh(step.desc) })),
   scope_items_en: service.items,
-  scope_items_zh: service.items.map(zh),
+  scope_items_zh: service.itemsZh || service.items.map(zh),
   faqs_en: service.faqs,
-  faqs_zh: service.faqs.map((faq) => ({ q: zh(faq.q), a: zh(faq.a) })),
-  seo_title_en: `${service.title} Kuala Lumpur | FLASH CAST`,
-  seo_title_zh: `${zh(service.title)} | FLASH CAST`,
-  seo_description_en: service.summary,
-  seo_description_zh: zh(service.summary),
+  faqs_zh: service.faqsZh || service.faqs.map((faq) => ({ q: zh(faq.q), a: zh(faq.a) })),
+  seo_title_en: service.seoTitle || `${service.title} Kuala Lumpur | FLASH CAST`,
+  seo_title_zh: service.seoTitleZh || `${service.titleZh || zh(service.title)} | FLASH CAST`,
+  seo_description_en: service.seoDescription || service.summary,
+  seo_description_zh: service.seoDescriptionZh || service.summaryZh || zh(service.summary),
   status: "published",
   sort_order: (index + 1) * 10,
 }));
@@ -893,6 +893,9 @@ const patchOrInsertByKey = async (table: string, key: string, rows: DbRow[]) => 
 
     const patch = buildBlankPatch(existing, row);
     if (Object.keys(patch).length) {
+      if (existing.id === undefined || existing.id === null || (typeof existing.id !== "string" && typeof existing.id !== "number")) {
+        throw new Error(`Cannot update ${table}: existing seed row is missing a valid id.`);
+      }
       await updateDefaultContentSeedRow(table, existing.id, patch);
       updated += 1;
     }

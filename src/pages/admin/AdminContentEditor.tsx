@@ -43,13 +43,19 @@ import { generateAdminContentEnglish } from "@/backend/modules/cms/service/cmsSe
 import { formatUserFacingError } from "@/lib/userFacingText";
 
 const formatGenerationError = (error: unknown, language: "en" | "zh") => formatUserFacingError(error, language);
+type AdminContentRecord = Record<string, unknown>;
+const toRecordId = (value: unknown): string | number | undefined =>
+  typeof value === "string" || typeof value === "number" ? value : undefined;
+const toOptionalString = (value: unknown): string | null =>
+  typeof value === "string" ? value : null;
+const toTextValue = (value: unknown): string => (typeof value === "string" ? value : "");
 
 const AdminContentEditor = () => {
   const { type = "projects", id } = useParams<{ type: string; id?: string }>();
   const queryClient = useQueryClient();
   const lang = getAdminLang();
   const t = copy[lang];
-  const [record, setRecord] = useState<Record<string, any>>({});
+  const [record, setRecord] = useState<AdminContentRecord>({});
   const recordDirtyRef = useRef(false);
   const [recordDirty, setRecordDirty] = useState(false);
   const [status, setStatus] = useState("");
@@ -57,7 +63,7 @@ const AdminContentEditor = () => {
   const [statusFilter, setStatusFilter] = useState("all");
   const deferredSearch = useDeferredValue(search);
 
-  const setRecordField = useCallback((patch: Record<string, any> | ((prev: Record<string, any>) => Record<string, any>)) => {
+  const setRecordField = useCallback((patch: AdminContentRecord | ((prev: AdminContentRecord) => AdminContentRecord)) => {
     recordDirtyRef.current = true;
     setRecordDirty(true);
     setRecord((prev) => (typeof patch === "function" ? patch(prev) : { ...prev, ...patch }));
@@ -112,13 +118,13 @@ const AdminContentEditor = () => {
       payload[field] = parseFieldValue(field, payload[field]);
     }
 
-    let savedRecord: Record<string, any>;
+    let savedRecord: AdminContentRecord;
     try {
       savedRecord = await saveAdminRecord({
         table: type,
         payload,
-        id: record.id,
-        expectedUpdatedAt: record.updated_at || null,
+        id: toRecordId(record.id),
+        expectedUpdatedAt: toOptionalString(record.updated_at),
         queryClient,
       });
     } catch (error) {
@@ -133,9 +139,9 @@ const AdminContentEditor = () => {
     const hasChineseContent = Object.keys(payload).some((field) => field.endsWith("_zh") && payload[field]);
     if (autoTranslateTables.has(type) && hasChineseContent) {
       setStatus(t.generatingEnglish);
-      let translatedRecord: Record<string, any> | null;
+      let translatedRecord: AdminContentRecord | null;
       try {
-        translatedRecord = await generateAdminContentEnglish<Record<string, any>>(type, savedRecord.id, false);
+        translatedRecord = await generateAdminContentEnglish<AdminContentRecord>(type, String(savedRecord.id), false);
       } catch (error) {
         setStatus(t.generationFailed(formatGenerationError(error, lang)));
         return;
@@ -159,15 +165,16 @@ const AdminContentEditor = () => {
   };
 
   const regenerateEnglish = async () => {
-    if (!record.id) {
+    const recordId = toRecordId(record.id);
+    if (!recordId) {
       setStatus(t.saveFirst);
       return;
     }
 
     setStatus(t.generating);
-    let translatedRecord: Record<string, any> | null;
+    let translatedRecord: AdminContentRecord | null;
     try {
-      translatedRecord = await generateAdminContentEnglish<Record<string, any>>(type, record.id, true);
+      translatedRecord = await generateAdminContentEnglish<AdminContentRecord>(type, String(recordId), true);
     } catch (error) {
       setStatus(formatGenerationError(error, lang));
       return;
@@ -234,7 +241,7 @@ const AdminContentEditor = () => {
           <div className="space-y-2">
             {filteredRows.map((row) => (
               <button
-                key={row.id}
+                key={String(row.id)}
                 className="block w-full rounded-lg border border-border p-3 text-left text-sm hover:bg-muted"
                 onClick={() => {
                   recordDirtyRef.current = false;
@@ -324,8 +331,8 @@ const AdminContentEditor = () => {
                       <div className="space-y-3">
                         <Input value={formatFieldValue(field, record[field])} onChange={(event) => setRecordField({ [field]: event.target.value })} />
                         <AdminImageUpload
-                          value={record[field]}
-                          folder={`${type}/${record.id || "draft"}`}
+                          value={toTextValue(record[field])}
+                          folder={`${type}/${toRecordId(record.id) || "draft"}`}
                           previewVariant={getAdminImagePreviewVariant(field)}
                           recordAsset
                           assetUsageType={type === "projects" ? "project" : type === "materials" ? "material" : type === "blog_posts" ? "blog" : "general"}
@@ -343,7 +350,7 @@ const AdminContentEditor = () => {
               );
             })}
           </div>
-          {type === "projects" && <AdminProjectImages projectId={record.id} />}
+          {type === "projects" && <AdminProjectImages projectId={String(toRecordId(record.id) || "")} />}
         </div>
       </div>
   );

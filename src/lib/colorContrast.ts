@@ -30,23 +30,30 @@ const parseHexColor = (color: string): RgbColor | null => {
 const parseRgbColor = (color: string): RgbColor | null => {
   const match = color.match(/rgba?\(([^)]+)\)/i);
 
-  if (!match) {
+  const value = match?.[1];
+  if (!value) {
     return null;
   }
 
-  const channels = match[1]
+  const channels = value
     .split(",")
     .slice(0, 3)
     .map((channel) => Number(channel.trim()));
+  const [red, green, blue] = channels;
 
-  if (channels.length < 3 || channels.some((channel) => Number.isNaN(channel))) {
+  if (
+    red === undefined ||
+    green === undefined ||
+    blue === undefined ||
+    channels.some((channel) => Number.isNaN(channel))
+  ) {
     return null;
   }
 
   return {
-    r: clampRgb(channels[0]),
-    g: clampRgb(channels[1]),
-    b: clampRgb(channels[2]),
+    r: clampRgb(red),
+    g: clampRgb(green),
+    b: clampRgb(blue),
   };
 };
 
@@ -56,7 +63,7 @@ const hslToRgb = (h: number, s: number, l: number): RgbColor => {
   const chroma = (1 - Math.abs(2 * lightness - 1)) * saturation;
   const segment = h / 60;
   const x = chroma * (1 - Math.abs((segment % 2) - 1));
-  const match =
+  const match: [number, number, number] =
     segment >= 0 && segment < 1
       ? [chroma, x, 0]
       : segment >= 1 && segment < 2
@@ -80,14 +87,21 @@ const hslToRgb = (h: number, s: number, l: number): RgbColor => {
 const parseHslColor = (color: string): RgbColor | null => {
   const match = color.match(/hsla?\(([^)]+)\)/i);
 
-  if (!match) {
+  const value = match?.[1];
+  if (!value) {
     return null;
   }
 
-  const channels = match[1].replace(/\//g, " ").split(/[\s,]+/).filter(Boolean);
-  const hue = Number(channels[0]);
-  const saturation = Number(channels[1]?.replace("%", ""));
-  const lightness = Number(channels[2]?.replace("%", ""));
+  const channels = value.replace(/\//g, " ").split(/[\s,]+/).filter(Boolean);
+  const [rawHue, rawSaturation, rawLightness] = channels;
+
+  if (!rawHue || !rawSaturation || !rawLightness) {
+    return null;
+  }
+
+  const hue = Number(rawHue);
+  const saturation = Number(rawSaturation.replace("%", ""));
+  const lightness = Number(rawLightness.replace("%", ""));
 
   if ([hue, saturation, lightness].some((channel) => Number.isNaN(channel))) {
     return null;
@@ -104,11 +118,15 @@ export const parseCssColor = (color: string): RgbColor | null => {
   return parseHexColor(color) || parseRgbColor(color) || parseHslColor(color);
 };
 
+const getLinearColorChannel = (channel: number): number => {
+  const normalized = channel / 255;
+  return normalized <= 0.03928 ? normalized / 12.92 : ((normalized + 0.055) / 1.055) ** 2.4;
+};
+
 export const getRelativeLuminance = ({ r, g, b }: RgbColor) => {
-  const [red, green, blue] = [r, g, b].map((channel) => {
-    const normalized = channel / 255;
-    return normalized <= 0.03928 ? normalized / 12.92 : ((normalized + 0.055) / 1.055) ** 2.4;
-  });
+  const red = getLinearColorChannel(r);
+  const green = getLinearColorChannel(g);
+  const blue = getLinearColorChannel(b);
 
   return 0.2126 * red + 0.7152 * green + 0.0722 * blue;
 };

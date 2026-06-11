@@ -20,9 +20,9 @@ export type CmsSection = {
   section_type: string;
   title_zh?: string | null;
   title_en?: string | null;
-  content_zh: Record<string, any>;
-  content_en: Record<string, any>;
-  settings: Record<string, any>;
+  content_zh: Record<string, unknown>;
+  content_en: Record<string, unknown>;
+  settings: Record<string, unknown>;
   status: "draft" | "published" | "archived";
   sort_order: number;
   updated_at?: string | null;
@@ -40,7 +40,7 @@ export type CmsRevision = {
   entity_id: string;
   action: string;
   version: number | null;
-  snapshot: Record<string, any>;
+  snapshot: Record<string, unknown>;
   created_at: string;
 };
 

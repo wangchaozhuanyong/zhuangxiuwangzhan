@@ -37,13 +37,20 @@ const setAtPath = (target: unknown, path: TranslatePath, value: unknown) => {
   if (!target || typeof target !== "object") return target;
 
   const container = target as Record<string, unknown> | unknown[];
-  let cursor: any = container;
+  let cursor: Record<string, unknown> | unknown[] = container;
   for (let index = 0; index < path.length - 1; index += 1) {
-    cursor = cursor[path[index] as any];
-    if (cursor === undefined || cursor === null) return target;
+    const segment = path[index];
+    const next = Array.isArray(cursor) && typeof segment === "number" ? cursor[segment] : (cursor as Record<string, unknown>)[String(segment)];
+    if (!next || typeof next !== "object") return target;
+    cursor = next as Record<string, unknown> | unknown[];
   }
 
-  cursor[path[path.length - 1] as any] = value;
+  const lastSegment = path[path.length - 1];
+  if (Array.isArray(cursor) && typeof lastSegment === "number") {
+    cursor[lastSegment] = value;
+  } else {
+    (cursor as Record<string, unknown>)[String(lastSegment)] = value;
+  }
   return target;
 };
 

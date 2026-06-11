@@ -1,5 +1,5 @@
 ﻿import { MapPin, CheckCircle } from "lucide-react";
-import { Layers, MessageCircle, Paintbrush, ShieldCheck, Target, Users, Wrench } from "lucide-react";
+import { Layers, MessageCircle, Paintbrush, ShieldCheck, Target, Users, Wrench, type LucideIcon } from "lucide-react";
 import GoogleMapEmbed from "@/components/GoogleMapEmbed";
 import Reveal from "@/components/Reveal";
 import PageMeta from "@/components/PageMeta";
@@ -56,15 +56,20 @@ const aboutIconMap = {
   wrench: Wrench,
 };
 
-const normalizeIconCardItems = (items: unknown, fallback: Array<{ icon: any; title: string; desc: string }>) => {
+type IconCardItem = { icon: LucideIcon; title: string; desc: string };
+type AboutStatItem = { value: string; label: string };
+type AboutMilestoneItem = { year: string; title: string; desc: string };
+
+const normalizeIconCardItems = (items: unknown, fallback: IconCardItem[]) => {
   if (!Array.isArray(items) || items.length === 0) return null;
   const normalized = items
-    .map((item: any, index) => {
-      const iconKey = String(item?.icon || "").toLowerCase().replace(/[\s_-]+/g, "");
+    .map((item, index) => {
+      const record = item as Record<string, unknown>;
+      const iconKey = String(record.icon || "").toLowerCase().replace(/[\s_-]+/g, "");
       return {
         icon: aboutIconMap[iconKey as keyof typeof aboutIconMap] || fallback[index]?.icon || CheckCircle,
-        title: String(item?.title || item?.title_zh || item?.title_en || "").trim(),
-        desc: String(item?.desc || item?.desc_zh || item?.desc_en || "").trim(),
+        title: String(record.title || record.title_zh || record.title_en || "").trim(),
+        desc: String(record.desc || record.desc_zh || record.desc_en || "").trim(),
       };
     })
     .filter((item) => item.title && item.desc);
@@ -88,7 +93,7 @@ const About = () => {
   const dynamicIntroParagraphs = useMemo<string[] | null>(() => {
     const items = introSection?.items;
     if (!Array.isArray(items) || items.length === 0) return null;
-    const asStrings = items.filter((x: any) => typeof x === "string");
+    const asStrings = items.filter((x): x is string => typeof x === "string");
     return asStrings.length ? asStrings : null;
   }, [introSection?.items]);
 
@@ -96,11 +101,14 @@ const About = () => {
     const items = statsSection?.items;
     if (!Array.isArray(items) || items.length === 0) return null;
     const normalized = items
-      .map((x: any) => ({
-        value: String(x?.value ?? ""),
-        label: String(x?.label ?? ""),
-      }))
-      .filter((x: any) => x.value && x.label);
+      .map((x): AboutStatItem => {
+        const record = x as Record<string, unknown>;
+        return {
+          value: String(record.value ?? ""),
+          label: String(record.label ?? ""),
+        };
+      })
+      .filter((x) => x.value && x.label);
     return normalized.length ? normalized : null;
   }, [statsSection?.items]);
 
@@ -108,12 +116,15 @@ const About = () => {
     const items = milestonesSection?.items;
     if (!Array.isArray(items) || items.length === 0) return null;
     const normalized = items
-      .map((x: any) => ({
-        year: String(x?.year ?? ""),
-        title: String(x?.title ?? ""),
-        desc: String(x?.desc ?? ""),
-      }))
-      .filter((x: any) => x.year && x.title && x.desc);
+      .map((x): AboutMilestoneItem => {
+        const record = x as Record<string, unknown>;
+        return {
+          year: String(record.year ?? ""),
+          title: String(record.title ?? ""),
+          desc: String(record.desc ?? ""),
+        };
+      })
+      .filter((x) => x.year && x.title && x.desc);
     return normalized.length ? normalized : null;
   }, [milestonesSection?.items]);
 
@@ -172,7 +183,7 @@ const About = () => {
             </Reveal>
             <Reveal direction="right" delay={150}>
               <div className="card-grid grid-cols-2 gap-5">
-                {(dynamicStats || localizedStats[language]).map((stat: any) => (
+                {(dynamicStats || localizedStats[language]).map((stat) => (
                   <div key={stat.label} className="text-center luxury-card p-6 group hover-lift">
                     <span className="text-limit-1 font-display text-2xl md:text-3xl font-bold text-accent mb-1">{stat.value}</span>
                     <span className="text-limit-2 text-muted-foreground text-xs leading-relaxed">{stat.label}</span>
@@ -202,7 +213,7 @@ const About = () => {
         <div className="container-narrow">
           <SectionHeader title={(milestonesSection?.title as string) || t.journeyTitle} description={(milestonesSection?.content as string) || t.journeyDescription} />
           <div className="max-w-2xl mx-auto">
-            {displayedMilestones.map((milestone: any, i: number) => (
+            {displayedMilestones.map((milestone, i: number) => (
               <Reveal key={milestone.year} delay={i * 60}>
                 <div className="flex gap-5 mb-6 last:mb-0">
                   <div className="flex flex-col items-center">

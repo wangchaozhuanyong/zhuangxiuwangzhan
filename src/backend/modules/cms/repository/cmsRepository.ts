@@ -65,7 +65,7 @@ export async function fetchAdminEditorRows(table: string, limit: number) {
   return data || [];
 }
 
-export async function fetchAdminContentRecord<T extends Record<string, any>>(table: string, id: string) {
+export async function fetchAdminContentRecord<T extends Record<string, unknown>>(table: string, id: string) {
   const supabase = requireSupabase();
   const { data, error } = await supabase.from(table).select("*").eq("id", id).single();
 

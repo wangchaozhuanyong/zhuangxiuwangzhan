@@ -10,12 +10,23 @@ import {
   type AdminMaterialListInput,
 } from "@/backend/modules/materials/repository/materialRepository";
 
-type AdminMaterialRecord = Record<string, any> & {
+type AdminMaterialRecord = Record<string, unknown> & {
   id?: string;
   updated_at?: string | null;
   slug?: string;
   status?: "draft" | "published" | "archived";
   title_zh?: string;
+  sort_order?: string | number | null;
+  suitable_spaces_zh?: unknown[] | null;
+  suitable_spaces_en?: unknown[] | null;
+  pros_zh?: unknown[] | null;
+  pros_en?: unknown[] | null;
+  cons_zh?: unknown[] | null;
+  cons_en?: unknown[] | null;
+  recommended_pairing_zh?: string | null;
+  recommended_pairing_en?: string | null;
+  note_zh?: string | null;
+  note_en?: string | null;
 };
 
 export type SaveAdminMaterialInput = {
@@ -88,7 +99,7 @@ export function generateAdminMaterialEnglish(materialId: string, force: boolean)
   return invokeMaterialEnglishGeneration(materialId, force);
 }
 
-export function loadAdminMaterialList<T extends Record<string, any>>(input: AdminMaterialListInput) {
+export function loadAdminMaterialList<T extends Record<string, unknown>>(input: AdminMaterialListInput) {
   return fetchAdminMaterialList<T>(input);
 }
 

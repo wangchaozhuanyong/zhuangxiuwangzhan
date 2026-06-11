@@ -29,9 +29,28 @@ const A = (key: AdminHomeEditorTextKey) => adminHomeEditorText[key][getAdminLang
 const formatA = (key: AdminHomeEditorTextKey, values: Record<string, string>) =>
   Object.entries(values).reduce((text, [name, value]) => text.replaceAll(`{${name}}`, value), A(key));
 
-const mergeSectionItems = (itemsZh?: any[] | null, itemsEn?: any[] | null) => {
-  const zh = Array.isArray(itemsZh) ? itemsZh : [];
-  const en = Array.isArray(itemsEn) ? itemsEn : [];
+type PublishStatus = "draft" | "published" | "archived";
+type HomeSectionItem = {
+  value?: string;
+  label_zh?: string;
+  label_en?: string;
+  title_zh?: string;
+  title_en?: string;
+  desc_zh?: string;
+  desc_en?: string;
+  icon?: string;
+  [key: string]: unknown;
+};
+
+const toPublishStatus = (value: string): PublishStatus =>
+  value === "draft" || value === "archived" ? value : "published";
+const toHomeSectionItem = (value: unknown): HomeSectionItem =>
+  value && typeof value === "object" && !Array.isArray(value) ? (value as HomeSectionItem) : {};
+const toRecordPayload = (value: Record<string, unknown>): Record<string, unknown> => value;
+
+const mergeSectionItems = (itemsZh?: unknown, itemsEn?: unknown): HomeSectionItem[] => {
+  const zh = Array.isArray(itemsZh) ? itemsZh.map(toHomeSectionItem) : [];
+  const en = Array.isArray(itemsEn) ? itemsEn.map(toHomeSectionItem) : [];
   const length = Math.max(zh.length, en.length);
   return Array.from({ length }, (_, index) => ({ ...(en[index] || {}), ...(zh[index] || {}) }));
 };
@@ -49,8 +68,8 @@ export default function AdminHomeEditor() {
   const [faqRows, setFaqRows] = useState<FaqRow[]>([]);
   const [ctaBlock, setCtaBlock] = useState<CtaRow | null>(null);
 
-  const [statsItems, setStatsItems] = useState<any[]>([]);
-  const [whyItems, setWhyItems] = useState<any[]>([]);
+  const [statsItems, setStatsItems] = useState<HomeSectionItem[]>([]);
+  const [whyItems, setWhyItems] = useState<HomeSectionItem[]>([]);
   const formDirtyRef = useRef(false);
   const [formDirty, setFormDirty] = useState(false);
 
@@ -68,8 +87,8 @@ export default function AdminHomeEditor() {
     setProcessSteps(bundle.processSteps);
     setFaqRows(bundle.faqRows);
     setCtaBlock(bundle.ctaBlock);
-    setStatsItems(mergeSectionItems(bundle.stats?.items_zh as any[] | undefined, bundle.stats?.items_en as any[] | undefined));
-    setWhyItems(mergeSectionItems(bundle.why?.items_zh as any[] | undefined, bundle.why?.items_en as any[] | undefined));
+    setStatsItems(mergeSectionItems(bundle.stats?.items_zh, bundle.stats?.items_en));
+    setWhyItems(mergeSectionItems(bundle.why?.items_zh, bundle.why?.items_en));
   }, [bundle]);
 
   const refreshEditor = async () => {
@@ -88,7 +107,7 @@ export default function AdminHomeEditor() {
     }
   };
 
-  const saveHomeSectionItems = async (row: HomeSectionRow | null, items: any[]) => {
+  const saveHomeSectionItems = async (row: HomeSectionRow | null, items: HomeSectionItem[]) => {
     if (!supabase) return;
     if (!row?.id) {
       toast({ title: A("cannotSave"), description: A("homeDataNotLoaded"), variant: "destructive" });
@@ -113,7 +132,7 @@ export default function AdminHomeEditor() {
 
   const upsertProcessStep = async (draft: ProcessStepRow) => {
     if (!supabase) return;
-    const payload: any = {
+    const payload = toRecordPayload({
       step_number: Number(draft.step_number || 0),
       title_zh: draft.title_zh || null,
       title_en: draft.title_en || null,
@@ -122,7 +141,7 @@ export default function AdminHomeEditor() {
       icon_key: draft.icon_key || null,
       status: draft.status || "published",
       sort_order: Number(draft.sort_order || 0),
-    };
+    });
     try {
       await saveAdminRecord({
         table: "process_steps",
@@ -157,7 +176,7 @@ export default function AdminHomeEditor() {
 
   const upsertFaq = async (draft: FaqRow) => {
     if (!supabase) return;
-    const payload: any = {
+    const payload = toRecordPayload({
       page_key: "home",
       question_zh: draft.question_zh || null,
       answer_zh: draft.answer_zh || null,
@@ -165,7 +184,7 @@ export default function AdminHomeEditor() {
       answer_en: draft.answer_en || null,
       status: draft.status || "published",
       sort_order: Number(draft.sort_order || 0),
-    };
+    });
     try {
       await saveAdminRecord({
         table: "faqs",
@@ -200,7 +219,7 @@ export default function AdminHomeEditor() {
 
   const upsertCta = async (draft: CtaRow) => {
     if (!supabase) return;
-    const payload: any = {
+    const payload = toRecordPayload({
       block_key: "home_final",
       title_zh: draft.title_zh || null,
       title_en: draft.title_en || null,
@@ -214,7 +233,7 @@ export default function AdminHomeEditor() {
       secondary_url: draft.secondary_url || null,
       image_url: draft.image_url || null,
       status: draft.status || "published",
-    };
+    });
 
     try {
       await saveAdminRecord({
@@ -434,7 +453,7 @@ export default function AdminHomeEditor() {
                   <label className="mb-1 block text-sm font-medium">{L("status")}</label>
                   <select
                     value={editingStep.status || "published"}
-                    onChange={(e) => setEditingStep((v) => (v ? { ...v, status: e.target.value as any } : v))}
+                    onChange={(e) => setEditingStep((v) => (v ? { ...v, status: toPublishStatus(e.target.value) } : v))}
                     className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
                   >
                     {publishStatusOptions().map(({ value, label }) => (
@@ -534,7 +553,7 @@ export default function AdminHomeEditor() {
                   <label className="mb-1 block text-sm font-medium">{L("status")}</label>
                   <select
                     value={editingFaq.status || "published"}
-                    onChange={(e) => setEditingFaq((v) => (v ? { ...v, status: e.target.value as any } : v))}
+                    onChange={(e) => setEditingFaq((v) => (v ? { ...v, status: toPublishStatus(e.target.value) } : v))}
                     className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
                   >
                     {publishStatusOptions().map(({ value, label }) => (
@@ -578,7 +597,7 @@ export default function AdminHomeEditor() {
                 <label className="mb-1 block text-sm font-medium">{A("status")}</label>
                 <select
                   value={(editingCta || ctaDraft).status || "published"}
-                  onChange={(e) => setEditingCta((v) => ({ ...(v || ctaDraft), status: e.target.value as any }))}
+                  onChange={(e) => setEditingCta((v) => ({ ...(v || ctaDraft), status: toPublishStatus(e.target.value) }))}
                   className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
                 >
                   {publishStatusOptions().map(({ value, label }) => (

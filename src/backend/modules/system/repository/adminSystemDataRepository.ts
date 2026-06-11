@@ -23,7 +23,7 @@ export async function fetchTranslationJobRows(limit: number) {
 export async function fetchTranslationLabelRows(table: string, select: string, ids: string[]) {
   const supabase = requireSupabase();
   const { data } = await supabase.from(table).select(select).in("id", ids);
-  return (data || []) as Array<Record<string, any>>;
+  return (data || []) as unknown as Array<Record<string, unknown>>;
 }
 
 export async function fetchAdminUserRows() {

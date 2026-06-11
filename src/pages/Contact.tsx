@@ -7,7 +7,6 @@ import { MapPin, Phone, Mail, Clock, ArrowRight, CheckCircle, Loader2, AlertCirc
 import GoogleMapEmbed from "@/components/GoogleMapEmbed";
 import WhatsAppIcon from "@/components/WhatsAppIcon";
 import Reveal from "@/components/Reveal";
-import SmartImage from "@/components/SmartImage";
 import PageMeta from "@/components/PageMeta";
 import { JsonLdBreadcrumb } from "@/components/JsonLd";
 import { submitContactLead } from "@/lib/leadApi";
@@ -16,7 +15,7 @@ import { useLanguage } from "@/i18n/LanguageContext";
 import { useSiteSettings } from "@/hooks/useSiteSettings";
 import { usePublishedSitePage } from "@/hooks/usePublishedContent";
 import HeroBanner from "@/components/blocks/HeroBanner";
-import { trackCtaClick, trackEvent } from "@/lib/analytics";
+import { trackContactFormSubmit, trackCtaClick } from "@/lib/analytics";
 import { isValidLeadEmail, isValidLeadPhone } from "@/lib/leadValidation";
 import { pageHeroImages, resolvePageHeroImage } from "@/lib/pageHeroImages";
 import { contactLocationOptions, contactPageText, contactProjectTypeOptions, contactServiceItems } from "@/i18n/contactPageText";
@@ -80,10 +79,7 @@ const Contact = () => {
     e.preventDefault();
     if (status === "submitting") return;
     if (!validate()) {
-      trackEvent("contact_form_submit", {
-        form_status: "validation_error",
-        page_path: window.location.pathname,
-      });
+      trackContactFormSubmit("validation_error");
       return;
     }
     setStatus("submitting");
@@ -99,18 +95,14 @@ const Contact = () => {
         website: honeypot,
         startedAt: formGuard.startedAt,
       });
-      trackEvent("contact_form_submit", {
-        form_status: "success",
-        page_path: window.location.pathname,
+      trackContactFormSubmit("success", {
         project_type: form.projectType,
         location: form.location,
       });
       setStatus("success");
     } catch (error) {
       console.error(error);
-      trackEvent("contact_form_submit", {
-        form_status: "error",
-        page_path: window.location.pathname,
+      trackContactFormSubmit("error", {
         project_type: form.projectType,
         location: form.location,
       });

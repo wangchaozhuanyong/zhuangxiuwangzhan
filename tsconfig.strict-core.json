@@ -25,6 +25,10 @@
     "src/lib/adminCmsBuilderModel.ts",
     "src/lib/contentApi.ts",
     "src/lib/homeContentApi.ts",
+    "src/hooks/**/*.ts",
+    "src/hooks/**/*.tsx",
+    "src/backend/modules/**/*.ts",
+    "src/backend/modules/**/*.tsx",
     "src/pages/CmsDynamicPage.tsx",
     "src/pages/admin/AdminCmsSectionContentEditor.tsx"
   ]

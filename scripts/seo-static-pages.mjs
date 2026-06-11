@@ -28,8 +28,6 @@ const staticDefs = [
   page("zh", "/services/kitchen", "吉隆坡厨房装修与橱柜定制 | FLASH CAST", "厨房装修、橱柜定制、台面、水电、瓷砖和厨房电器位规划服务。"),
   page("en", "/services/bathroom", "Bathroom Renovation Kuala Lumpur | FLASH CAST", "Bathroom renovation, waterproofing, tiling, vanity installation, shower upgrades, and plumbing works."),
   page("zh", "/services/bathroom", "吉隆坡浴室装修与防水工程 | FLASH CAST", "浴室翻新、防水、铺砖、浴室柜、淋浴系统和水喉排水工程。"),
-  page("en", "/services/office", "Office Renovation Kuala Lumpur | FLASH CAST", "Office renovation, partition works, lighting, flooring, pantry setup, data cabling, and workstation planning."),
-  page("zh", "/services/office", "吉隆坡办公室装修 | FLASH CAST", "办公室装修、隔间、灯光、地板、茶水间、网络布线和工作位规划。"),
   page("en", "/services/shoplot", "Shoplot Renovation Kuala Lumpur | FLASH CAST", "Shoplot renovation for retail, F&B, clinic, salon, showroom, and service businesses in Kuala Lumpur and Selangor."),
   page("zh", "/services/shoplot", "吉隆坡店铺装修 | FLASH CAST", "零售店、餐饮店、诊所、美容院、展厅和服务门店装修服务。"),
   page("en", "/services/artistic-coating", "Artistic Wall Coating Malaysia | FLASH CAST", "Premium artistic wall coating and Remmers decorative finishes for residential and commercial interiors."),

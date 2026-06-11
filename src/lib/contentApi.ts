@@ -17,11 +17,66 @@ import {
 import { stripHtml } from "@/lib/text";
 import { translateDisplayText } from "@/i18n/displayLabels";
 import { formatBlogReadTime } from "@/lib/blogMeta";
+import type { MaterialCatalogCategory } from "@/lib/materialCatalog";
 import { readPreloadedPublicData } from "@/lib/publicPreload";
-import { toArray, toText, type UnknownRecord } from "@/lib/recordUtils";
+import { toArray, toRecord, toText, type UnknownRecord } from "@/lib/recordUtils";
+
+type Language = "en" | "zh";
+type ProjectImageRecord = UnknownRecord & {
+  image_url?: string;
+  image_type?: string;
+  sort_order?: string | number | null;
+};
+export type PublishedProjectSummary = {
+  id: string;
+  slug: string;
+  title: string;
+  type: string;
+  location: string;
+  description: string;
+  images: string[];
+  imageAlts: string[];
+  thumbnail: string;
+  thumbnailAlt: string;
+};
+
+export type PublishedServiceSummary = {
+  id: string;
+  slug: string;
+  title: string;
+  summary: string;
+  description: string;
+  suitableFor: string[];
+  commonProjects: string[];
+  processSteps: Array<{ title?: string; desc?: string }>;
+  items: string[];
+  faqs: Array<{ q?: string; a?: string }>;
+  image: string;
+  seoTitle?: string;
+  seoDescription?: string;
+};
+
+export type PublishedHeroSlide = {
+  id: string;
+  title: string;
+  excerpt: string;
+  buttonLabel: string;
+  buttonUrl: string;
+  image: string;
+  alt: string;
+};
+
+type PublishedMaterialCategoryRecord = MaterialCatalogCategory & {
+  slug: string;
+  image: string;
+};
 
 const applyOptionalLimit = <T>(items: T[], limit?: number) =>
   limit && limit > 0 ? items.slice(0, limit) : items;
+
+const readText = (record: UnknownRecord | null | undefined, field: string, fallback = "") => toText(record?.[field], fallback);
+
+const readRecordArray = (value: unknown): UnknownRecord[] => toArray<UnknownRecord>(value).map(toRecord);
 
 const normalizeProjectType = (value: string) => {
   const type = value.trim().toLowerCase();
@@ -40,12 +95,18 @@ const normalizeProjectType = (value: string) => {
   return value;
 };
 
-export const getFallbackProjects = async (language: "en" | "zh" = "en") => {
+export const getFallbackProjects = async (language: Language = "en") => {
   const { projectsData } = await import("@/data/projects");
-  if (language !== "zh") return projectsData;
-
-  return projectsData.map((project: any) => ({
+  const addImageAltFields = (project: (typeof projectsData)[number]) => ({
     ...project,
+    imageAlts: [project.title],
+    thumbnailAlt: project.title,
+  });
+
+  if (language !== "zh") return projectsData.map(addImageAltFields);
+
+  return projectsData.map((project) => ({
+    ...addImageAltFields(project),
     title: translateDisplayText(project.title || "", language),
     type: normalizeProjectType(project.type || "Renovation"),
     description: translateDisplayText(project.description || "", language),
@@ -56,14 +117,15 @@ export const getFallbackProjects = async (language: "en" | "zh" = "en") => {
     testimonial: translateDisplayText(project.testimonial || "", language),
   }));
 };
-const getFallbackMaterials = async () => (await import("@/data/materials")).materialsData;
-const getFallbackBlogPosts = async (language: "en" | "zh" = "en") => {
+const getFallbackMaterials = async (): Promise<MaterialCatalogCategory[]> =>
+  (await import("@/data/materials")).materialsData as MaterialCatalogCategory[];
+const getFallbackBlogPosts = async (language: Language = "en") => {
   const { blogPosts } = await import("@/data/blog");
   if (language !== "zh") return blogPosts;
 
   const localize = (value: string) => translateDisplayText(value, language);
 
-  return blogPosts.map((post: any) => ({
+  return blogPosts.map((post) => ({
     ...post,
     title: localize(post.title || ""),
     excerpt: localize(post.excerpt || ""),
@@ -72,14 +134,14 @@ const getFallbackBlogPosts = async (language: "en" | "zh" = "en") => {
     tags: (post.tags || []).map((tag: string) => localize(tag)),
   }));
 };
-const getFallbackLocations = async (language: "en" | "zh" = "en") => {
+const getFallbackLocations = async (language: Language = "en") => {
   const { locationsData } = await import("@/data/locations");
   if (language !== "zh") return locationsData;
 
   const localize = (value: string) => translateDisplayText(value, language);
 
   return Object.fromEntries(
-    Object.entries(locationsData).map(([slug, location]: any) => [
+    Object.entries(locationsData).map(([slug, location]) => [
       slug,
       {
         ...location,
@@ -90,78 +152,81 @@ const getFallbackLocations = async (language: "en" | "zh" = "en") => {
         propertyTypes: (location.propertyTypes || []).map((item: string) => localize(item)),
         commonNeeds: (location.commonNeeds || []).map((item: string) => localize(item)),
         constructionNotes: localize(location.constructionNotes || ""),
-        projects: (location.projects || []).map((project: any) => ({ ...project, title: localize(project.title || "") })),
-        faqs: (location.faqs || []).map((faq: any) => ({ q: localize(faq.q || ""), a: localize(faq.a || "") })),
+        projects: (location.projects || []).map((project) => ({ ...project, title: localize(project.title || "") })),
+        faqs: (location.faqs || []).map((faq) => ({ q: localize(faq.q || ""), a: localize(faq.a || "") })),
       },
     ])
   );
 };
-export const getFallbackServices = async (language: "en" | "zh" = "en") => {
+export const getFallbackServices = async (language: Language = "en") => {
   const { servicesData } = await import("@/data/services");
   if (language !== "zh") return servicesData;
 
   const localize = (value: string) => translateDisplayText(value, language);
 
-  return servicesData.map((service: any) => ({
+  return servicesData.map((service) => ({
     ...service,
-    title: localize(service.title || ""),
-    summary: localize(service.summary || ""),
-    description: localize(service.description || ""),
-    suitableFor: (service.suitableFor || []).map((item: string) => localize(item)),
-    commonProjects: (service.commonProjects || []).map((item: string) => localize(item)),
-    processSteps: (service.processSteps || []).map((step: any) => ({
+    title: service.titleZh || localize(service.title || ""),
+    summary: service.summaryZh || localize(service.summary || ""),
+    description: service.descriptionZh || localize(service.description || ""),
+    suitableFor: service.suitableForZh || (service.suitableFor || []).map((item: string) => localize(item)),
+    commonProjects: service.commonProjectsZh || (service.commonProjects || []).map((item: string) => localize(item)),
+    processSteps: service.processStepsZh || (service.processSteps || []).map((step) => ({
       title: localize(step.title || ""),
       desc: localize(step.desc || ""),
     })),
-    items: (service.items || []).map((item: string) => localize(item)),
-    faqs: (service.faqs || []).map((faq: any) => ({ q: localize(faq.q || ""), a: localize(faq.a || "") })),
+    items: service.itemsZh || (service.items || []).map((item: string) => localize(item)),
+    faqs: service.faqsZh || (service.faqs || []).map((faq) => ({ q: localize(faq.q || ""), a: localize(faq.a || "") })),
+    seoTitle: service.seoTitleZh || service.seoTitle,
+    seoDescription: service.seoDescriptionZh || service.seoDescription,
   }));
 };
 
-const pickLocalizedValue = <T = unknown>(item: UnknownRecord | null | undefined, field: string, language: "en" | "zh", fallback: T): T => {
+const pickLocalizedValue = <T = unknown>(item: UnknownRecord | null | undefined, field: string, language: Language, fallback: T): T => {
   const value = item?.[`${field}_${language}`];
   return value === null || value === undefined || value === "" ? fallback : (value as T);
 };
 
-const pickLocalizedText = (item: UnknownRecord | null | undefined, field: string, language: "en" | "zh", fallback = ""): string =>
+const pickLocalizedText = (item: UnknownRecord | null | undefined, field: string, language: Language, fallback = ""): string =>
   toText(pickLocalizedValue(item, field, language, fallback));
 
-const pickLocalizedList = <T = unknown>(item: UnknownRecord | null | undefined, field: string, language: "en" | "zh"): T[] => {
+const pickLocalizedList = <T = unknown>(item: UnknownRecord | null | undefined, field: string, language: Language): T[] => {
   const value = item?.[`${field}_${language}`];
   return toArray<T>(value);
 };
 
-const getOrderedProjectImages = (item: any) => {
-  const all = (item.project_images || []).slice().sort((a: any, b: any) => (a.sort_order || 0) - (b.sort_order || 0));
-  const cover = all.filter((img: any) => img.image_type === "cover");
-  const gallery = all.filter((img: any) => img.image_type === "gallery");
-  const beforeAfter = all.filter((img: any) => img.image_type === "before" || img.image_type === "after");
+const getOrderedProjectImages = (item: UnknownRecord): ProjectImageRecord[] => {
+  const all = readRecordArray(item.project_images).sort((a, b) => Number(a.sort_order || 0) - Number(b.sort_order || 0));
+  const cover = all.filter((img) => img.image_type === "cover");
+  const gallery = all.filter((img) => img.image_type === "gallery");
+  const beforeAfter = all.filter((img) => img.image_type === "before" || img.image_type === "after");
   return [...cover, ...gallery, ...beforeAfter];
 };
 
-export const mapPublishedProjectSummary = (item: any, language: "en" | "zh") => {
+export const mapPublishedProjectSummary = (item: UnknownRecord, language: Language): PublishedProjectSummary => {
   const localize = (value: string) => (language === "zh" ? translateDisplayText(value, language) : value);
   const orderedImages = getOrderedProjectImages(item);
-  const images = orderedImages.map((img: any) => img.image_url).filter(Boolean);
+  const images = orderedImages.map((img) => toText(img.image_url)).filter(Boolean);
   const fallbackAlt = pickLocalizedText(item, "title", language);
   const imageAlts = orderedImages
-    .map((img: any) => pickLocalizedText(img, "alt", language, fallbackAlt))
-    .filter(Boolean);
-  const thumbnail = images[0] || item.image_url || "";
+    .map((img) => pickLocalizedText(img, "alt", language, fallbackAlt))
+    .filter((value): value is string => Boolean(value));
+  const thumbnail = images[0] || readText(item, "image_url");
+  const firstImageAlt = imageAlts[0] || fallbackAlt;
 
   return {
-    id: item.id,
-    slug: item.slug,
+    id: readText(item, "id"),
+    slug: readText(item, "slug"),
     title: localize(pickLocalizedText(item, "title", language)),
-    type: normalizeProjectType(item.project_type || "Renovation"),
-    location: item.location || "",
+    type: normalizeProjectType(readText(item, "project_type", "Renovation")),
+    location: readText(item, "location"),
     description:
       localize(pickLocalizedText(item, "excerpt", language)) ||
       localize(stripHtml(pickLocalizedText(item, "content", language))),
     images: thumbnail ? [thumbnail] : [],
-    imageAlts: imageAlts.length ? [imageAlts[0]] : fallbackAlt ? [fallbackAlt] : [],
+    imageAlts: firstImageAlt ? [firstImageAlt] : [],
     thumbnail,
-    thumbnailAlt: imageAlts[0] || fallbackAlt,
+    thumbnailAlt: firstImageAlt,
   };
 };
 
@@ -201,14 +266,14 @@ export const getPublishedServiceSummaries = async (language: "en" | "zh" = "en",
 
   const preloadedRows = readPreloadedPublicData()?.services;
   if (Array.isArray(preloadedRows) && preloadedRows.length) {
-    return applyOptionalLimit(preloadedRows, limit).map((item: any) => mapPublishedService(item, language));
+    return applyOptionalLimit(preloadedRows, limit).map((item) => mapPublishedService(item, language));
   }
 
   if (!hasPublicContentDatabaseClient()) return fallbackServices();
 
   const data = await fetchPublishedServiceSummaryRows(limit);
   if (!data?.length) return fallbackServices();
-  return data.map((item: any) => mapPublishedService(item, language));
+  return (data as unknown as UnknownRecord[]).map((item) => mapPublishedService(item, language));
 };
 
 export const getPublishedHeroSlides = async (language: "en" | "zh" = "en") => {
@@ -216,16 +281,16 @@ export const getPublishedHeroSlides = async (language: "en" | "zh" = "en") => {
 
   const data = await fetchPublishedHeroSlideRows();
   if (!data?.length) return [];
-  return data.map((item: any) => mapPublishedHeroSlide(item, language));
+  return data.map((item) => mapPublishedHeroSlide(item, language));
 };
 
-export const mapPublishedHeroSlide = (item: any, language: "en" | "zh" = "en") => ({
-    id: item.id,
+export const mapPublishedHeroSlide = (item: UnknownRecord, language: Language = "en"): PublishedHeroSlide => ({
+    id: readText(item, "id"),
     title: pickLocalizedText(item, "title", language),
     excerpt: pickLocalizedText(item, "excerpt", language),
     buttonLabel: pickLocalizedText(item, "button_label", language),
-    buttonUrl: item.button_url || "/quote",
-    image: item.image_url,
+    buttonUrl: readText(item, "button_url", "/quote"),
+    image: readText(item, "image_url"),
     alt: pickLocalizedText(item, "alt", language, pickLocalizedText(item, "title", language)),
 });
 
@@ -234,22 +299,22 @@ export const getPublishedTestimonials = async (language: "en" | "zh" = "en") => 
 
   const data = await fetchPublishedTestimonialRows();
   if (!data?.length) return [];
-  return data.map((item: any) => mapPublishedTestimonial(item, language));
+  return data.map((item) => mapPublishedTestimonial(item, language));
 };
 
-export const mapPublishedTestimonial = (item: any, language: "en" | "zh" = "en") => ({
-    id: item.id,
+export const mapPublishedTestimonial = (item: UnknownRecord, language: Language = "en") => ({
+    id: readText(item, "id"),
     text: pickLocalizedText(item, "content", language),
-    client: item.customer_name || "FLASH CAST Client",
+    client: readText(item, "customer_name", "FLASH CAST Client"),
     type: "Renovation",
     location: "",
-    rating: item.rating || 5,
+    rating: Number(item.rating || 5),
 });
 
 export const getPublishedServices = async (language: "en" | "zh" = "en") => {
   const preloadedRows = readPreloadedPublicData()?.services;
   if (Array.isArray(preloadedRows) && preloadedRows.length) {
-    return preloadedRows.map((item: any) => mapPublishedService(item, language));
+    return preloadedRows.map((item) => mapPublishedService(item, language));
   }
 
   if (!hasPublicContentDatabaseClient()) return getFallbackServices(language);
@@ -257,27 +322,27 @@ export const getPublishedServices = async (language: "en" | "zh" = "en") => {
   const data = await fetchPublishedServiceRows();
   if (!data?.length) return getFallbackServices(language);
 
-  return data.map((item: any) => mapPublishedService(item, language));
+  return data.map((item) => mapPublishedService(item, language));
 };
 
-export const mapPublishedService = (item: any, language: "en" | "zh") => ({
-    id: item.id,
+export const mapPublishedService = (item: UnknownRecord, language: Language): PublishedServiceSummary & UnknownRecord => ({
+    id: readText(item, "id"),
     title: pickLocalizedText(item, "title", language),
-    slug: item.slug,
+    slug: readText(item, "slug"),
     summary: pickLocalizedText(item, "excerpt", language),
     description: pickLocalizedText(item, "content", language),
-    suitableFor: pickLocalizedList(item, "suitable_for", language),
-    commonProjects: pickLocalizedList(item, "common_projects", language),
-    processSteps: pickLocalizedList(item, "process_steps", language),
-    items: pickLocalizedList(item, "scope_items", language),
-    faqs: pickLocalizedList(item, "faqs", language),
-    image: item.image_url || "",
+    suitableFor: pickLocalizedList<string>(item, "suitable_for", language),
+    commonProjects: pickLocalizedList<string>(item, "common_projects", language),
+    processSteps: pickLocalizedList<{ title?: string; desc?: string }>(item, "process_steps", language),
+    items: pickLocalizedList<string>(item, "scope_items", language),
+    faqs: pickLocalizedList<{ q?: string; a?: string }>(item, "faqs", language),
+    image: readText(item, "image_url"),
     seoTitle: pickLocalizedText(item, "seo_title", language),
     seoDescription: pickLocalizedText(item, "seo_description", language),
 });
 
 export const getPublishedServiceBySlug = async (slug: string, language: "en" | "zh") => {
-  const fallbackServices = async () => (await getFallbackServices(language)).find((service: any) => service.slug === slug) || null;
+  const fallbackServices = async () => (await getFallbackServices(language)).find((service) => service.slug === slug) || null;
   if (!hasPublicContentDatabaseClient()) return fallbackServices();
 
   const data = await fetchPublishedServiceRowBySlug(slug);
@@ -298,7 +363,7 @@ export const getPublishedProjectBySlug = async (slug: string, language: "en" | "
   return mapPublishedProjectDetail(data, language);
 };
 
-export function mapPublishedProjectDetail(data: any, language: "en" | "zh") {
+export function mapPublishedProjectDetail(data: UnknownRecord, language: Language) {
   const projectRecord = data as UnknownRecord;
   const orderedImages = toArray<UnknownRecord>(projectRecord.project_images)
     .slice()
@@ -307,7 +372,7 @@ export function mapPublishedProjectDetail(data: any, language: "en" | "zh") {
   const gallery = orderedImages.filter((img) => img.image_type === "gallery");
   const beforeAfter = orderedImages.filter((img) => img.image_type === "before" || img.image_type === "after");
   const imageRecords = [...cover, ...gallery, ...beforeAfter];
-  const fallbackUrl = data.image_url ? [data.image_url] : [];
+  const fallbackUrl = readText(data, "image_url") ? [readText(data, "image_url")] : [];
   const fallbackAlt = pickLocalizedText(data, "title", language);
 
   const images = imageRecords.map((img) => toText(img.image_url)).filter(Boolean);
@@ -316,23 +381,23 @@ export function mapPublishedProjectDetail(data: any, language: "en" | "zh") {
     .filter(Boolean);
 
   return {
-    id: data.id,
-    slug: data.slug,
+    id: readText(data, "id"),
+    slug: readText(data, "slug"),
     title: language === "zh" ? translateDisplayText(pickLocalizedText(data, "title", language), language) : pickLocalizedText(data, "title", language),
-    type: normalizeProjectType(data.project_type || "Renovation"),
-    location: data.location || "",
+    type: normalizeProjectType(readText(data, "project_type", "Renovation")),
+    location: readText(data, "location"),
     description: language === "zh" ? translateDisplayText(pickLocalizedText(data, "content", language), language) : pickLocalizedText(data, "content", language),
     clientNeed: language === "zh" ? translateDisplayText(pickLocalizedText(data, "client_need", language), language) : pickLocalizedText(data, "client_need", language),
-    materialsUsed: data.materials || [],
-    scope: data.scope || [],
+    materialsUsed: toArray(data.materials),
+    scope: toArray(data.scope),
     highlights: pickLocalizedList<string>(data, "highlights", language).map((value: string) => (language === "zh" ? translateDisplayText(value, language) : value)),
-    duration: data.duration || "",
-    budget: data.budget || "",
-    area: data.area || "",
+    duration: readText(data, "duration"),
+    budget: readText(data, "budget"),
+    area: readText(data, "area"),
     testimonial: "",
     images: images.length ? images : fallbackUrl,
     imageAlts: imageAlts.length ? imageAlts : fallbackAlt ? [fallbackAlt] : [],
-    thumbnail: (cover[0]?.image_url || gallery[0]?.image_url || images[0] || data.image_url || ""),
+    thumbnail: readText(cover[0], "image_url") || readText(gallery[0], "image_url") || images[0] || readText(data, "image_url"),
     thumbnailAlt:
       (pickLocalizedText(cover[0], "alt", language) ||
         pickLocalizedText(gallery[0], "alt", language) ||
@@ -341,7 +406,7 @@ export function mapPublishedProjectDetail(data: any, language: "en" | "zh") {
   };
 }
 
-export const getPublishedMaterials = async (language: "en" | "zh" = "en") => {
+export const getPublishedMaterials = async (language: "en" | "zh" = "en"): Promise<MaterialCatalogCategory[]> => {
   const preloadedRows = readPreloadedPublicData()?.materials;
   if (Array.isArray(preloadedRows) && preloadedRows.length) {
     return mapPublishedMaterialRows(preloadedRows, language);
@@ -354,11 +419,11 @@ export const getPublishedMaterials = async (language: "en" | "zh" = "en") => {
   return mapPublishedMaterialRows(data, language);
 };
 
-const mapPublishedMaterialRows = (rows: any[], language: "en" | "zh" = "en") =>
-  rows.reduce((acc: any[], item: any) => {
-    const categoryName = item.category || "Materials";
+const mapPublishedMaterialRows = (rows: UnknownRecord[], language: Language = "en") =>
+  rows.reduce<PublishedMaterialCategoryRecord[]>((acc, item) => {
+    const categoryName = readText(item, "category", "Materials");
     const categorySlug = categoryName.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
-    const subcategoryName = item.subcategory || categoryName;
+    const subcategoryName = readText(item, "subcategory", categoryName);
     const subcategorySlug = subcategoryName.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
     let category = acc.find((cat) => cat.slug === categorySlug);
 
@@ -367,7 +432,7 @@ const mapPublishedMaterialRows = (rows: any[], language: "en" | "zh" = "en") =>
         name: categoryName,
         slug: categorySlug,
         description: pickLocalizedText(item, "excerpt", language),
-        image: item.image_url || "",
+        image: readText(item, "image_url"),
         alt: pickLocalizedText(item, "alt", language, pickLocalizedText(item, "title", language, categoryName)),
         subcategories: [],
         items: [],
@@ -375,32 +440,32 @@ const mapPublishedMaterialRows = (rows: any[], language: "en" | "zh" = "en") =>
       acc.push(category);
     }
 
-    if (!category.subcategories.some((sub: any) => sub.slug === subcategorySlug)) {
+    if (!category.subcategories.some((sub) => sub.slug === subcategorySlug)) {
       category.subcategories.push({
         name: subcategoryName,
         slug: subcategorySlug,
         description: pickLocalizedText(item, "excerpt", language),
-        image: item.image_url || category.image,
+        image: readText(item, "image_url") || readText(category, "image"),
         alt: pickLocalizedText(item, "alt", language, subcategoryName),
       });
     }
 
     category.items.push({
-      id: item.id,
+      id: readText(item, "id"),
       name: pickLocalizedText(item, "title", language),
-      slug: item.slug,
+      slug: readText(item, "slug"),
       category: categoryName,
       subcategory: subcategorySlug,
-      type: item.material_type || categoryName,
-      color: item.color || "",
-      texture: item.texture || "",
+      type: readText(item, "material_type", categoryName),
+      color: readText(item, "color"),
+      texture: readText(item, "texture"),
       suitableSpaces: pickLocalizedList(item, "suitable_spaces", language),
       recommendedPairing: pickLocalizedText(item, "recommended_pairing", language),
       pros: pickLocalizedList(item, "pros", language),
       cons: pickLocalizedList(item, "cons", language),
       description: pickLocalizedText(item, "content", language) || pickLocalizedText(item, "excerpt", language),
-      note: pickLocalizedText(item, "note", language) || item.reference_price || "",
-      image: item.image_url || "",
+      note: pickLocalizedText(item, "note", language) || readText(item, "reference_price"),
+      image: readText(item, "image_url"),
       alt: pickLocalizedText(item, "alt", language, pickLocalizedText(item, "title", language)),
     });
 
@@ -410,7 +475,7 @@ const mapPublishedMaterialRows = (rows: any[], language: "en" | "zh" = "en") =>
 export const getPublishedMaterialBySlug = async (slug: string, language: "en" | "zh" = "en") => {
   const categories = await getPublishedMaterials(language);
   for (const category of categories) {
-    const material = category.items.find((item: any) => item.slug === slug);
+    const material = category.items.find((item) => item.slug === slug);
     if (material) return { material, category };
   }
   return { material: null, category: null };
@@ -429,20 +494,20 @@ export const getPublishedBlogPosts = async (language: "en" | "zh" = "en") => {
   return mapPublishedBlogPostRows(data, language);
 };
 
-const mapPublishedBlogPostRows = (rows: any[], language: "en" | "zh" = "en") => {
+const mapPublishedBlogPostRows = (rows: UnknownRecord[], language: Language = "en") => {
   const localize = (value: string) => (language === "zh" ? translateDisplayText(value, language) : value);
 
-  return rows.map((item: any) => ({
-    id: item.id,
-    slug: item.slug,
+  return rows.map((item) => ({
+    id: readText(item, "id"),
+    slug: readText(item, "slug"),
     title: localize(pickLocalizedText(item, "title", language)),
     excerpt: localize(pickLocalizedText(item, "excerpt", language)),
     content: localize(pickLocalizedText(item, "content", language)),
-    category: localize(item.category || "Renovation"),
-    date: item.published_at || item.created_at,
+    category: localize(readText(item, "category", "Renovation")),
+    date: readText(item, "published_at") || readText(item, "created_at"),
     readTime: formatBlogReadTime(null, language),
-    image: item.cover_image_url || "",
-    tags: (item.tags || []).map((tag: string) => localize(tag)),
+    image: readText(item, "cover_image_url"),
+    tags: toArray<string>(item.tags).map((tag) => localize(tag)),
   }));
 };
 
@@ -454,16 +519,16 @@ export const getPublishedBlogPostBySlug = async (slug: string, language: "en" | 
   if (!data) return fallbackPost();
 
   return {
-    id: data.id,
-    slug: data.slug,
+    id: readText(data, "id"),
+    slug: readText(data, "slug"),
     title: language === "zh" ? translateDisplayText(pickLocalizedText(data, "title", language), language) : pickLocalizedText(data, "title", language),
     excerpt: language === "zh" ? translateDisplayText(pickLocalizedText(data, "excerpt", language), language) : pickLocalizedText(data, "excerpt", language),
     content: language === "zh" ? translateDisplayText(pickLocalizedText(data, "content", language), language) : pickLocalizedText(data, "content", language),
-    category: language === "zh" ? translateDisplayText(data.category || "Renovation", language) : data.category || "Renovation",
-    date: data.published_at || data.created_at,
+    category: language === "zh" ? translateDisplayText(readText(data, "category", "Renovation"), language) : readText(data, "category", "Renovation"),
+    date: readText(data, "published_at") || readText(data, "created_at"),
     readTime: formatBlogReadTime(null, language),
-    image: data.cover_image_url || "",
-    tags: (data.tags || []).map((tag: string) => (language === "zh" ? translateDisplayText(tag, language) : tag)),
+    image: readText(data, "cover_image_url"),
+    tags: toArray<string>(data.tags).map((tag) => (language === "zh" ? translateDisplayText(tag, language) : tag)),
   };
 };
 
@@ -484,19 +549,23 @@ export const getPublishedServiceAreaBySlug = async (slug: string, language: "en"
 
   return {
     name: localize(areaName),
-    slug: data.slug,
-    metaTitle: localize(pickLocalizedText(data, "seo_title", language) || data.area_name || ""),
+    slug: readText(data, "slug"),
+    metaTitle: localize(pickLocalizedText(data, "seo_title", language) || readText(data, "area_name")),
     description: localize(pickLocalizedText(data, "seo_description", language) || pickLocalizedText(data, "excerpt", language)),
     intro: localize(pickLocalizedText(data, "content", language)),
-    propertyTypes: (data.property_types || []).map((value: string) => localize(value)),
-    commonNeeds: (data.common_needs || []).map((value: string) => localize(value)),
+    propertyTypes: toArray<string>(data.property_types).map((value) => localize(value)),
+    commonNeeds: toArray<string>(data.common_needs).map((value) => localize(value)),
     constructionNotes: localize(pickLocalizedText(data, "construction_notes", language)),
     projects: toArray<UnknownRecord>(data.projects).map((project) => ({
       ...project,
       title: localize(toText(project.title)),
-      image: project.image,
+      type: readText(project, "type"),
+      image: readText(project, "image"),
     })),
-    faqs: pickLocalizedList<any>(data, "faqs", language).map((faq: any) => ({ q: localize(faq.q || ""), a: localize(faq.a || "") })),
+    faqs: pickLocalizedList<UnknownRecord>(data, "faqs", language).map((faq) => ({
+      q: localize(readText(faq, "q")),
+      a: localize(readText(faq, "a")),
+    })),
   };
 };
 
@@ -515,12 +584,12 @@ export const getPublishedLandingPageBySlug = async (slug: string, language: "en"
       heroAlt: localize(page.heroAlt || page.title || ""),
       description: localize(page.description || ""),
       benefits: (page.benefits || []).map((item: string) => localize(item)),
-      relatedProjects: (page.relatedProjects || []).map((project: any) => ({
+      relatedProjects: (page.relatedProjects || []).map((project) => ({
         ...project,
         title: localize(project.title || ""),
         location: localize(project.location || ""),
       })),
-      faqs: (page.faqs || []).map((faq: any) => ({ q: localize(faq.q || ""), a: localize(faq.a || "") })),
+      faqs: (page.faqs || []).map((faq) => ({ q: localize(faq.q || ""), a: localize(faq.a || "") })),
       seoTitle: localize(page.seoTitle || ""),
       seoDescription: localize(page.seoDescription || ""),
     };
@@ -536,12 +605,15 @@ export const getPublishedLandingPageBySlug = async (slug: string, language: "en"
   return {
     title: localize(pickLocalizedText(data, "title", language)),
     subtitle: localize(pickLocalizedText(data, "excerpt", language)),
-    heroImage: data.hero_image_url || "",
+    heroImage: readText(data, "hero_image_url"),
     heroAlt: localize(pickLocalizedText(data, "alt", language, pickLocalizedText(data, "title", language))),
     description: localize(pickLocalizedText(data, "content", language)),
     benefits: pickLocalizedList<string>(data, "benefits", language).map((item: string) => localize(item)),
-    relatedProjects: data.related_projects || [],
-    faqs: pickLocalizedList<any>(data, "faqs", language).map((faq: any) => ({ q: localize(faq.q || ""), a: localize(faq.a || "") })),
+    relatedProjects: toArray(data.related_projects),
+    faqs: pickLocalizedList<UnknownRecord>(data, "faqs", language).map((faq) => ({
+      q: localize(readText(faq, "q")),
+      a: localize(readText(faq, "a")),
+    })),
     seoTitle: localize(pickLocalizedText(data, "seo_title", language)),
     seoDescription: localize(pickLocalizedText(data, "seo_description", language)),
   };

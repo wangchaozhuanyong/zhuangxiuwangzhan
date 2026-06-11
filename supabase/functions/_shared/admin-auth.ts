@@ -10,12 +10,31 @@ type AdminAuthOptions = {
   cronSecretEnv?: string;
 };
 
+type EdgeSupabaseClient = {
+  auth: {
+    getUser(token: string): Promise<{
+      data: { user?: { id: string; app_metadata?: Record<string, unknown> } | null };
+      error: { message?: string } | null;
+    }>;
+  };
+  from(table: string): {
+    select(columns: string): {
+      eq(column: string, value: unknown): {
+        maybeSingle(): Promise<{
+          data: { active?: boolean | null; role?: string | null } | null;
+          error: { message: string } | null;
+        }>;
+      };
+    };
+  };
+};
+
 export const getServiceRoleKey = () =>
   Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") || Deno.env.get("SERVICE_ROLE_KEY");
 
 export const requireAdminAccess = async (
   req: Request,
-  supabase: any,
+  supabase: EdgeSupabaseClient,
   options: AdminAuthOptions = {},
 ): Promise<EdgeAdminCheck> => {
   const cronSecret = options.cronSecretEnv ? Deno.env.get(options.cronSecretEnv) : null;

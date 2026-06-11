@@ -1,7 +1,6 @@
 import { FormEvent, useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import AdminPageHeader from "@/components/admin/AdminPageHeader";
-import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { AdminActionButton } from "@/components/admin/AdminPermission";
 import { isSupabaseConfigured } from "@/lib/supabase";

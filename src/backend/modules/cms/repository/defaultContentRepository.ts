@@ -1,22 +1,24 @@
 import { isSupabaseConfigured, supabase } from "@/lib/supabase";
 
-type DbRow = Record<string, any>;
+type DbRow = Record<string, unknown> & {
+  id?: unknown;
+};
 
 export const hasDefaultContentDatabaseClient = () => isSupabaseConfigured && Boolean(supabase);
 
 export async function fetchDefaultContentSeedRows(table: string, fields: string[]) {
   const { data, error } = await supabase!.from(table).select(fields.join(","));
   if (error) throw error;
-  return (data || []) as DbRow[];
+  return (data || []) as unknown as DbRow[];
 }
 
 export async function insertDefaultContentSeedRow(table: string, row: DbRow) {
-  const { error } = await supabase!.from(table).insert(row);
+  const { error } = await supabase!.from(table).insert(row as never);
   if (error) throw error;
 }
 
 export async function updateDefaultContentSeedRow(table: string, id: string | number, patch: DbRow) {
-  const { error } = await supabase!.from(table).update(patch).eq("id", id);
+  const { error } = await supabase!.from(table).update(patch as never).eq("id", id);
   if (error) throw error;
 }
 
@@ -29,7 +31,7 @@ export async function countDefaultContentSeedRows(table: string, filter?: { key:
 }
 
 export async function insertDefaultContentSeedRows(table: string, rows: DbRow[]) {
-  const { error } = await supabase!.from(table).insert(rows);
+  const { error } = await supabase!.from(table).insert(rows as never);
   if (error) throw error;
 }
 
@@ -49,7 +51,7 @@ export async function countDefaultContentProjectImages(projectId: string) {
 }
 
 export async function insertDefaultContentProjectImages(rows: DbRow[]) {
-  const { error } = await supabase!.from("project_images").insert(rows);
+  const { error } = await supabase!.from("project_images").insert(rows as never);
   if (error) throw error;
 }
 
@@ -60,11 +62,11 @@ export async function fetchDefaultSiteSettings() {
 }
 
 export async function insertDefaultSiteSettings(row: DbRow) {
-  const { error } = await supabase!.from("site_settings").insert({ id: "default", ...row });
+  const { error } = await supabase!.from("site_settings").insert({ id: "default", ...row } as never);
   if (error) throw error;
 }
 
 export async function updateDefaultSiteSettings(patch: DbRow) {
-  const { error } = await supabase!.from("site_settings").update(patch).eq("id", "default");
+  const { error } = await supabase!.from("site_settings").update(patch as never).eq("id", "default");
   if (error) throw error;
 }

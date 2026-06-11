@@ -6,6 +6,8 @@ import {
 } from "@/i18n/displayLabels";
 import type { Language } from "@/i18n/routes";
 
+type AdminEditorRecord = Record<string, unknown>;
+
 export const editableTables = new Set([
   "services",
   "projects",
@@ -233,53 +235,53 @@ export const tableLabels: Record<string, { en: string; zh: string }> = {
 
 const getTableLabel = (table: string, language: Language) => tableLabels[table]?.[language] || humanize(table);
 
-export const getRecordLabel = (row: Record<string, any>, type: string, language: Language) => {
+export const getRecordLabel = (row: AdminEditorRecord, type: string, language: Language) => {
   if (type === "leads") {
-    const name = row.name || (language === "zh" ? "咨询" : "Lead");
-    const phone = row.phone || (language === "zh" ? "无电话" : "No phone");
+    const name = String(row.name || (language === "zh" ? "咨询" : "Lead"));
+    const phone = String(row.phone || (language === "zh" ? "无电话" : "No phone"));
     return name + " · " + phone;
   }
 
   if (type === "quote_requests") {
-    const name = row.customer_name || (language === "zh" ? "报价请求" : "Quote request");
-    const phone = row.customer_phone || (language === "zh" ? "无电话" : "No phone");
+    const name = String(row.customer_name || (language === "zh" ? "报价请求" : "Quote request"));
+    const phone = String(row.customer_phone || (language === "zh" ? "无电话" : "No phone"));
     return name + " · " + phone;
   }
 
   if (type === "translation_jobs") {
-    return getTableLabel(row.table_name || "translation", language) + " · " + translateStatusLabel("translation_jobs", row.status || "unknown", language);
+    return getTableLabel(String(row.table_name || "translation"), language) + " · " + translateStatusLabel("translation_jobs", String(row.status || "unknown"), language);
   }
 
   const text = row.title_zh || row.title_en || row.name || row.customer_name;
   return text ? translateDisplayText(String(text), language) : getTableLabel(type, language);
 };
 
-export const getRecordMeta = (row: Record<string, any>, type: string, language: Language) => {
+export const getRecordMeta = (row: AdminEditorRecord, type: string, language: Language) => {
   if (type === "leads") {
     return (
-      translateProjectType(row.project_type || (language === "zh" ? "常规" : "General"), language) +
+      translateProjectType(String(row.project_type || (language === "zh" ? "常规" : "General")), language) +
       " · " +
-      translateLocationLabel(row.location || (language === "zh" ? "未填写地点" : "No location"), language) +
+      translateLocationLabel(String(row.location || (language === "zh" ? "未填写地点" : "No location")), language) +
       " · " +
-      translateStatusLabel("leads", row.status || "new", language)
+      translateStatusLabel("leads", String(row.status || "new"), language)
     );
   }
 
   if (type === "quote_requests") {
     return (
-      translateProjectType(row.project_type || (language === "zh" ? "项目" : "Project"), language) +
+      translateProjectType(String(row.project_type || (language === "zh" ? "项目" : "Project")), language) +
       " · " +
-      translateLocationLabel(row.location || (language === "zh" ? "未填写地点" : "No location"), language) +
+      translateLocationLabel(String(row.location || (language === "zh" ? "未填写地点" : "No location")), language) +
       " · " +
-      translateStatusLabel("quote_requests", row.status || "pending", language)
+      translateStatusLabel("quote_requests", String(row.status || "pending"), language)
     );
   }
 
-  if (type === "translation_jobs") return row.error_message || (language === "zh" ? "翻译记录" : "Translation record");
-  return translateStatusLabel(type, row.status || "saved", language);
+  if (type === "translation_jobs") return String(row.error_message || (language === "zh" ? "翻译记录" : "Translation record"));
+  return translateStatusLabel(type, String(row.status || "saved"), language);
 };
 
-export const parseFieldValue = (field: string, value: any) => {
+export const parseFieldValue = (field: string, value: unknown) => {
   if (arrayLikeFields.has(field)) {
     if (Array.isArray(value)) return value.map((item) => String(item || "").trim()).filter(Boolean);
     return String(value || "")
@@ -304,13 +306,13 @@ export const parseFieldValue = (field: string, value: any) => {
   return value;
 };
 
-export const formatFieldValue = (field: string, value: any) => {
-  if (arrayLikeFields.has(field)) return Array.isArray(value) ? value.join("\n") : value || "";
+export const formatFieldValue = (field: string, value: unknown): string => {
+  if (arrayLikeFields.has(field)) return Array.isArray(value) ? value.join("\n") : String(value || "");
   if (jsonFields.has(field)) return typeof value === "string" ? value : JSON.stringify(value || [], null, 2);
-  return value || "";
+  return String(value || "");
 };
 
-export const arrayValue = (field: string, value: any) => {
+export const arrayValue = (field: string, value: unknown) => {
   if (Array.isArray(value)) return value;
   if (jsonFields.has(field)) {
     try {
@@ -326,12 +328,12 @@ export const arrayValue = (field: string, value: any) => {
     .filter(Boolean);
 };
 
-const csvEscape = (value: any) => {
+const csvEscape = (value: unknown) => {
   const text = Array.isArray(value) || (value && typeof value === "object") ? JSON.stringify(value) : String(value ?? "");
   return `"${text.replaceAll('"', '""')}"`;
 };
 
-export const exportRowsAsCsv = (type: string, fields: string[], rows: any[]) => {
+export const exportRowsAsCsv = (type: string, fields: string[], rows: AdminEditorRecord[]) => {
   const csv = [fields.map(csvEscape).join(","), ...rows.map((row) => fields.map((field) => csvEscape(row[field])).join(","))].join("\n");
   const blob = new Blob([csv], { type: "text/csv;charset=utf-8" });
   const url = URL.createObjectURL(blob);

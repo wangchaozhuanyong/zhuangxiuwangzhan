@@ -25,6 +25,10 @@ const legacyRedirectPaths = new Set([
   "/zh/materials/melamine-grey-oak",
   "/en/materials/spc-vinyl-natural-oak",
   "/zh/materials/spc-vinyl-natural-oak",
+  "/en/services/office",
+  "/zh/services/office",
+  "/en/services/shoplot",
+  "/zh/services/shoplot",
 ]);
 
 const staticPaths = [
@@ -36,7 +40,6 @@ const staticPaths = [
   "/services/builtin",
   "/services/kitchen",
   "/services/bathroom",
-  "/services/office",
   "/services/shoplot",
   "/services/artistic-coating",
   "/services/old-house",

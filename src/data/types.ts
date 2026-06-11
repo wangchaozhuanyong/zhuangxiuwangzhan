@@ -16,15 +16,27 @@
 export interface ServiceItem {
   id: string;                // unique identifier, e.g. "svc-1"
   title: string;             // service name, e.g. "Interior Renovation"
+  titleZh?: string;          // optional Chinese fallback title
   slug: string;              // URL slug, e.g. "renovation"
   summary: string;           // short description for listing
+  summaryZh?: string;        // optional Chinese fallback summary
   description: string;       // full description for detail page
+  descriptionZh?: string;    // optional Chinese fallback description
   suitableFor: string[];     // target customer types
+  suitableForZh?: string[];  // optional Chinese fallback target customer types
   commonProjects: string[];  // common project scopes
+  commonProjectsZh?: string[]; // optional Chinese fallback project scopes
   processSteps: { title: string; desc: string }[]; // step-by-step process
+  processStepsZh?: { title: string; desc: string }[]; // optional Chinese fallback process
   items: string[];           // sub-items / scope list
+  itemsZh?: string[];        // optional Chinese fallback scope list
   faqs: { q: string; a: string }[]; // service-specific FAQs
+  faqsZh?: { q: string; a: string }[]; // optional Chinese fallback FAQs
   image: string;             // hero image URL
+  seoTitle?: string;         // optional SEO title
+  seoTitleZh?: string;       // optional Chinese SEO title
+  seoDescription?: string;   // optional SEO description
+  seoDescriptionZh?: string; // optional Chinese SEO description
 }
 
 // ============ MATERIALS ============
@@ -49,6 +61,7 @@ export interface MaterialSubcategory {
   slug: string;              // URL slug
   description: string;       // subcategory description
   image: string;             // subcategory thumbnail
+  alt?: string | null;        // optional image alt text
 }
 
 export interface MaterialCategory {
@@ -56,6 +69,7 @@ export interface MaterialCategory {
   slug: string;              // URL slug
   description: string;       // category description
   image: string;             // category thumbnail
+  alt?: string | null;        // optional image alt text
   subcategories: MaterialSubcategory[]; // subcategories
   items: MaterialItem[];     // materials in this category
 }
@@ -75,7 +89,9 @@ export interface ProjectItem {
   duration: string;          // project duration, e.g. "8 weeks"
   testimonial?: string;      // optional client testimonial
   images: string[];          // gallery image URLs
+  imageAlts?: string[];      // optional gallery image alt text
   thumbnail: string;         // thumbnail image URL
+  thumbnailAlt?: string;     // optional thumbnail alt text
 }
 
 // ============ BLOG ============

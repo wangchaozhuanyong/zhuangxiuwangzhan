@@ -5,6 +5,10 @@ import { requireSupabase } from "@/lib/supabase";
 
 type ProjectImageInsert = Database["public"]["Tables"]["project_images"]["Insert"];
 type ProjectImageUpdate = Database["public"]["Tables"]["project_images"]["Update"];
+type ProjectStatus = NonNullable<Database["public"]["Tables"]["projects"]["Row"]["status"]>;
+type SearchableQuery = {
+  or(filters: string): unknown;
+};
 
 export type SaveProjectRecordInput = {
   payload: Record<string, unknown>;
@@ -21,9 +25,9 @@ export type AdminProjectListInput = {
   search?: string;
 };
 
-const applySearch = (query: any, fields: string[], search?: string) => {
+const applySearch = <TQuery extends SearchableQuery>(query: TQuery, fields: string[], search?: string): TQuery => {
   if (!search) return query;
-  return query.or(fields.map((field) => `${field}.ilike.%${search}%`).join(","));
+  return query.or(fields.map((field) => `${field}.ilike.%${search}%`).join(",")) as TQuery;
 };
 
 export async function findProjectIdsBySlug(slug: string) {
@@ -34,7 +38,7 @@ export async function findProjectIdsBySlug(slug: string) {
   return (data || []).map((row) => String(row.id));
 }
 
-export async function fetchAdminProjectList<T extends Record<string, any>>(input: AdminProjectListInput) {
+export async function fetchAdminProjectList<T extends Record<string, unknown>>(input: AdminProjectListInput) {
   const supabase = requireSupabase();
   const from = input.page * input.pageSize;
   const to = from + input.pageSize - 1;
@@ -45,7 +49,7 @@ export async function fetchAdminProjectList<T extends Record<string, any>>(input
       "id,title_zh,title_en,slug,status,sort_order,location,project_type,image_url,updated_at,created_at,project_images(image_url,image_type,sort_order,alt_zh,alt_en)",
       { count: "exact" },
     );
-  if (input.status && input.status !== "all") query = query.eq("status", input.status as any);
+  if (input.status && input.status !== "all") query = query.eq("status", input.status as ProjectStatus);
   query = applySearch(query, ["title_zh", "title_en", "slug", "location", "project_type"], input.search);
   query = query.order("sort_order", { ascending: true }).order("updated_at", { ascending: false });
 

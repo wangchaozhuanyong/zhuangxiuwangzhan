@@ -77,7 +77,7 @@ const isValidTimezone = (value: string) => {
 
 export async function handleNotificationSettingsAction(
   supabase: SupabaseClient,
-  body: Record<string, any>,
+  body: Record<string, unknown>,
 ): Promise<NotificationSettingsActionResult> {
   const action = body.action || "get";
 

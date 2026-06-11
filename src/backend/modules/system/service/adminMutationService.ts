@@ -70,8 +70,11 @@ const cleanPayload = (payload: DbRecord, keepId = false) => {
   return next;
 };
 
-const normalizeDate = (value?: string | null) => {
+const normalizeDate = (value?: unknown) => {
   if (!value) return "";
+  if (!(typeof value === "string" || typeof value === "number" || value instanceof Date)) {
+    return String(value);
+  }
   const time = new Date(value).getTime();
   return Number.isNaN(time) ? String(value) : String(time);
 };
@@ -126,7 +129,7 @@ export async function saveAdminRecord<T extends DbRecord = DbRecord>({
       await insertAdminAuditLog({
         table,
         action: action || (isUpdate ? "update" : "insert"),
-        id: saved?.[idField] ?? id,
+        id: typeof saved?.[idField] === "string" || typeof saved?.[idField] === "number" ? saved[idField] : id,
         oldValue: before,
         newValue: saved,
       });

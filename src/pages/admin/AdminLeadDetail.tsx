@@ -21,6 +21,21 @@ const followupTypes = ["note", "call", "whatsapp", "site_visit", "quotation", "c
 
 type AdminLeadDetailTextKey = keyof typeof adminLeadDetailText;
 type AdminLeadFollowupTypeKey = keyof typeof adminLeadFollowupTypeLabels;
+type AdminLeadDetailRow = Record<string, unknown> & {
+  id?: string;
+  name?: string | null;
+  phone?: string | null;
+  email?: string | null;
+  status?: string | null;
+  source_path?: string | null;
+  project_type?: string | null;
+  location?: string | null;
+  budget_range?: string | null;
+  message?: string | null;
+  notes?: string | null;
+  next_follow_up_at?: string | null;
+  created_at?: string | null;
+};
 
 const A = (key: AdminLeadDetailTextKey) => adminLeadDetailText[key][getAdminLang()];
 
@@ -35,7 +50,7 @@ const AdminLeadDetail = () => {
   const { id } = useParams<{ id: string }>();
   const queryClient = useQueryClient();
   const { data, error } = useAdminLead(id);
-  const [lead, setLead] = useState<any>(null);
+  const [lead, setLead] = useState<AdminLeadDetailRow | null>(null);
   const [content, setContent] = useState("");
   const [followupType, setFollowupType] = useState("note");
   const [nextFollowUpAt, setNextFollowUpAt] = useState("");

@@ -20,6 +20,12 @@ import { formatUserFacingError } from "@/lib/userFacingText";
 type ModuleKey = "site_pages" | "home_sections" | "faqs" | "before_after_items" | "brand_partners";
 type Field = { key: string; type?: "text" | "textarea" | "image" | "number" | "select" | "textList" };
 type AdminSimpleCmsTextKey = keyof typeof adminSimpleCmsText.en;
+type SimpleCmsRecord = Record<string, unknown>;
+const toRecordId = (value: unknown): string | number | undefined =>
+  typeof value === "string" || typeof value === "number" ? value : undefined;
+const toOptionalString = (value: unknown): string | null =>
+  typeof value === "string" ? value : null;
+const toInputValue = (value: unknown): string | number => (typeof value === "number" ? value : String(value || ""));
 
 const configs: Record<ModuleKey, { table: ModuleKey; labelField: string; fields: Field[] }> = {
   site_pages: {
@@ -125,7 +131,7 @@ const AdminSimpleCms = ({ module }: { module: ModuleKey }) => {
   const config = configs[module];
   const queryClient = useQueryClient();
   const { data: rows = [], error, refetch } = useAdminSimpleCmsRows(config.table);
-  const [record, setRecord] = useState<Record<string, any>>(emptyRecord);
+  const [record, setRecord] = useState<SimpleCmsRecord>(emptyRecord);
   const recordDirtyRef = useRef(false);
   const [message, setMessage] = useState(error ? formatAdminError(module, error, language) : "");
   const [saving, setSaving] = useState(false);
@@ -175,7 +181,7 @@ const AdminSimpleCms = ({ module }: { module: ModuleKey }) => {
     setRecord((current) => ({ ...current, [key]: value }));
   };
 
-  const loadRecord = async (row: Record<string, any>) => {
+  const loadRecord = async (row: SimpleCmsRecord) => {
     if (!(await confirmDiscardUnsaved())) return;
     markRecordClean();
     setRecord(row);
@@ -202,14 +208,14 @@ const AdminSimpleCms = ({ module }: { module: ModuleKey }) => {
               .filter(Boolean);
       }
     }
-    const recordId = payload.id;
-    const expectedUpdatedAt = payload.updated_at || null;
+    const recordId = toRecordId(payload.id);
+    const expectedUpdatedAt = toOptionalString(payload.updated_at);
     delete payload.id;
     delete payload.created_at;
     delete payload.updated_at;
 
     try {
-      const data = await saveAdminRecord<Record<string, any>>({
+      const data = await saveAdminRecord<SimpleCmsRecord>({
         table: config.table,
         id: recordId,
         expectedUpdatedAt,
@@ -237,13 +243,13 @@ const AdminSimpleCms = ({ module }: { module: ModuleKey }) => {
       confirmLabel: t.archiveConfirm,
     });
     if (!confirmed) return;
-    const current = rows.find((row) => String(row.id) === String(id)) as Record<string, any> | undefined;
+    const current = rows.find((row) => String(row.id) === String(id)) as SimpleCmsRecord | undefined;
     setDeletingId(id);
     try {
       await archiveOrDeleteAdminRecord({
         table: config.table,
         id,
-        expectedUpdatedAt: current?.updated_at || null,
+        expectedUpdatedAt: toOptionalString(current?.updated_at),
         queryClient,
         softDelete: true,
       });
@@ -329,7 +335,7 @@ const AdminSimpleCms = ({ module }: { module: ModuleKey }) => {
             <div>
               <AdminFieldLabel label={t.status} help={getAdminFieldHelp("status")} />
               <select
-                value={record.status || "published"}
+                value={String(record.status || "published")}
                 onChange={(event) => update("status", event.target.value)}
                 className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
               >
@@ -342,7 +348,7 @@ const AdminSimpleCms = ({ module }: { module: ModuleKey }) => {
             </div>
             <div>
               <AdminFieldLabel label={t.sort} help={getAdminFieldHelp("sort_order")} />
-              <Input type="number" value={record.sort_order || 0} onChange={(event) => update("sort_order", Number(event.target.value || 0))} />
+              <Input type="number" value={toInputValue(record.sort_order || 0)} onChange={(event) => update("sort_order", Number(event.target.value || 0))} />
             </div>
           </div>
           <Button type="button" className="mt-5 w-full" disabled={saving} onClick={() => void save()}>
@@ -389,5 +395,3 @@ const AdminSimpleCms = ({ module }: { module: ModuleKey }) => {
 };
 
 export default AdminSimpleCms;
-
-

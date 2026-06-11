@@ -29,41 +29,73 @@ type AdminAboutEditorTextKey = keyof typeof adminAboutEditorText;
 const A = (key: AdminAboutEditorTextKey) => adminAboutEditorText[key][getAdminLang()];
 const sectionTabLabel = (key: SectionKey) => adminAboutEditorSectionTabLabels[key][getAdminLang()];
 
-const asArray = (value: unknown): any[] => (Array.isArray(value) ? value : []);
+type PublishStatus = "draft" | "published" | "archived";
+type AboutSectionItem = {
+  value?: string;
+  label?: string;
+  label_zh?: string;
+  label_en?: string;
+  title?: string;
+  title_zh?: string;
+  title_en?: string;
+  desc?: string;
+  desc_zh?: string;
+  desc_en?: string;
+  year?: string;
+  icon?: string;
+  [key: string]: unknown;
+};
+
+const toPublishStatus = (value: string): PublishStatus =>
+  value === "draft" || value === "archived" ? value : "published";
+const toTabValue = (value: string): SectionKey | "cta" =>
+  value === "cta" || sectionKeys.includes(value as SectionKey) ? (value as SectionKey | "cta") : "hero";
+const asArray = (value: unknown): unknown[] => (Array.isArray(value) ? value : []);
+const toItem = (value: unknown): AboutSectionItem =>
+  value && typeof value === "object" && !Array.isArray(value) ? (value as AboutSectionItem) : { title: String(value || "") };
 
 const cleanAboutItems = (sectionKey: string, value: unknown[]) => {
   const items = asArray(value);
   if (sectionKey === "intro") {
     return items
-      .map((item: any) => String(typeof item === "string" ? item : item?.title || ""))
+      .map((item) => String(typeof item === "string" ? item : toItem(item).title || ""))
       .map((item) => item.trim())
       .filter(Boolean);
   }
   if (sectionKey === "stats") {
     return items
-      .map((item: any) => ({
-        value: String(item?.value || "").trim(),
-        label: String(item?.label || item?.label_zh || item?.label_en || "").trim(),
-        icon: String(item?.icon || "").trim(),
-      }))
+      .map((item) => {
+        const record = toItem(item);
+        return {
+          value: String(record.value || "").trim(),
+          label: String(record.label || record.label_zh || record.label_en || "").trim(),
+          icon: String(record.icon || "").trim(),
+        };
+      })
       .filter((item) => item.value && item.label);
   }
   if (sectionKey === "milestones") {
     return items
-      .map((item: any) => ({
-        year: String(item?.year || "").trim(),
-        title: String(item?.title || "").trim(),
-        desc: String(item?.desc || "").trim(),
-      }))
+      .map((item) => {
+        const record = toItem(item);
+        return {
+          year: String(record.year || "").trim(),
+          title: String(record.title || "").trim(),
+          desc: String(record.desc || "").trim(),
+        };
+      })
       .filter((item) => item.year && item.title && item.desc);
   }
   if (sectionKey === "core_values" || sectionKey === "team") {
     return items
-      .map((item: any) => ({
-        title: String(item?.title || item?.title_zh || item?.title_en || "").trim(),
-        desc: String(item?.desc || item?.desc_zh || item?.desc_en || "").trim(),
-        icon: String(item?.icon || "").trim(),
-      }))
+      .map((item) => {
+        const record = toItem(item);
+        return {
+          title: String(record.title || record.title_zh || record.title_en || "").trim(),
+          desc: String(record.desc || record.desc_zh || record.desc_en || "").trim(),
+          icon: String(record.icon || "").trim(),
+        };
+      })
       .filter((item) => item.title && item.desc);
   }
   return [];
@@ -76,8 +108,8 @@ export default function AdminAboutEditor() {
   const loading = isFetching;
 
   const [sections, setSections] = useState<Record<string, AboutSectionRow | null>>({});
-  const [itemsZh, setItemsZh] = useState<Record<string, any[]>>({});
-  const [itemsEn, setItemsEn] = useState<Record<string, any[]>>({});
+  const [itemsZh, setItemsZh] = useState<Record<string, AboutSectionItem[]>>({});
+  const [itemsEn, setItemsEn] = useState<Record<string, AboutSectionItem[]>>({});
 
   const [ctaBlock, setCtaBlock] = useState<CtaRow | null>(null);
   const [editingCta, setEditingCta] = useState<CtaRow | null>(null);
@@ -99,11 +131,11 @@ export default function AdminAboutEditor() {
     if (!bundle) return;
     if (formDirtyRef.current) return;
     setSections(bundle.sections);
-    const zh: Record<string, any[]> = {};
-    const en: Record<string, any[]> = {};
+    const zh: Record<string, AboutSectionItem[]> = {};
+    const en: Record<string, AboutSectionItem[]> = {};
     sectionKeys.forEach((key) => {
-      zh[key] = asArray(bundle.sections[key]?.items_zh);
-      en[key] = asArray(bundle.sections[key]?.items_en);
+      zh[key] = asArray(bundle.sections[key]?.items_zh).map(toItem);
+      en[key] = asArray(bundle.sections[key]?.items_en).map(toItem);
     });
     setItemsZh(zh);
     setItemsEn(en);
@@ -119,7 +151,7 @@ export default function AdminAboutEditor() {
 
   const updateSection = (key: string, patch: Partial<AboutSectionRow>) => {
     markDirty();
-    setSections((prev) => ({ ...prev, [key]: { ...(prev[key] || ({ section_key: key } as any)), ...patch } }));
+    setSections((prev) => ({ ...prev, [key]: { ...(prev[key] || { section_key: key }), ...patch } }));
   };
 
   const saveSection = async (key: string) => {
@@ -135,7 +167,7 @@ export default function AdminAboutEditor() {
     }
 
     try {
-      const payload: any = {
+      const payload: Record<string, unknown> = {
         section_key: key,
         title_zh: row.title_zh || null,
         title_en: row.title_en || null,
@@ -186,7 +218,7 @@ export default function AdminAboutEditor() {
 
   const saveCta = async () => {
     if (!supabase) return;
-    const payload: any = {
+    const payload: Record<string, unknown> = {
       block_key: "about_final",
       title_zh: ctaDraft.title_zh || null,
       title_en: ctaDraft.title_en || null,
@@ -244,7 +276,7 @@ export default function AdminAboutEditor() {
         }
       />
 
-      <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as any)}>
+      <Tabs value={activeTab} onValueChange={(v) => setActiveTab(toTabValue(v))}>
         <div className="mb-4 overflow-auto">
           <TabsList className="w-max">
             {sectionKeys.map((key) => (
@@ -274,7 +306,7 @@ export default function AdminAboutEditor() {
                         <label className="mb-1 block text-sm font-medium">{A("status")}</label>
                         <select
                           value={row.status || "published"}
-                          onChange={(e) => updateSection(key, { status: e.target.value as any })}
+                          onChange={(e) => updateSection(key, { status: toPublishStatus(e.target.value) })}
                           className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
                         >
                           {publishStatusOptions().map(({ value, label }) => (
@@ -371,7 +403,7 @@ export default function AdminAboutEditor() {
                 <label className="mb-1 block text-sm font-medium">{A("status")}</label>
                 <select
                   value={ctaDraft.status || "published"}
-                  onChange={(e) => touchEditingCta((v) => ({ ...(v || ctaDraft), status: e.target.value as any }))}
+                  onChange={(e) => touchEditingCta((v) => ({ ...(v || ctaDraft), status: toPublishStatus(e.target.value) }))}
                   className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
                 >
                   {publishStatusOptions().map(({ value, label }) => (

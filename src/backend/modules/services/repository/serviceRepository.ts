@@ -1,6 +1,12 @@
 import type { QueryClient } from "@tanstack/react-query";
 import { saveAdminRecord } from "@/lib/adminMutation";
+import type { Database } from "@/lib/database.types";
 import { requireSupabase } from "@/lib/supabase";
+
+type ServiceStatus = NonNullable<Database["public"]["Tables"]["services"]["Row"]["status"]>;
+type SearchableQuery = {
+  or(filters: string): unknown;
+};
 
 export type SaveServiceRecordInput = {
   payload: Record<string, unknown>;
@@ -17,9 +23,9 @@ export type AdminServiceListInput = {
   search?: string;
 };
 
-const applySearch = (query: any, fields: string[], search?: string) => {
+const applySearch = <TQuery extends SearchableQuery>(query: TQuery, fields: string[], search?: string): TQuery => {
   if (!search) return query;
-  return query.or(fields.map((field) => `${field}.ilike.%${search}%`).join(","));
+  return query.or(fields.map((field) => `${field}.ilike.%${search}%`).join(",")) as TQuery;
 };
 
 export async function findServiceIdsBySlug(slug: string) {
@@ -30,7 +36,7 @@ export async function findServiceIdsBySlug(slug: string) {
   return (data || []).map((row) => String(row.id));
 }
 
-export async function fetchAdminServiceList<T extends Record<string, any>>(input: AdminServiceListInput) {
+export async function fetchAdminServiceList<T extends Record<string, unknown>>(input: AdminServiceListInput) {
   const supabase = requireSupabase();
   const from = input.page * input.pageSize;
   const to = from + input.pageSize - 1;
@@ -38,7 +44,7 @@ export async function fetchAdminServiceList<T extends Record<string, any>>(input
   let query = supabase
     .from("services")
     .select("id,title_zh,title_en,slug,status,sort_order,updated_at,created_at", { count: "exact" });
-  if (input.status && input.status !== "all") query = query.eq("status", input.status as any);
+  if (input.status && input.status !== "all") query = query.eq("status", input.status as ServiceStatus);
   query = applySearch(query, ["title_zh", "title_en", "slug"], input.search);
   query = query.order("sort_order", { ascending: true }).order("updated_at", { ascending: false });
 

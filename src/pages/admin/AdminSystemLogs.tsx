@@ -3,10 +3,7 @@ import AdminEmptyState from "@/components/admin/AdminEmptyState";
 import AdminPageHeader from "@/components/admin/AdminPageHeader";
 import { Badge } from "@/components/ui/badge";
 import { adminSystemLogsText } from "@/i18n/adminSystemLogsText";
-import {
-  loadAdminSystemEventLogs,
-  type SystemLogRow,
-} from "@/backend/modules/system/service/systemEventService";
+import { loadAdminSystemEventLogs } from "@/backend/modules/system/service/systemEventService";
 import { getAdminLang } from "@/lib/adminLocale";
 import { adminQueriesEnabled } from "@/lib/adminQueryCore";
 import { formatAdminSystemLogRow } from "@/lib/adminSystemLogDisplay";

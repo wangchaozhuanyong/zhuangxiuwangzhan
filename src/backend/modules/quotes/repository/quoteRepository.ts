@@ -1,5 +1,8 @@
 import { requireSupabase } from "@/lib/supabase";
 import { adminDayStartIso, adminSince24hIso, type AdminWorkflowFilter } from "@/lib/adminLeadWorkflow";
+import type { Database } from "@/lib/database.types";
+
+type QuoteStatus = NonNullable<Database["public"]["Tables"]["quote_requests"]["Row"]["status"]>;
 
 export type QuoteUpdatePatch = Record<string, unknown>;
 
@@ -18,23 +21,6 @@ export type AdminListPage<T> = {
   pageSize: number;
 };
 
-const applySearch = (query: any, fields: string[], search?: string) => {
-  if (!search) return query;
-  return query.or(fields.map((field) => `${field}.ilike.%${search}%`).join(","));
-};
-
-const applyQuoteWorkflowFilter = (query: any, workflow?: AdminWorkflowFilter) => {
-  if (!workflow || workflow === "all") return query;
-  const now = new Date();
-
-  if (workflow === "today") return query.gte("created_at", adminDayStartIso(now));
-  if (workflow === "due_followups") return query.not("next_follow_up_at", "is", null).lte("next_follow_up_at", now.toISOString());
-  if (workflow === "stale24") return query.in("status", ["pending", "contacted"]).lt("created_at", adminSince24hIso(now));
-  if (workflow === "to_quote") return query.in("status", ["pending", "contacted", "site_visit_scheduled"]);
-
-  return query;
-};
-
 export async function updateQuoteRecord(quoteRequestId: string, patch: QuoteUpdatePatch) {
   const supabase = requireSupabase();
   const { error } = await supabase.from("quote_requests").update(patch).eq("id", quoteRequestId);
@@ -43,15 +29,29 @@ export async function updateQuoteRecord(quoteRequestId: string, patch: QuoteUpda
   return true;
 }
 
-export async function fetchAdminQuoteList<T extends Record<string, any>>(input: AdminQuoteListRepositoryInput): Promise<AdminListPage<T>> {
+export async function fetchAdminQuoteList<T extends Record<string, unknown>>(input: AdminQuoteListRepositoryInput): Promise<AdminListPage<T>> {
   const supabase = requireSupabase();
   const from = input.page * input.pageSize;
   const to = from + input.pageSize - 1;
 
   let query = supabase.from("quote_requests").select("*", { count: "exact" });
-  if (input.status && input.status !== "all") query = query.eq("status", input.status as any);
-  query = applyQuoteWorkflowFilter(query, input.workflow);
-  query = applySearch(query, ["customer_name", "customer_phone", "customer_email", "location", "project_type", "source_path"], input.search);
+  if (input.status && input.status !== "all") query = query.eq("status", input.status as QuoteStatus);
+  if (input.workflow && input.workflow !== "all") {
+    const now = new Date();
+    if (input.workflow === "today") query = query.gte("created_at", adminDayStartIso(now));
+    if (input.workflow === "due_followups") {
+      query = query.not("next_follow_up_at", "is", null).lte("next_follow_up_at", now.toISOString());
+    }
+    if (input.workflow === "stale24") query = query.in("status", ["pending", "contacted"]).lt("created_at", adminSince24hIso(now));
+    if (input.workflow === "to_quote") query = query.in("status", ["pending", "contacted", "site_visit_scheduled"]);
+  }
+  if (input.search) {
+    query = query.or(
+      ["customer_name", "customer_phone", "customer_email", "location", "project_type", "source_path"]
+        .map((field) => `${field}.ilike.%${input.search}%`)
+        .join(","),
+    );
+  }
   query = query.order("created_at", { ascending: false });
 
   const { data, error, count } = await query.range(from, to);

@@ -12,7 +12,7 @@ import PageMeta from "@/components/PageMeta";
 import PublicLoadingState from "@/components/blocks/PublicLoadingState";
 import { JsonLdBreadcrumb } from "@/components/JsonLd";
 import { useSiteSettings } from "@/hooks/useSiteSettings";
-import { isHtmlText, stripHtml } from "@/lib/text";
+import { isHtmlText } from "@/lib/text";
 import { sanitizeHtml } from "@/lib/sanitizeHtml";
 import { translateDisplayText, translateProjectType } from "@/i18n/displayLabels";
 import { buildQuotePath, quoteProjectTypeFromProjectType } from "@/lib/quoteContext";

@@ -19,6 +19,32 @@ import {
 } from "@/lib/adminQueryCore";
 import type { Language } from "@/i18n/routes";
 
+export type AdminLeadListRow = {
+  id: string;
+  name: string | null;
+  phone: string | null;
+  email?: string | null;
+  status: string | null;
+  source_path: string | null;
+  project_type?: string | null;
+  location?: string | null;
+  created_at: string;
+  next_follow_up_at?: string | null;
+};
+
+export type AdminQuoteListRow = {
+  id: string;
+  customer_name: string | null;
+  customer_phone: string | null;
+  customer_email?: string | null;
+  status: string | null;
+  source_path: string | null;
+  project_type?: string | null;
+  location?: string | null;
+  created_at: string;
+  next_follow_up_at?: string | null;
+};
+
 export function useAdminLeads(options: AdminListQuery = {}) {
   const search = normalizeAdminSearch(options.search);
   const page = clampPage(options.page);
@@ -31,7 +57,7 @@ export function useAdminLeads(options: AdminListQuery = {}) {
     staleTime: ADMIN_LIST_STALE_TIME,
     gcTime: ADMIN_QUERY_GC_TIME,
     queryFn: () =>
-      loadAdminLeads<Record<string, any>>({
+      loadAdminLeads<AdminLeadListRow>({
         page,
         pageSize,
         status: options.status,
@@ -53,7 +79,7 @@ export function useAdminQuotes(options: AdminListQuery = {}) {
     staleTime: ADMIN_LIST_STALE_TIME,
     gcTime: ADMIN_QUERY_GC_TIME,
     queryFn: () =>
-      loadAdminQuotes<Record<string, any>>({
+      loadAdminQuotes<AdminQuoteListRow>({
         page,
         pageSize,
         status: options.status,

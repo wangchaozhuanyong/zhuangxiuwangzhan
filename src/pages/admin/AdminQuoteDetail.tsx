@@ -20,6 +20,24 @@ const statuses = ["pending", "contacted", "site_visit_scheduled", "quoted", "acc
 const followupTypes = ["note", "call", "whatsapp", "site_visit", "quotation", "closed"];
 type AdminQuoteDetailTextKey = keyof typeof adminQuoteDetailText;
 type AdminQuoteFollowupType = keyof typeof adminQuoteFollowupTypeLabels;
+type AdminQuoteDetailRow = Record<string, unknown> & {
+  id?: string;
+  customer_name?: string | null;
+  customer_phone?: string | null;
+  customer_email?: string | null;
+  status?: string | null;
+  source_path?: string | null;
+  project_type?: string | null;
+  location?: string | null;
+  property_size?: string | null;
+  estimated_budget?: string | null;
+  project_details?: string | null;
+  notes?: string | null;
+  quoted_amount?: number | string | null;
+  valid_until?: string | null;
+  next_follow_up_at?: string | null;
+  created_at?: string | null;
+};
 
 const AdminQuoteDetail = () => {
   const lang = getAdminLang();
@@ -31,7 +49,7 @@ const AdminQuoteDetail = () => {
   const { id } = useParams<{ id: string }>();
   const queryClient = useQueryClient();
   const { data, error } = useAdminQuote(id);
-  const [quote, setQuote] = useState<any>(null);
+  const [quote, setQuote] = useState<AdminQuoteDetailRow | null>(null);
   const [content, setContent] = useState("");
   const [followupType, setFollowupType] = useState("note");
   const [nextFollowUpAt, setNextFollowUpAt] = useState("");

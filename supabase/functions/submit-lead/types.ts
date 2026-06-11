@@ -12,6 +12,7 @@ export type ContactBody = {
   website?: string;
   startedAt?: number;
   elapsedMs?: number;
+  turnstileToken?: string;
 };
 
 export type QuoteBody = {
@@ -28,6 +29,7 @@ export type QuoteBody = {
   website?: string;
   startedAt?: number;
   elapsedMs?: number;
+  turnstileToken?: string;
 };
 
 export type SubmitBody = ContactBody | QuoteBody;

@@ -67,7 +67,7 @@ const lines = [
   `- AI-readable index: ${siteUrl}/llms.txt`,
   "",
   "## Content Scope",
-  "- Residential renovation, old house renovation, kitchen renovation, bathroom renovation, office renovation, shoplot renovation, warehouse shelving, exterior works, permit and drawing support.",
+  "- Residential renovation, old house renovation, kitchen renovation, bathroom renovation, office renovation, shop renovation / retail fit-out, warehouse shelving, exterior works, permit and drawing support.",
   "- Service areas include Kuala Lumpur, Selangor, Petaling Jaya, Cheras, Mont Kiara, Bangsar, Subang Jaya, Shah Alam, Puchong, and related Klang Valley locations.",
   "- The site is bilingual. English pages use /en paths. Chinese pages use /zh paths.",
   "- 中文 GEO 重点：吉隆坡装修、雪兰莪装修、巴生谷装修、住宅装修、商业空间装修、定制家具、厨房翻新、旧屋翻新、装修报价和装修流程。",

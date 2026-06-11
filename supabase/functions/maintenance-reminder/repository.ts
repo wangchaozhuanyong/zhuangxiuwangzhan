@@ -1,5 +1,11 @@
 import type { MaintenanceClient, MaintenanceMetrics, ReminderItem, TelegramSettings } from "./types.ts";
 
+type CountQuery = PromiseLike<{ count: number | null; error: { message?: string } | null }> & {
+  eq(column: string, value: unknown): CountQuery;
+  lt(column: string, value: unknown): CountQuery;
+  gte(column: string, value: unknown): CountQuery;
+};
+
 export async function fetchMaintenanceSettings(client: MaintenanceClient) {
   const { data, error } = await client
     .from("notification_settings")
@@ -24,8 +30,8 @@ export async function fetchReminderItems(client: MaintenanceClient, includeMonth
   return (data || []) as ReminderItem[];
 }
 
-const countRows = async (client: MaintenanceClient, table: string, configure?: (query: any) => any) => {
-  let query = client.from(table).select("id", { count: "exact", head: true });
+const countRows = async (client: MaintenanceClient, table: string, configure?: (query: CountQuery) => CountQuery) => {
+  let query = client.from(table).select("id", { count: "exact", head: true }) as CountQuery;
   if (configure) query = configure(query);
   const { count, error } = await query;
   if (error) return null;

@@ -109,6 +109,10 @@ type AdminProjectEditorTextKey = keyof typeof adminProjectEditorText;
 
 const parseLines = (value: string) => value.split("\n").map((s) => s.trim()).filter(Boolean);
 const formatLines = (value?: string[] | null) => (value || []).join("\n");
+const toPublishStatus = (value: string): ProjectRecord["status"] =>
+  value === "published" || value === "archived" ? value : "draft";
+const toStringArray = (value: unknown): string[] =>
+  Array.isArray(value) ? value.map((item) => String(item).trim()).filter(Boolean) : [];
 
 export default function AdminProjectEditor() {
   const language = getAdminLang();
@@ -131,13 +135,14 @@ export default function AdminProjectEditor() {
 
   const loadedRecord = useMemo<ProjectRecord | undefined>(() => {
     if (isNew || !loaded) return isNew ? empty : undefined;
+    const loadedRecordData = loaded as Partial<ProjectRecord>;
     return {
       ...empty,
-      ...(loaded as any),
-      materials: (loaded as any).materials || [],
-      scope: (loaded as any).scope || [],
-      highlights_zh: (loaded as any).highlights_zh || [],
-      highlights_en: (loaded as any).highlights_en || [],
+      ...loadedRecordData,
+      materials: toStringArray(loadedRecordData.materials),
+      scope: toStringArray(loadedRecordData.scope),
+      highlights_zh: toStringArray(loadedRecordData.highlights_zh),
+      highlights_en: toStringArray(loadedRecordData.highlights_en),
     };
   }, [isNew, loaded]);
 
@@ -321,7 +326,7 @@ export default function AdminProjectEditor() {
               <label className="mb-1 block text-sm font-medium">{A("status")}</label>
               <select
                 value={record.status}
-                onChange={(e) => setRecord((r) => ({ ...r, status: e.target.value as any }))}
+                onChange={(e) => setRecord((r) => ({ ...r, status: toPublishStatus(e.target.value) }))}
                 className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
               >
                 {publishStatusOptions().map(({ value, label }) => (

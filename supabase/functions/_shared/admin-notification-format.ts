@@ -92,7 +92,7 @@ const BUDGET_LABELS: Record<string, string> = {
 
 const TRAILING_TEST_TRACE_PATTERN = /\s+\d{13,}-[a-z0-9]{4,20}$/i;
 
-const readDate = (value?: string | number | Date | null) => {
+const readDate = (value?: string | number | Date | null): Date | null => {
   if (!value) return new Date();
   const date = value instanceof Date ? value : new Date(value);
   return Number.isNaN(date.getTime()) ? null : date;
@@ -104,7 +104,7 @@ const readPart = (parts: Intl.DateTimeFormatPart[], type: Intl.DateTimeFormatPar
 export const formatAdminDateTime = (
   value?: string | number | Date | null,
   timeZone = DEFAULT_ADMIN_NOTIFICATION_TIME_ZONE,
-) => {
+): string => {
   const date = readDate(value);
   if (!date) return "-";
 
@@ -139,7 +139,7 @@ export const formatAdminDateTime = (
 export const formatAdminDate = (
   value?: string | number | Date | null,
   timeZone = DEFAULT_ADMIN_NOTIFICATION_TIME_ZONE,
-) => {
+): string => {
   const date = readDate(value);
   if (!date) return "-";
 
@@ -160,7 +160,7 @@ export const formatAdminDate = (
   }
 };
 
-export const cleanNotificationValue = (value: unknown, options: { multiline?: boolean } = {}) => {
+export const cleanNotificationValue = (value: unknown, options: { multiline?: boolean } = {}): string => {
   if (value === null || value === undefined) return "";
   if (Array.isArray(value)) return value.map((item) => cleanNotificationValue(item)).filter(Boolean).join(", ");
 

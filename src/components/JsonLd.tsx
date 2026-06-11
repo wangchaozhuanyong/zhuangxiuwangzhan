@@ -1,6 +1,19 @@
 import { siteConfig, socialProfileUrls } from "@/config/site";
 import { useSiteSettings } from "@/hooks/useSiteSettings";
 
+const shouldRenderClientJsonLd = import.meta.env.DEV;
+
+const JsonLdScript = ({ data }: { data: unknown }) => {
+  if (!shouldRenderClientJsonLd) return null;
+
+  return (
+    <script
+      type="application/ld+json"
+      dangerouslySetInnerHTML={{ __html: JSON.stringify(data) }}
+    />
+  );
+};
+
 const createOrganizationData = (settings: ReturnType<typeof useSiteSettings>) => ({
   "@context": "https://schema.org",
   "@type": "Organization",
@@ -113,22 +126,12 @@ const createLocalBusinessData = (settings: ReturnType<typeof useSiteSettings>) =
 
 export const JsonLdOrganization = () => {
   const settings = useSiteSettings();
-  return (
-    <script
-      type="application/ld+json"
-      dangerouslySetInnerHTML={{ __html: JSON.stringify(createOrganizationData(settings)) }}
-    />
-  );
+  return <JsonLdScript data={createOrganizationData(settings)} />;
 };
 
 export const JsonLdLocalBusiness = () => {
   const settings = useSiteSettings();
-  return (
-    <script
-      type="application/ld+json"
-      dangerouslySetInnerHTML={{ __html: JSON.stringify(createLocalBusinessData(settings)) }}
-    />
-  );
+  return <JsonLdScript data={createLocalBusinessData(settings)} />;
 };
 
 export const JsonLdFAQ = ({ faqs }: { faqs: { question: string; answer: string }[] }) => {
@@ -145,12 +148,7 @@ export const JsonLdFAQ = ({ faqs }: { faqs: { question: string; answer: string }
     })),
   };
 
-  return (
-    <script
-      type="application/ld+json"
-      dangerouslySetInnerHTML={{ __html: JSON.stringify(data) }}
-    />
-  );
+  return <JsonLdScript data={data} />;
 };
 
 export const JsonLdService = ({
@@ -182,12 +180,7 @@ export const JsonLdService = ({
     },
   };
 
-  return (
-    <script
-      type="application/ld+json"
-      dangerouslySetInnerHTML={{ __html: JSON.stringify(data) }}
-    />
-  );
+  return <JsonLdScript data={data} />;
 };
 
 export const JsonLdBreadcrumb = ({ items }: { items: { name: string; url: string }[] }) => {
@@ -202,10 +195,5 @@ export const JsonLdBreadcrumb = ({ items }: { items: { name: string; url: string
     })),
   };
 
-  return (
-    <script
-      type="application/ld+json"
-      dangerouslySetInnerHTML={{ __html: JSON.stringify(data) }}
-    />
-  );
+  return <JsonLdScript data={data} />;
 };

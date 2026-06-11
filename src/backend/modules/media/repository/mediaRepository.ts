@@ -29,9 +29,13 @@ export type MediaStorageUploadOptions = {
   contentType?: string;
 };
 
+type SearchableQuery = {
+  or(filters: string): unknown;
+};
+
 export const hasMediaStorageClient = () => Boolean(supabase);
 
-const applyMediaSearch = (query: any, search?: string) => {
+const applyMediaSearch = <TQuery extends SearchableQuery>(query: TQuery, search?: string): TQuery => {
   if (!search) return query;
   const escaped = search.replace(/[%_]/g, "\\$&");
   return query.or(
@@ -43,7 +47,7 @@ const applyMediaSearch = (query: any, search?: string) => {
       `alt_zh.ilike.%${escaped}%`,
       `alt_en.ilike.%${escaped}%`,
     ].join(","),
-  );
+  ) as TQuery;
 };
 
 export async function fetchAdminMediaAssetList<T>({

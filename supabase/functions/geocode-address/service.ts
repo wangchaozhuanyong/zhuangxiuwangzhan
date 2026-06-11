@@ -3,6 +3,19 @@ import { requireAdminAccess } from "../_shared/admin-auth.ts";
 import type { AdminAccessResult, GeocodeResult } from "./types.ts";
 
 type SupabaseClient = ReturnType<typeof createClient>;
+type GoogleGeocodeResponse = {
+  status?: string;
+  error_message?: string;
+  results?: Array<{
+    formatted_address?: string;
+    geometry?: {
+      location?: {
+        lat?: number | string;
+        lng?: number | string;
+      };
+    };
+  }>;
+};
 
 export const clean = (value: unknown, max = 500) => String(value ?? "").trim().slice(0, max);
 
@@ -11,7 +24,7 @@ export const requireAdmin = async (req: Request, supabase: SupabaseClient): Prom
   return { ok: adminCheck.ok, status: adminCheck.status, error: adminCheck.error };
 };
 
-const parseGoogleResult = (data: any): GeocodeResult | null => {
+const parseGoogleResult = (data: GoogleGeocodeResponse): GeocodeResult | null => {
   const first = Array.isArray(data?.results) ? data.results[0] : null;
   const location = first?.geometry?.location;
   if (!location) return null;

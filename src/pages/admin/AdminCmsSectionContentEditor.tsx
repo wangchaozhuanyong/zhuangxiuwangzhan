@@ -96,16 +96,19 @@ const getSectionSchema = (type: string): SectionSchema => {
 const parseObjectFromText = (text: string) => {
   try {
     const parsed = text.trim() ? JSON.parse(text) : {};
-    return parsed && typeof parsed === "object" && !Array.isArray(parsed) ? parsed as Record<string, any> : {};
+    return parsed && typeof parsed === "object" && !Array.isArray(parsed) ? parsed as Record<string, unknown> : {};
   } catch {
     return {};
   }
 };
 
-const updateJsonText = (text: string, patcher: (value: Record<string, any>) => Record<string, any>) => {
+const updateJsonText = (text: string, patcher: (value: Record<string, unknown>) => Record<string, unknown>) => {
   const next = patcher(parseObjectFromText(text));
   return JSON.stringify(next, null, 2);
 };
+
+const readRecordItems = (value: unknown): Record<string, unknown>[] =>
+  Array.isArray(value) ? value.map((item) => (item && typeof item === "object" && !Array.isArray(item) ? item as Record<string, unknown> : {})) : [];
 
 export const SectionContentEditor = ({
   sectionType,
@@ -127,24 +130,25 @@ export const SectionContentEditor = ({
     onChange(updateJsonText(text, (current) => ({ ...current, [key]: value })));
   };
   const updateItem = (field: ItemsSectionField, index: number, patch: Record<string, unknown>) => {
-    const items = Array.isArray(content[field.key]) ? [...content[field.key]] : [];
+    const items = readRecordItems(content[field.key]);
     items[index] = { ...(items[index] || {}), ...patch };
     updateField(field.key, items);
   };
   const moveItem = (field: ItemsSectionField, index: number, direction: -1 | 1) => {
-    const items = Array.isArray(content[field.key]) ? [...content[field.key]] : [];
+    const items = readRecordItems(content[field.key]);
     const nextIndex = index + direction;
     if (nextIndex < 0 || nextIndex >= items.length) return;
     const [item] = items.splice(index, 1);
+    if (!item) return;
     items.splice(nextIndex, 0, item);
     updateField(field.key, items);
   };
   const removeItem = (field: ItemsSectionField, index: number) => {
-    const items = Array.isArray(content[field.key]) ? [...content[field.key]] : [];
+    const items = readRecordItems(content[field.key]);
     updateField(field.key, items.filter((_, itemIndex) => itemIndex !== index));
   };
   const addItem = (field: ItemsSectionField) => {
-    const items = Array.isArray(content[field.key]) ? [...content[field.key]] : [];
+    const items = readRecordItems(content[field.key]);
     const emptyItem = Object.fromEntries(field.itemFields.map((itemField) => [itemField.key, ""]));
     updateField(field.key, [...items, emptyItem]);
   };
@@ -186,11 +190,11 @@ export const SectionContentEditor = ({
       <div className="space-y-4">
         {schema.fields.map((field) => {
           if (field.type === "items") {
-            const items = Array.isArray(content[field.key]) ? content[field.key] : [];
+            const items = readRecordItems(content[field.key]);
             return (
               <div key={field.key} className="space-y-3">
                 <AdminFieldLabel label={field.label} help={field.help} />
-                {items.map((item: Record<string, any>, index: number) => (
+                {items.map((item: Record<string, unknown>, index: number) => (
                   <div key={`${field.key}-${index}`} className="rounded-lg border border-border bg-background p-4">
                     <div className="mb-3 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                       <span className="text-sm font-medium">{field.itemLabel} {index + 1}</span>

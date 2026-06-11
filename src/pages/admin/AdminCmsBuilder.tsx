@@ -367,11 +367,13 @@ export default function AdminCmsBuilder() {
       confirmLabel: A("restoreDialogConfirm"),
     });
     if (!confirmed) return;
-    const snapshot = { ...revision.snapshot, deleted_at: null } as Record<string, any>;
+    const snapshot = { ...revision.snapshot, deleted_at: null } as Record<string, unknown>;
+    const snapshotId = snapshot["id"];
+    if (typeof snapshotId !== "string" && typeof snapshotId !== "number") return;
     try {
       await saveAdminRecord({
         table: revision.entity_table,
-        id: snapshot["id"],
+        id: snapshotId,
         payload: snapshot,
         action: "restore",
         queryClient,

@@ -1,4 +1,5 @@
 import { isSupabaseConfigured, supabase } from "@/lib/supabase";
+import type { Json } from "@/lib/database.types";
 
 export type InsertSystemEventLogInput = {
   event_type: string;
@@ -30,7 +31,7 @@ export async function insertSystemEventLog(input: InsertSystemEventLogInput) {
     severity: input.severity,
     source: input.source,
     message: input.message,
-    metadata: input.metadata as any,
+    metadata: input.metadata as Json,
     actor_id: userData.user?.id || null,
   });
 

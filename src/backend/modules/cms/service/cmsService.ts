@@ -35,11 +35,11 @@ export function loadAdminEditorRows(table: string, limit: number) {
   return fetchAdminEditorRows(table, limit);
 }
 
-export function loadAdminContentRecord<T extends Record<string, any>>(table: string, id: string) {
+export function loadAdminContentRecord<T extends Record<string, unknown>>(table: string, id: string) {
   return fetchAdminContentRecord<T>(table, id);
 }
 
-export async function generateAdminContentEnglish<T extends Record<string, any>>(table: string, id: string, force: boolean) {
+export async function generateAdminContentEnglish<T extends Record<string, unknown>>(table: string, id: string, force: boolean) {
   await invokeAdminContentEnglishGeneration(table, id, force);
   return fetchAdminContentRecord<T>(table, id);
 }

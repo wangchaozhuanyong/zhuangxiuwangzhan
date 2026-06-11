@@ -1,6 +1,12 @@
 import type { QueryClient } from "@tanstack/react-query";
 import { saveAdminRecord } from "@/lib/adminMutation";
+import type { Database } from "@/lib/database.types";
 import { requireSupabase } from "@/lib/supabase";
+
+type MaterialStatus = NonNullable<Database["public"]["Tables"]["materials"]["Row"]["status"]>;
+type SearchableQuery = {
+  or(filters: string): unknown;
+};
 
 export type SaveMaterialRecordInput = {
   payload: Record<string, unknown>;
@@ -17,9 +23,9 @@ export type AdminMaterialListInput = {
   search?: string;
 };
 
-const applySearch = (query: any, fields: string[], search?: string) => {
+const applySearch = <TQuery extends SearchableQuery>(query: TQuery, fields: string[], search?: string): TQuery => {
   if (!search) return query;
-  return query.or(fields.map((field) => `${field}.ilike.%${search}%`).join(","));
+  return query.or(fields.map((field) => `${field}.ilike.%${search}%`).join(",")) as TQuery;
 };
 
 export async function findMaterialIdsBySlug(slug: string) {
@@ -30,7 +36,7 @@ export async function findMaterialIdsBySlug(slug: string) {
   return (data || []).map((row) => String(row.id));
 }
 
-export async function fetchAdminMaterialList<T extends Record<string, any>>(input: AdminMaterialListInput) {
+export async function fetchAdminMaterialList<T extends Record<string, unknown>>(input: AdminMaterialListInput) {
   const supabase = requireSupabase();
   const from = input.page * input.pageSize;
   const to = from + input.pageSize - 1;
@@ -38,7 +44,7 @@ export async function fetchAdminMaterialList<T extends Record<string, any>>(inpu
   let query = supabase
     .from("materials")
     .select("id,title_zh,title_en,slug,status,sort_order,category,subcategory,material_type,image_url,updated_at,created_at", { count: "exact" });
-  if (input.status && input.status !== "all") query = query.eq("status", input.status as any);
+  if (input.status && input.status !== "all") query = query.eq("status", input.status as MaterialStatus);
   query = applySearch(query, ["title_zh", "title_en", "slug", "category", "subcategory", "material_type"], input.search);
   query = query.order("sort_order", { ascending: true }).order("updated_at", { ascending: false });
 

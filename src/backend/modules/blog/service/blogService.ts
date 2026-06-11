@@ -10,12 +10,15 @@ import {
   type AdminBlogListInput,
 } from "@/backend/modules/blog/repository/blogRepository";
 
-type AdminBlogPostRecord = Record<string, any> & {
+type AdminBlogPostRecord = Record<string, unknown> & {
   id?: string;
   updated_at?: string | null;
   slug?: string;
   status?: "draft" | "published" | "archived";
   title_zh?: string;
+  sort_order?: string | number | null;
+  tags?: unknown[] | null;
+  published_at?: string | null;
 };
 
 export type SaveAdminBlogPostInput = {
@@ -80,7 +83,7 @@ export function generateAdminBlogEnglish(blogPostId: string, force: boolean) {
   return invokeBlogPostEnglishGeneration(blogPostId, force);
 }
 
-export function loadAdminBlogPostList<T extends Record<string, any>>(input: AdminBlogListInput) {
+export function loadAdminBlogPostList<T extends Record<string, unknown>>(input: AdminBlogListInput) {
   return fetchAdminBlogPostList<T>(input);
 }
 

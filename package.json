@@ -3,6 +3,9 @@
   "private": true,
   "version": "0.0.0",
   "type": "module",
+  "engines": {
+    "node": ">=20 <23"
+  },
   "scripts": {
     "dev": "vite",
     "arch:check": "node scripts/arch-check.mjs",
@@ -25,6 +28,7 @@
     "test:installed-browsers": "node scripts/run-installed-browser-compat.mjs",
     "verify:preview": "node scripts/verify-preview.mjs",
     "verify:deploy-cache": "node scripts/verify-deploy-cache-consistency.mjs",
+    "verify:edge-security": "node scripts/verify-edge-security.mjs",
     "verify:public-performance": "node scripts/verify-public-performance.mjs",
     "verify:seo-html": "node scripts/verify-seo-html.mjs",
     "release:check": "node scripts/release-check.mjs",

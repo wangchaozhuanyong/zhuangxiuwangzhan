@@ -117,6 +117,12 @@ const assertImmutableAssetHeaders = (headerBlocks, headerPath) => {
   );
 };
 
+const cspDirective = (policy, name) =>
+  policy
+    .split(";")
+    .map((directive) => directive.trim())
+    .find((directive) => directive.startsWith(`${name} `)) || "";
+
 const main = async () => {
   const indexHtml = await readDistFile("index.html");
   const headers = await readDistFile("_headers");
@@ -137,6 +143,7 @@ const main = async () => {
   for (const headerPath of IMMUTABLE_ASSET_PATHS) assertImmutableAssetHeaders(headerBlocks, headerPath);
   assert(headers.includes(`Content-Security-Policy: ${SITE_CSP_POLICY}`), "public/_headers CSP is not in sync with scripts/site-csp.mjs.");
   assert(!SITE_CSP_POLICY.includes("'unsafe-eval'"), "Production CSP must not include unsafe-eval.");
+  assert(!cspDirective(SITE_CSP_POLICY, "script-src").includes("'unsafe-inline'"), "Production script-src must not include unsafe-inline.");
   assert(!/^\/\*\s+\/index\.html\s+200\b/m.test(redirects), "Global SPA redirect would turn missing hashed assets into HTML.");
   assert(await pathExists(path.join(DIST, "404.html")), "dist/404.html is missing.");
 
@@ -164,7 +171,7 @@ const main = async () => {
         htmlNoStorePaths: HTML_NO_STORE_PATHS,
         assetCache: "public, max-age=31536000, immutable",
         immutableAssetPaths: IMMUTABLE_ASSET_PATHS,
-        productionCsp: "synced without unsafe-eval",
+        productionCsp: "synced without unsafe-eval or script-src unsafe-inline",
         spaFallback: "functions/_middleware.ts",
       },
       null,
