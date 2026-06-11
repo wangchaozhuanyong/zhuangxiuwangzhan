@@ -378,6 +378,9 @@ verify_jwt = false
 [functions.sitemap]
 verify_jwt = false
 
+[functions.content-publish]
+verify_jwt = false
+
 [edge_runtime]
 enabled = true
 # Supported request policies: `oneshot`, `per_worker`.
