@@ -164,7 +164,7 @@
 - 英文生成固定走 `generate-english-content`。
 - 健康检查固定走 `health-check`。
 - sitemap 动态生成固定走 `sitemap`。
-- SEO/GEO 审核通过的后台内容发布固定走受保护 Edge Function `content-publish`；当前第一版只支持 `service` 内容类型，必须使用管理员 Bearer token，角色必须是 `super_admin` 或 `content_editor`，发布模式必须包含 `ownerApproved: true` 和 `explicitExecution: true`。禁止 Codex 或脚本直接写内容数据库表来绕过后台发布链路。
+- SEO/GEO 审核通过的后台内容发布固定走受保护 Edge Function `content-publish`；当前第一版只支持 `service` 内容类型，可以使用管理员 Bearer token，或使用 `CONTENT_PUBLISH_SECRET` 对应的 `x-cron-secret` 机器密钥。管理员角色必须是 `super_admin` 或 `content_editor`，机器密钥只允许作为内容发布自动化路径，发布模式必须包含 `ownerApproved: true` 和 `explicitExecution: true`。禁止 Codex 或脚本直接写内容数据库表来绕过后台发布链路。
 
 新增或修改 API 时，必须说明请求字段、响应字段、错误格式、权限要求、缓存影响和兼容策略。现有 `submit-lead` 的 `{ ok, id }` / `{ error }` 返回方式先保持不动。
 

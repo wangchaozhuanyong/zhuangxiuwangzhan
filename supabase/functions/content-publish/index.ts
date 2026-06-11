@@ -27,7 +27,7 @@ serve(async (req) => {
     }
 
     const client = createClient(supabaseUrl, serviceRoleKey, { auth: { persistSession: false } });
-    const adminCheck = await requireAdminAccess(req, client);
+    const adminCheck = await requireAdminAccess(req, client, { cronSecretEnv: "CONTENT_PUBLISH_SECRET" });
     if (!adminCheck.ok) return json(req, { error: adminCheck.error || "Admin access required" }, adminCheck.status);
 
     let body: ContentPublishRequest;
@@ -38,7 +38,11 @@ serve(async (req) => {
       return json(req, { error: "Invalid JSON body" }, 400);
     }
 
-    const result = await publishContent(body, client, { adminUserId: adminCheck.userId || null, role: adminCheck.role || null });
+    const result = await publishContent(body, client, {
+      adminUserId: adminCheck.userId || null,
+      role: adminCheck.mode === "cron" ? "content_editor" : adminCheck.role || null,
+      authMode: adminCheck.mode,
+    });
     return json(req, result.body, result.status || 200);
   } catch (error) {
     return json(req, { error: error instanceof Error ? error.message : "Content publish failed" }, 500);

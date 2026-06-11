@@ -6,6 +6,7 @@ import {
   fetchAdminServiceRows,
   findServiceIdsBySlug,
   invokeServiceEnglishGeneration,
+  publishServiceRecord,
   saveServiceRecord,
   type AdminServiceListInput,
 } from "@/backend/modules/services/repository/serviceRepository";
@@ -110,6 +111,29 @@ export async function saveAdminService(input: SaveAdminServiceInput) {
     savedId: String((saved as Record<string, unknown>)?.id || ""),
     slug,
     status: payload.status,
+  };
+}
+
+export async function publishAdminService(input: SaveAdminServiceInput & { approvalId?: string; source?: string }) {
+  const { slug, payload } = buildAdminServicePayload(input.record, input.nextStatus || "published");
+  const result = await publishServiceRecord({
+    record: payload,
+    nextStatus: (payload.status as AdminServiceRecord["status"]) || "published",
+    expectedUpdatedAt: input.record.updated_at || null,
+    approvalId: input.approvalId,
+    source: input.source,
+  });
+
+  const saved = (result.saved_record || {}) as Record<string, unknown>;
+  const savedId = String(result.saved_id || saved.id || input.record.id || "");
+
+  return {
+    saved,
+    savedId,
+    slug,
+    status: (result.status as AdminServiceRecord["status"]) || (payload.status as AdminServiceRecord["status"]),
+    warnings: result.warnings || [],
+    nextSteps: result.next_steps || [],
   };
 }
 

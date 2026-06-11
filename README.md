@@ -45,6 +45,7 @@ Supabase Edge Function secrets must be configured in Supabase, not committed to 
 - `SUPABASE_SERVICE_ROLE_KEY`
 - `SITE_URL`
 - `MAINTENANCE_REMINDER_CRON_SECRET`
+- `CONTENT_PUBLISH_SECRET`
 
 Do not commit real passwords, tokens, service role keys, or production secrets.
 
@@ -56,8 +57,8 @@ Current first version:
 
 - Endpoint: `<SUPABASE_URL>/functions/v1/content-publish`
 - Method: `POST`
-- Auth: `Authorization: Bearer <admin user access token>`
-- Allowed roles: `super_admin`, `content_editor`
+- Auth: `Authorization: Bearer <admin user access token>` for an admin session, or `x-cron-secret: <CONTENT_PUBLISH_SECRET>` for approved SEO/GEO automation.
+- Allowed roles: `super_admin`, `content_editor`; the machine secret is treated as a content editor automation path.
 - Supported content type: `service`
 - Dry run mode validates and previews the cleaned admin payload without writing.
 - Publish mode requires `ownerApproved: true` and `explicitExecution: true`.

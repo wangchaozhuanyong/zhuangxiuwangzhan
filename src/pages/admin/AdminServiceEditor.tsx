@@ -29,6 +29,7 @@ import {
   generateAdminServiceEnglish,
   hasServiceBackendConfig,
   normalizeServiceSlug,
+  publishAdminService,
   saveAdminService,
 } from "@/backend/modules/services/service/serviceService";
 
@@ -257,6 +258,53 @@ export default function AdminServiceEditor() {
     }
   };
 
+  const publish = async () => {
+    const confirmed = await adminConfirm({
+      title: A("confirmPublishTitle"),
+      description: A("confirmPublishDescription"),
+      confirmLabel: A("confirmPublishLabel"),
+      confirmVariant: "default",
+    });
+    if (!confirmed) return;
+
+    const slug = normalizeServiceSlug(record.slug || record.title_zh);
+    if (!slug) {
+      toast({ title: A("slugRequired"), variant: "destructive" });
+      return;
+    }
+    const ok = await checkSlugUnique(slug);
+    if (!ok) {
+      toast({ title: A("slugUnavailable"), description: slugError || A("slugFixThenSave"), variant: "destructive" });
+      return;
+    }
+
+    setSaveBusy(true);
+    try {
+      const savedResult = await publishAdminService({
+        record: { ...record, status: "published" },
+        nextStatus: "published",
+        queryClient,
+        approvalId: `admin-ui-${new Date().toISOString()}`,
+        source: "admin-service-editor",
+      });
+      const { saved, savedId, warnings } = savedResult;
+      applyRemote({ ...record, ...saved, id: savedId, slug: savedResult.slug, status: savedResult.status });
+      await invalidateAfterAdminContentSave(queryClient);
+
+      if (warnings?.length) {
+        toast({ title: A("publishSucceeded"), description: formatA("publishWarningPrefix", { notes: warnings.join(" | ") }) });
+      } else {
+        toast({ title: A("publishSucceeded") });
+      }
+
+      if (isNew) navigate(`/admin/services/${savedId}`, { replace: true });
+    } catch (error) {
+      toast({ title: A("saveFailed"), description: formatAdminMutationError(error), variant: "destructive" });
+    } finally {
+      setSaveBusy(false);
+    }
+  };
+
   const forceRegenerateEnglish = async () => {
     const confirmed = await adminConfirm({
       title: A("confirmForceTitle"),
@@ -297,7 +345,7 @@ export default function AdminServiceEditor() {
             <AdminActionButton action="content.write" type="button" variant="outline" onClick={() => void save("draft")} disabled={saveBusy || isLoading}>
               {A("saveDraft")}
             </AdminActionButton>
-            <AdminActionButton action="content.publish" type="button" onClick={() => void save("published")} disabled={saveBusy || isLoading}>
+            <AdminActionButton action="content.publish" type="button" onClick={() => void publish()} disabled={saveBusy || isLoading}>
               {A("publish")}
             </AdminActionButton>
             <AdminActionButton action="content.write" type="button" variant="outline" onClick={() => void save(undefined, true)} disabled={saveBusy || isLoading || !record.id}>

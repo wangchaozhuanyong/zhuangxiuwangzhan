@@ -5,7 +5,7 @@ import {
   insertServiceRecord,
   updateServiceRecord,
 } from "./repository.ts";
-import type { ContentPublishClient, ContentPublishRequest, ContentPublishResult, ContentStatus, ServiceRow } from "./types.ts";
+import type { ContentPublishClient, ContentPublishRequest, ContentPublishResult, ContentStatus } from "./types.ts";
 
 const CONTENT_WRITE_ROLES = new Set(["super_admin", "content_editor"]);
 const VALID_STATUSES = new Set<ContentStatus>(["draft", "published", "archived"]);
@@ -43,6 +43,7 @@ const SERVICE_FIELDS = new Set([
 type PublishContext = {
   adminUserId?: string | null;
   role?: string | null;
+  authMode?: string | null;
 };
 
 const normalizeSlug = (value: unknown) =>
@@ -223,6 +224,7 @@ export async function publishContent(
       "Verify the /zh and /en public service pages read the updated admin content.",
       "Run publish receipt/QA before deployment or production cache verification.",
     ],
+    auth_mode: context.authMode || "admin",
   };
 
   if (mode === "dry-run") {

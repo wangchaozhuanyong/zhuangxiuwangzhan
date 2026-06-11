@@ -16,6 +16,30 @@ export type SaveServiceRecordInput = {
   queryClient?: QueryClient;
 };
 
+export type PublishServiceRecordInput = {
+  record: Record<string, unknown>;
+  nextStatus: ServiceStatus;
+  expectedUpdatedAt?: string | null;
+  approvalId?: string;
+  source?: string;
+};
+
+export type PublishServiceRecordResult = {
+  ok?: boolean;
+  dry_run?: boolean;
+  content_type?: string;
+  action?: string;
+  slug?: string;
+  status?: ServiceStatus;
+  existing_id?: string | null;
+  saved_id?: string | null;
+  saved_updated_at?: string | null;
+  warnings?: string[];
+  next_steps?: string[];
+  saved_record?: Record<string, unknown> | null;
+  error?: string;
+};
+
 export type AdminServiceListInput = {
   page: number;
   pageSize: number;
@@ -76,6 +100,28 @@ export function saveServiceRecord(input: SaveServiceRecordInput) {
     action: input.action,
     queryClient: input.queryClient,
   });
+}
+
+export async function publishServiceRecord(input: PublishServiceRecordInput) {
+  const supabase = requireSupabase();
+  const body = {
+    contentType: "service" as const,
+    mode: "publish" as const,
+    nextStatus: input.nextStatus,
+    expectedUpdatedAt: input.expectedUpdatedAt || null,
+    ownerApproved: true,
+    explicitExecution: true,
+    approvalId: input.approvalId,
+    source: input.source,
+    record: input.record,
+  };
+  const { data, error } = await supabase.functions.invoke<PublishServiceRecordResult>("content-publish", { body });
+  if (error) throw error;
+  if (!data?.ok) {
+    throw new Error(data?.error || "Publish failed");
+  }
+
+  return data;
 }
 
 export async function invokeServiceEnglishGeneration(serviceId: string, force: boolean) {
