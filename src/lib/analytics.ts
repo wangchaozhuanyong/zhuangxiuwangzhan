@@ -1,6 +1,10 @@
 type AnalyticsValue = string | number | boolean | null | undefined;
 type AnalyticsParams = Record<string, AnalyticsValue>;
 
+const defaultGoogleAdsId = "AW-18205206146";
+const defaultGoogleAdsLeadConversionLabel = "iI73CL2bybscEILN9ehD";
+const directConversionCtas = new Set(["whatsapp", "phone"]);
+
 declare global {
   interface Window {
     dataLayer?: unknown[];
@@ -9,9 +13,9 @@ declare global {
 }
 
 const measurementId = String(import.meta.env.VITE_GA_MEASUREMENT_ID || "").trim();
-const googleAdsId = String(import.meta.env.VITE_GOOGLE_ADS_ID || "").trim();
-const quoteConversionLabel = String(import.meta.env.VITE_GOOGLE_ADS_QUOTE_CONVERSION_LABEL || "").trim();
-const contactConversionLabel = String(import.meta.env.VITE_GOOGLE_ADS_CONTACT_CONVERSION_LABEL || "").trim();
+const googleAdsId = String(import.meta.env.VITE_GOOGLE_ADS_ID || defaultGoogleAdsId).trim();
+const quoteConversionLabel = String(import.meta.env.VITE_GOOGLE_ADS_QUOTE_CONVERSION_LABEL || defaultGoogleAdsLeadConversionLabel).trim();
+const contactConversionLabel = String(import.meta.env.VITE_GOOGLE_ADS_CONTACT_CONVERSION_LABEL || defaultGoogleAdsLeadConversionLabel).trim();
 const configuredPagesReportUrl = String(import.meta.env.VITE_GA4_PAGES_REPORT_URL || "").trim();
 const googleTagScriptId = "flashcast-google-tag";
 const googleTagIds = [measurementId, googleAdsId].filter(Boolean);
@@ -98,6 +102,15 @@ export const trackCtaClick = (ctaName: string, ctaLocation: string, params: Anal
     page_path: typeof window !== "undefined" ? window.location.pathname : "",
     ...params,
   });
+
+  if (directConversionCtas.has(ctaName)) {
+    trackGoogleAdsConversion(contactConversionLabel, {
+      conversion_source: "direct_cta_click",
+      cta_name: ctaName,
+      cta_location: ctaLocation,
+      ...params,
+    });
+  }
 };
 
 export const trackGoogleAdsConversion = (conversionLabel: string, params: AnalyticsParams = {}) => {
@@ -122,7 +135,10 @@ export const trackQuoteFormSubmit = (status: "success" | "error" | "validation_e
   });
 
   if (status === "success") {
-    trackGoogleAdsConversion(quoteConversionLabel, params);
+    trackGoogleAdsConversion(quoteConversionLabel, {
+      conversion_source: "quote_form_success",
+      ...params,
+    });
   }
 };
 
@@ -134,6 +150,9 @@ export const trackContactFormSubmit = (status: "success" | "error" | "validation
   });
 
   if (status === "success") {
-    trackGoogleAdsConversion(contactConversionLabel, params);
+    trackGoogleAdsConversion(contactConversionLabel, {
+      conversion_source: "contact_form_success",
+      ...params,
+    });
   }
 };
