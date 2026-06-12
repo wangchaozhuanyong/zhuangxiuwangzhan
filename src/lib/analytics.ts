@@ -1,6 +1,7 @@
 type AnalyticsValue = string | number | boolean | null | undefined;
 type AnalyticsParams = Record<string, AnalyticsValue>;
 
+const defaultGaMeasurementId = "G-K71PQ0MSV2";
 const defaultGoogleAdsId = "AW-18205206146";
 const defaultGoogleAdsLeadConversionLabel = "iI73CL2bybscEILN9ehD";
 const directConversionCtas = new Set(["whatsapp", "phone"]);
@@ -12,13 +13,13 @@ declare global {
   }
 }
 
-const measurementId = String(import.meta.env.VITE_GA_MEASUREMENT_ID || "").trim();
+export const gaMeasurementId = String(import.meta.env.VITE_GA_MEASUREMENT_ID || defaultGaMeasurementId).trim();
 const googleAdsId = String(import.meta.env.VITE_GOOGLE_ADS_ID || defaultGoogleAdsId).trim();
 const quoteConversionLabel = String(import.meta.env.VITE_GOOGLE_ADS_QUOTE_CONVERSION_LABEL || defaultGoogleAdsLeadConversionLabel).trim();
 const contactConversionLabel = String(import.meta.env.VITE_GOOGLE_ADS_CONTACT_CONVERSION_LABEL || defaultGoogleAdsLeadConversionLabel).trim();
 const configuredPagesReportUrl = String(import.meta.env.VITE_GA4_PAGES_REPORT_URL || "").trim();
 const googleTagScriptId = "flashcast-google-tag";
-const googleTagIds = [measurementId, googleAdsId].filter(Boolean);
+const googleTagIds = [gaMeasurementId, googleAdsId].filter(Boolean);
 const primaryGoogleTagId = googleTagIds[0] || "";
 
 export const isAnalyticsEnabled = googleTagIds.length > 0;
@@ -56,7 +57,7 @@ export const initAnalytics = () => {
     };
 
   window.gtag("js", new Date());
-  if (measurementId) window.gtag("config", measurementId, { send_page_view: false });
+  if (gaMeasurementId) window.gtag("config", gaMeasurementId, { send_page_view: false });
   if (googleAdsId) window.gtag("config", googleAdsId);
   ensureGoogleTagScript();
   initialized = true;

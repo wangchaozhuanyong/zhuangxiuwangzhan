@@ -2,6 +2,7 @@
  * Fetch key URLs and assert raw HTML contains expected SEO tags (no JS).
  */
 import { existsSync, readFileSync } from "node:fs";
+import { loadMaterialSeoPaths } from "./seo-material-pages.mjs";
 
 const BASE = (process.env.PREVIEW_URL || process.env.SITE_URL || "https://flashcast.com.my").replace(/\/$/, "");
 const RUN_EDGE_CHECKS = process.env.VERIFY_EDGE_SEO === "1";
@@ -23,6 +24,7 @@ const paths = [
 const failures = [];
 const warnings = [];
 const manifest = JSON.parse(readFileSync("public/seo-manifest.json", "utf8"));
+const materialSeoPaths = await loadMaterialSeoPaths();
 
 const decodeHtml = (value = "") =>
   value
@@ -143,9 +145,17 @@ const sitemapSet = new Set(sitemapLocs);
 const manifestSet = new Set(manifestLocs);
 const missingInManifest = sitemapLocs.filter((loc) => !manifestSet.has(loc));
 const missingInSitemap = manifestLocs.filter((loc) => !sitemapSet.has(loc));
+const materialSeoLocs = materialSeoPaths.flatMap((path) => [
+  `https://flashcast.com.my/en${path}`,
+  `https://flashcast.com.my/zh${path}`,
+]);
+const missingMaterialInManifest = materialSeoLocs.filter((loc) => !manifestSet.has(loc));
+const missingMaterialInSitemap = materialSeoLocs.filter((loc) => !sitemapSet.has(loc));
 
 if (missingInManifest.length) failures.push(`manifest: sitemap URLs missing from manifest: ${missingInManifest.slice(0, 5).join(", ")}`);
 if (missingInSitemap.length) failures.push(`sitemap: manifest URLs missing from sitemap: ${missingInSitemap.slice(0, 5).join(", ")}`);
+if (missingMaterialInManifest.length) failures.push(`manifest: material category URLs missing from manifest: ${missingMaterialInManifest.slice(0, 5).join(", ")}`);
+if (missingMaterialInSitemap.length) failures.push(`sitemap: material category URLs missing from sitemap: ${missingMaterialInSitemap.slice(0, 5).join(", ")}`);
 
 if (!existsSync("public/llms.txt")) {
   failures.push("llms: public/llms.txt is missing");

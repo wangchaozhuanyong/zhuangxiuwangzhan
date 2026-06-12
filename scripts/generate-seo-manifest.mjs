@@ -1,5 +1,6 @@
 import { existsSync, readFileSync, writeFileSync, mkdirSync } from "node:fs";
 import { buildStaticManifest, SITE_URL, OG_IMAGE, COMPANY } from "./seo-static-pages.mjs";
+import { loadMaterialSeoCategories } from "./seo-material-pages.mjs";
 
 const loadEnv = () => {
   if (!existsSync(".env")) return;
@@ -34,72 +35,6 @@ const legacyRedirectPaths = new Set([
 for (const path of legacyRedirectPaths) {
   delete manifest[path];
 }
-
-const materialCategories = [
-  {
-    slug: "kitchen-cabinets",
-    title_en: "Kitchen Cabinets Materials",
-    title_zh: "厨房橱柜材料",
-    description_en: "Premium custom kitchen cabinets in melamine, acrylic, lacquer, and solid wood finishes for Kuala Lumpur and Selangor renovation projects.",
-    description_zh: "提供美耐板、亚克力、烤漆与实木等厨房橱柜选择，适合吉隆坡与雪兰莪装修项目。",
-  },
-  {
-    slug: "whole-house-custom",
-    title_en: "Whole House Custom Furniture Materials",
-    title_zh: "全屋定制材料",
-    description_en: "Custom kitchen cabinets, wardrobes, TV consoles, and storage systems tailored to residential and commercial spaces.",
-    description_zh: "定制厨房橱柜、衣柜、电视柜与收纳系统，根据现场尺寸规划，提升空间使用效率。",
-  },
-  {
-    slug: "furniture",
-    title_en: "Furniture Materials and Selections",
-    title_zh: "家具材料与搭配",
-    description_en: "Sofas, beds, dining tables, and accent furniture selections to complete renovation projects.",
-    description_zh: "沙发、床、餐桌与搭配家具，适合住宅装修后期软装与空间完善。",
-  },
-  {
-    slug: "bathroom",
-    title_en: "Bathroom Materials",
-    title_zh: "浴室材料",
-    description_en: "Bathtubs, basins, toilets, shower systems, and vanity cabinets for bathroom renovation projects.",
-    description_zh: "浴缸、洗手盆、马桶、淋浴系统与浴室柜，适合完整浴室装修和局部升级。",
-  },
-  {
-    slug: "countertops-stone-surfaces",
-    title_en: "Countertops and Stone Surfaces",
-    title_zh: "台面与石材表面",
-    description_en: "Quartz, sintered stone, solid surface, and porcelain slab options for kitchen counters, islands, vanities, and commercial counters.",
-    description_zh: "石英石、岩板、人造石与大板瓷砖台面，适合厨房、岛台、浴室柜和商业柜台。",
-  },
-  {
-    slug: "flooring",
-    title_en: "Flooring Materials",
-    title_zh: "地板材料",
-    description_en: "SPC vinyl, laminate, engineered wood, and vinyl plank flooring for residential and commercial spaces.",
-    description_zh: "SPC 地板、复合地板、工程木地板与 PVC 地板，适合住宅和商业空间使用。",
-  },
-  {
-    slug: "doors-windows",
-    title_en: "Doors and Windows Materials",
-    title_zh: "门窗材料",
-    description_en: "Solid timber, laminate, barn, aluminium sliding, and frameless glass doors for homes and commercial interiors.",
-    description_zh: "实木门、复合门、谷仓门、铝合金推拉门与无框玻璃门，适合不同房间与商业空间。",
-  },
-  {
-    slug: "wall-panels",
-    title_en: "Wall Panels and Feature Wall Materials",
-    title_zh: "墙面与饰板材料",
-    description_en: "Fluted panels, timber cladding, feature wall tiles, and decorative wall panels for interior feature walls.",
-    description_zh: "格栅板、木饰面、背景墙砖与装饰墙板，适合电视墙、卧室和商业空间重点墙面。",
-  },
-  {
-    slug: "art-paint",
-    title_en: "Art Paint and Decorative Coatings",
-    title_zh: "艺术涂料与装饰涂层",
-    description_en: "Decorative art paint, microcement, metallic paint, and textured plaster finishes for premium interiors.",
-    description_zh: "艺术涂料、微水泥、金属漆与纹理漆，适合特色墙、天花和高级室内空间。",
-  },
-];
 
 const fetchRows = async (table, select) => {
   if (!SUPABASE_URL || !SUPABASE_ANON_KEY) return [];
@@ -180,6 +115,7 @@ const [projects, posts, materials, areas, landings, services, sitePages] = await
   fetchRows("services", "slug,title_en,title_zh,seo_title_en,seo_title_zh,seo_description_en,seo_description_zh"),
   fetchRows("site_pages", "page_key,path,title_en,title_zh,description_en,description_zh,seo_title_en,seo_title_zh,seo_description_en,seo_description_zh,seo_keywords_en,seo_keywords_zh,image_url"),
 ]);
+const materialCategories = await loadMaterialSeoCategories();
 
 for (const lang of ["en", "zh"]) {
   for (const row of sitePages) addSitePage(lang, row);
@@ -209,6 +145,15 @@ for (const lang of ["en", "zh"]) {
       lang === "zh" ? row.title_zh : row.title_en,
       lang === "zh" ? row.description_zh : row.description_en,
     );
+    for (const subcategory of row.subcategories) {
+      addDynamic(
+        lang,
+        `/materials/category/${row.slug}`,
+        subcategory.slug,
+        lang === "zh" ? subcategory.title_zh : subcategory.title_en,
+        lang === "zh" ? subcategory.description_zh : subcategory.description_en,
+      );
+    }
   }
   for (const row of materials) {
     addDynamic(

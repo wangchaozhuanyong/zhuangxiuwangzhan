@@ -1,4 +1,5 @@
 import { readFileSync, writeFileSync, existsSync } from "node:fs";
+import { loadMaterialSeoPaths } from "./seo-material-pages.mjs";
 
 const loadEnv = () => {
   if (!existsSync(".env")) return;
@@ -55,18 +56,6 @@ const staticPaths = [
   "/terms",
 ];
 
-const materialCategorySlugs = [
-  "kitchen-cabinets",
-  "whole-house-custom",
-  "furniture",
-  "bathroom",
-  "countertops-stone-surfaces",
-  "flooring",
-  "doors-windows",
-  "wall-panels",
-  "art-paint",
-];
-
 const escapeXml = (value) =>
   value.replace(/&/g, "&amp;").replace(/"/g, "&quot;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
 
@@ -107,12 +96,13 @@ const [projects, posts, materials, areas, landingPages, services] = await Promis
   fetchSlugs("landing_pages"),
   fetchSlugs("services"),
 ]);
+const materialSeoPaths = await loadMaterialSeoPaths();
 
 const paths = unique([
   ...staticPaths,
   ...projects.map((item) => `/projects/${item.slug}`),
   ...posts.map((item) => `/blog/${item.slug}`),
-  ...materialCategorySlugs.map((slug) => `/materials/category/${slug}`),
+  ...materialSeoPaths,
   ...materials.map((item) => `/materials/${item.slug}`),
   ...areas.map((item) => `/locations/${item.slug}`),
   ...landingPages.map((item) => `/landing/${item.slug}`),

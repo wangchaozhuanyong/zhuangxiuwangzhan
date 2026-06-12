@@ -42,8 +42,8 @@ export const adminDashboardText = {
   viewQuotes: { en: "View quotes", zh: "查看报价" },
   ga4ActionLabel: { en: "GA4 Page Views", zh: "GA4 页面访问统计" },
   ga4SetupHint: {
-    en: "Tip: the button still opens GA4 before VITE_GA_MEASUREMENT_ID is set; tracking starts after the ID is configured.",
-    zh: "提示：还没填写 VITE_GA_MEASUREMENT_ID 时，按钮仍会打开 GA4；上线前填好后才会正式记录访问量。",
+    en: "Tip: GA4 uses the default FLASH CAST measurement ID unless VITE_GA_MEASUREMENT_ID is overridden.",
+    zh: "提示：GA4 默认使用 FLASH CAST 的统计 ID；只有切换媒体资源时才需要覆盖 VITE_GA_MEASUREMENT_ID。",
   },
 } as const;
 
