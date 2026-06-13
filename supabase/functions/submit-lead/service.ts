@@ -11,6 +11,7 @@ import type { SubmitBody, SubmitLeadClient, SubmitLeadResult } from "./types.ts"
 const MIN_SUBMIT_MS = 3000;
 const MAX_PER_IP_HOUR = 8;
 const MAX_PER_PHONE_DAY = 5;
+const NOTIFICATION_WAIT_TIMEOUT_MS = 2_500;
 
 const clean = (value: unknown, max = 500) => String(value ?? "").trim().slice(0, max);
 
@@ -61,6 +62,20 @@ const checkRateLimit = async (
 const errorResult = (error: string, status = 400): SubmitLeadResult => ({ status, body: { error } });
 const saveFailedError = "Submission could not be saved. Please try again later.";
 
+const waitForNotificationAttempt = async (attempt: Promise<unknown>) => {
+  let timeoutId = 0;
+
+  const result = await Promise.race([
+    attempt.then(() => "ok" as const).catch(() => "error" as const),
+    new Promise<"timeout">((resolve) => {
+      timeoutId = setTimeout(() => resolve("timeout"), NOTIFICATION_WAIT_TIMEOUT_MS);
+    }),
+  ]);
+
+  clearTimeout(timeoutId);
+  return result;
+};
+
 export async function submitLead(req: Request, body: SubmitBody, client: SubmitLeadClient): Promise<SubmitLeadResult> {
   if (clean(body.website)) {
     return errorResult("Submission rejected");
@@ -109,11 +124,7 @@ export async function submitLead(req: Request, body: SubmitBody, client: SubmitL
       return errorResult(saveFailedError, 500);
     }
 
-    try {
-      await notifySubmittedLead(client, "contact", id);
-    } catch {
-      // Submission is already saved; notification failure must not reject the user.
-    }
+    await waitForNotificationAttempt(notifySubmittedLead(client, "contact", id));
 
     return { body: { ok: true, id } };
   }
@@ -142,11 +153,7 @@ export async function submitLead(req: Request, body: SubmitBody, client: SubmitL
       return errorResult(saveFailedError, 500);
     }
 
-    try {
-      await notifySubmittedLead(client, "quote", id);
-    } catch {
-      // Submission is already saved; notification failure must not reject the user.
-    }
+    await waitForNotificationAttempt(notifySubmittedLead(client, "quote", id));
 
     return { body: { ok: true, id } };
   }

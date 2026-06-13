@@ -1,7 +1,8 @@
 const siteKey = String(import.meta.env.VITE_TURNSTILE_SITE_KEY || "").trim();
 const TURNSTILE_SCRIPT_ID = "cf-turnstile-api";
 const TURNSTILE_SCRIPT_SRC = "https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit";
-const TOKEN_TIMEOUT_MS = 15_000;
+const SCRIPT_LOAD_TIMEOUT_MS = 8_000;
+const TOKEN_TIMEOUT_MS = 10_000;
 const shouldSkipTurnstile = import.meta.env.DEV;
 
 let scriptPromise: Promise<void> | null = null;
@@ -13,23 +14,60 @@ const loadTurnstileScript = () => {
 
   scriptPromise = new Promise((resolve, reject) => {
     const existing = document.getElementById(TURNSTILE_SCRIPT_ID) as HTMLScriptElement | null;
+    let timeoutId = 0;
+    let settled = false;
+    let script: HTMLScriptElement | null = existing;
+
+    const cleanup = () => {
+      window.clearTimeout(timeoutId);
+      script?.removeEventListener("load", onLoad);
+      script?.removeEventListener("error", onError);
+    };
+
+    const settle = (callback: () => void) => {
+      if (settled) return;
+      settled = true;
+      cleanup();
+      callback();
+    };
+
+    const onLoad = () => settle(resolve);
+    const onError = () =>
+      settle(() => {
+        scriptPromise = null;
+        reject(new Error("Turnstile could not be loaded"));
+      });
+
+    timeoutId = window.setTimeout(() => {
+      settle(() => {
+        if (!window.turnstile && script?.parentNode) script.parentNode.removeChild(script);
+        scriptPromise = null;
+        reject(new Error("Turnstile load timed out"));
+      });
+    }, SCRIPT_LOAD_TIMEOUT_MS);
+
     if (existing) {
-      existing.addEventListener("load", () => resolve(), { once: true });
-      existing.addEventListener("error", () => reject(new Error("Turnstile could not be loaded")), { once: true });
+      existing.addEventListener("load", onLoad, { once: true });
+      existing.addEventListener("error", onError, { once: true });
       return;
     }
 
-    const script = document.createElement("script");
+    script = document.createElement("script");
     script.id = TURNSTILE_SCRIPT_ID;
     script.src = TURNSTILE_SCRIPT_SRC;
     script.async = true;
     script.defer = true;
-    script.addEventListener("load", () => resolve(), { once: true });
-    script.addEventListener("error", () => reject(new Error("Turnstile could not be loaded")), { once: true });
+    script.addEventListener("load", onLoad, { once: true });
+    script.addEventListener("error", onError, { once: true });
     document.head.appendChild(script);
   });
 
   return scriptPromise;
+};
+
+export const preloadTurnstile = () => {
+  if (shouldSkipTurnstile || !siteKey) return Promise.resolve();
+  return loadTurnstileScript();
 };
 
 export const getTurnstileToken = async (action: "contact" | "quote") => {

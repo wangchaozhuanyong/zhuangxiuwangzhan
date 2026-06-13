@@ -1,4 +1,4 @@
-﻿import { FormEvent, useState } from "react";
+﻿import { FormEvent, useEffect, useState } from "react";
 import Link from "@/components/LocalizedLink";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -18,6 +18,7 @@ import HeroBanner from "@/components/blocks/HeroBanner";
 import { trackContactFormSubmit, trackCtaClick } from "@/lib/analytics";
 import { isValidLeadEmail, isValidLeadPhone } from "@/lib/leadValidation";
 import { pageHeroImages, resolvePageHeroImage } from "@/lib/pageHeroImages";
+import { preloadTurnstile } from "@/lib/turnstile";
 import { contactLocationOptions, contactPageText, contactProjectTypeOptions, contactServiceItems } from "@/i18n/contactPageText";
 
 
@@ -50,6 +51,10 @@ const Contact = () => {
   const [status, setStatus] = useState<"idle" | "submitting" | "success" | "error">("idle");
   const formGuard = useFormGuard();
   const [honeypot, setHoneypot] = useState("");
+
+  useEffect(() => {
+    void preloadTurnstile().catch(() => undefined);
+  }, []);
 
   const updateForm = (key: keyof typeof form, value: string) => {
     setForm((current) => ({ ...current, [key]: value }));

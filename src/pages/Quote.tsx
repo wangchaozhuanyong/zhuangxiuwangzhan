@@ -19,6 +19,7 @@ import { trackCtaClick, trackQuoteFormSubmit } from "@/lib/analytics";
 import { isValidLeadEmail, isValidLeadPhone } from "@/lib/leadValidation";
 import { pageHeroImages, resolvePageHeroImage } from "@/lib/pageHeroImages";
 import { formatQuoteContextLabel, parseQuoteContext } from "@/lib/quoteContext";
+import { preloadTurnstile } from "@/lib/turnstile";
 import { quotePageText } from "@/i18n/quotePageText";
 
 const projectTypes = [
@@ -97,6 +98,10 @@ const Quote = () => {
   const [status, setStatus] = useState<"idle" | "submitting" | "success" | "error">("idle");
   const formGuard = useFormGuard();
   const [honeypot, setHoneypot] = useState("");
+
+  useEffect(() => {
+    void preloadTurnstile().catch(() => undefined);
+  }, []);
 
   useEffect(() => {
     const previous = previousQuoteContextRef.current;

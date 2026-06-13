@@ -20,6 +20,21 @@ const cleanValue = (value: unknown) => {
   return String(value).trim();
 };
 
+const NOTIFICATION_FETCH_TIMEOUT_MS = 3_500;
+
+const fetchWithTimeout = async (url: string, init: RequestInit) => {
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), NOTIFICATION_FETCH_TIMEOUT_MS);
+
+  try {
+    return await fetch(url, { ...init, signal: controller.signal });
+  } finally {
+    clearTimeout(timeoutId);
+  }
+};
+
+const isAbortError = (error: unknown) => error instanceof Error && error.name === "AbortError";
+
 const resolveTelegramSettings = (row: NotificationSettingsRow | null): TelegramSettings => ({
   enabled: row?.telegram_enabled ?? Boolean(Deno.env.get("TELEGRAM_BOT_TOKEN") && Deno.env.get("TELEGRAM_CHAT_ID")),
   token: row?.telegram_bot_token || Deno.env.get("TELEGRAM_BOT_TOKEN"),
@@ -44,17 +59,26 @@ const sendTelegramMessage = async (message: string, settings: TelegramSettings):
     };
   }
 
-  const response = await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json; charset=utf-8",
-    },
-    body: JSON.stringify({
-      chat_id: chatId,
-      text: message,
-      disable_web_page_preview: true,
-    }),
-  });
+  let response: Response;
+  try {
+    response = await fetchWithTimeout(`https://api.telegram.org/bot${token}/sendMessage`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json; charset=utf-8",
+      },
+      body: JSON.stringify({
+        chat_id: chatId,
+        text: message,
+        disable_web_page_preview: true,
+      }),
+    });
+  } catch (error) {
+    return {
+      skipped: false,
+      ok: false,
+      error: isAbortError(error) ? "Telegram notification timed out" : "Telegram notification request failed",
+    };
+  }
 
   if (!response.ok) {
     return {
@@ -86,7 +110,7 @@ const sendLeadWebhook = async (
   }
 
   try {
-    const response = await fetch(webhookUrl, {
+    const response = await fetchWithTimeout(webhookUrl, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
@@ -114,7 +138,7 @@ const sendLeadWebhook = async (
     return {
       skipped: false,
       ok: false,
-      error: error instanceof Error ? error.message : "Webhook request failed",
+      error: isAbortError(error) ? "Webhook notification timed out" : "Webhook notification request failed",
     };
   }
 };
@@ -132,8 +156,10 @@ export async function notifyLead(input: NotifyLeadRequest, client: NotifyLeadCli
 
   const telegramMessage = buildLeadTelegramMessage(input.type, leadRecord.data);
   const telegramSettings = resolveTelegramSettings(await fetchTelegramSettingsRow(client));
-  const telegramResult = await sendTelegramMessage(telegramMessage, telegramSettings);
-  const webhookResult = await sendLeadWebhook(input.type, input.id, leadRecord.table, leadRecord.data, telegramMessage);
+  const [telegramResult, webhookResult] = await Promise.all([
+    sendTelegramMessage(telegramMessage, telegramSettings),
+    sendLeadWebhook(input.type, input.id, leadRecord.table, leadRecord.data, telegramMessage),
+  ]);
 
   if (shouldLogDeliveryResult(telegramResult)) {
     await insertNotificationFailureEvent(
