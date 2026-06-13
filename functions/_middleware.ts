@@ -66,6 +66,7 @@ const PRODUCTION_SCRIPT_SRC = [
   "https://challenges.cloudflare.com",
   "https://static.cloudflareinsights.com",
   "https://www.googletagmanager.com",
+  "https://googleads.g.doubleclick.net",
 ];
 const CSP_DIRECTIVES = (scriptSrc: string[]) => [
   ["default-src", "'self'"],
@@ -90,6 +91,8 @@ const CSP_DIRECTIVES = (scriptSrc: string[]) => [
     "https://www.google-analytics.com",
     "https://analytics.google.com",
     "https://www.googleadservices.com",
+    "https://www.google.com",
+    "https://ad.doubleclick.net",
     "https://googleads.g.doubleclick.net",
     "https://stats.g.doubleclick.net",
     "https://region1.google-analytics.com",
