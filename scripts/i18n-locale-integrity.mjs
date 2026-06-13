@@ -177,6 +177,12 @@ const propertyNameText = (nameNode) => {
   return nameNode.getText().replace(/^["']|["']$/g, "");
 };
 
+const scopedPropertyLocale = (propertyName) => {
+  if (/Zh$|_zh$/u.test(propertyName)) return "zh-CN";
+  if (/En$|_en$/u.test(propertyName)) return "en-US";
+  return null;
+};
+
 const readStaticString = (node) => {
   if (!node) return null;
   if (ts.isStringLiteral(node) || ts.isNoSubstitutionTemplateLiteral(node)) return node.text;
@@ -481,12 +487,18 @@ const checkResourcePurity = () => {
     }
 
     const sourceFile = parseSourceFile(relativeFilePath, source);
-    const visitAllStrings = (node) => {
+    const visitAllStrings = (node, activeLocale = locale) => {
+      if (ts.isPropertyAssignment(node)) {
+        const propertyLocale = scopedPropertyLocale(propertyNameText(node.name));
+        visitAllStrings(node.initializer, propertyLocale || activeLocale);
+        return;
+      }
+
       const staticValue = readStaticString(node);
       if (staticValue !== null) {
         scanLocaleResourceValue({
           issues,
-          locale,
+          locale: activeLocale,
           file: relativeFilePath,
           line: nodeLine(sourceFile, node),
           text: staticValue,
@@ -494,7 +506,7 @@ const checkResourcePurity = () => {
         return;
       }
 
-      ts.forEachChild(node, visitAllStrings);
+      ts.forEachChild(node, (child) => visitAllStrings(child, activeLocale));
     };
 
     visitAllStrings(sourceFile);
