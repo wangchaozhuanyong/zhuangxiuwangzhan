@@ -109,7 +109,7 @@ insert into public.site_settings (
   'FLASH CAST SDN. BHD.',
   'FLASH CAST',
   '202501027419 (1628831-M)',
-  'info@flashcast.com.my',
+  'flashcast001@gmail.com',
   '+60 11-2885 3888',
   '+601128853888',
   '601128853888',

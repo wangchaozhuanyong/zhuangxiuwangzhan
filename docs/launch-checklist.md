@@ -8,7 +8,7 @@ Set these values in the hosting platform environment variables before building:
 
 ```env
 VITE_SITE_URL=https://flashcast.com.my
-VITE_SITE_EMAIL=info@flashcast.com.my
+VITE_SITE_EMAIL=flashcast001@gmail.com
 VITE_SITE_PHONE_DISPLAY=+60 11-2885 3888
 VITE_SITE_PHONE_E164=+601128853888
 VITE_SITE_WHATSAPP_NUMBER=601128853888

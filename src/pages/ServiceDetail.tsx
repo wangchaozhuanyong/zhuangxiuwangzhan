@@ -85,7 +85,8 @@ const ServiceDetail = () => {
   const heroImage = service.image;
   const serviceTitle = displayText(service.title);
   const serviceSummary = displayText(service.summary);
-  const serviceDescription = displayText(service.description);
+  const rawServiceDescription = service.description || "";
+  const serviceDescription = isHtmlText(rawServiceDescription) ? rawServiceDescription : displayText(rawServiceDescription);
   const serviceSuitableFor = service.suitableFor.map((item: string) => displayText(item));
   const serviceItems = service.items.map((item: string) => displayText(item));
   const serviceCommonProjects = service.commonProjects.map((item: string) => displayText(item));

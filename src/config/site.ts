@@ -12,7 +12,7 @@ export const siteConfig = {
   name: "FLASH CAST SDN. BHD.",
   ssmNumber: env.VITE_SITE_SSM_NUMBER || "202501027419 (1628831-M)",
   url: siteUrl,
-  email: env.VITE_SITE_EMAIL || "info@flashcast.com.my",
+  email: env.VITE_SITE_EMAIL || "flashcast001@gmail.com",
   phoneDisplay,
   phoneHref: env.VITE_SITE_PHONE_HREF || normalizePhoneHref(phoneE164),
   phoneE164,
