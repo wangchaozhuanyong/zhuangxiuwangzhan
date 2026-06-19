@@ -90,6 +90,7 @@ export type AdminCopy = {
   darkTheme: string;
   contentReady: string;
   currentPage: string;
+  switchingPage: string;
 };
 
 export type NavItem = {
@@ -175,6 +176,7 @@ export const copy: Record<AdminLang, AdminCopy> = {
     darkTheme: "Dark",
     contentReady: "Content status",
     currentPage: "Current page",
+    switchingPage: "Opening page...",
   },
   zh: {
     dashboard: "总览",
@@ -231,6 +233,7 @@ export const copy: Record<AdminLang, AdminCopy> = {
     darkTheme: "深色",
     contentReady: "内容状态",
     currentPage: "当前页面",
+    switchingPage: "正在打开页面...",
   },
 };
 

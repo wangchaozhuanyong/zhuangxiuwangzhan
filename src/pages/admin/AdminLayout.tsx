@@ -15,7 +15,8 @@ import { Button } from "@/components/ui/button";
 import AdminHelpTip from "@/components/admin/AdminHelpTip";
 import AdminConfirmProvider from "@/components/admin/AdminConfirmProvider";
 import { Sheet, SheetContent, SheetDescription, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
-import { Skeleton } from "@/components/ui/skeleton";
+import AdminPageSkeleton, { type AdminPageSkeletonMode } from "@/components/admin/AdminPageSkeleton";
+import AdminRouteTransition from "@/components/admin/AdminRouteTransition";
 import SmartImage from "@/components/SmartImage";
 import { signOutAdmin } from "@/backend/modules/admin-auth/service/adminAuthService";
 import {
@@ -53,6 +54,9 @@ import { cn } from "@/lib/utils";
 import { useAdminAuth } from "@/pages/admin/AdminAuthProvider";
 
 const AdminDefaultContentSeedStatus = lazy(() => import("@/components/admin/AdminDefaultContentSeedStatus"));
+const ROUTE_SETTLE_MS = 260;
+const PENDING_NAV_FALLBACK_MS = 2500;
+const IDLE_PRELOAD_LIMIT = 8;
 
 const adminRoutePreloaders: Array<[RegExp, () => Promise<unknown>]> = [
   [/^\/admin\/dashboard$/, () => import("@/pages/admin/AdminDashboard")],
@@ -98,6 +102,51 @@ const preloadAdminRoute = (path: string) => {
   });
 };
 
+const getAdminRouteKey = (pathname: string, hash: string) => `${pathname}${hash}`;
+
+const getAdminSkeletonMode = (navKey: keyof AdminCopy): AdminPageSkeletonMode => {
+  switch (navKey) {
+    case "dashboard":
+    case "leadReports":
+    case "contentHealth":
+    case "publishCenter":
+    case "englishCenter":
+      return "dashboard";
+    case "home":
+    case "about":
+    case "cmsBuilder":
+    case "pages":
+    case "services":
+    case "projects":
+    case "materials":
+    case "blog":
+    case "websiteSettings":
+    case "notificationSettings":
+      return "form";
+    case "media":
+      return "media";
+    case "systemHealth":
+    case "systemLogs":
+    case "users":
+    case "translationJobs":
+      return "settings";
+    default:
+      return "table";
+  }
+};
+
+const AdminTopProgress = ({ visible }: { visible: boolean }) => (
+  <div
+    aria-hidden="true"
+    className={cn(
+      "pointer-events-none absolute inset-x-0 bottom-0 h-0.5 overflow-hidden transition-opacity duration-150",
+      visible ? "opacity-100" : "opacity-0",
+    )}
+  >
+    <div data-admin-progress-bar className="h-full w-full origin-left bg-accent" />
+  </div>
+);
+
 const ControlButton = ({
   active,
   children,
@@ -132,8 +181,12 @@ const AdminLayout = () => {
   const [navCollapsed, setNavCollapsed] = useState(() => readNavCollapsed());
   const [expandedGroups, setExpandedGroups] = useState<Record<string, boolean>>(() => readExpandedGroups());
   const [adminBrandIconFailed, setAdminBrandIconFailed] = useState(false);
+  const [pendingNavPath, setPendingNavPath] = useState<string | null>(null);
+  const [routeSettling, setRouteSettling] = useState(false);
   const lastBuildCheckAtRef = useRef(0);
   const pendingAdminLangRef = useRef(adminLang);
+  const routeKey = getAdminRouteKey(location.pathname, location.hash);
+  const previousRouteKeyRef = useRef(routeKey);
   const t = copy[adminLang];
   const showDefaultContentSeedStatus = location.pathname === "/admin/dashboard";
   const { data: adminSiteSettings = fallbackSiteSettings } = useQuery({
@@ -255,6 +308,25 @@ const AdminLayout = () => {
     setMobileNavOpen(false);
   }, [location.pathname, location.hash]);
 
+  useEffect(() => {
+    if (!pendingNavPath || !isAdminNavItemActive(pendingNavPath, location.pathname, location.hash)) return;
+    setPendingNavPath(null);
+  }, [location.hash, location.pathname, pendingNavPath]);
+
+  useEffect(() => {
+    if (!pendingNavPath) return;
+    const timeoutId = window.setTimeout(() => setPendingNavPath(null), PENDING_NAV_FALLBACK_MS);
+    return () => window.clearTimeout(timeoutId);
+  }, [pendingNavPath]);
+
+  useEffect(() => {
+    if (previousRouteKeyRef.current === routeKey) return;
+    previousRouteKeyRef.current = routeKey;
+    setRouteSettling(true);
+    const timeoutId = window.setTimeout(() => setRouteSettling(false), ROUTE_SETTLE_MS);
+    return () => window.clearTimeout(timeoutId);
+  }, [routeKey]);
+
   const activeNavLabel = useMemo(() => {
     for (const group of navGroups) {
       for (const item of group.items) {
@@ -327,8 +399,59 @@ const AdminLayout = () => {
   }, [location.pathname, location.hash, adminLang]);
 
   const activeNavHelp = useMemo(() => getAdminActiveNavHelp(activeNavKey, adminLang), [activeNavKey, adminLang]);
+  const skeletonMode = useMemo(() => getAdminSkeletonMode(activeNavKey), [activeNavKey]);
+  const isAdminRouteBusy = Boolean(pendingNavPath) || routeSettling;
 
   const websitePath = adminPublicSitePath(adminLang);
+
+  useEffect(() => {
+    const currentGroupItems = visibleNavGroups
+      .filter((group) => activeGroupKeys.includes(group.key))
+      .flatMap((group) => group.items.map((item) => item.path));
+    const priorityPaths = [
+      ...currentGroupItems,
+      "/admin/dashboard",
+      "/admin/content-health",
+      "/admin/leads",
+      "/admin/quotes",
+      "/admin/services",
+      "/admin/projects",
+      "/admin/media",
+      "/admin/seo",
+    ];
+    const paths = Array.from(new Set(priorityPaths))
+      .filter((path) => !isAdminNavItemActive(path, location.pathname, location.hash))
+      .slice(0, IDLE_PRELOAD_LIMIT);
+
+    if (!paths.length) return;
+
+    let cancelled = false;
+    let idleId: number | null = null;
+    let timeoutId: number | null = null;
+    const browserWindow = window as typeof window & {
+      requestIdleCallback?: (callback: () => void, options?: { timeout: number }) => number;
+      cancelIdleCallback?: (id: number) => void;
+    };
+
+    const run = () => {
+      idleId = null;
+      timeoutId = null;
+      if (cancelled) return;
+      paths.forEach(preloadAdminRoute);
+    };
+
+    if (browserWindow.requestIdleCallback) {
+      idleId = browserWindow.requestIdleCallback(run, { timeout: 1400 });
+    } else {
+      timeoutId = window.setTimeout(run, 500);
+    }
+
+    return () => {
+      cancelled = true;
+      if (idleId !== null) browserWindow.cancelIdleCallback?.(idleId);
+      if (timeoutId !== null) window.clearTimeout(timeoutId);
+    };
+  }, [activeGroupKeys, location.hash, location.pathname, visibleNavGroups]);
 
   const changeLanguage = (nextLanguage: AdminLang) => {
     if (pendingAdminLangRef.current === nextLanguage) return;
@@ -337,29 +460,48 @@ const AdminLayout = () => {
     setAdminLang(nextLanguage);
   };
 
-  const NavLink = ({ item, compact }: { item: NavItem; compact: boolean }) => {
+  const NavLink = ({ item, compact, mobile }: { item: NavItem; compact: boolean; mobile?: boolean }) => {
     const isActive = isAdminNavItemActive(item.path, location.pathname, location.hash);
+    const isPending = pendingNavPath === item.path && !isActive;
     const label = copyText(item.key);
     const Icon = item.icon;
+    const startNavigation = () => {
+      preloadAdminRoute(item.path);
+      if (!isActive) setPendingNavPath(item.path);
+      if (mobile) setMobileNavOpen(false);
+    };
+
     return (
       <Link
         key={item.path}
         to={item.path}
         title={label}
         aria-current={isActive ? "page" : undefined}
+        aria-busy={isPending ? true : undefined}
+        data-pending={isPending ? "true" : undefined}
+        onClick={startNavigation}
         onFocus={() => preloadAdminRoute(item.path)}
         onPointerEnter={() => preloadAdminRoute(item.path)}
         onTouchStart={() => preloadAdminRoute(item.path)}
         className={cn(
-          "group flex min-h-10 min-w-0 items-center gap-2.5 rounded-md border border-transparent px-3 py-2 text-sm font-semibold transition-colors",
+          "group relative flex min-h-10 min-w-0 items-center gap-2.5 rounded-md border border-transparent px-3 py-2 text-sm font-semibold transition-[background-color,border-color,box-shadow,color,transform] duration-150 ease-out active:scale-[0.985] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sidebar-ring/55",
           isActive
             ? "border border-accent/25 bg-accent/15 text-sidebar-accent-foreground shadow-sm"
             : "text-sidebar-foreground/76 hover:bg-sidebar-accent hover:text-sidebar-accent-foreground",
+          isPending && "border-accent/35 bg-accent/10 text-sidebar-accent-foreground shadow-sm",
           compact && "mx-auto h-10 w-10 justify-center px-0",
         )}
       >
-        <Icon className={cn("h-4 w-4 shrink-0", isActive ? "text-accent" : "text-sidebar-foreground/58 group-hover:text-sidebar-accent-foreground")} />
+        <Icon className={cn("h-4 w-4 shrink-0 transition-colors", isActive || isPending ? "text-accent" : "text-sidebar-foreground/58 group-hover:text-sidebar-accent-foreground")} />
         <span className={cn("truncate", compact && "sr-only")}>{label}</span>
+        <span
+          aria-hidden="true"
+          className={cn(
+            "absolute right-2 top-2 h-1.5 w-1.5 rounded-full bg-accent transition-opacity duration-150",
+            isPending ? "opacity-100" : "opacity-0",
+            compact && "right-1.5 top-1.5",
+          )}
+        />
       </Link>
     );
   };
@@ -370,7 +512,7 @@ const AdminLayout = () => {
       <aside
         className={cn(
           "flex h-full min-h-0 flex-col border-sidebar-border bg-sidebar text-sidebar-foreground",
-          variant === "desktop" ? "border-r transition-[width] duration-200" : "w-full",
+          variant === "desktop" ? "border-r transition-[width] duration-200 ease-out motion-reduce:transition-none" : "w-full",
           variant === "desktop" && (compact ? "w-[76px]" : "w-[280px]"),
         )}
       >
@@ -448,14 +590,14 @@ const AdminLayout = () => {
               <div
                 key={group.key}
                 className={cn(
-                  "rounded-xl border border-transparent transition-colors",
-                  isExpanded && "border-sidebar-border bg-sidebar-accent/35 p-1.5",
+                  "rounded-xl border border-transparent p-1 transition-colors duration-150",
+                  isExpanded && "border-sidebar-border bg-sidebar-accent/35",
                 )}
               >
                 <button
                   type="button"
                   className={cn(
-                    "flex min-h-11 w-full items-center justify-between rounded-lg px-3 py-2 text-left text-sm font-bold text-sidebar-foreground transition-colors hover:bg-sidebar-accent hover:text-sidebar-accent-foreground",
+                    "flex min-h-11 w-full items-center justify-between rounded-lg px-3 py-2 text-left text-sm font-bold text-sidebar-foreground transition-[background-color,color,box-shadow] duration-150 hover:bg-sidebar-accent hover:text-sidebar-accent-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sidebar-ring/55",
                     isExpanded && "bg-sidebar text-sidebar-foreground shadow-sm",
                   )}
                   aria-expanded={isExpanded}
@@ -472,13 +614,20 @@ const AdminLayout = () => {
                   </span>
                   <ChevronDown className={cn("h-4 w-4 shrink-0 transition-transform", isExpanded && "rotate-180")} />
                 </button>
-                {isExpanded && (
-                  <div className="ml-5 mt-1.5 space-y-1 border-l border-sidebar-border pl-2">
-                    {group.items.map((item) => (
-                      <NavLink key={item.path} item={item} compact={false} />
-                    ))}
+                <div
+                  className={cn(
+                    "grid transition-[grid-template-rows,opacity] duration-200 ease-out motion-reduce:transition-none",
+                    isExpanded ? "grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0",
+                  )}
+                >
+                  <div className="min-h-0 overflow-hidden">
+                    <div className="ml-5 mt-1.5 space-y-1 border-l border-sidebar-border pl-2">
+                      {group.items.map((item) => (
+                        <NavLink key={item.path} item={item} compact={false} mobile={variant === "mobile"} />
+                      ))}
+                    </div>
                   </div>
-                )}
+                </div>
               </div>
             );
           })}
@@ -565,6 +714,7 @@ const AdminLayout = () => {
                 </Button>
               </div>
             </div>
+            <AdminTopProgress visible={isAdminRouteBusy} />
           </header>
 
           <main className="min-w-0 px-3 py-4 sm:px-6 sm:py-5 lg:px-8">
@@ -576,20 +726,16 @@ const AdminLayout = () => {
               )}
 
               <Suspense
-                fallback={
-                  <div className="space-y-4">
-                    <Skeleton className="h-9 w-64 max-w-full" />
-                    <Skeleton className="h-52 w-full rounded-lg" />
-                    <Skeleton className="h-52 w-full rounded-lg" />
-                  </div>
-                }
+                fallback={<AdminPageSkeleton mode={skeletonMode} label={t.switchingPage} />}
               >
-                <div
-                  data-admin-language={adminLang}
-                  className="min-w-0 overflow-x-clip [overflow-wrap:anywhere] [&_a.inline-flex]:min-h-10 [&_button]:min-h-10 max-md:[&_select]:min-h-10"
-                >
-                  <Outlet />
-                </div>
+                <AdminRouteTransition key={routeKey} routeKey={routeKey} busy={isAdminRouteBusy}>
+                  <div
+                    data-admin-language={adminLang}
+                    className="min-w-0 overflow-x-clip [overflow-wrap:anywhere] [&_a.inline-flex]:min-h-10 [&_button]:min-h-10 max-md:[&_select]:min-h-10"
+                  >
+                    <Outlet />
+                  </div>
+                </AdminRouteTransition>
               </Suspense>
             </div>
           </main>
