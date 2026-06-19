@@ -4,7 +4,10 @@ type AnalyticsParams = Record<string, AnalyticsValue>;
 const defaultGaMeasurementId = "G-K71PQ0MSV2";
 const defaultGoogleAdsId = "AW-18205206146";
 const defaultGoogleAdsLeadConversionLabel = "iI73CL2bybscEILN9ehD";
-const directConversionCtas = new Set(["whatsapp", "phone"]);
+const directConversionCtaEvents: Record<string, string> = {
+  whatsapp: "whatsapp_click",
+  phone: "phone_click",
+};
 
 declare global {
   interface Window {
@@ -35,6 +38,25 @@ const sanitizeParams = (params: AnalyticsParams) =>
   Object.fromEntries(
     Object.entries(params).filter(([, value]) => value !== undefined && value !== null && value !== ""),
   );
+
+const currentPagePath = () => (typeof window !== "undefined" ? window.location.pathname : "");
+
+const trackSuccessfulLeadEvent = (
+  leadType: "quote_form" | "contact_form",
+  eventName: "quote_form_success" | "contact_form_success",
+  params: AnalyticsParams,
+) => {
+  const leadParams = {
+    conversion_source: eventName,
+    lead_type: leadType,
+    method: leadType,
+    page_path: currentPagePath(),
+    ...params,
+  };
+
+  trackEvent(eventName, leadParams);
+  trackEvent("generate_lead", leadParams);
+};
 
 const ensureGoogleTagScript = () => {
   if (!canUseBrowserAnalytics() || !primaryGoogleTagId || document.getElementById(googleTagScriptId)) return;
@@ -100,11 +122,21 @@ export const trackCtaClick = (ctaName: string, ctaLocation: string, params: Anal
   trackEvent("cta_click", {
     cta_name: ctaName,
     cta_location: ctaLocation,
-    page_path: typeof window !== "undefined" ? window.location.pathname : "",
+    page_path: currentPagePath(),
     ...params,
   });
 
-  if (directConversionCtas.has(ctaName)) {
+  const directLeadEventName = directConversionCtaEvents[ctaName];
+
+  if (directLeadEventName) {
+    trackEvent(directLeadEventName, {
+      conversion_source: "direct_cta_click",
+      cta_name: ctaName,
+      cta_location: ctaLocation,
+      page_path: currentPagePath(),
+      ...params,
+    });
+
     trackGoogleAdsConversion(contactConversionLabel, {
       conversion_source: "direct_cta_click",
       cta_name: ctaName,
@@ -131,11 +163,12 @@ export const trackGoogleAdsConversion = (conversionLabel: string, params: Analyt
 export const trackQuoteFormSubmit = (status: "success" | "error" | "validation_error", params: AnalyticsParams = {}) => {
   trackEvent("quote_form_submit", {
     form_status: status,
-    page_path: typeof window !== "undefined" ? window.location.pathname : "",
+    page_path: currentPagePath(),
     ...params,
   });
 
   if (status === "success") {
+    trackSuccessfulLeadEvent("quote_form", "quote_form_success", params);
     trackGoogleAdsConversion(quoteConversionLabel, {
       conversion_source: "quote_form_success",
       ...params,
@@ -146,11 +179,12 @@ export const trackQuoteFormSubmit = (status: "success" | "error" | "validation_e
 export const trackContactFormSubmit = (status: "success" | "error" | "validation_error", params: AnalyticsParams = {}) => {
   trackEvent("contact_form_submit", {
     form_status: status,
-    page_path: typeof window !== "undefined" ? window.location.pathname : "",
+    page_path: currentPagePath(),
     ...params,
   });
 
   if (status === "success") {
+    trackSuccessfulLeadEvent("contact_form", "contact_form_success", params);
     trackGoogleAdsConversion(contactConversionLabel, {
       conversion_source: "contact_form_success",
       ...params,
