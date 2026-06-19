@@ -44,19 +44,19 @@ const HeroSection = ({ pageContent, heroSlides }: HeroSectionProps) => {
   const mediaVersion = "20260619-no-text-home-hero";
   const mediaByVariant = {
     desktop: {
-      poster: `/videos/home-hero-poster.webp?v=${mediaVersion}`,
-      webm: `/videos/home-hero.webm?v=${mediaVersion}`,
-      mp4: `/videos/home-hero.mp4?v=${mediaVersion}`,
+      poster: `/videos/home-hero-poster-no-text-20260619.webp?v=${mediaVersion}`,
+      webm: `/videos/home-hero-no-text-20260619.webm?v=${mediaVersion}`,
+      mp4: `/videos/home-hero-no-text-20260619.mp4?v=${mediaVersion}`,
     },
     tablet: {
-      poster: `/videos/home-hero-poster-tablet.webp?v=${mediaVersion}`,
-      webm: `/videos/home-hero-tablet.webm?v=${mediaVersion}`,
-      mp4: `/videos/home-hero-tablet.mp4?v=${mediaVersion}`,
+      poster: `/videos/home-hero-poster-tablet-no-text-20260619.webp?v=${mediaVersion}`,
+      webm: `/videos/home-hero-tablet-no-text-20260619.webm?v=${mediaVersion}`,
+      mp4: `/videos/home-hero-tablet-no-text-20260619.mp4?v=${mediaVersion}`,
     },
     mobile: {
-      poster: `/videos/home-hero-poster-mobile.webp?v=${mediaVersion}`,
-      webm: `/videos/home-hero-mobile.webm?v=${mediaVersion}`,
-      mp4: `/videos/home-hero-mobile.mp4?v=${mediaVersion}`,
+      poster: `/videos/home-hero-poster-mobile-no-text-20260619.webp?v=${mediaVersion}`,
+      webm: `/videos/home-hero-mobile-no-text-20260619.webm?v=${mediaVersion}`,
+      mp4: `/videos/home-hero-mobile-no-text-20260619.mp4?v=${mediaVersion}`,
     },
   } satisfies Record<HeroMediaVariant, { poster: string; webm: string; mp4: string }>;
   const activeMedia = mediaByVariant[mediaVariant];

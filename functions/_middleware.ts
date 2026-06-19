@@ -415,9 +415,9 @@ const injectPerformanceHints = (html: string, env: Record<string, string | undef
     '<meta data-flashcast-performance-hints="true" />',
     supabaseOrigin ? `<link rel="preconnect" href="${escapeHtml(supabaseOrigin)}" crossorigin />` : "",
     supabaseOrigin ? `<link rel="dns-prefetch" href="//${escapeHtml(new URL(supabaseOrigin).hostname)}" />` : "",
-    `<link rel="preload" as="image" href="/videos/home-hero-poster-mobile.webp?v=${HERO_MEDIA_VERSION}" media="(max-width: 767px)" fetchpriority="high" />`,
-    `<link rel="preload" as="image" href="/videos/home-hero-poster-tablet.webp?v=${HERO_MEDIA_VERSION}" media="(min-width: 768px) and (max-width: 1180px) and (orientation: portrait)" fetchpriority="high" />`,
-    `<link rel="preload" as="image" href="/videos/home-hero-poster.webp?v=${HERO_MEDIA_VERSION}" media="(min-width: 768px) and (orientation: landscape), (min-width: 1181px)" fetchpriority="high" />`,
+    `<link rel="preload" as="image" href="/videos/home-hero-poster-mobile-no-text-20260619.webp?v=${HERO_MEDIA_VERSION}" media="(max-width: 767px)" fetchpriority="high" />`,
+    `<link rel="preload" as="image" href="/videos/home-hero-poster-tablet-no-text-20260619.webp?v=${HERO_MEDIA_VERSION}" media="(min-width: 768px) and (max-width: 1180px) and (orientation: portrait)" fetchpriority="high" />`,
+    `<link rel="preload" as="image" href="/videos/home-hero-poster-no-text-20260619.webp?v=${HERO_MEDIA_VERSION}" media="(min-width: 768px) and (orientation: landscape), (min-width: 1181px)" fetchpriority="high" />`,
   ].filter(Boolean);
 
   return html.replace("</head>", `    ${hints.join("\n    ")}\n  </head>`);
