@@ -203,17 +203,17 @@ export const translations: Translations = {
   "faq.q2": { en: "Do you provide a quotation after site visit?", zh: "现场勘察后会提供报价吗？" },
   "faq.a2": {
     en: "You can send your project type, location, area, photos, and requirements first. Site measurement and quotation details are confirmed based on area, project type, and schedule.",
-    zh: "是的。我们为吉隆坡和雪兰莪州所有项目提供免费现场测量和详细逐项报价 — 无需任何承诺，无隐藏费用。",
+    zh: "建议先提供项目类型、地点、面积、现场照片和主要需求。是否安排现场测量、报价细节和下一步时间，会根据地区、项目类型和实际范围确认。",
   },
   "faq.q3": { en: "Do you serve Kuala Lumpur and Selangor only?", zh: "只服务吉隆坡和雪兰莪吗？" },
   "faq.a3": {
-    en: "Yes, we currently serve all areas in Kuala Lumpur and Selangor including Mont Kiara, Bangsar, Cheras, Petaling Jaya, Subang Jaya, Shah Alam, Puchong, and surrounding areas.",
-    zh: "是的，我们目前服务吉隆坡和雪兰莪州所有区域，包括满家乐、孟沙、蕉赖、八打灵再也、梳邦再也、莎阿南、蒲种及周边地区。",
+    en: "Our current business data lists Kuala Lumpur, Selangor, and the Klang Valley as the main service areas. If your exact area or project type is uncertain, submit the request for confirmation first.",
+    zh: "根据当前业务资料，FLASH CAST 主要服务 Kuala Lumpur、Selangor 与 Klang Valley。若具体地区或项目类型不确定，建议先提交需求确认。",
   },
   "faq.q4": { en: "Can you handle condo renovation approval?", zh: "能处理公寓装修审批吗？" },
   "faq.a4": {
-    en: "Yes. We handle all permit applications — condo management office applications, DBKL permits, and local council approvals. This is included in our project management service.",
-    zh: "可以。我们处理所有许可申请 — 公寓管理处申请、DBKL 许可和地方政府审批。这包含在我们的项目管理服务中。",
+    en: "We can review condo management, DBKL, or local council approval needs where they apply. The required documents and responsibility should be confirmed based on the project scope and building rules.",
+    zh: "可以先协助判断是否涉及公寓管理处、DBKL 或 local council 相关申请。所需文件、责任范围和时间安排应按项目范围和大楼规则确认。",
   },
   "faq.q5": { en: "Do you provide design and carpentry work?", zh: "提供设计和木工服务吗？" },
   "faq.a5": {
@@ -222,13 +222,13 @@ export const translations: Translations = {
   },
   "faq.q6": { en: "How long does a renovation project usually take?", zh: "装修工程通常需要多长时间？" },
   "faq.a6": {
-    en: "Most residential renovations take 6-12 weeks. Kitchen projects take 3-5 weeks. Bathroom renovations take 2-3 weeks. Office and shop lot fit-outs take 4-8 weeks. We provide a detailed timeline with milestones.",
-    zh: "大多数住宅装修需要6-12周。厨房项目需要3-5周。浴室装修需要2-3周。办公室和店铺装修需要4-8周。我们会提供详细的时间表和里程碑节点。",
+    en: "Timeline depends on scope, site condition, design approval, material availability, building-management rules, and trade sequencing. Share your photos and requirements first so the team can review the likely next steps.",
+    zh: "工期会受施工范围、现场状况、设计确认、材料供应、管理处规则和工种衔接影响。建议先提交照片和需求，再根据实际范围评估下一步安排。",
   },
   "faq.q7": { en: "Do you provide warranty or after-sales support?", zh: "提供保修或售后服务吗？" },
   "faq.a7": {
     en: "We provide after-sales follow-up. Warranty scope, duration, and claim method should be confirmed in the quotation or project document.",
-    zh: "是的。所有装修工程均提供施工保修。我们也为交付后出现的任何问题提供售后支持。",
+    zh: "我们可提供交付后的跟进支持。具体保修范围、期限和处理方式，应以报价单或项目文件中的确认内容为准。",
   },
 
   // ============ CTA SECTION ============

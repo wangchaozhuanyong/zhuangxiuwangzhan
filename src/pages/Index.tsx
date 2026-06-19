@@ -1,5 +1,5 @@
 import PageMeta from "@/components/PageMeta";
-import { JsonLdLocalBusiness, JsonLdOrganization } from "@/components/JsonLd";
+import { JsonLdFAQ, JsonLdLocalBusiness, JsonLdOrganization } from "@/components/JsonLd";
 import HeroSection from "@/components/sections/HeroSection";
 import StatsSection from "@/components/sections/StatsSection";
 import BrandLogosSection from "@/components/sections/BrandLogosSection";
@@ -30,6 +30,9 @@ const Index = () => {
   const metaTitle = pageContent?.seo_title || pageContent?.title || copy.title;
   const metaDescription = pageContent?.seo_description || pageContent?.description || copy.description;
   const metaKeywords = pageContent?.seo_keywords || copy.keywords;
+  const homeFaqSchemaItems = (homeContent?.faqs ?? [])
+    .map((faq) => ({ question: faq.question, answer: faq.answer }))
+    .filter((faq) => faq.question && faq.answer);
 
   return (
     <main className="home-page overflow-x-hidden">
@@ -41,6 +44,7 @@ const Index = () => {
       />
       <JsonLdLocalBusiness />
       <JsonLdOrganization />
+      {homeFaqSchemaItems.length > 0 && <JsonLdFAQ faqs={homeFaqSchemaItems} />}
       <HeroSection pageContent={pageContent} heroSlides={homeContent?.heroSlides ?? []} />
       <PublicContentNotice result={homeContentResult} onRetry={() => void retryHomeContent()} />
       <div className="home-art-canvas">

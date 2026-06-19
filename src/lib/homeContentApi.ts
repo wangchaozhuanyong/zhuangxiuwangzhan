@@ -351,8 +351,8 @@ const getLocalHomeContentBundle = async (language: "en" | "zh"): Promise<Publish
     faqs: homeFAQs.map((item, index) => ({
       id: `local-home-faq-${index}`,
       category: "home",
-      question: item.q,
-      answer: item.a,
+      question: language === "zh" ? item.qZh || item.q : item.q,
+      answer: language === "zh" ? item.aZh || item.a : item.a,
     })),
   };
 };

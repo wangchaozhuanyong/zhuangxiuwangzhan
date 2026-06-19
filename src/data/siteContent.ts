@@ -112,57 +112,42 @@ export interface Testimonial {
   location: string;
   type: string;
 }
-export const testimonials: Testimonial[] = [
-  {
-    text: "Published client feedback should be shown only when the original review has been confirmed.",
-    client: "Mr. Tan",
-    location: "Mont Kiara, KL",
-    type: "Condo Renovation",
-  },
-  {
-    text: "Good communication throughout the renovation process. The site supervisor was always available and the weekly photo updates gave us confidence. The final result matches the 3D design perfectly.",
-    client: "Ms. Lee",
-    location: "Petaling Jaya",
-    type: "Office Fit-Out",
-  },
-  {
-    text: "We chose FLASH CAST for our kitchen renovation. The cabinet quality is excellent, soft-close hardware works perfectly, and the countertop installation was precise. Will use them again for our bedroom.",
-    client: "Mr. & Mrs. Wong",
-    location: "Bangsar, KL",
-    type: "Kitchen Renovation",
-  },
-]; // ============ HOMEPAGE FAQ ============
+export const testimonials: Testimonial[] = []; // ============ HOMEPAGE FAQ ============
 export interface FAQItem {
   q: string;
   a: string;
+  qZh?: string;
+  aZh?: string;
 }
 export const homeFAQs: FAQItem[] = [
   {
     q: "What types of renovation do you handle?",
-    a: "We handle full residential renovation (condo and landed), kitchen renovation, bathroom renovation, office fit-out, shop lot renovation, custom built-in furniture, artistic wall coating, and old house renovation. We also assist with permit applications and architectural drawings.",
+    a: "FLASH CAST publicly lists residential renovation, interior design, kitchen renovation, bathroom renovation, office renovation, shop renovation, custom built-in furniture, artistic wall coating, old-house renovation, approval coordination, and warehouse shelving related space planning.",
+    qZh: "FLASH CAST 主要做哪些装修服务？",
+    aZh: "FLASH CAST 的公开服务包括住宅装修、室内设计、厨房装修、浴室装修、办公室装修、店铺装修、定制家具、艺术涂料、旧屋翻新、装修申请协调和仓库货架相关空间规划。",
   },
   {
-    q: "Do you provide a quotation after site visit?",
-    a: "Yes. You can send your project type, location, area, photos, and requirements first. Site measurement and quotation details are confirmed based on area, project type, and schedule.",
+    q: "What should I prepare before requesting a renovation consultation?",
+    a: "Prepare the location, property or commercial space type, site photos, current issues, intended scope, design references, and any management-office, landlord, or mall work restrictions.",
+    qZh: "装修咨询前需要准备什么？",
+    aZh: "建议准备地点、房屋或商业空间类型、现场照片、现有问题、预计装修范围、喜欢的风格参考，以及是否有管理处、业主或商场施工限制。",
   },
   {
-    q: "Do you serve Kuala Lumpur and Selangor only?",
-    a: "Yes, we currently serve all areas in Kuala Lumpur and Selangor including Mont Kiara, Bangsar, Cheras, Petaling Jaya, Subang Jaya, Shah Alam, Puchong, and surrounding areas.",
+    q: "Which areas does FLASH CAST serve?",
+    a: "Based on current business data, FLASH CAST mainly serves Kuala Lumpur, Selangor, and the Klang Valley. If your exact area or project type is uncertain, submit the request for confirmation first.",
+    qZh: "FLASH CAST 服务哪些地区？",
+    aZh: "根据当前业务资料，FLASH CAST 主要服务 Kuala Lumpur、Selangor 与 Klang Valley。若具体地区或项目类型不确定，建议先提交需求确认。",
   },
   {
-    q: "Can you handle condo renovation approval?",
-    a: "Yes. We handle all permit applications - condo management office applications, DBKL permits, and local council approvals. This is included in our project management service.",
+    q: "Should the homepage show fixed renovation prices or timelines?",
+    a: "Not unless confirmed by the owner. Cost and schedule depend on area size, materials, demolition, carpentry, wiring, plumbing, waterproofing, approvals, and site condition.",
+    qZh: "首页可以写固定装修价格或工期吗？",
+    aZh: "不建议。价格和时间会受面积、材料、拆除、木作、水电、防水、管理处申请和现场条件影响，正式页面应避免未经确认的固定价格和固定工期。",
   },
   {
-    q: "Do you provide design and carpentry work?",
-    a: "Yes. We have an in-house design team for space planning and 3D visualization, and an in-house carpentry team for custom built-in furniture including wardrobes, kitchen cabinets, and storage solutions.",
-  },
-  {
-    q: "How long does a renovation project usually take?",
-    a: "Most residential renovations take 6-12 weeks. Kitchen projects take 3-5 weeks. Bathroom renovations take 2-3 weeks. Office and shop lot fit-outs take 4-8 weeks. We provide a detailed timeline with milestones.",
-  },
-  {
-    q: "Do you provide warranty or after-sales support?",
-    a: "We provide after-sales follow-up. Warranty scope, duration, and claim method should be confirmed in the quotation or project document.",
+    q: "Can the homepage show rendering concepts or design ideas?",
+    a: "Yes, but they must be clearly labeled as design concepts, rendering concepts, or planning examples, not as completed project proof, customer reviews, or before-after evidence.",
+    qZh: "可以在首页展示效果图或设计方案吗？",
+    aZh: "可以，但必须清楚标注为设计方案、效果图方案、概念设计或规划示例，不能写成真实完工案例、客户评价或 before/after 证明。",
   },
 ];

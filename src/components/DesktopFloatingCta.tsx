@@ -104,7 +104,7 @@ const DesktopFloatingCta = () => {
 
   return (
     <div
-      className="pointer-events-none fixed bottom-6 right-6 hidden w-[330px] lg:block"
+      className="desktop-floating-cta pointer-events-none fixed bottom-6 right-6 hidden w-[330px] lg:block"
       style={{ zIndex: PUBLIC_CHROME_Z.desktopFloating }}
     >
       <div className="pointer-events-auto">
@@ -112,7 +112,7 @@ const DesktopFloatingCta = () => {
           <AdaptiveSurface
             background="hsl(var(--surface-dark) / 0.94)"
             foreground="hsl(var(--surface-dark-foreground))"
-            className="relative mb-3 animate-fade-up rounded-card-lg border border-white/12 p-4 shadow-luxury backdrop-blur-md"
+            className="desktop-floating-cta__prompt relative mb-3 animate-fade-up rounded-card-lg border border-white/12 p-4 shadow-luxury backdrop-blur-md"
           >
             <button
               type="button"
@@ -148,7 +148,7 @@ const DesktopFloatingCta = () => {
           target="_blank"
           rel="noopener noreferrer"
           aria-label={t.whatsappAria}
-          className="ml-auto flex w-fit items-center justify-center rounded-full bg-whatsapp px-5 py-3 text-whatsapp-foreground shadow-luxury transition-all duration-300 hover:scale-[1.02]"
+          className="desktop-floating-cta__button ml-auto flex w-fit items-center justify-center rounded-full bg-whatsapp px-5 py-3 text-whatsapp-foreground shadow-luxury transition-all duration-300 hover:scale-[1.02]"
           onClick={() => trackCtaClick("whatsapp", "floating_desktop_button", { destination: "whatsapp" })}
         >
           <WhatsAppIcon className="h-5 w-5" />

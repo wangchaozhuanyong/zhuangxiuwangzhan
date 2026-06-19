@@ -1,12 +1,12 @@
 export const indexPageText = {
   en: {
-    title: "Renovation Company Kuala Lumpur | Condo, Landed & Commercial | FLASH CAST",
-    description: "FLASH CAST SDN. BHD. provides professional renovation, interior design, custom built-in furniture, and commercial fit-out services in Kuala Lumpur and Selangor.",
-    keywords: "renovation company Kuala Lumpur, interior design KL, custom built-in furniture Malaysia, commercial renovation Selangor, kitchen renovation KL, bathroom renovation, office renovation, condo renovation",
+    title: "Renovation Company Kuala Lumpur | Home & Commercial Renovation | FLASH CAST",
+    description: "FLASH CAST SDN. BHD. provides home and commercial renovation services in Kuala Lumpur, Selangor, and Klang Valley, including kitchens, bathrooms, offices, shops, built-ins, old-house renovation, and approval coordination.",
+    keywords: "renovation company Kuala Lumpur, renovation services Kuala Lumpur, home renovation Malaysia, kitchen renovation Malaysia, bathroom renovation, office renovation, shop renovation, custom built-in furniture",
   },
   zh: {
-    title: "吉隆坡装修公司 | 住宅商业装修与定制家具 | FLASH CAST",
-    description: "FLASH CAST 服务吉隆坡、雪兰莪与巴生谷，提供住宅装修、商业空间装修、厨房翻新、旧屋翻新、定制家具、材料建议与项目管理。",
-    keywords: "吉隆坡装修公司, KL 室内设计, 马来西亚定制家具, 雪兰莪商业装修, 厨房装修, 浴室翻新, 办公室装修, 公寓装修",
+    title: "吉隆坡装修公司 | 住宅与商业空间设计施工 | FLASH CAST",
+    description: "FLASH CAST SDN. BHD. 为吉隆坡、雪兰莪与巴生谷提供住宅装修、厨房、浴室、办公室、店铺、定制家具、旧屋翻新与装修申请协调。提交照片和需求，获取下一步建议。",
+    keywords: "吉隆坡装修公司, 吉隆坡装修服务项目, 住宅装修 吉隆坡, 厨房装修 吉隆坡, 浴室装修 防水, 办公室装修 马来西亚, 店铺装修 马来西亚, 定制家具 吉隆坡",
   },
 } as const;

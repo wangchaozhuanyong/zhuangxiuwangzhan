@@ -3,19 +3,19 @@ export const homeSectionText = {
     en: {
       quote: "Get Free Quote",
       whatsapp: "WhatsApp Us",
-      videoAlt: "FLASH CAST premium renovation project film featuring interiors, materials, construction and handover",
-      fallbackTitle: "Renovation & Interior Fit-Out in Malaysia",
+      videoAlt: "FLASH CAST renovation planning video showing interior spaces, material direction, site coordination and handover",
+      fallbackTitle: "Renovation Company in Kuala Lumpur for Homes and Commercial Spaces",
       fallbackDescription:
-        "FLASH CAST manages measurement, planning, material advice, renovation works, and handover follow-up for residential and commercial projects.",
+        "FLASH CAST supports renovation planning, site measurement, material advice, project coordination, construction management and handover follow-up for residential and commercial spaces in Kuala Lumpur, Selangor and the Klang Valley.",
       scrollAria: "Scroll to next section",
       scrollLabel: "Explore",
     },
     zh: {
       quote: "获取免费报价",
       whatsapp: "WhatsApp 联系",
-      videoAlt: "FLASH CAST 装修项目视频，展示室内空间、材料质感、施工管理与完工交付",
-      fallbackTitle: "马来西亚专业装修与空间改造公司",
-      fallbackDescription: "从现场测量、空间规划、材料建议到施工交付，FLASH CAST 让住宅与商业装修更清楚、更安心。",
+      videoAlt: "FLASH CAST 装修规划视频，展示室内空间、材料方向、现场协调与交付检查",
+      fallbackTitle: "吉隆坡装修公司与设计施工服务",
+      fallbackDescription: "FLASH CAST 为 Kuala Lumpur、Selangor 与 Klang Valley 的住宅和商业空间提供装修规划、现场测量、材料建议、项目协调、施工管理与交付支持。",
       scrollAria: "继续向下浏览",
       scrollLabel: "继续探索",
     },
@@ -202,12 +202,12 @@ export const homeSectionText = {
     en: {
       eyebrow: "Project Consultation",
       title: "Planning to Renovate Your Home or Office?",
-      description: "Tell us about your project, location, budget range, and timeline. We will review the details and follow up during business hours.",
+      description: "Share your location, property or business type, site photos, intended scope, and main issues. We will review the details and suggest the next step during business hours.",
     },
     zh: {
       eyebrow: "项目咨询",
       title: "计划装修您的住宅或办公室？",
-      description: "立即获取免费咨询和报价。我们服务吉隆坡、雪兰莪及周边地区。",
+      description: "提交地点、空间类型、现场照片、预计装修范围和主要问题，我们会先评估资料，再建议下一步咨询或现场测量安排。",
     },
   },
 } as const;

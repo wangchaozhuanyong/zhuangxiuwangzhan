@@ -45,6 +45,21 @@
     --media-overlay-start: 30 14% 5%;
     --media-overlay-end: 30 14% 5%;
 
+    --luxury-ink: #15110d;
+    --luxury-charcoal: #24201b;
+    --luxury-ivory: #f4efe5;
+    --luxury-paper: #fbf7ee;
+    --luxury-warm-sand: #e8ded0;
+    --luxury-taupe: #9d8a73;
+    --luxury-champagne: #c9a66a;
+    --luxury-aged-gold: #b88a43;
+    --luxury-smoke-text: #6d6258;
+    --luxury-hairline: rgba(68, 51, 35, 0.16);
+    --luxury-glass: rgba(255, 255, 255, 0.72);
+    --luxury-shadow: 0 28px 90px rgba(31, 24, 16, 0.18);
+    --luxury-shadow-soft: 0 20px 60px rgba(31, 24, 16, 0.12);
+    --luxury-shadow-dark: 0 26px 70px rgba(0, 0, 0, 0.22);
+
     --font-display: 'Playfair Display', 'Noto Serif SC', 'Noto Sans SC', serif;
     --font-body: 'Inter', 'Noto Sans SC', 'Microsoft YaHei UI', 'PingFang SC', sans-serif;
     --font-cjk-display: 'Noto Serif SC', 'Noto Sans SC', 'Microsoft YaHei UI', serif;

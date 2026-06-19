@@ -79,6 +79,7 @@ jobs:
           supabase functions deploy generate-english-content --project-ref rbsnyexjifounogswrjp --use-api
           supabase functions deploy geocode-address --project-ref rbsnyexjifounogswrjp --use-api
           supabase functions deploy form-attempts-maintenance --project-ref rbsnyexjifounogswrjp --use-api
+          supabase functions deploy content-publish --project-ref rbsnyexjifounogswrjp --no-verify-jwt --use-api
 
       - name: Verify public Edge Functions
         run: |
