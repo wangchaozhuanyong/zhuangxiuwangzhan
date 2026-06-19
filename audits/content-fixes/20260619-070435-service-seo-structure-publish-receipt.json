@@ -1,0 +1,152 @@
+{
+  "created_at": "2026-06-19T14:04:41.097Z",
+  "results": [
+    {
+      "slug": "warehouse",
+      "result": {
+        "ok": true,
+        "dry_run": false,
+        "content_type": "service",
+        "action": "publish",
+        "slug": "warehouse",
+        "status": "published",
+        "existing_id": "1fab3adb-aa8c-4aab-9c30-8931152cdc91",
+        "warnings": [],
+        "next_steps": [
+          "Regenerate SEO manifest/sitemap/llms after approved publish.",
+          "Verify the /zh and /en public service pages read the updated admin content.",
+          "Run publish receipt/QA before deployment or production cache verification."
+        ],
+        "auth_mode": "local-content-publish-service",
+        "saved_id": "1fab3adb-aa8c-4aab-9c30-8931152cdc91",
+        "saved_updated_at": "2026-06-19T14:04:36.28171+00:00"
+      }
+    },
+    {
+      "slug": "builtin",
+      "result": {
+        "ok": true,
+        "dry_run": false,
+        "content_type": "service",
+        "action": "publish",
+        "slug": "builtin",
+        "status": "published",
+        "existing_id": "b401a610-a4dc-4a0b-a7e0-efcac6c81d71",
+        "warnings": [],
+        "next_steps": [
+          "Regenerate SEO manifest/sitemap/llms after approved publish.",
+          "Verify the /zh and /en public service pages read the updated admin content.",
+          "Run publish receipt/QA before deployment or production cache verification."
+        ],
+        "auth_mode": "local-content-publish-service",
+        "saved_id": "b401a610-a4dc-4a0b-a7e0-efcac6c81d71",
+        "saved_updated_at": "2026-06-19T14:04:37.121353+00:00"
+      }
+    },
+    {
+      "slug": "bathroom",
+      "result": {
+        "ok": true,
+        "dry_run": false,
+        "content_type": "service",
+        "action": "publish",
+        "slug": "bathroom",
+        "status": "published",
+        "existing_id": "0f294e6d-2e2c-4f13-a93f-096728ccc6af",
+        "warnings": [],
+        "next_steps": [
+          "Regenerate SEO manifest/sitemap/llms after approved publish.",
+          "Verify the /zh and /en public service pages read the updated admin content.",
+          "Run publish receipt/QA before deployment or production cache verification."
+        ],
+        "auth_mode": "local-content-publish-service",
+        "saved_id": "0f294e6d-2e2c-4f13-a93f-096728ccc6af",
+        "saved_updated_at": "2026-06-19T14:04:37.681294+00:00"
+      }
+    },
+    {
+      "slug": "office-renovation",
+      "result": {
+        "ok": true,
+        "dry_run": false,
+        "content_type": "service",
+        "action": "publish",
+        "slug": "office-renovation",
+        "status": "published",
+        "existing_id": "a87541ac-1cba-4f1a-972d-428dccdbcc0f",
+        "warnings": [],
+        "next_steps": [
+          "Regenerate SEO manifest/sitemap/llms after approved publish.",
+          "Verify the /zh and /en public service pages read the updated admin content.",
+          "Run publish receipt/QA before deployment or production cache verification."
+        ],
+        "auth_mode": "local-content-publish-service",
+        "saved_id": "a87541ac-1cba-4f1a-972d-428dccdbcc0f",
+        "saved_updated_at": "2026-06-19T14:04:38.608595+00:00"
+      }
+    },
+    {
+      "slug": "kitchen",
+      "result": {
+        "ok": true,
+        "dry_run": false,
+        "content_type": "service",
+        "action": "publish",
+        "slug": "kitchen",
+        "status": "published",
+        "existing_id": "ce4156db-9034-42c8-ba29-b35724ea7d6d",
+        "warnings": [],
+        "next_steps": [
+          "Regenerate SEO manifest/sitemap/llms after approved publish.",
+          "Verify the /zh and /en public service pages read the updated admin content.",
+          "Run publish receipt/QA before deployment or production cache verification."
+        ],
+        "auth_mode": "local-content-publish-service",
+        "saved_id": "ce4156db-9034-42c8-ba29-b35724ea7d6d",
+        "saved_updated_at": "2026-06-19T14:04:39.531881+00:00"
+      }
+    },
+    {
+      "slug": "design",
+      "result": {
+        "ok": true,
+        "dry_run": false,
+        "content_type": "service",
+        "action": "publish",
+        "slug": "design",
+        "status": "published",
+        "existing_id": "0af89b93-8938-4a98-ba65-6525fbbe92c1",
+        "warnings": [],
+        "next_steps": [
+          "Regenerate SEO manifest/sitemap/llms after approved publish.",
+          "Verify the /zh and /en public service pages read the updated admin content.",
+          "Run publish receipt/QA before deployment or production cache verification."
+        ],
+        "auth_mode": "local-content-publish-service",
+        "saved_id": "0af89b93-8938-4a98-ba65-6525fbbe92c1",
+        "saved_updated_at": "2026-06-19T14:04:40.125884+00:00"
+      }
+    },
+    {
+      "slug": "shop-renovation",
+      "result": {
+        "ok": true,
+        "dry_run": false,
+        "content_type": "service",
+        "action": "publish",
+        "slug": "shop-renovation",
+        "status": "published",
+        "existing_id": "32f5374f-9919-41ea-80c7-00b5ac917532",
+        "warnings": [],
+        "next_steps": [
+          "Regenerate SEO manifest/sitemap/llms after approved publish.",
+          "Verify the /zh and /en public service pages read the updated admin content.",
+          "Run publish receipt/QA before deployment or production cache verification."
+        ],
+        "auth_mode": "local-content-publish-service",
+        "saved_id": "32f5374f-9919-41ea-80c7-00b5ac917532",
+        "saved_updated_at": "2026-06-19T14:04:40.73542+00:00"
+      }
+    }
+  ]
+}

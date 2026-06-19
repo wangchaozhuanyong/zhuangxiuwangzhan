@@ -1,0 +1,887 @@
+{
+  "created_at": "2026-06-19T14:00:42.467Z",
+  "purpose": "pre-fix backup for service SEO title and structured content publish",
+  "slugs": [
+    "warehouse",
+    "builtin",
+    "bathroom",
+    "office-renovation",
+    "kitchen",
+    "design",
+    "shop-renovation"
+  ],
+  "rows": [
+    {
+      "id": "1fab3adb-aa8c-4aab-9c30-8931152cdc91",
+      "slug": "warehouse",
+      "title_zh": "仓库货架与仓储空间规划服务",
+      "title_en": "Warehouse Shelving and Storage Planning",
+      "excerpt_zh": "仓库货架、仓储收纳系统、packing zone 和工业单位基础空间规划建议。",
+      "excerpt_en": "Warehouse shelving, storage-system planning, packing-zone organization, and practical industrial-unit layout advice.",
+      "content_zh": "<p>仓库项目不只是安装货架。真正影响使用效率的是收货区、存货区、拣货区、包装区、办公室角落、通道宽度、垂直高度利用、手推车或叉车动线、照明和分区标识。FLASH CAST 可先从现场测量和规划讨论开始，把货架方向、仓储逻辑、基础装修配合和执行范围整理清楚。</p><p>如果你需要整理仓储分区、packing zone、工业单位办公室角落或基础照明与隔间方向，可以先提供现场照片、尺寸、层高、货物类型和操作方式，再进入下一步报价沟通。</p>",
+      "content_en": "<p>A warehouse project is not only about adding racks. Daily efficiency depends on receiving flow, storage zoning, picking paths, packing areas, aisle width, vertical space usage, trolley or forklift movement, lighting, and whether a small office or admin corner needs to be integrated. FLASH CAST can help connect site review, storage planning, layout direction, and basic supporting works into a clearer execution scope.</p><p>If you need to organize shelving zones, a packing area, an office corner inside an industrial unit, or basic lighting and partition direction, the next step is to share site photos, dimensions, ceiling height, item type, and operating flow before quotation.</p>",
+      "image_url": "/images/services/warehouse-shelving.webp",
+      "alt_zh": "雪兰莪仓库货架规划概念图",
+      "alt_en": "warehouse shelving planning concept in Selangor",
+      "suitable_for_zh": [
+        "需要整理仓库货架和出入库流程的仓库业主",
+        "工业单位租户，希望把仓储区和小型办公区一起规划",
+        "电商仓、批发仓、物流配货空间，需要更清楚的 packing zone 和储位分区",
+        "需要基础隔间、照明或工作区整理的工业与仓储客户"
+      ],
+      "suitable_for_en": [
+        "Warehouse owners who need better shelving and daily storage flow",
+        "Industrial-unit tenants combining storage space with a small office corner",
+        "E-commerce, wholesale, or dispatch teams that need clearer packing-zone planning",
+        "Clients who need basic partitions, lighting, and practical warehouse organization"
+      ],
+      "common_projects_zh": [
+        "轻型、中型或基础仓库货架布局方向",
+        "仓储分区、收货区、拣货区与 packing zone 规划",
+        "通道宽度、推车或操作动线整理",
+        "工业单位办公室角落、文件区或隔间方向",
+        "灯光、电源、标识和基础整理建议",
+        "仓储规划示例或 rendering concept"
+      ],
+      "common_projects_en": [
+        "Light-duty, medium-duty, or basic warehouse rack layout direction",
+        "Storage zoning for receiving, picking, packing, and dispatch",
+        "Aisle width and movement planning",
+        "Office corner, partition, or admin area direction inside an industrial unit",
+        "Lighting, power point, signage, and basic space organization advice",
+        "Warehouse planning example or rendering concept"
+      ],
+      "process_steps_zh": [
+        {
+          "desc": "确认尺寸、货物类型、层高、通道宽度、出入库动线、照明和办公室角落需求。",
+          "title": "现场检查"
+        },
+        {
+          "desc": "整理货架方向、仓储分区、packing flow、办公角落布局和实际操作动线。",
+          "title": "仓储规划"
+        },
+        {
+          "desc": "确认是否包含货架、照明、隔间、办公室角落、标识或基础施工项目。",
+          "title": "范围与报价"
+        },
+        {
+          "desc": "在现场条件和报价确认后，协调已确认的仓储与配套范围。",
+          "title": "执行协调"
+        }
+      ],
+      "process_steps_en": [
+        {
+          "desc": "Review dimensions, item type, ceiling height, aisle width, loading flow, lighting, and office-corner needs.",
+          "title": "Site Review"
+        },
+        {
+          "desc": "Plan shelving direction, storage zones, packing flow, office-corner layout, and practical movement paths.",
+          "title": "Storage Planning"
+        },
+        {
+          "desc": "Confirm whether racks, lighting, partitions, admin corners, signage, or base works are included.",
+          "title": "Scope & Quotation"
+        },
+        {
+          "desc": "Coordinate the confirmed storage and supporting scope after site conditions and quotation are approved.",
+          "title": "Execution Coordination"
+        }
+      ],
+      "scope_items_zh": [
+        "仓库货架布局",
+        "收货区与出货区规划",
+        "Packing zone 规划",
+        "通道宽度与操作动线",
+        "办公室角落与隔间方向",
+        "照明与电源点位建议",
+        "仓储系统整理",
+        "工业单位空间规划",
+        "标识与基础空间整理",
+        "仓储规划示例"
+      ],
+      "scope_items_en": [
+        "Warehouse Shelving Layout",
+        "Receiving and Dispatch Zones",
+        "Packing Zone Planning",
+        "Aisle Width and Movement Flow",
+        "Office Corner and Partition Direction",
+        "Lighting and Power Point Planning",
+        "Storage-System Organization",
+        "Industrial Unit Layout Advice",
+        "Signage and Basic Space Organization",
+        "Warehouse Planning Example"
+      ],
+      "faqs_zh": [
+        {
+          "a": "可先按现场情况规划货架布局、仓储分区、基础照明、隔间和配套工程范围，最终执行内容以现场确认和报价范围为准。",
+          "q": "你们可以做仓库货架还是只做装修？"
+        },
+        {
+          "a": "建议准备仓库照片、尺寸、层高、货物类型、预计存放方式、是否需要 packing zone、是否需要办公室角落和现有地面/照明情况。",
+          "q": "报价前需要准备什么资料？"
+        },
+        {
+          "a": "不建议。仓库面积、货架类型、货物重量、层高、通道和配套工程都会影响报价和安排。",
+          "q": "可以写固定价格或固定工期吗？"
+        },
+        {
+          "a": "可以，但必须清楚标注为规划示例、概念设计或效果图方案。除非业主提供真实项目资料，否则不能写成真实完工案例。",
+          "q": "可以使用概念设计或规划示意图吗？"
+        }
+      ],
+      "faqs_en": [
+        {
+          "a": "The page can cover rack-layout planning together with basic storage zoning, lighting, partitions, and supporting works, depending on confirmed site scope.",
+          "q": "Do you handle shelving only, or renovation as well?"
+        },
+        {
+          "a": "Photos, dimensions, ceiling height, item type, storage method, aisle needs, packing-zone requirements, and whether an office corner is needed.",
+          "q": "What should a client prepare before asking for a quote?"
+        },
+        {
+          "a": "No. Cost and schedule depend on area, rack type, load pattern, site condition, aisle needs, and supporting works.",
+          "q": "Can the page mention fixed pricing or fixed timelines?"
+        },
+        {
+          "a": "Yes, but they must be clearly labeled as planning examples, design concepts, or rendering concepts. They must not be presented as completed project proof unless approved real materials are provided.",
+          "q": "Can design concepts or planning examples be used on the page?"
+        }
+      ],
+      "seo_title_zh": "仓库货架与仓储空间规划｜雪兰莪与吉隆坡 Warehouse Shelving 服务",
+      "seo_title_en": "Warehouse Shelving and Storage Planning in Selangor and Kuala Lumpur",
+      "seo_description_zh": "FLASH CAST 提供雪兰莪、吉隆坡与 Klang Valley 仓库货架、仓储收纳系统、packing zone 与工业单位空间规划建议。先确认尺寸、货物类型、动线与施工范围，再安排报价沟通。",
+      "seo_description_en": "FLASH CAST provides warehouse shelving, storage planning, packing-zone layout, and industrial-unit space advice in Selangor, Kuala Lumpur, and Klang Valley. Review dimensions, item flow, aisles, and scope before quotation.",
+      "status": "published",
+      "sort_order": 70,
+      "created_at": "2026-05-25T10:58:29.820388+00:00",
+      "updated_at": "2026-06-08T12:12:50.63575+00:00",
+      "version": 2
+    },
+    {
+      "id": "b401a610-a4dc-4a0b-a7e0-efcac6c81d71",
+      "slug": "builtin",
+      "title_zh": "定制家具与 Built-In 收纳柜设计",
+      "title_en": "Custom Built-In Furniture",
+      "excerpt_zh": "FLASH CAST 提供定制衣柜、厨房柜、电视柜、鞋柜、展示柜和收纳系统规划，先确认现场尺寸、材料、五金和安装范围。",
+      "excerpt_en": "Custom wardrobes, kitchen cabinets, TV cabinets, shoe cabinets, display cabinets, and storage systems planned around site measurements, materials, hardware, and installation scope.",
+      "content_zh": "<p>FLASH CAST 可协助吉隆坡、雪兰莪与 Klang Valley 的住宅和商业空间规划定制家具，包括衣柜、厨房柜、电视柜、鞋柜、书桌柜、展示柜和收纳系统。</p><p>制作前建议先确认现场尺寸、使用习惯、收纳需求、材料方向、五金和安装细节，让图纸与报价更贴近实际空间。</p><p>如页面使用视觉规划内容，必须清楚标注为概念设计、效果图方案或规划示例。除非业主提供真实项目照片与授权，否则不要描述成真实完工案例或客户证明。</p>",
+      "content_en": "<p>FLASH CAST helps plan custom built-in furniture for homes and commercial spaces in Kuala Lumpur, Selangor, and Klang Valley. The service can cover wardrobes, kitchen cabinets, TV cabinets, shoe cabinets, study desks, display cabinets, and storage systems.</p><p>Before fabrication, we review site measurements, storage needs, material direction, hardware, and installation details so the quotation and drawings match the actual space.</p><p>For visual planning, this page may use clearly labeled design concepts, rendering concepts, or planning examples. These visuals must not be presented as completed project proof unless the owner provides real project photos and approval.</p>",
+      "image_url": "/images/services/builtin-solutions.webp",
+      "alt_zh": "吉隆坡住宅定制衣柜与收纳柜概念设计",
+      "alt_en": "custom wardrobe and storage cabinet design concept for Kuala Lumpur home",
+      "suitable_for_zh": [
+        "需要定制收纳的屋主",
+        "空间有限的公寓业主",
+        "想更新衣柜或柜体的有地住宅业主",
+        "需要展示柜或收纳柜的办公室、诊所、店铺和 showroom"
+      ],
+      "suitable_for_en": [
+        "Homeowners planning custom storage",
+        "Condo owners with limited space",
+        "Landed house owners upgrading wardrobes or cabinets",
+        "Offices, clinics, shops, and showrooms needing display or storage cabinets"
+      ],
+      "common_projects_zh": [
+        "定制衣柜与卧室收纳",
+        "厨房柜与餐边柜",
+        "电视柜与客厅收纳",
+        "鞋柜与玄关收纳",
+        "商业展示柜与办公室收纳"
+      ],
+      "common_projects_en": [
+        "Custom wardrobes and bedroom storage",
+        "Kitchen cabinets and pantry storage",
+        "TV cabinets and living room storage",
+        "Shoe cabinets and entry storage",
+        "Commercial display cabinets and office storage"
+      ],
+      "process_steps_zh": [
+        {
+          "desc": "了解空间、用途、风格方向和收纳需求。",
+          "title": "初步咨询"
+        },
+        {
+          "desc": "确认尺寸、墙面、插座、梁柱和安装限制。",
+          "title": "现场测量"
+        },
+        {
+          "desc": "讨论柜体结构、收纳分区、材料、五金和视觉方向。",
+          "title": "规划建议"
+        },
+        {
+          "desc": "根据尺寸、材料、五金和安装范围确认报价。",
+          "title": "报价与材料确认"
+        },
+        {
+          "desc": "确认后安排制作、运输、安装和使用细节检查。",
+          "title": "制作与安装"
+        }
+      ],
+      "process_steps_en": [
+        {
+          "desc": "Understand the space, usage, style direction, and storage needs.",
+          "title": "Consultation"
+        },
+        {
+          "desc": "Confirm dimensions, walls, sockets, beams, columns, and installation limits.",
+          "title": "Site Measurement"
+        },
+        {
+          "desc": "Review cabinet structure, storage zones, materials, hardware, and visual direction.",
+          "title": "Planning Proposal"
+        },
+        {
+          "desc": "Confirm scope based on size, materials, hardware, and installation details.",
+          "title": "Quotation & Material Confirmation"
+        },
+        {
+          "desc": "Arrange production, delivery, installation, and final usage checks after confirmation.",
+          "title": "Fabrication & Installation"
+        }
+      ],
+      "scope_items_zh": [
+        "定制衣柜",
+        "厨房柜",
+        "电视柜",
+        "鞋柜",
+        "收纳柜",
+        "展示柜",
+        "书桌柜",
+        "办公室收纳系统",
+        "商业展示收纳",
+        "餐边柜",
+        "客厅收纳",
+        "卧室收纳"
+      ],
+      "scope_items_en": [
+        "Custom Wardrobes",
+        "Kitchen Cabinets",
+        "TV Cabinets",
+        "Shoe Cabinets",
+        "Storage Cabinets",
+        "Display Cabinets",
+        "Study Desks",
+        "Office Storage Systems",
+        "Commercial Display Storage",
+        "Pantry Cabinets",
+        "Living Room Storage",
+        "Bedroom Storage"
+      ],
+      "faqs_zh": [
+        {
+          "a": "可以协助规划衣柜、厨房柜、电视柜、鞋柜、书桌柜、展示柜和收纳系统。最终范围应以现场测量、材料选择、图纸和报价确认为准。",
+          "q": "FLASH CAST 可以做哪些定制家具？"
+        },
+        {
+          "a": "建议先测量。定制柜体会受到墙面尺寸、梁柱、插座、地面水平、门窗位置和使用习惯影响，测量后更适合确认图纸、材料和报价。",
+          "q": "定制家具需要先现场测量吗？"
+        },
+        {
+          "a": "不建议在没有业主确认的情况下写具体数字报价。可说明影响价格的因素，包括尺寸、板材、门板、五金、抽屉、内部配件、安装难度和收口细节。",
+          "q": "页面可以写具体数字报价吗？"
+        },
+        {
+          "a": "可以。厨房柜通常需要结合干湿厨房布局、台面、电器点位、插座、给排水和收纳动线一起考虑。具体范围以现场测量和报价确认为准。",
+          "q": "可以配合厨房装修一起规划厨房柜吗？"
+        },
+        {
+          "a": "可以，但必须清楚标注为概念设计、效果图方案或规划示例。除非业主提供真实项目照片与授权，否则不能写成真实完工案例或客户证明。",
+          "q": "效果图或概念图可以放在页面吗？"
+        }
+      ],
+      "faqs_en": [
+        {
+          "a": "FLASH CAST can help plan wardrobes, kitchen cabinets, TV cabinets, shoe cabinets, study desks, display cabinets, and storage systems. Final scope should be confirmed after measurement, material selection, drawings, and quotation.",
+          "q": "What types of custom built-in furniture can FLASH CAST help with?"
+        },
+        {
+          "a": "Yes. Built-in cabinets depend on wall dimensions, beams, sockets, floor level, doors, windows, and usage habits, so measurement helps confirm drawings, materials, and quotation.",
+          "q": "Is site measurement needed before making built-in cabinets?"
+        },
+        {
+          "a": "Not unless the owner confirms them. The page can explain price factors such as cabinet size, board material, door finish, hardware, drawers, internal accessories, installation complexity, and finishing details.",
+          "q": "Should this page publish specific numeric price ranges?"
+        },
+        {
+          "a": "Yes. Kitchen cabinets should be considered together with dry and wet kitchen layout, countertop, appliance points, sockets, plumbing, and storage workflow. Final scope depends on measurement and quotation.",
+          "q": "Can kitchen cabinets be planned together with kitchen renovation?"
+        },
+        {
+          "a": "Yes, but they must be clearly labeled as design concepts, rendering concepts, or planning examples. Unless the owner provides real project photos and approval, they must not be presented as completed project proof.",
+          "q": "Can design concepts or rendering images be used on the page?"
+        }
+      ],
+      "seo_title_zh": "定制家具与收纳柜设计｜吉隆坡与雪兰莪 Built-In Cabinet 服务",
+      "seo_title_en": "Custom Built-In Furniture Malaysia | Wardrobe, Cabinet & Storage Planning",
+      "seo_description_zh": "FLASH CAST 提供吉隆坡、雪兰莪和 Klang Valley 定制家具规划，包括衣柜、厨房柜、电视柜、鞋柜、展示柜和收纳系统。",
+      "seo_description_en": "FLASH CAST provides custom built-in furniture planning in Kuala Lumpur, Selangor, and Klang Valley, including wardrobes, kitchen cabinets, TV cabinets, shoe cabinets, display cabinets, and storage systems.",
+      "status": "published",
+      "sort_order": 60,
+      "created_at": "2026-05-25T10:58:29.820388+00:00",
+      "updated_at": "2026-06-08T07:17:51.658754+00:00",
+      "version": 1
+    },
+    {
+      "id": "0f294e6d-2e2c-4f13-a93f-096728ccc6af",
+      "slug": "bathroom",
+      "title_zh": "浴室装修与防水工程",
+      "title_en": "Bathroom Renovation and Waterproofing",
+      "excerpt_zh": "FLASH CAST 提供吉隆坡、雪兰莪与 Klang Valley 浴室装修和防水工程规划，包括漏水检查、瓷砖、排水、洁具、shower screen、浴室柜、通风和报价咨询。",
+      "excerpt_en": "Bathroom renovation and waterproofing planning for homes, condos, old-house upgrades, rental units, and resale units, including leakage review, tile works, drainage, sanitary fittings, shower screen planning, ventilation, storage, and quotation scope.",
+      "content_zh": "浴室装修不能只看瓷砖和洁具外观。真正影响后期使用的是防水范围、排水坡度、地漏位置、墙地砖铺贴、淋浴区隔断、洗手盆和镜柜收纳、马桶位置、通风、照明和维护便利性。FLASH CAST 可先从现场检查和需求确认开始，把防水、瓷砖、给排水、洁具、浴室柜和施工范围衔接起来。",
+      "content_en": "A bathroom renovation is not only about choosing tiles and sanitary fittings. Long-term usability depends on waterproofing scope, drainage slope, floor trap position, wall and floor tile works, shower screen planning, vanity storage, toilet position, ventilation, lighting, and maintenance access. FLASH CAST can help connect site inspection, waterproofing direction, tile and fitting selection, plumbing review, and renovation coordination after the scope is confirmed.",
+      "image_url": "/images/services/bathroom-renovation.webp",
+      "alt_zh": "吉隆坡浴室装修与防水工程效果图方案，展示淋浴区、瓷砖和浴室柜规划",
+      "alt_en": "Bathroom renovation and waterproofing design concept in Kuala Lumpur showing shower area, tiles and vanity planning",
+      "suitable_for_zh": [
+        "浴室漏水、墙地面发霉或防水需要重新检查的业主",
+        "旧瓷砖、旧洁具、旧浴室柜需要翻新的屋主",
+        "公寓业主需要在管理处规定下安排浴室装修",
+        "旧屋翻新客户需要浴室、厨房、水电和防水一起协调",
+        "出租单位或转售单位需要基础浴室升级的业主"
+      ],
+      "suitable_for_en": [
+        "Homeowners with bathroom leakage, mold, or waterproofing concerns",
+        "Owners replacing old tiles, old sanitary fittings, or outdated bathroom cabinets",
+        "Condo owners who need bathroom renovation under management rules",
+        "Old-house renovation clients coordinating bathroom, kitchen, plumbing, wiring, and waterproofing",
+        "Landlords or sellers preparing a unit with a practical bathroom upgrade"
+      ],
+      "common_projects_zh": [
+        "浴室防水范围与现场检查",
+        "墙砖、地砖、niche、backsplash 和收口方向",
+        "Shower screen、淋浴区、干湿分区和排水坡度",
+        "马桶、洗手盆、龙头、花洒、bidet 和洁具点位",
+        "洗手盆柜、镜柜、收纳和台面方向",
+        "排水、给水、电热水器、插座和灯光规划",
+        "浴室效果图方案或 bathroom design concept"
+      ],
+      "common_projects_en": [
+        "Bathroom waterproofing scope and site inspection",
+        "Wall tiles, floor tiles, niche, backsplash, and edge finishing direction",
+        "Shower screen, shower area, wet/dry separation, and drainage slope",
+        "Toilet, basin, tap, mixer, bidet, and sanitary fitting positions",
+        "Vanity cabinet, mirror cabinet, storage, and countertop direction",
+        "Drainage, water supply, water heater, socket, and lighting planning",
+        "Bathroom rendering concept or bathroom design concept"
+      ],
+      "process_steps_zh": [
+        {
+          "desc": "检查漏水位置、地面坡度、地漏、排水管、墙面空鼓、现有洁具、热水器、电源、通风和管理处要求。",
+          "title": "现场检查"
+        },
+        {
+          "desc": "确认湿区使用方式、墙地面范围、淋浴区、管口、墙角、门槛和排水条件。",
+          "title": "防水范围"
+        },
+        {
+          "desc": "规划墙砖、地砖、洁具、shower screen、浴室柜、镜柜、通风和维护便利性。",
+          "title": "瓷砖与洁具方向"
+        },
+        {
+          "desc": "确认是否包含拆除、防水、排水、给水、瓷砖、洁具、浴室柜、shower screen 或效果图方案。",
+          "title": "范围与报价"
+        },
+        {
+          "desc": "在现场条件、材料和报价确认后，协调已确认的浴室装修范围。",
+          "title": "装修协调"
+        }
+      ],
+      "process_steps_en": [
+        {
+          "desc": "Check leakage signs, floor slope, floor trap, drainage pipes, hollow tiles, existing fittings, water heater, electrical points, ventilation, and management requirements.",
+          "title": "Site Inspection"
+        },
+        {
+          "desc": "Review wet-area usage, wall and floor scope, shower area, pipe penetrations, wall corners, thresholds, and drainage condition.",
+          "title": "Waterproofing Scope"
+        },
+        {
+          "desc": "Plan wall tiles, floor tiles, sanitary fittings, shower screen, vanity cabinet, mirror cabinet, ventilation, and maintenance access.",
+          "title": "Tile & Fitting Direction"
+        },
+        {
+          "desc": "Confirm whether hacking, waterproofing, drainage, plumbing, tile works, fittings, cabinets, shower screen, or rendering concepts are included.",
+          "title": "Scope & Quotation"
+        },
+        {
+          "desc": "Coordinate the confirmed bathroom scope after site conditions, materials, and quotation are approved.",
+          "title": "Renovation Coordination"
+        }
+      ],
+      "scope_items_zh": [
+        "浴室防水范围",
+        "墙砖与地砖",
+        "排水坡度和地漏检查",
+        "Shower screen 规划",
+        "马桶、洗手盆、龙头和花洒点位",
+        "浴室柜与镜柜",
+        "给排水位置",
+        "热水器和电源点位",
+        "灯光与通风",
+        "防潮材料方向",
+        "浴室效果图方案"
+      ],
+      "scope_items_en": [
+        "Bathroom Waterproofing Scope",
+        "Wall & Floor Tiling",
+        "Drainage Slope and Floor Trap Review",
+        "Shower Screen Planning",
+        "Toilet, Basin, Tap and Mixer Positions",
+        "Vanity Cabinet and Mirror Cabinet",
+        "Plumbing and Water Supply",
+        "Water Heater and Electrical Points",
+        "Lighting and Ventilation",
+        "Moisture-Resistant Material Direction",
+        "Bathroom Rendering Concept"
+      ],
+      "faqs_zh": [
+        {
+          "a": "不一定。是否需要全部拆除，取决于漏水情况、瓷砖状况、排水位置、防水范围和洁具更换需求。建议先现场检查，再决定是局部更新还是完整翻新。",
+          "q": "浴室装修一定要全部拆除重做吗？"
+        },
+        {
+          "a": "浴室漏水可能来自地面、墙角、管口、地漏、门槛或楼上/隔壁位置。先确认范围，才能判断是否需要重做防水、调整排水或更换瓷砖。",
+          "q": "浴室防水为什么要先检查范围？"
+        },
+        {
+          "a": "费用会受浴室尺寸、防水范围、瓷砖选择、洁具品牌、shower screen、浴室柜、排水调整、拆除和恢复范围影响。具体数字价格需要现场评估和范围确认后才能公开。",
+          "q": "浴室装修费用受什么影响？"
+        },
+        {
+          "a": "可以。页面可使用清楚标注的 bathroom design concept、rendering concept 或效果图方案作为规划参考，但不能把概念图写成真实完工案例或客户证明。",
+          "q": "可以先做浴室效果图或设计方案吗？"
+        },
+        {
+          "a": "部分公寓或高楼项目可能需要管理处批准、施工时间限制或装修文件。具体要求应按物业管理处和项目范围确认，页面不应承诺一定批准。",
+          "q": "公寓浴室装修需要管理处批准吗？"
+        }
+      ],
+      "faqs_en": [
+        {
+          "a": "Not always. Whether full hacking is needed depends on leakage condition, tile condition, drainage position, waterproofing scope, and fittings to be replaced. A site inspection should come before deciding between partial upgrade and full renovation.",
+          "q": "Does every bathroom renovation require full hacking?"
+        },
+        {
+          "a": "Bathroom leakage can come from floor areas, wall corners, pipe penetrations, floor traps, thresholds, or even adjacent areas. Checking the scope first helps decide whether waterproofing, drainage adjustment, or tile replacement is needed.",
+          "q": "Why should waterproofing scope be checked first?"
+        },
+        {
+          "a": "Cost depends on bathroom size, waterproofing scope, tile selection, sanitary fittings, shower screen, vanity cabinet, drainage changes, demolition, and reinstatement scope. Specific numeric pricing should only be published after site assessment and scope confirmation.",
+          "q": "What affects bathroom renovation cost?"
+        },
+        {
+          "a": "Yes. Clearly labeled bathroom design concepts, rendering concepts, or planning examples can be used as references. They must not be presented as completed project proof or customer testimonials unless real approved materials are provided.",
+          "q": "Can I start with a bathroom rendering or design concept?"
+        },
+        {
+          "a": "Some condo or high-rise projects may require management approval, work-hour limits, or renovation documents. Requirements should be confirmed with the property management and project scope; the page should not promise guaranteed approval.",
+          "q": "Does condo bathroom renovation require management approval?"
+        }
+      ],
+      "seo_title_zh": "浴室装修与防水工程｜吉隆坡、雪兰莪 Bathroom Renovation",
+      "seo_title_en": "Bathroom Renovation Malaysia | Waterproofing, Tile Works & Shower Planning",
+      "seo_description_zh": "FLASH CAST 提供吉隆坡、雪兰莪与 Klang Valley 浴室装修和防水工程规划，包括防水、瓷砖、排水、洁具、shower screen、浴室柜和报价咨询。",
+      "seo_description_en": "FLASH CAST provides bathroom renovation in Kuala Lumpur, Selangor, and Klang Valley, covering waterproofing, tile works, drainage, sanitary fittings, shower screen planning, vanity storage, and quotation advice.",
+      "status": "published",
+      "sort_order": 30,
+      "created_at": "2026-05-25T10:58:29.820388+00:00",
+      "updated_at": "2026-06-08T08:55:21.144068+00:00",
+      "version": 1
+    },
+    {
+      "id": "a87541ac-1cba-4f1a-972d-428dccdbcc0f",
+      "slug": "office-renovation",
+      "title_zh": "办公室装修 马来西亚",
+      "title_en": "Office Renovation Malaysia",
+      "excerpt_zh": "FLASH CAST 为 Kuala Lumpur、Selangor 与 Klang Valley 的办公室装修和商业 fit-out 项目提供空间规划、隔间、前台、会议室、工位、照明与机电协调支持。",
+      "excerpt_en": "FLASH CAST supports office renovation and commercial fit-out projects across Kuala Lumpur, Selangor, and the Klang Valley, covering layout planning, partitions, reception areas, meeting rooms, workstations, lighting, and M&E coordination.",
+      "content_zh": "<section class=\"seo-rich-block seo-rich-hero\"><h1>马来西亚办公室装修与商业空间施工规划</h1><p>FLASH CAST 为 Kuala Lumpur、Selangor 与 Klang Valley 的办公室装修与商业 fit-out 项目提供空间规划、隔间、前台、会议室、工位、照明、机电协调和施工安排支持。页面重点帮助企业主先确认空间用途、团队人数、搬入时间、管理处限制和报价影响因素。</p><figure class=\"seo-rich-editor-media\"><img src=\"https://flashcast.com.my/images/_responsive/materials/w900/category-whole-house-custom.webp\" alt=\"办公室前台与等候区规划效果图方案\" loading=\"lazy\" /><figcaption>此图为办公室装修规划/效果图方案，不作为真实完工案例或客户照片。 <strong>设计方案 / 效果图方案 / rendering concept</strong></figcaption><p class=\"seo-rich-claim-boundary\">Rendering concept only; not a real project photo or customer case proof.</p></figure></section><section class=\"seo-rich-block\"><h2>哪些办公室场景适合翻新</h2><p>适合办公室搬迁前整修、旧办公室翻新、诊所/工作室/中小企业空间重整、门店后场办公室升级，以及需要改善前台、会议室、隔间、工位、储物和照明体验的商业空间。</p></section><section class=\"seo-rich-block\"><h2>办公室翻新前要准备什么</h2><p>建议先准备平面图或现场照片、面积、员工人数、主要使用需求、希望保留的家具设备、预计开工或搬入时间，以及大楼或管理处对施工时段和进出材料的限制。</p></section><section class=\"seo-rich-block\"><h2>报价与施工影响因素</h2><p>办公室装修报价通常受面积、隔间数量、M&E 协调、天花与地面更新、前台与木作、玻璃工程、品牌墙与灯光、夜间施工限制等因素影响。本页面不写固定价格、固定工期或未经确认的保修承诺。</p><figure class=\"seo-rich-editor-media\"><img src=\"https://flashcast.com.my/images/_responsive/materials/w900/category-furniture.webp\" alt=\"开放式办公区与会议室隔间布局概念设计\" loading=\"lazy\" /><figcaption>此图为开放办公区与会议室分区概念设计，用于说明规划方向，不代表真实完工案例。 <strong>概念设计 / 规划示例</strong></figcaption><p class=\"seo-rich-claim-boundary\">Design concept only; not a completed project proof.</p></figure></section><section class=\"seo-rich-block\"><h2>规划示例</h2><p>页面可展示前台与等候区布局、开放式办公区与会议室分区、小型办公室收纳与动线规划、品牌墙和照明方向。所有视觉内容都必须标注为设计方案、效果图方案或 planning example。</p><figure class=\"seo-rich-editor-media\"><img src=\"https://flashcast.com.my/images/_responsive/materials/w900/fluted-panel-charcoal.webp\" alt=\"办公室品牌墙与材料 mood board 参考方案\" loading=\"lazy\" /><figcaption>材料与品牌墙 mood board，仅作为参考方案，不作为真实材料承诺或完工证明。 <strong>参考方案 / material planning example</strong></figcaption></figure></section><section class=\"seo-rich-block\"><h2>相关服务和案例入口</h2><p>如项目涉及店铺、诊所或零售空间，可继续查看 <a href=\"/zh/services/shop-renovation\">店铺与商业空间装修</a>；如需要管理处或图纸支持，可查看 <a href=\"/zh/services/approval\">装修申请与图纸协调</a>；公开项目锚点可参考 <a href=\"/zh/projects/kota-damansara-clinic-fit-out\">Kota Damansara 诊所商业空间案例</a>，但不要把它扩写成未经确认的办公室案例。</p></section><section class=\"seo-rich-block seo-rich-faq\"><h2>常见问题</h2><details><summary>办公室装修前需要准备哪些资料？</summary><p>建议准备平面图或现场照片、面积、员工人数、主要使用需求、现有设备保留清单，以及预计搬入或开业时间。</p></details><details><summary>哪些因素最影响办公室装修报价？</summary><p>面积、隔间数量、机电协调、前台木作、玻璃工程、照明更新、品牌墙细节和施工时段限制都会影响报价。</p></details><details><summary>办公室翻新会不会影响正常办公？</summary><p>是否影响日常办公取决于施工范围、分阶段安排、夜间施工限制和现场管理条件。建议先说明使用时段、搬迁计划和可施工窗口。</p></details><details><summary>可以先看空间规划方向或效果图方案吗？</summary><p>可以。页面可展示概念设计、效果图方案和布局规划示例，但必须明确标注，不能写成真实完工证明。</p></details></section><section class=\"seo-rich-block seo-rich-cta\"><h2>获取办公室装修规划建议</h2><p>提交办公室面积、用途、地点、预计开工或搬入时间，或致电 +601128853888 / 电邮 flashcast001@gmail.com 获取初步规划建议。</p><a href=\"/zh/quote\">获取办公室装修报价</a></section>",
+      "content_en": "<section class=\"seo-rich-block seo-rich-hero\"><h1>Office Renovation Malaysia for Commercial Fit-Out and Space Planning</h1><p>FLASH CAST supports office renovation projects across Kuala Lumpur, Selangor, and the Klang Valley, covering layout planning, partitions, reception areas, meeting rooms, workstations, lighting coordination, M&E planning, and practical fit-out sequencing. The page helps business owners clarify space use, team size, move-in timing, building restrictions, and quotation factors before starting.</p><figure class=\"seo-rich-editor-media\"><img src=\"https://flashcast.com.my/images/_responsive/materials/w900/category-whole-house-custom.webp\" alt=\"office reception and waiting area rendering concept\" loading=\"lazy\" /><figcaption>This image is an office renovation planning/rendering concept, not a completed real project or customer photo. <strong>design concept / rendering concept</strong></figcaption><p class=\"seo-rich-claim-boundary\">Rendering concept only; not a real project photo or customer case proof.</p></figure></section><section class=\"seo-rich-block\"><h2>Which Office Scenarios Need Renovation</h2><p>This service is suitable for office relocation refreshes, old office upgrades, clinic or studio workspace planning, SME office fit-outs, retail back-office planning, and commercial spaces that need better reception, meeting rooms, partitions, workstations, storage, lighting, or circulation.</p></section><section class=\"seo-rich-block\"><h2>What to Prepare Before an Office Fit-Out</h2><p>Prepare a floor plan or site photos, approximate area, team size, main usage needs, furniture or equipment to keep, target move-in or opening date, and any building-management restrictions on working hours, material access, or noisy works.</p></section><section class=\"seo-rich-block\"><h2>Budget and Schedule Factors</h2><p>Office renovation quotation is usually affected by area size, partition quantity, M&E coordination, ceiling and floor updates, reception carpentry, glass works, brand-wall details, lighting, and after-hours work limits. This page should not state fixed prices, fixed timelines, or unconfirmed warranty promises.</p><figure class=\"seo-rich-editor-media\"><img src=\"https://flashcast.com.my/images/_responsive/materials/w900/category-furniture.webp\" alt=\"open office and meeting-room zoning concept\" loading=\"lazy\" /><figcaption>This image is an open office and meeting-room zoning concept for planning direction, not completed project proof. <strong>design concept / planning example</strong></figcaption><p class=\"seo-rich-claim-boundary\">Design concept only; not a completed project proof.</p></figure></section><section class=\"seo-rich-block\"><h2>Planning Examples</h2><p>The page can show reception and waiting-zone layout, open workspace plus meeting-room zoning, compact office storage and circulation, brand-wall direction, and lighting coordination. Every visual must stay labeled as a design concept, rendering concept, or planning example.</p><figure class=\"seo-rich-editor-media\"><img src=\"https://flashcast.com.my/images/_responsive/materials/w900/fluted-panel-charcoal.webp\" alt=\"office brand wall and material mood board planning example\" loading=\"lazy\" /><figcaption>This material and brand-wall mood board is a planning example only, not a fixed material promise or completed project proof. <strong>material planning example</strong></figcaption></figure></section><section class=\"seo-rich-block\"><h2>Related Services and Proof Paths</h2><p>If the project includes retail, clinic, or showroom areas, review <a href=\"/en/services/shop-renovation\">shop renovation and retail fit-out</a>. If management-office or drawing support is needed, review <a href=\"/en/services/approval\">approval and drawing support</a>. A public commercial fit-out anchor is <a href=\"/en/projects/kota-damansara-clinic-fit-out\">Kota Damansara clinic fit-out project</a>, but it should not be expanded into unconfirmed office case details.</p></section><section class=\"seo-rich-block seo-rich-faq\"><h2>FAQ</h2><details><summary>What should I prepare before an office renovation?</summary><p>Prepare a floor plan or site photos, approximate area, team size, main usage needs, items to keep, and your target move-in or opening date.</p></details><details><summary>What affects office renovation quotation the most?</summary><p>Area size, partition count, M&E coordination, reception carpentry, glass works, lighting changes, brand-wall details, and work-hour restrictions all affect quotation.</p></details><details><summary>Will an office fit-out disrupt daily operations?</summary><p>It depends on the scope, phased scheduling, after-hours work limits, and site conditions. Share operating hours, relocation timing, and allowed work windows early.</p></details><details><summary>Can I review a planning direction or rendering concept first?</summary><p>Yes. Design concepts, rendering concepts, and layout examples can be shown, but they must be clearly labeled and not presented as completed project proof.</p></details></section><section class=\"seo-rich-block seo-rich-cta\"><h2>Request Office Renovation Planning Advice</h2><p>Share your office size, business use, location, and target renovation timing, or contact +601128853888 / flashcast001@gmail.com for an initial planning review.</p><a href=\"/en/quote\">Request an Office Renovation Quotation</a></section>",
+      "image_url": "https://flashcast.com.my/images/_responsive/materials/w900/category-whole-house-custom.webp",
+      "alt_zh": "办公室前台与等候区规划效果图方案",
+      "alt_en": "office reception and waiting area rendering concept",
+      "suitable_for_zh": [],
+      "suitable_for_en": [],
+      "common_projects_zh": [],
+      "common_projects_en": [],
+      "process_steps_zh": [],
+      "process_steps_en": [],
+      "scope_items_zh": [],
+      "scope_items_en": [],
+      "faqs_zh": [],
+      "faqs_en": [],
+      "seo_title_zh": "办公室装修 马来西亚 | 商业空间规划与施工 | FLASH CAST",
+      "seo_title_en": "Office Renovation Malaysia | Commercial Fit-Out & Space Planning | FLASH CAST",
+      "seo_description_zh": "了解 FLASH CAST 在吉隆坡、雪兰莪与 Klang Valley 的办公室装修、商业空间规划、隔间、前台、会议室与机电协调服务。提交面积、用途和时间要求，获取下一步建议。",
+      "seo_description_en": "Plan an office renovation in Kuala Lumpur or Selangor with FLASH CAST. Review layout planning, partitions, reception areas, M&E coordination, schedule factors, and quotation steps before starting.",
+      "status": "published",
+      "sort_order": 40,
+      "created_at": "2026-05-25T10:58:29.820388+00:00",
+      "updated_at": "2026-06-17T06:39:20.999639+00:00",
+      "version": 2
+    },
+    {
+      "id": "ce4156db-9034-42c8-ba29-b35724ea7d6d",
+      "slug": "kitchen",
+      "title_zh": "厨房装修与橱柜定制",
+      "title_en": "Kitchen Renovation and Custom Cabinets",
+      "excerpt_zh": "FLASH CAST 提供吉隆坡、雪兰莪与 Klang Valley 厨房装修和厨房橱柜定制规划，包括干湿厨房布局、台面、电器点位、给排水、防水、收纳和报价咨询。",
+      "excerpt_en": "Kitchen renovation and custom cabinet planning for homes, condos, landed houses, and rental units, including wet and dry kitchen layout, countertops, appliance points, plumbing, waterproofing, storage, and quotation scope.",
+      "content_zh": "厨房装修不只是更换橱柜。真正影响后期使用体验的是动线、储物、台面高度、插座位置、照明、抽油烟机排风、水槽位置、防水细节、地砖墙砖和电器整合。FLASH CAST 可先从现场测量和需求确认开始，把 layout 规划、材料建议、橱柜方向、台面选择和施工协调连接起来。",
+      "content_en": "A kitchen renovation is not only about replacing cabinets. The real long-term value comes from workflow, storage, countertop planning, socket placement, lighting, ventilation, plumbing, waterproofing, wall and floor finishes, and appliance integration. FLASH CAST can help connect site measurement, layout planning, cabinet design direction, material advice, and renovation coordination after the scope is confirmed.",
+      "image_url": "https://flashcast.com.my/images/services/kitchen-renovation.jpg",
+      "alt_zh": "吉隆坡厨房装修与橱柜定制效果图方案，展示干湿厨房、台面和收纳规划",
+      "alt_en": "Kitchen renovation and custom cabinet design concept in Kuala Lumpur showing wet and dry kitchen layout, countertop and storage planning",
+      "suitable_for_zh": [
+        "旧厨房橱柜老化、台面损坏或收纳不足的业主",
+        "想把公寓厨房升级成更实用布局的屋主",
+        "有地住宅需要规划干湿厨房、岛台或高柜系统的客户",
+        "准备旧屋翻新，同时需要厨房、浴室、水电和柜体一起协调的客户",
+        "出租单位或转售单位需要厨房基础升级的业主"
+      ],
+      "suitable_for_en": [
+        "Homeowners with old cabinets, damaged countertops, or poor kitchen storage",
+        "Condo owners who want a more practical kitchen layout",
+        "Landed house owners planning wet and dry kitchen zones, island counters, or tall cabinets",
+        "Old-house renovation clients who need kitchen, bathroom, wiring, plumbing, and cabinet coordination",
+        "Landlords or sellers preparing a unit with a practical kitchen upgrade"
+      ],
+      "common_projects_zh": [
+        "干厨房与湿厨房布局",
+        "上下柜、高柜、吊柜和收纳分区",
+        "Quartz、sintered stone 或其他台面方向",
+        "水槽、龙头、排水和给水位置",
+        "Hob、hood、oven、microwave、dishwasher 等电器点位",
+        "Backsplash、墙砖、地砖和易清洁材料建议",
+        "厨房效果图方案或 cabinet design concept"
+      ],
+      "common_projects_en": [
+        "Wet kitchen and dry kitchen layout planning",
+        "Upper cabinets, lower cabinets, tall units, and storage zones",
+        "Quartz, sintered stone, or other countertop direction",
+        "Sink, tap, water supply, and drainage positions",
+        "Hob, hood, oven, microwave, dishwasher, and appliance points",
+        "Backsplash, wall tiles, floor tiles, and easy-clean material direction",
+        "Kitchen rendering concept or cabinet design concept"
+      ],
+      "process_steps_zh": [
+        {
+          "desc": "确认厨房尺寸、墙体限制、排水位置、电箱和插座、水槽位置、排风路径和现有屋况。",
+          "title": "现场测量"
+        },
+        {
+          "desc": "规划干湿厨房、使用动线、橱柜位置、台面方向、收纳和电器摆放。",
+          "title": "Layout 规划"
+        },
+        {
+          "desc": "讨论柜门饰面、柜体板材、五金、抽屉、台面、backsplash、墙砖和地砖。",
+          "title": "材料方向"
+        },
+        {
+          "desc": "确认是否包含给排水、电工、防水、拆除、墙地砖、橱柜、电器整合或效果图方案。",
+          "title": "范围与报价"
+        },
+        {
+          "desc": "在现场条件、材料和报价确认后，协调已确认的厨房装修范围。",
+          "title": "装修协调"
+        }
+      ],
+      "process_steps_en": [
+        {
+          "desc": "Confirm kitchen dimensions, wall limits, drainage, electrical points, sink position, ventilation path, and existing condition.",
+          "title": "Site Measurement"
+        },
+        {
+          "desc": "Plan wet and dry kitchen zones, workflow, cabinet positions, countertop direction, storage, and appliance placement.",
+          "title": "Layout Planning"
+        },
+        {
+          "desc": "Review cabinet finish, cabinet board, hardware, drawers, countertop, backsplash, wall tiles, and floor tiles.",
+          "title": "Material Direction"
+        },
+        {
+          "desc": "Confirm whether plumbing, electrical, waterproofing, demolition, tiles, cabinets, appliances, or rendering concepts are included.",
+          "title": "Scope & Quotation"
+        },
+        {
+          "desc": "Coordinate the confirmed kitchen scope after site conditions, materials, and quotation are approved.",
+          "title": "Renovation Coordination"
+        }
+      ],
+      "scope_items_zh": [
+        "湿厨房 layout",
+        "干厨房 layout",
+        "上柜与下柜规划",
+        "高柜与收纳分区",
+        "Quartz / sintered stone 台面方向",
+        "厨房岛台规划",
+        "墙地砖与 backsplash",
+        "给排水、水槽和排水位置",
+        "电工、灯光和插座点位",
+        "Hob、hood、oven 与电器整合",
+        "抽油烟与排风方向",
+        "厨房效果图方案"
+      ],
+      "scope_items_en": [
+        "Wet Kitchen Layout",
+        "Dry Kitchen Layout",
+        "Upper & Lower Kitchen Cabinets",
+        "Tall Cabinet and Storage Zones",
+        "Quartz / Sintered Stone Countertop Direction",
+        "Kitchen Island Planning",
+        "Tiling & Backsplash",
+        "Plumbing, Sink and Drainage",
+        "Electrical, Lighting and Socket Points",
+        "Hob, Hood, Oven and Appliance Integration",
+        "Exhaust & Ventilation",
+        "Kitchen Rendering Concept"
+      ],
+      "faqs_zh": [
+        {
+          "a": "不一定。可以根据现场情况决定保留部分布局、只更换门板或台面，或重新规划上下柜、高柜、岛台和收纳系统。最终方案应以现场测量和预算优先级为准。",
+          "q": "厨房装修一定要更换全部橱柜吗？"
+        },
+        {
+          "a": "建议准备厨房照片、尺寸、想保留的电器、想更换的电器、目前使用痛点、是否需要干湿厨房、是否要移动水槽或插座，以及喜欢的材料或效果图方向。",
+          "q": "厨房装修前需要准备什么资料？"
+        },
+        {
+          "a": "费用会受橱柜尺寸、板材、门板、五金、抽屉、台面、墙地砖、水电调整、防水范围、电器整合和安装复杂度影响。具体数字价格需要现场评估和范围确认后才能公开。",
+          "q": "厨房装修费用受什么影响？"
+        },
+        {
+          "a": "可以。页面可使用清楚标注的 kitchen design concept、rendering concept 或效果图方案作为规划参考，但不能把概念图写成真实完工案例或客户证明。",
+          "q": "可以先做厨房效果图或设计方案吗？"
+        },
+        {
+          "a": "可能会。若更改水槽、洗碗机、插座、hob、hood、oven 或地墙砖范围，就需要检查给排水、电源、排风和防水条件。具体范围以现场检查为准。",
+          "q": "厨房装修会涉及水电和防水吗？"
+        }
+      ],
+      "faqs_en": [
+        {
+          "a": "Not always. Depending on site condition, the project can keep part of the existing layout, replace doors or countertops, or fully redesign upper cabinets, lower cabinets, tall units, island counters, and storage systems. Final scope should follow measurement and budget priorities.",
+          "q": "Do I need to replace all kitchen cabinets?"
+        },
+        {
+          "a": "Prepare kitchen photos, rough measurements, appliances to keep or replace, current pain points, whether wet and dry kitchen zones are needed, whether sink or sockets may move, and preferred material or rendering direction.",
+          "q": "What should I prepare before asking for a kitchen renovation quote?"
+        },
+        {
+          "a": "Cost depends on cabinet size, board material, door finish, hardware, drawers, countertop, wall and floor tiles, plumbing changes, waterproofing scope, appliance integration, and installation complexity. Specific numeric pricing should only be published after site assessment and scope confirmation.",
+          "q": "What affects kitchen renovation cost?"
+        },
+        {
+          "a": "Yes. Clearly labeled kitchen design concepts, rendering concepts, or planning examples can be used as references. They must not be presented as completed project proof or customer testimonials unless real approved materials are provided.",
+          "q": "Can I start with a kitchen rendering or design concept?"
+        },
+        {
+          "a": "It can. If the sink, dishwasher, sockets, hob, hood, oven, wall tiles, or floor tiles are changed, plumbing, electrical, ventilation, and waterproofing conditions should be checked. Final scope depends on site inspection.",
+          "q": "Does kitchen renovation involve plumbing, electrical, and waterproofing?"
+        }
+      ],
+      "seo_title_zh": "厨房装修与橱柜定制｜吉隆坡、雪兰莪 Kitchen Renovation",
+      "seo_title_en": "Kitchen Renovation Malaysia | Custom Cabinets, Countertop & Wet/Dry Kitchen Planning",
+      "seo_description_zh": "FLASH CAST 提供吉隆坡、雪兰莪与 Klang Valley 厨房装修和橱柜定制规划，包括干湿厨房布局、台面、电器点位、给排水、防水、收纳和报价咨询。",
+      "seo_description_en": "FLASH CAST provides kitchen renovation in Kuala Lumpur, Selangor, and Klang Valley, covering custom cabinets, wet and dry kitchen layout, countertops, appliance points, plumbing, waterproofing, and quotation planning.",
+      "status": "published",
+      "sort_order": 20,
+      "created_at": "2026-05-25T10:58:29.820388+00:00",
+      "updated_at": "2026-06-11T16:25:01.222726+00:00",
+      "version": 1
+    },
+    {
+      "id": "0af89b93-8938-4a98-ba65-6525fbbe92c1",
+      "slug": "design",
+      "title_zh": "室内设计与空间规划",
+      "title_en": "Interior Design and Space Planning",
+      "excerpt_zh": "为住宅和商业装修提供室内设计与空间规划，包括 layout 方向、3D 效果图方向、材料建议、施工图协调和装修报价咨询。",
+      "excerpt_en": "Interior design and space planning for residential and commercial renovation, including layout direction, 3D visualization direction, material advice, drawing coordination, and renovation quotation support.",
+      "content_zh": "室内设计不是只挑颜色或摆家具。好的设计应先解决空间动线、收纳、采光、材料搭配、施工可行性和预算优先级。FLASH CAST 可根据确认范围，把空间规划、设计方案、定制家具、材料选择和装修协调衔接起来。",
+      "content_en": "Interior design should clarify layout flow, storage, daylight, material direction, construction feasibility, and budget priorities before renovation begins. FLASH CAST helps owners and business operators connect space planning, design concepts, custom built-in furniture, material selection, and renovation coordination after the scope is confirmed.",
+      "image_url": "/images/services/design-services.webp",
+      "alt_zh": "吉隆坡住宅与商业室内设计规划概念设计",
+      "alt_en": "residential and commercial interior design planning concept in Kuala Lumpur",
+      "suitable_for_zh": [
+        "准备装修公寓、排屋、半独立或独立式住宅，但还不确定布局和风格方向的业主",
+        "需要先看 3D 效果图方案、layout idea 或材料方向，再决定施工范围的客户",
+        "办公室、店铺、诊所、showroom 或商业空间，需要规划动线、前台、展示、收纳和品牌墙",
+        "想把室内设计、定制家具、材料选择和施工协调放在同一套流程中处理的客户"
+      ],
+      "suitable_for_en": [
+        "Homeowners planning a condo, terrace house, semi-D, or bungalow renovation but still unsure about layout and style direction",
+        "Clients who want to review 3D visualization, layout ideas, or material direction before confirming renovation scope",
+        "Office, shop, clinic, showroom, or commercial owners who need circulation, reception, display, storage, and brand-wall planning",
+        "Clients who want interior design, custom built-in furniture, material selection, and renovation coordination to connect in one workflow"
+      ],
+      "common_projects_zh": [
+        "住宅 layout 与空间规划",
+        "客厅、厨房、卧室、浴室、书房和收纳区设计方向",
+        "办公室前台、会议室、展示区、柜台、等候区和品牌墙规划",
+        "3D 可视化方向、效果图方案或概念设计",
+        "材料、颜色、灯光、柜体和饰面搭配建议"
+      ],
+      "common_projects_en": [
+        "Residential layout and space planning",
+        "Living room, kitchen, bedroom, bathroom, study, and storage direction",
+        "Office reception, meeting room, display area, counter, waiting area, and brand-wall planning",
+        "3D visualization direction, rendering concepts, or design concepts",
+        "Material, colour, lighting, cabinet, and finish coordination"
+      ],
+      "process_steps_zh": [
+        {
+          "desc": "了解空间类型、目标风格、预算因素、照片和地址区域。",
+          "title": "初步咨询"
+        },
+        {
+          "desc": "确认尺寸、结构限制、采光、插座、水位、门窗和现场条件。",
+          "title": "现场测量"
+        },
+        {
+          "desc": "整理动线、功能分区、收纳和家具/柜体位置。",
+          "title": "Layout 规划"
+        },
+        {
+          "desc": "准备材料方向、颜色建议、3D visualization 或 rendering concept。",
+          "title": "视觉方向"
+        },
+        {
+          "desc": "把设计方向转成可报价、可协调、可施工的范围。",
+          "title": "施工衔接"
+        },
+        {
+          "desc": "根据已确认范围、材料和现场条件进入下一步报价。",
+          "title": "报价与材料确认"
+        }
+      ],
+      "process_steps_en": [
+        {
+          "desc": "Review space type, design goals, budget factors, photos, and location.",
+          "title": "Initial Consultation"
+        },
+        {
+          "desc": "Confirm dimensions, site limits, daylight, power points, plumbing points, doors, windows, and existing conditions.",
+          "title": "Site Measurement"
+        },
+        {
+          "desc": "Organize circulation, functional zones, storage, furniture, and cabinet positions.",
+          "title": "Layout Planning"
+        },
+        {
+          "desc": "Prepare material direction, colour advice, 3D visualization, or rendering concepts where useful.",
+          "title": "Visual Direction"
+        },
+        {
+          "desc": "Translate design direction into a scope that can be quoted, coordinated, and built.",
+          "title": "Construction Alignment"
+        },
+        {
+          "desc": "Move into the next quotation step after scope, materials, and site conditions are confirmed.",
+          "title": "Quotation & Material Confirmation"
+        }
+      ],
+      "scope_items_zh": [
+        "空间规划与动线建议",
+        "住宅室内设计方向",
+        "商业空间设计方向",
+        "3D 可视化方向与效果图方案",
+        "材料、颜色、灯光、柜体和饰面搭配建议",
+        "施工图、尺寸、现场条件和报价范围协调"
+      ],
+      "scope_items_en": [
+        "Space planning and circulation advice",
+        "Residential interior design direction",
+        "Commercial interior design direction",
+        "3D visualization direction and rendering concepts",
+        "Material, colour, lighting, cabinet, and finish coordination",
+        "Drawing, dimension, site-condition, and quotation-scope coordination"
+      ],
+      "faqs_zh": [
+        {
+          "a": "可以根据确认范围把空间规划、材料方向、定制家具和施工协调衔接起来。具体是否包含完整施工图、3D 效果图或施工管理，需要按项目范围确认。",
+          "q": "FLASH CAST 提供室内设计和施工一起做吗？"
+        },
+        {
+          "a": "可以先做设计方向、layout idea、材料建议或效果图方案作为规划参考。是否进入施工报价，可在范围确认后再决定。",
+          "q": "可以只做设计，不马上施工吗？"
+        },
+        {
+          "a": "费用取决于空间面积、房间数量、3D 可视化需求、图纸复杂度、材料选择和修改次数。具体数字价格需要业主确认计费方式后才能公开。",
+          "q": "室内设计费用受什么影响？"
+        },
+        {
+          "a": "页面可以使用清楚标注的设计方案、效果图方案或概念设计，但不能把概念图写成真实完工项目、真实客户评价或 before/after 证明。",
+          "q": "设计方案可以用 AI 或效果图吗？"
+        },
+        {
+          "a": "可覆盖住宅、公寓、排屋、半独立、办公室、店铺、诊所、showroom 和其他已确认服务范围内的空间。",
+          "q": "室内设计适合哪些空间？"
+        }
+      ],
+      "faqs_en": [
+        {
+          "a": "The workflow can connect space planning, material direction, custom built-in furniture, and renovation coordination after the scope is confirmed. Whether full drawings, 3D visualization, or site management are included should be confirmed by project scope.",
+          "q": "Does FLASH CAST provide both interior design and renovation work?"
+        },
+        {
+          "a": "Yes. Layout ideas, material advice, design concepts, or rendering concepts can be prepared as planning references. Construction quotation can be considered after the scope is confirmed.",
+          "q": "Can I start with design only before construction?"
+        },
+        {
+          "a": "Cost depends on space size, number of rooms, 3D visualization needs, drawing complexity, material selection, and revision requirements. Specific numeric pricing should only be published after the owner confirms the pricing method.",
+          "q": "What affects interior design cost?"
+        },
+        {
+          "a": "Yes, but they must be clearly labeled as design concepts, rendering concepts, or planning examples. They must not be presented as completed project proof, customer testimonials, or before-and-after results unless approved real materials are provided.",
+          "q": "Can concept or rendering images be used?"
+        },
+        {
+          "a": "The page can cover homes, condos, terrace houses, semi-D homes, offices, shops, clinics, showrooms, and other spaces within verified service scope.",
+          "q": "What spaces can be planned?"
+        }
+      ],
+      "seo_title_zh": "吉隆坡室内设计与空间规划｜住宅与商业设计施工衔接",
+      "seo_title_en": "Interior Design Kuala Lumpur | Space Planning, 3D Visualization & Renovation Coordination",
+      "seo_description_zh": "FLASH CAST 提供吉隆坡、雪兰莪与 Klang Valley 室内设计、空间规划、3D 效果图方向、材料建议、施工图协调和装修报价咨询。",
+      "seo_description_en": "FLASH CAST provides interior design in Kuala Lumpur, Selangor, and Klang Valley, including space planning, 3D visualization direction, material advice, drawing coordination, and renovation quotation support.",
+      "status": "published",
+      "sort_order": 20,
+      "created_at": "2026-05-29T10:14:07.159452+00:00",
+      "updated_at": "2026-06-08T08:01:32.841656+00:00",
+      "version": 1
+    },
+    {
+      "id": "32f5374f-9919-41ea-80c7-00b5ac917532",
+      "slug": "shop-renovation",
+      "title_zh": "马来西亚店铺装修与零售空间图文方案",
+      "title_en": "Shop Renovation Malaysia Retail Fit-Out Plan",
+      "excerpt_zh": "FLASH CAST 店铺装修图文内容草案，包含开店前准备、展示动线、柜台收纳、材料方向、效果图方案、FAQ 和咨询 CTA。",
+      "excerpt_en": "FLASH CAST image-rich draft for shop renovation and retail fit-out planning, including pre-opening preparation, customer flow, counter and storage planning, rendering concepts, FAQ, and consultation CTA.",
+      "content_zh": "<section class=\"seo-rich-block seo-rich-hero\"><h1>马来西亚店铺装修与零售空间图文方案</h1><p>这是一份用于店铺装修服务页的图文内容结构，重点说明开店前准备、展示动线、柜台与收纳、材料方向、效果图方案、FAQ 和咨询路径。</p><figure><img src=\"https://flashcast.com.my/images/_responsive/materials/w900/category-whole-house-custom.webp\" alt=\"FLASH CAST 服务页效果图方案主图，用于装修内容规划说明\" loading=\"lazy\" /><figcaption>此图为规划/效果图方案，不作为真实完工案例或客户照片。 <strong>概念设计 / 效果图方案 / design concept / rendering concept</strong></figcaption></figure></section>\n<section class=\"seo-rich-block\"><h2>快速答案</h2><p>适合准备装修 shoplot、零售门店、展示空间、beauty 或 clinic 前场、小型餐饮与商业空间的业主。页面应先帮助访客确认店面照片、面积、营业类型、租约交付状态、管理方要求和预计开业时间。</p></section>\n<section class=\"seo-rich-block\"><h2>店铺装修规划范围</h2><p>正文可覆盖顾客动线、展示区、收银柜台、后场收纳、员工操作区、门头入口、照明、材料饰面、机电协调和报价前资料准备。不要写固定价格、固定工期、保修承诺或未确认服务区域。</p></section>\n<section class=\"seo-rich-block seo-rich-image\"><h2>分区规划示例图</h2><p>店铺装修规划/效果图方案说明图。</p><figure><img src=\"https://flashcast.com.my/images/_responsive/materials/w900/category-furniture.webp\" alt=\"FLASH CAST 分区规划示例图，用于装修内容规划说明\" loading=\"lazy\" /><figcaption>此图为规划/效果图方案，不作为真实完工案例或客户照片。 <strong>概念设计 / 效果图方案 / design concept / rendering concept</strong></figcaption></figure></section>\n<section class=\"seo-rich-block seo-rich-image\"><h2>材料 mood board</h2><p>店铺装修规划/效果图方案说明图。</p><figure><img src=\"https://flashcast.com.my/images/_responsive/materials/w900/fluted-panel-charcoal.webp\" alt=\"FLASH CAST 材料 mood board，用于装修内容规划说明\" loading=\"lazy\" /><figcaption>此图为规划/效果图方案，不作为真实完工案例或客户照片。 <strong>概念设计 / 效果图方案 / design concept / rendering concept</strong></figcaption></figure></section>\n<section class=\"seo-rich-block seo-rich-image\"><h2>流程说明图</h2><p>店铺装修规划/效果图方案说明图。</p><figure><img src=\"https://flashcast.com.my/images/_responsive/materials/w900/category-kitchen-cabinets.webp\" alt=\"FLASH CAST 流程说明图，用于装修内容规划说明\" loading=\"lazy\" /><figcaption>此图为规划/效果图方案，不作为真实完工案例或客户照片。 <strong>概念设计 / 效果图方案 / design concept / rendering concept</strong></figcaption></figure></section>\n<section class=\"seo-rich-block\"><h2>建议店铺装修流程</h2><ol><li>整理店面照片、面积与营业类型</li><li>确认顾客动线、展示区和柜台收纳</li><li>选择材料方向与效果图方案</li><li>通过报价或联系页面提交开店前需求</li></ol></section>\n<section class=\"seo-rich-block seo-rich-internal-links\"><h2>相关服务</h2><ul><li><a href=\"/zh/services/office-renovation\">商业空间与办公室装修</a></li><li><a href=\"/zh/services/builtin\">柜台木作与定制收纳</a></li><li><a href=\"/zh/services/approval\">装修申请与图纸协调</a></li></ul></section>\n<section class=\"seo-rich-block seo-rich-faq\"><h2>常见问题</h2><details><summary>店铺装修前需要准备什么资料？</summary><p>建议先准备店面照片、面积、营业类型、租约交付状态、管理方要求和预计开业时间，方便判断动线、柜台、展示和施工协调重点。</p></details><details><summary>这些图片是真实完工案例吗？</summary><p>不是。这里的图片按概念设计、效果图方案或规划示例使用，不能作为真实客户案例或完工证明。</p></details><details><summary>哪些因素会影响店铺装修报价与安排？</summary><p>面积、拆改、照明机电、柜台木作、展示系统、门头、施工时段限制和目标开业时间都会影响范围与安排。</p></details></section>\n<section class=\"seo-rich-block seo-rich-cta\"><h2>获取店铺装修规划建议</h2><p>提交店面照片、面积、营业类型和预计开业时间，先确认适合的 retail fit-out 规划方向。</p><a href=\"/zh/quote\">获取店铺装修报价 / 咨询</a></section>\n<p class=\"seo-rich-disclaimer\">以上图片为概念设计/效果图方案，不代表真实完工案例。</p>",
+      "content_en": "<section class=\"seo-rich-block seo-rich-hero\"><h1>Shop Renovation Malaysia Retail Fit-Out Plan</h1><p>This image-rich service page structure explains pre-opening preparation, customer flow, display planning, counter and storage needs, material direction, rendering concepts, FAQ, and consultation paths for shop renovation.</p><figure><img src=\"https://flashcast.com.my/images/_responsive/materials/w900/category-whole-house-custom.webp\" alt=\"FLASH CAST service page rendering concept for renovation planning content\" loading=\"lazy\" /><figcaption>This image is a planning/rendering concept, not a completed real project or customer photo. <strong>概念设计 / 效果图方案 / design concept / rendering concept</strong></figcaption></figure></section>\n<section class=\"seo-rich-block\"><h2>Quick Answer</h2><p>This page is for owners planning a shoplot, retail store, showroom, beauty or clinic front area, small F&amp;B outlet, or commercial fit-out. It should help visitors prepare shop photos, floor area, business type, tenancy handover status, landlord or mall requirements, and target opening date.</p></section>\n<section class=\"seo-rich-block\"><h2>Shop Fit-Out Planning Scope</h2><p>The copy can cover customer flow, product display, cashier counter, back-of-house storage, staff workflow, frontage visibility, lighting, material finishes, M&amp;E coordination, and quotation preparation. Do not state fixed prices, fixed timelines, warranty promises, or unsupported service areas.</p></section>\n<section class=\"seo-rich-block seo-rich-image\"><h2>section planning example</h2><p>Shop renovation planning/rendering concept image.</p><figure><img src=\"https://flashcast.com.my/images/_responsive/materials/w900/category-furniture.webp\" alt=\"FLASH CAST section planning example for renovation planning content\" loading=\"lazy\" /><figcaption>This image is a planning/rendering concept, not a completed real project or customer photo. <strong>概念设计 / 效果图方案 / design concept / rendering concept</strong></figcaption></figure></section>\n<section class=\"seo-rich-block seo-rich-image\"><h2>material mood board</h2><p>Shop renovation planning/rendering concept image.</p><figure><img src=\"https://flashcast.com.my/images/_responsive/materials/w900/fluted-panel-charcoal.webp\" alt=\"FLASH CAST material mood board for renovation planning content\" loading=\"lazy\" /><figcaption>This image is a planning/rendering concept, not a completed real project or customer photo. <strong>概念设计 / 效果图方案 / design concept / rendering concept</strong></figcaption></figure></section>\n<section class=\"seo-rich-block seo-rich-image\"><h2>process graphic</h2><p>Shop renovation planning/rendering concept image.</p><figure><img src=\"https://flashcast.com.my/images/_responsive/materials/w900/category-kitchen-cabinets.webp\" alt=\"FLASH CAST process graphic for renovation planning content\" loading=\"lazy\" /><figcaption>This image is a planning/rendering concept, not a completed real project or customer photo. <strong>概念设计 / 效果图方案 / design concept / rendering concept</strong></figcaption></figure></section>\n<section class=\"seo-rich-block\"><h2>Suggested Shop Renovation Flow</h2><ol><li>Prepare shop photos, floor area, and business type</li><li>Confirm customer flow, display zones, counter, and storage needs</li><li>Select material direction and rendering concept</li><li>Submit pre-opening requirements through quote or contact</li></ol></section>\n<section class=\"seo-rich-block seo-rich-internal-links\"><h2>Related Services</h2><ul><li><a href=\"/en/services/office-renovation\">office renovation and commercial fit-out</a></li><li><a href=\"/en/services/builtin\">counter carpentry and custom built-in storage</a></li><li><a href=\"/en/services/approval\">approval and drawing support</a></li></ul></section>\n<section class=\"seo-rich-block seo-rich-faq\"><h2>FAQ</h2><details><summary>What should I prepare before starting a shop renovation?</summary><p>Prepare current shop photos, floor area, business type, tenancy handover status, landlord or mall requirements, and target opening date so the fit-out scope can be reviewed clearly.</p></details><details><summary>Are these images completed real projects?</summary><p>No. These images are design concepts, rendering concepts, or planning examples, not real customer cases or proof of completion.</p></details><details><summary>What affects quotation and scheduling for a retail fit-out?</summary><p>Floor area, demolition, lighting and M&amp;E works, counter carpentry, display systems, frontage work, access restrictions, and target opening date all affect scope and scheduling.</p></details></section>\n<section class=\"seo-rich-block seo-rich-cta\"><h2>Request Shop Renovation Planning Advice</h2><p>Share your shop photos, floor area, business type, and opening target to confirm a suitable retail fit-out planning direction.</p><a href=\"/en/quote\">Request a Shop Renovation Quote</a></section>\n<p class=\"seo-rich-disclaimer\">Images above are design/rendering concepts, not completed real project proof.</p>",
+      "image_url": "https://flashcast.com.my/images/_responsive/materials/w900/category-whole-house-custom.webp",
+      "alt_zh": "FLASH CAST 服务页效果图方案主图，用于装修内容规划说明",
+      "alt_en": "FLASH CAST service page rendering concept for renovation planning content",
+      "suitable_for_zh": [],
+      "suitable_for_en": [],
+      "common_projects_zh": [],
+      "common_projects_en": [],
+      "process_steps_zh": [],
+      "process_steps_en": [],
+      "scope_items_zh": [],
+      "scope_items_en": [],
+      "faqs_zh": [],
+      "faqs_en": [],
+      "seo_title_zh": "FLASH CAST | 马来西亚店铺装修与零售空间规划",
+      "seo_title_en": "FLASH CAST | Shop Renovation Malaysia | Retail Fit-Out Planning",
+      "seo_description_zh": "FLASH CAST 店铺装修双语图文草案，覆盖 shoplot、零售门店、展示空间、柜台收纳、开店前准备、效果图方案、FAQ 和咨询路径。",
+      "seo_description_en": "Bilingual shop renovation and retail fit-out draft for FLASH CAST, covering shoplot planning, customer flow, display zones, counter storage, rendering concepts, FAQ, and quote path.",
+      "status": "published",
+      "sort_order": 50,
+      "created_at": "2026-05-25T10:58:29.820388+00:00",
+      "updated_at": "2026-06-14T10:09:11.759873+00:00",
+      "version": 1
+    }
+  ]
+}

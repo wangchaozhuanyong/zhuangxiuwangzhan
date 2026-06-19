@@ -1,0 +1,561 @@
+{
+  "created_at": "2026-06-19T14:03:28.700Z",
+  "results": [
+    {
+      "slug": "warehouse",
+      "result": {
+        "ok": true,
+        "dry_run": true,
+        "content_type": "service",
+        "action": "publish",
+        "slug": "warehouse",
+        "status": "published",
+        "existing_id": "1fab3adb-aa8c-4aab-9c30-8931152cdc91",
+        "warnings": [],
+        "next_steps": [
+          "Regenerate SEO manifest/sitemap/llms after approved publish.",
+          "Verify the /zh and /en public service pages read the updated admin content.",
+          "Run publish receipt/QA before deployment or production cache verification."
+        ],
+        "auth_mode": "local-content-publish-service",
+        "payload_preview": {
+          "slug": "warehouse",
+          "status": "published",
+          "seo_title_zh": "雪兰莪仓库货架规划 | FLASH CAST",
+          "title_zh": null,
+          "title_en": null,
+          "excerpt_zh": null,
+          "excerpt_en": null,
+          "alt_zh": null,
+          "alt_en": null,
+          "content_zh": null,
+          "content_en": null,
+          "seo_title_en": null,
+          "seo_description_zh": null,
+          "seo_description_en": null,
+          "image_url": null,
+          "suitable_for_zh": [],
+          "suitable_for_en": [],
+          "common_projects_zh": [],
+          "common_projects_en": [],
+          "scope_items_zh": [],
+          "scope_items_en": [],
+          "process_steps_zh": [],
+          "process_steps_en": [],
+          "faqs_zh": [],
+          "faqs_en": []
+        }
+      }
+    },
+    {
+      "slug": "builtin",
+      "result": {
+        "ok": true,
+        "dry_run": true,
+        "content_type": "service",
+        "action": "publish",
+        "slug": "builtin",
+        "status": "published",
+        "existing_id": "b401a610-a4dc-4a0b-a7e0-efcac6c81d71",
+        "warnings": [],
+        "next_steps": [
+          "Regenerate SEO manifest/sitemap/llms after approved publish.",
+          "Verify the /zh and /en public service pages read the updated admin content.",
+          "Run publish receipt/QA before deployment or production cache verification."
+        ],
+        "auth_mode": "local-content-publish-service",
+        "payload_preview": {
+          "slug": "builtin",
+          "status": "published",
+          "seo_title_en": "Built-In Furniture Malaysia | FLASH CAST",
+          "title_zh": null,
+          "title_en": null,
+          "excerpt_zh": null,
+          "excerpt_en": null,
+          "alt_zh": null,
+          "alt_en": null,
+          "content_zh": null,
+          "content_en": null,
+          "seo_title_zh": null,
+          "seo_description_zh": null,
+          "seo_description_en": null,
+          "image_url": null,
+          "suitable_for_zh": [],
+          "suitable_for_en": [],
+          "common_projects_zh": [],
+          "common_projects_en": [],
+          "scope_items_zh": [],
+          "scope_items_en": [],
+          "process_steps_zh": [],
+          "process_steps_en": [],
+          "faqs_zh": [],
+          "faqs_en": []
+        }
+      }
+    },
+    {
+      "slug": "bathroom",
+      "result": {
+        "ok": true,
+        "dry_run": true,
+        "content_type": "service",
+        "action": "publish",
+        "slug": "bathroom",
+        "status": "published",
+        "existing_id": "0f294e6d-2e2c-4f13-a93f-096728ccc6af",
+        "warnings": [],
+        "next_steps": [
+          "Regenerate SEO manifest/sitemap/llms after approved publish.",
+          "Verify the /zh and /en public service pages read the updated admin content.",
+          "Run publish receipt/QA before deployment or production cache verification."
+        ],
+        "auth_mode": "local-content-publish-service",
+        "payload_preview": {
+          "slug": "bathroom",
+          "status": "published",
+          "seo_title_en": "Bathroom Renovation Malaysia | FLASH CAST",
+          "title_zh": null,
+          "title_en": null,
+          "excerpt_zh": null,
+          "excerpt_en": null,
+          "alt_zh": null,
+          "alt_en": null,
+          "content_zh": null,
+          "content_en": null,
+          "seo_title_zh": null,
+          "seo_description_zh": null,
+          "seo_description_en": null,
+          "image_url": null,
+          "suitable_for_zh": [],
+          "suitable_for_en": [],
+          "common_projects_zh": [],
+          "common_projects_en": [],
+          "scope_items_zh": [],
+          "scope_items_en": [],
+          "process_steps_zh": [],
+          "process_steps_en": [],
+          "faqs_zh": [],
+          "faqs_en": []
+        }
+      }
+    },
+    {
+      "slug": "office-renovation",
+      "result": {
+        "ok": true,
+        "dry_run": true,
+        "content_type": "service",
+        "action": "publish",
+        "slug": "office-renovation",
+        "status": "published",
+        "existing_id": "a87541ac-1cba-4f1a-972d-428dccdbcc0f",
+        "warnings": [],
+        "next_steps": [
+          "Regenerate SEO manifest/sitemap/llms after approved publish.",
+          "Verify the /zh and /en public service pages read the updated admin content.",
+          "Run publish receipt/QA before deployment or production cache verification."
+        ],
+        "auth_mode": "local-content-publish-service",
+        "payload_preview": {
+          "slug": "office-renovation",
+          "status": "published",
+          "seo_title_en": "Office Renovation Malaysia | FLASH CAST",
+          "suitable_for_zh": [
+            "准备搬迁、扩充或翻新的办公室团队",
+            "需要优化前台、会议室、工位和收纳的中小企业",
+            "希望在开工前先确认动线、机电点位和材料方向的业主",
+            "需要配合管理处要求、施工时段和交付节点的商业空间"
+          ],
+          "suitable_for_en": [
+            "Office teams planning relocation, expansion, or renovation",
+            "SMEs that need reception, meeting room, workstation, and storage improvements",
+            "Owners who want layout, M&E points, and material direction clarified before work starts",
+            "Commercial spaces that need to coordinate management rules, work hours, and handover timing"
+          ],
+          "common_projects_zh": [
+            "办公室前台与等候区规划",
+            "会议室、经理房和开放工位布局",
+            "隔间、玻璃、门、天花和地面更新",
+            "照明、插座、网络点位和基础机电协调",
+            "茶水间、储物柜、文件柜和品牌墙方向"
+          ],
+          "common_projects_en": [
+            "Reception and waiting-area planning",
+            "Meeting room, manager room, and open workstation layout",
+            "Partitions, glass, doors, ceiling, and flooring updates",
+            "Lighting, power points, network points, and basic M&E coordination",
+            "Pantry, storage cabinet, filing cabinet, and brand-wall direction"
+          ],
+          "process_steps_zh": [
+            {
+              "title": "需求整理",
+              "desc": "确认办公室人数、部门关系、会议需求、储物需求、预算因素和目标搬入时间。"
+            },
+            {
+              "title": "现场检查",
+              "desc": "核对面积、原有隔间、天花、地面、插座、网络点位、空调和管理处限制。"
+            },
+            {
+              "title": "布局规划",
+              "desc": "整理前台、会议室、工位、储物、茶水间和通行动线，形成可报价范围。"
+            },
+            {
+              "title": "材料与机电协调",
+              "desc": "确认地板、墙面、灯光、玻璃、柜体、插座和弱电等需要配合的项目。"
+            },
+            {
+              "title": "报价与执行安排",
+              "desc": "根据确认范围、现场条件和审批要求安排报价沟通与施工协调。"
+            }
+          ],
+          "process_steps_en": [
+            {
+              "title": "Requirement Review",
+              "desc": "Confirm team size, department relationship, meeting needs, storage needs, budget factors, and target move-in timing."
+            },
+            {
+              "title": "Site Check",
+              "desc": "Review floor area, existing partitions, ceiling, flooring, power points, network points, air-conditioning, and management restrictions."
+            },
+            {
+              "title": "Layout Planning",
+              "desc": "Plan reception, meeting rooms, workstations, storage, pantry, and circulation so the quotation scope is clear."
+            },
+            {
+              "title": "Material & M&E Coordination",
+              "desc": "Coordinate flooring, wall finishes, lighting, glass, cabinets, power points, and data points where required."
+            },
+            {
+              "title": "Quotation & Execution Planning",
+              "desc": "Arrange quotation discussion and work coordination based on confirmed scope, site conditions, and approval requirements."
+            }
+          ],
+          "scope_items_zh": [
+            "办公室空间规划",
+            "前台与品牌墙",
+            "会议室与经理房",
+            "开放工位与隔间",
+            "地面、墙面、天花与灯光",
+            "插座、网络点位和基础机电协调",
+            "茶水间与办公室收纳",
+            "施工时段与管理处要求协调"
+          ],
+          "scope_items_en": [
+            "Office space planning",
+            "Reception and brand wall",
+            "Meeting room and manager room",
+            "Open workstations and partitions",
+            "Flooring, wall finishes, ceiling, and lighting",
+            "Power points, network points, and basic M&E coordination",
+            "Pantry and office storage",
+            "Work-hour and management-rule coordination"
+          ],
+          "faqs_zh": [
+            {
+              "q": "办公室装修前需要准备什么资料？",
+              "a": "建议准备平面图或现场照片、面积、人数、部门需求、会议室数量、预计搬入时间、管理处要求和现有机电情况。"
+            },
+            {
+              "q": "可以配合管理处或业主方施工要求吗？",
+              "a": "可以按已确认规则协调施工时段、出入安排、保护要求和交付节点。具体要求需要以管理处或业主方文件为准。"
+            },
+            {
+              "q": "报价会受哪些因素影响？",
+              "a": "面积、隔间数量、玻璃和木作、地面天花、灯光、电源网络点位、空调和施工时段都会影响范围与报价。"
+            },
+            {
+              "q": "可以先做 layout 或效果图方向吗？",
+              "a": "可以作为规划参考，但必须清楚标注为设计方案或效果图方向，不能写成真实完工案例或客户证明。"
+            }
+          ],
+          "faqs_en": [
+            {
+              "q": "What should we prepare before an office renovation quote?",
+              "a": "Prepare a floor plan or site photos, floor area, staff count, department needs, meeting-room requirements, target move-in date, management rules, and existing M&E condition."
+            },
+            {
+              "q": "Can the work follow building management or landlord requirements?",
+              "a": "Yes. Work hours, access, protection requirements, and handover timing can be coordinated based on confirmed building or landlord rules."
+            },
+            {
+              "q": "What affects the quotation?",
+              "a": "Floor area, partitions, glass works, carpentry, flooring, ceiling, lighting, power and network points, air-conditioning, and work-hour restrictions all affect scope and quotation."
+            },
+            {
+              "q": "Can layout ideas or rendering concepts be prepared first?",
+              "a": "Yes, as planning references. They must be clearly labeled as design or rendering concepts and not presented as completed project proof or customer evidence."
+            }
+          ],
+          "title_zh": null,
+          "title_en": null,
+          "excerpt_zh": null,
+          "excerpt_en": null,
+          "alt_zh": null,
+          "alt_en": null,
+          "content_zh": null,
+          "content_en": null,
+          "seo_title_zh": null,
+          "seo_description_zh": null,
+          "seo_description_en": null,
+          "image_url": null
+        }
+      }
+    },
+    {
+      "slug": "kitchen",
+      "result": {
+        "ok": true,
+        "dry_run": true,
+        "content_type": "service",
+        "action": "publish",
+        "slug": "kitchen",
+        "status": "published",
+        "existing_id": "ce4156db-9034-42c8-ba29-b35724ea7d6d",
+        "warnings": [],
+        "next_steps": [
+          "Regenerate SEO manifest/sitemap/llms after approved publish.",
+          "Verify the /zh and /en public service pages read the updated admin content.",
+          "Run publish receipt/QA before deployment or production cache verification."
+        ],
+        "auth_mode": "local-content-publish-service",
+        "payload_preview": {
+          "slug": "kitchen",
+          "status": "published",
+          "seo_title_en": "Kitchen Renovation Malaysia | FLASH CAST",
+          "title_zh": null,
+          "title_en": null,
+          "excerpt_zh": null,
+          "excerpt_en": null,
+          "alt_zh": null,
+          "alt_en": null,
+          "content_zh": null,
+          "content_en": null,
+          "seo_title_zh": null,
+          "seo_description_zh": null,
+          "seo_description_en": null,
+          "image_url": null,
+          "suitable_for_zh": [],
+          "suitable_for_en": [],
+          "common_projects_zh": [],
+          "common_projects_en": [],
+          "scope_items_zh": [],
+          "scope_items_en": [],
+          "process_steps_zh": [],
+          "process_steps_en": [],
+          "faqs_zh": [],
+          "faqs_en": []
+        }
+      }
+    },
+    {
+      "slug": "design",
+      "result": {
+        "ok": true,
+        "dry_run": true,
+        "content_type": "service",
+        "action": "publish",
+        "slug": "design",
+        "status": "published",
+        "existing_id": "0af89b93-8938-4a98-ba65-6525fbbe92c1",
+        "warnings": [],
+        "next_steps": [
+          "Regenerate SEO manifest/sitemap/llms after approved publish.",
+          "Verify the /zh and /en public service pages read the updated admin content.",
+          "Run publish receipt/QA before deployment or production cache verification."
+        ],
+        "auth_mode": "local-content-publish-service",
+        "payload_preview": {
+          "slug": "design",
+          "status": "published",
+          "seo_title_en": "Interior Design Kuala Lumpur | FLASH CAST",
+          "title_zh": null,
+          "title_en": null,
+          "excerpt_zh": null,
+          "excerpt_en": null,
+          "alt_zh": null,
+          "alt_en": null,
+          "content_zh": null,
+          "content_en": null,
+          "seo_title_zh": null,
+          "seo_description_zh": null,
+          "seo_description_en": null,
+          "image_url": null,
+          "suitable_for_zh": [],
+          "suitable_for_en": [],
+          "common_projects_zh": [],
+          "common_projects_en": [],
+          "scope_items_zh": [],
+          "scope_items_en": [],
+          "process_steps_zh": [],
+          "process_steps_en": [],
+          "faqs_zh": [],
+          "faqs_en": []
+        }
+      }
+    },
+    {
+      "slug": "shop-renovation",
+      "result": {
+        "ok": true,
+        "dry_run": true,
+        "content_type": "service",
+        "action": "publish",
+        "slug": "shop-renovation",
+        "status": "published",
+        "existing_id": "32f5374f-9919-41ea-80c7-00b5ac917532",
+        "warnings": [],
+        "next_steps": [
+          "Regenerate SEO manifest/sitemap/llms after approved publish.",
+          "Verify the /zh and /en public service pages read the updated admin content.",
+          "Run publish receipt/QA before deployment or production cache verification."
+        ],
+        "auth_mode": "local-content-publish-service",
+        "payload_preview": {
+          "slug": "shop-renovation",
+          "status": "published",
+          "suitable_for_zh": [
+            "准备装修 shoplot、零售门店或展示空间的业主",
+            "美容、诊所、showroom、小型餐饮或服务型门店前场规划",
+            "需要规划顾客动线、展示区、柜台和后场收纳的商家",
+            "希望在开业前确认材料方向、照明、机电和施工范围的租户"
+          ],
+          "suitable_for_en": [
+            "Owners planning a shoplot, retail store, or showroom fit-out",
+            "Beauty, clinic, showroom, small F&B, or service-front retail spaces",
+            "Businesses that need customer flow, display area, counter, and back-of-house storage planning",
+            "Tenants who want material direction, lighting, M&E, and work scope clarified before opening"
+          ],
+          "common_projects_zh": [
+            "门面入口与招牌方向规划",
+            "展示区、动线和顾客停留区整理",
+            "收银柜台、服务柜台和储物柜规划",
+            "灯光、插座、网络点位和基础机电协调",
+            "墙面、地面、天花、材料饰面和品牌色方向",
+            "开业前施工范围和交付准备"
+          ],
+          "common_projects_en": [
+            "Frontage, entrance, and signboard direction planning",
+            "Display zones, customer flow, and waiting-area organization",
+            "Cashier counter, service counter, and storage cabinet planning",
+            "Lighting, power points, network points, and basic M&E coordination",
+            "Wall, floor, ceiling, material finish, and brand-colour direction",
+            "Pre-opening fit-out scope and handover preparation"
+          ],
+          "process_steps_zh": [
+            {
+              "title": "开店资料整理",
+              "desc": "确认店面照片、面积、营业类型、租约交付状态、管理方要求和预计开业时间。"
+            },
+            {
+              "title": "动线与分区规划",
+              "desc": "整理入口、展示区、柜台、后场、储物、员工操作区和顾客停留区。"
+            },
+            {
+              "title": "材料与视觉方向",
+              "desc": "确认墙面、地面、天花、灯光、柜体、品牌色和效果图方案边界。"
+            },
+            {
+              "title": "报价范围确认",
+              "desc": "把柜台木作、机电、照明、饰面、门面和收尾项目整理成可报价范围。"
+            },
+            {
+              "title": "执行与交付协调",
+              "desc": "根据已确认的现场条件、管理要求和目标开业时间安排施工协调。"
+            }
+          ],
+          "process_steps_en": [
+            {
+              "title": "Pre-Opening Intake",
+              "desc": "Confirm shop photos, floor area, business type, tenancy handover status, management requirements, and target opening date."
+            },
+            {
+              "title": "Flow & Zone Planning",
+              "desc": "Plan entrance, display zones, counter, back-of-house, storage, staff workflow, and customer waiting areas."
+            },
+            {
+              "title": "Material & Visual Direction",
+              "desc": "Confirm wall, floor, ceiling, lighting, cabinet, brand-colour, and rendering concept boundaries."
+            },
+            {
+              "title": "Quotation Scope",
+              "desc": "Translate counter carpentry, M&E, lighting, finishes, frontage, and finishing works into a quotable scope."
+            },
+            {
+              "title": "Execution & Handover Coordination",
+              "desc": "Coordinate works based on confirmed site conditions, management requirements, and target opening timing."
+            }
+          ],
+          "scope_items_zh": [
+            "店铺 layout 与顾客动线",
+            "门面入口和品牌形象方向",
+            "展示区与产品陈列",
+            "柜台木作和后场收纳",
+            "灯光、插座、网络点位和基础机电协调",
+            "墙面、地面、天花和材料饰面",
+            "开业前施工范围整理",
+            "效果图方案或规划示例标注"
+          ],
+          "scope_items_en": [
+            "Shop layout and customer flow",
+            "Frontage, entrance, and brand direction",
+            "Display zones and merchandising layout",
+            "Counter carpentry and back-of-house storage",
+            "Lighting, power points, network points, and basic M&E coordination",
+            "Wall, floor, ceiling, and material finishes",
+            "Pre-opening fit-out scope organization",
+            "Rendering concepts or planning examples with clear labeling"
+          ],
+          "faqs_zh": [
+            {
+              "q": "店铺装修前需要准备什么资料？",
+              "a": "建议准备店面照片、面积、营业类型、租约交付状态、管理方要求、品牌方向和预计开业时间。"
+            },
+            {
+              "q": "你们可以规划柜台和展示区吗？",
+              "a": "可以按已确认范围规划收银柜台、服务柜台、展示区、储物区和顾客动线，最终以现场测量和报价为准。"
+            },
+            {
+              "q": "报价和工期可以固定写在页面吗？",
+              "a": "不建议。面积、拆改、机电、柜体、门面、材料、施工时段和审批要求都会影响报价与安排。"
+            },
+            {
+              "q": "效果图或示例图可以用于页面吗？",
+              "a": "可以，但必须清楚标注为概念设计、效果图方案或规划示例，不能写成真实完工案例或客户照片。"
+            }
+          ],
+          "faqs_en": [
+            {
+              "q": "What should I prepare before planning a shop renovation?",
+              "a": "Prepare shop photos, floor area, business type, tenancy handover status, management requirements, brand direction, and target opening date."
+            },
+            {
+              "q": "Can you plan counters and display areas?",
+              "a": "Yes. Cashier counters, service counters, display zones, storage, and customer flow can be planned based on confirmed scope, site measurement, and quotation."
+            },
+            {
+              "q": "Can fixed pricing or fixed timelines be stated on the page?",
+              "a": "No. Floor area, demolition, M&E, carpentry, frontage, materials, work-hour limits, and approval requirements all affect scope and scheduling."
+            },
+            {
+              "q": "Can rendering or example images be used?",
+              "a": "Yes, but they must be clearly labeled as design concepts, rendering concepts, or planning examples, not completed project proof or real customer photos."
+            }
+          ],
+          "title_zh": null,
+          "title_en": null,
+          "excerpt_zh": null,
+          "excerpt_en": null,
+          "alt_zh": null,
+          "alt_en": null,
+          "content_zh": null,
+          "content_en": null,
+          "seo_title_zh": null,
+          "seo_title_en": null,
+          "seo_description_zh": null,
+          "seo_description_en": null,
+          "image_url": null
+        }
+      }
+    }
+  ]
+}

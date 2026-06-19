@@ -1,0 +1,74 @@
+{
+  "created_at": "2026-06-19T14:14:53.349Z",
+  "targets": [
+    {
+      "table": "about_sections",
+      "id": "a62869fd-f8bb-4cc2-917e-28c211da0912",
+      "before": {
+        "id": "a62869fd-f8bb-4cc2-917e-28c211da0912",
+        "section_key": "hero",
+        "title_zh": "打造空间，也建立信任",
+        "title_en": "Building Spaces, Building Trust",
+        "subtitle_zh": null,
+        "subtitle_en": "A renovation partner focused on clear planning, practical workmanship, and dependable project delivery.",
+        "content_zh": "FLASH CAST SDN. BHD. 是位于吉隆坡的注册装修与室内设计公司，自 2015 年起为吉隆坡和雪兰莪客户提供住宅、商业和工业空间的一站式设计施工服务。",
+        "content_en": "FLASH CAST SDN. BHD. is a registered renovation and interior design company based in Kuala Lumpur, providing complete design-and-build solutions for residential, commercial, and industrial spaces across KL and Selangor since 2015.",
+        "image_url": "/images/heroes/v2/hero-about-premium.webp",
+        "items_zh": [],
+        "items_en": [
+          "Residential and commercial renovation planning",
+          "Custom built-in furniture and material advice",
+          "Project coordination across Kuala Lumpur and Selangor"
+        ],
+        "status": "published",
+        "sort_order": 0,
+        "created_at": "2026-05-29T06:50:53.377857+00:00",
+        "updated_at": "2026-06-19T13:15:32.193432+00:00",
+        "version": 1
+      }
+    },
+    {
+      "table": "about_sections",
+      "id": "050c7ce6-d4e3-42b7-9c8f-b931b0267a5e",
+      "before": {
+        "id": "050c7ce6-d4e3-42b7-9c8f-b931b0267a5e",
+        "section_key": "office",
+        "title_zh": "欢迎到访办公室",
+        "title_en": "Visit Our Office",
+        "subtitle_zh": null,
+        "subtitle_en": "Visit our Kuala Lumpur office or contact us to discuss your renovation plans.",
+        "content_zh": "办公室位于 Taman United, Kuala Lumpur，方便吉隆坡与雪兰莪客户沟通装修需求、查看资料并预约项目咨询。",
+        "content_en": "Our office is located in Taman United, Kuala Lumpur, making it convenient for clients from Kuala Lumpur and Selangor to discuss renovation needs and arrange project consultation.",
+        "image_url": "/images/heroes/hero-contact.webp",
+        "items_zh": [],
+        "items_en": [
+          "Office: 94, Jalan Mega Mendung, Taman United, 58200 Kuala Lumpur",
+          "Service area: Kuala Lumpur, Selangor, and nearby Klang Valley areas",
+          "Consultation: renovation planning, site review, and quotation"
+        ],
+        "status": "published",
+        "sort_order": 0,
+        "created_at": "2026-05-29T06:50:53.37785+00:00",
+        "updated_at": "2026-06-19T13:15:32.391987+00:00",
+        "version": 1
+      }
+    },
+    {
+      "table": "faqs",
+      "id": "85e71ede-6867-4998-ba95-f83119debf5b",
+      "before": {
+        "id": "85e71ede-6867-4998-ba95-f83119debf5b",
+        "page_key": "home",
+        "question_zh": "你们服务哪些地区？",
+        "question_en": "Do you serve Kuala Lumpur and Selangor only?",
+        "answer_zh": "目前主要服务 Kuala Lumpur、Selangor 和 Klang Valley 周边区域，例如 Mont Kiara、Bangsar、Cheras、Petaling Jaya、Subang Jaya、Shah Alam、Puchong 等。具体地点可以先联系确认。",
+        "answer_en": "Yes, we currently serve all areas in Kuala Lumpur and Selangor including Mont Kiara, Bangsar, Cheras, Petaling Jaya, Subang Jaya, Shah Alam, Puchong, and surrounding areas.",
+        "status": "published",
+        "sort_order": 30,
+        "created_at": "2026-05-29T10:15:52.810521+00:00",
+        "updated_at": "2026-05-29T12:52:03.405427+00:00",
+        "version": 1
+      }
+    }
+  ]
+}

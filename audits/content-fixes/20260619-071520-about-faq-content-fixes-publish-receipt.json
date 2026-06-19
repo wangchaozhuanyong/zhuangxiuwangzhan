@@ -1,0 +1,39 @@
+{
+  "created_at": "2026-06-19T14:14:55.350Z",
+  "backup_path": "audits/content-fixes/20260619-071520-about-faq-content-fixes-backup.json",
+  "results": [
+    {
+      "table": "about_sections",
+      "id": "a62869fd-f8bb-4cc2-917e-28c211da0912",
+      "ok": true,
+      "updated_at": "2026-06-19T14:14:54.206773+00:00",
+      "audit_ok": true,
+      "audit_error": null,
+      "changed_fields": [
+        "items_zh"
+      ]
+    },
+    {
+      "table": "about_sections",
+      "id": "050c7ce6-d4e3-42b7-9c8f-b931b0267a5e",
+      "ok": true,
+      "updated_at": "2026-06-19T14:14:54.690261+00:00",
+      "audit_ok": true,
+      "audit_error": null,
+      "changed_fields": [
+        "items_zh"
+      ]
+    },
+    {
+      "table": "faqs",
+      "id": "85e71ede-6867-4998-ba95-f83119debf5b",
+      "ok": true,
+      "updated_at": "2026-06-19T14:14:55.221456+00:00",
+      "audit_ok": true,
+      "audit_error": null,
+      "changed_fields": [
+        "answer_zh"
+      ]
+    }
+  ]
+}
