@@ -23,6 +23,33 @@ const gotoSmokePage = async (page: Page, path: string) => {
   throw lastError;
 };
 
+const installTurnstileMock = (page: Page) =>
+  page.addInitScript(() => {
+    type MockTurnstileOptions = { callback?: (token: string) => void };
+    const callbacks = new Map<string, MockTurnstileOptions["callback"]>();
+    const target = window as Window & {
+      turnstile: {
+        render: (_container: HTMLElement, options: MockTurnstileOptions) => string;
+        execute: (widgetId: string) => void;
+        remove: (widgetId: string) => void;
+      };
+    };
+
+    target.turnstile = {
+      render: (_container, options) => {
+        const widgetId = `mock-turnstile-${callbacks.size + 1}`;
+        callbacks.set(widgetId, options.callback);
+        return widgetId;
+      },
+      execute: (widgetId) => {
+        callbacks.get(widgetId)?.("test-turnstile-token");
+      },
+      remove: (widgetId) => {
+        callbacks.delete(widgetId);
+      },
+    };
+  });
+
 test.describe("public site smoke", () => {
   test("zh homepage loads without replacement characters", async ({ page }) => {
     await gotoSmokePage(page, "/zh");
@@ -74,8 +101,9 @@ test.describe("public site smoke", () => {
   });
 
   test("quote form can reach success state without duplicate data writes", async ({ page }) => {
+    await installTurnstileMock(page);
     let submitCount = 0;
-    await page.route("**/functions/v1/submit-lead", async (route) => {
+    await page.route("**/functions/v1/submit-lead**", async (route) => {
       submitCount += 1;
       await route.fulfill({
         status: 200,
@@ -99,7 +127,8 @@ test.describe("public site smoke", () => {
   });
 
   test("quote form shows backend error state and fallback contact actions", async ({ page }) => {
-    await page.route("**/functions/v1/submit-lead", async (route) => {
+    await installTurnstileMock(page);
+    await page.route("**/functions/v1/submit-lead**", async (route) => {
       await route.fulfill({
         status: 400,
         contentType: "application/json",
@@ -121,7 +150,7 @@ test.describe("public site smoke", () => {
 
   test("contact form validates empty required fields before submit", async ({ page }) => {
     let submitCount = 0;
-    await page.route("**/functions/v1/submit-lead", async (route) => {
+    await page.route("**/functions/v1/submit-lead**", async (route) => {
       submitCount += 1;
       await route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify({ ok: true }) });
     });

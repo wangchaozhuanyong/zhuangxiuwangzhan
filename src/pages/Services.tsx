@@ -6,7 +6,7 @@ import SmartImage from "@/components/SmartImage";
 import { usePublishedServices, usePublishedSitePage } from "@/hooks/usePublishedContent";
 import Reveal from "@/components/Reveal";
 import PageMeta from "@/components/PageMeta";
-import { JsonLdBreadcrumb } from "@/components/JsonLd";
+import { JsonLdBreadcrumb, JsonLdFAQ } from "@/components/JsonLd";
 import { useLanguage } from "@/i18n/LanguageContext";
 import HeroBanner from "@/components/blocks/HeroBanner";
 import SectionHeader from "@/components/blocks/SectionHeader";
@@ -345,6 +345,49 @@ const Services = () => {
         </section>
         );
       })}
+
+      <section className="section-padding bg-background">
+        <div className="container-narrow">
+          <SectionHeader title={t.selectorTitle} description={t.selectorText} />
+          <div className="grid gap-5 md:grid-cols-2">
+            {t.selectorItems.map((item, index) => (
+              <Reveal key={item.title} delay={index * 70} direction="none">
+                <article className="luxury-card h-full p-6">
+                  <span className="mb-3 block text-xs font-semibold uppercase tracking-[0.18em] text-accent">
+                    {String(index + 1).padStart(2, "0")}
+                  </span>
+                  <h2 className="font-display text-xl font-bold text-foreground">{item.title}</h2>
+                  <p className="mt-3 text-sm leading-relaxed text-muted-foreground">{item.desc}</p>
+                </article>
+              </Reveal>
+            ))}
+          </div>
+          <Reveal>
+            <div className="mt-8 border-l-4 border-accent bg-muted/60 p-6">
+              <h2 className="font-display text-2xl font-bold text-foreground">{t.conceptTitle}</h2>
+              <p className="mt-3 text-sm leading-relaxed text-muted-foreground">{t.conceptText}</p>
+            </div>
+          </Reveal>
+        </div>
+      </section>
+
+      <section className="section-padding bg-muted">
+        <div className="container-narrow">
+          <SectionHeader title={t.faqTitle} />
+          <div className="mx-auto grid max-w-4xl gap-4">
+            {t.faqs.map((faq, index) => (
+              <Reveal key={faq.q} delay={index * 60} direction="none">
+                <article className="luxury-card p-6">
+                  <h2 className="font-display text-lg font-bold text-foreground">{faq.q}</h2>
+                  <p className="mt-3 text-sm leading-relaxed text-muted-foreground">{faq.a}</p>
+                </article>
+              </Reveal>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <JsonLdFAQ faqs={t.faqs.map((faq) => ({ question: faq.q, answer: faq.a }))} />
 
       <CTABanner
         title={pageContent?.cta_title || t.unsureTitle}
