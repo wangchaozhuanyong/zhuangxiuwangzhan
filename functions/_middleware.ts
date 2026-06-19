@@ -60,7 +60,7 @@ const PUBLIC_PROJECT_SUMMARIES_CACHE_TTL_MS = 5 * 60 * 1000;
 const PUBLIC_PROJECT_DETAIL_CACHE_TTL_MS = 5 * 60 * 1000;
 const PUBLIC_HOME_BUNDLE_CACHE_TTL_MS = 5 * 60 * 1000;
 const PUBLIC_PAGE_DATA_CACHE_TTL_MS = 5 * 60 * 1000;
-const HERO_MEDIA_VERSION = "20260531-mobile-source-fix";
+const HERO_MEDIA_VERSION = "20260619-no-text-home-hero";
 const HTML_CACHE_DEBUG_HEADER = "x-flashcast-html-cache";
 const PRODUCTION_SCRIPT_SRC = [
   "'self'",

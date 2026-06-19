@@ -41,7 +41,7 @@ const HeroSection = ({ pageContent, heroSlides }: HeroSectionProps) => {
   const { data: fetchedSlides } = usePublishedHeroSlides(language, { enabled: heroSlides === undefined });
   const slides = heroSlides === undefined ? fetchedSlides : heroSlides;
   const slide = slides?.[0] ?? null;
-  const mediaVersion = "20260531-mobile-source-fix";
+  const mediaVersion = "20260619-no-text-home-hero";
   const mediaByVariant = {
     desktop: {
       poster: `/videos/home-hero-poster.webp?v=${mediaVersion}`,
