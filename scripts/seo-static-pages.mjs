@@ -3,13 +3,71 @@ export const SITE_URL = (process.env.VITE_SITE_URL || "https://flashcast.com.my"
 export const OG_IMAGE = `${SITE_URL}/og-image.webp`;
 export const COMPANY = "FLASH CAST SDN. BHD.";
 
-const page = (lang, path, title, description, keywords = "") => ({
+const page = (lang, path, title, description, keywords = "", extra = {}) => ({
   lang,
   path,
   title: title.includes("FLASH CAST") ? title : `${title} | ${COMPANY}`,
   description,
   keywords,
+  ...extra,
 });
+
+const servicesFaqs = {
+  en: [
+    {
+      question: "What renovation services does FLASH CAST provide?",
+      answer:
+        "Current public services include residential renovation, interior design, kitchen renovation, bathroom renovation, office renovation, shop renovation, custom built-in furniture, artistic wall coating, old-house renovation, approval coordination, and warehouse shelving related space planning.",
+    },
+    {
+      question: "What if I am not sure whether I need home renovation, kitchen renovation, or custom built-ins?",
+      answer:
+        "Start with the problem. For a whole home or multiple rooms, review residential renovation. For kitchen or bathroom issues, use the matching service page. For wardrobes, shoe cabinets, TV cabinets, or storage, start with custom built-in furniture.",
+    },
+    {
+      question: "What should I prepare before requesting advice?",
+      answer:
+        "Prepare the location, space type, site photos, current issues, intended scope, style references, management or mall work restrictions if any, and the service type you want to discuss.",
+    },
+    {
+      question: "Should the service page show fixed prices or fixed timelines?",
+      answer:
+        "Not unless confirmed by the owner. Quotation and scheduling depend on area size, demolition, materials, carpentry, wiring, plumbing, waterproofing, approvals, site conditions, and commercial opening timing.",
+    },
+    {
+      question: "Can the page show design concepts or rendering concepts?",
+      answer:
+        "Yes, but they must be clearly labelled as design concepts, rendering concepts, or planning examples, not as completed project proof, customer reviews, or before-after evidence.",
+    },
+  ],
+  zh: [
+    {
+      question: "FLASH CAST 提供哪些装修服务？",
+      answer:
+        "当前公开服务包括住宅装修、室内设计、厨房装修、浴室装修、办公室装修、店铺装修、定制家具、艺术墙面涂料、旧屋翻新、装修申请协调和仓库货架相关空间规划。",
+    },
+    {
+      question: "我不确定该选住宅装修、厨房装修还是定制家具，怎么办？",
+      answer:
+        "可以先按问题判断。如果是整屋或多个空间，先看住宅装修；如果集中在厨房或浴室，先看对应服务页；如果主要是柜体、衣柜、鞋柜或收纳，先看定制家具。",
+    },
+    {
+      question: "咨询前需要准备哪些资料？",
+      answer:
+        "建议准备地点、空间类型、现场照片、现有问题、预计装修范围、喜欢的风格参考、是否有管理处或商场施工限制，以及希望咨询的服务类型。",
+    },
+    {
+      question: "服务页可以写固定价格或固定工期吗？",
+      answer:
+        "不建议。装修报价和安排会受面积、拆除范围、材料、木作、水电、防水、审批、现场条件和商业开业时间影响，未经业主确认不能写固定承诺。",
+    },
+    {
+      question: "可以展示设计方案或效果图方案吗？",
+      answer:
+        "可以，但必须明确标注为设计方案、效果图方案、概念设计或规划示例，不能写成真实完工案例、客户评价或 before/after 证明。",
+    },
+  ],
+};
 
 const staticDefs = [
   page("en", "/", "Renovation Company Kuala Lumpur | Condo, Landed & Commercial | FLASH CAST", "FLASH CAST SDN. BHD. provides professional renovation, interior design, custom built-in furniture, and commercial fit-out services in Kuala Lumpur and Selangor."),
@@ -22,6 +80,7 @@ const staticDefs = [
     "Renovation Services Kuala Lumpur | Home, Kitchen, Office & Shop | FLASH CAST",
     "Explore FLASH CAST renovation services in Kuala Lumpur, Selangor, and Klang Valley, including home, kitchen, bathroom, office, shop, built-in furniture, design, approval, and warehouse planning.",
     "renovation services kuala lumpur, home renovation malaysia, kitchen renovation malaysia, bathroom renovation malaysia, office renovation malaysia, shop renovation malaysia, custom built in furniture malaysia",
+    { faqs: servicesFaqs.en },
   ),
   page(
     "zh",
@@ -29,6 +88,7 @@ const staticDefs = [
     "吉隆坡装修服务项目 | 住宅、厨房、办公室与店铺装修 | FLASH CAST",
     "FLASH CAST 提供吉隆坡、雪兰莪与巴生谷装修服务，包括住宅装修、厨房、浴室、办公室、店铺、定制家具、旧屋翻新、设计、申请协调和仓库空间规划。",
     "吉隆坡装修服务项目, 住宅装修 吉隆坡, 厨房装修 吉隆坡, 浴室装修 防水 吉隆坡, 办公室装修 马来西亚, 店铺装修 马来西亚, 定制家具 吉隆坡",
+    { faqs: servicesFaqs.zh },
   ),
   page("en", "/services/renovation", "Full Renovation Kuala Lumpur | FLASH CAST", "Full home and commercial renovation services in Kuala Lumpur and Selangor, including coordination, site work, and finishing."),
   page("zh", "/services/renovation", "吉隆坡全屋装修 | FLASH CAST", "FLASH CAST 提供吉隆坡与雪兰莪全屋装修、旧屋翻新、施工协调和收尾工程。"),
@@ -88,6 +148,7 @@ export function buildStaticManifest() {
         xDefault: `${SITE_URL}${enPath}`,
       },
       ogImage: OG_IMAGE,
+      ...(def.faqs ? { faqs: def.faqs } : {}),
     };
   }
   return manifest;

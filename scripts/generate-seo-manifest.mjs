@@ -90,7 +90,9 @@ const addSitePage = (lang, row) => {
   const ogImage = row.image_url
     ? (String(row.image_url).startsWith("http") ? row.image_url : `${SITE_URL}${row.image_url}`)
     : OG_IMAGE;
+  const existing = manifest[localized] || {};
   manifest[localized] = {
+    ...existing,
     lang,
     path: row.path || "/",
     title: (title || COMPANY).includes("FLASH CAST") ? title || COMPANY : `${title} | ${COMPANY}`,

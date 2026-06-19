@@ -6,6 +6,7 @@ type SeoEntry = {
   title: string;
   description: string;
   keywords?: string;
+  faqs?: { question: string; answer: string }[];
   canonical: string;
   hreflang: { en: string; zh: string; xDefault: string };
   ogImage: string;
@@ -401,6 +402,21 @@ const buildEdgeStructuredData = (meta: SeoEntry, siteSettings?: SiteSettingsHead
   const websiteId = `${origin}/#website`;
   const pageId = `${meta.canonical}#webpage`;
   const breadcrumb = buildBreadcrumb(meta, origin);
+  const faqNode =
+    meta.faqs && meta.faqs.length > 0
+      ? {
+          "@type": "FAQPage",
+          "@id": `${meta.canonical}#faq`,
+          mainEntity: meta.faqs.map((faq) => ({
+            "@type": "Question",
+            name: faq.question,
+            acceptedAnswer: {
+              "@type": "Answer",
+              text: faq.answer,
+            },
+          })),
+        }
+      : undefined;
 
   return {
     "@context": "https://schema.org",
@@ -479,6 +495,7 @@ const buildEdgeStructuredData = (meta: SeoEntry, siteSettings?: SiteSettingsHead
         keywords: meta.keywords || undefined,
       },
       breadcrumb,
+      ...(faqNode ? [faqNode] : []),
     ],
   };
 };
