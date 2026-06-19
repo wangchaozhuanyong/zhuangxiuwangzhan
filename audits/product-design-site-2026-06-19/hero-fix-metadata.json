@@ -1,0 +1,60 @@
+[
+  {
+    "fileName": "10-home-desktop-after.png",
+    "path": "/Users/wangchao/Desktop/装修网站/zhuangxiuwangzhan-main/audits/product-design-site-2026-06-19/screenshots/10-home-desktop-after.png",
+    "viewport": "1440x1000",
+    "actionsRect": {
+      "height": 44,
+      "visible": true,
+      "width": 330,
+      "x": 548,
+      "y": 683
+    },
+    "bodyTextStart": "跳到主要内容 FLASH CAST SDN. BHD. 首页 关于我们 服务项目 材料库 项目案例 施工流程 更多 EN | 中文 获取免费报价 马来西亚住宅与商业装修，一站式设计施工 FLASH CAST 提供现场测量、空间规划、材料建议、施工管理和售后跟进，帮助业主更安心完成装修。 获取免费报价 WhatsApp 联系 继续探索 Scope 清楚规划范围 报价前先了解现场情况、使用需求、材料、预算和时间安排。 KL & Selangor 本地服务区域 主要处理 Kuala Lumpur、Selangor 和附近 Klang Valley 区域的装修咨询。 住宅与商业 住宅和商业项目 可按需",
+    "descRect": {
+      "height": 68,
+      "visible": true,
+      "width": 640,
+      "x": 393,
+      "y": 587
+    },
+    "hasOverflow": false,
+    "hasReplacementChar": false,
+    "titleRect": {
+      "height": 297,
+      "visible": true,
+      "width": 736,
+      "x": 345,
+      "y": 273
+    }
+  },
+  {
+    "fileName": "11-home-mobile-after.png",
+    "path": "/Users/wangchao/Desktop/装修网站/zhuangxiuwangzhan-main/audits/product-design-site-2026-06-19/screenshots/11-home-mobile-after.png",
+    "viewport": "390x844",
+    "actionsRect": {
+      "height": 103,
+      "visible": true,
+      "width": 343,
+      "x": 16,
+      "y": 498
+    },
+    "bodyTextStart": "跳到主要内容 FLASH CAST SDN. BHD. EN 马来西亚住宅与商业装修，一站式设计施工 FLASH CAST 提供现场测量、空间规划、材料建议、施工管理和售后跟进，帮助业主更安心完成装修。 获取免费报价 WhatsApp 联系 继续探索 Scope 清楚规划范围 报价前先了解现场情况、使用需求、材料、预算和时间安排。 KL & Selangor 本地服务区域 主要处理 Kuala Lumpur、Selangor 和附近 Klang Valley 区域的装修咨询。 住宅与商业 住宅和商业项目 可按需求沟通住宅装修、办公室装修、店铺装修、定制柜体和部分工业空间。 SSM 注册公司 网",
+    "descRect": {
+      "height": 74,
+      "visible": true,
+      "width": 320,
+      "x": 28,
+      "y": 402
+    },
+    "hasOverflow": false,
+    "hasReplacementChar": false,
+    "titleRect": {
+      "height": 152,
+      "visible": true,
+      "width": 343,
+      "x": 16,
+      "y": 237
+    }
+  }
+]

@@ -45,6 +45,7 @@ export const adminSeoManagerText = {
   filterGeo: { en: "GEO region issues", zh: "GEO 地区问题" },
   filterAi: { en: "AI readability issues", zh: "AI 可读问题" },
   filterOk: { en: "Passed only", zh: "只看通过" },
+  filterLabel: { en: "SEO / GEO issue filter", zh: "SEO / GEO 问题筛选" },
   checkContent: { en: "Checked content", zh: "检查内容" },
   missing: { en: "Missing", zh: "有缺失" },
   zhSeo: { en: "Chinese SEO", zh: "中文 SEO" },

@@ -1,0 +1,588 @@
+[
+  {
+    "fileName": "01-home-desktop-viewport.png",
+    "path": "/Users/wangchao/Desktop/装修网站/zhuangxiuwangzhan-main/audits/product-design-site-2026-06-19/screenshots/01-home-desktop-viewport.png",
+    "requestedViewport": "1440x1000",
+    "hasOverflow": false,
+    "hasReplacementChar": false,
+    "headings": [
+      {
+        "tag": "H1",
+        "text": "吉隆坡装修公司与设计施工服务"
+      }
+    ],
+    "scrollY": 0,
+    "title": "吉隆坡装修公司 | 住宅与商业空间设计施工 | FLASH CAST",
+    "url": "http://127.0.0.1:4192/zh",
+    "viewport": "1440x1000",
+    "visibleButtons": [
+      {
+        "aria": null,
+        "href": "#main-content",
+        "text": "跳到主要内容"
+      },
+      {
+        "aria": null,
+        "href": "/zh",
+        "text": "FLASH CAST SDN. BHD."
+      },
+      {
+        "aria": null,
+        "href": "/zh",
+        "text": "首页"
+      },
+      {
+        "aria": null,
+        "href": "/zh/about",
+        "text": "关于我们"
+      },
+      {
+        "aria": null,
+        "href": "/zh/services",
+        "text": "服务项目"
+      },
+      {
+        "aria": null,
+        "href": "/zh/materials",
+        "text": "材料库"
+      },
+      {
+        "aria": null,
+        "href": "/zh/projects",
+        "text": "项目案例"
+      },
+      {
+        "aria": null,
+        "href": "/zh/process",
+        "text": "施工流程"
+      },
+      {
+        "aria": null,
+        "href": null,
+        "text": "更多"
+      },
+      {
+        "aria": "切换语言",
+        "href": "/en",
+        "text": "EN|中文"
+      },
+      {
+        "aria": "拨打电话",
+        "href": "tel:+601128853888",
+        "text": ""
+      },
+      {
+        "aria": "WhatsApp 咨询",
+        "href": "https://wa.me/601128853888",
+        "text": ""
+      },
+      {
+        "aria": null,
+        "href": "/zh/quote",
+        "text": "获取免费报价"
+      },
+      {
+        "aria": null,
+        "href": "/zh/quote",
+        "text": "获取免费报价"
+      },
+      {
+        "aria": null,
+        "href": "https://wa.me/601128853888?text=Homepage%20hero",
+        "text": "WhatsApp 联系"
+      },
+      {
+        "aria": "继续向下浏览",
+        "href": null,
+        "text": "继续探索"
+      },
+      {
+        "aria": "通过 WhatsApp 咨询",
+        "href": "https://wa.me/601128853888?text=Floating%20desktop%20CTA",
+        "text": "WhatsApp 咨询"
+      }
+    ]
+  },
+  {
+    "fileName": "02-home-mobile-viewport.png",
+    "path": "/Users/wangchao/Desktop/装修网站/zhuangxiuwangzhan-main/audits/product-design-site-2026-06-19/screenshots/02-home-mobile-viewport.png",
+    "requestedViewport": "390x844",
+    "hasOverflow": false,
+    "hasReplacementChar": false,
+    "headings": [
+      {
+        "tag": "H1",
+        "text": "马来西亚住宅与商业装修，一站式设计施工"
+      }
+    ],
+    "scrollY": 0,
+    "title": "吉隆坡装修公司 | 住宅商业装修与定制家具 | FLASH CAST",
+    "url": "http://127.0.0.1:4192/zh",
+    "viewport": "390x844",
+    "visibleButtons": [
+      {
+        "aria": null,
+        "href": "#main-content",
+        "text": "跳到主要内容"
+      },
+      {
+        "aria": null,
+        "href": "/zh",
+        "text": "FLASH CAST SDN. BHD."
+      },
+      {
+        "aria": "切换语言",
+        "href": "/en",
+        "text": "EN"
+      },
+      {
+        "aria": "拨打电话",
+        "href": "tel:+601128853888",
+        "text": ""
+      },
+      {
+        "aria": "打开导航菜单",
+        "href": null,
+        "text": ""
+      },
+      {
+        "aria": null,
+        "href": "/zh/quote",
+        "text": "获取免费报价"
+      },
+      {
+        "aria": null,
+        "href": "https://wa.me/601128853888?text=Homepage%20hero",
+        "text": "WhatsApp 联系"
+      },
+      {
+        "aria": "继续向下浏览",
+        "href": null,
+        "text": "继续探索"
+      }
+    ]
+  },
+  {
+    "fileName": "03-services-desktop-viewport.png",
+    "path": "/Users/wangchao/Desktop/装修网站/zhuangxiuwangzhan-main/audits/product-design-site-2026-06-19/screenshots/03-services-desktop-viewport.png",
+    "requestedViewport": "1440x1000",
+    "hasOverflow": false,
+    "hasReplacementChar": false,
+    "headings": [
+      {
+        "tag": "H1",
+        "text": "服务项目"
+      },
+      {
+        "tag": "H2",
+        "text": "按类型选择服务"
+      }
+    ],
+    "scrollY": 0,
+    "title": "吉隆坡装修服务 | 室内装修、定制家具、商业空间 | FLASH CAST",
+    "url": "http://127.0.0.1:4192/zh/services",
+    "viewport": "1440x1000",
+    "visibleButtons": [
+      {
+        "aria": null,
+        "href": "#main-content",
+        "text": "跳到主要内容"
+      },
+      {
+        "aria": null,
+        "href": "/zh",
+        "text": "FLASH CAST SDN. BHD."
+      },
+      {
+        "aria": null,
+        "href": "/zh",
+        "text": "首页"
+      },
+      {
+        "aria": null,
+        "href": "/zh/about",
+        "text": "关于我们"
+      },
+      {
+        "aria": null,
+        "href": "/zh/services",
+        "text": "服务项目"
+      },
+      {
+        "aria": null,
+        "href": "/zh/materials",
+        "text": "材料库"
+      },
+      {
+        "aria": null,
+        "href": "/zh/projects",
+        "text": "项目案例"
+      },
+      {
+        "aria": null,
+        "href": "/zh/process",
+        "text": "施工流程"
+      },
+      {
+        "aria": null,
+        "href": null,
+        "text": "更多"
+      },
+      {
+        "aria": "切换语言",
+        "href": "/en/services",
+        "text": "EN|中文"
+      },
+      {
+        "aria": "拨打电话",
+        "href": "tel:+601128853888",
+        "text": ""
+      },
+      {
+        "aria": "WhatsApp 咨询",
+        "href": "https://wa.me/601128853888",
+        "text": ""
+      },
+      {
+        "aria": null,
+        "href": "/zh/quote",
+        "text": "获取免费报价"
+      },
+      {
+        "aria": null,
+        "href": "#service-group-residential",
+        "text": "住宅住宅装修公寓 / 排屋 / 厨房"
+      },
+      {
+        "aria": null,
+        "href": "#service-group-commercial",
+        "text": "商业商业空间办公室 / 店铺 / 仓库"
+      },
+      {
+        "aria": null,
+        "href": "#service-group-specialty",
+        "text": "专项专项支持涂装 / 准证 / 图纸"
+      }
+    ]
+  },
+  {
+    "fileName": "04-service-detail-mobile-viewport.png",
+    "path": "/Users/wangchao/Desktop/装修网站/zhuangxiuwangzhan-main/audits/product-design-site-2026-06-19/screenshots/04-service-detail-mobile-viewport.png",
+    "requestedViewport": "390x844",
+    "hasOverflow": false,
+    "hasReplacementChar": false,
+    "headings": [
+      {
+        "tag": "H1",
+        "text": "住宅装修与旧屋翻新"
+      },
+      {
+        "tag": "H2",
+        "text": "服务概览"
+      }
+    ],
+    "scrollY": 0,
+    "title": "马来西亚住宅装修与旧屋翻新 | FLASH CAST",
+    "url": "http://127.0.0.1:4192/zh/services/renovation",
+    "viewport": "390x844",
+    "visibleButtons": [
+      {
+        "aria": null,
+        "href": "#main-content",
+        "text": "跳到主要内容"
+      },
+      {
+        "aria": null,
+        "href": "/zh",
+        "text": "FLASH CAST SDN. BHD."
+      },
+      {
+        "aria": "切换语言",
+        "href": "/en/services/renovation",
+        "text": "EN"
+      },
+      {
+        "aria": "拨打电话",
+        "href": "tel:+601128853888",
+        "text": ""
+      },
+      {
+        "aria": "打开导航菜单",
+        "href": null,
+        "text": ""
+      },
+      {
+        "aria": null,
+        "href": "/zh/services",
+        "text": "全部服务"
+      },
+      {
+        "aria": null,
+        "href": "/zh/quote?source=service&title=%E4%BD%8F%E5%AE%85%E8%A3%85%E4%BF%AE%E4%B8%8E%E6%97%A7%E5%B1%8B%E7%BF%BB%E6%96%B0&projectType=Residential+Renovation",
+        "text": "获取报价"
+      },
+      {
+        "aria": null,
+        "href": "https://wa.me/601128853888",
+        "text": "WhatsApp 联系"
+      }
+    ]
+  },
+  {
+    "fileName": "05-quote-desktop-viewport.png",
+    "path": "/Users/wangchao/Desktop/装修网站/zhuangxiuwangzhan-main/audits/product-design-site-2026-06-19/screenshots/05-quote-desktop-viewport.png",
+    "requestedViewport": "1440x1000",
+    "hasOverflow": false,
+    "hasReplacementChar": false,
+    "headings": [
+      {
+        "tag": "H1",
+        "text": "免费装修报价"
+      },
+      {
+        "tag": "H2",
+        "text": "请告诉我们你的项目"
+      },
+      {
+        "tag": "H2",
+        "text": "你将获得什么"
+      }
+    ],
+    "scrollY": 0,
+    "title": "免费装修报价 | 吉隆坡与雪兰莪 | FLASH CAST",
+    "url": "http://127.0.0.1:4192/zh/quote?source=service&title=%E5%85%A8%E5%B1%8B%E8%A3%85%E4%BF%AE",
+    "viewport": "1440x1000",
+    "visibleButtons": [
+      {
+        "aria": null,
+        "href": "#main-content",
+        "text": "跳到主要内容"
+      },
+      {
+        "aria": null,
+        "href": "/zh",
+        "text": "FLASH CAST SDN. BHD."
+      },
+      {
+        "aria": null,
+        "href": "/zh",
+        "text": "首页"
+      },
+      {
+        "aria": null,
+        "href": "/zh/about",
+        "text": "关于我们"
+      },
+      {
+        "aria": null,
+        "href": "/zh/services",
+        "text": "服务项目"
+      },
+      {
+        "aria": null,
+        "href": "/zh/materials",
+        "text": "材料库"
+      },
+      {
+        "aria": null,
+        "href": "/zh/projects",
+        "text": "项目案例"
+      },
+      {
+        "aria": null,
+        "href": "/zh/process",
+        "text": "施工流程"
+      },
+      {
+        "aria": null,
+        "href": null,
+        "text": "更多"
+      },
+      {
+        "aria": "切换语言",
+        "href": "/en/quote?source=service&title=%E5%85%A8%E5%B1%8B%E8%A3%85%E4%BF%AE",
+        "text": "EN|中文"
+      },
+      {
+        "aria": "拨打电话",
+        "href": "tel:+601128853888",
+        "text": ""
+      },
+      {
+        "aria": "WhatsApp 咨询",
+        "href": "https://wa.me/601128853888",
+        "text": ""
+      },
+      {
+        "aria": null,
+        "href": "/zh/quote",
+        "text": "获取免费报价"
+      }
+    ]
+  },
+  {
+    "fileName": "06-quote-mobile-viewport.png",
+    "path": "/Users/wangchao/Desktop/装修网站/zhuangxiuwangzhan-main/audits/product-design-site-2026-06-19/screenshots/06-quote-mobile-viewport.png",
+    "requestedViewport": "390x844",
+    "hasOverflow": false,
+    "hasReplacementChar": false,
+    "headings": [
+      {
+        "tag": "H1",
+        "text": "免费装修报价"
+      },
+      {
+        "tag": "H2",
+        "text": "请告诉我们你的项目"
+      }
+    ],
+    "scrollY": 0,
+    "title": "免费装修报价 | 吉隆坡与雪兰莪 | FLASH CAST",
+    "url": "http://127.0.0.1:4192/zh/quote?source=service&title=%E5%85%A8%E5%B1%8B%E8%A3%85%E4%BF%AE",
+    "viewport": "390x844",
+    "visibleButtons": [
+      {
+        "aria": null,
+        "href": "#main-content",
+        "text": "跳到主要内容"
+      },
+      {
+        "aria": null,
+        "href": "/zh",
+        "text": "FLASH CAST SDN. BHD."
+      },
+      {
+        "aria": "切换语言",
+        "href": "/en/quote?source=service&title=%E5%85%A8%E5%B1%8B%E8%A3%85%E4%BF%AE",
+        "text": "EN"
+      },
+      {
+        "aria": "拨打电话",
+        "href": "tel:+601128853888",
+        "text": ""
+      },
+      {
+        "aria": "打开导航菜单",
+        "href": null,
+        "text": ""
+      }
+    ]
+  },
+  {
+    "fileName": "07-quote-mobile-form-viewport.png",
+    "path": "/Users/wangchao/Desktop/装修网站/zhuangxiuwangzhan-main/audits/product-design-site-2026-06-19/screenshots/07-quote-mobile-form-viewport.png",
+    "requestedViewport": "390x844",
+    "hasOverflow": false,
+    "hasReplacementChar": false,
+    "headings": [
+      {
+        "tag": "H2",
+        "text": "请告诉我们你的项目"
+      }
+    ],
+    "scrollY": 607,
+    "title": "免费装修报价 | 吉隆坡与雪兰莪 | FLASH CAST",
+    "url": "http://127.0.0.1:4192/zh/quote?source=service&title=%E5%85%A8%E5%B1%8B%E8%A3%85%E4%BF%AE",
+    "viewport": "390x844",
+    "visibleButtons": [
+      {
+        "aria": null,
+        "href": "/zh",
+        "text": "FLASH CAST SDN. BHD."
+      },
+      {
+        "aria": "切换语言",
+        "href": "/en/quote?source=service&title=%E5%85%A8%E5%B1%8B%E8%A3%85%E4%BF%AE",
+        "text": "EN"
+      },
+      {
+        "aria": "拨打电话",
+        "href": "tel:+601128853888",
+        "text": ""
+      },
+      {
+        "aria": "打开导航菜单",
+        "href": null,
+        "text": ""
+      }
+    ]
+  },
+  {
+    "fileName": "08-admin-login-mobile-viewport.png",
+    "path": "/Users/wangchao/Desktop/装修网站/zhuangxiuwangzhan-main/audits/product-design-site-2026-06-19/screenshots/08-admin-login-mobile-viewport.png",
+    "requestedViewport": "390x844",
+    "hasOverflow": false,
+    "hasReplacementChar": false,
+    "headings": [
+      {
+        "tag": "H1",
+        "text": "管理员登录"
+      }
+    ],
+    "scrollY": 0,
+    "title": "管理员登录 | FLASH CAST 后台管理",
+    "url": "http://127.0.0.1:4192/admin",
+    "viewport": "390x844",
+    "visibleButtons": [
+      {
+        "aria": "中文",
+        "href": null,
+        "text": "中文"
+      },
+      {
+        "aria": "英文",
+        "href": null,
+        "text": "EN"
+      },
+      {
+        "aria": "深色",
+        "href": null,
+        "text": ""
+      },
+      {
+        "aria": null,
+        "href": null,
+        "text": "登录"
+      }
+    ]
+  },
+  {
+    "fileName": "09-admin-login-desktop-viewport.png",
+    "path": "/Users/wangchao/Desktop/装修网站/zhuangxiuwangzhan-main/audits/product-design-site-2026-06-19/screenshots/09-admin-login-desktop-viewport.png",
+    "requestedViewport": "1440x1000",
+    "hasOverflow": false,
+    "hasReplacementChar": false,
+    "headings": [
+      {
+        "tag": "H1",
+        "text": "管理员登录"
+      }
+    ],
+    "scrollY": 0,
+    "title": "管理员登录 | FLASH CAST 后台管理",
+    "url": "http://127.0.0.1:4192/admin",
+    "viewport": "1440x1000",
+    "visibleButtons": [
+      {
+        "aria": "中文",
+        "href": null,
+        "text": "中文"
+      },
+      {
+        "aria": "英文",
+        "href": null,
+        "text": "EN"
+      },
+      {
+        "aria": "深色",
+        "href": null,
+        "text": ""
+      },
+      {
+        "aria": null,
+        "href": null,
+        "text": "登录"
+      }
+    ]
+  }
+]

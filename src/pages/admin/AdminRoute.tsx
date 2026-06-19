@@ -1,6 +1,6 @@
 import { useEffect, useLayoutEffect, useRef, type ReactNode } from "react";
 import { Helmet } from "react-helmet-async";
-import { Link, Navigate, Outlet } from "react-router-dom";
+import { Link, Navigate, Outlet, useLocation } from "react-router-dom";
 import AdminHelpTip from "@/components/admin/AdminHelpTip";
 import { Button } from "@/components/ui/button";
 import { adminRouteText } from "@/i18n/adminRouteText";
@@ -47,6 +47,7 @@ const AdminNotice = ({
 
 const AdminRoute = () => {
   const { state: authState, isSupabaseConfigured } = useAdminAuth();
+  const location = useLocation();
   const lang = getAdminLang();
   const theme = getAdminTheme();
   const t = copy[lang];
@@ -93,7 +94,10 @@ const AdminRoute = () => {
     );
   }
 
-  if (authState === "signed-out") return <Navigate to="/admin" replace />;
+  if (authState === "signed-out") {
+    const redirectTo = `${location.pathname}${location.search}${location.hash}`;
+    return <Navigate to="/admin" replace state={{ reason: "signed-out", redirectTo }} />;
+  }
 
   if (authState === "denied") {
     return (

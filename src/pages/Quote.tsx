@@ -52,7 +52,8 @@ const getLocalizedOptionLabel = (options: { value: string; en: string; zh: strin
   return language === "zh" ? option.zh : option.en;
 };
 
-
+const formatQuoteText = (template: string, values: Record<string, string>) =>
+  Object.entries(values).reduce((text, [name, value]) => text.replaceAll(`{${name}}`, value), template);
 
 type FormErrors = Partial<Record<string, string>>;
 
@@ -98,6 +99,17 @@ const Quote = () => {
   const [status, setStatus] = useState<"idle" | "submitting" | "success" | "error">("idle");
   const formGuard = useFormGuard();
   const [honeypot, setHoneypot] = useState("");
+  const requiredCompletion = useMemo(
+    () => ({
+      contact: Boolean(form.name.trim() && form.phone.trim()),
+      project: Boolean(form.projectType && form.location.trim()),
+      details: Boolean(form.budget || form.propertySize.trim() || form.details.trim()),
+      done: [form.name.trim(), form.phone.trim(), form.projectType, form.location.trim()].filter(Boolean).length,
+      total: 4,
+    }),
+    [form.budget, form.details, form.location, form.name, form.phone, form.projectType, form.propertySize],
+  );
+  const formStepCompletion = [requiredCompletion.contact, requiredCompletion.project, requiredCompletion.details];
 
   useEffect(() => {
     void preloadTurnstile().catch(() => undefined);
@@ -270,6 +282,24 @@ const Quote = () => {
                 <h2 className="font-display text-2xl font-bold md:text-3xl">{t.formTitle}</h2>
               </div>
 
+              <div className="quote-form-guide" aria-live="polite">
+                <div className="quote-form-guide__summary">
+                  <span>{t.formTime}</span>
+                  <span>{formatQuoteText(t.formProgress, { done: String(requiredCompletion.done), total: String(requiredCompletion.total) })}</span>
+                </div>
+                <p className="quote-form-guide__text">{t.formGuideText}</p>
+                <ol className="quote-form-steps" aria-label={t.formTitle}>
+                  {t.formSteps.map((step, index) => (
+                    <li key={step} className="quote-form-steps__item" data-complete={formStepCompletion[index] ? "true" : "false"}>
+                      <span className="quote-form-steps__marker" aria-hidden="true">
+                        {formStepCompletion[index] ? <CheckCircle className="h-3.5 w-3.5" /> : index + 1}
+                      </span>
+                      <span>{step}</span>
+                    </li>
+                  ))}
+                </ol>
+              </div>
+
               {status === "error" && (
                 <div role="alert" aria-live="polite" className="mb-6 flex items-start gap-3 rounded-card border border-destructive/20 bg-destructive/5 p-4 text-sm">
                   <AlertCircle className="mt-0.5 h-4 w-4 text-destructive" />
@@ -288,6 +318,10 @@ const Quote = () => {
               )}
 
               <form onSubmit={handleSubmit} className="space-y-4" noValidate>
+                <div className="quote-form-section-label">
+                  <span>1</span>
+                  {t.contactSection}
+                </div>
                 <div className="grid gap-4 md:grid-cols-2">
                   <div>
                     <label htmlFor="quote-name" className="mb-1.5 block text-sm">{t.name}</label>
@@ -301,7 +335,7 @@ const Quote = () => {
                   </div>
                 </div>
 
-                <div className="grid gap-4 md:grid-cols-2">
+                <div className="grid gap-4">
                   <div>
                     <label htmlFor="quote-email" className="mb-1.5 block text-sm">
                       {t.email} <span className="text-muted-foreground">({t.optional})</span>
@@ -309,13 +343,12 @@ const Quote = () => {
                     <Input id="quote-email" type="email" value={form.email} onChange={(e) => updateForm("email", e.target.value)} placeholder={t.emailPlaceholder} aria-invalid={Boolean(errors.email)} aria-describedby={errors.email ? "quote-email-error" : undefined} />
                     {errors.email && <p id="quote-email-error" role="alert" className="mt-1 text-xs text-destructive">{errors.email}</p>}
                   </div>
-                  <div>
-                    <label htmlFor="quote-location" className="mb-1.5 block text-sm">{t.location}</label>
-                    <Input id="quote-location" value={form.location} onChange={(e) => updateForm("location", e.target.value)} placeholder={t.locationPlaceholder} aria-invalid={Boolean(errors.location)} aria-describedby={errors.location ? "quote-location-error" : undefined} />
-                    {errors.location && <p id="quote-location-error" role="alert" className="mt-1 text-xs text-destructive">{errors.location}</p>}
-                  </div>
                 </div>
 
+                <div className="quote-form-section-label">
+                  <span>2</span>
+                  {t.projectSection}
+                </div>
                 <div className="grid gap-4 md:grid-cols-2">
                   <div>
                     <label htmlFor="quote-project-type" className="mb-1.5 block text-sm">{t.projectType}</label>
@@ -337,23 +370,33 @@ const Quote = () => {
                     {errors.projectType && <p id="quote-project-type-error" role="alert" className="mt-1 text-xs text-destructive">{errors.projectType}</p>}
                   </div>
                   <div>
-                    <label htmlFor="quote-budget" className="mb-1.5 block text-sm">{t.budgetRange}</label>
-                    <select
-                      id="quote-budget"
-                      className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
-                      value={form.budget}
-                      onChange={(e) => updateForm("budget", e.target.value)}
-                    >
-                      <option value="">{t.selectBudgetRange}</option>
-                      {budgetRanges.map((item) => (
-                        <option key={item.value} value={item.value}>
-                          {language === "zh" ? item.zh : item.en}
-                        </option>
-                      ))}
-                    </select>
+                    <label htmlFor="quote-location" className="mb-1.5 block text-sm">{t.location}</label>
+                    <Input id="quote-location" value={form.location} onChange={(e) => updateForm("location", e.target.value)} placeholder={t.locationPlaceholder} aria-invalid={Boolean(errors.location)} aria-describedby={errors.location ? "quote-location-error" : undefined} />
+                    {errors.location && <p id="quote-location-error" role="alert" className="mt-1 text-xs text-destructive">{errors.location}</p>}
                   </div>
                 </div>
 
+                <div>
+                  <label htmlFor="quote-budget" className="mb-1.5 block text-sm">{t.budgetRange}</label>
+                  <select
+                    id="quote-budget"
+                    className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+                    value={form.budget}
+                    onChange={(e) => updateForm("budget", e.target.value)}
+                  >
+                    <option value="">{t.selectBudgetRange}</option>
+                    {budgetRanges.map((item) => (
+                      <option key={item.value} value={item.value}>
+                        {language === "zh" ? item.zh : item.en}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                <div className="quote-form-section-label">
+                  <span>3</span>
+                  {t.detailsSection}
+                </div>
                 <div>
                   <label htmlFor="quote-property-size" className="mb-1.5 block text-sm">
                     {t.propertySize} <span className="text-muted-foreground">({t.approx})</span>

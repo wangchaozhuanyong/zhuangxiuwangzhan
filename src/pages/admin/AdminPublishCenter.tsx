@@ -1,6 +1,7 @@
 import { useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import AdminPageHeader from "@/components/admin/AdminPageHeader";
+import AdminLoadingState from "@/components/admin/AdminLoadingState";
 import AdminStatCard from "@/components/admin/AdminStatCard";
 import AdminStatusBadge from "@/components/admin/AdminStatusBadge";
 import { Button } from "@/components/ui/button";
@@ -11,6 +12,8 @@ import { useAdminContentHealth } from "@/lib/adminContentHealth";
 const statusFilters = ["all", "draft", "published", "archived", "issues"] as const;
 type StatusFilter = (typeof statusFilters)[number];
 type AdminPublishCenterTextKey = keyof typeof adminPublishCenterText;
+
+const emptyContentHealthItems: NonNullable<ReturnType<typeof useAdminContentHealth>["data"]> = [];
 
 const formatTime = (value: string | null) => {
   if (!value) return "-";
@@ -24,7 +27,9 @@ export default function AdminPublishCenter() {
   const formatA = (key: AdminPublishCenterTextKey, values: Record<string, string>) =>
     Object.entries(values).reduce((text, [name, value]) => text.replaceAll(`{${name}}`, value), A(key));
   const filterLabel = (key: StatusFilter) => adminPublishCenterStatusFilters[key][language];
-  const { data: items = [], isFetching, refetch } = useAdminContentHealth();
+  const { data, isFetching, refetch } = useAdminContentHealth();
+  const items = data ?? emptyContentHealthItems;
+  const initialLoading = isFetching && !data;
   const [filter, setFilter] = useState<StatusFilter>("all");
 
   const summary = useMemo(
@@ -60,6 +65,11 @@ export default function AdminPublishCenter() {
         }
       />
 
+      {initialLoading ? (
+        <AdminLoadingState label={A("refreshing")} />
+      ) : (
+      <>
+
       <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-5">
         <AdminStatCard label={A("totalContent")} value={summary.total} helpText={A("totalContentHelp")} />
         <AdminStatCard label={A("drafts")} value={summary.draft} helpText={A("draftsHelp")} />
@@ -68,9 +78,9 @@ export default function AdminPublishCenter() {
         <AdminStatCard label={A("publishRisk")} value={summary.issues} helpText={A("publishRiskHelp")} href="/admin/content-health" />
       </div>
 
-      <div data-admin-card-actions className="flex flex-wrap gap-2 rounded-xl border border-border bg-card p-4 sm:p-5">
+      <div data-admin-card-actions className="flex flex-wrap gap-2 rounded-xl border border-border bg-card p-4 sm:p-5" role="group" aria-label={A("title")}>
         {statusFilters.map((item) => (
-          <Button key={item} type="button" variant={filter === item ? "default" : "outline"} size="sm" onClick={() => setFilter(item)}>
+          <Button key={item} type="button" variant={filter === item ? "default" : "outline"} size="sm" aria-pressed={filter === item} onClick={() => setFilter(item)}>
             {filterLabel(item)}
           </Button>
         ))}
@@ -104,6 +114,8 @@ export default function AdminPublishCenter() {
         ))}
         {filtered.length === 0 && <div className="rounded-xl border border-border bg-card p-8 text-sm text-muted-foreground">{A("empty")}</div>}
       </div>
+      </>
+      )}
     </div>
   );
 }

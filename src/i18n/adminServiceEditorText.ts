@@ -30,6 +30,7 @@ export const adminServiceEditorText = {
   preview: { en: "Preview", zh: "预览" },
   saveDraft: { en: "Save draft", zh: "保存草稿" },
   publish: { en: "Publish", zh: "发布" },
+  englishTools: { en: "English tools", zh: "英文工具" },
   saveAndGenerateEnglish: { en: "Save and auto-generate English", zh: "保存并自动生成英文" },
   forceRegenerateEnglish: { en: "Force regenerate English", zh: "强制重新生成英文" },
   newTitle: { en: "New service", zh: "新建服务" },

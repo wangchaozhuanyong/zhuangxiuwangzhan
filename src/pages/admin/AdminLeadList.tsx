@@ -4,7 +4,9 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import AdminPageHeader from "@/components/admin/AdminPageHeader";
+import AdminAlert from "@/components/admin/AdminAlert";
 import AdminListPager from "@/components/admin/AdminListPager";
+import AdminLoadingState from "@/components/admin/AdminLoadingState";
 import { useAdminLeads } from "@/lib/adminLeadQueries";
 import { getAdminLang } from "@/lib/adminLocale";
 import {
@@ -43,6 +45,7 @@ const AdminLeadList = () => {
   const total = data?.count ?? 0;
   const pageSize = data?.pageSize ?? 30;
   const message = error ? formatUserFacingError(error, lang) : "";
+  const initialLoading = isFetching && !data;
   const workflowOptions = getAdminWorkflowOptions("leads", lang);
 
   useEffect(() => {
@@ -109,8 +112,13 @@ const AdminLeadList = () => {
       />
 
       <div data-admin-filter-bar className="grid gap-3 md:grid-cols-[1fr_220px]">
-        <Input value={search} onChange={(event) => setSearch(event.target.value)} placeholder={A("search")} />
-        <select value={status} onChange={(event) => handleStatusChange(event.target.value)} className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm">
+        <Input value={search} onChange={(event) => setSearch(event.target.value)} placeholder={A("search")} aria-label={A("search")} />
+        <select
+          value={status}
+          onChange={(event) => handleStatusChange(event.target.value)}
+          aria-label={A("status")}
+          className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+        >
           {statuses.map((item) => (
             <option key={item} value={item}>
               {item === "all" ? A("statusAll") : translateStatusLabel("leads", item, lang)}
@@ -118,13 +126,14 @@ const AdminLeadList = () => {
           ))}
         </select>
       </div>
-      <div data-admin-card-actions className="flex flex-wrap gap-2">
+      <div data-admin-card-actions className="flex flex-wrap gap-2" role="group" aria-label={A("status")}>
         {workflowOptions.map((item) => (
           <Button
             key={item.value}
             type="button"
             size="sm"
             variant={workflow === item.value ? "default" : "outline"}
+            aria-pressed={workflow === item.value}
             title={item.help}
             onClick={() => handleWorkflowChange(item.value)}
           >
@@ -132,8 +141,11 @@ const AdminLeadList = () => {
           </Button>
         ))}
       </div>
-      {message && <p className="rounded-lg bg-muted p-3 text-sm">{message}</p>}
+      {message && <AdminAlert tone="error">{message}</AdminAlert>}
 
+      {initialLoading ? (
+        <AdminLoadingState />
+      ) : (
       <div className="space-y-3">
         {rows.map((lead) => {
           const whatsappHref = whatsappHrefFromPhone(lead.phone);
@@ -165,6 +177,7 @@ const AdminLeadList = () => {
         })}
         {rows.length === 0 && <div className="rounded-xl border border-border bg-card p-6 text-sm text-muted-foreground">{A("empty")}</div>}
       </div>
+      )}
       <AdminListPager page={page} pageSize={pageSize} total={total} isFetching={isFetching} itemLabel={A("pagerItemLabel")} onPageChange={setPage} />
     </div>
   );

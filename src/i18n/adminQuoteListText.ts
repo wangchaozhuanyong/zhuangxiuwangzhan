@@ -9,6 +9,7 @@ export const adminQuoteListText = {
     zh: "这里收的是用户主动提交的报价表单，信息比咨询页更完整，方便直接做预算判断。",
   },
   search: { en: "Search customer, phone, project, location...", zh: "搜索客户、电话、项目、地区..." },
+  status: { en: "Status", zh: "状态" },
   statusAll: { en: "All statuses", zh: "全部状态" },
   exportCsv: { en: "Export CSV", zh: "导出 CSV" },
   exportCurrentTitle: {

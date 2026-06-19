@@ -1,4 +1,4 @@
-﻿import { useMemo } from "react";
+﻿import { useEffect, useMemo, useState } from "react";
 import Link from "@/components/LocalizedLink";
 import { ArrowRight } from "lucide-react";
 import { servicesData } from "@/data/services";
@@ -121,6 +121,8 @@ const getGroupForService = (key: string): ServiceGroupId => {
   return serviceGroups.find((group) => group.keys.includes(key))?.id || "specialty";
 };
 
+const getServiceGroupHash = (groupId: ServiceGroupId) => `#service-group-${groupId}`;
+
 const Services = () => {
   const { language } = useLanguage();
   const t = servicesPageText[language];
@@ -150,8 +152,45 @@ const Services = () => {
       services: normalizedServices.filter(({ key }) => getGroupForService(key) === group.id),
     }));
   }, [normalizedServices]);
+  const visibleGroups = useMemo(() => groupedServices.filter((group) => group.services.length > 0), [groupedServices]);
+  const [activeGroupId, setActiveGroupId] = useState<ServiceGroupId>("residential");
   const geoText = applyPageTemplate(pageContent?.content, { count: normalizedServices.length });
   const heroImage = resolvePageHeroImage(pageContent?.image_url, pageHeroImages.services);
+
+  useEffect(() => {
+    const groupIds = visibleGroups.map((group) => group.id);
+    if (!groupIds.length) return undefined;
+
+    const hashGroupId = window.location.hash.replace("#service-group-", "") as ServiceGroupId;
+    setActiveGroupId(groupIds.includes(hashGroupId) ? hashGroupId : groupIds[0]);
+
+    const updateActiveGroupFromHash = () => {
+      const nextGroupId = window.location.hash.replace("#service-group-", "") as ServiceGroupId;
+      if (groupIds.includes(nextGroupId)) setActiveGroupId(nextGroupId);
+    };
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const visibleEntry = entries
+          .filter((entry) => entry.isIntersecting)
+          .sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
+        const visibleId = visibleEntry?.target.id.replace("service-group-", "") as ServiceGroupId | undefined;
+        if (visibleId && groupIds.includes(visibleId)) setActiveGroupId(visibleId);
+      },
+      { rootMargin: "-34% 0px -52% 0px", threshold: [0.08, 0.24, 0.48] },
+    );
+
+    groupIds.forEach((groupId) => {
+      const section = document.getElementById(`service-group-${groupId}`);
+      if (section) observer.observe(section);
+    });
+    window.addEventListener("hashchange", updateActiveGroupFromHash);
+
+    return () => {
+      observer.disconnect();
+      window.removeEventListener("hashchange", updateActiveGroupFromHash);
+    };
+  }, [visibleGroups]);
 
   return (
     <main className="overflow-x-hidden pt-site-header">
@@ -200,19 +239,31 @@ const Services = () => {
 
           <Reveal direction="none">
             <nav className="service-category-nav" aria-label={t.directoryTitle}>
-              {groupedServices.map((group, index) => {
+              {visibleGroups.map((group, index) => {
                 const groupCopy = t.groups[group.id];
+                const groupCount = applyPageTemplate(t.groupCount, { count: group.services.length });
+                const isActive = activeGroupId === group.id;
 
                 return (
                   <a
                     key={group.id}
                     className="service-category-nav__item"
-                    href={`#service-group-${group.id}`}
+                    href={getServiceGroupHash(group.id)}
+                    aria-current={isActive ? "location" : undefined}
+                    data-active={isActive ? "true" : "false"}
+                    onClick={() => setActiveGroupId(group.id)}
                     style={{ animationDelay: `${index * 70}ms` }}
                   >
-                    <span className="service-category-nav__label">{groupCopy.short}</span>
+                    <span className="service-category-nav__meta">
+                      <span className="service-category-nav__label">{groupCopy.short}</span>
+                      <span className="service-category-nav__count">{groupCount}</span>
+                    </span>
                     <strong>{groupCopy.title}</strong>
-                    <span>{groupCopy.hint}</span>
+                    <span className="service-category-nav__hint">{groupCopy.hint}</span>
+                    <span className="service-category-nav__action">
+                      <span>{groupCopy.cta}</span>
+                      <ArrowRight className="h-4 w-4" aria-hidden="true" />
+                    </span>
                   </a>
                 );
               })}
@@ -221,9 +272,8 @@ const Services = () => {
         </div>
       </section>
 
-      {groupedServices.map((group, groupIndex) => {
+      {visibleGroups.map((group, groupIndex) => {
         const groupCopy = t.groups[group.id];
-        if (!group.services.length) return null;
 
         return (
           <section

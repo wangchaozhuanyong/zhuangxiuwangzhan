@@ -2,6 +2,7 @@ import { useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { RefreshCw, Search } from "lucide-react";
 import AdminEmptyState from "@/components/admin/AdminEmptyState";
+import AdminLoadingState from "@/components/admin/AdminLoadingState";
 import AdminPageHeader from "@/components/admin/AdminPageHeader";
 import AdminStatCard from "@/components/admin/AdminStatCard";
 import AdminStatusBadge from "@/components/admin/AdminStatusBadge";
@@ -19,8 +20,12 @@ const A = (key: AdminContentHealthTextKey) => adminContentHealthText[key][getAdm
 const formatA = (key: AdminContentHealthTextKey, values: Record<string, string>) =>
   Object.entries(values).reduce((text, [name, value]) => text.replaceAll(`{${name}}`, value), A(key));
 
+const emptyContentHealthItems: NonNullable<ReturnType<typeof useAdminContentHealth>["data"]> = [];
+
 export default function AdminContentHealth() {
-  const { data: items = [], isFetching, refetch } = useAdminContentHealth();
+  const { data, isFetching, refetch } = useAdminContentHealth();
+  const items = data ?? emptyContentHealthItems;
+  const initialLoading = isFetching && !data;
   const [filter, setFilter] = useState<AdminContentHealthFilterKey>("all");
   const [search, setSearch] = useState("");
   const filters = adminContentHealthFilters.map((item) => ({
@@ -69,6 +74,11 @@ export default function AdminContentHealth() {
           </Button>
         }
       />
+
+      {initialLoading ? (
+        <AdminLoadingState label={A("checking")} />
+      ) : (
+      <>
 
       <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-7">
         <AdminStatCard label={A("totalContent")} value={summary.total} helpText={A("totalContentHelp")} />
@@ -170,6 +180,8 @@ export default function AdminContentHealth() {
           </div>
         )}
       </section>
+      </>
+      )}
     </div>
   );
 }

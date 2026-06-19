@@ -1,6 +1,8 @@
 import { useCallback, useMemo, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import AdminPageHeader from "@/components/admin/AdminPageHeader";
+import AdminAlert from "@/components/admin/AdminAlert";
+import AdminLoadingState from "@/components/admin/AdminLoadingState";
 import { Button } from "@/components/ui/button";
 import {
   adminSeoGuidanceByTableText,
@@ -74,6 +76,8 @@ const technicalWorkflow = [
 type AdminSeoManagerTextKey = keyof typeof adminSeoManagerText;
 type AdminSeoIssueLabelKey = keyof typeof adminSeoIssueLabels;
 type AdminSeoLanguage = keyof typeof adminSeoManagerText[AdminSeoManagerTextKey];
+
+const emptySeoRows: NonNullable<ReturnType<typeof useAdminSeoAudit>["data"]> = [];
 
 const localizedIssueLabel = (key: AdminSeoIssueLabelKey, language: AdminSeoLanguage) => adminSeoIssueLabels[key][language];
 
@@ -217,7 +221,9 @@ const AdminSeoAuditView = () => {
   );
   const strategyCards = strategyCardKeys.map((key) => adminSeoStrategyCards[language][key]);
   const guidanceByTable = adminSeoGuidanceByTableText[language];
-  const { data: rows = [], isFetching, isError, error, refetch } = useAdminSeoAudit();
+  const { data, isFetching, isError, error, refetch } = useAdminSeoAudit();
+  const rows = data ?? emptySeoRows;
+  const initialLoading = isFetching && !data;
   const [status, setStatus] = useState("all");
 
   const checkedRows = useMemo<CheckedSeoRow[]>(() => rows.map((row) => ({ ...row, issues: buildRowIssues(row, language) })), [language, rows]);
@@ -280,7 +286,12 @@ const AdminSeoAuditView = () => {
             <Button type="button" variant="outline" size="sm" onClick={() => void refetch()} disabled={isFetching}>
               {isFetching ? A("refreshing") : A("refresh")}
             </Button>
-            <select value={status} onChange={(event) => setStatus(event.target.value)} className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm">
+            <select
+              value={status}
+              onChange={(event) => setStatus(event.target.value)}
+              aria-label={A("filterLabel")}
+              className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+            >
               <option value="all">{A("filterAll")}</option>
               <option value="missing">{A("filterMissing")}</option>
               <option value="zh">{A("filterZh")}</option>
@@ -291,6 +302,11 @@ const AdminSeoAuditView = () => {
           </div>
         }
       />
+
+      {initialLoading ? (
+        <AdminLoadingState label={A("loading")} />
+      ) : (
+      <>
 
       <div className="grid gap-3 md:grid-cols-5">
         <div className="rounded-xl border border-border bg-card p-4">
@@ -327,7 +343,7 @@ const AdminSeoAuditView = () => {
         </div>
       </section>
 
-      {loadMessage && <p className="rounded-lg bg-muted p-3 text-sm">{loadMessage}</p>}
+      {loadMessage && <AdminAlert tone={isError ? "error" : "info"}>{loadMessage}</AdminAlert>}
 
       <div className="space-y-3">
         {filtered.map((row) => {
@@ -373,6 +389,8 @@ const AdminSeoAuditView = () => {
           );
         })}
       </div>
+      </>
+      )}
     </div>
   );
 };

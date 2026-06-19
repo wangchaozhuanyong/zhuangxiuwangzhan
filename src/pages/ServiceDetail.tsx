@@ -141,6 +141,15 @@ const ServiceDetail = () => {
               <WhatsAppIcon className="mr-2 h-[18px] w-[18px] text-whatsapp" /> {t.whatsapp}
             </a>
           </div>
+          <div className="page-hero__meta page-hero__meta--trust" aria-label={t.trustSignalsLabel}>
+            {t.trustSignals.map((signal) => (
+              <span key={signal.label}>
+                <CheckCircle className="h-3.5 w-3.5" aria-hidden="true" />
+                <strong>{signal.label}</strong>
+                <span className="page-hero__meta-text">{signal.text}</span>
+              </span>
+            ))}
+          </div>
         </div>
       </section>
 

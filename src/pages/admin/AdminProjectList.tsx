@@ -5,8 +5,10 @@ import { Button } from "@/components/ui/button";
 import { isSupabaseConfigured } from "@/lib/supabase";
 import { useAdminProjects, type AdminProjectRow } from "@/lib/adminBusinessContentQueries";
 import AdminPageHeader from "@/components/admin/AdminPageHeader";
+import AdminAlert from "@/components/admin/AdminAlert";
 import AdminDataTable, { type AdminDataTableColumn } from "@/components/admin/AdminDataTable";
 import AdminListPager from "@/components/admin/AdminListPager";
+import AdminLoadingState from "@/components/admin/AdminLoadingState";
 import AdminStatusBadge from "@/components/admin/AdminStatusBadge";
 import AdminEmptyState from "@/components/admin/AdminEmptyState";
 import SmartImage from "@/components/SmartImage";
@@ -36,6 +38,7 @@ export default function AdminProjectList() {
   const total = data?.count ?? 0;
   const pageSize = data?.pageSize ?? 30;
   const errorMessage = error ? formatUserFacingError(error, language) : "";
+  const initialLoading = isFetching && !data;
 
   useEffect(() => {
     setPage(0);
@@ -116,10 +119,11 @@ export default function AdminProjectList() {
       />
 
       <div data-admin-filter-bar className="mb-4 grid gap-3 md:grid-cols-[1fr_220px]">
-        <Input value={search} onChange={(e) => setSearch(e.target.value)} placeholder={A("searchPlaceholder")} />
+        <Input value={search} onChange={(e) => setSearch(e.target.value)} placeholder={A("searchPlaceholder")} aria-label={A("searchPlaceholder")} />
         <select
           value={status}
           onChange={(e) => setStatus(e.target.value)}
+          aria-label={A("statusHeader")}
           className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
         >
           <option value="all">{A("allStatuses")}</option>
@@ -131,24 +135,28 @@ export default function AdminProjectList() {
         </select>
       </div>
 
-      {errorMessage && <div className="mb-4 rounded-lg bg-muted p-3 text-sm">{errorMessage}</div>}
+      {errorMessage && <AdminAlert tone="error" className="mb-4">{errorMessage}</AdminAlert>}
 
-      <AdminDataTable
-        columns={columns}
-        rows={rows}
-        rowKey={(r) => r.id}
-        empty={
-          <AdminEmptyState
-            title={A("emptyTitle")}
-            description={A("emptyDescription")}
-            action={
-              <Button asChild>
-                <Link to="/admin/projects/new">{A("newProject")}</Link>
-              </Button>
-            }
-          />
-        }
-      />
+      {initialLoading ? (
+        <AdminLoadingState />
+      ) : (
+        <AdminDataTable
+          columns={columns}
+          rows={rows}
+          rowKey={(r) => r.id}
+          empty={
+            <AdminEmptyState
+              title={A("emptyTitle")}
+              description={A("emptyDescription")}
+              action={
+                <Button asChild>
+                  <Link to="/admin/projects/new">{A("newProject")}</Link>
+                </Button>
+              }
+            />
+          }
+        />
+      )}
       <AdminListPager page={page} pageSize={pageSize} total={total} isFetching={isFetching} itemLabel={A("itemLabel")} onPageChange={setPage} />
     </>
   );

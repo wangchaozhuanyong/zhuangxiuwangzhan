@@ -1,9 +1,19 @@
 import { useDeferredValue, useEffect, useState } from "react";
 import AdminPageHeader from "@/components/admin/AdminPageHeader";
 import AdminListPager from "@/components/admin/AdminListPager";
+import AdminAlert from "@/components/admin/AdminAlert";
+import AdminLoadingState from "@/components/admin/AdminLoadingState";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import {
   type AdminMediaAsset,
   useAdminMediaAssets,
@@ -26,6 +36,7 @@ import { toast } from "@/hooks/use-toast";
 import { adminMediaLibraryText, adminMediaUsageTypeLabels } from "@/i18n/adminMediaLibraryText";
 import { getAdminLang } from "@/lib/adminLocale";
 import { formatAdminMutationError } from "@/lib/adminMutation";
+import { formatUserFacingError } from "@/lib/userFacingText";
 
 const usageTypes = ["all", "hero", "project", "material", "blog", "logo", "icon", "og", "before_after", "video", "general"] as const;
 type UsageType = (typeof usageTypes)[number];
@@ -114,7 +125,8 @@ const AdminMediaLibrary = () => {
     }
   };
 
-  const banner = message || (error instanceof Error ? error.message : error ? String(error) : "");
+  const banner = message || (error ? formatUserFacingError(error, language) : "");
+  const initialLoading = isFetching && !data;
 
   return (
     <div className="space-y-6">
@@ -133,18 +145,35 @@ const AdminMediaLibrary = () => {
           <div className="mb-2 text-sm font-medium">{A("uploadVideo")}</div>
           <AdminVideoUpload folder="videos" onUploaded={(url, upload) => void createAsset(url, upload)} />
         </div>
-        {banner && <p className="mt-4 rounded-lg bg-muted p-3 text-sm">{banner}</p>}
+        {banner && (
+          <AdminAlert tone={error ? "error" : "info"} className="mt-4">
+            {banner}
+          </AdminAlert>
+        )}
       </div>
 
       <div className="rounded-xl border border-border bg-card p-4">
         <div data-admin-filter-bar className="grid gap-3 md:grid-cols-[1fr_220px]">
-          <Input value={search} onChange={(event) => setSearch(event.target.value)} placeholder={A("searchPlaceholder")} />
-          <select value={usageType} onChange={(event) => setUsageType(event.target.value as UsageType)} className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm">
+          <Input
+            value={search}
+            onChange={(event) => setSearch(event.target.value)}
+            placeholder={A("searchPlaceholder")}
+            aria-label={A("searchLabel")}
+          />
+          <select
+            value={usageType}
+            onChange={(event) => setUsageType(event.target.value as UsageType)}
+            aria-label={A("categoryLabel")}
+            className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+          >
             {usageTypes.map((item) => <option key={item} value={item}>{usageLabel(item)}</option>)}
           </select>
         </div>
       </div>
 
+      {initialLoading ? (
+        <AdminLoadingState />
+      ) : (
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
         {assets.map((asset) => {
           const kind = inferMediaKind({ mimeType: asset.mime_type, url: asset.file_url });
@@ -190,31 +219,74 @@ const AdminMediaLibrary = () => {
           );
         })}
       </div>
+      )}
       <AdminListPager page={page} pageSize={pageSize} total={total} isFetching={isFetching} itemLabel={A("itemLabel")} onPageChange={setPage} />
 
-      {editing && (
-        <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/40 p-3 sm:items-center sm:p-4">
-          <div className="max-h-[calc(100dvh-1.5rem)] w-full max-w-xl overflow-y-auto rounded-xl border border-border bg-card p-4 shadow-xl sm:max-h-[calc(100dvh-3rem)] sm:p-6">
-            <h2 className="mb-4 font-display text-xl font-bold">{A("editDialogTitle")}</h2>
+      <Dialog
+        open={Boolean(editing)}
+        onOpenChange={(open) => {
+          if (!open) setEditing(null);
+        }}
+      >
+        <DialogContent className="max-w-xl">
+          <DialogHeader>
+            <DialogTitle>{A("editDialogTitle")}</DialogTitle>
+            <DialogDescription>{A("editDialogDescription")}</DialogDescription>
+          </DialogHeader>
+          {editing && (
             <div className="space-y-4">
-              <Input value={editing.folder || ""} onChange={(event) => setEditing({ ...editing, folder: event.target.value })} placeholder={A("folderPlaceholder")} />
-              <select value={editing.usage_type || "general"} onChange={(event) => setEditing({ ...editing, usage_type: event.target.value })} className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm">
-                {usageTypes.filter((item) => item !== "all").map((item) => (
-                  <option key={item} value={item}>{usageLabel(item)}</option>
-                ))}
-              </select>
-              <Textarea rows={3} value={editing.alt_zh || ""} onChange={(event) => setEditing({ ...editing, alt_zh: event.target.value })} placeholder={A("altZhPlaceholder")} />
-              <Textarea rows={3} value={editing.alt_en || ""} onChange={(event) => setEditing({ ...editing, alt_en: event.target.value })} placeholder={A("altEnPlaceholder")} />
+              <div>
+                <label htmlFor="admin-media-folder" className="mb-1.5 block text-sm font-medium">{A("folderLabel")}</label>
+                <Input
+                  id="admin-media-folder"
+                  value={editing.folder || ""}
+                  onChange={(event) => setEditing({ ...editing, folder: event.target.value })}
+                  placeholder={A("folderPlaceholder")}
+                />
+              </div>
+              <div>
+                <label htmlFor="admin-media-usage-type" className="mb-1.5 block text-sm font-medium">{A("usageTypeLabel")}</label>
+                <select
+                  id="admin-media-usage-type"
+                  value={editing.usage_type || "general"}
+                  onChange={(event) => setEditing({ ...editing, usage_type: event.target.value })}
+                  className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+                >
+                  {usageTypes.filter((item) => item !== "all").map((item) => (
+                    <option key={item} value={item}>{usageLabel(item)}</option>
+                  ))}
+                </select>
+              </div>
+              <div>
+                <label htmlFor="admin-media-alt-zh" className="mb-1.5 block text-sm font-medium">{A("altZhLabel")}</label>
+                <Textarea
+                  id="admin-media-alt-zh"
+                  rows={3}
+                  value={editing.alt_zh || ""}
+                  onChange={(event) => setEditing({ ...editing, alt_zh: event.target.value })}
+                  placeholder={A("altZhPlaceholder")}
+                />
+              </div>
+              <div>
+                <label htmlFor="admin-media-alt-en" className="mb-1.5 block text-sm font-medium">{A("altEnLabel")}</label>
+                <Textarea
+                  id="admin-media-alt-en"
+                  rows={3}
+                  value={editing.alt_en || ""}
+                  onChange={(event) => setEditing({ ...editing, alt_en: event.target.value })}
+                  placeholder={A("altEnPlaceholder")}
+                />
+              </div>
             </div>
-            <div data-admin-mobile-actions className="mt-5 flex justify-end gap-2">
-              <Button type="button" variant="outline" onClick={() => setEditing(null)}>{A("cancel")}</Button>
-              <Button type="button" onClick={() => void saveAsset()} disabled={updateMutation.isPending} aria-busy={updateMutation.isPending}>
-                {updateMutation.isPending ? A("saving") : A("save")}
-              </Button>
-            </div>
-          </div>
-        </div>
-      )}
+          )}
+          <DialogFooter data-admin-mobile-actions>
+            <Button type="button" variant="outline" onClick={() => setEditing(null)}>{A("cancel")}</Button>
+            <Button type="button" onClick={() => void saveAsset()} disabled={updateMutation.isPending || !editing} aria-busy={updateMutation.isPending}>
+              {updateMutation.isPending ? A("saving") : A("save")}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
       <AdminConfirmDialog
         open={Boolean(assetToDelete)}
         onOpenChange={(open) => {

@@ -24,6 +24,7 @@ import { formatAdminMutationError } from "@/lib/adminMutation";
 import { isNewAdminRouteRecord } from "@/lib/adminRouteParams";
 import { autoEnglishDescription, englishMissingHint, hasAnyMissingEnglish } from "@/lib/adminTranslation";
 import { formatUserFacingError } from "@/lib/userFacingText";
+import { MoreHorizontal } from "lucide-react";
 import {
   checkAdminServiceSlugUnique,
   generateAdminServiceEnglish,
@@ -348,18 +349,34 @@ export default function AdminServiceEditor() {
             <AdminActionButton action="content.publish" type="button" onClick={() => void publish()} disabled={saveBusy || isLoading}>
               {A("publish")}
             </AdminActionButton>
-            <AdminActionButton action="content.write" type="button" variant="outline" onClick={() => void save(undefined, true)} disabled={saveBusy || isLoading || !record.id}>
-              {A("saveAndGenerateEnglish")}
-            </AdminActionButton>
-            <AdminActionButton
-              action="content.write"
-              type="button"
-              variant="outline"
-              onClick={() => void forceRegenerateEnglish()}
-              disabled={saveBusy || isLoading || !record.id}
-            >
-              {A("forceRegenerateEnglish")}
-            </AdminActionButton>
+            <details className="group relative">
+              <summary className="inline-flex min-h-10 cursor-pointer list-none items-center justify-center gap-2 rounded-md border border-input bg-background px-4 py-2 text-sm font-medium ring-offset-background transition-colors hover:bg-accent hover:text-accent-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 [&::-webkit-details-marker]:hidden">
+                <MoreHorizontal className="h-4 w-4" aria-hidden="true" />
+                {A("englishTools")}
+              </summary>
+              <div className="mt-2 grid gap-2 rounded-md border border-border bg-card p-2 shadow-sm md:absolute md:right-0 md:z-40 md:w-72">
+                <AdminActionButton
+                  action="content.write"
+                  type="button"
+                  variant="outline"
+                  className="w-full justify-center"
+                  onClick={() => void save(undefined, true)}
+                  disabled={saveBusy || isLoading || !record.id}
+                >
+                  {A("saveAndGenerateEnglish")}
+                </AdminActionButton>
+                <AdminActionButton
+                  action="content.write"
+                  type="button"
+                  variant="outline"
+                  className="w-full justify-center"
+                  onClick={() => void forceRegenerateEnglish()}
+                  disabled={saveBusy || isLoading || !record.id}
+                >
+                  {A("forceRegenerateEnglish")}
+                </AdminActionButton>
+              </div>
+            </details>
           </>
         }
       />
