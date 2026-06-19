@@ -54,7 +54,7 @@ const DEFAULT_MAP_LATITUDE = "3.0830403";
 const DEFAULT_MAP_LONGITUDE = "101.6708234";
 const PUBLIC_HTML_BROWSER_TTL_SECONDS = 60;
 const PUBLIC_HTML_EDGE_TTL_SECONDS = 300;
-const PUBLIC_HTML_CACHE_VERSION = "20260619-services-faq-schema";
+const PUBLIC_HTML_CACHE_VERSION = "20260619-dynamic-image-preloads";
 const SITE_SETTINGS_CACHE_TTL_MS = 5 * 60 * 1000;
 const PUBLIC_PROJECT_SUMMARIES_CACHE_TTL_MS = 5 * 60 * 1000;
 const PUBLIC_PROJECT_DETAIL_CACHE_TTL_MS = 5 * 60 * 1000;
@@ -158,6 +158,111 @@ const escapeHtml = (value: string) =>
     .replace(/</g, "&lt;")
     .replace(/>/g, "&gt;")
     .replace(/"/g, "&quot;");
+
+type ImagePreload = {
+  href: string;
+  srcSet: string;
+  sizes: string;
+};
+
+const PROJECT_CARD_IMAGE_WIDTHS = [360, 560, 720, 900];
+const SUPABASE_PUBLIC_OBJECT_SEGMENT = "/storage/v1/object/public/";
+const SUPABASE_PUBLIC_RENDER_SEGMENT = "/storage/v1/render/image/public/";
+
+const isRecord = (value: unknown): value is Record<string, unknown> =>
+  Boolean(value && typeof value === "object" && !Array.isArray(value));
+
+const readString = (record: Record<string, unknown> | null | undefined, field: string) => {
+  const value = record?.[field];
+  return typeof value === "string" ? value : "";
+};
+
+const readRecordArray = (value: unknown): Record<string, unknown>[] =>
+  Array.isArray(value) ? value.filter(isRecord) : [];
+
+const isSupabasePublicObjectUrl = (value: string) =>
+  /^https?:\/\//i.test(value) && value.includes(SUPABASE_PUBLIC_OBJECT_SEGMENT);
+
+const toSupabaseRenderImageUrl = (value: string, width: number, height: number) => {
+  const renderBase = value.replace(SUPABASE_PUBLIC_OBJECT_SEGMENT, SUPABASE_PUBLIC_RENDER_SEGMENT);
+  const separator = renderBase.includes("?") ? "&" : "?";
+  const params = new URLSearchParams({
+    quality: "70",
+    width: String(width),
+    height: String(height),
+    format: "webp",
+  });
+
+  return `${renderBase}${separator}${params.toString()}`;
+};
+
+const getProjectImageRank = (record: Record<string, unknown>) => {
+  const imageType = readString(record, "image_type");
+  if (imageType === "cover") return 0;
+  if (imageType === "gallery") return 1;
+  if (imageType === "before" || imageType === "after") return 2;
+  return 3;
+};
+
+const getProjectThumbnailUrl = (project: Record<string, unknown>) => {
+  const images = readRecordArray(project.project_images).sort((a, b) => {
+    const rank = getProjectImageRank(a) - getProjectImageRank(b);
+    if (rank !== 0) return rank;
+    return Number(a.sort_order || 0) - Number(b.sort_order || 0);
+  });
+
+  return readString(images[0], "image_url") || readString(project, "image_url");
+};
+
+const buildProjectImagePreloads = (
+  projects: unknown,
+  maxImages: number,
+  options: { height: number; sizes: string },
+) => {
+  const seen = new Set<string>();
+  const preloads: ImagePreload[] = [];
+
+  for (const project of readRecordArray(projects)) {
+    if (preloads.length >= maxImages) break;
+    const imageUrl = getProjectThumbnailUrl(project);
+    if (!imageUrl || !isSupabasePublicObjectUrl(imageUrl) || seen.has(imageUrl)) continue;
+    seen.add(imageUrl);
+
+    const srcSet = PROJECT_CARD_IMAGE_WIDTHS.map(
+      (width) => `${toSupabaseRenderImageUrl(imageUrl, width, options.height)} ${width}w`,
+    ).join(", ");
+
+    preloads.push({
+      href: toSupabaseRenderImageUrl(imageUrl, PROJECT_CARD_IMAGE_WIDTHS[0], options.height),
+      srcSet,
+      sizes: options.sizes,
+    });
+  }
+
+  return preloads;
+};
+
+const getDynamicImagePreloads = (
+  key: string,
+  homeContentBundle: HomeContentBundleRow | null,
+  projectSummaries: ProjectSummaryRow[] | null,
+) => {
+  if (isHomePageKey(key)) {
+    return buildProjectImagePreloads(homeContentBundle?.projects, 4, {
+      height: 600,
+      sizes: "(max-width: 640px) 92vw, (max-width: 1024px) 45vw, 30vw",
+    });
+  }
+
+  if (getTopLevelPublicPageKey(key) === "projects") {
+    return buildProjectImagePreloads(projectSummaries, 12, {
+      height: 500,
+      sizes: "(max-width: 768px) 92vw, 45vw",
+    });
+  }
+
+  return [];
+};
 
 const serializeCsp = (items: string[][]) => items.map(([name, ...values]) => `${name} ${values.join(" ")}`).join("; ");
 
@@ -316,6 +421,20 @@ const injectPerformanceHints = (html: string, env: Record<string, string | undef
   ].filter(Boolean);
 
   return html.replace("</head>", `    ${hints.join("\n    ")}\n  </head>`);
+};
+
+const injectDynamicImagePreloads = (html: string, preloads: ImagePreload[]) => {
+  if (!preloads.length || html.includes("data-flashcast-dynamic-image-preloads")) return html;
+
+  const tags = [
+    '<meta data-flashcast-dynamic-image-preloads="true" />',
+    ...preloads.map(
+      (preload) =>
+        `<link rel="preload" as="image" href="${escapeHtml(preload.href)}" imagesrcset="${escapeHtml(preload.srcSet)}" imagesizes="${escapeHtml(preload.sizes)}" fetchpriority="high" />`,
+    ),
+  ];
+
+  return html.replace("</head>", `    ${tags.join("\n    ")}\n  </head>`);
 };
 
 const injectPublicData = (html: string, payload: unknown) => {
@@ -1128,6 +1247,10 @@ export const onRequest: PagesFunction = async (context) => {
       generatedAt: new Date().toISOString(),
     });
   }
+  transformed = injectDynamicImagePreloads(
+    transformed,
+    getDynamicImagePreloads(key, homeContentBundle, projectSummaries),
+  );
   transformed = injectPerformanceHints(
     transformed,
     env as Record<string, string | undefined>,
