@@ -17,6 +17,7 @@ import { useSiteSettings } from "@/hooks/useSiteSettings";
 import { isHtmlText, stripHtml } from "@/lib/text";
 import { sanitizeHtml } from "@/lib/sanitizeHtml";
 import { translateDisplayText } from "@/i18n/displayLabels";
+import { trackCtaClick } from "@/lib/analytics";
 import { toArray, toRecord, toText } from "@/lib/recordUtils";
 import { landingPageText } from "@/i18n/landingPageText";
 
@@ -118,7 +119,11 @@ const LandingPage = () => {
             <h1 className="page-hero__title heading-safe mb-4 text-3xl font-bold leading-tight text-on-media md:text-5xl">{landingPage.title}</h1>
             <p className="page-hero__description prose-safe mb-6 text-lg text-on-media-muted">{landingPage.subtitle}</p>
             <div className="flex flex-col gap-3 sm:flex-row sm:gap-4">
-              <Link to="/quote" className="btn-on-dark-primary min-h-12 w-full justify-center px-8 sm:w-auto">
+              <Link
+                to="/quote"
+                className="btn-on-dark-primary min-h-12 w-full justify-center px-8 sm:w-auto"
+                onClick={() => trackCtaClick("quote", "landing_hero", { destination: "/quote" })}
+              >
                 {t.quote} <ArrowRight className="h-4 w-4" />
               </Link>
               <a
@@ -126,6 +131,7 @@ const LandingPage = () => {
                 target="_blank"
                 rel="noopener noreferrer"
                 className="btn-on-dark-secondary min-h-12 w-full justify-center px-8 sm:w-auto"
+                onClick={() => trackCtaClick("whatsapp", "landing_hero", { destination: "whatsapp" })}
               >
                 <WhatsAppIcon className="mr-2 h-[18px] w-[18px] text-whatsapp" /> {t.whatsapp}
               </a>

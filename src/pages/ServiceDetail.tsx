@@ -18,6 +18,7 @@ import { useSiteSettings } from "@/hooks/useSiteSettings";
 import { isHtmlText, stripHtml } from "@/lib/text";
 import { sanitizeHtml } from "@/lib/sanitizeHtml";
 import { translateDisplayText } from "@/i18n/displayLabels";
+import { trackCtaClick } from "@/lib/analytics";
 import { buildQuotePath, quoteProjectTypeFromServiceSlug } from "@/lib/quoteContext";
 import { serviceDetailPageText } from "@/i18n/serviceDetailPageText";
 
@@ -129,7 +130,11 @@ const ServiceDetail = () => {
           <h1 className="page-hero__title heading-safe mb-4 max-w-2xl text-3xl font-bold text-on-media md:text-5xl">{serviceTitle}</h1>
           <p className="page-hero__description prose-safe mb-8 max-w-2xl text-base text-on-media-muted md:text-lg">{serviceSummary}</p>
           <div className="flex flex-col gap-3 sm:flex-row">
-            <Link to={quotePath} className="btn-on-dark-primary min-h-12 justify-center px-8 sm:w-auto">
+            <Link
+              to={quotePath}
+              className="btn-on-dark-primary min-h-12 justify-center px-8 sm:w-auto"
+              onClick={() => trackCtaClick("quote", "service_detail_hero", { destination: quotePath })}
+            >
               {t.getQuote} <ArrowRight className="h-4 w-4" />
             </Link>
             <a
@@ -137,6 +142,7 @@ const ServiceDetail = () => {
               target="_blank"
               rel="noopener noreferrer"
               className="btn-on-dark-secondary min-h-12 justify-center px-8 sm:w-auto"
+              onClick={() => trackCtaClick("whatsapp", "service_detail_hero", { destination: "whatsapp" })}
             >
               <WhatsAppIcon className="mr-2 h-[18px] w-[18px] text-whatsapp" /> {t.whatsapp}
             </a>

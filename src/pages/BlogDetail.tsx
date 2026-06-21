@@ -16,6 +16,7 @@ import Reveal from "@/components/Reveal";
 import { isHtmlText } from "@/lib/text";
 import { sanitizeHtml } from "@/lib/sanitizeHtml";
 import { translateBlogCategory, translateKeywordLabel, translateDisplayText } from "@/i18n/displayLabels";
+import { trackCtaClick } from "@/lib/analytics";
 import { formatBlogDate, formatBlogReadTime } from "@/lib/blogMeta";
 import { blogDetailPageText } from "@/i18n/blogDetailPageText";
 
@@ -170,7 +171,11 @@ const BlogDetail = () => {
               <h3 className="heading-safe mb-2 font-display text-xl font-bold">{t.ctaTitle}</h3>
               <p className="mb-4 text-sm text-muted-foreground">{t.ctaText}</p>
               <div className="flex flex-col justify-center gap-3 sm:flex-row sm:gap-4">
-                <Link to="/quote" className="btn-brand-primary min-h-12 w-full justify-center px-8 sm:w-auto">
+                <Link
+                  to="/quote"
+                  className="btn-brand-primary min-h-12 w-full justify-center px-8 sm:w-auto"
+                  onClick={() => trackCtaClick("quote", "blog_detail_cta", { destination: "/quote" })}
+                >
                   {t.quote} <ArrowRight className="h-4 w-4" />
                 </Link>
                 <a
@@ -178,6 +183,7 @@ const BlogDetail = () => {
                   target="_blank"
                   rel="noopener noreferrer"
                   className="btn-brand-secondary min-h-12 w-full justify-center px-8 sm:w-auto"
+                  onClick={() => trackCtaClick("whatsapp", "blog_detail_cta", { destination: "whatsapp" })}
                 >
                   <WhatsAppIcon className="mr-2 h-[18px] w-[18px] text-whatsapp" /> {t.whatsapp}
                 </a>

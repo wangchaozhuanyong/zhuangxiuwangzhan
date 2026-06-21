@@ -2,6 +2,7 @@ import Link from "@/components/LocalizedLink";
 import Reveal from "@/components/Reveal";
 import WhatsAppIcon from "@/components/WhatsAppIcon";
 import { useSiteSettings } from "@/hooks/useSiteSettings";
+import { trackCtaClick } from "@/lib/analytics";
 import { cn } from "@/lib/utils";
 import { ArrowRight } from "lucide-react";
 
@@ -43,7 +44,11 @@ const FooterPreludeCta = ({
               <p className="home-footer-prelude__text">{description}</p>
             </div>
             <div className="home-footer-prelude__actions">
-              <Link to={quotePath} className="home-footer-prelude__button home-footer-prelude__button--primary">
+              <Link
+                to={quotePath}
+                className="home-footer-prelude__button home-footer-prelude__button--primary"
+                onClick={() => trackCtaClick("quote", whatsappSource || "Footer Prelude CTA", { destination: quotePath })}
+              >
                 <ArrowRight className="h-4 w-4" />
                 <span>{quoteLabel}</span>
               </Link>
@@ -52,6 +57,7 @@ const FooterPreludeCta = ({
                 target="_blank"
                 rel="noopener noreferrer"
                 className="home-footer-prelude__button home-footer-prelude__button--secondary"
+                onClick={() => trackCtaClick("whatsapp", whatsappSource || "Footer Prelude CTA", { destination: "whatsapp" })}
               >
                 <WhatsAppIcon className="h-[18px] w-[18px] text-whatsapp" />
                 <span>{whatsappLabel}</span>

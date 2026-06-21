@@ -84,18 +84,45 @@ describe("lead analytics events", () => {
     expect(getEventNames(gtag)).not.toContain("conversion");
   });
 
-  it("tracks WhatsApp CTA clicks separately from generic CTA clicks", async () => {
+  it("tracks WhatsApp CTA clicks as direct lead signals", async () => {
     const { analytics, gtag } = await loadAnalytics("/zh/services/renovation");
 
     analytics.trackCtaClick("whatsapp", "floating_bar", { language: "zh" });
 
-    expect(getEventNames(gtag)).toEqual(expect.arrayContaining(["cta_click", "whatsapp_click", "conversion"]));
+    expect(getEventNames(gtag)).toEqual(expect.arrayContaining(["cta_click", "whatsapp_click", "generate_lead", "conversion"]));
     expect(getEventPayload(gtag, "whatsapp_click")).toMatchObject({
       conversion_source: "direct_cta_click",
       cta_name: "whatsapp",
       cta_location: "floating_bar",
       page_path: "/zh/services/renovation",
       language: "zh",
+    });
+    expect(getEventPayload(gtag, "generate_lead")).toMatchObject({
+      conversion_source: "direct_cta_click",
+      lead_type: "whatsapp_click",
+      method: "whatsapp",
+      page_path: "/zh/services/renovation",
+    });
+  });
+
+  it("tracks phone CTA clicks as direct lead signals", async () => {
+    const { analytics, gtag } = await loadAnalytics("/zh/contact");
+
+    analytics.trackCtaClick("phone", "mobile_action_bar", { language: "zh" });
+
+    expect(getEventNames(gtag)).toEqual(expect.arrayContaining(["cta_click", "phone_click", "generate_lead", "conversion"]));
+    expect(getEventPayload(gtag, "phone_click")).toMatchObject({
+      conversion_source: "direct_cta_click",
+      cta_name: "phone",
+      cta_location: "mobile_action_bar",
+      page_path: "/zh/contact",
+      language: "zh",
+    });
+    expect(getEventPayload(gtag, "generate_lead")).toMatchObject({
+      conversion_source: "direct_cta_click",
+      lead_type: "phone_click",
+      method: "phone",
+      page_path: "/zh/contact",
     });
   });
 });

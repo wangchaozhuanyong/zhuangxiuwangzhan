@@ -15,6 +15,7 @@ import { useSiteSettings } from "@/hooks/useSiteSettings";
 import { isHtmlText, stripHtml } from "@/lib/text";
 import { sanitizeHtml } from "@/lib/sanitizeHtml";
 import { translateDisplayText, translateMaterialCategory, translateMaterialType, translateSpaceLabel } from "@/i18n/displayLabels";
+import { trackCtaClick } from "@/lib/analytics";
 import { buildQuotePath } from "@/lib/quoteContext";
 import { materialDetailPageText } from "@/i18n/materialDetailPageText";
 import {
@@ -219,7 +220,11 @@ const MaterialDetail = () => {
               )}
 
               <div className="flex flex-col gap-3 sm:flex-row">
-                <Link to={quotePath} className="btn-brand-primary min-h-12 justify-center px-8">
+                <Link
+                  to={quotePath}
+                  className="btn-brand-primary min-h-12 justify-center px-8"
+                  onClick={() => trackCtaClick("quote", "material_detail", { destination: quotePath })}
+                >
                   {t.enquire} <ArrowRight className="h-4 w-4" />
                 </Link>
                 <a
@@ -227,6 +232,7 @@ const MaterialDetail = () => {
                   target="_blank"
                   rel="noopener noreferrer"
                   className="btn-brand-secondary min-h-12 justify-center px-8"
+                  onClick={() => trackCtaClick("whatsapp", "material_detail", { destination: "whatsapp" })}
                 >
                   <WhatsAppIcon className="mr-2 h-[18px] w-[18px] text-whatsapp" /> {t.whatsapp}
                 </a>

@@ -9,6 +9,7 @@ import FAQSection from "@/components/blocks/FAQSection";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { useSiteSettings } from "@/hooks/useSiteSettings";
 import beforeAfterImg from "@/assets/old-house-before-after.webp";
+import { trackCtaClick } from "@/lib/analytics";
 import { pageHeroImages } from "@/lib/pageHeroImages";
 import { buildLocalResponsiveSrcSet } from "@/lib/localResponsiveImage";
 import { oldHouseRenovationPageText } from "@/i18n/oldHouseRenovationPageText";
@@ -51,7 +52,11 @@ const OldHouseRenovation = () => {
           <h1 className="page-hero__title heading-safe mb-5 max-w-2xl text-3xl font-bold text-on-media md:text-5xl">{t.title}</h1>
           <p className="page-hero__description prose-safe mb-8 max-w-xl text-base text-on-media-muted md:text-lg">{t.description}</p>
           <div className="flex flex-col gap-3 sm:flex-row sm:gap-4">
-            <Link to="/quote" className="btn-on-dark-primary min-h-12 w-full justify-center px-8 sm:w-auto">
+            <Link
+              to="/quote"
+              className="btn-on-dark-primary min-h-12 w-full justify-center px-8 sm:w-auto"
+              onClick={() => trackCtaClick("quote", "old_house_hero", { destination: "/quote" })}
+            >
               <ArrowRight className="h-4 w-4" /> {t.assessment}
             </Link>
             <a
@@ -59,6 +64,7 @@ const OldHouseRenovation = () => {
               target="_blank"
               rel="noopener noreferrer"
               className="btn-on-dark-secondary min-h-12 w-full justify-center px-8 sm:w-auto"
+              onClick={() => trackCtaClick("whatsapp", "old_house_hero", { destination: "whatsapp" })}
             >
               <WhatsAppIcon className="h-[18px] w-[18px] text-whatsapp" /> {t.whatsapp}
             </a>

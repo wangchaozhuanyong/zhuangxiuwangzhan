@@ -22,6 +22,7 @@ import { useSiteSettings } from "@/hooks/useSiteSettings";
 import { isHtmlText, stripHtml } from "@/lib/text";
 import { sanitizeHtml } from "@/lib/sanitizeHtml";
 import { translateDisplayText, translateProjectType } from "@/i18n/displayLabels";
+import { trackCtaClick } from "@/lib/analytics";
 import { pageHeroImages } from "@/lib/pageHeroImages";
 import { locationPageText } from "@/i18n/locationPageText";
 
@@ -112,7 +113,11 @@ const LocationPage = () => {
         variant="detail"
         actions={
           <>
-            <Link to="/quote" className="btn-on-dark-primary min-h-12 w-full justify-center px-8 sm:w-auto">
+            <Link
+              to="/quote"
+              className="btn-on-dark-primary min-h-12 w-full justify-center px-8 sm:w-auto"
+              onClick={() => trackCtaClick("quote", "location_hero", { destination: "/quote" })}
+            >
               {t.quote} <ArrowRight className="h-4 w-4" />
             </Link>
             <a
@@ -120,6 +125,7 @@ const LocationPage = () => {
               target="_blank"
               rel="noopener noreferrer"
               className="btn-on-dark-secondary min-h-12 w-full justify-center px-8 sm:w-auto"
+              onClick={() => trackCtaClick("whatsapp", "location_hero", { destination: "whatsapp" })}
             >
               <WhatsAppIcon className="mr-2 h-[18px] w-[18px] text-whatsapp" /> {t.whatsapp}
             </a>

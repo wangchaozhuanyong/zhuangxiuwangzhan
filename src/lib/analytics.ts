@@ -129,12 +129,19 @@ export const trackCtaClick = (ctaName: string, ctaLocation: string, params: Anal
   const directLeadEventName = directConversionCtaEvents[ctaName];
 
   if (directLeadEventName) {
-    trackEvent(directLeadEventName, {
+    const leadParams = {
       conversion_source: "direct_cta_click",
       cta_name: ctaName,
       cta_location: ctaLocation,
       page_path: currentPagePath(),
       ...params,
+    };
+
+    trackEvent(directLeadEventName, leadParams);
+    trackEvent("generate_lead", {
+      ...leadParams,
+      lead_type: directLeadEventName,
+      method: ctaName,
     });
 
     trackGoogleAdsConversion(contactConversionLabel, {

@@ -15,6 +15,7 @@ import { useSiteSettings } from "@/hooks/useSiteSettings";
 import { isHtmlText } from "@/lib/text";
 import { sanitizeHtml } from "@/lib/sanitizeHtml";
 import { translateDisplayText, translateProjectType } from "@/i18n/displayLabels";
+import { trackCtaClick } from "@/lib/analytics";
 import { buildQuotePath, quoteProjectTypeFromProjectType } from "@/lib/quoteContext";
 import { projectDetailPageText } from "@/i18n/projectDetailPageText";
 
@@ -245,7 +246,11 @@ const ProjectDetail = () => {
                 <div className="subpage-dark-card rounded-card border border-border/80 bg-surface-dark p-5 text-center">
                   <h3 className="mb-2 font-semibold text-surface-dark-foreground">{t.similarTitle}</h3>
                   <p className="mb-4 text-sm text-surface-dark-foreground/75">{t.similarText}</p>
-                  <Link to={quotePath} className="btn-on-dark-primary mb-2 w-full min-h-11 justify-center px-6 text-sm">
+                  <Link
+                    to={quotePath}
+                    className="btn-on-dark-primary mb-2 w-full min-h-11 justify-center px-6 text-sm"
+                    onClick={() => trackCtaClick("quote", "project_detail_sidebar", { destination: quotePath })}
+                  >
                     {t.quote} <ArrowRight className="h-3.5 w-3.5" />
                   </Link>
                   <a
@@ -253,6 +258,7 @@ const ProjectDetail = () => {
                     target="_blank"
                     rel="noopener noreferrer"
                     className="btn-on-dark-secondary w-full min-h-11 justify-center px-6 text-sm"
+                    onClick={() => trackCtaClick("whatsapp", "project_detail_sidebar", { destination: "whatsapp" })}
                   >
                     <WhatsAppIcon className="mr-1 h-4 w-4 text-whatsapp" /> {t.whatsapp}
                   </a>
