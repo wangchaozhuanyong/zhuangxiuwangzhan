@@ -306,7 +306,7 @@ const HeroSection = ({ pageContent, heroSlides }: HeroSectionProps) => {
             )}
 
             <a
-              href={settings.whatsapp_url("Homepage hero")}
+              href={settings.whatsapp_url()}
               target="_blank"
               rel="noopener noreferrer"
               className={secondaryButtonClass}

@@ -132,7 +132,7 @@ const DesktopFloatingCta = () => {
                 {t.quote}
               </LocalizedLink>
               <a
-                href={settings.whatsapp_url("Floating desktop prompt")}
+                href={settings.whatsapp_url()}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="btn-on-dark-secondary justify-center px-4 py-2.5 text-center text-sm"
@@ -144,7 +144,7 @@ const DesktopFloatingCta = () => {
           </AdaptiveSurface>
         ) : null}
         <a
-          href={settings.whatsapp_url("Floating desktop CTA")}
+          href={settings.whatsapp_url()}
           target="_blank"
           rel="noopener noreferrer"
           aria-label={t.whatsappAria}

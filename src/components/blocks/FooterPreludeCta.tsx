@@ -48,7 +48,7 @@ const FooterPreludeCta = ({
                 <span>{quoteLabel}</span>
               </Link>
               <a
-                href={settings.whatsapp_url(whatsappSource)}
+                href={settings.whatsapp_url()}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="home-footer-prelude__button home-footer-prelude__button--secondary"

@@ -54,7 +54,7 @@ const CTABanner = ({
                 <span>{quoteLabel}</span>
               </Link>
               <a
-                href={settings.whatsapp_url(whatsappSource)}
+                href={settings.whatsapp_url()}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="subpage-cta__button subpage-cta__button--secondary"
