@@ -12,6 +12,7 @@ dist
 dist-ssr
 test-results
 backups
+deploy-backups/
 tmp/
 .wrangler
 .deploy-cache
@@ -45,5 +46,4 @@ public/videos/*
 *.sln
 *.sw?
 .lovable/
-
 
