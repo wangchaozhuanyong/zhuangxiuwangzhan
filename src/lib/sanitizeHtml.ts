@@ -60,10 +60,34 @@ const isSafeUrl = (value: string) => {
   return true;
 };
 
+const replaceElementTag = (el: HTMLElement, tagName: string) => {
+  const parent = el.parentNode;
+  if (!parent) return null;
+
+  const replacement = document.createElement(tagName);
+  for (const attr of Array.from(el.attributes)) {
+    replacement.setAttribute(attr.name, attr.value);
+  }
+  while (el.firstChild) replacement.appendChild(el.firstChild);
+  parent.replaceChild(replacement, el);
+  return replacement;
+};
+
 const cleanNode = (node: Node) => {
+  let currentNode = node;
+
   if (node.nodeType === Node.ELEMENT_NODE) {
-    const el = node as HTMLElement;
-    const tag = el.tagName.toLowerCase();
+    let el = node as HTMLElement;
+    let tag = el.tagName.toLowerCase();
+
+    if (tag === "h1") {
+      const replacement = replaceElementTag(el, "h2");
+      if (replacement) {
+        el = replacement;
+        currentNode = replacement;
+        tag = "h2";
+      }
+    }
 
     if (!ALLOWED_TAGS.has(tag)) {
       const parent = el.parentNode;
@@ -71,6 +95,7 @@ const cleanNode = (node: Node) => {
       const children = Array.from(el.childNodes);
       for (const child of children) parent.insertBefore(child, el);
       parent.removeChild(el);
+      for (const child of children) cleanNode(child);
       return;
     }
 
@@ -120,7 +145,7 @@ const cleanNode = (node: Node) => {
     }
   }
 
-  for (const child of Array.from(node.childNodes)) cleanNode(child);
+  for (const child of Array.from(currentNode.childNodes)) cleanNode(child);
 };
 
 export const sanitizeHtml = (raw: string) => {
@@ -133,4 +158,3 @@ export const sanitizeHtml = (raw: string) => {
   cleanNode(container);
   return container.innerHTML;
 };
-

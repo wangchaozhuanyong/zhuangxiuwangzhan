@@ -30,5 +30,15 @@ describe("sanitizeHtml", () => {
     expect(out).toContain("<ul>");
     expect(out).toContain("<li>A</li>");
   });
-});
 
+  it("demotes CMS h1 headings to h2", () => {
+    const input = `<section class="seo-rich-block"><h1 class="lead" id="cms-title" onclick="alert(1)">CMS Title</h1><p>Copy</p></section>`;
+    const out = sanitizeHtml(input);
+
+    expect(out).toContain('<h2 class="lead">CMS Title</h2>');
+    expect(out).toContain("<p>Copy</p>");
+    expect(out).not.toMatch(/section/i);
+    expect(out).not.toMatch(/<h1/i);
+    expect(out).not.toMatch(/onclick|cms-title/i);
+  });
+});
