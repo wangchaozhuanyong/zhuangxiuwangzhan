@@ -54,7 +54,7 @@ const DEFAULT_MAP_LATITUDE = "3.0830403";
 const DEFAULT_MAP_LONGITUDE = "101.6708234";
 const PUBLIC_HTML_BROWSER_TTL_SECONDS = 60;
 const PUBLIC_HTML_EDGE_TTL_SECONDS = 300;
-const PUBLIC_HTML_CACHE_VERSION = "20260619-dynamic-image-preloads";
+const PUBLIC_HTML_CACHE_VERSION = "20260625-home-resource-hints";
 const SITE_SETTINGS_CACHE_TTL_MS = 5 * 60 * 1000;
 const PUBLIC_PROJECT_SUMMARIES_CACHE_TTL_MS = 5 * 60 * 1000;
 const PUBLIC_PROJECT_DETAIL_CACHE_TTL_MS = 5 * 60 * 1000;
@@ -244,14 +244,10 @@ const buildProjectImagePreloads = (
 
 const getDynamicImagePreloads = (
   key: string,
-  homeContentBundle: HomeContentBundleRow | null,
   projectSummaries: ProjectSummaryRow[] | null,
 ) => {
   if (isHomePageKey(key)) {
-    return buildProjectImagePreloads(homeContentBundle?.projects, 4, {
-      height: 600,
-      sizes: "(max-width: 640px) 92vw, (max-width: 1024px) 45vw, 30vw",
-    });
+    return [];
   }
 
   if (getTopLevelPublicPageKey(key) === "projects") {
@@ -1249,7 +1245,7 @@ export const onRequest: PagesFunction = async (context) => {
   }
   transformed = injectDynamicImagePreloads(
     transformed,
-    getDynamicImagePreloads(key, homeContentBundle, projectSummaries),
+    getDynamicImagePreloads(key, projectSummaries),
   );
   transformed = injectPerformanceHints(
     transformed,
