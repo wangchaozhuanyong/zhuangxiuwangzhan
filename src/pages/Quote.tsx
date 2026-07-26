@@ -273,7 +273,7 @@ const Quote = () => {
         description={pageContent?.description || t.heroText}
       />
 
-      <section className="section-padding bg-background pb-24 md:pb-28">
+      <section className="section-padding bg-background pb-[calc(8rem+env(safe-area-inset-bottom,0px))] md:pb-28">
         <div className="container-narrow grid gap-10 lg:grid-cols-[1.1fr_0.9fr]">
           <Reveal>
             <div className="subpage-form-panel p-5 md:p-8">
@@ -325,12 +325,12 @@ const Quote = () => {
                 <div className="grid gap-4 md:grid-cols-2">
                   <div>
                     <label htmlFor="quote-name" className="mb-1.5 block text-sm">{t.name}</label>
-                    <Input id="quote-name" value={form.name} onChange={(e) => updateForm("name", e.target.value)} placeholder={t.namePlaceholder} aria-invalid={Boolean(errors.name)} aria-describedby={errors.name ? "quote-name-error" : undefined} />
+                    <Input id="quote-name" value={form.name} onChange={(e) => updateForm("name", e.target.value)} placeholder={t.namePlaceholder} required aria-required="true" aria-invalid={Boolean(errors.name)} aria-describedby={errors.name ? "quote-name-error" : undefined} />
                     {errors.name && <p id="quote-name-error" role="alert" className="mt-1 text-xs text-destructive">{errors.name}</p>}
                   </div>
                   <div>
                     <label htmlFor="quote-phone" className="mb-1.5 block text-sm">{t.phone}</label>
-                    <Input id="quote-phone" type="tel" value={form.phone} onChange={(e) => updateForm("phone", e.target.value)} placeholder={t.contactLabel} aria-invalid={Boolean(errors.phone)} aria-describedby={errors.phone ? "quote-phone-error" : undefined} />
+                    <Input id="quote-phone" type="tel" value={form.phone} onChange={(e) => updateForm("phone", e.target.value)} placeholder={t.contactLabel} required aria-required="true" aria-invalid={Boolean(errors.phone)} aria-describedby={errors.phone ? "quote-phone-error" : undefined} />
                     {errors.phone && <p id="quote-phone-error" role="alert" className="mt-1 text-xs text-destructive">{errors.phone}</p>}
                   </div>
                 </div>
@@ -357,6 +357,8 @@ const Quote = () => {
                       className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
                       value={form.projectType}
                       onChange={(e) => updateForm("projectType", e.target.value)}
+                      required
+                      aria-required="true"
                       aria-invalid={Boolean(errors.projectType)}
                       aria-describedby={errors.projectType ? "quote-project-type-error" : undefined}
                     >
@@ -371,7 +373,7 @@ const Quote = () => {
                   </div>
                   <div>
                     <label htmlFor="quote-location" className="mb-1.5 block text-sm">{t.location}</label>
-                    <Input id="quote-location" value={form.location} onChange={(e) => updateForm("location", e.target.value)} placeholder={t.locationPlaceholder} aria-invalid={Boolean(errors.location)} aria-describedby={errors.location ? "quote-location-error" : undefined} />
+                    <Input id="quote-location" value={form.location} onChange={(e) => updateForm("location", e.target.value)} placeholder={t.locationPlaceholder} required aria-required="true" aria-invalid={Boolean(errors.location)} aria-describedby={errors.location ? "quote-location-error" : undefined} />
                     {errors.location && <p id="quote-location-error" role="alert" className="mt-1 text-xs text-destructive">{errors.location}</p>}
                   </div>
                 </div>
@@ -432,7 +434,7 @@ const Quote = () => {
                   </p>
                 </div>
 
-                <div className="absolute -left-[9999px] top-auto h-0 w-0 overflow-hidden" aria-hidden="true">
+                <div className="hidden" aria-hidden="true">
                   <label htmlFor="quote-website">Website</label>
                   <input
                     id="quote-website"

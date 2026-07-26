@@ -66,6 +66,50 @@ test.describe("public responsive layout", () => {
     expect(after).toEqual(before);
   });
 
+  test("mobile quote form keeps required fields semantic and submit action clear", async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.goto("/zh/quote", { waitUntil: "domcontentloaded" });
+    await page.waitForLoadState("load");
+
+    await expect(page.locator(".mobile-action-bar")).toHaveCount(0);
+    await expect(page.locator("html")).not.toHaveAttribute("data-mobile-action-bar", "true");
+
+    const fieldSemantics = await page.evaluate(() =>
+      ["quote-name", "quote-phone", "quote-project-type", "quote-location"].map((id) => {
+        const field = document.getElementById(id) as HTMLInputElement | HTMLSelectElement | null;
+        return {
+          id,
+          required: Boolean(field?.required),
+          ariaRequired: field?.getAttribute("aria-required"),
+        };
+      }),
+    );
+
+    expect(fieldSemantics).toEqual([
+      { id: "quote-name", required: true, ariaRequired: "true" },
+      { id: "quote-phone", required: true, ariaRequired: "true" },
+      { id: "quote-project-type", required: true, ariaRequired: "true" },
+      { id: "quote-location", required: true, ariaRequired: "true" },
+    ]);
+
+    const honeypot = await page.locator("#quote-website").evaluate((field) => ({
+      tabIndex: (field as HTMLInputElement).tabIndex,
+      autocomplete: field.getAttribute("autocomplete"),
+      hasLayoutBox: field.getClientRects().length > 0,
+    }));
+    expect(honeypot).toEqual({ tabIndex: -1, autocomplete: "off", hasLayoutBox: false });
+
+    const submitButton = page.getByRole("button", { name: "提交报价请求" });
+    await submitButton.scrollIntoViewIfNeeded();
+    const submitIsClickable = await submitButton.evaluate((button) => {
+      const rect = button.getBoundingClientRect();
+      const topElement = document.elementFromPoint(rect.left + rect.width / 2, rect.top + rect.height / 2);
+      return topElement === button || button.contains(topElement);
+    });
+
+    expect(submitIsClickable).toBe(true);
+  });
+
   test("mobile footer contact link opens the contact page from the company panel", async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
     await page.goto("/zh", { waitUntil: "domcontentloaded" });

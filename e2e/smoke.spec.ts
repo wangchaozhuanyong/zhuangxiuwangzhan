@@ -197,9 +197,23 @@ test.describe("admin access guard", () => {
     await page.waitForURL("**/admin", { timeout: 15_000 });
   });
 
-  test("unauthenticated system health page redirects to /admin", async ({ page }) => {
+  test("unauthenticated system health page shows feedback before redirecting to /admin", async ({ page }) => {
     await gotoSmokePage(page, "/admin/system-health");
+
+    await expect
+      .poll(
+        () =>
+          page.evaluate(() => {
+            const bodyText = document.body.innerText.trim();
+            return Boolean(document.querySelector('[role="status"]')) || Boolean(document.querySelector("#admin-login-email")) || bodyText.length > 20;
+          }),
+        { message: "admin protected route should not stay visually blank", timeout: 1_000 },
+      )
+      .toBe(true);
+
     await page.waitForURL("**/admin", { timeout: 15_000 });
+    await expect(page.locator("#admin-login-email")).toBeVisible();
+    await expect(page.locator("#admin-login-email")).toBeFocused();
   });
 
   test("unauthenticated lead reports page redirects to /admin", async ({ page }) => {

@@ -39,7 +39,7 @@ const ToggleButton = ({
     aria-pressed={active}
     onClick={onClick}
     className={cn(
-      "h-8 rounded-full px-3 text-xs font-semibold transition-colors",
+      "h-10 min-w-10 rounded-full px-3 text-xs font-semibold transition-colors",
       active ? "bg-primary text-primary-foreground shadow-sm" : "text-muted-foreground hover:bg-background hover:text-foreground",
     )}
   >
@@ -74,6 +74,7 @@ const AdminLogin = () => {
   const [language, setLanguage] = useState<AdminLang>(() => getAdminLang());
   const [theme, setTheme] = useState<AdminTheme>(() => getAdminTheme());
   const pendingLanguageRef = useRef(language);
+  const emailInputRef = useRef<HTMLInputElement>(null);
   const t = copy[language];
   const locationState = location.state as { reason?: string; redirectTo?: string } | null;
   const redirectTo =
@@ -89,6 +90,12 @@ const AdminLogin = () => {
   useEffect(() => {
     return () => clearAdminTheme();
   }, []);
+
+  useEffect(() => {
+    if (locationState?.reason !== "signed-out") return;
+    const timer = window.setTimeout(() => emailInputRef.current?.focus(), 0);
+    return () => window.clearTimeout(timer);
+  }, [locationState?.reason]);
 
   if (!hasAdminAuthConfig()) {
     return <Navigate to="/admin/dashboard" replace />;
@@ -182,7 +189,7 @@ const AdminLogin = () => {
               </div>
 
               <div className="flex w-full shrink-0 items-center justify-end gap-2 sm:w-auto">
-                <div className="inline-flex h-10 min-w-0 flex-1 items-center justify-center gap-1 rounded-full border border-border bg-muted/60 p-1 sm:flex-none" aria-label={t.language}>
+                <div className="inline-flex min-h-12 min-w-0 flex-1 items-center justify-center gap-1 rounded-full border border-border bg-muted/60 p-1 sm:flex-none" aria-label={t.language}>
                   <ToggleButton active={language === "zh"} label={t.zhLanguageLabel} onClick={() => changeLanguage("zh")}>
                     {t.zhLanguageButton}
                   </ToggleButton>
@@ -222,6 +229,7 @@ const AdminLogin = () => {
                 <label htmlFor="admin-login-email" className="mb-1.5 block text-sm font-medium">{t.email}</label>
                 <Input
                   id="admin-login-email"
+                  ref={emailInputRef}
                   type="email"
                   value={email}
                   onChange={(event) => {

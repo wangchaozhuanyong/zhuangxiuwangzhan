@@ -2,6 +2,7 @@ import { useEffect, useLayoutEffect, useRef, type ReactNode } from "react";
 import { Helmet } from "react-helmet-async";
 import { Link, Navigate, Outlet, useLocation } from "react-router-dom";
 import AdminHelpTip from "@/components/admin/AdminHelpTip";
+import AdminLoadingState from "@/components/admin/AdminLoadingState";
 import { Button } from "@/components/ui/button";
 import { adminRouteText } from "@/i18n/adminRouteText";
 import { signOutAdmin } from "@/backend/modules/admin-auth/service/adminAuthService";
@@ -86,9 +87,8 @@ const AdminRoute = () => {
   if (authState === "checking") {
     return (
       <main className="flex min-h-screen items-center justify-center overflow-x-clip bg-background px-3 py-6 text-foreground sm:px-4 sm:py-10">
-        <div className="w-full max-w-md rounded-lg border border-border bg-card p-5 text-center shadow-sm sm:p-8">
-          <div className="mx-auto mb-4 h-8 w-8 animate-spin rounded-full border-2 border-accent border-t-transparent" />
-          <p className="text-sm text-muted-foreground">{t.checking}</p>
+        <div className="w-full max-w-xl">
+          <AdminLoadingState label={t.checking} />
         </div>
       </main>
     );

@@ -12,7 +12,9 @@ import DynamicBrandHead from "@/components/DynamicBrandHead";
 import { AppErrorBoundary } from "@/components/AppErrorBoundary";
 import { PublicChromeProvider, usePublicChrome } from "@/contexts/PublicChromeContext";
 import { stripLanguagePrefix } from "@/i18n/routes";
+import { adminRouteText } from "@/i18n/adminRouteText";
 import { initAnalytics, trackPageView } from "@/lib/analytics";
+import { getAdminLang } from "@/lib/adminLocale";
 import { publicRoutes } from "@/routes/publicRoutes";
 import ScrollToTop from "./components/ScrollToTop";
 
@@ -54,6 +56,24 @@ const PageLoader = () => {
         </div>
       </div>
     </div>
+  );
+};
+
+const AdminPageLoader = () => {
+  const label = adminRouteText[getAdminLang()].checking;
+
+  return (
+    <main
+      className="flex min-h-screen items-center justify-center overflow-x-clip bg-background px-3 py-6 text-foreground sm:px-4 sm:py-10"
+      role="status"
+      aria-live="polite"
+      aria-busy="true"
+    >
+      <div className="w-full max-w-md rounded-lg border border-border bg-card p-5 text-center shadow-sm sm:p-8">
+        <div className="mx-auto mb-4 h-8 w-8 animate-spin rounded-full border-2 border-accent border-t-transparent" aria-hidden="true" />
+        <p className="text-sm text-muted-foreground">{label}</p>
+      </div>
+    </main>
   );
 };
 
@@ -145,7 +165,7 @@ const AppShell = () => {
       <PublicPageFrame isAdminRoute={isAdminRoute}>
         <div key={mainContentKey} id="main-content" tabIndex={-1} className={mainContentClass}>
           <AppErrorBoundary isAdminRoute={isAdminRoute}>
-          <Suspense fallback={<PageLoader />}>
+          <Suspense fallback={isAdminRoute ? <AdminPageLoader /> : <PageLoader />}>
             {isAdminRoute ? (
               isAdminLoginRoute ? (
                 <AdminLoginPage />
