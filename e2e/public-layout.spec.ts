@@ -3,8 +3,11 @@ import { expect, test } from "@playwright/test";
 const publicPaths = ["/zh", "/zh/services", "/zh/materials", "/zh/projects", "/zh/quote", "/zh/contact", "/zh/process"];
 
 const viewports = [
+  { name: "mobile-360", width: 360, height: 800 },
+  { name: "mobile-390", width: 390, height: 844 },
+  { name: "tablet", width: 768, height: 1024 },
+  { name: "small-desktop", width: 1024, height: 900 },
   { name: "desktop", width: 1440, height: 1000 },
-  { name: "mobile", width: 390, height: 844 },
 ];
 
 test.describe("public responsive layout", () => {
@@ -128,5 +131,31 @@ test.describe("public responsive layout", () => {
 
     await expect(page).toHaveURL(/\/zh\/contact$/);
     await expect(page.locator("#contact-name")).toBeVisible();
+  });
+
+  test("mobile quote and contact pages expose page-aware bottom actions after the compact hero", async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 844 });
+
+    for (const scenario of [
+      { path: "/zh/quote", formHref: "#quote-name", formLabel: "填写表单" },
+      { path: "/zh/contact", formHref: "#contact-name", formLabel: "填写留言" },
+    ]) {
+      await page.goto(scenario.path, { waitUntil: "domcontentloaded" });
+      await page.waitForLoadState("load");
+      await expect(page.locator(".page-hero")).toHaveClass(/page-hero--compact/);
+      await expect
+        .poll(() => page.locator(".page-hero").evaluate((hero) => hero.getBoundingClientRect().height))
+        .toBeLessThanOrEqual(380);
+
+      await page.locator(".page-hero").evaluate((hero) => {
+        window.scrollTo(0, hero.getBoundingClientRect().height + 80);
+      });
+
+      const actionBar = page.locator(".mobile-action-bar");
+      await expect(actionBar).toBeVisible();
+      await expect(actionBar.locator('a[href^="https://wa.me/"]')).toBeVisible();
+      await expect(actionBar.locator('a[href^="tel:"]')).toBeVisible();
+      await expect(actionBar.locator(`a[href="${scenario.formHref}"]`)).toHaveText(scenario.formLabel);
+    }
   });
 });

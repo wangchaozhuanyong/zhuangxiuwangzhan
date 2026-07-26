@@ -165,6 +165,61 @@ test.describe("public site smoke", () => {
     expect(submitCount).toBe(0);
   });
 
+  test("contact page separates phone and WhatsApp contact cards", async ({ page }) => {
+    await gotoSmokePage(page, "/zh/contact");
+    await page.waitForLoadState("load");
+
+    const contactCards = page.locator("main .space-y-5");
+    await expect(contactCards.locator('a[href^="tel:"]')).toHaveCount(1);
+    await expect(contactCards.locator('a[href^="https://wa.me/"]')).toHaveCount(1);
+    await expect(contactCards.locator('a[href^="tel:"]')).toContainText("电话");
+    await expect(contactCards.locator('a[href^="https://wa.me/"]')).toContainText("WhatsApp");
+  });
+
+  test("contact form can reach success state without duplicate data writes", async ({ page }) => {
+    await installTurnstileMock(page);
+    let submitCount = 0;
+    await page.route("**/functions/v1/submit-lead**", async (route) => {
+      submitCount += 1;
+      await route.fulfill({
+        status: 200,
+        contentType: "application/json",
+        body: JSON.stringify({ ok: true, id: "contact-e2e" }),
+      });
+    });
+
+    await gotoSmokePage(page, "/zh/contact");
+    await page.waitForLoadState("load");
+    await page.locator("#contact-name").fill("验收测试");
+    await page.locator("#contact-phone").fill("+601128853888");
+    await page.locator("#contact-message").fill("这是一次联系表单验收测试，不会写入真实数据。");
+    await page.getByRole("button", { name: "发送信息" }).click();
+
+    await expect(page.getByRole("heading", { name: "信息已发送！" })).toBeVisible();
+    expect(submitCount).toBe(1);
+  });
+
+  test("contact form shows backend error state and WhatsApp fallback", async ({ page }) => {
+    await installTurnstileMock(page);
+    await page.route("**/functions/v1/submit-lead**", async (route) => {
+      await route.fulfill({
+        status: 500,
+        contentType: "application/json",
+        body: JSON.stringify({ error: "Temporary failure" }),
+      });
+    });
+
+    await gotoSmokePage(page, "/zh/contact");
+    await page.waitForLoadState("load");
+    await page.locator("#contact-name").fill("验收测试");
+    await page.locator("#contact-phone").fill("+601128853888");
+    await page.locator("#contact-message").fill("这是一次失败状态验收测试，不会写入真实数据。");
+    await page.getByRole("button", { name: "发送信息" }).click();
+
+    await expect(page.getByText("提交失败。请稍后再试，或通过 WhatsApp 联系我们。")).toBeVisible();
+    await expect(page.locator('main a[href^="https://wa.me/"]').first()).toBeVisible();
+  });
+
   test("quote form rejects phone values that backend also rejects", async ({ page }) => {
     let submitCount = 0;
     await page.route("**/functions/v1/submit-lead", async (route) => {

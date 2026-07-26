@@ -3,9 +3,10 @@ type AnalyticsParams = Record<string, AnalyticsValue>;
 
 const defaultGaMeasurementId = "G-K71PQ0MSV2";
 const defaultGoogleAdsId = "AW-18205206146";
-const defaultGoogleAdsLeadConversionLabel = "iI73CL2bybscEILN9ehD";
-const directConversionCtaEvents: Record<string, string> = {
+const directLeadCtaEvents: Record<string, string> = {
   whatsapp: "whatsapp_click",
+};
+const directObservationCtaEvents: Record<string, string> = {
   phone: "phone_click",
 };
 
@@ -18,8 +19,9 @@ declare global {
 
 export const gaMeasurementId = String(import.meta.env.VITE_GA_MEASUREMENT_ID || defaultGaMeasurementId).trim();
 const googleAdsId = String(import.meta.env.VITE_GOOGLE_ADS_ID || defaultGoogleAdsId).trim();
-const quoteConversionLabel = String(import.meta.env.VITE_GOOGLE_ADS_QUOTE_CONVERSION_LABEL || defaultGoogleAdsLeadConversionLabel).trim();
-const contactConversionLabel = String(import.meta.env.VITE_GOOGLE_ADS_CONTACT_CONVERSION_LABEL || defaultGoogleAdsLeadConversionLabel).trim();
+const whatsappConversionLabel = String(import.meta.env.VITE_GOOGLE_ADS_WHATSAPP_CONVERSION_LABEL || "").trim();
+const quoteConversionLabel = String(import.meta.env.VITE_GOOGLE_ADS_QUOTE_CONVERSION_LABEL || "").trim();
+const contactConversionLabel = String(import.meta.env.VITE_GOOGLE_ADS_CONTACT_CONVERSION_LABEL || "").trim();
 const configuredPagesReportUrl = String(import.meta.env.VITE_GA4_PAGES_REPORT_URL || "").trim();
 const googleTagScriptId = "flashcast-google-tag";
 const googleTagIds = [gaMeasurementId, googleAdsId].filter(Boolean);
@@ -126,7 +128,7 @@ export const trackCtaClick = (ctaName: string, ctaLocation: string, params: Anal
     ...params,
   });
 
-  const directLeadEventName = directConversionCtaEvents[ctaName];
+  const directLeadEventName = directLeadCtaEvents[ctaName];
 
   if (directLeadEventName) {
     const leadParams = {
@@ -144,10 +146,24 @@ export const trackCtaClick = (ctaName: string, ctaLocation: string, params: Anal
       method: ctaName,
     });
 
-    trackGoogleAdsConversion(contactConversionLabel, {
+    trackGoogleAdsConversion(whatsappConversionLabel, {
       conversion_source: "direct_cta_click",
       cta_name: ctaName,
       cta_location: ctaLocation,
+      ...params,
+    });
+
+    return;
+  }
+
+  const observationEventName = directObservationCtaEvents[ctaName];
+
+  if (observationEventName) {
+    trackEvent(observationEventName, {
+      conversion_source: "direct_cta_click",
+      cta_name: ctaName,
+      cta_location: ctaLocation,
+      page_path: currentPagePath(),
       ...params,
     });
   }
