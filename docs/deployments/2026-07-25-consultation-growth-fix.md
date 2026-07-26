@@ -40,3 +40,10 @@
 
 - 新建转化在收到线上事件前可能显示“无效”或“最近无转化”，状态更新可能延迟。
 - 目标“每天 1–2 个咨询”是运营目标，不能由一次代码发布保证；需结合真实咨询质量、来源和后续小额搜索广告测试持续校准。
+
+## 生产验收补充
+
+- 首次上线验收发现报价接口返回 `Bot verification failed`。
+- 根因：Supabase `submit-lead` 已启用 Turnstile secret，但生产构建未注入对应公开 site key。
+- 修复：在预发布和 Cloudflare Pages 构建中透传 `VITE_TURNSTILE_SITE_KEY`；不修改数据库、Edge Function 或表单业务逻辑。
+- 修复上线后必须重新提交报价和联系表单各一次，并确认成功页与独立转化事件。
