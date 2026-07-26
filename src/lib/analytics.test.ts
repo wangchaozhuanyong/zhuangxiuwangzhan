@@ -8,8 +8,22 @@ const browserAnalyticsWindow = () =>
     gtag?: (...args: unknown[]) => void;
   };
 
-const loadAnalytics = async (path = "/zh/quote") => {
+const loadAnalytics = async (
+  path = "/zh/quote",
+  conversionLabels: {
+    whatsapp?: string;
+    quote?: string;
+    contact?: string;
+  } = {
+    whatsapp: "whatsapp-label",
+    quote: "quote-label",
+    contact: "contact-label",
+  },
+) => {
   vi.resetModules();
+  vi.stubEnv("VITE_GOOGLE_ADS_WHATSAPP_CONVERSION_LABEL", conversionLabels.whatsapp || "");
+  vi.stubEnv("VITE_GOOGLE_ADS_QUOTE_CONVERSION_LABEL", conversionLabels.quote || "");
+  vi.stubEnv("VITE_GOOGLE_ADS_CONTACT_CONVERSION_LABEL", conversionLabels.contact || "");
   document.head.innerHTML = "";
   window.history.pushState({}, "", path);
 
@@ -33,6 +47,7 @@ const getEventPayload = (gtag: GtagSpy, eventName: string) =>
 
 beforeEach(() => {
   vi.restoreAllMocks();
+  vi.unstubAllEnvs();
 });
 
 describe("analytics defaults", () => {
@@ -69,7 +84,18 @@ describe("lead analytics events", () => {
     });
     expect(getEventPayload(gtag, "conversion")).toMatchObject({
       conversion_source: "quote_form_success",
-      send_to: expect.stringContaining("AW-18205206146/"),
+      send_to: "AW-18205206146/quote-label",
+    });
+  });
+
+  it("uses the contact form conversion label only after a successful contact submission", async () => {
+    const { analytics, gtag } = await loadAnalytics("/zh/contact");
+
+    analytics.trackContactFormSubmit("success", { project_type: "condo" });
+
+    expect(getEventPayload(gtag, "conversion")).toMatchObject({
+      conversion_source: "contact_form_success",
+      send_to: "AW-18205206146/contact-label",
     });
   });
 
@@ -103,14 +129,20 @@ describe("lead analytics events", () => {
       method: "whatsapp",
       page_path: "/zh/services/renovation",
     });
+    expect(getEventPayload(gtag, "conversion")).toMatchObject({
+      conversion_source: "direct_cta_click",
+      send_to: "AW-18205206146/whatsapp-label",
+    });
   });
 
-  it("tracks phone CTA clicks as direct lead signals", async () => {
+  it("tracks phone CTA clicks as observations without counting them as leads or Ads conversions", async () => {
     const { analytics, gtag } = await loadAnalytics("/zh/contact");
 
     analytics.trackCtaClick("phone", "mobile_action_bar", { language: "zh" });
 
-    expect(getEventNames(gtag)).toEqual(expect.arrayContaining(["cta_click", "phone_click", "generate_lead", "conversion"]));
+    expect(getEventNames(gtag)).toEqual(expect.arrayContaining(["cta_click", "phone_click"]));
+    expect(getEventNames(gtag)).not.toContain("generate_lead");
+    expect(getEventNames(gtag)).not.toContain("conversion");
     expect(getEventPayload(gtag, "phone_click")).toMatchObject({
       conversion_source: "direct_cta_click",
       cta_name: "phone",
@@ -118,11 +150,18 @@ describe("lead analytics events", () => {
       page_path: "/zh/contact",
       language: "zh",
     });
-    expect(getEventPayload(gtag, "generate_lead")).toMatchObject({
-      conversion_source: "direct_cta_click",
-      lead_type: "phone_click",
-      method: "phone",
-      page_path: "/zh/contact",
+  });
+
+  it("does not send an Ads conversion when the WhatsApp label is not configured", async () => {
+    const { analytics, gtag } = await loadAnalytics("/zh/services/renovation", {
+      whatsapp: "",
+      quote: "quote-label",
+      contact: "contact-label",
     });
+
+    analytics.trackCtaClick("whatsapp", "service_detail_hero");
+
+    expect(getEventNames(gtag)).toEqual(expect.arrayContaining(["cta_click", "whatsapp_click", "generate_lead"]));
+    expect(getEventNames(gtag)).not.toContain("conversion");
   });
 });

@@ -120,9 +120,11 @@ const Contact = () => {
     settings.map_latitude && settings.map_longitude
       ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${settings.map_latitude},${settings.map_longitude}`)}`
       : `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(mapAddress)}`;
+  const whatsappHref = settings.whatsapp_url(t.whatsappMessage);
   const contactItems = [
     { icon: MapPin, title: t.addressTitle, text: mapAddress, href: mapHref, external: true, track: "map" },
     { icon: Phone, title: t.phoneTitle, text: settings.phone_display, href: settings.phone_href, track: "phone" },
+    { icon: WhatsAppIcon, title: t.whatsappTitle, text: settings.phone_display, href: whatsappHref, external: true, track: "whatsapp" },
     { icon: Mail, title: t.emailTitle, text: settings.email, href: `mailto:${settings.email}`, track: "email" },
     { icon: Clock, title: t.hoursTitle, text: t.hoursText },
   ];
@@ -158,6 +160,8 @@ const Contact = () => {
         label={pageContent?.subtitle || t.heroEyebrow}
         title={pageContent?.title || t.heroTitle}
         description={pageContent?.description || t.heroText}
+        variant="compact"
+        className="max-md:!min-h-[22rem]"
       />
 
       <section className="section-padding bg-background">
@@ -232,7 +236,7 @@ const Contact = () => {
                     {t.quoteCta} <ArrowRight className="h-4 w-4" />
                   </Link>
                   <a
-                    href={settings.whatsapp_url()}
+                    href={whatsappHref}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="btn-brand-secondary min-h-12 w-full justify-center px-8 sm:w-auto"
@@ -270,7 +274,7 @@ const Contact = () => {
                           <div className="flex flex-wrap gap-2">
                             <Button size="sm" className="btn-press" asChild>
                               <a
-                                href={settings.whatsapp_url()}
+                                href={whatsappHref}
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 onClick={() => trackCtaClick("whatsapp", "contact_error", { destination: "whatsapp" })}

@@ -85,6 +85,7 @@ const Quote = () => {
   const { data: pageContent } = usePublishedSitePage(language, "quote");
   const heroImage = resolvePageHeroImage(pageContent?.image_url, pageHeroImages.quote);
   const officeAddress = settings.short_address || settings.address || t.office;
+  const whatsappHref = settings.whatsapp_url(t.whatsappMessage);
   const [form, setForm] = useState({
     name: "",
     phone: "",
@@ -238,7 +239,7 @@ const Quote = () => {
                 </Button>
                 <Button asChild size="lg" variant="outline" className="btn-brand-secondary flex-1">
                   <a
-                    href={settings.whatsapp_url()}
+                    href={whatsappHref}
                     target="_blank"
                     rel="noreferrer"
                     onClick={() => trackCtaClick("whatsapp", "quote_success", { destination: "whatsapp" })}
@@ -271,6 +272,8 @@ const Quote = () => {
         label={pageContent?.subtitle || t.heroEyebrow}
         title={pageContent?.title || t.heroTitle}
         description={pageContent?.description || t.heroText}
+        variant="compact"
+        className="max-md:!min-h-[22rem]"
       />
 
       <section className="section-padding bg-background pb-24 md:pb-28">
@@ -420,7 +423,7 @@ const Quote = () => {
                   <p>
                     {t.photoText}{" "}
                     <a
-                      href={settings.whatsapp_url()}
+                      href={whatsappHref}
                       target="_blank"
                       rel="noreferrer"
                       className="font-medium text-accent hover:underline"
@@ -484,7 +487,7 @@ const Quote = () => {
                 <p className="mb-5 text-sm text-muted-foreground">{t.chatText}</p>
                 <Button asChild className="btn-brand-primary w-full">
                   <a
-                    href={settings.whatsapp_url()}
+                    href={whatsappHref}
                     target="_blank"
                     rel="noreferrer"
                     onClick={() => trackCtaClick("whatsapp", "quote_sidebar", { destination: "whatsapp" })}
