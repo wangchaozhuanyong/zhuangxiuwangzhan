@@ -6,7 +6,7 @@ import {
   notifySubmittedLead,
   recordSubmissionAttempt,
 } from "./repository.ts";
-import type { SubmitBody, SubmitLeadClient, SubmitLeadResult } from "./types.ts";
+import type { CleanLeadAttribution, LeadAttributionBody, SubmitBody, SubmitLeadClient, SubmitLeadResult } from "./types.ts";
 
 const MIN_SUBMIT_MS = 3000;
 const MAX_PER_IP_HOUR = 8;
@@ -17,6 +17,29 @@ const clean = (value: unknown, max = 500) => String(value ?? "").trim().slice(0,
 
 const phoneOk = (phone: string) => /^(?=.{7,20}$)[+]?\d[\d\s-]*$/.test(phone);
 const emailOk = (email: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+
+const cleanAttributionValue = (value: unknown, max = 240) => clean(value, max);
+
+export const normalizeLeadAttribution = (input?: LeadAttributionBody): CleanLeadAttribution => {
+  const first = input?.firstTouch || {};
+  const last = input?.lastTouch || {};
+  return {
+    firstTouchSource: cleanAttributionValue(first.source, 120),
+    firstTouchMedium: cleanAttributionValue(first.medium, 120),
+    firstTouchCampaign: cleanAttributionValue(first.campaign),
+    firstTouchTerm: cleanAttributionValue(first.term),
+    firstTouchContent: cleanAttributionValue(first.content),
+    lastTouchSource: cleanAttributionValue(last.source, 120),
+    lastTouchMedium: cleanAttributionValue(last.medium, 120),
+    lastTouchCampaign: cleanAttributionValue(last.campaign),
+    lastTouchTerm: cleanAttributionValue(last.term),
+    lastTouchContent: cleanAttributionValue(last.content),
+    landingPage: cleanAttributionValue(input?.landingPage || first.landingPage, 400),
+    gclid: cleanAttributionValue(input?.gclid || last.gclid || first.gclid, 300),
+    gbraid: cleanAttributionValue(input?.gbraid || last.gbraid || first.gbraid, 300),
+    wbraid: cleanAttributionValue(input?.wbraid || last.wbraid || first.wbraid, 300),
+  };
+};
 
 const hashText = async (value: string) => {
   const data = new TextEncoder().encode(value);
@@ -99,6 +122,7 @@ export async function submitLead(req: Request, body: SubmitBody, client: SubmitL
   const phoneHash = await hashText(phone);
   const email = clean(body.email, 200);
   if (email && !emailOk(email)) return errorResult("Invalid email");
+  const attribution = normalizeLeadAttribution(body.attribution);
 
   const rate = await checkRateLimit(client, body.type, ipHash, phoneHash);
   if (!rate.ok) return errorResult(rate.message, 429);
@@ -119,6 +143,7 @@ export async function submitLead(req: Request, body: SubmitBody, client: SubmitL
         location: clean(body.location, 200),
         message,
         sourcePath: clean(body.sourcePath, 300),
+        attribution,
       });
     } catch {
       return errorResult(saveFailedError, 500);
@@ -148,6 +173,7 @@ export async function submitLead(req: Request, body: SubmitBody, client: SubmitL
         budget: clean(body.budget, 80),
         details: clean(body.details, 4000),
         sourcePath: clean(body.sourcePath, 300),
+        attribution,
       });
     } catch {
       return errorResult(saveFailedError, 500);

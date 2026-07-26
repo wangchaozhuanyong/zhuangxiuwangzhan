@@ -600,6 +600,31 @@ export async function publishContent(
   if (mode !== "dry-run" && mode !== "publish") return errorResult("Invalid publish mode.");
   if (!input.record || typeof input.record !== "object" || Array.isArray(input.record)) return errorResult("record object is required.");
 
+  if (input.inspectOnly) {
+    if (input.contentType !== "service" || mode !== "dry-run") {
+      return errorResult("inspectOnly is allowed only for service dry-run.");
+    }
+    const slug = cleanText(input.record.slug, 160);
+    if (!slug || !/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(slug)) {
+      return errorResult("A valid service slug is required for inspectOnly.");
+    }
+    const existing = await fetchServiceBySlug(client, slug);
+    if (!existing) return errorResult("Service record not found.", 404);
+    return {
+      body: {
+        ok: true,
+        dry_run: true,
+        inspect_only: true,
+        content_type: "service",
+        action: "inspect",
+        slug,
+        existing_record: existing,
+        expected_updated_at: existing.updated_at || null,
+        auth_mode: context.authMode || "admin",
+      },
+    };
+  }
+
   const nextStatus = input.nextStatus || (input.record.status as ContentStatus | undefined) || "draft";
   if (!VALID_STATUSES.has(nextStatus)) return errorResult("Invalid nextStatus.");
   if (mode === "publish" && (!input.ownerApproved || !input.explicitExecution)) {
@@ -659,6 +684,8 @@ export async function publishContent(
       body: {
         ...commonBody,
         payload_preview: cleaned.payload,
+        existing_record: existing || null,
+        expected_updated_at: existing?.updated_at || null,
       },
     };
   }

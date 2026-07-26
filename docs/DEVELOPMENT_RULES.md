@@ -105,6 +105,8 @@
 | 英文内容生成 | `generate-english-content` |
 | 健康检查 | `health-check` |
 | 动态 sitemap | `sitemap` |
+| 无 PII 推广归因导出 | `growth-export` |
+| 受控推广 Telegram 变更通知 | `growth-notify` |
 
 新增或修改 API 必须说明：
 

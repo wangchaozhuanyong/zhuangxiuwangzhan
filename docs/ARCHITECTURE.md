@@ -186,6 +186,8 @@
 - `generate-english-content`: 英文生成和翻译任务。
 - `health-check`: 健康检查。
 - `sitemap`: 动态 sitemap。
+- `growth-export`: 受保护、无 PII 的线索/报价推广归因聚合。
+- `growth-notify`: 受保护的推广真实变更 Telegram 通知。
 
 新增或修改 API 时，必须说明请求字段、响应字段、错误格式、权限要求、缓存影响和兼容策略。现有 `submit-lead` 的 `{ ok, id }` / `{ error }` 返回方式先保持不动。
 

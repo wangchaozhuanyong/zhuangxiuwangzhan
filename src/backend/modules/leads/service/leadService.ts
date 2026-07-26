@@ -10,6 +10,7 @@ import {
 } from "@/backend/modules/leads/repository/leadRepository";
 import type { FormGuardFields } from "@/lib/formGuard";
 import { getTurnstileToken } from "@/lib/turnstile";
+import { getLeadAttribution, type LeadAttributionPayload } from "@/lib/leadAttribution";
 
 export type AddAdminLeadFollowupInput = {
   leadId: string;
@@ -30,6 +31,7 @@ export interface ContactSubmission {
   location?: string;
   message: string;
   sourcePath?: string;
+  attribution?: LeadAttributionPayload;
 }
 
 export interface QuoteSubmission {
@@ -42,6 +44,7 @@ export interface QuoteSubmission {
   budget?: string;
   details?: string;
   sourcePath?: string;
+  attribution?: LeadAttributionPayload;
 }
 
 const currentPathWithSearch = () => {
@@ -77,6 +80,7 @@ export const submitContactLead = async (payload: ContactSubmission & FormGuardFi
     location: payload.location,
     message: payload.message,
     sourcePath: payload.sourcePath || currentPathWithSearch(),
+    attribution: payload.attribution || getLeadAttribution(),
     website: payload.website,
     startedAt: payload.startedAt,
     elapsedMs,
@@ -99,6 +103,7 @@ export const submitQuoteRequest = async (payload: QuoteSubmission & FormGuardFie
     budget: payload.budget,
     details: payload.details,
     sourcePath: payload.sourcePath || currentPathWithSearch(),
+    attribution: payload.attribution || getLeadAttribution(),
     website: payload.website,
     startedAt: payload.startedAt,
     elapsedMs,

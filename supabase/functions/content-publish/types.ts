@@ -30,6 +30,7 @@ export type ContentPublishRequest = {
   explicitExecution?: boolean;
   approvalId?: string;
   source?: string;
+  inspectOnly?: boolean;
 };
 
 export type ServiceRow = Record<string, unknown> & {

@@ -1,7 +1,12 @@
-import type { ContactBody, QuoteBody, SubmitLeadClient } from "./types.ts";
+import type { CleanLeadAttribution, ContactBody, QuoteBody, SubmitLeadClient } from "./types.ts";
+
+type DenoRuntime = { env?: { get?: (name: string) => string | undefined } };
+
+const getRuntimeEnv = (name: string) =>
+  (globalThis as typeof globalThis & { Deno?: DenoRuntime }).Deno?.env?.get?.(name);
 
 const getServiceRoleKey = () =>
-  Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") || Deno.env.get("SERVICE_ROLE_KEY");
+  getRuntimeEnv("SUPABASE_SERVICE_ROLE_KEY") || getRuntimeEnv("SERVICE_ROLE_KEY");
 
 export async function countRecentAttemptsByIp(client: SubmitLeadClient, ipHash: string, sinceIso: string) {
   const { count, error } = await client
@@ -51,6 +56,7 @@ export async function createContactLead(
     location: string;
     message: string;
     sourcePath: string;
+    attribution: CleanLeadAttribution;
   },
 ) {
   const { error } = await client.from("leads").insert({
@@ -64,6 +70,20 @@ export async function createContactLead(
     source: "website_contact",
     source_path: input.sourcePath || null,
     status: "new",
+    first_touch_source: input.attribution.firstTouchSource || null,
+    first_touch_medium: input.attribution.firstTouchMedium || null,
+    first_touch_campaign: input.attribution.firstTouchCampaign || null,
+    first_touch_term: input.attribution.firstTouchTerm || null,
+    first_touch_content: input.attribution.firstTouchContent || null,
+    last_touch_source: input.attribution.lastTouchSource || null,
+    last_touch_medium: input.attribution.lastTouchMedium || null,
+    last_touch_campaign: input.attribution.lastTouchCampaign || null,
+    last_touch_term: input.attribution.lastTouchTerm || null,
+    last_touch_content: input.attribution.lastTouchContent || null,
+    landing_page: input.attribution.landingPage || null,
+    gclid: input.attribution.gclid || null,
+    gbraid: input.attribution.gbraid || null,
+    wbraid: input.attribution.wbraid || null,
   });
 
   if (error) throw error;
@@ -82,6 +102,7 @@ export async function createQuoteRequest(
     budget: string;
     details: string;
     sourcePath: string;
+    attribution: CleanLeadAttribution;
   },
 ) {
   const { error } = await client.from("quote_requests").insert({
@@ -96,6 +117,20 @@ export async function createQuoteRequest(
     project_details: input.details || null,
     source_path: input.sourcePath || null,
     status: "pending",
+    first_touch_source: input.attribution.firstTouchSource || null,
+    first_touch_medium: input.attribution.firstTouchMedium || null,
+    first_touch_campaign: input.attribution.firstTouchCampaign || null,
+    first_touch_term: input.attribution.firstTouchTerm || null,
+    first_touch_content: input.attribution.firstTouchContent || null,
+    last_touch_source: input.attribution.lastTouchSource || null,
+    last_touch_medium: input.attribution.lastTouchMedium || null,
+    last_touch_campaign: input.attribution.lastTouchCampaign || null,
+    last_touch_term: input.attribution.lastTouchTerm || null,
+    last_touch_content: input.attribution.lastTouchContent || null,
+    landing_page: input.attribution.landingPage || null,
+    gclid: input.attribution.gclid || null,
+    gbraid: input.attribution.gbraid || null,
+    wbraid: input.attribution.wbraid || null,
   });
 
   if (error) throw error;

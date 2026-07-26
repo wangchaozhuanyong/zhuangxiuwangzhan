@@ -12,6 +12,7 @@ import { addAdminLeadFollowup, updateAdminLead } from "@/backend/modules/leads/s
 import AdminPageHeader from "@/components/admin/AdminPageHeader";
 import { getAdminLang } from "@/lib/adminLocale";
 import { adminLeadDetailText, adminLeadFollowupTypeLabels } from "@/i18n/adminLeadDetailText";
+import { adminLeadQualityLabels, leadQualityValues, type LeadQualityValue } from "@/i18n/adminLeadQualityText";
 import { translateProjectType, translateStatusLabel } from "@/i18n/displayLabels";
 import { telHrefFromPhone, whatsappHrefFromPhone } from "@/lib/contactLinks";
 import { formatSourcePath, formatUserFacingError } from "@/lib/userFacingText";
@@ -34,6 +35,15 @@ type AdminLeadDetailRow = Record<string, unknown> & {
   message?: string | null;
   notes?: string | null;
   next_follow_up_at?: string | null;
+  lead_quality?: LeadQualityValue | null;
+  qualified_at?: string | null;
+  first_touch_source?: string | null;
+  first_touch_medium?: string | null;
+  first_touch_campaign?: string | null;
+  last_touch_source?: string | null;
+  last_touch_medium?: string | null;
+  last_touch_campaign?: string | null;
+  landing_page?: string | null;
   created_at?: string | null;
 };
 
@@ -185,12 +195,49 @@ const AdminLeadDetail = () => {
                     </select>
                   </div>
                   <div>
+                    <label className="mb-1 block text-sm font-medium">{A("leadQuality")}</label>
+                    <select
+                      value={lead.lead_quality || "unclassified"}
+                      onChange={(event) => {
+                        if (!canWriteLead) return;
+                        const leadQuality = event.target.value as LeadQualityValue;
+                        const qualifiedAt = leadQuality === "high" || leadQuality === "medium"
+                          ? lead.qualified_at || new Date().toISOString()
+                          : null;
+                        setLead({ ...lead, lead_quality: leadQuality, qualified_at: qualifiedAt });
+                        void updateLead(
+                          { lead_quality: leadQuality, qualified_at: qualifiedAt },
+                          A("leadQuality"),
+                        );
+                      }}
+                      disabled={!canWriteLead || savingField === A("leadQuality")}
+                      className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+                    >
+                      {leadQualityValues.map((item) => (
+                        <option key={item} value={item}>{adminLeadQualityLabels[item][lang]}</option>
+                      ))}
+                    </select>
+                  </div>
+                  <div>
+                    <span className="text-muted-foreground">{A("qualifiedAt")}</span>{" "}
+                    {lead.qualified_at ? new Date(lead.qualified_at).toLocaleString() : "-"}
+                  </div>
+                  <div>
                     <label className="mb-1 block text-sm font-medium">{A("nextFollowUp")}</label>
                     <Input type="datetime-local" value={lead.next_follow_up_at ? lead.next_follow_up_at.slice(0, 16) : ""} onChange={(event) => setLead({ ...lead, next_follow_up_at: event.target.value })} onBlur={() => void updateLead({ next_follow_up_at: lead.next_follow_up_at || null }, A("nextFollowUp"))} disabled={!canWriteLead || savingField === A("nextFollowUp")} />
                   </div>
                   <div className="md:col-span-2">
                     <label className="mb-1 block text-sm font-medium">{A("notes")}</label>
                     <Textarea rows={4} value={lead.notes || ""} onChange={(event) => setLead({ ...lead, notes: event.target.value })} onBlur={() => void updateLead({ notes: lead.notes || null }, A("notes"))} disabled={!canWriteLead || savingField === A("notes")} />
+                  </div>
+                  <div className="md:col-span-2 rounded-lg border border-border bg-muted/30 p-4">
+                    <h3 className="mb-2 font-medium">{A("attribution")}</h3>
+                    <div className="grid gap-2 md:grid-cols-2">
+                      <p><span className="text-muted-foreground">{A("firstTouch")}</span> {[lead.first_touch_source, lead.first_touch_medium].filter(Boolean).join(" / ") || "-"}</p>
+                      <p><span className="text-muted-foreground">{A("lastTouch")}</span> {[lead.last_touch_source, lead.last_touch_medium].filter(Boolean).join(" / ") || "-"}</p>
+                      <p><span className="text-muted-foreground">{A("campaign")}</span> {lead.last_touch_campaign || lead.first_touch_campaign || "-"}</p>
+                      <p><span className="text-muted-foreground">{A("landingPage")}</span> {lead.landing_page || "-"}</p>
+                    </div>
                   </div>
                 </div>
               </section>

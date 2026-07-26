@@ -11,6 +11,7 @@ import { formatAdminMutationError } from "@/lib/adminMutation";
 import { addAdminQuoteFollowup, updateAdminQuote } from "@/backend/modules/quotes/service/quoteService";
 import AdminPageHeader from "@/components/admin/AdminPageHeader";
 import { adminQuoteDetailText, adminQuoteFollowupTypeLabels } from "@/i18n/adminQuoteDetailText";
+import { adminLeadQualityLabels, leadQualityValues, type LeadQualityValue } from "@/i18n/adminLeadQualityText";
 import { getAdminLang } from "@/lib/adminLocale";
 import { translateProjectType, translateStatusLabel } from "@/i18n/displayLabels";
 import { telHrefFromPhone, whatsappHrefFromPhone } from "@/lib/contactLinks";
@@ -36,6 +37,15 @@ type AdminQuoteDetailRow = Record<string, unknown> & {
   quoted_amount?: number | string | null;
   valid_until?: string | null;
   next_follow_up_at?: string | null;
+  lead_quality?: LeadQualityValue | null;
+  qualified_at?: string | null;
+  first_touch_source?: string | null;
+  first_touch_medium?: string | null;
+  first_touch_campaign?: string | null;
+  last_touch_source?: string | null;
+  last_touch_medium?: string | null;
+  last_touch_campaign?: string | null;
+  landing_page?: string | null;
   created_at?: string | null;
 };
 
@@ -189,6 +199,34 @@ const AdminQuoteDetail = () => {
                     </select>
                   </div>
                   <div>
+                    <label className="mb-1 block text-sm font-medium">{A("leadQuality")}</label>
+                    <select
+                      value={quote.lead_quality || "unclassified"}
+                      onChange={(event) => {
+                        if (!canWriteLead) return;
+                        const leadQuality = event.target.value as LeadQualityValue;
+                        const qualifiedAt = leadQuality === "high" || leadQuality === "medium"
+                          ? quote.qualified_at || new Date().toISOString()
+                          : null;
+                        setQuote({ ...quote, lead_quality: leadQuality, qualified_at: qualifiedAt });
+                        void updateQuote(
+                          { lead_quality: leadQuality, qualified_at: qualifiedAt },
+                          A("leadQuality"),
+                        );
+                      }}
+                      disabled={!canWriteLead || savingField === A("leadQuality")}
+                      className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+                    >
+                      {leadQualityValues.map((item) => (
+                        <option key={item} value={item}>{adminLeadQualityLabels[item][lang]}</option>
+                      ))}
+                    </select>
+                  </div>
+                  <div>
+                    <span className="text-muted-foreground">{A("qualifiedAt")}</span>{" "}
+                    {quote.qualified_at ? new Date(quote.qualified_at).toLocaleString() : "-"}
+                  </div>
+                  <div>
                     <label className="mb-1 block text-sm font-medium">{A("validUntil")}</label>
                     <Input type="date" value={quote.valid_until || ""} onChange={(event) => setQuote({ ...quote, valid_until: event.target.value })} onBlur={() => void updateQuote({ valid_until: quote.valid_until || null }, A("validUntilField"))} disabled={!canWriteLead || savingField === A("validUntilField")} />
                   </div>
@@ -199,6 +237,15 @@ const AdminQuoteDetail = () => {
                   <div className="md:col-span-2">
                     <label className="mb-1 block text-sm font-medium">{A("notes")}</label>
                     <Textarea rows={4} value={quote.notes || ""} onChange={(event) => setQuote({ ...quote, notes: event.target.value })} onBlur={() => void updateQuote({ notes: quote.notes || null }, A("notes"))} disabled={!canWriteLead || savingField === A("notes")} />
+                  </div>
+                  <div className="md:col-span-2 rounded-lg border border-border bg-muted/30 p-4">
+                    <h3 className="mb-2 font-medium">{A("attribution")}</h3>
+                    <div className="grid gap-2 md:grid-cols-2">
+                      <p><span className="text-muted-foreground">{A("firstTouch")}</span> {[quote.first_touch_source, quote.first_touch_medium].filter(Boolean).join(" / ") || "-"}</p>
+                      <p><span className="text-muted-foreground">{A("lastTouch")}</span> {[quote.last_touch_source, quote.last_touch_medium].filter(Boolean).join(" / ") || "-"}</p>
+                      <p><span className="text-muted-foreground">{A("campaign")}</span> {quote.last_touch_campaign || quote.first_touch_campaign || "-"}</p>
+                      <p><span className="text-muted-foreground">{A("landingPage")}</span> {quote.landing_page || "-"}</p>
+                    </div>
                   </div>
                 </div>
               </section>

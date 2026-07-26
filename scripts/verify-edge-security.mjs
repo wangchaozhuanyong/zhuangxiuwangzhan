@@ -41,10 +41,22 @@ for (const functionName of [
   "health-check",
   "maintenance-reminder",
   "notification-settings",
+  "growth-export",
+  "growth-notify",
 ]) {
   const source = await read(`supabase/functions/${functionName}/index.ts`);
   if (!source.includes("corsHeadersFor") || !source.includes("handleCorsPreflight")) {
     fail(`${functionName} does not use the shared CORS helper`);
+  }
+}
+
+for (const [functionName, secretName] of [
+  ["growth-export", "GROWTH_EXPORT_SECRET"],
+  ["growth-notify", "GROWTH_NOTIFY_SECRET"],
+]) {
+  const source = await read(`supabase/functions/${functionName}/index.ts`);
+  if (!source.includes("requireAdminAccess") || !source.includes(secretName)) {
+    fail(`${functionName} does not enforce its protected machine secret`);
   }
 }
 

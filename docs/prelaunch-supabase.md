@@ -20,9 +20,15 @@ supabase functions deploy notify-lead
 supabase functions deploy notification-settings
 supabase functions deploy maintenance-reminder
 supabase functions deploy generate-english-content
+supabase functions deploy growth-export --no-verify-jwt
+supabase functions deploy growth-notify --no-verify-jwt
 ```
 
 `submit-lead` 需要 **service role**（Supabase 自动注入 `SUPABASE_SERVICE_ROLE_KEY`）。
+
+`growth-export` 和 `growth-notify` 的机器调用分别需要 `GROWTH_EXPORT_SECRET` 与
+`GROWTH_NOTIFY_SECRET`。它们使用 `x-cron-secret`，因此部署时关闭 Supabase 网关 JWT
+校验，但函数内部仍会通过 `requireAdminAccess` 严格校验机器密钥或管理员 Bearer token。
 
 ## 3. 管理员
 

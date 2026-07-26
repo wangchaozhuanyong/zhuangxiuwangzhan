@@ -46,8 +46,19 @@ Supabase Edge Function secrets must be configured in Supabase, not committed to 
 - `SITE_URL`
 - `MAINTENANCE_REMINDER_CRON_SECRET`
 - `CONTENT_PUBLISH_SECRET`
+- `GROWTH_EXPORT_SECRET`
+- `GROWTH_NOTIFY_SECRET`
 
 Do not commit real passwords, tokens, service role keys, or production secrets.
+
+## Managed Growth Data APIs
+
+The controlled managed-growth workflow uses two protected Edge Functions:
+
+- `growth-export`: `POST`, admin Bearer token or `x-cron-secret: <GROWTH_EXPORT_SECRET>`. Accepts `startDate`, `endDate`, and `limit`; returns hashed record IDs, bounded attribution, coarse location/service categories, lead quality, and value signals. It never returns customer name, phone, email, message, project details, or exact location.
+- `growth-notify`: `POST`, admin Bearer token or `x-cron-secret: <GROWTH_NOTIFY_SECRET>`. Accepts one approved managed-growth change event and sends the existing admin-configured Telegram notification without exposing the Telegram bot token to the automation client.
+
+Both endpoints are `no-store`, require protected access, and do not permit direct content or advertising changes.
 
 ## Admin Content Publish API
 

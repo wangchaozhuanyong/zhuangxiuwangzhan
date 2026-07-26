@@ -56,6 +56,8 @@ const requiredFunctionNames = [
   "generate-english-content",
   "health-check",
   "sitemap",
+  "growth-export",
+  "growth-notify",
 ];
 
 const errors = [];

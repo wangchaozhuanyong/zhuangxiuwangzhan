@@ -1,4 +1,5 @@
 import { buildLeadTelegramMessage } from "../_shared/admin-notification-format.ts";
+import { resolveTelegramSettings, sendTelegramMessage } from "../_shared/telegram-delivery.ts";
 import {
   fetchLeadNotificationRecord,
   fetchTelegramSettingsRow,
@@ -6,11 +7,9 @@ import {
 } from "./repository.ts";
 import type {
   DeliveryResult,
-  NotificationSettingsRow,
   NotifyLeadClient,
   NotifyLeadRequest,
   NotifyLeadResult,
-  TelegramSettings,
 } from "./types.ts";
 
 const cleanValue = (value: unknown) => {
@@ -34,65 +33,6 @@ const fetchWithTimeout = async (url: string, init: RequestInit) => {
 };
 
 const isAbortError = (error: unknown) => error instanceof Error && error.name === "AbortError";
-
-const resolveTelegramSettings = (row: NotificationSettingsRow | null): TelegramSettings => ({
-  enabled: row?.telegram_enabled ?? Boolean(Deno.env.get("TELEGRAM_BOT_TOKEN") && Deno.env.get("TELEGRAM_CHAT_ID")),
-  token: row?.telegram_bot_token || Deno.env.get("TELEGRAM_BOT_TOKEN"),
-  chatId: row?.telegram_chat_id || Deno.env.get("TELEGRAM_CHAT_ID"),
-});
-
-const sendTelegramMessage = async (message: string, settings: TelegramSettings): Promise<DeliveryResult> => {
-  const token = settings.token?.trim();
-  const chatId = settings.chatId?.trim();
-
-  if (!settings.enabled) {
-    return {
-      skipped: true,
-      reason: "Telegram notification is disabled",
-    };
-  }
-
-  if (!token || !chatId) {
-    return {
-      skipped: true,
-      reason: "TELEGRAM_BOT_TOKEN or TELEGRAM_CHAT_ID is not configured",
-    };
-  }
-
-  let response: Response;
-  try {
-    response = await fetchWithTimeout(`https://api.telegram.org/bot${token}/sendMessage`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json; charset=utf-8",
-      },
-      body: JSON.stringify({
-        chat_id: chatId,
-        text: message,
-        disable_web_page_preview: true,
-      }),
-    });
-  } catch (error) {
-    return {
-      skipped: false,
-      ok: false,
-      error: isAbortError(error) ? "Telegram notification timed out" : "Telegram notification request failed",
-    };
-  }
-
-  if (!response.ok) {
-    return {
-      skipped: false,
-      ok: false,
-      error: await response.text(),
-    };
-  }
-
-  return {
-    skipped: false,
-    ok: true,
-  };
-};
 
 const sendLeadWebhook = async (
   type: NotifyLeadRequest["type"],

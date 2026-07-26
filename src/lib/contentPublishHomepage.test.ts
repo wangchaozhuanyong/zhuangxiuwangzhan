@@ -166,3 +166,79 @@ describe("content-publish homepage", () => {
     expect(tables.admin_audit_logs.length).toBeGreaterThan(0);
   });
 });
+
+describe("content-publish service backup preflight", () => {
+  it("allows an authorized inspect-only dry-run by service slug without writing", async () => {
+    const { client, tables } = createMockContentClient({
+      services: [{
+        id: "service-1",
+        slug: "kitchen",
+        title_en: "Kitchen Renovation",
+        updated_at: "2026-07-25T10:00:00Z",
+      }],
+    });
+
+    const result = await publishContent(
+      {
+        contentType: "service",
+        mode: "dry-run",
+        inspectOnly: true,
+        record: { slug: "kitchen" },
+      },
+      client as unknown as ContentPublishClient,
+      { role: "content_editor", authMode: "cron" },
+    );
+
+    expect(result.body).toMatchObject({
+      ok: true,
+      inspect_only: true,
+      action: "inspect",
+      slug: "kitchen",
+      expected_updated_at: "2026-07-25T10:00:00Z",
+    });
+    expect(tables.services).toHaveLength(1);
+  });
+
+  it("returns the current service record in an authorized dry-run for backup and diff checks", async () => {
+    const { client, tables } = createMockContentClient({
+      services: [
+        {
+          id: "service-1",
+          slug: "renovation",
+          title_zh: "住宅装修",
+          title_en: "Residential Renovation",
+          content_zh: "现有中文内容",
+          content_en: "Existing English content",
+          status: "published",
+          updated_at: "2026-07-25T10:00:00Z",
+        },
+      ],
+    });
+
+    const result = await publishContent(
+      {
+        contentType: "service",
+        mode: "dry-run",
+        nextStatus: "published",
+        record: {
+          slug: "renovation",
+          title_zh: "住宅装修",
+          title_en: "Residential Renovation",
+          content_zh: "更新后的中文内容",
+          content_en: "Updated English content",
+        },
+      },
+      client as unknown as ContentPublishClient,
+      { role: "content_editor", authMode: "cron" },
+    );
+
+    expect(result.body.ok).toBe(true);
+    expect(result.body.existing_record).toMatchObject({
+      id: "service-1",
+      slug: "renovation",
+      content_en: "Existing English content",
+    });
+    expect(result.body.expected_updated_at).toBe("2026-07-25T10:00:00Z");
+    expect(tables.services[0].content_en).toBe("Existing English content");
+  });
+});

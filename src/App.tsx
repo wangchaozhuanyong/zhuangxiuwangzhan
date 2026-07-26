@@ -13,6 +13,7 @@ import { AppErrorBoundary } from "@/components/AppErrorBoundary";
 import { PublicChromeProvider, usePublicChrome } from "@/contexts/PublicChromeContext";
 import { stripLanguagePrefix } from "@/i18n/routes";
 import { initAnalytics, trackPageView } from "@/lib/analytics";
+import { captureLeadAttribution } from "@/lib/leadAttribution";
 import { publicRoutes } from "@/routes/publicRoutes";
 import ScrollToTop from "./components/ScrollToTop";
 
@@ -69,6 +70,7 @@ const AnalyticsRouteTracker = () => {
     if (location.pathname.startsWith("/admin")) return;
 
     const path = `${location.pathname}${location.search}`;
+    captureLeadAttribution(path);
     const timer = window.setTimeout(() => {
       trackPageView({
         path,

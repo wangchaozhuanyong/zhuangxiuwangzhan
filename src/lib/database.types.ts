@@ -341,6 +341,22 @@ export type Database = {
           closed_at: Timestamp | null;
           lost_reason: string | null;
           deal_value: number | null;
+          first_touch_source: string | null;
+          first_touch_medium: string | null;
+          first_touch_campaign: string | null;
+          first_touch_term: string | null;
+          first_touch_content: string | null;
+          last_touch_source: string | null;
+          last_touch_medium: string | null;
+          last_touch_campaign: string | null;
+          last_touch_term: string | null;
+          last_touch_content: string | null;
+          gclid: string | null;
+          gbraid: string | null;
+          wbraid: string | null;
+          landing_page: string | null;
+          lead_quality: "unclassified" | "high" | "medium" | "low" | "spam";
+          qualified_at: Timestamp | null;
           created_at: Timestamp | null;
           updated_at: Timestamp | null;
         }
@@ -513,6 +529,22 @@ export type Database = {
           lost_reason: string | null;
           closed_at: Timestamp | null;
           next_follow_up_at: Timestamp | null;
+          first_touch_source: string | null;
+          first_touch_medium: string | null;
+          first_touch_campaign: string | null;
+          first_touch_term: string | null;
+          first_touch_content: string | null;
+          last_touch_source: string | null;
+          last_touch_medium: string | null;
+          last_touch_campaign: string | null;
+          last_touch_term: string | null;
+          last_touch_content: string | null;
+          gclid: string | null;
+          gbraid: string | null;
+          wbraid: string | null;
+          landing_page: string | null;
+          lead_quality: "unclassified" | "high" | "medium" | "low" | "spam";
+          qualified_at: Timestamp | null;
           created_at: Timestamp | null;
           updated_at: Timestamp | null;
         }
