@@ -3,10 +3,9 @@ type AnalyticsParams = Record<string, AnalyticsValue>;
 
 const defaultGaMeasurementId = "G-K71PQ0MSV2";
 const defaultGoogleAdsId = "AW-18205206146";
-const directLeadCtaEvents: Record<string, string> = {
-  whatsapp: "whatsapp_click",
-};
+const productionAnalyticsHosts = new Set(["flashcast.com.my", "www.flashcast.com.my"]);
 const directObservationCtaEvents: Record<string, string> = {
+  whatsapp: "whatsapp_click",
   phone: "phone_click",
 };
 
@@ -19,7 +18,6 @@ declare global {
 
 export const gaMeasurementId = String(import.meta.env.VITE_GA_MEASUREMENT_ID || defaultGaMeasurementId).trim();
 const googleAdsId = String(import.meta.env.VITE_GOOGLE_ADS_ID || defaultGoogleAdsId).trim();
-const whatsappConversionLabel = String(import.meta.env.VITE_GOOGLE_ADS_WHATSAPP_CONVERSION_LABEL || "").trim();
 const quoteConversionLabel = String(import.meta.env.VITE_GOOGLE_ADS_QUOTE_CONVERSION_LABEL || "").trim();
 const contactConversionLabel = String(import.meta.env.VITE_GOOGLE_ADS_CONTACT_CONVERSION_LABEL || "").trim();
 const configuredPagesReportUrl = String(import.meta.env.VITE_GA4_PAGES_REPORT_URL || "").trim();
@@ -33,8 +31,14 @@ export const ga4PagesReportUrl =
 
 let initialized = false;
 
+export const isProductionAnalyticsHost = (hostname: string) =>
+  productionAnalyticsHosts.has(hostname.trim().toLowerCase());
+
 const canUseBrowserAnalytics = () =>
-  typeof window !== "undefined" && typeof document !== "undefined" && isAnalyticsEnabled;
+  typeof window !== "undefined" &&
+  typeof document !== "undefined" &&
+  isAnalyticsEnabled &&
+  (import.meta.env.MODE === "test" || isProductionAnalyticsHost(window.location.hostname));
 
 const sanitizeParams = (params: AnalyticsParams) =>
   Object.fromEntries(
@@ -127,34 +131,6 @@ export const trackCtaClick = (ctaName: string, ctaLocation: string, params: Anal
     page_path: currentPagePath(),
     ...params,
   });
-
-  const directLeadEventName = directLeadCtaEvents[ctaName];
-
-  if (directLeadEventName) {
-    const leadParams = {
-      conversion_source: "direct_cta_click",
-      cta_name: ctaName,
-      cta_location: ctaLocation,
-      page_path: currentPagePath(),
-      ...params,
-    };
-
-    trackEvent(directLeadEventName, leadParams);
-    trackEvent("generate_lead", {
-      ...leadParams,
-      lead_type: directLeadEventName,
-      method: ctaName,
-    });
-
-    trackGoogleAdsConversion(whatsappConversionLabel, {
-      conversion_source: "direct_cta_click",
-      cta_name: ctaName,
-      cta_location: ctaLocation,
-      ...params,
-    });
-
-    return;
-  }
 
   const observationEventName = directObservationCtaEvents[ctaName];
 
