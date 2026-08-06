@@ -18,6 +18,45 @@ const SUPABASE_URL = process.env.VITE_SUPABASE_URL;
 const SUPABASE_ANON_KEY = process.env.VITE_SUPABASE_ANON_KEY;
 
 const manifest = buildStaticManifest();
+const DRAFT_MARKER_REPLACEMENTS = [
+  [
+    /FLASH CAST image-rich draft for shop renovation and retail fit-out planning, including pre-opening preparation, customer flow, counter and storage planning, rendering concepts, FAQ, and consultation CTA\./gi,
+    "FLASH CAST plans shop renovation and retail fit-out for shoplots, retail stores, clinics, beauty front areas, F&B spaces, display flow, counter storage, material direction, and quotation preparation.",
+  ],
+  [
+    /FLASH CAST 店铺装修图文内容草案，包含开店前准备、展示动线、柜台收纳、材料方向、效果图方案、FAQ 和咨询 CTA。/g,
+    "FLASH CAST 提供店铺装修与零售空间规划，适合 shoplot、零售门店、诊所前区、beauty 前场和小型餐饮空间，重点整理展示动线、柜台收纳、材料方向和报价前准备。",
+  ],
+  [
+    /FLASH CAST 店铺装修双语图文草案，覆盖 shoplot、零售门店、展示空间、柜台收纳、开店前准备、效果图方案、FAQ 和咨询路径。/g,
+    "FLASH CAST 提供店铺装修与零售空间规划，覆盖 shoplot、零售门店、展示动线、柜台收纳、开店前准备、效果图方案和咨询路径。",
+  ],
+  [
+    /FLASH CAST image-rich draft for shop renovation and retail fit-out planning/gi,
+    "FLASH CAST shop renovation and retail fit-out planning guide",
+  ],
+  [
+    /Bilingual shop renovation and retail fit-out planning content for FLASH CAST, covering/gi,
+    "Plan shop renovation and retail fit-out with FLASH CAST, covering",
+  ],
+  [/image-rich draft/gi, "image-rich guide"],
+  [/FLASH CAST 店铺装修双语图文草案/g, "FLASH CAST 店铺装修与零售空间规划服务"],
+  [/FLASH CAST 店铺装修图文内容草案/g, "FLASH CAST 店铺装修与零售空间规划指南"],
+  [/双语图文草案/g, "双语服务指南"],
+  [/图文内容草案/g, "图文内容指南"],
+  [/图文草案/g, "服务规划指南"],
+  [/works best when/gi, "works well when"],
+  [/warranty, and exclusions/gi, "after-sales terms, and exclusions"],
+  [/保修和不包含项目/g, "售后条款和不包含项目"],
+  [/第一印象/g, "入口观感"],
+  [/第一眼/g, "入口观感"],
+];
+
+const sanitizeSeoText = (value = "") =>
+  DRAFT_MARKER_REPLACEMENTS.reduce(
+    (current, [pattern, replacement]) => current.replace(pattern, replacement),
+    String(value || ""),
+  );
 
 const legacyRedirectPaths = new Set([
   "/en/materials/acrylic-high-gloss-white",
@@ -57,11 +96,14 @@ const addDynamic = (lang, basePath, slug, title, description) => {
   if (legacyRedirectPaths.has(localized)) return;
   const enPath = `/en${path}`;
   const zhPath = `/zh${path}`;
+  const rawTitle = title || COMPANY;
+  const safeTitle = sanitizeSeoText(rawTitle.includes("FLASH CAST") ? rawTitle : `${rawTitle} | ${COMPANY}`);
+  const safeDescription = sanitizeSeoText(description || rawTitle).slice(0, 300);
   manifest[localized] = {
     lang,
     path,
-    title: title.includes("FLASH CAST") ? title : `${title} | ${COMPANY}`,
-    description: (description || title).slice(0, 300),
+    title: safeTitle,
+    description: safeDescription,
     canonical: `${SITE_URL}${localized}`,
     hreflang: {
       en: `${SITE_URL}${enPath}`,
@@ -91,12 +133,15 @@ const addSitePage = (lang, row) => {
     ? (String(row.image_url).startsWith("http") ? row.image_url : `${SITE_URL}${row.image_url}`)
     : OG_IMAGE;
   const existing = manifest[localized] || {};
+  const rawTitle = title || COMPANY;
+  const safeTitle = sanitizeSeoText(rawTitle.includes("FLASH CAST") ? rawTitle : `${rawTitle} | ${COMPANY}`);
+  const safeDescription = sanitizeSeoText(description || rawTitle || COMPANY).slice(0, 300);
   manifest[localized] = {
     ...existing,
     lang,
     path: row.path || "/",
-    title: (title || COMPANY).includes("FLASH CAST") ? title || COMPANY : `${title} | ${COMPANY}`,
-    description: (description || title || COMPANY).slice(0, 300),
+    title: safeTitle,
+    description: safeDescription,
     keywords: lang === "zh" ? row.seo_keywords_zh || row.seo_keywords_en || "" : row.seo_keywords_en || row.seo_keywords_zh || "",
     canonical: `${SITE_URL}${localized}`,
     hreflang: {

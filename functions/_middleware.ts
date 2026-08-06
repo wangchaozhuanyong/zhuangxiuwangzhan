@@ -180,6 +180,56 @@ const readString = (record: Record<string, unknown> | null | undefined, field: s
 const readRecordArray = (value: unknown): Record<string, unknown>[] =>
   Array.isArray(value) ? value.filter(isRecord) : [];
 
+const PUBLIC_DRAFT_MARKER_REPLACEMENTS: [RegExp, string][] = [
+  [
+    /FLASH CAST image-rich draft for shop renovation and retail fit-out planning, including pre-opening preparation, customer flow, counter and storage planning, rendering concepts, FAQ, and consultation CTA\./gi,
+    "FLASH CAST plans shop renovation and retail fit-out for shoplots, retail stores, clinics, beauty front areas, F&B spaces, display flow, counter storage, material direction, and quotation preparation.",
+  ],
+  [
+    /FLASH CAST 店铺装修图文内容草案，包含开店前准备、展示动线、柜台收纳、材料方向、效果图方案、FAQ 和咨询 CTA。/g,
+    "FLASH CAST 提供店铺装修与零售空间规划，适合 shoplot、零售门店、诊所前区、beauty 前场和小型餐饮空间，重点整理展示动线、柜台收纳、材料方向和报价前准备。",
+  ],
+  [
+    /FLASH CAST 店铺装修双语图文草案，覆盖 shoplot、零售门店、展示空间、柜台收纳、开店前准备、效果图方案、FAQ 和咨询路径。/g,
+    "FLASH CAST 提供店铺装修与零售空间规划，覆盖 shoplot、零售门店、展示动线、柜台收纳、开店前准备、效果图方案和咨询路径。",
+  ],
+  [
+    /FLASH CAST image-rich draft for shop renovation and retail fit-out planning/gi,
+    "FLASH CAST shop renovation and retail fit-out planning guide",
+  ],
+  [
+    /Bilingual shop renovation and retail fit-out planning content for FLASH CAST, covering/gi,
+    "Plan shop renovation and retail fit-out with FLASH CAST, covering",
+  ],
+  [/image-rich draft/gi, "image-rich guide"],
+  [/FLASH CAST 店铺装修双语图文草案/g, "FLASH CAST 店铺装修与零售空间规划服务"],
+  [/FLASH CAST 店铺装修图文内容草案/g, "FLASH CAST 店铺装修与零售空间规划指南"],
+  [/双语图文草案/g, "双语服务指南"],
+  [/图文内容草案/g, "图文内容指南"],
+  [/图文草案/g, "服务规划指南"],
+  [/works best when/gi, "works well when"],
+  [/warranty, and exclusions/gi, "after-sales terms, and exclusions"],
+  [/保修和不包含项目/g, "售后条款和不包含项目"],
+  [/第一印象/g, "入口观感"],
+  [/第一眼/g, "入口观感"],
+];
+
+const sanitizePublicDraftMarkers = (value: string) =>
+  PUBLIC_DRAFT_MARKER_REPLACEMENTS.reduce(
+    (current, [pattern, replacement]) => current.replace(pattern, replacement),
+    value,
+  );
+
+const sanitizePublicDataDraftMarkers = (value: unknown): unknown => {
+  if (typeof value === "string") return sanitizePublicDraftMarkers(value);
+  if (Array.isArray(value)) return value.map((item) => sanitizePublicDataDraftMarkers(item));
+  if (!isRecord(value)) return value;
+
+  return Object.fromEntries(
+    Object.entries(value).map(([key, item]) => [key, sanitizePublicDataDraftMarkers(item)]),
+  );
+};
+
 const isSupabasePublicObjectUrl = (value: string) =>
   /^https?:\/\//i.test(value) && value.includes(SUPABASE_PUBLIC_OBJECT_SEGMENT);
 
@@ -434,7 +484,7 @@ const injectDynamicImagePreloads = (html: string, preloads: ImagePreload[]) => {
 };
 
 const injectPublicData = (html: string, payload: unknown) => {
-  const script = `<script type="application/json" id="flashcast-public-data">${escapeJsonForHtml(payload)}</script>`;
+  const script = `<script type="application/json" id="flashcast-public-data">${escapeJsonForHtml(sanitizePublicDataDraftMarkers(payload))}</script>`;
   if (html.includes('id="flashcast-public-data"')) {
     return html.replace(
       /<script\b(?=[^>]*\bid="flashcast-public-data")[^>]*>[\s\S]*?<\/script>/i,
@@ -977,8 +1027,13 @@ const getExactLegacyRedirectPath = (pathname: string) => {
 };
 
 const injectSeo = (html: string, meta: SeoEntry, siteSettings?: SiteSettingsHead | null) => {
-  const title = escapeHtml(meta.title);
-  const description = escapeHtml(meta.description);
+  const safeMeta = {
+    ...meta,
+    title: sanitizePublicDraftMarkers(meta.title),
+    description: sanitizePublicDraftMarkers(meta.description),
+  };
+  const title = escapeHtml(safeMeta.title);
+  const description = escapeHtml(safeMeta.description);
   const canonical = escapeHtml(meta.canonical);
   const siteName = escapeHtml(siteSettings?.company_name || siteSettings?.brand_name || "FLASH CAST SDN. BHD.");
   const version = siteSettings?.updated_at || undefined;
@@ -1011,8 +1066,8 @@ const injectSeo = (html: string, meta: SeoEntry, siteSettings?: SiteSettingsHead
   out = replaceOrInsertTag(out, /<meta\b[^>]*name="twitter:description"[^>]*>/i, `<meta data-rh="true" name="twitter:description" content="${description}" />`);
   out = replaceOrInsertTag(out, /<meta\b[^>]*name="twitter:image"[^>]*>/i, `<meta data-rh="true" name="twitter:image" content="${ogImage}" />`);
   out = injectHeadIcons(out, favicon, touchIcon);
-  out = injectEdgeStructuredData(out, meta, siteSettings);
-  out = injectGeoSummary(out, meta);
+  out = injectEdgeStructuredData(out, safeMeta, siteSettings);
+  out = injectGeoSummary(out, safeMeta);
 
   return out;
 };

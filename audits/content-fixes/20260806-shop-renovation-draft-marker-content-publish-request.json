@@ -1,0 +1,37 @@
+{
+  "created_at": "2026-08-06T18:20:00Z",
+  "status": "prepared_not_submitted",
+  "reason": "CONTENT_PUBLISH_SECRET or an admin Bearer token is required before calling the protected content-publish function.",
+  "approval": {
+    "owner_approved": true,
+    "explicit_execution": true,
+    "approval_id": "owner-approved-2026-08-06-public-draft-marker-repair"
+  },
+  "target": {
+    "content_type": "service",
+    "slug": "shop-renovation",
+    "mode": "publish",
+    "next_status": "published"
+  },
+  "request_body": {
+    "contentType": "service",
+    "mode": "publish",
+    "nextStatus": "published",
+    "ownerApproved": true,
+    "explicitExecution": true,
+    "approvalId": "owner-approved-2026-08-06-public-draft-marker-repair",
+    "record": {
+      "slug": "shop-renovation",
+      "status": "published",
+      "excerpt_en": "FLASH CAST plans shop renovation and retail fit-out for shoplots, retail stores, clinics, beauty front areas, F&B spaces, display flow, counter storage, material direction, and quotation preparation.",
+      "excerpt_zh": "FLASH CAST 提供店铺装修与零售空间规划，适合 shoplot、零售门店、诊所前区、beauty 前场和小型餐饮空间，重点整理展示动线、柜台收纳、材料方向和报价前准备。",
+      "seo_description_zh": "FLASH CAST 提供店铺装修与零售空间规划，覆盖 shoplot、零售门店、展示动线、柜台收纳、开店前准备、效果图方案和咨询路径。"
+    }
+  },
+  "not_executed": [
+    "No direct database write.",
+    "No CMS/admin publish call without protected auth.",
+    "No deployment.",
+    "No Google Ads or Search Console action."
+  ]
+}

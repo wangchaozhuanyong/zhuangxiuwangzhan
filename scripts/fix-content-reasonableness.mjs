@@ -161,9 +161,9 @@ const blogUpdates = {
     excerpt_zh: "整理马来西亚装修预算的拆分方式，帮助业主看懂工程范围、材料等级、预留费用和报价比较重点。",
     excerpt_en: "A practical guide to renovation budgeting in Malaysia, covering scope, materials, contingency, and quotation comparison.",
     content_zh:
-      "<h2>先把预算分成几块</h2><p>装修预算不要只看一个总数。建议先分成拆除与保护、水电、防水、泥水、木作、油漆、五金电器、清洁和项目管理。这样报价一来，业主比较容易看出钱花在哪里。</p><h2>必须预留隐藏费用</h2><p>旧屋、浴室和商业空间最容易出现临时追加，例如墙内水管、电线老化、地面不平或管理处要求。建议至少预留 10% 到 15% 作为缓冲，不要把预算压到完全没有余地。</p><h2>比较报价时看范围</h2><p>同样是厨房或浴室，不同报价可能包含不同材料、收边方式、保修和现场协调。确认品牌、尺寸、数量、施工责任和不包含项目，比单纯比较总价更可靠。</p>",
+      "<h2>先把预算分成几块</h2><p>装修预算不要只看一个总数。建议先分成拆除与保护、水电、防水、泥水、木作、油漆、五金电器、清洁和项目管理。这样报价一来，业主比较容易看出钱花在哪里。</p><h2>必须预留隐藏费用</h2><p>旧屋、浴室和商业空间最容易出现临时追加，例如墙内水管、电线老化、地面不平或管理处要求。建议至少预留 10% 到 15% 作为缓冲，不要把预算压到完全没有余地。</p><h2>比较报价时看范围</h2><p>同样是厨房或浴室，不同报价可能包含不同材料、收边方式、售后条款和现场协调。确认品牌、尺寸、数量、施工责任和不包含项目，比单纯比较总价更可靠。</p>",
     content_en:
-      "<h2>Break the budget into clear sections</h2><p>Do not judge a renovation budget by the final number alone. Separate demolition, protection, wiring, plumbing, waterproofing, tiling, carpentry, painting, fittings, cleaning, and project management so each quotation is easier to compare.</p><h2>Keep a contingency allowance</h2><p>Older houses, bathrooms, and commercial spaces often reveal hidden issues after work starts. Keep around 10% to 15% aside for wiring, pipe, levelling, or management-office requirements.</p><h2>Compare scope, not just price</h2><p>A low quotation may exclude finishing details, warranty, site coordination, or material upgrades. Confirm brands, dimensions, quantities, responsibilities, and exclusions before deciding.</p>",
+      "<h2>Break the budget into clear sections</h2><p>Do not judge a renovation budget by the final number alone. Separate demolition, protection, wiring, plumbing, waterproofing, tiling, carpentry, painting, fittings, cleaning, and project management so each quotation is easier to compare.</p><h2>Keep a contingency allowance</h2><p>Older houses, bathrooms, and commercial spaces often reveal hidden issues after work starts. Keep around 10% to 15% aside for wiring, pipe, levelling, or management-office requirements.</p><h2>Compare scope, not just price</h2><p>A low quotation may exclude finishing details, after-sales terms, site coordination, or material upgrades. Confirm brands, dimensions, quantities, responsibilities, and exclusions before deciding.</p>",
   },
   "bathroom-waterproofing-guide": {
     excerpt_zh: "说明浴室防水工程的重点，包括拆除、基层处理、防水高度、闭水测试和后续铺砖注意事项。",
@@ -209,9 +209,9 @@ const blogUpdates = {
     excerpt_zh: "厨房橱柜材料选择要看防潮、门板表面、台面、五金、清洁习惯和预算，不只看颜色。",
     excerpt_en: "Choose kitchen cabinet materials by considering moisture resistance, door finish, countertop, hardware, cleaning habits, and budget.",
     content_zh:
-      "<h2>柜体和门板分开看</h2><p>厨房橱柜通常要分别确认柜体板材、门板饰面、台面和五金。柜体重视结构和防潮，门板则影响外观、清洁和耐刮表现。</p><h2>台面要配合使用习惯</h2><p>石英石、岩板和人造石都有不同优点。常煮饭的厨房要重视耐污、耐热和接缝处理；展示型干厨房可以更重视纹理和整体效果。</p><h2>五金影响每天使用</h2><p>抽屉轨道、铰链、拉篮和转角五金会影响顺手程度和寿命。报价时要确认品牌、数量、保修和是否包含安装调试。</p>",
+      "<h2>柜体和门板分开看</h2><p>厨房橱柜通常要分别确认柜体板材、门板饰面、台面和五金。柜体重视结构和防潮，门板则影响外观、清洁和耐刮表现。</p><h2>台面要配合使用习惯</h2><p>石英石、岩板和人造石都有不同优点。常煮饭的厨房要重视耐污、耐热和接缝处理；展示型干厨房可以更重视纹理和整体效果。</p><h2>五金影响每天使用</h2><p>抽屉轨道、铰链、拉篮和转角五金会影响顺手程度和寿命。报价时要确认品牌、数量、售后条款和是否包含安装调试。</p>",
     content_en:
-      "<h2>Separate cabinet body and door finish</h2><p>Kitchen cabinets should be reviewed by cabinet body, door finish, countertop, and hardware. The body affects structure and moisture resistance, while the door finish affects appearance and cleaning.</p><h2>Match countertops to usage</h2><p>Quartz, sintered stone, and solid surface each suit different habits. Heavy cooking needs stain resistance, heat tolerance, and good joint detailing.</p><h2>Hardware affects daily use</h2><p>Drawer runners, hinges, pull-out baskets, and corner fittings affect comfort and durability. Confirm brand, quantity, warranty, and adjustment work.</p>",
+      "<h2>Separate cabinet body and door finish</h2><p>Kitchen cabinets should be reviewed by cabinet body, door finish, countertop, and hardware. The body affects structure and moisture resistance, while the door finish affects appearance and cleaning.</p><h2>Match countertops to usage</h2><p>Quartz, sintered stone, and solid surface each suit different habits. Heavy cooking needs stain resistance, heat tolerance, and good joint detailing.</p><h2>Hardware affects daily use</h2><p>Drawer runners, hinges, pull-out baskets, and corner fittings affect comfort and durability. Confirm brand, quantity, after-sales terms, and adjustment work.</p>",
   },
   "selangor-office-fit-out-tips": {
     excerpt_zh: "雪兰莪办公室装修要先规划座位、会议室、前台、弱电、灯光、消防和未来扩充需求。",

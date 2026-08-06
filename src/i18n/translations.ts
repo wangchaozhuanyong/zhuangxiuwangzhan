@@ -55,7 +55,7 @@ export const translations: Translations = {
   "stats.trusted.desc": { en: "Repeat clients and referrals are our strongest endorsement", zh: "回头客和转介绍是我们最好的证明" },
   "stats.ssm.value": { en: "SSM", zh: "SSM" },
   "stats.ssm.label": { en: "Registered Company", zh: "注册公司" },
-  "stats.ssm.desc": { en: "Company registration and contact details are shown clearly for client verification.", zh: "正规注册公司，所有项目提供施工保修" },
+  "stats.ssm.desc": { en: "Company registration and contact details are shown clearly for client verification.", zh: "正规注册公司，售后条款以报价或项目文件确认为准" },
 
   // ============ SERVICES SECTION ============
   "services.title": { en: "Our Renovation Services", zh: "我们的装修服务" },
@@ -145,10 +145,10 @@ export const translations: Translations = {
     en: "We focus on practical renovation planning, reliable execution, and quality finishing. Every project is built to last, not just to look good.",
     zh: "我们注重实用的装修规划、可靠的施工和高品质收尾。每个项目都要经久耐用，不仅仅是好看。",
   },
-  "whyUs.ssm.title": { en: "SSM Registered Company", zh: "SSM 注册 & 施工保修" },
+  "whyUs.ssm.title": { en: "SSM Registered Company", zh: "SSM 注册 & 售后说明" },
   "whyUs.ssm.desc": {
     en: "FLASH CAST SDN. BHD. is a registered company. After-sales and warranty terms should be confirmed in the final quotation or project document.",
-    zh: "FLASH CAST SDN. BHD. 是一家完全 SSM 注册的公司。所有装修工程均提供施工保修，让您安心无忧。",
+    zh: "FLASH CAST SDN. BHD. 是一家注册公司。售后和保修范围应以最终报价或项目文件确认为准。",
   },
 
   // ============ PROCESS SECTION ============

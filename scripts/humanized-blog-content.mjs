@@ -172,8 +172,8 @@ export const humanizedBlogUpdates = [
     slug: "renovation-quotation-checklist-malaysia",
     zhTitle: "马来西亚装修报价单要看什么",
     enTitle: "Malaysia Renovation Quotation Checklist",
-    zhExcerpt: "看装修报价不要只看总价，要拆开范围、材料、数量、收口、保修和不包含项目。",
-    enExcerpt: "A renovation quotation should be checked by scope, material, quantity, finishing details, warranty, and exclusions.",
+    zhExcerpt: "看装修报价不要只看总价，要拆开范围、材料、数量、收口、售后条款和不包含项目。",
+    enExcerpt: "A renovation quotation should be checked by scope, material, quantity, finishing details, after-sales terms, and exclusions.",
     zh: [
       ["总价低不代表范围一样", "两个报价差很多时，先看是否都包含拆除、保护、清运、材料、人工、收边、测试和清洁。少一项，后面就可能加价。"],
       ["材料要写到可确认", "只写 premium 或 high quality 不够。最好写清品牌、型号、尺寸、厚度、颜色或同等级替代方式。"],
@@ -190,7 +190,7 @@ export const humanizedBlogUpdates = [
     zhTitle: "小公寓定制收纳怎么规划",
     enTitle: "Built-In Furniture Ideas for Small Condo Storage",
     zhExcerpt: "小公寓收纳重点不是做满柜子，而是把动线、深度、开门方式和日常习惯先排清楚。",
-    enExcerpt: "Small-condo storage works best when circulation, cabinet depth, door swing, and daily habits are planned first.",
+    enExcerpt: "Small-condo storage works well when circulation, cabinet depth, door swing, and daily habits are planned first.",
     zh: [
       ["先保留走动空间", "小户型不要为了收纳把通道压得太窄。玄关、餐边、电视墙和卧室衣柜要先确认人能舒服经过。"],
       ["柜深不是越深越好", "鞋柜、杂物柜、衣柜和展示柜需要不同深度。太深的柜子容易变成堆放区，反而不好找东西。"],
@@ -449,12 +449,12 @@ export const humanizedBlogUpdates = [
     zh: [
       ["柜体和门板分开选", "柜体重结构和防潮，门板重外观、手感和清洁。两者不要混在一起比较。"],
       ["台面按使用强度决定", "常煮饭的厨房要重视耐污、耐热和接缝处理；展示型干厨房可以更看重纹理和整体效果。"],
-      ["五金不要只看品牌名", "门铰、抽屉轨道、拉篮和转角配件要看承重、保修、数量和安装调试。每天使用的顺手度很关键。"],
+      ["五金不要只看品牌名", "门铰、抽屉轨道、拉篮和转角配件要看承重、售后条款、数量和安装调试。每天使用的顺手度很关键。"],
     ],
     en: [
       ["Choose cabinet body and doors separately", "The cabinet body affects structure and moisture resistance. Door finish affects appearance, touch, and cleaning."],
       ["Match countertop to cooking intensity", "Heavy cooking needs stain resistance, heat tolerance, and good joint detailing. A dry kitchen can focus more on texture."],
-      ["Hardware is more than a brand name", "Hinges, runners, pull-out baskets, and corner fittings should be checked for load, warranty, quantity, and adjustment."],
+      ["Hardware is more than a brand name", "Hinges, runners, pull-out baskets, and corner fittings should be checked for load, after-sales terms, quantity, and adjustment."],
     ],
   }),
   article({
@@ -496,7 +496,7 @@ export const humanizedBlogUpdates = [
     zhTitle: "小公寓收纳设计灵感",
     enTitle: "Small Condo Storage Design Ideas",
     zhExcerpt: "小公寓收纳要把玄关、电视墙、床边、餐边和垂直空间一起规划，少做零散柜子。",
-    enExcerpt: "Small condo storage works best when entry, TV wall, bedside, dining, and vertical space are planned together.",
+    enExcerpt: "Small condo storage works well when entry, TV wall, bedside, dining, and vertical space are planned together.",
     zh: [
       ["把零散柜子整合起来", "小空间如果到处加柜，会显得更乱。可以把电视墙、餐边柜、玄关柜和展示区整合成同一套语言。"],
       ["垂直空间很好用", "到顶柜、吊柜和高柜可以增加容量，但要搭配开放格或灯光，避免压迫感太重。"],
@@ -534,12 +534,12 @@ export const humanizedBlogUpdates = [
     zh: [
       ["先确认柜子类型", "衣柜、厨房柜、电视柜、鞋柜、浴室柜和展示柜的结构不同，不能用同一个单价直接比较。"],
       ["内部配件会影响预算", "抽屉、拉篮、灯带、玻璃门、隐藏插座和特殊五金都会提高价格，也会提升日常使用体验。"],
-      ["报价要看细节表", "尺寸、板材厚度、封边、五金品牌、台面材料、安装范围和保修要写清楚，比较才公平。"],
+      ["报价要看细节表", "尺寸、板材厚度、封边、五金品牌、台面材料、安装范围和售后条款要写清楚，比较才公平。"],
     ],
     en: [
       ["Confirm the cabinet type", "Wardrobes, kitchen cabinets, TV units, shoe cabinets, bathroom cabinets, and display units have different structures and cannot be priced the same way."],
       ["Internal accessories affect cost", "Drawers, pull-out baskets, lighting, glass doors, hidden sockets, and special hardware add cost but improve daily use."],
-      ["Review the detail sheet", "Dimensions, board thickness, edging, hardware brand, countertop, installation scope, and warranty should be stated clearly."],
+      ["Review the detail sheet", "Dimensions, board thickness, edging, hardware brand, countertop, installation scope, and after-sales terms should be stated clearly."],
     ],
   }),
   article({
@@ -677,4 +677,3 @@ export const applyHumanizedBlogContent = (posts) => {
   }
   return count;
 };
-

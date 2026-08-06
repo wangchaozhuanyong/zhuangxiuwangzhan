@@ -1,0 +1,393 @@
+{
+  "generated_at": "2026-08-06T18:11:49.201Z",
+  "source_url": "https://flashcast.com.my/en/services",
+  "mode": "owner_review_no_secret_no_live_call",
+  "content_gate_scope": {
+    "critical_public_pages": [
+      "https://flashcast.com.my/en",
+      "https://flashcast.com.my/en/services",
+      "https://flashcast.com.my/zh",
+      "https://flashcast.com.my/zh/services",
+      "https://flashcast.com.my/zh/services/shop-renovation",
+      "https://flashcast.com.my/zh/services/shoplot"
+    ],
+    "source_record": "services.slug=shop-renovation",
+    "expected_updated_at": "2026-07-30T04:14:30.624904+00:00"
+  },
+  "content_publish_dry_run_request": {
+    "contentType": "service",
+    "mode": "dry-run",
+    "nextStatus": "published",
+    "expectedUpdatedAt": "2026-07-30T04:14:30.624904+00:00",
+    "source": "flashcast-managed-growth-content-gate-2026-08-06",
+    "record": {
+      "id": "32f5374f-9919-41ea-80c7-00b5ac917532",
+      "slug": "shop-renovation",
+      "title_zh": "马来西亚店铺装修与零售空间规划",
+      "title_en": "Shop Renovation Malaysia Retail Fit-Out Planning",
+      "excerpt_zh": "FLASH CAST 店铺装修与零售空间规划指南，包含开店前准备、展示动线、柜台收纳、材料方向、效果图方案、FAQ 和咨询 CTA。",
+      "excerpt_en": "FLASH CAST shop renovation and retail fit-out planning guide, including pre-opening preparation, customer flow, counter and storage planning, rendering concepts, FAQ, and consultation CTA.",
+      "content_zh": "<section class=\"seo-rich-block seo-rich-hero\"><h1>马来西亚店铺装修与零售空间图文方案</h1><p>本页用于说明店铺装修服务规划，重点整理开店前准备、展示动线、柜台与收纳、材料方向、效果图方案、FAQ 和咨询路径。</p><figure><img src=\"https://flashcast.com.my/images/_responsive/materials/w900/category-whole-house-custom.webp\" alt=\"FLASH CAST 服务页效果图方案主图，用于装修内容规划说明\" loading=\"lazy\" /><figcaption>此图为规划/效果图方案，不作为真实完工案例或客户照片。 <strong>概念设计 / 效果图方案 / design concept / rendering concept</strong></figcaption></figure></section>\n<section class=\"seo-rich-block\"><h2>快速答案</h2><p>适合准备装修 shoplot、零售门店、展示空间、beauty 或 clinic 前场、小型餐饮与商业空间的业主。页面应先帮助访客确认店面照片、面积、营业类型、租约交付状态、管理方要求和预计开业时间。</p></section>\n<section class=\"seo-rich-block\"><h2>店铺装修规划范围</h2><p>规划内容可覆盖顾客动线、展示区、收银柜台、后场收纳、员工操作区、门头入口、照明、材料饰面、机电协调和报价前资料准备。不要写固定价格、固定工期、保修承诺或未确认服务区域。</p></section>\n<section class=\"seo-rich-block seo-rich-image\"><h2>分区规划示例图</h2><p>店铺装修规划/效果图方案说明图。</p><figure><img src=\"https://flashcast.com.my/images/_responsive/materials/w900/category-furniture.webp\" alt=\"FLASH CAST 分区规划示例图，用于装修内容规划说明\" loading=\"lazy\" /><figcaption>此图为规划/效果图方案，不作为真实完工案例或客户照片。 <strong>概念设计 / 效果图方案 / design concept / rendering concept</strong></figcaption></figure></section>\n<section class=\"seo-rich-block seo-rich-image\"><h2>材料 mood board</h2><p>店铺装修规划/效果图方案说明图。</p><figure><img src=\"https://flashcast.com.my/images/_responsive/materials/w900/fluted-panel-charcoal.webp\" alt=\"FLASH CAST 材料 mood board，用于装修内容规划说明\" loading=\"lazy\" /><figcaption>此图为规划/效果图方案，不作为真实完工案例或客户照片。 <strong>概念设计 / 效果图方案 / design concept / rendering concept</strong></figcaption></figure></section>\n<section class=\"seo-rich-block seo-rich-image\"><h2>流程说明图</h2><p>店铺装修规划/效果图方案说明图。</p><figure><img src=\"https://flashcast.com.my/images/_responsive/materials/w900/category-kitchen-cabinets.webp\" alt=\"FLASH CAST 流程说明图，用于装修内容规划说明\" loading=\"lazy\" /><figcaption>此图为规划/效果图方案，不作为真实完工案例或客户照片。 <strong>概念设计 / 效果图方案 / design concept / rendering concept</strong></figcaption></figure></section>\n<section class=\"seo-rich-block\"><h2>建议店铺装修流程</h2><ol><li>整理店面照片、面积与营业类型</li><li>确认顾客动线、展示区和柜台收纳</li><li>选择材料方向与效果图方案</li><li>通过报价或联系页面提交开店前需求</li></ol></section>\n<section class=\"seo-rich-block seo-rich-internal-links\"><h2>相关服务</h2><ul><li><a href=\"/zh/services/office-renovation\">商业空间与办公室装修</a></li><li><a href=\"/zh/services/builtin\">柜台木作与定制收纳</a></li><li><a href=\"/zh/services/approval\">装修申请与图纸协调</a></li></ul></section>\n<section class=\"seo-rich-block seo-rich-faq\"><h2>常见问题</h2><details><summary>店铺装修前需要准备什么资料？</summary><p>建议先准备店面照片、面积、营业类型、租约交付状态、管理方要求和预计开业时间，方便判断动线、柜台、展示和施工协调重点。</p></details><details><summary>这些图片是真实完工案例吗？</summary><p>不是。这里的图片按概念设计、效果图方案或规划示例使用，不能作为真实客户案例或完工证明。</p></details><details><summary>哪些因素会影响店铺装修报价与安排？</summary><p>面积、拆改、照明机电、柜台木作、展示系统、门头、施工时段限制和目标开业时间都会影响范围与安排。</p></details></section>\n<section class=\"seo-rich-block seo-rich-cta\"><h2>获取店铺装修规划建议</h2><p>提交店面照片、面积、营业类型和预计开业时间，先确认适合的 retail fit-out 规划方向。</p><a href=\"/zh/quote\">获取店铺装修报价 / 咨询</a></section>\n<p class=\"seo-rich-disclaimer\">以上图片为概念设计/效果图方案，不代表真实完工案例。</p>",
+      "content_en": "<section class=\"seo-rich-block seo-rich-hero\"><h1>Shop Renovation Malaysia Retail Fit-Out Plan</h1><p>This service guide explains pre-opening preparation, customer flow, display planning, counter and storage needs, material direction, rendering concepts, FAQ, and consultation paths for shop renovation.</p><figure><img src=\"https://flashcast.com.my/images/_responsive/materials/w900/category-whole-house-custom.webp\" alt=\"FLASH CAST service page rendering concept for renovation planning content\" loading=\"lazy\" /><figcaption>This image is a planning/rendering concept, not a completed real project or customer photo. <strong>概念设计 / 效果图方案 / design concept / rendering concept</strong></figcaption></figure></section>\n<section class=\"seo-rich-block\"><h2>Quick Answer</h2><p>This page is for owners planning a shoplot, retail store, showroom, beauty or clinic front area, small F&amp;B outlet, or commercial fit-out. It should help visitors prepare shop photos, floor area, business type, tenancy handover status, landlord or mall requirements, and target opening date.</p></section>\n<section class=\"seo-rich-block\"><h2>Shop Fit-Out Planning Scope</h2><p>The planning scope can cover customer flow, product display, cashier counter, back-of-house storage, staff workflow, frontage visibility, lighting, material finishes, M&amp;E coordination, and quotation preparation. Do not state fixed prices, fixed timelines, warranty promises, or unsupported service areas.</p></section>\n<section class=\"seo-rich-block seo-rich-image\"><h2>section planning example</h2><p>Shop renovation planning/rendering concept image.</p><figure><img src=\"https://flashcast.com.my/images/_responsive/materials/w900/category-furniture.webp\" alt=\"FLASH CAST section planning example for renovation planning content\" loading=\"lazy\" /><figcaption>This image is a planning/rendering concept, not a completed real project or customer photo. <strong>概念设计 / 效果图方案 / design concept / rendering concept</strong></figcaption></figure></section>\n<section class=\"seo-rich-block seo-rich-image\"><h2>material mood board</h2><p>Shop renovation planning/rendering concept image.</p><figure><img src=\"https://flashcast.com.my/images/_responsive/materials/w900/fluted-panel-charcoal.webp\" alt=\"FLASH CAST material mood board for renovation planning content\" loading=\"lazy\" /><figcaption>This image is a planning/rendering concept, not a completed real project or customer photo. <strong>概念设计 / 效果图方案 / design concept / rendering concept</strong></figcaption></figure></section>\n<section class=\"seo-rich-block seo-rich-image\"><h2>process graphic</h2><p>Shop renovation planning/rendering concept image.</p><figure><img src=\"https://flashcast.com.my/images/_responsive/materials/w900/category-kitchen-cabinets.webp\" alt=\"FLASH CAST process graphic for renovation planning content\" loading=\"lazy\" /><figcaption>This image is a planning/rendering concept, not a completed real project or customer photo. <strong>概念设计 / 效果图方案 / design concept / rendering concept</strong></figcaption></figure></section>\n<section class=\"seo-rich-block\"><h2>Suggested Shop Renovation Flow</h2><ol><li>Prepare shop photos, floor area, and business type</li><li>Confirm customer flow, display zones, counter, and storage needs</li><li>Select material direction and rendering concept</li><li>Submit pre-opening requirements through quote or contact</li></ol></section>\n<section class=\"seo-rich-block seo-rich-internal-links\"><h2>Related Services</h2><ul><li><a href=\"/en/services/office-renovation\">office renovation and commercial fit-out</a></li><li><a href=\"/en/services/builtin\">counter carpentry and custom built-in storage</a></li><li><a href=\"/en/services/approval\">approval and drawing support</a></li></ul></section>\n<section class=\"seo-rich-block seo-rich-faq\"><h2>FAQ</h2><details><summary>What should I prepare before starting a shop renovation?</summary><p>Prepare current shop photos, floor area, business type, tenancy handover status, landlord or mall requirements, and target opening date so the fit-out scope can be reviewed clearly.</p></details><details><summary>Are these images completed real projects?</summary><p>No. These images are design concepts, rendering concepts, or planning examples, not real customer cases or proof of completion.</p></details><details><summary>What affects quotation and scheduling for a retail fit-out?</summary><p>Floor area, demolition, lighting and M&amp;E works, counter carpentry, display systems, frontage work, access restrictions, and target opening date all affect scope and scheduling.</p></details></section>\n<section class=\"seo-rich-block seo-rich-cta\"><h2>Request Shop Renovation Planning Advice</h2><p>Share your shop photos, floor area, business type, and opening target to confirm a suitable retail fit-out planning direction.</p><a href=\"/en/quote\">Request a Shop Renovation Quote</a></section>\n<p class=\"seo-rich-disclaimer\">Images above are design/rendering concepts, not completed real project proof.</p>",
+      "image_url": "https://flashcast.com.my/images/_responsive/materials/w900/category-whole-house-custom.webp",
+      "alt_zh": "FLASH CAST 服务页效果图方案主图，用于装修内容规划说明",
+      "alt_en": "FLASH CAST service page rendering concept for renovation planning content",
+      "suitable_for_zh": [
+        "准备装修 shoplot、零售门店或展示空间的业主",
+        "美容、诊所、showroom、小型餐饮或服务型门店前场规划",
+        "需要规划顾客动线、展示区、柜台和后场收纳的商家",
+        "希望在开业前确认材料方向、照明、机电和施工范围的租户"
+      ],
+      "suitable_for_en": [
+        "Owners planning a shoplot, retail store, or showroom fit-out",
+        "Beauty, clinic, showroom, small F&B, or service-front retail spaces",
+        "Businesses that need customer flow, display area, counter, and back-of-house storage planning",
+        "Tenants who want material direction, lighting, M&E, and work scope clarified before opening"
+      ],
+      "common_projects_zh": [
+        "门面入口与招牌方向规划",
+        "展示区、动线和顾客停留区整理",
+        "收银柜台、服务柜台和储物柜规划",
+        "灯光、插座、网络点位和基础机电协调",
+        "墙面、地面、天花、材料饰面和品牌色方向",
+        "开业前施工范围和交付准备"
+      ],
+      "common_projects_en": [
+        "Frontage, entrance, and signboard direction planning",
+        "Display zones, customer flow, and waiting-area organization",
+        "Cashier counter, service counter, and storage cabinet planning",
+        "Lighting, power points, network points, and basic M&E coordination",
+        "Wall, floor, ceiling, material finish, and brand-colour direction",
+        "Pre-opening fit-out scope and handover preparation"
+      ],
+      "process_steps_zh": [
+        {
+          "desc": "确认店面照片、面积、营业类型、租约交付状态、管理方要求和预计开业时间。",
+          "title": "开店资料整理"
+        },
+        {
+          "desc": "整理入口、展示区、柜台、后场、储物、员工操作区和顾客停留区。",
+          "title": "动线与分区规划"
+        },
+        {
+          "desc": "确认墙面、地面、天花、灯光、柜体、品牌色和效果图方案边界。",
+          "title": "材料与视觉方向"
+        },
+        {
+          "desc": "把柜台木作、机电、照明、饰面、门面和收尾项目整理成可报价范围。",
+          "title": "报价范围确认"
+        },
+        {
+          "desc": "根据已确认的现场条件、管理要求和目标开业时间安排施工协调。",
+          "title": "执行与交付协调"
+        }
+      ],
+      "process_steps_en": [
+        {
+          "desc": "Confirm shop photos, floor area, business type, tenancy handover status, management requirements, and target opening date.",
+          "title": "Pre-Opening Intake"
+        },
+        {
+          "desc": "Plan entrance, display zones, counter, back-of-house, storage, staff workflow, and customer waiting areas.",
+          "title": "Flow & Zone Planning"
+        },
+        {
+          "desc": "Confirm wall, floor, ceiling, lighting, cabinet, brand-colour, and rendering concept boundaries.",
+          "title": "Material & Visual Direction"
+        },
+        {
+          "desc": "Translate counter carpentry, M&E, lighting, finishes, frontage, and finishing works into a quotable scope.",
+          "title": "Quotation Scope"
+        },
+        {
+          "desc": "Coordinate works based on confirmed site conditions, management requirements, and target opening timing.",
+          "title": "Execution & Handover Coordination"
+        }
+      ],
+      "scope_items_zh": [
+        "店铺 layout 与顾客动线",
+        "门面入口和品牌形象方向",
+        "展示区与产品陈列",
+        "柜台木作和后场收纳",
+        "灯光、插座、网络点位和基础机电协调",
+        "墙面、地面、天花和材料饰面",
+        "开业前施工范围整理",
+        "效果图方案或规划示例标注"
+      ],
+      "scope_items_en": [
+        "Shop layout and customer flow",
+        "Frontage, entrance, and brand direction",
+        "Display zones and merchandising layout",
+        "Counter carpentry and back-of-house storage",
+        "Lighting, power points, network points, and basic M&E coordination",
+        "Wall, floor, ceiling, and material finishes",
+        "Pre-opening fit-out scope organization",
+        "Rendering concepts or planning examples with clear labeling"
+      ],
+      "faqs_zh": [
+        {
+          "a": "建议准备店面照片、面积、营业类型、租约交付状态、管理方要求、品牌方向和预计开业时间。",
+          "q": "店铺装修前需要准备什么资料？"
+        },
+        {
+          "a": "可以按已确认范围规划收银柜台、服务柜台、展示区、储物区和顾客动线，最终以现场测量和报价为准。",
+          "q": "你们可以规划柜台和展示区吗？"
+        },
+        {
+          "a": "不建议。面积、拆改、机电、柜体、门面、材料、施工时段和审批要求都会影响报价与安排。",
+          "q": "报价和工期可以固定写在页面吗？"
+        },
+        {
+          "a": "可以，但必须清楚标注为概念设计、效果图方案或规划示例，不能写成真实完工案例或客户照片。",
+          "q": "效果图或示例图可以用于页面吗？"
+        }
+      ],
+      "faqs_en": [
+        {
+          "a": "Prepare shop photos, floor area, business type, tenancy handover status, management requirements, brand direction, and target opening date.",
+          "q": "What should I prepare before planning a shop renovation?"
+        },
+        {
+          "a": "Yes. Cashier counters, service counters, display zones, storage, and customer flow can be planned based on confirmed scope, site measurement, and quotation.",
+          "q": "Can you plan counters and display areas?"
+        },
+        {
+          "a": "No. Floor area, demolition, M&E, carpentry, frontage, materials, work-hour limits, and approval requirements all affect scope and scheduling.",
+          "q": "Can fixed pricing or fixed timelines be stated on the page?"
+        },
+        {
+          "a": "Yes, but they must be clearly labeled as design concepts, rendering concepts, or planning examples, not completed project proof or real customer photos.",
+          "q": "Can rendering or example images be used?"
+        }
+      ],
+      "seo_title_zh": "FLASH CAST | 马来西亚店铺装修与零售空间规划",
+      "seo_title_en": "FLASH CAST | Shop Renovation Malaysia | Retail Fit-Out Planning",
+      "seo_description_zh": "FLASH CAST 店铺装修与零售空间规划服务，覆盖 shoplot、零售门店、展示空间、柜台收纳、开店前准备、效果图方案、FAQ 和咨询路径。",
+      "seo_description_en": "Plan shop renovation and retail fit-out with FLASH CAST, covering shoplot planning, customer flow, display zones, counter storage, rendering concepts, FAQ, and quote path.",
+      "status": "published",
+      "sort_order": 50
+    }
+  },
+  "publish_request_template": {
+    "contentType": "service",
+    "mode": "publish",
+    "nextStatus": "published",
+    "expectedUpdatedAt": "2026-07-30T04:14:30.624904+00:00",
+    "ownerApproved": true,
+    "explicitExecution": true,
+    "approvalId": "OWNER_APPROVAL_REQUIRED",
+    "source": "flashcast-managed-growth-content-gate-2026-08-06",
+    "record": {
+      "id": "32f5374f-9919-41ea-80c7-00b5ac917532",
+      "slug": "shop-renovation",
+      "title_zh": "马来西亚店铺装修与零售空间规划",
+      "title_en": "Shop Renovation Malaysia Retail Fit-Out Planning",
+      "excerpt_zh": "FLASH CAST 店铺装修与零售空间规划指南，包含开店前准备、展示动线、柜台收纳、材料方向、效果图方案、FAQ 和咨询 CTA。",
+      "excerpt_en": "FLASH CAST shop renovation and retail fit-out planning guide, including pre-opening preparation, customer flow, counter and storage planning, rendering concepts, FAQ, and consultation CTA.",
+      "content_zh": "<section class=\"seo-rich-block seo-rich-hero\"><h1>马来西亚店铺装修与零售空间图文方案</h1><p>本页用于说明店铺装修服务规划，重点整理开店前准备、展示动线、柜台与收纳、材料方向、效果图方案、FAQ 和咨询路径。</p><figure><img src=\"https://flashcast.com.my/images/_responsive/materials/w900/category-whole-house-custom.webp\" alt=\"FLASH CAST 服务页效果图方案主图，用于装修内容规划说明\" loading=\"lazy\" /><figcaption>此图为规划/效果图方案，不作为真实完工案例或客户照片。 <strong>概念设计 / 效果图方案 / design concept / rendering concept</strong></figcaption></figure></section>\n<section class=\"seo-rich-block\"><h2>快速答案</h2><p>适合准备装修 shoplot、零售门店、展示空间、beauty 或 clinic 前场、小型餐饮与商业空间的业主。页面应先帮助访客确认店面照片、面积、营业类型、租约交付状态、管理方要求和预计开业时间。</p></section>\n<section class=\"seo-rich-block\"><h2>店铺装修规划范围</h2><p>规划内容可覆盖顾客动线、展示区、收银柜台、后场收纳、员工操作区、门头入口、照明、材料饰面、机电协调和报价前资料准备。不要写固定价格、固定工期、保修承诺或未确认服务区域。</p></section>\n<section class=\"seo-rich-block seo-rich-image\"><h2>分区规划示例图</h2><p>店铺装修规划/效果图方案说明图。</p><figure><img src=\"https://flashcast.com.my/images/_responsive/materials/w900/category-furniture.webp\" alt=\"FLASH CAST 分区规划示例图，用于装修内容规划说明\" loading=\"lazy\" /><figcaption>此图为规划/效果图方案，不作为真实完工案例或客户照片。 <strong>概念设计 / 效果图方案 / design concept / rendering concept</strong></figcaption></figure></section>\n<section class=\"seo-rich-block seo-rich-image\"><h2>材料 mood board</h2><p>店铺装修规划/效果图方案说明图。</p><figure><img src=\"https://flashcast.com.my/images/_responsive/materials/w900/fluted-panel-charcoal.webp\" alt=\"FLASH CAST 材料 mood board，用于装修内容规划说明\" loading=\"lazy\" /><figcaption>此图为规划/效果图方案，不作为真实完工案例或客户照片。 <strong>概念设计 / 效果图方案 / design concept / rendering concept</strong></figcaption></figure></section>\n<section class=\"seo-rich-block seo-rich-image\"><h2>流程说明图</h2><p>店铺装修规划/效果图方案说明图。</p><figure><img src=\"https://flashcast.com.my/images/_responsive/materials/w900/category-kitchen-cabinets.webp\" alt=\"FLASH CAST 流程说明图，用于装修内容规划说明\" loading=\"lazy\" /><figcaption>此图为规划/效果图方案，不作为真实完工案例或客户照片。 <strong>概念设计 / 效果图方案 / design concept / rendering concept</strong></figcaption></figure></section>\n<section class=\"seo-rich-block\"><h2>建议店铺装修流程</h2><ol><li>整理店面照片、面积与营业类型</li><li>确认顾客动线、展示区和柜台收纳</li><li>选择材料方向与效果图方案</li><li>通过报价或联系页面提交开店前需求</li></ol></section>\n<section class=\"seo-rich-block seo-rich-internal-links\"><h2>相关服务</h2><ul><li><a href=\"/zh/services/office-renovation\">商业空间与办公室装修</a></li><li><a href=\"/zh/services/builtin\">柜台木作与定制收纳</a></li><li><a href=\"/zh/services/approval\">装修申请与图纸协调</a></li></ul></section>\n<section class=\"seo-rich-block seo-rich-faq\"><h2>常见问题</h2><details><summary>店铺装修前需要准备什么资料？</summary><p>建议先准备店面照片、面积、营业类型、租约交付状态、管理方要求和预计开业时间，方便判断动线、柜台、展示和施工协调重点。</p></details><details><summary>这些图片是真实完工案例吗？</summary><p>不是。这里的图片按概念设计、效果图方案或规划示例使用，不能作为真实客户案例或完工证明。</p></details><details><summary>哪些因素会影响店铺装修报价与安排？</summary><p>面积、拆改、照明机电、柜台木作、展示系统、门头、施工时段限制和目标开业时间都会影响范围与安排。</p></details></section>\n<section class=\"seo-rich-block seo-rich-cta\"><h2>获取店铺装修规划建议</h2><p>提交店面照片、面积、营业类型和预计开业时间，先确认适合的 retail fit-out 规划方向。</p><a href=\"/zh/quote\">获取店铺装修报价 / 咨询</a></section>\n<p class=\"seo-rich-disclaimer\">以上图片为概念设计/效果图方案，不代表真实完工案例。</p>",
+      "content_en": "<section class=\"seo-rich-block seo-rich-hero\"><h1>Shop Renovation Malaysia Retail Fit-Out Plan</h1><p>This service guide explains pre-opening preparation, customer flow, display planning, counter and storage needs, material direction, rendering concepts, FAQ, and consultation paths for shop renovation.</p><figure><img src=\"https://flashcast.com.my/images/_responsive/materials/w900/category-whole-house-custom.webp\" alt=\"FLASH CAST service page rendering concept for renovation planning content\" loading=\"lazy\" /><figcaption>This image is a planning/rendering concept, not a completed real project or customer photo. <strong>概念设计 / 效果图方案 / design concept / rendering concept</strong></figcaption></figure></section>\n<section class=\"seo-rich-block\"><h2>Quick Answer</h2><p>This page is for owners planning a shoplot, retail store, showroom, beauty or clinic front area, small F&amp;B outlet, or commercial fit-out. It should help visitors prepare shop photos, floor area, business type, tenancy handover status, landlord or mall requirements, and target opening date.</p></section>\n<section class=\"seo-rich-block\"><h2>Shop Fit-Out Planning Scope</h2><p>The planning scope can cover customer flow, product display, cashier counter, back-of-house storage, staff workflow, frontage visibility, lighting, material finishes, M&amp;E coordination, and quotation preparation. Do not state fixed prices, fixed timelines, warranty promises, or unsupported service areas.</p></section>\n<section class=\"seo-rich-block seo-rich-image\"><h2>section planning example</h2><p>Shop renovation planning/rendering concept image.</p><figure><img src=\"https://flashcast.com.my/images/_responsive/materials/w900/category-furniture.webp\" alt=\"FLASH CAST section planning example for renovation planning content\" loading=\"lazy\" /><figcaption>This image is a planning/rendering concept, not a completed real project or customer photo. <strong>概念设计 / 效果图方案 / design concept / rendering concept</strong></figcaption></figure></section>\n<section class=\"seo-rich-block seo-rich-image\"><h2>material mood board</h2><p>Shop renovation planning/rendering concept image.</p><figure><img src=\"https://flashcast.com.my/images/_responsive/materials/w900/fluted-panel-charcoal.webp\" alt=\"FLASH CAST material mood board for renovation planning content\" loading=\"lazy\" /><figcaption>This image is a planning/rendering concept, not a completed real project or customer photo. <strong>概念设计 / 效果图方案 / design concept / rendering concept</strong></figcaption></figure></section>\n<section class=\"seo-rich-block seo-rich-image\"><h2>process graphic</h2><p>Shop renovation planning/rendering concept image.</p><figure><img src=\"https://flashcast.com.my/images/_responsive/materials/w900/category-kitchen-cabinets.webp\" alt=\"FLASH CAST process graphic for renovation planning content\" loading=\"lazy\" /><figcaption>This image is a planning/rendering concept, not a completed real project or customer photo. <strong>概念设计 / 效果图方案 / design concept / rendering concept</strong></figcaption></figure></section>\n<section class=\"seo-rich-block\"><h2>Suggested Shop Renovation Flow</h2><ol><li>Prepare shop photos, floor area, and business type</li><li>Confirm customer flow, display zones, counter, and storage needs</li><li>Select material direction and rendering concept</li><li>Submit pre-opening requirements through quote or contact</li></ol></section>\n<section class=\"seo-rich-block seo-rich-internal-links\"><h2>Related Services</h2><ul><li><a href=\"/en/services/office-renovation\">office renovation and commercial fit-out</a></li><li><a href=\"/en/services/builtin\">counter carpentry and custom built-in storage</a></li><li><a href=\"/en/services/approval\">approval and drawing support</a></li></ul></section>\n<section class=\"seo-rich-block seo-rich-faq\"><h2>FAQ</h2><details><summary>What should I prepare before starting a shop renovation?</summary><p>Prepare current shop photos, floor area, business type, tenancy handover status, landlord or mall requirements, and target opening date so the fit-out scope can be reviewed clearly.</p></details><details><summary>Are these images completed real projects?</summary><p>No. These images are design concepts, rendering concepts, or planning examples, not real customer cases or proof of completion.</p></details><details><summary>What affects quotation and scheduling for a retail fit-out?</summary><p>Floor area, demolition, lighting and M&amp;E works, counter carpentry, display systems, frontage work, access restrictions, and target opening date all affect scope and scheduling.</p></details></section>\n<section class=\"seo-rich-block seo-rich-cta\"><h2>Request Shop Renovation Planning Advice</h2><p>Share your shop photos, floor area, business type, and opening target to confirm a suitable retail fit-out planning direction.</p><a href=\"/en/quote\">Request a Shop Renovation Quote</a></section>\n<p class=\"seo-rich-disclaimer\">Images above are design/rendering concepts, not completed real project proof.</p>",
+      "image_url": "https://flashcast.com.my/images/_responsive/materials/w900/category-whole-house-custom.webp",
+      "alt_zh": "FLASH CAST 服务页效果图方案主图，用于装修内容规划说明",
+      "alt_en": "FLASH CAST service page rendering concept for renovation planning content",
+      "suitable_for_zh": [
+        "准备装修 shoplot、零售门店或展示空间的业主",
+        "美容、诊所、showroom、小型餐饮或服务型门店前场规划",
+        "需要规划顾客动线、展示区、柜台和后场收纳的商家",
+        "希望在开业前确认材料方向、照明、机电和施工范围的租户"
+      ],
+      "suitable_for_en": [
+        "Owners planning a shoplot, retail store, or showroom fit-out",
+        "Beauty, clinic, showroom, small F&B, or service-front retail spaces",
+        "Businesses that need customer flow, display area, counter, and back-of-house storage planning",
+        "Tenants who want material direction, lighting, M&E, and work scope clarified before opening"
+      ],
+      "common_projects_zh": [
+        "门面入口与招牌方向规划",
+        "展示区、动线和顾客停留区整理",
+        "收银柜台、服务柜台和储物柜规划",
+        "灯光、插座、网络点位和基础机电协调",
+        "墙面、地面、天花、材料饰面和品牌色方向",
+        "开业前施工范围和交付准备"
+      ],
+      "common_projects_en": [
+        "Frontage, entrance, and signboard direction planning",
+        "Display zones, customer flow, and waiting-area organization",
+        "Cashier counter, service counter, and storage cabinet planning",
+        "Lighting, power points, network points, and basic M&E coordination",
+        "Wall, floor, ceiling, material finish, and brand-colour direction",
+        "Pre-opening fit-out scope and handover preparation"
+      ],
+      "process_steps_zh": [
+        {
+          "desc": "确认店面照片、面积、营业类型、租约交付状态、管理方要求和预计开业时间。",
+          "title": "开店资料整理"
+        },
+        {
+          "desc": "整理入口、展示区、柜台、后场、储物、员工操作区和顾客停留区。",
+          "title": "动线与分区规划"
+        },
+        {
+          "desc": "确认墙面、地面、天花、灯光、柜体、品牌色和效果图方案边界。",
+          "title": "材料与视觉方向"
+        },
+        {
+          "desc": "把柜台木作、机电、照明、饰面、门面和收尾项目整理成可报价范围。",
+          "title": "报价范围确认"
+        },
+        {
+          "desc": "根据已确认的现场条件、管理要求和目标开业时间安排施工协调。",
+          "title": "执行与交付协调"
+        }
+      ],
+      "process_steps_en": [
+        {
+          "desc": "Confirm shop photos, floor area, business type, tenancy handover status, management requirements, and target opening date.",
+          "title": "Pre-Opening Intake"
+        },
+        {
+          "desc": "Plan entrance, display zones, counter, back-of-house, storage, staff workflow, and customer waiting areas.",
+          "title": "Flow & Zone Planning"
+        },
+        {
+          "desc": "Confirm wall, floor, ceiling, lighting, cabinet, brand-colour, and rendering concept boundaries.",
+          "title": "Material & Visual Direction"
+        },
+        {
+          "desc": "Translate counter carpentry, M&E, lighting, finishes, frontage, and finishing works into a quotable scope.",
+          "title": "Quotation Scope"
+        },
+        {
+          "desc": "Coordinate works based on confirmed site conditions, management requirements, and target opening timing.",
+          "title": "Execution & Handover Coordination"
+        }
+      ],
+      "scope_items_zh": [
+        "店铺 layout 与顾客动线",
+        "门面入口和品牌形象方向",
+        "展示区与产品陈列",
+        "柜台木作和后场收纳",
+        "灯光、插座、网络点位和基础机电协调",
+        "墙面、地面、天花和材料饰面",
+        "开业前施工范围整理",
+        "效果图方案或规划示例标注"
+      ],
+      "scope_items_en": [
+        "Shop layout and customer flow",
+        "Frontage, entrance, and brand direction",
+        "Display zones and merchandising layout",
+        "Counter carpentry and back-of-house storage",
+        "Lighting, power points, network points, and basic M&E coordination",
+        "Wall, floor, ceiling, and material finishes",
+        "Pre-opening fit-out scope organization",
+        "Rendering concepts or planning examples with clear labeling"
+      ],
+      "faqs_zh": [
+        {
+          "a": "建议准备店面照片、面积、营业类型、租约交付状态、管理方要求、品牌方向和预计开业时间。",
+          "q": "店铺装修前需要准备什么资料？"
+        },
+        {
+          "a": "可以按已确认范围规划收银柜台、服务柜台、展示区、储物区和顾客动线，最终以现场测量和报价为准。",
+          "q": "你们可以规划柜台和展示区吗？"
+        },
+        {
+          "a": "不建议。面积、拆改、机电、柜体、门面、材料、施工时段和审批要求都会影响报价与安排。",
+          "q": "报价和工期可以固定写在页面吗？"
+        },
+        {
+          "a": "可以，但必须清楚标注为概念设计、效果图方案或规划示例，不能写成真实完工案例或客户照片。",
+          "q": "效果图或示例图可以用于页面吗？"
+        }
+      ],
+      "faqs_en": [
+        {
+          "a": "Prepare shop photos, floor area, business type, tenancy handover status, management requirements, brand direction, and target opening date.",
+          "q": "What should I prepare before planning a shop renovation?"
+        },
+        {
+          "a": "Yes. Cashier counters, service counters, display zones, storage, and customer flow can be planned based on confirmed scope, site measurement, and quotation.",
+          "q": "Can you plan counters and display areas?"
+        },
+        {
+          "a": "No. Floor area, demolition, M&E, carpentry, frontage, materials, work-hour limits, and approval requirements all affect scope and scheduling.",
+          "q": "Can fixed pricing or fixed timelines be stated on the page?"
+        },
+        {
+          "a": "Yes, but they must be clearly labeled as design concepts, rendering concepts, or planning examples, not completed project proof or real customer photos.",
+          "q": "Can rendering or example images be used?"
+        }
+      ],
+      "seo_title_zh": "FLASH CAST | 马来西亚店铺装修与零售空间规划",
+      "seo_title_en": "FLASH CAST | Shop Renovation Malaysia | Retail Fit-Out Planning",
+      "seo_description_zh": "FLASH CAST 店铺装修与零售空间规划服务，覆盖 shoplot、零售门店、展示空间、柜台收纳、开店前准备、效果图方案、FAQ 和咨询路径。",
+      "seo_description_en": "Plan shop renovation and retail fit-out with FLASH CAST, covering shoplot planning, customer flow, display zones, counter storage, rendering concepts, FAQ, and quote path.",
+      "status": "published",
+      "sort_order": 50
+    }
+  },
+  "blog_project_field_replacements": [
+    {
+      "table": "blog_posts",
+      "slug": "built-in-furniture-small-condo-storage",
+      "field": "excerpt_en",
+      "from": "works best when",
+      "to": "works well when"
+    },
+    {
+      "table": "blog_posts",
+      "slug": "renovation-quotation-checklist-malaysia",
+      "field": "excerpt_en",
+      "from": "warranty",
+      "to": "after-sales terms"
+    },
+    {
+      "table": "blog_posts",
+      "slug": "small-condo-storage-design-ideas",
+      "field": "excerpt_en",
+      "from": "works best when",
+      "to": "works well when"
+    },
+    {
+      "table": "blog_posts",
+      "slug": "renovation-quotation-checklist-malaysia",
+      "field": "excerpt_zh",
+      "from": "保修",
+      "to": "售后条款"
+    },
+    {
+      "table": "projects",
+      "slug": "cheras-glass-shopfront-facade",
+      "field": "excerpt_zh",
+      "from": "第一眼",
+      "to": "入口观感"
+    },
+    {
+      "table": "projects",
+      "slug": "cheras-retail-boutique-renovation",
+      "field": "excerpt_zh",
+      "from": "第一印象",
+      "to": "进店观感"
+    },
+    {
+      "table": "projects",
+      "slug": "petaling-jaya-aluminium-glass-entrance",
+      "field": "excerpt_zh",
+      "from": "第一印象",
+      "to": "到访观感"
+    },
+    {
+      "table": "projects",
+      "slug": "setia-alam-shoe-display-cabinet",
+      "field": "excerpt_zh",
+      "from": "第一印象",
+      "to": "到访观感"
+    }
+  ],
+  "boundaries": [
+    "No secret is included.",
+    "No database/API write was performed while generating this package.",
+    "Use protected content-publish or admin UI; do not direct-write publishable tables.",
+    "Regenerate SEO manifest, sitemap, and llms after approved publish.",
+    "Verify /zh and /en public pages plus legacy /zh/services/shoplot redirect after publish/deploy."
+  ]
+}
