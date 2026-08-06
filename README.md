@@ -181,6 +181,7 @@ Automatic production deployment:
 - The production deploy workflow restores retained hashed assets, builds the new app, merges previous assets into `dist/assets`, verifies cache consistency, then deploys. This keeps old SPA HTML from breaking if it still points at the previous hashed JS chunks.
 - Public HTML responses for `/`, `/index.html`, `/zh`, `/zh/*`, `/en`, and `/en/*` use short cache headers: `public, max-age=60, stale-while-revalidate=300`, with CDN cache up to 300 seconds. Admin HTML responses for `/admin` and `/admin/*` must stay `no-store`. `/assets/*`, `/images/*`, and `/videos/*` stay `public, max-age=31536000, immutable`, and old hashed files are retained in `dist/assets` during deployment.
 - Do not deploy from a dirty local working tree. If a local manual Pages deploy is unavoidable, record the commit hash, deployment URL, and dirty status, then commit the changes before any GitHub Actions deployment can run.
+- If a local manual Cloudflare Pages deploy is unavoidable, prefer `npm run deploy:cloudflare:pages` after `npm run build`. The script passes `--env-file /dev/null` so Wrangler uses the logged-in OAuth session or the shell's explicit environment instead of accidentally loading stale Cloudflare tokens from the project `.env`.
 
 Before deployment:
 

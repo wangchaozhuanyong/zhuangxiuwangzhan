@@ -40,6 +40,7 @@
     "backup:supabase": "node scripts/backup-supabase.mjs",
     "verify:backup": "node scripts/verify-backup-package.mjs",
     "deploy:retain-assets": "node scripts/retain-deploy-assets.mjs",
+    "deploy:cloudflare:pages": "wrangler pages deploy dist --project-name flashcast-website --branch main --env-file /dev/null",
     "restore:backup:dry-run": "node scripts/restore-supabase-backup.mjs --dry-run",
     "generate:sitemap": "node scripts/generate-sitemap.mjs",
     "generate:llms": "node scripts/generate-llms.mjs",
