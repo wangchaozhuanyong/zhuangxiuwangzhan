@@ -212,6 +212,15 @@ for (const lang of ["en", "zh"]) {
         ? row.seo_description_zh || row.excerpt_zh || row.seo_description_en || row.excerpt_en
         : row.seo_description_en || row.excerpt_en || row.seo_description_zh || row.excerpt_zh,
     );
+    addDynamic(
+      lang,
+      "/products",
+      row.slug,
+      lang === "zh" ? row.title_zh || row.title_en : row.title_en || row.title_zh,
+      lang === "zh"
+        ? row.seo_description_zh || row.excerpt_zh || row.seo_description_en || row.excerpt_en
+        : row.seo_description_en || row.excerpt_en || row.seo_description_zh || row.excerpt_zh,
+    );
   }
   for (const row of areas) {
     addDynamic(

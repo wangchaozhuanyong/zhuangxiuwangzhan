@@ -5,6 +5,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import { Switch } from "@/components/ui/switch";
+import { Label } from "@/components/ui/label";
 import { isSupabaseConfigured, supabase } from "@/lib/supabase";
 import { toast } from "@/hooks/use-toast";
 import AdminPageHeader from "@/components/admin/AdminPageHeader";
@@ -64,6 +66,9 @@ export default function AdminHomeEditor() {
 
   const [statsSection, setStatsSection] = useState<HomeSectionRow | null>(null);
   const [whySection, setWhySection] = useState<HomeSectionRow | null>(null);
+  const [brandPartnersVisibility, setBrandPartnersVisibility] = useState<HomeSectionRow | null>(null);
+  const [brandPartnersEnabled, setBrandPartnersEnabled] = useState(false);
+  const [savingBrandPartnersVisibility, setSavingBrandPartnersVisibility] = useState(false);
   const [processSteps, setProcessSteps] = useState<ProcessStepRow[]>([]);
   const [faqRows, setFaqRows] = useState<FaqRow[]>([]);
   const [ctaBlock, setCtaBlock] = useState<CtaRow | null>(null);
@@ -84,6 +89,8 @@ export default function AdminHomeEditor() {
     if (formDirtyRef.current) return;
     setStatsSection(bundle.stats);
     setWhySection(bundle.why);
+    setBrandPartnersVisibility(bundle.brandPartnersVisibility);
+    setBrandPartnersEnabled(bundle.brandPartnersVisibility?.status === "published");
     setProcessSteps(bundle.processSteps);
     setFaqRows(bundle.faqRows);
     setCtaBlock(bundle.ctaBlock);
@@ -128,6 +135,34 @@ export default function AdminHomeEditor() {
     }
     toast({ title: A("saved") });
     await refreshEditor();
+  };
+
+  const updateBrandPartnersVisibility = async (enabled: boolean) => {
+    if (!supabase || savingBrandPartnersVisibility) return;
+    if (!brandPartnersVisibility?.id) {
+      toast({ title: A("cannotSave"), description: A("homeDataNotLoaded"), variant: "destructive" });
+      return;
+    }
+
+    const previousEnabled = brandPartnersEnabled;
+    setBrandPartnersEnabled(enabled);
+    setSavingBrandPartnersVisibility(true);
+    try {
+      const saved = await saveAdminRecord<HomeSectionRow>({
+        table: "home_sections",
+        payload: { status: enabled ? "published" : "draft" },
+        id: brandPartnersVisibility.id,
+        expectedUpdatedAt: brandPartnersVisibility.updated_at || null,
+        queryClient,
+      });
+      setBrandPartnersVisibility(saved);
+      toast({ title: enabled ? A("brandsEnabledToast") : A("brandsDisabledToast") });
+    } catch (error) {
+      setBrandPartnersEnabled(previousEnabled);
+      toast({ title: A("saveFailed"), description: formatAdminMutationError(error), variant: "destructive" });
+    } finally {
+      setSavingBrandPartnersVisibility(false);
+    }
   };
 
   const upsertProcessStep = async (draft: ProcessStepRow) => {
@@ -297,6 +332,7 @@ export default function AdminHomeEditor() {
             <TabsTrigger value="hero">{A("tabHero")}</TabsTrigger>
             <TabsTrigger value="stats">{A("tabStats")}</TabsTrigger>
             <TabsTrigger value="why">{A("tabWhy")}</TabsTrigger>
+            <TabsTrigger value="brands">{A("tabBrands")}</TabsTrigger>
             <TabsTrigger value="process">{A("tabProcess")}</TabsTrigger>
             <TabsTrigger value="beforeAfter">{A("tabBeforeAfter")}</TabsTrigger>
             <TabsTrigger value="testimonials">{A("tabTestimonials")}</TabsTrigger>
@@ -360,6 +396,47 @@ export default function AdminHomeEditor() {
 
             <div data-admin-card-actions className="mt-4 flex gap-2">
               <Button onClick={() => void saveHomeSectionItems(whySection, whyItems)}>{A("save")}</Button>
+            </div>
+          </AdminFormSection>
+        </TabsContent>
+
+        <TabsContent value="brands" className="space-y-6">
+          <AdminFormSection
+            title={A("brandsTitle")}
+            description={A("brandsDescription")}
+            helpText={A("brandsHelpText")}
+          >
+            <div className="flex flex-col gap-5 rounded-lg border border-border bg-background p-4 sm:flex-row sm:items-center sm:justify-between">
+              <div className="space-y-1">
+                <Label htmlFor="home-brand-partners-visibility">{A("brandsToggleLabel")}</Label>
+                <p id="home-brand-partners-visibility-status" className="text-sm text-muted-foreground" aria-live="polite">
+                  {savingBrandPartnersVisibility
+                    ? A("brandsSaving")
+                    : initialLoading
+                      ? A("loading")
+                      : !brandPartnersVisibility?.id
+                        ? A("brandsUnavailableState")
+                        : brandPartnersEnabled
+                          ? A("brandsEnabledState")
+                          : A("brandsDisabledState")}
+                </p>
+              </div>
+              <Switch
+                id="home-brand-partners-visibility"
+                checked={brandPartnersEnabled}
+                disabled={savingBrandPartnersVisibility || !brandPartnersVisibility?.id}
+                aria-describedby="home-brand-partners-visibility-status"
+                onCheckedChange={(enabled) => void updateBrandPartnersVisibility(enabled)}
+              />
+            </div>
+
+            <div data-admin-card-actions className="mt-4 flex flex-wrap gap-2">
+              <Button asChild variant="outline">
+                <Link to="/admin/brand-partners">{A("manageBrands")}</Link>
+              </Button>
+              <Button asChild variant="outline">
+                <a href="/zh" target="_blank" rel="noreferrer">{A("previewHomeZh")}</a>
+              </Button>
             </div>
           </AdminFormSection>
         </TabsContent>

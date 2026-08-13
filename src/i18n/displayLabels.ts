@@ -718,13 +718,23 @@ const extraZhTextReplacements: Record<string, string> = {
 export const translateDisplayText = (value: string, language: Language) => {
   if (language !== "zh" || !value) return value;
 
+  const escapePattern = (text: string) => text.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+
   const withExtraReplacements = Object.entries(extraZhTextReplacements).reduce((text, [key, replacement]) => {
-    return text.replace(new RegExp(key.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"), "gi"), replacement);
+    return text.replace(new RegExp(escapePattern(key), "gi"), replacement);
   }, value);
+
+  // Preserve untranslated prose as readable English. Fragment-by-fragment replacement
+  // inside a sentence creates mixed copy and can corrupt words such as "Malaysian".
+  const englishWordCount = value.match(/[A-Za-z][A-Za-z'-]*/g)?.length || 0;
+  if (withExtraReplacements === value && !/[\u3400-\u9fff]/.test(value) && englishWordCount >= 6) {
+    return value.trim();
+  }
 
   const translated = displayTextReplacements.reduce((text, entry) => {
     const replacement = entry.value.zh;
-    return text.replace(new RegExp(entry.key.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"), "gi"), replacement);
+    const pattern = new RegExp(`(^|[^A-Za-z0-9])${escapePattern(entry.key)}(?=$|[^A-Za-z0-9])`, "gi");
+    return text.replace(pattern, (_match, prefix: string) => `${prefix}${replacement}`);
   }, withExtraReplacements);
 
   return translated

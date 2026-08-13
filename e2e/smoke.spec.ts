@@ -59,11 +59,15 @@ test.describe("public site smoke", () => {
     expect(bodyText).not.toContain("�");
   });
 
-  test("zh homepage exposes a first-screen phone link on mobile", async ({ page }) => {
+  test("zh homepage exposes the fixed five-item navigation on mobile", async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
     await gotoSmokePage(page, "/zh");
     await page.waitForLoadState("load");
-    await expect(page.locator('.site-header__mobile-controls a[href^="tel:"]')).toBeVisible();
+
+    const bottomNav = page.locator(".forest-bottom-nav");
+    await expect(bottomNav).toBeVisible();
+    await expect(bottomNav.locator("a")).toHaveCount(5);
+    await expect(bottomNav.locator('a[href="/zh/contact"]')).toBeVisible();
   });
 
   test("hreflang links exist on a content page", async ({ page }) => {

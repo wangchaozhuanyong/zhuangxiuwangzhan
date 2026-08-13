@@ -50,6 +50,7 @@ const HeroBanner = ({
 
   return (
     <section
+      data-forest-page-hero="true"
       className={cn(
         "page-hero",
         variant !== "standard" && `page-hero--${variant}`,
@@ -57,7 +58,7 @@ const HeroBanner = ({
         className,
       )}
     >
-      <div className="page-hero__media absolute inset-0">
+      <div className="page-hero__media page-hero-media hero-media-mask">
         <picture className="block h-full w-full">
           {imageMobile ? <source media="(max-width: 767px)" srcSet={mobileSrcSet} sizes="100vw" /> : null}
           <SmartImage
@@ -73,9 +74,9 @@ const HeroBanner = ({
             quality={76}
           />
         </picture>
-        <div className="page-hero__overlay absolute inset-0 media-readable-overlay" aria-hidden="true" />
+        <div className="page-hero__overlay media-readable-overlay" aria-hidden="true" />
       </div>
-      <div className="page-hero__content site-container">
+      <div className="page-hero__content page-hero-copy site-container">
         {backTo && backLabel ? (
           <LocalizedLink
             to={backTo}
@@ -86,7 +87,7 @@ const HeroBanner = ({
           </LocalizedLink>
         ) : null}
         {label ? (
-          <p className="page-hero__label mb-4 font-body text-[11px] font-semibold uppercase tracking-[0.28em] text-gold">{label}</p>
+          <p className="page-hero__label forest-eyebrow">{label}</p>
         ) : null}
         <h1 className="page-hero__title heading-safe mb-4 max-w-2xl text-3xl font-bold text-on-media md:text-5xl">{title}</h1>
         {description ? (

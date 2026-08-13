@@ -8,6 +8,10 @@ const About = lazy(() => import("@/pages/About"));
 const Services = lazy(() => import("@/pages/Services"));
 const ServiceDetail = lazy(() => import("@/pages/ServiceDetail"));
 const Materials = lazy(() => import("@/pages/Materials"));
+const Products = lazy(() => import("@/pages/Products"));
+const ProductDetail = lazy(() => import("@/pages/ProductDetail"));
+const Promotions = lazy(() => import("@/pages/Promotions"));
+const Locations = lazy(() => import("@/pages/Locations"));
 const MaterialCategoryPage = lazy(() => import("@/pages/MaterialCategoryPage"));
 const MaterialSubcategoryPage = lazy(() => import("@/pages/MaterialSubcategoryPage"));
 const MaterialDetail = lazy(() => import("@/pages/MaterialDetail"));
@@ -45,6 +49,9 @@ export const publicRoutes = (
     <Route path="/:lang/materials/category/:categorySlug" element={withLanguageSync(<MaterialCategoryPage />)} />
     <Route path="/:lang/materials/category/:categorySlug/:subcategorySlug" element={withLanguageSync(<MaterialSubcategoryPage />)} />
     <Route path="/:lang/materials/:slug" element={withLanguageSync(<MaterialDetail />)} />
+    <Route path="/:lang/products" element={withLanguageSync(<Products />)} />
+    <Route path="/:lang/products/:slug" element={withLanguageSync(<ProductDetail />)} />
+    <Route path="/:lang/promotions" element={withLanguageSync(<Promotions />)} />
     <Route path="/:lang/projects" element={withLanguageSync(<Projects />)} />
     <Route path="/:lang/projects/:slug" element={withLanguageSync(<ProjectDetail />)} />
     <Route path="/:lang/process" element={withLanguageSync(<Process />)} />
@@ -53,6 +60,7 @@ export const publicRoutes = (
     <Route path="/:lang/quote" element={withLanguageSync(<Quote />)} />
     <Route path="/:lang/blog" element={withLanguageSync(<Blog />)} />
     <Route path="/:lang/blog/:slug" element={withLanguageSync(<BlogDetail />)} />
+    <Route path="/:lang/locations" element={withLanguageSync(<Locations />)} />
     <Route path="/:lang/locations/:slug" element={withLanguageSync(<LocationPage />)} />
     <Route path="/:lang/landing/:slug" element={withLanguageSync(<LandingPage />)} />
     <Route path="/:lang/privacy" element={withLanguageSync(<Privacy />)} />
@@ -60,6 +68,8 @@ export const publicRoutes = (
     <Route path="/about" element={<LegacyLanguageRedirect />} />
     <Route path="/services/*" element={<LegacyLanguageRedirect />} />
     <Route path="/materials/*" element={<LegacyLanguageRedirect />} />
+    <Route path="/products/*" element={<LegacyLanguageRedirect />} />
+    <Route path="/promotions" element={<LegacyLanguageRedirect />} />
     <Route path="/projects/*" element={<LegacyLanguageRedirect />} />
     <Route path="/process" element={<LegacyLanguageRedirect />} />
     <Route path="/faq" element={<LegacyLanguageRedirect />} />

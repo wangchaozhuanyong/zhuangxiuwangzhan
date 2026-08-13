@@ -16,6 +16,12 @@ const paths = [
   "/zh/services",
   "/en/projects",
   "/zh/materials",
+  "/en/products",
+  "/zh/products",
+  "/en/promotions",
+  "/zh/promotions",
+  "/en/locations",
+  "/zh/locations",
   "/zh/contact",
   "/zh/quote",
   "/zh/blog",
@@ -101,7 +107,9 @@ if (queryLocs.length) failures.push(`sitemap: query URLs should not be listed: $
 
 if (RUN_SITEMAP_CRAWL_CHECKS) {
   const crawlSitemapUrl = async (loc) => {
-    const response = await fetch(loc, {
+    const canonicalUrl = new URL(loc);
+    const crawlUrl = new URL(`${canonicalUrl.pathname}${canonicalUrl.search}`, `${BASE}/`).toString();
+    const response = await fetch(crawlUrl, {
       redirect: "manual",
       headers: { "user-agent": "flashcast-seo-verify" },
     });
@@ -170,10 +178,32 @@ const robotsTxt = readFileSync("public/robots.txt", "utf8");
 if (!robotsTxt.includes("https://flashcast.com.my/llms.txt")) failures.push("robots: missing llms.txt reference");
 
 if (RUN_EDGE_CHECKS) {
-  const legacy = await fetch(`${BASE}/about`, { redirect: "manual", headers: { "user-agent": "flashcast-seo-verify" } });
+  const legacy = await fetch(`${BASE}/about?utm_source=seo-check`, {
+    redirect: "manual",
+    headers: {
+      "accept-language": "zh-CN,zh;q=0.9,en;q=0.8",
+      "user-agent": "flashcast-seo-verify",
+    },
+  });
   const legacyLocation = legacy.headers.get("location") || "";
-  if (legacy.status !== 301 || !legacyLocation.endsWith("/en/about")) {
-    failures.push(`/about: expected 301 to /en/about, got ${legacy.status} ${legacyLocation}`);
+  if (legacy.status !== 302 || !legacyLocation.endsWith("/zh/about?utm_source=seo-check")) {
+    failures.push(`/about: expected 302 to /zh/about with query parameters, got ${legacy.status} ${legacyLocation}`);
+  }
+  if (!/^no-store\b/i.test(legacy.headers.get("cache-control") || "")) {
+    failures.push(`/about: language redirect must use Cache-Control: no-store`);
+  }
+
+  const savedEnglish = await fetch(`${BASE}/?gclid=seo-check`, {
+    redirect: "manual",
+    headers: {
+      "accept-language": "zh-CN,zh;q=0.9",
+      cookie: "flashcast_lang=en",
+      "user-agent": "flashcast-seo-verify",
+    },
+  });
+  const savedEnglishLocation = savedEnglish.headers.get("location") || "";
+  if (savedEnglish.status !== 302 || !savedEnglishLocation.endsWith("/en?gclid=seo-check")) {
+    failures.push(`/: expected saved English preference and gclid to produce /en?gclid=seo-check, got ${savedEnglish.status} ${savedEnglishLocation}`);
   }
 
   const missing = await fetchText(`${BASE}/random-google-test-xyz`, { redirect: "manual" });

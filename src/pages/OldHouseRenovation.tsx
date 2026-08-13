@@ -35,12 +35,12 @@ const OldHouseRenovation = () => {
     pageHeroImages.oldHouse.mobile;
 
   return (
-    <main className="pt-site-header">
+    <main className="forest-old-house-page pt-site-header">
       <PageMeta title={t.metaTitle} description={t.metaDescription} keywords={t.metaKeywords} canonicalPath="/services/old-house" />
       <JsonLdBreadcrumb items={[{ name: t.breadcrumbHome, url: "/" }, { name: t.breadcrumbServices, url: "/services" }, { name: t.breadcrumbCurrent, url: "/services/old-house" }]} />
 
-      <section className="page-hero page-hero--detail">
-        <div className="page-hero__media absolute inset-0">
+      <section data-forest-page-hero="true" className="page-hero page-hero--detail">
+        <div className="page-hero__media page-hero-media hero-media-mask">
           <picture className="block h-full w-full">
             <source media="(max-width: 767px)" srcSet={mobileHeroSrcSet} sizes="100vw" />
             <SmartImage src={pageHeroImages.oldHouse.desktop} alt={t.heroAlt} className="page-hero__image h-full w-full object-cover" width={1920} height={720} loading="eager" fetchPriority="high" sizes="100vw" candidateWidths={OLD_HOUSE_HERO_IMAGE_WIDTHS} quality={76} />

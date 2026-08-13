@@ -8,6 +8,8 @@ export type PublicDataPayload = {
   sitePages?: Record<string, UnknownRecord>;
   services?: UnknownRecord[];
   materials?: UnknownRecord[];
+  productHighlights?: UnknownRecord[];
+  serviceAreas?: UnknownRecord[];
   blogPosts?: UnknownRecord[];
   ctaBlocks?: Record<string, UnknownRecord>;
 };

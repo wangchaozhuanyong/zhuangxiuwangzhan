@@ -49,7 +49,7 @@ const LandingPage = () => {
 
   if (!page) {
     return (
-      <main className="pt-site-header section-padding text-center">
+      <main className="forest-landing-page pt-site-header section-padding text-center">
         <PageMeta title={`${t.notFound} | ${t.metaSuffix}`} description={t.notFound} canonicalPath={`/landing/${slug || ""}`} noIndex />
         <h1 className="font-display text-3xl font-bold mb-4">{t.notFound}</h1>
         <Button asChild><Link to="/">{t.backHome}</Link></Button>
@@ -102,14 +102,14 @@ const LandingPage = () => {
   });
 
   return (
-    <main className="pt-site-header">
+    <main className="forest-landing-page pt-site-header">
       <PageMeta
         title={landingPage.seoTitle || `${landingPage.title} | ${t.metaSuffix}`}
         description={landingPage.seoDescription || stripHtml(landingPage.description)}
         canonicalPath={`/landing/${slug || ""}`}
       />
-      <section className="page-hero page-hero--detail">
-        <div className="page-hero__media absolute inset-0">
+      <section data-forest-page-hero="true" className="page-hero page-hero--detail">
+        <div className="page-hero__media page-hero-media hero-media-mask">
           <SmartImage src={page.heroImage} alt={landingPage.heroAlt || landingPage.title} className="page-hero__image h-full w-full object-cover" loading="eager" width={1920} height={800} fetchPriority="high" sizes="100vw" candidateWidths={LANDING_HERO_IMAGE_WIDTHS} quality={76} />
           <div className="page-hero__overlay absolute inset-0 media-readable-overlay" aria-hidden="true" />
         </div>

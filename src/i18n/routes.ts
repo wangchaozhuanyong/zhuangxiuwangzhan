@@ -1,15 +1,20 @@
 import { readBrowserPreference, writeBrowserPreference } from "@/lib/browserPreference";
+import {
+  detectLanguageFromTags,
+  isSupportedLanguage,
+  PUBLIC_LANGUAGE_COOKIE,
+  type Language,
+} from "@/i18n/languageDetection";
 
-export type Language = "en" | "zh";
+export type { Language } from "@/i18n/languageDetection";
 
 export const supportedLanguages: Language[] = ["en", "zh"];
 const PUBLIC_LANG_KEY = "fc-lang";
-const PUBLIC_LANG_COOKIE = "flashcast_lang";
 
 let inMemoryLanguage: Language | null = null;
 
 export const isLanguage = (value?: string | null): value is Language =>
-  value === "en" || value === "zh";
+  isSupportedLanguage(value);
 
 export const getLanguageFromPath = (pathname = window.location.pathname): Language | null => {
   const segment = pathname.split("/").filter(Boolean)[0];
@@ -19,15 +24,18 @@ export const getLanguageFromPath = (pathname = window.location.pathname): Langua
 export const getDefaultLanguage = (): Language => {
   if (isLanguage(inMemoryLanguage)) return inMemoryLanguage;
 
-  const saved = readBrowserPreference(PUBLIC_LANG_KEY, PUBLIC_LANG_COOKIE);
+  const saved = readBrowserPreference(PUBLIC_LANG_KEY, PUBLIC_LANGUAGE_COOKIE);
   if (isLanguage(saved)) return saved;
 
-  return navigator.language.toLowerCase().startsWith("zh") ? "zh" : "en";
+  const browserLanguages = navigator.languages?.length
+    ? navigator.languages
+    : [navigator.language];
+  return detectLanguageFromTags(browserLanguages);
 };
 
 export const rememberLanguage = (language: Language) => {
   inMemoryLanguage = language;
-  writeBrowserPreference(PUBLIC_LANG_KEY, language, PUBLIC_LANG_COOKIE);
+  writeBrowserPreference(PUBLIC_LANG_KEY, language, PUBLIC_LANGUAGE_COOKIE);
 };
 
 export const stripLanguagePrefix = (pathname: string) => {

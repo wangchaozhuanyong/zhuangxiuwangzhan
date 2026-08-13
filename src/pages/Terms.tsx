@@ -16,7 +16,7 @@ const Terms = () => {
   const phoneLabel = language === "zh" ? "电话：" : "Phone:";
 
   return (
-    <main className="pt-site-header">
+    <main className="forest-legal-page pt-site-header">
       <PageMeta title={t.metaTitle} description={t.metaDescription} keywords={t.metaKeywords} canonicalPath="/terms" />
       <JsonLdBreadcrumb items={[{ name: t.breadcrumbHome, url: "/" }, { name: t.breadcrumbCurrent, url: "/terms" }]} />
 

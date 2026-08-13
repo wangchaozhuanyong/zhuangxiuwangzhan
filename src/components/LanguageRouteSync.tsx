@@ -17,8 +17,9 @@ export const LanguageRouteSync = () => {
 };
 
 export const RootLanguageRedirect = () => {
+  const location = useLocation();
   const language = getLanguageFromPath() || getDefaultLanguage();
-  return <Navigate to={`/${language}`} replace />;
+  return <Navigate to={`/${language}${location.search}${location.hash}`} replace />;
 };
 
 export const LegacyLanguageRedirect = () => {

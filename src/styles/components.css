@@ -8,5 +8,8 @@
 @import "./components/buttons.css";
 @import "./components/footer.css";
 @import "./components/utilities.css";
-@import "./components/public-luxury-refinement.css";
 @import "./components/motion.css";
+@import "./components/forest-client.css";
+@import "./components/forest-pages.css";
+@import "./components/forest-detail-pages.css";
+@import "./components/forest-final.css";

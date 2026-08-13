@@ -8,6 +8,7 @@ import {
   fetchPublishedProjectSummaryRows,
   fetchPublishedProjectSummaryRowsWithContent,
   fetchPublishedServiceAreaRowBySlug,
+  fetchPublishedServiceAreaRows,
   fetchPublishedServiceRowBySlug,
   fetchPublishedServiceRows,
   fetchPublishedServiceSummaryRows,
@@ -465,12 +466,36 @@ const mapPublishedMaterialRows = (rows: UnknownRecord[], language: Language = "e
       cons: pickLocalizedList(item, "cons", language),
       description: pickLocalizedText(item, "content", language) || pickLocalizedText(item, "excerpt", language),
       note: pickLocalizedText(item, "note", language) || readText(item, "reference_price"),
+      referencePrice: readText(item, "reference_price"),
       image: readText(item, "image_url"),
       alt: pickLocalizedText(item, "alt", language, pickLocalizedText(item, "title", language)),
     });
 
     return acc;
   }, []);
+
+export const getPublishedProductHighlights = async (
+  language: "en" | "zh" = "en",
+  limit = 4,
+): Promise<MaterialCatalogCategory["items"]> => {
+  const mapRows = (rows: UnknownRecord[]) => mapPublishedMaterialRows(rows, language).flatMap((category) => category.items).slice(0, limit);
+  const preloadedRows = readPreloadedPublicData()?.productHighlights;
+  if (Array.isArray(preloadedRows) && preloadedRows.length) return mapRows(preloadedRows);
+
+  if (hasPublicContentDatabaseClient()) {
+    const data = await fetchPublishedMaterialRows(limit);
+    if (data?.length) return mapRows(data as unknown as UnknownRecord[]);
+  }
+
+  const fallbackCategories = await getFallbackMaterials();
+  const unique = new Map<string, MaterialCatalogCategory["items"][number]>();
+  for (const category of fallbackCategories) {
+    for (const product of category.items) {
+      if (!unique.has(product.slug)) unique.set(product.slug, product);
+    }
+  }
+  return Array.from(unique.values()).slice(0, limit);
+};
 
 export const getPublishedMaterialBySlug = async (slug: string, language: "en" | "zh" = "en") => {
   const categories = await getPublishedMaterials(language);
@@ -567,6 +592,47 @@ export const getPublishedServiceAreaBySlug = async (slug: string, language: "en"
       a: localize(readText(faq, "a")),
     })),
   };
+};
+
+export type PublishedServiceAreaSummary = {
+  name: string;
+  slug: string;
+  description: string;
+  propertyTypes: string[];
+};
+
+const mapPublishedServiceAreaSummary = (data: UnknownRecord, language: Language): PublishedServiceAreaSummary => {
+  const localize = (value: string) => (language === "zh" ? translateDisplayText(value, language) : value);
+  const localizedTitle = pickLocalizedText(data, "title", language);
+
+  return {
+    name: localize(readText(data, "area_name") || localizedTitle),
+    slug: readText(data, "slug"),
+    description: localize(pickLocalizedText(data, "excerpt", language) || pickLocalizedText(data, "seo_description", language)),
+    propertyTypes: toArray<string>(data.property_types).map((value) => localize(value)),
+  };
+};
+
+export const getPublishedServiceAreas = async (language: "en" | "zh" = "en"): Promise<PublishedServiceAreaSummary[]> => {
+  const fallback = async () => {
+    const locations = await getFallbackLocations(language);
+    return Object.values(locations).map((location) => ({
+      name: location.name,
+      slug: location.slug,
+      description: location.description,
+      propertyTypes: location.propertyTypes,
+    }));
+  };
+
+  const preloadedRows = readPreloadedPublicData()?.serviceAreas;
+  if (Array.isArray(preloadedRows) && preloadedRows.length) {
+    return preloadedRows.map((item) => mapPublishedServiceAreaSummary(item, language));
+  }
+
+  if (!hasPublicContentDatabaseClient()) return fallback();
+  const data = await fetchPublishedServiceAreaRows();
+  if (!data?.length) return fallback();
+  return (data as unknown as UnknownRecord[]).map((item) => mapPublishedServiceAreaSummary(item, language));
 };
 
 export const getPublishedLandingPageBySlug = async (slug: string, language: "en" | "zh" = "en") => {

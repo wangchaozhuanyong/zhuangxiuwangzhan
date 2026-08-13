@@ -195,9 +195,9 @@ const Quote = () => {
 
   if (status === "success") {
     return (
-      <main className="pt-site-header">
+      <main className="forest-quote-page pt-site-header">
         <PageMeta title={t.successTitle} description={pageContent?.seo_description || t.metaDescription} canonicalPath="/quote" />
-        <section className="section-padding flex min-h-[70vh] items-center bg-background">
+        <section className="forest-quote-success section-padding flex min-h-[70vh] items-center bg-background">
           <div className="container-narrow mx-auto max-w-xl text-center">
             <div className="subpage-form-panel p-6 md:p-8">
               <div className="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-full border border-gold/25 bg-gold/10">
@@ -256,7 +256,7 @@ const Quote = () => {
   }
 
   return (
-    <main className="pt-site-header">
+    <main className="forest-quote-page pt-site-header">
       <PageMeta
         title={pageContent?.seo_title || t.metaTitle}
         description={pageContent?.seo_description || t.metaDescription}
@@ -272,14 +272,12 @@ const Quote = () => {
         label={pageContent?.subtitle || t.heroEyebrow}
         title={pageContent?.title || t.heroTitle}
         description={pageContent?.description || t.heroText}
-        variant="compact"
-        className="max-md:!min-h-[22rem]"
       />
 
-      <section className="section-padding bg-background pb-[calc(8rem+env(safe-area-inset-bottom,0px))] md:pb-28">
-        <div className="container-narrow grid gap-10 lg:grid-cols-[1.1fr_0.9fr]">
-          <Reveal>
-            <div className="subpage-form-panel p-5 md:p-8">
+      <section className="forest-quote-body section-padding bg-background pb-[calc(8rem+env(safe-area-inset-bottom,0px))] md:pb-28">
+        <div className="forest-quote-layout container-narrow grid gap-10 lg:grid-cols-[1.1fr_0.9fr]">
+          <Reveal className="forest-quote-form-wrap">
+            <div className="forest-quote-form subpage-form-panel p-5 md:p-8">
               <div className="subpage-local-heading">
                 <div className="accent-line mb-4" />
                 <h2 className="font-display text-2xl font-bold md:text-3xl">{t.formTitle}</h2>
@@ -468,8 +466,8 @@ const Quote = () => {
             </div>
           </Reveal>
 
-          <Reveal delay={120}>
-            <div className="lg:sticky lg:top-24">
+          <Reveal delay={120} className="forest-quote-aside-wrap">
+            <div className="forest-quote-aside lg:sticky lg:top-24">
               <div className="subpage-side-panel subpage-side-panel--centered p-6">
                 <h2 className="mb-4 font-display text-2xl font-bold">{t.trustTitle}</h2>
                 <ul className="subpage-copy-list">

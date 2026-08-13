@@ -16,7 +16,7 @@ import { translateDisplayText, translateMaterialCategory, translateMaterialSubca
 import { mergeMaterialCategoriesWithFallback } from "@/lib/materialCatalog";
 import { materialSubcategoryPageText } from "@/i18n/materialSubcategoryPageText";
 
-const MATERIAL_TILE_IMAGE_WIDTHS = [360, 560, 720];
+const MATERIAL_TILE_IMAGE_WIDTHS = [560, 720, 900];
 
 
 const MaterialSubcategoryPage = () => {
@@ -45,7 +45,7 @@ const MaterialSubcategoryPage = () => {
 
   if (!category || !subcategory) {
     return (
-      <main className="pt-site-header section-padding text-center">
+      <main className="forest-material-page pt-site-header section-padding text-center">
         <PageMeta title={t.notFound} description={t.notFound} canonicalPath={`/materials/category/${categorySlug || ""}/${subcategorySlug || ""}`} noIndex />
         <div className="container-narrow mx-auto max-w-lg">
           <div className="subpage-form-panel p-6 md:p-8">
@@ -58,7 +58,7 @@ const MaterialSubcategoryPage = () => {
   }
 
   return (
-    <main className="pt-site-header">
+    <main className="forest-material-page pt-site-header">
       <PageMeta
         title={t.metaTitle(displaySubcategoryName, displayCategoryName)}
         description={t.metaDescription(displaySubcategoryDescription, displaySubcategoryName)}
@@ -81,12 +81,12 @@ const MaterialSubcategoryPage = () => {
         <div className="container-narrow">
           <SectionHeader title={t.products(displaySubcategoryName)} description={displaySubcategoryDescription} />
           {items.length > 0 ? (
-            <div className="card-grid grid-cols-2 gap-4 md:grid-cols-3 md:gap-6 lg:grid-cols-4">
+            <div className="material-product-grid">
               {items.map((item, index) => (
                 <Reveal key={item.id} delay={index * 60} direction="none">
-                  <article className="material-depth-card luxury-card group hover-lift">
+                  <article className="material-depth-card material-depth-card--product luxury-card group hover-lift">
                     <div className="material-depth-card__media img-zoom">
-                      <SmartImage src={item.image} alt={item.alt || translateDisplayText(item.name, language)} loading="lazy" width={400} height={400} sizes="(max-width: 640px) 46vw, (max-width: 1024px) 30vw, 23vw" candidateWidths={MATERIAL_TILE_IMAGE_WIDTHS} quality={72} className="w-full h-full object-cover" />
+                      <SmartImage src={item.image} alt={item.alt || translateDisplayText(item.name, language)} loading="lazy" width={720} height={450} sizes="(max-width: 767px) 92vw, 46vw" candidateWidths={MATERIAL_TILE_IMAGE_WIDTHS} quality={72} className="h-full w-full object-contain" />
                     </div>
                     <div className="material-depth-card__body">
                       <h3 className="material-depth-card__title">{translateDisplayText(item.name, language)}</h3>

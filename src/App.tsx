@@ -8,6 +8,8 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import FloatingCTA from "@/components/FloatingCTA";
+import ForestBottomNav from "@/components/forest/ForestBottomNav";
+import { ForestAtmosphere, ForestRouteSkeleton } from "@/components/forest/ForestPagePrimitives";
 import DynamicBrandHead from "@/components/DynamicBrandHead";
 import { AppErrorBoundary } from "@/components/AppErrorBoundary";
 import { PublicChromeProvider, usePublicChrome } from "@/contexts/PublicChromeContext";
@@ -15,6 +17,7 @@ import { stripLanguagePrefix } from "@/i18n/routes";
 import { adminRouteText } from "@/i18n/adminRouteText";
 import { initAnalytics, trackPageView } from "@/lib/analytics";
 import { getAdminLang } from "@/lib/adminLocale";
+import { isImmersivePublicPath } from "@/lib/publicChrome";
 import { publicRoutes } from "@/routes/publicRoutes";
 import ScrollToTop from "./components/ScrollToTop";
 
@@ -33,30 +36,7 @@ const queryClient = new QueryClient({
 });
 
 const PageLoader = () => {
-  const { language } = useLanguage();
-  const label = language === "zh" ? "页面加载中" : "Loading page";
-
-  return (
-    <div
-      className="flex min-h-[60vh] items-center justify-center px-6 py-24"
-      role="status"
-      aria-live="polite"
-      aria-busy="true"
-      aria-label={language === "zh" ? "页面加载中" : label}
-    >
-      <div className="flex w-full max-w-md flex-col items-center gap-4 rounded-card border border-border bg-card/95 px-6 py-8 text-center shadow-luxury">
-        <div className="h-8 w-8 rounded-full border-2 border-accent border-t-transparent animate-spin" aria-hidden="true" />
-        <div className="space-y-2">
-          <p className="text-base font-semibold text-foreground">
-            {language === "zh" ? "正在加载页面内容" : "Loading page content"}
-          </p>
-          <p className="text-sm leading-relaxed text-muted-foreground">
-            {language === "zh" ? "请稍等，页面正在准备。" : "Please wait while the page is prepared."}
-          </p>
-        </div>
-      </div>
-    </div>
-  );
+  return <ForestRouteSkeleton />;
 };
 
 const AdminPageLoader = () => {
@@ -135,6 +115,29 @@ const PublicPageFrame = ({ isAdminRoute, children }: { isAdminRoute: boolean; ch
   );
 };
 
+const PublicSiteShell = ({
+  surface,
+  immersive,
+  children,
+}: {
+  surface: string;
+  immersive: boolean;
+  children: ReactNode;
+}) => {
+  const { theme } = usePublicChrome();
+
+  return (
+    <div
+      className="forest-site-shell"
+      data-theme={theme}
+      data-surface={surface}
+      data-header-overlay={immersive ? "true" : "false"}
+    >
+      {children}
+    </div>
+  );
+};
+
 const AppShell = () => {
   const location = useLocation();
   const { language } = useLanguage();
@@ -142,6 +145,8 @@ const AppShell = () => {
   const isAdminLoginRoute = /^\/admin\/?$/.test(location.pathname);
   const publicPath = stripLanguagePrefix(location.pathname);
   const isHomeRoute = !isAdminRoute && publicPath === "/";
+  const supportsMobileActionBar = publicPath === "/contact" || publicPath === "/quote";
+  const hasImmersiveHeader = !isAdminRoute && isImmersivePublicPath(publicPath);
   const publicMainClass = isAdminRoute
     ? undefined
     : isHomeRoute
@@ -150,9 +155,20 @@ const AppShell = () => {
   const publicMainTransitionClass = !isAdminRoute ? "public-main-transition" : undefined;
   const mainContentClass = [publicMainClass, publicMainTransitionClass].filter(Boolean).join(" ") || undefined;
   const mainContentKey = isAdminRoute ? "admin-main-content" : location.pathname;
+  const forestSurface = publicPath.startsWith("/products") || publicPath.startsWith("/materials")
+    ? "timber"
+    : publicPath.startsWith("/promotions") || publicPath.startsWith("/contact") || publicPath.startsWith("/quote")
+      ? "forest"
+      : publicPath.startsWith("/services") || publicPath.startsWith("/process")
+        ? "graphite"
+        : "stone";
 
   return (
-    <PublicChromeProvider isAdminRoute={isAdminRoute} isHomeRoute={isHomeRoute}>
+    <PublicChromeProvider
+      isAdminRoute={isAdminRoute}
+      isHomeRoute={isHomeRoute}
+      suppressMobileActionBar={!supportsMobileActionBar}
+    >
       <DynamicBrandHead />
       <ScrollToTop />
       {!isAdminRoute && (
@@ -160,28 +176,34 @@ const AppShell = () => {
           {language === "zh" ? "跳到主要内容" : "Skip to main content"}
         </a>
       )}
-      {!isAdminRoute && <Navbar />}
-      <PublicPageFrame isAdminRoute={isAdminRoute}>
-        <div key={mainContentKey} id="main-content" tabIndex={-1} className={mainContentClass}>
-          <AppErrorBoundary isAdminRoute={isAdminRoute}>
-          <Suspense fallback={isAdminRoute ? <AdminPageLoader /> : <PageLoader />}>
-            {isAdminRoute ? (
-              isAdminLoginRoute ? (
-                <AdminLoginPage />
-              ) : (
-                <AdminRouteTree />
-              )
-            ) : (
-              <Routes>
-                {publicRoutes}
-              </Routes>
-            )}
-          </Suspense>
-          </AppErrorBoundary>
-        </div>
-        {!isAdminRoute && <Footer />}
-        {!isAdminRoute && <FloatingCTA />}
-      </PublicPageFrame>
+      {isAdminRoute ? (
+        <PublicPageFrame isAdminRoute>
+          <div key={mainContentKey} id="main-content" tabIndex={-1} className={mainContentClass}>
+            <AppErrorBoundary isAdminRoute>
+              <Suspense fallback={<AdminPageLoader />}>
+                {isAdminLoginRoute ? <AdminLoginPage /> : <AdminRouteTree />}
+              </Suspense>
+            </AppErrorBoundary>
+          </div>
+        </PublicPageFrame>
+      ) : (
+        <PublicSiteShell surface={forestSurface} immersive={hasImmersiveHeader}>
+          <Navbar />
+          <PublicPageFrame isAdminRoute={false}>
+            <ForestAtmosphere />
+            <div key={mainContentKey} id="main-content" tabIndex={-1} className={mainContentClass} data-forest-surface={forestSurface}>
+              <AppErrorBoundary isAdminRoute={false}>
+                <Suspense fallback={<PageLoader />}>
+                  <Routes>{publicRoutes}</Routes>
+                </Suspense>
+              </AppErrorBoundary>
+            </div>
+            <Footer />
+            <FloatingCTA />
+            <ForestBottomNav />
+          </PublicPageFrame>
+        </PublicSiteShell>
+      )}
     </PublicChromeProvider>
   );
 };

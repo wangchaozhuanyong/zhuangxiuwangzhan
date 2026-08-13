@@ -140,9 +140,13 @@ export async function fetchPublishedProjectRowBySlug(slug: string) {
   return data || null;
 }
 
-export async function fetchPublishedMaterialRows() {
+export async function fetchPublishedMaterialRows(limit?: number) {
   if (!supabase) return null;
-  const { data, error } = await supabase.from("materials").select("*").eq("status", "published").order("sort_order");
+  const query = applyLimit(
+    supabase.from("materials").select("*").eq("status", "published").order("sort_order"),
+    limit,
+  );
+  const { data, error } = await query;
   if (error) return null;
   return data || [];
 }
@@ -166,6 +170,17 @@ export async function fetchPublishedServiceAreaRowBySlug(slug: string) {
   const { data, error } = await supabase.from("service_areas").select("*").eq("status", "published").eq("slug", slug).maybeSingle();
   if (error) return null;
   return data || null;
+}
+
+export async function fetchPublishedServiceAreaRows() {
+  if (!supabase) return null;
+  const { data, error } = await supabase
+    .from("service_areas")
+    .select("*")
+    .eq("status", "published")
+    .order("sort_order");
+  if (error) return null;
+  return data || [];
 }
 
 export async function fetchPublishedLandingPageRowBySlug(slug: string) {

@@ -3,7 +3,7 @@ import Link from "@/components/LocalizedLink";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { MapPin, Phone, Mail, Clock, ArrowRight, CheckCircle, Loader2, AlertCircle } from "lucide-react";
+import { MapPin, Phone, Mail, Clock, ArrowRight, CheckCircle, Loader2, AlertCircle, ExternalLink, Navigation } from "lucide-react";
 import GoogleMapEmbed from "@/components/GoogleMapEmbed";
 import WhatsAppIcon from "@/components/WhatsAppIcon";
 import Reveal from "@/components/Reveal";
@@ -20,6 +20,8 @@ import { isValidLeadEmail, isValidLeadPhone } from "@/lib/leadValidation";
 import { pageHeroImages, resolvePageHeroImage } from "@/lib/pageHeroImages";
 import { preloadTurnstile } from "@/lib/turnstile";
 import { contactLocationOptions, contactPageText, contactProjectTypeOptions, contactServiceItems } from "@/i18n/contactPageText";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { buildAppleMapNavigationUrl, buildGoogleMapOpenUrl, buildWazeNavigationUrl } from "@/lib/mapUrls";
 
 
 
@@ -116,17 +118,18 @@ const Contact = () => {
   };
 
   const mapAddress = settings.address || t.addressText;
-  const mapHref =
-    settings.map_latitude && settings.map_longitude
-      ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${settings.map_latitude},${settings.map_longitude}`)}`
-      : `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(mapAddress)}`;
+  const navigationLinks = [
+    { label: t.googleMaps, href: buildGoogleMapOpenUrl(mapAddress, settings.map_latitude, settings.map_longitude) },
+    { label: t.waze, href: buildWazeNavigationUrl(mapAddress, settings.map_latitude, settings.map_longitude) },
+    { label: t.appleMaps, href: buildAppleMapNavigationUrl(mapAddress, settings.map_latitude, settings.map_longitude) },
+  ];
   const whatsappHref = settings.whatsapp_url(t.whatsappMessage);
   const contactItems = [
-    { icon: MapPin, title: t.addressTitle, text: mapAddress, href: mapHref, external: true, track: "map" },
-    { icon: Phone, title: t.phoneTitle, text: settings.phone_display, href: settings.phone_href, track: "phone" },
-    { icon: WhatsAppIcon, title: t.whatsappTitle, text: settings.phone_display, href: whatsappHref, external: true, track: "whatsapp" },
-    { icon: Mail, title: t.emailTitle, text: settings.email, href: `mailto:${settings.email}`, track: "email" },
-    { icon: Clock, title: t.hoursTitle, text: t.hoursText },
+    { icon: WhatsAppIcon, title: t.whatsappTitle, text: settings.phone_display, href: whatsappHref, external: true, track: "whatsapp", action: t.whatsappCta },
+    { icon: Phone, title: t.phoneTitle, text: settings.phone_display, href: settings.phone_href, track: "phone", action: t.callAction },
+    { icon: Mail, title: t.emailTitle, text: settings.email, href: `mailto:${settings.email}`, track: "email", action: t.emailAction },
+    { icon: MapPin, title: t.addressTitle, text: mapAddress, track: "map", action: t.navigateAction, navigation: true },
+    { icon: Clock, title: t.hoursTitle, text: t.hoursText, track: "hours" },
   ];
 
   const mapDescription = mapAddress
@@ -144,7 +147,7 @@ const Contact = () => {
     ) : null;
 
   return (
-    <main className="pt-site-header">
+    <main className="forest-contact-page pt-site-header">
       <PageMeta
         title={pageContent?.seo_title || t.metaTitle}
         description={pageContent?.seo_description || t.metaDescription}
@@ -160,14 +163,12 @@ const Contact = () => {
         label={pageContent?.subtitle || t.heroEyebrow}
         title={pageContent?.title || t.heroTitle}
         description={pageContent?.description || t.heroText}
-        variant="compact"
-        className="max-md:!min-h-[22rem]"
       />
 
-      <section className="section-padding bg-background">
+      <section className="forest-contact-body section-padding bg-background">
         <div className="container-narrow">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
-            <Reveal direction="left">
+          <div className="forest-contact-layout grid grid-cols-1 lg:grid-cols-2 gap-12">
+            <Reveal direction="left" className="forest-contact-info">
               <div>
                 <div className="subpage-local-heading">
                   <div className="accent-line mb-4" />
@@ -178,36 +179,73 @@ const Contact = () => {
                     const Icon = item.icon;
                     const content = (
                       <>
-                        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-gold/25 bg-gold/10">
-                          <Icon className="h-4 w-4 text-gold" />
+                        <div className="contact-detail-row__icon">
+                          <Icon className="h-5 w-5" />
                         </div>
-                        <div>
+                        <div className="contact-detail-row__copy">
                           <h3 className="font-semibold text-sm mb-1">{item.title}</h3>
                           <p className="text-muted-foreground text-sm whitespace-pre-line">{item.text}</p>
                         </div>
+                        {item.action ? (
+                          <span className="contact-detail-row__action">
+                            {item.action}
+                            {item.navigation ? <Navigation className="h-4 w-4" /> : <ArrowRight className="h-4 w-4" />}
+                          </span>
+                        ) : null}
                       </>
                     );
 
-                    return item.href ? (
+                    return item.navigation ? (
+                      <Dialog key={item.title}>
+                        <DialogTrigger asChild>
+                          <button type="button" className="contact-detail-row w-full text-left">
+                            {content}
+                          </button>
+                        </DialogTrigger>
+                        <DialogContent className="navigation-dialog rounded-sm border-border bg-background">
+                          <DialogHeader>
+                            <DialogTitle>{t.navigationTitle}</DialogTitle>
+                            <DialogDescription>{t.navigationDescription}</DialogDescription>
+                          </DialogHeader>
+                          <p className="border-y border-border py-4 text-sm leading-6 text-muted-foreground">{mapAddress}</p>
+                          <div className="grid gap-2">
+                            {navigationLinks.map((link) => (
+                              <a
+                                key={link.label}
+                                href={link.href}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="navigation-dialog__option"
+                                onClick={() => trackCtaClick("map", "contact_navigation_dialog", { destination: link.label })}
+                              >
+                                <Navigation className="h-4 w-4" />
+                                <span>{link.label}</span>
+                                <ExternalLink className="ml-auto h-4 w-4" />
+                              </a>
+                            ))}
+                          </div>
+                        </DialogContent>
+                      </Dialog>
+                    ) : item.href ? (
                       <a
                         key={item.title}
                         href={item.href}
                         target={item.external ? "_blank" : undefined}
                         rel={item.external ? "noopener noreferrer" : undefined}
-                        className="group flex items-start gap-4 rounded-card border border-border/80 bg-card p-4 shadow-[0_18px_44px_-38px_rgba(21,18,14,0.38)] hover-lift"
+                        className="contact-detail-row"
                         onClick={() => trackCtaClick(item.track, "contact_info_card", { destination: item.track })}
                       >
                         {content}
                       </a>
                     ) : (
-                      <div key={item.title} className="group flex items-start gap-4 rounded-card border border-border/80 bg-card p-4 shadow-[0_18px_44px_-38px_rgba(21,18,14,0.38)] hover-lift">
+                      <div key={item.title} className="contact-detail-row">
                         {content}
                       </div>
                     );
                   })}
                 </div>
 
-                <div className="mt-6 overflow-hidden rounded-card border border-border/80 bg-card shadow-[0_22px_55px_-42px_rgba(21,18,14,0.38)]">
+                <div className="forest-contact-services mt-6 overflow-hidden rounded-card border border-border/80 bg-card shadow-[0_22px_55px_-42px_rgba(21,18,14,0.38)]">
                   <div className="flex items-center gap-3 border-b border-border/70 px-4 py-3">
                     <h3 className="shrink-0 text-sm font-semibold">{t.servicesTitle}</h3>
                     <div className="hidden h-px flex-1 bg-gradient-to-r from-gold/45 via-border to-transparent min-[460px]:block" aria-hidden="true" />
@@ -227,7 +265,7 @@ const Contact = () => {
                   </div>
                 </div>
 
-                <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:gap-4">
+                <div className="forest-contact-actions mt-6 flex flex-col gap-3 sm:flex-row sm:gap-4">
                   <Link
                     to="/quote"
                     className="btn-brand-primary min-h-12 w-full justify-center px-8 sm:w-auto"
@@ -248,8 +286,8 @@ const Contact = () => {
               </div>
             </Reveal>
 
-            <Reveal direction="right" delay={150}>
-              <div className="subpage-form-panel p-6 md:p-8">
+            <Reveal direction="right" delay={150} className="forest-contact-form-wrap">
+              <div className="forest-contact-form subpage-form-panel p-6 md:p-8">
                 {status === "success" ? (
                   <div className="text-center py-8">
                     <div className="w-14 h-14 mx-auto mb-5 rounded-full bg-accent/10 flex items-center justify-center">
@@ -402,13 +440,45 @@ const Contact = () => {
         </div>
       </section>
 
-      <section className="section-padding section-padding--continued bg-background">
+      <section className="forest-map-section section-padding section-padding--continued bg-background">
         <div className="container-narrow">
           <Reveal>
-            <div className="text-center mb-8">
-              <div className="accent-line mx-auto mb-4" />
-              <h2 className="font-display text-2xl md:text-3xl font-bold mb-3">{t.mapTitle}</h2>
-              <p className="text-muted-foreground text-sm">{mapDescription}</p>
+            <div className="forest-map-heading mb-8 flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between">
+              <div>
+                <div className="accent-line mb-4" />
+                <h2 className="font-display text-2xl md:text-3xl font-bold mb-3">{t.mapTitle}</h2>
+                <p className="text-muted-foreground text-sm">{mapDescription}</p>
+              </div>
+              <Dialog>
+                <DialogTrigger asChild>
+                  <Button type="button" variant="outline" className="min-h-11 shrink-0 rounded-sm">
+                    <Navigation className="mr-2 h-4 w-4" /> {t.navigateAction}
+                  </Button>
+                </DialogTrigger>
+                <DialogContent className="navigation-dialog rounded-sm border-border bg-background">
+                  <DialogHeader>
+                    <DialogTitle>{t.navigationTitle}</DialogTitle>
+                    <DialogDescription>{t.navigationDescription}</DialogDescription>
+                  </DialogHeader>
+                  <p className="border-y border-border py-4 text-sm leading-6 text-muted-foreground">{mapAddress}</p>
+                  <div className="grid gap-2">
+                    {navigationLinks.map((link) => (
+                      <a
+                        key={link.label}
+                        href={link.href}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="navigation-dialog__option"
+                        onClick={() => trackCtaClick("map", "contact_map", { destination: link.label })}
+                      >
+                        <Navigation className="h-4 w-4" />
+                        <span>{link.label}</span>
+                        <ExternalLink className="ml-auto h-4 w-4" />
+                      </a>
+                    ))}
+                  </div>
+                </DialogContent>
+              </Dialog>
             </div>
           </Reveal>
           <GoogleMapEmbed

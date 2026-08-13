@@ -23,6 +23,7 @@ export const blogPageText = {
     internalContact: "Contact",
     internalQuote: "Get a Quote",
     loadMore: "Load More Articles",
+    read: "Read article",
   },
   zh: {
     metaTitle: "装修博客与指南 | 吉隆坡装修知识 | FLASH CAST",
@@ -41,5 +42,6 @@ export const blogPageText = {
     internalContact: "联系我们",
     internalQuote: "免费报价",
     loadMore: "查看更多文章",
+    read: "阅读全文",
   },
 } as const;

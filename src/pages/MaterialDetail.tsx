@@ -25,7 +25,7 @@ import {
 } from "@/lib/materialCatalog";
 
 const MATERIAL_DETAIL_IMAGE_WIDTHS = [560, 720, 900, 1200];
-const MATERIAL_RELATED_IMAGE_WIDTHS = [360, 560, 720];
+const MATERIAL_RELATED_IMAGE_WIDTHS = [560, 720, 900];
 
 const formatText = (text: string, values: Record<string, string | number>) =>
   Object.entries(values).reduce((current, [key, value]) => current.replaceAll(`{${key}}`, String(value)), text);
@@ -71,7 +71,7 @@ const MaterialDetail = () => {
 
   if (!material || !category) {
     return (
-      <main className="pt-site-header section-padding text-center">
+      <main className="forest-material-detail-page pt-site-header section-padding text-center">
         <PageMeta title={t.notFound} description={t.notFound} canonicalPath={`/materials/${slug || ""}`} noIndex />
         <div className="container-narrow mx-auto max-w-lg">
           <div className="subpage-form-panel p-6 md:p-8">
@@ -93,7 +93,7 @@ const MaterialDetail = () => {
   });
 
   return (
-    <main className="pt-site-header">
+    <main className="forest-material-detail-page pt-site-header">
       <PageMeta
         title={formatText(t.metaTitle, { name: displayMaterialName })}
         description={formatText(t.metaDescription, {
@@ -129,7 +129,7 @@ const MaterialDetail = () => {
             <Reveal direction="left">
               <div className="material-detail-media luxury-card">
                 <div className="material-detail-media__frame img-zoom">
-                  <SmartImage src={material.image} alt={material.alt || displayMaterialName} className="w-full h-full object-cover" width={900} height={900} loading="eager" sizes="(max-width: 1024px) 92vw, 45vw" candidateWidths={MATERIAL_DETAIL_IMAGE_WIDTHS} quality={74} />
+                  <SmartImage src={material.image} alt={material.alt || displayMaterialName} className="h-full w-full object-contain" width={1200} height={750} loading="eager" sizes="(max-width: 767px) 92vw, 45vw" candidateWidths={MATERIAL_DETAIL_IMAGE_WIDTHS} quality={74} />
                 </div>
               </div>
             </Reveal>
@@ -250,11 +250,11 @@ const MaterialDetail = () => {
               <div className="accent-line mb-4" />
               <h2 className="font-display text-2xl font-bold">{formatText(t.more, { name: displayCategoryName })}</h2>
             </div>
-            <div className="card-grid grid-cols-2 gap-4 md:grid-cols-4 md:gap-5">
+            <div className="material-product-grid">
               {otherMaterials.map((item) => (
-                <article key={item.id} className="material-depth-card luxury-card group hover-lift">
+                <article key={item.id} className="material-depth-card material-depth-card--product luxury-card group hover-lift">
                   <div className="material-depth-card__media img-zoom">
-                    <SmartImage src={item.image} alt={item.alt || translateDisplayText(item.name, language)} loading="lazy" width={400} height={400} sizes="(max-width: 640px) 46vw, (max-width: 1024px) 24vw, 22vw" candidateWidths={MATERIAL_RELATED_IMAGE_WIDTHS} quality={72} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+                    <SmartImage src={item.image} alt={item.alt || translateDisplayText(item.name, language)} loading="lazy" width={720} height={450} sizes="(max-width: 767px) 92vw, 46vw" candidateWidths={MATERIAL_RELATED_IMAGE_WIDTHS} quality={72} className="h-full w-full object-contain transition-transform duration-300 group-hover:scale-[1.02]" />
                   </div>
                   <div className="material-depth-card__body">
                     <h3 className="material-depth-card__title">{translateDisplayText(item.name, language)}</h3>

@@ -29,3 +29,20 @@ export const buildGoogleMapOpenUrl = (
   latitude?: string | number | null,
   longitude?: string | number | null,
 ) => `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(buildGoogleMapQuery(query, latitude, longitude))}`;
+
+export const buildWazeNavigationUrl = (
+  query: string = officeAddress,
+  latitude?: string | number | null,
+  longitude?: string | number | null,
+) => {
+  if (hasValidMapCoordinates(latitude, longitude)) {
+    return `https://www.waze.com/ul?ll=${encodeURIComponent(`${Number(latitude)},${Number(longitude)}`)}&navigate=yes`;
+  }
+  return `https://www.waze.com/ul?q=${encodeURIComponent(query || officeAddress)}&navigate=yes`;
+};
+
+export const buildAppleMapNavigationUrl = (
+  query: string = officeAddress,
+  latitude?: string | number | null,
+  longitude?: string | number | null,
+) => `https://maps.apple.com/?daddr=${encodeURIComponent(buildGoogleMapQuery(query, latitude, longitude))}&dirflg=d`;

@@ -8,8 +8,10 @@ import {
   getPublishedMaterials,
   getPublishedProjectBySlug,
   getPublishedProjectSummaries,
+  getPublishedProductHighlights,
   getPublishedServiceBySlug,
   getPublishedServiceAreaBySlug,
+  getPublishedServiceAreas,
   getPublishedServiceSummaries,
   getPublishedServices,
   getPublishedTestimonials,
@@ -83,6 +85,15 @@ export function usePublishedMaterials(language: "en" | "zh", options?: PublicQue
   return useQuery({
     queryKey: ["published", "materials", language],
     queryFn: () => getPublishedMaterials(language),
+    enabled: isEnabled(options),
+    ...queryDefaults,
+  });
+}
+
+export function usePublishedProductHighlights(language: "en" | "zh", limit = 4, options?: PublicQueryOptions) {
+  return useQuery({
+    queryKey: ["published", "product_highlights", language, limit],
+    queryFn: () => getPublishedProductHighlights(language, limit),
     enabled: isEnabled(options),
     ...queryDefaults,
   });
@@ -220,6 +231,15 @@ export function usePublishedServiceAreaBySlug(slug: string | undefined, language
     queryKey: ["published", "service_area", slug, language],
     queryFn: () => getPublishedServiceAreaBySlug(slug!, language),
     enabled: Boolean(slug),
+    ...queryDefaults,
+  });
+}
+
+export function usePublishedServiceAreas(language: "en" | "zh", options?: PublicQueryOptions) {
+  return useQuery({
+    queryKey: ["published", "service_areas", language],
+    queryFn: () => getPublishedServiceAreas(language),
+    enabled: isEnabled(options),
     ...queryDefaults,
   });
 }

@@ -2,7 +2,10 @@ import { isSupabaseConfigured, supabase } from "@/lib/supabase";
 
 export const hasAdminEditorDatabaseClient = () => isSupabaseConfigured && Boolean(supabase);
 
-export async function ensureHomeSectionRecord(sectionKey: string) {
+export async function ensureHomeSectionRecord(
+  sectionKey: string,
+  defaultStatus: "draft" | "published" = "published",
+) {
   if (!supabase) return null;
   const { data, error } = await supabase.from("home_sections").select("*").eq("section_key", sectionKey).order("sort_order").limit(1);
   if (error) return null;
@@ -10,7 +13,7 @@ export async function ensureHomeSectionRecord(sectionKey: string) {
   if (row) return row;
   const { data: inserted, error: insertError } = await supabase
     .from("home_sections")
-    .insert({ section_key: sectionKey, status: "published", sort_order: 0 })
+    .insert({ section_key: sectionKey, status: defaultStatus, sort_order: 0 })
     .select("*")
     .single();
   if (insertError) return null;

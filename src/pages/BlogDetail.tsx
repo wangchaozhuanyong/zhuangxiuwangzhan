@@ -64,7 +64,7 @@ const BlogDetail = () => {
 
   if (!post) {
     return (
-      <main className="pt-site-header section-padding text-center">
+      <main className="forest-blog-detail-page pt-site-header section-padding text-center">
         <PageMeta title={t.notFound} description={t.notFound} canonicalPath={`/blog/${slug || ""}`} noIndex />
         <h1 className="font-display text-3xl font-bold mb-4">{t.notFound}</h1>
         <Button asChild><Link to="/blog">{t.backToBlog}</Link></Button>
@@ -120,7 +120,7 @@ const BlogDetail = () => {
   };
 
   return (
-    <main className="pt-site-header">
+    <main className="forest-blog-detail-page pt-site-header">
       <PageMeta
         title={`${displayText(post.title)} | ${t.metaSuffix}`}
         description={displayText(post.excerpt)}
@@ -130,8 +130,8 @@ const BlogDetail = () => {
       />
       <JsonLdBreadcrumb items={[{ name: t.breadcrumbHome, url: "/" }, { name: t.breadcrumbBlog, url: "/blog" }, { name: displayText(post.title), url: `/blog/${post.slug}` }]} />
 
-      <section className="page-hero page-hero--detail">
-        <div className="page-hero__media absolute inset-0">
+      <section data-forest-page-hero="true" className="page-hero page-hero--detail">
+        <div className="page-hero__media page-hero-media hero-media-mask">
           <SmartImage src={post.image} alt={displayText(post.title)} className="page-hero__image h-full w-full object-cover" width={1920} height={800} loading="eager" fetchPriority="high" sizes="100vw" candidateWidths={BLOG_HERO_IMAGE_WIDTHS} quality={76} />
           <div className="page-hero__overlay absolute inset-0 media-readable-overlay" aria-hidden="true" />
         </div>

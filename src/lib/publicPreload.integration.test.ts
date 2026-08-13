@@ -117,4 +117,32 @@ describe("public preload data", () => {
     expect((await getPublishedSitePage("en", "services"))?.seo_title).toBe("Services SEO");
     expect((await getPublishedCtaBlock("en", "home_final"))?.title).toBe("Start your renovation");
   });
+
+  it("keeps preloaded homepage brands hidden when the visibility setting is off", async () => {
+    setPreloadedPublicData({
+      homeContentBundle: {
+        home_sections: [{ section_key: "brand_partners", status: "draft" }],
+        brand_partners: [{ id: "brand-1", name: "Test Brand", logo_url: "/images/brands/test.webp" }],
+      },
+    });
+
+    const { getPublishedHomeContentBundle } = await import("@/lib/homeContentApi");
+    const result = await getPublishedHomeContentBundle("en");
+
+    expect(result.source).toBe("remote");
+    expect(result.data.brandPartners).toHaveLength(1);
+    expect(result.data.brandPartnersEnabled).toBe(false);
+  });
+
+  it("treats an empty preloaded site page as a resolved CMS result", async () => {
+    setPreloadedPublicData({
+      sitePages: {
+        promotions: {},
+      },
+    });
+
+    const { getPublishedSitePage } = await import("@/lib/homeContentApi");
+
+    expect(await getPublishedSitePage("en", "promotions")).toBeNull();
+  });
 });

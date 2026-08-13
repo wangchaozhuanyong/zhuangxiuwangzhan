@@ -96,6 +96,7 @@ export type AboutSectionKey = (typeof aboutSectionKeys)[number];
 export type AdminHomeEditorData = {
   stats: HomeSectionRow | null;
   why: HomeSectionRow | null;
+  brandPartnersVisibility: HomeSectionRow | null;
   processSteps: ProcessStepRow[];
   faqRows: FaqRow[];
   ctaBlock: CtaRow | null;
@@ -140,8 +141,11 @@ export type AdminUserRow = {
   version?: number | null;
 };
 
-async function ensureHomeSection(section_key: string): Promise<HomeSectionRow | null> {
-  const row = await ensureHomeSectionRecord(section_key);
+async function ensureHomeSection(
+  section_key: string,
+  defaultStatus: "draft" | "published" = "published",
+): Promise<HomeSectionRow | null> {
+  const row = await ensureHomeSectionRecord(section_key, defaultStatus);
   return (row as HomeSectionRow | null) || null;
 }
 
@@ -152,20 +156,22 @@ async function ensureAboutSection(section_key: string): Promise<AboutSectionRow 
 
 export async function fetchAdminHomeEditorData(): Promise<AdminHomeEditorData> {
   if (!hasAdminEditorDatabaseClient()) {
-    return { stats: null, why: null, processSteps: [], faqRows: [], ctaBlock: null };
+    return { stats: null, why: null, brandPartnersVisibility: null, processSteps: [], faqRows: [], ctaBlock: null };
   }
 
   await ensureAdminDefaultContent();
 
-  const [stats, why, auxiliary] = await Promise.all([
+  const [stats, why, brandPartnersVisibility, auxiliary] = await Promise.all([
     ensureHomeSection("stats"),
     ensureHomeSection("why_choose_us"),
+    ensureHomeSection("brand_partners", "draft"),
     fetchHomeEditorAuxiliaryRows(),
   ]);
 
   return {
     stats,
     why,
+    brandPartnersVisibility,
     processSteps: (auxiliary.processSteps as ProcessStepRow[]) ?? [],
     faqRows: (auxiliary.faqRows as FaqRow[]) ?? [],
     ctaBlock: (auxiliary.ctaBlock as CtaRow | null) ?? null,

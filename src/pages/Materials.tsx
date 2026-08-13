@@ -1,6 +1,6 @@
 ﻿import { useMemo } from "react";
 import Link from "@/components/LocalizedLink";
-import { ArrowRight } from "lucide-react";
+import { ArrowUpRight } from "lucide-react";
 import { materialsData } from "@/data/materials";
 import { usePublishedMaterials, usePublishedSitePage } from "@/hooks/usePublishedContent";
 import SmartImage from "@/components/SmartImage";
@@ -8,14 +8,14 @@ import { useLanguage } from "@/i18n/LanguageContext";
 import PageMeta from "@/components/PageMeta";
 import { JsonLdBreadcrumb } from "@/components/JsonLd";
 import HeroBanner from "@/components/blocks/HeroBanner";
-import SectionHeader from "@/components/blocks/SectionHeader";
 import CTABanner from "@/components/blocks/CTABanner";
 import { translateDisplayText, translateMaterialCategory } from "@/i18n/displayLabels";
 import { pageHeroImages, resolvePageHeroImage } from "@/lib/pageHeroImages";
 import { buildQuotePath } from "@/lib/quoteContext";
 import { materialsPageText } from "@/i18n/materialsPageText";
+import { ForestSectionHeading } from "@/components/forest/ForestPagePrimitives";
 
-const MATERIAL_CARD_IMAGE_WIDTHS = [360, 560, 720];
+const MATERIAL_CARD_IMAGE_WIDTHS = [560, 720, 900];
 
 
 const Materials = () => {
@@ -60,48 +60,39 @@ const Materials = () => {
         description={pageContent?.description || t.intro}
       />
 
-      <section className="section-padding bg-background">
-        <div className="container-narrow">
-          <SectionHeader title={t.choose} description={t.chooseText} />
+      <section className="forest-chapter forest-chapter--raised">
+          <ForestSectionHeading eyebrow={pageContent?.subtitle || t.eyebrow} title={t.choose} description={t.chooseText} />
 
-          <div className="material-directory-grid">
+          <div className="forest-listing-grid">
             {categories.map((category) => (
-              <article
+              <Link
                 key={category.slug}
-                className="material-directory-card luxury-card group hover-lift"
+                to={`/materials/category/${category.slug}`}
+                className="forest-listing-card"
               >
-                <div className="material-directory-card__media img-zoom">
+                <div className="forest-listing-card__media">
                   <SmartImage
                     src={category.image}
                     alt={category.alt || displayCategoryName(category.name)}
                     loading="lazy"
-                    width={400}
-                    height={300}
-                    sizes="(max-width: 640px) 92vw, (max-width: 1024px) 45vw, 31vw"
+                    width={720}
+                    height={450}
+                    sizes="(max-width: 767px) 92vw, 46vw"
                     candidateWidths={MATERIAL_CARD_IMAGE_WIDTHS}
                     quality={72}
                     className="h-full w-full object-cover"
                   />
                 </div>
-                <div className="material-directory-card__body">
-                  <h3 className="material-directory-card__title">{displayCategoryName(category.name)}</h3>
-                  <p className="material-directory-card__text">
+                <div className="forest-listing-card__body">
+                  <h2>{displayCategoryName(category.name)}</h2>
+                  <p>
                     {displayCategoryDescription(category.description)}
                   </p>
-                  <div className="material-directory-card__footer">
-                    <Link
-                      to={`/materials/category/${category.slug}`}
-                      className="material-card-action"
-                      aria-label={`${t.view} ${displayCategoryName(category.name)}`}
-                    >
-                      {t.view} <ArrowRight className="h-3.5 w-3.5" />
-                    </Link>
-                  </div>
+                  <span className="forest-listing-card__action">{t.view}<ArrowUpRight aria-hidden="true" /></span>
                 </div>
-              </article>
+              </Link>
             ))}
           </div>
-        </div>
       </section>
 
       <CTABanner

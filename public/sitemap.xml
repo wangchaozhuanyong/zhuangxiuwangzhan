@@ -157,6 +157,42 @@
     <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/materials" />
   </url>
   <url>
+    <loc>https://flashcast.com.my/en/products</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://flashcast.com.my/en/products" />
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://flashcast.com.my/zh/products" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/products" />
+  </url>
+  <url>
+    <loc>https://flashcast.com.my/zh/products</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://flashcast.com.my/en/products" />
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://flashcast.com.my/zh/products" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/products" />
+  </url>
+  <url>
+    <loc>https://flashcast.com.my/en/promotions</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://flashcast.com.my/en/promotions" />
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://flashcast.com.my/zh/promotions" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/promotions" />
+  </url>
+  <url>
+    <loc>https://flashcast.com.my/zh/promotions</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://flashcast.com.my/en/promotions" />
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://flashcast.com.my/zh/promotions" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/promotions" />
+  </url>
+  <url>
+    <loc>https://flashcast.com.my/en/locations</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://flashcast.com.my/en/locations" />
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://flashcast.com.my/zh/locations" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/locations" />
+  </url>
+  <url>
+    <loc>https://flashcast.com.my/zh/locations</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://flashcast.com.my/en/locations" />
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://flashcast.com.my/zh/locations" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/locations" />
+  </url>
+  <url>
     <loc>https://flashcast.com.my/en/projects</loc>
     <xhtml:link rel="alternate" hreflang="en" href="https://flashcast.com.my/en/projects" />
     <xhtml:link rel="alternate" hreflang="zh-CN" href="https://flashcast.com.my/zh/projects" />
@@ -2267,6 +2303,522 @@
     <xhtml:link rel="alternate" hreflang="en" href="https://flashcast.com.my/en/materials/subway-tile-white" />
     <xhtml:link rel="alternate" hreflang="zh-CN" href="https://flashcast.com.my/zh/materials/subway-tile-white" />
     <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/materials/subway-tile-white" />
+  </url>
+  <url>
+    <loc>https://flashcast.com.my/en/products/acrylic-high-gloss-white</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://flashcast.com.my/en/products/acrylic-high-gloss-white" />
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://flashcast.com.my/zh/products/acrylic-high-gloss-white" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/products/acrylic-high-gloss-white" />
+  </url>
+  <url>
+    <loc>https://flashcast.com.my/zh/products/acrylic-high-gloss-white</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://flashcast.com.my/en/products/acrylic-high-gloss-white" />
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://flashcast.com.my/zh/products/acrylic-high-gloss-white" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/products/acrylic-high-gloss-white" />
+  </url>
+  <url>
+    <loc>https://flashcast.com.my/en/products/porcelain-carrara-white</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://flashcast.com.my/en/products/porcelain-carrara-white" />
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://flashcast.com.my/zh/products/porcelain-carrara-white" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/products/porcelain-carrara-white" />
+  </url>
+  <url>
+    <loc>https://flashcast.com.my/zh/products/porcelain-carrara-white</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://flashcast.com.my/en/products/porcelain-carrara-white" />
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://flashcast.com.my/zh/products/porcelain-carrara-white" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/products/porcelain-carrara-white" />
+  </url>
+  <url>
+    <loc>https://flashcast.com.my/en/products/sintered-stone-grey</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://flashcast.com.my/en/products/sintered-stone-grey" />
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://flashcast.com.my/zh/products/sintered-stone-grey" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/products/sintered-stone-grey" />
+  </url>
+  <url>
+    <loc>https://flashcast.com.my/zh/products/sintered-stone-grey</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://flashcast.com.my/en/products/sintered-stone-grey" />
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://flashcast.com.my/zh/products/sintered-stone-grey" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/products/sintered-stone-grey" />
+  </url>
+  <url>
+    <loc>https://flashcast.com.my/en/products/spc-flooring-natural-oak</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://flashcast.com.my/en/products/spc-flooring-natural-oak" />
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://flashcast.com.my/zh/products/spc-flooring-natural-oak" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/products/spc-flooring-natural-oak" />
+  </url>
+  <url>
+    <loc>https://flashcast.com.my/zh/products/spc-flooring-natural-oak</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://flashcast.com.my/en/products/spc-flooring-natural-oak" />
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://flashcast.com.my/zh/products/spc-flooring-natural-oak" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/products/spc-flooring-natural-oak" />
+  </url>
+  <url>
+    <loc>https://flashcast.com.my/en/products/engineered-walnut-herringbone</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://flashcast.com.my/en/products/engineered-walnut-herringbone" />
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://flashcast.com.my/zh/products/engineered-walnut-herringbone" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/products/engineered-walnut-herringbone" />
+  </url>
+  <url>
+    <loc>https://flashcast.com.my/zh/products/engineered-walnut-herringbone</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://flashcast.com.my/en/products/engineered-walnut-herringbone" />
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://flashcast.com.my/zh/products/engineered-walnut-herringbone" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/products/engineered-walnut-herringbone" />
+  </url>
+  <url>
+    <loc>https://flashcast.com.my/en/products/solid-surface-warm-white</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://flashcast.com.my/en/products/solid-surface-warm-white" />
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://flashcast.com.my/zh/products/solid-surface-warm-white" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/products/solid-surface-warm-white" />
+  </url>
+  <url>
+    <loc>https://flashcast.com.my/zh/products/solid-surface-warm-white</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://flashcast.com.my/en/products/solid-surface-warm-white" />
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://flashcast.com.my/zh/products/solid-surface-warm-white" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/products/solid-surface-warm-white" />
+  </url>
+  <url>
+    <loc>https://flashcast.com.my/en/products/frameless-glass-clear</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://flashcast.com.my/en/products/frameless-glass-clear" />
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://flashcast.com.my/zh/products/frameless-glass-clear" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/products/frameless-glass-clear" />
+  </url>
+  <url>
+    <loc>https://flashcast.com.my/zh/products/frameless-glass-clear</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://flashcast.com.my/en/products/frameless-glass-clear" />
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://flashcast.com.my/zh/products/frameless-glass-clear" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/products/frameless-glass-clear" />
+  </url>
+  <url>
+    <loc>https://flashcast.com.my/en/products/barn-door-dark-wood</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://flashcast.com.my/en/products/barn-door-dark-wood" />
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://flashcast.com.my/zh/products/barn-door-dark-wood" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/products/barn-door-dark-wood" />
+  </url>
+  <url>
+    <loc>https://flashcast.com.my/zh/products/barn-door-dark-wood</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://flashcast.com.my/en/products/barn-door-dark-wood" />
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://flashcast.com.my/zh/products/barn-door-dark-wood" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/products/barn-door-dark-wood" />
+  </url>
+  <url>
+    <loc>https://flashcast.com.my/en/products/category-doors-windows</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://flashcast.com.my/en/products/category-doors-windows" />
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://flashcast.com.my/zh/products/category-doors-windows" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/products/category-doors-windows" />
+  </url>
+  <url>
+    <loc>https://flashcast.com.my/zh/products/category-doors-windows</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://flashcast.com.my/en/products/category-doors-windows" />
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://flashcast.com.my/zh/products/category-doors-windows" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/products/category-doors-windows" />
+  </url>
+  <url>
+    <loc>https://flashcast.com.my/en/products/art-texture-paint</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://flashcast.com.my/en/products/art-texture-paint" />
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://flashcast.com.my/zh/products/art-texture-paint" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/products/art-texture-paint" />
+  </url>
+  <url>
+    <loc>https://flashcast.com.my/zh/products/art-texture-paint</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://flashcast.com.my/en/products/art-texture-paint" />
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://flashcast.com.my/zh/products/art-texture-paint" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/products/art-texture-paint" />
+  </url>
+  <url>
+    <loc>https://flashcast.com.my/en/products/kitchen-solid-wood-cabinets</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://flashcast.com.my/en/products/kitchen-solid-wood-cabinets" />
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://flashcast.com.my/zh/products/kitchen-solid-wood-cabinets" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/products/kitchen-solid-wood-cabinets" />
+  </url>
+  <url>
+    <loc>https://flashcast.com.my/zh/products/kitchen-solid-wood-cabinets</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://flashcast.com.my/en/products/kitchen-solid-wood-cabinets" />
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://flashcast.com.my/zh/products/kitchen-solid-wood-cabinets" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/products/kitchen-solid-wood-cabinets" />
+  </url>
+  <url>
+    <loc>https://flashcast.com.my/en/products/aluminium-sliding-black</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://flashcast.com.my/en/products/aluminium-sliding-black" />
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://flashcast.com.my/zh/products/aluminium-sliding-black" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/products/aluminium-sliding-black" />
+  </url>
+  <url>
+    <loc>https://flashcast.com.my/zh/products/aluminium-sliding-black</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://flashcast.com.my/en/products/aluminium-sliding-black" />
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://flashcast.com.my/zh/products/aluminium-sliding-black" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/products/aluminium-sliding-black" />
+  </url>
+  <url>
+    <loc>https://flashcast.com.my/en/products/melamine-cabinet-board</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://flashcast.com.my/en/products/melamine-cabinet-board" />
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://flashcast.com.my/zh/products/melamine-cabinet-board" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/products/melamine-cabinet-board" />
+  </url>
+  <url>
+    <loc>https://flashcast.com.my/zh/products/melamine-cabinet-board</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://flashcast.com.my/en/products/melamine-cabinet-board" />
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://flashcast.com.my/zh/products/melamine-cabinet-board" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/products/melamine-cabinet-board" />
+  </url>
+  <url>
+    <loc>https://flashcast.com.my/en/products/category-whole-house-custom</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://flashcast.com.my/en/products/category-whole-house-custom" />
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://flashcast.com.my/zh/products/category-whole-house-custom" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/products/category-whole-house-custom" />
+  </url>
+  <url>
+    <loc>https://flashcast.com.my/zh/products/category-whole-house-custom</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://flashcast.com.my/en/products/category-whole-house-custom" />
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://flashcast.com.my/zh/products/category-whole-house-custom" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/products/category-whole-house-custom" />
+  </url>
+  <url>
+    <loc>https://flashcast.com.my/en/products/solid-wood-cabinet-teak</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://flashcast.com.my/en/products/solid-wood-cabinet-teak" />
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://flashcast.com.my/zh/products/solid-wood-cabinet-teak" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/products/solid-wood-cabinet-teak" />
+  </url>
+  <url>
+    <loc>https://flashcast.com.my/zh/products/solid-wood-cabinet-teak</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://flashcast.com.my/en/products/solid-wood-cabinet-teak" />
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://flashcast.com.my/zh/products/solid-wood-cabinet-teak" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/products/solid-wood-cabinet-teak" />
+  </url>
+  <url>
+    <loc>https://flashcast.com.my/en/products/lime-wash-paint</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://flashcast.com.my/en/products/lime-wash-paint" />
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://flashcast.com.my/zh/products/lime-wash-paint" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/products/lime-wash-paint" />
+  </url>
+  <url>
+    <loc>https://flashcast.com.my/zh/products/lime-wash-paint</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://flashcast.com.my/en/products/lime-wash-paint" />
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://flashcast.com.my/zh/products/lime-wash-paint" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/products/lime-wash-paint" />
+  </url>
+  <url>
+    <loc>https://flashcast.com.my/en/products/frameless-glass-screen</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://flashcast.com.my/en/products/frameless-glass-screen" />
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://flashcast.com.my/zh/products/frameless-glass-screen" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/products/frameless-glass-screen" />
+  </url>
+  <url>
+    <loc>https://flashcast.com.my/zh/products/frameless-glass-screen</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://flashcast.com.my/en/products/frameless-glass-screen" />
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://flashcast.com.my/zh/products/frameless-glass-screen" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/products/frameless-glass-screen" />
+  </url>
+  <url>
+    <loc>https://flashcast.com.my/en/products/fluted-wall-panel</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://flashcast.com.my/en/products/fluted-wall-panel" />
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://flashcast.com.my/zh/products/fluted-wall-panel" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/products/fluted-wall-panel" />
+  </url>
+  <url>
+    <loc>https://flashcast.com.my/zh/products/fluted-wall-panel</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://flashcast.com.my/en/products/fluted-wall-panel" />
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://flashcast.com.my/zh/products/fluted-wall-panel" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/products/fluted-wall-panel" />
+  </url>
+  <url>
+    <loc>https://flashcast.com.my/en/products/aluminium-sliding-door</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://flashcast.com.my/en/products/aluminium-sliding-door" />
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://flashcast.com.my/zh/products/aluminium-sliding-door" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/products/aluminium-sliding-door" />
+  </url>
+  <url>
+    <loc>https://flashcast.com.my/zh/products/aluminium-sliding-door</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://flashcast.com.my/en/products/aluminium-sliding-door" />
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://flashcast.com.my/zh/products/aluminium-sliding-door" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/products/aluminium-sliding-door" />
+  </url>
+  <url>
+    <loc>https://flashcast.com.my/en/products/art-microcement</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://flashcast.com.my/en/products/art-microcement" />
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://flashcast.com.my/zh/products/art-microcement" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/products/art-microcement" />
+  </url>
+  <url>
+    <loc>https://flashcast.com.my/zh/products/art-microcement</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://flashcast.com.my/en/products/art-microcement" />
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://flashcast.com.my/zh/products/art-microcement" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/products/art-microcement" />
+  </url>
+  <url>
+    <loc>https://flashcast.com.my/en/products/laminate-door-white-oak</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://flashcast.com.my/en/products/laminate-door-white-oak" />
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://flashcast.com.my/zh/products/laminate-door-white-oak" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/products/laminate-door-white-oak" />
+  </url>
+  <url>
+    <loc>https://flashcast.com.my/zh/products/laminate-door-white-oak</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://flashcast.com.my/en/products/laminate-door-white-oak" />
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://flashcast.com.my/zh/products/laminate-door-white-oak" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/products/laminate-door-white-oak" />
+  </url>
+  <url>
+    <loc>https://flashcast.com.my/en/products/anti-slip-bathroom-tile</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://flashcast.com.my/en/products/anti-slip-bathroom-tile" />
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://flashcast.com.my/zh/products/anti-slip-bathroom-tile" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/products/anti-slip-bathroom-tile" />
+  </url>
+  <url>
+    <loc>https://flashcast.com.my/zh/products/anti-slip-bathroom-tile</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://flashcast.com.my/en/products/anti-slip-bathroom-tile" />
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://flashcast.com.my/zh/products/anti-slip-bathroom-tile" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/products/anti-slip-bathroom-tile" />
+  </url>
+  <url>
+    <loc>https://flashcast.com.my/en/products/spc-vinyl-natural-oak</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://flashcast.com.my/en/products/spc-vinyl-natural-oak" />
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://flashcast.com.my/zh/products/spc-vinyl-natural-oak" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/products/spc-vinyl-natural-oak" />
+  </url>
+  <url>
+    <loc>https://flashcast.com.my/zh/products/spc-vinyl-natural-oak</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://flashcast.com.my/en/products/spc-vinyl-natural-oak" />
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://flashcast.com.my/zh/products/spc-vinyl-natural-oak" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/products/spc-vinyl-natural-oak" />
+  </url>
+  <url>
+    <loc>https://flashcast.com.my/en/products/kitchen-acrylic-cabinets</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://flashcast.com.my/en/products/kitchen-acrylic-cabinets" />
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://flashcast.com.my/zh/products/kitchen-acrylic-cabinets" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/products/kitchen-acrylic-cabinets" />
+  </url>
+  <url>
+    <loc>https://flashcast.com.my/zh/products/kitchen-acrylic-cabinets</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://flashcast.com.my/en/products/kitchen-acrylic-cabinets" />
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://flashcast.com.my/zh/products/kitchen-acrylic-cabinets" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/products/kitchen-acrylic-cabinets" />
+  </url>
+  <url>
+    <loc>https://flashcast.com.my/en/products/fluted-panel-charcoal</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://flashcast.com.my/en/products/fluted-panel-charcoal" />
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://flashcast.com.my/zh/products/fluted-panel-charcoal" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/products/fluted-panel-charcoal" />
+  </url>
+  <url>
+    <loc>https://flashcast.com.my/zh/products/fluted-panel-charcoal</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://flashcast.com.my/en/products/fluted-panel-charcoal" />
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://flashcast.com.my/zh/products/fluted-panel-charcoal" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/products/fluted-panel-charcoal" />
+  </url>
+  <url>
+    <loc>https://flashcast.com.my/en/products/solid-wood-teak</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://flashcast.com.my/en/products/solid-wood-teak" />
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://flashcast.com.my/zh/products/solid-wood-teak" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/products/solid-wood-teak" />
+  </url>
+  <url>
+    <loc>https://flashcast.com.my/zh/products/solid-wood-teak</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://flashcast.com.my/en/products/solid-wood-teak" />
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://flashcast.com.my/zh/products/solid-wood-teak" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/products/solid-wood-teak" />
+  </url>
+  <url>
+    <loc>https://flashcast.com.my/en/products/solid-timber-walnut</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://flashcast.com.my/en/products/solid-timber-walnut" />
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://flashcast.com.my/zh/products/solid-timber-walnut" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/products/solid-timber-walnut" />
+  </url>
+  <url>
+    <loc>https://flashcast.com.my/zh/products/solid-timber-walnut</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://flashcast.com.my/en/products/solid-timber-walnut" />
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://flashcast.com.my/zh/products/solid-timber-walnut" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/products/solid-timber-walnut" />
+  </url>
+  <url>
+    <loc>https://flashcast.com.my/en/products/subway-wall-tile</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://flashcast.com.my/en/products/subway-wall-tile" />
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://flashcast.com.my/zh/products/subway-wall-tile" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/products/subway-wall-tile" />
+  </url>
+  <url>
+    <loc>https://flashcast.com.my/zh/products/subway-wall-tile</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://flashcast.com.my/en/products/subway-wall-tile" />
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://flashcast.com.my/zh/products/subway-wall-tile" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/products/subway-wall-tile" />
+  </url>
+  <url>
+    <loc>https://flashcast.com.my/en/products/laminate-grey-stone</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://flashcast.com.my/en/products/laminate-grey-stone" />
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://flashcast.com.my/zh/products/laminate-grey-stone" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/products/laminate-grey-stone" />
+  </url>
+  <url>
+    <loc>https://flashcast.com.my/zh/products/laminate-grey-stone</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://flashcast.com.my/en/products/laminate-grey-stone" />
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://flashcast.com.my/zh/products/laminate-grey-stone" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/products/laminate-grey-stone" />
+  </url>
+  <url>
+    <loc>https://flashcast.com.my/en/products/kitchen-melamine-cabinets</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://flashcast.com.my/en/products/kitchen-melamine-cabinets" />
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://flashcast.com.my/zh/products/kitchen-melamine-cabinets" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/products/kitchen-melamine-cabinets" />
+  </url>
+  <url>
+    <loc>https://flashcast.com.my/zh/products/kitchen-melamine-cabinets</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://flashcast.com.my/en/products/kitchen-melamine-cabinets" />
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://flashcast.com.my/zh/products/kitchen-melamine-cabinets" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/products/kitchen-melamine-cabinets" />
+  </url>
+  <url>
+    <loc>https://flashcast.com.my/en/products/hexagon-grey-matte</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://flashcast.com.my/en/products/hexagon-grey-matte" />
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://flashcast.com.my/zh/products/hexagon-grey-matte" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/products/hexagon-grey-matte" />
+  </url>
+  <url>
+    <loc>https://flashcast.com.my/zh/products/hexagon-grey-matte</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://flashcast.com.my/en/products/hexagon-grey-matte" />
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://flashcast.com.my/zh/products/hexagon-grey-matte" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/products/hexagon-grey-matte" />
+  </url>
+  <url>
+    <loc>https://flashcast.com.my/en/products/quartz-countertop-white</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://flashcast.com.my/en/products/quartz-countertop-white" />
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://flashcast.com.my/zh/products/quartz-countertop-white" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/products/quartz-countertop-white" />
+  </url>
+  <url>
+    <loc>https://flashcast.com.my/zh/products/quartz-countertop-white</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://flashcast.com.my/en/products/quartz-countertop-white" />
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://flashcast.com.my/zh/products/quartz-countertop-white" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/products/quartz-countertop-white" />
+  </url>
+  <url>
+    <loc>https://flashcast.com.my/en/products/timber-cladding-oak</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://flashcast.com.my/en/products/timber-cladding-oak" />
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://flashcast.com.my/zh/products/timber-cladding-oak" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/products/timber-cladding-oak" />
+  </url>
+  <url>
+    <loc>https://flashcast.com.my/zh/products/timber-cladding-oak</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://flashcast.com.my/en/products/timber-cladding-oak" />
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://flashcast.com.my/zh/products/timber-cladding-oak" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/products/timber-cladding-oak" />
+  </url>
+  <url>
+    <loc>https://flashcast.com.my/en/products/quartz-countertop-carrara-white</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://flashcast.com.my/en/products/quartz-countertop-carrara-white" />
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://flashcast.com.my/zh/products/quartz-countertop-carrara-white" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/products/quartz-countertop-carrara-white" />
+  </url>
+  <url>
+    <loc>https://flashcast.com.my/zh/products/quartz-countertop-carrara-white</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://flashcast.com.my/en/products/quartz-countertop-carrara-white" />
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://flashcast.com.my/zh/products/quartz-countertop-carrara-white" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/products/quartz-countertop-carrara-white" />
+  </url>
+  <url>
+    <loc>https://flashcast.com.my/en/products/art-metallic-paint</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://flashcast.com.my/en/products/art-metallic-paint" />
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://flashcast.com.my/zh/products/art-metallic-paint" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/products/art-metallic-paint" />
+  </url>
+  <url>
+    <loc>https://flashcast.com.my/zh/products/art-metallic-paint</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://flashcast.com.my/en/products/art-metallic-paint" />
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://flashcast.com.my/zh/products/art-metallic-paint" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/products/art-metallic-paint" />
+  </url>
+  <url>
+    <loc>https://flashcast.com.my/en/products/category-bathroom</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://flashcast.com.my/en/products/category-bathroom" />
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://flashcast.com.my/zh/products/category-bathroom" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/products/category-bathroom" />
+  </url>
+  <url>
+    <loc>https://flashcast.com.my/zh/products/category-bathroom</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://flashcast.com.my/en/products/category-bathroom" />
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://flashcast.com.my/zh/products/category-bathroom" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/products/category-bathroom" />
+  </url>
+  <url>
+    <loc>https://flashcast.com.my/en/products/vinyl-plank-ash-grey</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://flashcast.com.my/en/products/vinyl-plank-ash-grey" />
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://flashcast.com.my/zh/products/vinyl-plank-ash-grey" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/products/vinyl-plank-ash-grey" />
+  </url>
+  <url>
+    <loc>https://flashcast.com.my/zh/products/vinyl-plank-ash-grey</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://flashcast.com.my/en/products/vinyl-plank-ash-grey" />
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://flashcast.com.my/zh/products/vinyl-plank-ash-grey" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/products/vinyl-plank-ash-grey" />
+  </url>
+  <url>
+    <loc>https://flashcast.com.my/en/products/art-venetian-plaster</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://flashcast.com.my/en/products/art-venetian-plaster" />
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://flashcast.com.my/zh/products/art-venetian-plaster" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/products/art-venetian-plaster" />
+  </url>
+  <url>
+    <loc>https://flashcast.com.my/zh/products/art-venetian-plaster</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://flashcast.com.my/en/products/art-venetian-plaster" />
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://flashcast.com.my/zh/products/art-venetian-plaster" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/products/art-venetian-plaster" />
+  </url>
+  <url>
+    <loc>https://flashcast.com.my/en/products/melamine-cabinet-grey-oak</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://flashcast.com.my/en/products/melamine-cabinet-grey-oak" />
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://flashcast.com.my/zh/products/melamine-cabinet-grey-oak" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/products/melamine-cabinet-grey-oak" />
+  </url>
+  <url>
+    <loc>https://flashcast.com.my/zh/products/melamine-cabinet-grey-oak</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://flashcast.com.my/en/products/melamine-cabinet-grey-oak" />
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://flashcast.com.my/zh/products/melamine-cabinet-grey-oak" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/products/melamine-cabinet-grey-oak" />
+  </url>
+  <url>
+    <loc>https://flashcast.com.my/en/products/acrylic-cabinet-gloss-white</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://flashcast.com.my/en/products/acrylic-cabinet-gloss-white" />
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://flashcast.com.my/zh/products/acrylic-cabinet-gloss-white" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/products/acrylic-cabinet-gloss-white" />
+  </url>
+  <url>
+    <loc>https://flashcast.com.my/zh/products/acrylic-cabinet-gloss-white</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://flashcast.com.my/en/products/acrylic-cabinet-gloss-white" />
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://flashcast.com.my/zh/products/acrylic-cabinet-gloss-white" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/products/acrylic-cabinet-gloss-white" />
+  </url>
+  <url>
+    <loc>https://flashcast.com.my/en/products/acrylic-cabinet-door</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://flashcast.com.my/en/products/acrylic-cabinet-door" />
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://flashcast.com.my/zh/products/acrylic-cabinet-door" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/products/acrylic-cabinet-door" />
+  </url>
+  <url>
+    <loc>https://flashcast.com.my/zh/products/acrylic-cabinet-door</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://flashcast.com.my/en/products/acrylic-cabinet-door" />
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://flashcast.com.my/zh/products/acrylic-cabinet-door" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/products/acrylic-cabinet-door" />
+  </url>
+  <url>
+    <loc>https://flashcast.com.my/en/products/melamine-grey-oak</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://flashcast.com.my/en/products/melamine-grey-oak" />
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://flashcast.com.my/zh/products/melamine-grey-oak" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/products/melamine-grey-oak" />
+  </url>
+  <url>
+    <loc>https://flashcast.com.my/zh/products/melamine-grey-oak</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://flashcast.com.my/en/products/melamine-grey-oak" />
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://flashcast.com.my/zh/products/melamine-grey-oak" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/products/melamine-grey-oak" />
+  </url>
+  <url>
+    <loc>https://flashcast.com.my/en/products/subway-tile-white</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://flashcast.com.my/en/products/subway-tile-white" />
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://flashcast.com.my/zh/products/subway-tile-white" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/products/subway-tile-white" />
+  </url>
+  <url>
+    <loc>https://flashcast.com.my/zh/products/subway-tile-white</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://flashcast.com.my/en/products/subway-tile-white" />
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://flashcast.com.my/zh/products/subway-tile-white" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/products/subway-tile-white" />
   </url>
   <url>
     <loc>https://flashcast.com.my/en/locations/kepong</loc>

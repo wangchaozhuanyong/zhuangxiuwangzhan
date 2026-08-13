@@ -21,6 +21,7 @@ export const servicesPageText = {
     directoryText: "Browse services by project type so you can quickly decide whether to start with residential renovation, kitchen or bathroom planning, commercial fit-out, custom storage, or approval support.",
     groupKicker: "Service Category",
     groupCount: "{count} services",
+    allServices: "All services",
     groups: {
       residential: {
         title: "Residential Renovation and Storage",
@@ -179,6 +180,7 @@ export const servicesPageText = {
     directoryText: "先按住宅、厨房浴室、商业空间、定制收纳和专项支持分类，方便你快速进入最相关的服务页。",
     groupKicker: "服务分类",
     groupCount: "{count} 项服务",
+    allServices: "全部服务",
     groups: {
       residential: {
         title: "住宅装修与定制收纳",

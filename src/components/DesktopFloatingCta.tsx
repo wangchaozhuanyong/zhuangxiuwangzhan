@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { X } from "lucide-react";
+import { useLocation } from "react-router-dom";
 import WhatsAppIcon from "@/components/WhatsAppIcon";
 import LocalizedLink from "@/components/LocalizedLink";
 import AdaptiveSurface from "@/components/AdaptiveSurface";
@@ -9,6 +10,7 @@ import { useSiteSettings } from "@/hooks/useSiteSettings";
 import { usePublicChrome } from "@/contexts/PublicChromeContext";
 import { trackCtaClick } from "@/lib/analytics";
 import { readBrowserPreference, writeBrowserPreference } from "@/lib/browserPreference";
+import { stripLanguagePrefix } from "@/i18n/routes";
 
 const CTA_DISMISSED_KEY = "flashcast_cta_dismissed_at";
 
@@ -32,9 +34,12 @@ const copy = {
 /** 桌面端右下角浮动 CTA（lg+）；与移动端底栏互斥展示 */
 const DesktopFloatingCta = () => {
   const { language } = useLanguage();
+  const location = useLocation();
   const settings = useSiteSettings();
   const { menuOpen } = usePublicChrome();
   const t = copy[language];
+  const publicPath = stripLanguagePrefix(location.pathname);
+  const suppressPrompt = publicPath === "/contact" || publicPath === "/quote";
   const [showPrompt, setShowPrompt] = useState(false);
   const [contentOverlapZone, setContentOverlapZone] = useState(false);
 
@@ -108,7 +113,7 @@ const DesktopFloatingCta = () => {
       style={{ zIndex: PUBLIC_CHROME_Z.desktopFloating }}
     >
       <div className="pointer-events-auto">
-        {showPrompt ? (
+        {showPrompt && !suppressPrompt ? (
           <AdaptiveSurface
             background="hsl(var(--surface-dark) / 0.94)"
             foreground="hsl(var(--surface-dark-foreground))"

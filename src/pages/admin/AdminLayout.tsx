@@ -77,6 +77,7 @@ const adminRoutePreloaders: Array<[RegExp, () => Promise<unknown>]> = [
   [/^\/admin\/services(?:\/|$)/, () => import("@/pages/admin/AdminServiceList")],
   [/^\/admin\/projects(?:\/|$)/, () => import("@/pages/admin/AdminProjectList")],
   [/^\/admin\/materials(?:\/|$)/, () => import("@/pages/admin/AdminMaterialList")],
+  [/^\/admin\/promotions$/, () => import("@/pages/admin/AdminPromotionsEditor")],
   [/^\/admin\/blog(?:\/|$)/, () => import("@/pages/admin/AdminBlogList")],
   [/^\/admin\/media$/, () => import("@/pages/admin/AdminMediaLibrary")],
   [/^\/admin\/seo$/, () => import("@/pages/admin/AdminSeoManager")],
@@ -119,6 +120,7 @@ const getAdminSkeletonMode = (navKey: keyof AdminCopy): AdminPageSkeletonMode =>
     case "services":
     case "projects":
     case "materials":
+    case "promotions":
     case "blog":
     case "websiteSettings":
     case "notificationSettings":

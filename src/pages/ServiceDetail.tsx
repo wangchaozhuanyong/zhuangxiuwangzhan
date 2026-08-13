@@ -70,7 +70,7 @@ const ServiceDetail = () => {
 
   if (!service) {
     return (
-      <main className="pt-site-header section-padding text-center">
+      <main className="forest-service-detail-page pt-site-header section-padding text-center">
         <PageMeta
           title={t.notFound}
           description={t.notFoundDescription}
@@ -106,7 +106,7 @@ const ServiceDetail = () => {
   });
 
   return (
-    <main className="pt-site-header">
+    <main className="forest-service-detail-page pt-site-header">
       <PageMeta
         title={service.seoTitle || t.metaTitleFallback(serviceTitle, t.metaSuffix)}
         description={service.seoDescription || stripHtml(serviceSummary)}
@@ -117,8 +117,8 @@ const ServiceDetail = () => {
       <JsonLdBreadcrumb items={[{ name: t.breadcrumbHome, url: "/" }, { name: t.breadcrumbServices, url: "/services" }, { name: serviceTitle, url: `/services/${service.slug}` }]} />
       {serviceFaqs.length > 0 && <JsonLdFAQ faqs={serviceFaqs.map((faq) => ({ question: faq.q, answer: faq.a }))} />}
 
-      <section className="page-hero page-hero--detail">
-        <div className="page-hero__media absolute inset-0">
+      <section data-forest-page-hero="true" className="page-hero page-hero--detail">
+        <div className="page-hero__media page-hero-media hero-media-mask">
           <SmartImage src={heroImage} alt={serviceTitle} className="page-hero__image h-full w-full object-cover" width={1920} height={800} loading="eager" fetchPriority="high" sizes="100vw" candidateWidths={SERVICE_HERO_IMAGE_WIDTHS} quality={76} />
           <div className="page-hero__overlay absolute inset-0 media-readable-overlay" aria-hidden="true" />
         </div>

@@ -23,8 +23,8 @@ export const adminHomeEditorText = {
   supabaseMissingDescription: { en: "Configure Supabase before using homepage admin management.", zh: "配置完成后才能使用首页后台管理。" },
   pageTitle: { en: "Homepage management", zh: "首页管理" },
   pageDescription: {
-    en: "Manage key homepage sections: stats, why choose us, process, homepage FAQ, and final CTA. The homepage hero uses a fixed video, so the backend only manages button copy and links to avoid images overriding the video.",
-    zh: "这里管理首页关键区块：统计数据、为什么选择我们、施工流程、首页常见问题和首页行动引导区。首页首屏固定播放视频，后台只管理按钮文案和链接，避免图片覆盖视频。",
+    en: "Manage key homepage sections: stats, why choose us, brand partners, process, homepage FAQ, and final CTA. The homepage hero uses a fixed video, so the backend only manages button copy and links to avoid images overriding the video.",
+    zh: "这里管理首页关键区块：统计数据、为什么选择我们、品牌合作、施工流程、首页常见问题和首页行动引导区。首页首屏固定播放视频，后台只管理按钮文案和链接，避免图片覆盖视频。",
   },
   pageHelpText: {
     en: "Edit the homepage video hero buttons, content modules, and bottom call-to-action area here.",
@@ -36,6 +36,7 @@ export const adminHomeEditorText = {
   tabHero: { en: "Hero buttons", zh: "首屏按钮" },
   tabStats: { en: "Stats", zh: "统计数据" },
   tabWhy: { en: "Why choose us", zh: "为什么选择我们" },
+  tabBrands: { en: "Brand partners", zh: "材料与五金品牌" },
   tabProcess: { en: "Process", zh: "施工流程" },
   tabBeforeAfter: { en: "Before and after", zh: "改造前后" },
   tabTestimonials: { en: "Testimonials", zh: "客户评价" },
@@ -81,6 +82,23 @@ export const adminHomeEditorText = {
     en: "Each advantage appears as a homepage advantage card. You can set icon, title, and description.",
     zh: "每一条优势都会显示成首页优势卡片，可以设置图标、标题和说明。",
   },
+  brandsTitle: { en: "Common material and hardware brands", zh: "常用材料与五金品牌" },
+  brandsDescription: {
+    en: "Control whether the brand partner section appears on the homepage. It is off by default.",
+    zh: "控制“常用材料与五金品牌”模块是否显示在首页，默认关闭。",
+  },
+  brandsHelpText: {
+    en: "This switch only controls homepage visibility. It does not delete or change any brand records.",
+    zh: "此开关只控制首页显示，不会删除或修改任何品牌资料。",
+  },
+  brandsToggleLabel: { en: "Show this section on the homepage", zh: "在首页显示此模块" },
+  brandsEnabledState: { en: "Currently on. Published brands are visible on the homepage.", zh: "当前已开启，已发布的品牌会显示在首页。" },
+  brandsDisabledState: { en: "Currently off. The entire section is hidden on the homepage.", zh: "当前已关闭，首页会隐藏整个模块。" },
+  brandsUnavailableState: { en: "The setting is unavailable. Refresh the page and try again.", zh: "显示设置暂不可用，请刷新页面后重试。" },
+  brandsSaving: { en: "Saving visibility setting...", zh: "正在保存显示设置..." },
+  brandsEnabledToast: { en: "Brand section enabled", zh: "品牌模块已开启" },
+  brandsDisabledToast: { en: "Brand section disabled", zh: "品牌模块已关闭" },
+  manageBrands: { en: "Manage brand records", zh: "管理品牌资料" },
   processTitle: { en: "Process", zh: "施工流程" },
   processDescription: { en: "Used by the homepage process module and process page.", zh: "用于首页流程模块与流程页。" },
   processHelpText: {

@@ -19,7 +19,7 @@ const NotFound = () => {
   }, [location.pathname]);
 
   return (
-    <main className="public-main--subpage min-h-screen pt-site-header">
+    <main className="forest-not-found-page public-main--subpage min-h-screen pt-site-header">
       <PageMeta
         title={`404 | ${t.title}`}
         description={t.metaDescription}

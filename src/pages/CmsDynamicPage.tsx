@@ -109,7 +109,7 @@ export default function CmsDynamicPage() {
 
   if (isLoading) {
     return (
-      <main className="pt-site-header">
+      <main className="forest-cms-page pt-site-header">
         <PublicLoadingState label={t.loading} title={t.loadingTitle} description={t.loadingDescription} />
       </main>
     );
@@ -117,7 +117,7 @@ export default function CmsDynamicPage() {
 
   if (isError) {
     return (
-      <main className="pt-site-header">
+      <main className="forest-cms-page pt-site-header">
         <PageMeta title={t.errorTitle} description={t.errorDescription} canonicalPath={cmsPath} />
         <section className="section-padding bg-background">
           <div className="container-narrow">
@@ -148,7 +148,7 @@ export default function CmsDynamicPage() {
   const sections = page.sections || [];
 
   return (
-    <main className="pt-site-header">
+    <main className="forest-cms-page pt-site-header">
       <PageMeta
         title={page.seo_title || page.title}
         description={page.seo_description || page.description || t.fallbackDescription}
@@ -157,9 +157,9 @@ export default function CmsDynamicPage() {
         canonicalPath={page.path}
       />
 
-      <section className="page-hero page-hero--detail">
+      <section data-forest-page-hero={heroImage ? "true" : "text-only"} className="page-hero page-hero--detail">
         {heroImage && (
-          <div className="page-hero__media absolute inset-0">
+          <div className="page-hero__media page-hero-media hero-media-mask">
             <SmartImage src={heroImage} alt={heroAlt} className="page-hero__image h-full w-full object-cover" loading="eager" width={1920} height={800} fetchPriority="high" />
             <div className="page-hero__overlay absolute inset-0 media-readable-overlay" aria-hidden="true" />
           </div>

@@ -1,4 +1,14 @@
 export const homeSectionText = {
+  forestAria: {
+    en: {
+      serviceHighlights: "Service highlights",
+      currentOffers: "Current service offers",
+    },
+    zh: {
+      serviceHighlights: "服务特点",
+      currentOffers: "当前服务优惠",
+    },
+  },
   hero: {
     en: {
       quote: "Get Free Quote",

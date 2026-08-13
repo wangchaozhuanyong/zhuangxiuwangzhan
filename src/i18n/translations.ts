@@ -17,6 +17,9 @@ export const translations: Translations = {
   "nav.blog": { en: "Blog", zh: "博客" },
   "nav.faq": { en: "FAQ", zh: "常见问题" },
   "nav.contact": { en: "Contact", zh: "联系我们" },
+  "nav.products": { en: "Products", zh: "装修商品" },
+  "nav.promotions": { en: "Promotions", zh: "优惠活动" },
+  "nav.locations": { en: "Locations", zh: "服务地区" },
   "nav.navigation": { en: "Navigation", zh: "导航" },
 
   // ============ CTA BUTTONS ============

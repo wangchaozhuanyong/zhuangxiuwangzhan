@@ -70,7 +70,7 @@ const LocationPage = () => {
 
   if (!location) {
     return (
-      <main className="pt-site-header section-padding text-center">
+      <main className="forest-location-detail-page pt-site-header section-padding text-center">
         <PageMeta title={t.notFound} description={t.notFound} canonicalPath={`/locations/${slug || ""}`} noIndex />
         <h1 className="font-display text-3xl font-bold mb-4">{t.notFound}</h1>
         <Button asChild><Link to="/">{t.backHome}</Link></Button>
@@ -79,7 +79,7 @@ const LocationPage = () => {
   }
 
   return (
-    <main className="pt-site-header">
+    <main className="forest-location-detail-page pt-site-header">
       <PageMeta
         title={location.metaTitle}
         description={stripHtml(location.description)}

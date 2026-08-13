@@ -1,4 +1,4 @@
-import { ReactNode, useEffect, useState } from "react";
+import { ReactNode, useEffect, useId, useState } from "react";
 import { useLocation } from "react-router-dom";
 import Link from "@/components/LocalizedLink";
 import { ChevronDown, Clock, ExternalLink, Facebook, Instagram, Linkedin, Mail, MapPin, Music2, Phone, type LucideIcon } from "lucide-react";
@@ -95,17 +95,23 @@ const MobileAccordion = ({
   children: ReactNode;
   isOpen: boolean;
   onToggle: () => void;
-}) => (
-  <div className={`footer-mobile-panel ${isOpen ? "is-open" : ""}`}>
-    <button type="button" onClick={onToggle} aria-expanded={isOpen}>
-      <span>{title}</span>
-      <ChevronDown className={`h-4 w-4 transition-transform duration-300 ${isOpen ? "rotate-180" : ""}`} />
-    </button>
-    <div className={`footer-mobile-panel-body ${isOpen ? "max-h-96 pb-5" : "max-h-0"}`} aria-hidden={!isOpen}>
-      {children}
+}) => {
+  const contentId = useId();
+
+  return (
+    <div className={`footer-mobile-panel ${isOpen ? "is-open" : ""}`}>
+      <button type="button" onClick={onToggle} aria-expanded={isOpen} aria-controls={contentId}>
+        <span>{title}</span>
+        <ChevronDown className={`h-4 w-4 transition-transform duration-300 ${isOpen ? "rotate-180" : ""}`} />
+      </button>
+      <div id={contentId} className="footer-mobile-panel-body" aria-hidden={!isOpen}>
+        <div className="footer-mobile-panel-body-inner">
+          {children}
+        </div>
+      </div>
     </div>
-  </div>
-);
+  );
+};
 
 const Footer = () => {
   const { language } = useLanguage();
@@ -125,6 +131,9 @@ const Footer = () => {
     normalizedPath === "/projects" ||
     normalizedPath === "/materials" ||
     normalizedPath.startsWith("/materials/category/") ||
+    normalizedPath === "/products" ||
+    normalizedPath === "/promotions" ||
+    normalizedPath === "/locations" ||
     normalizedPath === "/faq" ||
     normalizedPath.startsWith("/landing/");
   const showFooterCta = normalizedPath !== "/" && !hasDedicatedSubpageCta;

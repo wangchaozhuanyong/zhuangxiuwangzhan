@@ -10,3 +10,36 @@ export const PUBLIC_CHROME_Z = {
 } as const;
 
 export const isAdminPath = (pathname: string) => pathname.startsWith("/admin");
+
+const IMMERSIVE_PUBLIC_PATHS = new Set([
+  "/",
+  "/projects",
+  "/products",
+  "/promotions",
+  "/contact",
+  "/quote",
+  "/about",
+  "/services",
+  "/materials",
+  "/process",
+  "/blog",
+  "/faq",
+  "/locations",
+]);
+
+const IMMERSIVE_PUBLIC_PREFIXES = [
+  "/projects/",
+  "/products/",
+  "/services/",
+  "/materials/",
+  "/blog/",
+  "/locations/",
+  "/landing/",
+];
+
+/** 最终版设计中，拥有首屏大图并让顶栏叠加显示的公开页面。 */
+export const isImmersivePublicPath = (pathname: string) => {
+  const normalizedPath = pathname.length > 1 ? pathname.replace(/\/$/, "") : pathname;
+  return IMMERSIVE_PUBLIC_PATHS.has(normalizedPath)
+    || IMMERSIVE_PUBLIC_PREFIXES.some((prefix) => normalizedPath.startsWith(prefix));
+};

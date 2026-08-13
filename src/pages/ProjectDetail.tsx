@@ -57,7 +57,7 @@ const ProjectDetail = () => {
 
   if (!projectPending && !project) {
     return (
-      <main className="pt-site-header section-padding text-center">
+      <main className="forest-project-detail-page pt-site-header section-padding text-center">
         <PageMeta
           title={t.notFound}
           description={t.notFoundDescription}
@@ -92,7 +92,7 @@ const ProjectDetail = () => {
   });
 
   return (
-    <main className="pt-site-header">
+    <main className="forest-project-detail-page pt-site-header">
       <PageMeta
         title={`${projectTitleLabel} | ${projectLocationLabel} | ${t.metaSuffix}`}
         description={t.metaDescription(projectTypeLabel, projectLocationLabel, projectClientNeed)}
@@ -101,8 +101,8 @@ const ProjectDetail = () => {
       />
       <JsonLdBreadcrumb items={[{ name: t.breadcrumbHome, url: "/" }, { name: t.breadcrumbProjects, url: "/projects" }, { name: projectTitleLabel, url: `/projects/${project.slug}` }]} />
 
-      <section className="page-hero page-hero--detail items-end">
-        <div className="page-hero__media absolute inset-0">
+      <section data-forest-page-hero="true" className="page-hero page-hero--detail items-end">
+        <div className="page-hero__media page-hero-media hero-media-mask">
           <SmartImage src={mainImage} alt={mainImageAlt} className="page-hero__image h-full w-full object-cover" width={1920} height={800} loading="eager" fetchPriority="high" />
           <div
             className="page-hero__overlay absolute inset-0 bg-gradient-to-t from-[rgba(13,12,9,0.88)] via-[rgba(13,12,9,0.45)] to-[rgba(13,12,9,0.15)]"

@@ -1,11 +1,10 @@
-﻿import { useRef, useState } from "react";
+﻿import { useState } from "react";
 import Link from "@/components/LocalizedLink";
-import { MapPin } from "lucide-react";
+import { ArrowUpRight, MapPin } from "lucide-react";
 import SmartImage from "@/components/SmartImage";
 import DeferredSmartImage from "@/components/DeferredSmartImage";
 import { usePublishedProjectSummaries, usePublishedSitePage } from "@/hooks/usePublishedContent";
 import { useLanguage } from "@/i18n/LanguageContext";
-import Reveal from "@/components/Reveal";
 import PageMeta from "@/components/PageMeta";
 import { JsonLdBreadcrumb } from "@/components/JsonLd";
 import HeroBanner from "@/components/blocks/HeroBanner";
@@ -15,6 +14,8 @@ import { pageHeroImages, resolvePageHeroImage } from "@/lib/pageHeroImages";
 import { buildQuotePath } from "@/lib/quoteContext";
 import type { PublishedProjectSummary } from "@/lib/contentApi";
 import { projectsPageText } from "@/i18n/projectsPageText";
+import { ForestContentState, ForestFilterNav } from "@/components/forest/ForestPagePrimitives";
+import { forestUiText } from "@/i18n/forestUiText";
 
 const typeImageMap: Record<string, string> = {
   Residential: "/images/projects/residential-renovation.webp",
@@ -57,18 +58,8 @@ const categoryLabels = {
 const Projects = () => {
   const [filter, setFilter] = useState<(typeof categories)[number]>("All");
   const { language } = useLanguage();
-  const { data: projects = [] } = usePublishedProjectSummaries(language);
+  const { data: projects = [], isLoading, isError, refetch } = usePublishedProjectSummaries(language);
   const { data: pageContent } = usePublishedSitePage(language, "projects");
-  const categoryBarRef = useRef<HTMLDivElement | null>(null);
-  const categoryButtonRefs = useRef<Record<(typeof categories)[number], HTMLButtonElement | null>>({
-    All: null,
-    Residential: null,
-    Commercial: null,
-    "Built-In": null,
-    Warehouse: null,
-    Exterior: null,
-    Office: null,
-  });
   const pageCopy = projectsPageText[language];
   const filtered = filter === "All" ? projects : projects.filter((project) => project.type === filter);
   const displayProjectType = (value: string) => translateProjectType(value, language);
@@ -100,24 +91,6 @@ const Projects = () => {
     return <DeferredSmartImage {...imageProps} rootMargin={PROJECT_IMAGE_ROOT_MARGIN} />;
   };
 
-  const scrollCategoryIntoView = (category: (typeof categories)[number]) => {
-    const bar = categoryBarRef.current;
-    const target = categoryButtonRefs.current[category];
-    if (!bar || !target) return;
-
-    const prefersReducedMotion =
-      typeof window !== "undefined" && window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
-    const behavior: ScrollBehavior = prefersReducedMotion ? "auto" : "smooth";
-
-    const barRect = bar.getBoundingClientRect();
-    const targetRect = target.getBoundingClientRect();
-    const currentLeft = bar.scrollLeft;
-    const offsetWithinBar = targetRect.left - barRect.left;
-    const nextLeft = currentLeft + offsetWithinBar - (barRect.width - targetRect.width) / 2;
-
-    bar.scrollTo({ left: Math.max(0, nextLeft), behavior });
-  };
-
   return (
     <main className="pt-site-header">
       <PageMeta
@@ -137,67 +110,46 @@ const Projects = () => {
         description={pageContent?.description || pageCopy.intro}
       />
 
-      <section className="section-padding bg-background">
-        <div className="container-narrow">
-          <Reveal>
-            <div>
-              <div
-                ref={categoryBarRef}
-                className="subpage-filter-bar md:mx-0 md:flex-wrap md:justify-center md:overflow-visible md:[mask-image:none] md:[-webkit-mask-image:none]"
-                role="tablist"
-                aria-label={pageCopy.categoryFilterAria}
-              >
-              {categories.map((category) => (
-                <button
-                  key={category}
-                  onClick={() => {
-                    setFilter(category);
-                    requestAnimationFrame(() => scrollCategoryIntoView(category));
-                  }}
-                  ref={(node) => {
-                    categoryButtonRefs.current[category] = node;
-                  }}
-                  role="tab"
-                  aria-selected={filter === category}
-                  data-active={filter === category}
-                  className="subpage-filter-button btn-press"
-                >
-                  {categoryLabels[language][category]}
-                </button>
-              ))}
-              </div>
-            </div>
-          </Reveal>
+      <section className="forest-chapter forest-listing-chapter">
+          <ForestFilterNav
+            items={categories.map((category) => ({ value: category, label: categoryLabels[language][category] }))}
+            value={filter}
+            onChange={(value) => setFilter(value as (typeof categories)[number])}
+            ariaLabel={pageCopy.categoryFilterAria}
+          />
+          {!isLoading && !isError ? (
+            <div className="forest-listing-meta"><span>{forestUiText[language].resultCount(filtered.length)}</span></div>
+          ) : null}
 
-          <div className="card-grid grid-cols-1 gap-6 md:grid-cols-2">
+          {isLoading ? (
+            <ForestContentState variant="loading" compact />
+          ) : isError ? (
+            <ForestContentState variant="error" compact onRetry={() => void refetch()} />
+          ) : filtered.length === 0 ? (
+            <ForestContentState variant="empty" compact description={pageCopy.empty} />
+          ) : (
+          <div className="forest-listing-grid forest-project-listing">
             {filtered.map((project, index) => (
-              <Reveal key={project.id} delay={getProjectRevealDelay(index)}>
                 <Link
+                  key={project.id}
                   to={`/projects/${project.slug}`}
-                  className="card-equal group rounded-card border border-border/80 bg-card p-3 shadow-[0_22px_64px_-52px_rgba(21,18,14,0.42)] hover-lift"
+                  className={`forest-listing-card forest-project-row${index % 3 === 0 ? " forest-project-row--wide" : ""}`}
+                  style={{ animationDelay: `${getProjectRevealDelay(index)}ms` }}
                 >
-                  <div className="relative aspect-[4/3] overflow-hidden rounded-card img-zoom">
+                  <div className="forest-listing-card__media">
                     {renderProjectImage(project, index)}
-                    <div className="absolute top-3 left-3">
-                      <span className="bg-accent/90 text-accent-foreground text-xs font-medium px-3 py-1 rounded-full backdrop-blur-sm">{displayProjectType(project.type)}</span>
-                    </div>
                   </div>
-                  <div className="card-equal-body px-1 pb-2 pt-4">
-                  <h3 className="text-limit-2 font-display text-lg font-semibold mb-1 group-hover:text-accent transition-colors">{displayProjectTitle(project.title)}</h3>
-                    <span className="mb-2 flex min-w-0 items-center gap-1 text-sm text-muted-foreground">
-                    <MapPin className="w-3 h-3 shrink-0" /> <span className="min-w-0 truncate">{displayProjectLocation(project.location)}</span>
-                  </span>
-                  <p className="text-limit-2 text-muted-foreground text-sm">{displayProjectDescription(project)}</p>
+                  <div className="forest-listing-card__body">
+                    <p className="forest-listing-card__meta">{displayProjectType(project.type)}</p>
+                    <h2>{displayProjectTitle(project.title)}</h2>
+                    <p><MapPin className="mr-1 inline h-3.5 w-3.5" aria-hidden="true" />{displayProjectLocation(project.location)}</p>
+                    <p>{displayProjectDescription(project)}</p>
+                    <span className="forest-listing-card__action">{pageCopy.view}<ArrowUpRight aria-hidden="true" /></span>
                   </div>
                 </Link>
-              </Reveal>
             ))}
           </div>
-
-          {filtered.length === 0 && (
-            <p className="text-center text-muted-foreground py-12">{pageCopy.empty}</p>
           )}
-        </div>
       </section>
 
       <CTABanner

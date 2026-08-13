@@ -32,6 +32,7 @@ const AdminProjectList = lazy(() => import("@/pages/admin/AdminProjectList"));
 const AdminProjectEditor = lazy(() => import("@/pages/admin/AdminProjectEditor"));
 const AdminMaterialList = lazy(() => import("@/pages/admin/AdminMaterialList"));
 const AdminMaterialEditor = lazy(() => import("@/pages/admin/AdminMaterialEditor"));
+const AdminPromotionsEditor = lazy(() => import("@/pages/admin/AdminPromotionsEditor"));
 const AdminBlogList = lazy(() => import("@/pages/admin/AdminBlogList"));
 const AdminBlogEditor = lazy(() => import("@/pages/admin/AdminBlogEditor"));
 const AdminMediaLibrary = lazy(() => import("@/pages/admin/AdminMediaLibrary"));
@@ -106,6 +107,7 @@ export const adminRoutes = (
         <Route path="materials" element={withRoleGate(<AdminMaterialList />, ADMIN_ROLE_GROUPS.contentWrite)} />
         <Route path="materials/new" element={withRoleGate(<AdminMaterialEditor />, ADMIN_ROLE_GROUPS.contentWrite)} />
         <Route path="materials/:id" element={withRoleGate(<AdminMaterialEditor />, ADMIN_ROLE_GROUPS.contentWrite)} />
+        <Route path="promotions" element={withRoleGate(<AdminPromotionsEditor />, ADMIN_ROLE_GROUPS.contentWrite)} />
         <Route path="blog" element={withRoleGate(<AdminBlogList />, ADMIN_ROLE_GROUPS.contentWrite)} />
         <Route path="blog/new" element={withRoleGate(<AdminBlogEditor />, ADMIN_ROLE_GROUPS.contentWrite)} />
         <Route path="blog/:id" element={withRoleGate(<AdminBlogEditor />, ADMIN_ROLE_GROUPS.contentWrite)} />

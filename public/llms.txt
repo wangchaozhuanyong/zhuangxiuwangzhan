@@ -24,11 +24,13 @@ FLASH CAST SDN. BHD. 是服务吉隆坡、雪兰莪与巴生谷的装修、室�
 - faq: 2 localized URLs
 - home: 2 localized URLs
 - landing: 16 localized URLs
-- locations: 60 localized URLs
+- locations: 62 localized URLs
 - materials: 186 localized URLs
 - privacy: 2 localized URLs
 - process: 2 localized URLs
+- products: 88 localized URLs
 - projects: 78 localized URLs
+- promotions: 2 localized URLs
 - quote: 2 localized URLs
 - services: 24 localized URLs
 - terms: 2 localized URLs
@@ -103,6 +105,7 @@ FLASH CAST SDN. BHD. 是服务吉隆坡、雪兰莪与巴生谷的装修、室�
 - https://flashcast.com.my/en/landing/old-house-renovation
 - https://flashcast.com.my/en/landing/shop-renovation
 - https://flashcast.com.my/en/landing/warehouse-shelving
+- https://flashcast.com.my/en/locations
 - https://flashcast.com.my/en/locations/ampang
 - https://flashcast.com.my/en/locations/ara-damansara
 - https://flashcast.com.my/en/locations/balakong
@@ -324,6 +327,7 @@ FLASH CAST SDN. BHD. 是服务吉隆坡、雪兰莪与巴生谷的装修、室�
 - https://flashcast.com.my/zh/landing/old-house-renovation
 - https://flashcast.com.my/zh/landing/shop-renovation
 - https://flashcast.com.my/zh/landing/warehouse-shelving
+- https://flashcast.com.my/zh/locations
 - https://flashcast.com.my/zh/locations/ampang
 - https://flashcast.com.my/zh/locations/ara-damansara
 - https://flashcast.com.my/zh/locations/balakong
@@ -503,6 +507,51 @@ FLASH CAST SDN. BHD. 是服务吉隆坡、雪兰莪与巴生谷的装修、室�
 - https://flashcast.com.my/en/faq
 - https://flashcast.com.my/en/privacy
 - https://flashcast.com.my/en/process
+- https://flashcast.com.my/en/products
+- https://flashcast.com.my/en/products/acrylic-cabinet-door
+- https://flashcast.com.my/en/products/acrylic-cabinet-gloss-white
+- https://flashcast.com.my/en/products/acrylic-high-gloss-white
+- https://flashcast.com.my/en/products/aluminium-sliding-black
+- https://flashcast.com.my/en/products/aluminium-sliding-door
+- https://flashcast.com.my/en/products/anti-slip-bathroom-tile
+- https://flashcast.com.my/en/products/art-metallic-paint
+- https://flashcast.com.my/en/products/art-microcement
+- https://flashcast.com.my/en/products/art-texture-paint
+- https://flashcast.com.my/en/products/art-venetian-plaster
+- https://flashcast.com.my/en/products/barn-door-dark-wood
+- https://flashcast.com.my/en/products/category-bathroom
+- https://flashcast.com.my/en/products/category-doors-windows
+- https://flashcast.com.my/en/products/category-whole-house-custom
+- https://flashcast.com.my/en/products/engineered-walnut-herringbone
+- https://flashcast.com.my/en/products/fluted-panel-charcoal
+- https://flashcast.com.my/en/products/fluted-wall-panel
+- https://flashcast.com.my/en/products/frameless-glass-clear
+- https://flashcast.com.my/en/products/frameless-glass-screen
+- https://flashcast.com.my/en/products/hexagon-grey-matte
+- https://flashcast.com.my/en/products/kitchen-acrylic-cabinets
+- https://flashcast.com.my/en/products/kitchen-melamine-cabinets
+- https://flashcast.com.my/en/products/kitchen-solid-wood-cabinets
+- https://flashcast.com.my/en/products/laminate-door-white-oak
+- https://flashcast.com.my/en/products/laminate-grey-stone
+- https://flashcast.com.my/en/products/lime-wash-paint
+- https://flashcast.com.my/en/products/melamine-cabinet-board
+- https://flashcast.com.my/en/products/melamine-cabinet-grey-oak
+- https://flashcast.com.my/en/products/melamine-grey-oak
+- https://flashcast.com.my/en/products/porcelain-carrara-white
+- https://flashcast.com.my/en/products/quartz-countertop-carrara-white
+- https://flashcast.com.my/en/products/quartz-countertop-white
+- https://flashcast.com.my/en/products/sintered-stone-grey
+- https://flashcast.com.my/en/products/solid-surface-warm-white
+- https://flashcast.com.my/en/products/solid-timber-walnut
+- https://flashcast.com.my/en/products/solid-wood-cabinet-teak
+- https://flashcast.com.my/en/products/solid-wood-teak
+- https://flashcast.com.my/en/products/spc-flooring-natural-oak
+- https://flashcast.com.my/en/products/spc-vinyl-natural-oak
+- https://flashcast.com.my/en/products/subway-tile-white
+- https://flashcast.com.my/en/products/subway-wall-tile
+- https://flashcast.com.my/en/products/timber-cladding-oak
+- https://flashcast.com.my/en/products/vinyl-plank-ash-grey
+- https://flashcast.com.my/en/promotions
 - https://flashcast.com.my/en/quote
 - https://flashcast.com.my/en/terms
 - https://flashcast.com.my/zh/about
@@ -510,6 +559,51 @@ FLASH CAST SDN. BHD. 是服务吉隆坡、雪兰莪与巴生谷的装修、室�
 - https://flashcast.com.my/zh/faq
 - https://flashcast.com.my/zh/privacy
 - https://flashcast.com.my/zh/process
+- https://flashcast.com.my/zh/products
+- https://flashcast.com.my/zh/products/acrylic-cabinet-door
+- https://flashcast.com.my/zh/products/acrylic-cabinet-gloss-white
+- https://flashcast.com.my/zh/products/acrylic-high-gloss-white
+- https://flashcast.com.my/zh/products/aluminium-sliding-black
+- https://flashcast.com.my/zh/products/aluminium-sliding-door
+- https://flashcast.com.my/zh/products/anti-slip-bathroom-tile
+- https://flashcast.com.my/zh/products/art-metallic-paint
+- https://flashcast.com.my/zh/products/art-microcement
+- https://flashcast.com.my/zh/products/art-texture-paint
+- https://flashcast.com.my/zh/products/art-venetian-plaster
+- https://flashcast.com.my/zh/products/barn-door-dark-wood
+- https://flashcast.com.my/zh/products/category-bathroom
+- https://flashcast.com.my/zh/products/category-doors-windows
+- https://flashcast.com.my/zh/products/category-whole-house-custom
+- https://flashcast.com.my/zh/products/engineered-walnut-herringbone
+- https://flashcast.com.my/zh/products/fluted-panel-charcoal
+- https://flashcast.com.my/zh/products/fluted-wall-panel
+- https://flashcast.com.my/zh/products/frameless-glass-clear
+- https://flashcast.com.my/zh/products/frameless-glass-screen
+- https://flashcast.com.my/zh/products/hexagon-grey-matte
+- https://flashcast.com.my/zh/products/kitchen-acrylic-cabinets
+- https://flashcast.com.my/zh/products/kitchen-melamine-cabinets
+- https://flashcast.com.my/zh/products/kitchen-solid-wood-cabinets
+- https://flashcast.com.my/zh/products/laminate-door-white-oak
+- https://flashcast.com.my/zh/products/laminate-grey-stone
+- https://flashcast.com.my/zh/products/lime-wash-paint
+- https://flashcast.com.my/zh/products/melamine-cabinet-board
+- https://flashcast.com.my/zh/products/melamine-cabinet-grey-oak
+- https://flashcast.com.my/zh/products/melamine-grey-oak
+- https://flashcast.com.my/zh/products/porcelain-carrara-white
+- https://flashcast.com.my/zh/products/quartz-countertop-carrara-white
+- https://flashcast.com.my/zh/products/quartz-countertop-white
+- https://flashcast.com.my/zh/products/sintered-stone-grey
+- https://flashcast.com.my/zh/products/solid-surface-warm-white
+- https://flashcast.com.my/zh/products/solid-timber-walnut
+- https://flashcast.com.my/zh/products/solid-wood-cabinet-teak
+- https://flashcast.com.my/zh/products/solid-wood-teak
+- https://flashcast.com.my/zh/products/spc-flooring-natural-oak
+- https://flashcast.com.my/zh/products/spc-vinyl-natural-oak
+- https://flashcast.com.my/zh/products/subway-tile-white
+- https://flashcast.com.my/zh/products/subway-wall-tile
+- https://flashcast.com.my/zh/products/timber-cladding-oak
+- https://flashcast.com.my/zh/products/vinyl-plank-ash-grey
+- https://flashcast.com.my/zh/promotions
 - https://flashcast.com.my/zh/quote
 - https://flashcast.com.my/zh/terms
 

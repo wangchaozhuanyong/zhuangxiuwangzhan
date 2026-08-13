@@ -40,7 +40,7 @@ const MobileActionBar = () => {
       ? { href: "#contact-name", label: t.fillContact, ctaName: "contact_form_jump" }
       : null;
 
-  if (!showMobileActionBar) {
+  if (!showMobileActionBar || (!isQuotePage && !isContactPage)) {
     return null;
   }
 

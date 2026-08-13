@@ -1,16 +1,13 @@
 import { useMemo } from "react";
-import { CheckCircle } from "lucide-react";
-import Reveal from "@/components/Reveal";
+import { Check } from "lucide-react";
 import PageMeta from "@/components/PageMeta";
 import { JsonLdBreadcrumb } from "@/components/JsonLd";
 import HeroBanner from "@/components/blocks/HeroBanner";
-import SectionHeader from "@/components/blocks/SectionHeader";
-import { useLanguage } from "@/i18n/LanguageContext";
+import { ForestSectionHeading } from "@/components/forest/ForestPagePrimitives";
 import { usePublishedProcessSteps, usePublishedSitePage } from "@/hooks/usePublishedContent";
-import { pageHeroImages, resolvePageHeroImage } from "@/lib/pageHeroImages";
+import { useLanguage } from "@/i18n/LanguageContext";
 import { processPageText } from "@/i18n/processPageText";
-
-
+import { pageHeroImages, resolvePageHeroImage } from "@/lib/pageHeroImages";
 
 const Process = () => {
   const { language } = useLanguage();
@@ -30,52 +27,25 @@ const Process = () => {
 
   return (
     <main className="pt-site-header">
-      <PageMeta
-        title={pageContent?.seo_title || t.metaTitle}
-        description={pageContent?.seo_description || t.metaDescription}
-        keywords={pageContent?.seo_keywords || t.metaKeywords}
-        canonicalPath="/process"
-      />
+      <PageMeta title={pageContent?.seo_title || t.metaTitle} description={pageContent?.seo_description || t.metaDescription} keywords={pageContent?.seo_keywords || t.metaKeywords} canonicalPath="/process" />
       <JsonLdBreadcrumb items={[{ name: t.breadcrumbHome, url: "/" }, { name: t.breadcrumbProcess, url: "/process" }]} />
+      <HeroBanner image={heroImage.desktop} imageMobile={heroImage.mobile} imageAlt={pageContent?.alt || t.imageAlt} label={pageContent?.subtitle || t.label} title={pageContent?.title || t.title} description={pageContent?.description || t.description} />
 
-      <HeroBanner
-        image={heroImage.desktop}
-        imageMobile={heroImage.mobile}
-        imageAlt={pageContent?.alt || t.imageAlt}
-        label={pageContent?.subtitle || t.label}
-        title={pageContent?.title || t.title}
-        description={pageContent?.description || t.description}
-      />
-
-      <section className="section-padding bg-background">
-        <div className="container-narrow">
-          <SectionHeader title={t.sectionTitle} description={pageContent?.content || t.sectionDescription} />
-
-          <div className="mx-auto max-w-3xl space-y-6">
-            {steps.map((step, index) => (
-              <Reveal key={step.num} delay={index * 80}>
-                <div className="luxury-card hover-lift relative flex gap-5 p-6 md:gap-7 md:p-8">
-                  <div className="shrink-0">
-                    <div className="flex h-14 w-14 items-center justify-center rounded-full bg-accent font-display text-lg font-bold text-accent-foreground">
-                      {step.num}
-                    </div>
-                  </div>
-                  <div>
-                    <h3 className="mb-2 font-display text-lg font-semibold">{step.title}</h3>
-                    <p className="mb-3 text-sm leading-relaxed text-muted-foreground">{step.desc}</p>
-                    <ul className="space-y-1.5">
-                      {step.details.map((detail) => (
-                        <li key={detail} className="flex items-start gap-2 text-xs text-muted-foreground">
-                          <CheckCircle className="mt-0.5 h-3.5 w-3.5 shrink-0 text-accent" />
-                          <span>{detail}</span>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                </div>
-              </Reveal>
-            ))}
-          </div>
+      <section className="forest-chapter forest-process-story">
+        <div className="forest-process-story__heading">
+          <ForestSectionHeading eyebrow={pageContent?.subtitle || t.label} title={t.sectionTitle} description={pageContent?.content || t.sectionDescription} />
+        </div>
+        <div className="forest-process-story__list">
+          {steps.map((step) => (
+            <article key={step.num} className="forest-process-step">
+              <span className="forest-process-step__number">{step.num}</span>
+              <div>
+                <h2>{step.title}</h2>
+                <p>{step.desc}</p>
+                {step.details.length ? <ul>{step.details.map((detail) => <li key={detail}><Check aria-hidden="true" />{detail}</li>)}</ul> : null}
+              </div>
+            </article>
+          ))}
         </div>
       </section>
     </main>

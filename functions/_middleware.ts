@@ -1,4 +1,9 @@
 import manifest from "./seo-manifest.json";
+import {
+  PUBLIC_LANGUAGE_COOKIE,
+  readCookieValue,
+  resolvePreferredLanguage,
+} from "../src/i18n/languageDetection";
 
 type SeoEntry = {
   lang: string;
@@ -54,7 +59,7 @@ const DEFAULT_MAP_LATITUDE = "3.0830403";
 const DEFAULT_MAP_LONGITUDE = "101.6708234";
 const PUBLIC_HTML_BROWSER_TTL_SECONDS = 60;
 const PUBLIC_HTML_EDGE_TTL_SECONDS = 300;
-const PUBLIC_HTML_CACHE_VERSION = "20260625-home-resource-hints";
+const PUBLIC_HTML_CACHE_VERSION = "20260812-new-client-design";
 const SITE_SETTINGS_CACHE_TTL_MS = 5 * 60 * 1000;
 const PUBLIC_PROJECT_SUMMARIES_CACHE_TTL_MS = 5 * 60 * 1000;
 const PUBLIC_PROJECT_DETAIL_CACHE_TTL_MS = 5 * 60 * 1000;
@@ -506,6 +511,8 @@ const formatBreadcrumbName = (segment: string, lang: string) => {
     about: { en: "About", zh: "关于我们" },
     services: { en: "Services", zh: "服务项目" },
     materials: { en: "Materials", zh: "材料库" },
+    products: { en: "Products", zh: "装修商品" },
+    promotions: { en: "Promotions", zh: "优惠活动" },
     projects: { en: "Projects", zh: "装修案例" },
     process: { en: "Process", zh: "施工流程" },
     faq: { en: "FAQ", zh: "常见问题" },
@@ -773,20 +780,33 @@ const fetchHomeContentBundle = async (env: Record<string, string | undefined>) =
   }
 
   try {
-    const response = await fetch(`${supabaseUrl}/rest/v1/rpc/get_public_home_bundle`, {
-      method: "POST",
-      headers: {
-        apikey: supabaseAnonKey,
-        Authorization: `Bearer ${supabaseAnonKey}`,
-        "Content-Type": "application/json",
-        Accept: "application/json",
-      },
-      body: "{}",
-    });
+    const [response, brandPartnersVisibilityRows] = await Promise.all([
+      fetch(`${supabaseUrl}/rest/v1/rpc/get_public_home_bundle`, {
+        method: "POST",
+        headers: {
+          apikey: supabaseAnonKey,
+          Authorization: `Bearer ${supabaseAnonKey}`,
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        },
+        body: "{}",
+      }),
+      fetchPublicRows(env, "home_brand_partners_visibility", "home_sections", (url) => {
+        url.searchParams.set("select", "section_key,status");
+        url.searchParams.set("section_key", "eq.brand_partners");
+        url.searchParams.set("status", "eq.published");
+        url.searchParams.set("limit", "1");
+      }),
+    ]);
 
     if (!response.ok) return null;
 
     const value = (await response.json()) as HomeContentBundleRow;
+    const homeSections = Array.isArray(value.home_sections) ? value.home_sections : [];
+    value.home_sections = [
+      ...homeSections,
+      brandPartnersVisibilityRows?.[0] || { section_key: "brand_partners", status: "draft" },
+    ];
     homeContentBundleCache = {
       key: cacheKey,
       value,
@@ -848,6 +868,21 @@ const fetchPublicServices = async (env: Record<string, string | undefined>) =>
 
 const fetchPublicMaterials = async (env: Record<string, string | undefined>) =>
   fetchPublicRows(env, "materials", "materials", (url) => {
+    url.searchParams.set("select", "*");
+    url.searchParams.set("status", "eq.published");
+    url.searchParams.set("order", "sort_order.asc");
+  });
+
+const fetchPublicProductHighlights = async (env: Record<string, string | undefined>) =>
+  fetchPublicRows(env, "product_highlights", "materials", (url) => {
+    url.searchParams.set("select", "*");
+    url.searchParams.set("status", "eq.published");
+    url.searchParams.set("order", "sort_order.asc");
+    url.searchParams.set("limit", "4");
+  });
+
+const fetchPublicServiceAreas = async (env: Record<string, string | undefined>) =>
+  fetchPublicRows(env, "service_areas", "service_areas", (url) => {
     url.searchParams.set("select", "*");
     url.searchParams.set("status", "eq.published");
     url.searchParams.set("order", "sort_order.asc");
@@ -946,7 +981,7 @@ const getTopLevelPublicPageKey = (key: string) => {
   const parts = key.split("/").filter(Boolean);
   if (parts.length !== 2) return null;
   const pageKey = parts[1];
-  return pageKey === "services" || pageKey === "materials" || pageKey === "blog" || pageKey === "projects" ? pageKey : null;
+  return pageKey === "services" || pageKey === "materials" || pageKey === "products" || pageKey === "promotions" || pageKey === "locations" || pageKey === "blog" || pageKey === "projects" ? pageKey : null;
 };
 
 const getPathWithoutLanguage = (key: string) => {
@@ -963,6 +998,9 @@ const shouldPreloadFooterCtaBlock = (key: string) => {
     path === "/projects" ||
     path === "/materials" ||
     path.startsWith("/materials/category/") ||
+    path === "/products" ||
+    path === "/promotions" ||
+    path === "/locations" ||
     path === "/faq" ||
     path.startsWith("/landing/");
 
@@ -971,6 +1009,16 @@ const shouldPreloadFooterCtaBlock = (key: string) => {
 
 const getProjectDetailSlugFromKey = (key: string) => {
   const match = key.match(/^\/(?:en|zh)\/projects\/([^/]+)$/);
+  if (!match?.[1]) return null;
+  try {
+    return decodeURIComponent(match[1]);
+  } catch {
+    return match[1];
+  }
+};
+
+const getProductDetailSlugFromKey = (key: string) => {
+  const match = key.match(/^\/(?:en|zh)\/products\/([^/]+)$/);
   if (!match?.[1]) return null;
   try {
     return decodeURIComponent(match[1]);
@@ -994,7 +1042,7 @@ const EXACT_LEGACY_REDIRECTS: Record<string, string> = {
   "/zh/services/shoplot": "/zh/services/shop-renovation",
 };
 
-const redirect = (to: URL) =>
+const permanentRedirect = (to: URL) =>
   new Response(null, {
     status: 301,
     headers: {
@@ -1003,14 +1051,24 @@ const redirect = (to: URL) =>
     },
   });
 
+const languageRedirect = (to: URL) =>
+  new Response(null, {
+    status: 302,
+    headers: {
+      Location: to.toString(),
+      "Cache-Control": "no-store, no-cache, must-revalidate, max-age=0",
+      "CDN-Cache-Control": "no-store",
+      "Cloudflare-CDN-Cache-Control": "no-store",
+      Vary: "Accept-Language, Cookie",
+    },
+  });
+
 const isLanguagePrefixedPath = (pathname: string) => /^\/(en|zh)(?:\/|$)/.test(pathname);
 
-const getLegacyCanonicalPath = (pathname: string) => {
+const getUnprefixedPublicPath = (pathname: string) => {
   const cleaned = pathname.replace(/\/+$/, "") || "/";
-  // Keep the root document crawlable for ownership verification bots. The SPA
-  // still sends visitors to the default language route after hydration.
   if (cleaned === "/") {
-    return null;
+    return "/";
   }
 
   if (isLanguagePrefixedPath(cleaned) || cleaned === "/admin" || cleaned.startsWith("/admin/")) {
@@ -1018,8 +1076,14 @@ const getLegacyCanonicalPath = (pathname: string) => {
   }
 
   const englishPath = `/en${cleaned}`;
-  return (manifest as Record<string, SeoEntry>)[englishPath] ? englishPath : null;
+  return (manifest as Record<string, SeoEntry>)[englishPath] ? cleaned : null;
 };
+
+const getRequestLanguage = (request: Request) =>
+  resolvePreferredLanguage({
+    savedLanguage: readCookieValue(request.headers.get("cookie"), PUBLIC_LANGUAGE_COOKIE),
+    acceptLanguage: request.headers.get("accept-language"),
+  });
 
 const getExactLegacyRedirectPath = (pathname: string) => {
   const cleaned = pathname.replace(/\/+$/, "") || "/";
@@ -1163,13 +1227,13 @@ export const onRequest: PagesFunction = async (context) => {
   if (url.hostname === "www.flashcast.com.my") {
     url.hostname = "flashcast.com.my";
     url.protocol = "https:";
-    return redirect(url);
+    return permanentRedirect(url);
   }
 
   const exactLegacyRedirectPath = getExactLegacyRedirectPath(url.pathname);
   if (exactLegacyRedirectPath) {
     url.pathname = exactLegacyRedirectPath;
-    return redirect(url);
+    return permanentRedirect(url);
   }
 
   if (url.pathname === BAIDU_VERIFY_PATH) {
@@ -1185,10 +1249,11 @@ export const onRequest: PagesFunction = async (context) => {
     return next();
   }
 
-  const legacyCanonicalPath = getLegacyCanonicalPath(url.pathname);
-  if (legacyCanonicalPath) {
-    url.pathname = legacyCanonicalPath;
-    return redirect(url);
+  const unprefixedPublicPath = getUnprefixedPublicPath(url.pathname);
+  if (unprefixedPublicPath) {
+    const language = getRequestLanguage(request);
+    url.pathname = unprefixedPublicPath === "/" ? `/${language}` : `/${language}${unprefixedPublicPath}`;
+    return languageRedirect(url);
   }
 
   const key = normalizePath(url.pathname);
@@ -1224,27 +1289,33 @@ export const onRequest: PagesFunction = async (context) => {
 	  }
 
   const projectDetailSlug = getProjectDetailSlugFromKey(key);
+  const productDetailSlug = getProductDetailSlugFromKey(key);
   const topLevelPublicPageKey = getTopLevelPublicPageKey(key);
   const shouldInjectHomeBundle = Boolean(meta && isHomePageKey(key));
+  const shouldInjectProductHighlights = shouldInjectHomeBundle;
   const shouldInjectProjectSummaries = Boolean(meta && (key === "/en/projects" || key === "/zh/projects" || projectDetailSlug));
   const shouldInjectPublicPageBundle = Boolean(meta && topLevelPublicPageKey);
   const shouldInjectServices = topLevelPublicPageKey === "services";
-  const shouldInjectMaterials = topLevelPublicPageKey === "materials";
+  const shouldInjectMaterials = topLevelPublicPageKey === "materials" || topLevelPublicPageKey === "products" || Boolean(productDetailSlug);
+  const shouldInjectServiceAreas = topLevelPublicPageKey === "locations";
   const shouldInjectBlogPosts = topLevelPublicPageKey === "blog";
   const shouldInjectGlobalCtaBlock = Boolean(meta && shouldPreloadFooterCtaBlock(key));
   const [
     siteSettings,
     homeContentBundle,
+    productHighlights,
     projectSummaries,
     projectDetail,
     publicPageBundle,
     services,
     materials,
+    serviceAreas,
     blogPosts,
     footerCtaBlock,
   ] = await Promise.all([
     fetchSiteSettings(env as Record<string, string | undefined>),
     shouldInjectHomeBundle ? fetchHomeContentBundle(env as Record<string, string | undefined>) : Promise.resolve(null),
+    shouldInjectProductHighlights ? fetchPublicProductHighlights(env as Record<string, string | undefined>) : Promise.resolve(null),
     shouldInjectProjectSummaries ? fetchProjectSummaries(env as Record<string, string | undefined>) : Promise.resolve(null),
     projectDetailSlug ? fetchProjectDetailBySlug(env as Record<string, string | undefined>, projectDetailSlug) : Promise.resolve(null),
     shouldInjectPublicPageBundle && topLevelPublicPageKey
@@ -1252,6 +1323,7 @@ export const onRequest: PagesFunction = async (context) => {
       : Promise.resolve(null),
     shouldInjectServices ? fetchPublicServices(env as Record<string, string | undefined>) : Promise.resolve(null),
     shouldInjectMaterials ? fetchPublicMaterials(env as Record<string, string | undefined>) : Promise.resolve(null),
+    shouldInjectServiceAreas ? fetchPublicServiceAreas(env as Record<string, string | undefined>) : Promise.resolve(null),
     shouldInjectBlogPosts ? fetchPublicBlogPosts(env as Record<string, string | undefined>) : Promise.resolve(null),
     shouldInjectGlobalCtaBlock ? fetchPublicCtaBlock(env as Record<string, string | undefined>, "home_final") : Promise.resolve(null),
   ]);
@@ -1265,6 +1337,9 @@ export const onRequest: PagesFunction = async (context) => {
   if (homeContentBundle && Object.keys(homeContentBundle).length) {
     publicDataPayload.homeContentBundle = homeContentBundle;
   }
+  if (productHighlights?.length) {
+    publicDataPayload.productHighlights = productHighlights;
+  }
   if (shouldInjectProjectSummaries && projectSummaries?.length) {
     publicDataPayload.projectSummaries = projectSummaries;
   }
@@ -1273,9 +1348,9 @@ export const onRequest: PagesFunction = async (context) => {
       [projectDetailSlug]: projectDetail,
     };
   }
-  if (topLevelPublicPageKey && publicPageBundle) {
+  if (shouldInjectPublicPageBundle && topLevelPublicPageKey) {
     publicDataPayload.sitePages = {
-      [topLevelPublicPageKey]: publicPageBundle,
+      [topLevelPublicPageKey]: publicPageBundle || {},
     };
   }
   if (services?.length) {
@@ -1283,6 +1358,9 @@ export const onRequest: PagesFunction = async (context) => {
   }
   if (materials?.length) {
     publicDataPayload.materials = materials;
+  }
+  if (serviceAreas?.length) {
+    publicDataPayload.serviceAreas = serviceAreas;
   }
   if (blogPosts?.length) {
     publicDataPayload.blogPosts = blogPosts;

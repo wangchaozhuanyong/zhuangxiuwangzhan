@@ -25,6 +25,18 @@ export const pageHeroImages = {
     mobile: "/images/heroes/v2/hero-materials-premium-mobile.webp",
     legacy: ["/images/heroes/hero-materials.webp"],
   },
+  products: {
+    desktop: "/images/heroes/v2/hero-materials-premium.webp",
+    mobile: "/images/heroes/v2/hero-materials-premium-mobile.webp",
+  },
+  promotions: {
+    desktop: "/images/materials/kitchen-solid-wood-cabinets.webp",
+    mobile: "/images/materials/kitchen-solid-wood-cabinets.webp",
+  },
+  locations: {
+    desktop: "/images/heroes/v2/hero-projects-premium.webp",
+    mobile: "/images/heroes/v2/hero-projects-premium-mobile.webp",
+  },
   process: {
     desktop: "/images/heroes/v2/hero-process-premium.webp",
     mobile: "/images/heroes/v2/hero-process-premium-mobile.webp",

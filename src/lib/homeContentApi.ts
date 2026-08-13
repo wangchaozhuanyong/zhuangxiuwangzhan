@@ -136,6 +136,7 @@ export type PublishedHomeContentBundle = {
   statsSection: PublishedHomeSection | null;
   whyChooseUsSection: PublishedHomeSection | null;
   projects: PublishedProjectSummary[];
+  brandPartnersEnabled: boolean;
   brandPartners: PublishedBrandPartner[];
   services: PublishedServiceSummary[];
   processSteps: PublishedProcessStep[];
@@ -320,6 +321,7 @@ const emptyHomeContentBundle = (): PublishedHomeContentBundle => ({
   statsSection: null,
   whyChooseUsSection: null,
   projects: [],
+  brandPartnersEnabled: false,
   brandPartners: [],
   services: [],
   processSteps: [],
@@ -357,8 +359,18 @@ const getLocalHomeContentBundle = async (language: "en" | "zh"): Promise<Publish
   };
 };
 
-const mapRemoteHomeContentBundle = (payload: UnknownRecord, language: "en" | "zh"): PublishedHomeContentBundle => {
-  const homeSections = readRecordArray(payload.home_sections).map((row) => mapPublishedHomeSectionRow(row, language));
+export const isPublishedHomeSectionEnabled = (sectionKey: string, value: unknown): boolean => {
+  const rows = Array.isArray(value) ? readRecordArray(value) : [toRecord(value)];
+  return rows.some((row) => row.section_key === sectionKey && row.status === "published");
+};
+
+const mapRemoteHomeContentBundle = (
+  payload: UnknownRecord,
+  language: "en" | "zh",
+  brandPartnersVisibility: unknown = null,
+): PublishedHomeContentBundle => {
+  const homeSectionRows = readRecordArray(payload.home_sections);
+  const homeSections = homeSectionRows.map((row) => mapPublishedHomeSectionRow(row, language));
   const findHomeSection = (sectionKey: string) => homeSections.find((section) => section.section_key === sectionKey) || null;
   const ctaBlocks = readRecordArray(payload.cta_blocks);
 
@@ -368,6 +380,9 @@ const mapRemoteHomeContentBundle = (payload: UnknownRecord, language: "en" | "zh
     statsSection: findHomeSection("stats"),
     whyChooseUsSection: findHomeSection("why_choose_us"),
     projects: readRecordArray(payload.projects).map((item) => mapPublishedProjectSummary(item, language)),
+    brandPartnersEnabled:
+      isPublishedHomeSectionEnabled("brand_partners", homeSectionRows) ||
+      isPublishedHomeSectionEnabled("brand_partners", brandPartnersVisibility),
     brandPartners: toArray<PublishedBrandPartner>(payload.brand_partners).filter((item) => item.logo_url && item.name),
     services: readRecordArray(payload.services).map((item) => mapPublishedService(item, language)),
     processSteps: readRecordArray(payload.process_steps).map((row) => mapPublishedProcessStep(row, language)),
@@ -392,17 +407,25 @@ export const getPublishedHomeContentBundle = async (
 
   const preloadedHomeBundle = toRecord(readPreloadedPublicData()?.homeContentBundle);
   if (Object.keys(preloadedHomeBundle).length) {
-    return createRemoteContent(mapRemoteHomeContentBundle(preloadedHomeBundle, language));
+    const hasPreloadedBrandPartnersVisibility = readRecordArray(preloadedHomeBundle.home_sections)
+      .some((row) => row.section_key === "brand_partners" && typeof row.status === "string");
+    const brandPartnersVisibility = !hasPreloadedBrandPartnersVisibility && hasPublicContentDatabaseClient()
+      ? await fetchPublishedHomeSectionRow("brand_partners")
+      : null;
+    return createRemoteContent(mapRemoteHomeContentBundle(preloadedHomeBundle, language, brandPartnersVisibility));
   }
 
   if (!hasPublicContentDatabaseClient()) return fallback("supabase-not-configured");
 
   try {
-    const data = await fetchPublicHomeBundleData();
+    const [data, brandPartnersVisibility] = await Promise.all([
+      fetchPublicHomeBundleData(),
+      fetchPublishedHomeSectionRow("brand_partners"),
+    ]);
     const payload = toRecord(data);
     if (!Object.keys(payload).length) return fallback("remote-empty");
 
-    return createRemoteContent(mapRemoteHomeContentBundle(payload, language));
+    return createRemoteContent(mapRemoteHomeContentBundle(payload, language, brandPartnersVisibility));
   } catch (error) {
     return fallback("remote-error", error);
   }
@@ -497,10 +520,13 @@ export const getPublishedSitePage = async (
   language: "en" | "zh",
   pageKey: string,
 ): Promise<PublishedSitePage | null> => {
-  const preloadedPageBundle = toRecord(readPreloadedPublicData()?.sitePages?.[pageKey]);
+  const preloadedPages = readPreloadedPublicData()?.sitePages;
+  const hasPreloadedPage = Boolean(preloadedPages && Object.prototype.hasOwnProperty.call(preloadedPages, pageKey));
+  const preloadedPageBundle = toRecord(preloadedPages?.[pageKey]);
   if (Object.keys(preloadedPageBundle).length) {
     return mapSitePageRows(preloadedPageBundle, language);
   }
+  if (hasPreloadedPage) return null;
 
   if (!hasPublicContentDatabaseClient()) return null;
   const row = toRecord(await fetchPublishedLegacySitePageRow(pageKey));

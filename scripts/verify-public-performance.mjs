@@ -59,6 +59,27 @@ const pages = [
     maxSupabaseRestFetches: 0,
   },
   {
+    name: "products",
+    path: "/zh/products",
+    requireSiteSettingsPreload: true,
+    requireMaterialsPreload: true,
+    maxSupabaseRestFetches: 0,
+  },
+  {
+    name: "promotions",
+    path: "/zh/promotions",
+    requireSiteSettingsPreload: true,
+    requireSitePagePreload: "promotions",
+    maxSupabaseRestFetches: 0,
+  },
+  {
+    name: "locations",
+    path: "/zh/locations",
+    requireSiteSettingsPreload: true,
+    requireServiceAreasPreload: true,
+    maxSupabaseRestFetches: 0,
+  },
+  {
     name: "blog",
     path: "/zh/blog",
     requireSiteSettingsPreload: true,
@@ -132,6 +153,8 @@ const collectPageMetrics = async (page, lateThreshold) =>
       sitePageKeys: preload?.sitePages ? Object.keys(preload.sitePages).sort() : [],
       services: Array.isArray(preload?.services) ? preload.services.length : 0,
       materials: Array.isArray(preload?.materials) ? preload.materials.length : 0,
+      productHighlights: Array.isArray(preload?.productHighlights) ? preload.productHighlights.length : 0,
+      serviceAreas: Array.isArray(preload?.serviceAreas) ? preload.serviceAreas.length : 0,
       blogPosts: Array.isArray(preload?.blogPosts) ? preload.blogPosts.length : 0,
       ctaBlockKeys: preload?.ctaBlocks ? Object.keys(preload.ctaBlocks).sort() : [],
       projectSummaries: Array.isArray(preload?.projectSummaries) ? preload.projectSummaries.length : 0,
@@ -222,6 +245,7 @@ for (const pageSpec of pages) {
   }
   if (pageSpec.requireServicesPreload && result.services <= 0) addFailure("服务页缺少 HTML 预注入 services。");
   if (pageSpec.requireMaterialsPreload && result.materials <= 0) addFailure("材料页缺少 HTML 预注入 materials。");
+  if (pageSpec.requireServiceAreasPreload && result.serviceAreas <= 0) addFailure("地区页缺少 HTML 预注入 serviceAreas。");
   if (pageSpec.requireBlogPostsPreload && result.blogPosts <= 0) addFailure("博客页缺少 HTML 预注入 blogPosts。");
   if (pageSpec.requireCtaBlockPreload && !result.ctaBlockKeys.includes(pageSpec.requireCtaBlockPreload)) {
     addFailure(`缺少 HTML 预注入 ctaBlocks.${pageSpec.requireCtaBlockPreload}。`);

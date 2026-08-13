@@ -47,3 +47,8 @@ public/videos/*
 *.sw?
 .lovable/
 
+# Local design prototypes and visual QA artifacts
+/design-concepts-premium-v3/
+/design-preview/
+/design-preview-forest-shadow/
+/design-qa.md

@@ -5,6 +5,7 @@ export type MaterialCatalogItem = MaterialItem & {
   alt?: string | null;
   pros?: string[];
   cons?: string[];
+  referencePrice?: string;
 };
 
 export type MaterialCatalogSubcategory = MaterialSubcategory & {

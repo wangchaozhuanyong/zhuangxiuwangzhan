@@ -1,5 +1,6 @@
 import {
   Activity,
+  BadgePercent,
   BarChart3,
   Bell,
   BookOpen,
@@ -58,6 +59,7 @@ export type AdminCopy = {
   projects: string;
   blog: string;
   materials: string;
+  promotions: string;
   testimonials: string;
   serviceAreas: string;
   landingPages: string;
@@ -143,7 +145,8 @@ export const copy: Record<AdminLang, AdminCopy> = {
     services: "Services",
     projects: "Projects",
     blog: "Blog",
-    materials: "Materials",
+    materials: "Products / Materials",
+    promotions: "Promotions",
     testimonials: "Testimonials",
     serviceAreas: "Service Areas",
     landingPages: "Landing Pages",
@@ -200,7 +203,8 @@ export const copy: Record<AdminLang, AdminCopy> = {
     services: "服务项目",
     projects: "装修案例",
     blog: "博客",
-    materials: "材料库",
+    materials: "装修商品 / 材料",
+    promotions: "优惠活动",
     testimonials: "客户评价",
     serviceAreas: "服务区域",
     landingPages: "落地页",
@@ -269,6 +273,7 @@ export const navGroups: NavGroup[] = [
       { key: "services", path: "/admin/services", icon: Wrench, allowedRoles: ADMIN_ROLE_GROUPS.contentWrite },
       { key: "projects", path: "/admin/projects", icon: FolderKanban, allowedRoles: ADMIN_ROLE_GROUPS.contentWrite },
       { key: "materials", path: "/admin/materials", icon: BookOpen, allowedRoles: ADMIN_ROLE_GROUPS.contentWrite },
+      { key: "promotions", path: "/admin/promotions", icon: BadgePercent, allowedRoles: ADMIN_ROLE_GROUPS.contentWrite },
       { key: "blog", path: "/admin/blog", icon: Newspaper, allowedRoles: ADMIN_ROLE_GROUPS.contentWrite },
       { key: "serviceAreas", path: "/admin/content/service_areas", icon: MapPinned, allowedRoles: ADMIN_ROLE_GROUPS.contentWrite },
       { key: "landingPages", path: "/admin/content/landing_pages", icon: Globe2, allowedRoles: ADMIN_ROLE_GROUPS.contentWrite },

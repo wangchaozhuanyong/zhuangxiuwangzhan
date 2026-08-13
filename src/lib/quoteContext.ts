@@ -59,7 +59,7 @@ const projectTypeMap: Record<string, string> = {
   others: "Other",
 };
 
-export type QuoteSource = "service" | "project" | "material" | "services" | "projects" | "materials" | "floating" | "general";
+export type QuoteSource = "service" | "project" | "material" | "product" | "services" | "projects" | "materials" | "products" | "floating" | "general";
 
 export interface QuoteContextInput {
   source?: QuoteSource | string;
@@ -121,9 +121,11 @@ const sourceLabel = (source: string, language: Language) => {
     service: { en: "service", zh: "服务" },
     project: { en: "project reference", zh: "案例" },
     material: { en: "material", zh: "材料" },
+    product: { en: "product", zh: "商品" },
     services: { en: "service page", zh: "服务页" },
     projects: { en: "project page", zh: "案例页" },
     materials: { en: "material library", zh: "材料库" },
+    products: { en: "product directory", zh: "商品目录" },
   };
   return labels[source]?.[language] || (language === "zh" ? "官网页面" : "website page");
 };
@@ -135,6 +137,9 @@ const defaultDetails = (source: string, title: string, language: Language) => {
   }
   if (source === "material") {
     return language === "zh" ? `我想咨询这种材料：${title}。` : `I would like to ask about this material: ${title}.`;
+  }
+  if (source === "product") {
+    return language === "zh" ? `我想咨询这个商品：${title}。` : `I would like to ask about this product: ${title}.`;
   }
   return language === "zh" ? `我想咨询：${title}。` : `I would like to ask about: ${title}.`;
 };
