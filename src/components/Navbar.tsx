@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState, type MouseEvent } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { ArrowRight, ArrowUpRight, BadgePercent, BookOpen, ChevronDown, FileText, FolderOpen, GitBranch, ChevronRight, Globe, HelpCircle, Home, Info, Layers, LucideIcon, Mail, MapPinned, Menu, Moon, PackageSearch, Phone, Sun, Wrench, X } from "lucide-react";
+import { ArrowRight, ArrowUpRight, BadgePercent, BookOpen, ChevronDown, Columns2, FileText, FolderOpen, GitBranch, ChevronRight, Globe, HelpCircle, Home, Info, Layers, LucideIcon, Mail, MapPinned, Menu, Moon, PackageSearch, Phone, Sun, Wrench, X } from "lucide-react";
 import WhatsAppIcon from "@/components/WhatsAppIcon";
 import { Button } from "@/components/ui/button";
 import { useLanguage } from "@/i18n/LanguageContext";
@@ -12,7 +12,7 @@ import { useSiteSettings } from "@/hooks/useSiteSettings";
 import SmartImage from "@/components/SmartImage";
 import { usePublicChrome } from "@/contexts/PublicChromeContext";
 import { trackCtaClick } from "@/lib/analytics";
-import { isImmersivePublicPath, PUBLIC_CHROME_Z } from "@/lib/publicChrome";
+import { PUBLIC_CHROME_Z } from "@/lib/publicChrome";
 import { addCacheBuster } from "@/lib/siteSettingsApi";
 import logoFallback from "@/assets/logo-flashcast.webp";
 
@@ -35,6 +35,7 @@ const navItems: NavItem[] = [
   { labelKey: "nav.blog", path: "/blog", icon: BookOpen },
   { labelKey: "nav.faq", path: "/faq", icon: HelpCircle },
   { labelKey: "nav.locations", path: "/locations", icon: MapPinned },
+  { labelKey: "nav.beforeAfter", path: "/before-after", icon: Columns2 },
 ];
 
 const primaryDesktopNavItems = navItems.slice(0, 5);
@@ -45,7 +46,7 @@ const secondaryDesktopNavGroups = [
   },
   {
     key: "explore",
-    paths: ["/services", "/materials", "/locations"],
+    paths: ["/services", "/materials", "/locations", "/before-after"],
   },
 ] as const;
 const secondaryDesktopNavItems = secondaryDesktopNavGroups.flatMap((group) =>
@@ -61,6 +62,7 @@ const routePreloaders: Partial<Record<string, () => Promise<unknown>>> = {
   "/products": () => import("@/pages/Products"),
   "/promotions": () => import("@/pages/Promotions"),
   "/locations": () => import("@/pages/Locations"),
+  "/before-after": () => import("@/pages/BeforeAfter"),
   "/process": () => import("@/pages/Process"),
   "/blog": () => import("@/pages/Blog"),
   "/contact": () => import("@/pages/Contact"),
@@ -156,7 +158,7 @@ const LanguageSwitchLink = ({ variant, className }: LanguageSwitchLinkProps) => 
 };
 
 const Navbar = () => {
-  const { menuOpen: isOpen, setMenuOpen: setIsOpen, theme, toggleTheme } = usePublicChrome();
+  const { hasImmersiveHero, menuOpen: isOpen, setMenuOpen: setIsOpen, theme, toggleTheme } = usePublicChrome();
   const [scrolled, setScrolled] = useState(false);
   const [isMenuClosing, setIsMenuClosing] = useState(false);
   const [pendingPath, setPendingPath] = useState<string | null>(null);
@@ -173,9 +175,7 @@ const Navbar = () => {
   const settings = useSiteSettings();
   const primaryLogoSrc = addCacheBuster(settings.logo_url || "", settings.updated_at);
   const brandText = settings.company_name || "FLASH CAST SDN. BHD.";
-  const isHomePage = /^\/(en|zh)\/?$/.test(location.pathname);
-  const isImmersivePage = isImmersivePublicPath(stripLanguagePrefix(location.pathname));
-  const solidHeader = !isImmersivePage || scrolled || isOpen || desktopMoreOpen;
+  const solidHeader = !hasImmersiveHero || scrolled || isOpen || desktopMoreOpen;
   const resolvedLogoState: "primary" | "fallback" | "none" =
     logoState === "primary" && primaryLogoSrc ? "primary" : logoState === "none" ? "none" : "fallback";
   const logoSrc = resolvedLogoState === "primary" ? primaryLogoSrc : logoFallback;
@@ -223,10 +223,23 @@ const Navbar = () => {
   }, [clearMobileCloseTimer]);
 
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 20);
-    onScroll();
+    let frame = 0;
+    const update = () => {
+      frame = 0;
+      const nextScrolled = window.scrollY > 20;
+      setScrolled((current) => current === nextScrolled ? current : nextScrolled);
+    };
+    const onScroll = () => {
+      if (frame) return;
+      frame = window.requestAnimationFrame(update);
+    };
+
+    update();
     window.addEventListener("scroll", onScroll, { passive: true });
-    return () => window.removeEventListener("scroll", onScroll);
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+      if (frame) window.cancelAnimationFrame(frame);
+    };
   }, []);
 
   useEffect(() => {
@@ -339,8 +352,7 @@ const Navbar = () => {
     <>
       <header
         data-scrolled={scrolled ? "true" : "false"}
-        data-home={isHomePage ? "true" : "false"}
-        data-immersive={isImmersivePage ? "true" : "false"}
+        data-immersive={hasImmersiveHero ? "true" : "false"}
         data-header-state={solidHeader ? "solid" : "overlay"}
         className={`site-header fixed top-0 left-0 right-0 transition-all duration-300 ${solidHeader ? "is-solid" : "is-overlay"}`}
         style={{ zIndex: PUBLIC_CHROME_Z.header }}

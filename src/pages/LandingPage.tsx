@@ -2,6 +2,7 @@
 import { useMemo } from "react";
 import Link from "@/components/LocalizedLink";
 import { Button } from "@/components/ui/button";
+import ImmersiveHero from "@/components/ImmersiveHero";
 import { ArrowRight, CheckCircle, MapPin } from "lucide-react";
 import WhatsAppIcon from "@/components/WhatsAppIcon";
 import Reveal from "@/components/Reveal";
@@ -108,7 +109,7 @@ const LandingPage = () => {
         description={landingPage.seoDescription || stripHtml(landingPage.description)}
         canonicalPath={`/landing/${slug || ""}`}
       />
-      <section data-forest-page-hero="true" className="page-hero page-hero--detail">
+      <ImmersiveHero className="page-hero page-hero--detail">
         <div className="page-hero__media page-hero-media hero-media-mask">
           <SmartImage src={page.heroImage} alt={landingPage.heroAlt || landingPage.title} className="page-hero__image h-full w-full object-cover" loading="eager" width={1920} height={800} fetchPriority="high" sizes="100vw" candidateWidths={LANDING_HERO_IMAGE_WIDTHS} quality={76} />
           <div className="page-hero__overlay absolute inset-0 media-readable-overlay" aria-hidden="true" />
@@ -138,7 +139,7 @@ const LandingPage = () => {
             </div>
           </div>
         </div>
-      </section>
+      </ImmersiveHero>
 
       {/* Description + Benefits */}
       <section className="section-padding bg-background">

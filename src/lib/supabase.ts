@@ -1,11 +1,10 @@
 import { createClient } from "@supabase/supabase-js";
 import type { Database } from "./database.types";
+import { isSupabaseConfigured, supabaseAnonKey, supabaseUrl } from "@/lib/supabaseConfig";
 
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL as string | undefined;
-const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY as string | undefined;
 const PUBLIC_READ_TIMEOUT_MS = 10_000;
 
-export const isSupabaseConfigured = Boolean(supabaseUrl && supabaseAnonKey);
+export { isSupabaseConfigured } from "@/lib/supabaseConfig";
 
 const getRequestUrl = (input: Parameters<typeof fetch>[0]) => {
   if (typeof input === "string") return input;

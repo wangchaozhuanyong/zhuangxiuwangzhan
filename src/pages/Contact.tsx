@@ -166,15 +166,15 @@ const Contact = () => {
       />
 
       <section className="forest-contact-body section-padding bg-background">
-        <div className="container-narrow">
-          <div className="forest-contact-layout grid grid-cols-1 lg:grid-cols-2 gap-12">
-            <Reveal direction="left" className="forest-contact-info">
+        <div className="container-narrow max-md:!px-0">
+          <div className="forest-contact-layout">
+            <aside className="forest-contact-info" aria-labelledby="contact-info-title">
               <div>
                 <div className="subpage-local-heading">
                   <div className="accent-line mb-4" />
-                  <h2 className="font-display text-2xl font-bold">{t.infoTitle}</h2>
+                  <h2 id="contact-info-title" className="font-display text-2xl font-bold">{t.infoTitle}</h2>
                 </div>
-                <div className="space-y-5">
+                <div className="contact-detail-list">
                   {contactItems.map((item) => {
                     const Icon = item.icon;
                     const content = (
@@ -245,27 +245,24 @@ const Contact = () => {
                   })}
                 </div>
 
-                <div className="forest-contact-services mt-6 overflow-hidden rounded-card border border-border/80 bg-card shadow-[0_22px_55px_-42px_rgba(21,18,14,0.38)]">
-                  <div className="flex items-center gap-3 border-b border-border/70 px-4 py-3">
-                    <h3 className="shrink-0 text-sm font-semibold">{t.servicesTitle}</h3>
-                    <div className="hidden h-px flex-1 bg-gradient-to-r from-gold/45 via-border to-transparent min-[460px]:block" aria-hidden="true" />
+                <section className="forest-contact-services" aria-labelledby="contact-services-title">
+                  <div className="forest-contact-services__heading">
+                    <h3 id="contact-services-title">{t.servicesTitle}</h3>
+                    <span aria-hidden="true" />
                   </div>
-                  <div className="grid grid-cols-1 gap-2.5 p-4 min-[460px]:grid-cols-2">
+                  <ul className="forest-contact-services__grid">
                     {contactServiceItems[language].map((service) => (
-                      <div
-                        key={service}
-                        className="group flex min-h-11 items-center gap-2.5 rounded-lg border border-border/70 bg-background/75 px-3 py-2.5 text-sm font-medium text-foreground/75 shadow-[0_12px_28px_-26px_rgba(21,18,14,0.38)] transition-colors hover:border-gold/35 hover:bg-gold/5 hover:text-foreground"
-                      >
-                        <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full border border-gold/25 bg-gold/10">
-                          <CheckCircle className="h-3.5 w-3.5 text-gold" />
+                      <li key={service}>
+                        <span className="forest-contact-services__icon" aria-hidden="true">
+                          <CheckCircle />
                         </span>
-                        <span className="leading-snug">{service}</span>
-                      </div>
+                        <span>{service}</span>
+                      </li>
                     ))}
-                  </div>
-                </div>
+                  </ul>
+                </section>
 
-                <div className="forest-contact-actions mt-6 flex flex-col gap-3 sm:flex-row sm:gap-4">
+                <div className="forest-contact-actions">
                   <Link
                     to="/quote"
                     className="btn-brand-primary min-h-12 w-full justify-center px-8 sm:w-auto"
@@ -284,16 +281,16 @@ const Contact = () => {
                   </a>
                 </div>
               </div>
-            </Reveal>
+            </aside>
 
-            <Reveal direction="right" delay={150} className="forest-contact-form-wrap">
-              <div className="forest-contact-form subpage-form-panel p-6 md:p-8">
+            <section className="forest-contact-form-wrap" aria-labelledby="contact-form-title">
+              <div className="forest-contact-form">
                 {status === "success" ? (
                   <div className="text-center py-8">
                     <div className="w-14 h-14 mx-auto mb-5 rounded-full bg-accent/10 flex items-center justify-center">
                       <CheckCircle className="w-7 h-7 text-accent" />
                     </div>
-                    <h2 className="font-display text-2xl font-bold mb-3">{t.successTitle}</h2>
+                    <h2 id="contact-form-title" className="font-display text-2xl font-bold mb-3">{t.successTitle}</h2>
                     <p className="text-muted-foreground text-sm mb-2">{t.successThanks}, <strong className="text-foreground">{form.name}</strong>.</p>
                     <p className="text-muted-foreground text-sm mb-6">{t.successText}</p>
                     <Button variant="outline" className="btn-press" onClick={() => { setStatus("idle"); setForm({ name: "", phone: "", email: "", projectType: "", location: "", message: "" }); }}>
@@ -302,7 +299,7 @@ const Contact = () => {
                   </div>
                 ) : (
                   <>
-                    <h2 className="font-display text-2xl font-bold mb-6">{t.formTitle}</h2>
+                    <h2 id="contact-form-title" className="font-display text-2xl font-bold mb-6">{t.formTitle}</h2>
 
                     {status === "error" && (
                       <div role="alert" aria-live="polite" className="mb-6 p-4 bg-destructive/10 border border-destructive/20 rounded-lg flex items-start gap-3">
@@ -435,7 +432,7 @@ const Contact = () => {
                   </>
                 )}
               </div>
-            </Reveal>
+            </section>
           </div>
         </div>
       </section>

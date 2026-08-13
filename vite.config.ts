@@ -2,6 +2,7 @@ import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 import path from "path";
 import { preferWebpAssets } from "./scripts/vite-prefer-webp.mjs";
+import { pruneDuplicatePublicMedia } from "./scripts/vite-prune-public-media.mjs";
 import { LOCAL_SITE_CSP_POLICY } from "./scripts/site-csp.mjs";
 
 const securityHeaders = {
@@ -24,7 +25,7 @@ export default defineConfig(() => ({
   preview: {
     headers: securityHeaders,
   },
-  plugins: [preferWebpAssets(), react()],
+  plugins: [preferWebpAssets(), react(), pruneDuplicatePublicMedia()],
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),
@@ -37,7 +38,6 @@ export default defineConfig(() => ({
         manualChunks(id) {
           if (!id.includes("node_modules")) return;
           if (/[\\/]node_modules[\\/](react|react-dom|react-router-dom)[\\/]/.test(id)) return "vendor";
-          if (/[\\/]node_modules[\\/]@radix-ui[\\/](react-accordion|react-dialog|react-tooltip|react-toast)[\\/]/.test(id)) return "ui";
         },
       },
     },

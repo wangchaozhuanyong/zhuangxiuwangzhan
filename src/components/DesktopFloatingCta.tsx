@@ -40,10 +40,20 @@ const DesktopFloatingCta = () => {
   const t = copy[language];
   const publicPath = stripLanguagePrefix(location.pathname);
   const suppressPrompt = publicPath === "/contact" || publicPath === "/quote";
+  const [isDesktop, setIsDesktop] = useState(false);
   const [showPrompt, setShowPrompt] = useState(false);
   const [contentOverlapZone, setContentOverlapZone] = useState(false);
 
   useEffect(() => {
+    const desktopQuery = window.matchMedia("(min-width: 1024px)");
+    const update = () => setIsDesktop((current) => current === desktopQuery.matches ? current : desktopQuery.matches);
+    update();
+    desktopQuery.addEventListener("change", update);
+    return () => desktopQuery.removeEventListener("change", update);
+  }, []);
+
+  useEffect(() => {
+    if (!isDesktop) return;
     const dismissedAt = Number(readBrowserPreference(CTA_DISMISSED_KEY) || 0);
     const dismissedRecently = Date.now() - dismissedAt < 24 * 60 * 60 * 1000;
     if (dismissedRecently) {
@@ -53,7 +63,9 @@ const DesktopFloatingCta = () => {
     const reveal = () => setShowPrompt(true);
     const timer = window.setTimeout(reveal, 18000);
 
-    const handleScroll = () => {
+    let frame = 0;
+    const checkScrollProgress = () => {
+      frame = 0;
       const scrollable = document.documentElement.scrollHeight - window.innerHeight;
       if (scrollable <= 0) {
         return;
@@ -62,48 +74,56 @@ const DesktopFloatingCta = () => {
         reveal();
       }
     };
+    const handleScroll = () => {
+      if (frame) return;
+      frame = window.requestAnimationFrame(checkScrollProgress);
+    };
 
     window.addEventListener("scroll", handleScroll, { passive: true });
     return () => {
       window.clearTimeout(timer);
       window.removeEventListener("scroll", handleScroll);
+      if (frame) window.cancelAnimationFrame(frame);
     };
-  }, []);
+  }, [isDesktop]);
 
   useEffect(() => {
-    const updateFooterState = () => {
-      const overlapTargets = Array.from(
-        document.querySelectorAll(".projects-showcase-section, .material-directory-grid, .site-footer-art, footer"),
-      );
-      if (!overlapTargets.length) {
-        setContentOverlapZone(false);
-        return;
+    if (!isDesktop || !("IntersectionObserver" in window)) {
+      setContentOverlapZone(false);
+      return;
+    }
+
+    const visibleTargets = new Set<Element>();
+    const update = () => {
+      const shouldHide = visibleTargets.size > 0;
+      setContentOverlapZone((current) => current === shouldHide ? current : shouldHide);
+    };
+    const createObserver = (rootMargin: string) => new IntersectionObserver((entries) => {
+      for (const entry of entries) {
+        if (entry.isIntersecting) visibleTargets.add(entry.target);
+        else visibleTargets.delete(entry.target);
       }
+      update();
+    }, { rootMargin, threshold: 0 });
+    const contentObserver = createObserver("-120px 0px 80px 0px");
+    const footerObserver = createObserver("-120px 0px 260px 0px");
 
-      const shouldHide = overlapTargets.some((target) => {
-        const rect = target.getBoundingClientRect();
-        const earlyHideBuffer = target.classList.contains("site-footer-art") || target.tagName.toLowerCase() === "footer" ? 260 : 80;
-        return rect.top < window.innerHeight + earlyHideBuffer && rect.bottom > 120;
-      });
+    document.querySelectorAll(".projects-showcase-section, .material-directory-grid").forEach((target) => contentObserver.observe(target));
+    document.querySelectorAll(".site-footer-art, footer").forEach((target) => footerObserver.observe(target));
 
-      setContentOverlapZone(shouldHide);
-    };
-
-    updateFooterState();
-    window.addEventListener("scroll", updateFooterState, { passive: true });
-    window.addEventListener("resize", updateFooterState);
     return () => {
-      window.removeEventListener("scroll", updateFooterState);
-      window.removeEventListener("resize", updateFooterState);
+      contentObserver.disconnect();
+      footerObserver.disconnect();
+      visibleTargets.clear();
     };
-  }, []);
+  }, [isDesktop, location.pathname]);
 
   const dismissPrompt = () => {
     writeBrowserPreference(CTA_DISMISSED_KEY, String(Date.now()));
     setShowPrompt(false);
   };
 
-  if (menuOpen || contentOverlapZone) {
+  if (!isDesktop || menuOpen || contentOverlapZone) {
     return null;
   }
 

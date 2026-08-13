@@ -173,7 +173,7 @@ test.describe("public site smoke", () => {
     await gotoSmokePage(page, "/zh/contact");
     await page.waitForLoadState("load");
 
-    const contactCards = page.locator("main .space-y-5");
+    const contactCards = page.locator("main .contact-detail-list");
     await expect(contactCards.locator('a[href^="tel:"]')).toHaveCount(1);
     await expect(contactCards.locator('a[href^="https://wa.me/"]')).toHaveCount(1);
     await expect(contactCards.locator('a[href^="tel:"]')).toContainText("电话");

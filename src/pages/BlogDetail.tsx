@@ -2,6 +2,7 @@
 import { useParams } from "react-router-dom";
 import Link from "@/components/LocalizedLink";
 import { Button } from "@/components/ui/button";
+import ImmersiveHero from "@/components/ImmersiveHero";
 import { ArrowLeft, Clock, ArrowRight } from "lucide-react";
 import WhatsAppIcon from "@/components/WhatsAppIcon";
 import { blogPosts } from "@/data/blog";
@@ -130,7 +131,7 @@ const BlogDetail = () => {
       />
       <JsonLdBreadcrumb items={[{ name: t.breadcrumbHome, url: "/" }, { name: t.breadcrumbBlog, url: "/blog" }, { name: displayText(post.title), url: `/blog/${post.slug}` }]} />
 
-      <section data-forest-page-hero="true" className="page-hero page-hero--detail">
+      <ImmersiveHero className="page-hero page-hero--detail">
         <div className="page-hero__media page-hero-media hero-media-mask">
           <SmartImage src={post.image} alt={displayText(post.title)} className="page-hero__image h-full w-full object-cover" width={1920} height={800} loading="eager" fetchPriority="high" sizes="100vw" candidateWidths={BLOG_HERO_IMAGE_WIDTHS} quality={76} />
           <div className="page-hero__overlay absolute inset-0 media-readable-overlay" aria-hidden="true" />
@@ -146,7 +147,7 @@ const BlogDetail = () => {
             <span>{publishDate}</span>
           </div>
         </div>
-      </section>
+      </ImmersiveHero>
 
       <section className="section-padding bg-background">
         <div className="container-narrow max-w-3xl">

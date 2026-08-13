@@ -29,6 +29,7 @@
     "verify:preview": "node scripts/verify-preview.mjs",
     "verify:deploy-cache": "node scripts/verify-deploy-cache-consistency.mjs",
     "verify:edge-security": "node scripts/verify-edge-security.mjs",
+    "verify:performance-budget": "node scripts/verify-performance-budget.mjs",
     "verify:public-performance": "node scripts/verify-public-performance.mjs",
     "verify:seo-html": "node scripts/verify-seo-html.mjs",
     "release:check": "node scripts/release-check.mjs",

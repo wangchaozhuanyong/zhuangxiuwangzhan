@@ -28,6 +28,13 @@ const detailImageFrames = [
   { path: "/zh/locations/kuala-lumpur", selector: '[data-forest-page-hero="true"] .page-hero__media' },
 ];
 
+const immersiveHeaderPaths = Array.from(new Set([
+  ...publicPaths,
+  ...detailImageFrames
+    .filter(({ path }) => !path.startsWith("/zh/products/"))
+    .map(({ path }) => path),
+]));
+
 const viewports = [
   { name: "mobile-360", width: 360, height: 800 },
   { name: "mobile-390", width: 390, height: 844 },
@@ -228,19 +235,49 @@ test.describe("public responsive layout", () => {
     expect(indicatorAfter).not.toBe(indicatorBefore);
   });
 
-  test("immersive header overlays the hero and becomes solid after scroll", async ({ page }) => {
+  test("all media hero pages with the global header share its overlay state", async ({ page }) => {
     await page.setViewportSize({ width: 1440, height: 1000 });
-    await page.goto("/zh", { waitUntil: "domcontentloaded" });
-    await page.waitForLoadState("load");
+    for (const path of immersiveHeaderPaths) {
+      await page.goto(path, { waitUntil: "domcontentloaded" });
+      await page.waitForLoadState("load");
 
-    const header = page.locator(".site-header");
-    await expect(header).toHaveAttribute("data-header-state", "overlay");
-    await expect(page.locator(".forest-site-shell")).toHaveAttribute("data-header-overlay", "true");
-    await expect.poll(() => header.evaluate((element) => getComputedStyle(element, "::before").opacity)).toBe("0");
+      const header = page.locator(".site-header");
+      const hero = page.locator('[data-immersive-hero="true"]');
+      await expect(hero).toHaveCount(1);
+      await expect(header).toHaveAttribute("data-header-state", "overlay");
+      await expect(page.locator(".forest-site-shell")).toHaveAttribute("data-header-overlay", "true");
+      await expect.poll(() => header.evaluate((element) => getComputedStyle(element, "::before").opacity)).toBe("0");
 
-    await page.evaluate(() => window.scrollTo(0, 120));
-    await expect(header).toHaveAttribute("data-header-state", "solid");
-    await expect.poll(() => header.evaluate((element) => getComputedStyle(element, "::before").opacity)).toBe("1");
+      const opening = await page.evaluate(() => {
+        const headerElement = document.querySelector(".site-header");
+        const heroElement = document.querySelector('[data-immersive-hero="true"]');
+        if (!headerElement || !heroElement) throw new Error("Missing immersive header or hero");
+        return {
+          heroTop: Math.round(heroElement.getBoundingClientRect().top),
+          headerBottom: Math.round(headerElement.getBoundingClientRect().bottom),
+        };
+      });
+      expect(opening.heroTop).toBeLessThan(opening.headerBottom);
+
+      await page.evaluate(() => window.scrollTo(0, 120));
+      await expect(header).toHaveAttribute("data-header-state", "solid");
+      await expect.poll(() => header.evaluate((element) => getComputedStyle(element, "::before").opacity)).toBe("1");
+    }
+  });
+
+  test("pages without a media hero keep a solid header", async ({ page }) => {
+    await page.setViewportSize({ width: 1440, height: 1000 });
+
+    for (const path of ["/zh/privacy", "/zh/terms"]) {
+      await page.goto(path, { waitUntil: "domcontentloaded" });
+      await page.waitForLoadState("load");
+
+      const header = page.locator(".site-header");
+      await expect(page.locator('[data-forest-page-hero="true"]')).toHaveCount(0);
+      await expect(header).toHaveAttribute("data-header-state", "solid");
+      await expect(page.locator(".forest-site-shell")).toHaveAttribute("data-header-overlay", "false");
+      await expect.poll(() => header.evaluate((element) => getComputedStyle(element, "::before").opacity)).toBe("1");
+    }
   });
 
   test("mobile immersive header uses independent transparent controls", async ({ page }) => {
@@ -267,21 +304,37 @@ test.describe("public responsive layout", () => {
     expect(metrics.controlsBorderWidth).toBe(0);
     expect(metrics.buttonBorderWidths).toEqual([1, 1, 1]);
     expect(metrics.buttonGap).toBeGreaterThanOrEqual(8);
+
+    const header = page.locator(".site-header");
+    await page.locator(".site-header__mobile-button").last().click();
+    await expect(header).toHaveAttribute("data-header-state", "solid");
+    await expect.poll(() => header.evaluate((element) => getComputedStyle(element, "::before").opacity)).toBe("1");
   });
 
-  test("contact keeps the five-item bottom navigation fixed and visible", async ({ page }) => {
+  test("contact keeps the page-aware action navigation fixed throughout scrolling", async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
     await page.goto("/zh/contact", { waitUntil: "domcontentloaded" });
     await page.waitForLoadState("load");
 
     const bottomNav = page.locator(".forest-bottom-nav");
-    await expect(bottomNav).toBeVisible();
-    await expect(bottomNav.locator("a")).toHaveCount(5);
-    await expect(bottomNav.locator('a[aria-current="page"]')).toHaveAttribute("href", /\/zh\/contact$/);
+    const actionBar = page.locator(".mobile-action-bar");
+    await expect(actionBar).toBeVisible();
+    await expect(bottomNav).toHaveCount(0);
 
-    await page.evaluate(() => window.scrollTo(0, document.documentElement.scrollHeight));
-    await expect(bottomNav).toBeVisible();
-    const position = await bottomNav.evaluate((nav) => ({
+    await page.locator(".page-hero").evaluate((hero) => {
+      window.scrollTo(0, hero.getBoundingClientRect().height + 80);
+    });
+
+    await expect(actionBar).toBeVisible();
+    await expect(bottomNav).toHaveCount(0);
+    await page.evaluate(() => window.scrollBy(0, -180));
+    await expect(actionBar).toBeVisible();
+    await expect(bottomNav).toHaveCount(0);
+    await actionBar.evaluate(async (nav) => {
+      await Promise.all(nav.getAnimations().map((animation) => animation.finished));
+    });
+
+    const position = await actionBar.evaluate((nav) => ({
       position: getComputedStyle(nav).position,
       bottom: Math.round(window.innerHeight - nav.getBoundingClientRect().bottom),
     }));
@@ -293,8 +346,9 @@ test.describe("public responsive layout", () => {
     await page.goto("/zh/quote", { waitUntil: "domcontentloaded" });
     await page.waitForLoadState("load");
 
-    await expect(page.locator(".mobile-action-bar")).toHaveCount(0);
-    await expect(page.locator("html")).not.toHaveAttribute("data-mobile-action-bar", "true");
+    await expect(page.locator(".mobile-action-bar")).toBeVisible();
+    await expect(page.locator("html")).toHaveAttribute("data-mobile-action-bar", "true");
+    await expect(page.locator("#quote-name")).toBeVisible();
 
     const fieldSemantics = await page.evaluate(() =>
       ["quote-name", "quote-phone", "quote-project-type", "quote-location"].map((id) => {
@@ -429,7 +483,7 @@ test.describe("public responsive layout", () => {
     }).toBe(true);
   });
 
-  test("mobile quote and contact pages expose page-aware bottom actions after the final hero", async ({ page }) => {
+  test("mobile quote and contact pages keep page-aware bottom actions visible", async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
 
     for (const scenario of [
@@ -443,26 +497,32 @@ test.describe("public responsive layout", () => {
         .poll(() => page.locator(".page-hero").evaluate((hero) => hero.getBoundingClientRect().height))
         .toBeLessThanOrEqual(620);
 
+      const actionBar = page.locator(".mobile-action-bar");
+      await expect(actionBar).toBeVisible();
+      await expect(page.locator(".forest-bottom-nav")).toHaveCount(0);
+
       await page.locator(".page-hero").evaluate((hero) => {
         window.scrollTo(0, hero.getBoundingClientRect().height + 80);
       });
 
-      const actionBar = page.locator(".mobile-action-bar");
       await expect(actionBar).toBeVisible();
       await expect(actionBar.locator('a[href^="https://wa.me/"]')).toBeVisible();
       await expect(actionBar.locator('a[href^="tel:"]')).toBeVisible();
       await expect(actionBar.locator(`a[href="${scenario.formHref}"]`)).toHaveText(scenario.formLabel);
-      await page.waitForTimeout(420);
+      await page.evaluate(() => window.scrollBy(0, -180));
+      await expect(actionBar).toBeVisible();
+      await actionBar.evaluate(async (nav) => {
+        await Promise.all(nav.getAnimations().map((animation) => animation.finished));
+      });
 
       const fixedBars = await page.evaluate(() => {
         const actionRect = document.querySelector(".mobile-action-bar")?.getBoundingClientRect();
-        const navRect = document.querySelector(".forest-bottom-nav")?.getBoundingClientRect();
         return {
-          actionBottom: Math.round(actionRect?.bottom ?? 0),
-          navTop: Math.round(navRect?.top ?? 0),
+          actionBottom: Math.round(window.innerHeight - (actionRect?.bottom ?? 0)),
+          navigationCount: document.querySelectorAll(".forest-bottom-nav").length,
         };
       });
-      expect(fixedBars.actionBottom).toBeLessThanOrEqual(fixedBars.navTop);
+      expect(fixedBars).toEqual({ actionBottom: 0, navigationCount: 0 });
     }
   });
 
@@ -644,6 +704,7 @@ test.describe("public responsive layout", () => {
         await page.goto(scenario.path, { waitUntil: "domcontentloaded" });
         await page.waitForLoadState("load");
         await expect(page.locator("html")).toHaveAttribute("data-theme", theme);
+        await expect(page.locator(scenario.targets[0][0]).first()).toBeVisible();
 
         for (const [foregroundSelector, backgroundSelector] of scenario.targets) {
           const contrast = await page.evaluate(
@@ -743,7 +804,7 @@ test.describe("public responsive layout", () => {
     await page.getByRole("button", { name: "更多" }).click();
     const desktopMenu = page.locator(".site-header__more-menu");
     await expect(desktopMenu).toBeVisible();
-    await expect(desktopMenu.locator(".site-header__more-link")).toHaveCount(7);
+    await expect(desktopMenu.locator(".site-header__more-link")).toHaveCount(8);
     await expect(desktopMenu.locator(".site-header__more-group")).toHaveCount(2);
     await expect(desktopMenu.locator(".site-header__more-footer a")).toBeVisible();
     await expect(page.locator(".desktop-floating-cta")).toBeHidden();
@@ -760,7 +821,7 @@ test.describe("public responsive layout", () => {
     const mobileMenu = page.locator(".mobile-navigation");
     await expect(mobileMenu).toBeVisible();
     await expect(mobileMenu.locator(".mobile-navigation__primary-link")).toHaveCount(5);
-    await expect(mobileMenu.locator(".mobile-navigation__secondary-link")).toHaveCount(7);
+    await expect(mobileMenu.locator(".mobile-navigation__secondary-link")).toHaveCount(8);
     await expect(mobileMenu.locator(".mobile-navigation__quote")).toBeVisible();
     await expect(page.locator(".forest-bottom-nav")).toBeHidden();
 

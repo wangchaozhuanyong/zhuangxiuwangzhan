@@ -9,6 +9,7 @@ import {
   Wrench,
 } from "lucide-react";
 import DeferredSmartImage from "@/components/DeferredSmartImage";
+import ImmersiveHero from "@/components/ImmersiveHero";
 import LocalizedLink from "@/components/LocalizedLink";
 import SmartImage from "@/components/SmartImage";
 import WhatsAppIcon from "@/components/WhatsAppIcon";
@@ -46,6 +47,7 @@ const fallbackCopy = {
     projectsAll: "查看装修案例",
     compareTitle: "先看清问题，再决定怎么改",
     compareBody: "拖动画面查看空间更新。实际方案会根据结构、机电、预算和使用方式调整。",
+    compareAll: "查看全部改造案例",
     before: "改造前",
     after: "改造后",
     compareLabel: "拖动查看改造前后",
@@ -84,6 +86,7 @@ const fallbackCopy = {
     projectsAll: "View renovation projects",
     compareTitle: "See the problem clearly before deciding the change",
     compareBody: "Drag to compare the space. The actual proposal responds to structure, services, budget and use.",
+    compareAll: "View all transformations",
     before: "Before",
     after: "After",
     compareLabel: "Drag to compare before and after",
@@ -127,6 +130,8 @@ const ForestHome = ({ content }: ForestHomeProps) => {
   const heroAlt = hero?.alt || content?.pageContent?.alt || heroTitle;
   const services = content?.services.slice(0, 5) || [];
   const projects = content?.projects.slice(0, 6) || [];
+  const featuredProject = projects[0];
+  const supportingProjects = projects.slice(1);
   const processSteps = content?.processSteps.slice(0, 6) || [];
   const faqs = content?.faqs.slice(0, 4) || [];
   const beforeAfter = content?.beforeAfterItems[0];
@@ -152,7 +157,7 @@ const ForestHome = ({ content }: ForestHomeProps) => {
 
   return (
     <div className="forest-home">
-      <section className="forest-home-hero" aria-labelledby="forest-home-title">
+      <ImmersiveHero className="forest-home-hero" aria-labelledby="forest-home-title">
         <div className="forest-home-hero__copy">
           <span className="forest-kicker">FLASH CAST SDN. BHD.</span>
           <h1 id="forest-home-title">{heroTitle}</h1>
@@ -167,9 +172,18 @@ const ForestHome = ({ content }: ForestHomeProps) => {
           </div>
         </div>
         <figure className="forest-home-hero__media">
-          <SmartImage src={heroImage} alt={heroAlt} width={1600} height={1100} loading="eager" fetchPriority="high" />
+          <SmartImage
+            src={heroImage}
+            alt={heroAlt}
+            width={1600}
+            height={1100}
+            candidateWidths={[480, 720, 960, 1280, 1600]}
+            sizes="(max-width: 767px) 100vw, (max-width: 1199px) 58vw, 60vw"
+            loading="eager"
+            fetchPriority="high"
+          />
         </figure>
-      </section>
+      </ImmersiveHero>
 
       <section className="forest-trust-rail" aria-label={ariaCopy.serviceHighlights}>
         {copy.trust.map((item, index) => {
@@ -226,23 +240,73 @@ const ForestHome = ({ content }: ForestHomeProps) => {
 
       {projects.length ? (
         <section className="forest-chapter forest-projects">
-          <SectionHeading title={copy.projectsTitle} body={copy.projectsBody} />
-          <div className="forest-project-bento">
-            {projects.map((project, index) => (
-              <LocalizedLink key={project.slug} to={`/projects/${project.slug}`} className={`forest-project-cell forest-project-cell--${index + 1}`}>
-                <DeferredSmartImage src={project.thumbnail} alt={project.thumbnailAlt || project.title} width={1100} height={820} loading="lazy" />
-                <span><small>{project.type}</small><strong>{project.title}</strong><em>{project.location}</em></span>
-              </LocalizedLink>
-            ))}
+          <div className="forest-projects__intro">
+            <SectionHeading title={copy.projectsTitle} body={copy.projectsBody} />
+            <LocalizedLink className="forest-text-link forest-projects__all" to="/projects">
+              {copy.projectsAll}<ArrowRight />
+            </LocalizedLink>
           </div>
-          <LocalizedLink className="forest-button forest-button--outline forest-chapter-action" to="/projects">
-            {copy.projectsAll}<ArrowRight />
-          </LocalizedLink>
+
+          {featuredProject ? (
+            <article className="forest-project-feature">
+              <LocalizedLink className="forest-project-feature__media" to={`/projects/${featuredProject.slug}`} aria-label={featuredProject.title}>
+                <DeferredSmartImage
+                  src={featuredProject.thumbnail}
+                  alt={featuredProject.thumbnailAlt || featuredProject.title}
+                  width={1200}
+                  height={780}
+                  sizes="(max-width: 767px) 100vw, (max-width: 1199px) 62vw, 880px"
+                  candidateWidths={[560, 720, 960, 1200]}
+                  loading="lazy"
+                />
+              </LocalizedLink>
+              <div className="forest-project-feature__copy">
+                <small>{displayText(featuredProject.type)}</small>
+                <h3><LocalizedLink to={`/projects/${featuredProject.slug}`}>{featuredProject.title}</LocalizedLink></h3>
+                <span className="forest-project-location"><MapPin aria-hidden="true" />{featuredProject.location}</span>
+                {featuredProject.description ? <p>{featuredProject.description}</p> : null}
+                <LocalizedLink className="forest-text-link" to={`/projects/${featuredProject.slug}`}>
+                  {copy.details}<ArrowRight />
+                </LocalizedLink>
+              </div>
+            </article>
+          ) : null}
+
+          {supportingProjects.length ? (
+            <div className="forest-project-gallery">
+              {supportingProjects.map((project) => (
+                <article key={project.slug} className="forest-project-story">
+                  <LocalizedLink className="forest-project-story__media" to={`/projects/${project.slug}`} aria-label={project.title}>
+                    <DeferredSmartImage
+                      src={project.thumbnail}
+                      alt={project.thumbnailAlt || project.title}
+                      width={780}
+                      height={560}
+                      sizes="(max-width: 767px) 82vw, (max-width: 1199px) 50vw, 33vw"
+                      candidateWidths={[360, 560, 720, 960]}
+                      loading="lazy"
+                    />
+                  </LocalizedLink>
+                  <div className="forest-project-story__copy">
+                    <small>{displayText(project.type)}</small>
+                    <h3><LocalizedLink to={`/projects/${project.slug}`}>{project.title}</LocalizedLink></h3>
+                    <span className="forest-project-location"><MapPin aria-hidden="true" />{project.location}</span>
+                  </div>
+                </article>
+              ))}
+            </div>
+          ) : null}
         </section>
       ) : null}
 
       <section className="forest-chapter forest-transformation">
-        <SectionHeading title={copy.compareTitle} body={copy.compareBody} />
+        <div className="forest-transformation__copy">
+          <SectionHeading title={copy.compareTitle} body={copy.compareBody} />
+          <LocalizedLink className="forest-text-link" to="/before-after">
+            {copy.compareAll}
+            <ArrowRight aria-hidden="true" />
+          </LocalizedLink>
+        </div>
         <div className="forest-before-after">
           <SmartImage src={afterImage} alt={beforeAfter?.alt || copy.after} width={1200} height={800} loading="lazy" />
           <div className="forest-before-after__before" style={{ clipPath: `inset(0 ${100 - comparePosition}% 0 0)` }}>

@@ -2,6 +2,7 @@ import { useParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { AlertCircle, ArrowRight, RefreshCw } from "lucide-react";
 import Link from "@/components/LocalizedLink";
+import ImmersiveHero from "@/components/ImmersiveHero";
 import PageMeta from "@/components/PageMeta";
 import SmartImage from "@/components/SmartImage";
 import PublicLoadingState from "@/components/blocks/PublicLoadingState";
@@ -157,7 +158,7 @@ export default function CmsDynamicPage() {
         canonicalPath={page.path}
       />
 
-      <section data-forest-page-hero={heroImage ? "true" : "text-only"} className="page-hero page-hero--detail">
+      <ImmersiveHero enabled={Boolean(heroImage)} className="page-hero page-hero--detail">
         {heroImage && (
           <div className="page-hero__media page-hero-media hero-media-mask">
             <SmartImage src={heroImage} alt={heroAlt} className="page-hero__image h-full w-full object-cover" loading="eager" width={1920} height={800} fetchPriority="high" />
@@ -176,7 +177,7 @@ export default function CmsDynamicPage() {
             </Button>
           </div>
         </div>
-      </section>
+      </ImmersiveHero>
 
       {page.content && (
         <section className="section-padding bg-background">

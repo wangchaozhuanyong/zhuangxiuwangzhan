@@ -1,6 +1,7 @@
 ﻿import { useParams } from "react-router-dom";
 import Link from "@/components/LocalizedLink";
 import { Button } from "@/components/ui/button";
+import ImmersiveHero from "@/components/ImmersiveHero";
 import { ArrowLeft, ArrowRight, MapPin, Clock, CheckCircle, Star, Wrench, Layers } from "lucide-react";
 import WhatsAppIcon from "@/components/WhatsAppIcon";
 import { projectsData } from "@/data/projects";
@@ -101,7 +102,7 @@ const ProjectDetail = () => {
       />
       <JsonLdBreadcrumb items={[{ name: t.breadcrumbHome, url: "/" }, { name: t.breadcrumbProjects, url: "/projects" }, { name: projectTitleLabel, url: `/projects/${project.slug}` }]} />
 
-      <section data-forest-page-hero="true" className="page-hero page-hero--detail items-end">
+      <ImmersiveHero className="page-hero page-hero--detail items-end">
         <div className="page-hero__media page-hero-media hero-media-mask">
           <SmartImage src={mainImage} alt={mainImageAlt} className="page-hero__image h-full w-full object-cover" width={1920} height={800} loading="eager" fetchPriority="high" />
           <div
@@ -120,7 +121,7 @@ const ProjectDetail = () => {
             <span className="flex items-center gap-1"><Clock className="w-3.5 h-3.5" /> {projectDurationLabel}</span>
           </div>
         </div>
-      </section>
+      </ImmersiveHero>
 
       <section className="section-padding bg-background">
         <div className="container-narrow">

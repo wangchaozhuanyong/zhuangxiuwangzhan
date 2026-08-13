@@ -27,7 +27,7 @@ import {
   getPublishedProcessSteps,
   getPublishedSitePage,
 } from "@/lib/homeContentApi";
-import { isSupabaseConfigured } from "@/lib/supabase";
+import { isSupabaseConfigured } from "@/lib/supabaseConfig";
 
 const STALE = 5 * 60 * 1000;
 const GC = 30 * 60 * 1000;

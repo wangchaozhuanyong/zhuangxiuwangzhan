@@ -1,4 +1,4 @@
-import { isSupabaseConfigured, supabase } from "@/lib/supabase";
+import { isSupabaseConfigured } from "@/lib/supabaseConfig";
 
 const byCreatedAtDesc = { ascending: false };
 
@@ -48,9 +48,15 @@ const SERVICE_SUMMARY_SELECT = [
 const applyLimit = <T extends { limit: (count: number) => T }>(query: T, limit?: number) =>
   limit && limit > 0 ? query.limit(limit) : query;
 
-export const hasPublicContentDatabaseClient = () => isSupabaseConfigured && Boolean(supabase);
+export const hasPublicContentDatabaseClient = () => isSupabaseConfigured;
+
+const getPublicContentClient = async () => {
+  if (!isSupabaseConfigured) return null;
+  return (await import("@/lib/supabase")).supabase;
+};
 
 async function fetchPublishedProjectSummaryRowsBySelect(select: string, limit?: number) {
+  const supabase = await getPublicContentClient();
   if (!supabase) return null;
   const query = applyLimit(
     supabase
@@ -74,6 +80,7 @@ export async function fetchPublishedProjectSummaryRowsWithContent(limit?: number
 }
 
 export async function fetchPublishedServiceSummaryRows(limit?: number) {
+  const supabase = await getPublicContentClient();
   if (!supabase) return null;
   const query = applyLimit(
     supabase
@@ -89,6 +96,7 @@ export async function fetchPublishedServiceSummaryRows(limit?: number) {
 }
 
 export async function fetchPublishedHeroSlideRows() {
+  const supabase = await getPublicContentClient();
   if (!supabase) return [];
   const { data, error } = await supabase
     .from("hero_slides")
@@ -100,6 +108,7 @@ export async function fetchPublishedHeroSlideRows() {
 }
 
 export async function fetchPublishedTestimonialRows() {
+  const supabase = await getPublicContentClient();
   if (!supabase) return [];
   const { data, error } = await supabase
     .from("testimonials")
@@ -111,6 +120,7 @@ export async function fetchPublishedTestimonialRows() {
 }
 
 export async function fetchPublishedServiceRows() {
+  const supabase = await getPublicContentClient();
   if (!supabase) return null;
   const { data, error } = await supabase
     .from("services")
@@ -122,6 +132,7 @@ export async function fetchPublishedServiceRows() {
 }
 
 export async function fetchPublishedServiceRowBySlug(slug: string) {
+  const supabase = await getPublicContentClient();
   if (!supabase) return null;
   const { data, error } = await supabase.from("services").select("*").eq("status", "published").eq("slug", slug).maybeSingle();
   if (error) return null;
@@ -129,6 +140,7 @@ export async function fetchPublishedServiceRowBySlug(slug: string) {
 }
 
 export async function fetchPublishedProjectRowBySlug(slug: string) {
+  const supabase = await getPublicContentClient();
   if (!supabase) return null;
   const { data, error } = await supabase
     .from("projects")
@@ -141,6 +153,7 @@ export async function fetchPublishedProjectRowBySlug(slug: string) {
 }
 
 export async function fetchPublishedMaterialRows(limit?: number) {
+  const supabase = await getPublicContentClient();
   if (!supabase) return null;
   const query = applyLimit(
     supabase.from("materials").select("*").eq("status", "published").order("sort_order"),
@@ -152,6 +165,7 @@ export async function fetchPublishedMaterialRows(limit?: number) {
 }
 
 export async function fetchPublishedBlogPostRows() {
+  const supabase = await getPublicContentClient();
   if (!supabase) return null;
   const { data, error } = await supabase.from("blog_posts").select("*").eq("status", "published").order("published_at", byCreatedAtDesc);
   if (error) return null;
@@ -159,6 +173,7 @@ export async function fetchPublishedBlogPostRows() {
 }
 
 export async function fetchPublishedBlogPostRowBySlug(slug: string) {
+  const supabase = await getPublicContentClient();
   if (!supabase) return null;
   const { data, error } = await supabase.from("blog_posts").select("*").eq("status", "published").eq("slug", slug).maybeSingle();
   if (error) return null;
@@ -166,6 +181,7 @@ export async function fetchPublishedBlogPostRowBySlug(slug: string) {
 }
 
 export async function fetchPublishedServiceAreaRowBySlug(slug: string) {
+  const supabase = await getPublicContentClient();
   if (!supabase) return null;
   const { data, error } = await supabase.from("service_areas").select("*").eq("status", "published").eq("slug", slug).maybeSingle();
   if (error) return null;
@@ -173,6 +189,7 @@ export async function fetchPublishedServiceAreaRowBySlug(slug: string) {
 }
 
 export async function fetchPublishedServiceAreaRows() {
+  const supabase = await getPublicContentClient();
   if (!supabase) return null;
   const { data, error } = await supabase
     .from("service_areas")
@@ -184,6 +201,7 @@ export async function fetchPublishedServiceAreaRows() {
 }
 
 export async function fetchPublishedLandingPageRowBySlug(slug: string) {
+  const supabase = await getPublicContentClient();
   if (!supabase) return null;
   const { data, error } = await supabase.from("landing_pages").select("*").eq("status", "published").eq("slug", slug).maybeSingle();
   if (error) return null;
@@ -191,6 +209,7 @@ export async function fetchPublishedLandingPageRowBySlug(slug: string) {
 }
 
 export async function fetchPublicHomeBundleData() {
+  const supabase = await getPublicContentClient();
   if (!supabase) return null;
   const { data, error } = await supabase.rpc("get_public_home_bundle");
   if (error) return null;
@@ -198,6 +217,7 @@ export async function fetchPublicHomeBundleData() {
 }
 
 export async function fetchPublishedBrandPartnerRows() {
+  const supabase = await getPublicContentClient();
   if (!supabase) return [];
   const { data, error } = await supabase
     .from("brand_partners")
@@ -209,6 +229,7 @@ export async function fetchPublishedBrandPartnerRows() {
 }
 
 export async function fetchPublishedBeforeAfterRows() {
+  const supabase = await getPublicContentClient();
   if (!supabase) return [];
   const { data, error } = await supabase.from("before_after_items").select("*").eq("status", "published").order("sort_order");
   if (error) return [];
@@ -216,6 +237,7 @@ export async function fetchPublishedBeforeAfterRows() {
 }
 
 export async function fetchPublishedFaqRows(pageKey: string) {
+  const supabase = await getPublicContentClient();
   if (!supabase) return [];
   const { data, error } = await supabase.from("faqs").select("*").eq("status", "published").eq("page_key", pageKey).order("sort_order");
   if (error) return [];
@@ -223,6 +245,7 @@ export async function fetchPublishedFaqRows(pageKey: string) {
 }
 
 export async function fetchPublishedHomeSectionRow(sectionKey: string) {
+  const supabase = await getPublicContentClient();
   if (!supabase) return null;
   const { data, error } = await supabase
     .from("home_sections")
@@ -236,6 +259,7 @@ export async function fetchPublishedHomeSectionRow(sectionKey: string) {
 }
 
 export async function fetchPublishedProcessStepRows() {
+  const supabase = await getPublicContentClient();
   if (!supabase) return [];
   const { data, error } = await supabase
     .from("process_steps")
@@ -248,6 +272,7 @@ export async function fetchPublishedProcessStepRows() {
 }
 
 export async function fetchPublishedCtaBlockRow(blockKey: string) {
+  const supabase = await getPublicContentClient();
   if (!supabase) return null;
   const { data, error } = await supabase
     .from("cta_blocks")
@@ -260,6 +285,7 @@ export async function fetchPublishedCtaBlockRow(blockKey: string) {
 }
 
 export async function fetchPublishedAboutSectionRow(sectionKey: string) {
+  const supabase = await getPublicContentClient();
   if (!supabase) return null;
   const { data, error } = await supabase
     .from("about_sections")
@@ -273,6 +299,7 @@ export async function fetchPublishedAboutSectionRow(sectionKey: string) {
 }
 
 export async function fetchPublishedLegacySitePageRow(pageKey: string) {
+  const supabase = await getPublicContentClient();
   if (!supabase) return null;
   const { data, error } = await supabase.from("site_pages").select("*").eq("status", "published").eq("page_key", pageKey).limit(1);
   if (error) return null;
@@ -280,6 +307,7 @@ export async function fetchPublishedLegacySitePageRow(pageKey: string) {
 }
 
 export async function fetchPublishedCmsPageByPageKey(pageKey: string) {
+  const supabase = await getPublicContentClient();
   if (!supabase) return null;
   const { data, error } = await supabase
     .from("cms_pages")
@@ -293,6 +321,7 @@ export async function fetchPublishedCmsPageByPageKey(pageKey: string) {
 }
 
 export async function fetchPublishedCmsPageByPath(path: string) {
+  const supabase = await getPublicContentClient();
   if (!supabase) return null;
   const { data, error } = await supabase
     .from("cms_pages")

@@ -24,6 +24,7 @@ const MobileActionBar = () => {
   const { showMobileActionBar } = usePublicChrome();
   const t = mobileActionBarText[language];
   const publicPath = stripLanguagePrefix(location.pathname);
+  const isHomePage = publicPath === "/";
   const isQuotePage = publicPath === "/quote";
   const isContactPage = publicPath === "/contact";
   const source = isQuotePage
@@ -40,7 +41,7 @@ const MobileActionBar = () => {
       ? { href: "#contact-name", label: t.fillContact, ctaName: "contact_form_jump" }
       : null;
 
-  if (!showMobileActionBar || (!isQuotePage && !isContactPage)) {
+  if (!showMobileActionBar || (!isHomePage && !isQuotePage && !isContactPage)) {
     return null;
   }
 
@@ -79,7 +80,18 @@ const MobileActionBar = () => {
           </span>
           <span className="mobile-action-bar__label">{t.call}</span>
         </a>
-        {formAction ? (
+        {isHomePage ? (
+          <LocalizedLink
+            to="/contact"
+            className="mobile-action-bar__item mobile-action-bar__item--quote"
+            onClick={() => trackCtaClick("contact", "mobile_action_bar", { destination: "/contact" })}
+          >
+            <span className="mobile-action-bar__icon" aria-hidden="true">
+              <ClipboardList className="h-5 w-5" />
+            </span>
+            <span className="mobile-action-bar__label">{t.fillContact}</span>
+          </LocalizedLink>
+        ) : formAction ? (
           <a
             href={formAction.href}
             className="mobile-action-bar__item mobile-action-bar__item--quote"

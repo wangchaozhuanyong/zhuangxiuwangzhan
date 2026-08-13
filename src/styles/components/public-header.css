@@ -1,0 +1,86 @@
+@layer components {
+  html[data-public-theme] .forest-site-shell[data-header-overlay="true"] .pt-site-header,
+  html[data-public-theme] .forest-site-shell[data-header-overlay="true"] .forest-home {
+    padding-top: 0 !important;
+  }
+
+  html[data-public-theme] .forest-site-shell[data-product-detail="true"] .pt-site-header {
+    padding-top: 0 !important;
+  }
+
+  html[data-public-theme] .site-header.is-overlay {
+    border-bottom-color: transparent;
+    color: #f4f7f5;
+    background: transparent;
+    box-shadow: none;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+
+  html[data-public-theme] .site-header.is-overlay::before {
+    border-bottom-color: transparent;
+    background: transparent;
+    box-shadow: none;
+    opacity: 0;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+
+  html[data-public-theme] .site-header.is-overlay .site-header__brand img {
+    filter: grayscale(1) brightness(0) invert(1) drop-shadow(0 1px 7px rgb(0 0 0 / 0.34));
+  }
+
+  html[data-public-theme] .site-header.is-overlay :is(
+    .site-header__brand,
+    .site-header__nav-link
+  ) {
+    mix-blend-mode: difference;
+  }
+
+  html[data-public-theme] .site-header.is-overlay :is(
+    .site-header__control,
+    .site-header__icon-action,
+    .site-header__quote-button,
+    .site-header__mobile-button
+  ) {
+    border-color: rgb(255 255 255 / 0.38);
+    color: #fff;
+    background: rgb(4 14 10 / 0.2);
+    box-shadow:
+      inset 0 0 0 1px rgb(255 255 255 / 0.04),
+      0 0.35rem 1.1rem rgb(0 0 0 / 0.12);
+    text-shadow: 0 1px 10px rgb(0 0 0 / 0.4);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+  }
+
+  html[data-public-theme] .site-header.is-overlay .site-header__mobile-controls {
+    border-color: transparent;
+    background: transparent;
+    box-shadow: none;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+
+  html[data-public-theme] .site-header.is-solid {
+    color: var(--forest-text-primary);
+  }
+
+  html[data-public-theme] .site-header.is-solid::before {
+    border-bottom: 1px solid var(--forest-line);
+    background: var(--forest-header-solid);
+    box-shadow: 0 18px 52px -42px var(--forest-shadow-color);
+    opacity: 1;
+    backdrop-filter: blur(18px) saturate(112%);
+    -webkit-backdrop-filter: blur(18px) saturate(112%);
+  }
+
+  @supports not (mix-blend-mode: difference) {
+    html[data-public-theme] .site-header.is-overlay :is(
+      .site-header__brand,
+      .site-header__nav-link
+    ) {
+      filter: drop-shadow(0 1px 3px rgb(0 0 0 / 0.7));
+    }
+  }
+}

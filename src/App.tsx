@@ -3,13 +3,10 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, useLocation } from "react-router-dom";
 import { HelmetProvider } from "react-helmet-async";
 import { LanguageProvider, useLanguage } from "@/i18n/LanguageContext";
-import { Toaster } from "@/components/ui/toaster";
-import { TooltipProvider } from "@/components/ui/tooltip";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import FloatingCTA from "@/components/FloatingCTA";
 import ForestBottomNav from "@/components/forest/ForestBottomNav";
-import { ForestAtmosphere, ForestRouteSkeleton } from "@/components/forest/ForestPagePrimitives";
 import DynamicBrandHead from "@/components/DynamicBrandHead";
 import { AppErrorBoundary } from "@/components/AppErrorBoundary";
 import { PublicChromeProvider, usePublicChrome } from "@/contexts/PublicChromeContext";
@@ -17,12 +14,12 @@ import { stripLanguagePrefix } from "@/i18n/routes";
 import { adminRouteText } from "@/i18n/adminRouteText";
 import { initAnalytics, trackPageView } from "@/lib/analytics";
 import { getAdminLang } from "@/lib/adminLocale";
-import { isImmersivePublicPath } from "@/lib/publicChrome";
 import { publicRoutes } from "@/routes/publicRoutes";
 import ScrollToTop from "./components/ScrollToTop";
 
 const AdminRouteTree = lazy(() => import("@/routes/AdminRouteTree"));
 const AdminLoginPage = lazy(() => import("@/pages/admin/AdminLogin"));
+const AdminUiProviders = lazy(() => import("@/components/admin/AdminUiProviders"));
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -36,7 +33,18 @@ const queryClient = new QueryClient({
 });
 
 const PageLoader = () => {
-  return <ForestRouteSkeleton />;
+  return (
+    <main className="min-h-screen pt-site-header" role="status" aria-live="polite" aria-busy="true">
+      <div className="mx-auto grid min-h-[70vh] w-full max-w-[90rem] animate-pulse grid-cols-1 border-x border-border bg-card lg:grid-cols-2">
+        <div className="min-h-[24rem] bg-muted" />
+        <div className="flex flex-col justify-center gap-4 p-8 lg:p-16">
+          <span className="h-3 w-24 bg-muted" />
+          <span className="h-12 w-4/5 bg-muted" />
+          <span className="h-4 w-3/5 bg-muted" />
+        </div>
+      </div>
+    </main>
+  );
 };
 
 const AdminPageLoader = () => {
@@ -117,21 +125,22 @@ const PublicPageFrame = ({ isAdminRoute, children }: { isAdminRoute: boolean; ch
 
 const PublicSiteShell = ({
   surface,
-  immersive,
+  productDetail,
   children,
 }: {
   surface: string;
-  immersive: boolean;
+  productDetail: boolean;
   children: ReactNode;
 }) => {
-  const { theme } = usePublicChrome();
+  const { hasImmersiveHero, theme } = usePublicChrome();
 
   return (
     <div
       className="forest-site-shell"
       data-theme={theme}
       data-surface={surface}
-      data-header-overlay={immersive ? "true" : "false"}
+      data-header-overlay={hasImmersiveHero ? "true" : "false"}
+      data-product-detail={productDetail ? "true" : "false"}
     >
       {children}
     </div>
@@ -145,8 +154,8 @@ const AppShell = () => {
   const isAdminLoginRoute = /^\/admin\/?$/.test(location.pathname);
   const publicPath = stripLanguagePrefix(location.pathname);
   const isHomeRoute = !isAdminRoute && publicPath === "/";
-  const supportsMobileActionBar = publicPath === "/contact" || publicPath === "/quote";
-  const hasImmersiveHeader = !isAdminRoute && isImmersivePublicPath(publicPath);
+  const isProductDetailRoute = !isAdminRoute && /^\/products\/[^/]+$/.test(publicPath);
+  const supportsMobileActionBar = isHomeRoute || publicPath === "/contact" || publicPath === "/quote";
   const publicMainClass = isAdminRoute
     ? undefined
     : isHomeRoute
@@ -181,16 +190,17 @@ const AppShell = () => {
           <div key={mainContentKey} id="main-content" tabIndex={-1} className={mainContentClass}>
             <AppErrorBoundary isAdminRoute>
               <Suspense fallback={<AdminPageLoader />}>
-                {isAdminLoginRoute ? <AdminLoginPage /> : <AdminRouteTree />}
+                <AdminUiProviders>
+                  {isAdminLoginRoute ? <AdminLoginPage /> : <AdminRouteTree />}
+                </AdminUiProviders>
               </Suspense>
             </AppErrorBoundary>
           </div>
         </PublicPageFrame>
       ) : (
-        <PublicSiteShell surface={forestSurface} immersive={hasImmersiveHeader}>
-          <Navbar />
+        <PublicSiteShell surface={forestSurface} productDetail={isProductDetailRoute}>
+          {!isProductDetailRoute ? <Navbar /> : null}
           <PublicPageFrame isAdminRoute={false}>
-            <ForestAtmosphere />
             <div key={mainContentKey} id="main-content" tabIndex={-1} className={mainContentClass} data-forest-surface={forestSurface}>
               <AppErrorBoundary isAdminRoute={false}>
                 <Suspense fallback={<PageLoader />}>
@@ -210,17 +220,14 @@ const AppShell = () => {
 
 const App = () => (
   <LanguageProvider>
-  <HelmetProvider>
-    <QueryClientProvider client={queryClient}>
-      <TooltipProvider>
-        <Toaster />
+    <HelmetProvider>
+      <QueryClientProvider client={queryClient}>
         <BrowserRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
           <AnalyticsRouteTracker />
           <AppShell />
         </BrowserRouter>
-      </TooltipProvider>
-    </QueryClientProvider>
-  </HelmetProvider>
+      </QueryClientProvider>
+    </HelmetProvider>
   </LanguageProvider>
 );
 

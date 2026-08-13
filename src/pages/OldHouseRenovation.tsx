@@ -2,6 +2,7 @@
 import { ArrowRight, CheckCircle, AlertTriangle, Wrench, Droplets, Home } from "lucide-react";
 import WhatsAppIcon from "@/components/WhatsAppIcon";
 import Reveal from "@/components/Reveal";
+import ImmersiveHero from "@/components/ImmersiveHero";
 import SmartImage from "@/components/SmartImage";
 import PageMeta from "@/components/PageMeta";
 import { JsonLdBreadcrumb } from "@/components/JsonLd";
@@ -39,7 +40,7 @@ const OldHouseRenovation = () => {
       <PageMeta title={t.metaTitle} description={t.metaDescription} keywords={t.metaKeywords} canonicalPath="/services/old-house" />
       <JsonLdBreadcrumb items={[{ name: t.breadcrumbHome, url: "/" }, { name: t.breadcrumbServices, url: "/services" }, { name: t.breadcrumbCurrent, url: "/services/old-house" }]} />
 
-      <section data-forest-page-hero="true" className="page-hero page-hero--detail">
+      <ImmersiveHero className="page-hero page-hero--detail">
         <div className="page-hero__media page-hero-media hero-media-mask">
           <picture className="block h-full w-full">
             <source media="(max-width: 767px)" srcSet={mobileHeroSrcSet} sizes="100vw" />
@@ -70,7 +71,7 @@ const OldHouseRenovation = () => {
             </a>
           </div>
         </div>
-      </section>
+      </ImmersiveHero>
 
       <section className="section-padding bg-background">
         <div className="container-narrow grid grid-cols-1 lg:grid-cols-2 gap-10 items-center">

@@ -774,56 +774,117 @@
     box-shadow: inset 0 0 0 1px var(--forest-page-accent);
   }
 
-  .forest-offer-stack {
-    display: grid;
-    gap: clamp(1.25rem, 3vw, 2.5rem);
+  .forest-offers-chapter {
+    padding-top: clamp(3.75rem, 7vw, 7rem);
+  }
+
+  .forest-offers-index {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 2rem;
+    padding-bottom: clamp(2rem, 4vw, 3.5rem);
+    border-bottom: 1px solid var(--forest-page-line);
+  }
+
+  .forest-offers-index h2 {
+    max-width: 16ch;
+    margin: 0;
+    color: var(--forest-page-ink);
+    font-family: var(--font-display);
+    font-size: clamp(2.15rem, 5vw, 4.8rem);
+    font-weight: 500;
+    line-height: 1.02;
+    text-wrap: balance;
+  }
+
+  .forest-offers-index > p {
+    margin: 0 0 0.35rem;
+    color: var(--forest-page-muted);
+    font-size: 0.82rem;
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+  }
+
+  .forest-offer-list {
+    border-bottom: 1px solid var(--forest-page-line);
   }
 
   .forest-offer-panel {
-    position: sticky;
     display: grid;
-    min-height: 24rem;
-    grid-template-columns: minmax(6rem, 0.18fr) minmax(16rem, 0.48fr) minmax(15rem, 0.34fr);
+    min-height: 18rem;
+    grid-template-columns: minmax(8rem, 1.15fr) minmax(20rem, 4fr) minmax(17rem, 2.4fr);
     align-items: stretch;
-    border: 1px solid var(--forest-page-line);
-    background: var(--forest-page-panel);
-    box-shadow: var(--forest-page-shadow);
+    border-bottom: 1px solid var(--forest-page-line);
+    background: transparent;
   }
 
-  .forest-offer-panel__icon {
-    display: grid;
-    place-items: center;
+  .forest-offer-panel:last-child {
+    border-bottom: 0;
+  }
+
+  .forest-offer-panel__meta {
+    display: flex;
+    padding: clamp(1.75rem, 3vw, 2.75rem) clamp(1.25rem, 2.5vw, 2.25rem);
+    justify-content: space-between;
+    flex-direction: column;
     border-right: 1px solid var(--forest-page-line);
-    color: var(--forest-page-accent);
   }
 
-  .forest-offer-panel__icon svg {
-    width: clamp(2rem, 4vw, 3.5rem);
-    height: clamp(2rem, 4vw, 3.5rem);
-    stroke-width: 1.2;
+  .forest-offer-panel__meta > span {
+    color: var(--forest-page-ink);
+    font-family: var(--font-display);
+    font-size: clamp(2.2rem, 4vw, 4rem);
+    font-variant-numeric: tabular-nums;
+    line-height: 1;
+  }
+
+  .forest-offer-panel__meta p,
+  .forest-offer-panel__terms p {
+    display: flex;
+    align-items: center;
+    gap: 0.55rem;
+    margin: 0;
+    color: var(--forest-page-accent);
+    font-size: 0.75rem;
+    font-weight: 700;
+    line-height: 1.4;
+  }
+
+  .forest-offer-panel__meta svg,
+  .forest-offer-panel__terms svg {
+    width: 1rem;
+    height: 1rem;
+    flex: 0 0 auto;
+    stroke-width: 1.7;
   }
 
   .forest-offer-panel__copy,
   .forest-offer-panel__terms {
     display: flex;
-    padding: clamp(2rem, 5vw, 4.5rem);
+    padding: clamp(2.25rem, 4vw, 4rem);
     justify-content: center;
     flex-direction: column;
   }
 
-  .forest-offer-panel__copy h2 {
+  .forest-offer-panel__copy h3 {
+    max-width: 16ch;
     margin: 0;
-    max-width: 15ch;
-    font-size: clamp(1.9rem, 3.5vw, 4rem);
+    color: var(--forest-page-ink);
+    font-family: var(--font-display);
+    font-size: clamp(1.8rem, 3vw, 3.25rem);
     font-weight: 500;
     line-height: 1.08;
+    text-wrap: balance;
   }
 
-  .forest-offer-panel__copy > p:last-child,
+  .forest-offer-panel__copy > p,
   .forest-offer-panel__terms span {
+    max-width: 42rem;
     margin-top: 1.25rem;
     color: var(--forest-page-muted);
     line-height: 1.72;
+    text-wrap: pretty;
   }
 
   .forest-offer-panel__terms {
@@ -832,40 +893,43 @@
   }
 
   .forest-offer-panel__terms p {
-    display: flex;
-    align-items: center;
-    gap: 0.65rem;
-    margin: 0;
     color: var(--forest-page-ink);
-    font-size: 0.82rem;
-    font-weight: 700;
   }
 
   .forest-offer-panel__terms svg {
-    width: 1rem;
-    height: 1rem;
     color: var(--forest-page-accent);
   }
 
   .forest-offer-actions {
     display: grid;
-    margin-top: 3rem;
-    padding: 2rem 0;
+    margin-top: clamp(3rem, 6vw, 6rem);
+    padding: clamp(2rem, 4vw, 3.5rem);
     grid-template-columns: minmax(0, 1fr) auto;
-    align-items: center;
-    gap: 2rem;
-    border-top: 1px solid var(--forest-page-line);
-    border-bottom: 1px solid var(--forest-page-line);
+    align-items: end;
+    gap: clamp(2rem, 5vw, 5rem);
+    border: 1px solid var(--forest-page-line);
+    background: var(--forest-page-raised);
   }
 
-  .forest-offer-actions > p {
-    max-width: 50rem;
+  .forest-offer-actions__copy h2 {
+    max-width: 18ch;
     margin: 0;
+    color: var(--forest-page-ink);
+    font-family: var(--font-display);
+    font-size: clamp(1.8rem, 3.2vw, 3.4rem);
+    font-weight: 500;
+    line-height: 1.08;
+    text-wrap: balance;
+  }
+
+  .forest-offer-actions__copy > p:last-child {
+    max-width: 48rem;
+    margin: 1.15rem 0 0;
     color: var(--forest-page-muted);
     line-height: 1.7;
   }
 
-  .forest-offer-actions > div {
+  .forest-offer-actions__buttons {
     display: flex;
     flex-wrap: wrap;
     gap: 0.75rem;
@@ -1453,6 +1517,154 @@
     font-size: 0.86rem;
   }
 
+  .forest-before-after-page > .forest-section-heading {
+    margin-bottom: clamp(3rem, 6vw, 5.5rem);
+  }
+
+  .forest-comparison-list {
+    border-top: 1px solid var(--forest-page-line);
+  }
+
+  .forest-comparison-story {
+    display: grid;
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    gap: clamp(2rem, 4vw, 4.5rem);
+    align-items: center;
+    padding-block: clamp(3rem, 6vw, 6rem);
+    border-bottom: 1px solid var(--forest-page-line);
+  }
+
+  .forest-comparison-story__copy {
+    grid-column: 1 / 5;
+  }
+
+  .forest-comparison-story__copy h2 {
+    max-width: 13ch;
+    margin: 0;
+    color: var(--forest-page-ink);
+    font-family: var(--font-display);
+    font-size: clamp(1.85rem, 3vw, 3.2rem);
+    font-weight: 500;
+    line-height: 1.08;
+  }
+
+  .forest-comparison-story__location {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.55rem;
+    margin: 1.35rem 0 0;
+    color: var(--forest-page-accent);
+    font-size: 0.8rem;
+    font-weight: 700;
+    line-height: 1.5;
+  }
+
+  .forest-comparison-story__location svg {
+    margin-top: 0.08rem;
+    flex: 0 0 auto;
+  }
+
+  .forest-comparison-story__description {
+    margin: 1.25rem 0 0;
+    color: var(--forest-page-muted);
+    font-size: 0.96rem;
+    line-height: 1.78;
+  }
+
+  .forest-comparison-slider {
+    position: relative;
+    grid-column: 5 / 13;
+    overflow: hidden;
+    aspect-ratio: 16 / 10;
+    border: 1px solid var(--forest-page-line);
+    background: hsl(var(--muted));
+    box-shadow: var(--forest-page-shadow);
+  }
+
+  .forest-comparison-slider:focus-within {
+    outline: 2px solid var(--forest-page-accent);
+    outline-offset: 4px;
+  }
+
+  .forest-comparison-slider__image-shell,
+  .forest-comparison-slider__image {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+  }
+
+  .forest-comparison-slider__image {
+    object-fit: cover;
+  }
+
+  .forest-comparison-slider__before {
+    position: absolute;
+    inset: 0;
+    clip-path: inset(0 calc(100% - var(--compare-position)) 0 0);
+  }
+
+  .forest-comparison-slider__label {
+    position: absolute;
+    top: 1rem;
+    z-index: 3;
+    padding: 0.55rem 0.75rem;
+    background: hsl(158 32% 8% / 0.86);
+    color: white;
+    font-size: 0.72rem;
+    font-weight: 700;
+    line-height: 1;
+  }
+
+  .forest-comparison-slider__label--before {
+    left: 1rem;
+  }
+
+  .forest-comparison-slider__label--after {
+    right: 1rem;
+  }
+
+  .forest-comparison-slider__divider {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: var(--compare-position);
+    z-index: 3;
+    width: 1px;
+    background: hsl(0 0% 100% / 0.92);
+    transform: translateX(-50%);
+  }
+
+  .forest-comparison-slider__handle {
+    position: absolute;
+    top: 50%;
+    left: var(--compare-position);
+    z-index: 4;
+    display: grid;
+    width: 3.25rem;
+    height: 3.25rem;
+    place-items: center;
+    border: 1px solid hsl(0 0% 100% / 0.88);
+    border-radius: 50%;
+    background: hsl(158 32% 8% / 0.78);
+    color: white;
+    font-size: 1rem;
+    transform: translate(-50%, -50%);
+    pointer-events: none;
+  }
+
+  .forest-comparison-slider input {
+    position: absolute;
+    inset: 0;
+    z-index: 5;
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    cursor: ew-resize;
+    opacity: 0;
+    touch-action: pan-y;
+  }
+
   @keyframes forest-state-spin {
     to { transform: rotate(360deg); }
   }
@@ -1479,11 +1691,20 @@
     }
 
     .forest-offer-panel {
-      grid-template-columns: 6rem minmax(0, 1fr);
+      grid-template-columns: 7rem minmax(0, 1fr);
+    }
+
+    .forest-offer-panel__meta {
+      grid-column: 1;
+      grid-row: 1 / 3;
+    }
+
+    .forest-offer-panel__copy,
+    .forest-offer-panel__terms {
+      grid-column: 2;
     }
 
     .forest-offer-panel__terms {
-      grid-column: 1 / -1;
       border-top: 1px solid var(--forest-page-line);
       border-left: 0;
     }
@@ -1500,6 +1721,14 @@
     .forest-about-intro,
     .forest-process-story {
       grid-template-columns: 1fr;
+    }
+
+    .forest-comparison-story__copy {
+      grid-column: 1 / 6;
+    }
+
+    .forest-comparison-slider {
+      grid-column: 6 / 13;
     }
 
     .forest-process-story__heading {
@@ -1534,6 +1763,25 @@
 
     .forest-section-heading__action {
       justify-self: start;
+    }
+
+    .forest-comparison-story {
+      display: block;
+    }
+
+    .forest-comparison-story__copy h2 {
+      max-width: 16ch;
+      font-size: clamp(1.8rem, 9vw, 2.65rem);
+    }
+
+    .forest-comparison-slider {
+      margin-top: 2rem;
+      aspect-ratio: 4 / 3;
+    }
+
+    .forest-comparison-slider__handle {
+      width: 2.9rem;
+      height: 2.9rem;
     }
 
     html[data-public-theme] .public-main--subpage .page-hero {
@@ -1635,38 +1883,64 @@
       grid-template-columns: 1fr;
     }
 
-    .forest-offer-panel {
-      position: relative;
-      top: auto !important;
-      min-height: 0;
-      grid-template-columns: 1fr;
-      box-shadow: none;
+    .forest-offers-index {
+      display: block;
     }
 
-    .forest-offer-panel__icon {
-      min-height: 6rem;
-      place-items: center start;
+    .forest-offers-index h2 {
+      max-width: 13ch;
+      font-size: clamp(2.1rem, 11vw, 3.2rem);
+    }
+
+    .forest-offers-index > p {
+      margin-top: 1.25rem;
+    }
+
+    .forest-offer-panel {
+      display: block;
+      min-height: 0;
+    }
+
+    .forest-offer-panel__meta {
+      min-height: 0;
       padding: 1.25rem;
+      align-items: center;
+      flex-direction: row;
       border-right: 0;
       border-bottom: 1px solid var(--forest-page-line);
     }
 
-    .forest-offer-panel__copy,
-    .forest-offer-panel__terms {
-      padding: 2rem 1.25rem;
+    .forest-offer-panel__meta > span {
+      font-size: 2.3rem;
+    }
+
+    .forest-offer-panel__copy {
+      padding: 2rem 1.25rem 2.25rem;
+    }
+
+    .forest-offer-panel__copy h3 {
+      max-width: 14ch;
+      font-size: clamp(1.75rem, 8vw, 2.4rem);
     }
 
     .forest-offer-panel__terms {
-      grid-column: auto;
+      padding: 1.5rem 1.25rem 1.75rem;
+      border-top: 1px solid var(--forest-page-line);
+      border-left: 0;
     }
 
     .forest-offer-actions {
+      padding: 2rem 1.25rem;
       grid-template-columns: 1fr;
     }
 
-    .forest-offer-actions > div {
+    .forest-offer-actions__buttons {
       align-items: stretch;
       flex-direction: column;
+    }
+
+    .forest-offer-actions__buttons .forest-button {
+      width: 100%;
     }
 
     .forest-area-grid {

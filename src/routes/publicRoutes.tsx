@@ -1,34 +1,45 @@
-import { lazy } from "react";
+import { lazy, type ComponentType } from "react";
 import { Route } from "react-router-dom";
 import { LanguageRouteSync, LegacyLanguageRedirect, RootLanguageRedirect } from "@/components/LanguageRouteSync";
-import Index from "@/pages/Index";
-import Projects from "@/pages/Projects";
 
-const About = lazy(() => import("@/pages/About"));
-const Services = lazy(() => import("@/pages/Services"));
-const ServiceDetail = lazy(() => import("@/pages/ServiceDetail"));
-const Materials = lazy(() => import("@/pages/Materials"));
-const Products = lazy(() => import("@/pages/Products"));
-const ProductDetail = lazy(() => import("@/pages/ProductDetail"));
-const Promotions = lazy(() => import("@/pages/Promotions"));
-const Locations = lazy(() => import("@/pages/Locations"));
-const MaterialCategoryPage = lazy(() => import("@/pages/MaterialCategoryPage"));
-const MaterialSubcategoryPage = lazy(() => import("@/pages/MaterialSubcategoryPage"));
-const MaterialDetail = lazy(() => import("@/pages/MaterialDetail"));
-const ProjectDetail = lazy(() => import("@/pages/ProjectDetail"));
-const Process = lazy(() => import("@/pages/Process"));
-const FAQ = lazy(() => import("@/pages/FAQ"));
-const Contact = lazy(() => import("@/pages/Contact"));
-const Quote = lazy(() => import("@/pages/Quote"));
-const Blog = lazy(() => import("@/pages/Blog"));
-const BlogDetail = lazy(() => import("@/pages/BlogDetail"));
-const LocationPage = lazy(() => import("@/pages/LocationPage"));
-const LandingPage = lazy(() => import("@/pages/LandingPage"));
-const CmsDynamicPage = lazy(() => import("@/pages/CmsDynamicPage"));
-const Privacy = lazy(() => import("@/pages/Privacy"));
-const Terms = lazy(() => import("@/pages/Terms"));
-const OldHouseRenovation = lazy(() => import("@/pages/OldHouseRenovation"));
-const NotFound = lazy(() => import("@/pages/NotFound"));
+type PageModule = { default: ComponentType };
+
+const lazyPublicPage = (loader: () => Promise<PageModule>) => lazy(async () => {
+  const [pageModule] = await Promise.all([
+    loader(),
+    import("@/styles/routes/public-pages.css"),
+  ]);
+  return pageModule;
+});
+
+const Index = lazy(() => import("@/pages/Index"));
+const About = lazyPublicPage(() => import("@/pages/About"));
+const Services = lazyPublicPage(() => import("@/pages/Services"));
+const ServiceDetail = lazyPublicPage(() => import("@/pages/ServiceDetail"));
+const Materials = lazyPublicPage(() => import("@/pages/Materials"));
+const Products = lazyPublicPage(() => import("@/pages/Products"));
+const ProductDetail = lazyPublicPage(() => import("@/pages/ProductDetail"));
+const Promotions = lazyPublicPage(() => import("@/pages/Promotions"));
+const Locations = lazyPublicPage(() => import("@/pages/Locations"));
+const MaterialCategoryPage = lazyPublicPage(() => import("@/pages/MaterialCategoryPage"));
+const MaterialSubcategoryPage = lazyPublicPage(() => import("@/pages/MaterialSubcategoryPage"));
+const MaterialDetail = lazyPublicPage(() => import("@/pages/MaterialDetail"));
+const Projects = lazyPublicPage(() => import("@/pages/Projects"));
+const ProjectDetail = lazyPublicPage(() => import("@/pages/ProjectDetail"));
+const BeforeAfter = lazyPublicPage(() => import("@/pages/BeforeAfter"));
+const Process = lazyPublicPage(() => import("@/pages/Process"));
+const FAQ = lazyPublicPage(() => import("@/pages/FAQ"));
+const Contact = lazyPublicPage(() => import("@/pages/Contact"));
+const Quote = lazyPublicPage(() => import("@/pages/Quote"));
+const Blog = lazyPublicPage(() => import("@/pages/Blog"));
+const BlogDetail = lazyPublicPage(() => import("@/pages/BlogDetail"));
+const LocationPage = lazyPublicPage(() => import("@/pages/LocationPage"));
+const LandingPage = lazyPublicPage(() => import("@/pages/LandingPage"));
+const CmsDynamicPage = lazyPublicPage(() => import("@/pages/CmsDynamicPage"));
+const Privacy = lazyPublicPage(() => import("@/pages/Privacy"));
+const Terms = lazyPublicPage(() => import("@/pages/Terms"));
+const OldHouseRenovation = lazyPublicPage(() => import("@/pages/OldHouseRenovation"));
+const NotFound = lazyPublicPage(() => import("@/pages/NotFound"));
 
 const withLanguageSync = (page: JSX.Element) => (
   <>
@@ -54,6 +65,7 @@ export const publicRoutes = (
     <Route path="/:lang/promotions" element={withLanguageSync(<Promotions />)} />
     <Route path="/:lang/projects" element={withLanguageSync(<Projects />)} />
     <Route path="/:lang/projects/:slug" element={withLanguageSync(<ProjectDetail />)} />
+    <Route path="/:lang/before-after" element={withLanguageSync(<BeforeAfter />)} />
     <Route path="/:lang/process" element={withLanguageSync(<Process />)} />
     <Route path="/:lang/faq" element={withLanguageSync(<FAQ />)} />
     <Route path="/:lang/contact" element={withLanguageSync(<Contact />)} />
@@ -71,6 +83,7 @@ export const publicRoutes = (
     <Route path="/products/*" element={<LegacyLanguageRedirect />} />
     <Route path="/promotions" element={<LegacyLanguageRedirect />} />
     <Route path="/projects/*" element={<LegacyLanguageRedirect />} />
+    <Route path="/before-after" element={<LegacyLanguageRedirect />} />
     <Route path="/process" element={<LegacyLanguageRedirect />} />
     <Route path="/faq" element={<LegacyLanguageRedirect />} />
     <Route path="/contact" element={<LegacyLanguageRedirect />} />

@@ -30,6 +30,26 @@ export const ga4PagesReportUrl =
   configuredPagesReportUrl || "https://analytics.google.com/analytics/web/#/report/pages-and-screens";
 
 let initialized = false;
+let scriptRequested = false;
+let analyticsLoadScheduled = false;
+let webVitalsInitialized = false;
+
+type IdleWindow = Window & typeof globalThis & {
+  requestIdleCallback?: (callback: IdleRequestCallback, options?: IdleRequestOptions) => number;
+  cancelIdleCallback?: (handle: number) => void;
+};
+
+type LayoutShiftEntry = PerformanceEntry & {
+  value: number;
+  hadRecentInput: boolean;
+};
+
+type EventTimingEntry = PerformanceEntry & {
+  duration: number;
+  interactionId: number;
+};
+
+type WebVitalName = "CLS" | "FCP" | "INP" | "LCP" | "TTFB";
 
 export const isProductionAnalyticsHost = (hostname: string) =>
   productionAnalyticsHosts.has(hostname.trim().toLowerCase());
@@ -65,13 +85,138 @@ const trackSuccessfulLeadEvent = (
 };
 
 const ensureGoogleTagScript = () => {
-  if (!canUseBrowserAnalytics() || !primaryGoogleTagId || document.getElementById(googleTagScriptId)) return;
+  if (
+    !canUseBrowserAnalytics()
+    || !primaryGoogleTagId
+    || scriptRequested
+    || document.getElementById(googleTagScriptId)
+  ) return;
+
+  scriptRequested = true;
 
   const script = document.createElement("script");
   script.id = googleTagScriptId;
   script.async = true;
   script.src = `https://www.googletagmanager.com/gtag/js?id=${encodeURIComponent(primaryGoogleTagId)}`;
   document.head.appendChild(script);
+};
+
+const scheduleGoogleTagScript = () => {
+  if (!canUseBrowserAnalytics() || analyticsLoadScheduled || scriptRequested) return;
+  analyticsLoadScheduled = true;
+  const idleWindow = window as IdleWindow;
+  let idleHandle: number | null = null;
+  let fallbackTimer = 0;
+
+  const interactionEvents = ["pointerdown", "keydown", "touchstart"] as const;
+  const cleanup = () => {
+    interactionEvents.forEach((eventName) => window.removeEventListener(eventName, load));
+    if (idleHandle !== null) idleWindow.cancelIdleCallback?.(idleHandle);
+    window.clearTimeout(fallbackTimer);
+  };
+  const load = () => {
+    cleanup();
+    ensureGoogleTagScript();
+  };
+
+  interactionEvents.forEach((eventName) => window.addEventListener(eventName, load, { once: true, passive: true }));
+  if (idleWindow.requestIdleCallback) {
+    idleHandle = idleWindow.requestIdleCallback(load, { timeout: 4000 });
+  } else {
+    fallbackTimer = window.setTimeout(load, 3000);
+  }
+};
+
+const getVitalRating = (name: WebVitalName, value: number) => {
+  const thresholds: Record<WebVitalName, [number, number]> = {
+    CLS: [0.1, 0.25],
+    FCP: [1800, 3000],
+    INP: [200, 500],
+    LCP: [2500, 4000],
+    TTFB: [800, 1800],
+  };
+  const [good, poor] = thresholds[name];
+  return value <= good ? "good" : value <= poor ? "needs_improvement" : "poor";
+};
+
+const reportWebVital = (name: WebVitalName, value: number) => {
+  trackEvent("web_vital", {
+    metric_name: name,
+    metric_value: Math.round(name === "CLS" ? value * 1000 : value),
+    metric_rating: getVitalRating(name, value),
+    metric_unit: name === "CLS" ? "score_x1000" : "millisecond",
+    non_interaction: true,
+    page_path: currentPagePath(),
+  });
+};
+
+const observeWebVitals = () => {
+  if (webVitalsInitialized || typeof PerformanceObserver === "undefined") return;
+  webVitalsInitialized = true;
+  const supportedTypes = new Set(PerformanceObserver.supportedEntryTypes || []);
+  const observers: PerformanceObserver[] = [];
+  let clsValue = 0;
+  let lcpValue = 0;
+  let inpValue = 0;
+  let finalized = false;
+
+  const observe = (
+    type: string,
+    callback: PerformanceObserverCallback,
+    options: PerformanceObserverInit = { type, buffered: true },
+  ) => {
+    if (!supportedTypes.has(type)) return;
+    try {
+      const observer = new PerformanceObserver(callback);
+      observer.observe(options);
+      observers.push(observer);
+    } catch {
+      // Older browsers can omit individual performance entry types.
+    }
+  };
+
+  observe("paint", (list, observer) => {
+    const entry = list.getEntriesByName("first-contentful-paint")[0];
+    if (!entry) return;
+    reportWebVital("FCP", entry.startTime);
+    observer.disconnect();
+  });
+  observe("largest-contentful-paint", (list) => {
+    const entries = list.getEntries();
+    const entry = entries[entries.length - 1];
+    if (entry) lcpValue = entry.startTime;
+  });
+  observe("layout-shift", (list) => {
+    for (const entry of list.getEntries() as LayoutShiftEntry[]) {
+      if (!entry.hadRecentInput) clsValue += entry.value;
+    }
+  });
+  observe(
+    "event",
+    (list) => {
+      for (const entry of list.getEntries() as EventTimingEntry[]) {
+        if (entry.interactionId > 0) inpValue = Math.max(inpValue, entry.duration);
+      }
+    },
+    { type: "event", buffered: true, durationThreshold: 40 } as PerformanceObserverInit,
+  );
+
+  const navigation = performance.getEntriesByType("navigation")[0] as PerformanceNavigationTiming | undefined;
+  if (navigation) reportWebVital("TTFB", navigation.responseStart);
+
+  const finalize = () => {
+    if (finalized || document.visibilityState !== "hidden") return;
+    finalized = true;
+    if (lcpValue > 0) reportWebVital("LCP", lcpValue);
+    reportWebVital("CLS", clsValue);
+    if (inpValue > 0) reportWebVital("INP", inpValue);
+    observers.forEach((observer) => observer.disconnect());
+    document.removeEventListener("visibilitychange", finalize);
+    window.removeEventListener("pagehide", finalize);
+  };
+
+  document.addEventListener("visibilitychange", finalize);
+  window.addEventListener("pagehide", finalize);
 };
 
 export const initAnalytics = () => {
@@ -87,8 +232,9 @@ export const initAnalytics = () => {
   window.gtag("js", new Date());
   if (gaMeasurementId) window.gtag("config", gaMeasurementId, { send_page_view: false });
   if (googleAdsId) window.gtag("config", googleAdsId);
-  ensureGoogleTagScript();
   initialized = true;
+  observeWebVitals();
+  scheduleGoogleTagScript();
 };
 
 export const trackPageView = ({
@@ -149,6 +295,7 @@ export const trackGoogleAdsConversion = (conversionLabel: string, params: Analyt
   if (!canUseBrowserAnalytics() || !googleAdsId || !conversionLabel) return;
 
   initAnalytics();
+  ensureGoogleTagScript();
   window.gtag?.(
     "event",
     "conversion",

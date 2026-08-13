@@ -23,6 +23,25 @@ const localizedTeam = {
 const aboutIconMap = { check: CheckCircle, checkcircle: CheckCircle, layers: Layers, messagecircle: MessageCircle, paintbrush: Paintbrush, shieldcheck: ShieldCheck, target: Target, users: Users, wrench: Wrench };
 type AboutCard = { icon: LucideIcon; title: string; desc: string };
 
+const AboutCapabilityList = ({ items }: { items: AboutCard[] }) => (
+  <div className="forest-about-capability-list">
+    {items.map((item) => {
+      const Icon = item.icon;
+      return (
+        <article key={item.title}>
+          <div className="forest-about-capability-list__icon" aria-hidden="true">
+            <Icon />
+          </div>
+          <div className="forest-about-capability-list__copy">
+            <h2>{item.title}</h2>
+            <p>{item.desc}</p>
+          </div>
+        </article>
+      );
+    })}
+  </div>
+);
+
 const normalizeCards = (items: unknown, fallback: AboutCard[]) => {
   if (!Array.isArray(items) || !items.length) return null;
   const normalized = items.map((item, index) => {
@@ -91,12 +110,12 @@ const About = () => {
 
       <section className="forest-chapter forest-chapter--raised">
         <ForestSectionHeading title={(valuesSection?.title as string) || t.valuesTitle} description={(valuesSection?.content as string) || t.valuesDescription} />
-        <div className="forest-principle-grid">{values.map((item) => { const Icon = item.icon; return <article key={item.title}><Icon aria-hidden="true" /><h2>{item.title}</h2><p>{item.desc}</p></article>; })}</div>
+        <AboutCapabilityList items={values} />
       </section>
 
       <section className="forest-chapter">
         <ForestSectionHeading title={(teamSection?.title as string) || t.teamTitle} description={(teamSection?.content as string) || t.teamDescription} />
-        <div className="forest-team-list">{team.map((item) => { const Icon = item.icon; return <article key={item.title}><Icon aria-hidden="true" /><h2>{item.title}</h2><p>{item.desc}</p></article>; })}</div>
+        <AboutCapabilityList items={team} />
       </section>
 
       <section className="forest-chapter forest-chapter--raised forest-history">

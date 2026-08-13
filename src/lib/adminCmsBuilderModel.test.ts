@@ -34,6 +34,7 @@ describe("adminCmsBuilderModel", () => {
   it("marks fixed public routes as unsuitable for new free-form CMS pages", () => {
     expect(isCmsPathHandledByStaticRoute("/services")).toBe(true);
     expect(isCmsPathHandledByStaticRoute("/services/custom")).toBe(true);
+    expect(isCmsPathHandledByStaticRoute("/before-after")).toBe(true);
     expect(isCmsPathHandledByStaticRoute("/promo-page")).toBe(false);
   });
 

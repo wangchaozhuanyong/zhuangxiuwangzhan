@@ -1,4 +1,4 @@
-import { ArrowRight, BadgePercent, ShieldCheck } from "lucide-react";
+import { ArrowRight, ShieldCheck } from "lucide-react";
 import LocalizedLink from "@/components/LocalizedLink";
 import PageMeta from "@/components/PageMeta";
 import { JsonLdBreadcrumb } from "@/components/JsonLd";
@@ -29,7 +29,7 @@ const Promotions = () => {
   const offers = cmsOffers.length ? cmsOffers : t.defaultOffers;
 
   return (
-    <main className="pt-site-header">
+    <main className="forest-promotions-page pt-site-header">
       <PageMeta
         title={pageContent?.seo_title || t.metaTitle}
         description={pageContent?.seo_description || t.metaDescription}
@@ -47,46 +47,59 @@ const Promotions = () => {
         description={pageContent?.description || t.intro}
       />
 
-      <section className="forest-chapter forest-offers-chapter">
-        <div className="forest-offer-stack">
-          {offers.map((offer, index) => (
-            <article key={`${offer.title}-${index}`} className="forest-offer-panel" style={{ top: `calc(6rem + ${index * 1.25}rem)` }}>
-              <div className="forest-offer-panel__icon">
-                <BadgePercent aria-hidden="true" />
-              </div>
-              <div className="forest-offer-panel__copy">
-                <p className="forest-eyebrow">{t.available}</p>
-                <h2>{offer.title}</h2>
-                <p>{offer.description}</p>
-              </div>
-              <div className="forest-offer-panel__terms">
-                <p><ShieldCheck aria-hidden="true" />{t.conditions}</p>
-                <span>{offer.terms}</span>
-              </div>
-            </article>
-          ))}
-        </div>
+      <section className="forest-chapter forest-offers-chapter" aria-labelledby="promotion-options-heading">
+        <div className="forest-offers-sheet">
+          <header className="forest-offers-index">
+            <div className="forest-offers-index__copy">
+              <p className="forest-eyebrow">{t.listEyebrow}</p>
+              <h2 id="promotion-options-heading">{t.listTitle}</h2>
+            </div>
+            <p className="forest-offers-index__count">{t.offerCount(offers.length)}</p>
+          </header>
 
-        <div className="forest-offer-actions">
-          <p>{pageContent?.cta_description || t.intro}</p>
-          <div>
-            <a
-              href={settings.whatsapp_url()}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="forest-button forest-button--outline"
-              onClick={() => trackCtaClick("whatsapp", "promotions", { destination: "whatsapp" })}
-            >
-              <WhatsAppIcon className="h-4 w-4" /> {t.enquire}
-            </a>
-            <LocalizedLink
-              to="/quote"
-              className="forest-button forest-button--light"
-              onClick={() => trackCtaClick("quote", "promotions", { destination: "/quote" })}
-            >
-              {t.quote} <ArrowRight className="h-4 w-4" />
-            </LocalizedLink>
+          <div className="forest-offer-list">
+            {offers.map((offer, index) => (
+              <article
+                key={`${offer.title}-${index}`}
+                className="forest-offer-row"
+                aria-labelledby={`promotion-offer-${index}`}
+              >
+                <span className="forest-offer-row__number" aria-hidden="true">
+                  {String(index + 1).padStart(2, "0")}
+                </span>
+                <div className="forest-offer-row__copy">
+                  <h3 id={`promotion-offer-${index}`}>{offer.title}</h3>
+                  <p>{offer.description}</p>
+                </div>
+                <div className="forest-offer-row__terms">
+                  <p><ShieldCheck aria-hidden="true" />{t.conditions}</p>
+                  <span>{offer.terms}</span>
+                </div>
+              </article>
+            ))}
           </div>
+
+          <footer className="forest-offer-actions" aria-labelledby="promotion-action-heading">
+            <h2 id="promotion-action-heading">{t.actionTitle}</h2>
+            <div className="forest-offer-actions__buttons">
+              <a
+                href={settings.whatsapp_url()}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="forest-button forest-button--outline"
+                onClick={() => trackCtaClick("whatsapp", "promotions", { destination: "whatsapp" })}
+              >
+                <WhatsAppIcon className="h-4 w-4" /> {t.enquire}
+              </a>
+              <LocalizedLink
+                to="/quote"
+                className="forest-button forest-button--light"
+                onClick={() => trackCtaClick("quote", "promotions", { destination: "/quote" })}
+              >
+                {t.quote} <ArrowRight className="h-4 w-4" />
+              </LocalizedLink>
+            </div>
+          </footer>
         </div>
       </section>
     </main>

@@ -1,7 +1,9 @@
-import { AlertCircle, ArrowLeft, ArrowRight, CheckCircle2 } from "lucide-react";
+import { AlertCircle, ArrowRight, CheckCircle2 } from "lucide-react";
 import { useParams } from "react-router-dom";
 import LocalizedLink from "@/components/LocalizedLink";
 import PageMeta from "@/components/PageMeta";
+import ImmersiveHero from "@/components/ImmersiveHero";
+import ProductDetailChrome from "@/components/ProductDetailChrome";
 import PublicLoadingState from "@/components/blocks/PublicLoadingState";
 import SmartImage from "@/components/SmartImage";
 import WhatsAppIcon from "@/components/WhatsAppIcon";
@@ -80,11 +82,17 @@ const ProductDetail = () => {
         { name, url: `/products/${product.slug}` },
       ]} />
 
-      <div className="product-detail-back site-container">
-        <LocalizedLink to="/products"><ArrowLeft className="h-4 w-4" /> {t.back}</LocalizedLink>
-      </div>
+      <ProductDetailChrome
+        productName={name}
+        description={description}
+        backLabel={t.back}
+        shareLabel={t.share}
+        copiedLabel={t.linkCopied}
+        shareFailedLabel={t.shareFailed}
+        navigationLabel={t.productActions}
+      />
 
-      <section className="product-detail-opening">
+      <ImmersiveHero standardPageHero={false} className="product-detail-opening">
         <div className="product-detail-opening__media">
           <SmartImage
             src={product.image}
@@ -136,7 +144,7 @@ const ProductDetail = () => {
             </a>
           </div>
         </div>
-      </section>
+      </ImmersiveHero>
 
       <section className="product-detail-section site-container">
         <header className="product-detail-section__heading">

@@ -205,6 +205,18 @@
     <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/projects" />
   </url>
   <url>
+    <loc>https://flashcast.com.my/en/before-after</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://flashcast.com.my/en/before-after" />
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://flashcast.com.my/zh/before-after" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/before-after" />
+  </url>
+  <url>
+    <loc>https://flashcast.com.my/zh/before-after</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://flashcast.com.my/en/before-after" />
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://flashcast.com.my/zh/before-after" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://flashcast.com.my/en/before-after" />
+  </url>
+  <url>
     <loc>https://flashcast.com.my/en/process</loc>
     <xhtml:link rel="alternate" hreflang="en" href="https://flashcast.com.my/en/process" />
     <xhtml:link rel="alternate" hreflang="zh-CN" href="https://flashcast.com.my/zh/process" />

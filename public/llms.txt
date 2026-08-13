@@ -19,6 +19,7 @@ FLASH CAST SDN. BHD. 是服务吉隆坡、雪兰莪与巴生谷的装修、室�
 
 ## Route Inventory
 - about: 2 localized URLs
+- before-after: 2 localized URLs
 - blog: 78 localized URLs
 - contact: 2 localized URLs
 - faq: 2 localized URLs
@@ -503,6 +504,7 @@ FLASH CAST SDN. BHD. 是服务吉隆坡、雪兰莪与巴生谷的装修、室�
 - https://flashcast.com.my/zh/services/shop-renovation
 - https://flashcast.com.my/zh/services/warehouse
 - https://flashcast.com.my/en/about
+- https://flashcast.com.my/en/before-after
 - https://flashcast.com.my/en/contact
 - https://flashcast.com.my/en/faq
 - https://flashcast.com.my/en/privacy
@@ -555,6 +557,7 @@ FLASH CAST SDN. BHD. 是服务吉隆坡、雪兰莪与巴生谷的装修、室�
 - https://flashcast.com.my/en/quote
 - https://flashcast.com.my/en/terms
 - https://flashcast.com.my/zh/about
+- https://flashcast.com.my/zh/before-after
 - https://flashcast.com.my/zh/contact
 - https://flashcast.com.my/zh/faq
 - https://flashcast.com.my/zh/privacy

@@ -20,6 +20,7 @@ export const translations: Translations = {
   "nav.products": { en: "Products", zh: "装修商品" },
   "nav.promotions": { en: "Promotions", zh: "优惠活动" },
   "nav.locations": { en: "Locations", zh: "服务地区" },
+  "nav.beforeAfter": { en: "Before & After", zh: "改造前后" },
   "nav.navigation": { en: "Navigation", zh: "导航" },
 
   // ============ CTA BUTTONS ============

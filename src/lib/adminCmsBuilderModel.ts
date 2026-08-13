@@ -63,6 +63,7 @@ const STATIC_ROUTE_PREFIXES = [
   "/services",
   "/materials",
   "/projects",
+  "/before-after",
   "/process",
   "/faq",
   "/contact",

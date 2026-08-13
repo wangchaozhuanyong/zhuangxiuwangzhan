@@ -15,7 +15,7 @@ import { buildQuotePath } from "@/lib/quoteContext";
 import { materialsPageText } from "@/i18n/materialsPageText";
 import { ForestSectionHeading } from "@/components/forest/ForestPagePrimitives";
 
-const MATERIAL_CARD_IMAGE_WIDTHS = [560, 720, 900];
+const MATERIAL_CARD_IMAGE_WIDTHS = [360, 560, 720, 900];
 
 
 const Materials = () => {
@@ -42,7 +42,7 @@ const Materials = () => {
   const heroImage = resolvePageHeroImage(pageContent?.image_url, pageHeroImages.materials);
 
   return (
-    <main className="pt-site-header">
+    <main className="forest-material-library-page pt-site-header">
       <PageMeta
         title={pageContent?.seo_title || t.metaTitle}
         description={pageContent?.seo_description || t.metaDescription}
@@ -60,15 +60,15 @@ const Materials = () => {
         description={pageContent?.description || t.intro}
       />
 
-      <section className="forest-chapter forest-chapter--raised">
+      <section className="forest-chapter forest-chapter--raised forest-material-library">
           <ForestSectionHeading eyebrow={pageContent?.subtitle || t.eyebrow} title={t.choose} description={t.chooseText} />
 
-          <div className="forest-listing-grid">
+          <div className="forest-listing-grid forest-material-category-grid">
             {categories.map((category) => (
               <Link
                 key={category.slug}
                 to={`/materials/category/${category.slug}`}
-                className="forest-listing-card"
+                className="forest-listing-card forest-material-category-card"
               >
                 <div className="forest-listing-card__media">
                   <SmartImage
@@ -77,7 +77,7 @@ const Materials = () => {
                     loading="lazy"
                     width={720}
                     height={450}
-                    sizes="(max-width: 767px) 92vw, 46vw"
+                    sizes="46vw"
                     candidateWidths={MATERIAL_CARD_IMAGE_WIDTHS}
                     quality={72}
                     className="h-full w-full object-cover"
@@ -96,6 +96,7 @@ const Materials = () => {
       </section>
 
       <CTABanner
+        className="forest-material-cta"
         title={pageContent?.cta_title || t.ctaTitle}
         description={pageContent?.cta_description || t.ctaText}
         quoteLabel={t.quote}

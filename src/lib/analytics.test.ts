@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 type GtagSpy = ReturnType<typeof vi.fn<(...args: unknown[]) => void>>;
 
@@ -159,5 +159,45 @@ describe("lead analytics events", () => {
     expect(getEventNames(gtag)).toEqual(expect.arrayContaining(["cta_click", "whatsapp_click"]));
     expect(getEventNames(gtag)).not.toContain("generate_lead");
     expect(getEventNames(gtag)).not.toContain("conversion");
+  });
+});
+
+describe("analytics loading", () => {
+  beforeEach(() => {
+    vi.resetModules();
+    document.getElementById("flashcast-google-tag")?.remove();
+    delete window.gtag;
+    delete window.dataLayer;
+    Object.defineProperty(window, "requestIdleCallback", {
+      configurable: true,
+      value: vi.fn(() => 1),
+    });
+    Object.defineProperty(window, "cancelIdleCallback", {
+      configurable: true,
+      value: vi.fn(),
+    });
+  });
+
+  afterEach(() => {
+    document.getElementById("flashcast-google-tag")?.remove();
+  });
+
+  it("defers the Google Tag script until the first interaction", async () => {
+    const { initAnalytics } = await import("@/lib/analytics");
+
+    initAnalytics();
+    expect(document.getElementById("flashcast-google-tag")).toBeNull();
+
+    window.dispatchEvent(new Event("pointerdown"));
+    expect(document.getElementById("flashcast-google-tag")).toBeInstanceOf(HTMLScriptElement);
+  });
+
+  it("loads the Google Tag immediately for a conversion event", async () => {
+    const { trackGoogleAdsConversion } = await import("@/lib/analytics");
+
+    trackGoogleAdsConversion("conversion-label", { value: 1 });
+
+    expect(document.getElementById("flashcast-google-tag")).toBeInstanceOf(HTMLScriptElement);
+    expect(window.dataLayer?.length).toBeGreaterThan(0);
   });
 });

@@ -1,0 +1,163 @@
+@layer components {
+  .home-footer-prelude {
+    position: relative;
+    overflow: hidden;
+    isolation: isolate;
+    border-top: 1px solid rgba(198, 164, 106, 0.18);
+    border-bottom: 1px solid rgba(198, 164, 106, 0.34);
+    color: rgba(255, 250, 238, 0.94);
+    background: linear-gradient(128deg, #302a22 0%, #18201f 46%, #12100d 100%);
+  }
+
+  .home-footer-prelude::before,
+  .home-footer-prelude::after,
+  .home-footer-prelude__beam {
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+    content: "";
+  }
+
+  .home-footer-prelude::before {
+    background:
+      repeating-linear-gradient(90deg, rgba(255, 255, 255, 0.026) 0 1px, transparent 1px 82px),
+      repeating-linear-gradient(0deg, rgba(255, 255, 255, 0.018) 0 1px, transparent 1px 68px);
+  }
+
+  .home-footer-prelude::after {
+    top: auto;
+    height: 7rem;
+    background: linear-gradient(180deg, transparent, rgba(18, 16, 13, 0.98));
+  }
+
+  .home-footer-prelude__beam {
+    background: radial-gradient(ellipse at 50% 100%, rgba(198, 164, 106, 0.12), transparent 46%);
+  }
+
+  .home-footer-prelude__panel {
+    position: relative;
+    display: grid;
+    max-width: 68rem;
+    margin-inline: auto;
+    gap: 1.25rem;
+    justify-items: center;
+    overflow: hidden;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 8px;
+    padding: clamp(1.25rem, 5vw, 2.35rem);
+    background: rgba(20, 18, 15, 0.3);
+    box-shadow: 0 30px 88px -70px rgba(0, 0, 0, 0.92);
+    backdrop-filter: blur(16px) saturate(1.1);
+  }
+
+  .home-footer-prelude__rule,
+  .home-footer-prelude__copy,
+  .home-footer-prelude__actions {
+    position: relative;
+    z-index: 1;
+  }
+
+  .home-footer-prelude__rule {
+    display: block;
+    width: 3.2rem;
+    height: 2px;
+    margin-inline: auto;
+    background: linear-gradient(90deg, transparent, rgba(198, 164, 106, 0.94), transparent);
+  }
+
+  .home-footer-prelude__copy {
+    max-width: 42rem;
+    margin-inline: auto;
+    text-align: center;
+  }
+
+  .home-footer-prelude__eyebrow {
+    margin-bottom: 0.55rem;
+    color: rgba(214, 177, 111, 0.94);
+    font-size: 0.68rem;
+    font-weight: 800;
+    line-height: 1.2;
+    text-transform: uppercase;
+  }
+
+  .home-footer-prelude__title {
+    max-width: 38rem;
+    margin: 0 auto;
+    color: rgba(255, 250, 238, 0.96);
+    font-family: var(--font-display);
+    font-size: clamp(1.85rem, 7vw, 3rem);
+    font-weight: 800;
+    line-height: 1.1;
+    text-wrap: balance;
+  }
+
+  .home-footer-prelude__text {
+    max-width: 40rem;
+    margin: 0.85rem auto 0;
+    color: rgba(255, 250, 238, 0.68);
+    font-size: 0.95rem;
+    line-height: 1.75;
+  }
+
+  .home-footer-prelude__actions {
+    display: flex;
+    width: 100%;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.72rem;
+  }
+
+  .home-footer-prelude__button {
+    display: inline-flex;
+    width: min(100%, 18.5rem);
+    min-height: 2.95rem;
+    align-items: center;
+    justify-content: center;
+    gap: 0.55rem;
+    border-radius: 999px;
+    padding: 0.76rem 1.1rem;
+    font-size: 0.9rem;
+    font-weight: 800;
+    line-height: 1;
+    transition: transform 240ms ease, border-color 240ms ease, background 240ms ease;
+  }
+
+  .home-footer-prelude__button--primary {
+    border: 1px solid rgba(255, 252, 246, 0.74);
+    color: #17130f;
+    background: rgba(255, 253, 247, 0.96);
+  }
+
+  .home-footer-prelude__button--secondary {
+    border: 1px solid rgba(198, 164, 106, 0.28);
+    color: rgba(255, 250, 238, 0.92);
+    background: rgba(255, 255, 255, 0.045);
+  }
+
+  .home-footer-prelude__button:hover {
+    transform: translateY(-1px);
+  }
+
+  @media (min-width: 768px) {
+    .home-footer-prelude__panel {
+      grid-template-columns: 3px minmax(0, 1fr) minmax(15rem, 18rem);
+      align-items: center;
+      gap: 1.65rem;
+    }
+
+    .home-footer-prelude__rule {
+      width: 3px;
+      height: 6rem;
+    }
+
+    .home-footer-prelude__actions {
+      align-items: stretch;
+      justify-self: end;
+    }
+
+    .home-footer-prelude__button {
+      width: 100%;
+    }
+  }
+}

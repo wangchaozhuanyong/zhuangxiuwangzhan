@@ -1,6 +1,7 @@
 import { BadgePercent, Home, Images, Mail, PackageSearch } from "lucide-react";
 import { useLocation } from "react-router-dom";
 import LocalizedLink from "@/components/LocalizedLink";
+import { usePublicChrome } from "@/contexts/PublicChromeContext";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { forestUiText } from "@/i18n/forestUiText";
 import { stripLanguagePrefix } from "@/i18n/routes";
@@ -18,8 +19,11 @@ const isActive = (pathname: string, path: string) => path === "/" ? pathname ===
 const ForestBottomNav = () => {
   const location = useLocation();
   const { language } = useLanguage();
+  const { showMobileActionBar } = usePublicChrome();
   const text = forestUiText[language];
   const pathname = stripLanguagePrefix(location.pathname);
+
+  if (showMobileActionBar) return null;
 
   return (
     <nav className="forest-bottom-nav" aria-label={text.mobileNavLabel}>

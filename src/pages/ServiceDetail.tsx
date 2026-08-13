@@ -2,6 +2,7 @@
 import { useParams } from "react-router-dom";
 import Link from "@/components/LocalizedLink";
 import { Button } from "@/components/ui/button";
+import ImmersiveHero from "@/components/ImmersiveHero";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { ArrowRight, ArrowLeft, CheckCircle } from "lucide-react";
 import WhatsAppIcon from "@/components/WhatsAppIcon";
@@ -117,7 +118,7 @@ const ServiceDetail = () => {
       <JsonLdBreadcrumb items={[{ name: t.breadcrumbHome, url: "/" }, { name: t.breadcrumbServices, url: "/services" }, { name: serviceTitle, url: `/services/${service.slug}` }]} />
       {serviceFaqs.length > 0 && <JsonLdFAQ faqs={serviceFaqs.map((faq) => ({ question: faq.q, answer: faq.a }))} />}
 
-      <section data-forest-page-hero="true" className="page-hero page-hero--detail">
+      <ImmersiveHero className="page-hero page-hero--detail">
         <div className="page-hero__media page-hero-media hero-media-mask">
           <SmartImage src={heroImage} alt={serviceTitle} className="page-hero__image h-full w-full object-cover" width={1920} height={800} loading="eager" fetchPriority="high" sizes="100vw" candidateWidths={SERVICE_HERO_IMAGE_WIDTHS} quality={76} />
           <div className="page-hero__overlay absolute inset-0 media-readable-overlay" aria-hidden="true" />
@@ -157,7 +158,7 @@ const ServiceDetail = () => {
             ))}
           </div>
         </div>
-      </section>
+      </ImmersiveHero>
 
       <section className="section-padding bg-background">
         <div className="container-narrow">

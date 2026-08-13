@@ -55,7 +55,7 @@ export function SmartImage({
     (width
       ? [width, Math.min(width * 2, 2400)]
       : [480, 768, 1024, 1440]);
-  const fallbackWidth = width ?? widths[0] ?? 480;
+  const fallbackWidth = candidateWidths?.[0] ?? width ?? widths[0] ?? 480;
 
   const localResponsiveWidths =
     !isSupabase && candidateWidths && isLocalResponsiveImageCandidate(localSrc)
@@ -91,4 +91,3 @@ export function SmartImage({
 }
 
 export default SmartImage;
-

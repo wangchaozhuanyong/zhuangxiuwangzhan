@@ -5,6 +5,7 @@
 import type { ReactNode } from "react";
 import { ArrowLeft } from "lucide-react";
 import LocalizedLink from "@/components/LocalizedLink";
+import ImmersiveHero from "@/components/ImmersiveHero";
 import SmartImage from "@/components/SmartImage";
 import { buildLocalResponsiveSrcSet, isLocalResponsiveImageCandidate } from "@/lib/localResponsiveImage";
 import { cn } from "@/lib/utils";
@@ -49,8 +50,7 @@ const HeroBanner = ({
       : imageMobile;
 
   return (
-    <section
-      data-forest-page-hero="true"
+    <ImmersiveHero
       className={cn(
         "page-hero",
         variant !== "standard" && `page-hero--${variant}`,
@@ -96,7 +96,7 @@ const HeroBanner = ({
         {meta ? <div className="page-hero__meta">{meta}</div> : null}
         {actions ? <div className="page-hero__actions">{actions}</div> : null}
       </div>
-    </section>
+    </ImmersiveHero>
   );
 };
 

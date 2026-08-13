@@ -50,6 +50,7 @@ const staticPaths = [
   "/promotions",
   "/locations",
   "/projects",
+  "/before-after",
   "/process",
   "/faq",
   "/contact",

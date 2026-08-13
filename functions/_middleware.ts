@@ -4,6 +4,12 @@ import {
   readCookieValue,
   resolvePreferredLanguage,
 } from "../src/i18n/languageDetection";
+import {
+  buildLocalResponsiveSrcSet,
+  isLocalResponsiveImageCandidate,
+  normalizeLocalResponsiveImageWidths,
+  toLocalResponsiveImageSrc,
+} from "../src/lib/localResponsiveImage";
 
 type SeoEntry = {
   lang: string;
@@ -59,13 +65,12 @@ const DEFAULT_MAP_LATITUDE = "3.0830403";
 const DEFAULT_MAP_LONGITUDE = "101.6708234";
 const PUBLIC_HTML_BROWSER_TTL_SECONDS = 60;
 const PUBLIC_HTML_EDGE_TTL_SECONDS = 300;
-const PUBLIC_HTML_CACHE_VERSION = "20260812-new-client-design";
+const PUBLIC_HTML_CACHE_VERSION = "20260813-performance";
 const SITE_SETTINGS_CACHE_TTL_MS = 5 * 60 * 1000;
 const PUBLIC_PROJECT_SUMMARIES_CACHE_TTL_MS = 5 * 60 * 1000;
 const PUBLIC_PROJECT_DETAIL_CACHE_TTL_MS = 5 * 60 * 1000;
 const PUBLIC_HOME_BUNDLE_CACHE_TTL_MS = 5 * 60 * 1000;
 const PUBLIC_PAGE_DATA_CACHE_TTL_MS = 5 * 60 * 1000;
-const HERO_MEDIA_VERSION = "20260619-no-text-home-hero";
 const HTML_CACHE_DEBUG_HEADER = "x-flashcast-html-cache";
 const PRODUCTION_SCRIPT_SRC = [
   "'self'",
@@ -166,13 +171,17 @@ const escapeHtml = (value: string) =>
 
 type ImagePreload = {
   href: string;
-  srcSet: string;
-  sizes: string;
+  srcSet?: string;
+  sizes?: string;
 };
 
 const PROJECT_CARD_IMAGE_WIDTHS = [360, 560, 720, 900];
+const HOME_HERO_IMAGE_WIDTHS = [480, 720, 960, 1280, 1600];
+const DEFAULT_HOME_HERO_IMAGE = "/images/heroes/hero-luxury-living.webp";
+const HOME_HERO_IMAGE_SIZES = "(max-width: 767px) 100vw, (max-width: 1199px) 58vw, 60vw";
 const SUPABASE_PUBLIC_OBJECT_SEGMENT = "/storage/v1/object/public/";
 const SUPABASE_PUBLIC_RENDER_SEGMENT = "/storage/v1/render/image/public/";
+const STATIC_SITE_HOSTS = new Set(["flashcast.com.my", "www.flashcast.com.my"]);
 
 const isRecord = (value: unknown): value is Record<string, unknown> =>
   Boolean(value && typeof value === "object" && !Array.isArray(value));
@@ -251,6 +260,78 @@ const toSupabaseRenderImageUrl = (value: string, width: number, height: number) 
   return `${renderBase}${separator}${params.toString()}`;
 };
 
+const normalizePreloadImageUrl = (value: string) => {
+  if (!value) return value;
+  let normalized = value;
+
+  if (/^https?:\/\//i.test(value)) {
+    try {
+      const parsed = new URL(value);
+      if (STATIC_SITE_HOSTS.has(parsed.hostname.toLowerCase()) && /^\/(?:images|videos)\//i.test(parsed.pathname)) {
+        normalized = `${parsed.pathname}${parsed.search}${parsed.hash}`;
+      }
+    } catch {
+      return value;
+    }
+  }
+
+  return normalized.startsWith("/")
+    ? normalized.replace(/\.(?:jpe?g|png)(\?[^#]*)?($|#)/i, ".webp$1$2")
+    : normalized;
+};
+
+const buildImagePreload = (
+  imageUrl: string,
+  widths: number[],
+  options: { height: number; sizes: string },
+): ImagePreload => {
+  if (isSupabasePublicObjectUrl(imageUrl)) {
+    return {
+      href: toSupabaseRenderImageUrl(imageUrl, widths[0] ?? 480, options.height),
+      srcSet: widths
+        .map((width) => `${toSupabaseRenderImageUrl(imageUrl, width, options.height)} ${width}w`)
+        .join(", "),
+      sizes: options.sizes,
+    };
+  }
+
+  const normalizedUrl = normalizePreloadImageUrl(imageUrl);
+  if (isLocalResponsiveImageCandidate(normalizedUrl)) {
+    const responsiveWidths = normalizeLocalResponsiveImageWidths(widths);
+    return {
+      href: toLocalResponsiveImageSrc(normalizedUrl, responsiveWidths[0] ?? widths[0] ?? 480),
+      srcSet: buildLocalResponsiveSrcSet(normalizedUrl, responsiveWidths),
+      sizes: options.sizes,
+    };
+  }
+
+  return { href: normalizedUrl };
+};
+
+const getHomeHeroImageUrl = (bundle: HomeContentBundleRow | null, key: string) => {
+  const slideImage = readString(readRecordArray(bundle?.hero_slides)[0], "image_url");
+  if (slideImage) return slideImage;
+
+  const language = key.startsWith("/zh") ? "zh" : "en";
+  const cmsPage = readRecordArray(bundle?.cms_pages)[0];
+  const cmsSections = readRecordArray(cmsPage?.cms_sections).sort(
+    (a, b) => Number(a.sort_order || 0) - Number(b.sort_order || 0),
+  );
+  const cmsHero = cmsSections.find(
+    (section) => section.section_key === "hero" || section.section_type === "hero",
+  );
+  const localizedContent = cmsHero && isRecord(cmsHero[`content_${language}`])
+    ? (cmsHero[`content_${language}`] as Record<string, unknown>)
+    : null;
+  const cmsImage = readString(localizedContent, "image_url") || readString(
+    isRecord(cmsHero?.settings) ? cmsHero.settings : null,
+    "image_url",
+  );
+  if (cmsImage) return cmsImage;
+
+  return readString(readRecordArray(bundle?.site_pages)[0], "image_url") || DEFAULT_HOME_HERO_IMAGE;
+};
+
 const getProjectImageRank = (record: Record<string, unknown>) => {
   const imageType = readString(record, "image_type");
   if (imageType === "cover") return 0;
@@ -300,9 +381,15 @@ const buildProjectImagePreloads = (
 const getDynamicImagePreloads = (
   key: string,
   projectSummaries: ProjectSummaryRow[] | null,
+  homeContentBundle: HomeContentBundleRow | null,
 ) => {
   if (isHomePageKey(key)) {
-    return [];
+    return [
+      buildImagePreload(getHomeHeroImageUrl(homeContentBundle, key), HOME_HERO_IMAGE_WIDTHS, {
+        height: 1100,
+        sizes: HOME_HERO_IMAGE_SIZES,
+      }),
+    ];
   }
 
   if (getTopLevelPublicPageKey(key) === "projects") {
@@ -466,9 +553,6 @@ const injectPerformanceHints = (html: string, env: Record<string, string | undef
     '<meta data-flashcast-performance-hints="true" />',
     supabaseOrigin ? `<link rel="preconnect" href="${escapeHtml(supabaseOrigin)}" crossorigin />` : "",
     supabaseOrigin ? `<link rel="dns-prefetch" href="//${escapeHtml(new URL(supabaseOrigin).hostname)}" />` : "",
-    `<link rel="preload" as="image" href="/videos/home-hero-poster-mobile-no-text-20260619.webp?v=${HERO_MEDIA_VERSION}" media="(max-width: 767px)" fetchpriority="high" />`,
-    `<link rel="preload" as="image" href="/videos/home-hero-poster-tablet-no-text-20260619.webp?v=${HERO_MEDIA_VERSION}" media="(min-width: 768px) and (max-width: 1180px) and (orientation: portrait)" fetchpriority="high" />`,
-    `<link rel="preload" as="image" href="/videos/home-hero-poster-no-text-20260619.webp?v=${HERO_MEDIA_VERSION}" media="(min-width: 768px) and (orientation: landscape), (min-width: 1181px)" fetchpriority="high" />`,
   ].filter(Boolean);
 
   return html.replace("</head>", `    ${hints.join("\n    ")}\n  </head>`);
@@ -479,10 +563,12 @@ const injectDynamicImagePreloads = (html: string, preloads: ImagePreload[]) => {
 
   const tags = [
     '<meta data-flashcast-dynamic-image-preloads="true" />',
-    ...preloads.map(
-      (preload) =>
-        `<link rel="preload" as="image" href="${escapeHtml(preload.href)}" imagesrcset="${escapeHtml(preload.srcSet)}" imagesizes="${escapeHtml(preload.sizes)}" fetchpriority="high" />`,
-    ),
+    ...preloads.map((preload) => {
+      const responsiveAttributes = preload.srcSet && preload.sizes
+        ? ` imagesrcset="${escapeHtml(preload.srcSet)}" imagesizes="${escapeHtml(preload.sizes)}"`
+        : "";
+      return `<link rel="preload" as="image" href="${escapeHtml(preload.href)}"${responsiveAttributes} fetchpriority="high" />`;
+    }),
   ];
 
   return html.replace("</head>", `    ${tags.join("\n    ")}\n  </head>`);
@@ -1378,7 +1464,7 @@ export const onRequest: PagesFunction = async (context) => {
   }
   transformed = injectDynamicImagePreloads(
     transformed,
-    getDynamicImagePreloads(key, projectSummaries),
+    getDynamicImagePreloads(key, projectSummaries, homeContentBundle),
   );
   transformed = injectPerformanceHints(
     transformed,

@@ -101,7 +101,7 @@ const Services = () => {
       <HeroBanner image={heroImage.desktop} imageMobile={heroImage.mobile} imageAlt={pageContent?.alt || t.heroAlt} label={pageContent?.subtitle || t.eyebrow} title={pageContent?.title || t.title} description={pageContent?.description || t.intro} />
 
       <section className="forest-chapter forest-service-index">
-        <ForestSectionHeading eyebrow={t.eyebrow} title={t.directoryTitle} description={directoryDescription} />
+        <ForestSectionHeading title={t.directoryTitle} description={directoryDescription} className="forest-service-index__heading" />
         <ForestFilterNav items={filterItems} value={activeGroup} onChange={(value) => setActiveGroup(value as ServiceGroupId)} ariaLabel={t.directoryTitle} />
         {isLoading ? (
           <ForestContentState variant="loading" compact />
