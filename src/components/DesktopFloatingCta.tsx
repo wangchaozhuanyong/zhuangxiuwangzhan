@@ -88,7 +88,7 @@ const DesktopFloatingCta = () => {
   }, [isDesktop]);
 
   useEffect(() => {
-    if (!isDesktop || !("IntersectionObserver" in window)) {
+    if (!isDesktop || suppressPrompt || !("IntersectionObserver" in window)) {
       setContentOverlapZone(false);
       return;
     }
@@ -116,7 +116,7 @@ const DesktopFloatingCta = () => {
       footerObserver.disconnect();
       visibleTargets.clear();
     };
-  }, [isDesktop, location.pathname]);
+  }, [isDesktop, location.pathname, suppressPrompt]);
 
   const dismissPrompt = () => {
     writeBrowserPreference(CTA_DISMISSED_KEY, String(Date.now()));
