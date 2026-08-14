@@ -1,5 +1,16 @@
 export const adminDefaultContentSeedText = {
   en: {
+    sync: {
+      title: "Default content sync",
+      description: "Add missing records and fill blank fields from the reviewed code defaults. Existing content is not overwritten.",
+      action: "Sync defaults",
+      confirmTitle: "Sync default content?",
+      confirmDescription: "This writes only missing records and blank fields. Existing non-empty admin content stays unchanged.",
+      confirmLabel: "Run sync",
+      running: "Syncing...",
+      noChanges: "Everything is already in sync.",
+      completed: "Sync complete: {inserted} inserted, {updated} updated.",
+    },
     companyStats: [
       { value: "Scope", label: "Clear project planning" },
       { value: "Kuala Lumpur & Selangor", label: "Local service areas" },
@@ -28,6 +39,17 @@ export const adminDefaultContentSeedText = {
     ],
   },
   zh: {
+    sync: {
+      title: "默认内容同步",
+      description: "从已审核的代码默认值补充缺失记录和空字段，不覆盖后台已有内容。",
+      action: "同步默认内容",
+      confirmTitle: "确认同步默认内容？",
+      confirmDescription: "本次只新增缺失记录、补充空字段，后台已有的非空内容不会被覆盖。",
+      confirmLabel: "开始同步",
+      running: "正在同步...",
+      noChanges: "当前内容已经同步，无需修改。",
+      completed: "同步完成：新增 {inserted} 条，补充 {updated} 条。",
+    },
     companyStats: [
       { value: "范围", label: "清楚规划范围" },
       { value: "吉隆坡与雪兰莪", label: "本地服务区域" },

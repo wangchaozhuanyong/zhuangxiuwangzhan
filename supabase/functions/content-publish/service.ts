@@ -257,6 +257,52 @@ function cleanServicePayload(record: Record<string, unknown>, nextStatus?: Conte
   if (hasMediaPlaceholder(payload)) throw new Error("Media placeholders remain. Upload/select media in the admin media library first.");
   if (!isSafeImageUrl(payload.image_url)) throw new Error("image_url must be empty, site-relative, HTTPS, or localhost for local testing.");
 
+  if (status === "published") {
+    const requiredFields = [
+      "title_zh",
+      "title_en",
+      "excerpt_zh",
+      "excerpt_en",
+      "content_zh",
+      "content_en",
+      "image_url",
+      "alt_zh",
+      "alt_en",
+      "suitable_for_zh",
+      "suitable_for_en",
+      "common_projects_zh",
+      "common_projects_en",
+      "scope_items_zh",
+      "scope_items_en",
+      "process_steps_zh",
+      "process_steps_en",
+      "faqs_zh",
+      "faqs_en",
+      "seo_title_zh",
+      "seo_title_en",
+      "seo_description_zh",
+      "seo_description_en",
+    ];
+    const missingFields = requiredFields.filter((field) => {
+      const value = payload[field];
+      return !value || (Array.isArray(value) && value.length === 0);
+    });
+    const incompleteFields = ["process_steps_zh", "process_steps_en"].filter((field) =>
+      (payload[field] as Array<{ title?: string; desc?: string }>).some((item) => !item.title || !item.desc),
+    );
+    incompleteFields.push(
+      ...["faqs_zh", "faqs_en"].filter((field) =>
+        (payload[field] as Array<{ q?: string; a?: string }>).some((item) => !item.q || !item.a),
+      ),
+    );
+    const invalidFields = Array.from(new Set([...missingFields, ...incompleteFields]));
+    if (invalidFields.length) {
+      throw new Error(
+        `Published service requires bilingual content, structured details, SEO, image, and accessibility fields: ${invalidFields.join(", ")}.`,
+      );
+    }
+  }
+
   return { payload, slug, warnings };
 }
 

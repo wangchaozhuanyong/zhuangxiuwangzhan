@@ -65,6 +65,54 @@ const cleanFaqs = (value?: TextPairItem[] | null) =>
     .map((item) => ({ ...item, q: String(item?.q || "").trim(), a: String(item?.a || "").trim() }))
     .filter((item) => item.q || item.a);
 
+const publishedServiceFields = [
+  "title_zh",
+  "title_en",
+  "excerpt_zh",
+  "excerpt_en",
+  "content_zh",
+  "content_en",
+  "image_url",
+  "alt_zh",
+  "alt_en",
+  "suitable_for_zh",
+  "suitable_for_en",
+  "common_projects_zh",
+  "common_projects_en",
+  "scope_items_zh",
+  "scope_items_en",
+  "process_steps_zh",
+  "process_steps_en",
+  "faqs_zh",
+  "faqs_en",
+  "seo_title_zh",
+  "seo_title_en",
+  "seo_description_zh",
+  "seo_description_en",
+] as const;
+
+export const getAdminServicePublishIssues = (payload: Record<string, unknown>) => {
+  const missingFields = publishedServiceFields.filter((field) => {
+    const value = payload[field];
+    return !value || (typeof value === "string" && !value.trim()) || (Array.isArray(value) && value.length === 0);
+  });
+  const incompleteFields = ["process_steps_zh", "process_steps_en"].filter((field) =>
+    ((payload[field] as TextPairItem[] | undefined) || []).some((item) => !String(item.title || "").trim() || !String(item.desc || "").trim()),
+  );
+  incompleteFields.push(
+    ...["faqs_zh", "faqs_en"].filter((field) =>
+      ((payload[field] as TextPairItem[] | undefined) || []).some((item) => !String(item.q || "").trim() || !String(item.a || "").trim()),
+    ),
+  );
+  return Array.from(new Set([...missingFields, ...incompleteFields]));
+};
+
+const assertPublishedServiceComplete = (payload: Record<string, unknown>) => {
+  if (payload.status !== "published") return;
+  const issues = getAdminServicePublishIssues(payload);
+  if (issues.length) throw new Error(`Published service is incomplete: ${issues.join(", ")}.`);
+};
+
 export async function checkAdminServiceSlugUnique(slug: string, currentId?: string) {
   const value = normalizeServiceSlug(slug);
   if (!value) return false;
@@ -98,6 +146,7 @@ export function buildAdminServicePayload(record: AdminServiceRecord, nextStatus?
 
 export async function saveAdminService(input: SaveAdminServiceInput) {
   const { slug, payload } = buildAdminServicePayload(input.record, input.nextStatus);
+  assertPublishedServiceComplete(payload);
   const saved = await saveServiceRecord({
     payload,
     id: input.record.id,
@@ -116,6 +165,7 @@ export async function saveAdminService(input: SaveAdminServiceInput) {
 
 export async function publishAdminService(input: SaveAdminServiceInput & { approvalId?: string; source?: string }) {
   const { slug, payload } = buildAdminServicePayload(input.record, input.nextStatus || "published");
+  assertPublishedServiceComplete(payload);
   const result = await publishServiceRecord({
     record: payload,
     nextStatus: (payload.status as AdminServiceRecord["status"]) || "published",

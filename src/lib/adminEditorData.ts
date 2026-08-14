@@ -1,7 +1,6 @@
-import { ensureAdminDefaultContent } from "@/lib/adminDefaultContent";
 import {
-  ensureAboutSectionRecord,
-  ensureHomeSectionRecord,
+  fetchAboutSectionRecord,
+  fetchHomeSectionRecord,
   fetchAboutEditorCtaBlock,
   fetchHomeEditorAuxiliaryRows,
   hasAdminEditorDatabaseClient,
@@ -141,16 +140,13 @@ export type AdminUserRow = {
   version?: number | null;
 };
 
-async function ensureHomeSection(
-  section_key: string,
-  defaultStatus: "draft" | "published" = "published",
-): Promise<HomeSectionRow | null> {
-  const row = await ensureHomeSectionRecord(section_key, defaultStatus);
+async function fetchHomeSection(section_key: string): Promise<HomeSectionRow | null> {
+  const row = await fetchHomeSectionRecord(section_key);
   return (row as HomeSectionRow | null) || null;
 }
 
-async function ensureAboutSection(section_key: string): Promise<AboutSectionRow | null> {
-  const row = await ensureAboutSectionRecord(section_key);
+async function fetchAboutSection(section_key: string): Promise<AboutSectionRow | null> {
+  const row = await fetchAboutSectionRecord(section_key);
   return (row as AboutSectionRow | null) || null;
 }
 
@@ -159,12 +155,10 @@ export async function fetchAdminHomeEditorData(): Promise<AdminHomeEditorData> {
     return { stats: null, why: null, brandPartnersVisibility: null, processSteps: [], faqRows: [], ctaBlock: null };
   }
 
-  await ensureAdminDefaultContent();
-
   const [stats, why, brandPartnersVisibility, auxiliary] = await Promise.all([
-    ensureHomeSection("stats"),
-    ensureHomeSection("why_choose_us"),
-    ensureHomeSection("brand_partners", "draft"),
+    fetchHomeSection("stats"),
+    fetchHomeSection("why_choose_us"),
+    fetchHomeSection("brand_partners"),
     fetchHomeEditorAuxiliaryRows(),
   ]);
 
@@ -183,12 +177,10 @@ export async function fetchAdminAboutEditorData(): Promise<AdminAboutEditorData>
     return { sections: {}, ctaBlock: null };
   }
 
-  await ensureAdminDefaultContent();
-
-  const ensured = await Promise.all(aboutSectionKeys.map((key) => ensureAboutSection(key)));
+  const rows = await Promise.all(aboutSectionKeys.map((key) => fetchAboutSection(key)));
   const sections: Record<string, AboutSectionRow | null> = {};
   aboutSectionKeys.forEach((key, index) => {
-    sections[key] = ensured[index] ?? null;
+    sections[key] = rows[index] ?? null;
   });
 
   const data = await fetchAboutEditorCtaBlock();

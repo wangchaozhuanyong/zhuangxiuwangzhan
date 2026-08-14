@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { blogPosts } from "@/data/blog";
 import { landingPages } from "@/data/landings";
@@ -46,9 +46,6 @@ type SeedSummary = {
 
 type DbRow = Record<string, unknown>;
 
-const AUTO_SEED_CACHE_KEY = "flashcast_admin_default_seed_checked_at";
-const AUTO_SEED_CACHE_MS = 7 * 24 * 60 * 60 * 1000;
-
 const zh = (value: string) => translateDisplayText(value || "", "zh");
 const tr = (key: string, lang: "en" | "zh") => translations[key]?.[lang] || key;
 
@@ -90,46 +87,6 @@ const omitReadonly = (row: DbRow) => {
   delete copy.created_at;
   delete copy.updated_at;
   return copy;
-};
-
-const getAutoSeedCacheTime = () => {
-  if (typeof window === "undefined") return 0;
-  try {
-    const value = Number(window.localStorage.getItem(AUTO_SEED_CACHE_KEY) || "0");
-    return Number.isFinite(value) ? value : 0;
-  } catch {
-    return 0;
-  }
-};
-
-const shouldSkipAutoSeed = () => {
-  const checkedAt = getAutoSeedCacheTime();
-  return checkedAt > 0 && Date.now() - checkedAt < AUTO_SEED_CACHE_MS;
-};
-
-const rememberAutoSeed = () => {
-  if (typeof window === "undefined") return;
-  try {
-    window.localStorage.setItem(AUTO_SEED_CACHE_KEY, String(Date.now()));
-  } catch {
-    // Ignore storage failures. The seed still completed; only the browser-side skip cache failed.
-  }
-};
-
-const scheduleIdleWork = (callback: () => void) => {
-  if (typeof window === "undefined") return () => undefined;
-  const browserWindow = window as typeof window & {
-    requestIdleCallback?: (cb: () => void, options?: { timeout: number }) => number;
-    cancelIdleCallback?: (id: number) => void;
-  };
-
-  if (browserWindow.requestIdleCallback) {
-    const idleId = browserWindow.requestIdleCallback(callback, { timeout: 6000 });
-    return () => browserWindow.cancelIdleCallback?.(idleId);
-  }
-
-  const timeoutId = window.setTimeout(callback, 3500);
-  return () => window.clearTimeout(timeoutId);
 };
 
 const buildBlankPatch = (current: DbRow, defaults: DbRow) => {
@@ -1029,7 +986,7 @@ export async function ensureAdminDefaultContent(): Promise<SeedSummary> {
 
   if (seedPromise) return seedPromise;
 
-  seedPromise = (async () => {
+  const task = (async () => {
     let inserted = 0;
     let updated = 0;
     const add = (result: { inserted: number; updated: number }) => {
@@ -1058,10 +1015,8 @@ export async function ensureAdminDefaultContent(): Promise<SeedSummary> {
     add(await insertIfGroupEmpty("brand_partners", brandPartnerRows));
     add(await insertIfGroupEmpty("testimonials", testimonialRows));
 
-    rememberAutoSeed();
     return { status: "done" as const, inserted, updated };
   })().catch((error) => {
-    seedPromise = null;
     return {
       status: "error" as const,
       inserted: 0,
@@ -1070,48 +1025,27 @@ export async function ensureAdminDefaultContent(): Promise<SeedSummary> {
     };
   });
 
-  return seedPromise;
+  seedPromise = task;
+  const result = await task;
+  if (seedPromise === task) seedPromise = null;
+  return result;
 }
 
-export function useAdminDefaultContentSeed(options: { enabled?: boolean } = {}) {
+export function useAdminDefaultContentSeed() {
   const queryClient = useQueryClient();
   const [summary, setSummary] = useState<SeedSummary>({ status: "idle", inserted: 0, updated: 0 });
 
-  useEffect(() => {
-    let active = true;
-    if (options.enabled === false) {
-      setSummary({ status: "idle", inserted: 0, updated: 0 });
-      return () => {
-        active = false;
-      };
+  const run = useCallback(async () => {
+    setSummary((current) => ({ ...current, status: "running", error: undefined }));
+    const result = await ensureAdminDefaultContent();
+    setSummary(result);
+    if (result.status === "done" && (result.inserted || result.updated)) {
+      void queryClient.invalidateQueries({ queryKey: ["admin"], refetchType: "inactive" });
+      void queryClient.invalidateQueries({ queryKey: ["published"], refetchType: "inactive" });
+      void queryClient.invalidateQueries({ queryKey: ["site-settings"], refetchType: "inactive" });
     }
+    return result;
+  }, [queryClient]);
 
-    if (shouldSkipAutoSeed()) {
-      setSummary({ status: "done", inserted: 0, updated: 0 });
-      return () => {
-        active = false;
-      };
-    }
-
-    const cancelIdleWork = scheduleIdleWork(() => {
-      if (!active) return;
-      setSummary((current) => ({ ...current, status: "running" }));
-      void ensureAdminDefaultContent().then((result) => {
-        if (!active) return;
-        setSummary(result);
-        if (result.status === "done" && (result.inserted || result.updated)) {
-          void queryClient.invalidateQueries({ queryKey: ["admin"], refetchType: "inactive" });
-          void queryClient.invalidateQueries({ queryKey: ["published"], refetchType: "inactive" });
-          void queryClient.invalidateQueries({ queryKey: ["site-settings"], refetchType: "inactive" });
-        }
-      });
-    });
-
-    return () => {
-      active = false;
-      cancelIdleWork();
-    };
-  }, [queryClient, options.enabled]);
-
-  return summary;
+  return { ...summary, run };
 }
