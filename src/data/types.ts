@@ -105,7 +105,11 @@ export interface BlogPost {
   date: string;              // publish date string
   readTime: string;          // estimated read time
   image: string;             // featured image URL
+  imageAlt?: string;         // localized featured image alt text
   tags: string[];            // article tags
+  seoTitle?: string;         // localized SEO title from CMS
+  seoDescription?: string;   // localized SEO description from CMS
+  updatedAt?: string;        // last CMS update timestamp
 }
 
 // ============ LEADS (Customer Enquiries) ============

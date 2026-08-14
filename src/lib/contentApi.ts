@@ -17,7 +17,7 @@ import {
 } from "@/backend/modules/cms/repository/publicContentRepository";
 import { stripHtml } from "@/lib/text";
 import { translateDisplayText } from "@/i18n/displayLabels";
-import { formatBlogReadTime } from "@/lib/blogMeta";
+import { estimateBlogReadMinutes } from "@/lib/blogMeta";
 import type { MaterialCatalogCategory } from "@/lib/materialCatalog";
 import { readPreloadedPublicData } from "@/lib/publicPreload";
 import { toArray, toRecord, toText, type UnknownRecord } from "@/lib/recordUtils";
@@ -519,22 +519,35 @@ export const getPublishedBlogPosts = async (language: "en" | "zh" = "en") => {
   return mapPublishedBlogPostRows(data, language);
 };
 
-const mapPublishedBlogPostRows = (rows: UnknownRecord[], language: Language = "en") => {
+export const mapPublishedBlogPost = (item: UnknownRecord, language: Language = "en") => {
   const localize = (value: string) => (language === "zh" ? translateDisplayText(value, language) : value);
+  const alternateLanguage: Language = language === "zh" ? "en" : "zh";
+  const localizedText = (field: string, fallback = "") =>
+    pickLocalizedText(item, field, language) || pickLocalizedText(item, field, alternateLanguage) || fallback;
+  const title = localize(localizedText("title"));
+  const excerpt = localize(localizedText("excerpt"));
+  const content = localize(localizedText("content"));
 
-  return rows.map((item) => ({
+  return {
     id: readText(item, "id"),
     slug: readText(item, "slug"),
-    title: localize(pickLocalizedText(item, "title", language)),
-    excerpt: localize(pickLocalizedText(item, "excerpt", language)),
-    content: localize(pickLocalizedText(item, "content", language)),
+    title,
+    excerpt,
+    content,
     category: localize(readText(item, "category", "Renovation")),
     date: readText(item, "published_at") || readText(item, "created_at"),
-    readTime: formatBlogReadTime(null, language),
+    readTime: `${estimateBlogReadMinutes(content, language)} min`,
     image: readText(item, "cover_image_url"),
+    imageAlt: localize(localizedText("alt", title)),
     tags: toArray<string>(item.tags).map((tag) => localize(tag)),
-  }));
+    seoTitle: localize(localizedText("seo_title")),
+    seoDescription: localize(localizedText("seo_description")),
+    updatedAt: readText(item, "updated_at"),
+  };
 };
+
+const mapPublishedBlogPostRows = (rows: UnknownRecord[], language: Language = "en") =>
+  rows.map((item) => mapPublishedBlogPost(item, language));
 
 export const getPublishedBlogPostBySlug = async (slug: string, language: "en" | "zh" = "en") => {
   const fallbackPost = async () => (await getFallbackBlogPosts(language)).find((post) => post.slug === slug) || null;
@@ -543,18 +556,7 @@ export const getPublishedBlogPostBySlug = async (slug: string, language: "en" | 
   const data = await fetchPublishedBlogPostRowBySlug(slug);
   if (!data) return fallbackPost();
 
-  return {
-    id: readText(data, "id"),
-    slug: readText(data, "slug"),
-    title: language === "zh" ? translateDisplayText(pickLocalizedText(data, "title", language), language) : pickLocalizedText(data, "title", language),
-    excerpt: language === "zh" ? translateDisplayText(pickLocalizedText(data, "excerpt", language), language) : pickLocalizedText(data, "excerpt", language),
-    content: language === "zh" ? translateDisplayText(pickLocalizedText(data, "content", language), language) : pickLocalizedText(data, "content", language),
-    category: language === "zh" ? translateDisplayText(readText(data, "category", "Renovation"), language) : readText(data, "category", "Renovation"),
-    date: readText(data, "published_at") || readText(data, "created_at"),
-    readTime: formatBlogReadTime(null, language),
-    image: readText(data, "cover_image_url"),
-    tags: toArray<string>(data.tags).map((tag) => (language === "zh" ? translateDisplayText(tag, language) : tag)),
-  };
+  return mapPublishedBlogPost(data as unknown as UnknownRecord, language);
 };
 
 export const getPublishedServiceAreaBySlug = async (slug: string, language: "en" | "zh" = "en") => {

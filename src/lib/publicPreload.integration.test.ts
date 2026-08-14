@@ -72,7 +72,11 @@ describe("public preload data", () => {
           content_en: "Full guide",
           category: "Renovation",
           published_at: "2026-06-01",
+          updated_at: "2026-06-03T08:00:00.000Z",
           cover_image_url: "/images/projects/residential-renovation.webp",
+          alt_en: "Renovation planning guide cover",
+          seo_title_en: "Renovation Planning Guide | FLASH CAST",
+          seo_description_en: "Plan a renovation with a clear scope and material direction.",
           tags: ["Renovation"],
         },
       ],
@@ -82,7 +86,13 @@ describe("public preload data", () => {
 
     expect((await getPublishedServices("en"))[0]?.title).toBe("Office Renovation");
     expect((await getPublishedMaterials("en"))[0]?.items[0]?.name).toBe("Vinyl Plank");
-    expect((await getPublishedBlogPosts("en"))[0]?.title).toBe("Renovation Guide");
+    const blogPost = (await getPublishedBlogPosts("en"))[0];
+    expect(blogPost?.title).toBe("Renovation Guide");
+    expect(blogPost?.imageAlt).toBe("Renovation planning guide cover");
+    expect(blogPost?.seoTitle).toBe("Renovation Planning Guide | FLASH CAST");
+    expect(blogPost?.seoDescription).toBe("Plan a renovation with a clear scope and material direction.");
+    expect(blogPost?.updatedAt).toBe("2026-06-03T08:00:00.000Z");
+    expect(blogPost?.readTime).toBe("1 min");
   });
 
   it("uses preloaded site pages and footer CTA blocks", async () => {

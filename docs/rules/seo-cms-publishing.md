@@ -26,12 +26,15 @@ Flashcast 是公开获客网站，SEO 和 CMS 发布链路必须稳定。后台�
 - 改 slug、删除页面、下线内容时，必须考虑旧链接、重定向、404、sitemap 和搜索引擎影响。
 - `functions/seo-manifest.json`、`public/seo-manifest.json`、`public/sitemap.xml` 这类生成物不能手工乱改，优先用现有脚本生成。
 - SEO/GEO 审核通过的受保护发布入口是 `content-publish`。
-- `content-publish` 支持 `contentType: "service"` 和受限 `contentType: "homepage"`。
+- `content-publish` 支持 `contentType: "service"`、受限 `contentType: "homepage"` 和 `contentType: "blog"`。
 - `homepage` 发布只允许显式更新首页 `site_pages(page_key=home,path=/)`、`faqs(page_key=home)`、`cta_blocks(block_key=home_final)`、`home_sections(section_key=stats|why_choose_us)`。
 - `homepage.faqs` 替换必须显式设置 `replaceFaqs: true`，执行时会归档旧的 `published` 首页 FAQ，再插入新的已审核 FAQ；不得物理删除旧 FAQ。
+- `blog` 只允许写入 `blog_posts` 已有字段；发布状态必须同时具备中英文标题、摘要、正文、SEO 标题/描述、封面图和双语 alt，未知字段直接拒绝。
+- `blog` 更新必须带 `expectedUpdatedAt`（或记录内现有 `updated_at`）进行乐观冲突检查；slug 冲突返回 `409`。
 - `publish` 模式必须有管理员 Bearer token 或 `CONTENT_PUBLISH_SECRET` 对应的 `x-cron-secret`，并且请求必须包含 `ownerApproved: true` 与 `explicitExecution: true`。
 - `dry-run` 只返回 payload preview 和将要执行的表/字段动作，不写 CMS。
 - 发布后必须重新生成 SEO manifest / sitemap / llms，并验证 `/zh` 与 `/en` 首页真实读取到 CMS 内容。
+- 博客前端和边缘 SEO 都读取同一条 `blog_posts` 记录；前端查询、边缘公共数据和公开 HTML 缓存沿用现有最多约 5 分钟的一致性窗口。
 
 `homepage` 请求示例：
 
@@ -65,6 +68,33 @@ Flashcast 是公开获客网站，SEO 和 CMS 发布链路必须稳定。后台�
         "title_en": "Planning a Home or Commercial Renovation?"
       }
     ]
+  }
+}
+```
+
+`blog` dry-run 请求示例：
+
+```json
+{
+  "contentType": "blog",
+  "mode": "dry-run",
+  "nextStatus": "published",
+  "expectedUpdatedAt": "2026-08-14T01:00:00.000Z",
+  "record": {
+    "slug": "kitchen-renovation-planning",
+    "title_zh": "厨房装修规划指南",
+    "title_en": "Kitchen Renovation Planning Guide",
+    "excerpt_zh": "中文摘要",
+    "excerpt_en": "English excerpt",
+    "content_zh": "<p>中文正文</p>",
+    "content_en": "<p>English article body</p>",
+    "cover_image_url": "/images/blog/kitchen-planning.webp",
+    "alt_zh": "厨房装修规划效果图",
+    "alt_en": "Kitchen renovation planning concept",
+    "seo_title_zh": "厨房装修规划指南 | FLASH CAST",
+    "seo_title_en": "Kitchen Renovation Planning Guide | FLASH CAST",
+    "seo_description_zh": "中文 SEO 描述",
+    "seo_description_en": "English SEO description"
   }
 }
 ```

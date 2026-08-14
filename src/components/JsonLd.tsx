@@ -1,5 +1,7 @@
 import { siteConfig, socialProfileUrls } from "@/config/site";
 import { useSiteSettings } from "@/hooks/useSiteSettings";
+import { useLanguage } from "@/i18n/LanguageContext";
+import { stripLanguagePrefix, withLanguagePrefix } from "@/i18n/routes";
 
 const shouldRenderClientJsonLd = import.meta.env.DEV;
 
@@ -177,6 +179,70 @@ export const JsonLdService = ({
       "@type": "ServiceChannel",
       serviceUrl: `${siteConfig.url}/quote`,
       servicePhone: settings.phone_e164,
+    },
+  };
+
+  return <JsonLdScript data={data} />;
+};
+
+export const JsonLdBlogPosting = ({
+  headline,
+  description,
+  image,
+  imageAlt,
+  datePublished,
+  dateModified,
+  canonicalPath,
+  keywords,
+}: {
+  headline: string;
+  description: string;
+  image: string;
+  imageAlt: string;
+  datePublished: string;
+  dateModified: string;
+  canonicalPath: string;
+  keywords: string[];
+}) => {
+  const settings = useSiteSettings();
+  const { language } = useLanguage();
+  const path = withLanguagePrefix(stripLanguagePrefix(canonicalPath), language);
+  const canonicalUrl = `${siteConfig.url}${path}`;
+  const imageUrl = image.startsWith("http") ? image : `${siteConfig.url}${image.startsWith("/") ? image : `/${image}`}`;
+  const organizationName = settings.company_name || siteConfig.name;
+  const organizationId = `${siteConfig.url}/#localbusiness`;
+  const data = {
+    "@context": "https://schema.org",
+    "@type": "BlogPosting",
+    "@id": `${canonicalUrl}#article`,
+    mainEntityOfPage: {
+      "@type": "WebPage",
+      "@id": `${canonicalUrl}#webpage`,
+    },
+    headline,
+    description,
+    image: {
+      "@type": "ImageObject",
+      url: imageUrl,
+      caption: imageAlt,
+    },
+    datePublished,
+    dateModified,
+    inLanguage: language === "zh" ? "zh-CN" : "en",
+    keywords,
+    author: {
+      "@type": "Organization",
+      "@id": organizationId,
+      name: organizationName,
+    },
+    publisher: {
+      "@type": "Organization",
+      "@id": organizationId,
+      name: organizationName,
+      logo: {
+        "@type": "ImageObject",
+        url: settings.logo_url || siteConfig.logoUrl,
+      },
     },
   };
 

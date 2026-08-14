@@ -90,7 +90,7 @@ const fetchRows = async (table, select) => {
   return response.json();
 };
 
-const addDynamic = (lang, basePath, slug, title, description) => {
+const addDynamic = (lang, basePath, slug, title, description, metadata = {}) => {
   const path = `${basePath}/${slug}`;
   const localized = `/${lang}${path}`;
   if (legacyRedirectPaths.has(localized)) return;
@@ -99,6 +99,9 @@ const addDynamic = (lang, basePath, slug, title, description) => {
   const rawTitle = title || COMPANY;
   const safeTitle = sanitizeSeoText(rawTitle.includes("FLASH CAST") ? rawTitle : `${rawTitle} | ${COMPANY}`);
   const safeDescription = sanitizeSeoText(description || rawTitle).slice(0, 300);
+  const dynamicOgImage = metadata.ogImage
+    ? (String(metadata.ogImage).startsWith("http") ? metadata.ogImage : `${SITE_URL}${metadata.ogImage}`)
+    : OG_IMAGE;
   manifest[localized] = {
     lang,
     path,
@@ -110,7 +113,14 @@ const addDynamic = (lang, basePath, slug, title, description) => {
       zh: `${SITE_URL}${zhPath}`,
       xDefault: `${SITE_URL}${enPath}`,
     },
-    ogImage: OG_IMAGE,
+    ogImage: dynamicOgImage,
+    schemaType: metadata.schemaType || undefined,
+    headline: metadata.headline || undefined,
+    datePublished: metadata.datePublished || undefined,
+    dateModified: metadata.dateModified || undefined,
+    articleSection: metadata.articleSection || undefined,
+    imageAlt: metadata.imageAlt || undefined,
+    keywords: metadata.keywords || undefined,
   };
 };
 
@@ -155,7 +165,7 @@ const addSitePage = (lang, row) => {
 
 const [projects, posts, materials, areas, landings, services, sitePages] = await Promise.all([
   fetchRows("projects", "slug,title_en,title_zh,excerpt_en,excerpt_zh"),
-  fetchRows("blog_posts", "slug,title_en,title_zh,excerpt_en,excerpt_zh"),
+  fetchRows("blog_posts", "slug,title_en,title_zh,excerpt_en,excerpt_zh,seo_title_en,seo_title_zh,seo_description_en,seo_description_zh,category,tags,cover_image_url,alt_en,alt_zh,published_at,updated_at"),
   fetchRows("materials", "slug,title_en,title_zh,excerpt_en,excerpt_zh,seo_description_en,seo_description_zh"),
   fetchRows("service_areas", "slug,title_en,title_zh,seo_description_en,seo_description_zh,excerpt_en,excerpt_zh"),
   fetchRows("landing_pages", "slug,seo_title_en,seo_title_zh,seo_description_en,seo_description_zh,title_en,title_zh"),
@@ -176,12 +186,31 @@ for (const lang of ["en", "zh"]) {
     );
   }
   for (const row of posts) {
+    const title = lang === "zh" ? row.title_zh || row.title_en : row.title_en || row.title_zh;
+    const seoTitle = lang === "zh"
+      ? row.seo_title_zh || row.seo_title_en || title
+      : row.seo_title_en || row.seo_title_zh || title;
+    const excerpt = lang === "zh" ? row.excerpt_zh || row.excerpt_en : row.excerpt_en || row.excerpt_zh;
+    const seoDescription = lang === "zh"
+      ? row.seo_description_zh || row.seo_description_en || excerpt
+      : row.seo_description_en || row.seo_description_zh || excerpt;
+    const imageAlt = lang === "zh" ? row.alt_zh || row.alt_en || title : row.alt_en || row.alt_zh || title;
     addDynamic(
       lang,
       "/blog",
       row.slug,
-      lang === "zh" ? row.title_zh || row.title_en : row.title_en || row.title_zh,
-      lang === "zh" ? row.excerpt_zh || row.excerpt_en : row.excerpt_en || row.excerpt_zh,
+      seoTitle,
+      seoDescription,
+      {
+        schemaType: "BlogPosting",
+        headline: title,
+        datePublished: row.published_at,
+        dateModified: row.updated_at || row.published_at,
+        articleSection: row.category,
+        imageAlt,
+        ogImage: row.cover_image_url,
+        keywords: Array.isArray(row.tags) ? row.tags.join(", ") : "",
+      },
     );
   }
   for (const row of materialCategories) {

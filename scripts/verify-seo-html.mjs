@@ -31,6 +31,18 @@ const failures = [];
 const warnings = [];
 const manifest = JSON.parse(readFileSync("public/seo-manifest.json", "utf8"));
 const materialSeoPaths = await loadMaterialSeoPaths();
+const blogManifestEntries = Object.entries(manifest).filter(([path]) => /^\/(?:en|zh)\/blog\/[^/]+$/.test(path));
+
+if (!blogManifestEntries.length) {
+  warnings.push("manifest: no dynamic blog detail entries available for BlogPosting validation");
+} else {
+  const invalidBlogEntries = blogManifestEntries.filter(([, entry]) =>
+    entry.schemaType !== "BlogPosting" || !entry.headline || !entry.datePublished || !entry.dateModified || !entry.ogImage,
+  );
+  if (invalidBlogEntries.length) {
+    failures.push(`manifest: blog entries missing BlogPosting metadata: ${invalidBlogEntries.slice(0, 5).map(([path]) => path).join(", ")}`);
+  }
+}
 
 const decodeHtml = (value = "") =>
   value

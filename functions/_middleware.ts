@@ -21,6 +21,12 @@ type SeoEntry = {
   canonical: string;
   hreflang: { en: string; zh: string; xDefault: string };
   ogImage: string;
+  schemaType?: "BlogPosting";
+  headline?: string;
+  datePublished?: string;
+  dateModified?: string;
+  articleSection?: string;
+  imageAlt?: string;
 };
 
 type SiteSettingsHead = {
@@ -65,7 +71,7 @@ const DEFAULT_MAP_LATITUDE = "3.0830403";
 const DEFAULT_MAP_LONGITUDE = "101.6708234";
 const PUBLIC_HTML_BROWSER_TTL_SECONDS = 60;
 const PUBLIC_HTML_EDGE_TTL_SECONDS = 300;
-const PUBLIC_HTML_CACHE_VERSION = "20260813-performance";
+const PUBLIC_HTML_CACHE_VERSION = "20260814-blog-schema-v2";
 const SITE_SETTINGS_CACHE_TTL_MS = 5 * 60 * 1000;
 const PUBLIC_PROJECT_SUMMARIES_CACHE_TTL_MS = 5 * 60 * 1000;
 const PUBLIC_PROJECT_DETAIL_CACHE_TTL_MS = 5 * 60 * 1000;
@@ -654,12 +660,37 @@ const buildEdgeStructuredData = (meta: SeoEntry, siteSettings?: SiteSettingsHead
   const origin = canonical.origin;
   const siteName = siteSettings?.company_name || siteSettings?.brand_name || "FLASH CAST SDN. BHD.";
   const logo = normalizeBuiltInLogoUrl(siteSettings?.logo_url, origin) || `${origin}${DEFAULT_LOGO_VERSIONED_WEBP_PATH}`;
-  const image = siteSettings?.og_image_url || meta.ogImage || DEFAULT_OG_IMAGE;
+  const image = meta.ogImage === DEFAULT_OG_IMAGE
+    ? siteSettings?.og_image_url || meta.ogImage || DEFAULT_OG_IMAGE
+    : meta.ogImage;
   const lang = meta.lang === "zh" ? "zh-CN" : "en";
   const businessId = `${origin}/#localbusiness`;
   const websiteId = `${origin}/#website`;
   const pageId = `${meta.canonical}#webpage`;
   const breadcrumb = buildBreadcrumb(meta, origin);
+  const articleNode = meta.schemaType === "BlogPosting"
+    ? {
+        "@type": "BlogPosting",
+        "@id": `${meta.canonical}#article`,
+        mainEntityOfPage: { "@id": pageId },
+        headline: meta.headline || meta.title.replace(/\s*\|\s*FLASH CAST.*$/i, ""),
+        description: meta.description,
+        image: image
+          ? {
+              "@type": "ImageObject",
+              url: image,
+              caption: meta.imageAlt || meta.headline || meta.title,
+            }
+          : undefined,
+        datePublished: meta.datePublished || undefined,
+        dateModified: meta.dateModified || meta.datePublished || undefined,
+        inLanguage: lang,
+        articleSection: meta.articleSection || undefined,
+        keywords: meta.keywords || undefined,
+        author: { "@id": businessId },
+        publisher: { "@id": businessId },
+      }
+    : undefined;
   const faqNode =
     meta.faqs && meta.faqs.length > 0
       ? {
@@ -743,6 +774,7 @@ const buildEdgeStructuredData = (meta: SeoEntry, siteSettings?: SiteSettingsHead
         isPartOf: { "@id": websiteId },
         about: { "@id": businessId },
         provider: { "@id": businessId },
+        mainEntity: articleNode ? { "@id": articleNode["@id"] } : undefined,
         primaryImageOfPage: image
           ? {
               "@type": "ImageObject",
@@ -753,6 +785,7 @@ const buildEdgeStructuredData = (meta: SeoEntry, siteSettings?: SiteSettingsHead
         keywords: meta.keywords || undefined,
       },
       breadcrumb,
+      ...(articleNode ? [articleNode] : []),
       ...(faqNode ? [faqNode] : []),
     ],
   };

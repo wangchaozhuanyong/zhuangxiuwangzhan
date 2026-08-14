@@ -48,6 +48,28 @@ const SERVICE_FIELDS = new Set([
   "status",
   "sort_order",
 ]);
+const BLOG_FIELDS = new Set([
+  "id",
+  "slug",
+  "title_zh",
+  "title_en",
+  "excerpt_zh",
+  "excerpt_en",
+  "content_zh",
+  "content_en",
+  "category",
+  "tags",
+  "cover_image_url",
+  "alt_zh",
+  "alt_en",
+  "seo_title_zh",
+  "seo_title_en",
+  "seo_description_zh",
+  "seo_description_en",
+  "status",
+  "published_at",
+  "sort_order",
+]);
 const SITE_PAGE_FIELDS = new Set([
   "id",
   "page_key",
@@ -238,6 +260,80 @@ function cleanServicePayload(record: Record<string, unknown>, nextStatus?: Conte
   return { payload, slug, warnings };
 }
 
+function cleanBlogPayload(record: Record<string, unknown>, nextStatus?: ContentStatus) {
+  const payload: Record<string, unknown> = {};
+  for (const [key, value] of Object.entries(record)) {
+    if (READONLY_FIELDS.has(key)) continue;
+    if (!BLOG_FIELDS.has(key)) throw new Error(`Unsupported blog field: ${key}.`);
+    payload[key] = value;
+  }
+
+  const slug = normalizeSlug(payload.slug || payload.title_en || payload.title_zh);
+  if (!slug) throw new Error("Blog slug or title is required.");
+  payload.slug = slug;
+
+  const status = nextStatus || payload.status || "draft";
+  if (!VALID_STATUSES.has(status as ContentStatus)) throw new Error("Invalid blog status.");
+  payload.status = status;
+
+  for (const key of ["title_zh", "title_en", "alt_zh", "alt_en"]) {
+    payload[key] = cleanText(payload[key], 220);
+  }
+  for (const key of ["excerpt_zh", "excerpt_en"]) payload[key] = cleanText(payload[key], 600);
+  for (const key of ["content_zh", "content_en"]) payload[key] = cleanText(payload[key], 120000);
+  for (const key of ["seo_title_zh", "seo_title_en"]) payload[key] = cleanText(payload[key], 180);
+  for (const key of ["seo_description_zh", "seo_description_en"]) payload[key] = cleanText(payload[key], 320);
+  payload.category = cleanText(payload.category, 120);
+  payload.cover_image_url = cleanText(payload.cover_image_url, 1000);
+
+  if (payload.tags !== undefined && payload.tags !== null && !Array.isArray(payload.tags)) {
+    throw new Error("Blog tags must be an array.");
+  }
+  payload.tags = Array.isArray(payload.tags)
+    ? payload.tags.map((tag) => cleanText(tag, 100)).filter(Boolean).slice(0, 30)
+    : [];
+
+  const sortOrder = cleanSortOrder(payload.sort_order);
+  if (sortOrder !== undefined) payload.sort_order = sortOrder;
+
+  if (payload.published_at) {
+    const publishedAt = new Date(String(payload.published_at));
+    if (Number.isNaN(publishedAt.getTime())) throw new Error("Blog published_at must be a valid date.");
+    payload.published_at = publishedAt.toISOString();
+  } else {
+    payload.published_at = status === "published" ? new Date().toISOString() : null;
+  }
+
+  if (hasMediaPlaceholder(payload)) throw new Error("Media placeholders remain. Upload/select media in the admin media library first.");
+  if (!isSafeImageUrl(payload.cover_image_url)) {
+    throw new Error("cover_image_url must be empty, site-relative, HTTPS, or localhost for local testing.");
+  }
+
+  if (status === "published") {
+    const requiredFields = [
+      "title_zh",
+      "title_en",
+      "excerpt_zh",
+      "excerpt_en",
+      "content_zh",
+      "content_en",
+      "seo_title_zh",
+      "seo_title_en",
+      "seo_description_zh",
+      "seo_description_en",
+      "cover_image_url",
+      "alt_zh",
+      "alt_en",
+    ];
+    const missingFields = requiredFields.filter((field) => !payload[field]);
+    if (missingFields.length) {
+      throw new Error(`Published blog requires bilingual content, SEO, and image accessibility fields: ${missingFields.join(", ")}.`);
+    }
+  }
+
+  return { payload, slug, warnings: [] as string[] };
+}
+
 type HomepageTablePayload = {
   key: string;
   payload: Record<string, unknown>;
@@ -426,6 +522,102 @@ async function resolveExistingService(client: ContentPublishClient, payload: Rec
   return fetchServiceBySlug(client, slug);
 }
 
+async function resolveExistingBlog(client: ContentPublishClient, payload: Record<string, unknown>, slug: string) {
+  const id = typeof payload.id === "string" ? payload.id : "";
+  if (id) return fetchRecordByField(client, "blog_posts", "id", id);
+  return fetchRecordByField(client, "blog_posts", "slug", slug);
+}
+
+async function publishBlogContent(
+  input: ContentPublishRequest,
+  client: ContentPublishClient,
+  context: PublishContext,
+  mode: "dry-run" | "publish",
+  nextStatus: ContentStatus,
+): Promise<ContentPublishResult> {
+  let cleaned: ReturnType<typeof cleanBlogPayload>;
+  try {
+    cleaned = cleanBlogPayload(input.record || {}, nextStatus);
+  } catch (error) {
+    return errorResult(error instanceof Error ? error.message : "Invalid blog payload");
+  }
+
+  const existing = await resolveExistingBlog(client, cleaned.payload, cleaned.slug);
+  const existingId = existing?.id ? String(existing.id) : "";
+  const providedId = typeof cleaned.payload.id === "string" ? cleaned.payload.id : "";
+  if (providedId && !existing) return errorResult("Blog id was provided but no matching blog post exists.", 404);
+
+  const sameSlug = await fetchRecordByField(client, "blog_posts", "slug", cleaned.slug);
+  if (sameSlug?.id && (!existingId || String(sameSlug.id) !== existingId)) {
+    return errorResult("Blog slug already belongs to another record.", 409);
+  }
+
+  const expectedUpdatedAt = input.expectedUpdatedAt || (typeof input.record?.updated_at === "string" ? input.record.updated_at : "");
+  if (existing && !expectedUpdatedAt) {
+    return errorResult("expectedUpdatedAt is required when updating an existing blog post.", 409, {
+      currentUpdatedAt: existing.updated_at || null,
+    });
+  }
+  if (existing && expectedUpdatedAt && normalizeDate(existing.updated_at) !== normalizeDate(expectedUpdatedAt)) {
+    return errorResult("This blog post was changed by someone else. Refresh before publishing.", 409, {
+      currentUpdatedAt: existing.updated_at || null,
+    });
+  }
+  if (mode === "publish" && !cleanText(input.approvalId, 180)) {
+    return errorResult("Blog publishing requires a non-empty approvalId.", 403);
+  }
+
+  delete cleaned.payload.id;
+  const action = existing ? (nextStatus === "published" ? "publish" : "update") : nextStatus === "published" ? "publish" : "insert";
+  const commonBody = {
+    ok: true,
+    dry_run: mode === "dry-run",
+    content_type: "blog",
+    action,
+    slug: cleaned.slug,
+    status: nextStatus,
+    existing_id: existingId || null,
+    warnings: cleaned.warnings,
+    next_steps: [
+      "Regenerate SEO manifest/sitemap/llms after approved blog publish.",
+      "Verify the /zh and /en blog detail pages read the updated content, SEO, cover image, and alt text.",
+      "Run publish receipt/QA before deployment or production cache verification.",
+    ],
+    auth_mode: context.authMode || "admin",
+  };
+
+  if (mode === "dry-run") {
+    return { body: { ...commonBody, payload_preview: cleaned.payload } };
+  }
+
+  const saved = existingId
+    ? await updateContentRecord(client, "blog_posts", existingId, cleaned.payload)
+    : await insertContentRecord(client, "blog_posts", cleaned.payload);
+
+  const auditWarnings: string[] = [];
+  try {
+    await insertAdminAuditLog(client, {
+      adminUserId: context.adminUserId || null,
+      action,
+      tableName: "blog_posts",
+      recordId: String(saved.id || existingId || ""),
+      oldValue: existing,
+      newValue: saved,
+    });
+  } catch (error) {
+    auditWarnings.push(error instanceof Error ? error.message : "Audit log failed");
+  }
+
+  return {
+    body: {
+      ...commonBody,
+      saved_id: saved.id || existingId,
+      saved_updated_at: saved.updated_at || null,
+      warnings: [...cleaned.warnings, ...auditWarnings.map((warning) => `Audit warning: ${warning}`)],
+    },
+  };
+}
+
 const upsertByKey = async (
   client: ContentPublishClient,
   table: string,
@@ -592,8 +784,8 @@ export async function publishContent(
   if (!CONTENT_WRITE_ROLES.has(String(context.role || ""))) {
     return errorResult("Content editor access required", 403);
   }
-  if (input.contentType !== "service" && input.contentType !== "homepage") {
-    return errorResult("Unsupported contentType. Supported content types: service, homepage.");
+  if (input.contentType !== "service" && input.contentType !== "homepage" && input.contentType !== "blog") {
+    return errorResult("Unsupported contentType. Supported content types: service, homepage, blog.");
   }
 
   const mode = input.mode || "dry-run";
@@ -608,6 +800,9 @@ export async function publishContent(
 
   if (input.contentType === "homepage") {
     return publishHomepageContent(input, client, context, mode, nextStatus);
+  }
+  if (input.contentType === "blog") {
+    return publishBlogContent(input, client, context, mode, nextStatus);
   }
 
   let cleaned: ReturnType<typeof cleanServicePayload>;

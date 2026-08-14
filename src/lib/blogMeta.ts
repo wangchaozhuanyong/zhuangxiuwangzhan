@@ -1,6 +1,8 @@
 type Language = "en" | "zh";
 
 const defaultReadMinutes = 5;
+const englishWordsPerMinute = 220;
+const chineseCharactersPerMinute = 300;
 
 const parseBlogDate = (value: string | null | undefined) => {
   if (!value) return null;
@@ -41,4 +43,22 @@ export const formatBlogReadTime = (value: string | number | null | undefined, la
   const safeMinutes = Number.isFinite(minutes) && minutes > 0 ? minutes : defaultReadMinutes;
 
   return language === "zh" ? `${safeMinutes} \u5206\u949f\u9605\u8bfb` : `${safeMinutes} min read`;
+};
+
+export const estimateBlogReadMinutes = (value: string | null | undefined, language: Language) => {
+  const text = String(value || "")
+    .replace(/<[^>]*>/g, " ")
+    .replace(/[#*_>`~-]+/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+  if (!text) return defaultReadMinutes;
+
+  if (language === "zh") {
+    const chineseCharacters = text.match(/[\u3400-\u9fff\uf900-\ufaff]/g)?.length || 0;
+    const latinWords = text.match(/[A-Za-z0-9]+(?:['-][A-Za-z0-9]+)*/g)?.length || 0;
+    return Math.max(1, Math.ceil(chineseCharacters / chineseCharactersPerMinute + latinWords / englishWordsPerMinute));
+  }
+
+  const words = text.match(/[\p{L}\p{N}]+(?:['-][\p{L}\p{N}]+)*/gu)?.length || 0;
+  return Math.max(1, Math.ceil(words / englishWordsPerMinute));
 };

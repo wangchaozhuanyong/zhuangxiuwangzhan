@@ -11,7 +11,7 @@ import { useLanguage } from "@/i18n/LanguageContext";
 import PageMeta from "@/components/PageMeta";
 import PublicLoadingState from "@/components/blocks/PublicLoadingState";
 import SmartImage from "@/components/SmartImage";
-import { JsonLdBreadcrumb } from "@/components/JsonLd";
+import { JsonLdBlogPosting, JsonLdBreadcrumb } from "@/components/JsonLd";
 import { useSiteSettings } from "@/hooks/useSiteSettings";
 import Reveal from "@/components/Reveal";
 import { isHtmlText } from "@/lib/text";
@@ -75,6 +75,9 @@ const BlogDetail = () => {
 
   const readTime = formatBlogReadTime(post.readTime, language);
   const publishDate = formatBlogDate(post.date, language);
+  const articleTitle = displayText(post.title);
+  const articleDescription = displayText(post.seoDescription || post.excerpt);
+  const articleImageAlt = displayText(post.imageAlt || post.title);
 
   const renderContent = (content: string) => {
     if (isHtmlText(content)) {
@@ -123,17 +126,28 @@ const BlogDetail = () => {
   return (
     <main className="forest-blog-detail-page pt-site-header">
       <PageMeta
-        title={`${displayText(post.title)} | ${t.metaSuffix}`}
-        description={displayText(post.excerpt)}
+        title={displayText(post.seoTitle || `${post.title} | ${t.metaSuffix}`)}
+        description={articleDescription}
         keywords={post.tags.join(", ")}
         canonicalPath={`/blog/${post.slug}`}
+        ogImage={post.image}
         ogType="article"
       />
-      <JsonLdBreadcrumb items={[{ name: t.breadcrumbHome, url: "/" }, { name: t.breadcrumbBlog, url: "/blog" }, { name: displayText(post.title), url: `/blog/${post.slug}` }]} />
+      <JsonLdBreadcrumb items={[{ name: t.breadcrumbHome, url: "/" }, { name: t.breadcrumbBlog, url: "/blog" }, { name: articleTitle, url: `/blog/${post.slug}` }]} />
+      <JsonLdBlogPosting
+        headline={articleTitle}
+        description={articleDescription}
+        image={post.image}
+        imageAlt={articleImageAlt}
+        datePublished={post.date}
+        dateModified={post.updatedAt || post.date}
+        canonicalPath={`/blog/${post.slug}`}
+        keywords={post.tags}
+      />
 
       <ImmersiveHero className="page-hero page-hero--detail">
         <div className="page-hero__media page-hero-media hero-media-mask">
-          <SmartImage src={post.image} alt={displayText(post.title)} className="page-hero__image h-full w-full object-cover" width={1920} height={800} loading="eager" fetchPriority="high" sizes="100vw" candidateWidths={BLOG_HERO_IMAGE_WIDTHS} quality={76} />
+          <SmartImage src={post.image} alt={articleImageAlt} className="page-hero__image h-full w-full object-cover" width={1920} height={800} loading="eager" fetchPriority="high" sizes="100vw" candidateWidths={BLOG_HERO_IMAGE_WIDTHS} quality={76} />
           <div className="page-hero__overlay absolute inset-0 media-readable-overlay" aria-hidden="true" />
         </div>
         <div className="page-hero__content site-container max-w-3xl">
@@ -141,7 +155,7 @@ const BlogDetail = () => {
             <ArrowLeft className="w-3.5 h-3.5" /> {t.backToBlog}
           </Link>
           <span className="page-hero__label mb-3 block font-body text-[11px] font-semibold uppercase tracking-[0.28em] text-gold">{translateBlogCategory(post.category, language)}</span>
-          <h1 className="page-hero__title heading-safe mb-4 max-w-3xl font-display text-3xl font-bold text-on-media md:text-5xl">{displayText(post.title)}</h1>
+            <h1 className="page-hero__title heading-safe mb-4 max-w-3xl font-display text-3xl font-bold text-on-media md:text-5xl">{articleTitle}</h1>
           <div className="flex items-center gap-4 text-sm text-on-media-muted">
             <span className="flex items-center gap-1"><Clock className="w-3.5 h-3.5" /> {readTime}</span>
             <span>{publishDate}</span>
@@ -221,7 +235,7 @@ const BlogDetail = () => {
               <Reveal key={item.id} delay={index * 70} direction="none">
                 <Link to={`/blog/${item.slug}`} className="card-equal group luxury-card hover-lift">
                   <div className="aspect-[16/10] overflow-hidden img-zoom">
-                    <SmartImage src={item.image} alt={item.title} loading="lazy" width={400} height={300} sizes="(max-width: 640px) 92vw, 30vw" candidateWidths={RELATED_BLOG_IMAGE_WIDTHS} quality={72} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+                    <SmartImage src={item.image} alt={item.imageAlt || item.title} loading="lazy" width={400} height={300} sizes="(max-width: 640px) 92vw, 30vw" candidateWidths={RELATED_BLOG_IMAGE_WIDTHS} quality={72} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
                   </div>
                   <div className="card-equal-body p-4">
                     <span className="text-limit-1 text-accent text-xs font-medium">{translateBlogCategory(item.category, language)}</span>

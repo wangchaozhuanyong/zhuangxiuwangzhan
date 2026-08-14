@@ -83,7 +83,7 @@ const Blog = () => {
             {visiblePosts.map((post, index) => (
               <Link key={post.slug} to={`/blog/${post.slug}`} className="forest-journal-entry" data-lead={index === 0 && filter === "All" ? "true" : "false"}>
                 <div className="forest-journal-entry__media">
-                  <SmartImage src={post.image} alt={post.title} loading={index < 2 ? "eager" : "lazy"} fetchPriority={index === 0 ? "high" : "auto"} width={960} height={640} sizes="(max-width: 767px) 100vw, 42vw" candidateWidths={[480, 720, 960, 1200]} quality={72} />
+                  <SmartImage src={post.image} alt={post.imageAlt || post.title} loading={index < 2 ? "eager" : "lazy"} fetchPriority={index === 0 ? "high" : "auto"} width={960} height={640} sizes="(max-width: 767px) 100vw, 42vw" candidateWidths={[480, 720, 960, 1200]} quality={72} />
                 </div>
                 <div className="forest-journal-entry__copy">
                   <p className="forest-eyebrow">{translateBlogCategory(post.category, language)}</p>

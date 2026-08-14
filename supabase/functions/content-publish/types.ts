@@ -17,7 +17,7 @@ export type ContentPublishClient = {
 };
 
 export type ContentPublishMode = "dry-run" | "publish";
-export type ContentPublishType = "service" | "homepage";
+export type ContentPublishType = "service" | "homepage" | "blog";
 export type ContentStatus = "draft" | "published" | "archived";
 
 export type ContentPublishRequest = {
