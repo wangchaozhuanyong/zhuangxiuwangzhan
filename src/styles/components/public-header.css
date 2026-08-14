@@ -10,7 +10,7 @@
 
   html[data-public-theme] .site-header.is-overlay {
     border-bottom-color: transparent;
-    color: #f4f7f5;
+    color: #fff;
     background: transparent;
     box-shadow: none;
     backdrop-filter: none;
@@ -19,11 +19,15 @@
 
   html[data-public-theme] .site-header.is-overlay::before {
     border-bottom-color: transparent;
-    background: transparent;
-    box-shadow: none;
-    opacity: 0;
-    backdrop-filter: none;
-    -webkit-backdrop-filter: none;
+    background: linear-gradient(
+      180deg,
+      rgb(2 11 8 / 0.72) 0%,
+      rgb(2 11 8 / 0.62) 100%
+    );
+    box-shadow: 0 1px 0 rgb(255 255 255 / 0.08) inset;
+    opacity: 1;
+    backdrop-filter: blur(6px) saturate(108%);
+    -webkit-backdrop-filter: blur(6px) saturate(108%);
   }
 
   html[data-public-theme] .site-header.is-overlay .site-header__brand img {
@@ -34,7 +38,18 @@
     .site-header__brand,
     .site-header__nav-link
   ) {
-    mix-blend-mode: difference;
+    color: #fff;
+    mix-blend-mode: normal;
+    text-shadow: 0 1px 10px rgb(0 0 0 / 0.48);
+  }
+
+  html[data-public-theme] .site-header.is-overlay .site-header__language-option {
+    color: #fff;
+    opacity: 0.86;
+  }
+
+  html[data-public-theme] .site-header.is-overlay .site-header__language-option[data-active="true"] {
+    opacity: 1;
   }
 
   html[data-public-theme] .site-header.is-overlay :is(
@@ -75,12 +90,4 @@
     -webkit-backdrop-filter: blur(18px) saturate(112%);
   }
 
-  @supports not (mix-blend-mode: difference) {
-    html[data-public-theme] .site-header.is-overlay :is(
-      .site-header__brand,
-      .site-header__nav-link
-    ) {
-      filter: drop-shadow(0 1px 3px rgb(0 0 0 / 0.7));
-    }
-  }
 }

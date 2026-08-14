@@ -58,6 +58,7 @@ const Materials = () => {
         label={pageContent?.subtitle || t.eyebrow}
         title={pageContent?.title || t.title}
         description={pageContent?.description || t.intro}
+        variant="compact"
       />
 
       <section className="forest-chapter forest-chapter--raised forest-material-library">

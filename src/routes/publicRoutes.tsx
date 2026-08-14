@@ -12,7 +12,7 @@ const lazyPublicPage = (loader: () => Promise<PageModule>) => lazy(async () => {
   return pageModule;
 });
 
-const Index = lazy(() => import("@/pages/Index"));
+const Index = lazyPublicPage(() => import("@/pages/Index"));
 const About = lazyPublicPage(() => import("@/pages/About"));
 const Services = lazyPublicPage(() => import("@/pages/Services"));
 const ServiceDetail = lazyPublicPage(() => import("@/pages/ServiceDetail"));

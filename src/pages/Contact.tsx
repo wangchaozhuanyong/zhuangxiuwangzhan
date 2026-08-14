@@ -163,6 +163,7 @@ const Contact = () => {
         label={pageContent?.subtitle || t.heroEyebrow}
         title={pageContent?.title || t.heroTitle}
         description={pageContent?.description || t.heroText}
+        variant="utility"
       />
 
       <section className="forest-contact-body section-padding bg-background">
@@ -171,7 +172,6 @@ const Contact = () => {
             <aside className="forest-contact-info" aria-labelledby="contact-info-title">
               <div>
                 <div className="subpage-local-heading">
-                  <div className="accent-line mb-4" />
                   <h2 id="contact-info-title" className="font-display text-2xl font-bold">{t.infoTitle}</h2>
                 </div>
                 <div className="contact-detail-list">

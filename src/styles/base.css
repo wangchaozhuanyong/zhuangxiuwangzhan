@@ -60,9 +60,9 @@
     --luxury-shadow-soft: 0 20px 60px rgba(31, 24, 16, 0.12);
     --luxury-shadow-dark: 0 26px 70px rgba(0, 0, 0, 0.22);
 
-    --font-display: 'Playfair Display', 'Noto Serif SC', 'Noto Sans SC', serif;
-    --font-body: 'Inter', 'Noto Sans SC', 'Microsoft YaHei UI', 'PingFang SC', sans-serif;
-    --font-cjk-display: 'Noto Serif SC', 'Noto Sans SC', 'Microsoft YaHei UI', serif;
+    --font-display: 'Songti SC', 'STSong', 'Source Han Serif SC', 'Noto Serif CJK SC', Georgia, serif;
+    --font-body: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei UI', 'Microsoft YaHei', Arial, sans-serif;
+    --font-cjk-display: 'Songti SC', 'STSong', 'Source Han Serif SC', 'Noto Serif CJK SC', serif;
 
     --site-section-y: 3rem;
     --site-section-y-tight: 2.5rem;
@@ -176,6 +176,8 @@
     background-image: linear-gradient(180deg, hsl(var(--background)) 0%, hsl(36 20% 91%) 100%);
     font-feature-settings: "kern" 1, "liga" 1;
     text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
   }
 
   html[data-admin-theme] body {

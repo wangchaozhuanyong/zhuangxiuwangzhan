@@ -200,6 +200,7 @@ test.describe("mainstream browser compatibility", () => {
 
     const mobileNavigation = page.locator("#mobile-navigation");
     await expect(mobileNavigation).toBeVisible();
+    await mobileNavigation.getByRole("button", { name: "服务与资源" }).click();
     await mobileNavigation.locator('a[href*="/services"]').first().click();
 
     await expect(page).toHaveURL(/\/zh\/services$/);

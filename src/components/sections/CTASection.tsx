@@ -32,7 +32,6 @@ const CTASection = ({ ctaBlock: providedCtaBlock }: CTASectionProps) => {
   return (
     <FooterPreludeCta
       id="cta"
-      eyebrow={content.eyebrow}
       title={title}
       description={description}
       quoteLabel={primaryLabel}

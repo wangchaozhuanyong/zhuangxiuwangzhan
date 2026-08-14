@@ -26,16 +26,16 @@ export const pageHeroImages = {
     legacy: ["/images/heroes/hero-materials.webp"],
   },
   products: {
-    desktop: "/images/heroes/v2/hero-materials-premium.webp",
-    mobile: "/images/heroes/v2/hero-materials-premium-mobile.webp",
+    desktop: "/images/materials/kitchen-acrylic-cabinets.webp",
+    mobile: "/images/materials/kitchen-acrylic-cabinets.webp",
   },
   promotions: {
     desktop: "/images/materials/kitchen-solid-wood-cabinets.webp",
     mobile: "/images/materials/kitchen-solid-wood-cabinets.webp",
   },
   locations: {
-    desktop: "/images/heroes/v2/hero-projects-premium.webp",
-    mobile: "/images/heroes/v2/hero-projects-premium-mobile.webp",
+    desktop: "/images/projects/commercial-renovation.webp",
+    mobile: "/images/projects/commercial-renovation.webp",
   },
   process: {
     desktop: "/images/heroes/v2/hero-process-premium.webp",

@@ -1,5 +1,6 @@
 @import "../components/subpages.css";
 @import "../components/forest-pages.css";
 @import "../components/forest-detail-pages.css";
+@import "../components/public-page-unification.css";
 
 @tailwind components;

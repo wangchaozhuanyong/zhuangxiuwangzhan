@@ -45,6 +45,7 @@ const Promotions = () => {
         label={pageContent?.subtitle || t.eyebrow}
         title={pageContent?.title || t.title}
         description={pageContent?.description || t.intro}
+        variant="compact"
       />
 
       <section className="forest-chapter forest-offers-chapter" aria-labelledby="promotion-options-heading">

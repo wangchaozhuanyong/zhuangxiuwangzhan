@@ -21,7 +21,7 @@ interface HeroBannerProps {
   backLabel?: string;
   actions?: ReactNode;
   meta?: ReactNode;
-  variant?: "standard" | "compact" | "detail" | "legal";
+  variant?: "standard" | "compact" | "utility" | "detail" | "legal";
   align?: "start" | "center" | "end";
   className?: string;
 }
@@ -44,6 +44,9 @@ const HeroBanner = ({
   align = "start",
   className,
 }: HeroBannerProps) => {
+  const visibleLabel = label?.trim() && label.trim().toLocaleLowerCase() !== title.trim().toLocaleLowerCase()
+    ? label.trim()
+    : undefined;
   const mobileSrcSet =
     imageMobile && isLocalResponsiveImageCandidate(imageMobile)
       ? buildLocalResponsiveSrcSet(imageMobile, HERO_MOBILE_IMAGE_WIDTHS) ?? imageMobile
@@ -86,8 +89,8 @@ const HeroBanner = ({
             {backLabel}
           </LocalizedLink>
         ) : null}
-        {label ? (
-          <p className="page-hero__label forest-eyebrow">{label}</p>
+        {visibleLabel ? (
+          <p className="page-hero__label forest-eyebrow">{visibleLabel}</p>
         ) : null}
         <h1 className="page-hero__title heading-safe mb-4 max-w-2xl text-3xl font-bold text-on-media md:text-5xl">{title}</h1>
         {description ? (

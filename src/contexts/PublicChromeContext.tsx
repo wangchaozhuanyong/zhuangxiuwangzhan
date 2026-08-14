@@ -11,6 +11,8 @@ type PublicChromeContextValue = {
   showMobileActionBar: boolean;
 };
 
+type MobileActionBarMode = "hidden" | "scroll-up" | "always";
+
 const PUBLIC_THEME_STORAGE_KEY = "flashcast-public-theme";
 
 const getInitialPublicTheme = (): "light" | "dark" => {
@@ -29,19 +31,19 @@ const PublicChromeContext = createContext<PublicChromeContextValue | null>(null)
 export function PublicChromeProvider({
   isAdminRoute,
   isHomeRoute,
-  suppressMobileActionBar = false,
+  mobileActionBarMode = "hidden",
   children,
 }: {
   isAdminRoute: boolean;
   isHomeRoute: boolean;
-  suppressMobileActionBar?: boolean;
+  mobileActionBarMode?: MobileActionBarMode;
   children: ReactNode;
 }) {
   const [menuOpen, setMenuOpen] = useState(false);
   const [theme, setTheme] = useState<"light" | "dark">(getInitialPublicTheme);
   const [homeHeroPassed, setHomeHeroPassed] = useState(false);
-  const [homeScrollingUp, setHomeScrollingUp] = useState(false);
-  const lastHomeScrollY = useRef(0);
+  const [mobileScrollingUp, setMobileScrollingUp] = useState(false);
+  const lastMobileScrollY = useRef(0);
   const homeHeroPassedRef = useRef(false);
   const immersiveHeroIds = useRef(new Set<symbol>());
   const [hasImmersiveHero, setHasImmersiveHero] = useState(false);
@@ -57,10 +59,10 @@ export function PublicChromeProvider({
   }, []);
 
   useLayoutEffect(() => {
-    if (!isHomeRoute) {
+    if (mobileActionBarMode !== "scroll-up") {
       homeHeroPassedRef.current = false;
       setHomeHeroPassed(false);
-      setHomeScrollingUp(false);
+      setMobileScrollingUp(false);
       return;
     }
 
@@ -73,7 +75,7 @@ export function PublicChromeProvider({
       homeHeroPassedRef.current = passed;
       setHomeHeroPassed((current) => current === passed ? current : passed);
       if (!passed) {
-        setHomeScrollingUp((current) => current ? false : current);
+        setMobileScrollingUp((current) => current ? false : current);
       }
     };
 
@@ -81,7 +83,7 @@ export function PublicChromeProvider({
       scrollFrame = 0;
       const currentScrollY = window.scrollY;
 
-      if (!heroObserver) {
+      if (isHomeRoute && !heroObserver) {
         const hero = document.querySelector<HTMLElement>("[data-immersive-hero='true'], .forest-home-hero");
         if (hero) {
           const rect = hero.getBoundingClientRect();
@@ -91,16 +93,19 @@ export function PublicChromeProvider({
         }
       }
 
-      if (!homeHeroPassedRef.current) {
-        lastHomeScrollY.current = currentScrollY;
+      const canReveal = isHomeRoute ? homeHeroPassedRef.current : currentScrollY > 96;
+      if (!canReveal || currentScrollY <= 24) {
+        setMobileScrollingUp((current) => current ? false : current);
+        lastMobileScrollY.current = currentScrollY;
         return;
       }
 
-      const scrollDelta = currentScrollY - lastHomeScrollY.current;
+      const scrollDelta = currentScrollY - lastMobileScrollY.current;
       if (Math.abs(scrollDelta) < 8) return;
-      const scrollingUp = scrollDelta < 0;
-      setHomeScrollingUp((current) => current === scrollingUp ? current : scrollingUp);
-      lastHomeScrollY.current = currentScrollY;
+      // 手机上手指向上滑时页面内容上移，浏览器的 scrollY 会增加。
+      const contentMovingUp = scrollDelta > 0;
+      setMobileScrollingUp((current) => current === contentMovingUp ? current : contentMovingUp);
+      lastMobileScrollY.current = currentScrollY;
     };
 
     const scheduleScrollDirection = () => {
@@ -138,13 +143,14 @@ export function PublicChromeProvider({
 
     const start = () => {
       stop();
-      lastHomeScrollY.current = window.scrollY;
+      lastMobileScrollY.current = window.scrollY;
+      setMobileScrollingUp(false);
       if (!mobileQuery.matches) {
         setHeroPassed(false);
         return;
       }
 
-      if (!observeHero() && "MutationObserver" in window) {
+      if (isHomeRoute && !observeHero() && "MutationObserver" in window) {
         heroMountObserver = new MutationObserver(() => {
           if (!observeHero()) return;
           heroMountObserver?.disconnect();
@@ -154,6 +160,8 @@ export function PublicChromeProvider({
           childList: true,
           subtree: true,
         });
+      } else if (!isHomeRoute) {
+        setHeroPassed(false);
       }
       window.addEventListener("scroll", scheduleScrollDirection, { passive: true });
     };
@@ -165,13 +173,15 @@ export function PublicChromeProvider({
       mobileQuery.removeEventListener("change", start);
       stop();
     };
-  }, [isHomeRoute]);
+  }, [isHomeRoute, mobileActionBarMode]);
 
   const showMobileActionBar =
     !isAdminRoute
-    && !suppressMobileActionBar
     && !menuOpen
-    && (isHomeRoute ? homeHeroPassed && homeScrollingUp : true);
+    && (
+      mobileActionBarMode === "always"
+      || (mobileActionBarMode === "scroll-up" && mobileScrollingUp && (!isHomeRoute || homeHeroPassed))
+    );
 
   useEffect(() => {
     if (isAdminRoute) {

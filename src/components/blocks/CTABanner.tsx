@@ -2,7 +2,6 @@ import Link from "@/components/LocalizedLink";
 import Reveal from "@/components/Reveal";
 import WhatsAppIcon from "@/components/WhatsAppIcon";
 import { useSiteSettings } from "@/hooks/useSiteSettings";
-import { useLanguage } from "@/i18n/LanguageContext";
 import { trackCtaClick } from "@/lib/analytics";
 import { cn } from "@/lib/utils";
 import { ArrowRight } from "lucide-react";
@@ -13,7 +12,6 @@ interface CTABannerProps {
   quoteLabel?: string;
   whatsappLabel?: string;
   quotePath?: string;
-  eyebrow?: string;
   className?: string;
   whatsappSource?: string;
 }
@@ -24,13 +22,10 @@ const CTABanner = ({
   quoteLabel = "Get a Free Quote",
   whatsappLabel = "WhatsApp Us",
   quotePath = "/quote",
-  eyebrow,
   className,
   whatsappSource = "Subpage CTA",
 }: CTABannerProps) => {
-  const { language } = useLanguage();
   const settings = useSiteSettings();
-  const displayEyebrow = eyebrow || (language === "zh" ? "项目咨询" : "Project Consultation");
 
   return (
     <section className={cn("subpage-cta section-padding", className)}>
@@ -40,7 +35,6 @@ const CTABanner = ({
           <div className="subpage-cta__panel">
             <span className="subpage-cta__rule" aria-hidden="true" />
             <div className="subpage-cta__copy">
-              <p className="subpage-cta__eyebrow">{displayEyebrow}</p>
               <h2 className="subpage-cta__title font-display">{title}</h2>
               <p className="subpage-cta__text">{description}</p>
             </div>

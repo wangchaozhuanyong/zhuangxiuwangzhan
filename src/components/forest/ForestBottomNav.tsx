@@ -1,10 +1,10 @@
 import { BadgePercent, Home, Images, Mail, PackageSearch } from "lucide-react";
 import { useLocation } from "react-router-dom";
 import LocalizedLink from "@/components/LocalizedLink";
-import { usePublicChrome } from "@/contexts/PublicChromeContext";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { forestUiText } from "@/i18n/forestUiText";
 import { stripLanguagePrefix } from "@/i18n/routes";
+import { BOTTOM_NAV_SCROLL_INTENT } from "@/lib/publicScrollRestoration";
 
 const items = [
   { path: "/", labelKey: "home", icon: Home },
@@ -19,11 +19,8 @@ const isActive = (pathname: string, path: string) => path === "/" ? pathname ===
 const ForestBottomNav = () => {
   const location = useLocation();
   const { language } = useLanguage();
-  const { showMobileActionBar } = usePublicChrome();
   const text = forestUiText[language];
   const pathname = stripLanguagePrefix(location.pathname);
-
-  if (showMobileActionBar) return null;
 
   return (
     <nav className="forest-bottom-nav" aria-label={text.mobileNavLabel}>
@@ -31,7 +28,12 @@ const ForestBottomNav = () => {
         const Icon = item.icon;
         const active = isActive(pathname, item.path);
         return (
-          <LocalizedLink key={item.path} to={item.path} aria-current={active ? "page" : undefined}>
+          <LocalizedLink
+            key={item.path}
+            to={item.path}
+            state={{ scrollIntent: BOTTOM_NAV_SCROLL_INTENT }}
+            aria-current={active ? "page" : undefined}
+          >
             <Icon aria-hidden="true" />
             <span>{text.bottomNav[item.labelKey]}</span>
           </LocalizedLink>

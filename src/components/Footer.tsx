@@ -172,7 +172,6 @@ const Footer = () => {
       {showFooterCta && (
         <FooterPreludeCta
           className="site-footer-prelude"
-          eyebrow={language === "zh" ? uiText.preludeEyebrow : settings.company_name}
           title={footerCtaTitle}
           description={footerCtaDescription}
           quoteLabel={footerCtaButton}

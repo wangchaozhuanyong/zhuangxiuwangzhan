@@ -1,6 +1,32 @@
 import { useCallback, useEffect, useRef, useState, type MouseEvent } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { ArrowRight, ArrowUpRight, BadgePercent, BookOpen, ChevronDown, Columns2, FileText, FolderOpen, GitBranch, ChevronRight, Globe, HelpCircle, Home, Info, Layers, LucideIcon, Mail, MapPinned, Menu, Moon, PackageSearch, Phone, Sun, Wrench, X } from "lucide-react";
+import {
+  ArrowRight,
+  ArrowUpRight,
+  BadgePercent,
+  BookOpen,
+  ChevronDown,
+  Columns2,
+  FileText,
+  FolderOpen,
+  GitBranch,
+  ChevronRight,
+  Globe,
+  HelpCircle,
+  Home,
+  Info,
+  Layers,
+  LucideIcon,
+  Mail,
+  MapPinned,
+  Menu,
+  Moon,
+  PackageSearch,
+  Phone,
+  Sun,
+  Wrench,
+  X,
+} from "lucide-react";
 import WhatsAppIcon from "@/components/WhatsAppIcon";
 import { Button } from "@/components/ui/button";
 import { useLanguage } from "@/i18n/LanguageContext";
@@ -49,9 +75,8 @@ const secondaryDesktopNavGroups = [
     paths: ["/services", "/materials", "/locations", "/before-after"],
   },
 ] as const;
-const secondaryDesktopNavItems = secondaryDesktopNavGroups.flatMap((group) =>
-  group.paths.flatMap((path) => navItems.filter((item) => item.path === path)),
-);
+type SecondaryDesktopNavGroupKey = (typeof secondaryDesktopNavGroups)[number]["key"];
+const secondaryDesktopNavItems = secondaryDesktopNavGroups.flatMap((group) => group.paths.flatMap((path) => navItems.filter((item) => item.path === path)));
 
 const MOBILE_MENU_CLOSE_MS = 190;
 
@@ -121,13 +146,7 @@ const LanguageSwitchLink = ({ variant, className }: LanguageSwitchLinkProps) => 
 
   if (variant === "mobile") {
     return (
-      <Link
-        to={targetPath}
-        onPointerDown={previewNextState}
-        onClick={previewNextState}
-        className={className}
-        aria-label={ariaLabel}
-      >
+      <Link to={targetPath} onPointerDown={previewNextState} onClick={previewNextState} className={className} aria-label={ariaLabel}>
         <span className="site-header__mobile-language-label" aria-hidden="true">
           <span className="site-header__mobile-language-text">{languageLabel[displayedTargetLanguage].short}</span>
         </span>
@@ -136,13 +155,7 @@ const LanguageSwitchLink = ({ variant, className }: LanguageSwitchLinkProps) => 
   }
 
   return (
-    <Link
-      to={targetPath}
-      onPointerDown={previewNextState}
-      onClick={previewNextState}
-      className={className}
-      aria-label={ariaLabel}
-    >
+    <Link to={targetPath} onPointerDown={previewNextState} onClick={previewNextState} className={className} aria-label={ariaLabel}>
       <Globe className="h-3.5 w-3.5" aria-hidden="true" />
       <span className="site-header__language-option" data-active={displayedLanguage === "en" ? "true" : "false"}>
         {languageLabel.en.long}
@@ -161,6 +174,7 @@ const Navbar = () => {
   const { hasImmersiveHero, menuOpen: isOpen, setMenuOpen: setIsOpen, theme, toggleTheme } = usePublicChrome();
   const [scrolled, setScrolled] = useState(false);
   const [isMenuClosing, setIsMenuClosing] = useState(false);
+  const [expandedMobileGroup, setExpandedMobileGroup] = useState<SecondaryDesktopNavGroupKey | null>(null);
   const [pendingPath, setPendingPath] = useState<string | null>(null);
   const [desktopMoreOpen, setDesktopMoreOpen] = useState(false);
   const [logoState, setLogoState] = useState<"primary" | "fallback" | "none">("primary");
@@ -176,8 +190,7 @@ const Navbar = () => {
   const primaryLogoSrc = addCacheBuster(settings.logo_url || "", settings.updated_at);
   const brandText = settings.company_name || "FLASH CAST SDN. BHD.";
   const solidHeader = !hasImmersiveHero || scrolled || isOpen || desktopMoreOpen;
-  const resolvedLogoState: "primary" | "fallback" | "none" =
-    logoState === "primary" && primaryLogoSrc ? "primary" : logoState === "none" ? "none" : "fallback";
+  const resolvedLogoState: "primary" | "fallback" | "none" = logoState === "primary" && primaryLogoSrc ? "primary" : logoState === "none" ? "none" : "fallback";
   const logoSrc = resolvedLogoState === "primary" ? primaryLogoSrc : logoFallback;
 
   useEffect(() => {
@@ -193,41 +206,67 @@ const Navbar = () => {
   const openMobileMenu = useCallback(() => {
     clearMobileCloseTimer();
     setPendingPath(null);
+    setExpandedMobileGroup(null);
     setIsMenuClosing(false);
     setIsOpen(true);
   }, [clearMobileCloseTimer, setIsOpen]);
 
-  const closeMobileMenu = useCallback((afterClose?: () => void) => {
-    if (!isOpen) {
-      afterClose?.();
-      return;
-    }
+  const closeMobileMenu = useCallback(
+    (afterClose?: () => void) => {
+      if (!isOpen) {
+        afterClose?.();
+        return;
+      }
 
-    clearMobileCloseTimer();
-    mobileMenuRef.current?.setAttribute("data-state", "closing");
-    setIsMenuClosing(true);
+      clearMobileCloseTimer();
+      mobileMenuRef.current?.setAttribute("data-state", "closing");
+      setIsMenuClosing(true);
 
-    mobileCloseTimerRef.current = window.setTimeout(() => {
-      setIsOpen(false);
-      setIsMenuClosing(false);
-      setPendingPath(null);
-      mobileCloseTimerRef.current = null;
-      afterClose?.();
-    }, getMobileMenuCloseDelay());
-  }, [clearMobileCloseTimer, isOpen, setIsOpen]);
+      mobileCloseTimerRef.current = window.setTimeout(() => {
+        setIsOpen(false);
+        setIsMenuClosing(false);
+        setPendingPath(null);
+        setExpandedMobileGroup(null);
+        mobileCloseTimerRef.current = null;
+        afterClose?.();
+      }, getMobileMenuCloseDelay());
+    },
+    [clearMobileCloseTimer, isOpen, setIsOpen],
+  );
 
   useEffect(() => {
     return () => {
       clearMobileCloseTimer();
+      setIsOpen(false);
     };
-  }, [clearMobileCloseTimer]);
+  }, [clearMobileCloseTimer, setIsOpen]);
+
+  useEffect(() => {
+    const desktopQuery = window.matchMedia("(min-width: 1180px)");
+    const syncResponsiveMenuState = () => {
+      if (desktopQuery.matches) {
+        clearMobileCloseTimer();
+        setIsMenuClosing(false);
+        setPendingPath(null);
+        setExpandedMobileGroup(null);
+        setIsOpen(false);
+        return;
+      }
+
+      setDesktopMoreOpen(false);
+    };
+
+    syncResponsiveMenuState();
+    desktopQuery.addEventListener("change", syncResponsiveMenuState);
+    return () => desktopQuery.removeEventListener("change", syncResponsiveMenuState);
+  }, [clearMobileCloseTimer, setIsOpen]);
 
   useEffect(() => {
     let frame = 0;
     const update = () => {
       frame = 0;
       const nextScrolled = window.scrollY > 20;
-      setScrolled((current) => current === nextScrolled ? current : nextScrolled);
+      setScrolled((current) => (current === nextScrolled ? current : nextScrolled));
     };
     const onScroll = () => {
       if (frame) return;
@@ -246,19 +285,10 @@ const Navbar = () => {
     clearMobileCloseTimer();
     setIsMenuClosing(false);
     setPendingPath(null);
+    setExpandedMobileGroup(null);
     setIsOpen(false);
+    setDesktopMoreOpen(false);
   }, [clearMobileCloseTimer, location.pathname, setIsOpen]);
-
-  useEffect(() => {
-    if (isOpen) {
-      document.documentElement.dataset.menuOpen = "true";
-    } else {
-      delete document.documentElement.dataset.menuOpen;
-    }
-    return () => {
-      delete document.documentElement.dataset.menuOpen;
-    };
-  }, [isOpen]);
 
   useEffect(() => {
     if (!isOpen) return;
@@ -268,6 +298,29 @@ const Navbar = () => {
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === "Escape") {
         closeMobileMenu();
+        return;
+      }
+
+      if (event.key !== "Tab") return;
+
+      const panel = mobileMenuRef.current?.querySelector<HTMLElement>(".mobile-navigation__panel");
+      const focusableElements = Array.from(panel?.querySelectorAll<HTMLElement>('a[href], button:not([disabled]), [tabindex]:not([tabindex="-1"])') ?? []).filter(
+        (element) => element.offsetParent !== null,
+      );
+      const firstFocusable = focusableElements[0];
+      const lastFocusable = focusableElements[focusableElements.length - 1];
+
+      if (!firstFocusable || !lastFocusable) {
+        event.preventDefault();
+        return;
+      }
+
+      if (event.shiftKey && (document.activeElement === firstFocusable || document.activeElement === panel)) {
+        event.preventDefault();
+        lastFocusable.focus();
+      } else if (!event.shiftKey && document.activeElement === lastFocusable) {
+        event.preventDefault();
+        firstFocusable.focus();
       }
     };
 
@@ -309,7 +362,7 @@ const Navbar = () => {
     };
   }, [desktopMoreOpen]);
 
-  const menuAriaLabel = navText.openMenu;
+  const menuAriaLabel = isOpen ? navText.closeMenu : navText.openMenu;
   const moreLabel = navText.more;
   const desktopMoreActive = secondaryDesktopNavItems.some((item) => isActivePath(location.pathname, item.path));
 
@@ -358,10 +411,7 @@ const Navbar = () => {
         style={{ zIndex: PUBLIC_CHROME_Z.header }}
       >
         <div className="site-header__inner site-container flex h-12 flex-nowrap items-center gap-3 md:h-16">
-          <LocalizedLink
-            to="/"
-            className="site-header__brand flex h-8 w-[7.75rem] max-w-[42%] shrink-0 items-center md:h-10 md:w-40 md:max-w-[12rem]"
-          >
+          <LocalizedLink to="/" className="site-header__brand flex h-8 w-[7.75rem] max-w-[42%] shrink-0 items-center md:h-10 md:w-40 md:max-w-[12rem]">
             {resolvedLogoState !== "none" ? (
               <SmartImage
                 src={logoSrc}
@@ -374,9 +424,7 @@ const Navbar = () => {
                 onError={() => setLogoState(resolvedLogoState === "primary" ? "fallback" : "none")}
               />
             ) : (
-              <span className="min-w-0 truncate text-[15px] font-semibold tracking-wide text-foreground/90 md:text-base">
-                {brandText}
-              </span>
+              <span className="min-w-0 truncate text-[15px] font-semibold tracking-wide text-foreground/90 md:text-base">{brandText}</span>
             )}
             <span className="sr-only">{brandText}</span>
           </LocalizedLink>
@@ -420,29 +468,31 @@ const Navbar = () => {
                     {secondaryDesktopNavGroups.map((group) => (
                       <section key={group.key} className="site-header__more-group" role="presentation">
                         <p>{group.key === "company" ? navText.companyGroup : navText.exploreGroup}</p>
-                        {group.paths.flatMap((path) => navItems.filter((item) => item.path === path)).map((item) => {
-                          const isActive = isActivePath(location.pathname, item.path);
-                          const Icon = item.icon;
-                          return (
-                            <LocalizedLink
-                              key={item.path}
-                              to={item.path}
-                              role="menuitem"
-                              onClick={(event) => {
-                                setDesktopMoreOpen(false);
-                                handleNavClick(event, item.path);
-                              }}
-                              onFocus={() => preloadPublicRoute(item.path)}
-                              onPointerEnter={() => preloadPublicRoute(item.path)}
-                              aria-current={isActive ? "page" : undefined}
-                              className={`site-header__more-link ${isActive ? "site-header__more-link--active" : ""}`}
-                            >
-                              <Icon className="site-header__more-link-icon h-4 w-4" aria-hidden="true" />
-                              <span>{t(item.labelKey)}</span>
-                              <ArrowUpRight className="site-header__more-link-arrow h-3.5 w-3.5" aria-hidden="true" />
-                            </LocalizedLink>
-                          );
-                        })}
+                        {group.paths
+                          .flatMap((path) => navItems.filter((item) => item.path === path))
+                          .map((item) => {
+                            const isActive = isActivePath(location.pathname, item.path);
+                            const Icon = item.icon;
+                            return (
+                              <LocalizedLink
+                                key={item.path}
+                                to={item.path}
+                                role="menuitem"
+                                onClick={(event) => {
+                                  setDesktopMoreOpen(false);
+                                  handleNavClick(event, item.path);
+                                }}
+                                onFocus={() => preloadPublicRoute(item.path)}
+                                onPointerEnter={() => preloadPublicRoute(item.path)}
+                                aria-current={isActive ? "page" : undefined}
+                                className={`site-header__more-link ${isActive ? "site-header__more-link--active" : ""}`}
+                              >
+                                <Icon className="site-header__more-link-icon h-4 w-4" aria-hidden="true" />
+                                <span>{t(item.labelKey)}</span>
+                                <ArrowUpRight className="site-header__more-link-arrow h-3.5 w-3.5" aria-hidden="true" />
+                              </LocalizedLink>
+                            );
+                          })}
                       </section>
                     ))}
                   </div>
@@ -453,7 +503,9 @@ const Navbar = () => {
                       role="menuitem"
                       onClick={(event) => {
                         setDesktopMoreOpen(false);
-                        trackCtaClick("quote", "desktop_more_menu", { destination: "/quote" });
+                        trackCtaClick("quote", "desktop_more_menu", {
+                          destination: "/quote",
+                        });
                         handleNavClick(event, "/quote");
                       }}
                     >
@@ -467,10 +519,7 @@ const Navbar = () => {
           </nav>
 
           <div className="site-header__desktop-actions hidden shrink-0 items-center min-[1180px]:flex">
-            <LanguageSwitchLink
-              variant="desktop"
-              className="site-header__control site-header__language-control"
-            />
+            <LanguageSwitchLink variant="desktop" className="site-header__control site-header__language-control" />
             <Button
               variant="ghost"
               size="icon"
@@ -486,7 +535,11 @@ const Navbar = () => {
               <LocalizedLink
                 to="/quote"
                 className="whitespace-nowrap"
-                onClick={() => trackCtaClick("quote", "desktop_header", { destination: "/quote" })}
+                onClick={() =>
+                  trackCtaClick("quote", "desktop_header", {
+                    destination: "/quote",
+                  })
+                }
               >
                 {t("cta.getQuote")} <ArrowRight className="ml-1 h-3.5 w-3.5" />
               </LocalizedLink>
@@ -495,10 +548,7 @@ const Navbar = () => {
 
           <div className="ml-auto flex shrink-0 items-center min-[1180px]:hidden">
             <div className="site-header__mobile-controls flex h-11 items-center">
-              <LanguageSwitchLink
-                variant="mobile"
-                className="site-header__mobile-button site-header__mobile-language-button flex h-10 w-10 items-center justify-center text-[11px] font-bold"
-              />
+              <LanguageSwitchLink variant="mobile" className="site-header__mobile-button site-header__mobile-language-button flex h-10 w-10 items-center justify-center text-[11px] font-bold" />
               <button
                 type="button"
                 className="site-header__mobile-button flex h-10 w-10 items-center justify-center transition-colors"
@@ -528,110 +578,137 @@ const Navbar = () => {
           data-state={isMenuClosing ? "closing" : "open"}
           className="mobile-navigation fixed inset-x-0 bottom-0 top-12 flex flex-col border-t border-border/70 bg-[hsl(var(--background))] shadow-[0_-24px_80px_-56px_rgba(21,18,14,0.45)] md:top-16 min-[1180px]:hidden"
           style={{ zIndex: PUBLIC_CHROME_Z.mobileMenu }}
-          tabIndex={-1}
-          data-mobile-menu-initial-focus
         >
-          <div className="mobile-navigation__body">
-            <nav className="mobile-navigation__list" aria-label={navText.mobileNav}>
-              <section className="mobile-navigation__primary" aria-label={navText.featuredNavigation}>
-                <div className="mobile-navigation__primary-grid">
-                  {primaryDesktopNavItems.map((item, index) => {
-                    const isActive = isActivePath(location.pathname, item.path);
-                    const Icon = item.icon;
+          <button type="button" className="mobile-navigation__scrim" aria-label={navText.closeMenu} tabIndex={-1} onClick={() => closeMobileMenu()} />
+          <div className="mobile-navigation__panel" role="dialog" aria-modal="true" aria-label={navText.mobileNav} tabIndex={-1} data-mobile-menu-initial-focus>
+            <div className="mobile-navigation__body">
+              <nav className="mobile-navigation__list" aria-label={navText.mobileNav}>
+                <section className="mobile-navigation__primary" aria-label={navText.featuredNavigation}>
+                  <div className="mobile-navigation__primary-grid">
+                    {primaryDesktopNavItems.map((item, index) => {
+                      const isActive = isActivePath(location.pathname, item.path);
+                      const Icon = item.icon;
+                      return (
+                        <LocalizedLink
+                          key={item.path}
+                          to={item.path}
+                          onClick={(event) => handleNavClick(event, item.path)}
+                          onFocus={() => preloadPublicRoute(item.path)}
+                          onPointerEnter={() => preloadPublicRoute(item.path)}
+                          onTouchStart={() => preloadPublicRoute(item.path)}
+                          aria-current={isActive ? "page" : undefined}
+                          style={{ animationDelay: `${index * 40}ms` }}
+                          className={`mobile-nav-link mobile-navigation__primary-link ${isActive ? "mobile-navigation__primary-link--active" : ""} ${pendingPath === item.path ? "mobile-nav-link--pending" : ""}`}
+                        >
+                          <Icon className="mobile-navigation__primary-icon h-5 w-5" aria-hidden="true" />
+                          <span className="mobile-navigation__primary-label">{t(item.labelKey)}</span>
+                          <ChevronRight className="mobile-navigation__primary-arrow h-4 w-4" aria-hidden="true" />
+                        </LocalizedLink>
+                      );
+                    })}
+                  </div>
+                </section>
+
+                <div className="mobile-navigation__secondary-groups">
+                  {secondaryDesktopNavGroups.map((group, groupIndex) => {
+                    const isExpanded = expandedMobileGroup === group.key;
+                    const groupId = `mobile-navigation-${group.key}`;
                     return (
-                      <LocalizedLink
-                        key={item.path}
-                        to={item.path}
-                        onClick={(event) => handleNavClick(event, item.path)}
-                        onFocus={() => preloadPublicRoute(item.path)}
-                        onPointerEnter={() => preloadPublicRoute(item.path)}
-                        onTouchStart={() => preloadPublicRoute(item.path)}
-                        aria-current={isActive ? "page" : undefined}
-                        style={{ animationDelay: `${index * 40}ms` }}
-                        className={`mobile-nav-link mobile-navigation__primary-link ${isActive ? "mobile-navigation__primary-link--active" : ""} ${pendingPath === item.path ? "mobile-nav-link--pending" : ""}`}
-                      >
-                        <span className="mobile-navigation__primary-index" aria-hidden="true">{String(index + 1).padStart(2, "0")}</span>
-                        <Icon className="mobile-navigation__primary-icon h-5 w-5" aria-hidden="true" />
-                        <span className="mobile-navigation__primary-label">{t(item.labelKey)}</span>
-                        <ArrowUpRight className="mobile-navigation__primary-arrow h-4 w-4" aria-hidden="true" />
-                      </LocalizedLink>
+                      <section key={group.key} className="mobile-navigation__secondary-group">
+                        <button
+                          type="button"
+                          className="mobile-navigation__secondary-trigger"
+                          aria-expanded={isExpanded}
+                          aria-controls={groupId}
+                          onClick={() => setExpandedMobileGroup(isExpanded ? null : group.key)}
+                        >
+                          <span>{group.key === "company" ? navText.companyGroup : navText.exploreGroup}</span>
+                          <ChevronDown aria-hidden="true" />
+                        </button>
+                        <div id={groupId} hidden={!isExpanded}>
+                          {group.paths
+                            .flatMap((path) => navItems.filter((item) => item.path === path))
+                            .map((item, itemIndex) => {
+                              const isActive = isActivePath(location.pathname, item.path);
+                              const Icon = item.icon;
+                              return (
+                                <LocalizedLink
+                                  key={item.path}
+                                  to={item.path}
+                                  onClick={(event) => handleNavClick(event, item.path)}
+                                  onFocus={() => preloadPublicRoute(item.path)}
+                                  onPointerEnter={() => preloadPublicRoute(item.path)}
+                                  onTouchStart={() => preloadPublicRoute(item.path)}
+                                  aria-current={isActive ? "page" : undefined}
+                                  style={{
+                                    animationDelay: `${(primaryDesktopNavItems.length + groupIndex * 4 + itemIndex) * 40}ms`,
+                                  }}
+                                  className={`mobile-nav-link mobile-navigation__secondary-link ${isActive ? "mobile-navigation__secondary-link--active" : ""} ${pendingPath === item.path ? "mobile-nav-link--pending" : ""}`}
+                                >
+                                  <Icon className="h-4 w-4" aria-hidden="true" />
+                                  <span className="mobile-navigation__secondary-label">{t(item.labelKey)}</span>
+                                  <ChevronRight className="h-4 w-4" aria-hidden="true" />
+                                </LocalizedLink>
+                              );
+                            })}
+                        </div>
+                      </section>
                     );
                   })}
                 </div>
-              </section>
-
-              <div className="mobile-navigation__secondary-groups">
-                {secondaryDesktopNavGroups.map((group, groupIndex) => (
-                  <section key={group.key} className="mobile-navigation__secondary-group">
-                    <p>{group.key === "company" ? navText.companyGroup : navText.exploreGroup}</p>
-                    <div>
-                      {group.paths.flatMap((path) => navItems.filter((item) => item.path === path)).map((item, itemIndex) => {
-                        const isActive = isActivePath(location.pathname, item.path);
-                        const Icon = item.icon;
-                        return (
-                          <LocalizedLink
-                            key={item.path}
-                            to={item.path}
-                            onClick={(event) => handleNavClick(event, item.path)}
-                            onFocus={() => preloadPublicRoute(item.path)}
-                            onPointerEnter={() => preloadPublicRoute(item.path)}
-                            onTouchStart={() => preloadPublicRoute(item.path)}
-                            aria-current={isActive ? "page" : undefined}
-                            style={{ animationDelay: `${(primaryDesktopNavItems.length + groupIndex * 4 + itemIndex) * 40}ms` }}
-                            className={`mobile-nav-link mobile-navigation__secondary-link ${isActive ? "mobile-navigation__secondary-link--active" : ""} ${pendingPath === item.path ? "mobile-nav-link--pending" : ""}`}
-                          >
-                            <Icon className="h-4 w-4" aria-hidden="true" />
-                            <span>{t(item.labelKey)}</span>
-                            <ChevronRight className="h-4 w-4" aria-hidden="true" />
-                          </LocalizedLink>
-                        );
-                      })}
-                    </div>
-                  </section>
-                ))}
-              </div>
-            </nav>
-          </div>
-
-          <div className="mobile-navigation__footer">
-            <div className="mobile-navigation__footer-copy">
-              <span>{navText.projectConsultation}</span>
-              <p>{navText.startWithSpace}</p>
+              </nav>
             </div>
-            <LocalizedLink
-              to="/quote"
-              className="mobile-navigation__quote"
-              onClick={(event) => {
-                trackCtaClick("quote", "mobile_menu", { destination: "/quote" });
-                handleNavClick(event, "/quote");
-              }}
-              onFocus={() => preloadPublicRoute("/quote")}
-              onPointerEnter={() => preloadPublicRoute("/quote")}
-              onTouchStart={() => preloadPublicRoute("/quote")}
-            >
-              <FileText className="h-5 w-5" />
-              <span>{t("cta.getQuote")}</span>
-              <ArrowRight className="h-5 w-5" />
-            </LocalizedLink>
-            <div className="mobile-navigation__contact-row">
-              <a
-                href={settings.phone_href}
-                className="mobile-navigation__contact-action"
-                onClick={() => trackCtaClick("phone", "mobile_menu", { destination: "phone" })}
+
+            <div className="mobile-navigation__footer">
+              <div className="mobile-navigation__footer-copy">
+                <span>{navText.projectConsultation}</span>
+                <p>{navText.startWithSpace}</p>
+              </div>
+              <LocalizedLink
+                to="/quote"
+                className="mobile-navigation__quote"
+                onClick={(event) => {
+                  trackCtaClick("quote", "mobile_menu", {
+                    destination: "/quote",
+                  });
+                  handleNavClick(event, "/quote");
+                }}
+                onFocus={() => preloadPublicRoute("/quote")}
+                onPointerEnter={() => preloadPublicRoute("/quote")}
+                onTouchStart={() => preloadPublicRoute("/quote")}
               >
-                <Phone className="h-4 w-4" />
-                <span>{navText.callConsult}</span>
-              </a>
-              <a
-                href={settings.whatsapp_url()}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="mobile-navigation__contact-action"
-                onClick={() => trackCtaClick("whatsapp", "mobile_menu", { destination: "whatsapp" })}
-              >
-                <WhatsAppIcon className="h-4 w-4 text-whatsapp" />
-                <span>{t("cta.whatsapp")}</span>
-              </a>
+                <FileText className="h-5 w-5" />
+                <span>{t("cta.getQuote")}</span>
+                <ArrowRight className="h-5 w-5" />
+              </LocalizedLink>
+              <div className="mobile-navigation__contact-row">
+                <a
+                  href={settings.phone_href}
+                  className="mobile-navigation__contact-action"
+                  onClick={() =>
+                    trackCtaClick("phone", "mobile_menu", {
+                      destination: "phone",
+                    })
+                  }
+                >
+                  <Phone className="h-4 w-4" />
+                  <span>{navText.callConsult}</span>
+                </a>
+                <a
+                  href={settings.whatsapp_url()}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="mobile-navigation__contact-action"
+                  onClick={() =>
+                    trackCtaClick("whatsapp", "mobile_menu", {
+                      destination: "whatsapp",
+                    })
+                  }
+                >
+                  <WhatsAppIcon className="h-4 w-4 text-whatsapp" />
+                  <span>{t("cta.whatsapp")}</span>
+                </a>
+              </div>
             </div>
           </div>
         </div>

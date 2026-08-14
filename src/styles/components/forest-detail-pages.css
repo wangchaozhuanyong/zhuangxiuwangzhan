@@ -39,6 +39,75 @@
     box-shadow: inset 0 0 0 1px var(--forest-page-accent);
   }
 
+  /* Route-level hero hierarchy: brand pages stay expansive, catalog and utility
+     pages become progressively denser while retaining a real project image. */
+  html[data-public-theme] .public-main--subpage .page-hero.page-hero--compact[data-forest-page-hero="true"] {
+    height: clamp(28rem, 52dvh, 34rem);
+    min-height: 28rem;
+    max-height: 34rem;
+    grid-template-columns: minmax(0, 6fr) minmax(0, 6fr);
+  }
+
+  html[data-public-theme] .public-main--subpage .page-hero.page-hero--utility[data-forest-page-hero="true"] {
+    height: clamp(23rem, 44dvh, 29rem);
+    min-height: 23rem;
+    max-height: 29rem;
+    grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
+  }
+
+  html[data-public-theme] .public-main--subpage :is(.page-hero--compact, .page-hero--utility)[data-forest-page-hero="true"] .page-hero__content {
+    padding: clamp(2.25rem, 4vw, 4rem);
+  }
+
+  html[data-public-theme] .public-main--subpage .page-hero--compact[data-forest-page-hero="true"] .page-hero__title,
+  html[lang="en"][data-public-theme] .public-main--subpage .page-hero--compact[data-forest-page-hero="true"] .page-hero__title {
+    max-width: 18ch;
+    font-size: clamp(2.15rem, 2.7vw, 3.15rem);
+  }
+
+  html[data-public-theme] .public-main--subpage .page-hero--utility[data-forest-page-hero="true"] .page-hero__title,
+  html[lang="en"][data-public-theme] .public-main--subpage .page-hero--utility[data-forest-page-hero="true"] .page-hero__title {
+    max-width: 20ch;
+    font-size: clamp(2rem, 2.4vw, 2.8rem);
+  }
+
+  html[data-public-theme] .public-main--subpage .page-hero--utility[data-forest-page-hero="true"] .page-hero__description {
+    margin-top: 1rem;
+    font-size: 0.98rem;
+  }
+
+  /* Neutralize the older warm-card shimmer so detail and form routes use the
+     same mineral surfaces as the current public-page system. */
+  html[data-public-theme] .public-main--subpage :is(
+    .luxury-card,
+    .luxury-card-muted,
+    .rounded-card.border,
+    .rounded-card-lg.border,
+    .bg-card.border,
+    .subpage-form-panel,
+    .subpage-side-panel,
+    .card-equal,
+    .material-depth-card
+  ):not(.bg-surface-dark):not(.subpage-dark-card) {
+    border-color: var(--forest-page-line);
+    color: var(--forest-page-ink);
+    background: var(--forest-page-panel);
+  }
+
+  html[data-public-theme] .public-main--subpage :is(
+    .luxury-card,
+    .luxury-card-muted,
+    .rounded-card.border,
+    .rounded-card-lg.border,
+    .bg-card.border,
+    .subpage-form-panel,
+    .subpage-side-panel,
+    .card-equal,
+    .material-depth-card
+  ):not(.bg-surface-dark):not(.subpage-dark-card)::before {
+    display: none;
+  }
+
   html[data-public-theme] .public-main--subpage .subpage-local-heading {
     margin-bottom: 2rem;
   }
@@ -201,12 +270,9 @@
     max-width: 51rem;
   }
 
-  html[data-public-theme] .public-main--subpage .subpage-cta__eyebrow {
-    color: var(--forest-page-accent);
-  }
-
   html[data-public-theme] .public-main--subpage .subpage-cta__title {
-    max-width: 17ch;
+    max-width: 16em;
+    margin-inline: auto;
     color: var(--forest-page-ink);
     font-size: clamp(2.1rem, 4vw, 4.5rem);
     font-weight: 500;
@@ -394,7 +460,7 @@
 
   .forest-blog-detail-page .prose :is(h2, h3) {
     color: var(--forest-page-ink);
-    font-weight: 550;
+    font-weight: 500;
   }
 
   .forest-blog-detail-page .prose img {
@@ -512,7 +578,7 @@
 
   .forest-legal-page .legal-document h2 {
     font-size: clamp(1.25rem, 2vw, 1.75rem);
-    font-weight: 550;
+    font-weight: 500;
   }
 
   .forest-not-found-page .subpage-form-panel {
@@ -538,6 +604,33 @@
   }
 
   @media (max-width: 767px) {
+    html[data-public-theme] .public-main--subpage .page-hero.page-hero--compact[data-forest-page-hero="true"],
+    html[data-public-theme] .public-main--subpage .page-hero.page-hero--utility[data-forest-page-hero="true"] {
+      height: auto;
+      min-height: 0;
+      max-height: none;
+      grid-template-columns: 1fr;
+    }
+
+    html[data-public-theme] .public-main--subpage :is(.page-hero--compact, .page-hero--utility)[data-forest-page-hero="true"] .page-hero__media {
+      height: auto;
+      min-height: 0;
+      aspect-ratio: 16 / 8;
+    }
+
+    html[data-public-theme] .public-main--subpage :is(.page-hero--compact, .page-hero--utility)[data-forest-page-hero="true"] .page-hero__content {
+      min-height: 0;
+      padding: 1.5rem 1rem 1.85rem;
+    }
+
+    html[data-public-theme] .public-main--subpage .page-hero--compact[data-forest-page-hero="true"] .page-hero__title,
+    html[lang="en"][data-public-theme] .public-main--subpage .page-hero--compact[data-forest-page-hero="true"] .page-hero__title,
+    html[data-public-theme] .public-main--subpage .page-hero--utility[data-forest-page-hero="true"] .page-hero__title,
+    html[lang="en"][data-public-theme] .public-main--subpage .page-hero--utility[data-forest-page-hero="true"] .page-hero__title {
+      max-width: 20ch;
+      font-size: clamp(1.85rem, 8vw, 2.3rem);
+    }
+
     .forest-quote-layout,
     html[data-public-theme] .public-main--subpage .subpage-cta,
     .forest-legal-page .legal-hero {
@@ -553,12 +646,35 @@
     }
 
     html[data-public-theme] .public-main--subpage .subpage-cta__panel {
+      min-height: 0;
       grid-template-columns: 1fr;
-      padding: 4rem 1rem;
+      gap: 1.75rem;
+      padding: 3rem 1rem 3.25rem;
+      text-align: center;
+    }
+
+    html[data-public-theme] .public-main--subpage .subpage-cta__copy {
+      width: 100%;
+      margin-inline: auto;
+      text-align: center;
+    }
+
+    html[data-public-theme] .public-main--subpage .subpage-cta__title {
+      width: 100%;
+      max-width: none;
+      margin-inline: auto;
+      font-size: clamp(1.9rem, 8vw, 2.1rem);
+      line-height: 1.12;
+    }
+
+    html[data-public-theme] .public-main--subpage .subpage-cta__text {
+      margin: 1rem auto 0;
     }
 
     html[data-public-theme] .public-main--subpage .subpage-cta__actions {
       width: 100%;
+      max-width: 18.5rem;
+      margin-inline: auto;
     }
 
     .forest-material-detail-page .material-detail-showcase {

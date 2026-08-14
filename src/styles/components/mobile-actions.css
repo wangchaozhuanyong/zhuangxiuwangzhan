@@ -1,4 +1,8 @@
 @layer components {
+  .mobile-bottom-dock {
+    display: none;
+  }
+
   .mobile-action-bar {
     color: var(--adaptive-fg, #17130f);
     pointer-events: none;
@@ -114,7 +118,7 @@
     max-width: 100%;
     overflow: hidden;
     font-family: var(--font-body);
-    font-size: 0.66rem;
+    font-size: 0.75rem;
     font-weight: 800;
     letter-spacing: 0;
     line-height: 1;
@@ -156,7 +160,7 @@
   }
 
   .mobile-action-bar__item--quote .mobile-action-bar__label {
-    font-size: 0.68rem;
+    font-size: 0.75rem;
   }
 
   @media (max-width: 360px) {
@@ -177,7 +181,30 @@
 
     .mobile-action-bar__label,
     .mobile-action-bar__item--quote .mobile-action-bar__label {
-      font-size: 0.64rem;
+      font-size: 0.75rem;
+    }
+  }
+
+  @media (max-width: 767px) {
+    .mobile-bottom-dock {
+      position: fixed;
+      z-index: 45;
+      right: 0;
+      bottom: 0;
+      left: 0;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      min-height: calc(4.35rem + env(safe-area-inset-bottom, 0px));
+      pointer-events: none;
+    }
+
+    .mobile-bottom-dock > .mobile-action-bar,
+    .mobile-bottom-dock > .forest-bottom-nav {
+      position: relative;
+      inset: auto;
+      width: 100%;
+      pointer-events: auto;
     }
   }
 }

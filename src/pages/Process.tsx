@@ -29,7 +29,7 @@ const Process = () => {
     <main className="pt-site-header">
       <PageMeta title={pageContent?.seo_title || t.metaTitle} description={pageContent?.seo_description || t.metaDescription} keywords={pageContent?.seo_keywords || t.metaKeywords} canonicalPath="/process" />
       <JsonLdBreadcrumb items={[{ name: t.breadcrumbHome, url: "/" }, { name: t.breadcrumbProcess, url: "/process" }]} />
-      <HeroBanner image={heroImage.desktop} imageMobile={heroImage.mobile} imageAlt={pageContent?.alt || t.imageAlt} label={pageContent?.subtitle || t.label} title={pageContent?.title || t.title} description={pageContent?.description || t.description} />
+      <HeroBanner image={heroImage.desktop} imageMobile={heroImage.mobile} imageAlt={pageContent?.alt || t.imageAlt} label={pageContent?.subtitle || t.label} title={pageContent?.title || t.title} description={pageContent?.description || t.description} variant="compact" />
 
       <section className="forest-chapter forest-process-story">
         <div className="forest-process-story__heading">

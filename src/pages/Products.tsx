@@ -12,7 +12,6 @@ import { productsPageText } from "@/i18n/newClientPageText";
 import { pageHeroImages, resolvePageHeroImage } from "@/lib/pageHeroImages";
 import { stripHtml } from "@/lib/text";
 import { ForestContentState, ForestFilterNav } from "@/components/forest/ForestPagePrimitives";
-import { forestUiText } from "@/i18n/forestUiText";
 
 const INITIAL_PRODUCT_LIMIT = 18;
 
@@ -64,6 +63,7 @@ const Products = () => {
         label={pageContent?.subtitle || t.eyebrow}
         title={pageContent?.title || t.title}
         description={pageContent?.description || t.intro}
+        variant="compact"
       />
 
       <section className="forest-chapter forest-product-directory">
@@ -88,7 +88,6 @@ const Products = () => {
           onChange={(value) => { setCategory(value); setVisibleLimit(INITIAL_PRODUCT_LIMIT); }}
           ariaLabel={t.searchLabel}
         />
-        {!isLoading && !isError ? <div className="forest-listing-meta"><span>{forestUiText[language].resultCount(filteredProducts.length)}</span></div> : null}
 
         {isLoading ? (
           <ForestContentState variant="loading" compact description={t.loading} />

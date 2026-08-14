@@ -1,0 +1,574 @@
+html[data-public-theme] {
+    --public-layout-wide: 110rem;
+    --public-layout-reading: 46rem;
+    --public-layout-gutter: clamp(2rem, 4.2vw, 5.5rem);
+    --public-layout-inset: max(
+      var(--public-layout-gutter),
+      calc((100vw - var(--public-layout-wide)) / 2)
+    );
+  }
+
+  /* Local page headings should rely on type and spacing, not repeated decorative bars. */
+  html[data-public-theme] .public-main--subpage :is(
+    .subpage-local-heading,
+    .subpage-local-heading--balanced
+  ) .accent-line {
+    display: none;
+  }
+
+  html[data-public-theme] .public-main--subpage :is(
+    .subpage-local-heading,
+    .subpage-local-heading--balanced
+  ) :is(h1, h2, h3) {
+    letter-spacing: 0;
+    text-wrap: balance;
+  }
+
+  html[data-public-theme="light"] .public-main--subpage {
+    color-scheme: light;
+  }
+
+  html[data-public-theme="dark"] .public-main--subpage {
+    color-scheme: dark;
+  }
+
+  html[data-public-theme="dark"] .public-main--subpage::before {
+    background:
+      repeating-linear-gradient(90deg, hsl(var(--foreground) / 0.025) 0 1px, transparent 1px 76px),
+      repeating-linear-gradient(0deg, hsl(var(--foreground) / 0.018) 0 1px, transparent 1px 64px),
+      linear-gradient(122deg, transparent 0 28%, hsl(var(--accent) / 0.055) 28.15% 28.5%, transparent 28.65% 100%),
+      linear-gradient(180deg, hsl(var(--background) / 0.12), transparent 42%, hsl(var(--accent) / 0.025));
+  }
+
+  html[data-public-theme="dark"] .public-main--subpage::after {
+    background:
+      linear-gradient(112deg, transparent 0 15%, hsl(var(--foreground) / 0.035) 15.2% 15.7%, transparent 15.9% 100%),
+      linear-gradient(20deg, transparent 0 70%, hsl(var(--accent) / 0.035) 70.1% 70.45%, transparent 70.6% 100%);
+  }
+
+  html[data-public-theme] .public-main--subpage :is(
+    label,
+    legend,
+    .quote-form-section-label
+  ) {
+    color: var(--forest-page-ink);
+  }
+
+  /* Public forms use one semantic surface in both themes. Resetting the full
+     background shorthand prevents older white gradients from surviving in dark mode. */
+  html[data-public-theme] .public-main--subpage :is(
+    input:not([type="button"]):not([type="checkbox"]):not([type="color"]):not([type="file"]):not([type="hidden"]):not([type="image"]):not([type="radio"]):not([type="range"]):not([type="reset"]):not([type="submit"]),
+    textarea,
+    select
+  ) {
+    color: var(--forest-page-ink);
+    background: var(--forest-page-panel);
+    caret-color: var(--forest-page-ink);
+    -webkit-text-fill-color: var(--forest-page-ink);
+  }
+
+  html[data-public-theme] .public-main--subpage :is(input, textarea)::placeholder {
+    color: var(--forest-page-muted);
+    opacity: 1;
+    -webkit-text-fill-color: var(--forest-page-muted);
+  }
+
+  html[data-public-theme] .public-main--subpage select option {
+    color: var(--forest-page-ink);
+    background: var(--forest-page-panel);
+  }
+
+  html[data-public-theme] .public-main--subpage :is(input, textarea):-webkit-autofill {
+    caret-color: var(--forest-page-ink);
+    -webkit-text-fill-color: var(--forest-page-ink);
+    -webkit-box-shadow: 0 0 0 1000px var(--forest-page-panel) inset;
+  }
+
+  @media (min-width: 1180px) {
+    /* Desktop uses full-bleed page bands with one shared inner alignment rail. */
+    html[data-public-theme] body .site-header__inner.site-container,
+    html[data-public-theme] body .footer-content.site-container {
+      width: 100%;
+      max-width: var(--public-layout-wide);
+      margin-inline: auto;
+      padding-inline: var(--public-layout-gutter);
+    }
+
+    html[data-public-theme] body .site-header__inner.site-container {
+      height: 4.25rem;
+    }
+
+    html[data-public-theme] body .site-header__nav-link {
+      min-height: 4.25rem;
+      border: 0;
+      border-radius: 0;
+      background: transparent;
+      box-shadow: none;
+    }
+
+    html[data-public-theme] body .site-header__nav-link:hover,
+    html[data-public-theme] body .site-header__nav-link--active {
+      border: 0;
+      background: transparent;
+      box-shadow: none;
+    }
+
+    html[data-public-theme] body .site-header__nav-link::after {
+      right: auto;
+      bottom: 0.3rem;
+      left: 50%;
+      width: 0;
+      height: 2px;
+      background: currentColor;
+      opacity: 0.72;
+      transform: translateX(-50%);
+      transition: width 180ms cubic-bezier(0.16, 1, 0.3, 1), opacity 180ms ease;
+    }
+
+    html[data-public-theme] body .site-header__nav-link:hover::after {
+      width: calc(100% - 1.6rem);
+    }
+
+    html[data-public-theme] body .site-header__nav-link--active::after {
+      width: 1.75rem;
+      opacity: 1;
+    }
+
+    html[data-public-theme] body .site-header__nav-link:focus:not(:focus-visible) {
+      outline: 0;
+    }
+
+    html[data-public-theme] body .site-header__nav-link:focus-visible {
+      outline: 0;
+      background: hsl(var(--accent) / 0.12);
+      box-shadow: inset 0 -2px 0 hsl(var(--accent));
+    }
+
+    html[data-public-theme] body .site-header__nav-link:focus-visible::after {
+      width: 0;
+    }
+
+    html[data-public-theme] body .forest-home-hero,
+    html[data-public-theme] body .public-main--subpage .page-hero[data-forest-page-hero="true"] {
+      width: 100%;
+      max-width: none;
+      margin-inline: 0;
+      grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+      border-right: 0;
+      border-left: 0;
+    }
+
+    html[data-public-theme] body .forest-home-hero__copy,
+    html[data-public-theme] body .public-main--subpage [data-forest-page-hero="true"] .page-hero__content {
+      padding-left: var(--public-layout-inset);
+      padding-right: clamp(2.5rem, 4vw, 5rem);
+    }
+
+    html[data-public-theme] body .forest-home-hero__copy {
+      grid-column: 1;
+      grid-row: 1;
+    }
+
+    html[data-public-theme] body .forest-home-hero__media {
+      grid-column: 2;
+      grid-row: 1;
+    }
+
+    html[data-public-theme] body .forest-home-hero h1 {
+      max-width: 14ch;
+      font-size: clamp(3rem, 3.5vw, 4.2rem);
+    }
+
+    html[lang="en"][data-public-theme] body .forest-home-hero h1 {
+      max-width: 18ch;
+    }
+
+    html[data-public-theme] body .public-main--subpage [data-forest-page-hero="true"] .page-hero__title {
+      max-width: 14ch;
+      font-size: clamp(2.75rem, 3.65vw, 4.4rem);
+    }
+
+    html[lang="en"][data-public-theme] body .public-main--subpage [data-forest-page-hero="true"] .page-hero__title {
+      max-width: 18ch;
+      font-size: clamp(2.6rem, 3.25vw, 4rem);
+    }
+
+    html[data-public-theme] body .forest-trust-rail,
+    html[data-public-theme] body .forest-promo-band,
+    html[data-public-theme] body .forest-brand-rail {
+      width: 100%;
+      max-width: none;
+      margin-inline: 0;
+      border-right: 0;
+      border-left: 0;
+    }
+
+    html[data-public-theme] body .forest-brand-rail {
+      padding-inline: var(--public-layout-inset);
+    }
+
+    html[data-public-theme] body .forest-chapter,
+    html[data-public-theme] body .public-main--subpage > main > .forest-chapter {
+      width: 100%;
+      max-width: none;
+      margin-inline: 0;
+      padding-right: var(--public-layout-inset);
+      padding-left: var(--public-layout-inset);
+      border-right: 0;
+      border-left: 0;
+    }
+
+    html[data-public-theme] body .forest-content-frame {
+      width: 100%;
+      max-width: var(--public-layout-wide);
+      margin-inline: auto;
+    }
+
+    html[data-public-theme] body .public-main--subpage :is(
+      .container-narrow,
+      .container-wide,
+      .site-container
+    ) {
+      width: 100%;
+      max-width: var(--public-layout-wide);
+      margin-inline: auto;
+      padding-right: var(--public-layout-gutter);
+      padding-left: var(--public-layout-gutter);
+    }
+
+    html[data-public-theme] body .public-main--subpage > main > :is(
+      .section-padding,
+      .subpage-info-band,
+      .subpage-link-band
+    ) > :is(.container-narrow, .container-wide, .site-container) {
+      max-width: var(--public-layout-wide);
+    }
+
+    html[data-public-theme] body .public-main--subpage .subpage-cta {
+      width: 100%;
+      max-width: none;
+      margin-inline: 0;
+      border-right: 0;
+      border-left: 0;
+    }
+
+    html[data-public-theme] body .public-main--subpage .subpage-cta__panel {
+      padding-right: var(--public-layout-inset);
+      padding-left: var(--public-layout-inset);
+    }
+
+    html[data-public-theme] body .forest-contact-body {
+      width: 100%;
+      max-width: none;
+      margin-inline: 0;
+      padding-right: var(--public-layout-inset);
+      padding-left: var(--public-layout-inset);
+      border-right: 0;
+      border-left: 0;
+    }
+
+    html[data-public-theme] body .forest-contact-layout,
+    html[data-public-theme] body .forest-quote-layout {
+      width: 100%;
+      max-width: 90rem;
+      margin-inline: auto;
+    }
+
+    html[data-public-theme] body .forest-project-detail-page > .section-padding > .container-narrow > .grid,
+    html[data-public-theme] body .forest-blog-detail-page > .section-padding > .container-narrow > .grid {
+      max-width: 88rem;
+      margin-inline: auto;
+      grid-template-columns: minmax(0, var(--public-layout-reading)) minmax(20rem, 24rem);
+      justify-content: space-between;
+      gap: clamp(4rem, 7vw, 8rem) !important;
+      border: 0;
+      background: transparent;
+    }
+
+    html[data-public-theme] body .forest-project-detail-page > .section-padding > .container-narrow > .grid > div,
+    html[data-public-theme] body .forest-blog-detail-page > .section-padding > .container-narrow > .grid > div {
+      padding: 0;
+      background: transparent;
+    }
+
+    html[data-public-theme] body .forest-project-detail-page :is(
+      .prose,
+      .lg\:col-span-2 > p,
+      .lg\:col-span-2 > [data-reveal]
+    ),
+    html[data-public-theme] body .forest-blog-detail-page :is(article, .prose) {
+      max-width: var(--public-layout-reading);
+    }
+
+    html[data-public-theme] body .forest-project-listing {
+      column-gap: clamp(2rem, 3.4vw, 4rem);
+      row-gap: clamp(4rem, 6vw, 7rem);
+    }
+
+    html[data-public-theme] body .forest-project-row:last-child:nth-child(even) {
+      grid-column: span 2;
+    }
+
+    html[data-public-theme] body .forest-project-row:last-child:nth-child(even) .forest-listing-card__media {
+      aspect-ratio: 16 / 9;
+    }
+  }
+
+  @media (min-width: 1600px) {
+    html[data-public-theme] body .forest-project-row--wide {
+      display: grid;
+      grid-template-columns: minmax(0, 8fr) minmax(20rem, 4fr);
+      align-items: end;
+      gap: clamp(2.5rem, 4vw, 5rem);
+    }
+
+    html[data-public-theme] body .forest-project-row--wide .forest-listing-card__media {
+      aspect-ratio: 16 / 9;
+    }
+
+    html[data-public-theme] body .forest-project-row--wide .forest-listing-card__body {
+      padding: 0 0 1.5rem;
+    }
+  }
+
+  @media (max-width: 767px) {
+    /* Mobile subpages use one continuous canvas. Alternate tones create hierarchy
+       without making every chapter look like another nested panel. */
+    html[data-public-theme] .public-main--subpage > main > .forest-chapter {
+      border-right: 0;
+      border-bottom: 0;
+      border-left: 0;
+      padding: 3.5rem 1rem 4.25rem;
+      background: hsl(var(--background));
+      box-shadow: none;
+    }
+
+    html[data-public-theme] .public-main--subpage > main > .forest-chapter--raised {
+      background: var(--forest-page-raised);
+    }
+
+    html[data-public-theme] .public-main--subpage > main > :is(
+      .section-padding:not(.page-hero):not(.subpage-cta),
+      .subpage-info-band,
+      .subpage-link-band
+    ) {
+      border-right: 0;
+      border-bottom: 0;
+      border-left: 0;
+      box-shadow: none;
+    }
+
+    html[data-public-theme] .public-main--subpage > main > :is(
+      .subpage-info-band,
+      .subpage-link-band
+    ) {
+      background: var(--forest-page-raised);
+    }
+
+    html[data-public-theme] .public-main--subpage .subpage-cta {
+      border-right: 0;
+      border-bottom: 0;
+      border-left: 0;
+    }
+
+    /* Primary content panels are full-width editorial sheets on mobile. */
+    html[data-public-theme] .public-main--subpage > main > .section-padding > .container-narrow > .subpage-form-panel:not(.legal-document),
+    html[data-public-theme] .public-main--subpage > main > .section-padding > .container-narrow > [data-reveal] > .subpage-form-panel:not(.legal-document) {
+      border: 0;
+      padding-right: 0 !important;
+      padding-left: 0 !important;
+      background: transparent;
+    }
+
+    html[data-public-theme] .forest-contact-body {
+      border-bottom: 0;
+      background: hsl(var(--background));
+    }
+
+    html[data-public-theme] .forest-contact-form-wrap {
+      margin-top: 2.75rem;
+      border-top: 0;
+      padding-top: 2.75rem;
+    }
+
+    /* Quote form: remove the frame-within-frame treatment and keep only the
+       controls and meaningful information bands as raised surfaces. */
+    html[data-public-theme] .forest-quote-body {
+      padding: 2.5rem 0 calc(6.75rem + env(safe-area-inset-bottom, 0px)) !important;
+      background: hsl(var(--background));
+    }
+
+    html[data-public-theme] .forest-quote-layout {
+      width: 100%;
+      border: 0;
+      background: transparent;
+    }
+
+    html[data-public-theme] .forest-quote-layout > [data-reveal] {
+      padding: 0 1rem;
+      background: transparent;
+    }
+
+    html[data-public-theme] .forest-quote-layout > [data-reveal] + [data-reveal] {
+      margin-top: 3.25rem;
+      border-top: 1px solid var(--forest-page-line);
+      padding-top: 3.25rem;
+    }
+
+    html[data-public-theme] .forest-quote-form {
+      width: 100%;
+      background: transparent;
+    }
+
+    html[data-public-theme] .forest-quote-form .subpage-local-heading {
+      margin-bottom: 1.75rem;
+    }
+
+    html[data-public-theme] .forest-quote-form .quote-form-guide {
+      margin: 0 0 2rem;
+      border: 0;
+      border-top: 1px solid var(--forest-page-line);
+      border-bottom: 1px solid var(--forest-page-line);
+      padding: 1.1rem 0 1.2rem;
+      background: transparent;
+    }
+
+    html[data-public-theme] .forest-quote-form .quote-form-guide__summary span {
+      min-height: 0;
+      border: 0;
+      border-radius: 0;
+      padding: 0;
+      background: transparent;
+    }
+
+    html[data-public-theme] .forest-quote-form .quote-form-guide__text {
+      margin-top: 0.7rem;
+      font-size: 0.86rem;
+      line-height: 1.65;
+    }
+
+    html[data-public-theme] .forest-quote-form .quote-form-steps {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 0.5rem;
+      margin-top: 1rem;
+    }
+
+    html[data-public-theme] .forest-quote-form .quote-form-steps__item {
+      gap: 0.35rem;
+      font-size: 0.75rem;
+      line-height: 1.35;
+    }
+
+    html[data-public-theme] .forest-quote-form :is(
+      .quote-form-steps__marker,
+      .quote-form-section-label span
+    ) {
+      width: 1.35rem;
+      height: 1.35rem;
+    }
+
+    html[data-public-theme] .forest-quote-form form > .quote-form-section-label:first-child {
+      margin-top: 0;
+      border-top: 0;
+      padding-top: 0;
+    }
+
+    html[data-public-theme] .forest-quote-form .luxury-card-muted {
+      border: 0;
+      border-left: 2px solid var(--forest-page-accent);
+      background: var(--forest-page-raised);
+    }
+
+    html[data-public-theme] .forest-quote-aside > .subpage-side-panel {
+      background: transparent;
+    }
+
+    html[data-public-theme] .forest-quote-aside .subpage-copy-list {
+      gap: 0;
+      border-top: 1px solid var(--forest-page-line);
+      border-bottom: 1px solid var(--forest-page-line);
+      background: transparent;
+    }
+
+    html[data-public-theme] .forest-quote-aside .subpage-copy-item {
+      border: 0;
+      border-bottom: 1px solid var(--forest-page-line);
+      padding: 0.95rem 0;
+      background: transparent;
+    }
+
+    html[data-public-theme] .forest-quote-aside .subpage-copy-item:last-child {
+      border-bottom: 0;
+    }
+
+    /* Detail and CMS routes share the same mobile sheet instead of retaining
+       desktop split-panel frames inside the narrow viewport. */
+    html[data-public-theme] :is(
+      .forest-project-detail-page,
+      .forest-blog-detail-page
+    ) > .section-padding > .container-narrow > .grid {
+      border: 0;
+      background: transparent;
+    }
+
+    html[data-public-theme] :is(
+      .forest-project-detail-page,
+      .forest-blog-detail-page
+    ) > .section-padding > .container-narrow > .grid > div {
+      padding: 0;
+      background: transparent;
+    }
+
+    html[data-public-theme] :is(
+      .forest-project-detail-page,
+      .forest-blog-detail-page
+    ) > .section-padding > .container-narrow > .grid > div + div {
+      margin-top: 3rem;
+      border-top: 1px solid var(--forest-page-line);
+      padding-top: 3rem;
+    }
+
+    html[data-public-theme] .forest-material-detail-page .material-detail-showcase {
+      gap: 1.75rem;
+      border: 0;
+      background: transparent;
+    }
+
+    html[data-public-theme] .forest-material-detail-page .material-detail-showcase > * {
+      background: transparent;
+    }
+
+    html[data-public-theme] .forest-material-detail-page .material-detail-showcase .subpage-side-panel {
+      border: 0;
+      padding-right: 0 !important;
+      padding-left: 0 !important;
+      background: transparent;
+    }
+
+    html[data-public-theme] .forest-cms-page > .section-padding > .container-narrow {
+      border: 0;
+      padding-right: 0;
+      padding-left: 0;
+      background: transparent;
+    }
+
+    /* Footer prelude is a full-width transition band, not another card. */
+    html[data-public-theme][data-theme] .site-footer-prelude {
+      border-top: 0;
+      border-bottom: 0;
+    }
+
+    html[data-public-theme][data-theme] .home-footer-prelude__panel {
+      border: 0;
+      padding-right: 0;
+      padding-left: 0;
+      background: transparent;
+      box-shadow: none;
+      backdrop-filter: none;
+      -webkit-backdrop-filter: none;
+    }
+
+    html[data-public-theme][data-theme] .home-footer-prelude__panel::before {
+      display: none;
+    }
+  }

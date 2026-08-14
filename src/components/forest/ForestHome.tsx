@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useMemo, useState, type KeyboardEvent } from "react";
 import {
   ArrowRight,
   BadgePercent,
@@ -112,6 +112,27 @@ const SectionHeading = ({ title, body }: { title: string; body?: string }) => (
   </header>
 );
 
+const handleTabKey = (
+  event: KeyboardEvent<HTMLButtonElement>,
+  currentIndex: number,
+  itemCount: number,
+  selectTab: (index: number) => void,
+) => {
+  if (!itemCount) return;
+
+  let nextIndex = currentIndex;
+  if (event.key === "ArrowDown" || event.key === "ArrowRight") nextIndex = (currentIndex + 1) % itemCount;
+  else if (event.key === "ArrowUp" || event.key === "ArrowLeft") nextIndex = (currentIndex - 1 + itemCount) % itemCount;
+  else if (event.key === "Home") nextIndex = 0;
+  else if (event.key === "End") nextIndex = itemCount - 1;
+  else return;
+
+  event.preventDefault();
+  selectTab(nextIndex);
+  const tabs = event.currentTarget.parentElement?.querySelectorAll<HTMLButtonElement>("[role='tab']");
+  tabs?.[nextIndex]?.focus();
+};
+
 const ForestHome = ({ content }: ForestHomeProps) => {
   const { language } = useLanguage();
   const settings = useSiteSettings();
@@ -212,11 +233,15 @@ const ForestHome = ({ content }: ForestHomeProps) => {
                 {services.map((service, index) => (
                   <button
                     key={service.slug}
+                    id={`home-service-tab-${index}`}
                     type="button"
                     role="tab"
                     aria-selected={activeService === index}
+                    aria-controls="home-service-panel"
+                    tabIndex={activeService === index ? 0 : -1}
                     className={activeService === index ? "is-active" : ""}
                     onClick={() => setActiveService(index)}
+                    onKeyDown={(event) => handleTabKey(event, index, services.length, setActiveService)}
                   >
                     <span>{service.title}</span>
                     <small>{service.summary}</small>
@@ -229,7 +254,12 @@ const ForestHome = ({ content }: ForestHomeProps) => {
                 ) : null}
               </div>
               {activeServiceItem ? (
-                <figure className="forest-browser__stage" role="tabpanel">
+                <figure
+                  id="home-service-panel"
+                  className="forest-browser__stage"
+                  role="tabpanel"
+                  aria-labelledby={`home-service-tab-${activeService}`}
+                >
                   <SmartImage key={activeServiceItem.slug} src={activeServiceItem.image} alt={activeServiceItem.title} width={1200} height={1000} loading="lazy" />
                 </figure>
               ) : null}
@@ -364,11 +394,15 @@ const ForestHome = ({ content }: ForestHomeProps) => {
               {processSteps.map((step, index) => (
                 <button
                   key={step.id || `${step.step_number}-${step.title}`}
+                  id={`home-process-tab-${index}`}
                   type="button"
                   role="tab"
                   aria-selected={activeProcess === index}
+                  aria-controls="home-process-panel"
+                  tabIndex={activeProcess === index ? 0 : -1}
                   className={activeProcess === index ? "is-active" : ""}
                   onClick={() => setActiveProcess(index)}
+                  onKeyDown={(event) => handleTabKey(event, index, processSteps.length, setActiveProcess)}
                 >
                   <span><b>{String(step.step_number || index + 1).padStart(2, "0")}</b>{step.title}</span>
                   <small>{step.description}</small>
@@ -376,7 +410,12 @@ const ForestHome = ({ content }: ForestHomeProps) => {
               ))}
             </div>
             {activeProcessItem ? (
-              <figure className="forest-process-stage" role="tabpanel">
+              <figure
+                id="home-process-panel"
+                className="forest-process-stage"
+                role="tabpanel"
+                aria-labelledby={`home-process-tab-${activeProcess}`}
+              >
                 <SmartImage src={projects[activeProcess % Math.max(projects.length, 1)]?.thumbnail || introImage} alt={activeProcessItem.title} width={1200} height={900} loading="lazy" />
                 <figcaption><span>{String(activeProcessItem.step_number || activeProcess + 1).padStart(2, "0")}</span><h3>{activeProcessItem.title}</h3><p>{activeProcessItem.description}</p></figcaption>
               </figure>

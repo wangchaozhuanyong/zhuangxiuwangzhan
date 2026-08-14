@@ -116,7 +116,7 @@ export const contactPageText = {
     metaKeywords: "联系吉隆坡装修公司, FLASH CAST 地址, 雪兰莪装修咨询",
     breadcrumbHome: "首页",
     breadcrumbCurrent: "联系我们",
-    heroEyebrow: "联系我们",
+    heroEyebrow: "项目咨询",
     heroTitle: "联系我们",
     heroText: "准备开始装修项目？欢迎联系 FLASH CAST。我们服务吉隆坡、雪兰莪与巴生谷周边地区。",
     heroAlt: "联系 FLASH CAST 装修公司",

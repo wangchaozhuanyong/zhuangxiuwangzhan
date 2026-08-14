@@ -6,7 +6,6 @@ import { LanguageProvider, useLanguage } from "@/i18n/LanguageContext";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import FloatingCTA from "@/components/FloatingCTA";
-import ForestBottomNav from "@/components/forest/ForestBottomNav";
 import DynamicBrandHead from "@/components/DynamicBrandHead";
 import { AppErrorBoundary } from "@/components/AppErrorBoundary";
 import { PublicChromeProvider, usePublicChrome } from "@/contexts/PublicChromeContext";
@@ -155,7 +154,11 @@ const AppShell = () => {
   const publicPath = stripLanguagePrefix(location.pathname);
   const isHomeRoute = !isAdminRoute && publicPath === "/";
   const isProductDetailRoute = !isAdminRoute && /^\/products\/[^/]+$/.test(publicPath);
-  const supportsMobileActionBar = isHomeRoute || publicPath === "/contact" || publicPath === "/quote";
+  const mobileActionBarMode = isHomeRoute || publicPath === "/contact"
+    ? "scroll-up"
+    : publicPath === "/quote"
+      ? "always"
+      : "hidden";
   const publicMainClass = isAdminRoute
     ? undefined
     : isHomeRoute
@@ -176,7 +179,7 @@ const AppShell = () => {
     <PublicChromeProvider
       isAdminRoute={isAdminRoute}
       isHomeRoute={isHomeRoute}
-      suppressMobileActionBar={!supportsMobileActionBar}
+      mobileActionBarMode={mobileActionBarMode}
     >
       <DynamicBrandHead />
       <ScrollToTop />
@@ -210,7 +213,6 @@ const AppShell = () => {
             </div>
             <Footer />
             <FloatingCTA />
-            <ForestBottomNav />
           </PublicPageFrame>
         </PublicSiteShell>
       )}

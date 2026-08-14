@@ -11,7 +11,6 @@ interface FooterPreludeCtaProps {
   description: string;
   quoteLabel: string;
   whatsappLabel: string;
-  eyebrow: string;
   quotePath?: string;
   id?: string;
   className?: string;
@@ -23,7 +22,6 @@ const FooterPreludeCta = ({
   description,
   quoteLabel,
   whatsappLabel,
-  eyebrow,
   quotePath = "/quote",
   id,
   className,
@@ -39,7 +37,6 @@ const FooterPreludeCta = ({
           <div className="home-footer-prelude__panel">
             <span className="home-footer-prelude__rule" aria-hidden="true" />
             <div className="home-footer-prelude__copy">
-              <p className="home-footer-prelude__eyebrow">{eyebrow}</p>
               <h2 className="home-footer-prelude__title">{title}</h2>
               <p className="home-footer-prelude__text">{description}</p>
             </div>

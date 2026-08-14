@@ -133,7 +133,7 @@ const Projects = () => {
                 <Link
                   key={project.id}
                   to={`/projects/${project.slug}`}
-                  className={`forest-listing-card forest-project-row${index % 3 === 0 ? " forest-project-row--wide" : ""}`}
+                  className={`forest-listing-card forest-project-row${index === 0 ? " forest-project-row--wide" : ""}`}
                   style={{ animationDelay: `${getProjectRevealDelay(index)}ms` }}
                 >
                   <div className="forest-listing-card__media">

@@ -328,7 +328,7 @@
   .quote-side-nav__hint {
     color: rgba(82, 74, 64, 0.68);
     font-size: 0.78rem;
-    font-weight: 560;
+    font-weight: 600;
     line-height: 1.35;
     overflow-wrap: anywhere;
   }
@@ -465,7 +465,7 @@
     padding: 0.72rem 0.78rem;
     color: rgba(60, 54, 47, 0.78);
     font-size: 0.9rem;
-    font-weight: 560;
+    font-weight: 600;
     line-height: 1.45;
     box-shadow:
       0 16px 38px -34px rgba(21, 18, 14, 0.46),
@@ -1472,7 +1472,7 @@
 
   .service-category-nav__label {
     color: rgba(146, 111, 56, 0.9);
-    font-size: 0.68rem;
+    font-size: 0.75rem;
     font-weight: 800;
     line-height: 1.2;
     text-transform: uppercase;
@@ -1484,7 +1484,7 @@
     border-radius: 999px;
     background: rgba(255, 252, 246, 0.72);
     color: hsl(var(--muted-foreground));
-    font-size: 0.68rem;
+    font-size: 0.75rem;
     font-weight: 800;
     line-height: 1.2;
     padding: 0.26rem 0.5rem;
@@ -1620,7 +1620,7 @@
     border-radius: 999px;
     background: rgba(198, 164, 106, 0.12);
     color: rgba(112, 83, 40, 0.9);
-    font-size: 0.68rem;
+    font-size: 0.75rem;
     font-weight: 800;
     line-height: 1.2;
     padding: 0.28rem 0.58rem;
@@ -1666,7 +1666,7 @@
     border-radius: 999px;
     background: rgba(198, 164, 106, 0.12);
     color: rgba(112, 83, 40, 0.9);
-    font-size: 0.68rem;
+    font-size: 0.75rem;
     font-weight: 700;
     line-height: 1.2;
     padding: 0.32rem 0.55rem;
@@ -1795,18 +1795,10 @@
     margin-inline: auto;
   }
 
-  .subpage-cta__eyebrow {
-    margin-bottom: 0.55rem;
-    color: rgba(214, 177, 111, 0.94);
-    font-size: 0.68rem;
-    font-weight: 800;
-    letter-spacing: 0.2em;
-    line-height: 1.2;
-    text-transform: uppercase;
-  }
-
   .subpage-cta__title {
-    margin: 0;
+    width: 100%;
+    max-width: 16em;
+    margin: 0 auto;
     color: rgba(255, 250, 238, 0.96);
     font-size: clamp(1.85rem, 6vw, 2.8rem);
     line-height: 1.1;
@@ -1814,14 +1806,19 @@
   }
 
   .subpage-cta__text {
+    max-width: 40rem;
+    margin: 0.9rem auto 0;
     color: rgba(255, 250, 238, 0.7);
     font-size: 0.95rem;
     line-height: 1.75;
+    text-wrap: pretty;
   }
 
   .subpage-cta__actions {
     display: flex;
     width: 100%;
+    max-width: 18.5rem;
+    margin-inline: auto;
     flex-direction: column;
     align-items: center;
     gap: 0.72rem;
@@ -2081,7 +2078,7 @@
   @media (max-width: 380px) {
     .material-directory-card__footer {
       gap: 0.35rem;
-      font-size: 0.68rem;
+      font-size: 0.75rem;
     }
 
     .material-card-action {

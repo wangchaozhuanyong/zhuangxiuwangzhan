@@ -272,6 +272,7 @@ const Quote = () => {
         label={pageContent?.subtitle || t.heroEyebrow}
         title={pageContent?.title || t.heroTitle}
         description={pageContent?.description || t.heroText}
+        variant="utility"
       />
 
       <section className="forest-quote-body section-padding bg-background pb-[calc(8rem+env(safe-area-inset-bottom,0px))] md:pb-28">

@@ -436,20 +436,10 @@
     text-align: center;
   }
 
-  .home-footer-prelude__eyebrow {
-    margin-bottom: 0.55rem;
-    color: rgba(214, 177, 111, 0.94);
-    font-size: 0.68rem;
-    font-weight: 800;
-    letter-spacing: 0.2em;
-    line-height: 1.2;
-    text-transform: uppercase;
-  }
-
   .home-footer-prelude__title {
-    margin: 0;
-    max-width: 38rem;
-    margin-inline: auto;
+    width: min(100%, 14em);
+    max-width: none;
+    margin: 0 auto;
     color: rgba(255, 250, 238, 0.96);
     font-family: var(--font-display);
     font-size: clamp(1.85rem, 7vw, 3rem);

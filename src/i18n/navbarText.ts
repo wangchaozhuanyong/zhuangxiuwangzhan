@@ -2,6 +2,7 @@ export const navbarText = {
   en: {
     switchLanguage: "Switch language",
     openMenu: "Toggle navigation menu",
+    closeMenu: "Close navigation menu",
     callAria: "Call FLASH CAST",
     more: "More",
     mainNav: "Main navigation",
@@ -21,6 +22,7 @@ export const navbarText = {
   zh: {
     switchLanguage: "切换语言",
     openMenu: "打开导航菜单",
+    closeMenu: "关闭导航菜单",
     callAria: "拨打电话",
     more: "更多",
     mainNav: "主导航",
