@@ -14,10 +14,11 @@ type ContentPublishQueryBuilder = PromiseLike<ContentPublishQueryResult<unknown[
 
 export type ContentPublishClient = {
   from: (table: string) => ContentPublishQueryBuilder;
+  rpc: (name: string, args: Record<string, unknown>) => Promise<ContentPublishQueryResult<unknown[]>>;
 };
 
 export type ContentPublishMode = "dry-run" | "publish";
-export type ContentPublishType = "service" | "homepage" | "blog";
+export type ContentPublishType = "service" | "homepage" | "blog" | "material";
 export type ContentStatus = "draft" | "published" | "archived";
 
 export type ContentPublishRequest = {

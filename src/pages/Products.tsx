@@ -106,7 +106,7 @@ const Products = () => {
                         alt={product.alt || displayText(product.name)}
                         loading="lazy"
                         width={720}
-                        height={450}
+                        height={720}
                         sizes="(max-width: 767px) 50vw, (max-width: 1023px) 33vw, 25vw"
                         candidateWidths={[480, 720, 960]}
                       />

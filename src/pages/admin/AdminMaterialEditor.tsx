@@ -14,6 +14,7 @@ import AdminFormSection from "@/components/admin/AdminFormSection";
 import AdminEmptyState from "@/components/admin/AdminEmptyState";
 import { adminConfirm } from "@/components/admin/AdminConfirmProvider";
 import ImageField from "@/components/admin/ImageField";
+import AdminMaterialImages from "@/pages/admin/AdminMaterialImages";
 import { adminMaterialEditorText } from "@/i18n/adminMaterialEditorText";
 import { invalidateAdminContentDetail, invalidateAfterAdminContentSave } from "@/lib/adminInvalidate";
 import { useAdminMaterialDetail } from "@/lib/adminBusinessContentQueries";
@@ -48,6 +49,15 @@ type MaterialRecord = {
   color: string;
   texture: string;
   reference_price: string;
+  price_mode: "range" | "from" | "specification" | "size" | "scope" | "none";
+  price_min: string | number;
+  price_max: string | number;
+  price_currency: string;
+  price_unit: "sqft" | "foot_run" | "unit" | "set" | "panel" | "scope" | "none";
+  price_scope_zh: string;
+  price_scope_en: string;
+  price_note_zh: string;
+  price_note_en: string;
 
   suitable_spaces_zh: string[];
   pros_zh: string[];
@@ -87,6 +97,15 @@ const empty: MaterialRecord = {
   color: "",
   texture: "",
   reference_price: "",
+  price_mode: "none",
+  price_min: "",
+  price_max: "",
+  price_currency: "MYR",
+  price_unit: "none",
+  price_scope_zh: "",
+  price_scope_en: "",
+  price_note_zh: "",
+  price_note_en: "",
   suitable_spaces_zh: [],
   pros_zh: [],
   cons_zh: [],
@@ -131,6 +150,11 @@ const toPublishStatus = (value: string): MaterialRecord["status"] =>
 const toStringArray = (value: unknown): string[] =>
   Array.isArray(value) ? value.map((item) => String(item).trim()).filter(Boolean) : [];
 const toText = (value: unknown): string => (typeof value === "string" ? value : "");
+const toPriceInput = (value: unknown): string | number => typeof value === "number" || typeof value === "string" ? value : "";
+const toPriceMode = (value: unknown): MaterialRecord["price_mode"] =>
+  value === "range" || value === "from" || value === "specification" || value === "size" || value === "scope" ? value : "none";
+const toPriceUnit = (value: unknown): MaterialRecord["price_unit"] =>
+  value === "sqft" || value === "foot_run" || value === "unit" || value === "set" || value === "panel" || value === "scope" ? value : "none";
 
 export default function AdminMaterialEditor() {
   const language = getAdminLang();
@@ -167,6 +191,15 @@ export default function AdminMaterialEditor() {
       recommended_pairing_en: toText(loadedRecordData.recommended_pairing_en),
       note_zh: toText(loadedRecordData.note_zh),
       note_en: toText(loadedRecordData.note_en),
+      price_mode: toPriceMode(loadedRecordData.price_mode),
+      price_min: toPriceInput(loadedRecordData.price_min),
+      price_max: toPriceInput(loadedRecordData.price_max),
+      price_currency: toText(loadedRecordData.price_currency) || "MYR",
+      price_unit: toPriceUnit(loadedRecordData.price_unit),
+      price_scope_zh: toText(loadedRecordData.price_scope_zh),
+      price_scope_en: toText(loadedRecordData.price_scope_en),
+      price_note_zh: toText(loadedRecordData.price_note_zh),
+      price_note_en: toText(loadedRecordData.price_note_en),
     };
   }, [isNew, loaded]);
 
@@ -437,10 +470,78 @@ export default function AdminMaterialEditor() {
               <label className="mb-1 block text-sm font-medium">{A("texture")}</label>
               <Input value={record.texture} onChange={(e) => setRecord((r) => ({ ...r, texture: e.target.value }))} />
             </div>
+          </div>
+        </AdminFormSection>
+
+        <AdminFormSection title={A("priceTitle")} description={A("priceDescription")} helpText={A("priceHelp")}>
+          <div className="grid gap-4 md:grid-cols-2">
             <div>
-              <label className="mb-1 block text-sm font-medium">{A("referencePrice")}</label>
+              <label className="mb-1 block text-sm font-medium">{A("priceMode")}</label>
+              <select
+                value={record.price_mode}
+                onChange={(e) => setRecord((r) => ({ ...r, price_mode: toPriceMode(e.target.value) }))}
+                className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+              >
+                <option value="range">{A("priceModeRange")}</option>
+                <option value="from">{A("priceModeFrom")}</option>
+                <option value="specification">{A("priceModeSpecification")}</option>
+                <option value="size">{A("priceModeSize")}</option>
+                <option value="scope">{A("priceModeScope")}</option>
+                <option value="none">{A("priceModeNone")}</option>
+              </select>
+            </div>
+            <div>
+              <label className="mb-1 block text-sm font-medium">{A("priceUnit")}</label>
+              <select
+                value={record.price_unit}
+                onChange={(e) => setRecord((r) => ({ ...r, price_unit: toPriceUnit(e.target.value) }))}
+                className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+              >
+                <option value="sqft">{A("priceUnitSqft")}</option>
+                <option value="foot_run">{A("priceUnitFootRun")}</option>
+                <option value="unit">{A("priceUnitUnit")}</option>
+                <option value="set">{A("priceUnitSet")}</option>
+                <option value="panel">{A("priceUnitPanel")}</option>
+                <option value="scope">{A("priceUnitScope")}</option>
+                <option value="none">{A("priceUnitNone")}</option>
+              </select>
+            </div>
+            <div>
+              <label className="mb-1 block text-sm font-medium">{A("priceMin")}</label>
+              <Input type="number" min="0" step="0.01" value={record.price_min} onChange={(e) => setRecord((r) => ({ ...r, price_min: e.target.value }))} />
+            </div>
+            <div>
+              <label className="mb-1 block text-sm font-medium">{A("priceMax")}</label>
+              <Input type="number" min="0" step="0.01" value={record.price_max} onChange={(e) => setRecord((r) => ({ ...r, price_max: e.target.value }))} />
+            </div>
+            <div>
+              <label className="mb-1 block text-sm font-medium">{A("priceCurrency")}</label>
+              <Input value={record.price_currency} maxLength={3} onChange={(e) => setRecord((r) => ({ ...r, price_currency: e.target.value.toUpperCase() }))} />
+            </div>
+            <div>
+              <label className="mb-1 block text-sm font-medium">{A("legacyReferencePrice")}</label>
               <Input value={record.reference_price} onChange={(e) => setRecord((r) => ({ ...r, reference_price: e.target.value }))} />
             </div>
+            <div className="md:col-span-2">
+              <label className="mb-1 block text-sm font-medium">{A("priceScopeZh")}</label>
+              <Textarea rows={2} value={record.price_scope_zh} onChange={(e) => setRecord((r) => ({ ...r, price_scope_zh: e.target.value }))} />
+            </div>
+            <div className="md:col-span-2">
+              <label className="mb-1 block text-sm font-medium">{A("priceNoteZh")}</label>
+              <Textarea rows={2} value={record.price_note_zh} onChange={(e) => setRecord((r) => ({ ...r, price_note_zh: e.target.value }))} />
+            </div>
+            {showEnglish ? (
+              <>
+                <div className="md:col-span-2">
+                  <label className="mb-1 block text-sm font-medium">{A("priceScopeEn")}</label>
+                  <Textarea rows={2} value={record.price_scope_en} onChange={(e) => setRecord((r) => ({ ...r, price_scope_en: e.target.value }))} />
+                </div>
+                <div className="md:col-span-2">
+                  <label className="mb-1 block text-sm font-medium">{A("priceNoteEn")}</label>
+                  <Textarea rows={2} value={record.price_note_en} onChange={(e) => setRecord((r) => ({ ...r, price_note_en: e.target.value }))} />
+                </div>
+              </>
+            ) : null}
           </div>
         </AdminFormSection>
 
@@ -465,6 +566,8 @@ export default function AdminMaterialEditor() {
             )}
           </div>
         </AdminFormSection>
+
+        <AdminMaterialImages materialId={record.id} />
 
         <AdminFormSection title={A("usageZhTitle")} description={A("usageZhDescription")} helpText={A("usageZhHelp")}>
           <div className="grid gap-4 md:grid-cols-2">

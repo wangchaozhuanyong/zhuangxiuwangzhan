@@ -792,7 +792,7 @@
   html[data-public-theme] .forest-product-catalog-card .forest-listing-card__media,
   html[data-public-theme] .forest-product-catalog-card:nth-child(5n + 1) .forest-listing-card__media,
   html[data-public-theme] .forest-product-catalog-card:nth-child(5n + 4) .forest-listing-card__media {
-    aspect-ratio: 16 / 10;
+    aspect-ratio: 1 / 1;
   }
 
   html[data-public-theme] .forest-product-catalog-card .forest-listing-card__body {

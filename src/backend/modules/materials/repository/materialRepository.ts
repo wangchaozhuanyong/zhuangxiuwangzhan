@@ -4,6 +4,8 @@ import type { Database } from "@/lib/database.types";
 import { requireSupabase } from "@/lib/supabase";
 
 type MaterialStatus = NonNullable<Database["public"]["Tables"]["materials"]["Row"]["status"]>;
+type MaterialImageInsert = Database["public"]["Tables"]["material_images"]["Insert"];
+type MaterialImageUpdate = Database["public"]["Tables"]["material_images"]["Update"];
 type SearchableQuery = {
   or(filters: string): unknown;
 };
@@ -67,6 +69,18 @@ export async function fetchAdminMaterialRows(limit: number) {
   return data ?? [];
 }
 
+export async function fetchAdminMaterialImages(materialId: string) {
+  const supabase = requireSupabase();
+  const { data, error } = await supabase
+    .from("material_images")
+    .select("*")
+    .eq("material_id", materialId)
+    .eq("is_active", true)
+    .order("sort_order");
+  if (error) throw error;
+  return data ?? [];
+}
+
 export function saveMaterialRecord(input: SaveMaterialRecordInput) {
   return saveAdminRecord({
     table: "materials",
@@ -86,4 +100,22 @@ export async function invokeMaterialEnglishGeneration(materialId: string, force:
 
   if (error) throw error;
   return true;
+}
+
+export async function createMaterialImageRecord(payload: MaterialImageInsert) {
+  const supabase = requireSupabase();
+  const { error } = await supabase.from("material_images").insert(payload);
+  if (error) throw error;
+  return true;
+}
+
+export async function updateMaterialImageRecord(imageId: string, patch: MaterialImageUpdate) {
+  const supabase = requireSupabase();
+  const { error } = await supabase.from("material_images").update(patch).eq("id", imageId);
+  if (error) throw error;
+  return true;
+}
+
+export async function archiveMaterialImageRecord(imageId: string) {
+  return updateMaterialImageRecord(imageId, { is_active: false });
 }
