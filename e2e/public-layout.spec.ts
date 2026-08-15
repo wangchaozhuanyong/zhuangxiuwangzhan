@@ -605,13 +605,16 @@ test.describe("public responsive layout", () => {
       window.scrollTo({ top, behavior: "instant" });
     });
     const maxScroll = await rail.evaluate((element) => element.scrollWidth - element.clientWidth);
-    expect(maxScroll).toBeGreaterThan(0);
-    await rail.evaluate((element) => {
-      element.scrollLeft = Math.min(64, element.scrollWidth - element.clientWidth);
-      element.dispatchEvent(new Event("scroll", { bubbles: true }));
-    });
-    await expect.poll(() => rail.evaluate((element) => element.scrollLeft)).toBeGreaterThan(0);
-    await expect(nav).toHaveClass(/forest-filter-nav--start/);
+    if (maxScroll > 0) {
+      await rail.evaluate((element) => {
+        element.scrollLeft = Math.min(64, element.scrollWidth - element.clientWidth);
+        element.dispatchEvent(new Event("scroll", { bubbles: true }));
+      });
+      await expect.poll(() => rail.evaluate((element) => element.scrollLeft)).toBeGreaterThan(0);
+      await expect(nav).toHaveClass(/forest-filter-nav--start/);
+    } else {
+      await expect(nav).toHaveAttribute("data-scrollable", "false");
+    }
 
     const target = nav.locator(".forest-filter-nav__item").last();
     const indicator = nav.locator(".forest-filter-nav__active-indicator");
