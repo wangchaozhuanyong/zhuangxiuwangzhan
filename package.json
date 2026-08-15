@@ -38,6 +38,7 @@
     "verify:preview:server": "node scripts/verify-preview-with-server.mjs",
     "verify:admin-foundation": "node scripts/verify-admin-foundation.mjs",
     "verify:env": "node scripts/verify-env-separation.mjs",
+    "verify:cloudflare-token": "node scripts/verify-cloudflare-pages-token.mjs",
     "backup:supabase": "node scripts/backup-supabase.mjs",
     "verify:backup": "node scripts/verify-backup-package.mjs",
     "deploy:retain-assets": "node scripts/retain-deploy-assets.mjs",
