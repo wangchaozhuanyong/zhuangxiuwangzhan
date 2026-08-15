@@ -164,6 +164,28 @@ export async function fetchPublishedMaterialRows(limit?: number) {
   return data || [];
 }
 
+export async function fetchPublishedMaterialRowBySlug(slug: string) {
+  const supabase = await getPublicContentClient();
+  if (!supabase) return null;
+  const { data, error } = await supabase
+    .from("materials")
+    .select("*")
+    .eq("status", "published")
+    .eq("slug", slug)
+    .maybeSingle();
+  if (error) return null;
+  if (!data || !Object.prototype.hasOwnProperty.call(data, "price_mode")) return data || null;
+
+  const { data: gallery, error: galleryError } = await supabase
+    .from("material_images")
+    .select("*")
+    .eq("material_id", data.id)
+    .eq("is_active", true)
+    .order("sort_order", { ascending: true });
+
+  return galleryError ? data : { ...data, material_images: gallery || [] };
+}
+
 export async function fetchPublishedBlogPostRows() {
   const supabase = await getPublicContentClient();
   if (!supabase) return null;

@@ -71,6 +71,19 @@ export async function updateContentRecord(
   return data as ContentRow;
 }
 
+export async function replaceMaterialGallery(
+  client: ContentPublishClient,
+  materialId: string,
+  images: Record<string, unknown>[],
+): Promise<ContentRow[]> {
+  const { data, error } = await client.rpc("replace_material_gallery", {
+    p_material_id: materialId,
+    p_images: images,
+  });
+  if (error) throw new Error(error.message);
+  return (data as ContentRow[] | null) || [];
+}
+
 export async function archiveRecordsByField(
   client: ContentPublishClient,
   table: string,

@@ -1,6 +1,6 @@
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import { loadAdminBlogPostDetail, loadAdminBlogPostList, loadAdminBlogPostRows } from "@/backend/modules/blog/service/blogService";
-import { loadAdminMaterialDetail, loadAdminMaterialList, loadAdminMaterialRows } from "@/backend/modules/materials/service/materialService";
+import { loadAdminMaterialDetail, loadAdminMaterialImages, loadAdminMaterialList, loadAdminMaterialRows } from "@/backend/modules/materials/service/materialService";
 import { loadAdminProjectDetail, loadAdminProjectImages, loadAdminProjectList, loadAdminProjectRows } from "@/backend/modules/projects/service/projectService";
 import { loadAdminServiceDetail, loadAdminServiceList, loadAdminServiceRows } from "@/backend/modules/services/service/serviceService";
 import {
@@ -241,5 +241,13 @@ export function useAdminProjectImages(projectId: string | undefined) {
     queryKey: ["admin", "project_images", projectId],
     enabled: adminQueriesEnabled && Boolean(projectId),
     queryFn: () => loadAdminProjectImages(projectId!),
+  });
+}
+
+export function useAdminMaterialImages(materialId: string | undefined) {
+  return useQuery({
+    queryKey: ["admin", "material_images", materialId],
+    enabled: adminQueriesEnabled && Boolean(materialId),
+    queryFn: () => loadAdminMaterialImages(materialId!),
   });
 }

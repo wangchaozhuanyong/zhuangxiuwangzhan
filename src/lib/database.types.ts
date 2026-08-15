@@ -382,6 +382,15 @@ export type Database = {
           note_zh: string | null;
           note_en: string | null;
           reference_price: string | null;
+          price_mode: "range" | "from" | "specification" | "size" | "scope" | "none";
+          price_min: number | null;
+          price_max: number | null;
+          price_currency: string;
+          price_unit: "sqft" | "foot_run" | "unit" | "set" | "panel" | "scope" | "none";
+          price_scope_zh: string | null;
+          price_scope_en: string | null;
+          price_note_zh: string | null;
+          price_note_en: string | null;
           related_project_ids: string[] | null;
           image_url: string | null;
           alt_zh: string | null;
@@ -396,6 +405,20 @@ export type Database = {
           updated_at: Timestamp | null;
         }
       >;
+      material_images: Table<{
+        id: string;
+        material_id: string;
+        image_url: string;
+        image_type: "cover" | "scene" | "detail" | "installation" | "specification";
+        alt_zh: string | null;
+        alt_en: string | null;
+        source_url: string | null;
+        rights_status: "owned" | "generated" | "licensed" | "supplier_approved";
+        sort_order: number;
+        is_active: boolean;
+        created_at: Timestamp;
+        updated_at: Timestamp;
+      }>;
       media_assets: Table<
         ContentAuditColumns & {
           id: string;
