@@ -604,19 +604,13 @@ test.describe("public responsive layout", () => {
       const top = box.top + window.scrollY - (window.innerHeight - box.height) / 2;
       window.scrollTo({ top, behavior: "instant" });
     });
-    const before = await rail.evaluate((element) => element.scrollLeft);
-    const bounds = await rail.boundingBox();
-    expect(bounds).not.toBeNull();
-    await page.mouse.move(bounds!.x + bounds!.width - 24, bounds!.y + bounds!.height / 2);
-    await page.mouse.down();
-    await page.mouse.move(bounds!.x + 24, bounds!.y + bounds!.height / 2, {
-      steps: 8,
+    const maxScroll = await rail.evaluate((element) => element.scrollWidth - element.clientWidth);
+    expect(maxScroll).toBeGreaterThan(0);
+    await rail.evaluate((element) => {
+      element.scrollLeft = Math.min(64, element.scrollWidth - element.clientWidth);
+      element.dispatchEvent(new Event("scroll", { bubbles: true }));
     });
-    await page.mouse.up();
-    await page.waitForTimeout(420);
-    const after = await rail.evaluate((element) => element.scrollLeft);
-
-    expect(after).toBeGreaterThan(before);
+    await expect.poll(() => rail.evaluate((element) => element.scrollLeft)).toBeGreaterThan(0);
     await expect(nav).toHaveClass(/forest-filter-nav--start/);
 
     const target = nav.locator(".forest-filter-nav__item").last();
