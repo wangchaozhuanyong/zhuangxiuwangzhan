@@ -14,7 +14,7 @@ const fail = (message) => {
 
 const validateCatalog = () => {
   if (materialCatalogRecords.length !== 27) fail(`Expected 27 active products, found ${materialCatalogRecords.length}.`);
-  if (archiveMaterialSlugs.length !== 16) fail(`Expected 16 archived duplicate/placeholder slugs, found ${archiveMaterialSlugs.length}.`);
+  if (archiveMaterialSlugs.length !== 17) fail(`Expected 17 archived duplicate/placeholder slugs, found ${archiveMaterialSlugs.length}.`);
 
   const slugs = materialCatalogRecords.map((item) => item.record.slug);
   if (new Set(slugs).size !== slugs.length) fail("Active material slugs must be unique.");

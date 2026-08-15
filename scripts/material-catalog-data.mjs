@@ -563,6 +563,7 @@ export const archiveMaterialSlugs = [
   "acrylic-high-gloss-white",
   "kitchen-solid-wood-cabinets",
   "quartz-countertop-white",
+  "lime-wash-paint",
   "anti-slip-bathroom-tile",
   "subway-wall-tile",
   "aluminium-sliding-door",
