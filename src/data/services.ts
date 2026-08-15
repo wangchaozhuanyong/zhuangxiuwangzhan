@@ -489,19 +489,19 @@ export const servicesData: ServiceItem[] = [
   },
   {
     id: "shoplot",
-    title: "Shop Renovation and Retail Fit-Out Planning",
-    titleZh: "马来西亚店铺装修与零售空间规划施工",
+    title: "Shop Renovation & Retail Fit-Out",
+    titleZh: "店铺装修与零售空间规划",
     slug: "shop-renovation",
-    seoTitle: "Shop Renovation Malaysia | Retail Fit-Out & Shoplot Planning | FLASH CAST",
-    seoTitleZh: "马来西亚店铺装修与零售空间规划施工 | FLASH CAST",
+    seoTitle: "Shop Renovation & Retail Fit-Out | FLASH CAST",
+    seoTitleZh: "店铺装修与零售空间规划 | 商业空间 Fit-Out | FLASH CAST",
     seoDescription:
-      "Plan a shop renovation in Kuala Lumpur or Selangor with FLASH CAST. Review retail layout, customer flow, display planning, fit-out scope, timeline factors, and quotation steps before opening.",
+      "FLASH CAST plans shop renovation and retail fit-out for retail stores, F&B spaces, clinic front areas, beauty and hair salons, showrooms and service outlets.",
     seoDescriptionZh:
-      "了解 FLASH CAST 在 Kuala Lumpur、Selangor 与 Klang Valley 的店铺装修与 retail fit-out 服务，包括展示动线、柜台收纳、门头协调、工期因素与报价准备。",
+      "FLASH CAST 提供店铺装修与零售空间规划，覆盖零售店、餐饮店、诊所前区、美容美发门店和展厅的动线、柜台、展示、收纳、灯光与施工协调。",
     summary:
-      "Shop renovation and retail fit-out planning for shoplots, retail stores, beauty fronts, clinics, F&B spaces, and commercial outlets that need layout direction, display planning, counter storage, frontage coordination, and quotation clarity before opening.",
+      "We coordinate customer flow, display areas, counters, storage, lighting and M&E points around the way the business operates and the limits of the existing site.",
     summaryZh:
-      "为 shoplot、零售门店、beauty 前场、诊所前区、餐饮门店和商业空间提供店铺装修与零售空间规划，重点整理展示动线、柜台收纳、门头方向、施工范围和报价前准备。",
+      "从顾客进店、展示与服务动线，到柜台、收纳、灯光和机电点位，我们先根据经营方式和现场限制整理范围，再进入材料建议、报价与施工安排。",
     description:
       "Shop renovation is not only about changing finishes or adding signage. The real value comes from customer flow, display visibility, cashier and storage planning, staff workflow, frontage coordination, lighting, material direction, M&E alignment, and practical quotation preparation before opening. FLASH CAST helps owners review current shop photos, floor area, business type, tenancy handover status, landlord or mall rules, and target opening direction so the fit-out scope is easier to confirm.",
     descriptionZh:

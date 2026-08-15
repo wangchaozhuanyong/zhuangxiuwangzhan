@@ -29,13 +29,13 @@ import {
 } from "@/lib/homeContentApi";
 import { isSupabaseConfigured } from "@/lib/supabaseConfig";
 
-const STALE = 5 * 60 * 1000;
+const STALE = 60 * 1000;
 const GC = 30 * 60 * 1000;
 
 const queryDefaults = {
   staleTime: STALE,
   gcTime: GC,
-  refetchOnWindowFocus: false as const,
+  refetchOnWindowFocus: true as const,
 };
 
 type PublicQueryOptions = {

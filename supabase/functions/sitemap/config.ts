@@ -50,4 +50,13 @@ export const materialCategorySlugs = [
   "art-paint",
 ];
 
+export const legacyRedirectPaths = new Set([
+  "/materials/acrylic-high-gloss-white",
+  "/materials/melamine-grey-oak",
+  "/materials/spc-vinyl-natural-oak",
+  "/projects/mont-kiara-condo-renovation",
+  "/services/office",
+  "/services/shoplot",
+]);
+
 export const siteUrl = () => Deno.env.get("SITE_URL") || "https://flashcast.com.my";

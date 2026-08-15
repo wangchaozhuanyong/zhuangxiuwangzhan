@@ -189,7 +189,6 @@ const Navbar = () => {
   const settings = useSiteSettings();
   const primaryLogoSrc = addCacheBuster(settings.logo_url || "", settings.updated_at);
   const brandText = settings.company_name || "FLASH CAST SDN. BHD.";
-  const solidHeader = !hasImmersiveHero || scrolled || isOpen || desktopMoreOpen;
   const resolvedLogoState: "primary" | "fallback" | "none" = logoState === "primary" && primaryLogoSrc ? "primary" : logoState === "none" ? "none" : "fallback";
   const logoSrc = resolvedLogoState === "primary" ? primaryLogoSrc : logoFallback;
 
@@ -406,8 +405,8 @@ const Navbar = () => {
       <header
         data-scrolled={scrolled ? "true" : "false"}
         data-immersive={hasImmersiveHero ? "true" : "false"}
-        data-header-state={solidHeader ? "solid" : "overlay"}
-        className={`site-header fixed top-0 left-0 right-0 transition-all duration-300 ${solidHeader ? "is-solid" : "is-overlay"}`}
+        data-header-state="solid"
+        className="site-header is-solid fixed top-0 left-0 right-0 transition-all duration-300"
         style={{ zIndex: PUBLIC_CHROME_Z.header }}
       >
         <div className="site-header__inner site-container flex h-12 flex-nowrap items-center gap-3 md:h-16">

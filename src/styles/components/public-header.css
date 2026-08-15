@@ -1,7 +1,7 @@
 @layer components {
-  html[data-public-theme] .forest-site-shell[data-header-overlay="true"] .pt-site-header,
-  html[data-public-theme] .forest-site-shell[data-header-overlay="true"] .forest-home {
-    padding-top: 0 !important;
+  html[data-public-theme] .forest-site-shell[data-product-detail="false"] .pt-site-header,
+  html[data-public-theme] .forest-site-shell[data-product-detail="false"] .forest-home {
+    padding-top: 4rem !important;
   }
 
   html[data-public-theme] .forest-site-shell[data-product-detail="true"] .pt-site-header {
@@ -82,12 +82,16 @@
   }
 
   html[data-public-theme] .site-header.is-solid::before {
-    border-bottom: 1px solid var(--forest-line);
-    background: var(--forest-header-solid);
-    box-shadow: 0 18px 52px -42px var(--forest-shadow-color);
+    border-bottom: 0;
+    background: var(--forest-surface);
+    box-shadow: 0 12px 30px -28px var(--forest-shadow-color);
     opacity: 1;
-    backdrop-filter: blur(18px) saturate(112%);
-    -webkit-backdrop-filter: blur(18px) saturate(112%);
+    -webkit-backdrop-filter: none !important;
+    backdrop-filter: none !important;
+  }
+
+  html[data-public-theme] .mobile-navigation {
+    top: 4rem;
   }
 
 }

@@ -1,6 +1,6 @@
 import { useMemo } from "react";
 import Link from "@/components/LocalizedLink";
-import { ArrowRight, MapPin } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import Reveal from "@/components/Reveal";
 import DeferredSmartImage from "@/components/DeferredSmartImage";
 import { useLanguage } from "@/i18n/LanguageContext";
@@ -53,7 +53,6 @@ const ProjectsSection = ({ projects: providedProjects }: ProjectsSectionProps) =
               const label = copy.typeLabels[typeKey as keyof typeof copy.typeLabels] || project.type || copy.typeLabels.renovation;
               const title = translateDisplayText(project.title || "", language);
               const description = translateDisplayText(project.description || "", language);
-              const location = translateDisplayText(project.location || "", language);
               const isPriorityImage = index < 3;
 
               return (
@@ -66,7 +65,7 @@ const ProjectsSection = ({ projects: providedProjects }: ProjectsSectionProps) =
                       {project.thumbnail ? (
                         <DeferredSmartImage
                           src={project.thumbnail}
-                          alt={project.thumbnailAlt || `${title} - ${location}`}
+                          alt={title}
                           width={800}
                           height={600}
                           loading={isPriorityImage ? "eager" : "lazy"}
@@ -86,10 +85,6 @@ const ProjectsSection = ({ projects: providedProjects }: ProjectsSectionProps) =
                     </div>
                     <div className="projects-showcase-body card-equal-body p-5">
                       <h3 className="projects-showcase-card-title mb-2 font-display text-base font-semibold transition-colors">{title}</h3>
-                      <p className="projects-showcase-location mb-3 flex items-center gap-1.5 text-xs">
-                        <MapPin className="h-3.5 w-3.5 shrink-0" />
-                        <span className="min-w-0 truncate">{location}</span>
-                      </p>
                       <p className="projects-showcase-description line-clamp-2 text-xs leading-relaxed">{description}</p>
                     </div>
                   </Link>

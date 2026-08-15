@@ -53,7 +53,7 @@ export const projectsData: ProjectItem[] = [
   {
     id: "proj-3",
     slug: "custom-kitchen-bangsar",
-    title: "Custom Kitchen & Built-In Cabinets",
+    title: "Custom Kitchen and Whole-Home Built-In Cabinets",
     type: "Built-In",
     location: "Bangsar, Kuala Lumpur",
     description: "Complete kitchen renovation with custom cabinets, quartz countertop, and integrated appliances. Also included built-in shoe cabinet at the entrance and TV console in the living room.",
@@ -68,7 +68,7 @@ export const projectsData: ProjectItem[] = [
   {
     id: "proj-4",
     slug: "warehouse-racking-shah-alam",
-    title: "Industrial Warehouse Racking Setup",
+    title: "Industrial Warehouse Racking and Packing Area Setup",
     type: "Warehouse",
     location: "Shah Alam, Selangor",
     description: "Design and installation of a complete warehouse racking system for a 10,000 sqft logistics warehouse. The solution included heavy-duty pallet racking, medium-duty shelving, and a dedicated packing area.",
@@ -83,7 +83,7 @@ export const projectsData: ProjectItem[] = [
   {
     id: "proj-5",
     slug: "shopfront-renovation-cheras",
-    title: "Retail Shopfront Renovation",
+    title: "Retail Shopfront Signage and Display Renovation",
     type: "Exterior",
     location: "Cheras, Kuala Lumpur",
     description: "Complete shopfront renovation including new glass façade, 3D signage with LED backlight, roller shutter replacement, and interior retail display setup.",
@@ -98,7 +98,7 @@ export const projectsData: ProjectItem[] = [
   {
     id: "proj-6",
     slug: "luxury-master-bedroom-damansara",
-    title: "Luxury Master Bedroom Suite",
+    title: "Hotel-Inspired Master Suite and Walk-In Wardrobe",
     type: "Residential",
     location: "Damansara Heights, Kuala Lumpur",
     description: "A luxury master bedroom renovation featuring a walk-in wardrobe with LED-lit shelving, feature wall with hidden lighting, custom vanity table, and premium flooring.",
@@ -114,7 +114,7 @@ export const projectsData: ProjectItem[] = [
   {
     id: "proj-7",
     slug: "restaurant-fitout-subang",
-    title: "F&B Restaurant Fit-Out",
+    title: "F&B Kitchen Dining and Bar Fit-Out",
     type: "Commercial",
     location: "Subang Jaya, Selangor",
     description: "Full restaurant renovation including commercial kitchen setup, dining area interior design, bar counter, feature ceiling, and signage. Designed for a modern casual dining concept.",
@@ -129,7 +129,7 @@ export const projectsData: ProjectItem[] = [
   {
     id: "proj-8",
     slug: "home-office-puchong",
-    title: "Home Office Built-In Solution",
+    title: "Home Office Desk Library and Reading Nook Built-In",
     type: "Office",
     location: "Puchong, Selangor",
     description: "Custom home office renovation featuring a built-in desk with cable management, bookshelf wall, overhead cabinets, and a reading nook with window seat.",

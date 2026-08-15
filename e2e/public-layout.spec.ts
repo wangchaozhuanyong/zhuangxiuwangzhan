@@ -329,6 +329,12 @@ test.describe("public responsive layout", () => {
         overflow: grid.scrollWidth - grid.clientWidth,
         firstCardBorder: Number.parseFloat(getComputedStyle(grid.firstElementChild as Element).borderTopWidth),
         filterGap: Math.round(grid.getBoundingClientRect().top - document.querySelector(".forest-filter-nav")!.getBoundingClientRect().bottom),
+        imageFrames: [...grid.querySelectorAll<HTMLElement>(".forest-listing-card__media")]
+          .slice(0, 4)
+          .map((media) => {
+            const box = media.getBoundingClientRect();
+            return { width: Math.round(box.width), height: Math.round(box.height) };
+          }),
       }));
 
       expect(metrics.columns).toBe(scenario.columns);
@@ -337,7 +343,39 @@ test.describe("public responsive layout", () => {
       expect(metrics.overflow).toBeLessThanOrEqual(1);
       expect(metrics.filterGap).toBeGreaterThanOrEqual(24);
       expect(metrics.filterGap).toBeLessThanOrEqual(40);
+      expect(metrics.imageFrames.length).toBeGreaterThan(0);
+      for (const frame of metrics.imageFrames) {
+        expect(Math.abs(frame.width - frame.height)).toBeLessThanOrEqual(1);
+      }
     }
+  });
+
+  test("mobile home hero keeps a horizontal title and a generous 5:4 image", async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.goto("/zh", { waitUntil: "domcontentloaded" });
+    await page.waitForLoadState("load");
+    await expect(page.locator(".forest-home-hero h1")).toBeVisible();
+
+    const metrics = await page.evaluate(() => {
+      const media = document.querySelector<HTMLElement>(".forest-home-hero__media");
+      const copy = document.querySelector<HTMLElement>(".forest-home-hero__copy");
+      const title = document.querySelector<HTMLElement>(".forest-home-hero h1");
+      if (!media || !copy || !title) throw new Error("Missing mobile home hero");
+      const mediaBox = media.getBoundingClientRect();
+      const copyBox = copy.getBoundingClientRect();
+      const titleBox = title.getBoundingClientRect();
+      return {
+        mediaRatio: mediaBox.width / mediaBox.height,
+        copyWidth: Math.round(copyBox.width),
+        titleWidth: Math.round(titleBox.width),
+        titleHeight: Math.round(titleBox.height),
+      };
+    });
+
+    expect(metrics.mediaRatio).toBeCloseTo(5 / 4, 1);
+    expect(metrics.copyWidth).toBeGreaterThanOrEqual(374);
+    expect(metrics.titleWidth).toBeGreaterThanOrEqual(300);
+    expect(metrics.titleHeight).toBeLessThanOrEqual(200);
   });
 
   test("shared consultation blocks omit eyebrow copy and stay centered on mobile", async ({ page }) => {
@@ -561,6 +599,11 @@ test.describe("public responsive layout", () => {
     expect(styles.touchAction).toContain("pan-x");
     expect(styles.transition).toContain("cubic-bezier");
 
+    await nav.evaluate((element) => {
+      const box = element.getBoundingClientRect();
+      const top = box.top + window.scrollY - (window.innerHeight - box.height) / 2;
+      window.scrollTo({ top, behavior: "instant" });
+    });
     const before = await rail.evaluate((element) => element.scrollLeft);
     const bounds = await rail.boundingBox();
     expect(bounds).not.toBeNull();
@@ -586,7 +629,7 @@ test.describe("public responsive layout", () => {
     expect(indicatorAfter).not.toBe(indicatorBefore);
   });
 
-  test("all media hero pages keep the contrast-protected header overlay", async ({ page }) => {
+  test("all media hero pages place the solid header above the hero", async ({ page }) => {
     await page.setViewportSize({ width: 1440, height: 1000 });
     for (const path of immersiveHeaderPaths) {
       await page.goto(path, { waitUntil: "domcontentloaded" });
@@ -595,16 +638,16 @@ test.describe("public responsive layout", () => {
       const header = page.locator(".site-header");
       const hero = page.locator('[data-immersive-hero="true"]');
       await expect(hero).toHaveCount(1);
-      await expect(header).toHaveAttribute("data-header-state", "overlay");
-      await expect(page.locator(".forest-site-shell")).toHaveAttribute("data-header-overlay", "true");
-      const overlayStyle = await header.evaluate((element) => ({
+      await expect(header).toHaveAttribute("data-header-state", "solid");
+      await expect(page.locator(".forest-site-shell")).toHaveAttribute("data-header-overlay", "false");
+      const headerStyle = await header.evaluate((element) => ({
         backgroundColor: getComputedStyle(element).backgroundColor,
-        scrimImage: getComputedStyle(element, "::before").backgroundImage,
-        scrimOpacity: getComputedStyle(element, "::before").opacity,
+        surfaceColor: getComputedStyle(element, "::before").backgroundColor,
+        surfaceOpacity: getComputedStyle(element, "::before").opacity,
       }));
-      expect(overlayStyle.backgroundColor).toBe("rgba(0, 0, 0, 0)");
-      expect(overlayStyle.scrimImage).toContain("linear-gradient");
-      expect(overlayStyle.scrimOpacity).toBe("1");
+      expect(headerStyle.backgroundColor).toBe("rgba(0, 0, 0, 0)");
+      expect(headerStyle.surfaceColor).not.toBe("rgba(0, 0, 0, 0)");
+      expect(headerStyle.surfaceOpacity).toBe("1");
 
       const opening = await page.evaluate(() => {
         const headerElement = document.querySelector(".site-header");
@@ -615,7 +658,7 @@ test.describe("public responsive layout", () => {
           headerBottom: Math.round(headerElement.getBoundingClientRect().bottom),
         };
       });
-      expect(opening.heroTop).toBeLessThan(opening.headerBottom);
+      expect(opening.heroTop).toBeGreaterThanOrEqual(opening.headerBottom);
 
       await page.evaluate(() => window.scrollTo(0, 120));
       await expect(header).toHaveAttribute("data-header-state", "solid");
@@ -638,7 +681,7 @@ test.describe("public responsive layout", () => {
     }
   });
 
-  test("mobile immersive header uses independent transparent controls", async ({ page }) => {
+  test("mobile header keeps independent controls on its own row", async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
     await page.goto("/zh", { waitUntil: "domcontentloaded" });
     await page.waitForLoadState("load");
@@ -952,7 +995,8 @@ test.describe("public responsive layout", () => {
     await page.goto("/zh/quote", { waitUntil: "domcontentloaded" });
     await page.waitForLoadState("load");
     await expect(page.locator(".page-hero")).toHaveAttribute("data-forest-page-hero", "true");
-    await expect.poll(() => page.locator(".page-hero").evaluate((hero) => hero.getBoundingClientRect().height)).toBeLessThanOrEqual(620);
+    await expect.poll(() => page.locator(".page-hero").evaluate((hero) => hero.getBoundingClientRect().height)).toBeGreaterThanOrEqual(640);
+    await expect.poll(() => page.locator(".page-hero").evaluate((hero) => hero.getBoundingClientRect().height)).toBeLessThanOrEqual(720);
 
     const actionBar = page.locator(".mobile-action-bar");
     const bottomNav = page.locator(".forest-bottom-nav");
@@ -976,61 +1020,44 @@ test.describe("public responsive layout", () => {
     expect(fixedBars).toEqual({ navigationBottom: 0, stackGap: 0 });
   });
 
-  test("primary subpages use brand, catalog and utility hero proportions", async ({ page }) => {
+  test("primary subpages share one large editorial hero proportion", async ({ page }) => {
     await page.setViewportSize({ width: 1440, height: 1000 });
 
-    const groups = [
-      {
-        paths: ["/zh/about", "/zh/projects", "/zh/before-after"],
-        className: null,
-        minHeight: 700,
-        maxHeight: 720,
-      },
-      {
-        paths: ["/zh/services", "/zh/materials", "/zh/products", "/zh/promotions", "/zh/blog", "/zh/locations", "/zh/process"],
-        className: "page-hero--compact",
-        minHeight: 500,
-        maxHeight: 540,
-      },
-      {
-        paths: ["/zh/faq", "/zh/quote", "/zh/contact"],
-        className: "page-hero--utility",
-        minHeight: 420,
-        maxHeight: 460,
-      },
-    ] as const;
+    for (const path of publicPaths.filter((publicPath) => publicPath !== "/zh")) {
+      await page.goto(path, { waitUntil: "domcontentloaded" });
+      await page.waitForLoadState("load");
 
-    for (const group of groups) {
-      for (const path of group.paths) {
-        await page.goto(path, { waitUntil: "domcontentloaded" });
-        await page.waitForLoadState("load");
+      const hero = page.locator('[data-forest-page-hero="true"]');
+      await expect(hero).toHaveCount(1);
 
-        const hero = page.locator('[data-forest-page-hero="true"]');
-        await expect(hero).toHaveCount(1);
-        if (group.className) await expect(hero).toHaveClass(new RegExp(group.className));
+      const metrics = await hero.evaluate((element) => {
+        const media = element.querySelector(".page-hero__media");
+        const copy = element.querySelector(".page-hero__content");
+        const label = element.querySelector(".page-hero__label")?.textContent?.trim().toLocaleLowerCase();
+        const title = element.querySelector(".page-hero__title")?.textContent?.trim().toLocaleLowerCase();
+        if (!media || !copy) throw new Error("Missing final hero regions");
+        const heroBox = element.getBoundingClientRect();
+        const mediaBox = media.getBoundingClientRect();
+        const copyBox = copy.getBoundingClientRect();
+        const heroStyle = getComputedStyle(element);
+        const copyStyle = getComputedStyle(copy);
+        return {
+          display: heroStyle.display,
+          mediaStartsAfterCopy: mediaBox.left >= copyBox.right - 1,
+          mediaShare: mediaBox.width / heroBox.width,
+          height: Math.round(heroBox.height),
+          borderWidths: [heroStyle.borderTopWidth, heroStyle.borderRightWidth, heroStyle.borderBottomWidth, heroStyle.borderLeftWidth, copyStyle.borderRightWidth],
+          labelDuplicatesTitle: Boolean(label && title && label === title),
+        };
+      });
 
-        const metrics = await hero.evaluate((element) => {
-          const media = element.querySelector(".page-hero__media");
-          const copy = element.querySelector(".page-hero__content");
-          const label = element.querySelector(".page-hero__label")?.textContent?.trim().toLocaleLowerCase();
-          const title = element.querySelector(".page-hero__title")?.textContent?.trim().toLocaleLowerCase();
-          if (!media || !copy) throw new Error("Missing final hero regions");
-          const mediaBox = media.getBoundingClientRect();
-          const copyBox = copy.getBoundingClientRect();
-          return {
-            display: getComputedStyle(element).display,
-            mediaStartsAfterCopy: mediaBox.left >= copyBox.right - 1,
-            height: Math.round(element.getBoundingClientRect().height),
-            labelDuplicatesTitle: Boolean(label && title && label === title),
-          };
-        });
-
-        expect(metrics.display).toBe("grid");
-        expect(metrics.mediaStartsAfterCopy).toBe(true);
-        expect(metrics.labelDuplicatesTitle).toBe(false);
-        expect(metrics.height).toBeGreaterThanOrEqual(group.minHeight);
-        expect(metrics.height).toBeLessThanOrEqual(group.maxHeight);
-      }
+      expect(metrics.display).toBe("grid");
+      expect(metrics.mediaStartsAfterCopy).toBe(true);
+      expect(metrics.mediaShare).toBeGreaterThanOrEqual(0.56);
+      expect(metrics.mediaShare).toBeLessThanOrEqual(0.6);
+      expect(metrics.labelDuplicatesTitle).toBe(false);
+      expect(metrics.borderWidths).toEqual(["0px", "0px", "0px", "0px", "0px"]);
+      expect(metrics.height).toBe(700);
     }
   });
 
@@ -1055,10 +1082,13 @@ test.describe("public responsive layout", () => {
           };
         });
 
-        expect(pageFrame.width, `${path} hero image width`).toBeGreaterThanOrEqual(viewport.width <= 390 ? viewport.width - 1 : 300);
+        expect(pageFrame.width, `${path} hero image width`).toBeGreaterThanOrEqual(viewport.width <= 390 ? viewport.width - 16 : 300);
         expect(pageFrame.width, `${path} hero image width`).toBeLessThanOrEqual(viewport.width);
-        expect(pageFrame.height, `${path} hero image height`).toBeGreaterThanOrEqual(viewport.width <= 390 ? 150 : 360);
-        expect(pageFrame.height, `${path} hero image height`).toBeLessThanOrEqual(720);
+        if (viewport.width <= 390) {
+          expect(pageFrame.width / pageFrame.height, `${path} mobile hero image ratio`).toBeCloseTo(5 / 4, 1);
+        } else {
+          expect(pageFrame.height, `${path} desktop hero image height`).toBe(700);
+        }
       }
     }
   });
@@ -1093,25 +1123,18 @@ test.describe("public responsive layout", () => {
     await expect.poll(() => slider.evaluate((element) => getComputedStyle(element).outlineStyle)).not.toBe("none");
   });
 
-  test("detail pages use the same image frame as the home page", async ({ page }) => {
+  test("detail pages share one consistent image frame", async ({ page }) => {
+    const detailHeroes = detailImageFrames.filter(({ selector }) => selector.includes("data-forest-page-hero"));
+
     for (const viewport of [
       { width: 1440, height: 1000 },
       { width: 768, height: 1024 },
       { width: 390, height: 844 },
     ]) {
       await page.setViewportSize(viewport);
-      await page.goto("/zh", { waitUntil: "domcontentloaded" });
-      await page.waitForLoadState("load");
+      let referenceFrame: { width: number; height: number } | null = null;
 
-      const homeFrame = await page.locator(".forest-home-hero__media").evaluate((media) => {
-        const box = media.getBoundingClientRect();
-        return {
-          width: Math.round(box.width),
-          height: Math.round(box.height),
-        };
-      });
-
-      for (const detail of detailImageFrames) {
+      for (const detail of detailHeroes) {
         await page.goto(detail.path, { waitUntil: "domcontentloaded" });
         await page.waitForLoadState("load");
 
@@ -1123,14 +1146,15 @@ test.describe("public responsive layout", () => {
           };
         });
 
-        expect(
-          Math.abs(pageFrame.width - homeFrame.width),
-          `${detail.path} hero image frame width`,
-        ).toBeLessThanOrEqual(1);
-        expect(
-          Math.abs(pageFrame.height - homeFrame.height),
-          `${detail.path} hero image frame height`,
-        ).toBeLessThanOrEqual(1);
+        referenceFrame ??= pageFrame;
+        expect(Math.abs(pageFrame.width - referenceFrame.width), `${detail.path} hero image frame width`).toBeLessThanOrEqual(1);
+        expect(Math.abs(pageFrame.height - referenceFrame.height), `${detail.path} hero image frame height`).toBeLessThanOrEqual(1);
+
+        if (viewport.width <= 390) {
+          expect(pageFrame.width / pageFrame.height, `${detail.path} mobile detail image ratio`).toBeCloseTo(5 / 4, 1);
+        } else {
+          expect(pageFrame.height, `${detail.path} desktop detail image height`).toBe(700);
+        }
       }
     }
   });
@@ -1193,7 +1217,7 @@ test.describe("public responsive layout", () => {
       {
         path: "/zh/materials",
         targets: [
-          [".forest-section-heading .forest-eyebrow", ".forest-chapter--raised"],
+          [".forest-section-heading h2", ".forest-chapter--raised"],
           [".forest-section-heading__copy > p:not(.forest-eyebrow)", ".forest-chapter--raised"],
         ],
       },
@@ -1290,7 +1314,7 @@ test.describe("public responsive layout", () => {
     }
   });
 
-  test("detail pages inherit the immersive final-design header", async ({ page }) => {
+  test("detail pages inherit the separated solid header", async ({ page }) => {
     await page.setViewportSize({ width: 1440, height: 1000 });
     await page.goto("/zh/projects", { waitUntil: "domcontentloaded" });
     await page.waitForLoadState("load");
@@ -1299,8 +1323,8 @@ test.describe("public responsive layout", () => {
 
     await page.goto(detailHref!, { waitUntil: "domcontentloaded" });
     await page.waitForLoadState("load");
-    await expect(page.locator(".forest-site-shell")).toHaveAttribute("data-header-overlay", "true");
-    await expect(page.locator(".site-header")).toHaveAttribute("data-header-state", "overlay");
+    await expect(page.locator(".forest-site-shell")).toHaveAttribute("data-header-overlay", "false");
+    await expect(page.locator(".site-header")).toHaveAttribute("data-header-state", "solid");
     await expect(page.locator('[data-forest-page-hero="true"]')).toHaveCount(1);
   });
 

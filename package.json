@@ -52,6 +52,8 @@
     "seed:long-tail": "node scripts/upsert-long-tail-content.mjs",
     "content:humanize-blog": "node scripts/humanize-blog-posts.mjs",
     "content:humanize-blog:write": "node scripts/humanize-blog-posts.mjs --write",
+    "content:materials:validate": "node scripts/publish-material-catalog.mjs --validate",
+    "content:materials:dry-run": "node scripts/publish-material-catalog.mjs",
     "test:watch": "vitest"
   },
   "dependencies": {

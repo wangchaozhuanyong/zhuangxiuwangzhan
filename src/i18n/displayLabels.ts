@@ -497,6 +497,14 @@ const displayTextReplacements = Object.entries({
 
 const extraZhTextReplacements: Record<string, string> = {
   "Frequently Asked Questions": "常见问题",
+  "Modern Condo Full Renovation": "现代公寓全屋装修",
+  "Corporate Office Fit-Out": "企业办公室全案装修",
+  "Custom Kitchen and Whole-Home Built-In Cabinets": "厨房与全屋定制柜工程",
+  "Industrial Warehouse Racking and Packing Area Setup": "工业仓库货架与打包区安装",
+  "Retail Shopfront Signage and Display Renovation": "零售店门面招牌与展示区翻新",
+  "Hotel-Inspired Master Suite and Walk-In Wardrobe": "酒店式主卧套房与步入式衣柜",
+  "F&B Kitchen Dining and Bar Fit-Out": "餐饮店厨房用餐区与吧台装修",
+  "Home Office Desk Library and Reading Nook Built-In": "住家办公桌书柜与阅读角定制",
   "Corporate Office in KL Sentral": "吉隆坡中环企业办公室",
   "Co-Working Space in PJ": "八打灵再也共享办公室",
   "Retail Shop in Bangsar": "孟沙零售店铺",

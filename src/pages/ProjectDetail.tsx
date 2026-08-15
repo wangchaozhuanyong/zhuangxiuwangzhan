@@ -2,7 +2,7 @@
 import Link from "@/components/LocalizedLink";
 import { Button } from "@/components/ui/button";
 import ImmersiveHero from "@/components/ImmersiveHero";
-import { ArrowLeft, ArrowRight, MapPin, Clock, CheckCircle, Star, Wrench, Layers } from "lucide-react";
+import { ArrowLeft, ArrowRight, Clock, CheckCircle, Star, Wrench, Layers } from "lucide-react";
 import WhatsAppIcon from "@/components/WhatsAppIcon";
 import { projectsData } from "@/data/projects";
 import { usePublishedProjectBySlug, usePublishedProjectSummaries } from "@/hooks/usePublishedContent";
@@ -72,12 +72,11 @@ const ProjectDetail = () => {
   }
 
   const mainImage = project.images[0] || project.thumbnail;
-  const mainImageAlt = translateDisplayText(project.imageAlts?.[0] || project.thumbnailAlt || project.title, language);
   const relatedService = typeToService[project.type];
   const relatedServiceName = relatedService?.[language];
   const projectTypeLabel = translateProjectType(project.type, language);
   const projectTitleLabel = translateDisplayText(project.title, language);
-  const projectLocationLabel = translateDisplayText(project.location, language);
+  const mainImageAlt = `${projectTitleLabel} - ${t.imageLabel} 1`;
   const projectDurationLabel = translateDisplayText(project.duration, language);
   const projectDescription = translateDisplayText(project.description, language);
   const projectClientNeed = translateDisplayText(project.clientNeed, language);
@@ -89,15 +88,14 @@ const ProjectDetail = () => {
     source: "project",
     title: projectTitleLabel,
     projectType: quoteProjectTypeFromProjectType(project.type),
-    location: projectLocationLabel,
   });
 
   return (
     <main className="forest-project-detail-page pt-site-header">
       <PageMeta
-        title={`${projectTitleLabel} | ${projectLocationLabel} | ${t.metaSuffix}`}
-        description={t.metaDescription(projectTypeLabel, projectLocationLabel, projectClientNeed)}
-        keywords={t.metaKeywords(projectTypeLabel, projectLocationLabel, projectTitleLabel)}
+        title={`${projectTitleLabel} | ${t.metaSuffix}`}
+        description={t.metaDescription(projectTypeLabel)}
+        keywords={t.metaKeywords(projectTypeLabel, projectTitleLabel)}
         canonicalPath={`/projects/${project.slug}`}
       />
       <JsonLdBreadcrumb items={[{ name: t.breadcrumbHome, url: "/" }, { name: t.breadcrumbProjects, url: "/projects" }, { name: projectTitleLabel, url: `/projects/${project.slug}` }]} />
@@ -117,7 +115,6 @@ const ProjectDetail = () => {
           <span className="page-hero__label mb-2 block text-xs font-medium uppercase tracking-wider text-gold">{projectTypeLabel}</span>
           <h1 className="page-hero__title heading-safe mb-2 text-3xl font-bold text-on-media md:text-4xl">{projectTitleLabel}</h1>
           <div className="flex flex-wrap items-center gap-4 text-sm text-on-media-muted">
-            <span className="flex items-center gap-1"><MapPin className="w-3.5 h-3.5" /> {projectLocationLabel}</span>
             <span className="flex items-center gap-1"><Clock className="w-3.5 h-3.5" /> {projectDurationLabel}</span>
           </div>
         </div>
@@ -130,7 +127,7 @@ const ProjectDetail = () => {
               <Reveal>
                 <div className="p-5 bg-muted rounded-card border border-border mb-8">
                   <p className="text-muted-foreground text-sm leading-relaxed">
-                    <strong className="text-foreground">{t.summaryLabel}</strong> {t.summary(projectTitleLabel, projectTypeLabel, projectLocationLabel, projectDurationLabel, projectScope)}
+                    <strong className="text-foreground">{t.summaryLabel}</strong> {t.summary(projectTitleLabel, projectTypeLabel, projectScope)}
                   </p>
                 </div>
               </Reveal>
@@ -168,7 +165,7 @@ const ProjectDetail = () => {
                 <div className="grid grid-cols-2 gap-3 mb-8">
                   {project.images.map((img: string, index: number) => (
                     <div key={img || index} className="aspect-[4/3] overflow-hidden rounded-card bg-muted img-zoom">
-                      <SmartImage src={img} alt={translateDisplayText(project.imageAlts?.[index] || `${project.title} - ${t.imageLabel} ${index + 1}`, language)} loading="lazy" width={800} height={600} sizes="(max-width: 768px) 46vw, 390px" candidateWidths={PROJECT_GALLERY_IMAGE_WIDTHS} quality={72} className="w-full h-full object-cover hover:scale-105 transition-transform duration-500" />
+                      <SmartImage src={img} alt={`${projectTitleLabel} - ${t.imageLabel} ${index + 1}`} loading="lazy" width={800} height={600} sizes="(max-width: 768px) 46vw, 390px" candidateWidths={PROJECT_GALLERY_IMAGE_WIDTHS} quality={72} className="w-full h-full object-cover hover:scale-105 transition-transform duration-500" />
                     </div>
                   ))}
                 </div>
@@ -179,7 +176,7 @@ const ProjectDetail = () => {
                   <div className="p-6 bg-muted rounded-card border border-border mb-8">
                     <Star className="w-5 h-5 text-gold mb-3" />
                     <p className="italic text-foreground mb-3 leading-relaxed">"{projectTestimonial}"</p>
-                    <p className="text-sm text-muted-foreground font-medium">{t.testimonialBy(projectLocationLabel)}</p>
+                    <p className="text-sm text-muted-foreground font-medium">{t.testimonialBy}</p>
                   </div>
                 </Reveal>
               )}
@@ -188,7 +185,7 @@ const ProjectDetail = () => {
                 <div className="rounded-card border border-accent/20 bg-accent/5 p-5">
                   <h3 className="font-display text-lg font-bold mb-2">{t.resultTitle}</h3>
                   <p className="text-muted-foreground text-sm leading-relaxed">
-                    {t.resultIntro(projectTypeLabel, projectLocationLabel, projectDurationLabel, projectScope.length, projectMaterialsUsed.length)}
+                    {t.resultIntro(projectTypeLabel, projectScope.length, projectMaterialsUsed.length)}
                     {project.testimonial && ` ${t.satisfied}`}
                     {relatedService && <> {t.similarPrompt} <Link to={`/services/${relatedService.slug}`} className="text-accent hover:underline font-medium">{relatedServiceName}</Link> {t.serviceWord}</>}
                   </p>
@@ -202,7 +199,6 @@ const ProjectDetail = () => {
                   <h3 className="font-semibold mb-4">{t.details}</h3>
                   <div className="space-y-3 text-sm">
                     <div className="flex justify-between gap-3"><span className="text-muted-foreground">{t.type}</span><span className="font-medium text-right">{projectTypeLabel}</span></div>
-                    <div className="flex justify-between gap-3"><span className="text-muted-foreground">{t.location}</span><span className="font-medium text-right">{projectLocationLabel}</span></div>
                     <div className="flex justify-between gap-3"><span className="text-muted-foreground">{t.duration}</span><span className="font-medium text-right">{projectDurationLabel}</span></div>
                     <div className="flex justify-between gap-3"><span className="text-muted-foreground">{t.scopeItems}</span><span className="font-medium text-right">{projectScope.length} {t.items}</span></div>
                   </div>
@@ -294,14 +290,11 @@ const ProjectDetail = () => {
               <Reveal key={item.id} delay={index * 80} direction="none">
                 <Link to={`/projects/${item.slug}`} className="card-equal group luxury-card hover-lift">
                   <div className="aspect-[4/3] overflow-hidden img-zoom">
-                    <SmartImage src={item.images[0] || item.thumbnail} alt={item.imageAlts?.[0] || item.thumbnailAlt || item.title} loading="lazy" width={600} height={450} sizes="(max-width: 640px) 92vw, 30vw" candidateWidths={RELATED_PROJECT_IMAGE_WIDTHS} quality={72} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                    <SmartImage src={item.images[0] || item.thumbnail} alt={`${translateDisplayText(item.title, language)} - ${t.imageLabel} 1`} loading="lazy" width={600} height={450} sizes="(max-width: 640px) 92vw, 30vw" candidateWidths={RELATED_PROJECT_IMAGE_WIDTHS} quality={72} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
                   </div>
                   <div className="card-equal-body p-4">
                     <span className="text-limit-1 text-accent text-xs font-medium uppercase tracking-wider">{translateProjectType(item.type, language)}</span>
                       <h3 className="text-limit-2 font-display text-base font-semibold mt-1">{translateDisplayText(item.title, language)}</h3>
-                    <p className="mt-1 flex min-w-0 items-center gap-1 text-xs text-muted-foreground">
-                      <MapPin className="w-3 h-3 shrink-0" /> <span className="min-w-0 truncate">{translateDisplayText(item.location, language)}</span>
-                    </p>
                   </div>
                 </Link>
               </Reveal>

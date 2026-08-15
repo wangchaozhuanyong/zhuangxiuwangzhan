@@ -6,6 +6,17 @@ export type MaterialCatalogItem = MaterialItem & {
   pros?: string[];
   cons?: string[];
   referencePrice?: string;
+  priceScope?: string;
+  priceNote?: string;
+  gallery?: MaterialCatalogImage[];
+};
+
+export type MaterialCatalogImage = {
+  id: string;
+  image: string;
+  type: "cover" | "scene" | "detail" | "installation" | "specification";
+  alt: string;
+  sortOrder: number;
 };
 
 export type MaterialCatalogSubcategory = MaterialSubcategory & {

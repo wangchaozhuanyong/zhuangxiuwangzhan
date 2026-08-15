@@ -121,70 +121,38 @@ test.describe("public text readability", () => {
 
   for (const viewport of viewports) {
     for (const theme of themes) {
-      test(`${viewport.name} ${theme} overlay header has a deterministic contrast layer`, async ({ page }) => {
+      test(`${viewport.name} ${theme} solid header stays separate from the hero`, async ({ page }) => {
         await page.setViewportSize(viewport);
         await setPublicTheme(page, theme);
         await page.goto("/zh", { waitUntil: "domcontentloaded" });
         await page.waitForLoadState("load");
-        const header = page.locator(".site-header.is-overlay");
+        const header = page.locator(".site-header.is-solid");
         await expect(header).toBeVisible();
-        await expect.poll(() => header.evaluate((element) => {
-          const targets = Array.from(element.querySelectorAll(
-            ".site-header__nav-link, .site-header__language-option, .site-header__control, .site-header__icon-action, .site-header__quote-button, .site-header__mobile-button",
-          )).filter((target) => {
-            const style = getComputedStyle(target);
-            return style.display !== "none" && style.visibility !== "hidden" && target.getClientRects().length > 0;
-          });
-          return targets.length > 0 && targets.every((target) => getComputedStyle(target).color === "rgb(255, 255, 255)");
-        }), { timeout: 3_000 }).toBe(true);
-
         const result = await header.evaluate((element) => {
-          const scrim = getComputedStyle(element, "::before");
+          const surface = getComputedStyle(element, "::before");
+          const hero = document.querySelector<HTMLElement>(".forest-home-hero");
           const textTargets = Array.from(element.querySelectorAll(
             ".site-header__nav-link, .site-header__language-option, .site-header__control, .site-header__icon-action, .site-header__quote-button, .site-header__mobile-button",
           )).filter((target) => {
             const style = getComputedStyle(target);
             return style.display !== "none" && style.visibility !== "hidden" && target.getClientRects().length > 0;
           });
-          const weakestOpacity = Math.min(...textTargets.map((target) => Number(getComputedStyle(target).opacity)));
-          const stops = Array.from(scrim.backgroundImage.matchAll(/rgba?\(([^)]+)\)/g)).map((match) => {
-            const channels = match[1].split(/[\s,/]+/).filter(Boolean).map(Number);
-            return [channels[0], channels[1], channels[2], channels[3] ?? 1];
-          });
-          const luminance = (color: number[]) => {
-            const linear = color.slice(0, 3).map((channel) => {
-              const normalized = channel / 255;
-              return normalized <= 0.04045
-                ? normalized / 12.92
-                : ((normalized + 0.055) / 1.055) ** 2.4;
-            });
-            return 0.2126 * linear[0] + 0.7152 * linear[1] + 0.0722 * linear[2];
-          };
-          const worstCaseContrast = Math.min(...stops.map((stop) => {
-            const surface = stop.slice(0, 3).map((channel) => channel * stop[3] + 255 * (1 - stop[3]));
-            const foreground = surface.map((channel) => 255 * weakestOpacity + channel * (1 - weakestOpacity));
-            return (luminance(foreground) + 0.05) / (luminance(surface) + 0.05);
-          }));
 
           return {
-            backgroundImage: scrim.backgroundImage,
-            opacity: Number(scrim.opacity),
-            colors: textTargets.map((target) => getComputedStyle(target).color),
-            weakestOpacity,
-            worstCaseContrast,
-            blendModes: Array.from(element.querySelectorAll(".site-header__brand, .site-header__nav-link"))
-              .map((target) => getComputedStyle(target).mixBlendMode),
+            surfaceColor: surface.backgroundColor,
+            surfaceOpacity: Number(surface.opacity),
+            backdropFilter: surface.backdropFilter,
+            targetCount: textTargets.length,
+            headerBottom: Math.round(element.getBoundingClientRect().bottom),
+            heroTop: Math.round(hero?.getBoundingClientRect().top ?? -1),
           };
         });
 
-        expect(result.backgroundImage).toContain("linear-gradient");
-        expect(result.backgroundImage).not.toBe("none");
-        expect(result.opacity).toBe(1);
-        expect(result.colors.length).toBeGreaterThan(0);
-        expect(result.colors.every((color) => color === "rgb(255, 255, 255)")).toBe(true);
-        expect(result.weakestOpacity).toBeGreaterThanOrEqual(0.86);
-        expect(result.worstCaseContrast).toBeGreaterThanOrEqual(4.5);
-        expect(result.blendModes.every((mode) => mode === "normal")).toBe(true);
+        expect(result.surfaceColor).not.toBe("rgba(0, 0, 0, 0)");
+        expect(result.surfaceOpacity).toBe(1);
+        expect(result.backdropFilter).toBe("none");
+        expect(result.targetCount).toBeGreaterThan(0);
+        expect(result.heroTop).toBeGreaterThanOrEqual(result.headerBottom);
       });
     }
   }

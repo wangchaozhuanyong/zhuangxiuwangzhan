@@ -113,9 +113,10 @@ const Services = () => {
           <div className="forest-service-list">
             {visible.map(({ key, service }, index) => {
               const cardCopy = t.serviceCards[key as keyof typeof t.serviceCards];
-              const title = cardCopy?.title || translateDisplayText(service.title, language);
-              const summary = cardCopy?.summary || translateDisplayText(service.summary, language);
-              const tags = cardCopy?.tags || service.suitableFor.slice(0, 3).map((item: string) => translateDisplayText(item, language));
+              const title = translateDisplayText(service.title, language) || cardCopy?.title || "";
+              const summary = translateDisplayText(service.summary, language) || cardCopy?.summary || "";
+              const serviceTags = service.suitableFor.slice(0, 3).map((item: string) => translateDisplayText(item, language)).filter(Boolean);
+              const tags = serviceTags.length ? serviceTags : cardCopy?.tags || [];
               return (
                 <Link key={`${key}-${service.slug}`} to={`/services/${service.slug}`} className="forest-service-row" data-reverse={index % 2 ? "true" : "false"}>
                   <div className="forest-service-row__media">

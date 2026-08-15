@@ -282,7 +282,7 @@ const ForestHome = ({ content }: ForestHomeProps) => {
               <LocalizedLink className="forest-project-feature__media" to={`/projects/${featuredProject.slug}`} aria-label={featuredProject.title}>
                 <DeferredSmartImage
                   src={featuredProject.thumbnail}
-                  alt={featuredProject.thumbnailAlt || featuredProject.title}
+                  alt={featuredProject.title}
                   width={1200}
                   height={780}
                   sizes="(max-width: 767px) 100vw, (max-width: 1199px) 62vw, 880px"
@@ -293,7 +293,6 @@ const ForestHome = ({ content }: ForestHomeProps) => {
               <div className="forest-project-feature__copy">
                 <small>{displayText(featuredProject.type)}</small>
                 <h3><LocalizedLink to={`/projects/${featuredProject.slug}`}>{featuredProject.title}</LocalizedLink></h3>
-                <span className="forest-project-location"><MapPin aria-hidden="true" />{featuredProject.location}</span>
                 {featuredProject.description ? <p>{featuredProject.description}</p> : null}
                 <LocalizedLink className="forest-text-link" to={`/projects/${featuredProject.slug}`}>
                   {copy.details}<ArrowRight />
@@ -309,7 +308,7 @@ const ForestHome = ({ content }: ForestHomeProps) => {
                   <LocalizedLink className="forest-project-story__media" to={`/projects/${project.slug}`} aria-label={project.title}>
                     <DeferredSmartImage
                       src={project.thumbnail}
-                      alt={project.thumbnailAlt || project.title}
+                      alt={project.title}
                       width={780}
                       height={560}
                       sizes="(max-width: 767px) 82vw, (max-width: 1199px) 50vw, 33vw"
@@ -320,7 +319,6 @@ const ForestHome = ({ content }: ForestHomeProps) => {
                   <div className="forest-project-story__copy">
                     <small>{displayText(project.type)}</small>
                     <h3><LocalizedLink to={`/projects/${project.slug}`}>{project.title}</LocalizedLink></h3>
-                    <span className="forest-project-location"><MapPin aria-hidden="true" />{project.location}</span>
                   </div>
                 </article>
               ))}

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { blogPosts } from "@/data/blog";
 import { landingPages } from "@/data/landings";
@@ -46,9 +46,6 @@ type SeedSummary = {
 
 type DbRow = Record<string, unknown>;
 
-const AUTO_SEED_CACHE_KEY = "flashcast_admin_default_seed_checked_at";
-const AUTO_SEED_CACHE_MS = 7 * 24 * 60 * 60 * 1000;
-
 const zh = (value: string) => translateDisplayText(value || "", "zh");
 const tr = (key: string, lang: "en" | "zh") => translations[key]?.[lang] || key;
 
@@ -90,46 +87,6 @@ const omitReadonly = (row: DbRow) => {
   delete copy.created_at;
   delete copy.updated_at;
   return copy;
-};
-
-const getAutoSeedCacheTime = () => {
-  if (typeof window === "undefined") return 0;
-  try {
-    const value = Number(window.localStorage.getItem(AUTO_SEED_CACHE_KEY) || "0");
-    return Number.isFinite(value) ? value : 0;
-  } catch {
-    return 0;
-  }
-};
-
-const shouldSkipAutoSeed = () => {
-  const checkedAt = getAutoSeedCacheTime();
-  return checkedAt > 0 && Date.now() - checkedAt < AUTO_SEED_CACHE_MS;
-};
-
-const rememberAutoSeed = () => {
-  if (typeof window === "undefined") return;
-  try {
-    window.localStorage.setItem(AUTO_SEED_CACHE_KEY, String(Date.now()));
-  } catch {
-    // Ignore storage failures. The seed still completed; only the browser-side skip cache failed.
-  }
-};
-
-const scheduleIdleWork = (callback: () => void) => {
-  if (typeof window === "undefined") return () => undefined;
-  const browserWindow = window as typeof window & {
-    requestIdleCallback?: (cb: () => void, options?: { timeout: number }) => number;
-    cancelIdleCallback?: (id: number) => void;
-  };
-
-  if (browserWindow.requestIdleCallback) {
-    const idleId = browserWindow.requestIdleCallback(callback, { timeout: 6000 });
-    return () => browserWindow.cancelIdleCallback?.(idleId);
-  }
-
-  const timeoutId = window.setTimeout(callback, 3500);
-  return () => window.clearTimeout(timeoutId);
 };
 
 const buildBlankPatch = (current: DbRow, defaults: DbRow) => {
@@ -372,13 +329,13 @@ const sitePageRows = [
   {
     page_key: "projects",
     path: "/projects",
-    title_zh: "装修案例",
-    title_en: "Our Projects",
+    title_zh: "装修与空间改造案例",
+    title_en: "Renovation & Fit-Out Projects",
     subtitle_zh: "案例作品",
     subtitle_en: "Portfolio",
-    description_zh: "查看我们在吉隆坡和雪兰莪发布的住宅、商业空间、定制家具和仓储装修项目参考。",
-    description_en: "Renovation project references across Kuala Lumpur and Selangor - from residential homes to commercial spaces and warehouses.",
-    content_en: "Browse selected renovation project references by FLASH CAST, including residential homes, commercial spaces, custom built-in works, and practical project notes.",
+    description_zh: "按空间类型查看住宅、商业、定制家具、办公室与仓储项目，重点了解每个空间的问题、规划重点、施工范围与材料方向。",
+    description_en: "Browse projects by space type and review the problem, planning priorities, work scope and material direction behind each project.",
+    content_en: "Browse renovation and fit-out project references by space type, with practical project scope, material direction and planning notes.",
     cta_title_zh: "也想做类似项目？",
     cta_title_en: "Have a Similar Project?",
     cta_description_zh: "告诉我们您的装修需求，我们会根据空间、预算和工期提供合适方案。",
@@ -386,12 +343,12 @@ const sitePageRows = [
     image_url: "/images/heroes/v2/hero-projects-premium.webp",
     alt_zh: "FLASH CAST 装修案例作品",
     alt_en: "FLASH CAST renovation projects portfolio",
-    seo_title_zh: "吉隆坡与雪兰莪装修案例 | FLASH CAST 项目作品",
-    seo_title_en: "Renovation Projects Kuala Lumpur & Selangor | FLASH CAST Portfolio",
-    seo_description_zh: "浏览 FLASH CAST 在吉隆坡和雪兰莪发布的装修项目参考，包括公寓、住宅、办公室、厨房、仓储和店铺装修。",
-    seo_description_en: "Explore renovation project references by FLASH CAST across Kuala Lumpur and Selangor - residential condos, commercial offices, custom kitchens, warehouses, and shopfront works.",
-    seo_keywords_zh: "吉隆坡装修案例, 雪兰莪装修项目, 马来西亚室内装修, 店铺装修 KL",
-    seo_keywords_en: "renovation projects KL, condo renovation Kuala Lumpur, office fit-out Selangor, kitchen renovation Malaysia",
+    seo_title_zh: "装修案例与空间改造作品 | 住宅、商业、定制家具 | FLASH CAST",
+    seo_title_en: "Renovation & Fit-Out Projects | FLASH CAST",
+    seo_description_zh: "浏览 FLASH CAST 已发布的住宅装修、商业空间、办公室、店铺、理发店、定制家具和仓储工程项目参考，了解空间问题、施工范围、材料选择与规划方向。",
+    seo_description_en: "Explore FLASH CAST project references for homes, offices, retail spaces, hair salons, custom built-ins and warehouses, with practical scope, material and planning details.",
+    seo_keywords_zh: "装修案例, 空间改造, 住宅装修, 商业装修, 办公室装修, 店铺装修, 理发店装修, 定制家具",
+    seo_keywords_en: "renovation projects, fit-out projects, home renovation, office fit-out, retail renovation, hair salon fit-out, custom built-ins",
     status: "published",
     sort_order: 15,
   },
@@ -1029,7 +986,7 @@ export async function ensureAdminDefaultContent(): Promise<SeedSummary> {
 
   if (seedPromise) return seedPromise;
 
-  seedPromise = (async () => {
+  const task = (async () => {
     let inserted = 0;
     let updated = 0;
     const add = (result: { inserted: number; updated: number }) => {
@@ -1058,10 +1015,8 @@ export async function ensureAdminDefaultContent(): Promise<SeedSummary> {
     add(await insertIfGroupEmpty("brand_partners", brandPartnerRows));
     add(await insertIfGroupEmpty("testimonials", testimonialRows));
 
-    rememberAutoSeed();
     return { status: "done" as const, inserted, updated };
   })().catch((error) => {
-    seedPromise = null;
     return {
       status: "error" as const,
       inserted: 0,
@@ -1070,48 +1025,27 @@ export async function ensureAdminDefaultContent(): Promise<SeedSummary> {
     };
   });
 
-  return seedPromise;
+  seedPromise = task;
+  const result = await task;
+  if (seedPromise === task) seedPromise = null;
+  return result;
 }
 
-export function useAdminDefaultContentSeed(options: { enabled?: boolean } = {}) {
+export function useAdminDefaultContentSeed() {
   const queryClient = useQueryClient();
   const [summary, setSummary] = useState<SeedSummary>({ status: "idle", inserted: 0, updated: 0 });
 
-  useEffect(() => {
-    let active = true;
-    if (options.enabled === false) {
-      setSummary({ status: "idle", inserted: 0, updated: 0 });
-      return () => {
-        active = false;
-      };
+  const run = useCallback(async () => {
+    setSummary((current) => ({ ...current, status: "running", error: undefined }));
+    const result = await ensureAdminDefaultContent();
+    setSummary(result);
+    if (result.status === "done" && (result.inserted || result.updated)) {
+      void queryClient.invalidateQueries({ queryKey: ["admin"], refetchType: "inactive" });
+      void queryClient.invalidateQueries({ queryKey: ["published"], refetchType: "inactive" });
+      void queryClient.invalidateQueries({ queryKey: ["site-settings"], refetchType: "inactive" });
     }
+    return result;
+  }, [queryClient]);
 
-    if (shouldSkipAutoSeed()) {
-      setSummary({ status: "done", inserted: 0, updated: 0 });
-      return () => {
-        active = false;
-      };
-    }
-
-    const cancelIdleWork = scheduleIdleWork(() => {
-      if (!active) return;
-      setSummary((current) => ({ ...current, status: "running" }));
-      void ensureAdminDefaultContent().then((result) => {
-        if (!active) return;
-        setSummary(result);
-        if (result.status === "done" && (result.inserted || result.updated)) {
-          void queryClient.invalidateQueries({ queryKey: ["admin"], refetchType: "inactive" });
-          void queryClient.invalidateQueries({ queryKey: ["published"], refetchType: "inactive" });
-          void queryClient.invalidateQueries({ queryKey: ["site-settings"], refetchType: "inactive" });
-        }
-      });
-    });
-
-    return () => {
-      active = false;
-      cancelIdleWork();
-    };
-  }, [queryClient, options.enabled]);
-
-  return summary;
+  return { ...summary, run };
 }

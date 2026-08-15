@@ -4,6 +4,7 @@ import {
   fetchPublishedHeroSlideRows,
   fetchPublishedLandingPageRowBySlug,
   fetchPublishedMaterialRows,
+  fetchPublishedMaterialRowBySlug,
   fetchPublishedProjectRowBySlug,
   fetchPublishedProjectSummaryRows,
   fetchPublishedProjectSummaryRowsWithContent,
@@ -19,6 +20,7 @@ import { stripHtml } from "@/lib/text";
 import { translateDisplayText } from "@/i18n/displayLabels";
 import { estimateBlogReadMinutes } from "@/lib/blogMeta";
 import type { MaterialCatalogCategory } from "@/lib/materialCatalog";
+import { formatMaterialPrice } from "@/lib/materialPrice";
 import { readPreloadedPublicData } from "@/lib/publicPreload";
 import { toArray, toRecord, toText, type UnknownRecord } from "@/lib/recordUtils";
 
@@ -451,6 +453,25 @@ const mapPublishedMaterialRows = (rows: UnknownRecord[], language: Language = "e
       });
     }
 
+    const gallery = readRecordArray(item.material_images)
+      .filter((image) => image.is_active !== false && readText(image, "image_url"))
+      .sort((a, b) => Number(a.sort_order || 0) - Number(b.sort_order || 0))
+      .map((image) => ({
+        id: readText(image, "id", `${readText(item, "id")}-${readText(image, "sort_order", "0")}`),
+        image: readText(image, "image_url"),
+        type: (readText(image, "image_type", "scene") || "scene") as "cover" | "scene" | "detail" | "installation" | "specification",
+        alt: pickLocalizedText(image, "alt", language, pickLocalizedText(item, "title", language)),
+        sortOrder: Number(image.sort_order || 0),
+      }));
+    const referencePrice = formatMaterialPrice({
+      mode: readText(item, "price_mode"),
+      min: item.price_min as number | string | null | undefined,
+      max: item.price_max as number | string | null | undefined,
+      currency: readText(item, "price_currency", "MYR"),
+      unit: readText(item, "price_unit"),
+      legacyText: readText(item, "reference_price"),
+    }, language);
+
     category.items.push({
       id: readText(item, "id"),
       name: pickLocalizedText(item, "title", language),
@@ -465,10 +486,13 @@ const mapPublishedMaterialRows = (rows: UnknownRecord[], language: Language = "e
       pros: pickLocalizedList(item, "pros", language),
       cons: pickLocalizedList(item, "cons", language),
       description: pickLocalizedText(item, "content", language) || pickLocalizedText(item, "excerpt", language),
-      note: pickLocalizedText(item, "note", language) || readText(item, "reference_price"),
-      referencePrice: readText(item, "reference_price"),
+      note: pickLocalizedText(item, "note", language),
+      referencePrice,
+      priceScope: pickLocalizedText(item, "price_scope", language),
+      priceNote: pickLocalizedText(item, "price_note", language),
       image: readText(item, "image_url"),
       alt: pickLocalizedText(item, "alt", language, pickLocalizedText(item, "title", language)),
+      gallery,
     });
 
     return acc;
@@ -501,7 +525,12 @@ export const getPublishedMaterialBySlug = async (slug: string, language: "en" | 
   const categories = await getPublishedMaterials(language);
   for (const category of categories) {
     const material = category.items.find((item) => item.slug === slug);
-    if (material) return { material, category };
+    if (material) {
+      if (material.gallery?.length || !hasPublicContentDatabaseClient()) return { material, category };
+      const detailRow = await fetchPublishedMaterialRowBySlug(slug);
+      const detailMaterial = detailRow ? mapPublishedMaterialRows([detailRow as UnknownRecord], language)[0]?.items[0] : null;
+      return { material: detailMaterial ? { ...material, ...detailMaterial } : material, category };
+    }
   }
   return { material: null, category: null };
 };

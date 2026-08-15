@@ -15,15 +15,15 @@ type MobileActionBarMode = "hidden" | "scroll-up" | "always";
 
 const PUBLIC_THEME_STORAGE_KEY = "flashcast-public-theme";
 
-const getInitialPublicTheme = (): "light" | "dark" => {
+export const getInitialPublicTheme = (): "light" | "dark" => {
   if (typeof window === "undefined") return "dark";
   try {
     const storedTheme = window.localStorage.getItem(PUBLIC_THEME_STORAGE_KEY);
     if (storedTheme === "light" || storedTheme === "dark") return storedTheme;
   } catch {
-    // 浏览器禁止本地存储时，继续使用系统主题。
+    // 浏览器禁止本地存储时，继续使用默认深色主题。
   }
-  return window.matchMedia?.("(prefers-color-scheme: light)").matches ? "light" : "dark";
+  return "dark";
 };
 
 const PublicChromeContext = createContext<PublicChromeContextValue | null>(null);
@@ -183,7 +183,7 @@ export function PublicChromeProvider({
       || (mobileActionBarMode === "scroll-up" && mobileScrollingUp && (!isHomeRoute || homeHeroPassed))
     );
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (isAdminRoute) {
       delete document.documentElement.dataset.publicTheme;
       delete document.documentElement.dataset.theme;

@@ -53,6 +53,8 @@ Do not commit real passwords, tokens, service role keys, or production secrets.
 
 SEO/GEO automation and approved content imports must not write database tables directly. Use the protected Supabase Edge Function `content-publish`, which acts as the backend publishing API for admin-approved content.
 
+The API supports `service`, `homepage`, `blog`, `material`, `project`, and restricted `site_page` records. Published CMS records are also the runtime source for public HTML metadata, JSON-LD, `/sitemap.xml`, and `/llms.txt`; after this edge architecture is deployed, normal content updates do not require a frontend deployment.
+
 Current protected publishing contract:
 
 - Endpoint: `<SUPABASE_URL>/functions/v1/content-publish`

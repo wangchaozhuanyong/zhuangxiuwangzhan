@@ -6,6 +6,10 @@ export type SlugRow = {
   slug: string;
 };
 
+export type PathRow = {
+  path: string;
+};
+
 export type SitemapContentSlugs = {
   projects: SlugRow[];
   posts: SlugRow[];
@@ -13,4 +17,6 @@ export type SitemapContentSlugs = {
   areas: SlugRow[];
   landingPages: SlugRow[];
   services: SlugRow[];
+  sitePages: PathRow[];
+  cmsPages: PathRow[];
 };

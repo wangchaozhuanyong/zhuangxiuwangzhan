@@ -564,7 +564,7 @@ const hardcodedTargetFiles = () => {
     .filter((file) => {
       const relative = toPosix(path.relative(rootDir, file));
       if (localeScopedResourceFileSet.has(relative)) return false;
-      return !hardcodedExcludePathPatterns.some((pattern) => pattern.test(relative));
+      return !hardcodedExcludePathPatterns.some((pattern) => testRegex(pattern, relative));
     });
 };
 

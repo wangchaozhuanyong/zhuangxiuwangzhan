@@ -48,6 +48,13 @@ type ProjectSummaryRow = Record<string, unknown>;
 type ProjectDetailRow = Record<string, unknown>;
 type HomeContentBundleRow = Record<string, unknown>;
 type PublicDataRow = Record<string, unknown>;
+type DynamicRouteKind = "service" | "project" | "material" | "blog" | "service_area" | "landing_page" | "site_page" | "cms_page";
+type DynamicRouteState = {
+  kind: DynamicRouteKind;
+  row: PublicDataRow;
+  meta: SeoEntry;
+  contentVersion: string;
+};
 
 type PagesEnv = {
   [key: string]: unknown;
@@ -69,14 +76,15 @@ const DEFAULT_PHONE = "+601128853888";
 const DEFAULT_EMAIL = "support@flashcast.com.my";
 const DEFAULT_MAP_LATITUDE = "3.0830403";
 const DEFAULT_MAP_LONGITUDE = "101.6708234";
+const PUBLIC_SITE_URL = "https://flashcast.com.my";
 const PUBLIC_HTML_BROWSER_TTL_SECONDS = 60;
 const PUBLIC_HTML_EDGE_TTL_SECONDS = 300;
-const PUBLIC_HTML_CACHE_VERSION = "20260814-blog-schema-v2";
+const PUBLIC_HTML_CACHE_VERSION = "20260814-cms-live-sync-v1";
 const SITE_SETTINGS_CACHE_TTL_MS = 5 * 60 * 1000;
-const PUBLIC_PROJECT_SUMMARIES_CACHE_TTL_MS = 5 * 60 * 1000;
-const PUBLIC_PROJECT_DETAIL_CACHE_TTL_MS = 5 * 60 * 1000;
-const PUBLIC_HOME_BUNDLE_CACHE_TTL_MS = 5 * 60 * 1000;
-const PUBLIC_PAGE_DATA_CACHE_TTL_MS = 5 * 60 * 1000;
+const PUBLIC_PROJECT_SUMMARIES_CACHE_TTL_MS = 0;
+const PUBLIC_PROJECT_DETAIL_CACHE_TTL_MS = 0;
+const PUBLIC_HOME_BUNDLE_CACHE_TTL_MS = 60 * 1000;
+const PUBLIC_PAGE_DATA_CACHE_TTL_MS = 0;
 const HTML_CACHE_DEBUG_HEADER = "x-flashcast-html-cache";
 const PRODUCTION_SCRIPT_SRC = [
   "'self'",
@@ -978,6 +986,246 @@ const fetchPublicRows = async (
   }
 };
 
+const fetchFreshPublicRows = async (
+  env: Record<string, string | undefined>,
+  table: string,
+  configureUrl: (url: URL) => void,
+) => {
+  const supabaseUrl = env.VITE_SUPABASE_URL;
+  const supabaseAnonKey = env.VITE_SUPABASE_ANON_KEY;
+  if (!supabaseUrl || !supabaseAnonKey) return null;
+
+  try {
+    const url = new URL(`${supabaseUrl}/rest/v1/${table}`);
+    configureUrl(url);
+    const response = await fetch(url.toString(), {
+      headers: {
+        apikey: supabaseAnonKey,
+        Authorization: `Bearer ${supabaseAnonKey}`,
+      },
+    });
+    if (!response.ok) return null;
+    return (await response.json()) as PublicDataRow[];
+  } catch {
+    return null;
+  }
+};
+
+const stripMarkup = (value: unknown) =>
+  String(value || "")
+    .replace(/<script\b[^>]*>[\s\S]*?<\/script>/gi, " ")
+    .replace(/<style\b[^>]*>[\s\S]*?<\/style>/gi, " ")
+    .replace(/<[^>]+>/g, " ")
+    .replace(/&nbsp;|&#160;/gi, " ")
+    .replace(/&amp;/gi, "&")
+    .replace(/&quot;|&#34;/gi, '"')
+    .replace(/&#39;|&apos;/gi, "'")
+    .replace(/\s+/g, " ")
+    .trim();
+
+const collectContentTimestamps = (value: unknown, timestamps: string[] = []): string[] => {
+  if (Array.isArray(value)) {
+    value.forEach((item) => collectContentTimestamps(item, timestamps));
+    return timestamps;
+  }
+  if (!isRecord(value)) return timestamps;
+  for (const [key, item] of Object.entries(value)) {
+    if ((key === "updated_at" || key === "published_at") && typeof item === "string" && item) timestamps.push(item);
+    else if (Array.isArray(item) || isRecord(item)) collectContentTimestamps(item, timestamps);
+  }
+  return timestamps;
+};
+
+const hashContentVersion = (values: unknown[]) => {
+  const input = values.map((value) => (typeof value === "string" ? value : JSON.stringify(value))).join("|");
+  let hash = 2166136261;
+  for (let index = 0; index < input.length; index += 1) {
+    hash ^= input.charCodeAt(index);
+    hash = Math.imul(hash, 16777619);
+  }
+  return (hash >>> 0).toString(36);
+};
+
+const localizedField = (row: PublicDataRow, base: string, lang: "en" | "zh") => {
+  const preferred = readString(row, `${base}_${lang}`);
+  if (preferred) return preferred;
+  return readString(row, `${base}_${lang === "zh" ? "en" : "zh"}`);
+};
+
+const absolutePublicUrl = (value: string) => {
+  if (!value) return DEFAULT_OG_IMAGE;
+  if (/^https?:\/\//i.test(value)) return value;
+  return `${PUBLIC_SITE_URL}${value.startsWith("/") ? value : `/${value}`}`;
+};
+
+const buildDynamicSeoEntry = (
+  key: string,
+  row: PublicDataRow,
+  kind: DynamicRouteKind,
+  fallback?: SeoEntry,
+): SeoEntry => {
+  const lang: "en" | "zh" = key.startsWith("/zh") ? "zh" : "en";
+  const alternateLang = lang === "zh" ? "en" : "zh";
+  const rawTitle =
+    localizedField(row, "seo_title", lang) ||
+    localizedField(row, "title", lang) ||
+    readString(row, "area_name") ||
+    fallback?.title ||
+    "FLASH CAST";
+  const rawDescription =
+    localizedField(row, "seo_description", lang) ||
+    localizedField(row, "description", lang) ||
+    localizedField(row, "excerpt", lang) ||
+    localizedField(row, "content", lang) ||
+    fallback?.description ||
+    rawTitle;
+  const title = /flash cast/i.test(rawTitle) ? rawTitle : `${rawTitle} | FLASH CAST`;
+  const canonicalPath = key === "/" ? "/en" : key;
+  const pathWithoutLanguage = canonicalPath.replace(/^\/(?:en|zh)/, "") || "/";
+  const enPath = pathWithoutLanguage === "/" ? "/en" : `/en${pathWithoutLanguage}`;
+  const zhPath = pathWithoutLanguage === "/" ? "/zh" : `/zh${pathWithoutLanguage}`;
+  const keywordValue = localizedField(row, "seo_keywords", lang) || readString(row, "category");
+  const tags = Array.isArray(row.tags) ? row.tags.map((item) => String(item)).filter(Boolean) : [];
+  const faqRows = readRecordArray(row[`faqs_${lang}`]);
+  const faqs = faqRows
+    .map((faq) => ({
+      question: readString(faq, "q") || readString(faq, "question"),
+      answer: readString(faq, "a") || readString(faq, "answer"),
+    }))
+    .filter((faq) => faq.question && faq.answer);
+  const imageUrl =
+    readString(row, "cover_image_url") ||
+    readString(row, "hero_image_url") ||
+    readString(row, "image_url") ||
+    fallback?.ogImage ||
+    DEFAULT_OG_IMAGE;
+
+  return {
+    lang,
+    path: pathWithoutLanguage,
+    title: sanitizePublicDraftMarkers(stripMarkup(title)).slice(0, 180),
+    description: sanitizePublicDraftMarkers(stripMarkup(rawDescription)).slice(0, 300),
+    keywords: tags.length ? tags.join(", ") : keywordValue || fallback?.keywords,
+    faqs: faqs.length ? faqs : fallback?.faqs,
+    canonical: `${PUBLIC_SITE_URL}${canonicalPath}`,
+    hreflang: {
+      en: `${PUBLIC_SITE_URL}${enPath}`,
+      zh: `${PUBLIC_SITE_URL}${zhPath}`,
+      xDefault: `${PUBLIC_SITE_URL}${enPath}`,
+    },
+    ogImage: absolutePublicUrl(imageUrl),
+    schemaType: kind === "blog" ? "BlogPosting" : fallback?.schemaType,
+    headline: kind === "blog" ? localizedField(row, "title", lang) || rawTitle : fallback?.headline,
+    datePublished: kind === "blog" ? readString(row, "published_at") || readString(row, "created_at") : fallback?.datePublished,
+    dateModified: readString(row, "updated_at") || fallback?.dateModified,
+    articleSection: kind === "blog" ? readString(row, "category") || undefined : fallback?.articleSection,
+    imageAlt: localizedField(row, "alt", lang) || localizedField(row, "title", alternateLang) || fallback?.imageAlt,
+  };
+};
+
+const dynamicCollectionTableByPath: Record<string, string> = {
+  "/services": "services",
+  "/projects": "projects",
+  "/materials": "materials",
+  "/products": "materials",
+  "/blog": "blog_posts",
+  "/locations": "service_areas",
+};
+
+const fetchDynamicRouteState = async (
+  env: Record<string, string | undefined>,
+  key: string,
+  fallback?: SeoEntry,
+): Promise<DynamicRouteState | null> => {
+  const match = key.match(/^\/(en|zh)(\/.*)?$/);
+  if (!match) return null;
+  const path = match[2] || "/";
+  const routePatterns: Array<{ pattern: RegExp; table: string; kind: DynamicRouteKind; select?: string }> = [
+    { pattern: /^\/services\/([^/]+)$/, table: "services", kind: "service" },
+    { pattern: /^\/projects\/([^/]+)$/, table: "projects", kind: "project", select: "*,project_images(*)" },
+    { pattern: /^\/(?:materials|products)\/([^/]+)$/, table: "materials", kind: "material" },
+    { pattern: /^\/blog\/([^/]+)$/, table: "blog_posts", kind: "blog" },
+    { pattern: /^\/locations\/([^/]+)$/, table: "service_areas", kind: "service_area" },
+    { pattern: /^\/landing\/([^/]+)$/, table: "landing_pages", kind: "landing_page" },
+  ];
+
+  for (const route of routePatterns) {
+    const routeMatch = path.match(route.pattern);
+    if (!routeMatch?.[1]) continue;
+    const slug = decodeURIComponent(routeMatch[1]);
+    const rows = await fetchFreshPublicRows(env, route.table, (url) => {
+      url.searchParams.set("select", route.select || "*");
+      url.searchParams.set("status", "eq.published");
+      url.searchParams.set("slug", `eq.${slug}`);
+      url.searchParams.set("limit", "1");
+    });
+    const row = rows?.[0];
+    if (!row) return null;
+    const contentVersion = hashContentVersion([...collectContentTimestamps(row), row.id, row.slug]);
+    return { kind: route.kind, row, meta: buildDynamicSeoEntry(key, row, route.kind, fallback), contentVersion };
+  }
+
+  if (path === "/") {
+    const bundle = await fetchHomeContentBundle(env);
+    const sitePage = readRecordArray(bundle?.site_pages)[0];
+    if (!bundle || !sitePage) return null;
+    return {
+      kind: "site_page",
+      row: sitePage,
+      meta: buildDynamicSeoEntry(key, sitePage, "site_page", fallback),
+      contentVersion: hashContentVersion(collectContentTimestamps(bundle).length ? collectContentTimestamps(bundle) : [bundle]),
+    };
+  }
+
+  const [sitePageRows, cmsPageRows] = await Promise.all([
+    fetchFreshPublicRows(env, "site_pages", (url) => {
+      url.searchParams.set("select", "*");
+      url.searchParams.set("status", "eq.published");
+      url.searchParams.set("path", `eq.${path}`);
+      url.searchParams.set("limit", "1");
+    }),
+    fetchFreshPublicRows(env, "cms_pages", (url) => {
+      url.searchParams.set("select", "*,cms_sections(*)");
+      url.searchParams.set("status", "eq.published");
+      url.searchParams.set("deleted_at", "is.null");
+      url.searchParams.set("path", `eq.${path}`);
+      url.searchParams.set("limit", "1");
+    }),
+  ]);
+  const row = sitePageRows?.[0] || cmsPageRows?.[0];
+  const collectionTable = dynamicCollectionTableByPath[path];
+  if (!row && collectionTable && fallback) {
+    const latestRows = await fetchFreshPublicRows(env, collectionTable, (url) => {
+      url.searchParams.set("select", "id,updated_at");
+      url.searchParams.set("status", "eq.published");
+      url.searchParams.set("order", "updated_at.desc");
+      url.searchParams.set("limit", "1");
+    });
+    const latest = latestRows?.[0];
+    if (latest) {
+      return {
+        kind: "site_page",
+        row: latest,
+        meta: fallback,
+        contentVersion: hashContentVersion([latest.id, latest.updated_at]),
+      };
+    }
+  }
+  if (!row) return null;
+  const kind: DynamicRouteKind = sitePageRows?.[0] ? "site_page" : "cms_page";
+  const versionParts: unknown[] = [...collectContentTimestamps(row), row.id, row.path];
+  if (collectionTable) {
+    const latestRows = await fetchFreshPublicRows(env, collectionTable, (url) => {
+      url.searchParams.set("select", "updated_at");
+      url.searchParams.set("status", "eq.published");
+      url.searchParams.set("order", "updated_at.desc");
+      url.searchParams.set("limit", "1");
+    });
+    if (latestRows?.[0]?.updated_at) versionParts.push(latestRows[0].updated_at);
+  }
+  return { kind, row, meta: buildDynamicSeoEntry(key, row, kind, fallback), contentVersion: hashContentVersion(versionParts) };
+};
+
 const fetchPublicServices = async (env: Record<string, string | undefined>) =>
   fetchPublicRows(env, "services", "services", (url) => {
     url.searchParams.set("select", "*");
@@ -991,6 +1239,28 @@ const fetchPublicMaterials = async (env: Record<string, string | undefined>) =>
     url.searchParams.set("status", "eq.published");
     url.searchParams.set("order", "sort_order.asc");
   });
+
+const fetchPublicMaterialDetail = async (
+  env: Record<string, string | undefined>,
+  slug: string,
+  preloadedRow?: PublicDataRow | null,
+) => {
+  const material = preloadedRow || (await fetchFreshPublicRows(env, "materials", (url) => {
+    url.searchParams.set("select", "*");
+    url.searchParams.set("status", "eq.published");
+    url.searchParams.set("slug", `eq.${slug}`);
+    url.searchParams.set("limit", "1");
+  }))?.[0];
+  if (!material || !Object.prototype.hasOwnProperty.call(material, "price_mode")) return material || null;
+
+  const gallery = await fetchPublicRows(env, `material_gallery:${material.id}`, "material_images", (url) => {
+    url.searchParams.set("select", "*");
+    url.searchParams.set("material_id", `eq.${material.id}`);
+    url.searchParams.set("is_active", "eq.true");
+    url.searchParams.set("order", "sort_order.asc");
+  });
+  return { ...material, material_images: gallery || [] };
+};
 
 const fetchPublicProductHighlights = async (env: Record<string, string | undefined>) =>
   fetchPublicRows(env, "product_highlights", "materials", (url) => {
@@ -1137,7 +1407,7 @@ const getProjectDetailSlugFromKey = (key: string) => {
 };
 
 const getProductDetailSlugFromKey = (key: string) => {
-  const match = key.match(/^\/(?:en|zh)\/products\/([^/]+)$/);
+  const match = key.match(/^\/(?:en|zh)\/(?:materials|products)\/([^/]+)$/);
   if (!match?.[1]) return null;
   try {
     return decodeURIComponent(match[1]);
@@ -1290,6 +1560,95 @@ const isAssetPath = (pathname: string) =>
   STATIC_PATH_PREFIXES.some((prefix) => pathname.startsWith(prefix)) ||
   (/\.[a-z0-9]+$/i.test(pathname) && !pathname.endsWith(".html"));
 
+const fetchLiveSitemapXml = async (env: PagesEnv) => {
+  const supabaseUrl = env.VITE_SUPABASE_URL;
+  const supabaseAnonKey = env.VITE_SUPABASE_ANON_KEY;
+  if (!supabaseUrl) return "";
+  try {
+    const response = await fetch(`${supabaseUrl}/functions/v1/sitemap`, {
+      headers: supabaseAnonKey
+        ? { apikey: supabaseAnonKey, Authorization: `Bearer ${supabaseAnonKey}` }
+        : undefined,
+    });
+    return response.ok ? await response.text() : "";
+  } catch {
+    return "";
+  }
+};
+
+const mergeSitemapXml = (staticXml: string, dynamicXml: string) => {
+  const blocks = [...staticXml.matchAll(/<url>\s*[\s\S]*?<\/url>/gi), ...dynamicXml.matchAll(/<url>\s*[\s\S]*?<\/url>/gi)];
+  if (!blocks.length) return staticXml || dynamicXml;
+  const byLocation = new Map<string, string>();
+  for (const match of blocks) {
+    const block = match[0].trim();
+    const location = block.match(/<loc>([^<]+)<\/loc>/i)?.[1]?.trim();
+    if (!location) continue;
+    try {
+      if (EXACT_LEGACY_REDIRECTS[new URL(location).pathname]) continue;
+    } catch {
+      continue;
+    }
+    if (!byLocation.has(location)) byLocation.set(location, block);
+  }
+  const body = Array.from(byLocation.values()).sort((a, b) => {
+    const left = a.match(/<loc>([^<]+)<\/loc>/i)?.[1] || "";
+    const right = b.match(/<loc>([^<]+)<\/loc>/i)?.[1] || "";
+    return left.localeCompare(right);
+  });
+  return `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">\n${body.join("\n")}\n</urlset>\n`;
+};
+
+const sitemapCanonicalUrls = (xml: string) =>
+  Array.from(xml.matchAll(/<loc>([^<]+)<\/loc>/gi), (match) => match[1].trim())
+    .filter((url) => url.startsWith(`${PUBLIC_SITE_URL}/`))
+    .sort((a, b) => a.localeCompare(b));
+
+const replaceLlmsCanonicalUrls = (source: string, urls: string[]) => {
+  if (!source || !urls.length) return source;
+  const section = `## Canonical URL List\n${urls.map((url) => `- ${url}`).join("\n")}\n`;
+  if (/## Canonical URL List[\s\S]*?(?=\n## Notes For AI Assistants)/.test(source)) {
+    return source.replace(/## Canonical URL List[\s\S]*?(?=\n## Notes For AI Assistants)/, section.trimEnd());
+  }
+  return `${source.trimEnd()}\n\n${section}`;
+};
+
+const dynamicAssetHeaders = (contentType: string) => ({
+  "content-type": contentType,
+  "cache-control": "public, max-age=60, stale-while-revalidate=300",
+  "cdn-cache-control": "public, max-age=60",
+  "cloudflare-cdn-cache-control": "public, max-age=60",
+  "x-content-type-options": "nosniff",
+});
+
+const serveDynamicSeoAsset = async (
+  pathname: "/sitemap.xml" | "/llms.txt",
+  request: Request,
+  env: PagesEnv,
+  loadStatic: () => Promise<Response>,
+) => {
+  const [staticResponse, dynamicXml] = await Promise.all([loadStatic(), fetchLiveSitemapXml(env)]);
+  const staticText = staticResponse.ok ? await staticResponse.text() : "";
+  if (pathname === "/sitemap.xml") {
+    const xml = mergeSitemapXml(staticText, dynamicXml);
+    return new Response(request.method === "HEAD" ? null : xml, {
+      status: xml ? 200 : staticResponse.status,
+      headers: dynamicAssetHeaders("application/xml; charset=utf-8"),
+    });
+  }
+
+  const staticSitemapResponse = env.ASSETS
+    ? await env.ASSETS.fetch(new Request(new URL("/sitemap.xml", request.url).toString(), request))
+    : null;
+  const staticSitemapXml = staticSitemapResponse?.ok ? await staticSitemapResponse.text() : "";
+  const mergedSitemap = mergeSitemapXml(staticSitemapXml, dynamicXml);
+  const llms = replaceLlmsCanonicalUrls(staticText, sitemapCanonicalUrls(mergedSitemap));
+  return new Response(request.method === "HEAD" ? null : llms, {
+    status: llms ? 200 : staticResponse.status,
+    headers: dynamicAssetHeaders("text/plain; charset=utf-8"),
+  });
+};
+
 const applyHtmlNoStoreHeaders = (headers: Headers) => {
   headers.set("content-type", "text/html; charset=utf-8");
   headers.set("cache-control", "no-store, no-cache, must-revalidate, max-age=0");
@@ -1326,10 +1685,11 @@ const getEdgeCache = () => {
   return caches.default;
 };
 
-const getPublicHtmlCacheRequest = (request: Request) => {
+const getPublicHtmlCacheRequest = (request: Request, contentVersion = "static") => {
   const cacheUrl = new URL(request.url);
   cacheUrl.search = "";
   cacheUrl.searchParams.set("__flashcast_html_v", PUBLIC_HTML_CACHE_VERSION);
+  cacheUrl.searchParams.set("__flashcast_content_v", contentVersion);
   cacheUrl.hash = "";
   return new Request(cacheUrl.toString(), { method: "GET" });
 };
@@ -1364,6 +1724,15 @@ export const onRequest: PagesFunction = async (context) => {
     });
   }
 
+  if (url.pathname === "/sitemap.xml" || url.pathname === "/llms.txt") {
+    return serveDynamicSeoAsset(
+      url.pathname,
+      request,
+      env,
+      () => (env.ASSETS ? env.ASSETS.fetch(request) : next()),
+    );
+  }
+
   if (isAssetPath(url.pathname)) {
     return next();
   }
@@ -1376,9 +1745,13 @@ export const onRequest: PagesFunction = async (context) => {
   }
 
   const key = normalizePath(url.pathname);
-  const meta = (manifest as Record<string, SeoEntry>)[key];
+  const staticMeta = (manifest as Record<string, SeoEntry>)[key];
+  const dynamicRouteState = await fetchDynamicRouteState(env as Record<string, string | undefined>, key, staticMeta);
+  const meta = dynamicRouteState?.meta || staticMeta;
   const edgeCache = meta && request.method === "GET" ? getEdgeCache() : null;
-  const publicHtmlCacheRequest = edgeCache ? getPublicHtmlCacheRequest(request) : null;
+  const publicHtmlCacheRequest = edgeCache
+    ? getPublicHtmlCacheRequest(request, dynamicRouteState?.contentVersion || "static")
+    : null;
   const cachedPublicHtml = edgeCache && publicHtmlCacheRequest ? await edgeCache.match(publicHtmlCacheRequest) : null;
   if (cachedPublicHtml) {
     return withHtmlCacheDebugHeader(cachedPublicHtml, "hit");
@@ -1428,6 +1801,7 @@ export const onRequest: PagesFunction = async (context) => {
     publicPageBundle,
     services,
     materials,
+    materialDetail,
     serviceAreas,
     blogPosts,
     footerCtaBlock,
@@ -1436,12 +1810,23 @@ export const onRequest: PagesFunction = async (context) => {
     shouldInjectHomeBundle ? fetchHomeContentBundle(env as Record<string, string | undefined>) : Promise.resolve(null),
     shouldInjectProductHighlights ? fetchPublicProductHighlights(env as Record<string, string | undefined>) : Promise.resolve(null),
     shouldInjectProjectSummaries ? fetchProjectSummaries(env as Record<string, string | undefined>) : Promise.resolve(null),
-    projectDetailSlug ? fetchProjectDetailBySlug(env as Record<string, string | undefined>, projectDetailSlug) : Promise.resolve(null),
+    projectDetailSlug
+      ? dynamicRouteState?.kind === "project"
+        ? Promise.resolve(dynamicRouteState.row)
+        : fetchProjectDetailBySlug(env as Record<string, string | undefined>, projectDetailSlug)
+      : Promise.resolve(null),
     shouldInjectPublicPageBundle && topLevelPublicPageKey
       ? fetchPublicSitePageBundle(env as Record<string, string | undefined>, topLevelPublicPageKey)
       : Promise.resolve(null),
     shouldInjectServices ? fetchPublicServices(env as Record<string, string | undefined>) : Promise.resolve(null),
     shouldInjectMaterials ? fetchPublicMaterials(env as Record<string, string | undefined>) : Promise.resolve(null),
+    productDetailSlug
+      ? fetchPublicMaterialDetail(
+          env as Record<string, string | undefined>,
+          productDetailSlug,
+          dynamicRouteState?.kind === "material" ? dynamicRouteState.row : null,
+        )
+      : Promise.resolve(null),
     shouldInjectServiceAreas ? fetchPublicServiceAreas(env as Record<string, string | undefined>) : Promise.resolve(null),
     shouldInjectBlogPosts ? fetchPublicBlogPosts(env as Record<string, string | undefined>) : Promise.resolve(null),
     shouldInjectGlobalCtaBlock ? fetchPublicCtaBlock(env as Record<string, string | undefined>, "home_final") : Promise.resolve(null),
@@ -1475,8 +1860,14 @@ export const onRequest: PagesFunction = async (context) => {
   if (services?.length) {
     publicDataPayload.services = services;
   }
-  if (materials?.length) {
-    publicDataPayload.materials = materials;
+  if (materials?.length || materialDetail) {
+    const materialRows = materials?.length ? [...materials] : [];
+    if (materialDetail) {
+      const existingIndex = materialRows.findIndex((row) => String(row.slug || "") === productDetailSlug);
+      if (existingIndex >= 0) materialRows[existingIndex] = materialDetail;
+      else materialRows.push(materialDetail);
+    }
+    publicDataPayload.materials = materialRows;
   }
   if (serviceAreas?.length) {
     publicDataPayload.serviceAreas = serviceAreas;

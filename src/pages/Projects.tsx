@@ -1,6 +1,6 @@
 ﻿import { useState } from "react";
 import Link from "@/components/LocalizedLink";
-import { ArrowUpRight, MapPin } from "lucide-react";
+import { ArrowUpRight } from "lucide-react";
 import SmartImage from "@/components/SmartImage";
 import DeferredSmartImage from "@/components/DeferredSmartImage";
 import { usePublishedProjectSummaries, usePublishedSitePage } from "@/hooks/usePublishedContent";
@@ -64,7 +64,6 @@ const Projects = () => {
   const filtered = filter === "All" ? projects : projects.filter((project) => project.type === filter);
   const displayProjectType = (value: string) => translateProjectType(value, language);
   const displayProjectTitle = (value: string) => translateDisplayText(value, language);
-  const displayProjectLocation = (value: string) => translateDisplayText(value, language);
   const heroImage = resolvePageHeroImage(pageContent?.image_url, pageHeroImages.projects);
   const displayProjectDescription = (project: PublishedProjectSummary) =>
     translateDisplayText(String(project.description || ""), language);
@@ -73,7 +72,7 @@ const Projects = () => {
     const shouldRenderImmediately = index < PROJECT_INITIAL_EAGER_IMAGES;
     const imageProps = {
       src: project.thumbnail || typeImageMap[project.type] || typeImageMap.Residential,
-      alt: project.thumbnailAlt || `${project.title} - ${displayProjectType(project.type)} renovation in ${project.location}`,
+      alt: pageCopy.projectImageAlt(displayProjectTitle(project.title), displayProjectType(project.type)),
       width: 800,
       height: 500,
       sizes: "(max-width: 768px) 92vw, 45vw",
@@ -142,7 +141,6 @@ const Projects = () => {
                   <div className="forest-listing-card__body">
                     <p className="forest-listing-card__meta">{displayProjectType(project.type)}</p>
                     <h2>{displayProjectTitle(project.title)}</h2>
-                    <p><MapPin className="mr-1 inline h-3.5 w-3.5" aria-hidden="true" />{displayProjectLocation(project.location)}</p>
                     <p>{displayProjectDescription(project)}</p>
                     <span className="forest-listing-card__action">{pageCopy.view}<ArrowUpRight aria-hidden="true" /></span>
                   </div>

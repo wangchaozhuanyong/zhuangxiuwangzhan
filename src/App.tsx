@@ -131,14 +131,14 @@ const PublicSiteShell = ({
   productDetail: boolean;
   children: ReactNode;
 }) => {
-  const { hasImmersiveHero, theme } = usePublicChrome();
+  const { theme } = usePublicChrome();
 
   return (
     <div
       className="forest-site-shell"
       data-theme={theme}
       data-surface={surface}
-      data-header-overlay={hasImmersiveHero ? "true" : "false"}
+      data-header-overlay="false"
       data-product-detail={productDetail ? "true" : "false"}
     >
       {children}

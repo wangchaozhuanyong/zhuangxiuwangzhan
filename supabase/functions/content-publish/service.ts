@@ -7,6 +7,7 @@ import {
   insertContentRecord,
   insertAdminAuditLog,
   insertServiceRecord,
+  replaceMaterialGallery,
   updateContentRecord,
   updateServiceRecord,
 } from "./repository.ts";
@@ -19,6 +20,23 @@ const HOMEPAGE_ALLOWED_PAGE_KEYS = new Set(["home"]);
 const HOMEPAGE_ALLOWED_PATHS = new Set(["/"]);
 const HOMEPAGE_ALLOWED_CTA_KEYS = new Set(["home_final"]);
 const HOMEPAGE_ALLOWED_SECTION_KEYS = new Set(["stats", "why_choose_us"]);
+const STANDALONE_SITE_PAGE_PATHS = new Set([
+  "/about",
+  "/services",
+  "/materials",
+  "/products",
+  "/promotions",
+  "/projects",
+  "/before-after",
+  "/process",
+  "/faq",
+  "/contact",
+  "/quote",
+  "/blog",
+  "/locations",
+  "/privacy",
+  "/terms",
+]);
 const SERVICE_FIELDS = new Set([
   "id",
   "slug",
@@ -69,6 +87,95 @@ const BLOG_FIELDS = new Set([
   "status",
   "published_at",
   "sort_order",
+]);
+const PROJECT_FIELDS = new Set([
+  "id",
+  "slug",
+  "title_zh",
+  "title_en",
+  "excerpt_zh",
+  "excerpt_en",
+  "content_zh",
+  "content_en",
+  "image_url",
+  "location",
+  "area",
+  "duration",
+  "budget",
+  "project_type",
+  "materials",
+  "scope",
+  "highlights_zh",
+  "highlights_en",
+  "client_need_zh",
+  "client_need_en",
+  "seo_title_zh",
+  "seo_title_en",
+  "seo_description_zh",
+  "seo_description_en",
+  "status",
+  "sort_order",
+]);
+const MATERIAL_FIELDS = new Set([
+  "id",
+  "slug",
+  "title_zh",
+  "title_en",
+  "excerpt_zh",
+  "excerpt_en",
+  "content_zh",
+  "content_en",
+  "category",
+  "subcategory",
+  "material_type",
+  "color",
+  "texture",
+  "suitable_spaces_zh",
+  "suitable_spaces_en",
+  "pros_zh",
+  "pros_en",
+  "cons_zh",
+  "cons_en",
+  "recommended_pairing_zh",
+  "recommended_pairing_en",
+  "note_zh",
+  "note_en",
+  "reference_price",
+  "price_mode",
+  "price_min",
+  "price_max",
+  "price_currency",
+  "price_unit",
+  "price_scope_zh",
+  "price_scope_en",
+  "price_note_zh",
+  "price_note_en",
+  "related_project_ids",
+  "image_url",
+  "alt_zh",
+  "alt_en",
+  "seo_title_zh",
+  "seo_title_en",
+  "seo_description_zh",
+  "seo_description_en",
+  "status",
+  "sort_order",
+]);
+const MATERIAL_PRICE_MODES = new Set(["range", "from", "specification", "size", "scope", "none"]);
+const MATERIAL_PRICE_UNITS = new Set(["sqft", "foot_run", "unit", "set", "panel", "scope", "none"]);
+const MATERIAL_IMAGE_TYPES = new Set(["cover", "scene", "detail", "installation", "specification"]);
+const MATERIAL_IMAGE_RIGHTS = new Set(["owned", "generated", "licensed", "supplier_approved"]);
+const MATERIAL_SCHEMA_FIELDS = new Set([
+  "gallery",
+  "price_mode",
+  "price_min",
+  "price_max",
+  "price_currency",
+  "price_unit",
+  "price_scope_zh",
+  "price_scope_en",
+  "price_note_zh",
+  "price_note_en",
 ]);
 const SITE_PAGE_FIELDS = new Set([
   "id",
@@ -257,6 +364,52 @@ function cleanServicePayload(record: Record<string, unknown>, nextStatus?: Conte
   if (hasMediaPlaceholder(payload)) throw new Error("Media placeholders remain. Upload/select media in the admin media library first.");
   if (!isSafeImageUrl(payload.image_url)) throw new Error("image_url must be empty, site-relative, HTTPS, or localhost for local testing.");
 
+  if (status === "published") {
+    const requiredFields = [
+      "title_zh",
+      "title_en",
+      "excerpt_zh",
+      "excerpt_en",
+      "content_zh",
+      "content_en",
+      "image_url",
+      "alt_zh",
+      "alt_en",
+      "suitable_for_zh",
+      "suitable_for_en",
+      "common_projects_zh",
+      "common_projects_en",
+      "scope_items_zh",
+      "scope_items_en",
+      "process_steps_zh",
+      "process_steps_en",
+      "faqs_zh",
+      "faqs_en",
+      "seo_title_zh",
+      "seo_title_en",
+      "seo_description_zh",
+      "seo_description_en",
+    ];
+    const missingFields = requiredFields.filter((field) => {
+      const value = payload[field];
+      return !value || (Array.isArray(value) && value.length === 0);
+    });
+    const incompleteFields = ["process_steps_zh", "process_steps_en"].filter((field) =>
+      (payload[field] as Array<{ title?: string; desc?: string }>).some((item) => !item.title || !item.desc),
+    );
+    incompleteFields.push(
+      ...["faqs_zh", "faqs_en"].filter((field) =>
+        (payload[field] as Array<{ q?: string; a?: string }>).some((item) => !item.q || !item.a),
+      ),
+    );
+    const invalidFields = Array.from(new Set([...missingFields, ...incompleteFields]));
+    if (invalidFields.length) {
+      throw new Error(
+        `Published service requires bilingual content, structured details, SEO, image, and accessibility fields: ${invalidFields.join(", ")}.`,
+      );
+    }
+  }
+
   return { payload, slug, warnings };
 }
 
@@ -332,6 +485,246 @@ function cleanBlogPayload(record: Record<string, unknown>, nextStatus?: ContentS
   }
 
   return { payload, slug, warnings: [] as string[] };
+}
+
+function cleanMaterialGallery(value: unknown, published: boolean) {
+  if (value === undefined || value === null) {
+    if (published) throw new Error("Published material requires 8 to 12 gallery images.");
+    return [];
+  }
+  if (!Array.isArray(value)) throw new Error("Material gallery must be an array.");
+
+  const gallery = value.slice(0, 12).map((item, index) => {
+    const row = item && typeof item === "object" && !Array.isArray(item) ? (item as Record<string, unknown>) : {};
+    const imageUrl = cleanText(row.image_url, 1000);
+    const imageType = cleanText(row.image_type || (index === 0 ? "cover" : "scene"), 40) || "scene";
+    const rightsStatus = cleanText(row.rights_status || "owned", 40) || "owned";
+    const altZh = cleanText(row.alt_zh, 240);
+    const altEn = cleanText(row.alt_en, 240);
+    const sourceUrl = cleanText(row.source_url, 1000);
+
+    if (!imageUrl || !isSafeImageUrl(imageUrl)) throw new Error(`Material gallery image ${index + 1} has an invalid image_url.`);
+    if (!MATERIAL_IMAGE_TYPES.has(imageType)) throw new Error(`Material gallery image ${index + 1} has an invalid image_type.`);
+    if (!MATERIAL_IMAGE_RIGHTS.has(rightsStatus)) throw new Error(`Material gallery image ${index + 1} has an invalid rights_status.`);
+    if (sourceUrl && !isSafeImageUrl(sourceUrl)) throw new Error(`Material gallery image ${index + 1} has an invalid source_url.`);
+    if (published && (!altZh || !altEn)) throw new Error(`Material gallery image ${index + 1} requires Chinese and English alt text.`);
+
+    return {
+      image_url: imageUrl,
+      image_type: imageType,
+      alt_zh: altZh,
+      alt_en: altEn,
+      source_url: sourceUrl,
+      rights_status: rightsStatus,
+      sort_order: cleanSortOrder(row.sort_order) ?? index * 10,
+      is_active: true,
+    };
+  });
+
+  if (published && (gallery.length < 8 || gallery.length > 12)) {
+    throw new Error("Published material requires 8 to 12 gallery images.");
+  }
+  if (published && gallery[0]?.image_type !== "cover") {
+    throw new Error("The first material gallery image must use image_type=cover.");
+  }
+  if (new Set(gallery.map((item) => item.image_url)).size !== gallery.length) {
+    throw new Error("Material gallery image URLs must be unique within one product.");
+  }
+  return gallery;
+}
+
+function cleanMaterialPayload(record: Record<string, unknown>, nextStatus?: ContentStatus) {
+  const payload: Record<string, unknown> = {};
+  const warnings: string[] = [];
+  const requiresMaterialSchema = Array.from(MATERIAL_SCHEMA_FIELDS).some((field) =>
+    Object.prototype.hasOwnProperty.call(record, field),
+  );
+  for (const [key, value] of Object.entries(record)) {
+    if (key === "gallery" || READONLY_FIELDS.has(key)) continue;
+    if (!MATERIAL_FIELDS.has(key)) throw new Error(`Unsupported material field: ${key}.`);
+    payload[key] = value;
+  }
+
+  const slug = normalizeSlug(payload.slug || payload.title_en || payload.title_zh);
+  if (!slug) throw new Error("Material slug or title is required.");
+  payload.slug = slug;
+
+  const status = nextStatus || payload.status || "draft";
+  if (!VALID_STATUSES.has(status as ContentStatus)) throw new Error("Invalid material status.");
+  payload.status = status;
+
+  for (const key of ["title_zh", "title_en", "alt_zh", "alt_en", "category", "subcategory", "material_type", "color", "texture"]) {
+    payload[key] = cleanText(payload[key], 220);
+  }
+  for (const key of ["excerpt_zh", "excerpt_en"]) payload[key] = cleanText(payload[key], 600);
+  for (const key of ["content_zh", "content_en"]) payload[key] = cleanText(payload[key], 80000);
+  for (const key of ["recommended_pairing_zh", "recommended_pairing_en", "note_zh", "note_en"]) {
+    payload[key] = cleanText(payload[key], 1600);
+  }
+  for (const key of ["seo_title_zh", "seo_title_en"]) payload[key] = cleanText(payload[key], 180);
+  for (const key of ["seo_description_zh", "seo_description_en"]) payload[key] = cleanText(payload[key], 320);
+  for (const key of ["suitable_spaces_zh", "suitable_spaces_en", "pros_zh", "pros_en", "cons_zh", "cons_en"]) {
+    payload[key] = cleanLines(payload[key]);
+  }
+  payload.image_url = cleanText(payload.image_url, 1000);
+  payload.reference_price = cleanText(payload.reference_price, 220);
+  payload.related_project_ids = cleanLines(payload.related_project_ids);
+  if (requiresMaterialSchema) {
+    for (const key of ["price_scope_zh", "price_scope_en", "price_note_zh", "price_note_en"]) {
+      payload[key] = cleanText(payload[key], 1600);
+    }
+    payload.price_currency = (cleanText(payload.price_currency, 3) || "MYR").toUpperCase();
+    payload.price_mode = cleanText(payload.price_mode, 40) || "none";
+    payload.price_unit = cleanText(payload.price_unit, 40) || "none";
+    if (!MATERIAL_PRICE_MODES.has(String(payload.price_mode))) throw new Error("Invalid material price_mode.");
+    if (!MATERIAL_PRICE_UNITS.has(String(payload.price_unit))) throw new Error("Invalid material price_unit.");
+
+    for (const key of ["price_min", "price_max"]) {
+      if (payload[key] === undefined || payload[key] === null || payload[key] === "") {
+        payload[key] = null;
+        continue;
+      }
+      const amount = Number(payload[key]);
+      if (!Number.isFinite(amount) || amount < 0) throw new Error(`${key} must be a non-negative number.`);
+      payload[key] = amount;
+    }
+    if (payload.price_min !== null && payload.price_max !== null && Number(payload.price_max) < Number(payload.price_min)) {
+      throw new Error("price_max must be greater than or equal to price_min.");
+    }
+  }
+
+  const sortOrder = cleanSortOrder(payload.sort_order);
+  if (sortOrder !== undefined) payload.sort_order = sortOrder;
+  if (hasMediaPlaceholder(payload)) throw new Error("Media placeholders remain. Upload/select media in the admin media library first.");
+  if (!isSafeImageUrl(payload.image_url)) throw new Error("image_url must be empty, site-relative, HTTPS, or localhost for local testing.");
+
+  const published = status === "published";
+  const gallery = requiresMaterialSchema ? cleanMaterialGallery(record.gallery, published) : [];
+  if (published) {
+    const requiredFields = [
+      "title_zh", "title_en", "excerpt_zh", "excerpt_en", "content_zh", "content_en",
+      "category", "subcategory", "material_type", "image_url", "alt_zh", "alt_en",
+      "suitable_spaces_zh", "suitable_spaces_en", "pros_zh", "pros_en", "cons_zh", "cons_en",
+      "recommended_pairing_zh", "recommended_pairing_en", "note_zh", "note_en",
+      "seo_title_zh", "seo_title_en", "seo_description_zh", "seo_description_en",
+    ];
+    if (requiresMaterialSchema) {
+      requiredFields.push("price_scope_zh", "price_scope_en", "price_note_zh", "price_note_en");
+    }
+    const missing = requiredFields.filter((field) => !payload[field] || (Array.isArray(payload[field]) && payload[field].length === 0));
+    if (missing.length) throw new Error(`Published material requires bilingual content, pricing context, SEO, and accessibility fields: ${missing.join(", ")}.`);
+
+    if (requiresMaterialSchema) {
+      const priceMode = String(payload.price_mode);
+      if ((priceMode === "range" || priceMode === "from") && payload.price_min === null) {
+        throw new Error("Published material with range/from pricing requires price_min.");
+      }
+      if (priceMode === "range" && payload.price_max === null) {
+        throw new Error("Published material with range pricing requires price_max.");
+      }
+    }
+  }
+
+  return { payload, slug, gallery, warnings, requiresMaterialSchema };
+}
+
+function cleanProjectPayload(record: Record<string, unknown>, nextStatus?: ContentStatus) {
+  const payload: Record<string, unknown> = {};
+  const warnings: string[] = [];
+  for (const [key, value] of Object.entries(record)) {
+    if (READONLY_FIELDS.has(key)) continue;
+    if (!PROJECT_FIELDS.has(key)) throw new Error(`Unsupported project field: ${key}.`);
+    payload[key] = value;
+  }
+
+  const slug = normalizeSlug(payload.slug || payload.title_en || payload.title_zh);
+  if (!slug) throw new Error("Project slug or title is required.");
+  payload.slug = slug;
+  const status = nextStatus || payload.status || "draft";
+  if (!VALID_STATUSES.has(status as ContentStatus)) throw new Error("Invalid project status.");
+  payload.status = status;
+
+  for (const key of ["title_zh", "title_en", "project_type", "duration", "budget"]) {
+    payload[key] = cleanText(payload[key], 220);
+  }
+  for (const key of ["excerpt_zh", "excerpt_en"]) payload[key] = cleanText(payload[key], 600);
+  for (const key of ["content_zh", "content_en", "client_need_zh", "client_need_en"]) {
+    payload[key] = cleanText(payload[key], 80000);
+  }
+  for (const key of ["seo_title_zh", "seo_title_en"]) payload[key] = cleanText(payload[key], 180);
+  for (const key of ["seo_description_zh", "seo_description_en"]) payload[key] = cleanText(payload[key], 320);
+  for (const key of ["materials", "scope", "highlights_zh", "highlights_en"]) payload[key] = cleanLines(payload[key]);
+  payload.image_url = cleanText(payload.image_url, 1000);
+  payload.location = null;
+  payload.area = null;
+  if (cleanText(record.location, 220) || cleanText(record.area, 220)) {
+    warnings.push("Project location and area were removed to keep case descriptions location-neutral.");
+  }
+  const sortOrder = cleanSortOrder(payload.sort_order);
+  if (sortOrder !== undefined) payload.sort_order = sortOrder;
+  if (hasMediaPlaceholder(payload)) throw new Error("Media placeholders remain. Upload/select media in the admin media library first.");
+  if (!isSafeImageUrl(payload.image_url)) throw new Error("image_url must be empty, site-relative, HTTPS, or localhost for local testing.");
+
+  if (status === "published") {
+    const required = [
+      "title_zh", "title_en", "excerpt_zh", "excerpt_en", "content_zh", "content_en", "image_url",
+      "seo_title_zh", "seo_title_en", "seo_description_zh", "seo_description_en",
+    ];
+    const missing = required.filter((field) => !payload[field]);
+    if (missing.length) throw new Error(`Published project requires bilingual content, SEO, and a cover image: ${missing.join(", ")}.`);
+  }
+
+  return { payload, key: slug, warnings };
+}
+
+function cleanStandaloneSitePagePayload(record: Record<string, unknown>, nextStatus?: ContentStatus) {
+  const payload: Record<string, unknown> = {};
+  for (const [key, value] of Object.entries(record)) {
+    if (READONLY_FIELDS.has(key)) continue;
+    if (!SITE_PAGE_FIELDS.has(key)) throw new Error(`Unsupported site_page field: ${key}.`);
+    payload[key] = value;
+  }
+
+  const pageKey = String(payload.page_key || "").trim().toLowerCase();
+  if (!/^[a-z0-9][a-z0-9_-]{0,79}$/.test(pageKey)) throw new Error("site_page.page_key is required and must use a stable key.");
+  if (pageKey === "home") throw new Error("Use contentType=homepage for the home site page.");
+  const path = String(payload.path || "").trim().replace(/\/+$/, "") || "/";
+  if (!STANDALONE_SITE_PAGE_PATHS.has(path)) {
+    throw new Error("site_page.path must match an existing bilingual public page route. Use cms_pages for new dynamic routes.");
+  }
+  payload.page_key = pageKey;
+  payload.path = path;
+  const status = nextStatus || payload.status || "draft";
+  if (!VALID_STATUSES.has(status as ContentStatus)) throw new Error("Invalid site_page status.");
+  payload.status = status;
+
+  for (const key of ["title_zh", "title_en", "subtitle_zh", "subtitle_en", "cta_title_zh", "cta_title_en", "alt_zh", "alt_en"]) {
+    payload[key] = cleanText(payload[key], 240);
+  }
+  for (const key of ["description_zh", "description_en", "cta_description_zh", "cta_description_en"]) {
+    payload[key] = cleanText(payload[key], 1200);
+  }
+  for (const key of ["content_zh", "content_en"]) payload[key] = cleanText(payload[key], 80000);
+  for (const key of ["seo_title_zh", "seo_title_en"]) payload[key] = cleanText(payload[key], 180);
+  for (const key of ["seo_description_zh", "seo_description_en", "seo_keywords_zh", "seo_keywords_en"]) {
+    payload[key] = cleanText(payload[key], 500);
+  }
+  payload.items_zh = cleanList(payload.items_zh, 80);
+  payload.items_en = cleanList(payload.items_en, 80);
+  payload.image_url = cleanText(payload.image_url, 1000);
+  const sortOrder = cleanSortOrder(payload.sort_order);
+  if (sortOrder !== undefined) payload.sort_order = sortOrder;
+  if (hasMediaPlaceholder(payload)) throw new Error("Media placeholders remain. Upload/select media in the admin media library first.");
+  if (!isSafeImageUrl(payload.image_url)) throw new Error("image_url must be empty, site-relative, HTTPS, or localhost for local testing.");
+
+  if (status === "published") {
+    const required = ["title_zh", "title_en", "seo_title_zh", "seo_title_en", "seo_description_zh", "seo_description_en"];
+    if (payload.image_url) required.push("alt_zh", "alt_en");
+    const missing = required.filter((field) => !payload[field]);
+    if (missing.length) throw new Error(`Published site_page requires bilingual title, SEO, and image alt fields when applicable: ${missing.join(", ")}.`);
+  }
+
+  return { payload, key: pageKey, warnings: [] as string[] };
 }
 
 type HomepageTablePayload = {
@@ -579,9 +972,9 @@ async function publishBlogContent(
     existing_id: existingId || null,
     warnings: cleaned.warnings,
     next_steps: [
-      "Regenerate SEO manifest/sitemap/llms after approved blog publish.",
+      "Dynamic HTML SEO, sitemap.xml, and llms.txt read this published record; no frontend deployment is required.",
       "Verify the /zh and /en blog detail pages read the updated content, SEO, cover image, and alt text.",
-      "Run publish receipt/QA before deployment or production cache verification.",
+      "Run publish receipt/QA and production cache verification.",
     ],
     auth_mode: context.authMode || "admin",
   };
@@ -600,6 +993,242 @@ async function publishBlogContent(
       adminUserId: context.adminUserId || null,
       action,
       tableName: "blog_posts",
+      recordId: String(saved.id || existingId || ""),
+      oldValue: existing,
+      newValue: saved,
+    });
+  } catch (error) {
+    auditWarnings.push(error instanceof Error ? error.message : "Audit log failed");
+  }
+
+  return {
+    body: {
+      ...commonBody,
+      saved_id: saved.id || existingId,
+      saved_updated_at: saved.updated_at || null,
+      warnings: [...cleaned.warnings, ...auditWarnings.map((warning) => `Audit warning: ${warning}`)],
+    },
+  };
+}
+
+async function publishMaterialContent(
+  input: ContentPublishRequest,
+  client: ContentPublishClient,
+  context: PublishContext,
+  mode: "dry-run" | "publish",
+  nextStatus: ContentStatus,
+): Promise<ContentPublishResult> {
+  let cleaned: ReturnType<typeof cleanMaterialPayload>;
+  try {
+    cleaned = cleanMaterialPayload(input.record || {}, nextStatus);
+  } catch (error) {
+    return errorResult(error instanceof Error ? error.message : "Invalid material payload");
+  }
+
+  if (cleaned.requiresMaterialSchema) {
+    try {
+      await fetchRecordsByField(client, "material_images", "material_id", "00000000-0000-0000-0000-000000000000");
+    } catch {
+      return errorResult(
+        "The material price/gallery migration is not applied. Publish the legacy material fields only or apply the approved migration first.",
+        409,
+      );
+    }
+  }
+
+  const providedId = typeof cleaned.payload.id === "string" ? cleaned.payload.id : "";
+  const existing = providedId
+    ? await fetchRecordByField(client, "materials", "id", providedId)
+    : await fetchRecordByField(client, "materials", "slug", cleaned.slug);
+  const existingId = existing?.id ? String(existing.id) : "";
+  if (providedId && !existing) return errorResult("Material id was provided but no matching material exists.", 404);
+
+  const sameSlug = await fetchRecordByField(client, "materials", "slug", cleaned.slug);
+  if (sameSlug?.id && (!existingId || String(sameSlug.id) !== existingId)) {
+    return errorResult("Material slug already belongs to another record.", 409);
+  }
+
+  const expectedUpdatedAt = input.expectedUpdatedAt || (typeof input.record?.updated_at === "string" ? input.record.updated_at : "");
+  if (existing && mode === "publish" && !expectedUpdatedAt) {
+    return errorResult("expectedUpdatedAt is required when updating an existing material.", 409, {
+      currentUpdatedAt: existing.updated_at || null,
+    });
+  }
+  if (existing && expectedUpdatedAt && normalizeDate(existing.updated_at) !== normalizeDate(expectedUpdatedAt)) {
+    return errorResult("This material was changed by someone else. Refresh before publishing.", 409, {
+      currentUpdatedAt: existing.updated_at || null,
+    });
+  }
+  if (mode === "publish" && !cleanText(input.approvalId, 180)) {
+    return errorResult("Material publishing requires a non-empty approvalId.", 403);
+  }
+
+  delete cleaned.payload.id;
+  const action = existing ? (nextStatus === "published" ? "publish" : "update") : nextStatus === "published" ? "publish" : "insert";
+  const commonBody = {
+    ok: true,
+    dry_run: mode === "dry-run",
+    content_type: "material",
+    action,
+    slug: cleaned.slug,
+    status: nextStatus,
+    existing_id: existingId || null,
+    existing_updated_at: existing?.updated_at || null,
+    warnings: cleaned.warnings,
+    next_steps: [
+      cleaned.requiresMaterialSchema
+        ? "The material price/gallery schema was verified before this publish."
+        : "Legacy material publishing remains available without the optional price/gallery schema.",
+      "Verify dynamic HTML SEO, sitemap.xml, and llms.txt after approved material publish; no frontend deployment is required.",
+      "Verify the /zh and /en product list and detail pages, gallery, pricing, and alt text.",
+    ],
+    auth_mode: context.authMode || "admin",
+  };
+
+  if (mode === "dry-run") {
+    return {
+      body: {
+        ...commonBody,
+        payload_preview: {
+          material: cleaned.payload,
+          gallery: cleaned.gallery,
+        },
+      },
+    };
+  }
+
+  const saved = existingId
+    ? await updateContentRecord(client, "materials", existingId, cleaned.payload)
+    : await insertContentRecord(client, "materials", cleaned.payload);
+  const materialId = String(saved.id || existingId || "");
+  const previousGallery = cleaned.requiresMaterialSchema && materialId
+    ? await fetchRecordsByField(client, "material_images", "material_id", materialId)
+    : [];
+  const insertedGallery: ContentRow[] = [];
+
+  if (cleaned.gallery.length) {
+    insertedGallery.push(...await replaceMaterialGallery(client, materialId, cleaned.gallery));
+  }
+
+  const auditWarnings: string[] = [];
+  try {
+    await insertAdminAuditLog(client, {
+      adminUserId: context.adminUserId || null,
+      action,
+      tableName: "materials",
+      recordId: materialId,
+      oldValue: existing,
+      newValue: saved,
+    });
+    if (cleaned.gallery.length) {
+      await insertAdminAuditLog(client, {
+        adminUserId: context.adminUserId || null,
+        action: "replace_material_gallery",
+        tableName: "material_images",
+        recordId: materialId,
+        oldValue: previousGallery,
+        newValue: insertedGallery,
+      });
+    }
+  } catch (error) {
+    auditWarnings.push(error instanceof Error ? error.message : "Audit log failed");
+  }
+
+  return {
+    body: {
+      ...commonBody,
+      saved_id: materialId,
+      saved_updated_at: saved.updated_at || null,
+      gallery_count: insertedGallery.length,
+      gallery_archived_count: previousGallery.filter((row) => row.is_active !== false).length,
+      warnings: [...cleaned.warnings, ...auditWarnings.map((warning) => `Audit warning: ${warning}`)],
+    },
+  };
+}
+
+type SingleRecordPublishConfig = {
+  contentType: "project" | "site_page";
+  table: "projects" | "site_pages";
+  keyField: "slug" | "page_key";
+  clean: (
+    record: Record<string, unknown>,
+    nextStatus?: ContentStatus,
+  ) => { payload: Record<string, unknown>; key: string; warnings: string[] };
+  verifyPaths: string;
+};
+
+async function publishSingleRecordContent(
+  input: ContentPublishRequest,
+  client: ContentPublishClient,
+  context: PublishContext,
+  mode: "dry-run" | "publish",
+  nextStatus: ContentStatus,
+  config: SingleRecordPublishConfig,
+): Promise<ContentPublishResult> {
+  let cleaned: ReturnType<SingleRecordPublishConfig["clean"]>;
+  try {
+    cleaned = config.clean(input.record || {}, nextStatus);
+  } catch (error) {
+    return errorResult(error instanceof Error ? error.message : `Invalid ${config.contentType} payload`);
+  }
+
+  const providedId = typeof cleaned.payload.id === "string" ? cleaned.payload.id : "";
+  const existing = providedId
+    ? await fetchRecordByField(client, config.table, "id", providedId)
+    : await fetchRecordByField(client, config.table, config.keyField, cleaned.key);
+  const existingId = existing?.id ? String(existing.id) : "";
+  if (providedId && !existing) return errorResult(`${config.contentType} id was provided but no matching record exists.`, 404);
+
+  const sameKey = await fetchRecordByField(client, config.table, config.keyField, cleaned.key);
+  if (sameKey?.id && (!existingId || String(sameKey.id) !== existingId)) {
+    return errorResult(`${config.contentType} ${config.keyField} already belongs to another record.`, 409);
+  }
+
+  const expectedUpdatedAt = input.expectedUpdatedAt || (typeof input.record?.updated_at === "string" ? input.record.updated_at : "");
+  if (existing && mode === "publish" && !expectedUpdatedAt) {
+    return errorResult(`expectedUpdatedAt is required when updating an existing ${config.contentType}.`, 409, {
+      currentUpdatedAt: existing.updated_at || null,
+    });
+  }
+  if (existing && expectedUpdatedAt && normalizeDate(existing.updated_at) !== normalizeDate(expectedUpdatedAt)) {
+    return errorResult(`This ${config.contentType} was changed by someone else. Refresh before publishing.`, 409, {
+      currentUpdatedAt: existing.updated_at || null,
+    });
+  }
+  if (mode === "publish" && !cleanText(input.approvalId, 180)) {
+    return errorResult(`${config.contentType} publishing requires a non-empty approvalId.`, 403);
+  }
+
+  delete cleaned.payload.id;
+  const action = existing ? (nextStatus === "published" ? "publish" : "update") : nextStatus === "published" ? "publish" : "insert";
+  const commonBody = {
+    ok: true,
+    dry_run: mode === "dry-run",
+    content_type: config.contentType,
+    action,
+    [config.keyField]: cleaned.key,
+    status: nextStatus,
+    existing_id: existingId || null,
+    warnings: cleaned.warnings,
+    next_steps: [
+      "Dynamic HTML SEO, sitemap.xml, and llms.txt read the published CMS record; no frontend deployment is required.",
+      `Verify ${config.verifyPaths} in both languages after publishing.`,
+      "Record post-publish QA and rollback evidence.",
+    ],
+    auth_mode: context.authMode || "admin",
+  };
+
+  if (mode === "dry-run") return { body: { ...commonBody, payload_preview: cleaned.payload } };
+
+  const saved = existingId
+    ? await updateContentRecord(client, config.table, existingId, cleaned.payload)
+    : await insertContentRecord(client, config.table, cleaned.payload);
+  const auditWarnings: string[] = [];
+  try {
+    await insertAdminAuditLog(client, {
+      adminUserId: context.adminUserId || null,
+      action,
+      tableName: config.table,
       recordId: String(saved.id || existingId || ""),
       oldValue: existing,
       newValue: saved,
@@ -675,9 +1304,9 @@ async function publishHomepageContent(
     action: "publish-homepage",
     warnings: cleaned.warnings,
     next_steps: [
-      "Regenerate SEO manifest/sitemap/llms after approved homepage publish.",
+      "Dynamic HTML SEO, sitemap.xml, and llms.txt read the published CMS records; no frontend deployment is required.",
       "Verify /zh and /en homepage title, meta, H1/hero, FAQ, CTA, and schema in a real browser.",
-      "Run publish receipt/QA before deployment or production cache verification.",
+      "Run publish receipt/QA and production cache verification.",
     ],
     auth_mode: context.authMode || "admin",
   };
@@ -784,8 +1413,15 @@ export async function publishContent(
   if (!CONTENT_WRITE_ROLES.has(String(context.role || ""))) {
     return errorResult("Content editor access required", 403);
   }
-  if (input.contentType !== "service" && input.contentType !== "homepage" && input.contentType !== "blog") {
-    return errorResult("Unsupported contentType. Supported content types: service, homepage, blog.");
+  if (
+    input.contentType !== "service" &&
+    input.contentType !== "homepage" &&
+    input.contentType !== "blog" &&
+    input.contentType !== "material" &&
+    input.contentType !== "project" &&
+    input.contentType !== "site_page"
+  ) {
+    return errorResult("Unsupported contentType. Supported content types: service, homepage, blog, material, project, site_page.");
   }
 
   const mode = input.mode || "dry-run";
@@ -803,6 +1439,27 @@ export async function publishContent(
   }
   if (input.contentType === "blog") {
     return publishBlogContent(input, client, context, mode, nextStatus);
+  }
+  if (input.contentType === "material") {
+    return publishMaterialContent(input, client, context, mode, nextStatus);
+  }
+  if (input.contentType === "project") {
+    return publishSingleRecordContent(input, client, context, mode, nextStatus, {
+      contentType: "project",
+      table: "projects",
+      keyField: "slug",
+      clean: cleanProjectPayload,
+      verifyPaths: `/zh/projects/${normalizeSlug(input.record.slug)} and /en/projects/${normalizeSlug(input.record.slug)}`,
+    });
+  }
+  if (input.contentType === "site_page") {
+    return publishSingleRecordContent(input, client, context, mode, nextStatus, {
+      contentType: "site_page",
+      table: "site_pages",
+      keyField: "page_key",
+      clean: cleanStandaloneSitePagePayload,
+      verifyPaths: "the bilingual localized routes for the saved site_page.path",
+    });
   }
 
   let cleaned: ReturnType<typeof cleanServicePayload>;
@@ -842,9 +1499,9 @@ export async function publishContent(
     existing_id: existingId || null,
     warnings: cleaned.warnings,
     next_steps: [
-      "Regenerate SEO manifest/sitemap/llms after approved publish.",
+      "Dynamic HTML SEO, sitemap.xml, and llms.txt read this published record; no frontend deployment is required.",
       "Verify the /zh and /en public service pages read the updated admin content.",
-      "Run publish receipt/QA before deployment or production cache verification.",
+      "Run publish receipt/QA and production cache verification.",
     ],
     auth_mode: context.authMode || "admin",
   };

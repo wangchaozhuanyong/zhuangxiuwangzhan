@@ -4,6 +4,7 @@ import LocalizedLink from "@/components/LocalizedLink";
 import PageMeta from "@/components/PageMeta";
 import ImmersiveHero from "@/components/ImmersiveHero";
 import ProductDetailChrome from "@/components/ProductDetailChrome";
+import ProductGallery from "@/components/ProductGallery";
 import PublicLoadingState from "@/components/blocks/PublicLoadingState";
 import SmartImage from "@/components/SmartImage";
 import WhatsAppIcon from "@/components/WhatsAppIcon";
@@ -17,8 +18,6 @@ import { productDetailPageText } from "@/i18n/newClientPageText";
 import { trackCtaClick } from "@/lib/analytics";
 import { buildQuotePath } from "@/lib/quoteContext";
 import { stripHtml } from "@/lib/text";
-
-const PRODUCT_IMAGE_WIDTHS = [560, 720, 900, 1200];
 
 const ProductDetail = () => {
   const { slug } = useParams<{ slug: string }>();
@@ -94,16 +93,13 @@ const ProductDetail = () => {
 
       <ImmersiveHero standardPageHero={false} className="product-detail-opening">
         <div className="product-detail-opening__media">
-          <SmartImage
-            src={product.image}
-            alt={product.alt || name}
-            width={1200}
-            height={800}
-            loading="eager"
-            fetchPriority="high"
-            sizes="(max-width: 767px) 100vw, 58vw"
-            candidateWidths={PRODUCT_IMAGE_WIDTHS}
-            quality={76}
+          <ProductGallery
+            images={product.gallery || []}
+            fallbackImage={product.image}
+            fallbackAlt={product.alt || name}
+            navigationLabel={t.galleryLabel}
+            positionLabel={t.galleryPosition}
+            typeLabels={t.galleryTypes}
           />
         </div>
 
@@ -116,8 +112,11 @@ const ProductDetail = () => {
               <strong>{product.referencePrice}</strong>
             </div>
           ) : null}
+          {product.priceScope ? (
+            <p className="product-detail-price-scope"><strong>{t.priceScope}：</strong>{product.priceScope}</p>
+          ) : null}
           <p className="product-detail-opening__description">{description}</p>
-          <p className="product-detail-price-note">{t.priceNotice}</p>
+          <p className="product-detail-price-note">{product.priceNote || t.priceNotice}</p>
 
           {specs.length ? (
             <dl className="product-detail-quick-specs">
@@ -201,7 +200,7 @@ const ProductDetail = () => {
                 <article key={item.slug} className="new-client-card group">
                   <LocalizedLink to={`/products/${item.slug}`} className="block">
                     <div className="new-client-card__media">
-                      <SmartImage src={item.image} alt={item.alt || displayText(item.name)} loading="lazy" width={720} height={450} />
+                      <SmartImage src={item.image} alt={item.alt || displayText(item.name)} loading="lazy" width={720} height={720} />
                     </div>
                     <div className="new-client-card__body">
                       <p className="new-client-card__meta">{categoryName}</p>

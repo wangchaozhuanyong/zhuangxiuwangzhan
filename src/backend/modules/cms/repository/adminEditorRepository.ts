@@ -2,37 +2,18 @@ import { isSupabaseConfigured, supabase } from "@/lib/supabase";
 
 export const hasAdminEditorDatabaseClient = () => isSupabaseConfigured && Boolean(supabase);
 
-export async function ensureHomeSectionRecord(
-  sectionKey: string,
-  defaultStatus: "draft" | "published" = "published",
-) {
+export async function fetchHomeSectionRecord(sectionKey: string) {
   if (!supabase) return null;
   const { data, error } = await supabase.from("home_sections").select("*").eq("section_key", sectionKey).order("sort_order").limit(1);
   if (error) return null;
-  const row = (data || [])[0];
-  if (row) return row;
-  const { data: inserted, error: insertError } = await supabase
-    .from("home_sections")
-    .insert({ section_key: sectionKey, status: defaultStatus, sort_order: 0 })
-    .select("*")
-    .single();
-  if (insertError) return null;
-  return inserted;
+  return (data || [])[0] || null;
 }
 
-export async function ensureAboutSectionRecord(sectionKey: string) {
+export async function fetchAboutSectionRecord(sectionKey: string) {
   if (!supabase) return null;
   const { data, error } = await supabase.from("about_sections").select("*").eq("section_key", sectionKey).order("sort_order").limit(1);
   if (error) return null;
-  const row = (data || [])[0];
-  if (row) return row;
-  const { data: inserted, error: insertError } = await supabase
-    .from("about_sections")
-    .insert({ section_key: sectionKey, status: "published", sort_order: 0 })
-    .select("*")
-    .single();
-  if (insertError) return null;
-  return inserted;
+  return (data || [])[0] || null;
 }
 
 export async function fetchHomeEditorAuxiliaryRows() {
