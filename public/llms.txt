@@ -26,10 +26,10 @@ FLASH CAST SDN. BHD. 是服务吉隆坡、雪兰莪与巴生谷的装修、室�
 - home: 2 localized URLs
 - landing: 16 localized URLs
 - locations: 62 localized URLs
-- materials: 186 localized URLs
+- materials: 160 localized URLs
 - privacy: 2 localized URLs
 - process: 2 localized URLs
-- products: 88 localized URLs
+- products: 56 localized URLs
 - projects: 78 localized URLs
 - promotions: 2 localized URLs
 - quote: 2 localized URLs
