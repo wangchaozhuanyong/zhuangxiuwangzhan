@@ -3,8 +3,6 @@ import { createContext, useCallback, useContext, useEffect, useLayoutEffect, use
 type PublicChromeContextValue = {
   menuOpen: boolean;
   setMenuOpen: (open: boolean) => void;
-  theme: "light" | "dark";
-  toggleTheme: () => void;
   hasImmersiveHero: boolean;
   registerImmersiveHero: (id: symbol) => () => void;
   /** 是否显示移动端底部固定行动栏（非后台且菜单未打开） */
@@ -13,18 +11,7 @@ type PublicChromeContextValue = {
 
 type MobileActionBarMode = "hidden" | "scroll-up" | "always";
 
-const PUBLIC_THEME_STORAGE_KEY = "flashcast-public-theme";
-
-export const getInitialPublicTheme = (): "light" | "dark" => {
-  if (typeof window === "undefined") return "dark";
-  try {
-    const storedTheme = window.localStorage.getItem(PUBLIC_THEME_STORAGE_KEY);
-    if (storedTheme === "light" || storedTheme === "dark") return storedTheme;
-  } catch {
-    // 浏览器禁止本地存储时，继续使用默认深色主题。
-  }
-  return "dark";
-};
+export const getInitialPublicTheme = (): "dark" => "dark";
 
 const PublicChromeContext = createContext<PublicChromeContextValue | null>(null);
 
@@ -40,7 +27,6 @@ export function PublicChromeProvider({
   children: ReactNode;
 }) {
   const [menuOpen, setMenuOpen] = useState(false);
-  const [theme, setTheme] = useState<"light" | "dark">(getInitialPublicTheme);
   const [homeHeroPassed, setHomeHeroPassed] = useState(false);
   const [mobileScrollingUp, setMobileScrollingUp] = useState(false);
   const lastMobileScrollY = useRef(0);
@@ -191,21 +177,16 @@ export function PublicChromeProvider({
       return;
     }
 
-    document.documentElement.dataset.publicTheme = theme;
-    document.documentElement.dataset.theme = theme;
-    document.documentElement.style.colorScheme = theme;
-    try {
-      window.localStorage.setItem(PUBLIC_THEME_STORAGE_KEY, theme);
-    } catch {
-      // 存储不可用不应影响主题切换本身。
-    }
+    document.documentElement.dataset.publicTheme = "dark";
+    document.documentElement.dataset.theme = "dark";
+    document.documentElement.style.colorScheme = "dark";
 
     return () => {
       delete document.documentElement.dataset.publicTheme;
       delete document.documentElement.dataset.theme;
       document.documentElement.style.removeProperty("color-scheme");
     };
-  }, [isAdminRoute, theme]);
+  }, [isAdminRoute]);
 
   useEffect(() => {
     if (menuOpen) {
@@ -233,13 +214,11 @@ export function PublicChromeProvider({
     () => ({
       menuOpen,
       setMenuOpen,
-      theme,
-      toggleTheme: () => setTheme((current) => (current === "dark" ? "light" : "dark")),
       hasImmersiveHero,
       registerImmersiveHero,
       showMobileActionBar,
     }),
-    [hasImmersiveHero, menuOpen, registerImmersiveHero, showMobileActionBar, theme],
+    [hasImmersiveHero, menuOpen, registerImmersiveHero, showMobileActionBar],
   );
 
   return <PublicChromeContext.Provider value={value}>{children}</PublicChromeContext.Provider>;

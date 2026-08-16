@@ -1,6 +1,6 @@
 import { expect, test } from "@playwright/test";
 
-test("mobile home stacks contact actions above navigation only when scrolling up past the hero", async ({ page }) => {
+test("mobile home replaces navigation with contact actions only when scrolling up past the hero", async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto("/zh", { waitUntil: "domcontentloaded" });
   await page.waitForLoadState("load");
@@ -20,20 +20,18 @@ test("mobile home stacks contact actions above navigation only when scrolling up
 
   const actionBar = page.locator(".mobile-action-bar");
   await expect(actionBar).toBeVisible();
-  await expect(bottomNav).toBeVisible();
+  await expect(bottomNav).toBeHidden();
   await actionBar.evaluate(async (nav) => {
     await Promise.all(nav.getAnimations().map((animation) => animation.finished));
   });
 
-  const stackedBars = await page.evaluate(() => {
+  const fixedBar = await page.evaluate(() => {
     const actionRect = document.querySelector(".mobile-action-bar")?.getBoundingClientRect();
-    const navigationRect = document.querySelector(".forest-bottom-nav")?.getBoundingClientRect();
     return {
-      navigationBottom: Math.round(window.innerHeight - (navigationRect?.bottom ?? 0)),
-      stackGap: Math.round((navigationRect?.top ?? 0) - (actionRect?.bottom ?? 0)),
+      actionBottom: Math.round(window.innerHeight - (actionRect?.bottom ?? 0)),
     };
   });
-  expect(stackedBars).toEqual({ navigationBottom: 0, stackGap: 0 });
+  expect(fixedBar).toEqual({ actionBottom: 0 });
 
   await page.evaluate(() => window.scrollBy({ top: -160, behavior: "auto" }));
   await expect(actionBar).toHaveCount(0);

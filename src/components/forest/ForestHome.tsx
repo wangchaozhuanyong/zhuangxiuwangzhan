@@ -362,7 +362,7 @@ const ForestHome = ({ content }: ForestHomeProps) => {
               {products.map((product) => (
                 <LocalizedLink key={product.slug} to={`/products/${product.slug}`} className="forest-product">
                   <span className="forest-product__media">
-                    <DeferredSmartImage src={product.image} alt={product.alt || displayText(product.name)} width={720} height={450} loading="lazy" />
+                    <DeferredSmartImage src={product.image} alt={product.alt || displayText(product.name)} width={720} height={720} loading="lazy" />
                   </span>
                   <span className="forest-product__copy">
                     <small>{translateMaterialCategory(product.category, language)}</small>

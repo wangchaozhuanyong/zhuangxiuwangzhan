@@ -11,15 +11,13 @@ describe("public theme preference", () => {
     window.localStorage.clear();
   });
 
-  it("defaults to dark when the visitor has no saved preference", () => {
-    vi.spyOn(window, "matchMedia").mockReturnValue({ matches: true } as MediaQueryList);
-
+  it("uses the fixed dark public theme", () => {
     expect(getInitialPublicTheme()).toBe("dark");
   });
 
-  it("keeps a visitor's saved light preference", () => {
+  it("ignores obsolete saved light preferences", () => {
     window.localStorage.setItem("flashcast-public-theme", "light");
 
-    expect(getInitialPublicTheme()).toBe("light");
+    expect(getInitialPublicTheme()).toBe("dark");
   });
 });

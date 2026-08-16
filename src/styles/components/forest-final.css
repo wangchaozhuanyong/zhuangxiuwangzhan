@@ -34,40 +34,6 @@
     --forest-plane-b: rgb(15 30 26 / 0.82);
   }
 
-  html[data-public-theme="light"] {
-    --background: 150 10% 92%;
-    --foreground: 145 16% 10%;
-    --card: 150 18% 96%;
-    --card-foreground: 145 16% 10%;
-    --popover: 150 18% 96%;
-    --popover-foreground: 145 16% 10%;
-    --primary: 145 16% 10%;
-    --primary-foreground: 150 18% 96%;
-    --secondary: 145 12% 86%;
-    --secondary-foreground: 145 16% 10%;
-    --muted: 145 11% 87%;
-    --muted-foreground: 145 8% 33%;
-    --accent: 155 51% 27%;
-    --accent-foreground: 150 18% 98%;
-    --border: 145 12% 75%;
-    --input: 145 12% 75%;
-    --ring: 155 51% 27%;
-    --forest-canvas: #e5eae7;
-    --forest-canvas-alt: #dce3df;
-    --forest-surface: #eff3f0;
-    --forest-surface-raised: #f7f9f7;
-    --forest-text-primary: #151c18;
-    --forest-text-secondary: #54615a;
-    --forest-text-tertiary: #56635c;
-    --forest-line: rgb(36 58 48 / 0.2);
-    --forest-line-strong: rgb(36 58 48 / 0.35);
-    --forest-shadow-color: rgb(31 48 40 / 0.18);
-    --forest-header-solid: rgb(239 243 240 / 0.91);
-    --forest-menu-surface: #edf2ef;
-    --forest-plane-a: rgb(42 91 70 / 0.08);
-    --forest-plane-b: rgb(203 215 208 / 0.62);
-  }
-
   html[data-public-theme],
   html[data-public-theme] body,
   html[data-public-theme] #root,
@@ -111,10 +77,6 @@
     background-size: cover;
     mix-blend-mode: soft-light;
     opacity: 0.035;
-  }
-
-  html[data-public-theme="light"] .forest-site-shell::after {
-    opacity: 0.055;
   }
 
   @media (max-width: 767px) {

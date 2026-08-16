@@ -1,8 +1,8 @@
 import { expect, test, type Page } from "@playwright/test";
 
-type Theme = "light" | "dark";
+type Theme = "dark";
 
-const themes: Theme[] = ["light", "dark"];
+const themes: Theme[] = ["dark"];
 const viewports = [
   { name: "mobile", width: 390, height: 844 },
   { name: "desktop", width: 1440, height: 1000 },
@@ -10,7 +10,7 @@ const viewports = [
 
 async function setPublicTheme(page: Page, theme: Theme) {
   await page.goto("/zh", { waitUntil: "domcontentloaded" });
-  await page.evaluate((value) => localStorage.setItem("flashcast-public-theme", value), theme);
+  await expect(page.locator("html")).toHaveAttribute("data-public-theme", theme);
 }
 
 test.describe("public text readability", () => {
@@ -127,7 +127,9 @@ test.describe("public text readability", () => {
         await page.goto("/zh", { waitUntil: "domcontentloaded" });
         await page.waitForLoadState("load");
         const header = page.locator(".site-header.is-solid");
+        const hero = page.locator(".forest-home-hero");
         await expect(header).toBeVisible();
+        await expect(hero).toBeVisible();
         const result = await header.evaluate((element) => {
           const surface = getComputedStyle(element, "::before");
           const hero = document.querySelector<HTMLElement>(".forest-home-hero");

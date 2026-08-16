@@ -20,10 +20,8 @@ import {
   Mail,
   MapPinned,
   Menu,
-  Moon,
   PackageSearch,
   Phone,
-  Sun,
   Wrench,
   X,
 } from "lucide-react";
@@ -75,8 +73,23 @@ const secondaryDesktopNavGroups = [
     paths: ["/services", "/materials", "/locations", "/before-after"],
   },
 ] as const;
-type SecondaryDesktopNavGroupKey = (typeof secondaryDesktopNavGroups)[number]["key"];
 const secondaryDesktopNavItems = secondaryDesktopNavGroups.flatMap((group) => group.paths.flatMap((path) => navItems.filter((item) => item.path === path)));
+
+const mobileNavGroups = [
+  {
+    key: "core",
+    paths: ["/", "/projects", "/products", "/contact"],
+  },
+  {
+    key: "company",
+    paths: ["/about", "/process", "/blog", "/faq"],
+  },
+  {
+    key: "explore",
+    paths: ["/services", "/materials", "/before-after", "/locations", "/promotions"],
+  },
+] as const;
+type MobileNavGroupKey = (typeof mobileNavGroups)[number]["key"];
 
 const MOBILE_MENU_CLOSE_MS = 190;
 
@@ -171,10 +184,10 @@ const LanguageSwitchLink = ({ variant, className }: LanguageSwitchLinkProps) => 
 };
 
 const Navbar = () => {
-  const { hasImmersiveHero, menuOpen: isOpen, setMenuOpen: setIsOpen, theme, toggleTheme } = usePublicChrome();
+  const { hasImmersiveHero, menuOpen: isOpen, setMenuOpen: setIsOpen } = usePublicChrome();
   const [scrolled, setScrolled] = useState(false);
   const [isMenuClosing, setIsMenuClosing] = useState(false);
-  const [expandedMobileGroup, setExpandedMobileGroup] = useState<SecondaryDesktopNavGroupKey | null>(null);
+  const [expandedMobileGroup, setExpandedMobileGroup] = useState<MobileNavGroupKey>("core");
   const [pendingPath, setPendingPath] = useState<string | null>(null);
   const [desktopMoreOpen, setDesktopMoreOpen] = useState(false);
   const [logoState, setLogoState] = useState<"primary" | "fallback" | "none">("primary");
@@ -205,7 +218,7 @@ const Navbar = () => {
   const openMobileMenu = useCallback(() => {
     clearMobileCloseTimer();
     setPendingPath(null);
-    setExpandedMobileGroup(null);
+    setExpandedMobileGroup("core");
     setIsMenuClosing(false);
     setIsOpen(true);
   }, [clearMobileCloseTimer, setIsOpen]);
@@ -225,7 +238,7 @@ const Navbar = () => {
         setIsOpen(false);
         setIsMenuClosing(false);
         setPendingPath(null);
-        setExpandedMobileGroup(null);
+        setExpandedMobileGroup("core");
         mobileCloseTimerRef.current = null;
         afterClose?.();
       }, getMobileMenuCloseDelay());
@@ -247,7 +260,7 @@ const Navbar = () => {
         clearMobileCloseTimer();
         setIsMenuClosing(false);
         setPendingPath(null);
-        setExpandedMobileGroup(null);
+        setExpandedMobileGroup("core");
         setIsOpen(false);
         return;
       }
@@ -284,7 +297,7 @@ const Navbar = () => {
     clearMobileCloseTimer();
     setIsMenuClosing(false);
     setPendingPath(null);
-    setExpandedMobileGroup(null);
+    setExpandedMobileGroup("core");
     setIsOpen(false);
     setDesktopMoreOpen(false);
   }, [clearMobileCloseTimer, location.pathname, setIsOpen]);
@@ -519,17 +532,6 @@ const Navbar = () => {
 
           <div className="site-header__desktop-actions hidden shrink-0 items-center min-[1180px]:flex">
             <LanguageSwitchLink variant="desktop" className="site-header__control site-header__language-control" />
-            <Button
-              variant="ghost"
-              size="icon"
-              className="site-header__icon-action"
-              type="button"
-              aria-label={theme === "dark" ? navText.useLightTheme : navText.useDarkTheme}
-              title={theme === "dark" ? navText.useLightTheme : navText.useDarkTheme}
-              onClick={toggleTheme}
-            >
-              {theme === "dark" ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
-            </Button>
             <Button size="sm" className="site-header__quote-button font-semibold" asChild>
               <LocalizedLink
                 to="/quote"
@@ -548,14 +550,6 @@ const Navbar = () => {
           <div className="ml-auto flex shrink-0 items-center min-[1180px]:hidden">
             <div className="site-header__mobile-controls flex h-11 items-center">
               <LanguageSwitchLink variant="mobile" className="site-header__mobile-button site-header__mobile-language-button flex h-10 w-10 items-center justify-center text-[11px] font-bold" />
-              <button
-                type="button"
-                className="site-header__mobile-button flex h-10 w-10 items-center justify-center transition-colors"
-                onClick={toggleTheme}
-                aria-label={theme === "dark" ? navText.useLightTheme : navText.useDarkTheme}
-              >
-                {theme === "dark" ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
-              </button>
               <button
                 className="site-header__mobile-button flex h-10 w-10 items-center justify-center transition-colors"
                 onClick={() => (isOpen ? closeMobileMenu() : openMobileMenu())}
@@ -582,49 +576,28 @@ const Navbar = () => {
           <div className="mobile-navigation__panel" role="dialog" aria-modal="true" aria-label={navText.mobileNav} tabIndex={-1} data-mobile-menu-initial-focus>
             <div className="mobile-navigation__body">
               <nav className="mobile-navigation__list" aria-label={navText.mobileNav}>
-                <section className="mobile-navigation__primary" aria-label={navText.featuredNavigation}>
-                  <div className="mobile-navigation__primary-grid">
-                    {primaryDesktopNavItems.map((item, index) => {
-                      const isActive = isActivePath(location.pathname, item.path);
-                      const Icon = item.icon;
-                      return (
-                        <LocalizedLink
-                          key={item.path}
-                          to={item.path}
-                          onClick={(event) => handleNavClick(event, item.path)}
-                          onFocus={() => preloadPublicRoute(item.path)}
-                          onPointerEnter={() => preloadPublicRoute(item.path)}
-                          onTouchStart={() => preloadPublicRoute(item.path)}
-                          aria-current={isActive ? "page" : undefined}
-                          style={{ animationDelay: `${index * 40}ms` }}
-                          className={`mobile-nav-link mobile-navigation__primary-link ${isActive ? "mobile-navigation__primary-link--active" : ""} ${pendingPath === item.path ? "mobile-nav-link--pending" : ""}`}
-                        >
-                          <Icon className="mobile-navigation__primary-icon h-5 w-5" aria-hidden="true" />
-                          <span className="mobile-navigation__primary-label">{t(item.labelKey)}</span>
-                          <ChevronRight className="mobile-navigation__primary-arrow h-4 w-4" aria-hidden="true" />
-                        </LocalizedLink>
-                      );
-                    })}
-                  </div>
-                </section>
-
                 <div className="mobile-navigation__secondary-groups">
-                  {secondaryDesktopNavGroups.map((group, groupIndex) => {
+                  {mobileNavGroups.map((group, groupIndex) => {
                     const isExpanded = expandedMobileGroup === group.key;
                     const groupId = `mobile-navigation-${group.key}`;
+                    const groupLabel = group.key === "core"
+                      ? navText.coreGroup
+                      : group.key === "company"
+                        ? navText.companyGroup
+                        : navText.exploreGroup;
                     return (
-                      <section key={group.key} className="mobile-navigation__secondary-group">
+                      <section key={group.key} className="mobile-navigation__secondary-group" data-mobile-nav-group={group.key}>
                         <button
                           type="button"
                           className="mobile-navigation__secondary-trigger"
                           aria-expanded={isExpanded}
                           aria-controls={groupId}
-                          onClick={() => setExpandedMobileGroup(isExpanded ? null : group.key)}
+                          onClick={() => setExpandedMobileGroup(group.key)}
                         >
-                          <span>{group.key === "company" ? navText.companyGroup : navText.exploreGroup}</span>
+                          <span>{groupLabel}</span>
                           <ChevronDown aria-hidden="true" />
                         </button>
-                        <div id={groupId} hidden={!isExpanded}>
+                        <div id={groupId} className="mobile-navigation__group-list" hidden={!isExpanded}>
                           {group.paths
                             .flatMap((path) => navItems.filter((item) => item.path === path))
                             .map((item, itemIndex) => {
@@ -640,7 +613,7 @@ const Navbar = () => {
                                   onTouchStart={() => preloadPublicRoute(item.path)}
                                   aria-current={isActive ? "page" : undefined}
                                   style={{
-                                    animationDelay: `${(primaryDesktopNavItems.length + groupIndex * 4 + itemIndex) * 40}ms`,
+                                    animationDelay: `${(groupIndex * 4 + itemIndex) * 40}ms`,
                                   }}
                                   className={`mobile-nav-link mobile-navigation__secondary-link ${isActive ? "mobile-navigation__secondary-link--active" : ""} ${pendingPath === item.path ? "mobile-nav-link--pending" : ""}`}
                                 >

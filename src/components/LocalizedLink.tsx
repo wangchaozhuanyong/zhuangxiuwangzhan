@@ -14,7 +14,7 @@ const LocalizedLink = forwardRef<HTMLAnchorElement, LinkProps>(({ to, ...props }
     ? withLanguagePrefix(to, language)
     : to;
 
-  return <Link ref={ref} to={localizedTo} {...props} />;
+  return <Link ref={ref} to={localizedTo} viewTransition {...props} />;
 });
 
 LocalizedLink.displayName = "LocalizedLink";

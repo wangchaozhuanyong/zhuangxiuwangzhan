@@ -131,12 +131,10 @@ const PublicSiteShell = ({
   productDetail: boolean;
   children: ReactNode;
 }) => {
-  const { theme } = usePublicChrome();
-
   return (
     <div
       className="forest-site-shell"
-      data-theme={theme}
+      data-theme="dark"
       data-surface={surface}
       data-header-overlay="false"
       data-product-detail={productDetail ? "true" : "false"}
