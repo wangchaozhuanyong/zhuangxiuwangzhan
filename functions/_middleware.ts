@@ -113,6 +113,7 @@ const CSP_DIRECTIVES = (scriptSrc: string[]) => [
     "https://cloudflareinsights.com",
     "https://challenges.cloudflare.com",
     "https://static.cloudflareinsights.com",
+    "https://www.googletagmanager.com",
     "https://www.google-analytics.com",
     "https://analytics.google.com",
     "https://www.googleadservices.com",
