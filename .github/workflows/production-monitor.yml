@@ -1,0 +1,271 @@
+name: Production website monitoring
+
+on:
+  workflow_dispatch: {}
+  schedule:
+    - cron: "*/15 * * * *"
+    - cron: "17 */6 * * *"
+  workflow_run:
+    workflows: ["Deploy to Cloudflare Pages"]
+    types: [completed]
+
+permissions:
+  contents: read
+  issues: write
+
+concurrency:
+  group: production-monitor-${{ github.repository }}
+  cancel-in-progress: false
+
+env:
+  MONITOR_BASE_URL: https://flashcast.com.my
+
+jobs:
+  lightweight:
+    name: Availability, TLS, routes and backend health
+    if: >-
+      github.event_name != 'workflow_run' ||
+      (github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.head_branch == 'main')
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Setup Node
+        uses: actions/setup-node@v6
+        with:
+          node-version: "24"
+
+      - name: Run lightweight production monitor
+        id: monitor
+        continue-on-error: true
+        env:
+          MONITOR_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
+          MONITOR_REPORT_PATH: monitor-report.json
+        run: node scripts/monitor-production-site.mjs
+
+      - name: Upload monitor report
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: production-monitor-${{ github.run_id }}
+          path: monitor-report.json
+          if-no-files-found: warn
+          retention-days: 14
+
+      - name: Open, update or close availability incident
+        id: incident
+        if: always()
+        uses: actions/github-script@v9
+        env:
+          MONITOR_OUTCOME: ${{ steps.monitor.outcome }}
+          MONITOR_REPORT_PATH: monitor-report.json
+          MONITOR_BASE_URL: ${{ env.MONITOR_BASE_URL }}
+        with:
+          result-encoding: string
+          script: |
+            const fs = require('node:fs');
+            const marker = '<!-- flashcast-monitor:availability -->';
+            const title = '[网站监控] FLASH CAST 正式站异常';
+            const runUrl = `${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`;
+            const failed = process.env.MONITOR_OUTCOME !== 'success';
+            let report = null;
+
+            try {
+              report = JSON.parse(fs.readFileSync(process.env.MONITOR_REPORT_PATH, 'utf8'));
+            } catch (error) {
+              core.warning(`Unable to read monitor report: ${error.message}`);
+            }
+
+            const issues = await github.paginate(github.rest.issues.listForRepo, {
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              state: 'open',
+              per_page: 100,
+            });
+            const incident = issues.find((issue) => !issue.pull_request && issue.body?.includes(marker));
+
+            if (failed) {
+              const failedChecks = (report?.checks || [])
+                .filter((item) => item.status === 'fail')
+                .slice(0, 12)
+                .map((item) => `- **${item.name}**：${item.message}`)
+                .join('\n') || '- 监控脚本没有生成可读报告，请打开运行日志检查。';
+              const body = [
+                marker,
+                '## FLASH CAST 正式站监控告警',
+                '',
+                `- 网站：${process.env.MONITOR_BASE_URL}`,
+                `- 最近异常时间：${report?.checkedAt || new Date().toISOString()}`,
+                `- GitHub Actions：${runUrl}`,
+                `- 失败检查数：${report?.summary?.failed ?? '未知'}`,
+                '',
+                '### 异常项目',
+                failedChecks,
+                '',
+                '该 Issue 会在后续巡检恢复正常后自动关闭。',
+              ].join('\n');
+
+              if (incident) {
+                await github.rest.issues.update({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  issue_number: incident.number,
+                  title,
+                  body,
+                });
+                return 'ongoing_failure';
+              }
+
+              await github.rest.issues.create({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                title,
+                body,
+              });
+              return 'new_failure';
+            }
+
+            if (incident) {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: incident.number,
+                body: `✅ 网站已恢复正常。恢复确认时间：${report?.checkedAt || new Date().toISOString()}。\n\n巡检记录：${runUrl}`,
+              });
+              await github.rest.issues.update({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: incident.number,
+                state: 'closed',
+                state_reason: 'completed',
+              });
+              return 'recovered';
+            }
+
+            return 'healthy';
+
+      - name: Mark only a newly detected incident as failed
+        if: steps.incident.outputs.result == 'new_failure'
+        run: exit 1
+
+  browser-smoke:
+    name: Real browser navigation, forms and WhatsApp smoke
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (github.event_name == 'schedule' && github.event.schedule == '17 */6 * * *') ||
+      (github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.head_branch == 'main')
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Setup Node
+        uses: actions/setup-node@v6
+        with:
+          node-version: "24"
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Verify system Chrome
+        run: google-chrome --version
+
+      - name: Run production browser smoke tests
+        id: browser
+        continue-on-error: true
+        env:
+          PLAYWRIGHT_BASE_URL: https://flashcast.com.my
+          PLAYWRIGHT_CHROMIUM_CHANNEL: chrome
+        run: npm run test:e2e -- e2e/smoke.spec.ts --project=chromium --retries=1
+
+      - name: Upload browser traces
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: production-browser-smoke-${{ github.run_id }}
+          path: test-results
+          if-no-files-found: ignore
+          retention-days: 14
+
+      - name: Open, update or close browser incident
+        id: browser-incident
+        if: always()
+        uses: actions/github-script@v9
+        env:
+          BROWSER_OUTCOME: ${{ steps.browser.outcome }}
+          MONITOR_BASE_URL: ${{ env.MONITOR_BASE_URL }}
+        with:
+          result-encoding: string
+          script: |
+            const marker = '<!-- flashcast-monitor:browser -->';
+            const title = '[网站监控] FLASH CAST 浏览器巡检异常';
+            const runUrl = `${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`;
+            const failed = process.env.BROWSER_OUTCOME !== 'success';
+            const issues = await github.paginate(github.rest.issues.listForRepo, {
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              state: 'open',
+              per_page: 100,
+            });
+            const incident = issues.find((issue) => !issue.pull_request && issue.body?.includes(marker));
+
+            if (failed) {
+              const body = [
+                marker,
+                '## FLASH CAST 真实浏览器巡检告警',
+                '',
+                `- 网站：${process.env.MONITOR_BASE_URL}`,
+                `- 最近异常时间：${new Date().toISOString()}`,
+                `- GitHub Actions：${runUrl}`,
+                '',
+                '巡检覆盖中英文页面、手机导航、报价与联系表单交互、WhatsApp 链接、后台未登录保护。表单请求在测试中被拦截模拟，不会写入真实客户数据。',
+                '',
+                '该 Issue 会在下一次完整浏览器巡检恢复正常后自动关闭。',
+              ].join('\n');
+
+              if (incident) {
+                await github.rest.issues.update({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  issue_number: incident.number,
+                  title,
+                  body,
+                });
+                return 'ongoing_failure';
+              }
+
+              await github.rest.issues.create({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                title,
+                body,
+              });
+              return 'new_failure';
+            }
+
+            if (incident) {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: incident.number,
+                body: `✅ 真实浏览器巡检已恢复正常。恢复确认时间：${new Date().toISOString()}。\n\n巡检记录：${runUrl}`,
+              });
+              await github.rest.issues.update({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: incident.number,
+                state: 'closed',
+                state_reason: 'completed',
+              });
+              return 'recovered';
+            }
+
+            return 'healthy';
+
+      - name: Mark only a newly detected browser incident as failed
+        if: steps.browser-incident.outputs.result == 'new_failure'
+        run: exit 1
