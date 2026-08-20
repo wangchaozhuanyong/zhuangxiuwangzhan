@@ -4,14 +4,25 @@ import tls from "node:tls";
 
 const baseUrl = new URL(process.env.MONITOR_BASE_URL || "https://flashcast.com.my");
 const reportPath = process.env.MONITOR_REPORT_PATH || "monitor-report.json";
-const timeoutMs = Number(process.env.MONITOR_TIMEOUT_MS || "20000");
-const retryCount = Math.max(1, Number(process.env.MONITOR_RETRIES || "3"));
+const timeoutMs = Number(process.env.MONITOR_TIMEOUT_MS || "15000");
+const retryCount = Math.max(1, Number(process.env.MONITOR_RETRIES || "2"));
 const supabaseUrl = process.env.MONITOR_SUPABASE_URL?.trim();
 const startedAt = Date.now();
 
 const checks = [];
 
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+
+async function mapWithConcurrency(items, concurrency, worker) {
+  const queue = [...items];
+  const runners = Array.from({ length: Math.min(Math.max(1, concurrency), queue.length) }, async () => {
+    while (queue.length) {
+      const item = queue.shift();
+      if (item !== undefined) await worker(item);
+    }
+  });
+  await Promise.all(runners);
+}
 
 function addCheck(name, status, message, details = {}) {
   checks.push({ name, status, message, ...details });
@@ -129,7 +140,10 @@ async function readTlsCertificate() {
     });
 
     socket.on("error", (error) => {
-      finish(() => addCheck("TLS certificate", "fail", normalizeError(error)));
+      finish(() => {
+        addCheck("TLS certificate", "fail", normalizeError(error));
+        socket.destroy();
+      });
     });
   });
 }
@@ -282,7 +296,7 @@ function extractSameOriginAssets(html) {
     }
   }
 
-  return [...assetUrls].slice(0, 40);
+  return [...assetUrls].slice(0, 24);
 }
 
 async function checkAssets() {
@@ -300,7 +314,7 @@ async function checkAssets() {
   const failures = [];
   const cacheWarnings = [];
 
-  for (const assetUrl of assetUrls) {
+  await mapWithConcurrency(assetUrls, 8, async (assetUrl) => {
     try {
       let result = await fetchWithRetry(assetUrl, { method: "HEAD" });
       if (result.response.status === 405 || result.response.status === 403) {
@@ -310,7 +324,7 @@ async function checkAssets() {
 
       if (!result.response.ok) {
         failures.push(`${result.response.status} ${assetUrl}`);
-        continue;
+        return;
       }
 
       const cacheControl = result.response.headers.get("cache-control") || "";
@@ -320,7 +334,7 @@ async function checkAssets() {
     } catch (error) {
       failures.push(`${assetUrl} -> ${normalizeError(error)}`);
     }
-  }
+  });
 
   if (failures.length) {
     addCheck("Static assets", "fail", `${failures.length} asset(s) failed`, { failures });
@@ -434,12 +448,9 @@ function buildMarkdown(report) {
   return `${lines.join("\n")}\n`;
 }
 
-await checkDns();
-await readTlsCertificate();
-for (const pageCheck of pageChecks) await checkPage(pageCheck);
-await checkAssets();
-await checkSecurityHeaders();
-await checkSupabaseHealth();
+await Promise.all([checkDns(), readTlsCertificate()]);
+await Promise.all(pageChecks.map((pageCheck) => checkPage(pageCheck)));
+await Promise.all([checkAssets(), checkSecurityHeaders(), checkSupabaseHealth()]);
 
 const summary = {
   passed: checks.filter((item) => item.status === "pass").length,
@@ -464,4 +475,4 @@ if (process.env.GITHUB_STEP_SUMMARY) {
   await appendFile(process.env.GITHUB_STEP_SUMMARY, markdown, "utf8");
 }
 
-if (!report.ok) process.exitCode = 1;
+process.exit(report.ok ? 0 : 1);
