@@ -67,7 +67,7 @@ jobs:
           script: |
             const fs = require('node:fs');
             const marker = '<!-- flashcast-monitor:availability -->';
-            const title = '[网站监控] FLASH CAST 正式站异常';
+            const title = '[Website Monitoring] FLASH CAST Production Site Incident';
             const runUrl = `${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`;
             const failed = process.env.MONITOR_OUTCOME !== 'success';
             let report = null;
@@ -90,21 +90,21 @@ jobs:
               const failedChecks = (report?.checks || [])
                 .filter((item) => item.status === 'fail')
                 .slice(0, 12)
-                .map((item) => `- **${item.name}**：${item.message}`)
-                .join('\n') || '- 监控脚本没有生成可读报告，请打开运行日志检查。';
+                .map((item) => `- **${item.name}**: ${item.message}`)
+                .join('\n') || '- The monitor did not generate a readable report. Open the workflow logs for details.';
               const body = [
                 marker,
-                '## FLASH CAST 正式站监控告警',
+                '## FLASH CAST Production Site Alert',
                 '',
-                `- 网站：${process.env.MONITOR_BASE_URL}`,
-                `- 最近异常时间：${report?.checkedAt || new Date().toISOString()}`,
-                `- GitHub Actions：${runUrl}`,
-                `- 失败检查数：${report?.summary?.failed ?? '未知'}`,
+                `- Site: ${process.env.MONITOR_BASE_URL}`,
+                `- Last detected: ${report?.checkedAt || new Date().toISOString()}`,
+                `- GitHub Actions run: ${runUrl}`,
+                `- Failed checks: ${report?.summary?.failed ?? 'unknown'}`,
                 '',
-                '### 异常项目',
+                '### Failed checks',
                 failedChecks,
                 '',
-                '该 Issue 会在后续巡检恢复正常后自动关闭。',
+                'This issue will be updated while the incident continues and closed automatically after recovery is confirmed.',
               ].join('\n');
 
               if (incident) {
@@ -132,7 +132,7 @@ jobs:
                 owner: context.repo.owner,
                 repo: context.repo.repo,
                 issue_number: incident.number,
-                body: `✅ 网站已恢复正常。恢复确认时间：${report?.checkedAt || new Date().toISOString()}。\n\n巡检记录：${runUrl}`,
+                body: `✅ The production website has recovered. Recovery confirmed at: ${report?.checkedAt || new Date().toISOString()}.\n\nMonitoring run: ${runUrl}`,
               });
               await github.rest.issues.update({
                 owner: context.repo.owner,
@@ -202,7 +202,7 @@ jobs:
           result-encoding: string
           script: |
             const marker = '<!-- flashcast-monitor:browser -->';
-            const title = '[网站监控] FLASH CAST 浏览器巡检异常';
+            const title = '[Website Monitoring] FLASH CAST Browser Smoke Incident';
             const runUrl = `${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`;
             const failed = process.env.BROWSER_OUTCOME !== 'success';
             const issues = await github.paginate(github.rest.issues.listForRepo, {
@@ -216,15 +216,15 @@ jobs:
             if (failed) {
               const body = [
                 marker,
-                '## FLASH CAST 真实浏览器巡检告警',
+                '## FLASH CAST Browser Smoke Alert',
                 '',
-                `- 网站：${process.env.MONITOR_BASE_URL}`,
-                `- 最近异常时间：${new Date().toISOString()}`,
-                `- GitHub Actions：${runUrl}`,
+                `- Site: ${process.env.MONITOR_BASE_URL}`,
+                `- Last detected: ${new Date().toISOString()}`,
+                `- GitHub Actions run: ${runUrl}`,
                 '',
-                '巡检覆盖中英文页面、手机导航、报价与联系表单交互、WhatsApp 链接、后台未登录保护。表单请求在测试中被拦截模拟，不会写入真实客户数据。',
+                'The browser smoke covers Chinese and English pages, mobile navigation, quote and contact form interaction states, WhatsApp links, and unauthenticated admin-route protection. Form submissions are intercepted and mocked, so no real customer data is written.',
                 '',
-                '该 Issue 会在下一次完整浏览器巡检恢复正常后自动关闭。',
+                'This issue will be updated while the incident continues and closed automatically after the next successful full browser smoke.',
               ].join('\n');
 
               if (incident) {
@@ -252,7 +252,7 @@ jobs:
                 owner: context.repo.owner,
                 repo: context.repo.repo,
                 issue_number: incident.number,
-                body: `✅ 真实浏览器巡检已恢复正常。恢复确认时间：${new Date().toISOString()}。\n\n巡检记录：${runUrl}`,
+                body: `✅ The browser smoke has recovered. Recovery confirmed at: ${new Date().toISOString()}.\n\nMonitoring run: ${runUrl}`,
               });
               await github.rest.issues.update({
                 owner: context.repo.owner,
