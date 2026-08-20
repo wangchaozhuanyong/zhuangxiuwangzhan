@@ -39,12 +39,14 @@ The production browser smoke mocks `submit-lead` responses. It does not create r
 
 ## Incident behavior
 
+All monitoring reports, alert titles, incident descriptions, failed-check details, and recovery comments are written in English.
+
 The workflow creates one GitHub Issue per monitor layer when a new incident is detected:
 
-- `[网站监控] FLASH CAST 正式站异常`
-- `[网站监控] FLASH CAST 浏览器巡检异常`
+- `[Website Monitoring] FLASH CAST Production Site Incident`
+- `[Website Monitoring] FLASH CAST Browser Smoke Incident`
 
-An ongoing failure updates the existing Issue instead of creating repeated Issues. Recovery adds a comment and closes the Issue automatically.
+An ongoing failure updates the existing Issue instead of creating repeated Issues. Recovery adds an English comment and closes the Issue automatically.
 
 Reports and browser traces are kept as GitHub Actions artifacts for 14 days.
 
