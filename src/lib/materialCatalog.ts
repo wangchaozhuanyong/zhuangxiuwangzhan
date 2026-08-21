@@ -3,11 +3,14 @@ import type { MaterialCategory, MaterialItem, MaterialSubcategory } from "@/data
 
 export type MaterialCatalogItem = MaterialItem & {
   alt?: string | null;
+  excerpt?: string;
   pros?: string[];
   cons?: string[];
   referencePrice?: string;
   priceScope?: string;
   priceNote?: string;
+  seoTitle?: string;
+  seoDescription?: string;
   gallery?: MaterialCatalogImage[];
 };
 

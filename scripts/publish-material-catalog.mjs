@@ -6,6 +6,8 @@ import { archiveMaterialSlugs, materialCatalogRecords } from "./material-catalog
 const args = process.argv.slice(2);
 const validateOnly = args.includes("--validate");
 const execute = args.includes("--execute");
+const skipArchive = args.includes("--skip-archive");
+const requestedSlugs = args.filter((arg) => arg.startsWith("--slug=")).map((arg) => arg.slice("--slug=".length)).filter(Boolean);
 const approvalId = args.find((arg) => arg.startsWith("--approval-id="))?.slice("--approval-id=".length) || "";
 
 const fail = (message) => {
@@ -102,12 +104,18 @@ const main = async () => {
   const secret = env.CONTENT_PUBLISH_SECRET;
   if (!supabaseUrl || !secret) fail("SUPABASE_URL (or VITE_SUPABASE_URL) and CONTENT_PUBLISH_SECRET are required.");
   const functionUrl = `${supabaseUrl.replace(/\/$/, "")}/functions/v1/content-publish`;
+  const selectedRecords = requestedSlugs.length
+    ? materialCatalogRecords.filter((item) => requestedSlugs.includes(item.record.slug))
+    : materialCatalogRecords;
+  const selectedSlugs = new Set(selectedRecords.map((item) => item.record.slug));
+  const missingSlugs = requestedSlugs.filter((slug) => !selectedSlugs.has(slug));
+  if (missingSlugs.length) fail(`Unknown material slug(s): ${missingSlugs.join(", ")}.`);
 
   const results = [];
-  for (const item of materialCatalogRecords) {
+  for (const item of selectedRecords) {
     results.push(await publishRecord({ functionUrl, secret, record: item.record, nextStatus: "published" }));
   }
-  for (const slug of archiveMaterialSlugs) {
+  for (const slug of skipArchive || requestedSlugs.length ? [] : archiveMaterialSlugs) {
     const preview = await postPublishRequest(functionUrl, secret, {
       contentType: "material",
       mode: "dry-run",
@@ -126,7 +134,7 @@ const main = async () => {
     results.push(await publishRecord({ functionUrl, secret, record: { slug, status: "archived" }, nextStatus: "archived" }));
   }
 
-  console.log(JSON.stringify({ ok: true, mode: execute ? "publish" : "dry-run", ...summary, results }, null, 2));
+  console.log(JSON.stringify({ ok: true, mode: execute ? "publish" : "dry-run", ...summary, selectedProducts: selectedRecords.length, archivedRecordsIncluded: !skipArchive && !requestedSlugs.length, results }, null, 2));
 };
 
 main().catch((error) => {
