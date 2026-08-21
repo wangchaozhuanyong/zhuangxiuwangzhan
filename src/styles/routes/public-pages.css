@@ -4,11 +4,3 @@
 @import "../components/public-page-unification.css";
 @import "../components/optical-gallery.css";
 @tailwind components;
-
-@media (max-width: 1179px) {
-  html[data-public-theme="dark"][data-menu-open="true"]
-    .mobile-navigation__secondary-group
-    > .mobile-navigation__group-list {
-    grid-template-columns: minmax(0, 1fr) !important;
-  }
-}

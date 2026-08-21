@@ -1058,6 +1058,13 @@
       grid-template-columns: 1fr !important;
     }
 
+    html[data-public-theme="dark"][data-menu-open="true"]
+      .mobile-navigation__panel
+      .mobile-navigation__secondary-group
+      > .mobile-navigation__group-list {
+      grid-template-columns: minmax(0, 1fr) !important;
+    }
+
     html[data-public-theme="dark"] .mobile-navigation__secondary-group {
       padding-top: 0;
     }
