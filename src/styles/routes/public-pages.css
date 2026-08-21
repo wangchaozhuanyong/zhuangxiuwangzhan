@@ -3,4 +3,5 @@
 @import "../components/forest-detail-pages.css";
 @import "../components/public-page-unification.css";
 @import "../components/optical-gallery.css";
+@import "../components/cinematic-public.css";
 @tailwind components;
