@@ -1,6 +1,6 @@
-﻿import { useState } from "react";
+﻿import { useEffect, useState } from "react";
 import Link from "@/components/LocalizedLink";
-import { ArrowUpRight } from "lucide-react";
+import { ArrowUpRight, ChevronDown } from "lucide-react";
 import SmartImage from "@/components/SmartImage";
 import DeferredSmartImage from "@/components/DeferredSmartImage";
 import { usePublishedProjectSummaries, usePublishedSitePage } from "@/hooks/usePublishedContent";
@@ -28,6 +28,8 @@ const typeImageMap: Record<string, string> = {
 
 const categories = ["All", "Residential", "Commercial", "Built-In", "Warehouse", "Exterior", "Office"] as const;
 const PROJECT_INITIAL_EAGER_IMAGES = 4;
+const PROJECT_INITIAL_VISIBLE = 10;
+const PROJECT_REVEAL_STEP = 8;
 const PROJECT_IMAGE_ROOT_MARGIN = "1800px";
 const PROJECT_CARD_IMAGE_WIDTHS = [360, 560, 720, 900];
 const getProjectRevealDelay = (index: number) => (index % 4) * 60;
@@ -52,21 +54,24 @@ const categoryLabels = {
     Office: "办公室",
   },
 };
-
-
-
 const Projects = () => {
   const [filter, setFilter] = useState<(typeof categories)[number]>("All");
+  const [visibleCount, setVisibleCount] = useState(PROJECT_INITIAL_VISIBLE);
   const { language } = useLanguage();
   const { data: projects = [], isLoading, isError, refetch } = usePublishedProjectSummaries(language);
   const { data: pageContent } = usePublishedSitePage(language, "projects");
   const pageCopy = projectsPageText[language];
   const filtered = filter === "All" ? projects : projects.filter((project) => project.type === filter);
+  const visibleProjects = filtered.slice(0, visibleCount);
   const displayProjectType = (value: string) => translateProjectType(value, language);
   const displayProjectTitle = (value: string) => translateDisplayText(value, language);
   const heroImage = resolvePageHeroImage(pageContent?.image_url, pageHeroImages.projects);
   const displayProjectDescription = (project: PublishedProjectSummary) =>
     translateDisplayText(String(project.description || ""), language);
+
+  useEffect(() => {
+    setVisibleCount(PROJECT_INITIAL_VISIBLE);
+  }, [filter]);
 
   const renderProjectImage = (project: PublishedProjectSummary, index: number) => {
     const shouldRenderImmediately = index < PROJECT_INITIAL_EAGER_IMAGES;
@@ -110,44 +115,57 @@ const Projects = () => {
       />
 
       <section className="forest-chapter forest-listing-chapter">
-          <ForestFilterNav
-            items={categories.map((category) => ({ value: category, label: categoryLabels[language][category] }))}
-            value={filter}
-            onChange={(value) => setFilter(value as (typeof categories)[number])}
-            ariaLabel={pageCopy.categoryFilterAria}
-          />
-          {!isLoading && !isError ? (
-            <div className="forest-listing-meta"><span>{forestUiText[language].resultCount(filtered.length)}</span></div>
-          ) : null}
+        <ForestFilterNav
+          items={categories.map((category) => ({ value: category, label: categoryLabels[language][category] }))}
+          value={filter}
+          onChange={(value) => setFilter(value as (typeof categories)[number])}
+          ariaLabel={pageCopy.categoryFilterAria}
+        />
+        {!isLoading && !isError ? (
+          <div className="forest-listing-meta"><span>{forestUiText[language].resultCount(filtered.length)}</span></div>
+        ) : null}
 
-          {isLoading ? (
-            <ForestContentState variant="loading" compact />
-          ) : isError ? (
-            <ForestContentState variant="error" compact onRetry={() => void refetch()} />
-          ) : filtered.length === 0 ? (
-            <ForestContentState variant="empty" compact description={pageCopy.empty} />
-          ) : (
+        {isLoading ? (
+          <ForestContentState variant="loading" compact />
+        ) : isError ? (
+          <ForestContentState variant="error" compact onRetry={() => void refetch()} />
+        ) : filtered.length === 0 ? (
+          <ForestContentState variant="empty" compact description={pageCopy.empty} />
+        ) : (
           <div className="forest-listing-grid forest-project-listing">
-            {filtered.map((project, index) => (
-                <Link
-                  key={project.id}
-                  to={`/projects/${project.slug}`}
-                  className={`forest-listing-card forest-project-row${index === 0 ? " forest-project-row--wide" : ""}`}
-                  style={{ animationDelay: `${getProjectRevealDelay(index)}ms` }}
-                >
-                  <div className="forest-listing-card__media">
-                    {renderProjectImage(project, index)}
-                  </div>
-                  <div className="forest-listing-card__body">
-                    <p className="forest-listing-card__meta">{displayProjectType(project.type)}</p>
-                    <h2>{displayProjectTitle(project.title)}</h2>
-                    <p>{displayProjectDescription(project)}</p>
-                    <span className="forest-listing-card__action">{pageCopy.view}<ArrowUpRight aria-hidden="true" /></span>
-                  </div>
-                </Link>
+            {visibleProjects.map((project, index) => (
+              <Link
+                key={project.id}
+                to={`/projects/${project.slug}`}
+                className={`forest-listing-card forest-project-row${index === 0 ? " forest-project-row--wide" : ""}`}
+                style={{ animationDelay: `${getProjectRevealDelay(index)}ms` }}
+              >
+                <div className="forest-listing-card__media">
+                  {renderProjectImage(project, index)}
+                </div>
+                <div className="forest-listing-card__body">
+                  <p className="forest-listing-card__meta">{displayProjectType(project.type)}</p>
+                  <h2>{displayProjectTitle(project.title)}</h2>
+                  <p>{displayProjectDescription(project)}</p>
+                  <span className="forest-listing-card__action">{pageCopy.view}<ArrowUpRight aria-hidden="true" /></span>
+                </div>
+              </Link>
             ))}
           </div>
-          )}
+        )}
+        {!isLoading && !isError && visibleProjects.length < filtered.length ? (
+          <div className="forest-load-more-wrap">
+            <button
+              type="button"
+              className="forest-load-more"
+              onClick={() => setVisibleCount((current) => Math.min(current + PROJECT_REVEAL_STEP, filtered.length))}
+            >
+              <span>{pageCopy.loadMore}</span>
+              <small>{pageCopy.showing(visibleProjects.length, filtered.length)}</small>
+              <ChevronDown aria-hidden="true" />
+            </button>
+          </div>
+        ) : null}
       </section>
 
       <CTABanner

@@ -399,21 +399,9 @@
     color: var(--optical-accent);
   }
 
-  html[data-public-theme="dark"] .forest-company-intro {
-    display: grid;
-    grid-template-columns: minmax(0, 7fr) minmax(20rem, 5fr);
-    gap: clamp(3rem, 7vw, 8rem);
-    align-items: center;
-  }
-
-  html[data-public-theme="dark"] .forest-company-intro > figure {
-    grid-column: auto;
+  html[data-public-theme="dark"] .forest-company-intro > .forest-editorial-media__media {
     aspect-ratio: 16 / 10;
     overflow: hidden;
-  }
-
-  html[data-public-theme="dark"] .forest-company-intro > div {
-    grid-column: auto;
   }
 
   html[data-public-theme="dark"] :is(.forest-company-intro, .forest-project-feature, .forest-project-story, .forest-product, .forest-listing-card, .forest-journal-entry) img {
@@ -427,32 +415,30 @@
   }
 
   html[data-public-theme="dark"] .forest-services {
-    min-height: 62rem;
+    min-height: 0;
   }
 
   html[data-public-theme="dark"] .forest-services .forest-content-frame {
-    display: grid;
-    grid-template-columns: minmax(18rem, 0.7fr) minmax(0, 1.3fr);
-    gap: clamp(3rem, 6vw, 7rem);
-    align-items: start;
+    display: block;
   }
 
   html[data-public-theme="dark"] .forest-services .forest-section-heading {
-    position: sticky;
-    top: 8rem;
+    position: static;
+    max-width: 52rem;
+    margin-bottom: clamp(2rem, 3vw, 3rem);
   }
 
   html[data-public-theme="dark"] .forest-browser {
     display: grid;
-    grid-template-columns: minmax(14rem, 0.7fr) minmax(0, 1.3fr);
-    border: 1px solid var(--forest-line);
+    grid-template-columns: minmax(0, 1fr);
+    border: 0;
     border-radius: 0.125rem;
-    background: #101311;
-    box-shadow: 0 3rem 6rem -4rem rgb(0 0 0 / 0.8);
+    background: transparent;
+    box-shadow: none;
   }
 
   html[data-public-theme="dark"] .forest-browser__list {
-    border-right: 1px solid var(--forest-line);
+    border-right: 0;
     background: #121512;
   }
 
@@ -470,12 +456,14 @@
   }
 
   html[data-public-theme="dark"] .forest-browser__list button.is-active {
-    box-shadow: inset 3px 0 0 var(--optical-accent);
+    box-shadow: inset 0 3px 0 var(--optical-accent);
   }
 
   html[data-public-theme="dark"] .forest-browser__stage {
-    min-height: 38rem;
+    min-height: 0;
     overflow: hidden;
+    border-color: var(--forest-line-strong);
+    box-shadow: 0 3rem 6rem -4rem rgb(0 0 0 / 0.8);
   }
 
   html[data-public-theme="dark"] .forest-browser__stage img {
@@ -491,27 +479,38 @@
   }
 
   html[data-public-theme="dark"] .forest-projects__intro {
-    align-items: end;
+    margin-bottom: clamp(2rem, 3vw, 3rem);
   }
 
   html[data-public-theme="dark"] .forest-project-feature {
     display: grid;
-    grid-template-columns: minmax(0, 1.55fr) minmax(18rem, 0.45fr);
-    gap: 0;
-    margin-top: 4rem;
-    border-block: 1px solid var(--forest-line);
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    column-gap: clamp(2rem, 4vw, 4.5rem);
+    row-gap: 0;
+    margin-top: 0;
+    border-top: 0;
+    border-bottom: 1px solid var(--forest-line);
   }
 
   html[data-public-theme="dark"] .forest-project-feature__media {
-    min-height: 38rem;
+    min-height: 0;
+    grid-column: 1 / 13;
     overflow: hidden;
   }
 
   html[data-public-theme="dark"] .forest-project-feature__copy {
     display: flex;
+    grid-column: 1 / 9;
     flex-direction: column;
     justify-content: flex-end;
-    padding: clamp(2rem, 4vw, 4rem);
+    padding: clamp(1.75rem, 3vw, 3rem) 0 clamp(2rem, 3.5vw, 3.5rem);
+    border-left: 0;
+    background: transparent;
+  }
+
+  html[data-public-theme="dark"] .forest-project-feature__overview {
+    grid-column: 9 / 13;
+    padding: clamp(1.75rem, 3vw, 3rem) clamp(1.5rem, 2.5vw, 2.5rem) clamp(2rem, 3.5vw, 3.5rem);
     border-left: 1px solid var(--forest-line);
     background: linear-gradient(145deg, rgb(94 164 134 / 0.08), transparent 46%), #101311;
   }
@@ -554,15 +553,24 @@
 
   html[data-public-theme="dark"] .forest-transformation {
     display: grid;
-    grid-template-columns: minmax(18rem, 4fr) minmax(0, 8fr);
-    gap: clamp(3rem, 6vw, 7rem);
-    align-items: center;
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    column-gap: clamp(2rem, 4vw, 4rem);
+    row-gap: clamp(1.5rem, 2.5vw, 2.5rem);
+    align-items: start;
     background: var(--forest-canvas-alt);
   }
 
-  html[data-public-theme="dark"] .forest-transformation__copy,
+  html[data-public-theme="dark"] .forest-transformation__heading {
+    grid-column: 1 / 10;
+  }
+
+  html[data-public-theme="dark"] .forest-transformation__details,
   html[data-public-theme="dark"] .forest-transformation .forest-before-after {
-    grid-column: auto;
+    grid-column: 1 / 13;
+  }
+
+  html[data-public-theme="dark"] .forest-transformation__details > p {
+    color: var(--forest-text-secondary);
   }
 
   html[data-public-theme="dark"] :is(.forest-before-after, .forest-comparison-slider) {
@@ -1362,7 +1370,8 @@
 
     html[data-public-theme="dark"] .forest-company-intro > figure,
     html[data-public-theme="dark"] .forest-company-intro > div,
-    html[data-public-theme="dark"] .forest-transformation__copy,
+    html[data-public-theme="dark"] .forest-transformation__heading,
+    html[data-public-theme="dark"] .forest-transformation__details,
     html[data-public-theme="dark"] .forest-transformation .forest-before-after {
       width: 100%;
       grid-column: 1;
@@ -1531,14 +1540,32 @@
 
     html[data-public-theme="dark"] .forest-project-feature__media {
       min-height: 0;
+      grid-column: 1;
       aspect-ratio: 4 / 3;
     }
 
     html[data-public-theme="dark"] .forest-project-feature__copy {
+      grid-column: 1;
       padding: 1.5rem 1.25rem 2rem;
       border-top: 1px solid var(--forest-line);
       border-left: 0;
     }
+
+    html[data-public-theme="dark"] .forest-project-feature__overview {
+      grid-column: 1;
+      padding: 1.5rem 1.25rem 2rem;
+      border-top: 1px solid var(--forest-line);
+      border-left: 0;
+    }
+
+    html[data-public-theme="dark"] .forest-process-stage {
+      aspect-ratio: auto;
+    }
+
+  html[data-public-theme="dark"] .forest-process-stage > img {
+    height: auto;
+    aspect-ratio: 4 / 3;
+  }
 
     html[data-public-theme="dark"] .forest-project-gallery {
       display: flex;

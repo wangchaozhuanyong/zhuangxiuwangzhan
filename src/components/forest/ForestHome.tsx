@@ -160,7 +160,8 @@ const ForestHome = ({ content }: ForestHomeProps) => {
   const afterImage = beforeAfter?.after_image_url || "/images/before-after/after-living.webp";
   const activeServiceItem = services[activeService] || services[0];
   const activeProcessItem = processSteps[activeProcess] || processSteps[0];
-  const introImage = projects[0]?.images[1] || projects[0]?.thumbnail || "/images/projects/proj1-condo-2.webp";
+  const introProject = projects[3] || projects[1] || projects[0];
+  const introImage = introProject?.images[1] || introProject?.thumbnail || "/images/projects/proj1-condo-2.webp";
   const displayText = (value: string) => language === "zh" ? translateDisplayText(value, language) : value;
 
   const whyItems = useMemo(() => {
@@ -196,10 +197,9 @@ const ForestHome = ({ content }: ForestHomeProps) => {
           <SmartImage
             src={heroImage}
             alt={heroAlt}
-            width={1600}
-            height={1100}
-            candidateWidths={[480, 720, 960, 1280, 1600]}
-            sizes="(max-width: 767px) 100vw, (max-width: 1199px) 58vw, 60vw"
+            width={1920}
+            height={1080}
+            sizes="(max-width: 767px) 100vw, 1200px"
             loading="eager"
             fetchPriority="high"
           />
@@ -214,49 +214,58 @@ const ForestHome = ({ content }: ForestHomeProps) => {
         })}
       </section>
 
-      <section className="forest-chapter forest-company-intro">
-        <figure>
-          <DeferredSmartImage src={introImage} alt={projects[0]?.thumbnailAlt || copy.companyTitle} width={1200} height={900} loading="lazy" />
+      <section className="forest-chapter forest-editorial-media forest-company-intro" data-cinematic-section>
+        <div className="forest-editorial-media__heading">
+          <SectionHeading title={copy.companyTitle} />
+        </div>
+        <figure className="forest-editorial-media__media" data-cinematic-media>
+          <DeferredSmartImage src={introImage} alt={introProject?.thumbnailAlt || copy.companyTitle} width={1200} height={900} loading="lazy" />
         </figure>
-        <div>
-          <SectionHeading title={copy.companyTitle} body={copy.companyBody} />
+        <div className="forest-editorial-media__details">
+          <p>{copy.companyBody}</p>
           <LocalizedLink className="forest-text-link" to="/about">{copy.about}<ArrowRight /></LocalizedLink>
         </div>
       </section>
 
       {services.length ? (
-        <section className="forest-chapter forest-chapter--band forest-services">
+        <section className="forest-chapter forest-chapter--band forest-services" data-cinematic-section>
           <div className="forest-content-frame">
-            <SectionHeading title={copy.servicesTitle} body={copy.servicesBody} />
+            <SectionHeading title={copy.servicesTitle} />
             <div className="forest-browser">
-              <div className="forest-browser__list" role="tablist" aria-label={copy.servicesTitle}>
-                {services.map((service, index) => (
-                  <button
-                    key={service.slug}
-                    id={`home-service-tab-${index}`}
-                    type="button"
-                    role="tab"
-                    aria-selected={activeService === index}
-                    aria-controls="home-service-panel"
-                    tabIndex={activeService === index ? 0 : -1}
-                    className={activeService === index ? "is-active" : ""}
-                    onClick={() => setActiveService(index)}
-                    onKeyDown={(event) => handleTabKey(event, index, services.length, setActiveService)}
-                  >
-                    <span>{service.title}</span>
-                    <small>{service.summary}</small>
-                  </button>
-                ))}
-                {activeServiceItem ? (
-                  <LocalizedLink className="forest-text-link" to={`/services/${activeServiceItem.slug}`}>
-                    {copy.details}<ArrowRight />
-                  </LocalizedLink>
-                ) : null}
+              <div className="forest-browser__controls">
+                <div className="forest-browser__list" role="tablist" aria-label={copy.servicesTitle}>
+                  {services.map((service, index) => (
+                    <button
+                      key={service.slug}
+                      id={`home-service-tab-${index}`}
+                      type="button"
+                      role="tab"
+                      aria-selected={activeService === index}
+                      aria-controls="home-service-panel"
+                      tabIndex={activeService === index ? 0 : -1}
+                      className={activeService === index ? "is-active" : ""}
+                      onClick={() => setActiveService(index)}
+                      onKeyDown={(event) => handleTabKey(event, index, services.length, setActiveService)}
+                    >
+                      <span>{service.title}</span>
+                      <small>{service.summary}</small>
+                    </button>
+                  ))}
+                </div>
+                <div className="forest-browser__footer">
+                  <p>{copy.servicesBody}</p>
+                  {activeServiceItem ? (
+                    <LocalizedLink className="forest-text-link" to={`/services/${activeServiceItem.slug}`}>
+                      {copy.details}<ArrowRight />
+                    </LocalizedLink>
+                  ) : null}
+                </div>
               </div>
               {activeServiceItem ? (
                 <figure
                   id="home-service-panel"
                   className="forest-browser__stage"
+                  data-cinematic-media
                   role="tabpanel"
                   aria-labelledby={`home-service-tab-${activeService}`}
                 >
@@ -269,24 +278,21 @@ const ForestHome = ({ content }: ForestHomeProps) => {
       ) : null}
 
       {projects.length ? (
-        <section className="forest-chapter forest-projects">
+        <section className="forest-chapter forest-projects" data-cinematic-section>
           <div className="forest-projects__intro">
-            <SectionHeading title={copy.projectsTitle} body={copy.projectsBody} />
-            <LocalizedLink className="forest-text-link forest-projects__all" to="/projects">
-              {copy.projectsAll}<ArrowRight />
-            </LocalizedLink>
+            <SectionHeading title={copy.projectsTitle} />
           </div>
 
           {featuredProject ? (
             <article className="forest-project-feature">
-              <LocalizedLink className="forest-project-feature__media" to={`/projects/${featuredProject.slug}`} aria-label={featuredProject.title}>
+              <LocalizedLink className="forest-project-feature__media" to={`/projects/${featuredProject.slug}`} aria-label={featuredProject.title} data-cinematic-media>
                 <DeferredSmartImage
                   src={featuredProject.thumbnail}
                   alt={featuredProject.title}
-                  width={1200}
-                  height={780}
-                  sizes="(max-width: 767px) 100vw, (max-width: 1199px) 62vw, 880px"
-                  candidateWidths={[560, 720, 960, 1200]}
+                  width={1440}
+                  height={900}
+                  sizes="(max-width: 767px) 100vw, (max-width: 1439px) 92vw, 1320px"
+                  candidateWidths={[560, 720, 960, 1200, 1440]}
                   loading="lazy"
                 />
               </LocalizedLink>
@@ -296,6 +302,12 @@ const ForestHome = ({ content }: ForestHomeProps) => {
                 {featuredProject.description ? <p>{featuredProject.description}</p> : null}
                 <LocalizedLink className="forest-text-link" to={`/projects/${featuredProject.slug}`}>
                   {copy.details}<ArrowRight />
+                </LocalizedLink>
+              </div>
+              <div className="forest-project-feature__overview">
+                <p>{copy.projectsBody}</p>
+                <LocalizedLink className="forest-text-link forest-projects__all" to="/projects">
+                  {copy.projectsAll}<ArrowRight />
                 </LocalizedLink>
               </div>
             </article>
@@ -327,15 +339,11 @@ const ForestHome = ({ content }: ForestHomeProps) => {
         </section>
       ) : null}
 
-      <section className="forest-chapter forest-transformation">
-        <div className="forest-transformation__copy">
-          <SectionHeading title={copy.compareTitle} body={copy.compareBody} />
-          <LocalizedLink className="forest-text-link" to="/before-after">
-            {copy.compareAll}
-            <ArrowRight aria-hidden="true" />
-          </LocalizedLink>
+      <section className="forest-chapter forest-editorial-media forest-transformation" data-cinematic-section>
+        <div className="forest-editorial-media__heading forest-transformation__heading">
+          <SectionHeading title={copy.compareTitle} />
         </div>
-        <div className="forest-before-after">
+        <div className="forest-editorial-media__media forest-before-after" data-cinematic-media>
           <SmartImage src={afterImage} alt={beforeAfter?.alt || copy.after} width={1200} height={800} loading="lazy" />
           <div className="forest-before-after__before" style={{ clipPath: `inset(0 ${100 - comparePosition}% 0 0)` }}>
             <SmartImage src={beforeImage} alt={beforeAfter?.alt || copy.before} width={1200} height={800} loading="lazy" />
@@ -352,10 +360,17 @@ const ForestHome = ({ content }: ForestHomeProps) => {
             onChange={(event) => setComparePosition(Number(event.target.value))}
           />
         </div>
+        <div className="forest-editorial-media__details forest-transformation__details">
+          <p>{copy.compareBody}</p>
+          <LocalizedLink className="forest-text-link" to="/before-after">
+            {copy.compareAll}
+            <ArrowRight aria-hidden="true" />
+          </LocalizedLink>
+        </div>
       </section>
 
       {products.length ? (
-        <section className="forest-chapter forest-chapter--band forest-products">
+        <section className="forest-chapter forest-chapter--band forest-products" data-cinematic-section>
           <div className="forest-content-frame">
             <SectionHeading title={copy.productsTitle} body={copy.productsBody} />
             <div className="forest-product-grid">
@@ -385,32 +400,38 @@ const ForestHome = ({ content }: ForestHomeProps) => {
       </section>
 
       {processSteps.length ? (
-        <section className="forest-chapter forest-process">
-          <SectionHeading title={copy.processTitle} body={copy.processBody} />
+        <section className="forest-chapter forest-process" data-cinematic-section>
+          <SectionHeading title={copy.processTitle} />
           <div className="forest-browser forest-browser--process">
-            <div className="forest-browser__list" role="tablist" aria-label={copy.processTitle}>
-              {processSteps.map((step, index) => (
-                <button
-                  key={step.id || `${step.step_number}-${step.title}`}
-                  id={`home-process-tab-${index}`}
-                  type="button"
-                  role="tab"
-                  aria-selected={activeProcess === index}
-                  aria-controls="home-process-panel"
-                  tabIndex={activeProcess === index ? 0 : -1}
-                  className={activeProcess === index ? "is-active" : ""}
-                  onClick={() => setActiveProcess(index)}
-                  onKeyDown={(event) => handleTabKey(event, index, processSteps.length, setActiveProcess)}
-                >
-                  <span><b>{String(step.step_number || index + 1).padStart(2, "0")}</b>{step.title}</span>
-                  <small>{step.description}</small>
-                </button>
-              ))}
+            <div className="forest-browser__controls">
+              <div className="forest-browser__list" role="tablist" aria-label={copy.processTitle}>
+                {processSteps.map((step, index) => (
+                  <button
+                    key={step.id || `${step.step_number}-${step.title}`}
+                    id={`home-process-tab-${index}`}
+                    type="button"
+                    role="tab"
+                    aria-selected={activeProcess === index}
+                    aria-controls="home-process-panel"
+                    tabIndex={activeProcess === index ? 0 : -1}
+                    className={activeProcess === index ? "is-active" : ""}
+                    onClick={() => setActiveProcess(index)}
+                    onKeyDown={(event) => handleTabKey(event, index, processSteps.length, setActiveProcess)}
+                  >
+                    <span><b>{String(step.step_number || index + 1).padStart(2, "0")}</b>{step.title}</span>
+                    <small>{step.description}</small>
+                  </button>
+                ))}
+              </div>
+              <div className="forest-browser__footer">
+                <p>{copy.processBody}</p>
+              </div>
             </div>
             {activeProcessItem ? (
               <figure
                 id="home-process-panel"
-                className="forest-process-stage"
+                className="forest-browser__stage forest-process-stage"
+                data-cinematic-media
                 role="tabpanel"
                 aria-labelledby={`home-process-tab-${activeProcess}`}
               >
@@ -448,7 +469,7 @@ const ForestHome = ({ content }: ForestHomeProps) => {
       ) : null}
 
       {faqs.length ? (
-        <section className="forest-chapter forest-faq">
+        <section className="forest-chapter forest-faq" data-cinematic-section>
           <SectionHeading title={copy.faqTitle} />
           <div className="forest-faq-list">
             {faqs.map((faq, index) => (

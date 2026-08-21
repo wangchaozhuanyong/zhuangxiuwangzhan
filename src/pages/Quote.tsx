@@ -71,7 +71,13 @@ const quoteFieldIds: Record<string, string> = {
 const focusFirstQuoteError = (errors: FormErrors) => {
   const firstKey = Object.keys(errors)[0];
   if (!firstKey || typeof window === "undefined") return;
-  window.setTimeout(() => document.getElementById(quoteFieldIds[firstKey] || firstKey)?.focus(), 0);
+  window.setTimeout(() => {
+    const target = document.getElementById(quoteFieldIds[firstKey] || firstKey);
+    if (!target) return;
+    const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    target.scrollIntoView({ behavior: reduceMotion ? "auto" : "smooth", block: "center" });
+    target.focus({ preventScroll: true });
+  }, 0);
 };
 
 const Quote = () => {

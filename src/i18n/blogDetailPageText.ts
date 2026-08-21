@@ -17,6 +17,10 @@ export const blogDetailPageText = {
     internalFaq: "FAQ",
     internalContact: "Contact",
     moreArticles: "More Articles",
+    articleLead: "Project perspective",
+    designJudgements: "Design judgements",
+    editorialPrinciples: ["Natural light first", "Durable materials", "Transparent budget"],
+    editorialImageAlt: "FLASH CAST interior design reference",
   },
   zh: {
     notFound: "文章不存在",
@@ -36,5 +40,9 @@ export const blogDetailPageText = {
     internalFaq: "常见问题",
     internalContact: "联系我们",
     moreArticles: "更多文章",
+    articleLead: "项目视角",
+    designJudgements: "设计判断",
+    editorialPrinciples: ["自然光优先", "材料耐久易维护", "预算透明可执行"],
+    editorialImageAlt: "FLASH CAST 室内设计参考画面",
   },
 } as const;

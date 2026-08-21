@@ -1,4 +1,4 @@
-import type { CSSProperties } from "react";
+import type { CSSProperties, MouseEvent } from "react";
 import { ClipboardList, Phone } from "lucide-react";
 import { useLocation } from "react-router-dom";
 import WhatsAppIcon from "@/components/WhatsAppIcon";
@@ -16,6 +16,16 @@ const mobileActionBackground = "hsl(38 33% 97% / 0.98)";
 const mobileActionForeground = getReadableTextColor("hsl(38 33% 97%)");
 
 const formatMessage = (template: string, source: string) => template.replace("{source}", source);
+
+const scrollToFormField = (event: MouseEvent<HTMLAnchorElement>, targetSelector: string) => {
+  const target = document.querySelector<HTMLElement>(targetSelector);
+  if (!target) return;
+
+  event.preventDefault();
+  const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  target.scrollIntoView({ behavior: reduceMotion ? "auto" : "smooth", block: "center" });
+  window.setTimeout(() => target.focus({ preventScroll: true }), reduceMotion ? 0 : 360);
+};
 
 const MobileActionBar = () => {
   const { language } = useLanguage();
@@ -95,7 +105,10 @@ const MobileActionBar = () => {
           <a
             href={formAction.href}
             className="mobile-action-bar__item mobile-action-bar__item--quote"
-            onClick={() => trackCtaClick(formAction.ctaName, "mobile_action_bar", { destination: formAction.href })}
+            onClick={(event) => {
+              trackCtaClick(formAction.ctaName, "mobile_action_bar", { destination: formAction.href });
+              scrollToFormField(event, formAction.href);
+            }}
           >
             <span className="mobile-action-bar__icon" aria-hidden="true">
               <ClipboardList className="h-5 w-5" />

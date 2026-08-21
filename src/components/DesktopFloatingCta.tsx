@@ -39,7 +39,11 @@ const DesktopFloatingCta = () => {
   const { menuOpen } = usePublicChrome();
   const t = copy[language];
   const publicPath = stripLanguagePrefix(location.pathname);
-  const suppressPrompt = publicPath === "/contact" || publicPath === "/quote";
+  const suppressPrompt =
+    publicPath === "/contact" ||
+    publicPath === "/quote" ||
+    publicPath.startsWith("/blog/") ||
+    publicPath.startsWith("/projects/");
   const [isDesktop, setIsDesktop] = useState(false);
   const [showPrompt, setShowPrompt] = useState(false);
   const [contentOverlapZone, setContentOverlapZone] = useState(false);
@@ -163,7 +167,8 @@ const DesktopFloatingCta = () => {
                 className="btn-on-dark-secondary justify-center px-4 py-2.5 text-center text-sm"
                 onClick={() => trackCtaClick("whatsapp", "floating_desktop_prompt", { destination: "whatsapp" })}
               >
-                WhatsApp
+                <WhatsAppIcon className="h-4 w-4 shrink-0 text-whatsapp" />
+                <span>WhatsApp</span>
               </a>
             </div>
           </AdaptiveSurface>

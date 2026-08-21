@@ -23,7 +23,6 @@ import { trackCtaClick } from "@/lib/analytics";
 import { buildQuotePath, quoteProjectTypeFromServiceSlug } from "@/lib/quoteContext";
 import { serviceDetailPageText } from "@/i18n/serviceDetailPageText";
 
-const SERVICE_HERO_IMAGE_WIDTHS = [720, 900, 1200];
 
 
 
@@ -120,7 +119,7 @@ const ServiceDetail = () => {
 
       <ImmersiveHero className="page-hero page-hero--detail">
         <div className="page-hero__media page-hero-media hero-media-mask">
-          <SmartImage src={heroImage} alt={serviceTitle} className="page-hero__image h-full w-full object-cover" width={1920} height={800} loading="eager" fetchPriority="high" sizes="100vw" candidateWidths={SERVICE_HERO_IMAGE_WIDTHS} quality={76} />
+          <SmartImage src={heroImage} alt={serviceTitle} className="page-hero__image h-full w-full object-cover" width={1920} height={800} loading="eager" fetchPriority="high" sizes="100vw" quality={76} />
           <div className="page-hero__overlay absolute inset-0 media-readable-overlay" aria-hidden="true" />
         </div>
         <div className="page-hero__content site-container">

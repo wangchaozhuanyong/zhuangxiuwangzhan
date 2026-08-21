@@ -26,7 +26,6 @@ interface HeroBannerProps {
   className?: string;
 }
 
-const HERO_IMAGE_WIDTHS = [720, 900, 1200];
 const HERO_MOBILE_IMAGE_WIDTHS = [560, 720, 900];
 
 const HeroBanner = ({
@@ -73,7 +72,6 @@ const HeroBanner = ({
             width={1920}
             height={800}
             sizes="100vw"
-            candidateWidths={HERO_IMAGE_WIDTHS}
             quality={76}
           />
         </picture>

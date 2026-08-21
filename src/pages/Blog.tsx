@@ -96,7 +96,7 @@ const Blog = () => {
             ))}
           </div>
         )}
-        {visibleCount < filtered.length ? <div className="forest-load-more"><button type="button" className="forest-button forest-button--outline" onClick={() => setVisibleCount((count) => count + BLOG_PAGE_SIZE)}>{t.loadMore}</button></div> : null}
+        {visibleCount < filtered.length ? <div className="forest-load-more-wrap"><button type="button" className="forest-load-more-button" onClick={() => setVisibleCount((count) => count + BLOG_PAGE_SIZE)}>{t.loadMore}</button></div> : null}
       </section>
     </main>
   );

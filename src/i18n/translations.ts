@@ -21,6 +21,8 @@ export const translations: Translations = {
   "nav.promotions": { en: "Promotions", zh: "优惠活动" },
   "nav.locations": { en: "Locations", zh: "服务地区" },
   "nav.beforeAfter": { en: "Before & After", zh: "改造前后" },
+  "nav.oldHouse": { en: "Old House Renovation", zh: "旧屋翻新" },
+  "nav.quote": { en: "Get a Quote", zh: "获取报价" },
   "nav.navigation": { en: "Navigation", zh: "导航" },
 
   // ============ CTA BUTTONS ============

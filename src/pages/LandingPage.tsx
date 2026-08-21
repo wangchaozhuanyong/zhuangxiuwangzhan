@@ -3,8 +3,9 @@ import { useMemo } from "react";
 import Link from "@/components/LocalizedLink";
 import { Button } from "@/components/ui/button";
 import ImmersiveHero from "@/components/ImmersiveHero";
-import { ArrowRight, CheckCircle, MapPin } from "lucide-react";
+import { ArrowRight, CheckCircle, ClipboardCheck, Clock3, MapPin, MapPinned } from "lucide-react";
 import WhatsAppIcon from "@/components/WhatsAppIcon";
+import LandingQuoteForm from "@/components/landing/LandingQuoteForm";
 import Reveal from "@/components/Reveal";
 import FAQSection from "@/components/blocks/FAQSection";
 import CTABanner from "@/components/blocks/CTABanner";
@@ -22,12 +23,7 @@ import { trackCtaClick } from "@/lib/analytics";
 import { toArray, toRecord, toText } from "@/lib/recordUtils";
 import { landingPageText } from "@/i18n/landingPageText";
 
-const LANDING_HERO_IMAGE_WIDTHS = [720, 900, 1200];
 const LANDING_PROJECT_IMAGE_WIDTHS = [360, 560, 720];
-
-
-
-
 const LandingPage = () => {
   const { slug } = useParams<{ slug: string }>();
   const { language } = useLanguage();
@@ -109,40 +105,43 @@ const LandingPage = () => {
         description={landingPage.seoDescription || stripHtml(landingPage.description)}
         canonicalPath={`/landing/${slug || ""}`}
       />
-      <ImmersiveHero className="page-hero page-hero--detail">
+      <ImmersiveHero className="page-hero landing-conversion-hero">
         <div className="page-hero__media page-hero-media hero-media-mask">
-          <SmartImage src={page.heroImage} alt={landingPage.heroAlt || landingPage.title} className="page-hero__image h-full w-full object-cover" loading="eager" width={1920} height={800} fetchPriority="high" sizes="100vw" candidateWidths={LANDING_HERO_IMAGE_WIDTHS} quality={76} />
+          <SmartImage src={landingPage.heroImage} alt={landingPage.heroAlt || landingPage.title} className="page-hero__image h-full w-full object-cover" loading="eager" width={1920} height={1080} fetchPriority="high" sizes="100vw" quality={78} />
           <div className="page-hero__overlay absolute inset-0 media-readable-overlay" aria-hidden="true" />
         </div>
-        <div className="page-hero__content site-container">
-          <div className="max-w-xl min-w-0">
+        <div className="page-hero__content landing-conversion-hero__content site-container">
+          <div className="landing-conversion-hero__copy">
             <p className="page-hero__label mb-3 font-body text-[11px] font-semibold uppercase tracking-[0.28em] text-gold">FLASH CAST SDN. BHD.</p>
             <h1 className="page-hero__title heading-safe mb-4 text-3xl font-bold leading-tight text-on-media md:text-5xl">{landingPage.title}</h1>
             <p className="page-hero__description prose-safe mb-6 text-lg text-on-media-muted">{landingPage.subtitle}</p>
-            <div className="flex flex-col gap-3 sm:flex-row sm:gap-4">
-              <Link
-                to="/quote"
-                className="btn-on-dark-primary min-h-12 w-full justify-center px-8 sm:w-auto"
-                onClick={() => trackCtaClick("quote", "landing_hero", { destination: "/quote" })}
-              >
-                {t.quote} <ArrowRight className="h-4 w-4" />
-              </Link>
+            <p className="landing-conversion-hero__area"><MapPin aria-hidden="true" />{t.heroSupport}</p>
+            <div className="landing-conversion-hero__actions">
               <a
                 href={settings.whatsapp_url()}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="btn-on-dark-secondary min-h-12 w-full justify-center px-8 sm:w-auto"
+                className="landing-conversion-hero__whatsapp"
                 onClick={() => trackCtaClick("whatsapp", "landing_hero", { destination: "whatsapp" })}
               >
-                <WhatsAppIcon className="mr-2 h-[18px] w-[18px] text-whatsapp" /> {t.whatsapp}
+                <WhatsAppIcon aria-hidden="true" /> <span>{t.whatsapp}</span><ArrowRight aria-hidden="true" />
               </a>
             </div>
           </div>
+          <LandingQuoteForm landingTitle={landingPage.title} />
         </div>
       </ImmersiveHero>
 
+      <section className="landing-trust-rail" aria-label={t.whyChoose} data-cinematic-section>
+        {t.trustItems.map((item, index) => {
+          const icons = [Clock3, ClipboardCheck, CheckCircle, MapPinned];
+          const Icon = icons[index] || CheckCircle;
+          return <div key={item}><Icon aria-hidden="true" /><span>{item}</span></div>;
+        })}
+      </section>
+
       {/* Description + Benefits */}
-      <section className="section-padding bg-background">
+      <section className="landing-overview section-padding" data-cinematic-section>
         <div className="container-narrow">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-10 items-start">
             <Reveal direction="left">
@@ -177,9 +176,26 @@ const LandingPage = () => {
         </div>
       </section>
 
+      <section className="landing-process section-padding" data-cinematic-section>
+        <div className="container-narrow">
+          <header className="landing-section-heading">
+            <h2>{t.processTitle}</h2>
+            <p>{t.processIntro}</p>
+          </header>
+          <ol className="landing-process__steps">
+            {t.processSteps.map((step, index) => (
+              <li key={step.title}>
+                <span aria-hidden="true">{String(index + 1).padStart(2, "0")}</span>
+                <div><h3>{step.title}</h3><p>{step.description}</p></div>
+              </li>
+            ))}
+          </ol>
+        </div>
+      </section>
+
       {/* Related Projects */}
       {landingRelatedProjects.length > 0 && (
-        <section className="section-padding bg-muted">
+        <section className="landing-projects section-padding" data-cinematic-section>
           <div className="container-narrow">
             <Reveal>
               <div className="text-center mb-10">
@@ -191,7 +207,7 @@ const LandingPage = () => {
               {landingRelatedProjects.map((p, i) => (
                 <Reveal key={p.title} delay={i * 80}>
                   <div className="material-depth-card luxury-card overflow-hidden hover-lift">
-                    <div className="material-depth-card__media img-zoom aspect-[4/3]">
+                    <div className="material-depth-card__media img-zoom aspect-[4/3]" data-cinematic-media>
                       <SmartImage src={p.image} alt={p.title} loading="lazy" width={600} height={450} sizes="(max-width: 640px) 92vw, 45vw" candidateWidths={LANDING_PROJECT_IMAGE_WIDTHS} quality={72} className="w-full h-full object-cover" />
                     </div>
                     <div className="material-depth-card__body">

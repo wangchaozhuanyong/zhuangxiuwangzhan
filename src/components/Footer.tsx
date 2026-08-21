@@ -1,7 +1,7 @@
 import { ReactNode, useEffect, useId, useState } from "react";
-import { useLocation } from "react-router-dom";
+import { Link as RouterLink, useLocation } from "react-router-dom";
 import Link from "@/components/LocalizedLink";
-import { ChevronDown, Clock, ExternalLink, Facebook, Instagram, Linkedin, Mail, MapPin, Music2, Phone, type LucideIcon } from "lucide-react";
+import { ArrowUp, ChevronDown, Clock, ExternalLink, Facebook, Instagram, Linkedin, Mail, MapPin, Music2, Phone, type LucideIcon } from "lucide-react";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { footerCopy, footerLocationLinks, footerServiceOverrides, footerUiText } from "@/i18n/footerText";
 import { useSiteSettings } from "@/hooks/useSiteSettings";
@@ -9,9 +9,22 @@ import { usePublishedCtaBlock } from "@/hooks/usePublishedContent";
 import SmartImage from "@/components/SmartImage";
 import FooterPreludeCta from "@/components/blocks/FooterPreludeCta";
 import { addCacheBuster } from "@/lib/siteSettingsApi";
-import { stripLanguagePrefix } from "@/i18n/routes";
+import { stripLanguagePrefix, switchLanguagePath } from "@/i18n/routes";
 import { trackCtaClick } from "@/lib/analytics";
 import logoFallback from "@/assets/logo-flashcast.webp";
+import { publicNavigationGroups, type PublicNavGroupKey } from "@/config/publicNavigation";
+import { useT } from "@/i18n/useT";
+import { navbarText } from "@/i18n/navbarText";
+
+const navbarGroupLabel = (key: PublicNavGroupKey, language: "en" | "zh") => {
+  const copy = navbarText[language];
+  return {
+    spaces: copy.spacesGroup,
+    services: copy.servicesGroup,
+    studio: copy.studioGroup,
+    contact: copy.contactGroup,
+  }[key];
+};
 
 const SectionTitle = ({ children }: { children: ReactNode }) => (
   <div className="footer-column-title">
@@ -117,6 +130,7 @@ const Footer = () => {
   const { language } = useLanguage();
   const location = useLocation();
   const settings = useSiteSettings();
+  const translate = useT();
   const t = footerCopy[language];
   const uiText = footerUiText[language];
   const [openSection, setOpenSection] = useState<string | null>(null);
@@ -125,6 +139,7 @@ const Footer = () => {
   const serviceLinks = normalizeFooterServiceLinks(t.serviceLinks, language);
   const logoSrc = !logoFailed && settings.logo_url ? addCacheBuster(settings.logo_url, settings.updated_at) : logoFallback;
   const normalizedPath = stripLanguagePrefix(location.pathname);
+  const showFooterCta = normalizedPath !== "/";
   const hasDedicatedSubpageCta =
     normalizedPath === "/services" ||
     normalizedPath.startsWith("/services/") ||
@@ -136,12 +151,15 @@ const Footer = () => {
     normalizedPath === "/locations" ||
     normalizedPath === "/faq" ||
     normalizedPath.startsWith("/landing/");
-  const showFooterCta = normalizedPath !== "/" && !hasDedicatedSubpageCta;
-  const { data: globalCtaBlock } = usePublishedCtaBlock(language, "home_final", { enabled: showFooterCta });
+  const { data: globalCtaBlock } = usePublishedCtaBlock(language, "home_final", {
+    enabled: showFooterCta && !hasDedicatedSubpageCta,
+  });
   const footerCtaTitle = globalCtaBlock?.title || t.ctaTitle;
   const footerCtaDescription = globalCtaBlock?.description || t.ctaText;
   const footerCtaButton = globalCtaBlock?.primary_label || t.ctaButton;
   const footerCtaPath = globalCtaBlock?.primary_url || "/quote";
+  const nextLanguage = language === "en" ? "zh" : "en";
+  const nextLanguagePath = switchLanguagePath(location.pathname, nextLanguage, location.search, location.hash);
   const mapHref =
     settings.map_latitude && settings.map_longitude
       ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${settings.map_latitude},${settings.map_longitude}`)}`
@@ -178,11 +196,13 @@ const Footer = () => {
           whatsappLabel={uiText.whatsappLabel}
           quotePath={footerCtaPath}
           whatsappSource="Footer CTA"
+          imageAlt={uiText.panoramaAlt}
         />
       )}
 
       <div className="footer-surface">
         <div className="footer-content site-container py-10 md:py-16 lg:py-20">
+          <div className="footer-wordmark" aria-hidden="true">FLASH CAST</div>
           <div className="footer-workbench hidden lg:grid">
             <div className="footer-brand-panel">
               <div className="footer-logo-row">
@@ -248,15 +268,20 @@ const Footer = () => {
                 </ul>
               </div>
 
-              <div className="footer-link-column">
-                <SectionTitle>{t.companyTitle}</SectionTitle>
-                <ul>
-                  {t.companyLinks.map((item) => (
-                    <FooterLink key={item.path} to={item.path}>
-                      {item.name}
-                    </FooterLink>
+              <div className="footer-link-column footer-link-column--directory">
+                <SectionTitle>{uiText.directoryTitle}</SectionTitle>
+                <div className="footer-directory-groups">
+                  {publicNavigationGroups.map((group) => (
+                    <section key={group.key}>
+                      <p>{navbarGroupLabel(group.key, language)}</p>
+                      <ul>
+                        {group.items.map((item) => (
+                          <FooterLink key={item.path} to={item.path}>{translate(item.labelKey)}</FooterLink>
+                        ))}
+                      </ul>
+                    </section>
                   ))}
-                </ul>
+                </div>
               </div>
 
               <div className="footer-link-column">
@@ -344,10 +369,8 @@ const Footer = () => {
                 onToggle={() => setOpenSection(openSection === "company" ? null : "company")}
               >
                 <ul className="footer-mobile-link-list">
-                  {t.companyLinks.map((item) => (
-                    <FooterLink key={item.path} to={item.path}>
-                      {item.name}
-                    </FooterLink>
+                  {publicNavigationGroups.flatMap((group) => group.items).map((item) => (
+                    <FooterLink key={item.path} to={item.path}>{translate(item.labelKey)}</FooterLink>
                   ))}
                 </ul>
               </MobileAccordion>
@@ -377,6 +400,13 @@ const Footer = () => {
               <Link to="/terms">
                 {t.terms}
               </Link>
+              <RouterLink to={nextLanguagePath} className="footer-language-link" aria-label={uiText.languageLabel}>
+                {nextLanguage === "zh" ? "中文" : "EN"}
+              </RouterLink>
+              <button type="button" className="footer-back-to-top" onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}>
+                <span>{uiText.backToTop}</span>
+                <ArrowUp className="h-4 w-4" aria-hidden="true" />
+              </button>
             </div>
           </div>
         </div>

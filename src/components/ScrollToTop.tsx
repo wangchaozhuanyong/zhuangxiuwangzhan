@@ -84,6 +84,7 @@ const ScrollToTop = () => {
 
   useLayoutEffect(() => {
     const routeContext = routeContextRef.current;
+    document.documentElement.dataset.navigationType = routeContext.navigationType.toLowerCase();
     const pathname = routeContext.location.pathname;
     const isRestorableRoute = isBottomNavPath(pathname);
     const positionKey = getScrollPositionKey(pathname);

@@ -129,8 +129,8 @@ const Products = () => {
               ))}
             </div>
             {filteredProducts.length > visibleLimit ? (
-              <div className="forest-load-more">
-                <button type="button" className="forest-button forest-button--outline" onClick={() => setVisibleLimit((limit) => limit + INITIAL_PRODUCT_LIMIT)}>
+              <div className="forest-load-more-wrap">
+                <button type="button" className="forest-load-more-button" onClick={() => setVisibleLimit((limit) => limit + INITIAL_PRODUCT_LIMIT)}>
                   {t.loadMore}
                 </button>
               </div>

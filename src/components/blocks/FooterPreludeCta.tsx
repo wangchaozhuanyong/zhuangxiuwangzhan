@@ -1,6 +1,7 @@
 import Link from "@/components/LocalizedLink";
 import Reveal from "@/components/Reveal";
 import WhatsAppIcon from "@/components/WhatsAppIcon";
+import SmartImage from "@/components/SmartImage";
 import { useSiteSettings } from "@/hooks/useSiteSettings";
 import { trackCtaClick } from "@/lib/analytics";
 import { cn } from "@/lib/utils";
@@ -15,6 +16,8 @@ interface FooterPreludeCtaProps {
   id?: string;
   className?: string;
   whatsappSource?: string;
+  imageSrc?: string;
+  imageAlt?: string;
 }
 
 const FooterPreludeCta = ({
@@ -26,11 +29,24 @@ const FooterPreludeCta = ({
   id,
   className,
   whatsappSource,
+  imageSrc = "/images/projects/generated-portfolio/mont-kiara-luxury-condo-renovation.webp",
+  imageAlt = "",
 }: FooterPreludeCtaProps) => {
   const settings = useSiteSettings();
 
   return (
     <section className={cn("home-footer-prelude section-padding", className)} id={id}>
+      <div className="home-footer-prelude__media" aria-hidden={imageAlt ? undefined : "true"}>
+        <SmartImage
+          src={imageSrc}
+          alt={imageAlt}
+          className="home-footer-prelude__image"
+          width={1920}
+          height={1080}
+          sizes="100vw"
+          quality={78}
+        />
+      </div>
       <div className="home-footer-prelude__beam" aria-hidden="true" />
       <div className="container-narrow relative z-10">
         <Reveal>

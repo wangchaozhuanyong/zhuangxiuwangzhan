@@ -1,6 +1,6 @@
 import { lazy, Suspense, useEffect, useRef, type ReactNode } from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, useLocation } from "react-router-dom";
+import { BrowserRouter, Routes, useLocation, useNavigationType } from "react-router-dom";
 import { HelmetProvider } from "react-helmet-async";
 import { LanguageProvider, useLanguage } from "@/i18n/LanguageContext";
 import Navbar from "@/components/Navbar";
@@ -19,6 +19,7 @@ import ScrollToTop from "./components/ScrollToTop";
 const AdminRouteTree = lazy(() => import("@/routes/AdminRouteTree"));
 const AdminLoginPage = lazy(() => import("@/pages/admin/AdminLogin"));
 const AdminUiProviders = lazy(() => import("@/components/admin/AdminUiProviders"));
+const PublicCinematicMotion = lazy(() => import("@/components/PublicCinematicMotion"));
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -146,6 +147,7 @@ const PublicSiteShell = ({
 
 const AppShell = () => {
   const location = useLocation();
+  const navigationType = useNavigationType();
   const { language } = useLanguage();
   const isAdminRoute = location.pathname.startsWith("/admin");
   const isAdminLoginRoute = /^\/admin\/?$/.test(location.pathname);
@@ -167,11 +169,21 @@ const AppShell = () => {
   const mainContentKey = isAdminRoute ? "admin-main-content" : location.pathname;
   const forestSurface = publicPath.startsWith("/products") || publicPath.startsWith("/materials")
     ? "timber"
-    : publicPath.startsWith("/promotions") || publicPath.startsWith("/contact") || publicPath.startsWith("/quote")
-      ? "forest"
-      : publicPath.startsWith("/services") || publicPath.startsWith("/process")
-        ? "graphite"
-        : "stone";
+    : publicPath.startsWith("/landing")
+      ? "campaign"
+      : publicPath.startsWith("/promotions") || publicPath.startsWith("/contact") || publicPath.startsWith("/quote")
+        ? "forest"
+        : publicPath.startsWith("/services") || publicPath.startsWith("/process")
+          ? "graphite"
+          : "stone";
+
+  useEffect(() => {
+    document.documentElement.dataset.navigationType = navigationType.toLowerCase();
+
+    return () => {
+      delete document.documentElement.dataset.navigationType;
+    };
+  }, [navigationType]);
 
   return (
     <PublicChromeProvider
@@ -201,6 +213,9 @@ const AppShell = () => {
       ) : (
         <PublicSiteShell surface={forestSurface} productDetail={isProductDetailRoute}>
           {!isProductDetailRoute ? <Navbar /> : null}
+          <Suspense fallback={null}>
+            <PublicCinematicMotion />
+          </Suspense>
           <PublicPageFrame isAdminRoute={false}>
             <div key={mainContentKey} id="main-content" tabIndex={-1} className={mainContentClass} data-forest-surface={forestSurface}>
               <AppErrorBoundary isAdminRoute={false}>

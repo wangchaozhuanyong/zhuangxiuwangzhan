@@ -21,12 +21,53 @@ import { trackCtaClick } from "@/lib/analytics";
 import { formatBlogDate, formatBlogReadTime } from "@/lib/blogMeta";
 import { blogDetailPageText } from "@/i18n/blogDetailPageText";
 
-const BLOG_HERO_IMAGE_WIDTHS = [720, 900, 1200];
 const RELATED_BLOG_IMAGE_WIDTHS = [360, 560, 720];
 
+const EDITORIAL_STORY_IMAGES = [
+  "/images/projects/generated-portfolio/mont-kiara-luxury-condo-renovation.webp",
+  "/images/projects/generated-portfolio/bukit-jalil-family-condo-upgrade.webp",
+  "/images/materials/art-lime-wash.webp",
+] as const;
 
+const splitEditorialSections = (content: string) =>
+  content
+    .replace(/\s+##\s+/g, "\n\n## ")
+    .split(/\n\n+/)
+    .map((block) => block.trim())
+    .filter(Boolean);
 
+const splitSanitizedHtmlSections = (html: string) => {
+  if (typeof DOMParser === "undefined") return [html];
+  const documentNode = new DOMParser().parseFromString(html, "text/html");
+  const sections: string[] = [];
+  let current: string[] = [];
 
+  Array.from(documentNode.body.children).forEach((element) => {
+    if (/^H[2-4]$/.test(element.tagName) && current.length) {
+      sections.push(current.join(""));
+      current = [];
+    }
+    current.push(element.outerHTML);
+  });
+  if (current.length) sections.push(current.join(""));
+  return sections.length ? sections : [html];
+};
+
+const renderPlainParagraph = (block: string, key: string) => {
+  const listParts = block.split(/\s+-\s+/).filter(Boolean);
+  if (listParts.length > 2) {
+    const [lead, ...items] = listParts;
+    return (
+      <div key={key} className="blog-editorial-copy">
+        {lead ? <p>{lead}</p> : null}
+        <ul>
+          {items.map((item, index) => <li key={`${key}-${index}`}>{item}</li>)}
+        </ul>
+      </div>
+    );
+  }
+  return <p key={key} className="blog-editorial-copy">{block}</p>;
+};
 const BlogDetail = () => {
   const { slug } = useParams<{ slug: string }>();
   const { language } = useLanguage();
@@ -81,45 +122,58 @@ const BlogDetail = () => {
 
   const renderContent = (content: string) => {
     if (isHtmlText(content)) {
-      return <div className="prose prose-neutral max-w-none" dangerouslySetInnerHTML={{ __html: sanitizeHtml(content) }} />;
+      const htmlSections = splitSanitizedHtmlSections(sanitizeHtml(content));
+      return (
+        <div className="blog-editorial-html">
+          {htmlSections.map((section, index) => (
+            <div key={index} className="blog-editorial-html-section" data-cinematic-section>
+              <div className="prose prose-neutral max-w-none" dangerouslySetInnerHTML={{ __html: section }} />
+              {(index + 1) % 2 === 0 ? (
+                <figure className="blog-editorial-figure blog-editorial-figure--wide" data-cinematic-media>
+                  <SmartImage src={EDITORIAL_STORY_IMAGES[index % EDITORIAL_STORY_IMAGES.length]} alt={t.editorialImageAlt} width={1200} height={760} sizes="(max-width: 900px) 100vw, 1100px" candidateWidths={[720, 900, 1200]} quality={78} className="h-full w-full object-cover" />
+                </figure>
+              ) : null}
+            </div>
+          ))}
+        </div>
+      );
     }
 
-    return content.split("\n\n").map((block, index) => {
-      if (block.startsWith("## ")) {
-        return <h2 key={index} className="font-display text-xl md:text-2xl font-bold mt-8 mb-3">{block.replace("## ", "")}</h2>;
-      }
+    return splitEditorialSections(content).map((block, index) => {
+      const isSection = block.startsWith("## ");
+      const cleanBlock = isSection ? block.replace(/^##\s+/, "") : block;
       if (block.startsWith("- [ ] ")) {
         const items = block.split("\n").filter(Boolean);
         return (
-          <ul key={index} className="space-y-2 my-4">
+          <ul key={index} className="blog-editorial-checklist">
             {items.map((item, itemIndex) => (
-              <li key={itemIndex} className="flex items-start gap-2 text-muted-foreground">
-                <span className="w-4 h-4 mt-0.5 border border-border rounded shrink-0" />
+              <li key={itemIndex}>
+                <span aria-hidden="true" />
                 <span>{item.replace("- [ ] ", "")}</span>
               </li>
             ))}
           </ul>
         );
       }
-      if (block.startsWith("**")) {
-        const parts = block.split("\n").filter(Boolean);
-        return (
-          <div key={index} className="my-4 space-y-1">
-            {parts.map((line, lineIndex) => {
-              const boldMatch = line.match(/^\*\*(.*?)\*\*\s*(.*)/);
-              if (boldMatch) {
-                return (
-                  <p key={lineIndex} className="text-muted-foreground">
-                    <strong className="text-foreground">{boldMatch[1]}</strong> {boldMatch[2]}
-                  </p>
-                );
-              }
-              return <p key={lineIndex} className="text-muted-foreground">{line}</p>;
-            })}
-          </div>
-        );
-      }
-      return <p key={index} className="text-muted-foreground leading-relaxed my-4">{block}</p>;
+      return (
+        <div key={index} className={`blog-editorial-section ${isSection ? "blog-editorial-section--chapter" : "blog-editorial-section--lead"}`} data-cinematic-section>
+          {renderPlainParagraph(cleanBlock, `blog-block-${index}`)}
+          {isSection && index % 2 === 0 ? (
+            <figure className="blog-editorial-figure blog-editorial-figure--wide" data-cinematic-media>
+              <SmartImage
+                src={EDITORIAL_STORY_IMAGES[(index / 2) % EDITORIAL_STORY_IMAGES.length]}
+                alt={t.editorialImageAlt}
+                width={1200}
+                height={760}
+                sizes="(max-width: 900px) 100vw, 1100px"
+                candidateWidths={[720, 900, 1200]}
+                quality={78}
+                className="h-full w-full object-cover"
+              />
+            </figure>
+          ) : null}
+        </div>
+      );
     });
   };
 
@@ -147,7 +201,7 @@ const BlogDetail = () => {
 
       <ImmersiveHero className="page-hero page-hero--detail">
         <div className="page-hero__media page-hero-media hero-media-mask">
-          <SmartImage src={post.image} alt={articleImageAlt} className="page-hero__image h-full w-full object-cover" width={1920} height={800} loading="eager" fetchPriority="high" sizes="100vw" candidateWidths={BLOG_HERO_IMAGE_WIDTHS} quality={76} />
+          <SmartImage src={post.image} alt={articleImageAlt} className="page-hero__image h-full w-full object-cover" width={1920} height={800} loading="eager" fetchPriority="high" sizes="100vw" quality={76} />
           <div className="page-hero__overlay absolute inset-0 media-readable-overlay" aria-hidden="true" />
         </div>
         <div className="page-hero__content site-container max-w-3xl">
@@ -163,26 +217,44 @@ const BlogDetail = () => {
         </div>
       </ImmersiveHero>
 
-      <section className="section-padding bg-background">
-        <div className="container-narrow max-w-3xl">
+      <section className="blog-editorial-shell section-padding bg-background">
+        <div className="blog-editorial-layout container-narrow">
           <Reveal>
-            <div className="prose-sm">
-              {renderContent(displayText(post.content))}
+            <header className="blog-editorial-prologue">
+              <span>{t.articleLead}</span>
+              <p>{displayText(post.excerpt)}</p>
+            </header>
+          </Reveal>
+
+          <Reveal delay={60}>
+            <div className="blog-editorial-judgements" aria-label={t.designJudgements}>
+              <p>{t.designJudgements}</p>
+              <ol>
+                {t.editorialPrinciples.map((principle) => (
+                  <li key={principle}>{principle}</li>
+                ))}
+              </ol>
             </div>
           </Reveal>
 
+          <Reveal delay={100}>
+            <article className="blog-editorial-article">
+              {renderContent(displayText(post.content))}
+            </article>
+          </Reveal>
+
           <Reveal delay={80}>
-            <div className="mt-10 pt-6 border-t border-border">
+            <div className="blog-editorial-tags mt-10 pt-6 border-t border-border">
               <div className="flex flex-wrap gap-2">
                 {post.tags.map((tag) => (
-                  <span key={tag} className="text-xs px-3 py-1 bg-muted rounded-full text-muted-foreground">#{translateKeywordLabel(tag, language)}</span>
+                  <span key={tag}>#{translateKeywordLabel(tag, language)}</span>
                 ))}
               </div>
             </div>
           </Reveal>
 
           <Reveal delay={160}>
-            <div className="luxury-card-muted mt-10 p-6 text-center">
+            <div className="blog-editorial-cta luxury-card-muted mt-10 p-6 text-center">
               <h3 className="heading-safe mb-2 font-display text-xl font-bold">{t.ctaTitle}</h3>
               <p className="mb-4 text-sm text-muted-foreground">{t.ctaText}</p>
               <div className="flex flex-col justify-center gap-3 sm:flex-row sm:gap-4">

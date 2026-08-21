@@ -15,7 +15,6 @@ import { pageHeroImages } from "@/lib/pageHeroImages";
 import { buildLocalResponsiveSrcSet } from "@/lib/localResponsiveImage";
 import { oldHouseRenovationPageText } from "@/i18n/oldHouseRenovationPageText";
 
-const OLD_HOUSE_HERO_IMAGE_WIDTHS = [720, 900, 1200];
 const OLD_HOUSE_MOBILE_HERO_IMAGE_WIDTHS = [560, 720, 900];
 const OLD_HOUSE_CONTENT_IMAGE_WIDTHS = [560, 720, 900];
 const oldHouseServiceImg = "/images/services/old-house-renovation.webp";
@@ -44,7 +43,7 @@ const OldHouseRenovation = () => {
         <div className="page-hero__media page-hero-media hero-media-mask">
           <picture className="block h-full w-full">
             <source media="(max-width: 767px)" srcSet={mobileHeroSrcSet} sizes="100vw" />
-            <SmartImage src={pageHeroImages.oldHouse.desktop} alt={t.heroAlt} className="page-hero__image h-full w-full object-cover" width={1920} height={720} loading="eager" fetchPriority="high" sizes="100vw" candidateWidths={OLD_HOUSE_HERO_IMAGE_WIDTHS} quality={76} />
+            <SmartImage src={pageHeroImages.oldHouse.desktop} alt={t.heroAlt} className="page-hero__image h-full w-full object-cover" width={1920} height={720} loading="eager" fetchPriority="high" sizes="100vw" quality={76} />
           </picture>
           <div className="page-hero__overlay absolute inset-0 media-readable-overlay" aria-hidden="true" />
         </div>

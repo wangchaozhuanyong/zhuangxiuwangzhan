@@ -29,7 +29,7 @@ const ProductDetail = () => {
   const category = data?.category;
 
   if (isPending) {
-    return <PublicLoadingState label="FLASH CAST" title={t.loadingTitle} description={t.loadingDescription} />;
+    return <PublicLoadingState label="FLASH CAST" title={t.loadingTitle} description={t.loadingDescription} variant="product" />;
   }
 
   if (!product || !category) {

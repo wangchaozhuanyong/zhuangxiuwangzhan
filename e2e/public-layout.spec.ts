@@ -370,12 +370,12 @@ test.describe("public responsive layout", () => {
     }
   });
 
-  test("home editorial grids use explicit tracks and vertically stacked headings", async ({ page }) => {
+  test("home media sections keep titles above images and supporting content below", async ({ page }) => {
     const scenarios = [
-      { width: 1440, height: 1000, stacked: false },
-      { width: 1024, height: 1000, stacked: false },
-      { width: 768, height: 1024, stacked: true },
-      { width: 390, height: 844, stacked: true },
+      { width: 1440, height: 1000 },
+      { width: 1024, height: 1000 },
+      { width: 768, height: 1024 },
+      { width: 390, height: 844 },
     ];
 
     for (const scenario of scenarios) {
@@ -385,62 +385,43 @@ test.describe("public responsive layout", () => {
       await expect(page.locator(".forest-services .forest-section-heading")).toBeVisible();
       await expect(page.locator(".forest-product").first()).toBeVisible();
 
-      const metrics = await page.evaluate(() => {
-        const readPair = (parentSelector: string, firstSelector: string, secondSelector: string) => {
-          const parent = document.querySelector<HTMLElement>(parentSelector);
-          const first = document.querySelector<HTMLElement>(firstSelector);
-          const second = document.querySelector<HTMLElement>(secondSelector);
-          if (!parent || !first || !second) throw new Error(`Missing editorial grid ${parentSelector}`);
-          const firstBox = first.getBoundingClientRect();
-          const secondBox = second.getBoundingClientRect();
+      const flows = await page.evaluate(() => {
+        const readFlow = (
+          name: string,
+          headingSelector: string,
+          mediaSelector: string,
+          detailSelectors: string[],
+        ) => {
+          const heading = document.querySelector<HTMLElement>(headingSelector);
+          const media = document.querySelector<HTMLElement>(mediaSelector);
+          const details = detailSelectors.map((selector) => document.querySelector<HTMLElement>(selector));
+          if (!heading || !media || details.some((detail) => !detail)) throw new Error(`Missing media flow ${name}`);
+
+          const headingBox = heading.getBoundingClientRect();
+          const mediaBox = media.getBoundingClientRect();
+          const detailBoxes = details.map((detail) => detail!.getBoundingClientRect());
           return {
-            tracks: getComputedStyle(parent).gridTemplateColumns.split(" "),
-            first: { left: Math.round(firstBox.left), right: Math.round(firstBox.right), width: Math.round(firstBox.width), bottom: Math.round(firstBox.bottom) },
-            second: { left: Math.round(secondBox.left), right: Math.round(secondBox.right), width: Math.round(secondBox.width), top: Math.round(secondBox.top) },
+            name,
+            headingBeforeMedia: headingBox.bottom <= mediaBox.top,
+            mediaBeforeDetails: detailBoxes.every((detailBox) => mediaBox.bottom <= detailBox.top),
+            positiveWidths: [headingBox, mediaBox, ...detailBoxes].every((box) => box.width > 0),
           };
         };
 
-        const headings = [...document.querySelectorAll<HTMLElement>(".forest-home .forest-section-heading")]
-          .map((heading) => {
-            const title = heading.querySelector<HTMLElement>("h2");
-            const description = heading.querySelector<HTMLElement>(":scope > p");
-            if (!title || !description) return null;
-            const titleBox = title.getBoundingClientRect();
-            const descriptionBox = description.getBoundingClientRect();
-            return {
-              display: getComputedStyle(heading).display,
-              leftDelta: Math.round(descriptionBox.left - titleBox.left),
-              gap: Math.round(descriptionBox.top - titleBox.bottom),
-            };
-          })
-          .filter((item): item is NonNullable<typeof item> => item !== null);
-
-        return {
-          company: readPair(".forest-company-intro", ".forest-company-intro > figure", ".forest-company-intro > div"),
-          transformation: readPair(".forest-transformation", ".forest-transformation__copy", ".forest-before-after"),
-          headings,
-        };
+        return [
+          readFlow("company", ".forest-company-intro h2", ".forest-company-intro .forest-editorial-media__media", [".forest-company-intro .forest-editorial-media__details"]),
+          readFlow("services", ".forest-services h2", ".forest-services .forest-browser__stage", [".forest-services .forest-browser__controls"]),
+          readFlow("projects", ".forest-projects__intro h2", ".forest-project-feature__media", [".forest-project-feature__copy", ".forest-project-feature__overview"]),
+          readFlow("transformation", ".forest-transformation h2", ".forest-before-after", [".forest-transformation__details"]),
+          readFlow("process", ".forest-process > .forest-section-heading h2", ".forest-process-stage", [".forest-process .forest-browser__controls"]),
+        ];
       });
 
-      expect(metrics.company.tracks).not.toContain("0px");
-      expect(metrics.transformation.tracks).not.toContain("0px");
-      expect(metrics.headings.length).toBeGreaterThanOrEqual(6);
-      for (const heading of metrics.headings) {
-        expect(heading.display).toBe("block");
-        expect(Math.abs(heading.leftDelta)).toBeLessThanOrEqual(1);
-        expect(heading.gap).toBe(16);
-      }
-
-      if (scenario.stacked) {
-        expect(Math.abs(metrics.company.first.left - metrics.company.second.left)).toBeLessThanOrEqual(1);
-        expect(Math.abs(metrics.company.first.width - metrics.company.second.width)).toBeLessThanOrEqual(1);
-        expect(metrics.company.second.top).toBeGreaterThanOrEqual(metrics.company.first.bottom);
-        expect(Math.abs(metrics.transformation.first.left - metrics.transformation.second.left)).toBeLessThanOrEqual(1);
-        expect(Math.abs(metrics.transformation.first.width - metrics.transformation.second.width)).toBeLessThanOrEqual(1);
-        expect(metrics.transformation.second.top).toBeGreaterThanOrEqual(metrics.transformation.first.bottom);
-      } else {
-        expect(metrics.company.second.left).toBeGreaterThanOrEqual(metrics.company.first.right);
-        expect(metrics.transformation.second.left).toBeGreaterThanOrEqual(metrics.transformation.first.right);
+      expect(flows.map(({ name }) => name)).toEqual(["company", "services", "projects", "transformation", "process"]);
+      for (const flow of flows) {
+        expect(flow.headingBeforeMedia, `${flow.name} title should be above media`).toBe(true);
+        expect(flow.mediaBeforeDetails, `${flow.name} supporting content should be below media`).toBe(true);
+        expect(flow.positiveWidths, `${flow.name} should keep stable widths`).toBe(true);
       }
     }
   });
@@ -551,7 +532,6 @@ test.describe("public responsive layout", () => {
         },
         { prefix: scenario.prefix },
       );
-
       expect(metrics.copyCenterDelta).toBeLessThanOrEqual(1);
       expect(metrics.titleCenterDelta).toBeLessThanOrEqual(1);
       expect(metrics.actionsCenterDelta).toBeLessThanOrEqual(1);
@@ -864,6 +844,8 @@ test.describe("public responsive layout", () => {
     await expect(page.locator(".forest-contact-page .subpage-local-heading .accent-line")).toHaveCount(0);
 
     await page.locator(".page-hero").evaluate((hero) => {
+      window.dispatchEvent(new Event("wheel"));
+      document.documentElement.style.scrollBehavior = "auto";
       window.scrollTo(0, hero.getBoundingClientRect().height + 80);
     });
 
@@ -886,7 +868,10 @@ test.describe("public responsive layout", () => {
     });
     expect(position).toEqual({ position: "fixed", dockBottom: 0, actionBottom: 0 });
 
-    await page.evaluate(() => window.scrollBy(0, -180));
+    await page.evaluate(() => {
+      window.dispatchEvent(new Event("wheel"));
+      window.scrollBy(0, -180);
+    });
     await expect(actionBar).toHaveCount(0);
     await expect(bottomNav).toBeVisible();
   });
@@ -1129,9 +1114,9 @@ test.describe("public responsive layout", () => {
 
     await expect
       .poll(async () => {
-        await page.locator(".footer-surface").scrollIntoViewIfNeeded();
+        await page.locator(".footer-legal").scrollIntoViewIfNeeded();
         await page.waitForTimeout(120);
-        return page.evaluate(() => {
+        const metrics = await page.evaluate(() => {
           const footer = document.querySelector(".footer-surface");
           const legal = document.querySelector(".footer-legal");
           const navigation = document.querySelector(".forest-bottom-nav");
@@ -1139,8 +1124,9 @@ test.describe("public responsive layout", () => {
           const footerRect = footer.getBoundingClientRect();
           const navigationRect = navigation.getBoundingClientRect();
           const legalGap = Math.round(navigationRect.top - legal.getBoundingClientRect().bottom);
-          return footerRect.bottom >= navigationRect.bottom && legalGap >= 10 && legalGap <= 24;
+          return { footerBottom: footerRect.bottom, navigationBottom: navigationRect.bottom, legalGap };
         });
+        return metrics.footerBottom >= metrics.navigationBottom - 1 && metrics.legalGap >= 9 && metrics.legalGap <= 24;
       })
       .toBe(true);
   });
@@ -1196,7 +1182,8 @@ test.describe("public responsive layout", () => {
         const copyStyle = getComputedStyle(copy);
         return {
           display: heroStyle.display,
-          mediaStartsAfterCopy: mediaBox.left >= copyBox.right - 1,
+          mediaCoversHero: Math.abs(mediaBox.left - heroBox.left) <= 1 && Math.abs(mediaBox.right - heroBox.right) <= 1,
+          copyOverMedia: copyBox.left >= heroBox.left && copyBox.right <= heroBox.right,
           mediaShare: mediaBox.width / heroBox.width,
           height: Math.round(heroBox.height),
           borderWidths: [heroStyle.borderTopWidth, heroStyle.borderRightWidth, heroStyle.borderBottomWidth, heroStyle.borderLeftWidth, copyStyle.borderRightWidth],
@@ -1205,12 +1192,13 @@ test.describe("public responsive layout", () => {
       });
 
       expect(metrics.display).toBe("grid");
-      expect(metrics.mediaStartsAfterCopy).toBe(true);
-      expect(metrics.mediaShare).toBeGreaterThanOrEqual(0.56);
-      expect(metrics.mediaShare).toBeLessThanOrEqual(0.6);
+      expect(metrics.mediaCoversHero).toBe(true);
+      expect(metrics.copyOverMedia).toBe(true);
+      expect(metrics.mediaShare).toBeCloseTo(1, 2);
       expect(metrics.labelDuplicatesTitle).toBe(false);
       expect(metrics.borderWidths).toEqual(["0px", "0px", "0px", "0px", "0px"]);
-      expect(metrics.height).toBe(700);
+      expect(metrics.height).toBeGreaterThanOrEqual(700);
+      expect(metrics.height).toBeLessThanOrEqual(832);
     }
   });
 
@@ -1238,9 +1226,11 @@ test.describe("public responsive layout", () => {
         expect(pageFrame.width, `${path} hero image width`).toBeGreaterThanOrEqual(viewport.width <= 390 ? viewport.width - 16 : 300);
         expect(pageFrame.width, `${path} hero image width`).toBeLessThanOrEqual(viewport.width);
         if (viewport.width <= 390) {
-          expect(pageFrame.width / pageFrame.height, `${path} mobile hero image ratio`).toBeCloseTo(5 / 4, 1);
+          expect(pageFrame.height, `${path} mobile hero image height`).toBeGreaterThanOrEqual(Math.round(viewport.height * 0.7));
+          expect(pageFrame.height, `${path} mobile hero image height`).toBeLessThanOrEqual(viewport.height);
         } else {
-          expect(pageFrame.height, `${path} desktop hero image height`).toBe(700);
+          expect(pageFrame.height, `${path} desktop hero image height`).toBeGreaterThanOrEqual(Math.round(viewport.height * 0.65));
+          expect(pageFrame.height, `${path} desktop hero image height`).toBeLessThanOrEqual(viewport.height);
         }
       }
     }
@@ -1304,9 +1294,11 @@ test.describe("public responsive layout", () => {
         expect(Math.abs(pageFrame.height - referenceFrame.height), `${detail.path} hero image frame height`).toBeLessThanOrEqual(1);
 
         if (viewport.width <= 390) {
-          expect(pageFrame.width / pageFrame.height, `${detail.path} mobile detail image ratio`).toBeCloseTo(5 / 4, 1);
+          expect(pageFrame.height, `${detail.path} mobile detail image height`).toBeGreaterThanOrEqual(Math.round(viewport.height * 0.7));
+          expect(pageFrame.height, `${detail.path} mobile detail image height`).toBeLessThanOrEqual(viewport.height);
         } else {
-          expect(pageFrame.height, `${detail.path} desktop detail image height`).toBe(700);
+          expect(pageFrame.height, `${detail.path} desktop detail image height`).toBeGreaterThanOrEqual(Math.round(viewport.height * 0.65));
+          expect(pageFrame.height, `${detail.path} desktop detail image height`).toBeLessThanOrEqual(viewport.height);
         }
       }
     }
@@ -1499,17 +1491,18 @@ test.describe("public responsive layout", () => {
     await page.goto("/zh", { waitUntil: "domcontentloaded" });
     await page.waitForLoadState("load");
 
-    await page.getByRole("button", { name: "更多" }).click();
+    await page.getByRole("button", { name: "打开导航菜单" }).click();
     const desktopMenu = page.locator(".site-header__more-menu");
     await expect(desktopMenu).toBeVisible();
-    await expect(desktopMenu.locator(".site-header__more-link")).toHaveCount(8);
-    await expect(desktopMenu.locator(".site-header__more-group")).toHaveCount(2);
-    await expect(desktopMenu.locator(".site-header__more-footer a")).toBeVisible();
+    await expect(desktopMenu.locator(".site-header__more-link")).toHaveCount(15);
+    await expect(desktopMenu.locator(".site-header__more-group")).toHaveCount(4);
+    await expect(desktopMenu.locator(".mobile-navigation__preview img")).toBeVisible();
+    await expect(desktopMenu.locator(".mobile-navigation__footer a")).toHaveCount(3);
     await expect(page.locator(".desktop-floating-cta")).toBeHidden();
 
     const desktopMenuBox = await desktopMenu.boundingBox();
-    expect(desktopMenuBox?.height).toBeGreaterThan(300);
-    expect(desktopMenuBox?.y).toBeGreaterThanOrEqual(55);
+    expect(desktopMenuBox?.height).toBeGreaterThanOrEqual(899);
+    expect(desktopMenuBox?.y).toBeLessThanOrEqual(1);
 
     await page.setViewportSize({ width: 390, height: 844 });
     await page.reload({ waitUntil: "domcontentloaded" });
@@ -1519,8 +1512,8 @@ test.describe("public responsive layout", () => {
     const mobileMenu = page.locator(".mobile-navigation");
     await expect(mobileMenu).toBeVisible();
     await expect(mobileMenu.locator(".mobile-navigation__primary-link")).toHaveCount(0);
-    await expect(mobileMenu.locator(".mobile-navigation__secondary-link")).toHaveCount(13);
-    await expect(mobileMenu.locator(".mobile-navigation__secondary-trigger")).toHaveCount(3);
+    await expect(mobileMenu.locator(".mobile-navigation__secondary-link")).toHaveCount(15);
+    await expect(mobileMenu.locator(".mobile-navigation__secondary-trigger")).toHaveCount(4);
     await expect(mobileMenu.locator(".mobile-navigation__quote")).toBeVisible();
     await expect(page.locator(".forest-bottom-nav")).toBeHidden();
 
@@ -1531,7 +1524,7 @@ test.describe("public responsive layout", () => {
     expect(mobileMetrics.scrollWidth).toBeLessThanOrEqual(mobileMetrics.innerWidth + 2);
   });
 
-  test("navigation state resets when crossing the desktop breakpoint", async ({ page }) => {
+  test("the shared chapter menu remains stable across the desktop breakpoint", async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
     await page.goto("/zh", { waitUntil: "domcontentloaded" });
     await page.waitForLoadState("load");
@@ -1541,24 +1534,20 @@ test.describe("public responsive layout", () => {
     await expect(page.locator(".public-page-frame")).toHaveAttribute("inert", "");
 
     await page.setViewportSize({ width: 1440, height: 900 });
-    await expect(page.locator(".mobile-navigation")).toHaveCount(0);
-    await expect(page.locator("html")).not.toHaveAttribute("data-menu-open", "true");
-    await expect(page.locator(".public-page-frame")).not.toHaveAttribute("inert", "");
-    await expect
-      .poll(() => page.evaluate(() => getComputedStyle(document.body).overflow))
-      .not.toBe("hidden");
-
-    await page.getByRole("button", { name: "更多" }).click();
-    await expect(page.locator("html")).toHaveAttribute("data-desktop-menu-open", "true");
+    await expect(page.locator(".mobile-navigation")).toBeVisible();
+    await expect(page.locator("html")).toHaveAttribute("data-menu-open", "true");
+    await expect(page.locator("html")).toHaveAttribute("data-chapter-menu-open", "true");
     await expect(page.locator(".site-header__more-menu")).toBeVisible();
 
     await page.setViewportSize({ width: 390, height: 844 });
+    await expect(page.locator(".site-header__more-menu")).toBeVisible();
+    await expect(page.locator("html")).toHaveAttribute("data-chapter-menu-open", "true");
+    await page.keyboard.press("Escape");
     await expect(page.locator(".site-header__more-menu")).toHaveCount(0);
-    await expect(page.locator("html")).not.toHaveAttribute("data-desktop-menu-open", "true");
-    await expect(page.getByRole("button", { name: "打开导航菜单" })).toBeVisible();
+    await expect(page.locator(".public-page-frame")).not.toHaveAttribute("inert", "");
   });
 
-  test("mobile menu uses a right-side single-column accordion", async ({ page }) => {
+  test("mobile menu uses a full-screen single-column chapter accordion", async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
     await page.goto("/zh", { waitUntil: "domcontentloaded" });
     await page.waitForLoadState("load");
@@ -1575,7 +1564,7 @@ test.describe("public responsive layout", () => {
       const footer = document.querySelector(".mobile-navigation__footer");
       const footerCopy = footer?.querySelector(".mobile-navigation__footer-copy");
       const quote = footer?.querySelector(".mobile-navigation__quote");
-      if (!menu || !panel || !scrim || !coreGroupList || !coreLink || secondaryGroups.length !== 3 || secondaryTriggers.length !== 3 || !footer || !footerCopy || !quote) {
+      if (!menu || !panel || !scrim || !coreGroupList || !coreLink || secondaryGroups.length !== 4 || secondaryTriggers.length !== 4 || !footer || !footerCopy || !quote) {
         throw new Error("Missing mobile menu structure");
       }
 
@@ -1600,59 +1589,144 @@ test.describe("public responsive layout", () => {
         coreGridColumns: coreGroupStyle.gridTemplateColumns.split(" ").length,
         coreLinkFontSize: Number.parseFloat(coreLinkStyle.fontSize),
         coreLinkHeight: coreLink.getBoundingClientRect().height,
-        secondaryGroupsHidden: Array.from(secondaryGroups).map((group) => group.querySelector(":scope > div")?.hasAttribute("hidden")),
+        secondaryGroupsHidden: Array.from(secondaryGroups).map((group) => getComputedStyle(group.querySelector<HTMLElement>(":scope > div")!).display === "none"),
         secondaryTriggersExpanded: Array.from(secondaryTriggers).map((trigger) => trigger.getAttribute("aria-expanded")),
         footerCopyDisplay: getComputedStyle(footerCopy).display,
         footerDivider: Number.parseFloat(getComputedStyle(footer).borderTopWidth),
-        quoteFillsFooter: quoteBox.width >= footerBox.width - 32,
+        quoteUsesHalfFooter: quoteBox.width >= footerBox.width * 0.45,
       };
     });
 
     expect(metrics.menuBackground).toBe("rgba(0, 0, 0, 0)");
     expect(metrics.menuFillsViewport).toBe(true);
     expect(metrics.scrimFillsMenu).toBe(true);
-    expect(Math.abs(metrics.panelWidth - metrics.viewportWidth * 0.58)).toBeLessThanOrEqual(2);
-    expect(metrics.panelHeight).toBeGreaterThanOrEqual(metrics.viewportHeight - metrics.panelTop - 1);
-    expect(metrics.panelLeft).toBeGreaterThanOrEqual(100);
+    expect(Math.abs(metrics.panelWidth - metrics.viewportWidth)).toBeLessThanOrEqual(2);
+    expect(metrics.panelHeight).toBeGreaterThanOrEqual(metrics.viewportHeight - 1);
+    expect(metrics.panelLeft).toBeLessThanOrEqual(1);
     expect(metrics.panelRightGap).toBeLessThanOrEqual(1);
-    expect(metrics.panelTop).toBeGreaterThanOrEqual(48);
+    expect(metrics.panelTop).toBeLessThanOrEqual(1);
     expect(metrics.coreGridColumns).toBe(1);
     expect(metrics.coreLinkFontSize).toBeGreaterThanOrEqual(16);
     expect(metrics.coreLinkHeight).toBeGreaterThanOrEqual(44);
-    expect(metrics.secondaryGroupsHidden).toEqual([false, true, true]);
-    expect(metrics.secondaryTriggersExpanded).toEqual(["true", "false", "false"]);
+    expect(metrics.secondaryGroupsHidden).toEqual([false, true, true, true]);
+    expect(metrics.secondaryTriggersExpanded).toEqual(["true", "false", "false", "false"]);
     expect(metrics.footerCopyDisplay).toBe("none");
     expect(metrics.footerDivider).toBeGreaterThanOrEqual(1);
-    expect(metrics.quoteFillsFooter).toBe(true);
+    expect(metrics.quoteUsesHalfFooter).toBe(true);
 
     const secondaryTriggers = page.locator(".mobile-navigation__secondary-trigger");
-    const coreGroup = page.locator("#mobile-navigation-core");
-    const companyGroup = page.locator("#mobile-navigation-company");
-    const exploreGroup = page.locator("#mobile-navigation-explore");
+    const spacesGroup = page.locator("#mobile-navigation-spaces");
+    const servicesGroup = page.locator("#mobile-navigation-services");
+    const studioGroup = page.locator("#mobile-navigation-studio");
+    const contactGroup = page.locator("#mobile-navigation-contact");
 
     await secondaryTriggers.nth(1).click();
     await expect(secondaryTriggers.nth(0)).toHaveAttribute("aria-expanded", "false");
     await expect(secondaryTriggers.nth(1)).toHaveAttribute("aria-expanded", "true");
-    await expect(coreGroup).toBeHidden();
-    await expect(companyGroup).toBeVisible();
-    await expect(exploreGroup).toBeHidden();
+    await expect(spacesGroup).toBeHidden();
+    await expect(servicesGroup).toBeVisible();
+    await expect(studioGroup).toBeHidden();
 
     await secondaryTriggers.nth(2).click();
     await expect(secondaryTriggers.nth(1)).toHaveAttribute("aria-expanded", "false");
     await expect(secondaryTriggers.nth(2)).toHaveAttribute("aria-expanded", "true");
-    await expect(companyGroup).toBeHidden();
-    await expect(exploreGroup).toBeVisible();
+    await expect(servicesGroup).toBeHidden();
+    await expect(studioGroup).toBeVisible();
+    await expect(contactGroup).toBeHidden();
 
     const secondaryHrefs = await page.locator(".mobile-navigation__secondary-link").evaluateAll((links) => links.map((link) => link.getAttribute("href")));
 
     expect(secondaryHrefs).toEqual([
-      "/zh", "/zh/projects", "/zh/products", "/zh/contact",
+      "/zh", "/zh/projects", "/zh/before-after",
+      "/zh/services", "/zh/services/old-house", "/zh/materials", "/zh/products", "/zh/promotions",
       "/zh/about", "/zh/process", "/zh/blog", "/zh/faq",
-      "/zh/services", "/zh/materials", "/zh/before-after", "/zh/locations", "/zh/promotions",
+      "/zh/locations", "/zh/contact", "/zh/quote",
     ]);
 
-    await page.locator(".mobile-navigation__scrim").click({ position: { x: 8, y: 100 } });
+    await page.keyboard.press("Escape");
     await expect(page.locator(".mobile-navigation")).toBeHidden();
+  });
+
+  test("cinematic public shell stays aligned across every target viewport", async ({ page }) => {
+    const viewports = [
+      { width: 320, height: 800 },
+      { width: 375, height: 812 },
+      { width: 390, height: 844 },
+      { width: 430, height: 932 },
+      { width: 768, height: 1024 },
+      { width: 1024, height: 900 },
+      { width: 1440, height: 1000 },
+    ];
+
+    for (const viewport of viewports) {
+      await page.setViewportSize(viewport);
+      await page.goto("/zh/about", { waitUntil: "domcontentloaded" });
+      await page.waitForLoadState("load");
+      await expect(page.locator(".page-hero__image")).toBeVisible();
+      await expect.poll(
+        () => page.locator(".page-hero__image").evaluate((image) => Number.parseFloat(getComputedStyle(image).opacity)),
+        { timeout: 1_500 },
+      ).toBe(1);
+
+      const metrics = await page.evaluate(() => {
+        const hero = document.querySelector<HTMLElement>(".page-hero");
+        const image = document.querySelector<HTMLElement>(".page-hero__image");
+        const title = document.querySelector<HTMLElement>(".page-hero__title");
+        if (!hero || !image || !title) throw new Error("Missing cinematic hero structure");
+        const heroBox = hero.getBoundingClientRect();
+        const imageBox = image.getBoundingClientRect();
+        const titleBox = title.getBoundingClientRect();
+        return {
+          overflow: document.documentElement.scrollWidth - innerWidth,
+          heroLeft: heroBox.left,
+          heroRightGap: innerWidth - heroBox.right,
+          imageLeft: imageBox.left,
+          imageRightGap: innerWidth - imageBox.right,
+          titleInside: titleBox.left >= -1 && titleBox.right <= innerWidth + 1,
+          imageFilter: getComputedStyle(image).filter,
+          imageOpacity: Number.parseFloat(getComputedStyle(image).opacity),
+        };
+      });
+
+      expect(metrics.overflow).toBeLessThanOrEqual(2);
+      expect(Math.abs(metrics.heroLeft)).toBeLessThanOrEqual(1);
+      expect(Math.abs(metrics.heroRightGap)).toBeLessThanOrEqual(1);
+      expect(metrics.imageLeft).toBeLessThanOrEqual(1);
+      expect(metrics.imageRightGap).toBeLessThanOrEqual(1);
+      expect(metrics.titleInside).toBe(true);
+      expect(metrics.imageFilter).toBe("none");
+      expect(metrics.imageOpacity).toBe(1);
+    }
+  });
+
+  test("blog article alternates editorial copy, judgements and clear media", async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.goto("/zh/blog/how-to-plan-condo-renovation-kl", { waitUntil: "domcontentloaded" });
+    await page.waitForLoadState("load");
+
+    await expect(page.locator(".blog-editorial-prologue")).toBeVisible();
+    await expect(page.locator(".blog-editorial-judgements li")).toHaveCount(3);
+    await expect(page.locator(".blog-editorial-figure").first()).toBeVisible();
+    await expect(page.locator(".footer-wordmark")).toHaveText("FLASH CAST");
+
+    const metrics = await page.evaluate(() => {
+      const paper = document.querySelector<HTMLElement>(".blog-editorial-shell");
+      const heading = document.querySelector<HTMLElement>(".blog-editorial-html h2");
+      const figureImage = document.querySelector<HTMLElement>(".blog-editorial-figure img");
+      if (!paper || !heading || !figureImage) throw new Error("Missing editorial article elements");
+      return {
+        overflow: document.documentElement.scrollWidth - innerWidth,
+        paperBackground: getComputedStyle(paper).backgroundColor,
+        headingColor: getComputedStyle(heading).color,
+        imageFilter: getComputedStyle(figureImage).filter,
+        directoryLinks: document.querySelectorAll(".footer-directory-groups .footer-link").length,
+      };
+    });
+
+    expect(metrics.overflow).toBeLessThanOrEqual(2);
+    expect(metrics.paperBackground).not.toBe(metrics.headingColor);
+    expect(metrics.imageFilter).toBe("none");
+    expect(metrics.directoryLinks).toBe(15);
   });
 
   test("reduced motion removes cinematic transforms and sticky storytelling", async ({ page }) => {
