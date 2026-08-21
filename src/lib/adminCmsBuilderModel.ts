@@ -8,6 +8,8 @@ export type CmsPage = {
   seo_title_en?: string | null;
   seo_description_zh?: string | null;
   seo_description_en?: string | null;
+  seo_keywords_zh?: string | null;
+  seo_keywords_en?: string | null;
   status: "draft" | "published" | "archived";
   sort_order: number;
   updated_at?: string | null;
@@ -54,6 +56,8 @@ export const emptyPage: CmsPage = {
   seo_title_en: "",
   seo_description_zh: "",
   seo_description_en: "",
+  seo_keywords_zh: "",
+  seo_keywords_en: "",
   status: "draft",
   sort_order: 0,
 };

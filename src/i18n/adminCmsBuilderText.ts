@@ -139,10 +139,35 @@ export const adminCmsBuilderText = {
   },
   sortLabel: { en: "Sort order", zh: "排序" },
   sortHelp: { en: "Smaller numbers appear earlier.", zh: "数字越小越靠前。" },
+  zhSeoTitleLabel: { en: "Chinese SEO title", zh: "中文 SEO 标题" },
+  zhSeoTitleHelp: {
+    en: "Keep it specific, readable, and aligned with the Chinese page intent.",
+    zh: "应清楚说明中文页面主题与地区，不要堆砌关键词。",
+  },
+  enSeoTitleLabel: { en: "English SEO title", zh: "英文 SEO 标题" },
+  enSeoTitleHelp: {
+    en: "Keep it specific, readable, and aligned with the English page intent.",
+    zh: "应清楚说明英文页面主题与地区，不要堆砌关键词。",
+  },
   zhSeoDescriptionLabel: { en: "Chinese SEO description", zh: "中文 SEO 描述" },
   zhSeoDescriptionHelp: {
     en: "Commonly used for search results and sharing cards.",
     zh: "搜索结果和分享卡片常用描述。",
+  },
+  enSeoDescriptionLabel: { en: "English SEO description", zh: "英文 SEO 描述" },
+  enSeoDescriptionHelp: {
+    en: "Commonly used for English search results and sharing cards.",
+    zh: "英文搜索结果和分享卡片常用描述。",
+  },
+  zhSeoKeywordsLabel: { en: "Chinese SEO keywords", zh: "中文 SEO 关键词" },
+  zhSeoKeywordsHelp: {
+    en: "Use a short, comma-separated list of topics that actually appear on the page.",
+    zh: "只填写页面实际覆盖的主题，使用逗号分隔，保持精简。",
+  },
+  enSeoKeywordsLabel: { en: "English SEO keywords", zh: "英文 SEO 关键词" },
+  enSeoKeywordsHelp: {
+    en: "Use a short, comma-separated list of topics that actually appear on the page.",
+    zh: "只填写英文页面实际覆盖的主题，使用逗号分隔，保持精简。",
   },
   saving: { en: "Saving...", zh: "保存中..." },
   savePageButton: { en: "Save page", zh: "保存页面" },

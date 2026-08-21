@@ -67,7 +67,7 @@ test.describe("Scheme A approved-design fidelity", () => {
     const dialog = page.getByRole("dialog", { name: "完整目录" });
     await expect(dialog).toBeVisible();
     await expect(dialog.locator(".scheme-a-directory__groups section")).toHaveCount(4);
-    await expect(dialog.locator(".scheme-a-directory__groups a")).toHaveCount(15);
+    await expect(dialog.locator(".scheme-a-directory__groups a")).toHaveCount(16);
     await expect(dialog.locator('.scheme-a-directory__groups section[data-open="true"]')).toHaveCount(1);
     await expect(dialog.locator(".scheme-a-directory__preview")).toBeVisible();
     await expect(dialog.locator(".scheme-a-directory__language")).toContainText("中文");
@@ -111,6 +111,9 @@ test.describe("Scheme A approved-design fidelity", () => {
     expect(contactMetrics.callHeight).toBeGreaterThanOrEqual(60);
     expect(contactMetrics.callLabelSize).toBeGreaterThanOrEqual(14);
     expect(contactMetrics.hoursLabelSize).toBeGreaterThanOrEqual(14);
+
+    await dialog.getByRole("button", { name: "服务体系", exact: true }).click();
+    await expect(dialog.getByRole("link", { name: "装修报价专题", exact: true })).toHaveAttribute("href", "/zh/landing/office-renovation");
 
     const whatsapp = dialog.locator(".scheme-a-directory__foot .is-whatsapp");
     await expect(whatsapp).toBeVisible();

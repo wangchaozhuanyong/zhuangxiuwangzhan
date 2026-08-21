@@ -9,6 +9,7 @@ export type PublicNavIconKey =
   | "materials"
   | "products"
   | "promotions"
+  | "campaign"
   | "about"
   | "process"
   | "blog"
@@ -53,6 +54,7 @@ export const publicNavigationGroups: readonly PublicNavGroup[] = [
       { labelKey: "nav.materials", path: "/materials", icon: "materials", previewImage: "/images/heroes/v2/hero-materials-premium.webp" },
       { labelKey: "nav.products", path: "/products", icon: "products", previewImage: "/images/services/builtin-solutions.webp" },
       { labelKey: "nav.promotions", path: "/promotions", icon: "promotions", previewImage: previewImages.contact },
+      { labelKey: "nav.campaign", path: "/landing/office-renovation", icon: "campaign", previewImage: "/images/projects/commercial-renovation.webp" },
     ],
   },
   {

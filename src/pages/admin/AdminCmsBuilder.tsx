@@ -537,8 +537,28 @@ export default function AdminCmsBuilder() {
               <Input type="number" value={pageDraft.sort_order} onChange={(event) => { setDirty(true); setPageDraft((page) => ({ ...page, sort_order: Number(event.target.value || 0) })); }} />
             </div>
             <div className="md:col-span-2">
+              <AdminFieldLabel label={A("zhSeoTitleLabel")} help={A("zhSeoTitleHelp")} />
+              <Input value={pageDraft.seo_title_zh || ""} onChange={(event) => { setDirty(true); setPageDraft((page) => ({ ...page, seo_title_zh: event.target.value })); }} />
+            </div>
+            <div className="md:col-span-2">
+              <AdminFieldLabel label={A("enSeoTitleLabel")} help={A("enSeoTitleHelp")} />
+              <Input value={pageDraft.seo_title_en || ""} onChange={(event) => { setDirty(true); setPageDraft((page) => ({ ...page, seo_title_en: event.target.value })); }} />
+            </div>
+            <div className="md:col-span-2">
               <AdminFieldLabel label={A("zhSeoDescriptionLabel")} help={A("zhSeoDescriptionHelp")} />
               <Textarea rows={3} value={pageDraft.seo_description_zh || ""} onChange={(event) => { setDirty(true); setPageDraft((page) => ({ ...page, seo_description_zh: event.target.value })); }} />
+            </div>
+            <div className="md:col-span-2">
+              <AdminFieldLabel label={A("enSeoDescriptionLabel")} help={A("enSeoDescriptionHelp")} />
+              <Textarea rows={3} value={pageDraft.seo_description_en || ""} onChange={(event) => { setDirty(true); setPageDraft((page) => ({ ...page, seo_description_en: event.target.value })); }} />
+            </div>
+            <div className="md:col-span-2">
+              <AdminFieldLabel label={A("zhSeoKeywordsLabel")} help={A("zhSeoKeywordsHelp")} />
+              <Textarea rows={2} value={pageDraft.seo_keywords_zh || ""} onChange={(event) => { setDirty(true); setPageDraft((page) => ({ ...page, seo_keywords_zh: event.target.value })); }} />
+            </div>
+            <div className="md:col-span-2">
+              <AdminFieldLabel label={A("enSeoKeywordsLabel")} help={A("enSeoKeywordsHelp")} />
+              <Textarea rows={2} value={pageDraft.seo_keywords_en || ""} onChange={(event) => { setDirty(true); setPageDraft((page) => ({ ...page, seo_keywords_en: event.target.value })); }} />
             </div>
           </div>
           <div data-admin-card-actions className="mt-4 flex flex-wrap gap-2">

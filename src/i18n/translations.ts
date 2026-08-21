@@ -19,6 +19,7 @@ export const translations: Translations = {
   "nav.contact": { en: "Contact", zh: "联系我们" },
   "nav.products": { en: "Products", zh: "装修商品" },
   "nav.promotions": { en: "Promotions", zh: "优惠活动" },
+  "nav.campaign": { en: "Renovation Campaign", zh: "装修报价专题" },
   "nav.locations": { en: "Locations", zh: "服务地区" },
   "nav.beforeAfter": { en: "Before & After", zh: "改造前后" },
   "nav.oldHouse": { en: "Old House Renovation", zh: "旧屋翻新" },

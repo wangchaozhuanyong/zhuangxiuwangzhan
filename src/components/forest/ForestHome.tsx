@@ -60,17 +60,18 @@ const ForestHome = ({ content }: ForestHomeProps) => {
         </figure>
         <div className="scheme-a-hero__copy">
           <p className="scheme-a-eyebrow">{copy.heroKicker}</p>
-          <h1 id="scheme-a-home-title">
-            <span>{copy.heroTitle}</span>
-            <span>{copy.heroTitleAccent}</span>
-          </h1>
+            <h1 id="scheme-a-home-title">
+              <span>{copy.heroTitle}</span>
+              {" "}
+              <span>{copy.heroTitleAccent}</span>
+            </h1>
           <p className="scheme-a-hero__lead">{copy.heroDescription}</p>
           <div className="scheme-a-actions">
-            <LocalizedLink className="scheme-a-button scheme-a-button--paper" to="/projects">
-              {copy.projectsCta}
+            <LocalizedLink className="scheme-a-button scheme-a-button--paper" to="/quote">
+              {copy.quoteCta}
             </LocalizedLink>
-            <LocalizedLink className="scheme-a-button scheme-a-button--glass" to="/contact">
-              {copy.consultCta}
+            <LocalizedLink className="scheme-a-button scheme-a-button--glass" to="/projects">
+              {copy.projectsCta}
               <ArrowUpRight aria-hidden="true" />
             </LocalizedLink>
           </div>
@@ -208,7 +209,7 @@ const ForestHome = ({ content }: ForestHomeProps) => {
         <div className="scheme-a-frame">
           <p className="scheme-a-eyebrow">{copy.contactLabel}</p>
           <h2>{copy.contactTitle}</h2>
-          <LocalizedLink className="scheme-a-button scheme-a-button--gold" to="/contact">
+          <LocalizedLink className="scheme-a-button scheme-a-button--gold" to="/quote">
             {copy.contactCta}
             <ArrowUpRight aria-hidden="true" />
           </LocalizedLink>
