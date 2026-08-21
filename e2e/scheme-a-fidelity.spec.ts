@@ -125,6 +125,11 @@ test.describe("Scheme A approved-design fidelity", () => {
     await page.keyboard.press("Escape");
     await expect(dialog).toHaveCount(0);
     await expect(trigger).toBeFocused();
+
+    await trigger.click();
+    await expect(dialog.locator('.scheme-a-directory__groups section[data-open="true"]')).toHaveCount(0);
+    await page.keyboard.press("Escape");
+    await expect(trigger).toBeFocused();
   });
 
   test("desktop opening preserves impact while revealing the next chapter", async ({ page }) => {
