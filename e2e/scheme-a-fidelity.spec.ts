@@ -68,12 +68,15 @@ test.describe("Scheme A approved-design fidelity", () => {
     await expect(dialog).toBeVisible();
     await expect(dialog.locator(".scheme-a-directory__groups section")).toHaveCount(4);
     await expect(dialog.locator(".scheme-a-directory__groups a")).toHaveCount(16);
-    await expect(dialog.locator('.scheme-a-directory__groups section[data-open="true"]')).toHaveCount(1);
+    await expect(dialog.locator('.scheme-a-directory__groups section[data-open="true"]')).toHaveCount(0);
     await expect(dialog.locator(".scheme-a-directory__preview")).toBeVisible();
     await expect(dialog.locator(".scheme-a-directory__language")).toContainText("中文");
     await expect(dialog.locator(".scheme-a-directory__language")).toContainText("EN");
     await expect(dialog).toContainText("营业时间");
     await expect(dialog.locator(".scheme-a-directory__preview figcaption strong")).toContainText("项目案例");
+
+    await dialog.getByRole("button", { name: "空间作品", exact: true }).click();
+    await expect(dialog.locator('.scheme-a-directory__groups section[data-open="true"]')).toHaveCount(1);
 
     const openGroupLabels = dialog.locator('.scheme-a-directory__groups section[data-open="true"] a > span:first-child');
     const labelLeftEdges = await openGroupLabels.evaluateAll((labels) => labels.map((label) => label.getBoundingClientRect().left));

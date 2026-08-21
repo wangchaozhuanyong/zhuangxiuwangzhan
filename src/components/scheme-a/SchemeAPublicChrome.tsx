@@ -90,9 +90,8 @@ export const SchemeANavbar = () => {
   const footer = footerCopy[language];
   const settings = useSiteSettings();
   const { hasImmersiveHero, menuOpen, setMenuOpen } = usePublicChrome();
-  const currentGroup = publicNavigationGroups.find((group) => group.items.some((item) => isActivePath(location.pathname, item.path)))?.key ?? "spaces";
   const currentItem = getCurrentNavigationItem(location.pathname);
-  const [openGroup, setOpenGroup] = useState<PublicNavGroupKey | null>(currentGroup);
+  const [openGroup, setOpenGroup] = useState<PublicNavGroupKey | null>(null);
   const [previewItem, setPreviewItem] = useState<PublicNavItem>(currentItem);
   const [scrolled, setScrolled] = useState(false);
   const sentinelRef = useRef<HTMLSpanElement>(null);
@@ -107,9 +106,9 @@ export const SchemeANavbar = () => {
 
   useEffect(() => {
     setMenuOpen(false);
-    setOpenGroup(currentGroup);
+    setOpenGroup(null);
     setPreviewItem(currentItem);
-  }, [currentGroup, currentItem, location.pathname, setMenuOpen]);
+  }, [currentItem, location.pathname, setMenuOpen]);
 
   useEffect(() => {
     const sentinel = sentinelRef.current;
@@ -182,7 +181,7 @@ export const SchemeANavbar = () => {
             </LocalizedLink>
             <div className="scheme-a-chrome__control-rail">
               <LanguageSwitch language={language} to={languagePath} label={navText.switchLanguage} className="scheme-a-chrome__language" />
-              <button ref={triggerRef} className="scheme-a-chrome__menu" type="button" aria-label={t.openMenu} aria-expanded={menuOpen} aria-controls="scheme-a-directory" onClick={() => { setPreviewItem(currentItem); setMenuOpen(true); }}>
+              <button ref={triggerRef} className="scheme-a-chrome__menu" type="button" aria-label={t.openMenu} aria-expanded={menuOpen} aria-controls="scheme-a-directory" onClick={() => { setOpenGroup(null); setPreviewItem(currentItem); setMenuOpen(true); }}>
                 <span>{t.menu}</span><Menu aria-hidden="true" />
               </button>
             </div>
