@@ -139,7 +139,11 @@ const AdminMediaLibrary = () => {
       <div className="rounded-xl border border-border bg-card p-4 sm:p-6">
         <div className="rounded-lg border border-emerald-200 bg-emerald-50 p-3 text-sm text-emerald-900">{A("uploadInfo")}</div>
         <div className="mt-5">
-          <AdminImageUpload folder="media" onUploaded={(url, upload) => void createAsset(url, upload)} />
+          <AdminImageUpload
+            folder="media"
+            assetUsageType={usageType === "all" ? "general" : usageType}
+            onUploaded={(url, upload) => void createAsset(url, upload)}
+          />
         </div>
         <div className="mt-5 rounded-lg border border-border bg-muted/20 p-4">
           <div className="mb-2 text-sm font-medium">{A("uploadVideo")}</div>

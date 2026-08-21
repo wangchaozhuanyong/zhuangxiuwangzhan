@@ -13,6 +13,7 @@ import {
 import { usePublishedProjectSummaries, usePublishedSitePage } from "@/hooks/usePublishedContent";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { projectsPageText } from "@/i18n/projectsPageText";
+import { mediaLabels } from "@/i18n/mediaLabels";
 import { schemeAProjectsIndexText, schemeARouteText } from "@/i18n/schemeAText";
 import { translateDisplayText, translateProjectType } from "@/i18n/displayLabels";
 import { pageHeroImages, resolvePageHeroImage } from "@/lib/pageHeroImages";
@@ -70,9 +71,13 @@ export default function Projects() {
       <SchemeARouteHero
         kind="listing"
         image={heroImage.desktop}
+        imageSourceWidth={heroImage.desktopWidth}
+        tabletImage={heroImage.tablet}
+        tabletImageSourceWidth={heroImage.tabletWidth}
         mobileImage={heroImage.mobile}
+        mobileImageSourceWidth={heroImage.mobileWidth}
         imageAlt={pageContent?.alt || copy.heroAlt}
-        label={pageContent?.subtitle || copy.eyebrow}
+        label={[pageContent?.subtitle || copy.eyebrow, heroImage.claimLevel ? mediaLabels[language].renderingConcept : ""].filter(Boolean).join(" · ")}
         title={pageContent?.title || copy.title}
         description={pageContent?.description || copy.intro}
       />

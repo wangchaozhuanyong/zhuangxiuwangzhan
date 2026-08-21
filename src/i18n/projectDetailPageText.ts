@@ -18,6 +18,7 @@ export const projectDetailPageText = {
     clientRequirements: "Client's Requirements",
     solution: "Our Solution & Highlights",
     gallery: "Project Gallery",
+    galleryDescription: "Explore the available views, from the overall space to materials and finishing details.",
     testimonialBy: "Project client",
     resultTitle: "Project Result",
     resultIntro: (type: string, scopeCount: number, materialCount: number) =>
@@ -64,6 +65,7 @@ export const projectDetailPageText = {
     clientRequirements: "客户需求",
     solution: "解决方案与项目亮点",
     gallery: "项目图片",
+    galleryDescription: "从整体空间到材料收口，查看现有图片所呈现的设计与施工细节。",
     testimonialBy: "项目客户",
     resultTitle: "项目成果",
     resultIntro: (type: string, scopeCount: number, materialCount: number) =>

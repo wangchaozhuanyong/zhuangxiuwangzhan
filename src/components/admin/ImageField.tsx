@@ -75,7 +75,12 @@ export default function ImageField({
 
       <div className="rounded-lg border border-border bg-muted/20 p-3">
         <div className="mb-2 text-xs font-medium text-muted-foreground">{text.uploadNewImage}</div>
-        <AdminImageUpload value={value} folder={folder} onUploaded={(url, upload) => void handleUploaded(url, upload)} />
+        <AdminImageUpload
+          value={value}
+          folder={folder}
+          assetUsageType={usageType || "general"}
+          onUploaded={(url, upload) => void handleUploaded(url, upload)}
+        />
       </div>
       {mediaMessage && <p className="text-xs text-amber-700">{mediaMessage}</p>}
 

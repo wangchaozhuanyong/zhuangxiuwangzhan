@@ -151,7 +151,11 @@ export default function MediaPicker({
 
             <div className="rounded-lg border border-border bg-muted/20 p-3">
               <div className="mb-2 text-xs font-medium text-muted-foreground">{text.uploadNewMediaImage}</div>
-              <AdminImageUpload folder="media" onUploaded={(url, upload) => void createAsset(url, upload)} />
+              <AdminImageUpload
+                folder="media"
+                assetUsageType={usageType === "all" ? "general" : usageType}
+                onUploaded={(url, upload) => void createAsset(url, upload)}
+              />
             </div>
           </div>
         )}

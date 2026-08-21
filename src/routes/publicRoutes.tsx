@@ -3,16 +3,24 @@ import { Route } from "react-router-dom";
 import { LanguageRouteSync, LegacyLanguageRedirect, RootLanguageRedirect } from "@/components/LanguageRouteSync";
 
 type PageModule = { default: ComponentType };
+type StyleModule = typeof import("*.css");
 
-const lazyPublicPage = (loader: () => Promise<PageModule>) => lazy(async () => {
+const loadPublicPageStyles = () => import("@/styles/routes/public-pages.css");
+const loadPublicHomeStyles = () => import("@/styles/routes/public-home.css");
+const loadPublicFormStyles = () => import("@/styles/routes/public-forms.css");
+
+const lazyPublicPage = (
+  loader: () => Promise<PageModule>,
+  styleLoader: () => Promise<StyleModule> = loadPublicPageStyles,
+) => lazy(async () => {
   const [pageModule] = await Promise.all([
     loader(),
-    import("@/styles/routes/public-pages.css"),
+    styleLoader(),
   ]);
   return pageModule;
 });
 
-const Index = lazyPublicPage(() => import("@/pages/Index"));
+const Index = lazyPublicPage(() => import("@/pages/Index"), loadPublicHomeStyles);
 const About = lazyPublicPage(() => import("@/pages/About"));
 const Services = lazyPublicPage(() => import("@/pages/Services"));
 const ServiceDetail = lazyPublicPage(() => import("@/pages/ServiceDetail"));
@@ -29,8 +37,8 @@ const ProjectDetail = lazyPublicPage(() => import("@/pages/ProjectDetail"));
 const BeforeAfter = lazyPublicPage(() => import("@/pages/BeforeAfter"));
 const Process = lazyPublicPage(() => import("@/pages/Process"));
 const FAQ = lazyPublicPage(() => import("@/pages/FAQ"));
-const Contact = lazyPublicPage(() => import("@/pages/Contact"));
-const Quote = lazyPublicPage(() => import("@/pages/Quote"));
+const Contact = lazyPublicPage(() => import("@/pages/Contact"), loadPublicFormStyles);
+const Quote = lazyPublicPage(() => import("@/pages/Quote"), loadPublicFormStyles);
 const Blog = lazyPublicPage(() => import("@/pages/Blog"));
 const BlogDetail = lazyPublicPage(() => import("@/pages/BlogDetail"));
 const LocationPage = lazyPublicPage(() => import("@/pages/LocationPage"));

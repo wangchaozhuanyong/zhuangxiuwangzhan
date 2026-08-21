@@ -9,6 +9,7 @@ import { usePublishedProjectBySlug, usePublishedProjectSummaries } from "@/hooks
 import { useLanguage } from "@/i18n/LanguageContext";
 import { translateDisplayText, translateProjectType } from "@/i18n/displayLabels";
 import { projectDetailPageText } from "@/i18n/projectDetailPageText";
+import { mediaLabels } from "@/i18n/mediaLabels";
 import { stripHtml } from "@/lib/text";
 
 export default function ProjectDetail() {
@@ -42,12 +43,13 @@ export default function ProjectDetail() {
   const highlights = project.highlights.map((item: string) => translateDisplayText(item, language));
   const materials = project.materialsUsed.map((item: string) => translateDisplayText(item, language));
   const images = (project.images.length ? project.images : [project.thumbnail]).filter(Boolean);
+  const usesRenderingConcept = images.some((src) => src.includes("/generated-portfolio/"));
 
   return (
     <main className="fc-route-page">
       <PageMeta title={`${title} | ${copy.metaSuffix}`} description={copy.metaDescription(type)} keywords={copy.metaKeywords(type, title)} canonicalPath={`/projects/${project.slug}`} />
       <JsonLdBreadcrumb items={[{ name: copy.breadcrumbHome, url: "/" }, { name: copy.breadcrumbProjects, url: "/projects" }, { name: title, url: `/projects/${project.slug}` }]} />
-      <SchemeARouteHero kind="detail" image={images[0]} imageAlt={`${title} - ${copy.imageLabel} 1`} label={type} title={title} description={description} />
+      <SchemeARouteHero kind="detail" image={images[0]} imageAlt={`${title} - ${copy.imageLabel} 1`} label={[type, usesRenderingConcept ? mediaLabels[language].renderingConcept : ""].filter(Boolean).join(" · ")} title={title} description={description} />
       <SchemeAFacts items={[
         { label: copy.type, value: type },
         { label: copy.duration, value: translateDisplayText(project.duration, language) },
@@ -61,8 +63,8 @@ export default function ProjectDetail() {
           ...scope.map((item) => ({ title: item })),
         ]} />
       </SchemeASection>
-      <SchemeASection title={copy.gallery} description={language === "zh" ? "从整体空间到材料收口，查看完成后的真实细节。" : "From the whole space to the finishing details."}>
-        <SchemeAGallery images={images.slice(0, 2).map((src, index) => ({ src, alt: `${title} - ${copy.imageLabel} ${index + 1}` }))} />
+      <SchemeASection title={copy.gallery} description={copy.galleryDescription}>
+        <SchemeAGallery images={images.map((src, index) => ({ src, alt: `${title} - ${copy.imageLabel} ${index + 1}` }))} />
       </SchemeASection>
       <SchemeASection title={copy.moreProjects}>
         <SchemeAListingGrid items={relatedItems} actionLabel={copy.viewAll} />

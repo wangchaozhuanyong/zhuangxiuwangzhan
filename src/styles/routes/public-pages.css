@@ -1,14 +1,3 @@
-@import "../components/forest-client.css";
-@import "../components/forest-final.css";
-@import "../components/public-header.css";
-@import "../components/cinematic-public.css";
-@import "../components/subpages.css";
-@import "../components/forest-pages.css";
-@import "../components/forest-detail-pages.css";
-@import "../components/public-page-unification.css";
-@import "../components/optical-gallery.css";
-@import "../components/scheme-a-fidelity.css";
 @import "../components/scheme-a-structural.css";
-@import "../components/scheme-a-literal.css";
 @import "../components/scheme-a-native-pages.css";
 @tailwind components;

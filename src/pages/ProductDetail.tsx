@@ -46,7 +46,7 @@ export default function ProductDetail() {
       ]} />
       <SchemeASection title={copy.detailsTitle} description={copy.detailsIntro}><SchemeANumberList items={detailItems} /></SchemeASection>
       <SchemeASection title={copy.galleryLabel} description={display(product.recommendedPairing) || display(product.note) || copy.confirmWithTeam}>
-        <SchemeAGallery images={(gallery.length ? gallery : [{ src: product.image, alt: product.alt || name }, { src: related[0]?.image || product.image, alt: related[0]?.alt || name }]).slice(0, 2)} />
+        <SchemeAGallery images={gallery.length ? gallery : [{ src: product.image, alt: product.alt || name }, { src: related[0]?.image || product.image, alt: related[0]?.alt || name }]} />
       </SchemeASection>
       {relatedItems.length ? <SchemeASection title={copy.relatedTitle} description={copy.relatedIntro}><SchemeAListingGrid items={relatedItems} actionLabel={copy.view} /></SchemeASection> : null}
     </main>

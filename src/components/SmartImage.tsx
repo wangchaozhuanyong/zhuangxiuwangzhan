@@ -22,6 +22,8 @@ type SmartImageProps = Omit<React.ImgHTMLAttributes<HTMLImageElement>, "src" | "
    * If omitted, falls back to [width, width*2] when width is provided.
    */
   candidateWidths?: number[];
+  /** Exact pixel width of the original local WebP, used as the final high-DPR srcset candidate. */
+  sourceWidth?: number;
   quality?: number;
   resize?: "contain" | "cover" | "fill";
 };
@@ -41,6 +43,7 @@ export function SmartImage({
   height,
   sizes,
   candidateWidths,
+  sourceWidth,
   quality,
   resize,
   ...rest
@@ -61,9 +64,14 @@ export function SmartImage({
     !isSupabase && candidateWidths && isLocalResponsiveImageCandidate(localSrc)
       ? normalizeLocalResponsiveImageWidths(widths)
       : [];
-  const localResponsiveSrcSet = localResponsiveWidths.length
+  const generatedLocalSrcSet = localResponsiveWidths.length
     ? buildLocalResponsiveSrcSet(localSrc, localResponsiveWidths)
     : undefined;
+  const largestGeneratedWidth = localResponsiveWidths[localResponsiveWidths.length - 1] ?? 0;
+  const localResponsiveSrcSet =
+    sourceWidth && sourceWidth > largestGeneratedWidth
+      ? [generatedLocalSrcSet, `${localSrc} ${sourceWidth}w`].filter(Boolean).join(", ")
+      : generatedLocalSrcSet;
   const srcSet = isSupabase ? buildSupabaseSrcSet(src, widths, { height, quality, resize }) : localResponsiveSrcSet;
   const resolvedSrc = isSupabase
     ? toSupabaseRenderImageUrl(src, { width: fallbackWidth, height, quality, resize })

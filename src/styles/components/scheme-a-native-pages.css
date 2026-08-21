@@ -207,7 +207,8 @@ html[data-public-theme="dark"] .scheme-a-public-shell input[type="range"] {
 
 .fc-route-filter button[aria-pressed="true"] {
   color: #f2ede4;
-  background: linear-gradient(135deg, #24231f, #343128);
+  background-color: #24231f;
+  background-image: linear-gradient(135deg, #24231f, #343128);
   box-shadow: 0 10px 24px rgb(58 47 31 / 0.12);
 }
 
@@ -534,8 +535,9 @@ html[data-public-theme="dark"] .home-footer-prelude__button--secondary svg { col
 
 @media (hover: hover) {
   .fc-route-card:hover .fc-route-card-media img { transform: scale(1.02); }
-  .fc-route-filter button:hover,
+  .fc-route-filter button:not([aria-pressed="true"]):hover,
   .fc-route-more:hover { transform: translateY(-2px); background: rgb(187 151 94 / 0.18); }
+  .fc-route-filter button[aria-pressed="true"]:hover { transform: translateY(-2px); }
 }
 
 @media (min-width: 768px) {
@@ -603,6 +605,21 @@ html[data-public-theme="dark"] .home-footer-prelude__button--secondary svg { col
 
 @media (max-width: 767px) {
   html[data-public-theme][data-mobile-action-bar="true"] body { padding-bottom: 0 !important; }
+  html[data-public-theme="dark"] body .public-main--subpage .forest-quote-page .fc-route-hero-form[data-forest-page-hero="true"] {
+    min-height: clamp(400px, 118vw, 500px) !important;
+  }
+  html[data-public-theme="dark"] body .scheme-a-public-shell .mobile-action-bar__item--whatsapp,
+  html[data-public-theme="dark"] body .scheme-a-public-shell .mobile-action-bar__item--call {
+    background-color: #0d100e;
+    background-image: none;
+  }
+  html[data-public-theme="dark"] body .scheme-a-public-shell .mobile-action-bar__item--whatsapp { color: #8ed7b7; }
+  html[data-public-theme="dark"] body .scheme-a-public-shell .mobile-action-bar__item--call { color: #e6d6b9; }
+  html[data-public-theme="dark"] body .scheme-a-public-shell .mobile-action-bar__item--quote {
+    color: #07100c;
+    background-color: #b99050;
+    background-image: linear-gradient(135deg, #d8b87a, #b99050);
+  }
   .fc-route-editorial .blog-editorial-prologue,
   .fc-route-editorial .blog-editorial-judgements,
   .fc-route-editorial .blog-editorial-section { display: block; }

@@ -1,4 +1,4 @@
-import { expect, test, type Page } from "@playwright/test";
+import { expect, test, type Locator, type Page } from "@playwright/test";
 
 type Theme = "dark";
 
@@ -13,7 +13,66 @@ async function setPublicTheme(page: Page, theme: Theme) {
   await expect(page.locator("html")).toHaveAttribute("data-public-theme", theme);
 }
 
+async function readContrast(locator: Locator) {
+  return locator.evaluate((element) => {
+    type Rgb = [number, number, number];
+    const parseRgb = (value: string): Rgb => {
+      const channels = value.match(/[\d.]+/g)?.map(Number);
+      if (!channels || channels.length < 3) throw new Error(`Unsupported color: ${value}`);
+      return [channels[0], channels[1], channels[2]];
+    };
+    const luminance = (color: Rgb) => {
+      const linear = color.map((channel) => {
+        const normalized = channel / 255;
+        return normalized <= 0.04045
+          ? normalized / 12.92
+          : ((normalized + 0.055) / 1.055) ** 2.4;
+      });
+      return 0.2126 * linear[0] + 0.7152 * linear[1] + 0.0722 * linear[2];
+    };
+    const style = getComputedStyle(element);
+    const foregroundLuminance = luminance(parseRgb(style.color));
+    const backgroundLuminance = luminance(parseRgb(style.backgroundColor));
+    return {
+      backgroundImage: style.backgroundImage,
+      contrast: (Math.max(foregroundLuminance, backgroundLuminance) + 0.05)
+        / (Math.min(foregroundLuminance, backgroundLuminance) + 0.05),
+    };
+  });
+}
+
 test.describe("public text readability", () => {
+  test("selected project filter keeps AA contrast while hovered", async ({ page }) => {
+    await page.setViewportSize({ width: 1440, height: 1000 });
+    await page.goto("/zh/projects", { waitUntil: "domcontentloaded" });
+
+    const selectedFilter = page.locator(".fc-route-filter button").nth(1);
+    await selectedFilter.click();
+    await expect(selectedFilter).toHaveAttribute("aria-pressed", "true");
+    await selectedFilter.hover();
+    await expect(selectedFilter).toHaveCSS("background-color", "rgb(36, 35, 31)");
+
+    const colors = await readContrast(selectedFilter);
+
+    expect(colors.backgroundImage).toContain("linear-gradient");
+    expect(colors.contrast).toBeGreaterThanOrEqual(4.5);
+  });
+
+  test("contextual mobile actions keep AA contrast", async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.goto("/zh/quote", { waitUntil: "domcontentloaded" });
+
+    const actions = page.locator(".mobile-action-bar__item");
+    await expect(actions).toHaveCount(3);
+    await expect(actions.nth(0)).toHaveCSS("background-color", "rgb(13, 16, 14)");
+    await expect(actions.nth(1)).toHaveCSS("background-color", "rgb(13, 16, 14)");
+    await expect(actions.nth(2)).toHaveCSS("background-color", "rgb(185, 144, 80)");
+    for (let index = 0; index < await actions.count(); index += 1) {
+      const colors = await readContrast(actions.nth(index));
+      expect(colors.contrast, `mobile action ${index + 1} contrast`).toBeGreaterThanOrEqual(4.5);
+    }
+  });
+
   for (const viewport of viewports) {
     for (const theme of themes) {
       for (const formPage of [

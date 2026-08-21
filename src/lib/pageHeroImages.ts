@@ -1,6 +1,11 @@
 type PageHeroImage = {
   desktop: string;
   mobile: string;
+  tablet?: string;
+  desktopWidth?: number;
+  tabletWidth?: number;
+  mobileWidth?: number;
+  claimLevel?: "rendering_concept";
   legacy?: readonly string[];
 };
 
@@ -11,24 +16,47 @@ export const pageHeroImages = {
     legacy: ["/images/heroes/hero-about.webp"],
   },
   services: {
-    desktop: "/images/heroes/v2/hero-services-premium.webp",
-    mobile: "/images/heroes/v2/hero-services-premium-mobile.webp",
-    legacy: ["/images/heroes/hero-services.webp"],
+    desktop: "/images/heroes/v3/hero-services-v3-desktop.webp",
+    desktopWidth: 1726,
+    tablet: "/images/heroes/v3/hero-services-v3-tablet.webp",
+    tabletWidth: 1122,
+    mobile: "/images/heroes/v3/hero-services-v3-mobile.webp",
+    mobileWidth: 1086,
+    claimLevel: "rendering_concept",
+    legacy: ["/images/heroes/hero-services.webp", "/images/heroes/v2/hero-services-premium.webp"],
   },
   projects: {
-    desktop: "/images/heroes/v2/hero-projects-premium.webp",
-    mobile: "/images/heroes/v2/hero-projects-premium-mobile.webp",
-    legacy: ["/images/heroes/hero-projects.webp"],
+    desktop: "/images/heroes/v3/hero-projects-v3-desktop.webp",
+    desktopWidth: 1729,
+    tablet: "/images/heroes/v3/hero-projects-v3-tablet.webp",
+    tabletWidth: 1122,
+    mobile: "/images/heroes/v3/hero-projects-v3-mobile.webp",
+    mobileWidth: 1086,
+    claimLevel: "rendering_concept",
+    legacy: ["/images/heroes/hero-projects.webp", "/images/heroes/v2/hero-projects-premium.webp"],
   },
   materials: {
-    desktop: "/images/heroes/v2/hero-materials-premium.webp",
-    mobile: "/images/heroes/v2/hero-materials-premium-mobile.webp",
-    legacy: ["/images/heroes/hero-materials.webp"],
+    desktop: "/images/heroes/v3/hero-materials-v3-desktop.webp",
+    desktopWidth: 1727,
+    tablet: "/images/heroes/v3/hero-materials-v3-tablet.webp",
+    tabletWidth: 1122,
+    mobile: "/images/heroes/v3/hero-materials-v3-mobile.webp",
+    mobileWidth: 1086,
+    claimLevel: "rendering_concept",
+    legacy: ["/images/heroes/hero-materials.webp", "/images/heroes/v2/hero-materials-premium.webp"],
   },
   products: {
-    desktop: "/images/heroes/v2/hero-materials-premium.webp",
-    mobile: "/images/heroes/v2/hero-materials-premium-mobile.webp",
-    legacy: ["/images/materials/kitchen-acrylic-cabinets.webp"],
+    desktop: "/images/heroes/v3/hero-products-v3-desktop.webp",
+    desktopWidth: 1729,
+    tablet: "/images/heroes/v3/hero-products-v3-tablet.webp",
+    tabletWidth: 1122,
+    mobile: "/images/heroes/v3/hero-products-v3-mobile.webp",
+    mobileWidth: 1086,
+    claimLevel: "rendering_concept",
+    legacy: [
+      "/images/materials/kitchen-acrylic-cabinets.webp",
+      "/images/heroes/v2/hero-materials-premium.webp",
+    ],
   },
   promotions: {
     desktop: "/images/heroes/v2/hero-quote-premium.webp",
@@ -78,10 +106,15 @@ export const resolvePageHeroImage = (publishedImage: string | null | undefined, 
 
   return {
     desktop,
-    // The CMS currently stores one wide hero only. Keep that editorial image on
-    // desktop, while the route-level portrait art direction protects mobile
-    // sharpness and composition until a dedicated CMS mobile field exists.
-    mobile: fallback.mobile,
+    // A CMS-provided hero has no verified tablet/mobile pair yet, so keep one
+    // evidence level across breakpoints. Known legacy defaults are replaced by
+    // the complete v3 art-directed set below.
+    tablet: shouldUseFallback ? fallback.tablet : desktop,
+    mobile: shouldUseFallback ? fallback.mobile : desktop,
+    desktopWidth: shouldUseFallback ? fallback.desktopWidth : undefined,
+    tabletWidth: shouldUseFallback ? fallback.tabletWidth : undefined,
+    mobileWidth: shouldUseFallback ? fallback.mobileWidth : undefined,
+    claimLevel: shouldUseFallback ? fallback.claimLevel : undefined,
   };
 };
 

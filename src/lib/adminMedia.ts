@@ -1,5 +1,6 @@
 import { adminMediaPerformanceText } from "@/i18n/adminMediaLibraryText";
 import { getAdminLang } from "@/lib/adminLocale";
+import { resolveImageDeliveryProfile } from "@/lib/imageDeliveryPolicy";
 
 export type AdminMediaKind = "image" | "video" | "unknown";
 
@@ -35,6 +36,7 @@ export type AdminMediaAssetLike = {
   height?: number | null;
   poster_url?: string | null;
   duration_seconds?: number | null;
+  usage_type?: string | null;
 };
 
 export type MediaPerformanceStatus = {
@@ -175,6 +177,7 @@ export function getMediaPerformanceStatus(asset: AdminMediaAssetLike): MediaPerf
   }
 
   if (kind === "image") {
+    const profile = resolveImageDeliveryProfile({ usageType: asset.usage_type });
     if (!size || !width || !height) {
       return {
         tone: "warning",
@@ -189,14 +192,14 @@ export function getMediaPerformanceStatus(asset: AdminMediaAssetLike): MediaPerf
         detail: text.formatNeedsOptimization.detail,
       };
     }
-    if (size > 3 * 1024 * 1024) {
+    if (size > profile.maxBytes * 2) {
       return {
         tone: "danger",
         label: text.imageTooLarge.label,
         detail: text.imageTooLarge.detail,
       };
     }
-    if (size > 1024 * 1024 || width > 2400 || height > 2400) {
+    if (size > profile.maxBytes || width > profile.maxEdge || height > profile.maxEdge) {
       return {
         tone: "warning",
         label: text.imageLarge.label,

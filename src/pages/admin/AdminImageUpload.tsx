@@ -12,6 +12,7 @@ import {
 import { getAdminLang } from "@/lib/adminLocale";
 import type { AdminUploadedMedia } from "@/lib/adminMedia";
 import { useCreateAdminMediaAsset } from "@/lib/adminMediaQueries";
+import { resolveImageDeliveryProfile, type ImageDeliveryProfile } from "@/lib/imageDeliveryPolicy";
 import { cn } from "@/lib/utils";
 
 export type AdminImagePreviewVariant = "cover" | "logo" | "icon" | "og";
@@ -37,11 +38,13 @@ type PreparedUpload = {
 
 const BUCKET = "site-images";
 const ORIGINAL_BUCKET = "site-media-originals";
-const MAX_EDGE = 2400;
 const ICON_OUTPUT_SIZE = 512;
 const ICON_MARK_SIZE = 468;
 const ICON_MARK_COLOR = { r: 199, g: 166, b: 103 };
 const WEBP_QUALITY = 0.82;
+const MIN_WEBP_QUALITY = 0.58;
+const WEBP_QUALITY_STEP = 0.06;
+const MAX_RESIZE_PASSES = 4;
 const MAX_SOURCE_BYTES = 20 * 1024 * 1024;
 const MAX_UPLOAD_BYTES = 5 * 1024 * 1024;
 const ALLOWED_IMAGE_TYPES = new Set(["image/jpeg", "image/png", "image/webp"]);
@@ -109,7 +112,20 @@ const getFaviconBounds = (imageData: ImageData): PixelBounds | null => {
   return transparentRatio > 0.05 ? alphaBounds : nonWhiteBounds || alphaBounds;
 };
 
-const prepareIconUploadFile = async (file: File, bitmap: ImageBitmap): Promise<PreparedUpload> => {
+const encodeCanvasToWebp = (canvas: HTMLCanvasElement, quality: number): Promise<Blob> =>
+  new Promise((resolve, reject) => {
+    canvas.toBlob(
+      (blob) => (blob ? resolve(blob) : reject(new Error("WebP 编码失败"))),
+      "image/webp",
+      quality,
+    );
+  });
+
+const prepareIconUploadFile = async (
+  file: File,
+  bitmap: ImageBitmap,
+  profile: ImageDeliveryProfile,
+): Promise<PreparedUpload> => {
   const sourceCanvas = document.createElement("canvas");
   sourceCanvas.width = bitmap.width;
   sourceCanvas.height = bitmap.height;
@@ -161,16 +177,10 @@ const prepareIconUploadFile = async (file: File, bitmap: ImageBitmap): Promise<P
   if (!ctx) throw new Error("浏览器不支持图片处理画布");
   ctx.drawImage(markCanvas, Math.round((ICON_OUTPUT_SIZE - targetW) / 2), Math.round((ICON_OUTPUT_SIZE - targetH) / 2));
 
-  const blob: Blob = await new Promise((resolve, reject) => {
-    canvas.toBlob(
-      (b) => (b ? resolve(b) : reject(new Error("WebP 编码失败"))),
-      "image/webp",
-      WEBP_QUALITY,
-    );
-  });
+  const blob = await encodeCanvasToWebp(canvas, WEBP_QUALITY);
 
-  if (blob.size > MAX_UPLOAD_BYTES) {
-    throw new Error("自动处理后的展示图仍超过 5MB。请换一张更合理的素材，或后续交给服务端处理队列。");
+  if (blob.size > profile.maxBytes) {
+    throw new Error(formatA("optimizedFileTooLarge", { maxSize: `${Math.round(profile.maxBytes / 1024)} KB` }));
   }
 
   const out = new File([blob], `${sanitizeName(file.name, "favicon")}.webp`, { type: "image/webp" });
@@ -185,7 +195,11 @@ const prepareIconUploadFile = async (file: File, bitmap: ImageBitmap): Promise<P
   };
 };
 
-async function prepareUploadFile(file: File, variant: AdminImagePreviewVariant = "cover"): Promise<PreparedUpload> {
+async function prepareUploadFile(
+  file: File,
+  variant: AdminImagePreviewVariant = "cover",
+  usageType = "general",
+): Promise<PreparedUpload> {
   const mime = file.type || "";
   const ext = file.name.split(".").pop()?.toLowerCase() || "";
 
@@ -200,38 +214,46 @@ async function prepareUploadFile(file: File, variant: AdminImagePreviewVariant =
   const bitmap = await createImageBitmap(file);
   const originalWidth = bitmap.width;
   const originalHeight = bitmap.height;
+  const profile = resolveImageDeliveryProfile({ usageType, previewVariant: variant });
 
   if (variant === "icon") {
     try {
-      return await prepareIconUploadFile(file, bitmap);
+      return await prepareIconUploadFile(file, bitmap, profile);
     } finally {
       bitmap.close?.();
     }
   }
 
-  const scale = Math.min(1, MAX_EDGE / Math.max(originalWidth, originalHeight));
-  const targetW = Math.max(1, Math.round(originalWidth * scale));
-  const targetH = Math.max(1, Math.round(originalHeight * scale));
-
   const canvas = document.createElement("canvas");
-  canvas.width = targetW;
-  canvas.height = targetH;
-  const ctx = canvas.getContext("2d");
-  if (!ctx) throw new Error("浏览器不支持图片处理画布");
-  ctx.drawImage(bitmap, 0, 0, targetW, targetH);
+  const initialScale = Math.min(1, profile.maxEdge / Math.max(originalWidth, originalHeight));
+  let targetW = Math.max(1, Math.round(originalWidth * initialScale));
+  let targetH = Math.max(1, Math.round(originalHeight * initialScale));
+  let blob: Blob | null = null;
+  const targetMaxBytes = Math.min(profile.maxBytes, MAX_UPLOAD_BYTES);
 
-  const blob: Blob = await new Promise((resolve, reject) => {
-    canvas.toBlob(
-      (b) => (b ? resolve(b) : reject(new Error("WebP 编码失败"))),
-      "image/webp",
-      WEBP_QUALITY,
-    );
-  });
+  try {
+    for (let resizePass = 0; resizePass < MAX_RESIZE_PASSES; resizePass += 1) {
+      canvas.width = targetW;
+      canvas.height = targetH;
+      const ctx = canvas.getContext("2d");
+      if (!ctx) throw new Error("浏览器不支持图片处理画布");
+      ctx.drawImage(bitmap, 0, 0, targetW, targetH);
 
-  bitmap.close?.();
+      for (let quality = WEBP_QUALITY; quality >= MIN_WEBP_QUALITY - 0.001; quality -= WEBP_QUALITY_STEP) {
+        blob = await encodeCanvasToWebp(canvas, Number(quality.toFixed(2)));
+        if (blob.size <= targetMaxBytes) break;
+      }
 
-  if (blob.size > MAX_UPLOAD_BYTES) {
-    throw new Error("自动处理后的展示图仍超过 5MB。请换一张更合理的素材，或后续交给服务端处理队列。");
+      if (blob && blob.size <= targetMaxBytes) break;
+      targetW = Math.max(1, Math.round(targetW * 0.85));
+      targetH = Math.max(1, Math.round(targetH * 0.85));
+    }
+  } finally {
+    bitmap.close?.();
+  }
+
+  if (!blob || blob.size > targetMaxBytes) {
+    throw new Error(formatA("optimizedFileTooLarge", { maxSize: `${Math.round(targetMaxBytes / 1024)} KB` }));
   }
 
   const out = new File([blob], `${sanitizeName(file.name)}.webp`, { type: "image/webp" });
@@ -340,7 +362,7 @@ const AdminImageUpload = ({ value, folder = "content", previewVariant = "cover",
     setNotes([]);
 
     try {
-      const prepared = await prepareUploadFile(file, previewVariant);
+      const prepared = await prepareUploadFile(file, previewVariant, assetUsageType);
       const folderPath = sanitizeFolder(folder);
       const stamp = Date.now();
       const originalPath = await tryUploadOriginalCopy({ file, folderPath, stamp });

@@ -58,6 +58,8 @@ type DynamicRouteState = {
 
 type PagesEnv = {
   [key: string]: unknown;
+  CF_PAGES_COMMIT_SHA?: string;
+  CF_PAGES_URL?: string;
   VITE_SUPABASE_URL?: string;
   VITE_SUPABASE_ANON_KEY?: string;
   ASSETS?: {
@@ -79,7 +81,8 @@ const DEFAULT_MAP_LONGITUDE = "101.6708234";
 const PUBLIC_SITE_URL = "https://flashcast.com.my";
 const PUBLIC_HTML_BROWSER_TTL_SECONDS = 60;
 const PUBLIC_HTML_EDGE_TTL_SECONDS = 300;
-const PUBLIC_HTML_CACHE_VERSION = "20260814-cms-live-sync-v1";
+const PUBLIC_HTML_FRESHNESS_TTL_SECONDS = 60;
+const PUBLIC_HTML_CACHE_VERSION = "20260821-public-swr-v3";
 const SITE_SETTINGS_CACHE_TTL_MS = 5 * 60 * 1000;
 const PUBLIC_PROJECT_SUMMARIES_CACHE_TTL_MS = 0;
 const PUBLIC_PROJECT_DETAIL_CACHE_TTL_MS = 0;
@@ -127,7 +130,7 @@ const CSP_DIRECTIVES = (scriptSrc: string[]) => [
   ["form-action", "'self'"],
 ];
 const INLINE_SCRIPT_PATTERN = /<script\b(?![^>]*\bsrc=)[^>]*>([\s\S]*?)<\/script>/gi;
-type HtmlCacheDebugState = "hit" | "miss" | "bypass-admin" | "bypass-not-found";
+type HtmlCacheDebugState = "hit" | "stale" | "miss" | "bypass-admin" | "bypass-not-found";
 
 let siteSettingsCache:
   | {
@@ -162,6 +165,7 @@ let homeContentBundleCache:
   | null = null;
 
 const publicRowsCache = new Map<string, { value: PublicDataRow[] | null; expiresAt: number }>();
+const publicHtmlRefreshes = new Map<string, Promise<void>>();
 
 const PROJECT_SUMMARY_SELECT = [
   "id",
@@ -1492,7 +1496,7 @@ const injectSeo = (html: string, meta: SeoEntry, siteSettings?: SiteSettingsHead
   const siteName = escapeHtml(siteSettings?.company_name || siteSettings?.brand_name || "FLASH CAST SDN. BHD.");
   const version = siteSettings?.updated_at || undefined;
   const { favicon, touchIcon } = resolveHeadIcons(siteSettings);
-  const defaultOgImage = siteSettings?.og_image_url || normalizeBuiltInLogoUrl(siteSettings?.logo_url, canonical.origin) || meta.ogImage;
+  const defaultOgImage = siteSettings?.og_image_url || normalizeBuiltInLogoUrl(siteSettings?.logo_url, new URL(canonical).origin) || meta.ogImage;
   const ogImage =
     meta.ogImage === DEFAULT_OG_IMAGE
       ? escapeHtml(addCacheBuster(defaultOgImage, version))
@@ -1686,14 +1690,33 @@ const getEdgeCache = () => {
   return caches.default;
 };
 
-const getPublicHtmlCacheRequest = (request: Request, contentVersion = "static") => {
+const getPublicHtmlDeploymentVersion = (env: PagesEnv) => {
+  const version = env.CF_PAGES_COMMIT_SHA || env.CF_PAGES_URL;
+  return typeof version === "string" && version.trim() ? version.trim().slice(0, 128) : "local";
+};
+
+const getPublicHtmlCacheRequest = (request: Request, env: PagesEnv) => {
   const cacheUrl = new URL(request.url);
   cacheUrl.search = "";
   cacheUrl.searchParams.set("__flashcast_html_v", PUBLIC_HTML_CACHE_VERSION);
-  cacheUrl.searchParams.set("__flashcast_content_v", contentVersion);
+  cacheUrl.searchParams.set("__flashcast_deploy_v", getPublicHtmlDeploymentVersion(env));
   cacheUrl.hash = "";
   return new Request(cacheUrl.toString(), { method: "GET" });
 };
+
+const getPublicHtmlFreshnessRequest = (publicHtmlCacheRequest: Request) => {
+  const cacheUrl = new URL(publicHtmlCacheRequest.url);
+  cacheUrl.searchParams.set("__flashcast_html_fresh", "1");
+  return new Request(cacheUrl.toString(), { method: "GET" });
+};
+
+const createPublicHtmlFreshnessResponse = () => new Response(null, {
+  headers: {
+    "cache-control": `public, max-age=${PUBLIC_HTML_FRESHNESS_TTL_SECONDS}`,
+    "cdn-cache-control": `public, max-age=${PUBLIC_HTML_FRESHNESS_TTL_SECONDS}`,
+    "cloudflare-cdn-cache-control": `public, max-age=${PUBLIC_HTML_FRESHNESS_TTL_SECONDS}`,
+  },
+});
 
 export const onRequest: PagesFunction = async (context) => {
   const { request, next } = context;
@@ -1747,16 +1770,16 @@ export const onRequest: PagesFunction = async (context) => {
 
   const key = normalizePath(url.pathname);
   const staticMeta = (manifest as Record<string, SeoEntry>)[key];
-  const dynamicRouteState = await fetchDynamicRouteState(env as Record<string, string | undefined>, key, staticMeta);
-  const meta = dynamicRouteState?.meta || staticMeta;
-  const edgeCache = meta && request.method === "GET" ? getEdgeCache() : null;
-  const publicHtmlCacheRequest = edgeCache
-    ? getPublicHtmlCacheRequest(request, dynamicRouteState?.contentVersion || "static")
+  const isPublicLanguagePath = /^\/(?:en|zh)(?:\/|$)/.test(key);
+  const edgeCache = request.method === "GET" && isPublicLanguagePath ? getEdgeCache() : null;
+  const publicHtmlCacheRequest = edgeCache ? getPublicHtmlCacheRequest(request, env) : null;
+  const publicHtmlFreshnessRequest = publicHtmlCacheRequest
+    ? getPublicHtmlFreshnessRequest(publicHtmlCacheRequest)
     : null;
-  const cachedPublicHtml = edgeCache && publicHtmlCacheRequest ? await edgeCache.match(publicHtmlCacheRequest) : null;
-  if (cachedPublicHtml) {
-    return withHtmlCacheDebugHeader(cachedPublicHtml, "hit");
-  }
+
+  const generatePublicHtml = async () => {
+    const dynamicRouteState = await fetchDynamicRouteState(env as Record<string, string | undefined>, key, staticMeta);
+    const meta = dynamicRouteState?.meta || staticMeta;
 
   const appShellUrl = new URL(request.url);
   appShellUrl.pathname = "/";
@@ -1766,7 +1789,7 @@ export const onRequest: PagesFunction = async (context) => {
     : await next("/");
   const contentType = response.headers.get("content-type") || "";
   if (!contentType.includes("text/html")) {
-    return response;
+    return { response, cacheWrite: null };
   }
 
 	  if (url.pathname === "/admin" || url.pathname.startsWith("/admin/")) {
@@ -1778,7 +1801,10 @@ export const onRequest: PagesFunction = async (context) => {
 	    const headers = new Headers(response.headers);
 	    applyHtmlNoStoreHeaders(headers);
 	    await applyHtmlSecurityHeaders(headers, transformed);
-	    return withHtmlCacheDebugHeader(new Response(transformed, { status: response.status, headers }), "bypass-admin");
+	    return {
+        response: withHtmlCacheDebugHeader(new Response(transformed, { status: response.status, headers }), "bypass-admin"),
+        cacheWrite: null,
+      };
 	  }
 
   const projectDetailSlug = getProjectDetailSlugFromKey(key);
@@ -1907,15 +1933,57 @@ export const onRequest: PagesFunction = async (context) => {
     new Response(transformed, { status: meta ? response.status : 404, headers }),
     meta ? "miss" : "bypass-not-found",
   );
-  if (edgeCache && publicHtmlCacheRequest) {
-    const putPromise = edgeCache.put(publicHtmlCacheRequest, finalResponse.clone());
-    const waitUntil = (context as unknown as { waitUntil?: (promise: Promise<unknown>) => void }).waitUntil;
-    if (typeof waitUntil === "function") {
-      waitUntil(putPromise);
-    } else {
-      await putPromise.catch(() => undefined);
+  const cacheWrite = meta && edgeCache && publicHtmlCacheRequest && publicHtmlFreshnessRequest
+    ? Promise.all([
+        edgeCache.put(publicHtmlCacheRequest, finalResponse.clone()),
+        edgeCache.put(publicHtmlFreshnessRequest, createPublicHtmlFreshnessResponse()),
+      ]).then(() => undefined).catch(() => undefined)
+    : null;
+
+  return { response: finalResponse, cacheWrite };
+  };
+
+  if (edgeCache && publicHtmlCacheRequest && publicHtmlFreshnessRequest) {
+    const [cachedPublicHtml, freshnessMarker] = await Promise.all([
+      edgeCache.match(publicHtmlCacheRequest),
+      edgeCache.match(publicHtmlFreshnessRequest),
+    ]);
+    if (cachedPublicHtml) {
+      if (!freshnessMarker) {
+        const refreshKey = publicHtmlCacheRequest.url;
+        let refreshPromise = publicHtmlRefreshes.get(refreshKey);
+        if (!refreshPromise) {
+          refreshPromise = generatePublicHtml()
+            .then(async (generated) => {
+              if (generated.cacheWrite) await generated.cacheWrite;
+            })
+            .catch(() => undefined)
+            .finally(() => {
+              publicHtmlRefreshes.delete(refreshKey);
+            });
+          publicHtmlRefreshes.set(refreshKey, refreshPromise);
+        }
+
+        const waitUntil = (context as unknown as { waitUntil?: (promise: Promise<unknown>) => void }).waitUntil;
+        if (typeof waitUntil === "function") {
+          waitUntil(refreshPromise);
+        } else {
+          await refreshPromise;
+        }
+      }
+
+      return withHtmlCacheDebugHeader(cachedPublicHtml, freshnessMarker ? "hit" : "stale");
     }
   }
 
-  return finalResponse;
+  const generated = await generatePublicHtml();
+  if (generated.cacheWrite) {
+    const waitUntil = (context as unknown as { waitUntil?: (promise: Promise<unknown>) => void }).waitUntil;
+    if (typeof waitUntil === "function") {
+      waitUntil(generated.cacheWrite);
+    } else {
+      await generated.cacheWrite;
+    }
+  }
+  return generated.response;
 };

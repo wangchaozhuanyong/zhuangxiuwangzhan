@@ -18,16 +18,32 @@ test("mobile navigation remains stable while the header changes state", async ({
 
   await dock.locator('a[href="/zh/contact"]').click();
   await expect(page).toHaveURL(/\/zh\/contact$/);
-  await expect(page.locator('.scheme-a-mobile-dock a[aria-current="page"]')).toHaveAttribute("href", "/zh/contact");
-  await expect(page.locator(".scheme-a-mobile-dock")).toBeVisible();
+  await expect(page.locator(".scheme-a-mobile-dock")).toHaveCount(0);
+
+  const actionBar = page.locator(".mobile-action-bar");
+  await expect(actionBar).toBeVisible();
+  await expect(actionBar.locator("a")).toHaveCount(3);
+  await expect(actionBar.locator('a[href="#contact-name"]')).toBeVisible();
+  await actionBar.locator('a[href="#contact-name"]').click();
+  await expect(page.locator("#contact-name")).toBeFocused();
+
+  await page.goto("/en/quote", { waitUntil: "domcontentloaded" });
+  await expect(page.locator(".scheme-a-mobile-dock")).toHaveCount(0);
+  await expect(page.locator('.mobile-action-bar a[href="#quote-name"]')).toBeVisible();
 });
 
 test("mobile pages keep native vertical scrolling while media loads", async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
+  const cinematicMotionRequests: string[] = [];
+  page.on("request", (request) => {
+    if (request.url().includes("PublicCinematicMotion")) cinematicMotionRequests.push(request.url());
+  });
   await page.goto("/zh", { waitUntil: "domcontentloaded" });
   await page.waitForLoadState("load");
   await expect(page.locator(".scheme-a-home")).toBeVisible();
   await page.waitForTimeout(600);
+
+  expect(cinematicMotionRequests).toEqual([]);
 
   const motionState = await page.locator("[data-cinematic-section]").evaluateAll((sections) =>
     sections.map((section) => {
@@ -48,6 +64,17 @@ test("mobile pages keep native vertical scrolling while media loads", async ({ p
   const startY = await page.evaluate(() => window.scrollY);
   await page.evaluate(() => window.scrollTo({ top: 1600, behavior: "auto" }));
   await expect.poll(() => page.evaluate(() => window.scrollY)).toBeGreaterThan(startY + 1000);
+});
+
+test("desktop loads cinematic motion after the initial render", async ({ page }) => {
+  const cinematicMotionRequests: string[] = [];
+  page.on("request", (request) => {
+    if (request.url().includes("PublicCinematicMotion")) cinematicMotionRequests.push(request.url());
+  });
+
+  await page.goto("/zh", { waitUntil: "domcontentloaded" });
+  await expect(page.locator(".scheme-a-home")).toBeVisible();
+  await expect.poll(() => cinematicMotionRequests.length).toBeGreaterThan(0);
 });
 
 test("before-and-after comparison keeps vertical touch panning available", async ({ page }) => {

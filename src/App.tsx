@@ -1,10 +1,11 @@
-import { lazy, Suspense, useEffect, useRef, type MouseEvent, type ReactNode } from "react";
+import { lazy, Suspense, useEffect, useRef, useState, type MouseEvent, type ReactNode } from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, useLocation, useNavigationType } from "react-router-dom";
 import { HelmetProvider } from "react-helmet-async";
 import { LanguageProvider, useLanguage } from "@/i18n/LanguageContext";
 import { SchemeAFooter, SchemeAFooterPrelude, SchemeAMobileDock, SchemeANavbar } from "@/components/scheme-a/SchemeAPublicChrome";
 import DynamicBrandHead from "@/components/DynamicBrandHead";
+import MobileActionBar from "@/components/MobileActionBar";
 import { AppErrorBoundary } from "@/components/AppErrorBoundary";
 import { PublicChromeProvider, usePublicChrome } from "@/contexts/PublicChromeContext";
 import { stripLanguagePrefix } from "@/i18n/routes";
@@ -19,6 +20,59 @@ const AdminRouteTree = lazy(() => import("@/routes/AdminRouteTree"));
 const AdminLoginPage = lazy(() => import("@/pages/admin/AdminLogin"));
 const AdminUiProviders = lazy(() => import("@/components/admin/AdminUiProviders"));
 const PublicCinematicMotion = lazy(() => import("@/components/PublicCinematicMotion"));
+
+const PublicCinematicMotionGate = () => {
+  const [shouldLoadMotion, setShouldLoadMotion] = useState(false);
+
+  useEffect(() => {
+    const desktopMotion = window.matchMedia("(min-width: 768px) and (hover: hover) and (pointer: fine)");
+    const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+    let idleCallbackId: number | null = null;
+    let fallbackTimer = 0;
+
+    const cancelScheduledLoad = () => {
+      if (idleCallbackId !== null && typeof window.cancelIdleCallback === "function") {
+        window.cancelIdleCallback(idleCallbackId);
+      }
+      window.clearTimeout(fallbackTimer);
+      idleCallbackId = null;
+      fallbackTimer = 0;
+    };
+
+    const syncMotionPreference = () => {
+      cancelScheduledLoad();
+      if (!desktopMotion.matches || reducedMotion.matches) {
+        setShouldLoadMotion(false);
+        return;
+      }
+
+      const enableMotion = () => setShouldLoadMotion(true);
+      if (typeof window.requestIdleCallback === "function") {
+        idleCallbackId = window.requestIdleCallback(enableMotion, { timeout: 800 });
+      } else {
+        fallbackTimer = window.setTimeout(enableMotion, 120);
+      }
+    };
+
+    desktopMotion.addEventListener("change", syncMotionPreference);
+    reducedMotion.addEventListener("change", syncMotionPreference);
+    syncMotionPreference();
+
+    return () => {
+      cancelScheduledLoad();
+      desktopMotion.removeEventListener("change", syncMotionPreference);
+      reducedMotion.removeEventListener("change", syncMotionPreference);
+    };
+  }, []);
+
+  if (!shouldLoadMotion) return null;
+
+  return (
+    <Suspense fallback={null}>
+      <PublicCinematicMotion />
+    </Suspense>
+  );
+};
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -160,6 +214,7 @@ const AppShell = () => {
   const publicPath = stripLanguagePrefix(location.pathname);
   const isHomeRoute = !isAdminRoute && publicPath === "/";
   const isProductDetailRoute = !isAdminRoute && /^\/products\/[^/]+$/.test(publicPath);
+  const usesContextualMobileActionBar = !isAdminRoute && (publicPath === "/quote" || publicPath === "/contact");
   const publicMainClass = isAdminRoute
     ? undefined
     : isHomeRoute
@@ -190,7 +245,7 @@ const AppShell = () => {
     <PublicChromeProvider
       isAdminRoute={isAdminRoute}
       isHomeRoute={isHomeRoute}
-      mobileActionBarMode="hidden"
+      mobileActionBarMode={usesContextualMobileActionBar ? "always" : "hidden"}
     >
       <DynamicBrandHead />
       <ScrollToTop />
@@ -214,9 +269,7 @@ const AppShell = () => {
       ) : (
         <PublicSiteShell surface={forestSurface} productDetail={isProductDetailRoute}>
           <SchemeANavbar />
-          <Suspense fallback={null}>
-            <PublicCinematicMotion />
-          </Suspense>
+          <PublicCinematicMotionGate />
           <PublicPageFrame isAdminRoute={false}>
             <div key={mainContentKey} id="main-content" tabIndex={-1} className={mainContentClass} data-forest-surface={forestSurface}>
               <AppErrorBoundary isAdminRoute={false}>
@@ -227,7 +280,7 @@ const AppShell = () => {
             </div>
             <SchemeAFooterPrelude />
             <SchemeAFooter />
-            <SchemeAMobileDock />
+            {usesContextualMobileActionBar ? <MobileActionBar /> : <SchemeAMobileDock />}
           </PublicPageFrame>
         </PublicSiteShell>
       )}

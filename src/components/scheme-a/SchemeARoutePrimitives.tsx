@@ -7,6 +7,10 @@ import { buildLocalResponsiveSrcSet, isLocalResponsiveImageCandidate } from "@/l
 import { buildSupabaseSrcSet, isSupabasePublicObjectUrl } from "@/lib/supabaseImage";
 
 const ROUTE_HERO_MOBILE_WIDTHS = [560, 720, 900];
+const ROUTE_HERO_TABLET_WIDTHS = [720, 900];
+
+const appendOriginalCandidate = (srcSet: string | undefined, src: string, sourceWidth?: number) =>
+  sourceWidth ? [srcSet, `${src} ${sourceWidth}w`].filter(Boolean).join(", ") : srcSet;
 
 export type SchemeARouteKind = "listing" | "detail" | "content" | "article" | "legal" | "form" | "compare";
 
@@ -38,7 +42,11 @@ export type SchemeAFaqItem = {
 export function SchemeARouteHero({
   kind = "content",
   image,
+  imageSourceWidth,
+  tabletImage,
+  tabletImageSourceWidth,
   mobileImage,
+  mobileImageSourceWidth,
   imageAlt,
   label,
   title,
@@ -46,7 +54,11 @@ export function SchemeARouteHero({
 }: {
   kind?: SchemeARouteKind;
   image: string;
+  imageSourceWidth?: number;
+  tabletImage?: string;
+  tabletImageSourceWidth?: number;
   mobileImage?: string;
+  mobileImageSourceWidth?: number;
   imageAlt: string;
   label: string;
   title: string;
@@ -56,7 +68,22 @@ export function SchemeARouteHero({
     ? isSupabasePublicObjectUrl(mobileImage)
       ? buildSupabaseSrcSet(mobileImage, ROUTE_HERO_MOBILE_WIDTHS, { height: 1120, quality: 86, resize: "cover" })
       : isLocalResponsiveImageCandidate(mobileImage)
-        ? buildLocalResponsiveSrcSet(mobileImage, ROUTE_HERO_MOBILE_WIDTHS)
+        ? appendOriginalCandidate(
+            buildLocalResponsiveSrcSet(mobileImage, ROUTE_HERO_MOBILE_WIDTHS),
+            mobileImage,
+            mobileImageSourceWidth,
+          )
+        : undefined
+    : undefined;
+  const tabletSrcSet = tabletImage
+    ? isSupabasePublicObjectUrl(tabletImage)
+      ? buildSupabaseSrcSet(tabletImage, ROUTE_HERO_TABLET_WIDTHS, { height: 1400, quality: 84, resize: "cover" })
+      : isLocalResponsiveImageCandidate(tabletImage)
+        ? appendOriginalCandidate(
+            buildLocalResponsiveSrcSet(tabletImage, ROUTE_HERO_TABLET_WIDTHS),
+            tabletImage,
+            tabletImageSourceWidth,
+          )
         : undefined
     : undefined;
 
@@ -67,8 +94,16 @@ export function SchemeARouteHero({
           {mobileImage ? (
             <source media="(max-width: 767px)" srcSet={mobileSrcSet || mobileImage} sizes="100vw" />
           ) : null}
+          {tabletImage ? (
+            <source
+              media="(min-width: 768px) and (max-width: 1023px) and (orientation: portrait)"
+              srcSet={tabletSrcSet || tabletImage}
+              sizes="100vw"
+            />
+          ) : null}
           <SmartImage
             src={image}
+            sourceWidth={imageSourceWidth}
             alt={imageAlt}
             width={1600}
             height={1100}
@@ -227,11 +262,28 @@ export function SchemeAGallery({
 }: {
   images: readonly { src: string; alt: string }[];
 }) {
+  const visibleImages = images.slice(0, 8);
+  const rows: Array<Array<{ src: string; alt: string }>> = [];
+  for (let index = 0; index < visibleImages.length; index += 2) {
+    rows.push(visibleImages.slice(index, index + 2));
+  }
+
   return (
-    <div className="fc-route-gallery">
-      {images.slice(0, 2).map((image, index) => (
-        <div key={`${image.src}-${index}`} className="fc-route-gallery-media" data-cinematic-media>
-          <SmartImage src={image.src} alt={image.alt} width={index === 0 ? 1200 : 720} height={900} sizes={index === 0 ? "70vw" : "30vw"} candidateWidths={[560, 720, 960, 1200]} quality={84} />
+    <div className="grid gap-2">
+      {rows.map((row, rowIndex) => (
+        <div
+          key={`gallery-row-${rowIndex}`}
+          className="fc-route-gallery"
+          style={row.length === 1 ? { gridTemplateColumns: "1fr" } : undefined}
+        >
+          {row.map((image, imageIndex) => {
+            const index = rowIndex * 2 + imageIndex;
+            return (
+              <div key={`${image.src}-${index}`} className="fc-route-gallery-media" data-cinematic-media>
+                <SmartImage src={image.src} alt={image.alt} width={imageIndex === 0 ? 1200 : 720} height={900} sizes={imageIndex === 0 ? "70vw" : "30vw"} candidateWidths={[560, 720, 960, 1200]} quality={84} />
+              </div>
+            );
+          })}
         </div>
       ))}
     </div>

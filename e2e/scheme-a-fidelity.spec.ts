@@ -190,6 +190,56 @@ test.describe("Scheme A approved-design fidelity", () => {
     await expect.poll(() => page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth)).toBeLessThanOrEqual(1);
   });
 
+  test("quote keeps its form progress above the contextual mobile action bar", async ({ page }) => {
+    for (const viewport of [
+      { width: 320, height: 720 },
+      { width: 390, height: 844 },
+      { width: 430, height: 932 },
+    ]) {
+      await page.setViewportSize(viewport);
+      await page.goto("/zh/quote", { waitUntil: "domcontentloaded" });
+
+      const hero = page.locator(".forest-quote-page .fc-route-hero-form");
+      const progress = page.locator(".quote-form-guide__summary");
+      const actionBar = page.locator(".mobile-action-bar");
+      await expect(hero).toBeVisible();
+      await expect(progress).toBeVisible();
+      await expect(actionBar).toBeVisible();
+      await expect(page.locator(".scheme-a-mobile-dock")).toHaveCount(0);
+
+      const metrics = await page.evaluate(() => {
+        const hero = document.querySelector<HTMLElement>(".forest-quote-page .fc-route-hero-form");
+        const title = document.querySelector<HTMLElement>(".forest-quote-form h2");
+        const progress = document.querySelector<HTMLElement>(".quote-form-guide__summary");
+        const actionBar = document.querySelector<HTMLElement>(".mobile-action-bar");
+        if (!hero || !title || !progress || !actionBar) throw new Error("Missing quote conversion regions");
+        return {
+          heroHeight: hero.getBoundingClientRect().height,
+          titleTop: title.getBoundingClientRect().top,
+          progressBottom: progress.getBoundingClientRect().bottom,
+          actionBarTop: actionBar.getBoundingClientRect().top,
+          horizontalOverflow: document.documentElement.scrollWidth - document.documentElement.clientWidth,
+        };
+      });
+
+      expect(metrics.heroHeight).toBeGreaterThanOrEqual(400);
+      expect(metrics.heroHeight).toBeLessThanOrEqual(500);
+      expect(metrics.titleTop).toBeGreaterThanOrEqual(0);
+      expect(metrics.progressBottom).toBeLessThan(metrics.actionBarTop);
+      expect(metrics.horizontalOverflow).toBeLessThanOrEqual(1);
+    }
+
+    await page.locator('.mobile-action-bar a[href="#quote-name"]').click();
+    await expect(page.locator("#quote-name")).toBeFocused();
+
+    const menuTrigger = page.locator('button[aria-controls="scheme-a-directory"]');
+    await menuTrigger.click();
+    await expect(page.locator(".mobile-action-bar")).toHaveCount(0);
+    await page.keyboard.press("Escape");
+    await expect(page.locator(".mobile-action-bar")).toBeVisible();
+    await expect(menuTrigger).toBeFocused();
+  });
+
   test("product search remains readable inside the legacy dark theme scope", async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
     await page.goto("/zh/products", { waitUntil: "domcontentloaded" });
@@ -281,7 +331,10 @@ test.describe("Scheme A approved-design fidelity", () => {
     }
 
     await page.goto("/zh/blog/how-to-plan-condo-renovation-kl", { waitUntil: "domcontentloaded" });
-    const editorialSource = await page.locator(".fc-route-hero-media img").evaluate((element: HTMLImageElement) => element.currentSrc);
+    const editorialImage = page.locator(".fc-route-hero-media img");
+    await expect(editorialImage).toBeVisible();
+    await expect.poll(() => editorialImage.evaluate((element: HTMLImageElement) => element.currentSrc)).not.toBe("");
+    const editorialSource = await editorialImage.evaluate((element: HTMLImageElement) => element.currentSrc);
     const editorialUrl = new URL(editorialSource);
     if (editorialUrl.hostname === "images.unsplash.com") {
       expect(editorialUrl.searchParams.get("w")).toBe("1800");

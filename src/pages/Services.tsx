@@ -15,6 +15,7 @@ import { usePublishedServices, usePublishedSitePage } from "@/hooks/usePublished
 import { useLanguage } from "@/i18n/LanguageContext";
 import { translateDisplayText } from "@/i18n/displayLabels";
 import { servicesPageText } from "@/i18n/servicesPageText";
+import { mediaLabels } from "@/i18n/mediaLabels";
 import { schemeARouteText } from "@/i18n/schemeAText";
 import { pageHeroImages, resolvePageHeroImage } from "@/lib/pageHeroImages";
 
@@ -54,9 +55,13 @@ export default function Services() {
       <SchemeARouteHero
         kind="listing"
         image={hero.desktop}
+        imageSourceWidth={hero.desktopWidth}
+        tabletImage={hero.tablet}
+        tabletImageSourceWidth={hero.tabletWidth}
         mobileImage={hero.mobile}
+        mobileImageSourceWidth={hero.mobileWidth}
         imageAlt={pageContent?.alt || copy.heroAlt}
-        label={pageContent?.subtitle || copy.eyebrow}
+        label={[pageContent?.subtitle || copy.eyebrow, hero.claimLevel ? mediaLabels[language].renderingConcept : ""].filter(Boolean).join(" · ")}
         title={pageContent?.title || copy.title}
         description={pageContent?.description || copy.intro}
       />

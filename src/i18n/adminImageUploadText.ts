@@ -17,6 +17,10 @@ export const adminImageUploadText = {
     zh: "原图桶暂未准备好，本次已先上传前台优化图。",
   },
   uploadFailed: { en: "Upload failed. Please try again later.", zh: "上传失败，请稍后再试。" },
+  optimizedFileTooLarge: {
+    en: "The optimized WebP is still larger than {maxSize}. Please choose a more suitable source image.",
+    zh: "自动优化后的 WebP 仍超过 {maxSize}，请换一张更适合该容器的原图。",
+  },
   mediaRecordFailed: { en: "Media library record creation failed.", zh: "媒体库记录创建失败。" },
   mediaRecordFailedWithReason: {
     en: "Media library record creation failed: {reason}",
