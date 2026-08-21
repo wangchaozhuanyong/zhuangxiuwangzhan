@@ -101,7 +101,7 @@ export const pageHeroImages = {
 
 export const resolvePageHeroImage = (publishedImage: string | null | undefined, fallback: PageHeroImage) => {
   const image = publishedImage?.trim();
-  const shouldUseFallback = !image || fallback.legacy?.includes(image);
+  const shouldUseFallback = !image || image === fallback.desktop || fallback.legacy?.includes(image);
   const desktop = shouldUseFallback ? fallback.desktop : image;
 
   return {
