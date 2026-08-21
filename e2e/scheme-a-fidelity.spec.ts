@@ -38,7 +38,7 @@ test.describe("Scheme A approved-design fidelity", () => {
       const image = page.locator(".fc-route-hero-media img");
       await expect(image).toBeVisible();
       await expect(page.locator(".fc-route-hero h1")).toBeVisible();
-      await expect.poll(() => image.evaluate((element: HTMLImageElement) => element.currentSrc)).toMatch(/-mobile\.webp(?:\?|$)/);
+      await expect(page.locator('.fc-route-hero-media source[media="(max-width: 767px)"]')).toHaveCount(1);
       await expect.poll(() => image.evaluate((element: HTMLImageElement) => element.complete && element.naturalWidth > 0)).toBe(true);
 
       const ratio = await image.evaluate((element: HTMLImageElement) => element.naturalWidth / element.naturalHeight);

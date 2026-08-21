@@ -129,27 +129,19 @@ test.describe("public text readability", () => {
         const header = page.locator(".scheme-a-chrome.is-overlay");
         const hero = page.locator(".scheme-a-hero");
         await expect(header).toBeVisible();
+        await expect(header.locator(".scheme-a-chrome__menu")).toBeVisible();
         await expect(hero).toBeVisible();
         const result = await header.evaluate((element) => {
           const surface = getComputedStyle(element);
           const hero = document.querySelector<HTMLElement>(".scheme-a-hero");
-          const textTargets = Array.from(element.querySelectorAll(
-            ".scheme-a-chrome__primary a, .scheme-a-chrome__language, .scheme-a-chrome__quote, .scheme-a-chrome__menu",
-          )).filter((target) => {
-            const style = getComputedStyle(target);
-            return style.display !== "none" && style.visibility !== "hidden" && target.getClientRects().length > 0;
-          });
-
           return {
             surfaceImage: surface.backgroundImage,
-            targetCount: textTargets.length,
             headerBottom: Math.round(element.getBoundingClientRect().bottom),
             heroTop: Math.round(hero?.getBoundingClientRect().top ?? -1),
           };
         });
 
         expect(result.surfaceImage).toContain("linear-gradient");
-        expect(result.targetCount).toBeGreaterThan(0);
         expect(result.heroTop).toBeLessThan(result.headerBottom);
       });
     }

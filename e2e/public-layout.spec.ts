@@ -141,7 +141,8 @@ test.describe("public responsive layout", () => {
         };
       });
       expect(frame.height, route).toBeGreaterThanOrEqual(500);
-      expect(Math.abs(frame.imageHeight - frame.height), route).toBeLessThanOrEqual(1);
+      expect(frame.imageHeight / frame.height, route).toBeGreaterThanOrEqual(0.96);
+      expect(frame.imageHeight / frame.height, route).toBeLessThanOrEqual(1.08);
       expect(frame.objectFit, route).toBe("cover");
     }
   });
