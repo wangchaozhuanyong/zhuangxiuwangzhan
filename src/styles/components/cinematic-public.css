@@ -154,11 +154,12 @@
   }
 
   html[data-public-theme="dark"][data-menu-open="true"] .mobile-navigation__panel {
-    position: relative;
+    position: absolute;
+    inset: 0;
     z-index: 1;
     display: grid !important;
-    width: 100% !important;
-    height: 100%;
+    width: 100vw !important;
+    height: 100dvh;
     max-width: none !important;
     max-height: none !important;
     grid-template-rows: auto minmax(0, 1fr) auto;
