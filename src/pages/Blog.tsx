@@ -5,6 +5,7 @@ import { SchemeAContentState, SchemeAFilter, SchemeAListingGrid, SchemeALoadMore
 import { blogPosts } from "@/data/blog";
 import { usePublishedBlogPosts, usePublishedSitePage } from "@/hooks/usePublishedContent";
 import { useLanguage } from "@/i18n/LanguageContext";
+import { mediaLabels } from "@/i18n/mediaLabels";
 import { blogCategoryFilters, blogPageText } from "@/i18n/blogPageText";
 import { schemeARouteText } from "@/i18n/schemeAText";
 import { translateBlogCategory, translateDisplayText } from "@/i18n/displayLabels";
@@ -43,7 +44,7 @@ export default function Blog() {
     <main className="fc-route-page">
       <PageMeta title={pageContent?.seo_title || copy.metaTitle} description={pageContent?.seo_description || copy.metaDescription} keywords={pageContent?.seo_keywords || copy.metaKeywords} canonicalPath="/blog" />
       <JsonLdBreadcrumb items={[{ name: copy.breadcrumbHome, url: "/" }, { name: copy.breadcrumbBlog, url: "/blog" }]} />
-      <SchemeARouteHero kind="listing" image={hero.desktop} mobileImage={hero.mobile} imageAlt={pageContent?.alt || copy.heroAlt} label={pageContent?.subtitle || copy.eyebrow} title={pageContent?.title || copy.title} description={pageContent?.description || copy.intro} />
+      <SchemeARouteHero kind="listing" image={hero.desktop} imageSourceWidth={hero.desktopWidth} tabletImage={hero.tablet} tabletImageSourceWidth={hero.tabletWidth} mobileImage={hero.mobile} mobileImageSourceWidth={hero.mobileWidth} imageAlt={pageContent?.alt || copy.heroAlt} label={[pageContent?.subtitle || copy.eyebrow, hero.claimLevel ? mediaLabels[language].renderingConcept : ""].filter(Boolean).join(" · ")} title={pageContent?.title || copy.title} description={pageContent?.description || copy.intro} />
       <SchemeASection title={routeText.blogLatest} description={routeText.blogLatestText}>
         <SchemeAFilter items={blogCategoryFilters.map((category) => ({ value: category.value, label: category[language] }))} value={filter} onChange={setFilter} ariaLabel={copy.breadcrumbBlog} />
         {isLoading ? <SchemeAContentState>{routeText.blogLoading}</SchemeAContentState> : null}

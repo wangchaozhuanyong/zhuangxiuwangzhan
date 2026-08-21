@@ -7,6 +7,7 @@ import { SchemeAContentState, SchemeAFacts, SchemeAFaqList, SchemeAListingGrid, 
 import { locationsData } from "@/data/locations";
 import { usePublishedServiceAreaBySlug } from "@/hooks/usePublishedContent";
 import { useLanguage } from "@/i18n/LanguageContext";
+import { mediaLabels } from "@/i18n/mediaLabels";
 import { withLanguagePrefix } from "@/i18n/routes";
 import { locationPageText } from "@/i18n/locationPageText";
 import { translateDisplayText, translateProjectType } from "@/i18n/displayLabels";
@@ -36,7 +37,7 @@ export default function LocationPage() {
       <PageMeta title={location.metaTitle} description={display(location.description)} keywords={copy.keywords(location.name)} canonicalPath={`/locations/${location.slug}`} />
       <JsonLdBreadcrumb items={[{ name: copy.breadcrumbHome, url: "/" }, { name: copy.breadcrumbLocations, url: "/locations" }, { name: location.name, url: `/locations/${location.slug}` }]} />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify({ "@context": "https://schema.org", "@type": "LocalBusiness", name: settings.company_name, description: location.description, address: settings.address, areaServed: location.name, url: `${siteConfig.url}${withLanguagePrefix(`/locations/${location.slug}`, language)}` }) }} />
-      <SchemeARouteHero kind="detail" image={pageHeroImages.services.desktop} mobileImage={pageHeroImages.services.mobile} imageAlt={`${location.name} renovation services`} label={copy.breadcrumbLocations} title={copy.heroTitle(location.name)} description={display(location.description)} />
+      <SchemeARouteHero kind="detail" image={pageHeroImages.locations.desktop} imageSourceWidth={pageHeroImages.locations.desktopWidth} tabletImage={pageHeroImages.locations.tablet} tabletImageSourceWidth={pageHeroImages.locations.tabletWidth} mobileImage={pageHeroImages.locations.mobile} mobileImageSourceWidth={pageHeroImages.locations.mobileWidth} imageAlt={language === "zh" ? `${location.name} 装修服务范围规划示意` : `${location.name} renovation service area planning concept`} label={[copy.breadcrumbLocations, mediaLabels[language].renderingConcept].join(" · ")} title={copy.heroTitle(location.name)} description={display(location.description)} />
       <SchemeAFacts items={[
         { label: language === "zh" ? "地区" : "Area", value: location.name },
         { label: copy.propertyTypes, value: location.propertyTypes.slice(0, 2).map(display).join(" / ") },

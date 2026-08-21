@@ -9,6 +9,7 @@ import { usePublishedAboutSection, usePublishedSitePage } from "@/hooks/usePubli
 import { useSiteSettings } from "@/hooks/useSiteSettings";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { aboutCopy, aboutMilestoneCopy, aboutStatCopy, aboutTeamCopy, aboutValueCopy } from "@/i18n/aboutContent";
+import { mediaLabels } from "@/i18n/mediaLabels";
 import { pageHeroImages, resolvePageHeroImage } from "@/lib/pageHeroImages";
 
 const localizedValues = {
@@ -67,14 +68,14 @@ const About = () => {
   }, [milestonesSection?.items, language]);
   const values = useMemo(() => normalizeCards(valuesSection?.items, localizedValues[language]) || localizedValues[language], [valuesSection?.items, language]);
   const team = useMemo(() => normalizeCards(teamSection?.items, localizedTeam[language]) || localizedTeam[language], [teamSection?.items, language]);
-  const heroImage = resolvePageHeroImage(heroSection?.image_url as string | undefined, pageHeroImages.about);
+  const heroImage = resolvePageHeroImage(pageContent?.image_url || (heroSection?.image_url as string | undefined), pageHeroImages.about);
   const officeDescription = settings.address ? t.officeAddress.replace("{address}", settings.address) : t.officeDescription;
 
   return (
     <main className="fc-route-page">
       <PageMeta title={pageContent?.seo_title || t.metaTitle} description={pageContent?.seo_description || t.metaDescription} keywords={pageContent?.seo_keywords || t.metaKeywords} canonicalPath="/about" />
       <JsonLdBreadcrumb items={[{ name: t.breadcrumbHome, url: "/" }, { name: t.breadcrumbAbout, url: "/about" }]} />
-      <SchemeARouteHero kind="content" image={heroImage.desktop} mobileImage={heroImage.mobile} imageAlt={t.imageAlt} label={t.label} title={(heroSection?.title as string) || t.title} description={(heroSection?.content as string) || (heroSection?.subtitle as string) || t.description} />
+      <SchemeARouteHero kind="content" image={heroImage.desktop} imageSourceWidth={heroImage.desktopWidth} tabletImage={heroImage.tablet} tabletImageSourceWidth={heroImage.tabletWidth} mobileImage={heroImage.mobile} mobileImageSourceWidth={heroImage.mobileWidth} imageAlt={pageContent?.alt || t.imageAlt} label={[t.label, heroImage.claimLevel ? mediaLabels[language].renderingConcept : ""].filter(Boolean).join(" · ")} title={(heroSection?.title as string) || t.title} description={(heroSection?.content as string) || (heroSection?.subtitle as string) || t.description} />
 
       <SchemeASection title={(introSection?.title as string) || t.introTitle} description={introParagraphs.join(" ")}>
         <SchemeAFacts items={stats} />

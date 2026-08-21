@@ -4,6 +4,7 @@ import { JsonLdBreadcrumb } from "@/components/JsonLd";
 import { SchemeANumberList, SchemeARouteHero, SchemeASection } from "@/components/scheme-a/SchemeARoutePrimitives";
 import { usePublishedProcessSteps, usePublishedSitePage } from "@/hooks/usePublishedContent";
 import { useLanguage } from "@/i18n/LanguageContext";
+import { mediaLabels } from "@/i18n/mediaLabels";
 import { processPageText } from "@/i18n/processPageText";
 import { pageHeroImages, resolvePageHeroImage } from "@/lib/pageHeroImages";
 
@@ -27,7 +28,7 @@ const Process = () => {
     <main className="fc-route-page">
       <PageMeta title={pageContent?.seo_title || t.metaTitle} description={pageContent?.seo_description || t.metaDescription} keywords={pageContent?.seo_keywords || t.metaKeywords} canonicalPath="/process" />
       <JsonLdBreadcrumb items={[{ name: t.breadcrumbHome, url: "/" }, { name: t.breadcrumbProcess, url: "/process" }]} />
-      <SchemeARouteHero kind="content" image={heroImage.desktop} mobileImage={heroImage.mobile} imageAlt={pageContent?.alt || t.imageAlt} label={pageContent?.subtitle || t.label} title={pageContent?.title || t.title} description={pageContent?.description || t.description} />
+      <SchemeARouteHero kind="content" image={heroImage.desktop} imageSourceWidth={heroImage.desktopWidth} tabletImage={heroImage.tablet} tabletImageSourceWidth={heroImage.tabletWidth} mobileImage={heroImage.mobile} mobileImageSourceWidth={heroImage.mobileWidth} imageAlt={pageContent?.alt || t.imageAlt} label={[pageContent?.subtitle || t.label, heroImage.claimLevel ? mediaLabels[language].renderingConcept : ""].filter(Boolean).join(" · ")} title={pageContent?.title || t.title} description={pageContent?.description || t.description} />
 
       <SchemeASection title={t.sectionTitle} description={pageContent?.content || t.sectionDescription}>
         <SchemeANumberList items={steps.map((step) => ({ title: step.title, description: [step.desc, ...step.details].filter(Boolean).join(" · ") }))} />

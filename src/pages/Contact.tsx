@@ -12,6 +12,7 @@ import { JsonLdBreadcrumb } from "@/components/JsonLd";
 import { submitContactLead } from "@/lib/leadApi";
 import { useFormGuard } from "@/hooks/useFormGuard";
 import { useLanguage } from "@/i18n/LanguageContext";
+import { mediaLabels } from "@/i18n/mediaLabels";
 import { useSiteSettings } from "@/hooks/useSiteSettings";
 import { usePublishedSitePage } from "@/hooks/usePublishedContent";
 import { SchemeARouteHero } from "@/components/scheme-a/SchemeARoutePrimitives";
@@ -157,7 +158,7 @@ const Contact = () => {
       />
       <JsonLdBreadcrumb items={[{ name: t.breadcrumbHome, url: "/" }, { name: t.breadcrumbCurrent, url: "/contact" }]} />
 
-      <SchemeARouteHero kind="form" image={heroImage.desktop} mobileImage={heroImage.mobile} imageAlt={pageContent?.alt || t.heroAlt} label={pageContent?.subtitle || t.heroEyebrow} title={pageContent?.title || t.heroTitle} description={pageContent?.description || t.heroText} />
+      <SchemeARouteHero kind="form" image={heroImage.desktop} imageSourceWidth={heroImage.desktopWidth} tabletImage={heroImage.tablet} tabletImageSourceWidth={heroImage.tabletWidth} mobileImage={heroImage.mobile} mobileImageSourceWidth={heroImage.mobileWidth} imageAlt={pageContent?.alt || t.heroAlt} label={[pageContent?.subtitle || t.heroEyebrow, heroImage.claimLevel ? mediaLabels[language].renderingConcept : ""].filter(Boolean).join(" · ")} title={pageContent?.title || t.heroTitle} description={pageContent?.description || t.heroText} />
 
       <section className="forest-contact-body section-padding bg-background">
         <div className="container-narrow max-md:!px-0">
