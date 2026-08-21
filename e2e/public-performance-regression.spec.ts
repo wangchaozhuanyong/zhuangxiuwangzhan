@@ -8,7 +8,7 @@ test("mobile home replaces navigation with contact actions only when scrolling u
     document.documentElement.style.scrollBehavior = "auto";
   });
 
-  const hero = page.locator(".forest-home-hero");
+  const hero = page.locator(".scheme-a-hero");
   const bottomNav = page.locator(".forest-bottom-nav");
   await expect(hero).toBeVisible();
   await expect(bottomNav).toBeVisible();

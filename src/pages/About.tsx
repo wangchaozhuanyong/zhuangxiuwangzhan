@@ -1,10 +1,9 @@
 import { useMemo } from "react";
-import { Check, CheckCircle, Layers, MapPin, MessageCircle, Paintbrush, ShieldCheck, Target, Users, Wrench, type LucideIcon } from "lucide-react";
+import { MapPin } from "lucide-react";
 import GoogleMapEmbed from "@/components/GoogleMapEmbed";
 import PageMeta from "@/components/PageMeta";
 import { JsonLdBreadcrumb } from "@/components/JsonLd";
-import HeroBanner from "@/components/blocks/HeroBanner";
-import { ForestSectionHeading } from "@/components/forest/ForestPagePrimitives";
+import { SchemeAFacts, SchemeANumberList, SchemeARouteHero, SchemeASection } from "@/components/scheme-a/SchemeARoutePrimitives";
 import { coreValues, teamHighlights } from "@/data/siteContent";
 import { usePublishedAboutSection, usePublishedSitePage } from "@/hooks/usePublishedContent";
 import { useSiteSettings } from "@/hooks/useSiteSettings";
@@ -20,34 +19,13 @@ const localizedTeam = {
   en: teamHighlights.map((item, index) => ({ ...item, title: aboutTeamCopy.en[index]?.title || item.title, desc: aboutTeamCopy.en[index]?.desc || item.desc })),
   zh: teamHighlights.map((item, index) => ({ ...item, title: aboutTeamCopy.zh[index]?.title || item.title, desc: aboutTeamCopy.zh[index]?.desc || item.desc })),
 };
-const aboutIconMap = { check: CheckCircle, checkcircle: CheckCircle, layers: Layers, messagecircle: MessageCircle, paintbrush: Paintbrush, shieldcheck: ShieldCheck, target: Target, users: Users, wrench: Wrench };
-type AboutCard = { icon: LucideIcon; title: string; desc: string };
-
-const AboutCapabilityList = ({ items }: { items: AboutCard[] }) => (
-  <div className="forest-about-capability-list">
-    {items.map((item) => {
-      const Icon = item.icon;
-      return (
-        <article key={item.title}>
-          <div className="forest-about-capability-list__icon" aria-hidden="true">
-            <Icon />
-          </div>
-          <div className="forest-about-capability-list__copy">
-            <h2>{item.title}</h2>
-            <p>{item.desc}</p>
-          </div>
-        </article>
-      );
-    })}
-  </div>
-);
+type AboutCard = { title: string; desc: string };
 
 const normalizeCards = (items: unknown, fallback: AboutCard[]) => {
   if (!Array.isArray(items) || !items.length) return null;
   const normalized = items.map((item, index) => {
     const record = item as Record<string, unknown>;
-    const iconKey = String(record.icon || "").toLowerCase().replace(/[\s_-]+/g, "");
-    return { icon: aboutIconMap[iconKey as keyof typeof aboutIconMap] || fallback[index]?.icon || CheckCircle, title: String(record.title || record.title_zh || record.title_en || "").trim(), desc: String(record.desc || record.desc_zh || record.desc_en || "").trim() };
+    return { title: String(record.title || record.title_zh || record.title_en || fallback[index]?.title || "").trim(), desc: String(record.desc || record.desc_zh || record.desc_en || fallback[index]?.desc || "").trim() };
   }).filter((item) => item.title && item.desc);
   return normalized.length ? normalized : null;
 };
@@ -93,43 +71,34 @@ const About = () => {
   const officeDescription = settings.address ? t.officeAddress.replace("{address}", settings.address) : t.officeDescription;
 
   return (
-    <main className="pt-site-header">
+    <main className="fc-route-page">
       <PageMeta title={pageContent?.seo_title || t.metaTitle} description={pageContent?.seo_description || t.metaDescription} keywords={pageContent?.seo_keywords || t.metaKeywords} canonicalPath="/about" />
       <JsonLdBreadcrumb items={[{ name: t.breadcrumbHome, url: "/" }, { name: t.breadcrumbAbout, url: "/about" }]} />
-      <HeroBanner image={heroImage.desktop} imageMobile={heroImage.mobile} imageAlt={t.imageAlt} label={t.label} title={(heroSection?.title as string) || t.title} description={(heroSection?.content as string) || (heroSection?.subtitle as string) || t.description} />
+      <SchemeARouteHero kind="content" image={heroImage.desktop} mobileImage={heroImage.mobile} imageAlt={t.imageAlt} label={t.label} title={(heroSection?.title as string) || t.title} description={(heroSection?.content as string) || (heroSection?.subtitle as string) || t.description} />
 
-      <section className="forest-chapter forest-about-intro">
-        <div className="forest-about-intro__copy">
-          <p className="forest-eyebrow">{t.label}</p>
-          <h2>{(introSection?.title as string) || t.introTitle}</h2>
-          {introParagraphs.map((paragraph) => <p key={paragraph}>{paragraph}</p>)}
-          <div className="forest-about-tags">{t.tags.map((tag) => <span key={tag}><Check aria-hidden="true" />{tag}</span>)}</div>
-        </div>
-        <div className="forest-about-stats">{stats.map((stat) => <div key={stat.label}><strong>{stat.value}</strong><span>{stat.label}</span></div>)}</div>
-      </section>
+      <SchemeASection title={(introSection?.title as string) || t.introTitle} description={introParagraphs.join(" ")}>
+        <SchemeAFacts items={stats} />
+        <div className="fc-route-tagline" aria-label={t.label}>{t.tags.map((tag) => <span key={tag}>{tag}</span>)}</div>
+      </SchemeASection>
 
-      <section className="forest-chapter forest-chapter--raised">
-        <ForestSectionHeading title={(valuesSection?.title as string) || t.valuesTitle} description={(valuesSection?.content as string) || t.valuesDescription} />
-        <AboutCapabilityList items={values} />
-      </section>
+      <SchemeASection title={(valuesSection?.title as string) || t.valuesTitle} description={(valuesSection?.content as string) || t.valuesDescription}>
+        <SchemeANumberList items={values.map((item) => ({ title: item.title, description: item.desc }))} />
+      </SchemeASection>
 
-      <section className="forest-chapter">
-        <ForestSectionHeading title={(teamSection?.title as string) || t.teamTitle} description={(teamSection?.content as string) || t.teamDescription} />
-        <AboutCapabilityList items={team} />
-      </section>
+      <SchemeASection title={(teamSection?.title as string) || t.teamTitle} description={(teamSection?.content as string) || t.teamDescription}>
+        <SchemeANumberList items={team.map((item) => ({ title: item.title, description: item.desc }))} />
+      </SchemeASection>
 
-      <section className="forest-chapter forest-chapter--raised forest-history">
-        <ForestSectionHeading title={(milestonesSection?.title as string) || t.journeyTitle} description={(milestonesSection?.content as string) || t.journeyDescription} />
-        <div className="forest-history__list">{milestones.map((item) => <article key={`${item.year}-${item.title}`}><time>{item.year}</time><div><h2>{item.title}</h2><p>{item.desc}</p></div></article>)}</div>
-      </section>
+      <SchemeASection title={(milestonesSection?.title as string) || t.journeyTitle} description={(milestonesSection?.content as string) || t.journeyDescription}>
+        <ol className="fc-route-history">{milestones.map((item) => <li key={`${item.year}-${item.title}`}><time>{item.year}</time><div><strong>{item.title}</strong><p>{item.desc}</p></div></li>)}</ol>
+      </SchemeASection>
 
-      <section className="forest-chapter forest-office-section">
-        <ForestSectionHeading title={(officeSection?.title as string) || t.officeTitle} description={(officeSection?.content as string) || officeDescription} />
-        <div className="forest-office-grid">
-          <div className="forest-office-copy"><MapPin aria-hidden="true" /><h2>{settings.company_name}</h2><address>{settings.address}</address><p>{t.hours}</p></div>
+      <SchemeASection title={(officeSection?.title as string) || t.officeTitle} description={(officeSection?.content as string) || officeDescription} className="fc-route-office">
+        <div className="fc-route-office-grid">
+          <div className="fc-route-office-copy"><MapPin aria-hidden="true" /><h2>{settings.company_name}</h2><address>{settings.address}</address><p>{t.hours}</p></div>
           <GoogleMapEmbed title={t.mapTitle} addressLabel={settings.address} latitude={settings.map_latitude} longitude={settings.map_longitude} height={360} className="min-h-[360px]" />
         </div>
-      </section>
+      </SchemeASection>
     </main>
   );
 };

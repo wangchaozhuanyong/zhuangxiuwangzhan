@@ -14,13 +14,14 @@ import Reveal from "@/components/Reveal";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { useSiteSettings } from "@/hooks/useSiteSettings";
 import { usePublishedSitePage } from "@/hooks/usePublishedContent";
-import HeroBanner from "@/components/blocks/HeroBanner";
+import { SchemeARouteHero } from "@/components/scheme-a/SchemeARoutePrimitives";
 import { trackCtaClick, trackQuoteFormSubmit } from "@/lib/analytics";
 import { isValidLeadEmail, isValidLeadPhone } from "@/lib/leadValidation";
 import { pageHeroImages, resolvePageHeroImage } from "@/lib/pageHeroImages";
 import { formatQuoteContextLabel, parseQuoteContext } from "@/lib/quoteContext";
 import { preloadTurnstile } from "@/lib/turnstile";
 import { quotePageText } from "@/i18n/quotePageText";
+import { focusElementByIdWhenReady } from "@/lib/instantScroll";
 
 const projectTypes = [
   { value: "Residential Renovation", en: "Residential Renovation", zh: "住宅装修" },
@@ -71,13 +72,7 @@ const quoteFieldIds: Record<string, string> = {
 const focusFirstQuoteError = (errors: FormErrors) => {
   const firstKey = Object.keys(errors)[0];
   if (!firstKey || typeof window === "undefined") return;
-  window.setTimeout(() => {
-    const target = document.getElementById(quoteFieldIds[firstKey] || firstKey);
-    if (!target) return;
-    const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    target.scrollIntoView({ behavior: reduceMotion ? "auto" : "smooth", block: "center" });
-    target.focus({ preventScroll: true });
-  }, 0);
+  focusElementByIdWhenReady(quoteFieldIds[firstKey] || firstKey);
 };
 
 const Quote = () => {
@@ -201,7 +196,7 @@ const Quote = () => {
 
   if (status === "success") {
     return (
-      <main className="forest-quote-page pt-site-header">
+      <main className="fc-route-page fc-route-form-page forest-quote-page">
         <PageMeta title={t.successTitle} description={pageContent?.seo_description || t.metaDescription} canonicalPath="/quote" />
         <section className="forest-quote-success section-padding flex min-h-[70vh] items-center bg-background">
           <div className="container-narrow mx-auto max-w-xl text-center">
@@ -262,7 +257,7 @@ const Quote = () => {
   }
 
   return (
-    <main className="forest-quote-page pt-site-header">
+    <main className="fc-route-page fc-route-form-page forest-quote-page">
       <PageMeta
         title={pageContent?.seo_title || t.metaTitle}
         description={pageContent?.seo_description || t.metaDescription}
@@ -271,15 +266,7 @@ const Quote = () => {
       />
       <JsonLdBreadcrumb items={[{ name: t.breadcrumbHome, url: "/" }, { name: t.breadcrumbCurrent, url: "/quote" }]} />
 
-      <HeroBanner
-        image={heroImage.desktop}
-        imageMobile={heroImage.mobile}
-        imageAlt={pageContent?.alt || t.heroAlt}
-        label={pageContent?.subtitle || t.heroEyebrow}
-        title={pageContent?.title || t.heroTitle}
-        description={pageContent?.description || t.heroText}
-        variant="utility"
-      />
+      <SchemeARouteHero kind="form" image={heroImage.desktop} mobileImage={heroImage.mobile} imageAlt={pageContent?.alt || t.heroAlt} label={pageContent?.subtitle || t.heroEyebrow} title={pageContent?.title || t.heroTitle} description={pageContent?.description || t.heroText} />
 
       <section className="forest-quote-body section-padding bg-background pb-[calc(8rem+env(safe-area-inset-bottom,0px))] md:pb-28">
         <div className="forest-quote-layout container-narrow grid gap-10 lg:grid-cols-[1.1fr_0.9fr]">
@@ -333,12 +320,12 @@ const Quote = () => {
                 <div className="grid gap-4 md:grid-cols-2">
                   <div>
                     <label htmlFor="quote-name" className="mb-1.5 block text-sm">{t.name}</label>
-                    <Input id="quote-name" value={form.name} onChange={(e) => updateForm("name", e.target.value)} placeholder={t.namePlaceholder} required aria-required="true" aria-invalid={Boolean(errors.name)} aria-describedby={errors.name ? "quote-name-error" : undefined} />
+                    <Input id="quote-name" name="name" autoComplete="name" value={form.name} onChange={(e) => updateForm("name", e.target.value)} placeholder={t.namePlaceholder} required aria-required="true" aria-invalid={Boolean(errors.name)} aria-describedby={errors.name ? "quote-name-error" : undefined} />
                     {errors.name && <p id="quote-name-error" role="alert" className="mt-1 text-xs text-destructive">{errors.name}</p>}
                   </div>
                   <div>
                     <label htmlFor="quote-phone" className="mb-1.5 block text-sm">{t.phone}</label>
-                    <Input id="quote-phone" type="tel" value={form.phone} onChange={(e) => updateForm("phone", e.target.value)} placeholder={t.contactLabel} required aria-required="true" aria-invalid={Boolean(errors.phone)} aria-describedby={errors.phone ? "quote-phone-error" : undefined} />
+                    <Input id="quote-phone" name="phone" type="tel" autoComplete="tel" value={form.phone} onChange={(e) => updateForm("phone", e.target.value)} placeholder={t.contactLabel} required aria-required="true" aria-invalid={Boolean(errors.phone)} aria-describedby={errors.phone ? "quote-phone-error" : undefined} />
                     {errors.phone && <p id="quote-phone-error" role="alert" className="mt-1 text-xs text-destructive">{errors.phone}</p>}
                   </div>
                 </div>
@@ -348,7 +335,7 @@ const Quote = () => {
                     <label htmlFor="quote-email" className="mb-1.5 block text-sm">
                       {t.email} <span className="text-muted-foreground">({t.optional})</span>
                     </label>
-                    <Input id="quote-email" type="email" value={form.email} onChange={(e) => updateForm("email", e.target.value)} placeholder={t.emailPlaceholder} aria-invalid={Boolean(errors.email)} aria-describedby={errors.email ? "quote-email-error" : undefined} />
+                    <Input id="quote-email" name="email" type="email" autoComplete="email" value={form.email} onChange={(e) => updateForm("email", e.target.value)} placeholder={t.emailPlaceholder} aria-invalid={Boolean(errors.email)} aria-describedby={errors.email ? "quote-email-error" : undefined} />
                     {errors.email && <p id="quote-email-error" role="alert" className="mt-1 text-xs text-destructive">{errors.email}</p>}
                   </div>
                 </div>
@@ -362,6 +349,8 @@ const Quote = () => {
                     <label htmlFor="quote-project-type" className="mb-1.5 block text-sm">{t.projectType}</label>
                     <select
                       id="quote-project-type"
+                      name="projectType"
+                      autoComplete="off"
                       className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
                       value={form.projectType}
                       onChange={(e) => updateForm("projectType", e.target.value)}
@@ -381,7 +370,7 @@ const Quote = () => {
                   </div>
                   <div>
                     <label htmlFor="quote-location" className="mb-1.5 block text-sm">{t.location}</label>
-                    <Input id="quote-location" value={form.location} onChange={(e) => updateForm("location", e.target.value)} placeholder={t.locationPlaceholder} required aria-required="true" aria-invalid={Boolean(errors.location)} aria-describedby={errors.location ? "quote-location-error" : undefined} />
+                    <Input id="quote-location" name="location" autoComplete="address-level2" value={form.location} onChange={(e) => updateForm("location", e.target.value)} placeholder={t.locationPlaceholder} required aria-required="true" aria-invalid={Boolean(errors.location)} aria-describedby={errors.location ? "quote-location-error" : undefined} />
                     {errors.location && <p id="quote-location-error" role="alert" className="mt-1 text-xs text-destructive">{errors.location}</p>}
                   </div>
                 </div>
@@ -390,6 +379,8 @@ const Quote = () => {
                   <label htmlFor="quote-budget" className="mb-1.5 block text-sm">{t.budgetRange}</label>
                   <select
                     id="quote-budget"
+                    name="budget"
+                    autoComplete="off"
                     className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
                     value={form.budget}
                     onChange={(e) => updateForm("budget", e.target.value)}
@@ -411,13 +402,15 @@ const Quote = () => {
                   <label htmlFor="quote-property-size" className="mb-1.5 block text-sm">
                     {t.propertySize} <span className="text-muted-foreground">({t.approx})</span>
                   </label>
-                  <Input id="quote-property-size" value={form.propertySize} onChange={(e) => updateForm("propertySize", e.target.value)} placeholder={t.sizePlaceholder} />
+                  <Input id="quote-property-size" name="propertySize" inputMode="decimal" autoComplete="off" value={form.propertySize} onChange={(e) => updateForm("propertySize", e.target.value)} placeholder={t.sizePlaceholder} />
                 </div>
 
                 <div>
                   <label htmlFor="quote-details" className="mb-1.5 block text-sm">{t.details}</label>
                   <Textarea
                     id="quote-details"
+                    name="details"
+                    autoComplete="off"
                     rows={5}
                     value={form.details}
                     onChange={(e) => updateForm("details", e.target.value)}

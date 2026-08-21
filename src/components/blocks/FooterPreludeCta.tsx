@@ -43,8 +43,7 @@ const FooterPreludeCta = ({
           className="home-footer-prelude__image"
           width={1920}
           height={1080}
-          sizes="100vw"
-          quality={78}
+          quality={86}
         />
       </div>
       <div className="home-footer-prelude__beam" aria-hidden="true" />

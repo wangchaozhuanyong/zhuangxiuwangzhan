@@ -1,9 +1,8 @@
 import { useMemo } from "react";
 import PageMeta from "@/components/PageMeta";
 import { JsonLdFAQ, JsonLdBreadcrumb } from "@/components/JsonLd";
-import HeroBanner from "@/components/blocks/HeroBanner";
-import CTABanner from "@/components/blocks/CTABanner";
-import { ForestFaqList, ForestSectionHeading } from "@/components/forest/ForestPagePrimitives";
+import Link from "@/components/LocalizedLink";
+import { SchemeAFaqList, SchemeARouteHero, SchemeASection } from "@/components/scheme-a/SchemeARoutePrimitives";
 import { usePublishedFaqs, usePublishedSitePage } from "@/hooks/usePublishedContent";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { faqPageText } from "@/i18n/faqPageText";
@@ -25,21 +24,25 @@ const FAQ = () => {
   const heroImage = resolvePageHeroImage(pageContent?.image_url, pageHeroImages.faq);
 
   return (
-    <main className="pt-site-header">
+    <main className="fc-route-page">
       <PageMeta title={pageContent?.seo_title || t.metaTitle} description={pageContent?.seo_description || t.metaDescription} keywords={pageContent?.seo_keywords || t.metaKeywords} canonicalPath="/faq" />
       <JsonLdFAQ faqs={allFaqs} />
       <JsonLdBreadcrumb items={[{ name: t.breadcrumbHome, url: "/" }, { name: t.breadcrumbFaq, url: "/faq" }]} />
-      <HeroBanner image={heroImage.desktop} imageMobile={heroImage.mobile} imageAlt={pageContent?.alt || t.heroAlt} label={pageContent?.subtitle || t.eyebrow} title={pageContent?.title || t.title} description={pageContent?.description || t.intro} variant="utility" />
+      <SchemeARouteHero kind="content" image={heroImage.desktop} mobileImage={heroImage.mobile} imageAlt={pageContent?.alt || t.heroAlt} label={pageContent?.subtitle || t.eyebrow} title={pageContent?.title || t.title} description={pageContent?.description || t.intro} />
 
-      <section className="forest-chapter forest-faq-page">
+      <SchemeASection title={pageContent?.subtitle || t.eyebrow} description={pageContent?.description || t.intro}>
         {categories.map((category) => (
-          <div key={category.category} className="forest-faq-group">
-            {showCategoryHeadings ? <ForestSectionHeading title={category.category} /> : null}
-            <ForestFaqList items={category.items.map((item) => ({ question: item.q, answer: item.a }))} />
+          <div key={category.category} className="fc-route-faq-group">
+            {showCategoryHeadings ? <h2>{category.category}</h2> : null}
+            <SchemeAFaqList items={category.items.map((item) => ({ question: item.q, answer: item.a }))} />
           </div>
         ))}
-      </section>
-      <CTABanner title={pageContent?.cta_title || t.ctaTitle} description={pageContent?.cta_description || t.ctaText} quoteLabel={t.contact} quotePath="/contact" whatsappLabel={t.whatsapp} whatsappSource="FAQ CTA" />
+        <div className="fc-route-action-panel">
+          <h2>{pageContent?.cta_title || t.ctaTitle}</h2>
+          <p>{pageContent?.cta_description || t.ctaText}</p>
+          <div><Link to="/contact">{t.contact}</Link><Link to="/quote">{t.whatsapp}</Link></div>
+        </div>
+      </SchemeASection>
     </main>
   );
 };

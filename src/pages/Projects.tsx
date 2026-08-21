@@ -1,23 +1,31 @@
-﻿import { useEffect, useState } from "react";
-import Link from "@/components/LocalizedLink";
-import { ArrowUpRight, ChevronDown } from "lucide-react";
-import SmartImage from "@/components/SmartImage";
-import DeferredSmartImage from "@/components/DeferredSmartImage";
-import { usePublishedProjectSummaries, usePublishedSitePage } from "@/hooks/usePublishedContent";
-import { useLanguage } from "@/i18n/LanguageContext";
+import { useEffect, useMemo, useState } from "react";
 import PageMeta from "@/components/PageMeta";
 import { JsonLdBreadcrumb } from "@/components/JsonLd";
-import HeroBanner from "@/components/blocks/HeroBanner";
-import CTABanner from "@/components/blocks/CTABanner";
+import {
+  SchemeAContentState,
+  SchemeAFilter,
+  SchemeAListingGrid,
+  SchemeALoadMore,
+  SchemeARouteHero,
+  SchemeASection,
+  type SchemeAListingItem,
+} from "@/components/scheme-a/SchemeARoutePrimitives";
+import { usePublishedProjectSummaries, usePublishedSitePage } from "@/hooks/usePublishedContent";
+import { useLanguage } from "@/i18n/LanguageContext";
+import { projectsPageText } from "@/i18n/projectsPageText";
+import { schemeAProjectsIndexText, schemeARouteText } from "@/i18n/schemeAText";
 import { translateDisplayText, translateProjectType } from "@/i18n/displayLabels";
 import { pageHeroImages, resolvePageHeroImage } from "@/lib/pageHeroImages";
-import { buildQuotePath } from "@/lib/quoteContext";
-import type { PublishedProjectSummary } from "@/lib/contentApi";
-import { projectsPageText } from "@/i18n/projectsPageText";
-import { ForestContentState, ForestFilterNav } from "@/components/forest/ForestPagePrimitives";
-import { forestUiText } from "@/i18n/forestUiText";
 
-const typeImageMap: Record<string, string> = {
+const categories = ["All", "Residential", "Commercial", "Built-In", "Warehouse", "Exterior", "Office"] as const;
+const PAGE_SIZE = 10;
+
+const categoryLabels = {
+  en: { All: "All", Residential: "Residential", Commercial: "Commercial", "Built-In": "Built-In", Warehouse: "Warehouse", Exterior: "Exterior", Office: "Office" },
+  zh: { All: "全部", Residential: "住宅装修", Commercial: "商业装修", "Built-In": "定制家具", Warehouse: "仓储工程", Exterior: "外墙工程", Office: "办公室" },
+} as const;
+
+const fallbackImages: Record<string, string> = {
   Residential: "/images/projects/residential-renovation.webp",
   Commercial: "/images/projects/commercial-renovation.webp",
   "Built-In": "/images/projects/kitchen-cabinet.webp",
@@ -26,170 +34,66 @@ const typeImageMap: Record<string, string> = {
   Office: "/images/projects/commercial-renovation.webp",
 };
 
-const categories = ["All", "Residential", "Commercial", "Built-In", "Warehouse", "Exterior", "Office"] as const;
-const PROJECT_INITIAL_EAGER_IMAGES = 4;
-const PROJECT_INITIAL_VISIBLE = 10;
-const PROJECT_REVEAL_STEP = 8;
-const PROJECT_IMAGE_ROOT_MARGIN = "1800px";
-const PROJECT_CARD_IMAGE_WIDTHS = [360, 560, 720, 900];
-const getProjectRevealDelay = (index: number) => (index % 4) * 60;
-
-const categoryLabels = {
-  en: {
-    All: "All",
-    Residential: "Residential",
-    Commercial: "Commercial",
-    "Built-In": "Built-In",
-    Warehouse: "Warehouse",
-    Exterior: "Exterior",
-    Office: "Office",
-  },
-  zh: {
-    All: "全部",
-    Residential: "住宅装修",
-    Commercial: "商业装修",
-    "Built-In": "定制家具",
-    Warehouse: "仓储工程",
-    Exterior: "外墙工程",
-    Office: "办公室",
-  },
-};
-const Projects = () => {
-  const [filter, setFilter] = useState<(typeof categories)[number]>("All");
-  const [visibleCount, setVisibleCount] = useState(PROJECT_INITIAL_VISIBLE);
+export default function Projects() {
   const { language } = useLanguage();
+  const copy = projectsPageText[language];
+  const indexCopy = schemeAProjectsIndexText[language];
+  const routeText = schemeARouteText[language];
+  const [filter, setFilter] = useState<(typeof categories)[number]>("All");
+  const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
   const { data: projects = [], isLoading, isError, refetch } = usePublishedProjectSummaries(language);
   const { data: pageContent } = usePublishedSitePage(language, "projects");
-  const pageCopy = projectsPageText[language];
-  const filtered = filter === "All" ? projects : projects.filter((project) => project.type === filter);
-  const visibleProjects = filtered.slice(0, visibleCount);
-  const displayProjectType = (value: string) => translateProjectType(value, language);
-  const displayProjectTitle = (value: string) => translateDisplayText(value, language);
   const heroImage = resolvePageHeroImage(pageContent?.image_url, pageHeroImages.projects);
-  const displayProjectDescription = (project: PublishedProjectSummary) =>
-    translateDisplayText(String(project.description || ""), language);
+  const filtered = filter === "All" ? projects : projects.filter((project) => project.type === filter);
+  const visible = filtered.slice(0, visibleCount);
 
-  useEffect(() => {
-    setVisibleCount(PROJECT_INITIAL_VISIBLE);
-  }, [filter]);
+  useEffect(() => setVisibleCount(PAGE_SIZE), [filter]);
 
-  const renderProjectImage = (project: PublishedProjectSummary, index: number) => {
-    const shouldRenderImmediately = index < PROJECT_INITIAL_EAGER_IMAGES;
-    const imageProps = {
-      src: project.thumbnail || typeImageMap[project.type] || typeImageMap.Residential,
-      alt: pageCopy.projectImageAlt(displayProjectTitle(project.title), displayProjectType(project.type)),
-      width: 800,
-      height: 500,
-      sizes: "(max-width: 768px) 92vw, 45vw",
-      candidateWidths: PROJECT_CARD_IMAGE_WIDTHS,
-      quality: 70,
-      loading: "eager" as const,
-      fetchPriority: index < 2 ? ("high" as const) : ("auto" as const),
-      className: "w-full h-full object-cover",
+  const items = useMemo<SchemeAListingItem[]>(() => visible.map((project) => {
+    const title = translateDisplayText(project.title, language);
+    const type = translateProjectType(project.type, language);
+    return {
+      id: String(project.id),
+      title,
+      meta: [type, project.location].filter(Boolean).join(" / "),
+      description: translateDisplayText(String(project.description || ""), language),
+      image: project.thumbnail || fallbackImages[project.type] || fallbackImages.Residential,
+      imageAlt: copy.projectImageAlt(title, type),
+      href: `/projects/${project.slug}`,
     };
-
-    if (shouldRenderImmediately) {
-      return <SmartImage {...imageProps} />;
-    }
-
-    return <DeferredSmartImage {...imageProps} rootMargin={PROJECT_IMAGE_ROOT_MARGIN} />;
-  };
+  }), [copy, language, visible]);
 
   return (
-    <main className="pt-site-header">
-      <PageMeta
-        title={pageContent?.seo_title || pageCopy.metaTitle}
-        description={pageContent?.seo_description || pageCopy.metaDescription}
-        keywords={pageContent?.seo_keywords || pageCopy.metaKeywords}
-        canonicalPath="/projects"
-      />
-      <JsonLdBreadcrumb items={[{ name: pageCopy.breadcrumbHome, url: "/" }, { name: pageCopy.breadcrumbProjects, url: "/projects" }]} />
-
-      <HeroBanner
+    <main className="fc-route-page">
+      <PageMeta title={pageContent?.seo_title || copy.metaTitle} description={pageContent?.seo_description || copy.metaDescription} keywords={pageContent?.seo_keywords || copy.metaKeywords} canonicalPath="/projects" />
+      <JsonLdBreadcrumb items={[{ name: copy.breadcrumbHome, url: "/" }, { name: copy.breadcrumbProjects, url: "/projects" }]} />
+      <SchemeARouteHero
+        kind="listing"
         image={heroImage.desktop}
-        imageMobile={heroImage.mobile}
-        imageAlt={pageContent?.alt || pageCopy.heroAlt}
-        label={pageContent?.subtitle || pageCopy.eyebrow}
-        title={pageContent?.title || pageCopy.title}
-        description={pageContent?.description || pageCopy.intro}
+        mobileImage={heroImage.mobile}
+        imageAlt={pageContent?.alt || copy.heroAlt}
+        label={pageContent?.subtitle || copy.eyebrow}
+        title={pageContent?.title || copy.title}
+        description={pageContent?.description || copy.intro}
       />
-
-      <section className="forest-chapter forest-listing-chapter">
-        <ForestFilterNav
+      <SchemeASection title={indexCopy.title} description={indexCopy.description}>
+        <SchemeAFilter
           items={categories.map((category) => ({ value: category, label: categoryLabels[language][category] }))}
           value={filter}
           onChange={(value) => setFilter(value as (typeof categories)[number])}
-          ariaLabel={pageCopy.categoryFilterAria}
+          ariaLabel={copy.categoryFilterAria}
         />
-        {!isLoading && !isError ? (
-          <div className="forest-listing-meta"><span>{forestUiText[language].resultCount(filtered.length)}</span></div>
+        <p className="sr-only" aria-live="polite" aria-atomic="true">
+          {!isLoading && !isError ? copy.showing(visible.length, filtered.length) : ""}
+        </p>
+        {isLoading ? <SchemeAContentState>{routeText.projectsLoading}</SchemeAContentState> : null}
+        {isError ? <SchemeAContentState action={<button type="button" onClick={() => void refetch()}>{routeText.reload}</button>}>{routeText.projectsError}</SchemeAContentState> : null}
+        {!isLoading && !isError && !items.length ? <SchemeAContentState>{copy.empty}</SchemeAContentState> : null}
+        {!isLoading && !isError && items.length ? <SchemeAListingGrid items={items} actionLabel={copy.view} /> : null}
+        {!isLoading && !isError && visible.length < filtered.length ? (
+          <SchemeALoadMore label={copy.loadMore} detail={copy.showing(visible.length, filtered.length)} onClick={() => setVisibleCount((count) => Math.min(count + PAGE_SIZE, filtered.length))} />
         ) : null}
-
-        {isLoading ? (
-          <ForestContentState variant="loading" compact />
-        ) : isError ? (
-          <ForestContentState variant="error" compact onRetry={() => void refetch()} />
-        ) : filtered.length === 0 ? (
-          <ForestContentState variant="empty" compact description={pageCopy.empty} />
-        ) : (
-          <div className="forest-listing-grid forest-project-listing">
-            {visibleProjects.map((project, index) => (
-              <Link
-                key={project.id}
-                to={`/projects/${project.slug}`}
-                className={`forest-listing-card forest-project-row${index === 0 ? " forest-project-row--wide" : ""}`}
-                style={{ animationDelay: `${getProjectRevealDelay(index)}ms` }}
-              >
-                <div className="forest-listing-card__media">
-                  {renderProjectImage(project, index)}
-                </div>
-                <div className="forest-listing-card__body">
-                  <p className="forest-listing-card__meta">{displayProjectType(project.type)}</p>
-                  <h2>{displayProjectTitle(project.title)}</h2>
-                  <p>{displayProjectDescription(project)}</p>
-                  <span className="forest-listing-card__action">{pageCopy.view}<ArrowUpRight aria-hidden="true" /></span>
-                </div>
-              </Link>
-            ))}
-          </div>
-        )}
-        {!isLoading && !isError && visibleProjects.length < filtered.length ? (
-          <div className="forest-load-more-wrap">
-            <button
-              type="button"
-              className="forest-load-more"
-              onClick={() => setVisibleCount((current) => Math.min(current + PROJECT_REVEAL_STEP, filtered.length))}
-            >
-              <span>{pageCopy.loadMore}</span>
-              <small>{pageCopy.showing(visibleProjects.length, filtered.length)}</small>
-              <ChevronDown aria-hidden="true" />
-            </button>
-          </div>
-        ) : null}
-      </section>
-
-      <CTABanner
-        title={pageContent?.cta_title || pageCopy.ctaTitle}
-        description={pageContent?.cta_description || pageCopy.ctaText}
-        quoteLabel={pageCopy.quote}
-        quotePath={buildQuotePath({ source: "projects" })}
-        whatsappLabel={pageCopy.whatsapp}
-        whatsappSource="Projects CTA"
-      />
-
-      <section className="subpage-link-band py-8">
-        <div className="container-narrow text-center">
-          <p className="text-muted-foreground text-sm">
-            <Link to="/services" className="text-accent hover:underline">{pageCopy.links.services}</Link>{" / "}
-            <Link to="/materials" className="text-accent hover:underline">{pageCopy.links.materials}</Link>{" / "}
-            <Link to="/blog" className="text-accent hover:underline">{pageCopy.links.blog}</Link>{" / "}
-            <Link to="/faq" className="text-accent hover:underline">{pageCopy.links.faq}</Link>{" / "}
-            <Link to="/contact" className="text-accent hover:underline">{pageCopy.links.contact}</Link>
-          </p>
-        </div>
-      </section>
+      </SchemeASection>
     </main>
   );
-};
-
-export default Projects;
+}

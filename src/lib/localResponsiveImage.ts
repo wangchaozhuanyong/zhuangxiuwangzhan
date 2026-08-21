@@ -1,7 +1,7 @@
 const RESPONSIVE_IMAGE_PREFIX = "/images/_responsive";
 const LOCAL_RESPONSIVE_IMAGE_PATTERN = /^\/images\/(projects|services|materials|heroes|before-after)\/(.+\.webp)([?#].*)?$/i;
 
-export const LOCAL_RESPONSIVE_IMAGE_WIDTHS = [360, 560, 720, 900, 1200] as const;
+export const LOCAL_RESPONSIVE_IMAGE_WIDTHS = [360, 560, 720, 900, 1200, 1600] as const;
 const FALLBACK_LOCAL_RESPONSIVE_IMAGE_WIDTH = 1200;
 
 const chooseGeneratedWidth = (width: number) =>

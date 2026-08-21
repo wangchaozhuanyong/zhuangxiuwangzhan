@@ -309,6 +309,27 @@ const isSafeImageUrl = (value: unknown) => {
   return text.startsWith("/") || text.startsWith("https://") || text.startsWith("http://localhost");
 };
 
+const isWebpDeliveryUrl = (value: unknown) => {
+  const text = cleanText(value, 1000);
+  if (!text) return true;
+
+  try {
+    const url = new URL(text, "http://localhost");
+    if (/\.webp$/i.test(url.pathname)) return true;
+    return url.pathname.includes("/storage/v1/render/image/public/")
+      && url.searchParams.get("format")?.toLowerCase() === "webp";
+  } catch {
+    return false;
+  }
+};
+
+const assertPublishedWebpImage = (value: unknown, status: unknown, fieldName: string) => {
+  if (status !== "published" || !cleanText(value, 1000)) return;
+  if (!isWebpDeliveryUrl(value)) {
+    throw new Error(`${fieldName} must use a WebP image before publishing. Upload or select it from the media library first.`);
+  }
+};
+
 const isSafeActionUrl = (value: unknown) => {
   const text = cleanText(value, 1000);
   if (!text) return true;
@@ -363,6 +384,7 @@ function cleanServicePayload(record: Record<string, unknown>, nextStatus?: Conte
 
   if (hasMediaPlaceholder(payload)) throw new Error("Media placeholders remain. Upload/select media in the admin media library first.");
   if (!isSafeImageUrl(payload.image_url)) throw new Error("image_url must be empty, site-relative, HTTPS, or localhost for local testing.");
+  assertPublishedWebpImage(payload.image_url, status, "image_url");
 
   if (status === "published") {
     const requiredFields = [
@@ -461,6 +483,7 @@ function cleanBlogPayload(record: Record<string, unknown>, nextStatus?: ContentS
   if (!isSafeImageUrl(payload.cover_image_url)) {
     throw new Error("cover_image_url must be empty, site-relative, HTTPS, or localhost for local testing.");
   }
+  assertPublishedWebpImage(payload.cover_image_url, status, "cover_image_url");
 
   if (status === "published") {
     const requiredFields = [
@@ -504,6 +527,7 @@ function cleanMaterialGallery(value: unknown, published: boolean) {
     const sourceUrl = cleanText(row.source_url, 1000);
 
     if (!imageUrl || !isSafeImageUrl(imageUrl)) throw new Error(`Material gallery image ${index + 1} has an invalid image_url.`);
+    assertPublishedWebpImage(imageUrl, published ? "published" : "draft", `Material gallery image ${index + 1}`);
     if (!MATERIAL_IMAGE_TYPES.has(imageType)) throw new Error(`Material gallery image ${index + 1} has an invalid image_type.`);
     if (!MATERIAL_IMAGE_RIGHTS.has(rightsStatus)) throw new Error(`Material gallery image ${index + 1} has an invalid rights_status.`);
     if (sourceUrl && !isSafeImageUrl(sourceUrl)) throw new Error(`Material gallery image ${index + 1} has an invalid source_url.`);
@@ -599,6 +623,7 @@ function cleanMaterialPayload(record: Record<string, unknown>, nextStatus?: Cont
   if (!isSafeImageUrl(payload.image_url)) throw new Error("image_url must be empty, site-relative, HTTPS, or localhost for local testing.");
 
   const published = status === "published";
+  assertPublishedWebpImage(payload.image_url, status, "image_url");
   const gallery = requiresMaterialSchema ? cleanMaterialGallery(record.gallery, published) : [];
   if (published) {
     const requiredFields = [
@@ -664,6 +689,7 @@ function cleanProjectPayload(record: Record<string, unknown>, nextStatus?: Conte
   if (sortOrder !== undefined) payload.sort_order = sortOrder;
   if (hasMediaPlaceholder(payload)) throw new Error("Media placeholders remain. Upload/select media in the admin media library first.");
   if (!isSafeImageUrl(payload.image_url)) throw new Error("image_url must be empty, site-relative, HTTPS, or localhost for local testing.");
+  assertPublishedWebpImage(payload.image_url, status, "image_url");
 
   if (status === "published") {
     const required = [
@@ -716,6 +742,7 @@ function cleanStandaloneSitePagePayload(record: Record<string, unknown>, nextSta
   if (sortOrder !== undefined) payload.sort_order = sortOrder;
   if (hasMediaPlaceholder(payload)) throw new Error("Media placeholders remain. Upload/select media in the admin media library first.");
   if (!isSafeImageUrl(payload.image_url)) throw new Error("image_url must be empty, site-relative, HTTPS, or localhost for local testing.");
+  assertPublishedWebpImage(payload.image_url, status, "image_url");
 
   if (status === "published") {
     const required = ["title_zh", "title_en", "seo_title_zh", "seo_title_en", "seo_description_zh", "seo_description_en"];
@@ -814,6 +841,7 @@ function cleanSitePage(input: unknown, nextStatus: ContentStatus, warnings: stri
 
   if (hasMediaPlaceholder(payload)) throw new Error("Media placeholders remain. Upload/select media in the admin media library first.");
   if (!isSafeImageUrl(payload.image_url)) throw new Error("sitePage.image_url must be empty, site-relative, HTTPS, or localhost for local testing.");
+  assertPublishedWebpImage(payload.image_url, payload.status, "sitePage.image_url");
 
   return { key: pageKey, payload };
 }
@@ -835,6 +863,7 @@ function cleanCtaBlock(input: unknown, nextStatus: ContentStatus, warnings: stri
     throw new Error("CTA URLs must be empty, site-relative, HTTPS, mailto, or tel links.");
   }
   if (!isSafeImageUrl(payload.image_url)) throw new Error("ctaBlock.image_url must be empty, site-relative, HTTPS, or localhost for local testing.");
+  assertPublishedWebpImage(payload.image_url, payload.status, "ctaBlock.image_url");
   return { key: blockKey, payload };
 }
 
@@ -859,6 +888,7 @@ function cleanHomeSection(input: unknown, nextStatus: ContentStatus, warnings: s
   if (sortOrder !== undefined) payload.sort_order = sortOrder;
   if (!isSafeActionUrl(payload.button_url)) throw new Error("homeSection.button_url must be empty, site-relative, HTTPS, mailto, or tel links.");
   if (!isSafeImageUrl(payload.image_url)) throw new Error("homeSection.image_url must be empty, site-relative, HTTPS, or localhost for local testing.");
+  assertPublishedWebpImage(payload.image_url, payload.status, "homeSection.image_url");
   return { key: sectionKey, payload };
 }
 

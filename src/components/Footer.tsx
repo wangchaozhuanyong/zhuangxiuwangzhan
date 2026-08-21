@@ -202,7 +202,7 @@ const Footer = () => {
 
       <div className="footer-surface">
         <div className="footer-content site-container py-10 md:py-16 lg:py-20">
-          <div className="footer-wordmark" aria-hidden="true">FLASH CAST</div>
+          <div className="footer-wordmark" aria-hidden="true"><span>FLASH </span><em>CAST</em></div>
           <div className="footer-workbench hidden lg:grid">
             <div className="footer-brand-panel">
               <div className="footer-logo-row">

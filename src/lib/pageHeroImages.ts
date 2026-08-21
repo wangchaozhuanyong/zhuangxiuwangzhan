@@ -26,16 +26,18 @@ export const pageHeroImages = {
     legacy: ["/images/heroes/hero-materials.webp"],
   },
   products: {
-    desktop: "/images/materials/kitchen-acrylic-cabinets.webp",
-    mobile: "/images/materials/kitchen-acrylic-cabinets.webp",
+    desktop: "/images/heroes/v2/hero-materials-premium.webp",
+    mobile: "/images/heroes/v2/hero-materials-premium-mobile.webp",
+    legacy: ["/images/materials/kitchen-acrylic-cabinets.webp"],
   },
   promotions: {
-    desktop: "/images/materials/kitchen-solid-wood-cabinets.webp",
-    mobile: "/images/materials/kitchen-solid-wood-cabinets.webp",
+    desktop: "/images/heroes/v2/hero-quote-premium.webp",
+    mobile: "/images/heroes/v2/hero-quote-premium-mobile.webp",
+    legacy: ["/images/materials/kitchen-solid-wood-cabinets.webp"],
   },
   locations: {
     desktop: "/images/projects/commercial-renovation.webp",
-    mobile: "/images/projects/commercial-renovation.webp",
+    mobile: "/images/heroes/v2/hero-services-premium-mobile.webp",
   },
   process: {
     desktop: "/images/heroes/v2/hero-process-premium.webp",
@@ -76,6 +78,46 @@ export const resolvePageHeroImage = (publishedImage: string | null | undefined, 
 
   return {
     desktop,
-    mobile: desktop === fallback.desktop ? fallback.mobile : undefined,
+    // The CMS currently stores one wide hero only. Keep that editorial image on
+    // desktop, while the route-level portrait art direction protects mobile
+    // sharpness and composition until a dedicated CMS mobile field exists.
+    mobile: fallback.mobile,
+  };
+};
+
+const resizeUnsplashHero = (source: string, width: number, height: number) => {
+  try {
+    const url = new URL(source);
+    if (url.hostname !== "images.unsplash.com") return source;
+
+    url.searchParams.set("auto", "format");
+    url.searchParams.set("fit", "crop");
+    url.searchParams.set("crop", "entropy");
+    url.searchParams.set("q", "86");
+    url.searchParams.set("w", String(width));
+    url.searchParams.set("h", String(height));
+    return url.toString();
+  } catch {
+    return source;
+  }
+};
+
+/**
+ * Article images arrive from the CMS as one source. Unsplash URLs commonly
+ * carry an old 800px query, so create explicit desktop and portrait requests
+ * instead of stretching that thumbnail across a full-bleed hero.
+ */
+export const resolveEditorialHeroImage = (publishedImage: string | null | undefined, fallback: PageHeroImage) => {
+  const image = publishedImage?.trim();
+  if (!image) return { desktop: fallback.desktop, mobile: fallback.mobile };
+
+  const desktop = resizeUnsplashHero(image, 1800, 1100);
+  const mobile = resizeUnsplashHero(image, 900, 1200);
+
+  return {
+    desktop,
+    // Local/CMS assets do not expose a portrait derivative. Use the approved
+    // editorial portrait instead of enlarging a landscape thumbnail on phones.
+    mobile: mobile === image ? fallback.mobile : mobile,
   };
 };

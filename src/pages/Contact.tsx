@@ -14,7 +14,7 @@ import { useFormGuard } from "@/hooks/useFormGuard";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { useSiteSettings } from "@/hooks/useSiteSettings";
 import { usePublishedSitePage } from "@/hooks/usePublishedContent";
-import HeroBanner from "@/components/blocks/HeroBanner";
+import { SchemeARouteHero } from "@/components/scheme-a/SchemeARoutePrimitives";
 import { trackContactFormSubmit, trackCtaClick } from "@/lib/analytics";
 import { isValidLeadEmail, isValidLeadPhone } from "@/lib/leadValidation";
 import { pageHeroImages, resolvePageHeroImage } from "@/lib/pageHeroImages";
@@ -22,6 +22,7 @@ import { preloadTurnstile } from "@/lib/turnstile";
 import { contactLocationOptions, contactPageText, contactProjectTypeOptions, contactServiceItems } from "@/i18n/contactPageText";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { buildAppleMapNavigationUrl, buildGoogleMapOpenUrl, buildWazeNavigationUrl } from "@/lib/mapUrls";
+import { focusElementByIdWhenReady } from "@/lib/instantScroll";
 
 
 
@@ -39,7 +40,7 @@ const contactFieldIds: Record<string, string> = {
 const focusFirstContactError = (errors: FormErrors) => {
   const firstKey = Object.keys(errors)[0];
   if (!firstKey || typeof window === "undefined") return;
-  window.setTimeout(() => document.getElementById(contactFieldIds[firstKey] || firstKey)?.focus(), 0);
+  focusElementByIdWhenReady(contactFieldIds[firstKey] || firstKey);
 };
 
 const Contact = () => {
@@ -147,7 +148,7 @@ const Contact = () => {
     ) : null;
 
   return (
-    <main className="forest-contact-page pt-site-header">
+    <main className="fc-route-page fc-route-form-page forest-contact-page">
       <PageMeta
         title={pageContent?.seo_title || t.metaTitle}
         description={pageContent?.seo_description || t.metaDescription}
@@ -156,15 +157,7 @@ const Contact = () => {
       />
       <JsonLdBreadcrumb items={[{ name: t.breadcrumbHome, url: "/" }, { name: t.breadcrumbCurrent, url: "/contact" }]} />
 
-      <HeroBanner
-        image={heroImage.desktop}
-        imageMobile={heroImage.mobile}
-        imageAlt={pageContent?.alt || t.heroAlt}
-        label={pageContent?.subtitle || t.heroEyebrow}
-        title={pageContent?.title || t.heroTitle}
-        description={pageContent?.description || t.heroText}
-        variant="utility"
-      />
+      <SchemeARouteHero kind="form" image={heroImage.desktop} mobileImage={heroImage.mobile} imageAlt={pageContent?.alt || t.heroAlt} label={pageContent?.subtitle || t.heroEyebrow} title={pageContent?.title || t.heroTitle} description={pageContent?.description || t.heroText} />
 
       <section className="forest-contact-body section-padding bg-background">
         <div className="container-narrow max-md:!px-0">
@@ -337,6 +330,8 @@ const Contact = () => {
                         <label htmlFor="contact-name" className="block text-sm font-medium mb-1.5">{t.name} <span className="text-destructive">*</span></label>
                         <Input
                           id="contact-name"
+                          name="name"
+                          autoComplete="name"
                           required placeholder={t.namePlaceholder} value={form.name}
                           className={errors.name ? "border-destructive" : ""}
                           aria-invalid={Boolean(errors.name)}
@@ -349,6 +344,8 @@ const Contact = () => {
                         <label htmlFor="contact-phone" className="block text-sm font-medium mb-1.5">{t.phone} <span className="text-destructive">*</span></label>
                         <Input
                           id="contact-phone"
+                          name="phone"
+                          autoComplete="tel"
                           type="tel" required placeholder={settings.phone_display} value={form.phone}
                           className={errors.phone ? "border-destructive" : ""}
                           aria-invalid={Boolean(errors.phone)}
@@ -361,6 +358,8 @@ const Contact = () => {
                         <label htmlFor="contact-email" className="block text-sm font-medium mb-1.5">{t.email} <span className="text-muted-foreground text-xs">({t.optional})</span></label>
                         <Input
                           id="contact-email"
+                          name="email"
+                          autoComplete="email"
                           type="email" placeholder={t.emailPlaceholder} value={form.email}
                           className={errors.email ? "border-destructive" : ""}
                           aria-invalid={Boolean(errors.email)}
@@ -374,6 +373,8 @@ const Contact = () => {
                           <label htmlFor="contact-project-type" className="block text-sm font-medium mb-1.5">{t.projectType}</label>
                           <select
                             id="contact-project-type"
+                            name="projectType"
+                            autoComplete="off"
                             className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                             value={form.projectType}
                             onChange={(e) => updateForm("projectType", e.target.value)}
@@ -386,6 +387,8 @@ const Contact = () => {
                           <label htmlFor="contact-location" className="block text-sm font-medium mb-1.5">{t.location}</label>
                           <select
                             id="contact-location"
+                            name="location"
+                            autoComplete="address-level2"
                             className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                             value={form.location}
                             onChange={(e) => updateForm("location", e.target.value)}
@@ -399,6 +402,8 @@ const Contact = () => {
                         <label htmlFor="contact-message" className="block text-sm font-medium mb-1.5">{t.message} <span className="text-destructive">*</span></label>
                         <Textarea
                           id="contact-message"
+                          name="message"
+                          autoComplete="off"
                           required rows={4} placeholder={t.messagePlaceholder}
                           value={form.message}
                           className={errors.message ? "border-destructive" : ""}
@@ -448,7 +453,7 @@ const Contact = () => {
               </div>
               <Dialog>
                 <DialogTrigger asChild>
-                  <Button type="button" variant="outline" className="min-h-11 shrink-0 rounded-sm">
+                  <Button type="button" className="btn-brand-secondary min-h-11 shrink-0 rounded-sm">
                     <Navigation className="mr-2 h-4 w-4" /> {t.navigateAction}
                   </Button>
                 </DialogTrigger>

@@ -1,17 +1,17 @@
 import { useParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
-import { AlertCircle, ArrowRight, RefreshCw } from "lucide-react";
+import { AlertCircle, RefreshCw } from "lucide-react";
 import Link from "@/components/LocalizedLink";
-import ImmersiveHero from "@/components/ImmersiveHero";
 import PageMeta from "@/components/PageMeta";
-import SmartImage from "@/components/SmartImage";
 import PublicLoadingState from "@/components/blocks/PublicLoadingState";
 import { Button } from "@/components/ui/button";
+import { SchemeARouteHero, SchemeASection } from "@/components/scheme-a/SchemeARoutePrimitives";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { getPublishedCmsPageByPath, type PublishedCmsSection } from "@/lib/homeContentApi";
 import { toText } from "@/lib/recordUtils";
 import { sanitizeHtml } from "@/lib/sanitizeHtml";
 import NotFound from "@/pages/NotFound";
+import { pageHeroImages } from "@/lib/pageHeroImages";
 
 const copy = {
   en: {
@@ -49,15 +49,16 @@ const getSectionBody = (section: PublishedCmsSection) => {
 const renderList = (items: unknown[]) => {
   if (!items.length) return null;
   return (
-    <div className="mt-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+    <div className="fc-route-cms-list">
       {items.map((item, index) => {
         const value = typeof item === "string" ? { title: item } : (item as Record<string, unknown>);
         const title = String(value.title || value.name || `Item ${index + 1}`);
         const description = String(value.description || value.content || value.text || "");
         return (
-          <div key={`${title}-${index}`} className="rounded-lg border border-border bg-card p-4">
-            <h3 className="text-base font-semibold">{title}</h3>
-            {description && <p className="mt-2 text-sm leading-6 text-muted-foreground">{description}</p>}
+          <div key={`${title}-${index}`}>
+            <span>{String(index + 1).padStart(2, "0")}</span>
+            <h3>{title}</h3>
+            {description && <p>{description}</p>}
           </div>
         );
       })}
@@ -77,23 +78,15 @@ const CmsSection = ({ section }: { section: PublishedCmsSection }) => {
   if (!title && !body && !items.length) return null;
 
   return (
-    <section className="section-padding bg-background">
-      <div className="container-narrow">
-        {title && (
-          <div className="subpage-local-heading">
-            <div className="accent-line mb-4" />
-            <h2 className="font-display text-2xl font-bold tracking-normal md:text-3xl">{title}</h2>
-          </div>
-        )}
+    <SchemeASection title={title || undefined}>
         {body && (
           <div
-            className="prose prose-neutral mt-4 max-w-none text-muted-foreground"
+            className="fc-route-cms-copy prose prose-neutral"
             dangerouslySetInnerHTML={{ __html: sanitizeHtml(body.includes("<") ? body : `<p>${body}</p>`) }}
           />
         )}
         {renderList(items)}
-      </div>
-    </section>
+    </SchemeASection>
   );
 };
 
@@ -110,7 +103,7 @@ export default function CmsDynamicPage() {
 
   if (isLoading) {
     return (
-      <main className="forest-cms-page pt-site-header">
+      <main className="fc-route-page">
         <PublicLoadingState label={t.loading} title={t.loadingTitle} description={t.loadingDescription} />
       </main>
     );
@@ -118,16 +111,16 @@ export default function CmsDynamicPage() {
 
   if (isError) {
     return (
-      <main className="forest-cms-page pt-site-header">
+      <main className="fc-route-page fc-route-missing">
         <PageMeta title={t.errorTitle} description={t.errorDescription} canonicalPath={cmsPath} />
-        <section className="section-padding bg-background">
-          <div className="container-narrow">
-            <div role="alert" className="rounded-xl border border-destructive/20 bg-destructive/5 p-6">
+        <section>
+          <div>
+            <div role="alert">
               <div className="mb-4 flex items-start gap-3">
                 <AlertCircle className="mt-1 h-5 w-5 shrink-0 text-destructive" />
                 <div>
-                  <h1 className="font-display text-2xl font-bold">{t.errorTitle}</h1>
-                  <p className="mt-2 text-sm leading-6 text-muted-foreground">{t.errorDescription}</p>
+                  <h1>{t.errorTitle}</h1>
+                  <p>{t.errorDescription}</p>
                 </div>
               </div>
               <Button type="button" variant="outline" onClick={() => void refetch()}>
@@ -149,7 +142,7 @@ export default function CmsDynamicPage() {
   const sections = page.sections || [];
 
   return (
-    <main className="forest-cms-page pt-site-header">
+    <main className="fc-route-page">
       <PageMeta
         title={page.seo_title || page.title}
         description={page.seo_description || page.description || t.fallbackDescription}
@@ -158,36 +151,16 @@ export default function CmsDynamicPage() {
         canonicalPath={page.path}
       />
 
-      <ImmersiveHero enabled={Boolean(heroImage)} className="page-hero page-hero--detail">
-        {heroImage && (
-          <div className="page-hero__media page-hero-media hero-media-mask">
-            <SmartImage src={heroImage} alt={heroAlt} className="page-hero__image h-full w-full object-cover" loading="eager" width={1920} height={800} fetchPriority="high" />
-            <div className="page-hero__overlay absolute inset-0 media-readable-overlay" aria-hidden="true" />
-          </div>
-        )}
-        <div className="page-hero__content site-container">
-          <div className="max-w-2xl min-w-0">
-            <p className="page-hero__label mb-3 font-body text-[11px] font-semibold uppercase tracking-[0.28em] text-gold">FLASH CAST SDN. BHD.</p>
-            <h1 className="page-hero__title heading-safe mb-4 text-3xl font-bold leading-tight text-on-media md:text-5xl">{page.title}</h1>
-            {page.description && <p className="page-hero__description prose-safe mb-6 text-lg text-on-media-muted">{page.description}</p>}
-            <Button asChild className="min-h-12 rounded-full px-7">
-              <Link to="/quote">
-                {page.cta_title || t.quote} <ArrowRight className="h-4 w-4" />
-              </Link>
-            </Button>
-          </div>
-        </div>
-      </ImmersiveHero>
+      <SchemeARouteHero kind="content" image={heroImage || pageHeroImages.about.desktop} imageAlt={heroAlt} label="FLASH CAST SDN. BHD." title={page.title} description={page.description || t.fallbackDescription} />
 
       {page.content && (
-        <section className="section-padding bg-background">
-          <div className="container-narrow">
+        <SchemeASection>
             <div
-              className="prose prose-neutral max-w-none text-muted-foreground"
+              className="fc-route-cms-copy prose prose-neutral"
               dangerouslySetInnerHTML={{ __html: sanitizeHtml(page.content.includes("<") ? page.content : `<p>${page.content}</p>`) }}
             />
-          </div>
-        </section>
+            <div className="fc-route-action-panel"><h2>{page.cta_title || t.quote}</h2><div><Link to="/quote">{page.cta_title || t.quote}</Link><Link to="/contact">{t.fallbackDescription}</Link></div></div>
+        </SchemeASection>
       )}
 
       {sections.map((section) => <CmsSection key={section.id} section={section} />)}

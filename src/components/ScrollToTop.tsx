@@ -4,6 +4,7 @@ import {
   hasBottomNavScrollIntent,
   isBottomNavPath,
 } from "@/lib/publicScrollRestoration";
+import { scrollWindowToImmediately } from "@/lib/instantScroll";
 
 const MAX_RESTORE_FRAMES = 120;
 // 页面刷新后从顶部开始，只在当前 SPA 会话内保留五个标签页的位置。
@@ -42,11 +43,7 @@ const restoreScrollPosition = (savedPosition: number) => {
       0,
       document.documentElement.scrollHeight - window.innerHeight,
     );
-    window.scrollTo({
-      top: Math.min(targetPosition, maximumPosition),
-      left: 0,
-      behavior: "auto",
-    });
+    scrollWindowToImmediately(Math.min(targetPosition, maximumPosition));
 
     const pageCanReachTarget = maximumPosition >= targetPosition - 1;
     if (targetPosition === 0 || (pageCanReachTarget && attempts >= 2) || attempts >= MAX_RESTORE_FRAMES) {

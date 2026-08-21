@@ -17,7 +17,7 @@ const pages = [
     maxHomeBundleFetches: 0,
     maxSupabaseRestFetches: 0,
     highRiskDynamicImages: true,
-    minSupabaseImagesBeforeLateThreshold: 4,
+    minSupabaseImagesBeforeLateThreshold: 2,
   },
   {
     name: "projects",

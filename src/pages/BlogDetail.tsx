@@ -1,9 +1,7 @@
 ﻿import { useMemo } from "react";
 import { useParams } from "react-router-dom";
 import Link from "@/components/LocalizedLink";
-import { Button } from "@/components/ui/button";
-import ImmersiveHero from "@/components/ImmersiveHero";
-import { ArrowLeft, Clock, ArrowRight } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import WhatsAppIcon from "@/components/WhatsAppIcon";
 import { blogPosts } from "@/data/blog";
 import { usePublishedBlogPostBySlug, usePublishedBlogPosts } from "@/hooks/usePublishedContent";
@@ -13,15 +11,14 @@ import PublicLoadingState from "@/components/blocks/PublicLoadingState";
 import SmartImage from "@/components/SmartImage";
 import { JsonLdBlogPosting, JsonLdBreadcrumb } from "@/components/JsonLd";
 import { useSiteSettings } from "@/hooks/useSiteSettings";
-import Reveal from "@/components/Reveal";
+import { SchemeAListingGrid, SchemeARouteHero, SchemeASection } from "@/components/scheme-a/SchemeARoutePrimitives";
 import { isHtmlText } from "@/lib/text";
 import { sanitizeHtml } from "@/lib/sanitizeHtml";
 import { translateBlogCategory, translateKeywordLabel, translateDisplayText } from "@/i18n/displayLabels";
 import { trackCtaClick } from "@/lib/analytics";
 import { formatBlogDate, formatBlogReadTime } from "@/lib/blogMeta";
 import { blogDetailPageText } from "@/i18n/blogDetailPageText";
-
-const RELATED_BLOG_IMAGE_WIDTHS = [360, 560, 720];
+import { pageHeroImages, resolveEditorialHeroImage } from "@/lib/pageHeroImages";
 
 const EDITORIAL_STORY_IMAGES = [
   "/images/projects/generated-portfolio/mont-kiara-luxury-condo-renovation.webp",
@@ -106,10 +103,9 @@ const BlogDetail = () => {
 
   if (!post) {
     return (
-      <main className="forest-blog-detail-page pt-site-header section-padding text-center">
+      <main className="fc-route-page fc-route-missing">
         <PageMeta title={t.notFound} description={t.notFound} canonicalPath={`/blog/${slug || ""}`} noIndex />
-        <h1 className="font-display text-3xl font-bold mb-4">{t.notFound}</h1>
-        <Button asChild><Link to="/blog">{t.backToBlog}</Link></Button>
+        <div><h1>{t.notFound}</h1><Link to="/blog">{t.backToBlog}</Link></div>
       </main>
     );
   }
@@ -119,6 +115,7 @@ const BlogDetail = () => {
   const articleTitle = displayText(post.title);
   const articleDescription = displayText(post.seoDescription || post.excerpt);
   const articleImageAlt = displayText(post.imageAlt || post.title);
+  const articleHeroImage = resolveEditorialHeroImage(post.image, pageHeroImages.blog);
 
   const renderContent = (content: string) => {
     if (isHtmlText(content)) {
@@ -178,7 +175,7 @@ const BlogDetail = () => {
   };
 
   return (
-    <main className="forest-blog-detail-page pt-site-header">
+    <main className="fc-route-page fc-route-article-page">
       <PageMeta
         title={displayText(post.seoTitle || `${post.title} | ${t.metaSuffix}`)}
         description={articleDescription}
@@ -199,34 +196,15 @@ const BlogDetail = () => {
         keywords={post.tags}
       />
 
-      <ImmersiveHero className="page-hero page-hero--detail">
-        <div className="page-hero__media page-hero-media hero-media-mask">
-          <SmartImage src={post.image} alt={articleImageAlt} className="page-hero__image h-full w-full object-cover" width={1920} height={800} loading="eager" fetchPriority="high" sizes="100vw" quality={76} />
-          <div className="page-hero__overlay absolute inset-0 media-readable-overlay" aria-hidden="true" />
-        </div>
-        <div className="page-hero__content site-container max-w-3xl">
-          <Link to="/blog" className="page-hero__back mb-6 inline-flex items-center gap-1.5 text-sm text-on-media-muted transition-colors hover:text-gold">
-            <ArrowLeft className="w-3.5 h-3.5" /> {t.backToBlog}
-          </Link>
-          <span className="page-hero__label mb-3 block font-body text-[11px] font-semibold uppercase tracking-[0.28em] text-gold">{translateBlogCategory(post.category, language)}</span>
-            <h1 className="page-hero__title heading-safe mb-4 max-w-3xl font-display text-3xl font-bold text-on-media md:text-5xl">{articleTitle}</h1>
-          <div className="flex items-center gap-4 text-sm text-on-media-muted">
-            <span className="flex items-center gap-1"><Clock className="w-3.5 h-3.5" /> {readTime}</span>
-            <span>{publishDate}</span>
-          </div>
-        </div>
-      </ImmersiveHero>
+      <SchemeARouteHero kind="article" image={articleHeroImage.desktop} mobileImage={articleHeroImage.mobile} imageAlt={articleImageAlt} label={`${translateBlogCategory(post.category, language)} / ${publishDate} / ${readTime}`} title={articleTitle} description={displayText(post.excerpt)} />
 
-      <section className="blog-editorial-shell section-padding bg-background">
-        <div className="blog-editorial-layout container-narrow">
-          <Reveal>
+      <SchemeASection className="fc-route-editorial">
+        <div className="blog-editorial-layout">
             <header className="blog-editorial-prologue">
               <span>{t.articleLead}</span>
               <p>{displayText(post.excerpt)}</p>
             </header>
-          </Reveal>
 
-          <Reveal delay={60}>
             <div className="blog-editorial-judgements" aria-label={t.designJudgements}>
               <p>{t.designJudgements}</p>
               <ol>
@@ -235,32 +213,25 @@ const BlogDetail = () => {
                 ))}
               </ol>
             </div>
-          </Reveal>
 
-          <Reveal delay={100}>
             <article className="blog-editorial-article">
               {renderContent(displayText(post.content))}
             </article>
-          </Reveal>
 
-          <Reveal delay={80}>
-            <div className="blog-editorial-tags mt-10 pt-6 border-t border-border">
-              <div className="flex flex-wrap gap-2">
+            <div className="blog-editorial-tags">
+              <div>
                 {post.tags.map((tag) => (
                   <span key={tag}>#{translateKeywordLabel(tag, language)}</span>
                 ))}
               </div>
             </div>
-          </Reveal>
 
-          <Reveal delay={160}>
-            <div className="blog-editorial-cta luxury-card-muted mt-10 p-6 text-center">
-              <h3 className="heading-safe mb-2 font-display text-xl font-bold">{t.ctaTitle}</h3>
-              <p className="mb-4 text-sm text-muted-foreground">{t.ctaText}</p>
-              <div className="flex flex-col justify-center gap-3 sm:flex-row sm:gap-4">
+            <div className="fc-route-action-panel">
+              <h2>{t.ctaTitle}</h2>
+              <p>{t.ctaText}</p>
+              <div>
                 <Link
                   to="/quote"
-                  className="btn-brand-primary min-h-12 w-full justify-center px-8 sm:w-auto"
                   onClick={() => trackCtaClick("quote", "blog_detail_cta", { destination: "/quote" })}
                 >
                   {t.quote} <ArrowRight className="h-4 w-4" />
@@ -269,56 +240,26 @@ const BlogDetail = () => {
                   href={settings.whatsapp_url()}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="btn-brand-secondary min-h-12 w-full justify-center px-8 sm:w-auto"
                   onClick={() => trackCtaClick("whatsapp", "blog_detail_cta", { destination: "whatsapp" })}
                 >
-                  <WhatsAppIcon className="mr-2 h-[18px] w-[18px] text-whatsapp" /> {t.whatsapp}
+                  <WhatsAppIcon /> {t.whatsapp}
                 </a>
               </div>
             </div>
-          </Reveal>
 
-          <Reveal delay={220}>
-            <div className="mt-6 flex flex-wrap gap-3 justify-center text-sm">
+            <nav className="fc-route-related-links">
               <Link to="/services" className="text-accent hover:underline">{t.internalServices}</Link>
-              <span className="text-border">/</span>
               <Link to="/projects" className="text-accent hover:underline">{t.internalProjects}</Link>
-              <span className="text-border">/</span>
               <Link to="/materials" className="text-accent hover:underline">{t.internalMaterials}</Link>
-              <span className="text-border">/</span>
               <Link to="/faq" className="text-accent hover:underline">{t.internalFaq}</Link>
-              <span className="text-border">/</span>
               <Link to="/contact" className="text-accent hover:underline">{t.internalContact}</Link>
-            </div>
-          </Reveal>
+            </nav>
         </div>
-      </section>
+      </SchemeASection>
 
-      <section className="section-padding bg-muted">
-        <div className="container-narrow">
-          <Reveal>
-            <div className="subpage-local-heading">
-              <div className="accent-line mb-4" />
-              <h2 className="font-display text-2xl font-bold">{t.moreArticles}</h2>
-            </div>
-          </Reveal>
-          <div className="card-grid grid-cols-1 gap-5 sm:grid-cols-3">
-            {otherPosts.map((item, index) => (
-              <Reveal key={item.id} delay={index * 70} direction="none">
-                <Link to={`/blog/${item.slug}`} className="card-equal group luxury-card hover-lift">
-                  <div className="aspect-[16/10] overflow-hidden img-zoom">
-                    <SmartImage src={item.image} alt={item.imageAlt || item.title} loading="lazy" width={400} height={300} sizes="(max-width: 640px) 92vw, 30vw" candidateWidths={RELATED_BLOG_IMAGE_WIDTHS} quality={72} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
-                  </div>
-                  <div className="card-equal-body p-4">
-                    <span className="text-limit-1 text-accent text-xs font-medium">{translateBlogCategory(item.category, language)}</span>
-                    <h3 className="text-limit-2 font-semibold text-sm mt-1">{displayText(item.title)}</h3>
-                  </div>
-                </Link>
-              </Reveal>
-            ))}
-          </div>
-        </div>
-      </section>
+      <SchemeASection title={t.moreArticles}>
+        <SchemeAListingGrid actionLabel={t.backToBlog} items={otherPosts.map((item) => ({ id: String(item.id), title: displayText(item.title), meta: translateBlogCategory(item.category, language), image: item.image, imageAlt: item.imageAlt || item.title, href: `/blog/${item.slug}` }))} />
+      </SchemeASection>
     </main>
   );
 };

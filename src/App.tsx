@@ -1,11 +1,9 @@
-import { lazy, Suspense, useEffect, useRef, type ReactNode } from "react";
+import { lazy, Suspense, useEffect, useRef, type MouseEvent, type ReactNode } from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, useLocation, useNavigationType } from "react-router-dom";
 import { HelmetProvider } from "react-helmet-async";
 import { LanguageProvider, useLanguage } from "@/i18n/LanguageContext";
-import Navbar from "@/components/Navbar";
-import Footer from "@/components/Footer";
-import FloatingCTA from "@/components/FloatingCTA";
+import { SchemeAFooter, SchemeAFooterPrelude, SchemeAMobileDock, SchemeANavbar } from "@/components/scheme-a/SchemeAPublicChrome";
 import DynamicBrandHead from "@/components/DynamicBrandHead";
 import { AppErrorBoundary } from "@/components/AppErrorBoundary";
 import { PublicChromeProvider, usePublicChrome } from "@/contexts/PublicChromeContext";
@@ -13,6 +11,7 @@ import { stripLanguagePrefix } from "@/i18n/routes";
 import { adminRouteText } from "@/i18n/adminRouteText";
 import { initAnalytics, trackPageView } from "@/lib/analytics";
 import { getAdminLang } from "@/lib/adminLocale";
+import { focusElementByIdWhenReady } from "@/lib/instantScroll";
 import { publicRoutes } from "@/routes/publicRoutes";
 import ScrollToTop from "./components/ScrollToTop";
 
@@ -33,15 +32,15 @@ const queryClient = new QueryClient({
 });
 
 const PageLoader = () => {
+  const { language } = useLanguage();
+
   return (
-    <main className="min-h-screen pt-site-header" role="status" aria-live="polite" aria-busy="true">
-      <div className="mx-auto grid min-h-[70vh] w-full max-w-[90rem] animate-pulse grid-cols-1 border-x border-border bg-card lg:grid-cols-2">
-        <div className="min-h-[24rem] bg-muted" />
-        <div className="flex flex-col justify-center gap-4 p-8 lg:p-16">
-          <span className="h-3 w-24 bg-muted" />
-          <span className="h-12 w-4/5 bg-muted" />
-          <span className="h-4 w-3/5 bg-muted" />
-        </div>
+    <main className="scheme-a-page-loader" role="status" aria-live="polite" aria-busy="true">
+      <div className="scheme-a-page-loader__brand">
+        <p>INTERIOR &amp; RENOVATION</p>
+        <strong><span>FLASH</span><em>CAST</em></strong>
+        <span>{language === "zh" ? "空间正在显影" : "Bringing the space into focus"}</span>
+        <i aria-hidden="true" />
       </div>
     </main>
   );
@@ -132,17 +131,24 @@ const PublicSiteShell = ({
   productDetail: boolean;
   children: ReactNode;
 }) => {
+  const { hasImmersiveHero } = usePublicChrome();
+
   return (
     <div
-      className="forest-site-shell"
+      className="scheme-a-public-shell"
       data-theme="dark"
       data-surface={surface}
-      data-header-overlay="false"
+      data-header-overlay={hasImmersiveHero ? "true" : "false"}
       data-product-detail={productDetail ? "true" : "false"}
     >
       {children}
     </div>
   );
+};
+
+const handleSkipToMainContent = (event: MouseEvent<HTMLAnchorElement>) => {
+  event.preventDefault();
+  focusElementByIdWhenReady("main-content", "start");
 };
 
 const AppShell = () => {
@@ -154,11 +160,6 @@ const AppShell = () => {
   const publicPath = stripLanguagePrefix(location.pathname);
   const isHomeRoute = !isAdminRoute && publicPath === "/";
   const isProductDetailRoute = !isAdminRoute && /^\/products\/[^/]+$/.test(publicPath);
-  const mobileActionBarMode = isHomeRoute || publicPath === "/contact"
-    ? "scroll-up"
-    : publicPath === "/quote"
-      ? "always"
-      : "hidden";
   const publicMainClass = isAdminRoute
     ? undefined
     : isHomeRoute
@@ -189,12 +190,12 @@ const AppShell = () => {
     <PublicChromeProvider
       isAdminRoute={isAdminRoute}
       isHomeRoute={isHomeRoute}
-      mobileActionBarMode={mobileActionBarMode}
+      mobileActionBarMode="hidden"
     >
       <DynamicBrandHead />
       <ScrollToTop />
       {!isAdminRoute && (
-        <a href="#main-content" className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[100] focus:rounded-md focus:bg-background focus:px-4 focus:py-2 focus:text-sm focus:font-semibold focus:text-foreground focus:shadow-lg">
+        <a href="#main-content" onClick={handleSkipToMainContent} className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[100] focus:rounded-md focus:bg-background focus:px-4 focus:py-2 focus:text-sm focus:font-semibold focus:text-foreground focus:shadow-lg">
           {language === "zh" ? "跳到主要内容" : "Skip to main content"}
         </a>
       )}
@@ -212,7 +213,7 @@ const AppShell = () => {
         </PublicPageFrame>
       ) : (
         <PublicSiteShell surface={forestSurface} productDetail={isProductDetailRoute}>
-          {!isProductDetailRoute ? <Navbar /> : null}
+          <SchemeANavbar />
           <Suspense fallback={null}>
             <PublicCinematicMotion />
           </Suspense>
@@ -224,8 +225,9 @@ const AppShell = () => {
                 </Suspense>
               </AppErrorBoundary>
             </div>
-            <Footer />
-            <FloatingCTA />
+            <SchemeAFooterPrelude />
+            <SchemeAFooter />
+            <SchemeAMobileDock />
           </PublicPageFrame>
         </PublicSiteShell>
       )}

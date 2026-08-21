@@ -1,321 +1,72 @@
-﻿import { useParams } from "react-router-dom";
+import { useMemo } from "react";
+import { useParams } from "react-router-dom";
 import Link from "@/components/LocalizedLink";
-import { Button } from "@/components/ui/button";
-import ImmersiveHero from "@/components/ImmersiveHero";
-import { ArrowLeft, ArrowRight, Clock, CheckCircle, Star, Wrench, Layers } from "lucide-react";
-import WhatsAppIcon from "@/components/WhatsAppIcon";
+import PageMeta from "@/components/PageMeta";
+import { JsonLdBreadcrumb } from "@/components/JsonLd";
+import { SchemeAContentState, SchemeAFacts, SchemeAGallery, SchemeAListingGrid, SchemeANumberList, SchemeARouteHero, SchemeASection, type SchemeAListingItem } from "@/components/scheme-a/SchemeARoutePrimitives";
 import { projectsData } from "@/data/projects";
 import { usePublishedProjectBySlug, usePublishedProjectSummaries } from "@/hooks/usePublishedContent";
 import { useLanguage } from "@/i18n/LanguageContext";
-import Reveal from "@/components/Reveal";
-import SmartImage from "@/components/SmartImage";
-import PageMeta from "@/components/PageMeta";
-import PublicLoadingState from "@/components/blocks/PublicLoadingState";
-import { JsonLdBreadcrumb } from "@/components/JsonLd";
-import { useSiteSettings } from "@/hooks/useSiteSettings";
-import { isHtmlText } from "@/lib/text";
-import { sanitizeHtml } from "@/lib/sanitizeHtml";
 import { translateDisplayText, translateProjectType } from "@/i18n/displayLabels";
-import { trackCtaClick } from "@/lib/analytics";
-import { buildQuotePath, quoteProjectTypeFromProjectType } from "@/lib/quoteContext";
 import { projectDetailPageText } from "@/i18n/projectDetailPageText";
+import { stripHtml } from "@/lib/text";
 
-const typeToService: Record<string, { en: string; zh: string; slug: string }> = {
-  Residential: { en: "Interior Renovation", zh: "室内装修", slug: "renovation" },
-  Commercial: { en: "Shop Renovation", zh: "店铺装修", slug: "shop-renovation" },
-  "Built-In": { en: "Custom Built-In Solutions", zh: "定制内嵌家具", slug: "builtin" },
-  Warehouse: { en: "Warehouse & Shelving", zh: "仓库与货架工程", slug: "warehouse" },
-  Exterior: { en: "Shop Renovation", zh: "店铺装修", slug: "shop-renovation" },
-  Office: { en: "Office Renovation", zh: "办公室装修", slug: "office-renovation" },
-};
-
-const PROJECT_GALLERY_IMAGE_WIDTHS = [360, 560, 720, 900];
-const RELATED_PROJECT_IMAGE_WIDTHS = [360, 560, 720];
-
-const ProjectDetail = () => {
+export default function ProjectDetail() {
   const { slug } = useParams<{ slug: string }>();
   const { language } = useLanguage();
-  const settings = useSiteSettings();
-  const t = projectDetailPageText[language];
-  const fallbackProject = projectsData.find((item) => item.slug === slug);
-  const { data: publishedProject, isPending: projectPending } = usePublishedProjectBySlug(slug, language);
+  const copy = projectDetailPageText[language];
+  const fallback = projectsData.find((item) => item.slug === slug);
+  const { data: publishedProject, isPending } = usePublishedProjectBySlug(slug, language);
   const { data: publishedProjects = [] } = usePublishedProjectSummaries(language);
-  const project = publishedProject ?? fallbackProject;
+  const project = publishedProject || fallback;
   const allProjects = publishedProjects.length ? publishedProjects : projectsData;
-  const relatedProjects = allProjects.filter((item) => item.slug !== slug && item.type === project?.type).slice(0, 2);
-  const otherProjects = allProjects.filter((item) => item.slug !== slug && item.type !== project?.type).slice(0, 1);
-  const related = [...relatedProjects, ...otherProjects].slice(0, 3);
 
-  if (projectPending && !fallbackProject) {
-    return (
-      <PublicLoadingState
-        label="FLASH CAST"
-        title={t.loadingTitle}
-        description={t.loadingDescription}
-      />
-    );
-  }
+  const relatedItems = useMemo<SchemeAListingItem[]>(() => allProjects.filter((item) => item.slug !== slug).slice(0, 3).map((item) => ({
+    id: String(item.id),
+    title: translateDisplayText(item.title, language),
+    description: translateDisplayText(String(item.description || ""), language),
+    meta: translateProjectType(item.type, language),
+    image: item.images?.[0] || item.thumbnail,
+    imageAlt: translateDisplayText(item.title, language),
+    href: `/projects/${item.slug}`,
+  })), [allProjects, language, slug]);
 
-  if (!projectPending && !project) {
-    return (
-      <main className="forest-project-detail-page pt-site-header section-padding text-center">
-        <PageMeta
-          title={t.notFound}
-          description={t.notFoundDescription}
-          canonicalPath="/projects"
-          noIndex
-        />
-        <h1 className="font-display text-3xl font-bold mb-4">{t.notFound}</h1>
-        <Button asChild><Link to="/projects">{t.viewAll}</Link></Button>
-      </main>
-    );
-  }
+  if (isPending && !project) return <main className="fc-route-page"><SchemeAContentState>{copy.loadingDescription}</SchemeAContentState></main>;
+  if (!project) return <main className="fc-route-page fc-route-not-found"><PageMeta title={copy.notFound} description={copy.notFoundDescription} canonicalPath="/projects" noIndex /><SchemeAContentState action={<Link to="/projects">{copy.viewAll}</Link>}>{copy.notFound}</SchemeAContentState></main>;
 
-  const mainImage = project.images[0] || project.thumbnail;
-  const relatedService = typeToService[project.type];
-  const relatedServiceName = relatedService?.[language];
-  const projectTypeLabel = translateProjectType(project.type, language);
-  const projectTitleLabel = translateDisplayText(project.title, language);
-  const mainImageAlt = `${projectTitleLabel} - ${t.imageLabel} 1`;
-  const projectDurationLabel = translateDisplayText(project.duration, language);
-  const projectDescription = translateDisplayText(project.description, language);
-  const projectClientNeed = translateDisplayText(project.clientNeed, language);
-  const projectHighlights = project.highlights.map((highlight: string) => translateDisplayText(highlight, language));
-  const projectScope = project.scope.map((scope: string) => translateDisplayText(scope, language));
-  const projectMaterialsUsed = project.materialsUsed.map((material: string) => translateDisplayText(material, language));
-  const projectTestimonial = project.testimonial ? translateDisplayText(project.testimonial, language) : "";
-  const quotePath = buildQuotePath({
-    source: "project",
-    title: projectTitleLabel,
-    projectType: quoteProjectTypeFromProjectType(project.type),
-  });
+  const title = translateDisplayText(project.title, language);
+  const type = translateProjectType(project.type, language);
+  const description = stripHtml(translateDisplayText(project.description || "", language));
+  const clientNeed = stripHtml(translateDisplayText(project.clientNeed || "", language));
+  const scope = project.scope.map((item: string) => translateDisplayText(item, language));
+  const highlights = project.highlights.map((item: string) => translateDisplayText(item, language));
+  const materials = project.materialsUsed.map((item: string) => translateDisplayText(item, language));
+  const images = (project.images.length ? project.images : [project.thumbnail]).filter(Boolean);
 
   return (
-    <main className="forest-project-detail-page pt-site-header">
-      <PageMeta
-        title={`${projectTitleLabel} | ${t.metaSuffix}`}
-        description={t.metaDescription(projectTypeLabel)}
-        keywords={t.metaKeywords(projectTypeLabel, projectTitleLabel)}
-        canonicalPath={`/projects/${project.slug}`}
-      />
-      <JsonLdBreadcrumb items={[{ name: t.breadcrumbHome, url: "/" }, { name: t.breadcrumbProjects, url: "/projects" }, { name: projectTitleLabel, url: `/projects/${project.slug}` }]} />
-
-      <ImmersiveHero className="page-hero page-hero--detail items-end">
-        <div className="page-hero__media page-hero-media hero-media-mask">
-          <SmartImage src={mainImage} alt={mainImageAlt} className="page-hero__image h-full w-full object-cover" width={1920} height={800} loading="eager" fetchPriority="high" />
-          <div
-            className="page-hero__overlay absolute inset-0 bg-gradient-to-t from-[rgba(13,12,9,0.88)] via-[rgba(13,12,9,0.45)] to-[rgba(13,12,9,0.15)]"
-            aria-hidden="true"
-          />
-        </div>
-        <div className="page-hero__content site-container pb-12 pt-16">
-          <Link to="/projects" className="page-hero__back mb-4 inline-flex items-center gap-1 text-sm text-on-media-muted transition-colors hover:text-gold">
-            <ArrowLeft className="h-3.5 w-3.5" /> {t.allProjects}
-          </Link>
-          <span className="page-hero__label mb-2 block text-xs font-medium uppercase tracking-wider text-gold">{projectTypeLabel}</span>
-          <h1 className="page-hero__title heading-safe mb-2 text-3xl font-bold text-on-media md:text-4xl">{projectTitleLabel}</h1>
-          <div className="flex flex-wrap items-center gap-4 text-sm text-on-media-muted">
-            <span className="flex items-center gap-1"><Clock className="w-3.5 h-3.5" /> {projectDurationLabel}</span>
-          </div>
-        </div>
-      </ImmersiveHero>
-
-      <section className="section-padding bg-background">
-        <div className="container-narrow">
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
-            <div className="lg:col-span-2">
-              <Reveal>
-                <div className="p-5 bg-muted rounded-card border border-border mb-8">
-                  <p className="text-muted-foreground text-sm leading-relaxed">
-                    <strong className="text-foreground">{t.summaryLabel}</strong> {t.summary(projectTitleLabel, projectTypeLabel, projectScope)}
-                  </p>
-                </div>
-              </Reveal>
-
-              <Reveal>
-                <h2 className="font-display text-2xl font-bold mb-4">{t.overview}</h2>
-                {isHtmlText(projectDescription) ? (
-                  <div className="prose prose-neutral max-w-none text-muted-foreground mb-8" dangerouslySetInnerHTML={{ __html: sanitizeHtml(projectDescription) }} />
-                ) : (
-                  <p className="text-muted-foreground leading-relaxed mb-8">{projectDescription}</p>
-                )}
-              </Reveal>
-
-              <Reveal delay={100}>
-                <h3 className="font-display text-xl font-bold mb-3">{t.clientRequirements}</h3>
-                <p className="text-muted-foreground mb-8 leading-relaxed">{projectClientNeed}</p>
-              </Reveal>
-
-              <Reveal delay={150}>
-                <h3 className="font-display text-xl font-bold mb-3">{t.solution}</h3>
-                <ul className="subpage-copy-list mb-8">
-                  {projectHighlights.map((highlight: string) => (
-                    <li key={highlight} className="subpage-copy-item">
-                      <span className="subpage-copy-icon">
-                        <CheckCircle className="h-3.5 w-3.5" />
-                      </span>
-                      <span className="subpage-copy-text">{highlight}</span>
-                    </li>
-                  ))}
-                </ul>
-              </Reveal>
-
-              <Reveal delay={200}>
-                <h3 className="font-display text-xl font-bold mb-4">{t.gallery}</h3>
-                <div className="grid grid-cols-2 gap-3 mb-8">
-                  {project.images.map((img: string, index: number) => (
-                    <div key={img || index} className="aspect-[4/3] overflow-hidden rounded-card bg-muted img-zoom">
-                      <SmartImage src={img} alt={`${projectTitleLabel} - ${t.imageLabel} ${index + 1}`} loading="lazy" width={800} height={600} sizes="(max-width: 768px) 46vw, 390px" candidateWidths={PROJECT_GALLERY_IMAGE_WIDTHS} quality={72} className="w-full h-full object-cover hover:scale-105 transition-transform duration-500" />
-                    </div>
-                  ))}
-                </div>
-              </Reveal>
-
-              {project.testimonial && (
-                <Reveal delay={250}>
-                  <div className="p-6 bg-muted rounded-card border border-border mb-8">
-                    <Star className="w-5 h-5 text-gold mb-3" />
-                    <p className="italic text-foreground mb-3 leading-relaxed">"{projectTestimonial}"</p>
-                    <p className="text-sm text-muted-foreground font-medium">{t.testimonialBy}</p>
-                  </div>
-                </Reveal>
-              )}
-
-              <Reveal delay={300}>
-                <div className="rounded-card border border-accent/20 bg-accent/5 p-5">
-                  <h3 className="font-display text-lg font-bold mb-2">{t.resultTitle}</h3>
-                  <p className="text-muted-foreground text-sm leading-relaxed">
-                    {t.resultIntro(projectTypeLabel, projectScope.length, projectMaterialsUsed.length)}
-                    {project.testimonial && ` ${t.satisfied}`}
-                    {relatedService && <> {t.similarPrompt} <Link to={`/services/${relatedService.slug}`} className="text-accent hover:underline font-medium">{relatedServiceName}</Link> {t.serviceWord}</>}
-                  </p>
-                </div>
-              </Reveal>
-            </div>
-
-            <div className="space-y-6">
-              <Reveal direction="right">
-                <div className="rounded-card border border-border bg-card p-5">
-                  <h3 className="font-semibold mb-4">{t.details}</h3>
-                  <div className="space-y-3 text-sm">
-                    <div className="flex justify-between gap-3"><span className="text-muted-foreground">{t.type}</span><span className="font-medium text-right">{projectTypeLabel}</span></div>
-                    <div className="flex justify-between gap-3"><span className="text-muted-foreground">{t.duration}</span><span className="font-medium text-right">{projectDurationLabel}</span></div>
-                    <div className="flex justify-between gap-3"><span className="text-muted-foreground">{t.scopeItems}</span><span className="font-medium text-right">{projectScope.length} {t.items}</span></div>
-                  </div>
-                </div>
-              </Reveal>
-
-              <Reveal direction="right" delay={80}>
-                <div className="rounded-card border border-border bg-card p-5">
-                  <div className="flex items-center gap-2 mb-3">
-                    <Wrench className="w-4 h-4 text-accent" />
-                    <h3 className="font-semibold">{t.scope}</h3>
-                  </div>
-                  <ul className="subpage-copy-list subpage-copy-list--compact">
-                    {projectScope.map((scope: string) => (
-                      <li key={scope} className="subpage-copy-item subpage-copy-item--soft">
-                        <span className="subpage-copy-dot" />
-                        <span className="subpage-copy-text">{scope}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              </Reveal>
-
-              <Reveal direction="right" delay={160}>
-                <div className="rounded-card border border-border bg-card p-5">
-                  <div className="flex items-center gap-2 mb-3">
-                    <Layers className="w-4 h-4 text-accent" />
-                    <h3 className="font-semibold">{t.materials}</h3>
-                  </div>
-                  <ul className="subpage-copy-list subpage-copy-list--compact">
-                    {projectMaterialsUsed.map((material: string) => (
-                      <li key={material} className="subpage-copy-item subpage-copy-item--soft">
-                        <span className="subpage-copy-dot" />
-                        <span className="subpage-copy-text">{material}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              </Reveal>
-
-              <Reveal direction="right" delay={240}>
-                <div className="subpage-dark-card rounded-card border border-border/80 bg-surface-dark p-5 text-center">
-                  <h3 className="mb-2 font-semibold text-surface-dark-foreground">{t.similarTitle}</h3>
-                  <p className="mb-4 text-sm text-surface-dark-foreground/75">{t.similarText}</p>
-                  <Link
-                    to={quotePath}
-                    className="btn-on-dark-primary mb-2 w-full min-h-11 justify-center px-6 text-sm"
-                    onClick={() => trackCtaClick("quote", "project_detail_sidebar", { destination: quotePath })}
-                  >
-                    {t.quote} <ArrowRight className="h-3.5 w-3.5" />
-                  </Link>
-                  <a
-                    href={settings.whatsapp_url()}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="btn-on-dark-secondary w-full min-h-11 justify-center px-6 text-sm"
-                    onClick={() => trackCtaClick("whatsapp", "project_detail_sidebar", { destination: "whatsapp" })}
-                  >
-                    <WhatsAppIcon className="mr-1 h-4 w-4 text-whatsapp" /> {t.whatsapp}
-                  </a>
-                </div>
-              </Reveal>
-
-              {relatedService && (
-                <Reveal direction="right" delay={320}>
-                  <div className="rounded-card border border-border bg-card p-5">
-                    <h3 className="font-semibold text-sm mb-2">{t.relatedService}</h3>
-                    <Link to={`/services/${relatedService.slug}`} className="text-accent hover:underline text-sm font-medium flex items-center gap-1">
-                      {relatedServiceName} <ArrowRight className="w-3.5 h-3.5" />
-                    </Link>
-                  </div>
-                </Reveal>
-              )}
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <section className="section-padding bg-muted">
-        <div className="container-narrow">
-          <Reveal>
-            <div className="subpage-local-heading">
-              <div className="accent-line mb-4" />
-              <h2 className="font-display text-2xl font-bold">{t.moreProjects}</h2>
-            </div>
-          </Reveal>
-          <div className="card-grid grid-cols-1 gap-5 sm:grid-cols-3">
-            {related.map((item, index) => (
-              <Reveal key={item.id} delay={index * 80} direction="none">
-                <Link to={`/projects/${item.slug}`} className="card-equal group luxury-card hover-lift">
-                  <div className="aspect-[4/3] overflow-hidden img-zoom">
-                    <SmartImage src={item.images[0] || item.thumbnail} alt={`${translateDisplayText(item.title, language)} - ${t.imageLabel} 1`} loading="lazy" width={600} height={450} sizes="(max-width: 640px) 92vw, 30vw" candidateWidths={RELATED_PROJECT_IMAGE_WIDTHS} quality={72} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
-                  </div>
-                  <div className="card-equal-body p-4">
-                    <span className="text-limit-1 text-accent text-xs font-medium uppercase tracking-wider">{translateProjectType(item.type, language)}</span>
-                      <h3 className="text-limit-2 font-display text-base font-semibold mt-1">{translateDisplayText(item.title, language)}</h3>
-                  </div>
-                </Link>
-              </Reveal>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      <section className="subpage-link-band py-8">
-        <div className="container-narrow text-center">
-          <p className="text-muted-foreground text-sm">
-            <Link to="/services" className="text-accent hover:underline">{t.internalServices}</Link>{" / "}
-            <Link to="/materials" className="text-accent hover:underline">{t.internalMaterials}</Link>{" / "}
-            <Link to="/blog" className="text-accent hover:underline">{t.internalBlog}</Link>{" / "}
-            <Link to="/faq" className="text-accent hover:underline">{t.internalFaq}</Link>{" / "}
-            <Link to="/contact" className="text-accent hover:underline">{t.internalContact}</Link>
-          </p>
-        </div>
-      </section>
+    <main className="fc-route-page">
+      <PageMeta title={`${title} | ${copy.metaSuffix}`} description={copy.metaDescription(type)} keywords={copy.metaKeywords(type, title)} canonicalPath={`/projects/${project.slug}`} />
+      <JsonLdBreadcrumb items={[{ name: copy.breadcrumbHome, url: "/" }, { name: copy.breadcrumbProjects, url: "/projects" }, { name: title, url: `/projects/${project.slug}` }]} />
+      <SchemeARouteHero kind="detail" image={images[0]} imageAlt={`${title} - ${copy.imageLabel} 1`} label={type} title={title} description={description} />
+      <SchemeAFacts items={[
+        { label: copy.type, value: type },
+        { label: copy.duration, value: translateDisplayText(project.duration, language) },
+        { label: copy.scopeItems, value: `${scope.length} ${copy.items}` },
+        { label: copy.materials, value: String(materials.length) },
+      ]} />
+      <SchemeASection title={copy.overview} description={description}>
+        <SchemeANumberList items={[
+          { title: copy.clientRequirements, description: clientNeed },
+          ...highlights.map((item) => ({ title: item })),
+          ...scope.map((item) => ({ title: item })),
+        ]} />
+      </SchemeASection>
+      <SchemeASection title={copy.gallery} description={language === "zh" ? "从整体空间到材料收口，查看完成后的真实细节。" : "From the whole space to the finishing details."}>
+        <SchemeAGallery images={images.slice(0, 2).map((src, index) => ({ src, alt: `${title} - ${copy.imageLabel} ${index + 1}` }))} />
+      </SchemeASection>
+      <SchemeASection title={copy.moreProjects}>
+        <SchemeAListingGrid items={relatedItems} actionLabel={copy.viewAll} />
+      </SchemeASection>
     </main>
   );
-};
-
-export default ProjectDetail;
+}

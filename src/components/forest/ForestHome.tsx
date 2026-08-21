@@ -1,487 +1,222 @@
-import { useMemo, useState, type KeyboardEvent } from "react";
-import {
-  ArrowRight,
-  BadgePercent,
-  Check,
-  MapPin,
-  Ruler,
-  ShieldCheck,
-  Wrench,
-} from "lucide-react";
+import { useState, type CSSProperties } from "react";
+import { ArrowRight, ArrowUpRight } from "lucide-react";
 import DeferredSmartImage from "@/components/DeferredSmartImage";
 import ImmersiveHero from "@/components/ImmersiveHero";
 import LocalizedLink from "@/components/LocalizedLink";
 import SmartImage from "@/components/SmartImage";
-import WhatsAppIcon from "@/components/WhatsAppIcon";
-import { usePublishedProductHighlights } from "@/hooks/usePublishedContent";
-import { useSiteSettings } from "@/hooks/useSiteSettings";
 import { useLanguage } from "@/i18n/LanguageContext";
-import { homeSectionText } from "@/i18n/homeSectionsText";
-import { translateDisplayText, translateMaterialCategory } from "@/i18n/displayLabels";
+import { translateDisplayText } from "@/i18n/displayLabels";
+import { schemeAHomeText } from "@/i18n/schemeAText";
 import type { PublishedHomeContentBundle } from "@/lib/homeContentApi";
 
 type ForestHomeProps = {
   content: PublishedHomeContentBundle | undefined;
 };
 
-const fallbackCopy = {
-  zh: {
-    heroTitle: "吉隆坡住宅与商业空间装修",
-    heroDescription: "从空间规划、定制家具到施工交付。",
-    whatsapp: "WhatsApp 联系",
-    quote: "获取免费报价",
-    trust: [
-      "Kuala Lumpur、Selangor 与 Klang Valley",
-      "先规划，再确定材料与施工范围",
-      "住宅、商业与定制家具统一协调",
-      "按现场条件和交付节点推进",
-    ],
-    companyTitle: "我们把设计、材料与施工放在同一张图里",
-    companyBody: "FLASH CAST 立足本地现场条件，服务住宅、商业与定制家具项目。我们先把需求和边界说清楚，再进入选材、报价与施工。",
-    about: "了解公司",
-    servicesTitle: "从一间房，到完整商业空间",
-    servicesBody: "按空间需求展开，不把不同服务塞进同一套标准套餐。",
-    details: "了解详情",
-    projectsTitle: "精选装修案例",
-    projectsBody: "住宅、办公、餐饮与定制项目使用同一套清晰的案例叙事。",
-    projectsAll: "查看装修案例",
-    compareTitle: "先看清问题，再决定怎么改",
-    compareBody: "拖动画面查看空间更新。实际方案会根据结构、机电、预算和使用方式调整。",
-    compareAll: "查看全部改造案例",
-    before: "改造前",
-    after: "改造后",
-    compareLabel: "拖动查看改造前后",
-    productsTitle: "装修商品，不是普通商城",
-    productsBody: "展示衣柜、家具、橱柜、地板、门窗和涂料的做法、材质与参考价格。",
-    productsAll: "浏览装修商品",
-    productView: "查看商品",
-    offers: ["免费基础上门沟通", "免费空间规划建议", "定制商品优惠展示"],
-    processTitle: "从沟通到交付",
-    processBody: "每一步解决一个明确问题，让设计判断和现场执行保持一致。",
-    whyTitle: "为什么选择 FLASH CAST",
-    testimonialsTitle: "客户怎样评价合作过程",
-    brandsTitle: "常用材料与五金品牌",
-    faqTitle: "开始前常见的问题",
-    faqAll: "查看全部问题",
-  },
-  en: {
-    heroTitle: "Renovation for homes and commercial spaces in Kuala Lumpur",
-    heroDescription: "From space planning and custom furniture to site delivery.",
-    whatsapp: "Contact on WhatsApp",
-    quote: "Get a free quote",
-    trust: [
-      "Kuala Lumpur, Selangor and Klang Valley",
-      "Plan first, then confirm materials and scope",
-      "One team for homes, businesses and built-ins",
-      "Delivery follows site conditions and milestones",
-    ],
-    companyTitle: "Design, materials and site delivery on one plan",
-    companyBody: "FLASH CAST works around local site conditions across residential, commercial and custom furniture projects. We define needs and boundaries before materials, quotation and construction.",
-    about: "About the company",
-    servicesTitle: "From one room to a complete commercial interior",
-    servicesBody: "Services unfold around the space, not a one-size-fits-all package.",
-    details: "View details",
-    projectsTitle: "Selected renovation projects",
-    projectsBody: "Residential, office, hospitality and custom work presented through one clear project narrative.",
-    projectsAll: "View renovation projects",
-    compareTitle: "See the problem clearly before deciding the change",
-    compareBody: "Drag to compare the space. The actual proposal responds to structure, services, budget and use.",
-    compareAll: "View all transformations",
-    before: "Before",
-    after: "After",
-    compareLabel: "Drag to compare before and after",
-    productsTitle: "Renovation products, not a conventional online shop",
-    productsBody: "Compare wardrobes, furniture, cabinets, flooring, doors, windows and finishes with material and indicative price guidance.",
-    productsAll: "Browse renovation products",
-    productView: "View product",
-    offers: ["Complimentary first site discussion", "Complimentary space planning advice", "Selected custom product offers"],
-    processTitle: "From first conversation to handover",
-    processBody: "Each step resolves one clear question so design decisions stay aligned with site delivery.",
-    whyTitle: "Why clients choose FLASH CAST",
-    testimonialsTitle: "What clients say about the process",
-    brandsTitle: "Materials and hardware brands we work with",
-    faqTitle: "Questions before you begin",
-    faqAll: "View all questions",
-  },
-} as const;
-
-const SectionHeading = ({ title, body }: { title: string; body?: string }) => (
-  <header className="forest-section-heading">
-    <h2>{title}</h2>
-    {body ? <p>{body}</p> : null}
-  </header>
-);
-
-const handleTabKey = (
-  event: KeyboardEvent<HTMLButtonElement>,
-  currentIndex: number,
-  itemCount: number,
-  selectTab: (index: number) => void,
-) => {
-  if (!itemCount) return;
-
-  let nextIndex = currentIndex;
-  if (event.key === "ArrowDown" || event.key === "ArrowRight") nextIndex = (currentIndex + 1) % itemCount;
-  else if (event.key === "ArrowUp" || event.key === "ArrowLeft") nextIndex = (currentIndex - 1 + itemCount) % itemCount;
-  else if (event.key === "Home") nextIndex = 0;
-  else if (event.key === "End") nextIndex = itemCount - 1;
-  else return;
-
-  event.preventDefault();
-  selectTab(nextIndex);
-  const tabs = event.currentTarget.parentElement?.querySelectorAll<HTMLButtonElement>("[role='tab']");
-  tabs?.[nextIndex]?.focus();
-};
-
 const ForestHome = ({ content }: ForestHomeProps) => {
   const { language } = useLanguage();
-  const settings = useSiteSettings();
-  const copy = fallbackCopy[language];
-  const ariaCopy = homeSectionText.forestAria[language];
-  const [activeService, setActiveService] = useState(0);
-  const [activeProcess, setActiveProcess] = useState(0);
-  const [comparePosition, setComparePosition] = useState(58);
-  const [openFaq, setOpenFaq] = useState(0);
-  const { data: products = [] } = usePublishedProductHighlights(language, 4);
+  const copy = schemeAHomeText[language];
+  const [comparePosition, setComparePosition] = useState(48);
 
   const hero = content?.heroSlides[0];
-  const heroTitle = hero?.title || content?.pageContent?.title || copy.heroTitle;
-  const heroDescription = hero?.excerpt || content?.pageContent?.description || copy.heroDescription;
   const heroImage = hero?.image || content?.pageContent?.image_url || "/images/heroes/hero-luxury-living.webp";
-  const heroAlt = hero?.alt || content?.pageContent?.alt || heroTitle;
-  const services = content?.services.slice(0, 5) || [];
+  const heroAlt = hero?.alt || content?.pageContent?.alt || copy.heroTitle + copy.heroTitleAccent;
   const projects = content?.projects.slice(0, 6) || [];
   const featuredProject = projects[0];
-  const supportingProjects = projects.slice(1);
-  const processSteps = content?.processSteps.slice(0, 6) || [];
-  const faqs = content?.faqs.slice(0, 4) || [];
+  const supportingProject = projects[1] || projects[0];
+  const projectImage = featuredProject?.thumbnail || "/images/projects/generated-portfolio/mont-kiara-luxury-condo-renovation.webp";
+  const materialImage = supportingProject?.images[1]
+    || supportingProject?.thumbnail
+    || "/images/projects/proj1-condo-2.webp";
   const beforeAfter = content?.beforeAfterItems[0];
   const beforeImage = beforeAfter?.before_image_url || "/images/before-after/before-living.webp";
   const afterImage = beforeAfter?.after_image_url || "/images/before-after/after-living.webp";
-  const activeServiceItem = services[activeService] || services[0];
-  const activeProcessItem = processSteps[activeProcess] || processSteps[0];
-  const introProject = projects[3] || projects[1] || projects[0];
-  const introImage = introProject?.images[1] || introProject?.thumbnail || "/images/projects/proj1-condo-2.webp";
   const displayText = (value: string) => language === "zh" ? translateDisplayText(value, language) : value;
-
-  const whyItems = useMemo(() => {
-    const items = content?.whyChooseUsSection?.items || [];
-    return items
-      .map((item) => {
-        if (!item || typeof item !== "object") return null;
-        const record = item as Record<string, unknown>;
-        const title = String(record.title || record.name || "");
-        const description = String(record.description || record.content || "");
-        return title ? { title, description } : null;
-      })
-      .filter((item): item is { title: string; description: string } => Boolean(item));
-  }, [content?.whyChooseUsSection?.items]);
+  const serviceItems = content?.services.slice(0, 4).map((service) => ({
+    title: service.title,
+    summary: service.summary,
+    path: `/services/${service.slug}`,
+  })) || [];
+  const resolvedServices = serviceItems.length ? serviceItems : copy.serviceFallbacks;
+  const projectMeta = featuredProject
+    ? [displayText(featuredProject.type), featuredProject.location].filter(Boolean).join(" / ")
+    : copy.projectFallbackMeta;
 
   return (
-    <div className="forest-home">
-      <ImmersiveHero className="forest-home-hero" aria-labelledby="forest-home-title">
-        <div className="forest-home-hero__copy">
-          <span className="forest-kicker">FLASH CAST SDN. BHD.</span>
-          <h1 id="forest-home-title">{heroTitle}</h1>
-          <p>{heroDescription}</p>
-          <div className="forest-home-hero__actions">
-            <a className="forest-button forest-button--light" href={settings.whatsapp_url()} target="_blank" rel="noopener noreferrer">
-              <WhatsAppIcon className="h-4 w-4" /> {copy.whatsapp}
-            </a>
-            <LocalizedLink className="forest-button forest-button--outline" to="/quote">
-              {copy.quote} <ArrowRight className="h-4 w-4" />
-            </LocalizedLink>
-          </div>
-        </div>
-        <figure className="forest-home-hero__media">
+    <div className="scheme-a-home">
+      <ImmersiveHero className="scheme-a-hero" aria-labelledby="scheme-a-home-title">
+        <figure className="scheme-a-hero__media" data-cinematic-media>
           <SmartImage
             src={heroImage}
             alt={heroAlt}
             width={1920}
-            height={1080}
-            sizes="(max-width: 767px) 100vw, 1200px"
+            height={1200}
+            sizes="100vw"
+            candidateWidths={[360, 560, 720, 900, 1200, 1600]}
+            quality={88}
             loading="eager"
             fetchPriority="high"
           />
         </figure>
+        <div className="scheme-a-hero__copy">
+          <p className="scheme-a-eyebrow">{copy.heroKicker}</p>
+          <h1 id="scheme-a-home-title">
+            <span>{copy.heroTitle}</span>
+            <span>{copy.heroTitleAccent}</span>
+          </h1>
+          <p className="scheme-a-hero__lead">{copy.heroDescription}</p>
+          <div className="scheme-a-actions">
+            <LocalizedLink className="scheme-a-button scheme-a-button--paper" to="/projects">
+              {copy.projectsCta}
+            </LocalizedLink>
+            <LocalizedLink className="scheme-a-button scheme-a-button--glass" to="/contact">
+              {copy.consultCta}
+              <ArrowUpRight aria-hidden="true" />
+            </LocalizedLink>
+          </div>
+        </div>
       </ImmersiveHero>
 
-      <section className="forest-trust-rail" aria-label={ariaCopy.serviceHighlights}>
-        {copy.trust.map((item, index) => {
-          const icons = [MapPin, Ruler, Wrench, ShieldCheck];
-          const Icon = icons[index];
-          return <div key={item}><Icon aria-hidden="true" /><span>{item}</span></div>;
-        })}
-      </section>
-
-      <section className="forest-chapter forest-editorial-media forest-company-intro" data-cinematic-section>
-        <div className="forest-editorial-media__heading">
-          <SectionHeading title={copy.companyTitle} />
-        </div>
-        <figure className="forest-editorial-media__media" data-cinematic-media>
-          <DeferredSmartImage src={introImage} alt={introProject?.thumbnailAlt || copy.companyTitle} width={1200} height={900} loading="lazy" />
-        </figure>
-        <div className="forest-editorial-media__details">
-          <p>{copy.companyBody}</p>
-          <LocalizedLink className="forest-text-link" to="/about">{copy.about}<ArrowRight /></LocalizedLink>
+      <section className="scheme-a-principle" data-cinematic-section>
+        <div className="scheme-a-frame scheme-a-principle__inner">
+          <p className="scheme-a-eyebrow">{copy.principleLabel}</p>
+          <h2>{copy.principleTitle}</h2>
         </div>
       </section>
 
-      {services.length ? (
-        <section className="forest-chapter forest-chapter--band forest-services" data-cinematic-section>
-          <div className="forest-content-frame">
-            <SectionHeading title={copy.servicesTitle} />
-            <div className="forest-browser">
-              <div className="forest-browser__controls">
-                <div className="forest-browser__list" role="tablist" aria-label={copy.servicesTitle}>
-                  {services.map((service, index) => (
-                    <button
-                      key={service.slug}
-                      id={`home-service-tab-${index}`}
-                      type="button"
-                      role="tab"
-                      aria-selected={activeService === index}
-                      aria-controls="home-service-panel"
-                      tabIndex={activeService === index ? 0 : -1}
-                      className={activeService === index ? "is-active" : ""}
-                      onClick={() => setActiveService(index)}
-                      onKeyDown={(event) => handleTabKey(event, index, services.length, setActiveService)}
-                    >
-                      <span>{service.title}</span>
-                      <small>{service.summary}</small>
-                    </button>
-                  ))}
-                </div>
-                <div className="forest-browser__footer">
-                  <p>{copy.servicesBody}</p>
-                  {activeServiceItem ? (
-                    <LocalizedLink className="forest-text-link" to={`/services/${activeServiceItem.slug}`}>
-                      {copy.details}<ArrowRight />
-                    </LocalizedLink>
-                  ) : null}
-                </div>
-              </div>
-              {activeServiceItem ? (
-                <figure
-                  id="home-service-panel"
-                  className="forest-browser__stage"
-                  data-cinematic-media
-                  role="tabpanel"
-                  aria-labelledby={`home-service-tab-${activeService}`}
-                >
-                  <SmartImage key={activeServiceItem.slug} src={activeServiceItem.image} alt={activeServiceItem.title} width={1200} height={1000} loading="lazy" />
-                </figure>
-              ) : null}
-            </div>
-          </div>
-        </section>
-      ) : null}
-
-      {projects.length ? (
-        <section className="forest-chapter forest-projects" data-cinematic-section>
-          <div className="forest-projects__intro">
-            <SectionHeading title={copy.projectsTitle} />
-          </div>
-
-          {featuredProject ? (
-            <article className="forest-project-feature">
-              <LocalizedLink className="forest-project-feature__media" to={`/projects/${featuredProject.slug}`} aria-label={featuredProject.title} data-cinematic-media>
-                <DeferredSmartImage
-                  src={featuredProject.thumbnail}
-                  alt={featuredProject.title}
-                  width={1440}
-                  height={900}
-                  sizes="(max-width: 767px) 100vw, (max-width: 1439px) 92vw, 1320px"
-                  candidateWidths={[560, 720, 960, 1200, 1440]}
-                  loading="lazy"
-                />
-              </LocalizedLink>
-              <div className="forest-project-feature__copy">
-                <small>{displayText(featuredProject.type)}</small>
-                <h3><LocalizedLink to={`/projects/${featuredProject.slug}`}>{featuredProject.title}</LocalizedLink></h3>
-                {featuredProject.description ? <p>{featuredProject.description}</p> : null}
-                <LocalizedLink className="forest-text-link" to={`/projects/${featuredProject.slug}`}>
-                  {copy.details}<ArrowRight />
-                </LocalizedLink>
-              </div>
-              <div className="forest-project-feature__overview">
-                <p>{copy.projectsBody}</p>
-                <LocalizedLink className="forest-text-link forest-projects__all" to="/projects">
-                  {copy.projectsAll}<ArrowRight />
-                </LocalizedLink>
-              </div>
-            </article>
-          ) : null}
-
-          {supportingProjects.length ? (
-            <div className="forest-project-gallery">
-              {supportingProjects.map((project) => (
-                <article key={project.slug} className="forest-project-story">
-                  <LocalizedLink className="forest-project-story__media" to={`/projects/${project.slug}`} aria-label={project.title}>
-                    <DeferredSmartImage
-                      src={project.thumbnail}
-                      alt={project.title}
-                      width={780}
-                      height={560}
-                      sizes="(max-width: 767px) 82vw, (max-width: 1199px) 50vw, 33vw"
-                      candidateWidths={[360, 560, 720, 960]}
-                      loading="lazy"
-                    />
-                  </LocalizedLink>
-                  <div className="forest-project-story__copy">
-                    <small>{displayText(project.type)}</small>
-                    <h3><LocalizedLink to={`/projects/${project.slug}`}>{project.title}</LocalizedLink></h3>
-                  </div>
-                </article>
-              ))}
-            </div>
-          ) : null}
-        </section>
-      ) : null}
-
-      <section className="forest-chapter forest-editorial-media forest-transformation" data-cinematic-section>
-        <div className="forest-editorial-media__heading forest-transformation__heading">
-          <SectionHeading title={copy.compareTitle} />
+      <section className="scheme-a-statement" data-cinematic-section>
+        <div className="scheme-a-frame">
+          <p className="scheme-a-eyebrow">{copy.statementLabel}</p>
+          <blockquote>{copy.statementQuote}</blockquote>
         </div>
-        <div className="forest-editorial-media__media forest-before-after" data-cinematic-media>
-          <SmartImage src={afterImage} alt={beforeAfter?.alt || copy.after} width={1200} height={800} loading="lazy" />
-          <div className="forest-before-after__before" style={{ clipPath: `inset(0 ${100 - comparePosition}% 0 0)` }}>
-            <SmartImage src={beforeImage} alt={beforeAfter?.alt || copy.before} width={1200} height={800} loading="lazy" />
+      </section>
+
+      <section className="scheme-a-project" data-cinematic-section>
+        <div className="scheme-a-frame scheme-a-section-head">
+          <div>
+            <p className="scheme-a-eyebrow">{copy.projectLabel}</p>
+            <h2>{copy.projectTitle}</h2>
           </div>
-          <span className="forest-before-after__label forest-before-after__label--before">{copy.before}</span>
-          <span className="forest-before-after__label forest-before-after__label--after">{copy.after}</span>
-          <span className="forest-before-after__handle" style={{ left: `${comparePosition}%` }} aria-hidden="true" />
+          <LocalizedLink to="/projects">
+            {copy.projectAll}
+            <ArrowUpRight aria-hidden="true" />
+          </LocalizedLink>
+        </div>
+        <LocalizedLink
+          className="scheme-a-project__media"
+          to={featuredProject ? `/projects/${featuredProject.slug}` : "/projects"}
+          aria-label={featuredProject?.title || copy.projectFallbackTitle}
+          data-cinematic-media
+        >
+          <DeferredSmartImage
+            src={projectImage}
+            alt={featuredProject?.thumbnailAlt || featuredProject?.title || copy.projectFallbackTitle}
+            width={1600}
+            height={1050}
+            sizes="100vw"
+            candidateWidths={[560, 720, 960, 1200, 1600]}
+            quality={86}
+            loading="lazy"
+          />
+        </LocalizedLink>
+        <div className="scheme-a-frame scheme-a-project__meta">
+          <div>
+            <strong>{featuredProject?.title || copy.projectFallbackTitle}</strong>
+            <span>{projectMeta}</span>
+          </div>
+          <p>{featuredProject?.description || copy.projectDescription}</p>
+        </div>
+      </section>
+
+      <section className="scheme-a-services" data-cinematic-section>
+        <div className="scheme-a-frame scheme-a-services__layout">
+          <header>
+            <p className="scheme-a-eyebrow">{copy.servicesLabel}</p>
+            <h2>{copy.servicesTitle}</h2>
+          </header>
+          <ol>
+            {resolvedServices.map((service) => (
+              <li key={`${service.path}-${service.title}`}>
+                <LocalizedLink to={service.path}>
+                  <span>{service.title}</span>
+                  <small>{service.summary}</small>
+                  <ArrowUpRight aria-hidden="true" />
+                </LocalizedLink>
+              </li>
+            ))}
+          </ol>
+        </div>
+      </section>
+
+      <section className="scheme-a-materials" data-cinematic-section>
+        <div className="scheme-a-frame scheme-a-materials__layout">
+          <figure className="scheme-a-materials__media" data-cinematic-media>
+            <DeferredSmartImage
+              src={materialImage}
+              alt={copy.materialTitle}
+              width={1280}
+              height={960}
+              sizes="(max-width: 767px) calc(100vw - 44px), 52vw"
+              candidateWidths={[560, 720, 960, 1280]}
+              quality={86}
+              loading="lazy"
+            />
+          </figure>
+          <div className="scheme-a-materials__copy">
+            <h2>{copy.materialTitle}</h2>
+            <p>{copy.materialBody}</p>
+            <LocalizedLink to="/materials">
+              {copy.materialCta}
+              <ArrowRight aria-hidden="true" />
+            </LocalizedLink>
+          </div>
+        </div>
+      </section>
+
+      <section className="scheme-a-before" data-cinematic-section>
+        <div className="scheme-a-frame scheme-a-section-head scheme-a-section-head--compact">
+          <div>
+            <p className="scheme-a-eyebrow">{copy.beforeLabel}</p>
+            <h2>{copy.beforeTitle}</h2>
+          </div>
+        </div>
+        <div
+          className="scheme-a-compare"
+          style={{ "--scheme-compare": `${comparePosition}%` } as CSSProperties}
+          data-cinematic-media
+        >
+          <SmartImage src={afterImage} alt={beforeAfter?.alt || copy.after} width={1600} height={1000} sizes="100vw" candidateWidths={[360, 560, 720, 900, 1200, 1600]} quality={86} loading="lazy" />
+          <div className="scheme-a-compare__before" aria-hidden="true">
+            <SmartImage src={beforeImage} alt="" width={1600} height={1000} sizes="100vw" candidateWidths={[360, 560, 720, 900, 1200, 1600]} quality={86} loading="lazy" />
+          </div>
+          <span className="scheme-a-compare__tag scheme-a-compare__tag--before">{copy.before}</span>
+          <span className="scheme-a-compare__tag scheme-a-compare__tag--after">{copy.after}</span>
+          <span className="scheme-a-compare__line" aria-hidden="true" />
           <input
             type="range"
-            min="0"
-            max="100"
+            min="8"
+            max="92"
             value={comparePosition}
             aria-label={copy.compareLabel}
             onChange={(event) => setComparePosition(Number(event.target.value))}
           />
         </div>
-        <div className="forest-editorial-media__details forest-transformation__details">
-          <p>{copy.compareBody}</p>
-          <LocalizedLink className="forest-text-link" to="/before-after">
-            {copy.compareAll}
-            <ArrowRight aria-hidden="true" />
+        <p className="scheme-a-frame scheme-a-before__note">{copy.beforeNote}</p>
+      </section>
+
+      <section className="scheme-a-contact" data-cinematic-section>
+        <div className="scheme-a-frame">
+          <p className="scheme-a-eyebrow">{copy.contactLabel}</p>
+          <h2>{copy.contactTitle}</h2>
+          <LocalizedLink className="scheme-a-button scheme-a-button--gold" to="/contact">
+            {copy.contactCta}
+            <ArrowUpRight aria-hidden="true" />
           </LocalizedLink>
+          <div className="scheme-a-contact__regions">
+            {copy.regions.map((region) => <span key={region}>{region}</span>)}
+          </div>
         </div>
       </section>
-
-      {products.length ? (
-        <section className="forest-chapter forest-chapter--band forest-products" data-cinematic-section>
-          <div className="forest-content-frame">
-            <SectionHeading title={copy.productsTitle} body={copy.productsBody} />
-            <div className="forest-product-grid">
-              {products.map((product) => (
-                <LocalizedLink key={product.slug} to={`/products/${product.slug}`} className="forest-product">
-                  <span className="forest-product__media">
-                    <DeferredSmartImage src={product.image} alt={product.alt || displayText(product.name)} width={720} height={720} loading="lazy" />
-                  </span>
-                  <span className="forest-product__copy">
-                    <small>{translateMaterialCategory(product.category, language)}</small>
-                    <strong>{displayText(product.name)}</strong>
-                    {product.referencePrice ? <em>{product.referencePrice}</em> : null}
-                    <b>{copy.productView}<ArrowRight /></b>
-                  </span>
-                </LocalizedLink>
-              ))}
-            </div>
-            <LocalizedLink className="forest-button forest-button--light forest-chapter-action" to="/products">
-              {copy.productsAll}<ArrowRight />
-            </LocalizedLink>
-          </div>
-        </section>
-      ) : null}
-
-      <section className="forest-promo-band" aria-label={ariaCopy.currentOffers}>
-        {copy.offers.map((item) => <LocalizedLink key={item} to="/promotions"><BadgePercent /><span>{item}</span></LocalizedLink>)}
-      </section>
-
-      {processSteps.length ? (
-        <section className="forest-chapter forest-process" data-cinematic-section>
-          <SectionHeading title={copy.processTitle} />
-          <div className="forest-browser forest-browser--process">
-            <div className="forest-browser__controls">
-              <div className="forest-browser__list" role="tablist" aria-label={copy.processTitle}>
-                {processSteps.map((step, index) => (
-                  <button
-                    key={step.id || `${step.step_number}-${step.title}`}
-                    id={`home-process-tab-${index}`}
-                    type="button"
-                    role="tab"
-                    aria-selected={activeProcess === index}
-                    aria-controls="home-process-panel"
-                    tabIndex={activeProcess === index ? 0 : -1}
-                    className={activeProcess === index ? "is-active" : ""}
-                    onClick={() => setActiveProcess(index)}
-                    onKeyDown={(event) => handleTabKey(event, index, processSteps.length, setActiveProcess)}
-                  >
-                    <span><b>{String(step.step_number || index + 1).padStart(2, "0")}</b>{step.title}</span>
-                    <small>{step.description}</small>
-                  </button>
-                ))}
-              </div>
-              <div className="forest-browser__footer">
-                <p>{copy.processBody}</p>
-              </div>
-            </div>
-            {activeProcessItem ? (
-              <figure
-                id="home-process-panel"
-                className="forest-browser__stage forest-process-stage"
-                data-cinematic-media
-                role="tabpanel"
-                aria-labelledby={`home-process-tab-${activeProcess}`}
-              >
-                <SmartImage src={projects[activeProcess % Math.max(projects.length, 1)]?.thumbnail || introImage} alt={activeProcessItem.title} width={1200} height={900} loading="lazy" />
-                <figcaption><span>{String(activeProcessItem.step_number || activeProcess + 1).padStart(2, "0")}</span><h3>{activeProcessItem.title}</h3><p>{activeProcessItem.description}</p></figcaption>
-              </figure>
-            ) : null}
-          </div>
-        </section>
-      ) : null}
-
-      {whyItems.length ? (
-        <section className="forest-chapter forest-why">
-          <SectionHeading title={content?.whyChooseUsSection?.title || copy.whyTitle} body={content?.whyChooseUsSection?.content} />
-          <div className="forest-feature-list">
-            {whyItems.map((item, index) => <article key={`${item.title}-${index}`}><Check /><h3>{item.title}</h3><p>{item.description}</p></article>)}
-          </div>
-        </section>
-      ) : null}
-
-      {content?.brandPartnersEnabled && content.brandPartners.length ? (
-        <section className="forest-brand-rail" aria-labelledby="forest-brands-title">
-          <h2 id="forest-brands-title">{copy.brandsTitle}</h2>
-          <div>{content.brandPartners.map((brand) => <span key={brand.id}><SmartImage src={brand.logo_url} alt={brand.name} width={160} height={80} loading="lazy" /><small>{brand.name}</small></span>)}</div>
-        </section>
-      ) : null}
-
-      {content?.testimonials.length ? (
-        <section className="forest-chapter forest-testimonials">
-          <SectionHeading title={copy.testimonialsTitle} />
-          <div>
-            {content.testimonials.slice(0, 3).map((item) => <blockquote key={item.id}><p>“{item.text}”</p><footer><strong>{item.client}</strong><span>{[item.type, item.location].filter(Boolean).join(" · ")}</span></footer></blockquote>)}
-          </div>
-        </section>
-      ) : null}
-
-      {faqs.length ? (
-        <section className="forest-chapter forest-faq" data-cinematic-section>
-          <SectionHeading title={copy.faqTitle} />
-          <div className="forest-faq-list">
-            {faqs.map((faq, index) => (
-              <article key={faq.id}>
-                <h3><button type="button" aria-expanded={openFaq === index} onClick={() => setOpenFaq(openFaq === index ? -1 : index)}><span>{faq.question}</span><b aria-hidden="true">{openFaq === index ? "−" : "+"}</b></button></h3>
-                {openFaq === index ? <p>{faq.answer}</p> : null}
-              </article>
-            ))}
-          </div>
-          <LocalizedLink className="forest-text-link forest-chapter-action" to="/faq">{copy.faqAll}<ArrowRight /></LocalizedLink>
-        </section>
-      ) : null}
     </div>
   );
 };

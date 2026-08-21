@@ -72,7 +72,7 @@ const HeroBanner = ({
             width={1920}
             height={800}
             sizes="100vw"
-            quality={76}
+            quality={86}
           />
         </picture>
         <div className="page-hero__overlay media-readable-overlay" aria-hidden="true" />

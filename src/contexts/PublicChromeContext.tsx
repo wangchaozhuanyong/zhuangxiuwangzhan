@@ -179,7 +179,9 @@ export function PublicChromeProvider({
 
     document.documentElement.dataset.publicTheme = "dark";
     document.documentElement.dataset.theme = "dark";
-    document.documentElement.style.colorScheme = "dark";
+    // The public selector remains stable for legacy component compatibility,
+    // while Scheme A itself uses light form controls and a warm paper canvas.
+    document.documentElement.style.colorScheme = "light";
 
     return () => {
       delete document.documentElement.dataset.publicTheme;

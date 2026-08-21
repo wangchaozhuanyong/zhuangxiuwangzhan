@@ -1,318 +1,59 @@
-﻿import { useMemo } from "react";
+import { useMemo } from "react";
 import { useParams } from "react-router-dom";
 import Link from "@/components/LocalizedLink";
-import { Button } from "@/components/ui/button";
-import ImmersiveHero from "@/components/ImmersiveHero";
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
-import { ArrowRight, ArrowLeft, CheckCircle } from "lucide-react";
-import WhatsAppIcon from "@/components/WhatsAppIcon";
-import { servicesData } from "@/data/services";
-import { usePublishedServiceBySlug, usePublishedServices, usePublishedSitePage } from "@/hooks/usePublishedContent";
-import Reveal from "@/components/Reveal";
-import SmartImage from "@/components/SmartImage";
 import PageMeta from "@/components/PageMeta";
-import PublicLoadingState from "@/components/blocks/PublicLoadingState";
-import CTABanner from "@/components/blocks/CTABanner";
-import { JsonLdService, JsonLdBreadcrumb, JsonLdFAQ } from "@/components/JsonLd";
+import { JsonLdBreadcrumb, JsonLdFAQ, JsonLdService } from "@/components/JsonLd";
+import { SchemeAContentState, SchemeAFacts, SchemeAFaqList, SchemeAListingGrid, SchemeANumberList, SchemeARouteHero, SchemeASection, type SchemeAListingItem } from "@/components/scheme-a/SchemeARoutePrimitives";
+import { servicesData } from "@/data/services";
+import { usePublishedServiceBySlug, usePublishedServices } from "@/hooks/usePublishedContent";
 import { useLanguage } from "@/i18n/LanguageContext";
-import { useSiteSettings } from "@/hooks/useSiteSettings";
-import { isHtmlText, stripHtml } from "@/lib/text";
-import { sanitizeHtml } from "@/lib/sanitizeHtml";
 import { translateDisplayText } from "@/i18n/displayLabels";
-import { trackCtaClick } from "@/lib/analytics";
-import { buildQuotePath, quoteProjectTypeFromServiceSlug } from "@/lib/quoteContext";
 import { serviceDetailPageText } from "@/i18n/serviceDetailPageText";
+import { stripHtml } from "@/lib/text";
 
-
-
-
-
-const ServiceDetail = () => {
+export default function ServiceDetail() {
   const { slug } = useParams<{ slug: string }>();
   const { language } = useLanguage();
-  const settings = useSiteSettings();
-  const t = serviceDetailPageText[language];
-  const { data: pageContent } = usePublishedSitePage(language, "service_detail");
-  const { data: cmsService, isLoading: isServiceLoading } = usePublishedServiceBySlug(slug, language);
-  const displayText = (value: string) => translateDisplayText(value, language);
-  const initialServices = language === "zh"
-    ? servicesData.map((service) => ({
-        ...service,
-        title: service.titleZh || displayText(service.title),
-        summary: service.summaryZh || displayText(service.summary),
-        description: service.descriptionZh || displayText(service.description),
-        suitableFor: service.suitableForZh || service.suitableFor.map((item) => displayText(item)),
-        commonProjects: service.commonProjectsZh || service.commonProjects.map((item) => displayText(item)),
-        processSteps: service.processStepsZh || service.processSteps.map((step) => ({ title: displayText(step.title), desc: displayText(step.desc) })),
-        items: service.itemsZh || service.items.map((item) => displayText(item)),
-        faqs: service.faqsZh || service.faqs.map((faq) => ({ q: displayText(faq.q), a: displayText(faq.a) })),
-        seoTitle: service.seoTitleZh || service.seoTitle,
-        seoDescription: service.seoDescriptionZh || service.seoDescription,
-      }))
-    : servicesData;
+  const copy = serviceDetailPageText[language];
+  const { data: cmsService, isLoading } = usePublishedServiceBySlug(slug, language);
   const { data: cmsServices } = usePublishedServices(language);
-  const services = useMemo(
-    () => (cmsServices?.length ? cmsServices : initialServices),
-    [cmsServices, initialServices],
-  );
-
+  const fallbackServices = useMemo(() => servicesData.map((service) => language === "zh" ? ({ ...service, title: service.titleZh || translateDisplayText(service.title, language), summary: service.summaryZh || translateDisplayText(service.summary, language), description: service.descriptionZh || translateDisplayText(service.description, language), suitableFor: service.suitableForZh || service.suitableFor.map((item) => translateDisplayText(item, language)), commonProjects: service.commonProjectsZh || service.commonProjects.map((item) => translateDisplayText(item, language)), processSteps: service.processStepsZh || service.processSteps, items: service.itemsZh || service.items, faqs: service.faqsZh || service.faqs, seoTitle: service.seoTitleZh || service.seoTitle, seoDescription: service.seoDescriptionZh || service.seoDescription }) : service), [language]);
+  const services = cmsServices?.length ? cmsServices : fallbackServices;
   const service = cmsService || services.find((item) => item.slug === slug);
 
-  if (isServiceLoading && !cmsService && !service) {
-    return (
-      <PublicLoadingState
-        label="FLASH CAST"
-        title={t.loadingTitle}
-        description={t.loadingDescription}
-      />
-    );
-  }
+  if (isLoading && !service) return <main className="fc-route-page"><SchemeAContentState>{copy.loadingDescription}</SchemeAContentState></main>;
+  if (!service) return <main className="fc-route-page"><PageMeta title={copy.notFound} description={copy.notFoundDescription} canonicalPath="/services" noIndex /><SchemeAContentState action={<Link to="/services">{copy.viewAll}</Link>}>{copy.notFound}</SchemeAContentState></main>;
 
-  if (!service) {
-    return (
-      <main className="forest-service-detail-page pt-site-header section-padding text-center">
-        <PageMeta
-          title={t.notFound}
-          description={t.notFoundDescription}
-          canonicalPath="/services"
-          noIndex
-        />
-        <h1 className="font-display text-3xl font-bold mb-4">{t.notFound}</h1>
-        <Button asChild><Link to="/services">{t.viewAll}</Link></Button>
-      </main>
-    );
-  }
-
-  const heroImage = service.image;
-  const serviceTitle = displayText(service.title);
-  const serviceSummary = displayText(service.summary);
-  const rawServiceDescription = service.description || "";
-  const serviceDescription = isHtmlText(rawServiceDescription) ? rawServiceDescription : displayText(rawServiceDescription);
-  const serviceSuitableFor = service.suitableFor.map((item: string) => displayText(item));
-  const serviceItems = service.items.map((item: string) => displayText(item));
-  const serviceCommonProjects = service.commonProjects.map((item: string) => displayText(item));
-  const serviceProcessSteps = service.processSteps.map((step) => ({
-    title: displayText(step.title),
-    desc: displayText(step.desc),
-  })).filter((step) => step.title || step.desc);
-  const serviceFaqs = service.faqs.map((faq) => ({
-    q: displayText(faq.q),
-    a: displayText(faq.a),
-  })).filter((faq) => faq.q && faq.a);
-  const quotePath = buildQuotePath({
-    source: "service",
-    title: serviceTitle,
-    projectType: quoteProjectTypeFromServiceSlug(service.slug, serviceTitle),
-  });
+  const display = (value: string) => stripHtml(translateDisplayText(value || "", language));
+  const title = display(service.title);
+  const summary = display(service.summary);
+  const description = display(service.description || service.summary);
+  const suitable = service.suitableFor.map((item: string) => display(item));
+  const offered = service.items.map((item: string) => display(item));
+  const process = service.processSteps.map((step) => ({ title: display(step.title), description: display(step.desc) })).filter((step) => step.title || step.description);
+  const faqs = service.faqs.map((faq) => ({ question: display(faq.q), answer: display(faq.a) })).filter((faq) => faq.question && faq.answer);
+  const related = services.filter((item) => item.slug !== service.slug).slice(0, 3);
+  const relatedItems: SchemeAListingItem[] = related.map((item) => ({ id: String(item.id || item.slug), title: display(item.title), description: display(item.summary), image: item.image, imageAlt: display(item.title), href: `/services/${item.slug}` }));
 
   return (
-    <main className="forest-service-detail-page pt-site-header">
-      <PageMeta
-        title={service.seoTitle || t.metaTitleFallback(serviceTitle, t.metaSuffix)}
-        description={service.seoDescription || stripHtml(serviceSummary)}
-        keywords={t.metaKeywords(serviceTitle)}
-        canonicalPath={`/services/${service.slug}`}
-      />
-      <JsonLdService name={serviceTitle} description={serviceSummary} />
-      <JsonLdBreadcrumb items={[{ name: t.breadcrumbHome, url: "/" }, { name: t.breadcrumbServices, url: "/services" }, { name: serviceTitle, url: `/services/${service.slug}` }]} />
-      {serviceFaqs.length > 0 && <JsonLdFAQ faqs={serviceFaqs.map((faq) => ({ question: faq.q, answer: faq.a }))} />}
-
-      <ImmersiveHero className="page-hero page-hero--detail">
-        <div className="page-hero__media page-hero-media hero-media-mask">
-          <SmartImage src={heroImage} alt={serviceTitle} className="page-hero__image h-full w-full object-cover" width={1920} height={800} loading="eager" fetchPriority="high" sizes="100vw" quality={76} />
-          <div className="page-hero__overlay absolute inset-0 media-readable-overlay" aria-hidden="true" />
-        </div>
-        <div className="page-hero__content site-container">
-          <Link to="/services" className="page-hero__back mb-6 inline-flex items-center gap-1 text-sm text-on-media-muted transition-colors hover:text-gold">
-            <ArrowLeft className="h-3.5 w-3.5" /> {t.allServices}
-          </Link>
-          <p className="page-hero__label mb-4 font-body text-[11px] font-semibold uppercase tracking-[0.28em] text-gold">{t.services}</p>
-          <h1 className="page-hero__title heading-safe mb-4 max-w-2xl text-3xl font-bold text-on-media md:text-5xl">{serviceTitle}</h1>
-          <p className="page-hero__description prose-safe mb-8 max-w-2xl text-base text-on-media-muted md:text-lg">{serviceSummary}</p>
-          <div className="flex flex-col gap-3 sm:flex-row">
-            <Link
-              to={quotePath}
-              className="btn-on-dark-primary min-h-12 justify-center px-8 sm:w-auto"
-              onClick={() => trackCtaClick("quote", "service_detail_hero", { destination: quotePath })}
-            >
-              {t.getQuote} <ArrowRight className="h-4 w-4" />
-            </Link>
-            <a
-              href={settings.whatsapp_url()}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="btn-on-dark-secondary min-h-12 justify-center px-8 sm:w-auto"
-              onClick={() => trackCtaClick("whatsapp", "service_detail_hero", { destination: "whatsapp" })}
-            >
-              <WhatsAppIcon className="mr-2 h-[18px] w-[18px] text-whatsapp" /> {t.whatsapp}
-            </a>
-          </div>
-          <div className="page-hero__meta page-hero__meta--trust" aria-label={t.trustSignalsLabel}>
-            {t.trustSignals.map((signal) => (
-              <span key={signal.label}>
-                <CheckCircle className="h-3.5 w-3.5" aria-hidden="true" />
-                <strong>{signal.label}</strong>
-                <span className="page-hero__meta-text">{signal.text}</span>
-              </span>
-            ))}
-          </div>
-        </div>
-      </ImmersiveHero>
-
-      <section className="section-padding bg-background">
-        <div className="container-narrow">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
-            <Reveal direction="left">
-              <div>
-                <div className="subpage-local-heading--balanced">
-                  <div className="accent-line mb-4" />
-                  <h2 className="font-display text-2xl md:text-3xl font-bold">{t.overview}</h2>
-                </div>
-                {isHtmlText(serviceDescription) ? (
-                  <div className="prose prose-neutral max-w-none text-muted-foreground mb-6" dangerouslySetInnerHTML={{ __html: sanitizeHtml(serviceDescription) }} />
-                ) : (
-                  <p className="text-muted-foreground leading-relaxed mb-6">{serviceDescription}</p>
-                )}
-                <h3 className="font-semibold mb-3">{t.suitableFor}</h3>
-                <ul className="subpage-copy-list subpage-copy-list--two mb-6">
-                  {serviceSuitableFor.map((item: string) => (
-                    <li key={item} className="subpage-copy-item">
-                      <span className="subpage-copy-icon">
-                        <CheckCircle className="h-3.5 w-3.5" />
-                      </span>
-                      <span className="subpage-copy-text">{item}</span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            </Reveal>
-            <Reveal direction="right" delay={150}>
-              <div>
-                <h3 className="font-semibold mb-3">{t.offer}</h3>
-                <div className="subpage-copy-list">
-                  {serviceItems.map((item: string) => (
-                    <div key={item} className="subpage-copy-item subpage-copy-item--soft">
-                      <span className="subpage-copy-dot" />
-                      <span className="subpage-copy-text">{item}</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </Reveal>
-          </div>
-        </div>
-      </section>
-
-      <section className="section-padding bg-muted">
-        <div className="container-narrow">
-          <Reveal>
-            <div className="subpage-local-heading">
-              <div className="accent-line mb-4" />
-              <h2 className="font-display text-2xl font-bold">{t.commonProjects}</h2>
-            </div>
-          </Reveal>
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3">
-            {serviceCommonProjects.map((project: string, index: number) => (
-              <Reveal key={project} delay={index * 55} direction="none">
-                <div className="text-limit-2 rounded-card border border-border bg-background p-4 text-center text-sm font-medium">
-                  {project}
-                </div>
-              </Reveal>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {serviceProcessSteps.length > 0 && (
-        <section className="section-padding bg-background">
-          <div className="container-narrow max-w-3xl">
-            <Reveal>
-              <h2 className="font-display text-2xl md:text-3xl font-bold mb-8 text-center">{t.process}</h2>
-            </Reveal>
-            <div className="space-y-6">
-              {serviceProcessSteps.map((step, index: number) => (
-                <Reveal key={`${step.title}-${index}`} delay={index * 75}>
-                  <div className="flex gap-4">
-                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-accent/25 bg-accent/15 text-sm font-bold text-gold">
-                      {index + 1}
-                    </div>
-                    <div className="pt-1">
-                      <h3 className="font-semibold mb-1">{step.title}</h3>
-                      <p className="text-muted-foreground text-sm">{step.desc}</p>
-                    </div>
-                  </div>
-                </Reveal>
-              ))}
-            </div>
-          </div>
-        </section>
-      )}
-
-      {serviceFaqs.length > 0 && (
-        <section className="section-padding bg-muted">
-          <div className="container-narrow max-w-3xl">
-            <Reveal>
-              <h2 className="font-display text-2xl font-bold mb-6 text-center">{t.faq}</h2>
-            </Reveal>
-            <Reveal delay={100}>
-              <Accordion type="single" collapsible className="space-y-2">
-                {serviceFaqs.map((faq, index: number) => (
-                  <AccordionItem key={`${faq.q}-${index}`} value={`faq-${index}`} className="bg-background rounded-card border border-border px-4">
-                    <AccordionTrigger className="text-left font-medium text-sm md:text-base">{faq.q}</AccordionTrigger>
-                    <AccordionContent className="text-muted-foreground text-sm">{faq.a}</AccordionContent>
-                  </AccordionItem>
-                ))}
-              </Accordion>
-            </Reveal>
-          </div>
-        </section>
-      )}
-
-      <section className="section-padding bg-background">
-        <div className="container-narrow">
-          <Reveal>
-            <h2 className="font-display text-2xl font-bold mb-6 text-center">{t.relatedServices}</h2>
-          </Reveal>
-          <div className="card-grid grid-cols-2 gap-4 md:grid-cols-3">
-            {services
-              .filter((item) => item.slug !== service.slug)
-              .slice(0, 3)
-              .map((item, index) => (
-                <Reveal key={item.slug} delay={index * 70} direction="none">
-                  <Link
-                    to={`/services/${item.slug}`}
-                    className="card-equal group rounded-card border border-border bg-card p-5 text-center transition-colors hover:border-accent/30 hover-lift"
-                  >
-                    <h3 className="text-limit-2 font-display font-semibold text-sm mb-1 group-hover:text-accent transition-colors">
-                      {displayText(item.title)}
-                    </h3>
-                    <p className="text-limit-2 text-muted-foreground text-xs leading-relaxed">{displayText(item.summary)}</p>
-                  </Link>
-                </Reveal>
-              ))}
-          </div>
-          <Reveal delay={240}>
-            <div className="flex flex-wrap justify-center gap-3 mt-6 text-sm">
-              <Link to="/projects" className="text-accent hover:underline">{t.viewProjects}</Link>
-              <span className="text-border">|</span>
-              <Link to="/materials" className="text-accent hover:underline">{t.materialLibrary}</Link>
-              <span className="text-border">|</span>
-              <Link to="/faq" className="text-accent hover:underline">{t.faqLink}</Link>
-            </div>
-          </Reveal>
-        </div>
-      </section>
-
-      <CTABanner
-        title={t.interested(serviceTitle)}
-        description={pageContent?.cta_description || t.ctaText}
-        quoteLabel={t.freeQuote}
-        quotePath={quotePath}
-        whatsappLabel={t.whatsapp}
-        whatsappSource="Service Detail CTA"
-      />
+    <main className="fc-route-page">
+      <PageMeta title={service.seoTitle || copy.metaTitleFallback(title, copy.metaSuffix)} description={service.seoDescription || summary} keywords={copy.metaKeywords(title)} canonicalPath={`/services/${service.slug}`} />
+      <JsonLdService name={title} description={summary} />
+      <JsonLdBreadcrumb items={[{ name: copy.breadcrumbHome, url: "/" }, { name: copy.breadcrumbServices, url: "/services" }, { name: title, url: `/services/${service.slug}` }]} />
+      {faqs.length ? <JsonLdFAQ faqs={faqs} /> : null}
+      <SchemeARouteHero kind="detail" image={service.image} imageAlt={title} label={copy.services} title={title} description={summary} />
+      <SchemeAFacts items={[
+        { label: language === "zh" ? "服务地区" : "Service area", value: "Kuala Lumpur / Selangor" },
+        { label: language === "zh" ? "咨询方式" : "Consultation", value: language === "zh" ? "现场测量" : "Site review" },
+        { label: language === "zh" ? "规划依据" : "Planning basis", value: language === "zh" ? "实际工程范围" : "Confirmed scope" },
+        { label: language === "zh" ? "项目衔接" : "Delivery", value: language === "zh" ? "设计与施工" : "Design and build" },
+      ]} />
+      <SchemeASection title={copy.overview} description={description}>
+        <SchemeANumberList items={[...suitable.map((item) => ({ title: item })), ...offered.map((item) => ({ title: item }))]} />
+      </SchemeASection>
+      {process.length ? <SchemeASection title={copy.process} description={language === "zh" ? "每一步解决一个明确问题，让设计与现场执行保持一致。" : "Each step resolves one clear decision from planning to delivery."}><SchemeANumberList items={process} /></SchemeASection> : null}
+      {faqs.length ? <SchemeASection title={copy.faq}><SchemeAFaqList items={faqs} /></SchemeASection> : null}
+      <SchemeASection title={copy.relatedServices}><SchemeAListingGrid items={relatedItems} actionLabel={copy.viewProjects} /></SchemeASection>
     </main>
   );
-};
-
-export default ServiceDetail;
+}

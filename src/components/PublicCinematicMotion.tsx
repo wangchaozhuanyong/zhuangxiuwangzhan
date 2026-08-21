@@ -14,6 +14,7 @@ const PublicCinematicMotion = () => {
     const animatedHeroes = new WeakSet<HTMLElement>();
     const animatedSections = new WeakSet<HTMLElement>();
     const animatedMedia = new WeakSet<HTMLElement>();
+    const ownedTriggers = new Set<ScrollTrigger>();
     let setupFrame = 0;
     let refreshTimer = 0;
 
@@ -23,49 +24,67 @@ const PublicCinematicMotion = () => {
     };
 
     const scan = contextSafe(() => {
-      const root = document.getElementById("main-content");
+      const root = document.querySelector<HTMLElement>(".scheme-a-public-shell");
       if (!root) return;
 
       const heroMedia = root.querySelector<HTMLElement>(
-        ":is(.forest-home-hero__media, .page-hero__media, .product-detail-opening__media)",
+        ":is(.scheme-a-hero__media, .fc-route-hero-media, .forest-home-hero__media, .page-hero__media, .product-detail-opening__media)",
       );
       const hero = heroMedia?.closest<HTMLElement>(
-        ":is(.forest-home-hero, .page-hero, .product-detail-opening)",
+        ":is(.scheme-a-hero, .fc-route-hero, .forest-home-hero, .page-hero, .product-detail-opening)",
       );
 
       if (hero && !animatedHeroes.has(hero)) {
         animatedHeroes.add(hero);
         const heroImage = heroMedia?.querySelector<HTMLElement>("img");
         const heroCopy = hero.querySelectorAll<HTMLElement>(
-          ":is(.forest-kicker, .page-hero__label, .new-client-page__eyebrow, h1, .forest-home-hero__copy > p, .page-hero__description, .page-hero__meta, .page-hero__actions, .forest-home-hero__actions, .product-detail-opening__description, .product-detail-actions)",
+          ":is(.scheme-a-eyebrow, .forest-kicker, .page-hero__label, .new-client-page__eyebrow, h1, .scheme-a-hero__lead, .forest-home-hero__copy > p, .page-hero__description, .page-hero__meta, .page-hero__actions, .scheme-a-actions, .forest-home-hero__actions, .product-detail-opening__description, .product-detail-actions)",
         );
         const entrance = gsap.timeline({ defaults: { ease: "power3.out" } });
 
+        entrance.fromTo(heroMedia, { opacity: 0.82 }, { opacity: 1, duration: 0.82 }, 0);
         if (heroImage) {
-          entrance.fromTo(heroImage, { scale: 1.025, autoAlpha: 0.78 }, { scale: 1, autoAlpha: 1, duration: 0.82 }, 0);
+          entrance.fromTo(
+            heroImage,
+            { scale: 1.055 },
+            { scale: 1, duration: 0.88 },
+            0,
+          );
         }
         if (heroCopy.length) {
-          entrance.fromTo(heroCopy, { y: 20 }, { y: 0, duration: 0.58, stagger: 0.045 }, 0.1);
+          entrance.fromTo(
+            heroCopy,
+            { y: 28, autoAlpha: 0 },
+            { y: 0, autoAlpha: 1, duration: 0.68, stagger: 0.065 },
+            0.08,
+          );
         }
-        entrance.fromTo(".site-header__inner", { y: -7 }, { y: 0, duration: 0.4 }, 0.38);
+        entrance.fromTo(
+          ".scheme-a-chrome__bar",
+          { y: -10, autoAlpha: 0 },
+          { y: 0, autoAlpha: 1, duration: 0.48 },
+          0.42,
+        );
       }
 
       const sections = root.querySelectorAll<HTMLElement>(
-        "[data-cinematic-section], .forest-home > section:not(.forest-trust-rail):not(.forest-promo-band), main > section:not(.page-hero):not(.product-detail-opening)",
+        "[data-cinematic-section], .scheme-a-home > section:not(.scheme-a-hero), .fc-route-page > section:not(.fc-route-hero), .forest-home > section:not(.forest-trust-rail):not(.forest-promo-band)",
       );
       sections.forEach((section) => {
         if (animatedSections.has(section) || section.closest("[aria-hidden='true']")) return;
         animatedSections.add(section);
-        gsap.fromTo(
+        const sectionTween = gsap.fromTo(
           section,
-          { y: 18 },
+          { y: 34, opacity: 0.78 },
           {
             y: 0,
-            duration: 0.58,
-            ease: "power2.out",
-            scrollTrigger: { trigger: section, start: "top 90%", once: true },
+            opacity: 1,
+            duration: 0.76,
+            ease: "power3.out",
+            scrollTrigger: { trigger: section, start: "top 88%", once: true },
           },
         );
+        if (sectionTween.scrollTrigger) ownedTriggers.add(sectionTween.scrollTrigger);
       });
 
       if (window.matchMedia("(min-width: 1024px)").matches) {
@@ -74,9 +93,9 @@ const PublicCinematicMotion = () => {
           const image = media.querySelector<HTMLElement>("img");
           if (!image) return;
           animatedMedia.add(media);
-          gsap.fromTo(
+          const mediaTween = gsap.fromTo(
             image,
-            { scale: 1.018 },
+            { scale: 1.035 },
             {
               scale: 1,
               ease: "none",
@@ -88,6 +107,7 @@ const PublicCinematicMotion = () => {
               },
             },
           );
+          if (mediaTween.scrollTrigger) ownedTriggers.add(mediaTween.scrollTrigger);
         });
       }
 
@@ -99,19 +119,25 @@ const PublicCinematicMotion = () => {
       setupFrame = window.requestAnimationFrame(scan);
     };
 
-    const root = document.getElementById("main-content");
+    const root = document.querySelector<HTMLElement>(".scheme-a-public-shell");
     const observer = root ? new MutationObserver(scheduleScan) : null;
     observer?.observe(root as HTMLElement, { childList: true, subtree: true });
     window.addEventListener("load", scheduleScan, { once: true });
+    window.addEventListener("pageshow", scheduleScan);
     window.addEventListener("resize", scheduleScan);
+    root?.addEventListener("load", scheduleScan, true);
+    document.fonts?.ready.then(scheduleScan).catch(() => undefined);
     scheduleScan();
 
     return () => {
       window.cancelAnimationFrame(setupFrame);
       window.clearTimeout(refreshTimer);
       observer?.disconnect();
+      ownedTriggers.forEach((trigger) => trigger.kill());
       window.removeEventListener("load", scheduleScan);
+      window.removeEventListener("pageshow", scheduleScan);
       window.removeEventListener("resize", scheduleScan);
+      root?.removeEventListener("load", scheduleScan, true);
     };
   }, { dependencies: [location.pathname], revertOnUpdate: true });
 

@@ -14,10 +14,6 @@ html[data-public-theme] {
     --forest-shadow: 0 28px 64px hsl(158 34% 2% / 0.2);
 }
 
-html[data-public-theme] {
-    scroll-behavior: smooth;
-}
-
 html[data-public-theme] body {
     overflow-x: clip;
     background: hsl(var(--background));

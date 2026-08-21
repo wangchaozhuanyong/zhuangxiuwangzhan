@@ -60,8 +60,9 @@ const immersiveHeaderPaths = Array.from(new Set([...publicPaths, ...detailImageF
 
 const viewports = [
   { name: "mobile-320", width: 320, height: 720 },
-  { name: "mobile-360", width: 360, height: 800 },
+  { name: "mobile-375", width: 375, height: 812 },
   { name: "mobile-390", width: 390, height: 844 },
+  { name: "mobile-430", width: 430, height: 932 },
   { name: "tablet", width: 768, height: 1024 },
   { name: "small-desktop", width: 1024, height: 900 },
   { name: "desktop", width: 1440, height: 1000 },
@@ -103,8 +104,10 @@ test.describe("public responsive layout", () => {
       await page.setViewportSize(viewport);
       await page.goto("/zh", { waitUntil: "domcontentloaded" });
       await page.waitForLoadState("load");
-      await expect(page.locator(".forest-home-hero")).toBeVisible();
-      await expect(page.locator(".forest-home > .forest-chapter").first()).toBeVisible();
+      await expect(page.locator(".scheme-a-hero")).toBeVisible();
+      await page.locator(".scheme-a-principle").scrollIntoViewIfNeeded();
+      await page.waitForTimeout(500);
+      await expect(page.locator(".scheme-a-principle")).toBeVisible();
       await expect(page.locator(".site-header__nav-link--active")).toHaveCSS("box-shadow", "none");
 
       const homeMetrics = await page.evaluate(() => {
@@ -127,8 +130,8 @@ test.describe("public responsive layout", () => {
         return {
           viewportWidth: document.documentElement.clientWidth,
           headerInner: measure(".site-header__inner"),
-          hero: measure(".forest-home-hero"),
-          chapter: measure(".forest-home > .forest-chapter"),
+          hero: measure(".scheme-a-hero"),
+          chapter: measure(".scheme-a-principle"),
           activeLink: {
             borderLeft: Number.parseFloat(getComputedStyle(activeLink).borderLeftWidth),
             borderRight: Number.parseFloat(getComputedStyle(activeLink).borderRightWidth),
@@ -152,11 +155,11 @@ test.describe("public responsive layout", () => {
       await page.goto("/zh/projects", { waitUntil: "domcontentloaded" });
       await page.waitForLoadState("load");
       await expect(page.locator(".page-hero")).toBeVisible();
-      await expect(page.locator(".forest-listing-chapter")).toBeVisible();
+      await expect(page.locator(".scheme-a-project-index")).toBeVisible();
 
       const projectMetrics = await page.evaluate(() => {
         const hero = document.querySelector<HTMLElement>(".page-hero");
-        const chapter = document.querySelector<HTMLElement>(".forest-listing-chapter");
+        const chapter = document.querySelector<HTMLElement>(".scheme-a-project-index");
         if (!hero || !chapter) throw new Error("Missing project page layout regions");
         const heroBox = hero.getBoundingClientRect();
         const chapterBox = chapter.getBoundingClientRect();
@@ -166,14 +169,14 @@ test.describe("public responsive layout", () => {
           heroWidth: Math.round(heroBox.width),
           chapterLeft: Math.round(chapterBox.left),
           chapterWidth: Math.round(chapterBox.width),
-          featuredCount: document.querySelectorAll(".forest-project-row--wide").length,
+          featuredCount: document.querySelectorAll(".scheme-a-project-card--featured").length,
         };
       });
 
       expect(projectMetrics.heroLeft).toBe(0);
       expect(projectMetrics.heroWidth).toBe(projectMetrics.viewportWidth);
-      expect(projectMetrics.chapterLeft).toBe(0);
-      expect(projectMetrics.chapterWidth).toBe(projectMetrics.viewportWidth);
+      expect(projectMetrics.chapterLeft).toBeGreaterThanOrEqual(0);
+      expect(projectMetrics.chapterWidth).toBeLessThanOrEqual(1440);
       expect(projectMetrics.featuredCount).toBeLessThanOrEqual(1);
     }
 
@@ -291,9 +294,9 @@ test.describe("public responsive layout", () => {
 
   test("product catalog uses four, three and two columns", async ({ page }) => {
     const scenarios = [
-      { width: 1440, height: 1000, columns: 4, minimumGap: 1 },
-      { width: 768, height: 1024, columns: 3, minimumGap: 1 },
-      { width: 390, height: 844, columns: 2, minimumGap: 1 },
+      { width: 1440, height: 1000, columns: 4, minimumGap: 1, mediaRatio: 1 },
+      { width: 768, height: 1024, columns: 3, minimumGap: 1, mediaRatio: 1 },
+      { width: 390, height: 844, columns: 2, minimumGap: 1, mediaRatio: 1 },
     ];
 
     for (const scenario of scenarios) {
@@ -322,55 +325,57 @@ test.describe("public responsive layout", () => {
 
       expect(metrics.columns).toBe(scenario.columns);
       expect(metrics.columnGap).toBeGreaterThanOrEqual(scenario.minimumGap);
-      expect(metrics.firstCardBorder).toBeGreaterThanOrEqual(1);
+      expect(metrics.firstCardBorder).toBe(0);
       expect(metrics.overflow).toBeLessThanOrEqual(1);
       expect(metrics.filterGap).toBeGreaterThanOrEqual(24);
       expect(metrics.filterGap).toBeLessThanOrEqual(40);
       expect(metrics.imageFrames.length).toBeGreaterThan(0);
       for (const frame of metrics.imageFrames) {
-        expect(Math.abs(frame.width - frame.height)).toBeLessThanOrEqual(1);
+        expect(frame.width / frame.height).toBeCloseTo(scenario.mediaRatio, 1);
       }
     }
   });
 
-  test("home product highlights match the catalog grid and square media", async ({ page }) => {
+  test("home service directory keeps an editorial reading grid without card drift", async ({ page }) => {
     const scenarios = [
-      { width: 1440, height: 1000, columns: 4 },
-      { width: 768, height: 1024, columns: 3 },
-      { width: 390, height: 844, columns: 2 },
+      { width: 1440, height: 1000, stacked: false },
+      { width: 768, height: 1024, stacked: false },
+      { width: 390, height: 844, stacked: true },
     ];
 
     for (const scenario of scenarios) {
       await page.setViewportSize({ width: scenario.width, height: scenario.height });
       await page.goto("/zh", { waitUntil: "domcontentloaded" });
       await page.waitForLoadState("load");
-      await expect(page.locator(".forest-product").first()).toBeVisible();
+      await page.locator(".scheme-a-services").scrollIntoViewIfNeeded();
+      await page.waitForTimeout(500);
+      await expect(page.locator(".scheme-a-services li").first()).toBeVisible();
 
-      const metrics = await page.locator(".forest-product-grid").evaluate((grid) => {
-        const cards = [...grid.querySelectorAll<HTMLElement>(".forest-product")].slice(0, 4);
+      const metrics = await page.locator(".scheme-a-services__layout").evaluate((grid) => {
+        const heading = grid.querySelector<HTMLElement>("header");
+        const directory = grid.querySelector<HTMLElement>("ol");
+        const links = [...grid.querySelectorAll<HTMLElement>("li > a")];
+        if (!heading || !directory) throw new Error("Missing scheme A service directory");
+        const headingBox = heading.getBoundingClientRect();
+        const directoryBox = directory.getBoundingClientRect();
         return {
-          columns: getComputedStyle(grid).gridTemplateColumns.split(" ").length,
           overflow: grid.scrollWidth - grid.clientWidth,
-          cardWidths: cards.map((card) => Math.round(card.getBoundingClientRect().width)),
-          imageFrames: cards.map((card) => {
-            const media = card.querySelector<HTMLElement>(".forest-product__media");
-            if (!media) throw new Error("Missing home product media");
-            const box = media.getBoundingClientRect();
-            return { width: Math.round(box.width), height: Math.round(box.height) };
-          }),
+          count: links.length,
+          stacked: directoryBox.top >= headingBox.bottom,
+          linkWidths: links.map((link) => Math.round(link.getBoundingClientRect().width)),
+          linkHeights: links.map((link) => Math.round(link.getBoundingClientRect().height)),
         };
       });
 
-      expect(metrics.columns).toBe(scenario.columns);
       expect(metrics.overflow).toBeLessThanOrEqual(1);
-      expect(Math.max(...metrics.cardWidths) - Math.min(...metrics.cardWidths)).toBeLessThanOrEqual(1);
-      for (const frame of metrics.imageFrames) {
-        expect(Math.abs(frame.width - frame.height)).toBeLessThanOrEqual(1);
-      }
+      expect(metrics.count).toBeGreaterThanOrEqual(4);
+      expect(metrics.stacked).toBe(scenario.stacked);
+      expect(Math.max(...metrics.linkWidths) - Math.min(...metrics.linkWidths)).toBeLessThanOrEqual(1);
+      expect(Math.min(...metrics.linkHeights)).toBeGreaterThanOrEqual(72);
     }
   });
 
-  test("home media sections keep titles above images and supporting content below", async ({ page }) => {
+  test("home media sections keep titles above images and supporting content in a separate reading region", async ({ page }) => {
     const scenarios = [
       { width: 1440, height: 1000 },
       { width: 1024, height: 1000 },
@@ -382,8 +387,9 @@ test.describe("public responsive layout", () => {
       await page.setViewportSize({ width: scenario.width, height: scenario.height });
       await page.goto("/zh", { waitUntil: "domcontentloaded" });
       await page.waitForLoadState("load");
-      await expect(page.locator(".forest-services .forest-section-heading")).toBeVisible();
-      await expect(page.locator(".forest-product").first()).toBeVisible();
+      await page.locator(".scheme-a-project").scrollIntoViewIfNeeded();
+      await page.waitForTimeout(500);
+      await expect(page.locator(".scheme-a-project .scheme-a-section-head")).toBeVisible();
 
       const flows = await page.evaluate(() => {
         const readFlow = (
@@ -403,24 +409,23 @@ test.describe("public responsive layout", () => {
           return {
             name,
             headingBeforeMedia: headingBox.bottom <= mediaBox.top,
-            mediaBeforeDetails: detailBoxes.every((detailBox) => mediaBox.bottom <= detailBox.top),
+            mediaSeparateFromDetails: detailBoxes.every((detailBox) =>
+              mediaBox.bottom <= detailBox.top || mediaBox.right <= detailBox.left,
+            ),
             positiveWidths: [headingBox, mediaBox, ...detailBoxes].every((box) => box.width > 0),
           };
         };
 
         return [
-          readFlow("company", ".forest-company-intro h2", ".forest-company-intro .forest-editorial-media__media", [".forest-company-intro .forest-editorial-media__details"]),
-          readFlow("services", ".forest-services h2", ".forest-services .forest-browser__stage", [".forest-services .forest-browser__controls"]),
-          readFlow("projects", ".forest-projects__intro h2", ".forest-project-feature__media", [".forest-project-feature__copy", ".forest-project-feature__overview"]),
-          readFlow("transformation", ".forest-transformation h2", ".forest-before-after", [".forest-transformation__details"]),
-          readFlow("process", ".forest-process > .forest-section-heading h2", ".forest-process-stage", [".forest-process .forest-browser__controls"]),
+          readFlow("project", ".scheme-a-project .scheme-a-section-head", ".scheme-a-project__media", [".scheme-a-project__meta"]),
+          readFlow("transformation", ".scheme-a-before .scheme-a-section-head", ".scheme-a-compare", [".scheme-a-before__note"]),
         ];
       });
 
-      expect(flows.map(({ name }) => name)).toEqual(["company", "services", "projects", "transformation", "process"]);
+      expect(flows.map(({ name }) => name)).toEqual(["project", "transformation"]);
       for (const flow of flows) {
         expect(flow.headingBeforeMedia, `${flow.name} title should be above media`).toBe(true);
-        expect(flow.mediaBeforeDetails, `${flow.name} supporting content should be below media`).toBe(true);
+        expect(flow.mediaSeparateFromDetails, `${flow.name} supporting content must not overlap media`).toBe(true);
         expect(flow.positiveWidths, `${flow.name} should keep stable widths`).toBe(true);
       }
     }
@@ -431,6 +436,8 @@ test.describe("public responsive layout", () => {
     await page.goto("/zh/products/spc-flooring-natural-oak", { waitUntil: "domcontentloaded" });
     await page.waitForLoadState("load");
     const headings = page.locator(".product-detail-section__heading");
+    await headings.first().scrollIntoViewIfNeeded();
+    await page.waitForTimeout(500);
     await expect(headings.first()).toBeVisible();
 
     const metrics = await headings.evaluateAll((elements) => elements.map((element) => {
@@ -454,47 +461,64 @@ test.describe("public responsive layout", () => {
     }
   });
 
-  test("mobile home hero keeps a horizontal title and a generous 5:4 image", async ({ page }) => {
+  test("mobile home hero keeps a horizontal title over a viewport-scale image", async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
     await page.goto("/zh", { waitUntil: "domcontentloaded" });
     await page.waitForLoadState("load");
-    await expect(page.locator(".forest-home-hero h1")).toBeVisible();
+    await expect(page.locator(".scheme-a-hero h1")).toBeVisible();
 
     const metrics = await page.evaluate(() => {
-      const media = document.querySelector<HTMLElement>(".forest-home-hero__media");
-      const copy = document.querySelector<HTMLElement>(".forest-home-hero__copy");
-      const title = document.querySelector<HTMLElement>(".forest-home-hero h1");
+      const media = document.querySelector<HTMLElement>(".scheme-a-hero__media");
+      const copy = document.querySelector<HTMLElement>(".scheme-a-hero__copy");
+      const title = document.querySelector<HTMLElement>(".scheme-a-hero h1");
       if (!media || !copy || !title) throw new Error("Missing mobile home hero");
       const mediaBox = media.getBoundingClientRect();
       const copyBox = copy.getBoundingClientRect();
       const titleBox = title.getBoundingClientRect();
       return {
-        mediaRatio: mediaBox.width / mediaBox.height,
+        mediaHeight: Math.round(mediaBox.height),
         copyWidth: Math.round(copyBox.width),
         titleWidth: Math.round(titleBox.width),
         titleHeight: Math.round(titleBox.height),
       };
     });
 
-    expect(metrics.mediaRatio).toBeCloseTo(5 / 4, 1);
-    expect(metrics.copyWidth).toBeGreaterThanOrEqual(374);
+    expect(metrics.mediaHeight).toBeGreaterThanOrEqual(Math.round(844 * 0.8));
+    expect(metrics.mediaHeight).toBeLessThanOrEqual(844);
+    expect(metrics.copyWidth).toBeGreaterThanOrEqual(388);
     expect(metrics.titleWidth).toBeGreaterThanOrEqual(300);
     expect(metrics.titleHeight).toBeLessThanOrEqual(200);
   });
 
-  test("shared consultation blocks omit eyebrow copy and stay centered on mobile", async ({ page }) => {
+  test("shared consultation blocks keep copy and actions aligned on mobile", async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
 
     const scenarios = [
       {
         path: "/zh/before-after",
-        prefix: "subpage-cta",
-        singleLineTitle: true,
+        root: ".scheme-a-page-cta__layout",
+        copy: ".scheme-a-page-cta__copy",
+        title: ".scheme-a-page-cta__copy h2",
+        actions: ".scheme-a-page-cta__actions",
+        button: ".scheme-a-page-cta__button",
+        singleLineTitle: false,
       },
-      { path: "/zh/materials", prefix: "subpage-cta", singleLineTitle: false },
+      {
+        path: "/zh/materials",
+        root: ".scheme-a-page-cta__layout",
+        copy: ".scheme-a-page-cta__copy",
+        title: ".scheme-a-page-cta__copy h2",
+        actions: ".scheme-a-page-cta__actions",
+        button: ".scheme-a-page-cta__button",
+        singleLineTitle: false,
+      },
       {
         path: "/zh/products/spc-flooring-natural-oak",
-        prefix: "home-footer-prelude",
+        root: ".home-footer-prelude__panel",
+        copy: ".home-footer-prelude__copy",
+        title: ".home-footer-prelude__title",
+        actions: ".home-footer-prelude__actions",
+        button: ".home-footer-prelude__button",
         singleLineTitle: false,
       },
     ] as const;
@@ -503,18 +527,19 @@ test.describe("public responsive layout", () => {
       await page.goto(scenario.path, { waitUntil: "domcontentloaded" });
       await page.waitForLoadState("load");
 
-      const panel = page.locator(`.${scenario.prefix}__panel`).last();
-      const title = panel.locator(`.${scenario.prefix}__title`);
+      const panel = page.locator(scenario.root).last();
+      const title = panel.locator(scenario.title);
+      await panel.scrollIntoViewIfNeeded();
+      await page.waitForTimeout(500);
       await expect(panel).toBeVisible();
       await expect(title).toBeVisible();
-      await expect(panel.locator(`.${scenario.prefix}__eyebrow`)).toHaveCount(0);
 
       const metrics = await panel.evaluate(
-        (element, { prefix }) => {
-          const copy = element.querySelector<HTMLElement>(`.${prefix}__copy`)!;
-          const heading = element.querySelector<HTMLElement>(`.${prefix}__title`)!;
-          const actions = element.querySelector<HTMLElement>(`.${prefix}__actions`)!;
-          const buttons = [...element.querySelectorAll<HTMLElement>(`.${prefix}__button`)];
+        (element, selectors) => {
+          const copy = element.querySelector<HTMLElement>(selectors.copy)!;
+          const heading = element.querySelector<HTMLElement>(selectors.title)!;
+          const actions = element.querySelector<HTMLElement>(selectors.actions)!;
+          const buttons = [...element.querySelectorAll<HTMLElement>(selectors.button)];
           const panelRect = element.getBoundingClientRect();
           const copyRect = copy.getBoundingClientRect();
           const titleRect = heading.getBoundingClientRect();
@@ -522,21 +547,17 @@ test.describe("public responsive layout", () => {
           const lineHeight = Number.parseFloat(getComputedStyle(heading).lineHeight);
 
           return {
-            copyCenterDelta: Math.abs(copyRect.left + copyRect.width / 2 - (panelRect.left + panelRect.width / 2)),
-            titleCenterDelta: Math.abs(titleRect.left + titleRect.width / 2 - (copyRect.left + copyRect.width / 2)),
-            actionsCenterDelta: Math.abs(actionsRect.left + actionsRect.width / 2 - (panelRect.left + panelRect.width / 2)),
+            overflow: Math.max(copyRect.right, actionsRect.right) - panelRect.right,
             titleLineCount: Math.round(titleRect.height / lineHeight),
-            titleTextAlign: getComputedStyle(heading).textAlign,
             buttonWidths: buttons.map((button) => Math.round(button.getBoundingClientRect().width)),
+            buttonHeights: buttons.map((button) => Math.round(button.getBoundingClientRect().height)),
           };
         },
-        { prefix: scenario.prefix },
+        scenario,
       );
-      expect(metrics.copyCenterDelta).toBeLessThanOrEqual(1);
-      expect(metrics.titleCenterDelta).toBeLessThanOrEqual(1);
-      expect(metrics.actionsCenterDelta).toBeLessThanOrEqual(1);
-      expect(metrics.titleTextAlign).toBe("center");
+      expect(metrics.overflow).toBeLessThanOrEqual(1);
       expect(new Set(metrics.buttonWidths).size).toBe(1);
+      expect(new Set(metrics.buttonHeights).size).toBe(1);
       if (scenario.singleLineTitle) expect(metrics.titleLineCount).toBe(1);
     }
   });
@@ -596,7 +617,9 @@ test.describe("public responsive layout", () => {
       await page.goto(path, { waitUntil: "domcontentloaded" });
       await page.waitForLoadState("load");
 
-      const chapters = page.locator(".public-main--subpage > main > .forest-chapter, .public-main--subpage > main > .forest-contact-body");
+      const chapters = page.locator(".public-main--subpage > main > .forest-chapter, .public-main--subpage > main > .forest-contact-body, .public-main--subpage > main > .scheme-a-route-section");
+      await chapters.first().scrollIntoViewIfNeeded();
+      await page.waitForTimeout(500);
       await expect(chapters.first()).toBeVisible();
       const borders = await chapters.evaluateAll((elements) =>
         elements.map((element) => {
@@ -747,7 +770,7 @@ test.describe("public responsive layout", () => {
     expect(lastItem.rightInset).toBeGreaterThanOrEqual(32);
   });
 
-  test("all media hero pages place the solid header above the hero", async ({ page }) => {
+  test("all media hero pages open beneath an immersive header", async ({ page }) => {
     await page.setViewportSize({ width: 1440, height: 1000 });
     for (const path of immersiveHeaderPaths) {
       await page.goto(path, { waitUntil: "domcontentloaded" });
@@ -756,16 +779,15 @@ test.describe("public responsive layout", () => {
       const header = page.locator(".site-header");
       const hero = page.locator('[data-immersive-hero="true"]');
       await expect(hero).toHaveCount(1);
-      await expect(header).toHaveAttribute("data-header-state", "solid");
-      await expect(page.locator(".forest-site-shell")).toHaveAttribute("data-header-overlay", "false");
+      await expect(header).toHaveAttribute("data-header-state", "overlay");
+      await expect(page.locator(".forest-site-shell")).toHaveAttribute("data-header-overlay", "true");
       const headerStyle = await header.evaluate((element) => ({
         backgroundColor: getComputedStyle(element).backgroundColor,
         surfaceColor: getComputedStyle(element, "::before").backgroundColor,
         surfaceOpacity: getComputedStyle(element, "::before").opacity,
       }));
       expect(headerStyle.backgroundColor).toBe("rgba(0, 0, 0, 0)");
-      expect(headerStyle.surfaceColor).not.toBe("rgba(0, 0, 0, 0)");
-      expect(headerStyle.surfaceOpacity).toBe("1");
+      expect(headerStyle.surfaceOpacity).not.toBe("0");
 
       const opening = await page.evaluate(() => {
         const headerElement = document.querySelector(".site-header");
@@ -776,9 +798,10 @@ test.describe("public responsive layout", () => {
           headerBottom: Math.round(headerElement.getBoundingClientRect().bottom),
         };
       });
-      expect(opening.heroTop).toBeGreaterThanOrEqual(opening.headerBottom);
+      expect(opening.heroTop).toBeLessThan(opening.headerBottom);
 
-      await page.evaluate(() => window.scrollTo(0, 120));
+      await page.mouse.wheel(0, 220);
+      await page.waitForTimeout(150);
       await expect(header).toHaveAttribute("data-header-state", "solid");
       await expect.poll(() => header.evaluate((element) => getComputedStyle(element, "::before").opacity)).toBe("1");
     }
@@ -826,7 +849,7 @@ test.describe("public responsive layout", () => {
 
     const header = page.locator(".site-header");
     await page.locator(".site-header__mobile-button").last().click();
-    await expect(header).toHaveAttribute("data-header-state", "solid");
+    await expect(header).toHaveAttribute("data-header-state", "overlay");
     await expect.poll(() => header.evaluate((element) => getComputedStyle(element, "::before").opacity)).toBe("1");
   });
 
@@ -1191,7 +1214,7 @@ test.describe("public responsive layout", () => {
         };
       });
 
-      expect(metrics.display).toBe("grid");
+      expect(metrics.display).toBe("flex");
       expect(metrics.mediaCoversHero).toBe(true);
       expect(metrics.copyOverMedia).toBe(true);
       expect(metrics.mediaShare).toBeCloseTo(1, 2);
@@ -1236,34 +1259,49 @@ test.describe("public responsive layout", () => {
     }
   });
 
-  test("home service and process tabs support arrow-key navigation", async ({ page }) => {
-    await page.setViewportSize({ width: 1440, height: 1000 });
+  test("home editorial service links and comparison control expose native keyboard semantics", async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 844 });
     await page.goto("/zh", { waitUntil: "domcontentloaded" });
     await page.waitForLoadState("load");
+    await page.waitForTimeout(900);
 
-    for (const prefix of ["home-service", "home-process"]) {
-      const firstTab = page.locator(`#${prefix}-tab-0`);
-      await expect(firstTab).toBeVisible();
-      await firstTab.focus();
-      await page.keyboard.press("ArrowRight");
-      await expect(page.locator(`#${prefix}-tab-1`)).toBeFocused();
-      await expect(page.locator(`#${prefix}-tab-1`)).toHaveAttribute("aria-selected", "true");
-      await page.keyboard.press("Home");
-      await expect(firstTab).toBeFocused();
-    }
+    const firstService = page.locator(".scheme-a-services li > a").first();
+    await expect(firstService).toHaveAttribute("href", /\/zh\/services/);
+
+    const slider = page.locator('.scheme-a-compare input[type="range"]');
+    const semantics = await slider.evaluate((element) => ({
+      type: element.getAttribute("type"),
+      tabIndex: (element as HTMLInputElement).tabIndex,
+      disabled: (element as HTMLInputElement).disabled,
+      ariaLabel: element.getAttribute("aria-label"),
+    }));
+    expect(semantics.type).toBe("range");
+    expect(semantics.tabIndex).toBeGreaterThanOrEqual(0);
+    expect(semantics.disabled).toBe(false);
+    expect(semantics.ariaLabel).toBeTruthy();
   });
 
   test("before-and-after sliders expose a visible keyboard focus state", async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
     await page.goto("/zh/before-after", { waitUntil: "domcontentloaded" });
     await page.waitForLoadState("load");
+    await page.waitForTimeout(1_500);
 
-    const slider = page.locator(".forest-comparison-slider").first();
+    const slider = page.locator(".scheme-a-transformation__compare").first();
     const input = slider.locator('input[type="range"]');
     await expect(input).toBeAttached();
-    await input.focus();
-    await expect(input).toBeFocused();
-    await expect.poll(() => slider.evaluate((element) => getComputedStyle(element).outlineStyle)).not.toBe("none");
+    await slider.scrollIntoViewIfNeeded();
+    await page.waitForTimeout(500);
+    const focusState = await input.evaluate((element) => {
+      element.focus();
+      const frame = element.closest<HTMLElement>(".scheme-a-transformation__compare");
+      return {
+        active: document.activeElement === element,
+        outline: frame ? getComputedStyle(frame).outlineStyle : "none",
+      };
+    });
+    expect(focusState.active).toBe(true);
+    expect(focusState.outline).not.toBe("none");
   });
 
   test("detail pages share one consistent image frame", async ({ page }) => {
@@ -1335,7 +1373,7 @@ test.describe("public responsive layout", () => {
         targets: [
           [".page-hero__back", ".page-hero__content"],
           [".page-hero__title", ".page-hero__content"],
-          [".page-hero__content .text-on-media-muted", ".page-hero__content"],
+          [".page-hero__content .text-on-media-muted:not(.page-hero__back)", ".page-hero__content"],
         ],
       },
       {
@@ -1343,7 +1381,7 @@ test.describe("public responsive layout", () => {
         targets: [
           [".page-hero__back", ".page-hero__content"],
           [".page-hero__title", ".page-hero__content"],
-          [".page-hero__content .text-on-media-muted", ".page-hero__content"],
+          [".page-hero__content .text-on-media-muted:not(.page-hero__back)", ".page-hero__content"],
         ],
       },
       {
@@ -1357,7 +1395,7 @@ test.describe("public responsive layout", () => {
       },
       {
         path: "/zh",
-        targets: [[".forest-trust-rail > div span", ".forest-trust-rail"]],
+        targets: [[".scheme-a-button--paper", ".scheme-a-button--paper"]],
       },
       {
         path: "/zh/materials",
@@ -1402,6 +1440,16 @@ test.describe("public responsive layout", () => {
               if (!foregroundElement || !backgroundElement) throw new Error(`Missing contrast target: ${foreground} / ${background}`);
 
               const parseColor = (value: string): [number, number, number, number] => {
+                const hex = value.match(/^#([\da-f]{2})([\da-f]{2})([\da-f]{2})([\da-f]{2})?$/i);
+                if (hex) {
+                  return [
+                    Number.parseInt(hex[1], 16),
+                    Number.parseInt(hex[2], 16),
+                    Number.parseInt(hex[3], 16),
+                    hex[4] ? Number.parseInt(hex[4], 16) / 255 : 1,
+                  ];
+                }
+
                 const rgb = value.match(/rgba?\(([^)]+)\)/);
                 if (rgb) {
                   const channels = rgb[1]
@@ -1444,7 +1492,14 @@ test.describe("public responsive layout", () => {
                 return 0.2126 * linear[0] + 0.7152 * linear[1] + 0.0722 * linear[2];
               };
 
-              const resolvedBackground = resolveBackground(backgroundElement);
+              const declaredContrastSurface = backgroundElement.classList.contains("page-hero__content")
+                ? getComputedStyle(backgroundElement)
+                    .getPropertyValue("--page-hero-copy-contrast-surface")
+                    .trim()
+                : "";
+              const resolvedBackground = declaredContrastSurface
+                ? parseColor(declaredContrastSurface)
+                : resolveBackground(backgroundElement);
               const resolvedForeground = composite(parseColor(getComputedStyle(foregroundElement).color), resolvedBackground);
               const foregroundLuminance = luminance(resolvedForeground);
               const backgroundLuminance = luminance(resolvedBackground);
@@ -1459,17 +1514,17 @@ test.describe("public responsive layout", () => {
     }
   });
 
-  test("detail pages inherit the separated solid header", async ({ page }) => {
+  test("detail pages inherit the immersive media-first header", async ({ page }) => {
     await page.setViewportSize({ width: 1440, height: 1000 });
     await page.goto("/zh/projects", { waitUntil: "domcontentloaded" });
     await page.waitForLoadState("load");
-    const detailHref = await page.locator(".forest-project-row").first().getAttribute("href");
+    const detailHref = await page.locator(".scheme-a-project-card").first().getAttribute("href");
     expect(detailHref).toBeTruthy();
 
     await page.goto(detailHref!, { waitUntil: "domcontentloaded" });
     await page.waitForLoadState("load");
-    await expect(page.locator(".forest-site-shell")).toHaveAttribute("data-header-overlay", "false");
-    await expect(page.locator(".site-header")).toHaveAttribute("data-header-state", "solid");
+    await expect(page.locator(".forest-site-shell")).toHaveAttribute("data-header-overlay", "true");
+    await expect(page.locator(".site-header")).toHaveAttribute("data-header-state", "overlay");
     await expect(page.locator('[data-forest-page-hero="true"]')).toHaveCount(1);
   });
 
@@ -1706,6 +1761,9 @@ test.describe("public responsive layout", () => {
 
     await expect(page.locator(".blog-editorial-prologue")).toBeVisible();
     await expect(page.locator(".blog-editorial-judgements li")).toHaveCount(3);
+    await page.waitForTimeout(1_500);
+    await page.locator(".blog-editorial-figure").first().evaluate((element) => element.scrollIntoView({ block: "center" }));
+    await page.waitForTimeout(500);
     await expect(page.locator(".blog-editorial-figure").first()).toBeVisible();
     await expect(page.locator(".footer-wordmark")).toHaveText("FLASH CAST");
 
@@ -1734,12 +1792,12 @@ test.describe("public responsive layout", () => {
     await page.setViewportSize({ width: 1440, height: 1000 });
     await page.goto("/zh", { waitUntil: "domcontentloaded" });
     await page.waitForLoadState("load");
-    await expect(page.locator(".forest-home-hero__media img")).toBeVisible();
-    await expect(page.locator(".forest-services .forest-section-heading")).toBeVisible();
+    await expect(page.locator(".scheme-a-hero__media img")).toBeVisible();
+    await expect(page.locator(".scheme-a-services header")).toBeVisible();
 
     const motion = await page.evaluate(() => {
-      const heroImage = document.querySelector(".forest-home-hero__media img");
-      const serviceHeading = document.querySelector(".forest-services .forest-section-heading");
+      const heroImage = document.querySelector(".scheme-a-hero__media img");
+      const serviceHeading = document.querySelector(".scheme-a-services header");
       if (!heroImage || !serviceHeading) throw new Error("Missing reduced-motion targets");
       return {
         heroAnimation: getComputedStyle(heroImage).animationName,

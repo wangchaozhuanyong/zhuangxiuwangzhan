@@ -6,7 +6,7 @@ const IMAGE_FOLDERS = (process.env.RESPONSIVE_IMAGE_FOLDERS || "projects,service
   .split(",")
   .map((value) => value.trim())
   .filter(Boolean);
-const WIDTHS = (process.env.PROJECT_IMAGE_WIDTHS || "360,560,720,900,1200")
+const WIDTHS = (process.env.PROJECT_IMAGE_WIDTHS || "360,560,720,900,1200,1600")
   .split(",")
   .map((value) => Number(value.trim()))
   .filter((value) => Number.isFinite(value) && value > 0)

@@ -25,7 +25,7 @@ const Index = () => {
     .filter((faq) => faq.question && faq.answer);
 
   return (
-    <main className="home-page overflow-x-hidden">
+    <main className="scheme-a-home-page">
       <PageMeta
         title={metaTitle}
         description={metaDescription}

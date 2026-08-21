@@ -83,4 +83,54 @@ describe("content-publish service", () => {
     expect(result.body.content_type).toBe("service");
     expect((result.body.payload_preview as Record<string, unknown>).status).toBe("published");
   });
+
+  it("blocks non-WebP images from being published", async () => {
+    const result = await publishContent(
+      {
+        contentType: "service",
+        mode: "dry-run",
+        nextStatus: "published",
+        record: { ...publishedServiceRecord, image_url: "https://images.example.com/office-renovation.jpg" },
+      },
+      createReadOnlyClient() as unknown as ContentPublishClient,
+      { role: "content_editor", authMode: "admin" },
+    );
+
+    expect(result.status).toBe(400);
+    expect(result.body.error).toContain("must use a WebP image");
+  });
+
+  it("accepts Supabase render URLs that explicitly deliver WebP", async () => {
+    const result = await publishContent(
+      {
+        contentType: "service",
+        mode: "dry-run",
+        nextStatus: "published",
+        record: {
+          ...publishedServiceRecord,
+          image_url: "https://example.supabase.co/storage/v1/render/image/public/site-images/office.jpg?width=1200&format=webp",
+        },
+      },
+      createReadOnlyClient() as unknown as ContentPublishClient,
+      { role: "content_editor", authMode: "admin" },
+    );
+
+    expect(result.body.ok).toBe(true);
+  });
+
+  it("keeps non-WebP images editable in drafts", async () => {
+    const result = await publishContent(
+      {
+        contentType: "service",
+        mode: "dry-run",
+        nextStatus: "draft",
+        record: { slug: "office-draft", image_url: "/images/services/office-draft.jpg" },
+      },
+      createReadOnlyClient() as unknown as ContentPublishClient,
+      { role: "content_editor", authMode: "admin" },
+    );
+
+    expect(result.body.ok).toBe(true);
+    expect((result.body.payload_preview as Record<string, unknown>).status).toBe("draft");
+  });
 });

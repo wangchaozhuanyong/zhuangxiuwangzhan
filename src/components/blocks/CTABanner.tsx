@@ -1,5 +1,4 @@
 import Link from "@/components/LocalizedLink";
-import Reveal from "@/components/Reveal";
 import WhatsAppIcon from "@/components/WhatsAppIcon";
 import { useSiteSettings } from "@/hooks/useSiteSettings";
 import { trackCtaClick } from "@/lib/analytics";
@@ -28,38 +27,33 @@ const CTABanner = ({
   const settings = useSiteSettings();
 
   return (
-    <section className={cn("subpage-cta section-padding", className)}>
-      <div className="subpage-cta__beam" aria-hidden="true" />
-      <div className="container-narrow relative z-10">
-        <Reveal>
-          <div className="subpage-cta__panel">
-            <span className="subpage-cta__rule" aria-hidden="true" />
-            <div className="subpage-cta__copy">
-              <h2 className="subpage-cta__title font-display">{title}</h2>
-              <p className="subpage-cta__text">{description}</p>
-            </div>
-            <div className="subpage-cta__actions">
-              <Link
-                to={quotePath}
-                className="subpage-cta__button subpage-cta__button--primary"
-                onClick={() => trackCtaClick("quote", whatsappSource, { destination: quotePath })}
-              >
-                <ArrowRight className="h-4 w-4" />
-                <span>{quoteLabel}</span>
-              </Link>
-              <a
-                href={settings.whatsapp_url()}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="subpage-cta__button subpage-cta__button--secondary"
-                onClick={() => trackCtaClick("whatsapp", whatsappSource, { destination: "whatsapp" })}
-              >
-                <WhatsAppIcon className="h-[18px] w-[18px] text-whatsapp" />
-                <span>{whatsappLabel}</span>
-              </a>
-            </div>
-          </div>
-        </Reveal>
+    <section className={cn("subpage-cta scheme-a-page-cta", className)} data-cinematic-section>
+      <div className="scheme-a-frame scheme-a-page-cta__layout">
+        <div className="scheme-a-page-cta__copy">
+          <p>FLASH CAST</p>
+          <h2>{title}</h2>
+          <span>{description}</span>
+        </div>
+        <div className="scheme-a-page-cta__actions">
+          <Link
+            to={quotePath}
+            className="scheme-a-page-cta__button scheme-a-page-cta__button--primary"
+            onClick={() => trackCtaClick("quote", whatsappSource, { destination: quotePath })}
+          >
+            <span>{quoteLabel}</span>
+            <ArrowRight aria-hidden="true" />
+          </Link>
+          <a
+            href={settings.whatsapp_url()}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="scheme-a-page-cta__button scheme-a-page-cta__button--secondary"
+            onClick={() => trackCtaClick("whatsapp", whatsappSource, { destination: "whatsapp" })}
+          >
+            <WhatsAppIcon aria-hidden="true" />
+            <span>{whatsappLabel}</span>
+          </a>
+        </div>
       </div>
     </section>
   );

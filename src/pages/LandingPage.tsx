@@ -1,17 +1,14 @@
-﻿import { useParams } from "react-router-dom";
 import { useMemo } from "react";
+import { useParams } from "react-router-dom";
+import { ArrowRight, CheckCircle, MapPin } from "lucide-react";
 import Link from "@/components/LocalizedLink";
-import { Button } from "@/components/ui/button";
 import ImmersiveHero from "@/components/ImmersiveHero";
-import { ArrowRight, CheckCircle, ClipboardCheck, Clock3, MapPin, MapPinned } from "lucide-react";
 import WhatsAppIcon from "@/components/WhatsAppIcon";
 import LandingQuoteForm from "@/components/landing/LandingQuoteForm";
-import Reveal from "@/components/Reveal";
-import FAQSection from "@/components/blocks/FAQSection";
-import CTABanner from "@/components/blocks/CTABanner";
 import PublicLoadingState from "@/components/blocks/PublicLoadingState";
 import PageMeta from "@/components/PageMeta";
 import SmartImage from "@/components/SmartImage";
+import { SchemeAFaqList, SchemeANumberList } from "@/components/scheme-a/SchemeARoutePrimitives";
 import { landingPages } from "@/data/landings";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { usePublishedLandingPageBySlug } from "@/hooks/usePublishedContent";
@@ -23,7 +20,6 @@ import { trackCtaClick } from "@/lib/analytics";
 import { toArray, toRecord, toText } from "@/lib/recordUtils";
 import { landingPageText } from "@/i18n/landingPageText";
 
-const LANDING_PROJECT_IMAGE_WIDTHS = [360, 560, 720];
 const LandingPage = () => {
   const { slug } = useParams<{ slug: string }>();
   const { language } = useLanguage();
@@ -35,23 +31,11 @@ const LandingPage = () => {
   const displayText = (value: string) => translateDisplayText(value, language);
 
   if (pagePending && !fallbackPage) {
-    return (
-      <PublicLoadingState
-        label="FLASH CAST"
-        title={t.loadingTitle}
-        description={t.loadingDescription}
-      />
-    );
+    return <PublicLoadingState label="FLASH CAST" title={t.loadingTitle} description={t.loadingDescription} />;
   }
 
   if (!page) {
-    return (
-      <main className="forest-landing-page pt-site-header section-padding text-center">
-        <PageMeta title={`${t.notFound} | ${t.metaSuffix}`} description={t.notFound} canonicalPath={`/landing/${slug || ""}`} noIndex />
-        <h1 className="font-display text-3xl font-bold mb-4">{t.notFound}</h1>
-        <Button asChild><Link to="/">{t.backHome}</Link></Button>
-      </main>
-    );
+    return <main className="fc-route-page fc-route-missing"><PageMeta title={`${t.notFound} | ${t.metaSuffix}`} description={t.notFound} canonicalPath={`/landing/${slug || ""}`} noIndex /><div><h1>{t.notFound}</h1><Link to="/">{t.backHome}</Link></div></main>;
   }
 
   const landingPage = language === "zh"
@@ -64,173 +48,65 @@ const LandingPage = () => {
         benefits: toArray(page.benefits).map((item) => displayText(toText(item))),
         relatedProjects: toArray(page.relatedProjects).map((item) => {
           const project = toRecord(item);
-          return {
-            ...project,
-            title: displayText(toText(project.title)),
-            location: displayText(toText(project.location)),
-          };
+          return { ...project, title: displayText(toText(project.title)), location: displayText(toText(project.location)) };
         }),
         faqs: toArray(page.faqs).map((item) => {
           const faq = toRecord(item);
-          return {
-            q: displayText(toText(faq.q)),
-            a: displayText(toText(faq.a)),
-          };
+          return { q: displayText(toText(faq.q)), a: displayText(toText(faq.a)) };
         }),
         seoTitle: displayText(page.seoTitle || ""),
         seoDescription: displayText(page.seoDescription || ""),
       }
     : page;
-  const landingBenefits = toArray(landingPage.benefits).map((item) => toText(item)).filter(Boolean);
-  const landingRelatedProjects = toArray(landingPage.relatedProjects).map((item) => {
+  const benefits = toArray(landingPage.benefits).map((item) => toText(item)).filter(Boolean);
+  const projects = toArray(landingPage.relatedProjects).map((item) => {
     const project = toRecord(item);
-    return {
-      title: toText(project.title),
-      location: toText(project.location),
-      image: toText(project.image),
-    };
-  });
-  const landingFaqs = toArray(landingPage.faqs).map((item) => {
+    return { title: toText(project.title), location: toText(project.location), image: toText(project.image) };
+  }).filter((item) => item.title && item.image);
+  const faqs = toArray(landingPage.faqs).map((item) => {
     const faq = toRecord(item);
-    return {
-      q: toText(faq.q),
-      a: toText(faq.a),
-    };
-  });
+    return { question: toText(faq.q), answer: toText(faq.a) };
+  }).filter((item) => item.question && item.answer);
 
   return (
-    <main className="forest-landing-page pt-site-header">
-      <PageMeta
-        title={landingPage.seoTitle || `${landingPage.title} | ${t.metaSuffix}`}
-        description={landingPage.seoDescription || stripHtml(landingPage.description)}
-        canonicalPath={`/landing/${slug || ""}`}
-      />
-      <ImmersiveHero className="page-hero landing-conversion-hero">
-        <div className="page-hero__media page-hero-media hero-media-mask">
-          <SmartImage src={landingPage.heroImage} alt={landingPage.heroAlt || landingPage.title} className="page-hero__image h-full w-full object-cover" loading="eager" width={1920} height={1080} fetchPriority="high" sizes="100vw" quality={78} />
-          <div className="page-hero__overlay absolute inset-0 media-readable-overlay" aria-hidden="true" />
-        </div>
-        <div className="page-hero__content landing-conversion-hero__content site-container">
-          <div className="landing-conversion-hero__copy">
-            <p className="page-hero__label mb-3 font-body text-[11px] font-semibold uppercase tracking-[0.28em] text-gold">FLASH CAST SDN. BHD.</p>
-            <h1 className="page-hero__title heading-safe mb-4 text-3xl font-bold leading-tight text-on-media md:text-5xl">{landingPage.title}</h1>
-            <p className="page-hero__description prose-safe mb-6 text-lg text-on-media-muted">{landingPage.subtitle}</p>
-            <p className="landing-conversion-hero__area"><MapPin aria-hidden="true" />{t.heroSupport}</p>
-            <div className="landing-conversion-hero__actions">
-              <a
-                href={settings.whatsapp_url()}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="landing-conversion-hero__whatsapp"
-                onClick={() => trackCtaClick("whatsapp", "landing_hero", { destination: "whatsapp" })}
-              >
-                <WhatsAppIcon aria-hidden="true" /> <span>{t.whatsapp}</span><ArrowRight aria-hidden="true" />
-              </a>
-            </div>
+    <main className="fc-c-page">
+      <PageMeta title={landingPage.seoTitle || `${landingPage.title} | ${t.metaSuffix}`} description={landingPage.seoDescription || stripHtml(landingPage.description)} canonicalPath={`/landing/${slug || ""}`} />
+
+      <ImmersiveHero className="fc-c-hero" id="campaign-hero">
+        <div className="fc-c-hero__media" data-cinematic-media><SmartImage src={landingPage.heroImage} alt={landingPage.heroAlt || landingPage.title} loading="eager" width={1920} height={1080} fetchPriority="high" sizes="100vw" quality={86} /></div>
+        <div className="fc-c-hero__copy">
+          <span className="fc-c-kicker">Kuala Lumpur / Selangor / Klang Valley</span>
+          <h1>{landingPage.title}</h1>
+          <p>{landingPage.subtitle}</p>
+          <span className="fc-c-area"><MapPin aria-hidden="true" />{t.heroSupport}</span>
+          <div className="fc-c-actions">
+            <a href="#landing-quote">{t.quote}<ArrowRight aria-hidden="true" /></a>
+            <a href={settings.whatsapp_url()} target="_blank" rel="noopener noreferrer" onClick={() => trackCtaClick("whatsapp", "landing_hero", { destination: "whatsapp" })}><WhatsAppIcon aria-hidden="true" /><span>{t.whatsapp}</span></a>
           </div>
-          <LandingQuoteForm landingTitle={landingPage.title} />
         </div>
       </ImmersiveHero>
 
-      <section className="landing-trust-rail" aria-label={t.whyChoose} data-cinematic-section>
-        {t.trustItems.map((item, index) => {
-          const icons = [Clock3, ClipboardCheck, CheckCircle, MapPinned];
-          const Icon = icons[index] || CheckCircle;
-          return <div key={item}><Icon aria-hidden="true" /><span>{item}</span></div>;
-        })}
+      <section className="fc-c-trust" aria-label={t.whyChoose}>{t.trustItems.slice(0, 3).map((item) => <p key={item}><CheckCircle aria-hidden="true" /><strong>{item}</strong></p>)}</section>
+
+      <section className="fc-c-form-section">
+        <LandingQuoteForm landingTitle={landingPage.title} />
+        <a className="fc-c-whatsapp-band" href={settings.whatsapp_url()} target="_blank" rel="noopener noreferrer" onClick={() => trackCtaClick("whatsapp", "landing_form", { destination: "whatsapp" })}><WhatsAppIcon /><span><strong>{t.whatsapp}</strong><small>{t.formSubtitle}</small></span><ArrowRight /></a>
       </section>
 
-      {/* Description + Benefits */}
-      <section className="landing-overview section-padding" data-cinematic-section>
-        <div className="container-narrow">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-10 items-start">
-            <Reveal direction="left">
-              <div className="subpage-side-panel p-5 md:p-7">
-                <div className="subpage-local-heading--balanced">
-                  <div className="accent-line mb-4" />
-                  <h2 className="font-display text-2xl md:text-3xl font-bold">{t.overview}</h2>
-                </div>
-                {isHtmlText(landingPage.description) ? (
-                  <div className="prose prose-neutral max-w-none text-muted-foreground" dangerouslySetInnerHTML={{ __html: sanitizeHtml(landingPage.description) }} />
-                ) : (
-                  <p className="text-muted-foreground leading-relaxed">{landingPage.description}</p>
-                )}
-              </div>
-            </Reveal>
-            <Reveal direction="right" delay={100}>
-              <div className="subpage-side-panel p-5 md:p-7">
-                <h3 className="font-semibold text-base mb-4">{t.whyChoose}</h3>
-                <ul className="subpage-copy-list">
-                  {landingBenefits.map((b) => (
-                    <li key={b} className="subpage-copy-item">
-                      <span className="subpage-copy-icon">
-                        <CheckCircle className="h-3.5 w-3.5" />
-                      </span>
-                      <span className="subpage-copy-text">{b}</span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            </Reveal>
-          </div>
+      <section className="fc-c-section fc-c-overview">
+        <header><span>{t.overview}</span><h2>{t.whyChoose}</h2></header>
+        <div className="fc-c-overview__grid">
+          <div className="fc-c-overview__copy">{isHtmlText(landingPage.description) ? <div dangerouslySetInnerHTML={{ __html: sanitizeHtml(landingPage.description) }} /> : <p>{landingPage.description}</p>}</div>
+          <ol>{benefits.map((benefit, index) => <li key={benefit}><span>{String(index + 1).padStart(2, "0")}</span><strong>{benefit}</strong></li>)}</ol>
         </div>
       </section>
 
-      <section className="landing-process section-padding" data-cinematic-section>
-        <div className="container-narrow">
-          <header className="landing-section-heading">
-            <h2>{t.processTitle}</h2>
-            <p>{t.processIntro}</p>
-          </header>
-          <ol className="landing-process__steps">
-            {t.processSteps.map((step, index) => (
-              <li key={step.title}>
-                <span aria-hidden="true">{String(index + 1).padStart(2, "0")}</span>
-                <div><h3>{step.title}</h3><p>{step.description}</p></div>
-              </li>
-            ))}
-          </ol>
-        </div>
-      </section>
+      <section className="fc-c-section fc-c-process"><header><span>{t.processIntro}</span><h2>{t.processTitle}</h2></header><SchemeANumberList items={t.processSteps} /></section>
 
-      {/* Related Projects */}
-      {landingRelatedProjects.length > 0 && (
-        <section className="landing-projects section-padding" data-cinematic-section>
-          <div className="container-narrow">
-            <Reveal>
-              <div className="text-center mb-10">
-                <div className="accent-line mx-auto mb-4" />
-                <h2 className="font-display text-2xl md:text-3xl font-bold mb-3">{t.relatedProjects}</h2>
-              </div>
-            </Reveal>
-            <div className="card-grid mx-auto max-w-2xl grid-cols-1 gap-5 sm:grid-cols-2">
-              {landingRelatedProjects.map((p, i) => (
-                <Reveal key={p.title} delay={i * 80}>
-                  <div className="material-depth-card luxury-card overflow-hidden hover-lift">
-                    <div className="material-depth-card__media img-zoom aspect-[4/3]" data-cinematic-media>
-                      <SmartImage src={p.image} alt={p.title} loading="lazy" width={600} height={450} sizes="(max-width: 640px) 92vw, 45vw" candidateWidths={LANDING_PROJECT_IMAGE_WIDTHS} quality={72} className="w-full h-full object-cover" />
-                    </div>
-                    <div className="material-depth-card__body">
-                      <h3 className="material-depth-card__title">{p.title}</h3>
-                      <p className="material-depth-card__meta flex items-center gap-1"><MapPin className="w-3 h-3 shrink-0" /> <span className="min-w-0 truncate">{p.location}</span></p>
-                    </div>
-                  </div>
-                </Reveal>
-              ))}
-            </div>
-          </div>
-        </section>
-      )}
+      {projects.length ? <section className="fc-c-section fc-c-projects"><header><span>{t.relatedProjects}</span><h2>{projects[0].title}</h2></header><div className="fc-c-project-grid">{projects.map((project) => <article key={project.title}><SmartImage src={project.image} alt={project.title} width={900} height={620} quality={84} /><div><strong>{project.title}</strong><span>{project.location}</span></div></article>)}</div></section> : null}
 
-      {/* FAQ */}
-      <FAQSection title={t.faqTitle} faqs={landingFaqs} className="section-padding bg-background" />
-
-      <CTABanner
-        title={t.ctaTitle}
-        description={t.ctaDescription}
-        quoteLabel={t.quote}
-        whatsappLabel={t.whatsapp}
-      />
+      <section className="fc-c-section fc-c-faq"><header><span>{t.faqTitle}</span><h2>{t.ctaTitle}</h2></header><SchemeAFaqList items={faqs} /></section>
+      <section className="fc-c-final"><span>{t.ctaDescription}</span><h2>{t.ctaTitle}</h2><a href="#landing-quote">{t.quote}<ArrowRight /></a></section>
     </main>
   );
 };

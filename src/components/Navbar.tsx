@@ -110,7 +110,7 @@ const getOppositeLanguage = (language: Language): Language => (language === "en"
 
 const languageLabel = {
   en: { short: "EN", long: "EN" },
-  zh: { short: "中", long: "中文" },
+  zh: { short: "中文", long: "中文" },
 } satisfies Record<Language, { short: string; long: string }>;
 
 interface LanguageSwitchLinkProps {
@@ -127,7 +127,6 @@ const LanguageSwitchLink = ({ variant, className }: LanguageSwitchLinkProps) => 
   const [optimisticLanguage, setOptimisticLanguage] = useState<Language | null>(null);
   const displayedLanguage = optimisticLanguage ?? currentLanguage;
   const nextLanguage = getOppositeLanguage(currentLanguage);
-  const displayedTargetLanguage = getOppositeLanguage(displayedLanguage);
   const targetPath = switchLanguagePath(location.pathname, nextLanguage, location.search, location.hash);
 
   useEffect(() => setOptimisticLanguage(null), [location.hash, location.pathname, location.search]);
@@ -137,7 +136,8 @@ const LanguageSwitchLink = ({ variant, className }: LanguageSwitchLinkProps) => 
     return (
       <Link to={targetPath} onPointerDown={previewNextState} onClick={previewNextState} className={className} aria-label={text.switchLanguage}>
         <span className="site-header__mobile-language-label" aria-hidden="true">
-          <span className="site-header__mobile-language-text">{languageLabel[displayedTargetLanguage].short}</span>
+          <span className="site-header__mobile-language-text" data-active={displayedLanguage === "zh" ? "true" : "false"}>{languageLabel.zh.short}</span>
+          <span className="site-header__mobile-language-text" data-active={displayedLanguage === "en" ? "true" : "false"}>{languageLabel.en.short}</span>
         </span>
       </Link>
     );
@@ -175,6 +175,7 @@ const Navbar = () => {
   const resolvedLogoState: "primary" | "fallback" | "none" = logoState === "primary" && primaryLogoSrc ? "primary" : logoState === "none" ? "none" : "fallback";
   const logoSrc = resolvedLogoState === "primary" ? primaryLogoSrc : logoFallback;
   const previewItem = publicNavigationItems.find((item) => item.path === previewPath) ?? publicNavigationItems[0];
+  const usesOverlayHeader = hasImmersiveHero && !scrolled;
 
   const groupLabel = (key: PublicNavGroupKey) => ({
     spaces: navText.spacesGroup,
@@ -307,8 +308,8 @@ const Navbar = () => {
       <header
         data-scrolled={scrolled ? "true" : "false"}
         data-immersive={hasImmersiveHero ? "true" : "false"}
-        data-header-state="solid"
-        className="site-header is-solid fixed inset-x-0 top-0 transition-all duration-300"
+        data-header-state={usesOverlayHeader ? "overlay" : "solid"}
+        className={`site-header ${usesOverlayHeader ? "is-overlay" : "is-solid"} fixed inset-x-0 top-0 transition-all duration-300`}
         style={{ zIndex: PUBLIC_CHROME_Z.header }}
       >
         <div className="site-header__inner site-container flex h-12 flex-nowrap items-center gap-3 md:h-16">
@@ -347,7 +348,7 @@ const Navbar = () => {
 
           <div className="ml-auto flex shrink-0 items-center min-[1180px]:hidden">
             <div className="site-header__mobile-controls flex h-11 items-center">
-              <LanguageSwitchLink variant="mobile" className="site-header__mobile-button site-header__mobile-language-button flex h-10 w-10 items-center justify-center text-[11px] font-bold" />
+              <LanguageSwitchLink variant="mobile" className="site-header__mobile-button site-header__mobile-language-button flex h-10 w-[3.75rem] items-center justify-center text-[11px] font-bold" />
               <button type="button" className="site-header__mobile-button flex h-10 w-10 items-center justify-center transition-colors" onClick={(event) => isOpen ? closeMenu() : openMenu(event.currentTarget)} aria-label={isOpen ? navText.closeMenu : navText.openMenu} aria-expanded={isOpen} aria-controls="mobile-navigation">
                 {isOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
               </button>

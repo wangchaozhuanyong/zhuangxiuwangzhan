@@ -121,18 +121,18 @@ test.describe("public text readability", () => {
 
   for (const viewport of viewports) {
     for (const theme of themes) {
-      test(`${viewport.name} ${theme} solid header stays separate from the hero`, async ({ page }) => {
+      test(`${viewport.name} ${theme} immersive header remains readable over the hero`, async ({ page }) => {
         await page.setViewportSize(viewport);
         await setPublicTheme(page, theme);
         await page.goto("/zh", { waitUntil: "domcontentloaded" });
         await page.waitForLoadState("load");
-        const header = page.locator(".site-header.is-solid");
-        const hero = page.locator(".forest-home-hero");
+        const header = page.locator(".site-header.is-overlay");
+        const hero = page.locator(".scheme-a-hero");
         await expect(header).toBeVisible();
         await expect(hero).toBeVisible();
         const result = await header.evaluate((element) => {
           const surface = getComputedStyle(element, "::before");
-          const hero = document.querySelector<HTMLElement>(".forest-home-hero");
+          const hero = document.querySelector<HTMLElement>(".scheme-a-hero");
           const textTargets = Array.from(element.querySelectorAll(
             ".site-header__nav-link, .site-header__language-option, .site-header__control, .site-header__icon-action, .site-header__quote-button, .site-header__mobile-button",
           )).filter((target) => {
@@ -150,11 +150,10 @@ test.describe("public text readability", () => {
           };
         });
 
-        expect(result.surfaceColor).not.toBe("rgba(0, 0, 0, 0)");
-        expect(result.surfaceOpacity).toBe(1);
+        expect(result.surfaceOpacity).toBeGreaterThan(0);
         expect(result.backdropFilter).toBe("none");
         expect(result.targetCount).toBeGreaterThan(0);
-        expect(result.heroTop).toBeGreaterThanOrEqual(result.headerBottom);
+        expect(result.heroTop).toBeLessThan(result.headerBottom);
       });
     }
   }
