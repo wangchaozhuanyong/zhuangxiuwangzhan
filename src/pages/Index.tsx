@@ -1,6 +1,6 @@
 import PageMeta from "@/components/PageMeta";
 import { JsonLdFAQ, JsonLdLocalBusiness, JsonLdOrganization } from "@/components/JsonLd";
-import ForestHome from "@/components/forest/ForestHome";
+import SchemeAHome from "@/components/scheme-a/SchemeAHome";
 import PublicContentNotice from "@/components/PublicContentNotice";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { usePublishedHomeContentBundle } from "@/hooks/usePublishedContent";
@@ -36,7 +36,7 @@ const Index = () => {
       <JsonLdOrganization />
       {homeFaqSchemaItems.length > 0 && <JsonLdFAQ faqs={homeFaqSchemaItems} />}
       <PublicContentNotice result={homeContentResult} onRetry={() => void retryHomeContent()} />
-      <ForestHome content={homeContent} />
+      <SchemeAHome content={homeContent} />
     </main>
   );
 };

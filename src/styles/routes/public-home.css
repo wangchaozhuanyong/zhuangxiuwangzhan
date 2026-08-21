@@ -1,4 +1,5 @@
 @import "../components/scheme-a-structural.css";
 @import "../components/scheme-a-literal.css";
 @import "../components/scheme-a-native-pages.css";
+@import "../components/home-atelier.css";
 @tailwind components;

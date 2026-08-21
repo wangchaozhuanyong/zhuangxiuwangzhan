@@ -72,8 +72,9 @@ describe("public Edge HTML cache", () => {
   const requestPage = async ({
     deploymentVersion = "commit-a",
     html = assetHtml,
-  }: { deploymentVersion?: string; html?: string } = {}) => {
-    const request = new Request("https://flashcast.com.my/zh/projects");
+    path = "/zh/projects",
+  }: { deploymentVersion?: string; html?: string; path?: string } = {}) => {
+    const request = new Request(`https://flashcast.com.my${path}`);
     return onRequest({
       request,
       env: {
@@ -130,5 +131,18 @@ describe("public Edge HTML cache", () => {
 
     expect(nextDeploymentResponse.headers.get("x-flashcast-html-cache")).toBe("miss");
     expect(await nextDeploymentResponse.text()).toContain('data-build="b"');
+  });
+
+  it("preloads one responsive homepage art direction per viewport", async () => {
+    const response = await requestPage({ path: "/zh" });
+    const html = await response.text();
+
+    expect(html).toContain('/images/_responsive/heroes/w360/v4/home-atelier-mobile.webp');
+    expect(html).toContain('/images/_responsive/heroes/w560/v4/home-atelier-tablet.webp');
+    expect(html).toContain('/images/_responsive/heroes/w720/v4/home-atelier-desktop.webp');
+    expect(html).toContain('media="(max-width: 767px)"');
+    expect(html).toContain('media="(min-width: 768px) and (max-width: 1179px)"');
+    expect(html).toContain('media="(min-width: 1180px)"');
+    expect(html).not.toContain('rel="preload" as="image" href="/images/heroes/hero-luxury-living.webp"');
   });
 });

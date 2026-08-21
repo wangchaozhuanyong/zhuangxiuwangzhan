@@ -132,7 +132,7 @@ test.describe("Scheme A approved-design fidelity", () => {
     await expect(trigger).toBeFocused();
   });
 
-  test("desktop opening preserves impact while revealing the next chapter", async ({ page }) => {
+  test("desktop opening preserves a full-viewport editorial stage", async ({ page }) => {
     await page.setViewportSize({ width: 1440, height: 900 });
     await page.goto("/zh", { waitUntil: "domcontentloaded" });
     await expect(page.locator(".scheme-a-hero")).toBeVisible();
@@ -145,14 +145,17 @@ test.describe("Scheme A approved-design fidelity", () => {
       if (!hero || !next || !header) throw new Error("Missing Scheme A opening regions");
       return {
         heroHeight: Math.round(hero.getBoundingClientRect().height),
+        heroTop: Math.round(hero.getBoundingClientRect().top),
         nextTop: Math.round(next.getBoundingClientRect().top),
         headerPosition: getComputedStyle(header).position,
       };
     });
 
-    expect(metrics.heroHeight).toBeGreaterThanOrEqual(680);
-    expect(metrics.heroHeight).toBeLessThanOrEqual(780);
-    expect(metrics.nextTop).toBeLessThan(900);
+    expect(metrics.heroHeight).toBeGreaterThanOrEqual(899);
+    expect(metrics.heroHeight).toBeLessThanOrEqual(901);
+    const chapterGap = metrics.nextTop - metrics.heroTop - metrics.heroHeight;
+    expect(chapterGap).toBeGreaterThanOrEqual(0);
+    expect(chapterGap).toBeLessThanOrEqual(40);
     expect(metrics.headerPosition).toBe("fixed");
 
     const header = page.locator(".scheme-a-chrome");

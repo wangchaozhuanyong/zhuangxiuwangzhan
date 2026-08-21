@@ -192,12 +192,51 @@ type ImagePreload = {
   href: string;
   srcSet?: string;
   sizes?: string;
+  media?: string;
 };
 
 const PROJECT_CARD_IMAGE_WIDTHS = [360, 560, 720, 900];
 const HOME_HERO_IMAGE_WIDTHS = [480, 720, 960, 1280, 1600];
 const DEFAULT_HOME_HERO_IMAGE = "/images/heroes/hero-luxury-living.webp";
 const HOME_HERO_IMAGE_SIZES = "(max-width: 767px) 100vw, (max-width: 1199px) 58vw, 60vw";
+const HOME_ATELIER_HERO_PRELOADS: ImagePreload[] = [
+  {
+    href: "/images/_responsive/heroes/w360/v4/home-atelier-mobile.webp",
+    srcSet: [
+      "/images/_responsive/heroes/w360/v4/home-atelier-mobile.webp 360w",
+      "/images/_responsive/heroes/w560/v4/home-atelier-mobile.webp 560w",
+      "/images/_responsive/heroes/w720/v4/home-atelier-mobile.webp 720w",
+      "/images/_responsive/heroes/w900/v4/home-atelier-mobile.webp 900w",
+      "/images/heroes/v4/home-atelier-mobile.webp 1200w",
+    ].join(", "),
+    sizes: "100vw",
+    media: "(max-width: 767px)",
+  },
+  {
+    href: "/images/_responsive/heroes/w560/v4/home-atelier-tablet.webp",
+    srcSet: [
+      "/images/_responsive/heroes/w560/v4/home-atelier-tablet.webp 560w",
+      "/images/_responsive/heroes/w720/v4/home-atelier-tablet.webp 720w",
+      "/images/_responsive/heroes/w900/v4/home-atelier-tablet.webp 900w",
+      "/images/_responsive/heroes/w1200/v4/home-atelier-tablet.webp 1200w",
+      "/images/heroes/v4/home-atelier-tablet.webp 1600w",
+    ].join(", "),
+    sizes: "100vw",
+    media: "(min-width: 768px) and (max-width: 1179px)",
+  },
+  {
+    href: "/images/_responsive/heroes/w720/v4/home-atelier-desktop.webp",
+    srcSet: [
+      "/images/_responsive/heroes/w720/v4/home-atelier-desktop.webp 720w",
+      "/images/_responsive/heroes/w900/v4/home-atelier-desktop.webp 900w",
+      "/images/_responsive/heroes/w1200/v4/home-atelier-desktop.webp 1200w",
+      "/images/_responsive/heroes/w1600/v4/home-atelier-desktop.webp 1600w",
+      "/images/heroes/v4/home-atelier-desktop.webp 2880w",
+    ].join(", "),
+    sizes: "(min-width: 1440px) 58vw, 60vw",
+    media: "(min-width: 1180px)",
+  },
+];
 const SUPABASE_PUBLIC_OBJECT_SEGMENT = "/storage/v1/object/public/";
 const SUPABASE_PUBLIC_RENDER_SEGMENT = "/storage/v1/render/image/public/";
 const STATIC_SITE_HOSTS = new Set(["flashcast.com.my", "www.flashcast.com.my"]);
@@ -403,8 +442,13 @@ const getDynamicImagePreloads = (
   homeContentBundle: HomeContentBundleRow | null,
 ) => {
   if (isHomePageKey(key)) {
+    const heroImageUrl = getHomeHeroImageUrl(homeContentBundle, key);
+    if (normalizePreloadImageUrl(heroImageUrl).split(/[?#]/, 1)[0].endsWith("/hero-luxury-living.webp")) {
+      return HOME_ATELIER_HERO_PRELOADS;
+    }
+
     return [
-      buildImagePreload(getHomeHeroImageUrl(homeContentBundle, key), HOME_HERO_IMAGE_WIDTHS, {
+      buildImagePreload(heroImageUrl, HOME_HERO_IMAGE_WIDTHS, {
         height: 1100,
         sizes: HOME_HERO_IMAGE_SIZES,
       }),
@@ -586,7 +630,8 @@ const injectDynamicImagePreloads = (html: string, preloads: ImagePreload[]) => {
       const responsiveAttributes = preload.srcSet && preload.sizes
         ? ` imagesrcset="${escapeHtml(preload.srcSet)}" imagesizes="${escapeHtml(preload.sizes)}"`
         : "";
-      return `<link rel="preload" as="image" href="${escapeHtml(preload.href)}"${responsiveAttributes} fetchpriority="high" />`;
+      const mediaAttribute = preload.media ? ` media="${escapeHtml(preload.media)}"` : "";
+      return `<link rel="preload" as="image" href="${escapeHtml(preload.href)}"${responsiveAttributes}${mediaAttribute} fetchpriority="high" />`;
     }),
   ];
 
