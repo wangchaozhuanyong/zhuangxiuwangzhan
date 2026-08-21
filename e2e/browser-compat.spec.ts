@@ -4,31 +4,31 @@ const compatPages = [
   {
     label: "zh home",
     path: "/zh",
-    selectors: [".site-header__brand", "main", "footer", 'a[href^="tel:"]'],
+    selectors: [".scheme-a-chrome__brand", "main", "footer", 'a[href^="tel:"]'],
     minTextLength: 800,
   },
   {
     label: "en home",
     path: "/en",
-    selectors: [".site-header__brand", "main", "footer", 'a[href^="tel:"]'],
+    selectors: [".scheme-a-chrome__brand", "main", "footer", 'a[href^="tel:"]'],
     minTextLength: 800,
   },
   {
     label: "services",
     path: "/zh/services",
-    selectors: [".site-header__brand", "main", "footer", 'a[href*="/quote"]'],
+    selectors: [".scheme-a-chrome__brand", "main", "footer", 'a[href*="/quote"]'],
     minTextLength: 800,
   },
   {
     label: "materials",
     path: "/zh/materials",
-    selectors: [".site-header__brand", "main", "footer"],
+    selectors: [".scheme-a-chrome__brand", "main", "footer"],
     minTextLength: 500,
   },
   {
     label: "projects",
     path: "/zh/projects",
-    selectors: [".site-header__brand", "main", "footer", 'a[href*="/quote"]'],
+    selectors: [".scheme-a-chrome__brand", "main", "footer", 'a[href*="/quote"]'],
     minTextLength: 500,
   },
   {
@@ -46,7 +46,7 @@ const compatPages = [
   {
     label: "process",
     path: "/zh/process",
-    selectors: [".site-header__brand", "main", "footer"],
+    selectors: [".scheme-a-chrome__brand", "main", "footer"],
     minTextLength: 500,
   },
   {
@@ -168,14 +168,14 @@ test.describe("mainstream browser compatibility", () => {
     await page.goto("/zh", { waitUntil: "domcontentloaded" });
     await page.waitForLoadState("load");
 
-    const mobileMenuButton = page.locator('button[aria-controls="mobile-navigation"]');
+    const mobileMenuButton = page.locator('button[aria-controls="scheme-a-directory"]');
     if (await mobileMenuButton.isVisible()) {
       await mobileMenuButton.click();
-      await expect(page.locator("#mobile-navigation")).toBeVisible();
+      await expect(page.locator("#scheme-a-directory")).toBeVisible();
       await page
-        .locator('[data-mobile-nav-group="contact"] .mobile-navigation__secondary-trigger')
+        .locator('.scheme-a-directory__group-toggle[aria-controls="scheme-a-directory-group-contact"]')
         .click();
-      await expect(page.locator('#mobile-navigation a[href*="/quote"]').first()).toBeVisible();
+      await expect(page.locator('#scheme-a-directory a[href*="/quote"]').first()).toBeVisible();
     }
 
     await page.goto("/zh/quote", { waitUntil: "domcontentloaded" });
@@ -197,22 +197,22 @@ test.describe("mainstream browser compatibility", () => {
     await page.goto("/zh", { waitUntil: "domcontentloaded" });
     await page.waitForLoadState("load");
 
-    const mobileMenuButton = page.locator('button[aria-controls="mobile-navigation"]');
+    const mobileMenuButton = page.locator('button[aria-controls="scheme-a-directory"]');
     await expect(mobileMenuButton).toBeVisible();
     await mobileMenuButton.click();
 
-    const mobileNavigation = page.locator("#mobile-navigation");
+    const mobileNavigation = page.locator("#scheme-a-directory");
     await expect(mobileNavigation).toBeVisible();
     await mobileNavigation
-      .locator('[data-mobile-nav-group="services"] .mobile-navigation__secondary-trigger')
+      .locator('.scheme-a-directory__group-toggle[aria-controls="scheme-a-directory-group-services"]')
       .click();
-    await mobileNavigation.locator('a[href*="/services"]').first().click();
+    await mobileNavigation.locator('#scheme-a-directory-group-services a[href$="/services"]').first().click();
 
     await expect(page).toHaveURL(/\/zh\/services$/);
-    await expect(mobileNavigation).toBeHidden();
+    await expect(mobileNavigation).toHaveCount(0);
     await expect
       .poll(() => hasVisibleElement(page, "main"), { message: "mobile service navigation renders main content", timeout: 20_000 })
       .toBe(true);
-    await expect(page.locator("html")).not.toHaveAttribute("data-menu-open", "true");
+    await expect(page.locator("html")).not.toHaveCSS("overflow", "hidden");
   });
 });

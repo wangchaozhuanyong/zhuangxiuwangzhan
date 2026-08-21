@@ -364,6 +364,7 @@ html[data-public-theme="dark"] .scheme-a-public-shell input[type="range"] {
 }
 .fc-route-form-page :is(.container-narrow, .forest-quote-layout) { width: min(100%, 1180px) !important; max-width: none !important; margin-inline: auto !important; padding-inline: 0 !important; }
 .fc-route-form-page :is(.forest-contact-layout, .forest-quote-layout) { display: grid; gap: 28px; }
+.fc-route-form-page .forest-quote-form-wrap { background: transparent !important; }
 .fc-route-form-page :is(.forest-contact-info, .forest-contact-form, .forest-quote-form, .subpage-side-panel) {
   border: 0 !important;
   border-radius: 2px !important;

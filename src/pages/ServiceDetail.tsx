@@ -3,12 +3,14 @@ import { useParams } from "react-router-dom";
 import Link from "@/components/LocalizedLink";
 import PageMeta from "@/components/PageMeta";
 import { JsonLdBreadcrumb, JsonLdFAQ, JsonLdService } from "@/components/JsonLd";
+import CTABanner from "@/components/blocks/CTABanner";
 import { SchemeAContentState, SchemeAFacts, SchemeAFaqList, SchemeAListingGrid, SchemeANumberList, SchemeARouteHero, SchemeASection, type SchemeAListingItem } from "@/components/scheme-a/SchemeARoutePrimitives";
 import { servicesData } from "@/data/services";
 import { usePublishedServiceBySlug, usePublishedServices } from "@/hooks/usePublishedContent";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { translateDisplayText } from "@/i18n/displayLabels";
 import { serviceDetailPageText } from "@/i18n/serviceDetailPageText";
+import { buildQuotePath, quoteProjectTypeFromServiceSlug } from "@/lib/quoteContext";
 import { stripHtml } from "@/lib/text";
 
 export default function ServiceDetail() {
@@ -34,6 +36,11 @@ export default function ServiceDetail() {
   const faqs = service.faqs.map((faq) => ({ question: display(faq.q), answer: display(faq.a) })).filter((faq) => faq.question && faq.answer);
   const related = services.filter((item) => item.slug !== service.slug).slice(0, 3);
   const relatedItems: SchemeAListingItem[] = related.map((item) => ({ id: String(item.id || item.slug), title: display(item.title), description: display(item.summary), image: item.image, imageAlt: display(item.title), href: `/services/${item.slug}` }));
+  const quotePath = buildQuotePath({
+    source: "service",
+    title,
+    projectType: quoteProjectTypeFromServiceSlug(service.slug, title),
+  });
 
   return (
     <main className="fc-route-page">
@@ -54,6 +61,14 @@ export default function ServiceDetail() {
       {process.length ? <SchemeASection title={copy.process} description={language === "zh" ? "每一步解决一个明确问题，让设计与现场执行保持一致。" : "Each step resolves one clear decision from planning to delivery."}><SchemeANumberList items={process} /></SchemeASection> : null}
       {faqs.length ? <SchemeASection title={copy.faq}><SchemeAFaqList items={faqs} /></SchemeASection> : null}
       <SchemeASection title={copy.relatedServices}><SchemeAListingGrid items={relatedItems} actionLabel={copy.viewProjects} /></SchemeASection>
+      <CTABanner
+        title={copy.interested(title)}
+        description={copy.ctaText}
+        quoteLabel={copy.freeQuote}
+        quotePath={quotePath}
+        whatsappLabel={copy.whatsapp}
+        whatsappSource="Service Detail CTA"
+      />
     </main>
   );
 }

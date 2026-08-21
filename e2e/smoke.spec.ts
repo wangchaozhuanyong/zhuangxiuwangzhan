@@ -64,7 +64,7 @@ test.describe("public site smoke", () => {
     await gotoSmokePage(page, "/zh");
     await page.waitForLoadState("load");
 
-    const bottomNav = page.locator(".forest-bottom-nav");
+    const bottomNav = page.locator(".scheme-a-mobile-dock");
     await expect(bottomNav).toBeVisible();
     await expect(bottomNav.locator("a")).toHaveCount(5);
     await expect(bottomNav.locator('a[href="/zh/contact"]')).toBeVisible();

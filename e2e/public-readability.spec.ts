@@ -126,32 +126,29 @@ test.describe("public text readability", () => {
         await setPublicTheme(page, theme);
         await page.goto("/zh", { waitUntil: "domcontentloaded" });
         await page.waitForLoadState("load");
-        const header = page.locator(".site-header.is-overlay");
+        const header = page.locator(".scheme-a-chrome.is-overlay");
         const hero = page.locator(".scheme-a-hero");
         await expect(header).toBeVisible();
         await expect(hero).toBeVisible();
         const result = await header.evaluate((element) => {
-          const surface = getComputedStyle(element, "::before");
+          const surface = getComputedStyle(element);
           const hero = document.querySelector<HTMLElement>(".scheme-a-hero");
           const textTargets = Array.from(element.querySelectorAll(
-            ".site-header__nav-link, .site-header__language-option, .site-header__control, .site-header__icon-action, .site-header__quote-button, .site-header__mobile-button",
+            ".scheme-a-chrome__primary a, .scheme-a-chrome__language, .scheme-a-chrome__quote, .scheme-a-chrome__menu",
           )).filter((target) => {
             const style = getComputedStyle(target);
             return style.display !== "none" && style.visibility !== "hidden" && target.getClientRects().length > 0;
           });
 
           return {
-            surfaceColor: surface.backgroundColor,
-            surfaceOpacity: Number(surface.opacity),
-            backdropFilter: surface.backdropFilter,
+            surfaceImage: surface.backgroundImage,
             targetCount: textTargets.length,
             headerBottom: Math.round(element.getBoundingClientRect().bottom),
             heroTop: Math.round(hero?.getBoundingClientRect().top ?? -1),
           };
         });
 
-        expect(result.surfaceOpacity).toBeGreaterThan(0);
-        expect(result.backdropFilter).toBe("none");
+        expect(result.surfaceImage).toContain("linear-gradient");
         expect(result.targetCount).toBeGreaterThan(0);
         expect(result.heroTop).toBeLessThan(result.headerBottom);
       });
@@ -159,24 +156,24 @@ test.describe("public text readability", () => {
   }
 
   for (const theme of themes) {
-    test(`${theme} project CTA keeps its intended dark surface`, async ({ page }) => {
+    test(`${theme} service CTA keeps its intended dark surface`, async ({ page }) => {
       await page.setViewportSize({ width: 1440, height: 1000 });
       await setPublicTheme(page, theme);
-      await page.goto("/zh/projects/modern-condo-mont-kiara", { waitUntil: "domcontentloaded" });
+      await page.goto("/zh/services/renovation", { waitUntil: "domcontentloaded" });
       await page.waitForLoadState("load");
 
-      const card = page.locator(".subpage-dark-card");
+      const card = page.locator(".scheme-a-page-cta");
       await card.scrollIntoViewIfNeeded();
       await expect(card).toBeVisible();
       const styles = await card.evaluate((element) => ({
-        backgroundImage: getComputedStyle(element).backgroundImage,
-        titleColor: getComputedStyle(element.querySelector("h3") as Element).color,
-        copyColor: getComputedStyle(element.querySelector("p") as Element).color,
-        primaryText: getComputedStyle(element.querySelector(".btn-on-dark-primary") as Element).color,
-        secondaryText: getComputedStyle(element.querySelector(".btn-on-dark-secondary") as Element).color,
+        backgroundColor: getComputedStyle(element).backgroundColor,
+        titleColor: getComputedStyle(element.querySelector("h2") as Element).color,
+        copyColor: getComputedStyle(element.querySelector(".scheme-a-page-cta__copy > span") as Element).color,
+        primaryText: getComputedStyle(element.querySelector(".scheme-a-page-cta__button--primary") as Element).color,
+        secondaryText: getComputedStyle(element.querySelector(".scheme-a-page-cta__button--secondary") as Element).color,
       }));
 
-      expect(styles.backgroundImage).toContain("linear-gradient");
+      expect(styles.backgroundColor).not.toBe("rgba(0, 0, 0, 0)");
       expect(styles.titleColor).not.toBe("rgb(21, 28, 24)");
       expect(styles.copyColor).not.toBe("rgb(21, 28, 24)");
       expect(styles.primaryText).not.toBe("rgb(21, 28, 24)");
