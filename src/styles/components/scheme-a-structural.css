@@ -769,6 +769,7 @@
     margin: 0;
     cursor: ew-resize;
     opacity: 0;
+    touch-action: pan-y;
   }
 
   html[data-public-theme="dark"] .scheme-a-before__note {
@@ -1035,6 +1036,7 @@
     margin: 0;
     cursor: ew-resize;
     opacity: 0;
+    touch-action: pan-y;
   }
 
   html[data-public-theme="dark"] :is(.scheme-a-compare, .scheme-a-transformation__compare):focus-within {

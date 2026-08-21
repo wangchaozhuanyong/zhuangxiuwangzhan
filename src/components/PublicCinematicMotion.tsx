@@ -9,7 +9,15 @@ const PublicCinematicMotion = () => {
   const location = useLocation();
 
   useGSAP((_, contextSafe) => {
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const prefersNativeTouchScroll = window.matchMedia(
+      "(max-width: 767px), (hover: none) and (pointer: coarse)",
+    ).matches;
+
+    // ScrollTrigger refreshes can interrupt inertial scrolling when mobile
+    // browser chrome changes the visual viewport or lazy images mount. Keep
+    // touch devices on the browser's native scrolling path instead.
+    if (prefersReducedMotion || prefersNativeTouchScroll) return;
 
     const animatedHeroes = new WeakSet<HTMLElement>();
     const animatedSections = new WeakSet<HTMLElement>();
@@ -26,6 +34,7 @@ const PublicCinematicMotion = () => {
     const scan = contextSafe(() => {
       const root = document.querySelector<HTMLElement>(".scheme-a-public-shell");
       if (!root) return;
+      let addedScrollTrigger = false;
 
       const heroMedia = root.querySelector<HTMLElement>(
         ":is(.scheme-a-hero__media, .fc-route-hero-media, .forest-home-hero__media, .page-hero__media, .product-detail-opening__media)",
@@ -84,7 +93,10 @@ const PublicCinematicMotion = () => {
             scrollTrigger: { trigger: section, start: "top 88%", once: true },
           },
         );
-        if (sectionTween.scrollTrigger) ownedTriggers.add(sectionTween.scrollTrigger);
+        if (sectionTween.scrollTrigger) {
+          ownedTriggers.add(sectionTween.scrollTrigger);
+          addedScrollTrigger = true;
+        }
       });
 
       if (window.matchMedia("(min-width: 1024px)").matches) {
@@ -107,11 +119,14 @@ const PublicCinematicMotion = () => {
               },
             },
           );
-          if (mediaTween.scrollTrigger) ownedTriggers.add(mediaTween.scrollTrigger);
+          if (mediaTween.scrollTrigger) {
+            ownedTriggers.add(mediaTween.scrollTrigger);
+            addedScrollTrigger = true;
+          }
         });
       }
 
-      refresh();
+      if (addedScrollTrigger) refresh();
     });
 
     const scheduleScan = () => {
@@ -124,8 +139,6 @@ const PublicCinematicMotion = () => {
     observer?.observe(root as HTMLElement, { childList: true, subtree: true });
     window.addEventListener("load", scheduleScan, { once: true });
     window.addEventListener("pageshow", scheduleScan);
-    window.addEventListener("resize", scheduleScan);
-    root?.addEventListener("load", scheduleScan, true);
     document.fonts?.ready.then(scheduleScan).catch(() => undefined);
     scheduleScan();
 
@@ -136,8 +149,6 @@ const PublicCinematicMotion = () => {
       ownedTriggers.forEach((trigger) => trigger.kill());
       window.removeEventListener("load", scheduleScan);
       window.removeEventListener("pageshow", scheduleScan);
-      window.removeEventListener("resize", scheduleScan);
-      root?.removeEventListener("load", scheduleScan, true);
     };
   }, { dependencies: [location.pathname], revertOnUpdate: true });
 
