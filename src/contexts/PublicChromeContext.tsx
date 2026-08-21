@@ -188,7 +188,7 @@ export function PublicChromeProvider({
     };
   }, [isAdminRoute]);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (menuOpen) {
       document.documentElement.dataset.menuOpen = "true";
     } else {
