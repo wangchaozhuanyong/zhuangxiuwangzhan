@@ -1093,6 +1093,13 @@
       font-size: 1rem;
     }
 
+    html[data-public-theme="dark"][data-menu-open="true"]
+      .mobile-navigation__panel
+      .mobile-navigation__secondary-link {
+      min-height: 3rem !important;
+      font-size: 1rem !important;
+    }
+
     html[data-public-theme="dark"] .mobile-navigation__preview {
       display: none;
     }
