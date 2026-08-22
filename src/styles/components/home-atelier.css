@@ -294,6 +294,7 @@
 
   html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-project__collection-media,
   html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-project__collection-media > span,
+  html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-project__collection-media picture,
   html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-project__collection-media img {
     display: block;
     width: 100%;
@@ -752,7 +753,7 @@
       scroll-snap-align: start;
     }
 
-    html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-project__collection-item .scheme-a-project__collection-media {
+    html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-project__collection-item:nth-child(n) .scheme-a-project__collection-media {
       aspect-ratio: 4 / 5;
     }
 

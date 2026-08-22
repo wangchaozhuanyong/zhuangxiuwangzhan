@@ -6,8 +6,19 @@ import {
   normalizeLocalResponsiveImageWidths,
   toLocalResponsiveImageSrc,
 } from "@/lib/localResponsiveImage";
-import { buildSupabaseSrcSet, isSupabasePublicObjectUrl, toSupabaseRenderImageUrl } from "@/lib/supabaseImage";
+import {
+  buildSupabaseSrcSet,
+  isSupabasePublicObjectUrl,
+  resolveSupabaseHeightForWidth,
+  toSupabaseRenderImageUrl,
+  type SupabaseTargetAspectRatio,
+} from "@/lib/supabaseImage";
 import { cn } from "@/lib/utils";
+
+type SmartImagePictureSource = Pick<
+  React.SourceHTMLAttributes<HTMLSourceElement>,
+  "media" | "sizes" | "srcSet" | "type"
+>;
 
 type SmartImageProps = Omit<React.ImgHTMLAttributes<HTMLImageElement>, "src" | "srcSet" | "sizes"> & {
   src: string;
@@ -26,6 +37,10 @@ type SmartImageProps = Omit<React.ImgHTMLAttributes<HTMLImageElement>, "src" | "
   sourceWidth?: number;
   quality?: number;
   resize?: "contain" | "cover" | "fill";
+  /** Crop each Supabase srcset candidate to this width/height ratio. */
+  targetAspectRatio?: SupabaseTargetAspectRatio;
+  /** Optional art-directed picture sources, ordered from most specific to least specific. */
+  pictureSources?: SmartImagePictureSource[];
 };
 
 type NativeFetchPriority = "high" | "low" | "auto";
@@ -46,6 +61,8 @@ export function SmartImage({
   sourceWidth,
   quality,
   resize,
+  targetAspectRatio,
+  pictureSources,
   ...rest
 }: SmartImageProps) {
   const isSupabase = isSupabasePublicObjectUrl(src);
@@ -72,16 +89,19 @@ export function SmartImage({
     sourceWidth && sourceWidth > largestGeneratedWidth
       ? [generatedLocalSrcSet, `${localSrc} ${sourceWidth}w`].filter(Boolean).join(", ")
       : generatedLocalSrcSet;
-  const srcSet = isSupabase ? buildSupabaseSrcSet(src, widths, { height, quality, resize }) : localResponsiveSrcSet;
+  const srcSet = isSupabase
+    ? buildSupabaseSrcSet(src, widths, { height, quality, resize, targetAspectRatio })
+    : localResponsiveSrcSet;
+  const fallbackHeight = resolveSupabaseHeightForWidth(fallbackWidth, targetAspectRatio, height);
   const resolvedSrc = isSupabase
-    ? toSupabaseRenderImageUrl(src, { width: fallbackWidth, height, quality, resize })
+    ? toSupabaseRenderImageUrl(src, { width: fallbackWidth, height: fallbackHeight, quality, resize })
     : localResponsiveWidths.length
       ? toLocalResponsiveImageSrc(localSrc, localResponsiveWidths[0] ?? fallbackWidth)
     : localSrc;
   const resolvedFetchPriority: NativeFetchPriority = fetchPriority ?? (loading === "eager" ? "high" : "auto");
   const fetchPriorityAttr = { fetchpriority: resolvedFetchPriority } as { fetchpriority: NativeFetchPriority };
 
-  return (
+  const image = (
     <img
       src={resolvedSrc}
       srcSet={srcSet}
@@ -95,6 +115,17 @@ export function SmartImage({
       className={cn(className)}
       {...rest}
     />
+  );
+
+  if (!pictureSources?.length) return image;
+
+  return (
+    <picture className="block h-full w-full">
+      {pictureSources.map((source, index) => (
+        <source key={`${source.media || "default"}-${index}`} {...source} />
+      ))}
+      {image}
+    </picture>
   );
 }
 

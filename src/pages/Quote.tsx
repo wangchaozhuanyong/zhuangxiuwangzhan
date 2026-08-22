@@ -197,9 +197,9 @@ const Quote = () => {
 
   if (status === "success") {
     return (
-      <main className="fc-route-page fc-route-form-page forest-quote-page">
+      <main className="fc-route-page fc-route-form-page fc-route-quote-page">
         <PageMeta title={t.successTitle} description={pageContent?.seo_description || t.metaDescription} canonicalPath="/quote" />
-        <section className="forest-quote-success section-padding flex min-h-[70vh] items-center bg-background">
+        <section className="fc-route-quote-success section-padding flex min-h-[70vh] items-center bg-background">
           <div className="container-narrow mx-auto max-w-xl text-center">
             <div className="subpage-form-panel p-6 md:p-8">
               <div className="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-full border border-gold/25 bg-gold/10">
@@ -258,7 +258,7 @@ const Quote = () => {
   }
 
   return (
-    <main className="fc-route-page fc-route-form-page forest-quote-page">
+    <main className="fc-route-page fc-route-form-page fc-route-quote-page">
       <PageMeta
         title={pageContent?.seo_title || t.metaTitle}
         description={pageContent?.seo_description || t.metaDescription}
@@ -269,10 +269,10 @@ const Quote = () => {
 
       <SchemeARouteHero kind="form" image={heroImage.desktop} imageSourceWidth={heroImage.desktopWidth} tabletImage={heroImage.tablet} tabletImageSourceWidth={heroImage.tabletWidth} mobileImage={heroImage.mobile} mobileImageSourceWidth={heroImage.mobileWidth} imageAlt={pageContent?.alt || t.heroAlt} label={[pageContent?.subtitle || t.heroEyebrow, heroImage.claimLevel ? mediaLabels[language].renderingConcept : ""].filter(Boolean).join(" · ")} title={pageContent?.title || t.heroTitle} description={pageContent?.description || t.heroText} />
 
-      <section className="forest-quote-body section-padding bg-background pb-[calc(8rem+env(safe-area-inset-bottom,0px))] md:pb-28">
-        <div className="forest-quote-layout container-narrow grid gap-10 lg:grid-cols-[1.1fr_0.9fr]">
-          <Reveal className="forest-quote-form-wrap">
-            <div className="forest-quote-form subpage-form-panel p-5 md:p-8">
+      <section className="fc-route-quote-body section-padding bg-background pb-[calc(8rem+env(safe-area-inset-bottom,0px))] md:pb-28">
+        <div className="fc-route-quote-layout container-narrow grid gap-10 lg:grid-cols-[1.1fr_0.9fr]">
+          <Reveal className="fc-route-quote-form-wrap">
+            <div className="fc-route-quote-form subpage-form-panel p-5 md:p-8">
               <div className="subpage-local-heading">
                 <div className="accent-line mb-4" />
                 <h2 className="font-display text-2xl font-bold md:text-3xl">{t.formTitle}</h2>
@@ -467,8 +467,8 @@ const Quote = () => {
             </div>
           </Reveal>
 
-          <Reveal delay={120} className="forest-quote-aside-wrap">
-            <div className="forest-quote-aside lg:sticky lg:top-24">
+          <Reveal delay={120} className="fc-route-quote-aside-wrap">
+            <div className="fc-route-quote-aside lg:sticky lg:top-24">
               <div className="subpage-side-panel subpage-side-panel--centered p-6">
                 <h2 className="mb-4 font-display text-2xl font-bold">{t.trustTitle}</h2>
                 <ul className="subpage-copy-list">

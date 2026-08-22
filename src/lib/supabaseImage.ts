@@ -6,6 +6,15 @@ export type SupabaseRenderOptions = {
   format?: "origin" | "webp";
 };
 
+export type SupabaseTargetAspectRatio = {
+  width: number;
+  height: number;
+};
+
+type SupabaseSrcSetOptions = Omit<SupabaseRenderOptions, "width"> & {
+  targetAspectRatio?: SupabaseTargetAspectRatio;
+};
+
 const DEFAULT_QUALITY = 75;
 const DEFAULT_FORMAT: SupabaseRenderOptions["format"] = "webp";
 
@@ -41,9 +50,32 @@ export function toSupabaseRenderImageUrl(url: string, opts: SupabaseRenderOption
   return qs ? `${renderBase}${renderBase.includes("?") ? "&" : "?"}${qs}` : renderBase;
 }
 
-export function buildSupabaseSrcSet(url: string, widths: number[], opts: Omit<SupabaseRenderOptions, "width"> = {}) {
-  if (!isSupabasePublicObjectUrl(url)) return undefined;
-  const uniqueSorted = Array.from(new Set(widths.filter(Boolean))).sort((a, b) => a - b);
-  return uniqueSorted.map((w) => `${toSupabaseRenderImageUrl(url, { ...opts, width: w })} ${w}w`).join(", ");
+export function resolveSupabaseHeightForWidth(
+  width: number,
+  targetAspectRatio: SupabaseTargetAspectRatio | undefined,
+  fallbackHeight?: number,
+) {
+  if (
+    !targetAspectRatio
+    || !Number.isFinite(targetAspectRatio.width)
+    || !Number.isFinite(targetAspectRatio.height)
+    || targetAspectRatio.width <= 0
+    || targetAspectRatio.height <= 0
+  ) {
+    return fallbackHeight;
+  }
+
+  return Math.round(width * (targetAspectRatio.height / targetAspectRatio.width));
 }
 
+export function buildSupabaseSrcSet(url: string, widths: number[], opts: SupabaseSrcSetOptions = {}) {
+  if (!isSupabasePublicObjectUrl(url)) return undefined;
+  const { targetAspectRatio, ...renderOptions } = opts;
+  const uniqueSorted = Array.from(new Set(widths.filter(Boolean))).sort((a, b) => a - b);
+  return uniqueSorted
+    .map((width) => {
+      const height = resolveSupabaseHeightForWidth(width, targetAspectRatio, renderOptions.height);
+      return `${toSupabaseRenderImageUrl(url, { ...renderOptions, width, height })} ${width}w`;
+    })
+    .join(", ");
+}

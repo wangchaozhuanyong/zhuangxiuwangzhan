@@ -132,6 +132,65 @@ test.describe("Scheme A approved-design fidelity", () => {
     await expect(trigger).toBeFocused();
   });
 
+  test("home project cards use the approved mobile and desktop image slots", async ({ page }) => {
+    for (const viewport of [
+      { width: 360, height: 800 },
+      { width: 390, height: 844 },
+      { width: 430, height: 932 },
+    ]) {
+      await page.setViewportSize(viewport);
+      await page.goto("/zh", { waitUntil: "domcontentloaded" });
+
+      const collection = page.locator(".scheme-a-project__collection");
+      await expect(collection).toBeVisible();
+      await collection.scrollIntoViewIfNeeded();
+
+      const frames = collection.locator(".scheme-a-project__collection-media");
+      const frameCount = await frames.count();
+      expect(frameCount).toBeGreaterThanOrEqual(2);
+      await expect(collection.locator(".scheme-a-project__collection-media img").first()).toBeAttached();
+
+      const metrics = await collection.evaluate((element) => {
+        const media = Array.from(element.querySelectorAll<HTMLElement>(".scheme-a-project__collection-media"));
+        return {
+          clientWidth: element.clientWidth,
+          scrollWidth: element.scrollWidth,
+          frames: media.map((frame) => {
+            const rect = frame.getBoundingClientRect();
+            const image = frame.querySelector<HTMLImageElement>("img");
+            return {
+              width: rect.width,
+              height: rect.height,
+              objectFit: image ? getComputedStyle(image).objectFit : "missing",
+            };
+          }),
+        };
+      });
+
+      const widths = metrics.frames.map((frame) => frame.width);
+      expect(Math.max(...widths) - Math.min(...widths)).toBeLessThanOrEqual(1);
+      for (const frame of metrics.frames) {
+        expect(frame.height / frame.width).toBeCloseTo(1.25, 2);
+        if (frame.objectFit !== "missing") expect(frame.objectFit).toBe("cover");
+      }
+      expect(metrics.frames.some((frame) => frame.objectFit === "cover")).toBe(true);
+      expect(metrics.scrollWidth).toBeGreaterThan(metrics.clientWidth);
+    }
+
+    await page.setViewportSize({ width: 1440, height: 900 });
+    await page.goto("/zh", { waitUntil: "domcontentloaded" });
+    const desktopFrames = page.locator(".scheme-a-project__collection-media");
+    await expect(desktopFrames.first()).toBeVisible();
+    const desktopRatios = await desktopFrames.evaluateAll((frames) => frames.map((frame) => {
+      const rect = frame.getBoundingClientRect();
+      return rect.height / rect.width;
+    }));
+    expect(desktopRatios).toHaveLength(3);
+    expect(desktopRatios[0]).toBeCloseTo(1.25, 2);
+    expect(desktopRatios[1]).toBeCloseTo(0.625, 2);
+    expect(desktopRatios[2]).toBeCloseTo(1, 2);
+  });
+
   test("desktop opening preserves a full-viewport editorial stage", async ({ page }) => {
     await page.setViewportSize({ width: 1440, height: 900 });
     await page.goto("/zh", { waitUntil: "domcontentloaded" });
@@ -202,7 +261,7 @@ test.describe("Scheme A approved-design fidelity", () => {
       await page.setViewportSize(viewport);
       await page.goto("/zh/quote", { waitUntil: "domcontentloaded" });
 
-      const hero = page.locator(".forest-quote-page .fc-route-hero-form");
+      const hero = page.locator(".fc-route-quote-page .fc-route-hero-form");
       const progress = page.locator(".quote-form-guide__summary");
       const switcher = page.getByTestId("mobile-bottom-dock");
       const actionBar = page.locator(".scheme-a-contact-dock");
@@ -215,8 +274,8 @@ test.describe("Scheme A approved-design fidelity", () => {
       await expect(page.locator(".scheme-a-mobile-dock")).not.toBeVisible();
 
       const metrics = await page.evaluate(() => {
-        const hero = document.querySelector<HTMLElement>(".forest-quote-page .fc-route-hero-form");
-        const title = document.querySelector<HTMLElement>(".forest-quote-form h2");
+        const hero = document.querySelector<HTMLElement>(".fc-route-quote-page .fc-route-hero-form");
+        const title = document.querySelector<HTMLElement>(".fc-route-quote-form h2");
         const progress = document.querySelector<HTMLElement>(".quote-form-guide__summary");
         const actionBar = document.querySelector<HTMLElement>(".scheme-a-contact-dock");
         if (!hero || !title || !progress || !actionBar) throw new Error("Missing quote conversion regions");
