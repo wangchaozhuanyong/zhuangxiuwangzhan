@@ -54,7 +54,7 @@ Do not commit real passwords, tokens, service role keys, or production secrets.
 
 SEO/GEO automation and approved content imports must not write database tables directly. Use the protected Supabase Edge Function `content-publish`, which acts as the backend publishing API for admin-approved content.
 
-The API supports `service`, `homepage`, `blog`, `material`, `project`, and restricted `site_page` records. Published CMS records are also the runtime source for public HTML metadata, JSON-LD, `/sitemap.xml`, and `/llms.txt`; after this edge architecture is deployed, normal content updates do not require a frontend deployment.
+The API supports `service`, `service_area`, `homepage`, `blog`, `material`, `project`, and restricted `site_page` records. Published CMS records are also the runtime source for public HTML metadata, JSON-LD, `/sitemap.xml`, and `/llms.txt`; after this edge architecture is deployed, normal content updates do not require a frontend deployment.
 
 Current protected publishing contract:
 
@@ -62,7 +62,7 @@ Current protected publishing contract:
 - Method: `POST`
 - Auth: `Authorization: Bearer <admin user access token>` for an admin session, or `x-cron-secret: <CONTENT_PUBLISH_SECRET>` for approved SEO/GEO automation.
 - Allowed roles: `super_admin`, `content_editor`; the machine secret is treated as a content editor automation path.
-- Supported content types: `service`, restricted `homepage`, and `blog`
+- Supported content types: `service`, `service_area`, restricted `homepage`, `blog`, `material`, `project`, and restricted `site_page`
 - Dry run mode validates and previews the cleaned admin payload without writing.
 - Publish mode requires `ownerApproved: true` and `explicitExecution: true`.
 - Sync behavior: writes through the backend admin publishing flow, records `admin_audit_logs`, and returns SEO/QA next steps.

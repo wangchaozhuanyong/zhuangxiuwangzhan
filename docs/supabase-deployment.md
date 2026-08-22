@@ -107,6 +107,8 @@ CLOUDFLARE_ZONE_ID=
 
 After a successful CMS publish, `content-publish` advances the existing `site_settings.updated_at` value. Public HTML cache keys include this revision and edge nodes re-check it at most every five seconds, so old HTML is bypassed without a frontend deployment or database migration.
 
+`content-publish` accepts the protected `service_area` content type for `service_areas` records. It uses the same field whitelist, bilingual published-content validation, optimistic locking, admin audit log, content-revision advancement, and best-effort edge-cache purge as other supported CMS records. Because the admin editor and public location pages read the same record, an approved machine-secret publish stays synchronized without an interactive `/admin` login.
+
 `CLOUDFLARE_API_TOKEN` and `CLOUDFLARE_ZONE_ID` are optional best-effort cleanup settings. When configured, scope the token to `Cache Purge` for the production zone only. The content revision remains the source of truth because Pages Cache API entries may not belong to the custom domain's purge scope.
 
 ## Health Check

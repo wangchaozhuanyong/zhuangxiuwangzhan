@@ -66,6 +66,30 @@ const SERVICE_FIELDS = new Set([
   "status",
   "sort_order",
 ]);
+const SERVICE_AREA_FIELDS = new Set([
+  "id",
+  "slug",
+  "title_zh",
+  "title_en",
+  "excerpt_zh",
+  "excerpt_en",
+  "content_zh",
+  "content_en",
+  "area_name",
+  "property_types",
+  "common_needs",
+  "construction_notes_zh",
+  "construction_notes_en",
+  "projects",
+  "faqs_zh",
+  "faqs_en",
+  "seo_title_zh",
+  "seo_title_en",
+  "seo_description_zh",
+  "seo_description_en",
+  "status",
+  "sort_order",
+]);
 const BLOG_FIELDS = new Set([
   "id",
   "slug",
@@ -433,6 +457,101 @@ function cleanServicePayload(record: Record<string, unknown>, nextStatus?: Conte
   }
 
   return { payload, slug, warnings };
+}
+
+const cleanServiceAreaProjects = (value: unknown, status: ContentStatus) =>
+  Array.isArray(value)
+    ? value
+        .map((item, index) => {
+          const row = item && typeof item === "object" ? (item as Record<string, unknown>) : {};
+          const project = {
+            title: cleanText(row.title, 240) || "",
+            type: cleanText(row.type, 120) || "",
+            image: cleanText(row.image, 1000) || "",
+          };
+          if (!project.title || !project.type || !project.image) {
+            throw new Error(`Service-area project ${index + 1} requires title, type, and image.`);
+          }
+          if (!isSafeImageUrl(project.image)) {
+            throw new Error(`Service-area project ${index + 1} image must be site-relative, HTTPS, or localhost for local testing.`);
+          }
+          assertPublishedWebpImage(project.image, status, `projects[${index}].image`);
+          return project;
+        })
+        .slice(0, 24)
+    : [];
+
+function cleanServiceAreaPayload(record: Record<string, unknown>, nextStatus?: ContentStatus) {
+  const payload: Record<string, unknown> = {};
+  for (const [key, value] of Object.entries(record)) {
+    if (READONLY_FIELDS.has(key)) continue;
+    if (!SERVICE_AREA_FIELDS.has(key)) throw new Error(`Unsupported service_area field: ${key}.`);
+    payload[key] = value;
+  }
+
+  const slug = normalizeSlug(payload.slug || payload.area_name || payload.title_en || payload.title_zh);
+  if (!slug) throw new Error("Service-area slug, area_name, or title is required.");
+  payload.slug = slug;
+
+  const status = (nextStatus || payload.status || "draft") as ContentStatus;
+  if (!VALID_STATUSES.has(status)) throw new Error("Invalid service_area status.");
+  payload.status = status;
+
+  for (const key of ["title_zh", "title_en", "area_name"]) payload[key] = cleanText(payload[key], 240);
+  for (const key of ["excerpt_zh", "excerpt_en"]) payload[key] = cleanText(payload[key], 800);
+  for (const key of ["content_zh", "content_en", "construction_notes_zh", "construction_notes_en"]) {
+    payload[key] = cleanText(payload[key], 80000);
+  }
+  for (const key of ["seo_title_zh", "seo_title_en"]) payload[key] = cleanText(payload[key], 180);
+  for (const key of ["seo_description_zh", "seo_description_en"]) payload[key] = cleanText(payload[key], 320);
+  payload.property_types = cleanLines(payload.property_types);
+  payload.common_needs = cleanLines(payload.common_needs);
+  payload.projects = cleanServiceAreaProjects(payload.projects, status);
+  payload.faqs_zh = cleanFaqs(payload.faqs_zh);
+  payload.faqs_en = cleanFaqs(payload.faqs_en);
+  const sortOrder = cleanSortOrder(payload.sort_order);
+  if (sortOrder !== undefined) payload.sort_order = sortOrder;
+
+  if (hasMediaPlaceholder(payload)) throw new Error("Media placeholders remain. Upload/select media in the admin media library first.");
+
+  if (status === "published") {
+    const required = [
+      "title_zh",
+      "title_en",
+      "excerpt_zh",
+      "excerpt_en",
+      "content_zh",
+      "content_en",
+      "area_name",
+      "property_types",
+      "common_needs",
+      "construction_notes_zh",
+      "construction_notes_en",
+      "projects",
+      "faqs_zh",
+      "faqs_en",
+      "seo_title_zh",
+      "seo_title_en",
+      "seo_description_zh",
+      "seo_description_en",
+    ];
+    const missing = required.filter((field) => {
+      const value = payload[field];
+      return !value || (Array.isArray(value) && value.length === 0);
+    });
+    const incompleteFaqs = ["faqs_zh", "faqs_en"].filter((field) =>
+      (payload[field] as Array<{ q?: string; a?: string }>).some((item) => !item.q || !item.a),
+    );
+    if ((payload.faqs_zh as unknown[]).length !== (payload.faqs_en as unknown[]).length) {
+      incompleteFaqs.push("faqs_zh/faqs_en count mismatch");
+    }
+    const invalidFields = Array.from(new Set([...missing, ...incompleteFaqs]));
+    if (invalidFields.length) {
+      throw new Error(`Published service_area requires complete bilingual content, planning details, projects, FAQ, and SEO fields: ${invalidFields.join(", ")}.`);
+    }
+  }
+
+  return { payload, key: slug, warnings: [] as string[] };
 }
 
 function cleanBlogPayload(record: Record<string, unknown>, nextStatus?: ContentStatus) {
@@ -1177,8 +1296,8 @@ async function publishMaterialContent(
 }
 
 type SingleRecordPublishConfig = {
-  contentType: "project" | "site_page";
-  table: "projects" | "site_pages";
+  contentType: "project" | "site_page" | "service_area";
+  table: "projects" | "site_pages" | "service_areas";
   keyField: "slug" | "page_key";
   clean: (
     record: Record<string, unknown>,
@@ -1449,9 +1568,10 @@ export async function publishContent(
     input.contentType !== "blog" &&
     input.contentType !== "material" &&
     input.contentType !== "project" &&
-    input.contentType !== "site_page"
+    input.contentType !== "site_page" &&
+    input.contentType !== "service_area"
   ) {
-    return errorResult("Unsupported contentType. Supported content types: service, homepage, blog, material, project, site_page.");
+    return errorResult("Unsupported contentType. Supported content types: service, service_area, homepage, blog, material, project, site_page.");
   }
 
   const mode = input.mode || "dry-run";
@@ -1472,6 +1592,15 @@ export async function publishContent(
   }
   if (input.contentType === "material") {
     return publishMaterialContent(input, client, context, mode, nextStatus);
+  }
+  if (input.contentType === "service_area") {
+    return publishSingleRecordContent(input, client, context, mode, nextStatus, {
+      contentType: "service_area",
+      table: "service_areas",
+      keyField: "slug",
+      clean: cleanServiceAreaPayload,
+      verifyPaths: `/zh/locations/${normalizeSlug(input.record.slug)} and /en/locations/${normalizeSlug(input.record.slug)}`,
+    });
   }
   if (input.contentType === "project") {
     return publishSingleRecordContent(input, client, context, mode, nextStatus, {
