@@ -1,9 +1,43 @@
 export const blogCategoryFilters = [
-  { value: "All", en: "All", zh: "全部" },
-  { value: "Guides", en: "Guides", zh: "装修指南" },
-  { value: "Materials", en: "Materials", zh: "材料知识" },
-  { value: "Inspiration", en: "Inspiration", zh: "设计灵感" },
+  { value: "all", en: "All", zh: "全部" },
+  { value: "budget-quotation", en: "Budget & Quotations", zh: "预算与报价" },
+  { value: "home-condo-approval", en: "Home, Condo & Approvals", zh: "住宅、公寓与审批" },
+  { value: "kitchen-cabinetry", en: "Kitchen & Cabinetry", zh: "厨房与定制柜" },
+  { value: "bathroom-waterproofing", en: "Bathroom & Waterproofing", zh: "浴室与防水" },
+  { value: "office-retail-fitout", en: "Office & Retail Fit-Out", zh: "办公室与店铺" },
+  { value: "materials-design", en: "Materials & Design", zh: "材料与设计" },
 ] as const;
+
+export const blogTopicText = {
+  en: {
+    heading: "Explore by renovation decision",
+    description: "Start with the part of the project you need to decide next. Each topic connects practical guides with the relevant FLASH CAST service.",
+    serviceLabel: "Related service",
+    articlesLabel: "Featured guides",
+    topics: {
+      "budget-quotation": { label: "Budget & Quotations", description: "Scope, quotation and payment checks for comparing renovation proposals." },
+      "home-condo-approval": { label: "Home, Condo & Approvals", description: "Planning, management and approval checks for condos, landed homes and older properties." },
+      "kitchen-cabinetry": { label: "Kitchen & Cabinetry", description: "Kitchen layout, cabinet specifications, storage and quotation decisions." },
+      "bathroom-waterproofing": { label: "Bathroom & Waterproofing", description: "Wet-area scope, leakage, drainage and waterproofing planning." },
+      "office-retail-fitout": { label: "Office & Retail Fit-Out", description: "Fit-out, reinstatement, approval and opening-readiness guidance for business spaces." },
+      "materials-design": { label: "Materials & Design", description: "Material comparisons, finishes and design choices suited to the intended space." },
+    },
+  },
+  zh: {
+    heading: "按装修决策查找内容",
+    description: "从你下一步需要决定的问题开始，每个主题都会连接实用指南与对应的 FLASH CAST 服务。",
+    serviceLabel: "相关服务",
+    articlesLabel: "精选指南",
+    topics: {
+      "budget-quotation": { label: "预算与报价", description: "核对装修范围、报价和付款安排，帮助你更准确地比较方案。" },
+      "home-condo-approval": { label: "住宅、公寓与审批", description: "公寓、排屋和旧屋装修的规划、管理处与审批检查。" },
+      "kitchen-cabinetry": { label: "厨房与定制柜", description: "厨房布局、柜体规格、收纳和报价决策指南。" },
+      "bathroom-waterproofing": { label: "浴室与防水", description: "湿区范围、漏水、排水和防水施工前的规划重点。" },
+      "office-retail-fitout": { label: "办公室与店铺", description: "商业空间装修、还原、审批与开业准备指南。" },
+      "materials-design": { label: "材料与设计", description: "按空间用途比较材料、饰面和设计方向。" },
+    },
+  },
+} as const;
 
 export const blogPageText = {
   en: {

@@ -19,6 +19,7 @@ import { trackCtaClick } from "@/lib/analytics";
 import { formatBlogDate, formatBlogReadTime } from "@/lib/blogMeta";
 import { blogDetailPageText } from "@/i18n/blogDetailPageText";
 import { pageHeroImages, resolveEditorialHeroImage } from "@/lib/pageHeroImages";
+import { resolveBlogTopic } from "@/lib/blogTopics";
 
 const EDITORIAL_STORY_IMAGES = [
   "/images/projects/generated-portfolio/mont-kiara-luxury-condo-renovation.webp",
@@ -88,8 +89,12 @@ const BlogDetail = () => {
   );
   const otherPosts = useMemo(() => {
     const source = cmsPosts?.length ? cmsPosts : initialPosts;
-    return source.filter((item) => item.slug !== slug).slice(0, 3);
-  }, [cmsPosts, initialPosts, slug]);
+    const currentTopic = post ? resolveBlogTopic(post.category, post.slug) : null;
+    return source
+      .filter((item) => item.slug !== slug)
+      .sort((left, right) => Number(resolveBlogTopic(right.category, right.slug) === currentTopic) - Number(resolveBlogTopic(left.category, left.slug) === currentTopic))
+      .slice(0, 3);
+  }, [cmsPosts, initialPosts, post, slug]);
 
   if (postPending && !fallbackPost) {
     return (
@@ -196,7 +201,7 @@ const BlogDetail = () => {
         keywords={post.tags}
       />
 
-      <SchemeARouteHero kind="article" image={articleHeroImage.desktop} mobileImage={articleHeroImage.mobile} imageAlt={articleImageAlt} label={`${translateBlogCategory(post.category, language)} / ${publishDate} / ${readTime}`} title={articleTitle} description={displayText(post.excerpt)} />
+      <SchemeARouteHero kind="article" image={articleHeroImage.desktop} mobileImage={articleHeroImage.mobile} imageAlt={articleImageAlt} label={`${translateBlogCategory(resolveBlogTopic(post.category, post.slug), language)} / ${publishDate} / ${readTime}`} title={articleTitle} description={displayText(post.excerpt)} />
 
       <SchemeASection className="fc-route-editorial">
         <div className="blog-editorial-layout">
@@ -258,7 +263,7 @@ const BlogDetail = () => {
       </SchemeASection>
 
       <SchemeASection title={t.moreArticles}>
-        <SchemeAListingGrid actionLabel={t.backToBlog} items={otherPosts.map((item) => ({ id: String(item.id), title: displayText(item.title), meta: translateBlogCategory(item.category, language), image: item.image, imageAlt: item.imageAlt || item.title, href: `/blog/${item.slug}` }))} />
+        <SchemeAListingGrid actionLabel={t.backToBlog} items={otherPosts.map((item) => ({ id: String(item.id), title: displayText(item.title), meta: translateBlogCategory(resolveBlogTopic(item.category, item.slug), language), image: item.image, imageAlt: item.imageAlt || item.title, href: `/blog/${item.slug}` }))} />
       </SchemeASection>
     </main>
   );
