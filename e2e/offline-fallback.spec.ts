@@ -16,7 +16,7 @@ test("uses a dedicated offline page without caching live HTML", async ({ context
   await expect.poll(() => page.evaluate(() => Boolean(navigator.serviceWorker.controller))).toBe(true);
 
   const cacheKeys = await page.evaluate(async () => caches.keys());
-  expect(cacheKeys).toContain("flashcast-offline-v1");
+  expect(cacheKeys).toContain("flashcast-offline-v2");
 
   await context.setOffline(true);
   await page.goto("/zh/services", { waitUntil: "domcontentloaded" }).catch((error: unknown) => {

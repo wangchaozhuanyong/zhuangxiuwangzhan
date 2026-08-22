@@ -1604,6 +1604,8 @@ const BAIDU_VERIFY_PATH = "/baidu_verify_codeva-XKTTMi4PYh.html";
 const BAIDU_VERIFY_HTML = "codeva-XKTTMi4PYh";
 const STATIC_FILE_PATHS = new Set([
   BAIDU_VERIFY_PATH,
+  "/offline",
+  "/offline.html",
 ]);
 
 const isAssetPath = (pathname: string) =>

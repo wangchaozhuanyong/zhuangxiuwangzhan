@@ -138,6 +138,23 @@ describe("public Edge HTML cache", () => {
     });
   });
 
+  it("passes the dedicated offline document to the static asset handler", async () => {
+    const offlineHtml = "<!doctype html><html><body><h1>当前网络不可用</h1></body></html>";
+    const next = vi.fn(async () => new Response(offlineHtml, {
+      headers: { "content-type": "text/html; charset=utf-8" },
+    }));
+
+    const response = await onRequest({
+      request: new Request("https://flashcast.com.my/offline"),
+      env: {},
+      next,
+    } as never);
+
+    expect(next).toHaveBeenCalledOnce();
+    expect(response.status).toBe(200);
+    await expect(response.text()).resolves.toContain("当前网络不可用");
+  });
+
   it("serves a fresh cache hit without querying Supabase again", async () => {
     const firstResponse = await requestPage();
     expect(firstResponse.headers.get("x-flashcast-html-cache")).toBe("miss");
