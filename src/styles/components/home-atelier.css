@@ -605,7 +605,8 @@
     }
 
     html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-hero__media img {
-      object-position: center center !important;
+      object-position: left center !important;
+      transform: scale(1.1) !important;
     }
 
     html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-hero__media figcaption {
@@ -678,8 +679,10 @@
     }
 
     html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-hero__disciplines li {
+      padding-right: 0;
       font-size: 9px;
       letter-spacing: 0.04em;
+      text-align: center;
     }
 
     html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-principle__inner,
@@ -721,9 +724,10 @@
     }
 
     html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-project__media {
-      width: calc(100% - 22px);
+      width: calc(100% - 44px);
       height: auto;
       aspect-ratio: 4 / 5;
+      margin-right: 22px;
       margin-left: 22px;
     }
 
