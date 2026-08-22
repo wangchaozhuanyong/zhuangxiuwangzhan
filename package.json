@@ -58,6 +58,7 @@
     "content:materials:validate": "node scripts/publish-material-catalog.mjs --validate",
     "content:materials:dry-run": "node scripts/publish-material-catalog.mjs",
     "content:trust-fixes": "node scripts/publish-content-trust-fixes.mjs",
+    "content:service-area-publish": "node scripts/publish-service-area-content.mjs",
     "test:watch": "vitest"
   },
   "dependencies": {

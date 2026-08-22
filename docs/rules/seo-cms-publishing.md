@@ -26,7 +26,8 @@ Flashcast 是公开获客网站，SEO 和 CMS 发布链路必须稳定。后台�
 - 改 slug、删除页面、下线内容时，必须考虑旧链接、重定向、404、sitemap 和搜索引擎影响。
 - `functions/seo-manifest.json`、`public/seo-manifest.json`、`public/sitemap.xml` 这类生成物不能手工乱改，优先用现有脚本生成。
 - SEO/GEO 审核通过的受保护发布入口是 `content-publish`。
-- `content-publish` 支持 `service`、受限 `homepage`、`blog`、`material`、`project` 和受限 `site_page`；全部沿用管理员/机器密钥鉴权、显式授权、乐观锁、字段白名单和审计记录。
+- `content-publish` 支持 `service`、`service_area`、受限 `homepage`、`blog`、`material`、`project` 和受限 `site_page`；全部沿用管理员/机器密钥鉴权、显式授权、乐观锁、字段白名单和审计记录。
+- `service_area` 直接更新后台与公开页面共用的 `service_areas` 记录；必须一次只处理一个 `/en/locations/<slug>` 与 `/zh/locations/<slug>` 双语页面对，并验证数据库记录和两个公开页面后才算完成。
 - `project` 发布会清空 `location` 与 `area`，案例标题和内容应描述空间类型与装修范围，例如“理发店装修”，不写具体地区案例说明。
 - `site_page` 只允许更新现有双语公开路由；新动态路由必须使用 `cms_pages`，不能借此创建前端无法读取的页面。
 - 材料价格/图库迁移未应用时，`material` 只允许旧结构字段；带高级价格或图库字段的请求必须阻断，不能尝试写不存在的字段或表。
