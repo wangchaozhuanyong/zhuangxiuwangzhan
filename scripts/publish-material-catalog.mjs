@@ -9,13 +9,15 @@ const execute = args.includes("--execute");
 const skipArchive = args.includes("--skip-archive");
 const requestedSlugs = args.filter((arg) => arg.startsWith("--slug=")).map((arg) => arg.slice("--slug=".length)).filter(Boolean);
 const approvalId = args.find((arg) => arg.startsWith("--approval-id="))?.slice("--approval-id=".length) || "";
+const envDir = path.resolve(args.find((arg) => arg.startsWith("--env-dir="))?.slice("--env-dir=".length) || process.cwd());
+const assetRoot = path.resolve(args.find((arg) => arg.startsWith("--asset-root="))?.slice("--asset-root=".length) || process.cwd());
 
 const fail = (message) => {
   throw new Error(message);
 };
 
 const validateCatalog = () => {
-  if (materialCatalogRecords.length !== 27) fail(`Expected 27 active products, found ${materialCatalogRecords.length}.`);
+  if (materialCatalogRecords.length !== 45) fail(`Expected 45 active products, found ${materialCatalogRecords.length}.`);
   if (archiveMaterialSlugs.length !== 16) fail(`Expected 16 archived duplicate/placeholder slugs, found ${archiveMaterialSlugs.length}.`);
 
   const slugs = materialCatalogRecords.map((item) => item.record.slug);
@@ -39,7 +41,7 @@ const validateCatalog = () => {
     for (const image of record.gallery) {
       if (!image.alt_zh || !image.alt_en) fail(`${record.slug} contains an image without bilingual alt text.`);
       if (image.image_url.startsWith("/")) {
-        const localPath = path.join(process.cwd(), "public", image.image_url.replace(/^\//, ""));
+        const localPath = path.join(assetRoot, "public", image.image_url.replace(/^\//, ""));
         if (!fs.existsSync(localPath)) fail(`${record.slug} references a missing local image: ${image.image_url}`);
       }
     }
@@ -73,7 +75,7 @@ const publishRecord = async ({ functionUrl, secret, record, nextStatus }) => {
     mode: "dry-run",
     nextStatus,
     record,
-    source: "material-catalog-2026-08-14",
+    source: "material-catalog-2026-08-22",
   });
   if (!execute) return { slug: record.slug, action: preview.action, mode: "dry-run" };
 
@@ -86,7 +88,7 @@ const publishRecord = async ({ functionUrl, secret, record, nextStatus }) => {
     explicitExecution: true,
     approvalId,
     record,
-    source: "material-catalog-2026-08-14",
+    source: "material-catalog-2026-08-22",
   });
   return { slug: record.slug, action: published.action, mode: "publish", galleryCount: published.gallery_count || 0 };
 };
@@ -99,7 +101,7 @@ const main = async () => {
   }
 
   if (execute && !approvalId) fail("--execute requires --approval-id=<owner approval reference>.");
-  const env = loadEnv("", process.cwd(), "");
+  const env = loadEnv("", envDir, "");
   const supabaseUrl = env.SUPABASE_URL || env.VITE_SUPABASE_URL;
   const secret = env.CONTENT_PUBLISH_SECRET;
   if (!supabaseUrl || !secret) fail("SUPABASE_URL (or VITE_SUPABASE_URL) and CONTENT_PUBLISH_SECRET are required.");
@@ -121,7 +123,7 @@ const main = async () => {
       mode: "dry-run",
       nextStatus: "archived",
       record: { slug, status: "archived" },
-      source: "material-catalog-2026-08-14",
+      source: "material-catalog-2026-08-22",
     });
     if (!preview.existing_id) {
       results.push({ slug, action: "skip-missing", mode: execute ? "publish" : "dry-run" });

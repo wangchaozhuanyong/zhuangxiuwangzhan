@@ -95,7 +95,9 @@ const materialSubcategoryLabels: Record<string, LabelPair> = {
   "fluted panel": { en: "Fluted Panel", zh: "格栅饰板" },
   "timber cladding": { en: "Timber Cladding", zh: "木饰面" },
   "feature wall tile": { en: "Feature Wall Tile", zh: "背景墙砖" },
+  "floor tile": { en: "Floor Tile", zh: "地砖" },
   "wall panel": { en: "Wall Panel", zh: "墙板" },
+  "acoustic wall panel": { en: "Acoustic Wall Panel", zh: "吸音墙板" },
   "venetian plaster": { en: "Venetian Plaster", zh: "威尼斯灰泥" },
   microcement: { en: "Microcement", zh: "微水泥" },
   "metallic paint": { en: "Metallic Paint", zh: "金属漆" },
@@ -122,6 +124,8 @@ const materialTypeLabels: Record<string, LabelPair> = {
   "solid surface": { en: "Solid Surface", zh: "人造石" },
   "mdf fluted": { en: "MDF Fluted", zh: "MDF 格栅板" },
   timber: { en: "Timber", zh: "木材" },
+  "aluminium and tempered glass": { en: "Aluminium and Tempered Glass", zh: "铝框与钢化玻璃" },
+  "acoustic panel": { en: "Acoustic Panel", zh: "吸音板" },
 };
 
 const spaceLabels: Record<string, LabelPair> = {
@@ -496,6 +500,26 @@ const displayTextReplacements = Object.entries({
   .map(([key, value]) => ({ key, value }));
 
 const extraZhTextReplacements: Record<string, string> = {
+  "Smoked Glass and Walnut": "烟熏玻璃与胡桃木",
+  "Warm Oak and Charcoal": "暖橡木与炭灰色",
+  "Warm White and Oak": "暖白与橡木色",
+  "Natural Woodgrain": "天然木纹",
+  "Natural Timber": "天然木色",
+  "Dark Walnut": "深胡桃木",
+  "Matte Grey": "哑光灰",
+  "Warm Beige": "暖米色",
+  "Warm Grey": "暖灰色",
+  "Light Oak": "浅橡木色",
+  "Warm Oak": "暖橡木色",
+  "Smooth Matte": "柔和哑光",
+  "Slatted Felt": "木条与吸音毡",
+  "Clear Glass": "透明玻璃",
+  "Fine Grip": "细颗粒防滑面",
+  "Ribbed Glass": "长虹玻璃",
+  "Charcoal": "炭灰色",
+  "Neutral": "中性色",
+  "Fluted": "格栅纹理",
+  "Black": "黑色",
   "Frequently Asked Questions": "常见问题",
   "Modern Condo Full Renovation": "现代公寓全屋装修",
   "Corporate Office Fit-Out": "企业办公室全案装修",
