@@ -1,7 +1,11 @@
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import test from "node:test";
-import { validateProductionReleaseState } from "./production-release-policy.mjs";
+import {
+  findUnexpectedChangedPaths,
+  isPostBuildGeneratedPath,
+  validateProductionReleaseState,
+} from "./production-release-policy.mjs";
 
 const SHA = "a".repeat(40);
 
@@ -54,4 +58,28 @@ test("the standard release guard always verifies the current remote main", () =>
   const packageJson = JSON.parse(readFileSync(new URL("../package.json", import.meta.url), "utf8"));
 
   assert.match(packageJson.scripts["release:guard"], /--require-remote(?:\s|$)/);
+});
+
+test("post-build checks allow only declared generated output", () => {
+  assert.equal(isPostBuildGeneratedPath("public/images/_responsive/projects/w360/example.webp"), true);
+  assert.equal(isPostBuildGeneratedPath("public/sitemap.xml"), true);
+  assert.equal(isPostBuildGeneratedPath("src/App.tsx"), false);
+
+  assert.deepEqual(findUnexpectedChangedPaths([
+    "functions/seo-manifest.json",
+    "public/images/_responsive/projects/w360/example.webp",
+    "src/App.tsx",
+  ], true), ["src/App.tsx"]);
+});
+
+test("pre-build checks reject generated output too", () => {
+  assert.deepEqual(findUnexpectedChangedPaths(["public/sitemap.xml"], false), ["public/sitemap.xml"]);
+});
+
+test("deployment entrypoints enable the generated-output exception only after building", () => {
+  const workflow = readFileSync(new URL("../.github/workflows/cloudflare-pages-deploy-manual.yml", import.meta.url), "utf8");
+  const localDeployScript = readFileSync(new URL("./deploy-cloudflare-pages.mjs", import.meta.url), "utf8");
+
+  assert.match(workflow, /Confirm release source is unchanged after build[\s\S]*release:guard -- --allow-generated-output/);
+  assert.match(localDeployScript, /guardScript, "--require-remote", "--allow-generated-output"/);
 });

@@ -28,7 +28,7 @@ const captureGit = (args) =>
 
 run(process.execPath, [guardScript, "--require-remote"]);
 run(npmCommand, ["run", "release:check"]);
-run(process.execPath, [guardScript, "--require-remote"]);
+run(process.execPath, [guardScript, "--require-remote", "--allow-generated-output"]);
 
 const commitSha = captureGit(["rev-parse", "HEAD"]);
 run(npxCommand, [
