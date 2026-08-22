@@ -148,6 +148,15 @@
 - `docs/rules/seo-cms-publishing.md`
 - `docs/rules/dependencies.md`
 - `docs/rules/logging-privacy.md`
+- `docs/rules/public-case-privacy.md`
+- `docs/rules/production-releases.md`
+
+生产发布必须遵守：
+
+- `main` 是唯一正式发布分支，功能分支只能开发、测试和预览。
+- 功能代码、样式和回归测试必须先 commit、push 并合并到 `main`，再发布同一个完整 SHA。
+- 禁止发布未提交工作区、旧 `dist` 或非 `main` 分支；禁止绕过 `npm run release:guard` 直接执行 Wrangler 正式部署。
+- 收到“发布”指令时，必须验证当前分支、工作区、`origin/main` 和发布 SHA；条件不满足必须停止。
 
 ## 路由和 API 规则
 

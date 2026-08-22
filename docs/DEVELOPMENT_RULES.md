@@ -22,6 +22,8 @@
 | SEO / GEO / CMS 发布 | `docs/rules/seo-cms-publishing.md` |
 | 依赖管理 | `docs/rules/dependencies.md` |
 | 日志、审计和隐私 | `docs/rules/logging-privacy.md` |
+| 公开案例隐私 | `docs/rules/public-case-privacy.md` |
+| 正式环境发布 | `docs/rules/production-releases.md` |
 
 ## 1. 项目结构规则
 
@@ -272,6 +274,14 @@ Service Worker / PWA：
 如果没有运行某项验证，最终回复必须明确说明“未验证”，不能让人误以为已经通过。
 
 ## 10. 部署和回滚规则
+
+正式前端发布固定遵守以下约束：
+
+- `main` 是唯一生产分支，功能分支只能生成预览或运行验证。
+- 代码、样式和测试必须先提交、推送并合并到 `main`。
+- 正式部署必须与 `origin/main` 的完整 SHA 一致，禁止部署未提交工作区或旧 `dist`。
+- 发布前和构建后运行 `npm run release:guard`；本地紧急发布只能使用 `npm run deploy:cloudflare:pages`。
+- 详细流程见 `docs/rules/production-releases.md`。
 
 上线前必须确认：
 
