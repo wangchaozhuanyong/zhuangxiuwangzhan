@@ -61,12 +61,14 @@ test.describe("public text readability", () => {
   test("contextual mobile actions keep AA contrast", async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
     await page.goto("/zh/quote", { waitUntil: "domcontentloaded" });
+    await page.evaluate(() => window.scrollTo({ top: 200, behavior: "auto" }));
+    await expect(page.getByTestId("mobile-bottom-dock")).toHaveAttribute("data-mode", "actions");
 
-    const actions = page.locator(".mobile-action-bar__item");
+    const actions = page.locator(".scheme-a-contact-dock__item");
     await expect(actions).toHaveCount(3);
-    await expect(actions.nth(0)).toHaveCSS("background-color", "rgb(13, 16, 14)");
-    await expect(actions.nth(1)).toHaveCSS("background-color", "rgb(13, 16, 14)");
-    await expect(actions.nth(2)).toHaveCSS("background-color", "rgb(185, 144, 80)");
+    await expect(actions.nth(0)).toHaveCSS("background-color", "rgb(18, 18, 15)");
+    await expect(actions.nth(1)).toHaveCSS("background-color", "rgb(18, 18, 15)");
+    await expect(actions.nth(2)).toHaveCSS("background-color", "rgb(205, 167, 102)");
     for (let index = 0; index < await actions.count(); index += 1) {
       const colors = await readContrast(actions.nth(index));
       expect(colors.contrast, `mobile action ${index + 1} contrast`).toBeGreaterThanOrEqual(4.5);
