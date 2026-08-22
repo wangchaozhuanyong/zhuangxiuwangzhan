@@ -1,10 +1,18 @@
 import { describe, expect, it } from "vitest";
 import {
   hasNewPublicVersion,
+  isPublicVersionEndpointAvailable,
   parsePublicVersion,
 } from "@/lib/publicVersion";
 
 describe("public document version", () => {
+  it("skips checks when a plain Vite preview cannot serve the Pages Function endpoint", () => {
+    expect(isPublicVersionEndpointAvailable("127.0.0.1")).toBe(false);
+    expect(isPublicVersionEndpointAvailable("localhost")).toBe(false);
+    expect(isPublicVersionEndpointAvailable("flashcast.com.my")).toBe(true);
+    expect(isPublicVersionEndpointAvailable("preview.pages.dev")).toBe(true);
+  });
+
   it("normalizes the lightweight endpoint response", () => {
     expect(parsePublicVersion({ deploymentVersion: " commit-a ", contentVersion: " revision-a " })).toEqual({
       deploymentVersion: "commit-a",

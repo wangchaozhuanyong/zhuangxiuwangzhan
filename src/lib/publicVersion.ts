@@ -7,6 +7,11 @@ export type PublicVersion = {
 
 const readVersionText = (value: unknown) => (typeof value === "string" ? value.trim().slice(0, 128) : "");
 
+export const isPublicVersionEndpointAvailable = (hostname: string) => {
+  const normalized = hostname.trim().toLowerCase();
+  return normalized !== "localhost" && normalized !== "127.0.0.1" && normalized !== "::1";
+};
+
 export const createCurrentPublicVersion = (): PublicVersion => ({
   deploymentVersion: readVersionText(import.meta.env.VITE_APP_VERSION),
   contentVersion: readVersionText(readPreloadedPublicData()?.siteSettings?.updated_at),
