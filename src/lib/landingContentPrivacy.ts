@@ -59,10 +59,11 @@ export const anonymizeLandingProjectCards = (
 ): LandingProject[] => {
   if (!slug || !isPrivacyProtectedLanding(slug)) return projects;
 
-  const safeTitles = titleCopy[slug][language];
+  const safeTitles = titleCopy[slug]?.[language];
+  if (!safeTitles?.length) return projects;
   return projects.map((project, index) => ({
     ...project,
-    title: safeTitles[index % safeTitles.length],
+    title: safeTitles[index % safeTitles.length] || project.title,
     location: broadLocation(project.location, language),
   }));
 };
@@ -72,6 +73,7 @@ export const getLandingProjectPrivacyIssues = (slug: unknown, projects: unknown)
   if (!isPrivacyProtectedLanding(normalizedSlug) || !Array.isArray(projects)) return [];
 
   const approvedTitles = allowedTitles[normalizedSlug];
+  if (!approvedTitles) return ["privacy_configuration"];
   const issues: string[] = [];
 
   projects.forEach((value, index) => {
