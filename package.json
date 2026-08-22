@@ -51,7 +51,6 @@
     "generate:llms": "node scripts/generate-llms.mjs",
     "images:webp": "node scripts/convert-images-to-webp.mjs",
     "images:prune": "node scripts/prune-duplicate-images.mjs",
-    "videos:compress": "node scripts/compress-hero-videos.mjs",
     "seed:second-stage": "node scripts/upsert-second-stage-content.mjs",
     "seed:long-tail": "node scripts/upsert-long-tail-content.mjs",
     "content:humanize-blog": "node scripts/humanize-blog-posts.mjs",

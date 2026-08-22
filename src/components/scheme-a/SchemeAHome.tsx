@@ -1,6 +1,6 @@
-import { useState, type CSSProperties } from "react";
 import { ArrowRight, ArrowUpRight } from "lucide-react";
 import DeferredSmartImage from "@/components/DeferredSmartImage";
+import ImageComparisonSlider from "@/components/ImageComparisonSlider";
 import ImmersiveHero from "@/components/ImmersiveHero";
 import LocalizedLink from "@/components/LocalizedLink";
 import SmartImage from "@/components/SmartImage";
@@ -46,8 +46,6 @@ const buildHomeHeroSrcSet = (src: string, sourceWidth: number, widths: number[])
 const SchemeAHome = ({ content }: SchemeAHomeProps) => {
   const { language } = useLanguage();
   const copy = schemeAHomeText[language];
-  const [comparePosition, setComparePosition] = useState(48);
-
   const hero = content?.heroSlides[0];
   const configuredHeroImage = hero?.image || content?.pageContent?.image_url;
   const usesAtelierHero = !configuredHeroImage || configuredHeroImage.endsWith("/hero-luxury-living.webp");
@@ -310,10 +308,13 @@ const SchemeAHome = ({ content }: SchemeAHomeProps) => {
             <h2>{copy.beforeTitle}</h2>
           </div>
         </div>
-        <div
+        <ImageComparisonSlider
           className="scheme-a-compare"
-          style={{ "--scheme-compare": `${comparePosition}%` } as CSSProperties}
-          data-cinematic-media
+          positionVariable="--scheme-compare"
+          initialValue={48}
+          min={8}
+          max={92}
+          ariaLabel={copy.compareLabel}
         >
           <SmartImage src={afterImage} alt={beforeAfter?.alt || copy.after} width={1600} height={1000} sizes="100vw" candidateWidths={[360, 560, 720, 900, 1200, 1600]} quality={86} loading="lazy" />
           <div className="scheme-a-compare__before" aria-hidden="true">
@@ -322,15 +323,7 @@ const SchemeAHome = ({ content }: SchemeAHomeProps) => {
           <span className="scheme-a-compare__tag scheme-a-compare__tag--before">{copy.before}</span>
           <span className="scheme-a-compare__tag scheme-a-compare__tag--after">{copy.after}</span>
           <span className="scheme-a-compare__line" aria-hidden="true" />
-          <input
-            type="range"
-            min="8"
-            max="92"
-            value={comparePosition}
-            aria-label={copy.compareLabel}
-            onChange={(event) => setComparePosition(Number(event.target.value))}
-          />
-        </div>
+        </ImageComparisonSlider>
         <p className="scheme-a-frame scheme-a-before__note">{copy.beforeNote}</p>
       </section>
 

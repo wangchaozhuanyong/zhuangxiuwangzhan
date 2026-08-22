@@ -1,5 +1,5 @@
-import { useState, type CSSProperties } from "react";
 import { DeferredSmartImage } from "@/components/DeferredSmartImage";
+import ImageComparisonSlider from "@/components/ImageComparisonSlider";
 import { JsonLdBreadcrumb } from "@/components/JsonLd";
 import PageMeta from "@/components/PageMeta";
 import { ForestContentState } from "@/components/forest/ForestPagePrimitives";
@@ -22,7 +22,6 @@ function BeforeAfterComparison({
   language: "en" | "zh";
 }) {
   const t = beforeAfterPageText[language];
-  const [position, setPosition] = useState(index % 2 === 0 ? 55 : 48);
   const imageAlt = item.alt || item.title;
 
   return (
@@ -35,10 +34,11 @@ function BeforeAfterComparison({
         </div>
       </header>
 
-      <div
+      <ImageComparisonSlider
         className="scheme-a-transformation__compare"
-        style={{ "--compare-position": `${position}%` } as CSSProperties}
-        data-cinematic-media
+        positionVariable="--compare-position"
+        initialValue={index % 2 === 0 ? 55 : 48}
+        ariaLabel={t.compareAria(item.title)}
       >
         <DeferredSmartImage
           src={item.after_image_url}
@@ -75,16 +75,7 @@ function BeforeAfterComparison({
         <span className="scheme-a-transformation__handle" aria-hidden="true">
           ↔
         </span>
-        <input
-          type="range"
-          min="0"
-          max="100"
-          value={position}
-          aria-label={t.compareAria(item.title)}
-          aria-valuetext={`${position}%`}
-          onChange={(event) => setPosition(Number(event.target.value))}
-        />
-      </div>
+      </ImageComparisonSlider>
     </article>
   );
 }
