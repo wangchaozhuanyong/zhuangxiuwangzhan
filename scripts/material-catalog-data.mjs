@@ -1,3 +1,5 @@
+import { expansionDefinitions } from "./material-catalog-expansion-data.mjs";
+
 const portfolio = (file) => `/images/projects/generated-portfolio/${file}.webp`;
 
 const gallerySets = {
@@ -485,7 +487,36 @@ const defaultPriceNote = {
 const gallerySceneLabelsZh = ["客厅", "餐厅", "厨房", "卧室", "玄关", "办公室", "商业空间", "重点墙面", "整体装修"];
 const gallerySceneLabelsEn = ["living room", "dining area", "kitchen", "bedroom", "entryway", "office", "commercial interior", "feature area", "whole interior"];
 
-const buildGallery = (definition) => [
+const expansionGalleryFiles = [
+  ["scene-plan.webp", "scene", "空间应用规划", "space planning"],
+  ["texture.webp", "detail", "材质纹理", "material texture"],
+  ["detail.webp", "detail", "构造细节", "construction detail"],
+  ["specification.webp", "specification", "规格确认", "specification review"],
+  ["installation.webp", "installation", "安装节点", "installation detail"],
+  ["pairing.webp", "scene", "材料搭配", "material pairing"],
+  ["edge-detail.webp", "detail", "收边细节", "edge detail"],
+  ["maintenance.webp", "specification", "维护规划", "maintenance planning"],
+  ["alternate-layout.webp", "scene", "替代布局", "alternate layout"],
+];
+
+const buildGallery = (definition) => definition.assetRoot ? [
+  {
+    image_url: definition.cover,
+    image_type: "cover",
+    alt_zh: `${definition.titleZh}装修效果概念主图`,
+    alt_en: `${definition.titleEn} renovation concept overview`,
+    rights_status: "generated",
+    sort_order: 0,
+  },
+  ...expansionGalleryFiles.map(([file, imageType, labelZh, labelEn], index) => ({
+    image_url: `${definition.assetRoot}/${file}`,
+    image_type: imageType,
+    alt_zh: `${definition.titleZh}${labelZh}效果概念图`,
+    alt_en: `${definition.titleEn} ${labelEn} concept`,
+    rights_status: "generated",
+    sort_order: (index + 1) * 10,
+  })),
+] : [
   {
     image_url: definition.cover,
     image_type: "cover",
@@ -504,7 +535,7 @@ const buildGallery = (definition) => [
   })),
 ];
 
-export const materialCatalogRecords = definitions.map((definition, index) => ({
+export const materialCatalogRecords = [...definitions, ...expansionDefinitions].map((definition, index) => ({
   record: {
     slug: definition.slug,
     title_zh: definition.titleZh,
