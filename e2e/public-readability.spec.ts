@@ -61,7 +61,8 @@ test.describe("public text readability", () => {
   test("contextual mobile actions keep AA contrast", async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
     await page.goto("/zh/quote", { waitUntil: "domcontentloaded" });
-    await page.evaluate(() => window.scrollTo({ top: 200, behavior: "auto" }));
+    await expect(page.locator(".fc-route-form-page")).toBeVisible();
+    await page.evaluate(() => window.scrollTo({ top: 160, behavior: "auto" }));
     await expect(page.getByTestId("mobile-bottom-dock")).toHaveAttribute("data-mode", "actions");
 
     const actions = page.locator(".scheme-a-contact-dock__item");
@@ -78,8 +79,8 @@ test.describe("public text readability", () => {
   for (const viewport of viewports) {
     for (const theme of themes) {
       for (const formPage of [
-        { path: "/zh/contact", selector: ".forest-contact-form form" },
-        { path: "/zh/quote", selector: ".forest-quote-form form" },
+        { path: "/zh/contact", selector: ".fc-route-contact-form form" },
+        { path: "/zh/quote", selector: ".fc-route-quote-form form" },
       ]) {
         test(`${viewport.name} ${theme} ${formPage.path} keeps form copy readable`, async ({ page }) => {
           await page.setViewportSize(viewport);

@@ -223,15 +223,7 @@ const AppShell = () => {
   const publicMainTransitionClass = !isAdminRoute ? "public-main-transition" : undefined;
   const mainContentClass = [publicMainClass, publicMainTransitionClass].filter(Boolean).join(" ") || undefined;
   const mainContentKey = isAdminRoute ? "admin-main-content" : location.pathname;
-  const forestSurface = publicPath.startsWith("/products") || publicPath.startsWith("/materials")
-    ? "timber"
-    : publicPath.startsWith("/landing")
-      ? "campaign"
-      : publicPath.startsWith("/promotions") || publicPath.startsWith("/contact") || publicPath.startsWith("/quote")
-        ? "forest"
-        : publicPath.startsWith("/services") || publicPath.startsWith("/process")
-          ? "graphite"
-          : "stone";
+  const publicSurface = publicPath.startsWith("/landing/") ? "campaign" : "scheme-a";
 
   useEffect(() => {
     document.documentElement.dataset.navigationType = navigationType.toLowerCase();
@@ -267,11 +259,11 @@ const AppShell = () => {
           </div>
         </PublicPageFrame>
       ) : (
-        <PublicSiteShell surface={forestSurface} productDetail={isProductDetailRoute}>
+        <PublicSiteShell surface={publicSurface} productDetail={isProductDetailRoute}>
           <SchemeANavbar />
           <PublicCinematicMotionGate />
           <PublicPageFrame isAdminRoute={false}>
-            <div key={mainContentKey} id="main-content" tabIndex={-1} className={mainContentClass} data-forest-surface={forestSurface}>
+            <div key={mainContentKey} id="main-content" tabIndex={-1} className={mainContentClass} data-public-surface={publicSurface}>
               <AppErrorBoundary isAdminRoute={false}>
                 <Suspense fallback={<PageLoader />}>
                   <Routes>{publicRoutes}</Routes>

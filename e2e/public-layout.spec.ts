@@ -151,7 +151,7 @@ test.describe("public responsive layout", () => {
     await page.setViewportSize({ width: 1440, height: 900 });
     await page.goto("/zh/quote", { waitUntil: "domcontentloaded" });
 
-    const form = page.locator(".forest-quote-form form");
+    const form = page.locator(".fc-route-quote-form form");
     await expect(form).toBeVisible();
     await expect(page.locator("#quote-name")).toHaveAttribute("required", "");
     await expect(page.locator("#quote-phone")).toHaveAttribute("required", "");
@@ -159,8 +159,8 @@ test.describe("public responsive layout", () => {
     await expect(page.locator("#quote-location")).toHaveAttribute("required", "");
 
     const surface = await form.evaluate((element) => {
-      const wrapper = element.closest(".forest-quote-form-wrap");
-      const panel = element.closest(".forest-quote-form");
+      const wrapper = element.closest(".fc-route-quote-form-wrap");
+      const panel = element.closest(".fc-route-quote-form");
       const label = element.querySelector("label");
       return {
         wrapperBackground: wrapper ? getComputedStyle(wrapper).backgroundColor : "missing",

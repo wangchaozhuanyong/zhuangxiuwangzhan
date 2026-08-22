@@ -10,6 +10,7 @@ import { translateDisplayText } from "@/i18n/displayLabels";
 import { schemeAHomeText } from "@/i18n/schemeAText";
 import type { PublishedHomeContentBundle } from "@/lib/homeContentApi";
 import { isRenderingConceptProject } from "@/lib/projectContentClassification";
+import { buildSupabaseSrcSet, type SupabaseTargetAspectRatio } from "@/lib/supabaseImage";
 
 type SchemeAHomeProps = {
   content: PublishedHomeContentBundle | undefined;
@@ -20,6 +21,18 @@ const HOME_HERO_ASSETS = {
   tablet: "/images/heroes/v4/home-atelier-tablet.webp",
   mobile: "/images/heroes/v4/home-atelier-mobile.webp",
 } as const;
+
+const PROJECT_CARD_MOBILE_MEDIA = "(max-width: 47.9375rem)";
+const PROJECT_CARD_MOBILE_SIZES = "(max-width: 397px) 78vw, 310px";
+const PROJECT_CARD_MOBILE_WIDTHS = [360, 560, 720, 960];
+const PROJECT_CARD_DESKTOP_WIDTHS = [360, 560, 720, 900, 1200, 1600];
+const PROJECT_CARD_MOBILE_ASPECT_RATIO = { width: 4, height: 5 } as const satisfies SupabaseTargetAspectRatio;
+const PROJECT_CARD_DESKTOP_ASPECT_RATIOS = [
+  PROJECT_CARD_MOBILE_ASPECT_RATIO,
+  { width: 16, height: 10 },
+  { width: 1, height: 1 },
+] as const satisfies readonly SupabaseTargetAspectRatio[];
+const PROJECT_CARD_INTRINSIC_WIDTH = 960;
 
 const buildHomeHeroSrcSet = (src: string, sourceWidth: number, widths: number[]) => {
   const relativePath = src.replace(/^\/images\/heroes\//, "");
@@ -192,33 +205,55 @@ const SchemeAHome = ({ content }: SchemeAHomeProps) => {
         </div>
         {supportingProjects.length > 0 && (
           <div className="scheme-a-frame scheme-a-project__collection">
-            {supportingProjects.map((project, projectIndex) => (
-              <LocalizedLink
-                key={project.slug}
-                className="scheme-a-project__collection-item"
-                to={`/projects/${project.slug}`}
-                aria-label={project.title}
-              >
-                <span className="scheme-a-project__collection-media">
-                  <DeferredSmartImage
-                    src={project.thumbnail}
-                    alt={project.thumbnailAlt || project.title}
-                    width={960}
-                    height={1120}
-                    sizes={projectIndex === 0
-                      ? "(max-width: 767px) 78vw, (max-width: 1100px) 46vw, 48vw"
-                      : "(max-width: 767px) 78vw, (max-width: 1100px) 46vw, 38vw"}
-                    candidateWidths={[360, 560, 720, 900, 1200, 1600]}
-                    quality={84}
-                    loading="lazy"
-                  />
-                </span>
-                <span className="scheme-a-project__collection-copy">
-                  <strong>{project.title}</strong>
-                  <small>{[displayText(project.type), isRenderingConceptProject(project) ? copy.projectConceptLabel : ""].filter(Boolean).join(" · ")}</small>
-                </span>
-              </LocalizedLink>
-            ))}
+            {supportingProjects.map((project, projectIndex) => {
+              const desktopAspectRatio = PROJECT_CARD_DESKTOP_ASPECT_RATIOS[projectIndex]
+                || PROJECT_CARD_MOBILE_ASPECT_RATIO;
+              const desktopIntrinsicHeight = Math.round(
+                PROJECT_CARD_INTRINSIC_WIDTH * (desktopAspectRatio.height / desktopAspectRatio.width),
+              );
+              const mobileSrcSet = buildSupabaseSrcSet(project.thumbnail, PROJECT_CARD_MOBILE_WIDTHS, {
+                quality: 84,
+                resize: "cover",
+                targetAspectRatio: PROJECT_CARD_MOBILE_ASPECT_RATIO,
+              });
+
+              return (
+                <LocalizedLink
+                  key={project.slug}
+                  className="scheme-a-project__collection-item"
+                  to={`/projects/${project.slug}`}
+                  aria-label={project.title}
+                >
+                  <span className="scheme-a-project__collection-media">
+                    <DeferredSmartImage
+                      src={project.thumbnail}
+                      alt={project.thumbnailAlt || project.title}
+                      width={PROJECT_CARD_INTRINSIC_WIDTH}
+                      height={desktopIntrinsicHeight}
+                      sizes={projectIndex === 0
+                        ? "(max-width: 767px) 78vw, (max-width: 1100px) 46vw, 48vw"
+                        : "(max-width: 767px) 78vw, (max-width: 1100px) 46vw, 38vw"}
+                      candidateWidths={PROJECT_CARD_DESKTOP_WIDTHS}
+                      quality={84}
+                      resize="cover"
+                      targetAspectRatio={desktopAspectRatio}
+                      pictureSources={mobileSrcSet
+                        ? [{
+                            media: PROJECT_CARD_MOBILE_MEDIA,
+                            sizes: PROJECT_CARD_MOBILE_SIZES,
+                            srcSet: mobileSrcSet,
+                          }]
+                        : undefined}
+                      loading="lazy"
+                    />
+                  </span>
+                  <span className="scheme-a-project__collection-copy">
+                    <strong>{project.title}</strong>
+                    <small>{[displayText(project.type), isRenderingConceptProject(project) ? copy.projectConceptLabel : ""].filter(Boolean).join(" · ")}</small>
+                  </span>
+                </LocalizedLink>
+              );
+            })}
           </div>
         )}
       </section>
