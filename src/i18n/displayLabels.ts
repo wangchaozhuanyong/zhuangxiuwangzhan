@@ -160,6 +160,12 @@ const blogCategoryLabels: Record<string, LabelPair> = {
   guides: { en: "Guides", zh: "指南" },
   materials: { en: "Materials", zh: "材料" },
   inspiration: { en: "Inspiration", zh: "灵感" },
+  "budget-quotation": { en: "Budget & Quotations", zh: "预算与报价" },
+  "home-condo-approval": { en: "Home, Condo & Approvals", zh: "住宅、公寓与审批" },
+  "kitchen-cabinetry": { en: "Kitchen & Cabinetry", zh: "厨房与定制柜" },
+  "bathroom-waterproofing": { en: "Bathroom & Waterproofing", zh: "浴室与防水" },
+  "office-retail-fitout": { en: "Office & Retail Fit-Out", zh: "办公室与店铺" },
+  "materials-design": { en: "Materials & Design", zh: "材料与设计" },
 };
 
 const fieldLabels: Record<string, LabelPair> = {

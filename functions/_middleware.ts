@@ -1480,6 +1480,18 @@ const EXACT_LEGACY_REDIRECTS: Record<string, string> = {
   "/zh/services/office": "/zh/services/office-renovation",
   "/en/services/shoplot": "/en/services/shop-renovation",
   "/zh/services/shoplot": "/zh/services/shop-renovation",
+  "/en/blog/renovation-cost-malaysia-2025": "/en/blog/malaysia-renovation-budget-guide",
+  "/zh/blog/renovation-cost-malaysia-2025": "/zh/blog/malaysia-renovation-budget-guide",
+  "/en/blog/renovation-materials-for-malaysia-climate": "/en/blog/renovation-materials-malaysia",
+  "/zh/blog/renovation-materials-for-malaysia-climate": "/zh/blog/renovation-materials-malaysia",
+  "/en/blog/spc-vs-vinyl-flooring-malaysia": "/en/blog/spc-vinyl-vs-laminate-flooring",
+  "/zh/blog/spc-vs-vinyl-flooring-malaysia": "/zh/blog/spc-vinyl-vs-laminate-flooring",
+  "/en/blog/office-fit-out-checklist-selangor": "/en/blog/office-renovation-checklist-malaysia",
+  "/zh/blog/office-fit-out-checklist-selangor": "/zh/blog/office-renovation-checklist-malaysia",
+  "/en/blog/shop-renovation-opening-timeline-malaysia": "/en/blog/shop-renovation-before-opening",
+  "/zh/blog/shop-renovation-opening-timeline-malaysia": "/zh/blog/shop-renovation-before-opening",
+  "/en/blog/kl-condo-renovation-approval": "/en/blog/condo-renovation-management-approval-malaysia",
+  "/zh/blog/kl-condo-renovation-approval": "/zh/blog/condo-renovation-management-approval-malaysia",
 };
 
 const permanentRedirect = (to: URL) =>
