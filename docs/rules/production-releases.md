@@ -28,7 +28,7 @@
 - 来源分支严格等于 `main`。
 - 工作区没有修改、删除或未跟踪文件。
 - 检出的 `HEAD` 等于声明的发布 SHA。
-- 本地紧急发布时，`HEAD` 必须等于 `origin/main`。
+- 所有正式发布（包括 CI 和本地紧急发布）中，`HEAD` 必须等于执行校验时最新的 `origin/main`；构建期间 `main` 前进时，旧 SHA 必须停止发布并重新走门禁。
 - 发布前检查和构建后检查全部通过。
 - Cloudflare 命令显式携带 `--branch main` 和 `--commit-hash <完整 SHA>`。
 

@@ -34,7 +34,7 @@
     "verify:seo-html": "node scripts/verify-seo-html.mjs",
     "release:check": "node scripts/release-check.mjs",
     "release:check:dirty": "node scripts/release-check.mjs --allow-dirty",
-    "release:guard": "node scripts/verify-production-release-source.mjs",
+    "release:guard": "node scripts/verify-production-release-source.mjs --require-remote",
     "test:release-policy": "node --test scripts/production-release-policy.test.mjs",
     "release:performance": "node scripts/release-check.mjs --performance-only",
     "verify:preview:server": "node scripts/verify-preview-with-server.mjs",

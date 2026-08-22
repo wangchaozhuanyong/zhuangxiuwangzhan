@@ -1,4 +1,5 @@
 import assert from "node:assert/strict";
+import { readFileSync } from "node:fs";
 import test from "node:test";
 import { validateProductionReleaseState } from "./production-release-policy.mjs";
 
@@ -47,4 +48,10 @@ test("requires local production releases to match origin main", () => {
 
   assert.equal(issues.length, 1);
   assert.match(issues[0], /not the same commit as origin\/main/);
+});
+
+test("the standard release guard always verifies the current remote main", () => {
+  const packageJson = JSON.parse(readFileSync(new URL("../package.json", import.meta.url), "utf8"));
+
+  assert.match(packageJson.scripts["release:guard"], /--require-remote(?:\s|$)/);
 });
