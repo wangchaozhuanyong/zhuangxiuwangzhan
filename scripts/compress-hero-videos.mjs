@@ -15,12 +15,12 @@ if (!hasFfmpeg) {
 
 const dir = "public/videos";
 const jobs = [
-  { in: "home-hero.mp4", out: "home-hero.mp4", scale: "1920:-2:flags=lanczos", crf: "20", sharpen: true },
-  { in: "home-hero-mobile.mp4", out: "home-hero-mobile.mp4", scale: "1080:-2", crf: "24" },
-  { in: "home-hero-tablet.mp4", out: "home-hero-tablet.mp4", scale: "1536:-2", crf: "25" },
-  { in: "home-hero.mp4", out: "home-hero.webm", scale: "1920:-2:flags=lanczos", crf: "24", webm: true, sharpen: true },
-  { in: "home-hero-mobile.mp4", out: "home-hero-mobile.webm", scale: "1080:-2", crf: "30", webm: true },
-  { in: "home-hero-tablet.mp4", out: "home-hero-tablet.webm", scale: "1536:-2", crf: "31", webm: true },
+  { in: "home-hero-no-text-20260619.mp4", out: "home-hero-no-text-20260619.mp4", scale: "1920:-2:flags=lanczos", crf: "20", sharpen: true },
+  { in: "home-hero-mobile-no-text-20260619.mp4", out: "home-hero-mobile-no-text-20260619.mp4", scale: "1080:-2", crf: "24" },
+  { in: "home-hero-tablet-no-text-20260619.mp4", out: "home-hero-tablet-no-text-20260619.mp4", scale: "1536:-2", crf: "25" },
+  { in: "home-hero-no-text-20260619.mp4", out: "home-hero-no-text-20260619.webm", scale: "1920:-2:flags=lanczos", crf: "24", webm: true, sharpen: true },
+  { in: "home-hero-mobile-no-text-20260619.mp4", out: "home-hero-mobile-no-text-20260619.webm", scale: "1080:-2", crf: "30", webm: true },
+  { in: "home-hero-tablet-no-text-20260619.mp4", out: "home-hero-tablet-no-text-20260619.webm", scale: "1536:-2", crf: "31", webm: true },
 ];
 
 for (const job of jobs) {

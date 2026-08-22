@@ -1,4 +1,5 @@
 import type { QueryClient } from "@tanstack/react-query";
+import { requestPublicContentInvalidation } from "@/lib/adminMutation";
 import { isSupabaseConfigured } from "@/lib/supabase";
 import {
   createProjectImageRecord,
@@ -102,28 +103,35 @@ export function generateAdminProjectEnglish(projectId: string, force: boolean) {
   return invokeProjectEnglishGeneration(projectId, force);
 }
 
-export function addAdminProjectImage(projectId: string, draft: AdminProjectImageDraft) {
-  return createProjectImageRecord({
+export async function addAdminProjectImage(projectId: string, draft: AdminProjectImageDraft) {
+  const result = await createProjectImageRecord({
     ...draft,
     project_id: projectId,
     image_type: (draft.image_type as ProjectImageType) || "gallery",
     sort_order: Number(draft.sort_order || 0),
   });
+  await requestPublicContentInvalidation({ table: "project_images", action: "insert", id: projectId });
+  return result;
 }
 
-export function updateAdminProjectImage(imageId: string, patch: Record<string, unknown>) {
-  return updateProjectImageRecord(imageId, patch);
+export async function updateAdminProjectImage(imageId: string, patch: Record<string, unknown>) {
+  const result = await updateProjectImageRecord(imageId, patch);
+  await requestPublicContentInvalidation({ table: "project_images", action: "update", id: imageId });
+  return result;
 }
 
 export async function setAdminProjectImageAsCover(projectId: string, imageId: string) {
   await resetProjectCoverRecords(projectId);
   await updateProjectImageRecord(imageId, { image_type: "cover", sort_order: 0 });
+  await requestPublicContentInvalidation({ table: "project_images", action: "set-cover", id: imageId });
 
   return true;
 }
 
-export function deleteAdminProjectImage(imageId: string) {
-  return deleteProjectImageRecord(imageId);
+export async function deleteAdminProjectImage(imageId: string) {
+  const result = await deleteProjectImageRecord(imageId);
+  await requestPublicContentInvalidation({ table: "project_images", action: "delete", id: imageId });
+  return result;
 }
 
 export function loadAdminProjectList<T extends Record<string, unknown>>(input: AdminProjectListInput) {

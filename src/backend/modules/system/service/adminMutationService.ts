@@ -5,6 +5,7 @@ import {
   fetchAdminMutationRecord,
   insertAdminAuditLog,
   insertAdminMutationRecord,
+  requestPublicContentInvalidation,
   updateAdminMutationRecord,
   type AdminMutationDbRecord,
 } from "@/backend/modules/system/repository/adminMutationRepository";
@@ -36,6 +37,28 @@ type DeleteAdminRecordOptions = {
 };
 
 const readonlyFields = new Set(["id", "created_at", "updated_at", "version"]);
+const publicContentTables = new Set([
+  "about_sections",
+  "before_after_items",
+  "blog_posts",
+  "brand_partners",
+  "cms_pages",
+  "cms_sections",
+  "cta_blocks",
+  "faqs",
+  "hero_slides",
+  "home_sections",
+  "landing_pages",
+  "materials",
+  "process_steps",
+  "projects",
+  "promotions",
+  "service_areas",
+  "services",
+  "site_pages",
+  "site_settings",
+  "testimonials",
+]);
 
 export class AdminMutationError extends Error {
   code: "conflict" | "validation" | "database" | "unknown";
@@ -88,6 +111,37 @@ async function invalidateAfterMutation(queryClient: QueryClient | undefined, mod
   }
   await invalidateAfterAdminContentSave(queryClient);
 }
+
+export const mutationAffectsPublishedContent = (
+  table: string,
+  before: DbRecord | null | undefined,
+  after: DbRecord | null | undefined,
+) => {
+  if (!publicContentTables.has(table)) return false;
+  if (table === "site_settings") return true;
+  return before?.status === "published" || after?.status === "published";
+};
+
+const invalidatePublicDelivery = async (
+  table: string,
+  action: string,
+  id: string | number | null | undefined,
+  before: DbRecord | null | undefined,
+  after: DbRecord | null | undefined,
+) => {
+  if (!mutationAffectsPublishedContent(table, before, after)) return null;
+
+  try {
+    const result = await requestPublicContentInvalidation({ table, action, id });
+    return result.cache_invalidation?.revision || null;
+  } catch (error) {
+    const message = formatUserFacingError(error, "zh");
+    throw new AdminMutationError(
+      "database",
+      `内容已经保存，但公开网页缓存刷新失败。请刷新后台确认保存结果后再重试发布。${message ? ` 原因：${message}` : ""}`,
+    );
+  }
+};
 
 export async function saveAdminRecord<T extends DbRecord = DbRecord>({
   table,
@@ -151,6 +205,14 @@ export async function saveAdminRecord<T extends DbRecord = DbRecord>({
   }
 
   await invalidateAfterMutation(queryClient, invalidate);
+  const publicRevision = await invalidatePublicDelivery(
+    table,
+    action || (isUpdate ? "update" : "insert"),
+    typeof saved?.[idField] === "string" || typeof saved?.[idField] === "number" ? saved[idField] : id,
+    before,
+    saved,
+  );
+  if (table === "site_settings" && publicRevision) saved.updated_at = publicRevision;
   return saved as T;
 }
 
@@ -195,5 +257,6 @@ export async function archiveOrDeleteAdminRecord({
   }
 
   await invalidateAfterMutation(queryClient, "admin-content");
+  await invalidatePublicDelivery(table, shouldArchive ? "archive" : "delete", id, before, after);
   return after;
 }

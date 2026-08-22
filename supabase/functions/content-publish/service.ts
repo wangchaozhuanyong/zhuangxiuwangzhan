@@ -1569,9 +1569,10 @@ export async function publishContent(
     input.contentType !== "material" &&
     input.contentType !== "project" &&
     input.contentType !== "site_page" &&
-    input.contentType !== "service_area"
+    input.contentType !== "service_area" &&
+    input.contentType !== "cache_invalidation"
   ) {
-    return errorResult("Unsupported contentType. Supported content types: service, service_area, homepage, blog, material, project, site_page.");
+    return errorResult("Unsupported contentType. Supported content types: service, service_area, homepage, blog, material, project, site_page, cache_invalidation.");
   }
 
   const mode = input.mode || "dry-run";
@@ -1582,6 +1583,26 @@ export async function publishContent(
   if (!VALID_STATUSES.has(nextStatus)) return errorResult("Invalid nextStatus.");
   if (mode === "publish" && (!input.ownerApproved || !input.explicitExecution)) {
     return errorResult("Publishing requires ownerApproved=true and explicitExecution=true.", 403);
+  }
+
+  if (input.contentType === "cache_invalidation") {
+    if (mode === "publish" && !cleanText(input.approvalId, 180)) {
+      return errorResult("Cache invalidation requires a non-empty approvalId.", 403);
+    }
+
+    return {
+      body: {
+        ok: true,
+        dry_run: mode === "dry-run",
+        content_type: "cache_invalidation",
+        action: "invalidate",
+        status: nextStatus,
+        source: cleanText(input.source, 180) || "admin-content-mutation",
+        warnings: [],
+        next_steps: ["Verify the affected public route returns the new content revision."],
+        auth_mode: context.authMode || "admin",
+      },
+    };
   }
 
   if (input.contentType === "homepage") {

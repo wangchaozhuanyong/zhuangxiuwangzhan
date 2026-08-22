@@ -27,10 +27,11 @@ const captureGit = (args) =>
   }).trim();
 
 run(process.execPath, [guardScript, "--require-remote"]);
+const commitSha = captureGit(["rev-parse", "HEAD"]);
+process.env.VITE_APP_VERSION = commitSha;
 run(npmCommand, ["run", "release:check"]);
 run(process.execPath, [guardScript, "--require-remote", "--allow-generated-output"]);
 
-const commitSha = captureGit(["rev-parse", "HEAD"]);
 run(npxCommand, [
   "wrangler",
   "pages",

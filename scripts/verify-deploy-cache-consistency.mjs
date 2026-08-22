@@ -6,7 +6,7 @@ const ROOT = process.cwd();
 const DIST = path.join(ROOT, "dist");
 const RETAINED_ASSET_CACHE = path.join(ROOT, ".deploy-cache/assets");
 const PUBLIC_HTML_CACHE_PATHS = ["/", "/index.html", "/*.html", "/zh", "/zh/*", "/en", "/en/*"];
-const HTML_NO_STORE_PATHS = ["/admin", "/admin/*"];
+const HTML_NO_STORE_PATHS = ["/admin", "/admin/*", "/sw.js"];
 const IMMUTABLE_ASSET_PATHS = ["/assets/*", "/images/*", "/videos/*", "/*.webp", "/*.jpg", "/*.png"];
 
 const pathExists = async (target) => {
@@ -146,6 +146,11 @@ const main = async () => {
   assert(!cspDirective(SITE_CSP_POLICY, "script-src").includes("'unsafe-inline'"), "Production script-src must not include unsafe-inline.");
   assert(!/^\/\*\s+\/index\.html\s+200\b/m.test(redirects), "Global SPA redirect would turn missing hashed assets into HTML.");
   assert(await pathExists(path.join(DIST, "404.html")), "dist/404.html is missing.");
+  assert(await pathExists(path.join(DIST, "offline.html")), "dist/offline.html is missing.");
+  assert(await pathExists(path.join(DIST, "sw.js")), "dist/sw.js is missing.");
+  const serviceWorker = await readDistFile("sw.js");
+  assert(serviceWorker.includes('event.request.mode !== "navigate"'), "Service Worker must limit interception to navigations.");
+  assert(!/cache\.put\(\s*event\.request|cache\.add\(\s*event\.request/.test(serviceWorker), "Service Worker must not cache navigated HTML.");
 
   const retainedCacheFiles = await listAssetFiles(RETAINED_ASSET_CACHE);
   const missingRetainedAssets = [];

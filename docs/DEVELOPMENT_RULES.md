@@ -232,8 +232,8 @@ Cloudflare / HTML / 静态资源缓存：
 
 Service Worker / PWA：
 
-- 当前项目默认不新增 Service Worker/PWA。
-- 如果以后要新增，必须先设计版本失效、后台内容更新、静态资源更新和回滚策略。
+- 当前项目只允许离线兜底 Service Worker：导航必须使用 network-only，不缓存公开 HTML，断网时只返回独立 `offline.html`。
+- Service Worker 脚本必须 `no-store`，更新使用 `updateViaCache: none`；禁止扩展为 app-shell 或 stale HTML 缓存，除非重新评估版本失效、后台内容更新、静态资源更新和回滚策略。
 
 ## 9. 质量门禁规则
 
@@ -360,6 +360,6 @@ Architecture Compliance Report:
 
 当前项目没有订单、库存、支付功能。相关规则只是未来扩展时的安全底线，不代表本次要开发这些功能。
 
-当前项目没有 Service Worker/PWA。不要为了“优化缓存”顺手新增，除非单独评估和立项。
+当前项目只有不缓存 HTML 的离线兜底 Service Worker，不是完整 PWA。不要把它扩展为页面离线缓存，除非单独评估和立项。
 
 当前项目没有本地统一 `/api` 后端。不要为了单个功能临时创建新后端体系。

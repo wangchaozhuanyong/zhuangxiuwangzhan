@@ -83,6 +83,7 @@ const PUBLIC_HTML_EDGE_TTL_SECONDS = 300;
 const PUBLIC_HTML_FRESHNESS_TTL_SECONDS = 60;
 const PUBLIC_HTML_CACHE_VERSION = "20260821-public-browser-revalidate-v5";
 const PUBLIC_HTML_CACHE_TAG = "flashcast-public-html";
+const PUBLIC_VERSION_PATH = "/__flashcast/version";
 const SITE_SETTINGS_CACHE_TTL_MS = 5 * 1000;
 const PUBLIC_PROJECT_SUMMARIES_CACHE_TTL_MS = 0;
 const PUBLIC_PROJECT_DETAIL_CACHE_TTL_MS = 0;
@@ -1802,6 +1803,26 @@ const getPublicHtmlDeploymentVersion = (env: PagesEnv) => {
   return typeof version === "string" && version.trim() ? version.trim().slice(0, 128) : "local";
 };
 
+const servePublicVersion = async (request: Request, env: PagesEnv) => {
+  const siteSettings = await fetchSiteSettings(env as Record<string, string | undefined>);
+  const payload = JSON.stringify({
+    deploymentVersion: getPublicHtmlDeploymentVersion(env),
+    contentVersion: String(siteSettings?.updated_at || "unknown").slice(0, 128),
+  });
+
+  return new Response(request.method === "HEAD" ? null : payload, {
+    headers: {
+      "content-type": "application/json; charset=utf-8",
+      "cache-control": "no-store, no-cache, must-revalidate, max-age=0",
+      "cdn-cache-control": "no-store",
+      "cloudflare-cdn-cache-control": "no-store",
+      pragma: "no-cache",
+      expires: "0",
+      "x-content-type-options": "nosniff",
+    },
+  });
+};
+
 const getPublicHtmlCacheRequest = (
   request: Request,
   env: PagesEnv,
@@ -1859,6 +1880,10 @@ export const onRequest: PagesFunction = async (context) => {
         "cache-control": "public, max-age=60, stale-while-revalidate=300",
       },
     });
+  }
+
+  if (url.pathname === PUBLIC_VERSION_PATH) {
+    return servePublicVersion(request, env);
   }
 
   if (url.pathname === "/sitemap.xml" || url.pathname === "/llms.txt") {

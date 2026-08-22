@@ -6,6 +6,7 @@ import { LanguageProvider, useLanguage } from "@/i18n/LanguageContext";
 import { SchemeAFooter, SchemeAFooterPrelude, SchemeANavbar } from "@/components/scheme-a/SchemeAPublicChrome";
 import DynamicBrandHead from "@/components/DynamicBrandHead";
 import MobileBottomDock from "@/components/MobileBottomDock";
+import PublicUpdateNotice from "@/components/PublicUpdateNotice";
 import { AppErrorBoundary } from "@/components/AppErrorBoundary";
 import { PublicChromeProvider, usePublicChrome } from "@/contexts/PublicChromeContext";
 import { stripLanguagePrefix } from "@/i18n/routes";
@@ -279,6 +280,7 @@ const AppShell = () => {
             </div>
             <SchemeAFooterPrelude />
             <SchemeAFooter />
+            <PublicUpdateNotice />
             <MobileBottomDock />
           </PublicPageFrame>
         </PublicSiteShell>
