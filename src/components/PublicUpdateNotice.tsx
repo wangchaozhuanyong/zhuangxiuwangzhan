@@ -5,6 +5,7 @@ import {
   createCurrentPublicVersion,
   fetchPublicVersion,
   hasNewPublicVersion,
+  isPublicVersionEndpointAvailable,
   type PublicVersion,
 } from "@/lib/publicVersion";
 
@@ -19,6 +20,8 @@ const PublicUpdateNotice = () => {
   const updateAvailableRef = useRef(false);
 
   useEffect(() => {
+    if (!isPublicVersionEndpointAvailable(window.location.hostname)) return;
+
     let active = true;
     let requestController: AbortController | null = null;
     let requestInFlight = false;
