@@ -1,0 +1,21 @@
+{
+  "ok": true,
+  "checkedAt": "2026-08-22T07:27:30.781Z",
+  "rowMismatches": [],
+  "pageChecks": [
+    {
+      "path": "/en/services/approval",
+      "status": 200,
+      "expected": "Permit &amp; Drawing Support Kuala Lumpur | FLASH CAST",
+      "found": true,
+      "forbiddenFound": []
+    },
+    {
+      "path": "/zh/services/approval",
+      "status": 200,
+      "expected": "装修准证",
+      "found": true,
+      "forbiddenFound": []
+    }
+  ]
+}

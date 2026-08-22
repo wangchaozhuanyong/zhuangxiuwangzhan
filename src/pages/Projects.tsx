@@ -17,6 +17,7 @@ import { mediaLabels } from "@/i18n/mediaLabels";
 import { schemeAProjectsIndexText, schemeARouteText } from "@/i18n/schemeAText";
 import { translateDisplayText, translateProjectType } from "@/i18n/displayLabels";
 import { pageHeroImages, resolvePageHeroImage } from "@/lib/pageHeroImages";
+import { isRenderingConceptProject } from "@/lib/projectContentClassification";
 
 const categories = ["All", "Residential", "Commercial", "Built-In", "Warehouse", "Exterior", "Office"] as const;
 const PAGE_SIZE = 10;
@@ -56,7 +57,7 @@ export default function Projects() {
     return {
       id: String(project.id),
       title,
-      meta: [type, project.location].filter(Boolean).join(" / "),
+      meta: [type, isRenderingConceptProject(project) ? mediaLabels[language].renderingConcept : ""].filter(Boolean).join(" · "),
       description: translateDisplayText(String(project.description || ""), language),
       image: project.thumbnail || fallbackImages[project.type] || fallbackImages.Residential,
       imageAlt: copy.projectImageAlt(title, type),

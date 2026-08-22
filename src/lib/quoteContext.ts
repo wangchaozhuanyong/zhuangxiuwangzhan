@@ -22,6 +22,7 @@ const serviceSlugProjectType: Record<string, string> = {
   kitchen: "Kitchen Cabinet",
   bathroom: "Bathroom Renovation",
   office: "Office Renovation",
+  "office-renovation": "Office Renovation",
   shoplot: "Shop Renovation",
   "shop-renovation": "Shop Renovation",
   "artistic-coating": "Artistic Wall / Coating",

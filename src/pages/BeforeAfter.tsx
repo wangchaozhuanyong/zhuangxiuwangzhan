@@ -1,5 +1,4 @@
 import { useState, type CSSProperties } from "react";
-import { MapPin } from "lucide-react";
 import { DeferredSmartImage } from "@/components/DeferredSmartImage";
 import { JsonLdBreadcrumb } from "@/components/JsonLd";
 import PageMeta from "@/components/PageMeta";
@@ -9,7 +8,6 @@ import { SchemeARouteHero, SchemeASection } from "@/components/scheme-a/SchemeAR
 import { usePublishedBeforeAfterItems } from "@/hooks/usePublishedContent";
 import { beforeAfterFallbackMedia } from "@/data/beforeAfterFallback";
 import { useLanguage } from "@/i18n/LanguageContext";
-import { translateDisplayText } from "@/i18n/displayLabels";
 import type { PublishedBeforeAfterItem } from "@/lib/homeContentApi";
 import { pageHeroImages } from "@/lib/pageHeroImages";
 import { beforeAfterPageText } from "@/i18n/beforeAfterPageText";
@@ -25,7 +23,6 @@ function BeforeAfterComparison({
 }) {
   const t = beforeAfterPageText[language];
   const [position, setPosition] = useState(index % 2 === 0 ? 55 : 48);
-  const location = translateDisplayText(item.location, language);
   const imageAlt = item.alt || item.title;
 
   return (
@@ -34,13 +31,7 @@ function BeforeAfterComparison({
         <p className="scheme-a-transformation__index">{String(index + 1).padStart(2, "0")}</p>
         <div>
           <h2>{item.title}</h2>
-          {location ? (
-            <p className="scheme-a-transformation__location">
-              <MapPin aria-hidden="true" size={15} strokeWidth={1.6} />
-              <span>{location}</span>
-            </p>
-          ) : null}
-          {item.description ? <p className="scheme-a-transformation__description">{item.description}</p> : null}
+          <p className="scheme-a-transformation__description">{t.itemDescription}</p>
         </div>
       </header>
 

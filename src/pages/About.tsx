@@ -36,38 +36,20 @@ const About = () => {
   const t = aboutCopy[language];
   const settings = useSiteSettings();
   const { data: heroSection } = usePublishedAboutSection(language, "hero");
-  const { data: introSection } = usePublishedAboutSection(language, "intro");
   const { data: statsSection } = usePublishedAboutSection(language, "stats");
   const { data: valuesSection } = usePublishedAboutSection(language, "core_values");
-  const { data: teamSection } = usePublishedAboutSection(language, "team");
-  const { data: milestonesSection } = usePublishedAboutSection(language, "milestones");
-  const { data: officeSection } = usePublishedAboutSection(language, "office");
   const { data: pageContent } = usePublishedSitePage(language, "about");
 
-  const introParagraphs = useMemo(() => {
-    const items = introSection?.items;
-    if (Array.isArray(items)) {
-      const values = items.filter((item): item is string => typeof item === "string");
-      if (values.length) return values;
-    }
-    const fallback: string[] = [...t.intro];
-    if (settings.address) fallback[1] = t.intro[1].replace("94, Jalan Mega Mendung, Taman United, 58200 Kuala Lumpur", settings.address);
-    return fallback;
-  }, [introSection?.items, settings.address, t.intro]);
+  const introParagraphs: readonly string[] = t.intro;
   const stats = useMemo(() => {
     const items = statsSection?.items;
     if (!Array.isArray(items)) return aboutStatCopy[language];
     const values = items.map((item) => { const record = item as Record<string, unknown>; return { value: String(record.value || ""), label: String(record.label || "") }; }).filter((item) => item.value && item.label);
     return values.length ? values : aboutStatCopy[language];
   }, [statsSection?.items, language]);
-  const milestones = useMemo(() => {
-    const items = milestonesSection?.items;
-    if (!Array.isArray(items)) return aboutMilestoneCopy[language];
-    const values = items.map((item) => { const record = item as Record<string, unknown>; return { year: String(record.year || ""), title: String(record.title || ""), desc: String(record.desc || "") }; }).filter((item) => item.year && item.title && item.desc);
-    return values.length ? values : aboutMilestoneCopy[language];
-  }, [milestonesSection?.items, language]);
+  const milestones = aboutMilestoneCopy[language];
   const values = useMemo(() => normalizeCards(valuesSection?.items, localizedValues[language]) || localizedValues[language], [valuesSection?.items, language]);
-  const team = useMemo(() => normalizeCards(teamSection?.items, localizedTeam[language]) || localizedTeam[language], [teamSection?.items, language]);
+  const team = localizedTeam[language];
   const heroImage = resolvePageHeroImage(pageContent?.image_url || (heroSection?.image_url as string | undefined), pageHeroImages.about);
   const officeDescription = settings.address ? t.officeAddress.replace("{address}", settings.address) : t.officeDescription;
 
@@ -75,9 +57,9 @@ const About = () => {
     <main className="fc-route-page">
       <PageMeta title={pageContent?.seo_title || t.metaTitle} description={pageContent?.seo_description || t.metaDescription} keywords={pageContent?.seo_keywords || t.metaKeywords} canonicalPath="/about" />
       <JsonLdBreadcrumb items={[{ name: t.breadcrumbHome, url: "/" }, { name: t.breadcrumbAbout, url: "/about" }]} />
-      <SchemeARouteHero kind="content" image={heroImage.desktop} imageSourceWidth={heroImage.desktopWidth} tabletImage={heroImage.tablet} tabletImageSourceWidth={heroImage.tabletWidth} mobileImage={heroImage.mobile} mobileImageSourceWidth={heroImage.mobileWidth} imageAlt={pageContent?.alt || t.imageAlt} label={[t.label, heroImage.claimLevel ? mediaLabels[language].renderingConcept : ""].filter(Boolean).join(" · ")} title={(heroSection?.title as string) || t.title} description={(heroSection?.content as string) || (heroSection?.subtitle as string) || t.description} />
+      <SchemeARouteHero kind="content" image={heroImage.desktop} imageSourceWidth={heroImage.desktopWidth} tabletImage={heroImage.tablet} tabletImageSourceWidth={heroImage.tabletWidth} mobileImage={heroImage.mobile} mobileImageSourceWidth={heroImage.mobileWidth} imageAlt={pageContent?.alt || t.imageAlt} label={[t.label, heroImage.claimLevel ? mediaLabels[language].renderingConcept : ""].filter(Boolean).join(" · ")} title={(heroSection?.title as string) || t.title} description={t.description} />
 
-      <SchemeASection title={(introSection?.title as string) || t.introTitle} description={introParagraphs.join(" ")}>
+      <SchemeASection title={t.introTitle} description={introParagraphs.join(" ")}>
         <SchemeAFacts items={stats} />
         <div className="fc-route-tagline" aria-label={t.label}>{t.tags.map((tag) => <span key={tag}>{tag}</span>)}</div>
       </SchemeASection>
@@ -86,17 +68,17 @@ const About = () => {
         <SchemeANumberList items={values.map((item) => ({ title: item.title, description: item.desc }))} />
       </SchemeASection>
 
-      <SchemeASection title={(teamSection?.title as string) || t.teamTitle} description={(teamSection?.content as string) || t.teamDescription}>
+      <SchemeASection title={t.teamTitle} description={t.teamDescription}>
         <SchemeANumberList items={team.map((item) => ({ title: item.title, description: item.desc }))} />
       </SchemeASection>
 
-      <SchemeASection title={(milestonesSection?.title as string) || t.journeyTitle} description={(milestonesSection?.content as string) || t.journeyDescription}>
-        <ol className="fc-route-history">{milestones.map((item) => <li key={`${item.year}-${item.title}`}><time>{item.year}</time><div><strong>{item.title}</strong><p>{item.desc}</p></div></li>)}</ol>
+      <SchemeASection title={t.journeyTitle} description={t.journeyDescription}>
+        <ol className="fc-route-history">{milestones.map((item) => <li key={`${item.year}-${item.title}`}><span className="fc-route-history-index">{item.year}</span><div><strong>{item.title}</strong><p>{item.desc}</p></div></li>)}</ol>
       </SchemeASection>
 
-      <SchemeASection title={(officeSection?.title as string) || t.officeTitle} description={(officeSection?.content as string) || officeDescription} className="fc-route-office">
+      <SchemeASection title={t.officeTitle} description={officeDescription} className="fc-route-office">
         <div className="fc-route-office-grid">
-          <div className="fc-route-office-copy"><MapPin aria-hidden="true" /><h2>{settings.company_name}</h2><address>{settings.address}</address><p>{t.hours}</p></div>
+          <div className="fc-route-office-copy"><MapPin aria-hidden="true" /><h2>{settings.company_name}</h2><address>{settings.address}</address><p>{t.visitNote}</p></div>
           <GoogleMapEmbed title={t.mapTitle} addressLabel={settings.address} latitude={settings.map_latitude} longitude={settings.map_longitude} height={360} className="min-h-[360px]" />
         </div>
       </SchemeASection>

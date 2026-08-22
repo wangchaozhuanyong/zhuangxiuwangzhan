@@ -4,10 +4,12 @@ import DeferredSmartImage from "@/components/DeferredSmartImage";
 import ImmersiveHero from "@/components/ImmersiveHero";
 import LocalizedLink from "@/components/LocalizedLink";
 import SmartImage from "@/components/SmartImage";
+import { SchemeAFaqList } from "@/components/scheme-a/SchemeARoutePrimitives";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { translateDisplayText } from "@/i18n/displayLabels";
 import { schemeAHomeText } from "@/i18n/schemeAText";
 import type { PublishedHomeContentBundle } from "@/lib/homeContentApi";
+import { isRenderingConceptProject } from "@/lib/projectContentClassification";
 
 type SchemeAHomeProps = {
   content: PublishedHomeContentBundle | undefined;
@@ -64,9 +66,13 @@ const SchemeAHome = ({ content }: SchemeAHomeProps) => {
     path: `/services/${service.slug}`,
   })) || [];
   const resolvedServices = serviceItems.length ? serviceItems : copy.serviceFallbacks;
+  const featuredProjectIsConcept = isRenderingConceptProject(featuredProject);
   const projectMeta = featuredProject
-    ? [displayText(featuredProject.type), featuredProject.location].filter(Boolean).join(" / ")
+    ? [displayText(featuredProject.type), featuredProjectIsConcept ? copy.projectConceptLabel : ""].filter(Boolean).join(" · ")
     : copy.projectFallbackMeta;
+  const faqItems = (content?.faqs || [])
+    .map((faq) => ({ question: faq.question, answer: faq.answer }))
+    .filter((faq) => faq.question && faq.answer);
 
   return (
     <div className="scheme-a-home scheme-a-home--atelier">
@@ -168,7 +174,7 @@ const SchemeAHome = ({ content }: SchemeAHomeProps) => {
         >
           <DeferredSmartImage
             src={projectImage}
-            alt={featuredProject?.thumbnailAlt || featuredProject?.title || copy.projectFallbackTitle}
+            alt={featuredProjectIsConcept ? `${featuredProject?.title || copy.projectFallbackTitle} · ${copy.projectConceptLabel}` : featuredProject?.thumbnailAlt || featuredProject?.title || copy.projectFallbackTitle}
             width={1600}
             height={1050}
             sizes="100vw"
@@ -209,7 +215,7 @@ const SchemeAHome = ({ content }: SchemeAHomeProps) => {
                 </span>
                 <span className="scheme-a-project__collection-copy">
                   <strong>{project.title}</strong>
-                  <small>{[displayText(project.type), project.location].filter(Boolean).join(" / ")}</small>
+                  <small>{[displayText(project.type), isRenderingConceptProject(project) ? copy.projectConceptLabel : ""].filter(Boolean).join(" · ")}</small>
                 </span>
               </LocalizedLink>
             ))}
@@ -292,6 +298,19 @@ const SchemeAHome = ({ content }: SchemeAHomeProps) => {
         </div>
         <p className="scheme-a-frame scheme-a-before__note">{copy.beforeNote}</p>
       </section>
+
+      {faqItems.length > 0 && (
+        <section className="scheme-a-home-faq" data-cinematic-section>
+          <div className="scheme-a-frame scheme-a-home-faq__layout">
+            <header>
+              <p className="scheme-a-eyebrow">{copy.faqLabel}</p>
+              <h2>{copy.faqTitle}</h2>
+              <p>{copy.faqDescription}</p>
+            </header>
+            <SchemeAFaqList items={faqItems} />
+          </div>
+        </section>
+      )}
 
       <section className="scheme-a-contact" data-cinematic-section>
         <div className="scheme-a-frame">

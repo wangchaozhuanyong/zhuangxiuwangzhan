@@ -1,0 +1,21 @@
+{
+  "ok": true,
+  "checkedAt": "2026-08-22T07:17:43.573Z",
+  "rowMismatches": [],
+  "pageChecks": [
+    {
+      "path": "/en/services/bathroom",
+      "status": 200,
+      "expected": "Bathroom Renovation Malaysia | FLASH CAST",
+      "found": true,
+      "forbiddenFound": []
+    },
+    {
+      "path": "/zh/services/bathroom",
+      "status": 200,
+      "expected": "浴室装修与防水工程",
+      "found": true,
+      "forbiddenFound": []
+    }
+  ]
+}

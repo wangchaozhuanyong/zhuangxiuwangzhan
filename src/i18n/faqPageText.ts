@@ -19,7 +19,7 @@ export const faqPageText = {
         items: [
           { q: "What renovation services does FLASH CAST provide?", a: "We provide full renovation, interior design, custom built-in furniture, kitchen renovation, bathroom renovation, office renovation, shoplot renovation, artistic wall coating (German Remmers), old house renovation, and permit coordination across Kuala Lumpur and Selangor." },
           { q: "Which areas do you serve?", a: "We serve all areas in Kuala Lumpur and Selangor including Mont Kiara, Bangsar, Cheras, Petaling Jaya, Subang Jaya, Shah Alam, Puchong, and surrounding areas." },
-          { q: "Is FLASH CAST a registered company?", a: "Yes, FLASH CAST SDN. BHD. is a fully SSM-registered company based in Taman United, Kuala Lumpur." },
+          { q: "Can company details be confirmed before appointment?", a: "Yes. Ask the team for the current company and appointment details you need before visiting or proceeding with a quotation." },
         ],
       },
       {

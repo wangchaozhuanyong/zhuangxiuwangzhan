@@ -1,0 +1,21 @@
+{
+  "ok": true,
+  "checkedAt": "2026-08-22T07:17:51.749Z",
+  "rowMismatches": [],
+  "pageChecks": [
+    {
+      "path": "/en/services/shop-renovation",
+      "status": 200,
+      "expected": "Shop Renovation &amp; Retail Fit-Out | FLASH CAST",
+      "found": true,
+      "forbiddenFound": []
+    },
+    {
+      "path": "/zh/services/shop-renovation",
+      "status": 200,
+      "expected": "店铺装修与零售空间规划",
+      "found": true,
+      "forbiddenFound": []
+    }
+  ]
+}

@@ -1,0 +1,19 @@
+{
+  "ok": true,
+  "checkedAt": "2026-08-22T06:48:54.138Z",
+  "rowMismatches": [],
+  "pageChecks": [
+    {
+      "path": "/en/projects/mont-kiara-luxury-condo-renovation",
+      "status": 200,
+      "expected": "Luxury Condo Living &amp; Dining Rendering Concept",
+      "found": true
+    },
+    {
+      "path": "/zh/projects/mont-kiara-luxury-condo-renovation",
+      "status": 200,
+      "expected": "高级公寓客餐厅效果图概念",
+      "found": true
+    }
+  ]
+}

@@ -309,7 +309,7 @@ html[data-public-theme="dark"] .scheme-a-public-shell input[type="range"] {
 
 .fc-route-history { list-style: none; padding: 0; box-shadow: inset 0 1px 0 rgb(121 99 66 / 0.15); }
 .fc-route-history li { display: grid; grid-template-columns: 68px 1fr; gap: 18px; padding: 22px 0; box-shadow: inset 0 -1px 0 rgb(121 99 66 / 0.13); }
-.fc-route-history time { color: #a27c42; font-family: Georgia, "Times New Roman", serif; font-size: 18px; }
+.fc-route-history :is(time, .fc-route-history-index) { color: #a27c42; font-family: Georgia, "Times New Roman", serif; font-size: 18px; }
 .fc-route-history strong { font-family: Georgia, "Songti SC", serif; font-size: 17px; font-weight: 400; }
 .fc-route-history p { margin-top: 7px; color: #6a655d; font-size: 11px; line-height: 1.65; }
 

@@ -1,0 +1,21 @@
+{
+  "ok": true,
+  "checkedAt": "2026-08-22T07:17:35.873Z",
+  "rowMismatches": [],
+  "pageChecks": [
+    {
+      "path": "/en/services/kitchen",
+      "status": 200,
+      "expected": "Kitchen Renovation Malaysia | FLASH CAST",
+      "found": true,
+      "forbiddenFound": []
+    },
+    {
+      "path": "/zh/services/kitchen",
+      "status": 200,
+      "expected": "厨房装修与橱柜定制",
+      "found": true,
+      "forbiddenFound": []
+    }
+  ]
+}

@@ -1,0 +1,21 @@
+{
+  "ok": true,
+  "checkedAt": "2026-08-22T07:17:06.244Z",
+  "rowMismatches": [],
+  "pageChecks": [
+    {
+      "path": "/en/services/builtin",
+      "status": 200,
+      "expected": "Built-In Furniture Malaysia | FLASH CAST",
+      "found": true,
+      "forbiddenFound": []
+    },
+    {
+      "path": "/zh/services/builtin",
+      "status": 200,
+      "expected": "定制家具与收纳柜设计",
+      "found": true,
+      "forbiddenFound": []
+    }
+  ]
+}

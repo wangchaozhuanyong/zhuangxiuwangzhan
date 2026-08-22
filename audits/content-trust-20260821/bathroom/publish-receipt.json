@@ -1,0 +1,58 @@
+{
+  "ok": true,
+  "target": "bathroom",
+  "operation": "optimize",
+  "approvalId": "OWNER-STANDING-WEBSITE-CONTENT-2026-08-14",
+  "publishedAt": "2026-08-22T07:17:43.574Z",
+  "published": {
+    "ok": true,
+    "dry_run": false,
+    "content_type": "service",
+    "action": "publish",
+    "slug": "bathroom",
+    "status": "published",
+    "existing_id": "0f294e6d-2e2c-4f13-a93f-096728ccc6af",
+    "warnings": [],
+    "next_steps": [
+      "Dynamic HTML SEO, sitemap.xml, and llms.txt read this published record; no frontend deployment is required.",
+      "Verify the /zh and /en public service pages read the updated admin content.",
+      "Run publish receipt/QA and production cache verification."
+    ],
+    "auth_mode": "cron",
+    "saved_id": "0f294e6d-2e2c-4f13-a93f-096728ccc6af",
+    "saved_updated_at": "2026-08-22T07:17:42.361636+00:00",
+    "cache_invalidation": {
+      "ok": true,
+      "strategy": "content-revision",
+      "revision": "2026-08-22T07:17:42.527Z",
+      "edge_purge_requested": {
+        "ok": true,
+        "attempted": true,
+        "tag": "flashcast-public-html",
+        "status": 200
+      }
+    }
+  },
+  "postcheck": {
+    "ok": true,
+    "checkedAt": "2026-08-22T07:17:43.573Z",
+    "rowMismatches": [],
+    "pageChecks": [
+      {
+        "path": "/en/services/bathroom",
+        "status": 200,
+        "expected": "Bathroom Renovation Malaysia | FLASH CAST",
+        "found": true,
+        "forbiddenFound": []
+      },
+      {
+        "path": "/zh/services/bathroom",
+        "status": 200,
+        "expected": "浴室装修与防水工程",
+        "found": true,
+        "forbiddenFound": []
+      }
+    ]
+  },
+  "rollbackCommand": "npm run content:trust-fixes -- --target=bathroom --execute --approval-id=OWNER-STANDING-WEBSITE-CONTENT-2026-08-14 --rollback-from=/Users/wangchao/Desktop/装修网站/zhuangxiuwangzhan-content-trust-20260821/audits/content-trust-20260821/bathroom/backup.json --env-dir=/Users/wangchao/Desktop/装修网站/zhuangxiuwangzhan-main"
+}

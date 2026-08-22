@@ -1,0 +1,21 @@
+{
+  "ok": true,
+  "checkedAt": "2026-08-22T07:16:54.923Z",
+  "rowMismatches": [],
+  "pageChecks": [
+    {
+      "path": "/en/services/design",
+      "status": 200,
+      "expected": "Interior Design Kuala Lumpur | FLASH CAST",
+      "found": true,
+      "forbiddenFound": []
+    },
+    {
+      "path": "/zh/services/design",
+      "status": 200,
+      "expected": "吉隆坡室内设计与空间规划",
+      "found": true,
+      "forbiddenFound": []
+    }
+  ]
+}

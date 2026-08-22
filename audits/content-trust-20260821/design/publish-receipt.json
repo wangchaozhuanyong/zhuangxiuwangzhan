@@ -1,0 +1,58 @@
+{
+  "ok": true,
+  "target": "design",
+  "operation": "optimize",
+  "approvalId": "OWNER-STANDING-WEBSITE-CONTENT-2026-08-14",
+  "publishedAt": "2026-08-22T07:16:54.924Z",
+  "published": {
+    "ok": true,
+    "dry_run": false,
+    "content_type": "service",
+    "action": "publish",
+    "slug": "design",
+    "status": "published",
+    "existing_id": "0af89b93-8938-4a98-ba65-6525fbbe92c1",
+    "warnings": [],
+    "next_steps": [
+      "Dynamic HTML SEO, sitemap.xml, and llms.txt read this published record; no frontend deployment is required.",
+      "Verify the /zh and /en public service pages read the updated admin content.",
+      "Run publish receipt/QA and production cache verification."
+    ],
+    "auth_mode": "cron",
+    "saved_id": "0af89b93-8938-4a98-ba65-6525fbbe92c1",
+    "saved_updated_at": "2026-08-22T07:16:52.43667+00:00",
+    "cache_invalidation": {
+      "ok": true,
+      "strategy": "content-revision",
+      "revision": "2026-08-22T07:16:52.874Z",
+      "edge_purge_requested": {
+        "ok": true,
+        "attempted": true,
+        "tag": "flashcast-public-html",
+        "status": 200
+      }
+    }
+  },
+  "postcheck": {
+    "ok": true,
+    "checkedAt": "2026-08-22T07:16:54.923Z",
+    "rowMismatches": [],
+    "pageChecks": [
+      {
+        "path": "/en/services/design",
+        "status": 200,
+        "expected": "Interior Design Kuala Lumpur | FLASH CAST",
+        "found": true,
+        "forbiddenFound": []
+      },
+      {
+        "path": "/zh/services/design",
+        "status": 200,
+        "expected": "吉隆坡室内设计与空间规划",
+        "found": true,
+        "forbiddenFound": []
+      }
+    ]
+  },
+  "rollbackCommand": "npm run content:trust-fixes -- --target=design --execute --approval-id=OWNER-STANDING-WEBSITE-CONTENT-2026-08-14 --rollback-from=/Users/wangchao/Desktop/装修网站/zhuangxiuwangzhan-content-trust-20260821/audits/content-trust-20260821/design/backup.json --env-dir=/Users/wangchao/Desktop/装修网站/zhuangxiuwangzhan-main"
+}

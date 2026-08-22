@@ -3,6 +3,7 @@ import { useParams } from "react-router-dom";
 import Link from "@/components/LocalizedLink";
 import PageMeta from "@/components/PageMeta";
 import { JsonLdBreadcrumb } from "@/components/JsonLd";
+import CTABanner from "@/components/blocks/CTABanner";
 import { SchemeAContentState, SchemeAFacts, SchemeAGallery, SchemeAListingGrid, SchemeANumberList, SchemeARouteHero, SchemeASection, type SchemeAListingItem } from "@/components/scheme-a/SchemeARoutePrimitives";
 import { projectsData } from "@/data/projects";
 import { usePublishedProjectBySlug, usePublishedProjectSummaries } from "@/hooks/usePublishedContent";
@@ -10,6 +11,8 @@ import { useLanguage } from "@/i18n/LanguageContext";
 import { translateDisplayText, translateProjectType } from "@/i18n/displayLabels";
 import { projectDetailPageText } from "@/i18n/projectDetailPageText";
 import { mediaLabels } from "@/i18n/mediaLabels";
+import { buildQuotePath, quoteProjectTypeFromProjectType } from "@/lib/quoteContext";
+import { isRenderingConceptProject } from "@/lib/projectContentClassification";
 import { stripHtml } from "@/lib/text";
 
 export default function ProjectDetail() {
@@ -26,7 +29,10 @@ export default function ProjectDetail() {
     id: String(item.id),
     title: translateDisplayText(item.title, language),
     description: translateDisplayText(String(item.description || ""), language),
-    meta: translateProjectType(item.type, language),
+    meta: [
+      translateProjectType(item.type, language),
+      isRenderingConceptProject(item) ? mediaLabels[language].renderingConcept : "",
+    ].filter(Boolean).join(" · "),
     image: item.images?.[0] || item.thumbnail,
     imageAlt: translateDisplayText(item.title, language),
     href: `/projects/${item.slug}`,
@@ -43,32 +49,50 @@ export default function ProjectDetail() {
   const highlights = project.highlights.map((item: string) => translateDisplayText(item, language));
   const materials = project.materialsUsed.map((item: string) => translateDisplayText(item, language));
   const images = (project.images.length ? project.images : [project.thumbnail]).filter(Boolean);
-  const usesRenderingConcept = images.some((src) => src.includes("/generated-portfolio/"));
+  const usesRenderingConcept = isRenderingConceptProject({ ...project, images });
+  const publicDescription = usesRenderingConcept ? `${copy.renderingDisclaimer} ${description}` : description;
+  const quotePath = buildQuotePath({
+    source: "project",
+    title,
+    projectType: quoteProjectTypeFromProjectType(project.type),
+  });
 
   return (
     <main className="fc-route-page">
-      <PageMeta title={`${title} | ${copy.metaSuffix}`} description={copy.metaDescription(type)} keywords={copy.metaKeywords(type, title)} canonicalPath={`/projects/${project.slug}`} />
+      <PageMeta title={`${title} | ${copy.metaSuffix}`} description={usesRenderingConcept ? copy.conceptMetaDescription(type) : copy.metaDescription(type)} keywords={copy.metaKeywords(type, title)} canonicalPath={`/projects/${project.slug}`} />
       <JsonLdBreadcrumb items={[{ name: copy.breadcrumbHome, url: "/" }, { name: copy.breadcrumbProjects, url: "/projects" }, { name: title, url: `/projects/${project.slug}` }]} />
-      <SchemeARouteHero kind="detail" image={images[0]} imageAlt={`${title} - ${copy.imageLabel} 1`} label={[type, usesRenderingConcept ? mediaLabels[language].renderingConcept : ""].filter(Boolean).join(" · ")} title={title} description={description} />
+      <SchemeARouteHero kind="detail" image={images[0]} imageAlt={`${title} - ${copy.imageLabel} 1`} label={[type, usesRenderingConcept ? mediaLabels[language].renderingConcept : ""].filter(Boolean).join(" · ")} title={title} description={publicDescription} />
       <SchemeAFacts items={[
         { label: copy.type, value: type },
-        { label: copy.duration, value: translateDisplayText(project.duration, language) },
+        usesRenderingConcept
+          ? { label: copy.referenceType, value: copy.renderingConcept }
+          : { label: copy.duration, value: translateDisplayText(project.duration, language) },
         { label: copy.scopeItems, value: `${scope.length} ${copy.items}` },
-        { label: copy.materials, value: String(materials.length) },
+        { label: usesRenderingConcept ? copy.materialDirection : copy.materials, value: String(materials.length) },
       ]} />
-      <SchemeASection title={copy.overview} description={description}>
+      <SchemeASection title={usesRenderingConcept ? copy.conceptOverview : copy.overview} description={publicDescription}>
         <SchemeANumberList items={[
-          { title: copy.clientRequirements, description: clientNeed },
+          usesRenderingConcept
+            ? { title: copy.planningBrief, description: copy.planningBriefDescription }
+            : { title: copy.clientRequirements, description: clientNeed },
           ...highlights.map((item) => ({ title: item })),
           ...scope.map((item) => ({ title: item })),
         ]} />
       </SchemeASection>
-      <SchemeASection title={copy.gallery} description={copy.galleryDescription}>
+      <SchemeASection title={copy.gallery} description={usesRenderingConcept ? copy.conceptGalleryDescription : copy.galleryDescription}>
         <SchemeAGallery images={images.map((src, index) => ({ src, alt: `${title} - ${copy.imageLabel} ${index + 1}` }))} />
       </SchemeASection>
       <SchemeASection title={copy.moreProjects}>
         <SchemeAListingGrid items={relatedItems} actionLabel={copy.viewAll} />
       </SchemeASection>
+      <CTABanner
+        title={copy.ctaTitle}
+        description={copy.ctaDescription}
+        quoteLabel={copy.ctaQuote}
+        quotePath={quotePath}
+        whatsappLabel={copy.ctaWhatsapp}
+        whatsappSource="Project Detail CTA"
+      />
     </main>
   );
 }
