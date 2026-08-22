@@ -260,14 +260,13 @@
     width: min(92%, 106rem);
     height: auto;
     aspect-ratio: 16 / 9;
-    margin-right: 0;
-    margin-left: auto;
+    margin-inline: auto;
     background: #c7c0b5;
   }
 
   html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-project__meta {
     width: min(92%, var(--scheme-a-frame));
-    margin-right: 0;
+    margin-inline: auto;
     padding-top: 2.4rem;
     padding-right: var(--scheme-a-gutter);
     padding-left: 0;
@@ -429,6 +428,7 @@
 
   html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-before__note {
     width: min(88%, var(--scheme-a-frame));
+    margin-inline: auto;
     padding-right: 0;
     padding-left: 0;
   }
@@ -796,10 +796,10 @@
     }
 
     html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-compare {
-      width: calc(100% - 22px);
+      width: calc(100% - 44px);
       height: auto;
       aspect-ratio: 4 / 5;
-      margin-left: 0;
+      margin-inline: auto;
     }
 
     html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-before__note {
