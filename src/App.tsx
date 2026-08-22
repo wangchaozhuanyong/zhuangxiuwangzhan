@@ -3,9 +3,9 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, useLocation, useNavigationType } from "react-router-dom";
 import { HelmetProvider } from "react-helmet-async";
 import { LanguageProvider, useLanguage } from "@/i18n/LanguageContext";
-import { SchemeAFooter, SchemeAFooterPrelude, SchemeAMobileDock, SchemeANavbar } from "@/components/scheme-a/SchemeAPublicChrome";
+import { SchemeAFooter, SchemeAFooterPrelude, SchemeANavbar } from "@/components/scheme-a/SchemeAPublicChrome";
 import DynamicBrandHead from "@/components/DynamicBrandHead";
-import MobileActionBar from "@/components/MobileActionBar";
+import MobileBottomDock from "@/components/MobileBottomDock";
 import { AppErrorBoundary } from "@/components/AppErrorBoundary";
 import { PublicChromeProvider, usePublicChrome } from "@/contexts/PublicChromeContext";
 import { stripLanguagePrefix } from "@/i18n/routes";
@@ -214,7 +214,6 @@ const AppShell = () => {
   const publicPath = stripLanguagePrefix(location.pathname);
   const isHomeRoute = !isAdminRoute && publicPath === "/";
   const isProductDetailRoute = !isAdminRoute && /^\/products\/[^/]+$/.test(publicPath);
-  const usesContextualMobileActionBar = !isAdminRoute && (publicPath === "/quote" || publicPath === "/contact");
   const publicMainClass = isAdminRoute
     ? undefined
     : isHomeRoute
@@ -244,8 +243,8 @@ const AppShell = () => {
   return (
     <PublicChromeProvider
       isAdminRoute={isAdminRoute}
-      isHomeRoute={isHomeRoute}
-      mobileActionBarMode={usesContextualMobileActionBar ? "always" : "hidden"}
+      routeKey={location.pathname}
+      mobileActionBarMode={isAdminRoute ? "hidden" : "scroll-up"}
     >
       <DynamicBrandHead />
       <ScrollToTop />
@@ -280,7 +279,7 @@ const AppShell = () => {
             </div>
             <SchemeAFooterPrelude />
             <SchemeAFooter />
-            {usesContextualMobileActionBar ? <MobileActionBar /> : <SchemeAMobileDock />}
+            <MobileBottomDock />
           </PublicPageFrame>
         </PublicSiteShell>
       )}

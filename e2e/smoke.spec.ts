@@ -59,15 +59,28 @@ test.describe("public site smoke", () => {
     expect(bodyText).not.toContain("�");
   });
 
-  test("zh homepage exposes the fixed five-item navigation on mobile", async ({ page }) => {
+  test("zh homepage switches between mobile navigation and contact actions by scroll direction", async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
     await gotoSmokePage(page, "/zh");
     await page.waitForLoadState("load");
 
     const bottomNav = page.locator(".scheme-a-mobile-dock");
+    const bottomDock = page.getByTestId("mobile-bottom-dock");
+    const contactDock = page.locator(".scheme-a-contact-dock");
+    await expect(bottomDock).toHaveAttribute("data-mode", "navigation");
     await expect(bottomNav).toBeVisible();
     await expect(bottomNav.locator("a")).toHaveCount(5);
     await expect(bottomNav.locator('a[href="/zh/contact"]')).toBeVisible();
+
+    await page.evaluate(() => window.scrollTo({ top: 200, behavior: "auto" }));
+    await expect(bottomDock).toHaveAttribute("data-mode", "actions");
+    await expect(contactDock).toBeVisible();
+    await expect(bottomNav).not.toBeVisible();
+
+    await page.evaluate(() => window.scrollBy({ top: -40, behavior: "auto" }));
+    await expect(bottomDock).toHaveAttribute("data-mode", "navigation");
+    await expect(bottomNav).toBeVisible();
+    await expect(contactDock).not.toBeVisible();
   });
 
   test("hreflang links exist on a content page", async ({ page }) => {
