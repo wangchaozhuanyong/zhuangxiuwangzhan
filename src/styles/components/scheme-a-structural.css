@@ -774,6 +774,7 @@
     margin: 0;
     cursor: ew-resize;
     opacity: 0;
+    pointer-events: none;
     touch-action: pan-y;
   }
 
@@ -1041,7 +1042,19 @@
     margin: 0;
     cursor: ew-resize;
     opacity: 0;
+    pointer-events: none;
     touch-action: pan-y;
+  }
+
+  html[data-public-theme="dark"] :is(.scheme-a-compare, .scheme-a-transformation__compare) {
+    cursor: ew-resize;
+    touch-action: pan-y;
+    user-select: none;
+    -webkit-user-select: none;
+  }
+
+  html[data-public-theme="dark"] :is(.scheme-a-compare, .scheme-a-transformation__compare) img {
+    pointer-events: none;
   }
 
   html[data-public-theme="dark"] :is(.scheme-a-compare, .scheme-a-transformation__compare):focus-within {
