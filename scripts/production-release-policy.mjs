@@ -1,5 +1,17 @@
 export const DEFAULT_PRODUCTION_BRANCH = "main";
 
+const GENERATED_RELEASE_ARTIFACT_FILES = new Set([
+  "functions/seo-manifest.json",
+  "public/llms.txt",
+  "public/seo-manifest.json",
+  "public/sitemap.xml",
+]);
+
+export function isGeneratedReleaseArtifactPath(value) {
+  const filePath = normalize(value).replaceAll("\\", "/");
+  return GENERATED_RELEASE_ARTIFACT_FILES.has(filePath) || filePath.startsWith("public/images/_responsive/");
+}
+
 const normalize = (value) => String(value || "").trim();
 const normalizeSha = (value) => normalize(value).toLowerCase();
 

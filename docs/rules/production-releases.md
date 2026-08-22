@@ -30,6 +30,7 @@
 - 检出的 `HEAD` 等于声明的发布 SHA。
 - 所有正式发布（包括 CI 和本地紧急发布）中，`HEAD` 必须等于执行校验时最新的 `origin/main`；构建期间 `main` 前进时，旧 SHA 必须停止发布并重新走门禁。
 - 发布前检查和构建后检查全部通过。
+- 发布前工作区必须完全干净；构建后只允许 `public/images/_responsive/`、sitemap、llms 与 SEO manifest 等仓库内明确登记的生成产物发生变化，任何源码、配置或未登记路径变化都必须阻止发布。
 - Cloudflare 命令显式携带 `--branch main` 和 `--commit-hash <完整 SHA>`。
 
 任意一项不满足都必须停止。禁止使用 `--allow-dirty`、伪造分支名或直接运行 Wrangler 绕过。

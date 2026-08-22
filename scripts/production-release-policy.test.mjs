@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import test from "node:test";
-import { validateProductionReleaseState } from "./production-release-policy.mjs";
+import { isGeneratedReleaseArtifactPath, validateProductionReleaseState } from "./production-release-policy.mjs";
 
 const SHA = "a".repeat(40);
 
@@ -54,4 +54,20 @@ test("the standard release guard always verifies the current remote main", () =>
   const packageJson = JSON.parse(readFileSync(new URL("../package.json", import.meta.url), "utf8"));
 
   assert.match(packageJson.scripts["release:guard"], /--require-remote(?:\s|$)/);
+});
+
+test("only known build outputs qualify as generated release artifacts", () => {
+  assert.equal(isGeneratedReleaseArtifactPath("public/images/_responsive/materials/w720/example.webp"), true);
+  assert.equal(isGeneratedReleaseArtifactPath("public/sitemap.xml"), true);
+  assert.equal(isGeneratedReleaseArtifactPath("functions/seo-manifest.json"), true);
+  assert.equal(isGeneratedReleaseArtifactPath("src/pages/Products.tsx"), false);
+  assert.equal(isGeneratedReleaseArtifactPath(".github/workflows/cloudflare-pages-deploy-manual.yml"), false);
+});
+
+test("post-build guards allow only generated release artifacts", () => {
+  const workflow = readFileSync(new URL("../.github/workflows/cloudflare-pages-deploy-manual.yml", import.meta.url), "utf8");
+  const deployScript = readFileSync(new URL("./deploy-cloudflare-pages.mjs", import.meta.url), "utf8");
+
+  assert.match(workflow, /Confirm release source is unchanged after build[\s\S]*release:guard -- --allow-generated-dirty/);
+  assert.match(deployScript, /guardScript, "--require-remote", "--allow-generated-dirty"/);
 });
