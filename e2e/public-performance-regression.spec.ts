@@ -26,6 +26,7 @@ test("mobile navigation remains stable while the header changes state", async ({
 
   await dock.locator('a[href="/zh/contact"]').click();
   await expect(page).toHaveURL(/\/zh\/contact$/);
+  await page.waitForLoadState("networkidle");
   await expect(switcher).toHaveAttribute("data-mode", "navigation");
   await expect(dock).toBeVisible();
 
@@ -34,6 +35,7 @@ test("mobile navigation remains stable while the header changes state", async ({
   await expect(actionBar).toBeVisible();
   await expect(actionBar.locator("a")).toHaveCount(3);
   await expect(actionBar.locator('a[href="#contact-name"]')).toBeVisible();
+  await page.waitForTimeout(300);
   await actionBar.locator('a[href="#contact-name"]').click();
   await expect(page.locator("#contact-name")).toBeFocused();
   await expect(switcher).toHaveAttribute("data-mode", "hidden");
