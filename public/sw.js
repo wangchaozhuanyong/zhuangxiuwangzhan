@@ -1,5 +1,5 @@
-const OFFLINE_CACHE = "flashcast-offline-v1";
-const OFFLINE_URL = "/offline.html";
+const OFFLINE_CACHE = "flashcast-offline-v2";
+const OFFLINE_URL = "/offline";
 
 self.addEventListener("install", (event) => {
   event.waitUntil(

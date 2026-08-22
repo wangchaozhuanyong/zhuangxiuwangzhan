@@ -168,6 +168,9 @@ const pageChecks = [
   { path: "/zh/contact", name: "Contact page", kind: "html", publicCache: true },
   { path: "/zh/process", name: "Process page", kind: "html", publicCache: true },
   { path: "/admin", name: "Admin login", kind: "html", adminCache: true },
+  { path: "/__flashcast/version", name: "Public version endpoint", kind: "version" },
+  { path: "/offline", name: "Offline fallback", kind: "offline" },
+  { path: "/sw.js", name: "Service Worker", kind: "service-worker" },
   { path: "/robots.txt", name: "robots.txt", kind: "robots" },
   { path: "/sitemap.xml", name: "sitemap.xml", kind: "sitemap" },
 ];
@@ -192,11 +195,29 @@ async function checkPage(config) {
       return;
     }
 
-    if (config.kind === "html") {
+    if (config.kind === "html" || config.kind === "offline") {
       if (!/<html[\s>]/i.test(body)) {
         addCheck(config.name, "fail", "Response does not contain an HTML document", {
           url: response.url,
           contentType,
+          durationMs,
+        });
+        return;
+      }
+
+      if (config.kind === "offline" && !/当前网络不可用/.test(body)) {
+        addCheck(config.name, "fail", "Offline document is missing its dedicated offline marker", {
+          url: response.url,
+          durationMs,
+        });
+        return;
+      }
+
+      const offlineRequiresRevalidation = /(?:no-store|no-cache)/i.test(cacheControl)
+        || (/max-age=0/i.test(cacheControl) && /must-revalidate/i.test(cacheControl));
+      if (config.kind === "offline" && !offlineRequiresRevalidation) {
+        addCheck(config.name, "fail", `Offline document can be reused without revalidation: ${cacheControl || "(missing)"}`, {
+          url: response.url,
           durationMs,
         });
         return;
@@ -235,12 +256,70 @@ async function checkPage(config) {
         addCheck("Admin cache policy", "pass", cacheControl, { url: response.url });
       }
 
-      if (config.publicCache && !/public/i.test(cacheControl)) {
-        addCheck(`${config.name} cache policy`, "warning", `Public cache header is missing or unexpected: ${cacheControl || "(missing)"}`, {
+      const requiresBrowserRevalidation = /no-cache/i.test(cacheControl)
+        && /max-age=0/i.test(cacheControl)
+        && /must-revalidate/i.test(cacheControl);
+      if (config.publicCache && !requiresBrowserRevalidation) {
+        addCheck(`${config.name} browser cache policy`, "fail", `Expected browser revalidation but received: ${cacheControl || "(missing)"}`, {
           url: response.url,
         });
+      } else if (config.publicCache) {
+        addCheck(`${config.name} browser cache policy`, "pass", cacheControl, { url: response.url });
       }
 
+      return;
+    }
+
+    if (config.kind === "version") {
+      let payload;
+      try {
+        payload = JSON.parse(body);
+      } catch {
+        payload = null;
+      }
+
+      if (!payload?.deploymentVersion || !payload?.contentVersion) {
+        addCheck(config.name, "fail", "Endpoint did not return deploymentVersion and contentVersion", {
+          url: response.url,
+          durationMs,
+        });
+      } else if (!/no-store/i.test(cacheControl)) {
+        addCheck(config.name, "fail", `Expected no-store but received: ${cacheControl || "(missing)"}`, {
+          url: response.url,
+          durationMs,
+        });
+      } else {
+        addCheck(config.name, "pass", `${response.status} in ${durationMs} ms`, {
+          url: response.url,
+          durationMs,
+          deploymentVersion: payload.deploymentVersion,
+          contentVersion: payload.contentVersion,
+        });
+      }
+      return;
+    }
+
+    if (config.kind === "service-worker") {
+      const isNetworkOnlyNavigation = body.includes('event.request.mode !== "navigate"')
+        && body.includes('fetch(event.request, { cache: "no-store" })')
+        && body.includes('const OFFLINE_URL = "/offline"');
+
+      if (!isNetworkOnlyNavigation) {
+        addCheck(config.name, "fail", "Service Worker is missing the network-only navigation fallback", {
+          url: response.url,
+          durationMs,
+        });
+      } else if (!/no-store/i.test(cacheControl)) {
+        addCheck(config.name, "fail", `Expected no-store but received: ${cacheControl || "(missing)"}`, {
+          url: response.url,
+          durationMs,
+        });
+      } else {
+        addCheck(config.name, "pass", `${response.status} in ${durationMs} ms`, {
+          url: response.url,
+          durationMs,
+        });
+      }
       return;
     }
 
