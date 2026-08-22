@@ -191,6 +191,42 @@ test.describe("Scheme A approved-design fidelity", () => {
     expect(desktopRatios[2]).toBeCloseTo(1, 2);
   });
 
+  test("home feature media stays horizontally balanced", async ({ page }) => {
+    for (const viewport of [
+      { width: 390, height: 844 },
+      { width: 1440, height: 900 },
+      { width: 2560, height: 1200 },
+    ]) {
+      await page.setViewportSize(viewport);
+      await page.goto("/zh", { waitUntil: "domcontentloaded" });
+      await expect(page.locator(".scheme-a-project__media")).toBeAttached();
+      await expect(page.locator(".scheme-a-compare")).toBeAttached();
+
+      const metrics = await page.evaluate(() => {
+        const horizontalGaps = (selector: string) => {
+          const element = document.querySelector<HTMLElement>(selector);
+          if (!element) throw new Error(`Missing home feature region: ${selector}`);
+          const rect = element.getBoundingClientRect();
+          return {
+            left: rect.left,
+            right: document.documentElement.clientWidth - rect.right,
+          };
+        };
+
+        return {
+          projectMedia: horizontalGaps(".scheme-a-project__media"),
+          projectMeta: horizontalGaps(".scheme-a-project__meta"),
+          comparison: horizontalGaps(".scheme-a-compare"),
+          comparisonNote: horizontalGaps(".scheme-a-before__note"),
+        };
+      });
+
+      for (const region of Object.values(metrics)) {
+        expect(Math.abs(region.left - region.right), `${viewport.width}px viewport`).toBeLessThanOrEqual(1);
+      }
+    }
+  });
+
   test("desktop opening preserves a full-viewport editorial stage", async ({ page }) => {
     await page.setViewportSize({ width: 1440, height: 900 });
     await page.goto("/zh", { waitUntil: "domcontentloaded" });
