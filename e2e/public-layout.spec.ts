@@ -170,7 +170,7 @@ test.describe("public responsive layout", () => {
     });
     expect(surface.wrapperBackground).toBe("rgba(0, 0, 0, 0)");
     expect(surface.panelBackground).not.toBe("rgba(0, 0, 0, 0)");
-    expect(surface.labelColor).toBe("rgb(25, 25, 23)");
+    expect(surface.labelColor).toBe("rgb(28, 27, 24)");
   });
 
   test("Scheme A footer and mobile dock expose the complete navigation", async ({ page }) => {
