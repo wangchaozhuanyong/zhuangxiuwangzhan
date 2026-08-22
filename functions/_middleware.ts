@@ -1745,6 +1745,18 @@ const requestAcceptsEtag = (request: Request, etag: string) => {
     .some((candidate) => candidate.trim() === "*" || normalizeEtag(candidate) === normalizedEtag);
 };
 
+const requestAcceptsLastModified = (request: Request, lastModified: string) => {
+  // RFC conditional request precedence: If-None-Match wins whenever it is present.
+  if (request.headers.has("if-none-match")) return false;
+  const ifModifiedSince = request.headers.get("if-modified-since");
+  if (!ifModifiedSince) return false;
+  const lastModifiedTime = Date.parse(lastModified);
+  const ifModifiedSinceTime = Date.parse(ifModifiedSince);
+  return Number.isFinite(lastModifiedTime)
+    && Number.isFinite(ifModifiedSinceTime)
+    && lastModifiedTime <= ifModifiedSinceTime;
+};
+
 const createPublicHtmlBrowserResponse = (
   response: Response,
   request: Request,
@@ -1754,8 +1766,12 @@ const createPublicHtmlBrowserResponse = (
   applyPublicHtmlBrowserCacheHeaders(headers);
   headers.set(HTML_CACHE_DEBUG_HEADER, state);
   const etag = headers.get("etag");
+  const lastModified = headers.get("last-modified");
 
-  if (etag && requestAcceptsEtag(request, etag)) {
+  if (
+    (etag && requestAcceptsEtag(request, etag))
+    || (lastModified && requestAcceptsLastModified(request, lastModified))
+  ) {
     return new Response(null, { status: 304, headers });
   }
 
@@ -1879,7 +1895,7 @@ export const onRequest: PagesFunction = async (context) => {
     ? getPublicHtmlFreshnessRequest(publicHtmlCacheRequest)
     : null;
 
-  const generatePublicHtml = async () => {
+  const generatePublicHtml = async (existingLastModified?: string | null) => {
     const dynamicRouteState = await fetchDynamicRouteState(env as Record<string, string | undefined>, key, staticMeta);
     const meta = dynamicRouteState?.meta || staticMeta;
 
@@ -2026,6 +2042,7 @@ export const onRequest: PagesFunction = async (context) => {
   if (meta) {
     applyPublicHtmlEdgeCacheHeaders(headers);
     headers.set("etag", await createHtmlEtag(transformed));
+    headers.set("last-modified", existingLastModified || new Date().toUTCString());
   } else {
     applyHtmlNoStoreHeaders(headers);
   }
@@ -2055,7 +2072,7 @@ export const onRequest: PagesFunction = async (context) => {
         const refreshKey = publicHtmlCacheRequest.url;
         let refreshPromise = publicHtmlRefreshes.get(refreshKey);
         if (!refreshPromise) {
-          refreshPromise = generatePublicHtml()
+          refreshPromise = generatePublicHtml(cachedPublicHtml.headers.get("last-modified"))
             .then(async (generated) => {
               if (generated.cacheWrite) await generated.cacheWrite;
             })

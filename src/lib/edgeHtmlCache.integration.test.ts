@@ -124,6 +124,7 @@ describe("public Edge HTML cache", () => {
     expect(firstResponse.headers.get("cdn-cache-control")).toBe("no-store");
     expect(firstResponse.headers.get("cloudflare-cdn-cache-control")).toBe("no-store");
     expect(firstResponse.headers.get("etag")).toMatch(/^"sha256-[a-f0-9]{64}"$/);
+    expect(firstResponse.headers.get("last-modified")).toBeTruthy();
     await Promise.all(pendingTasks.splice(0));
     const cachedPublicHtml = edgeCache.getPublicHtmlEntry();
     expect(cachedPublicHtml?.headers.get("cache-control")).toBe("public, max-age=300");
@@ -154,9 +155,41 @@ describe("public Edge HTML cache", () => {
     expect(await revalidatedResponse.text()).toBe("");
   });
 
+  it("returns 304 through Last-Modified when an upstream proxy strips ETag", async () => {
+    const firstResponse = await requestPage();
+    const lastModified = firstResponse.headers.get("last-modified");
+    expect(lastModified).toBeTruthy();
+    await Promise.all(pendingTasks.splice(0));
+
+    const revalidatedResponse = await requestPage({
+      headers: { "if-modified-since": lastModified || "" },
+    });
+
+    expect(revalidatedResponse.status).toBe(304);
+    expect(revalidatedResponse.headers.get("last-modified")).toBe(lastModified);
+    expect(revalidatedResponse.headers.get("x-flashcast-html-cache")).toBe("hit");
+    expect(await revalidatedResponse.text()).toBe("");
+  });
+
+  it("gives If-None-Match precedence over If-Modified-Since", async () => {
+    const firstResponse = await requestPage();
+    const lastModified = firstResponse.headers.get("last-modified");
+    await Promise.all(pendingTasks.splice(0));
+
+    const revalidatedResponse = await requestPage({
+      headers: {
+        "if-none-match": '"different-content"',
+        "if-modified-since": lastModified || "",
+      },
+    });
+
+    expect(revalidatedResponse.status).toBe(200);
+  });
+
   it("serves stale HTML immediately and refreshes it in the background", async () => {
     const firstResponse = await requestPage();
     const etag = firstResponse.headers.get("etag");
+    const lastModified = firstResponse.headers.get("last-modified");
     await Promise.all(pendingTasks.splice(0));
     edgeCache.expireFreshnessMarker();
     const fetchesBeforeRefresh = supabaseFetch.mock.calls.length;
@@ -172,6 +205,7 @@ describe("public Edge HTML cache", () => {
     const refreshedResponse = await requestPage({ headers: { "if-none-match": etag || "" } });
     expect(refreshedResponse.status).toBe(304);
     expect(refreshedResponse.headers.get("etag")).toBe(etag);
+    expect(refreshedResponse.headers.get("last-modified")).toBe(lastModified);
   });
 
   it("does not reuse cached HTML across deployments", async () => {
