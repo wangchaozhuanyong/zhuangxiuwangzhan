@@ -204,17 +204,21 @@ test.describe("Scheme A approved-design fidelity", () => {
 
       const hero = page.locator(".forest-quote-page .fc-route-hero-form");
       const progress = page.locator(".quote-form-guide__summary");
-      const actionBar = page.locator(".mobile-action-bar");
+      const switcher = page.getByTestId("mobile-bottom-dock");
+      const actionBar = page.locator(".scheme-a-contact-dock");
       await expect(hero).toBeVisible();
       await expect(progress).toBeVisible();
+      await expect(switcher).toHaveAttribute("data-mode", "navigation");
+      await page.evaluate(() => window.scrollTo({ top: 200, behavior: "auto" }));
+      await expect(switcher).toHaveAttribute("data-mode", "actions");
       await expect(actionBar).toBeVisible();
-      await expect(page.locator(".scheme-a-mobile-dock")).toHaveCount(0);
+      await expect(page.locator(".scheme-a-mobile-dock")).not.toBeVisible();
 
       const metrics = await page.evaluate(() => {
         const hero = document.querySelector<HTMLElement>(".forest-quote-page .fc-route-hero-form");
         const title = document.querySelector<HTMLElement>(".forest-quote-form h2");
         const progress = document.querySelector<HTMLElement>(".quote-form-guide__summary");
-        const actionBar = document.querySelector<HTMLElement>(".mobile-action-bar");
+        const actionBar = document.querySelector<HTMLElement>(".scheme-a-contact-dock");
         if (!hero || !title || !progress || !actionBar) throw new Error("Missing quote conversion regions");
         return {
           heroHeight: hero.getBoundingClientRect().height,
@@ -232,14 +236,16 @@ test.describe("Scheme A approved-design fidelity", () => {
       expect(metrics.horizontalOverflow).toBeLessThanOrEqual(1);
     }
 
-    await page.locator('.mobile-action-bar a[href="#quote-name"]').click();
+    await page.locator('.scheme-a-contact-dock a[href="#quote-name"]').click();
     await expect(page.locator("#quote-name")).toBeFocused();
+    await expect(page.getByTestId("mobile-bottom-dock")).toHaveAttribute("data-mode", "hidden");
 
     const menuTrigger = page.locator('button[aria-controls="scheme-a-directory"]');
     await menuTrigger.click();
-    await expect(page.locator(".mobile-action-bar")).toHaveCount(0);
+    await expect(page.getByTestId("mobile-bottom-dock")).toHaveAttribute("data-mode", "hidden");
     await page.keyboard.press("Escape");
-    await expect(page.locator(".mobile-action-bar")).toBeVisible();
+    await expect(page.getByTestId("mobile-bottom-dock")).toHaveAttribute("data-mode", "actions");
+    await expect(page.locator(".scheme-a-contact-dock")).toBeVisible();
     await expect(menuTrigger).toBeFocused();
   });
 
