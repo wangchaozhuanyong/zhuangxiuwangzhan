@@ -1,0 +1,19 @@
+{
+  "ok": true,
+  "checkedAt": "2026-08-22T06:48:27.776Z",
+  "rowMismatches": [],
+  "pageChecks": [
+    {
+      "path": "/en/services/office-renovation",
+      "status": 200,
+      "expected": "Office Renovation &amp; Commercial Fit-Out Malaysia",
+      "found": true
+    },
+    {
+      "path": "/zh/services/office-renovation",
+      "status": 200,
+      "expected": "马来西亚办公室装修与商业空间规划",
+      "found": true
+    }
+  ]
+}

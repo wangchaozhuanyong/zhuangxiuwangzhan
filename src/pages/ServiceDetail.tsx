@@ -13,6 +13,11 @@ import { serviceDetailPageText } from "@/i18n/serviceDetailPageText";
 import { buildQuotePath, quoteProjectTypeFromServiceSlug } from "@/lib/quoteContext";
 import { stripHtml } from "@/lib/text";
 
+const relatedServiceSlugs: Record<string, readonly string[]> = {
+  "office-renovation": ["shop-renovation", "approval", "design"],
+  "shop-renovation": ["office-renovation", "approval", "design"],
+};
+
 export default function ServiceDetail() {
   const { slug } = useParams<{ slug: string }>();
   const { language } = useLanguage();
@@ -34,7 +39,11 @@ export default function ServiceDetail() {
   const offered = service.items.map((item: string) => display(item));
   const process = service.processSteps.map((step) => ({ title: display(step.title), description: display(step.desc) })).filter((step) => step.title || step.description);
   const faqs = service.faqs.map((faq) => ({ question: display(faq.q), answer: display(faq.a) })).filter((faq) => faq.question && faq.answer);
-  const related = services.filter((item) => item.slug !== service.slug).slice(0, 3);
+  const preferredRelatedSlugs = relatedServiceSlugs[service.slug] || [];
+  const related = [
+    ...preferredRelatedSlugs.map((relatedSlug) => services.find((item) => item.slug === relatedSlug)).filter(Boolean),
+    ...services.filter((item) => item.slug !== service.slug && !preferredRelatedSlugs.includes(item.slug)),
+  ].slice(0, 3);
   const relatedItems: SchemeAListingItem[] = related.map((item) => ({ id: String(item.id || item.slug), title: display(item.title), description: display(item.summary), image: item.image, imageAlt: display(item.title), href: `/services/${item.slug}` }));
   const quotePath = buildQuotePath({
     source: "service",
@@ -60,7 +69,7 @@ export default function ServiceDetail() {
       </SchemeASection>
       {process.length ? <SchemeASection title={copy.process} description={language === "zh" ? "每一步解决一个明确问题，让设计与现场执行保持一致。" : "Each step resolves one clear decision from planning to delivery."}><SchemeANumberList items={process} /></SchemeASection> : null}
       {faqs.length ? <SchemeASection title={copy.faq}><SchemeAFaqList items={faqs} /></SchemeASection> : null}
-      <SchemeASection title={copy.relatedServices}><SchemeAListingGrid items={relatedItems} actionLabel={copy.viewProjects} /></SchemeASection>
+      <SchemeASection title={copy.relatedServices}><SchemeAListingGrid items={relatedItems} actionLabel={copy.viewService} /></SchemeASection>
       <CTABanner
         title={copy.interested(title)}
         description={copy.ctaText}

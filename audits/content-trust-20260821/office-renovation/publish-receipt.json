@@ -1,0 +1,56 @@
+{
+  "ok": true,
+  "target": "office-renovation",
+  "operation": "optimize",
+  "approvalId": "OWNER-STANDING-WEBSITE-CONTENT-2026-08-14",
+  "publishedAt": "2026-08-22T06:48:27.777Z",
+  "published": {
+    "ok": true,
+    "dry_run": false,
+    "content_type": "service",
+    "action": "publish",
+    "slug": "office-renovation",
+    "status": "published",
+    "existing_id": "a87541ac-1cba-4f1a-972d-428dccdbcc0f",
+    "warnings": [],
+    "next_steps": [
+      "Dynamic HTML SEO, sitemap.xml, and llms.txt read this published record; no frontend deployment is required.",
+      "Verify the /zh and /en public service pages read the updated admin content.",
+      "Run publish receipt/QA and production cache verification."
+    ],
+    "auth_mode": "cron",
+    "saved_id": "a87541ac-1cba-4f1a-972d-428dccdbcc0f",
+    "saved_updated_at": "2026-08-22T06:48:26.731611+00:00",
+    "cache_invalidation": {
+      "ok": true,
+      "strategy": "content-revision",
+      "revision": "2026-08-22T06:48:26.904Z",
+      "edge_purge_requested": {
+        "ok": true,
+        "attempted": true,
+        "tag": "flashcast-public-html",
+        "status": 200
+      }
+    }
+  },
+  "postcheck": {
+    "ok": true,
+    "checkedAt": "2026-08-22T06:48:27.776Z",
+    "rowMismatches": [],
+    "pageChecks": [
+      {
+        "path": "/en/services/office-renovation",
+        "status": 200,
+        "expected": "Office Renovation &amp; Commercial Fit-Out Malaysia",
+        "found": true
+      },
+      {
+        "path": "/zh/services/office-renovation",
+        "status": 200,
+        "expected": "马来西亚办公室装修与商业空间规划",
+        "found": true
+      }
+    ]
+  },
+  "rollbackCommand": "npm run content:trust-fixes -- --target=office-renovation --execute --approval-id=OWNER-STANDING-WEBSITE-CONTENT-2026-08-14 --rollback-from=/Users/wangchao/Desktop/装修网站/zhuangxiuwangzhan-content-trust-20260821/audits/content-trust-20260821/office-renovation/backup.json --env-dir=/Users/wangchao/Desktop/装修网站/zhuangxiuwangzhan-main"
+}

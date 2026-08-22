@@ -57,6 +57,7 @@
     "content:humanize-blog:write": "node scripts/humanize-blog-posts.mjs --write",
     "content:materials:validate": "node scripts/publish-material-catalog.mjs --validate",
     "content:materials:dry-run": "node scripts/publish-material-catalog.mjs",
+    "content:trust-fixes": "node scripts/publish-content-trust-fixes.mjs",
     "test:watch": "vitest"
   },
   "dependencies": {

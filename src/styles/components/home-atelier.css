@@ -432,6 +432,51 @@
     padding-left: 0;
   }
 
+  html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-home-faq {
+    padding: clamp(5rem, 9vw, 8rem) var(--scheme-a-gutter);
+    color: #ece8df;
+    background: #171713;
+  }
+
+  html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-home-faq__layout {
+    display: grid;
+    grid-template-columns: minmax(14rem, 0.38fr) minmax(0, 0.62fr);
+    gap: clamp(2.5rem, 7vw, 7rem);
+  }
+
+  html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-home-faq h2 {
+    max-width: 12em;
+    margin-top: 1rem;
+    font-family: Georgia, "Songti SC", serif;
+    font-size: clamp(2rem, 4vw, 3.6rem);
+    font-weight: 400;
+    line-height: 1.18;
+  }
+
+  html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-home-faq header > p:last-child {
+    max-width: 34rem;
+    margin-top: 1.4rem;
+    color: rgb(236 232 223 / 0.62);
+    font-size: 0.75rem;
+    line-height: 1.75;
+  }
+
+  html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-home-faq .fc-route-faq {
+    box-shadow: inset 0 1px 0 rgb(236 232 223 / 0.16);
+  }
+
+  html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-home-faq .fc-route-faq > div {
+    box-shadow: inset 0 -1px 0 rgb(236 232 223 / 0.12);
+  }
+
+  html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-home-faq .fc-route-faq button {
+    color: #ece8df;
+  }
+
+  html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-home-faq .fc-route-faq p {
+    color: rgb(236 232 223 / 0.66);
+  }
+
   html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-contact {
     background:
       radial-gradient(circle at 76% 22%, rgb(176 138 82 / 0.16), transparent 30rem),
@@ -755,6 +800,15 @@
     html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-before__note {
       width: 100%;
       padding: 16px 22px 0;
+    }
+
+    html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-home-faq {
+      padding: 82px 22px 94px;
+    }
+
+    html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-home-faq__layout {
+      grid-template-columns: 1fr;
+      gap: 2.4rem;
     }
 
     html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-contact > .scheme-a-frame {

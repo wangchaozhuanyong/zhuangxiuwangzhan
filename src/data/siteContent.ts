@@ -16,34 +16,34 @@ export interface MilestoneItem {
 }
 export const companyMilestones: MilestoneItem[] = [
   {
-    year: "2015",
-    title: "Company Founded",
-    desc: "FLASH CAST SDN. BHD. established in Kuala Lumpur, starting with residential renovation projects.",
+    year: "01",
+    title: "Scope Review",
+    desc: "Clarify the space, site condition, priorities, and intended renovation scope.",
   },
   {
-    year: "2017",
-    title: "Commercial Expansion",
-    desc: "Expanded into commercial fit-out and office renovation, serving corporate clients across KL.",
+    year: "02",
+    title: "Site and Requirement Check",
+    desc: "Review access, measurements, building rules, and coordination needs.",
   },
   {
-    year: "2019",
-    title: "Artistic Wall Coating Service",
-    desc: "Expanded artistic wall coating options for selected feature wall projects.",
+    year: "03",
+    title: "Design and Material Direction",
+    desc: "Align layout, visual direction, selected materials, and practical constraints.",
   },
   {
-    year: "2021",
-    title: "Industrial Division",
-    desc: "Launched warehouse shelving and industrial racking division to serve manufacturing and logistics sectors.",
+    year: "04",
+    title: "Quotation and Documentation",
+    desc: "Confirm the itemized scope, responsibilities, exclusions, and change process.",
   },
   {
-    year: "2023",
-    title: "Broader Project Coverage",
-    desc: "Expanded renovation references across residential, commercial, and selected industrial spaces.",
+    year: "05",
+    title: "Work Coordination",
+    desc: "Coordinate the agreed sequence, site communication, and quality checkpoints.",
   },
   {
-    year: "2025",
-    title: "Regional Growth",
-    desc: "Expanded service coverage to all major areas across Kuala Lumpur and Selangor.",
+    year: "06",
+    title: "Handover and Follow-up",
+    desc: "Review the agreed deliverables and the after-sales terms in the project documents.",
   },
 ];
 export interface CoreValueItem {
@@ -64,8 +64,8 @@ export const coreValues: CoreValueItem[] = [
   },
   {
     icon: Clock,
-    title: "On-Time Delivery",
-    desc: "We respect your timeline. Our project management system ensures milestones are met and your renovation is completed as scheduled.",
+    title: "Milestone Planning",
+    desc: "Project milestones, dependencies, and timing assumptions are documented so progress can be tracked and discussed.",
   },
   {
     icon: Heart,
@@ -81,23 +81,23 @@ export interface TeamHighlightItem {
 export const teamHighlights: TeamHighlightItem[] = [
   {
     icon: Hammer,
-    title: "Skilled Carpenters",
-    desc: "In-house carpentry team specializing in custom built-in furniture, cabinetry, and millwork.",
+    title: "Built-In Planning",
+    desc: "Discusses custom cabinets, wardrobes, storage, and timber-detail requirements.",
   },
   {
     icon: Users,
-    title: "Design Consultants",
-    desc: "Experienced interior designers who translate your ideas into practical, beautiful living spaces.",
+    title: "Design Coordination",
+    desc: "Translates requirements into spatial layouts, style direction, and practical design plans.",
   },
   {
     icon: Target,
-    title: "Project Managers",
-    desc: "Dedicated coordinators who oversee every phase - from permits and procurement to quality checks.",
+    title: "Project Coordination",
+    desc: "Plans the required approvals, materials, trades, and site checks for the confirmed scope.",
   },
   {
     icon: Star,
-    title: "Specialist Applicators",
-    desc: "Wall coating applicators familiar with selected decorative finishing methods.",
+    title: "Wall-Finish Planning",
+    desc: "Reviews suitable feature-wall, texture, sample, and decorative finish directions.",
   },
 ];
 export const companyStats = [

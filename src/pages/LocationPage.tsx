@@ -30,7 +30,14 @@ export default function LocationPage() {
 
   const display = (value: string) => stripHtml(translateDisplayText(value || "", language));
   const faqs = location.faqs.map((faq) => ({ question: display(faq.q), answer: display(faq.a) }));
-  const projectItems: SchemeAListingItem[] = location.projects.map((project, index) => ({ id: `${project.title}-${index}`, title: display(project.title), meta: translateProjectType(project.type, language), image: project.image, imageAlt: display(project.title), href: "/projects" }));
+  const projectItems: SchemeAListingItem[] = location.projects.map((project, index) => ({
+    id: `${project.title}-${index}`,
+    title: `${display(project.title)} — ${mediaLabels[language].renderingConcept}`,
+    meta: `${translateProjectType(project.type, language)} · ${mediaLabels[language].renderingConcept}`,
+    image: project.image,
+    imageAlt: `${display(project.title)} · ${mediaLabels[language].renderingConcept}`,
+    href: "/projects",
+  }));
 
   return (
     <main className="fc-route-page">

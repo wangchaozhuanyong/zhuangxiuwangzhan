@@ -1,0 +1,19 @@
+{
+  "ok": true,
+  "checkedAt": "2026-08-22T06:49:13.258Z",
+  "rowMismatches": [],
+  "pageChecks": [
+    {
+      "path": "/en/about",
+      "status": 200,
+      "expected": "About FLASH CAST | Renovation Planning in Kuala Lumpur",
+      "found": true
+    },
+    {
+      "path": "/zh/about",
+      "status": 200,
+      "expected": "关于 FLASH CAST | 吉隆坡装修规划与项目协调",
+      "found": true
+    }
+  ]
+}

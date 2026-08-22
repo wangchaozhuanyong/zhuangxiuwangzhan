@@ -1,0 +1,56 @@
+{
+  "ok": true,
+  "target": "mont-kiara-concept",
+  "operation": "optimize",
+  "approvalId": "OWNER-STANDING-WEBSITE-CONTENT-2026-08-14",
+  "publishedAt": "2026-08-22T06:48:54.139Z",
+  "published": {
+    "ok": true,
+    "dry_run": false,
+    "content_type": "project",
+    "action": "publish",
+    "slug": "mont-kiara-luxury-condo-renovation",
+    "status": "published",
+    "existing_id": "13a73c37-93ed-4006-97c2-9984615a7892",
+    "warnings": [],
+    "next_steps": [
+      "Dynamic HTML SEO, sitemap.xml, and llms.txt read the published CMS record; no frontend deployment is required.",
+      "Verify /zh/projects/mont-kiara-luxury-condo-renovation and /en/projects/mont-kiara-luxury-condo-renovation in both languages after publishing.",
+      "Record post-publish QA and rollback evidence."
+    ],
+    "auth_mode": "cron",
+    "saved_id": "13a73c37-93ed-4006-97c2-9984615a7892",
+    "saved_updated_at": "2026-08-22T06:48:51.824111+00:00",
+    "cache_invalidation": {
+      "ok": true,
+      "strategy": "content-revision",
+      "revision": "2026-08-22T06:48:52.013Z",
+      "edge_purge_requested": {
+        "ok": true,
+        "attempted": true,
+        "tag": "flashcast-public-html",
+        "status": 200
+      }
+    }
+  },
+  "postcheck": {
+    "ok": true,
+    "checkedAt": "2026-08-22T06:48:54.138Z",
+    "rowMismatches": [],
+    "pageChecks": [
+      {
+        "path": "/en/projects/mont-kiara-luxury-condo-renovation",
+        "status": 200,
+        "expected": "Luxury Condo Living &amp; Dining Rendering Concept",
+        "found": true
+      },
+      {
+        "path": "/zh/projects/mont-kiara-luxury-condo-renovation",
+        "status": 200,
+        "expected": "高级公寓客餐厅效果图概念",
+        "found": true
+      }
+    ]
+  },
+  "rollbackCommand": "npm run content:trust-fixes -- --target=mont-kiara-concept --execute --approval-id=OWNER-STANDING-WEBSITE-CONTENT-2026-08-14 --rollback-from=/Users/wangchao/Desktop/装修网站/zhuangxiuwangzhan-content-trust-20260821/audits/content-trust-20260821/mont-kiara-concept/backup.json --env-dir=/Users/wangchao/Desktop/装修网站/zhuangxiuwangzhan-main"
+}

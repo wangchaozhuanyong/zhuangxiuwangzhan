@@ -152,10 +152,10 @@ export const translations: Translations = {
     en: "We focus on practical renovation planning, reliable execution, and quality finishing. Every project is built to last, not just to look good.",
     zh: "我们注重实用的装修规划、可靠的施工和高品质收尾。每个项目都要经久耐用，不仅仅是好看。",
   },
-  "whyUs.ssm.title": { en: "SSM Registered Company", zh: "SSM 注册 & 售后说明" },
+  "whyUs.ssm.title": { en: "Clear Project Documentation", zh: "清晰项目文件" },
   "whyUs.ssm.desc": {
-    en: "FLASH CAST SDN. BHD. is a registered company. After-sales and warranty terms should be confirmed in the final quotation or project document.",
-    zh: "FLASH CAST SDN. BHD. 是一家注册公司。售后和保修范围应以最终报价或项目文件确认为准。",
+    en: "Scope, responsibilities, changes, and after-sales terms should be confirmed in the final quotation or project document.",
+    zh: "工程范围、职责、变更与售后条款应以最终报价或项目文件确认为准。",
   },
 
   // ============ PROCESS SECTION ============
@@ -249,26 +249,26 @@ export const translations: Translations = {
   "about.label": { en: "About Us", zh: "关于我们" },
   "about.heroTitle": { en: "Building Spaces, Building Trust", zh: "打造空间，建立信任" },
   "about.heroDesc": {
-    en: "FLASH CAST SDN. BHD. — a registered renovation and interior design company based in Kuala Lumpur, providing complete design-and-build solutions for residential, commercial, and industrial spaces across KL and Selangor since 2015.",
-    zh: "FLASH CAST SDN. BHD. — 一家注册的装修和室内设计公司，总部位于吉隆坡。自2015年以来，为吉隆坡和雪兰莪州的住宅、商业和工业空间提供完整的设计与施工解决方案。",
+    en: "FLASH CAST SDN. BHD. supports renovation planning, design coordination, built-in work, and project delivery for residential and commercial spaces in Kuala Lumpur and Selangor.",
+    zh: "FLASH CAST SDN. BHD. 为吉隆坡与雪兰莪的住宅和商业空间提供装修规划、设计协调、定制工程与项目交付支持。",
   },
   "about.whoWeAre": { en: "Who We Are", zh: "公司简介" },
   "about.whoWeAre.p1": {
-    en: "Founded in 2015, FLASH CAST SDN. BHD. has grown from a small residential renovation team into a full-service design and build company serving clients across Kuala Lumpur and Selangor.",
-    zh: "成立于2015年，FLASH CAST SDN. BHD. 从一个小型住宅装修团队发展成为服务吉隆坡和雪兰莪州客户的全方位设计与施工公司。",
+    en: "We help clients clarify scope, site conditions, material direction, coordination needs, and the next practical step before work begins.",
+    zh: "我们协助客户在开工前理清工程范围、现场状况、材料方向、协调需求与下一步安排。",
   },
   "about.whoWeAre.p2": {
-    en: "We are SSM-registered and operate from our office at 94, Jalan Mega Mendung, Taman United, 58200 Kuala Lumpur. Our team handles every aspect of the renovation process.",
-    zh: "我们是 SSM 注册公司，办公室位于吉隆坡58200 Taman United, Jalan Mega Mendung 94号。我们的团队负责装修过程的每一个环节。",
+    en: "Project responsibilities, communication, scope, and after-sales terms are confirmed in the relevant quotation or project documents.",
+    zh: "项目职责、沟通方式、工程范围与售后条款以报价单或项目文件中的确认内容为准。",
   },
   "about.whoWeAre.p3": {
     en: "We also discuss artistic wall coating options for Malaysian homes and commercial spaces when this finish suits the project.",
-    zh: "作为德国 Remmers 艺术涂料的授权施工商，我们也为马来西亚住宅和商业空间带来欧洲品质的装饰墙面涂装。",
+    zh: "如果艺术墙面涂装适合项目，我们也可协助讨论材料、质感与样板方向。",
   },
   "about.coreValues": { en: "Our Core Values", zh: "核心价值观" },
   "about.coreValues.desc": { en: "These principles guide every project we take on.", zh: "这些原则指导着我们承接的每一个项目。" },
   "about.team": { en: "Our Team", zh: "我们的团队" },
-  "about.team.desc": { en: "A dedicated in-house team of professionals — no outsourced labour.", zh: "一支专业的自有团队 — 不外包劳务。" },
+  "about.team.desc": { en: "Project roles and coordination needs are defined according to the confirmed scope.", zh: "项目角色与协调需求会按确认的工程范围说明。" },
   "about.journey": { en: "Our Journey", zh: "发展历程" },
   "about.journey.desc": {
     en: "From a small residential renovation team to a full-service design-and-build company serving Kuala Lumpur and Selangor.",
@@ -288,16 +288,16 @@ export const translations: Translations = {
   "contact.sendMessage": { en: "Send Us a Message", zh: "给我们留言" },
   "contact.messageSent": { en: "Message Sent!", zh: "消息已发送！" },
   "contact.thankYou": { en: "Thank you", zh: "感谢您" },
-  "contact.replyPromise": { en: "We will review your message and follow up during business hours.", zh: "我们将在24小时内回复您。" },
+  "contact.replyPromise": { en: "We will review your message and follow up after it is received.", zh: "我们收到留言后会尽快查看并跟进。" },
   "contact.address": { en: "Address", zh: "地址" },
   "contact.phone": { en: "Phone / WhatsApp", zh: "电话 / WhatsApp" },
   "contact.email": { en: "Email", zh: "邮箱" },
   "contact.hours": { en: "Business Hours", zh: "营业时间" },
-  "contact.hoursText": { en: "Mon – Sat: 9:00 AM – 6:00 PM\nSun: By Appointment", zh: "周一至周六：上午9:00 – 下午6:00\n周日：预约制" },
+  "contact.hoursText": { en: "Visits and consultations by prior arrangement", zh: "到访与咨询请提前联系安排" },
   "contact.ourServices": { en: "Our Services", zh: "我们的服务" },
   "contact.visitOffice": { en: "Visit Our Office", zh: "参观办公室" },
   "contact.visitOffice.desc": { en: "Located in Taman United, Kuala Lumpur — serving KL, Selangor, and the Klang Valley", zh: "位于吉隆坡 Taman United — 服务吉隆坡、雪兰莪和巴生谷地区" },
-  "contact.noSpam": { en: "We will follow up during business hours. No spam.", zh: "我们将在24小时内回复。不会发送垃圾信息。" },
+  "contact.noSpam": { en: "We will follow up after reviewing your message. No spam.", zh: "我们查看留言后会尽快跟进，不会发送垃圾信息。" },
 
   // ============ FORM FIELDS ============
   "form.name": { en: "Name", zh: "姓名" },
@@ -393,7 +393,7 @@ export const translations: Translations = {
     en: "Professional renovation & interior design company in Kuala Lumpur, Malaysia. Specializing in residential renovation, custom built-in furniture, commercial fit-out, and artistic wall coating (German Remmers).",
     zh: "马来西亚吉隆坡专业装修和室内设计公司。专注于住宅装修、定制内嵌家具、商业装修和艺术墙面涂料（德国 Remmers）。",
   },
-  "footer.brand.registration": { en: "SSM Registered · In-House Design & Build Team", zh: "SSM 注册 · 自有设计施工团队" },
+  "footer.brand.registration": { en: "Renovation Planning · Design, Build & Coordination", zh: "装修规划 · 设计、施工与协调" },
   "footer.services": { en: "Services", zh: "服务" },
   "footer.company": { en: "Company", zh: "公司" },
   "footer.serviceAreas": { en: "Service Areas", zh: "服务区域" },
@@ -402,13 +402,13 @@ export const translations: Translations = {
   "footer.terms": { en: "Terms", zh: "服务条款" },
 
   // ============ BEFORE/AFTER ============
-  "beforeAfter.title": { en: "Before & After", zh: "装修前后对比" },
+  "beforeAfter.title": { en: "Space Planning Comparisons", zh: "空间规划对比参考" },
   "beforeAfter.subtitle": {
-    en: "See the transformation — real renovation projects by FLASH CAST.",
-    zh: "看看变化 — FLASH CAST 真实装修项目。",
+    en: "Compare clearly labelled existing references and planning directions. These visuals are not presented as verified completed customer projects.",
+    zh: "对比清楚标注的现况参考与规划方向，不将这些图像写成已核实的客户完工案例。",
   },
-  "beforeAfter.before": { en: "Before", zh: "装修前" },
-  "beforeAfter.after": { en: "After", zh: "装修后" },
+  "beforeAfter.before": { en: "Existing reference", zh: "现况参考" },
+  "beforeAfter.after": { en: "Planning direction", zh: "规划方向" },
 
   // ============ BRAND LOGOS ============
   "brands.title": { en: "Trusted Partners & Materials", zh: "合作伙伴与材料品牌" },

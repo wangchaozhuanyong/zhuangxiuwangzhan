@@ -1,0 +1,56 @@
+{
+  "ok": true,
+  "target": "about-metadata",
+  "operation": "optimize",
+  "approvalId": "OWNER-STANDING-WEBSITE-CONTENT-2026-08-14",
+  "publishedAt": "2026-08-22T06:49:13.258Z",
+  "published": {
+    "ok": true,
+    "dry_run": false,
+    "content_type": "site_page",
+    "action": "publish",
+    "page_key": "about",
+    "status": "published",
+    "existing_id": "a8229b60-d01f-4f23-b1c4-6c79b50b69c1",
+    "warnings": [],
+    "next_steps": [
+      "Dynamic HTML SEO, sitemap.xml, and llms.txt read the published CMS record; no frontend deployment is required.",
+      "Verify the bilingual localized routes for the saved site_page.path in both languages after publishing.",
+      "Record post-publish QA and rollback evidence."
+    ],
+    "auth_mode": "cron",
+    "saved_id": "a8229b60-d01f-4f23-b1c4-6c79b50b69c1",
+    "saved_updated_at": "2026-08-22T06:49:11.042069+00:00",
+    "cache_invalidation": {
+      "ok": true,
+      "strategy": "content-revision",
+      "revision": "2026-08-22T06:49:11.202Z",
+      "edge_purge_requested": {
+        "ok": true,
+        "attempted": true,
+        "tag": "flashcast-public-html",
+        "status": 200
+      }
+    }
+  },
+  "postcheck": {
+    "ok": true,
+    "checkedAt": "2026-08-22T06:49:13.258Z",
+    "rowMismatches": [],
+    "pageChecks": [
+      {
+        "path": "/en/about",
+        "status": 200,
+        "expected": "About FLASH CAST | Renovation Planning in Kuala Lumpur",
+        "found": true
+      },
+      {
+        "path": "/zh/about",
+        "status": 200,
+        "expected": "关于 FLASH CAST | 吉隆坡装修规划与项目协调",
+        "found": true
+      }
+    ]
+  },
+  "rollbackCommand": "npm run content:trust-fixes -- --target=about-metadata --execute --approval-id=OWNER-STANDING-WEBSITE-CONTENT-2026-08-14 --rollback-from=/Users/wangchao/Desktop/装修网站/zhuangxiuwangzhan-content-trust-20260821/audits/content-trust-20260821/about-metadata/backup.json --env-dir=/Users/wangchao/Desktop/装修网站/zhuangxiuwangzhan-main"
+}

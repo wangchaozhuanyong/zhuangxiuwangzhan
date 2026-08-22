@@ -1,0 +1,21 @@
+{
+  "ok": true,
+  "checkedAt": "2026-08-22T07:17:58.719Z",
+  "rowMismatches": [],
+  "pageChecks": [
+    {
+      "path": "/en/services/warehouse",
+      "status": 200,
+      "expected": "Warehouse Shelving and Storage Planning",
+      "found": true,
+      "forbiddenFound": []
+    },
+    {
+      "path": "/zh/services/warehouse",
+      "status": 200,
+      "expected": "雪兰莪仓库货架规划",
+      "found": true,
+      "forbiddenFound": []
+    }
+  ]
+}

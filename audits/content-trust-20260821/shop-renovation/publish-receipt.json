@@ -1,0 +1,58 @@
+{
+  "ok": true,
+  "target": "shop-renovation",
+  "operation": "optimize",
+  "approvalId": "OWNER-STANDING-WEBSITE-CONTENT-2026-08-14",
+  "publishedAt": "2026-08-22T07:17:51.750Z",
+  "published": {
+    "ok": true,
+    "dry_run": false,
+    "content_type": "service",
+    "action": "publish",
+    "slug": "shop-renovation",
+    "status": "published",
+    "existing_id": "32f5374f-9919-41ea-80c7-00b5ac917532",
+    "warnings": [],
+    "next_steps": [
+      "Dynamic HTML SEO, sitemap.xml, and llms.txt read this published record; no frontend deployment is required.",
+      "Verify the /zh and /en public service pages read the updated admin content.",
+      "Run publish receipt/QA and production cache verification."
+    ],
+    "auth_mode": "cron",
+    "saved_id": "32f5374f-9919-41ea-80c7-00b5ac917532",
+    "saved_updated_at": "2026-08-22T07:17:50.285924+00:00",
+    "cache_invalidation": {
+      "ok": true,
+      "strategy": "content-revision",
+      "revision": "2026-08-22T07:17:50.453Z",
+      "edge_purge_requested": {
+        "ok": true,
+        "attempted": true,
+        "tag": "flashcast-public-html",
+        "status": 200
+      }
+    }
+  },
+  "postcheck": {
+    "ok": true,
+    "checkedAt": "2026-08-22T07:17:51.749Z",
+    "rowMismatches": [],
+    "pageChecks": [
+      {
+        "path": "/en/services/shop-renovation",
+        "status": 200,
+        "expected": "Shop Renovation &amp; Retail Fit-Out | FLASH CAST",
+        "found": true,
+        "forbiddenFound": []
+      },
+      {
+        "path": "/zh/services/shop-renovation",
+        "status": 200,
+        "expected": "店铺装修与零售空间规划",
+        "found": true,
+        "forbiddenFound": []
+      }
+    ]
+  },
+  "rollbackCommand": "npm run content:trust-fixes -- --target=shop-renovation --execute --approval-id=OWNER-STANDING-WEBSITE-CONTENT-2026-08-14 --rollback-from=/Users/wangchao/Desktop/装修网站/zhuangxiuwangzhan-content-trust-20260821/audits/content-trust-20260821/shop-renovation/backup.json --env-dir=/Users/wangchao/Desktop/装修网站/zhuangxiuwangzhan-main"
+}
