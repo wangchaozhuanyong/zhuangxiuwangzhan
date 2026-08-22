@@ -1,4 +1,5 @@
 import type { QueryClient } from "@tanstack/react-query";
+import { requestPublicContentInvalidation } from "@/lib/adminMutation";
 import { isSupabaseConfigured } from "@/lib/supabase";
 import {
   fetchAdminMaterialDetail,
@@ -155,8 +156,8 @@ export function loadAdminMaterialImages(materialId: string) {
   return fetchAdminMaterialImages(materialId);
 }
 
-export function addAdminMaterialImage(materialId: string, draft: AdminMaterialImageDraft) {
-  return createMaterialImageRecord({
+export async function addAdminMaterialImage(materialId: string, draft: AdminMaterialImageDraft) {
+  const result = await createMaterialImageRecord({
     ...draft,
     material_id: materialId,
     image_type: (draft.image_type as MaterialImageType) || "scene",
@@ -164,12 +165,18 @@ export function addAdminMaterialImage(materialId: string, draft: AdminMaterialIm
     sort_order: Number(draft.sort_order || 0),
     is_active: true,
   });
+  await requestPublicContentInvalidation({ table: "material_images", action: "insert", id: materialId });
+  return result;
 }
 
-export function updateAdminMaterialImage(imageId: string, patch: Record<string, unknown>) {
-  return updateMaterialImageRecord(imageId, patch);
+export async function updateAdminMaterialImage(imageId: string, patch: Record<string, unknown>) {
+  const result = await updateMaterialImageRecord(imageId, patch);
+  await requestPublicContentInvalidation({ table: "material_images", action: "update", id: imageId });
+  return result;
 }
 
-export function archiveAdminMaterialImage(imageId: string) {
-  return archiveMaterialImageRecord(imageId);
+export async function archiveAdminMaterialImage(imageId: string) {
+  const result = await archiveMaterialImageRecord(imageId);
+  await requestPublicContentInvalidation({ table: "material_images", action: "archive", id: imageId });
+  return result;
 }

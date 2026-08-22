@@ -116,6 +116,28 @@ describe("public Edge HTML cache", () => {
     } as never);
   };
 
+  const requestVersion = async () => onRequest({
+    request: new Request("https://flashcast.com.my/__flashcast/version"),
+    env: {
+      CF_PAGES_COMMIT_SHA: "commit-version-endpoint",
+      VITE_SUPABASE_URL: "https://version-endpoint.supabase.co",
+      VITE_SUPABASE_ANON_KEY: "test-anon-key",
+    },
+    next: async () => new Response("not used"),
+  } as never);
+
+  it("serves a lightweight uncached deployment and content version", async () => {
+    const response = await requestVersion();
+
+    expect(response.status).toBe(200);
+    expect(response.headers.get("content-type")).toContain("application/json");
+    expect(response.headers.get("cache-control")).toContain("no-store");
+    await expect(response.json()).resolves.toEqual({
+      deploymentVersion: "commit-version-endpoint",
+      contentVersion: siteSettingsRevision,
+    });
+  });
+
   it("serves a fresh cache hit without querying Supabase again", async () => {
     const firstResponse = await requestPage();
     expect(firstResponse.headers.get("x-flashcast-html-cache")).toBe("miss");

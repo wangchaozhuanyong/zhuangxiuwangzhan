@@ -3,6 +3,51 @@ import type { Json } from "@/lib/database.types";
 
 export type AdminMutationDbRecord = Record<string, unknown>;
 
+export type PublicContentInvalidationResult = {
+  ok?: boolean;
+  cache_invalidation?: {
+    ok?: boolean;
+    revision?: string | null;
+    edge_purge_requested?: {
+      ok?: boolean;
+      attempted?: boolean;
+      error?: string;
+    };
+  };
+  error?: string;
+};
+
+export async function requestPublicContentInvalidation(args: {
+  table: string;
+  action: string;
+  id?: string | number | null;
+}) {
+  const supabase = requireSupabase();
+  const approvalId = `admin-cache-${args.table}-${String(args.id || "record")}-${new Date().toISOString()}`;
+  const { data, error } = await supabase.functions.invoke<PublicContentInvalidationResult>("content-publish", {
+    body: {
+      contentType: "cache_invalidation",
+      mode: "publish",
+      nextStatus: "published",
+      ownerApproved: true,
+      explicitExecution: true,
+      approvalId,
+      source: `admin-mutation:${args.table}:${args.action}`,
+      record: {
+        table: args.table,
+        action: args.action,
+        id: args.id == null ? null : String(args.id),
+      },
+    },
+  });
+  if (error) throw error;
+  if (!data?.ok || data.cache_invalidation?.ok !== true) {
+    throw new Error(data?.error || "Public content cache revision could not be advanced.");
+  }
+
+  return data;
+}
+
 export async function insertAdminAuditLog(args: {
   table: string;
   action: string;

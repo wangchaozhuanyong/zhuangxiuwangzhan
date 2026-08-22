@@ -41,6 +41,7 @@
     "verify:admin-foundation": "node scripts/verify-admin-foundation.mjs",
     "verify:env": "node scripts/verify-env-separation.mjs",
     "verify:cloudflare-token": "node scripts/verify-cloudflare-pages-token.mjs",
+    "verify:content-publish-cache": "node scripts/verify-content-publish-cache.mjs",
     "backup:supabase": "node scripts/backup-supabase.mjs",
     "verify:backup": "node scripts/verify-backup-package.mjs",
     "deploy:retain-assets": "node scripts/retain-deploy-assets.mjs",

@@ -2,8 +2,10 @@ import { createRoot } from "react-dom/client";
 import App from "./App.tsx";
 import "./index.css";
 import { consumePendingChunkRecoveryLog, installChunkLoadRecovery } from "@/lib/chunkLoadRecovery";
+import { registerOfflineFallback } from "@/lib/offlineFallback";
 
 installChunkLoadRecovery();
+registerOfflineFallback();
 const pendingChunkRecoveryLog = consumePendingChunkRecoveryLog();
 if (pendingChunkRecoveryLog) {
   void import("@/lib/systemLog").then(({ logSystemEvent }) =>

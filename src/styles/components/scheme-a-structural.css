@@ -12,6 +12,11 @@
     --scheme-a-frame: 86rem;
   }
 
+  html[data-public-theme="dark"] {
+    --font-display: Georgia, "Songti SC", "STSong", "Source Han Serif SC", "Noto Serif CJK SC", serif;
+    --font-body: Inter, "Noto Sans SC", "Microsoft YaHei UI", "PingFang SC", sans-serif;
+  }
+
   html[data-public-theme="dark"] .scheme-a-home {
     width: 100%;
     overflow: clip;
