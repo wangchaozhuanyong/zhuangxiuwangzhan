@@ -100,7 +100,14 @@ SUPABASE_SERVICE_ROLE_KEY=
 LEAD_NOTIFICATION_WEBHOOK_URL=
 SITE_URL=https://flashcast.com.my
 MAINTENANCE_REMINDER_CRON_SECRET=
+CONTENT_PUBLISH_SECRET=
+CLOUDFLARE_API_TOKEN=
+CLOUDFLARE_ZONE_ID=
 ```
+
+After a successful CMS publish, `content-publish` advances the existing `site_settings.updated_at` value. Public HTML cache keys include this revision and edge nodes re-check it at most every five seconds, so old HTML is bypassed without a frontend deployment or database migration.
+
+`CLOUDFLARE_API_TOKEN` and `CLOUDFLARE_ZONE_ID` are optional best-effort cleanup settings. When configured, scope the token to `Cache Purge` for the production zone only. The content revision remains the source of truth because Pages Cache API entries may not belong to the custom domain's purge scope.
 
 ## Health Check
 

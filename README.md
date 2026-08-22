@@ -46,6 +46,7 @@ Supabase Edge Function secrets must be configured in Supabase, not committed to 
 - `SITE_URL`
 - `MAINTENANCE_REMINDER_CRON_SECRET`
 - `CONTENT_PUBLISH_SECRET`
+- Optional `CLOUDFLARE_API_TOKEN` with `Cache Purge` permission and `CLOUDFLARE_ZONE_ID` for best-effort edge purging. CMS publish invalidates HTML primarily by advancing the existing `site_settings.updated_at` content revision.
 
 Do not commit real passwords, tokens, service role keys, or production secrets.
 
@@ -65,6 +66,7 @@ Current protected publishing contract:
 - Dry run mode validates and previews the cleaned admin payload without writing.
 - Publish mode requires `ownerApproved: true` and `explicitExecution: true`.
 - Sync behavior: writes through the backend admin publishing flow, records `admin_audit_logs`, and returns SEO/QA next steps.
+- Cache behavior: successful publish requests advance the content revision and request a best-effort purge of the `flashcast-public-html` cache tag; purge warnings do not hide a completed database write.
 - Blog publish behavior: validates the existing `blog_posts` schema, rejects unknown fields and slug conflicts, enforces bilingual publish fields, and checks `expectedUpdatedAt` before updates.
 
 Example dry run body:
@@ -182,7 +184,7 @@ Automatic production deployment:
 - `Prelaunch verification` only checks the release. It is not a production deployment by itself.
 - Manual deployment is still available through the `Deploy to Cloudflare Pages` workflow if an operator needs to republish a known commit.
 - The production deploy workflow restores retained hashed assets, builds the new app, merges previous assets into `dist/assets`, verifies cache consistency, then deploys. This keeps old SPA HTML from breaking if it still points at the previous hashed JS chunks.
-- Public HTML responses for `/`, `/index.html`, `/zh`, `/zh/*`, `/en`, and `/en/*` use short cache headers: `public, max-age=60, stale-while-revalidate=300`, with CDN cache up to 300 seconds. Admin HTML responses for `/admin` and `/admin/*` must stay `no-store`. `/assets/*`, `/images/*`, and `/videos/*` stay `public, max-age=31536000, immutable`, and old hashed files are retained in `dist/assets` during deployment.
+- Public HTML responses for `/`, `/index.html`, `/zh`, `/zh/*`, `/en`, and `/en/*` use `no-cache, max-age=0, must-revalidate`, while Pages Functions keep generated HTML in the internal Cache API for up to 300 seconds and return `304` for matching ETags. Admin HTML responses for `/admin` and `/admin/*` stay `no-store`. `/assets/*`, `/images/*`, and `/videos/*` stay `public, max-age=31536000, immutable`, and old hashed files are retained in `dist/assets` during deployment.
 - Do not deploy from a dirty local working tree. If a local manual Pages deploy is unavoidable, record the commit hash, deployment URL, and dirty status, then commit the changes before any GitHub Actions deployment can run.
 - If a local manual Cloudflare Pages deploy is unavoidable, prefer `npm run deploy:cloudflare:pages` after `npm run build`. The script passes `--env-file /dev/null` so Wrangler uses the logged-in OAuth session or the shell's explicit environment instead of accidentally loading stale Cloudflare tokens from the project `.env`.
 

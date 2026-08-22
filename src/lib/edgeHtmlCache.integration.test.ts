@@ -36,6 +36,12 @@ class MemoryEdgeCache {
       if (key.includes("__flashcast_html_fresh=1")) this.entries.delete(key);
     }
   }
+
+  getPublicHtmlEntry() {
+    const entry = Array.from(this.entries.entries())
+      .find(([key]) => !key.includes("__flashcast_html_fresh=1"));
+    return entry?.[1].clone();
+  }
 }
 
 const originalCachesDescriptor = Object.getOwnPropertyDescriptor(globalThis, "caches");
@@ -43,14 +49,22 @@ const originalCachesDescriptor = Object.getOwnPropertyDescriptor(globalThis, "ca
 describe("public Edge HTML cache", () => {
   const edgeCache = new MemoryEdgeCache();
   const pendingTasks: Promise<unknown>[] = [];
-  const supabaseFetch = vi.fn(async () => new Response("[]", {
-    status: 200,
-    headers: { "content-type": "application/json" },
-  }));
+  let siteSettingsRevision = "2026-08-21T00:00:00.000Z";
+  const supabaseFetch = vi.fn(async (input: RequestInfo | URL) => {
+    const url = String(input);
+    const body = url.includes("/rest/v1/site_settings")
+      ? JSON.stringify([{ updated_at: siteSettingsRevision }])
+      : "[]";
+    return new Response(body, {
+      status: 200,
+      headers: { "content-type": "application/json" },
+    });
+  });
   const assetHtml = "<!doctype html><html><head><title>FLASH CAST</title></head><body><div id=\"root\"></div></body></html>";
 
   beforeEach(() => {
     edgeCache.clear();
+    siteSettingsRevision = "2026-08-21T00:00:00.000Z";
     Object.defineProperty(globalThis, "caches", {
       configurable: true,
       value: { default: edgeCache },
@@ -73,13 +87,21 @@ describe("public Edge HTML cache", () => {
     deploymentVersion = "commit-a",
     html = assetHtml,
     path = "/zh/projects",
-  }: { deploymentVersion?: string; html?: string; path?: string } = {}) => {
-    const request = new Request(`https://flashcast.com.my${path}`);
+    supabaseUrl = "https://example.supabase.co",
+    headers,
+  }: {
+    deploymentVersion?: string;
+    html?: string;
+    path?: string;
+    supabaseUrl?: string;
+    headers?: HeadersInit;
+  } = {}) => {
+    const request = new Request(`https://flashcast.com.my${path}`, { headers });
     return onRequest({
       request,
       env: {
         CF_PAGES_COMMIT_SHA: deploymentVersion,
-        VITE_SUPABASE_URL: "https://example.supabase.co",
+        VITE_SUPABASE_URL: supabaseUrl,
         VITE_SUPABASE_ANON_KEY: "test-anon-key",
         ASSETS: {
           fetch: async () => new Response(html, {
@@ -97,28 +119,59 @@ describe("public Edge HTML cache", () => {
   it("serves a fresh cache hit without querying Supabase again", async () => {
     const firstResponse = await requestPage();
     expect(firstResponse.headers.get("x-flashcast-html-cache")).toBe("miss");
+    expect(firstResponse.headers.get("cache-tag")).toBe("flashcast-public-html");
+    expect(firstResponse.headers.get("cache-control")).toBe("no-cache, max-age=0, must-revalidate");
+    expect(firstResponse.headers.get("cdn-cache-control")).toBe("no-store");
+    expect(firstResponse.headers.get("cloudflare-cdn-cache-control")).toBe("no-store");
+    expect(firstResponse.headers.get("etag")).toMatch(/^"sha256-[a-f0-9]{64}"$/);
     await Promise.all(pendingTasks.splice(0));
+    const cachedPublicHtml = edgeCache.getPublicHtmlEntry();
+    expect(cachedPublicHtml?.headers.get("cache-control")).toBe("public, max-age=300");
+    expect(cachedPublicHtml?.headers.get("cdn-cache-control")).toBe("public, max-age=300");
     const fetchesAfterMiss = supabaseFetch.mock.calls.length;
     expect(fetchesAfterMiss).toBeGreaterThan(0);
 
     const secondResponse = await requestPage();
 
     expect(secondResponse.headers.get("x-flashcast-html-cache")).toBe("hit");
+    expect(secondResponse.headers.get("cache-control")).toBe("no-cache, max-age=0, must-revalidate");
+    expect(secondResponse.headers.get("cdn-cache-control")).toBe("no-store");
     expect(supabaseFetch).toHaveBeenCalledTimes(fetchesAfterMiss);
   });
 
+  it("returns 304 when the browser revalidates an unchanged cached page", async () => {
+    const firstResponse = await requestPage();
+    const etag = firstResponse.headers.get("etag");
+    expect(etag).toBeTruthy();
+    await Promise.all(pendingTasks.splice(0));
+
+    const revalidatedResponse = await requestPage({ headers: { "if-none-match": etag || "" } });
+
+    expect(revalidatedResponse.status).toBe(304);
+    expect(revalidatedResponse.headers.get("etag")).toBe(etag);
+    expect(revalidatedResponse.headers.get("x-flashcast-html-cache")).toBe("hit");
+    expect(revalidatedResponse.headers.get("cache-control")).toBe("no-cache, max-age=0, must-revalidate");
+    expect(await revalidatedResponse.text()).toBe("");
+  });
+
   it("serves stale HTML immediately and refreshes it in the background", async () => {
-    await requestPage();
+    const firstResponse = await requestPage();
+    const etag = firstResponse.headers.get("etag");
     await Promise.all(pendingTasks.splice(0));
     edgeCache.expireFreshnessMarker();
     const fetchesBeforeRefresh = supabaseFetch.mock.calls.length;
 
-    const staleResponse = await requestPage();
+    const staleResponse = await requestPage({ headers: { "if-none-match": etag || "" } });
 
+    expect(staleResponse.status).toBe(304);
     expect(staleResponse.headers.get("x-flashcast-html-cache")).toBe("stale");
     expect(pendingTasks.length).toBeGreaterThan(0);
     await Promise.all(pendingTasks.splice(0));
     expect(supabaseFetch.mock.calls.length).toBeGreaterThan(fetchesBeforeRefresh);
+
+    const refreshedResponse = await requestPage({ headers: { "if-none-match": etag || "" } });
+    expect(refreshedResponse.status).toBe(304);
+    expect(refreshedResponse.headers.get("etag")).toBe(etag);
   });
 
   it("does not reuse cached HTML across deployments", async () => {
@@ -144,5 +197,26 @@ describe("public Edge HTML cache", () => {
     expect(html).toContain('media="(min-width: 768px) and (max-width: 1179px)"');
     expect(html).toContain('media="(min-width: 1180px)"');
     expect(html).not.toContain('rel="preload" as="image" href="/images/heroes/hero-luxury-living.webp"');
+  });
+
+  it("does not reuse cached HTML after the published content revision advances", async () => {
+    let now = Date.now();
+    vi.spyOn(Date, "now").mockImplementation(() => now);
+    const supabaseUrl = "https://revision.supabase.co";
+
+    const firstResponse = await requestPage({ supabaseUrl });
+    const firstEtag = firstResponse.headers.get("etag");
+    await Promise.all(pendingTasks.splice(0));
+    siteSettingsRevision = "2026-08-21T00:00:06.000Z";
+    now += 6_000;
+
+    const revisedResponse = await requestPage({
+      supabaseUrl,
+      headers: { "if-none-match": firstEtag || "" },
+    });
+
+    expect(revisedResponse.status).toBe(200);
+    expect(revisedResponse.headers.get("x-flashcast-html-cache")).toBe("miss");
+    expect(revisedResponse.headers.get("etag")).not.toBe(firstEtag);
   });
 });
