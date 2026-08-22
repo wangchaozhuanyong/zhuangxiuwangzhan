@@ -18,6 +18,7 @@ import {
 } from "@/backend/modules/cms/repository/publicContentRepository";
 import { stripHtml } from "@/lib/text";
 import { translateDisplayText } from "@/i18n/displayLabels";
+import { landingContent } from "@/i18n/landingContent";
 import { estimateBlogReadMinutes } from "@/lib/blogMeta";
 import type { MaterialCatalogCategory } from "@/lib/materialCatalog";
 import { formatMaterialPrice } from "@/lib/materialPrice";
@@ -673,7 +674,22 @@ export const getPublishedLandingPageBySlug = async (slug: string, language: "en"
   const fallback = async () => {
     const { landingPages } = await import("@/data/landings");
     const page = landingPages[slug] || null;
-    if (!page || language !== "zh") return page;
+    if (!page) return null;
+
+    if (language !== "zh") return page;
+    const chineseCopy = landingContent[slug]?.zh;
+    if (chineseCopy) {
+      return {
+        ...page,
+        ...chineseCopy,
+        heroImage: page.heroImage,
+        heroAlt: chineseCopy.heroAlt || chineseCopy.title,
+        relatedProjects: chineseCopy.relatedProjects.map((project, index) => ({
+          ...project,
+          image: page.relatedProjects[index]?.image || page.heroImage,
+        })),
+      };
+    }
 
     const localize = (value: string) => translateDisplayText(value, language);
 

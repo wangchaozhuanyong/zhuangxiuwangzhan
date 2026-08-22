@@ -17,6 +17,7 @@ import {
 import { translations } from "@/i18n/translations";
 import { translateDisplayText } from "@/i18n/displayLabels";
 import { adminDefaultContentSeedText } from "@/i18n/adminDefaultContentSeedText";
+import { landingContent } from "@/i18n/landingContent";
 import { promotionsPageText } from "@/i18n/newClientPageText";
 import { formatUserFacingError } from "@/lib/userFacingText";
 import {
@@ -256,33 +257,36 @@ const serviceAreaRows = Object.values(locationsData).map((location, index) => ({
   sort_order: (index + 1) * 10,
 }));
 
-const landingPageRows = Object.entries(landingPages).map(([slug, page], index) => ({
-  slug,
-  title_en: page.title,
-  title_zh: zh(page.title),
-  excerpt_en: page.subtitle,
-  excerpt_zh: zh(page.subtitle),
-  content_en: page.description,
-  content_zh: zh(page.description),
-  hero_image_url: asPublicImage(page.heroImage, "services"),
-  alt_en: page.heroAlt || page.title,
-  alt_zh: zh(page.heroAlt || page.title),
-  benefits_en: page.benefits,
-  benefits_zh: page.benefits.map(zh),
-  related_projects: page.relatedProjects.map((project) => ({
-    ...project,
-    title: project.title,
-    image: asPublicImage(project.image, "projects"),
-  })),
-  faqs_en: page.faqs,
-  faqs_zh: page.faqs.map((faq) => ({ q: zh(faq.q), a: zh(faq.a) })),
-  seo_title_en: page.seoTitle || page.title,
-  seo_title_zh: zh(page.seoTitle || page.title),
-  seo_description_en: page.seoDescription || page.description,
-  seo_description_zh: zh(page.seoDescription || page.description),
-  status: "published",
-  sort_order: (index + 1) * 10,
-}));
+const landingPageRows = Object.entries(landingPages).map(([slug, page], index) => {
+  const chineseCopy = landingContent[slug]?.zh;
+  return {
+    slug,
+    title_en: page.title,
+    title_zh: chineseCopy?.title || zh(page.title),
+    excerpt_en: page.subtitle,
+    excerpt_zh: chineseCopy?.subtitle || zh(page.subtitle),
+    content_en: page.description,
+    content_zh: chineseCopy?.description || zh(page.description),
+    hero_image_url: asPublicImage(page.heroImage, "services"),
+    alt_en: page.heroAlt || page.title,
+    alt_zh: chineseCopy?.heroAlt || zh(page.heroAlt || page.title),
+    benefits_en: page.benefits,
+    benefits_zh: chineseCopy?.benefits || page.benefits.map(zh),
+    related_projects: page.relatedProjects.map((project) => ({
+      ...project,
+      title: project.title,
+      image: asPublicImage(project.image, "projects"),
+    })),
+    faqs_en: page.faqs,
+    faqs_zh: chineseCopy?.faqs || page.faqs.map((faq) => ({ q: zh(faq.q), a: zh(faq.a) })),
+    seo_title_en: page.seoTitle || page.title,
+    seo_title_zh: chineseCopy?.seoTitle || zh(page.seoTitle || page.title),
+    seo_description_en: page.seoDescription || page.description,
+    seo_description_zh: chineseCopy?.seoDescription || zh(page.seoDescription || page.description),
+    status: "published",
+    sort_order: (index + 1) * 10,
+  };
+});
 
 const sitePageRows = [
   {

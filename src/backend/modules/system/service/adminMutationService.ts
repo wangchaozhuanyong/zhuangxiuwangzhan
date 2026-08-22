@@ -10,6 +10,7 @@ import {
 } from "@/backend/modules/system/repository/adminMutationRepository";
 import { invalidateAfterAdminContentSave, invalidatePublishedContent } from "@/lib/adminInvalidate";
 import { formatUserFacingError } from "@/lib/userFacingText";
+import { getLandingProjectPrivacyIssues } from "@/lib/landingContentPrivacy";
 
 type DbRecord = AdminMutationDbRecord;
 
@@ -114,6 +115,17 @@ export async function saveAdminRecord<T extends DbRecord = DbRecord>({
 
     if (expectedUpdatedAt && before.updated_at && normalizeDate(before.updated_at) !== normalizeDate(expectedUpdatedAt)) {
       throw new AdminMutationError("conflict", "保存失败：这条内容已经被别人修改，请先刷新页面再保存。");
+    }
+  }
+
+  const effectiveRecord = { ...(before || {}), ...clean };
+  if (table === "landing_pages" && effectiveRecord.status === "published") {
+    const privacyIssues = getLandingProjectPrivacyIssues(effectiveRecord.slug, effectiveRecord.related_projects);
+    if (privacyIssues.length) {
+      throw new AdminMutationError(
+        "validation",
+        `保存失败：办公室落地页案例只能使用匿名标题和吉隆坡、雪兰莪或巴生谷等大区域。请检查：${privacyIssues.join(", ")}。`,
+      );
     }
   }
 

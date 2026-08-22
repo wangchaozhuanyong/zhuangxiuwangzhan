@@ -107,44 +107,48 @@ export const landingPages: Record<string, LandingData> = {
   },
   "office-renovation": {
     title: "Office Renovation in Kuala Lumpur",
-    subtitle: "Professional Office Fit-Out & Renovation - Design to Completion",
+    subtitle: "Workspace planning, fit-out coordination and renovation delivery",
     heroImage: commercialImg,
+    heroAlt: "Office renovation and workspace planning in Kuala Lumpur",
     description:
-      "Transform your workspace with FLASH CAST's professional office renovation services. We handle everything from space planning and design to partitioning, ceiling, electrical, and furniture.",
+      "Office renovation should begin with team size, work patterns, visitor flow, meeting needs and future growth. FLASH CAST plans the layout, partitions, lighting, power, data points, storage and construction sequence for offices across Kuala Lumpur, Selangor and Klang Valley.",
     benefits: [
-      "Complete office fit-out services",
-      "Space planning & design",
-      "Glass & gypsum partitioning",
-      "Workstation setup",
-      "Meeting room & reception design",
-      "Minimal disruption to operations",
+      "Team capacity and workflow planning",
+      "Reception, meeting room and work area layout",
+      "Partition, ceiling, lighting and flooring coordination",
+      "Power, data and equipment point planning",
+      "Building-management requirement coordination",
+      "Phased construction and handover checks",
     ],
     relatedProjects: [
       {
-        title: "Corporate Office in KL Sentral",
-        location: "KL Sentral",
+        title: "Office Space Planning Reference",
+        location: "Kuala Lumpur",
         image: commercialImg,
       },
       {
-        title: "Co-Working Space in PJ",
-        location: "Petaling Jaya",
+        title: "Office Refurbishment Reference",
+        location: "Selangor",
         image: residentialImg,
       },
     ],
     faqs: [
       {
-        q: "Can you renovate while we continue working?",
-        a: "Yes. We can phase the renovation to minimize disruption to your daily operations.",
+        q: "Can renovation continue while the team is working?",
+        a: "It may be possible to phase the works by zone or schedule noisier tasks outside working hours, subject to the confirmed scope and building rules.",
       },
       {
-        q: "Do you handle office permits?",
-        a: "Yes. We manage all building management applications and permits required for office renovations.",
+        q: "What should we prepare before planning an office renovation?",
+        a: "Prepare the floor plan or approximate area, team size, meeting and reception needs, current site photos, target move-in date, and any landlord or building-management requirements.",
       },
       {
-        q: "What's included in office fit-out?",
-        a: "Our office fit-out covers partitioning, ceiling, flooring, electrical, networking, painting, furniture, and reception design.",
+        q: "Can you help coordinate building-management requirements?",
+        a: "Where included in the confirmed scope, we can help organise the required drawings, work schedules, contractor information and submission documents. Final approval remains with the relevant management or authority.",
       },
     ],
+    seoTitle: "Office Renovation Kuala Lumpur | Workspace Planning | FLASH CAST",
+    seoDescription:
+      "Plan office renovation in Kuala Lumpur, Selangor and Klang Valley, including layout, reception, meeting rooms, partitions, lighting, power, data points and construction coordination.",
   },
   "shop-renovation": {
     title: "Shop Renovation in Kuala Lumpur",

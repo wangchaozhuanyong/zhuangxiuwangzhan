@@ -59,15 +59,63 @@ test.describe("public site smoke", () => {
     expect(bodyText).not.toContain("�");
   });
 
-  test("zh homepage exposes the fixed five-item navigation on mobile", async ({ page }) => {
+  test("zh homepage switches between mobile navigation and contact actions by scroll direction", async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
     await gotoSmokePage(page, "/zh");
     await page.waitForLoadState("load");
 
     const bottomNav = page.locator(".scheme-a-mobile-dock");
+    const bottomDock = page.getByTestId("mobile-bottom-dock");
+    const contactDock = page.locator(".scheme-a-contact-dock");
+    await expect(bottomDock).toHaveAttribute("data-mode", "navigation");
     await expect(bottomNav).toBeVisible();
     await expect(bottomNav.locator("a")).toHaveCount(5);
     await expect(bottomNav.locator('a[href="/zh/contact"]')).toBeVisible();
+
+    await page.evaluate(() => window.scrollTo({ top: 200, behavior: "auto" }));
+    await expect(bottomDock).toHaveAttribute("data-mode", "actions");
+    await expect(contactDock).toBeVisible();
+    await expect(bottomNav).not.toBeVisible();
+
+    await page.evaluate(() => window.scrollBy({ top: -40, behavior: "auto" }));
+    await expect(bottomDock).toHaveAttribute("data-mode", "navigation");
+    await expect(bottomNav).toBeVisible();
+    await expect(contactDock).not.toBeVisible();
+  });
+
+  test("office landing never exposes client names or precise locations", async ({ page }) => {
+    await page.route("**/rest/v1/landing_pages**", async (route) => {
+      await route.fulfill({
+        status: 200,
+        contentType: "application/json",
+        body: JSON.stringify([{
+          slug: "office-renovation",
+          status: "published",
+          title_zh: "吉隆坡办公室装修与空间规划",
+          excerpt_zh: "办公空间规划与施工协调",
+          content_zh: "根据团队与现场条件规划办公室装修。",
+          hero_image_url: "/images/projects/commercial-renovation.webp",
+          alt_zh: "办公室装修参考",
+          benefits_zh: ["办公动线规划"],
+          related_projects: [
+            { title: "Named Company Headquarters", location: "KL Sentral", image: "/images/projects/commercial-renovation.webp" },
+            { title: "Named Coworking Outlet", location: "Petaling Jaya", image: "/images/projects/residential-renovation.webp" },
+          ],
+          faqs_zh: [],
+          seo_title_zh: "吉隆坡办公室装修与空间规划 | FLASH CAST",
+          seo_description_zh: "吉隆坡办公室装修与空间规划。",
+        }]),
+      });
+    });
+
+    await gotoSmokePage(page, "/zh/landing/office-renovation");
+    await expect(page.locator(".fc-c-projects__privacy-note")).toBeVisible();
+    await expect(page.locator(".fc-c-projects")).toContainText("办公空间布局规划参考");
+    await expect(page.locator(".fc-c-projects")).toContainText("吉隆坡");
+    await expect(page.locator(".fc-c-projects")).toContainText("雪兰莪");
+    await expect(page.locator("body")).not.toContainText("Named Company Headquarters");
+    await expect(page.locator("body")).not.toContainText("KL Sentral");
+    await expect(page.locator("body")).not.toContainText("Petaling Jaya");
   });
 
   test("hreflang links exist on a content page", async ({ page }) => {

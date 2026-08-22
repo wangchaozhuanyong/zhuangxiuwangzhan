@@ -1,4 +1,4 @@
-import { createContext, useCallback, useContext, useEffect, useLayoutEffect, useMemo, useRef, useState, type ReactNode } from "react";
+import { createContext, useCallback, useContext, useLayoutEffect, useMemo, useRef, useState, type ReactNode } from "react";
 
 type PublicChromeContextValue = {
   menuOpen: boolean;
@@ -11,26 +11,30 @@ type PublicChromeContextValue = {
 
 type MobileActionBarMode = "hidden" | "scroll-up" | "always";
 
+const MOBILE_SCROLL_TOP_RESET = 24;
+const MOBILE_SCROLL_REVEAL_START = 96;
+const MOBILE_SCROLL_DIRECTION_TRAVEL = 24;
+
 export const getInitialPublicTheme = (): "dark" => "dark";
 
 const PublicChromeContext = createContext<PublicChromeContextValue | null>(null);
 
 export function PublicChromeProvider({
   isAdminRoute,
-  isHomeRoute,
+  routeKey,
   mobileActionBarMode = "hidden",
   children,
 }: {
   isAdminRoute: boolean;
-  isHomeRoute: boolean;
+  routeKey: string;
   mobileActionBarMode?: MobileActionBarMode;
   children: ReactNode;
 }) {
   const [menuOpen, setMenuOpen] = useState(false);
-  const [homeHeroPassed, setHomeHeroPassed] = useState(false);
   const [mobileScrollingUp, setMobileScrollingUp] = useState(false);
   const lastMobileScrollY = useRef(0);
-  const homeHeroPassedRef = useRef(false);
+  const pendingMobileDirection = useRef<-1 | 0 | 1>(0);
+  const pendingMobileTravel = useRef(0);
   const immersiveHeroIds = useRef(new Set<symbol>());
   const [hasImmersiveHero, setHasImmersiveHero] = useState(false);
 
@@ -46,52 +50,40 @@ export function PublicChromeProvider({
 
   useLayoutEffect(() => {
     if (mobileActionBarMode !== "scroll-up") {
-      homeHeroPassedRef.current = false;
-      setHomeHeroPassed(false);
       setMobileScrollingUp(false);
       return;
     }
 
     const mobileQuery = window.matchMedia("(max-width: 767px)");
-    let heroObserver: IntersectionObserver | null = null;
-    let heroMountObserver: MutationObserver | null = null;
     let scrollFrame = 0;
-
-    const setHeroPassed = (passed: boolean) => {
-      homeHeroPassedRef.current = passed;
-      setHomeHeroPassed((current) => current === passed ? current : passed);
-      if (!passed) {
-        setMobileScrollingUp((current) => current ? false : current);
-      }
-    };
 
     const updateScrollDirection = () => {
       scrollFrame = 0;
       const currentScrollY = window.scrollY;
+      const scrollDelta = currentScrollY - lastMobileScrollY.current;
+      lastMobileScrollY.current = currentScrollY;
 
-      if (isHomeRoute && !heroObserver) {
-        const hero = document.querySelector<HTMLElement>("[data-immersive-hero='true'], .forest-home-hero");
-        if (hero) {
-          const rect = hero.getBoundingClientRect();
-          const visibleHeight = Math.max(0, Math.min(rect.bottom, window.innerHeight) - Math.max(rect.top, 0));
-          const visibleRatio = rect.height > 0 ? visibleHeight / rect.height : 0;
-          setHeroPassed(rect.top < 0 && visibleRatio <= 0.24);
-        }
-      }
-
-      const canReveal = isHomeRoute ? homeHeroPassedRef.current : currentScrollY > 96;
-      if (!canReveal || currentScrollY <= 24) {
+      if (currentScrollY <= MOBILE_SCROLL_TOP_RESET) {
         setMobileScrollingUp((current) => current ? false : current);
-        lastMobileScrollY.current = currentScrollY;
+        pendingMobileDirection.current = 0;
+        pendingMobileTravel.current = 0;
         return;
       }
 
-      const scrollDelta = currentScrollY - lastMobileScrollY.current;
-      if (Math.abs(scrollDelta) < 8) return;
+      if (Math.abs(scrollDelta) < 1) return;
       // 手机上手指向上滑时页面内容上移，浏览器的 scrollY 会增加。
-      const contentMovingUp = scrollDelta > 0;
-      setMobileScrollingUp((current) => current === contentMovingUp ? current : contentMovingUp);
-      lastMobileScrollY.current = currentScrollY;
+      const direction = scrollDelta > 0 ? 1 : -1;
+      if (pendingMobileDirection.current !== direction) {
+        pendingMobileDirection.current = direction;
+        pendingMobileTravel.current = 0;
+      }
+      pendingMobileTravel.current += Math.abs(scrollDelta);
+
+      if (pendingMobileTravel.current < MOBILE_SCROLL_DIRECTION_TRAVEL) return;
+      pendingMobileTravel.current = 0;
+
+      const showActions = direction > 0 && currentScrollY > MOBILE_SCROLL_REVEAL_START;
+      setMobileScrollingUp((current) => current === showActions ? current : showActions);
     };
 
     const scheduleScrollDirection = () => {
@@ -100,55 +92,18 @@ export function PublicChromeProvider({
     };
 
     const stop = () => {
-      heroObserver?.disconnect();
-      heroObserver = null;
-      heroMountObserver?.disconnect();
-      heroMountObserver = null;
       window.removeEventListener("scroll", scheduleScrollDirection);
       if (scrollFrame) window.cancelAnimationFrame(scrollFrame);
       scrollFrame = 0;
     };
 
-    const observeHero = () => {
-      if (heroObserver) return true;
-      const hero = document.querySelector<HTMLElement>("[data-immersive-hero='true'], .forest-home-hero");
-      if (!hero) return false;
-
-      if ("IntersectionObserver" in window) {
-        heroObserver = new IntersectionObserver(([entry]) => {
-          if (!entry) return;
-          setHeroPassed(entry.boundingClientRect.top < 0 && entry.intersectionRatio <= 0.24);
-        }, { threshold: [0, 0.24, 1] });
-        heroObserver.observe(hero);
-      } else {
-        const rect = hero.getBoundingClientRect();
-        setHeroPassed(rect.top < 0 && rect.bottom <= rect.height * 0.24);
-      }
-      return true;
-    };
-
     const start = () => {
       stop();
       lastMobileScrollY.current = window.scrollY;
+      pendingMobileDirection.current = 0;
+      pendingMobileTravel.current = 0;
       setMobileScrollingUp(false);
-      if (!mobileQuery.matches) {
-        setHeroPassed(false);
-        return;
-      }
-
-      if (isHomeRoute && !observeHero() && "MutationObserver" in window) {
-        heroMountObserver = new MutationObserver(() => {
-          if (!observeHero()) return;
-          heroMountObserver?.disconnect();
-          heroMountObserver = null;
-        });
-        heroMountObserver.observe(document.getElementById("root") || document.body, {
-          childList: true,
-          subtree: true,
-        });
-      } else if (!isHomeRoute) {
-        setHeroPassed(false);
-      }
+      if (!mobileQuery.matches) return;
       window.addEventListener("scroll", scheduleScrollDirection, { passive: true });
     };
 
@@ -159,14 +114,14 @@ export function PublicChromeProvider({
       mobileQuery.removeEventListener("change", start);
       stop();
     };
-  }, [isHomeRoute, mobileActionBarMode]);
+  }, [mobileActionBarMode, routeKey]);
 
   const showMobileActionBar =
     !isAdminRoute
     && !menuOpen
     && (
       mobileActionBarMode === "always"
-      || (mobileActionBarMode === "scroll-up" && mobileScrollingUp && (!isHomeRoute || homeHeroPassed))
+      || (mobileActionBarMode === "scroll-up" && mobileScrollingUp)
     );
 
   useLayoutEffect(() => {
@@ -200,17 +155,6 @@ export function PublicChromeProvider({
       delete document.documentElement.dataset.menuOpen;
     };
   }, [menuOpen]);
-
-  useEffect(() => {
-    if (showMobileActionBar) {
-      document.documentElement.dataset.mobileActionBar = "true";
-    } else {
-      delete document.documentElement.dataset.mobileActionBar;
-    }
-    return () => {
-      delete document.documentElement.dataset.mobileActionBar;
-    };
-  }, [showMobileActionBar]);
 
   const value = useMemo(
     () => ({

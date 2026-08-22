@@ -7,7 +7,7 @@ on:
     types: [completed]
 
 concurrency:
-  group: cloudflare-pages-prod-${{ github.event.workflow_run.head_branch || github.ref }}
+  group: cloudflare-pages-production
   cancel-in-progress: true
 
 jobs:
@@ -25,9 +25,16 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v6
         with:
-          node-version: "24"
+          node-version: "22"
           cache: "npm"
           cache-dependency-path: package-lock.json
+
+      - name: Verify production release source
+        env:
+          PRODUCTION_BRANCH: main
+          RELEASE_SOURCE_BRANCH: ${{ github.event.workflow_run.head_branch || github.ref_name }}
+          RELEASE_SOURCE_SHA: ${{ github.event.workflow_run.head_sha || github.sha }}
+        run: npm run release:guard
 
       - name: Verify Cloudflare deployment credentials
         env:
@@ -65,6 +72,13 @@ jobs:
           VITE_GOOGLE_ADS_CONTACT_CONVERSION_LABEL: ${{ secrets.VITE_GOOGLE_ADS_CONTACT_CONVERSION_LABEL }}
           VITE_APP_VERSION: ${{ github.event.workflow_run.head_sha || github.sha }}
         run: npm run release:check
+
+      - name: Confirm release source is unchanged after build
+        env:
+          PRODUCTION_BRANCH: main
+          RELEASE_SOURCE_BRANCH: ${{ github.event.workflow_run.head_branch || github.ref_name }}
+          RELEASE_SOURCE_SHA: ${{ github.event.workflow_run.head_sha || github.sha }}
+        run: npm run release:guard
 
       - name: Sync Pages Function runtime secrets
         env:

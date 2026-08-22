@@ -12,6 +12,8 @@
 | SEO / GEO / CMS 发布 | `seo-cms-publishing.md` | 公开页面、CMS 内容、sitemap、metadata |
 | 依赖管理 | `dependencies.md` | 新增 npm 包、替换库、引入大型功能库 |
 | 日志、审计和隐私 | `logging-privacy.md` | 后台敏感操作、线索隐私、日志、备份 |
+| 公开案例隐私 | `public-case-privacy.md` | 案例名称、地点颗粒度、图片和真实性 |
+| 正式环境发布 | `production-releases.md` | Git 分支、提交、Cloudflare 部署、验收和回滚 |
 
 修改这些规则后，必须运行：
 
