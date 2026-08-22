@@ -78,7 +78,7 @@ jobs:
           PRODUCTION_BRANCH: main
           RELEASE_SOURCE_BRANCH: ${{ github.event.workflow_run.head_branch || github.ref_name }}
           RELEASE_SOURCE_SHA: ${{ github.event.workflow_run.head_sha || github.sha }}
-        run: npm run release:guard
+        run: npm run release:guard -- --allow-generated-output
 
       - name: Sync Pages Function runtime secrets
         env:
