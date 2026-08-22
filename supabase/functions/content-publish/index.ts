@@ -3,6 +3,7 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { getServiceRoleKey, requireAdminAccess } from "../_shared/admin-auth.ts";
 import { corsHeadersFor, handleCorsPreflight, isAllowedCorsOrigin } from "../_shared/cors.ts";
 import { BodyTooLargeError, readJsonBody } from "../_shared/request-body.ts";
+import { purgePublicHtmlCache } from "./cache-invalidation.ts";
 import { publishContent } from "./service.ts";
 import type { ContentPublishRequest } from "./types.ts";
 
@@ -43,6 +44,35 @@ serve(async (req) => {
       role: adminCheck.mode === "cron" ? "content_editor" : adminCheck.role || null,
       authMode: adminCheck.mode,
     });
+    if (result.body.ok === true && result.body.dry_run === false) {
+      const revision = new Date().toISOString();
+      const { error: revisionError } = await client
+        .from("site_settings")
+        .update({ updated_at: revision })
+        .eq("id", "default");
+      const edgePurge = await purgePublicHtmlCache({
+        apiToken: Deno.env.get("CLOUDFLARE_API_TOKEN"),
+        zoneId: Deno.env.get("CLOUDFLARE_ZONE_ID"),
+      });
+      result.body.cache_invalidation = {
+        ok: !revisionError,
+        strategy: "content-revision",
+        revision: revisionError ? null : revision,
+        edge_purge_requested: edgePurge,
+      };
+      const warnings = Array.isArray(result.body.warnings)
+        ? result.body.warnings.filter((warning): warning is string => typeof warning === "string")
+        : [];
+      if (revisionError) {
+        warnings.push(`Cache revision warning: ${revisionError.message}`);
+      }
+      if (!edgePurge.ok) {
+        warnings.push(`Cloudflare cache purge warning: ${edgePurge.error}`);
+      }
+      if (warnings.length) {
+        result.body.warnings = warnings;
+      }
+    }
     return json(req, result.body, result.status || 200);
   } catch (error) {
     return json(req, { error: error instanceof Error ? error.message : "Content publish failed" }, 500);

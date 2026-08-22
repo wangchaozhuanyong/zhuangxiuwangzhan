@@ -63,39 +63,53 @@
   Expires: 0
 
 /
-  Cache-Control: public, max-age=60, stale-while-revalidate=300
-  CDN-Cache-Control: public, max-age=300
-  Cloudflare-CDN-Cache-Control: public, max-age=300
+  Cache-Control: no-cache, max-age=0, must-revalidate
+  CDN-Cache-Control: no-store
+  Cloudflare-CDN-Cache-Control: no-store
+  Pragma: no-cache
+  Expires: 0
 
 /index.html
-  Cache-Control: public, max-age=60, stale-while-revalidate=300
-  CDN-Cache-Control: public, max-age=300
-  Cloudflare-CDN-Cache-Control: public, max-age=300
+  Cache-Control: no-cache, max-age=0, must-revalidate
+  CDN-Cache-Control: no-store
+  Cloudflare-CDN-Cache-Control: no-store
+  Pragma: no-cache
+  Expires: 0
 
 /*.html
-  Cache-Control: public, max-age=60, stale-while-revalidate=300
-  CDN-Cache-Control: public, max-age=300
-  Cloudflare-CDN-Cache-Control: public, max-age=300
+  Cache-Control: no-cache, max-age=0, must-revalidate
+  CDN-Cache-Control: no-store
+  Cloudflare-CDN-Cache-Control: no-store
+  Pragma: no-cache
+  Expires: 0
 
 /zh
-  Cache-Control: public, max-age=60, stale-while-revalidate=300
-  CDN-Cache-Control: public, max-age=300
-  Cloudflare-CDN-Cache-Control: public, max-age=300
+  Cache-Control: no-cache, max-age=0, must-revalidate
+  CDN-Cache-Control: no-store
+  Cloudflare-CDN-Cache-Control: no-store
+  Pragma: no-cache
+  Expires: 0
 
 /zh/*
-  Cache-Control: public, max-age=60, stale-while-revalidate=300
-  CDN-Cache-Control: public, max-age=300
-  Cloudflare-CDN-Cache-Control: public, max-age=300
+  Cache-Control: no-cache, max-age=0, must-revalidate
+  CDN-Cache-Control: no-store
+  Cloudflare-CDN-Cache-Control: no-store
+  Pragma: no-cache
+  Expires: 0
 
 /en
-  Cache-Control: public, max-age=60, stale-while-revalidate=300
-  CDN-Cache-Control: public, max-age=300
-  Cloudflare-CDN-Cache-Control: public, max-age=300
+  Cache-Control: no-cache, max-age=0, must-revalidate
+  CDN-Cache-Control: no-store
+  Cloudflare-CDN-Cache-Control: no-store
+  Pragma: no-cache
+  Expires: 0
 
 /en/*
-  Cache-Control: public, max-age=60, stale-while-revalidate=300
-  CDN-Cache-Control: public, max-age=300
-  Cloudflare-CDN-Cache-Control: public, max-age=300
+  Cache-Control: no-cache, max-age=0, must-revalidate
+  CDN-Cache-Control: no-store
+  Cloudflare-CDN-Cache-Control: no-store
+  Pragma: no-cache
+  Expires: 0
 
 /assets/*
   Cache-Control: public, max-age=31536000, immutable

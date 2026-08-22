@@ -41,9 +41,9 @@ Flashcast 是公开获客网站，SEO 和 CMS 发布链路必须稳定。后台�
 - `dry-run` 只返回 payload preview 和将要执行的表/字段动作，不写 CMS。
 - Cloudflare Middleware 会按 CMS `updated_at` 生成公开 HTML 内容版本，并从已发布记录生成动态 Meta/JSON-LD；发布后无需重新部署前端。
 - `/sitemap.xml` 与 `/llms.txt` 会在运行时合并动态 Supabase sitemap 和静态兜底清单，正常 CMS 内容发布无需重新生成静态文件。
-- 浏览器公开 HTML 最多保留约 60 秒短缓存；客户端 React Query 在 60 秒后失效，并在窗口重新聚焦时刷新。
+- 浏览器公开 HTML 每次使用前都向边缘重验证；内容未变化时通过 ETag 返回 `304`。客户端 React Query 在 60 秒后失效，并在窗口重新聚焦时刷新。
 - 发布后仍必须验证 `/zh` 与 `/en` 页面、Meta/JSON-LD、sitemap、llms、媒体和前后台显示一致，并保留 receipt/rollback 证据。
-- 博客前端和边缘 SEO 都读取同一条 `blog_posts` 记录；公开 HTML 通过记录版本自动失效，浏览器短缓存窗口约 60 秒。
+- 博客前端和边缘 SEO 都读取同一条 `blog_posts` 记录；公开 HTML 通过记录版本自动失效，浏览器不再直接使用 60 秒旧 HTML。
 
 `homepage` 请求示例：
 

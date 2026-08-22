@@ -225,7 +225,7 @@ React Query 规则：
 
 Cloudflare / HTML / 静态资源缓存：
 
-- 公开 HTML 可短缓存：`public, max-age=60, stale-while-revalidate=300`。
+- 公开 HTML 浏览器响应必须使用 `no-cache, max-age=0, must-revalidate`，Pages Functions 内部 Cache API 可缓存 300 秒；响应内容未变化时使用 ETag 返回 `304`。
 - 后台 HTML 必须 `no-store`。
 - hashed assets、图片、视频可以长期 immutable。
 - 白屏、chunk 加载失败、路由异常时，必须同时检查 `public/_headers`、`public/_redirects`、`functions/_middleware.ts`、构建产物和资源保留脚本。

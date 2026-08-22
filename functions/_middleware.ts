@@ -79,11 +79,11 @@ const DEFAULT_EMAIL = "support@flashcast.com.my";
 const DEFAULT_MAP_LATITUDE = "3.0830403";
 const DEFAULT_MAP_LONGITUDE = "101.6708234";
 const PUBLIC_SITE_URL = "https://flashcast.com.my";
-const PUBLIC_HTML_BROWSER_TTL_SECONDS = 60;
 const PUBLIC_HTML_EDGE_TTL_SECONDS = 300;
 const PUBLIC_HTML_FRESHNESS_TTL_SECONDS = 60;
-const PUBLIC_HTML_CACHE_VERSION = "20260821-public-swr-v3";
-const SITE_SETTINGS_CACHE_TTL_MS = 5 * 60 * 1000;
+const PUBLIC_HTML_CACHE_VERSION = "20260821-public-browser-revalidate-v5";
+const PUBLIC_HTML_CACHE_TAG = "flashcast-public-html";
+const SITE_SETTINGS_CACHE_TTL_MS = 5 * 1000;
 const PUBLIC_PROJECT_SUMMARIES_CACHE_TTL_MS = 0;
 const PUBLIC_PROJECT_DETAIL_CACHE_TTL_MS = 0;
 const PUBLIC_HOME_BUNDLE_CACHE_TTL_MS = 60 * 1000;
@@ -1668,6 +1668,7 @@ const dynamicAssetHeaders = (contentType: string) => ({
   "cache-control": "public, max-age=60, stale-while-revalidate=300",
   "cdn-cache-control": "public, max-age=60",
   "cloudflare-cdn-cache-control": "public, max-age=60",
+  "cache-tag": PUBLIC_HTML_CACHE_TAG,
   "x-content-type-options": "nosniff",
 });
 
@@ -1708,16 +1709,61 @@ const applyHtmlNoStoreHeaders = (headers: Headers) => {
   headers.set("expires", "0");
 };
 
-const applyPublicHtmlCacheHeaders = (headers: Headers) => {
+const applyPublicHtmlEdgeCacheHeaders = (headers: Headers) => {
   headers.set("content-type", "text/html; charset=utf-8");
-  headers.set(
-    "cache-control",
-    `public, max-age=${PUBLIC_HTML_BROWSER_TTL_SECONDS}, stale-while-revalidate=${PUBLIC_HTML_EDGE_TTL_SECONDS}`,
-  );
+  headers.set("cache-control", `public, max-age=${PUBLIC_HTML_EDGE_TTL_SECONDS}`);
   headers.set("cdn-cache-control", `public, max-age=${PUBLIC_HTML_EDGE_TTL_SECONDS}`);
   headers.set("cloudflare-cdn-cache-control", `public, max-age=${PUBLIC_HTML_EDGE_TTL_SECONDS}`);
+  headers.set("cache-tag", PUBLIC_HTML_CACHE_TAG);
   headers.delete("pragma");
   headers.delete("expires");
+};
+
+const applyPublicHtmlBrowserCacheHeaders = (headers: Headers) => {
+  headers.set("content-type", "text/html; charset=utf-8");
+  headers.set("cache-control", "no-cache, max-age=0, must-revalidate");
+  headers.set("cdn-cache-control", "no-store");
+  headers.set("cloudflare-cdn-cache-control", "no-store");
+  headers.set("pragma", "no-cache");
+  headers.set("expires", "0");
+};
+
+const createHtmlEtag = async (html: string) => {
+  const digest = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(html));
+  const hash = Array.from(new Uint8Array(digest), (byte) => byte.toString(16).padStart(2, "0")).join("");
+  return `"sha256-${hash}"`;
+};
+
+const normalizeEtag = (etag: string) => etag.trim().replace(/^W\//i, "");
+
+const requestAcceptsEtag = (request: Request, etag: string) => {
+  const ifNoneMatch = request.headers.get("if-none-match");
+  if (!ifNoneMatch) return false;
+  const normalizedEtag = normalizeEtag(etag);
+  return ifNoneMatch
+    .split(",")
+    .some((candidate) => candidate.trim() === "*" || normalizeEtag(candidate) === normalizedEtag);
+};
+
+const createPublicHtmlBrowserResponse = (
+  response: Response,
+  request: Request,
+  state: HtmlCacheDebugState,
+) => {
+  const headers = new Headers(response.headers);
+  applyPublicHtmlBrowserCacheHeaders(headers);
+  headers.set(HTML_CACHE_DEBUG_HEADER, state);
+  const etag = headers.get("etag");
+
+  if (etag && requestAcceptsEtag(request, etag)) {
+    return new Response(null, { status: 304, headers });
+  }
+
+  return new Response(request.method === "HEAD" ? null : response.body, {
+    status: response.status,
+    statusText: response.statusText,
+    headers,
+  });
 };
 
 const withHtmlCacheDebugHeader = (response: Response, state: HtmlCacheDebugState) => {
@@ -1740,11 +1786,16 @@ const getPublicHtmlDeploymentVersion = (env: PagesEnv) => {
   return typeof version === "string" && version.trim() ? version.trim().slice(0, 128) : "local";
 };
 
-const getPublicHtmlCacheRequest = (request: Request, env: PagesEnv) => {
+const getPublicHtmlCacheRequest = (
+  request: Request,
+  env: PagesEnv,
+  contentRevision?: string | null,
+) => {
   const cacheUrl = new URL(request.url);
   cacheUrl.search = "";
   cacheUrl.searchParams.set("__flashcast_html_v", PUBLIC_HTML_CACHE_VERSION);
   cacheUrl.searchParams.set("__flashcast_deploy_v", getPublicHtmlDeploymentVersion(env));
+  cacheUrl.searchParams.set("__flashcast_content_v", contentRevision?.trim() || "unknown");
   cacheUrl.hash = "";
   return new Request(cacheUrl.toString(), { method: "GET" });
 };
@@ -1760,6 +1811,7 @@ const createPublicHtmlFreshnessResponse = () => new Response(null, {
     "cache-control": `public, max-age=${PUBLIC_HTML_FRESHNESS_TTL_SECONDS}`,
     "cdn-cache-control": `public, max-age=${PUBLIC_HTML_FRESHNESS_TTL_SECONDS}`,
     "cloudflare-cdn-cache-control": `public, max-age=${PUBLIC_HTML_FRESHNESS_TTL_SECONDS}`,
+    "cache-tag": PUBLIC_HTML_CACHE_TAG,
   },
 });
 
@@ -1817,7 +1869,12 @@ export const onRequest: PagesFunction = async (context) => {
   const staticMeta = (manifest as Record<string, SeoEntry>)[key];
   const isPublicLanguagePath = /^\/(?:en|zh)(?:\/|$)/.test(key);
   const edgeCache = request.method === "GET" && isPublicLanguagePath ? getEdgeCache() : null;
-  const publicHtmlCacheRequest = edgeCache ? getPublicHtmlCacheRequest(request, env) : null;
+  const prefetchedSiteSettings = edgeCache
+    ? await fetchSiteSettings(env as Record<string, string | undefined>)
+    : undefined;
+  const publicHtmlCacheRequest = edgeCache
+    ? getPublicHtmlCacheRequest(request, env, prefetchedSiteSettings?.updated_at)
+    : null;
   const publicHtmlFreshnessRequest = publicHtmlCacheRequest
     ? getPublicHtmlFreshnessRequest(publicHtmlCacheRequest)
     : null;
@@ -1878,7 +1935,9 @@ export const onRequest: PagesFunction = async (context) => {
     blogPosts,
     footerCtaBlock,
   ] = await Promise.all([
-    fetchSiteSettings(env as Record<string, string | undefined>),
+    prefetchedSiteSettings !== undefined
+      ? Promise.resolve(prefetchedSiteSettings)
+      : fetchSiteSettings(env as Record<string, string | undefined>),
     shouldInjectHomeBundle ? fetchHomeContentBundle(env as Record<string, string | undefined>) : Promise.resolve(null),
     shouldInjectProductHighlights ? fetchPublicProductHighlights(env as Record<string, string | undefined>) : Promise.resolve(null),
     shouldInjectProjectSummaries ? fetchProjectSummaries(env as Record<string, string | undefined>) : Promise.resolve(null),
@@ -1953,10 +2012,7 @@ export const onRequest: PagesFunction = async (context) => {
     };
   }
   if (Object.keys(publicDataPayload).length) {
-    transformed = injectPublicData(transformed, {
-      ...publicDataPayload,
-      generatedAt: new Date().toISOString(),
-    });
+    transformed = injectPublicData(transformed, publicDataPayload);
   }
   transformed = injectDynamicImagePreloads(
     transformed,
@@ -1967,20 +2023,21 @@ export const onRequest: PagesFunction = async (context) => {
     env as Record<string, string | undefined>,
   );
   const headers = new Headers(response.headers);
-	  if (meta) {
-	    applyPublicHtmlCacheHeaders(headers);
-	  } else {
-	    applyHtmlNoStoreHeaders(headers);
-	  }
-	  await applyHtmlSecurityHeaders(headers, transformed);
+  if (meta) {
+    applyPublicHtmlEdgeCacheHeaders(headers);
+    headers.set("etag", await createHtmlEtag(transformed));
+  } else {
+    applyHtmlNoStoreHeaders(headers);
+  }
+  await applyHtmlSecurityHeaders(headers, transformed);
 
-	  const finalResponse = withHtmlCacheDebugHeader(
-    new Response(transformed, { status: meta ? response.status : 404, headers }),
-    meta ? "miss" : "bypass-not-found",
-  );
+  const generatedResponse = new Response(transformed, { status: meta ? response.status : 404, headers });
+  const finalResponse = meta
+    ? createPublicHtmlBrowserResponse(generatedResponse.clone(), request, "miss")
+    : withHtmlCacheDebugHeader(generatedResponse, "bypass-not-found");
   const cacheWrite = meta && edgeCache && publicHtmlCacheRequest && publicHtmlFreshnessRequest
     ? Promise.all([
-        edgeCache.put(publicHtmlCacheRequest, finalResponse.clone()),
+        edgeCache.put(publicHtmlCacheRequest, generatedResponse.clone()),
         edgeCache.put(publicHtmlFreshnessRequest, createPublicHtmlFreshnessResponse()),
       ]).then(() => undefined).catch(() => undefined)
     : null;
@@ -2017,7 +2074,11 @@ export const onRequest: PagesFunction = async (context) => {
         }
       }
 
-      return withHtmlCacheDebugHeader(cachedPublicHtml, freshnessMarker ? "hit" : "stale");
+      return createPublicHtmlBrowserResponse(
+        cachedPublicHtml,
+        request,
+        freshnessMarker ? "hit" : "stale",
+      );
     }
   }
 

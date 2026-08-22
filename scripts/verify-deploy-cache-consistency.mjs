@@ -97,16 +97,16 @@ const assertHtmlNoStoreHeaders = (headerBlocks, headerPath) => {
 const assertPublicHtmlCacheHeaders = (headerBlocks, headerPath) => {
   const block = assertHeaderBlock(headerBlocks, headerPath);
   assert(
-    /^public,\s*max-age=60,\s*stale-while-revalidate=300$/i.test(block.get("cache-control") || ""),
-    `${headerPath} must set public HTML Cache-Control to public, max-age=60, stale-while-revalidate=300.`,
+    /^no-cache,\s*max-age=0,\s*must-revalidate$/i.test(block.get("cache-control") || ""),
+    `${headerPath} must require browser HTML revalidation with no-cache, max-age=0, must-revalidate.`,
   );
-  assert(/^public,\s*max-age=300$/i.test(block.get("cdn-cache-control") || ""), `${headerPath} must set CDN-Cache-Control: public, max-age=300.`);
+  assert(/^no-store$/i.test(block.get("cdn-cache-control") || ""), `${headerPath} must set CDN-Cache-Control: no-store.`);
   assert(
-    /^public,\s*max-age=300$/i.test(block.get("cloudflare-cdn-cache-control") || ""),
-    `${headerPath} must set Cloudflare-CDN-Cache-Control: public, max-age=300.`,
+    /^no-store$/i.test(block.get("cloudflare-cdn-cache-control") || ""),
+    `${headerPath} must set Cloudflare-CDN-Cache-Control: no-store.`,
   );
-  assert(!block.has("pragma"), `${headerPath} must not keep Pragma after public HTML caching is enabled.`);
-  assert(!block.has("expires"), `${headerPath} must not keep Expires after public HTML caching is enabled.`);
+  assert(/^no-cache$/i.test(block.get("pragma") || ""), `${headerPath} must set Pragma: no-cache.`);
+  assert(/^0$/.test(block.get("expires") || ""), `${headerPath} must set Expires: 0.`);
 };
 
 const assertImmutableAssetHeaders = (headerBlocks, headerPath) => {
@@ -165,7 +165,8 @@ const main = async () => {
         ok: true,
         assetRefCount: assetRefs.length,
         retainedAssetCount: retainedCacheFiles.length,
-        publicHtmlCache: "public, max-age=60, stale-while-revalidate=300",
+        publicHtmlBrowserCache: "no-cache, max-age=0, must-revalidate",
+        publicHtmlEdgeCache: "Cache API public, max-age=300",
         publicHtmlCachePaths: PUBLIC_HTML_CACHE_PATHS,
         adminHtmlCache: "no-store",
         htmlNoStorePaths: HTML_NO_STORE_PATHS,
