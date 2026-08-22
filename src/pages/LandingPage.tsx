@@ -19,6 +19,10 @@ import { translateDisplayText } from "@/i18n/displayLabels";
 import { trackCtaClick } from "@/lib/analytics";
 import { toArray, toRecord, toText } from "@/lib/recordUtils";
 import { landingPageText } from "@/i18n/landingPageText";
+import {
+  anonymizeLandingProjectCards,
+  isPrivacyProtectedLanding,
+} from "@/lib/landingContentPrivacy";
 
 const LandingPage = () => {
   const { slug } = useParams<{ slug: string }>();
@@ -59,10 +63,12 @@ const LandingPage = () => {
       }
     : page;
   const benefits = toArray(landingPage.benefits).map((item) => toText(item)).filter(Boolean);
-  const projects = toArray(landingPage.relatedProjects).map((item) => {
+  const rawProjects = toArray(landingPage.relatedProjects).map((item) => {
     const project = toRecord(item);
     return { title: toText(project.title), location: toText(project.location), image: toText(project.image) };
   }).filter((item) => item.title && item.image);
+  const projects = anonymizeLandingProjectCards(slug, language, rawProjects);
+  const projectPrivacyCopy = isPrivacyProtectedLanding(slug) ? t.projectPrivacy : null;
   const faqs = toArray(landingPage.faqs).map((item) => {
     const faq = toRecord(item);
     return { question: toText(faq.q), answer: toText(faq.a) };
@@ -103,7 +109,7 @@ const LandingPage = () => {
 
       <section className="fc-c-section fc-c-process"><header><span>{t.processIntro}</span><h2>{t.processTitle}</h2></header><SchemeANumberList items={t.processSteps} /></section>
 
-      {projects.length ? <section className="fc-c-section fc-c-projects"><header><span>{t.relatedProjects}</span><h2>{projects[0].title}</h2></header><div className="fc-c-project-grid">{projects.map((project) => <article key={project.title}><SmartImage src={project.image} alt={project.title} width={900} height={620} quality={84} /><div><strong>{project.title}</strong><span>{project.location}</span></div></article>)}</div></section> : null}
+      {projects.length ? <section className="fc-c-section fc-c-projects"><header><span>{projectPrivacyCopy?.eyebrow || t.relatedProjects}</span><h2>{projectPrivacyCopy?.title || projects[0].title}</h2></header>{projectPrivacyCopy ? <p className="fc-c-projects__privacy-note">{projectPrivacyCopy.note}</p> : null}<div className="fc-c-project-grid">{projects.map((project) => <article key={`${project.title}-${project.image}`}><SmartImage src={project.image} alt={project.title} width={900} height={620} quality={84} /><div><strong>{project.title}</strong><span>{project.location}</span></div></article>)}</div></section> : null}
 
       <section className="fc-c-section fc-c-faq"><header><span>{t.faqTitle}</span><h2>{t.ctaTitle}</h2></header><SchemeAFaqList items={faqs} /></section>
       <section className="fc-c-final"><span>{t.ctaDescription}</span><h2>{t.ctaTitle}</h2><a href="#landing-quote">{t.quote}<ArrowRight /></a></section>

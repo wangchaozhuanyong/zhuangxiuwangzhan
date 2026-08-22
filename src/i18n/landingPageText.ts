@@ -44,6 +44,11 @@ export const landingPageText = {
       { title: "Handover", description: "Review completed work and close outstanding items." },
     ],
     relatedProjects: "Related Projects",
+    projectPrivacy: {
+      eyebrow: "Office space references",
+      title: "Space type and renovation priorities only",
+      note: "To protect client privacy, company names, outlet names, buildings and precise locations are not published. Images illustrate the space type and planning direction only.",
+    },
     faqTitle: "Frequently Asked Questions",
     ctaTitle: "Ready to Get Started?",
     ctaDescription: "Contact us today for a free consultation and quotation.",
@@ -94,6 +99,11 @@ export const landingPageText = {
       { title: "验收交付", description: "检查完成情况并处理待完成事项。" },
     ],
     relatedProjects: "相关案例",
+    projectPrivacy: {
+      eyebrow: "办公空间项目参考",
+      title: "只呈现空间类型与改造重点",
+      note: "为保护客户隐私，不公开企业、门店、楼宇或精确地点；图片仅用于说明空间类型与规划方向。",
+    },
     faqTitle: "常见问题",
     ctaTitle: "准备开始规划项目？",
     ctaDescription: "欢迎联系我们，获取免费咨询和装修报价。",

@@ -492,6 +492,7 @@ html[data-public-theme="dark"] body .scheme-a-public-shell main.fc-c-page > sect
 .fc-c-process .fc-route-number-list li { box-shadow: inset 0 -1px 0 rgb(255 255 255 / .1); }
 .fc-c-process .fc-route-number-list strong { color: #f1ede5; }
 .fc-c-process .fc-route-number-list span { color: rgb(241 237 229 / .62); }
+.fc-c-projects__privacy-note { max-width: 62em; margin: -12px 0 24px; color: #6d675f; font-size: 10px; line-height: 1.7; }
 .fc-c-project-grid { display: grid; gap: 12px; }
 .fc-c-project-grid article { position: relative; min-height: 320px; overflow: hidden; }
 .fc-c-project-grid article :is(picture, img) { display: block; width: 100%; height: 100%; }
