@@ -15,6 +15,17 @@ type ContentPublishQueryBuilder = PromiseLike<ContentPublishQueryResult<unknown[
 export type ContentPublishClient = {
   from: (table: string) => ContentPublishQueryBuilder;
   rpc: (name: string, args: Record<string, unknown>) => Promise<ContentPublishQueryResult<unknown[]>>;
+  storage?: {
+    from: (bucket: string) => {
+      upload: (
+        path: string,
+        body: Uint8Array,
+        options: { cacheControl?: string; contentType?: string; upsert?: boolean },
+      ) => Promise<ContentPublishQueryResult<{ path?: string } | null>>;
+      remove: (paths: string[]) => Promise<ContentPublishQueryResult<unknown[]>>;
+      getPublicUrl: (path: string) => { data: { publicUrl?: string } };
+    };
+  };
 };
 
 export type ContentPublishMode = "dry-run" | "publish";
@@ -26,6 +37,7 @@ export type ContentPublishType =
   | "material"
   | "project"
   | "site_page"
+  | "media"
   | "cache_invalidation";
 export type ContentStatus = "draft" | "published" | "archived";
 

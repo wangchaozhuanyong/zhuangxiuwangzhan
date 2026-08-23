@@ -7,7 +7,10 @@ import { purgePublicHtmlCache } from "./cache-invalidation.ts";
 import { publishContent } from "./service.ts";
 import type { ContentPublishRequest } from "./types.ts";
 
-const MAX_BODY_BYTES = 512 * 1024;
+// A 5 MiB WebP expands to roughly 6.7 MiB when base64 encoded. The request is
+// authenticated before the body is read, and the media service still enforces
+// the decoded 5 MiB limit.
+const MAX_BODY_BYTES = 7 * 1024 * 1024;
 
 const json = (req: Request, body: Record<string, unknown>, status = 200) =>
   new Response(JSON.stringify(body), {

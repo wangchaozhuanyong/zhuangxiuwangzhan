@@ -82,10 +82,10 @@
 .fc-route-hero h1 {
   max-width: 10.5em;
   color: #f5f1e9;
-  font-family: Georgia, "Songti SC", "Times New Roman", serif;
+  font-family: var(--font-display);
   font-size: clamp(32px, 9vw, 39px);
   font-weight: 400;
-  line-height: 1.08;
+  line-height: 1.15;
   letter-spacing: 0;
   text-wrap: balance;
 }
@@ -93,13 +93,13 @@
 .fc-route-hero h1.fc-route-title-long {
   max-width: 14em;
   font-size: clamp(25px, 7.2vw, 31px);
-  line-height: 1.16;
+  line-height: 1.18;
 }
 
 .fc-route-hero-copy > p {
   max-width: 31em;
   margin-top: 14px;
-  color: rgb(245 241 233 / 0.86);
+  color: rgb(245 241 233 / 0.90);
   font-size: 13px;
   line-height: 1.68;
   text-wrap: pretty;
@@ -114,7 +114,7 @@
 
 .fc-route-section-head h2 {
   max-width: 12em;
-  font-family: Georgia, "Songti SC", "Times New Roman", serif;
+  font-family: var(--font-display);
   font-size: 30px;
   font-weight: 400;
   line-height: 1.18;
@@ -124,7 +124,7 @@
 .fc-route-section-head p {
   max-width: 31em;
   margin-top: 12px;
-  color: #6a655d;
+  color: #5c564e;
   font-size: 13px;
   line-height: 1.7;
 }
@@ -145,9 +145,9 @@
   margin-bottom: 14px;
   padding: 0 14px;
   border-radius: 2px;
-  color: #6a655d;
+  color: #5c564e;
   background: rgb(255 255 255 / 0.32);
-  box-shadow: inset 0 0 0 1px rgb(121 99 66 / 0.11);
+  box-shadow: inset 0 0 0 1px rgb(121 99 66 / 0.20);
   transition: background 180ms ease, box-shadow 180ms ease;
 }
 
@@ -187,17 +187,18 @@ html[data-public-theme="dark"] .scheme-a-public-shell input[type="range"] {
 .fc-route-filter button {
   min-height: 44px;
   border: 0;
-  border-radius: 2px;
-  padding: 8px 13px;
+  border-radius: 3px;
+  padding: 9px 16px;
   color: #1c1b18;
-  background: rgb(117 96 65 / 0.075);
+  background: rgb(117 96 65 / 0.085);
   box-shadow: none;
-  font-size: 11px;
+  font-size: 12px;
+  font-weight: 500;
   transition: color 180ms ease, background 180ms ease, transform 180ms ease;
 }
 
 .fc-route-filter button:hover {
-  background: rgb(117 96 65 / 0.13);
+  background: rgb(117 96 65 / 0.15);
 }
 
 .fc-route-filter button:focus-visible {
@@ -388,7 +389,31 @@ html[data-public-theme="dark"] .scheme-a-public-shell input[type="range"] {
 .fc-route-form-page .fc-route-contact-info { padding: 22px; }
 .fc-route-form-page :is(.fc-route-contact-form, .fc-route-quote-form, .subpage-side-panel) { padding: 24px !important; }
 .fc-route-form-page :is(.fc-route-contact-form, .fc-route-quote-form) h2,
-.fc-route-form-page .subpage-side-panel h2 { font-family: Georgia, "Songti SC", serif !important; font-size: 26px !important; font-weight: 400 !important; }
+.fc-route-form-page .subpage-side-panel h2 { font-family: var(--font-display) !important; font-size: 26px !important; font-weight: 400 !important; }
+.fc-route-form-page select,
+.fc-route-quote-form select,
+.subpage-form-panel select {
+  appearance: none !important;
+  -webkit-appearance: none !important;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23b88a43' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E") !important;
+  background-repeat: no-repeat !important;
+  background-position: right 0.75rem center !important;
+  background-size: 16px 16px !important;
+  padding-right: 2.5rem !important;
+  border: 1px solid rgba(121, 99, 66, 0.24) !important;
+  border-radius: 4px !important;
+  background-color: rgb(255 255 255 / 0.55) !important;
+  color: #24231f !important;
+  transition: border-color 180ms ease, box-shadow 180ms ease, background-color 180ms ease;
+}
+.fc-route-form-page select:focus,
+.fc-route-quote-form select:focus,
+.subpage-form-panel select:focus {
+  outline: none !important;
+  border-color: #b88a43 !important;
+  background-color: rgb(255 255 255 / 0.9) !important;
+  box-shadow: 0 0 0 3px rgba(184, 138, 67, 0.16) !important;
+}
 .fc-route-form-page .contact-detail-list { box-shadow: inset 0 1px 0 rgb(121 99 66 / .14); }
 .fc-route-form-page .contact-detail-row { display: grid; grid-template-columns: 30px minmax(0, 1fr) auto; min-height: 68px; align-items: center; gap: 12px; border: 0 !important; border-radius: 0 !important; padding: 14px 0 !important; color: #25231f; background: transparent !important; box-shadow: inset 0 -1px 0 rgb(121 99 66 / .12) !important; }
 .fc-route-form-page .contact-detail-row__icon { display: grid; width: 28px; height: 28px; place-items: center; color: #9b7540; background: transparent !important; }
@@ -586,8 +611,27 @@ html[data-public-theme="dark"] .home-footer-prelude__button--secondary svg { col
   .fc-route-budget-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
   .fc-route-form-page :is(.fc-route-contact-layout, .fc-route-quote-layout) { grid-template-columns: minmax(0, .78fr) minmax(0, 1.22fr) !important; gap: clamp(34px, 6vw, 86px); align-items: start; }
   .fc-route-form-page .fc-route-quote-layout { grid-template-columns: minmax(0, 1.2fr) minmax(300px, .8fr) !important; }
-  .fc-route-form-page .fc-route-contact-info { position: sticky; top: calc(var(--site-header-height, 76px) + 28px); }
   .fc-route-form-page :is(.fc-route-contact-form, .fc-route-quote-form, .subpage-side-panel) { padding: 36px !important; }
+  .fc-route-form-page select,
+  .fc-route-quote-form select,
+  .subpage-form-panel select {
+    appearance: none;
+    -webkit-appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23b88a43' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 0.75rem center;
+    background-size: 16px 16px;
+    padding-right: 2.5rem;
+    border-color: rgba(121, 99, 66, 0.24);
+    transition: border-color 180ms ease, box-shadow 180ms ease;
+  }
+  .fc-route-form-page select:focus,
+  .fc-route-quote-form select:focus,
+  .subpage-form-panel select:focus {
+    outline: none;
+    border-color: #b88a43;
+    box-shadow: 0 0 0 3px rgba(184, 138, 67, 0.16);
+  }
   .fc-route-cms-list { grid-template-columns: repeat(3, minmax(0, 1fr)); }
   .fc-c-hero { display: grid !important; min-height: 780px !important; padding: 0 !important; grid-template-columns: 1.25fr .75fr; align-items: stretch; }
   html[data-public-theme="dark"] body .scheme-a-public-shell main.fc-c-page > section.fc-c-hero[data-forest-page-hero="true"] { display: grid !important; min-height: 780px !important; padding: 0 !important; }

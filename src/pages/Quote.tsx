@@ -397,7 +397,7 @@ const Quote = () => {
 
                 <div className="quote-form-section-label">
                   <span>3</span>
-                  {t.detailsSection}
+                  {t.detailsSection} <span className="text-xs font-normal text-muted-foreground">({t.optional})</span>
                 </div>
                 <div>
                   <label htmlFor="quote-property-size" className="mb-1.5 block text-sm">
