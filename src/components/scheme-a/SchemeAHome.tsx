@@ -146,6 +146,16 @@ const SchemeAHome = ({ content }: SchemeAHomeProps) => {
               <ArrowUpRight aria-hidden="true" />
             </LocalizedLink>
           </div>
+          {copy.heroStats && (
+            <div className="scheme-a-hero__metrics" aria-label={language === "zh" ? "交付保障指标" : "Delivery trust metrics"}>
+              {copy.heroStats.map((stat) => (
+                <div key={stat.label} className="scheme-a-hero__metric-item">
+                  <strong>{stat.value}</strong>
+                  <span>{stat.label}</span>
+                </div>
+              ))}
+            </div>
+          )}
           <ul className="scheme-a-hero__disciplines" aria-label={copy.heroCapabilitiesLabel}>
             {copy.heroCapabilities.map((capability) => <li key={capability}>{capability}</li>)}
           </ul>
@@ -293,6 +303,13 @@ const SchemeAHome = ({ content }: SchemeAHomeProps) => {
           <div className="scheme-a-materials__copy">
             <h2>{copy.materialTitle}</h2>
             <p>{copy.materialBody}</p>
+            {copy.materialTags && (
+              <ul className="scheme-a-materials__tags" aria-label={language === "zh" ? "精选材质特性" : "Curated material tags"}>
+                {copy.materialTags.map((tag) => (
+                  <li key={tag}><span>•</span>{tag}</li>
+                ))}
+              </ul>
+            )}
             <LocalizedLink to="/materials">
               {copy.materialCta}
               <ArrowRight aria-hidden="true" />
@@ -326,6 +343,26 @@ const SchemeAHome = ({ content }: SchemeAHomeProps) => {
         </ImageComparisonSlider>
         <p className="scheme-a-frame scheme-a-before__note">{copy.beforeNote}</p>
       </section>
+
+      {copy.processSteps && (
+        <section className="scheme-a-home-process" data-cinematic-section>
+          <div className="scheme-a-frame scheme-a-section-head">
+            <div>
+              <p className="scheme-a-eyebrow">{copy.processLabel}</p>
+              <h2>{copy.processTitle}</h2>
+            </div>
+          </div>
+          <div className="scheme-a-frame scheme-a-home-process__grid">
+            {copy.processSteps.map((step) => (
+              <div key={step.step} className="scheme-a-home-process__card">
+                <span className="scheme-a-home-process__number">{step.step}</span>
+                <h3>{step.title}</h3>
+                <p>{step.desc}</p>
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
 
       {faqItems.length > 0 && (
         <section className="scheme-a-home-faq" data-cinematic-section>
