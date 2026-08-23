@@ -18,7 +18,7 @@ export default {
         site: "1320px",
       },
       fontFamily: {
-        display: ['Playfair Display', 'Noto Serif SC', 'Noto Sans SC', 'serif'],
+        display: ['Playfair Display', 'Songti SC', 'STSong', 'Source Han Serif SC', 'Noto Serif CJK SC', 'Georgia', 'serif'],
         body: ['Inter', 'Noto Sans SC', 'Microsoft YaHei UI', 'PingFang SC', 'sans-serif'],
       },
       colors: {

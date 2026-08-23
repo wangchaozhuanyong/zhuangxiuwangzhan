@@ -27,20 +27,22 @@
     min-height: 100svh;
     place-items: center;
     padding: 76px var(--cinematic-gutter) 0;
-    background: #11110f;
+    background: #eee9df;
+    color: #1c1b18;
+    transition: opacity 280ms ease, background 280ms ease;
   }
 
   .scheme-a-page-loader__brand {
     display: grid;
     width: min(100%, 760px);
     justify-items: center;
-    color: #eee9df;
+    color: #1c1b18;
     text-align: center;
   }
 
   .scheme-a-page-loader__brand p {
     margin: 0 0 1rem;
-    color: #a69d90;
+    color: #7a7266;
     font-size: 0.62rem;
     font-weight: 700;
     letter-spacing: 0.2em;
@@ -59,34 +61,34 @@
   }
 
   .scheme-a-page-loader__brand strong span {
-    color: #eee9df;
+    color: #1c1b18;
   }
 
   .scheme-a-page-loader__brand strong em {
-    color: #cda766;
+    color: #b88a43;
     font-style: normal;
   }
 
   .scheme-a-page-loader__brand > span {
     margin-top: 1.15rem;
-    color: #918a80;
-    font-size: 0.72rem;
+    color: #5c564e;
+    font-size: 0.76rem;
     letter-spacing: 0.12em;
   }
 
   .scheme-a-page-loader__brand > i {
     width: min(210px, 48vw);
-    height: 1px;
+    height: 2px;
     margin-top: 1.3rem;
     overflow: hidden;
-    background: rgb(238 233 223 / 0.12);
+    background: rgb(28 27 24 / 0.12);
   }
 
   .scheme-a-page-loader__brand > i::after {
     display: block;
     width: 45%;
     height: 100%;
-    background: #cda766;
+    background: #b88a43;
     content: "";
     animation: scheme-loader 1s cubic-bezier(.65, 0, .35, 1) infinite alternate;
   }
@@ -173,14 +175,18 @@
     align-items: center;
     justify-content: center;
     gap: 0.24rem;
+    min-height: 40px;
   }
 
   .scheme-a-language-switch span {
     display: inline-grid;
-    min-width: 2rem;
-    min-height: 1.75rem;
+    min-width: 2.2rem;
+    min-height: 2rem;
     place-items: center;
-    padding-inline: 0.2rem;
+    padding-inline: 0.35rem;
+    border-radius: 3px;
+    font-size: 0.76rem;
+    font-weight: 600;
     opacity: 0.58;
     transition: color 180ms ease, background 180ms ease, opacity 180ms ease;
   }
@@ -193,7 +199,7 @@
 
   .scheme-a-language-switch i {
     width: 1px;
-    height: 14px;
+    height: 16px;
     background: currentColor;
     opacity: 0.24;
   }

@@ -116,3 +116,35 @@ export async function insertAdminAuditLog(
   });
   if (error) throw new Error(error.message);
 }
+
+export async function uploadMediaObject(
+  client: ContentPublishClient,
+  input: {
+    bucket: string;
+    objectPath: string;
+    bytes: Uint8Array;
+    mimeType: string;
+  },
+): Promise<string> {
+  if (!client.storage) throw new Error("Media storage client is unavailable.");
+  const bucket = client.storage.from(input.bucket);
+  const { error } = await bucket.upload(input.objectPath, input.bytes, {
+    cacheControl: "31536000",
+    contentType: input.mimeType,
+    upsert: false,
+  });
+  if (error) throw new Error(error.message);
+  const publicUrl = bucket.getPublicUrl(input.objectPath).data.publicUrl;
+  if (!publicUrl) throw new Error("Media upload did not return a public URL.");
+  return publicUrl;
+}
+
+export async function removeMediaObject(
+  client: ContentPublishClient,
+  bucketName: string,
+  objectPath: string,
+): Promise<void> {
+  if (!client.storage) throw new Error("Media storage client is unavailable.");
+  const { error } = await client.storage.from(bucketName).remove([objectPath]);
+  if (error) throw new Error(error.message);
+}
