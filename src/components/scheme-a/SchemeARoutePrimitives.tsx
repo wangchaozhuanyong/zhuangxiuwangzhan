@@ -280,7 +280,7 @@ export function SchemeAGallery({
             const index = rowIndex * 2 + imageIndex;
             return (
               <div key={`${image.src}-${index}`} className="fc-route-gallery-media" data-cinematic-media>
-                <SmartImage src={image.src} alt={image.alt} width={imageIndex === 0 ? 1200 : 720} height={900} sizes={imageIndex === 0 ? "70vw" : "30vw"} candidateWidths={[560, 720, 960, 1200]} quality={84} />
+                <SmartImage src={image.src} alt={image.alt} width={1200} height={750} sizes="(max-width: 767px) 100vw, 50vw" candidateWidths={[560, 720, 960, 1200]} quality={84} />
               </div>
             );
           })}
