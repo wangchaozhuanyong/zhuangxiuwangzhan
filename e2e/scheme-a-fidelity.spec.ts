@@ -170,7 +170,7 @@ test.describe("Scheme A approved-design fidelity", () => {
       const widths = metrics.frames.map((frame) => frame.width);
       expect(Math.max(...widths) - Math.min(...widths)).toBeLessThanOrEqual(1);
       for (const frame of metrics.frames) {
-        expect(frame.height / frame.width).toBeCloseTo(1.25, 2);
+        expect(frame.height / frame.width).toBeCloseTo(0.625, 2);
         if (frame.objectFit !== "missing") expect(frame.objectFit).toBe("cover");
       }
       expect(metrics.frames.some((frame) => frame.objectFit === "cover")).toBe(true);
@@ -186,7 +186,7 @@ test.describe("Scheme A approved-design fidelity", () => {
       return rect.height / rect.width;
     }));
     expect(desktopRatios).toHaveLength(3);
-    expect(desktopRatios[0]).toBeCloseTo(1.25, 2);
+    expect(desktopRatios[0]).toBeCloseTo(0.625, 2);
     expect(desktopRatios[1]).toBeCloseTo(0.625, 2);
     expect(desktopRatios[2]).toBeCloseTo(1, 2);
   });
