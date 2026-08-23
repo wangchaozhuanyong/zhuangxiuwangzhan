@@ -301,7 +301,7 @@
   }
 
   html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-project__collection-media {
-    aspect-ratio: 4 / 5;
+    aspect-ratio: 16 / 10;
     overflow: hidden;
     background: #cec7bc;
   }
@@ -726,7 +726,7 @@
     html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-project__media {
       width: calc(100% - 44px);
       height: auto;
-      aspect-ratio: 4 / 5;
+      aspect-ratio: 16 / 10;
       margin-right: 22px;
       margin-left: 22px;
     }
@@ -752,13 +752,13 @@
     }
 
     html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-project__collection-item {
-      width: min(78vw, 310px);
+      width: min(84vw, 360px);
       flex: 0 0 auto;
       scroll-snap-align: start;
     }
 
     html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-project__collection-item:nth-child(n) .scheme-a-project__collection-media {
-      aspect-ratio: 4 / 5;
+      aspect-ratio: 16 / 10;
     }
 
     html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-project__collection-copy {
@@ -798,7 +798,7 @@
     html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-compare {
       width: calc(100% - 44px);
       height: auto;
-      aspect-ratio: 4 / 5;
+      aspect-ratio: 16 / 10;
       margin-inline: auto;
     }
 
