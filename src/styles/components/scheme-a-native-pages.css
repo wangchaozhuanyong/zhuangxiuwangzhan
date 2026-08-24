@@ -595,9 +595,13 @@ html[data-public-theme="dark"] .scheme-a-public-shell input[type="range"] {
   align-items: start !important;
 }
 
+.fc-route-form-page .fc-route-contact-layout > * {
+  min-width: 0;
+}
+
 @media (max-width: 1023px) {
   .fc-route-form-page .fc-route-contact-layout {
-    grid-template-columns: 1fr !important;
+    grid-template-columns: minmax(0, 1fr) !important;
     gap: 32px !important;
     max-width: 640px !important;
     margin-inline: auto !important;

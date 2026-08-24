@@ -717,8 +717,11 @@
 
   html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-contact__regions {
     grid-column: 1 / -1;
-    padding-top: clamp(3rem, 7vw, 6rem);
-    border-top: 1px solid rgba(212, 175, 55, 0.22);
+    gap: 0.75rem 1.5rem;
+    margin-top: clamp(2.75rem, 5vw, 4.5rem);
+    padding-top: 0;
+    border-top: 0;
+    color: rgb(238 233 223 / 0.64);
   }
 
   @media (hover: hover) {
@@ -1061,7 +1064,7 @@
 
     html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-contact > .scheme-a-frame {
       display: block;
-      padding: 86px 22px 70px;
+      padding: 86px 22px 60px;
     }
 
     html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-contact h2 {
@@ -1072,7 +1075,8 @@
     }
 
     html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-contact__regions {
-      padding-top: 50px;
+      margin-top: 46px;
+      padding-top: 0;
     }
   }
 
