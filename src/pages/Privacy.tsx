@@ -3,6 +3,9 @@ import { JsonLdBreadcrumb } from "@/components/JsonLd";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { useSiteSettings } from "@/hooks/useSiteSettings";
 import { privacyPageText } from "@/i18n/privacyPageText";
+import { mediaLabels } from "@/i18n/mediaLabels";
+import { SchemeARouteHero } from "@/components/scheme-a/SchemeARoutePrimitives";
+import { pageHeroImages } from "@/lib/pageHeroImages";
 
 
 
@@ -15,17 +18,23 @@ const Privacy = () => {
   const phoneLabel = language === "zh" ? "电话：" : "Phone:";
 
   return (
-    <main className="fc-route-page fc-route-legal-page">
+    <main className="fc-route-page">
       <PageMeta title={t.metaTitle} description={t.metaDescription} keywords={t.metaKeywords} canonicalPath="/privacy" />
       <JsonLdBreadcrumb items={[{ name: t.breadcrumbHome, url: "/" }, { name: t.breadcrumbCurrent, url: "/privacy" }]} />
 
-      <header className="fc-route-legal-intro">
-        <div>
-          <span className="fc-route-kicker">{t.breadcrumbCurrent}</span>
-          <h1>{t.title}</h1>
-          <p>{t.updated}</p>
-        </div>
-      </header>
+      <SchemeARouteHero
+        kind="legal"
+        image={pageHeroImages.contact.desktop}
+        imageSourceWidth={pageHeroImages.contact.desktopWidth}
+        tabletImage={pageHeroImages.contact.tablet}
+        tabletImageSourceWidth={pageHeroImages.contact.tabletWidth}
+        mobileImage={pageHeroImages.contact.mobile}
+        mobileImageSourceWidth={pageHeroImages.contact.mobileWidth}
+        imageAlt={t.imageAlt}
+        label={`${t.breadcrumbCurrent} · ${mediaLabels[language].renderingConcept}`}
+        title={t.title}
+        description={t.updated}
+      />
 
       <div className="fc-route-legal-layout">
         <nav className="fc-route-legal-toc" aria-label={t.breadcrumbCurrent}>

@@ -11,7 +11,7 @@ export const schemeAHomeText = {
     heroStats: [
       { value: "12+ 年", label: "本地精工设计施工" },
       { value: "450+ 案", label: "排屋与私宅空间交付" },
-      { value: "CIDB G3", label: "合规资质与全程质保" },
+      { value: "正规资质", label: "合规持牌与全程质保" },
     ],
     quoteCta: "获取免费报价",
     projectsCta: "查看装修案例",
@@ -72,7 +72,7 @@ export const schemeAHomeText = {
     heroStats: [
       { value: "12+ Yrs", label: "Local Craft & Build Experience" },
       { value: "450+", label: "Landed & Luxury Spaces Delivered" },
-      { value: "CIDB G3", label: "Certified & Full Scope Warranty" },
+      { value: "Certified", label: "Licensed & Scope Warranty" },
     ],
     quoteCta: "Request a free quote",
     projectsCta: "View renovation projects",

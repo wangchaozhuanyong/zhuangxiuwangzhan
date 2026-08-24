@@ -74,10 +74,10 @@ const LanguageSwitch = ({
   label: string;
   className?: string;
 }) => (
-  <RouterLink className={`scheme-a-language-switch ${className}`.trim()} to={to} aria-label={label}>
-    <span data-active={language === "zh" ? "true" : "false"}>中文</span>
-    <i aria-hidden="true" />
-    <span data-active={language === "en" ? "true" : "false"}>EN</span>
+  <RouterLink className={`scheme-a-lang-pill ${className}`.trim()} to={to} aria-label={label}>
+    <span className={`scheme-a-lang-option ${language === "zh" ? "is-active" : ""}`}>中文</span>
+    <i className="scheme-a-lang-divider" aria-hidden="true" />
+    <span className={`scheme-a-lang-option ${language === "en" ? "is-active" : ""}`}>EN</span>
   </RouterLink>
 );
 
@@ -127,6 +127,30 @@ export const SchemeANavbar = () => {
     observer.observe(sentinel);
     return () => observer.disconnect();
   }, [hasImmersiveHero, location.pathname]);
+
+  useEffect(() => {
+    const prefetchHeroes = () => {
+      const heroUrls = [
+        "/images/heroes/v3/hero-services-v3-desktop.webp",
+        "/images/heroes/v3/hero-projects-v3-desktop.webp",
+        "/images/heroes/v3/hero-materials-v3-desktop.webp",
+        "/images/heroes/v3/hero-products-v3-desktop.webp",
+        "/images/heroes/v3/hero-about-v3-desktop.webp",
+        "/images/heroes/v2/hero-quote-premium.webp",
+      ];
+      heroUrls.forEach((url) => {
+        const img = new Image();
+        img.src = url;
+      });
+    };
+    if (typeof window !== "undefined") {
+      if ("requestIdleCallback" in window) {
+        (window as Window & { requestIdleCallback: (cb: () => void) => number }).requestIdleCallback(prefetchHeroes);
+      } else {
+        setTimeout(prefetchHeroes, 1000);
+      }
+    }
+  }, []);
 
   useEffect(() => {
     if (!menuOpen) return;
@@ -179,10 +203,10 @@ export const SchemeANavbar = () => {
             <LocalizedLink className="scheme-a-chrome__quote" to="/quote" onClick={() => trackCtaClick("quote", "scheme_a_header", { destination: "/quote" })}>
               {t.quote}<ArrowUpRight aria-hidden="true" />
             </LocalizedLink>
-            <div className="scheme-a-chrome__control-rail">
-              <LanguageSwitch language={language} to={languagePath} label={navText.switchLanguage} className="scheme-a-chrome__language" />
-              <button ref={triggerRef} className="scheme-a-chrome__menu" type="button" aria-label={t.openMenu} aria-expanded={menuOpen} aria-controls="scheme-a-directory" onClick={() => { setOpenGroup(null); setPreviewItem(currentItem); setMenuOpen(true); }}>
-                <span>{t.menu}</span><Menu aria-hidden="true" />
+            <div className="scheme-a-chrome__control-capsule">
+              <LanguageSwitch language={language} to={languagePath} label={navText.switchLanguage} />
+              <button ref={triggerRef} className="scheme-a-chrome__menu-trigger" type="button" aria-label={t.openMenu} aria-expanded={menuOpen} aria-controls="scheme-a-directory" onClick={() => { setOpenGroup(null); setPreviewItem(currentItem); setMenuOpen(true); }}>
+                <Menu aria-hidden="true" />
               </button>
             </div>
           </div>
@@ -195,9 +219,13 @@ export const SchemeANavbar = () => {
           <div className="scheme-a-directory__head scheme-a-frame">
             <BrandMark logo={logo} name={companyName} />
             <div className="scheme-a-directory__intro"><span>{t.directory}</span><p>{t.directoryIntro}</p></div>
-            <div className="scheme-a-directory__control-rail">
-              <LanguageSwitch language={language} to={languagePath} label={navText.switchLanguage} className="scheme-a-directory__language" />
-              <button ref={closeRef} type="button" aria-label={t.closeMenu} onClick={() => { setMenuOpen(false); window.requestAnimationFrame(() => triggerRef.current?.focus()); }}><X aria-hidden="true" /></button>
+            <div className="scheme-a-directory__actions">
+              <div className="scheme-a-chrome__control-capsule">
+                <LanguageSwitch language={language} to={languagePath} label={navText.switchLanguage} />
+                <button ref={closeRef} className="scheme-a-chrome__menu-trigger" type="button" aria-label={t.closeMenu} onClick={() => { setMenuOpen(false); window.requestAnimationFrame(() => triggerRef.current?.focus()); }}>
+                  <X aria-hidden="true" />
+                </button>
+              </div>
             </div>
           </div>
           <div className="scheme-a-directory__body scheme-a-frame">
