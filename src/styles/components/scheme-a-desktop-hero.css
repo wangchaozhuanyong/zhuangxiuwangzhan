@@ -30,11 +30,13 @@
   }
 
   .scheme-a-public-shell .fc-route-page .fc-route-hero-copy {
-    width: min(100%, 1200px);
+    width: 100%;
+    max-width: none;
     height: auto;
     min-height: inherit;
-    margin-inline: auto;
-    padding: 0 clamp(32px, 5vw, 64px) clamp(40px, 5vw, 64px);
+    margin-inline: 0;
+    padding: 0 clamp(32px, 5vw, 80px) clamp(40px, 5vw, 64px);
+    align-items: flex-start;
     background: transparent;
   }
 }

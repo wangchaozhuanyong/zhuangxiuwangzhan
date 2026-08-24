@@ -30,6 +30,17 @@ const responsiveViewports = [
 ] as const;
 
 test.describe("Scheme A approved-design fidelity", () => {
+  test("refreshed local imagery uses cache-safe versioned paths", async ({ page }) => {
+    await page.goto("/zh", { waitUntil: "domcontentloaded" });
+
+    const footerPreludeImage = page.locator(".scheme-a-footer-prelude img");
+    await expect(footerPreludeImage).toHaveAttribute(
+      "src",
+      /\/images\/_responsive\/projects\/w\d+\/v20260824\/generated-portfolio\/mont-kiara-luxury-condo-renovation\.webp/,
+    );
+    await expect(footerPreludeImage).toHaveAttribute("srcset", /\/v20260824\//);
+  });
+
   test("mobile route heroes load the dedicated portrait art direction", async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
 
@@ -388,14 +399,23 @@ test.describe("Scheme A approved-design fidelity", () => {
 
     for (const route of [...portraitHeroRoutes, "/zh/privacy", "/zh/terms"]) {
       await page.goto(route, { waitUntil: "domcontentloaded" });
+      await page.locator(".fc-route-hero-copy").waitFor();
 
       const metrics = await page.evaluate(() => {
         const main = document.querySelector<HTMLElement>("main.fc-route-page");
+        const hero = document.querySelector<HTMLElement>(".fc-route-hero");
+        const heroCopy = document.querySelector<HTMLElement>(".fc-route-hero-copy");
+        const heroTitle = heroCopy?.querySelector<HTMLElement>("h1");
         const sectionHeads = Array.from(document.querySelectorAll<HTMLElement>(".fc-route-section-head"));
         return {
           horizontalOverflow: document.documentElement.scrollWidth - document.documentElement.clientWidth,
           mainRightGap: main ? Math.round(document.documentElement.clientWidth - main.getBoundingClientRect().right) : 0,
           mainLeft: main ? Math.round(main.getBoundingClientRect().left) : 0,
+          heroCopyLeft: heroCopy ? Math.round(heroCopy.getBoundingClientRect().left) : null,
+          heroCopyRightGap: heroCopy && hero
+            ? Math.round(hero.getBoundingClientRect().right - heroCopy.getBoundingClientRect().right)
+            : null,
+          heroTitleLeft: heroTitle ? Math.round(heroTitle.getBoundingClientRect().left) : null,
           headings: sectionHeads.map((head) => {
             const title = head.querySelector<HTMLElement>("h2");
             const copy = head.querySelector<HTMLElement>("p");
@@ -415,6 +435,9 @@ test.describe("Scheme A approved-design fidelity", () => {
       expect(metrics.horizontalOverflow, route).toBeLessThanOrEqual(1);
       expect(metrics.mainLeft, route).toBe(0);
       expect(metrics.mainRightGap, route).toBe(0);
+      expect(metrics.heroCopyLeft, route).toBe(0);
+      expect(metrics.heroCopyRightGap, route).toBe(0);
+      expect(metrics.heroTitleLeft, route).toBeLessThanOrEqual(80);
       for (const heading of metrics.headings) {
         if (!heading) continue;
         expect(heading.display, route).toBe("block");

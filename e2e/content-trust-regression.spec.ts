@@ -14,6 +14,22 @@ test.describe("public content trust boundaries", () => {
     const hero = page.locator(".scheme-a-hero");
     await expect(hero).toContainText("Design & Build");
     await expect(hero).toContainText("Clear Quotes");
+    await expect(hero).toContainText("Written scope and material details");
+    const metricLayout = await hero.locator(".scheme-a-hero__metric-item").evaluateAll((items) => items.map((item) => {
+      const title = item.querySelector<HTMLElement>("strong");
+      const label = item.querySelector<HTMLElement>("span");
+      return {
+        itemWidth: item.getBoundingClientRect().width,
+        titleTop: title?.getBoundingClientRect().top ?? 0,
+        labelWidth: label?.getBoundingClientRect().width ?? 0,
+        labelOverflow: label ? label.scrollWidth - label.clientWidth : 0,
+      };
+    }));
+    expect(Math.max(...metricLayout.map((item) => item.titleTop)) - Math.min(...metricLayout.map((item) => item.titleTop))).toBeLessThanOrEqual(1);
+    for (const metric of metricLayout) {
+      expect(metric.labelWidth).toBeLessThanOrEqual(metric.itemWidth);
+      expect(metric.labelOverflow).toBeLessThanOrEqual(1);
+    }
     await expect(hero).not.toContainText("12+ Yrs");
     await expect(hero).not.toContainText("450+");
     await expect(hero).not.toContainText("Licensed & Scope Warranty");
