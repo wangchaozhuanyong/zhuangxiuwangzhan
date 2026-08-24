@@ -80,6 +80,79 @@ test.describe("public responsive layout", () => {
     expect(metrics.headerRight).toBeGreaterThanOrEqual(20);
   });
 
+  test("mobile home CTA separates the quote button from service regions with balanced whitespace", async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.goto("/zh", { waitUntil: "domcontentloaded" });
+
+    const contact = page.locator(".scheme-a-contact");
+    const button = contact.locator(".scheme-a-button");
+    const regions = contact.locator(".scheme-a-contact__regions");
+    await contact.scrollIntoViewIfNeeded();
+    await expect(button).toBeVisible();
+    await expect(regions).toBeVisible();
+
+    const metrics = await contact.evaluate((element) => {
+      const button = element.querySelector<HTMLElement>(".scheme-a-button");
+      const regions = element.querySelector<HTMLElement>(".scheme-a-contact__regions");
+      const firstRegion = regions?.querySelector<HTMLElement>("span");
+      if (!button || !regions || !firstRegion) throw new Error("Missing home CTA layout regions");
+
+      const contactRect = element.getBoundingClientRect();
+      const buttonRect = button.getBoundingClientRect();
+      const regionsRect = regions.getBoundingClientRect();
+      const firstRegionRect = firstRegion.getBoundingClientRect();
+      const regionsStyle = getComputedStyle(regions);
+      return {
+        buttonToRegions: Math.round(regionsRect.top - buttonRect.bottom),
+        regionsToBottom: Math.round(contactRect.bottom - firstRegionRect.bottom),
+        borderTopWidth: regionsStyle.borderTopWidth,
+        borderTopStyle: regionsStyle.borderTopStyle,
+      };
+    });
+
+    expect(metrics.borderTopWidth).toBe("0px");
+    expect(metrics.borderTopStyle).toBe("none");
+    expect(metrics.buttonToRegions).toBeGreaterThanOrEqual(44);
+    expect(metrics.buttonToRegions).toBeLessThanOrEqual(48);
+    expect(metrics.regionsToBottom).toBeGreaterThanOrEqual(56);
+    expect(metrics.regionsToBottom).toBeLessThanOrEqual(68);
+  });
+
+  test("mobile contact panels stay centered inside equal page gutters", async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.goto("/zh/contact", { waitUntil: "domcontentloaded" });
+
+    const info = page.locator(".fc-route-contact-info");
+    const form = page.locator(".fc-route-contact-form");
+    await expect(info).toBeVisible();
+    await expect(form).toBeVisible();
+
+    const metrics = await page.evaluate(() => {
+      const viewportWidth = document.documentElement.clientWidth;
+      const getGutters = (selector: string) => {
+        const element = document.querySelector<HTMLElement>(selector);
+        if (!element) throw new Error(`Missing contact panel: ${selector}`);
+        const rect = element.getBoundingClientRect();
+        return {
+          left: Math.round(rect.left),
+          right: Math.round(viewportWidth - rect.right),
+          width: Math.round(rect.width),
+        };
+      };
+
+      return {
+        info: getGutters(".fc-route-contact-info"),
+        form: getGutters(".fc-route-contact-form"),
+      };
+    });
+
+    for (const panel of [metrics.info, metrics.form]) {
+      expect(Math.abs(panel.left - panel.right)).toBeLessThanOrEqual(1);
+      expect(panel.left).toBeGreaterThanOrEqual(20);
+      expect(panel.width).toBeLessThanOrEqual(350);
+    }
+  });
+
   test("mobile header keeps a stable control row when language changes", async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
     await page.goto("/zh/about", { waitUntil: "domcontentloaded" });
