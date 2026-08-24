@@ -236,8 +236,8 @@ const BlogDetail = () => {
               <p>{t.ctaText}</p>
               <div>
                 <Link
-                  to="/quote"
-                  onClick={() => trackCtaClick("quote", "blog_detail_cta", { destination: "/quote" })}
+                  to="/quote#quote-form"
+                  onClick={() => trackCtaClick("quote", "blog_detail_cta", { destination: "/quote#quote-form" })}
                 >
                   {t.quote} <ArrowRight className="h-4 w-4" />
                 </Link>

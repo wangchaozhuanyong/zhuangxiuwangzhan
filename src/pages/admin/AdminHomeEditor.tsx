@@ -424,7 +424,7 @@ export default function AdminHomeEditor() {
               <Switch
                 id="home-brand-partners-visibility"
                 checked={brandPartnersEnabled}
-                disabled={savingBrandPartnersVisibility || !brandPartnersVisibility?.id}
+                disabled
                 aria-describedby="home-brand-partners-visibility-status"
                 onCheckedChange={(enabled) => void updateBrandPartnersVisibility(enabled)}
               />

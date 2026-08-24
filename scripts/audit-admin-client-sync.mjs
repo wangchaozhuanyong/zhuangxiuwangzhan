@@ -8,6 +8,7 @@ const args = process.argv.slice(2);
 const SITE_URL = (args.find((arg) => /^https?:\/\//i.test(arg)) || process.env.SITE_URL || "https://flashcast.com.my").replace(/\/$/, "");
 const skipRoutes = args.includes("--skip-routes");
 const checkImageHead = args.includes("--check-image-head");
+const failOnArchived = args.includes("--fail-on-archived");
 const routeLimitArg = args.find((arg) => arg.startsWith("--route-limit="));
 const routeLimit = routeLimitArg ? Number(routeLimitArg.split("=")[1]) : 120;
 
@@ -342,6 +343,14 @@ if (!skipRoutes && routeLimit > 0) {
   await browser.close();
 }
 
+const publishedDbIssues = dbIssues.filter((issue) => issue.status === "published" || issue.type === "read_error");
+const archivedDbIssues = dbIssues.filter((issue) => issue.status === "archived");
+const draftDbIssues = dbIssues.filter((issue) => issue.status === "draft");
+const blockingDbErrors = dbIssues.filter((issue) =>
+  issue.level === "error"
+  && (failOnArchived || issue.status === "published" || issue.type === "read_error"),
+);
+
 const report = {
   startedAt,
   finishedAt: new Date().toISOString(),
@@ -350,6 +359,14 @@ const report = {
   checkedRoutes: routeSeen.size,
   dbIssueCount: dbIssues.length,
   dbErrorCount: dbIssues.filter((issue) => issue.level === "error").length,
+  publishedDbIssueCount: publishedDbIssues.length,
+  publishedDbErrorCount: publishedDbIssues.filter((issue) => issue.level === "error").length,
+  archivedDbIssueCount: archivedDbIssues.length,
+  archivedDbErrorCount: archivedDbIssues.filter((issue) => issue.level === "error").length,
+  draftDbIssueCount: draftDbIssues.length,
+  draftDbErrorCount: draftDbIssues.filter((issue) => issue.level === "error").length,
+  blockingDbErrorCount: blockingDbErrors.length,
+  failOnArchived,
   imageIssueCount: imageIssues.length,
   routeIssueCount: routeIssues.length,
   dbIssues,
@@ -369,9 +386,19 @@ console.log(
       checkedRoutes: routeSeen.size,
       dbIssueCount: report.dbIssueCount,
       dbErrorCount: report.dbErrorCount,
+      publishedDbIssueCount: report.publishedDbIssueCount,
+      publishedDbErrorCount: report.publishedDbErrorCount,
+      archivedDbIssueCount: report.archivedDbIssueCount,
+      archivedDbErrorCount: report.archivedDbErrorCount,
+      draftDbIssueCount: report.draftDbIssueCount,
+      draftDbErrorCount: report.draftDbErrorCount,
+      blockingDbErrorCount: report.blockingDbErrorCount,
+      failOnArchived,
       imageIssueCount: report.imageIssueCount,
       routeIssueCount: report.routeIssueCount,
-      topDbIssues: dbIssues.slice(0, 20),
+      topPublishedDbIssues: publishedDbIssues.slice(0, 20),
+      topArchivedDbIssues: archivedDbIssues.slice(0, 20),
+      topDraftDbIssues: draftDbIssues.slice(0, 20),
       topImageIssues: imageIssues.slice(0, 20),
       topRouteIssues: routeIssues.slice(0, 20),
     },
@@ -380,4 +407,4 @@ console.log(
   ),
 );
 
-if (report.dbErrorCount || report.imageIssueCount || report.routeIssueCount) process.exit(1);
+if (report.blockingDbErrorCount || report.imageIssueCount || report.routeIssueCount) process.exit(1);

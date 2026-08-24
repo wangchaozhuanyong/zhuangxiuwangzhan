@@ -1,5 +1,5 @@
 import { FormEvent, useEffect, useMemo, useRef, useState } from "react";
-import { useSearchParams } from "react-router-dom";
+import { useLocation, useSearchParams } from "react-router-dom";
 import LocalizedLink from "@/components/LocalizedLink";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -19,10 +19,10 @@ import { SchemeARouteHero } from "@/components/scheme-a/SchemeARoutePrimitives";
 import { trackCtaClick, trackQuoteFormSubmit } from "@/lib/analytics";
 import { isValidLeadEmail, isValidLeadPhone } from "@/lib/leadValidation";
 import { pageHeroImages, resolvePageHeroImage } from "@/lib/pageHeroImages";
-import { formatQuoteContextLabel, parseQuoteContext } from "@/lib/quoteContext";
+import { formatQuoteContextLabel, parseQuoteContext, QUOTE_FORM_ID } from "@/lib/quoteContext";
 import { preloadTurnstile } from "@/lib/turnstile";
 import { quotePageText } from "@/i18n/quotePageText";
-import { focusElementByIdWhenReady } from "@/lib/instantScroll";
+import { focusElementByIdWhenReady, scrollWindowToImmediately } from "@/lib/instantScroll";
 
 const projectTypes = [
   { value: "Residential Renovation", en: "Residential Renovation", zh: "住宅装修" },
@@ -78,6 +78,7 @@ const focusFirstQuoteError = (errors: FormErrors) => {
 
 const Quote = () => {
   const { language } = useLanguage();
+  const location = useLocation();
   const [searchParams] = useSearchParams();
   const settings = useSiteSettings();
   const t = quotePageText[language];
@@ -104,19 +105,35 @@ const Quote = () => {
   const [honeypot, setHoneypot] = useState("");
   const requiredCompletion = useMemo(
     () => ({
-      contact: Boolean(form.name.trim() && form.phone.trim()),
-      project: Boolean(form.projectType && form.location.trim()),
-      details: Boolean(form.budget || form.propertySize.trim() || form.details.trim()),
       done: [form.name.trim(), form.phone.trim(), form.projectType, form.location.trim()].filter(Boolean).length,
       total: 4,
     }),
-    [form.budget, form.details, form.location, form.name, form.phone, form.projectType, form.propertySize],
+    [form.location, form.name, form.phone, form.projectType],
   );
-  const formStepCompletion = [requiredCompletion.contact, requiredCompletion.project, requiredCompletion.details];
-
   useEffect(() => {
     void preloadTurnstile().catch(() => undefined);
   }, []);
+
+  useEffect(() => {
+    if (location.hash !== `#${QUOTE_FORM_ID}`) return;
+    focusElementByIdWhenReady("quote-form-title", "start");
+
+    // The route hero and web fonts can finish settling after the browser's native
+    // hash jump. Re-anchor once so the focused heading stays below the fixed bar.
+    const correctionTimer = window.setTimeout(() => {
+      const formPanel = document.getElementById(QUOTE_FORM_ID);
+      const title = document.getElementById("quote-form-title");
+      if (!(formPanel instanceof HTMLElement) || !(title instanceof HTMLElement)) return;
+
+      const header = document.querySelector<HTMLElement>(".scheme-a-chrome");
+      const headerHeight = header?.getBoundingClientRect().height ?? 76;
+      const formTop = window.scrollY + formPanel.getBoundingClientRect().top;
+      scrollWindowToImmediately(formTop - headerHeight - 20);
+      title.focus({ preventScroll: true });
+    }, 320);
+
+    return () => window.clearTimeout(correctionTimer);
+  }, [location.hash]);
 
   useEffect(() => {
     const previous = previousQuoteContextRef.current;
@@ -272,10 +289,10 @@ const Quote = () => {
       <section className="fc-route-quote-body section-padding bg-background pb-[calc(8rem+env(safe-area-inset-bottom,0px))] md:pb-28">
         <div className="fc-route-quote-layout container-narrow grid gap-10 lg:grid-cols-[1.1fr_0.9fr]">
           <Reveal className="fc-route-quote-form-wrap">
-            <div className="fc-route-quote-form subpage-form-panel p-5 md:p-8">
+            <div id={QUOTE_FORM_ID} className="fc-route-quote-form subpage-form-panel p-5 md:p-8" aria-labelledby="quote-form-title">
               <div className="subpage-local-heading">
                 <div className="accent-line mb-4" />
-                <h2 className="font-display text-2xl font-bold md:text-3xl">{t.formTitle}</h2>
+                <h2 id="quote-form-title" tabIndex={-1} className="font-display text-2xl font-bold md:text-3xl">{t.formTitle}</h2>
               </div>
 
               <div className="quote-form-guide" aria-live="polite">
@@ -284,16 +301,6 @@ const Quote = () => {
                   <span>{formatQuoteText(t.formProgress, { done: String(requiredCompletion.done), total: String(requiredCompletion.total) })}</span>
                 </div>
                 <p className="quote-form-guide__text">{t.formGuideText}</p>
-                <ol className="quote-form-steps" aria-label={t.formTitle}>
-                  {t.formSteps.map((step, index) => (
-                    <li key={step} className="quote-form-steps__item" data-complete={formStepCompletion[index] ? "true" : "false"}>
-                      <span className="quote-form-steps__marker" aria-hidden="true">
-                        {formStepCompletion[index] ? <CheckCircle className="h-3.5 w-3.5" /> : index + 1}
-                      </span>
-                      <span>{step}</span>
-                    </li>
-                  ))}
-                </ol>
               </div>
 
               {status === "error" && (

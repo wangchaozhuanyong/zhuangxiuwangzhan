@@ -41,7 +41,7 @@ const FAQ = () => {
         <div className="fc-route-action-panel">
           <h2>{pageContent?.cta_title || t.ctaTitle}</h2>
           <p>{pageContent?.cta_description || t.ctaText}</p>
-          <div><Link to="/contact">{t.contact}</Link><Link to="/quote">{t.whatsapp}</Link></div>
+          <div><Link to="/contact">{t.contact}</Link><Link to="/quote#quote-form">{t.whatsapp}</Link></div>
         </div>
       </SchemeASection>
     </main>

@@ -10,6 +10,7 @@ import { translateDisplayText } from "@/i18n/displayLabels";
 import { schemeAHomeText } from "@/i18n/schemeAText";
 import type { PublishedHomeContentBundle } from "@/lib/homeContentApi";
 import { isRenderingConceptProject } from "@/lib/projectContentClassification";
+import { resolveSchemeAHomePresentation } from "@/lib/schemeAHomePresentation";
 import { buildSupabaseSrcSet, type SupabaseTargetAspectRatio } from "@/lib/supabaseImage";
 
 type SchemeAHomeProps = {
@@ -46,6 +47,7 @@ const buildHomeHeroSrcSet = (src: string, sourceWidth: number, widths: number[])
 const SchemeAHome = ({ content }: SchemeAHomeProps) => {
   const { language } = useLanguage();
   const copy = schemeAHomeText[language];
+  const presentation = resolveSchemeAHomePresentation(content, language, copy);
   const hero = content?.heroSlides[0];
   const configuredHeroImage = hero?.image || content?.pageContent?.image_url;
   const usesAtelierHero = !configuredHeroImage || configuredHeroImage.endsWith("/hero-luxury-living.webp");
@@ -138,17 +140,17 @@ const SchemeAHome = ({ content }: SchemeAHomeProps) => {
           </h1>
           <p className="scheme-a-hero__lead">{copy.heroDescription}</p>
           <div className="scheme-a-actions">
-            <LocalizedLink className="scheme-a-button scheme-a-button--paper" to="/quote">
-              {copy.quoteCta}
+            <LocalizedLink className="scheme-a-button scheme-a-button--paper" to={presentation.heroAction.url}>
+              {presentation.heroAction.label}
             </LocalizedLink>
             <LocalizedLink className="scheme-a-button scheme-a-button--glass" to="/projects">
               {copy.projectsCta}
               <ArrowUpRight aria-hidden="true" />
             </LocalizedLink>
           </div>
-          {copy.heroStats && (
-            <div className="scheme-a-hero__metrics" aria-label={language === "zh" ? "交付保障指标" : "Delivery trust metrics"}>
-              {copy.heroStats.map((stat) => (
+          {presentation.stats.length > 0 && (
+            <div className="scheme-a-hero__metrics" data-content-source={presentation.statsSource} aria-label={language === "zh" ? "交付保障指标" : "Delivery trust metrics"}>
+              {presentation.stats.map((stat) => (
                 <div key={stat.label} className="scheme-a-hero__metric-item">
                   <strong>{stat.value}</strong>
                   <span>{stat.label}</span>
@@ -344,8 +346,8 @@ const SchemeAHome = ({ content }: SchemeAHomeProps) => {
         <p className="scheme-a-frame scheme-a-before__note">{copy.beforeNote}</p>
       </section>
 
-      {copy.processSteps && (
-        <section className="scheme-a-home-process" data-cinematic-section>
+      {presentation.processSteps.length > 0 && (
+        <section className="scheme-a-home-process" data-content-source={presentation.processSource} data-cinematic-section>
           <div className="scheme-a-frame scheme-a-section-head">
             <div>
               <p className="scheme-a-eyebrow">{copy.processLabel}</p>
@@ -353,7 +355,7 @@ const SchemeAHome = ({ content }: SchemeAHomeProps) => {
             </div>
           </div>
           <div className="scheme-a-frame scheme-a-home-process__grid">
-            {copy.processSteps.map((step) => (
+            {presentation.processSteps.map((step) => (
               <div key={step.step} className="scheme-a-home-process__card">
                 <span className="scheme-a-home-process__number">{step.step}</span>
                 <h3>{step.title}</h3>
@@ -377,12 +379,12 @@ const SchemeAHome = ({ content }: SchemeAHomeProps) => {
         </section>
       )}
 
-      <section className="scheme-a-contact" data-cinematic-section>
+      <section className="scheme-a-contact" data-content-source={presentation.contactSource} data-cinematic-section>
         <div className="scheme-a-frame">
-          <p className="scheme-a-eyebrow">{copy.contactLabel}</p>
-          <h2>{copy.contactTitle}</h2>
-          <LocalizedLink className="scheme-a-button scheme-a-button--gold" to="/quote">
-            {copy.contactCta}
+          <p className="scheme-a-eyebrow">{presentation.contact.label}</p>
+          <h2>{presentation.contact.title}</h2>
+          <LocalizedLink className="scheme-a-button scheme-a-button--gold" to={presentation.contact.ctaUrl}>
+            {presentation.contact.ctaLabel}
             <ArrowUpRight aria-hidden="true" />
           </LocalizedLink>
           <div className="scheme-a-contact__regions">

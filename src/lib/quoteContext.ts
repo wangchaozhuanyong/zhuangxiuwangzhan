@@ -78,6 +78,9 @@ export interface ParsedQuoteContext {
   details: string;
 }
 
+export const QUOTE_FORM_ID = "quote-form";
+export const QUOTE_FORM_PATH = `/quote#${QUOTE_FORM_ID}`;
+
 const clean = (value?: string | null) => String(value || "").trim();
 
 const validProjectType = (value?: string | null) => {
@@ -114,7 +117,12 @@ export const buildQuotePath = (context: QuoteContextInput = {}) => {
   if (context.location) params.set("location", clean(context.location));
   if (context.details) params.set("details", clean(context.details));
   const query = params.toString();
-  return query ? `/quote?${query}` : "/quote";
+  return withQuoteFormHash(query ? `/quote?${query}` : "/quote");
+};
+
+export const withQuoteFormHash = (path = "/quote") => {
+  const [withoutHash] = String(path || "/quote").split("#");
+  return `${withoutHash || "/quote"}#${QUOTE_FORM_ID}`;
 };
 
 const sourceLabel = (source: string, language: Language) => {

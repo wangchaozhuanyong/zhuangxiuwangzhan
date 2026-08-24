@@ -2,6 +2,7 @@ import Link from "@/components/LocalizedLink";
 import WhatsAppIcon from "@/components/WhatsAppIcon";
 import { useSiteSettings } from "@/hooks/useSiteSettings";
 import { trackCtaClick } from "@/lib/analytics";
+import { QUOTE_FORM_PATH } from "@/lib/quoteContext";
 import { cn } from "@/lib/utils";
 import { ArrowRight } from "lucide-react";
 
@@ -20,7 +21,7 @@ const CTABanner = ({
   description = "Get a free consultation and quotation. We serve Kuala Lumpur, Selangor, and surrounding areas.",
   quoteLabel = "Get a Free Quote",
   whatsappLabel = "WhatsApp Us",
-  quotePath = "/quote",
+  quotePath = QUOTE_FORM_PATH,
   className,
   whatsappSource = "Subpage CTA",
 }: CTABannerProps) => {
