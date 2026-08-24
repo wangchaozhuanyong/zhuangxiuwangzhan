@@ -60,8 +60,8 @@ test.describe("public route style isolation", () => {
       expect(before.headerFont).toContain("Inter");
       if (viewport.width < 768) expect(before.heroSpanWhiteSpace).toBe("normal");
 
-      await page.locator('.scheme-a-hero a[href="/zh/quote"]').first().click();
-      await expect(page).toHaveURL(/\/zh\/quote$/);
+      await page.locator('.scheme-a-hero a[href="/zh/quote#quote-form"]').first().click();
+      await expect(page).toHaveURL(/\/zh\/quote#quote-form$/);
       await expect(page.locator(".fc-route-form-page")).toBeVisible();
 
       await page.locator('.scheme-a-chrome__brand[href="/zh"]').click();
