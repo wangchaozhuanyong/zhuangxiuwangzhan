@@ -1,8 +1,9 @@
 /* Canonical public design bundle. Import order is deliberate and stable:
-   structural foundations, approved proportions, route primitives, then the
-   page-scoped home variation. */
+   structural foundations, approved proportions, route primitives, the
+   page-scoped home variation, then desktop route-hero corrections. */
 @import "../components/scheme-a-structural.css";
 @import "../components/scheme-a-literal.css";
 @import "../components/scheme-a-native-pages.css";
 @import "../components/home-atelier.css";
+@import "../components/scheme-a-desktop-hero.css";
 @tailwind components;

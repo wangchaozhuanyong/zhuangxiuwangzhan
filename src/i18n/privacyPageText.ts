@@ -6,6 +6,7 @@ export const privacyPageText = {
     breadcrumbHome: "Home",
     breadcrumbCurrent: "Privacy Policy",
     title: "Privacy Policy",
+    imageAlt: "Material consultation area with two chairs and documents on the table",
     updated: "Last updated: March 2026",
     sections: [
       {
@@ -47,6 +48,7 @@ export const privacyPageText = {
     breadcrumbHome: "首页",
     breadcrumbCurrent: "隐私政策",
     title: "隐私政策",
+    imageAlt: "摆放资料与双人座椅的材料咨询区",
     updated: "最后更新：2026 年 3 月",
     sections: [
       {

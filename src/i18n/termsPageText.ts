@@ -6,6 +6,7 @@ export const termsPageText = {
     breadcrumbHome: "Home",
     breadcrumbCurrent: "Terms & Conditions",
     title: "Terms & Conditions",
+    imageAlt: "Renovation drawings, quotation documents, calculator, and material samples",
     updated: "Last updated: March 2026",
     sections: [
       { title: "1. General", body: "These Terms & Conditions govern the use of this website and the renovation services provided by FLASH CAST SDN. BHD. By using our website or engaging our services, you agree to these terms." },
@@ -28,6 +29,7 @@ export const termsPageText = {
     breadcrumbHome: "首页",
     breadcrumbCurrent: "服务条款",
     title: "服务条款",
+    imageAlt: "装修图纸、报价文件、计算器与材料样板展示",
     updated: "最后更新：2026 年 3 月",
     sections: [
       { title: "1. 一般条款", body: "本服务条款适用于本网站及 FLASH CAST SDN. BHD. 提供的装修服务。使用本网站或委托我们提供服务，即表示你同意本条款。" },

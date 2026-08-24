@@ -98,11 +98,21 @@ export function SmartImage({
     : localResponsiveWidths.length
       ? toLocalResponsiveImageSrc(localSrc, localResponsiveWidths[0] ?? fallbackWidth)
     : localSrc;
+  const [isLoaded, setIsLoaded] = React.useState(false);
+  const imgRef = React.useRef<HTMLImageElement>(null);
+
+  React.useEffect(() => {
+    if (imgRef.current?.complete) {
+      setIsLoaded(true);
+    }
+  }, [resolvedSrc]);
+
   const resolvedFetchPriority: NativeFetchPriority = fetchPriority ?? (loading === "eager" ? "high" : "auto");
   const fetchPriorityAttr = { fetchpriority: resolvedFetchPriority } as { fetchpriority: NativeFetchPriority };
 
   const image = (
     <img
+      ref={imgRef}
       src={resolvedSrc}
       srcSet={srcSet}
       sizes={srcSet ? resolvedSizes : undefined}
@@ -114,6 +124,11 @@ export function SmartImage({
       {...fetchPriorityAttr}
       className={cn(className)}
       {...rest}
+      onLoad={(event) => {
+        setIsLoaded(true);
+        rest.onLoad?.(event);
+      }}
+      data-loaded={isLoaded ? "true" : "false"}
     />
   );
 
