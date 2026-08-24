@@ -129,30 +129,6 @@ export const SchemeANavbar = () => {
   }, [hasImmersiveHero, location.pathname]);
 
   useEffect(() => {
-    const prefetchHeroes = () => {
-      const heroUrls = [
-        "/images/heroes/v3/hero-services-v3-desktop.webp",
-        "/images/heroes/v3/hero-projects-v3-desktop.webp",
-        "/images/heroes/v3/hero-materials-v3-desktop.webp",
-        "/images/heroes/v3/hero-products-v3-desktop.webp",
-        "/images/heroes/v3/hero-about-v3-desktop.webp",
-        "/images/heroes/v2/hero-quote-premium.webp",
-      ];
-      heroUrls.forEach((url) => {
-        const img = new Image();
-        img.src = url;
-      });
-    };
-    if (typeof window !== "undefined") {
-      if ("requestIdleCallback" in window) {
-        (window as Window & { requestIdleCallback: (cb: () => void) => number }).requestIdleCallback(prefetchHeroes);
-      } else {
-        setTimeout(prefetchHeroes, 1000);
-      }
-    }
-  }, []);
-
-  useEffect(() => {
     if (!menuOpen) return;
     const previousRootOverflow = document.documentElement.style.overflow;
     const previousBodyOverflow = document.body.style.overflow;

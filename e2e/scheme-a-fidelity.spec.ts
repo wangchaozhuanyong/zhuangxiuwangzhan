@@ -70,8 +70,8 @@ test.describe("Scheme A approved-design fidelity", () => {
     await expect(dialog.locator(".scheme-a-directory__groups a")).toHaveCount(16);
     await expect(dialog.locator('.scheme-a-directory__groups section[data-open="true"]')).toHaveCount(0);
     await expect(dialog.locator(".scheme-a-directory__preview")).toBeVisible();
-    await expect(dialog.locator(".scheme-a-directory__language")).toContainText("中文");
-    await expect(dialog.locator(".scheme-a-directory__language")).toContainText("EN");
+    await expect(dialog.locator(".scheme-a-lang-pill")).toContainText("中文");
+    await expect(dialog.locator(".scheme-a-lang-pill")).toContainText("EN");
     await expect(dialog).toContainText("营业时间");
     await expect(dialog.locator(".scheme-a-directory__preview figcaption strong")).toContainText("项目案例");
 
@@ -186,9 +186,9 @@ test.describe("Scheme A approved-design fidelity", () => {
       return rect.height / rect.width;
     }));
     expect(desktopRatios).toHaveLength(3);
-    expect(desktopRatios[0]).toBeCloseTo(0.625, 2);
-    expect(desktopRatios[1]).toBeCloseTo(0.625, 2);
-    expect(desktopRatios[2]).toBeCloseTo(1, 2);
+    expect(desktopRatios[0]).toBeCloseTo(0.6875, 2);
+    expect(desktopRatios[1]).toBeCloseTo(0.6875, 2);
+    expect(desktopRatios[2]).toBeCloseTo(0.6875, 2);
   });
 
   test("home feature media stays horizontally balanced", async ({ page }) => {
@@ -344,7 +344,7 @@ test.describe("Scheme A approved-design fidelity", () => {
     await expect(menuTrigger).toBeFocused();
   });
 
-  test("product search remains readable inside the legacy dark theme scope", async ({ page }) => {
+  test("product search remains readable inside the current dark surface", async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
     await page.goto("/zh/products", { waitUntil: "domcontentloaded" });
 
@@ -355,7 +355,7 @@ test.describe("Scheme A approved-design fidelity", () => {
       color: getComputedStyle(element).color,
     }));
     expect(colors.background).toBe("rgba(0, 0, 0, 0)");
-    expect(colors.color).toBe("rgb(37, 35, 31)");
+    expect(colors.color).toBe("rgb(255, 255, 255)");
   });
 
   test("CMS hydration does not replace the promotions hero headline", async ({ page }) => {
@@ -468,7 +468,7 @@ test.describe("Scheme A approved-design fidelity", () => {
     }));
     expect(mapActionStyle.height).toBeGreaterThanOrEqual(44);
     expect(mapActionStyle.background).not.toBe("rgba(0, 0, 0, 0)");
-    expect(mapActionStyle.border).toBe("0px");
+    expect(mapActionStyle.border).toBe("1px");
 
     const footerBack = page.locator(".scheme-a-footer__legal button");
     await expect(footerBack).toBeVisible();

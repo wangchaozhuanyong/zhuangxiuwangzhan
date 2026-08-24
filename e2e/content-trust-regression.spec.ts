@@ -11,6 +11,12 @@ test.describe("public content trust boundaries", () => {
 
     await expect(page.getByRole("heading", { name: "Clarify the essentials before an enquiry" })).toBeVisible();
     expect(await page.locator(".scheme-a-home-faq .fc-route-faq > div").count()).toBeGreaterThan(0);
+    const hero = page.locator(".scheme-a-hero");
+    await expect(hero).toContainText("Design & Build");
+    await expect(hero).toContainText("Clear Quotes");
+    await expect(hero).not.toContainText("12+ Yrs");
+    await expect(hero).not.toContainText("450+");
+    await expect(hero).not.toContainText("Licensed & Scope Warranty");
     await expect(page.locator("main")).toContainText("PROJECT REFERENCES");
     await expect(page.locator("main")).not.toContainText("REAL PROJECTS");
   });
