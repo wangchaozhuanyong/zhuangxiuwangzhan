@@ -30,6 +30,17 @@ const responsiveViewports = [
 ] as const;
 
 test.describe("Scheme A approved-design fidelity", () => {
+  test("refreshed local imagery uses cache-safe versioned paths", async ({ page }) => {
+    await page.goto("/zh", { waitUntil: "domcontentloaded" });
+
+    const footerPreludeImage = page.locator(".scheme-a-footer-prelude img");
+    await expect(footerPreludeImage).toHaveAttribute(
+      "src",
+      /\/images\/_responsive\/projects\/w\d+\/v20260824\/generated-portfolio\/mont-kiara-luxury-condo-renovation\.webp/,
+    );
+    await expect(footerPreludeImage).toHaveAttribute("srcset", /\/v20260824\//);
+  });
+
   test("mobile route heroes load the dedicated portrait art direction", async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
 
@@ -70,8 +81,8 @@ test.describe("Scheme A approved-design fidelity", () => {
     await expect(dialog.locator(".scheme-a-directory__groups a")).toHaveCount(16);
     await expect(dialog.locator('.scheme-a-directory__groups section[data-open="true"]')).toHaveCount(0);
     await expect(dialog.locator(".scheme-a-directory__preview")).toBeVisible();
-    await expect(dialog.locator(".scheme-a-directory__language")).toContainText("中文");
-    await expect(dialog.locator(".scheme-a-directory__language")).toContainText("EN");
+    await expect(dialog.locator(".scheme-a-lang-pill")).toContainText("中文");
+    await expect(dialog.locator(".scheme-a-lang-pill")).toContainText("EN");
     await expect(dialog).toContainText("营业时间");
     await expect(dialog.locator(".scheme-a-directory__preview figcaption strong")).toContainText("项目案例");
 
@@ -186,9 +197,9 @@ test.describe("Scheme A approved-design fidelity", () => {
       return rect.height / rect.width;
     }));
     expect(desktopRatios).toHaveLength(3);
-    expect(desktopRatios[0]).toBeCloseTo(0.625, 2);
-    expect(desktopRatios[1]).toBeCloseTo(0.625, 2);
-    expect(desktopRatios[2]).toBeCloseTo(1, 2);
+    expect(desktopRatios[0]).toBeCloseTo(0.6875, 2);
+    expect(desktopRatios[1]).toBeCloseTo(0.6875, 2);
+    expect(desktopRatios[2]).toBeCloseTo(0.6875, 2);
   });
 
   test("home feature media stays horizontally balanced", async ({ page }) => {
@@ -344,7 +355,7 @@ test.describe("Scheme A approved-design fidelity", () => {
     await expect(menuTrigger).toBeFocused();
   });
 
-  test("product search remains readable inside the legacy dark theme scope", async ({ page }) => {
+  test("product search remains readable inside the current dark surface", async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
     await page.goto("/zh/products", { waitUntil: "domcontentloaded" });
 
@@ -355,7 +366,7 @@ test.describe("Scheme A approved-design fidelity", () => {
       color: getComputedStyle(element).color,
     }));
     expect(colors.background).toBe("rgba(0, 0, 0, 0)");
-    expect(colors.color).toBe("rgb(37, 35, 31)");
+    expect(colors.color).toBe("rgb(255, 255, 255)");
   });
 
   test("CMS hydration does not replace the promotions hero headline", async ({ page }) => {
@@ -388,14 +399,23 @@ test.describe("Scheme A approved-design fidelity", () => {
 
     for (const route of [...portraitHeroRoutes, "/zh/privacy", "/zh/terms"]) {
       await page.goto(route, { waitUntil: "domcontentloaded" });
+      await page.locator(".fc-route-hero-copy").waitFor();
 
       const metrics = await page.evaluate(() => {
         const main = document.querySelector<HTMLElement>("main.fc-route-page");
+        const hero = document.querySelector<HTMLElement>(".fc-route-hero");
+        const heroCopy = document.querySelector<HTMLElement>(".fc-route-hero-copy");
+        const heroTitle = heroCopy?.querySelector<HTMLElement>("h1");
         const sectionHeads = Array.from(document.querySelectorAll<HTMLElement>(".fc-route-section-head"));
         return {
           horizontalOverflow: document.documentElement.scrollWidth - document.documentElement.clientWidth,
           mainRightGap: main ? Math.round(document.documentElement.clientWidth - main.getBoundingClientRect().right) : 0,
           mainLeft: main ? Math.round(main.getBoundingClientRect().left) : 0,
+          heroCopyLeft: heroCopy ? Math.round(heroCopy.getBoundingClientRect().left) : null,
+          heroCopyRightGap: heroCopy && hero
+            ? Math.round(hero.getBoundingClientRect().right - heroCopy.getBoundingClientRect().right)
+            : null,
+          heroTitleLeft: heroTitle ? Math.round(heroTitle.getBoundingClientRect().left) : null,
           headings: sectionHeads.map((head) => {
             const title = head.querySelector<HTMLElement>("h2");
             const copy = head.querySelector<HTMLElement>("p");
@@ -415,6 +435,9 @@ test.describe("Scheme A approved-design fidelity", () => {
       expect(metrics.horizontalOverflow, route).toBeLessThanOrEqual(1);
       expect(metrics.mainLeft, route).toBe(0);
       expect(metrics.mainRightGap, route).toBe(0);
+      expect(metrics.heroCopyLeft, route).toBe(0);
+      expect(metrics.heroCopyRightGap, route).toBe(0);
+      expect(metrics.heroTitleLeft, route).toBeLessThanOrEqual(80);
       for (const heading of metrics.headings) {
         if (!heading) continue;
         expect(heading.display, route).toBe("block");
@@ -468,7 +491,7 @@ test.describe("Scheme A approved-design fidelity", () => {
     }));
     expect(mapActionStyle.height).toBeGreaterThanOrEqual(44);
     expect(mapActionStyle.background).not.toBe("rgba(0, 0, 0, 0)");
-    expect(mapActionStyle.border).toBe("0px");
+    expect(mapActionStyle.border).toBe("1px");
 
     const footerBack = page.locator(".scheme-a-footer__legal button");
     await expect(footerBack).toBeVisible();

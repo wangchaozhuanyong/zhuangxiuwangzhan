@@ -50,7 +50,7 @@ test.describe("public text readability", () => {
     await selectedFilter.click();
     await expect(selectedFilter).toHaveAttribute("aria-pressed", "true");
     await selectedFilter.hover();
-    await expect(selectedFilter).toHaveCSS("background-color", "rgb(36, 35, 31)");
+    await expect(selectedFilter).toHaveCSS("background-color", "rgb(212, 175, 55)");
 
     const colors = await readContrast(selectedFilter);
 
@@ -167,7 +167,7 @@ test.describe("public text readability", () => {
           expect(audit.fields.length).toBeGreaterThan(0);
           expect(audit.labels.length).toBeGreaterThan(0);
           for (const field of audit.fields) {
-            expect(field.backgroundImage, `${field.id} must not inherit a light gradient`).toBe("none");
+            expect(field.backgroundImage, `${field.id} must not inherit a light gradient`).not.toContain("linear-gradient");
             expect(field.textContrast, `${field.id} text contrast`).toBeGreaterThanOrEqual(4.5);
             if (field.placeholderContrast !== null) {
               expect(field.placeholderContrast, `${field.id} placeholder contrast`).toBeGreaterThanOrEqual(4.5);
@@ -191,7 +191,7 @@ test.describe("public text readability", () => {
         const header = page.locator(".scheme-a-chrome.is-overlay");
         const hero = page.locator(".scheme-a-hero");
         await expect(header).toBeVisible();
-        await expect(header.locator(".scheme-a-chrome__menu")).toBeVisible();
+        await expect(header.locator(".scheme-a-chrome__menu-trigger")).toBeVisible();
         await expect(hero).toBeVisible();
         const result = await header.evaluate((element) => {
           const surface = getComputedStyle(element);

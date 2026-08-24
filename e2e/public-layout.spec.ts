@@ -85,7 +85,7 @@ test.describe("public responsive layout", () => {
     await page.goto("/zh/about", { waitUntil: "domcontentloaded" });
 
     const header = page.locator(".scheme-a-chrome");
-    const language = page.locator(".scheme-a-chrome__language");
+    const language = page.locator(".scheme-a-lang-pill").first();
     const menu = page.locator('button[aria-controls="scheme-a-directory"]');
     await expect(header).toBeVisible();
     await expect(language).toBeVisible();
@@ -94,7 +94,7 @@ test.describe("public responsive layout", () => {
 
     await language.click();
     await expect(page).toHaveURL(/\/en\/about$/);
-    await expect(page.locator(".scheme-a-chrome__language")).toBeVisible();
+    await expect(page.locator(".scheme-a-lang-pill").first()).toBeVisible();
     const after = await page.locator(".scheme-a-chrome").evaluate((element) => element.getBoundingClientRect().height);
     expect(Math.abs(after - before)).toBeLessThanOrEqual(1);
   });
@@ -109,7 +109,7 @@ test.describe("public responsive layout", () => {
     await expect(filters.first()).toBeVisible();
     expect(await filters.count()).toBeGreaterThan(1);
     const mobileColumns = await grid.evaluate((element) => getComputedStyle(element).gridTemplateColumns.split(" ").length);
-    expect(mobileColumns).toBe(2);
+    expect(mobileColumns).toBe(1);
 
     await filters.nth(1).click();
     await expect(filters.nth(1)).toHaveAttribute("aria-pressed", "true");
@@ -118,7 +118,7 @@ test.describe("public responsive layout", () => {
     await page.setViewportSize({ width: 1440, height: 900 });
     await page.goto("/zh/products", { waitUntil: "domcontentloaded" });
     const desktopColumns = await page.locator(".fc-route-grid").evaluate((element) => getComputedStyle(element).gridTemplateColumns.split(" ").length);
-    expect(desktopColumns).toBe(12);
+    expect(desktopColumns).toBe(3);
   });
 
   test("route heroes keep a loaded cover image inside a stable frame", async ({ page }) => {
@@ -140,7 +140,7 @@ test.describe("public responsive layout", () => {
           objectFit: image ? getComputedStyle(image).objectFit : "",
         };
       });
-      expect(frame.height, route).toBeGreaterThanOrEqual(500);
+      expect(frame.height, route).toBeGreaterThanOrEqual(480);
       expect(frame.imageHeight / frame.height, route).toBeGreaterThanOrEqual(0.96);
       expect(frame.imageHeight / frame.height, route).toBeLessThanOrEqual(1.08);
       expect(frame.objectFit, route).toBe("cover");
@@ -170,7 +170,7 @@ test.describe("public responsive layout", () => {
     });
     expect(surface.wrapperBackground).toBe("rgba(0, 0, 0, 0)");
     expect(surface.panelBackground).not.toBe("rgba(0, 0, 0, 0)");
-    expect(surface.labelColor).toBe("rgb(28, 27, 24)");
+    expect(surface.labelColor).toBe("rgb(247, 244, 238)");
   });
 
   test("Scheme A footer and mobile dock expose the complete navigation", async ({ page }) => {

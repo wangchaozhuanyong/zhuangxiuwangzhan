@@ -1,6 +1,10 @@
 import { describe, expect, it } from "vitest";
 import { optimizeContentImageSrc, toLocalStaticImageSrc } from "@/lib/imageUrl";
-import { buildLocalResponsiveSrcSet, toLocalResponsiveImageSrc } from "@/lib/localResponsiveImage";
+import {
+  buildLocalResponsiveSrcSet,
+  toLocalResponsiveImageSrc,
+  toVersionedLocalResponsiveImageSrc,
+} from "@/lib/localResponsiveImage";
 import { toSupabaseRenderImageUrl } from "@/lib/supabaseImage";
 
 describe("imageUrl", () => {
@@ -63,7 +67,23 @@ describe("imageUrl", () => {
       "/images/_responsive/heroes/w720/v2/hero-services-premium-mobile.webp",
     );
     expect(toLocalResponsiveImageSrc("/images/before-after/before-kitchen.webp", 560)).toBe(
-      "/images/_responsive/before-after/w560/before-kitchen.webp",
+      "/images/_responsive/before-after/w560/v20260824/before-kitchen.webp",
+    );
+  });
+
+  it("moves refreshed local images onto cache-safe versioned paths", () => {
+    expect(toVersionedLocalResponsiveImageSrc("/images/services/old-house-renovation.webp")).toBe(
+      "/images/services/v20260824/old-house-renovation.webp",
+    );
+    expect(
+      toVersionedLocalResponsiveImageSrc(
+        "/images/projects/generated-portfolio/mont-kiara-luxury-condo-renovation.webp?fit=cover#preview",
+      ),
+    ).toBe(
+      "/images/projects/v20260824/generated-portfolio/mont-kiara-luxury-condo-renovation.webp?fit=cover#preview",
+    );
+    expect(toVersionedLocalResponsiveImageSrc("/images/services/kitchen-renovation.webp")).toBe(
+      "/images/services/kitchen-renovation.webp",
     );
   });
 });

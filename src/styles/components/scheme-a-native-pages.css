@@ -279,7 +279,7 @@ html[data-public-theme="dark"] .scheme-a-public-shell input[type="range"] {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  min-height: 40px;
+  min-height: 44px;
   border: 1px solid rgba(212, 175, 55, 0.28);
   border-radius: 999px;
   padding: 6px 18px;
@@ -310,7 +310,8 @@ html[data-public-theme="dark"] .scheme-a-public-shell input[type="range"] {
 .fc-route-filter button[aria-pressed="true"] {
   color: #0a0b0d !important;
   border: 1px solid #d4af37 !important;
-  background: linear-gradient(135deg, #e5ca7c 0%, #d4af37 100%) !important;
+  background-color: #d4af37 !important;
+  background-image: linear-gradient(135deg, #e5ca7c 0%, #d4af37 100%) !important;
   box-shadow: 0 6px 20px rgba(212, 175, 55, 0.4) !important;
   font-weight: 700 !important;
   transform: scale(1.02);
@@ -638,6 +639,13 @@ html[data-public-theme="dark"] .scheme-a-public-shell input[type="range"] {
   background-color: rgba(14, 15, 18, 0.9) !important;
   color: #f7f4ee !important;
   transition: border-color 200ms ease, box-shadow 200ms ease;
+}
+.fc-route-form-page input::placeholder,
+.fc-route-quote-form input::placeholder,
+.fc-route-form-page textarea::placeholder,
+.fc-route-quote-form textarea::placeholder {
+  color: rgba(247, 244, 238, 0.72) !important;
+  opacity: 1 !important;
 }
 .fc-route-form-page input:focus,
 .fc-route-quote-form input:focus,
