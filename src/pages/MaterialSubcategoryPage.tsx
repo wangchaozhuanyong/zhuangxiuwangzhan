@@ -27,6 +27,6 @@ export default function MaterialSubcategoryPage() {
     <PageMeta title={copy.metaTitle(name, categoryName)} description={copy.metaDescription(description, name)} keywords={copy.metaKeywords(name, categoryName)} canonicalPath={`/materials/category/${category.slug}/${subcategory.slug}`} />
     <JsonLdBreadcrumb items={[{ name: copy.breadcrumbHome, url: "/" }, { name: copy.breadcrumbMaterials, url: "/materials" }, { name: categoryName, url: `/materials/category/${category.slug}` }, { name, url: `/materials/category/${category.slug}/${subcategory.slug}` }]} />
     <SchemeARouteHero kind="listing" image={subcategory.image} imageAlt={subcategory.alt || name} label={categoryName} title={name} description={description} />
-    <SchemeASection title={copy.products(name)} description={description}>{items.length ? <SchemeAListingGrid items={items} actionLabel={copy.view} /> : <SchemeAContentState action={<Link to="/quote">{copy.quote}</Link>}>{copy.comingSoon}</SchemeAContentState>}</SchemeASection>
+    <SchemeASection title={copy.products(name)} description={description}>{items.length ? <SchemeAListingGrid items={items} actionLabel={copy.view} /> : <SchemeAContentState action={<Link to="/quote#quote-form">{copy.quote}</Link>}>{copy.comingSoon}</SchemeAContentState>}</SchemeASection>
   </main>;
 }

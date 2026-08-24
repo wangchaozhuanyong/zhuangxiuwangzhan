@@ -8,6 +8,7 @@ import { mobileActionBarText } from "@/i18n/mobileActionBarText";
 import { stripLanguagePrefix } from "@/i18n/routes";
 import { useSiteSettings } from "@/hooks/useSiteSettings";
 import { trackCtaClick } from "@/lib/analytics";
+import { QUOTE_FORM_PATH } from "@/lib/quoteContext";
 
 const formatMessage = (template: string, source: string) => template.replace("{source}", source);
 
@@ -87,9 +88,9 @@ const MobileActionBar = () => {
           </a>
         ) : (
           <LocalizedLink
-            to="/quote"
+            to={QUOTE_FORM_PATH}
             className="scheme-a-contact-dock__item scheme-a-contact-dock__item--primary"
-            onClick={() => trackCtaClick("quote", "mobile_action_bar", { destination: "/quote" })}
+            onClick={() => trackCtaClick("quote", "mobile_action_bar", { destination: QUOTE_FORM_PATH })}
           >
             <span className="scheme-a-contact-dock__icon" aria-hidden="true">
               <ClipboardList className="h-5 w-5" />

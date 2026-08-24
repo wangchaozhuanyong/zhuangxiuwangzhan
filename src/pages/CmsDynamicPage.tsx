@@ -159,7 +159,7 @@ export default function CmsDynamicPage() {
               className="fc-route-cms-copy prose prose-neutral"
               dangerouslySetInnerHTML={{ __html: sanitizeHtml(page.content.includes("<") ? page.content : `<p>${page.content}</p>`) }}
             />
-            <div className="fc-route-action-panel"><h2>{page.cta_title || t.quote}</h2><div><Link to="/quote">{page.cta_title || t.quote}</Link><Link to="/contact">{t.fallbackDescription}</Link></div></div>
+            <div className="fc-route-action-panel"><h2>{page.cta_title || t.quote}</h2><div><Link to="/quote#quote-form">{page.cta_title || t.quote}</Link><Link to="/contact">{t.fallbackDescription}</Link></div></div>
         </SchemeASection>
       )}
 

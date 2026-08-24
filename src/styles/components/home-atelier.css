@@ -229,8 +229,8 @@
   html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-hero__metric-item span {
     display: block;
     max-width: 22ch;
-    font-size: 0.68rem;
-    color: rgba(246, 241, 232, 0.7);
+    font-size: 0.75rem;
+    color: rgba(246, 241, 232, 0.78);
     letter-spacing: 0.04em;
     line-height: 1.4;
     text-wrap: balance;
@@ -252,8 +252,8 @@
   html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-hero__disciplines li {
     display: inline-flex;
     align-items: center;
-    color: rgba(246, 241, 232, 0.6);
-    font-size: 0.72rem;
+    color: rgba(246, 241, 232, 0.72);
+    font-size: 0.75rem;
     letter-spacing: 0.08em;
     line-height: 1.4;
   }
@@ -898,7 +898,8 @@
     }
 
     html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-hero__metric-item span {
-      font-size: 10px !important;
+      font-size: 11px !important;
+      color: rgba(246, 241, 232, 0.78) !important;
     }
 
     html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-hero__disciplines {
@@ -913,9 +914,9 @@
     }
 
     html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-hero__disciplines li {
-      font-size: 10.5px !important;
+      font-size: 11px !important;
       letter-spacing: 0.04em !important;
-      color: rgba(246, 241, 232, 0.65) !important;
+      color: rgba(246, 241, 232, 0.74) !important;
     }
 
     html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-principle__inner,

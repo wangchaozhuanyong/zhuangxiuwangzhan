@@ -129,7 +129,7 @@ export default function BeforeAfter() {
             ))}
           </div>
         ) : null}
-        <div className="fc-route-action-panel"><h2>{t.ctaTitle}</h2><p>{t.ctaDescription}</p><div><Link to="/quote">{t.ctaPrimary}</Link><Link to="/contact">{t.ctaSecondary}</Link></div></div>
+        <div className="fc-route-action-panel"><h2>{t.ctaTitle}</h2><p>{t.ctaDescription}</p><div><Link to="/quote#quote-form">{t.ctaPrimary}</Link><Link to="/contact">{t.ctaSecondary}</Link></div></div>
       </SchemeASection>
     </main>
   );

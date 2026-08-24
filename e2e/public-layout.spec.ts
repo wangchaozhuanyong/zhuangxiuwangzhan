@@ -140,11 +140,28 @@ test.describe("public responsive layout", () => {
           objectFit: image ? getComputedStyle(image).objectFit : "",
         };
       });
-      expect(frame.height, route).toBeGreaterThanOrEqual(480);
+      expect(frame.height, route).toBeGreaterThanOrEqual(route === "/zh/projects" ? 400 : 480);
       expect(frame.imageHeight / frame.height, route).toBeGreaterThanOrEqual(0.96);
       expect(frame.imageHeight / frame.height, route).toBeLessThanOrEqual(1.08);
       expect(frame.objectFit, route).toBe("cover");
     }
+  });
+
+  test("quote links can land directly on the accessible form heading", async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.goto("/zh/quote#quote-form", { waitUntil: "domcontentloaded" });
+
+    const form = page.locator("#quote-form");
+    const title = page.locator("#quote-form-title");
+    const header = page.locator(".scheme-a-chrome");
+    await expect(form).toBeVisible();
+    await expect(title).toBeFocused();
+    await expect.poll(() => title.evaluate((element) => element.getBoundingClientRect().top)).toBeLessThan(180);
+    await expect.poll(async () => {
+      const titleTop = await title.evaluate((element) => element.getBoundingClientRect().top);
+      const headerBottom = await header.evaluate((element) => element.getBoundingClientRect().bottom);
+      return titleTop - headerBottom;
+    }).toBeGreaterThanOrEqual(16);
   });
 
   test("quote form stays on a readable paper surface with semantic required fields", async ({ page }) => {

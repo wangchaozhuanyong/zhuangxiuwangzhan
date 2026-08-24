@@ -59,7 +59,7 @@ const OldHouseRenovation = () => {
           <h2>{t.ctaTitle}</h2>
           <p>{t.ctaDescription}</p>
           <div>
-            <Link to="/quote" onClick={() => trackCtaClick("quote", "old_house_cta", { destination: "/quote" })}>{t.assessment}</Link>
+            <Link to="/quote#quote-form" onClick={() => trackCtaClick("quote", "old_house_cta", { destination: "/quote#quote-form" })}>{t.assessment}</Link>
             <a href={settings.whatsapp_url()} target="_blank" rel="noopener noreferrer" onClick={() => trackCtaClick("whatsapp", "old_house_cta", { destination: "whatsapp" })}><WhatsAppIcon />{t.whatsapp}</a>
           </div>
         </div>

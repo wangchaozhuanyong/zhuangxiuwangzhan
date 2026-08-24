@@ -34,7 +34,7 @@ export default function Promotions() {
           <h2>{copy.actionTitle}</h2>
           <div>
             <a href={settings.whatsapp_url()} target="_blank" rel="noopener noreferrer" onClick={() => trackCtaClick("whatsapp", "promotions", { destination: "whatsapp" })}><WhatsAppIcon aria-hidden="true" />{copy.enquire}</a>
-            <LocalizedLink to="/quote" onClick={() => trackCtaClick("quote", "promotions", { destination: "/quote" })}>{copy.quote}<ArrowRight aria-hidden="true" /></LocalizedLink>
+            <LocalizedLink to="/quote#quote-form" onClick={() => trackCtaClick("quote", "promotions", { destination: "/quote#quote-form" })}>{copy.quote}<ArrowRight aria-hidden="true" /></LocalizedLink>
           </div>
         </div>
       </SchemeASection>

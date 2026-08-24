@@ -35,6 +35,7 @@ import { schemeAChromeText } from "@/i18n/schemeAText";
 import { stripLanguagePrefix, switchLanguagePath } from "@/i18n/routes";
 import { useT } from "@/i18n/useT";
 import { trackCtaClick } from "@/lib/analytics";
+import { QUOTE_FORM_PATH } from "@/lib/quoteContext";
 import { addCacheBuster } from "@/lib/siteSettingsApi";
 import logoFallback from "@/assets/logo-flashcast.webp";
 
@@ -48,6 +49,10 @@ const publicNavigationItems = publicNavigationGroups.flatMap((group) => group.it
 
 const getCurrentNavigationItem = (pathname: string) =>
   publicNavigationItems.find((item) => isActivePath(pathname, item.path)) ?? publicNavigationItems[0];
+
+const getCurrentNavigationGroup = (pathname: string): PublicNavGroupKey =>
+  publicNavigationGroups.find((group) => group.items.some((item) => isActivePath(pathname, item.path)))?.key
+  ?? "services";
 
 const BrandMark = ({ logo, name }: { logo: string; name: string }) => (
   <LocalizedLink className="scheme-a-chrome__brand" to="/" aria-label={name}>
@@ -91,6 +96,7 @@ export const SchemeANavbar = () => {
   const settings = useSiteSettings();
   const { hasImmersiveHero, menuOpen, setMenuOpen } = usePublicChrome();
   const currentItem = getCurrentNavigationItem(location.pathname);
+  const currentGroup = getCurrentNavigationGroup(location.pathname);
   const [openGroup, setOpenGroup] = useState<PublicNavGroupKey | null>(null);
   const [previewItem, setPreviewItem] = useState<PublicNavItem>(currentItem);
   const [scrolled, setScrolled] = useState(false);
@@ -176,12 +182,12 @@ export const SchemeANavbar = () => {
             ))}
           </nav>
           <div className="scheme-a-chrome__actions">
-            <LocalizedLink className="scheme-a-chrome__quote" to="/quote" onClick={() => trackCtaClick("quote", "scheme_a_header", { destination: "/quote" })}>
+            <LocalizedLink className="scheme-a-chrome__quote" to={QUOTE_FORM_PATH} onClick={() => trackCtaClick("quote", "scheme_a_header", { destination: QUOTE_FORM_PATH })}>
               {t.quote}<ArrowUpRight aria-hidden="true" />
             </LocalizedLink>
             <div className="scheme-a-chrome__control-capsule">
               <LanguageSwitch language={language} to={languagePath} label={navText.switchLanguage} />
-              <button ref={triggerRef} className="scheme-a-chrome__menu-trigger" type="button" aria-label={t.openMenu} aria-expanded={menuOpen} aria-controls="scheme-a-directory" onClick={() => { setOpenGroup(null); setPreviewItem(currentItem); setMenuOpen(true); }}>
+              <button ref={triggerRef} className="scheme-a-chrome__menu-trigger" type="button" aria-label={t.openMenu} aria-expanded={menuOpen} aria-controls="scheme-a-directory" onClick={() => { setOpenGroup(currentGroup); setPreviewItem(currentItem); setMenuOpen(true); }}>
                 <Menu aria-hidden="true" />
               </button>
             </div>
@@ -221,7 +227,7 @@ export const SchemeANavbar = () => {
                   <ul id={`scheme-a-directory-group-${group.key}`}>
                     {group.items.map((item) => (
                       <li key={item.path}>
-                        <LocalizedLink to={item.path} aria-current={isActivePath(location.pathname, item.path) ? "page" : undefined} onFocus={() => setPreviewItem(item)} onPointerEnter={() => setPreviewItem(item)}>
+                        <LocalizedLink to={item.path === "/quote" ? QUOTE_FORM_PATH : item.path} aria-current={isActivePath(location.pathname, item.path) ? "page" : undefined} onFocus={() => setPreviewItem(item)} onPointerEnter={() => setPreviewItem(item)}>
                           <span>{translate(item.labelKey)}</span><ArrowUpRight aria-hidden="true" />
                         </LocalizedLink>
                       </li>
@@ -254,7 +260,7 @@ export const SchemeANavbar = () => {
           <div className="scheme-a-directory__foot scheme-a-frame">
             <a href={settings.phone_href} onClick={() => trackCtaClick("phone", "scheme_a_menu", { destination: "phone" })}><Phone aria-hidden="true" />{t.call}</a>
             <a className="is-whatsapp" href={settings.whatsapp_url()} target="_blank" rel="noopener noreferrer" onClick={() => trackCtaClick("whatsapp", "scheme_a_menu", { destination: "whatsapp" })}><WhatsAppIcon />{t.whatsapp}</a>
-            <LocalizedLink className="is-quote" to="/quote">{t.quote}<ArrowUpRight aria-hidden="true" /></LocalizedLink>
+            <LocalizedLink className="is-quote" to={QUOTE_FORM_PATH}>{t.quote}<ArrowUpRight aria-hidden="true" /></LocalizedLink>
           </div>
         </div>
       ) : null}
@@ -274,7 +280,7 @@ export const SchemeAFooterPrelude = () => {
         <div className="scheme-a-footer__invitation scheme-a-frame">
           <p>{t.footerKicker}</p><h2>{t.footerTitle}</h2><span>{t.footerBody}</span>
           <div>
-            <LocalizedLink to="/quote" onClick={() => trackCtaClick("quote", "scheme_a_footer_prelude", { destination: "/quote" })}>{t.quote}<ArrowUpRight /></LocalizedLink>
+            <LocalizedLink to={QUOTE_FORM_PATH} onClick={() => trackCtaClick("quote", "scheme_a_footer_prelude", { destination: QUOTE_FORM_PATH })}>{t.quote}<ArrowUpRight /></LocalizedLink>
             <a href={settings.whatsapp_url()} target="_blank" rel="noopener noreferrer" onClick={() => trackCtaClick("whatsapp", "scheme_a_footer_prelude", { destination: "whatsapp" })}><WhatsAppIcon />{t.whatsapp}</a>
           </div>
         </div>

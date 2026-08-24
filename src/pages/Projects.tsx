@@ -66,7 +66,7 @@ export default function Projects() {
   }), [copy, language, visible]);
 
   return (
-    <main className="fc-route-page">
+    <main className="fc-route-page fc-route-projects-page">
       <PageMeta title={pageContent?.seo_title || copy.metaTitle} description={pageContent?.seo_description || copy.metaDescription} keywords={pageContent?.seo_keywords || copy.metaKeywords} canonicalPath="/projects" />
       <JsonLdBreadcrumb items={[{ name: copy.breadcrumbHome, url: "/" }, { name: copy.breadcrumbProjects, url: "/projects" }]} />
       <SchemeARouteHero
@@ -89,7 +89,7 @@ export default function Projects() {
           onChange={(value) => setFilter(value as (typeof categories)[number])}
           ariaLabel={copy.categoryFilterAria}
         />
-        <p className="sr-only" aria-live="polite" aria-atomic="true">
+        <p className="fc-route-filter-summary" role="status" aria-live="polite" aria-atomic="true">
           {!isLoading && !isError ? copy.showing(visible.length, filtered.length) : ""}
         </p>
         {isLoading ? <SchemeAContentState>{routeText.projectsLoading}</SchemeAContentState> : null}

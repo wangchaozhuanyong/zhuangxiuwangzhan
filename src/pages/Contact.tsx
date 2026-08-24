@@ -258,9 +258,9 @@ const Contact = () => {
 
                 <div className="fc-route-contact-actions">
                   <Link
-                    to="/quote"
+                    to="/quote#quote-form"
                     className="btn-brand-primary min-h-12 w-full justify-center px-8 sm:w-auto"
-                    onClick={() => trackCtaClick("quote", "contact_info", { destination: "/quote" })}
+                    onClick={() => trackCtaClick("quote", "contact_info", { destination: "/quote#quote-form" })}
                   >
                     {t.quoteCta} <ArrowRight className="h-4 w-4" />
                   </Link>

@@ -42,6 +42,7 @@
 .fc-route-hero-article,
 .fc-route-hero-legal { min-height: clamp(460px, 50vh, 580px); }
 .fc-route-hero-form { min-height: clamp(520px, 56vh, 660px); }
+.fc-route-projects-page .fc-route-hero-listing { min-height: clamp(460px, 50vh, 600px); }
 
 .fc-route-hero-copy {
   grid-column: 1;
@@ -121,6 +122,8 @@
     padding: clamp(6rem, 12vh, 8rem) clamp(18px, 5vw, 32px) clamp(2.5rem, 5vh, 3.5rem);
     background: linear-gradient(0deg, rgba(13, 14, 17, 0.96) 0%, rgba(13, 14, 17, 0.85) 55%, rgba(13, 14, 17, 0.3) 85%, transparent 100%);
   }
+
+  .fc-route-projects-page .fc-route-hero-listing { min-height: clamp(400px, 100vw, 480px); }
 }
 
 .fc-route-kicker {
@@ -315,6 +318,14 @@ html[data-public-theme="dark"] .scheme-a-public-shell input[type="range"] {
   box-shadow: 0 6px 20px rgba(212, 175, 55, 0.4) !important;
   font-weight: 700 !important;
   transform: scale(1.02);
+}
+
+.fc-route-filter-summary {
+  min-height: 1.4em;
+  margin: -14px 0 28px;
+  color: rgba(246, 241, 232, 0.72);
+  font-size: 12px;
+  line-height: 1.4;
 }
 
 .fc-blog-topics__grid { display: grid; gap: 14px; }
@@ -822,7 +833,21 @@ html[data-public-theme] .fc-route-form-page .contact-detail-row__action:hover {
   color: rgba(246, 241, 232, 0.72) !important;
   font-size: 12.5px !important;
   line-height: 1.6 !important;
-  margin-bottom: 14px !important;
+  margin-bottom: 0 !important;
+}
+
+.fc-route-form-page #quote-form {
+  scroll-margin-top: calc(var(--site-header-height, 76px) + 16px);
+  scroll-margin-bottom: calc(96px + env(safe-area-inset-bottom, 0px));
+}
+
+.fc-route-form-page #quote-form-title {
+  scroll-margin-top: calc(var(--site-header-height, 76px) + 16px);
+}
+
+.fc-route-form-page #quote-form-title:focus-visible {
+  outline: 2px solid #d4af37;
+  outline-offset: 8px;
 }
 
 .fc-route-form-page .quote-form-steps {
@@ -1241,7 +1266,7 @@ html[data-public-theme="dark"] .home-footer-prelude__button--secondary svg { col
 @media (max-width: 767px) {
   html[data-public-theme][data-mobile-action-bar="true"] body { padding-bottom: 0 !important; }
   html[data-public-theme="dark"] body .public-main--subpage .fc-route-quote-page .fc-route-hero-form[data-forest-page-hero="true"] {
-    min-height: clamp(400px, 118vw, 500px) !important;
+    min-height: clamp(360px, 96vw, 420px) !important;
   }
   html[data-public-theme="dark"] body .scheme-a-public-shell .mobile-action-bar__item--whatsapp,
   html[data-public-theme="dark"] body .scheme-a-public-shell .mobile-action-bar__item--call {
