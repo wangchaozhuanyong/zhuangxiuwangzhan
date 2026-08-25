@@ -63,7 +63,7 @@
 
   html[data-public-theme="dark"] .scheme-a-public-shell .scheme-a-home--atelier .scheme-a-hero__copy {
     justify-content: flex-start;
-    padding-top: clamp(7rem, 14vh, 8.5rem);
+    padding-top: clamp(7rem, 14vh, 7.5rem);
     padding-right: clamp(2.5rem, 4vw, 4rem);
     padding-bottom: clamp(2rem, 4vh, 3rem);
     padding-left: var(--scheme-a-desktop-leading-edge);
