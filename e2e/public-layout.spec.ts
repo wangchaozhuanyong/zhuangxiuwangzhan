@@ -153,6 +153,37 @@ test.describe("public responsive layout", () => {
     }
   });
 
+  test("mobile contact actions reflow without squeezing the phone number", async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.goto("/zh/contact", { waitUntil: "domcontentloaded" });
+
+    const phoneText = page.locator(".contact-detail-row__copy p", { hasText: "+60 11-2885 3888" }).first();
+    const row = phoneText.locator("..").locator("..");
+    const action = row.locator(".contact-detail-row__action");
+    await expect(phoneText).toBeVisible();
+    await expect(action).toBeVisible();
+
+    const metrics = await row.evaluate((element) => {
+      const copy = element.querySelector<HTMLElement>(".contact-detail-row__copy");
+      const phone = copy?.querySelector<HTMLElement>("p");
+      const action = element.querySelector<HTMLElement>(".contact-detail-row__action");
+      if (!copy || !phone || !action) throw new Error("Missing contact row content");
+      const range = document.createRange();
+      range.selectNodeContents(phone);
+      return {
+        display: getComputedStyle(element).display,
+        copyWidth: Math.round(copy.getBoundingClientRect().width),
+        phoneLines: range.getClientRects().length,
+        actionBelowCopy: action.getBoundingClientRect().top >= copy.getBoundingClientRect().bottom,
+      };
+    });
+
+    expect(metrics.display).toBe("grid");
+    expect(metrics.copyWidth).toBeGreaterThanOrEqual(180);
+    expect(metrics.phoneLines).toBe(1);
+    expect(metrics.actionBelowCopy).toBe(true);
+  });
+
   test("mobile header keeps a stable control row when language changes", async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
     await page.goto("/zh/about", { waitUntil: "domcontentloaded" });

@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { normalizeBuiltInLogoUrl, resolveSiteSettings } from "@/lib/siteSettingsApi";
+import { normalizeBuiltInLogoUrl, normalizeDisplayAddress, resolveSiteSettings } from "@/lib/siteSettingsApi";
 
 describe("site settings contact links", () => {
   it("normalizes WhatsApp numbers from admin settings for wa.me links", () => {
@@ -45,5 +45,22 @@ describe("site settings contact links", () => {
 
     const settings = resolveSiteSettings({ logo_url: "/logo-flashcast.png" }, "zh");
     expect(settings.logo_url).toBe("/logo-flashcast-20260605.webp");
+  });
+
+  it("normalizes admin-entered address punctuation before public display", () => {
+    expect(normalizeDisplayAddress("  94, Jalan Mega Mendung,Taman United,  58200 Kuala Lumpur  ")).toBe(
+      "94, Jalan Mega Mendung, Taman United, 58200 Kuala Lumpur",
+    );
+
+    const settings = resolveSiteSettings(
+      {
+        address_zh: "94, Jalan Mega Mendung,Taman United, 58200 Kuala Lumpur",
+        short_address_zh: "94, Jalan Mega Mendung,58200",
+      },
+      "zh",
+    );
+
+    expect(settings.address).toBe("94, Jalan Mega Mendung, Taman United, 58200 Kuala Lumpur");
+    expect(settings.short_address).toBe("94, Jalan Mega Mendung, 58200");
   });
 });
