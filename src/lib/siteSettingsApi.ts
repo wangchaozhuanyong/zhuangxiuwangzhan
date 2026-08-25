@@ -133,6 +133,12 @@ export const resolveAppleTouchIconUrl = (
 const normalizePhoneHref = (phone: string) => `tel:${phone.replace(/[^\d+]/g, "")}`;
 const normalizeWhatsAppNumber = (phone: string) => phone.replace(/[^\d]/g, "");
 
+export const normalizeDisplayAddress = (address: string) =>
+  address
+    .trim()
+    .replace(/,\s*/g, ", ")
+    .replace(/\s+/g, " ");
+
 export const fallbackSiteSettings: SiteSettings = {
   company_name: siteConfig.name,
   brand_name: "FLASH CAST",
@@ -177,8 +183,8 @@ export const resolveSiteSettings = (
   const merged = { ...fallbackSiteSettings, ...(settings || {}) };
   const phoneE164 = merged.phone_e164 || normalizePhoneHref(merged.phone_display);
   const whatsappNumber = normalizeWhatsAppNumber(merged.whatsapp_number || phoneE164);
-  const address = language === "zh" ? merged.address_zh || merged.address_en : merged.address_en || merged.address_zh;
-  const shortAddress = language === "zh" ? merged.short_address_zh || merged.short_address_en : merged.short_address_en || merged.short_address_zh;
+  const address = normalizeDisplayAddress(language === "zh" ? merged.address_zh || merged.address_en : merged.address_en || merged.address_zh);
+  const shortAddress = normalizeDisplayAddress(language === "zh" ? merged.short_address_zh || merged.short_address_en : merged.short_address_en || merged.short_address_zh);
   const logoUrl = normalizeBuiltInLogoUrl(merged.logo_url);
 
   return {

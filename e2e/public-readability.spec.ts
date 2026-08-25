@@ -42,6 +42,47 @@ async function readContrast(locator: Locator) {
 }
 
 test.describe("public text readability", () => {
+  test("blog topic cards keep readable dark-theme contrast", async ({ page }) => {
+    await page.setViewportSize({ width: 1440, height: 1000 });
+    await page.goto("/zh/blog", { waitUntil: "domcontentloaded" });
+
+    const card = page.locator(".fc-blog-topic-card").first();
+    await expect(card).toBeVisible();
+    const contrast = await card.evaluate((element) => {
+      type Rgb = [number, number, number];
+      const parseRgb = (value: string): Rgb => {
+        const channels = value.match(/[\d.]+/g)?.map(Number);
+        if (!channels || channels.length < 3) throw new Error(`Unsupported color: ${value}`);
+        return [channels[0], channels[1], channels[2]];
+      };
+      const luminance = (color: Rgb) => {
+        const linear = color.map((channel) => {
+          const normalized = channel / 255;
+          return normalized <= 0.04045
+            ? normalized / 12.92
+            : ((normalized + 0.055) / 1.055) ** 2.4;
+        });
+        return 0.2126 * linear[0] + 0.7152 * linear[1] + 0.0722 * linear[2];
+      };
+      const background = parseRgb(getComputedStyle(element).backgroundColor);
+      return Array.from(element.querySelectorAll("button > span, button > strong, b, a")).map((target) => {
+        const foreground = parseRgb(getComputedStyle(target).color);
+        const foregroundLuminance = luminance(foreground);
+        const backgroundLuminance = luminance(background);
+        return {
+          text: target.textContent?.trim() || target.tagName,
+          value: (Math.max(foregroundLuminance, backgroundLuminance) + 0.05)
+            / (Math.min(foregroundLuminance, backgroundLuminance) + 0.05),
+        };
+      });
+    });
+
+    expect(contrast.length).toBeGreaterThan(0);
+    for (const item of contrast) {
+      expect(item.value, `${item.text} contrast`).toBeGreaterThanOrEqual(4.5);
+    }
+  });
+
   test("selected project filter keeps AA contrast while hovered", async ({ page }) => {
     await page.setViewportSize({ width: 1440, height: 1000 });
     await page.goto("/zh/projects", { waitUntil: "domcontentloaded" });
