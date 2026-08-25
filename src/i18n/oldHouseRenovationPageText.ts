@@ -23,6 +23,38 @@ export const oldHouseRenovationPageText = {
       "FLASH CAST provides old house renovation planning, site measurement, material advice, quotation scope review, and renovation coordination across Kuala Lumpur, Selangor, and Klang Valley.",
     ],
     tags: ["Site Assessment", "Scope Planning", "Waterproofing Review", "Material Direction"],
+    comparisonsTitle: "Terrace House Renovation: Before and After",
+    comparisonsDescription:
+      "Drag the divider to compare the same space from the same viewpoint. These AI-assisted visuals are renovation concepts for planning discussion, not photographs of completed customer projects.",
+    before: "Before renovation",
+    after: "After renovation",
+    compareAria: (title: string) => `Drag to compare the before and after concept for ${title}`,
+    comparisons: [
+      {
+        id: "terrace-living",
+        meta: "25–35-year double-storey terrace · Living and dining",
+        title: "Narrow Living–Dining Room Reset",
+        description:
+          "Repair ageing finishes and replan wiring, lighting, storage, furniture scale, and the route from the entrance. The design keeps the original terrace-house width and structural openings while making daily circulation brighter and clearer.",
+        afterAlt: "After-renovation concept for the same older terrace-house living and dining room viewpoint",
+      },
+      {
+        id: "terrace-kitchen",
+        meta: "Older double-storey terrace · Galley kitchen",
+        title: "Kitchen Infrastructure and Workflow Renewal",
+        description:
+          "Replace ageing pipes, wiring, cabinets, worktops, and hard-to-clean finishes while retaining the narrow galley footprint. Task lighting, exhaust, service access, and wet-area durability are planned before the visual finishes.",
+        afterAlt: "After-renovation concept for the same older terrace-house galley kitchen viewpoint",
+      },
+      {
+        id: "terrace-bathroom",
+        meta: "Multigenerational terrace house · Bathroom",
+        title: "Senior-Safe Bathroom Upgrade",
+        description:
+          "Renew waterproofing and plumbing, then introduce non-slip flooring, a level shower area, reachable fittings, grab-bar backing, a shower seat, and brighter ventilation without enlarging the original bathroom.",
+        afterAlt: "After-renovation concept for the same older terrace-house senior-friendly bathroom viewpoint",
+      },
+    ],
     challengesTitle: "Common Old House Issues",
     challengesDescription: "These are typical areas to review before confirming an old house renovation scope.",
     challenges: [
@@ -129,6 +161,38 @@ export const oldHouseRenovationPageText = {
       "FLASH CAST 提供 Kuala Lumpur、Selangor 与 Klang Valley 旧屋翻新规划、现场测量、材料建议、报价范围整理和施工协调。",
     ],
     tags: ["现场评估", "范围规划", "防水检查", "材料方向"],
+    comparisonsTitle: "老排屋改造前后对比",
+    comparisonsDescription:
+      "拖动中间滑块，可查看同一空间、同一机位的改造前后变化。以下为辅助沟通翻新方向的 AI 概念图，不是已完工客户项目照片。",
+    before: "改造前",
+    after: "改造后",
+    compareAria: (title: string) => `拖动查看${title}的改造前后概念对比`,
+    comparisons: [
+      {
+        id: "terrace-living",
+        meta: "25–35 年双层排屋 · 客餐厅",
+        title: "狭长客餐厅动线重整",
+        description:
+          "先修复老化墙面并重整电线、灯光、收纳与家具尺度，再改善从入户到餐区的通行。方案保留原有排屋宽度和结构开口，重点解决阴暗、杂乱和动线拥挤。",
+        afterAlt: "同一机位下老排屋客餐厅改造后的概念效果图",
+      },
+      {
+        id: "terrace-kitchen",
+        meta: "老双层排屋 · 狭长厨房",
+        title: "厨房基础系统与操作动线翻新",
+        description:
+          "在保留狭长厨房格局的前提下，更新老化水管、电线、柜体、台面和难清洁饰面；先规划照明、排烟、检修口和湿区耐用性，再决定外观材料。",
+        afterAlt: "同一机位下老排屋狭长厨房改造后的概念效果图",
+      },
+      {
+        id: "terrace-bathroom",
+        meta: "三代同堂排屋 · 浴室",
+        title: "适老安全浴室升级",
+        description:
+          "重新处理防水和水管，再加入防滑地面、平缓淋浴区、顺手洁具、扶手预埋、折叠座椅和更好的照明通风，不靠扩大空间也能提升安全性。",
+        afterAlt: "同一机位下老排屋适老浴室改造后的概念效果图",
+      },
+    ],
     challengesTitle: "旧屋常见问题",
     challengesDescription: "这些问题如果在装修前没有梳理，后续可能影响安全、预算和使用体验。",
     challenges: [

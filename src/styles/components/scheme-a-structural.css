@@ -960,6 +960,10 @@
     line-height: 1.85;
   }
 
+  html[data-public-theme="dark"] .scheme-a-old-house-route .scheme-a-transformation__description {
+    color: rgb(246 241 232 / 0.68);
+  }
+
   html[data-public-theme="dark"] .scheme-a-transformation__compare {
     position: relative;
     width: 100%;
