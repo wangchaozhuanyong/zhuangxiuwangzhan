@@ -264,6 +264,10 @@ const mapSitePageRows = (payload: UnknownRecord, language: "en" | "zh") => {
   const legacyRow = readRecordArray(payload.site_pages)[0];
   const legacy = legacyRow ? mapLegacySitePage(legacyRow, language) : null;
   const cmsRow = readRecordArray(payload.cms_pages)[0];
+  // The protected homepage publisher writes the public page-level record to
+  // site_pages. Keep the hydrated React view aligned with edge HTML, which
+  // already treats that published home record as authoritative.
+  if (legacy?.page_key === "home") return legacy;
   return cmsRow ? mapPublishedCmsPage(cmsRow, language, legacy) : legacy;
 };
 

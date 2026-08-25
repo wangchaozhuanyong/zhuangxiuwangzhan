@@ -144,6 +144,38 @@ describe("public preload data", () => {
     expect(result.data.brandPartnersEnabled).toBe(false);
   });
 
+  it("keeps the hydrated homepage aligned with the published site_pages record", async () => {
+    setPreloadedPublicData({
+      homeContentBundle: {
+        cms_pages: [{
+          id: "cms-home",
+          page_key: "home",
+          path: "/",
+          title_en: "Old CMS home",
+          seo_title_en: "Old CMS home SEO",
+          image_url: "/images/heroes/old-home.webp",
+        }],
+        site_pages: [{
+          id: "published-home",
+          page_key: "home",
+          path: "/",
+          title_en: "Published home",
+          seo_title_en: "Published home SEO",
+          image_url: "/images/heroes/published-home.webp",
+          status: "published",
+        }],
+      },
+    });
+
+    const { getPublishedHomeContentBundle } = await import("@/lib/homeContentApi");
+    const result = await getPublishedHomeContentBundle("en");
+
+    expect(result.source).toBe("remote");
+    expect(result.data.pageContent?.id).toBe("published-home");
+    expect(result.data.pageContent?.seo_title).toBe("Published home SEO");
+    expect(result.data.pageContent?.image_url).toBe("/images/heroes/published-home.webp");
+  });
+
   it("treats an empty preloaded site page as a resolved CMS result", async () => {
     setPreloadedPublicData({
       sitePages: {
