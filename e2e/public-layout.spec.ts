@@ -80,6 +80,139 @@ test.describe("public responsive layout", () => {
     expect(metrics.headerRight).toBeGreaterThanOrEqual(20);
   });
 
+  test("ultra-wide desktop header and heroes share a balanced viewport gutter", async ({ page }) => {
+    await page.setViewportSize({ width: 2560, height: 1000 });
+
+    for (const route of ["/zh", "/zh/services", "/zh/projects", "/zh/contact"]) {
+      await page.goto(route, { waitUntil: "domcontentloaded" });
+
+      const title = page.locator(route === "/zh" ? ".scheme-a-hero h1" : ".fc-route-hero h1");
+      const brand = page.locator(".scheme-a-chrome__brand");
+      await expect(title).toBeVisible();
+      await expect(brand).toBeVisible();
+
+      const alignment = await page.evaluate((isHome) => {
+        const title = document.querySelector<HTMLElement>(isHome ? ".scheme-a-hero h1" : ".fc-route-hero h1");
+        const brand = document.querySelector<HTMLElement>(".scheme-a-chrome__brand");
+        if (!title || !brand) throw new Error("Missing public desktop rail elements");
+        return {
+          titleLeft: Math.round(title.getBoundingClientRect().left),
+          brandLeft: Math.round(brand.getBoundingClientRect().left),
+        };
+      }, route === "/zh");
+
+      expect(Math.abs(alignment.titleLeft - alignment.brandLeft), route).toBeLessThanOrEqual(20);
+      expect(alignment.titleLeft, route).toBeGreaterThanOrEqual(64);
+      expect(alignment.titleLeft, route).toBeLessThanOrEqual(96);
+    }
+  });
+
+  test("desktop home hero keeps a two-line headline and an image-led split", async ({ page }) => {
+    const viewports = [
+      { width: 1280, height: 720 },
+      { width: 1440, height: 900 },
+      { width: 1920, height: 1000 },
+      { width: 2560, height: 1164 },
+    ];
+
+    for (const viewport of viewports) {
+      await page.setViewportSize(viewport);
+      await page.goto("/zh", { waitUntil: "domcontentloaded" });
+
+      const hero = page.locator(".scheme-a-hero");
+      const title = hero.locator("h1");
+      await expect(hero).toBeVisible();
+      await expect(title).toBeVisible();
+
+      const layout = await hero.evaluate((element) => {
+        const copy = element.querySelector<HTMLElement>(".scheme-a-hero__copy");
+        const title = element.querySelector<HTMLElement>("h1");
+        const eyebrow = element.querySelector<HTMLElement>(".scheme-a-eyebrow");
+        const metrics = element.querySelector<HTMLElement>(".scheme-a-hero__metrics");
+        const disciplines = element.querySelector<HTMLElement>(".scheme-a-hero__disciplines");
+        const primaryAction = element.querySelector<HTMLElement>(".scheme-a-actions a");
+        if (!copy || !title || !eyebrow || !metrics || !disciplines || !primaryAction) {
+          throw new Error("Missing home hero layout regions");
+        }
+
+        const heroRect = element.getBoundingClientRect();
+        const copyRect = copy.getBoundingClientRect();
+        const titleRect = title.getBoundingClientRect();
+        const eyebrowRect = eyebrow.getBoundingClientRect();
+        const disciplinesRect = disciplines.getBoundingClientRect();
+        const actionRect = primaryAction.getBoundingClientRect();
+        const lineTops = new Set<number>();
+        title.querySelectorAll("span").forEach((span) => {
+          const range = document.createRange();
+          range.selectNodeContents(span);
+          Array.from(range.getClientRects()).forEach((rect) => lineTops.add(Math.round(rect.top)));
+        });
+
+        return {
+          copyRatio: copyRect.width / heroRect.width,
+          eyebrowOffset: Math.round(eyebrowRect.top - heroRect.top),
+          titleLines: lineTops.size,
+          titleOverflow: Math.round(titleRect.right - copyRect.right),
+          actionBottom: Math.round(actionRect.bottom),
+          disciplinesBottomGap: Math.round(heroRect.bottom - disciplinesRect.bottom),
+          justifyContent: getComputedStyle(copy).justifyContent,
+        };
+      });
+
+      expect(layout.copyRatio, JSON.stringify(viewport)).toBeGreaterThanOrEqual(0.44);
+      expect(layout.copyRatio, JSON.stringify(viewport)).toBeLessThanOrEqual(0.49);
+      expect(layout.eyebrowOffset, JSON.stringify(viewport)).toBeLessThanOrEqual(150);
+      expect(layout.titleLines, JSON.stringify(viewport)).toBe(2);
+      expect(layout.titleOverflow, JSON.stringify(viewport)).toBeLessThanOrEqual(0);
+      expect(layout.actionBottom, JSON.stringify(viewport)).toBeLessThanOrEqual(viewport.height);
+      expect(layout.disciplinesBottomGap, JSON.stringify(viewport)).toBeGreaterThanOrEqual(24);
+      expect(layout.disciplinesBottomGap, JSON.stringify(viewport)).toBeLessThanOrEqual(64);
+      expect(layout.justifyContent, JSON.stringify(viewport)).toBe("flex-start");
+    }
+  });
+
+  test("desktop route hero copy uses the left panel without sinking to the bottom", async ({ page }) => {
+    await page.setViewportSize({ width: 1440, height: 900 });
+
+    for (const route of ["/zh/about", "/zh/services", "/zh/materials", "/zh/projects", "/zh/contact"]) {
+      await page.goto(route, { waitUntil: "domcontentloaded" });
+
+      const hero = page.locator(".fc-route-hero").first();
+      const copy = hero.locator(".fc-route-hero-copy").first();
+      const title = hero.locator("h1").first();
+      await expect(hero).toBeVisible();
+      await expect(copy).toHaveCSS("justify-content", "center");
+      await expect(title).toBeVisible();
+
+      const balance = await hero.evaluate((element) => {
+        const title = element.querySelector<HTMLElement>("h1");
+        const copy = element.querySelector<HTMLElement>(".fc-route-hero-copy");
+        if (!title || !copy) throw new Error("Missing public route hero regions");
+
+        const heroRect = element.getBoundingClientRect();
+        const copyRect = copy.getBoundingClientRect();
+        const titleRect = title.getBoundingClientRect();
+        const copyChildren = Array.from(copy.children).filter(
+          (child): child is HTMLElement => child instanceof HTMLElement && getComputedStyle(child).display !== "none",
+        );
+        const contentBottom = Math.max(...copyChildren.map((child) => child.getBoundingClientRect().bottom));
+
+        return {
+          titleOffsetFromHeroTop: Math.round(titleRect.top - heroRect.top),
+          contentGapBelow: Math.round(heroRect.bottom - contentBottom),
+          copyCenterOffset: Math.round(
+            Math.abs((titleRect.top + contentBottom) / 2 - (copyRect.top + copyRect.bottom) / 2),
+          ),
+        };
+      });
+
+      expect(balance.titleOffsetFromHeroTop, route).toBeGreaterThanOrEqual(150);
+      expect(balance.titleOffsetFromHeroTop, route).toBeLessThanOrEqual(280);
+      expect(balance.contentGapBelow, route).toBeGreaterThanOrEqual(120);
+      expect(balance.copyCenterOffset, route).toBeLessThanOrEqual(80);
+    }
+  });
+
   test("mobile home CTA separates the quote button from service regions with balanced whitespace", async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
     await page.goto("/zh", { waitUntil: "domcontentloaded" });
