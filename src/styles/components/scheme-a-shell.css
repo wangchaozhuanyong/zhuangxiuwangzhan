@@ -183,6 +183,7 @@
   }
 
   .scheme-a-chrome__primary a,
+  .scheme-a-chrome__nav-more,
   .scheme-a-chrome__quote,
   .scheme-a-chrome__menu {
     min-height: 44px;
@@ -216,7 +217,8 @@
     transform: translateY(-1px);
   }
 
-  .scheme-a-chrome__primary a {
+  .scheme-a-chrome__primary a,
+  .scheme-a-chrome__nav-more {
     position: relative;
     display: inline-flex;
     align-items: center;
@@ -225,7 +227,21 @@
     transition: color 200ms ease;
   }
 
-  .scheme-a-chrome__primary a::after {
+  .scheme-a-chrome__nav-more {
+    gap: 0.42rem;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    cursor: pointer;
+  }
+
+  .scheme-a-chrome__nav-more svg {
+    width: 15px;
+    height: 15px;
+  }
+
+  .scheme-a-chrome__primary a::after,
+  .scheme-a-chrome__nav-more::after {
     position: absolute;
     right: 0;
     bottom: 5px;
@@ -239,9 +255,16 @@
   }
 
   .scheme-a-chrome__primary a:hover::after,
-  .scheme-a-chrome__primary a[aria-current="page"]::after {
+  .scheme-a-chrome__primary a[aria-current="page"]::after,
+  .scheme-a-chrome__nav-more:hover::after,
+  .scheme-a-chrome__nav-more[aria-expanded="true"]::after {
     transform: scaleX(1);
     transform-origin: left;
+  }
+
+  .scheme-a-chrome__nav-more:hover,
+  .scheme-a-chrome__nav-more[aria-expanded="true"] {
+    color: #e5ca7c;
   }
 
   .scheme-a-chrome__actions,
@@ -312,15 +335,30 @@
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    width: 44px;
+    gap: 7px;
+    width: auto;
+    min-width: 70px;
     height: 44px;
     margin-left: 2px;
-    padding: 0;
+    padding: 0 11px 0 12px;
     border: 0;
+    border-left: 1px solid rgba(212, 175, 55, 0.24);
     background: transparent;
     color: #f7f4ee;
     cursor: pointer;
     transition: color 180ms ease, transform 140ms ease;
+  }
+
+  .scheme-a-chrome__menu-trigger--compact {
+    display: none;
+  }
+
+  .scheme-a-chrome__menu-label {
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    line-height: 1;
+    white-space: nowrap;
   }
 
   .scheme-a-chrome__menu-trigger:hover {
@@ -872,6 +910,10 @@
       display: none;
     }
 
+    .scheme-a-chrome__menu-trigger--compact {
+      display: inline-flex;
+    }
+
     .scheme-a-directory__preview {
       display: none;
     }
@@ -950,8 +992,14 @@
 
     .scheme-a-chrome__menu-trigger {
       width: 44px !important;
+      min-width: 44px !important;
       height: 44px !important;
       margin-left: 1px !important;
+      padding: 0 !important;
+    }
+
+    .scheme-a-chrome__menu-label {
+      display: none !important;
     }
 
     .scheme-a-chrome__menu-trigger svg {

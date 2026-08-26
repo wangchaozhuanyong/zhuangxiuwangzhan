@@ -108,7 +108,7 @@ const SchemeAHome = ({ content }: SchemeAHomeProps) => {
                 alt={heroAlt}
                 width={2880}
                 height={1620}
-                sizes="(min-width: 90rem) 58vw, (min-width: 73.75rem) 60vw, 100vw"
+                sizes="(min-width: 90rem) max(58vw, 178vh), (min-width: 73.75rem) max(60vw, 178vh), 100vw"
                 candidateWidths={[720, 900, 1200, 1600]}
                 sourceWidth={2880}
                 quality={88}
@@ -158,9 +158,12 @@ const SchemeAHome = ({ content }: SchemeAHomeProps) => {
               ))}
             </div>
           )}
-          <ul className="scheme-a-hero__disciplines" aria-label={copy.heroCapabilitiesLabel}>
-            {copy.heroCapabilities.map((capability) => <li key={capability}>{capability}</li>)}
-          </ul>
+          <div className="scheme-a-hero__capabilities">
+            <p className="scheme-a-hero__capabilities-label">{copy.heroCapabilitiesLabel}</p>
+            <ul className="scheme-a-hero__disciplines" aria-label={copy.heroCapabilitiesLabel}>
+              {copy.heroCapabilities.map((capability) => <li key={capability}>{capability}</li>)}
+            </ul>
+          </div>
         </div>
       </ImmersiveHero>
 

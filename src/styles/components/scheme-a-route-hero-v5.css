@@ -84,6 +84,58 @@
   text-shadow: none;
 }
 
+.scheme-a-public-shell .fc-route-page .fc-route-hero-support {
+  display: none;
+}
+
+@media (min-width: 73.75rem) {
+  .scheme-a-public-shell .fc-route-page .fc-route-hero-support {
+    display: grid;
+    order: 4;
+    width: min(100%, 31rem);
+    gap: 0;
+    margin: clamp(42px, 6vh, 68px) 0 0;
+    border-top: 1px solid rgba(214, 182, 126, 0.28);
+  }
+
+  .scheme-a-public-shell .fc-route-page .fc-route-hero-support > div {
+    display: grid;
+    min-height: 52px;
+    grid-template-columns: minmax(108px, 0.72fr) minmax(0, 1.28fr);
+    align-items: center;
+    gap: 20px;
+    border-bottom: 1px solid rgba(245, 241, 233, 0.11);
+  }
+
+  .scheme-a-public-shell .fc-route-page .fc-route-hero-support dt,
+  .scheme-a-public-shell .fc-route-page .fc-route-hero-support dd {
+    margin: 0;
+  }
+
+  .scheme-a-public-shell .fc-route-page .fc-route-hero-support dt {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: rgba(229, 202, 124, 0.82);
+    font-size: 10.5px;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    white-space: nowrap;
+  }
+
+  .scheme-a-public-shell .fc-route-page .fc-route-hero-support dt span {
+    color: rgba(229, 202, 124, 0.48);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .scheme-a-public-shell .fc-route-page .fc-route-hero-support dd {
+    color: rgba(245, 241, 233, 0.72);
+    font-size: 12px;
+    line-height: 1.55;
+    text-wrap: pretty;
+  }
+}
+
 .scheme-a-public-shell .fc-route-page .fc-route-hero-media {
   position: relative;
   z-index: 1;

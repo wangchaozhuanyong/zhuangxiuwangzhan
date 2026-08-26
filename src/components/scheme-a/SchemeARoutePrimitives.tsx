@@ -3,6 +3,8 @@ import { ArrowUpRight, ChevronDown, Plus } from "lucide-react";
 import Link from "@/components/LocalizedLink";
 import SmartImage from "@/components/SmartImage";
 import ImmersiveHero from "@/components/ImmersiveHero";
+import { useLanguage } from "@/i18n/LanguageContext";
+import { schemeARouteHeroSupportText } from "@/i18n/schemeAText";
 import { buildLocalResponsiveSrcSet, isLocalResponsiveImageCandidate } from "@/lib/localResponsiveImage";
 import { buildSupabaseSrcSet, isSupabasePublicObjectUrl } from "@/lib/supabaseImage";
 
@@ -79,6 +81,8 @@ export function SchemeARouteHero({
   title: string;
   description: string;
 }) {
+  const { language } = useLanguage();
+  const supportCopy = schemeARouteHeroSupportText[language];
   const mediaStyle: SchemeARouteHeroMediaStyle = {
     "--fc-route-hero-position-desktop": imagePosition?.desktop || "center",
     "--fc-route-hero-position-tablet": imagePosition?.tablet || imagePosition?.desktop || "center",
@@ -146,6 +150,16 @@ export function SchemeARouteHero({
         <span className="fc-route-kicker">{label}</span>
         <h1 className={usesCompactTitleScale ? "fc-route-title-long" : undefined}>{title}</h1>
         <p>{description}</p>
+        {kind !== "legal" ? (
+          <dl className="fc-route-hero-support" aria-label={supportCopy.ariaLabel}>
+            {supportCopy.items.map((item, index) => (
+              <div key={item.label}>
+                <dt><span>{String(index + 1).padStart(2, "0")}</span>{item.label}</dt>
+                <dd>{item.value}</dd>
+              </div>
+            ))}
+          </dl>
+        ) : null}
       </div>
     </ImmersiveHero>
   );
