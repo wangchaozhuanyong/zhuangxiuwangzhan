@@ -306,6 +306,7 @@ test.describe("Scheme A approved-design fidelity", () => {
     ]) {
       await page.setViewportSize(viewport);
       await page.goto("/zh/quote", { waitUntil: "domcontentloaded" });
+      await page.evaluate(() => document.fonts.ready);
 
       const hero = page.locator(".fc-route-quote-page .fc-route-hero-form");
       const progress = page.locator(".quote-form-guide__summary");

@@ -185,7 +185,12 @@
   }
 
   .scheme-a-public-shell .fc-route-page.fc-route-quote-page .fc-route-hero-copy {
-    padding-bottom: 30px;
+    padding-top: 18px;
+    padding-bottom: 18px;
+  }
+
+  .scheme-a-public-shell .fc-route-page.fc-route-quote-page .fc-route-quote-body {
+    padding-top: 30px !important;
   }
 
   .scheme-a-public-shell .fc-route-page .fc-route-kicker {
