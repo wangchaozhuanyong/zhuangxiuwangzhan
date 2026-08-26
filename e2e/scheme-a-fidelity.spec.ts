@@ -393,7 +393,7 @@ test.describe("Scheme A approved-design fidelity", () => {
     expect(styles).toEqual({ opacity: "1", visibility: "visible" });
   });
 
-  test("shared route layout removes recurring offset and split-heading defects", async ({ page }) => {
+  test("shared route layout keeps the editorial rail aligned with the image seam", async ({ page }) => {
     await page.setViewportSize({ width: 1440, height: 900 });
 
     for (const route of [...portraitHeroRoutes, "/zh/privacy", "/zh/terms"]) {
@@ -404,6 +404,7 @@ test.describe("Scheme A approved-design fidelity", () => {
         const main = document.querySelector<HTMLElement>("main.fc-route-page");
         const hero = document.querySelector<HTMLElement>(".fc-route-hero");
         const heroCopy = document.querySelector<HTMLElement>(".fc-route-hero-copy");
+        const heroMedia = document.querySelector<HTMLElement>(".fc-route-hero-media");
         const heroTitle = heroCopy?.querySelector<HTMLElement>("h1");
         const sectionHeads = Array.from(document.querySelectorAll<HTMLElement>(".fc-route-section-head"));
         return {
@@ -411,8 +412,14 @@ test.describe("Scheme A approved-design fidelity", () => {
           mainRightGap: main ? Math.round(document.documentElement.clientWidth - main.getBoundingClientRect().right) : 0,
           mainLeft: main ? Math.round(main.getBoundingClientRect().left) : 0,
           heroCopyLeft: heroCopy ? Math.round(heroCopy.getBoundingClientRect().left) : null,
-          heroCopyRightGap: heroCopy && hero
-            ? Math.round(hero.getBoundingClientRect().right - heroCopy.getBoundingClientRect().right)
+          copyToMediaSeam: heroCopy && heroMedia
+            ? Math.abs(heroCopy.getBoundingClientRect().right - heroMedia.getBoundingClientRect().left)
+            : null,
+          mediaRightGap: heroMedia && hero
+            ? Math.abs(hero.getBoundingClientRect().right - heroMedia.getBoundingClientRect().right)
+            : null,
+          copyShare: heroCopy && hero
+            ? heroCopy.getBoundingClientRect().width / hero.getBoundingClientRect().width
             : null,
           heroTitleLeft: heroTitle ? Math.round(heroTitle.getBoundingClientRect().left) : null,
           headings: sectionHeads.map((head) => {
@@ -435,13 +442,57 @@ test.describe("Scheme A approved-design fidelity", () => {
       expect(metrics.mainLeft, route).toBe(0);
       expect(metrics.mainRightGap, route).toBe(0);
       expect(metrics.heroCopyLeft, route).toBe(0);
-      expect(metrics.heroCopyRightGap, route).toBe(0);
+      expect(metrics.copyToMediaSeam, route).toBeLessThanOrEqual(1);
+      expect(metrics.mediaRightGap, route).toBeLessThanOrEqual(1);
+      expect(metrics.copyShare, route).toBeGreaterThanOrEqual(0.33);
+      expect(metrics.copyShare, route).toBeLessThanOrEqual(0.42);
       expect(metrics.heroTitleLeft, route).toBeLessThanOrEqual(80);
       for (const heading of metrics.headings) {
         if (!heading) continue;
         expect(heading.display, route).toBe("block");
         expect(heading.copyTop, route).toBeGreaterThanOrEqual(heading.titleBottom);
         expect(heading.leftDelta, route).toBeLessThanOrEqual(1);
+      }
+    }
+  });
+
+  test("route hero copy and artwork stay separate at responsive breakpoints", async ({ page }) => {
+    for (const viewport of [
+      { width: 360, height: 800 },
+      { width: 768, height: 1024 },
+      { width: 1024, height: 900 },
+      { width: 1440, height: 900 },
+    ]) {
+      await page.setViewportSize(viewport);
+
+      for (const route of ["/zh/services", "/en/services", "/zh/services/old-house", "/zh/contact"]) {
+        await page.goto(route, { waitUntil: "domcontentloaded" });
+        const image = page.locator(".fc-route-hero-media img");
+        await expect(image).toBeVisible();
+        await expect.poll(() => image.evaluate((element: HTMLImageElement) => element.complete && element.naturalWidth > 0)).toBe(true);
+
+        const metrics = await page.evaluate(() => {
+          const copy = document.querySelector<HTMLElement>(".fc-route-hero-copy");
+          const media = document.querySelector<HTMLElement>(".fc-route-hero-media");
+          if (!copy || !media) throw new Error("Missing route hero copy or media");
+          const copyRect = copy.getBoundingClientRect();
+          const mediaRect = media.getBoundingClientRect();
+          return {
+            horizontalOverflow: document.documentElement.scrollWidth - document.documentElement.clientWidth,
+            horizontalOverlap: Math.max(0, Math.min(copyRect.right, mediaRect.right) - Math.max(copyRect.left, mediaRect.left)),
+            verticalOverlap: Math.max(0, Math.min(copyRect.bottom, mediaRect.bottom) - Math.max(copyRect.top, mediaRect.top)),
+            mediaAboveCopy: mediaRect.bottom <= copyRect.top + 1,
+          };
+        });
+
+        expect(metrics.horizontalOverflow, `${route} at ${viewport.width}px`).toBeLessThanOrEqual(1);
+        if (viewport.width >= 1024) {
+          expect(metrics.horizontalOverlap, `${route} at ${viewport.width}px`).toBeLessThanOrEqual(1);
+          expect(metrics.verticalOverlap, `${route} at ${viewport.width}px`).toBeGreaterThan(0);
+        } else {
+          expect(metrics.mediaAboveCopy, `${route} at ${viewport.width}px`).toBe(true);
+          expect(metrics.verticalOverlap, `${route} at ${viewport.width}px`).toBeLessThanOrEqual(1);
+        }
       }
     }
   });
@@ -453,7 +504,7 @@ test.describe("Scheme A approved-design fidelity", () => {
       await page.goto(route, { waitUntil: "domcontentloaded" });
       const image = page.locator(".fc-route-hero-media img");
       await expect(image).toBeVisible();
-      await expect.poll(() => image.evaluate((element: HTMLImageElement) => element.currentSrc)).toMatch(/\/w1600\//);
+      await expect.poll(() => image.evaluate((element: HTMLImageElement) => element.currentSrc)).toMatch(/\/w(?:1200|1600)\//);
     }
 
     await page.goto("/zh/blog/how-to-plan-condo-renovation-kl", { waitUntil: "domcontentloaded" });
@@ -495,6 +546,47 @@ test.describe("Scheme A approved-design fidelity", () => {
     const footerBack = page.locator(".scheme-a-footer__legal button");
     await expect(footerBack).toBeVisible();
     expect(await footerBack.evaluate((element) => element.getBoundingClientRect().height)).toBeGreaterThanOrEqual(44);
+  });
+
+  test("contact actions stay aligned to the right of their details", async ({ page }) => {
+    for (const viewport of [
+      { width: 360, height: 800 },
+      { width: 390, height: 844 },
+      { width: 768, height: 1024 },
+      { width: 1024, height: 900 },
+      { width: 1440, height: 900 },
+    ]) {
+      await page.setViewportSize(viewport);
+
+      for (const route of ["/zh/contact", "/en/contact"]) {
+        await page.goto(route, { waitUntil: "domcontentloaded" });
+        const actionableRows = page.locator(".contact-detail-row:has(.contact-detail-row__action)");
+        await expect(actionableRows).toHaveCount(4);
+
+        const alignments = await actionableRows.evaluateAll((rows) => rows.map((row) => {
+          const copy = row.querySelector<HTMLElement>(".contact-detail-row__copy");
+          const action = row.querySelector<HTMLElement>(".contact-detail-row__action");
+          if (!copy || !action) throw new Error("Missing contact detail content or action");
+
+          const rowRect = row.getBoundingClientRect();
+          const copyRect = copy.getBoundingClientRect();
+          const actionRect = action.getBoundingClientRect();
+          return {
+            actionToTheRight: actionRect.left >= copyRect.right - 1,
+            actionInsideRow: actionRect.right <= rowRect.right + 1,
+            actionVerticallyAligned: actionRect.top < copyRect.bottom && actionRect.bottom > copyRect.top,
+          };
+        }));
+
+        for (const alignment of alignments) {
+          expect(alignment.actionToTheRight, `${route} at ${viewport.width}px`).toBe(true);
+          expect(alignment.actionInsideRow, `${route} at ${viewport.width}px`).toBe(true);
+          expect(alignment.actionVerticallyAligned, `${route} at ${viewport.width}px`).toBe(true);
+        }
+
+        await expect.poll(() => page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth)).toBeLessThanOrEqual(1);
+      }
+    }
   });
 
   test("representative mobile actions keep a usable touch target", async ({ page }) => {

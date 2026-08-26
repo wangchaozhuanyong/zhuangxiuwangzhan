@@ -30,6 +30,7 @@ const Privacy = () => {
         tabletImageSourceWidth={pageHeroImages.contact.tabletWidth}
         mobileImage={pageHeroImages.contact.mobile}
         mobileImageSourceWidth={pageHeroImages.contact.mobileWidth}
+        imagePosition={pageHeroImages.contact.imagePosition}
         imageAlt={t.imageAlt}
         label={`${t.breadcrumbCurrent} · ${mediaLabels[language].renderingConcept}`}
         title={t.title}

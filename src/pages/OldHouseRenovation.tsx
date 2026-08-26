@@ -11,6 +11,7 @@ import {
   SchemeASection,
 } from "@/components/scheme-a/SchemeARoutePrimitives";
 import { useLanguage } from "@/i18n/LanguageContext";
+import { mediaLabels } from "@/i18n/mediaLabels";
 import { useSiteSettings } from "@/hooks/useSiteSettings";
 import { trackCtaClick } from "@/lib/analytics";
 import { pageHeroImages } from "@/lib/pageHeroImages";
@@ -41,7 +42,7 @@ const OldHouseRenovation = () => {
       <PageMeta title={t.metaTitle} description={t.metaDescription} keywords={t.metaKeywords} canonicalPath="/services/old-house" />
       <JsonLdBreadcrumb items={[{ name: t.breadcrumbHome, url: "/" }, { name: t.breadcrumbServices, url: "/services" }, { name: t.breadcrumbCurrent, url: "/services/old-house" }]} />
 
-      <SchemeARouteHero kind="detail" image={pageHeroImages.oldHouse.desktop} mobileImage={pageHeroImages.oldHouse.mobile} imageAlt={t.heroAlt} label={t.label} title={t.title} description={t.description} />
+      <SchemeARouteHero kind="detail" image={pageHeroImages.oldHouse.desktop} imageSourceWidth={pageHeroImages.oldHouse.desktopWidth} tabletImage={pageHeroImages.oldHouse.tablet} tabletImageSourceWidth={pageHeroImages.oldHouse.tabletWidth} mobileImage={pageHeroImages.oldHouse.mobile} mobileImageSourceWidth={pageHeroImages.oldHouse.mobileWidth} imagePosition={pageHeroImages.oldHouse.imagePosition} imageAlt={t.heroAlt} label={[t.label, mediaLabels[language].renderingConcept].join(" · ")} title={t.title} description={t.description} />
 
       <SchemeASection title={t.introTitle} description={t.intro.join(" ")}>
         <div className="fc-route-tagline">{t.tags.map((tag) => <span key={tag}>{tag}</span>)}</div>
