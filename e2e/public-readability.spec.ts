@@ -231,8 +231,11 @@ test.describe("public text readability", () => {
         await page.waitForLoadState("load");
         const header = page.locator(".scheme-a-chrome.is-overlay");
         const hero = page.locator(".scheme-a-hero");
+        const directoryTrigger = viewport.name === "desktop"
+          ? header.locator(".scheme-a-chrome__nav-more")
+          : header.locator(".scheme-a-chrome__menu-trigger--compact");
         await expect(header).toBeVisible();
-        await expect(header.locator(".scheme-a-chrome__menu-trigger")).toBeVisible();
+        await expect(directoryTrigger).toBeVisible();
         await expect(hero).toBeVisible();
         const result = await header.evaluate((element) => {
           const surface = getComputedStyle(element);

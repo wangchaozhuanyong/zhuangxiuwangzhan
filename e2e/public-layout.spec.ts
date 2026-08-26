@@ -139,7 +139,6 @@ test.describe("public responsive layout", () => {
         const copyRect = copy.getBoundingClientRect();
         const titleRect = title.getBoundingClientRect();
         const eyebrowRect = eyebrow.getBoundingClientRect();
-        const disciplinesRect = disciplines.getBoundingClientRect();
         const actionRect = primaryAction.getBoundingClientRect();
         const lineTops = new Set<number>();
         title.querySelectorAll("span").forEach((span) => {
@@ -154,7 +153,7 @@ test.describe("public responsive layout", () => {
           titleLines: lineTops.size,
           titleOverflow: Math.round(titleRect.right - copyRect.right),
           actionBottom: Math.round(actionRect.bottom),
-          disciplinesBottomGap: Math.round(heroRect.bottom - disciplinesRect.bottom),
+          metricsBottomGap: Math.round(heroRect.bottom - metrics.getBoundingClientRect().bottom),
           justifyContent: getComputedStyle(copy).justifyContent,
         };
       });
@@ -165,8 +164,8 @@ test.describe("public responsive layout", () => {
       expect(layout.titleLines, JSON.stringify(viewport)).toBe(2);
       expect(layout.titleOverflow, JSON.stringify(viewport)).toBeLessThanOrEqual(0);
       expect(layout.actionBottom, JSON.stringify(viewport)).toBeLessThanOrEqual(viewport.height);
-      expect(layout.disciplinesBottomGap, JSON.stringify(viewport)).toBeGreaterThanOrEqual(24);
-      expect(layout.disciplinesBottomGap, JSON.stringify(viewport)).toBeLessThanOrEqual(64);
+      expect(layout.metricsBottomGap, JSON.stringify(viewport)).toBeGreaterThanOrEqual(24);
+      expect(layout.metricsBottomGap, JSON.stringify(viewport)).toBeLessThanOrEqual(64);
       expect(layout.justifyContent, JSON.stringify(viewport)).toBe("flex-start");
     }
   });
@@ -208,7 +207,8 @@ test.describe("public responsive layout", () => {
 
       expect(balance.titleOffsetFromHeroTop, route).toBeGreaterThanOrEqual(150);
       expect(balance.titleOffsetFromHeroTop, route).toBeLessThanOrEqual(360);
-      expect(balance.contentGapBelow, route).toBeGreaterThanOrEqual(120);
+      expect(balance.contentGapBelow, route).toBeGreaterThanOrEqual(48);
+      expect(balance.contentGapBelow, route).toBeLessThanOrEqual(120);
       expect(balance.copyCenterOffset, route).toBeLessThanOrEqual(80);
     }
   });
@@ -325,7 +325,7 @@ test.describe("public responsive layout", () => {
 
     const header = page.locator(".scheme-a-chrome");
     const language = page.locator(".scheme-a-lang-pill").first();
-    const menu = page.locator('button[aria-controls="scheme-a-directory"]');
+    const menu = page.locator(".scheme-a-chrome__menu-trigger--compact");
     await expect(header).toBeVisible();
     await expect(language).toBeVisible();
     await expect(menu).toBeVisible();

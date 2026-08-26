@@ -165,10 +165,11 @@ test.describe("mainstream browser compatibility", () => {
   });
 
   test("mobile menu and quote form accept basic interaction", async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 844 });
     await page.goto("/zh", { waitUntil: "domcontentloaded" });
     await page.waitForLoadState("load");
 
-    const mobileMenuButton = page.locator('button[aria-controls="scheme-a-directory"]');
+    const mobileMenuButton = page.locator(".scheme-a-chrome__menu-trigger--compact");
     if (await mobileMenuButton.isVisible()) {
       await mobileMenuButton.click();
       await expect(page.locator("#scheme-a-directory")).toBeVisible();
@@ -197,7 +198,7 @@ test.describe("mainstream browser compatibility", () => {
     await page.goto("/zh", { waitUntil: "domcontentloaded" });
     await page.waitForLoadState("load");
 
-    const mobileMenuButton = page.locator('button[aria-controls="scheme-a-directory"]');
+    const mobileMenuButton = page.locator(".scheme-a-chrome__menu-trigger--compact");
     await expect(mobileMenuButton).toBeVisible();
     await mobileMenuButton.click();
 

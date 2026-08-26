@@ -135,7 +135,7 @@ test.describe("Scheme A approved-design fidelity", () => {
     await page.setViewportSize({ width: 390, height: 844 });
     await page.goto("/zh/projects", { waitUntil: "domcontentloaded" });
 
-    const trigger = page.getByLabel("打开完整网站目录", { exact: true });
+    const trigger = page.locator(".scheme-a-chrome__menu-trigger--compact");
     await trigger.click();
 
     const dialog = page.getByRole("dialog", { name: "完整目录" });
@@ -419,7 +419,7 @@ test.describe("Scheme A approved-design fidelity", () => {
     await expect(page.locator("#quote-name")).toBeFocused();
     await expect(page.getByTestId("mobile-bottom-dock")).toHaveAttribute("data-mode", "hidden");
 
-    const menuTrigger = page.locator('button[aria-controls="scheme-a-directory"]');
+    const menuTrigger = page.locator(".scheme-a-chrome__menu-trigger--compact");
     await menuTrigger.click();
     await expect(page.getByTestId("mobile-bottom-dock")).toHaveAttribute("data-mode", "hidden");
     await page.keyboard.press("Escape");
