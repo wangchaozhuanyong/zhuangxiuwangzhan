@@ -30,6 +30,7 @@ const Terms = () => {
         tabletImageSourceWidth={pageHeroImages.quote.tabletWidth}
         mobileImage={pageHeroImages.quote.mobile}
         mobileImageSourceWidth={pageHeroImages.quote.mobileWidth}
+        imagePosition={pageHeroImages.quote.imagePosition}
         imageAlt={t.imageAlt}
         label={`${t.breadcrumbCurrent} · ${mediaLabels[language].renderingConcept}`}
         title={t.title}

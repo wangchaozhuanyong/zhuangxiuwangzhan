@@ -77,6 +77,7 @@ export default function Projects() {
         tabletImageSourceWidth={heroImage.tabletWidth}
         mobileImage={heroImage.mobile}
         mobileImageSourceWidth={heroImage.mobileWidth}
+        imagePosition={heroImage.imagePosition}
         imageAlt={pageContent?.alt || copy.heroAlt}
         label={[pageContent?.subtitle || copy.eyebrow, heroImage.claimLevel ? mediaLabels[language].renderingConcept : ""].filter(Boolean).join(" · ")}
         title={pageContent?.title || copy.title}

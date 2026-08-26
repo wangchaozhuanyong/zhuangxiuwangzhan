@@ -158,7 +158,7 @@ const Contact = () => {
       />
       <JsonLdBreadcrumb items={[{ name: t.breadcrumbHome, url: "/" }, { name: t.breadcrumbCurrent, url: "/contact" }]} />
 
-      <SchemeARouteHero kind="form" image={heroImage.desktop} imageSourceWidth={heroImage.desktopWidth} tabletImage={heroImage.tablet} tabletImageSourceWidth={heroImage.tabletWidth} mobileImage={heroImage.mobile} mobileImageSourceWidth={heroImage.mobileWidth} imageAlt={pageContent?.alt || t.heroAlt} label={[pageContent?.subtitle || t.heroEyebrow, heroImage.claimLevel ? mediaLabels[language].renderingConcept : ""].filter(Boolean).join(" · ")} title={pageContent?.title || t.heroTitle} description={pageContent?.description || t.heroText} />
+      <SchemeARouteHero kind="form" image={heroImage.desktop} imageSourceWidth={heroImage.desktopWidth} tabletImage={heroImage.tablet} tabletImageSourceWidth={heroImage.tabletWidth} mobileImage={heroImage.mobile} mobileImageSourceWidth={heroImage.mobileWidth} imagePosition={heroImage.imagePosition} imageAlt={pageContent?.alt || t.heroAlt} label={[pageContent?.subtitle || t.heroEyebrow, heroImage.claimLevel ? mediaLabels[language].renderingConcept : ""].filter(Boolean).join(" · ")} title={pageContent?.title || t.heroTitle} description={pageContent?.description || t.heroText} />
 
       <section className="fc-route-contact-body section-padding bg-background">
         <div className="container-narrow max-md:!px-0">

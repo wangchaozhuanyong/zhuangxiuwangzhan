@@ -8,6 +8,7 @@ import { SchemeARouteHero, SchemeASection } from "@/components/scheme-a/SchemeAR
 import { usePublishedBeforeAfterItems } from "@/hooks/usePublishedContent";
 import { beforeAfterFallbackMedia } from "@/data/beforeAfterFallback";
 import { useLanguage } from "@/i18n/LanguageContext";
+import { mediaLabels } from "@/i18n/mediaLabels";
 import type { PublishedBeforeAfterItem } from "@/lib/homeContentApi";
 import { pageHeroImages } from "@/lib/pageHeroImages";
 import { beforeAfterPageText } from "@/i18n/beforeAfterPageText";
@@ -110,7 +111,7 @@ export default function BeforeAfter() {
         ]}
       />
 
-      <SchemeARouteHero kind="compare" image={hero.desktop} mobileImage={hero.mobile} imageAlt={t.heroAlt} label={t.heroLabel} title={t.heroTitle} description={t.heroDescription} />
+      <SchemeARouteHero kind="compare" image={hero.desktop} imageSourceWidth={hero.desktopWidth} tabletImage={hero.tablet} tabletImageSourceWidth={hero.tabletWidth} mobileImage={hero.mobile} mobileImageSourceWidth={hero.mobileWidth} imagePosition={hero.imagePosition} imageAlt={t.heroAlt} label={[t.heroLabel, mediaLabels[language].renderingConcept].join(" · ")} title={t.heroTitle} description={t.heroDescription} />
 
       <SchemeASection title={t.sectionTitle} description={t.sectionDescription} className="scheme-a-transformations">
         {isLoading ? <ForestContentState variant="loading" description={t.loading} /> : null}

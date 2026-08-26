@@ -1,4 +1,4 @@
-import { useId, useState, type ReactNode } from "react";
+import { useId, useState, type CSSProperties, type ReactNode } from "react";
 import { ArrowUpRight, ChevronDown, Plus } from "lucide-react";
 import Link from "@/components/LocalizedLink";
 import SmartImage from "@/components/SmartImage";
@@ -8,11 +8,24 @@ import { buildSupabaseSrcSet, isSupabasePublicObjectUrl } from "@/lib/supabaseIm
 
 const ROUTE_HERO_MOBILE_WIDTHS = [560, 720, 900];
 const ROUTE_HERO_TABLET_WIDTHS = [720, 900];
+const WIDE_TITLE_CHARACTER = /[\p{Script=Han}\p{Script=Hiragana}\p{Script=Katakana}\p{Script=Hangul}]/u;
 
 const appendOriginalCandidate = (srcSet: string | undefined, src: string, sourceWidth?: number) =>
   sourceWidth ? [srcSet, `${src} ${sourceWidth}w`].filter(Boolean).join(", ") : srcSet;
 
 export type SchemeARouteKind = "listing" | "detail" | "content" | "article" | "legal" | "form" | "compare";
+
+export type SchemeARouteImagePosition = {
+  desktop?: string;
+  tablet?: string;
+  mobile?: string;
+};
+
+type SchemeARouteHeroMediaStyle = CSSProperties & {
+  "--fc-route-hero-position-desktop"?: string;
+  "--fc-route-hero-position-tablet"?: string;
+  "--fc-route-hero-position-mobile"?: string;
+};
 
 export type SchemeAListingItem = {
   id: string;
@@ -47,6 +60,7 @@ export function SchemeARouteHero({
   tabletImageSourceWidth,
   mobileImage,
   mobileImageSourceWidth,
+  imagePosition,
   imageAlt,
   label,
   title,
@@ -59,11 +73,24 @@ export function SchemeARouteHero({
   tabletImageSourceWidth?: number;
   mobileImage?: string;
   mobileImageSourceWidth?: number;
+  imagePosition?: SchemeARouteImagePosition;
   imageAlt: string;
   label: string;
   title: string;
   description: string;
 }) {
+  const mediaStyle: SchemeARouteHeroMediaStyle = {
+    "--fc-route-hero-position-desktop": imagePosition?.desktop || "center",
+    "--fc-route-hero-position-tablet": imagePosition?.tablet || imagePosition?.desktop || "center",
+    "--fc-route-hero-position-mobile": imagePosition?.mobile || imagePosition?.tablet || imagePosition?.desktop || "center",
+  };
+  const titleCharacters = Array.from(title);
+  const hasWideTitleCharacter = titleCharacters.some((character) => WIDE_TITLE_CHARACTER.test(character));
+  const titleVisualLength = titleCharacters.reduce(
+    (length, character) => length + (WIDE_TITLE_CHARACTER.test(character) ? 2 : 1),
+    0,
+  );
+  const usesCompactTitleScale = titleVisualLength > (hasWideTitleCharacter ? 10 : 16);
   const mobileSrcSet = mobileImage
     ? isSupabasePublicObjectUrl(mobileImage)
       ? buildSupabaseSrcSet(mobileImage, ROUTE_HERO_MOBILE_WIDTHS, { height: 1120, quality: 86, resize: "cover" })
@@ -88,8 +115,8 @@ export function SchemeARouteHero({
     : undefined;
 
   return (
-    <ImmersiveHero className={`fc-route-hero fc-route-hero-${kind}`}>
-      <div className="fc-route-hero-media" data-cinematic-media>
+    <ImmersiveHero className={`fc-route-hero fc-route-hero-${kind}`} data-route-hero-layout="editorial-rail">
+      <div className="fc-route-hero-media" data-cinematic-media style={mediaStyle}>
         <picture>
           {mobileImage ? (
             <source media="(max-width: 767px)" srcSet={mobileSrcSet || mobileImage} sizes="100vw" />
@@ -109,7 +136,7 @@ export function SchemeARouteHero({
             height={1100}
             loading="eager"
             fetchPriority="high"
-            sizes="100vw"
+            sizes="(min-width: 1024px) 64vw, 100vw"
             candidateWidths={[560, 720, 960, 1200, 1600]}
             quality={86}
           />
@@ -117,7 +144,7 @@ export function SchemeARouteHero({
       </div>
       <div className="fc-route-hero-copy">
         <span className="fc-route-kicker">{label}</span>
-        <h1 className={title.length > 16 ? "fc-route-title-long" : undefined}>{title}</h1>
+        <h1 className={usesCompactTitleScale ? "fc-route-title-long" : undefined}>{title}</h1>
         <p>{description}</p>
       </div>
     </ImmersiveHero>
