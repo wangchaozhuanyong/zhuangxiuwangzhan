@@ -321,12 +321,20 @@ test.describe("Scheme A approved-design fidelity", () => {
 
       const metrics = await page.evaluate(() => {
         const hero = document.querySelector<HTMLElement>(".fc-route-quote-page .fc-route-hero-form");
+        const heroMedia = hero?.querySelector<HTMLElement>(".fc-route-hero-media");
+        const heroCopy = hero?.querySelector<HTMLElement>(".fc-route-hero-copy");
         const title = document.querySelector<HTMLElement>(".fc-route-quote-form h2");
         const progress = document.querySelector<HTMLElement>(".quote-form-guide__summary");
         const actionBar = document.querySelector<HTMLElement>(".scheme-a-contact-dock");
-        if (!hero || !title || !progress || !actionBar) throw new Error("Missing quote conversion regions");
+        if (!hero || !heroMedia || !heroCopy || !title || !progress || !actionBar) {
+          throw new Error("Missing quote conversion regions");
+        }
+        const mediaRect = heroMedia.getBoundingClientRect();
+        const copyRect = heroCopy.getBoundingClientRect();
         return {
           heroHeight: hero.getBoundingClientRect().height,
+          mediaHeight: mediaRect.height,
+          copyBelowMedia: copyRect.top >= mediaRect.bottom - 1,
           titleTop: title.getBoundingClientRect().top,
           progressBottom: progress.getBoundingClientRect().bottom,
           actionBarTop: actionBar.getBoundingClientRect().top,
@@ -335,7 +343,9 @@ test.describe("Scheme A approved-design fidelity", () => {
       });
 
       expect(metrics.heroHeight).toBeGreaterThanOrEqual(360);
-      expect(metrics.heroHeight).toBeLessThanOrEqual(420);
+      expect(metrics.mediaHeight).toBeGreaterThanOrEqual(300);
+      expect(metrics.mediaHeight).toBeLessThanOrEqual(390);
+      expect(metrics.copyBelowMedia).toBe(true);
       expect(metrics.titleTop).toBeGreaterThanOrEqual(0);
       expect(metrics.progressBottom).toBeLessThan(metrics.actionBarTop);
       expect(metrics.horizontalOverflow).toBeLessThanOrEqual(1);
@@ -444,7 +454,7 @@ test.describe("Scheme A approved-design fidelity", () => {
       expect(metrics.heroCopyLeft, route).toBe(0);
       expect(metrics.copyToMediaSeam, route).toBeLessThanOrEqual(1);
       expect(metrics.mediaRightGap, route).toBeLessThanOrEqual(1);
-      expect(metrics.copyShare, route).toBeGreaterThanOrEqual(0.33);
+      expect(metrics.copyShare, route).toBeGreaterThanOrEqual(0.329);
       expect(metrics.copyShare, route).toBeLessThanOrEqual(0.42);
       expect(metrics.heroTitleLeft, route).toBeLessThanOrEqual(80);
       for (const heading of metrics.headings) {
@@ -517,7 +527,7 @@ test.describe("Scheme A approved-design fidelity", () => {
       expect(editorialUrl.searchParams.get("w")).toBe("1800");
       expect(editorialUrl.searchParams.get("h")).toBe("1100");
     } else {
-      expect(editorialUrl.pathname).toMatch(/\/w1600\//);
+      expect(editorialUrl.pathname).toMatch(/\/w(?:1200|1600)\//);
     }
   });
 

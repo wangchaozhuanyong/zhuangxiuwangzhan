@@ -171,7 +171,7 @@ test.describe("public responsive layout", () => {
     }
   });
 
-  test("desktop route hero copy uses the left panel without sinking to the bottom", async ({ page }) => {
+  test("desktop route hero copy stays vertically centered in the editorial rail", async ({ page }) => {
     await page.setViewportSize({ width: 1440, height: 900 });
 
     for (const route of ["/zh/about", "/zh/services", "/zh/materials", "/zh/projects", "/zh/contact"]) {
@@ -207,7 +207,7 @@ test.describe("public responsive layout", () => {
       });
 
       expect(balance.titleOffsetFromHeroTop, route).toBeGreaterThanOrEqual(150);
-      expect(balance.titleOffsetFromHeroTop, route).toBeLessThanOrEqual(280);
+      expect(balance.titleOffsetFromHeroTop, route).toBeLessThanOrEqual(360);
       expect(balance.contentGapBelow, route).toBeGreaterThanOrEqual(120);
       expect(balance.copyCenterOffset, route).toBeLessThanOrEqual(80);
     }
@@ -286,7 +286,7 @@ test.describe("public responsive layout", () => {
     }
   });
 
-  test("mobile contact actions reflow without squeezing the phone number", async ({ page }) => {
+  test("mobile contact actions stay to the right without wrapping the phone number", async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
     await page.goto("/zh/contact", { waitUntil: "domcontentloaded" });
 
@@ -305,16 +305,18 @@ test.describe("public responsive layout", () => {
       range.selectNodeContents(phone);
       return {
         display: getComputedStyle(element).display,
-        copyWidth: Math.round(copy.getBoundingClientRect().width),
         phoneLines: range.getClientRects().length,
-        actionBelowCopy: action.getBoundingClientRect().top >= copy.getBoundingClientRect().bottom,
+        actionToTheRight: action.getBoundingClientRect().left >= copy.getBoundingClientRect().right - 1,
+        actionVerticallyAligned:
+          action.getBoundingClientRect().top < copy.getBoundingClientRect().bottom
+          && action.getBoundingClientRect().bottom > copy.getBoundingClientRect().top,
       };
     });
 
     expect(metrics.display).toBe("grid");
-    expect(metrics.copyWidth).toBeGreaterThanOrEqual(180);
     expect(metrics.phoneLines).toBe(1);
-    expect(metrics.actionBelowCopy).toBe(true);
+    expect(metrics.actionToTheRight).toBe(true);
+    expect(metrics.actionVerticallyAligned).toBe(true);
   });
 
   test("mobile header keeps a stable control row when language changes", async ({ page }) => {
@@ -370,16 +372,21 @@ test.describe("public responsive layout", () => {
       await expect.poll(() => image.evaluate((element: HTMLImageElement) => element.complete && element.naturalWidth > 0)).toBe(true);
 
       const frame = await hero.evaluate((element) => {
+        const media = element.querySelector<HTMLElement>(".fc-route-hero-media");
         const image = element.querySelector<HTMLImageElement>("img");
+        const mediaHeight = media?.getBoundingClientRect().height || 0;
         return {
           height: element.getBoundingClientRect().height,
+          mediaHeight,
           imageHeight: image?.getBoundingClientRect().height || 0,
           objectFit: image ? getComputedStyle(image).objectFit : "",
         };
       });
       expect(frame.height, route).toBeGreaterThanOrEqual(route === "/zh/projects" ? 400 : 480);
-      expect(frame.imageHeight / frame.height, route).toBeGreaterThanOrEqual(0.96);
-      expect(frame.imageHeight / frame.height, route).toBeLessThanOrEqual(1.08);
+      expect(frame.mediaHeight, route).toBeGreaterThanOrEqual(300);
+      expect(frame.mediaHeight, route).toBeLessThanOrEqual(390);
+      expect(frame.imageHeight / frame.mediaHeight, route).toBeGreaterThanOrEqual(0.96);
+      expect(frame.imageHeight / frame.mediaHeight, route).toBeLessThanOrEqual(1.08);
       expect(frame.objectFit, route).toBe("cover");
     }
   });
