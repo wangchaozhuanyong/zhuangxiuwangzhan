@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { Link as RouterLink, useLocation } from "react-router-dom";
 import {
   ArrowUp,
@@ -101,7 +101,8 @@ export const SchemeANavbar = () => {
   const [previewItem, setPreviewItem] = useState<PublicNavItem>(currentItem);
   const [scrolled, setScrolled] = useState(false);
   const sentinelRef = useRef<HTMLSpanElement>(null);
-  const triggerRef = useRef<HTMLButtonElement>(null);
+  const desktopTriggerRef = useRef<HTMLButtonElement>(null);
+  const compactTriggerRef = useRef<HTMLButtonElement>(null);
   const closeRef = useRef<HTMLButtonElement>(null);
   const menuRef = useRef<HTMLDivElement>(null);
   const logo = settings.logo_url ? addCacheBuster(settings.logo_url, settings.updated_at) : logoFallback;
@@ -109,6 +110,26 @@ export const SchemeANavbar = () => {
   const nextLanguage = language === "zh" ? "en" : "zh";
   const languagePath = switchLanguagePath(location.pathname, nextLanguage, location.search, location.hash);
   const overlay = hasImmersiveHero && !scrolled && !menuOpen;
+
+  const closeDirectory = useCallback(() => {
+    setMenuOpen(false);
+    window.requestAnimationFrame(() => {
+      const trigger = [desktopTriggerRef.current, compactTriggerRef.current]
+        .find((candidate) => candidate && candidate.getClientRects().length > 0);
+      trigger?.focus();
+    });
+  }, [setMenuOpen]);
+
+  const toggleDirectory = useCallback(() => {
+    if (menuOpen) {
+      closeDirectory();
+      return;
+    }
+
+    setOpenGroup(currentGroup);
+    setPreviewItem(currentItem);
+    setMenuOpen(true);
+  }, [closeDirectory, currentGroup, currentItem, menuOpen, setMenuOpen]);
 
   useEffect(() => {
     setMenuOpen(false);
@@ -143,8 +164,7 @@ export const SchemeANavbar = () => {
     window.requestAnimationFrame(() => closeRef.current?.focus());
     const handleKey = (event: KeyboardEvent) => {
       if (event.key === "Escape") {
-        setMenuOpen(false);
-        window.requestAnimationFrame(() => triggerRef.current?.focus());
+        closeDirectory();
         return;
       }
       if (event.key !== "Tab") return;
@@ -166,7 +186,7 @@ export const SchemeANavbar = () => {
       document.body.style.overflow = previousBodyOverflow;
       window.removeEventListener("keydown", handleKey);
     };
-  }, [menuOpen, setMenuOpen]);
+  }, [closeDirectory, menuOpen]);
 
   return (
     <>
@@ -180,6 +200,10 @@ export const SchemeANavbar = () => {
                 {translate(item.labelKey)}
               </LocalizedLink>
             ))}
+            <button ref={desktopTriggerRef} className="scheme-a-chrome__nav-more" type="button" aria-label={t.openMenu} aria-expanded={menuOpen} aria-controls="scheme-a-directory" onClick={toggleDirectory}>
+              <span>{navText.more}</span>
+              <Menu aria-hidden="true" />
+            </button>
           </nav>
           <div className="scheme-a-chrome__actions">
             <LocalizedLink className="scheme-a-chrome__quote" to={QUOTE_FORM_PATH} onClick={() => trackCtaClick("quote", "scheme_a_header", { destination: QUOTE_FORM_PATH })}>
@@ -187,7 +211,8 @@ export const SchemeANavbar = () => {
             </LocalizedLink>
             <div className="scheme-a-chrome__control-capsule">
               <LanguageSwitch language={language} to={languagePath} label={navText.switchLanguage} />
-              <button ref={triggerRef} className="scheme-a-chrome__menu-trigger" type="button" aria-label={t.openMenu} aria-expanded={menuOpen} aria-controls="scheme-a-directory" onClick={() => { setOpenGroup(currentGroup); setPreviewItem(currentItem); setMenuOpen(true); }}>
+              <button ref={compactTriggerRef} className="scheme-a-chrome__menu-trigger scheme-a-chrome__menu-trigger--compact" type="button" aria-label={t.openMenu} aria-expanded={menuOpen} aria-controls="scheme-a-directory" onClick={toggleDirectory}>
+                <span className="scheme-a-chrome__menu-label">{navText.more}</span>
                 <Menu aria-hidden="true" />
               </button>
             </div>
@@ -197,14 +222,28 @@ export const SchemeANavbar = () => {
       {!hasImmersiveHero ? <div className="scheme-a-chrome__spacer" aria-hidden="true" /> : null}
 
       {menuOpen ? (
-        <div ref={menuRef} id="scheme-a-directory" className="scheme-a-directory" role="dialog" aria-modal="true" aria-label={t.directory}>
+        <div
+          ref={menuRef}
+          id="scheme-a-directory"
+          className="scheme-a-directory"
+          role="dialog"
+          aria-modal="true"
+          aria-label={t.directory}
+          onPointerDown={(event) => {
+            const target = event.target;
+            if (!(target instanceof Element)) return;
+            if (target.closest("a, button, figure, .scheme-a-directory__contact")) return;
+            closeDirectory();
+          }}
+        >
           <div className="scheme-a-directory__head scheme-a-frame">
             <BrandMark logo={logo} name={companyName} />
             <div className="scheme-a-directory__intro"><span>{t.directory}</span><p>{t.directoryIntro}</p></div>
             <div className="scheme-a-directory__actions">
               <div className="scheme-a-chrome__control-capsule">
                 <LanguageSwitch language={language} to={languagePath} label={navText.switchLanguage} />
-                <button ref={closeRef} className="scheme-a-chrome__menu-trigger" type="button" aria-label={t.closeMenu} onClick={() => { setMenuOpen(false); window.requestAnimationFrame(() => triggerRef.current?.focus()); }}>
+                <button ref={closeRef} className="scheme-a-chrome__menu-trigger" type="button" aria-label={t.closeMenu} aria-expanded="true" aria-controls="scheme-a-directory" onClick={toggleDirectory}>
+                  <span className="scheme-a-chrome__menu-label">{navText.more}</span>
                   <X aria-hidden="true" />
                 </button>
               </div>

@@ -68,6 +68,69 @@ test.describe("Scheme A approved-design fidelity", () => {
     }
   });
 
+  test("desktop more control opens and closes the complete directory", async ({ page }) => {
+    await page.setViewportSize({ width: 1440, height: 900 });
+    await page.goto("/zh/services", { waitUntil: "domcontentloaded" });
+
+    const desktopNavigation = page.locator(".scheme-a-chrome__primary");
+    const trigger = desktopNavigation.getByRole("button", { name: "打开完整网站目录", exact: true });
+    await expect(trigger).toBeVisible();
+    await expect(trigger).toContainText("更多");
+    await expect(desktopNavigation.locator("a").last()).toContainText("材料库");
+    const desktopOrder = await desktopNavigation.locator(":scope > *").evaluateAll((items) =>
+      items.map((item) => ({ text: item.textContent?.trim(), left: item.getBoundingClientRect().left })),
+    );
+    expect(desktopOrder.at(-1)?.text).toContain("更多");
+    expect(desktopOrder.at(-1)?.left).toBeGreaterThan(desktopOrder.at(-2)?.left || 0);
+    await trigger.click();
+
+    const dialog = page.getByRole("dialog", { name: "完整目录" });
+    await expect(dialog).toBeVisible();
+    const close = dialog.getByRole("button", { name: "关闭网站目录", exact: true });
+    await expect(close).toContainText("更多");
+    await close.click();
+    await expect(dialog).toHaveCount(0);
+    await expect(trigger).toBeFocused();
+
+    await trigger.click();
+    await expect(dialog).toBeVisible();
+    await dialog.click({ position: { x: 720, y: 32 } });
+    await expect(dialog).toHaveCount(0);
+    await expect(trigger).toBeFocused();
+  });
+
+  test("desktop heroes add useful density and avoid upscaling the home artwork", async ({ page }) => {
+    await page.setViewportSize({ width: 2048, height: 990 });
+    await page.goto("/zh", { waitUntil: "domcontentloaded" });
+
+    const homeHero = page.locator(".scheme-a-home--atelier .scheme-a-hero");
+    const heroImage = homeHero.locator(".scheme-a-hero__media img");
+    await expect(homeHero.locator(".scheme-a-hero__capabilities-label")).toBeVisible();
+    await expect(homeHero.locator(".scheme-a-hero__disciplines li")).toHaveCount(3);
+    const imageScale = await heroImage.evaluate((image: HTMLImageElement) => {
+      const rect = image.getBoundingClientRect();
+      return {
+        currentSrc: image.currentSrc,
+        horizontal: (rect.width * window.devicePixelRatio) / 2880,
+        vertical: (rect.height * window.devicePixelRatio) / 1620,
+      };
+    });
+    expect(imageScale.currentSrc).toContain("/images/heroes/v4/home-atelier-desktop.webp");
+    expect(imageScale.horizontal).toBeLessThanOrEqual(1);
+    expect(imageScale.vertical).toBeLessThanOrEqual(1);
+
+    await page.goto("/zh/services", { waitUntil: "domcontentloaded" });
+    const support = page.locator(".fc-route-hero-support");
+    await expect(support).toBeVisible();
+    await expect(support.locator(":scope > div")).toHaveCount(3);
+    await expect.poll(() => page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth)).toBeLessThanOrEqual(1);
+
+    await page.setViewportSize({ width: 390, height: 844 });
+    await expect(page.locator(".fc-route-hero-support")).not.toBeVisible();
+    await page.goto("/zh", { waitUntil: "domcontentloaded" });
+    await expect(page.locator(".scheme-a-home--atelier .scheme-a-hero__capabilities-label")).not.toBeVisible();
+  });
+
   test("mobile directory is complete, collapsible and keyboard safe", async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
     await page.goto("/zh/projects", { waitUntil: "domcontentloaded" });

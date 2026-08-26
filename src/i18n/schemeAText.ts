@@ -123,6 +123,25 @@ export const schemeAHomeText = {
   },
 } as const;
 
+export const schemeARouteHeroSupportText = {
+  zh: {
+    ariaLabel: "装修项目沟通要点",
+    items: [
+      { label: "项目类型", value: "住宅 · 商业 · 旧屋 · 定制柜" },
+      { label: "沟通起点", value: "地点 · 空间照片 · 计划范围" },
+      { label: "服务区域", value: "吉隆坡 · 雪兰莪 · 巴生谷" },
+    ],
+  },
+  en: {
+    ariaLabel: "Renovation project essentials",
+    items: [
+      { label: "Project types", value: "Homes · Commercial · Older properties · Built-ins" },
+      { label: "Start with", value: "Location · Site photos · Intended scope" },
+      { label: "Service areas", value: "Kuala Lumpur · Selangor · Klang Valley" },
+    ],
+  },
+} as const;
+
 export const schemeAProjectsIndexText = {
   zh: {
     label: "空间作品",

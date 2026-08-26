@@ -237,6 +237,10 @@
     white-space: normal;
   }
 
+  html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-hero__capabilities-label {
+    display: none;
+  }
+
   html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-hero__disciplines {
     display: flex;
     flex-wrap: wrap;

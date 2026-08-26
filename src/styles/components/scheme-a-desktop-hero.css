@@ -35,9 +35,25 @@
   }
 
   html[data-public-theme="dark"] .scheme-a-public-shell .scheme-a-home--atelier .scheme-a-hero__metrics {
+    order: 2;
     gap: clamp(1rem, 2vw, 2rem);
     margin-top: auto;
     text-align: left;
+  }
+
+  html[data-public-theme="dark"] .scheme-a-public-shell .scheme-a-home--atelier .scheme-a-hero__capabilities {
+    order: 1;
+    width: min(100%, 36rem);
+    margin-top: clamp(2.25rem, 4.5vh, 3.75rem);
+  }
+
+  html[data-public-theme="dark"] .scheme-a-public-shell .scheme-a-home--atelier .scheme-a-hero__capabilities-label {
+    display: block;
+    margin: 0 0 0.7rem;
+    color: rgba(229, 202, 124, 0.76);
+    font-size: 0.65rem;
+    font-weight: 700;
+    letter-spacing: 0.18em;
   }
 
   html[data-public-theme="dark"] .scheme-a-public-shell .scheme-a-home--atelier .scheme-a-hero__metric-item {
@@ -50,7 +66,48 @@
   }
 
   html[data-public-theme="dark"] .scheme-a-public-shell .scheme-a-home--atelier .scheme-a-hero__disciplines {
-    justify-content: flex-start;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 0;
+    justify-content: stretch;
+    margin-top: 0;
+    padding-top: 0;
+    border-top: 0;
+  }
+
+  html[data-public-theme="dark"] .scheme-a-public-shell .scheme-a-home--atelier .scheme-a-hero__disciplines li {
+    min-height: 2.7rem;
+    padding: 0.72rem 0;
+    border-top: 1px solid rgba(214, 182, 126, 0.2);
+    font-size: 0.72rem;
+    letter-spacing: 0.055em;
+  }
+
+  html[data-public-theme="dark"] .scheme-a-public-shell .scheme-a-home--atelier .scheme-a-hero__disciplines li:last-child {
+    border-bottom: 1px solid rgba(214, 182, 126, 0.2);
+  }
+}
+
+@media (min-width: 73.75rem) and (max-height: 51.25rem) {
+  html[data-public-theme="dark"] .scheme-a-public-shell .scheme-a-home--atelier .scheme-a-hero__capabilities {
+    margin-top: 1.5rem;
+  }
+
+  html[data-public-theme="dark"] .scheme-a-public-shell .scheme-a-home--atelier .scheme-a-hero__capabilities-label {
+    display: none;
+  }
+
+  html[data-public-theme="dark"] .scheme-a-public-shell .scheme-a-home--atelier .scheme-a-hero__disciplines {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  html[data-public-theme="dark"] .scheme-a-public-shell .scheme-a-home--atelier .scheme-a-hero__disciplines li {
+    min-height: 3.4rem;
+    padding: 0.7rem 0.65rem;
+  }
+
+  html[data-public-theme="dark"] .scheme-a-public-shell .scheme-a-home--atelier .scheme-a-hero__metrics {
+    margin-top: auto;
   }
 }
 
