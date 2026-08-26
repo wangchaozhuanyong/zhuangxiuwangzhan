@@ -347,7 +347,7 @@ test.describe("Scheme A approved-design fidelity", () => {
       expect(metrics.mediaHeight).toBeLessThanOrEqual(390);
       expect(metrics.copyBelowMedia).toBe(true);
       expect(metrics.titleTop).toBeGreaterThanOrEqual(0);
-      expect(metrics.progressBottom).toBeLessThan(metrics.actionBarTop);
+      expect(metrics.progressBottom).toBeLessThanOrEqual(metrics.actionBarTop - 8);
       expect(metrics.horizontalOverflow).toBeLessThanOrEqual(1);
     }
 
