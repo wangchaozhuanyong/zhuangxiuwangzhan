@@ -184,6 +184,10 @@
     padding: 30px clamp(20px, 6vw, 28px) 46px;
   }
 
+  .scheme-a-public-shell .fc-route-page.fc-route-quote-page .fc-route-hero-copy {
+    padding-bottom: 30px;
+  }
+
   .scheme-a-public-shell .fc-route-page .fc-route-kicker {
     margin-bottom: 16px;
     font-size: 10.5px;
