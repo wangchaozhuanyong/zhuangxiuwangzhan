@@ -1544,6 +1544,23 @@ const getExactLegacyRedirectPath = (pathname: string) => {
   return EXACT_LEGACY_REDIRECTS[cleaned] || null;
 };
 
+const LANDING_TO_SERVICE_SLUGS: Record<string, string> = {
+  "office-renovation": "office-renovation",
+  "shop-renovation": "shop-renovation",
+  "bathroom-renovation": "bathroom",
+  "old-house-renovation": "old-house",
+  "custom-built-in": "builtin",
+  "warehouse-shelving": "warehouse",
+  "kitchen-cabinet": "kitchen",
+};
+
+const getLandingToServiceRedirectPath = (pathname: string) => {
+  const cleaned = pathname.replace(/\/+$/, "") || "/";
+  const match = cleaned.match(/^\/(en|zh)\/landing\/([^/]+)$/);
+  const serviceSlug = match?.[2] ? LANDING_TO_SERVICE_SLUGS[match[2]] : null;
+  return match && serviceSlug ? `/${match[1]}/services/${serviceSlug}` : null;
+};
+
 const injectSeo = (html: string, meta: SeoEntry, siteSettings?: SiteSettingsHead | null) => {
   const safeMeta = {
     ...meta,
@@ -1886,6 +1903,12 @@ export const onRequest: PagesFunction = async (context) => {
   const exactLegacyRedirectPath = getExactLegacyRedirectPath(url.pathname);
   if (exactLegacyRedirectPath) {
     url.pathname = exactLegacyRedirectPath;
+    return permanentRedirect(url);
+  }
+
+  const landingToServiceRedirectPath = getLandingToServiceRedirectPath(url.pathname);
+  if (landingToServiceRedirectPath) {
+    url.pathname = landingToServiceRedirectPath;
     return permanentRedirect(url);
   }
 
