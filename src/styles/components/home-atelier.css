@@ -1109,6 +1109,259 @@
     }
   }
 
+  @media (min-width: 48rem) {
+    html[lang="en"][data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-principle h2 {
+      max-width: 30ch;
+      font-size: clamp(2rem, 2.8vw, 3.1rem);
+      line-height: 1.16;
+      text-wrap: pretty;
+    }
+
+    html[lang="en"][data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-statement blockquote {
+      max-width: 28ch;
+      font-size: clamp(2.1rem, 3.1vw, 3.45rem);
+      line-height: 1.2;
+      text-wrap: pretty;
+    }
+
+    html[lang="en"][data-public-theme="dark"] .scheme-a-home--atelier :is(
+      .scheme-a-section-head h2,
+      .scheme-a-services h2,
+      .scheme-a-materials h2,
+      .scheme-a-contact h2
+    ) {
+      max-width: 26ch;
+      font-size: clamp(2rem, 3vw, 3rem);
+      line-height: 1.14;
+      text-wrap: pretty;
+    }
+
+    html[lang="en"][data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-services__layout {
+      grid-template-columns: minmax(22rem, 0.9fr) minmax(0, 1.1fr);
+      gap: clamp(3rem, 5vw, 5rem);
+    }
+
+    html[lang="en"][data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-services li span {
+      font-size: clamp(1.15rem, 1.55vw, 1.45rem);
+      line-height: 1.24;
+    }
+
+    html[lang="en"][data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-services li small {
+      font-size: 0.8rem;
+      line-height: 1.55;
+    }
+
+    html[lang="en"][data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-home-process .scheme-a-section-head h2 {
+      max-width: 28ch;
+      font-size: clamp(2.2rem, 3.2vw, 3.2rem);
+      line-height: 1.14;
+    }
+
+    html[lang="en"][data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-home-faq__layout {
+      grid-template-columns: minmax(18rem, 0.42fr) minmax(0, 0.58fr);
+      gap: clamp(2.5rem, 5vw, 5rem);
+    }
+
+    html[lang="en"][data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-home-faq h2 {
+      max-width: 18em;
+      font-size: clamp(2rem, 3.1vw, 3rem);
+      line-height: 1.14;
+      text-wrap: pretty;
+    }
+
+    html[lang="en"][data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-contact h2 {
+      max-width: 22ch;
+    }
+
+    html[lang="en"] .scheme-a-footer__invitation h2 {
+      max-width: 18ch;
+      font-size: clamp(2.6rem, 4.5vw, 5rem);
+      line-height: 1.05;
+      text-wrap: pretty;
+    }
+  }
+
+  @media (min-width: 48rem) and (max-width: 64rem) {
+    html[lang="en"][data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-hero h1 {
+      max-width: 17ch;
+      font-size: clamp(2.4rem, 4.8vw, 3.6rem);
+      line-height: 1.08;
+    }
+
+    html[lang="en"][data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-project__collection-copy {
+      grid-template-columns: 1fr;
+      gap: 0.55rem;
+    }
+
+    html[lang="en"][data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-services__layout,
+    html[lang="en"][data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-home-faq__layout {
+      grid-template-columns: 1fr;
+      gap: 2.5rem;
+    }
+
+    html[lang="en"][data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-services header {
+      position: static;
+    }
+
+    html[lang="en"][data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-services h2,
+    html[lang="en"][data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-home-faq h2 {
+      max-width: 24ch;
+    }
+
+    html[lang="en"][data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-home-process__grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  @media (max-width: 47.9375rem) {
+    html[lang="en"][data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-hero h1 {
+      max-width: 15ch !important;
+      font-size: clamp(30px, 8vw, 33px) !important;
+      line-height: 1.1 !important;
+    }
+
+    html[lang="en"][data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-principle__inner {
+      padding-top: 48px;
+      padding-bottom: 56px;
+    }
+
+    html[lang="en"][data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-principle h2 {
+      max-width: none;
+      font-size: 26px;
+      line-height: 1.3;
+      text-wrap: pretty;
+    }
+
+    html[lang="en"][data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-statement > .scheme-a-frame {
+      padding-top: 56px;
+      padding-bottom: 64px;
+    }
+
+    html[lang="en"][data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-statement blockquote {
+      max-width: none;
+      font-size: 29px;
+      line-height: 1.28;
+      text-wrap: pretty;
+    }
+
+    html[lang="en"][data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-project,
+    html[lang="en"][data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-before {
+      padding-top: 56px;
+      padding-bottom: 64px;
+    }
+
+    html[lang="en"][data-public-theme="dark"] .scheme-a-home--atelier :is(
+      .scheme-a-section-head h2,
+      .scheme-a-services h2,
+      .scheme-a-materials h2,
+      .scheme-a-contact h2
+    ) {
+      max-width: none;
+      font-size: 29px;
+      line-height: 1.18;
+      text-wrap: pretty;
+    }
+
+    html[lang="en"][data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-services__layout {
+      gap: 2rem;
+    }
+
+    html[lang="en"][data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-services li a {
+      grid-template-columns: 1.75rem minmax(0, 1fr) auto;
+      min-height: 0;
+      align-items: start;
+      padding: 1rem 0;
+    }
+
+    html[lang="en"][data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-services li span {
+      font-size: 18px;
+      line-height: 1.25;
+    }
+
+    html[lang="en"][data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-services li small {
+      font-size: 12px;
+      line-height: 1.55;
+    }
+
+    html[lang="en"][data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-materials,
+    html[lang="en"][data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-home-process,
+    html[lang="en"][data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-home-faq {
+      padding-top: 56px;
+      padding-bottom: 64px;
+    }
+
+    html[lang="en"][data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-materials__media {
+      height: 300px;
+      min-height: 300px;
+    }
+
+    html[lang="en"][data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-materials__copy {
+      margin-top: 28px;
+    }
+
+    html[lang="en"][data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-home-process .scheme-a-section-head h2 {
+      max-width: none;
+      font-size: 31px;
+      line-height: 1.16;
+    }
+
+    html[lang="en"][data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-home-process__grid {
+      gap: 1rem;
+      margin-top: 1.5rem;
+    }
+
+    html[lang="en"][data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-home-process__card {
+      padding: 22px 20px;
+    }
+
+    html[lang="en"][data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-home-process__number {
+      margin-bottom: 12px;
+      font-size: 28px;
+    }
+
+    html[lang="en"][data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-home-process__card h3 {
+      margin-bottom: 8px;
+      font-size: 17px;
+      line-height: 1.25;
+    }
+
+    html[lang="en"][data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-home-process__card p {
+      font-size: 12px;
+      line-height: 1.6;
+    }
+
+    html[lang="en"][data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-home-faq__layout {
+      gap: 1.9rem;
+    }
+
+    html[lang="en"][data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-home-faq h2 {
+      max-width: none;
+      font-size: 29px;
+      line-height: 1.18;
+      text-wrap: pretty;
+    }
+
+    html[lang="en"][data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-contact > .scheme-a-frame {
+      padding-top: 64px;
+      padding-bottom: 48px;
+    }
+
+    html[lang="en"][data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-contact h2 {
+      max-width: none;
+      padding-top: 16px;
+      padding-bottom: 28px;
+      font-size: 30px;
+      line-height: 1.18;
+    }
+
+    html[lang="en"] .scheme-a-footer__invitation h2 {
+      max-width: 18ch;
+      font-size: clamp(2.25rem, 9vw, 2.75rem);
+      line-height: 1.08;
+      text-wrap: pretty;
+    }
+  }
+
   @media (max-width: 23.125rem) {
     html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-actions {
       grid-template-columns: 1fr;
