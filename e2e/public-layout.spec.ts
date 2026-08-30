@@ -324,18 +324,27 @@ test.describe("public responsive layout", () => {
     await page.goto("/zh/about", { waitUntil: "domcontentloaded" });
 
     const header = page.locator(".scheme-a-chrome");
-    const language = page.locator(".scheme-a-lang-pill").first();
+    const language = page.getByRole("group", { name: "切换语言" }).first();
+    const englishOption = language.getByRole("link", { name: "切换到英文" });
     const menu = page.locator(".scheme-a-chrome__menu-trigger--compact");
     await expect(header).toBeVisible();
     await expect(language).toBeVisible();
+    await expect(englishOption).toHaveAttribute("href", "/en/about");
     await expect(menu).toBeVisible();
+    await expect(language.locator(".scheme-a-chrome__menu-trigger")).toHaveCount(0);
     const before = await header.evaluate((element) => element.getBoundingClientRect().height);
 
-    await language.click();
+    await englishOption.click();
     await expect(page).toHaveURL(/\/en\/about$/);
-    await expect(page.locator(".scheme-a-lang-pill").first()).toBeVisible();
+    const englishLanguage = page.getByRole("group", { name: "Switch language" }).first();
+    await expect(englishLanguage).toBeVisible();
+    await expect(englishLanguage.getByRole("link", { name: "Switch to English" })).toHaveAttribute("aria-current", "true");
+    await expect(englishLanguage.getByRole("link", { name: "Switch to Chinese" })).toHaveAttribute("href", "/zh/about");
     const after = await page.locator(".scheme-a-chrome").evaluate((element) => element.getBoundingClientRect().height);
     expect(Math.abs(after - before)).toBeLessThanOrEqual(1);
+
+    await englishLanguage.getByRole("link", { name: "Switch to Chinese" }).click();
+    await expect(page).toHaveURL(/\/zh\/about$/);
   });
 
   test("product catalog keeps its editorial grid and direct filter controls", async ({ page }) => {

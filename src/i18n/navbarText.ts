@@ -1,6 +1,10 @@
 export const navbarText = {
   en: {
     switchLanguage: "Switch language",
+    switchToChinese: "Switch to Chinese",
+    switchToEnglish: "Switch to English",
+    chineseShort: "中文",
+    englishShort: "EN",
     openMenu: "Toggle navigation menu",
     closeMenu: "Close navigation menu",
     callAria: "Call FLASH CAST",
@@ -26,6 +30,10 @@ export const navbarText = {
   },
   zh: {
     switchLanguage: "切换语言",
+    switchToChinese: "切换到中文",
+    switchToEnglish: "切换到英文",
+    chineseShort: "中文",
+    englishShort: "EN",
     openMenu: "打开导航菜单",
     closeMenu: "关闭导航菜单",
     callAria: "拨打电话",
