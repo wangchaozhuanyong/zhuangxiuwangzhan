@@ -83,3 +83,17 @@ test("deployment entrypoints enable the generated-output exception only after bu
   assert.match(workflow, /Confirm release source is unchanged after build[\s\S]*release:guard -- --allow-generated-output/);
   assert.match(localDeployScript, /guardScript, "--require-remote", "--allow-generated-output"/);
 });
+
+test("release workflows use the verified public support email", () => {
+  const workflows = [
+    "prelaunch.yml",
+    "cloudflare-pages-deploy-manual.yml",
+  ];
+
+  for (const workflowName of workflows) {
+    const workflow = readFileSync(new URL(`../.github/workflows/${workflowName}`, import.meta.url), "utf8");
+
+    assert.match(workflow, /VITE_SITE_EMAIL:\s*support@flashcast\.com\.my/);
+    assert.doesNotMatch(workflow, /flashcast001@gmail\.com/);
+  }
+});

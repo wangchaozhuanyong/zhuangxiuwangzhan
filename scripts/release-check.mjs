@@ -48,6 +48,7 @@ assertCleanGit();
 
 const stableChecks = [
   "npm run arch:check",
+  "npm run test:release-policy",
   "npm run lint",
   "npm run typecheck",
   "npm run typecheck:strict-core",
