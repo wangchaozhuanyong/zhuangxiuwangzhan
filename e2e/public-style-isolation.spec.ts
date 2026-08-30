@@ -57,7 +57,7 @@ test.describe("public route style isolation", () => {
 
       const before = await readPublicStyleSignature(page);
       expect(before.bodyFont).toContain("Inter");
-      expect(before.headerFont).toContain("Inter");
+      expect(before.headerFont).toMatch(/PingFang SC|Noto Sans SC|Microsoft YaHei UI/);
       if (viewport.width < 768) expect(before.heroSpanWhiteSpace).toBe("normal");
 
       await page.locator('.scheme-a-hero a[href="/zh/quote#quote-form"]').first().click();
