@@ -1552,6 +1552,7 @@ const LANDING_TO_SERVICE_SLUGS: Record<string, string> = {
   "custom-built-in": "builtin",
   "warehouse-shelving": "warehouse",
   "kitchen-cabinet": "kitchen",
+  "flooring": "flooring",
 };
 
 const getLandingToServiceRedirectPath = (pathname: string) => {

@@ -100,6 +100,7 @@ const landingServiceRedirectSlugs = new Set([
   "custom-built-in",
   "warehouse-shelving",
   "kitchen-cabinet",
+  "flooring",
 ]);
 
 const [projects, posts, materials, areas, landingPages, services] = await Promise.all([

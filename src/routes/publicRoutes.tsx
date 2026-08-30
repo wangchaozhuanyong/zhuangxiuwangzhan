@@ -55,6 +55,7 @@ const landingToServiceSlugs: Record<string, string> = {
   "custom-built-in": "builtin",
   "warehouse-shelving": "warehouse",
   "kitchen-cabinet": "kitchen",
+  "flooring": "flooring",
 };
 const NotFound = lazyPublicPage(() => import("@/pages/NotFound"));
 
