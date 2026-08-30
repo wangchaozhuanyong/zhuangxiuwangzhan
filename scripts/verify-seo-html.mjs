@@ -16,8 +16,6 @@ const paths = [
   "/zh/services",
   "/en/projects",
   "/zh/materials",
-  "/en/products",
-  "/zh/products",
   "/en/promotions",
   "/zh/promotions",
   "/en/locations",

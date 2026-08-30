@@ -70,9 +70,28 @@ const legacyRedirectPaths = new Set([
   "/en/services/shoplot",
   "/zh/services/shoplot",
 ]);
+const redirectOnlyPaths = new Set([
+  "/products",
+]);
+const redirectOnlyLandingSlugs = new Set([
+  "office-renovation",
+  "shop-renovation",
+  "bathroom-renovation",
+  "old-house-renovation",
+  "custom-built-in",
+  "warehouse-shelving",
+  "kitchen-cabinet",
+  "flooring",
+]);
 
 for (const path of legacyRedirectPaths) {
   delete manifest[path];
+}
+
+for (const path of redirectOnlyPaths) {
+  for (const lang of ["en", "zh"]) {
+    delete manifest[`/${lang}${path}`];
+  }
 }
 
 const fetchRows = async (table, select) => {
@@ -125,7 +144,7 @@ const addDynamic = (lang, basePath, slug, title, description, metadata = {}) => 
 };
 
 const addSitePage = (lang, row) => {
-  if (!row.path || row.path.includes(":")) return;
+  if (!row.path || row.path.includes(":") || redirectOnlyPaths.has(row.path)) return;
   const path = row.path === "/" ? "" : row.path;
   const localized = path ? `/${lang}${path}` : `/${lang}`;
   const enPath = path ? `/en${path}` : "/en";
@@ -241,15 +260,6 @@ for (const lang of ["en", "zh"]) {
         ? row.seo_description_zh || row.excerpt_zh || row.seo_description_en || row.excerpt_en
         : row.seo_description_en || row.excerpt_en || row.seo_description_zh || row.excerpt_zh,
     );
-    addDynamic(
-      lang,
-      "/products",
-      row.slug,
-      lang === "zh" ? row.title_zh || row.title_en : row.title_en || row.title_zh,
-      lang === "zh"
-        ? row.seo_description_zh || row.excerpt_zh || row.seo_description_en || row.excerpt_en
-        : row.seo_description_en || row.excerpt_en || row.seo_description_zh || row.excerpt_zh,
-    );
   }
   for (const row of areas) {
     addDynamic(
@@ -263,6 +273,7 @@ for (const lang of ["en", "zh"]) {
     );
   }
   for (const row of landings) {
+    if (redirectOnlyLandingSlugs.has(row.slug)) continue;
     const title =
       lang === "zh"
         ? row.seo_title_zh || row.title_zh || row.seo_title_en || row.title_en

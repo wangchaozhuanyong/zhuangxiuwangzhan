@@ -5,7 +5,6 @@ const portraitHeroRoutes = [
   "/zh/services",
   "/zh/services/old-house",
   "/zh/materials",
-  "/zh/products",
   "/zh/promotions",
   "/zh/projects",
   "/zh/before-after",
@@ -141,7 +140,7 @@ test.describe("Scheme A approved-design fidelity", () => {
     const dialog = page.getByRole("dialog", { name: "完整目录" });
     await expect(dialog).toBeVisible();
     await expect(dialog.locator(".scheme-a-directory__groups section")).toHaveCount(4);
-    await expect(dialog.locator(".scheme-a-directory__groups a")).toHaveCount(16);
+    await expect(dialog.locator(".scheme-a-directory__groups a")).toHaveCount(14);
     await expect(dialog.locator('.scheme-a-directory__groups section[data-open="true"]')).toHaveCount(1);
     await expect(dialog.getByRole("button", { name: "空间作品", exact: true })).toHaveAttribute("aria-expanded", "true");
     await expect(dialog.locator(".scheme-a-directory__preview")).toBeVisible();
@@ -189,7 +188,8 @@ test.describe("Scheme A approved-design fidelity", () => {
     expect(contactMetrics.hoursLabelSize).toBeGreaterThanOrEqual(14);
 
     await dialog.getByRole("button", { name: "服务体系", exact: true }).click();
-    await expect(dialog.getByRole("link", { name: "装修报价专题", exact: true })).toHaveAttribute("href", "/zh/landing/office-renovation");
+    await expect(dialog.getByRole("link", { name: "材料库", exact: true })).toHaveAttribute("href", "/zh/materials");
+    await expect(dialog.getByRole("link", { name: "装修报价专题", exact: true })).toHaveCount(0);
 
     const whatsapp = dialog.locator(".scheme-a-directory__foot .is-whatsapp");
     await expect(whatsapp).toBeVisible();
@@ -429,18 +429,18 @@ test.describe("Scheme A approved-design fidelity", () => {
     await expect(menuTrigger).toBeFocused();
   });
 
-  test("product search remains readable inside the current dark surface", async ({ page }) => {
+  test("materials listing remains readable inside the current dark surface", async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
-    await page.goto("/zh/products", { waitUntil: "domcontentloaded" });
+    await page.goto("/zh/materials", { waitUntil: "domcontentloaded" });
 
-    const input = page.locator('.fc-route-search input[type="search"]');
-    await expect(input).toBeVisible();
-    const colors = await input.evaluate((element) => ({
+    const card = page.locator(".fc-route-card").first();
+    await expect(card).toBeVisible();
+    const colors = await card.evaluate((element) => ({
       background: getComputedStyle(element).backgroundColor,
       color: getComputedStyle(element).color,
     }));
-    expect(colors.background).toBe("rgba(0, 0, 0, 0)");
-    expect(colors.color).toBe("rgb(255, 255, 255)");
+    expect(colors.background).not.toBe("rgba(0, 0, 0, 0)");
+    expect(colors.color).not.toBe("rgba(0, 0, 0, 0)");
   });
 
   test("CMS hydration does not replace the promotions hero headline", async ({ page }) => {
@@ -575,7 +575,7 @@ test.describe("Scheme A approved-design fidelity", () => {
   test("known wide-screen heroes no longer stretch thumbnail sources", async ({ page }) => {
     await page.setViewportSize({ width: 1440, height: 900 });
 
-    for (const route of ["/zh/products", "/zh/promotions"]) {
+    for (const route of ["/zh/materials", "/zh/promotions"]) {
       await page.goto(route, { waitUntil: "domcontentloaded" });
       const image = page.locator(".fc-route-hero-media img");
       await expect(image).toBeVisible();
@@ -667,7 +667,7 @@ test.describe("Scheme A approved-design fidelity", () => {
   test("representative mobile actions keep a usable touch target", async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
 
-    for (const route of ["/zh", "/zh/projects", "/zh/products", "/zh/promotions", "/zh/faq", "/zh/contact", "/zh/quote"]) {
+    for (const route of ["/zh", "/zh/projects", "/zh/materials", "/zh/promotions", "/zh/faq", "/zh/contact", "/zh/quote"]) {
       await page.goto(route, { waitUntil: "domcontentloaded" });
       const undersized = await page.locator("button, summary").evaluateAll((elements) => elements.flatMap((element) => {
         const rect = element.getBoundingClientRect();

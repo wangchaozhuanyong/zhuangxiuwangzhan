@@ -187,8 +187,6 @@ const staticDefs = [
   page("zh", "/services/approval", "装修准证与图纸文件支持 | FLASH CAST", "装修准证申请、管理处协调、图纸文件和施工资料准备服务。"),
   page("en", "/materials", "Renovation Materials Guide | Flooring, Cabinets, Tiles | FLASH CAST", "Browse renovation materials including flooring, kitchen cabinets, tiles, and wall finishes."),
   page("zh", "/materials", "装修材料指南 | 地板、橱柜、瓷砖 | FLASH CAST", "浏览地板、橱柜、瓷砖、墙面等装修材料与搭配建议。"),
-  page("en", "/products", "Renovation Products Kuala Lumpur | FLASH CAST", "Browse renovation products, materials, finishes, cabinets, flooring, surfaces, and fittings available for project consultation with FLASH CAST."),
-  page("zh", "/products", "吉隆坡装修商品与材料 | FLASH CAST", "浏览 FLASH CAST 装修商品、材料、饰面、柜体、地板、台面与配件，并咨询项目适用方案。"),
   page("en", "/promotions", "Renovation Promotions Kuala Lumpur | FLASH CAST", "Review current FLASH CAST renovation promotion enquiries and the conditions that apply before quotation confirmation."),
   page("zh", "/promotions", "吉隆坡装修优惠活动 | FLASH CAST", "查看 FLASH CAST 当前装修优惠咨询方向与报价确认前的适用条件。"),
   page("en", "/locations", "Renovation Service Areas KL & Selangor | FLASH CAST", "Explore FLASH CAST renovation service areas across Kuala Lumpur, Selangor, and Klang Valley."),

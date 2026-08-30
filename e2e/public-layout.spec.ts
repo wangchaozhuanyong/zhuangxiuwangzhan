@@ -6,7 +6,6 @@ const primaryRoutes = [
   "/zh/services",
   "/zh/services/renovation",
   "/zh/materials",
-  "/zh/products",
   "/zh/promotions",
   "/zh/projects",
   "/zh/before-after",
@@ -347,24 +346,18 @@ test.describe("public responsive layout", () => {
     await expect(page).toHaveURL(/\/zh\/about$/);
   });
 
-  test("product catalog keeps its editorial grid and direct filter controls", async ({ page }) => {
+  test("material category catalog keeps its editorial grid", async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
-    await page.goto("/zh/products", { waitUntil: "domcontentloaded" });
+    await page.goto("/zh/materials", { waitUntil: "domcontentloaded" });
 
     const grid = page.locator(".fc-route-grid");
-    const filters = page.locator(".fc-route-filter button");
     await expect(grid).toBeVisible();
-    await expect(filters.first()).toBeVisible();
-    expect(await filters.count()).toBeGreaterThan(1);
+    await expect(page.locator(".fc-route-card").first()).toBeVisible();
     const mobileColumns = await grid.evaluate((element) => getComputedStyle(element).gridTemplateColumns.split(" ").length);
     expect(mobileColumns).toBe(1);
 
-    await filters.nth(1).click();
-    await expect(filters.nth(1)).toHaveAttribute("aria-pressed", "true");
-    await expect(page.locator(".fc-route-card").first()).toBeVisible();
-
     await page.setViewportSize({ width: 1440, height: 900 });
-    await page.goto("/zh/products", { waitUntil: "domcontentloaded" });
+    await page.goto("/zh/materials", { waitUntil: "domcontentloaded" });
     const desktopColumns = await page.locator(".fc-route-grid").evaluate((element) => getComputedStyle(element).gridTemplateColumns.split(" ").length);
     expect(desktopColumns).toBe(3);
   });
@@ -466,7 +459,7 @@ test.describe("public responsive layout", () => {
     page.on("console", onConsole);
     page.on("pageerror", (error) => pageErrors.push(error.message));
 
-    for (const route of ["/zh", "/zh/services", "/zh/products", "/zh/projects", "/zh/quote", "/zh/contact"]) {
+    for (const route of ["/zh", "/zh/services", "/zh/materials", "/zh/projects", "/zh/quote", "/zh/contact"]) {
       await page.goto(route, { waitUntil: "domcontentloaded" });
       await expect(page.locator("main").first()).toBeVisible();
     }
