@@ -11,13 +11,20 @@ const canUseIntersectionObserver = () =>
   typeof window !== "undefined" && typeof window.IntersectionObserver === "function";
 
 export function DeferredSmartImage({
-  rootMargin = "1000px",
+  rootMargin = "600px",
   placeholderClassName,
   className,
   ...imageProps
 }: DeferredSmartImageProps) {
   const placeholderRef = React.useRef<HTMLSpanElement | null>(null);
   const [shouldRender, setShouldRender] = React.useState(false);
+  const [imageState, setImageState] = React.useState<"idle" | "loading" | "loaded" | "error">("idle");
+  const imageSource = imageProps.src;
+
+  React.useEffect(() => {
+    setShouldRender(false);
+    setImageState("idle");
+  }, [imageSource]);
 
   React.useEffect(() => {
     if (shouldRender) return;
@@ -26,6 +33,7 @@ export function DeferredSmartImage({
 
     if (!canUseIntersectionObserver()) {
       setShouldRender(true);
+      setImageState("loading");
       return;
     }
 
@@ -33,6 +41,7 @@ export function DeferredSmartImage({
       (entries) => {
         if (entries.some((entry) => entry.isIntersecting)) {
           setShouldRender(true);
+          setImageState("loading");
           observer.disconnect();
         }
       },
@@ -44,8 +53,27 @@ export function DeferredSmartImage({
   }, [rootMargin, shouldRender]);
 
   return (
-    <span ref={placeholderRef} className={cn("block h-full w-full", placeholderClassName)}>
-      {shouldRender ? <SmartImage {...imageProps} className={className} /> : null}
+    <span
+      ref={placeholderRef}
+      className={cn("smart-image-placeholder block h-full w-full", placeholderClassName)}
+      data-image-state={imageState}
+      aria-busy={imageState === "loading" ? true : undefined}
+    >
+      {shouldRender ? (
+        <SmartImage
+          {...imageProps}
+          revealOnLoad={imageProps.revealOnLoad ?? true}
+          className={className}
+          onLoad={(event) => {
+            setImageState("loaded");
+            imageProps.onLoad?.(event);
+          }}
+          onError={(event) => {
+            setImageState("error");
+            imageProps.onError?.(event);
+          }}
+        />
+      ) : null}
     </span>
   );
 }

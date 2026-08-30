@@ -8,13 +8,18 @@
     --scheme-a-line: rgb(98 81 56 / 0.16);
     --scheme-a-dark-line: rgb(238 233 223 / 0.15);
     --scheme-a-gutter: clamp(1.375rem, 4vw, 4rem);
-    --scheme-a-section: clamp(5rem, 10vw, 9rem);
+    --scheme-a-section: clamp(4rem, 7vw, 6.5rem);
     --scheme-a-frame: 86rem;
   }
 
   html[data-public-theme="dark"] {
-    --font-display: Georgia, "Songti SC", "STSong", "Source Han Serif SC", "Noto Serif CJK SC", serif;
-    --font-body: Inter, "Noto Sans SC", "Microsoft YaHei UI", "PingFang SC", sans-serif;
+    --font-display: "Inter Tight Local", "Arial Narrow", "Helvetica Neue", Arial, sans-serif;
+    --font-body: "Inter Local", "Helvetica Neue", Arial, sans-serif;
+  }
+
+  html[lang^="zh"][data-public-theme="dark"] {
+    --font-display: "Songti SC", "STSong", "Source Han Serif SC", "Noto Serif CJK SC", serif;
+    --font-body: "PingFang SC", "Noto Sans SC", "Microsoft YaHei UI", sans-serif;
   }
 
   html[data-public-theme="dark"] .scheme-a-home {
@@ -22,7 +27,7 @@
     overflow: clip;
     color: var(--scheme-a-ink);
     background: var(--scheme-a-paper);
-    font-family: "PingFang SC", "Noto Sans SC", "Helvetica Neue", Arial, sans-serif;
+    font-family: var(--font-body);
   }
 
   html[data-public-theme="dark"] .scheme-a-home *,
@@ -36,7 +41,7 @@
   }
 
   html[data-public-theme="dark"] .scheme-a-home :is(h1, h2, blockquote, strong) {
-    font-family: Georgia, "Songti SC", "STSong", "Times New Roman", serif;
+    font-family: var(--font-display);
     font-weight: 400;
   }
 
@@ -123,7 +128,6 @@
     object-fit: cover;
     object-position: center;
     filter: none !important;
-    opacity: 1 !important;
   }
 
   html[data-public-theme="dark"] .scheme-a-hero__copy {
@@ -207,7 +211,7 @@
 
   html[data-public-theme="dark"] .mobile-navigation__masthead strong {
     color: var(--scheme-a-paper);
-    font-family: Georgia, "Times New Roman", serif;
+    font-family: var(--font-display);
     font-size: 1.15rem;
     font-weight: 400;
     letter-spacing: 0.055em;
@@ -253,7 +257,7 @@
     border: 0 !important;
     color: rgb(238 233 223 / 0.78) !important;
     background: transparent !important;
-    font-family: Georgia, "Songti SC", "STSong", serif;
+    font-family: var(--font-display);
     font-size: 1.04rem;
     font-weight: 400;
   }
@@ -617,7 +621,7 @@
   }
 
   html[data-public-theme="dark"] .scheme-a-services li span {
-    font-family: Georgia, "Songti SC", "STSong", serif;
+    font-family: var(--font-display);
     font-size: clamp(1.25rem, 2vw, 1.8rem);
   }
 
@@ -891,7 +895,7 @@
     max-width: 17ch;
     margin: 0;
     padding-top: 1rem;
-    font-family: Georgia, "Songti SC", "STSong", serif;
+    font-family: var(--font-display);
     font-size: clamp(2.5rem, 5vw, 5.2rem);
     font-weight: 400;
     line-height: 1.16;
@@ -928,7 +932,7 @@
   html[data-public-theme="dark"] .scheme-a-transformation__index {
     margin: 0;
     color: var(--scheme-a-gold);
-    font-family: Georgia, "Times New Roman", serif;
+    font-family: var(--font-display);
     font-size: clamp(1.1rem, 2vw, 1.55rem);
     letter-spacing: 0.08em;
   }
@@ -936,7 +940,7 @@
   html[data-public-theme="dark"] .scheme-a-transformation__copy h2 {
     max-width: 20ch;
     margin: 0;
-    font-family: Georgia, "Songti SC", "STSong", serif;
+    font-family: var(--font-display);
     font-size: clamp(2.1rem, 4vw, 4.2rem);
     font-weight: 400;
     line-height: 1.18;
@@ -1141,7 +1145,7 @@
 
   html[data-public-theme="dark"] .scheme-a-project-card__index {
     color: var(--scheme-a-gold);
-    font-family: Georgia, "Times New Roman", serif;
+    font-family: var(--font-display);
     font-size: 0.75rem;
     letter-spacing: 0.06em;
   }
@@ -1157,7 +1161,7 @@
   html[data-public-theme="dark"] .scheme-a-project-card__body h2 {
     margin: 0;
     padding-top: 0.55rem;
-    font-family: Georgia, "Songti SC", "STSong", serif;
+    font-family: var(--font-display);
     font-size: clamp(1.55rem, 2.6vw, 2.7rem);
     font-weight: 400;
     line-height: 1.24;
@@ -1238,7 +1242,7 @@
     align-self: start;
     padding-top: 0.2rem;
     color: var(--scheme-a-gold);
-    font-family: Georgia, "Times New Roman", serif;
+    font-family: var(--font-display);
     font-size: 0.82rem;
     letter-spacing: 0.08em;
   }
@@ -1266,7 +1270,7 @@
     max-width: 13ch;
     margin: 0;
     padding-top: 0.8rem;
-    font-family: Georgia, "Songti SC", "STSong", serif;
+    font-family: var(--font-display);
     font-size: clamp(2rem, 4vw, 4.1rem);
     font-weight: 400;
     line-height: 1.16;
@@ -1322,7 +1326,7 @@
     max-width: 18ch;
     margin: 0;
     padding-top: 1rem;
-    font-family: Georgia, "Songti SC", "STSong", serif;
+    font-family: var(--font-display);
     font-size: clamp(2.35rem, 4.8vw, 4.8rem);
     font-weight: 400;
     line-height: 1.2;
@@ -1352,7 +1356,7 @@
 
   html[data-public-theme="dark"] .scheme-a-service-principles__grid h2 {
     margin: 0;
-    font-family: Georgia, "Songti SC", "STSong", serif;
+    font-family: var(--font-display);
     font-size: 1.45rem;
     font-weight: 400;
     line-height: 1.35;
@@ -1415,7 +1419,7 @@
     margin: 0;
     padding-top: 1rem;
     color: var(--scheme-a-paper);
-    font-family: Georgia, "Songti SC", "STSong", serif;
+    font-family: var(--font-display);
     font-size: clamp(2.35rem, 5vw, 5rem);
     font-weight: 400;
     line-height: 1.18;

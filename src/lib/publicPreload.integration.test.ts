@@ -1,4 +1,12 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
+import {
+  projectBlogPostSummariesForPreload,
+  projectHomeContentBundleForPreload,
+  projectMaterialsForPreload,
+  projectProjectSummariesForPreload,
+  projectServiceAreaSummariesForPreload,
+  projectServiceSummariesForPreload,
+} from "../../functions/publicDataProjection";
 
 const originalDocumentDescriptor = Object.getOwnPropertyDescriptor(globalThis, "document");
 
@@ -95,6 +103,76 @@ describe("public preload data", () => {
     expect(blogPost?.readTime).toBe("1 min");
   });
 
+  it("hydrates both languages from the projected Edge listing contract", async () => {
+    setPreloadedPublicData({
+      services: projectServiceSummariesForPreload([{
+        id: "service-1",
+        slug: "office-renovation",
+        title_en: "Office Renovation",
+        title_zh: "办公室装修",
+        excerpt_en: "Office upgrade",
+        excerpt_zh: "办公室升级",
+        content_en: "Detail omitted from the listing preload",
+      }]),
+      materials: projectMaterialsForPreload([{
+        id: "material-1",
+        slug: "vinyl-plank",
+        category: "Flooring",
+        subcategory: "Vinyl",
+        title_en: "Vinyl Plank",
+        title_zh: "乙烯基地板",
+        excerpt_en: "Durable flooring",
+        excerpt_zh: "耐用地板",
+        image_url: "/vinyl.webp",
+        content_en: "Detail omitted from the listing preload",
+      }]),
+      projectSummaries: projectProjectSummariesForPreload([{
+        id: "project-1",
+        slug: "project-one",
+        title_en: "Project One",
+        title_zh: "项目一",
+        excerpt_en: "Project summary",
+        excerpt_zh: "项目摘要",
+        project_images: [{ image_type: "cover", image_url: "/project.webp", alt_en: "Project", alt_zh: "项目" }],
+      }]),
+      serviceAreas: projectServiceAreaSummariesForPreload([{
+        id: "area-1",
+        slug: "bangsar",
+        area_name: "Bangsar",
+        excerpt_en: "Bangsar renovation",
+        excerpt_zh: "孟沙装修",
+        property_types: ["Condo"],
+      }]),
+      blogPosts: projectBlogPostSummariesForPreload([{
+        id: "blog-1",
+        slug: "renovation-guide",
+        title_en: "Renovation Guide",
+        title_zh: "装修指南",
+        excerpt_en: "Planning notes",
+        excerpt_zh: "规划说明",
+        content_en: Array.from({ length: 221 }, () => "word").join(" "),
+        content_zh: "装".repeat(301),
+        category: "Renovation",
+      }]),
+    });
+
+    const {
+      getPublishedBlogPosts,
+      getPublishedMaterials,
+      getPublishedProjectSummaries,
+      getPublishedServiceAreas,
+      getPublishedServices,
+    } = await import("@/lib/contentApi");
+
+    expect((await getPublishedServices("en"))[0]?.title).toBe("Office Renovation");
+    expect((await getPublishedServices("zh"))[0]?.title).toBe("办公室装修");
+    expect((await getPublishedMaterials("zh"))[0]?.items[0]?.name).toBe("乙烯基地板");
+    expect((await getPublishedProjectSummaries("en"))[0]?.thumbnail).toBe("/project.webp");
+    expect((await getPublishedServiceAreas("zh"))[0]?.description).toBe("孟沙装修");
+    expect((await getPublishedBlogPosts("en"))[0]?.readTime).toBe("2 min");
+    expect((await getPublishedBlogPosts("zh"))[0]?.readTime).toBe("2 min");
+  });
+
   it("uses preloaded site pages and footer CTA blocks", async () => {
     setPreloadedPublicData({
       sitePages: {
@@ -142,6 +220,71 @@ describe("public preload data", () => {
     expect(result.source).toBe("remote");
     expect(result.data.brandPartners).toHaveLength(1);
     expect(result.data.brandPartnersEnabled).toBe(false);
+  });
+
+  it("hydrates the visible homepage fields from the projected bilingual bundle", async () => {
+    setPreloadedPublicData({
+      homeContentBundle: projectHomeContentBundleForPreload({
+        site_pages: [{
+          id: "home",
+          page_key: "home",
+          path: "/",
+          seo_title_en: "Home SEO",
+          seo_title_zh: "首页 SEO",
+          image_url: "/home.webp",
+          alt_en: "Home",
+          alt_zh: "首页",
+          content_en: "Detail omitted from the homepage preload",
+        }],
+        hero_slides: [{
+          id: "hero",
+          title_en: "Build well",
+          title_zh: "认真建造",
+          button_label_en: "Get a quote",
+          button_label_zh: "获取报价",
+          button_url: "/quote",
+          image_url: "/hero.webp",
+        }],
+        services: [{
+          id: "service",
+          slug: "office-renovation",
+          title_en: "Office renovation",
+          title_zh: "办公室装修",
+          excerpt_en: "Office upgrade",
+          excerpt_zh: "办公室升级",
+          content_en: "Detail omitted from the homepage preload",
+        }],
+        projects: [{
+          id: "project",
+          slug: "project-one",
+          title_en: "Project One",
+          title_zh: "项目一",
+          excerpt_en: "Project summary",
+          excerpt_zh: "项目摘要",
+          project_images: [{ image_type: "cover", image_url: "/project.webp", alt_en: "Project", alt_zh: "项目" }],
+        }],
+        faqs: [{
+          id: "faq",
+          page_key: "home",
+          question_en: "Question?",
+          question_zh: "问题？",
+          answer_en: "Answer.",
+          answer_zh: "答案。",
+        }],
+      }),
+    });
+
+    const { getPublishedHomeContentBundle } = await import("@/lib/homeContentApi");
+    const english = await getPublishedHomeContentBundle("en");
+    const chinese = await getPublishedHomeContentBundle("zh");
+
+    expect(english.data.pageContent?.seo_title).toBe("Home SEO");
+    expect(chinese.data.pageContent?.seo_title).toBe("首页 SEO");
+    expect(english.data.heroSlides[0]?.buttonLabel).toBe("Get a quote");
+    expect(chinese.data.heroSlides[0]?.buttonLabel).toBe("获取报价");
+    expect(english.data.services[0]?.summary).toBe("Office upgrade");
+    expect(chinese.data.projects[0]?.thumbnailAlt).toBe("项目");
+    expect(chinese.data.faqs[0]?.answer).toBe("答案。");
   });
 
   it("keeps the hydrated homepage aligned with the published site_pages record", async () => {

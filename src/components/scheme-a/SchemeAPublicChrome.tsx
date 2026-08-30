@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import { Link as RouterLink, useLocation } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 import {
   ArrowUp,
   ArrowUpRight,
@@ -18,6 +18,7 @@ import {
   X,
 } from "lucide-react";
 import LocalizedLink from "@/components/LocalizedLink";
+import LanguageRouteLink from "@/components/LanguageRouteLink";
 import SmartImage from "@/components/SmartImage";
 import WhatsAppIcon from "@/components/WhatsAppIcon";
 import {
@@ -79,11 +80,17 @@ const LanguageSwitch = ({
   label: string;
   className?: string;
 }) => (
-  <RouterLink className={`scheme-a-lang-pill ${className}`.trim()} to={to} aria-label={label}>
+  <LanguageRouteLink
+    className={`scheme-a-lang-pill ${className}`.trim()}
+    to={to}
+    targetLanguage={language === "zh" ? "en" : "zh"}
+    prefetchOnReady
+    aria-label={label}
+  >
     <span className={`scheme-a-lang-option ${language === "zh" ? "is-active" : ""}`}>中文</span>
     <i className="scheme-a-lang-divider" aria-hidden="true" />
     <span className={`scheme-a-lang-option ${language === "en" ? "is-active" : ""}`}>EN</span>
-  </RouterLink>
+  </LanguageRouteLink>
 );
 
 export const SchemeANavbar = () => {
@@ -109,6 +116,7 @@ export const SchemeANavbar = () => {
   const companyName = settings.company_name || "FLASH CAST SDN. BHD.";
   const nextLanguage = language === "zh" ? "en" : "zh";
   const languagePath = switchLanguagePath(location.pathname, nextLanguage, location.search, location.hash);
+  const publicPath = stripLanguagePrefix(location.pathname);
   const overlay = hasImmersiveHero && !scrolled && !menuOpen;
 
   const closeDirectory = useCallback(() => {
@@ -135,7 +143,7 @@ export const SchemeANavbar = () => {
     setMenuOpen(false);
     setOpenGroup(null);
     setPreviewItem(currentItem);
-  }, [currentItem, location.pathname, setMenuOpen]);
+  }, [currentItem, publicPath, setMenuOpen]);
 
   useEffect(() => {
     const sentinel = sentinelRef.current;
@@ -153,7 +161,7 @@ export const SchemeANavbar = () => {
     }, { threshold: 0 });
     observer.observe(sentinel);
     return () => observer.disconnect();
-  }, [hasImmersiveHero, location.pathname]);
+  }, [hasImmersiveHero, publicPath]);
 
   useEffect(() => {
     if (!menuOpen) return;
@@ -276,7 +284,7 @@ export const SchemeANavbar = () => {
               ))}
             </nav>
             <figure className="scheme-a-directory__preview">
-              <SmartImage src={previewItem.previewImage} alt={navText.previewAlt} width={1100} height={800} quality={84} />
+              <SmartImage src={previewItem.previewImage} alt={navText.previewAlt} width={1100} height={800} quality={84} revealOnLoad />
               <figcaption><span>{language === "zh" ? "当前章节" : "Current chapter"}</span><strong>{translate(previewItem.labelKey)}</strong></figcaption>
             </figure>
             <div className="scheme-a-directory__contact">
@@ -315,7 +323,7 @@ export const SchemeAFooterPrelude = () => {
   return (
     <section className="scheme-a-footer-prelude" data-cinematic-section>
       <div className="scheme-a-footer__panorama">
-        <SmartImage src="/images/projects/generated-portfolio/mont-kiara-luxury-condo-renovation.webp" alt={t.footerTitle} width={2560} height={1440} sizes="100vw" candidateWidths={[360, 560, 720, 960, 1200, 1600, 2560]} quality={88} />
+        <SmartImage src="/images/projects/generated-portfolio/mont-kiara-luxury-condo-renovation.webp" alt={t.footerTitle} width={2560} height={1440} sizes="100vw" candidateWidths={[360, 560, 720, 960, 1200, 1600, 2560]} quality={88} revealOnLoad />
         <div className="scheme-a-footer__invitation scheme-a-frame">
           <p>{t.footerKicker}</p><h2>{t.footerTitle}</h2><span>{t.footerBody}</span>
           <div>
@@ -381,7 +389,7 @@ export const SchemeAFooter = () => {
         </div>
         <div className="scheme-a-footer__legal scheme-a-frame">
           <span>{t.copyright} {footer.rights}</span>
-          <nav><LocalizedLink to="/privacy">{footer.privacy}</LocalizedLink><LocalizedLink to="/terms">{footer.terms}</LocalizedLink><RouterLink to={languagePath}>{t.language}: {nextLanguage === "zh" ? "中文" : "EN"}</RouterLink><button type="button" onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}>{t.backToTop}<ArrowUp /></button></nav>
+          <nav><LocalizedLink to="/privacy">{footer.privacy}</LocalizedLink><LocalizedLink to="/terms">{footer.terms}</LocalizedLink><LanguageRouteLink to={languagePath} targetLanguage={nextLanguage}>{t.language}: {nextLanguage === "zh" ? "中文" : "EN"}</LanguageRouteLink><button type="button" onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}>{t.backToTop}<ArrowUp /></button></nav>
         </div>
       </div>
     </footer>

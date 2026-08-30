@@ -33,6 +33,45 @@ import { toArray, toRecord, toText, type UnknownRecord } from "@/lib/recordUtils
 
 type Language = "en" | "zh";
 
+const HOME_BUNDLE_SNAPSHOT_TTL = 60 * 1000;
+type RawHomeBundle = Awaited<ReturnType<typeof fetchPublicHomeBundleData>>;
+type BrandPartnersVisibility = Awaited<ReturnType<typeof fetchPublishedHomeSectionRow>>;
+
+let homeBundleSnapshot: { data: RawHomeBundle; expiresAt: number } | null = null;
+let homeBundleRequest: Promise<RawHomeBundle> | null = null;
+let brandPartnersVisibilitySnapshot: { data: BrandPartnersVisibility; expiresAt: number } | null = null;
+let brandPartnersVisibilityRequest: Promise<BrandPartnersVisibility> | null = null;
+
+const fetchSharedHomeBundleData = async () => {
+  const now = Date.now();
+  if (homeBundleSnapshot && homeBundleSnapshot.expiresAt > now) return homeBundleSnapshot.data;
+  if (homeBundleRequest) return homeBundleRequest;
+
+  homeBundleRequest = fetchPublicHomeBundleData()
+    .then((data) => {
+      if (data) homeBundleSnapshot = { data, expiresAt: Date.now() + HOME_BUNDLE_SNAPSHOT_TTL };
+      return data;
+    })
+    .finally(() => { homeBundleRequest = null; });
+  return homeBundleRequest;
+};
+
+const fetchSharedBrandPartnersVisibility = async () => {
+  const now = Date.now();
+  if (brandPartnersVisibilitySnapshot && brandPartnersVisibilitySnapshot.expiresAt > now) {
+    return brandPartnersVisibilitySnapshot.data;
+  }
+  if (brandPartnersVisibilityRequest) return brandPartnersVisibilityRequest;
+
+  brandPartnersVisibilityRequest = fetchPublishedHomeSectionRow("brand_partners")
+    .then((data) => {
+      brandPartnersVisibilitySnapshot = { data, expiresAt: Date.now() + HOME_BUNDLE_SNAPSHOT_TTL };
+      return data;
+    })
+    .finally(() => { brandPartnersVisibilityRequest = null; });
+  return brandPartnersVisibilityRequest;
+};
+
 const readText = (record: UnknownRecord | null | undefined, field: string, fallback = "") => toText(record?.[field], fallback);
 const readRecordArray = (value: unknown): UnknownRecord[] => toArray<UnknownRecord>(value).map(toRecord);
 
@@ -414,7 +453,7 @@ export const getPublishedHomeContentBundle = async (
     const hasPreloadedBrandPartnersVisibility = readRecordArray(preloadedHomeBundle.home_sections)
       .some((row) => row.section_key === "brand_partners" && typeof row.status === "string");
     const brandPartnersVisibility = !hasPreloadedBrandPartnersVisibility && hasPublicContentDatabaseClient()
-      ? await fetchPublishedHomeSectionRow("brand_partners")
+      ? await fetchSharedBrandPartnersVisibility()
       : null;
     return createRemoteContent(mapRemoteHomeContentBundle(preloadedHomeBundle, language, brandPartnersVisibility));
   }
@@ -423,8 +462,8 @@ export const getPublishedHomeContentBundle = async (
 
   try {
     const [data, brandPartnersVisibility] = await Promise.all([
-      fetchPublicHomeBundleData(),
-      fetchPublishedHomeSectionRow("brand_partners"),
+      fetchSharedHomeBundleData(),
+      fetchSharedBrandPartnersVisibility(),
     ]);
     const payload = toRecord(data);
     if (!Object.keys(payload).length) return fallback("remote-empty");

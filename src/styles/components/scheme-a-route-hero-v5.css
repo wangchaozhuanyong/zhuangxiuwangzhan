@@ -167,7 +167,6 @@
   object-fit: cover;
   object-position: var(--fc-route-hero-position-desktop, center);
   filter: none !important;
-  opacity: 1 !important;
 }
 
 @media (max-width: 1023px) {

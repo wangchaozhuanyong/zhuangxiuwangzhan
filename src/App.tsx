@@ -222,7 +222,7 @@ const AppShell = () => {
       : "public-main public-main--subpage";
   const publicMainTransitionClass = !isAdminRoute ? "public-main-transition" : undefined;
   const mainContentClass = [publicMainClass, publicMainTransitionClass].filter(Boolean).join(" ") || undefined;
-  const mainContentKey = isAdminRoute ? "admin-main-content" : location.pathname;
+  const mainContentKey = isAdminRoute ? "admin-main-content" : publicPath;
   const publicSurface = publicPath.startsWith("/landing/") ? "campaign" : "scheme-a";
 
   useEffect(() => {
@@ -236,7 +236,7 @@ const AppShell = () => {
   return (
     <PublicChromeProvider
       isAdminRoute={isAdminRoute}
-      routeKey={location.pathname}
+      routeKey={isAdminRoute ? location.pathname : publicPath}
       mobileActionBarMode={isAdminRoute ? "hidden" : "scroll-up"}
     >
       <DynamicBrandHead />
