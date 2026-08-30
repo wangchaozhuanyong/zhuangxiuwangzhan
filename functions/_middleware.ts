@@ -244,7 +244,7 @@ const HOME_ATELIER_HERO_PRELOADS: ImagePreload[] = [
       "/images/_responsive/heroes/w1600/v4/home-atelier-desktop.webp 1600w",
       "/images/heroes/v4/home-atelier-desktop.webp 2880w",
     ].join(", "),
-    sizes: "(min-width: 1440px) 58vw, 60vw",
+    sizes: "(min-width: 90rem) max(58vw, 178vh), (min-width: 73.75rem) max(60vw, 178vh), 100vw",
     media: "(min-width: 1180px)",
   },
 ];

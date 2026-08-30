@@ -269,7 +269,17 @@ describe("public Edge HTML cache", () => {
     expect(html).toContain('media="(max-width: 767px)"');
     expect(html).toContain('media="(min-width: 768px) and (max-width: 1179px)"');
     expect(html).toContain('media="(min-width: 1180px)"');
+    expect(html).toContain('imagesizes="(min-width: 90rem) max(58vw, 178vh), (min-width: 73.75rem) max(60vw, 178vh), 100vw"');
+    expect(html).not.toContain('imagesizes="(min-width: 1440px) 58vw, 60vw"');
     expect(html).not.toContain('rel="preload" as="image" href="/images/heroes/hero-luxury-living.webp"');
+  });
+
+  it("does not preload the homepage hero on non-home routes", async () => {
+    const response = await requestPage({ path: "/zh/contact" });
+    const html = await response.text();
+
+    expect(html).not.toContain("data-flashcast-dynamic-image-preloads");
+    expect(html).not.toContain("home-atelier-");
   });
 
   it("does not reuse cached HTML after the published content revision advances", async () => {
