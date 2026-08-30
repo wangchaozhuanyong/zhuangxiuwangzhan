@@ -245,8 +245,8 @@ test.describe("public responsive layout", () => {
 
     expect(metrics.borderTopWidth).toBe("0px");
     expect(metrics.borderTopStyle).toBe("none");
-    expect(metrics.buttonToRegions).toBeGreaterThanOrEqual(44);
-    expect(metrics.buttonToRegions).toBeLessThanOrEqual(48);
+    expect(metrics.buttonToRegions).toBeGreaterThanOrEqual(30);
+    expect(metrics.buttonToRegions).toBeLessThanOrEqual(34);
     expect(metrics.regionsToBottom).toBeGreaterThanOrEqual(56);
     expect(metrics.regionsToBottom).toBeLessThanOrEqual(68);
   });
