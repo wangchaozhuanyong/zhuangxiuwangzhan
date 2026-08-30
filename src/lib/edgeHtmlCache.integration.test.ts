@@ -185,6 +185,44 @@ describe("public Edge HTML cache", () => {
     expect(response.headers.get("location")).toBe(`https://flashcast.com.my${expectedPath}`);
   });
 
+  it("filters redirect-only URLs from the merged public sitemap", async () => {
+    const staticSitemap = `<?xml version="1.0" encoding="UTF-8"?><urlset>
+      <url><loc>https://flashcast.com.my/en/products</loc></url>
+      <url><loc>https://flashcast.com.my/zh/services/flooring</loc></url>
+    </urlset>`;
+    const dynamicSitemap = `<?xml version="1.0" encoding="UTF-8"?><urlset>
+      <url><loc>https://flashcast.com.my/en/landing/flooring</loc></url>
+      <url><loc>https://flashcast.com.my/zh/landing/office-renovation</loc></url>
+      <url><loc>https://flashcast.com.my/en/services/flooring</loc></url>
+    </urlset>`;
+    vi.stubGlobal("fetch", vi.fn(async (input: RequestInfo | URL) => {
+      if (String(input).includes("/functions/v1/sitemap")) {
+        return new Response(dynamicSitemap, { headers: { "content-type": "application/xml" } });
+      }
+      return new Response("[]", { headers: { "content-type": "application/json" } });
+    }));
+
+    const response = await onRequest({
+      request: new Request("https://flashcast.com.my/sitemap.xml"),
+      env: {
+        VITE_SUPABASE_URL: "https://example.supabase.co",
+        VITE_SUPABASE_ANON_KEY: "test-anon-key",
+        ASSETS: {
+          fetch: async () => new Response(staticSitemap, { headers: { "content-type": "application/xml" } }),
+        },
+      },
+      next: async () => new Response("not used"),
+    } as never);
+    const xml = await response.text();
+
+    expect(response.status).toBe(200);
+    expect(xml).toContain("https://flashcast.com.my/zh/services/flooring");
+    expect(xml).toContain("https://flashcast.com.my/en/services/flooring");
+    expect(xml).not.toContain("https://flashcast.com.my/en/products");
+    expect(xml).not.toContain("https://flashcast.com.my/en/landing/flooring");
+    expect(xml).not.toContain("https://flashcast.com.my/zh/landing/office-renovation");
+  });
+
   it("serves a fresh cache hit without querying Supabase again", async () => {
     const firstResponse = await requestPage();
     expect(firstResponse.headers.get("x-flashcast-html-cache")).toBe("miss");

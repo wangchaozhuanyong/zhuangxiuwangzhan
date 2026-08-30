@@ -1569,6 +1569,12 @@ const getLandingToServiceRedirectPath = (pathname: string) => {
   return match && serviceSlug ? `/${match[1]}/services/${serviceSlug}` : null;
 };
 
+const isRedirectOnlySitemapPath = (pathname: string) => Boolean(
+  getExactLegacyRedirectPath(pathname)
+  || getProductsToMaterialsRedirectPath(pathname)
+  || getLandingToServiceRedirectPath(pathname),
+);
+
 const injectSeo = (html: string, meta: SeoEntry, siteSettings?: SiteSettingsHead | null) => {
   const safeMeta = {
     ...meta,
@@ -1677,7 +1683,7 @@ const mergeSitemapXml = (staticXml: string, dynamicXml: string) => {
     const location = block.match(/<loc>([^<]+)<\/loc>/i)?.[1]?.trim();
     if (!location) continue;
     try {
-      if (EXACT_LEGACY_REDIRECTS[new URL(location).pathname]) continue;
+      if (isRedirectOnlySitemapPath(new URL(location).pathname)) continue;
     } catch {
       continue;
     }
