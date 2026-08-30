@@ -156,6 +156,20 @@ describe("public Edge HTML cache", () => {
   });
 
   it.each([
+    ["/en/products", "/en/materials"],
+    ["/zh/products/spc-flooring-natural-oak/?source=legacy", "/zh/materials/spc-flooring-natural-oak?source=legacy"],
+  ])("permanently redirects %s to the matching material path", async (path, expectedPath) => {
+    const response = await onRequest({
+      request: new Request(`https://flashcast.com.my${path}`),
+      env: {},
+      next: async () => new Response("not used"),
+    } as never);
+
+    expect(response.status).toBe(301);
+    expect(response.headers.get("location")).toBe(`https://flashcast.com.my${expectedPath}`);
+  });
+
+  it.each([
     ["/en/landing/office-renovation", "/en/services/office-renovation"],
     ["/zh/landing/kitchen-cabinet?source=legacy", "/zh/services/kitchen?source=legacy"],
     ["/en/landing/warehouse-shelving/", "/en/services/warehouse"],

@@ -430,7 +430,7 @@ export const SchemeAMobileDock = () => {
   const items = [
     { path: "/", label: t.dockHome, icon: Home },
     { path: "/projects", label: t.dockProjects, icon: FolderOpen },
-    { path: "/products", label: t.dockProducts, icon: PackageSearch },
+    { path: "/materials", label: t.dockMaterials, icon: PackageSearch },
     { path: "/promotions", label: t.dockPromotions, icon: BadgePercent },
     { path: "/contact", label: t.dockContact, icon: Mail },
   ];

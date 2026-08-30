@@ -52,7 +52,6 @@ export const publicNavigationGroups: readonly PublicNavGroup[] = [
       { labelKey: "nav.services", path: "/services", icon: "services", previewImage: previewImages.services },
       { labelKey: "nav.oldHouse", path: "/services/old-house", icon: "oldHouse", previewImage: "/images/heroes/v2/hero-old-house-premium.webp" },
       { labelKey: "nav.materials", path: "/materials", icon: "materials", previewImage: "/images/heroes/v2/hero-materials-premium.webp" },
-      { labelKey: "nav.products", path: "/products", icon: "products", previewImage: "/images/services/builtin-solutions.webp" },
       { labelKey: "nav.promotions", path: "/promotions", icon: "promotions", previewImage: previewImages.contact },
     ],
   },
