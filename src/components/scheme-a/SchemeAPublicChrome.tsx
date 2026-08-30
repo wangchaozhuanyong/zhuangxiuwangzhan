@@ -71,27 +71,49 @@ const getGroupLabel = (key: PublicNavGroupKey, navText: typeof navbarText.zh | t
 
 const LanguageSwitch = ({
   language,
-  to,
-  label,
-  className = "",
+  paths,
+  labels,
 }: {
   language: "zh" | "en";
-  to: string;
-  label: string;
-  className?: string;
-}) => (
-  <LanguageRouteLink
-    className={`scheme-a-lang-pill ${className}`.trim()}
-    to={to}
-    targetLanguage={language === "zh" ? "en" : "zh"}
-    prefetchOnReady
-    aria-label={label}
-  >
-    <span className={`scheme-a-lang-option ${language === "zh" ? "is-active" : ""}`}>中文</span>
-    <i className="scheme-a-lang-divider" aria-hidden="true" />
-    <span className={`scheme-a-lang-option ${language === "en" ? "is-active" : ""}`}>EN</span>
-  </LanguageRouteLink>
-);
+  paths: Record<"zh" | "en", string>;
+  labels: {
+    group: string;
+    zh: string;
+    en: string;
+    zhShort: string;
+    enShort: string;
+  };
+}) => {
+  const options = [
+    { code: "zh" as const, label: labels.zh, shortLabel: labels.zhShort },
+    { code: "en" as const, label: labels.en, shortLabel: labels.enShort },
+  ];
+
+  return (
+    <div className="scheme-a-language-switch" role="group" aria-label={labels.group}>
+      {options.map((option) => {
+        const active = option.code === language;
+        return (
+          <LanguageRouteLink
+            key={option.code}
+            className={`scheme-a-language-option ${active ? "is-active" : ""}`}
+            to={paths[option.code]}
+            targetLanguage={option.code}
+            prefetchOnReady={!active}
+            aria-current={active ? "true" : undefined}
+            aria-label={option.label}
+            lang={option.code === "zh" ? "zh-CN" : "en"}
+            onClick={(event) => {
+              if (active) event.preventDefault();
+            }}
+          >
+            {option.shortLabel}
+          </LanguageRouteLink>
+        );
+      })}
+    </div>
+  );
+};
 
 export const SchemeANavbar = () => {
   const location = useLocation();
@@ -114,8 +136,17 @@ export const SchemeANavbar = () => {
   const menuRef = useRef<HTMLDivElement>(null);
   const logo = settings.logo_url ? addCacheBuster(settings.logo_url, settings.updated_at) : logoFallback;
   const companyName = settings.company_name || "FLASH CAST SDN. BHD.";
-  const nextLanguage = language === "zh" ? "en" : "zh";
-  const languagePath = switchLanguagePath(location.pathname, nextLanguage, location.search, location.hash);
+  const languagePaths = {
+    zh: switchLanguagePath(location.pathname, "zh", location.search, location.hash),
+    en: switchLanguagePath(location.pathname, "en", location.search, location.hash),
+  };
+  const languageLabels = {
+    group: navText.switchLanguage,
+    zh: navText.switchToChinese,
+    en: navText.switchToEnglish,
+    zhShort: navText.chineseShort,
+    enShort: navText.englishShort,
+  };
   const publicPath = stripLanguagePrefix(location.pathname);
   const overlay = hasImmersiveHero && !scrolled && !menuOpen;
 
@@ -217,13 +248,11 @@ export const SchemeANavbar = () => {
             <LocalizedLink className="scheme-a-chrome__quote" to={QUOTE_FORM_PATH} onClick={() => trackCtaClick("quote", "scheme_a_header", { destination: QUOTE_FORM_PATH })}>
               {t.quote}<ArrowUpRight aria-hidden="true" />
             </LocalizedLink>
-            <div className="scheme-a-chrome__control-capsule">
-              <LanguageSwitch language={language} to={languagePath} label={navText.switchLanguage} />
-              <button ref={compactTriggerRef} className="scheme-a-chrome__menu-trigger scheme-a-chrome__menu-trigger--compact" type="button" aria-label={t.openMenu} aria-expanded={menuOpen} aria-controls="scheme-a-directory" onClick={toggleDirectory}>
-                <span className="scheme-a-chrome__menu-label">{navText.more}</span>
-                <Menu aria-hidden="true" />
-              </button>
-            </div>
+            <LanguageSwitch language={language} paths={languagePaths} labels={languageLabels} />
+            <button ref={compactTriggerRef} className="scheme-a-chrome__menu-trigger scheme-a-chrome__menu-trigger--compact" type="button" aria-label={t.openMenu} aria-expanded={menuOpen} aria-controls="scheme-a-directory" onClick={toggleDirectory}>
+              <span className="scheme-a-chrome__menu-label">{navText.more}</span>
+              <Menu aria-hidden="true" />
+            </button>
           </div>
         </div>
       </header>
@@ -248,13 +277,11 @@ export const SchemeANavbar = () => {
             <BrandMark logo={logo} name={companyName} />
             <div className="scheme-a-directory__intro"><span>{t.directory}</span><p>{t.directoryIntro}</p></div>
             <div className="scheme-a-directory__actions">
-              <div className="scheme-a-chrome__control-capsule">
-                <LanguageSwitch language={language} to={languagePath} label={navText.switchLanguage} />
-                <button ref={closeRef} className="scheme-a-chrome__menu-trigger" type="button" aria-label={t.closeMenu} aria-expanded="true" aria-controls="scheme-a-directory" onClick={toggleDirectory}>
-                  <span className="scheme-a-chrome__menu-label">{navText.more}</span>
-                  <X aria-hidden="true" />
-                </button>
-              </div>
+              <LanguageSwitch language={language} paths={languagePaths} labels={languageLabels} />
+              <button ref={closeRef} className="scheme-a-chrome__menu-trigger" type="button" aria-label={t.closeMenu} aria-expanded="true" aria-controls="scheme-a-directory" onClick={toggleDirectory}>
+                <span className="scheme-a-chrome__menu-label">{navText.more}</span>
+                <X aria-hidden="true" />
+              </button>
             </div>
           </div>
           <div className="scheme-a-directory__body scheme-a-frame">

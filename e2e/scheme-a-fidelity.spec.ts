@@ -145,8 +145,9 @@ test.describe("Scheme A approved-design fidelity", () => {
     await expect(dialog.locator('.scheme-a-directory__groups section[data-open="true"]')).toHaveCount(1);
     await expect(dialog.getByRole("button", { name: "空间作品", exact: true })).toHaveAttribute("aria-expanded", "true");
     await expect(dialog.locator(".scheme-a-directory__preview")).toBeVisible();
-    await expect(dialog.locator(".scheme-a-lang-pill")).toContainText("中文");
-    await expect(dialog.locator(".scheme-a-lang-pill")).toContainText("EN");
+    const languageSwitch = dialog.getByRole("group", { name: "切换语言" });
+    await expect(languageSwitch.getByRole("link", { name: "切换到中文" })).toContainText("中文");
+    await expect(languageSwitch.getByRole("link", { name: "切换到英文" })).toContainText("EN");
     await expect(dialog).toContainText("营业时间");
     await expect(dialog.locator(".scheme-a-directory__preview figcaption strong")).toContainText("项目案例");
 

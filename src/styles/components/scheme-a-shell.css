@@ -277,12 +277,11 @@
     flex-shrink: 0;
   }
 
-  .scheme-a-chrome__control-capsule {
+  .scheme-a-language-switch {
     display: inline-flex;
     align-items: center;
-    min-height: 44px;
     height: 44px;
-    padding: 0 4px;
+    padding: 3px;
     border-radius: 6px;
     background: rgba(18, 20, 24, 0.75);
     border: 1px solid rgba(212, 175, 55, 0.28);
@@ -291,50 +290,46 @@
     transition: border-color 180ms ease, box-shadow 180ms ease;
   }
 
-  .scheme-a-chrome__control-capsule:hover {
+  .scheme-a-language-switch:hover {
     border-color: rgba(212, 175, 55, 0.5);
     box-shadow: 0 6px 20px rgba(212, 175, 55, 0.12);
   }
 
-  .scheme-a-lang-pill {
+  .scheme-a-language-option {
     display: inline-flex;
     align-items: center;
-    min-height: 44px;
+    justify-content: center;
+    min-width: 38px;
+    height: 36px;
+    padding: 0 9px;
+    border-radius: 4px;
+    color: rgba(246, 241, 232, 0.72);
+    font-size: 11.5px;
+    font-weight: 600;
+    line-height: 1;
     text-decoration: none;
-    gap: 0;
+    transition: color 180ms ease, background-color 180ms ease, opacity 180ms ease, transform 140ms ease;
   }
 
-  .scheme-a-lang-pill[data-language-switching="true"] {
+  .scheme-a-language-option:hover:not(.is-active) {
+    color: #f7f4ee;
+    background: rgba(212, 175, 55, 0.12);
+  }
+
+  .scheme-a-language-option:active:not(.is-active) {
+    transform: translateY(1px);
+  }
+
+  .scheme-a-language-option[data-language-switching="true"] {
     cursor: progress;
     opacity: 0.72;
   }
 
-  .scheme-a-lang-option {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    height: 26px;
-    padding: 0 8px;
-    border-radius: 4px;
-    color: rgba(246, 241, 232, 0.75);
-    font-size: 11.5px;
-    font-weight: 500;
-    line-height: 1;
-    transition: color 180ms ease, background-color 180ms ease, opacity 180ms ease;
-  }
-
-  .scheme-a-lang-option.is-active {
+  .scheme-a-language-option.is-active {
     background: #d4a754;
     color: #141311;
     font-weight: 700;
-  }
-
-  .scheme-a-lang-divider {
-    display: inline-block;
-    width: 1px;
-    height: 10px;
-    background: rgba(212, 175, 55, 0.3);
-    margin: 0 4px;
+    cursor: default;
   }
 
   .scheme-a-chrome__menu-trigger {
@@ -345,14 +340,15 @@
     width: auto;
     min-width: 70px;
     height: 44px;
-    margin-left: 2px;
-    padding: 0 11px 0 12px;
-    border: 0;
-    border-left: 1px solid rgba(212, 175, 55, 0.24);
-    background: transparent;
+    padding: 0 12px;
+    border: 1px solid rgba(212, 175, 55, 0.28);
+    border-radius: 6px;
+    background: rgba(18, 20, 24, 0.75);
     color: #f7f4ee;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.35);
+    backdrop-filter: blur(14px);
     cursor: pointer;
-    transition: color 180ms ease, transform 140ms ease;
+    transition: color 180ms ease, border-color 180ms ease, background-color 180ms ease, transform 140ms ease;
   }
 
   .scheme-a-chrome__menu-trigger--compact {
@@ -369,6 +365,8 @@
 
   .scheme-a-chrome__menu-trigger:hover {
     color: #e5ca7c;
+    border-color: rgba(212, 175, 55, 0.5);
+    background: rgba(212, 175, 55, 0.1);
   }
 
   .scheme-a-chrome__menu-trigger svg {
@@ -1007,17 +1005,16 @@
       gap: 6px !important;
     }
 
-    .scheme-a-chrome__control-capsule {
-      min-height: 44px !important;
+    .scheme-a-language-switch {
       height: 44px !important;
       padding: 0 3px !important;
       border-radius: 5px !important;
     }
 
-    .scheme-a-lang-option {
-      height: 24px !important;
-      min-height: 24px !important;
-      padding: 0 6px !important;
+    .scheme-a-language-option {
+      min-width: 34px !important;
+      height: 36px !important;
+      padding: 0 7px !important;
       font-size: 11px !important;
       border-radius: 3px !important;
     }
@@ -1026,7 +1023,6 @@
       width: 44px !important;
       min-width: 44px !important;
       height: 44px !important;
-      margin-left: 1px !important;
       padding: 0 !important;
     }
 
@@ -1551,7 +1547,7 @@
     .scheme-a-directory__groups a,
     .scheme-a-footer__directory a,
     .scheme-a-footer__areas a,
-    .scheme-a-language-switch span,
+    .scheme-a-language-option,
     .scheme-a-directory__group-toggle > svg,
     .scheme-a-footer__mobile-directory summary svg,
     .scheme-a-page-loader__brand strong,
