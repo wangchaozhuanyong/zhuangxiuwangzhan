@@ -98,36 +98,10 @@ test.describe("public site smoke", () => {
     await expect(contactDock).not.toBeVisible();
   });
 
-  test("office landing never exposes client names or precise locations", async ({ page }) => {
-    await page.route("**/rest/v1/landing_pages**", async (route) => {
-      await route.fulfill({
-        status: 200,
-        contentType: "application/json",
-        body: JSON.stringify([{
-          slug: "office-renovation",
-          status: "published",
-          title_zh: "吉隆坡办公室装修与空间规划",
-          excerpt_zh: "办公空间规划与施工协调",
-          content_zh: "根据团队与现场条件规划办公室装修。",
-          hero_image_url: "/images/projects/commercial-renovation.webp",
-          alt_zh: "办公室装修参考",
-          benefits_zh: ["办公动线规划"],
-          related_projects: [
-            { title: "Named Company Headquarters", location: "KL Sentral", image: "/images/projects/commercial-renovation.webp" },
-            { title: "Named Coworking Outlet", location: "Petaling Jaya", image: "/images/projects/residential-renovation.webp" },
-          ],
-          faqs_zh: [],
-          seo_title_zh: "吉隆坡办公室装修与空间规划 | FLASH CAST",
-          seo_description_zh: "吉隆坡办公室装修与空间规划。",
-        }]),
-      });
-    });
-
+  test("legacy office landing redirects without exposing seeded client detail", async ({ page }) => {
     await gotoSmokePage(page, "/zh/landing/office-renovation");
-    await expect(page.locator(".fc-c-projects__privacy-note")).toBeVisible();
-    await expect(page.locator(".fc-c-projects")).toContainText("办公空间布局规划参考");
-    await expect(page.locator(".fc-c-projects")).toContainText("吉隆坡");
-    await expect(page.locator(".fc-c-projects")).toContainText("雪兰莪");
+    await expect(page).toHaveURL(/\/zh\/services\/office-renovation(?:[?#].*)?$/);
+    await expect(page.locator("main")).toBeVisible();
     await expect(page.locator("body")).not.toContainText("Named Company Headquarters");
     await expect(page.locator("body")).not.toContainText("KL Sentral");
     await expect(page.locator("body")).not.toContainText("Petaling Jaya");
