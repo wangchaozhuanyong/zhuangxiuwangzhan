@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useLayoutEffect } from "react";
 import { Navigate, useLocation, useParams } from "react-router-dom";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { getDefaultLanguage, getLanguageFromPath, isLanguage, stripLanguagePrefix, withLanguagePrefix } from "@/i18n/routes";
@@ -7,7 +7,7 @@ export const LanguageRouteSync = () => {
   const { language, setLanguage } = useLanguage();
   const { lang } = useParams<{ lang?: string }>();
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (isLanguage(lang) && lang !== language) {
       setLanguage(lang);
     }

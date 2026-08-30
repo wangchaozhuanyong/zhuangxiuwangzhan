@@ -132,7 +132,7 @@ const BlogDetail = () => {
               <div className="prose prose-neutral max-w-none" dangerouslySetInnerHTML={{ __html: section }} />
               {(index + 1) % 2 === 0 ? (
                 <figure className="blog-editorial-figure blog-editorial-figure--wide" data-cinematic-media>
-                  <SmartImage src={EDITORIAL_STORY_IMAGES[index % EDITORIAL_STORY_IMAGES.length]} alt={t.editorialImageAlt} width={1200} height={760} sizes="(max-width: 900px) 100vw, 1100px" candidateWidths={[720, 900, 1200]} quality={78} className="h-full w-full object-cover" />
+                  <SmartImage src={EDITORIAL_STORY_IMAGES[index % EDITORIAL_STORY_IMAGES.length]} alt={t.editorialImageAlt} width={1200} height={760} sizes="(max-width: 900px) 100vw, 1100px" candidateWidths={[720, 900, 1200]} quality={78} className="h-full w-full object-cover" revealOnLoad />
                 </figure>
               ) : null}
             </div>
@@ -171,6 +171,7 @@ const BlogDetail = () => {
                 candidateWidths={[720, 900, 1200]}
                 quality={78}
                 className="h-full w-full object-cover"
+                revealOnLoad
               />
             </figure>
           ) : null}

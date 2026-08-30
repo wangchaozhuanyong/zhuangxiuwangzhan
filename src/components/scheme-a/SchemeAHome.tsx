@@ -114,6 +114,7 @@ const SchemeAHome = ({ content }: SchemeAHomeProps) => {
                 quality={88}
                 loading="eager"
                 fetchPriority="high"
+                revealOnLoad
               />
             </picture>
           ) : (
@@ -127,6 +128,7 @@ const SchemeAHome = ({ content }: SchemeAHomeProps) => {
               quality={88}
               loading="eager"
               fetchPriority="high"
+              revealOnLoad
             />
           )}
           {usesAtelierHero && <figcaption>{copy.heroConceptLabel}</figcaption>}
@@ -203,10 +205,12 @@ const SchemeAHome = ({ content }: SchemeAHomeProps) => {
             alt={featuredProjectIsConcept ? `${featuredProject?.title || copy.projectFallbackTitle} · ${copy.projectConceptLabel}` : featuredProject?.thumbnailAlt || featuredProject?.title || copy.projectFallbackTitle}
             width={1600}
             height={1050}
+            rootMargin="1000px"
             sizes="100vw"
             candidateWidths={[560, 720, 960, 1200, 1600]}
             quality={86}
             loading="lazy"
+            revealOnLoad
           />
         </LocalizedLink>
         <div className="scheme-a-frame scheme-a-project__meta">
@@ -217,57 +221,60 @@ const SchemeAHome = ({ content }: SchemeAHomeProps) => {
           <p>{featuredProject?.description || copy.projectDescription}</p>
         </div>
         {supportingProjects.length > 0 && (
-          <div className="scheme-a-frame scheme-a-project__collection">
-            {supportingProjects.map((project, projectIndex) => {
-              const desktopAspectRatio = PROJECT_CARD_DESKTOP_ASPECT_RATIOS[projectIndex]
-                || PROJECT_CARD_MOBILE_ASPECT_RATIO;
-              const desktopIntrinsicHeight = Math.round(
-                PROJECT_CARD_INTRINSIC_WIDTH * (desktopAspectRatio.height / desktopAspectRatio.width),
-              );
-              const mobileSrcSet = buildSupabaseSrcSet(project.thumbnail, PROJECT_CARD_MOBILE_WIDTHS, {
-                quality: 84,
-                resize: "cover",
-                targetAspectRatio: PROJECT_CARD_MOBILE_ASPECT_RATIO,
-              });
+          <>
+            <div className="scheme-a-frame scheme-a-project__collection">
+              {supportingProjects.map((project, projectIndex) => {
+                const desktopAspectRatio = PROJECT_CARD_DESKTOP_ASPECT_RATIOS[projectIndex]
+                  || PROJECT_CARD_MOBILE_ASPECT_RATIO;
+                const desktopIntrinsicHeight = Math.round(
+                  PROJECT_CARD_INTRINSIC_WIDTH * (desktopAspectRatio.height / desktopAspectRatio.width),
+                );
+                const mobileSrcSet = buildSupabaseSrcSet(project.thumbnail, PROJECT_CARD_MOBILE_WIDTHS, {
+                  quality: 84,
+                  resize: "cover",
+                  targetAspectRatio: PROJECT_CARD_MOBILE_ASPECT_RATIO,
+                });
 
-              return (
-                <LocalizedLink
-                  key={project.slug}
-                  className="scheme-a-project__collection-item"
-                  to={`/projects/${project.slug}`}
-                  aria-label={project.title}
-                >
-                  <span className="scheme-a-project__collection-media">
-                    <DeferredSmartImage
-                      src={project.thumbnail}
-                      alt={project.thumbnailAlt || project.title}
-                      width={PROJECT_CARD_INTRINSIC_WIDTH}
-                      height={desktopIntrinsicHeight}
-                      sizes={projectIndex === 0
-                        ? "(max-width: 767px) 78vw, (max-width: 1100px) 46vw, 48vw"
-                        : "(max-width: 767px) 78vw, (max-width: 1100px) 46vw, 38vw"}
-                      candidateWidths={PROJECT_CARD_DESKTOP_WIDTHS}
-                      quality={84}
-                      resize="cover"
-                      targetAspectRatio={desktopAspectRatio}
-                      pictureSources={mobileSrcSet
-                        ? [{
-                            media: PROJECT_CARD_MOBILE_MEDIA,
-                            sizes: PROJECT_CARD_MOBILE_SIZES,
-                            srcSet: mobileSrcSet,
-                          }]
-                        : undefined}
-                      loading="lazy"
-                    />
-                  </span>
-                  <span className="scheme-a-project__collection-copy">
-                    <strong>{project.title}</strong>
-                    <small>{[displayText(project.type), isRenderingConceptProject(project) ? copy.projectConceptLabel : ""].filter(Boolean).join(" · ")}</small>
-                  </span>
-                </LocalizedLink>
-              );
-            })}
-          </div>
+                return (
+                  <LocalizedLink
+                    key={project.slug}
+                    className="scheme-a-project__collection-item"
+                    to={`/projects/${project.slug}`}
+                    aria-label={project.title}
+                  >
+                    <span className="scheme-a-project__collection-media">
+                      <DeferredSmartImage
+                        src={project.thumbnail}
+                        alt={project.thumbnailAlt || project.title}
+                        width={PROJECT_CARD_INTRINSIC_WIDTH}
+                        height={desktopIntrinsicHeight}
+                        sizes={projectIndex === 0
+                          ? "(max-width: 767px) 78vw, (max-width: 1100px) 46vw, 48vw"
+                          : "(max-width: 767px) 78vw, (max-width: 1100px) 46vw, 38vw"}
+                        candidateWidths={PROJECT_CARD_DESKTOP_WIDTHS}
+                        quality={84}
+                        resize="cover"
+                        targetAspectRatio={desktopAspectRatio}
+                        pictureSources={mobileSrcSet
+                          ? [{
+                              media: PROJECT_CARD_MOBILE_MEDIA,
+                              sizes: PROJECT_CARD_MOBILE_SIZES,
+                              srcSet: mobileSrcSet,
+                            }]
+                          : undefined}
+                        loading="lazy"
+                      />
+                    </span>
+                    <span className="scheme-a-project__collection-copy">
+                      <strong>{project.title}</strong>
+                      <small>{[displayText(project.type), isRenderingConceptProject(project) ? copy.projectConceptLabel : ""].filter(Boolean).join(" · ")}</small>
+                    </span>
+                  </LocalizedLink>
+                );
+              })}
+            </div>
+            <p className="scheme-a-frame scheme-a-project__collection-hint">{copy.projectSwipeHint}</p>
+          </>
         )}
       </section>
 
@@ -338,9 +345,9 @@ const SchemeAHome = ({ content }: SchemeAHomeProps) => {
           max={92}
           ariaLabel={copy.compareLabel}
         >
-          <SmartImage src={afterImage} alt={beforeAfter?.alt || copy.after} width={1600} height={1000} sizes="100vw" candidateWidths={[360, 560, 720, 900, 1200, 1600]} quality={86} loading="lazy" />
+          <SmartImage src={afterImage} alt={beforeAfter?.alt || copy.after} width={1600} height={1000} sizes="100vw" candidateWidths={[360, 560, 720, 900, 1200, 1600]} quality={86} loading="lazy" revealOnLoad />
           <div className="scheme-a-compare__before" aria-hidden="true">
-            <SmartImage src={beforeImage} alt="" width={1600} height={1000} sizes="100vw" candidateWidths={[360, 560, 720, 900, 1200, 1600]} quality={86} loading="lazy" />
+            <SmartImage src={beforeImage} alt="" width={1600} height={1000} sizes="100vw" candidateWidths={[360, 560, 720, 900, 1200, 1600]} quality={86} loading="lazy" revealOnLoad />
           </div>
           <span className="scheme-a-compare__tag scheme-a-compare__tag--before">{copy.before}</span>
           <span className="scheme-a-compare__tag scheme-a-compare__tag--after">{copy.after}</span>

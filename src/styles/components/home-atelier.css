@@ -135,6 +135,13 @@
     letter-spacing: -0.055em;
   }
 
+  html[lang="en"][data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-hero h1 {
+    max-width: 12ch;
+    font-size: clamp(2.8rem, 4vw, 5.1rem);
+    line-height: 1.08;
+    letter-spacing: -0.035em;
+  }
+
   html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-hero h1 span {
     white-space: normal;
   }
@@ -275,8 +282,8 @@
     grid-template-columns: minmax(12rem, 0.28fr) minmax(0, 1fr);
     gap: clamp(2.5rem, 5vw, 6rem);
     align-items: start;
-    padding-top: clamp(4.5rem, 7vw, 7.5rem);
-    padding-bottom: clamp(5rem, 8vw, 8.5rem);
+    padding-top: clamp(4rem, 6vw, 6rem);
+    padding-bottom: clamp(4.5rem, 6.5vw, 6.5rem);
   }
 
   html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-principle h2 {
@@ -299,8 +306,8 @@
     grid-template-columns: minmax(12rem, 0.28fr) minmax(0, 1fr);
     gap: clamp(2.5rem, 5vw, 6rem);
     align-items: start;
-    padding-top: clamp(5rem, 8vw, 8rem);
-    padding-bottom: clamp(5.5rem, 9vw, 9rem);
+    padding-top: clamp(4.5rem, 6.5vw, 7rem);
+    padding-bottom: clamp(5rem, 7vw, 7.5rem);
   }
 
   html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-statement blockquote {
@@ -312,8 +319,8 @@
   }
 
   html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-project {
-    padding-top: clamp(5rem, 8vw, 8rem);
-    padding-bottom: clamp(6rem, 9vw, 9.5rem);
+    padding-top: clamp(4.5rem, 6.5vw, 7rem);
+    padding-bottom: clamp(5rem, 7vw, 7.5rem);
     background: var(--atelier-paper);
   }
 
@@ -333,8 +340,7 @@
   html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-project__media {
     width: 100%;
     max-width: var(--scheme-a-frame);
-    height: auto;
-    aspect-ratio: 16 / 9;
+    height: min(56.25vw, 78vh);
     margin-inline: auto;
     background: #c7c0b5;
     border-radius: 4px;
@@ -355,7 +361,11 @@
     display: grid;
     grid-template-columns: repeat(3, minmax(0, 1fr));
     gap: clamp(1.5rem, 3vw, 3rem);
-    margin-top: clamp(4rem, 6vw, 7rem);
+    margin-top: clamp(2.75rem, 4vw, 4.5rem);
+  }
+
+  html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-project__collection-hint {
+    display: none;
   }
 
   html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-project__collection-item {
@@ -425,7 +435,7 @@
 
   html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-services__layout {
     grid-template-columns: minmax(19rem, 0.75fr) minmax(0, 1.25fr);
-    gap: clamp(4rem, 12vw, 12rem);
+    gap: clamp(3rem, 6vw, 6rem);
   }
 
   html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-services header {
@@ -505,8 +515,8 @@
   }
 
   html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-materials {
-    padding-top: clamp(8rem, 13vw, 12rem);
-    padding-bottom: clamp(8rem, 13vw, 12rem);
+    padding-top: clamp(5.5rem, 8vw, 8rem);
+    padding-bottom: clamp(5.5rem, 8vw, 8rem);
     background:
       radial-gradient(circle at 78% 18%, rgba(212, 175, 55, 0.15), transparent 32rem),
       #121316;
@@ -515,11 +525,11 @@
 
   html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-materials__layout {
     grid-template-columns: minmax(0, 1.28fr) minmax(20rem, 0.72fr);
-    gap: clamp(4rem, 10vw, 10rem);
+    gap: clamp(3rem, 6vw, 6rem);
   }
 
   html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-materials__media {
-    min-height: 46rem;
+    min-height: clamp(30rem, 44vw, 40rem);
     border: 1px solid rgba(212, 175, 55, 0.3);
     border-radius: 4px;
     overflow: hidden;
@@ -554,8 +564,8 @@
   }
 
   html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-before {
-    padding-top: clamp(8rem, 12vw, 11rem);
-    padding-bottom: clamp(8rem, 12vw, 11rem);
+    padding-top: clamp(5.5rem, 8vw, 8rem);
+    padding-bottom: clamp(5.5rem, 8vw, 8rem);
     background: #0f1013;
     color: #f7f4ee;
   }
@@ -580,8 +590,8 @@
   }
 
   html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-home-process {
-    padding-top: clamp(6.5rem, 10vw, 9.5rem);
-    padding-bottom: clamp(6.5rem, 10vw, 9.5rem);
+    padding-top: clamp(5rem, 7vw, 7rem);
+    padding-bottom: clamp(5rem, 7vw, 7rem);
     color: #f6f1e8;
     background:
       radial-gradient(circle at 50% 0%, rgba(212, 175, 55, 0.14), transparent 40rem),
@@ -645,7 +655,7 @@
   }
 
   html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-home-faq {
-    padding: clamp(5rem, 9vw, 8rem) var(--scheme-a-gutter);
+    padding: clamp(4.5rem, 7vw, 7rem) var(--scheme-a-gutter);
     color: #ece8df;
     background: #0f1013;
   }
@@ -702,8 +712,8 @@
     grid-template-columns: minmax(0, 1fr) auto;
     gap: 2rem clamp(3rem, 8vw, 8rem);
     align-items: end;
-    padding-top: clamp(8rem, 13vw, 12rem);
-    padding-bottom: clamp(7rem, 11vw, 10rem);
+    padding-top: clamp(6rem, 9vw, 9rem);
+    padding-bottom: clamp(5rem, 8vw, 8rem);
   }
 
   html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-contact h2 {
@@ -785,6 +795,12 @@
       font-size: clamp(3.1rem, 7.6vw, 5.2rem);
     }
 
+    html[lang="en"][data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-hero h1 {
+      max-width: 12ch;
+      font-size: clamp(2.9rem, 6.8vw, 4.6rem);
+      line-height: 1.1;
+    }
+
     html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-hero__lead {
       max-width: 37rem;
     }
@@ -817,9 +833,9 @@
     html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-hero,
     html[data-public-theme="dark"] body .scheme-a-home--atelier .scheme-a-hero {
       width: 100% !important;
-      height: clamp(680px, 188vw, 760px) !important;
-      min-height: clamp(680px, 188vw, 760px) !important;
-      max-height: 760px !important;
+      height: auto !important;
+      min-height: max(700px, 100svh) !important;
+      max-height: none !important;
     }
 
     html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-hero__media img {
@@ -828,7 +844,7 @@
     }
 
     html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-hero__media figcaption {
-      top: 94px;
+      top: 74px;
       right: 22px;
       bottom: auto;
       font-size: 8px;
@@ -838,7 +854,7 @@
     html[data-public-theme="dark"][data-theme] body .scheme-a-home--atelier .scheme-a-hero__copy {
       width: 100% !important;
       max-width: none !important;
-      padding: 110px 22px calc(92px + env(safe-area-inset-bottom)) !important;
+      padding: 96px 22px calc(84px + env(safe-area-inset-bottom)) !important;
     }
 
     html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-hero__copy .scheme-a-eyebrow {
@@ -856,9 +872,10 @@
     }
 
     html[lang="en"][data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-hero h1 {
-      max-width: 10ch !important;
-      font-size: clamp(35px, 10.2vw, 42px) !important;
-      line-height: 1.08 !important;
+      max-width: 13ch !important;
+      font-size: clamp(31px, 8.8vw, 36px) !important;
+      line-height: 1.14 !important;
+      letter-spacing: -0.025em !important;
     }
 
     html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-hero__lead {
@@ -936,8 +953,8 @@
     }
 
     html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-principle__inner {
-      padding-top: 76px;
-      padding-bottom: 88px;
+      padding-top: 56px;
+      padding-bottom: 64px;
     }
 
     html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-principle h2 {
@@ -948,8 +965,8 @@
     }
 
     html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-statement > .scheme-a-frame {
-      padding-top: 82px;
-      padding-bottom: 92px;
+      padding-top: 64px;
+      padding-bottom: 72px;
     }
 
     html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-statement blockquote {
@@ -960,8 +977,8 @@
     }
 
     html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-project {
-      padding-top: 82px;
-      padding-bottom: 94px;
+      padding-top: 64px;
+      padding-bottom: 72px;
     }
 
     html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-project__media {
@@ -981,7 +998,7 @@
       display: flex;
       width: 100%;
       gap: 16px;
-      margin-top: 64px;
+      margin-top: 40px;
       padding: 0 22px 16px;
       overflow-x: auto;
       scroll-snap-type: x mandatory;
@@ -1002,6 +1019,14 @@
       aspect-ratio: 16 / 10;
     }
 
+    html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-project__collection-hint {
+      display: block;
+      padding: 0 22px;
+      color: rgba(229, 202, 124, 0.75);
+      font-size: 10px;
+      letter-spacing: 0.08em;
+    }
+
     html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-project__collection-copy {
       grid-template-columns: 1fr;
       gap: 7px;
@@ -1018,22 +1043,22 @@
     }
 
     html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-materials {
-      padding: 82px 22px 94px;
+      padding: 64px 22px 72px;
     }
 
     html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-materials__media {
-      height: 370px;
-      min-height: 370px;
+      height: 330px;
+      min-height: 330px;
     }
 
     html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-materials__copy {
       margin-top: 34px;
-      padding: 0 0 0 30px;
+      padding: 0;
     }
 
     html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-before {
-      padding-top: 86px;
-      padding-bottom: 94px;
+      padding-top: 64px;
+      padding-bottom: 72px;
     }
 
     html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-compare {
@@ -1049,7 +1074,7 @@
     }
 
     html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-home-process {
-      padding: 82px 22px 94px;
+      padding: 64px 22px 72px;
     }
 
     html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-home-process__grid {
@@ -1058,7 +1083,7 @@
     }
 
     html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-home-faq {
-      padding: 82px 22px 94px;
+      padding: 64px 22px 72px;
     }
 
     html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-home-faq__layout {
@@ -1068,18 +1093,18 @@
 
     html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-contact > .scheme-a-frame {
       display: block;
-      padding: 86px 22px 60px;
+      padding: 72px 22px 56px;
     }
 
     html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-contact h2 {
       max-width: 12em;
       padding: 20px 0 34px;
-      font-size: 38px;
-      line-height: 1.3;
+      font-size: clamp(34px, 9vw, 36px);
+      line-height: 1.22;
     }
 
     html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-contact__regions {
-      margin-top: 46px;
+      margin-top: 32px;
       padding-top: 0;
     }
   }

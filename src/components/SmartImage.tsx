@@ -42,6 +42,8 @@ type SmartImageProps = Omit<React.ImgHTMLAttributes<HTMLImageElement>, "src" | "
   targetAspectRatio?: SupabaseTargetAspectRatio;
   /** Optional art-directed picture sources, ordered from most specific to least specific. */
   pictureSources?: SmartImagePictureSource[];
+  /** Fade the decoded image over the parent surface instead of popping into view. */
+  revealOnLoad?: boolean;
 };
 
 type NativeFetchPriority = "high" | "low" | "auto";
@@ -64,6 +66,9 @@ export function SmartImage({
   resize,
   targetAspectRatio,
   pictureSources,
+  revealOnLoad = false,
+  onLoad,
+  onError,
   ...rest
 }: SmartImageProps) {
   const isSupabase = isSupabasePublicObjectUrl(src);
@@ -103,6 +108,26 @@ export function SmartImage({
 
   const resolvedFetchPriority: NativeFetchPriority = fetchPriority ?? (loading === "eager" ? "high" : "auto");
   const fetchPriorityAttr = { fetchpriority: resolvedFetchPriority } as { fetchpriority: NativeFetchPriority };
+  const sourceKey = [
+    resolvedSrc,
+    srcSet,
+    pictureSources?.map((source) => `${source.media || "default"}:${source.srcSet || ""}`).join("|"),
+  ].filter(Boolean).join("::");
+  const [loadState, setLoadState] = React.useState<{
+    sourceKey: string;
+    status: "loading" | "loaded" | "error";
+  }>({ sourceKey, status: "loading" });
+  const imageState = loadState.sourceKey === sourceKey ? loadState.status : "loading";
+
+  const handleLoad: React.ReactEventHandler<HTMLImageElement> = (event) => {
+    setLoadState({ sourceKey, status: "loaded" });
+    onLoad?.(event);
+  };
+
+  const handleError: React.ReactEventHandler<HTMLImageElement> = (event) => {
+    setLoadState({ sourceKey, status: "error" });
+    onError?.(event);
+  };
 
   const image = (
     <img
@@ -115,7 +140,10 @@ export function SmartImage({
       loading={loading ?? "lazy"}
       decoding={decoding ?? "async"}
       {...fetchPriorityAttr}
-      className={cn(className)}
+      data-image-state={revealOnLoad ? imageState : undefined}
+      className={cn("smart-image", revealOnLoad && "smart-image--reveal", className)}
+      onLoad={handleLoad}
+      onError={handleError}
       {...rest}
     />
   );
@@ -123,7 +151,7 @@ export function SmartImage({
   if (!pictureSources?.length) return image;
 
   return (
-    <picture className="block h-full w-full">
+    <picture className="smart-image-picture block h-full w-full">
       {pictureSources.map((source, index) => (
         <source key={`${source.media || "default"}-${index}`} {...source} />
       ))}

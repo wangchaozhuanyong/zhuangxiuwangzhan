@@ -7,6 +7,8 @@ const lateImageStartMs = Number(process.env.PUBLIC_PERFORMANCE_LATE_IMAGE_START_
 const maxLateSupabaseImages = Number(process.env.PUBLIC_PERFORMANCE_MAX_LATE_SUPABASE_IMAGES || 20);
 const projectDetailPath =
   process.env.PUBLIC_PERFORMANCE_PROJECT_DETAIL_PATH || "/zh/projects/damansara-heights-semi-d-refurbishment";
+const productDetailPath =
+  process.env.PUBLIC_PERFORMANCE_PRODUCT_DETAIL_PATH || "/zh/products/vinyl-plank-ash-grey";
 
 const pages = [
   {
@@ -14,6 +16,7 @@ const pages = [
     path: "/zh",
     requireSiteSettingsPreload: true,
     requireHomeBundlePreload: true,
+    maxPreloadBytes: 55_000,
     maxHomeBundleFetches: 0,
     maxSupabaseRestFetches: 0,
     highRiskDynamicImages: true,
@@ -25,6 +28,7 @@ const pages = [
     requireSiteSettingsPreload: true,
     requireSitePagePreload: "projects",
     requireProjectSummariesPreload: true,
+    maxPreloadBytes: 55_000,
     maxProjectRestFetches: 0,
     maxSupabaseRestFetches: 0,
     highRiskDynamicImages: true,
@@ -37,6 +41,7 @@ const pages = [
     requireProjectDetailPreload: true,
     requireProjectSummariesPreload: true,
     requireCtaBlockPreload: "home_final",
+    maxPreloadBytes: 60_000,
     maxProjectRestFetches: 0,
     maxSupabaseRestFetches: 0,
     highRiskDynamicImages: true,
@@ -48,6 +53,7 @@ const pages = [
     requireSiteSettingsPreload: true,
     requireSitePagePreload: "services",
     requireServicesPreload: true,
+    maxPreloadBytes: 25_000,
     maxSupabaseRestFetches: 0,
   },
   {
@@ -56,6 +62,7 @@ const pages = [
     requireSiteSettingsPreload: true,
     requireSitePagePreload: "materials",
     requireMaterialsPreload: true,
+    maxPreloadBytes: 75_000,
     maxSupabaseRestFetches: 0,
   },
   {
@@ -63,6 +70,17 @@ const pages = [
     path: "/zh/products",
     requireSiteSettingsPreload: true,
     requireMaterialsPreload: true,
+    maxPreloadBytes: 75_000,
+    maxSupabaseRestFetches: 0,
+  },
+  {
+    name: "product-detail",
+    path: productDetailPath,
+    requireSiteSettingsPreload: true,
+    requireMaterialsPreload: true,
+    requireMaterialDetailPreload: productDetailPath.split("/").filter(Boolean).at(-1),
+    requireCtaBlockPreload: "home_final",
+    maxPreloadBytes: 80_000,
     maxSupabaseRestFetches: 0,
   },
   {
@@ -70,6 +88,7 @@ const pages = [
     path: "/zh/promotions",
     requireSiteSettingsPreload: true,
     requireSitePagePreload: "promotions",
+    maxPreloadBytes: 15_000,
     maxSupabaseRestFetches: 0,
   },
   {
@@ -77,6 +96,7 @@ const pages = [
     path: "/zh/locations",
     requireSiteSettingsPreload: true,
     requireServiceAreasPreload: true,
+    maxPreloadBytes: 55_000,
     maxSupabaseRestFetches: 0,
   },
   {
@@ -86,6 +106,7 @@ const pages = [
     requireSitePagePreload: "blog",
     requireBlogPostsPreload: true,
     requireCtaBlockPreload: "home_final",
+    maxPreloadBytes: 90_000,
     maxSupabaseRestFetches: 0,
   },
 ];
@@ -148,11 +169,18 @@ const collectPageMetrics = async (page, lateThreshold) =>
 
     return {
       preloadKeys: preload ? Object.keys(preload).sort() : [],
+      preloadJsonBytes: new TextEncoder().encode(preloadNode?.textContent || "").byteLength,
       hasSiteSettings: Boolean(preload?.siteSettings),
       hasHomeBundle: Boolean(preload?.homeContentBundle),
       sitePageKeys: preload?.sitePages ? Object.keys(preload.sitePages).sort() : [],
       services: Array.isArray(preload?.services) ? preload.services.length : 0,
       materials: Array.isArray(preload?.materials) ? preload.materials.length : 0,
+      materialDetailSlugs: Array.isArray(preload?.materials)
+        ? preload.materials
+            .filter((row) => row && typeof row === "object" && Array.isArray(row.material_images))
+            .map((row) => String(row.slug || ""))
+            .filter(Boolean)
+        : [],
       productHighlights: Array.isArray(preload?.productHighlights) ? preload.productHighlights.length : 0,
       serviceAreas: Array.isArray(preload?.serviceAreas) ? preload.serviceAreas.length : 0,
       blogPosts: Array.isArray(preload?.blogPosts) ? preload.blogPosts.length : 0,
@@ -237,6 +265,9 @@ for (const pageSpec of pages) {
   if (result.brokenVisibleImageCount > 0) addFailure(`页面当前可见区域存在破图：visible=${result.brokenVisibleImageCount}`);
   if (result.pageErrorCount > 0) addFailure(`页面运行错误：${result.pageErrors.join(" | ")}`);
   if (result.failedAssetCount > 0) addFailure(`资源请求失败：${JSON.stringify(result.failedAssets)}`);
+  if (typeof pageSpec.maxPreloadBytes === "number" && result.preloadJsonBytes > pageSpec.maxPreloadBytes) {
+    addFailure(`HTML 预注入 JSON 过大：${result.preloadJsonBytes} bytes > ${pageSpec.maxPreloadBytes} bytes`);
+  }
 
   if (pageSpec.requireSiteSettingsPreload && !result.hasSiteSettings) addFailure("缺少 HTML 预注入 siteSettings。");
   if (pageSpec.requireHomeBundlePreload && !result.hasHomeBundle) addFailure("首页缺少 HTML 预注入 homeContentBundle。");
@@ -245,6 +276,9 @@ for (const pageSpec of pages) {
   }
   if (pageSpec.requireServicesPreload && result.services <= 0) addFailure("服务页缺少 HTML 预注入 services。");
   if (pageSpec.requireMaterialsPreload && result.materials <= 0) addFailure("材料页缺少 HTML 预注入 materials。");
+  if (pageSpec.requireMaterialDetailPreload && !result.materialDetailSlugs.includes(pageSpec.requireMaterialDetailPreload)) {
+    addFailure(`产品详情页缺少完整 HTML 预注入材料：${pageSpec.requireMaterialDetailPreload}。`);
+  }
   if (pageSpec.requireServiceAreasPreload && result.serviceAreas <= 0) addFailure("地区页缺少 HTML 预注入 serviceAreas。");
   if (pageSpec.requireBlogPostsPreload && result.blogPosts <= 0) addFailure("博客页缺少 HTML 预注入 blogPosts。");
   if (pageSpec.requireCtaBlockPreload && !result.ctaBlockKeys.includes(pageSpec.requireCtaBlockPreload)) {

@@ -140,6 +140,7 @@ export function SchemeARouteHero({
             height={1100}
             loading="eager"
             fetchPriority="high"
+            revealOnLoad
             sizes="(min-width: 1024px) 64vw, 100vw"
             candidateWidths={[560, 720, 960, 1200, 1600]}
             quality={86}
@@ -227,8 +228,9 @@ export function SchemeAListingGrid({ items, actionLabel }: { items: readonly Sch
               alt={item.imageAlt || item.title}
               width={index === 0 ? 1200 : 720}
               height={index === 0 ? 750 : 540}
-              loading={index < 3 ? "eager" : "lazy"}
-              fetchPriority={index === 0 ? "high" : "auto"}
+              loading="lazy"
+              fetchPriority="auto"
+              revealOnLoad
               sizes={index === 0 ? "(max-width: 767px) 100vw, 64vw" : "(max-width: 767px) 50vw, 32vw"}
               candidateWidths={[360, 560, 720, 960, 1200]}
               quality={82}
@@ -321,7 +323,7 @@ export function SchemeAGallery({
             const index = rowIndex * 2 + imageIndex;
             return (
               <div key={`${image.src}-${index}`} className="fc-route-gallery-media" data-cinematic-media>
-                <SmartImage src={image.src} alt={image.alt} width={1200} height={750} sizes="(max-width: 767px) 100vw, 50vw" candidateWidths={[560, 720, 960, 1200]} quality={84} />
+                <SmartImage src={image.src} alt={image.alt} width={1200} height={750} sizes="(max-width: 767px) 100vw, 50vw" candidateWidths={[560, 720, 960, 1200]} quality={84} revealOnLoad />
               </div>
             );
           })}

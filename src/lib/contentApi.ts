@@ -560,6 +560,10 @@ export const mapPublishedBlogPost = (item: UnknownRecord, language: Language = "
   const title = localize(localizedText("title"));
   const excerpt = localize(localizedText("excerpt"));
   const content = localize(localizedText("content"));
+  const preloadedReadMinutes = Number(item[`preload_read_minutes_${language}`]);
+  const readMinutes = Number.isFinite(preloadedReadMinutes) && preloadedReadMinutes > 0
+    ? preloadedReadMinutes
+    : estimateBlogReadMinutes(content, language);
 
   return {
     id: readText(item, "id"),
@@ -569,7 +573,7 @@ export const mapPublishedBlogPost = (item: UnknownRecord, language: Language = "
     content,
     category: localize(readText(item, "category", "Renovation")),
     date: readText(item, "published_at") || readText(item, "created_at"),
-    readTime: `${estimateBlogReadMinutes(content, language)} min`,
+    readTime: `${readMinutes} min`,
     image: readText(item, "cover_image_url"),
     imageAlt: localize(localizedText("alt", title)),
     tags: toArray<string>(item.tags).map((tag) => localize(tag)),

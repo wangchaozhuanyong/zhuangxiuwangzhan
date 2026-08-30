@@ -79,7 +79,7 @@ const LandingPage = () => {
       <PageMeta title={landingPage.seoTitle || `${landingPage.title} | ${t.metaSuffix}`} description={landingPage.seoDescription || stripHtml(landingPage.description)} canonicalPath={`/landing/${slug || ""}`} />
 
       <ImmersiveHero className="fc-c-hero" id="campaign-hero">
-        <div className="fc-c-hero__media" data-cinematic-media><SmartImage src={landingPage.heroImage} alt={landingPage.heroAlt || landingPage.title} loading="eager" width={1920} height={1080} fetchPriority="high" sizes="100vw" quality={86} /></div>
+        <div className="fc-c-hero__media" data-cinematic-media><SmartImage src={landingPage.heroImage} alt={landingPage.heroAlt || landingPage.title} loading="eager" width={1920} height={1080} fetchPriority="high" sizes="100vw" quality={86} revealOnLoad /></div>
         <div className="fc-c-hero__copy">
           <span className="fc-c-kicker">Kuala Lumpur / Selangor / Klang Valley</span>
           <h1>{landingPage.title}</h1>
@@ -109,7 +109,7 @@ const LandingPage = () => {
 
       <section className="fc-c-section fc-c-process"><header><span>{t.processIntro}</span><h2>{t.processTitle}</h2></header><SchemeANumberList items={t.processSteps} /></section>
 
-      {projects.length ? <section className="fc-c-section fc-c-projects"><header><span>{projectPrivacyCopy?.eyebrow || t.relatedProjects}</span><h2>{projectPrivacyCopy?.title || projects[0].title}</h2></header>{projectPrivacyCopy ? <p className="fc-c-projects__privacy-note">{projectPrivacyCopy.note}</p> : null}<div className="fc-c-project-grid">{projects.map((project) => <article key={`${project.title}-${project.image}`}><SmartImage src={project.image} alt={project.title} width={900} height={620} quality={84} /><div><strong>{project.title}</strong><span>{project.location}</span></div></article>)}</div></section> : null}
+      {projects.length ? <section className="fc-c-section fc-c-projects"><header><span>{projectPrivacyCopy?.eyebrow || t.relatedProjects}</span><h2>{projectPrivacyCopy?.title || projects[0].title}</h2></header>{projectPrivacyCopy ? <p className="fc-c-projects__privacy-note">{projectPrivacyCopy.note}</p> : null}<div className="fc-c-project-grid">{projects.map((project) => <article key={`${project.title}-${project.image}`}><SmartImage src={project.image} alt={project.title} width={900} height={620} quality={84} revealOnLoad /><div><strong>{project.title}</strong><span>{project.location}</span></div></article>)}</div></section> : null}
 
       <section className="fc-c-section fc-c-faq"><header><span>{t.faqTitle}</span><h2>{t.ctaTitle}</h2></header><SchemeAFaqList items={faqs} /></section>
       <section className="fc-c-final"><span>{t.ctaDescription}</span><h2>{t.ctaTitle}</h2><a href="#landing-quote">{t.quote}<ArrowRight /></a></section>

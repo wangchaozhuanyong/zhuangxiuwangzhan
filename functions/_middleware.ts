@@ -10,6 +10,16 @@ import {
   normalizeLocalResponsiveImageWidths,
   toLocalResponsiveImageSrc,
 } from "../src/lib/localResponsiveImage";
+import {
+  projectBlogPostSummariesForPreload,
+  projectCtaBlockForPreload,
+  projectHomeContentBundleForPreload,
+  projectMaterialsForPreload,
+  projectProjectSummariesForPreload,
+  projectServiceAreaSummariesForPreload,
+  projectServiceSummariesForPreload,
+  projectSitePageBundleForPreload,
+} from "./publicDataProjection";
 
 type SeoEntry = {
   lang: string;
@@ -1313,14 +1323,6 @@ const fetchPublicMaterialDetail = async (
   return { ...material, material_images: gallery || [] };
 };
 
-const fetchPublicProductHighlights = async (env: Record<string, string | undefined>) =>
-  fetchPublicRows(env, "product_highlights", "materials", (url) => {
-    url.searchParams.set("select", "*");
-    url.searchParams.set("status", "eq.published");
-    url.searchParams.set("order", "sort_order.asc");
-    url.searchParams.set("limit", "4");
-  });
-
 const fetchPublicServiceAreas = async (env: Record<string, string | undefined>) =>
   fetchPublicRows(env, "service_areas", "service_areas", (url) => {
     url.searchParams.set("select", "*");
@@ -1968,7 +1970,6 @@ export const onRequest: PagesFunction = async (context) => {
   const productDetailSlug = getProductDetailSlugFromKey(key);
   const topLevelPublicPageKey = getTopLevelPublicPageKey(key);
   const shouldInjectHomeBundle = Boolean(meta && isHomePageKey(key));
-  const shouldInjectProductHighlights = shouldInjectHomeBundle;
   const shouldInjectProjectSummaries = Boolean(meta && (key === "/en/projects" || key === "/zh/projects" || projectDetailSlug));
   const shouldInjectPublicPageBundle = Boolean(meta && topLevelPublicPageKey);
   const shouldInjectServices = topLevelPublicPageKey === "services";
@@ -1979,7 +1980,6 @@ export const onRequest: PagesFunction = async (context) => {
   const [
     siteSettings,
     homeContentBundle,
-    productHighlights,
     projectSummaries,
     projectDetail,
     publicPageBundle,
@@ -1994,7 +1994,6 @@ export const onRequest: PagesFunction = async (context) => {
       ? Promise.resolve(prefetchedSiteSettings)
       : fetchSiteSettings(env as Record<string, string | undefined>),
     shouldInjectHomeBundle ? fetchHomeContentBundle(env as Record<string, string | undefined>) : Promise.resolve(null),
-    shouldInjectProductHighlights ? fetchPublicProductHighlights(env as Record<string, string | undefined>) : Promise.resolve(null),
     shouldInjectProjectSummaries ? fetchProjectSummaries(env as Record<string, string | undefined>) : Promise.resolve(null),
     projectDetailSlug
       ? dynamicRouteState?.kind === "project"
@@ -2025,13 +2024,10 @@ export const onRequest: PagesFunction = async (context) => {
     publicDataPayload.siteSettings = siteSettings;
   }
   if (homeContentBundle && Object.keys(homeContentBundle).length) {
-    publicDataPayload.homeContentBundle = homeContentBundle;
-  }
-  if (productHighlights?.length) {
-    publicDataPayload.productHighlights = productHighlights;
+    publicDataPayload.homeContentBundle = projectHomeContentBundleForPreload(homeContentBundle);
   }
   if (shouldInjectProjectSummaries && projectSummaries?.length) {
-    publicDataPayload.projectSummaries = projectSummaries;
+    publicDataPayload.projectSummaries = projectProjectSummariesForPreload(projectSummaries);
   }
   if (projectDetailSlug && projectDetail) {
     publicDataPayload.projectDetails = {
@@ -2040,11 +2036,11 @@ export const onRequest: PagesFunction = async (context) => {
   }
   if (shouldInjectPublicPageBundle && topLevelPublicPageKey) {
     publicDataPayload.sitePages = {
-      [topLevelPublicPageKey]: publicPageBundle || {},
+      [topLevelPublicPageKey]: publicPageBundle ? projectSitePageBundleForPreload(publicPageBundle) : {},
     };
   }
   if (services?.length) {
-    publicDataPayload.services = services;
+    publicDataPayload.services = projectServiceSummariesForPreload(services);
   }
   if (materials?.length || materialDetail) {
     const materialRows = materials?.length ? [...materials] : [];
@@ -2053,17 +2049,17 @@ export const onRequest: PagesFunction = async (context) => {
       if (existingIndex >= 0) materialRows[existingIndex] = materialDetail;
       else materialRows.push(materialDetail);
     }
-    publicDataPayload.materials = materialRows;
+    publicDataPayload.materials = projectMaterialsForPreload(materialRows, productDetailSlug);
   }
   if (serviceAreas?.length) {
-    publicDataPayload.serviceAreas = serviceAreas;
+    publicDataPayload.serviceAreas = projectServiceAreaSummariesForPreload(serviceAreas);
   }
   if (blogPosts?.length) {
-    publicDataPayload.blogPosts = blogPosts;
+    publicDataPayload.blogPosts = projectBlogPostSummariesForPreload(blogPosts);
   }
   if (footerCtaBlock) {
     publicDataPayload.ctaBlocks = {
-      home_final: footerCtaBlock,
+      home_final: projectCtaBlockForPreload(footerCtaBlock),
     };
   }
   if (Object.keys(publicDataPayload).length) {

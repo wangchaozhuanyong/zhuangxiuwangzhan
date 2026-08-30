@@ -1,3 +1,19 @@
+@font-face {
+  font-family: "Inter Local";
+  src: url("/fonts/inter-latin-variable.woff2") format("woff2");
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Inter Tight Local";
+  src: url("/fonts/inter-tight-latin-variable.woff2") format("woff2");
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+}
+
 @layer base {
   :root {
     --background: 38 24% 94%;
@@ -168,6 +184,50 @@
     --sidebar-accent-foreground: 42 28% 94%;
     --sidebar-border: 219 14% 20%;
     --sidebar-ring: 38 58% 60%;
+  }
+}
+
+@layer components {
+  .smart-image-placeholder {
+    position: relative;
+    overflow: hidden;
+    isolation: isolate;
+    background:
+      radial-gradient(circle at 72% 24%, rgba(212, 175, 55, 0.1), transparent 38%),
+      linear-gradient(135deg, #1b1a17, #111214 68%);
+  }
+
+  .smart-image-placeholder::before {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    background: linear-gradient(120deg, rgba(255, 255, 255, 0.025), transparent 42%);
+    content: "";
+    pointer-events: none;
+  }
+
+  .smart-image-placeholder > :is(.smart-image, .smart-image-picture) {
+    position: relative;
+    z-index: 1;
+  }
+
+  .smart-image--reveal {
+    opacity: 0.01;
+    transition: opacity 180ms ease-out;
+  }
+
+  .smart-image--reveal[data-image-state="loaded"] {
+    opacity: 1;
+  }
+
+  .smart-image--reveal[data-image-state="error"] {
+    opacity: 0;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .smart-image--reveal {
+      transition: none;
+    }
   }
 }
 
