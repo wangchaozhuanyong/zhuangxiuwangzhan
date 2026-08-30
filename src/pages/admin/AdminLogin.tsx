@@ -1,12 +1,19 @@
-import { useEffect, useLayoutEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
 import { Helmet } from "react-helmet-async";
 import { Navigate, useLocation } from "react-router-dom";
-import { FileText, Images, LayoutDashboard, Loader2, Moon, SearchCheck, ShieldCheck, Sun } from "lucide-react";
+import { Eye, EyeOff, FileText, Images, KeyRound, LayoutDashboard, Loader2, Moon, SearchCheck, ShieldCheck, Sun } from "lucide-react";
 import AdminAlert from "@/components/admin/AdminAlert";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { adminLoginText } from "@/i18n/adminLoginText";
-import { hasAdminAuthConfig, signInAdmin } from "@/backend/modules/admin-auth/service/adminAuthService";
+import {
+  hasAdminAuthConfig,
+  prepareAdminMfaFlow,
+  signInAdmin,
+  signOutAdmin,
+  verifyAdminMfa,
+  type AdminMfaFlow,
+} from "@/backend/modules/admin-auth/service/adminAuthService";
 import {
   applyAdminTheme,
   clearAdminTheme,
@@ -21,6 +28,8 @@ import { cn } from "@/lib/utils";
 
 const copy = adminLoginText;
 const workspaceIcons = [LayoutDashboard, FileText, Images, SearchCheck] as const;
+type LoginStep = "credentials" | "challenge" | "enroll";
+type TotpEnrollment = Extract<AdminMfaFlow, { step: "enroll" }>["enrollment"];
 
 const ToggleButton = ({
   active,
@@ -62,21 +71,38 @@ const formatAdminLoginError = (message: string, language: AdminLang) => {
   if (normalized.includes("network") || normalized.includes("fetch")) {
     return t.network;
   }
-  return language === "en" ? message || t.fallback : t.fallback;
+  if (normalized.includes("admin_access_required")) {
+    return t.adminAccessRequired;
+  }
+  if (normalized.includes("invalid totp") || normalized.includes("invalid otp") || normalized.includes("challenge")) {
+    return t.invalidMfaCode;
+  }
+  if (normalized.includes("mfa") || normalized.includes("factor") || normalized.includes("totp")) {
+    return t.mfaUnavailable;
+  }
+  return t.fallback;
 };
 
 const AdminLogin = () => {
   const location = useLocation();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+  const [showMfaSecret, setShowMfaSecret] = useState(false);
+  const [loginStep, setLoginStep] = useState<LoginStep>("credentials");
+  const [mfaCode, setMfaCode] = useState("");
+  const [mfaFactorId, setMfaFactorId] = useState<string | null>(null);
+  const [mfaEnrollment, setMfaEnrollment] = useState<TotpEnrollment | null>(null);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [initializing, setInitializing] = useState(true);
   const [language, setLanguage] = useState<AdminLang>(() => getAdminLang());
   const [theme, setTheme] = useState<AdminTheme>(() => getAdminTheme());
   const pendingLanguageRef = useRef(language);
+  const currentLanguageRef = useRef(language);
   const emailInputRef = useRef<HTMLInputElement>(null);
   const t = copy[language];
-  const locationState = location.state as { reason?: string; redirectTo?: string } | null;
+  const locationState = location.state as { reason?: "signed-out" | "mfa-required"; redirectTo?: string } | null;
   const redirectTo =
     locationState?.redirectTo && locationState.redirectTo.startsWith("/admin") && !/^\/admin\/?$/.test(locationState.redirectTo)
       ? locationState.redirectTo
@@ -92,14 +118,15 @@ const AdminLogin = () => {
   }, []);
 
   useEffect(() => {
-    if (locationState?.reason !== "signed-out") return;
+    currentLanguageRef.current = language;
+  }, [language]);
+
+  useEffect(() => {
+    if (locationState?.reason !== "signed-out" && locationState?.reason !== "mfa-required") return;
+    if (initializing || loginStep !== "credentials") return;
     const timer = window.setTimeout(() => emailInputRef.current?.focus(), 0);
     return () => window.clearTimeout(timer);
-  }, [locationState?.reason]);
-
-  if (!hasAdminAuthConfig()) {
-    return <Navigate to="/admin/dashboard" replace />;
-  }
+  }, [initializing, locationState?.reason, loginStep]);
 
   const changeLanguage = (nextLanguage: AdminLang) => {
     if (pendingLanguageRef.current === nextLanguage) return;
@@ -107,6 +134,72 @@ const AdminLogin = () => {
     setLanguage(nextLanguage);
     setAdminLang(nextLanguage);
   };
+
+  const applyMfaFlow = useCallback(
+    async (flow: AdminMfaFlow) => {
+      if (flow.step === "complete") {
+        window.location.replace(redirectTo);
+        return;
+      }
+
+      if (flow.step === "denied") {
+        await signOutAdmin();
+        setLoginStep("credentials");
+        setMfaFactorId(null);
+        setMfaEnrollment(null);
+        setError(copy[currentLanguageRef.current].errors.adminAccessRequired);
+        return;
+      }
+
+      if (flow.step === "challenge") {
+        setLoginStep("challenge");
+        setMfaFactorId(flow.factorId);
+        setMfaEnrollment(null);
+        setMfaCode("");
+        return;
+      }
+
+      if (flow.step === "enroll") {
+        setLoginStep("enroll");
+        setMfaFactorId(flow.enrollment.factorId);
+        setMfaEnrollment(flow.enrollment);
+        setMfaCode("");
+        return;
+      }
+
+      setLoginStep("credentials");
+      setMfaFactorId(null);
+      setMfaEnrollment(null);
+    },
+    [redirectTo],
+  );
+
+  useEffect(() => {
+    if (!hasAdminAuthConfig()) return;
+    let active = true;
+
+    const resumeSession = async () => {
+      try {
+        const flow = await prepareAdminMfaFlow();
+        if (!active) return;
+        await applyMfaFlow(flow);
+      } catch (resumeError) {
+        if (!active) return;
+        setError(formatAdminLoginError(resumeError instanceof Error ? resumeError.message : String(resumeError), currentLanguageRef.current));
+      } finally {
+        if (active) setInitializing(false);
+      }
+    };
+
+    void resumeSession();
+    return () => {
+      active = false;
+    };
+  }, [applyMfaFlow]);
+
+  if (!hasAdminAuthConfig()) {
+    return <Navigate to="/admin/dashboard" replace />;
+  }
 
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
@@ -116,6 +209,8 @@ const AdminLogin = () => {
     let signInError: unknown = null;
     try {
       await signInAdmin(email, password);
+      setPassword("");
+      await applyMfaFlow(await prepareAdminMfaFlow());
     } catch (error) {
       signInError = error;
     }
@@ -126,7 +221,39 @@ const AdminLogin = () => {
       return;
     }
 
-    window.location.href = redirectTo;
+  };
+
+  const handleMfaSubmit = async (event: React.FormEvent) => {
+    event.preventDefault();
+    if (!mfaFactorId || !/^\d{6}$/.test(mfaCode)) {
+      setError(t.errors.invalidMfaCode);
+      return;
+    }
+
+    setLoading(true);
+    setError("");
+    try {
+      await verifyAdminMfa(mfaFactorId, mfaCode);
+      await applyMfaFlow(await prepareAdminMfaFlow());
+    } catch (mfaError) {
+      setError(formatAdminLoginError(mfaError instanceof Error ? mfaError.message : String(mfaError), language));
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleUseAnotherAccount = async () => {
+    setLoading(true);
+    await signOutAdmin();
+    setEmail("");
+    setPassword("");
+    setMfaCode("");
+    setMfaFactorId(null);
+    setMfaEnrollment(null);
+    setLoginStep("credentials");
+    setError("");
+    setLoading(false);
+    window.setTimeout(() => emailInputRef.current?.focus(), 0);
   };
 
   return (
@@ -176,7 +303,11 @@ const AdminLogin = () => {
         </section>
 
         <div className="mx-auto w-full max-w-lg lg:mx-0 lg:max-w-none lg:justify-self-end">
-          <form onSubmit={handleSubmit} aria-busy={loading} className="rounded-lg border border-border bg-card p-4 shadow-luxury-soft sm:p-8">
+          <form
+            onSubmit={loginStep === "credentials" ? handleSubmit : handleMfaSubmit}
+            aria-busy={loading || initializing}
+            className="rounded-lg border border-border bg-card p-4 shadow-luxury-soft sm:p-8"
+          >
             <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
               <div className="flex min-w-0 items-start gap-3 sm:gap-4">
                 <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-primary text-sm font-bold text-primary-foreground">
@@ -211,7 +342,9 @@ const AdminLogin = () => {
               </div>
             </div>
 
-            <p className="mb-6 break-words text-sm leading-6 text-muted-foreground">{t.description}</p>
+            <p className="mb-6 break-words text-sm leading-6 text-muted-foreground">
+              {loginStep === "enroll" ? t.mfaEnrollDescription : loginStep === "challenge" ? t.mfaChallengeDescription : t.description}
+            </p>
 
             {error && (
               <div role="alert" className="mb-4 rounded-lg border border-destructive/20 bg-destructive/10 p-3 text-sm text-destructive">
@@ -223,49 +356,152 @@ const AdminLogin = () => {
                 {t.signInToContinue}
               </AdminAlert>
             )}
+            {locationState?.reason === "mfa-required" && !error && loginStep !== "credentials" && (
+              <AdminAlert tone="info" className="mb-4">
+                {t.mfaRequiredToContinue}
+              </AdminAlert>
+            )}
 
             <div className="space-y-4">
-              <div>
-                <label htmlFor="admin-login-email" className="mb-1.5 block text-sm font-medium">{t.email}</label>
-                <Input
-                  id="admin-login-email"
-                  ref={emailInputRef}
-                  type="email"
-                  value={email}
-                  onChange={(event) => {
-                    setEmail(event.target.value);
-                    if (error) setError("");
-                  }}
-                  autoComplete="username"
-                  required
-                  disabled={loading}
-                />
-              </div>
-              <div>
-                <label htmlFor="admin-login-password" className="mb-1.5 block text-sm font-medium">{t.password}</label>
-                <Input
-                  id="admin-login-password"
-                  type="password"
-                  value={password}
-                  onChange={(event) => {
-                    setPassword(event.target.value);
-                    if (error) setError("");
-                  }}
-                  autoComplete="current-password"
-                  required
-                  disabled={loading}
-                />
-              </div>
-              <Button type="submit" className="h-11 w-full rounded-lg" disabled={loading}>
-                {loading ? (
-                  <>
-                    <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />
-                    {t.signingIn}
-                  </>
-                ) : (
-                  t.signIn
-                )}
-              </Button>
+              {loginStep === "credentials" ? (
+                <>
+                  <div>
+                    <label htmlFor="admin-login-email" className="mb-1.5 block text-sm font-medium">{t.email}</label>
+                    <Input
+                      id="admin-login-email"
+                      ref={emailInputRef}
+                      type="email"
+                      value={email}
+                      onChange={(event) => {
+                        setEmail(event.target.value);
+                        if (error) setError("");
+                      }}
+                      autoComplete="username"
+                      required
+                      disabled={loading || initializing}
+                    />
+                  </div>
+                  <div>
+                    <label htmlFor="admin-login-password" className="mb-1.5 block text-sm font-medium">{t.password}</label>
+                    <div className="relative">
+                      <Input
+                        id="admin-login-password"
+                        className="pr-11"
+                        type={showPassword ? "text" : "password"}
+                        value={password}
+                        onChange={(event) => {
+                          setPassword(event.target.value);
+                          if (error) setError("");
+                        }}
+                        autoComplete="current-password"
+                        required
+                        disabled={loading || initializing}
+                      />
+                      <button
+                        type="button"
+                        className="absolute inset-y-0 right-0 flex w-11 items-center justify-center rounded-r-md text-muted-foreground hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                        aria-label={showPassword ? t.hidePassword : t.showPassword}
+                        title={showPassword ? t.hidePassword : t.showPassword}
+                        aria-pressed={showPassword}
+                        onClick={() => setShowPassword((value) => !value)}
+                        disabled={loading || initializing}
+                      >
+                        {showPassword ? <EyeOff className="h-4 w-4" aria-hidden="true" /> : <Eye className="h-4 w-4" aria-hidden="true" />}
+                      </button>
+                    </div>
+                  </div>
+                  <Button type="submit" className="h-11 w-full rounded-lg" disabled={loading || initializing}>
+                    {loading || initializing ? (
+                      <>
+                        <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />
+                        {initializing ? t.checkingSession : t.signingIn}
+                      </>
+                    ) : (
+                      t.signIn
+                    )}
+                  </Button>
+                </>
+              ) : (
+                <>
+                  {loginStep === "enroll" && mfaEnrollment && (
+                    <div className="space-y-4 rounded-lg border border-border bg-muted/40 p-4">
+                      <div className="flex items-start gap-3">
+                        <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-primary text-primary-foreground">
+                          <KeyRound className="h-4 w-4" aria-hidden="true" />
+                        </span>
+                        <div className="min-w-0">
+                          <h2 className="font-semibold text-foreground">{t.mfaEnrollTitle}</h2>
+                          <p className="mt-1 text-xs leading-5 text-muted-foreground">{t.mfaEnrollHelp}</p>
+                        </div>
+                      </div>
+                      <img
+                        src={mfaEnrollment.qrCode}
+                        alt={t.mfaQrAlt}
+                        className="mx-auto h-44 w-44 rounded-lg border border-border bg-white p-2"
+                        width="176"
+                        height="176"
+                      />
+                      <div>
+                        <label htmlFor="admin-mfa-secret" className="mb-1.5 block text-xs font-medium text-foreground">{t.mfaSecret}</label>
+                        <div className="relative">
+                          <Input
+                            id="admin-mfa-secret"
+                            className="pr-11 font-mono text-xs"
+                            type={showMfaSecret ? "text" : "password"}
+                            value={mfaEnrollment.secret}
+                            readOnly
+                            autoComplete="off"
+                          />
+                          <button
+                            type="button"
+                            className="absolute inset-y-0 right-0 flex w-11 items-center justify-center rounded-r-md text-muted-foreground hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                            aria-label={showMfaSecret ? t.hideMfaSecret : t.showMfaSecret}
+                            title={showMfaSecret ? t.hideMfaSecret : t.showMfaSecret}
+                            aria-pressed={showMfaSecret}
+                            onClick={() => setShowMfaSecret((value) => !value)}
+                          >
+                            {showMfaSecret ? <EyeOff className="h-4 w-4" aria-hidden="true" /> : <Eye className="h-4 w-4" aria-hidden="true" />}
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                  <div>
+                    <label htmlFor="admin-mfa-code" className="mb-1.5 block text-sm font-medium">{t.mfaCode}</label>
+                    <Input
+                      id="admin-mfa-code"
+                      value={mfaCode}
+                      onChange={(event) => {
+                        setMfaCode(event.target.value.replace(/\D/g, "").slice(0, 6));
+                        if (error) setError("");
+                      }}
+                      inputMode="numeric"
+                      pattern="[0-9]{6}"
+                      maxLength={6}
+                      autoComplete="one-time-code"
+                      placeholder={t.mfaCodePlaceholder}
+                      required
+                      autoFocus
+                      disabled={loading}
+                    />
+                  </div>
+                  <Button type="submit" className="h-11 w-full rounded-lg" disabled={loading || mfaCode.length !== 6}>
+                    {loading ? (
+                      <>
+                        <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />
+                        {t.verifyingMfa}
+                      </>
+                    ) : loginStep === "enroll" ? (
+                      t.enableMfa
+                    ) : (
+                      t.verifyMfa
+                    )}
+                  </Button>
+                  <Button type="button" variant="outline" className="h-10 w-full rounded-lg" disabled={loading} onClick={() => void handleUseAnotherAccount()}>
+                    {t.useAnotherAccount}
+                  </Button>
+                </>
+              )}
             </div>
 
             <div className="mt-5 flex items-start gap-3 rounded-lg border border-border bg-muted/55 px-3 py-3 text-xs text-muted-foreground">

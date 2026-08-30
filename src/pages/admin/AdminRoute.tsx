@@ -99,6 +99,11 @@ const AdminRoute = () => {
     return <Navigate to="/admin" replace state={{ reason: "signed-out", redirectTo }} />;
   }
 
+  if (authState === "mfa-required") {
+    const redirectTo = `${location.pathname}${location.search}${location.hash}`;
+    return <Navigate to="/admin" replace state={{ reason: "mfa-required", redirectTo }} />;
+  }
+
   if (authState === "denied") {
     return (
       <AdminNotice title={t.accessRequired} body={t.deniedBody} helpText={t.deniedHelp}>

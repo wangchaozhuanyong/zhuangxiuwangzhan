@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useEffect, useMemo, useRef, useState } from "react";
 import {
+  getAdminMfaState,
   getAdminRoleStatus,
   getAdminSession,
   hasAdminAuthConfig,
@@ -7,12 +8,13 @@ import {
   type AdminRole,
 } from "@/backend/modules/admin-auth/service/adminAuthService";
 
-type AdminAuthState = "checking" | "signed-in" | "signed-out" | "denied";
+type AdminAuthState = "checking" | "signed-in" | "signed-out" | "mfa-required" | "denied";
 export type { AdminRole };
 
 type AdminAuthContextValue = {
   state: AdminAuthState;
   isSupabaseConfigured: boolean;
+  userId: string | null;
   role: AdminRole | null;
   isSuperAdmin: boolean;
 };
@@ -27,6 +29,7 @@ export function useAdminAuth() {
 
 export default function AdminAuthProvider({ children }: { children: React.ReactNode }) {
   const [state, setState] = useState<AdminAuthState>("checking");
+  const [userId, setUserId] = useState<string | null>(null);
   const [role, setRole] = useState<AdminRole | null>(null);
   const roleRef = useRef<AdminRole | null>(null);
   const lastSessionIdRef = useRef<string | null>(null);
@@ -45,28 +48,47 @@ export default function AdminAuthProvider({ children }: { children: React.ReactN
     let active = true;
 
     const check = async () => {
-      const session = await getAdminSession();
-      if (!active) return;
+      try {
+        const session = await getAdminSession();
+        if (!active) return;
 
-      if (!session) {
-        lastSessionIdRef.current = null;
+        if (!session) {
+          lastSessionIdRef.current = null;
+          setUserId(null);
+          applyRole(null);
+          setState("signed-out");
+          return;
+        }
+
+        if (lastSessionIdRef.current === session.access_token && roleRef.current) {
+          setState((prev) => (prev === "checking" ? "signed-in" : prev));
+          return;
+        }
+
+        lastSessionIdRef.current = session.access_token;
+        setUserId(session.user.id);
+        const mfaState = await getAdminMfaState();
+        if (!active) return;
+        if (mfaState.currentLevel !== "aal2") {
+          applyRole(null);
+          setState("mfa-required");
+          return;
+        }
+
+        const { isAdmin, role: adminRole } = await getAdminRoleStatus();
+        if (!active) return;
+        if (isAdmin && adminRole) {
+          applyRole(adminRole);
+          setState("signed-in");
+          return;
+        }
+
         applyRole(null);
-        setState("signed-out");
-        return;
-      }
-
-      if (lastSessionIdRef.current === session.access_token && roleRef.current) {
-        setState((prev) => (prev === "checking" ? "signed-in" : prev));
-        return;
-      }
-
-      lastSessionIdRef.current = session.access_token;
-      const { isAdmin, role: adminRole } = await getAdminRoleStatus();
-      if (!active) return;
-      if (isAdmin) {
-        applyRole(adminRole || "super_admin");
-        setState("signed-in");
-      } else {
+        setState("denied");
+      } catch {
+        if (!active) return;
+        lastSessionIdRef.current = null;
+        setUserId(null);
         applyRole(null);
         setState("denied");
       }
@@ -86,8 +108,8 @@ export default function AdminAuthProvider({ children }: { children: React.ReactN
   }, []);
 
   const value = useMemo<AdminAuthContextValue>(
-    () => ({ state, isSupabaseConfigured: hasAdminAuthConfig(), role, isSuperAdmin: role === "super_admin" }),
-    [state, role],
+    () => ({ state, isSupabaseConfigured: hasAdminAuthConfig(), userId, role, isSuperAdmin: role === "super_admin" }),
+    [state, userId, role],
   );
 
   return <AdminAuthContext.Provider value={value}>{children}</AdminAuthContext.Provider>;

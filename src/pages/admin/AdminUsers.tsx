@@ -14,11 +14,19 @@ import { getAdminLang } from "@/lib/adminLocale";
 import { formatUserFacingError } from "@/lib/userFacingText";
 import {
   getAdminUserForUpsert,
+  isProtectedAdminUserMutationError,
   saveAdminUser,
 } from "@/backend/modules/admin-users/service/adminUserService";
 
 const formatText = (text: string, values: Record<string, string | number>) =>
   Object.entries(values).reduce((current, [key, value]) => current.replaceAll(`{${key}}`, String(value)), text);
+
+const formatAdminUserSaveError = (error: unknown, selfProtectionMessage: string) => {
+  if (isProtectedAdminUserMutationError(error)) {
+    return selfProtectionMessage;
+  }
+  return formatAdminMutationError(error);
+};
 
 const AdminUsers = () => {
   const language = getAdminLang();
@@ -26,7 +34,7 @@ const AdminUsers = () => {
   const roleLabels = adminUserRoleLabels[language];
   const roleOptions = Object.entries(roleLabels);
   const queryClient = useQueryClient();
-  const { isSuperAdmin, role } = useAdminAuth();
+  const { isSuperAdmin, role, userId: currentUserId } = useAdminAuth();
   const { data: users = [], error, refetch, isFetching } = useAdminUsers();
   const [form, setForm] = useState({ user_id: "", email: "", role: "content_editor" });
   const [message, setMessage] = useState(error ? formatUserFacingError(error, language) : "");
@@ -64,14 +72,14 @@ const AdminUsers = () => {
       setMessage(text.saved);
       await refreshUsers();
     } catch (saveError) {
-      setMessage(formatAdminMutationError(saveError));
+      setMessage(formatAdminUserSaveError(saveError, text.selfProtectionError));
     } finally {
       setSavingKey(null);
     }
   };
 
   const toggleActive = async (user: AdminUserRow) => {
-    if (!isSuperAdmin) return;
+    if (!isSuperAdmin || user.user_id === currentUserId) return;
     const nextActive = !user.active;
     const actionText = nextActive ? text.enable : text.disable;
     const confirmed = await adminConfirm({
@@ -88,14 +96,14 @@ const AdminUsers = () => {
       setMessage(formatText(text.toggled, { action: actionText }));
       await refreshUsers();
     } catch (saveError) {
-      setMessage(formatAdminMutationError(saveError));
+      setMessage(formatAdminUserSaveError(saveError, text.selfProtectionError));
     } finally {
       setSavingKey(null);
     }
   };
 
   const updateRole = async (user: AdminUserRow, nextRole: string) => {
-    if (!isSuperAdmin || nextRole === user.role) return;
+    if (!isSuperAdmin || user.user_id === currentUserId || nextRole === user.role) return;
     const confirmed = await adminConfirm({
       title: text.confirmRoleTitle,
       description: formatText(text.confirmRoleDescription, {
@@ -113,7 +121,7 @@ const AdminUsers = () => {
       setMessage(text.roleUpdated);
       await refreshUsers();
     } catch (saveError) {
-      setMessage(formatAdminMutationError(saveError));
+      setMessage(formatAdminUserSaveError(saveError, text.selfProtectionError));
     } finally {
       setSavingKey(null);
     }
@@ -187,6 +195,7 @@ const AdminUsers = () => {
             <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
               <div className="min-w-0">
                 <p className="break-all font-semibold">{user.email || text.noEmail}</p>
+                {user.user_id === currentUserId && <p className="mt-1 text-xs font-semibold text-accent">{text.currentAccount}</p>}
                 <p className="mt-1 break-all text-xs text-muted-foreground">{user.user_id}</p>
                 <p className="mt-1 text-xs text-muted-foreground">{text.statusPrefix}{user.active ? text.active : text.inactive}</p>
               </div>
@@ -195,7 +204,7 @@ const AdminUsers = () => {
                   value={user.role || "super_admin"}
                   onChange={(event) => void updateRole(user, event.target.value)}
                   className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm sm:w-auto"
-                  disabled={!isSuperAdmin || savingKey === `role:${user.user_id}`}
+                  disabled={!isSuperAdmin || user.user_id === currentUserId || savingKey === `role:${user.user_id}`}
                 >
                   {roleOptions.map(([value, label]) => (
                     <option key={value} value={value}>
@@ -207,7 +216,7 @@ const AdminUsers = () => {
                   action="users.manage"
                   variant="outline"
                   onClick={() => void toggleActive(user)}
-                  disabled={!isSuperAdmin || savingKey === `active:${user.user_id}`}
+                  disabled={!isSuperAdmin || user.user_id === currentUserId || savingKey === `active:${user.user_id}`}
                 >
                   {savingKey === `active:${user.user_id}` ? text.processing : user.active ? text.disable : text.enable}
                 </AdminActionButton>

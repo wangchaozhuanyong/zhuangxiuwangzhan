@@ -58,6 +58,19 @@ if (!turnstileHelper.includes("TURNSTILE_SECRET_KEY")) {
   fail("Turnstile helper does not read TURNSTILE_SECRET_KEY");
 }
 
+const adminAuthHelper = await read("supabase/functions/_shared/admin-auth.ts");
+if (!adminAuthHelper.includes('getJwtAssuranceLevel(token) !== "aal2"')) {
+  fail("shared admin authentication does not require an aal2 MFA session");
+}
+if (adminAuthHelper.includes('app_metadata?.role === "admin"')) {
+  fail("shared admin authentication still trusts the legacy app_metadata admin fallback");
+}
+
+const healthCheckRepository = await read("supabase/functions/health-check/repository.ts");
+if (!healthCheckRepository.includes('getJwtAssuranceLevel(token) !== "aal2"')) {
+  fail("health-check admin mode does not require an aal2 MFA session");
+}
+
 const headers = await read("public/_headers");
 if (!headers.includes(`Content-Security-Policy: ${SITE_CSP_POLICY}`)) {
   fail("public/_headers CSP is not synchronized with scripts/site-csp.mjs");

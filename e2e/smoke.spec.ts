@@ -1,8 +1,23 @@
 import { test, expect, type Page } from "@playwright/test";
+import { createHmac } from "node:crypto";
 
 const isExternalSmoke = Boolean(process.env.PLAYWRIGHT_BASE_URL);
 const navigationAttempts = isExternalSmoke ? 2 : 1;
 const navigationTimeout = isExternalSmoke ? 45_000 : 30_000;
+
+const generateTotpCode = (secret: string, timestamp = Date.now()) => {
+  const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ234567";
+  const normalized = secret.toUpperCase().replace(/[^A-Z2-7]/g, "");
+  let bits = "";
+  for (const character of normalized) bits += alphabet.indexOf(character).toString(2).padStart(5, "0");
+  const key = Buffer.from((bits.match(/.{8}/g) || []).map((byte) => Number.parseInt(byte, 2)));
+  const counter = Buffer.alloc(8);
+  counter.writeBigUInt64BE(BigInt(Math.floor(timestamp / 30_000)));
+  const digest = createHmac("sha1", key).update(counter).digest();
+  const offset = digest[digest.length - 1] & 0x0f;
+  const value = (digest.readUInt32BE(offset) & 0x7fffffff) % 1_000_000;
+  return String(value).padStart(6, "0");
+};
 
 const gotoSmokePage = async (page: Page, path: string) => {
   let lastError: unknown;
@@ -299,6 +314,21 @@ test.describe("public site smoke", () => {
 });
 
 test.describe("admin access guard", () => {
+  test("admin login password can be shown and hidden on mobile", async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 844 });
+    await gotoSmokePage(page, "/admin");
+
+    const password = page.locator("#admin-login-password");
+    await expect(password).toHaveAttribute("type", "password");
+    await page.getByRole("button", { name: /显示密码|Show password/i }).click();
+    await expect(password).toHaveAttribute("type", "text");
+    await page.getByRole("button", { name: /隐藏密码|Hide password/i }).click();
+    await expect(password).toHaveAttribute("type", "password");
+
+    const hasHorizontalOverflow = await page.evaluate(() => document.documentElement.scrollWidth > document.documentElement.clientWidth);
+    expect(hasHorizontalOverflow).toBe(false);
+  });
+
   test("unauthenticated admin page redirects to /admin", async ({ page }) => {
     await gotoSmokePage(page, "/admin/dashboard");
     await page.waitForURL("**/admin", { timeout: 15_000 });
@@ -330,13 +360,18 @@ test.describe("admin access guard", () => {
 });
 
 test.describe("admin authenticated smoke", () => {
-  test.skip(!process.env.ADMIN_TEST_EMAIL || !process.env.ADMIN_TEST_PASSWORD, "Set ADMIN_TEST_EMAIL and ADMIN_TEST_PASSWORD to run admin login smoke.");
+  test.skip(
+    !process.env.ADMIN_TEST_EMAIL || !process.env.ADMIN_TEST_PASSWORD || !process.env.ADMIN_TEST_TOTP_SECRET,
+    "Set ADMIN_TEST_EMAIL, ADMIN_TEST_PASSWORD and ADMIN_TEST_TOTP_SECRET to run admin login smoke.",
+  );
 
   test("admin can sign in and open system health", async ({ page }) => {
     await gotoSmokePage(page, "/admin");
     await page.locator('input[type="email"]').fill(process.env.ADMIN_TEST_EMAIL!);
     await page.locator('input[type="password"]').fill(process.env.ADMIN_TEST_PASSWORD!);
     await page.getByRole("button", { name: /登录|Sign in/i }).click();
+    await page.locator("#admin-mfa-code").fill(generateTotpCode(process.env.ADMIN_TEST_TOTP_SECRET!));
+    await page.getByRole("button", { name: /验证并继续|Verify and continue/i }).click();
     await page.waitForURL("**/admin/dashboard", { timeout: 20_000 });
 
     await gotoSmokePage(page, "/admin/system-health");

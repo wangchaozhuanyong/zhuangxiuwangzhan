@@ -2,7 +2,7 @@
 
 Purpose: admin login, route protection, role checks, and auth boundary ownership.
 
-Current status: first admin auth migration complete. `AdminAuthProvider` now reads sessions, role status, and auth state changes through this module's service/repository. Route guards remain in `src/pages/admin` and `src/components/admin` because they are UI/route boundary code.
+Current status: admin sessions, role status, TOTP enrollment/challenge, and auth state changes are owned by this module's service/repository. Admin access requires an `aal2` session after the MFA enforcement migration is applied. Route guards remain in `src/pages/admin` and `src/components/admin` because they are UI/route boundary code.
 
 Layer rules:
 
