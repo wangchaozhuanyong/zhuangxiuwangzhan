@@ -5,7 +5,7 @@ export const BOTTOM_NAV_SCROLL_INTENT = "restore-bottom-navigation" as const;
 const BOTTOM_NAV_PATHS = new Set([
   "/",
   "/projects",
-  "/products",
+  "/materials",
   "/promotions",
   "/contact",
 ]);

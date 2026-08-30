@@ -155,6 +155,20 @@ describe("public Edge HTML cache", () => {
     await expect(response.text()).resolves.toContain("当前网络不可用");
   });
 
+  it.each([
+    ["/en/products", "/en/materials"],
+    ["/zh/products/spc-flooring-natural-oak/?source=legacy", "/zh/materials/spc-flooring-natural-oak?source=legacy"],
+  ])("permanently redirects %s to the matching material path", async (path, expectedPath) => {
+    const response = await onRequest({
+      request: new Request(`https://flashcast.com.my${path}`),
+      env: {},
+      next: async () => new Response("not used"),
+    } as never);
+
+    expect(response.status).toBe(301);
+    expect(response.headers.get("location")).toBe(`https://flashcast.com.my${expectedPath}`);
+  });
+
   it("serves a fresh cache hit without querying Supabase again", async () => {
     const firstResponse = await requestPage();
     expect(firstResponse.headers.get("x-flashcast-html-cache")).toBe("miss");

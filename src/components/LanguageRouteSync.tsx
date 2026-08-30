@@ -28,3 +28,9 @@ export const LegacyLanguageRedirect = () => {
   const path = stripLanguagePrefix(location.pathname);
   return <Navigate to={`${withLanguagePrefix(path, language)}${location.search}${location.hash}`} replace />;
 };
+
+export const ProductsToMaterialsRedirect = () => {
+  const location = useLocation();
+  const path = location.pathname.replace(/^\/(en|zh)\/products(?=\/|$)/, "/$1/materials");
+  return <Navigate to={`${path}${location.search}${location.hash}`} replace />;
+};

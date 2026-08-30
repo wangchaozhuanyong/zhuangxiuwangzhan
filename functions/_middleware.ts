@@ -1544,6 +1544,13 @@ const getExactLegacyRedirectPath = (pathname: string) => {
   return EXACT_LEGACY_REDIRECTS[cleaned] || null;
 };
 
+const getProductsToMaterialsRedirectPath = (pathname: string) => {
+  const cleaned = pathname.replace(/\/+$/, "") || "/";
+  const match = cleaned.match(/^\/(en|zh)\/products(?:\/([^/]+))?$/);
+  if (!match) return null;
+  return `/${match[1]}/materials${match[2] ? `/${match[2]}` : ""}`;
+};
+
 const injectSeo = (html: string, meta: SeoEntry, siteSettings?: SiteSettingsHead | null) => {
   const safeMeta = {
     ...meta,
@@ -1886,6 +1893,12 @@ export const onRequest: PagesFunction = async (context) => {
   const exactLegacyRedirectPath = getExactLegacyRedirectPath(url.pathname);
   if (exactLegacyRedirectPath) {
     url.pathname = exactLegacyRedirectPath;
+    return permanentRedirect(url);
+  }
+
+  const productsToMaterialsRedirectPath = getProductsToMaterialsRedirectPath(url.pathname);
+  if (productsToMaterialsRedirectPath) {
+    url.pathname = productsToMaterialsRedirectPath;
     return permanentRedirect(url);
   }
 

@@ -1,6 +1,6 @@
 import { lazy, type ComponentType } from "react";
 import { Route } from "react-router-dom";
-import { LanguageRouteSync, LegacyLanguageRedirect, RootLanguageRedirect } from "@/components/LanguageRouteSync";
+import { LanguageRouteSync, LegacyLanguageRedirect, ProductsToMaterialsRedirect, RootLanguageRedirect } from "@/components/LanguageRouteSync";
 
 type PageModule = { default: ComponentType };
 type StyleModule = typeof import("*.css");
@@ -24,8 +24,6 @@ const About = lazyPublicPage(() => import("@/pages/About"));
 const Services = lazyPublicPage(() => import("@/pages/Services"));
 const ServiceDetail = lazyPublicPage(() => import("@/pages/ServiceDetail"));
 const Materials = lazyPublicPage(() => import("@/pages/Materials"));
-const Products = lazyPublicPage(() => import("@/pages/Products"));
-const ProductDetail = lazyPublicPage(() => import("@/pages/ProductDetail"));
 const Promotions = lazyPublicPage(() => import("@/pages/Promotions"));
 const Locations = lazyPublicPage(() => import("@/pages/Locations"));
 const MaterialCategoryPage = lazyPublicPage(() => import("@/pages/MaterialCategoryPage"));
@@ -67,8 +65,8 @@ export const publicRoutes = (
     <Route path="/:lang/materials/category/:categorySlug" element={withLanguageSync(<MaterialCategoryPage />)} />
     <Route path="/:lang/materials/category/:categorySlug/:subcategorySlug" element={withLanguageSync(<MaterialSubcategoryPage />)} />
     <Route path="/:lang/materials/:slug" element={withLanguageSync(<MaterialDetail />)} />
-    <Route path="/:lang/products" element={withLanguageSync(<Products />)} />
-    <Route path="/:lang/products/:slug" element={withLanguageSync(<ProductDetail />)} />
+    <Route path="/:lang/products" element={<ProductsToMaterialsRedirect />} />
+    <Route path="/:lang/products/:slug" element={<ProductsToMaterialsRedirect />} />
     <Route path="/:lang/promotions" element={withLanguageSync(<Promotions />)} />
     <Route path="/:lang/projects" element={withLanguageSync(<Projects />)} />
     <Route path="/:lang/projects/:slug" element={withLanguageSync(<ProjectDetail />)} />
