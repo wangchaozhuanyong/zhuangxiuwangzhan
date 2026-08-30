@@ -27,6 +27,18 @@ const checks = [
     patterns: ["Content roles can write services", "Lead roles can write leads", "Content roles can upload site images"],
   },
   {
+    file: "supabase/migrations/20260830085643_admin_role_safety.sql",
+    patterns: ["is_admin_identity", "self_admin_role_change_forbidden", "last_super_admin_required", "protect_last_super_admin"],
+  },
+  {
+    file: "supabase/migrations/20260830085644_admin_mfa_enforcement.sql",
+    patterns: ["auth.jwt() ->> 'aal'", "'aal2'", "public.admin_role", "public.has_admin_role"],
+  },
+  {
+    file: "supabase/migrations/20260830085645_admin_identity_immutability.sql",
+    patterns: ["admin_user_identity_change_forbidden", "before update of user_id, role, active or delete"],
+  },
+  {
     file: "src/lib/adminMutation.ts",
     patterns: ["saveAdminRecord", "archiveOrDeleteAdminRecord", "AdminMutationError"],
   },
@@ -61,6 +73,14 @@ const checks = [
   {
     file: "src/components/admin/AdminPermission.tsx",
     patterns: ["AdminActionButton", "useAdminPermission", "content.publish", "lead.write", "users.manage"],
+  },
+  {
+    file: "src/backend/modules/admin-auth/service/adminAuthService.ts",
+    patterns: ["prepareAdminMfaFlow", "verifyAdminMfa", "getAdminMfaState"],
+  },
+  {
+    file: "src/pages/admin/AdminLogin.tsx",
+    patterns: ["showPassword", "mfaEnrollment", "verifyAdminMfa", "one-time-code"],
   },
   {
     file: "src/pages/admin/AdminSystemHealth.tsx",

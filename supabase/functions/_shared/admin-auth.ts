@@ -33,6 +33,19 @@ type EdgeSupabaseClient = {
 export const getServiceRoleKey = () =>
   Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") || Deno.env.get("SERVICE_ROLE_KEY");
 
+export const getJwtAssuranceLevel = (token: string) => {
+  try {
+    const encodedPayload = token.split(".")[1];
+    if (!encodedPayload) return null;
+    const normalized = encodedPayload.replace(/-/g, "+").replace(/_/g, "/");
+    const padded = normalized.padEnd(Math.ceil(normalized.length / 4) * 4, "=");
+    const payload = JSON.parse(atob(padded)) as { aal?: unknown };
+    return typeof payload.aal === "string" ? payload.aal : null;
+  } catch {
+    return null;
+  }
+};
+
 export const requireAdminAccess = async (
   req: Request,
   supabase: EdgeSupabaseClient,
@@ -52,7 +65,10 @@ export const requireAdminAccess = async (
     return { ok: false, status: 401, error: "Invalid authorization token", mode: "admin" };
   }
 
-  const jwtRole = userData.user.app_metadata?.role === "admin" ? "super_admin" : null;
+  if (getJwtAssuranceLevel(token) !== "aal2") {
+    return { ok: false, status: 403, error: "Two-factor authentication required", mode: "admin" };
+  }
+
   const { data: adminRow, error: adminError } = await supabase
     .from("admin_users")
     .select("user_id,role,active")
@@ -66,7 +82,6 @@ export const requireAdminAccess = async (
   if (adminRow) {
     return { ok: true, status: 200, error: null, mode: "admin", userId: userData.user.id, role: adminRow.role || null };
   }
-  if (jwtRole) return { ok: true, status: 200, error: null, mode: "admin", userId: userData.user.id, role: jwtRole };
 
   return { ok: false, status: 403, error: "Admin access required", mode: "admin" };
 };

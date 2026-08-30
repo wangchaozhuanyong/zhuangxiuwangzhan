@@ -16,3 +16,13 @@ export function saveAdminUser(
 ) {
   return saveAdminUserRecord(payload, existing, queryClient);
 }
+
+export function isProtectedAdminUserMutationError(error: unknown) {
+  const message = error instanceof Error ? error.message : (error as { message?: unknown } | null)?.message;
+  return typeof message === "string"
+    && (
+      message.includes("self_admin_role_change_forbidden")
+      || message.includes("last_super_admin_required")
+      || message.includes("admin_user_identity_change_forbidden")
+    );
+}

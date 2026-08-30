@@ -1,4 +1,5 @@
 import type { HealthClient, HealthTableDefinition, SystemEventRow, TableCheck } from "./types.ts";
+import { getJwtAssuranceLevel } from "../_shared/admin-auth.ts";
 
 const eventSelect = "id,event_type,severity,source,message,metadata,created_at";
 
@@ -15,7 +16,7 @@ export async function checkTable(client: HealthClient, item: HealthTableDefiniti
 }
 
 export async function getAdminRole(client: HealthClient, token: string) {
-  if (!token) return null;
+  if (!token || getJwtAssuranceLevel(token) !== "aal2") return null;
   const { data: userData, error: userError } = await client.auth.getUser(token);
   const userId = userData?.user?.id;
   if (userError || !userId) return null;
