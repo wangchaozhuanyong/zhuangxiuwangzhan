@@ -91,6 +91,17 @@ const urlEntry = (localizedPath) => {
 
 const unique = (items) => [...new Set(items)];
 
+const landingServiceRedirectSlugs = new Set([
+  "office-renovation",
+  "shop-renovation",
+  "bathroom-renovation",
+  "old-house-renovation",
+  "custom-built-in",
+  "warehouse-shelving",
+  "kitchen-cabinet",
+  "flooring",
+]);
+
 const [projects, posts, materials, areas, landingPages, services] = await Promise.all([
   fetchSlugs("projects"),
   fetchSlugs("blog_posts"),
@@ -108,7 +119,7 @@ const paths = unique([
   ...materialSeoPaths,
   ...materials.map((item) => `/materials/${item.slug}`),
   ...areas.map((item) => `/locations/${item.slug}`),
-  ...landingPages.map((item) => `/landing/${item.slug}`),
+  ...landingPages.filter((item) => !landingServiceRedirectSlugs.has(item.slug)).map((item) => `/landing/${item.slug}`),
   ...services.map((item) => `/services/${item.slug}`),
 ]);
 

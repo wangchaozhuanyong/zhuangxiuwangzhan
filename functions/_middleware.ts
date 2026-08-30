@@ -1551,6 +1551,24 @@ const getProductsToMaterialsRedirectPath = (pathname: string) => {
   return `/${match[1]}/materials${match[2] ? `/${match[2]}` : ""}`;
 };
 
+const LANDING_TO_SERVICE_SLUGS: Record<string, string> = {
+  "office-renovation": "office-renovation",
+  "shop-renovation": "shop-renovation",
+  "bathroom-renovation": "bathroom",
+  "old-house-renovation": "old-house",
+  "custom-built-in": "builtin",
+  "warehouse-shelving": "warehouse",
+  "kitchen-cabinet": "kitchen",
+  "flooring": "flooring",
+};
+
+const getLandingToServiceRedirectPath = (pathname: string) => {
+  const cleaned = pathname.replace(/\/+$/, "") || "/";
+  const match = cleaned.match(/^\/(en|zh)\/landing\/([^/]+)$/);
+  const serviceSlug = match?.[2] ? LANDING_TO_SERVICE_SLUGS[match[2]] : null;
+  return match && serviceSlug ? `/${match[1]}/services/${serviceSlug}` : null;
+};
+
 const injectSeo = (html: string, meta: SeoEntry, siteSettings?: SiteSettingsHead | null) => {
   const safeMeta = {
     ...meta,
@@ -1899,6 +1917,12 @@ export const onRequest: PagesFunction = async (context) => {
   const productsToMaterialsRedirectPath = getProductsToMaterialsRedirectPath(url.pathname);
   if (productsToMaterialsRedirectPath) {
     url.pathname = productsToMaterialsRedirectPath;
+    return permanentRedirect(url);
+  }
+
+  const landingToServiceRedirectPath = getLandingToServiceRedirectPath(url.pathname);
+  if (landingToServiceRedirectPath) {
+    url.pathname = landingToServiceRedirectPath;
     return permanentRedirect(url);
   }
 

@@ -169,6 +169,22 @@ describe("public Edge HTML cache", () => {
     expect(response.headers.get("location")).toBe(`https://flashcast.com.my${expectedPath}`);
   });
 
+  it.each([
+    ["/en/landing/office-renovation", "/en/services/office-renovation"],
+    ["/zh/landing/kitchen-cabinet?source=legacy", "/zh/services/kitchen?source=legacy"],
+    ["/en/landing/warehouse-shelving/", "/en/services/warehouse"],
+    ["/en/landing/flooring?source=legacy", "/en/services/flooring?source=legacy"],
+  ])("permanently redirects %s to the mapped service path", async (path, expectedPath) => {
+    const response = await onRequest({
+      request: new Request(`https://flashcast.com.my${path}`),
+      env: {},
+      next: async () => new Response("not used"),
+    } as never);
+
+    expect(response.status).toBe(301);
+    expect(response.headers.get("location")).toBe(`https://flashcast.com.my${expectedPath}`);
+  });
+
   it("serves a fresh cache hit without querying Supabase again", async () => {
     const firstResponse = await requestPage();
     expect(firstResponse.headers.get("x-flashcast-html-cache")).toBe("miss");

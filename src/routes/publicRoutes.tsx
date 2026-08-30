@@ -1,5 +1,5 @@
 import { lazy, type ComponentType } from "react";
-import { Route } from "react-router-dom";
+import { Navigate, Route, useParams } from "react-router-dom";
 import { LanguageRouteSync, LegacyLanguageRedirect, ProductsToMaterialsRedirect, RootLanguageRedirect } from "@/components/LanguageRouteSync";
 
 type PageModule = { default: ComponentType };
@@ -44,6 +44,17 @@ const CmsDynamicPage = lazyPublicPage(() => import("@/pages/CmsDynamicPage"));
 const Privacy = lazyPublicPage(() => import("@/pages/Privacy"));
 const Terms = lazyPublicPage(() => import("@/pages/Terms"));
 const OldHouseRenovation = lazyPublicPage(() => import("@/pages/OldHouseRenovation"));
+
+const landingToServiceSlugs: Record<string, string> = {
+  "office-renovation": "office-renovation",
+  "shop-renovation": "shop-renovation",
+  "bathroom-renovation": "bathroom",
+  "old-house-renovation": "old-house",
+  "custom-built-in": "builtin",
+  "warehouse-shelving": "warehouse",
+  "kitchen-cabinet": "kitchen",
+  "flooring": "flooring",
+};
 const NotFound = lazyPublicPage(() => import("@/pages/NotFound"));
 
 const withLanguageSync = (page: JSX.Element) => (
@@ -52,6 +63,15 @@ const withLanguageSync = (page: JSX.Element) => (
     {page}
   </>
 );
+
+const LandingPageRoute = () => {
+  const { lang, slug } = useParams<{ lang: string; slug: string }>();
+  const serviceSlug = slug ? landingToServiceSlugs[slug] : null;
+  if (serviceSlug && (lang === "en" || lang === "zh")) {
+    return <Navigate to={`/${lang}/services/${serviceSlug}`} replace />;
+  }
+  return withLanguageSync(<LandingPage />);
+};
 
 export const publicRoutes = (
   <>
@@ -79,7 +99,7 @@ export const publicRoutes = (
     <Route path="/:lang/blog/:slug" element={withLanguageSync(<BlogDetail />)} />
     <Route path="/:lang/locations" element={withLanguageSync(<Locations />)} />
     <Route path="/:lang/locations/:slug" element={withLanguageSync(<LocationPage />)} />
-    <Route path="/:lang/landing/:slug" element={withLanguageSync(<LandingPage />)} />
+    <Route path="/:lang/landing/:slug" element={<LandingPageRoute />} />
     <Route path="/:lang/privacy" element={withLanguageSync(<Privacy />)} />
     <Route path="/:lang/terms" element={withLanguageSync(<Terms />)} />
     <Route path="/about" element={<LegacyLanguageRedirect />} />
