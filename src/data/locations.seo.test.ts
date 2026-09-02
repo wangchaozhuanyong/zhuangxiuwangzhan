@@ -69,3 +69,62 @@ describe("Kuala Lumpur location SEO fallbacks", () => {
     expect(locationPageText.zh.resourceAction).toBeTruthy();
   });
 });
+
+describe("Petaling Jaya location SEO fallbacks", () => {
+  const pj = locationsData["petaling-jaya"];
+  const office = servicesData.find((service) => service.slug === "office-renovation");
+  const oldHouse = servicesData.find((service) => service.slug === "old-house");
+
+  it("assigns a distinct local commercial intent that avoids cannibalizing Home and Service pages", () => {
+    expect(pj).toBeDefined();
+
+    // Must have the dedicated local service title
+    expect(pj.metaTitle).toBe("Home & Office Renovation Petaling Jaya | FLASH CAST");
+
+    // Title length constraint
+    expect(pj.metaTitle.length).toBeGreaterThanOrEqual(40);
+    expect(pj.metaTitle.length).toBeLessThanOrEqual(60);
+
+    // Must NOT cannibalize other primary pages
+    expect(pj.metaTitle).not.toContain("Interior Design PJ");
+    expect(pj.metaTitle).not.toBe(office?.seoTitle);
+    expect(pj.metaTitle).not.toBe(oldHouse?.seoTitle);
+  });
+
+  it("provides complete bilingual fallback content for Petaling Jaya", () => {
+    expect(pj.nameZh).toBe("八打灵再也");
+    expect(pj.metaTitleZh).toBe("八打灵再也装修服务 | 住宅与办公室装修 | FLASH CAST");
+    expect(pj.descriptionZh).toBeTruthy();
+    expect(pj.descriptionZh).toContain("八打灵再也");
+    expect(pj.introZh).toBeTruthy();
+    expect(pj.introZh).toContain("八打灵再也");
+
+    expect(pj.propertyTypesZh).toBeDefined();
+    expect(pj.propertyTypesZh?.length).toBe(pj.propertyTypes.length);
+
+    expect(pj.commonNeedsZh).toBeDefined();
+    expect(pj.commonNeedsZh?.length).toBe(pj.commonNeeds.length);
+
+    expect(pj.constructionNotesZh).toBeTruthy();
+    expect(pj.constructionNotesZh).toContain("MBPJ");
+
+    expect(pj.faqsZh).toBeDefined();
+    expect(pj.faqsZh?.length).toBe(pj.faqs.length);
+    pj.faqs.forEach((faq, index) => {
+      expect(faq.q).toBeTruthy();
+      expect(faq.a).toBeTruthy();
+      const faqZh = pj.faqsZh?.[index];
+      expect(faqZh?.q).toBeTruthy();
+      expect(faqZh?.a).toBeTruthy();
+    });
+  });
+
+  it("links project cards to specific project detail destinations", () => {
+    expect(pj.projects.length).toBeGreaterThan(0);
+    pj.projects.forEach((project) => {
+      const target = project.href || (project.slug ? `/projects/${project.slug}` : "");
+      expect(target).toMatch(/^\/projects\/[a-z0-9-]+$/);
+    });
+  });
+});
+
