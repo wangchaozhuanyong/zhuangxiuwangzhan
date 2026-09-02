@@ -88,14 +88,14 @@ const serviceContextLinks: Record<Language, ServiceContextLinksBySlug> = {
     ],
     bathroom: [
       { id: "bathroom-kl", label: "服务地区", title: "吉隆坡装修服务", description: "了解当地房产类型、管理处事项和装修服务范围。", href: "/locations/kuala-lumpur" },
-      { id: "bathroom-pj", label: "服务地区", title: "Petaling Jaya 装修服务", description: "查看公寓、有地住宅和旧房常见服务条件。", href: "/locations/petaling-jaya" },
+      { id: "bathroom-pj", label: "服务地区", title: "八打灵再也装修服务", description: "查看公寓、有地住宅和旧房常见服务条件。", href: "/locations/petaling-jaya" },
       { id: "bathroom-projects", label: "项目参考", title: "浏览装修项目参考", description: "查看已发布项目，并确认每个项目属于真实完工内容还是已标注概念。", href: "/projects" },
       { id: "bathroom-leakage", label: "规划指南", title: "浴室漏水与翻新", description: "了解为什么决定维修范围前，应先检查漏水来源和现场条件。", href: "/blog/bathroom-leakage-renovation-malaysia" },
       { id: "bathroom-waterproofing", label: "规划指南", title: "防水与排水规划", description: "检查排水坡度、地漏、湿区、管口和瓷砖工程衔接。", href: "/blog/bathroom-waterproofing-drainage-planning-malaysia" },
       { id: "bathroom-materials", label: "装修材料", title: "浴室材料与洁具", description: "浏览已发布的瓷砖、洗手盆、马桶、淋浴、浴室柜和相关选择。", href: "/materials/category/bathroom" },
     ],
     "office-renovation": [
-      { id: "office-pj", label: "服务地区", title: "Petaling Jaya 办公室装修", description: "了解办公室、商业单位、进场条件和大楼要求的当地规划事项。", href: "/locations/petaling-jaya" },
+      { id: "office-pj", label: "服务地区", title: "八打灵再也办公室装修", description: "了解办公室、商业单位、进场条件和大楼要求的当地规划事项。", href: "/locations/petaling-jaya" },
       { id: "office-cyberjaya", label: "服务地区", title: "Cyberjaya 办公室装修", description: "查看办公室与科技工作空间的运营、机电、数据、进场和 fit-out 范围考虑。", href: "/locations/cyberjaya" },
       { id: "office-projects", label: "项目参考", title: "浏览办公室与商业项目参考", description: "查看已发布项目，并确认每项内容属于完工项目还是已标注的规划概念。", href: "/projects" },
       { id: "office-checklist", label: "规划指南", title: "办公室装修检查清单", description: "准备员工人数、布局、大楼规定、设备服务、报价范围、协调和交付要求。", href: "/blog/office-renovation-checklist-malaysia" },
@@ -112,7 +112,7 @@ const serviceContextLinks: Record<Language, ServiceContextLinksBySlug> = {
     ],
     "old-house": [
       { id: "old-house-cheras", label: "服务地区", title: "Cheras 旧屋翻新", description: "了解旧有地住宅的电线水管、潮湿、进场和分阶段施工规划事项。", href: "/locations/cheras" },
-      { id: "old-house-pj", label: "服务地区", title: "Petaling Jaya 住宅翻新", description: "查看成熟有地住宅、分层物业、进场、保留项目和现场状况的规划考虑。", href: "/locations/petaling-jaya" },
+      { id: "old-house-pj", label: "服务地区", title: "八打灵再也住宅翻新", description: "查看成熟有地住宅、分层物业、进场、保留项目和现场状况的规划考虑。", href: "/locations/petaling-jaya" },
       { id: "old-house-projects", label: "项目参考", title: "浏览有地住宅翻新参考", description: "查看已发布项目，并确认每项内容属于完工项目还是已标注的规划概念。", href: "/projects" },
       { id: "old-house-checklist", label: "规划指南", title: "旧屋翻新检查清单", description: "检查屋况、安全顺序、电线、水管、潮湿、屋顶、格局、申请和报价范围。", href: "/blog/old-house-renovation-checklist" },
       { id: "old-house-costs", label: "规划指南", title: "旧屋翻新隐藏成本", description: "了解检查、必要修复、进场、保留工程、暂定范围和现场发现如何影响报价。", href: "/blog/old-house-renovation-hidden-costs-malaysia" },
