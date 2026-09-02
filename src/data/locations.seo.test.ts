@@ -128,3 +128,62 @@ describe("Petaling Jaya location SEO fallbacks", () => {
   });
 });
 
+describe("Puchong location SEO fallbacks", () => {
+  const puchong = locationsData["puchong"];
+  const shop = servicesData.find((service) => service.slug === "shop-renovation");
+  const kitchen = servicesData.find((service) => service.slug === "kitchen");
+
+  it("assigns a distinct local commercial intent that avoids cannibalizing Home and Service pages", () => {
+    expect(puchong).toBeDefined();
+
+    // Must have the dedicated local service title
+    expect(puchong.metaTitle).toBe("Home & Commercial Renovation Puchong | FLASH CAST");
+
+    // Title length constraint
+    expect(puchong.metaTitle.length).toBeGreaterThanOrEqual(40);
+    expect(puchong.metaTitle.length).toBeLessThanOrEqual(60);
+
+    // Must NOT cannibalize other primary pages or have stuffed title
+    expect(puchong.metaTitle).not.toContain("Renovation Company Puchong");
+    expect(puchong.metaTitle).not.toBe(shop?.seoTitle);
+    expect(puchong.metaTitle).not.toBe(kitchen?.seoTitle);
+  });
+
+  it("provides complete bilingual fallback content for Puchong", () => {
+    expect(puchong.nameZh).toBe("蒲种");
+    expect(puchong.metaTitleZh).toBe("蒲种装修服务 | 住宅排屋与商业空间 | FLASH CAST");
+    expect(puchong.descriptionZh).toBeTruthy();
+    expect(puchong.descriptionZh).toContain("蒲种");
+    expect(puchong.introZh).toBeTruthy();
+    expect(puchong.introZh).toContain("蒲种");
+
+    expect(puchong.propertyTypesZh).toBeDefined();
+    expect(puchong.propertyTypesZh?.length).toBe(puchong.propertyTypes.length);
+
+    expect(puchong.commonNeedsZh).toBeDefined();
+    expect(puchong.commonNeedsZh?.length).toBe(puchong.commonNeeds.length);
+
+    expect(puchong.constructionNotesZh).toBeTruthy();
+    expect(puchong.constructionNotesZh).toContain("MBSJ");
+
+    expect(puchong.faqsZh).toBeDefined();
+    expect(puchong.faqsZh?.length).toBe(puchong.faqs.length);
+    puchong.faqs.forEach((faq, index) => {
+      expect(faq.q).toBeTruthy();
+      expect(faq.a).toBeTruthy();
+      const faqZh = puchong.faqsZh?.[index];
+      expect(faqZh?.q).toBeTruthy();
+      expect(faqZh?.a).toBeTruthy();
+    });
+  });
+
+  it("links project cards to specific project detail destinations", () => {
+    expect(puchong.projects.length).toBeGreaterThan(0);
+    puchong.projects.forEach((project) => {
+      const target = project.href || (project.slug ? `/projects/${project.slug}` : "");
+      expect(target).toMatch(/^\/projects\/[a-z0-9-]+$/);
+    });
+  });
+});
+
+
