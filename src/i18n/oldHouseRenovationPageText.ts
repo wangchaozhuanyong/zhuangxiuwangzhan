@@ -1,6 +1,6 @@
 export const oldHouseRenovationPageText = {
   en: {
-    metaTitle: "Old House Renovation Malaysia | KL & Selangor Landed Home Upgrade | FLASH CAST",
+    metaTitle: "Old House Renovation Kuala Lumpur | FLASH CAST",
     metaDescription:
       "FLASH CAST provides old house renovation planning in Kuala Lumpur, Selangor, and Klang Valley, covering site assessment, wiring, plumbing, waterproofing, layout, kitchen, bathroom, and material direction.",
     metaKeywords:
@@ -9,7 +9,7 @@ export const oldHouseRenovationPageText = {
     breadcrumbServices: "Services",
     breadcrumbCurrent: "Old House Renovation",
     label: "Old House Renovation",
-    title: "Old House Renovation Planning in Kuala Lumpur and Selangor",
+    title: "Old House Renovation in Kuala Lumpur and Selangor",
     description:
       "Old house renovation is not only about replacing tiles or repainting walls. FLASH CAST helps owners review cracks, leaks, wiring, plumbing, waterproofing, termite risk, roofing, layout, ventilation, storage, and maintenance needs before confirming the renovation scope.",
     heroAlt: "Old house renovation planning concept in Kuala Lumpur and Selangor",
@@ -106,6 +106,10 @@ export const oldHouseRenovationPageText = {
       { type: "Function Upgrades", range: "Site-based", desc: "Kitchen, bathroom, storage, lighting, ventilation, and daily flow improvements." },
       { type: "Full Planning", range: "Assessment needed", desc: "Whole-house planning where repair priorities, layout, materials, and phasing are reviewed together." },
     ],
+    resourceTitle: "Plan your old-house renovation enquiry",
+    resourceDescription:
+      "Continue with relevant service areas, project references, practical guides, and material options. Project pages retain their published completion or concept classification.",
+    resourceAction: "Open resource",
     faqTitle: "Old House Renovation FAQ",
     faqDescription: "Common questions about old house renovation planning, budget factors, and work scope in Malaysia.",
     faqs: [
@@ -139,7 +143,7 @@ export const oldHouseRenovationPageText = {
     ],
   },
   zh: {
-    metaTitle: "旧屋翻新马来西亚｜吉隆坡与雪兰莪老屋翻新规划 | FLASH CAST",
+    metaTitle: "吉隆坡旧屋翻新 | 排屋与有地住宅 | FLASH CAST",
     metaDescription:
       "FLASH CAST 提供吉隆坡、雪兰莪与 Klang Valley 旧屋翻新规划，包括屋况评估、电线水管、防水、厨房浴室、格局与材料建议。",
     metaKeywords: "旧屋翻新 马来西亚, 吉隆坡旧屋翻新, 雪兰莪旧屋翻新, 排屋翻新, 老屋电线水管更新, 旧屋防水翻新",
@@ -147,7 +151,7 @@ export const oldHouseRenovationPageText = {
     breadcrumbServices: "服务项目",
     breadcrumbCurrent: "旧屋翻新",
     label: "旧屋翻新",
-    title: "吉隆坡与雪兰莪旧屋翻新规划",
+    title: "吉隆坡与雪兰莪旧屋翻新",
     description:
       "旧屋翻新不只是换地砖或重新油漆。FLASH CAST 协助业主在确认施工范围前，先评估墙裂、漏水、电线、水管、防水、白蚁、屋顶、采光、收纳和空间布局。",
     heroAlt: "吉隆坡与雪兰莪旧屋翻新规划概念设计",
@@ -244,6 +248,9 @@ export const oldHouseRenovationPageText = {
       { type: "功能改善", range: "按现场评估", desc: "厨房、浴室、收纳、灯光、通风和生活动线改善。" },
       { type: "完整规划", range: "需现场评估", desc: "把维修优先级、格局、材料和分阶段施工一起整理。" },
     ],
+    resourceTitle: "继续规划旧屋翻新咨询",
+    resourceDescription: "继续查看相关服务地区、项目参考、实用指南和材料选择。项目页会保留已发布的完工或概念内容分类。",
+    resourceAction: "查看内容",
     faqTitle: "旧屋翻新常见问题",
     faqDescription: "关于马来西亚旧屋翻新规划、预算因素和施工范围的常见问题。",
     faqs: [

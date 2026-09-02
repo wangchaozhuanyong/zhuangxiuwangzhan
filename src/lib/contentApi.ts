@@ -149,15 +149,15 @@ const getFallbackLocations = async (language: Language = "en") => {
       slug,
       {
         ...location,
-        name: localize(location.name || ""),
-        metaTitle: localize(location.metaTitle || ""),
-        description: localize(location.description || ""),
-        intro: localize(location.intro || ""),
-        propertyTypes: (location.propertyTypes || []).map((item: string) => localize(item)),
-        commonNeeds: (location.commonNeeds || []).map((item: string) => localize(item)),
-        constructionNotes: localize(location.constructionNotes || ""),
+        name: location.nameZh || localize(location.name || ""),
+        metaTitle: location.metaTitleZh || localize(location.metaTitle || ""),
+        description: location.descriptionZh || localize(location.description || ""),
+        intro: location.introZh || localize(location.intro || ""),
+        propertyTypes: location.propertyTypesZh || (location.propertyTypes || []).map((item: string) => localize(item)),
+        commonNeeds: location.commonNeedsZh || (location.commonNeeds || []).map((item: string) => localize(item)),
+        constructionNotes: location.constructionNotesZh || localize(location.constructionNotes || ""),
         projects: (location.projects || []).map((project) => ({ ...project, title: localize(project.title || "") })),
-        faqs: (location.faqs || []).map((faq) => ({ q: localize(faq.q || ""), a: localize(faq.a || "") })),
+        faqs: location.faqsZh || (location.faqs || []).map((faq) => ({ q: localize(faq.q || ""), a: localize(faq.a || "") })),
       },
     ])
   );
@@ -625,6 +625,8 @@ export const getPublishedServiceAreaBySlug = async (slug: string, language: "en"
       title: localize(toText(project.title)),
       type: readText(project, "type"),
       image: readText(project, "image"),
+      slug: readText(project, "slug") || undefined,
+      href: readText(project, "href") || undefined,
     })),
     faqs: pickLocalizedList<UnknownRecord>(data, "faqs", language).map((faq) => ({
       q: localize(readText(faq, "q")),

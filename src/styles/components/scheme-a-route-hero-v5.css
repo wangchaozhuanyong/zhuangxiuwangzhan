@@ -84,6 +84,44 @@
   text-shadow: none;
 }
 
+.scheme-a-public-shell .fc-route-page .fc-route-hero-actions {
+  display: flex;
+  order: 4;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: clamp(24px, 3.5vh, 34px);
+}
+
+.scheme-a-public-shell .fc-route-page .fc-route-hero-actions a {
+  display: inline-flex;
+  min-height: 48px;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  border: 1px solid #d6b66a;
+  padding: 12px 20px;
+  color: #14120d;
+  background: #d6b66a;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-decoration: none;
+  transition: border-color 180ms ease, background 180ms ease, transform 180ms ease;
+}
+
+.scheme-a-public-shell .fc-route-page .fc-route-hero-actions svg {
+  width: 16px;
+  height: 16px;
+}
+
+@media (hover: hover) {
+  .scheme-a-public-shell .fc-route-page .fc-route-hero-actions a:hover {
+    border-color: #e5ca7c;
+    background: #e5ca7c;
+    transform: translateY(-2px);
+  }
+}
+
 .scheme-a-public-shell .fc-route-page .fc-route-hero-support {
   display: none;
 }
@@ -91,7 +129,7 @@
 @media (min-width: 73.75rem) {
   .scheme-a-public-shell .fc-route-page .fc-route-hero-support {
     display: grid;
-    order: 4;
+    order: 5;
     width: min(100%, 31rem);
     gap: 0;
     margin: clamp(42px, 6vh, 68px) 0 0;
@@ -266,10 +304,21 @@
   }
 
   .scheme-a-public-shell .fc-route-page .fc-route-hero-copy > p {
+    order: 4;
     margin-top: 22px;
     color: rgba(245, 241, 233, 0.78);
     font-size: 14px;
     line-height: 1.8;
+  }
+
+  .scheme-a-public-shell .fc-route-page .fc-route-hero-actions {
+    order: 3;
+    width: 100%;
+    margin-top: 22px;
+  }
+
+  .scheme-a-public-shell .fc-route-page .fc-route-hero-actions a {
+    width: 100%;
   }
 }
 

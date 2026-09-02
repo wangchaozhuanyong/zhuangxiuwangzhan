@@ -39,6 +39,14 @@ export type SchemeAListingItem = {
   href: string;
 };
 
+export type SchemeALinkItem = {
+  id: string;
+  label: string;
+  title: string;
+  description: string;
+  href: string;
+};
+
 export type SchemeAFact = {
   label: string;
   value: string;
@@ -67,6 +75,7 @@ export function SchemeARouteHero({
   label,
   title,
   description,
+  actions,
 }: {
   kind?: SchemeARouteKind;
   image: string;
@@ -80,6 +89,7 @@ export function SchemeARouteHero({
   label: string;
   title: string;
   description: string;
+  actions?: ReactNode;
 }) {
   const { language } = useLanguage();
   const supportCopy = schemeARouteHeroSupportText[language];
@@ -151,6 +161,7 @@ export function SchemeARouteHero({
         <span className="fc-route-kicker">{label}</span>
         <h1 className={usesCompactTitleScale ? "fc-route-title-long" : undefined}>{title}</h1>
         <p>{description}</p>
+        {actions ? <div className="fc-route-hero-actions">{actions}</div> : null}
         {kind !== "legal" ? (
           <dl className="fc-route-hero-support" aria-label={supportCopy.ariaLabel}>
             {supportCopy.items.map((item, index) => (
@@ -240,6 +251,21 @@ export function SchemeAListingGrid({ items, actionLabel }: { items: readonly Sch
           <h3>{item.title}</h3>
           {item.description ? <p>{item.description}</p> : null}
           <span className="fc-route-card-action">{actionLabel}<ArrowUpRight aria-hidden="true" /></span>
+        </Link>
+      ))}
+    </div>
+  );
+}
+
+export function SchemeALinkGrid({ items, actionLabel }: { items: readonly SchemeALinkItem[]; actionLabel: string }) {
+  return (
+    <div className="fc-route-link-grid">
+      {items.map((item) => (
+        <Link key={item.id} to={item.href} className="fc-route-link-card">
+          <span className="fc-route-link-card-label">{item.label}</span>
+          <h3>{item.title}</h3>
+          <p>{item.description}</p>
+          <span className="fc-route-link-card-action">{actionLabel}<ArrowUpRight aria-hidden="true" /></span>
         </Link>
       ))}
     </div>

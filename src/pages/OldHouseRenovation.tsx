@@ -3,9 +3,10 @@ import ImageComparisonSlider from "@/components/ImageComparisonSlider";
 import Link from "@/components/LocalizedLink";
 import WhatsAppIcon from "@/components/WhatsAppIcon";
 import PageMeta from "@/components/PageMeta";
-import { JsonLdBreadcrumb } from "@/components/JsonLd";
+import { JsonLdBreadcrumb, JsonLdFAQ, JsonLdService } from "@/components/JsonLd";
 import {
   SchemeAFaqList,
+  SchemeALinkGrid,
   SchemeANumberList,
   SchemeARouteHero,
   SchemeASection,
@@ -16,6 +17,7 @@ import { useSiteSettings } from "@/hooks/useSiteSettings";
 import { trackCtaClick } from "@/lib/analytics";
 import { pageHeroImages } from "@/lib/pageHeroImages";
 import { oldHouseRenovationPageText } from "@/i18n/oldHouseRenovationPageText";
+import { getServiceContextLinks } from "@/i18n/serviceContextLinks";
 
 const oldHouseComparisonMedia = {
   "terrace-living": {
@@ -36,13 +38,16 @@ const OldHouseRenovation = () => {
   const { language } = useLanguage();
   const settings = useSiteSettings();
   const t = oldHouseRenovationPageText[language];
+  const contextLinks = getServiceContextLinks("old-house", language);
 
   return (
     <main className="fc-route-page scheme-a-old-house-route">
       <PageMeta title={t.metaTitle} description={t.metaDescription} keywords={t.metaKeywords} canonicalPath="/services/old-house" />
       <JsonLdBreadcrumb items={[{ name: t.breadcrumbHome, url: "/" }, { name: t.breadcrumbServices, url: "/services" }, { name: t.breadcrumbCurrent, url: "/services/old-house" }]} />
+      <JsonLdService name={t.title} description={t.description} />
+      <JsonLdFAQ faqs={t.faqs.map((item) => ({ question: item.q, answer: item.a }))} />
 
-      <SchemeARouteHero kind="detail" image={pageHeroImages.oldHouse.desktop} imageSourceWidth={pageHeroImages.oldHouse.desktopWidth} tabletImage={pageHeroImages.oldHouse.tablet} tabletImageSourceWidth={pageHeroImages.oldHouse.tabletWidth} mobileImage={pageHeroImages.oldHouse.mobile} mobileImageSourceWidth={pageHeroImages.oldHouse.mobileWidth} imagePosition={pageHeroImages.oldHouse.imagePosition} imageAlt={t.heroAlt} label={[t.label, mediaLabels[language].renderingConcept].join(" · ")} title={t.title} description={t.description} />
+      <SchemeARouteHero kind="detail" image={pageHeroImages.oldHouse.desktop} imageSourceWidth={pageHeroImages.oldHouse.desktopWidth} tabletImage={pageHeroImages.oldHouse.tablet} tabletImageSourceWidth={pageHeroImages.oldHouse.tabletWidth} mobileImage={pageHeroImages.oldHouse.mobile} mobileImageSourceWidth={pageHeroImages.oldHouse.mobileWidth} imagePosition={pageHeroImages.oldHouse.imagePosition} imageAlt={t.heroAlt} label={[t.label, mediaLabels[language].renderingConcept].join(" · ")} title={t.title} description={t.description} actions={<Link to="/quote#quote-form" onClick={() => trackCtaClick("quote", "old_house_hero", { destination: "/quote#quote-form" })}>{t.assessment}</Link>} />
 
       <SchemeASection title={t.introTitle} description={t.intro.join(" ")}>
         <div className="fc-route-tagline">{t.tags.map((tag) => <span key={tag}>{tag}</span>)}</div>
@@ -127,6 +132,10 @@ const OldHouseRenovation = () => {
         <div className="fc-route-budget-grid">
           {t.prices.map((item, index) => <article key={item.type}><span>{String(index + 1).padStart(2, "0")}</span><h3>{item.type}</h3><strong>{item.range}</strong><p>{item.desc}</p></article>)}
         </div>
+      </SchemeASection>
+
+      <SchemeASection title={t.resourceTitle} description={t.resourceDescription}>
+        <SchemeALinkGrid items={contextLinks} actionLabel={t.resourceAction} />
       </SchemeASection>
 
       <SchemeASection title={t.faqTitle} description={t.faqDescription}>

@@ -1,0 +1,308 @@
+import { describe, expect, it } from "vitest";
+import { locationsData } from "@/data/locations";
+import { servicesData } from "@/data/services";
+import { locationPageText } from "@/i18n/locationPageText";
+
+describe("Kuala Lumpur location SEO fallbacks", () => {
+  const kl = locationsData["kuala-lumpur"];
+  const residential = servicesData.find((service) => service.slug === "renovation");
+
+  it("assigns a distinct local commercial intent that avoids cannibalizing Home and Service pages", () => {
+    expect(kl).toBeDefined();
+
+    // Must have the dedicated local service title
+    expect(kl.metaTitle).toBe("Renovation Services in Kuala Lumpur | FLASH CAST");
+
+    // Title length constraint
+    expect(kl.metaTitle.length).toBeGreaterThanOrEqual(40);
+    expect(kl.metaTitle.length).toBeLessThanOrEqual(60);
+
+    // Must NOT cannibalize other primary pages
+    expect(kl.metaTitle).not.toContain("Interior Design KL");
+    expect(kl.metaTitle).not.toBe("Renovation Company Kuala Lumpur | FLASH CAST"); // Home
+    expect(kl.metaTitle).not.toBe("Renovation Services Kuala Lumpur | FLASH CAST"); // Services Hub
+    expect(kl.metaTitle).not.toBe(residential?.seoTitle); // Residential Service
+  });
+
+  it("provides complete bilingual fallback content for Kuala Lumpur", () => {
+    expect(kl.nameZh).toBe("吉隆坡");
+    expect(kl.metaTitleZh).toBe("吉隆坡装修服务 | 住宅与商业空间 | FLASH CAST");
+    expect(kl.descriptionZh).toBeTruthy();
+    expect(kl.descriptionZh).toContain("吉隆坡");
+    expect(kl.introZh).toBeTruthy();
+    expect(kl.introZh).toContain("吉隆坡");
+
+    expect(kl.propertyTypesZh).toBeDefined();
+    expect(kl.propertyTypesZh?.length).toBe(kl.propertyTypes.length);
+
+    expect(kl.commonNeedsZh).toBeDefined();
+    expect(kl.commonNeedsZh?.length).toBe(kl.commonNeeds.length);
+
+    expect(kl.constructionNotesZh).toBeTruthy();
+    expect(kl.constructionNotesZh).toContain("DBKL");
+
+    expect(kl.faqsZh).toBeDefined();
+    expect(kl.faqsZh?.length).toBe(kl.faqs.length);
+    kl.faqs.forEach((faq, index) => {
+      expect(faq.q).toBeTruthy();
+      expect(faq.a).toBeTruthy();
+      const faqZh = kl.faqsZh?.[index];
+      expect(faqZh?.q).toBeTruthy();
+      expect(faqZh?.a).toBeTruthy();
+    });
+  });
+
+  it("links project cards to specific project detail destinations", () => {
+    expect(kl.projects.length).toBeGreaterThan(0);
+    kl.projects.forEach((project) => {
+      const target = project.href || (project.slug ? `/projects/${project.slug}` : "");
+      expect(target).toMatch(/^\/projects\/[a-z0-9-]+$/);
+    });
+  });
+
+  it("provides resource labels in locationPageText for both languages", () => {
+    expect(locationPageText.en.resourceTitle("Kuala Lumpur")).toContain("Kuala Lumpur");
+    expect(locationPageText.zh.resourceTitle("吉隆坡")).toContain("吉隆坡");
+    expect(locationPageText.en.resourceDescription).toBeTruthy();
+    expect(locationPageText.zh.resourceDescription).toBeTruthy();
+    expect(locationPageText.en.resourceAction).toBeTruthy();
+    expect(locationPageText.zh.resourceAction).toBeTruthy();
+  });
+});
+
+describe("Petaling Jaya location SEO fallbacks", () => {
+  const pj = locationsData["petaling-jaya"];
+  const office = servicesData.find((service) => service.slug === "office-renovation");
+  const oldHouse = servicesData.find((service) => service.slug === "old-house");
+
+  it("assigns a distinct local commercial intent that avoids cannibalizing Home and Service pages", () => {
+    expect(pj).toBeDefined();
+
+    // Must have the dedicated local service title
+    expect(pj.metaTitle).toBe("Home & Office Renovation Petaling Jaya | FLASH CAST");
+
+    // Title length constraint
+    expect(pj.metaTitle.length).toBeGreaterThanOrEqual(40);
+    expect(pj.metaTitle.length).toBeLessThanOrEqual(60);
+
+    // Must NOT cannibalize other primary pages
+    expect(pj.metaTitle).not.toContain("Interior Design PJ");
+    expect(pj.metaTitle).not.toBe(office?.seoTitle);
+    expect(pj.metaTitle).not.toBe(oldHouse?.seoTitle);
+  });
+
+  it("provides complete bilingual fallback content for Petaling Jaya", () => {
+    expect(pj.nameZh).toBe("八打灵再也");
+    expect(pj.metaTitleZh).toBe("八打灵再也装修服务 | 住宅与办公室装修 | FLASH CAST");
+    expect(pj.descriptionZh).toBeTruthy();
+    expect(pj.descriptionZh).toContain("八打灵再也");
+    expect(pj.introZh).toBeTruthy();
+    expect(pj.introZh).toContain("八打灵再也");
+
+    expect(pj.propertyTypesZh).toBeDefined();
+    expect(pj.propertyTypesZh?.length).toBe(pj.propertyTypes.length);
+
+    expect(pj.commonNeedsZh).toBeDefined();
+    expect(pj.commonNeedsZh?.length).toBe(pj.commonNeeds.length);
+
+    expect(pj.constructionNotesZh).toBeTruthy();
+    expect(pj.constructionNotesZh).toContain("MBPJ");
+
+    expect(pj.faqsZh).toBeDefined();
+    expect(pj.faqsZh?.length).toBe(pj.faqs.length);
+    pj.faqs.forEach((faq, index) => {
+      expect(faq.q).toBeTruthy();
+      expect(faq.a).toBeTruthy();
+      const faqZh = pj.faqsZh?.[index];
+      expect(faqZh?.q).toBeTruthy();
+      expect(faqZh?.a).toBeTruthy();
+    });
+  });
+
+  it("links project cards to specific project detail destinations", () => {
+    expect(pj.projects.length).toBeGreaterThan(0);
+    pj.projects.forEach((project) => {
+      const target = project.href || (project.slug ? `/projects/${project.slug}` : "");
+      expect(target).toMatch(/^\/projects\/[a-z0-9-]+$/);
+    });
+  });
+});
+
+describe("Puchong location SEO fallbacks", () => {
+  const puchong = locationsData["puchong"];
+  const shop = servicesData.find((service) => service.slug === "shop-renovation");
+  const kitchen = servicesData.find((service) => service.slug === "kitchen");
+
+  it("assigns a distinct local commercial intent that avoids cannibalizing Home and Service pages", () => {
+    expect(puchong).toBeDefined();
+
+    // Must have the dedicated local service title
+    expect(puchong.metaTitle).toBe("Home & Commercial Renovation Puchong | FLASH CAST");
+
+    // Title length constraint
+    expect(puchong.metaTitle.length).toBeGreaterThanOrEqual(40);
+    expect(puchong.metaTitle.length).toBeLessThanOrEqual(60);
+
+    // Must NOT cannibalize other primary pages or have stuffed title
+    expect(puchong.metaTitle).not.toContain("Renovation Company Puchong");
+    expect(puchong.metaTitle).not.toBe(shop?.seoTitle);
+    expect(puchong.metaTitle).not.toBe(kitchen?.seoTitle);
+  });
+
+  it("provides complete bilingual fallback content for Puchong", () => {
+    expect(puchong.nameZh).toBe("蒲种");
+    expect(puchong.metaTitleZh).toBe("蒲种装修服务 | 住宅排屋与商业空间 | FLASH CAST");
+    expect(puchong.descriptionZh).toBeTruthy();
+    expect(puchong.descriptionZh).toContain("蒲种");
+    expect(puchong.introZh).toBeTruthy();
+    expect(puchong.introZh).toContain("蒲种");
+
+    expect(puchong.propertyTypesZh).toBeDefined();
+    expect(puchong.propertyTypesZh?.length).toBe(puchong.propertyTypes.length);
+
+    expect(puchong.commonNeedsZh).toBeDefined();
+    expect(puchong.commonNeedsZh?.length).toBe(puchong.commonNeeds.length);
+
+    expect(puchong.constructionNotesZh).toBeTruthy();
+    expect(puchong.constructionNotesZh).toContain("MBSJ");
+
+    expect(puchong.faqsZh).toBeDefined();
+    expect(puchong.faqsZh?.length).toBe(puchong.faqs.length);
+    puchong.faqs.forEach((faq, index) => {
+      expect(faq.q).toBeTruthy();
+      expect(faq.a).toBeTruthy();
+      const faqZh = puchong.faqsZh?.[index];
+      expect(faqZh?.q).toBeTruthy();
+      expect(faqZh?.a).toBeTruthy();
+    });
+  });
+
+  it("links project cards to specific project detail destinations", () => {
+    expect(puchong.projects.length).toBeGreaterThan(0);
+    puchong.projects.forEach((project) => {
+      const target = project.href || (project.slug ? `/projects/${project.slug}` : "");
+      expect(target).toMatch(/^\/projects\/[a-z0-9-]+$/);
+    });
+  });
+});
+
+describe("Subang Jaya location SEO fallbacks", () => {
+  const subang = locationsData["subang-jaya"];
+  const oldHouse = servicesData.find((service) => service.slug === "old-house");
+  const shop = servicesData.find((service) => service.slug === "shop-renovation");
+
+  it("assigns a distinct local commercial intent that avoids cannibalizing Home and Service pages", () => {
+    expect(subang).toBeDefined();
+
+    // Must have the dedicated local service title
+    expect(subang.metaTitle).toBe("Terrace & Shop Renovation Subang Jaya | FLASH CAST");
+
+    // Title length constraint
+    expect(subang.metaTitle.length).toBeGreaterThanOrEqual(40);
+    expect(subang.metaTitle.length).toBeLessThanOrEqual(60);
+
+    // Must NOT cannibalize other primary pages or have generic conflicting title
+    expect(subang.metaTitle).not.toContain("Renovation Company Subang Jaya");
+    expect(subang.metaTitle).not.toBe(oldHouse?.seoTitle);
+    expect(subang.metaTitle).not.toBe(shop?.seoTitle);
+  });
+
+  it("provides complete bilingual fallback content for Subang Jaya", () => {
+    expect(subang.nameZh).toBe("梳邦再也");
+    expect(subang.metaTitleZh).toBe("梳邦再也装修服务 | 排屋翻新与商铺装修 | FLASH CAST");
+    expect(subang.descriptionZh).toBeTruthy();
+    expect(subang.descriptionZh).toContain("梳邦再也");
+    expect(subang.introZh).toBeTruthy();
+    expect(subang.introZh).toContain("梳邦再也");
+
+    expect(subang.propertyTypesZh).toBeDefined();
+    expect(subang.propertyTypesZh?.length).toBe(subang.propertyTypes.length);
+
+    expect(subang.commonNeedsZh).toBeDefined();
+    expect(subang.commonNeedsZh?.length).toBe(subang.commonNeeds.length);
+
+    expect(subang.constructionNotesZh).toBeTruthy();
+    expect(subang.constructionNotesZh).toContain("MBSJ");
+
+    expect(subang.faqsZh).toBeDefined();
+    expect(subang.faqsZh?.length).toBe(subang.faqs.length);
+    subang.faqs.forEach((faq, index) => {
+      expect(faq.q).toBeTruthy();
+      expect(faq.a).toBeTruthy();
+      const faqZh = subang.faqsZh?.[index];
+      expect(faqZh?.q).toBeTruthy();
+      expect(faqZh?.a).toBeTruthy();
+    });
+  });
+
+  it("links project cards to specific project detail destinations", () => {
+    expect(subang.projects.length).toBeGreaterThan(0);
+    subang.projects.forEach((project) => {
+      const target = project.href || (project.slug ? `/projects/${project.slug}` : "");
+      expect(target).toMatch(/^\/projects\/[a-z0-9-]+$/);
+    });
+  });
+});
+
+describe("Cheras location SEO fallbacks", () => {
+  const cheras = locationsData["cheras"];
+  const oldHouse = servicesData.find((service) => service.slug === "old-house");
+  const residential = servicesData.find((service) => service.slug === "renovation");
+
+  it("assigns a distinct local residential and terrace intent that avoids cannibalizing Home and Service pages", () => {
+    expect(cheras).toBeDefined();
+
+    // Must have the dedicated local service title
+    expect(cheras.metaTitle).toBe("Home & Terrace Renovation Cheras | FLASH CAST");
+
+    // Title length constraint
+    expect(cheras.metaTitle.length).toBeGreaterThanOrEqual(40);
+    expect(cheras.metaTitle.length).toBeLessThanOrEqual(60);
+
+    // Must NOT cannibalize other primary pages or have stuffed title
+    expect(cheras.metaTitle).not.toContain("Renovation Planning Cheras");
+    expect(cheras.metaTitle).not.toBe(oldHouse?.seoTitle);
+    expect(cheras.metaTitle).not.toBe(residential?.seoTitle);
+  });
+
+  it("provides complete bilingual fallback content for Cheras", () => {
+    expect(cheras.nameZh).toBe("蕉赖");
+    expect(cheras.metaTitleZh).toBe("蕉赖装修服务 | 排屋翻新与公寓改造 | FLASH CAST");
+    expect(cheras.descriptionZh).toBeTruthy();
+    expect(cheras.descriptionZh).toContain("蕉赖");
+    expect(cheras.introZh).toBeTruthy();
+    expect(cheras.introZh).toContain("蕉赖");
+
+    expect(cheras.propertyTypesZh).toBeDefined();
+    expect(cheras.propertyTypesZh?.length).toBe(cheras.propertyTypes.length);
+
+    expect(cheras.commonNeedsZh).toBeDefined();
+    expect(cheras.commonNeedsZh?.length).toBe(cheras.commonNeeds.length);
+
+    expect(cheras.constructionNotesZh).toBeTruthy();
+    expect(cheras.constructionNotesZh).toContain("DBKL");
+    expect(cheras.constructionNotesZh).toContain("MPKJ");
+
+    expect(cheras.faqsZh).toBeDefined();
+    expect(cheras.faqsZh?.length).toBe(cheras.faqs.length);
+    cheras.faqs.forEach((faq, index) => {
+      expect(faq.q).toBeTruthy();
+      expect(faq.a).toBeTruthy();
+      const faqZh = cheras.faqsZh?.[index];
+      expect(faqZh?.q).toBeTruthy();
+      expect(faqZh?.a).toBeTruthy();
+    });
+  });
+
+  it("links project cards to specific project detail destinations", () => {
+    expect(cheras.projects.length).toBeGreaterThan(0);
+    cheras.projects.forEach((project) => {
+      const target = project.href || (project.slug ? `/projects/${project.slug}` : "");
+      expect(target).toMatch(/^\/projects\/[a-z0-9-]+$/);
+    });
+  });
+});
+
+
+
+

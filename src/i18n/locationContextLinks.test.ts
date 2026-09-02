@@ -1,0 +1,87 @@
+import { readFileSync } from "node:fs";
+import { resolve } from "node:path";
+import { describe, expect, it } from "vitest";
+import { getLocationContextLinks } from "@/i18n/locationContextLinks";
+
+const sitemap = readFileSync(resolve(process.cwd(), "public/sitemap.xml"), "utf8");
+
+describe("location context links", () => {
+  it("keeps English and Chinese link destinations aligned for kuala-lumpur", () => {
+    const englishLinks = getLocationContextLinks("kuala-lumpur", "en");
+    const chineseLinks = getLocationContextLinks("kuala-lumpur", "zh");
+
+    expect(englishLinks).toHaveLength(13);
+    expect(chineseLinks.map((item) => item.href)).toEqual(englishLinks.map((item) => item.href));
+    expect(new Set(englishLinks.map((item) => item.href)).size).toBe(englishLinks.length);
+    expect(englishLinks.every((item) => item.href.startsWith("/") && !item.href.startsWith("//"))).toBe(true);
+
+    englishLinks.forEach((item) => {
+      expect(sitemap).toContain(`<loc>https://flashcast.com.my/en${item.href}</loc>`);
+      expect(sitemap).toContain(`<loc>https://flashcast.com.my/zh${item.href}</loc>`);
+    });
+  });
+
+  it("keeps English and Chinese link destinations aligned for petaling-jaya", () => {
+    const englishLinks = getLocationContextLinks("petaling-jaya", "en");
+    const chineseLinks = getLocationContextLinks("petaling-jaya", "zh");
+
+    expect(englishLinks).toHaveLength(13);
+    expect(chineseLinks.map((item) => item.href)).toEqual(englishLinks.map((item) => item.href));
+    expect(new Set(englishLinks.map((item) => item.href)).size).toBe(englishLinks.length);
+    expect(englishLinks.every((item) => item.href.startsWith("/") && !item.href.startsWith("//"))).toBe(true);
+
+    englishLinks.forEach((item) => {
+      expect(sitemap).toContain(`<loc>https://flashcast.com.my/en${item.href}</loc>`);
+      expect(sitemap).toContain(`<loc>https://flashcast.com.my/zh${item.href}</loc>`);
+    });
+  });
+
+  it("keeps English and Chinese link destinations aligned for puchong", () => {
+    const englishLinks = getLocationContextLinks("puchong", "en");
+    const chineseLinks = getLocationContextLinks("puchong", "zh");
+
+    expect(englishLinks).toHaveLength(13);
+    expect(chineseLinks.map((item) => item.href)).toEqual(englishLinks.map((item) => item.href));
+    expect(new Set(englishLinks.map((item) => item.href)).size).toBe(englishLinks.length);
+    expect(englishLinks.every((item) => item.href.startsWith("/") && !item.href.startsWith("//"))).toBe(true);
+
+    englishLinks.forEach((item) => {
+      expect(sitemap).toContain(`<loc>https://flashcast.com.my/en${item.href}</loc>`);
+      expect(sitemap).toContain(`<loc>https://flashcast.com.my/zh${item.href}</loc>`);
+    });
+  });
+
+  it("keeps English and Chinese link destinations aligned for subang-jaya", () => {
+    const englishLinks = getLocationContextLinks("subang-jaya", "en");
+    const chineseLinks = getLocationContextLinks("subang-jaya", "zh");
+
+    expect(englishLinks).toHaveLength(13);
+    expect(chineseLinks.map((item) => item.href)).toEqual(englishLinks.map((item) => item.href));
+    expect(new Set(englishLinks.map((item) => item.href)).size).toBe(englishLinks.length);
+    expect(englishLinks.every((item) => item.href.startsWith("/") && !item.href.startsWith("//"))).toBe(true);
+
+    englishLinks.forEach((item) => {
+      expect(sitemap).toContain(`<loc>https://flashcast.com.my/en${item.href}</loc>`);
+      expect(sitemap).toContain(`<loc>https://flashcast.com.my/zh${item.href}</loc>`);
+    });
+  });
+
+  it("keeps English and Chinese link destinations aligned for cheras", () => {
+    const englishLinks = getLocationContextLinks("cheras", "en");
+    const chineseLinks = getLocationContextLinks("cheras", "zh");
+
+    expect(englishLinks).toHaveLength(13);
+    expect(chineseLinks.map((item) => item.href)).toEqual(englishLinks.map((item) => item.href));
+    expect(new Set(englishLinks.map((item) => item.href)).size).toBe(englishLinks.length);
+    expect(englishLinks.every((item) => item.href.startsWith("/") && !item.href.startsWith("//"))).toBe(true);
+
+    englishLinks.forEach((item) => {
+      expect(sitemap).toContain(`<loc>https://flashcast.com.my/en${item.href}</loc>`);
+      expect(sitemap).toContain(`<loc>https://flashcast.com.my/zh${item.href}</loc>`);
+    });
+  });
+
+  it("does not invent contextual links for locations outside the current delivery batch", () => {
+    expect(getLocationContextLinks("unknown-slug", "en")).toEqual([]);
+  });
+});

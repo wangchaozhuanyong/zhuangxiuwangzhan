@@ -1,15 +1,17 @@
 import { useMemo } from "react";
 import { useParams } from "react-router-dom";
+import { ArrowUpRight } from "lucide-react";
 import Link from "@/components/LocalizedLink";
 import PageMeta from "@/components/PageMeta";
 import { JsonLdBreadcrumb, JsonLdFAQ, JsonLdService } from "@/components/JsonLd";
 import CTABanner from "@/components/blocks/CTABanner";
-import { SchemeAContentState, SchemeAFacts, SchemeAFaqList, SchemeAListingGrid, SchemeANumberList, SchemeARouteHero, SchemeASection, type SchemeAListingItem } from "@/components/scheme-a/SchemeARoutePrimitives";
+import { SchemeAContentState, SchemeAFacts, SchemeAFaqList, SchemeALinkGrid, SchemeAListingGrid, SchemeANumberList, SchemeARouteHero, SchemeASection, type SchemeAListingItem } from "@/components/scheme-a/SchemeARoutePrimitives";
 import { servicesData } from "@/data/services";
 import { usePublishedServiceBySlug, usePublishedServices } from "@/hooks/usePublishedContent";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { translateDisplayText } from "@/i18n/displayLabels";
 import { serviceDetailPageText } from "@/i18n/serviceDetailPageText";
+import { getServiceContextLinks } from "@/i18n/serviceContextLinks";
 import { buildQuotePath, quoteProjectTypeFromServiceSlug } from "@/lib/quoteContext";
 import { stripHtml } from "@/lib/text";
 
@@ -37,6 +39,7 @@ export default function ServiceDetail() {
   const description = display(service.description || service.summary);
   const suitable = service.suitableFor.map((item: string) => display(item));
   const offered = service.items.map((item: string) => display(item));
+  const commonProjects = service.commonProjects.map((item: string) => display(item));
   const process = service.processSteps.map((step) => ({ title: display(step.title), description: display(step.desc) })).filter((step) => step.title || step.description);
   const faqs = service.faqs.map((faq) => ({ question: display(faq.q), answer: display(faq.a) })).filter((faq) => faq.question && faq.answer);
   const preferredRelatedSlugs = relatedServiceSlugs[service.slug] || [];
@@ -45,6 +48,7 @@ export default function ServiceDetail() {
     ...services.filter((item) => item.slug !== service.slug && !preferredRelatedSlugs.includes(item.slug)),
   ].slice(0, 3);
   const relatedItems: SchemeAListingItem[] = related.map((item) => ({ id: String(item.id || item.slug), title: display(item.title), description: display(item.summary), image: item.image, imageAlt: display(item.title), href: `/services/${item.slug}` }));
+  const contextLinks = getServiceContextLinks(service.slug, language);
   const quotePath = buildQuotePath({
     source: "service",
     title,
@@ -57,17 +61,31 @@ export default function ServiceDetail() {
       <JsonLdService name={title} description={summary} />
       <JsonLdBreadcrumb items={[{ name: copy.breadcrumbHome, url: "/" }, { name: copy.breadcrumbServices, url: "/services" }, { name: title, url: `/services/${service.slug}` }]} />
       {faqs.length ? <JsonLdFAQ faqs={faqs} /> : null}
-      <SchemeARouteHero kind="detail" image={service.image} imageAlt={title} label={copy.services} title={title} description={summary} />
-      <SchemeAFacts items={[
-        { label: language === "zh" ? "服务地区" : "Service area", value: "Kuala Lumpur / Selangor" },
-        { label: language === "zh" ? "咨询方式" : "Consultation", value: language === "zh" ? "现场测量" : "Site review" },
-        { label: language === "zh" ? "规划依据" : "Planning basis", value: language === "zh" ? "实际工程范围" : "Confirmed scope" },
-        { label: language === "zh" ? "项目衔接" : "Delivery", value: language === "zh" ? "设计与施工" : "Design and build" },
-      ]} />
+      <SchemeARouteHero
+        kind="detail"
+        image={service.image}
+        imageAlt={title}
+        label={copy.services}
+        title={title}
+        description={summary}
+        actions={<Link to={quotePath}>{copy.getQuote}<ArrowUpRight aria-hidden="true" /></Link>}
+      />
+      <SchemeAFacts items={copy.facts} />
       <SchemeASection title={copy.overview} description={description}>
-        <SchemeANumberList items={[...suitable.map((item) => ({ title: item })), ...offered.map((item) => ({ title: item }))]} />
+        <div className="fc-route-scope-grid">
+          <div className="fc-route-scope-group">
+            <h3>{copy.suitableFor}</h3>
+            <SchemeANumberList items={suitable.map((item) => ({ title: item }))} />
+          </div>
+          <div className="fc-route-scope-group">
+            <h3>{copy.offer}</h3>
+            <SchemeANumberList items={offered.map((item) => ({ title: item }))} />
+          </div>
+        </div>
       </SchemeASection>
-      {process.length ? <SchemeASection title={copy.process} description={language === "zh" ? "每一步解决一个明确问题，让设计与现场执行保持一致。" : "Each step resolves one clear decision from planning to delivery."}><SchemeANumberList items={process} /></SchemeASection> : null}
+      {commonProjects.length ? <SchemeASection title={copy.commonProjects}><SchemeANumberList items={commonProjects.map((item) => ({ title: item }))} /></SchemeASection> : null}
+      {process.length ? <SchemeASection title={copy.process} description={copy.processDescription}><SchemeANumberList items={process} /></SchemeASection> : null}
+      {contextLinks.length ? <SchemeASection title={copy.resourceTitle(title)} description={copy.resourceDescription}><SchemeALinkGrid items={contextLinks} actionLabel={copy.resourceAction} /></SchemeASection> : null}
       {faqs.length ? <SchemeASection title={copy.faq}><SchemeAFaqList items={faqs} /></SchemeASection> : null}
       <SchemeASection title={copy.relatedServices}><SchemeAListingGrid items={relatedItems} actionLabel={copy.viewService} /></SchemeASection>
       <CTABanner
