@@ -41,14 +41,14 @@ test.describe("public content trust boundaries", () => {
     await gotoPublicPage(page, "/en/services/office-renovation");
     const main = page.locator("main");
 
-    await expect(page.getByRole("heading", { level: 1, name: "Office Renovation & Commercial Fit-Out Malaysia" })).toBeVisible();
+    await expect(page.getByRole("heading", { level: 1, name: "Office Renovation & Fit-Out in Kuala Lumpur" })).toBeVisible();
     await expect(main).not.toContainText("This page should not state");
     await expect(main).not.toContainText("should not be expanded into unconfirmed");
     await expect(main).not.toContainText("flashcast001@gmail.com");
     await expect(main).toContainText("Shop Renovation & Retail Fit-Out");
     await expect(main).toContainText("Permit & Drawing Support");
     await expect(main.getByText("View Service", { exact: true })).toHaveCount(3);
-    await expect(main.locator('a[href*="projectType=Office+Renovation"]')).toBeVisible();
+    await expect(main.locator('a[href*="projectType=Office+Renovation"]').first()).toBeVisible();
   });
 
   test("generated project is presented as a concept without customer or timeline claims", async ({ page }) => {
