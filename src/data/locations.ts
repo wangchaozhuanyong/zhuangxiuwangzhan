@@ -11,41 +11,132 @@ export interface LocationProject {
   title: string;
   type: string;
   image: string;
+  slug?: string;
+  href?: string;
 }
 
 export interface LocationData {
   name: string;
+  nameZh?: string;
   slug: string;
   metaTitle: string;
+  metaTitleZh?: string;
   description: string;
+  descriptionZh?: string;
   intro: string;
+  introZh?: string;
   propertyTypes: string[];
+  propertyTypesZh?: string[];
   commonNeeds: string[];
+  commonNeedsZh?: string[];
   constructionNotes: string;
+  constructionNotesZh?: string;
   projects: LocationProject[];
   faqs: { q: string; a: string }[];
+  faqsZh?: { q: string; a: string }[];
 }
 
 export const locationsData: Record<string, LocationData> = {
   "kuala-lumpur": {
     name: "Kuala Lumpur",
+    nameZh: "吉隆坡",
     slug: "kuala-lumpur",
-    metaTitle: "Renovation Services in Kuala Lumpur | Interior Design KL | FLASH CAST",
-    description: "Plan residential or commercial renovation in Kuala Lumpur with attention to site condition, building rules, materials, coordination, and quotation scope.",
-    intro: "Kuala Lumpur projects can involve high-rise access, building-management requirements, landed-property conditions, commercial operations, and different approval needs. Start by confirming the property, current site, intended changes, and applicable requirements.",
-    propertyTypes: ["High-rise condominiums (Mont Kiara, KLCC, Bangsar)", "Serviced apartments", "Landed houses (semi-D, bungalows, terraces)", "Shop lots and commercial units", "Office spaces in commercial towers", "F&B outlets and retail stores"],
-    commonNeeds: ["Full condo renovation with management office permit", "Kitchen cabinet replacement and built-in furniture", "Master bedroom and wardrobe upgrade", "Bathroom renovation with waterproofing", "Open-concept living room redesign", "Office partition and fit-out"],
-    constructionNotes: "Requirements vary by building, property type, scope, and current authority rules. Confirm access, protection, deposits, approved hours, drawings, submissions, and responsible parties with the management, landlord, consultants, or relevant authority before work.",
+    metaTitle: "Renovation Services in Kuala Lumpur | FLASH CAST",
+    metaTitleZh: "吉隆坡装修服务 | 住宅与商业空间 | FLASH CAST",
+    description: "Plan residential or commercial renovation in Kuala Lumpur with FLASH CAST. Review property types, condo management rules, commercial fit-outs, and quotation scope.",
+    descriptionZh: "FLASH CAST 为吉隆坡提供住宅与商业装修服务。覆盖高层公寓管理处申请、有地排屋改造、商业空间与定制柜工程，支持现场评估与明细报价。",
+    intro: "Kuala Lumpur renovation projects feature a diverse mix of high-rise condominiums, established landed homes, commercial corporate offices, and street-level shoplots. Renovation planning in KL requires navigating strict Joint Management Body (JMB) or Management Corporation (MC) renovation guidelines, DBKL permits for structural alterations, freight elevator booking, noise and working-hour limitations, and coordinated multi-trade scheduling. FLASH CAST helps property owners and commercial operators define clear project scopes, select appropriate materials, manage site constraints, and execute seamless renovations across all major Kuala Lumpur districts.",
+    introZh: "吉隆坡的装修项目涵盖高层公寓、成熟有地住宅、商业写字楼以及沿街商铺等多种物业类型。在吉隆坡进行装修，通常需要应对严格的管理处（JMB/MC）审批流程、DBKL 市政改造报批、货梯保护与使用预约、施工时间与噪音限制，以及泥水、水电、木作等多个工种的交叉协调。FLASH CAST 从真实现场勘测与需求出发，协助业主厘清工程范围、把控选材标准、协调物业审批，并落实明细报价与施工交付。",
+    propertyTypes: [
+      "High-rise condominiums & serviced apartments (Mont Kiara, KLCC, Bangsar, Sri Hartamas)",
+      "Established landed homes & terraces (Cheras, Kepong, Setapak, TTDI)",
+      "Commercial corporate offices in office towers (KL Sentral, Mid Valley, Bukit Bintang)",
+      "Street-level shoplots & retail units (Telawi Bangsar, Cheras Commercial, Old Klang Road)",
+      "Semi-detached & bungalow homes (Damansara Heights, Bangsar, Kenny Hills)",
+    ],
+    propertyTypesZh: [
+      "高层公寓与服务式住宅（Mont Kiara、KLCC、Bangsar、Sri Hartamas）",
+      "成熟排屋与有地住宅（Cheras、Kepong、Setapak、TTDI）",
+      "商业大楼企业办公室（KL Sentral、Mid Valley、Bukit Bintang）",
+      "沿街商铺与零售餐饮空间（Telawi Bangsar、Cheras 商业区、Old Klang Road）",
+      "半独立式与独立洋房（Damansara Heights、Bangsar、Kenny Hills）",
+    ],
+    commonNeeds: [
+      "Full condo renovation with management office submission, deposit, and lift protection",
+      "Kitchen cabinet replacement, wet/dry kitchen separation, and appliance point planning",
+      "Bathroom renovation with multi-layer waterproofing membrane and plumbing renewal",
+      "Landed house modernization, electrical rewiring, roof leakage repair, and layout opening",
+      "Corporate office partition, glass meeting rooms, ceiling, and M&E / data cabling",
+      "Custom built-in wardrobes, TV feature walls, and compact home storage solutions",
+    ],
+    commonNeedsZh: [
+      "整套公寓翻新：包含管理处报备、装修押金、公共走廊与电梯保护",
+      "厨房橱柜定制：干湿厨房动线分区、防潮板材与厨电水电点位规划",
+      "浴室翻新与防水：多层防水施工、老旧水管更换与坡度排水优化",
+      "有地排屋改造：全屋电线重拉、屋顶防漏修缮与室内空间打通",
+      "企业办公室 Fit-Out：玻璃隔断、会议室规划、天花与机电网络布线",
+      "全屋定制收纳：衣帽间、电视背景墙柜、玄关鞋柜与防潮内嵌家具",
+    ],
+    constructionNotes: "Kuala Lumpur construction regulations differ significantly between strata developments and landed properties. For condominiums and office towers, building management typically requires contractor public liability insurance, refundable security deposits, designated work hours (usually 9:00 AM to 5:00 PM on weekdays), noise-controlled periods, and strict protection for common corridors and lifts. For landed properties involving structural additions or facade alterations, DBKL (Dewan Bandaraya Kuala Lumpur) drawings and permits must be confirmed with certified consultants before commencing work. We coordinate with owners, property management, and licensed specialists to ensure documentation is properly aligned prior to site mobilization.",
+    constructionNotesZh: "吉隆坡的装修施工规范在分层地契建筑（Condo / 写字楼）与有地住宅之间存在明显差异。高层公寓和商业大楼通常要求承包商提供公众责任险（Public Liability Insurance）、缴纳可退还装修押金、限定工作时段（通常为周一至周五 9:00–17:00）、控制高噪音工序，并对公共走廊和货梯进行全方位保护。有地住宅如涉及外扩结构或门面改动，则需由注册执业人士向 DBKL（吉隆坡市政局）报批图纸与准证。FLASH CAST 在施工前协助业主核对管理处规约与报备文件，确保现场合规进场。",
     projects: [
-      { title: "Modern Condo Renovation in Mont Kiara", type: "Residential", image: residentialImg },
-      { title: "Office Fit-Out in KL Sentral", type: "Commercial", image: commercialImg },
-      { title: "Custom Kitchen in Bangsar", type: "Built-In", image: kitchenImg },
+      {
+        title: "Modern Condo Renovation in Mont Kiara",
+        type: "Residential",
+        image: residentialImg,
+        slug: "mont-kiara-luxury-condo-renovation",
+        href: "/projects/mont-kiara-luxury-condo-renovation",
+      },
+      {
+        title: "Office Fit-Out in KL Sentral",
+        type: "Commercial",
+        image: commercialImg,
+        slug: "kl-sentral-meeting-room-pantry-upgrade",
+        href: "/projects/kl-sentral-meeting-room-pantry-upgrade",
+      },
+      {
+        title: "Custom Kitchen in Bangsar",
+        type: "Built-In",
+        image: kitchenImg,
+        slug: "custom-kitchen-bangsar",
+        href: "/projects/custom-kitchen-bangsar",
+      },
     ],
     faqs: [
-      { q: "Do you provide renovation services throughout Kuala Lumpur?", a: "Yes. We cover all areas in Kuala Lumpur including Mont Kiara, Bangsar, Cheras, Kepong, Wangsa Maju, Sentul, Sri Hartamas, Damansara Heights, Taman Tun Dr Ismail, and the city centre." },
-      { q: "Can approval or management documents be discussed?", a: "Yes. Required documents and coordination can be reviewed after the scope is clear. Exact responsibility, fees, timing, and outcome depend on the management or relevant authority." },
-      { q: "What affects a possible start date in KL?", a: "Site access, confirmed scope, approvals, material availability, building rules, contractor scheduling, and project documents all affect timing." },
-      { q: "What affects condo renovation cost in Kuala Lumpur?", a: "Condo renovation cost depends on scope, size, materials, management rules, and site condition. A quotation should be prepared after reviewing the project details." },
+      {
+        q: "Which districts in Kuala Lumpur do you cover for residential and commercial renovations?",
+        a: "We provide renovation and fit-out services across all major Kuala Lumpur areas, including Mont Kiara, Bangsar, Cheras, Kepong, Wangsa Maju, Setapak, Sentul, Sri Hartamas, Damansara Heights, Bukit Bintang, KL Sentral, TTDI, and the Kuala Lumpur city centre.",
+      },
+      {
+        q: "How are condominium renovation permits and management submissions handled in KL?",
+        a: "Condominium renovations require prior approval from the Joint Management Body (JMB) or Management Corporation (MC). We assist homeowners by preparing contractor insurance documents, scope descriptions, and work schedules, and review elevator protection and deposit requirements before work begins. Structural alterations requiring DBKL approval must be signed off by a certified engineer.",
+      },
+      {
+        q: "What factors influence the start date of a renovation project in Kuala Lumpur?",
+        a: "The start date depends on completing site measurements, finalizing the bill of quantities (BOQ), material lead times (such as custom quartz countertops or specialized carpentry finishes), and obtaining the management renovation permit (which typically takes 5 to 14 working days after submission).",
+      },
+      {
+        q: "What factors affect condo and landed house renovation costs in Kuala Lumpur?",
+        a: "Costs depend on property type and access conditions (e.g., high-rise lift access vs landed driveways), the extent of wet works (demolition, masonry, waterproofing), mechanical & electrical renewal requirements, and the grade of materials chosen for cabinetry, flooring, and sanitary fittings. We provide itemized quotations so you can evaluate essential works versus optional aesthetic upgrades.",
+      },
+    ],
+    faqsZh: [
+      {
+        q: "FLASH CAST 在吉隆坡具体覆盖哪些区域的住宅与商业装修？",
+        a: "我们的服务覆盖吉隆坡所有主要区域，包括 Mont Kiara、Bangsar、Cheras（蕉赖）、Kepong（甲洞）、Wangsa Maju、Setapak（文良港）、Sentul（冼都）、Sri Hartamas、Damansara Heights、Bukit Bintang、KL Sentral、TTDI 以及吉隆坡市中心核心区。",
+      },
+      {
+        q: "吉隆坡高层公寓的管理处装修审批流程如何办理？",
+        a: "公寓装修需提前向大楼管理处（JMB 或 MC）提交申请。我们协助业主准备施工范围说明、工期计划表及承包商保险（Public Liability）文件，并提前确认货梯保护与装修押金标准。若涉及敲除非承重墙或结构改动，需按 DBKL 规定由注册结构工程师出具图纸。",
+      },
+      {
+        q: "在吉隆坡开始一项装修工程通常需要多长时间准备？",
+        a: "开工时间主要取决于现场量房复核、报价方案敲定、定制材料（如橱柜板材、石材台面）的加工周期，以及管理处审批进度。通常管理处审批需要 5 至 14 个工作日，所有手续齐备后方可安排保护进场。",
+      },
+      {
+        q: "影响吉隆坡公寓与排屋装修费用的核心因素有哪些？",
+        a: "费用主要取决于物业类型与进场难度（如公寓货梯搬运与保护要求）、泥水与湿作工程量（拆墙、地砖、防水）、水电管线老化是否需要全换，以及橱柜定制与地面材料的选型等级。FLASH CAST 提供详细拆项的工程报价单，帮助业主区分必须工程与升级选项。",
+      },
     ],
   },
   "selangor": {
