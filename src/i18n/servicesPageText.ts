@@ -125,6 +125,15 @@ export const servicesPageText = {
     ],
     conceptTitle: "Planning and Rendering Concepts",
     conceptText: "Design concepts and rendering concepts can be used as planning examples, but they must be clearly labelled and not presented as completed project proof, customer reviews, or before-and-after evidence.",
+    resourceTitle: "Continue planning beyond the service list",
+    resourceText: "Use project references, local service-area information, material options, and practical guides to prepare a clearer renovation enquiry.",
+    resourceAction: "Explore",
+    resources: [
+      { id: "service-projects", label: "Project references", title: "Renovation projects", description: "Review published project scope and check each page's completed-project or concept classification.", href: "/projects" },
+      { id: "service-locations", label: "Service areas", title: "Kuala Lumpur and Selangor locations", description: "Compare local property types, common renovation needs, and service coverage by area.", href: "/locations" },
+      { id: "service-materials", label: "Materials", title: "Renovation materials library", description: "Browse published flooring, cabinetry, countertop, wall, door, and bathroom options.", href: "/materials" },
+      { id: "service-guides", label: "Planning guides", title: "Renovation blog and checklists", description: "Prepare for quotations, approvals, materials, waterproofing, and project handover.", href: "/blog" },
+    ],
     faqTitle: "Renovation Services FAQ",
     faqs: [
       {
@@ -284,6 +293,15 @@ export const servicesPageText = {
     ],
     conceptTitle: "设计方案与效果图方案",
     conceptText: "页面可以使用明确标注的设计方案、效果图方案、概念设计或规划示例，但不能写成真实完工案例、客户评价或 before/after 证明。",
+    resourceTitle: "从服务列表继续规划装修",
+    resourceText: "结合项目参考、当地服务范围、材料选择和实用指南，准备更清楚的装修咨询资料。",
+    resourceAction: "继续查看",
+    resources: [
+      { id: "service-projects", label: "项目参考", title: "装修项目", description: "查看已发布项目范围，并确认每个页面属于真实完工内容还是已标注概念。", href: "/projects" },
+      { id: "service-locations", label: "服务地区", title: "吉隆坡与雪兰莪服务地区", description: "按地区比较房产类型、常见装修需求和服务范围。", href: "/locations" },
+      { id: "service-materials", label: "装修材料", title: "装修材料库", description: "浏览已发布的地面、柜体、台面、墙面、门窗和浴室选择。", href: "/materials" },
+      { id: "service-guides", label: "规划指南", title: "装修博客与检查清单", description: "准备报价、审批、材料、防水和项目交付需要确认的事项。", href: "/blog" },
+    ],
     faqTitle: "装修服务常见问题",
     faqs: [
       {

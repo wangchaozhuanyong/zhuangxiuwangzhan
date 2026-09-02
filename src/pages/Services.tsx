@@ -1,10 +1,12 @@
 import { useMemo, useState } from "react";
+import CTABanner from "@/components/blocks/CTABanner";
 import PageMeta from "@/components/PageMeta";
 import { JsonLdBreadcrumb } from "@/components/JsonLd";
 import {
   SchemeAContentState,
   SchemeAFilter,
   SchemeAFaqList,
+  SchemeALinkGrid,
   SchemeAListingGrid,
   SchemeARouteHero,
   SchemeASection,
@@ -87,9 +89,19 @@ export default function Services() {
           {copy.selectorItems.map((item, index) => <li key={item.title}><b>{String(index + 1).padStart(2, "0")}</b><div><strong>{item.title}</strong><span>{item.desc}</span></div></li>)}
         </ol>
       </SchemeASection>
+      <SchemeASection title={copy.resourceTitle} description={copy.resourceText}>
+        <SchemeALinkGrid items={copy.resources} actionLabel={copy.resourceAction} />
+      </SchemeASection>
       <SchemeASection title={copy.faqTitle}>
         <SchemeAFaqList items={copy.faqs.map((faq) => ({ question: faq.q, answer: faq.a }))} />
       </SchemeASection>
+      <CTABanner
+        title={copy.unsureTitle}
+        description={copy.unsureText}
+        quoteLabel={copy.quote}
+        whatsappLabel={copy.whatsapp}
+        whatsappSource="Services Hub CTA"
+      />
     </main>
   );
 }

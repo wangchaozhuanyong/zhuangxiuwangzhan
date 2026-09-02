@@ -1,6 +1,6 @@
 export const indexPageText = {
   en: {
-    title: "Renovation Company Kuala Lumpur & Selangor | FLASH CAST",
+    title: "Renovation Company Kuala Lumpur | Home & Commercial Renovation | FLASH CAST",
     description: "FLASH CAST plans and coordinates home and commercial renovation across Kuala Lumpur, Selangor, and Klang Valley, including kitchens, bathrooms, offices, shops, custom built-ins, material advice, and site work.",
     keywords: "renovation company Kuala Lumpur, renovation services Kuala Lumpur, home renovation Malaysia, kitchen renovation Malaysia, bathroom renovation, office renovation, shop renovation, custom built-in furniture",
   },
