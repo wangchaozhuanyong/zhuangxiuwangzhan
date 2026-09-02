@@ -36,6 +36,22 @@ const serviceContextLinks: Record<Language, ServiceContextLinksBySlug> = {
       { id: "bathroom-waterproofing", label: "Planning guide", title: "Waterproofing and drainage planning", description: "Review floor falls, traps, wet zones, pipe penetrations, and tile-work coordination.", href: "/blog/bathroom-waterproofing-drainage-planning-malaysia" },
       { id: "bathroom-materials", label: "Materials", title: "Bathroom materials and fittings", description: "Browse published tile, basin, toilet, shower, cabinet, and related bathroom options.", href: "/materials/category/bathroom" },
     ],
+    "office-renovation": [
+      { id: "office-pj", label: "Service area", title: "Petaling Jaya office renovation", description: "Review local planning considerations for offices, commercial units, access, and building requirements.", href: "/locations/petaling-jaya" },
+      { id: "office-cyberjaya", label: "Service area", title: "Cyberjaya office renovation", description: "Explore office and technology-workspace planning around operations, M&E, data, access, and fit-out scope.", href: "/locations/cyberjaya" },
+      { id: "office-projects", label: "Project references", title: "Browse office and commercial references", description: "Review published project pages and confirm whether each item is completed work or a labeled planning concept.", href: "/projects" },
+      { id: "office-checklist", label: "Planning guide", title: "Office renovation checklist", description: "Prepare headcount, layout, building rules, services, quotation scope, coordination, and handover requirements.", href: "/blog/office-renovation-checklist-malaysia" },
+      { id: "office-reinstatement", label: "Planning guide", title: "Office reinstatement or renovation", description: "Clarify the difference between fitting out a workspace and returning a tenancy to its required handover condition.", href: "/blog/office-reinstatement-vs-renovation" },
+      { id: "office-materials", label: "Materials", title: "Office flooring options", description: "Compare published flooring types against subfloor condition, traffic, maintenance, acoustic needs, and building rules.", href: "/materials/category/flooring" },
+    ],
+    "shop-renovation": [
+      { id: "shop-cheras", label: "Service area", title: "Cheras shop renovation", description: "Review planning considerations for shoplots, retail units, access, existing services, and opening priorities.", href: "/locations/cheras" },
+      { id: "shop-subang", label: "Service area", title: "Subang Jaya shop renovation", description: "Explore retail and F&B fit-out considerations for shoplots, commercial units, landlord rules, and site services.", href: "/locations/subang-jaya" },
+      { id: "shop-projects", label: "Project references", title: "Browse retail and commercial references", description: "Review published project pages and confirm whether each item is completed work or a labeled planning concept.", href: "/projects" },
+      { id: "shop-opening", label: "Planning guide", title: "Shop renovation before opening", description: "Prepare the business brief, tenancy condition, customer flow, back-of-house needs, services, and opening sequence.", href: "/blog/shop-renovation-before-opening" },
+      { id: "shop-permit", label: "Planning guide", title: "Shoplot permit and management planning", description: "Check which landlord, management, signage, work-hour, protection, or authority requirements may apply to the site.", href: "/blog/shoplot-renovation-permit-malaysia" },
+      { id: "shop-materials", label: "Materials", title: "Retail display and storage cabinet", description: "Review a published display-storage option for counters, merchandise, back storage, and practical maintenance.", href: "/materials/display-storage-cabinet" },
+    ],
   },
   zh: {
     renovation: [
@@ -61,6 +77,22 @@ const serviceContextLinks: Record<Language, ServiceContextLinksBySlug> = {
       { id: "bathroom-leakage", label: "规划指南", title: "浴室漏水与翻新", description: "了解为什么决定维修范围前，应先检查漏水来源和现场条件。", href: "/blog/bathroom-leakage-renovation-malaysia" },
       { id: "bathroom-waterproofing", label: "规划指南", title: "防水与排水规划", description: "检查排水坡度、地漏、湿区、管口和瓷砖工程衔接。", href: "/blog/bathroom-waterproofing-drainage-planning-malaysia" },
       { id: "bathroom-materials", label: "装修材料", title: "浴室材料与洁具", description: "浏览已发布的瓷砖、洗手盆、马桶、淋浴、浴室柜和相关选择。", href: "/materials/category/bathroom" },
+    ],
+    "office-renovation": [
+      { id: "office-pj", label: "服务地区", title: "Petaling Jaya 办公室装修", description: "了解办公室、商业单位、进场条件和大楼要求的当地规划事项。", href: "/locations/petaling-jaya" },
+      { id: "office-cyberjaya", label: "服务地区", title: "Cyberjaya 办公室装修", description: "查看办公室与科技工作空间的运营、机电、数据、进场和 fit-out 范围考虑。", href: "/locations/cyberjaya" },
+      { id: "office-projects", label: "项目参考", title: "浏览办公室与商业项目参考", description: "查看已发布项目，并确认每项内容属于完工项目还是已标注的规划概念。", href: "/projects" },
+      { id: "office-checklist", label: "规划指南", title: "办公室装修检查清单", description: "准备员工人数、布局、大楼规定、设备服务、报价范围、协调和交付要求。", href: "/blog/office-renovation-checklist-malaysia" },
+      { id: "office-reinstatement", label: "规划指南", title: "办公室复原还是装修", description: "分清新办公空间 fit-out 与按租约要求恢复交付状态的不同。", href: "/blog/office-reinstatement-vs-renovation" },
+      { id: "office-materials", label: "装修材料", title: "办公室地面材料", description: "按基层状况、人流、保养、声学需求和大楼规定比较已发布的地面选择。", href: "/materials/category/flooring" },
+    ],
+    "shop-renovation": [
+      { id: "shop-cheras", label: "服务地区", title: "Cheras 店铺装修", description: "了解 shoplot、零售单位、进场、现有设备和开业优先项的规划事项。", href: "/locations/cheras" },
+      { id: "shop-subang", label: "服务地区", title: "Subang Jaya 店铺装修", description: "查看 shoplot 和商业单位的零售、餐饮 fit-out、业主规定和现场设备考虑。", href: "/locations/subang-jaya" },
+      { id: "shop-projects", label: "项目参考", title: "浏览零售与商业项目参考", description: "查看已发布项目，并确认每项内容属于完工项目还是已标注的规划概念。", href: "/projects" },
+      { id: "shop-opening", label: "规划指南", title: "开店前的店铺装修规划", description: "提前整理营业需求、租约交付状态、顾客动线、后场、设备和开业顺序。", href: "/blog/shop-renovation-before-opening" },
+      { id: "shop-permit", label: "规划指南", title: "Shoplot 准证与管理要求", description: "检查现场可能涉及的业主、管理处、招牌、施工时段、保护或地方单位要求。", href: "/blog/shoplot-renovation-permit-malaysia" },
+      { id: "shop-materials", label: "装修材料", title: "零售展示与收纳柜", description: "查看已发布的展示收纳选项，用于柜台、商品展示、后场收纳和保养规划。", href: "/materials/display-storage-cabinet" },
     ],
   },
 };

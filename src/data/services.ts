@@ -432,11 +432,11 @@ export const servicesData: ServiceItem[] = [
   },
   {
     id: "office",
-    title: "Office Renovation and Commercial Fit-Out",
-    titleZh: "马来西亚办公室装修与商业空间规划",
+    title: "Office Renovation & Fit-Out in Kuala Lumpur",
+    titleZh: "吉隆坡办公室装修与 Fit-Out",
     slug: "office-renovation",
-    seoTitle: "Office Renovation Malaysia & Commercial Fit-Out | FLASH CAST",
-    seoTitleZh: "马来西亚办公室装修与商业 Fit-Out | FLASH CAST",
+    seoTitle: "Office Renovation Contractor KL | FLASH CAST",
+    seoTitleZh: "吉隆坡办公室装修与 Fit-Out | FLASH CAST",
     seoDescription:
       "Plan office renovation and commercial fit-out in Kuala Lumpur, Selangor, and Klang Valley with FLASH CAST. Review layout, partitions, reception, M&E, materials, and quotation steps.",
     seoDescriptionZh:
@@ -533,11 +533,11 @@ export const servicesData: ServiceItem[] = [
   },
   {
     id: "shoplot",
-    title: "Shop Renovation & Retail Fit-Out",
-    titleZh: "店铺装修与零售空间规划",
+    title: "Shop Renovation & Retail Fit-Out in Kuala Lumpur",
+    titleZh: "吉隆坡店铺装修与零售 Fit-Out",
     slug: "shop-renovation",
-    seoTitle: "Shop Renovation & Retail Fit-Out | FLASH CAST",
-    seoTitleZh: "店铺装修与零售空间规划 | 商业空间 Fit-Out | FLASH CAST",
+    seoTitle: "Shop Renovation Kuala Lumpur | FLASH CAST",
+    seoTitleZh: "吉隆坡店铺装修与零售 Fit-Out | FLASH CAST",
     seoDescription:
       "FLASH CAST plans shop renovation and retail fit-out for retail stores, F&B spaces, clinic front areas, beauty and hair salons, showrooms and service outlets.",
     seoDescriptionZh:

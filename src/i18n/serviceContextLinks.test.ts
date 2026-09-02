@@ -3,7 +3,7 @@ import { resolve } from "node:path";
 import { describe, expect, it } from "vitest";
 import { getServiceContextLinks } from "@/i18n/serviceContextLinks";
 
-const PRIORITY_SERVICE_SLUGS = ["renovation", "kitchen", "bathroom"] as const;
+const PRIORITY_SERVICE_SLUGS = ["renovation", "kitchen", "bathroom", "office-renovation", "shop-renovation"] as const;
 const sitemap = readFileSync(resolve(process.cwd(), "public/sitemap.xml"), "utf8");
 
 describe("service context links", () => {
@@ -21,7 +21,7 @@ describe("service context links", () => {
     });
   });
 
-  it("does not invent contextual links for services outside the first delivery batch", () => {
-    expect(getServiceContextLinks("office-renovation", "en")).toEqual([]);
+  it("does not invent contextual links for services outside the current delivery batch", () => {
+    expect(getServiceContextLinks("old-house", "en")).toEqual([]);
   });
 });

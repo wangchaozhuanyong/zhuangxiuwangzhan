@@ -1,10 +1,10 @@
 import { describe, expect, it } from "vitest";
 import { servicesData } from "@/data/services";
 
-const PRIORITY_SERVICE_SLUGS = ["renovation", "kitchen", "bathroom"] as const;
+const PRIORITY_SERVICE_SLUGS = ["renovation", "kitchen", "bathroom", "office-renovation", "shop-renovation"] as const;
 
 describe("priority service SEO fallbacks", () => {
-  it("assigns a distinct commercial search intent to each first-batch service", () => {
+  it("assigns a distinct commercial search intent to each priority service", () => {
     const services = PRIORITY_SERVICE_SLUGS.map((slug) => servicesData.find((service) => service.slug === slug));
     expect(services.every(Boolean)).toBe(true);
 
@@ -13,6 +13,8 @@ describe("priority service SEO fallbacks", () => {
       "Residential Renovation Kuala Lumpur | FLASH CAST",
       "Kitchen Renovation Kuala Lumpur | FLASH CAST",
       "Bathroom Renovation Kuala Lumpur | FLASH CAST",
+      "Office Renovation Contractor KL | FLASH CAST",
+      "Shop Renovation Kuala Lumpur | FLASH CAST",
     ]);
     expect(new Set(titles).size).toBe(titles.length);
     expect(titles.every((title) => title.length >= 40 && title.length <= 60)).toBe(true);
