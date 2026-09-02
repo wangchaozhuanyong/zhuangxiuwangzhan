@@ -52,6 +52,22 @@ const serviceContextLinks: Record<Language, ServiceContextLinksBySlug> = {
       { id: "shop-permit", label: "Planning guide", title: "Shoplot permit and management planning", description: "Check which landlord, management, signage, work-hour, protection, or authority requirements may apply to the site.", href: "/blog/shoplot-renovation-permit-malaysia" },
       { id: "shop-materials", label: "Materials", title: "Retail display and storage cabinet", description: "Review a published display-storage option for counters, merchandise, back storage, and practical maintenance.", href: "/materials/display-storage-cabinet" },
     ],
+    "old-house": [
+      { id: "old-house-cheras", label: "Service area", title: "Cheras old-house renovation", description: "Review planning considerations for older landed homes, existing wiring and plumbing, moisture, access, and staged work.", href: "/locations/cheras" },
+      { id: "old-house-pj", label: "Service area", title: "Petaling Jaya home renovation", description: "Explore renovation planning for established landed homes, strata properties, access, retained items, and site condition.", href: "/locations/petaling-jaya" },
+      { id: "old-house-projects", label: "Project references", title: "Browse landed-home renovation references", description: "Review published project pages and confirm whether each item is completed work or a labeled planning concept.", href: "/projects" },
+      { id: "old-house-checklist", label: "Planning guide", title: "Old-house renovation checklist", description: "Check site condition, safety priorities, wiring, plumbing, moisture, roof, layout, approvals, and quotation scope.", href: "/blog/old-house-renovation-checklist" },
+      { id: "old-house-costs", label: "Planning guide", title: "Hidden old-house renovation costs", description: "Understand how investigation, repairs, access, retained work, provisional scope, and discoveries can affect a quotation.", href: "/blog/old-house-renovation-hidden-costs-malaysia" },
+      { id: "old-house-materials", label: "Materials", title: "Renovation materials library", description: "Compare published flooring, doors, cabinetry, wall finishes, and bathroom options after the repair scope is clear.", href: "/materials" },
+    ],
+    builtin: [
+      { id: "builtin-puchong", label: "Service area", title: "Puchong custom built-ins", description: "Review local planning considerations for landed homes, condos, commercial storage, measurement, and installation access.", href: "/locations/puchong" },
+      { id: "builtin-bangsar", label: "Service area", title: "Bangsar custom cabinets", description: "Explore cabinet and storage planning for landed homes, strata properties, retail units, and existing site conditions.", href: "/locations/bangsar" },
+      { id: "builtin-projects", label: "Project references", title: "Browse cabinet and storage references", description: "Review published project pages and confirm whether each item is completed work or a labeled planning concept.", href: "/projects" },
+      { id: "builtin-cost", label: "Planning guide", title: "Built-in cabinet cost factors", description: "Compare how dimensions, board material, finishes, hardware, accessories, access, and installation affect scope.", href: "/blog/built-in-cabinet-cost-malaysia" },
+      { id: "builtin-storage", label: "Planning guide", title: "Built-in storage for small condos", description: "Plan full-height storage, wardrobes, TV walls, shoe cabinets, study areas, and everyday access in compact homes.", href: "/blog/built-in-furniture-small-condo-storage" },
+      { id: "builtin-materials", label: "Materials", title: "Whole-home custom cabinet options", description: "Browse published wardrobe, kitchen, TV, shoe, study, and storage cabinet categories before approving samples.", href: "/materials/category/whole-house-custom" },
+    ],
   },
   zh: {
     renovation: [
@@ -93,6 +109,22 @@ const serviceContextLinks: Record<Language, ServiceContextLinksBySlug> = {
       { id: "shop-opening", label: "规划指南", title: "开店前的店铺装修规划", description: "提前整理营业需求、租约交付状态、顾客动线、后场、设备和开业顺序。", href: "/blog/shop-renovation-before-opening" },
       { id: "shop-permit", label: "规划指南", title: "Shoplot 准证与管理要求", description: "检查现场可能涉及的业主、管理处、招牌、施工时段、保护或地方单位要求。", href: "/blog/shoplot-renovation-permit-malaysia" },
       { id: "shop-materials", label: "装修材料", title: "零售展示与收纳柜", description: "查看已发布的展示收纳选项，用于柜台、商品展示、后场收纳和保养规划。", href: "/materials/display-storage-cabinet" },
+    ],
+    "old-house": [
+      { id: "old-house-cheras", label: "服务地区", title: "Cheras 旧屋翻新", description: "了解旧有地住宅的电线水管、潮湿、进场和分阶段施工规划事项。", href: "/locations/cheras" },
+      { id: "old-house-pj", label: "服务地区", title: "Petaling Jaya 住宅翻新", description: "查看成熟有地住宅、分层物业、进场、保留项目和现场状况的规划考虑。", href: "/locations/petaling-jaya" },
+      { id: "old-house-projects", label: "项目参考", title: "浏览有地住宅翻新参考", description: "查看已发布项目，并确认每项内容属于完工项目还是已标注的规划概念。", href: "/projects" },
+      { id: "old-house-checklist", label: "规划指南", title: "旧屋翻新检查清单", description: "检查屋况、安全顺序、电线、水管、潮湿、屋顶、格局、申请和报价范围。", href: "/blog/old-house-renovation-checklist" },
+      { id: "old-house-costs", label: "规划指南", title: "旧屋翻新隐藏成本", description: "了解检查、必要修复、进场、保留工程、暂定范围和现场发现如何影响报价。", href: "/blog/old-house-renovation-hidden-costs-malaysia" },
+      { id: "old-house-materials", label: "装修材料", title: "装修材料库", description: "在必要修复范围清楚后，再比较已发布的地面、门窗、柜体、墙面和浴室材料。", href: "/materials" },
+    ],
+    builtin: [
+      { id: "builtin-puchong", label: "服务地区", title: "Puchong 定制柜", description: "了解有地住宅、公寓、商业收纳、现场测量和安装进场的当地规划事项。", href: "/locations/puchong" },
+      { id: "builtin-bangsar", label: "服务地区", title: "Bangsar 定制柜", description: "查看有地住宅、分层物业、零售空间和现场条件下的柜体与收纳规划。", href: "/locations/bangsar" },
+      { id: "builtin-projects", label: "项目参考", title: "浏览柜体与收纳项目参考", description: "查看已发布项目，并确认每项内容属于完工项目还是已标注的规划概念。", href: "/projects" },
+      { id: "builtin-cost", label: "规划指南", title: "定制柜报价影响因素", description: "比较尺寸、板材、饰面、五金、内部配件、进场和安装如何影响范围。", href: "/blog/built-in-cabinet-cost-malaysia" },
+      { id: "builtin-storage", label: "规划指南", title: "小公寓内嵌收纳规划", description: "规划到顶收纳、衣柜、电视墙、鞋柜、书桌区和紧凑住宅的日常取用。", href: "/blog/built-in-furniture-small-condo-storage" },
+      { id: "builtin-materials", label: "装修材料", title: "全屋定制柜选择", description: "确认样板前，先浏览已发布的衣柜、厨房柜、电视柜、鞋柜、书桌和收纳柜分类。", href: "/materials/category/whole-house-custom" },
     ],
   },
 };

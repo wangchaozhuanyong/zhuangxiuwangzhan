@@ -175,11 +175,11 @@ export const servicesData: ServiceItem[] = [
   },
   {
     id: "builtin",
-    title: "Custom Built-In Furniture",
-    titleZh: "定制家具与 Built-In 收纳柜设计",
+    title: "Custom Cabinets & Built-In Furniture in Kuala Lumpur",
+    titleZh: "吉隆坡定制柜与内嵌家具",
     slug: "builtin",
-    seoTitle: "Custom Built-In Furniture Malaysia | Wardrobe, Cabinet & Storage Planning",
-    seoTitleZh: "定制家具与收纳柜设计｜吉隆坡与雪兰莪 Built-In Cabinet 服务",
+    seoTitle: "Custom Cabinet Kuala Lumpur | FLASH CAST",
+    seoTitleZh: "吉隆坡定制柜与内嵌家具 | FLASH CAST",
     seoDescription: "FLASH CAST provides custom built-in furniture planning in Kuala Lumpur, Selangor, and Klang Valley, including wardrobes, kitchen cabinets, TV cabinets, shoe cabinets, display cabinets, and storage systems.",
     seoDescriptionZh: "FLASH CAST 提供吉隆坡、雪兰莪和 Klang Valley 定制家具规划，包括衣柜、厨房柜、电视柜、鞋柜、展示柜和收纳系统。",
     summary: "Custom wardrobes, kitchen cabinets, TV cabinets, shoe cabinets, display cabinets, and storage systems planned around site measurements, materials, hardware, and installation scope.",
@@ -657,11 +657,11 @@ export const servicesData: ServiceItem[] = [
   },
   {
     id: "old-house",
-    title: "Old House Renovation",
-    titleZh: "旧屋翻新规划",
+    title: "Old House Renovation in Kuala Lumpur and Selangor",
+    titleZh: "吉隆坡与雪兰莪旧屋翻新",
     slug: "old-house",
-    seoTitle: "Old House Renovation Malaysia | KL & Selangor Landed Home Upgrade",
-    seoTitleZh: "旧屋翻新马来西亚｜吉隆坡与雪兰莪老屋翻新规划",
+    seoTitle: "Old House Renovation Kuala Lumpur | FLASH CAST",
+    seoTitleZh: "吉隆坡旧屋翻新 | 排屋与有地住宅 | FLASH CAST",
     seoDescription:
       "FLASH CAST provides old house renovation planning in Kuala Lumpur, Selangor, and Klang Valley, covering site assessment, wiring, plumbing, waterproofing, layout, kitchen, bathroom, and material direction.",
     seoDescriptionZh:
