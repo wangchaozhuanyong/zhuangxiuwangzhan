@@ -186,4 +186,63 @@ describe("Puchong location SEO fallbacks", () => {
   });
 });
 
+describe("Subang Jaya location SEO fallbacks", () => {
+  const subang = locationsData["subang-jaya"];
+  const oldHouse = servicesData.find((service) => service.slug === "old-house");
+  const shop = servicesData.find((service) => service.slug === "shop-renovation");
+
+  it("assigns a distinct local commercial intent that avoids cannibalizing Home and Service pages", () => {
+    expect(subang).toBeDefined();
+
+    // Must have the dedicated local service title
+    expect(subang.metaTitle).toBe("Terrace & Shop Renovation Subang Jaya | FLASH CAST");
+
+    // Title length constraint
+    expect(subang.metaTitle.length).toBeGreaterThanOrEqual(40);
+    expect(subang.metaTitle.length).toBeLessThanOrEqual(60);
+
+    // Must NOT cannibalize other primary pages or have generic conflicting title
+    expect(subang.metaTitle).not.toContain("Renovation Company Subang Jaya");
+    expect(subang.metaTitle).not.toBe(oldHouse?.seoTitle);
+    expect(subang.metaTitle).not.toBe(shop?.seoTitle);
+  });
+
+  it("provides complete bilingual fallback content for Subang Jaya", () => {
+    expect(subang.nameZh).toBe("梳邦再也");
+    expect(subang.metaTitleZh).toBe("梳邦再也装修服务 | 排屋翻新与商铺装修 | FLASH CAST");
+    expect(subang.descriptionZh).toBeTruthy();
+    expect(subang.descriptionZh).toContain("梳邦再也");
+    expect(subang.introZh).toBeTruthy();
+    expect(subang.introZh).toContain("梳邦再也");
+
+    expect(subang.propertyTypesZh).toBeDefined();
+    expect(subang.propertyTypesZh?.length).toBe(subang.propertyTypes.length);
+
+    expect(subang.commonNeedsZh).toBeDefined();
+    expect(subang.commonNeedsZh?.length).toBe(subang.commonNeeds.length);
+
+    expect(subang.constructionNotesZh).toBeTruthy();
+    expect(subang.constructionNotesZh).toContain("MBSJ");
+
+    expect(subang.faqsZh).toBeDefined();
+    expect(subang.faqsZh?.length).toBe(subang.faqs.length);
+    subang.faqs.forEach((faq, index) => {
+      expect(faq.q).toBeTruthy();
+      expect(faq.a).toBeTruthy();
+      const faqZh = subang.faqsZh?.[index];
+      expect(faqZh?.q).toBeTruthy();
+      expect(faqZh?.a).toBeTruthy();
+    });
+  });
+
+  it("links project cards to specific project detail destinations", () => {
+    expect(subang.projects.length).toBeGreaterThan(0);
+    subang.projects.forEach((project) => {
+      const target = project.href || (project.slug ? `/projects/${project.slug}` : "");
+      expect(target).toMatch(/^\/projects\/[a-z0-9-]+$/);
+    });
+  });
+});
+
+
 
