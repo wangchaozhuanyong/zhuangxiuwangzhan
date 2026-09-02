@@ -244,5 +244,65 @@ describe("Subang Jaya location SEO fallbacks", () => {
   });
 });
 
+describe("Cheras location SEO fallbacks", () => {
+  const cheras = locationsData["cheras"];
+  const oldHouse = servicesData.find((service) => service.slug === "old-house");
+  const residential = servicesData.find((service) => service.slug === "renovation");
+
+  it("assigns a distinct local residential and terrace intent that avoids cannibalizing Home and Service pages", () => {
+    expect(cheras).toBeDefined();
+
+    // Must have the dedicated local service title
+    expect(cheras.metaTitle).toBe("Home & Terrace Renovation Cheras | FLASH CAST");
+
+    // Title length constraint
+    expect(cheras.metaTitle.length).toBeGreaterThanOrEqual(40);
+    expect(cheras.metaTitle.length).toBeLessThanOrEqual(60);
+
+    // Must NOT cannibalize other primary pages or have stuffed title
+    expect(cheras.metaTitle).not.toContain("Renovation Planning Cheras");
+    expect(cheras.metaTitle).not.toBe(oldHouse?.seoTitle);
+    expect(cheras.metaTitle).not.toBe(residential?.seoTitle);
+  });
+
+  it("provides complete bilingual fallback content for Cheras", () => {
+    expect(cheras.nameZh).toBe("蕉赖");
+    expect(cheras.metaTitleZh).toBe("蕉赖装修服务 | 排屋翻新与公寓改造 | FLASH CAST");
+    expect(cheras.descriptionZh).toBeTruthy();
+    expect(cheras.descriptionZh).toContain("蕉赖");
+    expect(cheras.introZh).toBeTruthy();
+    expect(cheras.introZh).toContain("蕉赖");
+
+    expect(cheras.propertyTypesZh).toBeDefined();
+    expect(cheras.propertyTypesZh?.length).toBe(cheras.propertyTypes.length);
+
+    expect(cheras.commonNeedsZh).toBeDefined();
+    expect(cheras.commonNeedsZh?.length).toBe(cheras.commonNeeds.length);
+
+    expect(cheras.constructionNotesZh).toBeTruthy();
+    expect(cheras.constructionNotesZh).toContain("DBKL");
+    expect(cheras.constructionNotesZh).toContain("MPKJ");
+
+    expect(cheras.faqsZh).toBeDefined();
+    expect(cheras.faqsZh?.length).toBe(cheras.faqs.length);
+    cheras.faqs.forEach((faq, index) => {
+      expect(faq.q).toBeTruthy();
+      expect(faq.a).toBeTruthy();
+      const faqZh = cheras.faqsZh?.[index];
+      expect(faqZh?.q).toBeTruthy();
+      expect(faqZh?.a).toBeTruthy();
+    });
+  });
+
+  it("links project cards to specific project detail destinations", () => {
+    expect(cheras.projects.length).toBeGreaterThan(0);
+    cheras.projects.forEach((project) => {
+      const target = project.href || (project.slug ? `/projects/${project.slug}` : "");
+      expect(target).toMatch(/^\/projects\/[a-z0-9-]+$/);
+    });
+  });
+});
+
+
 
 
