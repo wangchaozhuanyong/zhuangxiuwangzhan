@@ -374,7 +374,6 @@ export const SchemeAFooter = () => {
   const areas = footerLocationLinks[language];
   const nextLanguage = language === "zh" ? "en" : "zh";
   const languagePath = switchLanguagePath(location.pathname, nextLanguage, location.search, location.hash);
-  const currentGroup = publicNavigationGroups.find((group) => group.items.some((item) => isActivePath(location.pathname, item.path)))?.key;
 
   return (
     <footer className="scheme-a-footer">
@@ -403,7 +402,7 @@ export const SchemeAFooter = () => {
           </nav>
           <nav className="scheme-a-footer__mobile-directory" aria-label={t.navigationTitle}>
             {publicNavigationGroups.map((group) => (
-              <details key={group.key} open={group.key === currentGroup}>
+              <details key={group.key}>
                 <summary><span>{getGroupLabel(group.key, navText)}</span><ChevronDown aria-hidden="true" /></summary>
                 <div>{group.items.map((item) => <LocalizedLink key={item.path} to={item.path}>{translate(item.labelKey)}<ArrowUpRight /></LocalizedLink>)}</div>
               </details>

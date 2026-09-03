@@ -1,0 +1,38 @@
+@layer components {
+  /*
+   * One vertical rhythm for public content sections. Keep internal component
+   * spacing intact while preventing adjacent sections from stacking two large
+   * hard-coded paddings into an oversized blank band.
+   */
+  html[lang][data-public-theme="dark"] {
+    --public-section-space-start: clamp(3.25rem, 4.5vw, 4.5rem);
+    --public-section-space-end: clamp(3.5rem, 5vw, 5rem);
+  }
+
+  html[lang][data-public-theme="dark"] .scheme-a-home--atelier :is(
+    .scheme-a-principle__inner,
+    .scheme-a-statement > .scheme-a-frame,
+    .scheme-a-project,
+    .scheme-a-services,
+    .scheme-a-materials,
+    .scheme-a-before,
+    .scheme-a-home-process,
+    .scheme-a-home-faq
+  ),
+  html[lang][data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-contact > .scheme-a-frame,
+  html[lang][data-public-theme="dark"] .scheme-a-route-section,
+  html[lang][data-public-theme="dark"] .fc-route-section,
+  html[lang][data-public-theme="dark"] .fc-c-form-section,
+  html[lang][data-public-theme="dark"] .fc-c-section,
+  html[lang][data-public-theme="dark"] .fc-c-final {
+    padding-top: var(--public-section-space-start);
+    padding-bottom: var(--public-section-space-end);
+  }
+
+  @media (max-width: 47.9375rem) {
+    html[lang][data-public-theme="dark"] {
+      --public-section-space-start: 42px;
+      --public-section-space-end: 56px;
+    }
+  }
+}

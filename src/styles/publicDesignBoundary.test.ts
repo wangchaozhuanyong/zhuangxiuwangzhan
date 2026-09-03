@@ -65,8 +65,27 @@ describe("public design boundary", () => {
 
   it("loads one canonical public stylesheet entry", () => {
     const publicRoutes = readFileSync(resolve(process.cwd(), "src/routes/publicRoutes.tsx"), "utf8");
+    const publicStyles = readFileSync(resolve(process.cwd(), "src/styles/routes/public-pages.css"), "utf8");
+    const sectionSpacing = readFileSync(resolve(process.cwd(), "src/styles/components/public-section-spacing.css"), "utf8");
 
     expect(publicRoutes).toContain('import("@/styles/routes/public-pages.css")');
     expect(publicRoutes).not.toMatch(/public-(?:home|forms)\.css|scheme-a-fidelity\.css/);
+    expect(publicStyles.trimEnd()).toMatch(/@import "\.\.\/components\/public-section-spacing\.css";\n@tailwind components;$/);
+    expect(sectionSpacing).toContain("--public-section-space-end: 56px;");
+  });
+
+  it("keeps the home materials content structured without the retired left rail", () => {
+    const homeStyles = readFileSync(resolve(process.cwd(), "src/styles/components/home-atelier.css"), "utf8");
+
+    expect(homeStyles).toMatch(/\.scheme-a-home--atelier \.scheme-a-materials__copy \{[\s\S]*?border-left: 0;/);
+    expect(homeStyles).toMatch(/\.scheme-a-materials__tags \{[\s\S]*?counter-reset: material-item;/);
+    expect(homeStyles).toMatch(/\.scheme-a-materials__tags li::before \{[\s\S]*?decimal-leading-zero/);
+  });
+
+  it("starts every mobile footer directory group collapsed", () => {
+    const publicChrome = readFileSync(resolve(process.cwd(), "src/components/scheme-a/SchemeAPublicChrome.tsx"), "utf8");
+
+    expect(publicChrome).toContain('<details key={group.key}>');
+    expect(publicChrome).not.toMatch(/<details key=\{group\.key\}\s+open=/);
   });
 });
