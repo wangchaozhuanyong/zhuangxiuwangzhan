@@ -96,6 +96,8 @@ jobs:
         run: npm run verify:preview:server
 
       - name: Chromium E2E
+        env:
+          PLAYWRIGHT_REUSE_SERVER: "1"
         run: npm run test:e2e -- --project=chromium
 
       - name: Upload browser traces

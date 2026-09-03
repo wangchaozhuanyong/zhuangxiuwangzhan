@@ -141,6 +141,7 @@ test("pull requests expose one stable required-release-gate after all mandatory 
   assert.match(workflow, /VITE_SUPABASE_URL: \$\{\{ secrets\.VITE_SUPABASE_URL \}\}/);
   assert.match(workflow, /VITE_SUPABASE_ANON_KEY: \$\{\{ secrets\.VITE_SUPABASE_ANON_KEY \}\}/);
   assert.match(workflow, /VITE_TURNSTILE_SITE_KEY: \$\{\{ secrets\.VITE_TURNSTILE_SITE_KEY \}\}/);
+  assert.match(workflow, /name: Chromium E2E\s+env:\s+PLAYWRIGHT_REUSE_SERVER: "1"/);
   assert.doesNotMatch(workflow, /ci-test-public-anon-key|http:\/\/127\.0\.0\.1:4789/);
   assert.doesNotMatch(workflow, /submit-lead|TURNSTILE_(?:BYPASS|SKIP)|SKIP_TURNSTILE/i);
 });

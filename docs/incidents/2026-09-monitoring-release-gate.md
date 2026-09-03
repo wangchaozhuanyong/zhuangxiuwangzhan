@@ -25,7 +25,7 @@
 - `scripts/production-detail-monitor.test.mjs`
   - 覆盖每类每语言最少两条、额外固定 DBKL、抽样不足、通用首页/错误页/体积异常和查询参数脱敏。
 - `.github/workflows/pull-request-quality-gate.yml`
-  - 在 PR 合并前运行静态质量与 release candidate 两个 mandatory jobs，由 `required-release-gate` 聚合。
+  - 在 PR 合并前运行静态质量与 release candidate 两个 mandatory jobs，由 `required-release-gate` 聚合；preview 后的 Chromium E2E 复用同一份受控构建服务器，避免端口竞争。
 - `scripts/production-release-policy.test.mjs`
   - 锁定持续故障红灯和 required gate 结构、命令及安全配置。
 - `package.json`
@@ -57,6 +57,8 @@
 - `npm run test:e2e -- --project=chromium`：162 passed、0 failed、1 skipped；`submit-lead` 由既有测试路由拦截，没有生产写入。
 
 本机 Node 为 24.19.0，而仓库声明 `>=20 <23`；最终 required gate 固定 Node 22。完整响应式图片生成的首次本机尝试在任务交互中断时尚未结束，不能将其写成通过，最终以 GitHub Actions 的完整构建结果为准。
+
+GitHub required gate 首次运行确认完整 build、性能预算、SEO 与 preview 均通过，同时发现 `verify:preview:server` 启动的 Vite 子进程在 job 内短暂占用 Playwright 默认端口。Chromium E2E 因端口竞争失败，聚合 gate 按设计变红。workflow 随后显式启用仓库已有的 `PLAYWRIGHT_REUSE_SERVER` 支持，让 E2E 复用同一受控 `dist` preview；最终结果以修复后的重跑为准。
 
 ## 生产验证
 
