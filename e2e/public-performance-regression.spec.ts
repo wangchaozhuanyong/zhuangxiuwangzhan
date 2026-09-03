@@ -92,12 +92,27 @@ test("desktop loads cinematic motion after the initial render", async ({ page })
   await expect.poll(() => cinematicMotionRequests.length).toBeGreaterThan(0);
 });
 
-test("before-and-after comparison keeps vertical touch panning available", async ({ page }) => {
+test("before-and-after fallback stays interactive while CMS is pending", async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
-  await page.goto("/zh/before-after", { waitUntil: "domcontentloaded" });
-  await page.waitForLoadState("load");
+  let releaseCmsRequest: (() => void) | undefined;
+  await page.route("**/rest/v1/before_after_items**", async (route) => {
+    await new Promise<void>((resolve) => {
+      releaseCmsRequest = resolve;
+    });
+    await route.fulfill({ status: 200, contentType: "application/json", body: "[]" });
+  });
 
+  await page.goto("/zh/before-after", { waitUntil: "domcontentloaded" });
+  await expect.poll(() => Boolean(releaseCmsRequest)).toBe(true);
+
+  const list = page.locator(".scheme-a-transformation-list");
   const comparison = page.locator(".scheme-a-transformation__compare input[type='range']").first();
-  await expect(comparison).toBeVisible();
-  await expect(comparison).toHaveCSS("touch-action", "pan-y");
+  try {
+    await expect(list).toHaveAttribute("data-content-source", "fallback");
+    await expect(list).toHaveAttribute("aria-busy", "true");
+    await expect(comparison).toBeVisible();
+    await expect(comparison).toHaveCSS("touch-action", "pan-y");
+  } finally {
+    releaseCmsRequest?.();
+  }
 });
