@@ -89,7 +89,8 @@ export default function BeforeAfter() {
     ...media,
     ...t.fallbackItems[index],
   }));
-  const displayItems: readonly PublishedBeforeAfterItem[] = items.length
+  const hasPublishedItems = items.length > 0;
+  const displayItems: readonly PublishedBeforeAfterItem[] = hasPublishedItems
     ? items
     : fallbackItems;
   const hero = pageHeroImages.projects;
@@ -114,22 +115,23 @@ export default function BeforeAfter() {
       <SchemeARouteHero kind="compare" image={hero.desktop} imageSourceWidth={hero.desktopWidth} tabletImage={hero.tablet} tabletImageSourceWidth={hero.tabletWidth} mobileImage={hero.mobile} mobileImageSourceWidth={hero.mobileWidth} imagePosition={hero.imagePosition} imageAlt={t.heroAlt} label={[t.heroLabel, mediaLabels[language].renderingConcept].join(" · ")} title={t.heroTitle} description={t.heroDescription} />
 
       <SchemeASection title={t.sectionTitle} description={t.sectionDescription} className="scheme-a-transformations">
-        {isLoading ? <ForestContentState variant="loading" description={t.loading} /> : null}
         {!isLoading && isError ? (
           <ForestContentState variant="error" description={t.error} onRetry={() => void refetch()} />
         ) : null}
-        {!isLoading && !isError ? (
-          <div className="scheme-a-transformation-list">
-            {displayItems.map((item, index) => (
-              <BeforeAfterComparison
-                key={item.id || `${item.title}-${index}`}
-                item={item}
-                index={index}
-                language={language}
-              />
-            ))}
-          </div>
-        ) : null}
+        <div
+          className="scheme-a-transformation-list"
+          data-content-source={hasPublishedItems ? "cms" : "fallback"}
+          aria-busy={isLoading || undefined}
+        >
+          {displayItems.map((item, index) => (
+            <BeforeAfterComparison
+              key={item.id || `${item.title}-${index}`}
+              item={item}
+              index={index}
+              language={language}
+            />
+          ))}
+        </div>
         <div className="fc-route-action-panel"><h2>{t.ctaTitle}</h2><p>{t.ctaDescription}</p><div><Link to="/quote#quote-form">{t.ctaPrimary}</Link><Link to="/contact">{t.ctaSecondary}</Link></div></div>
       </SchemeASection>
     </main>
