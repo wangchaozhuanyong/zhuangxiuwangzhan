@@ -66,6 +66,10 @@ type DynamicRouteState = {
   contentVersion: string;
 };
 
+type EdgeRowsReadResult =
+  | { ok: true; rows: PublicDataRow[]; durationMs: number; status: number; requestId?: string }
+  | { ok: false; category: "timeout" | "network" | "http" | "invalid_response"; durationMs: number; status?: number; requestId?: string };
+
 type PagesEnv = {
   [key: string]: unknown;
   CF_PAGES_COMMIT_SHA?: string;
@@ -99,7 +103,12 @@ const PUBLIC_PROJECT_SUMMARIES_CACHE_TTL_MS = 0;
 const PUBLIC_PROJECT_DETAIL_CACHE_TTL_MS = 0;
 const PUBLIC_HOME_BUNDLE_CACHE_TTL_MS = 60 * 1000;
 const PUBLIC_PAGE_DATA_CACHE_TTL_MS = 0;
+const EDGE_PUBLIC_READ_TIMEOUT_MS = 2_000;
+const PUBLIC_DATA_WARNING_BYTES = 150 * 1024;
+const PUBLIC_DATA_HARD_LIMIT_BYTES = 250 * 1024;
 const HTML_CACHE_DEBUG_HEADER = "x-flashcast-html-cache";
+const EDGE_FALLBACK_HEADER = "x-flashcast-edge-fallback";
+const PUBLIC_DATA_STATUS_HEADER = "x-flashcast-public-data";
 const PRODUCTION_SCRIPT_SRC = [
   "'self'",
   "https://challenges.cloudflare.com",
@@ -191,6 +200,85 @@ const PROJECT_SUMMARY_SELECT = [
   "sort_order",
   "project_images(id,image_url,image_type,sort_order,alt_en,alt_zh)",
 ].join(",");
+
+const BLOG_EDGE_META_SELECT = [
+  "id",
+  "slug",
+  "title_en",
+  "title_zh",
+  "excerpt_en",
+  "excerpt_zh",
+  "seo_title_en",
+  "seo_title_zh",
+  "seo_description_en",
+  "seo_description_zh",
+  "cover_image_url",
+  "alt_en",
+  "alt_zh",
+  "tags",
+  "category",
+  "published_at",
+  "created_at",
+  "updated_at",
+].join(",");
+
+type EdgeFetchDiagnostics = {
+  route: string;
+  stage: string;
+};
+
+const edgeErrorCategory = (error: unknown): "timeout" | "network" => {
+  const name = error instanceof Error ? error.name : "";
+  return name === "AbortError" || name === "TimeoutError" ? "timeout" : "network";
+};
+
+const logEdgeReadFailure = (
+  diagnostics: EdgeFetchDiagnostics,
+  details: {
+    category: "timeout" | "network" | "http" | "invalid_response" | "transform";
+    durationMs: number;
+    status?: number;
+    requestId?: string;
+  },
+) => {
+  console.warn("[flashcast-edge-read]", JSON.stringify({
+    route: diagnostics.route.slice(0, 160),
+    stage: diagnostics.stage.slice(0, 80),
+    category: details.category,
+    status: details.status,
+    durationMs: details.durationMs,
+    requestId: details.requestId?.slice(0, 128),
+  }));
+};
+
+const fetchWithEdgeTimeout = async (
+  input: RequestInfo | URL,
+  init: RequestInit = {},
+  diagnostics: EdgeFetchDiagnostics,
+) => {
+  const startedAt = Date.now();
+  try {
+    const response = await fetch(input, {
+      ...init,
+      signal: init.signal || AbortSignal.timeout(EDGE_PUBLIC_READ_TIMEOUT_MS),
+    });
+    if (!response.ok) {
+      logEdgeReadFailure(diagnostics, {
+        category: "http",
+        durationMs: Date.now() - startedAt,
+        status: response.status,
+        requestId: response.headers.get("x-request-id") || response.headers.get("cf-ray") || undefined,
+      });
+    }
+    return response;
+  } catch (error) {
+    logEdgeReadFailure(diagnostics, {
+      category: edgeErrorCategory(error),
+      durationMs: Date.now() - startedAt,
+    });
+    throw error;
+  }
+};
 
 const escapeHtml = (value: string) =>
   value
@@ -650,15 +738,33 @@ const injectDynamicImagePreloads = (html: string, preloads: ImagePreload[]) => {
 };
 
 const injectPublicData = (html: string, payload: unknown) => {
-  const script = `<script type="application/json" id="flashcast-public-data">${escapeJsonForHtml(sanitizePublicDataDraftMarkers(payload))}</script>`;
-  if (html.includes('id="flashcast-public-data"')) {
-    return html.replace(
-      /<script\b(?=[^>]*\bid="flashcast-public-data")[^>]*>[\s\S]*?<\/script>/i,
-      script,
-    );
+  const serialized = escapeJsonForHtml(sanitizePublicDataDraftMarkers(payload));
+  const byteLength = new TextEncoder().encode(serialized).byteLength;
+  if (byteLength >= PUBLIC_DATA_WARNING_BYTES) {
+    console.warn("[flashcast-public-data]", JSON.stringify({
+      category: byteLength > PUBLIC_DATA_HARD_LIMIT_BYTES ? "omitted" : "large",
+      byteLength,
+      warningBytes: PUBLIC_DATA_WARNING_BYTES,
+      hardLimitBytes: PUBLIC_DATA_HARD_LIMIT_BYTES,
+    }));
+  }
+  if (byteLength > PUBLIC_DATA_HARD_LIMIT_BYTES) {
+    return { html, byteLength, omitted: true };
   }
 
-  return html.replace("</head>", `    ${script}\n  </head>`);
+  const script = `<script type="application/json" id="flashcast-public-data">${serialized}</script>`;
+  if (html.includes('id="flashcast-public-data"')) {
+    return {
+      html: html.replace(
+        /<script\b(?=[^>]*\bid="flashcast-public-data")[^>]*>[\s\S]*?<\/script>/i,
+        script,
+      ),
+      byteLength,
+      omitted: false,
+    };
+  }
+
+  return { html: html.replace("</head>", `    ${script}\n  </head>`), byteLength, omitted: false };
 };
 
 const escapeJsonForHtml = (value: unknown) =>
@@ -892,7 +998,7 @@ const fetchSiteSettings = async (env: Record<string, string | undefined>) => {
   }
 
   try {
-    const response = await fetch(
+    const response = await fetchWithEdgeTimeout(
       `${supabaseUrl}/rest/v1/site_settings?select=company_name,brand_name,logo_url,favicon_url,og_image_url,phone_e164,email,address_en,address_zh,map_latitude,map_longitude,updated_at&id=eq.default&limit=1`,
       {
         headers: {
@@ -900,6 +1006,7 @@ const fetchSiteSettings = async (env: Record<string, string | undefined>) => {
           Authorization: `Bearer ${supabaseAnonKey}`,
         },
       },
+      { route: "/__site-settings", stage: "site-settings" },
     );
 
     if (!response.ok) return null;
@@ -935,12 +1042,12 @@ const fetchProjectSummaries = async (env: Record<string, string | undefined>) =>
     url.searchParams.set("status", "eq.published");
     url.searchParams.set("order", "sort_order.asc");
 
-    const response = await fetch(url.toString(), {
+    const response = await fetchWithEdgeTimeout(url.toString(), {
       headers: {
         apikey: supabaseAnonKey,
         Authorization: `Bearer ${supabaseAnonKey}`,
       },
-    });
+    }, { route: "/projects", stage: "project-summaries" });
 
     if (!response.ok) return null;
 
@@ -969,7 +1076,7 @@ const fetchHomeContentBundle = async (env: Record<string, string | undefined>) =
 
   try {
     const [response, brandPartnersVisibilityRows] = await Promise.all([
-      fetch(`${supabaseUrl}/rest/v1/rpc/get_public_home_bundle`, {
+      fetchWithEdgeTimeout(`${supabaseUrl}/rest/v1/rpc/get_public_home_bundle`, {
         method: "POST",
         headers: {
           apikey: supabaseAnonKey,
@@ -978,7 +1085,7 @@ const fetchHomeContentBundle = async (env: Record<string, string | undefined>) =
           Accept: "application/json",
         },
         body: "{}",
-      }),
+      }, { route: "/", stage: "home-bundle" }),
       fetchPublicRows(env, "home_brand_partners_visibility", "home_sections", (url) => {
         url.searchParams.set("select", "section_key,status");
         url.searchParams.set("section_key", "eq.brand_partners");
@@ -1027,12 +1134,12 @@ const fetchPublicRows = async (
     const url = new URL(`${supabaseUrl}/rest/v1/${table}`);
     configureUrl(url);
 
-    const response = await fetch(url.toString(), {
+    const response = await fetchWithEdgeTimeout(url.toString(), {
       headers: {
         apikey: supabaseAnonKey,
         Authorization: `Bearer ${supabaseAnonKey}`,
       },
-    });
+    }, { route: `/${table}`, stage: cacheKey });
 
     if (!response.ok) return null;
 
@@ -1047,29 +1154,58 @@ const fetchPublicRows = async (
   }
 };
 
+const fetchFreshPublicRowsResult = async (
+  env: Record<string, string | undefined>,
+  table: string,
+  configureUrl: (url: URL) => void,
+  diagnostics: EdgeFetchDiagnostics = { route: `/${table}`, stage: "fresh-row" },
+): Promise<EdgeRowsReadResult> => {
+  const supabaseUrl = env.VITE_SUPABASE_URL;
+  const supabaseAnonKey = env.VITE_SUPABASE_ANON_KEY;
+  if (!supabaseUrl || !supabaseAnonKey) return { ok: true, rows: [], durationMs: 0, status: 200 };
+
+  const startedAt = Date.now();
+  try {
+    const url = new URL(`${supabaseUrl}/rest/v1/${table}`);
+    configureUrl(url);
+    const response = await fetchWithEdgeTimeout(url.toString(), {
+      headers: {
+        apikey: supabaseAnonKey,
+        Authorization: `Bearer ${supabaseAnonKey}`,
+      },
+    }, diagnostics);
+    const durationMs = Date.now() - startedAt;
+    const requestId = response.headers.get("x-request-id") || response.headers.get("cf-ray") || undefined;
+    if (!response.ok) {
+      return { ok: false, category: "http", durationMs, status: response.status, requestId };
+    }
+    const payload = await response.json();
+    if (!Array.isArray(payload)) {
+      logEdgeReadFailure(diagnostics, {
+        category: "invalid_response",
+        durationMs,
+        status: response.status,
+        requestId,
+      });
+      return { ok: false, category: "invalid_response", durationMs, status: response.status, requestId };
+    }
+    return { ok: true, rows: payload as PublicDataRow[], durationMs, status: response.status, requestId };
+  } catch (error) {
+    return {
+      ok: false,
+      category: edgeErrorCategory(error),
+      durationMs: Date.now() - startedAt,
+    };
+  }
+};
+
 const fetchFreshPublicRows = async (
   env: Record<string, string | undefined>,
   table: string,
   configureUrl: (url: URL) => void,
 ) => {
-  const supabaseUrl = env.VITE_SUPABASE_URL;
-  const supabaseAnonKey = env.VITE_SUPABASE_ANON_KEY;
-  if (!supabaseUrl || !supabaseAnonKey) return null;
-
-  try {
-    const url = new URL(`${supabaseUrl}/rest/v1/${table}`);
-    configureUrl(url);
-    const response = await fetch(url.toString(), {
-      headers: {
-        apikey: supabaseAnonKey,
-        Authorization: `Bearer ${supabaseAnonKey}`,
-      },
-    });
-    if (!response.ok) return null;
-    return (await response.json()) as PublicDataRow[];
-  } catch {
-    return null;
-  }
+  const result = await fetchFreshPublicRowsResult(env, table, configureUrl);
+  return result.ok ? result.rows : null;
 };
 
 const stripMarkup = (value: unknown) =>
@@ -1083,6 +1219,12 @@ const stripMarkup = (value: unknown) =>
     .replace(/&#39;|&apos;/gi, "'")
     .replace(/\s+/g, " ")
     .trim();
+
+const boundedLocalizedContent = (row: PublicDataRow, lang: "en" | "zh") =>
+  localizedField(row, "content", lang).slice(0, 4_096);
+
+const validDateString = (value: string | undefined) =>
+  value && Number.isFinite(Date.parse(value)) ? value : undefined;
 
 const collectContentTimestamps = (value: unknown, timestamps: string[] = []): string[] => {
   if (Array.isArray(value)) {
@@ -1133,20 +1275,26 @@ const buildDynamicSeoEntry = (
     readString(row, "area_name") ||
     fallback?.title ||
     "FLASH CAST";
-  const rawDescription =
-    localizedField(row, "seo_description", lang) ||
-    localizedField(row, "description", lang) ||
-    localizedField(row, "excerpt", lang) ||
-    localizedField(row, "content", lang) ||
-    fallback?.description ||
-    rawTitle;
+  const rawDescription = kind === "blog"
+    ? localizedField(row, "seo_description", lang) ||
+      localizedField(row, "excerpt", lang) ||
+      fallback?.description ||
+      rawTitle
+    : localizedField(row, "seo_description", lang) ||
+      localizedField(row, "description", lang) ||
+      localizedField(row, "excerpt", lang) ||
+      boundedLocalizedContent(row, lang) ||
+      fallback?.description ||
+      rawTitle;
   const title = /flash cast/i.test(rawTitle) ? rawTitle : `${rawTitle} | FLASH CAST`;
   const canonicalPath = key === "/" ? "/en" : key;
   const pathWithoutLanguage = canonicalPath.replace(/^\/(?:en|zh)/, "") || "/";
   const enPath = pathWithoutLanguage === "/" ? "/en" : `/en${pathWithoutLanguage}`;
   const zhPath = pathWithoutLanguage === "/" ? "/zh" : `/zh${pathWithoutLanguage}`;
   const keywordValue = localizedField(row, "seo_keywords", lang) || readString(row, "category");
-  const tags = Array.isArray(row.tags) ? row.tags.map((item) => String(item)).filter(Boolean) : [];
+  const tags = Array.isArray(row.tags)
+    ? row.tags.filter((item): item is string => typeof item === "string" && Boolean(item.trim())).map((item) => item.trim())
+    : [];
   const faqRows = readRecordArray(row[`faqs_${lang}`]);
   const faqs = faqRows
     .map((faq) => ({
@@ -1177,8 +1325,10 @@ const buildDynamicSeoEntry = (
     ogImage: absolutePublicUrl(imageUrl),
     schemaType: kind === "blog" ? "BlogPosting" : fallback?.schemaType,
     headline: kind === "blog" ? localizedField(row, "title", lang) || rawTitle : fallback?.headline,
-    datePublished: kind === "blog" ? readString(row, "published_at") || readString(row, "created_at") : fallback?.datePublished,
-    dateModified: readString(row, "updated_at") || fallback?.dateModified,
+    datePublished: kind === "blog"
+      ? validDateString(readString(row, "published_at")) || validDateString(readString(row, "created_at")) || fallback?.datePublished
+      : fallback?.datePublished,
+    dateModified: validDateString(readString(row, "updated_at")) || fallback?.dateModified,
     articleSection: kind === "blog" ? readString(row, "category") || undefined : fallback?.articleSection,
     imageAlt: localizedField(row, "alt", lang) || localizedField(row, "title", alternateLang) || fallback?.imageAlt,
   };
@@ -1205,7 +1355,7 @@ const fetchDynamicRouteState = async (
     { pattern: /^\/services\/([^/]+)$/, table: "services", kind: "service" },
     { pattern: /^\/projects\/([^/]+)$/, table: "projects", kind: "project", select: "*,project_images(*)" },
     { pattern: /^\/(?:materials|products)\/([^/]+)$/, table: "materials", kind: "material" },
-    { pattern: /^\/blog\/([^/]+)$/, table: "blog_posts", kind: "blog" },
+    { pattern: /^\/blog\/([^/]+)$/, table: "blog_posts", kind: "blog", select: BLOG_EDGE_META_SELECT },
     { pattern: /^\/locations\/([^/]+)$/, table: "service_areas", kind: "service_area" },
     { pattern: /^\/landing\/([^/]+)$/, table: "landing_pages", kind: "landing_page" },
   ];
@@ -1214,12 +1364,14 @@ const fetchDynamicRouteState = async (
     const routeMatch = path.match(route.pattern);
     if (!routeMatch?.[1]) continue;
     const slug = decodeURIComponent(routeMatch[1]);
-    const rows = await fetchFreshPublicRows(env, route.table, (url) => {
+    const readResult = await fetchFreshPublicRowsResult(env, route.table, (url) => {
       url.searchParams.set("select", route.select || "*");
       url.searchParams.set("status", "eq.published");
       url.searchParams.set("slug", `eq.${slug}`);
       url.searchParams.set("limit", "1");
-    });
+    }, { route: key, stage: `${route.kind}-meta` });
+    if (readResult.ok === false) throw new Error(`edge_read_${readResult.category}`);
+    const rows = readResult.rows;
     const row = rows?.[0];
     if (!row) return null;
     const contentVersion = hashContentVersion([...collectContentTimestamps(row), row.id, row.slug]);
@@ -1389,12 +1541,12 @@ const fetchProjectDetailBySlug = async (env: Record<string, string | undefined>,
     url.searchParams.set("slug", `eq.${slug}`);
     url.searchParams.set("limit", "1");
 
-    const response = await fetch(url.toString(), {
+    const response = await fetchWithEdgeTimeout(url.toString(), {
       headers: {
         apikey: supabaseAnonKey,
         Authorization: `Bearer ${supabaseAnonKey}`,
       },
-    });
+    }, { route: "/projects/:slug", stage: "project-detail" });
 
     if (!response.ok) return null;
 
@@ -1663,11 +1815,11 @@ const fetchLiveSitemapXml = async (env: PagesEnv) => {
   const supabaseAnonKey = env.VITE_SUPABASE_ANON_KEY;
   if (!supabaseUrl) return "";
   try {
-    const response = await fetch(`${supabaseUrl}/functions/v1/sitemap`, {
+    const response = await fetchWithEdgeTimeout(`${supabaseUrl}/functions/v1/sitemap`, {
       headers: supabaseAnonKey
         ? { apikey: supabaseAnonKey, Authorization: `Bearer ${supabaseAnonKey}` }
         : undefined,
-    });
+    }, { route: "/sitemap.xml", stage: "dynamic-sitemap" });
     return response.ok ? await response.text() : "";
   } catch {
     return "";
@@ -2062,6 +2214,7 @@ export const onRequest: PagesFunction = async (context) => {
 
   const html = await response.text();
   let transformed = meta ? injectSeo(html, meta, siteSettings) : injectNoIndexNotFound(html, siteSettings);
+  let publicDataOmitted = false;
   const publicDataPayload: Record<string, unknown> = {};
   if (siteSettings) {
     publicDataPayload.siteSettings = siteSettings;
@@ -2106,7 +2259,9 @@ export const onRequest: PagesFunction = async (context) => {
     };
   }
   if (Object.keys(publicDataPayload).length) {
-    transformed = injectPublicData(transformed, publicDataPayload);
+    const publicDataInjection = injectPublicData(transformed, publicDataPayload);
+    transformed = publicDataInjection.html;
+    publicDataOmitted = publicDataInjection.omitted;
   }
   transformed = injectDynamicImagePreloads(
     transformed,
@@ -2117,6 +2272,7 @@ export const onRequest: PagesFunction = async (context) => {
     env as Record<string, string | undefined>,
   );
   const headers = new Headers(response.headers);
+  if (publicDataOmitted) headers.set(PUBLIC_DATA_STATUS_HEADER, "omitted-too-large");
   if (meta) {
     applyPublicHtmlEdgeCacheHeaders(headers);
     headers.set("etag", await createHtmlEtag(transformed));
@@ -2140,6 +2296,55 @@ export const onRequest: PagesFunction = async (context) => {
   return { response: finalResponse, cacheWrite };
   };
 
+  const generatePublicHtmlWithFallback = async (existingLastModified?: string | null) => {
+    const startedAt = Date.now();
+    try {
+      return await generatePublicHtml(existingLastModified);
+    } catch {
+      logEdgeReadFailure(
+        { route: key, stage: "html-generate" },
+        { category: "transform", durationMs: Date.now() - startedAt },
+      );
+
+      const appShellUrl = new URL(request.url);
+      appShellUrl.pathname = "/";
+      appShellUrl.search = "";
+      const appShellResponse = env.ASSETS
+        ? await env.ASSETS.fetch(new Request(appShellUrl.toString(), request))
+        : await next("/");
+      const contentType = appShellResponse.headers.get("content-type") || "";
+      if (!contentType.includes("text/html")) {
+        return { response: appShellResponse, cacheWrite: null };
+      }
+
+      const html = await appShellResponse.text();
+      let transformed = staticMeta
+        ? injectSeo(html, staticMeta, prefetchedSiteSettings)
+        : injectNoIndexNotFound(html, prefetchedSiteSettings);
+      transformed = injectPerformanceHints(transformed, env as Record<string, string | undefined>);
+      const headers = new Headers(appShellResponse.headers);
+      if (staticMeta) {
+        applyPublicHtmlEdgeCacheHeaders(headers);
+        headers.set("etag", await createHtmlEtag(transformed));
+        headers.set("last-modified", existingLastModified || new Date().toUTCString());
+        headers.set(EDGE_FALLBACK_HEADER, "manifest");
+      } else {
+        applyHtmlNoStoreHeaders(headers);
+      }
+      await applyHtmlSecurityHeaders(headers, transformed);
+      const fallbackResponse = new Response(transformed, {
+        status: staticMeta ? 200 : 404,
+        headers,
+      });
+      return {
+        response: staticMeta
+          ? createPublicHtmlBrowserResponse(fallbackResponse, request, "miss")
+          : withHtmlCacheDebugHeader(fallbackResponse, "bypass-not-found"),
+        cacheWrite: null,
+      };
+    }
+  };
+
   if (edgeCache && publicHtmlCacheRequest && publicHtmlFreshnessRequest) {
     const [cachedPublicHtml, freshnessMarker] = await Promise.all([
       edgeCache.match(publicHtmlCacheRequest),
@@ -2150,7 +2355,7 @@ export const onRequest: PagesFunction = async (context) => {
         const refreshKey = publicHtmlCacheRequest.url;
         let refreshPromise = publicHtmlRefreshes.get(refreshKey);
         if (!refreshPromise) {
-          refreshPromise = generatePublicHtml(cachedPublicHtml.headers.get("last-modified"))
+          refreshPromise = generatePublicHtmlWithFallback(cachedPublicHtml.headers.get("last-modified"))
             .then(async (generated) => {
               if (generated.cacheWrite) await generated.cacheWrite;
             })
@@ -2177,7 +2382,7 @@ export const onRequest: PagesFunction = async (context) => {
     }
   }
 
-  const generated = await generatePublicHtml();
+  const generated = await generatePublicHtmlWithFallback();
   if (generated.cacheWrite) {
     const waitUntil = (context as unknown as { waitUntil?: (promise: Promise<unknown>) => void }).waitUntil;
     if (typeof waitUntil === "function") {
