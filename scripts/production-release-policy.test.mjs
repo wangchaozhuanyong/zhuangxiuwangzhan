@@ -97,3 +97,51 @@ test("release workflows use the verified public support email", () => {
     assert.doesNotMatch(workflow, /flashcast001@gmail\.com/);
   }
 });
+
+test("production monitors fail every unhealthy run, including an ongoing incident", () => {
+  const workflow = readFileSync(new URL("../.github/workflows/production-monitor.yml", import.meta.url), "utf8");
+
+  assert.match(
+    workflow,
+    /name: Fail while the production monitor is unhealthy[\s\S]*?if: always\(\) && steps\.monitor\.outcome != 'success'[\s\S]*?run: exit 1/,
+  );
+  assert.match(
+    workflow,
+    /name: Fail while the browser smoke is unhealthy[\s\S]*?if: always\(\) && steps\.browser\.outcome != 'success'[\s\S]*?run: exit 1/,
+  );
+  assert.doesNotMatch(workflow, /Mark only a newly detected/);
+  assert.doesNotMatch(workflow, /steps\.(?:incident|browser-incident)\.outputs\.result == 'new_failure'/);
+});
+
+test("pull requests expose one stable required-release-gate after all mandatory jobs", () => {
+  const workflow = readFileSync(new URL("../.github/workflows/pull-request-quality-gate.yml", import.meta.url), "utf8");
+
+  assert.match(workflow, /pull_request:\s*\n\s*branches: \[main\]/);
+  assert.match(workflow, /required-release-gate:\s*\n\s*name: required-release-gate\s*\n\s*if: always\(\)\s*\n\s*needs: \[static-quality, release-candidate\]/);
+  assert.match(workflow, /test "\$STATIC_RESULT" = "success"/);
+  assert.match(workflow, /test "\$RELEASE_RESULT" = "success"/);
+
+  for (const command of [
+    "npm run arch:check",
+    "npm run i18n:check",
+    "npm run typecheck",
+    "npm run typecheck:strict-core",
+    "npm run lint",
+    "npm test",
+    "npm run build",
+    "npm run verify:edge-security",
+    "npm run verify:performance-budget",
+    "npm run verify:seo-html",
+    "npm run verify:preview:server",
+    "npm run test:e2e -- --project=chromium",
+  ]) {
+    assert.match(workflow, new RegExp(command.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")));
+  }
+
+  assert.match(workflow, /VITE_SUPABASE_URL: \$\{\{ secrets\.VITE_SUPABASE_URL \}\}/);
+  assert.match(workflow, /VITE_SUPABASE_ANON_KEY: \$\{\{ secrets\.VITE_SUPABASE_ANON_KEY \}\}/);
+  assert.match(workflow, /VITE_TURNSTILE_SITE_KEY: \$\{\{ secrets\.VITE_TURNSTILE_SITE_KEY \}\}/);
+  assert.match(workflow, /name: Chromium E2E\s+env:\s+PLAYWRIGHT_REUSE_SERVER: "1"/);
+  assert.doesNotMatch(workflow, /ci-test-public-anon-key|http:\/\/127\.0\.0\.1:4789/);
+  assert.doesNotMatch(workflow, /submit-lead|TURNSTILE_(?:BYPASS|SKIP)|SKIP_TURNSTILE/i);
+});
