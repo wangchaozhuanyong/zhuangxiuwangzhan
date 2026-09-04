@@ -1,0 +1,124 @@
+name: Pull request release quality gate
+
+on:
+  pull_request:
+    branches: [main]
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+
+concurrency:
+  group: pull-request-release-gate-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  static-quality:
+    name: Static quality and policy tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: actions/setup-node@v6
+        with:
+          node-version: "22"
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Architecture check
+        run: npm run arch:check
+
+      - name: Locale integrity
+        run: npm run i18n:check
+
+      - name: TypeScript checks
+        run: npm run typecheck && npm run typecheck:strict-core
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Unit and integration tests
+        run: npm test
+
+      - name: Release and monitoring policy tests
+        run: npm run test:release-policy && npm run test:monitor-policy
+
+      - name: Edge security verification
+        run: npm run verify:edge-security
+
+  release-candidate:
+    name: Isolated build, preview and Chromium E2E
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: actions/setup-node@v6
+        with:
+          node-version: "22"
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build release candidate
+        env:
+          VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
+          VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
+          VITE_TURNSTILE_SITE_KEY: ${{ secrets.VITE_TURNSTILE_SITE_KEY }}
+          VITE_SITE_URL: https://flashcast.com.my
+          VITE_SITE_EMAIL: support@flashcast.com.my
+          VITE_SITE_PHONE_DISPLAY: "+60 11-2885 3888"
+          VITE_SITE_PHONE_E164: "+601128853888"
+          VITE_SITE_WHATSAPP_NUMBER: "601128853888"
+          VITE_SITE_SSM_NUMBER: "202501027419 (1628831-M)"
+          VITE_SITE_ADDRESS: "94, Jalan Mega Mendung, Taman United, 58200 Kuala Lumpur, Malaysia"
+          VITE_SITE_SHORT_ADDRESS: "94, Jalan Mega Mendung, 58200"
+          VITE_GOOGLE_ADS_WHATSAPP_CONVERSION_LABEL: ${{ secrets.VITE_GOOGLE_ADS_WHATSAPP_CONVERSION_LABEL }}
+          VITE_GOOGLE_ADS_QUOTE_CONVERSION_LABEL: ${{ secrets.VITE_GOOGLE_ADS_QUOTE_CONVERSION_LABEL }}
+          VITE_GOOGLE_ADS_CONTACT_CONVERSION_LABEL: ${{ secrets.VITE_GOOGLE_ADS_CONTACT_CONVERSION_LABEL }}
+          VITE_APP_VERSION: pr-${{ github.event.pull_request.head.sha || github.sha }}
+        run: npm run build
+
+      - name: Bundle performance budget
+        run: npm run verify:performance-budget
+
+      - name: Raw SEO HTML verification
+        run: npm run verify:seo-html
+
+      - name: Install Chromium
+        run: npx playwright install --with-deps chromium
+
+      - name: Preview verification
+        run: npm run verify:preview:server
+
+      - name: Chromium E2E
+        env:
+          PLAYWRIGHT_REUSE_SERVER: "1"
+        run: npm run test:e2e -- --project=chromium
+
+      - name: Upload browser traces
+        if: failure()
+        uses: actions/upload-artifact@v7
+        with:
+          name: required-gate-browser-traces-${{ github.run_id }}
+          path: test-results
+          if-no-files-found: ignore
+          retention-days: 14
+
+  required-release-gate:
+    name: required-release-gate
+    if: always()
+    needs: [static-quality, release-candidate]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Require every release check
+        env:
+          STATIC_RESULT: ${{ needs.static-quality.result }}
+          RELEASE_RESULT: ${{ needs.release-candidate.result }}
+        run: |
+          test "$STATIC_RESULT" = "success"
+          test "$RELEASE_RESULT" = "success"

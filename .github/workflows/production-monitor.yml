@@ -148,8 +148,8 @@ jobs:
 
             return 'healthy';
 
-      - name: Mark only a newly detected incident as failed
-        if: steps.incident.outputs.result == 'new_failure'
+      - name: Fail while the production monitor is unhealthy
+        if: always() && steps.monitor.outcome != 'success'
         run: exit 1
 
   browser-smoke:
@@ -270,6 +270,6 @@ jobs:
 
             return 'healthy';
 
-      - name: Mark only a newly detected browser incident as failed
-        if: steps.browser-incident.outputs.result == 'new_failure'
+      - name: Fail while the browser smoke is unhealthy
+        if: always() && steps.browser.outcome != 'success'
         run: exit 1
