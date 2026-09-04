@@ -223,6 +223,114 @@ describe("public Edge HTML cache", () => {
     expect(xml).not.toContain("https://flashcast.com.my/zh/landing/office-renovation");
   });
 
+  it("reads only blog metadata at the Edge and never uses the article body as the description fallback", async () => {
+    const requestedSelects: string[] = [];
+    vi.stubGlobal("fetch", vi.fn(async (input: RequestInfo | URL) => {
+      const url = new URL(String(input));
+      if (url.pathname.endsWith("/site_settings")) {
+        return new Response(JSON.stringify([{ updated_at: siteSettingsRevision }]), {
+          headers: { "content-type": "application/json" },
+        });
+      }
+      if (url.pathname.endsWith("/blog_posts")) {
+        requestedSelects.push(url.searchParams.get("select") || "");
+        return new Response(JSON.stringify([{
+          id: "blog-dbkl",
+          slug: "renovation-permit-dbkl-guide",
+          title_en: "DBKL permit guide",
+          title_zh: "DBKL 装修准证指南",
+          excerpt_en: "",
+          seo_description_en: "",
+          content_en: "BODY_TEXT_MUST_NOT_BECOME_EDGE_DESCRIPTION",
+          tags: { invalid: true },
+          published_at: "not-a-date",
+          updated_at: "also-not-a-date",
+        }]), { headers: { "content-type": "application/json" } });
+      }
+      return new Response("[]", { headers: { "content-type": "application/json" } });
+    }));
+
+    const response = await requestPage({ path: "/en/blog/renovation-permit-dbkl-guide" });
+    const html = await response.text();
+
+    expect(response.status).toBe(200);
+    expect(requestedSelects).toHaveLength(1);
+    expect(requestedSelects[0]).not.toBe("*");
+    expect(requestedSelects[0]).not.toContain("content_en");
+    expect(requestedSelects[0]).not.toContain("content_zh");
+    expect(html).not.toContain("BODY_TEXT_MUST_NOT_BECOME_EDGE_DESCRIPTION");
+    expect(html).toContain('rel="canonical" href="https://flashcast.com.my/en/blog/renovation-permit-dbkl-guide"');
+    expect(html).toContain('hreflang="zh-CN"');
+    expect(html).toContain('hreflang="en"');
+  });
+
+  it("returns the manifest app shell when the blog metadata read reaches its timeout", async () => {
+    vi.stubGlobal("fetch", vi.fn(async (input: RequestInfo | URL, init?: RequestInit) => {
+      const url = new URL(String(input));
+      if (url.pathname.endsWith("/site_settings")) {
+        return new Response(JSON.stringify([{ updated_at: siteSettingsRevision }]), {
+          headers: { "content-type": "application/json" },
+        });
+      }
+      if (url.pathname.endsWith("/blog_posts")) {
+        return new Promise<Response>((_resolve, reject) => {
+          expect(init?.signal).toBeInstanceOf(AbortSignal);
+          init?.signal?.addEventListener("abort", () => reject(new DOMException("timed out", "TimeoutError")), { once: true });
+        });
+      }
+      return new Response("[]", { headers: { "content-type": "application/json" } });
+    }));
+
+    const response = await requestPage({ path: "/en/blog/renovation-permit-dbkl-guide" });
+    const html = await response.text();
+
+    expect(response.status).toBe(200);
+    expect(response.headers.get("x-flashcast-edge-fallback")).toBe("manifest");
+    expect(html).toContain("DBKL Renovation Permit");
+    expect(html).not.toMatch(/502 Bad Gateway|Application error/i);
+  }, 5_000);
+
+  it("keeps genuinely unknown blog routes as 404 with noindex", async () => {
+    const response = await requestPage({ path: "/en/blog/definitely-not-published" });
+    const html = await response.text();
+
+    expect(response.status).toBe(404);
+    expect(html).toContain('name="robots" content="noindex, nofollow"');
+    expect(response.headers.get("x-flashcast-edge-fallback")).toBeNull();
+  });
+
+  it("omits oversized public preload JSON and lets the client fetch on demand", async () => {
+    const oversizedContent = "x".repeat(300 * 1024);
+    vi.stubGlobal("fetch", vi.fn(async (input: RequestInfo | URL) => {
+      const url = new URL(String(input));
+      if (url.pathname.endsWith("/site_settings")) {
+        return new Response(JSON.stringify([{ updated_at: siteSettingsRevision }]), {
+          headers: { "content-type": "application/json" },
+        });
+      }
+      if (url.pathname.endsWith("/site_pages")) {
+        return new Response(JSON.stringify([{
+          id: "services-page",
+          page_key: "services",
+          path: "/services",
+          title_en: "Services",
+          title_zh: "服务项目",
+          content_en: oversizedContent,
+          updated_at: siteSettingsRevision,
+        }]), { headers: { "content-type": "application/json" } });
+      }
+      return new Response("[]", { headers: { "content-type": "application/json" } });
+    }));
+
+    const response = await requestPage({ path: "/en/services" });
+    const html = await response.text();
+
+    expect(response.status).toBe(200);
+    expect(response.headers.get("x-flashcast-public-data")).toBe("omitted-too-large");
+    expect(html).not.toContain('id="flashcast-public-data"');
+    expect(new TextEncoder().encode(html).byteLength).toBeLessThan(250 * 1024);
+  });
+
   it("serves a fresh cache hit without querying Supabase again", async () => {
     const firstResponse = await requestPage();
     expect(firstResponse.headers.get("x-flashcast-html-cache")).toBe("miss");

@@ -198,7 +198,7 @@ export async function fetchPublishedBlogPostRowBySlug(slug: string) {
   const supabase = await getPublicContentClient();
   if (!supabase) return null;
   const { data, error } = await supabase.from("blog_posts").select("*").eq("status", "published").eq("slug", slug).maybeSingle();
-  if (error) return null;
+  if (error) throw error;
   return data || null;
 }
 

@@ -1,13 +1,14 @@
 ﻿import { useMemo } from "react";
 import { useParams } from "react-router-dom";
 import Link from "@/components/LocalizedLink";
-import { ArrowRight } from "lucide-react";
+import { AlertCircle, ArrowRight, RefreshCw } from "lucide-react";
 import WhatsAppIcon from "@/components/WhatsAppIcon";
 import { blogPosts } from "@/data/blog";
 import { usePublishedBlogPostBySlug, usePublishedBlogPosts } from "@/hooks/usePublishedContent";
 import { useLanguage } from "@/i18n/LanguageContext";
 import PageMeta from "@/components/PageMeta";
 import PublicLoadingState from "@/components/blocks/PublicLoadingState";
+import { Button } from "@/components/ui/button";
 import SmartImage from "@/components/SmartImage";
 import { JsonLdBlogPosting, JsonLdBreadcrumb } from "@/components/JsonLd";
 import { useSiteSettings } from "@/hooks/useSiteSettings";
@@ -81,7 +82,13 @@ const BlogDetail = () => {
       }))
     : blogPosts;
   const fallbackPost = initialPosts.find((item) => item.slug === slug);
-  const { data: cmsPost, isPending: postPending } = usePublishedBlogPostBySlug(slug, language);
+  const {
+    data: cmsPost,
+    isPending: postPending,
+    isError: postError,
+    isFetching: postFetching,
+    refetch: refetchPost,
+  } = usePublishedBlogPostBySlug(slug, language);
   const { data: cmsPosts } = usePublishedBlogPosts(language);
   const post = useMemo(
     () => cmsPost ?? fallbackPost,
@@ -103,6 +110,38 @@ const BlogDetail = () => {
         title={t.loadingTitle}
         description={t.loadingDescription}
       />
+    );
+  }
+
+  if (postError && !fallbackPost) {
+    return (
+      <main className="fc-route-page fc-route-missing">
+        <PageMeta
+          title={t.errorTitle}
+          description={t.errorDescription}
+          canonicalPath={`/blog/${slug || ""}`}
+          noIndex
+        />
+        <section>
+          <div role="alert">
+            <div className="mb-4 flex items-start gap-3">
+              <AlertCircle className="mt-1 h-5 w-5 shrink-0 text-destructive" />
+              <div>
+                <h1>{t.errorTitle}</h1>
+                <p>{t.errorDescription}</p>
+              </div>
+            </div>
+            <div className="flex flex-wrap items-center justify-center gap-4">
+              <Button type="button" variant="outline" disabled={postFetching} onClick={() => void refetchPost()}>
+                <RefreshCw className={`h-4 w-4 ${postFetching ? "animate-spin" : ""}`} />
+                {t.retry}
+              </Button>
+              <Link to="/blog">{t.backToBlog}</Link>
+              <Link to="/contact">{t.contact}</Link>
+            </div>
+          </div>
+        </section>
+      </main>
     );
   }
 
