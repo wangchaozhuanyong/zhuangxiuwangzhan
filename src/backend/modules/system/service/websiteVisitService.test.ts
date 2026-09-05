@@ -21,7 +21,10 @@ function request(headers: Record<string, string> = {}) {
   });
 }
 
-afterEach(() => vi.unstubAllGlobals());
+afterEach(() => {
+  vi.restoreAllMocks();
+  vi.unstubAllGlobals();
+});
 
 describe("website visit edge service", () => {
   it("accepts a small same-origin public route and takes the IP only from Cloudflare", () => {
@@ -71,6 +74,11 @@ describe("website visit edge service", () => {
   });
 
   it("requires one fixed receiver and sends a signed bounded request", async () => {
+    const staticTimeout = vi
+      .spyOn(AbortSignal, "timeout")
+      .mockImplementation(() => {
+        throw new Error("unsupported worker API");
+      });
     const fetchMock = vi.fn(async (_url: string, init: RequestInit) => {
       expect(init.headers).toMatchObject({
         "x-website-visit-signature": expect.stringMatching(/^[a-f0-9]{64}$/),
@@ -95,5 +103,7 @@ describe("website visit edge service", () => {
       ),
     ).toBe(true);
     expect(fetchMock).toHaveBeenCalledTimes(1);
+    expect(fetchMock.mock.calls[0]?.[1].signal).toBeInstanceOf(AbortSignal);
+    expect(staticTimeout).not.toHaveBeenCalled();
   });
 });
