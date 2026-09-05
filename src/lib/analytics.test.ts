@@ -45,14 +45,38 @@ const getEventPayload = (gtag: GtagSpy, eventName: string) =>
 beforeEach(() => {
   vi.restoreAllMocks();
   vi.unstubAllEnvs();
+  vi.stubEnv("VITE_GA_MEASUREMENT_ID", "");
+  vi.stubEnv("VITE_GA4_PAGES_REPORT_URL", "");
 });
 
 describe("analytics defaults", () => {
+  it("replaces a generic or env-comment-truncated report link with the Flashcast property", async () => {
+    vi.stubEnv("VITE_GA4_PAGES_REPORT_URL", "https://analytics.google.com/analytics/web/");
+    const { analytics } = await loadAnalytics();
+    expect(analytics.ga4PagesReportUrl).toContain("a396903314p540413787/");
+  });
   it("keeps the GA4 measurement id configured by default", async () => {
     const { analytics } = await loadAnalytics();
 
-    expect(analytics.gaMeasurementId).toBe("G-K71PQ0MSV2");
+    expect(analytics.gaMeasurementId).toBe("G-LLJGRG2YNP");
     expect(analytics.isAnalyticsEnabled).toBe(true);
+    expect(analytics.ga4PagesReportUrl).toContain("a396903314p540413787/");
+  });
+
+  it("sends page views to the Flashcast stream by default", async () => {
+    const { analytics, gtag } = await loadAnalytics("/zh/services");
+    analytics.trackPageView({ path: "/zh/services", language: "zh" });
+    expect(gtag).toHaveBeenCalledWith("config", "G-LLJGRG2YNP", { send_page_view: false });
+    expect(getEventPayload(gtag, "page_view")).toMatchObject({ page_path: "/zh/services" });
+    expect(gtag.mock.calls.flat()).not.toContain("G-K71PQ0MSV2");
+  });
+
+  it("preserves explicit measurement and report configuration", async () => {
+    vi.stubEnv("VITE_GA_MEASUREMENT_ID", "G-TESTSTREAM");
+    vi.stubEnv("VITE_GA4_PAGES_REPORT_URL", "https://analytics.google.com/analytics/web/#/p123/reports");
+    const { analytics } = await loadAnalytics();
+    expect(analytics.gaMeasurementId).toBe("G-TESTSTREAM");
+    expect(analytics.ga4PagesReportUrl).toContain("p123/reports");
   });
 
   it("allows production analytics only on FLASH CAST production hosts", async () => {
