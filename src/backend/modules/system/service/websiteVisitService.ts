@@ -115,11 +115,13 @@ export async function forwardWebsiteVisit(
   )
     .map((byte) => byte.toString(16).padStart(2, "0"))
     .join("");
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), 4000);
   try {
     const response = await fetch(receiverUrl, {
       method: "POST",
       redirect: "error",
-      signal: AbortSignal.timeout(4000),
+      signal: controller.signal,
       headers: {
         "Content-Type": "application/json",
         "x-website-visit-signature": signature,
@@ -134,5 +136,7 @@ export async function forwardWebsiteVisit(
     return result.success === true && result.data?.accepted === true;
   } catch {
     return false;
+  } finally {
+    clearTimeout(timeout);
   }
 }
