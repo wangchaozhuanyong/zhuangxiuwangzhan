@@ -106,4 +106,27 @@ describe("website visit edge service", () => {
     expect(fetchMock.mock.calls[0]?.[1].signal).toBeInstanceOf(AbortSignal);
     expect(staticTimeout).not.toHaveBeenCalled();
   });
+
+  it("logs only bounded diagnostics when the receiver rejects a request", async () => {
+    const warning = vi.spyOn(console, "warn").mockImplementation(() => undefined);
+    vi.stubGlobal("fetch", vi.fn(async () => new Response("Unauthorized", { status: 401 })));
+    const env = {
+      WEBSITE_VISIT_INGEST_SECRET: secret,
+      WEBSITE_VISIT_INGEST_URL:
+        "https://54-249-61-238.sslip.io/api/id-business-v2/workspace-website-monitor/visits/ingest",
+    };
+
+    expect(
+      await forwardWebsiteVisit(
+        createWebsiteVisit(request(), { eventId, path: "/en" })!,
+        env,
+      ),
+    ).toBe(false);
+    expect(warning).toHaveBeenCalledTimes(1);
+    const diagnostic = warning.mock.calls.flat().join(" ");
+    expect(diagnostic).toContain('"category":"http"');
+    expect(diagnostic).toContain('"status":401');
+    expect(diagnostic).not.toContain(secret);
+    expect(diagnostic).not.toContain("203.0.113.19");
+  });
 });
