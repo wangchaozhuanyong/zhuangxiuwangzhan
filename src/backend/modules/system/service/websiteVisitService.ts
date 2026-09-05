@@ -117,6 +117,15 @@ export async function forwardWebsiteVisit(
     .join("");
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), 4000);
+  const startedAt = Date.now();
+  const warn = (
+    category: "http" | "invalid_response" | "timeout" | "network",
+    status?: number,
+  ) =>
+    console.warn(
+      "[website-visit-forward]",
+      JSON.stringify({ category, status, durationMs: Date.now() - startedAt }),
+    );
   try {
     const response = await fetch(receiverUrl, {
       method: "POST",
@@ -128,13 +137,24 @@ export async function forwardWebsiteVisit(
       },
       body: JSON.stringify(event),
     });
-    if (!response.ok) return false;
-    const result = (await response.json()) as {
-      success?: boolean;
-      data?: { accepted?: boolean };
-    };
-    return result.success === true && result.data?.accepted === true;
-  } catch {
+    if (!response.ok) {
+      warn("http", response.status);
+      return false;
+    }
+    let result: { success?: boolean; data?: { accepted?: boolean } };
+    try {
+      result = (await response.json()) as typeof result;
+    } catch {
+      warn("invalid_response", response.status);
+      return false;
+    }
+    if (result.success !== true || result.data?.accepted !== true) {
+      warn("invalid_response", response.status);
+      return false;
+    }
+    return true;
+  } catch (error) {
+    warn(error instanceof Error && error.name === "AbortError" ? "timeout" : "network");
     return false;
   } finally {
     clearTimeout(timeout);
