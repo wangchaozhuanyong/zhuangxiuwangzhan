@@ -7,12 +7,12 @@ export const privacyPageText = {
     breadcrumbCurrent: "Privacy Policy",
     title: "Privacy Policy",
     imageAlt: "Material consultation area with two chairs and documents on the table",
-    updated: "Last updated: March 2026",
+    updated: "Last updated: September 2026",
     sections: [
       {
         title: "1. Information We Collect",
         body: "When you contact us via our website, WhatsApp, phone, or email, we may collect the following information:",
-        items: ["Name and contact details, including phone number and email address", "Property address and project details", "Budget preferences and renovation requirements", "Photos or documents you share with us", "Website usage data, such as cookies and analytics"],
+        items: ["Name and contact details, including phone number and email address", "Property address and project details", "Budget preferences and renovation requirements", "Photos or documents you share with us", "Website usage data, including page paths, visit times, cookies, analytics, and visitor IP addresses retained online for up to 30 days"],
       },
       {
         title: "2. How We Use Your Information",
@@ -49,12 +49,12 @@ export const privacyPageText = {
     breadcrumbCurrent: "隐私政策",
     title: "隐私政策",
     imageAlt: "摆放资料与双人座椅的材料咨询区",
-    updated: "最后更新：2026 年 3 月",
+    updated: "最后更新：2026 年 9 月",
     sections: [
       {
         title: "1. 我们收集的信息",
         body: "当你通过网站、WhatsApp、电话或电邮联系我们时，我们可能会收集以下资料：",
-        items: ["姓名与联系方式，包括电话号码和电邮地址", "物业地址与项目资料", "预算偏好与装修需求", "你提供给我们的照片或文件", "网站使用资料，例如 cookies 与分析数据"],
+        items: ["姓名与联系方式，包括电话号码和电邮地址", "物业地址与项目资料", "预算偏好与装修需求", "你提供给我们的照片或文件", "网站使用资料，包括访问页面、访问时间、cookies、分析数据及在线保留最多 30 天的访客 IP 地址"],
       },
       {
         title: "2. 我们如何使用资料",
