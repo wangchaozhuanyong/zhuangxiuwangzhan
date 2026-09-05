@@ -1,7 +1,8 @@
 type AnalyticsValue = string | number | boolean | null | undefined;
 type AnalyticsParams = Record<string, AnalyticsValue>;
 
-const defaultGaMeasurementId = "G-K71PQ0MSV2";
+// Flashcast Website stream, verified against flashcast.com.my in GA4.
+const defaultGaMeasurementId = "G-LLJGRG2YNP";
 const defaultGoogleAdsId = "AW-18205206146";
 const productionAnalyticsHosts = new Set(["flashcast.com.my", "www.flashcast.com.my"]);
 const directObservationCtaEvents: Record<string, string> = {
@@ -27,7 +28,9 @@ const primaryGoogleTagId = googleTagIds[0] || "";
 
 export const isAnalyticsEnabled = googleTagIds.length > 0;
 export const ga4PagesReportUrl =
-  configuredPagesReportUrl || "https://analytics.google.com/analytics/web/#/report/pages-and-screens";
+  /#\/(?:a\d+)?p\d+(?:\/|$)/.test(configuredPagesReportUrl)
+    ? configuredPagesReportUrl
+    : "https://analytics.google.com/analytics/web/#/a396903314p540413787/reports";
 
 let initialized = false;
 let scriptRequested = false;
