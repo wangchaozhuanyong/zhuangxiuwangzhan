@@ -206,6 +206,21 @@ describe("analytics loading", () => {
     document.getElementById("flashcast-google-tag")?.remove();
   });
 
+  it("queues Google commands as Arguments objects so gtag.js can dispatch them", async () => {
+    const { trackPageView } = await import("@/lib/analytics");
+
+    trackPageView({ path: "/en/services", language: "en" });
+
+    // gtag.js distinguishes its Arguments command messages from ordinary array data.
+    const commands = (window.dataLayer || []).filter(
+      (entry) => Object.prototype.toString.call(entry) === "[object Arguments]",
+    ).map((entry) => Array.from(entry as IArguments));
+    expect(commands).toContainEqual(["config", "G-LLJGRG2YNP", { send_page_view: false }]);
+    expect(commands).toContainEqual([
+      "event", "page_view", expect.objectContaining({ page_path: "/en/services", language: "en" }),
+    ]);
+  });
+
   it("defers the Google Tag script until the first interaction", async () => {
     const { initAnalytics } = await import("@/lib/analytics");
 

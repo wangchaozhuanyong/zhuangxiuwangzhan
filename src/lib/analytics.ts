@@ -228,8 +228,10 @@ export const initAnalytics = () => {
   window.dataLayer = window.dataLayer || [];
   window.gtag =
     window.gtag ||
-    function gtag(...args: unknown[]) {
-      window.dataLayer?.push(args);
+    function gtag() {
+      // Google dispatches Arguments command messages; rest-parameter arrays are treated as data.
+      // eslint-disable-next-line prefer-rest-params
+      window.dataLayer?.push(arguments);
     };
 
   window.gtag("js", new Date());
