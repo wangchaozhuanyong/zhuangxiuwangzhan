@@ -87,9 +87,12 @@ jobs:
           CLOUDFLARE_PAGES_PROJECT_NAME: ${{ secrets.CLOUDFLARE_PAGES_PROJECT_NAME }}
           VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
           VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
+          WEBSITE_VISIT_INGEST_SECRET: ${{ secrets.WEBSITE_VISIT_INGEST_SECRET }}
         run: |
           printf '%s' "$VITE_SUPABASE_URL" | npx wrangler pages secret put VITE_SUPABASE_URL --project-name "$CLOUDFLARE_PAGES_PROJECT_NAME"
           printf '%s' "$VITE_SUPABASE_ANON_KEY" | npx wrangler pages secret put VITE_SUPABASE_ANON_KEY --project-name "$CLOUDFLARE_PAGES_PROJECT_NAME"
+          printf '%s' "$WEBSITE_VISIT_INGEST_SECRET" | npx wrangler pages secret put WEBSITE_VISIT_INGEST_SECRET --project-name "$CLOUDFLARE_PAGES_PROJECT_NAME"
+          printf '%s' 'https://54-249-61-238.sslip.io/api/id-business-v2/workspace-website-monitor/visits/ingest' | npx wrangler pages secret put WEBSITE_VISIT_INGEST_URL --project-name "$CLOUDFLARE_PAGES_PROJECT_NAME"
 
       - name: Deploy (Cloudflare Pages)
         env:

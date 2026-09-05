@@ -12,6 +12,7 @@ import { PublicChromeProvider, usePublicChrome } from "@/contexts/PublicChromeCo
 import { stripLanguagePrefix } from "@/i18n/routes";
 import { adminRouteText } from "@/i18n/adminRouteText";
 import { initAnalytics, trackPageView } from "@/lib/analytics";
+import { recordWebsiteVisit } from "@/lib/websiteVisits";
 import { getAdminLang } from "@/lib/adminLocale";
 import { focusElementByIdWhenReady } from "@/lib/instantScroll";
 import { publicRoutes } from "@/routes/publicRoutes";
@@ -137,6 +138,7 @@ const AnalyticsRouteTracker = () => {
         title: document.title,
         language,
       });
+      void recordWebsiteVisit(location.pathname);
     }, 0);
 
     return () => window.clearTimeout(timer);
