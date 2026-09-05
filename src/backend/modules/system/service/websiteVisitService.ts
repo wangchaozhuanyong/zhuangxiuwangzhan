@@ -129,7 +129,8 @@ export async function forwardWebsiteVisit(
   try {
     const response = await fetch(receiverUrl, {
       method: "POST",
-      redirect: "error",
+      // Cloudflare Pages throws synchronously for `redirect: "error"`; manual still rejects every 3xx via response.ok.
+      redirect: "manual",
       signal: controller.signal,
       headers: {
         "Content-Type": "application/json",

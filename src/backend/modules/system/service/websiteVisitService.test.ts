@@ -80,6 +80,7 @@ describe("website visit edge service", () => {
         throw new Error("unsupported worker API");
       });
     const fetchMock = vi.fn(async (_url: string, init: RequestInit) => {
+      expect(init.redirect).toBe("manual");
       expect(init.headers).toMatchObject({
         "x-website-visit-signature": expect.stringMatching(/^[a-f0-9]{64}$/),
       });
