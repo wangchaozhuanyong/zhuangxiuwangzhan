@@ -1,6 +1,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import { loadEnv } from "vite";
+import { buildTopicClusterBlogRecord, topicClusterBlogConfigs } from "./topic-cluster-blog-records.mjs";
 
 const args = process.argv.slice(2);
 const execute = args.includes("--execute");
@@ -510,6 +511,17 @@ const targetConfigs = {
       { path: "/zh/about", expected: "关于 FLASH CAST | 吉隆坡装修规划与项目协调" },
     ],
   },
+  ...Object.fromEntries(
+    Object.entries(topicClusterBlogConfigs).map(([slug, config]) => [slug, {
+      contentType: "blog",
+      table: "blog_posts",
+      keyField: "slug",
+      key: slug,
+      fields: blogFields,
+      buildRecord: buildTopicClusterBlogRecord,
+      publicPaths: config.publicPaths,
+    }]),
+  ),
 };
 
 const writeJson = (filePath, value) => {
