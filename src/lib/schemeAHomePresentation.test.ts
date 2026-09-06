@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { resolveSchemeAHomePresentation } from "@/lib/schemeAHomePresentation";
 import type { PublishedHomeContentBundle } from "@/lib/homeContentApi";
+import { schemeAHomeText } from "@/i18n/schemeAText";
 
 const fallback = {
   heroStats: [
@@ -38,6 +39,15 @@ const bundle = (patch: Partial<PublishedHomeContentBundle>): PublishedHomeConten
 });
 
 describe("resolveSchemeAHomePresentation", () => {
+  it("keeps bilingual homepage fallbacks evidence-safe", () => {
+    const serialized = JSON.stringify(schemeAHomeText);
+    for (const unsupportedClaim of ["进口超薄", "德系", "严苛工法", "质保凭证", "dedicated post-handover", "dual sign-offs", "German Concealed"]) {
+      expect(serialized).not.toContain(unsupportedClaim);
+    }
+    expect(schemeAHomeText.zh.processSteps[0].desc).toContain("专业评估");
+    expect(schemeAHomeText.en.processSteps[3].desc).toContain("written quotation");
+  });
+
   it("uses compatible CMS modules and adds the quote form anchor", () => {
     const result = resolveSchemeAHomePresentation(bundle({
       heroSlides: [{ id: "hero", title: "", excerpt: "", buttonLabel: "Start", buttonUrl: "/quote", image: "", alt: "" }],

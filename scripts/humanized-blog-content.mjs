@@ -226,12 +226,12 @@ export const humanizedBlogUpdates = [
     zhExcerpt: "旧屋翻新最容易追加的费用，通常来自水电、防水、墙地面、屋顶和拆除后才看见的问题。",
     enExcerpt: "Hidden old-house renovation costs often come from wiring, plumbing, waterproofing, walls, floors, roofs, and post-hacking discoveries.",
     zh: [
-      ["拆开后才知道的项目要预留", "旧屋常见隐藏问题包括旧电线、锈蚀水管、空鼓地砖、墙面渗水、白蚁和屋顶漏水。报价前只能先估风险，不能全部当作已知项目。"],
+      ["拆开后才知道的项目要预留", "旧屋常见隐藏问题包括旧电线、锈蚀水管、空鼓地砖、墙面渗水、白蚁和屋顶漏水。报价前只能先估风险，不能全部当作已知项目。在比较暂定项目之前，可先了解我们的<a href=\"/zh/services/old-house\">吉隆坡与雪兰莪旧屋翻新规划</a>，看清现场条件、工程范围与报价假设如何衔接。"],
       ["基础维修优先于装饰", "如果预算有限，先处理安全、漏水、排水和电力负载，再安排柜体、背景墙和软装。这样住进去后更安心。"],
       ["报价要写清楚现场确认项", "哪些项目已包含，哪些要拆除后再确认，最好提前写明。这样追加费用出现时，双方比较容易判断是否合理。"],
     ],
     en: [
-      ["Allow for items only visible after hacking", "Old wiring, rusty pipes, hollow tiles, seepage, termites, and roof leaks may only be confirmed after opening up."],
+      ["Allow for items only visible after hacking", "Old wiring, rusty pipes, hollow tiles, seepage, termites, and roof leaks may only be confirmed after opening up. Before comparing provisional items, review our <a href=\"/en/services/old-house\">old house renovation planning in Kuala Lumpur and Selangor</a> to understand how site condition, scope, and quotation assumptions connect."],
       ["Prioritize repairs before decoration", "Handle safety, leaks, drainage, and electrical load before cabinets, feature walls, and styling upgrades."],
       ["State site-confirmation items clearly", "Quotations should separate included work from items that need confirmation after demolition."],
     ],
@@ -430,12 +430,12 @@ export const humanizedBlogUpdates = [
     zhExcerpt: "旧屋翻新前先查结构、水电、防水、屋顶、墙面、地面和白蚁风险，再谈风格。",
     enExcerpt: "Before renovating an old house, check structure, wiring, plumbing, waterproofing, roof, walls, floors, and termite risk.",
     zh: [
-      ["先检查看不见的地方", "水管、电线、防水、排水和屋顶是旧屋翻新的重点。表面还能用，不代表里面没有老化。"],
+      ["先检查看不见的地方", "水管、电线、防水、排水和屋顶是旧屋翻新的重点。表面还能用，不代表里面没有老化。如果多个系统或空间都需要处理，可在申请报价前先查看我们的<a href=\"/zh/services/old-house\">吉隆坡与雪兰莪旧屋翻新规划</a>。"],
       ["拆除阶段要预留判断时间", "拆掉旧砖、旧柜或旧天花后，可能看到空鼓、渗水、旧线或白蚁痕迹。不要把排期压得太死。"],
       ["预算按优先级排", "安全和防水先做，使用功能第二，最后才是造型和软装。这样钱花得更稳。"],
     ],
     en: [
-      ["Inspect hidden areas first", "Pipes, wiring, waterproofing, drainage, and roof condition matter most in old-house renovation."],
+      ["Inspect hidden areas first", "Pipes, wiring, waterproofing, drainage, and roof condition matter most in old-house renovation. If several systems or rooms need attention, review our <a href=\"/en/services/old-house\">old house renovation planning in Kuala Lumpur and Selangor</a> before requesting a quote."],
       ["Allow time during demolition", "After removing old tiles, cabinets, or ceiling, hollow areas, seepage, old wiring, or termite signs may appear."],
       ["Prioritize the budget", "Safety and waterproofing come first, function comes second, and styling can follow once the basics are secure."],
     ],

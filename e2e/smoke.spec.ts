@@ -110,6 +110,7 @@ test.describe("public site smoke", () => {
   test("hreflang links exist on a content page", async ({ page }) => {
     await gotoSmokePage(page, "/zh/quote");
     await page.waitForLoadState("load");
+    await expect(page.getByRole("link", { name: "查看隐私政策" })).toHaveAttribute("href", "/zh/privacy");
     await expect(page.locator('link[rel="alternate"]')).toHaveCount(3);
     const hreflangs = await page
       .locator('link[rel="alternate"]')
@@ -163,7 +164,11 @@ test.describe("public site smoke", () => {
     await page.locator("#quote-details").fill("这是一次报价流程验收测试，不会写入真实数据。");
     await page.getByRole("button", { name: "提交报价请求" }).click();
 
+    const successStatus = page.locator("#quote-success-status");
     await expect(page.getByRole("heading", { name: "报价请求已提交！" })).toBeVisible();
+    await expect(successStatus).toHaveAttribute("role", "status");
+    await expect(successStatus).toBeFocused();
+    await expect(successStatus).toContainText("请不要重复提交");
     expect(submitCount).toBe(1);
   });
 
@@ -185,7 +190,10 @@ test.describe("public site smoke", () => {
     await page.locator("#quote-project-type").selectOption("Residential Renovation");
     await page.getByRole("button", { name: "提交报价请求" }).click();
 
-    await expect(page.getByText("提交失败")).toBeVisible();
+    await expect(page.locator("#quote-submit-error")).toContainText("提交失败");
+    await expect(page.locator("#quote-submit-error")).toBeFocused();
+    await expect(page.locator("#quote-name")).toHaveValue("验收测试");
+    await expect(page.locator("#quote-phone")).toHaveValue("+601128853888");
     await expect(page.locator('a[href^="https://wa.me/"]').first()).toBeVisible();
   });
 
@@ -276,7 +284,9 @@ test.describe("public site smoke", () => {
     await page.locator("#quote-project-type").selectOption("Residential Renovation");
     await page.getByRole("button", { name: "提交报价请求" }).click();
 
-    await expect(page.getByText("请输入有效的电话号码")).toBeVisible();
+    await expect(page.locator("#quote-validation-summary")).toContainText("请检查以下 1 个字段");
+    await expect(page.locator("#quote-phone-error")).toHaveText("请输入有效的电话号码");
+    await expect(page.locator("#quote-phone")).toBeFocused();
     expect(submitCount).toBe(0);
   });
 

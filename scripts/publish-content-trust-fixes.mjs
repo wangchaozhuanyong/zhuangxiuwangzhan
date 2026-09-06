@@ -24,6 +24,12 @@ const serviceFields = [
   "seo_title_en", "seo_description_zh", "seo_description_en", "sort_order",
 ];
 
+const blogFields = [
+  "id", "slug", "status", "updated_at", "title_zh", "title_en", "excerpt_zh", "excerpt_en", "content_zh", "content_en",
+  "category", "tags", "cover_image_url", "alt_zh", "alt_en", "seo_title_zh", "seo_title_en", "seo_description_zh",
+  "seo_description_en", "published_at", "sort_order",
+];
+
 const projectFields = [
   "id", "slug", "status", "updated_at", "title_zh", "title_en", "excerpt_zh", "excerpt_en", "content_zh", "content_en",
   "image_url", "location", "area", "duration", "budget", "project_type", "materials", "scope", "highlights_zh", "highlights_en",
@@ -278,6 +284,100 @@ const serviceFaqRecord = (key) => (current) => ({
   ...(key === "kitchen" ? { image_url: "/images/services/kitchen-renovation.webp" } : {}),
 });
 
+const kitchenRecord = (current) => ({
+  ...current,
+  title_zh: "吉隆坡与雪兰莪厨房装修服务",
+  title_en: "Kitchen Renovation in Kuala Lumpur & Selangor",
+  excerpt_zh: "根据真实现场规划厨房动线、收纳、橱柜、台面、家电点位、给排水、湿作状况与书面报价范围。",
+  excerpt_en: "Plan kitchen layout, storage, cabinets, countertop options, appliance points, plumbing, wet-work condition, and written quotation scope around the real site.",
+  content_zh: "厨房装修不只是换橱柜，而是重新整理日常使用动线、收纳、台面、家电点位、给排水和湿作范围。FLASH CAST 可从现场测量、现有水电点位、干湿厨房分区、柜体结构、材料方向和报价范围开始整理；最终范围以真实现场与书面报价为准。",
+  content_en: "Kitchen renovation should address daily workflow, storage, countertop use, appliance points, plumbing, and wet-work scope together. FLASH CAST can begin with site measurements, existing service points, dry and wet kitchen zoning, cabinet structure, material direction, and quotation scope. Final scope follows the real site and written quotation.",
+  suitable_for_zh: [
+    "旧厨房橱柜老化、台面损坏或收纳不足的业主",
+    "想把公寓厨房升级成更实用布局的屋主",
+    "有地住宅需要规划干湿厨房、岛台或高柜系统的客户",
+    "准备旧屋翻新，同时需要厨房、浴室、水电和柜体一起协调的客户",
+    "希望在报价前把柜体、家电、水电和湿作范围一起确认的屋主",
+  ],
+  suitable_for_en: [
+    "Homeowners with old cabinets, damaged countertops, or poor kitchen storage",
+    "Condo owners who want a more practical kitchen layout",
+    "Landed-house owners planning wet and dry kitchen zones, island counters, or tall cabinets",
+    "Old-house renovation clients coordinating kitchen, bathroom, wiring, plumbing, and cabinet work",
+    "Homeowners who need cabinet, appliance, plumbing, and wet-work scope coordinated before quotation",
+  ],
+  common_projects_zh: [
+    "公寓旧厨房翻新", "有地住宅干湿厨房改造", "厨房收纳与家电点位优化", "厨房橱柜与台面选择评估",
+    "餐厨一体或开放式厨房规划", "厨房与饭厅局部升级", "厨房与饭厅使用动线规划", "清楚标注的厨房效果图或柜体规划概念",
+  ],
+  common_projects_en: [
+    "Old condo kitchen upgrades", "Landed-home dry and wet kitchen renovation", "Kitchen storage and appliance-point improvements",
+    "Kitchen cabinet and countertop option review", "Open kitchen or dining-kitchen layout planning", "Partial dining and kitchen upgrade work",
+    "Kitchen and dining circulation planning", "Clearly labeled kitchen rendering or cabinet-planning concepts",
+  ],
+  scope_items_zh: [
+    "现场测量与现有水电点位确认", "干厨房、湿厨房或开放式厨房布局建议", "地柜、吊柜、高柜、岛台或半岛台收纳规划",
+    "台面、柜门、五金、背板和墙地面材料建议", "水槽、炉具、抽油烟机、冰箱、洗碗机等家电点位规划",
+    "给排水、防水相关范围、瓷砖与湿作范围评估", "报价范围检查、施工协调和交付检查", "厨房装修设计方案效果图，不代表真实完工案例",
+  ],
+  scope_items_en: [
+    "Site measurement and existing point checking", "Dry kitchen, wet kitchen, or open kitchen layout planning",
+    "Base cabinet, wall cabinet, tall unit, island, or peninsula storage planning", "Countertop, cabinet door, hardware, backsplash, wall, and floor material advice",
+    "Sink, hob, hood, fridge, dishwasher, and appliance point coordination", "Plumbing, waterproofing-related, tile, and wet-work scope review",
+    "Quotation scope review, site coordination, and handover checking", "Kitchen renovation rendering concept, not a completed project photo",
+  ],
+  faqs_zh: [
+    { q: "FLASH CAST 可以协助哪些厨房装修范围？", a: "可以协助检查公寓与有地住宅厨房、干湿厨房分区、橱柜布局、台面选择、家电点位、给排水、湿作和相关协调。最终范围以真实现场和书面报价为准。" },
+    { q: "厨房装修报价会受什么影响？", a: "主要取决于橱柜尺寸、台面选择、五金、家电点位、给排水调整、湿作范围、墙地面处理、拆除和安装复杂度。" },
+    { q: "是否可以只做厨房橱柜和台面？", a: "可以先评估橱柜、台面和家电点位是否能单独更新；如果涉及水电、墙地面或防水相关范围，需要一起确认施工边界。" },
+    { q: "干厨房和湿厨房应该怎么规划？", a: "建议根据煮食频率、油烟、收纳、采光、用餐动线和家电清单规划。湿厨房偏实际烹饪，干厨房可承担备餐、展示和收纳功能。" },
+    { q: "页面里的效果图方案是真实完工案例吗？", a: "不是。清楚标注的效果图只是规划参考，不作为真实客户完工项目证明。最终以现场与确认材料为准。" },
+  ],
+  faqs_en: [
+    { q: "What kitchen renovation work can FLASH CAST help with?", a: "FLASH CAST can help review condo and landed-home kitchens, dry and wet kitchen zoning, cabinet layouts, countertop options, appliance points, plumbing, wet works, and related coordination. Final scope follows the real site and written quotation." },
+    { q: "What affects a kitchen renovation quotation?", a: "Key factors include cabinet size, countertop choice, hardware, appliance points, plumbing changes, wet-work scope, wall and floor finishes, demolition, and installation complexity." },
+    { q: "Can I update only kitchen cabinets and countertops?", a: "Yes, the cabinet and countertop scope can be reviewed first. If plumbing, electrical points, wall or floor finishes, or waterproofing-related work is involved, the construction boundary should be confirmed together." },
+    { q: "How should dry and wet kitchen zones be planned?", a: "Planning should consider cooking frequency, smoke and grease, storage, natural light, dining flow, and the appliance list. Wet kitchens usually support heavier cooking, while dry kitchens can support prep, display, and storage." },
+    { q: "Are rendering concepts on the page completed projects?", a: "No. Clearly labeled rendering concepts are planning references, not proof of a completed customer project. Final decisions depend on the real site and approved materials." },
+  ],
+  seo_title_zh: "吉隆坡与雪兰莪厨房装修｜橱柜、台面与干湿厨房规划 | FLASH CAST",
+  seo_title_en: "Kitchen Renovation Kuala Lumpur & Selangor | FLASH CAST",
+  seo_description_zh: "根据真实现场规划吉隆坡与雪兰莪厨房装修，包括动线、收纳、橱柜、台面选择、家电点位、给排水、湿作状况与书面报价范围。",
+  seo_description_en: "Plan kitchen renovation in Kuala Lumpur and Selangor around the actual layout, storage, cabinets, countertop options, appliance points, plumbing, wet-work condition, and confirmed quotation scope.",
+  image_url: "/images/services/kitchen-renovation.webp",
+  status: "published",
+});
+
+const appendOnce = (content, marker, sentence) => {
+  const html = String(content || "");
+  if (html.includes(marker)) return html;
+  const paragraphEnd = html.indexOf("</p>");
+  if (paragraphEnd < 0) return `${html}<p>${sentence}</p>`;
+  return `${html.slice(0, paragraphEnd)} ${sentence}${html.slice(paragraphEnd)}`;
+};
+
+const oldHouseBlogRecord = (current) => {
+  const checklist = current.slug === "old-house-renovation-checklist";
+  return {
+    ...current,
+    content_zh: appendOnce(
+      current.content_zh,
+      'href="/zh/services/old-house"',
+      checklist
+        ? '如果多个系统或空间都需要处理，可在申请报价前先查看我们的<a href="/zh/services/old-house">吉隆坡与雪兰莪旧屋翻新规划</a>。'
+        : '在比较暂定项目之前，可先了解我们的<a href="/zh/services/old-house">吉隆坡与雪兰莪旧屋翻新规划</a>，看清现场条件、工程范围与报价假设如何衔接。',
+    ),
+    content_en: appendOnce(
+      current.content_en,
+      'href="/en/services/old-house"',
+      checklist
+        ? 'If several systems or rooms need attention, review our <a href="/en/services/old-house">old house renovation planning in Kuala Lumpur and Selangor</a> before requesting a quote.'
+        : 'Before comparing provisional items, review our <a href="/en/services/old-house">old house renovation planning in Kuala Lumpur and Selangor</a> to understand how site condition, scope, and quotation assumptions connect.',
+    ),
+    status: "published",
+  };
+};
+
 const approvalServiceRecord = (current) => ({
   ...current,
   excerpt_en: "Review renovation approval, management, drawing and document-coordination needs against the property and confirmed project scope.",
@@ -337,10 +437,24 @@ const targetConfigs = {
     ],
   },
   kitchen: {
-    contentType: "service", table: "services", keyField: "slug", key: "kitchen", fields: serviceFields, buildRecord: serviceFaqRecord("kitchen"),
+    contentType: "service", table: "services", keyField: "slug", key: "kitchen", fields: serviceFields, buildRecord: kitchenRecord,
     publicPaths: [
-      { path: "/en/services/kitchen", expected: "Kitchen Renovation Malaysia | FLASH CAST", forbidden: ["This page should not publish", "owner-confirmed project"] },
-      { path: "/zh/services/kitchen", expected: "厨房装修与橱柜定制", forbidden: ["业主确认", "页面不应"] },
+      { path: "/en/services/kitchen", expected: "Kitchen Renovation Kuala Lumpur &amp; Selangor | FLASH CAST", forbidden: ["Kitchen Renovation Malaysia | FLASH CAST", "owner-confirmed project"] },
+      { path: "/zh/services/kitchen", expected: "吉隆坡与雪兰莪厨房装修服务", forbidden: ["出租单位或转售单位", "TTDI 餐厨翻新参考"] },
+    ],
+  },
+  "old-house-renovation-checklist": {
+    contentType: "blog", table: "blog_posts", keyField: "slug", key: "old-house-renovation-checklist", fields: blogFields, buildRecord: oldHouseBlogRecord,
+    publicPaths: [
+      { path: "/en/blog/old-house-renovation-checklist", expected: 'href="/en/services/old-house"' },
+      { path: "/zh/blog/old-house-renovation-checklist", expected: 'href="/zh/services/old-house"' },
+    ],
+  },
+  "old-house-renovation-hidden-costs-malaysia": {
+    contentType: "blog", table: "blog_posts", keyField: "slug", key: "old-house-renovation-hidden-costs-malaysia", fields: blogFields, buildRecord: oldHouseBlogRecord,
+    publicPaths: [
+      { path: "/en/blog/old-house-renovation-hidden-costs-malaysia", expected: 'href="/en/services/old-house"' },
+      { path: "/zh/blog/old-house-renovation-hidden-costs-malaysia", expected: 'href="/zh/services/old-house"' },
     ],
   },
   bathroom: {

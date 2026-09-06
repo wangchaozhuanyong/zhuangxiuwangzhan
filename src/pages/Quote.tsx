@@ -110,9 +110,25 @@ const Quote = () => {
     }),
     [form.location, form.name, form.phone, form.projectType],
   );
+  const validationEntries = Object.entries(errors).map(([field, message]) => ({
+    field,
+    label: {
+      name: t.name,
+      phone: t.phone,
+      email: t.email,
+      projectType: t.projectType,
+      location: t.location,
+    }[field] || field,
+    message,
+  }));
   useEffect(() => {
     void preloadTurnstile().catch(() => undefined);
   }, []);
+
+  useEffect(() => {
+    if (status === "success") focusElementByIdWhenReady("quote-success-status", "start");
+    if (status === "error") focusElementByIdWhenReady("quote-submit-error", "start");
+  }, [status]);
 
   useEffect(() => {
     if (location.hash !== `#${QUOTE_FORM_ID}`) return;
@@ -170,7 +186,12 @@ const Quote = () => {
     if (!form.location.trim()) next.location = t.requiredLocation;
     const hasErrors = Object.keys(next).length > 0;
     setErrors(next);
-    if (hasErrors) focusFirstQuoteError(next);
+    if (hasErrors && typeof window !== "undefined") {
+      window.requestAnimationFrame(() => {
+        document.getElementById("quote-validation-summary")?.focus({ preventScroll: true });
+        window.setTimeout(() => focusFirstQuoteError(next), 180);
+      });
+    }
     return !hasErrors;
   };
 
@@ -218,7 +239,7 @@ const Quote = () => {
         <PageMeta title={t.successTitle} description={pageContent?.seo_description || t.metaDescription} canonicalPath="/quote" />
         <section className="fc-route-quote-success section-padding flex min-h-[70vh] items-center bg-background">
           <div className="container-narrow mx-auto max-w-xl text-center">
-            <div className="subpage-form-panel p-6 md:p-8">
+            <div id="quote-success-status" role="status" aria-live="polite" tabIndex={-1} className="subpage-form-panel p-6 md:p-8 focus:outline-none">
               <div className="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-full border border-gold/25 bg-gold/10">
                 <CheckCircle className="h-8 w-8 text-gold" />
               </div>
@@ -229,6 +250,7 @@ const Quote = () => {
               <p className="mb-6 text-muted-foreground">
                 {t.successFollowUp} <strong className="text-foreground">{t.successFollowUpHours}</strong> {t.successFollowUpEnd}
               </p>
+              <p className="mb-6 text-sm text-muted-foreground">{t.successNoRepeat}</p>
 
               <div className="luxury-card-muted p-5 text-left">
                 <h2 className="mb-4 font-display text-xl font-semibold">{t.whatsappFast}</h2>
@@ -303,16 +325,6 @@ const Quote = () => {
                 <p className="quote-form-guide__text">{t.formGuideText}</p>
               </div>
 
-              {status === "error" && (
-                <div role="alert" aria-live="polite" className="mb-6 flex items-start gap-3 rounded-card border border-destructive/20 bg-destructive/5 p-4 text-sm">
-                  <AlertCircle className="mt-0.5 h-4 w-4 text-destructive" />
-                  <div>
-                    <p className="font-medium text-destructive">{t.errorTitle}</p>
-                    <p className="text-muted-foreground">{t.errorText}</p>
-                  </div>
-                </div>
-              )}
-
               {contextLabel && (
                 <div className="mb-6 rounded-card border border-accent/20 bg-accent/5 p-4 text-sm">
                   <p className="font-medium text-foreground">{contextLabel}</p>
@@ -321,6 +333,25 @@ const Quote = () => {
               )}
 
               <form onSubmit={handleSubmit} className="space-y-4" noValidate>
+                {status === "error" && (
+                  <div id="quote-submit-error" role="alert" aria-live="assertive" tabIndex={-1} className="mb-6 flex items-start gap-3 rounded-card border border-destructive/20 bg-destructive/5 p-4 text-sm focus:outline-none">
+                    <AlertCircle className="mt-0.5 h-4 w-4 text-destructive" />
+                    <div>
+                      <p className="font-medium text-destructive">{t.errorTitle}</p>
+                      <p className="text-muted-foreground">{t.errorText}</p>
+                    </div>
+                  </div>
+                )}
+
+                {validationEntries.length > 0 && (
+                  <div id="quote-validation-summary" role="alert" aria-live="assertive" tabIndex={-1} className="rounded-card border border-destructive/20 bg-destructive/5 p-4 text-sm focus:outline-none">
+                    <p className="font-medium text-destructive">{formatQuoteText(t.validationSummary, { count: String(validationEntries.length) })}</p>
+                    <ul className="mt-2 list-disc space-y-1 pl-5 text-muted-foreground">
+                      {validationEntries.map(({ field, label, message }) => <li key={field}><a className="underline" href={`#${quoteFieldIds[field]}`}>{label}: {message}</a></li>)}
+                    </ul>
+                  </div>
+                )}
+
                 <div className="quote-form-section-label">
                   <span>1</span>
                   {t.contactSection}
@@ -457,7 +488,10 @@ const Quote = () => {
                 </div>
 
                 <div className="pt-2">
-                  <Button type="submit" size="lg" className="btn-brand-primary h-12 w-full md:w-auto" disabled={status === "submitting"} aria-busy={status === "submitting"}>
+                  <p id="quote-privacy-note" className="mb-3 text-xs text-muted-foreground">
+                    {t.privacyNote} <LocalizedLink to="/privacy" className="font-medium text-accent underline">{t.privacyLink}</LocalizedLink>.
+                  </p>
+                  <Button type="submit" size="lg" className="btn-brand-primary h-12 w-full md:w-auto" disabled={status === "submitting"} aria-busy={status === "submitting"} aria-describedby="quote-privacy-note">
                     {status === "submitting" ? (
                       <>
                         <Loader2 className="mr-2 h-4 w-4 animate-spin" /> {t.submitting}
@@ -468,7 +502,6 @@ const Quote = () => {
                       </>
                     )}
                   </Button>
-                  <p className="mt-3 text-xs text-muted-foreground">{t.privacyNote}</p>
                 </div>
               </form>
             </div>
