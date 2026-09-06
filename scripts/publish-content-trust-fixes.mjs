@@ -440,7 +440,7 @@ const targetConfigs = {
     contentType: "service", table: "services", keyField: "slug", key: "kitchen", fields: serviceFields, buildRecord: kitchenRecord,
     publicPaths: [
       { path: "/en/services/kitchen", expected: "Kitchen Renovation Kuala Lumpur &amp; Selangor | FLASH CAST", forbidden: ["Kitchen Renovation Malaysia | FLASH CAST", "owner-confirmed project"] },
-      { path: "/zh/services/kitchen", expected: "吉隆坡与雪兰莪厨房装修服务", forbidden: ["出租单位或转售单位", "TTDI 餐厨翻新参考"] },
+      { path: "/zh/services/kitchen", expected: "吉隆坡与雪兰莪厨房装修｜橱柜、台面与干湿厨房规划", forbidden: ["出租单位或转售单位", "TTDI 餐厨翻新参考"] },
     ],
   },
   "old-house-renovation-checklist": {
