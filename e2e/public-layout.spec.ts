@@ -58,10 +58,10 @@ test.describe("public responsive layout", () => {
     await page.goto("/zh", { waitUntil: "domcontentloaded" });
 
     await expect(page.locator(".scheme-a-hero")).toBeVisible();
-    await expect(page.locator(".scheme-a-principle")).toBeAttached();
+    await expect(page.locator(".scheme-a-services")).toBeAttached();
     const metrics = await page.evaluate(() => {
       const hero = document.querySelector<HTMLElement>(".scheme-a-hero");
-      const chapter = document.querySelector<HTMLElement>(".scheme-a-principle");
+      const chapter = document.querySelector<HTMLElement>(".scheme-a-services");
       const headerRail = document.querySelector<HTMLElement>(".scheme-a-chrome__bar");
       if (!hero || !chapter || !headerRail) throw new Error("Missing Scheme A layout regions");
       const headerRect = headerRail.getBoundingClientRect();
@@ -212,42 +212,18 @@ test.describe("public responsive layout", () => {
     }
   });
 
-  test("mobile home CTA separates the quote button from service regions with balanced whitespace", async ({ page }) => {
+  test("mobile home ends with one quote and WhatsApp decision block", async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
     await page.goto("/zh", { waitUntil: "domcontentloaded" });
 
-    const contact = page.locator(".scheme-a-contact");
-    const button = contact.locator(".scheme-a-button");
-    const regions = contact.locator(".scheme-a-contact__regions");
-    await contact.scrollIntoViewIfNeeded();
-    await expect(button).toBeVisible();
-    await expect(regions).toBeVisible();
-
-    const metrics = await contact.evaluate((element) => {
-      const button = element.querySelector<HTMLElement>(".scheme-a-button");
-      const regions = element.querySelector<HTMLElement>(".scheme-a-contact__regions");
-      const firstRegion = regions?.querySelector<HTMLElement>("span");
-      if (!button || !regions || !firstRegion) throw new Error("Missing home CTA layout regions");
-
-      const contactRect = element.getBoundingClientRect();
-      const buttonRect = button.getBoundingClientRect();
-      const regionsRect = regions.getBoundingClientRect();
-      const firstRegionRect = firstRegion.getBoundingClientRect();
-      const regionsStyle = getComputedStyle(regions);
-      return {
-        buttonToRegions: Math.round(regionsRect.top - buttonRect.bottom),
-        regionsToBottom: Math.round(contactRect.bottom - firstRegionRect.bottom),
-        borderTopWidth: regionsStyle.borderTopWidth,
-        borderTopStyle: regionsStyle.borderTopStyle,
-      };
-    });
-
-    expect(metrics.borderTopWidth).toBe("0px");
-    expect(metrics.borderTopStyle).toBe("none");
-    expect(metrics.buttonToRegions).toBeGreaterThanOrEqual(30);
-    expect(metrics.buttonToRegions).toBeLessThanOrEqual(34);
-    expect(metrics.regionsToBottom).toBeGreaterThanOrEqual(56);
-    expect(metrics.regionsToBottom).toBeLessThanOrEqual(68);
+    const cta = page.locator('[data-home-section="cta"]');
+    const links = cta.locator(".scheme-a-footer__invitation a");
+    await cta.scrollIntoViewIfNeeded();
+    await expect(cta).toBeVisible();
+    await expect(links).toHaveCount(2);
+    await expect(links.first()).toHaveAttribute("href", "/zh/quote#quote-form");
+    await expect(links.last()).toHaveAttribute("href", /wa\.me/);
+    await expect(links.last()).toHaveAttribute("target", "_blank");
   });
 
   test("mobile contact panels stay centered inside equal page gutters", async ({ page }) => {
@@ -434,6 +410,51 @@ test.describe("public responsive layout", () => {
     expect(surface.wrapperBackground).toBe("rgba(0, 0, 0, 0)");
     expect(surface.panelBackground).not.toBe("rgba(0, 0, 0, 0)");
     expect(surface.labelColor).toBe("rgb(247, 244, 238)");
+  });
+
+  test("home follows the seven-section decision path in both languages", async ({ page }) => {
+    const expectedOrder = ["hero", "services", "projects", "trust", "process", "faq", "cta"];
+
+    for (const locale of ["en", "zh"]) {
+      await page.goto(`/${locale}`, { waitUntil: "domcontentloaded" });
+      const sections = page.locator("[data-home-section]");
+      await expect(sections).toHaveCount(expectedOrder.length);
+      await expect.poll(() => sections.evaluateAll((items) => items.map((item) => item.getAttribute("data-home-section"))))
+        .toEqual(expectedOrder);
+      await expect(page.locator(".scheme-a-project__collection-item")).toHaveCount(2);
+      await expect(page.locator('[data-home-section="cta"] .scheme-a-footer__invitation a')).toHaveCount(2);
+    }
+  });
+
+  test("mobile quote support content does not reserve an invisible blank block", async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.goto("/zh/quote", { waitUntil: "domcontentloaded" });
+
+    const form = page.locator(".fc-route-quote-form-wrap");
+    const aside = page.locator(".fc-route-quote-aside-wrap");
+    await expect(form).toBeVisible();
+    await expect(aside).toBeVisible();
+
+    const layout = await page.evaluate(() => {
+      const formElement = document.querySelector<HTMLElement>(".fc-route-quote-form-wrap");
+      const asideElement = document.querySelector<HTMLElement>(".fc-route-quote-aside-wrap");
+      if (!formElement || !asideElement) throw new Error("Missing quote layout regions");
+      const formRect = formElement.getBoundingClientRect();
+      const asideRect = asideElement.getBoundingClientRect();
+      const asideStyle = getComputedStyle(asideElement);
+      return {
+        gap: Math.round(asideRect.top - formRect.bottom),
+        opacity: asideStyle.opacity,
+        visibility: asideStyle.visibility,
+        revealState: asideElement.getAttribute("data-reveal-state"),
+      };
+    });
+
+    expect(layout.gap).toBeGreaterThanOrEqual(0);
+    expect(layout.gap).toBeLessThanOrEqual(96);
+    expect(layout.opacity).toBe("1");
+    expect(layout.visibility).toBe("visible");
+    expect(layout.revealState).toBeNull();
   });
 
   test("Scheme A footer and mobile dock expose the complete navigation", async ({ page }) => {

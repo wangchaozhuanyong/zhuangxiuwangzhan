@@ -259,10 +259,9 @@ test.describe("Scheme A approved-design fidelity", () => {
       const rect = frame.getBoundingClientRect();
       return rect.height / rect.width;
     }));
-    expect(desktopRatios).toHaveLength(3);
+    expect(desktopRatios).toHaveLength(2);
     expect(desktopRatios[0]).toBeCloseTo(0.6875, 2);
     expect(desktopRatios[1]).toBeCloseTo(0.6875, 2);
-    expect(desktopRatios[2]).toBeCloseTo(0.6875, 2);
   });
 
   test("home feature media stays horizontally balanced", async ({ page }) => {
@@ -274,7 +273,6 @@ test.describe("Scheme A approved-design fidelity", () => {
       await page.setViewportSize(viewport);
       await page.goto("/zh", { waitUntil: "domcontentloaded" });
       await expect(page.locator(".scheme-a-project__media")).toBeAttached();
-      await expect(page.locator(".scheme-a-compare")).toBeAttached();
 
       const metrics = await page.evaluate(() => {
         const horizontalGaps = (selector: string) => {
@@ -290,8 +288,6 @@ test.describe("Scheme A approved-design fidelity", () => {
         return {
           projectMedia: horizontalGaps(".scheme-a-project__media"),
           projectMeta: horizontalGaps(".scheme-a-project__meta"),
-          comparison: horizontalGaps(".scheme-a-compare"),
-          comparisonNote: horizontalGaps(".scheme-a-before__note"),
         };
       });
 
@@ -305,11 +301,11 @@ test.describe("Scheme A approved-design fidelity", () => {
     await page.setViewportSize({ width: 1440, height: 900 });
     await page.goto("/zh", { waitUntil: "domcontentloaded" });
     await expect(page.locator(".scheme-a-hero")).toBeVisible();
-    await expect(page.locator(".scheme-a-principle")).toBeAttached();
+    await expect(page.locator(".scheme-a-services")).toBeAttached();
 
     const metrics = await page.evaluate(() => {
       const hero = document.querySelector<HTMLElement>(".scheme-a-hero");
-      const next = document.querySelector<HTMLElement>(".scheme-a-principle");
+      const next = document.querySelector<HTMLElement>(".scheme-a-services");
       const header = document.querySelector<HTMLElement>(".scheme-a-chrome");
       if (!hero || !next || !header) throw new Error("Missing Scheme A opening regions");
       return {
