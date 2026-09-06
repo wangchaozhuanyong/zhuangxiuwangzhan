@@ -1,6 +1,5 @@
 import { ArrowRight, ArrowUpRight } from "lucide-react";
 import DeferredSmartImage from "@/components/DeferredSmartImage";
-import ImageComparisonSlider from "@/components/ImageComparisonSlider";
 import ImmersiveHero from "@/components/ImmersiveHero";
 import LocalizedLink from "@/components/LocalizedLink";
 import SmartImage from "@/components/SmartImage";
@@ -62,23 +61,21 @@ const SchemeAHome = ({ content }: SchemeAHomeProps) => {
     })
     .slice(0, 6);
   const featuredProject = projects[0];
-  const supportingProjects = projects.slice(1, 4);
+  const supportingProjects = projects.slice(1, 3);
   const projectImage = featuredProject?.thumbnail || "/images/projects/generated-portfolio/mont-kiara-luxury-condo-renovation.webp";
   const displayedProjectImages = new Set([projectImage, ...supportingProjects.map((project) => project.thumbnail)]);
   const materialImage = projects
     .flatMap((project) => [...project.images, project.thumbnail])
     .find((image) => image && !displayedProjectImages.has(image))
     || "/images/projects/proj1-condo-2.webp";
-  const beforeAfter = content?.beforeAfterItems[0];
-  const beforeImage = beforeAfter?.before_image_url || "/images/before-after/before-living.webp";
-  const afterImage = beforeAfter?.after_image_url || "/images/before-after/after-living.webp";
   const displayText = (value: string) => language === "zh" ? translateDisplayText(value, language) : value;
-  const serviceItems = content?.services.slice(0, 4).map((service) => ({
-    title: service.title,
-    summary: service.summary,
-    path: `/services/${service.slug}`,
-  })) || [];
-  const resolvedServices = serviceItems.length ? serviceItems : copy.serviceFallbacks;
+  const resolvedServices = copy.serviceFallbacks.map((fallback) => {
+    const slug = fallback.path.split("/").filter(Boolean).at(-1);
+    const publishedService = content?.services.find((service) => service.slug === slug);
+    return publishedService
+      ? { title: publishedService.title, summary: publishedService.summary, path: fallback.path }
+      : fallback;
+  });
   const featuredProjectIsConcept = isRenderingConceptProject(featuredProject);
   const projectMeta = featuredProject
     ? [displayText(featuredProject.type), featuredProjectIsConcept ? copy.projectConceptLabel : ""].filter(Boolean).join(" · ")
@@ -89,7 +86,7 @@ const SchemeAHome = ({ content }: SchemeAHomeProps) => {
 
   return (
     <div className="scheme-a-home scheme-a-home--atelier">
-      <ImmersiveHero className="scheme-a-hero" aria-labelledby="scheme-a-home-title">
+      <ImmersiveHero className="scheme-a-hero" aria-labelledby="scheme-a-home-title" data-home-section="hero">
         <figure className="scheme-a-hero__media" data-cinematic-media>
           {usesAtelierHero ? (
             <picture className="scheme-a-hero__picture">
@@ -169,21 +166,27 @@ const SchemeAHome = ({ content }: SchemeAHomeProps) => {
         </div>
       </ImmersiveHero>
 
-      <section className="scheme-a-principle" data-cinematic-section>
-        <div className="scheme-a-frame scheme-a-principle__inner">
-          <p className="scheme-a-eyebrow">{copy.principleLabel}</p>
-          <h2>{copy.principleTitle}</h2>
+      <section className="scheme-a-services" data-home-section="services" data-cinematic-section>
+        <div className="scheme-a-frame scheme-a-services__layout">
+          <header>
+            <p className="scheme-a-eyebrow">{copy.servicesLabel}</p>
+            <h2>{copy.servicesTitle}</h2>
+          </header>
+          <ol>
+            {resolvedServices.map((service) => (
+              <li key={`${service.path}-${service.title}`}>
+                <LocalizedLink to={service.path}>
+                  <span>{service.title}</span>
+                  <small>{service.summary}</small>
+                  <ArrowUpRight aria-hidden="true" />
+                </LocalizedLink>
+              </li>
+            ))}
+          </ol>
         </div>
       </section>
 
-      <section className="scheme-a-statement" data-cinematic-section>
-        <div className="scheme-a-frame">
-          <p className="scheme-a-eyebrow">{copy.statementLabel}</p>
-          <blockquote>{copy.statementQuote}</blockquote>
-        </div>
-      </section>
-
-      <section className="scheme-a-project" data-cinematic-section>
+      <section className="scheme-a-project" data-home-section="projects" data-cinematic-section>
         <div className="scheme-a-frame scheme-a-section-head">
           <div>
             <p className="scheme-a-eyebrow">{copy.projectLabel}</p>
@@ -278,27 +281,7 @@ const SchemeAHome = ({ content }: SchemeAHomeProps) => {
         )}
       </section>
 
-      <section className="scheme-a-services" data-cinematic-section>
-        <div className="scheme-a-frame scheme-a-services__layout">
-          <header>
-            <p className="scheme-a-eyebrow">{copy.servicesLabel}</p>
-            <h2>{copy.servicesTitle}</h2>
-          </header>
-          <ol>
-            {resolvedServices.map((service) => (
-              <li key={`${service.path}-${service.title}`}>
-                <LocalizedLink to={service.path}>
-                  <span>{service.title}</span>
-                  <small>{service.summary}</small>
-                  <ArrowUpRight aria-hidden="true" />
-                </LocalizedLink>
-              </li>
-            ))}
-          </ol>
-        </div>
-      </section>
-
-      <section className="scheme-a-materials" data-cinematic-section>
+      <section className="scheme-a-materials" data-home-section="trust" data-cinematic-section>
         <div className="scheme-a-frame scheme-a-materials__layout">
           <figure className="scheme-a-materials__media" data-cinematic-media>
             <DeferredSmartImage
@@ -313,51 +296,26 @@ const SchemeAHome = ({ content }: SchemeAHomeProps) => {
             />
           </figure>
           <div className="scheme-a-materials__copy">
-            <h2>{copy.materialTitle}</h2>
-            <p>{copy.materialBody}</p>
-            {copy.materialTags && (
-              <ul className="scheme-a-materials__tags" aria-label={language === "zh" ? "精选材质特性" : "Curated material tags"}>
-                {copy.materialTags.map((tag) => (
-                  <li key={tag}><span>•</span>{tag}</li>
+            <p className="scheme-a-eyebrow">{copy.trustLabel}</p>
+            <h2>{copy.trustTitle}</h2>
+            <p>{copy.trustBody}</p>
+            {copy.trustPoints && (
+              <ul className="scheme-a-materials__tags" aria-label={copy.trustLabel}>
+                {copy.trustPoints.map((point) => (
+                  <li key={point}><span>•</span>{point}</li>
                 ))}
               </ul>
             )}
             <LocalizedLink to="/materials">
-              {copy.materialCta}
+              {copy.trustCta}
               <ArrowRight aria-hidden="true" />
             </LocalizedLink>
           </div>
         </div>
       </section>
 
-      <section className="scheme-a-before" data-cinematic-section>
-        <div className="scheme-a-frame scheme-a-section-head scheme-a-section-head--compact">
-          <div>
-            <p className="scheme-a-eyebrow">{copy.beforeLabel}</p>
-            <h2>{copy.beforeTitle}</h2>
-          </div>
-        </div>
-        <ImageComparisonSlider
-          className="scheme-a-compare"
-          positionVariable="--scheme-compare"
-          initialValue={48}
-          min={8}
-          max={92}
-          ariaLabel={copy.compareLabel}
-        >
-          <SmartImage src={afterImage} alt={beforeAfter?.alt || copy.after} width={1600} height={1000} sizes="100vw" candidateWidths={[360, 560, 720, 900, 1200, 1600]} quality={86} loading="lazy" revealOnLoad />
-          <div className="scheme-a-compare__before" aria-hidden="true">
-            <SmartImage src={beforeImage} alt="" width={1600} height={1000} sizes="100vw" candidateWidths={[360, 560, 720, 900, 1200, 1600]} quality={86} loading="lazy" revealOnLoad />
-          </div>
-          <span className="scheme-a-compare__tag scheme-a-compare__tag--before">{copy.before}</span>
-          <span className="scheme-a-compare__tag scheme-a-compare__tag--after">{copy.after}</span>
-          <span className="scheme-a-compare__line" aria-hidden="true" />
-        </ImageComparisonSlider>
-        <p className="scheme-a-frame scheme-a-before__note">{copy.beforeNote}</p>
-      </section>
-
       {presentation.processSteps.length > 0 && (
-        <section className="scheme-a-home-process" data-content-source={presentation.processSource} data-cinematic-section>
+        <section className="scheme-a-home-process" data-home-section="process" data-content-source={presentation.processSource} data-cinematic-section>
           <div className="scheme-a-frame scheme-a-section-head">
             <div>
               <p className="scheme-a-eyebrow">{copy.processLabel}</p>
@@ -377,7 +335,7 @@ const SchemeAHome = ({ content }: SchemeAHomeProps) => {
       )}
 
       {faqItems.length > 0 && (
-        <section className="scheme-a-home-faq" data-cinematic-section>
+        <section className="scheme-a-home-faq" data-home-section="faq" data-cinematic-section>
           <div className="scheme-a-frame scheme-a-home-faq__layout">
             <header>
               <p className="scheme-a-eyebrow">{copy.faqLabel}</p>
@@ -389,19 +347,6 @@ const SchemeAHome = ({ content }: SchemeAHomeProps) => {
         </section>
       )}
 
-      <section className="scheme-a-contact" data-content-source={presentation.contactSource} data-cinematic-section>
-        <div className="scheme-a-frame">
-          <p className="scheme-a-eyebrow">{presentation.contact.label}</p>
-          <h2>{presentation.contact.title}</h2>
-          <LocalizedLink className="scheme-a-button scheme-a-button--gold" to={presentation.contact.ctaUrl}>
-            {presentation.contact.ctaLabel}
-            <ArrowUpRight aria-hidden="true" />
-          </LocalizedLink>
-          <div className="scheme-a-contact__regions">
-            {copy.regions.map((region) => <span key={region}>{region}</span>)}
-          </div>
-        </div>
-      </section>
     </div>
   );
 };

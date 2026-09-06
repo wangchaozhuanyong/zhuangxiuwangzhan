@@ -73,9 +73,6 @@ test("mobile pages keep native vertical scrolling while media loads", async ({ p
   expect(motionState.length).toBeGreaterThan(0);
   expect(motionState.every(({ opacity, transform }) => opacity === "" && transform === "")).toBe(true);
 
-  const comparison = page.locator(".scheme-a-compare input[type='range']");
-  await expect(comparison).toHaveCSS("touch-action", "pan-y");
-
   const startY = await page.evaluate(() => window.scrollY);
   await page.evaluate(() => window.scrollTo({ top: 1600, behavior: "auto" }));
   await expect.poll(() => page.evaluate(() => window.scrollY)).toBeGreaterThan(startY + 1000);

@@ -507,7 +507,7 @@ const Quote = () => {
             </div>
           </Reveal>
 
-          <Reveal delay={120} className="fc-route-quote-aside-wrap">
+          <div className="fc-route-quote-aside-wrap">
             <div className="fc-route-quote-aside lg:sticky lg:top-24">
               <div className="subpage-side-panel subpage-side-panel--centered p-6">
                 <h2 className="mb-4 font-display text-2xl font-bold">{t.trustTitle}</h2>
@@ -586,7 +586,7 @@ const Quote = () => {
                 </nav>
               </div>
             </div>
-          </Reveal>
+          </div>
         </div>
       </section>
     </main>
