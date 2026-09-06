@@ -24,4 +24,12 @@ describe("translateDisplayText", () => {
     expect(translateMaterialSubcategory("Acoustic Wall Panel", "zh")).toBe("吸音墙板");
     expect(translateMaterialSubcategory("Solid Wood Finish", "zh")).toBe("实木饰面");
   });
+
+  it("localizes legacy approval service cards on Chinese pages", () => {
+    expect(translateDisplayText("Permit & Drawing Support", "zh")).toBe("装修准证与图纸支持");
+    expect(translateDisplayText(
+      "Review renovation approval, management, drawing, and document-coordination needs against the property and confirmed project scope.",
+      "zh",
+    )).toBe("根据房产类型与已确认项目范围，检查装修审批、管理方、图纸与文件协调需求。");
+  });
 });

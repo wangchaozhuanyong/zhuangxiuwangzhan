@@ -43,6 +43,8 @@ export const serviceDetailPageText = {
     interested: (title: string) => `Interested in ${title}?`,
     ctaText: "Contact us for a free consultation and quotation. We serve Kuala Lumpur, Selangor, and surrounding areas.",
     freeQuote: "Get a Free Quote",
+    whatsappMessage: (title: string) =>
+      `Hi FLASH CAST, I'd like to ask about ${title}. Project location: __. Property type: __. Current condition or main issue: __. Approximate area: __. I can share site photos or a floor plan.`,
   },
   zh: {
     notFound: "服务不存在",
@@ -88,5 +90,7 @@ export const serviceDetailPageText = {
     interested: (title: string) => `想了解 ${title}？`,
     ctaText: "联系我们获取免费咨询与报价。我们服务吉隆坡、雪兰莪与周边地区。",
     freeQuote: "获取免费报价",
+    whatsappMessage: (title: string) =>
+      `你好 FLASH CAST，我想咨询${title}。项目地点：__。房产类型：__。目前屋况或主要问题：__。大约面积：__。我可以提供现场照片或平面图。`,
   },
 } as const;

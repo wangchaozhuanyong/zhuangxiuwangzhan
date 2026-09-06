@@ -134,6 +134,7 @@ const addDynamic = (lang, basePath, slug, title, description, metadata = {}) => 
     },
     ogImage: dynamicOgImage,
     schemaType: metadata.schemaType || undefined,
+    entityName: metadata.entityName || undefined,
     headline: metadata.headline || undefined,
     datePublished: metadata.datePublished || undefined,
     dateModified: metadata.dateModified || undefined,
@@ -293,7 +294,10 @@ for (const lang of ["en", "zh"]) {
       lang === "zh"
         ? row.seo_description_zh || row.seo_description_en
         : row.seo_description_en || row.seo_description_zh;
-    addDynamic(lang, "/services", row.slug, title, description);
+    addDynamic(lang, "/services", row.slug, title, description, {
+      schemaType: "Service",
+      entityName: lang === "zh" ? row.title_zh || row.title_en : row.title_en || row.title_zh,
+    });
   }
 }
 

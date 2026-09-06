@@ -17,6 +17,8 @@ export const oldHouseRenovationPageText = {
     serviceAlt: "Old house site assessment and renovation planning example",
     assessment: "Request Old House Renovation Advice",
     whatsapp: "WhatsApp Enquiry",
+    whatsappMessage:
+      "Hi FLASH CAST, I'd like advice on an old house renovation. Project location: __. Property type and age: __. Main issues: __. Approximate floor area: __. I can share site photos or a floor plan.",
     introTitle: "What to Check Before Renovating an Old House",
     intro: [
       "Many terrace houses, semi-detached homes, bungalows, inherited properties, and older landed homes need a careful review before cosmetic upgrades begin.",
@@ -159,6 +161,8 @@ export const oldHouseRenovationPageText = {
     serviceAlt: "旧屋现场评估与翻新规划示例",
     assessment: "获取旧屋翻新报价建议",
     whatsapp: "WhatsApp 咨询",
+    whatsappMessage:
+      "你好 FLASH CAST，我想咨询旧屋翻新。项目地点：__。房屋类型与大约屋龄：__。主要问题：__。大约面积：__。我可以提供现场照片或平面图。",
     introTitle: "旧屋翻新前要先检查什么",
     intro: [
       "很多排屋、半独立、独立式住宅、继承房产或多年未装修的旧屋，在做表面装饰前需要先确认屋况。",
