@@ -201,9 +201,9 @@ const blogUpdates = {
     excerpt_zh: "旧屋翻新前应检查水电、防水、屋顶、墙体、地面和隐藏问题，避免开工后预算失控。",
     excerpt_en: "A checklist for old house renovation covering wiring, plumbing, waterproofing, roof, walls, floors, and hidden-condition risks.",
     content_zh:
-      "<h2>先检查隐藏工程</h2><p>旧屋翻新最重要的是水管、电线、防水、排水和屋顶状态。表面看起来还能用，不代表墙内和地底没有老化问题。</p><h2>分清必要维修和风格升级</h2><p>预算有限时，先处理安全、漏水、潮湿和结构相关项目，再安排橱柜、墙面、灯光和软装升级。这样比较不容易为了外观牺牲基础工程。</p><h2>开工前确认风险</h2><p>拆除后可能发现空鼓、渗水、白蚁或旧线路问题。报价阶段应先说明哪些属于已包含，哪些需要现场确认后再报价。</p>",
+      "<h2>先检查隐藏工程</h2><p>旧屋翻新最重要的是水管、电线、防水、排水和屋顶状态。表面看起来还能用，不代表墙内和地底没有老化问题。如果多个系统或空间都需要处理，可在申请报价前先查看我们的<a href=\"/zh/services/old-house\">吉隆坡与雪兰莪旧屋翻新规划</a>。</p><h2>分清必要维修和风格升级</h2><p>预算有限时，先处理安全、漏水、潮湿和结构相关项目，再安排橱柜、墙面、灯光和软装升级。这样比较不容易为了外观牺牲基础工程。</p><h2>开工前确认风险</h2><p>拆除后可能发现空鼓、渗水、白蚁或旧线路问题。报价阶段应先说明哪些属于已包含，哪些需要现场确认后再报价。</p>",
     content_en:
-      "<h2>Inspect hidden works first</h2><p>For older houses, wiring, plumbing, waterproofing, drainage, and roof condition are more important than surface appearance. A room may look acceptable while hidden services are aging.</p><h2>Separate repairs from upgrades</h2><p>When budget is limited, handle safety, leaks, dampness, and structural concerns before cabinets, finishes, lighting, and styling upgrades.</p><h2>Confirm site risks early</h2><p>Hacking may reveal hollow tiles, seepage, termites, or old wiring. Quotations should state what is included and what needs confirmation after opening up.</p>",
+      "<h2>Inspect hidden works first</h2><p>For older houses, wiring, plumbing, waterproofing, drainage, and roof condition are more important than surface appearance. A room may look acceptable while hidden services are aging. If several systems or rooms need attention, review our <a href=\"/en/services/old-house\">old house renovation planning in Kuala Lumpur and Selangor</a> before requesting a quote.</p><h2>Separate repairs from upgrades</h2><p>When budget is limited, handle safety, leaks, dampness, and structural concerns before cabinets, finishes, lighting, and styling upgrades.</p><h2>Confirm site risks early</h2><p>Hacking may reveal hollow tiles, seepage, termites, or old wiring. Quotations should state what is included and what needs confirmation after opening up.</p>",
   },
   "kitchen-cabinet-material-guide": {
     excerpt_zh: "厨房橱柜材料选择要看防潮、门板表面、台面、五金、清洁习惯和预算，不只看颜色。",

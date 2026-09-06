@@ -12,7 +12,7 @@ describe("priority service SEO fallbacks", () => {
     const titles = services.map((service) => service?.seoTitle || "");
     expect(titles).toEqual([
       "Residential Renovation Kuala Lumpur | FLASH CAST",
-      "Kitchen Renovation Kuala Lumpur | FLASH CAST",
+      "Kitchen Renovation Kuala Lumpur & Selangor | FLASH CAST",
       "Bathroom Renovation Kuala Lumpur | FLASH CAST",
       "Office Renovation Contractor KL | FLASH CAST",
       "Shop Renovation Kuala Lumpur | FLASH CAST",
