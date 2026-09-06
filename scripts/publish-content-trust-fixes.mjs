@@ -446,15 +446,16 @@ const targetConfigs = {
   "old-house-renovation-checklist": {
     contentType: "blog", table: "blog_posts", keyField: "slug", key: "old-house-renovation-checklist", fields: blogFields, buildRecord: oldHouseBlogRecord,
     publicPaths: [
-      { path: "/en/blog/old-house-renovation-checklist", expected: 'href="/en/services/old-house"' },
-      { path: "/zh/blog/old-house-renovation-checklist", expected: 'href="/zh/services/old-house"' },
+      // Edge HTML exposes blog metadata, while rowMismatches validates the complete body and its contextual link.
+      { path: "/en/blog/old-house-renovation-checklist", expected: "Old House Renovation Checklist | FLASH CAST" },
+      { path: "/zh/blog/old-house-renovation-checklist", expected: "旧屋翻新检查清单 | FLASH CAST" },
     ],
   },
   "old-house-renovation-hidden-costs-malaysia": {
     contentType: "blog", table: "blog_posts", keyField: "slug", key: "old-house-renovation-hidden-costs-malaysia", fields: blogFields, buildRecord: oldHouseBlogRecord,
     publicPaths: [
-      { path: "/en/blog/old-house-renovation-hidden-costs-malaysia", expected: 'href="/en/services/old-house"' },
-      { path: "/zh/blog/old-house-renovation-hidden-costs-malaysia", expected: 'href="/zh/services/old-house"' },
+      { path: "/en/blog/old-house-renovation-hidden-costs-malaysia", expected: "Hidden Costs in Old House Renovation in Malaysia | FLASH CAST" },
+      { path: "/zh/blog/old-house-renovation-hidden-costs-malaysia", expected: "马来西亚旧屋翻新常见隐藏费用 | FLASH CAST" },
     ],
   },
   bathroom: {
