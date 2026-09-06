@@ -290,10 +290,18 @@ test.describe("public site smoke", () => {
     expect(submitCount).toBe(0);
   });
 
-  test("service detail exposes contextual quote links", async ({ page }) => {
+  test("service detail exposes contextual quote and WhatsApp links", async ({ page }) => {
     await gotoSmokePage(page, "/zh/services/renovation");
     await page.waitForLoadState("load");
     await expect(page.locator('a[href*="source=service"]').first()).toBeVisible();
+    const renovationWhatsAppHref = await page.locator('main a[href^="https://wa.me/"]').last().getAttribute("href");
+    expect(decodeURIComponent(renovationWhatsAppHref || "")).toContain("住宅装修");
+    expect(decodeURIComponent(renovationWhatsAppHref || "")).toContain("项目地点");
+
+    await gotoSmokePage(page, "/en/services/old-house");
+    const oldHouseWhatsAppHref = await page.locator('main a[href^="https://wa.me/"]').last().getAttribute("href");
+    expect(decodeURIComponent(oldHouseWhatsAppHref || "")).toContain("old house renovation");
+    expect(decodeURIComponent(oldHouseWhatsAppHref || "")).toContain("Property type and age");
   });
 });
 

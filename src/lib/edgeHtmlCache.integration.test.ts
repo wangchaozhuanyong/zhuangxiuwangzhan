@@ -264,6 +264,59 @@ describe("public Edge HTML cache", () => {
     expect(html).toContain('hreflang="en"');
   });
 
+  it("publishes a language-aware Service entity for service detail pages", async () => {
+    vi.stubGlobal("fetch", vi.fn(async (input: RequestInfo | URL) => {
+      const url = new URL(String(input));
+      if (url.pathname.endsWith("/site_settings")) {
+        return new Response(JSON.stringify([{
+          company_name: "FLASH CAST SDN. BHD.",
+          phone_e164: "+601128853888",
+          updated_at: siteSettingsRevision,
+        }]), { headers: { "content-type": "application/json" } });
+      }
+      if (url.pathname.endsWith("/services")) {
+        return new Response(JSON.stringify([{
+          id: "service-bathroom",
+          slug: "bathroom",
+          title_en: "Bathroom Renovation and Waterproofing",
+          title_zh: "浴室装修与防水工程",
+          seo_title_en: "Bathroom Renovation Malaysia | FLASH CAST",
+          seo_title_zh: "吉隆坡浴室装修与防水工程 | FLASH CAST",
+          seo_description_en: "Plan bathroom waterproofing, drainage, tiles and sanitary fittings around the real site.",
+          seo_description_zh: "根据真实现场规划浴室防水、排水、瓷砖与洁具范围。",
+          image_url: "/images/services/bathroom-renovation.webp",
+          faqs_zh: [{ q: "浴室漏水一定要全部翻新吗？", a: "不一定，应先检查漏水来源和现场条件。" }],
+          updated_at: siteSettingsRevision,
+          status: "published",
+        }]), { headers: { "content-type": "application/json" } });
+      }
+      return new Response("[]", { headers: { "content-type": "application/json" } });
+    }));
+
+    const response = await requestPage({ path: "/zh/services/bathroom" });
+    const html = await response.text();
+    const schemaMatch = html.match(/data-flashcast-edge-schema>([\s\S]*?)<\/script>/);
+
+    expect(response.status).toBe(200);
+    expect(schemaMatch?.[1]).toBeTruthy();
+    const schema = JSON.parse(schemaMatch?.[1] || "{}");
+    const service = schema["@graph"].find((node: Record<string, unknown>) => node["@type"] === "Service");
+    const webPage = schema["@graph"].find((node: Record<string, unknown>) => node["@type"] === "WebPage");
+
+    expect(service).toMatchObject({
+      "@id": "https://flashcast.com.my/zh/services/bathroom#service",
+      name: "浴室装修与防水工程",
+      serviceType: "浴室装修与防水工程",
+      url: "https://flashcast.com.my/zh/services/bathroom",
+      provider: { "@id": "https://flashcast.com.my/#localbusiness" },
+      availableChannel: {
+        serviceUrl: "https://flashcast.com.my/zh/quote",
+        servicePhone: "+601128853888",
+      },
+    });
+    expect(webPage.mainEntity).toEqual({ "@id": "https://flashcast.com.my/zh/services/bathroom#service" });
+  });
+
   it("returns the manifest app shell when the blog metadata read reaches its timeout", async () => {
     vi.stubGlobal("fetch", vi.fn(async (input: RequestInfo | URL, init?: RequestInit) => {
       const url = new URL(String(input));

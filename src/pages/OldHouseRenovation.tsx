@@ -145,7 +145,7 @@ const OldHouseRenovation = () => {
           <p>{t.ctaDescription}</p>
           <div>
             <Link to="/quote#quote-form" onClick={() => trackCtaClick("quote", "old_house_cta", { destination: "/quote#quote-form" })}>{t.assessment}</Link>
-            <a href={settings.whatsapp_url()} target="_blank" rel="noopener noreferrer" onClick={() => trackCtaClick("whatsapp", "old_house_cta", { destination: "whatsapp" })}><WhatsAppIcon />{t.whatsapp}</a>
+            <a href={settings.whatsapp_url(t.whatsappMessage)} target="_blank" rel="noopener noreferrer" onClick={() => trackCtaClick("whatsapp", "old_house_cta", { destination: "whatsapp" })}><WhatsAppIcon />{t.whatsapp}</a>
           </div>
         </div>
         <nav className="fc-route-related-links" aria-label={t.breadcrumbCurrent}>{t.internalLinks.map((item) => <Link key={item.to} to={item.to}>{item.label}</Link>)}</nav>

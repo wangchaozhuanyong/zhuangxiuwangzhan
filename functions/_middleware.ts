@@ -31,7 +31,8 @@ type SeoEntry = {
   canonical: string;
   hreflang: { en: string; zh: string; xDefault: string };
   ogImage: string;
-  schemaType?: "BlogPosting";
+  schemaType?: "BlogPosting" | "Service";
+  entityName?: string;
   headline?: string;
   datePublished?: string;
   dateModified?: string;
@@ -866,6 +867,23 @@ const buildEdgeStructuredData = (meta: SeoEntry, siteSettings?: SiteSettingsHead
         publisher: { "@id": businessId },
       }
     : undefined;
+  const serviceNode = meta.schemaType === "Service"
+    ? {
+        "@type": "Service",
+        "@id": `${meta.canonical}#service`,
+        name: meta.entityName || meta.title.replace(/\s*\|\s*FLASH CAST.*$/i, ""),
+        serviceType: meta.entityName || meta.title.replace(/\s*\|\s*FLASH CAST.*$/i, ""),
+        description: meta.description,
+        url: meta.canonical,
+        provider: { "@id": businessId },
+        areaServed: ["Kuala Lumpur", "Selangor", "Klang Valley"],
+        availableChannel: {
+          "@type": "ServiceChannel",
+          serviceUrl: `${origin}/${meta.lang === "zh" ? "zh" : "en"}/quote`,
+          servicePhone: siteSettings?.phone_e164 || DEFAULT_PHONE,
+        },
+      }
+    : undefined;
   const faqNode =
     meta.faqs && meta.faqs.length > 0
       ? {
@@ -949,7 +967,11 @@ const buildEdgeStructuredData = (meta: SeoEntry, siteSettings?: SiteSettingsHead
         isPartOf: { "@id": websiteId },
         about: { "@id": businessId },
         provider: { "@id": businessId },
-        mainEntity: articleNode ? { "@id": articleNode["@id"] } : undefined,
+        mainEntity: articleNode
+          ? { "@id": articleNode["@id"] }
+          : serviceNode
+            ? { "@id": serviceNode["@id"] }
+            : undefined,
         primaryImageOfPage: image
           ? {
               "@type": "ImageObject",
@@ -961,6 +983,7 @@ const buildEdgeStructuredData = (meta: SeoEntry, siteSettings?: SiteSettingsHead
       },
       breadcrumb,
       ...(articleNode ? [articleNode] : []),
+      ...(serviceNode ? [serviceNode] : []),
       ...(faqNode ? [faqNode] : []),
     ],
   };
@@ -1323,7 +1346,8 @@ const buildDynamicSeoEntry = (
       xDefault: `${PUBLIC_SITE_URL}${enPath}`,
     },
     ogImage: absolutePublicUrl(imageUrl),
-    schemaType: kind === "blog" ? "BlogPosting" : fallback?.schemaType,
+    schemaType: kind === "blog" ? "BlogPosting" : kind === "service" ? "Service" : fallback?.schemaType,
+    entityName: kind === "service" ? localizedField(row, "title", lang) || rawTitle : fallback?.entityName,
     headline: kind === "blog" ? localizedField(row, "title", lang) || rawTitle : fallback?.headline,
     datePublished: kind === "blog"
       ? validDateString(readString(row, "published_at")) || validDateString(readString(row, "created_at")) || fallback?.datePublished

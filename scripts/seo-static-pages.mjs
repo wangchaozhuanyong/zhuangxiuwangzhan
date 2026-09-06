@@ -232,6 +232,7 @@ export function buildStaticManifest() {
       },
       ogImage: OG_IMAGE,
       ...(def.faqs ? { faqs: def.faqs } : {}),
+      ...(def.path.startsWith("/services/") ? { schemaType: "Service" } : {}),
     };
   }
   return manifest;
