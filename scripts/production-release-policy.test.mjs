@@ -155,7 +155,10 @@ test("production workflow has only an explicit main dispatch and never synchroni
   assert.match(workflow, /source_sha:[\s\S]*required: true/);
   assert.doesNotMatch(workflow, /approval_id:|APPROVAL_ID:/);
   assert.match(workflow, /build:\s+needs: protection/);
-  assert.match(workflow, /deploy:[\s\S]*environment:\s+name: flashcast-production/);
+  assert.doesNotMatch(workflow, /deploy:[\s\S]*environment:\s+name: flashcast-production/);
+  assert.match(workflow, /pages-release-evidence\.mjs owner /);
+  assert.match(workflow, /pages-release-evidence\.mjs owner-authorization-request /);
+  assert.match(workflow, /pages-release-evidence\.mjs owner-authorize /);
   assert.match(workflow, /authorization_digest: \$\{\{ steps\.request\.outputs\.authorization_digest \}\}/);
   assert.match(workflow, /cancel-in-progress: false/);
   assert.match(workflow, /artifact-ids: \$\{\{ needs\.build\.outputs\.artifact_id \}\}/);
@@ -163,7 +166,7 @@ test("production workflow has only an explicit main dispatch and never synchroni
   assert(deploy);
   assert.doesNotMatch(deploy, /run:.*(?:release:check|npm run build|retain-assets|functions build)/);
   assert.match(deploy, /--cwd "\$RUNNER_TEMP\/pages-deployer".*--no-bundle --env-file \/dev\/null/);
-  const ordered = ["Require existing protected environment", "Stable release check", "Compile complete Pages Functions", "Confirm release source", "Freeze complete upload input", "Archive immutable complete release", "Prepare exact native approval request", "Download the immutable release", "Verify downloaded artifact digest against GitHub metadata", "Verify exact single-use native environment approval", "sha256sum --check", "Recheck main CI", "Deploy verified archived input"];
+  const ordered = ["Verify single-owner manual release identity", "Stable release check", "Compile complete Pages Functions", "Confirm release source", "Freeze complete upload input", "Archive immutable complete release", "Prepare exact single-owner release request", "Download the immutable release", "Verify downloaded artifact digest against GitHub metadata", "Verify exact single-use owner manual dispatch", "sha256sum --check", "Recheck main CI", "Deploy verified archived input"];
   let previous = -1;
   for (const marker of ordered) {
     const index = workflow.indexOf(marker);
@@ -177,9 +180,10 @@ import { mkdtempSync, mkdirSync, rmSync, symlinkSync, writeFileSync } from "node
 import { tmpdir } from "node:os";
 import path from "node:path";
 import {
-  RELEASE_ENVIRONMENT, RELEASE_REPOSITORY, authorizationRequest, checkArtifactMetadata,
-  checkMainCI, checkProtectedEnvironment, deploymentRecord, freeze, releaseAuthorization,
-  validateProtectedEnvironment, verify, verifyArtifactMetadata,
+  RELEASE_ENVIRONMENT, RELEASE_OWNER_LOGIN, RELEASE_REPOSITORY, authorizationRequest,
+  checkArtifactMetadata, checkMainCI, checkOwnerManualRun, checkProtectedEnvironment,
+  deploymentRecord, freeze, ownerReleaseAuthorization, releaseAuthorization,
+  validateOwnerManualRun, validateProtectedEnvironment, verify, verifyArtifactMetadata,
 } from "./pages-release-evidence.mjs";
 
 function completeArtifact(t) {
@@ -428,6 +432,98 @@ test("requested artifact, package, authorization digest and run attempt cannot c
     { artifactId: "124" }, { artifactDigest: "f".repeat(64) }, { packageSha256: "f".repeat(64) },
     { requestDigest: "f".repeat(64) }, { runAttempt: "2" }, { repository: "example/other" },
   ]) await assert.rejects(releaseAuthorization({ ...context, ...change }, true, fakeReleaseAPI(fixture)));
+});
+
+function ownerManualFixture() {
+  return {
+    run: {
+      id: 42, run_attempt: 1, event: "workflow_dispatch", head_branch: "main", head_sha: SHA,
+      repository: { full_name: RELEASE_REPOSITORY },
+      path: ".github/workflows/cloudflare-pages-deploy-manual.yml",
+      actor: { id: 1, login: RELEASE_OWNER_LOGIN },
+      triggering_actor: { id: 1, login: RELEASE_OWNER_LOGIN },
+      status: "in_progress",
+    },
+    jobs: {
+      total_count: 3,
+      jobs: [
+        { id: 86, name: "protection", run_id: 42, status: "completed" },
+        { id: 87, name: "build", run_id: 42, status: "completed" },
+        { id: 88, name: "Deploy approved immutable artifact", run_id: 42, status: "in_progress" },
+      ],
+    },
+  };
+}
+
+function fakeOwnerAPI(fixture, calls = []) {
+  const base = `https://api.github.com/repos/${RELEASE_REPOSITORY}/actions/runs/${fixture.run.id}`;
+  const payloads = {
+    [base]: fixture.run,
+    [`${base}/jobs?per_page=100`]: fixture.jobs,
+  };
+  return async (url, options) => {
+    assert(!options.method || options.method === "GET", "Owner authorization cannot mutate GitHub state");
+    assert(Object.hasOwn(payloads, url), `Unexpected owner release API: ${url}`);
+    calls.push(url);
+    return { ok: true, json: async () => structuredClone(payloads[url]) };
+  };
+}
+
+test("single-owner manual release binds owner, exact run, source and artifact", async () => {
+  const fixture = ownerManualFixture();
+  const identity = validateOwnerManualRun(releaseInput, fixture.run);
+  assert.equal(identity.ownerLogin, RELEASE_OWNER_LOGIN);
+  const checked = await checkOwnerManualRun(releaseInput, fakeOwnerAPI(fixture));
+  assert.equal(checked.ownerId, 1);
+
+  const request = await ownerReleaseAuthorization(releaseInput, false, fakeOwnerAPI(fixture));
+  const context = { ...releaseInput, requestDigest: request.sha256 };
+  const calls = [];
+  const result = await ownerReleaseAuthorization(context, true, fakeOwnerAPI(fixture, calls));
+  assert.deepEqual(result.request_sha256, request.sha256);
+  assert.equal(result.authorization_source, "github_single_owner_manual_dispatch");
+  assert.equal(result.owner_login, RELEASE_OWNER_LOGIN);
+  assert.equal(result.owner_id, 1);
+  assert.equal(result.approval_id, "github-owner-dispatch:1:42:1:88");
+  assert.equal(result.source_sha, SHA);
+  assert.equal(result.artifact_id, 123);
+  assert.equal(calls.length, 2);
+  assert(!JSON.stringify(result).includes(releaseInput.token));
+});
+
+test("single-owner release rejects another account, automatic run, rerun and replay", async () => {
+  for (const change of [
+    (f) => { f.run.actor.login = "other"; },
+    (f) => { f.run.triggering_actor.login = "other"; },
+    (f) => { f.run.triggering_actor.id = 2; },
+    (f) => { f.run.event = "push"; },
+    (f) => { f.run.head_branch = "feature"; },
+    (f) => { f.run.head_sha = "b".repeat(40); },
+    (f) => { f.run.run_attempt = 2; },
+    (f) => { f.run.status = "completed"; },
+  ]) {
+    const fixture = ownerManualFixture();
+    change(fixture);
+    await assert.rejects(ownerReleaseAuthorization(releaseInput, false, fakeOwnerAPI(fixture)));
+  }
+});
+
+test("single-owner release rejects changed request and non-unique deploy job", async () => {
+  const fixture = ownerManualFixture();
+  const request = await ownerReleaseAuthorization(releaseInput, false, fakeOwnerAPI(fixture));
+  await assert.rejects(ownerReleaseAuthorization(
+    { ...releaseInput, requestDigest: "f".repeat(64) },
+    true,
+    fakeOwnerAPI(fixture),
+  ), /changed after preparation/);
+
+  fixture.jobs.jobs.push({ ...fixture.jobs.jobs[2], id: 89 });
+  fixture.jobs.total_count += 1;
+  await assert.rejects(ownerReleaseAuthorization(
+    { ...releaseInput, requestDigest: request.sha256 },
+    true,
+    fakeOwnerAPI(fixture),
+  ), /unique native deploy job/);
 });
 
 test("a new run cannot reuse an earlier run's native approval", async () => {

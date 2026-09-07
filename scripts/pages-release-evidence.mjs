@@ -79,6 +79,7 @@ export async function checkMainCI({ repository, sourceSha, token }, fetchImpl = 
 // dispatch string is never an authorization source.
 export const RELEASE_REPOSITORY = "wangchaozhuanyong/zhuangxiuwangzhan";
 export const RELEASE_ENVIRONMENT = "flashcast-production";
+export const RELEASE_OWNER_LOGIN = "wangchaozhuanyong";
 const RELEASE_WORKFLOW = ".github/workflows/cloudflare-pages-deploy-manual.yml";
 const RELEASE_JOB = "Deploy approved immutable artifact";
 const positiveId = (value) => {
@@ -197,6 +198,101 @@ export async function releaseAuthorization(context, verifyApproval, fetchImpl = 
   return verifyNativeApproval(request, protection, run, reviews, jobs);
 }
 
+export function validateOwnerManualRun(context, run) {
+  assert.equal(context.repository, RELEASE_REPOSITORY, "Cross-repository release is forbidden");
+  requireSha(context.sourceSha);
+  const runId = positiveId(context.runId);
+  assert.equal(Number(context.runAttempt), 1, "Re-runs cannot reuse owner release authorization; start a new manual run");
+  assert.equal(run.id, runId);
+  assert.equal(run.run_attempt, 1, "The manual run was already retried");
+  assert.equal(run.event, "workflow_dispatch", "Only an explicit manual dispatch may release production");
+  assert.equal(run.head_branch, "main", "Only main may release production");
+  assert.equal(run.head_sha, context.sourceSha, "Owner authorization source SHA mismatch");
+  assert.equal(run.repository?.full_name, context.repository);
+  assert.equal(run.path?.split("@")[0], RELEASE_WORKFLOW);
+  assert.equal(run.actor?.login, RELEASE_OWNER_LOGIN, "Release actor is not the repository owner");
+  assert.equal(run.triggering_actor?.login, RELEASE_OWNER_LOGIN, "Triggering actor is not the repository owner");
+  const actorId = positiveId(run.actor?.id);
+  assert.equal(positiveId(run.triggering_actor?.id), actorId, "Actor and triggering actor must be the same owner account");
+  assert.equal(run.status, "in_progress", "Completed owner authorization cannot be replayed");
+  return {
+    repository: context.repository,
+    sourceSha: context.sourceSha,
+    runId,
+    runAttempt: 1,
+    ownerLogin: RELEASE_OWNER_LOGIN,
+    ownerId: actorId,
+    authorizationSource: "github_single_owner_manual_dispatch",
+  };
+}
+
+export async function checkOwnerManualRun(context, fetchImpl = fetch) {
+  assert(context.token, "GitHub read token is required");
+  const run = await requestJson(
+    `https://api.github.com/repos/${context.repository}/actions/runs/${positiveId(context.runId)}`,
+    context.token,
+    fetchImpl,
+  );
+  return validateOwnerManualRun(context, run);
+}
+
+export function ownerAuthorizationRequest(context, run) {
+  assert(!Object.hasOwn(context, "approvalId"), "Caller-supplied approval_id is not authorization");
+  const identity = validateOwnerManualRun(context, run);
+  const request = {
+    task_id: "fc-20260906-website-rebuild-release-execution",
+    action_id: `pages-deploy-${identity.runId}`,
+    action_class: "site_publish",
+    scope: `flashcast.com.my:website-rebuild-final-main:${context.sourceSha}`,
+    source_sha: context.sourceSha,
+    repository: context.repository,
+    owner_login: identity.ownerLogin,
+    owner_id: identity.ownerId,
+    run_id: identity.runId,
+    run_attempt: 1,
+    artifact_id: positiveId(context.artifactId),
+    artifact_digest: `sha256:${digest(context.artifactDigest)}`,
+    package_sha256: digest(context.packageSha256),
+    authorization_source: identity.authorizationSource,
+    single_use_unit: `${identity.runId}:1:deploy`,
+  };
+  return { request, sha256: sha256(JSON.stringify(request)) };
+}
+
+export function verifyOwnerManualDispatch(request, context, run, jobs) {
+  const identity = validateOwnerManualRun(context, run);
+  assert.equal(request.request.owner_login, identity.ownerLogin);
+  assert.equal(request.request.owner_id, identity.ownerId);
+  assert(Array.isArray(jobs.jobs) && jobs.total_count === jobs.jobs.length, "Incomplete native job history fails closed");
+  const live = jobs.jobs.filter((job) => job.name === RELEASE_JOB);
+  assert.equal(live.length, 1, "A unique native deploy job is required");
+  assert.equal(live[0].run_id, run.id);
+  assert.equal(live[0].status, "in_progress", "Completed deployment authorization cannot be replayed");
+  positiveId(live[0].id);
+  return {
+    ...request.request,
+    request_sha256: request.sha256,
+    approval_id: `github-owner-dispatch:${identity.ownerId}:${run.id}:1:${live[0].id}`,
+    native_deploy_job_id: live[0].id,
+    operator_id: identity.ownerId,
+    operator_login: identity.ownerLogin,
+    source: `https://api.github.com/repos/${RELEASE_REPOSITORY}/actions/runs/${run.id}`,
+    single_use_enforcement: "one owner-triggered manual run, attempt 1, and one in-progress deploy job",
+    checked_at: new Date().toISOString(),
+  };
+}
+
+export async function ownerReleaseAuthorization(context, verifyAuthorization, fetchImpl = fetch) {
+  assert(context.token, "GitHub read token is required");
+  const base = `https://api.github.com/repos/${context.repository}/actions/runs/${positiveId(context.runId)}`;
+  const run = await requestJson(base, context.token, fetchImpl);
+  const request = ownerAuthorizationRequest(context, run);
+  if (!verifyAuthorization) return request;
+  assert.equal(context.requestDigest, request.sha256, "Requested authorization changed after preparation");
+  const jobs = await requestJson(`${base}/jobs?per_page=100`, context.token, fetchImpl);
+  return verifyOwnerManualDispatch(request, context, run, jobs);
+}
+
 export function verifyArtifactMetadata(metadata, context, now = Date.now()) {
   const id = positiveId(context.artifactId);
   const runId = positiveId(context.runId);
@@ -291,13 +387,22 @@ async function main() {
     save(input, await checkMainCI({ repository: env.GITHUB_REPOSITORY, sourceSha: env.RELEASE_SOURCE_SHA, token: env.GH_TOKEN }));
   } else if (command === "protection") {
     save(input, await checkProtectedEnvironment(context));
+  } else if (command === "owner") {
+    save(input, await checkOwnerManualRun(context));
   } else if (command === "authorization-request") {
     const request = await releaseAuthorization(context, false);
     save(input, request);
     writeFileSync(env.GITHUB_OUTPUT, `authorization_digest=${request.sha256}\n`, { flag: "a" });
     writeFileSync(env.GITHUB_STEP_SUMMARY, `Review this exact single-use release request before approving the protected deployment job.\n\n\`\`\`json\n${JSON.stringify(request.request, null, 2)}\n\`\`\`\n\nRequired native review comment: \`approve sha256:${request.sha256}\`\n`, { flag: "a" });
+  } else if (command === "owner-authorization-request") {
+    const request = await ownerReleaseAuthorization(context, false);
+    save(input, request);
+    writeFileSync(env.GITHUB_OUTPUT, `authorization_digest=${request.sha256}\n`, { flag: "a" });
+    writeFileSync(env.GITHUB_STEP_SUMMARY, `Single-owner manual production release request.\n\n\`\`\`json\n${JSON.stringify(request.request, null, 2)}\n\`\`\`\n`, { flag: "a" });
   } else if (command === "authorize") {
     save(input, await releaseAuthorization(context, true));
+  } else if (command === "owner-authorize") {
+    save(input, await ownerReleaseAuthorization(context, true));
   } else if (command === "artifact") {
     save(input, await checkArtifactMetadata(context));
   } else if (command === "deployment") {
