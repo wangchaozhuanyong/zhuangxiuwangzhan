@@ -18,9 +18,15 @@ on:
         type: choice
         options:
           - all-20260906
+          - topic-cluster-links-20260907
           - kitchen
           - old-house-renovation-checklist
           - old-house-renovation-hidden-costs-malaysia
+          - malaysia-renovation-budget-guide
+          - kitchen-renovation-quotation-checklist-malaysia
+          - bathroom-waterproofing-drainage-planning-malaysia
+          - office-fit-out-me-it-planning-checklist-malaysia
+          - restaurant-fit-out-planning-checklist-malaysia
       approval_id:
         description: "Owner authorization reference used in the audit log."
         required: true
@@ -46,33 +52,19 @@ jobs:
           node-version: "22"
           cache: npm
 
-      - uses: supabase/setup-cli@v2
-        with:
-          version: latest
-
       - name: Install dependencies
         run: npm ci
 
       - name: Confirm production source and required secrets
         env:
           CONTENT_PUBLISH_SECRET: ${{ secrets.CONTENT_PUBLISH_SECRET }}
-          SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
           VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
           VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
         run: |
           test "$GITHUB_REF" = "refs/heads/main"
           test -n "$CONTENT_PUBLISH_SECRET"
-          test -n "$SUPABASE_ACCESS_TOKEN"
           test -n "$VITE_SUPABASE_URL"
           test -n "$VITE_SUPABASE_ANON_KEY"
-
-      - name: Synchronize publisher authentication and deploy publisher
-        env:
-          CONTENT_PUBLISH_SECRET: ${{ secrets.CONTENT_PUBLISH_SECRET }}
-          SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
-        run: |
-          supabase secrets set "CONTENT_PUBLISH_SECRET=$CONTENT_PUBLISH_SECRET" --project-ref rbsnyexjifounogswrjp
-          supabase functions deploy content-publish --project-ref rbsnyexjifounogswrjp --no-verify-jwt --use-api
 
       - name: Validate or publish approved updates
         env:
@@ -86,6 +78,8 @@ jobs:
         run: |
           if [ "$PUBLISH_TARGET" = "all-20260906" ]; then
             TARGETS="kitchen old-house-renovation-checklist old-house-renovation-hidden-costs-malaysia"
+          elif [ "$PUBLISH_TARGET" = "topic-cluster-links-20260907" ]; then
+            TARGETS="malaysia-renovation-budget-guide kitchen-renovation-quotation-checklist-malaysia bathroom-waterproofing-drainage-planning-malaysia office-fit-out-me-it-planning-checklist-malaysia restaurant-fit-out-planning-checklist-malaysia"
           else
             TARGETS="$PUBLISH_TARGET"
           fi
