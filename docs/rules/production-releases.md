@@ -70,3 +70,15 @@
 - 前端异常优先回滚 Cloudflare 部署，不要同时回滚数据库。
 - 回滚后重新运行完整生产 smoke。
 - CMS 数据回滚遵守内容 revision 和备份规则，与前端代码回滚分开处理。
+
+## 手动发布与完整制品（2026-09-07）
+
+- `Deploy to Cloudflare Pages` 仅允许手动在 `main` 上运行。必须填写最新完整 `source_sha` 和本次政策生成的单次 `approval_id`；常驻授权名称不是执行许可。不得恢复 `workflow_run` 自动生产部署，也不得在内容发布中同步 Pages secrets 或部署 Supabase Functions。
+- 同一个最终 main SHA 的 Prelaunch、i18n、required release workflow 必须成功。质量工作流默认面向 PR，最终 main 需要单独运行；PR 的绿灯不代替 main 的验证。构建前及上传前都检查最新 main，任何漂移停止。
+- 构建按现有 release:check 完成响应式图片、SEO 生成和旧 hashed assets 保留后，按只读取得的现有 production compatibility date/flags 再预编译 `dist/_worker.js` 与 `dist/_routes.json`。完整包还包含 HTML、静态资源、headers、redirects、sitemap、llms；仅 Vite dist 不是完整部署包。
+- 打包后保存每个文件的大小/SHA-256、tar 包 SHA-256、源码 SHA、Node/Wrangler/lockfile 信息、GitHub artifact ID/digest。部署 job 在新 runner 按 artifact ID 下载，验证压缩包及全部文件，使用分别独立的上传目录、Wrangler 工作目录及 `--no-bundle` 上传（Wrangler 缓存不得进入上传目录），不能再次构建或隐式读取仓库 functions/config。
+- 构建前只读保存 Cloudflare canonical production deployment ID、URL、完整 commit SHA，并与公开 version endpoint 对账；上传前再次确认旧 deployment ID 和 runtime compatibility 设置均未变。只保存白名单部署字段，不保存 API 整体响应、账号配置或密钥。
+- 发布后保存新 deployment ID 与公开版本，完整生产 smoke 仍须按业务页面验收。任何失败停止 CMS；按批准的前一 deployment ID 回退 Cloudflare Pages 后再次核对公开版本和 smoke，不因 workflow 失败就声称自动回滚。旧版本没有历史制品归档时如实登记缺口，不用重新构建的包冒充原上传字节。
+- 首次合并本发布修复前，完整检查旧部署/Prelaunch 活动运行并停止并行 main 写入；有旧运行则停止，不能假定源码修改会取消它们。修复合并后读取 main YAML、等待该 SHA 的 Prelaunch 完成并确认无自动部署，再继续业务 PR。
+- 修复先合并会改变 base 和全部组合树。重建 #88–#92 版本清单；strict 要求更新分支时保留 merge 历史，重新跑当前 Head CI/QA，不复用旧树、旧 Head 放行或已消费许可。
+- CMS 五篇先统一远程 dry-run 5/5。之后使用已核准的单 target 入口：一篇发布 → API 字段/版本 → 两语言渲染正文新内链 → Meta/Schema/sitemap/llms → 保存 PASS → 下一篇。任一失败停止，不用 all-five publish 循环越过逐篇验收。
