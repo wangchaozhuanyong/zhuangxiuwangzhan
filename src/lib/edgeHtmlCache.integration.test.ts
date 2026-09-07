@@ -281,13 +281,20 @@ describe("public Edge HTML cache", () => {
     expect(html).toContain('hreflang="en"');
   });
 
-  it("publishes a language-aware Service entity for service detail pages", async () => {
+  it.each([
+    ["zh", "+601100000001"],
+    ["en", "+601100000001"],
+    ["zh", undefined],
+    ["en", undefined],
+    ["zh", ""],
+    ["en", ""],
+  ])("publishes a language-aware Service with a ContactPoint for %s and phone %s", async (lang, phone) => {
     vi.stubGlobal("fetch", vi.fn(async (input: RequestInfo | URL) => {
       const url = new URL(String(input));
       if (url.pathname.endsWith("/site_settings")) {
         return new Response(JSON.stringify([{
           company_name: "FLASH CAST SDN. BHD.",
-          phone_e164: "+601128853888",
+          phone_e164: phone,
           updated_at: siteSettingsRevision,
         }]), { headers: { "content-type": "application/json" } });
       }
@@ -310,7 +317,11 @@ describe("public Edge HTML cache", () => {
       return new Response("[]", { headers: { "content-type": "application/json" } });
     }));
 
-    const response = await requestPage({ path: "/zh/services/bathroom" });
+    const response = await requestPage({
+      path: `/${lang}/services/bathroom`,
+      // Isolate each settings fixture from the middleware's in-memory cache.
+      supabaseUrl: `https://service-schema-${lang}-${phone ? "configured" : phone === undefined ? "missing" : "empty"}.supabase.co`,
+    });
     const html = await response.text();
     const schemaMatch = html.match(/data-flashcast-edge-schema>([\s\S]*?)<\/script>/);
 
@@ -321,17 +332,21 @@ describe("public Edge HTML cache", () => {
     const webPage = schema["@graph"].find((node: Record<string, unknown>) => node["@type"] === "WebPage");
 
     expect(service).toMatchObject({
-      "@id": "https://flashcast.com.my/zh/services/bathroom#service",
-      name: "浴室装修与防水工程",
-      serviceType: "浴室装修与防水工程",
-      url: "https://flashcast.com.my/zh/services/bathroom",
+      "@id": `https://flashcast.com.my/${lang}/services/bathroom#service`,
+      name: lang === "zh" ? "浴室装修与防水工程" : "Bathroom Renovation and Waterproofing",
+      serviceType: lang === "zh" ? "浴室装修与防水工程" : "Bathroom Renovation and Waterproofing",
+      url: `https://flashcast.com.my/${lang}/services/bathroom`,
       provider: { "@id": "https://flashcast.com.my/#localbusiness" },
       availableChannel: {
-        serviceUrl: "https://flashcast.com.my/zh/quote",
-        servicePhone: "+601128853888",
+        "@type": "ServiceChannel",
+        serviceUrl: `https://flashcast.com.my/${lang}/quote`,
+        servicePhone: {
+          "@type": "ContactPoint",
+          telephone: phone || "+601128853888",
+        },
       },
     });
-    expect(webPage.mainEntity).toEqual({ "@id": "https://flashcast.com.my/zh/services/bathroom#service" });
+    expect(webPage.mainEntity).toEqual({ "@id": `https://flashcast.com.my/${lang}/services/bathroom#service` });
   });
 
   it("returns the manifest app shell when the blog metadata read reaches its timeout", async () => {

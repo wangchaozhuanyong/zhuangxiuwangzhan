@@ -880,7 +880,10 @@ const buildEdgeStructuredData = (meta: SeoEntry, siteSettings?: SiteSettingsHead
         availableChannel: {
           "@type": "ServiceChannel",
           serviceUrl: `${origin}/${meta.lang === "zh" ? "zh" : "en"}/quote`,
-          servicePhone: siteSettings?.phone_e164 || DEFAULT_PHONE,
+          servicePhone: {
+            "@type": "ContactPoint",
+            telephone: siteSettings?.phone_e164 || DEFAULT_PHONE,
+          },
         },
       }
     : undefined;
