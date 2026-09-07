@@ -95,6 +95,7 @@ export default function ServiceDetail() {
         quotePath={quotePath}
         whatsappLabel={copy.whatsapp}
         whatsappSource="Service Detail CTA"
+        whatsappMessage={copy.whatsappMessage(title)}
       />
     </main>
   );
