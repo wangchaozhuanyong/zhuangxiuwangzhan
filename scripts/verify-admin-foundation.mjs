@@ -116,11 +116,11 @@ const checks = [
   },
   {
     file: "README.md",
-    patterns: ["Checks Before Release", "Deployment And Rollback", "Backup And Recovery", "restore:backup:dry-run"],
+    patterns: ["Backup And Recovery", "restore:backup:dry-run"],
   },
   {
     file: "docs/admin-foundation.md",
-    patterns: ["Professional Admin Foundation", "Release Checklist", "Recovery", "Backup Checks"],
+    patterns: ["Professional Admin Foundation", "Recovery", "Backup Checks"],
   },
 ];
 

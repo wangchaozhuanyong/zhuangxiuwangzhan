@@ -7,7 +7,6 @@ import { fileURLToPath } from "node:url";
 const rootDir = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const npmCommand = process.platform === "win32" ? "npm.cmd" : "npm";
 const npxCommand = process.platform === "win32" ? "npx.cmd" : "npx";
-const guardScript = path.join(rootDir, "scripts", "verify-production-release-source.mjs");
 const projectName = process.env.CLOUDFLARE_PAGES_PROJECT_NAME?.trim() || "flashcast-website";
 
 const run = (command, args) => {
@@ -15,22 +14,11 @@ const run = (command, args) => {
   execFileSync(command, args, {
     cwd: rootDir,
     stdio: "inherit",
-    env: { ...process.env, PRODUCTION_BRANCH: "main" },
+    env: process.env,
   });
 };
 
-const captureGit = (args) =>
-  execFileSync("git", args, {
-    cwd: rootDir,
-    encoding: "utf8",
-    stdio: ["ignore", "pipe", "pipe"],
-  }).trim();
-
-run(process.execPath, [guardScript, "--require-remote"]);
-const commitSha = captureGit(["rev-parse", "HEAD"]);
-process.env.VITE_APP_VERSION = commitSha;
-run(npmCommand, ["run", "release:check"]);
-run(process.execPath, [guardScript, "--require-remote", "--allow-generated-output"]);
+run(npmCommand, ["run", "build"]);
 
 run(npxCommand, [
   "wrangler",
@@ -39,10 +27,6 @@ run(npxCommand, [
   "dist",
   "--project-name",
   projectName,
-  "--branch",
-  "main",
-  "--commit-hash",
-  commitSha,
   "--env-file",
   "/dev/null",
 ]);

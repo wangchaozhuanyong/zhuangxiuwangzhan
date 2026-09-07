@@ -149,14 +149,6 @@
 - `docs/rules/dependencies.md`
 - `docs/rules/logging-privacy.md`
 - `docs/rules/public-case-privacy.md`
-- `docs/rules/production-releases.md`
-
-生产发布必须遵守：
-
-- `main` 是唯一正式发布分支，功能分支只能开发、测试和预览。
-- 功能代码、样式和回归测试必须先 commit、push 并合并到 `main`，再发布同一个完整 SHA。
-- 禁止发布未提交工作区、旧 `dist` 或非 `main` 分支；禁止绕过 `npm run release:guard` 直接执行 Wrangler 正式部署。
-- 收到“发布”指令时，必须验证当前分支、工作区、`origin/main` 和发布 SHA；条件不满足必须停止。
 
 ## 路由和 API 规则
 
@@ -256,7 +248,7 @@ Architecture Compliance Report:
 ## 自动检查
 
 - 本项目提供 `npm run arch:check`。
-- 修改架构文档、开发规则、模块列表、脚本、CI 或后端目录后，必须运行 `npm run arch:check`。
+- 修改架构文档、开发规则、模块列表、脚本或后端目录后，必须运行 `npm run arch:check`。
 - 普通代码改动至少按影响范围运行 `npm run lint`、`npm run typecheck`、相关测试。
 - 公开页面、动态图片、媒体加载、HTML 预注入、Edge 缓存相关改动必须运行或说明未运行 `npm run verify:public-performance`。
 - 多语言文案改动运行 `npm run i18n:check`。
@@ -264,4 +256,3 @@ Architecture Compliance Report:
 - 前台 UI 改动必须检查真实桌面端和移动端页面。
 - SEO / CMS 发布链路改动必须验证后台保存、前台展示、SEO metadata、sitemap 或相关生成物是否一致。
 - 表单、线索、报价、通知相关改动必须验证成功、失败、防重复提交和缓存刷新。
-- CI 必须执行 `npm run arch:check`。

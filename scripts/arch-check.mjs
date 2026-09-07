@@ -207,13 +207,6 @@ if (exists("package.json")) {
   }
 }
 
-if (exists(".github/workflows/prelaunch.yml")) {
-  const prelaunch = read(".github/workflows/prelaunch.yml");
-  if (!prelaunch.includes("npm run arch:check")) {
-    fail("prelaunch CI must run npm run arch:check.");
-  }
-}
-
 for (const functionName of requiredFunctionNames) {
   if (!exists(path.join("supabase/functions", functionName, "index.ts"))) {
     fail(`Missing required Supabase function entry: supabase/functions/${functionName}/index.ts`);

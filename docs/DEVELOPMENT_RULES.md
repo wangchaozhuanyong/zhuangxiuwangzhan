@@ -23,7 +23,6 @@
 | 依赖管理 | `docs/rules/dependencies.md` |
 | 日志、审计和隐私 | `docs/rules/logging-privacy.md` |
 | 公开案例隐私 | `docs/rules/public-case-privacy.md` |
-| 正式环境发布 | `docs/rules/production-releases.md` |
 
 ## 1. 项目结构规则
 
@@ -250,56 +249,15 @@ Service Worker / PWA：
 | 用户界面技术字段直出 | `npm run ui:text-check` |
 | 生产构建 | `npm run build` |
 | 本地预览检查 | `npm run verify:preview` 或 `npm run verify:preview:server` |
-| 部署缓存 | `npm run verify:deploy-cache` |
 | 后台基础能力 | `npm run verify:admin-foundation` |
 | E2E | `npm run test:e2e` |
 | 可访问性/响应式 | Playwright 或真实浏览器检查 |
 | SEO / CMS 发布链路 | `npm run verify:seo-html`、`npm run verify:preview` 或相关脚本 |
 | 依赖变更 | `npm install` 后检查 lockfile、`npm run build` |
 
-上线前参考 `.github/workflows/prelaunch.yml` 的顺序：
-
-1. `npm ci`
-2. `npm run arch:check`
-3. `npm run build`
-4. `npm run deploy:retain-assets`
-5. `npm run verify:deploy-cache`
-6. `npm run lint`
-7. `npm test`
-8. `npm run typecheck`
-9. `npm run typecheck:strict-core`
-10. `npm run verify:preview:server`
-11. `npm run test:e2e -- --project=chromium`
-
 如果没有运行某项验证，最终回复必须明确说明“未验证”，不能让人误以为已经通过。
 
-## 10. 部署和回滚规则
-
-正式前端发布固定遵守以下约束：
-
-- `main` 是唯一生产分支，功能分支只能生成预览或运行验证。
-- 代码、样式和测试必须先提交、推送并合并到 `main`。
-- 正式部署必须与 `origin/main` 的完整 SHA 一致，禁止部署未提交工作区或旧 `dist`。
-- 发布前和构建后运行 `npm run release:guard`；本地紧急发布只能使用 `npm run deploy:cloudflare:pages`。
-- 详细流程见 `docs/rules/production-releases.md`。
-
-上线前必须确认：
-
-- 生产环境变量齐全，尤其 `VITE_SUPABASE_URL`、`VITE_SUPABASE_ANON_KEY`、站点电话、邮箱、SSM、地址。
-- Supabase migrations 已应用到目标项目。
-- 必要的 Supabase Edge Functions 已部署。
-- `public/_headers`、`public/_redirects`、`functions/_middleware.ts` 没破坏 HTML 缓存、后台 no-store、SPA fallback 和 hashed asset 404。
-- 静态资源保留脚本和部署缓存校验通过。
-
-回滚规则：
-
-- 前端发布失败：优先回滚 Cloudflare Pages 上一个成功部署。
-- 静态资源/chunk 问题：检查 retained assets 和缓存头，必要时恢复上一个 dist。
-- 数据库问题：先停止继续写入，再根据备份、迁移回滚方案处理。
-- Edge Function 问题：优先回滚对应函数版本，确认 secrets 没变坏。
-- 高风险回滚必须记录影响范围、执行人、时间和验证结果。
-
-## 11. 任务流程规则
+## 10. 任务流程规则
 
 改代码前必须先定位根因，不要只修表面现象。
 
@@ -356,7 +314,7 @@ Architecture Compliance Report:
 10. Remaining architecture risk:
 ```
 
-## 12. 非本次默认范围
+## 11. 非本次默认范围
 
 当前项目没有订单、库存、支付功能。相关规则只是未来扩展时的安全底线，不代表本次要开发这些功能。
 

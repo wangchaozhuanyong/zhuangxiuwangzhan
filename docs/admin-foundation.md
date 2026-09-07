@@ -71,33 +71,6 @@ Module order must be editable through drag-and-drop and keyboard-friendly up/dow
 - Folder names are sanitized before upload.
 - Public media should always have meaningful alt text.
 
-## Release Checklist
-
-Run before release:
-
-```bash
-npm.cmd run typecheck
-npm.cmd run lint
-npm.cmd test -- --run
-npm.cmd run build
-npm.cmd run verify:admin-foundation
-npm.cmd run verify:env
-npm.cmd run verify:backup
-```
-
-Manual checks:
-
-- `/admin` loads.
-- CMS Builder loads after migration.
-- A simple page save succeeds.
-- A repeated save does not create duplicate data.
-- A stale edit shows a conflict message.
-- A small image upload succeeds.
-- A large or unsupported file is rejected.
-- `/admin/system-logs` loads for admins.
-- `/admin/system-health` shows the health check and backup reminders.
-- The health check function returns `ok: true`.
-
 ## Backup Checks
 
 Run:
@@ -116,4 +89,3 @@ If `SUPABASE_SERVICE_ROLE_KEY` is not set, the backup is a public content/media 
 - For deleted content: check archived rows first.
 - For database damage: restore from Supabase backup.
 - For app content damage: restore a verified backup package to staging first, then production.
-- For bad deployment: roll back the frontend build before touching data.

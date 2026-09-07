@@ -1,6 +1,6 @@
 # Flashcast Architecture
 
-本文档只描述 Flashcast 网站的固定架构边界。完整开发流程、质量门禁、安全、缓存、部署和回滚规则见 `docs/DEVELOPMENT_RULES.md`。
+本文档只描述 Flashcast 网站的固定架构边界。完整开发流程、质量检查、安全和缓存规则见 `docs/DEVELOPMENT_RULES.md`。
 
 ## 1. Current Real Architecture
 
@@ -249,4 +249,3 @@ Architecture Compliance Report:
 - 架构规则变更：运行 `npm run arch:check`。
 - 修改 `AGENTS.md`、`docs/ARCHITECTURE.md`、`docs/DEVELOPMENT_RULES.md`、`scripts/arch-check.mjs` 或 `src/backend/modules` 后，必须运行 `npm run arch:check`。
 - 修改公开页面性能、动态图片、媒体加载、HTML 预注入或 Edge 缓存后，必须运行或说明未运行 `npm run verify:public-performance`。
-- CI 必须执行 `npm run arch:check`。
