@@ -17,7 +17,7 @@ import { isHtmlText } from "@/lib/text";
 import { sanitizeHtml } from "@/lib/sanitizeHtml";
 import { translateBlogCategory, translateKeywordLabel, translateDisplayText } from "@/i18n/displayLabels";
 import { trackCtaClick } from "@/lib/analytics";
-import { formatBlogDate, formatBlogReadTime } from "@/lib/blogMeta";
+import { formatBlogReadTime, getBlogDateDisplay } from "@/lib/blogMeta";
 import { blogDetailPageText } from "@/i18n/blogDetailPageText";
 import { pageHeroImages, resolveEditorialHeroImage } from "@/lib/pageHeroImages";
 import { resolveBlogTopic } from "@/lib/blogTopics";
@@ -155,7 +155,7 @@ const BlogDetail = () => {
   }
 
   const readTime = formatBlogReadTime(post.readTime, language);
-  const publishDate = formatBlogDate(post.date, language);
+  const { publishedDate, updatedDate } = getBlogDateDisplay(post.date, post.updatedAt, language);
   const articleTitle = displayText(post.title);
   const articleDescription = displayText(post.seoDescription || post.excerpt);
   const articleImageAlt = displayText(post.imageAlt || post.title);
@@ -241,13 +241,25 @@ const BlogDetail = () => {
         keywords={post.tags}
       />
 
-      <SchemeARouteHero kind="article" image={articleHeroImage.desktop} mobileImage={articleHeroImage.mobile} imageAlt={articleImageAlt} label={`${translateBlogCategory(resolveBlogTopic(post.category, post.slug), language)} / ${publishDate} / ${readTime}`} title={articleTitle} description={displayText(post.excerpt)} />
+      <SchemeARouteHero kind="article" image={articleHeroImage.desktop} mobileImage={articleHeroImage.mobile} imageAlt={articleImageAlt} label={`${translateBlogCategory(resolveBlogTopic(post.category, post.slug), language)} / ${readTime}`} title={articleTitle} description={displayText(post.excerpt)} />
 
       <SchemeASection className="fc-route-editorial">
         <div className="blog-editorial-layout">
             <header className="blog-editorial-prologue">
               <span>{t.articleLead}</span>
               <p>{displayText(post.excerpt)}</p>
+              <div
+                className="mt-4 flex flex-wrap gap-x-5 gap-y-2 text-sm text-muted-foreground"
+                aria-label={t.articleDates}
+                data-blog-date-metadata
+              >
+                {publishedDate ? (
+                  <span>{t.published} <time className="font-medium text-foreground" dateTime={post.date}>{publishedDate}</time></span>
+                ) : null}
+                {updatedDate ? (
+                  <span>{t.lastUpdated} <time className="font-medium text-foreground" dateTime={post.updatedAt || post.date}>{updatedDate}</time></span>
+                ) : null}
+              </div>
             </header>
 
             <div className="blog-editorial-judgements" aria-label={t.designJudgements}>

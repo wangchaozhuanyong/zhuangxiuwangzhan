@@ -38,6 +38,20 @@ export const formatBlogDate = (value: string | null | undefined, language: Langu
   }).format(date);
 };
 
+export const getBlogDateDisplay = (
+  publishedValue: string | null | undefined,
+  updatedValue: string | null | undefined,
+  language: Language,
+) => {
+  const publishedDate = formatBlogDate(publishedValue, language);
+  const candidateUpdatedDate = formatBlogDate(updatedValue, language);
+
+  return {
+    publishedDate,
+    updatedDate: candidateUpdatedDate && candidateUpdatedDate !== publishedDate ? candidateUpdatedDate : "",
+  };
+};
+
 export const formatBlogReadTime = (value: string | number | null | undefined, language: Language) => {
   const minutes = typeof value === "number" ? value : Number(String(value || "").match(/\d+/)?.[0] || defaultReadMinutes);
   const safeMinutes = Number.isFinite(minutes) && minutes > 0 ? minutes : defaultReadMinutes;
