@@ -74,6 +74,28 @@ test.describe("public content trust boundaries", () => {
     await expect(main.getByText("Request a Quote", { exact: true })).toBeVisible();
   });
 
+  test("legacy project media follows the explicit rendering-concept disclosure", async ({ page }) => {
+    await gotoPublicPage(page, "/en/projects/corporate-office-petaling-jaya");
+    let main = page.locator("main");
+
+    await expect(page.getByRole("heading", { level: 1, name: "Corporate Office Space Planning Rendering Concept" })).toBeVisible();
+    await expect(main).toContainText("Rendering Concept");
+    await expect(main).toContainText("Planning Brief");
+    await expect(main).not.toContainText("Client's Requirements");
+    await expect(page.locator('meta[name="description"]')).toHaveAttribute("content", /rendering concept/i);
+
+    await page.setViewportSize({ width: 390, height: 844 });
+    await gotoPublicPage(page, "/zh/projects/modern-condo-mont-kiara");
+    main = page.locator("main");
+    await expect(page.getByRole("heading", { level: 1, name: "现代公寓空间规划效果图概念" })).toBeVisible();
+    await expect(main).toContainText("效果图概念");
+    await expect(main).toContainText("规划说明");
+    await expect(main).not.toContainText("客户需求");
+    await expect(page.locator('meta[name="description"]')).toHaveAttribute("content", /效果图概念/);
+    const metrics = await page.evaluate(() => ({ clientWidth: document.documentElement.clientWidth, scrollWidth: document.documentElement.scrollWidth }));
+    expect(metrics.scrollWidth).toBeLessThanOrEqual(metrics.clientWidth + 1);
+  });
+
   test("about and comparison pages avoid unsupported proof claims", async ({ page }) => {
     await gotoPublicPage(page, "/en/about");
     let main = page.locator("main");
