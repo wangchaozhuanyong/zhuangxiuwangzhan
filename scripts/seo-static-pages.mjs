@@ -191,8 +191,8 @@ const staticDefs = [
   page("zh", "/promotions", "吉隆坡装修优惠活动 | FLASH CAST", "查看 FLASH CAST 当前装修优惠咨询方向与报价确认前的适用条件。"),
   page("en", "/locations", "Renovation Service Areas KL & Selangor | FLASH CAST", "Explore FLASH CAST renovation service areas across Kuala Lumpur, Selangor, and Klang Valley."),
   page("zh", "/locations", "吉隆坡与雪兰莪装修服务地区 | FLASH CAST", "查看 FLASH CAST 在吉隆坡、雪兰莪与巴生谷的装修服务覆盖地区。"),
-  page("en", "/projects", "Renovation Projects Portfolio | Kuala Lumpur | FLASH CAST", "View completed renovation projects by FLASH CAST in Kuala Lumpur and Selangor."),
-  page("zh", "/projects", "装修案例 | 吉隆坡 | FLASH CAST", "查看 FLASH CAST 在吉隆坡与雪兰莪完成的装修案例。"),
+  page("en", "/projects", "Renovation Projects Portfolio | Kuala Lumpur | FLASH CAST", "Browse FLASH CAST renovation project references and clearly labelled planning concepts for homes and commercial spaces in Kuala Lumpur and Selangor."),
+  page("zh", "/projects", "装修案例 | 吉隆坡 | FLASH CAST", "浏览 FLASH CAST 在吉隆坡与雪兰莪发布的装修项目参考和清楚标注的效果图概念。"),
   page("en", "/before-after", "Renovation Before and After Kuala Lumpur | FLASH CAST", "Explore renovation before-and-after comparisons by FLASH CAST across Kuala Lumpur and Klang Valley."),
   page("zh", "/before-after", "吉隆坡装修前后对比案例 | FLASH CAST", "查看 FLASH CAST 在吉隆坡与 Klang Valley 的装修前后对比示例与空间改造效果。"),
   page("en", "/process", "Our Renovation Process | FLASH CAST Kuala Lumpur", "Understand FLASH CAST's renovation process from consultation to handover."),
@@ -232,6 +232,7 @@ export function buildStaticManifest() {
       },
       ogImage: OG_IMAGE,
       ...(def.faqs ? { faqs: def.faqs } : {}),
+      ...(def.path.startsWith("/services/") ? { schemaType: "Service" } : {}),
     };
   }
   return manifest;

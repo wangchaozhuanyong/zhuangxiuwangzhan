@@ -1,47 +1,83 @@
 name: Deploy to Cloudflare Pages
+run-name: "site_publish | fc-20260906-website-rebuild-release-execution | ${{ inputs.source_sha }}"
 
 on:
-  workflow_dispatch: {}
-  workflow_run:
-    workflows: ["Prelaunch verification"]
-    types: [completed]
+  workflow_dispatch:
+    inputs:
+      source_sha:
+        description: "Exact latest main SHA with all release CI successful"
+        required: true
+        type: string
 
 concurrency:
   group: cloudflare-pages-production
-  cancel-in-progress: true
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+  actions: read
+
+env:
+  PRODUCTION_BRANCH: main
+  RELEASE_SOURCE_BRANCH: ${{ github.ref_name }}
+  RELEASE_SOURCE_SHA: ${{ inputs.source_sha }}
 
 jobs:
-  deploy:
-    if: ${{ github.event_name == 'workflow_dispatch' || (github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.head_branch == 'main') }}
+  protection:
+    if: ${{ github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main' }}
     runs-on: ubuntu-latest
-    permissions:
-      contents: read
     steps:
-      - name: Checkout
+      - uses: actions/checkout@v6
+        with:
+          ref: ${{ github.sha }}
+      - uses: actions/setup-node@v6
+        with:
+          node-version: "22"
+      - name: Verify production release source
+        run: npm run release:guard
+      - name: Require existing protected environment before any release work
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: node scripts/pages-release-evidence.mjs protection "$RUNNER_TEMP/release-protection.json"
+
+  build:
+    needs: protection
+    if: ${{ github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main' }}
+    runs-on: ubuntu-latest
+    outputs:
+      artifact_id: ${{ steps.archive.outputs.artifact-id }}
+      artifact_digest: ${{ steps.archive.outputs.artifact-digest }}
+      package_sha256: ${{ steps.freeze.outputs.package_sha256 }}
+      authorization_digest: ${{ steps.request.outputs.authorization_digest }}
+    steps:
+      - name: Checkout requested main
         uses: actions/checkout@v6
         with:
-          ref: ${{ github.event.workflow_run.head_sha || github.sha }}
+          ref: ${{ github.sha }}
 
       - name: Setup Node
         uses: actions/setup-node@v6
         with:
           node-version: "22"
-          cache: "npm"
-          cache-dependency-path: package-lock.json
+          cache: npm
 
       - name: Verify production release source
-        env:
-          PRODUCTION_BRANCH: main
-          RELEASE_SOURCE_BRANCH: ${{ github.event.workflow_run.head_branch || github.ref_name }}
-          RELEASE_SOURCE_SHA: ${{ github.event.workflow_run.head_sha || github.sha }}
         run: npm run release:guard
 
-      - name: Verify Cloudflare deployment credentials
+      - name: Prepare release evidence
+        run: mkdir "$RUNNER_TEMP/pages-release"
+
+      - name: Verify successful final main CI
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: node scripts/pages-release-evidence.mjs ci "$RUNNER_TEMP/pages-release/main-ci.json"
+
+      - name: Capture current production rollback deployment
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           CLOUDFLARE_PAGES_PROJECT_NAME: ${{ secrets.CLOUDFLARE_PAGES_PROJECT_NAME }}
-        run: npm run verify:cloudflare-token
+        run: node scripts/pages-release-evidence.mjs deployment "$RUNNER_TEMP/pages-release/previous-deployment.json"
 
       - name: Install dependencies
         run: npm ci
@@ -70,40 +106,154 @@ jobs:
           VITE_GOOGLE_ADS_WHATSAPP_CONVERSION_LABEL: ${{ secrets.VITE_GOOGLE_ADS_WHATSAPP_CONVERSION_LABEL }}
           VITE_GOOGLE_ADS_QUOTE_CONVERSION_LABEL: ${{ secrets.VITE_GOOGLE_ADS_QUOTE_CONVERSION_LABEL }}
           VITE_GOOGLE_ADS_CONTACT_CONVERSION_LABEL: ${{ secrets.VITE_GOOGLE_ADS_CONTACT_CONVERSION_LABEL }}
-          VITE_APP_VERSION: ${{ github.event.workflow_run.head_sha || github.sha }}
+          VITE_APP_VERSION: ${{ inputs.source_sha }}
         run: npm run release:check
 
+      - name: Compile complete Pages Functions and routing
+        run: node scripts/pages-release-evidence.mjs compile "$RUNNER_TEMP/pages-release/previous-deployment.json"
+
       - name: Confirm release source is unchanged after build
-        env:
-          PRODUCTION_BRANCH: main
-          RELEASE_SOURCE_BRANCH: ${{ github.event.workflow_run.head_branch || github.ref_name }}
-          RELEASE_SOURCE_SHA: ${{ github.event.workflow_run.head_sha || github.sha }}
         run: npm run release:guard -- --allow-generated-output
 
-      - name: Sync Pages Function runtime secrets
-        env:
-          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          CLOUDFLARE_PAGES_PROJECT_NAME: ${{ secrets.CLOUDFLARE_PAGES_PROJECT_NAME }}
-          VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
-          VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
-          WEBSITE_VISIT_INGEST_SECRET: ${{ secrets.WEBSITE_VISIT_INGEST_SECRET }}
+      - name: Freeze complete upload input
+        id: freeze
         run: |
-          printf '%s' "$VITE_SUPABASE_URL" | npx wrangler pages secret put VITE_SUPABASE_URL --project-name "$CLOUDFLARE_PAGES_PROJECT_NAME"
-          printf '%s' "$VITE_SUPABASE_ANON_KEY" | npx wrangler pages secret put VITE_SUPABASE_ANON_KEY --project-name "$CLOUDFLARE_PAGES_PROJECT_NAME"
-          printf '%s' "$WEBSITE_VISIT_INGEST_SECRET" | npx wrangler pages secret put WEBSITE_VISIT_INGEST_SECRET --project-name "$CLOUDFLARE_PAGES_PROJECT_NAME"
-          printf '%s' 'https://54-249-61-238.sslip.io/api/id-business-v2/workspace-website-monitor/visits/ingest' | npx wrangler pages secret put WEBSITE_VISIT_INGEST_URL --project-name "$CLOUDFLARE_PAGES_PROJECT_NAME"
+          node scripts/pages-release-evidence.mjs freeze dist "$RUNNER_TEMP/pages-release/manifest.json"
+          node -e 'const fs = require("node:fs"); const crypto = require("node:crypto"); fs.writeFileSync(process.env.RUNNER_TEMP + "/pages-release/build.json", JSON.stringify({sourceSha: process.env.RELEASE_SOURCE_SHA, node: process.version, wrangler: JSON.parse(fs.readFileSync("node_modules/wrangler/package.json")).version, lockSha256: crypto.createHash("sha256").update(fs.readFileSync("package-lock.json")).digest("hex")}))'
+          tar -czf "$RUNNER_TEMP/pages-release/deployment.tar.gz" -C dist .
+          cd "$RUNNER_TEMP/pages-release"
+          sha256sum deployment.tar.gz > deployment.tar.gz.sha256
+          echo "package_sha256=$(sha256sum deployment.tar.gz | cut -d ' ' -f 1)" >> "$GITHUB_OUTPUT"
 
-      - name: Deploy (Cloudflare Pages)
+      - name: Archive immutable complete release
+        id: archive
+        uses: actions/upload-artifact@v7
+        with:
+          name: pages-${{ inputs.source_sha }}-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/pages-release/
+          if-no-files-found: error
+          retention-days: 90
+
+      - name: Prepare exact native approval request
+        id: request
         env:
-          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          CLOUDFLARE_PAGES_PROJECT_NAME: ${{ secrets.CLOUDFLARE_PAGES_PROJECT_NAME }}
-          COMMIT_SHA: ${{ github.event.workflow_run.head_sha || github.sha }}
-        run: npx wrangler pages deploy dist --project-name "$CLOUDFLARE_PAGES_PROJECT_NAME" --branch main --commit-hash "$COMMIT_SHA"
+          GH_TOKEN: ${{ github.token }}
+          ARTIFACT_ID: ${{ steps.archive.outputs.artifact-id }}
+          ARTIFACT_DIGEST: ${{ steps.archive.outputs.artifact-digest }}
+          EXPECTED_PACKAGE_SHA256: ${{ steps.freeze.outputs.package_sha256 }}
+        run: node scripts/pages-release-evidence.mjs authorization-request "$RUNNER_TEMP/pages-release/authorization-request.json"
+
+      - name: Archive native approval request
+        uses: actions/upload-artifact@v7
+        with:
+          name: pages-authorization-request-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/pages-release/authorization-request.json
+          if-no-files-found: error
+          retention-days: 90
 
       - name: Save retained hashed assets
         uses: actions/cache/save@v5
         with:
           path: .deploy-cache/assets
           key: cloudflare-pages-assets-${{ github.run_id }}
+
+  deploy:
+    name: Deploy approved immutable artifact
+    needs: build
+    environment:
+      name: flashcast-production
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout verification tools at the same main SHA
+        uses: actions/checkout@v6
+        with:
+          ref: ${{ github.sha }}
+
+      - name: Setup Node
+        uses: actions/setup-node@v6
+        with:
+          node-version: "22"
+          cache: npm
+
+      - name: Verify production release source
+        run: npm run release:guard
+
+      - name: Install locked deployment tooling
+        run: npm ci
+
+      - name: Download the immutable release by artifact ID
+        uses: actions/download-artifact@v5
+        with:
+          artifact-ids: ${{ needs.build.outputs.artifact_id }}
+          merge-multiple: true
+          path: ${{ runner.temp }}/pages-release
+
+      - name: Verify downloaded artifact digest against GitHub metadata
+        env:
+          GH_TOKEN: ${{ github.token }}
+          ARTIFACT_ID: ${{ needs.build.outputs.artifact_id }}
+          ARTIFACT_DIGEST: ${{ needs.build.outputs.artifact_digest }}
+        run: node scripts/pages-release-evidence.mjs artifact "$RUNNER_TEMP/pages-release/artifact-metadata-verification.json"
+
+      - name: Verify exact single-use native environment approval
+        env:
+          GH_TOKEN: ${{ github.token }}
+          ARTIFACT_ID: ${{ needs.build.outputs.artifact_id }}
+          ARTIFACT_DIGEST: ${{ needs.build.outputs.artifact_digest }}
+          EXPECTED_PACKAGE_SHA256: ${{ needs.build.outputs.package_sha256 }}
+          AUTHORIZATION_DIGEST: ${{ needs.build.outputs.authorization_digest }}
+        run: node scripts/pages-release-evidence.mjs authorize "$RUNNER_TEMP/pages-release/authorization.json"
+
+      - name: Verify archive and extract to isolated upload directory
+        env:
+          EXPECTED_PACKAGE_SHA256: ${{ needs.build.outputs.package_sha256 }}
+          ARTIFACT_ID: ${{ needs.build.outputs.artifact_id }}
+          ARTIFACT_DIGEST: ${{ needs.build.outputs.artifact_digest }}
+        run: |
+          cd "$RUNNER_TEMP/pages-release"
+          sha256sum --check deployment.tar.gz.sha256
+          test "$(sha256sum deployment.tar.gz | cut -d ' ' -f 1)" = "$EXPECTED_PACKAGE_SHA256"
+          node -e 'require("node:fs").writeFileSync("artifact-identity.json", JSON.stringify({id: process.env.ARTIFACT_ID, digest: process.env.ARTIFACT_DIGEST, packageSha256: process.env.EXPECTED_PACKAGE_SHA256, sourceSha: process.env.RELEASE_SOURCE_SHA}))'
+          mkdir "$RUNNER_TEMP/pages-upload" "$RUNNER_TEMP/pages-deployer"
+          tar -xzf deployment.tar.gz -C "$RUNNER_TEMP/pages-upload"
+          cd "$GITHUB_WORKSPACE"
+          node scripts/pages-release-evidence.mjs verify "$RUNNER_TEMP/pages-upload" "$RUNNER_TEMP/pages-release/manifest.json"
+
+      - name: Recheck main CI and rollback baseline immediately before upload
+        env:
+          GH_TOKEN: ${{ github.token }}
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          CLOUDFLARE_PAGES_PROJECT_NAME: ${{ secrets.CLOUDFLARE_PAGES_PROJECT_NAME }}
+        run: |
+          node scripts/pages-release-evidence.mjs ci "$RUNNER_TEMP/pages-release/deploy-ci.json"
+          node scripts/pages-release-evidence.mjs deployment "$RUNNER_TEMP/pages-release/before-upload.json"
+          node -e 'const fs = require("node:fs"); const p = process.env.RUNNER_TEMP + "/pages-release/"; const before = JSON.parse(fs.readFileSync(p + "previous-deployment.json")); const now = JSON.parse(fs.readFileSync(p + "before-upload.json")); require("node:assert/strict").equal(now.deploymentId, before.deploymentId, "Production changed during build; stop"); require("node:assert/strict").deepEqual(now.runtime, before.runtime, "Runtime configuration changed; stop")'
+          npm run release:guard
+
+      - name: Deploy verified archived input without rebundling
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          CLOUDFLARE_PAGES_PROJECT_NAME: ${{ secrets.CLOUDFLARE_PAGES_PROJECT_NAME }}
+        run: |
+          "$GITHUB_WORKSPACE/node_modules/.bin/wrangler" pages deploy "$RUNNER_TEMP/pages-upload" --cwd "$RUNNER_TEMP/pages-deployer" --project-name "$CLOUDFLARE_PAGES_PROJECT_NAME" --branch main --commit-hash "$RELEASE_SOURCE_SHA" --no-bundle --env-file /dev/null
+          node scripts/pages-release-evidence.mjs verify "$RUNNER_TEMP/pages-upload" "$RUNNER_TEMP/pages-release/manifest.json"
+
+      - name: Record deployed identity and public version
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          CLOUDFLARE_PAGES_PROJECT_NAME: ${{ secrets.CLOUDFLARE_PAGES_PROJECT_NAME }}
+          EXPECTED_DEPLOYMENT_SHA: ${{ inputs.source_sha }}
+        run: |
+          node scripts/pages-release-evidence.mjs deployment "$RUNNER_TEMP/pages-release/deployed.json"
+
+      - name: Preserve deployment evidence even on failure
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: pages-receipt-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/pages-release/*.json
+          if-no-files-found: warn
+          retention-days: 90

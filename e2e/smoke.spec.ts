@@ -4,6 +4,20 @@ import { createHmac } from "node:crypto";
 const isExternalSmoke = Boolean(process.env.PLAYWRIGHT_BASE_URL);
 const navigationAttempts = isExternalSmoke ? 2 : 1;
 const navigationTimeout = isExternalSmoke ? 45_000 : 30_000;
+const publishedServiceSlugs = [
+  "approval",
+  "artistic-coating",
+  "bathroom",
+  "builtin",
+  "design",
+  "flooring",
+  "kitchen",
+  "office-renovation",
+  "old-house",
+  "renovation",
+  "shop-renovation",
+  "warehouse",
+] as const;
 
 const generateTotpCode = (secret: string, timestamp = Date.now()) => {
   const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ234567";
@@ -290,11 +304,50 @@ test.describe("public site smoke", () => {
     expect(submitCount).toBe(0);
   });
 
-  test("service detail exposes contextual quote links", async ({ page }) => {
+  test("service detail exposes contextual quote and WhatsApp links", async ({ page }) => {
     await gotoSmokePage(page, "/zh/services/renovation");
     await page.waitForLoadState("load");
     await expect(page.locator('a[href*="source=service"]').first()).toBeVisible();
+    const renovationWhatsAppHref = await page.locator('main a[href^="https://wa.me/"]').last().getAttribute("href");
+    expect(decodeURIComponent(renovationWhatsAppHref || "")).toContain("住宅装修");
+    expect(decodeURIComponent(renovationWhatsAppHref || "")).toContain("项目地点");
+
+    await gotoSmokePage(page, "/en/services/old-house");
+    const oldHouseWhatsAppHref = await page.locator('main a[href^="https://wa.me/"]').last().getAttribute("href");
+    expect(decodeURIComponent(oldHouseWhatsAppHref || "")).toContain("old house renovation");
+    expect(decodeURIComponent(oldHouseWhatsAppHref || "")).toContain("Property type and age");
+
+    await gotoSmokePage(page, "/en/services/office-renovation");
+    const officeQuoteHref = await page.locator('a[href*="source=service"]').first().getAttribute("href");
+    const officeWhatsAppHref = await page.locator('main a[href^="https://wa.me/"]').last().getAttribute("href");
+    expect(new URL(officeQuoteHref || "", "https://flashcast.com.my").searchParams.get("projectType")).toBe("Office Renovation");
+    expect(decodeURIComponent(officeWhatsAppHref || "")).toContain("Office Renovation");
+    expect(decodeURIComponent(officeWhatsAppHref || "")).toContain("Project location");
+
+    await gotoSmokePage(page, "/zh/services/shop-renovation");
+    const shopQuoteHref = await page.locator('a[href*="source=service"]').first().getAttribute("href");
+    const shopWhatsAppHref = await page.locator('main a[href^="https://wa.me/"]').last().getAttribute("href");
+    expect(new URL(shopQuoteHref || "", "https://flashcast.com.my").searchParams.get("projectType")).toBe("Shop Renovation");
+    expect(decodeURIComponent(shopWhatsAppHref || "")).toContain("店铺装修");
+    expect(decodeURIComponent(shopWhatsAppHref || "")).toContain("项目地点");
   });
+
+  for (const language of ["en", "zh"] as const) {
+    test(`${language} published service family keeps enquiry context and mobile width`, async ({ page }) => {
+      await page.setViewportSize({ width: 390, height: 844 });
+
+      for (const slug of publishedServiceSlugs) {
+        await gotoSmokePage(page, `/${language}/services/${slug}`);
+        await expect(page.locator("main h1")).toBeVisible();
+        await expect(page.locator('main a[href*="source=service"]').first()).toBeVisible();
+
+        const whatsappHref = await page.locator('main a[href^="https://wa.me/"]').last().getAttribute("href");
+        expect(decodeURIComponent(whatsappHref || "")).toContain(language === "zh" ? "项目地点" : "Project location");
+
+        expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
+      }
+    });
+  }
 });
 
 test.describe("admin access guard", () => {

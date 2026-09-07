@@ -134,6 +134,7 @@ const addDynamic = (lang, basePath, slug, title, description, metadata = {}) => 
     },
     ogImage: dynamicOgImage,
     schemaType: metadata.schemaType || undefined,
+    entityName: metadata.entityName || undefined,
     headline: metadata.headline || undefined,
     datePublished: metadata.datePublished || undefined,
     dateModified: metadata.dateModified || undefined,
@@ -185,13 +186,13 @@ const addSitePage = (lang, row) => {
 const [projects, posts, materials, areas, landings, services, sitePages] = await Promise.all([
   fetchRows("projects", "slug,title_en,title_zh,excerpt_en,excerpt_zh"),
   fetchRows("blog_posts", "slug,title_en,title_zh,excerpt_en,excerpt_zh,seo_title_en,seo_title_zh,seo_description_en,seo_description_zh,category,tags,cover_image_url,alt_en,alt_zh,published_at,updated_at"),
-  fetchRows("materials", "slug,title_en,title_zh,excerpt_en,excerpt_zh,seo_description_en,seo_description_zh"),
+  fetchRows("materials", "slug,title_en,title_zh,excerpt_en,excerpt_zh,seo_description_en,seo_description_zh,category,subcategory"),
   fetchRows("service_areas", "slug,title_en,title_zh,seo_description_en,seo_description_zh,excerpt_en,excerpt_zh"),
   fetchRows("landing_pages", "slug,seo_title_en,seo_title_zh,seo_description_en,seo_description_zh,title_en,title_zh"),
   fetchRows("services", "slug,title_en,title_zh,seo_title_en,seo_title_zh,seo_description_en,seo_description_zh"),
   fetchRows("site_pages", "page_key,path,title_en,title_zh,description_en,description_zh,seo_title_en,seo_title_zh,seo_description_en,seo_description_zh,seo_keywords_en,seo_keywords_zh,image_url"),
 ]);
-const materialCategories = await loadMaterialSeoCategories();
+const materialCategories = await loadMaterialSeoCategories(materials);
 
 for (const lang of ["en", "zh"]) {
   for (const row of sitePages) addSitePage(lang, row);
@@ -293,7 +294,10 @@ for (const lang of ["en", "zh"]) {
       lang === "zh"
         ? row.seo_description_zh || row.seo_description_en
         : row.seo_description_en || row.seo_description_zh;
-    addDynamic(lang, "/services", row.slug, title, description);
+    addDynamic(lang, "/services", row.slug, title, description, {
+      schemaType: "Service",
+      entityName: lang === "zh" ? row.title_zh || row.title_en : row.title_en || row.title_zh,
+    });
   }
 }
 

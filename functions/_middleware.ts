@@ -31,7 +31,8 @@ type SeoEntry = {
   canonical: string;
   hreflang: { en: string; zh: string; xDefault: string };
   ogImage: string;
-  schemaType?: "BlogPosting";
+  schemaType?: "BlogPosting" | "Service";
+  entityName?: string;
   headline?: string;
   datePublished?: string;
   dateModified?: string;
@@ -866,6 +867,26 @@ const buildEdgeStructuredData = (meta: SeoEntry, siteSettings?: SiteSettingsHead
         publisher: { "@id": businessId },
       }
     : undefined;
+  const serviceNode = meta.schemaType === "Service"
+    ? {
+        "@type": "Service",
+        "@id": `${meta.canonical}#service`,
+        name: meta.entityName || meta.title.replace(/\s*\|\s*FLASH CAST.*$/i, ""),
+        serviceType: meta.entityName || meta.title.replace(/\s*\|\s*FLASH CAST.*$/i, ""),
+        description: meta.description,
+        url: meta.canonical,
+        provider: { "@id": businessId },
+        areaServed: ["Kuala Lumpur", "Selangor", "Klang Valley"],
+        availableChannel: {
+          "@type": "ServiceChannel",
+          serviceUrl: `${origin}/${meta.lang === "zh" ? "zh" : "en"}/quote`,
+          servicePhone: {
+            "@type": "ContactPoint",
+            telephone: siteSettings?.phone_e164 || DEFAULT_PHONE,
+          },
+        },
+      }
+    : undefined;
   const faqNode =
     meta.faqs && meta.faqs.length > 0
       ? {
@@ -949,7 +970,11 @@ const buildEdgeStructuredData = (meta: SeoEntry, siteSettings?: SiteSettingsHead
         isPartOf: { "@id": websiteId },
         about: { "@id": businessId },
         provider: { "@id": businessId },
-        mainEntity: articleNode ? { "@id": articleNode["@id"] } : undefined,
+        mainEntity: articleNode
+          ? { "@id": articleNode["@id"] }
+          : serviceNode
+            ? { "@id": serviceNode["@id"] }
+            : undefined,
         primaryImageOfPage: image
           ? {
               "@type": "ImageObject",
@@ -961,6 +986,7 @@ const buildEdgeStructuredData = (meta: SeoEntry, siteSettings?: SiteSettingsHead
       },
       breadcrumb,
       ...(articleNode ? [articleNode] : []),
+      ...(serviceNode ? [serviceNode] : []),
       ...(faqNode ? [faqNode] : []),
     ],
   };
@@ -1323,7 +1349,8 @@ const buildDynamicSeoEntry = (
       xDefault: `${PUBLIC_SITE_URL}${enPath}`,
     },
     ogImage: absolutePublicUrl(imageUrl),
-    schemaType: kind === "blog" ? "BlogPosting" : fallback?.schemaType,
+    schemaType: kind === "blog" ? "BlogPosting" : kind === "service" ? "Service" : fallback?.schemaType,
+    entityName: kind === "service" ? localizedField(row, "title", lang) || rawTitle : fallback?.entityName,
     headline: kind === "blog" ? localizedField(row, "title", lang) || rawTitle : fallback?.headline,
     datePublished: kind === "blog"
       ? validDateString(readString(row, "published_at")) || validDateString(readString(row, "created_at")) || fallback?.datePublished
@@ -1628,6 +1655,16 @@ const EXACT_LEGACY_REDIRECTS: Record<string, string> = {
   "/zh/materials/melamine-grey-oak": "/zh/materials/melamine-cabinet-grey-oak",
   "/en/materials/spc-vinyl-natural-oak": "/en/materials/spc-flooring-natural-oak",
   "/zh/materials/spc-vinyl-natural-oak": "/zh/materials/spc-flooring-natural-oak",
+  "/en/materials/acrylic-cabinet-door": "/en/materials/acrylic-cabinet-gloss-white",
+  "/zh/materials/acrylic-cabinet-door": "/zh/materials/acrylic-cabinet-gloss-white",
+  "/en/materials/aluminium-sliding-door": "/en/materials/aluminium-sliding-black",
+  "/zh/materials/aluminium-sliding-door": "/zh/materials/aluminium-sliding-black",
+  "/en/materials/fluted-wall-panel": "/en/materials/fluted-panel-charcoal",
+  "/zh/materials/fluted-wall-panel": "/zh/materials/fluted-panel-charcoal",
+  "/en/materials/kitchen-melamine-cabinets": "/en/materials/category/kitchen-cabinets/melamine-cabinets",
+  "/zh/materials/kitchen-melamine-cabinets": "/zh/materials/category/kitchen-cabinets/melamine-cabinets",
+  "/en/materials/quartz-countertop-white": "/en/materials/quartz-countertop-carrara-white",
+  "/zh/materials/quartz-countertop-white": "/zh/materials/quartz-countertop-carrara-white",
   "/en/projects/mont-kiara-condo-renovation": "/en/projects/mont-kiara-luxury-condo-renovation",
   "/zh/projects/mont-kiara-condo-renovation": "/zh/projects/mont-kiara-luxury-condo-renovation",
   "/en/services/office": "/en/services/office-renovation",

@@ -170,6 +170,23 @@ describe("public Edge HTML cache", () => {
   });
 
   it.each([
+    ["/en/materials/acrylic-cabinet-door", "/en/materials/acrylic-cabinet-gloss-white"],
+    ["/zh/materials/aluminium-sliding-door?source=gsc", "/zh/materials/aluminium-sliding-black?source=gsc"],
+    ["/en/materials/fluted-wall-panel", "/en/materials/fluted-panel-charcoal"],
+    ["/zh/materials/kitchen-melamine-cabinets", "/zh/materials/category/kitchen-cabinets/melamine-cabinets"],
+    ["/en/materials/quartz-countertop-white", "/en/materials/quartz-countertop-carrara-white"],
+  ])("permanently redirects historical material path %s to the verified replacement", async (path, expectedPath) => {
+    const response = await onRequest({
+      request: new Request(`https://flashcast.com.my${path}`),
+      env: {},
+      next: async () => new Response("not used"),
+    } as never);
+
+    expect(response.status).toBe(301);
+    expect(response.headers.get("location")).toBe(`https://flashcast.com.my${expectedPath}`);
+  });
+
+  it.each([
     ["/en/landing/office-renovation", "/en/services/office-renovation"],
     ["/zh/landing/kitchen-cabinet?source=legacy", "/zh/services/kitchen?source=legacy"],
     ["/en/landing/warehouse-shelving/", "/en/services/warehouse"],
@@ -262,6 +279,74 @@ describe("public Edge HTML cache", () => {
     expect(html).toContain('rel="canonical" href="https://flashcast.com.my/en/blog/renovation-permit-dbkl-guide"');
     expect(html).toContain('hreflang="zh-CN"');
     expect(html).toContain('hreflang="en"');
+  });
+
+  it.each([
+    ["zh", "+601100000001"],
+    ["en", "+601100000001"],
+    ["zh", undefined],
+    ["en", undefined],
+    ["zh", ""],
+    ["en", ""],
+  ])("publishes a language-aware Service with a ContactPoint for %s and phone %s", async (lang, phone) => {
+    vi.stubGlobal("fetch", vi.fn(async (input: RequestInfo | URL) => {
+      const url = new URL(String(input));
+      if (url.pathname.endsWith("/site_settings")) {
+        return new Response(JSON.stringify([{
+          company_name: "FLASH CAST SDN. BHD.",
+          phone_e164: phone,
+          updated_at: siteSettingsRevision,
+        }]), { headers: { "content-type": "application/json" } });
+      }
+      if (url.pathname.endsWith("/services")) {
+        return new Response(JSON.stringify([{
+          id: "service-bathroom",
+          slug: "bathroom",
+          title_en: "Bathroom Renovation and Waterproofing",
+          title_zh: "浴室装修与防水工程",
+          seo_title_en: "Bathroom Renovation Malaysia | FLASH CAST",
+          seo_title_zh: "吉隆坡浴室装修与防水工程 | FLASH CAST",
+          seo_description_en: "Plan bathroom waterproofing, drainage, tiles and sanitary fittings around the real site.",
+          seo_description_zh: "根据真实现场规划浴室防水、排水、瓷砖与洁具范围。",
+          image_url: "/images/services/bathroom-renovation.webp",
+          faqs_zh: [{ q: "浴室漏水一定要全部翻新吗？", a: "不一定，应先检查漏水来源和现场条件。" }],
+          updated_at: siteSettingsRevision,
+          status: "published",
+        }]), { headers: { "content-type": "application/json" } });
+      }
+      return new Response("[]", { headers: { "content-type": "application/json" } });
+    }));
+
+    const response = await requestPage({
+      path: `/${lang}/services/bathroom`,
+      // Isolate each settings fixture from the middleware's in-memory cache.
+      supabaseUrl: `https://service-schema-${lang}-${phone ? "configured" : phone === undefined ? "missing" : "empty"}.supabase.co`,
+    });
+    const html = await response.text();
+    const schemaMatch = html.match(/data-flashcast-edge-schema>([\s\S]*?)<\/script>/);
+
+    expect(response.status).toBe(200);
+    expect(schemaMatch?.[1]).toBeTruthy();
+    const schema = JSON.parse(schemaMatch?.[1] || "{}");
+    const service = schema["@graph"].find((node: Record<string, unknown>) => node["@type"] === "Service");
+    const webPage = schema["@graph"].find((node: Record<string, unknown>) => node["@type"] === "WebPage");
+
+    expect(service).toMatchObject({
+      "@id": `https://flashcast.com.my/${lang}/services/bathroom#service`,
+      name: lang === "zh" ? "浴室装修与防水工程" : "Bathroom Renovation and Waterproofing",
+      serviceType: lang === "zh" ? "浴室装修与防水工程" : "Bathroom Renovation and Waterproofing",
+      url: `https://flashcast.com.my/${lang}/services/bathroom`,
+      provider: { "@id": "https://flashcast.com.my/#localbusiness" },
+      availableChannel: {
+        "@type": "ServiceChannel",
+        serviceUrl: `https://flashcast.com.my/${lang}/quote`,
+        servicePhone: {
+          "@type": "ContactPoint",
+          telephone: phone || "+601128853888",
+        },
+      },
+    });
+    expect(webPage.mainEntity).toEqual({ "@id": `https://flashcast.com.my/${lang}/services/bathroom#service` });
   });
 
   it("returns the manifest app shell when the blog metadata read reaches its timeout", async () => {

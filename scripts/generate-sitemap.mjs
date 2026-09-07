@@ -62,9 +62,9 @@ const staticPaths = [
 const escapeXml = (value) =>
   value.replace(/&/g, "&amp;").replace(/"/g, "&quot;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
 
-const fetchSlugs = async (table) => {
+const fetchRows = async (table, select = "slug") => {
   if (!SUPABASE_URL || !SUPABASE_ANON_KEY) return [];
-  const response = await fetch(`${SUPABASE_URL}/rest/v1/${table}?select=slug&status=eq.published`, {
+  const response = await fetch(`${SUPABASE_URL}/rest/v1/${table}?select=${encodeURIComponent(select)}&status=eq.published`, {
     headers: {
       apikey: SUPABASE_ANON_KEY,
       Authorization: `Bearer ${SUPABASE_ANON_KEY}`,
@@ -103,14 +103,14 @@ const landingServiceRedirectSlugs = new Set([
 ]);
 
 const [projects, posts, materials, areas, landingPages, services] = await Promise.all([
-  fetchSlugs("projects"),
-  fetchSlugs("blog_posts"),
-  fetchSlugs("materials"),
-  fetchSlugs("service_areas"),
-  fetchSlugs("landing_pages"),
-  fetchSlugs("services"),
+  fetchRows("projects"),
+  fetchRows("blog_posts"),
+  fetchRows("materials", "slug,category,subcategory"),
+  fetchRows("service_areas"),
+  fetchRows("landing_pages"),
+  fetchRows("services"),
 ]);
-const materialSeoPaths = await loadMaterialSeoPaths();
+const materialSeoPaths = await loadMaterialSeoPaths(materials);
 
 const paths = unique([
   ...staticPaths,

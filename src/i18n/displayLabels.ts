@@ -75,6 +75,9 @@ const materialSubcategoryLabels: Record<string, LabelPair> = {
   toilet: { en: "Toilet", zh: "马桶" },
   "shower system": { en: "Shower System", zh: "淋浴系统" },
   "bathroom cabinet": { en: "Bathroom Cabinet", zh: "浴室柜" },
+  "anti-slip tile": { en: "Anti-Slip Tile", zh: "防滑砖" },
+  "porcelain tile": { en: "Porcelain Tile", zh: "瓷砖" },
+  "wall tile": { en: "Wall Tile", zh: "墙砖" },
   "quartz countertops": { en: "Quartz Countertops", zh: "石英石台面" },
   "sintered stone": { en: "Sintered Stone", zh: "岩板" },
   "solid surface": { en: "Solid Surface", zh: "人造石" },
@@ -98,6 +101,7 @@ const materialSubcategoryLabels: Record<string, LabelPair> = {
   "floor tile": { en: "Floor Tile", zh: "地砖" },
   "wall panel": { en: "Wall Panel", zh: "墙板" },
   "acoustic wall panel": { en: "Acoustic Wall Panel", zh: "吸音墙板" },
+  "solid wood finish": { en: "Solid Wood Finish", zh: "实木饰面" },
   "venetian plaster": { en: "Venetian Plaster", zh: "威尼斯灰泥" },
   microcement: { en: "Microcement", zh: "微水泥" },
   "metallic paint": { en: "Metallic Paint", zh: "金属漆" },
@@ -506,6 +510,8 @@ const displayTextReplacements = Object.entries({
   .map(([key, value]) => ({ key, value }));
 
 const extraZhTextReplacements: Record<string, string> = {
+  "Permit & Drawing Support": "装修准证与图纸支持",
+  "Review renovation approval, management, drawing, and document-coordination needs against the property and confirmed project scope.": "根据房产类型与已确认项目范围，检查装修审批、管理方、图纸与文件协调需求。",
   "Smoked Glass and Walnut": "烟熏玻璃与胡桃木",
   "Warm Oak and Charcoal": "暖橡木与炭灰色",
   "Warm White and Oak": "暖白与橡木色",

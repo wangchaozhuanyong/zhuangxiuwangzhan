@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { translateDisplayText } from "@/i18n/displayLabels";
+import { translateDisplayText, translateMaterialSubcategory } from "@/i18n/displayLabels";
 
 describe("translateDisplayText", () => {
   it("does not replace a label inside a longer English word", () => {
@@ -17,5 +17,19 @@ describe("translateDisplayText", () => {
 
   it("still applies curated full-sentence translations", () => {
     expect(translateDisplayText("Homeowners planning a renovation", "zh")).toBe("正在规划装修的屋主");
+  });
+
+  it("translates CMS material subcategory labels used by public taxonomy pages", () => {
+    expect(translateMaterialSubcategory("Anti-Slip Tile", "zh")).toBe("防滑砖");
+    expect(translateMaterialSubcategory("Acoustic Wall Panel", "zh")).toBe("吸音墙板");
+    expect(translateMaterialSubcategory("Solid Wood Finish", "zh")).toBe("实木饰面");
+  });
+
+  it("localizes legacy approval service cards on Chinese pages", () => {
+    expect(translateDisplayText("Permit & Drawing Support", "zh")).toBe("装修准证与图纸支持");
+    expect(translateDisplayText(
+      "Review renovation approval, management, drawing, and document-coordination needs against the property and confirmed project scope.",
+      "zh",
+    )).toBe("根据房产类型与已确认项目范围，检查装修审批、管理方、图纸与文件协调需求。");
   });
 });
