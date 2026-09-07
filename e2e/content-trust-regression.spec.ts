@@ -51,6 +51,16 @@ test.describe("public content trust boundaries", () => {
     await expect(main.locator('a[href*="projectType=Office+Renovation"]').first()).toBeVisible();
   });
 
+  test("Chinese shop service localizes the approval related-service card", async ({ page }) => {
+    await gotoPublicPage(page, "/zh/services/shop-renovation");
+    const main = page.locator("main");
+
+    await expect(main).toContainText("装修准证与图纸支持");
+    await expect(main).toContainText("根据房产类型与已确认项目范围，检查装修审批、管理方、图纸与文件协调需求。");
+    await expect(main).not.toContainText("Permit & Drawing Support");
+    await expect(main).not.toContainText("Review renovation approval");
+  });
+
   test("generated project is presented as a concept without customer or timeline claims", async ({ page }) => {
     await gotoPublicPage(page, "/en/projects/mont-kiara-luxury-condo-renovation");
     const main = page.locator("main");
