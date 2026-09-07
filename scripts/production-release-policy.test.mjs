@@ -153,14 +153,17 @@ test("production workflow has only an explicit main dispatch and never synchroni
   assert.doesNotMatch(workflow, /workflow_run:|\n  push:|\n  schedule:|pages secret (?:put|delete)|supabase (?:secrets|functions)/);
   assert.match(workflow, /github\.ref == 'refs\/heads\/main'/);
   assert.match(workflow, /source_sha:[\s\S]*required: true/);
-  assert.match(workflow, /approval_id:[\s\S]*required: true/);
+  assert.doesNotMatch(workflow, /approval_id:|APPROVAL_ID:/);
+  assert.match(workflow, /build:\s+needs: protection/);
+  assert.match(workflow, /deploy:[\s\S]*environment:\s+name: flashcast-production/);
+  assert.match(workflow, /authorization_digest: \$\{\{ steps\.request\.outputs\.authorization_digest \}\}/);
   assert.match(workflow, /cancel-in-progress: false/);
   assert.match(workflow, /artifact-ids: \$\{\{ needs\.build\.outputs\.artifact_id \}\}/);
   const deploy = workflow.split("\n  deploy:\n")[1];
   assert(deploy);
   assert.doesNotMatch(deploy, /run:.*(?:release:check|npm run build|retain-assets|functions build)/);
   assert.match(deploy, /--cwd "\$RUNNER_TEMP\/pages-deployer".*--no-bundle --env-file \/dev\/null/);
-  const ordered = ["Stable release check", "Compile complete Pages Functions", "Confirm release source", "Freeze complete upload input", "Archive immutable complete release", "Download the immutable release", "sha256sum --check", "Recheck main CI", "Deploy verified archived input"];
+  const ordered = ["Require existing protected environment", "Stable release check", "Compile complete Pages Functions", "Confirm release source", "Freeze complete upload input", "Archive immutable complete release", "Prepare exact native approval request", "Download the immutable release", "Verify downloaded artifact digest against GitHub metadata", "Verify exact single-use native environment approval", "sha256sum --check", "Recheck main CI", "Deploy verified archived input"];
   let previous = -1;
   for (const marker of ordered) {
     const index = workflow.indexOf(marker);
@@ -173,7 +176,11 @@ test("production workflow has only an explicit main dispatch and never synchroni
 import { mkdtempSync, mkdirSync, rmSync, symlinkSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import path from "node:path";
-import { checkMainCI, deploymentRecord, freeze, verify } from "./pages-release-evidence.mjs";
+import {
+  RELEASE_ENVIRONMENT, RELEASE_REPOSITORY, authorizationRequest, checkArtifactMetadata,
+  checkMainCI, checkProtectedEnvironment, deploymentRecord, freeze, releaseAuthorization,
+  validateProtectedEnvironment, verify, verifyArtifactMetadata,
+} from "./pages-release-evidence.mjs";
 
 function completeArtifact(t) {
   const directory = mkdtempSync(path.join(tmpdir(), "pages-release-policy-"));
@@ -270,4 +277,217 @@ test("compile refuses existing Worker output before invoking Wrangler", (t) => {
   ], { cwd: directory, encoding: "utf8" });
   assert.equal(result.status, 1);
   assert.match(result.stderr, /Compile requires fresh build output/);
+});
+
+const DIGEST = "d".repeat(64);
+const releaseInput = {
+  repository: RELEASE_REPOSITORY, sourceSha: SHA, token: "fixture-only",
+  runId: "42", runAttempt: "1", artifactId: "123", artifactDigest: DIGEST,
+  packageSha256: "e".repeat(64),
+};
+
+function nativeReleaseFixture() {
+  return {
+    environment: {
+      id: 7, name: RELEASE_ENVIRONMENT,
+      protection_rules: [{ type: "required_reviewers", prevent_self_review: true, reviewers: [{ type: "User", reviewer: { id: 9 } }] }],
+      deployment_branch_policy: { protected_branches: false, custom_branch_policies: true },
+    },
+    branches: { total_count: 1, branch_policies: [{ id: 8, name: "main", type: "branch" }] },
+    run: {
+      id: 42, run_attempt: 1, event: "workflow_dispatch", head_branch: "main", head_sha: SHA,
+      repository: { full_name: RELEASE_REPOSITORY },
+      path: ".github/workflows/cloudflare-pages-deploy-manual.yml",
+      actor: { id: 1 }, triggering_actor: { id: 2 },
+    },
+    reviews: [],
+    jobs: { total_count: 1, jobs: [{ id: 88, name: "Deploy approved immutable artifact", run_id: 42, status: "in_progress" }] },
+  };
+}
+
+function fakeReleaseAPI(fixture, calls = []) {
+  const base = `https://api.github.com/repos/${RELEASE_REPOSITORY}`;
+  const payloads = {
+    [`${base}/environments/${RELEASE_ENVIRONMENT}`]: fixture.environment,
+    [`${base}/environments/${RELEASE_ENVIRONMENT}/deployment-branch-policies?per_page=100`]: fixture.branches,
+    [`${base}/actions/runs/${fixture.run.id}`]: fixture.run,
+    [`${base}/actions/runs/${fixture.run.id}/approvals`]: fixture.reviews,
+    [`${base}/actions/runs/${fixture.run.id}/jobs?per_page=100`]: fixture.jobs,
+  };
+  return async (url, options) => {
+    assert(!options.method || options.method === "GET", "Authorization cannot mutate GitHub state");
+    assert.equal(options.headers["X-GitHub-Api-Version"], "2026-03-10");
+    assert(Object.hasOwn(payloads, url), `Unexpected release API: ${url}`);
+    calls.push(url);
+    return { ok: true, json: async () => structuredClone(payloads[url]) };
+  };
+}
+
+async function approvedReleaseFixture() {
+  const fixture = nativeReleaseFixture();
+  const request = await releaseAuthorization(releaseInput, false, fakeReleaseAPI(fixture));
+  fixture.reviews.push({
+    state: "approved", user: { id: 9 },
+    environments: [{ id: 7, name: RELEASE_ENVIRONMENT }],
+    comment: `approve sha256:${request.sha256}`,
+  });
+  return { fixture, request, context: { ...releaseInput, requestDigest: request.sha256 } };
+}
+
+test("native environment request binds exact task, independent action, scope, source and artifact", async () => {
+  const { fixture, request, context } = await approvedReleaseFixture();
+  const calls = [];
+  const result = await releaseAuthorization(context, true, fakeReleaseAPI(fixture, calls));
+  assert.deepEqual(result.request, {
+    task_id: "fc-20260906-website-rebuild-release-execution", action_id: "pages-deploy-42",
+    action_class: "site_publish", scope: `flashcast.com.my:website-rebuild-final-main:${SHA}`,
+    source_sha: SHA, repository: RELEASE_REPOSITORY, environment_id: 7,
+    environment_name: RELEASE_ENVIRONMENT, required_reviewer_ids: [9], run_id: 42, run_attempt: 1,
+    artifact_id: 123, artifact_digest: `sha256:${DIGEST}`, package_sha256: "e".repeat(64),
+    authorization_source: "github_protected_environment_review", single_use_unit: "42:1:deploy",
+  });
+  assert.equal(result.sha256, request.sha256);
+  assert.equal(result.approval_id, "github-environment:7:42:1:88");
+  assert.equal(result.reviewer_id, 9);
+  assert.equal(calls.length, 5);
+  assert(!JSON.stringify(result).includes(releaseInput.token));
+});
+
+test("free-form approval ID and standing authorization name cannot authorize a release", async () => {
+  const { fixture, context } = await approvedReleaseFixture();
+  for (const approvalId of ["fake", "owner-standing-flashcast-site-publish-20260906", "github-environment:7:42:1:88", ""]) {
+    await assert.rejects(releaseAuthorization({ ...context, approvalId }, true, fakeReleaseAPI(fixture)), /Caller-supplied approval_id/);
+  }
+});
+
+test("absent environment and provider failures stop without a success receipt", async () => {
+  for (const status of [404, 403, 500]) {
+    let calls = 0;
+    await assert.rejects(checkProtectedEnvironment(releaseInput, async () => {
+      calls += 1;
+      return { ok: false, status, json: () => { throw new Error("Must not read or persist an error body"); } };
+    }), new RegExp(`HTTP ${status}`));
+    assert.equal(calls, 1);
+  }
+});
+
+for (const [name, change] of [
+  ["missing environment", (f) => { f.environment = {}; }],
+  ["wrong environment", (f) => { f.environment.name = "preview"; }],
+  ["no reviewer rule", (f) => { f.environment.protection_rules = []; }],
+  ["self-review enabled", (f) => { f.environment.protection_rules[0].prevent_self_review = false; }],
+  ["unknown self-review state", (f) => { delete f.environment.protection_rules[0].prevent_self_review; }],
+  ["no configured reviewer", (f) => { f.environment.protection_rules[0].reviewers = []; }],
+  ["team membership not verified", (f) => { f.environment.protection_rules[0].reviewers[0].type = "Team"; }],
+  ["no branch restriction", (f) => { f.environment.deployment_branch_policy = null; }],
+  ["protected branches instead of exact main", (f) => { f.environment.deployment_branch_policy = { protected_branches: true, custom_branch_policies: false }; }],
+  ["wildcard branch", (f) => { f.branches.branch_policies[0].name = "*"; }],
+  ["tag named main", (f) => { f.branches.branch_policies[0].type = "tag"; }],
+  ["unknown branch policy type", (f) => { delete f.branches.branch_policies[0].type; }],
+  ["additional deployment policy", (f) => { f.branches.total_count = 2; }],
+]) {
+  test(`protected environment rejects ${name}`, async () => {
+    const fixture = nativeReleaseFixture();
+    change(fixture);
+    await assert.rejects(checkProtectedEnvironment(releaseInput, fakeReleaseAPI(fixture)));
+  });
+}
+
+for (const [name, change] of [
+  ["missing review including admin bypass", (f) => { f.reviews = []; }],
+  ["ambiguous review history", (f) => { f.reviews.push(structuredClone(f.reviews[0])); }],
+  ["rejected review", (f) => { f.reviews[0].state = "rejected"; }],
+  ["unconfigured reviewer", (f) => { f.reviews[0].user.id = 99; }],
+  ["actor self-review", (f) => { f.run.actor.id = 9; }],
+  ["triggering actor self-review", (f) => { f.run.triggering_actor.id = 9; }],
+  ["wrong environment review", (f) => { f.reviews[0].environments[0].id = 99; }],
+  ["free-form review comment", (f) => { f.reviews[0].comment = "approved"; }],
+  ["different request comment", (f) => { f.reviews[0].comment = `approve sha256:${"f".repeat(64)}`; }],
+  ["completed job replay", (f) => { f.jobs.jobs[0].status = "completed"; }],
+  ["missing job", (f) => { f.jobs = { total_count: 0, jobs: [] }; }],
+  ["ambiguous deploy jobs", (f) => { f.jobs.jobs.push(structuredClone(f.jobs.jobs[0])); f.jobs.total_count = 2; }],
+  ["incomplete paginated job history", (f) => { f.jobs.total_count = 101; }],
+  ["job from a different run", (f) => { f.jobs.jobs[0].run_id = 43; }],
+  ["native run retry", (f) => { f.run.run_attempt = 2; }],
+  ["different native source SHA", (f) => { f.run.head_sha = "b".repeat(40); }],
+  ["automatic run", (f) => { f.run.event = "push"; }],
+  ["feature branch", (f) => { f.run.head_branch = "feature"; }],
+  ["different workflow", (f) => { f.run.path = ".github/workflows/other.yml"; }],
+  ["changed reviewer configuration after request", (f) => { f.environment.protection_rules[0].reviewers.push({ type: "User", reviewer: { id: 10 } }); }],
+]) {
+  test(`native authorization rejects ${name}`, async () => {
+    const { fixture, context } = await approvedReleaseFixture();
+    change(fixture);
+    await assert.rejects(releaseAuthorization(context, true, fakeReleaseAPI(fixture)));
+  });
+}
+
+test("requested artifact, package, authorization digest and run attempt cannot change", async () => {
+  const { fixture, context } = await approvedReleaseFixture();
+  for (const change of [
+    { artifactId: "124" }, { artifactDigest: "f".repeat(64) }, { packageSha256: "f".repeat(64) },
+    { requestDigest: "f".repeat(64) }, { runAttempt: "2" }, { repository: "example/other" },
+  ]) await assert.rejects(releaseAuthorization({ ...context, ...change }, true, fakeReleaseAPI(fixture)));
+});
+
+test("a new run cannot reuse an earlier run's native approval", async () => {
+  const { fixture, context, request } = await approvedReleaseFixture();
+  fixture.run.id = 43;
+  fixture.jobs.jobs[0].run_id = 43;
+  const next = { ...context, runId: "43" };
+  const nextRequest = authorizationRequest(next, validateProtectedEnvironment(fixture.environment, fixture.branches), fixture.run);
+  assert.notEqual(nextRequest.sha256, request.sha256);
+  assert.notEqual(nextRequest.request.action_id, request.request.action_id);
+  await assert.rejects(releaseAuthorization({ ...next, requestDigest: nextRequest.sha256 }, true, fakeReleaseAPI(fixture)), /does not bind/);
+});
+
+function artifactMetadataFixture() {
+  return {
+    id: 123, name: `pages-${SHA}-42-1`, digest: `sha256:${DIGEST}`,
+    expired: false, expires_at: "2999-01-01T00:00:00Z", size_in_bytes: 100,
+    workflow_run: { id: 42, head_sha: SHA, head_branch: "main" },
+  };
+}
+
+test("artifact digest is independently read from the exact official artifact ID", async () => {
+  let calls = 0;
+  const result = await checkArtifactMetadata(releaseInput, async (url, options) => {
+    calls += 1;
+    assert.equal(url, `https://api.github.com/repos/${RELEASE_REPOSITORY}/actions/artifacts/123`);
+    assert(!options.method || options.method === "GET");
+    return { ok: true, json: async () => artifactMetadataFixture() };
+  });
+  assert.equal(calls, 1);
+  assert.equal(result.artifact_id, 123);
+  assert.equal(result.official_digest, `sha256:${DIGEST}`);
+  assert.equal(result.upload_digest, result.official_digest);
+  assert.equal(result.digest_equal, true);
+  assert.doesNotThrow(() => verifyArtifactMetadata(artifactMetadataFixture(), { ...releaseInput, artifactDigest: `sha256:${DIGEST}` }));
+});
+
+for (const [name, change] of [
+  ["wrong ID", (m) => { m.id = 124; }],
+  ["wrong name", (m) => { m.name = "pages-other"; }],
+  ["missing digest", (m) => { delete m.digest; }],
+  ["mismatched digest", (m) => { m.digest = `sha256:${"f".repeat(64)}`; }],
+  ["untyped official digest", (m) => { m.digest = DIGEST; }],
+  ["expired artifact", (m) => { m.expired = true; }],
+  ["missing expiry state", (m) => { delete m.expired; }],
+  ["past expiry date", (m) => { m.expires_at = "2020-01-01T00:00:00Z"; }],
+  ["missing expiry date", (m) => { delete m.expires_at; }],
+  ["empty artifact", (m) => { m.size_in_bytes = 0; }],
+  ["wrong run", (m) => { m.workflow_run.id = 43; }],
+  ["wrong source SHA", (m) => { m.workflow_run.head_sha = "b".repeat(40); }],
+  ["wrong source branch", (m) => { m.workflow_run.head_branch = "feature"; }],
+]) {
+  test(`official artifact verification rejects ${name}`, () => {
+    const metadata = artifactMetadataFixture();
+    change(metadata);
+    assert.throws(() => verifyArtifactMetadata(metadata, releaseInput));
+  });
+}
+
+test("artifact API failure or missing upload digest cannot produce digest equality", async () => {
+  await assert.rejects(checkArtifactMetadata(releaseInput, async () => ({ ok: false, status: 404 })), /HTTP 404/);
+  assert.throws(() => verifyArtifactMetadata(artifactMetadataFixture(), { ...releaseInput, artifactDigest: undefined }), /digest is required/);
 });

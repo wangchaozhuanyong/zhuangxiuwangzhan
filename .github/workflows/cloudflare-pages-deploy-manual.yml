@@ -1,14 +1,11 @@
 name: Deploy to Cloudflare Pages
+run-name: "site_publish | fc-20260906-website-rebuild-release-execution | ${{ inputs.source_sha }}"
 
 on:
   workflow_dispatch:
     inputs:
       source_sha:
         description: "Exact latest main SHA with all release CI successful"
-        required: true
-        type: string
-      approval_id:
-        description: "Single-use policy permit for this exact site release"
         required: true
         type: string
 
@@ -26,13 +23,32 @@ env:
   RELEASE_SOURCE_SHA: ${{ inputs.source_sha }}
 
 jobs:
+  protection:
+    if: ${{ github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main' }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          ref: ${{ github.sha }}
+      - uses: actions/setup-node@v6
+        with:
+          node-version: "22"
+      - name: Verify production release source
+        run: npm run release:guard
+      - name: Require existing protected environment before any release work
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: node scripts/pages-release-evidence.mjs protection "$RUNNER_TEMP/release-protection.json"
+
   build:
+    needs: protection
     if: ${{ github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main' }}
     runs-on: ubuntu-latest
     outputs:
       artifact_id: ${{ steps.archive.outputs.artifact-id }}
       artifact_digest: ${{ steps.archive.outputs.artifact-digest }}
       package_sha256: ${{ steps.freeze.outputs.package_sha256 }}
+      authorization_digest: ${{ steps.request.outputs.authorization_digest }}
     steps:
       - name: Checkout requested main
         uses: actions/checkout@v6
@@ -49,13 +65,7 @@ jobs:
         run: npm run release:guard
 
       - name: Prepare release evidence
-        env:
-          APPROVAL_ID: ${{ inputs.approval_id }}
-        run: |
-          test -n "$APPROVAL_ID"
-          test "$APPROVAL_ID" != "owner-standing-flashcast-site-publish-20260906"
-          mkdir "$RUNNER_TEMP/pages-release"
-          node -e 'require("node:fs").writeFileSync(process.env.RUNNER_TEMP + "/pages-release/authorization.json", JSON.stringify({ approvalId: process.env.APPROVAL_ID, sourceSha: process.env.RELEASE_SOURCE_SHA, runId: process.env.GITHUB_RUN_ID, runAttempt: process.env.GITHUB_RUN_ATTEMPT }))'
+        run: mkdir "$RUNNER_TEMP/pages-release"
 
       - name: Verify successful final main CI
         env:
@@ -124,6 +134,23 @@ jobs:
           if-no-files-found: error
           retention-days: 90
 
+      - name: Prepare exact native approval request
+        id: request
+        env:
+          GH_TOKEN: ${{ github.token }}
+          ARTIFACT_ID: ${{ steps.archive.outputs.artifact-id }}
+          ARTIFACT_DIGEST: ${{ steps.archive.outputs.artifact-digest }}
+          EXPECTED_PACKAGE_SHA256: ${{ steps.freeze.outputs.package_sha256 }}
+        run: node scripts/pages-release-evidence.mjs authorization-request "$RUNNER_TEMP/pages-release/authorization-request.json"
+
+      - name: Archive native approval request
+        uses: actions/upload-artifact@v7
+        with:
+          name: pages-authorization-request-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/pages-release/authorization-request.json
+          if-no-files-found: error
+          retention-days: 90
+
       - name: Save retained hashed assets
         uses: actions/cache/save@v5
         with:
@@ -131,7 +158,10 @@ jobs:
           key: cloudflare-pages-assets-${{ github.run_id }}
 
   deploy:
+    name: Deploy approved immutable artifact
     needs: build
+    environment:
+      name: flashcast-production
     runs-on: ubuntu-latest
     steps:
       - name: Checkout verification tools at the same main SHA
@@ -157,6 +187,22 @@ jobs:
           artifact-ids: ${{ needs.build.outputs.artifact_id }}
           merge-multiple: true
           path: ${{ runner.temp }}/pages-release
+
+      - name: Verify downloaded artifact digest against GitHub metadata
+        env:
+          GH_TOKEN: ${{ github.token }}
+          ARTIFACT_ID: ${{ needs.build.outputs.artifact_id }}
+          ARTIFACT_DIGEST: ${{ needs.build.outputs.artifact_digest }}
+        run: node scripts/pages-release-evidence.mjs artifact "$RUNNER_TEMP/pages-release/artifact-metadata-verification.json"
+
+      - name: Verify exact single-use native environment approval
+        env:
+          GH_TOKEN: ${{ github.token }}
+          ARTIFACT_ID: ${{ needs.build.outputs.artifact_id }}
+          ARTIFACT_DIGEST: ${{ needs.build.outputs.artifact_digest }}
+          EXPECTED_PACKAGE_SHA256: ${{ needs.build.outputs.package_sha256 }}
+          AUTHORIZATION_DIGEST: ${{ needs.build.outputs.authorization_digest }}
+        run: node scripts/pages-release-evidence.mjs authorize "$RUNNER_TEMP/pages-release/authorization.json"
 
       - name: Verify archive and extract to isolated upload directory
         env:
