@@ -170,6 +170,23 @@ describe("public Edge HTML cache", () => {
   });
 
   it.each([
+    ["/en/materials/acrylic-cabinet-door", "/en/materials/acrylic-cabinet-gloss-white"],
+    ["/zh/materials/aluminium-sliding-door?source=gsc", "/zh/materials/aluminium-sliding-black?source=gsc"],
+    ["/en/materials/fluted-wall-panel", "/en/materials/fluted-panel-charcoal"],
+    ["/zh/materials/kitchen-melamine-cabinets", "/zh/materials/category/kitchen-cabinets/melamine-cabinets"],
+    ["/en/materials/quartz-countertop-white", "/en/materials/quartz-countertop-carrara-white"],
+  ])("permanently redirects historical material path %s to the verified replacement", async (path, expectedPath) => {
+    const response = await onRequest({
+      request: new Request(`https://flashcast.com.my${path}`),
+      env: {},
+      next: async () => new Response("not used"),
+    } as never);
+
+    expect(response.status).toBe(301);
+    expect(response.headers.get("location")).toBe(`https://flashcast.com.my${expectedPath}`);
+  });
+
+  it.each([
     ["/en/landing/office-renovation", "/en/services/office-renovation"],
     ["/zh/landing/kitchen-cabinet?source=legacy", "/zh/services/kitchen?source=legacy"],
     ["/en/landing/warehouse-shelving/", "/en/services/warehouse"],

@@ -2,11 +2,12 @@ import { useParams } from "react-router-dom";
 import Link from "@/components/LocalizedLink";
 import PageMeta from "@/components/PageMeta";
 import { JsonLdBreadcrumb } from "@/components/JsonLd";
-import { SchemeAContentState, SchemeAListingGrid, SchemeARouteHero, SchemeASection, type SchemeAListingItem } from "@/components/scheme-a/SchemeARoutePrimitives";
+import { SchemeAContentState, SchemeALinkGrid, SchemeAListingGrid, SchemeANumberList, SchemeARouteHero, SchemeASection, type SchemeAListingItem } from "@/components/scheme-a/SchemeARoutePrimitives";
 import { usePublishedMaterials } from "@/hooks/usePublishedContent";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { translateDisplayText, translateMaterialCategory, translateMaterialSubcategory, translateSpaceLabel } from "@/i18n/displayLabels";
 import { materialSubcategoryPageText } from "@/i18n/materialSubcategoryPageText";
+import { getMaterialSubcategoryGuidance } from "@/i18n/materialSubcategoryGuidance";
 import { mergeMaterialCategoriesWithFallback } from "@/lib/materialCatalog";
 
 export default function MaterialSubcategoryPage() {
@@ -22,11 +23,18 @@ export default function MaterialSubcategoryPage() {
   const categoryName = translateMaterialCategory(category.name, language);
   const name = translateMaterialSubcategory(subcategory.name, language);
   const description = translateDisplayText(subcategory.description, language);
+  const guidance = getMaterialSubcategoryGuidance(category.slug, categoryName, name, language);
   const items: SchemeAListingItem[] = materials.map((item) => ({ id: String(item.id), title: translateDisplayText(item.name, language), description: item.suitableSpaces.map((space) => translateSpaceLabel(space, language)).join(" / "), meta: translateDisplayText(item.color || categoryName, language), image: item.image, imageAlt: item.alt || item.name, href: `/materials/${item.slug}` }));
   return <main className="fc-route-page">
     <PageMeta title={copy.metaTitle(name, categoryName)} description={copy.metaDescription(description, name)} keywords={copy.metaKeywords(name, categoryName)} canonicalPath={`/materials/category/${category.slug}/${subcategory.slug}`} />
     <JsonLdBreadcrumb items={[{ name: copy.breadcrumbHome, url: "/" }, { name: copy.breadcrumbMaterials, url: "/materials" }, { name: categoryName, url: `/materials/category/${category.slug}` }, { name, url: `/materials/category/${category.slug}/${subcategory.slug}` }]} />
     <SchemeARouteHero kind="listing" image={subcategory.image} imageAlt={subcategory.alt || name} label={categoryName} title={name} description={description} />
+    <SchemeASection title={guidance.checklistTitle} description={guidance.checklistDescription}>
+      <SchemeANumberList items={guidance.checklist} />
+    </SchemeASection>
     <SchemeASection title={copy.products(name)} description={description}>{items.length ? <SchemeAListingGrid items={items} actionLabel={copy.view} /> : <SchemeAContentState action={<Link to="/quote#quote-form">{copy.quote}</Link>}>{copy.comingSoon}</SchemeAContentState>}</SchemeASection>
+    <SchemeASection title={guidance.relatedTitle} description={guidance.relatedDescription}>
+      <SchemeALinkGrid items={guidance.relatedLinks} actionLabel={copy.view} />
+    </SchemeASection>
   </main>;
 }
