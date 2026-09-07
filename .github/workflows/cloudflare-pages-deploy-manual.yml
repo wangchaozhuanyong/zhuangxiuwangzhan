@@ -35,10 +35,10 @@ jobs:
           node-version: "22"
       - name: Verify production release source
         run: npm run release:guard
-      - name: Require existing protected environment before any release work
+      - name: Verify single-owner manual release identity
         env:
           GH_TOKEN: ${{ github.token }}
-        run: node scripts/pages-release-evidence.mjs protection "$RUNNER_TEMP/release-protection.json"
+        run: node scripts/pages-release-evidence.mjs owner "$RUNNER_TEMP/release-owner.json"
 
   build:
     needs: protection
@@ -134,16 +134,16 @@ jobs:
           if-no-files-found: error
           retention-days: 90
 
-      - name: Prepare exact native approval request
+      - name: Prepare exact single-owner release request
         id: request
         env:
           GH_TOKEN: ${{ github.token }}
           ARTIFACT_ID: ${{ steps.archive.outputs.artifact-id }}
           ARTIFACT_DIGEST: ${{ steps.archive.outputs.artifact-digest }}
           EXPECTED_PACKAGE_SHA256: ${{ steps.freeze.outputs.package_sha256 }}
-        run: node scripts/pages-release-evidence.mjs authorization-request "$RUNNER_TEMP/pages-release/authorization-request.json"
+        run: node scripts/pages-release-evidence.mjs owner-authorization-request "$RUNNER_TEMP/pages-release/authorization-request.json"
 
-      - name: Archive native approval request
+      - name: Archive single-owner release request
         uses: actions/upload-artifact@v7
         with:
           name: pages-authorization-request-${{ github.run_id }}-${{ github.run_attempt }}
@@ -160,8 +160,6 @@ jobs:
   deploy:
     name: Deploy approved immutable artifact
     needs: build
-    environment:
-      name: flashcast-production
     runs-on: ubuntu-latest
     steps:
       - name: Checkout verification tools at the same main SHA
@@ -195,14 +193,14 @@ jobs:
           ARTIFACT_DIGEST: ${{ needs.build.outputs.artifact_digest }}
         run: node scripts/pages-release-evidence.mjs artifact "$RUNNER_TEMP/pages-release/artifact-metadata-verification.json"
 
-      - name: Verify exact single-use native environment approval
+      - name: Verify exact single-use owner manual dispatch
         env:
           GH_TOKEN: ${{ github.token }}
           ARTIFACT_ID: ${{ needs.build.outputs.artifact_id }}
           ARTIFACT_DIGEST: ${{ needs.build.outputs.artifact_digest }}
           EXPECTED_PACKAGE_SHA256: ${{ needs.build.outputs.package_sha256 }}
           AUTHORIZATION_DIGEST: ${{ needs.build.outputs.authorization_digest }}
-        run: node scripts/pages-release-evidence.mjs authorize "$RUNNER_TEMP/pages-release/authorization.json"
+        run: node scripts/pages-release-evidence.mjs owner-authorize "$RUNNER_TEMP/pages-release/authorization.json"
 
       - name: Verify archive and extract to isolated upload directory
         env:

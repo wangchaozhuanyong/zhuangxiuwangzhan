@@ -73,7 +73,7 @@
 
 ## 手动发布与完整制品（2026-09-07）
 
-- `Deploy to Cloudflare Pages` 仅允许手动在 `main` 上运行，唯一输入是最新完整 `source_sha`。发布授权必须来自下述受保护 GitHub Environment 的原生审核记录；自由填写的 `approval_id` 和常驻授权名称均不能放行。不得恢复 `workflow_run` 自动生产部署，也不得在内容发布中同步 Pages secrets 或部署 Supabase Functions。
+- `Deploy to Cloudflare Pages` 仅允许仓库唯一 Owner `wangchaozhuanyong` 手动在 `main` 上运行，唯一输入是最新完整 `source_sha`。工作流必须从 GitHub run API 复核 actor、triggering actor、仓库、main、精确 SHA、attempt 1、制品与唯一运行中的 deploy job；自由填写的 `approval_id` 不能放行。不得恢复 `workflow_run` 自动生产部署，也不得在内容发布中同步 Pages secrets 或部署 Supabase Functions。
 - 同一个最终 main SHA 的 Prelaunch、i18n、required release workflow 必须成功。质量工作流默认面向 PR，最终 main 需要单独运行；PR 的绿灯不代替 main 的验证。构建前及上传前都检查最新 main，任何漂移停止。
 - 构建按现有 release:check 完成响应式图片、SEO 生成和旧 hashed assets 保留后，按只读取得的现有 production compatibility date/flags 再预编译 `dist/_worker.js` 与 `dist/_routes.json`。完整包还包含 HTML、静态资源、headers、redirects、sitemap、llms；仅 Vite dist 不是完整部署包。
 - 打包后保存每个文件的大小/SHA-256、tar 包 SHA-256、源码 SHA、Node/Wrangler/lockfile 信息、GitHub artifact ID/digest。部署 job 在新 runner 按 artifact ID 下载，再只读查询同一个 ID 的官方 artifact 元数据，强制比较 API digest 与 upload-artifact 的输出，并核对 ID、名称、有效期、非零大小、run ID、main 分支和源码 SHA；缺字段、过期或不等值全部失败。此 API 核验独立于压缩包和逐文件校验，不声称从解压目录重算了 GitHub ZIP digest。随后验证压缩包及全部文件，使用分别独立的上传目录、Wrangler 工作目录及 `--no-bundle` 上传（Wrangler 缓存不得进入上传目录），不能再次构建或隐式读取仓库 functions/config。
@@ -103,3 +103,13 @@
 部署回执归档 `authorization.json`（请求摘要、原生审核人/环境/run/job 来源）与 `artifact-metadata-verification.json`（官方 digest、upload digest 和明确 equality）。这些源码及 fixture 测试通过只表示可交 QA；仍需真实保护配置、原生审核、最终 main CI、制品与生产验收才能证明实际发布成功。
 
 API 合约依据：[Environment](https://docs.github.com/en/rest/deployments/environments)、[deployment branch policies](https://docs.github.com/en/rest/deployments/branch-policies)、[原生审核历史](https://docs.github.com/en/rest/actions/workflow-runs#get-the-review-history-for-a-workflow-run)、[artifact 元数据](https://docs.github.com/en/rest/actions/artifacts#get-an-artifact)。
+
+## 当前单一 GitHub Owner 发布模式（2026-09-07）
+
+老板确认仓库只有一个 GitHub 账号，因此本节替代上面的 `release-safety-v2` 第二审核人 / Environment required reviewer 要求。独立 QA 仍由 FLASH CAST 固定质检部门完成，不把 GitHub 自审冒充 QA。
+
+- 仅 `wangchaozhuanyong` 可手动触发；actor 与 triggering actor 必须是同一个 Owner 账号。
+- 仍只接受 `main` 最新完整 SHA、首次 run attempt、完整不可变制品、官方 artifact digest、发布前后 Cloudflare deployment/version 对账和唯一运行中的 deploy job。
+- 工作流不绑定 GitHub Environment，也不要求第二个 GitHub 用户；不接受输入 `approval_id`、自动触发、rerun、旧 SHA、非 main、其他仓库或其他账号。
+- 代码合并仍走 PR、当前 Head CI 和独立 QA；“单一 Owner”只改变生产发布授权来源，不降低内容/SEO、备份、回滚和上线后验收门禁。
+- 本模式不写 Secrets、账号权限、DNS、基础设施或数据库结构；Cloudflare 凭据继续只从现有 GitHub Actions Secrets 读取。
