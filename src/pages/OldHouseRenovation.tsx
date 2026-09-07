@@ -16,6 +16,7 @@ import { mediaLabels } from "@/i18n/mediaLabels";
 import { useSiteSettings } from "@/hooks/useSiteSettings";
 import { trackCtaClick } from "@/lib/analytics";
 import { pageHeroImages } from "@/lib/pageHeroImages";
+import { buildQuotePath, quoteProjectTypeFromServiceSlug } from "@/lib/quoteContext";
 import { oldHouseRenovationPageText } from "@/i18n/oldHouseRenovationPageText";
 import { getServiceContextLinks } from "@/i18n/serviceContextLinks";
 
@@ -39,6 +40,11 @@ const OldHouseRenovation = () => {
   const settings = useSiteSettings();
   const t = oldHouseRenovationPageText[language];
   const contextLinks = getServiceContextLinks("old-house", language);
+  const quotePath = buildQuotePath({
+    source: "service",
+    title: t.title,
+    projectType: quoteProjectTypeFromServiceSlug("old-house", t.title),
+  });
 
   return (
     <main className="fc-route-page scheme-a-old-house-route">
@@ -47,7 +53,7 @@ const OldHouseRenovation = () => {
       <JsonLdService name={t.title} description={t.description} />
       <JsonLdFAQ faqs={t.faqs.map((item) => ({ question: item.q, answer: item.a }))} />
 
-      <SchemeARouteHero kind="detail" image={pageHeroImages.oldHouse.desktop} imageSourceWidth={pageHeroImages.oldHouse.desktopWidth} tabletImage={pageHeroImages.oldHouse.tablet} tabletImageSourceWidth={pageHeroImages.oldHouse.tabletWidth} mobileImage={pageHeroImages.oldHouse.mobile} mobileImageSourceWidth={pageHeroImages.oldHouse.mobileWidth} imagePosition={pageHeroImages.oldHouse.imagePosition} imageAlt={t.heroAlt} label={[t.label, mediaLabels[language].renderingConcept].join(" · ")} title={t.title} description={t.description} actions={<Link to="/quote#quote-form" onClick={() => trackCtaClick("quote", "old_house_hero", { destination: "/quote#quote-form" })}>{t.assessment}</Link>} />
+      <SchemeARouteHero kind="detail" image={pageHeroImages.oldHouse.desktop} imageSourceWidth={pageHeroImages.oldHouse.desktopWidth} tabletImage={pageHeroImages.oldHouse.tablet} tabletImageSourceWidth={pageHeroImages.oldHouse.tabletWidth} mobileImage={pageHeroImages.oldHouse.mobile} mobileImageSourceWidth={pageHeroImages.oldHouse.mobileWidth} imagePosition={pageHeroImages.oldHouse.imagePosition} imageAlt={t.heroAlt} label={[t.label, mediaLabels[language].renderingConcept].join(" · ")} title={t.title} description={t.description} actions={<Link to={quotePath} onClick={() => trackCtaClick("quote", "old_house_hero", { destination: quotePath })}>{t.assessment}</Link>} />
 
       <SchemeASection title={t.introTitle} description={t.intro.join(" ")}>
         <div className="fc-route-tagline">{t.tags.map((tag) => <span key={tag}>{tag}</span>)}</div>
@@ -144,8 +150,8 @@ const OldHouseRenovation = () => {
           <h2>{t.ctaTitle}</h2>
           <p>{t.ctaDescription}</p>
           <div>
-            <Link to="/quote#quote-form" onClick={() => trackCtaClick("quote", "old_house_cta", { destination: "/quote#quote-form" })}>{t.assessment}</Link>
-            <a href={settings.whatsapp_url()} target="_blank" rel="noopener noreferrer" onClick={() => trackCtaClick("whatsapp", "old_house_cta", { destination: "whatsapp" })}><WhatsAppIcon />{t.whatsapp}</a>
+            <Link to={quotePath} onClick={() => trackCtaClick("quote", "old_house_cta", { destination: quotePath })}>{t.assessment}</Link>
+            <a href={settings.whatsapp_url(t.whatsappMessage)} target="_blank" rel="noopener noreferrer" onClick={() => trackCtaClick("whatsapp", "old_house_cta", { destination: "whatsapp" })}><WhatsAppIcon />{t.whatsapp}</a>
           </div>
         </div>
         <nav className="fc-route-related-links" aria-label={t.breadcrumbCurrent}>{t.internalLinks.map((item) => <Link key={item.to} to={item.to}>{item.label}</Link>)}</nav>

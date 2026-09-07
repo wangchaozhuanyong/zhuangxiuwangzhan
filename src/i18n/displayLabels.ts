@@ -506,6 +506,8 @@ const displayTextReplacements = Object.entries({
   .map(([key, value]) => ({ key, value }));
 
 const extraZhTextReplacements: Record<string, string> = {
+  "Permit & Drawing Support": "装修准证与图纸支持",
+  "Review renovation approval, management, drawing, and document-coordination needs against the property and confirmed project scope.": "根据房产类型与已确认项目范围，检查装修审批、管理方、图纸与文件协调需求。",
   "Smoked Glass and Walnut": "烟熏玻璃与胡桃木",
   "Warm Oak and Charcoal": "暖橡木与炭灰色",
   "Warm White and Oak": "暖白与橡木色",
