@@ -50,6 +50,11 @@ const subcategoryZhLabels = {
   toilet: "马桶",
   "shower system": "淋浴系统",
   "bathroom cabinet": "浴室柜",
+  "anti slip tile": "防滑砖",
+  "floor tile": "地砖",
+  "porcelain tile": "瓷砖",
+  "shower screen": "浴室玻璃隔断",
+  "wall tile": "墙砖",
   "quartz countertops": "石英石台面",
   "sintered stone": "岩板",
   "solid surface": "人造石",
@@ -63,10 +68,13 @@ const subcategoryZhLabels = {
   "barn door": "谷仓门",
   "aluminium sliding door": "铝合金推拉门",
   "frameless glass door": "无框玻璃门",
+  "frameless glass": "无框玻璃",
   "fluted panel": "格栅饰板",
   "timber cladding": "木饰面",
   "feature wall tile": "背景墙砖",
   "wall panel": "墙板",
+  "acoustic wall panel": "吸音墙板",
+  "solid wood finish": "实木饰面",
   "venetian plaster": "威尼斯灰泥",
   microcement: "微水泥",
   "metallic paint": "金属漆",
@@ -75,6 +83,40 @@ const subcategoryZhLabels = {
 };
 
 const zhLabel = (map, value) => map[normalizeKey(value)] || value;
+
+const slugify = (value) =>
+  String(value || "")
+    .trim()
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/(^-|-$)/g, "");
+
+const buildCategorySeoEntry = (category) => {
+  const nameEn = category.name || slugToTitle(category.slug);
+  const nameZh = zhLabel(categoryZhLabels, nameEn);
+  return {
+    slug: category.slug,
+    title_en: `${nameEn} Materials`,
+    title_zh: `${nameZh}材料`,
+    description_en:
+      category.description ||
+      `${nameEn} material options for renovation projects in Kuala Lumpur and Selangor.`,
+    description_zh: `${nameZh}材料选项，适合吉隆坡与雪兰莪装修项目参考。`,
+    subcategories: (category.subcategories || []).map((subcategory) => {
+      const subNameEn = subcategory.name || slugToTitle(subcategory.slug);
+      const subNameZh = zhLabel(subcategoryZhLabels, subNameEn);
+      return {
+        slug: subcategory.slug,
+        title_en: `${subNameEn} | ${nameEn}`,
+        title_zh: `${subNameZh} | ${nameZh}`,
+        description_en:
+          subcategory.description ||
+          `${subNameEn} options under ${nameEn} materials for renovation projects in Kuala Lumpur.`,
+        description_zh: `${subNameZh}属于${nameZh}材料分类，可用于吉隆坡装修项目的材料选择参考。`,
+      };
+    }),
+  };
+};
 
 const loadMaterialsData = async () => {
   if (!materialDataPromise) {
@@ -95,38 +137,47 @@ const loadMaterialsData = async () => {
   return materialDataPromise;
 };
 
-export const loadMaterialSeoCategories = async () => {
+export const loadMaterialSeoCategories = async (publishedMaterialRows = []) => {
   const categories = await loadMaterialsData();
-  return categories.map((category) => {
-    const nameEn = category.name || slugToTitle(category.slug);
-    const nameZh = zhLabel(categoryZhLabels, nameEn);
-    return {
-      slug: category.slug,
-      title_en: `${nameEn} Materials`,
-      title_zh: `${nameZh}材料`,
-      description_en:
-        category.description ||
-        `${nameEn} material options for renovation projects in Kuala Lumpur and Selangor.`,
-      description_zh: `${nameZh}材料选项，适合吉隆坡与雪兰莪装修项目参考。`,
-      subcategories: (category.subcategories || []).map((subcategory) => {
-        const subNameEn = subcategory.name || slugToTitle(subcategory.slug);
-        const subNameZh = zhLabel(subcategoryZhLabels, subNameEn);
-        return {
-          slug: subcategory.slug,
-          title_en: `${subNameEn} | ${nameEn}`,
-          title_zh: `${subNameZh} | ${nameZh}`,
-          description_en:
-            subcategory.description ||
-            `${subNameEn} options under ${nameEn} materials for renovation projects in Kuala Lumpur.`,
-          description_zh: `${subNameZh}属于${nameZh}材料分类，可用于吉隆坡装修项目的材料选择参考。`,
-        };
-      }),
-    };
-  });
+  const merged = new Map(categories.map((category) => {
+    const entry = buildCategorySeoEntry(category);
+    return [entry.slug, entry];
+  }));
+
+  for (const row of publishedMaterialRows) {
+    const categoryName = String(row?.category || "Materials").trim() || "Materials";
+    const subcategoryName = String(row?.subcategory || categoryName).trim() || categoryName;
+    const categorySlug = slugify(categoryName);
+    const subcategorySlug = slugify(subcategoryName);
+    if (!categorySlug || !subcategorySlug) continue;
+
+    let category = merged.get(categorySlug);
+    if (!category) {
+      category = buildCategorySeoEntry({
+        name: categoryName,
+        slug: categorySlug,
+        subcategories: [],
+      });
+      merged.set(categorySlug, category);
+    }
+
+    if (category.subcategories.some((subcategory) => subcategory.slug === subcategorySlug)) continue;
+    const nameZh = zhLabel(categoryZhLabels, categoryName);
+    const subNameZh = zhLabel(subcategoryZhLabels, subcategoryName);
+    category.subcategories.push({
+      slug: subcategorySlug,
+      title_en: `${subcategoryName} | ${categoryName}`,
+      title_zh: `${subNameZh} | ${nameZh}`,
+      description_en: `${subcategoryName} options under ${categoryName} materials for renovation projects in Kuala Lumpur.`,
+      description_zh: `${subNameZh}属于${nameZh}材料分类，可用于吉隆坡装修项目的材料选择参考。`,
+    });
+  }
+
+  return Array.from(merged.values());
 };
 
-export const loadMaterialSeoPaths = async () => {
-  const categories = await loadMaterialSeoCategories();
+export const loadMaterialSeoPaths = async (publishedMaterialRows = []) => {
+  const categories = await loadMaterialSeoCategories(publishedMaterialRows);
   return categories.flatMap((category) => [
     `/materials/category/${category.slug}`,
     ...category.subcategories.map((subcategory) => `/materials/category/${category.slug}/${subcategory.slug}`),
