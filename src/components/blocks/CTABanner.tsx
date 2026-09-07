@@ -14,6 +14,7 @@ interface CTABannerProps {
   quotePath?: string;
   className?: string;
   whatsappSource?: string;
+  whatsappMessage?: string;
 }
 
 const CTABanner = ({
@@ -24,6 +25,7 @@ const CTABanner = ({
   quotePath = QUOTE_FORM_PATH,
   className,
   whatsappSource = "Subpage CTA",
+  whatsappMessage,
 }: CTABannerProps) => {
   const settings = useSiteSettings();
 
@@ -45,7 +47,7 @@ const CTABanner = ({
             <ArrowRight aria-hidden="true" />
           </Link>
           <a
-            href={settings.whatsapp_url()}
+            href={settings.whatsapp_url(whatsappMessage)}
             target="_blank"
             rel="noopener noreferrer"
             className="scheme-a-page-cta__button scheme-a-page-cta__button--secondary"
