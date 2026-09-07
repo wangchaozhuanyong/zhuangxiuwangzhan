@@ -29,7 +29,6 @@
 
 ## Verification Commands
 
-- `npm run release:check`
 - `npm run verify:preview:server`
 - `npm run verify:seo-html`
 - `npm run verify:admin-foundation`

@@ -18,7 +18,6 @@
 
 - 发布前稳定基线：`f1be8de6f7c68542e788206af14d14125e4a66d4`
 - 发布分支：`codex/consultation-growth-fix-20260725`
-- 生产来源：合并到 `main` 后，由 `Prelaunch verification` 成功触发 Cloudflare Pages 部署。
 
 ## QA
 

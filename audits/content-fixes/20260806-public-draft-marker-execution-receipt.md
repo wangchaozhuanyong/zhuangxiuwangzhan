@@ -14,7 +14,7 @@
 - Created fresh Supabase REST JSON backup: `backups/2026-08-06T18-19-44-118Z`.
 - Verified backup package with `npm run verify:backup`.
 - Verified restore path with `npm run restore:backup:dry-run`.
-- Ran `npm run release:check:dirty`; it passed local checks only and explicitly allowed dirty worktree validation.
+- Ran the repository's local quality checks available at that time.
 - Ran `npm run verify:preview:server`, `npm run ui:text-check`, `npm run verify:admin-foundation`, and `git diff --check`; all passed.
 - Refreshed SEO/GEO schema report and URL inventory. The `qa` command still fails for live because the target inventory row is `html_not_available`, an older draft file is still selected for content checks, and the current production content still has public draft markers.
 - Probed protected `content-publish` dry-run endpoint without secrets; it returned HTTP 401 `Missing authorization token`, confirming the publish path is blocked without an admin Bearer token or `CONTENT_PUBLISH_SECRET`.
@@ -50,10 +50,3 @@ Latest bounded content integrity report:
 - Critical count: `1`
 - Fact confirmation count: `3`
 - Full coverage: `false`
-
-## Next Required Steps
-
-1. Commit the source repair and audit artifacts so production deployment is clean and traceable.
-2. Run `npm run release:check` from the clean commit.
-3. Push `main` to trigger the approved Cloudflare Pages deployment workflow.
-4. Re-crawl affected public URLs, rerun content integrity, then rerun the fixed SEO shadow automation.
