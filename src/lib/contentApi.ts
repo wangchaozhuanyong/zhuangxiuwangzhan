@@ -123,6 +123,16 @@ export const getFallbackProjects = async (language: Language = "en") => {
 };
 const getFallbackMaterials = async (): Promise<MaterialCatalogCategory[]> =>
   (await import("@/data/materials")).materialsData as MaterialCatalogCategory[];
+
+export const translateBlogContent = (value: string, language: Language) => {
+  if (language !== "zh" || !value) return value;
+
+  return value
+    .split(/(<[^>]+>)/g)
+    .map((part) => (part.startsWith("<") ? part : translateDisplayText(part, language)))
+    .join("");
+};
+
 const getFallbackBlogPosts = async (language: Language = "en") => {
   const { blogPosts } = await import("@/data/blog");
   if (language !== "zh") return blogPosts;
@@ -133,7 +143,7 @@ const getFallbackBlogPosts = async (language: Language = "en") => {
     ...post,
     title: localize(post.title || ""),
     excerpt: localize(post.excerpt || ""),
-    content: localize(post.content || ""),
+    content: translateBlogContent(post.content || "", language),
     category: localize(post.category || ""),
     tags: (post.tags || []).map((tag: string) => localize(tag)),
   }));
@@ -559,7 +569,7 @@ export const mapPublishedBlogPost = (item: UnknownRecord, language: Language = "
     pickLocalizedText(item, field, language) || pickLocalizedText(item, field, alternateLanguage) || fallback;
   const title = localize(localizedText("title"));
   const excerpt = localize(localizedText("excerpt"));
-  const content = localize(localizedText("content"));
+  const content = translateBlogContent(localizedText("content"), language);
   const preloadedReadMinutes = Number(item[`preload_read_minutes_${language}`]);
   const readMinutes = Number.isFinite(preloadedReadMinutes) && preloadedReadMinutes > 0
     ? preloadedReadMinutes
