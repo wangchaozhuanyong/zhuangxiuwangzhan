@@ -21,6 +21,7 @@ import { formatBlogReadTime, getBlogDateDisplay } from "@/lib/blogMeta";
 import { blogDetailPageText } from "@/i18n/blogDetailPageText";
 import { pageHeroImages, resolveEditorialHeroImage } from "@/lib/pageHeroImages";
 import { resolveBlogTopic } from "@/lib/blogTopics";
+import { translateBlogContent } from "@/lib/contentApi";
 
 const EDITORIAL_STORY_IMAGES = [
   "/images/projects/generated-portfolio/mont-kiara-luxury-condo-renovation.webp",
@@ -78,7 +79,7 @@ const BlogDetail = () => {
         ...item,
         title: displayText(item.title),
         excerpt: displayText(item.excerpt),
-        content: displayText(item.content),
+        content: translateBlogContent(item.content, language),
       }))
     : blogPosts;
   const fallbackPost = initialPosts.find((item) => item.slug === slug);
@@ -272,7 +273,7 @@ const BlogDetail = () => {
             </div>
 
             <article className="blog-editorial-article">
-              {renderContent(displayText(post.content))}
+              {renderContent(post.content)}
             </article>
 
             <div className="blog-editorial-tags">
