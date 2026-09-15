@@ -364,6 +364,10 @@
     margin-top: clamp(2.75rem, 4vw, 4.5rem);
   }
 
+  html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-project__collection[data-count="2"] {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
   html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-project__collection-hint {
     display: none;
   }
@@ -524,16 +528,66 @@
   }
 
   html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-materials__layout {
-    grid-template-columns: minmax(0, 1.28fr) minmax(20rem, 0.72fr);
+    grid-template-columns: minmax(0, 1.05fr) minmax(22rem, 0.95fr);
     gap: clamp(3rem, 6vw, 6rem);
+    align-items: center;
   }
 
   html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-materials__media {
+    position: relative;
     min-height: clamp(30rem, 44vw, 40rem);
     border: 1px solid rgba(212, 175, 55, 0.3);
     border-radius: 4px;
     overflow: hidden;
     box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+  }
+
+  html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-materials__media img {
+    object-position: 70% center;
+  }
+
+  html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-materials__badge {
+    position: absolute;
+    bottom: clamp(1.25rem, 2.5vw, 2.2rem);
+    left: clamp(1.25rem, 2.5vw, 2.2rem);
+    z-index: 2;
+    display: flex;
+    align-items: center;
+    gap: 0.85rem;
+    padding: 0.85rem 1.25rem;
+    border: 1px solid rgba(212, 175, 55, 0.4);
+    border-radius: 4px;
+    background: rgba(15, 16, 19, 0.86);
+    backdrop-filter: blur(14px);
+    box-shadow: 0 16px 40px rgba(0, 0, 0, 0.5);
+    pointer-events: none;
+    transform: translateZ(0);
+  }
+
+  html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-materials__badge-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #d4af37;
+    box-shadow: 0 0 10px rgba(212, 175, 55, 0.8);
+    flex-shrink: 0;
+  }
+
+  html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-materials__badge strong {
+    display: block;
+    color: #f7f4ee;
+    font-size: 0.88rem;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    line-height: 1.3;
+  }
+
+  html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-materials__badge span {
+    display: block;
+    color: var(--atelier-gold);
+    font-size: 0.72rem;
+    letter-spacing: 0.05em;
+    line-height: 1.3;
   }
 
   html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-materials__copy {
@@ -631,6 +685,8 @@
     background:
       radial-gradient(circle at 50% 0%, rgba(212, 175, 55, 0.14), transparent 40rem),
       #111215;
+    content-visibility: auto;
+    contain-intrinsic-size: 1px 600px;
   }
 
   html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-home-process .scheme-a-section-head h2 {
@@ -693,6 +749,8 @@
     padding: clamp(4.5rem, 7vw, 7rem) var(--scheme-a-gutter);
     color: #ece8df;
     background: #0f1013;
+    content-visibility: auto;
+    contain-intrinsic-size: 1px 500px;
   }
 
   html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-home-faq__layout {

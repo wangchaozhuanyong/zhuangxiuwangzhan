@@ -352,7 +352,7 @@ export const SchemeAFooterPrelude = () => {
   return (
     <section className="scheme-a-footer-prelude" data-home-section={isHome ? "cta" : undefined} data-cinematic-section>
       <div className="scheme-a-footer__panorama">
-        <SmartImage src="/images/projects/generated-portfolio/mont-kiara-luxury-condo-renovation.webp" alt={t.footerTitle} width={2560} height={1440} sizes="100vw" candidateWidths={[360, 560, 720, 960, 1200, 1600, 2560]} quality={88} revealOnLoad />
+        <SmartImage src="/images/projects/generated-portfolio/mont-kiara-luxury-condo-renovation.webp" alt={t.footerTitle} width={2560} height={1440} sizes="100vw" candidateWidths={[360, 560, 720, 960, 1200, 1600, 2560]} quality={88} />
         <div className="scheme-a-footer__invitation scheme-a-frame">
           <p>{t.footerKicker}</p><h2>{t.footerTitle}</h2><span>{t.footerBody}</span>
           <div>

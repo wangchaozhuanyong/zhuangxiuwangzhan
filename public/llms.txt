@@ -24,16 +24,14 @@ FLASH CAST SDN. BHD. 是服务吉隆坡、雪兰莪与巴生谷的装修、室�
 - contact: 2 localized URLs
 - faq: 2 localized URLs
 - home: 2 localized URLs
-- landing: 16 localized URLs
 - locations: 62 localized URLs
-- materials: 196 localized URLs
+- materials: 214 localized URLs
 - privacy: 2 localized URLs
 - process: 2 localized URLs
-- products: 92 localized URLs
 - projects: 78 localized URLs
 - promotions: 2 localized URLs
 - quote: 2 localized URLs
-- services: 24 localized URLs
+- services: 26 localized URLs
 - terms: 2 localized URLs
 
 ## Priority Chinese Pages
@@ -98,14 +96,6 @@ FLASH CAST SDN. BHD. 是服务吉隆坡、雪兰莪与巴生谷的装修、室�
 - https://flashcast.com.my/en/blog/shoplot-renovation-permit-malaysia
 - https://flashcast.com.my/en/blog/small-condo-storage-design-ideas
 - https://flashcast.com.my/en/blog/spc-vinyl-vs-laminate-flooring
-- https://flashcast.com.my/en/landing/bathroom-renovation
-- https://flashcast.com.my/en/landing/custom-built-in
-- https://flashcast.com.my/en/landing/flooring
-- https://flashcast.com.my/en/landing/kitchen-cabinet
-- https://flashcast.com.my/en/landing/office-renovation
-- https://flashcast.com.my/en/landing/old-house-renovation
-- https://flashcast.com.my/en/landing/shop-renovation
-- https://flashcast.com.my/en/landing/warehouse-shelving
 - https://flashcast.com.my/en/locations
 - https://flashcast.com.my/en/locations/ampang
 - https://flashcast.com.my/en/locations/ara-damansara
@@ -156,11 +146,16 @@ FLASH CAST SDN. BHD. 是服务吉隆坡、雪兰莪与巴生谷的装修、室�
 - https://flashcast.com.my/en/materials/category/art-paint/texture-paint
 - https://flashcast.com.my/en/materials/category/art-paint/venetian-plaster
 - https://flashcast.com.my/en/materials/category/bathroom
+- https://flashcast.com.my/en/materials/category/bathroom/anti-slip-tile
 - https://flashcast.com.my/en/materials/category/bathroom/basin
 - https://flashcast.com.my/en/materials/category/bathroom/bathroom-cabinet
 - https://flashcast.com.my/en/materials/category/bathroom/bathtub
+- https://flashcast.com.my/en/materials/category/bathroom/floor-tile
+- https://flashcast.com.my/en/materials/category/bathroom/porcelain-tile
+- https://flashcast.com.my/en/materials/category/bathroom/shower-screen
 - https://flashcast.com.my/en/materials/category/bathroom/shower-system
 - https://flashcast.com.my/en/materials/category/bathroom/toilet
+- https://flashcast.com.my/en/materials/category/bathroom/wall-tile
 - https://flashcast.com.my/en/materials/category/countertops-stone-surfaces
 - https://flashcast.com.my/en/materials/category/countertops-stone-surfaces/porcelain-slab
 - https://flashcast.com.my/en/materials/category/countertops-stone-surfaces/quartz-countertops
@@ -169,6 +164,7 @@ FLASH CAST SDN. BHD. 是服务吉隆坡、雪兰莪与巴生谷的装修、室�
 - https://flashcast.com.my/en/materials/category/doors-windows
 - https://flashcast.com.my/en/materials/category/doors-windows/aluminium-sliding-door
 - https://flashcast.com.my/en/materials/category/doors-windows/barn-door
+- https://flashcast.com.my/en/materials/category/doors-windows/frameless-glass
 - https://flashcast.com.my/en/materials/category/doors-windows/frameless-glass-door
 - https://flashcast.com.my/en/materials/category/doors-windows/laminate-door
 - https://flashcast.com.my/en/materials/category/doors-windows/solid-timber-door
@@ -188,7 +184,9 @@ FLASH CAST SDN. BHD. 是服务吉隆坡、雪兰莪与巴生谷的装修、室�
 - https://flashcast.com.my/en/materials/category/kitchen-cabinets/acrylic-cabinets
 - https://flashcast.com.my/en/materials/category/kitchen-cabinets/melamine-cabinets
 - https://flashcast.com.my/en/materials/category/kitchen-cabinets/solid-wood-cabinets
+- https://flashcast.com.my/en/materials/category/kitchen-cabinets/storage-cabinets
 - https://flashcast.com.my/en/materials/category/wall-panels
+- https://flashcast.com.my/en/materials/category/wall-panels/acoustic-wall-panel
 - https://flashcast.com.my/en/materials/category/wall-panels/feature-wall-tile
 - https://flashcast.com.my/en/materials/category/wall-panels/fluted-panel
 - https://flashcast.com.my/en/materials/category/wall-panels/timber-cladding
@@ -196,6 +194,7 @@ FLASH CAST SDN. BHD. 是服务吉隆坡、雪兰莪与巴生谷的装修、室�
 - https://flashcast.com.my/en/materials/category/whole-house-custom
 - https://flashcast.com.my/en/materials/category/whole-house-custom/kitchen-cabinets
 - https://flashcast.com.my/en/materials/category/whole-house-custom/shoe-cabinets
+- https://flashcast.com.my/en/materials/category/whole-house-custom/solid-wood-finish
 - https://flashcast.com.my/en/materials/category/whole-house-custom/storage-cabinets
 - https://flashcast.com.my/en/materials/category/whole-house-custom/study-desk
 - https://flashcast.com.my/en/materials/category/whole-house-custom/tv-cabinets
@@ -280,6 +279,7 @@ FLASH CAST SDN. BHD. 是服务吉隆坡、雪兰莪与巴生谷的装修、室�
 - https://flashcast.com.my/en/services/bathroom
 - https://flashcast.com.my/en/services/builtin
 - https://flashcast.com.my/en/services/design
+- https://flashcast.com.my/en/services/flooring
 - https://flashcast.com.my/en/services/kitchen
 - https://flashcast.com.my/en/services/office-renovation
 - https://flashcast.com.my/en/services/old-house
@@ -325,14 +325,6 @@ FLASH CAST SDN. BHD. 是服务吉隆坡、雪兰莪与巴生谷的装修、室�
 - https://flashcast.com.my/zh/blog/shoplot-renovation-permit-malaysia
 - https://flashcast.com.my/zh/blog/small-condo-storage-design-ideas
 - https://flashcast.com.my/zh/blog/spc-vinyl-vs-laminate-flooring
-- https://flashcast.com.my/zh/landing/bathroom-renovation
-- https://flashcast.com.my/zh/landing/custom-built-in
-- https://flashcast.com.my/zh/landing/flooring
-- https://flashcast.com.my/zh/landing/kitchen-cabinet
-- https://flashcast.com.my/zh/landing/office-renovation
-- https://flashcast.com.my/zh/landing/old-house-renovation
-- https://flashcast.com.my/zh/landing/shop-renovation
-- https://flashcast.com.my/zh/landing/warehouse-shelving
 - https://flashcast.com.my/zh/locations
 - https://flashcast.com.my/zh/locations/ampang
 - https://flashcast.com.my/zh/locations/ara-damansara
@@ -383,11 +375,16 @@ FLASH CAST SDN. BHD. 是服务吉隆坡、雪兰莪与巴生谷的装修、室�
 - https://flashcast.com.my/zh/materials/category/art-paint/texture-paint
 - https://flashcast.com.my/zh/materials/category/art-paint/venetian-plaster
 - https://flashcast.com.my/zh/materials/category/bathroom
+- https://flashcast.com.my/zh/materials/category/bathroom/anti-slip-tile
 - https://flashcast.com.my/zh/materials/category/bathroom/basin
 - https://flashcast.com.my/zh/materials/category/bathroom/bathroom-cabinet
 - https://flashcast.com.my/zh/materials/category/bathroom/bathtub
+- https://flashcast.com.my/zh/materials/category/bathroom/floor-tile
+- https://flashcast.com.my/zh/materials/category/bathroom/porcelain-tile
+- https://flashcast.com.my/zh/materials/category/bathroom/shower-screen
 - https://flashcast.com.my/zh/materials/category/bathroom/shower-system
 - https://flashcast.com.my/zh/materials/category/bathroom/toilet
+- https://flashcast.com.my/zh/materials/category/bathroom/wall-tile
 - https://flashcast.com.my/zh/materials/category/countertops-stone-surfaces
 - https://flashcast.com.my/zh/materials/category/countertops-stone-surfaces/porcelain-slab
 - https://flashcast.com.my/zh/materials/category/countertops-stone-surfaces/quartz-countertops
@@ -396,6 +393,7 @@ FLASH CAST SDN. BHD. 是服务吉隆坡、雪兰莪与巴生谷的装修、室�
 - https://flashcast.com.my/zh/materials/category/doors-windows
 - https://flashcast.com.my/zh/materials/category/doors-windows/aluminium-sliding-door
 - https://flashcast.com.my/zh/materials/category/doors-windows/barn-door
+- https://flashcast.com.my/zh/materials/category/doors-windows/frameless-glass
 - https://flashcast.com.my/zh/materials/category/doors-windows/frameless-glass-door
 - https://flashcast.com.my/zh/materials/category/doors-windows/laminate-door
 - https://flashcast.com.my/zh/materials/category/doors-windows/solid-timber-door
@@ -415,7 +413,9 @@ FLASH CAST SDN. BHD. 是服务吉隆坡、雪兰莪与巴生谷的装修、室�
 - https://flashcast.com.my/zh/materials/category/kitchen-cabinets/acrylic-cabinets
 - https://flashcast.com.my/zh/materials/category/kitchen-cabinets/melamine-cabinets
 - https://flashcast.com.my/zh/materials/category/kitchen-cabinets/solid-wood-cabinets
+- https://flashcast.com.my/zh/materials/category/kitchen-cabinets/storage-cabinets
 - https://flashcast.com.my/zh/materials/category/wall-panels
+- https://flashcast.com.my/zh/materials/category/wall-panels/acoustic-wall-panel
 - https://flashcast.com.my/zh/materials/category/wall-panels/feature-wall-tile
 - https://flashcast.com.my/zh/materials/category/wall-panels/fluted-panel
 - https://flashcast.com.my/zh/materials/category/wall-panels/timber-cladding
@@ -423,6 +423,7 @@ FLASH CAST SDN. BHD. 是服务吉隆坡、雪兰莪与巴生谷的装修、室�
 - https://flashcast.com.my/zh/materials/category/whole-house-custom
 - https://flashcast.com.my/zh/materials/category/whole-house-custom/kitchen-cabinets
 - https://flashcast.com.my/zh/materials/category/whole-house-custom/shoe-cabinets
+- https://flashcast.com.my/zh/materials/category/whole-house-custom/solid-wood-finish
 - https://flashcast.com.my/zh/materials/category/whole-house-custom/storage-cabinets
 - https://flashcast.com.my/zh/materials/category/whole-house-custom/study-desk
 - https://flashcast.com.my/zh/materials/category/whole-house-custom/tv-cabinets
@@ -507,6 +508,7 @@ FLASH CAST SDN. BHD. 是服务吉隆坡、雪兰莪与巴生谷的装修、室�
 - https://flashcast.com.my/zh/services/bathroom
 - https://flashcast.com.my/zh/services/builtin
 - https://flashcast.com.my/zh/services/design
+- https://flashcast.com.my/zh/services/flooring
 - https://flashcast.com.my/zh/services/kitchen
 - https://flashcast.com.my/zh/services/office-renovation
 - https://flashcast.com.my/zh/services/old-house
@@ -519,52 +521,6 @@ FLASH CAST SDN. BHD. 是服务吉隆坡、雪兰莪与巴生谷的装修、室�
 - https://flashcast.com.my/en/faq
 - https://flashcast.com.my/en/privacy
 - https://flashcast.com.my/en/process
-- https://flashcast.com.my/en/products
-- https://flashcast.com.my/en/products/acrylic-cabinet-gloss-white
-- https://flashcast.com.my/en/products/aluminium-sliding-black
-- https://flashcast.com.my/en/products/art-lime-wash
-- https://flashcast.com.my/en/products/art-metallic-paint
-- https://flashcast.com.my/en/products/art-microcement
-- https://flashcast.com.my/en/products/art-texture-paint
-- https://flashcast.com.my/en/products/art-venetian-plaster
-- https://flashcast.com.my/en/products/barn-door-dark-wood
-- https://flashcast.com.my/en/products/bathroom-floor-tile-anti-slip
-- https://flashcast.com.my/en/products/bathroom-vanity-wall-hung
-- https://flashcast.com.my/en/products/cabinet-system-moisture-resistant
-- https://flashcast.com.my/en/products/display-storage-cabinet
-- https://flashcast.com.my/en/products/engineered-walnut-herringbone
-- https://flashcast.com.my/en/products/engineered-wood-dark-walnut
-- https://flashcast.com.my/en/products/entry-shoe-cabinet-bench
-- https://flashcast.com.my/en/products/fluted-panel-charcoal
-- https://flashcast.com.my/en/products/frameless-glass-clear
-- https://flashcast.com.my/en/products/frameless-glass-screen
-- https://flashcast.com.my/en/products/hexagon-grey-matte
-- https://flashcast.com.my/en/products/kitchen-cabinet-matte-grey-slab
-- https://flashcast.com.my/en/products/kitchen-cabinet-natural-woodgrain
-- https://flashcast.com.my/en/products/laminate-door-white-oak
-- https://flashcast.com.my/en/products/laminate-grey-stone
-- https://flashcast.com.my/en/products/melamine-cabinet-grey-oak
-- https://flashcast.com.my/en/products/porcelain-carrara-white
-- https://flashcast.com.my/en/products/quartz-countertop-carrara-white
-- https://flashcast.com.my/en/products/quartz-countertop-dark-stone-look
-- https://flashcast.com.my/en/products/shower-screen-black-framed
-- https://flashcast.com.my/en/products/sintered-stone-grey
-- https://flashcast.com.my/en/products/solid-surface-warm-beige
-- https://flashcast.com.my/en/products/solid-surface-warm-white
-- https://flashcast.com.my/en/products/solid-timber-walnut
-- https://flashcast.com.my/en/products/solid-wood-cabinet-teak
-- https://flashcast.com.my/en/products/solid-wood-teak
-- https://flashcast.com.my/en/products/spc-flooring-light-oak
-- https://flashcast.com.my/en/products/spc-flooring-natural-oak
-- https://flashcast.com.my/en/products/study-desk-storage
-- https://flashcast.com.my/en/products/subway-tile-white
-- https://flashcast.com.my/en/products/timber-cladding-oak
-- https://flashcast.com.my/en/products/tv-storage-wall
-- https://flashcast.com.my/en/products/vinyl-plank-ash-grey
-- https://flashcast.com.my/en/products/wall-panel-acoustic-system
-- https://flashcast.com.my/en/products/wall-panel-charcoal-fluted
-- https://flashcast.com.my/en/products/wall-panel-natural-timber-look
-- https://flashcast.com.my/en/products/wardrobe-full-height
 - https://flashcast.com.my/en/promotions
 - https://flashcast.com.my/en/quote
 - https://flashcast.com.my/en/terms
@@ -574,52 +530,6 @@ FLASH CAST SDN. BHD. 是服务吉隆坡、雪兰莪与巴生谷的装修、室�
 - https://flashcast.com.my/zh/faq
 - https://flashcast.com.my/zh/privacy
 - https://flashcast.com.my/zh/process
-- https://flashcast.com.my/zh/products
-- https://flashcast.com.my/zh/products/acrylic-cabinet-gloss-white
-- https://flashcast.com.my/zh/products/aluminium-sliding-black
-- https://flashcast.com.my/zh/products/art-lime-wash
-- https://flashcast.com.my/zh/products/art-metallic-paint
-- https://flashcast.com.my/zh/products/art-microcement
-- https://flashcast.com.my/zh/products/art-texture-paint
-- https://flashcast.com.my/zh/products/art-venetian-plaster
-- https://flashcast.com.my/zh/products/barn-door-dark-wood
-- https://flashcast.com.my/zh/products/bathroom-floor-tile-anti-slip
-- https://flashcast.com.my/zh/products/bathroom-vanity-wall-hung
-- https://flashcast.com.my/zh/products/cabinet-system-moisture-resistant
-- https://flashcast.com.my/zh/products/display-storage-cabinet
-- https://flashcast.com.my/zh/products/engineered-walnut-herringbone
-- https://flashcast.com.my/zh/products/engineered-wood-dark-walnut
-- https://flashcast.com.my/zh/products/entry-shoe-cabinet-bench
-- https://flashcast.com.my/zh/products/fluted-panel-charcoal
-- https://flashcast.com.my/zh/products/frameless-glass-clear
-- https://flashcast.com.my/zh/products/frameless-glass-screen
-- https://flashcast.com.my/zh/products/hexagon-grey-matte
-- https://flashcast.com.my/zh/products/kitchen-cabinet-matte-grey-slab
-- https://flashcast.com.my/zh/products/kitchen-cabinet-natural-woodgrain
-- https://flashcast.com.my/zh/products/laminate-door-white-oak
-- https://flashcast.com.my/zh/products/laminate-grey-stone
-- https://flashcast.com.my/zh/products/melamine-cabinet-grey-oak
-- https://flashcast.com.my/zh/products/porcelain-carrara-white
-- https://flashcast.com.my/zh/products/quartz-countertop-carrara-white
-- https://flashcast.com.my/zh/products/quartz-countertop-dark-stone-look
-- https://flashcast.com.my/zh/products/shower-screen-black-framed
-- https://flashcast.com.my/zh/products/sintered-stone-grey
-- https://flashcast.com.my/zh/products/solid-surface-warm-beige
-- https://flashcast.com.my/zh/products/solid-surface-warm-white
-- https://flashcast.com.my/zh/products/solid-timber-walnut
-- https://flashcast.com.my/zh/products/solid-wood-cabinet-teak
-- https://flashcast.com.my/zh/products/solid-wood-teak
-- https://flashcast.com.my/zh/products/spc-flooring-light-oak
-- https://flashcast.com.my/zh/products/spc-flooring-natural-oak
-- https://flashcast.com.my/zh/products/study-desk-storage
-- https://flashcast.com.my/zh/products/subway-tile-white
-- https://flashcast.com.my/zh/products/timber-cladding-oak
-- https://flashcast.com.my/zh/products/tv-storage-wall
-- https://flashcast.com.my/zh/products/vinyl-plank-ash-grey
-- https://flashcast.com.my/zh/products/wall-panel-acoustic-system
-- https://flashcast.com.my/zh/products/wall-panel-charcoal-fluted
-- https://flashcast.com.my/zh/products/wall-panel-natural-timber-look
-- https://flashcast.com.my/zh/products/wardrobe-full-height
 - https://flashcast.com.my/zh/promotions
 - https://flashcast.com.my/zh/quote
 - https://flashcast.com.my/zh/terms

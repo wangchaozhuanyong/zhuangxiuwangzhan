@@ -50,6 +50,8 @@ type NativeFetchPriority = "high" | "low" | "auto";
 
 const DEFAULT_SIZES = "100vw";
 
+const loadedSourceKeys = new Set<string>();
+
 export function SmartImage({
   src,
   alt,
@@ -108,6 +110,7 @@ export function SmartImage({
 
   const resolvedFetchPriority: NativeFetchPriority = fetchPriority ?? (loading === "eager" ? "high" : "auto");
   const fetchPriorityAttr = { fetchpriority: resolvedFetchPriority } as { fetchpriority: NativeFetchPriority };
+  const imgRef = React.useRef<HTMLImageElement | null>(null);
   const sourceKey = [
     resolvedSrc,
     srcSet,
@@ -116,10 +119,21 @@ export function SmartImage({
   const [loadState, setLoadState] = React.useState<{
     sourceKey: string;
     status: "loading" | "loaded" | "error";
-  }>({ sourceKey, status: "loading" });
+  }>(() => ({
+    sourceKey,
+    status: loadedSourceKeys.has(sourceKey) ? "loaded" : "loading",
+  }));
   const imageState = loadState.sourceKey === sourceKey ? loadState.status : "loading";
 
+  React.useLayoutEffect(() => {
+    if (imgRef.current && imgRef.current.complete && imgRef.current.naturalWidth > 0) {
+      loadedSourceKeys.add(sourceKey);
+      setLoadState((prev) => (prev.status === "loaded" ? prev : { sourceKey, status: "loaded" }));
+    }
+  }, [sourceKey]);
+
   const handleLoad: React.ReactEventHandler<HTMLImageElement> = (event) => {
+    loadedSourceKeys.add(sourceKey);
     setLoadState({ sourceKey, status: "loaded" });
     onLoad?.(event);
   };
@@ -131,6 +145,7 @@ export function SmartImage({
 
   const image = (
     <img
+      ref={imgRef}
       src={resolvedSrc}
       srcSet={srcSet}
       sizes={srcSet ? resolvedSizes : undefined}

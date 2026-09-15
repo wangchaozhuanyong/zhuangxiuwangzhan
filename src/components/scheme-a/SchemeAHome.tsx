@@ -61,7 +61,7 @@ const SchemeAHome = ({ content }: SchemeAHomeProps) => {
     })
     .slice(0, 6);
   const featuredProject = projects[0];
-  const supportingProjects = projects.slice(1, 3);
+  const supportingProjects = projects.slice(1, 4);
   const projectImage = featuredProject?.thumbnail || "/images/projects/generated-portfolio/mont-kiara-luxury-condo-renovation.webp";
   const displayedProjectImages = new Set([projectImage, ...supportingProjects.map((project) => project.thumbnail)]);
   const materialImage = projects
@@ -111,7 +111,6 @@ const SchemeAHome = ({ content }: SchemeAHomeProps) => {
                 quality={88}
                 loading="eager"
                 fetchPriority="high"
-                revealOnLoad
               />
             </picture>
           ) : (
@@ -125,7 +124,6 @@ const SchemeAHome = ({ content }: SchemeAHomeProps) => {
               quality={88}
               loading="eager"
               fetchPriority="high"
-              revealOnLoad
             />
           )}
           {usesAtelierHero && <figcaption>{copy.heroConceptLabel}</figcaption>}
@@ -213,7 +211,6 @@ const SchemeAHome = ({ content }: SchemeAHomeProps) => {
             candidateWidths={[560, 720, 960, 1200, 1600]}
             quality={86}
             loading="lazy"
-            revealOnLoad
           />
         </LocalizedLink>
         <div className="scheme-a-frame scheme-a-project__meta">
@@ -225,7 +222,7 @@ const SchemeAHome = ({ content }: SchemeAHomeProps) => {
         </div>
         {supportingProjects.length > 0 && (
           <>
-            <div className="scheme-a-frame scheme-a-project__collection">
+            <div className="scheme-a-frame scheme-a-project__collection" data-count={supportingProjects.length}>
               {supportingProjects.map((project, projectIndex) => {
                 const desktopAspectRatio = PROJECT_CARD_DESKTOP_ASPECT_RATIOS[projectIndex]
                   || PROJECT_CARD_MOBILE_ASPECT_RATIO;
@@ -251,9 +248,9 @@ const SchemeAHome = ({ content }: SchemeAHomeProps) => {
                         alt={project.thumbnailAlt || project.title}
                         width={PROJECT_CARD_INTRINSIC_WIDTH}
                         height={desktopIntrinsicHeight}
-                        sizes={projectIndex === 0
+                        sizes={supportingProjects.length === 2
                           ? "(max-width: 767px) 78vw, (max-width: 1100px) 46vw, 48vw"
-                          : "(max-width: 767px) 78vw, (max-width: 1100px) 46vw, 38vw"}
+                          : "(max-width: 767px) 78vw, (max-width: 1100px) 46vw, 31vw"}
                         candidateWidths={PROJECT_CARD_DESKTOP_WIDTHS}
                         quality={84}
                         resize="cover"
@@ -289,11 +286,18 @@ const SchemeAHome = ({ content }: SchemeAHomeProps) => {
               alt={copy.materialTitle}
               width={1280}
               height={960}
-              sizes="(max-width: 767px) calc(100vw - 44px), 52vw"
+              sizes="(max-width: 767px) calc(100vw - 44px), 50vw"
               candidateWidths={[560, 720, 960, 1280]}
               quality={86}
               loading="lazy"
             />
+            <div className="scheme-a-materials__badge" aria-hidden="true">
+              <span className="scheme-a-materials__badge-dot" />
+              <div>
+                <strong>{language === "zh" ? "全案透明交付体系" : "Transparent Delivery System"}</strong>
+                <span>{language === "zh" ? "书面工作范围 · 0增项承诺 · 节点验收" : "Written Scope · No Hidden Fees · Stage Sign-Off"}</span>
+              </div>
+            </div>
           </figure>
           <div className="scheme-a-materials__copy">
             <p className="scheme-a-eyebrow">{copy.trustLabel}</p>
