@@ -43,3 +43,6 @@ public/videos/*
 /design-preview-forest-shadow/
 /design-qa/
 /design-qa.md
+
+# Release retry receipts and isolated release-control fixtures
+/.release/
