@@ -3,20 +3,76 @@ name: Deploy to Cloudflare Pages
 on:
   push:
     branches: [main]
-  workflow_dispatch: {}
+  pull_request:
+    paths:
+      - .github/workflows/cloudflare-pages-deploy.yml
+      - scripts/pages-release*
+      - scripts/deploy-cloudflare-pages.mjs
+      - scripts/arch-check.mjs
+      - AGENTS.md
+  workflow_dispatch:
+    inputs:
+      expected_sha:
+        description: Optional main revision selected by the local release entry
+        type: string
+        default: ""
 
 concurrency:
-  group: cloudflare-pages-production
-  cancel-in-progress: true
+  group: pages-${{ github.event_name == 'pull_request' && github.ref || 'production' }}
+  cancel-in-progress: false
 
 permissions:
   contents: read
+  actions: read
 
 jobs:
-  deploy:
+  plan:
     runs-on: ubuntu-latest
+    outputs:
+      deploy: ${{ steps.plan.outputs.deploy }}
     steps:
       - uses: actions/checkout@v6
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+      - uses: actions/setup-node@v6
+        with:
+          node-version: "22"
+      - name: Check release controls
+        run: |
+          node --test scripts/pages-release.test.mjs
+          npm run arch:check
+      - name: Compare production with the release source
+        id: plan
+        env:
+          GH_TOKEN: ${{ github.token }}
+          EXPECTED_SHA: ${{ inputs.expected_sha }}
+        run: node scripts/pages-release.mjs plan
+
+  deploy:
+    needs: plan
+    if: needs.plan.outputs.deploy == 'true'
+    runs-on: ubuntu-latest
+    env:
+      VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
+      VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
+      VITE_TURNSTILE_SITE_KEY: ${{ secrets.VITE_TURNSTILE_SITE_KEY }}
+      VITE_SITE_URL: https://flashcast.com.my
+      VITE_SITE_EMAIL: support@flashcast.com.my
+      VITE_SITE_PHONE_DISPLAY: "+60 11-2885 3888"
+      VITE_SITE_PHONE_E164: "+601128853888"
+      VITE_SITE_WHATSAPP_NUMBER: "601128853888"
+      VITE_SITE_SSM_NUMBER: "202501027419 (1628831-M)"
+      VITE_SITE_ADDRESS: "94, Jalan Mega Mendung, Taman United, 58200 Kuala Lumpur, Malaysia"
+      VITE_SITE_SHORT_ADDRESS: "94, Jalan Mega Mendung, 58200"
+      VITE_GOOGLE_ADS_WHATSAPP_CONVERSION_LABEL: ${{ secrets.VITE_GOOGLE_ADS_WHATSAPP_CONVERSION_LABEL }}
+      VITE_GOOGLE_ADS_QUOTE_CONVERSION_LABEL: ${{ secrets.VITE_GOOGLE_ADS_QUOTE_CONVERSION_LABEL }}
+      VITE_GOOGLE_ADS_CONTACT_CONVERSION_LABEL: ${{ secrets.VITE_GOOGLE_ADS_CONTACT_CONVERSION_LABEL }}
+      VITE_APP_VERSION: ${{ github.sha }}
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          ref: ${{ github.sha }}
 
       - uses: actions/setup-node@v6
         with:
@@ -26,24 +82,38 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Identify this run's build
+        id: build-key
+        run: node scripts/pages-release.mjs cache-key
+
+      - name: Restore build for a retry of this run
+        id: build-cache
+        uses: actions/cache/restore@v4
+        with:
+          key: ${{ steps.build-key.outputs.key }}
+          path: |
+            dist
+            functions/seo-manifest.json
+            .release/pages-build.json
+
       - name: Build website
-        env:
-          VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
-          VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
-          VITE_TURNSTILE_SITE_KEY: ${{ secrets.VITE_TURNSTILE_SITE_KEY }}
-          VITE_SITE_URL: https://flashcast.com.my
-          VITE_SITE_EMAIL: support@flashcast.com.my
-          VITE_SITE_PHONE_DISPLAY: "+60 11-2885 3888"
-          VITE_SITE_PHONE_E164: "+601128853888"
-          VITE_SITE_WHATSAPP_NUMBER: "601128853888"
-          VITE_SITE_SSM_NUMBER: "202501027419 (1628831-M)"
-          VITE_SITE_ADDRESS: "94, Jalan Mega Mendung, Taman United, 58200 Kuala Lumpur, Malaysia"
-          VITE_SITE_SHORT_ADDRESS: "94, Jalan Mega Mendung, 58200"
-          VITE_GOOGLE_ADS_WHATSAPP_CONVERSION_LABEL: ${{ secrets.VITE_GOOGLE_ADS_WHATSAPP_CONVERSION_LABEL }}
-          VITE_GOOGLE_ADS_QUOTE_CONVERSION_LABEL: ${{ secrets.VITE_GOOGLE_ADS_QUOTE_CONVERSION_LABEL }}
-          VITE_GOOGLE_ADS_CONTACT_CONVERSION_LABEL: ${{ secrets.VITE_GOOGLE_ADS_CONTACT_CONVERSION_LABEL }}
-          VITE_APP_VERSION: ${{ github.sha }}
-        run: npm run build
+        if: steps.build-cache.outputs.cache-hit != 'true'
+        run: |
+          npm run build
+          node scripts/pages-release.mjs record
+
+      - name: Verify source and all build files
+        run: node scripts/pages-release.mjs verify-build
+
+      - name: Save build before publishing
+        if: steps.build-cache.outputs.cache-hit != 'true'
+        uses: actions/cache/save@v4
+        with:
+          key: ${{ steps.build-key.outputs.key }}
+          path: |
+            dist
+            functions/seo-manifest.json
+            .release/pages-build.json
 
       - name: Deploy website
         env:
@@ -51,3 +121,6 @@ jobs:
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           CLOUDFLARE_PAGES_PROJECT_NAME: ${{ secrets.CLOUDFLARE_PAGES_PROJECT_NAME }}
         run: npx wrangler pages deploy dist --project-name "$CLOUDFLARE_PAGES_PROJECT_NAME" --branch main --commit-hash "$GITHUB_SHA" --env-file /dev/null
+
+      - name: Verify the running production revision
+        run: node scripts/pages-release.mjs verify-live
