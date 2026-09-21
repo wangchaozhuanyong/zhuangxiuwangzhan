@@ -1,0 +1,159 @@
+name: Release managed content-publish R3
+
+on:
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: Read-only preflight or exact migration and Edge release
+        required: true
+        type: choice
+        options: [dry-run, deploy]
+      expected_sha:
+        description: Exact reviewed main commit SHA
+        required: true
+        type: string
+      approval_id:
+        description: Exact R3 approval audit reference (not an authorization token)
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: production-supabase-content-publish-r3
+  cancel-in-progress: false
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          ref: ${{ github.sha }}
+      - uses: actions/setup-node@v6
+        with:
+          node-version: '22'
+      - name: Check exact release identity and local controls
+        env:
+          EXPECTED_SHA: ${{ inputs.expected_sha }}
+          RELEASE_MODE: ${{ inputs.mode }}
+          APPROVAL_ID: ${{ inputs.approval_id }}
+        run: |
+          node scripts/supabase-content-publish-release.mjs identity
+          node --test scripts/supabase-content-publish-release.test.mjs
+          npm run arch:check
+      - name: Verify protected environment before loading credentials
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: node scripts/supabase-content-publish-release.mjs environment
+
+  release:
+    needs: verify
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    environment: production-supabase
+    env:
+      SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+      SUPABASE_DB_PASSWORD: ${{ secrets.SUPABASE_DB_PASSWORD }}
+      EXPECTED_SHA: ${{ inputs.expected_sha }}
+      RELEASE_MODE: ${{ inputs.mode }}
+      APPROVAL_ID: ${{ inputs.approval_id }}
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          ref: ${{ github.sha }}
+      - uses: actions/setup-node@v6
+        with:
+          node-version: '22'
+      - name: Recheck selected SHA and credential availability
+        run: |
+          node scripts/supabase-content-publish-release.mjs identity
+          test -n "$SUPABASE_ACCESS_TOKEN"
+          test -n "$SUPABASE_DB_PASSWORD"
+      - uses: supabase/setup-cli@3c2f5e2ae34c34e428e8e206e2c4d21fa2d20fbf # v2.1.1
+        with:
+          version: 2.84.2
+      - name: Link exact project and reject remote migration drift
+        run: |
+          supabase link --project-ref rbsnyexjifounogswrjp --yes
+          supabase migration list --linked > "$RUNNER_TEMP/migration-list-before.txt"
+          node scripts/supabase-content-publish-release.mjs migration-list "$RUNNER_TEMP/migration-list-before.txt"
+      - name: Prove zero-write migration plan
+        run: |
+          supabase db push --linked --dry-run > "$RUNNER_TEMP/db-push-dry-run.txt"
+          node scripts/supabase-content-publish-release.mjs dry-run "$RUNNER_TEMP/db-push-dry-run.txt"
+      - name: Verify same SHA is running on the public website
+        if: ${{ inputs.mode == 'deploy' }}
+        run: |
+          node -e 'fetch("https://flashcast.com.my/__flashcast/version", {cache:"no-store"}).then(r=>r.json()).then(v=>{if(v.deploymentVersion!==process.env.GITHUB_SHA)process.exit(1)}).catch(()=>process.exit(1))'
+      - name: Capture current schema and deployed Edge source before any write
+        if: ${{ inputs.mode == 'deploy' }}
+        run: |
+          supabase db dump --linked --schema public --file "$RUNNER_TEMP/public-schema-before.sql"
+          test -s "$RUNNER_TEMP/public-schema-before.sql"
+          mkdir -p "$RUNNER_TEMP/edge-before"
+          supabase init --workdir "$RUNNER_TEMP/edge-before" --yes
+          supabase functions download content-publish --project-ref rbsnyexjifounogswrjp --use-api --workdir "$RUNNER_TEMP/edge-before"
+          test -s "$RUNNER_TEMP/edge-before/supabase/functions/content-publish/index.ts"
+          supabase functions list --project-ref rbsnyexjifounogswrjp -o json > "$RUNNER_TEMP/functions-before.json"
+          node scripts/supabase-content-publish-release.mjs function-version "$RUNNER_TEMP/functions-before.json" > "$RUNNER_TEMP/edge-version-before.txt"
+          node scripts/supabase-content-publish-release.mjs source-hash "$RUNNER_TEMP/edge-before/supabase/functions/content-publish" > "$RUNNER_TEMP/edge-source-before.sha256"
+          sha256sum "$RUNNER_TEMP/public-schema-before.sql" "$RUNNER_TEMP/edge-before/supabase/functions/content-publish/index.ts" > "$RUNNER_TEMP/pre-release-hashes.txt"
+          echo "Previous content-publish version: $(cat "$RUNNER_TEMP/edge-version-before.txt"); source SHA-256: $(cat "$RUNNER_TEMP/edge-source-before.sha256")." >> "$GITHUB_STEP_SUMMARY"
+      - name: Retain previous Edge source for controlled recovery
+        if: ${{ inputs.mode == 'deploy' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: content-publish-before-${{ github.sha }}
+          path: ${{ runner.temp }}/edge-before/supabase/functions/content-publish/
+          retention-days: 7
+          if-no-files-found: error
+      - name: Apply only the reviewed additive migration
+        if: ${{ inputs.mode == 'deploy' }}
+        run: |
+          supabase db push --linked --yes
+          supabase migration list --linked > "$RUNNER_TEMP/migration-list-after.txt"
+          ALLOW_APPLIED=true node scripts/supabase-content-publish-release.mjs migration-list "$RUNNER_TEMP/migration-list-after.txt"
+          echo 'The permit schema migration is additive and remains in place; SQL rollback is not automatic.' >> "$GITHUB_STEP_SUMMARY"
+      - name: Deploy Edge function and restore prior source on failure
+        if: ${{ inputs.mode == 'deploy' }}
+        run: |
+          rollback_failed() {
+            echo "::error::rollback_failed: $1"
+            echo "rollback_failed: $1. Additive permit schema remains; stop and inspect production before retry." >> "$GITHUB_STEP_SUMMARY"
+            exit 1
+          }
+          if supabase functions deploy content-publish --project-ref rbsnyexjifounogswrjp --no-verify-jwt --use-api && \
+             supabase functions list --project-ref rbsnyexjifounogswrjp -o json > "$RUNNER_TEMP/functions-after.json" && \
+             node scripts/supabase-content-publish-release.mjs function-version-advanced "$RUNNER_TEMP/functions-after.json" "$RUNNER_TEMP/functions-before.json" > "$RUNNER_TEMP/edge-version-after.txt"; then
+            echo "content-publish version advanced to $(cat "$RUNNER_TEMP/edge-version-after.txt"); managed switch remains off." >> "$GITHUB_STEP_SUMMARY"
+            exit 0
+          fi
+          echo '::warning::Edge deploy or version readback failed; attempting the exact downloaded source restore. Additive permit schema is retained.'
+          if ! supabase functions deploy content-publish --project-ref rbsnyexjifounogswrjp --no-verify-jwt --use-api --workdir "$RUNNER_TEMP/edge-before"; then
+            rollback_failed 'restoring the previous Edge source failed'
+          fi
+          if ! supabase functions list --project-ref rbsnyexjifounogswrjp -o json > "$RUNNER_TEMP/functions-restored.json" || \
+             ! node scripts/supabase-content-publish-release.mjs function-version-advanced "$RUNNER_TEMP/functions-restored.json" "$RUNNER_TEMP/functions-before.json" > "$RUNNER_TEMP/edge-version-restored.txt"; then
+            rollback_failed 'restored Edge version could not be verified'
+          fi
+          mkdir -p "$RUNNER_TEMP/edge-restored"
+          if ! supabase init --workdir "$RUNNER_TEMP/edge-restored" --yes || \
+             ! supabase functions download content-publish --project-ref rbsnyexjifounogswrjp --use-api --workdir "$RUNNER_TEMP/edge-restored" || \
+             ! node scripts/supabase-content-publish-release.mjs source-compare \
+                 "$RUNNER_TEMP/edge-before/supabase/functions/content-publish" \
+                 "$RUNNER_TEMP/edge-restored/supabase/functions/content-publish" > "$RUNNER_TEMP/edge-source-restored.sha256"; then
+            rollback_failed 'restored Edge source hash could not be verified'
+          fi
+          echo "rollback_succeeded_verified: version $(cat "$RUNNER_TEMP/edge-version-restored.txt"), source SHA-256 $(cat "$RUNNER_TEMP/edge-source-restored.sha256"). Additive permit schema remains; no automatic SQL rollback." >> "$GITHUB_STEP_SUMMARY"
+          echo '::error::Initial Edge release failed; prior source restored and verified. Do not retry without reviewing the failure.'
+          exit 1
+      - name: Record precise release boundary
+        run: |
+          if [ "$RELEASE_MODE" = dry-run ]; then
+            echo 'Supabase R3 preflight only: no migration, Edge deploy, secret change, or CMS write.' >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo "R3 migration and content-publish Edge deployed at ${GITHUB_SHA}. The managed release switch remains off; no CMS content was published." >> "$GITHUB_STEP_SUMMARY"
+          fi

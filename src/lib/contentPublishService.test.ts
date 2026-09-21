@@ -47,6 +47,89 @@ const createReadOnlyClient = () => ({
 });
 
 describe("content-publish service", () => {
+  it("requires a matching one-time database claim before a managed service write", async () => {
+    const id = "b401a610-a4dc-4a0b-a7e0-efcac6c81d71";
+    const updatedAt = "2026-08-30T10:55:12.151465+00:00";
+    const current = { ...publishedServiceRecord, id, slug: "builtin", updated_at: updatedAt, status: "published" };
+    const calls: string[] = [];
+    let allowClaim = false;
+    const client = {
+      from(table: string) {
+        if (table === "admin_audit_logs") return { insert: async () => ({ data: null, error: null }) };
+        const builder = {
+          select() { return builder; },
+          eq() { return builder; },
+          update() { calls.push("write"); return builder; },
+          maybeSingle: async () => ({ data: current, error: null }),
+          single: async () => ({ data: { ...current, updated_at: "later" }, error: null }),
+        };
+        return builder;
+      },
+      async rpc(name: string, args: Record<string, unknown>) {
+        calls.push(name);
+        if (name === "claim_managed_cms_release_permit") {
+          expect(args.p_task_id).toBe("fc-20260920-builtin-whole-house-custom-v1");
+          expect(args.p_github_run_id).toBe(12345);
+          expect(args.p_payload_sha256).toMatch(/^[0-9a-f]{64}$/);
+          return { data: allowClaim ? [{}] : [], error: null };
+        }
+        return { data: [{}], error: null };
+      },
+    };
+    const request = {
+      contentType: "service" as const, mode: "publish" as const, nextStatus: "published" as const,
+      ownerApproved: true, explicitExecution: true, approvalId: "audit-only",
+      expectedUpdatedAt: updatedAt, record: current,
+      managedPermit: { permitId: "11111111-1111-4111-8111-111111111111", taskId: "fc-20260920-builtin-whole-house-custom-v1",
+        actionId: "publish-builtin-whole-house-custom-v1", operation: "publish" as const,
+        scope: "flashcast.com.my:services/b401a610-a4dc-4a0b-a7e0-efcac6c81d71", candidateVersion: "builtin-whole-house-custom-v1" },
+    };
+    const context = { role: "content_editor", authMode: "cron", managedIdentity: {
+      repositoryId: 1248188229, actorId: 98765, workflowSha: "a".repeat(40), workflowRef: "wangchaozhuanyong/zhuangxiuwangzhan/.github/workflows/content-publish-approved.yml@refs/heads/main",
+      runId: 12345, runAttempt: 1,
+    } };
+    const denied = await publishContent(request, client as unknown as ContentPublishClient, context);
+    expect(denied.status).toBe(403);
+    expect(calls).toEqual(["claim_managed_cms_release_permit"]);
+    calls.length = 0;
+    allowClaim = true;
+    const permitted = await publishContent(request, client as unknown as ContentPublishClient, context);
+    expect(permitted.body.ok).toBe(true);
+    expect(calls).toEqual(["claim_managed_cms_release_permit", "begin_managed_cms_release_write", "write", "finish_managed_cms_release_write"]);
+    calls.length = 0;
+    const rollback = { ...request, managedPermit: { ...request.managedPermit,
+      permitId: "22222222-2222-4222-8222-222222222222", operation: "rollback" as const,
+      actionId: "rollback-builtin-whole-house-custom-v1",
+      candidateVersion: "builtin-whole-house-custom-v1-rollback-v1" } };
+    const restored = await publishContent(rollback, client as unknown as ContentPublishClient, context);
+    expect(restored.body.ok).toBe(true);
+    expect(calls[0]).toBe("claim_managed_cms_release_permit");
+    calls.length = 0;
+    const wrongRollback = await publishContent({ ...rollback, managedPermit: { ...rollback.managedPermit, actionId: "publish-builtin-whole-house-custom-v1" } },
+      client as unknown as ContentPublishClient, context);
+    expect(wrongRollback.status).toBe(403);
+    expect(calls).toHaveLength(0);
+  });
+  it.each([
+    ["b401a610-a4dc-4a0b-a7e0-efcac6c81d71", "builtin"],
+    ["0d947129-0595-43ef-baa1-0fd9d8b870e6", "renovation"],
+    ["32f5374f-9919-41ea-80c7-00b5ac917532", "shop-renovation"],
+  ])("blocks managed service %s before legacy cron/admin writes", async (id, slug) => {
+    let databaseAccessed = false;
+    const client = { from: () => { databaseAccessed = true; throw new Error("Database should not be reached"); } };
+    for (const record of [{ id, slug }, { id }, { slug }]) {
+      const result = await publishContent(
+        { contentType: "service", mode: "publish", nextStatus: "published", ownerApproved: true,
+          explicitExecution: true, approvalId: "caller-controlled", record },
+        client as unknown as ContentPublishClient,
+        { role: "content_editor", authMode: "cron" },
+      );
+      expect(result.status).toBe(403);
+      expect(result.body.error).toContain("trusted one-time permit");
+    }
+    expect(databaseAccessed).toBe(false);
+  });
+
   it("rejects incomplete published services before writing", async () => {
     const result = await publishContent(
       {

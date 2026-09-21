@@ -42,6 +42,7 @@ export type ContentPublishType =
 export type ContentStatus = "draft" | "published" | "archived";
 
 export type ContentPublishRequest = {
+  managedIdentityProbe?: boolean;
   contentType?: ContentPublishType;
   mode?: ContentPublishMode;
   record?: Record<string, unknown>;
@@ -51,6 +52,14 @@ export type ContentPublishRequest = {
   explicitExecution?: boolean;
   approvalId?: string;
   source?: string;
+  managedPermit?: {
+    permitId: string;
+    taskId: string;
+    actionId: string;
+    operation: "publish" | "rollback";
+    scope: string;
+    candidateVersion: string;
+  };
 };
 
 export type ServiceRow = Record<string, unknown> & {

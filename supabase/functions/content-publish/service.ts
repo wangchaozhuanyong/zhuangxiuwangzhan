@@ -14,8 +14,14 @@ import {
   uploadMediaObject,
 } from "./repository.ts";
 import type { ContentPublishClient, ContentPublishRequest, ContentPublishResult, ContentRow, ContentStatus } from "./types.ts";
+import { MANAGED_SERVICES, managedAction } from "./managed-targets.ts";
+import { samePgTimestamp } from "./managed-timestamp.ts";
 
 const CONTENT_WRITE_ROLES = new Set(["super_admin", "content_editor"]);
+// These three records cannot be written through the legacy cron/admin path.
+// The R3 permit verifier must be wired before any managed write is enabled.
+const MANAGED_SERVICE_IDS = new Set<string>(MANAGED_SERVICES.map((service) => service.id));
+const MANAGED_SERVICE_SLUGS = new Set<string>(MANAGED_SERVICES.map((service) => service.slug));
 const VALID_STATUSES = new Set<ContentStatus>(["draft", "published", "archived"]);
 const MEDIA_BUCKET = "site-images";
 const MEDIA_PREFIX = "media/seo-generated/";
@@ -276,6 +282,18 @@ type PublishContext = {
   adminUserId?: string | null;
   role?: string | null;
   authMode?: string | null;
+  managedIdentity?: { repositoryId: number; actorId: number; workflowRef: string; workflowSha: string; runId: number; runAttempt: number };
+};
+
+const stableValue = (value: unknown): unknown => {
+  if (Array.isArray(value)) return value.map(stableValue);
+  if (!value || typeof value !== "object") return value ?? null;
+  return Object.fromEntries(Object.keys(value).sort().map((key) => [key, stableValue((value as Record<string, unknown>)[key])]));
+};
+const sha256 = async (value: unknown) => {
+  const data = new TextEncoder().encode(JSON.stringify(stableValue(value)));
+  const digest = await crypto.subtle.digest("SHA-256", data);
+  return Array.from(new Uint8Array(digest), (byte) => byte.toString(16).padStart(2, "0")).join("");
 };
 
 const normalizeSlug = (value: unknown) =>
@@ -1106,7 +1124,10 @@ async function publishBlogContent(
       currentUpdatedAt: existing.updated_at || null,
     });
   }
-  if (existing && expectedUpdatedAt && normalizeDate(existing.updated_at) !== normalizeDate(expectedUpdatedAt)) {
+  const isManagedExisting = MANAGED_SERVICE_IDS.has(existingId) || MANAGED_SERVICE_SLUGS.has(cleaned.slug);
+  if (existing && expectedUpdatedAt && (isManagedExisting && mode === "publish"
+    ? !samePgTimestamp(existing.updated_at, expectedUpdatedAt)
+    : normalizeDate(existing.updated_at) !== normalizeDate(expectedUpdatedAt))) {
     return errorResult("This blog post was changed by someone else. Refresh before publishing.", 409, {
       currentUpdatedAt: existing.updated_at || null,
     });
@@ -1794,6 +1815,12 @@ export async function publishContent(
   const mode = input.mode || "dry-run";
   if (mode !== "dry-run" && mode !== "publish") return errorResult("Invalid publish mode.");
   if (!input.record || typeof input.record !== "object" || Array.isArray(input.record)) return errorResult("record object is required.");
+  if (input.contentType === "service" && mode === "publish" && (
+    MANAGED_SERVICE_IDS.has(String(input.record.id || "")) ||
+    MANAGED_SERVICE_SLUGS.has(normalizeSlug(input.record.slug))
+  ) && !context.managedIdentity) {
+    return errorResult("Managed service publish requires a trusted one-time permit; this route is not configured.", 403);
+  }
 
   const nextStatus = input.nextStatus || (input.record.status as ContentStatus | undefined) || "draft";
   if (!VALID_STATUSES.has(nextStatus)) return errorResult("Invalid nextStatus.");
@@ -1871,6 +1898,9 @@ export async function publishContent(
 
   const existing = await resolveExistingService(client, cleaned.payload, cleaned.slug);
   const existingId = existing?.id ? String(existing.id) : "";
+  if (mode === "publish" && (MANAGED_SERVICE_IDS.has(existingId) || MANAGED_SERVICE_SLUGS.has(String(existing?.slug || ""))) && !context.managedIdentity) {
+    return errorResult("Managed service publish requires a trusted one-time permit; this route is not configured.", 403);
+  }
   const providedId = typeof cleaned.payload.id === "string" ? cleaned.payload.id : "";
   if (providedId && !existing) return errorResult("Service id was provided but no matching service exists.", 404);
 
@@ -1915,9 +1945,86 @@ export async function publishContent(
     };
   }
 
-  const saved = existingId
-    ? await updateServiceRecord(client, existingId, cleaned.payload)
-    : await insertServiceRecord(client, cleaned.payload);
+  const managedService = MANAGED_SERVICES.find((service) => service.id === existingId || service.slug === cleaned.slug);
+  let managedWriteStarted = false;
+  if (managedService) {
+    const identity = context.managedIdentity;
+    const permit = input.managedPermit;
+    const exactTarget = existingId === managedService.id && cleaned.slug === managedService.slug
+      && String(input.record.id || "") === managedService.id && existing;
+    const expectedAction = managedAction(managedService, permit?.operation === "rollback" ? "rollback" : "publish");
+    const exactPermit = permit && permit.taskId === expectedAction.taskId
+      && permit.actionId === expectedAction.actionId
+      && permit.scope === expectedAction.scope && permit.candidateVersion === expectedAction.candidateVersion
+      && /^[0-9a-f-]{36}$/i.test(permit.permitId);
+    if (!identity || !exactTarget || !exactPermit) {
+      return errorResult("Managed CMS publish requires an exact verified permit.", 403);
+    }
+    const payloadSha256 = await sha256(cleaned.payload);
+    const { data: claimed, error: claimError } = await client.rpc("claim_managed_cms_release_permit", {
+      p_permit_id: permit.permitId,
+      p_task_id: permit.taskId,
+      p_action_id: permit.actionId,
+      p_action_class: "cms_write",
+      p_operation: permit.operation,
+      p_scope: permit.scope,
+      p_candidate_version: permit.candidateVersion,
+      p_record_id: managedService.id,
+      p_slug: managedService.slug,
+      p_expected_updated_at: expectedUpdatedAt,
+      p_payload_sha256: payloadSha256,
+      p_github_repository_id: identity.repositoryId,
+      p_github_workflow_ref: identity.workflowRef,
+      p_github_workflow_sha: identity.workflowSha,
+      p_github_actor_id: identity.actorId,
+      p_github_run_id: identity.runId,
+      p_github_run_attempt: identity.runAttempt,
+    });
+    if (claimError || !Array.isArray(claimed) || claimed.length !== 1) {
+      return errorResult("Managed CMS permit is missing, expired, mismatched, revoked, or already used.", 403);
+    }
+    const { data: writing, error: writingError } = await client.rpc("begin_managed_cms_release_write", {
+      p_permit_id: permit.permitId,
+      p_github_run_id: identity.runId,
+      p_github_run_attempt: identity.runAttempt,
+    });
+    if (writingError || !Array.isArray(writing) || writing.length !== 1) {
+      return errorResult("Managed CMS permit could not begin its one-time write.", 409);
+    }
+    managedWriteStarted = true;
+  }
+
+  let saved: ContentRow;
+  try {
+    saved = existingId
+      ? await updateServiceRecord(client, existingId, cleaned.payload)
+      : await insertServiceRecord(client, cleaned.payload);
+  } catch (error) {
+    if (managedWriteStarted && input.managedPermit && context.managedIdentity) {
+      await client.rpc("finish_managed_cms_release_write", {
+        p_permit_id: input.managedPermit.permitId,
+        p_github_run_id: context.managedIdentity.runId,
+        p_github_run_attempt: context.managedIdentity.runAttempt,
+        p_saved_id: null,
+        p_saved_updated_at: null,
+        p_success: false,
+      });
+    }
+    throw error;
+  }
+  if (managedWriteStarted && input.managedPermit && context.managedIdentity) {
+    const { data: completed, error: completionError } = await client.rpc("finish_managed_cms_release_write", {
+      p_permit_id: input.managedPermit.permitId,
+      p_github_run_id: context.managedIdentity.runId,
+      p_github_run_attempt: context.managedIdentity.runAttempt,
+      p_saved_id: saved.id,
+      p_saved_updated_at: saved.updated_at,
+      p_success: true,
+    });
+    if (completionError || !Array.isArray(completed) || completed.length !== 1) {
+      return errorResult("CMS write result is uncertain; read back the row before issuing a new permit.", 409);
+    }
+  }
 
   const auditWarnings: string[] = [];
   try {
