@@ -1,0 +1,77 @@
+name: R3 managed CMS PR checks
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - .github/workflows/r3-managed-cms-pr-ci.yml
+      - .env.example
+      - .github/workflows/content-publish-approved.yml
+      - .github/workflows/supabase-content-publish-r3.yml
+      - scripts/publish-content-trust-fixes.mjs
+      - scripts/supabase-content-publish-release.mjs
+      - scripts/supabase-content-publish-release.test.mjs
+      - src/lib/contentPublishService.test.ts
+      - src/lib/githubOidcPermit.test.ts
+      - src/lib/managedContentPublishWorkflow.test.ts
+      - src/lib/managedPermitAuth.test.ts
+      - src/lib/managedPermitIssuer.test.ts
+      - src/lib/managedTimestamp.test.ts
+      - src/lib/topicClusterBlogRecordsScript.test.ts
+      - supabase/functions/content-publish/github-oidc.ts
+      - supabase/functions/content-publish/index.ts
+      - supabase/functions/content-publish/managed-targets.ts
+      - supabase/functions/content-publish/managed-timestamp.ts
+      - supabase/functions/content-publish/permit-auth.ts
+      - supabase/functions/content-publish/permit-issuer.ts
+      - supabase/functions/content-publish/service.ts
+      - supabase/functions/content-publish/types.ts
+      - supabase/migrations/20260921194000_managed_cms_release_permits.sql
+      - supabase/tests/managed_cms_release_permits.sql
+
+permissions:
+  contents: read
+
+jobs:
+  r3-managed-cms-pr-checks:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          persist-credentials: false
+
+      - uses: actions/setup-node@v6
+        with:
+          node-version: '22'
+
+      - name: Verify checked-out candidate SHA
+        env:
+          PR_HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        run: test "$(git rev-parse HEAD)" = "$PR_HEAD_SHA"
+
+      - name: Install locked dependencies
+        run: npm ci
+
+      - name: Validate types, lint, and architecture
+        run: |
+          npm run typecheck
+          npm run lint
+          npm run arch:check
+
+      - name: Run focused managed CMS tests
+        run: |
+          npm test -- \
+            src/lib/contentPublishService.test.ts \
+            src/lib/topicClusterBlogRecordsScript.test.ts \
+            src/lib/githubOidcPermit.test.ts \
+            src/lib/managedContentPublishWorkflow.test.ts \
+            src/lib/managedPermitAuth.test.ts \
+            src/lib/managedPermitIssuer.test.ts \
+            src/lib/managedTimestamp.test.ts
+
+      - name: Run Supabase release gate tests without linking production
+        run: |
+          node --check scripts/supabase-content-publish-release.mjs
+          node --test scripts/supabase-content-publish-release.test.mjs

@@ -119,4 +119,21 @@ describe("topic-cluster Blog publish records", () => {
     expect(workflow).toContain("if: always()");
     expect(workflow).toContain("path: audits/content-publish-${{ github.run_id }}");
   });
+
+  it("offers three fixed CMS targets but blocks their publish before production secrets", () => {
+    const workflow = readFileSync(
+      resolve(process.cwd(), ".github/workflows/content-publish-approved.yml"),
+      "utf8",
+    );
+    for (const target of ["builtin-whole-house-custom-v1", "en-renovation-owner-cms-v2", "pg002-shop-cms-v1"]) {
+      expect(workflow).toContain(`          - ${target}`);
+    }
+    expect(workflow).toContain("Reject unverified locked-target writes before loading production credentials");
+    expect(workflow).toContain("builtin-whole-house-custom-v1|en-renovation-owner-cms-v2|pg002-shop-cms-v1)");
+    expect(workflow.indexOf("Reject unverified locked-target writes before loading production credentials"))
+      .toBeLessThan(workflow.indexOf("Confirm production source and required secrets"));
+    for (const reference of ["qa_receipt_id", "release_decision_id", "policy_permit_id", "policy_scope"]) {
+      expect(workflow).not.toContain(`inputs.${reference}`);
+    }
+  });
 });

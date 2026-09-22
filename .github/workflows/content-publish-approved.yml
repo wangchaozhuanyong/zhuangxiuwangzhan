@@ -27,14 +27,35 @@ on:
           - bathroom-waterproofing-drainage-planning-malaysia
           - office-fit-out-me-it-planning-checklist-malaysia
           - restaurant-fit-out-planning-checklist-malaysia
+          - builtin-whole-house-custom-v1
+          - en-renovation-owner-cms-v2
+          - pg002-shop-cms-v1
       approval_id:
         description: "Owner authorization reference used in the audit log."
         required: true
         default: owner-standing-flashcast-site-publish-20260906
         type: string
+      managed_permit_id:
+        description: "Exact single-use permit UUID for one locked CMS target."
+        required: false
+        type: string
+      managed_operation:
+        description: "Publish the locked candidate or restore its exact prior CMS version."
+        required: true
+        default: publish
+        type: choice
+        options:
+          - publish
+          - rollback
+      parent_run_id:
+        description: "Completed publish run containing the immutable prior-record artifact; rollback only."
+        required: false
+        type: string
 
 permissions:
   contents: read
+  actions: read
+  id-token: write
 
 concurrency:
   group: approved-content-publish-production
@@ -46,6 +67,51 @@ jobs:
     timeout-minutes: 20
     steps:
       - uses: actions/checkout@v6
+
+      - name: Reject unverified locked-target writes before loading production credentials
+        env:
+          PUBLISH_MODE: ${{ inputs.mode }}
+          PUBLISH_TARGET: ${{ inputs.target }}
+          MANAGED_PERMIT_ID: ${{ inputs.managed_permit_id }}
+          MANAGED_OPERATION: ${{ inputs.managed_operation }}
+          PARENT_RUN_ID: ${{ inputs.parent_run_id }}
+        run: |
+          test "$GITHUB_REF" = "refs/heads/main"
+          if [ "$MANAGED_OPERATION" = "rollback" ]; then
+            case "$PUBLISH_TARGET" in
+              builtin-whole-house-custom-v1|en-renovation-owner-cms-v2|pg002-shop-cms-v1) ;;
+              *) echo "::error::Rollback is limited to the three locked CMS candidates."; exit 1 ;;
+            esac
+            if ! [[ "$PARENT_RUN_ID" =~ ^[1-9][0-9]*$ ]]; then
+              echo "::error::Rollback requires the exact completed parent run ID."
+              exit 1
+            fi
+          fi
+          if [ "$PUBLISH_MODE" = "publish" ]; then
+            case "$PUBLISH_TARGET" in
+              builtin-whole-house-custom-v1|en-renovation-owner-cms-v2|pg002-shop-cms-v1)
+                if ! [[ "$MANAGED_PERMIT_ID" =~ ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$ ]]; then
+                  echo "::error::A valid single-use managed permit ID is required."
+                  exit 1
+                fi
+                ;;
+              *)
+                if [ "$MANAGED_OPERATION" = "rollback" ]; then
+                  echo "::error::Rollback is limited to the three locked CMS candidates."
+                  exit 1
+                fi
+                ;;
+            esac
+          fi
+
+      - name: Download exact parent-run backup for managed rollback
+        if: ${{ inputs.managed_operation == 'rollback' }}
+        uses: actions/download-artifact@v4
+        with:
+          name: approved-content-publish-${{ inputs.parent_run_id }}
+          run-id: ${{ inputs.parent_run_id }}
+          github-token: ${{ github.token }}
+          path: audits/parent-${{ inputs.parent_run_id }}
 
       - uses: actions/setup-node@v6
         with:
@@ -75,6 +141,9 @@ jobs:
           PUBLISH_MODE: ${{ inputs.mode }}
           PUBLISH_TARGET: ${{ inputs.target }}
           APPROVAL_ID: ${{ inputs.approval_id }}
+          MANAGED_PERMIT_ID: ${{ inputs.managed_permit_id }}
+          MANAGED_OPERATION: ${{ inputs.managed_operation }}
+          PARENT_RUN_ID: ${{ inputs.parent_run_id }}
         run: |
           if [ "$PUBLISH_TARGET" = "all-20260906" ]; then
             TARGETS="kitchen old-house-renovation-checklist old-house-renovation-hidden-costs-malaysia"
@@ -84,16 +153,24 @@ jobs:
             TARGETS="$PUBLISH_TARGET"
           fi
 
-          for CONTENT_TARGET in $TARGETS; do
-            npm run content:trust-fixes -- --target="$CONTENT_TARGET" --artifact-dir="audits/content-publish-${GITHUB_RUN_ID}"
-          done
+          if [ "$MANAGED_OPERATION" != "rollback" ]; then
+            for CONTENT_TARGET in $TARGETS; do
+              npm run content:trust-fixes -- --target="$CONTENT_TARGET" --artifact-dir="audits/content-publish-${GITHUB_RUN_ID}"
+            done
+          else
+            npm run content:trust-fixes -- --target="$PUBLISH_TARGET" --rollback-from="audits/parent-${PARENT_RUN_ID}/${PUBLISH_TARGET}/backup.json" --artifact-dir="audits/content-publish-${GITHUB_RUN_ID}"
+          fi
 
           if [ "$PUBLISH_MODE" != "publish" ]; then
             exit 0
           fi
 
           for CONTENT_TARGET in $TARGETS; do
-            npm run content:trust-fixes -- --target="$CONTENT_TARGET" --execute --approval-id="$APPROVAL_ID" --artifact-dir="audits/content-publish-${GITHUB_RUN_ID}"
+            extra_args=()
+            if [ "$MANAGED_OPERATION" = "rollback" ]; then
+              extra_args+=("--rollback-from=audits/parent-${PARENT_RUN_ID}/${CONTENT_TARGET}/backup.json")
+            fi
+            npm run content:trust-fixes -- --target="$CONTENT_TARGET" --execute --approval-id="$APPROVAL_ID" --managed-permit-id="$MANAGED_PERMIT_ID" "${extra_args[@]}" --artifact-dir="audits/content-publish-${GITHUB_RUN_ID}"
           done
 
       - name: Upload audit package
