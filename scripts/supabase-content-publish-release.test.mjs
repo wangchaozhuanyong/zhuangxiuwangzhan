@@ -10,6 +10,7 @@ import {
   sourceTreeHash,
   verifyAdvancedFunctionVersion,
   verifyDryRun,
+  verifyDryRunEvidence,
   verifyEnvironment,
   verifyMigrationList,
   verifyReleaseIdentity,
@@ -77,8 +78,46 @@ test('restored Edge source must hash-match the exact pre-release tree', async ()
   }
 });
 
-test('db push dry-run must select only exact migration', () => {
-  verifyDryRun(`Dry run. Would push these migrations:\n • ${MIGRATION_FILE}\n`);
-  assert.throws(() => verifyDryRun('No migrations to push.'));
-  assert.throws(() => verifyDryRun(`Would push these migrations: ${MIGRATION_FILE} 20260922120000_other.sql`));
+const actualDryRun = `DRY RUN: migrations will *not* be pushed to the database.
+Connecting to remote database...
+Would push these migrations:
+ • ${MIGRATION_FILE}
+`;
+
+test('db push dry-run accepts the exact Supabase CLI 2.84.2 evidence', () => {
+  verifyDryRun(actualDryRun);
+  verifyDryRun(`\u001b[1mDRY RUN: migrations will *not* be pushed to the database.\u001b[0m\r\n` +
+    `Would push these migrations:\r\n • ${MIGRATION_FILE}\r\n`);
+});
+
+test('db push dry-run fails closed on missing markers, empty plans, and migration drift', () => {
+  assert.throws(() => verifyDryRun(''), /evidence is empty/);
+  assert.throws(() => verifyDryRun(`Would push these migrations:\n • ${MIGRATION_FILE}\n`), /marker is missing/);
+  assert.throws(() => verifyDryRun('DRY RUN: migrations will *not* be pushed to the database.\nNo migrations to push.'));
+  assert.throws(() => verifyDryRun(actualDryRun + ' • 20260922120000_other.sql\n'));
+});
+
+test('dry-run evidence recovery captures stderr without weakening the gate', async () => {
+  let calls = 0;
+  assert.deepEqual(await verifyDryRunEvidence(actualDryRun, async () => {
+    calls += 1;
+    return { code: 1, signal: null, stdout: '', stderr: '' };
+  }), { source: 'evidence-file' });
+  assert.equal(calls, 0);
+
+  assert.deepEqual(await verifyDryRunEvidence('', async () => {
+    calls += 1;
+    return { code: 0, signal: null, stdout: '', stderr: actualDryRun };
+  }), { source: 'captured-cli' });
+  assert.equal(calls, 1);
+
+  await assert.rejects(verifyDryRunEvidence('', async () => (
+    { code: 1, signal: null, stdout: '', stderr: actualDryRun }
+  )), /evidence recovery failed/);
+  await assert.rejects(verifyDryRunEvidence('', async () => (
+    { code: 0, signal: null, stdout: '', stderr: `Would push these migrations:\n • ${MIGRATION_FILE}\n` }
+  )), /marker is missing/);
+  await assert.rejects(verifyDryRunEvidence('', async () => (
+    { code: 0, signal: null, stdout: '', stderr: actualDryRun + ' • 20260922120000_other.sql\n' }
+  )), /did not select only|unexpected migration/);
 });

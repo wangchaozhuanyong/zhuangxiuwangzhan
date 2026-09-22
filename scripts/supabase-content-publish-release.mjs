@@ -1,4 +1,5 @@
 import { createHash } from 'node:crypto';
+import { spawn } from 'node:child_process';
 import { readFile, readdir } from 'node:fs/promises';
 import { join, relative } from 'node:path';
 
@@ -102,10 +103,58 @@ export async function verifyRestoredSource(originalDirectory, restoredDirectory)
 }
 
 export function verifyDryRun(output) {
-  assert(/would push these migrations/i.test(output), 'unrecognized Supabase db push dry-run');
-  const listed = [...output.matchAll(/\b(\d{12,14}_[\w-]+\.sql)\b/g)].map((match) => match[1]);
+  const normalized = String(output ?? '')
+    .replace(/\u001B\[[0-?]*[ -/]*[@-~]/g, '')
+    .replace(/\r\n?/g, '\n');
+  assert(normalized.trim(), 'Supabase db push dry-run evidence is empty');
+  assert(
+    /^\s*DRY RUN:\s*migrations will \*not\* be pushed to the database\.\s*$/im.test(normalized),
+    'Supabase db push dry-run marker is missing',
+  );
+  const lines = normalized.split('\n');
+  const headings = lines
+    .map((line, index) => (/^\s*Would push these migrations:\s*$/i.test(line) ? index : -1))
+    .filter((index) => index >= 0);
+  assert(headings.length === 1, 'unrecognized Supabase db push dry-run migration heading');
+  const listed = lines
+    .slice(headings[0] + 1)
+    .map((line) => line.match(/^\s*[•*+-]\s+(\d{12,14}_[\w-]+\.sql)\s*$/i)?.[1])
+    .filter(Boolean);
+  const allSqlFiles = [...normalized.matchAll(/\b(\d{12,14}_[\w-]+\.sql)\b/gi)]
+    .map((match) => match[1]);
   assert(listed.length === 1 && listed[0] === MIGRATION_FILE,
     `dry-run did not select only ${MIGRATION_FILE}`);
+  assert(allSqlFiles.length === 1 && allSqlFiles[0] === MIGRATION_FILE,
+    'dry-run contains an unexpected migration reference');
+}
+
+async function captureSupabaseDryRun() {
+  return await new Promise((resolve, reject) => {
+    const child = spawn('supabase', ['db', 'push', '--linked', '--dry-run'], {
+      stdio: ['ignore', 'pipe', 'pipe'],
+    });
+    let stdout = '';
+    let stderr = '';
+    child.stdout.setEncoding('utf8');
+    child.stderr.setEncoding('utf8');
+    child.stdout.on('data', (chunk) => { stdout += chunk; });
+    child.stderr.on('data', (chunk) => { stderr += chunk; });
+    child.once('error', reject);
+    child.once('close', (code, signal) => resolve({ code, signal, stdout, stderr }));
+  });
+}
+
+export async function verifyDryRunEvidence(fileOutput, runDryRun = captureSupabaseDryRun) {
+  try {
+    verifyDryRun(fileOutput);
+    return { source: 'evidence-file' };
+  } catch {
+    const result = await runDryRun();
+    assert(result?.code === 0 && !result.signal,
+      `Supabase db push dry-run evidence recovery failed with exit ${result?.code ?? 'unknown'}`);
+    verifyDryRun([result.stdout, result.stderr].filter(Boolean).join('\n'));
+    return { source: 'captured-cli' };
+  }
 }
 
 async function main() {
@@ -142,7 +191,7 @@ async function main() {
   }
   const output = await readFile(path, 'utf8');
   if (command === 'migration-list') verifyMigrationList(output, process.env.ALLOW_APPLIED === 'true');
-  else if (command === 'dry-run') verifyDryRun(output);
+  else if (command === 'dry-run') await verifyDryRunEvidence(output);
   else if (command === 'function-version') process.stdout.write(`${functionVersion(output)}\n`);
   else if (command === 'function-version-advanced') {
     assert(comparison, 'baseline function list is required');
