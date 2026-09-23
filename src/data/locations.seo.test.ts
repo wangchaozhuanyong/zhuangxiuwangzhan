@@ -70,6 +70,44 @@ describe("Kuala Lumpur location SEO fallbacks", () => {
   });
 });
 
+describe("Selangor location SEO fallbacks", () => {
+  const selangor = locationsData.selangor;
+
+  it("keeps the English and Chinese fallback within confirmed service scope", () => {
+    expect(selangor.intro).not.toMatch(/industrial spaces|factory/i);
+    expect(selangor.propertyTypes.join(" ")).not.toMatch(/industrial|warehouse/i);
+    expect(selangor.commonNeeds).toContain("Warehouse shelving, aisle planning, floor marking, and storage zoning");
+    expect(selangor.introZh).not.toMatch(/工厂|工业空间|仓库装修/);
+    expect(selangor.propertyTypesZh?.join(" ")).not.toMatch(/工厂|工业|仓库/);
+    expect(selangor.commonNeedsZh).toContain("仓库货架、通道规划、地面标线与存储分区");
+  });
+
+  it("provides complete Chinese content for the initial and failed-CMS fallback", () => {
+    expect(selangor.nameZh).toBe("雪兰莪");
+    expect(selangor.metaTitleZh).toContain("雪兰莪");
+    expect(selangor.descriptionZh).toContain("雪兰莪");
+    expect(selangor.introZh).toContain("雪兰莪");
+    expect(selangor.propertyTypesZh).toHaveLength(selangor.propertyTypes.length);
+    expect(selangor.commonNeedsZh).toHaveLength(selangor.commonNeeds.length);
+    expect(selangor.constructionNotesZh).toBeTruthy();
+    expect(selangor.projectsZh).toHaveLength(selangor.projects.length);
+    expect(selangor.projectsZh?.map(({ image }) => image)).toEqual(selangor.projects.map(({ image }) => image));
+    expect(selangor.faqsZh).toHaveLength(selangor.faqs.length);
+
+    const chineseCopy = [
+      selangor.nameZh,
+      selangor.descriptionZh,
+      selangor.introZh,
+      selangor.constructionNotesZh,
+      ...selangor.propertyTypesZh!,
+      ...selangor.commonNeedsZh!,
+      ...selangor.projectsZh!.map(({ title }) => title),
+      ...selangor.faqsZh!.flatMap(({ q, a }) => [q, a]),
+    ];
+    chineseCopy.forEach((value) => expect(value).not.toMatch(/[A-Za-z]/));
+  });
+});
+
 describe("Petaling Jaya location SEO fallbacks", () => {
   const pj = locationsData["petaling-jaya"];
   const office = servicesData.find((service) => service.slug === "office-renovation");

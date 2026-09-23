@@ -32,6 +32,7 @@ export interface LocationData {
   constructionNotes: string;
   constructionNotesZh?: string;
   projects: LocationProject[];
+  projectsZh?: LocationProject[];
   faqs: { q: string; a: string }[];
   faqsZh?: { q: string; a: string }[];
 }
@@ -141,23 +142,41 @@ export const locationsData: Record<string, LocationData> = {
   },
   "selangor": {
     name: "Selangor",
+    nameZh: "雪兰莪",
     slug: "selangor",
     metaTitle: "Renovation Company Selangor | Shah Alam, PJ, Subang | FLASH CAST",
+    metaTitleZh: "雪兰莪装修服务 | 住宅、店铺与定制柜体 | FLASH CAST",
     description: "Discuss renovation planning for selected Selangor areas, including residential, commercial, built-in, and fit-out scope based on the real site.",
-    intro: "Selangor includes different local-authority areas, strata buildings, landed homes, commercial units, and industrial spaces. The relevant site, management, landlord, and authority requirements should be checked for each project.",
-    propertyTypes: ["Double-storey terrace houses", "Semi-detached and bungalows", "Condominiums and apartments", "Shop lots (single and double storey)", "Industrial units and warehouses", "Office units in commercial complexes"],
-    commonNeeds: ["Full landed house renovation and extension", "Kitchen and bathroom overhaul for older homes", "Shop lot renovation for new business setup", "Warehouse racking and storage solutions", "Custom built-in furniture for family homes", "Office renovation and partitioning"],
+    descriptionZh: "可讨论雪兰莪部分地区的住宅、商业空间、定制柜体与装修规划；实际服务与施工范围须结合地点和现场条件确认。",
+    intro: "Selangor includes different local-authority areas, strata buildings, landed homes, and commercial units. The relevant site, management, landlord, and authority requirements should be checked for each project.",
+    introZh: "雪兰莪涉及不同地方政府辖区，也有公寓、有地住宅和商业单位。每个项目都应按实际地点、管理规定、业主或出租方要求，以及相关主管部门的现行要求核对施工范围。",
+    propertyTypes: ["Double-storey terrace houses", "Semi-detached and bungalows", "Condominiums and apartments", "Shop lots (single and double storey)", "Office units in commercial complexes"],
+    propertyTypesZh: ["双层排屋", "半独立式住宅与独立式住宅", "公寓", "单层与双层店铺", "商业大楼内的办公室"],
+    commonNeeds: ["Full landed house renovation and extension", "Kitchen and bathroom overhaul for older homes", "Shop lot renovation for new business setup", "Warehouse shelving, aisle planning, floor marking, and storage zoning", "Custom built-in furniture for family homes", "Office renovation and partitioning"],
+    commonNeedsZh: ["有地住宅装修与扩建范围评估", "旧屋厨房与浴室翻新", "新店开业前的店铺装修规划", "仓库货架、通道规划、地面标线与存储分区", "住宅定制柜体与收纳规划", "办公室装修与隔断规划"],
     constructionNotes: "Requirements vary by local-authority area, property type, management rules, and proposed work. Confirm extension, structural, external, strata, access, and document requirements with the relevant current parties before construction.",
+    constructionNotesZh: "不同地区、物业类型、管理规定与计划工程所需文件可能不同。开工前应与相关责任方确认扩建、结构、外立面、公寓管理、现场进出及文件要求。",
     projects: [
       { title: "Landed House Renovation in Shah Alam", type: "Residential", image: residentialImg },
       { title: "Shop Renovation in Klang", type: "Commercial", image: commercialImg },
       { title: "Custom Kitchen in Subang Jaya", type: "Built-In", image: kitchenImg },
     ],
+    projectsZh: [
+      { title: "住宅装修空间参考", type: "Residential", image: residentialImg },
+      { title: "店铺装修空间参考", type: "Commercial", image: commercialImg },
+      { title: "厨房定制空间参考", type: "Built-In", image: kitchenImg },
+    ],
     faqs: [
-      { q: "Which areas in Selangor do you serve?", a: "We serve all major areas including Shah Alam, Petaling Jaya, Subang Jaya, Puchong, Klang, Ampang, Kajang, Rawang, Setia Alam, Kota Kemuning, and surrounding areas." },
+      { q: "Which areas in Selangor do you serve?", a: "We serve selected areas in Selangor based on location, project scope, access, and schedule. Share your exact location so we can confirm availability." },
       { q: "Can site measurement be arranged in Selangor?", a: "Site measurement can be arranged based on area, project type, access, and schedule." },
       { q: "Can a landed-house extension be assessed?", a: "Yes. Share the existing condition and proposed changes so structural, consultant, authority, neighbour, access, and quotation requirements can be identified." },
       { q: "How are different Selangor approval requirements handled?", a: "First identify the current relevant authority and property rules. The required drawings, submissions, responsible parties, fees, and timing should then be confirmed for that exact scope." },
+    ],
+    faqsZh: [
+      { q: "雪兰莪哪些地区可以咨询？", a: "可先提供具体地点、项目范围和现场出入条件，我们会结合安排确认是否可以服务。" },
+      { q: "雪兰莪项目可以安排现场测量吗？", a: "可根据地区、项目类型、现场出入条件与时间安排讨论。" },
+      { q: "有地住宅扩建可以先评估吗？", a: "可以先提供现状和计划改动，再核对结构、顾问、主管部门、邻里、现场出入及报价所需条件。" },
+      { q: "不同地区的审批要求如何确认？", a: "应先确认当前适用的主管部门和物业规定，再按实际工程范围核对图纸、申请、责任方、费用和时间。" },
     ],
   },
   "petaling-jaya": {

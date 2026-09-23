@@ -48,7 +48,7 @@ export default function LocationPage() {
       propertyTypes: loc.propertyTypesZh || loc.propertyTypes,
       commonNeeds: loc.commonNeedsZh || loc.commonNeeds,
       constructionNotes: loc.constructionNotesZh || loc.constructionNotes,
-      projects: loc.projects,
+      projects: loc.projectsZh || loc.projects,
       faqs: loc.faqsZh || loc.faqs,
     };
   }, [slug, language]);

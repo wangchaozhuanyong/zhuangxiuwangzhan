@@ -166,7 +166,7 @@ const getFallbackLocations = async (language: Language = "en") => {
         propertyTypes: location.propertyTypesZh || (location.propertyTypes || []).map((item: string) => localize(item)),
         commonNeeds: location.commonNeedsZh || (location.commonNeeds || []).map((item: string) => localize(item)),
         constructionNotes: location.constructionNotesZh || localize(location.constructionNotes || ""),
-        projects: (location.projects || []).map((project) => ({ ...project, title: localize(project.title || "") })),
+        projects: location.projectsZh || (location.projects || []).map((project) => ({ ...project, title: localize(project.title || "") })),
         faqs: location.faqsZh || (location.faqs || []).map((faq) => ({ q: localize(faq.q || ""), a: localize(faq.a || "") })),
       },
     ])
