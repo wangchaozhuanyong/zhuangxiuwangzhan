@@ -6,19 +6,88 @@ import { join, relative } from 'node:path';
 export const PROJECT_REF = 'rbsnyexjifounogswrjp';
 export const MIGRATION_VERSION = '20260921194000';
 export const MIGRATION_FILE = `${MIGRATION_VERSION}_managed_cms_release_permits.sql`;
-export const APPROVAL_ID = 'apr-1d43729c395c38ea41ef';
 export const ENVIRONMENT = 'production-supabase';
+export const APPROVAL_BINDING_VERSION = 'r3-release-approval/v1';
+export const APPROVAL_MAX_TTL_MS = 30 * 60 * 1000;
+
+const APPROVAL_FIELDS = [
+  'version', 'taskId', 'actionId', 'actionClass', 'scope', 'approvalId', 'expectedSha',
+  'repository', 'repositoryId', 'ref', 'workflowRef', 'environment', 'eventName', 'runId',
+  'runAttempt', 'singleUse', 'status', 'issuedAt', 'expiresAt',
+];
 
 function assert(condition, message) {
   if (!condition) throw new Error(message);
 }
 
-export function verifyReleaseIdentity({ ref, sha, expectedSha, mode, approvalId }) {
+export function verifyReleaseIdentity({ ref, sha, expectedSha, mode }) {
   assert(ref === 'refs/heads/main', 'release must run on main');
   assert(/^[0-9a-f]{40}$/.test(sha ?? ''), 'invalid running SHA');
   assert(sha === expectedSha, 'expected SHA differs from checked-out main');
   assert(mode === 'dry-run' || mode === 'deploy', 'invalid release mode');
-  assert(approvalId === APPROVAL_ID, 'wrong exact R3 approval reference');
+}
+
+function canonicalApprovalPayload(binding) {
+  return Object.fromEntries(APPROVAL_FIELDS.map((field) => [field, binding[field]]));
+}
+
+export function approvalBindingDigest(binding) {
+  return createHash('sha256').update(JSON.stringify(canonicalApprovalPayload(binding))).digest('hex');
+}
+
+function validateApprovalBinding(binding, now) {
+  assert(binding && typeof binding === 'object' && !Array.isArray(binding), 'approval binding must be an object');
+  const expectedFields = [...APPROVAL_FIELDS, 'payloadSha256'].sort();
+  assert(JSON.stringify(Object.keys(binding).sort()) === JSON.stringify(expectedFields),
+    'approval binding fields are missing or unexpected');
+  assert(binding.version === APPROVAL_BINDING_VERSION, 'unsupported approval binding version');
+  assert(/^fc-\d{8}-[a-z0-9-]+$/.test(binding.taskId), 'invalid approval task ID');
+  assert(/^[a-z0-9][a-z0-9-]{2,120}$/.test(binding.actionId), 'invalid approval action ID');
+  assert(binding.actionClass === 'site_publish', 'approval action class must be site_publish');
+  assert(/^flashcast\.com\.my:[^*\s]+$/.test(binding.scope), 'approval scope must be exact and site-bound');
+  assert(/^apr-[0-9a-f]{20}$/.test(binding.approvalId), 'approval ID must be an exact single-use reference');
+  assert(/^[0-9a-f]{40}$/.test(binding.expectedSha), 'approval SHA is invalid');
+  assert(/^[A-Za-z0-9_.-]+\/[A-Za-z0-9_.-]+$/.test(binding.repository), 'approval repository is invalid');
+  assert(/^\d+$/.test(String(binding.repositoryId)), 'approval repository ID is invalid');
+  assert(binding.ref === 'refs/heads/main', 'approval ref must be main');
+  assert(binding.workflowRef === `${binding.repository}/.github/workflows/supabase-content-publish-r3.yml@refs/heads/main`,
+    'approval workflow ref is invalid');
+  assert(binding.environment === ENVIRONMENT, 'approval environment is invalid');
+  assert(binding.eventName === 'workflow_dispatch', 'approval event is invalid');
+  assert(/^\d+$/.test(String(binding.runId)), 'approval run ID is invalid');
+  assert(binding.runAttempt === 1, 'approval is valid only for the first run attempt');
+  assert(binding.singleUse === true && binding.status === 'active', 'approval must be active and single-use');
+  const issuedAt = Date.parse(binding.issuedAt);
+  const expiresAt = Date.parse(binding.expiresAt);
+  assert(Number.isFinite(issuedAt) && Number.isFinite(expiresAt), 'approval timestamps are invalid');
+  assert(issuedAt <= now && expiresAt > now, 'approval is not currently valid');
+  assert(expiresAt - issuedAt > 0 && expiresAt - issuedAt <= APPROVAL_MAX_TTL_MS,
+    'approval expiry exceeds the short-lived limit');
+  assert(/^[0-9a-f]{64}$/.test(binding.payloadSha256), 'approval payload digest is invalid');
+  assert(binding.payloadSha256 === approvalBindingDigest(binding), 'approval payload digest mismatch');
+}
+
+export function verifyReleaseApproval({ allowlistJson, taskId, actionId, actionClass, scope, approvalId,
+  expectedSha, repository, repositoryId, ref, workflowRef, environment, eventName, runId, runAttempt,
+  now = Date.now() }) {
+  let allowlist;
+  try {
+    allowlist = JSON.parse(allowlistJson);
+  } catch {
+    throw new Error('protected approval allowlist is malformed');
+  }
+  assert(Array.isArray(allowlist) && allowlist.length > 0 && allowlist.length <= 20,
+    'protected approval allowlist must contain 1 to 20 bindings');
+  for (const binding of allowlist) validateApprovalBinding(binding, now);
+  const matches = allowlist.filter((binding) => binding.taskId === taskId
+    && binding.actionId === actionId && binding.actionClass === actionClass && binding.scope === scope
+    && binding.approvalId === approvalId && binding.expectedSha === expectedSha
+    && binding.repository === repository && String(binding.repositoryId) === String(repositoryId)
+    && binding.ref === ref && binding.workflowRef === workflowRef && binding.environment === environment
+    && binding.eventName === eventName && String(binding.runId) === String(runId)
+    && binding.runAttempt === Number(runAttempt));
+  assert(matches.length === 1, 'no unique exact active approval binding matches this run');
+  return { approvalId: matches[0].approvalId, payloadSha256: matches[0].payloadSha256 };
 }
 
 export function verifyEnvironment(environment) {
@@ -165,7 +234,32 @@ async function main() {
       sha: process.env.GITHUB_SHA,
       expectedSha: process.env.EXPECTED_SHA,
       mode: process.env.RELEASE_MODE,
+    });
+    return;
+  }
+  if (command === 'approval') {
+    verifyReleaseIdentity({
+      ref: process.env.GITHUB_REF,
+      sha: process.env.GITHUB_SHA,
+      expectedSha: process.env.EXPECTED_SHA,
+      mode: process.env.RELEASE_MODE,
+    });
+    verifyReleaseApproval({
+      allowlistJson: process.env.R3_RELEASE_APPROVAL_ALLOWLIST_JSON,
+      taskId: process.env.TASK_ID,
+      actionId: process.env.ACTION_ID,
+      actionClass: process.env.ACTION_CLASS,
+      scope: process.env.RELEASE_SCOPE,
       approvalId: process.env.APPROVAL_ID,
+      expectedSha: process.env.EXPECTED_SHA,
+      repository: process.env.GITHUB_REPOSITORY,
+      repositoryId: process.env.GITHUB_REPOSITORY_ID,
+      ref: process.env.GITHUB_REF,
+      workflowRef: process.env.GITHUB_WORKFLOW_REF,
+      environment: process.env.RELEASE_ENVIRONMENT,
+      eventName: process.env.GITHUB_EVENT_NAME,
+      runId: process.env.GITHUB_RUN_ID,
+      runAttempt: process.env.GITHUB_RUN_ATTEMPT,
     });
     return;
   }
