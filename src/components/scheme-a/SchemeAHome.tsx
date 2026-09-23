@@ -165,6 +165,10 @@ const SchemeAHome = ({ content }: SchemeAHomeProps) => {
           <header>
             <p className="scheme-a-eyebrow">{copy.servicesLabel}</p>
             <h2>{copy.servicesTitle}</h2>
+            <div className="scheme-a-services__context">
+              <p>{copy.designPrompt} <LocalizedLink to="/services/design">{copy.designLink}<ArrowUpRight aria-hidden="true" /></LocalizedLink></p>
+              <p>{copy.areasPrompt} <LocalizedLink to="/locations">{copy.areasLink}<ArrowUpRight aria-hidden="true" /></LocalizedLink></p>
+            </div>
           </header>
           <ol>
             {resolvedServices.map((service) => (
@@ -289,8 +293,8 @@ const SchemeAHome = ({ content }: SchemeAHomeProps) => {
             <div className="scheme-a-materials__badge" aria-hidden="true">
               <span className="scheme-a-materials__badge-dot" />
               <div>
-                <strong>{language === "zh" ? "全案透明交付体系" : "Transparent Delivery System"}</strong>
-                <span>{language === "zh" ? "书面工作范围 · 0增项承诺 · 节点验收" : "Written Scope · No Hidden Fees · Stage Sign-Off"}</span>
+                <strong>{copy.trustBadgeTitle}</strong>
+                <span>{copy.trustBadgeDetail}</span>
               </div>
             </div>
           </figure>

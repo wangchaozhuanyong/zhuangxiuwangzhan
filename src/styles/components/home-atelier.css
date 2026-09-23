@@ -458,6 +458,33 @@
     align-self: start;
   }
 
+  html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-services__context {
+    display: grid;
+    gap: 0.85rem;
+    max-width: 29rem;
+    margin-top: 1.75rem;
+  }
+
+  html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-services__context p {
+    color: rgba(247, 244, 238, 0.72);
+    font-size: 0.85rem;
+    line-height: 1.65;
+  }
+
+  html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-services__context a {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.2rem;
+    color: var(--atelier-gold);
+    text-decoration: underline;
+    text-underline-offset: 0.2em;
+  }
+
+  html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-services__context svg {
+    width: 0.85rem;
+    height: 0.85rem;
+  }
+
   html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-services ol {
     counter-reset: atelier-service;
     list-style: none;
@@ -574,6 +601,7 @@
     display: flex;
     align-items: center;
     gap: 0.75rem;
+    max-width: min(26rem, calc(100% - 2.5rem));
     padding: 0.75rem 1.15rem;
     border: 1px solid rgba(212, 175, 55, 0.4);
     border-radius: 4px;
