@@ -71,6 +71,20 @@ export async function updateContentRecord(
   return data as ContentRow;
 }
 
+// Keep the version predicate in the same UPDATE as the content write.
+export async function updateContentRecordAtVersion(
+  client: ContentPublishClient,
+  table: string,
+  id: string,
+  expectedUpdatedAt: string,
+  payload: Record<string, unknown>,
+): Promise<ContentRow | null> {
+  const { data, error } = await client.from(table).update(payload)
+    .eq("id", id).eq("updated_at", expectedUpdatedAt).select("*").maybeSingle();
+  if (error) throw new Error(error.message);
+  return data as ContentRow | null;
+}
+
 export async function replaceMaterialGallery(
   client: ContentPublishClient,
   materialId: string,

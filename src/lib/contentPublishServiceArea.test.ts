@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { publishContent } from "../../supabase/functions/content-publish/service.ts";
 import type { ContentPublishClient } from "../../supabase/functions/content-publish/types.ts";
+import { targetConfigs } from "../../scripts/publish-content-trust-fixes.mjs";
 
 type Row = Record<string, unknown> & { id?: string };
 type Tables = Record<string, Row[]>;
@@ -39,7 +40,7 @@ function createMockContentClient(initialTables: Tables) {
         return builder;
       },
       maybeSingle() {
-        return Promise.resolve({ data: filtered()[0] || null, error: null });
+        return Promise.resolve({ data: (operation === "select" ? filtered() : execute())[0] || null, error: null });
       },
       single() {
         return Promise.resolve({ data: execute()[0] || null, error: null });
@@ -96,6 +97,50 @@ const publishedServiceArea = {
 };
 
 describe("content-publish service_area", () => {
+  const locked = targetConfigs["selangor-service-area-r1-v4"].lockedCandidate;
+  const selangor = { ...publishedServiceArea, id: locked.recordId, slug: locked.slug,
+    updated_at: locked.expectedUpdatedAt, area_name: "Selangor" };
+  const identity = { repositoryId: 1248188229, actorId: 98765, workflowSha: "a".repeat(40),
+    workflowRef: "wangchaozhuanyong/zhuangxiuwangzhan/.github/workflows/content-publish-approved.yml@refs/heads/main",
+    runId: 12345, runAttempt: 1 };
+  const permit = { permitId: "11111111-1111-4111-8111-111111111111",
+    taskId: locked.taskId, actionId: locked.actionId, operation: "publish" as const,
+    scope: locked.scope, candidateVersion: locked.candidateVersion };
+
+  it("blocks the Selangor row through generic admin and cron writes", async () => {
+    let read = false;
+    const client = { from: () => { read = true; throw new Error("must not read"); } };
+    for (const record of [{ id: locked.recordId }, { slug: locked.slug }]) {
+      const result = await publishContent({ contentType: "service_area", mode: "publish", nextStatus: "published",
+        ownerApproved: true, explicitExecution: true, approvalId: "forged", record },
+      client as unknown as ContentPublishClient, { role: "content_editor", authMode: "cron" });
+      expect(result.status).toBe(403);
+    }
+    expect(read).toBe(false);
+  });
+
+  it.each([false, true])("uses an atomic Selangor version predicate; race=%s", async (race) => {
+    const { client, tables } = createMockContentClient({ service_areas: [selangor], admin_audit_logs: [] });
+    const calls: Array<{ name: string; args: Record<string, unknown> }> = [];
+    Object.assign(client, { rpc: async (name: string, args: Record<string, unknown>) => {
+      calls.push({ name, args });
+      if (name === "begin_managed_cms_release_write" && race) {
+        tables.service_areas[0].updated_at = "2026-08-22T08:45:24.326900+00:00";
+      }
+      return { data: [{}], error: null };
+    } });
+    const record = { ...selangor, ...locked.desiredFields };
+    const result = await publishContent({ contentType: "service_area", mode: "publish", nextStatus: "published",
+      ownerApproved: true, explicitExecution: true, approvalId: "test-only", expectedUpdatedAt: locked.expectedUpdatedAt,
+      record, managedPermit: permit }, client as unknown as ContentPublishClient,
+    { role: "content_editor", authMode: "cron", managedIdentity: identity });
+    expect(calls.map((call) => call.name)).toEqual([
+      "claim_managed_cms_release_permit", "begin_managed_cms_release_write", "finish_managed_cms_release_write",
+    ]);
+    expect(result.status).toBe(race ? 409 : undefined);
+    expect(calls.at(-1)?.args.p_success).toBe(!race);
+    expect(tables.service_areas[0].content_zh).toBe(race ? selangor.content_zh : locked.desiredFields.content_zh);
+  });
   it("validates a complete bilingual service area in dry-run mode", async () => {
     const { client } = createMockContentClient({ service_areas: [] });
     const result = await publishContent(

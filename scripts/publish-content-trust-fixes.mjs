@@ -4,6 +4,7 @@ import { createHash } from "node:crypto";
 import { fileURLToPath } from "node:url";
 import { loadEnv } from "vite";
 import { buildTopicClusterBlogRecord, topicClusterBlogConfigs } from "./topic-cluster-blog-records.mjs";
+import { lockedR3Candidates } from "./managed-cms-targets-r3-v2.mjs";
 
 const args = process.argv.slice(2);
 const execute = args.includes("--execute");
@@ -26,6 +27,13 @@ const serviceFields = [
   "image_url", "alt_zh", "alt_en", "suitable_for_zh", "suitable_for_en", "common_projects_zh", "common_projects_en",
   "scope_items_zh", "scope_items_en", "process_steps_zh", "process_steps_en", "faqs_zh", "faqs_en", "seo_title_zh",
   "seo_title_en", "seo_description_zh", "seo_description_en", "sort_order",
+];
+
+const serviceAreaFields = [
+  "id", "slug", "status", "updated_at", "title_zh", "title_en", "excerpt_zh", "excerpt_en",
+  "content_zh", "content_en", "area_name", "property_types", "common_needs", "construction_notes_zh",
+  "construction_notes_en", "projects", "faqs_zh", "faqs_en", "seo_title_zh", "seo_title_en",
+  "seo_description_zh", "seo_description_en", "sort_order",
 ];
 
 const blogFields = [
@@ -951,12 +959,12 @@ const targetConfigs = {
     ],
   },
   ...Object.fromEntries(
-    Object.entries(lockedServiceCandidates).map(([name, locked]) => [name, {
-      contentType: "service",
-      table: "services",
+    Object.entries({ ...lockedServiceCandidates, ...lockedR3Candidates }).map(([name, locked]) => [name, {
+      contentType: locked.contentType || "service",
+      table: locked.contentType === "service_area" ? "service_areas" : "services",
       keyField: "slug",
       key: locked.slug,
-      fields: serviceFields,
+      fields: locked.contentType === "service_area" ? serviceAreaFields : serviceFields,
       buildRecord: (current) => ({ ...current, ...locked.desiredFields }),
       publicPaths: locked.publicPaths,
       lockedCandidate: locked,
@@ -1001,13 +1009,14 @@ const assertLockedServiceCandidate = (locked, current) => {
   if (current.updated_at !== locked.expectedUpdatedAt) {
     fail(`Locked CMS updated_at drift for ${locked.candidateVersion}; obtain a new QA candidate.`);
   }
-  const baseline = Object.fromEntries(serviceFields.map((field) => [field, current[field]]));
+  const fields = locked.contentType === "service_area" ? serviceAreaFields : serviceFields;
+  const baseline = Object.fromEntries(fields.map((field) => [field, current[field]]));
   if (stableDigest(baseline) !== locked.baselineFieldsSha256) {
     fail(`Locked CMS field drift for ${locked.candidateVersion}; obtain a new QA candidate.`);
   }
   const changedFields = Object.keys(locked.desiredFields).sort();
   if (!valuesMatch(changedFields, [...locked.changedFields].sort())
-      || changedFields.some((field) => !serviceFields.includes(field) || ["id", "slug", "status", "updated_at"].includes(field))
+      || changedFields.some((field) => !fields.includes(field) || ["id", "slug", "status", "updated_at"].includes(field))
       || stableDigest(locked.desiredFields) !== locked.desiredFieldsSha256) {
     fail(`Locked candidate payload mismatch for ${locked.candidateVersion}.`);
   }
@@ -1041,7 +1050,7 @@ const requestGithubOidcToken = async () => {
 };
 
 const buildLockedDryRunRequest = (locked, record, source) => ({
-  contentType: "service",
+  contentType: locked.contentType || "service",
   mode: "dry-run",
   nextStatus: "published",
   expectedUpdatedAt: locked.expectedUpdatedAt,
@@ -1051,7 +1060,7 @@ const buildLockedDryRunRequest = (locked, record, source) => ({
 
 const assertLockedDryRunResult = (locked, response, httpStatus, before, after) => {
   if (httpStatus !== 200 || response.ok !== true || response.dry_run !== true
-      || response.content_type !== "service" || response.existing_id !== locked.recordId
+      || response.content_type !== (locked.contentType || "service") || response.existing_id !== locked.recordId
       || response.slug !== locked.slug || response.saved_id) {
     fail(`Protected dry-run did not confirm the exact locked candidate ${locked.candidateVersion}.`);
   }
@@ -1124,10 +1133,14 @@ const main = async () => {
     if (rollback.target !== target || rollback.key !== config.key || !rollback.record) fail("Rollback backup does not match the selected target.");
     if (config.lockedCandidate) {
       const locked = config.lockedCandidate;
-      const baseline = Object.fromEntries(serviceFields.map((field) => [field, rollback.record[field]]));
+      const baseline = Object.fromEntries(config.fields.map((field) => [field, rollback.record[field]]));
       if (rollback.record.id !== locked.recordId || rollback.record.slug !== locked.slug
           || stableDigest(baseline) !== locked.baselineFieldsSha256) {
         fail(`Rollback artifact does not contain the exact prior version of ${locked.candidateVersion}.`);
+      }
+      if (config.fields.some((field) => !["updated_at", ...locked.changedFields].includes(field)
+          && !valuesMatch(current[field], rollback.record[field]))) {
+        fail(`Rollback would overwrite an unrelated field of ${locked.candidateVersion}.`);
       }
     }
     desired = rollback.record;

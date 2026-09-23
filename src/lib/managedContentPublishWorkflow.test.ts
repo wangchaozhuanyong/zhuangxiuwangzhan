@@ -41,6 +41,12 @@ const lockedTargets = [
   },
 ] as const;
 
+const newTargets = [
+  { name: "kitchen-r1-cms-row-20260924-v1", contentType: "service", slug: "kitchen", fields: ["faqs_zh", "faqs_en"] },
+  { name: "design-r1-cms-row-20260924-v1", contentType: "service", slug: "design", fields: ["content_zh", "content_en", "faqs_zh", "faqs_en"] },
+  { name: "selangor-service-area-r1-v4", contentType: "service_area", slug: "selangor", fields: ["content_zh", "content_en", "property_types"] },
+] as const;
+
 const makeCurrent = (name: string) => {
   const config = targetConfigs[name];
   const locked = config.lockedCandidate;
@@ -174,12 +180,42 @@ describe("three locked CMS targets in the existing protected workflow", () => {
     }
   });
 
+  it.each(newTargets)("pins $name to exact changed fields and the correct protected content type", ({ name, contentType, slug, fields }) => {
+    const { config, locked, row } = makeCurrent(name);
+    expect(config.contentType).toBe(contentType);
+    expect(locked.slug).toBe(slug);
+    expect(locked.changedFields).toEqual(fields);
+    expect(stableDigest(locked.desiredFields)).toBe(locked.desiredFieldsSha256);
+    expect(locked.sourceCandidateSha256).toMatch(/^[a-f0-9]{64}$/);
+    expect(locked.rollbackRecordSha256).toMatch(/^[a-f0-9]{64}$/);
+    expect(locked.publicPaths.map(({ path }: { path: string }) => path)).toEqual(
+      ["en", "zh"].map((lang) => `/${lang}/${contentType === "service_area" ? "locations" : "services"}/${slug}`),
+    );
+    expect(() => assertLockedServiceCandidate(locked, row)).not.toThrow();
+    const desired = config.buildRecord(row);
+    expect(buildLockedDryRunRequest(locked, desired, "test")).toMatchObject({
+      contentType, mode: "dry-run", expectedUpdatedAt: locked.expectedUpdatedAt,
+    });
+    expect(() => assertLockedServiceCandidate({ ...locked, desiredFields: { ...locked.desiredFields, [fields[0]]: "forged" } }, row))
+      .toThrow(/payload mismatch/);
+  });
+
+  it.each(newTargets)("rejects direct $name writes before reading credentials", ({ name }) => {
+    const artifactDir = resolve(process.cwd(), `audits/managed-workflow-guard-test-${process.pid}-${name}`);
+    const result = spawnSync(process.execPath, [resolve(process.cwd(), "scripts/publish-content-trust-fixes.mjs"),
+      `--target=${name}`, "--execute", "--approval-id=forged", `--artifact-dir=${artifactDir}`],
+    { cwd: process.cwd(), encoding: "utf8" });
+    expect(result.status).toBe(1);
+    expect(result.stderr).toContain("approved main workflow and an exact single-use permit");
+    expect(existsSync(artifactDir)).toBe(false);
+  });
+
   it("keeps prior targets available without a locked-candidate publish gate", () => {
     for (const target of ["kitchen", "builtin", "shop-renovation", "old-house-renovation-checklist", "malaysia-renovation-budget-guide"]) {
       expect(targetConfigs[target]).toBeDefined();
       expect(targetConfigs[target].lockedCandidate).toBeUndefined();
     }
     expect(Object.keys(targetConfigs).filter((target) => targetConfigs[target].lockedCandidate).sort())
-      .toEqual(lockedTargets.map((item) => item.name).sort());
+      .toEqual([...lockedTargets, ...newTargets].map((item) => item.name).sort());
   });
 });

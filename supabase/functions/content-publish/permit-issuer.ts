@@ -1,4 +1,4 @@
-import { MANAGED_SERVICES, managedAction } from "./managed-targets.ts";
+import { MANAGED_TARGETS, managedAction } from "./managed-targets.ts";
 import { samePgTimestamp } from "./managed-timestamp.ts";
 import type { ContentPublishClient } from "./types.ts";
 
@@ -33,7 +33,7 @@ export type ManagedPermitIssue = {
 };
 
 export async function issueManagedPermit(client: ContentPublishClient, input: ManagedPermitIssue, now = Date.now()) {
-  const target = MANAGED_SERVICES.find((item) => item.id === input.recordId && item.slug === input.slug);
+  const target = MANAGED_TARGETS.find((item) => item.id === input.recordId && item.slug === input.slug);
   const action = target && managedAction(target, input.operation);
   const expires = Date.parse(input.expiresAt);
   if (!target || !action || !["publish", "rollback"].includes(input.operation)

@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { issueManagedPermit, revokeManagedPermit } from "../../supabase/functions/content-publish/permit-issuer.ts";
 import type { ContentPublishClient } from "../../supabase/functions/content-publish/types.ts";
+import { MANAGED_AREAS, MANAGED_SERVICES } from "../../supabase/functions/content-publish/managed-targets.ts";
 
 const now = Date.parse("2026-09-21T12:00:00Z");
 const base = {
@@ -44,6 +45,27 @@ const clientFor = (parent?: Record<string, unknown>) => {
 };
 
 describe("protected managed CMS permit issuer", () => {
+  it.each([...MANAGED_SERVICES.slice(-2), ...MANAGED_AREAS])(
+    "binds a distinct publish and rollback permit to $slug", async (target) => {
+      const publish = { ...base, taskId: target.taskId, actionId: target.actionId,
+        candidateVersion: target.candidateVersion, recordId: target.id, slug: target.slug, scope: target.scope };
+      const issued = clientFor();
+      await expect(issueManagedPermit(issued.client, publish, now)).resolves.toMatchObject({ operation: "publish" });
+      const rollback = { ...publish, permitId: "22222222-2222-4222-8222-222222222222",
+        actionId: `rollback-${target.candidateVersion}`,
+        candidateVersion: `${target.candidateVersion}-rollback-v1`, operation: "rollback" as const,
+        expectedUpdatedAt: "2026-09-21T12:01:00Z", payloadSha256: base.rollbackPayloadSha256,
+        rollbackPayloadSha256: undefined, parentPermitId: base.permitId };
+      const parent = { status: "completed", operation: "publish", task_id: target.taskId,
+        record_id: target.id, slug: target.slug, scope: target.scope,
+        candidate_version: target.candidateVersion, rollback_payload_sha256: base.rollbackPayloadSha256,
+        saved_updated_at: rollback.expectedUpdatedAt };
+      await expect(issueManagedPermit(clientFor(parent).client, rollback, now))
+        .resolves.toMatchObject({ operation: "rollback" });
+      await expect(issueManagedPermit(clientFor({ ...parent, record_id: base.recordId }).client, rollback, now))
+        .rejects.toThrow(/prior version/);
+    },
+  );
   it("issues an exact short-lived unbound publish permit", async () => {
     const { client, inserted } = clientFor();
     const result = await issueManagedPermit(client, base, now);

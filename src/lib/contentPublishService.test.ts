@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { publishContent } from "../../supabase/functions/content-publish/service.ts";
 import type { ContentPublishClient } from "../../supabase/functions/content-publish/types.ts";
+import { targetConfigs } from "../../scripts/publish-content-trust-fixes.mjs";
 
 const publishedServiceRecord = {
   slug: "office-renovation",
@@ -47,6 +48,62 @@ const createReadOnlyClient = () => ({
 });
 
 describe("content-publish service", () => {
+  it.each(["kitchen-r1-cms-row-20260924-v1", "design-r1-cms-row-20260924-v1"])(
+    "requires exact QA-locked fields and a distinct permit for %s", async (name) => {
+      const locked = targetConfigs[name].lockedCandidate;
+      const current = { ...publishedServiceRecord, id: locked.recordId, slug: locked.slug,
+        updated_at: locked.expectedUpdatedAt, status: "published" };
+      const calls: string[] = [];
+      const predicates: Array<[string, unknown]> = [];
+      const finishResults: unknown[] = [];
+      let writePayload: Record<string, unknown> | null = null;
+      const raced = name.startsWith("design-");
+      const client = {
+        from(table: string) {
+          if (table === "admin_audit_logs") return { insert: async () => ({ data: null, error: null }) };
+          const builder = { select() { return builder; },
+            eq(field: string, value: unknown) { if (writePayload) predicates.push([field, value]); return builder; },
+            maybeSingle: async () => ({ data: writePayload ? raced ? null : { ...current, ...writePayload } : current, error: null }),
+            update(payload: Record<string, unknown>) { calls.push("write"); writePayload = payload; return builder; },
+            single: async () => ({ data: { ...current, ...writePayload, updated_at: "2026-09-24T00:00:00.000001Z" }, error: null }),
+          };
+          return builder;
+        },
+        async rpc(operation: string, args: Record<string, unknown>) {
+          calls.push(operation);
+          if (operation === "finish_managed_cms_release_write") finishResults.push(args.p_success);
+          return { data: [{}], error: null };
+        },
+      };
+      const request = { contentType: "service" as const, mode: "publish" as const,
+        nextStatus: "published" as const, ownerApproved: true, explicitExecution: true,
+        approvalId: "test-only", expectedUpdatedAt: locked.expectedUpdatedAt,
+        record: { ...current, ...locked.desiredFields },
+        managedPermit: { permitId: "11111111-1111-4111-8111-111111111111", taskId: locked.taskId,
+          actionId: locked.actionId, operation: "publish" as const,
+          scope: locked.scope, candidateVersion: locked.candidateVersion },
+      };
+      const context = { role: "content_editor", authMode: "cron", managedIdentity: {
+        repositoryId: 1248188229, actorId: 98765, workflowSha: "a".repeat(40),
+        workflowRef: "wangchaozhuanyong/zhuangxiuwangzhan/.github/workflows/content-publish-approved.yml@refs/heads/main",
+        runId: 12345, runAttempt: 1,
+      } };
+      const originalField = request.record[locked.changedFields[0]];
+      const changedField = Array.isArray(originalField)
+        ? [...originalField, { q: "Forged question?", a: "Forged answer." }]
+        : `${originalField} forged`;
+      const tampered = await publishContent({ ...request,
+        record: { ...request.record, [locked.changedFields[0]]: changedField } },
+      client as unknown as ContentPublishClient, context);
+      expect(tampered.status).toBe(403);
+      expect(calls).toHaveLength(0);
+      const exact = await publishContent(request, client as unknown as ContentPublishClient, context);
+      expect(exact.status).toBe(raced ? 409 : undefined);
+      expect(predicates).toContainEqual(["updated_at", locked.expectedUpdatedAt]);
+      expect(finishResults).toEqual([!raced]);
+      expect(calls).toEqual(["claim_managed_cms_release_permit", "begin_managed_cms_release_write", "write", "finish_managed_cms_release_write"]);
+    },
+  );
   it("requires a matching one-time database claim before a managed service write", async () => {
     const id = "b401a610-a4dc-4a0b-a7e0-efcac6c81d71";
     const updatedAt = "2026-08-30T10:55:12.151465+00:00";

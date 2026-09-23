@@ -10,18 +10,21 @@ import {
   removeMediaObject,
   replaceMaterialGallery,
   updateContentRecord,
+  updateContentRecordAtVersion,
   updateServiceRecord,
   uploadMediaObject,
 } from "./repository.ts";
 import type { ContentPublishClient, ContentPublishRequest, ContentPublishResult, ContentRow, ContentStatus } from "./types.ts";
-import { MANAGED_SERVICES, managedAction } from "./managed-targets.ts";
+import { MANAGED_AREAS, MANAGED_SERVICES, managedAction } from "./managed-targets.ts";
+import type { ManagedTarget } from "./managed-targets.ts";
 import { samePgTimestamp } from "./managed-timestamp.ts";
 
 const CONTENT_WRITE_ROLES = new Set(["super_admin", "content_editor"]);
-// These three records cannot be written through the legacy cron/admin path.
-// The R3 permit verifier must be wired before any managed write is enabled.
+// Managed rows cannot be written through the legacy cron/admin path.
 const MANAGED_SERVICE_IDS = new Set<string>(MANAGED_SERVICES.map((service) => service.id));
 const MANAGED_SERVICE_SLUGS = new Set<string>(MANAGED_SERVICES.map((service) => service.slug));
+const MANAGED_AREA_IDS = new Set<string>(MANAGED_AREAS.map((area) => area.id));
+const MANAGED_AREA_SLUGS = new Set<string>(MANAGED_AREAS.map((area) => area.slug));
 const VALID_STATUSES = new Set<ContentStatus>(["draft", "published", "archived"]);
 const MEDIA_BUCKET = "site-images";
 const MEDIA_PREFIX = "media/seo-generated/";
@@ -388,6 +391,88 @@ const errorResult = (error: string, status = 400, extra: Record<string, unknown>
   status,
   body: { ok: false, error, ...extra },
 });
+
+async function beginManagedCmsWrite(
+  input: ContentPublishRequest,
+  client: ContentPublishClient,
+  context: PublishContext,
+  target: ManagedTarget,
+  existing: ContentRow | null,
+  slug: string,
+  payload: Record<string, unknown>,
+  expectedUpdatedAt: string,
+): Promise<ContentPublishResult | null> {
+  const identity = context.managedIdentity;
+  const permit = input.managedPermit;
+  const action = managedAction(target, permit?.operation === "rollback" ? "rollback" : "publish");
+  if (!identity || !existing || existing.id !== target.id || slug !== target.slug
+      || input.record?.id !== target.id || input.contentType !== target.contentType
+      || !permit || permit.taskId !== action.taskId || permit.actionId !== action.actionId
+      || permit.scope !== action.scope || permit.candidateVersion !== action.candidateVersion
+      || !/^[0-9a-f-]{36}$/i.test(permit.permitId)) {
+    return errorResult("Managed CMS publish requires an exact verified permit.", 403);
+  }
+  if (permit.operation === "publish" && target.changedFields && target.desiredFieldsSha256) {
+    const fields = new Set(target.changedFields);
+    const changed = Object.fromEntries(target.changedFields.map((field) => [field, payload[field]]));
+    const unrelatedChange = Object.entries(payload).some(([field, value]) =>
+      !fields.has(field) && JSON.stringify(stableValue(value)) !== JSON.stringify(stableValue(existing[field])));
+    if (unrelatedChange || await sha256(changed) !== target.desiredFieldsSha256) {
+      return errorResult("Managed CMS payload differs from the QA-locked fields.", 403);
+    }
+  }
+  const payloadSha256 = await sha256(payload);
+  const { data: claimed, error: claimError } = await client.rpc("claim_managed_cms_release_permit", {
+    p_permit_id: permit.permitId,
+    p_task_id: permit.taskId,
+    p_action_id: permit.actionId,
+    p_action_class: "cms_write",
+    p_operation: permit.operation,
+    p_scope: permit.scope,
+    p_candidate_version: permit.candidateVersion,
+    p_record_id: target.id,
+    p_slug: target.slug,
+    p_expected_updated_at: expectedUpdatedAt,
+    p_payload_sha256: payloadSha256,
+    p_github_repository_id: identity.repositoryId,
+    p_github_workflow_ref: identity.workflowRef,
+    p_github_workflow_sha: identity.workflowSha,
+    p_github_actor_id: identity.actorId,
+    p_github_run_id: identity.runId,
+    p_github_run_attempt: identity.runAttempt,
+  });
+  if (claimError || !Array.isArray(claimed) || claimed.length !== 1) {
+    return errorResult("Managed CMS permit is missing, expired, mismatched, revoked, or already used.", 403);
+  }
+  const { data: writing, error: writingError } = await client.rpc("begin_managed_cms_release_write", {
+    p_permit_id: permit.permitId,
+    p_github_run_id: identity.runId,
+    p_github_run_attempt: identity.runAttempt,
+  });
+  if (writingError || !Array.isArray(writing) || writing.length !== 1) {
+    return errorResult("Managed CMS permit could not begin its one-time write.", 409);
+  }
+  return null;
+}
+
+async function finishManagedCmsWrite(
+  client: ContentPublishClient,
+  context: PublishContext,
+  permitId: string,
+  saved: ContentRow | null,
+): Promise<boolean> {
+  const identity = context.managedIdentity;
+  if (!identity) return false;
+  const { data, error } = await client.rpc("finish_managed_cms_release_write", {
+    p_permit_id: permitId,
+    p_github_run_id: identity.runId,
+    p_github_run_attempt: identity.runAttempt,
+    p_saved_id: saved?.id || null,
+    p_saved_updated_at: saved?.updated_at || null,
+    p_success: Boolean(saved),
+  });
+  return !error && Array.isArray(data) && data.length === 1;
+}
 
 function cleanServicePayload(record: Record<string, unknown>, nextStatus?: ContentStatus) {
   const warnings: string[] = [];
@@ -1366,7 +1451,12 @@ async function publishSingleRecordContent(
       currentUpdatedAt: existing.updated_at || null,
     });
   }
-  if (existing && expectedUpdatedAt && normalizeDate(existing.updated_at) !== normalizeDate(expectedUpdatedAt)) {
+  const managedArea = config.contentType === "service_area"
+    ? MANAGED_AREAS.find((area) => area.id === existingId || area.slug === cleaned.key)
+    : undefined;
+  if (existing && expectedUpdatedAt && (managedArea
+    ? !samePgTimestamp(existing.updated_at, expectedUpdatedAt)
+    : normalizeDate(existing.updated_at) !== normalizeDate(expectedUpdatedAt))) {
     return errorResult(`This ${config.contentType} was changed by someone else. Refresh before publishing.`, 409, {
       currentUpdatedAt: existing.updated_at || null,
     });
@@ -1396,9 +1486,28 @@ async function publishSingleRecordContent(
 
   if (mode === "dry-run") return { body: { ...commonBody, payload_preview: cleaned.payload } };
 
-  const saved = existingId
-    ? await updateContentRecord(client, config.table, existingId, cleaned.payload)
-    : await insertContentRecord(client, config.table, cleaned.payload);
+  if (managedArea) {
+    const denied = await beginManagedCmsWrite(input, client, context, managedArea, existing, cleaned.key,
+      cleaned.payload, expectedUpdatedAt);
+    if (denied) return denied;
+  }
+  let saved: ContentRow | null;
+  try {
+    saved = managedArea
+      ? await updateContentRecordAtVersion(client, config.table, existingId, expectedUpdatedAt, cleaned.payload)
+      : existingId
+      ? await updateContentRecord(client, config.table, existingId, cleaned.payload)
+      : await insertContentRecord(client, config.table, cleaned.payload);
+  } catch (error) {
+    if (managedArea && input.managedPermit) await finishManagedCmsWrite(client, context, input.managedPermit.permitId, null);
+    throw error;
+  }
+  if (managedArea && input.managedPermit) {
+    const completed = await finishManagedCmsWrite(client, context, input.managedPermit.permitId, saved);
+    if (!saved) return errorResult("This service_area was changed during the write. Refresh before publishing.", 409);
+    if (!completed) return errorResult("CMS write result is uncertain; read back the row before issuing a new permit.", 409);
+  }
+  if (!saved) return errorResult("CMS write returned no row.", 409);
   const auditWarnings: string[] = [];
   try {
     await insertAdminAuditLog(client, {
@@ -1815,11 +1924,17 @@ export async function publishContent(
   const mode = input.mode || "dry-run";
   if (mode !== "dry-run" && mode !== "publish") return errorResult("Invalid publish mode.");
   if (!input.record || typeof input.record !== "object" || Array.isArray(input.record)) return errorResult("record object is required.");
-  if (input.contentType === "service" && mode === "publish" && (
-    MANAGED_SERVICE_IDS.has(String(input.record.id || "")) ||
-    MANAGED_SERVICE_SLUGS.has(normalizeSlug(input.record.slug))
+  if (mode === "publish" && (
+    (input.contentType === "service" && (
+      MANAGED_SERVICE_IDS.has(String(input.record.id || "")) ||
+      MANAGED_SERVICE_SLUGS.has(normalizeSlug(input.record.slug))
+    )) ||
+    (input.contentType === "service_area" && (
+      MANAGED_AREA_IDS.has(String(input.record.id || "")) ||
+      MANAGED_AREA_SLUGS.has(normalizeSlug(input.record.slug))
+    ))
   ) && !context.managedIdentity) {
-    return errorResult("Managed service publish requires a trusted one-time permit; this route is not configured.", 403);
+    return errorResult("Managed CMS publish requires a trusted one-time permit; this route is not configured.", 403);
   }
 
   const nextStatus = input.nextStatus || (input.record.status as ContentStatus | undefined) || "draft";
@@ -1909,8 +2024,11 @@ export async function publishContent(
     return errorResult("Service slug already belongs to another record.", 409);
   }
 
+  const isManagedExisting = MANAGED_SERVICE_IDS.has(existingId) || MANAGED_SERVICE_SLUGS.has(cleaned.slug);
   const expectedUpdatedAt = input.expectedUpdatedAt || (typeof input.record.updated_at === "string" ? input.record.updated_at : "");
-  if (existing && expectedUpdatedAt && normalizeDate(existing.updated_at) !== normalizeDate(expectedUpdatedAt)) {
+  if (existing && expectedUpdatedAt && (isManagedExisting && mode === "publish"
+    ? !samePgTimestamp(existing.updated_at, expectedUpdatedAt)
+    : normalizeDate(existing.updated_at) !== normalizeDate(expectedUpdatedAt))) {
     return errorResult("This service was changed by someone else. Refresh before publishing.", 409, {
       currentUpdatedAt: existing.updated_at || null,
     });
@@ -1946,85 +2064,31 @@ export async function publishContent(
   }
 
   const managedService = MANAGED_SERVICES.find((service) => service.id === existingId || service.slug === cleaned.slug);
-  let managedWriteStarted = false;
   if (managedService) {
-    const identity = context.managedIdentity;
-    const permit = input.managedPermit;
-    const exactTarget = existingId === managedService.id && cleaned.slug === managedService.slug
-      && String(input.record.id || "") === managedService.id && existing;
-    const expectedAction = managedAction(managedService, permit?.operation === "rollback" ? "rollback" : "publish");
-    const exactPermit = permit && permit.taskId === expectedAction.taskId
-      && permit.actionId === expectedAction.actionId
-      && permit.scope === expectedAction.scope && permit.candidateVersion === expectedAction.candidateVersion
-      && /^[0-9a-f-]{36}$/i.test(permit.permitId);
-    if (!identity || !exactTarget || !exactPermit) {
-      return errorResult("Managed CMS publish requires an exact verified permit.", 403);
-    }
-    const payloadSha256 = await sha256(cleaned.payload);
-    const { data: claimed, error: claimError } = await client.rpc("claim_managed_cms_release_permit", {
-      p_permit_id: permit.permitId,
-      p_task_id: permit.taskId,
-      p_action_id: permit.actionId,
-      p_action_class: "cms_write",
-      p_operation: permit.operation,
-      p_scope: permit.scope,
-      p_candidate_version: permit.candidateVersion,
-      p_record_id: managedService.id,
-      p_slug: managedService.slug,
-      p_expected_updated_at: expectedUpdatedAt,
-      p_payload_sha256: payloadSha256,
-      p_github_repository_id: identity.repositoryId,
-      p_github_workflow_ref: identity.workflowRef,
-      p_github_workflow_sha: identity.workflowSha,
-      p_github_actor_id: identity.actorId,
-      p_github_run_id: identity.runId,
-      p_github_run_attempt: identity.runAttempt,
-    });
-    if (claimError || !Array.isArray(claimed) || claimed.length !== 1) {
-      return errorResult("Managed CMS permit is missing, expired, mismatched, revoked, or already used.", 403);
-    }
-    const { data: writing, error: writingError } = await client.rpc("begin_managed_cms_release_write", {
-      p_permit_id: permit.permitId,
-      p_github_run_id: identity.runId,
-      p_github_run_attempt: identity.runAttempt,
-    });
-    if (writingError || !Array.isArray(writing) || writing.length !== 1) {
-      return errorResult("Managed CMS permit could not begin its one-time write.", 409);
-    }
-    managedWriteStarted = true;
+    const denied = await beginManagedCmsWrite(input, client, context, managedService, existing, cleaned.slug,
+      cleaned.payload, expectedUpdatedAt);
+    if (denied) return denied;
   }
 
-  let saved: ContentRow;
+  let saved: ContentRow | null;
   try {
     saved = existingId
-      ? await updateServiceRecord(client, existingId, cleaned.payload)
+      ? managedService?.changedFields
+        ? await updateContentRecordAtVersion(client, "services", existingId, expectedUpdatedAt, cleaned.payload)
+        : await updateServiceRecord(client, existingId, cleaned.payload)
       : await insertServiceRecord(client, cleaned.payload);
   } catch (error) {
-    if (managedWriteStarted && input.managedPermit && context.managedIdentity) {
-      await client.rpc("finish_managed_cms_release_write", {
-        p_permit_id: input.managedPermit.permitId,
-        p_github_run_id: context.managedIdentity.runId,
-        p_github_run_attempt: context.managedIdentity.runAttempt,
-        p_saved_id: null,
-        p_saved_updated_at: null,
-        p_success: false,
-      });
+    if (managedService && input.managedPermit) {
+      await finishManagedCmsWrite(client, context, input.managedPermit.permitId, null);
     }
     throw error;
   }
-  if (managedWriteStarted && input.managedPermit && context.managedIdentity) {
-    const { data: completed, error: completionError } = await client.rpc("finish_managed_cms_release_write", {
-      p_permit_id: input.managedPermit.permitId,
-      p_github_run_id: context.managedIdentity.runId,
-      p_github_run_attempt: context.managedIdentity.runAttempt,
-      p_saved_id: saved.id,
-      p_saved_updated_at: saved.updated_at,
-      p_success: true,
-    });
-    if (completionError || !Array.isArray(completed) || completed.length !== 1) {
-      return errorResult("CMS write result is uncertain; read back the row before issuing a new permit.", 409);
-    }
+  if (managedService && input.managedPermit) {
+    const completed = await finishManagedCmsWrite(client, context, input.managedPermit.permitId, saved);
+    if (!saved) return errorResult("This service was changed during the write. Refresh before publishing.", 409);
+    if (!completed) return errorResult("CMS write result is uncertain; read back the row before issuing a new permit.", 409);
   }
+  if (!saved) return errorResult("CMS write returned no row.", 409);
 
   const auditWarnings: string[] = [];
   try {
