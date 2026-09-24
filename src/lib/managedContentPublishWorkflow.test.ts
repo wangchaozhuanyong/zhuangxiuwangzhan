@@ -45,6 +45,7 @@ const newTargets = [
   { name: "kitchen-r1-cms-row-20260924-v1", contentType: "service", slug: "kitchen", fields: ["faqs_zh", "faqs_en"] },
   { name: "design-r1-cms-row-20260924-v1", contentType: "service", slug: "design", fields: ["content_zh", "content_en", "faqs_zh", "faqs_en"] },
   { name: "selangor-service-area-r1-v4", contentType: "service_area", slug: "selangor", fields: ["content_zh", "content_en", "property_types"] },
+  { name: "org-017-bathroom-faq-parity-reconciliation-v4", contentType: "service", slug: "bathroom", fields: ["faqs_zh", "faqs_en"] },
 ] as const;
 
 const makeCurrent = (name: string) => {
@@ -198,6 +199,32 @@ describe("three locked CMS targets in the existing protected workflow", () => {
     });
     expect(() => assertLockedServiceCandidate({ ...locked, desiredFields: { ...locked.desiredFields, [fields[0]]: "forged" } }, row))
       .toThrow(/payload mismatch/);
+  });
+
+  it("binds Bathroom V4 to the QA row, two new public questions and exact rollback source", () => {
+    const locked = targetConfigs["org-017-bathroom-faq-parity-reconciliation-v4"].lockedCandidate;
+    expect(locked.taskId).toBe("fc-20260924-org-017-bathroom-faq-rework-v3");
+    expect(locked.actionId).toBe("org-017-bathroom-faq-parity-reconcile-v4");
+    expect(locked.scope).toBe("flashcast.com.my:services/0f294e6d-2e2c-4f13-a93f-096728ccc6af:faqs_en,faqs_zh");
+    expect(locked.expectedUpdatedAt).toBe("2026-08-22T07:17:42.361636+00:00");
+    expect(locked.baselineFieldsSha256).toBe("d684889815ec35bdd864f4100448b8e663870bdab710b3b5f29e5b70b3ebd9f1");
+    expect(locked.desiredFieldsSha256).toBe("f39d92eda1447c558c42c2ab07878ba75b712c1355a65b7d5c07b4edcdc96f5d");
+    expect(locked.desiredFields.faqs_en).toHaveLength(6);
+    expect(locked.desiredFields.faqs_zh).toHaveLength(6);
+    expect(locked.publicPaths[0].requiredPhrases).toEqual([
+      "What should I prepare before starting a bathroom renovation?",
+      "Why should waterproofing scope be checked first?",
+    ]);
+    expect(locked.publicPaths[1].requiredPhrases).toEqual([
+      "浴室装修前需要准备什么资料？",
+      "浴室防水为什么要先检查范围？",
+    ]);
+    expect(locked.rollbackRecordSha256).toBe("732d8396cb6c65291fdc9f8a12ea0d85edef48ce9046729a92d3055d3a0e5be5");
+    const { row } = makeCurrent("org-017-bathroom-faq-parity-reconciliation-v4");
+    const published = { ...row, ...locked.desiredFields, updated_at: "2026-09-24T11:21:00.000001Z" };
+    expect(() => assertLockedRollbackCurrent(locked, published)).not.toThrow();
+    expect(() => assertLockedRollbackCurrent(locked, { ...published, faqs_en: row.faqs_en }))
+      .toThrow(/does not match/);
   });
 
   it.each(newTargets)("rejects direct $name writes before reading credentials", ({ name }) => {

@@ -45,7 +45,7 @@ const clientFor = (parent?: Record<string, unknown>) => {
 };
 
 describe("protected managed CMS permit issuer", () => {
-  it.each([...MANAGED_SERVICES.slice(-2), ...MANAGED_AREAS])(
+  it.each([...MANAGED_SERVICES.slice(-3), ...MANAGED_AREAS])(
     "binds a distinct publish and rollback permit to $slug", async (target) => {
       const publish = { ...base, taskId: target.taskId, actionId: target.actionId,
         candidateVersion: target.candidateVersion, recordId: target.id, slug: target.slug, scope: target.scope };

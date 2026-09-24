@@ -1279,23 +1279,31 @@ const main = async () => {
 
   const pageChecks = [];
   const publicPaths = rollbackFrom && config.lockedCandidate
-    ? config.publicPaths.map((page) => ({ ...page, expected: String(page.path.startsWith("/zh/") ? desired.seo_title_zh : desired.seo_title_en).replaceAll("&", "&amp;") }))
+    ? config.publicPaths.map((page) => ({
+      ...page,
+      expected: String(page.path.startsWith("/zh/") ? desired.seo_title_zh : desired.seo_title_en).replaceAll("&", "&amp;"),
+      ...(page.requiredPhrases?.length ? {
+        requiredPhrases: (page.path.startsWith("/zh/") ? desired.faqs_zh : desired.faqs_en).map((faq) => faq.q),
+        forbidden: [...(page.forbidden || []), ...page.requiredPhrases],
+      } : {}),
+    }))
     : config.publicPaths;
   for (const page of publicPaths) {
-    let last = { path: page.path, status: 0, expected: page.expected, found: false, forbiddenFound: [] };
+    let last = { path: page.path, status: 0, expected: page.expected, found: false, forbiddenFound: [], missingRequired: [] };
     for (let attempt = 0; attempt < 3; attempt += 1) {
       const response = await fetch(`${publicSiteUrl}${page.path}?content_audit=${Date.now()}`, { headers: { "cache-control": "no-cache" } });
       const html = await response.text();
       const forbiddenFound = (page.forbidden || []).filter((phrase) => html.includes(phrase));
-      last = { path: page.path, status: response.status, expected: page.expected, found: html.includes(page.expected), forbiddenFound };
-      if (last.status === 200 && last.found && forbiddenFound.length === 0) break;
+      const missingRequired = (page.requiredPhrases || []).filter((phrase) => !html.includes(phrase));
+      last = { path: page.path, status: response.status, expected: page.expected, found: html.includes(page.expected), forbiddenFound, missingRequired };
+      if (last.status === 200 && last.found && forbiddenFound.length === 0 && missingRequired.length === 0) break;
       await new Promise((resolve) => setTimeout(resolve, 1200));
     }
     pageChecks.push(last);
   }
 
   const postcheck = {
-    ok: rowMismatches.length === 0 && pageChecks.every((check) => check.status === 200 && check.found && check.forbiddenFound.length === 0),
+    ok: rowMismatches.length === 0 && pageChecks.every((check) => check.status === 200 && check.found && check.forbiddenFound.length === 0 && check.missingRequired.length === 0),
     checkedAt: new Date().toISOString(),
     rowMismatches,
     pageChecks,

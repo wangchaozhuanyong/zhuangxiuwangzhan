@@ -48,7 +48,7 @@ const createReadOnlyClient = () => ({
 });
 
 describe("content-publish service", () => {
-  it.each(["kitchen-r1-cms-row-20260924-v1", "design-r1-cms-row-20260924-v1"])(
+  it.each(["kitchen-r1-cms-row-20260924-v1", "design-r1-cms-row-20260924-v1", "org-017-bathroom-faq-parity-reconciliation-v4"])(
     "requires exact QA-locked fields and a distinct permit for %s", async (name) => {
       const locked = targetConfigs[name].lockedCandidate;
       const current = { ...publishedServiceRecord, id: locked.recordId, slug: locked.slug,
@@ -171,6 +171,7 @@ describe("content-publish service", () => {
     ["b401a610-a4dc-4a0b-a7e0-efcac6c81d71", "builtin"],
     ["0d947129-0595-43ef-baa1-0fd9d8b870e6", "renovation"],
     ["32f5374f-9919-41ea-80c7-00b5ac917532", "shop-renovation"],
+    ["0f294e6d-2e2c-4f13-a93f-096728ccc6af", "bathroom"],
   ])("blocks managed service %s before legacy cron/admin writes", async (id, slug) => {
     let databaseAccessed = false;
     const client = { from: () => { databaseAccessed = true; throw new Error("Database should not be reached"); } };
