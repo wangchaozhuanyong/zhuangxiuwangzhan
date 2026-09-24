@@ -196,6 +196,28 @@
   line-height: 1.75;
 }
 
+.fc-route-service-overview-copy {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  max-width: 62rem;
+  margin-bottom: 36px;
+  color: rgba(246, 241, 232, 0.7);
+  font-size: 14.5px;
+  line-height: 1.75;
+}
+
+.fc-route-service-overview-copy h2,
+.fc-route-service-overview-copy h3 {
+  color: #fff;
+  font-family: var(--font-display);
+  font-size: clamp(21px, 2vw, 28px);
+  font-weight: 500;
+  line-height: 1.3;
+}
+.fc-route-service-overview-copy a { color: #e9c88b; text-decoration: underline; text-underline-offset: 3px; }
+.fc-route-service-overview-copy a:focus-visible { outline: 2px solid currentColor; outline-offset: 3px; }
+
 .fc-route-filter {
   display: flex;
   flex-wrap: wrap;

@@ -13,7 +13,8 @@ import { translateDisplayText } from "@/i18n/displayLabels";
 import { serviceDetailPageText } from "@/i18n/serviceDetailPageText";
 import { getServiceContextLinks } from "@/i18n/serviceContextLinks";
 import { buildQuotePath, quoteProjectTypeFromServiceSlug } from "@/lib/quoteContext";
-import { stripHtml } from "@/lib/text";
+import { sanitizeServiceOverviewHtml } from "@/lib/serviceOverviewHtml";
+import { isHtmlText, stripHtml } from "@/lib/text";
 
 const relatedServiceSlugs: Record<string, readonly string[]> = {
   "office-renovation": ["shop-renovation", "approval", "design"],
@@ -36,12 +37,13 @@ export default function ServiceDetail() {
   const display = (value: string) => stripHtml(translateDisplayText(value || "", language));
   const title = display(service.title);
   const summary = display(service.summary);
-  const description = display(service.description || service.summary);
+  const rawDescription = service.description || service.summary;
+  const richDescription = isHtmlText(rawDescription) ? sanitizeServiceOverviewHtml(rawDescription, language) : "";
   const suitable = service.suitableFor.map((item: string) => display(item));
   const offered = service.items.map((item: string) => display(item));
   const commonProjects = service.commonProjects.map((item: string) => display(item));
   const process = service.processSteps.map((step) => ({ title: display(step.title), description: display(step.desc) })).filter((step) => step.title || step.description);
-  const faqs = service.faqs.map((faq) => ({ question: display(faq.q), answer: display(faq.a) })).filter((faq) => faq.question && faq.answer);
+  const faqs = service.faqs.map((faq) => ({ question: stripHtml(faq.q || ""), answer: stripHtml(faq.a || "") })).filter((faq) => faq.question && faq.answer);
   const preferredRelatedSlugs = relatedServiceSlugs[service.slug] || [];
   const related = [
     ...preferredRelatedSlugs.map((relatedSlug) => services.find((item) => item.slug === relatedSlug)).filter(Boolean),
@@ -71,7 +73,8 @@ export default function ServiceDetail() {
         actions={<Link to={quotePath}>{copy.getQuote}<ArrowUpRight aria-hidden="true" /></Link>}
       />
       <SchemeAFacts items={copy.facts} />
-      <SchemeASection title={copy.overview} description={description}>
+      <SchemeASection title={copy.overview} description={richDescription ? undefined : display(rawDescription)} className="fc-route-service-overview">
+        {richDescription ? <div className="fc-route-service-overview-copy" dangerouslySetInnerHTML={{ __html: richDescription }} /> : null}
         <div className="fc-route-scope-grid">
           <div className="fc-route-scope-group">
             <h3>{copy.suitableFor}</h3>
