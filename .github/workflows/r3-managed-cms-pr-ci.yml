@@ -8,6 +8,7 @@ on:
       - .env.example
       - .github/workflows/content-publish-approved.yml
       - .github/workflows/supabase-content-publish-r3.yml
+      - scripts/managed-cms-targets-r3-v2.mjs
       - scripts/publish-content-trust-fixes.mjs
       - scripts/supabase-content-publish-release.mjs
       - scripts/supabase-content-publish-release.test.mjs
@@ -37,6 +38,12 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
+      - name: Reject fork before using public site build configuration
+        env:
+          PR_HEAD_REPO: ${{ github.event.pull_request.head.repo.full_name }}
+          REPOSITORY: ${{ github.repository }}
+        run: test "$PR_HEAD_REPO" = "$REPOSITORY"
+
       - uses: actions/checkout@v6
         with:
           ref: ${{ github.event.pull_request.head.sha }}
@@ -75,3 +82,23 @@ jobs:
         run: |
           node --check scripts/supabase-content-publish-release.mjs
           node --test scripts/supabase-content-publish-release.test.mjs
+
+      - name: Strict build and verify the current Head artifacts
+        env:
+          VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
+          VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
+          VITE_SITE_URL: https://flashcast.com.my
+          VITE_SITE_EMAIL: support@flashcast.com.my
+          VITE_SITE_PHONE_DISPLAY: "+60 11-2885 3888"
+          VITE_SITE_PHONE_E164: "+601128853888"
+          VITE_SITE_WHATSAPP_NUMBER: "601128853888"
+          VITE_SITE_SSM_NUMBER: "202501027419 (1628831-M)"
+          VITE_SITE_ADDRESS: "94, Jalan Mega Mendung, Taman United, 58200 Kuala Lumpur, Malaysia"
+          VITE_SITE_SHORT_ADDRESS: "94, Jalan Mega Mendung, 58200"
+          VITE_APP_VERSION: ${{ github.event.pull_request.head.sha }}
+        run: |
+          test -n "$VITE_SUPABASE_URL"
+          test -n "$VITE_SUPABASE_ANON_KEY"
+          npm run build
+          node scripts/pages-release.mjs record
+          node scripts/pages-release.mjs verify-build

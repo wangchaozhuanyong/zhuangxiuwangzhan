@@ -1,4 +1,4 @@
-// Exact field values copied from the three QA-locked CMS row candidates.
+// Exact field values copied from the four QA-locked CMS row candidates.
 export const lockedR3Candidates = Object.freeze({
   "kitchen-r1-cms-row-20260924-v1": {
     "taskId": "fc-20260924-seo-owner-implementation-v1",
@@ -220,5 +220,103 @@ export const lockedR3Candidates = Object.freeze({
         "expected": "Selangor 装修公司 | 住宅、旧屋、厨房、办公室与店铺装修"
       }
     ]
-  }
+  },
+  "org-017-bathroom-faq-parity-reconciliation-v4": {
+    "taskId": "fc-20260924-org-017-bathroom-faq-rework-v3",
+    "candidateVersion": "org-017-bathroom-faq-parity-reconciliation-v4",
+    "qaEvidenceVersion": "org-017-bathroom-faq-parity-reconciliation-v4",
+    "actionId": "org-017-bathroom-faq-parity-reconcile-v4",
+    "actionClass": "cms_write",
+    "scope": "flashcast.com.my:services/0f294e6d-2e2c-4f13-a93f-096728ccc6af:faqs_en,faqs_zh",
+    "sourceCandidatePath": "backups/org017-bathroom-managed-target-r3-v1/candidate-row.json",
+    "sourceCandidateSha256": "4856f083b50acce95d444e960c2243836b1f89eb9854807429edcf76e4c7a938",
+    "rollbackPackagePath": "backups/org017-bathroom-managed-target-r3-v1/rollback-record-template.json",
+    "rollbackPackageSha256": "732d8396cb6c65291fdc9f8a12ea0d85edef48ce9046729a92d3055d3a0e5be5",
+    "rollbackRecordPath": "backups/org017-bathroom-managed-target-r3-v1/raw-row.json",
+    "rollbackRecordSha256": "732d8396cb6c65291fdc9f8a12ea0d85edef48ce9046729a92d3055d3a0e5be5",
+    "recordId": "0f294e6d-2e2c-4f13-a93f-096728ccc6af",
+    "slug": "bathroom",
+    "contentType": "service",
+    "expectedUpdatedAt": "2026-08-22T07:17:42.361636+00:00",
+    "status": "published",
+    "baselineFieldsSha256": "d684889815ec35bdd864f4100448b8e663870bdab710b3b5f29e5b70b3ebd9f1",
+    "desiredFieldsSha256": "f39d92eda1447c558c42c2ab07878ba75b712c1355a65b7d5c07b4edcdc96f5d",
+    "changedFields": [
+      "faqs_zh",
+      "faqs_en"
+    ],
+    "desiredFields": {
+      "faqs_zh": [
+        {
+          "q": "浴室漏水一定要全部翻新吗？",
+          "a": "不一定。合适范围取决于漏水来源、防水、排水、瓷砖与洁具，建议先查看现场。"
+        },
+        {
+          "q": "浴室装修前需要准备什么资料？",
+          "a": "建议先准备浴室照片、面积、主要问题、希望更换的项目，以及公寓或管理处对施工时间的限制。"
+        },
+        {
+          "q": "浴室防水为什么要先检查范围？",
+          "a": "浴室漏水可能来自地面、墙角、管口、地漏、门槛或楼上/隔壁位置。先确认范围，才能判断是否需要重做防水、调整排水或更换瓷砖。"
+        },
+        {
+          "q": "哪些因素会影响浴室装修报价？",
+          "a": "尺寸、拆除、防水、排水、水管、瓷砖、洁具、淋浴屏、浴室柜与恢复工程都会影响报价。"
+        },
+        {
+          "q": "可以先准备浴室效果图吗？",
+          "a": "可以。清楚标注的概念图可用于规划，但不作为真实客户完工项目证明。"
+        },
+        {
+          "q": "公寓浴室装修需要管理处批准吗？",
+          "a": "不同大楼要求不同，应向管理处确认施工时段、保护、押金、表格与所需资料。"
+        }
+      ],
+      "faqs_en": [
+        {
+          "q": "Does bathroom leakage always require a full renovation?",
+          "a": "Not always. The right scope depends on the leak source, waterproofing, drainage, tiles and fittings. A site review should come first."
+        },
+        {
+          "q": "What should I prepare before starting a bathroom renovation?",
+          "a": "Prepare bathroom photos, size, main issues, the items you want to replace, and any building-management restrictions on work timing."
+        },
+        {
+          "q": "Why should waterproofing scope be checked first?",
+          "a": "Bathroom leakage can come from floor areas, wall corners, pipe penetrations, floor traps, thresholds, or even adjacent areas. Checking the scope first helps decide whether waterproofing, drainage adjustment, or tile replacement is needed."
+        },
+        {
+          "q": "What affects a bathroom renovation quotation?",
+          "a": "Size, demolition, waterproofing, drainage, plumbing, tiles, fittings, shower screen, vanity and reinstatement needs affect the quotation."
+        },
+        {
+          "q": "Can a bathroom rendering be prepared first?",
+          "a": "Yes. A clearly labeled concept can support planning, but it is not proof of a completed customer project."
+        },
+        {
+          "q": "Does a condo bathroom renovation need management approval?",
+          "a": "Requirements vary by building. Confirm working hours, protection, deposits, forms and documents with the property management."
+        }
+      ]
+    },
+    "publicPaths": [
+      {
+        "path": "/en/services/bathroom",
+        "expected": "Bathroom Renovation Malaysia | FLASH CAST",
+        "requiredPhrases": [
+          "What should I prepare before starting a bathroom renovation?",
+          "Why should waterproofing scope be checked first?"
+        ]
+      },
+      {
+        "path": "/zh/services/bathroom",
+        "expected": "浴室装修与防水工程",
+        "requiredPhrases": [
+          "浴室装修前需要准备什么资料？",
+          "浴室防水为什么要先检查范围？"
+        ]
+      }
+    ]
+  },
+
 });
