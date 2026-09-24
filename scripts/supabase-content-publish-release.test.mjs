@@ -125,6 +125,21 @@ test('migration list permits one exact pending migration and rejects drift', () 
   assert.deepEqual(verifyMigrationList(list('20260921194000'), true), { pending: [], targetApplied: true });
 });
 
+test('repeat Edge release requires an already-applied migration and performs no schema write', async () => {
+  const workflow = await readFile(new URL('../.github/workflows/supabase-content-publish-r3.yml', import.meta.url), 'utf8');
+  const appliedGate = 'ALLOW_APPLIED=true node scripts/supabase-content-publish-release.mjs migration-list';
+  const firstGate = workflow.indexOf(appliedGate);
+  const backup = workflow.indexOf('Retain previous Edge source for controlled recovery');
+  const secondGate = workflow.indexOf(appliedGate, firstGate + appliedGate.length);
+  const edgeDeploy = workflow.indexOf('supabase functions deploy content-publish --project-ref rbsnyexjifounogswrjp');
+  assert.ok(firstGate > 0 && firstGate < backup, 'applied migration must be checked before backup');
+  assert.ok(secondGate > backup && secondGate < edgeDeploy, 'migration must be rechecked before Edge deploy');
+  assert.doesNotMatch(workflow, /supabase db push/);
+  assert.throws(() => verifyMigrationList(list(), true), /unexpected pending migrations/);
+  assert.throws(() => verifyMigrationList(list('20260921194000') + '20260922120000 │  │ 2026-09-22\n', true));
+  assert.deepEqual(verifyMigrationList(list('20260921194000'), true), { pending: [], targetApplied: true });
+});
+
 test('Edge version readback requires one active target and a newer version', () => {
   const baseline = JSON.stringify([{ slug: 'content-publish', status: 'ACTIVE', version: 10 }]);
   const restored = JSON.stringify([{ slug: 'content-publish', status: 'ACTIVE', version: 12 }]);

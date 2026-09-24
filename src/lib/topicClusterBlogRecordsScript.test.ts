@@ -120,16 +120,24 @@ describe("topic-cluster Blog publish records", () => {
     expect(workflow).toContain("path: audits/content-publish-${{ github.run_id }}");
   });
 
-  it("offers three fixed CMS targets but blocks their publish before production secrets", () => {
+  it("offers all six fixed CMS targets but blocks publish and rollback before production secrets", () => {
     const workflow = readFileSync(
       resolve(process.cwd(), ".github/workflows/content-publish-approved.yml"),
       "utf8",
     );
-    for (const target of ["builtin-whole-house-custom-v1", "en-renovation-owner-cms-v2", "pg002-shop-cms-v1"]) {
+    const lockedTargets = [
+      "builtin-whole-house-custom-v1",
+      "en-renovation-owner-cms-v2",
+      "pg002-shop-cms-v1",
+      "kitchen-r1-cms-row-20260924-v1",
+      "design-r1-cms-row-20260924-v1",
+      "selangor-service-area-r1-v4",
+    ];
+    for (const target of lockedTargets) {
       expect(workflow).toContain(`          - ${target}`);
     }
     expect(workflow).toContain("Reject unverified locked-target writes before loading production credentials");
-    expect(workflow).toContain("builtin-whole-house-custom-v1|en-renovation-owner-cms-v2|pg002-shop-cms-v1)");
+    expect(workflow.split(`${lockedTargets.join("|")})`)).toHaveLength(3);
     expect(workflow.indexOf("Reject unverified locked-target writes before loading production credentials"))
       .toBeLessThan(workflow.indexOf("Confirm production source and required secrets"));
     for (const reference of ["qa_receipt_id", "release_decision_id", "policy_permit_id", "policy_scope"]) {
