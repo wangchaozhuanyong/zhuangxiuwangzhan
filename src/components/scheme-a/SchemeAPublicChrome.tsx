@@ -36,6 +36,7 @@ import { schemeAChromeText } from "@/i18n/schemeAText";
 import { stripLanguagePrefix, switchLanguagePath } from "@/i18n/routes";
 import { useT } from "@/i18n/useT";
 import { trackCtaClick } from "@/lib/analytics";
+import { buildGoogleMapOpenUrl } from "@/lib/mapUrls";
 import { QUOTE_FORM_PATH } from "@/lib/quoteContext";
 import { addCacheBuster } from "@/lib/siteSettingsApi";
 import logoFallback from "@/assets/logo-flashcast.webp";
@@ -397,9 +398,23 @@ export const SchemeAFooter = () => {
           <section className="scheme-a-footer__studio">
             <p>{t.contactTitle}</p>
             <strong>{settings.company_name}</strong>
-            <address><MapPin />{settings.address}</address>
-            <a href={settings.phone_href}><Phone />{settings.phone_display}</a>
-            <a href={`mailto:${settings.email}`}><Mail />{settings.email}</a>
+            <address>
+              <a className="scheme-a-footer__contact-link" href={buildGoogleMapOpenUrl(settings.address, settings.map_latitude, settings.map_longitude)} target="_blank" rel="noopener noreferrer">
+                <MapPin aria-hidden="true" />
+                <span className="scheme-a-footer__contact-value">{settings.address}</span>
+                <span className="scheme-a-footer__contact-action">{footer.openMap}<ArrowUpRight aria-hidden="true" /></span>
+              </a>
+            </address>
+            <a className="scheme-a-footer__contact-link" href={settings.phone_href}>
+              <Phone aria-hidden="true" />
+              <span className="scheme-a-footer__contact-value">{settings.phone_display}</span>
+              <span className="scheme-a-footer__contact-action">{footer.callAction}<ArrowUpRight aria-hidden="true" /></span>
+            </a>
+            <a className="scheme-a-footer__contact-link" href={`mailto:${settings.email}`}>
+              <Mail aria-hidden="true" />
+              <span className="scheme-a-footer__contact-value">{settings.email}</span>
+              <span className="scheme-a-footer__contact-action">{footer.emailAction}<ArrowUpRight aria-hidden="true" /></span>
+            </a>
             <span><Clock />{footer.hours}</span>
             <div className="scheme-a-footer__socials">
               {settings.instagram_url ? <a href={settings.instagram_url} target="_blank" rel="noopener noreferrer" aria-label="Instagram"><Instagram /></a> : null}
