@@ -38,7 +38,7 @@ export default function ProjectDetail() {
     href: `/projects/${item.slug}`,
   })), [allProjects, language, slug]);
 
-  if (isPending && !project) return <main className="fc-route-page"><SchemeAContentState>{copy.loadingDescription}</SchemeAContentState></main>;
+  if (isPending && !project) return <main className="fc-route-page" data-route-pending="true"><SchemeAContentState>{copy.loadingDescription}</SchemeAContentState></main>;
   if (!project) return <main className="fc-route-page fc-route-not-found"><PageMeta title={copy.notFound} description={copy.notFoundDescription} canonicalPath="/projects" noIndex /><SchemeAContentState action={<Link to="/projects">{copy.viewAll}</Link>}>{copy.notFound}</SchemeAContentState></main>;
 
   const title = translateDisplayText(project.title, language);

@@ -55,12 +55,22 @@ const getCurrentNavigationGroup = (pathname: string): PublicNavGroupKey =>
   publicNavigationGroups.find((group) => group.items.some((item) => isActivePath(pathname, item.path)))?.key
   ?? "services";
 
-const BrandMark = ({ logo, name }: { logo: string; name: string }) => (
-  <LocalizedLink className="scheme-a-chrome__brand" to="/" aria-label={name}>
-    <SmartImage src={logo} alt="" width={190} height={52} loading="eager" />
-    <span className="sr-only">{name}</span>
-  </LocalizedLink>
-);
+const BrandMark = ({ logo, name }: { logo: string; name: string }) => {
+  const [failedLogo, setFailedLogo] = useState<string | null>(null);
+  return (
+    <LocalizedLink className="scheme-a-chrome__brand" to="/" aria-label={name}>
+      <SmartImage
+        src={failedLogo === logo ? logoFallback : logo}
+        alt=""
+        width={190}
+        height={52}
+        loading="eager"
+        onError={() => { if (failedLogo !== logo) setFailedLogo(logo); }}
+      />
+      <span className="sr-only">{name}</span>
+    </LocalizedLink>
+  );
+};
 
 const getGroupLabel = (key: PublicNavGroupKey, navText: typeof navbarText.zh | typeof navbarText.en) => ({
   spaces: navText.spacesGroup,

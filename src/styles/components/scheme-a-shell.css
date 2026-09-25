@@ -34,6 +34,26 @@
     transition: opacity 320ms cubic-bezier(0.16, 1, 0.3, 1), background 320ms ease;
   }
 
+  .scheme-a-page-loader--overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 100;
+    min-height: 100svh;
+  }
+
+  .scheme-a-page-loader__actions {
+    display: flex;
+    gap: 0.75rem;
+    margin-top: 1.5rem;
+  }
+
+  .scheme-a-page-loader__actions button {
+    border: 1px solid #d4af37;
+    border-radius: 0.25rem;
+    padding: 0.65rem 1rem;
+    color: #f7f4ee;
+  }
+
   .scheme-a-page-loader__brand {
     display: grid;
     width: min(100%, 760px);
@@ -60,7 +80,7 @@
     font-weight: 400;
     line-height: 0.92;
     letter-spacing: -0.04em;
-    animation: scheme-brand-exposure 880ms cubic-bezier(0.16, 1, 0.3, 1) both;
+    animation: none;
   }
 
   .scheme-a-page-loader__brand strong span {

@@ -15,7 +15,7 @@ const PublicLoadingState = ({
 }: PublicLoadingStateProps) => {
   if (variant === "product") {
     return (
-      <main className="product-loading-state" role="status" aria-live="polite" aria-busy="true">
+      <main className="product-loading-state" role="status" aria-live="polite" aria-busy="true" data-route-pending="true">
         <header className="product-loading-state__status">
           <span>{label}</span>
           <h1>{title}</h1>
@@ -45,7 +45,7 @@ const PublicLoadingState = ({
   }
 
   return (
-    <main className="forest-state-page pt-site-header">
+    <main className="forest-state-page pt-site-header" data-route-pending="true">
       <div className="forest-page-frame">
         <ForestContentState variant="loading" label={label} title={title} description={description} />
       </div>

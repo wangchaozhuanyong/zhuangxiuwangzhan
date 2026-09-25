@@ -23,7 +23,7 @@ export default function MaterialDetail() {
   const category = categories.find((item) => item.items.some((material) => material.slug === slug));
   const material = category?.items.find((item) => item.slug === slug);
 
-  if (isPending && !material) return <main className="fc-route-page"><SchemeAContentState>{copy.loadingDescription}</SchemeAContentState></main>;
+  if (isPending && !material) return <main className="fc-route-page" data-route-pending="true"><SchemeAContentState>{copy.loadingDescription}</SchemeAContentState></main>;
   if (!material || !category) return <main className="fc-route-page"><PageMeta title={copy.notFound} description={copy.notFound} canonicalPath={`/materials/${slug || ""}`} noIndex /><SchemeAContentState action={<Link to="/materials">{copy.viewAll}</Link>}>{copy.notFound}</SchemeAContentState></main>;
 
   const name = translateDisplayText(material.name, language);

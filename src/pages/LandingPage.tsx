@@ -79,7 +79,7 @@ const LandingPage = () => {
       <PageMeta title={landingPage.seoTitle || `${landingPage.title} | ${t.metaSuffix}`} description={landingPage.seoDescription || stripHtml(landingPage.description)} canonicalPath={`/landing/${slug || ""}`} />
 
       <ImmersiveHero className="fc-c-hero" id="campaign-hero">
-        <div className="fc-c-hero__media" data-cinematic-media><SmartImage src={landingPage.heroImage} alt={landingPage.heroAlt || landingPage.title} loading="eager" width={1920} height={1080} fetchPriority="high" sizes="100vw" quality={86} revealOnLoad /></div>
+        <div className="fc-c-hero__media" data-cinematic-media><SmartImage src={landingPage.heroImage} alt={landingPage.heroAlt || landingPage.title} loading="eager" width={1920} height={1080} fetchPriority="high" sizes="100vw" quality={86} revealOnLoad critical /></div>
         <div className="fc-c-hero__copy">
           <span className="fc-c-kicker">Kuala Lumpur / Selangor / Klang Valley</span>
           <h1>{landingPage.title}</h1>

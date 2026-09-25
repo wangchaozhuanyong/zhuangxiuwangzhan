@@ -4,50 +4,62 @@ import { describe, expect, it, vi } from "vitest";
 import SmartImage from "@/components/SmartImage";
 
 describe("SmartImage", () => {
-  it("exposes a stable loading state and reveals after load", () => {
+  it("waits for the selected candidate to decode and retains it while a replacement loads", async () => {
     const container = document.createElement("div");
     document.body.appendChild(container);
     const root = createRoot(container);
     const onLoad = vi.fn();
-    const onError = vi.fn();
+    await act(async () => root.render(<SmartImage src="/first.webp" alt="First" critical onLoad={onLoad} />));
 
-    act(() => {
-      root.render(<SmartImage src="/first.webp" alt="First" revealOnLoad onLoad={onLoad} onError={onError} />);
-    });
-
-    let image = container.querySelector<HTMLImageElement>("img");
+    let image = container.querySelector<HTMLImageElement>(".smart-image");
+    let finishDecode: (() => void) | undefined;
+    Object.defineProperty(image, "currentSrc", { configurable: true, value: "https://example.com/selected-first.webp" });
+    Object.defineProperty(image, "decode", { configurable: true, value: () => new Promise<void>((resolve) => { finishDecode = resolve; }) });
+    await act(async () => image?.dispatchEvent(new Event("load", { bubbles: true })));
     expect(image?.dataset.imageState).toBe("loading");
-    expect(image?.classList.contains("smart-image--reveal")).toBe(true);
+    expect(onLoad).not.toHaveBeenCalled();
 
-    act(() => image?.dispatchEvent(new Event("load", { bubbles: true })));
+    await act(async () => finishDecode?.());
     expect(image?.dataset.imageState).toBe("loaded");
     expect(onLoad).toHaveBeenCalledOnce();
 
-    act(() => {
-      root.render(<SmartImage src="/second.webp" alt="Second" revealOnLoad onLoad={onLoad} onError={onError} />);
-    });
-
-    image = container.querySelector<HTMLImageElement>("img");
+    await act(async () => root.render(<SmartImage src="/second.webp" alt="Second" critical onLoad={onLoad} />));
+    image = container.querySelector<HTMLImageElement>(".smart-image");
     expect(image?.dataset.imageState).toBe("loading");
+    expect(container.querySelector<HTMLImageElement>(".smart-image-previous")?.src).toBe("https://example.com/selected-first.webp");
 
-    act(() => image?.dispatchEvent(new Event("error", { bubbles: true })));
-    expect(image?.dataset.imageState).toBe("error");
-    expect(onError).toHaveBeenCalledOnce();
+    Object.defineProperty(image, "currentSrc", { configurable: true, value: "https://example.com/selected-second.webp" });
+    Object.defineProperty(image, "decode", { configurable: true, value: () => Promise.resolve() });
+    await act(async () => image?.dispatchEvent(new Event("load", { bubbles: true })));
+    expect(image?.dataset.imageState).toBe("loaded");
+    expect(container.querySelector(".smart-image-previous")).toBeNull();
 
-    act(() => root.unmount());
+    await act(async () => root.unmount());
     container.remove();
   });
 
-  it("keeps legacy images immediately visible unless reveal is requested", () => {
+  it("shows a retry action for failed critical images", async () => {
+    const container = document.createElement("div");
+    document.body.appendChild(container);
+    const root = createRoot(container);
+    await act(async () => root.render(<SmartImage src="/broken.webp" alt="Broken" critical />));
+    const image = container.querySelector<HTMLImageElement>(".smart-image");
+    await act(async () => image?.dispatchEvent(new Event("error", { bubbles: true })));
+    expect(image?.dataset.imageState).toBe("error");
+    expect(container.querySelector(".smart-image-failure button")?.textContent).toContain("Retry");
+    await act(async () => (container.querySelector(".smart-image-failure button") as HTMLButtonElement).click());
+    expect(container.querySelector<HTMLImageElement>(".smart-image")?.src).toContain("image_retry=");
+    await act(async () => root.unmount());
+    container.remove();
+  });
+
+  it("does not hide ordinary images while they load", async () => {
     const container = document.createElement("div");
     const root = createRoot(container);
-
-    act(() => root.render(<SmartImage src="/logo.webp" alt="Logo" />));
+    await act(async () => root.render(<SmartImage src="/logo.webp" alt="Logo" />));
     const image = container.querySelector<HTMLImageElement>("img");
-
-    expect(image?.dataset.imageState).toBeUndefined();
-    expect(image?.classList.contains("smart-image--reveal")).toBe(false);
-
-    act(() => root.unmount());
+    expect(image?.classList.contains("smart-image--critical")).toBe(false);
+    expect(image?.dataset.imageState).toBe("loading");
+    await act(async () => root.unmount());
   });
 });

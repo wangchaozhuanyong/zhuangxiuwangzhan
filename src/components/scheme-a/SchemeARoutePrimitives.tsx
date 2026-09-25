@@ -131,19 +131,13 @@ export function SchemeARouteHero({
   return (
     <ImmersiveHero className={`fc-route-hero fc-route-hero-${kind}`} data-route-hero-layout="editorial-rail">
       <div className="fc-route-hero-media" data-cinematic-media style={mediaStyle}>
-        <picture>
-          {mobileImage ? (
-            <source media="(max-width: 767px)" srcSet={mobileSrcSet || mobileImage} sizes="100vw" />
-          ) : null}
-          {tabletImage ? (
-            <source
-              media="(min-width: 768px) and (max-width: 1023px) and (orientation: portrait)"
-              srcSet={tabletSrcSet || tabletImage}
-              sizes="100vw"
-            />
-          ) : null}
           <SmartImage
             src={image}
+            pictureSources={[
+              ...(mobileImage ? [{ media: "(max-width: 767px)", srcSet: mobileSrcSet || mobileImage, sizes: "100vw" }] : []),
+              ...(tabletImage ? [{ media: "(min-width: 768px) and (max-width: 1023px) and (orientation: portrait)", srcSet: tabletSrcSet || tabletImage, sizes: "100vw" }] : []),
+            ]}
+            critical
             sourceWidth={imageSourceWidth}
             alt={imageAlt}
             width={1600}
@@ -155,7 +149,6 @@ export function SchemeARouteHero({
             candidateWidths={[560, 720, 960, 1200, 1600]}
             quality={86}
           />
-        </picture>
       </div>
       <div className="fc-route-hero-copy">
         <span className="fc-route-kicker">{label}</span>

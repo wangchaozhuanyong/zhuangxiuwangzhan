@@ -17,7 +17,7 @@ export default function ProductDetail() {
   const product = data?.material;
   const category = data?.category;
 
-  if (isPending) return <main className="fc-route-page"><SchemeAContentState>{copy.loadingDescription}</SchemeAContentState></main>;
+  if (isPending) return <main className="fc-route-page" data-route-pending="true"><SchemeAContentState>{copy.loadingDescription}</SchemeAContentState></main>;
   if (!product || !category) return <main className="fc-route-page"><PageMeta title={copy.notFound} description={copy.notFound} canonicalPath={`/products/${slug || ""}`} noIndex /><SchemeAContentState action={<LocalizedLink to="/products">{copy.viewAll}</LocalizedLink>}>{copy.notFound}</SchemeAContentState></main>;
 
   const display = (value?: string) => translateDisplayText(value || "", language);

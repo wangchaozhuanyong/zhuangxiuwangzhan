@@ -16,6 +16,7 @@ import { recordWebsiteVisit } from "@/lib/websiteVisits";
 import { getAdminLang } from "@/lib/adminLocale";
 import { focusElementByIdWhenReady } from "@/lib/instantScroll";
 import { publicRoutes } from "@/routes/publicRoutes";
+import { PublicRouteImageGate } from "@/components/PublicRouteImageGate";
 import ScrollToTop from "./components/ScrollToTop";
 
 const AdminRouteTree = lazy(() => import("@/routes/AdminRouteTree"));
@@ -91,7 +92,7 @@ const PageLoader = () => {
   const { language } = useLanguage();
 
   return (
-    <main className="scheme-a-page-loader" role="status" aria-live="polite" aria-busy="true">
+    <main className="scheme-a-page-loader" role="status" aria-live="polite" aria-busy="true" data-route-pending="true">
       <div className="scheme-a-page-loader__brand">
         <p>INTERIOR &amp; RENOVATION</p>
         <strong><span>FLASH</span><em>CAST</em></strong>
@@ -265,13 +266,15 @@ const AppShell = () => {
           <SchemeANavbar />
           <PublicCinematicMotionGate />
           <PublicPageFrame isAdminRoute={false}>
-            <div key={mainContentKey} id="main-content" tabIndex={-1} className={mainContentClass} data-public-surface={publicSurface}>
-              <AppErrorBoundary isAdminRoute={false}>
-                <Suspense fallback={<PageLoader />}>
-                  <Routes>{publicRoutes}</Routes>
-                </Suspense>
-              </AppErrorBoundary>
-            </div>
+            <PublicRouteImageGate key={location.key}>
+              <div key={mainContentKey} id="main-content" tabIndex={-1} className={mainContentClass} data-public-surface={publicSurface}>
+                <AppErrorBoundary isAdminRoute={false}>
+                  <Suspense fallback={<PageLoader />}>
+                    <Routes>{publicRoutes}</Routes>
+                  </Suspense>
+                </AppErrorBoundary>
+              </div>
+            </PublicRouteImageGate>
             <SchemeAFooterPrelude />
             <SchemeAFooter />
             <PublicUpdateNotice />

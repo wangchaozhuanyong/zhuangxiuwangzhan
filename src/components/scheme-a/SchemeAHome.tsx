@@ -85,19 +85,14 @@ const SchemeAHome = ({ content }: SchemeAHomeProps) => {
       <ImmersiveHero className="scheme-a-hero" aria-labelledby="scheme-a-home-title" data-home-section="hero">
         <figure className="scheme-a-hero__media" data-cinematic-media>
           {usesAtelierHero ? (
-            <picture className="scheme-a-hero__picture">
-              <source
-                media="(max-width: 47.9375rem)"
-                srcSet={buildHomeHeroSrcSet(HOME_HERO_ASSETS.mobile, 1200, [360, 560, 720, 900])}
-                sizes="100vw"
-              />
-              <source
-                media="(max-width: 73.6875rem)"
-                srcSet={buildHomeHeroSrcSet(HOME_HERO_ASSETS.tablet, 1600, [560, 720, 900, 1200])}
-                sizes="100vw"
-              />
               <SmartImage
                 src={HOME_HERO_ASSETS.desktop}
+                pictureSources={[
+                  { media: "(max-width: 47.9375rem)", srcSet: buildHomeHeroSrcSet(HOME_HERO_ASSETS.mobile, 1200, [360, 560, 720, 900]), sizes: "100vw" },
+                  { media: "(max-width: 73.6875rem)", srcSet: buildHomeHeroSrcSet(HOME_HERO_ASSETS.tablet, 1600, [560, 720, 900, 1200]), sizes: "100vw" },
+                ]}
+                pictureClassName="scheme-a-hero__picture"
+                critical
                 alt={heroAlt}
                 width={2880}
                 height={1620}
@@ -108,10 +103,10 @@ const SchemeAHome = ({ content }: SchemeAHomeProps) => {
                 loading="eager"
                 fetchPriority="high"
               />
-            </picture>
           ) : (
             <SmartImage
               src={heroImage}
+              critical
               alt={heroAlt}
               width={1920}
               height={1080}

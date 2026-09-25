@@ -53,6 +53,7 @@
   }
 
   html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-hero__picture,
+  html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-hero__media > .smart-image-frame,
   html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-hero__media > img,
   html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-hero__picture img {
     position: absolute;

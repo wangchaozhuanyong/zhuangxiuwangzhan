@@ -15,7 +15,7 @@ export default function MaterialCategoryPage() {
   const copy = materialCategoryPageText[language];
   const { data: published, isPending } = usePublishedMaterials(language);
   const category = mergeMaterialCategoriesWithFallback(published).find((item) => item.slug === categorySlug);
-  if (isPending && !category) return <main className="fc-route-page"><SchemeAContentState>{copy.loadingDescription}</SchemeAContentState></main>;
+  if (isPending && !category) return <main className="fc-route-page" data-route-pending="true"><SchemeAContentState>{copy.loadingDescription}</SchemeAContentState></main>;
   if (!category) return <main className="fc-route-page"><PageMeta title={copy.notFound} description={copy.notFound} canonicalPath={`/materials/category/${categorySlug || ""}`} noIndex /><SchemeAContentState action={<Link to="/materials">{copy.viewAll}</Link>}>{copy.notFound}</SchemeAContentState></main>;
 
   const name = translateMaterialCategory(category.name, language);
