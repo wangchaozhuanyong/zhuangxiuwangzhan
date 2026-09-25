@@ -519,6 +519,7 @@ html[data-public-theme="dark"] .scheme-a-public-shell input[type="range"] {
   -webkit-box-orient: vertical;
   overflow: hidden;
   text-overflow: ellipsis;
+  min-height: 2.7em;
   transition: color 220ms ease;
 }
 
@@ -528,7 +529,7 @@ html[data-public-theme="dark"] .scheme-a-public-shell input[type="range"] {
 
 .fc-route-card p {
   display: -webkit-box;
-  -webkit-line-clamp: 3;
+  -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -536,6 +537,7 @@ html[data-public-theme="dark"] .scheme-a-public-shell input[type="range"] {
   color: rgba(246, 241, 232, 0.68);
   font-size: 12.5px;
   line-height: 1.65;
+  min-height: 3.3em;
 }
 
 .fc-route-card-action {
@@ -543,7 +545,7 @@ html[data-public-theme="dark"] .scheme-a-public-shell input[type="range"] {
   align-items: center;
   gap: 6px;
   margin-top: auto;
-  padding-top: 14px;
+  padding-top: 16px;
   color: #d4af37;
   font-size: 11.5px;
   font-weight: 600;
@@ -736,11 +738,14 @@ html[data-public-theme="dark"] .scheme-a-public-shell input[type="range"] {
   background-repeat: no-repeat !important;
   background-position: right 0.85rem center !important;
   background-size: 16px 16px !important;
-  padding-right: 2.6rem !important;
+  height: 44px !important;
+  min-height: 44px !important;
+  padding: 0 2.6rem 0 12px !important;
   border: 1px solid rgba(212, 175, 55, 0.3) !important;
   border-radius: 4px !important;
   background-color: rgba(14, 15, 18, 0.9) !important;
   color: #f7f4ee !important;
+  line-height: 42px !important;
   transition: border-color 200ms ease, box-shadow 200ms ease, background-color 200ms ease;
 }
 .fc-route-form-page select:focus,
@@ -752,9 +757,19 @@ html[data-public-theme="dark"] .scheme-a-public-shell input[type="range"] {
   box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.25) !important;
 }
 .fc-route-form-page input,
-.fc-route-quote-form input,
+.fc-route-quote-form input {
+  height: 44px !important;
+  min-height: 44px !important;
+  padding-inline: 12px !important;
+  border: 1px solid rgba(212, 175, 55, 0.3) !important;
+  border-radius: 4px !important;
+  background-color: rgba(14, 15, 18, 0.9) !important;
+  color: #f7f4ee !important;
+  transition: border-color 200ms ease, box-shadow 200ms ease;
+}
 .fc-route-form-page textarea,
 .fc-route-quote-form textarea {
+  padding: 12px !important;
   border: 1px solid rgba(212, 175, 55, 0.3) !important;
   border-radius: 4px !important;
   background-color: rgba(14, 15, 18, 0.9) !important;

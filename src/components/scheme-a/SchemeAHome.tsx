@@ -27,11 +27,7 @@ const PROJECT_CARD_MOBILE_SIZES = "(max-width: 397px) 78vw, 310px";
 const PROJECT_CARD_MOBILE_WIDTHS = [360, 560, 720, 960];
 const PROJECT_CARD_DESKTOP_WIDTHS = [360, 560, 720, 900, 1200, 1600];
 const PROJECT_CARD_MOBILE_ASPECT_RATIO = { width: 4, height: 5 } as const satisfies SupabaseTargetAspectRatio;
-const PROJECT_CARD_DESKTOP_ASPECT_RATIOS = [
-  PROJECT_CARD_MOBILE_ASPECT_RATIO,
-  { width: 16, height: 10 },
-  { width: 1, height: 1 },
-] as const satisfies readonly SupabaseTargetAspectRatio[];
+const PROJECT_CARD_DESKTOP_ASPECT_RATIO = { width: 16, height: 10 } as const satisfies SupabaseTargetAspectRatio;
 const PROJECT_CARD_INTRINSIC_WIDTH = 960;
 
 const buildHomeHeroSrcSet = (src: string, sourceWidth: number, widths: number[]) => {
@@ -223,9 +219,8 @@ const SchemeAHome = ({ content }: SchemeAHomeProps) => {
         {supportingProjects.length > 0 && (
           <>
             <div className="scheme-a-frame scheme-a-project__collection" data-count={supportingProjects.length}>
-              {supportingProjects.map((project, projectIndex) => {
-                const desktopAspectRatio = PROJECT_CARD_DESKTOP_ASPECT_RATIOS[projectIndex]
-                  || PROJECT_CARD_MOBILE_ASPECT_RATIO;
+              {supportingProjects.map((project) => {
+                const desktopAspectRatio = PROJECT_CARD_DESKTOP_ASPECT_RATIO;
                 const desktopIntrinsicHeight = Math.round(
                   PROJECT_CARD_INTRINSIC_WIDTH * (desktopAspectRatio.height / desktopAspectRatio.width),
                 );
