@@ -83,11 +83,14 @@ describe("public HTML data projection", () => {
       id: "service-1",
       slug: "service-one",
       title_en: "Service one",
+      alt_en: "Warehouse shelving concept",
+      alt_zh: "仓储货架规划概念图",
       excerpt_en: "",
       content_en: "Fallback description",
       content_zh: "中文回退描述",
     }]);
     expect(services[0]).toMatchObject({ content_en: "Fallback description", content_zh: "中文回退描述" });
+    expect(services[0]).toMatchObject({ alt_en: "Warehouse shelving concept", alt_zh: "仓储货架规划概念图" });
 
     const materials = projectMaterialsForPreload([
       {

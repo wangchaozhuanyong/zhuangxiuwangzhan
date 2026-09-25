@@ -33,6 +33,7 @@ export interface ServiceItem {
   faqs: { q: string; a: string }[]; // service-specific FAQs
   faqsZh?: { q: string; a: string }[]; // optional Chinese fallback FAQs
   image: string;             // hero image URL
+  imageAlt?: string;          // localized CMS image description when available
   seoTitle?: string;         // optional SEO title
   seoTitleZh?: string;       // optional Chinese SEO title
   seoDescription?: string;   // optional SEO description

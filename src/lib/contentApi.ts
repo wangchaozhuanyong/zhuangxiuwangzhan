@@ -56,6 +56,7 @@ export type PublishedServiceSummary = {
   items: string[];
   faqs: Array<{ q?: string; a?: string }>;
   image: string;
+  imageAlt?: string;
   seoTitle?: string;
   seoDescription?: string;
 };
@@ -351,6 +352,7 @@ export const mapPublishedService = (item: UnknownRecord, language: Language): Pu
     items: pickLocalizedList<string>(item, "scope_items", language),
     faqs: pickLocalizedList<{ q?: string; a?: string }>(item, "faqs", language),
     image: readText(item, "image_url"),
+    imageAlt: pickLocalizedText(item, "alt", language, pickLocalizedText(item, "title", language)),
     seoTitle: pickLocalizedText(item, "seo_title", language),
     seoDescription: pickLocalizedText(item, "seo_description", language),
 });

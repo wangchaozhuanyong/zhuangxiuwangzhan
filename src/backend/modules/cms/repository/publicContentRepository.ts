@@ -42,6 +42,8 @@ const SERVICE_SUMMARY_SELECT = [
   "content_en",
   "content_zh",
   "image_url",
+  "alt_en",
+  "alt_zh",
   "sort_order",
 ].join(",");
 

@@ -15,6 +15,8 @@ import { getServiceContextLinks } from "@/i18n/serviceContextLinks";
 import { buildQuotePath, quoteProjectTypeFromServiceSlug } from "@/lib/quoteContext";
 import { sanitizeServiceOverviewHtml } from "@/lib/serviceOverviewHtml";
 import { isHtmlText, stripHtml } from "@/lib/text";
+import { isServiceConceptImage } from "@/lib/serviceMedia";
+import { mediaLabels } from "@/i18n/mediaLabels";
 
 const relatedServiceSlugs: Record<string, readonly string[]> = {
   "office-renovation": ["shop-renovation", "approval", "design"],
@@ -36,6 +38,8 @@ export default function ServiceDetail() {
 
   const display = (value: string) => stripHtml(translateDisplayText(value || "", language));
   const title = display(service.title);
+  const imageAlt = display(service.imageAlt || service.title);
+  const conceptLabel = isServiceConceptImage(imageAlt) ? mediaLabels[language].renderingConcept : "";
   const summary = display(service.summary);
   const rawDescription = service.description || service.summary;
   const richDescription = isHtmlText(rawDescription) ? sanitizeServiceOverviewHtml(rawDescription, language) : "";
@@ -49,7 +53,18 @@ export default function ServiceDetail() {
     ...preferredRelatedSlugs.map((relatedSlug) => services.find((item) => item.slug === relatedSlug)).filter(Boolean),
     ...services.filter((item) => item.slug !== service.slug && !preferredRelatedSlugs.includes(item.slug)),
   ].slice(0, 3);
-  const relatedItems: SchemeAListingItem[] = related.map((item) => ({ id: String(item.id || item.slug), title: display(item.title), description: display(item.summary), image: item.image, imageAlt: display(item.title), href: `/services/${item.slug}` }));
+  const relatedItems: SchemeAListingItem[] = related.map((item) => {
+    const relatedImageAlt = display(item.imageAlt || item.title);
+    return {
+      id: String(item.id || item.slug),
+      title: display(item.title),
+      description: display(item.summary),
+      image: item.image,
+      imageAlt: relatedImageAlt,
+      meta: isServiceConceptImage(relatedImageAlt) ? mediaLabels[language].renderingConcept : undefined,
+      href: `/services/${item.slug}`,
+    };
+  });
   const contextLinks = getServiceContextLinks(service.slug, language);
   const quotePath = buildQuotePath({
     source: "service",
@@ -66,8 +81,8 @@ export default function ServiceDetail() {
       <SchemeARouteHero
         kind="detail"
         image={service.image}
-        imageAlt={title}
-        label={copy.services}
+        imageAlt={imageAlt}
+        label={[copy.services, conceptLabel].filter(Boolean).join(" · ")}
         title={title}
         description={summary}
         actions={<Link to={quotePath}>{copy.getQuote}<ArrowUpRight aria-hidden="true" /></Link>}
