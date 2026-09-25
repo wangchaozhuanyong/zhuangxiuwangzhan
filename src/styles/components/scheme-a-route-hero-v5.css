@@ -261,8 +261,30 @@
 }
 
 @media (max-width: 767px) {
+  .scheme-a-public-shell .fc-route-page .fc-route-hero {
+    position: relative;
+    overflow: hidden;
+    background: #0d0e11;
+  }
+
   .scheme-a-public-shell .fc-route-page .fc-route-hero-media {
-    height: clamp(300px, 88vw, 390px);
+    height: clamp(260px, 72vw, 340px);
+    position: relative;
+  }
+
+  .scheme-a-public-shell .fc-route-page .fc-route-hero-media::after {
+    display: block !important;
+    position: absolute;
+    inset: 0;
+    content: "";
+    pointer-events: none;
+    background: linear-gradient(180deg, 
+      rgba(13, 14, 17, 0.15) 0%, 
+      transparent 35%, 
+      rgba(13, 14, 17, 0.55) 65%, 
+      rgba(13, 14, 17, 0.92) 88%, 
+      #0d0e11 100%
+    );
   }
 
   .scheme-a-public-shell .fc-route-page .fc-route-hero-media img {
@@ -270,51 +292,128 @@
   }
 
   .scheme-a-public-shell .fc-route-page .fc-route-hero-copy {
-    padding: 30px clamp(20px, 6vw, 28px) 46px;
+    margin-top: -36px;
+    padding: 0 clamp(20px, 6vw, 28px) 16px;
+    border-top: 0;
+    background: transparent;
   }
 
-  .scheme-a-public-shell .fc-route-page.fc-route-quote-page .fc-route-hero-copy {
-    padding-top: 18px;
-    padding-bottom: 18px;
+  .scheme-a-public-shell .fc-route-page:is(.fc-route-quote-page, .fc-route-contact-page) .fc-route-hero-copy {
+    margin-top: -36px;
+    padding-top: 0;
+    padding-bottom: 16px;
   }
 
-  .scheme-a-public-shell .fc-route-page.fc-route-quote-page .fc-route-quote-body {
-    padding-top: 30px !important;
+  .scheme-a-public-shell .fc-route-page:is(.fc-route-quote-page, .fc-route-contact-page) :is(.fc-route-quote-body, .fc-route-contact-body) {
+    padding-top: 18px !important;
   }
 
   .scheme-a-public-shell .fc-route-page .fc-route-kicker {
-    margin-bottom: 16px;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 3px 10px;
+    background: rgba(212, 175, 55, 0.12);
+    border: 1px solid rgba(212, 175, 55, 0.28);
+    border-radius: 999px;
+    color: var(--atelier-gold, #d4af37);
     font-size: 10.5px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    margin-bottom: 10px;
+    backdrop-filter: blur(8px);
+    width: fit-content;
+  }
+
+  .scheme-a-public-shell .fc-route-page .fc-route-kicker::before {
+    content: "";
+    display: inline-block;
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: var(--atelier-gold, #d4af37);
+    box-shadow: 0 0 6px rgba(212, 175, 55, 0.8);
   }
 
   .scheme-a-public-shell .fc-route-page .fc-route-hero h1 {
     max-width: 15ch;
-    font-size: clamp(36px, 10.5vw, 44px);
-    line-height: 1.13;
+    font-size: clamp(30px, 8.5vw, 38px);
+    line-height: 1.18;
+    color: #ffffff;
+    text-shadow: 0 2px 12px rgba(0, 0, 0, 0.8);
   }
 
   .scheme-a-public-shell .fc-route-page .fc-route-hero h1.fc-route-title-long {
     max-width: 17ch;
-    font-size: clamp(31px, 8.8vw, 38px);
+    font-size: clamp(26px, 7.5vw, 32px);
   }
 
   .scheme-a-public-shell .fc-route-page .fc-route-hero-copy::after {
-    width: 54px;
-    margin-top: 20px;
+    display: none;
   }
 
   .scheme-a-public-shell .fc-route-page .fc-route-hero-copy > p {
     order: 4;
-    margin-top: 22px;
-    color: rgba(245, 241, 233, 0.78);
-    font-size: 14px;
-    line-height: 1.8;
+    margin-top: 10px;
+    color: rgba(245, 241, 233, 0.82);
+    font-size: 13.5px;
+    line-height: 1.65;
+  }
+
+  .scheme-a-public-shell .fc-route-page .fc-route-hero-support {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    order: 5;
+    width: 100%;
+    margin-top: 12px;
+    border-top: 0;
+  }
+
+  .scheme-a-public-shell .fc-route-page .fc-route-hero-support > div {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    min-height: 0;
+    padding: 4px 9px;
+    background: rgba(22, 24, 28, 0.75);
+    border: 1px solid rgba(212, 175, 55, 0.2);
+    border-radius: 4px;
+    backdrop-filter: blur(6px);
+  }
+
+  .scheme-a-public-shell .fc-route-page .fc-route-hero-support dt {
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    color: rgba(229, 202, 124, 0.9);
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    white-space: nowrap;
+  }
+
+  .scheme-a-public-shell .fc-route-page .fc-route-hero-support dt span {
+    color: var(--atelier-gold, #d4af37);
+    font-weight: 700;
+    font-size: 9.5px;
+  }
+
+  .scheme-a-public-shell .fc-route-page .fc-route-hero-support dd {
+    margin: 0;
+    color: rgba(245, 241, 233, 0.75);
+    font-size: 10px;
+    line-height: 1.3;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 
   .scheme-a-public-shell .fc-route-page .fc-route-hero-actions {
-    order: 3;
+    order: 6;
     width: 100%;
-    margin-top: 22px;
+    margin-top: 16px;
   }
 
   .scheme-a-public-shell .fc-route-page .fc-route-hero-actions a {
