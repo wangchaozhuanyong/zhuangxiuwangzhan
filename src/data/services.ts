@@ -179,7 +179,7 @@ export const servicesData: ServiceItem[] = [
     titleZh: "吉隆坡定制柜与内嵌家具",
     slug: "builtin",
     imageAlt: "Italian-minimalist whole-house built-in cabinetry concept with a TV storage wall and kitchen tall units",
-    imageAltZh: "意式极简客厅与干厨房的全屋定制柜体、电视收纳墙和厨房高柜概念示意图",
+    imageAltZh: "意式极简客厅与厨房的全屋定制柜体、电视收纳墙和厨房高柜概念示意图",
     seoTitle: "Custom Cabinet Kuala Lumpur | FLASH CAST",
     seoTitleZh: "吉隆坡定制柜与内嵌家具 | FLASH CAST",
     seoDescription: "FLASH CAST provides custom built-in furniture planning in Kuala Lumpur, Selangor, and Klang Valley, including wardrobes, kitchen cabinets, TV cabinets, shoe cabinets, display cabinets, and storage systems.",
