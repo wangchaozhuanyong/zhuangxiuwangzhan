@@ -266,7 +266,7 @@ const AppShell = () => {
           <SchemeANavbar />
           <PublicCinematicMotionGate />
           <PublicPageFrame isAdminRoute={false}>
-            <PublicRouteImageGate key={location.key}>
+            <PublicRouteImageGate key={location.key} routeKey={location.pathname}>
               <div key={mainContentKey} id="main-content" tabIndex={-1} className={mainContentClass} data-public-surface={publicSurface}>
                 <AppErrorBoundary isAdminRoute={false}>
                   <Suspense fallback={<PageLoader />}>

@@ -594,6 +594,12 @@ html[data-public-theme="dark"] .scheme-a-public-shell input[type="range"] {
 .fc-route-state button:hover { transform: translateY(-1px); }
 
 .fc-route-facts { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); background: #121316; border: 1px solid rgba(212, 175, 55, 0.25); border-radius: 4px; overflow: hidden; }
+.fc-route-page > .fc-route-facts {
+  --fc-route-facts-gutter: clamp(24px, 4vw, 56px);
+  width: calc(100% - 2 * var(--fc-route-facts-gutter));
+  max-width: calc(var(--scheme-a-frame, 86rem) - 2 * var(--fc-route-facts-gutter));
+  margin-inline: auto;
+}
 .fc-route-facts div { min-width: 0; padding: 22px 20px; box-shadow: inset -1px -1px 0 rgba(212, 175, 55, 0.18); }
 .fc-route-facts span { display: block; color: rgba(246, 241, 232, 0.6); font-size: 11px; letter-spacing: 0.06em; text-transform: uppercase; font-weight: 600; }
 .fc-route-facts strong { display: block; margin-top: 6px; font-size: 16px; font-weight: 600; font-family: var(--font-display); color: #e5ca7c; }
@@ -1548,6 +1554,7 @@ html[data-public-theme="dark"] .home-footer-prelude__button--secondary svg { col
   .fc-route-card:first-child .fc-route-card-media { aspect-ratio: 4 / 3; }
   .fc-route-card:nth-child(2), .fc-route-card:nth-child(3), .fc-route-card:nth-child(n+4) { grid-column: auto; }
   .fc-route-facts { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  .fc-route-page > .fc-route-facts { --fc-route-facts-gutter: clamp(32px, 5vw, 64px); }
   .fc-route-facts div { padding: 24px clamp(20px, 2.5vw, 40px); }
   .fc-route-gallery { gap: 20px; }
   .fc-route-gallery-media { min-height: unset; aspect-ratio: 16 / 10; }
