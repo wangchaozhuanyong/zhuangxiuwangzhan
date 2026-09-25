@@ -1,5 +1,5 @@
 {
-  "candidateVersion": "service-media-original-concepts-r2-v2",
+  "candidateVersion": "service-media-original-concepts-r2-v5",
   "mode": "local preview fallback data",
   "checks": [
     {
@@ -140,7 +140,7 @@
       "slug": "builtin",
       "position": "listing",
       "src": "http://127.0.0.1:4200/images/_responsive/services/w360/ai-concepts/builtin-concept.webp",
-      "alt": "意式极简客厅与干厨房的全屋定制柜体、电视收纳墙和厨房高柜概念示意图",
+      "alt": "意式极简客厅与厨房的全屋定制柜体、电视收纳墙和厨房高柜概念示意图",
       "loaded": true,
       "disclosure": "AI 生成概念示意，非客户完工实景"
     },
@@ -170,7 +170,7 @@
       "slug": "builtin",
       "position": "detail",
       "src": "http://127.0.0.1:4200/images/_responsive/services/w560/ai-concepts/builtin-concept.webp",
-      "alt": "意式极简客厅与干厨房的全屋定制柜体、电视收纳墙和厨房高柜概念示意图",
+      "alt": "意式极简客厅与厨房的全屋定制柜体、电视收纳墙和厨房高柜概念示意图",
       "loaded": true,
       "disclosure": "AI 生成概念示意，非客户完工实景",
       "quoteHref": "/zh/quote?source=service&title=%E5%90%89%E9%9A%86%E5%9D%A1%E5%AE%9A%E5%88%B6%E6%9F%9C%E4%B8%8E%E5%86%85%E5%B5%8C%E5%AE%B6%E5%85%B7&projectType=Custom+Built-In+Furniture#quote-form",
@@ -206,7 +206,7 @@
       "slug": "builtin",
       "position": "listing",
       "src": "http://127.0.0.1:4200/images/_responsive/services/w560/ai-concepts/builtin-concept.webp",
-      "alt": "意式极简客厅与干厨房的全屋定制柜体、电视收纳墙和厨房高柜概念示意图",
+      "alt": "意式极简客厅与厨房的全屋定制柜体、电视收纳墙和厨房高柜概念示意图",
       "loaded": true,
       "disclosure": "AI 生成概念示意，非客户完工实景"
     },
@@ -236,7 +236,7 @@
       "slug": "builtin",
       "position": "detail",
       "src": "http://127.0.0.1:4200/images/_responsive/services/w1200/ai-concepts/builtin-concept.webp",
-      "alt": "意式极简客厅与干厨房的全屋定制柜体、电视收纳墙和厨房高柜概念示意图",
+      "alt": "意式极简客厅与厨房的全屋定制柜体、电视收纳墙和厨房高柜概念示意图",
       "loaded": true,
       "disclosure": "AI 生成概念示意，非客户完工实景",
       "quoteHref": "/zh/quote?source=service&title=%E5%90%89%E9%9A%86%E5%9D%A1%E5%AE%9A%E5%88%B6%E6%9F%9C%E4%B8%8E%E5%86%85%E5%B5%8C%E5%AE%B6%E5%85%B7&projectType=Custom+Built-In+Furniture#quote-form",

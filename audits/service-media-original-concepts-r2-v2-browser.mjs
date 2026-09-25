@@ -82,5 +82,5 @@ try {
 } finally {
   await browser.close();
 }
-writeFileSync(resolve(output, `browser-validation-${mode}.json`), JSON.stringify({ candidateVersion: "service-media-original-concepts-r2-v2", mode: cmsRows ? "local preview injected exact CMS candidate rows" : "local preview fallback data", checks }, null, 2) + "\n");
+writeFileSync(resolve(output, `browser-validation-${mode}.json`), JSON.stringify({ candidateVersion: "service-media-original-concepts-r2-v5", mode: cmsRows ? "local preview injected exact CMS candidate rows" : "local preview fallback data", checks }, null, 2) + "\n");
 console.log(JSON.stringify({ checks: checks.length, loaded: checks.filter((item) => item.loaded).length, bilingualDisclosures: [...new Set(checks.map((item) => item.disclosure))] }, null, 2));
