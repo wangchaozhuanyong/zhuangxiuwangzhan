@@ -308,13 +308,14 @@ export function SchemeANumberList({ items }: { items: readonly SchemeANumberItem
   );
 }
 
-function SchemeAFaqRow({ item, defaultOpen }: { item: SchemeAFaqItem; defaultOpen: boolean }) {
+function SchemeAFaqRow({ item, defaultOpen, index }: { item: SchemeAFaqItem; defaultOpen: boolean; index: number }) {
   const [open, setOpen] = useState(defaultOpen);
   const answerId = useId();
   return (
-    <div>
+    <div className={`fc-route-faq-item ${open ? "is-open" : ""}`}>
       <button type="button" aria-expanded={open} aria-controls={answerId} onClick={() => setOpen((value) => !value)}>
-        <span>{item.question}</span>
+        <span className="fc-route-faq-index">{String(index + 1).padStart(2, "0")}</span>
+        <span className="fc-route-faq-question">{item.question}</span>
         <Plus aria-hidden="true" data-open={open ? "true" : "false"} />
       </button>
       <p id={answerId} hidden={!open}>{item.answer}</p>
@@ -323,7 +324,13 @@ function SchemeAFaqRow({ item, defaultOpen }: { item: SchemeAFaqItem; defaultOpe
 }
 
 export function SchemeAFaqList({ items }: { items: readonly SchemeAFaqItem[] }) {
-  return <div className="fc-route-faq">{items.map((item, index) => <SchemeAFaqRow key={`${item.question}-${index}`} item={item} defaultOpen={index === 0} />)}</div>;
+  return (
+    <div className="fc-route-faq">
+      {items.map((item, index) => (
+        <SchemeAFaqRow key={`${item.question}-${index}`} item={item} defaultOpen={index === 0} index={index} />
+      ))}
+    </div>
+  );
 }
 
 export function SchemeAGallery({

@@ -868,6 +868,13 @@
 
   html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-home-faq .fc-route-faq p {
     color: rgba(236, 232, 223, 0.75);
+    padding-left: 36px;
+  }
+
+  @media (max-width: 767px) {
+    html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-home-faq .fc-route-faq p {
+      padding-left: 30px;
+    }
   }
 
   html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-contact {

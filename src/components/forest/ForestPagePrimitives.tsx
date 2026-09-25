@@ -410,7 +410,8 @@ export function ForestFaqList({ items }: { items: Array<{ question: string; answ
               aria-controls={contentId}
               onClick={() => setOpenIndex(open ? null : index)}
             >
-              <span>{item.question}</span>
+              <span className="fc-route-faq-index">{String(index + 1).padStart(2, "0")}</span>
+              <span className="fc-route-faq-question">{item.question}</span>
               {open ? <Minus aria-hidden="true" /> : <Plus aria-hidden="true" />}
             </button>
             <div id={contentId} className="forest-faq-answer" hidden={!open}>
