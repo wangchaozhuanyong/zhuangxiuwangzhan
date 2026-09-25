@@ -1,10 +1,12 @@
 import { describe, expect, it } from "vitest";
+import { readFileSync } from "node:fs";
+import { resolve } from "node:path";
 import { publishContent } from "../../supabase/functions/content-publish/service.ts";
 import type { ContentPublishClient } from "../../supabase/functions/content-publish/types.ts";
 import { targetConfigs } from "../../scripts/publish-content-trust-fixes.mjs";
 
 const publishedServiceRecord = {
-  slug: "office-renovation",
+  slug: "sample-service",
   title_zh: "办公室装修",
   title_en: "Office Renovation",
   excerpt_zh: "办公室规划与施工。",
@@ -48,11 +50,13 @@ const createReadOnlyClient = () => ({
 });
 
 describe("content-publish service", () => {
-  it.each(["kitchen-r1-cms-row-20260924-v1", "design-r1-cms-row-20260924-v1", "org-017-bathroom-faq-parity-reconciliation-v4"])(
+  it.each(["kitchen-r1-cms-row-20260924-v1", "design-r1-cms-row-20260924-v1", "org-017-bathroom-faq-parity-reconciliation-v4", "office-service-scope-r1-v1"])(
     "requires exact QA-locked fields and a distinct permit for %s", async (name) => {
       const locked = targetConfigs[name].lockedCandidate;
-      const current = { ...publishedServiceRecord, id: locked.recordId, slug: locked.slug,
-        updated_at: locked.expectedUpdatedAt, status: "published" };
+      const current = name === "office-service-scope-r1-v1"
+        ? JSON.parse(readFileSync(resolve(process.cwd(), locked.rollbackRecordPath), "utf8"))
+        : { ...publishedServiceRecord, id: locked.recordId, slug: locked.slug,
+          updated_at: locked.expectedUpdatedAt, status: "published" };
       const calls: string[] = [];
       const predicates: Array<[string, unknown]> = [];
       const finishResults: unknown[] = [];
@@ -97,11 +101,27 @@ describe("content-publish service", () => {
       client as unknown as ContentPublishClient, context);
       expect(tampered.status).toBe(403);
       expect(calls).toHaveLength(0);
+      if (name === "office-service-scope-r1-v1") {
+        for (const variant of [
+          { ...request, record: { ...request.record, title_en: "Unapproved" } },
+          { ...request, record: { ...request.record, id: "11111111-1111-4111-8111-111111111111" } },
+          { ...request, record: { ...request.record, slug: "other-office" } },
+          { ...request, expectedUpdatedAt: "2026-08-22T06:48:26.731612+00:00" },
+          { ...request, managedPermit: { ...request.managedPermit, taskId: "other-task" } },
+          { ...request, managedPermit: { ...request.managedPermit, actionId: "other-action" } },
+          { ...request, managedPermit: { ...request.managedPermit, scope: "flashcast.com.my:other" } },
+        ]) {
+          const denied = await publishContent(variant, client as unknown as ContentPublishClient, context);
+          expect(denied.body.ok).toBe(false);
+          expect(calls).toHaveLength(0);
+        }
+      }
       const exact = await publishContent(request, client as unknown as ContentPublishClient, context);
       expect(exact.status).toBe(raced ? 409 : undefined);
       expect(predicates).toContainEqual(["updated_at", locked.expectedUpdatedAt]);
       expect(finishResults).toEqual([!raced]);
       expect(calls).toEqual(["claim_managed_cms_release_permit", "begin_managed_cms_release_write", "write", "finish_managed_cms_release_write"]);
+      expect(Object.keys(writePayload || {}).sort()).toEqual([...locked.changedFields].sort());
     },
   );
   it("requires a matching one-time database claim before a managed service write", async () => {

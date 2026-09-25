@@ -34,6 +34,10 @@ on:
           - design-r1-cms-row-20260924-v1
           - selangor-service-area-r1-v4
           - org-017-bathroom-faq-parity-reconciliation-v4
+          - blog-kitchen-cabinet-cost-r1-v1
+          - blog-renovation-quotation-links-r1-v1
+          - blog-office-checklist-links-r1-v1
+          - office-service-scope-r1-v1
       approval_id:
         description: "Owner authorization reference used in the audit log."
         required: true
@@ -83,7 +87,7 @@ jobs:
           test "$GITHUB_REF" = "refs/heads/main"
           if [ "$MANAGED_OPERATION" = "rollback" ]; then
             case "$PUBLISH_TARGET" in
-              builtin-whole-house-custom-v1|en-renovation-owner-cms-v2|pg002-shop-cms-v1|kitchen-r1-cms-row-20260924-v1|design-r1-cms-row-20260924-v1|selangor-service-area-r1-v4|org-017-bathroom-faq-parity-reconciliation-v4) ;;
+              builtin-whole-house-custom-v1|en-renovation-owner-cms-v2|pg002-shop-cms-v1|kitchen-r1-cms-row-20260924-v1|design-r1-cms-row-20260924-v1|selangor-service-area-r1-v4|org-017-bathroom-faq-parity-reconciliation-v4|blog-kitchen-cabinet-cost-r1-v1|blog-renovation-quotation-links-r1-v1|blog-office-checklist-links-r1-v1|office-service-scope-r1-v1) ;;
               *) echo "::error::Rollback is limited to locked CMS candidates."; exit 1 ;;
             esac
             if ! [[ "$PARENT_RUN_ID" =~ ^[1-9][0-9]*$ ]]; then
@@ -93,7 +97,7 @@ jobs:
           fi
           if [ "$PUBLISH_MODE" = "publish" ]; then
             case "$PUBLISH_TARGET" in
-              builtin-whole-house-custom-v1|en-renovation-owner-cms-v2|pg002-shop-cms-v1|kitchen-r1-cms-row-20260924-v1|design-r1-cms-row-20260924-v1|selangor-service-area-r1-v4|org-017-bathroom-faq-parity-reconciliation-v4)
+              builtin-whole-house-custom-v1|en-renovation-owner-cms-v2|pg002-shop-cms-v1|kitchen-r1-cms-row-20260924-v1|design-r1-cms-row-20260924-v1|selangor-service-area-r1-v4|org-017-bathroom-faq-parity-reconciliation-v4|blog-kitchen-cabinet-cost-r1-v1|blog-renovation-quotation-links-r1-v1|blog-office-checklist-links-r1-v1|office-service-scope-r1-v1)
                 if ! [[ "$MANAGED_PERMIT_ID" =~ ^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$ ]]; then
                   echo "::error::A valid single-use managed permit ID is required."
                   exit 1

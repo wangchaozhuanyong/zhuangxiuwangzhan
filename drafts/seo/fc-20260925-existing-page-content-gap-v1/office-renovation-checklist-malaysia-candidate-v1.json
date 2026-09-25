@@ -1,0 +1,60 @@
+{
+  "task_id": "fc-20260925-existing-page-content-gap-v1",
+  "source_queue": "drafts/seo/fc-20260925-organic-query-page-completion-v1/url-execution-queue-55-v4.csv",
+  "candidate_version": "office-checklist-links-r1-v1",
+  "action_id": "update-office-checklist-existing-blog-links-v1",
+  "risk_level": "R1",
+  "action_class": "cms_content_candidate",
+  "publication_route": "cms_content_candidate -> cms_write -> protected content-publish",
+  "scope": "flashcast.com.my:blog_posts/190d319c-b027-4730-ab34-df5010f4acc0",
+  "target_urls": [
+    "https://flashcast.com.my/en/blog/office-renovation-checklist-malaysia",
+    "https://flashcast.com.my/zh/blog/office-renovation-checklist-malaysia"
+  ],
+  "search_consultation_intent": "Prepare an office fit-out brief with a separate fitted-storage specification and a clear quote route.",
+  "expected_updated_at": "2026-08-22T12:23:42.64036+00:00",
+  "changed_fields": [
+    "content_zh",
+    "content_en"
+  ],
+  "request": {
+    "contentType": "blog",
+    "mode": "dry-run",
+    "nextStatus": "published",
+    "expectedUpdatedAt": "2026-08-22T12:23:42.64036+00:00",
+    "record": {
+      "id": "190d319c-b027-4730-ab34-df5010f4acc0",
+      "slug": "office-renovation-checklist-malaysia",
+      "title_zh": "马来西亚办公室装修检查清单",
+      "title_en": "Office Renovation Checklist for Malaysian Businesses",
+      "excerpt_zh": "用一份受控清单协调办公室装修范围、业主审批、水电、网络、家具、测试、搬迁和交付。",
+      "excerpt_en": "Coordinate office fit-out scope, landlord approvals, M&E, IT, furniture, testing, move-in and handover through one controlled checklist.",
+      "content_zh": "<p><strong>直接答案：</strong>办公室装修本质上是协调项目。布局、建筑规则、电力负载、空调、灯光、网络、家具和搬迁日期要一起核对，避免一个分包阻碍另一个。</p><p>使用方法：把下列各项替换为本项目的实际尺寸、明确责任人、获批图纸和书面记录，再用于报价、审批或施工决定。</p><h2>确认人数和工作方式</h2><p>记录人数、部门、会议类型、私密性、收纳、无障碍、访客、混合办公和未来变化，并用这些需求验证布局。</p><h2>尽早建立审批责任表</h2><p>列出业主、管理处、主管部门、顾问和专项提交，以及押金、保险、工作时间、出入和检查节点。</p><h2>封天花前协调系统</h2><p>叠合灯光、电源、网络、空调、消防接口、检修口和天花，在制作前通过图纸和现场解决冲突。</p><h2>锁定家具和科技接口</h2><p>确认工位尺寸、地插、显示设备、会议系统、打印机、茶水间电器、机柜位置和布线路径。</p><p>如果办公室范围包含定制柜、文件收纳或茶水间柜体，应将尺寸、板材与饰面方向、五金、进场和安装接口与一般装修分开列明。可同时查看<a href=\"/zh/services/builtin\">全屋定制与定制家具服务</a>及<a href=\"/zh/services/office-renovation\">办公室装修服务</a>，再通过<a href=\"/zh/quote\">免费报价表</a>提交平面图和现场照片。最终范围与价格仍须根据现场查看和书面报价确认。</p><h2>规划测试、搬迁和交付</h2><p>明确调试、标签、竣工资料、培训、缺陷、清洁、搬迁顺序和业主收尾责任。</p><h2>开工或签约前检查清单</h2><ul><li>人数与房间需求书</li><li>审批责任表</li><li>协调后的水电网络图</li><li>家具设备清单</li><li>测试与标签计划</li><li>搬迁和交付顺序</li></ul><h2>常见问题</h2><h3>网络规划什么时候开始？</h3><p>应在布局、天花和家具定稿前开始，因为设备位置会影响电源、数据和检修。</p><h3>业主装修指南可以后面再看吗？</h3><p>应在设计批准前核对，因为它可能影响范围和提交。</p><h3>交付应包含什么？</h3><p>按项目约定测试记录、标签、竣工图、说明书、钥匙、缺陷和书面接受。</p><h2>资料来源与适用边界</h2><ul><li><a href=\"https://www.dbkl.gov.my/en/departments/jabatan-kawalan-bangunan\" target=\"_blank\" rel=\"noopener noreferrer\">吉隆坡市政局建筑管制部门</a></li><li><a href=\"https://www.st.gov.my/sites/default/files/2026-02/Non-Domestic-Electrical-Installation-Safety-Code.pdf\" target=\"_blank\" rel=\"noopener noreferrer\">马来西亚能源委员会非住宅电气装置安全守则</a></li></ul><p>资料核对日期：2026 年 8 月 22 日。相关部门、管理处、顾问和产品制造商的要求可能变化；正式决定前请以项目所在地、具体范围和所选产品的最新书面资料为准。</p>",
+      "content_en": "<p><strong>Direct answer：</strong>An office fit-out is a coordination project. Layout, building rules, electrical load, cooling, lighting, data, furniture and the move date must be reviewed together so one package does not block another.</p><p>How to use this guide: replace every point below with the property's actual dimensions, named responsibilities, approved drawings and written evidence before using it for quotation, approval or construction decisions.</p><h2>Confirm occupancy and work patterns</h2><p>Record headcount, departments, meeting types, privacy, storage, accessibility, visitors, hybrid work and future change. Use these needs to test the layout.</p><h2>Start the approval matrix early</h2><p>List landlord, management, authority, consultant and specialist submissions, plus deposits, insurance, work hours, access and inspection points.</p><h2>Coordinate services before ceilings close</h2><p>Overlay lighting, power, data, cooling, fire interfaces, access panels and ceiling systems. Resolve clashes on drawings and site before fabrication.</p><h2>Freeze furniture and technology interfaces</h2><p>Confirm workstation sizes, floor boxes, displays, meeting equipment, printers, pantry appliances, server or network locations and cable routes.</p><p>If fitted cabinets, filing storage or pantry units are part of the office brief, record dimensions, board and finish direction, hardware, access and installation interfaces separately from the general fit-out. Review the <a href=\"/en/services/builtin\">custom built-in furniture service</a> alongside the <a href=\"/en/services/office-renovation\">office renovation service</a>, then send the room plan and site photos through the <a href=\"/en/quote\">free quotation form</a>. Final scope and price remain subject to site review and a written quotation.</p><h2>Plan testing, move and handover</h2><p>Set responsibility for commissioning, labels, as-built records, training, defects, cleaning, move sequencing and landlord close-out.</p><h2>Checklist before approval or start</h2><ul><li>Occupancy and room brief</li><li>Approval responsibility matrix</li><li>Coordinated M&amp;E/IT drawings</li><li>Furniture and equipment schedule</li><li>Testing and labelling plan</li><li>Move-in and handover sequence</li></ul><h2>Frequently asked questions</h2><h3>When should IT planning start?</h3><p>Before layouts, ceilings and furniture are frozen, because device locations affect power, data and access.</p><h3>Can the landlord guide be checked later?</h3><p>It should be checked before design approval because it can affect scope and submissions.</p><h3>What should handover include?</h3><p>Agree test records, labels, as-builts, manuals, keys, defects and written acceptance for the project.</p><h2>Sources and scope boundary</h2><ul><li><a href=\"https://www.dbkl.gov.my/en/departments/jabatan-kawalan-bangunan\" target=\"_blank\" rel=\"noopener noreferrer\">DBKL Department of Building Control</a></li><li><a href=\"https://www.st.gov.my/sites/default/files/2026-02/Non-Domestic-Electrical-Installation-Safety-Code.pdf\" target=\"_blank\" rel=\"noopener noreferrer\">Energy Commission non-domestic electrical installation safety code</a></li></ul><p>Sources checked on 22 August 2026. Authority, management, consultant and manufacturer requirements can change; confirm the latest written requirements for the actual property, scope and selected product before making a final decision.</p>",
+      "category": "office-retail-fitout",
+      "tags": [
+        "office",
+        "renovation",
+        "checklist",
+        "commercial",
+        "malaysia"
+      ],
+      "cover_image_url": "/images/services/office-renovation.webp",
+      "alt_zh": "办公室与零售空间装修规划",
+      "alt_en": "Office and retail fit-out planning",
+      "seo_title_zh": "马来西亚办公室装修检查清单",
+      "seo_title_en": "Office Renovation Checklist for Malaysian Businesses",
+      "seo_description_zh": "用一份受控清单协调办公室装修范围、业主审批、水电、网络、家具、测试、搬迁和交付。",
+      "seo_description_en": "Coordinate office fit-out scope, landlord approvals, M&E, IT, furniture, testing, move-in and handover through one controlled checklist.",
+      "status": "published",
+      "published_at": "2025-08-22T00:00:00+00:00",
+      "created_at": "2026-05-29T10:15:45.711188+00:00",
+      "updated_at": "2026-08-22T12:23:42.64036+00:00",
+      "sort_order": 50,
+      "version": 1
+    }
+  },
+  "status": "ready_for_qa",
+  "qa_pass": false,
+  "production_write_executed": false
+}

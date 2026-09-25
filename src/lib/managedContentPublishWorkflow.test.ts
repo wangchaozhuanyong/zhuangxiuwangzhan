@@ -1,5 +1,7 @@
 import { spawnSync } from "node:child_process";
 import { existsSync } from "node:fs";
+import { readFileSync } from "node:fs";
+import { createHash } from "node:crypto";
 import { resolve } from "node:path";
 
 import { describe, expect, it } from "vitest";
@@ -46,6 +48,7 @@ const newTargets = [
   { name: "design-r1-cms-row-20260924-v1", contentType: "service", slug: "design", fields: ["content_zh", "content_en", "faqs_zh", "faqs_en"] },
   { name: "selangor-service-area-r1-v4", contentType: "service_area", slug: "selangor", fields: ["content_zh", "content_en", "property_types"] },
   { name: "org-017-bathroom-faq-parity-reconciliation-v4", contentType: "service", slug: "bathroom", fields: ["faqs_zh", "faqs_en"] },
+  { name: "office-service-scope-r1-v1", contentType: "service", slug: "office-renovation", fields: ["content_en", "content_zh"] },
 ] as const;
 
 const makeCurrent = (name: string) => {
@@ -60,6 +63,29 @@ const makeCurrent = (name: string) => {
 };
 
 describe("three locked CMS targets in the existing protected workflow", () => {
+  it("locks the Office candidate to its original two fields and exact source row", () => {
+    const config = targetConfigs["office-service-scope-r1-v1"];
+    const locked = config.lockedCandidate;
+    const baseline = JSON.parse(readFileSync(resolve(process.cwd(), locked.rollbackRecordPath), "utf8"));
+    const sourceSha = createHash("sha256").update(readFileSync(resolve(process.cwd(), locked.sourceCandidatePath))).digest("hex");
+    expect(sourceSha).toBe(locked.sourceCandidateSha256);
+    expect(locked.scope).toBe("flashcast.com.my:services/a87541ac-1cba-4f1a-972d-428dccdbcc0f:content_en,content_zh");
+    expect(locked.changedFields).toEqual(["content_en", "content_zh"]);
+    expect(() => assertLockedServiceCandidate(locked, baseline)).not.toThrow();
+    expect(() => assertLockedServiceCandidate(locked, { ...baseline, updated_at: "2026-08-22T06:48:26.731612+00:00" })).toThrow();
+    expect(() => assertLockedServiceCandidate(locked, { ...baseline, title_en: "unapproved" })).toThrow();
+  });
+
+  it("exposes only the four approved new targets in each protected workflow gate", () => {
+    const workflow = readFileSync(resolve(process.cwd(), ".github/workflows/content-publish-approved.yml"), "utf8");
+    const four = ["office-service-scope-r1-v1", "blog-kitchen-cabinet-cost-r1-v1",
+      "blog-renovation-quotation-links-r1-v1", "blog-office-checklist-links-r1-v1"];
+    for (const name of four) {
+      expect(workflow.split(name)).toHaveLength(4);
+      expect(targetConfigs[name]).toBeDefined();
+      expect(targetConfigs[name].lockedCandidate).toBeDefined();
+    }
+  });
   it.each(lockedTargets)("maps $name to the original candidate and a strict no-write request", ({ name, taskId, recordId, slug, fieldCount, sourceSha256 }) => {
     const { config, locked, row } = makeCurrent(name);
     expect(locked.taskId).toBe(taskId);
@@ -116,13 +142,18 @@ describe("three locked CMS targets in the existing protected workflow", () => {
   });
 
   it("accepts only an HTTP 200 dry-run on the exact unchanged row", () => {
-    const { locked, row } = makeCurrent(lockedTargets[2].name);
-    const response = { ok: true, dry_run: true, content_type: "service", existing_id: locked.recordId, slug: locked.slug };
-    expect(() => assertLockedDryRunResult(locked, response, 200, row, { ...row })).not.toThrow();
-    expect(() => assertLockedDryRunResult(locked, response, 401, row, row)).toThrow(/did not confirm/);
-    expect(() => assertLockedDryRunResult(locked, { ...response, dry_run: false }, 200, row, row)).toThrow(/did not confirm/);
-    expect(() => assertLockedDryRunResult(locked, { ...response, saved_id: "unexpected" }, 200, row, row)).toThrow(/did not confirm/);
-    expect(() => assertLockedDryRunResult(locked, response, 200, row, { ...row, updated_at: "later" })).toThrow(/changed during dry-run/);
+    const { config, locked, row } = makeCurrent(lockedTargets[2].name);
+    const desired = config.buildRecord(row);
+    const patch = Object.fromEntries(locked.changedFields.map((field: string) => [field, desired[field]]));
+    const response = { ok: true, dry_run: true, content_type: "service", existing_id: locked.recordId, slug: locked.slug,
+      payload_preview: patch };
+    expect(() => assertLockedDryRunResult(locked, response, 200, row, { ...row }, desired)).not.toThrow();
+    expect(() => assertLockedDryRunResult(locked, response, 401, row, row, desired)).toThrow(/did not confirm/);
+    expect(() => assertLockedDryRunResult(locked, { ...response, dry_run: false }, 200, row, row, desired)).toThrow(/did not confirm/);
+    expect(() => assertLockedDryRunResult(locked, { ...response, saved_id: "unexpected" }, 200, row, row, desired)).toThrow(/did not confirm/);
+    expect(() => assertLockedDryRunResult(locked, response, 200, row, { ...row, updated_at: "later" }, desired)).toThrow(/changed during dry-run/);
+    expect(() => assertLockedDryRunResult(locked, { ...response, payload_preview: { ...patch, title_en: "extra" } }, 200, row, row, desired))
+      .toThrow(/exact SQL patch/);
   });
 
   it("rejects forged text references without a verified main run and exact permit ID", () => {
@@ -243,6 +274,7 @@ describe("three locked CMS targets in the existing protected workflow", () => {
       expect(targetConfigs[target].lockedCandidate).toBeUndefined();
     }
     expect(Object.keys(targetConfigs).filter((target) => targetConfigs[target].lockedCandidate).sort())
-      .toEqual([...lockedTargets, ...newTargets].map((item) => item.name).sort());
+      .toEqual([...lockedTargets.map((item) => item.name), ...newTargets.map((item) => item.name),
+        "blog-kitchen-cabinet-cost-r1-v1", "blog-renovation-quotation-links-r1-v1", "blog-office-checklist-links-r1-v1"].sort());
   });
 });
