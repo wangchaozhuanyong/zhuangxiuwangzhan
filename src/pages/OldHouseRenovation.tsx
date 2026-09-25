@@ -136,7 +136,15 @@ const OldHouseRenovation = () => {
 
       <SchemeASection title={t.priceTitle} description={t.priceDescription}>
         <div className="fc-route-budget-grid">
-          {t.prices.map((item, index) => <article key={item.type}><span>{String(index + 1).padStart(2, "0")}</span><h3>{item.type}</h3><strong>{item.range}</strong><p>{item.desc}</p></article>)}
+          {t.prices.map((item) => (
+            <article key={item.type} className="fc-route-budget-card">
+              <header className="fc-route-budget-card__head">
+                <h3>{item.type}</h3>
+                <span className="fc-route-budget-card__tag">{item.range}</span>
+              </header>
+              <p>{item.desc}</p>
+            </article>
+          ))}
         </div>
       </SchemeASection>
 
