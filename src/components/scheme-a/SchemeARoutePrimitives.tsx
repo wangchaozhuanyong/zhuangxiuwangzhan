@@ -177,16 +177,17 @@ export function SchemeASection({
   className = "",
 }: {
   title?: string;
-  description?: string;
+  description?: string | readonly string[];
   children: ReactNode;
   className?: string;
 }) {
+  const paragraphs = typeof description === "string" ? (description ? [description] : []) : description || [];
   return (
     <section className={`fc-route-section ${className}`.trim()}>
-      {title || description ? (
+      {title || paragraphs.length ? (
         <header className="fc-route-section-head">
           {title ? <h2>{title}</h2> : null}
-          {description ? <p>{description}</p> : null}
+          {paragraphs.map((paragraph, index) => <p key={`${index}-${paragraph}`}>{paragraph}</p>)}
         </header>
       ) : null}
       {children}
