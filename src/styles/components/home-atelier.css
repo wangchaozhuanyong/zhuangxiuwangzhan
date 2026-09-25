@@ -478,7 +478,8 @@
 
   html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-services li a {
     display: grid;
-    grid-template-columns: 3.5rem minmax(0, 1fr) 2rem;
+    grid-template-columns: auto minmax(0, 1fr) 2rem;
+    column-gap: clamp(16px, 2.5vw, 24px);
     min-height: 7rem;
     padding: 1.6rem 1rem;
     align-items: center;
@@ -494,7 +495,9 @@
     font-family: var(--font-display);
     font-size: 1.35rem;
     font-weight: 600;
-    letter-spacing: 0.08em;
+    font-variant-numeric: tabular-nums;
+    min-width: 2.2ch;
+    letter-spacing: 0.04em;
     align-self: center;
   }
 
@@ -1252,7 +1255,8 @@
     }
 
     html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-services li a {
-      grid-template-columns: 2.2rem minmax(0, 1fr) auto;
+      grid-template-columns: auto minmax(0, 1fr) auto;
+      column-gap: 16px;
       min-height: 5.5rem;
       padding: 1.1rem 0.5rem;
     }
@@ -1541,7 +1545,8 @@
     }
 
     html[lang="en"][data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-services li a {
-      grid-template-columns: 1.75rem minmax(0, 1fr) auto;
+      grid-template-columns: auto minmax(0, 1fr) auto;
+      column-gap: 14px;
       min-height: 0;
       align-items: start;
       padding: 1rem 0;
