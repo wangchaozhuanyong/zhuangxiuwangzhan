@@ -270,6 +270,7 @@
   .scheme-a-public-shell .fc-route-page .fc-route-hero-media {
     height: clamp(260px, 72vw, 340px);
     position: relative;
+    margin-top: 56px;
   }
 
   .scheme-a-public-shell .fc-route-page .fc-route-hero-media::after {
