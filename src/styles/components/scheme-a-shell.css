@@ -644,7 +644,7 @@
     position: relative;
     min-height: clamp(380px, 48vh, 560px);
     overflow: hidden;
-    background: #141412;
+    background: #0d0e11;
   }
 
   .scheme-a-footer__panorama > img {
@@ -654,13 +654,18 @@
     height: 100%;
     object-fit: cover;
     object-position: center;
-    filter: none;
+    filter: brightness(0.82) contrast(1.04);
   }
 
   .scheme-a-footer__panorama::after {
     position: absolute;
     inset: 0;
-    background: linear-gradient(90deg, rgba(14, 14, 12, 0.78) 0%, rgba(14, 14, 12, 0.38) 52%, rgba(14, 14, 12, 0.08) 80%, transparent 100%);
+    background: linear-gradient(90deg, 
+      rgba(9, 10, 12, 0.92) 0%, 
+      rgba(9, 10, 12, 0.82) 42%, 
+      rgba(9, 10, 12, 0.48) 72%, 
+      rgba(9, 10, 12, 0.22) 100%
+    );
     content: "";
     pointer-events: none;
   }
@@ -677,6 +682,25 @@
   }
 
   .scheme-a-footer__invitation > p,
+  .scheme-a-footer__invitation .scheme-a-footer__kicker {
+    display: inline-flex;
+    align-items: center;
+    width: fit-content;
+    padding: 5px 14px;
+    margin: 0 0 1.15rem;
+    background: rgba(14, 15, 18, 0.75);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(212, 175, 55, 0.35);
+    border-radius: 999px;
+    color: #f3df9f;
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.45);
+  }
+
   .scheme-a-footer__studio > p,
   .scheme-a-footer__directory section > p,
   .scheme-a-footer__areas > p {
@@ -694,13 +718,16 @@
     font-size: clamp(2.7rem, 6vw, 6.6rem);
     font-weight: 400;
     line-height: 0.98;
+    color: #ffffff;
+    text-shadow: 0 2px 16px rgba(0, 0, 0, 0.85), 0 1px 3px rgba(0, 0, 0, 0.95);
   }
 
   .scheme-a-footer__invitation > span {
     max-width: 540px;
     margin-top: 1.35rem;
-    color: #d5cec2;
+    color: rgba(246, 241, 232, 0.94);
     line-height: 1.75;
+    text-shadow: 0 1px 8px rgba(0, 0, 0, 0.85);
   }
 
   .scheme-a-footer__invitation > div {
@@ -1296,21 +1323,35 @@
 
     .scheme-a-footer__panorama,
     .scheme-a-footer__invitation {
-      min-height: clamp(420px, 80vw, 540px);
+      min-height: clamp(440px, 86vw, 560px);
     }
 
     .scheme-a-footer__panorama::after {
-      background: linear-gradient(0deg, rgb(12 12 10 / 0.82) 0%, rgb(12 12 10 / 0.14) 76%, transparent 100%);
+      background: linear-gradient(180deg, 
+        rgba(9, 10, 12, 0.86) 0%, 
+        rgba(9, 10, 12, 0.68) 32%, 
+        rgba(9, 10, 12, 0.84) 68%, 
+        rgba(9, 10, 12, 0.96) 100%
+      );
     }
 
     .scheme-a-footer__invitation {
-      width: calc(100% - 44px);
+      width: calc(100% - 36px);
+      margin-inline: auto;
       justify-content: flex-end;
-      padding-bottom: 2rem;
+      padding-bottom: 2.2rem;
     }
 
     .scheme-a-footer__invitation h2 {
-      font-size: clamp(2.6rem, 13vw, 4.5rem);
+      font-size: clamp(2.3rem, 11vw, 3.8rem);
+      line-height: 1.08;
+    }
+
+    .scheme-a-footer__invitation > span {
+      font-size: 13.5px;
+      line-height: 1.6;
+      margin-top: 1rem;
+      margin-bottom: 0.5rem;
     }
 
     .scheme-a-footer__invitation > div {
