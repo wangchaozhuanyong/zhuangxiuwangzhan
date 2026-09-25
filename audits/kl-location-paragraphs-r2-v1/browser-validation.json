@@ -1,0 +1,89 @@
+{
+  "candidateVersion": "kl-location-intent-r1-v1",
+  "results": [
+    {
+      "language": "en",
+      "width": 1280,
+      "paragraphs": 3,
+      "serviceHrefs": [
+        "/en/services/renovation",
+        "/en/services/kitchen",
+        "/en/services/bathroom",
+        "/en/services/office-renovation",
+        "/en/services/builtin"
+      ],
+      "quoteHref": "/en/quote?source=location&title=Kuala+Lumpur+Renovation+Contractor&location=Kuala+Lumpur+Renovation+Contractor#quote-form",
+      "introBounds": {
+        "x": 64,
+        "y": 1168.4229736328125,
+        "width": 1152,
+        "height": 532.421875
+      },
+      "documentWidth": 1280,
+      "failedRequests": []
+    },
+    {
+      "language": "en",
+      "width": 390,
+      "paragraphs": 3,
+      "serviceHrefs": [
+        "/en/services/renovation",
+        "/en/services/kitchen",
+        "/en/services/bathroom",
+        "/en/services/office-renovation",
+        "/en/services/builtin"
+      ],
+      "quoteHref": "/en/quote?source=location&title=Kuala+Lumpur+Renovation+Contractor&location=Kuala+Lumpur+Renovation+Contractor#quote-form",
+      "introBounds": {
+        "x": 24,
+        "y": 1012.8831787109375,
+        "width": 342,
+        "height": 777.15625
+      },
+      "documentWidth": 390,
+      "failedRequests": []
+    },
+    {
+      "language": "zh",
+      "width": 1280,
+      "paragraphs": 3,
+      "serviceHrefs": [
+        "/zh/services/renovation",
+        "/zh/services/kitchen",
+        "/zh/services/bathroom",
+        "/zh/services/office-renovation",
+        "/zh/services/builtin"
+      ],
+      "quoteHref": "/zh/quote?source=location&title=%E5%90%89%E9%9A%86%E5%9D%A1%E8%A3%85%E4%BF%AE%E5%85%AC%E5%8F%B8&location=%E5%90%89%E9%9A%86%E5%9D%A1%E8%A3%85%E4%BF%AE%E5%85%AC%E5%8F%B8#quote-form",
+      "introBounds": {
+        "x": 64,
+        "y": 935.7681274414062,
+        "width": 1152,
+        "height": 360.78118896484375
+      },
+      "documentWidth": 1280,
+      "failedRequests": []
+    },
+    {
+      "language": "zh",
+      "width": 390,
+      "paragraphs": 3,
+      "serviceHrefs": [
+        "/zh/services/renovation",
+        "/zh/services/kitchen",
+        "/zh/services/bathroom",
+        "/zh/services/office-renovation",
+        "/zh/services/builtin"
+      ],
+      "quoteHref": "/zh/quote?source=location&title=%E5%90%89%E9%9A%86%E5%9D%A1%E8%A3%85%E4%BF%AE%E5%85%AC%E5%8F%B8&location=%E5%90%89%E9%9A%86%E5%9D%A1%E8%A3%85%E4%BF%AE%E5%85%AC%E5%8F%B8#quote-form",
+      "introBounds": {
+        "x": 24,
+        "y": 886.79931640625,
+        "width": 342,
+        "height": 489.8125
+      },
+      "documentWidth": 390,
+      "failedRequests": []
+    }
+  ]
+}

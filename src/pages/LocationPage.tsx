@@ -28,7 +28,7 @@ import { pageHeroImages } from "@/lib/pageHeroImages";
 import { siteConfig } from "@/config/site";
 import { useSiteSettings } from "@/hooks/useSiteSettings";
 import { buildQuotePath } from "@/lib/quoteContext";
-import { stripHtml } from "@/lib/text";
+import { plainTextParagraphs, stripHtml } from "@/lib/text";
 
 export default function LocationPage() {
   const { slug } = useParams<{ slug: string }>();
@@ -59,6 +59,7 @@ export default function LocationPage() {
   if (!location) return <main className="fc-route-page"><PageMeta title={copy.notFound} description={copy.notFound} canonicalPath={`/locations/${slug || ""}`} noIndex /><SchemeAContentState action={<Link to="/locations">{copy.backHome}</Link>}>{copy.notFound}</SchemeAContentState></main>;
 
   const display = (value: string) => stripHtml(translateDisplayText(value || "", language));
+  const introParagraphs = plainTextParagraphs(translateDisplayText(location.intro || "", language));
   const faqs = location.faqs.map((faq) => ({ question: display(faq.q), answer: display(faq.a) }));
   const projectItems: SchemeAListingItem[] = location.projects.map((project, index) => ({
     id: `${project.title}-${index}`,
@@ -121,7 +122,7 @@ export default function LocationPage() {
         { label: language === "zh" ? "服务" : "Service", value: language === "zh" ? "设计 / 装修" : "Design / Build" },
         { label: language === "zh" ? "协调" : "Coordination", value: language === "zh" ? "管理处申请" : "Management approval" },
       ]} />
-      <SchemeASection title={copy.trusted(location.name)} description={display(location.intro)}>
+      <SchemeASection title={copy.trusted(location.name)} description={introParagraphs}>
         <SchemeANumberList items={location.commonNeeds.map((item) => ({ title: display(item) }))} />
       </SchemeASection>
       {location.constructionNotes ? <SchemeASection title={copy.permitNotes} description={display(location.constructionNotes)}><SchemeANumberList items={location.propertyTypes.map((item) => ({ title: display(item) }))} /></SchemeASection> : null}
