@@ -36,6 +36,7 @@ export type SchemeAListingItem = {
   meta?: string;
   image: string;
   imageAlt?: string;
+  mediaDisclosure?: string;
   href: string;
 };
 
@@ -72,6 +73,7 @@ export function SchemeARouteHero({
   mobileImageSourceWidth,
   imagePosition,
   imageAlt,
+  mediaDisclosure,
   label,
   title,
   description,
@@ -86,6 +88,7 @@ export function SchemeARouteHero({
   mobileImageSourceWidth?: number;
   imagePosition?: SchemeARouteImagePosition;
   imageAlt: string;
+  mediaDisclosure?: string;
   label: string;
   title: string;
   description: string;
@@ -152,6 +155,7 @@ export function SchemeARouteHero({
       </div>
       <div className="fc-route-hero-copy">
         <span className="fc-route-kicker">{label}</span>
+        {mediaDisclosure ? <span className="fc-route-media-disclosure">{mediaDisclosure}</span> : null}
         <h1 className={usesCompactTitleScale ? "fc-route-title-long" : undefined}>{title}</h1>
         <p>{description}</p>
         {actions ? <div className="fc-route-hero-actions">{actions}</div> : null}
@@ -241,6 +245,7 @@ export function SchemeAListingGrid({ items, actionLabel }: { items: readonly Sch
               quality={82}
             />
           </div>
+          {item.mediaDisclosure ? <span className="fc-route-card-disclosure">{item.mediaDisclosure}</span> : null}
           {item.meta ? <span className="fc-route-card-meta">{item.meta}</span> : null}
           <h3>{item.title}</h3>
           {item.description ? <p>{item.description}</p> : null}

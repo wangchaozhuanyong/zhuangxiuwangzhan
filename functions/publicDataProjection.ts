@@ -77,6 +77,7 @@ const SERVICE_SUMMARY_FIELDS = [
   "id",
   "slug",
   "image_url",
+  ...withLocalizedFields(["alt"]),
   ...withLocalizedFields(["title", "excerpt"]),
 ] as const;
 

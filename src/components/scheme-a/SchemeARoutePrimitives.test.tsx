@@ -2,7 +2,7 @@ import { act } from "react";
 import { createRoot } from "react-dom/client";
 import { MemoryRouter } from "react-router-dom";
 import { describe, expect, it } from "vitest";
-import { SchemeAGallery, SchemeALinkGrid, SchemeASection } from "@/components/scheme-a/SchemeARoutePrimitives";
+import { SchemeAGallery, SchemeALinkGrid, SchemeAListingGrid, SchemeASection } from "@/components/scheme-a/SchemeARoutePrimitives";
 
 describe("SchemeASection", () => {
   it("renders CMS paragraph text as separate escaped paragraphs and keeps single-string callers working", () => {
@@ -21,6 +21,30 @@ describe("SchemeASection", () => {
 
     act(() => root.render(<SchemeASection title="Other section" description="Single description"><span>Existing content</span></SchemeASection>));
     expect(Array.from(container.querySelectorAll(".fc-route-section-head p"), (paragraph) => paragraph.textContent)).toEqual(["Single description"]);
+    act(() => root.unmount());
+    container.remove();
+  });
+});
+
+describe("SchemeAListingGrid", () => {
+  it("shows the AI concept disclosure as visible text separate from image alt", () => {
+    const container = document.createElement("div");
+    document.body.appendChild(container);
+    const root = createRoot(container);
+    act(() => root.render(
+      <MemoryRouter>
+        <SchemeAListingGrid items={[{
+          id: "warehouse",
+          title: "Warehouse Shelving",
+          image: "/images/services/ai-concepts/warehouse-concept.webp",
+          imageAlt: "Warehouse shelving planning concept",
+          mediaDisclosure: "AI-generated concept illustration, not a completed client project",
+          href: "/services/warehouse",
+        }]} actionLabel="View service" />
+      </MemoryRouter>,
+    ));
+    expect(container.querySelector(".fc-route-card-disclosure")).toHaveTextContent("AI-generated concept illustration, not a completed client project");
+    expect(container.querySelector("img")).toHaveAttribute("alt", "Warehouse shelving planning concept");
     act(() => root.unmount());
     container.remove();
   });

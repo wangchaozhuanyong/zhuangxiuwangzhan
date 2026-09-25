@@ -15,6 +15,8 @@ import { getServiceContextLinks } from "@/i18n/serviceContextLinks";
 import { buildQuotePath, quoteProjectTypeFromServiceSlug } from "@/lib/quoteContext";
 import { sanitizeServiceOverviewHtml } from "@/lib/serviceOverviewHtml";
 import { isHtmlText, stripHtml } from "@/lib/text";
+import { isAiServiceConceptImage, isServiceConceptImage } from "@/lib/serviceMedia";
+import { mediaLabels } from "@/i18n/mediaLabels";
 
 const relatedServiceSlugs: Record<string, readonly string[]> = {
   "office-renovation": ["shop-renovation", "approval", "design"],
@@ -27,7 +29,7 @@ export default function ServiceDetail() {
   const copy = serviceDetailPageText[language];
   const { data: cmsService, isLoading } = usePublishedServiceBySlug(slug, language);
   const { data: cmsServices } = usePublishedServices(language);
-  const fallbackServices = useMemo(() => servicesData.map((service) => language === "zh" ? ({ ...service, title: service.titleZh || translateDisplayText(service.title, language), summary: service.summaryZh || translateDisplayText(service.summary, language), description: service.descriptionZh || translateDisplayText(service.description, language), suitableFor: service.suitableForZh || service.suitableFor.map((item) => translateDisplayText(item, language)), commonProjects: service.commonProjectsZh || service.commonProjects.map((item) => translateDisplayText(item, language)), processSteps: service.processStepsZh || service.processSteps, items: service.itemsZh || service.items, faqs: service.faqsZh || service.faqs, seoTitle: service.seoTitleZh || service.seoTitle, seoDescription: service.seoDescriptionZh || service.seoDescription }) : service), [language]);
+  const fallbackServices = useMemo(() => servicesData.map((service) => language === "zh" ? ({ ...service, title: service.titleZh || translateDisplayText(service.title, language), summary: service.summaryZh || translateDisplayText(service.summary, language), description: service.descriptionZh || translateDisplayText(service.description, language), imageAlt: service.imageAltZh || service.imageAlt, suitableFor: service.suitableForZh || service.suitableFor.map((item) => translateDisplayText(item, language)), commonProjects: service.commonProjectsZh || service.commonProjects.map((item) => translateDisplayText(item, language)), processSteps: service.processStepsZh || service.processSteps, items: service.itemsZh || service.items, faqs: service.faqsZh || service.faqs, seoTitle: service.seoTitleZh || service.seoTitle, seoDescription: service.seoDescriptionZh || service.seoDescription }) : service), [language]);
   const services = cmsServices?.length ? cmsServices : fallbackServices;
   const service = cmsService || services.find((item) => item.slug === slug);
 
@@ -36,6 +38,9 @@ export default function ServiceDetail() {
 
   const display = (value: string) => stripHtml(translateDisplayText(value || "", language));
   const title = display(service.title);
+  const imageAlt = display(service.imageAlt || service.title);
+  const conceptLabel = isServiceConceptImage(imageAlt) ? mediaLabels[language].renderingConcept : "";
+  const mediaDisclosure = isAiServiceConceptImage(service.image) ? mediaLabels[language].aiConceptDisclosure : undefined;
   const summary = display(service.summary);
   const rawDescription = service.description || service.summary;
   const richDescription = isHtmlText(rawDescription) ? sanitizeServiceOverviewHtml(rawDescription, language) : "";
@@ -49,7 +54,19 @@ export default function ServiceDetail() {
     ...preferredRelatedSlugs.map((relatedSlug) => services.find((item) => item.slug === relatedSlug)).filter(Boolean),
     ...services.filter((item) => item.slug !== service.slug && !preferredRelatedSlugs.includes(item.slug)),
   ].slice(0, 3);
-  const relatedItems: SchemeAListingItem[] = related.map((item) => ({ id: String(item.id || item.slug), title: display(item.title), description: display(item.summary), image: item.image, imageAlt: display(item.title), href: `/services/${item.slug}` }));
+  const relatedItems: SchemeAListingItem[] = related.map((item) => {
+    const relatedImageAlt = display(item.imageAlt || item.title);
+    return {
+      id: String(item.id || item.slug),
+      title: display(item.title),
+      description: display(item.summary),
+      image: item.image,
+      imageAlt: relatedImageAlt,
+      mediaDisclosure: isAiServiceConceptImage(item.image) ? mediaLabels[language].aiConceptDisclosure : undefined,
+      meta: isServiceConceptImage(relatedImageAlt) ? mediaLabels[language].renderingConcept : undefined,
+      href: `/services/${item.slug}`,
+    };
+  });
   const contextLinks = getServiceContextLinks(service.slug, language);
   const quotePath = buildQuotePath({
     source: "service",
@@ -66,8 +83,9 @@ export default function ServiceDetail() {
       <SchemeARouteHero
         kind="detail"
         image={service.image}
-        imageAlt={title}
-        label={copy.services}
+        imageAlt={imageAlt}
+        mediaDisclosure={mediaDisclosure}
+        label={[copy.services, conceptLabel].filter(Boolean).join(" · ")}
         title={title}
         description={summary}
         actions={<Link to={quotePath}>{copy.getQuote}<ArrowUpRight aria-hidden="true" /></Link>}

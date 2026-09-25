@@ -110,6 +110,8 @@ describe("public preload data", () => {
         slug: "office-renovation",
         title_en: "Office Renovation",
         title_zh: "办公室装修",
+        alt_en: "Office layout concept",
+        alt_zh: "办公室布局概念图",
         excerpt_en: "Office upgrade",
         excerpt_zh: "办公室升级",
         content_en: "Detail omitted from the listing preload",
@@ -166,6 +168,8 @@ describe("public preload data", () => {
 
     expect((await getPublishedServices("en"))[0]?.title).toBe("Office Renovation");
     expect((await getPublishedServices("zh"))[0]?.title).toBe("办公室装修");
+    expect((await getPublishedServices("en"))[0]?.imageAlt).toBe("Office layout concept");
+    expect((await getPublishedServices("zh"))[0]?.imageAlt).toBe("办公室布局概念图");
     expect((await getPublishedMaterials("zh"))[0]?.items[0]?.name).toBe("乙烯基地板");
     expect((await getPublishedProjectSummaries("en"))[0]?.thumbnail).toBe("/project.webp");
     expect((await getPublishedServiceAreas("zh"))[0]?.description).toBe("孟沙装修");
