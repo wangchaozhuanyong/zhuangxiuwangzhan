@@ -67,30 +67,34 @@
 
   html[data-public-theme="dark"] .scheme-a-public-shell .scheme-a-home--atelier .scheme-a-hero__disciplines {
     display: grid;
-    grid-template-columns: 1fr;
-    gap: 0;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 0.4rem 0.8rem;
     justify-content: stretch;
     margin-top: 0;
-    padding-top: 0;
-    border-top: 0;
+    padding-top: 0.6rem;
+    border-top: 1px solid rgba(214, 182, 126, 0.2);
   }
 
   html[data-public-theme="dark"] .scheme-a-public-shell .scheme-a-home--atelier .scheme-a-hero__disciplines li {
-    min-height: 2.7rem;
-    padding: 0.72rem 0;
-    border-top: 1px solid rgba(214, 182, 126, 0.2);
+    min-height: auto;
+    padding: 0.35rem 0;
+    border-top: 0;
     font-size: 0.72rem;
-    letter-spacing: 0.055em;
+    letter-spacing: 0.04em;
+    color: rgba(246, 241, 232, 0.75);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 
   html[data-public-theme="dark"] .scheme-a-public-shell .scheme-a-home--atelier .scheme-a-hero__disciplines li:last-child {
-    border-bottom: 1px solid rgba(214, 182, 126, 0.2);
+    border-bottom: 0;
   }
 }
 
 @media (min-width: 73.75rem) and (max-height: 51.25rem) {
   html[data-public-theme="dark"] .scheme-a-public-shell .scheme-a-home--atelier .scheme-a-hero__capabilities {
-    margin-top: 1.5rem;
+    margin-top: 1.2rem;
   }
 
   html[data-public-theme="dark"] .scheme-a-public-shell .scheme-a-home--atelier .scheme-a-hero__capabilities-label {
@@ -99,11 +103,12 @@
 
   html[data-public-theme="dark"] .scheme-a-public-shell .scheme-a-home--atelier .scheme-a-hero__disciplines {
     grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 0.3rem 0.6rem;
   }
 
   html[data-public-theme="dark"] .scheme-a-public-shell .scheme-a-home--atelier .scheme-a-hero__disciplines li {
-    min-height: 3.4rem;
-    padding: 0.7rem 0.65rem;
+    min-height: auto;
+    padding: 0.25rem 0;
   }
 
   html[data-public-theme="dark"] .scheme-a-public-shell .scheme-a-home--atelier .scheme-a-hero__metrics {
@@ -113,8 +118,8 @@
 
 @media (min-width: 100rem) {
   html[data-public-theme="dark"] .scheme-a-chrome__bar.scheme-a-frame {
-    width: 100%;
-    max-width: none;
-    padding-inline: clamp(48px, 5vw, 80px);
+    width: min(100%, var(--scheme-a-frame));
+    max-width: var(--scheme-a-frame);
+    padding-inline: var(--scheme-a-gutter);
   }
 }

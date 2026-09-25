@@ -332,27 +332,25 @@ export function SchemeAGallery({
   images: readonly { src: string; alt: string }[];
 }) {
   const visibleImages = images.slice(0, 8);
-  const rows: Array<Array<{ src: string; alt: string }>> = [];
-  for (let index = 0; index < visibleImages.length; index += 2) {
-    rows.push(visibleImages.slice(index, index + 2));
-  }
+  const isSingle = visibleImages.length === 1;
 
   return (
-    <div className="grid gap-2">
-      {rows.map((row, rowIndex) => (
-        <div
-          key={`gallery-row-${rowIndex}`}
-          className="fc-route-gallery"
-          style={row.length === 1 ? { gridTemplateColumns: "1fr" } : undefined}
-        >
-          {row.map((image, imageIndex) => {
-            const index = rowIndex * 2 + imageIndex;
-            return (
-              <div key={`${image.src}-${index}`} className="fc-route-gallery-media" data-cinematic-media>
-                <SmartImage src={image.src} alt={image.alt} width={1200} height={750} sizes="(max-width: 767px) 100vw, 50vw" candidateWidths={[560, 720, 960, 1200]} quality={84} revealOnLoad />
-              </div>
-            );
-          })}
+    <div
+      className="fc-route-gallery"
+      style={isSingle ? { gridTemplateColumns: "1fr" } : undefined}
+    >
+      {visibleImages.map((image, index) => (
+        <div key={`${image.src}-${index}`} className="fc-route-gallery-media" data-cinematic-media>
+          <SmartImage
+            src={image.src}
+            alt={image.alt}
+            width={1200}
+            height={750}
+            sizes="(max-width: 767px) 100vw, 50vw"
+            candidateWidths={[560, 720, 960, 1200]}
+            quality={84}
+            revealOnLoad
+          />
         </div>
       ))}
     </div>
