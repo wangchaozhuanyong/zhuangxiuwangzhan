@@ -628,37 +628,64 @@
   }
 
   html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-materials__tags {
-    display: grid;
-    width: min(100%, 32rem);
-    gap: 0;
-    margin: clamp(1.35rem, 2.2vw, 1.9rem) 0 0;
+    display: flex;
+    flex-direction: column;
+    width: min(100%, 34rem);
+    gap: 10px;
+    margin: clamp(1.4rem, 2.4vw, 2rem) 0 0;
     padding: 0;
-    border-top: 1px solid rgba(229, 202, 124, 0.2);
+    border: 0;
     list-style: none;
     counter-reset: material-item;
   }
 
   html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-materials__tags li {
-    display: grid;
-    grid-template-columns: 1.8rem minmax(0, 1fr);
-    align-items: baseline;
-    gap: 0.85rem;
-    padding-block: 0.8rem;
-    border-bottom: 1px solid rgba(229, 202, 124, 0.2);
-    color: #f0ebe1;
-    font-size: 0.86rem;
-    letter-spacing: 0.03em;
-    line-height: 1.6;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 11px 16px;
+    background: rgba(22, 24, 28, 0.72);
+    border: 1px solid rgba(212, 175, 55, 0.18);
+    border-radius: 6px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25);
+    color: #f7f4ee;
+    font-size: 0.88rem;
+    font-weight: 500;
+    letter-spacing: 0.02em;
+    line-height: 1.45;
     counter-increment: material-item;
+    transition: transform 220ms cubic-bezier(0.16, 1, 0.3, 1),
+                border-color 220ms ease,
+                background-color 220ms ease,
+                box-shadow 220ms ease;
+  }
+
+  html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-materials__tags li:hover {
+    transform: translateX(4px);
+    background: rgba(28, 30, 36, 0.9);
+    border-color: rgba(212, 175, 55, 0.45);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.35), 0 0 16px rgba(212, 175, 55, 0.08);
   }
 
   html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-materials__tags li::before {
     content: counter(material-item, decimal-leading-zero);
-    color: rgba(229, 202, 124, 0.78);
-    font-family: var(--font-body);
-    font-size: 0.62rem;
+    flex-shrink: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 2rem;
+    height: 1.35rem;
+    padding: 0 6px;
+    background: rgba(212, 175, 55, 0.12);
+    border: 1px solid rgba(212, 175, 55, 0.3);
+    border-radius: 999px;
+    color: var(--atelier-gold);
+    font-family: var(--font-display);
+    font-size: 0.72rem;
+    font-weight: 600;
     font-variant-numeric: tabular-nums;
-    letter-spacing: 0.08em;
+    letter-spacing: 0.06em;
+    line-height: 1;
   }
 
   html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-materials__tags li span {
@@ -666,7 +693,31 @@
   }
 
   html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-materials__copy > a {
-    margin-top: clamp(1.5rem, 2.6vw, 2rem);
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: clamp(1.4rem, 2.4vw, 1.85rem);
+    color: var(--atelier-gold);
+    font-size: 0.88rem;
+    font-weight: 500;
+    letter-spacing: 0.04em;
+    text-decoration: none;
+    transition: color 200ms ease, gap 200ms ease;
+  }
+
+  html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-materials__copy > a:hover {
+    color: #f5e4a8;
+    gap: 12px;
+  }
+
+  html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-materials__copy > a svg {
+    width: 14px;
+    height: 14px;
+    transition: transform 200ms ease;
+  }
+
+  html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-materials__copy > a:hover svg {
+    transform: translateX(3px);
   }
 
   html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-before {
@@ -1211,52 +1262,70 @@
       padding-inline: 0;
     }
 
+    html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-materials__layout {
+      width: 100%;
+      max-width: var(--scheme-a-frame);
+      margin-inline: auto;
+      padding-inline: var(--scheme-a-gutter) !important;
+      box-sizing: border-box;
+    }
+
     html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-materials__media {
-      height: 330px;
-      min-height: 330px;
+      width: 100%;
+      height: 310px;
+      min-height: 310px;
+      border-radius: 4px;
+      overflow: hidden;
     }
 
     html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-materials__copy {
+      width: 100%;
       margin-top: 24px;
       padding: 0;
     }
 
     html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-materials__copy h2 {
       max-width: 100%;
-      font-size: 32px;
-      line-height: 1.28;
+      font-size: 30px;
+      line-height: 1.3;
       letter-spacing: -0.025em;
     }
 
     html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-materials__copy p {
-      max-width: 36em;
-      margin-top: 13px;
+      max-width: 100%;
+      margin-top: 12px;
       color: rgba(246, 241, 232, 0.72);
       font-size: 13px;
-      line-height: 1.75;
+      line-height: 1.7;
     }
 
     html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-materials__tags {
-      gap: 0;
-      margin-top: 21px;
+      width: 100%;
+      gap: 8px;
+      margin-top: 18px;
+      border: 0;
     }
 
     html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-materials__tags li {
-      grid-template-columns: 1.65rem minmax(0, 1fr);
-      gap: 8px;
-      padding-block: 11px;
+      gap: 10px;
+      padding: 10px 14px;
       font-size: 13px;
-      letter-spacing: 0.02em;
-      line-height: 1.55;
+      letter-spacing: 0.015em;
+      line-height: 1.45;
+      border-radius: 6px;
     }
 
     html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-materials__tags li::before {
-      font-size: 9px;
+      min-width: 1.85rem;
+      height: 1.25rem;
+      font-size: 10.5px;
+      padding: 0 5px;
     }
 
     html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-materials__copy > a {
       margin-top: 18px;
       padding-top: 0;
+      font-size: 13px;
     }
 
     html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-before {

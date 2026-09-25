@@ -364,7 +364,7 @@
 
     html[data-public-theme="dark"] .scheme-a-materials__layout {
       display: block;
-      padding: 0;
+      padding-inline: var(--scheme-a-gutter, 22px);
     }
 
     html[data-public-theme="dark"] .scheme-a-materials__media {
