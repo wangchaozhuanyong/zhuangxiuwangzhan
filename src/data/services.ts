@@ -1,15 +1,15 @@
 import { ServiceItem } from "./types";
 
 const designImg = "/images/services/design-services.webp";
-const builtinImg = "/images/services/builtin-solutions.webp";
+const builtinImg = "/images/services/ai-concepts/builtin-concept.webp";
 const renovationImg = "/images/services/renovation-works.webp";
-const warehouseImg = "/images/services/warehouse-shelving.webp";
+const warehouseImg = "/images/services/ai-concepts/warehouse-concept.webp";
 const approvalImg = "/images/services/approval-docs.webp";
 const artisticCoatingImg = "/images/services/artistic-coating.webp";
 const oldHouseImg = "/images/services/old-house-renovation.webp";
 const kitchenImg = "/images/services/kitchen-renovation.webp";
 const bathroomImg = "/images/services/bathroom-renovation.webp";
-const officeImg = "/images/services/office-renovation.webp";
+const officeImg = "/images/services/ai-concepts/office-renovation-concept.webp";
 const shoplotImg = "/images/services/shoplot-renovation.webp";
 
 export const servicesData: ServiceItem[] = [
@@ -178,6 +178,8 @@ export const servicesData: ServiceItem[] = [
     title: "Custom Cabinets & Built-In Furniture in Kuala Lumpur",
     titleZh: "吉隆坡定制柜与内嵌家具",
     slug: "builtin",
+    imageAlt: "Italian-minimalist whole-house built-in cabinetry concept with a TV storage wall and kitchen tall units",
+    imageAltZh: "意式极简客厅与干厨房的全屋定制柜体、电视收纳墙和厨房高柜概念示意图",
     seoTitle: "Custom Cabinet Kuala Lumpur | FLASH CAST",
     seoTitleZh: "吉隆坡定制柜与内嵌家具 | FLASH CAST",
     seoDescription: "FLASH CAST provides custom built-in furniture planning in Kuala Lumpur, Selangor, and Klang Valley, including wardrobes, kitchen cabinets, TV cabinets, shoe cabinets, display cabinets, and storage systems.",
@@ -435,6 +437,8 @@ export const servicesData: ServiceItem[] = [
     title: "Office Renovation & Fit-Out in Kuala Lumpur",
     titleZh: "吉隆坡办公室装修与 Fit-Out",
     slug: "office-renovation",
+    imageAlt: "Modern office concept with workstations, a glass meeting room, reception and integrated storage",
+    imageAltZh: "现代办公室工位、玻璃会议室、前台与文件收纳规划概念示意图",
     seoTitle: "Office Renovation Contractor KL | FLASH CAST",
     seoTitleZh: "吉隆坡办公室装修与 Fit-Out | FLASH CAST",
     seoDescription:
@@ -750,6 +754,8 @@ export const servicesData: ServiceItem[] = [
     title: "Warehouse Shelving and Storage Planning",
     titleZh: "仓库货架与仓储空间规划服务",
     slug: "warehouse",
+    imageAlt: "Warehouse shelving, central aisle, floor zoning and picking-area planning concept",
+    imageAltZh: "仓库货架、中央通道、地面分区标线与拣货区规划概念示意图",
     seoTitle: "Warehouse Shelving and Storage Planning in Selangor and Kuala Lumpur",
     seoTitleZh: "仓库货架与仓储空间规划｜雪兰莪与吉隆坡 Warehouse Shelving 服务",
     seoDescription:

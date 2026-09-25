@@ -34,6 +34,7 @@ export interface ServiceItem {
   faqsZh?: { q: string; a: string }[]; // optional Chinese fallback FAQs
   image: string;             // hero image URL
   imageAlt?: string;          // localized CMS image description when available
+  imageAltZh?: string;        // Chinese fallback image description
   seoTitle?: string;         // optional SEO title
   seoTitleZh?: string;       // optional Chinese SEO title
   seoDescription?: string;   // optional SEO description

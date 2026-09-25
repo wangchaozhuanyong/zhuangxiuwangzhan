@@ -1,0 +1,270 @@
+{
+  "candidateVersion": "service-media-original-concepts-r2-v2",
+  "mode": "local preview injected exact CMS candidate rows",
+  "checks": [
+    {
+      "language": "en",
+      "width": 390,
+      "slug": "builtin",
+      "position": "listing",
+      "src": "http://127.0.0.1:4200/images/_responsive/services/w560/ai-concepts/builtin-concept.webp",
+      "alt": "Italian-minimalist whole-house built-in cabinetry concept with a TV storage wall and kitchen tall units",
+      "loaded": true,
+      "disclosure": "AI-generated concept illustration, not a completed client project"
+    },
+    {
+      "language": "en",
+      "width": 390,
+      "slug": "warehouse",
+      "position": "listing",
+      "src": "http://127.0.0.1:4200/images/_responsive/services/w360/ai-concepts/warehouse-concept.webp",
+      "alt": "Warehouse shelving, central aisle, floor zoning and picking-area planning concept",
+      "loaded": true,
+      "disclosure": "AI-generated concept illustration, not a completed client project"
+    },
+    {
+      "language": "en",
+      "width": 390,
+      "slug": "office-renovation",
+      "position": "listing",
+      "src": "http://127.0.0.1:4200/images/_responsive/services/w360/ai-concepts/office-renovation-concept.webp",
+      "alt": "Modern office concept with workstations, a glass meeting room, reception and integrated storage",
+      "loaded": true,
+      "disclosure": "AI-generated concept illustration, not a completed client project"
+    },
+    {
+      "language": "en",
+      "width": 390,
+      "slug": "builtin",
+      "position": "detail",
+      "src": "http://127.0.0.1:4200/images/_responsive/services/w560/ai-concepts/builtin-concept.webp",
+      "alt": "Italian-minimalist whole-house built-in cabinetry concept with a TV storage wall and kitchen tall units",
+      "loaded": true,
+      "disclosure": "AI-generated concept illustration, not a completed client project",
+      "quoteHref": "/en/quote?source=service&title=Whole-House+Custom+Furniture%2C+Built-In+Storage+%26+Wardrobes&projectType=Custom+Built-In+Furniture#quote-form",
+      "documentWidth": 390
+    },
+    {
+      "language": "en",
+      "width": 390,
+      "slug": "warehouse",
+      "position": "detail",
+      "src": "http://127.0.0.1:4200/images/_responsive/services/w560/ai-concepts/warehouse-concept.webp",
+      "alt": "Warehouse shelving, central aisle, floor zoning and picking-area planning concept",
+      "loaded": true,
+      "disclosure": "AI-generated concept illustration, not a completed client project",
+      "quoteHref": "/en/quote?source=service&title=Warehouse+Shelving+and+Storage+Planning&projectType=Warehouse+%26+Shelving#quote-form",
+      "documentWidth": 390
+    },
+    {
+      "language": "en",
+      "width": 390,
+      "slug": "office-renovation",
+      "position": "detail",
+      "src": "http://127.0.0.1:4200/images/_responsive/services/w560/ai-concepts/office-renovation-concept.webp",
+      "alt": "Modern office concept with workstations, a glass meeting room, reception and integrated storage",
+      "loaded": true,
+      "disclosure": "AI-generated concept illustration, not a completed client project",
+      "quoteHref": "/en/quote?source=service&title=Office+Renovation+%26+Commercial+Fit-Out+Malaysia&projectType=Office+Renovation#quote-form",
+      "documentWidth": 390
+    },
+    {
+      "language": "en",
+      "width": 1280,
+      "slug": "builtin",
+      "position": "listing",
+      "src": "http://127.0.0.1:4200/images/_responsive/services/w1200/ai-concepts/builtin-concept.webp",
+      "alt": "Italian-minimalist whole-house built-in cabinetry concept with a TV storage wall and kitchen tall units",
+      "loaded": true,
+      "disclosure": "AI-generated concept illustration, not a completed client project"
+    },
+    {
+      "language": "en",
+      "width": 1280,
+      "slug": "warehouse",
+      "position": "listing",
+      "src": "http://127.0.0.1:4200/images/_responsive/services/w560/ai-concepts/warehouse-concept.webp",
+      "alt": "Warehouse shelving, central aisle, floor zoning and picking-area planning concept",
+      "loaded": true,
+      "disclosure": "AI-generated concept illustration, not a completed client project"
+    },
+    {
+      "language": "en",
+      "width": 1280,
+      "slug": "office-renovation",
+      "position": "listing",
+      "src": "http://127.0.0.1:4200/images/_responsive/services/w560/ai-concepts/office-renovation-concept.webp",
+      "alt": "Modern office concept with workstations, a glass meeting room, reception and integrated storage",
+      "loaded": true,
+      "disclosure": "AI-generated concept illustration, not a completed client project"
+    },
+    {
+      "language": "en",
+      "width": 1280,
+      "slug": "builtin",
+      "position": "detail",
+      "src": "http://127.0.0.1:4200/images/_responsive/services/w1200/ai-concepts/builtin-concept.webp",
+      "alt": "Italian-minimalist whole-house built-in cabinetry concept with a TV storage wall and kitchen tall units",
+      "loaded": true,
+      "disclosure": "AI-generated concept illustration, not a completed client project",
+      "quoteHref": "/en/quote?source=service&title=Whole-House+Custom+Furniture%2C+Built-In+Storage+%26+Wardrobes&projectType=Custom+Built-In+Furniture#quote-form",
+      "documentWidth": 1280
+    },
+    {
+      "language": "en",
+      "width": 1280,
+      "slug": "warehouse",
+      "position": "detail",
+      "src": "http://127.0.0.1:4200/images/_responsive/services/w1200/ai-concepts/warehouse-concept.webp",
+      "alt": "Warehouse shelving, central aisle, floor zoning and picking-area planning concept",
+      "loaded": true,
+      "disclosure": "AI-generated concept illustration, not a completed client project",
+      "quoteHref": "/en/quote?source=service&title=Warehouse+Shelving+and+Storage+Planning&projectType=Warehouse+%26+Shelving#quote-form",
+      "documentWidth": 1280
+    },
+    {
+      "language": "en",
+      "width": 1280,
+      "slug": "office-renovation",
+      "position": "detail",
+      "src": "http://127.0.0.1:4200/images/_responsive/services/w1200/ai-concepts/office-renovation-concept.webp",
+      "alt": "Modern office concept with workstations, a glass meeting room, reception and integrated storage",
+      "loaded": true,
+      "disclosure": "AI-generated concept illustration, not a completed client project",
+      "quoteHref": "/en/quote?source=service&title=Office+Renovation+%26+Commercial+Fit-Out+Malaysia&projectType=Office+Renovation#quote-form",
+      "documentWidth": 1280
+    },
+    {
+      "language": "zh",
+      "width": 390,
+      "slug": "builtin",
+      "position": "listing",
+      "src": "http://127.0.0.1:4200/images/_responsive/services/w560/ai-concepts/builtin-concept.webp",
+      "alt": "意式极简客厅与干厨房的全屋定制柜体、电视收纳墙和厨房高柜概念示意图",
+      "loaded": true,
+      "disclosure": "AI 生成概念示意，非客户完工实景"
+    },
+    {
+      "language": "zh",
+      "width": 390,
+      "slug": "warehouse",
+      "position": "listing",
+      "src": "http://127.0.0.1:4200/images/_responsive/services/w360/ai-concepts/warehouse-concept.webp",
+      "alt": "仓库货架、中央通道、地面分区标线与拣货区规划概念示意图",
+      "loaded": true,
+      "disclosure": "AI 生成概念示意，非客户完工实景"
+    },
+    {
+      "language": "zh",
+      "width": 390,
+      "slug": "office-renovation",
+      "position": "listing",
+      "src": "http://127.0.0.1:4200/images/_responsive/services/w360/ai-concepts/office-renovation-concept.webp",
+      "alt": "现代办公室工位、玻璃会议室、前台与文件收纳规划概念示意图",
+      "loaded": true,
+      "disclosure": "AI 生成概念示意，非客户完工实景"
+    },
+    {
+      "language": "zh",
+      "width": 390,
+      "slug": "builtin",
+      "position": "detail",
+      "src": "http://127.0.0.1:4200/images/_responsive/services/w560/ai-concepts/builtin-concept.webp",
+      "alt": "意式极简客厅与干厨房的全屋定制柜体、电视收纳墙和厨房高柜概念示意图",
+      "loaded": true,
+      "disclosure": "AI 生成概念示意，非客户完工实景",
+      "quoteHref": "/zh/quote?source=service&title=%E5%85%A8%E5%B1%8B%E5%AE%9A%E5%88%B6%E3%80%81%E5%AE%9A%E5%88%B6%E5%AE%B6%E5%85%B7%E4%B8%8E%E5%AE%9A%E5%88%B6%E8%A1%A3%E6%9F%9C&projectType=Custom+Built-In+Furniture#quote-form",
+      "documentWidth": 390
+    },
+    {
+      "language": "zh",
+      "width": 390,
+      "slug": "warehouse",
+      "position": "detail",
+      "src": "http://127.0.0.1:4200/images/_responsive/services/w560/ai-concepts/warehouse-concept.webp",
+      "alt": "仓库货架、中央通道、地面分区标线与拣货区规划概念示意图",
+      "loaded": true,
+      "disclosure": "AI 生成概念示意，非客户完工实景",
+      "quoteHref": "/zh/quote?source=service&title=%E9%9B%AA%E5%85%B0%E8%8E%AA%E4%BB%93%E5%BA%93%E8%B4%A7%E6%9E%B6%E4%B8%8E%E4%BB%93%E5%82%A8%E7%A9%BA%E9%97%B4%E8%A7%84%E5%88%92&projectType=Warehouse+%26+Shelving#quote-form",
+      "documentWidth": 390
+    },
+    {
+      "language": "zh",
+      "width": 390,
+      "slug": "office-renovation",
+      "position": "detail",
+      "src": "http://127.0.0.1:4200/images/_responsive/services/w560/ai-concepts/office-renovation-concept.webp",
+      "alt": "现代办公室工位、玻璃会议室、前台与文件收纳规划概念示意图",
+      "loaded": true,
+      "disclosure": "AI 生成概念示意，非客户完工实景",
+      "quoteHref": "/zh/quote?source=service&title=%E9%A9%AC%E6%9D%A5%E8%A5%BF%E4%BA%9A%E5%8A%9E%E5%85%AC%E5%AE%A4%E8%A3%85%E4%BF%AE%E4%B8%8E%E5%95%86%E4%B8%9A%E7%A9%BA%E9%97%B4%E8%A7%84%E5%88%92&projectType=Office+Renovation#quote-form",
+      "documentWidth": 390
+    },
+    {
+      "language": "zh",
+      "width": 1280,
+      "slug": "builtin",
+      "position": "listing",
+      "src": "http://127.0.0.1:4200/images/_responsive/services/w1200/ai-concepts/builtin-concept.webp",
+      "alt": "意式极简客厅与干厨房的全屋定制柜体、电视收纳墙和厨房高柜概念示意图",
+      "loaded": true,
+      "disclosure": "AI 生成概念示意，非客户完工实景"
+    },
+    {
+      "language": "zh",
+      "width": 1280,
+      "slug": "warehouse",
+      "position": "listing",
+      "src": "http://127.0.0.1:4200/images/_responsive/services/w560/ai-concepts/warehouse-concept.webp",
+      "alt": "仓库货架、中央通道、地面分区标线与拣货区规划概念示意图",
+      "loaded": true,
+      "disclosure": "AI 生成概念示意，非客户完工实景"
+    },
+    {
+      "language": "zh",
+      "width": 1280,
+      "slug": "office-renovation",
+      "position": "listing",
+      "src": "http://127.0.0.1:4200/images/_responsive/services/w560/ai-concepts/office-renovation-concept.webp",
+      "alt": "现代办公室工位、玻璃会议室、前台与文件收纳规划概念示意图",
+      "loaded": true,
+      "disclosure": "AI 生成概念示意，非客户完工实景"
+    },
+    {
+      "language": "zh",
+      "width": 1280,
+      "slug": "builtin",
+      "position": "detail",
+      "src": "http://127.0.0.1:4200/images/_responsive/services/w1200/ai-concepts/builtin-concept.webp",
+      "alt": "意式极简客厅与干厨房的全屋定制柜体、电视收纳墙和厨房高柜概念示意图",
+      "loaded": true,
+      "disclosure": "AI 生成概念示意，非客户完工实景",
+      "quoteHref": "/zh/quote?source=service&title=%E5%85%A8%E5%B1%8B%E5%AE%9A%E5%88%B6%E3%80%81%E5%AE%9A%E5%88%B6%E5%AE%B6%E5%85%B7%E4%B8%8E%E5%AE%9A%E5%88%B6%E8%A1%A3%E6%9F%9C&projectType=Custom+Built-In+Furniture#quote-form",
+      "documentWidth": 1280
+    },
+    {
+      "language": "zh",
+      "width": 1280,
+      "slug": "warehouse",
+      "position": "detail",
+      "src": "http://127.0.0.1:4200/images/_responsive/services/w1200/ai-concepts/warehouse-concept.webp",
+      "alt": "仓库货架、中央通道、地面分区标线与拣货区规划概念示意图",
+      "loaded": true,
+      "disclosure": "AI 生成概念示意，非客户完工实景",
+      "quoteHref": "/zh/quote?source=service&title=%E9%9B%AA%E5%85%B0%E8%8E%AA%E4%BB%93%E5%BA%93%E8%B4%A7%E6%9E%B6%E4%B8%8E%E4%BB%93%E5%82%A8%E7%A9%BA%E9%97%B4%E8%A7%84%E5%88%92&projectType=Warehouse+%26+Shelving#quote-form",
+      "documentWidth": 1280
+    },
+    {
+      "language": "zh",
+      "width": 1280,
+      "slug": "office-renovation",
+      "position": "detail",
+      "src": "http://127.0.0.1:4200/images/_responsive/services/w1200/ai-concepts/office-renovation-concept.webp",
+      "alt": "现代办公室工位、玻璃会议室、前台与文件收纳规划概念示意图",
+      "loaded": true,
+      "disclosure": "AI 生成概念示意，非客户完工实景",
+      "quoteHref": "/zh/quote?source=service&title=%E9%A9%AC%E6%9D%A5%E8%A5%BF%E4%BA%9A%E5%8A%9E%E5%85%AC%E5%AE%A4%E8%A3%85%E4%BF%AE%E4%B8%8E%E5%95%86%E4%B8%9A%E7%A9%BA%E9%97%B4%E8%A7%84%E5%88%92&projectType=Office+Renovation#quote-form",
+      "documentWidth": 1280
+    }
+  ]
+}

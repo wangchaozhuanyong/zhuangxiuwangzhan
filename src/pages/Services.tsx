@@ -20,7 +20,7 @@ import { servicesPageText } from "@/i18n/servicesPageText";
 import { mediaLabels } from "@/i18n/mediaLabels";
 import { schemeARouteText } from "@/i18n/schemeAText";
 import { pageHeroImages, resolvePageHeroImage } from "@/lib/pageHeroImages";
-import { isServiceConceptImage } from "@/lib/serviceMedia";
+import { isAiServiceConceptImage, isServiceConceptImage } from "@/lib/serviceMedia";
 import { stripHtml } from "@/lib/text";
 
 type ServiceGroup = "all" | "residential" | "commercial" | "specialty";
@@ -44,15 +44,17 @@ export default function Services() {
 
   const items = useMemo<SchemeAListingItem[]>(() => visible.map((service) => {
     const title = translateDisplayText(service.title, language);
-    const imageAlt = stripHtml(service.imageAlt || title);
+    const imageAlt = stripHtml((language === "zh" && typeof service.imageAltZh === "string" ? service.imageAltZh : service.imageAlt) || title);
     const conceptLabel = isServiceConceptImage(imageAlt) ? mediaLabels[language].renderingConcept : "";
+    const image = service.image || servicesData.find((fallback) => fallback.slug === service.slug)?.image || pageHeroImages.services.desktop;
     return {
       id: String(service.id || service.slug),
       title,
       description: translateDisplayText(service.summary || service.description || "", language),
       meta: [copy.groups[groupForService(service.slug)].short, conceptLabel].filter(Boolean).join(" · "),
-      image: service.image || servicesData.find((fallback) => fallback.slug === service.slug)?.image || pageHeroImages.services.desktop,
+      image,
       imageAlt,
+      mediaDisclosure: isAiServiceConceptImage(image) ? mediaLabels[language].aiConceptDisclosure : undefined,
       href: `/services/${service.slug}`,
     };
   }), [copy.groups, language, visible]);

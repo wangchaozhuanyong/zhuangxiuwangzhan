@@ -182,6 +182,7 @@ export const getFallbackServices = async (language: Language = "en") => {
   return servicesData.map((service) => ({
     ...service,
     title: service.titleZh || localize(service.title || ""),
+    imageAlt: service.imageAltZh || localize(service.imageAlt || service.title || ""),
     summary: service.summaryZh || localize(service.summary || ""),
     description: service.descriptionZh || localize(service.description || ""),
     suitableFor: service.suitableForZh || (service.suitableFor || []).map((item: string) => localize(item)),

@@ -137,6 +137,20 @@
   text-transform: uppercase;
 }
 
+.fc-route-media-disclosure,
+.fc-route-card-disclosure {
+  display: block;
+  color: #f3da9e;
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1.5;
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+.fc-route-media-disclosure { margin-bottom: 12px; }
+.fc-route-card-disclosure { margin-top: 12px; }
+
 .fc-route-hero h1 {
   max-width: 16ch;
   color: #ffffff;
