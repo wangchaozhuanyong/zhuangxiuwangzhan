@@ -29,7 +29,7 @@ export default function Promotions() {
       <PageMeta title={pageContent?.seo_title || copy.metaTitle} description={pageContent?.seo_description || copy.metaDescription} keywords={pageContent?.seo_keywords} canonicalPath="/promotions" />
       <JsonLdBreadcrumb items={[{ name: routeText.home, url: "/" }, { name: routeText.promotions, url: "/promotions" }]} />
       <SchemeARouteHero kind="listing" image={hero.desktop} imageSourceWidth={hero.desktopWidth} tabletImage={hero.tablet} tabletImageSourceWidth={hero.tabletWidth} mobileImage={hero.mobile} mobileImageSourceWidth={hero.mobileWidth} imagePosition={hero.imagePosition} imageAlt={pageContent?.alt || copy.title} label={[pageContent?.subtitle || copy.eyebrow, hero.claimLevel ? mediaLabels[language].renderingConcept : ""].filter(Boolean).join(" · ")} title={pageContent?.title || copy.title} description={pageContent?.description || copy.intro} />
-      <SchemeASection title={copy.listTitle} description={copy.offerCount(offers.length)}>
+      <SchemeASection title={copy.listTitle}>
         <SchemeANumberList items={offers.map((offer) => ({ title: offer.title, description: `${offer.description} · ${copy.conditions}：${offer.terms}` }))} />
         <div className="fc-route-action-panel">
           <h2>{copy.actionTitle}</h2>
