@@ -23,6 +23,7 @@ export type ManagedPermitIssue = {
   payloadSha256: string;
   rollbackPayloadSha256?: string;
   parentPermitId?: string;
+  parentRunId?: number;
   githubActorId: number;
   githubWorkflowSha: string;
   qaReceiptId: string;
@@ -51,7 +52,8 @@ export async function issueManagedPermit(client: ContentPublishClient, input: Ma
   let parentId: string | null = null;
   let rollbackPayloadSha256: string | null = null;
   if (input.operation === "publish") {
-    if (!input.rollbackPayloadSha256 || !SHA256.test(input.rollbackPayloadSha256) || input.parentPermitId) {
+    if (!input.rollbackPayloadSha256 || !SHA256.test(input.rollbackPayloadSha256)
+        || input.parentPermitId || input.parentRunId !== undefined) {
       throw new Error("Publish requires the exact independently restorable prior payload digest");
     }
     rollbackPayloadSha256 = input.rollbackPayloadSha256;
@@ -59,12 +61,17 @@ export async function issueManagedPermit(client: ContentPublishClient, input: Ma
     if (!input.parentPermitId || !UUID.test(input.parentPermitId) || input.rollbackPayloadSha256) {
       throw new Error("Rollback requires a distinct completed publish permit");
     }
+    if (target.contentType === "blog"
+        && (!Number.isSafeInteger(input.parentRunId) || Number(input.parentRunId) <= 0)) {
+      throw new Error("Managed Blog rollback requires the exact completed parent run ID");
+    }
     const { data: rawParent, error: parentError } = await client.from("managed_cms_release_permits")
       .select("*").eq("permit_id", input.parentPermitId).maybeSingle();
     const parent = rawParent as Record<string, unknown> | null;
     if (parentError || !parent || parent.status !== "completed" || parent.operation !== "publish"
         || parent.task_id !== input.taskId || parent.record_id !== input.recordId || parent.slug !== input.slug
         || parent.scope !== input.scope || parent.candidate_version !== target.candidateVersion
+        || (target.contentType === "blog" && Number(parent.github_run_id) !== input.parentRunId)
         || parent.rollback_payload_sha256 !== input.payloadSha256
         || !samePgTimestamp(parent.saved_updated_at, input.expectedUpdatedAt)) {
       throw new Error("Rollback does not restore the completed candidate's exact prior version");

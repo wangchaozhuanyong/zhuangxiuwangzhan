@@ -120,7 +120,7 @@ describe("topic-cluster Blog publish records", () => {
     expect(workflow).toContain("path: audits/content-publish-${{ github.run_id }}");
   });
 
-  it("offers all seven fixed CMS targets but blocks publish and rollback before production secrets", () => {
+  it("offers all eleven fixed CMS targets but blocks publish and rollback before production secrets", () => {
     const workflow = readFileSync(
       resolve(process.cwd(), ".github/workflows/content-publish-approved.yml"),
       "utf8",
@@ -133,6 +133,10 @@ describe("topic-cluster Blog publish records", () => {
       "design-r1-cms-row-20260924-v1",
       "selangor-service-area-r1-v4",
       "org-017-bathroom-faq-parity-reconciliation-v4",
+      "blog-kitchen-cabinet-cost-r1-v1",
+      "blog-renovation-quotation-links-r1-v1",
+      "blog-office-checklist-links-r1-v1",
+      "office-service-scope-r1-v1",
     ];
     for (const target of lockedTargets) {
       expect(workflow).toContain(`          - ${target}`);

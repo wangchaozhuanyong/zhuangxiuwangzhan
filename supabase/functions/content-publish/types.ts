@@ -48,6 +48,7 @@ export type ContentPublishRequest = {
   record?: Record<string, unknown>;
   nextStatus?: ContentStatus;
   expectedUpdatedAt?: string | null;
+  managedOperation?: "publish" | "rollback"; // Dry-run preview only; writes use managedPermit.operation.
   ownerApproved?: boolean;
   explicitExecution?: boolean;
   approvalId?: string;

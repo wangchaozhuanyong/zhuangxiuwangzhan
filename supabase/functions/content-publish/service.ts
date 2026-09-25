@@ -15,7 +15,7 @@ import {
   uploadMediaObject,
 } from "./repository.ts";
 import type { ContentPublishClient, ContentPublishRequest, ContentPublishResult, ContentRow, ContentStatus } from "./types.ts";
-import { MANAGED_AREAS, MANAGED_SERVICES, managedAction } from "./managed-targets.ts";
+import { MANAGED_AREAS, MANAGED_BLOGS, MANAGED_SERVICES, managedAction } from "./managed-targets.ts";
 import type { ManagedTarget } from "./managed-targets.ts";
 import { samePgTimestamp } from "./managed-timestamp.ts";
 
@@ -25,6 +25,8 @@ const MANAGED_SERVICE_IDS = new Set<string>(MANAGED_SERVICES.map((service) => se
 const MANAGED_SERVICE_SLUGS = new Set<string>(MANAGED_SERVICES.map((service) => service.slug));
 const MANAGED_AREA_IDS = new Set<string>(MANAGED_AREAS.map((area) => area.id));
 const MANAGED_AREA_SLUGS = new Set<string>(MANAGED_AREAS.map((area) => area.slug));
+const MANAGED_BLOG_IDS = new Set<string>(MANAGED_BLOGS.map((blog) => blog.id));
+const MANAGED_BLOG_SLUGS = new Set<string>(MANAGED_BLOGS.map((blog) => blog.slug));
 const VALID_STATUSES = new Set<ContentStatus>(["draft", "published", "archived"]);
 const MEDIA_BUCKET = "site-images";
 const MEDIA_PREFIX = "media/seo-generated/";
@@ -81,6 +83,8 @@ const SERVICE_FIELDS = new Set([
   "status",
   "sort_order",
 ]);
+const SERVICE_BASELINE_FIELDS = ["id", "slug", "status", "updated_at", ...[...SERVICE_FIELDS].filter((field) =>
+  !["id", "slug", "status"].includes(field))] as const;
 const SERVICE_AREA_FIELDS = new Set([
   "id",
   "slug",
@@ -127,6 +131,12 @@ const BLOG_FIELDS = new Set([
   "published_at",
   "sort_order",
 ]);
+// Matches the QA-locked full-row baseline digest; only changedFields may enter SQL.
+const BLOG_BASELINE_FIELDS = [
+  "id", "slug", "status", "updated_at", "title_zh", "title_en", "excerpt_zh", "excerpt_en",
+  "content_zh", "content_en", "category", "tags", "cover_image_url", "alt_zh", "alt_en",
+  "seo_title_zh", "seo_title_en", "seo_description_zh", "seo_description_en", "published_at", "sort_order",
+] as const;
 const PROJECT_FIELDS = new Set([
   "id",
   "slug",
@@ -401,6 +411,7 @@ async function beginManagedCmsWrite(
   slug: string,
   payload: Record<string, unknown>,
   expectedUpdatedAt: string,
+  writePayload: Record<string, unknown> = payload,
 ): Promise<ContentPublishResult | null> {
   const identity = context.managedIdentity;
   const permit = input.managedPermit;
@@ -420,8 +431,14 @@ async function beginManagedCmsWrite(
     if (unrelatedChange || await sha256(changed) !== target.desiredFieldsSha256) {
       return errorResult("Managed CMS payload differs from the QA-locked fields.", 403);
     }
+    if (target.contentType === "service" && target.baselineFieldsSha256) {
+      const baseline = Object.fromEntries(SERVICE_BASELINE_FIELDS.map((field) => [field, existing[field] ?? null]));
+      if (await sha256(baseline) !== target.baselineFieldsSha256) {
+        return errorResult("Managed service row differs from the QA-locked baseline.", 409);
+      }
+    }
   }
-  const payloadSha256 = await sha256(payload);
+  const payloadSha256 = await sha256(writePayload);
   const { data: claimed, error: claimError } = await client.rpc("claim_managed_cms_release_permit", {
     p_permit_id: permit.permitId,
     p_task_id: permit.taskId,
@@ -1179,6 +1196,40 @@ async function resolveExistingBlog(client: ContentPublishClient, payload: Record
   return fetchRecordByField(client, "blog_posts", "slug", slug);
 }
 
+async function managedBlogPatch(
+  target: ManagedTarget,
+  existing: ContentRow | null,
+  requestRecord: Record<string, unknown>,
+  cleaned: Record<string, unknown>,
+  operation: "publish" | "rollback",
+): Promise<{ patch: Record<string, unknown> } | { denied: ContentPublishResult }> {
+  if (!existing || existing.id !== target.id || existing.slug !== target.slug
+      || requestRecord.id !== target.id || requestRecord.slug !== target.slug
+      || !target.changedFields || !target.desiredFieldsSha256 || !target.baselineFieldsSha256) {
+    return { denied: errorResult("Managed Blog requires its exact existing row ID and slug.", 403) };
+  }
+  const fields = new Set<string>(target.changedFields);
+  const unsupported = Object.keys(requestRecord).some((field) =>
+    !BLOG_FIELDS.has(field) && !READONLY_FIELDS.has(field));
+  const unrelated = [...BLOG_FIELDS].some((field) => !fields.has(field)
+    && JSON.stringify(stableValue(requestRecord[field])) !== JSON.stringify(stableValue(existing[field])));
+  if (unsupported || unrelated || requestRecord.published_at !== existing.published_at) {
+    return { denied: errorResult("Managed Blog request changes an unlocked field or published_at.", 403) };
+  }
+  const patch = Object.fromEntries(target.changedFields.map((field) => [field, cleaned[field]]));
+  if (Object.keys(patch).some((field) => !BLOG_FIELDS.has(field) || patch[field] === undefined)) {
+    return { denied: errorResult("Managed Blog patch has an invalid field.", 403) };
+  }
+  if (operation === "publish") {
+    const baseline = Object.fromEntries(BLOG_BASELINE_FIELDS.map((field) => [field, existing[field] ?? null]));
+    if (await sha256(baseline) !== target.baselineFieldsSha256
+        || await sha256(patch) !== target.desiredFieldsSha256) {
+      return { denied: errorResult("Managed Blog row or patch differs from the QA-locked candidate.", 409) };
+    }
+  }
+  return { patch };
+}
+
 async function publishBlogContent(
   input: ContentPublishRequest,
   client: ContentPublishClient,
@@ -1209,8 +1260,13 @@ async function publishBlogContent(
       currentUpdatedAt: existing.updated_at || null,
     });
   }
-  const isManagedExisting = MANAGED_SERVICE_IDS.has(existingId) || MANAGED_SERVICE_SLUGS.has(cleaned.slug);
-  if (existing && expectedUpdatedAt && (isManagedExisting && mode === "publish"
+  const managedBlog = MANAGED_BLOGS.find((blog) => blog.id === existingId || blog.slug === cleaned.slug
+    || blog.id === providedId);
+  const isManagedExisting = Boolean(managedBlog);
+  if (managedBlog && (nextStatus !== "published" || existing?.status !== "published")) {
+    return errorResult("Managed Blog must preserve its published status.", 403);
+  }
+  if (existing && expectedUpdatedAt && (isManagedExisting
     ? !samePgTimestamp(existing.updated_at, expectedUpdatedAt)
     : normalizeDate(existing.updated_at) !== normalizeDate(expectedUpdatedAt))) {
     return errorResult("This blog post was changed by someone else. Refresh before publishing.", 409, {
@@ -1222,6 +1278,12 @@ async function publishBlogContent(
   }
 
   delete cleaned.payload.id;
+  const prepared = managedBlog
+    ? await managedBlogPatch(managedBlog, existing, input.record || {}, cleaned.payload,
+      (mode === "dry-run" ? input.managedOperation : input.managedPermit?.operation) === "rollback" ? "rollback" : "publish")
+    : null;
+  if (prepared && "denied" in prepared) return prepared.denied;
+  const writePayload = prepared && "patch" in prepared ? prepared.patch : cleaned.payload;
   const action = existing ? (nextStatus === "published" ? "publish" : "update") : nextStatus === "published" ? "publish" : "insert";
   const commonBody = {
     ok: true,
@@ -1241,12 +1303,33 @@ async function publishBlogContent(
   };
 
   if (mode === "dry-run") {
-    return { body: { ...commonBody, payload_preview: cleaned.payload } };
+    return { body: { ...commonBody, payload_preview: writePayload } };
   }
 
-  const saved = existingId
-    ? await updateContentRecord(client, "blog_posts", existingId, cleaned.payload)
-    : await insertContentRecord(client, "blog_posts", cleaned.payload);
+  if (managedBlog) {
+    const denied = await beginManagedCmsWrite(input, client, context, managedBlog, existing, cleaned.slug,
+      writePayload, expectedUpdatedAt);
+    if (denied) return denied;
+  }
+  let saved: ContentRow | null;
+  try {
+    saved = managedBlog
+      ? await updateContentRecordAtVersion(client, "blog_posts", existingId, expectedUpdatedAt, writePayload)
+      : existingId
+      ? await updateContentRecord(client, "blog_posts", existingId, cleaned.payload)
+      : await insertContentRecord(client, "blog_posts", cleaned.payload);
+  } catch (error) {
+    if (managedBlog && input.managedPermit) {
+      await finishManagedCmsWrite(client, context, input.managedPermit.permitId, null);
+    }
+    throw error;
+  }
+  if (managedBlog && input.managedPermit) {
+    const completed = await finishManagedCmsWrite(client, context, input.managedPermit.permitId, saved);
+    if (!saved) return errorResult("This Blog changed during the atomic write. Refresh before publishing.", 409);
+    if (!completed) return errorResult("CMS write result is uncertain; read back the row before issuing a new permit.", 409);
+  }
+  if (!saved) return errorResult("CMS write returned no row.", 409);
 
   const auditWarnings: string[] = [];
   try {
@@ -1932,6 +2015,10 @@ export async function publishContent(
     (input.contentType === "service_area" && (
       MANAGED_AREA_IDS.has(String(input.record.id || "")) ||
       MANAGED_AREA_SLUGS.has(normalizeSlug(input.record.slug))
+    )) ||
+    (input.contentType === "blog" && (
+      MANAGED_BLOG_IDS.has(String(input.record.id || "")) ||
+      MANAGED_BLOG_SLUGS.has(normalizeSlug(input.record.slug))
     ))
   ) && !context.managedIdentity) {
     return errorResult("Managed CMS publish requires a trusted one-time permit; this route is not configured.", 403);
@@ -2024,9 +2111,14 @@ export async function publishContent(
     return errorResult("Service slug already belongs to another record.", 409);
   }
 
-  const isManagedExisting = MANAGED_SERVICE_IDS.has(existingId) || MANAGED_SERVICE_SLUGS.has(cleaned.slug);
+  const managedService = MANAGED_SERVICES.find((service) => service.id === existingId || service.slug === cleaned.slug);
+  const isManagedExisting = Boolean(managedService);
   const expectedUpdatedAt = input.expectedUpdatedAt || (typeof input.record.updated_at === "string" ? input.record.updated_at : "");
-  if (existing && expectedUpdatedAt && (isManagedExisting && mode === "publish"
+  if (managedService && (!existing || existing.id !== managedService.id || cleaned.slug !== managedService.slug
+      || input.record.id !== managedService.id || !expectedUpdatedAt)) {
+    return errorResult("Managed service requires its exact existing row and version.", 403);
+  }
+  if (existing && expectedUpdatedAt && (isManagedExisting
     ? !samePgTimestamp(existing.updated_at, expectedUpdatedAt)
     : normalizeDate(existing.updated_at) !== normalizeDate(expectedUpdatedAt))) {
     return errorResult("This service was changed by someone else. Refresh before publishing.", 409, {
@@ -2035,6 +2127,13 @@ export async function publishContent(
   }
 
   delete cleaned.payload.id;
+
+  const writePayload = managedService?.changedFields
+    ? Object.fromEntries(managedService.changedFields.map((field) => [field, cleaned.payload[field]]))
+    : cleaned.payload;
+  if (managedService?.changedFields && Object.values(writePayload).some((value) => value === undefined)) {
+    return errorResult("Managed service patch has an invalid field.", 403);
+  }
 
   const action = existing ? (nextStatus === "published" ? "publish" : "update") : nextStatus === "published" ? "publish" : "insert";
   const commonBody = {
@@ -2058,15 +2157,14 @@ export async function publishContent(
     return {
       body: {
         ...commonBody,
-        payload_preview: cleaned.payload,
+        payload_preview: writePayload,
       },
     };
   }
 
-  const managedService = MANAGED_SERVICES.find((service) => service.id === existingId || service.slug === cleaned.slug);
   if (managedService) {
     const denied = await beginManagedCmsWrite(input, client, context, managedService, existing, cleaned.slug,
-      cleaned.payload, expectedUpdatedAt);
+      cleaned.payload, expectedUpdatedAt, writePayload);
     if (denied) return denied;
   }
 
@@ -2074,7 +2172,7 @@ export async function publishContent(
   try {
     saved = existingId
       ? managedService?.changedFields
-        ? await updateContentRecordAtVersion(client, "services", existingId, expectedUpdatedAt, cleaned.payload)
+        ? await updateContentRecordAtVersion(client, "services", existingId, expectedUpdatedAt, writePayload)
         : await updateServiceRecord(client, existingId, cleaned.payload)
       : await insertServiceRecord(client, cleaned.payload);
   } catch (error) {

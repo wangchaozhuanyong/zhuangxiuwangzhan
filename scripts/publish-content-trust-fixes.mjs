@@ -961,10 +961,10 @@ const targetConfigs = {
   ...Object.fromEntries(
     Object.entries({ ...lockedServiceCandidates, ...lockedR3Candidates }).map(([name, locked]) => [name, {
       contentType: locked.contentType || "service",
-      table: locked.contentType === "service_area" ? "service_areas" : "services",
+      table: locked.contentType === "service_area" ? "service_areas" : locked.contentType === "blog" ? "blog_posts" : "services",
       keyField: "slug",
       key: locked.slug,
-      fields: locked.contentType === "service_area" ? serviceAreaFields : serviceFields,
+      fields: locked.contentType === "service_area" ? serviceAreaFields : locked.contentType === "blog" ? blogFields : serviceFields,
       buildRecord: (current) => ({ ...current, ...locked.desiredFields }),
       publicPaths: locked.publicPaths,
       lockedCandidate: locked,
@@ -1009,7 +1009,7 @@ const assertLockedServiceCandidate = (locked, current) => {
   if (current.updated_at !== locked.expectedUpdatedAt) {
     fail(`Locked CMS updated_at drift for ${locked.candidateVersion}; obtain a new QA candidate.`);
   }
-  const fields = locked.contentType === "service_area" ? serviceAreaFields : serviceFields;
+  const fields = locked.contentType === "service_area" ? serviceAreaFields : locked.contentType === "blog" ? blogFields : serviceFields;
   const baseline = Object.fromEntries(fields.map((field) => [field, current[field]]));
   if (stableDigest(baseline) !== locked.baselineFieldsSha256) {
     fail(`Locked CMS field drift for ${locked.candidateVersion}; obtain a new QA candidate.`);
@@ -1049,22 +1049,29 @@ const requestGithubOidcToken = async () => {
   return result.value;
 };
 
-const buildLockedDryRunRequest = (locked, record, source) => ({
+const buildLockedDryRunRequest = (locked, record, source, operation = "publish") => ({
   contentType: locked.contentType || "service",
   mode: "dry-run",
   nextStatus: "published",
   expectedUpdatedAt: locked.expectedUpdatedAt,
+  ...(locked.contentType === "blog" ? { managedOperation: operation } : {}),
   record,
   source,
 });
 
-const assertLockedDryRunResult = (locked, response, httpStatus, before, after) => {
+const assertLockedDryRunResult = (locked, response, httpStatus, before, after, desired) => {
   if (httpStatus !== 200 || response.ok !== true || response.dry_run !== true
       || response.content_type !== (locked.contentType || "service") || response.existing_id !== locked.recordId
       || response.slug !== locked.slug || response.saved_id) {
     fail(`Protected dry-run did not confirm the exact locked candidate ${locked.candidateVersion}.`);
   }
   if (!valuesMatch(after, before)) fail(`CMS row changed during dry-run for ${locked.candidateVersion}.`);
+  if (locked.changedFields && (locked.contentType === "blog" || (locked.contentType || "service") === "service")) {
+    const patch = Object.fromEntries(locked.changedFields.map((field) => [field, desired[field]]));
+    if (!valuesMatch(response.payload_preview, patch) || stableDigest(response.payload_preview) !== stableDigest(patch)) {
+      fail(`Managed dry-run payload does not match its exact SQL patch for ${locked.candidateVersion}.`);
+    }
+  }
 };
 
 const fetchJson = async (url, options = {}, onStatus) => {
@@ -1178,7 +1185,7 @@ const main = async () => {
     ? `managed-cms:${config.lockedCandidate.taskId}:${rollbackFrom ? `rollback-${config.lockedCandidate.candidateVersion}` : config.lockedCandidate.actionId}`
     : `content-trust-20260821:${target}:${operation}`;
   const dryRun = await postContentPublish(config.lockedCandidate
-    ? { ...buildLockedDryRunRequest(config.lockedCandidate, desired, source), expectedUpdatedAt: rollbackFrom ? current.updated_at : config.lockedCandidate.expectedUpdatedAt }
+    ? { ...buildLockedDryRunRequest(config.lockedCandidate, desired, source, rollbackFrom ? "rollback" : "publish"), expectedUpdatedAt: rollbackFrom ? current.updated_at : config.lockedCandidate.expectedUpdatedAt }
     : {
       contentType: config.contentType,
       mode: "dry-run",
@@ -1190,7 +1197,7 @@ const main = async () => {
   if (config.lockedCandidate) {
     const locked = config.lockedCandidate;
     const afterDryRun = await fetchCurrent();
-    assertLockedDryRunResult(locked, dryRun, publisherHttpStatus, current, afterDryRun);
+    assertLockedDryRunResult(locked, dryRun, publisherHttpStatus, current, afterDryRun, desired);
     writeJson(path.join(outputDir, "locked-dry-run-receipt.json"), {
       task_id: locked.taskId,
       candidate_version: locked.candidateVersion,
@@ -1216,9 +1223,9 @@ const main = async () => {
       expected_updated_at: rollbackFrom ? current.updated_at : config.lockedCandidate.expectedUpdatedAt,
     });
     if (!rollbackFrom) {
-      const restoreDryRun = await postContentPublish(buildLockedDryRunRequest(config.lockedCandidate, current, `${source}:rollback-preview`));
+      const restoreDryRun = await postContentPublish(buildLockedDryRunRequest(config.lockedCandidate, current, `${source}:rollback-preview`, "rollback"));
       const afterRestorePreview = await fetchCurrent();
-      assertLockedDryRunResult(config.lockedCandidate, restoreDryRun, publisherHttpStatus, current, afterRestorePreview);
+      assertLockedDryRunResult(config.lockedCandidate, restoreDryRun, publisherHttpStatus, current, afterRestorePreview, current);
       writeJson(path.join(outputDir, "rollback-payload-digest.json"), {
         task_id: config.lockedCandidate.taskId,
         candidate_version: config.lockedCandidate.candidateVersion,
