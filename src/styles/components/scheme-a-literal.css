@@ -139,7 +139,6 @@
       padding: 0 !important;
     }
 
-    html[data-public-theme="dark"] .scheme-a-hero::after,
     html[data-public-theme="dark"] body .forest-home-hero::after {
       background:
         linear-gradient(to bottom, rgb(15 15 13 / 0.2) 0, transparent 24%),
