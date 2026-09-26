@@ -17,6 +17,7 @@ import { getAdminLang } from "@/lib/adminLocale";
 import { focusElementByIdWhenReady } from "@/lib/instantScroll";
 import { publicRoutes } from "@/routes/publicRoutes";
 import { PublicRouteImageGate } from "@/components/PublicRouteImageGate";
+import { publicContentStatusText } from "@/i18n/publicContentStatusText";
 import ScrollToTop from "./components/ScrollToTop";
 
 const AdminRouteTree = lazy(() => import("@/routes/AdminRouteTree"));
@@ -94,9 +95,9 @@ const PageLoader = () => {
   return (
     <main className="scheme-a-page-loader" role="status" aria-live="polite" aria-busy="true" data-route-pending="true">
       <div className="scheme-a-page-loader__brand">
-        <p>INTERIOR &amp; RENOVATION</p>
+        <p>{publicContentStatusText[language].loaderBrand}</p>
         <strong><span>FLASH</span><em>CAST</em></strong>
-        <span>{language === "zh" ? "空间正在显影" : "Bringing the space into focus"}</span>
+        <span>{publicContentStatusText[language].loaderPending}</span>
         <i aria-hidden="true" />
       </div>
     </main>

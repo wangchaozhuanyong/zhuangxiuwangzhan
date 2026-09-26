@@ -54,6 +54,7 @@
     "src/i18n/blogPageText.ts",
     "src/i18n/chunkLoadRecoveryText.ts",
     "src/i18n/contactPageText.ts",
+    "src/i18n/designServicePageText.ts",
     "src/i18n/faqPageText.ts",
     "src/i18n/footerText.ts",
     "src/i18n/homeSectionsText.ts",

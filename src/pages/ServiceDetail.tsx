@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { lazy, useMemo } from "react";
 import { useParams } from "react-router-dom";
 import { ArrowUpRight } from "lucide-react";
 import Link from "@/components/LocalizedLink";
@@ -18,6 +18,8 @@ import { isHtmlText, stripHtml } from "@/lib/text";
 import { isAiServiceConceptImage, isServiceConceptImage } from "@/lib/serviceMedia";
 import { mediaLabels } from "@/i18n/mediaLabels";
 
+const DesignServiceContent = lazy(() => import("@/components/services/DesignServiceContent"));
+
 const relatedServiceSlugs: Record<string, readonly string[]> = {
   "office-renovation": ["shop-renovation", "approval", "design"],
   "shop-renovation": ["office-renovation", "approval", "design"],
@@ -32,6 +34,8 @@ export default function ServiceDetail() {
   const fallbackServices = useMemo(() => servicesData.map((service) => language === "zh" ? ({ ...service, title: service.titleZh || translateDisplayText(service.title, language), summary: service.summaryZh || translateDisplayText(service.summary, language), description: service.descriptionZh || translateDisplayText(service.description, language), imageAlt: service.imageAltZh || service.imageAlt, suitableFor: service.suitableForZh || service.suitableFor.map((item) => translateDisplayText(item, language)), commonProjects: service.commonProjectsZh || service.commonProjects.map((item) => translateDisplayText(item, language)), processSteps: service.processStepsZh || service.processSteps, items: service.itemsZh || service.items, faqs: service.faqsZh || service.faqs, seoTitle: service.seoTitleZh || service.seoTitle, seoDescription: service.seoDescriptionZh || service.seoDescription }) : service), [language]);
   const services = cmsServices?.length ? cmsServices : fallbackServices;
   const service = cmsService || services.find((item) => item.slug === slug);
+
+  if (slug === "design") return <DesignServiceContent key={language} />;
 
   if (isLoading && !service) return <main className="fc-route-page" data-route-pending="true"><SchemeAContentState>{copy.loadingDescription}</SchemeAContentState></main>;
   if (!service) return <main className="fc-route-page"><PageMeta title={copy.notFound} description={copy.notFoundDescription} canonicalPath="/services" noIndex /><SchemeAContentState action={<Link to="/services">{copy.viewAll}</Link>}>{copy.notFound}</SchemeAContentState></main>;
