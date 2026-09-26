@@ -1,5 +1,6 @@
 import { useLayoutEffect, useState, type ReactNode } from "react";
 import { useLanguage } from "@/i18n/LanguageContext";
+import { publicContentStatusText } from "@/i18n/publicContentStatusText";
 
 const MAX_WAIT_MS = 5000;
 const readyRouteImages = new Map<string, string[]>();
@@ -90,15 +91,15 @@ export function PublicRouteImageGate({ children, routeKey }: { children: ReactNo
       {status !== "ready" ? (
         <div className="scheme-a-page-loader scheme-a-page-loader--overlay" role="status" aria-live="polite" aria-busy={status === "waiting"}>
           <div className="scheme-a-page-loader__brand">
-            <p>INTERIOR &amp; RENOVATION</p>
+            <p>{publicContentStatusText[language].loaderBrand}</p>
             <strong><span>FLASH</span><em>CAST</em></strong>
             <span>{status === "timeout"
-              ? language === "zh" ? "页面图片加载超时" : "Images are taking too long"
-              : language === "zh" ? "空间正在显影" : "Bringing the space into focus"}</span>
+              ? publicContentStatusText[language].loaderTimeout
+              : publicContentStatusText[language].loaderPending}</span>
             {status === "waiting" ? <i aria-hidden="true" /> : (
               <div className="scheme-a-page-loader__actions">
-                <button type="button" onClick={() => window.location.reload()}>{language === "zh" ? "重试" : "Retry"}</button>
-                <button type="button" onClick={() => setStatus("ready")}>{language === "zh" ? "继续浏览" : "Continue"}</button>
+                <button type="button" onClick={() => window.location.reload()}>{publicContentStatusText[language].loaderRetry}</button>
+                <button type="button" onClick={() => setStatus("ready")}>{publicContentStatusText[language].loaderContinue}</button>
               </div>
             )}
           </div>

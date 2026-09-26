@@ -1,5 +1,10 @@
 export const publicContentStatusText = {
   en: {
+    loaderBrand: "INTERIOR & RENOVATION",
+    loaderPending: "Bringing the space into focus",
+    loaderTimeout: "Images are taking too long",
+    loaderRetry: "Retry",
+    loaderContinue: "Continue",
     remoteErrorTitle: "Showing local fallback content",
     remoteErrorDescription: "The public content service is not responding right now. The page is using local fallback content.",
     remoteErrorAction: "Retry",
@@ -8,6 +13,11 @@ export const publicContentStatusText = {
     fallbackAction: "Reload",
   },
   zh: {
+    loaderBrand: "室内设计与装修",
+    loaderPending: "空间正在显影",
+    loaderTimeout: "页面图片加载超时",
+    loaderRetry: "重试",
+    loaderContinue: "继续浏览",
     remoteErrorTitle: "内容正在使用本地兜底",
     remoteErrorDescription: "后台内容接口暂时没有连上，页面先显示本地备用内容。你可以稍后重试刷新。",
     remoteErrorAction: "重试加载",

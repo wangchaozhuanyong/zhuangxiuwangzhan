@@ -38,11 +38,11 @@ describe("SmartImage", () => {
     container.remove();
   });
 
-  it("shows a retry action for failed critical images", async () => {
+  it.each(["critical", "ordinary"] as const)("shows a retry action for failed %s images", async (mode) => {
     const container = document.createElement("div");
     document.body.appendChild(container);
     const root = createRoot(container);
-    await act(async () => root.render(<SmartImage src="/broken.webp" alt="Broken" critical />));
+    await act(async () => root.render(<SmartImage src="/broken.webp" alt="Broken" critical={mode === "critical"} showFailureFallback={mode === "ordinary"} />));
     const image = container.querySelector<HTMLImageElement>(".smart-image");
     await act(async () => image?.dispatchEvent(new Event("error", { bubbles: true })));
     expect(image?.dataset.imageState).toBe("error");

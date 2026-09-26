@@ -2,11 +2,11 @@ import type { Language } from "@/i18n/routes";
 
 export const mediaLabels: Record<Language, { renderingConcept: string; aiConceptDisclosure: string }> = {
   en: {
-    renderingConcept: "Rendering concept",
-    aiConceptDisclosure: "AI-generated concept illustration, not a completed client project",
+    renderingConcept: "Design rendering",
+    aiConceptDisclosure: "Design rendering",
   },
   zh: {
-    renderingConcept: "效果图方案",
-    aiConceptDisclosure: "AI 生成概念示意，非客户完工实景",
+    renderingConcept: "设计效果图",
+    aiConceptDisclosure: "设计效果图",
   },
 };

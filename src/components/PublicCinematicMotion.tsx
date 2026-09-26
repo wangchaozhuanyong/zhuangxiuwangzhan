@@ -19,30 +19,34 @@ const PublicCinematicMotion = () => {
 
     const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     const finePointer = window.matchMedia("(min-width: 768px) and (hover: hover) and (pointer: fine)").matches;
-    const sections = Array.from(root.querySelectorAll<HTMLElement>(SECTION_SELECTOR))
-      .filter((section) => !section.closest("[aria-hidden='true']"));
-
-    if (reducedMotion || !finePointer || !("IntersectionObserver" in window)) {
-      sections.forEach((section) => { section.dataset.cinematicState = "visible"; });
-      return;
-    }
-
-    const observer = new IntersectionObserver((entries) => {
+    const seen = new WeakSet<HTMLElement>();
+    const observer = !reducedMotion && finePointer && "IntersectionObserver" in window ? new IntersectionObserver((entries) => {
       entries.forEach((entry) => {
         if (!entry.isIntersecting) return;
         const section = entry.target as HTMLElement;
         section.dataset.cinematicState = "visible";
         observer.unobserve(section);
       });
-    }, { rootMargin: "0px 0px -8%", threshold: 0.08 });
+    }, { rootMargin: "0px 0px -8%", threshold: 0.08 }) : null;
 
-    sections.forEach((section) => {
-      const isAlreadyInView = section.getBoundingClientRect().top <= window.innerHeight * 0.9;
-      section.dataset.cinematicState = isAlreadyInView ? "visible" : "pending";
-      if (!isAlreadyInView) observer.observe(section);
-    });
+    // Lazy route bodies can arrive after this effect, including language switches.
+    const registerSections = () => {
+      root.querySelectorAll<HTMLElement>(SECTION_SELECTOR).forEach((section) => {
+        if (seen.has(section) || section.closest("[aria-hidden='true']")) return;
+        seen.add(section);
+        const isAlreadyInView = !observer || section.getBoundingClientRect().top <= window.innerHeight * 0.9;
+        section.dataset.cinematicState = isAlreadyInView ? "visible" : "pending";
+        if (!isAlreadyInView) observer?.observe(section);
+      });
+    };
+    registerSections();
+    const contentObserver = new MutationObserver(registerSections);
+    contentObserver.observe(root, { childList: true, subtree: true });
 
-    return () => observer.disconnect();
+    return () => {
+      contentObserver.disconnect();
+      observer?.disconnect();
+    };
   }, [publicPath]);
 
   return null;
