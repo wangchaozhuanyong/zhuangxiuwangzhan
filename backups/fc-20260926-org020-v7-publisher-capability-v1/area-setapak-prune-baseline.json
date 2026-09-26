@@ -1,0 +1,78 @@
+{
+  "id": "5fa21a11-4f43-4aca-8635-80f010e3ee51",
+  "slug": "setapak",
+  "title_zh": "Setapak 装修公司",
+  "title_en": "Setapak Renovation Contractor",
+  "excerpt_zh": "FLASH CAST 提供 Setapak 住宅装修、旧屋翻新、厨房浴室、办公室、店铺和定制柜服务。",
+  "excerpt_en": "FLASH CAST provides Setapak home renovation, old house refurbishment, kitchen, bathroom, office, shop, and custom cabinet services.",
+  "content_zh": "<p>Setapak 装修项目需要同时考虑房屋类型、管理处规定、施工时段、材料进场、预算分项和售后责任。公寓项目较多，常见需求包括出租单位翻新、厨房橱柜、浴室维修和基础装修。</p><p>FLASH CAST 会先了解地区、面积、项目类型、预算和照片，再根据现场条件整理可执行的施工范围。业主可以通过 WhatsApp 或免费报价表单先提交资料，我们会协助判断下一步是否需要现场测量。</p><p>如果你正在寻找 Setapak renovation contractor、装修公司、厨房橱柜、浴室防水、办公室装修或店铺装修服务，这个页面会持续整理本地区案例、FAQ 和材料建议。</p>",
+  "content_en": "<p>Setapak renovation projects should consider property type, management rules, working hours, material delivery, itemized budget, and after-sales responsibility. Common project types include Condo, Terrace house, Semi-D, Office, Retail shop, Warehouse, with frequent requests such as Full renovation, Kitchen cabinet, Bathroom waterproofing, Built-in furniture, Office fit-out, Shop renovation.</p><p>FLASH CAST first reviews the location, area, project type, budget, photos, and site condition before preparing a practical scope. Owners can send details by WhatsApp or the free quote form so we can advise whether a site measurement is needed.</p><p>Setapak projects should confirm management application, working hours, material delivery, protection works, parking, and noise limits early. This page supports searches for Setapak renovation contractor, home renovation, kitchen cabinet, bathroom waterproofing, office renovation, shop renovation, and custom cabinet services.</p>",
+  "area_name": "Setapak",
+  "seo_title_zh": "Setapak 装修公司 | 住宅、旧屋、厨房、办公室与店铺装修",
+  "seo_title_en": "Setapak Renovation Contractor | Home, Office, Kitchen & Shop",
+  "seo_description_zh": "FLASH CAST 提供Setapak装修服务，覆盖吉隆坡、雪兰莪与巴生谷住宅、旧屋、厨房橱柜、浴室防水、办公室、店铺和定制柜项目。客户可先提交照片、面积、预算和工期，获取中文咨询与免费报价建议。",
+  "seo_description_en": "FLASH CAST provides Setapak renovation services for homes, old houses, kitchen cabinets, bathroom waterproofing, offices, shops, custom cabinets, and free quotation.",
+  "status": "published",
+  "sort_order": 150,
+  "created_at": "2026-05-25T18:01:51.601584+00:00",
+  "updated_at": "2026-08-22T08:46:18.327823+00:00",
+  "property_types": [
+    "Condo",
+    "Terrace house",
+    "Semi-D",
+    "Office",
+    "Retail shop",
+    "Warehouse"
+  ],
+  "common_needs": [
+    "Full renovation",
+    "Kitchen cabinet",
+    "Bathroom waterproofing",
+    "Built-in furniture",
+    "Office fit-out",
+    "Shop renovation"
+  ],
+  "construction_notes_zh": "Setapak 项目建议提前确认管理处申请、施工时间、材料运输、保护工程、停车安排和噪音限制。",
+  "construction_notes_en": "Setapak projects should confirm management application, working hours, material delivery, protection works, parking, and noise limits early.",
+  "projects": [
+    {
+      "type": "Residential Renovation",
+      "image": "/images/projects/residential-renovation.webp?v=20260601-content",
+      "title": "Setapak Residential Renovation Reference"
+    },
+    {
+      "type": "Commercial Fit-Out",
+      "image": "/images/projects/commercial-renovation.webp?v=20260601-content",
+      "title": "Setapak Commercial Fit-Out Reference"
+    }
+  ],
+  "faqs_zh": [
+    {
+      "a": "可以在初步了解项目类型、地点、出入条件、现场情况和时间安排后讨论。请先提供照片、大约面积和计划施工范围。",
+      "q": "Setapak 可以安排现场查看或测量吗？"
+    },
+    {
+      "a": "报价准备时间取决于施工范围是否明确、是否需要现场查看，以及材料、技术、管理处、业主、顾问或相关部门资料是否齐全。我们会在审核资料后说明下一步。",
+      "q": "Setapak 装修报价准备时间受哪些因素影响？"
+    },
+    {
+      "a": "可以。我们可以根据现有管理指南和项目范围一起核对。具体表格、图纸、合格人员、费用、押金、提交责任和审批结果，仍以相关管理处、业主、顾问或主管部门要求为准。",
+      "q": "可以一起核对管理处或审批要求吗？"
+    }
+  ],
+  "faqs_en": [
+    {
+      "a": "It can be discussed after we review the project type, location, access, current condition, and schedule. Share photos, approximate size, and intended scope first.",
+      "q": "Can a site visit or measurement be arranged in Setapak?"
+    },
+    {
+      "a": "Timing depends on how clear the scope is, whether a site review is needed, and whether material, technical, management, landlord, consultant, or authority details are outstanding. We confirm the next step after reviewing the information.",
+      "q": "What affects quotation preparation for a renovation in Setapak?"
+    },
+    {
+      "a": "Yes. We can review the available building guide and project scope with you. Required forms, drawings, qualified parties, fees, deposits, submissions, responsibilities, and approval decisions remain subject to the relevant management, landlord, consultants, or authority.",
+      "q": "Can management or approval requirements be reviewed?"
+    }
+  ],
+  "version": 1
+}

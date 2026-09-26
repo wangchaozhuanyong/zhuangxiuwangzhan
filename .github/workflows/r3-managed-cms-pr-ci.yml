@@ -9,10 +9,13 @@ on:
       - .github/workflows/content-publish-approved.yml
       - .github/workflows/supabase-content-publish-r3.yml
       - scripts/managed-cms-targets-r3-v2.mjs
+      - scripts/managed-cms-targets-org020-v7.mjs
       - scripts/publish-content-trust-fixes.mjs
       - scripts/supabase-content-publish-release.mjs
       - scripts/supabase-content-publish-release.test.mjs
       - src/lib/contentPublishService.test.ts
+      - src/lib/contentPublishOrg020V7.test.ts
+      - src/lib/contentPublishServiceArea.test.ts
       - src/lib/githubOidcPermit.test.ts
       - src/lib/managedContentPublishWorkflow.test.ts
       - src/lib/managedPermitAuth.test.ts
@@ -22,6 +25,7 @@ on:
       - supabase/functions/content-publish/github-oidc.ts
       - supabase/functions/content-publish/index.ts
       - supabase/functions/content-publish/managed-targets.ts
+      - supabase/functions/content-publish/org020-v7-targets.ts
       - supabase/functions/content-publish/managed-timestamp.ts
       - supabase/functions/content-publish/permit-auth.ts
       - supabase/functions/content-publish/permit-issuer.ts
@@ -70,6 +74,8 @@ jobs:
       - name: Run focused managed CMS tests
         run: |
           npm test -- \
+            src/lib/contentPublishOrg020V7.test.ts \
+            src/lib/contentPublishServiceArea.test.ts \
             src/lib/contentPublishService.test.ts \
             src/lib/topicClusterBlogRecordsScript.test.ts \
             src/lib/githubOidcPermit.test.ts \

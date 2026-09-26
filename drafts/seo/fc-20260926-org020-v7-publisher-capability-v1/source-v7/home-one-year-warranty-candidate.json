@@ -1,0 +1,59 @@
+{
+  "task_id": "fc-20260925-existing-page-content-gap-v1",
+  "backlog_item_id": "ORG-020",
+  "campaign_id": "free-seo-geo-longterm",
+  "roadmap_item_id": "LT-020",
+  "candidate_version": "home-one-year-warranty-r1-v7",
+  "action_id": "org020-home-one-year-warranty-v7",
+  "action_class": "cms_content_candidate",
+  "risk_level": "R1",
+  "publication_route": "cms_content_candidate -> cms_write -> protected content-publish",
+  "scope": "flashcast.com.my:faqs/c2fad758-eff4-4feb-a9fb-87e6cb5bf77e:answer_en,answer_zh",
+  "table": "faqs",
+  "record_id": "c2fad758-eff4-4feb-a9fb-87e6cb5bf77e",
+  "slug": null,
+  "target_urls": [
+    "https://flashcast.com.my/en",
+    "https://flashcast.com.my/zh"
+  ],
+  "intent_and_difference": "Add owner-confirmed quotation, 30 km measurement or one-year warranty boundary to the actual published FAQ row; question and sort order preserved.",
+  "expected_updated_at": "2026-08-21T15:49:57.402821+00:00",
+  "baseline_projection_fields": [
+    "id",
+    "page_key",
+    "question_zh",
+    "question_en",
+    "answer_zh",
+    "answer_en",
+    "status",
+    "sort_order",
+    "updated_at"
+  ],
+  "baseline_fields_sha256": "ca110819313f79322c675024879678fc8fb1b8570d91125f2cfeab71e9fe465a",
+  "desired_fields_sha256": "a9943008b1eb62c339ca35b19c65dcd13d18e9dc6d9afc8c5eb8c3bc7a0e1b9c",
+  "changed_fields": [
+    "answer_zh",
+    "answer_en"
+  ],
+  "desired_fields": {
+    "answer_zh": "FLASH CAST 提供一年保修，售后按已确认工程跟进。适用范围、起算时间、例外、供应商保修及申请方式须在书面报价或项目文件中确认。",
+    "answer_en": "FLASH CAST provides a one-year warranty and after-sales follow-up for the confirmed work. Coverage, start date, exclusions, supplier warranties and the claim process must be confirmed in the written quotation or project documents."
+  },
+  "request": null,
+  "diff_path": "drafts/seo/fc-20260925-existing-page-content-gap-v1/v7/home-one-year-warranty-diff.json",
+  "backup_path": "backups/fc-20260925-existing-page-content-gap-v1/v7/home-one-year-warranty-current-row.json",
+  "forward_recovery_path": "backups/fc-20260925-existing-page-content-gap-v1/v7/home-one-year-warranty-forward-recovery.json",
+  "company_fact_sources": [
+    "company-context.md",
+    "services-and-pricing.md",
+    "service-area.md",
+    "faq.md"
+  ],
+  "primary_sources": [],
+  "protected_target_status": "FAQ_EXACT_ROW_PATCH_CAPABILITY_MISSING",
+  "next_owner": "operations",
+  "capability_next_step": "Existing homepage FAQs publish inserts rows and optional archives all home FAQs; it cannot preserve exact IDs via an answer-only CAS patch and cannot update general FAQs. QA reviews exact content; protected maintainer must define a reviewed exact-row patch capability or identify an existing authenticated native exact-row update path. Do not use insert/replaceFaqs, invent contentType=faq or emit duplicate rows.",
+  "status": "ready_for_qa",
+  "qa_pass": false,
+  "production_write_executed": false
+}

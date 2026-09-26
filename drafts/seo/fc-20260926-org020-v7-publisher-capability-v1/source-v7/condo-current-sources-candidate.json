@@ -1,0 +1,110 @@
+{
+  "task_id": "fc-20260925-existing-page-content-gap-v1",
+  "backlog_item_id": "ORG-020",
+  "campaign_id": "free-seo-geo-longterm",
+  "roadmap_item_id": "LT-020",
+  "candidate_version": "condo-current-sources-r1-v7",
+  "action_id": "org020-condo-current-sources-v7",
+  "action_class": "cms_content_candidate",
+  "risk_level": "R1",
+  "publication_route": "cms_content_candidate -> cms_write -> protected content-publish",
+  "scope": "flashcast.com.my:blog_posts/701c2406-ba5b-4bbc-8d47-f985047d5c81:content_en,content_zh",
+  "table": "blog_posts",
+  "record_id": "701c2406-ba5b-4bbc-8d47-f985047d5c81",
+  "slug": "condo-renovation-management-approval-malaysia",
+  "target_urls": [
+    "https://flashcast.com.my/en/blog/condo-renovation-management-approval-malaysia",
+    "https://flashcast.com.my/zh/blog/condo-renovation-management-approval-malaysia"
+  ],
+  "intent_and_difference": "Replace obsolete entry URL and add current primary-source boundary plus actual service-owner links. Building-specific rules and company registration remain separate missing inputs.",
+  "expected_updated_at": "2026-08-22T12:22:48.46177+00:00",
+  "baseline_projection_fields": [
+    "id",
+    "slug",
+    "status",
+    "updated_at",
+    "title_zh",
+    "title_en",
+    "excerpt_zh",
+    "excerpt_en",
+    "content_zh",
+    "content_en",
+    "category",
+    "tags",
+    "cover_image_url",
+    "alt_zh",
+    "alt_en",
+    "seo_title_zh",
+    "seo_title_en",
+    "seo_description_zh",
+    "seo_description_en",
+    "published_at",
+    "sort_order"
+  ],
+  "baseline_fields_sha256": "33543229cebb5085fdd17d8c27a74c083b0ab1cedc7edb0f5b627d16275f63e1",
+  "desired_fields_sha256": "258a1d3f30917b2848c4792bea16c399ab6f1b6959738d3acb9abb58a6335e4b",
+  "changed_fields": [
+    "content_en",
+    "content_zh"
+  ],
+  "desired_fields": {
+    "content_en": "<p><strong>Direct answer：</strong>Condo management approval is building-specific. Obtain the current guide for the actual unit and match the renovation scope to its forms, deposits, access, protection, work-hour and contractor-document requirements.</p><p>How to use this guide: replace every point below with the property's actual dimensions, named responsibilities, approved drawings and written evidence before using it for quotation, approval or construction decisions.</p><h2>Get the current building pack</h2><p>Ask management for the latest forms, renovation guide, contractor requirements, deposit terms, work hours, lift booking, protection standard, debris route and inspection process.</p><h2>Describe the exact work</h2><p>Mark hacking, wet work, plumbing, electrical, air-conditioning, doors, windows, balcony, common-property interfaces and heavy deliveries. Avoid submitting a vague room list.</p><h2>Assign every document</h2><p>Record who supplies owner details, contractor registrations, worker lists, insurance, drawings, method statements and professional endorsements where required.</p><h2>Plan logistics before start</h2><p>Book lifts and loading, protect common areas, control tools and materials, arrange debris removal and inform neighbours or security where the building process requires it.</p><h2>Close the permit properly</h2><p>Keep inspection, cleaning, damage, key, deposit and defect records. Ask what evidence is required before management closes the renovation file or releases a deposit.</p><h2>Checklist before approval or start</h2><ul><li>Current management guide</li><li>Marked scope and drawings</li><li>Contractor and worker documents</li><li>Lift and access bookings</li><li>Protection and debris plan</li><li>Close-out and deposit evidence</li></ul><h2>Frequently asked questions</h2><h3>Is management approval a government permit?</h3><p>No. It is a separate building obligation; check whether authority approval also applies.</p><h3>Can the deposit be assumed refundable?</h3><p>Read the current terms and close-out conditions; do not rely on a verbal assumption.</p><h3>Should deliveries be booked?</h3><p>Follow the building's current loading, lift, protection and security process.</p><h2>Sources and scope boundary</h2><ul><li><a href=\"https://www.cidb.gov.my/eng/contractor-registration/\" target=\"_blank\" rel=\"noopener noreferrer\">CIDB contractor registration guidance</a></li><li><a href=\"https://www.dbkl.gov.my/jabatan/jabatan-kawalan-bangunan\" target=\"_blank\" rel=\"noopener noreferrer\">DBKL Department of Building Control</a></li></ul><p>The original guide was checked on 22 August 2026; the official entry points below were reviewed on 26 September 2026. Authority, management, consultant and manufacturer requirements can change; confirm the latest written requirements for the actual property, scope and selected product before making a final decision.</p><h2>Confirm the rules for your actual building</h2><p>The published strata regulations require prior written management approval and authority approval where needed; deposits and completion conditions can be imposed. Obtain the current building-specific forms, work hours, lift booking, protection and closure conditions instead of assuming one rule applies to every condo. The general regulation does not prove that any individual application is approved.</p><p>Primary reference: <a href=\"https://www.ppj.gov.my/storage/akta318/572/572.pdf\" target=\"_blank\" rel=\"noopener noreferrer\">Strata Management Regulations 2015, Third Schedule, renovation by-law 27</a>. For a property brief, see <a href=\"/en/services/renovation\">residential renovation</a> and <a href=\"/en/quote\">request a free quotation</a>.</p>",
+    "content_zh": "<p><strong>直接答案：</strong>公寓管理处审批取决于具体建筑。应取得实际单位的当前指南，并把工程范围对应到表格、押金、出入、保护、工作时间和承包商文件要求。</p><p>使用方法：把下列各项替换为本项目的实际尺寸、明确责任人、获批图纸和书面记录，再用于报价、审批或施工决定。</p><h2>取得当前建筑资料包</h2><p>向管理处索取最新表格、装修指南、承包商要求、押金、工作时间、电梯预约、保护标准、垃圾路线和检查流程。</p><h2>准确说明施工</h2><p>标明拆除、湿作业、水路、电气、空调、门窗、阳台、公共区域接口和大型运输，不能只提交模糊房间清单。</p><h2>分配每份文件责任</h2><p>记录业主资料、承包商注册、工人名单、保险、图纸、施工方法和需要的专业签署由谁提供。</p><h2>开工前规划物流</h2><p>预约电梯和卸货，保护公共区域，管理工具材料，安排清运，并按建筑流程通知邻居或保安。</p><h2>正确关闭装修申请</h2><p>保留检查、清洁、损坏、钥匙、押金和缺陷记录，并确认管理处关闭申请或退押金需要什么证据。</p><h2>开工或签约前检查清单</h2><ul><li>当前管理指南</li><li>标注范围与图纸</li><li>承包商和工人文件</li><li>电梯与出入预约</li><li>保护和清运计划</li><li>关闭申请与退押金证据</li></ul><h2>常见问题</h2><h3>管理处批准就是政府准证吗？</h3><p>不是，它是独立的建筑义务，还要确认是否涉及主管部门审批。</p><h3>押金一定会退吗？</h3><p>应阅读当前条款和关闭条件，不能只靠口头假设。</p><h3>运输要预约吗？</h3><p>按建筑当前卸货、电梯、保护和保安流程执行。</p><h2>资料来源与适用边界</h2><ul><li><a href=\"https://www.cidb.gov.my/eng/contractor-registration/\" target=\"_blank\" rel=\"noopener noreferrer\">CIDB 承包商注册官方说明</a></li><li><a href=\"https://www.dbkl.gov.my/jabatan/jabatan-kawalan-bangunan\" target=\"_blank\" rel=\"noopener noreferrer\">吉隆坡市政局建筑管制部门</a></li></ul><p>原指南核对日期：2026 年 8 月 22 日；下列官方入口于 2026 年 9 月 26 日复核。相关部门、管理处、顾问和产品制造商的要求可能变化；正式决定前请以项目所在地、具体范围和所选产品的最新书面资料为准。</p><h2>按实际建筑确认当前规则</h2><p>已发布的分层物业条例要求先取得管理单位书面批准，并在需要时取得主管机构批准；管理单位可要求押金和完成条件。应索取当前建筑的表格、施工时段、电梯预约、保护及关闭申请要求，不能认为所有公寓规则相同。一般法规不证明任何单个申请已经获批。</p><p>官方参考：<a href=\"https://www.ppj.gov.my/storage/akta318/572/572.pdf\" target=\"_blank\" rel=\"noopener noreferrer\">2015 分层物业管理条例，第三附表装修细则第 27 条</a>。物业需求可进入 <a href=\"/zh/services/renovation\">住宅装修服务</a>，或 <a href=\"/zh/quote\">申请免费报价</a>。</p>"
+  },
+  "request": {
+    "contentType": "blog",
+    "mode": "dry-run",
+    "nextStatus": "published",
+    "expectedUpdatedAt": "2026-08-22T12:22:48.46177+00:00",
+    "record": {
+      "id": "701c2406-ba5b-4bbc-8d47-f985047d5c81",
+      "slug": "condo-renovation-management-approval-malaysia",
+      "title_zh": "公寓装修管理处审批要准备什么",
+      "title_en": "Condo Renovation Management Approval in Malaysia",
+      "excerpt_zh": "按当前管理指南规划公寓装修表格、押金、工作时间、电梯、保护、承包商文件和检查。",
+      "excerpt_en": "Use the current management guide to plan condo renovation forms, deposits, work hours, lift access, protection, contractor documents and inspections.",
+      "content_zh": "<p><strong>直接答案：</strong>公寓管理处审批取决于具体建筑。应取得实际单位的当前指南，并把工程范围对应到表格、押金、出入、保护、工作时间和承包商文件要求。</p><p>使用方法：把下列各项替换为本项目的实际尺寸、明确责任人、获批图纸和书面记录，再用于报价、审批或施工决定。</p><h2>取得当前建筑资料包</h2><p>向管理处索取最新表格、装修指南、承包商要求、押金、工作时间、电梯预约、保护标准、垃圾路线和检查流程。</p><h2>准确说明施工</h2><p>标明拆除、湿作业、水路、电气、空调、门窗、阳台、公共区域接口和大型运输，不能只提交模糊房间清单。</p><h2>分配每份文件责任</h2><p>记录业主资料、承包商注册、工人名单、保险、图纸、施工方法和需要的专业签署由谁提供。</p><h2>开工前规划物流</h2><p>预约电梯和卸货，保护公共区域，管理工具材料，安排清运，并按建筑流程通知邻居或保安。</p><h2>正确关闭装修申请</h2><p>保留检查、清洁、损坏、钥匙、押金和缺陷记录，并确认管理处关闭申请或退押金需要什么证据。</p><h2>开工或签约前检查清单</h2><ul><li>当前管理指南</li><li>标注范围与图纸</li><li>承包商和工人文件</li><li>电梯与出入预约</li><li>保护和清运计划</li><li>关闭申请与退押金证据</li></ul><h2>常见问题</h2><h3>管理处批准就是政府准证吗？</h3><p>不是，它是独立的建筑义务，还要确认是否涉及主管部门审批。</p><h3>押金一定会退吗？</h3><p>应阅读当前条款和关闭条件，不能只靠口头假设。</p><h3>运输要预约吗？</h3><p>按建筑当前卸货、电梯、保护和保安流程执行。</p><h2>资料来源与适用边界</h2><ul><li><a href=\"https://www.cidb.gov.my/eng/contractor-registration/\" target=\"_blank\" rel=\"noopener noreferrer\">CIDB 承包商注册官方说明</a></li><li><a href=\"https://www.dbkl.gov.my/jabatan/jabatan-kawalan-bangunan\" target=\"_blank\" rel=\"noopener noreferrer\">吉隆坡市政局建筑管制部门</a></li></ul><p>原指南核对日期：2026 年 8 月 22 日；下列官方入口于 2026 年 9 月 26 日复核。相关部门、管理处、顾问和产品制造商的要求可能变化；正式决定前请以项目所在地、具体范围和所选产品的最新书面资料为准。</p><h2>按实际建筑确认当前规则</h2><p>已发布的分层物业条例要求先取得管理单位书面批准，并在需要时取得主管机构批准；管理单位可要求押金和完成条件。应索取当前建筑的表格、施工时段、电梯预约、保护及关闭申请要求，不能认为所有公寓规则相同。一般法规不证明任何单个申请已经获批。</p><p>官方参考：<a href=\"https://www.ppj.gov.my/storage/akta318/572/572.pdf\" target=\"_blank\" rel=\"noopener noreferrer\">2015 分层物业管理条例，第三附表装修细则第 27 条</a>。物业需求可进入 <a href=\"/zh/services/renovation\">住宅装修服务</a>，或 <a href=\"/zh/quote\">申请免费报价</a>。</p>",
+      "content_en": "<p><strong>Direct answer：</strong>Condo management approval is building-specific. Obtain the current guide for the actual unit and match the renovation scope to its forms, deposits, access, protection, work-hour and contractor-document requirements.</p><p>How to use this guide: replace every point below with the property's actual dimensions, named responsibilities, approved drawings and written evidence before using it for quotation, approval or construction decisions.</p><h2>Get the current building pack</h2><p>Ask management for the latest forms, renovation guide, contractor requirements, deposit terms, work hours, lift booking, protection standard, debris route and inspection process.</p><h2>Describe the exact work</h2><p>Mark hacking, wet work, plumbing, electrical, air-conditioning, doors, windows, balcony, common-property interfaces and heavy deliveries. Avoid submitting a vague room list.</p><h2>Assign every document</h2><p>Record who supplies owner details, contractor registrations, worker lists, insurance, drawings, method statements and professional endorsements where required.</p><h2>Plan logistics before start</h2><p>Book lifts and loading, protect common areas, control tools and materials, arrange debris removal and inform neighbours or security where the building process requires it.</p><h2>Close the permit properly</h2><p>Keep inspection, cleaning, damage, key, deposit and defect records. Ask what evidence is required before management closes the renovation file or releases a deposit.</p><h2>Checklist before approval or start</h2><ul><li>Current management guide</li><li>Marked scope and drawings</li><li>Contractor and worker documents</li><li>Lift and access bookings</li><li>Protection and debris plan</li><li>Close-out and deposit evidence</li></ul><h2>Frequently asked questions</h2><h3>Is management approval a government permit?</h3><p>No. It is a separate building obligation; check whether authority approval also applies.</p><h3>Can the deposit be assumed refundable?</h3><p>Read the current terms and close-out conditions; do not rely on a verbal assumption.</p><h3>Should deliveries be booked?</h3><p>Follow the building's current loading, lift, protection and security process.</p><h2>Sources and scope boundary</h2><ul><li><a href=\"https://www.cidb.gov.my/eng/contractor-registration/\" target=\"_blank\" rel=\"noopener noreferrer\">CIDB contractor registration guidance</a></li><li><a href=\"https://www.dbkl.gov.my/jabatan/jabatan-kawalan-bangunan\" target=\"_blank\" rel=\"noopener noreferrer\">DBKL Department of Building Control</a></li></ul><p>The original guide was checked on 22 August 2026; the official entry points below were reviewed on 26 September 2026. Authority, management, consultant and manufacturer requirements can change; confirm the latest written requirements for the actual property, scope and selected product before making a final decision.</p><h2>Confirm the rules for your actual building</h2><p>The published strata regulations require prior written management approval and authority approval where needed; deposits and completion conditions can be imposed. Obtain the current building-specific forms, work hours, lift booking, protection and closure conditions instead of assuming one rule applies to every condo. The general regulation does not prove that any individual application is approved.</p><p>Primary reference: <a href=\"https://www.ppj.gov.my/storage/akta318/572/572.pdf\" target=\"_blank\" rel=\"noopener noreferrer\">Strata Management Regulations 2015, Third Schedule, renovation by-law 27</a>. For a property brief, see <a href=\"/en/services/renovation\">residential renovation</a> and <a href=\"/en/quote\">request a free quotation</a>.</p>",
+      "category": "home-condo-approval",
+      "tags": [
+        "FLASH CAST",
+        "condo renovation",
+        "management approval",
+        "KL"
+      ],
+      "cover_image_url": "/images/services/renovation-works.webp",
+      "alt_zh": "住宅装修与审批规划",
+      "alt_en": "Home renovation and approval planning",
+      "seo_title_zh": "公寓装修管理处审批要准备什么",
+      "seo_title_en": "Condo Renovation Management Approval in Malaysia",
+      "seo_description_zh": "按当前管理指南规划公寓装修表格、押金、工作时间、电梯、保护、承包商文件和检查。",
+      "seo_description_en": "Use the current management guide to plan condo renovation forms, deposits, work hours, lift access, protection, contractor documents and inspections.",
+      "status": "published",
+      "published_at": "2026-05-26T01:00:00+00:00",
+      "created_at": "2026-05-25T18:01:51.978739+00:00",
+      "updated_at": "2026-08-22T12:22:48.46177+00:00",
+      "sort_order": 0,
+      "version": 1
+    }
+  },
+  "diff_path": "drafts/seo/fc-20260925-existing-page-content-gap-v1/v7/condo-current-sources-diff.json",
+  "backup_path": "backups/fc-20260925-existing-page-content-gap-v1/v7/condo-current-sources-current-row.json",
+  "forward_recovery_path": "backups/fc-20260925-existing-page-content-gap-v1/v7/condo-current-sources-forward-recovery.json",
+  "company_fact_sources": [
+    "company-context.md",
+    "services-and-pricing.md",
+    "service-area.md",
+    "faq.md"
+  ],
+  "primary_sources": [
+    "https://www.dbkl.gov.my/jabatan/jabatan-kawalan-bangunan",
+    "https://www.cidb.gov.my/eng/contractor-registration/",
+    "https://www.ppj.gov.my/storage/akta318/572/572.pdf"
+  ],
+  "protected_target_status": "NEW_EXACT_V7_TUPLE_NOT_DEPLOYED",
+  "next_owner": "operations",
+  "capability_next_step": "After content QA, review exact table/row/task/action/version/field/baseline/desired tuple with current protected maintainer; preserve old targets. Existing old target is not permission for this new tuple. No permit issued or consumed.",
+  "status": "ready_for_qa",
+  "qa_pass": false,
+  "production_write_executed": false
+}

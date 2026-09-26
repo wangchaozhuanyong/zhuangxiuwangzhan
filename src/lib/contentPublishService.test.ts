@@ -214,7 +214,7 @@ describe("content-publish service", () => {
         contentType: "service",
         mode: "dry-run",
         nextStatus: "published",
-        record: { slug: "shop-renovation", title_en: "Shop Renovation" },
+        record: { slug: "unlocked-service-test", title_en: "Shop Renovation" },
       },
       createReadOnlyClient() as unknown as ContentPublishClient,
       { role: "content_editor" },

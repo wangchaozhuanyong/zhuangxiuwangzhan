@@ -7,6 +7,7 @@ import { buildTopicClusterBlogRecord, topicClusterBlogConfigs } from "./topic-cl
 import { lockedR3Candidates } from "./managed-cms-targets-r3-v2.mjs";
 import { lockedKlMediaCandidates } from "./managed-cms-targets-kl-media-v1.mjs";
 import { lockedBlogMediaCandidates } from "./managed-cms-targets-blog-media-v1.mjs";
+import { lockedOrg020V7Candidates } from "./managed-cms-targets-org020-v7.mjs";
 
 const args = process.argv.slice(2);
 const execute = args.includes("--execute");
@@ -961,12 +962,12 @@ const targetConfigs = {
     ],
   },
   ...Object.fromEntries(
-    Object.entries({ ...lockedServiceCandidates, ...lockedR3Candidates, ...lockedKlMediaCandidates, ...lockedBlogMediaCandidates }).map(([name, locked]) => [name, {
+    Object.entries({ ...lockedServiceCandidates, ...lockedR3Candidates, ...lockedKlMediaCandidates, ...lockedBlogMediaCandidates, ...lockedOrg020V7Candidates }).map(([name, locked]) => [name, {
       contentType: locked.contentType || "service",
-      table: locked.contentType === "service_area" ? "service_areas" : locked.contentType === "blog" ? "blog_posts" : "services",
-      keyField: "slug",
-      key: locked.slug,
-      fields: locked.contentType === "service_area" ? serviceAreaFields : locked.contentType === "blog" ? blogFields : serviceFields,
+      table: locked.table || (locked.contentType === "service_area" ? "service_areas" : locked.contentType === "blog" ? "blog_posts" : "services"),
+      keyField: locked.keyField || "slug",
+      key: locked.keyField === "id" ? locked.recordId : locked.slug,
+      fields: locked.baselineProjectionFields || (locked.contentType === "service_area" ? serviceAreaFields : locked.contentType === "blog" ? blogFields : serviceFields),
       buildRecord: (current) => ({ ...current, ...locked.desiredFields }),
       publicPaths: locked.publicPaths,
       lockedCandidate: locked,
@@ -1005,13 +1006,14 @@ const valuesMatch = (left, right) => JSON.stringify(stableValue(left)) === JSON.
 const stableDigest = (value) => createHash("sha256").update(JSON.stringify(stableValue(value))).digest("hex");
 
 const assertLockedServiceCandidate = (locked, current) => {
-  if (current.id !== locked.recordId || current.slug !== locked.slug || current.status !== locked.status) {
+  const key = locked.contentType === "faq" ? `faq-${current.id}` : locked.contentType === "site_page" ? current.page_key : current.slug;
+  if (current.id !== locked.recordId || key !== locked.slug || current.status !== locked.status) {
     fail(`Locked CMS identity mismatch for ${locked.candidateVersion}.`);
   }
   if (current.updated_at !== locked.expectedUpdatedAt) {
     fail(`Locked CMS updated_at drift for ${locked.candidateVersion}; obtain a new QA candidate.`);
   }
-  const fields = locked.contentType === "service_area" ? serviceAreaFields : locked.contentType === "blog" ? blogFields : serviceFields;
+  const fields = locked.baselineProjectionFields || (locked.contentType === "service_area" ? serviceAreaFields : locked.contentType === "blog" ? blogFields : serviceFields);
   const baseline = Object.fromEntries(fields.map((field) => [field, current[field]]));
   if (stableDigest(baseline) !== locked.baselineFieldsSha256) {
     fail(`Locked CMS field drift for ${locked.candidateVersion}; obtain a new QA candidate.`);
@@ -1075,12 +1077,12 @@ const assertLockedDryRunResult = (locked, response, httpStatus, before, after, d
     fail(`Protected dry-run did not confirm the exact locked candidate ${locked.candidateVersion}.`);
   }
   if (!valuesMatch(after, before)) fail(`CMS row changed during dry-run for ${locked.candidateVersion}.`);
-  if (locked.changedFields && (locked.contentType === "blog"
+  if (locked.changedFields && (locked.exactPatchOnly || locked.contentType === "blog"
       || (locked.contentType === "service_area" && locked.baselineFieldsSha256)
       || (locked.contentType || "service") === "service")) {
     const patch = Object.fromEntries(locked.changedFields.map((field) => [field, desired[field]]));
     if (!valuesMatch(response.payload_preview, patch) || stableDigest(response.payload_preview) !== stableDigest(patch)) {
-      fail(`Managed dry-run payload does not match its exact SQL patch for ${locked.candidateVersion}.`);
+    fail(`Managed dry-run payload does not match its exact SQL patch for ${locked.candidateVersion}.`);
     }
   }
 };
@@ -1236,7 +1238,7 @@ const main = async () => {
       payload_sha256: stableDigest(dryRun.payload_preview),
       expected_updated_at: rollbackFrom ? current.updated_at : config.lockedCandidate.expectedUpdatedAt,
     });
-    if (!rollbackFrom) {
+    if (!rollbackFrom && !config.lockedCandidate.exactPatchOnly) {
       const restoreDryRun = await postContentPublish(buildLockedDryRunRequest(config.lockedCandidate, current, `${source}:rollback-preview`, "rollback"));
       const afterRestorePreview = await fetchCurrent();
       assertLockedDryRunResult(config.lockedCandidate, restoreDryRun, publisherHttpStatus, current, afterRestorePreview, current);
@@ -1245,6 +1247,19 @@ const main = async () => {
         candidate_version: config.lockedCandidate.candidateVersion,
         payload_sha256: stableDigest(restoreDryRun.payload_preview),
         baseline_fields_sha256: config.lockedCandidate.baselineFieldsSha256,
+      });
+    }
+    if (config.lockedCandidate.exactPatchOnly) {
+      // A prior payload digest is required by the existing issuer contract, but never authorizes restoring it.
+      const prior = Object.fromEntries(config.lockedCandidate.changedFields.map((field) => [field, current[field]]));
+      writeJson(path.join(outputDir, "rollback-payload-digest.json"), {
+        task_id: config.lockedCandidate.taskId,
+        candidate_version: config.lockedCandidate.candidateVersion,
+        payload_sha256: stableDigest(prior),
+        baseline_fields_sha256: config.lockedCandidate.baselineFieldsSha256,
+        restoration_allowed: false,
+        native_restore_preview_executed: false,
+        recovery: "Read the actual saved row and prepare a separately reviewed exact forward correction.",
       });
     }
     if (process.env.GITHUB_ACTIONS === "true") {
@@ -1260,7 +1275,9 @@ const main = async () => {
     }
   }
 
-  const rollbackCommand = config.lockedCandidate
+  const rollbackCommand = config.lockedCandidate?.exactPatchOnly
+    ? "Read the actual saved row; prepare a new reviewed exact forward correction. Prior-payload restore and permit replay are disabled."
+    : config.lockedCandidate
     ? `Issue a distinct one-time rollback permit bound to this completed publish permit and its saved_updated_at; run content-publish-approved.yml with managed_operation=rollback, parent_run_id=${process.env.GITHUB_RUN_ID || "PARENT_RUN_ID"}, and the new permit ID.`
     : `npm run content:trust-fixes -- --target=${target} --execute --approval-id=${approvalId || "OWNER-STANDING-WEBSITE-CONTENT-2026-08-14"} --rollback-from=${path.join(outputDir, "backup.json")} --env-dir=${envDir}`;
   writeText(path.join(outputDir, "CHANGELOG.md"), `# ${target} content trust change\n\n- Operation: ${operation}\n- Content type: ${config.contentType}\n- Bilingual paths: ${config.publicPaths.map((item) => item.path).join(", ")}\n- Backup: \`backup.json\`\n- Desired payload: \`desired.json\`\n- Dry run: \`dry-run.json\`\n- Rollback command: \`${rollbackCommand}\`\n`);

@@ -1,0 +1,52 @@
+{
+  "task_id": "fc-20260925-existing-page-content-gap-v1",
+  "parent_capability_task_id": "fc-20260926-org020-v7-publisher-capability-v1",
+  "backlog_item_id": "ORG-020",
+  "candidate_version": "general-quote-30km-answer-execution-r1-v8",
+  "action_id": "org020-general-quote-30km-v7-answer-execution-v8",
+  "risk_level": "R1",
+  "action_class": "cms_content_candidate",
+  "scope": "flashcast.com.my:faqs/baa8e461-1269-47a7-a82f-c81487c1c657:answer_en,answer_zh",
+  "source_frozen_candidate_path": "drafts/seo/fc-20260925-existing-page-content-gap-v1/v7/general-quote-30km-candidate.json",
+  "source_frozen_candidate_sha256": "41bd09cebd20f33185c007f34676188db20652f281ce5e82cdf870b7c196ec15",
+  "original_candidate_version": "general-quote-30km-r1-v7",
+  "original_action_id": "org020-general-quote-30km-v7",
+  "frozen_request_was_null": true,
+  "content_unchanged_from_frozen_v7": true,
+  "desired_fields_sha256": "9f07adf698d8bc4d23bb32d213eb977dc2ba8f0d71989d7f8372ab9a338806a1",
+  "baseline_fields_sha256": "94bcaa30663b1a0ea2d7b068f38886361b0138f32f2b70a6e12a11f40d29501c",
+  "changed_fields": [
+    "answer_zh",
+    "answer_en"
+  ],
+  "record_id": "baa8e461-1269-47a7-a82f-c81487c1c657",
+  "target": "org020-general-quote-30km-answer-r1-v8",
+  "request": {
+    "contentType": "faq",
+    "mode": "dry-run",
+    "nextStatus": "published",
+    "expectedUpdatedAt": "2026-05-29T12:52:02.57532+00:00",
+    "managedCandidate": {
+      "taskId": "fc-20260925-existing-page-content-gap-v1",
+      "actionId": "org020-general-quote-30km-v7-answer-execution-v8",
+      "candidateVersion": "general-quote-30km-answer-execution-r1-v8",
+      "scope": "flashcast.com.my:faqs/baa8e461-1269-47a7-a82f-c81487c1c657:answer_en,answer_zh",
+      "operation": "publish"
+    },
+    "record": {
+      "id": "baa8e461-1269-47a7-a82f-c81487c1c657",
+      "page_key": "general",
+      "question_zh": "可以先做免费报价咨询吗？",
+      "question_en": "Do you provide free quotation?",
+      "answer_zh": "可以先免费咨询与报价。提供地点、空间类型、照片或平面图及主要需求后，再确认量房安排。距离公司或服务点 30 公里以内可免费上门量房；超过 30 公里会收费，具体费用与预约须先确认。",
+      "answer_en": "An initial quotation is free. Share the location, property type, photos or plan and main requirements before confirming a site visit. Site measurement is free within 30 km of the company or service point; travel beyond 30 km is chargeable, with the amount and appointment confirmed first.",
+      "status": "published",
+      "sort_order": 10,
+      "updated_at": "2026-05-29T12:52:02.57532+00:00"
+    }
+  },
+  "status": "ready_for_qa",
+  "qa_pass": false,
+  "production_write_executed": false,
+  "new_capability_required": true
+}

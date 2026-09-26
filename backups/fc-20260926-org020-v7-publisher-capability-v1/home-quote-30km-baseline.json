@@ -1,0 +1,13 @@
+{
+  "id": "4cd35122-16d3-4f0d-a60c-49c8e0d996f8",
+  "page_key": "home",
+  "question_zh": "如何申请装修报价？",
+  "question_en": "How do I request a renovation quote?",
+  "answer_zh": "请提供地点、空间类型、大约面积、现场照片、现有问题和计划进行的项目。我们会先梳理需求，必要时安排现场评估，再按确认范围准备书面方案或报价。",
+  "answer_en": "Share the location, space type, approximate area, site photos, current issues, and the work you are considering. We can then clarify the scope, arrange a site review where needed, and prepare a written proposal or quotation for the confirmed items.",
+  "status": "published",
+  "sort_order": 20,
+  "created_at": "2026-08-21T15:49:56.800849+00:00",
+  "updated_at": "2026-08-21T15:49:56.800849+00:00",
+  "version": 1
+}
