@@ -120,7 +120,7 @@ describe("topic-cluster Blog publish records", () => {
     expect(workflow).toContain("path: audits/content-publish-${{ github.run_id }}");
   });
 
-  it("offers all eleven fixed CMS targets but blocks publish and rollback before production secrets", () => {
+  it("locks exact publish and safe rollback target sets before production secrets", () => {
     const workflow = readFileSync(
       resolve(process.cwd(), ".github/workflows/content-publish-approved.yml"),
       "utf8",
@@ -142,7 +142,19 @@ describe("topic-cluster Blog publish records", () => {
       expect(workflow).toContain(`          - ${target}`);
     }
     expect(workflow).toContain("Reject unverified locked-target writes before loading production credentials");
-    expect(workflow.split(`${lockedTargets.join("|")})`)).toHaveLength(3);
+    const mediaTargets = [
+      "org026-builtin-media-r1-v5", "org026-warehouse-media-r1-v5", "org026-office-renovation-media-r1-v5",
+      "blog-kitchen-cabinet-media-r1-v1", "blog-office-checklist-media-r1-v1",
+    ];
+    const rollbackTargets = [...lockedTargets, "kl-location-intent-r1-v2"];
+    const publishTargets = [...rollbackTargets, ...mediaTargets];
+    const cases = [...workflow.matchAll(/case "\$PUBLISH_TARGET" in\s*([^)]*)\)/g)]
+      .map((match) => match[1].trim().split("|"));
+    expect(cases).toHaveLength(2);
+    expect(cases[0]).toEqual(rollbackTargets);
+    expect(cases[1]).toEqual(publishTargets);
+    for (const target of publishTargets) expect(workflow).toContain(`          - ${target}`);
+    for (const target of mediaTargets) expect(cases[0]).not.toContain(target);
     expect(workflow.indexOf("Reject unverified locked-target writes before loading production credentials"))
       .toBeLessThan(workflow.indexOf("Confirm production source and required secrets"));
     for (const reference of ["qa_receipt_id", "release_decision_id", "policy_permit_id", "policy_scope"]) {

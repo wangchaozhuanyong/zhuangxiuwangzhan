@@ -277,6 +277,7 @@ describe("three locked CMS targets in the existing protected workflow", () => {
       .toEqual([...lockedTargets.map((item) => item.name), ...newTargets.map((item) => item.name),
         "blog-kitchen-cabinet-cost-r1-v1", "blog-renovation-quotation-links-r1-v1", "blog-office-checklist-links-r1-v1",
         "kl-location-intent-r1-v2", "org026-builtin-media-r1-v5", "org026-warehouse-media-r1-v5",
-        "org026-office-renovation-media-r1-v5"].sort());
+        "org026-office-renovation-media-r1-v5", "blog-kitchen-cabinet-media-r1-v1",
+        "blog-office-checklist-media-r1-v1"].sort());
   });
 });
