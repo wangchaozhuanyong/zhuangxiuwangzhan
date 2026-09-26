@@ -1,0 +1,103 @@
+{
+  "schema_version": "1.0",
+  "task_id": "fc-20260926-org027-org028-blog-media-implementation-v1",
+  "backlog_item_id": "ORG-027",
+  "candidate_type": "cms_content_candidate",
+  "action_class": "cms_write",
+  "release_channel": "cms_content_candidate -> cms_write -> protected content-publish",
+  "risk": "R1_PENDING_FIXED_QA",
+  "candidate_version": "kitchen-cabinet-price-malaysia-media-r1-v1",
+  "action_id": "replace-kitchen-cabinet-price-malaysia-cover-alt-v1",
+  "scope": "flashcast.com.my:blog_posts/3fa4ff63-1ee6-4b7c-8f32-792c948c8545:cover_image_url,alt_en,alt_zh",
+  "status": "READY_FOR_QA_EXECUTION_BLOCKED_PROTECTED_TARGET_MISSING",
+  "slug": "kitchen-cabinet-price-malaysia",
+  "cms_row_id": "3fa4ff63-1ee6-4b7c-8f32-792c948c8545",
+  "source": {
+    "observed_at_utc": "2026-09-26T05:58:15.379Z",
+    "source": "Anonymous public browser blog_posts response",
+    "page_url": "https://flashcast.com.my/en/blog/kitchen-cabinet-price-malaysia",
+    "http_status": 200,
+    "fields": [
+      "id",
+      "slug",
+      "title_zh",
+      "title_en",
+      "excerpt_zh",
+      "excerpt_en",
+      "content_zh",
+      "content_en",
+      "category",
+      "tags",
+      "cover_image_url",
+      "alt_zh",
+      "alt_en",
+      "seo_title_zh",
+      "seo_title_en",
+      "seo_description_zh",
+      "seo_description_en",
+      "status",
+      "published_at",
+      "created_at",
+      "updated_at",
+      "sort_order",
+      "version"
+    ],
+    "cms_write": false,
+    "credentials_saved": false
+  },
+  "expected_status": "published",
+  "expected_version": 1,
+  "expected_updated_at": "2026-09-25T20:44:41.209652+00:00",
+  "baseline_full_row_file_sha256": "d802d229a974d919fd17f7fce3e85b416524b532493cea72eabdf10d2abc7e41",
+  "baseline_canonical_fields_sha256": "3dd078cc97a2dc5cc444c6b719a1abc7a06a8de22ccfd0de38e37eb65a4d6cdd",
+  "desired_canonical_fields_sha256": "e8f02478322b875695c95bbdc5b85d009bc052d2915245a52c12806b7eacd547",
+  "hash_serialization": "UTF-8 JSON sort_keys=true ensure_ascii=false separators comma/colon; not an issuer-generated permit",
+  "source_full_row_backup": "/Users/wangchao/Desktop/装修公司虚拟员工/backups/fc-20260926-org027-org028-blog-media-implementation-v1/cms-readonly-baseline-v1/kitchen-cabinet-price-malaysia.json",
+  "allowed_fields": [
+    "cover_image_url",
+    "alt_en",
+    "alt_zh"
+  ],
+  "field_diff": {
+    "cover_image_url": {
+      "before": "/images/services/kitchen-renovation.webp",
+      "after": "/images/blog/editorial-concepts-20260926-v1/kitchen-cabinet-price-malaysia/kitchen-cover.webp"
+    },
+    "alt_zh": {
+      "before": "厨房装修与柜体规划",
+      "after": "现代厨房柜体、台面与高柜布局概念示意图"
+    },
+    "alt_en": {
+      "before": "Kitchen renovation and cabinetry planning",
+      "after": "Concept illustration of a modern kitchen with cabinetry, worktop and tall-unit layout"
+    }
+  },
+  "body_and_links_unchanged": true,
+  "desired_fields": {
+    "cover_image_url": "/images/blog/editorial-concepts-20260926-v1/kitchen-cabinet-price-malaysia/kitchen-cover.webp",
+    "alt_en": "Concept illustration of a modern kitchen with cabinetry, worktop and tall-unit layout",
+    "alt_zh": "现代厨房柜体、台面与高柜布局概念示意图"
+  },
+  "site_dependency": "org027-org028-blog-media-renderer-r2-v1; deploy and verify asset URLs before CMS write",
+  "protected_target": {
+    "status": "MISSING_FOR_THIS_MEDIA_TUPLE",
+    "existing_target_fields": "content/SEO only, different task/action/version",
+    "owner": "operations / authorized CMS publisher custodian",
+    "required_tuple": [
+      "fc-20260926-org027-org028-blog-media-implementation-v1",
+      "replace-kitchen-cabinet-price-malaysia-cover-alt-v1",
+      "kitchen-cabinet-price-malaysia-media-r1-v1",
+      "3fa4ff63-1ee6-4b7c-8f32-792c948c8545",
+      [
+        "cover_image_url",
+        "alt_en",
+        "alt_zh"
+      ]
+    ],
+    "capability_modified_this_task": false
+  },
+  "safe_recovery": "No restore of unverified old cover; rights-cleared forward repair or keep R2 text-only desktop transition; fresh row reread/CAS required before any later write",
+  "cms_saved_id": null,
+  "external_write_executed": false,
+  "paid_promotion_enabled": false
+}

@@ -12,6 +12,7 @@ import { translateBlogCategory, translateDisplayText } from "@/i18n/displayLabel
 import { formatBlogDate, formatBlogReadTime } from "@/lib/blogMeta";
 import { BLOG_TOPIC_KEYS, BLOG_TOPIC_SERVICE_PATHS, resolveBlogTopic } from "@/lib/blogTopics";
 import { pageHeroImages, resolvePageHeroImage } from "@/lib/pageHeroImages";
+import { getBlogEditorialMedia } from "@/lib/blogEditorialMedia";
 import Link from "@/components/LocalizedLink";
 
 const PAGE_SIZE = 9;
@@ -40,6 +41,8 @@ export default function Blog() {
     meta: [translateBlogCategory(resolveBlogTopic(post.category, post.slug), language), formatBlogReadTime(post.readTime, language), formatBlogDate(post.date, language)].filter(Boolean).join(" / "),
     image: post.image,
     imageAlt: post.imageAlt || post.title,
+    mediaDisclosure: getBlogEditorialMedia(post.slug)?.cmsCover === post.image
+      ? getBlogEditorialMedia(post.slug)?.disclosure[language] : undefined,
     href: `/blog/${post.slug}`,
   })), [filtered, language, visibleCount]);
 

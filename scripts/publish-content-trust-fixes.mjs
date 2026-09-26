@@ -6,6 +6,7 @@ import { loadEnv } from "vite";
 import { buildTopicClusterBlogRecord, topicClusterBlogConfigs } from "./topic-cluster-blog-records.mjs";
 import { lockedR3Candidates } from "./managed-cms-targets-r3-v2.mjs";
 import { lockedKlMediaCandidates } from "./managed-cms-targets-kl-media-v1.mjs";
+import { lockedBlogMediaCandidates } from "./managed-cms-targets-blog-media-v1.mjs";
 
 const args = process.argv.slice(2);
 const execute = args.includes("--execute");
@@ -960,7 +961,7 @@ const targetConfigs = {
     ],
   },
   ...Object.fromEntries(
-    Object.entries({ ...lockedServiceCandidates, ...lockedR3Candidates, ...lockedKlMediaCandidates }).map(([name, locked]) => [name, {
+    Object.entries({ ...lockedServiceCandidates, ...lockedR3Candidates, ...lockedKlMediaCandidates, ...lockedBlogMediaCandidates }).map(([name, locked]) => [name, {
       contentType: locked.contentType || "service",
       table: locked.contentType === "service_area" ? "service_areas" : locked.contentType === "blog" ? "blog_posts" : "services",
       keyField: "slug",

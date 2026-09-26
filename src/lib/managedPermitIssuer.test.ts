@@ -45,7 +45,7 @@ const clientFor = (parent?: Record<string, unknown>) => {
 };
 
 describe("protected managed CMS permit issuer", () => {
-  it.each([...MANAGED_SERVICES.slice(-3).filter((target) => target.rollbackAllowed !== false), ...MANAGED_AREAS, ...MANAGED_BLOGS])(
+  it.each([...MANAGED_SERVICES.slice(-3).filter((target) => target.rollbackAllowed !== false), ...MANAGED_AREAS, ...MANAGED_BLOGS.filter((target) => target.rollbackAllowed !== false)])(
     "binds a distinct publish and rollback permit to $slug", async (target) => {
       const publish = { ...base, taskId: target.taskId, actionId: target.actionId,
         candidateVersion: target.candidateVersion, recordId: target.id, slug: target.slug, scope: target.scope };
@@ -76,7 +76,7 @@ describe("protected managed CMS permit issuer", () => {
       }
     },
   );
-  it.each(MANAGED_SERVICES.filter((target) => target.rollbackAllowed === false))(
+  it.each([...MANAGED_SERVICES, ...MANAGED_BLOGS].filter((target) => target.rollbackAllowed === false))(
     "refuses to re-expose an unverified old image for $slug", async (target) => {
       const rollback = { ...base, taskId: target.taskId, recordId: target.id, slug: target.slug,
         scope: target.scope, actionId: `rollback-${target.candidateVersion}`,

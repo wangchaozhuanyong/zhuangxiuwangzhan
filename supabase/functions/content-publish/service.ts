@@ -1266,9 +1266,13 @@ async function publishBlogContent(
       currentUpdatedAt: existing.updated_at || null,
     });
   }
-  const managedBlog = MANAGED_BLOGS.find((blog) => blog.id === existingId || blog.slug === cleaned.slug
-    || blog.id === providedId);
-  const isManagedExisting = Boolean(managedBlog);
+  const isManagedExisting = MANAGED_BLOGS.some((blog) => blog.id === existingId
+    || blog.slug === cleaned.slug || blog.id === providedId);
+  const managedBlog = findManagedTarget(MANAGED_BLOGS, existingId, cleaned.slug,
+    input.managedPermit || (mode === "dry-run" ? input.managedCandidate : undefined));
+  if (isManagedExisting && !managedBlog) {
+    return errorResult("Managed Blog requires an exact locked row and candidate.", 403);
+  }
   if (managedBlog && (nextStatus !== "published" || existing?.status !== "published")) {
     return errorResult("Managed Blog must preserve its published status.", 403);
   }
