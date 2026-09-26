@@ -5,6 +5,8 @@ type PublicChromeContextValue = {
   setMenuOpen: (open: boolean) => void;
   hasImmersiveHero: boolean;
   registerImmersiveHero: (id: symbol) => () => void;
+  hasPageConsultation: boolean;
+  registerPageConsultation: (id: symbol) => () => void;
   /** 是否显示移动端底部固定行动栏（非后台且菜单未打开） */
   showMobileActionBar: boolean;
 };
@@ -37,6 +39,17 @@ export function PublicChromeProvider({
   const pendingMobileTravel = useRef(0);
   const immersiveHeroIds = useRef(new Set<symbol>());
   const [hasImmersiveHero, setHasImmersiveHero] = useState(false);
+  const consultationIds = useRef(new Set<symbol>());
+  const [hasPageConsultation, setHasPageConsultation] = useState(false);
+
+  const registerPageConsultation = useCallback((id: symbol) => {
+    consultationIds.current.add(id);
+    setHasPageConsultation(true);
+    return () => {
+      consultationIds.current.delete(id);
+      setHasPageConsultation(consultationIds.current.size > 0);
+    };
+  }, []);
 
   const registerImmersiveHero = useCallback((id: symbol) => {
     immersiveHeroIds.current.add(id);
@@ -162,9 +175,11 @@ export function PublicChromeProvider({
       setMenuOpen,
       hasImmersiveHero,
       registerImmersiveHero,
+      hasPageConsultation,
+      registerPageConsultation,
       showMobileActionBar,
     }),
-    [hasImmersiveHero, menuOpen, registerImmersiveHero, showMobileActionBar],
+    [hasImmersiveHero, hasPageConsultation, menuOpen, registerImmersiveHero, registerPageConsultation, showMobileActionBar],
   );
 
   return <PublicChromeContext.Provider value={value}>{children}</PublicChromeContext.Provider>;
@@ -176,4 +191,10 @@ export function usePublicChrome() {
     throw new Error("usePublicChrome must be used within PublicChromeProvider");
   }
   return context;
+}
+
+/** A mounted page CTA replaces the generic footer invitation, including on route changes. */
+export function usePageConsultation() {
+  const { registerPageConsultation } = usePublicChrome();
+  useLayoutEffect(() => registerPageConsultation(Symbol("page-consultation")), [registerPageConsultation]);
 }

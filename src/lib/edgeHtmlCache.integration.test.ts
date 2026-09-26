@@ -524,14 +524,12 @@ describe("public Edge HTML cache", () => {
     const response = await requestPage({ path: "/zh" });
     const html = await response.text();
 
-    expect(html).toContain('/images/_responsive/heroes/w360/v4/home-atelier-mobile.webp');
-    expect(html).toContain('/images/_responsive/heroes/w560/v4/home-atelier-tablet.webp');
-    expect(html).toContain('/images/_responsive/heroes/w720/v4/home-atelier-desktop.webp');
-    expect(html).toContain('media="(max-width: 767px)"');
-    expect(html).toContain('media="(min-width: 768px) and (max-width: 1179px)"');
-    expect(html).toContain('media="(min-width: 1180px)"');
-    expect(html).toContain('imagesizes="(min-width: 90rem) max(58vw, 178vh), (min-width: 73.75rem) max(60vw, 178vh), 100vw"');
-    expect(html).not.toContain('imagesizes="(min-width: 1440px) 58vw, 60vw"');
+    expect(html).toContain('/images/_responsive/heroes/w360/v6/home-daylight-mobile.webp');
+    expect(html).toContain('/images/_responsive/heroes/w720/v6/home-daylight-desktop.webp');
+    expect(html).toContain('media="(max-width: 1023px)"');
+    expect(html).toContain('media="(min-width: 1024px)"');
+    expect(html).toContain('imagesizes="100vw"');
+    expect(html).not.toContain('home-atelier-');
     expect(html).not.toContain('rel="preload" as="image" href="/images/heroes/hero-luxury-living.webp"');
   });
 
@@ -540,7 +538,7 @@ describe("public Edge HTML cache", () => {
     const html = await response.text();
 
     expect(html).not.toContain("data-flashcast-dynamic-image-preloads");
-    expect(html).not.toContain("home-atelier-");
+    expect(html).not.toContain("home-daylight-");
   });
 
   it("does not reuse cached HTML after the published content revision advances", async () => {

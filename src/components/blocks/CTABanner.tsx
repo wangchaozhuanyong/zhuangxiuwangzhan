@@ -5,6 +5,7 @@ import { trackCtaClick } from "@/lib/analytics";
 import { QUOTE_FORM_PATH } from "@/lib/quoteContext";
 import { cn } from "@/lib/utils";
 import { ArrowRight } from "lucide-react";
+import { usePageConsultation } from "@/contexts/PublicChromeContext";
 
 interface CTABannerProps {
   title?: string;
@@ -27,6 +28,7 @@ const CTABanner = ({
   whatsappSource = "Subpage CTA",
   whatsappMessage,
 }: CTABannerProps) => {
+  usePageConsultation();
   const settings = useSiteSettings();
 
   return (

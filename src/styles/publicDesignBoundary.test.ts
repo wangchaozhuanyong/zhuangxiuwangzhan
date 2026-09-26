@@ -74,12 +74,10 @@ describe("public design boundary", () => {
     expect(sectionSpacing).toContain("--public-section-space-end: 18px;");
   });
 
-  it("keeps the home materials content structured without the retired left rail", () => {
+  it("keeps the home materials content without the retired left rail", () => {
     const homeStyles = readFileSync(resolve(process.cwd(), "src/styles/components/home-atelier.css"), "utf8");
 
     expect(homeStyles).toMatch(/\.scheme-a-home--atelier \.scheme-a-materials__copy \{[\s\S]*?border-left: 0;/);
-    expect(homeStyles).toMatch(/\.scheme-a-materials__tags \{[\s\S]*?counter-reset: material-item;/);
-    expect(homeStyles).toMatch(/\.scheme-a-materials__tags li::before \{[\s\S]*?decimal-leading-zero/);
   });
 
   it("starts every mobile footer directory group collapsed", () => {

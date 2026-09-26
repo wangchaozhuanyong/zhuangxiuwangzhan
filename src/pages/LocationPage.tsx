@@ -11,7 +11,7 @@ import {
   SchemeAFaqList,
   SchemeALinkGrid,
   SchemeAListingGrid,
-  SchemeANumberList,
+  SchemeAFeatureList,
   SchemeARouteHero,
   SchemeASection,
   type SchemeAListingItem,
@@ -123,9 +123,9 @@ export default function LocationPage() {
         { label: language === "zh" ? "协调" : "Coordination", value: language === "zh" ? "管理处申请" : "Management approval" },
       ]} />
       <SchemeASection title={copy.trusted(location.name)} description={introParagraphs}>
-        <SchemeANumberList items={location.commonNeeds.map((item) => ({ title: display(item) }))} />
+        <SchemeAFeatureList items={location.commonNeeds.map(display)} />
       </SchemeASection>
-      {location.constructionNotes ? <SchemeASection title={copy.permitNotes} description={display(location.constructionNotes)}><SchemeANumberList items={location.propertyTypes.map((item) => ({ title: display(item) }))} /></SchemeASection> : null}
+      {location.constructionNotes ? <SchemeASection title={copy.permitNotes} description={display(location.constructionNotes)}><SchemeAFeatureList items={location.propertyTypes.map(display)} /></SchemeASection> : null}
       {projectItems.length ? <SchemeASection title={copy.featuredProjects(location.name)}><SchemeAListingGrid items={projectItems} actionLabel={copy.internalProjects} /></SchemeASection> : null}
       {contextLinks.length ? (
         <SchemeASection title={copy.resourceTitle(location.name)} description={copy.resourceDescription}>

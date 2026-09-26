@@ -4,8 +4,10 @@ import Link from "@/components/LocalizedLink";
 import WhatsAppIcon from "@/components/WhatsAppIcon";
 import PageMeta from "@/components/PageMeta";
 import { JsonLdBreadcrumb, JsonLdFAQ, JsonLdService } from "@/components/JsonLd";
+import { usePageConsultation } from "@/contexts/PublicChromeContext";
 import {
   SchemeAFaqList,
+  SchemeAFeatureList,
   SchemeALinkGrid,
   SchemeANumberList,
   SchemeARouteHero,
@@ -36,6 +38,7 @@ const oldHouseComparisonMedia = {
 } as const;
 
 const OldHouseRenovation = () => {
+  usePageConsultation();
   const { language } = useLanguage();
   const settings = useSiteSettings();
   const t = oldHouseRenovationPageText[language];
@@ -127,7 +130,7 @@ const OldHouseRenovation = () => {
       </SchemeASection>
 
       <SchemeASection title={t.scopeTitle} description={t.scopeDescription}>
-        <SchemeANumberList items={t.scope.map((item) => ({ title: item }))} />
+        <SchemeAFeatureList items={t.scope} />
       </SchemeASection>
 
       <SchemeASection title={t.processTitle} description={t.processDescription}>
