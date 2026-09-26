@@ -21,7 +21,7 @@
   }
 
   html[data-public-theme="dark"] .scheme-a-public-shell .scheme-a-home--atelier .scheme-a-hero h1 {
-    width: max-content;
+    width: 100%;
     max-width: 100%;
     font-size: clamp(2.75rem, 3.2vw, 4.5rem);
   }
@@ -31,7 +31,7 @@
   }
 
   html[data-public-theme="dark"] .scheme-a-public-shell .scheme-a-home--atelier .scheme-a-hero h1 span {
-    white-space: nowrap;
+    white-space: normal;
   }
 
   html[data-public-theme="dark"] .scheme-a-public-shell .scheme-a-home--atelier .scheme-a-hero__metrics {

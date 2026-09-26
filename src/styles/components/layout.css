@@ -676,19 +676,9 @@
     text-align: center;
   }
 
-  .subpage-local-heading .accent-line {
-    margin-left: auto;
-    margin-right: auto;
-  }
-
   .subpage-local-heading--balanced {
     margin-bottom: 1rem;
     text-align: center;
-  }
-
-  .subpage-local-heading--balanced .accent-line {
-    margin-left: auto;
-    margin-right: auto;
   }
 
   @media (min-width: 768px) {
@@ -700,10 +690,6 @@
       text-align: left;
     }
 
-    .subpage-local-heading--balanced .accent-line {
-      margin-left: 0;
-      margin-right: 0;
-    }
   }
 
   .text-steel {

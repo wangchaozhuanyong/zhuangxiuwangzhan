@@ -119,8 +119,8 @@ const SchemeAHome = ({ content }: SchemeAHomeProps) => {
           )}
           {usesAtelierHero && <figcaption>{copy.heroConceptLabel}</figcaption>}
         </figure>
-        <div className="scheme-a-hero__copy">
-          <p className="scheme-a-eyebrow">{copy.heroKicker}</p>
+        <div className="scheme-a-hero__copy scheme-a-heading">
+          <p className="sr-only">{copy.heroKicker}</p>
           <h1 id="scheme-a-home-title">
             <span>{copy.heroTitle}</span>
             {" "}
@@ -157,7 +157,7 @@ const SchemeAHome = ({ content }: SchemeAHomeProps) => {
 
       <section className="scheme-a-services" data-home-section="services" data-cinematic-section>
         <div className="scheme-a-frame scheme-a-services__layout">
-          <header>
+          <header className="scheme-a-heading">
             <p className="scheme-a-eyebrow">{copy.servicesLabel}</p>
             <h2>{copy.servicesTitle}</h2>
             <div className="scheme-a-services__context">
@@ -181,7 +181,7 @@ const SchemeAHome = ({ content }: SchemeAHomeProps) => {
 
       <section className="scheme-a-project" data-home-section="projects" data-cinematic-section>
         <div className="scheme-a-frame scheme-a-section-head">
-          <div>
+          <div className="scheme-a-heading">
             <p className="scheme-a-eyebrow">{copy.projectLabel}</p>
             <h2>{copy.projectTitle}</h2>
           </div>
@@ -294,9 +294,11 @@ const SchemeAHome = ({ content }: SchemeAHomeProps) => {
             </div>
           </figure>
           <div className="scheme-a-materials__copy">
-            <p className="scheme-a-eyebrow">{copy.trustLabel}</p>
-            <h2>{copy.trustTitle}</h2>
-            <p>{copy.trustBody}</p>
+            <header className="scheme-a-heading">
+              <p className="scheme-a-eyebrow">{copy.trustLabel}</p>
+              <h2>{copy.trustTitle}</h2>
+              <p>{copy.trustBody}</p>
+            </header>
             {copy.trustPoints && (
               <ul className="scheme-a-materials__tags" aria-label={copy.trustLabel}>
                 {copy.trustPoints.map((point) => (
@@ -315,7 +317,7 @@ const SchemeAHome = ({ content }: SchemeAHomeProps) => {
       {presentation.processSteps.length > 0 && (
         <section className="scheme-a-home-process" data-home-section="process" data-content-source={presentation.processSource} data-cinematic-section>
           <div className="scheme-a-frame scheme-a-section-head">
-            <div>
+            <div className="scheme-a-heading">
               <p className="scheme-a-eyebrow">{copy.processLabel}</p>
               <h2>{copy.processTitle}</h2>
             </div>
@@ -335,7 +337,7 @@ const SchemeAHome = ({ content }: SchemeAHomeProps) => {
       {faqItems.length > 0 && (
         <section className="scheme-a-home-faq" data-home-section="faq" data-cinematic-section>
           <div className="scheme-a-frame scheme-a-home-faq__layout">
-            <header>
+            <header className="scheme-a-heading">
               <p className="scheme-a-eyebrow">{copy.faqLabel}</p>
               <h2>{copy.faqTitle}</h2>
               <p>{copy.faqDescription}</p>

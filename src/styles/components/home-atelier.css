@@ -137,7 +137,7 @@
   }
 
   html[lang="en"][data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-hero h1 {
-    max-width: 14ch;
+    max-width: min(100%, 22ch);
     font-size: clamp(2.6rem, 3.8vw, 4.5rem);
     line-height: 1.12;
     letter-spacing: -0.025em;
@@ -157,6 +157,7 @@
   }
 
   html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-actions {
+    justify-content: center;
     gap: 1.2rem;
     align-items: center;
     padding-top: clamp(1.5rem, 3.5vh, 2.4rem);

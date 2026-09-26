@@ -420,10 +420,15 @@
   }
 
   .scheme-a-chrome :is(a, button):focus-visible,
-  .scheme-a-directory :is(a, button):focus-visible,
   .scheme-a-footer :is(a, button, summary):focus-visible {
     outline: 2px solid #d7ae6b;
     outline-offset: 3px;
+  }
+
+  .scheme-a-directory :is(a, button):focus-visible {
+    outline: 2px solid rgb(245 241 233 / 0.65);
+    outline-offset: -2px;
+    border-radius: 6px;
   }
 
   .scheme-a-chrome :is(.scheme-a-chrome__quote, .scheme-a-chrome__menu):active,
@@ -1179,20 +1184,19 @@
       min-height: auto;
       flex: 0 0 auto;
       grid-template-columns: 1fr;
-      gap: 0.45rem;
+      gap: 10px;
       overflow: visible;
       border-top: 0;
     }
 
     .scheme-a-directory__groups section {
-      border-radius: 3px;
-      background: #1a1a17;
-      transition: background 180ms ease, box-shadow 180ms ease;
+      border-radius: 6px;
+      background: #171819;
+      transition: background 180ms ease;
     }
 
     .scheme-a-directory__groups section[data-open="true"] {
-      background: #22221e;
-      box-shadow: inset 2px 0 #cda766, inset 0 1px rgb(255 255 255 / 0.035);
+      background: #222427;
     }
 
     .scheme-a-directory__group-toggle {
@@ -1201,7 +1205,7 @@
       padding-inline: 1rem;
       color: #eee9df;
       font-family: var(--font-body);
-      font-size: 1.0625rem;
+      font-size: 1rem;
       font-weight: 600;
       letter-spacing: -0.01em;
       line-height: 1.3;
@@ -1224,27 +1228,35 @@
 
     .scheme-a-directory__groups ul {
       display: none;
-      padding: 0.05rem 0.55rem 0.7rem;
+      padding: 0 8px 10px;
     }
 
     .scheme-a-directory__groups section[data-open="true"] ul {
       display: block;
+      animation: scheme-directory-group-in 180ms ease;
     }
 
     .scheme-a-directory__groups a {
       min-height: 46px;
       border-bottom: 0;
-      padding-inline: 1rem 0.9rem;
+      padding-inline: 16px 12px;
       color: #bdb7ac;
       font-family: var(--font-body);
-      font-size: 0.9375rem;
+      font-size: 0.875rem;
       font-weight: 400;
       line-height: 1.45;
+      border-radius: 4px;
+      transition: color 180ms ease, background 180ms ease;
     }
 
     .scheme-a-directory__groups a[aria-current="page"] {
-      color: #fffaf0;
-      font-weight: 500;
+      color: #ead4a9;
+      background: rgb(212 178 118 / 0.1);
+      font-weight: 600;
+    }
+
+    .scheme-a-directory__groups a:not([aria-current="page"]):hover {
+      background: rgb(255 255 255 / 0.035);
     }
 
     .scheme-a-directory__groups a svg {
@@ -1924,6 +1936,7 @@
 
   @media (prefers-reduced-motion: reduce) {
     .scheme-a-directory,
+    .scheme-a-directory__groups ul,
     .scheme-a-chrome,
     .scheme-a-directory__groups a,
     .scheme-a-footer__directory a,
@@ -1941,6 +1954,11 @@
   @keyframes scheme-directory-in {
     from { opacity: 0; clip-path: inset(0 0 100% 0); }
     to { opacity: 1; clip-path: inset(0); }
+  }
+
+  @keyframes scheme-directory-group-in {
+    from { opacity: 0; transform: translateY(-3px); }
+    to { opacity: 1; transform: translateY(0); }
   }
 
   @keyframes scheme-loader {

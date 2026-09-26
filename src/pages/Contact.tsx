@@ -446,12 +446,11 @@ const Contact = () => {
       <section className="forest-map-section section-padding section-padding--continued bg-background">
         <div className="container-narrow">
           <Reveal>
-            <div className="forest-map-heading mb-8 flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between">
-              <div>
-                <div className="accent-line mb-4" />
+            <div className="forest-map-heading mb-6 flex flex-col items-center gap-5">
+              <header className="scheme-a-heading">
                 <h2 className="font-display text-2xl md:text-3xl font-bold mb-3">{t.mapTitle}</h2>
                 <p className="text-muted-foreground text-sm">{mapDescription}</p>
-              </div>
+              </header>
               <Dialog>
                 <DialogTrigger asChild>
                   <Button type="button" className="btn-brand-secondary min-h-11 shrink-0 rounded-sm">

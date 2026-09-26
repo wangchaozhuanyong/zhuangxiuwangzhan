@@ -312,8 +312,7 @@ const Quote = () => {
         <div className="fc-route-quote-layout container-narrow grid gap-10 lg:grid-cols-[1.1fr_0.9fr]">
           <Reveal className="fc-route-quote-form-wrap">
             <div id={QUOTE_FORM_ID} className="fc-route-quote-form subpage-form-panel p-5 md:p-8" aria-labelledby="quote-form-title">
-              <div className="subpage-local-heading">
-                <div className="accent-line mb-4" />
+              <div className="subpage-local-heading scheme-a-heading">
                 <h2 id="quote-form-title" tabIndex={-1} className="font-display text-2xl font-bold md:text-3xl">{t.formTitle}</h2>
               </div>
 
