@@ -1,0 +1,77 @@
+{
+  "id": "e2e461b7-3bb8-4206-817a-7f830824b8ac",
+  "slug": "selangor",
+  "title_zh": "Selangor 装修公司",
+  "title_en": "Selangor Renovation Contractor",
+  "excerpt_zh": "FLASH CAST 提供 Selangor 住宅装修、旧屋翻新、厨房浴室、办公室、店铺和定制柜服务。",
+  "excerpt_en": "FLASH CAST provides Selangor home renovation, old house refurbishment, kitchen, bathroom, office, shop, and custom cabinet services.",
+  "content_zh": "<p>Selangor 装修项目需要同时考虑房屋类型、管理处规定、施工时段、材料进场、预算分项和售后责任。住宅、办公室和零售店铺等项目需结合现场条件确认测量安排、预算分项和施工范围。仓储相关服务仅限货架、通道规划、地面标线及存储分区，具体范围以现场评估与报价为准。</p><p>FLASH CAST 会先了解地区、面积、项目类型、预算和照片，再根据现场条件整理可执行的施工范围。业主可以通过 WhatsApp 或免费报价表单先提交资料，我们会协助判断下一步是否需要现场测量。</p><p>如果你正在寻找 Selangor renovation contractor、装修公司、厨房橱柜、浴室防水、办公室装修或店铺装修服务，这个页面会持续整理本地区案例、FAQ 和材料建议。</p>",
+  "content_en": "<p>Selangor renovation projects should consider property type, management rules, working hours, material delivery, itemized budget, and after-sales responsibility. Common project types include Condo, Terrace house, Semi-D, Office, and Retail shop, with frequent requests such as Full renovation, Kitchen cabinet, Bathroom waterproofing, Built-in furniture, Office fit-out, and Shop renovation. For warehouse-related needs, the confirmed scope is limited to racking, aisle planning, floor marking, and storage zoning; exact work is subject to a site review and quotation.</p><p>FLASH CAST first reviews the location, area, project type, budget, photos, and site condition before preparing a practical scope. Owners can send details by WhatsApp or the free quote form so we can advise whether a site measurement is needed.</p><p>Selangor projects should confirm management application, working hours, material delivery, protection works, parking, and noise limits early. This page supports searches for Selangor renovation contractor, home renovation, kitchen cabinet, bathroom waterproofing, office renovation, shop renovation, and custom cabinet services.</p>",
+  "area_name": "Selangor",
+  "seo_title_zh": "Selangor 装修公司 | 住宅、旧屋、厨房、办公室与店铺装修",
+  "seo_title_en": "Selangor Renovation Contractor | Home, Office, Kitchen & Shop",
+  "seo_description_zh": "FLASH CAST 提供 Selangor 装修服务，覆盖Full renovation、Kitchen cabinet、Bathroom waterproofing。客户可先提交照片、面积、预算和工期，我们会根据当地房型、管理处要求和施工范围提供中文咨询与免费报价建议。",
+  "seo_description_en": "FLASH CAST provides Selangor renovation services for homes, old houses, kitchen cabinets, bathroom waterproofing, offices, shops, custom cabinets, and free quotation.",
+  "status": "published",
+  "sort_order": 20,
+  "created_at": "2026-05-25T10:58:29.820388+00:00",
+  "updated_at": "2026-09-25T15:58:19.761673+00:00",
+  "property_types": [
+    "Condo",
+    "Terrace house",
+    "Semi-D",
+    "Office",
+    "Retail shop"
+  ],
+  "common_needs": [
+    "Full renovation",
+    "Kitchen cabinet",
+    "Bathroom waterproofing",
+    "Built-in furniture",
+    "Office fit-out",
+    "Shop renovation"
+  ],
+  "construction_notes_zh": "Selangor 项目建议提前确认管理处申请、施工时间、材料运输、保护工程、停车安排和噪音限制。",
+  "construction_notes_en": "Selangor projects should confirm management application, working hours, material delivery, protection works, parking, and noise limits early.",
+  "projects": [
+    {
+      "type": "Residential Renovation",
+      "image": "/images/projects/residential-renovation.webp?v=20260601-content",
+      "title": "Selangor Residential Renovation Reference"
+    },
+    {
+      "type": "Commercial Fit-Out",
+      "image": "/images/projects/commercial-renovation.webp?v=20260601-content",
+      "title": "Selangor Commercial Fit-Out Reference"
+    }
+  ],
+  "faqs_zh": [
+    {
+      "a": "可以在初步了解项目类型、地点、出入条件、现场情况和时间安排后讨论。请先提供照片、大约面积和计划施工范围。",
+      "q": "Selangor 可以安排现场查看或测量吗？"
+    },
+    {
+      "a": "报价准备时间取决于施工范围是否明确、是否需要现场查看，以及材料、技术、管理处、业主、顾问或相关部门资料是否齐全。我们会在审核资料后说明下一步。",
+      "q": "Selangor 装修报价准备时间受哪些因素影响？"
+    },
+    {
+      "a": "可以。我们可以根据现有管理指南和项目范围一起核对。具体表格、图纸、合格人员、费用、押金、提交责任和审批结果，仍以相关管理处、业主、顾问或主管部门要求为准。",
+      "q": "可以一起核对管理处或审批要求吗？"
+    }
+  ],
+  "faqs_en": [
+    {
+      "a": "It can be discussed after we review the project type, location, access, current condition, and schedule. Share photos, approximate size, and intended scope first.",
+      "q": "Can a site visit or measurement be arranged in Selangor?"
+    },
+    {
+      "a": "Timing depends on how clear the scope is, whether a site review is needed, and whether material, technical, management, landlord, consultant, or authority details are outstanding. We confirm the next step after reviewing the information.",
+      "q": "What affects quotation preparation for a renovation in Selangor?"
+    },
+    {
+      "a": "Yes. We can review the available building guide and project scope with you. Required forms, drawings, qualified parties, fees, deposits, submissions, responsibilities, and approval decisions remain subject to the relevant management, landlord, consultants, or authority.",
+      "q": "Can management or approval requirements be reviewed?"
+    }
+  ],
+  "version": 1
+}

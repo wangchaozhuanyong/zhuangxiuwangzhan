@@ -40,6 +40,7 @@ Flashcast 是公开获客网站，SEO 和 CMS 发布链路必须稳定。后台�
 - `blog` 更新必须带 `expectedUpdatedAt`（或记录内现有 `updated_at`）进行乐观冲突检查；slug 冲突返回 `409`。
 - `publish` 模式必须有管理员 Bearer token 或 `CONTENT_PUBLISH_SECRET` 对应的 `x-cron-secret`，并且请求必须包含 `ownerApproved: true` 与 `explicitExecution: true`。
 - `dry-run` 只返回 payload preview 和将要执行的表/字段动作，不写 CMS。
+- ORG-020 的受限 `faq` 仅精确更新 3 条既有 FAQ 的双语 answer，沿用一次许可/OIDC/CAS，不新增或替换整组；对应新执行适配版本和接口合同见 `docs/ORG020_V7_PUBLISHER_CONTRACT.md`。
 - Cloudflare Middleware 会按 CMS `updated_at` 生成公开 HTML 内容版本，并从已发布记录生成动态 Meta/JSON-LD；发布后无需重新部署前端。
 - `/sitemap.xml` 与 `/llms.txt` 会在运行时合并动态 Supabase sitemap 和静态兜底清单，正常 CMS 内容发布无需重新生成静态文件。
 - 浏览器公开 HTML 每次使用前都向边缘重验证；内容未变化时通过 ETag 返回 `304`，若上游代理剥离动态 HTML ETag，则使用 Last-Modified 继续完成条件重验证。客户端 React Query 在 60 秒后失效，并在窗口重新聚焦时刷新。

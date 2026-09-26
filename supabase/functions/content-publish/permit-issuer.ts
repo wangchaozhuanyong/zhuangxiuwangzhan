@@ -49,6 +49,11 @@ export async function issueManagedPermit(client: ContentPublishClient, input: Ma
       || !Number.isFinite(expires) || expires <= now || expires > now + 15 * 60_000) {
     throw new Error("Managed permit identity, evidence, or short expiry is invalid");
   }
+  if (target.baselineProjectionFields && (input.operation !== "publish"
+      || !samePgTimestamp(input.expectedUpdatedAt, target.expectedUpdatedAt)
+      || input.payloadSha256 !== target.desiredFieldsSha256)) {
+    throw new Error("Exact frozen target version or changed-fields payload digest is invalid");
+  }
 
   let parentId: string | null = null;
   let rollbackPayloadSha256: string | null = null;

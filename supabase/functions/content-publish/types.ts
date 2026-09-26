@@ -37,6 +37,7 @@ export type ContentPublishType =
   | "material"
   | "project"
   | "site_page"
+  | "faq"
   | "media"
   | "cache_invalidation";
 export type ContentStatus = "draft" | "published" | "archived";

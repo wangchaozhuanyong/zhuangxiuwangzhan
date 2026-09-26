@@ -1,0 +1,13 @@
+{
+  "id": "c2fad758-eff4-4feb-a9fb-87e6cb5bf77e",
+  "page_key": "home",
+  "question_zh": "是否提供售后跟进或保修？",
+  "question_en": "Is after-sales support or warranty included?",
+  "answer_zh": "售后会按已确认的项目范围跟进。施工保障、供应商保修、适用范围、例外情况与期限，应以报价单或项目文件中的书面说明为准。",
+  "answer_en": "After-sales follow-up is handled according to the confirmed project scope. Any workmanship coverage, supplier warranty, exclusions, and duration should be stated in the quotation or project documents for your review.",
+  "status": "published",
+  "sort_order": 70,
+  "created_at": "2026-08-21T15:49:57.402821+00:00",
+  "updated_at": "2026-08-21T15:49:57.402821+00:00",
+  "version": 1
+}

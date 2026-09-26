@@ -147,7 +147,37 @@ describe("topic-cluster Blog publish records", () => {
       "blog-kitchen-cabinet-media-r1-v1", "blog-office-checklist-media-r1-v1",
     ];
     const rollbackTargets = [...lockedTargets, "kl-location-intent-r1-v2"];
-    const publishTargets = [...rollbackTargets, ...mediaTargets];
+    const org020Targets = [
+      "org020-shop-intent-body-r1-v7",
+      "org020-zh-renovation-study-room-r1-v7",
+      "org020-budget-timeline-r1-v7",
+      "org020-area-ampang-prune-r1-v7",
+      "org020-area-ara-damansara-prune-r1-v7",
+      "org020-area-bangsar-prune-r1-v7",
+      "org020-area-bukit-jalil-prune-r1-v7",
+      "org020-area-cheras-prune-r1-v7",
+      "org020-area-cyberjaya-prune-r1-v7",
+      "org020-area-damansara-prune-r1-v7",
+      "org020-area-kepong-prune-r1-v7",
+      "org020-area-kota-damansara-prune-r1-v7",
+      "org020-area-mont-kiara-prune-r1-v7",
+      "org020-area-petaling-jaya-prune-r1-v7",
+      "org020-area-puchong-prune-r1-v7",
+      "org020-area-selangor-prune-r1-v7",
+      "org020-area-setapak-prune-r1-v7",
+      "org020-area-setia-alam-prune-r1-v7",
+      "org020-area-shah-alam-prune-r1-v7",
+      "org020-area-sri-petaling-prune-r1-v7",
+      "org020-area-subang-jaya-prune-r1-v7",
+      "org020-general-quote-30km-answer-r1-v8",
+      "org020-home-quote-30km-answer-r1-v8",
+      "org020-home-one-year-warranty-answer-r1-v8",
+      "org020-locations-hub-availability-r1-v7",
+      "org020-coating-fact-safe-body-r1-v7",
+      "org020-condo-current-sources-r1-v7",
+      "org020-dbkl-current-sources-r1-v7",
+    ];
+    const publishTargets = [...rollbackTargets, ...mediaTargets, ...org020Targets];
     const cases = [...workflow.matchAll(/case "\$PUBLISH_TARGET" in\s*([^)]*)\)/g)]
       .map((match) => match[1].trim().split("|"));
     expect(cases).toHaveLength(2);

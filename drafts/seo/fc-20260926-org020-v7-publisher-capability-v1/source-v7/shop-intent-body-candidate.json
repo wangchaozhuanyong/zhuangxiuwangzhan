@@ -1,0 +1,253 @@
+{
+  "task_id": "fc-20260925-existing-page-content-gap-v1",
+  "backlog_item_id": "ORG-020",
+  "campaign_id": "free-seo-geo-longterm",
+  "roadmap_item_id": "LT-020",
+  "candidate_version": "shop-intent-body-r1-v7",
+  "action_id": "org020-shop-intent-body-v7",
+  "action_class": "cms_content_candidate",
+  "risk_level": "R1",
+  "publication_route": "cms_content_candidate -> cms_write -> protected content-publish",
+  "scope": "flashcast.com.my:services/32f5374f-9919-41ea-80c7-00b5ac917532:content_en,content_zh",
+  "table": "services",
+  "record_id": "32f5374f-9919-41ea-80c7-00b5ac917532",
+  "slug": "shop-renovation",
+  "target_urls": [
+    "https://flashcast.com.my/en/services/shop-renovation",
+    "https://flashcast.com.my/zh/services/shop-renovation"
+  ],
+  "intent_and_difference": "Fill supported retail/F&B/salon/clinic-front/shoplot/reinstatement and phased trading intent; body links route to separate existing commercial owners.",
+  "expected_updated_at": "2026-09-25T07:25:59.506056+00:00",
+  "baseline_projection_fields": [
+    "id",
+    "slug",
+    "status",
+    "updated_at",
+    "title_zh",
+    "title_en",
+    "excerpt_zh",
+    "excerpt_en",
+    "content_zh",
+    "content_en",
+    "image_url",
+    "alt_zh",
+    "alt_en",
+    "suitable_for_zh",
+    "suitable_for_en",
+    "common_projects_zh",
+    "common_projects_en",
+    "process_steps_zh",
+    "process_steps_en",
+    "scope_items_zh",
+    "scope_items_en",
+    "faqs_zh",
+    "faqs_en",
+    "seo_title_zh",
+    "seo_title_en",
+    "seo_description_zh",
+    "seo_description_en",
+    "sort_order"
+  ],
+  "baseline_fields_sha256": "f9a3126d01293039128270db7d9456cc10ff52fc8606c046d0a06d406a405776",
+  "desired_fields_sha256": "8aa01f3de2801376adc20e0f8a7a875a661ddcd26bc9a218cfde0cd5cdd314dc",
+  "changed_fields": [
+    "content_zh",
+    "content_en"
+  ],
+  "desired_fields": {
+    "content_zh": "<p>FLASH CAST 为吉隆坡、雪兰莪与巴生谷的零售店、餐饮营业空间、诊所前区、美容或理发门店、展厅及服务门店讨论店铺装修与商业 fit-out。先确认营业用途、租约交付条件和现场限制，再划分顾客动线、展示或服务区、柜台及后场范围。</p><h2>零售店、便利店与展厅</h2><p>把入口、展示、选购、排队、收银与补货路径一起规划。先提供商品或展品尺寸、库存和设备清单，再核对展示柜、收纳、灯光、插座、搬运和维护需要；不以同一装修套餐套用所有店型。</p><h2>餐厅、咖啡店与服务门店</h2><p>餐饮空间应先分开顾客区、服务柜台、备餐与后场动线，核对现有给排水、电气和排风条件。诊所前区、美容或理发门店可先讨论接待、候客、服务区与收纳；专业设备、卫生或行业许可及专业签署需另行核实，不视为装修范围自动包含。</p><h2>Shoplot、商场单位与租约还原</h2><p>说明是空铺首次装修、旧店翻新、局部升级还是租约退场还原。把业主或商场指南、原状交付清单、允许施工时段、运输、电梯、保护及清运要求列入范围；如希望分阶段施工，先确认可隔离的区域和营业影响，再商定安排。</p><h2>开业时间与报价准备</h2><p>提供地点、面积或平面图、现场照片、设备及展示需求、租约交付状态、管理方要求和预期开业时间。报价需分开拆除、墙地面、柜体、灯光、机电衔接、保护、清运及待核实项目；材料供货、审批和现场出入都会影响进度，不能仅按面积或统一工期判断。</p><h2>按主要需求继续了解</h2><p>办公室工位与隔间可查看 <a href=\"/zh/services/office-renovation\">办公室装修服务</a>；展示柜、接待柜台与整体收纳可查看 <a href=\"/zh/services/builtin\">全屋定制与定制家具</a>。需要先梳理平面和材料时，可查看 <a href=\"/zh/services/design\">室内设计与装修规划</a>。准备好照片、地点和重点需求后，<a href=\"/zh/quote\">申请免费装修报价</a>；最终规格、费用、提交责任与施工安排以现场核对和书面范围为准。</p>",
+    "content_en": "<p>FLASH CAST discusses shop renovation and commercial fit-out for retail stores, F&B premises, clinic front areas, beauty and hair salons, showrooms and service outlets in Kuala Lumpur, Selangor and the Klang Valley. Business use, tenancy handover conditions and site constraints guide the customer route, display or service zones, counter and back-of-house scope.</p><h2>Retail stores, convenience shops and showrooms</h2><p>Plan entry, displays, browsing, queues, checkout and restocking together. Share product or exhibit dimensions, stock and equipment lists before checking display cabinets, storage, lighting, power points, delivery and maintenance. One fit-out package will not suit every store type.</p><h2>Restaurants, cafes and service outlets</h2><p>Separate customer seating, service counters, preparation and back-of-house movement, then check existing plumbing, electrical and ventilation conditions. Clinic front areas and salons can start with reception, waiting, service zones and storage. Specialist equipment, hygiene or industry licences and professional sign-off require separate checks and are not automatically included.</p><h2>Shoplots, mall units and tenancy reinstatement</h2><p>Clarify whether the work is a first fit-out, older-shop renovation, partial upgrade or end-of-tenancy reinstatement. Include landlord or mall guidelines, the handover inventory, permitted work hours, delivery, lift access, protection and waste removal. For phased work, first identify areas that can be separated and the effect on trading before agreeing the arrangement.</p><h2>Opening dates and quotation preparation</h2><p>Share the location, floor area or plan, photos, equipment and display needs, tenancy condition, management requirements and intended opening date. Separate demolition, finishes, cabinetry, lighting, service coordination, protection, waste removal and items still to be checked. Materials, approvals and access affect the programme; area alone or a fixed generic duration is not enough.</p><h2>Follow the main project need</h2><p>For workstations and partitions, see <a href=\"/en/services/office-renovation\">office renovation</a>. For display cabinets, reception counters and coordinated storage, see <a href=\"/en/services/builtin\">whole-house custom furniture and built-ins</a>. If layout and material choices need clarification first, see <a href=\"/en/services/design\">interior design and renovation planning</a>. Share photos, location and the main requirements to <a href=\"/en/quote\">request a free renovation quotation</a>. Specifications, cost, submission responsibilities and scheduling follow site checks and the written scope.</p>"
+  },
+  "request": {
+    "contentType": "service",
+    "mode": "dry-run",
+    "nextStatus": "published",
+    "expectedUpdatedAt": "2026-09-25T07:25:59.506056+00:00",
+    "record": {
+      "id": "32f5374f-9919-41ea-80c7-00b5ac917532",
+      "slug": "shop-renovation",
+      "title_zh": "店铺装修与零售空间规划",
+      "title_en": "Shop Renovation & Retail Fit-Out",
+      "excerpt_zh": "吉隆坡与雪兰莪的店铺装修与零售 fit-out：零售、餐饮营业空间、诊所前区、美容美发、展厅及服务门店可先讨论动线、展示、柜台、收纳与现场条件；实际范围经现场核对和书面报价确认。",
+      "excerpt_en": "Shop renovation for retail, F&B premises, clinic front areas, salons and showrooms in Kuala Lumpur and Selangor. Review customer flow, counters, storage and site conditions before agreeing the scope and quotation.",
+      "content_zh": "<p>FLASH CAST 为吉隆坡、雪兰莪与巴生谷的零售店、餐饮营业空间、诊所前区、美容或理发门店、展厅及服务门店讨论店铺装修与商业 fit-out。先确认营业用途、租约交付条件和现场限制，再划分顾客动线、展示或服务区、柜台及后场范围。</p><h2>零售店、便利店与展厅</h2><p>把入口、展示、选购、排队、收银与补货路径一起规划。先提供商品或展品尺寸、库存和设备清单，再核对展示柜、收纳、灯光、插座、搬运和维护需要；不以同一装修套餐套用所有店型。</p><h2>餐厅、咖啡店与服务门店</h2><p>餐饮空间应先分开顾客区、服务柜台、备餐与后场动线，核对现有给排水、电气和排风条件。诊所前区、美容或理发门店可先讨论接待、候客、服务区与收纳；专业设备、卫生或行业许可及专业签署需另行核实，不视为装修范围自动包含。</p><h2>Shoplot、商场单位与租约还原</h2><p>说明是空铺首次装修、旧店翻新、局部升级还是租约退场还原。把业主或商场指南、原状交付清单、允许施工时段、运输、电梯、保护及清运要求列入范围；如希望分阶段施工，先确认可隔离的区域和营业影响，再商定安排。</p><h2>开业时间与报价准备</h2><p>提供地点、面积或平面图、现场照片、设备及展示需求、租约交付状态、管理方要求和预期开业时间。报价需分开拆除、墙地面、柜体、灯光、机电衔接、保护、清运及待核实项目；材料供货、审批和现场出入都会影响进度，不能仅按面积或统一工期判断。</p><h2>按主要需求继续了解</h2><p>办公室工位与隔间可查看 <a href=\"/zh/services/office-renovation\">办公室装修服务</a>；展示柜、接待柜台与整体收纳可查看 <a href=\"/zh/services/builtin\">全屋定制与定制家具</a>。需要先梳理平面和材料时，可查看 <a href=\"/zh/services/design\">室内设计与装修规划</a>。准备好照片、地点和重点需求后，<a href=\"/zh/quote\">申请免费装修报价</a>；最终规格、费用、提交责任与施工安排以现场核对和书面范围为准。</p>",
+      "content_en": "<p>FLASH CAST discusses shop renovation and commercial fit-out for retail stores, F&B premises, clinic front areas, beauty and hair salons, showrooms and service outlets in Kuala Lumpur, Selangor and the Klang Valley. Business use, tenancy handover conditions and site constraints guide the customer route, display or service zones, counter and back-of-house scope.</p><h2>Retail stores, convenience shops and showrooms</h2><p>Plan entry, displays, browsing, queues, checkout and restocking together. Share product or exhibit dimensions, stock and equipment lists before checking display cabinets, storage, lighting, power points, delivery and maintenance. One fit-out package will not suit every store type.</p><h2>Restaurants, cafes and service outlets</h2><p>Separate customer seating, service counters, preparation and back-of-house movement, then check existing plumbing, electrical and ventilation conditions. Clinic front areas and salons can start with reception, waiting, service zones and storage. Specialist equipment, hygiene or industry licences and professional sign-off require separate checks and are not automatically included.</p><h2>Shoplots, mall units and tenancy reinstatement</h2><p>Clarify whether the work is a first fit-out, older-shop renovation, partial upgrade or end-of-tenancy reinstatement. Include landlord or mall guidelines, the handover inventory, permitted work hours, delivery, lift access, protection and waste removal. For phased work, first identify areas that can be separated and the effect on trading before agreeing the arrangement.</p><h2>Opening dates and quotation preparation</h2><p>Share the location, floor area or plan, photos, equipment and display needs, tenancy condition, management requirements and intended opening date. Separate demolition, finishes, cabinetry, lighting, service coordination, protection, waste removal and items still to be checked. Materials, approvals and access affect the programme; area alone or a fixed generic duration is not enough.</p><h2>Follow the main project need</h2><p>For workstations and partitions, see <a href=\"/en/services/office-renovation\">office renovation</a>. For display cabinets, reception counters and coordinated storage, see <a href=\"/en/services/builtin\">whole-house custom furniture and built-ins</a>. If layout and material choices need clarification first, see <a href=\"/en/services/design\">interior design and renovation planning</a>. Share photos, location and the main requirements to <a href=\"/en/quote\">request a free renovation quotation</a>. Specifications, cost, submission responsibilities and scheduling follow site checks and the written scope.</p>",
+      "image_url": "/images/services/shoplot-renovation.webp",
+      "alt_zh": "店铺装修与零售空间规划",
+      "alt_en": "Shop Renovation & Retail Fit-Out",
+      "suitable_for_zh": [
+        "准备开新 shoplot、零售门店、showroom、beauty 前场、诊所前区或小型餐饮门店的业主",
+        "已有店面但想重新整理顾客动线、展示区、收银柜台和收纳规划的经营者",
+        "开业前需要先确认门头方向、员工操作区、展示逻辑和 opening readiness 优先级的客户",
+        "想先整理 fit-out 范围，再进入详细报价的商业租户或店主"
+      ],
+      "suitable_for_en": [
+        "Owners opening a new shoplot, retail store, showroom, beauty front area, clinic front area, or small F&B outlet",
+        "Businesses relaunching an existing store and needing better customer flow, display, counter, and storage planning",
+        "Operators who need to review frontage visibility, signage direction, staff workflow, and opening-readiness priorities before renovation",
+        "Commercial tenants who want to organize fit-out scope before requesting a detailed quotation"
+      ],
+      "common_projects_zh": [
+        "开店前 shoplot 装修范围整理",
+        "零售展示区与顾客动线规划",
+        "收银柜台、后场收纳和员工操作区整理",
+        "beauty 或 clinic 前场更新方向",
+        "门头、招牌和入口可见度协调",
+        "适合零售空间的材料与灯光方向建议"
+      ],
+      "common_projects_en": [
+        "Shoplot fit-out scope planning before opening",
+        "Retail display layout and customer-flow review",
+        "Cashier counter, back-storage, and staff workflow planning",
+        "Beauty or clinic front-area refresh direction",
+        "Frontage, signage, and entry-visibility coordination",
+        "Material and lighting direction for a practical retail environment"
+      ],
+      "process_steps_zh": [
+        {
+          "desc": "先了解店面类型、面积、现场照片、预计开业方向和主要使用需求。",
+          "title": "营业需求初步确认"
+        },
+        {
+          "desc": "确认尺寸、进场限制、门头现况、展示区、柜台位置、收纳需求和施工条件。",
+          "title": "现场测量"
+        },
+        {
+          "desc": "整理顾客动线、展示逻辑、收银区、员工操作区、招牌方向和空间利用优先级。",
+          "title": "动线与分区重点"
+        },
+        {
+          "desc": "确认材料、灯光、门头、机电和需要纳入报价的主要 fit-out 项目。",
+          "title": "材料与范围方向"
+        },
+        {
+          "desc": "在使用范围、现场条件和施工优先级确认后，再进入详细报价步骤。",
+          "title": "报价前整理"
+        }
+      ],
+      "process_steps_en": [
+        {
+          "desc": "Review the shop type, floor area, current photos, target opening direction, and key operational needs.",
+          "title": "Initial Business Review"
+        },
+        {
+          "desc": "Confirm dimensions, access limits, frontage condition, display zones, counter position, storage needs, and site restrictions.",
+          "title": "Site Measurement"
+        },
+        {
+          "desc": "Organize customer flow, product display, cashier zone, staff workflow, signage direction, and practical space use.",
+          "title": "Layout Priorities"
+        },
+        {
+          "desc": "Review materials, lighting, facade elements, M&E scope, and the fit-out items that should be included in quotation.",
+          "title": "Scope & Material Direction"
+        },
+        {
+          "desc": "Move into quotation after the business-use scope, site condition, and execution priorities are confirmed.",
+          "title": "Quotation Preparation"
+        }
+      ],
+      "scope_items_zh": [
+        "顾客动线与展示规划",
+        "柜台、收银区与后场收纳方向",
+        "门头、招牌与入口可见度协调",
+        "灯光、饰面与零售空间氛围方向",
+        "隔间与功能分区整理",
+        "电路、照明与机电范围确认",
+        "地面、墙面、玻璃与门面局部更新方向",
+        "需要时的给排水与水槽点位检查",
+        "餐饮、beauty、clinic 或服务型店面的空间使用协调",
+        "基于真实店况的报价前资料整理"
+      ],
+      "scope_items_en": [
+        "Customer-flow and display planning",
+        "Counter, cashier, and back-storage direction",
+        "Frontage, signage, and entrance visibility coordination",
+        "Lighting, finishes, and retail atmosphere planning",
+        "Partitioning and practical zoning",
+        "Electrical, lighting, and M&E scope review",
+        "Flooring, wall finishes, glazing, and selected facade items",
+        "Plumbing and sink-point review where relevant",
+        "F&B, beauty, clinic, or service-business space-use alignment",
+        "Quotation preparation based on real shop conditions"
+      ],
+      "faqs_zh": [
+        {
+          "a": "零售店、餐饮营业空间、诊所前区、美容/理发门店、展厅和服务门店都可先讨论动线、展示或服务区、柜台与收纳。实际承接范围须按现场条件及书面报价确认；这不是任何行业的完工案例声明。",
+          "q": "哪些商业店铺适合先咨询？"
+        },
+        {
+          "a": "建议提供地点、营业用途、面积或平面图、现场照片、租约交付状态、业主或商场装修要求，以及目标开业时间。资料不齐也可先咨询，缺项在范围确认时补核。",
+          "q": "店铺装修开工前可先提供什么资料？"
+        },
+        {
+          "a": "不自动包含。设备、诊疗或餐饮专门区域、行业许可与专业签字等事项，须按具体项目、管理方要求和相关专业责任单独核对，并写入确认的工作范围。",
+          "q": "专业设备或行业特殊范围是否自动包含？"
+        },
+        {
+          "a": "可先核对可能需要的图纸、文件和协调事项；具体责任、费用、时间及结果须按租约、业主或管理方、地方单位与相关专业要求确认，不保证审批通过。",
+          "q": "招牌、装修准证或管理处审批由谁负责？"
+        },
+        {
+          "a": "报价免费。面积、拆改、机电、进场条件与管理要求会影响范围和安排；未现场核对并确认书面范围前，不承诺固定价格或完工日期。",
+          "q": "报价是否免费，能否保证开业前完工？"
+        },
+        {
+          "a": "可使用页面现有的项目参考、开店规划和准证指南及相关商业服务链接；每项参考须区分已公开项目与概念图。准备好基本现场资料后，通过页面免费报价或 WhatsApp 入口咨询。",
+          "q": "哪里可以查看参考并开始咨询？"
+        }
+      ],
+      "faqs_en": [
+        {
+          "a": "Retail stores, F&B trading areas, clinic front areas, beauty and hair salons, showrooms and service outlets can discuss customer flow, display or service zones, counters and storage. The deliverable scope needs a site review and written quotation; this is not a claim of completed work in every industry.",
+          "q": "Which commercial spaces can start an enquiry?"
+        },
+        {
+          "a": "Share the location, business use, floor area or plan, site photos, tenancy handover condition, landlord or mall fit-out requirements, and intended opening date where available. An enquiry can start with incomplete information; gaps are checked when defining the scope.",
+          "q": "What information helps before a shop fit-out starts?"
+        },
+        {
+          "a": "No. Equipment, specialist clinical or food-service areas, industry licences and professional sign-off must be checked for the individual project, management requirements and responsible professionals, then stated in the agreed scope.",
+          "q": "Are specialist equipment and industry-specific works included automatically?"
+        },
+        {
+          "a": "Possible drawings, documents and coordination needs can be reviewed first. Responsibility, fees, timing and outcome depend on the tenancy, landlord or management, local authority and relevant professional requirements; approval is not guaranteed.",
+          "q": "Who handles signage, permits or management approval?"
+        },
+        {
+          "a": "The quotation is free. Area, alteration scope, M&E, access and management rules affect scope and scheduling. No fixed price or completion date is promised before site review and written scope confirmation.",
+          "q": "Is the quotation free, and is an opening date guaranteed?"
+        },
+        {
+          "a": "Use the page's existing project references, opening and permit guides, and related commercial-service links; distinguish published projects from labeled concepts. Then use the free-quote or WhatsApp action with the available site information.",
+          "q": "Where can I view references and start an enquiry?"
+        }
+      ],
+      "seo_title_zh": "店铺装修与零售空间规划 | 商业空间 Fit-Out | FLASH CAST",
+      "seo_title_en": "Shop Renovation & Retail Fit-Out | FLASH CAST",
+      "seo_description_zh": "FLASH CAST 为吉隆坡及雪兰莪零售、餐饮营业空间、诊所前区、美容美发和展厅讨论店铺装修 fit-out；先核对现场、经营需求与物业要求，再确认报价范围。",
+      "seo_description_en": "Shop renovation in Kuala Lumpur and Selangor for retail, F&B, clinic front areas, salons and showrooms. Review site needs before a written quotation.",
+      "status": "published",
+      "sort_order": 50,
+      "created_at": "2026-05-25T10:58:29.820388+00:00",
+      "updated_at": "2026-09-25T07:25:59.506056+00:00",
+      "version": 1
+    }
+  },
+  "diff_path": "drafts/seo/fc-20260925-existing-page-content-gap-v1/v7/shop-intent-body-diff.json",
+  "backup_path": "backups/fc-20260925-existing-page-content-gap-v1/v7/shop-intent-body-current-row.json",
+  "forward_recovery_path": "backups/fc-20260925-existing-page-content-gap-v1/v7/shop-intent-body-forward-recovery.json",
+  "company_fact_sources": [
+    "company-context.md",
+    "services-and-pricing.md",
+    "service-area.md",
+    "faq.md"
+  ],
+  "primary_sources": [],
+  "protected_target_status": "NEW_EXACT_V7_TUPLE_NOT_DEPLOYED",
+  "next_owner": "operations",
+  "capability_next_step": "After content QA, review exact table/row/task/action/version/field/baseline/desired tuple with current protected maintainer; preserve old targets. Existing old target is not permission for this new tuple. No permit issued or consumed.",
+  "status": "ready_for_qa",
+  "qa_pass": false,
+  "production_write_executed": false
+}

@@ -17,8 +17,8 @@ export const faqPageText = {
       {
         category: "General",
         items: [
-          { q: "What renovation services does FLASH CAST provide?", a: "We provide full renovation, interior design, custom built-in furniture, kitchen renovation, bathroom renovation, office renovation, shoplot renovation, artistic wall coating (German Remmers), old house renovation, and permit coordination across Kuala Lumpur and Selangor." },
-          { q: "Which areas do you serve?", a: "We serve all areas in Kuala Lumpur and Selangor including Mont Kiara, Bangsar, Cheras, Petaling Jaya, Subang Jaya, Shah Alam, Puchong, and surrounding areas." },
+          { q: "What renovation services does FLASH CAST provide?", a: "We plan whole-house custom furniture, built-ins and wardrobes, alongside residential, kitchen, bathroom, office, shop and old-house renovation. Wall finishes, materials and any approval coordination depend on the site and written scope." },
+          { q: "Which areas do you serve?", a: "We mainly serve Kuala Lumpur, Selangor and the Klang Valley. Share your exact project location and type so availability, access and site-review arrangements can be confirmed." },
           { q: "Can company details be confirmed before appointment?", a: "Yes. Ask the team for the current company and appointment details you need before visiting or proceeding with a quotation." },
         ],
       },
@@ -26,16 +26,16 @@ export const faqPageText = {
         category: "Process & Pricing",
         items: [
           { q: "How do I get a quotation?", a: "Contact us via WhatsApp, phone, or the online quote form. We will review your project type, location, photos, and scope before confirming the next step and quotation details." },
-          { q: "Can site measurement be arranged?", a: "Site measurement can be arranged based on area, project type, site access, and schedule." },
-          { q: "How long does a typical renovation take?", a: "Most residential renovations take 6-12 weeks. Kitchen projects take 3-5 weeks. Bathroom renovations take 2-3 weeks. Office and shop lot fit-outs take 4-8 weeks. We provide a detailed timeline with milestones." },
-          { q: "Do you provide warranty or after-sales support?", a: "We provide after-sales follow-up. Warranty scope, duration, and claim method should be confirmed in the quotation or project document." },
+          { q: "Can site measurement be arranged?", a: "Site measurement is free within 30 km of the company or service point. Travel beyond 30 km is chargeable; confirm the amount and appointment before a visit. Availability depends on the project, site access and schedule." },
+          { q: "How long does a typical renovation take?", a: "The schedule depends on site condition, confirmed work, materials and delivery, access, and required approvals. Agree the sequence and milestones after the scope is checked; there is no fixed duration for every project." },
+          { q: "Do you provide warranty or after-sales support?", a: "FLASH CAST provides a one-year warranty. Confirm the covered work, start date, exclusions and claim process in the written quotation or project documents." },
         ],
       },
       {
         category: "Kitchen & Bathroom",
         items: [
-          { q: "How long does a kitchen renovation take?", a: "A typical kitchen renovation takes 3-5 weeks depending on the scope and whether plumbing changes are needed." },
-          { q: "Is waterproofing included in bathroom renovation?", a: "Yes. We apply multiple layers of waterproof membrane and conduct a 48-hour water test before tiling." },
+          { q: "How long does a kitchen renovation take?", a: "Cabinet measurements, materials, worktops, plumbing and electrical changes, access and delivery affect the schedule. Confirm the scope and sequence before agreeing a completion date." },
+          { q: "Is waterproofing included in bathroom renovation?", a: "Waterproofing can be discussed after the wet area, substrate, leakage and plumbing are checked. Specify the selected system, preparation, testing and exclusions in the written scope; they are not automatically included in every bathroom quotation." },
           { q: "Can you install kitchen appliances?", a: "Yes. We integrate ovens, hoods, hobs, dishwashers, and other appliances into the cabinet design." },
         ],
       },
@@ -43,16 +43,16 @@ export const faqPageText = {
         category: "Custom Built-In & Materials",
         items: [
           { q: "Can you build custom furniture to my exact dimensions?", a: "Yes, all our built-in furniture is made to measure, including wardrobes, kitchen cabinets, TV consoles, shoe cabinets, vanities, and more." },
-          { q: "What materials do you use for cabinets?", a: "We use melamine, acrylic, solid wood, laminate, and other premium materials. Soft-close hardware is included as standard for suitable cabinet systems." },
+          { q: "What materials do you use for cabinets?", a: "Material directions can include melamine, acrylic and solid wood. Confirm the board, finish, hardware and accessories against samples and the written quotation; soft-close hardware is not automatically included in every system." },
           { q: "Can I see material samples before committing?", a: "Yes. We encourage clients to view material samples such as tiles, boards, countertops, and cabinet finishes before making a decision." },
         ],
       },
       {
         category: "Commercial & Permits",
         items: [
-          { q: "Do you handle renovation permits and approvals?", a: "Yes, we assist with condo management office applications, DBKL permits, local council approvals, drawing coordination, and site inspection scheduling." },
-          { q: "Can you renovate my shop or office?", a: "Yes, we handle shop lot renovation, office fit-out, F&B interiors, clinic setup, showroom works, and retail displays for commercial clients across KL and Selangor." },
-          { q: "Can you work after business hours for office renovation?", a: "Yes. We can arrange night or weekend work to minimize disruption to your operations." },
+          { q: "Do you handle renovation permits and approvals?", a: "Where included in the confirmed scope, we can help organise management or authority requirements and drawing coordination. Submission, professional sign-off, fees and final approval must be checked for the specific property and work." },
+          { q: "Can you renovate my shop or office?", a: "We can discuss office and shop fit-out, retail, F&B premises, clinic front areas, salons and showrooms. Specialist equipment, industry licences and professional sign-off need separate checks against the agreed scope." },
+          { q: "Can you work after business hours for office renovation?", a: "Discuss phasing and permitted work hours with the landlord or building management. Night or weekend work depends on the building rules, required permissions, access and the agreed schedule." },
         ],
       },
     ],
@@ -75,25 +75,25 @@ export const faqPageText = {
       {
         category: "一般问题",
         items: [
-          { q: "FLASH CAST 提供哪些装修服务？", a: "我们提供全屋装修、室内设计、定制内嵌家具、厨房装修、浴室装修、办公室装修、店铺装修、德国 Remmers 艺术墙面涂装、旧屋翻新和准证协调服务。" },
-          { q: "你们服务哪些地区？", a: "我们服务吉隆坡与雪兰莪，包括 Mont Kiara、Bangsar、Cheras、Petaling Jaya、Subang Jaya、Shah Alam、Puchong 和周边地区。" },
-          { q: "FLASH CAST 是注册公司吗？", a: "是的，FLASH CAST SDN. BHD. 是 SSM 注册公司，办公室位于 Taman United，吉隆坡。" },
+          { q: "FLASH CAST 提供哪些装修服务？", a: "我们重点规划全屋定制、定制家具与衣柜，并可讨论住宅、厨房、浴室、办公室、店铺和旧屋翻新。墙面饰面、材料及审批协调按现场和书面范围确认。" },
+          { q: "你们服务哪些地区？", a: "主要服务吉隆坡、雪兰莪与巴生谷。请提供具体地点和项目类型，以便确认服务安排、现场出入与量房条件。" },
+          { q: "预约前可以核对公司资料吗？", a: "可以。公司地址为 94, Jalan Mega Mendung, Taman United, 58200 Kuala Lumpur。来访前请先预约；需要注册资料时，请向团队索取当前可核实文件。" },
         ],
       },
       {
         category: "流程与报价",
         items: [
-          { q: "如何获取装修报价？", a: "你可以通过 WhatsApp、电话或网站报价表单联系。我们会安排现场测量，并提供清楚的分项报价。" },
-          { q: "现场测量是免费的吗？", a: "吉隆坡与雪兰莪项目可安排免费现场测量，作为报价流程的一部分。" },
-          { q: "一般装修需要多久？", a: "住宅装修通常需要 6-12 周，厨房约 3-5 周，浴室约 2-3 周，办公室和店铺装修约 4-8 周，实际时间会根据范围确认。" },
-          { q: "是否提供保固和售后？", a: "是的，装修工程会提供施工保固，并在交付后提供售后支援。" },
+          { q: "如何获取装修报价？", a: "可通过 WhatsApp、电话或网站报价表单先咨询。提供地点、空间类型、照片和需求后，再确认是否需要量房及书面报价范围。" },
+          { q: "现场测量是免费的吗？", a: "距离公司或服务点 30 公里以内可免费上门量房；超过 30 公里会收费，具体费用和预约须先确认。是否安排还需核对项目、出入和时间。" },
+          { q: "一般装修需要多久？", a: "工期取决于现场状况、确认工程、材料供货、出入条件和所需审批。核对范围后再商定工序与节点，不适用统一固定工期。" },
+          { q: "是否提供保固和售后？", a: "FLASH CAST 提供一年保修；适用工程、起算时间、例外和申请方式须在书面报价或项目文件中确认。" },
         ],
       },
       {
         category: "厨房与浴室",
         items: [
-          { q: "厨房装修一般多久？", a: "一般厨房装修约 3-5 周，取决于橱柜、台面、水电和是否需要更改管线。" },
-          { q: "浴室装修包含防水吗？", a: "包含。我们会进行多层防水处理，并在铺砖前进行蓄水测试。" },
+          { q: "厨房装修一般多久？", a: "现场量度、柜体和台面规格、水电改动、出入与供货都会影响工期。确认范围和工序后，再商定完成时间。" },
+          { q: "浴室装修包含防水吗？", a: "可在检查湿区、基层、漏水和管线后讨论防水范围。所选系统、基层处理、测试与不包含项目须写明，不视为每份浴室报价自动包含。" },
           { q: "可以安装厨房电器吗？", a: "可以。我们可配合烤箱、抽油烟机、炉具、洗碗机等电器整合橱柜设计。" },
         ],
       },
@@ -101,16 +101,16 @@ export const faqPageText = {
         category: "定制家具与材料",
         items: [
           { q: "可以按尺寸定制家具吗？", a: "可以。衣柜、厨房橱柜、电视柜、鞋柜、浴室柜等都可按现场尺寸定制。" },
-          { q: "橱柜常用什么材料？", a: "常用材料包括 melamine、acrylic、solid wood、laminate 等，也可根据预算和风格推荐。" },
+          { q: "橱柜常用什么材料？", a: "材料方向可包括 melamine、acrylic 与 solid wood。板材、饰面、五金和配件须按样板及书面报价确认，缓冲五金不视为所有方案默认包含。" },
           { q: "决定前可以看材料样板吗？", a: "可以。我们建议客户先查看瓷砖、板材、台面和门板样板，再确认最终材料。" },
         ],
       },
       {
         category: "商业空间与准证",
         items: [
-          { q: "你们会处理装修准证吗？", a: "我们可协助 condo management 申请、DBKL 或地方政府准证、图纸协调和现场检查安排。" },
-          { q: "可以装修店铺或办公室吗？", a: "可以。我们承接店铺、办公室、餐饮空间、诊所、展厅和零售空间装修。" },
-          { q: "办公室装修可以安排非营业时间施工吗？", a: "可以根据项目安排夜间或周末施工，以减少对业务运作的影响。" },
+          { q: "你们会处理装修准证吗？", a: "在确认范围包含时，可协助整理管理处或主管机构要求及图纸协调。提交责任、专业签署、费用和最终审批按具体物业与工程核实。" },
+          { q: "可以装修店铺或办公室吗？", a: "可讨论办公室、店铺、零售、餐饮营业空间、诊所前区、美容或理发门店与展厅装修。专业设备、行业许可和专业签署需另行核对。" },
+          { q: "办公室装修可以安排非营业时间施工吗？", a: "可讨论分阶段施工与允许工作时段。夜间或周末安排取决于管理处或业主规定、所需许可、现场出入和确认进度。" },
         ],
       },
     ],

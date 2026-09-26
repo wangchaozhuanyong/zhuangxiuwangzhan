@@ -73,7 +73,8 @@ function createMockContentClient(initialTables: Tables) {
 }
 
 const publishedServiceArea = {
-  slug: "mont-kiara",
+  // Generic publishing fixture stays outside the newly locked production-area identities.
+  slug: "unlocked-area-test",
   title_zh: "Mont Kiara 装修规划",
   title_en: "Mont Kiara Renovation Planning",
   excerpt_zh: "为住宅与商业空间整理装修范围。",
@@ -151,9 +152,9 @@ describe("content-publish service_area", () => {
 
     expect(result.body.ok).toBe(true);
     expect(result.body.content_type).toBe("service_area");
-    expect((result.body.payload_preview as Row).slug).toBe("mont-kiara");
+    expect((result.body.payload_preview as Row).slug).toBe("unlocked-area-test");
     expect(result.body.next_steps).toContain(
-      "Verify /zh/locations/mont-kiara and /en/locations/mont-kiara in both languages after publishing.",
+      "Verify /zh/locations/unlocked-area-test and /en/locations/unlocked-area-test in both languages after publishing.",
     );
   });
 

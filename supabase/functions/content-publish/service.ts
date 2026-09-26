@@ -15,7 +15,7 @@ import {
   uploadMediaObject,
 } from "./repository.ts";
 import type { ContentPublishClient, ContentPublishRequest, ContentPublishResult, ContentRow, ContentStatus } from "./types.ts";
-import { MANAGED_AREAS, MANAGED_BLOGS, MANAGED_SERVICES, MANAGED_TARGETS, findManagedTarget, managedAction } from "./managed-targets.ts";
+import { MANAGED_AREAS, MANAGED_BLOGS, MANAGED_SERVICES, MANAGED_TARGETS, ORG020_V7_TARGETS, findManagedTarget, managedAction } from "./managed-targets.ts";
 import type { ManagedTarget } from "./managed-targets.ts";
 import { samePgTimestamp } from "./managed-timestamp.ts";
 
@@ -436,8 +436,8 @@ async function beginManagedCmsWrite(
     if (unrelatedChange || await sha256(changed) !== target.desiredFieldsSha256) {
       return errorResult("Managed CMS payload differs from the QA-locked fields.", 403);
     }
-    if ((target.contentType === "service" || target.contentType === "service_area") && target.baselineFieldsSha256) {
-      const baselineFields = target.contentType === "service" ? SERVICE_BASELINE_FIELDS : SERVICE_AREA_BASELINE_FIELDS;
+    if ((target.baselineProjectionFields || target.contentType === "service" || target.contentType === "service_area") && target.baselineFieldsSha256) {
+      const baselineFields = target.baselineProjectionFields || (target.contentType === "service" ? SERVICE_BASELINE_FIELDS : SERVICE_AREA_BASELINE_FIELDS);
       const baseline = Object.fromEntries(baselineFields.map((field) => [field, existing[field] ?? null]));
       if (await sha256(baseline) !== target.baselineFieldsSha256) {
         return errorResult("Managed CMS row differs from the QA-locked baseline.", 409);
@@ -1881,6 +1881,11 @@ async function publishHomepageContent(
 
   const existingSitePage = cleaned.sitePage ? await fetchRecordByField(client, "site_pages", "page_key", cleaned.sitePage.key) : null;
   const existingFaqs = cleaned.faqs.length ? await fetchRecordsByField(client, "faqs", "page_key", "home") : [];
+  const protectedFaqs = existingFaqs.filter((row) => ORG020_V7_TARGETS.some((target) => target.contentType === "faq" && target.id === row.id));
+  if (protectedFaqs.length && (cleaned.replaceFaqs || cleaned.faqs.some((faq) => protectedFaqs.some((row) =>
+      faq.question_en === row.question_en || faq.question_zh === row.question_zh)))) {
+    return errorResult("Managed FAQ rows cannot be replaced as a group or duplicated; use the exact existing-row answer target.", 403);
+  }
   const existingCtaBlocks = await Promise.all(cleaned.ctaBlocks.map((item) => fetchRecordByField(client, "cta_blocks", "block_key", item.key)));
   const existingHomeSections = await Promise.all(cleaned.homeSections.map((item) => fetchRecordByField(client, "home_sections", "section_key", item.key)));
 
@@ -2002,6 +2007,82 @@ async function publishHomepageContent(
   };
 }
 
+const managedRecordKey = (input: ContentPublishRequest): string => input.contentType === "faq"
+  ? `faq-${String(input.record?.id || "")}`
+  : input.contentType === "site_page" ? String(input.record?.page_key || "") : normalizeSlug(input.record?.slug);
+
+// Existing-row patches only. All validation precedes permit claim and SQL; no insertion or group replacement.
+async function publishOrg020ExactPatch(
+  input: ContentPublishRequest, client: ContentPublishClient, context: PublishContext,
+  mode: "dry-run" | "publish", nextStatus: ContentStatus, target: ManagedTarget,
+): Promise<ContentPublishResult> {
+  const record = input.record!;
+  if ((input.managedPermit || input.managedCandidate)?.operation !== "publish"
+      || nextStatus !== "published" || target.rollbackAllowed !== false) {
+    return errorResult("This exact candidate only permits a reviewed forward publish.", 403);
+  }
+  const existing = await fetchRecordByField(client, target.table!, "id", target.id);
+  if (!existing) return errorResult("The exact existing CMS row was not found.", 404);
+  const expected = String(input.expectedUpdatedAt || "");
+  if (!expected || !samePgTimestamp(expected, target.expectedUpdatedAt)
+      || !samePgTimestamp(existing.updated_at, expected)) {
+    return errorResult("This exact row version differs from the frozen candidate. Refresh and obtain new QA.", 409);
+  }
+  const baseline = Object.fromEntries(target.baselineProjectionFields!.map((field) => [field, existing[field] ?? null]));
+  if (existing.status !== "published" || await sha256(baseline) !== target.baselineFieldsSha256) {
+    return errorResult("The existing CMS row differs from its frozen baseline.", 409);
+  }
+  const fields = new Set(target.changedFields);
+  const allowed = new Set([...target.baselineProjectionFields!, ...READONLY_FIELDS]);
+  if (Object.entries(record).some(([field, value]) => !allowed.has(field)
+      || (!fields.has(field) && JSON.stringify(stableValue(value)) !== JSON.stringify(stableValue(existing[field]))))
+      || target.changedFields!.some((field) => record[field] === undefined)) {
+    return errorResult("Only the exact frozen changed fields may differ; unknown or unrelated fields are rejected.", 403);
+  }
+  let cleaned: Record<string, unknown>;
+  try {
+    if (target.contentType === "service") cleaned = cleanServicePayload(record, nextStatus).payload;
+    else if (target.contentType === "service_area") cleaned = cleanServiceAreaPayload(record, nextStatus).payload;
+    else if (target.contentType === "blog") cleaned = cleanBlogPayload(record, nextStatus).payload;
+    else if (target.contentType === "site_page") cleaned = cleanStandaloneSitePagePayload(record, nextStatus).payload;
+    else cleaned = Object.fromEntries(["answer_en", "answer_zh"].map((field) => [field, cleanText(record[field])]));
+  } catch (error) {
+    return errorResult(error instanceof Error ? error.message : "Invalid exact patch", 400);
+  }
+  const patch = Object.fromEntries(target.changedFields!.map((field) => [field, cleaned[field]]));
+  if (Object.values(patch).some((value) => value === undefined || value === null)
+      || await sha256(patch) !== target.desiredFieldsSha256) {
+    return errorResult("The cleaned patch differs from the frozen desired fields hash.", 403);
+  }
+  const common = { ok: true, dry_run: mode === "dry-run", content_type: target.contentType,
+    action: "update", slug: target.slug, existing_id: target.id, status: existing.status,
+    warnings: [], auth_mode: context.authMode || "admin" };
+  if (mode === "dry-run") return { body: { ...common, performed_write: false, payload_preview: patch } };
+  if (!cleanText(input.approvalId, 180)) return errorResult("Publishing requires a non-empty approvalId.", 403);
+  // The raw row is already checked for unrelated changes. Pass only unchanged existing fields + cleaned patch.
+  const checkedPayload = Object.fromEntries(Object.keys(record).filter((field) => !READONLY_FIELDS.has(field) && field !== "id")
+    .map((field) => [field, fields.has(field) ? patch[field] : existing[field]]));
+  const denied = await beginManagedCmsWrite(input, client, context, target, existing, target.slug,
+    checkedPayload, expected, patch);
+  if (denied) return denied;
+  let saved: ContentRow | null;
+  try {
+    saved = await updateContentRecordAtVersion(client, target.table!, target.id, expected, patch);
+  } catch (error) {
+    await finishManagedCmsWrite(client, context, input.managedPermit!.permitId, null);
+    throw error;
+  }
+  const completed = await finishManagedCmsWrite(client, context, input.managedPermit!.permitId, saved);
+  if (!saved) return errorResult("This exact CMS row changed during its CAS write. Read back before retrying.", 409);
+  if (!completed) return errorResult("CMS write result is uncertain; read back before issuing another permit.", 409);
+  const warnings: string[] = [];
+  try {
+    await insertAdminAuditLog(client, { adminUserId: context.adminUserId || null, action: "update",
+      tableName: target.table!, recordId: target.id, oldValue: existing, newValue: saved });
+  } catch (error) { warnings.push(error instanceof Error ? error.message : "Audit log failed"); }
+  return { body: { ...common, performed_write: true, saved_id: saved.id, saved_updated_at: saved.updated_at, warnings } };
+}
+
 export async function publishContent(
   input: ContentPublishRequest,
   client: ContentPublishClient,
@@ -2017,11 +2098,12 @@ export async function publishContent(
     input.contentType !== "material" &&
     input.contentType !== "project" &&
     input.contentType !== "site_page" &&
+    input.contentType !== "faq" &&
     input.contentType !== "service_area" &&
     input.contentType !== "media" &&
     input.contentType !== "cache_invalidation"
   ) {
-    return errorResult("Unsupported contentType. Supported content types: service, service_area, homepage, blog, material, project, site_page, media, cache_invalidation.");
+    return errorResult("Unsupported contentType. Supported content types: service, service_area, homepage, blog, material, project, site_page, faq (exact managed answers only), media, cache_invalidation.");
   }
 
   const mode = input.mode || "dry-run";
@@ -2029,10 +2111,20 @@ export async function publishContent(
   if (!input.record || typeof input.record !== "object" || Array.isArray(input.record)) return errorResult("record object is required.");
   const permitTarget = mode === "publish" && input.managedPermit
     ? findManagedTarget(MANAGED_TARGETS, String(input.record.id || ""),
-      normalizeSlug(input.record.slug), input.managedPermit)
+      managedRecordKey(input), input.managedPermit)
     : undefined;
   if (mode === "publish" && input.managedPermit && permitTarget?.contentType !== input.contentType) {
     return errorResult("Managed CMS permit does not match this exact row and action.", 403);
+  }
+  const selection = input.managedPermit || (mode === "dry-run" ? input.managedCandidate : undefined);
+  const exact = selection ? findManagedTarget(MANAGED_TARGETS, String(input.record.id || ""), managedRecordKey(input), selection) : undefined;
+  const newManagedRow = ORG020_V7_TARGETS.some((target) => target.contentType === input.contentType
+    && (target.id === input.record?.id || target.slug === managedRecordKey(input)));
+  if (mode === "publish" && newManagedRow && !context.managedIdentity) {
+    return errorResult("Managed CMS publish requires a trusted one-time permit; this route is not configured.", 403);
+  }
+  if ((input.contentType === "faq" || newManagedRow) && (!exact || exact.contentType !== input.contentType)) {
+    return errorResult("This managed CMS row requires its exact task, action, version and row identity.", 403);
   }
   if (mode === "publish" && (
     (input.contentType === "service" && (
@@ -2055,6 +2147,9 @@ export async function publishContent(
   if (!VALID_STATUSES.has(nextStatus)) return errorResult("Invalid nextStatus.");
   if (mode === "publish" && (!input.ownerApproved || !input.explicitExecution)) {
     return errorResult("Publishing requires ownerApproved=true and explicitExecution=true.", 403);
+  }
+  if (exact && ORG020_V7_TARGETS.includes(exact)) {
+    return publishOrg020ExactPatch(input, client, context, mode, nextStatus, exact);
   }
 
   if (input.contentType === "cache_invalidation") {

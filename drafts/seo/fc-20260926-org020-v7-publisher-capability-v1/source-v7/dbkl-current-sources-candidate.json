@@ -1,0 +1,111 @@
+{
+  "task_id": "fc-20260925-existing-page-content-gap-v1",
+  "backlog_item_id": "ORG-020",
+  "campaign_id": "free-seo-geo-longterm",
+  "roadmap_item_id": "LT-020",
+  "candidate_version": "dbkl-current-sources-r1-v7",
+  "action_id": "org020-dbkl-current-sources-v7",
+  "action_class": "cms_content_candidate",
+  "risk_level": "R1",
+  "publication_route": "cms_content_candidate -> cms_write -> protected content-publish",
+  "scope": "flashcast.com.my:blog_posts/a58f337f-f070-4d28-a28e-bc6add7c42fd:content_en,content_zh",
+  "table": "blog_posts",
+  "record_id": "a58f337f-f070-4d28-a28e-bc6add7c42fd",
+  "slug": "renovation-permit-dbkl-guide",
+  "target_urls": [
+    "https://flashcast.com.my/en/blog/renovation-permit-dbkl-guide",
+    "https://flashcast.com.my/zh/blog/renovation-permit-dbkl-guide"
+  ],
+  "intent_and_difference": "Replace obsolete entry URL and add current primary-source boundary plus actual service-owner links. Building-specific rules and company registration remain separate missing inputs.",
+  "expected_updated_at": "2026-08-22T12:23:01.800158+00:00",
+  "baseline_projection_fields": [
+    "id",
+    "slug",
+    "status",
+    "updated_at",
+    "title_zh",
+    "title_en",
+    "excerpt_zh",
+    "excerpt_en",
+    "content_zh",
+    "content_en",
+    "category",
+    "tags",
+    "cover_image_url",
+    "alt_zh",
+    "alt_en",
+    "seo_title_zh",
+    "seo_title_en",
+    "seo_description_zh",
+    "seo_description_en",
+    "published_at",
+    "sort_order"
+  ],
+  "baseline_fields_sha256": "4768610336b18ae78dc5e5db9a25b876dac20caa68ee13bd8fcb25d314e05802",
+  "desired_fields_sha256": "1a3c934809c65760d00e98507b73c56beadfb9053254f7c4fc58752d9e75c350",
+  "changed_fields": [
+    "content_en",
+    "content_zh"
+  ],
+  "desired_fields": {
+    "content_en": "<p><strong>Direct answer：</strong>DBKL's Building Control Department publishes current building-control functions and renovation-related guidance, but the route depends on the property and proposed work. This guide helps organise the questions; it is not an approval or legal opinion.</p><p>How to use this guide: replace every point below with the property's actual dimensions, named responsibilities, approved drawings and written evidence before using it for quotation, approval or construction decisions.</p><h2>Describe the work before asking about permits</h2><p>Prepare the address, property type, existing plan, photos and a marked-up list of changes. Identify structural, external, signage, use, partition, wet-area and building-service impacts.</p><h2>Separate authority and private approvals</h2><p>DBKL requirements do not replace building-management, landlord, strata, mall or tenancy obligations. Record each approval owner, submission party, fee, deposit and release condition.</p><h2>Confirm whether qualified parties are needed</h2><p>Ask whether an architect, engineer, submitting person or specialist must prepare, endorse or submit any part. Do not assume the contractor can sign every document.</p><h2>Do not start from an old checklist</h2><p>Forms, checklists and departmental routes can change. Download the current documents from the official channel and confirm the applicable version for the exact scope.</p><h2>Keep the approved scope on site</h2><p>Once the required written permissions are obtained, align drawings, contractor documents, work hours, access, protection and inspection records with the approved scope. Submit changes before carrying them out when required.</p><h2>Checklist before approval or start</h2><ul><li>Address, property type and photos</li><li>Marked-up scope and drawings</li><li>Management or landlord guide</li><li>Named submission responsibility</li><li>Current official forms and fees</li><li>Written approval and site copy</li></ul><h2>Frequently asked questions</h2><h3>Does every internal renovation follow the same DBKL route?</h3><p>No. Confirm the exact property and work with the relevant current official channel.</p><h3>Is management approval the same as DBKL approval?</h3><p>No. They are separate obligations and one does not automatically satisfy the other.</p><h3>Can work start while an application is pending?</h3><p>Do not assume so. Start only when the required written permissions and site conditions for that scope are confirmed.</p><h2>Sources and scope boundary</h2><ul><li><a href=\"https://www.dbkl.gov.my/jabatan/jabatan-kawalan-bangunan\" target=\"_blank\" rel=\"noopener noreferrer\">DBKL Department of Building Control</a></li><li><a href=\"https://www.cidb.gov.my/eng/contractor-registration/\" target=\"_blank\" rel=\"noopener noreferrer\">CIDB contractor registration guidance</a></li></ul><p>The original guide was checked on 22 August 2026; the official entry points below were reviewed on 26 September 2026. Authority, management, consultant and manufacturer requirements can change; confirm the latest written requirements for the actual property, scope and selected product before making a final decision.</p><h2>Use the current official entry points</h2><p>DBKL lists renovation-work permits among the building-control department functions. Confirm the route and documents for the actual property and proposed work with that department. CIDB publishes contractor registration requirements; check the appointed contractor and relevant scope rather than treating this guide as proof of FLASH CAST registration. No fixed fees, approval duration or approval outcome is promised.</p><p>For a commercial brief, see <a href=\"/en/services/shop-renovation\">shop renovation</a> or <a href=\"/en/services/office-renovation\">office renovation</a>. Share the address and marked scope through the <a href=\"/en/quote\">quotation form</a>.</p>",
+    "content_zh": "<p><strong>直接答案：</strong>DBKL 建筑管制部门会发布现行建筑管制职能和装修相关指引，但具体路径取决于物业和拟施工范围。本文用于整理问题，不代表审批结果或法律意见。</p><p>使用方法：把下列各项替换为本项目的实际尺寸、明确责任人、获批图纸和书面记录，再用于报价、审批或施工决定。</p><h2>先说明工程再问准证</h2><p>准备地址、物业类型、现有图纸、照片和标注后的变更清单，并指出是否影响结构、外立面、招牌、用途、隔间、湿区或建筑设备。</p><h2>分开政府与私人审批</h2><p>DBKL 要求不能替代管理处、业主、分层物业、商场或租约义务。分别记录审批方、提交人、费用、押金和退还条件。</p><h2>确认是否需要合格专业人士</h2><p>询问是否必须由建筑师、工程师、提交人或专项人员准备、签署或提交资料，不能假设承包商能签所有文件。</p><h2>不要从旧清单开始</h2><p>表格、清单和部门流程可能变化，应从官方渠道下载当前文件，并确认哪一个版本适用于实际范围。</p><h2>现场资料要与批准范围一致</h2><p>取得所需书面许可后，把图纸、承包商文件、工作时间、出入、保护和检查记录与批准范围对齐；需要时先提交变更再施工。</p><h2>开工或签约前检查清单</h2><ul><li>地址、物业类型和照片</li><li>标注范围与图纸</li><li>管理处或业主指南</li><li>明确提交责任</li><li>当前官方表格与费用</li><li>书面批准及现场副本</li></ul><h2>常见问题</h2><h3>所有室内装修都走同一个 DBKL 流程吗？</h3><p>不是，应按具体物业和工程向当前官方渠道确认。</p><h3>管理处批准等于 DBKL 批准吗？</h3><p>不等于，它们是不同义务，一个批准不会自动替代另一个。</p><h3>申请处理中可以开工吗？</h3><p>不能自行假设，应在该范围需要的书面许可和现场条件确认后才开始。</p><h2>资料来源与适用边界</h2><ul><li><a href=\"https://www.dbkl.gov.my/jabatan/jabatan-kawalan-bangunan\" target=\"_blank\" rel=\"noopener noreferrer\">吉隆坡市政局建筑管制部门</a></li><li><a href=\"https://www.cidb.gov.my/eng/contractor-registration/\" target=\"_blank\" rel=\"noopener noreferrer\">CIDB 承包商注册官方说明</a></li></ul><p>原指南核对日期：2026 年 8 月 22 日；下列官方入口于 2026 年 9 月 26 日复核。相关部门、管理处、顾问和产品制造商的要求可能变化；正式决定前请以项目所在地、具体范围和所选产品的最新书面资料为准。</p><h2>使用当前官方入口核对</h2><p>DBKL 将装修工程准证列为建筑管制部门职能之一。应向该部门按实际物业与拟施工范围确认路径及资料。CIDB 公布承包商注册要求，应核对受委任承包商及适用范围；本指南不作为 FLASH CAST 注册证明，不承诺统一费用、审批时间或审批结果。</p><p>商业需求可查看 <a href=\"/zh/services/shop-renovation\">店铺装修</a> 或 <a href=\"/zh/services/office-renovation\">办公室装修</a>，再通过 <a href=\"/zh/quote\">报价表</a> 提供地址与标注范围。</p>"
+  },
+  "request": {
+    "contentType": "blog",
+    "mode": "dry-run",
+    "nextStatus": "published",
+    "expectedUpdatedAt": "2026-08-22T12:23:01.800158+00:00",
+    "record": {
+      "id": "a58f337f-f070-4d28-a28e-bc6add7c42fd",
+      "slug": "renovation-permit-dbkl-guide",
+      "title_zh": "DBKL 装修准证要注意什么",
+      "title_en": "DBKL Renovation Permit: What to Check",
+      "excerpt_zh": "开工前按吉隆坡实际工程范围核对 DBKL、管理处、业主、顾问和文件要求。",
+      "excerpt_en": "Check the current DBKL, management, landlord, consultant and document requirements for the exact Kuala Lumpur renovation scope before work starts.",
+      "content_zh": "<p><strong>直接答案：</strong>DBKL 建筑管制部门会发布现行建筑管制职能和装修相关指引，但具体路径取决于物业和拟施工范围。本文用于整理问题，不代表审批结果或法律意见。</p><p>使用方法：把下列各项替换为本项目的实际尺寸、明确责任人、获批图纸和书面记录，再用于报价、审批或施工决定。</p><h2>先说明工程再问准证</h2><p>准备地址、物业类型、现有图纸、照片和标注后的变更清单，并指出是否影响结构、外立面、招牌、用途、隔间、湿区或建筑设备。</p><h2>分开政府与私人审批</h2><p>DBKL 要求不能替代管理处、业主、分层物业、商场或租约义务。分别记录审批方、提交人、费用、押金和退还条件。</p><h2>确认是否需要合格专业人士</h2><p>询问是否必须由建筑师、工程师、提交人或专项人员准备、签署或提交资料，不能假设承包商能签所有文件。</p><h2>不要从旧清单开始</h2><p>表格、清单和部门流程可能变化，应从官方渠道下载当前文件，并确认哪一个版本适用于实际范围。</p><h2>现场资料要与批准范围一致</h2><p>取得所需书面许可后，把图纸、承包商文件、工作时间、出入、保护和检查记录与批准范围对齐；需要时先提交变更再施工。</p><h2>开工或签约前检查清单</h2><ul><li>地址、物业类型和照片</li><li>标注范围与图纸</li><li>管理处或业主指南</li><li>明确提交责任</li><li>当前官方表格与费用</li><li>书面批准及现场副本</li></ul><h2>常见问题</h2><h3>所有室内装修都走同一个 DBKL 流程吗？</h3><p>不是，应按具体物业和工程向当前官方渠道确认。</p><h3>管理处批准等于 DBKL 批准吗？</h3><p>不等于，它们是不同义务，一个批准不会自动替代另一个。</p><h3>申请处理中可以开工吗？</h3><p>不能自行假设，应在该范围需要的书面许可和现场条件确认后才开始。</p><h2>资料来源与适用边界</h2><ul><li><a href=\"https://www.dbkl.gov.my/jabatan/jabatan-kawalan-bangunan\" target=\"_blank\" rel=\"noopener noreferrer\">吉隆坡市政局建筑管制部门</a></li><li><a href=\"https://www.cidb.gov.my/eng/contractor-registration/\" target=\"_blank\" rel=\"noopener noreferrer\">CIDB 承包商注册官方说明</a></li></ul><p>原指南核对日期：2026 年 8 月 22 日；下列官方入口于 2026 年 9 月 26 日复核。相关部门、管理处、顾问和产品制造商的要求可能变化；正式决定前请以项目所在地、具体范围和所选产品的最新书面资料为准。</p><h2>使用当前官方入口核对</h2><p>DBKL 将装修工程准证列为建筑管制部门职能之一。应向该部门按实际物业与拟施工范围确认路径及资料。CIDB 公布承包商注册要求，应核对受委任承包商及适用范围；本指南不作为 FLASH CAST 注册证明，不承诺统一费用、审批时间或审批结果。</p><p>商业需求可查看 <a href=\"/zh/services/shop-renovation\">店铺装修</a> 或 <a href=\"/zh/services/office-renovation\">办公室装修</a>，再通过 <a href=\"/zh/quote\">报价表</a> 提供地址与标注范围。</p>",
+      "content_en": "<p><strong>Direct answer：</strong>DBKL's Building Control Department publishes current building-control functions and renovation-related guidance, but the route depends on the property and proposed work. This guide helps organise the questions; it is not an approval or legal opinion.</p><p>How to use this guide: replace every point below with the property's actual dimensions, named responsibilities, approved drawings and written evidence before using it for quotation, approval or construction decisions.</p><h2>Describe the work before asking about permits</h2><p>Prepare the address, property type, existing plan, photos and a marked-up list of changes. Identify structural, external, signage, use, partition, wet-area and building-service impacts.</p><h2>Separate authority and private approvals</h2><p>DBKL requirements do not replace building-management, landlord, strata, mall or tenancy obligations. Record each approval owner, submission party, fee, deposit and release condition.</p><h2>Confirm whether qualified parties are needed</h2><p>Ask whether an architect, engineer, submitting person or specialist must prepare, endorse or submit any part. Do not assume the contractor can sign every document.</p><h2>Do not start from an old checklist</h2><p>Forms, checklists and departmental routes can change. Download the current documents from the official channel and confirm the applicable version for the exact scope.</p><h2>Keep the approved scope on site</h2><p>Once the required written permissions are obtained, align drawings, contractor documents, work hours, access, protection and inspection records with the approved scope. Submit changes before carrying them out when required.</p><h2>Checklist before approval or start</h2><ul><li>Address, property type and photos</li><li>Marked-up scope and drawings</li><li>Management or landlord guide</li><li>Named submission responsibility</li><li>Current official forms and fees</li><li>Written approval and site copy</li></ul><h2>Frequently asked questions</h2><h3>Does every internal renovation follow the same DBKL route?</h3><p>No. Confirm the exact property and work with the relevant current official channel.</p><h3>Is management approval the same as DBKL approval?</h3><p>No. They are separate obligations and one does not automatically satisfy the other.</p><h3>Can work start while an application is pending?</h3><p>Do not assume so. Start only when the required written permissions and site conditions for that scope are confirmed.</p><h2>Sources and scope boundary</h2><ul><li><a href=\"https://www.dbkl.gov.my/jabatan/jabatan-kawalan-bangunan\" target=\"_blank\" rel=\"noopener noreferrer\">DBKL Department of Building Control</a></li><li><a href=\"https://www.cidb.gov.my/eng/contractor-registration/\" target=\"_blank\" rel=\"noopener noreferrer\">CIDB contractor registration guidance</a></li></ul><p>The original guide was checked on 22 August 2026; the official entry points below were reviewed on 26 September 2026. Authority, management, consultant and manufacturer requirements can change; confirm the latest written requirements for the actual property, scope and selected product before making a final decision.</p><h2>Use the current official entry points</h2><p>DBKL lists renovation-work permits among the building-control department functions. Confirm the route and documents for the actual property and proposed work with that department. CIDB publishes contractor registration requirements; check the appointed contractor and relevant scope rather than treating this guide as proof of FLASH CAST registration. No fixed fees, approval duration or approval outcome is promised.</p><p>For a commercial brief, see <a href=\"/en/services/shop-renovation\">shop renovation</a> or <a href=\"/en/services/office-renovation\">office renovation</a>. Share the address and marked scope through the <a href=\"/en/quote\">quotation form</a>.</p>",
+      "category": "home-condo-approval",
+      "tags": [
+        "permit",
+        "DBKL",
+        "kuala lumpur",
+        "renovation",
+        "compliance"
+      ],
+      "cover_image_url": "/images/services/renovation-works.webp",
+      "alt_zh": "住宅装修与审批规划",
+      "alt_en": "Home renovation and approval planning",
+      "seo_title_zh": "DBKL 装修准证要注意什么",
+      "seo_title_en": "DBKL Renovation Permit: What to Check",
+      "seo_description_zh": "开工前按吉隆坡实际工程范围核对 DBKL、管理处、业主、顾问和文件要求。",
+      "seo_description_en": "Check the current DBKL, management, landlord, consultant and document requirements for the exact Kuala Lumpur renovation scope before work starts.",
+      "status": "published",
+      "published_at": "2025-10-08T00:00:00+00:00",
+      "created_at": "2026-05-29T10:15:45.459405+00:00",
+      "updated_at": "2026-08-22T12:23:01.800158+00:00",
+      "sort_order": 30,
+      "version": 1
+    }
+  },
+  "diff_path": "drafts/seo/fc-20260925-existing-page-content-gap-v1/v7/dbkl-current-sources-diff.json",
+  "backup_path": "backups/fc-20260925-existing-page-content-gap-v1/v7/dbkl-current-sources-current-row.json",
+  "forward_recovery_path": "backups/fc-20260925-existing-page-content-gap-v1/v7/dbkl-current-sources-forward-recovery.json",
+  "company_fact_sources": [
+    "company-context.md",
+    "services-and-pricing.md",
+    "service-area.md",
+    "faq.md"
+  ],
+  "primary_sources": [
+    "https://www.dbkl.gov.my/jabatan/jabatan-kawalan-bangunan",
+    "https://www.cidb.gov.my/eng/contractor-registration/",
+    "https://www.ppj.gov.my/storage/akta318/572/572.pdf"
+  ],
+  "protected_target_status": "NEW_EXACT_V7_TUPLE_NOT_DEPLOYED",
+  "next_owner": "operations",
+  "capability_next_step": "After content QA, review exact table/row/task/action/version/field/baseline/desired tuple with current protected maintainer; preserve old targets. Existing old target is not permission for this new tuple. No permit issued or consumed.",
+  "status": "ready_for_qa",
+  "qa_pass": false,
+  "production_write_executed": false
+}

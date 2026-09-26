@@ -1,0 +1,154 @@
+{
+  "task_id": "fc-20260925-existing-page-content-gap-v1",
+  "backlog_item_id": "ORG-020",
+  "campaign_id": "free-seo-geo-longterm",
+  "roadmap_item_id": "LT-020",
+  "candidate_version": "area-cheras-prune-r1-v7",
+  "action_id": "org020-area-cheras-prune-v7",
+  "action_class": "cms_content_candidate",
+  "risk_level": "R1",
+  "publication_route": "cms_content_candidate -> cms_write -> protected content-publish",
+  "scope": "flashcast.com.my:service_areas/2153b108-6057-4efd-b22c-d0ffed2ce44b:content_en",
+  "table": "service_areas",
+  "record_id": "2153b108-6057-4efd-b22c-d0ffed2ce44b",
+  "slug": "cheras",
+  "target_urls": [
+    "https://flashcast.com.my/en/locations/cheras",
+    "https://flashcast.com.my/zh/locations/cheras"
+  ],
+  "intent_and_difference": "Delete only explicit search-keyword boilerplate from an existing area body; preserve every substantive local note, FAQ, media and assigned canonical URL. No city-swapped expansion or new claims.",
+  "expected_updated_at": "2026-08-22T08:45:39.396+00:00",
+  "baseline_projection_fields": [
+    "id",
+    "slug",
+    "status",
+    "updated_at",
+    "title_zh",
+    "title_en",
+    "excerpt_zh",
+    "excerpt_en",
+    "content_zh",
+    "content_en",
+    "area_name",
+    "property_types",
+    "common_needs",
+    "construction_notes_zh",
+    "construction_notes_en",
+    "projects",
+    "faqs_zh",
+    "faqs_en",
+    "seo_title_zh",
+    "seo_title_en",
+    "seo_description_zh",
+    "seo_description_en",
+    "sort_order"
+  ],
+  "baseline_fields_sha256": "32b00246c9f3dfbfedea0b347787e5f934d655b77f9989fc5f3e1627b8433fcb",
+  "desired_fields_sha256": "1c04e69dabffd66267ff5820e2dc842aef4554219ac1920c3be26281c65dfe52",
+  "changed_fields": [
+    "content_en"
+  ],
+  "desired_fields": {
+    "content_en": "<p>Cheras renovation projects should consider property type, management rules, working hours, material delivery, itemized budget, and after-sales responsibility. Common project types include Condo, Terrace house, Semi-D, Office, Retail shop, Warehouse, with frequent requests such as Full renovation, Kitchen cabinet, Bathroom waterproofing, Built-in furniture, Office fit-out, Shop renovation.</p><p>FLASH CAST first reviews the location, area, project type, budget, photos, and site condition before preparing a practical scope. Owners can send details by WhatsApp or the free quote form so we can advise whether a site measurement is needed.</p><p>Cheras projects should confirm management application, working hours, material delivery, protection works, parking, and noise limits early.</p>"
+  },
+  "request": {
+    "contentType": "service_area",
+    "mode": "dry-run",
+    "nextStatus": "published",
+    "expectedUpdatedAt": "2026-08-22T08:45:39.396+00:00",
+    "record": {
+      "id": "2153b108-6057-4efd-b22c-d0ffed2ce44b",
+      "slug": "cheras",
+      "title_zh": "Cheras 装修公司",
+      "title_en": "Cheras Renovation Contractor",
+      "excerpt_zh": "FLASH CAST 提供 Cheras 住宅装修、旧屋翻新、厨房浴室、办公室、店铺和定制柜服务。",
+      "excerpt_en": "FLASH CAST provides Cheras home renovation, old house refurbishment, kitchen, bathroom, office, shop, and custom cabinet services.",
+      "content_zh": "<p>Cheras 装修项目需要同时考虑房屋类型、管理处规定、施工时段、材料进场、预算分项和售后责任。公寓、排屋和店铺类型多，适合覆盖浴室防水、厨房翻新、旧屋维修和店铺开业装修。</p><p>FLASH CAST 会先了解地区、面积、项目类型、预算和照片，再根据现场条件整理可执行的施工范围。业主可以通过 WhatsApp 或免费报价表单先提交资料，我们会协助判断下一步是否需要现场测量。</p><p>如果你正在寻找 Cheras renovation contractor、装修公司、厨房橱柜、浴室防水、办公室装修或店铺装修服务，这个页面会持续整理本地区案例、FAQ 和材料建议。</p>",
+      "content_en": "<p>Cheras renovation projects should consider property type, management rules, working hours, material delivery, itemized budget, and after-sales responsibility. Common project types include Condo, Terrace house, Semi-D, Office, Retail shop, Warehouse, with frequent requests such as Full renovation, Kitchen cabinet, Bathroom waterproofing, Built-in furniture, Office fit-out, Shop renovation.</p><p>FLASH CAST first reviews the location, area, project type, budget, photos, and site condition before preparing a practical scope. Owners can send details by WhatsApp or the free quote form so we can advise whether a site measurement is needed.</p><p>Cheras projects should confirm management application, working hours, material delivery, protection works, parking, and noise limits early.</p>",
+      "area_name": "Cheras",
+      "seo_title_zh": "Cheras 装修公司 | 住宅、旧屋、厨房、办公室与店铺装修",
+      "seo_title_en": "Cheras Renovation Contractor | Home, Office, Kitchen & Shop",
+      "seo_description_zh": "FLASH CAST 提供Cheras装修服务，覆盖吉隆坡、雪兰莪与巴生谷住宅、旧屋、厨房橱柜、浴室防水、办公室、店铺和定制柜项目。客户可先提交照片、面积、预算和工期，获取中文咨询与免费报价建议。",
+      "seo_description_en": "FLASH CAST provides Cheras renovation services for homes, old houses, kitchen cabinets, bathroom waterproofing, offices, shops, custom cabinets, and free quotation.",
+      "status": "published",
+      "sort_order": 60,
+      "created_at": "2026-05-25T10:58:29.820388+00:00",
+      "updated_at": "2026-08-22T08:45:39.396+00:00",
+      "property_types": [
+        "Condo",
+        "Terrace house",
+        "Semi-D",
+        "Office",
+        "Retail shop",
+        "Warehouse"
+      ],
+      "common_needs": [
+        "Full renovation",
+        "Kitchen cabinet",
+        "Bathroom waterproofing",
+        "Built-in furniture",
+        "Office fit-out",
+        "Shop renovation"
+      ],
+      "construction_notes_zh": "Cheras 项目建议提前确认管理处申请、施工时间、材料运输、保护工程、停车安排和噪音限制。",
+      "construction_notes_en": "Cheras projects should confirm management application, working hours, material delivery, protection works, parking, and noise limits early.",
+      "projects": [
+        {
+          "type": "Residential Renovation",
+          "image": "/images/projects/residential-renovation.webp?v=20260601-content",
+          "title": "Cheras Residential Renovation Reference"
+        },
+        {
+          "type": "Commercial Fit-Out",
+          "image": "/images/projects/commercial-renovation.webp?v=20260601-content",
+          "title": "Cheras Commercial Fit-Out Reference"
+        }
+      ],
+      "faqs_zh": [
+        {
+          "a": "可以在初步了解项目类型、地点、出入条件、现场情况和时间安排后讨论。请先提供照片、大约面积和计划施工范围。",
+          "q": "Cheras 可以安排现场查看或测量吗？"
+        },
+        {
+          "a": "报价准备时间取决于施工范围是否明确、是否需要现场查看，以及材料、技术、管理处、业主、顾问或相关部门资料是否齐全。我们会在审核资料后说明下一步。",
+          "q": "Cheras 装修报价准备时间受哪些因素影响？"
+        },
+        {
+          "a": "可以。我们可以根据现有管理指南和项目范围一起核对。具体表格、图纸、合格人员、费用、押金、提交责任和审批结果，仍以相关管理处、业主、顾问或主管部门要求为准。",
+          "q": "可以一起核对管理处或审批要求吗？"
+        }
+      ],
+      "faqs_en": [
+        {
+          "a": "It can be discussed after we review the project type, location, access, current condition, and schedule. Share photos, approximate size, and intended scope first.",
+          "q": "Can a site visit or measurement be arranged in Cheras?"
+        },
+        {
+          "a": "Timing depends on how clear the scope is, whether a site review is needed, and whether material, technical, management, landlord, consultant, or authority details are outstanding. We confirm the next step after reviewing the information.",
+          "q": "What affects quotation preparation for a renovation in Cheras?"
+        },
+        {
+          "a": "Yes. We can review the available building guide and project scope with you. Required forms, drawings, qualified parties, fees, deposits, submissions, responsibilities, and approval decisions remain subject to the relevant management, landlord, consultants, or authority.",
+          "q": "Can management or approval requirements be reviewed?"
+        }
+      ],
+      "version": 1
+    }
+  },
+  "diff_path": "drafts/seo/fc-20260925-existing-page-content-gap-v1/v7/area-cheras-prune-diff.json",
+  "backup_path": "backups/fc-20260925-existing-page-content-gap-v1/v7/area-cheras-prune-current-row.json",
+  "forward_recovery_path": "backups/fc-20260925-existing-page-content-gap-v1/v7/area-cheras-prune-forward-recovery.json",
+  "company_fact_sources": [
+    "company-context.md",
+    "services-and-pricing.md",
+    "service-area.md",
+    "faq.md"
+  ],
+  "primary_sources": [],
+  "protected_target_status": "NEW_EXACT_V7_TUPLE_NOT_DEPLOYED",
+  "next_owner": "operations",
+  "capability_next_step": "After content QA, review exact table/row/task/action/version/field/baseline/desired tuple with current protected maintainer; preserve old targets. Existing old target is not permission for this new tuple. No permit issued or consumed.",
+  "status": "ready_for_qa",
+  "qa_pass": false,
+  "production_write_executed": false
+}

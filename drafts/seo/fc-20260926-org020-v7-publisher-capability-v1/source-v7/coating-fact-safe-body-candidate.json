@@ -1,0 +1,302 @@
+{
+  "task_id": "fc-20260925-existing-page-content-gap-v1",
+  "backlog_item_id": "ORG-020",
+  "campaign_id": "free-seo-geo-longterm",
+  "roadmap_item_id": "LT-020",
+  "candidate_version": "coating-fact-safe-body-r1-v7",
+  "action_id": "org020-coating-fact-safe-body-v7",
+  "action_class": "cms_content_candidate",
+  "risk_level": "R1",
+  "publication_route": "cms_content_candidate -> cms_write -> protected content-publish",
+  "scope": "flashcast.com.my:services/d862312d-d5f3-4bb7-9bf0-137ed71c87be:alt_en,alt_zh,content_en,content_zh,excerpt_en,excerpt_zh,process_steps_en,process_steps_zh,scope_items_en,scope_items_zh,seo_description_en,seo_description_zh,seo_title_en,seo_title_zh,title_en,title_zh",
+  "table": "services",
+  "record_id": "d862312d-d5f3-4bb7-9bf0-137ed71c87be",
+  "slug": "artistic-coating",
+  "target_urls": [
+    "https://flashcast.com.my/en/services/artistic-coating",
+    "https://flashcast.com.my/zh/services/artistic-coating"
+  ],
+  "intent_and_difference": "Replace unsupported Remmers association in all existing public text/metadata fields; preserve image_url and identify its rights as separate Visual input. Advance generic supported wall-finish brief.",
+  "expected_updated_at": "2026-06-02T08:04:52.946145+00:00",
+  "baseline_projection_fields": [
+    "id",
+    "slug",
+    "status",
+    "updated_at",
+    "title_zh",
+    "title_en",
+    "excerpt_zh",
+    "excerpt_en",
+    "content_zh",
+    "content_en",
+    "image_url",
+    "alt_zh",
+    "alt_en",
+    "suitable_for_zh",
+    "suitable_for_en",
+    "common_projects_zh",
+    "common_projects_en",
+    "process_steps_zh",
+    "process_steps_en",
+    "scope_items_zh",
+    "scope_items_en",
+    "faqs_zh",
+    "faqs_en",
+    "seo_title_zh",
+    "seo_title_en",
+    "seo_description_zh",
+    "seo_description_en",
+    "sort_order"
+  ],
+  "baseline_fields_sha256": "0ea082a23256203346441716285fd06521de278d583b84090c9e3c339c3fc219",
+  "desired_fields_sha256": "59e14663f5bef76a32ed23f5f05f10eee4efc79216598447e42c7d6a500853c4",
+  "changed_fields": [
+    "content_zh",
+    "content_en",
+    "title_zh",
+    "title_en",
+    "excerpt_zh",
+    "excerpt_en",
+    "alt_zh",
+    "alt_en",
+    "seo_title_zh",
+    "seo_title_en",
+    "seo_description_zh",
+    "seo_description_en",
+    "scope_items_zh",
+    "scope_items_en",
+    "process_steps_zh",
+    "process_steps_en"
+  ],
+  "desired_fields": {
+    "content_zh": "<p>艺术墙面涂装可用于讨论室内特色墙的颜色、肌理、光感与维护需求。FLASH CAST 会先核对墙面状况和设计方向，再按样板与书面范围确认材料和施工。</p><h2>先看基层与使用条件</h2><p>提供墙面尺寸、照片、现有饰面及受潮或开裂情况。潮湿、松动或不平整基层应先评估处理范围，不能仅靠饰面覆盖问题。</p><h2>用实物样板确认效果</h2><p>纹理、金属感或其他装饰效果应结合样板、照明和观看距离比较。产品名称、体系、适用基层、用量和维护方法须按所选产品的当前资料确认，不以效果图代替真实施工效果。</p><h2>报价与下一步</h2><p>面积、基层处理、选定饰面、样板确认、保护和现场出入都会影响报价。需要整体空间协调时，可查看 <a href=\"/zh/services/design\">室内设计与装修规划</a>；可通过 <a href=\"/zh/quote\">免费报价入口</a> 提供墙面照片和需求。本页不声明任何品牌的授权经销、合作关系或通用性能保证。</p>",
+    "content_en": "<p>Artistic wall coating helps explore colour, texture, reflected light and maintenance for interior feature walls. FLASH CAST first reviews the wall condition and design direction, then confirms materials and application within an approved sample and written scope.</p><h2>Check the substrate and use</h2><p>Share wall dimensions, photos, existing finishes and any dampness or cracking. Damp, loose or uneven substrates need an assessment of preparation work; a decorative finish should not simply cover an unresolved problem.</p><h2>Confirm the effect with physical samples</h2><p>Compare texture, metallic appearance or other decorative effects against samples, lighting and viewing distance. Product identity, system, suitable substrate, coverage and care follow the selected product documentation. A rendering does not prove an installed finish.</p><h2>Quotation and next step</h2><p>Area, preparation, selected finish, samples, protection and access affect the quotation. For wider coordination, see <a href=\"/en/services/design\">interior design and renovation planning</a>. Share wall photos and requirements through the <a href=\"/en/quote\">free quotation form</a>. This page does not claim authorised distribution, a brand partnership or a general performance guarantee.</p>",
+    "title_zh": "艺术墙面涂装与特色墙规划",
+    "title_en": "Artistic Wall Coating and Feature Wall Planning",
+    "excerpt_zh": "先核对墙面状态、颜色、肌理、样板与维护需求，再确认饰面及施工范围。",
+    "excerpt_en": "Review the wall condition, colour, texture, samples and care needs before confirming the finish and work scope.",
+    "alt_zh": "艺术墙面饰面规划参考",
+    "alt_en": "Decorative wall finish planning reference",
+    "seo_title_zh": "吉隆坡艺术墙面涂装与特色墙规划 | FLASH CAST",
+    "seo_title_en": "Artistic Wall Coating and Feature Walls Kuala Lumpur | FLASH CAST",
+    "seo_description_zh": "讨论吉隆坡与雪兰莪特色墙的颜色、肌理、基层与维护条件，按实物样板和书面范围确认艺术墙面饰面及报价。",
+    "seo_description_en": "Discuss feature-wall colour, texture, preparation and maintenance in Kuala Lumpur and Selangor. Confirm the selected finish with samples and a written quotation.",
+    "scope_items_zh": [
+      "墙面尺寸与现状核对",
+      "颜色与肌理方向",
+      "所选产品与样板确认",
+      "基层处理范围",
+      "保护、出入与维护要求"
+    ],
+    "scope_items_en": [
+      "Wall dimensions and existing condition",
+      "Colour and texture direction",
+      "Selected product and sample confirmation",
+      "Surface-preparation scope",
+      "Protection, access and maintenance requirements"
+    ],
+    "process_steps_zh": [
+      {
+        "title": "需求与现场资料",
+        "desc": "提供尺寸、照片和期望效果。"
+      },
+      {
+        "title": "基层与材料核对",
+        "desc": "检查现况，并按所选产品资料确认准备要求。"
+      },
+      {
+        "title": "样板与范围确认",
+        "desc": "核对实物样板、工序、保护和书面报价。"
+      },
+      {
+        "title": "施工与检查",
+        "desc": "按确认体系和范围协调工序及阶段检查。"
+      },
+      {
+        "title": "维护与交付说明",
+        "desc": "所需封层、清洁与维护按产品资料和项目文件确认。"
+      }
+    ],
+    "process_steps_en": [
+      {
+        "title": "Brief and site information",
+        "desc": "Share dimensions, photos and the intended effect."
+      },
+      {
+        "title": "Substrate and material review",
+        "desc": "Check the current wall and preparation requirements for the selected product."
+      },
+      {
+        "title": "Sample and scope confirmation",
+        "desc": "Review physical samples, work stages, protection and the written quotation."
+      },
+      {
+        "title": "Work and stage checks",
+        "desc": "Coordinate the agreed system and work scope."
+      },
+      {
+        "title": "Care and handover",
+        "desc": "Confirm any sealing, cleaning and care requirements against product and project documents."
+      }
+    ]
+  },
+  "request": {
+    "contentType": "service",
+    "mode": "dry-run",
+    "nextStatus": "published",
+    "expectedUpdatedAt": "2026-06-02T08:04:52.946145+00:00",
+    "record": {
+      "id": "d862312d-d5f3-4bb7-9bf0-137ed71c87be",
+      "slug": "artistic-coating",
+      "title_zh": "艺术墙面涂装与特色墙规划",
+      "title_en": "Artistic Wall Coating and Feature Wall Planning",
+      "excerpt_zh": "先核对墙面状态、颜色、肌理、样板与维护需求，再确认饰面及施工范围。",
+      "excerpt_en": "Review the wall condition, colour, texture, samples and care needs before confirming the finish and work scope.",
+      "content_zh": "<p>艺术墙面涂装可用于讨论室内特色墙的颜色、肌理、光感与维护需求。FLASH CAST 会先核对墙面状况和设计方向，再按样板与书面范围确认材料和施工。</p><h2>先看基层与使用条件</h2><p>提供墙面尺寸、照片、现有饰面及受潮或开裂情况。潮湿、松动或不平整基层应先评估处理范围，不能仅靠饰面覆盖问题。</p><h2>用实物样板确认效果</h2><p>纹理、金属感或其他装饰效果应结合样板、照明和观看距离比较。产品名称、体系、适用基层、用量和维护方法须按所选产品的当前资料确认，不以效果图代替真实施工效果。</p><h2>报价与下一步</h2><p>面积、基层处理、选定饰面、样板确认、保护和现场出入都会影响报价。需要整体空间协调时，可查看 <a href=\"/zh/services/design\">室内设计与装修规划</a>；可通过 <a href=\"/zh/quote\">免费报价入口</a> 提供墙面照片和需求。本页不声明任何品牌的授权经销、合作关系或通用性能保证。</p>",
+      "content_en": "<p>Artistic wall coating helps explore colour, texture, reflected light and maintenance for interior feature walls. FLASH CAST first reviews the wall condition and design direction, then confirms materials and application within an approved sample and written scope.</p><h2>Check the substrate and use</h2><p>Share wall dimensions, photos, existing finishes and any dampness or cracking. Damp, loose or uneven substrates need an assessment of preparation work; a decorative finish should not simply cover an unresolved problem.</p><h2>Confirm the effect with physical samples</h2><p>Compare texture, metallic appearance or other decorative effects against samples, lighting and viewing distance. Product identity, system, suitable substrate, coverage and care follow the selected product documentation. A rendering does not prove an installed finish.</p><h2>Quotation and next step</h2><p>Area, preparation, selected finish, samples, protection and access affect the quotation. For wider coordination, see <a href=\"/en/services/design\">interior design and renovation planning</a>. Share wall photos and requirements through the <a href=\"/en/quote\">free quotation form</a>. This page does not claim authorised distribution, a brand partnership or a general performance guarantee.</p>",
+      "image_url": "/images/services/artistic-coating.webp",
+      "alt_zh": "艺术墙面饰面规划参考",
+      "alt_en": "Decorative wall finish planning reference",
+      "suitable_for_zh": [
+        "想提升质感的住宅业主",
+        "室内设计师",
+        "酒店与接待空间",
+        "餐饮空间",
+        "商业展厅与大堂"
+      ],
+      "suitable_for_en": [
+        "Homeowners wanting premium feature walls",
+        "Interior designers seeking unique finishes",
+        "Hotels and hospitality venues",
+        "Restaurants and F&B interiors",
+        "Commercial showrooms and lobbies"
+      ],
+      "common_projects_zh": [
+        "艺术背景墙",
+        "主卧强调墙",
+        "酒店大堂墙面",
+        "餐厅墙面",
+        "办公接待区",
+        "展示墙"
+      ],
+      "common_projects_en": [
+        "Living room TV feature wall",
+        "Master bedroom accent wall",
+        "Hotel lobby and corridor coating",
+        "Restaurant interior wall finish",
+        "Office reception feature wall"
+      ],
+      "process_steps_zh": [
+        {
+          "title": "需求与现场资料",
+          "desc": "提供尺寸、照片和期望效果。"
+        },
+        {
+          "title": "基层与材料核对",
+          "desc": "检查现况，并按所选产品资料确认准备要求。"
+        },
+        {
+          "title": "样板与范围确认",
+          "desc": "核对实物样板、工序、保护和书面报价。"
+        },
+        {
+          "title": "施工与检查",
+          "desc": "按确认体系和范围协调工序及阶段检查。"
+        },
+        {
+          "title": "维护与交付说明",
+          "desc": "所需封层、清洁与维护按产品资料和项目文件确认。"
+        }
+      ],
+      "process_steps_en": [
+        {
+          "title": "Brief and site information",
+          "desc": "Share dimensions, photos and the intended effect."
+        },
+        {
+          "title": "Substrate and material review",
+          "desc": "Check the current wall and preparation requirements for the selected product."
+        },
+        {
+          "title": "Sample and scope confirmation",
+          "desc": "Review physical samples, work stages, protection and the written quotation."
+        },
+        {
+          "title": "Work and stage checks",
+          "desc": "Coordinate the agreed system and work scope."
+        },
+        {
+          "title": "Care and handover",
+          "desc": "Confirm any sealing, cleaning and care requirements against product and project documents."
+        }
+      ],
+      "scope_items_zh": [
+        "墙面尺寸与现状核对",
+        "颜色与肌理方向",
+        "所选产品与样板确认",
+        "基层处理范围",
+        "保护、出入与维护要求"
+      ],
+      "scope_items_en": [
+        "Wall dimensions and existing condition",
+        "Colour and texture direction",
+        "Selected product and sample confirmation",
+        "Surface-preparation scope",
+        "Protection, access and maintenance requirements"
+      ],
+      "faqs_zh": [
+        {
+          "a": "它是一种有质感的装饰涂装，能做出纹理、层次和特别的视觉效果。",
+          "q": "什么是艺术墙面涂装？"
+        },
+        {
+          "a": "耐用度会受墙面状态、涂装类型、施工方式、封层和日常使用影响，施工前应先确认维护要求。",
+          "q": "耐用吗？"
+        },
+        {
+          "a": "费用会根据面积、效果、墙面处理、层数和现场情况变化，需要看过墙面和需求后确认报价。",
+          "q": "价格大概多少？"
+        }
+      ],
+      "faqs_en": [
+        {
+          "a": "Artistic wall coating is a decorative finish that can create texture, depth, and distinctive visual effects on selected walls.",
+          "q": "What is artistic wall coating?"
+        },
+        {
+          "a": "Durability depends on wall condition, coating type, application method, sealing, and daily use. Maintenance needs should be confirmed before work starts.",
+          "q": "How durable is it?"
+        },
+        {
+          "a": "Cost depends on wall area, selected finish, surface preparation, number of layers, and site condition. A quotation should be confirmed after reviewing the wall.",
+          "q": "How much does it cost?"
+        }
+      ],
+      "seo_title_zh": "吉隆坡艺术墙面涂装与特色墙规划 | FLASH CAST",
+      "seo_title_en": "Artistic Wall Coating and Feature Walls Kuala Lumpur | FLASH CAST",
+      "seo_description_zh": "讨论吉隆坡与雪兰莪特色墙的颜色、肌理、基层与维护条件，按实物样板和书面范围确认艺术墙面饰面及报价。",
+      "seo_description_en": "Discuss feature-wall colour, texture, preparation and maintenance in Kuala Lumpur and Selangor. Confirm the selected finish with samples and a written quotation.",
+      "status": "published",
+      "sort_order": 80,
+      "created_at": "2026-05-29T10:14:07.591592+00:00",
+      "updated_at": "2026-06-02T08:04:52.946145+00:00",
+      "version": 1
+    }
+  },
+  "diff_path": "drafts/seo/fc-20260925-existing-page-content-gap-v1/v7/coating-fact-safe-body-diff.json",
+  "backup_path": "backups/fc-20260925-existing-page-content-gap-v1/v7/coating-fact-safe-body-current-row.json",
+  "forward_recovery_path": "backups/fc-20260925-existing-page-content-gap-v1/v7/coating-fact-safe-body-forward-recovery.json",
+  "company_fact_sources": [
+    "company-context.md",
+    "services-and-pricing.md",
+    "service-area.md",
+    "faq.md"
+  ],
+  "primary_sources": [],
+  "protected_target_status": "NEW_EXACT_V7_TUPLE_NOT_DEPLOYED",
+  "next_owner": "operations",
+  "capability_next_step": "After content QA, review exact table/row/task/action/version/field/baseline/desired tuple with current protected maintainer; preserve old targets. Existing old target is not permission for this new tuple. No permit issued or consumed.",
+  "status": "ready_for_qa",
+  "qa_pass": false,
+  "production_write_executed": false
+}

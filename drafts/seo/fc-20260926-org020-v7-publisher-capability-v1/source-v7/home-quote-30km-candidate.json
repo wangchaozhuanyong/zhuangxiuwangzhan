@@ -1,0 +1,59 @@
+{
+  "task_id": "fc-20260925-existing-page-content-gap-v1",
+  "backlog_item_id": "ORG-020",
+  "campaign_id": "free-seo-geo-longterm",
+  "roadmap_item_id": "LT-020",
+  "candidate_version": "home-quote-30km-r1-v7",
+  "action_id": "org020-home-quote-30km-v7",
+  "action_class": "cms_content_candidate",
+  "risk_level": "R1",
+  "publication_route": "cms_content_candidate -> cms_write -> protected content-publish",
+  "scope": "flashcast.com.my:faqs/4cd35122-16d3-4f0d-a60c-49c8e0d996f8:answer_en,answer_zh",
+  "table": "faqs",
+  "record_id": "4cd35122-16d3-4f0d-a60c-49c8e0d996f8",
+  "slug": null,
+  "target_urls": [
+    "https://flashcast.com.my/en",
+    "https://flashcast.com.my/zh"
+  ],
+  "intent_and_difference": "Add owner-confirmed quotation, 30 km measurement or one-year warranty boundary to the actual published FAQ row; question and sort order preserved.",
+  "expected_updated_at": "2026-08-21T15:49:56.800849+00:00",
+  "baseline_projection_fields": [
+    "id",
+    "page_key",
+    "question_zh",
+    "question_en",
+    "answer_zh",
+    "answer_en",
+    "status",
+    "sort_order",
+    "updated_at"
+  ],
+  "baseline_fields_sha256": "cb2db9898ce946612a0acff470dbfca7bb1e7427bce01a17c71f8c489ea31d5f",
+  "desired_fields_sha256": "c004dd71c236dc4c380cb9316a3de37984514f64d52e64496efa19b4fb88d201",
+  "changed_fields": [
+    "answer_zh",
+    "answer_en"
+  ],
+  "desired_fields": {
+    "answer_zh": "请提供地点、空间类型、大约面积、现场照片、现有问题和计划工程。免费报价按确认范围准备；量房是否安排需核对现场与时间。距离公司或服务点 30 公里以内可免费上门量房，超过 30 公里会收费，费用须预约前确认。",
+    "answer_en": "Share the location, space type, approximate area, photos, issues and proposed work. A free quotation follows the confirmed scope; site-review arrangements depend on access and schedule. Measurement is free within 30 km of the company or service point. Travel beyond 30 km is chargeable; confirm the amount before the appointment."
+  },
+  "request": null,
+  "diff_path": "drafts/seo/fc-20260925-existing-page-content-gap-v1/v7/home-quote-30km-diff.json",
+  "backup_path": "backups/fc-20260925-existing-page-content-gap-v1/v7/home-quote-30km-current-row.json",
+  "forward_recovery_path": "backups/fc-20260925-existing-page-content-gap-v1/v7/home-quote-30km-forward-recovery.json",
+  "company_fact_sources": [
+    "company-context.md",
+    "services-and-pricing.md",
+    "service-area.md",
+    "faq.md"
+  ],
+  "primary_sources": [],
+  "protected_target_status": "FAQ_EXACT_ROW_PATCH_CAPABILITY_MISSING",
+  "next_owner": "operations",
+  "capability_next_step": "Existing homepage FAQs publish inserts rows and optional archives all home FAQs; it cannot preserve exact IDs via an answer-only CAS patch and cannot update general FAQs. QA reviews exact content; protected maintainer must define a reviewed exact-row patch capability or identify an existing authenticated native exact-row update path. Do not use insert/replaceFaqs, invent contentType=faq or emit duplicate rows.",
+  "status": "ready_for_qa",
+  "qa_pass": false,
+  "production_write_executed": false
+}

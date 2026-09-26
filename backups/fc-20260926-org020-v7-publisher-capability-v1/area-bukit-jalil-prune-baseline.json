@@ -1,0 +1,79 @@
+{
+  "id": "53665859-85f5-4176-a8e8-e70571f4e8fa",
+  "slug": "bukit-jalil",
+  "title_zh": "Bukit Jalil 装修公司",
+  "title_en": "Bukit Jalil Renovation Contractor",
+  "excerpt_zh": "FLASH CAST 提供 Bukit Jalil 住宅装修、旧屋翻新、厨房浴室、办公室、店铺和定制柜服务。",
+  "excerpt_en": "FLASH CAST provides Bukit Jalil home renovation, old house refurbishment, kitchen, bathroom, office, shop, and custom cabinet services.",
+  "content_zh": "<p>武吉加里尔装修项目需要结合地区、物业类型、管理处规定、施工时间、材料运输和预算分项来规划。公寓和商业空间集中，常见需求包括公寓装修、厨房橱柜、办公室和店铺空间施工。</p><p>FLASH CAST 会先了解面积、照片、预算、项目类型和期望工期，再判断是否需要现场测量，并整理适合本地区的施工范围和材料建议。</p><p>如果你正在搜索武吉加里尔装修公司、装修承包商、厨房橱柜、浴室防水、旧屋翻新、办公室装修或店铺装修，可以先通过 WhatsApp 或免费报价表单提交资料。</p>",
+  "content_en": "<p>Bukit Jalil renovation projects should consider property type, management rules, working hours, material delivery, itemized budget, and after-sales responsibility. Common project types include Condo, Terrace house, Semi-D, Bungalow, Office, Retail shop, with frequent requests such as Full renovation, Kitchen cabinet, Bathroom waterproofing, Custom built-in, Office fit-out, Shop renovation.</p><p>FLASH CAST first reviews the location, area, project type, budget, photos, and site condition before preparing a practical scope. Owners can send details by WhatsApp or the free quote form so we can advise whether a site measurement is needed.</p><p>Bukit Jalil projects should confirm working hours, delivery route, parking, protection works, and management or committee requirements early. This page supports searches for Bukit Jalil renovation contractor, home renovation, kitchen cabinet, bathroom waterproofing, office renovation, shop renovation, and custom cabinet services.</p>",
+  "area_name": "Bukit Jalil",
+  "seo_title_zh": "Bukit Jalil 装修公司 | 厨房、浴室、旧屋、办公室与店铺装修",
+  "seo_title_en": "Bukit Jalil Renovation Contractor | FLASH CAST",
+  "seo_description_zh": "FLASH CAST 提供Bukit Jalil装修服务，覆盖吉隆坡、雪兰莪与巴生谷住宅、旧屋、厨房橱柜、浴室防水、办公室、店铺和定制柜项目。客户可先提交照片、面积、预算和工期，获取中文咨询与免费报价建议。",
+  "seo_description_en": "FLASH CAST provides Bukit Jalil renovation services for homes, old houses, kitchen cabinets, bathroom waterproofing, offices, shops, custom built-ins, and free quotation.",
+  "status": "published",
+  "sort_order": 250,
+  "created_at": "2026-05-25T18:11:29.90042+00:00",
+  "updated_at": "2026-06-02T08:05:13.486508+00:00",
+  "property_types": [
+    "Condo",
+    "Terrace house",
+    "Semi-D",
+    "Bungalow",
+    "Office",
+    "Retail shop",
+    "Warehouse"
+  ],
+  "common_needs": [
+    "Full renovation",
+    "Kitchen cabinet",
+    "Bathroom waterproofing",
+    "Custom built-in",
+    "Office fit-out",
+    "Shop renovation"
+  ],
+  "construction_notes_zh": "Bukit Jalil 项目建议提前确认施工时间、搬运路线、停车、保护工程、管理处或业主委员会要求。",
+  "construction_notes_en": "Bukit Jalil projects should confirm working hours, delivery route, parking, protection works, and management or committee requirements early.",
+  "projects": [
+    {
+      "type": "Residential Renovation",
+      "image": "/images/projects/residential-renovation.webp?v=20260601-content",
+      "title": "Bukit Jalil Residential Renovation Reference"
+    },
+    {
+      "type": "Commercial Fit-Out",
+      "image": "/images/projects/commercial-renovation.webp?v=20260601-content",
+      "title": "Bukit Jalil Commercial Fit-Out Reference"
+    }
+  ],
+  "faqs_zh": [
+    {
+      "a": "可以。请先提供照片、面积、地点、项目类型和预算范围，我们会先判断大概施工范围。",
+      "q": "Bukit Jalil 装修可以先线上估价吗？"
+    },
+    {
+      "a": "提供。我们会根据项目类型和现场条件整理报价，必要时安排现场测量。",
+      "q": "Bukit Jalil 是否提供免费报价？"
+    },
+    {
+      "a": "可以。网站和后台内容支持中英文，项目沟通也可按业主习惯进行。",
+      "q": "可以做中文和英文沟通吗？"
+    }
+  ],
+  "faqs_en": [
+    {
+      "a": "Yes. Send photos, area, location, project type, and budget range so we can advise the likely scope first.",
+      "q": "Can I get an online estimate for Bukit Jalil?"
+    },
+    {
+      "a": "Yes. We prepare quotations based on project type and site condition, with site measurement arranged when needed.",
+      "q": "Do you provide free quotation in Bukit Jalil?"
+    },
+    {
+      "a": "Yes. The website and admin content support both Chinese and English, and project communication can follow the owner's preference.",
+      "q": "Can communication be in Chinese or English?"
+    }
+  ],
+  "version": 1
+}

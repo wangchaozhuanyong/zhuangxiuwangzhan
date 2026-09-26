@@ -1,0 +1,52 @@
+{
+  "task_id": "fc-20260925-existing-page-content-gap-v1",
+  "parent_capability_task_id": "fc-20260926-org020-v7-publisher-capability-v1",
+  "backlog_item_id": "ORG-020",
+  "candidate_version": "home-quote-30km-answer-execution-r1-v8",
+  "action_id": "org020-home-quote-30km-v7-answer-execution-v8",
+  "risk_level": "R1",
+  "action_class": "cms_content_candidate",
+  "scope": "flashcast.com.my:faqs/4cd35122-16d3-4f0d-a60c-49c8e0d996f8:answer_en,answer_zh",
+  "source_frozen_candidate_path": "drafts/seo/fc-20260925-existing-page-content-gap-v1/v7/home-quote-30km-candidate.json",
+  "source_frozen_candidate_sha256": "80032c7ccd11feb76d193304fd975c165d0df6970cd340036ec54d806454439e",
+  "original_candidate_version": "home-quote-30km-r1-v7",
+  "original_action_id": "org020-home-quote-30km-v7",
+  "frozen_request_was_null": true,
+  "content_unchanged_from_frozen_v7": true,
+  "desired_fields_sha256": "c004dd71c236dc4c380cb9316a3de37984514f64d52e64496efa19b4fb88d201",
+  "baseline_fields_sha256": "cb2db9898ce946612a0acff470dbfca7bb1e7427bce01a17c71f8c489ea31d5f",
+  "changed_fields": [
+    "answer_zh",
+    "answer_en"
+  ],
+  "record_id": "4cd35122-16d3-4f0d-a60c-49c8e0d996f8",
+  "target": "org020-home-quote-30km-answer-r1-v8",
+  "request": {
+    "contentType": "faq",
+    "mode": "dry-run",
+    "nextStatus": "published",
+    "expectedUpdatedAt": "2026-08-21T15:49:56.800849+00:00",
+    "managedCandidate": {
+      "taskId": "fc-20260925-existing-page-content-gap-v1",
+      "actionId": "org020-home-quote-30km-v7-answer-execution-v8",
+      "candidateVersion": "home-quote-30km-answer-execution-r1-v8",
+      "scope": "flashcast.com.my:faqs/4cd35122-16d3-4f0d-a60c-49c8e0d996f8:answer_en,answer_zh",
+      "operation": "publish"
+    },
+    "record": {
+      "id": "4cd35122-16d3-4f0d-a60c-49c8e0d996f8",
+      "page_key": "home",
+      "question_zh": "如何申请装修报价？",
+      "question_en": "How do I request a renovation quote?",
+      "answer_zh": "请提供地点、空间类型、大约面积、现场照片、现有问题和计划工程。免费报价按确认范围准备；量房是否安排需核对现场与时间。距离公司或服务点 30 公里以内可免费上门量房，超过 30 公里会收费，费用须预约前确认。",
+      "answer_en": "Share the location, space type, approximate area, photos, issues and proposed work. A free quotation follows the confirmed scope; site-review arrangements depend on access and schedule. Measurement is free within 30 km of the company or service point. Travel beyond 30 km is chargeable; confirm the amount before the appointment.",
+      "status": "published",
+      "sort_order": 20,
+      "updated_at": "2026-08-21T15:49:56.800849+00:00"
+    }
+  },
+  "status": "ready_for_qa",
+  "qa_pass": false,
+  "production_write_executed": false,
+  "new_capability_required": true
+}

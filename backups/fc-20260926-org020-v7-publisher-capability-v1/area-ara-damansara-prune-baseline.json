@@ -1,0 +1,79 @@
+{
+  "id": "a47b04a1-99ad-46df-9976-5a63135adf1f",
+  "slug": "ara-damansara",
+  "title_zh": "Ara Damansara 装修公司",
+  "title_en": "Ara Damansara Renovation Contractor",
+  "excerpt_zh": "FLASH CAST 提供 Ara Damansara 住宅装修、旧屋翻新、厨房浴室、办公室、店铺和定制柜服务。",
+  "excerpt_en": "FLASH CAST provides Ara Damansara home renovation, old house refurbishment, kitchen, bathroom, office, shop, and custom cabinet services.",
+  "content_zh": "<p>Ara Damansara 装修项目需要结合地区、物业类型、管理处规定、施工时间、材料运输和预算分项来规划。公寓、办公室和商业单位集中，重点是审批、空间规划、材料进场和交付效率。</p><p>FLASH CAST 会先了解面积、照片、预算、项目类型和期望工期，再判断是否需要现场测量，并整理适合本地区的施工范围和材料建议。</p><p>如果你正在搜索 Ara Damansara 装修公司、renovation contractor、厨房橱柜、浴室防水、旧屋翻新、办公室装修或店铺装修，可以先通过 WhatsApp 或免费报价表单提交资料。</p>",
+  "content_en": "<p>Ara Damansara renovation projects should consider property type, management rules, working hours, material delivery, itemized budget, and after-sales responsibility. Common project types include Condo, Terrace house, Semi-D, Bungalow, Office, Retail shop, with frequent requests such as Full renovation, Kitchen cabinet, Bathroom waterproofing, Custom built-in, Office fit-out, Shop renovation.</p><p>FLASH CAST first reviews the location, area, project type, budget, photos, and site condition before preparing a practical scope. Owners can send details by WhatsApp or the free quote form so we can advise whether a site measurement is needed.</p><p>Ara Damansara projects should confirm working hours, delivery route, parking, protection works, and management or committee requirements early. This page supports searches for Ara Damansara renovation contractor, home renovation, kitchen cabinet, bathroom waterproofing, office renovation, shop renovation, and custom cabinet services.</p>",
+  "area_name": "Ara Damansara",
+  "seo_title_zh": "Ara Damansara 装修公司 | 厨房、浴室、旧屋、办公室与店铺装修",
+  "seo_title_en": "Ara Damansara Renovation Contractor | FLASH CAST",
+  "seo_description_zh": "FLASH CAST 提供Ara Damansara装修服务，覆盖吉隆坡、雪兰莪与巴生谷住宅、旧屋、厨房橱柜、浴室防水、办公室、店铺和定制柜项目。客户可先提交照片、面积、预算和工期，获取中文咨询与免费报价建议。",
+  "seo_description_en": "FLASH CAST provides Ara Damansara renovation services for homes, old houses, kitchen cabinets, bathroom waterproofing, offices, shops, custom built-ins, and free quotation.",
+  "status": "published",
+  "sort_order": 290,
+  "created_at": "2026-05-25T18:11:29.90042+00:00",
+  "updated_at": "2026-06-02T08:05:17.249751+00:00",
+  "property_types": [
+    "Condo",
+    "Terrace house",
+    "Semi-D",
+    "Bungalow",
+    "Office",
+    "Retail shop",
+    "Warehouse"
+  ],
+  "common_needs": [
+    "Full renovation",
+    "Kitchen cabinet",
+    "Bathroom waterproofing",
+    "Custom built-in",
+    "Office fit-out",
+    "Shop renovation"
+  ],
+  "construction_notes_zh": "Ara Damansara 项目建议提前确认施工时间、搬运路线、停车、保护工程、管理处或业主委员会要求。",
+  "construction_notes_en": "Ara Damansara projects should confirm working hours, delivery route, parking, protection works, and management or committee requirements early.",
+  "projects": [
+    {
+      "type": "Residential Renovation",
+      "image": "/images/projects/residential-renovation.webp?v=20260601-content",
+      "title": "Ara Damansara Residential Renovation Reference"
+    },
+    {
+      "type": "Commercial Fit-Out",
+      "image": "/images/projects/commercial-renovation.webp?v=20260601-content",
+      "title": "Ara Damansara Commercial Fit-Out Reference"
+    }
+  ],
+  "faqs_zh": [
+    {
+      "a": "可以。请先提供照片、面积、地点、项目类型和预算范围，我们会先判断大概施工范围。",
+      "q": "Ara Damansara 装修可以先线上估价吗？"
+    },
+    {
+      "a": "提供。我们会根据项目类型和现场条件整理报价，必要时安排现场测量。",
+      "q": "Ara Damansara 是否提供免费报价？"
+    },
+    {
+      "a": "可以。网站和后台内容支持中英文，项目沟通也可按业主习惯进行。",
+      "q": "可以做中文和英文沟通吗？"
+    }
+  ],
+  "faqs_en": [
+    {
+      "a": "Yes. Send photos, area, location, project type, and budget range so we can advise the likely scope first.",
+      "q": "Can I get an online estimate for Ara Damansara?"
+    },
+    {
+      "a": "Yes. We prepare quotations based on project type and site condition, with site measurement arranged when needed.",
+      "q": "Do you provide free quotation in Ara Damansara?"
+    },
+    {
+      "a": "Yes. The website and admin content support both Chinese and English, and project communication can follow the owner's preference.",
+      "q": "Can communication be in Chinese or English?"
+    }
+  ],
+  "version": 1
+}
