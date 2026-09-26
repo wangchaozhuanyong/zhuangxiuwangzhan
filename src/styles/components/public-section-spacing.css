@@ -5,8 +5,8 @@
    * hard-coded paddings into an oversized blank band.
    */
   html[lang][data-public-theme="dark"] {
-    --public-section-space-start: clamp(3.25rem, 4.5vw, 4.5rem);
-    --public-section-space-end: clamp(3.5rem, 5vw, 5rem);
+    --public-section-space-start: clamp(24px, 2.2vw, 32px);
+    --public-section-space-end: clamp(24px, 2.2vw, 32px);
   }
 
   html[lang][data-public-theme="dark"] .scheme-a-home--atelier :is(
@@ -22,6 +22,7 @@
   html[lang][data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-contact > .scheme-a-frame,
   html[lang][data-public-theme="dark"] .scheme-a-route-section,
   html[lang][data-public-theme="dark"] .fc-route-section,
+  html[lang][data-public-theme="dark"] .fc-route-form-page :is(.fc-route-contact-body, .fc-route-quote-body, .forest-map-section),
   html[lang][data-public-theme="dark"] .fc-c-form-section,
   html[lang][data-public-theme="dark"] .fc-c-section,
   html[lang][data-public-theme="dark"] .fc-c-final {
@@ -31,8 +32,8 @@
 
   @media (max-width: 47.9375rem) {
     html[lang][data-public-theme="dark"] {
-      --public-section-space-start: 42px;
-      --public-section-space-end: 56px;
+    --public-section-space-start: 18px;
+    --public-section-space-end: 18px;
     }
   }
 }

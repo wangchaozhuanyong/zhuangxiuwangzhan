@@ -167,17 +167,17 @@ export function SchemeARouteHero({
           ) : heroImage}
         </MediaTag>
       ) : null}
-      <div className="fc-route-hero-copy" style={{ ...(!image ? { gridColumn: "1 / -1" } : {}), ...(imageCaption ? { marginTop: 0 } : {}) }}>
-        <span className="fc-route-kicker">{label}</span>
+      <div className="fc-route-hero-copy scheme-a-heading" style={{ ...(!image ? { gridColumn: "1 / -1" } : {}), ...(imageCaption ? { marginTop: 0 } : {}) }}>
+        <span className="sr-only">{label}</span>
         {mediaDisclosure ? <span className="fc-route-media-disclosure">{mediaDisclosure}</span> : null}
         <h1 className={usesCompactTitleScale ? "fc-route-title-long" : undefined}>{title}</h1>
         <p>{description}</p>
         {actions ? <div className="fc-route-hero-actions">{actions}</div> : null}
         {kind !== "legal" ? (
           <dl className="fc-route-hero-support" aria-label={supportCopy.ariaLabel}>
-            {supportCopy.items.map((item, index) => (
+            {supportCopy.items.map((item) => (
               <div key={item.label}>
-                <dt><span>{String(index + 1).padStart(2, "0")}</span>{item.label}</dt>
+                <dt>{item.label}</dt>
                 <dd>{item.value}</dd>
               </div>
             ))}
@@ -203,7 +203,7 @@ export function SchemeASection({
   return (
     <section className={`fc-route-section ${className}`.trim()}>
       {title || paragraphs.length ? (
-        <header className="fc-route-section-head">
+        <header className="fc-route-section-head scheme-a-heading">
           {title ? <h2>{title}</h2> : null}
           {paragraphs.map((paragraph, index) => <p key={`${index}-${paragraph}`}>{paragraph}</p>)}
         </header>
@@ -259,11 +259,13 @@ export function SchemeAListingGrid({ items, actionLabel }: { items: readonly Sch
               quality={82}
             />
           </div>
-          {item.mediaDisclosure ? <span className="fc-route-card-disclosure">{item.mediaDisclosure}</span> : null}
-          {item.meta ? <span className="fc-route-card-meta">{item.meta}</span> : null}
-          <h3>{item.title}</h3>
-          {item.description ? <p>{item.description}</p> : null}
-          <span className="fc-route-card-action">{actionLabel}<ArrowUpRight aria-hidden="true" /></span>
+          <div className="fc-route-card-body">
+            {item.mediaDisclosure ? <span className="fc-route-card-disclosure">{item.mediaDisclosure}</span> : null}
+            {item.meta ? <span className="fc-route-card-meta">{item.meta}</span> : null}
+            <h3>{item.title}</h3>
+            {item.description ? <p>{item.description}</p> : null}
+            <span className="fc-route-card-action">{actionLabel}<ArrowUpRight aria-hidden="true" /></span>
+          </div>
         </Link>
       ))}
     </div>

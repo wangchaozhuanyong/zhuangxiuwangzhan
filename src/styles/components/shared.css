@@ -16,11 +16,6 @@
     background-color: hsl(var(--steel-light));
   }
 
-  .accent-line {
-    @apply h-1.5 w-1.5 rounded-full bg-gold;
-    box-shadow: 0 0 0 5px hsl(var(--gold) / 0.12), 0 0 22px hsl(var(--gold) / 0.28);
-  }
-
   .hero-action-dock {
     @apply grid gap-4 rounded-card border border-white/15 p-4 backdrop-blur-md sm:grid-cols-[1fr_auto] sm:items-center md:p-5;
     background-color: rgba(13, 12, 9, 0.35);

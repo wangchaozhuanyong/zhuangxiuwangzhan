@@ -71,7 +71,7 @@ describe("public design boundary", () => {
     expect(publicRoutes).toContain('import("@/styles/routes/public-pages.css")');
     expect(publicRoutes).not.toMatch(/public-(?:home|forms)\.css|scheme-a-fidelity\.css/);
     expect(publicStyles.trimEnd()).toMatch(/@import "\.\.\/components\/public-section-spacing\.css";\n@tailwind components;$/);
-    expect(sectionSpacing).toContain("--public-section-space-end: 56px;");
+    expect(sectionSpacing).toContain("--public-section-space-end: 18px;");
   });
 
   it("keeps the home materials content structured without the retired left rail", () => {
