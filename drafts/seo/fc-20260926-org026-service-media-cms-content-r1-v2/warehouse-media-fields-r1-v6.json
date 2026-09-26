@@ -1,0 +1,131 @@
+{
+  "schema_version": "1.1",
+  "task_id": "fc-20260926-org026-service-media-cms-content-r1-v2",
+  "original_task_id": "fc-20260926-website-placeholder-media-audit-v1",
+  "backlog_item_id": "ORG-026",
+  "campaign_id": "free-seo-geo-longterm",
+  "candidate_version": "warehouse-media-fields-r1-v6",
+  "action_id": "org026-warehouse-media-cms-fields-r1-v6",
+  "target": "org026-warehouse-media-r1-v6",
+  "candidate_type": "cms_content_candidate",
+  "action_class": "cms_write",
+  "risk": "R1_EXISTING_CMS_SERVICE_MEDIA_FIELDS",
+  "scope": "flashcast.com.my:services/1fab3adb-aa8c-4aab-9c30-8931152cdc91:image_url,alt_en,alt_zh",
+  "channel_lock": "cms_content_candidate -> cms_write -> protected content-publish",
+  "status": "READY_FOR_QA_NOT_PUBLISHED",
+  "supersedes_candidate_version": "service-media-fields-r1-v5",
+  "supersedes_action_id": "org026-service-media-cms-fields-r1-v4",
+  "identity_repair_task_id": "fc-20260926-two-service-row-identity-old-house-b-code-v1",
+  "original_source_candidate_path": "drafts/seo/fc-20260926-protected-cms-kl-service-target-capability-v2/service-media-fields-r1-v5.json",
+  "original_source_candidate_sha256": "3c643421acbfc8df06df7041f7e189da13b8513f4f5ea35c6f72c208ed0c9cce",
+  "inherited_evidence": {
+    "original_media_candidate_version": "service-media-fields-r1-v5",
+    "media_and_field_bytes_unchanged": true,
+    "new_identity_independent_qa_required": true,
+    "prior_published_four_targets_not_replayed": true
+  },
+  "modified_fields": [
+    "image_url",
+    "alt_en",
+    "alt_zh"
+  ],
+  "record_id": "1fab3adb-aa8c-4aab-9c30-8931152cdc91",
+  "slug": "warehouse",
+  "expected_updated_at": "2026-08-30T10:52:51.425098+00:00",
+  "baseline_fields_sha256": "e8d10cca54bea7eb1e540b0798f819ea80ea5884b8706319e15f11b98c887d41",
+  "desired_fields_sha256": "6ea4f3c6163cebead0c69b034d3222e6ba2934a66c21abb5d3f6801e073b811c",
+  "desired_fields": {
+    "image_url": "/images/services/ai-concepts/warehouse-concept.webp",
+    "alt_en": "Warehouse shelving, central aisle, floor zoning and picking-area planning concept",
+    "alt_zh": "仓库货架、中央通道、地面分区标线与拣货区规划概念示意图"
+  },
+  "baseline_record_path": "drafts/seo/fc-20260926-protected-cms-kl-service-target-capability-v2/warehouse-baseline.json",
+  "baseline_record_sha256": "a2cca1add7a0ae0791bf29f358e4ddce8bab0c7ff13bfa0d490b53833ce0bf69",
+  "required_visible_disclosure": {
+    "zh": "AI 生成概念示意，非客户完工实景",
+    "en": "AI-generated concept illustration, not a completed client project"
+  },
+  "items": [
+    {
+      "slug": "warehouse",
+      "cms_row_id": "1fab3adb-aa8c-4aab-9c30-8931152cdc91",
+      "expected_status": "published",
+      "read_only_expected_version": 2,
+      "read_only_expected_updated_at": "2026-08-30T10:52:51.425098+00:00",
+      "read_only_full_row_sha256": "9610a31c806fe15189d7c761d7350063b81035e09882c045ecc0f0c6bf9fa983",
+      "allowed_fields": [
+        "image_url",
+        "alt_en",
+        "alt_zh"
+      ],
+      "field_diff": {
+        "image_url": {
+          "before": "https://rbsnyexjifounogswrjp.supabase.co/storage/v1/object/public/site-images/media/seo-generated/2026-08-30/flash-cast-hero-rendering-concept.webp",
+          "after": "/images/services/ai-concepts/warehouse-concept.webp",
+          "before_sha256": "ec0f65d581cb0a1f7f6b50e1c180ac7d0fbffdf340164f9ab8ba3a7cb1b95350",
+          "after_sha256": "0ebdc074bf9770900ee4c44281182d6292602349b52418cbcddaabf9af0121e2"
+        },
+        "alt_en": {
+          "before": "Warehouse shelving and storage-flow rendering concept for Selangor",
+          "after": "Warehouse shelving, central aisle, floor zoning and picking-area planning concept",
+          "before_sha256": "add3a642c605fd96cfffc428da9b95ad90a3e35fe1e5f3a64b00e42b0faf9584",
+          "after_sha256": "31c027048f3cf97d48400b86af34958d2860631846c55816b81de4b1702c9aa1"
+        },
+        "alt_zh": {
+          "before": "雪兰莪仓库货架与仓储动线规划概念设计",
+          "after": "仓库货架、中央通道、地面分区标线与拣货区规划概念示意图",
+          "before_sha256": "85ee3077731717f8c4153ae006a866adf0511387f6cebe3a9d71a8dcbc84e209",
+          "after_sha256": "ed273184e00a69a69b203f6bac1d1954fb70644bfb40464fdbae76da5474b42e"
+        }
+      },
+      "unchanged_field_sha256": {
+        "id": "9b4d687c534fa945ee6d9ff08c995576afdb09a6f454dcafe95323c1e28fd063",
+        "slug": "7cbbd0184f4d2461ac868af79bb683454c0d4ef36325ad99cb29cbd682c8a55a",
+        "title_zh": "790c37a7faba84315c56f9328b69f40252f1a3501fde85cf75dfd4d56ca05f69",
+        "title_en": "2d12c88d9470d6388c298dab64aa8a7e207bbf09680ae93a2f53720293fc4c9e",
+        "excerpt_zh": "cd35b9ad8f1ad2e2dc94753f6841b4e756c7c7b2733663655552c132043bdd6c",
+        "excerpt_en": "87411fc3317fd0b3998726692ee88cb71cd66ee3a0ae274b1a76393df235cbd3",
+        "content_zh": "0ecc86c97049e2640bb61be9b5723e1842b1228a96143d4576111f6bb8a532cf",
+        "content_en": "125f7fbfeb6c6317b0d34cea4139f0d708e53ad7adb0cb1c625740cf25086f0e",
+        "suitable_for_zh": "513c8093b88ad618654124af5115fb9260389d44665892b8dbb51ed825d7619a",
+        "suitable_for_en": "19709789bb546190bd874389b877cd1dc8087193de89ce6f09d0b6b6a4f8d9fc",
+        "common_projects_zh": "80a8db2bca232732cc572719a0416678a22d8b16d19a155d36fc1a253337f9c1",
+        "common_projects_en": "9bca88ac04a0191e6588f542f8faba7c6f94187e2b24fdf7a4204bfa4f27751e",
+        "process_steps_zh": "08ee074e1be657da81ab65359147ee56542a3be5f2d5d9080ead18fed7fe3927",
+        "process_steps_en": "9a7bb6fd87cd4e16d9e2d497e674df20a8ae4bbb5e5144aa33fc988b47a9de69",
+        "scope_items_zh": "fcc5f53d84bdbd5535d73d70d0235c721cef8ed97205dae493715fff3185fffa",
+        "scope_items_en": "c21c06349b0c5207ac6ea11ec4078b8a0608d7b43ff16706aef2bd7d72ed6a2f",
+        "faqs_zh": "30b70cb1d3b0f01639b0e477954d10eb1c243113acba381ec87577a3d02d687f",
+        "faqs_en": "6ebbd9f5f3bee3f042e7166bfaf6a977a2ad068f33af66c7dbe7a8502d403573",
+        "seo_title_zh": "8667f0b05af80638bee2f83c4a1409cc2a26cb1f05f8f20d6d23e05d646aa844",
+        "seo_title_en": "a6e2b2a309694c7f3c263faf37e450e3809cacbb10927f0338a5ecee0a6cbc12",
+        "seo_description_zh": "d0bc1e8e98787dc8c80ffef647864ebe1e201db565f71728f538263532971437",
+        "seo_description_en": "88ddd35602eff8ba41280a5215c25dcdee2a0cf0529679589f9af40fb5ec3faa",
+        "status": "dd2653c12a35c69d362d327a778f6e79f7e182293194fe0c3f4f68f6afdc8c1b",
+        "sort_order": "ff5a1ae012afa5d4c889c50ad427aaf545d31a4fac04ffc1c4d03d403ba4250a",
+        "created_at": "9bd14572d63dfb236b19afc233a3a2146c6399fd317528e01d81b21d1eb12380",
+        "updated_at": "5d4ba15a38377b1b1fd5c3cff6f3fd6ee5c1965f28cf18a9b314072b44fe4c12",
+        "version": "d4735e3a265e16eee03f59718b9b5d03019c07d8b6c51f90da3a666eec13ab35"
+      },
+      "asset": {
+        "public_url": "https://flashcast.com.my/images/services/ai-concepts/warehouse-concept.webp",
+        "public_sha256": "2bb0c8ea645c5d96d50b96fd553bfd3aac60be1f53a27ceb827276fd01a5031f",
+        "source_path": "delivery/creative/fc-20260926-website-placeholder-media-audit-v1/assets/warehouse-concept.webp",
+        "rights_status": "ORIGINAL_CONCEPT_READY",
+        "truth_label": "ai_concept_not_client_project"
+      },
+      "scope": "flashcast.com.my:services/1fab3adb-aa8c-4aab-9c30-8931152cdc91:image_url,alt_en,alt_zh",
+      "rollback_payload_from_read_only_baseline": {
+        "image_url": "https://rbsnyexjifounogswrjp.supabase.co/storage/v1/object/public/site-images/media/seo-generated/2026-08-30/flash-cast-hero-rendering-concept.webp",
+        "alt_en": "Warehouse shelving and storage-flow rendering concept for Selangor",
+        "alt_zh": "雪兰莪仓库货架与仓储动线规划概念设计"
+      },
+      "cms_saved_id": null,
+      "published": false
+    }
+  ],
+  "rollback_allowed": false,
+  "release_gate": "New exact identity QA, current full-row CAS readback and zero-write dry-run, Ops AUTO_RELEASE and fresh per-row single-use policy are required. Old shared target is audit-only. Preserve existing fields, image/alt bytes and all completed permits. No old unverified image restoration.",
+  "cms_saved_id": null,
+  "published": false
+}

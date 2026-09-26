@@ -1,4 +1,4 @@
-// Frozen four-row publisher targets from the original content candidates and read-only baselines.
+// Frozen targets: successful KL/Builtin identities preserved; unsaved rows have distinct actions.
 export const lockedKlMediaCandidates = Object.freeze({
   "kl-location-intent-r1-v2": {
     "taskId": "fc-20260926-kl-location-cms-r1-closure-v1",
@@ -81,15 +81,15 @@ export const lockedKlMediaCandidates = Object.freeze({
       }
     ]
   },
-  "org026-warehouse-media-r1-v5": {
+  "org026-warehouse-media-r1-v6": {
     "taskId": "fc-20260926-org026-service-media-cms-content-r1-v2",
-    "candidateVersion": "service-media-fields-r1-v5",
-    "qaEvidenceVersion": "service-media-fields-r1-v5",
-    "actionId": "org026-service-media-cms-fields-r1-v4",
+    "candidateVersion": "warehouse-media-fields-r1-v6",
+    "qaEvidenceVersion": "warehouse-media-fields-r1-v6",
+    "actionId": "org026-warehouse-media-cms-fields-r1-v6",
     "actionClass": "cms_write",
     "scope": "flashcast.com.my:services/1fab3adb-aa8c-4aab-9c30-8931152cdc91:image_url,alt_en,alt_zh",
-    "sourceCandidatePath": "drafts/seo/fc-20260926-protected-cms-kl-service-target-capability-v2/service-media-fields-r1-v5.json",
-    "sourceCandidateSha256": "3c643421acbfc8df06df7041f7e189da13b8513f4f5ea35c6f72c208ed0c9cce",
+    "sourceCandidatePath": "drafts/seo/fc-20260926-org026-service-media-cms-content-r1-v2/warehouse-media-fields-r1-v6.json",
+    "sourceCandidateSha256": "02a3b0ba02f0cd5677bf77d2faeb0cbcad5c2d9cd6bdb1ca58082905487bdd28",
     "rollbackPackagePath": "drafts/seo/fc-20260926-protected-cms-kl-service-target-capability-v2/warehouse-baseline.json",
     "rollbackPackageSha256": "a2cca1add7a0ae0791bf29f358e4ddce8bab0c7ff13bfa0d490b53833ce0bf69",
     "rollbackRecordPath": "drafts/seo/fc-20260926-protected-cms-kl-service-target-capability-v2/warehouse-baseline.json",
@@ -121,17 +121,20 @@ export const lockedKlMediaCandidates = Object.freeze({
         "path": "/zh/services/warehouse",
         "expected": "雪兰莪仓库货架与仓储空间规划｜FLASH CAST"
       }
-    ]
+    ],
+    "priorQaEvidenceVersion": "service-media-fields-r1-v5",
+    "originalSourceCandidatePath": "drafts/seo/fc-20260926-protected-cms-kl-service-target-capability-v2/service-media-fields-r1-v5.json",
+    "originalSourceCandidateSha256": "3c643421acbfc8df06df7041f7e189da13b8513f4f5ea35c6f72c208ed0c9cce"
   },
-  "org026-office-renovation-media-r1-v5": {
+  "org026-office-renovation-media-r1-v6": {
     "taskId": "fc-20260926-org026-service-media-cms-content-r1-v2",
-    "candidateVersion": "service-media-fields-r1-v5",
-    "qaEvidenceVersion": "service-media-fields-r1-v5",
-    "actionId": "org026-service-media-cms-fields-r1-v4",
+    "candidateVersion": "office-renovation-media-fields-r1-v6",
+    "qaEvidenceVersion": "office-renovation-media-fields-r1-v6",
+    "actionId": "org026-office-renovation-media-cms-fields-r1-v6",
     "actionClass": "cms_write",
     "scope": "flashcast.com.my:services/a87541ac-1cba-4f1a-972d-428dccdbcc0f:image_url,alt_en,alt_zh",
-    "sourceCandidatePath": "drafts/seo/fc-20260926-protected-cms-kl-service-target-capability-v2/service-media-fields-r1-v5.json",
-    "sourceCandidateSha256": "3c643421acbfc8df06df7041f7e189da13b8513f4f5ea35c6f72c208ed0c9cce",
+    "sourceCandidatePath": "drafts/seo/fc-20260926-org026-service-media-cms-content-r1-v2/office-renovation-media-fields-r1-v6.json",
+    "sourceCandidateSha256": "338390baf2783b84a66a9acbf4c046f6918a4ce15dbb6c8fd820564ea59109b1",
     "rollbackPackagePath": "drafts/seo/fc-20260926-protected-cms-kl-service-target-capability-v2/office-renovation-baseline.json",
     "rollbackPackageSha256": "28cf8dfa1c84e9e39a663f673b89851b9727c694445b275dacaedb65f08a4eaf",
     "rollbackRecordPath": "drafts/seo/fc-20260926-protected-cms-kl-service-target-capability-v2/office-renovation-baseline.json",
@@ -163,7 +166,10 @@ export const lockedKlMediaCandidates = Object.freeze({
         "path": "/zh/services/office-renovation",
         "expected": "马来西亚办公室装修与商业空间规划 | FLASH CAST"
       }
-    ]
+    ],
+    "priorQaEvidenceVersion": "service-media-fields-r1-v5",
+    "originalSourceCandidatePath": "drafts/seo/fc-20260926-protected-cms-kl-service-target-capability-v2/service-media-fields-r1-v5.json",
+    "originalSourceCandidateSha256": "3c643421acbfc8df06df7041f7e189da13b8513f4f5ea35c6f72c208ed0c9cce"
   }
 }
 );
