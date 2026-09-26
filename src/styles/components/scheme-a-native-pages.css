@@ -1679,9 +1679,6 @@ html[data-public-theme="dark"] .home-footer-prelude__button--secondary svg { col
 }
 
 @media (max-width: 767px) {
-  .fc-route-page {
-    --scheme-a-gutter: 16px;
-  }
   .fc-route-section {
     padding-inline: var(--scheme-a-gutter);
   }
@@ -1750,12 +1747,6 @@ html[data-public-theme="dark"] .home-footer-prelude__button--secondary svg { col
   html[data-public-theme] .fc-route-form-page .contact-detail-row__action {
     padding-inline: clamp(8px, 2.6vw, 12px) !important;
     font-size: clamp(10.5px, 2.8vw, 11.5px) !important;
-  }
-}
-
-@media (max-width: 374px) {
-  .fc-route-page {
-    --scheme-a-gutter: 12px;
   }
 }
 
