@@ -7,7 +7,6 @@
    */
   @media (max-width: 47.9375rem) {
     :root {
-      --scheme-a-gutter: 22px;
       --scheme-a-section: 72px;
     }
 
@@ -230,7 +229,7 @@
     }
 
     html[data-public-theme="dark"] .scheme-a-principle__inner {
-      padding: 46px 22px 54px;
+      padding: 46px var(--scheme-a-gutter) 54px;
     }
 
     html[data-public-theme="dark"] .scheme-a-principle h2 {
@@ -242,7 +241,7 @@
     }
 
     html[data-public-theme="dark"] .scheme-a-statement > .scheme-a-frame {
-      padding: 72px 22px 78px;
+      padding: 72px var(--scheme-a-gutter) 78px;
     }
 
     html[data-public-theme="dark"] .scheme-a-statement blockquote {
@@ -259,7 +258,7 @@
 
     html[data-public-theme="dark"] .scheme-a-section-head {
       gap: 16px;
-      padding: 0 22px 28px;
+      padding: 0 var(--scheme-a-gutter) 28px;
     }
 
     html[data-public-theme="dark"] .scheme-a-section-head h2,
@@ -293,7 +292,7 @@
     html[data-public-theme="dark"] .scheme-a-project__meta {
       grid-template-columns: 1fr;
       gap: 22px;
-      padding: 24px 22px 0;
+      padding: 24px var(--scheme-a-gutter) 0;
     }
 
     html[data-public-theme="dark"] .scheme-a-project__meta > div {
@@ -315,7 +314,7 @@
     }
 
     html[data-public-theme="dark"] .scheme-a-services {
-      padding: 72px 22px 78px;
+      padding: 72px 0 78px;
     }
 
     html[data-public-theme="dark"] .scheme-a-services__layout {
@@ -359,12 +358,12 @@
     }
 
     html[data-public-theme="dark"] .scheme-a-materials {
-      padding: 72px 22px 78px;
+      padding: 72px 0 78px;
     }
 
     html[data-public-theme="dark"] .scheme-a-materials__layout {
       display: block;
-      padding-inline: var(--scheme-a-gutter, 22px);
+      padding-inline: var(--scheme-a-gutter);
     }
 
     html[data-public-theme="dark"] .scheme-a-materials__media {
@@ -402,12 +401,12 @@
     }
 
     html[data-public-theme="dark"] .scheme-a-before__note {
-      padding: 16px 22px 0;
+      padding: 16px var(--scheme-a-gutter) 0;
       font-size: 11px;
     }
 
     html[data-public-theme="dark"] .scheme-a-contact > .scheme-a-frame {
-      padding: 74px 22px 54px;
+      padding: 74px var(--scheme-a-gutter) 54px;
     }
 
     html[data-public-theme="dark"] .scheme-a-contact h2 {
