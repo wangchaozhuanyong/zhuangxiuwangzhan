@@ -176,7 +176,7 @@ const BlogDetail = () => {
           alt={image.alt[language]}
           width={1536}
           height={1024}
-          sizes="(max-width: 900px) 100vw, 1100px"
+          sizes="(max-width: 767px) calc(100vw - 32px), (max-width: 1023px) calc(100vw - 96px), 760px"
           loading={image === editorialMedia?.inline[0] ? "eager" : "lazy"}
           decoding="async"
           className="h-full w-full object-cover"
@@ -206,7 +206,7 @@ const BlogDetail = () => {
               {conceptImage ? renderConceptImage(conceptImage) : null}
               {!editorialMedia && (index + 1) % 2 === 0 ? (
                 <figure className="blog-editorial-figure blog-editorial-figure--wide" data-cinematic-media>
-                  <SmartImage src={EDITORIAL_STORY_IMAGES[index % EDITORIAL_STORY_IMAGES.length]} alt={t.editorialImageAlt} width={1200} height={760} sizes="(max-width: 900px) 100vw, 1100px" candidateWidths={[720, 900, 1200]} quality={78} className="h-full w-full object-cover" revealOnLoad />
+                  <SmartImage src={EDITORIAL_STORY_IMAGES[index % EDITORIAL_STORY_IMAGES.length]} alt={t.editorialImageAlt} width={1200} height={760} sizes="(max-width: 767px) calc(100vw - 32px), (max-width: 1023px) calc(100vw - 96px), 760px" candidateWidths={[720, 900, 1200]} quality={78} className="h-full w-full object-cover" revealOnLoad />
                 </figure>
               ) : null}
             </div>
@@ -244,7 +244,7 @@ const BlogDetail = () => {
                 alt={t.editorialImageAlt}
                 width={1200}
                 height={760}
-                sizes="(max-width: 900px) 100vw, 1100px"
+                sizes="(max-width: 767px) calc(100vw - 32px), (max-width: 1023px) calc(100vw - 96px), 760px"
                 candidateWidths={[720, 900, 1200]}
                 quality={78}
                 className="h-full w-full object-cover"

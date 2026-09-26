@@ -942,7 +942,117 @@
     }
   }
 
-  @media (max-width: 73.6875rem) {
+  /* Desktop sections share one frame and one heading rhythm. */
+  @media (min-width: 1024px) {
+    html[lang][data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-heading h2 {
+      max-width: 100%;
+      margin-top: 12px;
+      padding-top: 0;
+      font-size: clamp(36px, 3vw, 44px);
+      line-height: 1.25;
+    }
+
+    html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-section-head {
+      padding-bottom: 32px;
+    }
+
+    html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-services__layout,
+    html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-home-faq__layout {
+      grid-template-columns: minmax(0, 1fr);
+      gap: 32px;
+    }
+
+    html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-services header {
+      position: static;
+    }
+
+    html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-services__context {
+      max-width: 760px;
+      margin: 20px auto 0;
+      gap: 8px;
+    }
+
+    html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-services ol {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 24px;
+    }
+
+    html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-services li a {
+      height: 100%;
+      padding: 24px 0;
+      grid-template-rows: auto 1fr;
+      column-gap: 16px;
+      text-align: left;
+    }
+
+    html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-services li span {
+      font-size: clamp(22px, 1.7vw, 26px);
+      line-height: 1.4;
+    }
+
+    html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-services li small,
+    html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-services__context p,
+    html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-home-process__card p,
+    html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-home-faq header > p:last-child,
+    html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-materials__copy p,
+    html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-project__meta p {
+      font-size: 16px;
+      line-height: 1.75;
+    }
+
+    html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-materials__layout {
+      grid-template-columns: minmax(0, 1.05fr) minmax(0, .95fr);
+      gap: 32px;
+    }
+
+    html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-materials__copy {
+      padding: 0;
+    }
+
+    html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-materials__media {
+      min-height: 440px;
+    }
+
+    html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-home-process__grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 24px;
+      margin-top: 0;
+    }
+
+    html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-home-process__card {
+      padding: 28px 24px;
+      text-align: left;
+    }
+
+    html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-home-process__card h3,
+    html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-project__collection-copy strong {
+      font-size: clamp(22px, 1.7vw, 26px);
+      line-height: 1.4;
+    }
+
+    html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-project__collection {
+      gap: 24px;
+      margin-top: 32px;
+    }
+
+    html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-project__collection[data-count="2"] {
+      max-width: var(--scheme-a-frame);
+    }
+
+    html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-home-faq header > p:last-child {
+      max-width: 760px;
+      margin-top: 20px;
+    }
+  }
+
+  @media (min-width: 1280px) {
+    html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-home-process__grid {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+  }
+
+  @media (max-width: 1023px) {
     html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-hero {
       display: flex;
       min-height: 0;
@@ -1407,7 +1517,7 @@
     }
   }
 
-  @media (min-width: 48rem) {
+  @media (min-width: 48rem) and (max-width: 1023px) {
     html[lang="en"][data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-principle h2 {
       max-width: 30ch;
       font-size: clamp(2rem, 2.8vw, 3.1rem);
@@ -1479,7 +1589,7 @@
     }
   }
 
-  @media (min-width: 48rem) and (max-width: 64rem) {
+  @media (min-width: 48rem) and (max-width: 1023px) {
     html[lang="en"][data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-hero h1 {
       max-width: 17ch;
       font-size: clamp(2.4rem, 4.8vw, 3.6rem);

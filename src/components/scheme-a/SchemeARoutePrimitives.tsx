@@ -149,40 +149,42 @@ export function SchemeARouteHero({
       loading="eager"
       fetchPriority="high"
       revealOnLoad
-      sizes="(min-width: 1024px) 64vw, 100vw"
+      sizes="(min-width: 1536px) 789px, (min-width: 1024px) calc((100vw - 128px) * 0.56), 100vw"
       candidateWidths={[560, 720, 960, 1200, 1600]}
       quality={86}
     />
   );
 
   return (
-    <ImmersiveHero className={`fc-route-hero fc-route-hero-${kind}`} data-route-hero-layout="editorial-rail">
-      {image || mobileImage ? (
-        <MediaTag className={`fc-route-hero-media${image ? "" : " md:hidden"}`} data-cinematic-media style={mediaStyle}>
-          {imageCaption ? (
-            <div className="flex h-full flex-col">
-              <div className="min-h-0 flex-1">{heroImage}</div>
-              <figcaption className="relative z-10 shrink-0 bg-background px-6 py-3 text-sm leading-relaxed text-muted-foreground">{imageCaption}</figcaption>
-            </div>
-          ) : heroImage}
-        </MediaTag>
-      ) : null}
-      <div className="fc-route-hero-copy scheme-a-heading" style={{ ...(!image ? { gridColumn: "1 / -1" } : {}), ...(imageCaption ? { marginTop: 0 } : {}) }}>
-        <span className="sr-only">{label}</span>
-        {mediaDisclosure ? <span className="fc-route-media-disclosure">{mediaDisclosure}</span> : null}
-        <h1 className={usesCompactTitleScale ? "fc-route-title-long" : undefined}>{title}</h1>
-        <p>{description}</p>
-        {actions ? <div className="fc-route-hero-actions">{actions}</div> : null}
-        {kind !== "legal" ? (
-          <dl className="fc-route-hero-support" aria-label={supportCopy.ariaLabel}>
-            {supportCopy.items.map((item) => (
-              <div key={item.label}>
-                <dt>{item.label}</dt>
-                <dd>{item.value}</dd>
+    <ImmersiveHero className={`fc-route-hero fc-route-hero-${kind}`} data-route-hero-layout="framed-split">
+      <div className="scheme-a-frame fc-route-hero-frame">
+        {image || mobileImage ? (
+          <MediaTag className={`fc-route-hero-media${image ? "" : " md:hidden"}`} data-cinematic-media style={mediaStyle}>
+            {imageCaption ? (
+              <div className="flex h-full flex-col">
+                <div className="min-h-0 flex-1">{heroImage}</div>
+                <figcaption className="relative z-10 shrink-0 bg-background px-6 py-3 text-sm leading-relaxed text-muted-foreground">{imageCaption}</figcaption>
               </div>
-            ))}
-          </dl>
+            ) : heroImage}
+          </MediaTag>
         ) : null}
+        <div className="fc-route-hero-copy scheme-a-heading scheme-a-heading--split" style={{ ...(!image ? { gridColumn: "1 / -1" } : {}), ...(imageCaption ? { marginTop: 0 } : {}) }}>
+          <span className="sr-only">{label}</span>
+          {mediaDisclosure ? <span className="fc-route-media-disclosure">{mediaDisclosure}</span> : null}
+          <h1 className={usesCompactTitleScale ? "fc-route-title-long" : undefined}>{title}</h1>
+          <p>{description}</p>
+          {actions ? <div className="fc-route-hero-actions">{actions}</div> : null}
+          {kind !== "legal" ? (
+            <dl className="fc-route-hero-support" aria-label={supportCopy.ariaLabel}>
+              {supportCopy.items.map((item) => (
+                <div key={item.label}>
+                  <dt>{item.label}</dt>
+                  <dd>{item.value}</dd>
+                </div>
+              ))}
+            </dl>
+          ) : null}
+        </div>
       </div>
     </ImmersiveHero>
   );
@@ -202,13 +204,15 @@ export function SchemeASection({
   const paragraphs = typeof description === "string" ? (description ? [description] : []) : description || [];
   return (
     <section className={`fc-route-section ${className}`.trim()}>
-      {title || paragraphs.length ? (
-        <header className="fc-route-section-head scheme-a-heading">
-          {title ? <h2>{title}</h2> : null}
-          {paragraphs.map((paragraph, index) => <p key={`${index}-${paragraph}`}>{paragraph}</p>)}
-        </header>
-      ) : null}
-      {children}
+      <div className="scheme-a-frame fc-route-section-frame">
+        {title || paragraphs.length ? (
+          <header className="fc-route-section-head scheme-a-heading">
+            {title ? <h2>{title}</h2> : null}
+            {paragraphs.map((paragraph, index) => <p key={`${index}-${paragraph}`}>{paragraph}</p>)}
+          </header>
+        ) : null}
+        {children}
+      </div>
     </section>
   );
 }
@@ -254,7 +258,7 @@ export function SchemeAListingGrid({ items, actionLabel }: { items: readonly Sch
               loading="lazy"
               fetchPriority="auto"
               revealOnLoad
-              sizes={index === 0 ? "(max-width: 767px) 100vw, 64vw" : "(max-width: 767px) 50vw, 32vw"}
+              sizes="(max-width: 374px) calc(100vw - 24px), (max-width: 639px) calc(100vw - 32px), (max-width: 1023px) 46vw, (min-width: 1536px) 464px, calc((100vw - 144px) / 3)"
               candidateWidths={[360, 560, 720, 960, 1200]}
               quality={82}
             />
@@ -368,7 +372,7 @@ export function SchemeAGallery({
             alt={image.alt}
             width={1200}
             height={750}
-            sizes="(max-width: 767px) 100vw, 50vw"
+            sizes={isSingle ? "(max-width: 767px) calc(100vw - 32px), (min-width: 1536px) 1440px, calc(100vw - 96px)" : "(max-width: 767px) calc(100vw - 32px), (min-width: 1536px) 710px, calc((100vw - 116px) / 2)"}
             candidateWidths={[560, 720, 960, 1200]}
             quality={84}
             revealOnLoad

@@ -1,13 +1,13 @@
 /*
  * Route hero v5 is the single final-layout authority for shared public pages.
- * Desktop uses the selected editorial rail; tablet and mobile use a true stack
+ * Desktop shares the site frame; tablet and mobile use a true stack
  * so copy never competes with, blurs into, or overlays the artwork.
  */
 .scheme-a-public-shell .fc-route-page .fc-route-hero {
-  display: grid;
-  grid-template-columns: minmax(400px, 33vw) minmax(0, 1fr);
-  grid-template-rows: minmax(0, 1fr);
-  min-height: clamp(640px, calc(100svh - 180px), 880px);
+  position: relative;
+  display: block;
+  min-height: 0;
+  padding-top: calc(var(--site-header-height, 76px) + 24px);
   height: auto;
   align-items: stretch;
   overflow: hidden;
@@ -26,17 +26,13 @@
   display: flex;
   width: 100%;
   max-width: none;
-  min-height: 100%;
+  min-height: 0;
   margin: 0;
-  padding:
-    calc(var(--site-header-height, 76px) + clamp(54px, 7vh, 78px))
-    clamp(36px, 3.3vw, 56px)
-    clamp(52px, 7vh, 76px)
-    clamp(48px, 5.4vw, 82px);
+  padding: 32px 0;
   flex-direction: column;
-  align-items: center;
+  align-items: flex-start;
   justify-content: center;
-  border-right: 1px solid rgba(214, 182, 126, 0.46);
+  border-right: 0;
   color: #f5f1e9;
   background: #0d0e11;
 }
@@ -46,9 +42,11 @@
 }
 
 .scheme-a-public-shell .fc-route-page .fc-route-hero h1 {
-  max-width: 10.5ch;
+  max-width: none;
   color: #fff;
-  font-size: clamp(50px, 4.2vw, 68px);
+  font-size: clamp(44px, 3.2vw, 60px);
+  font-family: var(--font-display);
+  text-wrap: balance;
   font-weight: 500;
   line-height: 1.1;
   letter-spacing: -0.025em;
@@ -56,19 +54,20 @@
 }
 
 .scheme-a-public-shell .fc-route-page .fc-route-hero h1.fc-route-title-long {
-  max-width: 13ch;
-  font-size: clamp(36px, 3vw, 46px);
+  max-width: none;
+  font-size: clamp(44px, 3.2vw, 60px);
   line-height: 1.17;
 }
 
 .scheme-a-public-shell .fc-route-page .fc-route-hero-copy > p {
-  max-width: 21.5em;
+  max-width: 38em;
   margin-top: 20px;
   order: 3;
   color: rgba(245, 241, 233, 0.76);
-  font-size: clamp(15.5px, 1.1vw, 16.5px);
+  font-size: 17px;
   line-height: 1.8;
   letter-spacing: 0.01em;
+  text-wrap: pretty;
   text-shadow: none;
 }
 
@@ -76,7 +75,7 @@
   display: flex;
   order: 4;
   flex-wrap: wrap;
-  justify-content: center;
+  justify-content: flex-start;
   gap: 10px;
   margin-top: 24px;
 }
@@ -125,7 +124,7 @@
   display: flex;
   min-width: 0;
   align-items: baseline;
-  justify-content: center;
+  justify-content: flex-start;
   flex-wrap: wrap;
   gap: 4px 8px;
 }
@@ -157,9 +156,9 @@
   grid-row: 1;
   align-self: end;
   width: 100%;
-  height: calc(100% - var(--site-header-height, 76px));
+  height: 100%;
   min-height: 0;
-  margin-top: var(--site-header-height, 76px);
+  margin-top: 0;
   overflow: hidden;
   background: #17181a;
 }
@@ -182,8 +181,28 @@
   filter: none !important;
 }
 
+.fc-route-hero-frame {
+  display: grid;
+  grid-template-columns: minmax(0, 44fr) minmax(0, 56fr);
+  grid-template-rows: minmax(clamp(440px, 35vw, 560px), auto);
+  gap: 32px;
+}
+
+@media (min-width: 1024px) {
+  .scheme-a-public-shell .fc-route-page .fc-route-hero-support :is(dt, dd) { font-size: 14px; }
+  .fc-route-hero-media > :is(img, picture, .smart-image-frame, .flex) {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+  }
+}
+
 @media (max-width: 1023px) {
+  .fc-route-hero-frame { display: contents; }
+
   .scheme-a-public-shell .fc-route-page .fc-route-hero {
+    padding-top: 0;
     display: flex;
     min-height: 0;
     flex-direction: column;
@@ -196,6 +215,7 @@
     inset: auto;
     order: 1;
     align-self: auto;
+    margin-top: var(--site-header-height, 76px);
     width: 100%;
     height: clamp(360px, 48svh, 500px);
     min-height: 0;
@@ -208,6 +228,7 @@
 
   .scheme-a-public-shell .fc-route-page .fc-route-hero-copy {
     position: relative;
+    align-items: center;
     order: 2;
     width: 100%;
     min-height: 0;
@@ -215,6 +236,11 @@
     border-top: 1px solid rgba(214, 182, 126, 0.42);
     border-right: 0;
     background: #0d0e11;
+  }
+
+  .scheme-a-public-shell .fc-route-page .fc-route-hero-actions,
+  .scheme-a-public-shell .fc-route-page .fc-route-hero-support > div {
+    justify-content: center;
   }
 
   .scheme-a-public-shell .fc-route-page .fc-route-hero h1 {

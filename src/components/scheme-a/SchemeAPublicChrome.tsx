@@ -362,15 +362,17 @@ export const SchemeAFooterPrelude = () => {
 
   return (
     <section className="scheme-a-footer-prelude" data-home-section={isHome ? "cta" : undefined} data-cinematic-section>
-      <div className="scheme-a-footer__panorama">
-        <SmartImage src="/images/projects/generated-portfolio/mont-kiara-luxury-condo-renovation.webp" alt={t.footerTitle} width={2560} height={1440} sizes="100vw" candidateWidths={[360, 560, 720, 960, 1200, 1600, 2560]} quality={88} />
-        <div className="scheme-a-footer__invitation scheme-a-frame">
-          <p className="scheme-a-footer__kicker"><span>{t.footerKicker}</span></p>
-          <h2>{t.footerTitle}</h2>
-          <span>{t.footerBody}</span>
-          <div>
-            <LocalizedLink to={QUOTE_FORM_PATH} onClick={() => trackCtaClick("quote", "scheme_a_footer_prelude", { destination: QUOTE_FORM_PATH })}>{t.quote}<ArrowUpRight /></LocalizedLink>
-            <a href={settings.whatsapp_url()} target="_blank" rel="noopener noreferrer" onClick={() => trackCtaClick("whatsapp", "scheme_a_footer_prelude", { destination: "whatsapp" })}><WhatsAppIcon />{t.whatsapp}</a>
+      <div className="scheme-a-footer-prelude__frame scheme-a-frame">
+        <div className="scheme-a-footer__panorama">
+          <SmartImage src="/images/projects/generated-portfolio/mont-kiara-luxury-condo-renovation.webp" alt={t.footerTitle} width={2560} height={1440} sizes="(min-width: 1536px) 1440px, (min-width: 1024px) calc(100vw - 96px), 100vw" candidateWidths={[360, 560, 720, 960, 1200, 1600, 2560]} quality={88} />
+          <div className="scheme-a-footer__invitation scheme-a-frame">
+            <p className="scheme-a-footer__kicker"><span>{t.footerKicker}</span></p>
+            <h2>{t.footerTitle}</h2>
+            <span>{t.footerBody}</span>
+            <div>
+              <LocalizedLink to={QUOTE_FORM_PATH} onClick={() => trackCtaClick("quote", "scheme_a_footer_prelude", { destination: QUOTE_FORM_PATH })}>{t.quote}<ArrowUpRight /></LocalizedLink>
+              <a href={settings.whatsapp_url()} target="_blank" rel="noopener noreferrer" onClick={() => trackCtaClick("whatsapp", "scheme_a_footer_prelude", { destination: "whatsapp" })}><WhatsAppIcon />{t.whatsapp}</a>
+            </div>
           </div>
         </div>
       </div>
