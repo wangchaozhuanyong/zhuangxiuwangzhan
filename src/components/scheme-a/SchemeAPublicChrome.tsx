@@ -49,6 +49,22 @@ const isActivePath = (pathname: string, itemPath: string) => {
 
 const publicNavigationItems = publicNavigationGroups.flatMap((group) => group.items);
 
+const footerNavigationGroups = [
+  {
+    titleKey: "spaceServicesTitle",
+    items: publicNavigationGroups
+      .filter((group) => group.key === "spaces" || group.key === "services")
+      .flatMap((group) => group.items),
+  },
+  {
+    titleKey: "brandContactTitle",
+    items: publicNavigationGroups
+      .filter((group) => group.key === "studio" || group.key === "contact")
+      .flatMap((group) => group.items)
+      .filter((item) => item.path !== "/contact"),
+  },
+] as const;
+
 const getCurrentNavigationItem = (pathname: string) =>
   publicNavigationItems.find((item) => isActivePath(pathname, item.path)) ?? publicNavigationItems[0];
 
@@ -396,53 +412,59 @@ export const SchemeAFooter = () => {
     <footer className="scheme-a-footer">
       <div className="scheme-a-footer__surface">
         <div className="scheme-a-footer__wordmark scheme-a-frame" aria-hidden="true"><span>FLASH</span><em>CAST</em></div>
-        <div className="scheme-a-footer__grid scheme-a-frame">
-          <section className="scheme-a-footer__studio">
-            <p>{t.contactTitle}</p>
-            <strong>{settings.company_name}</strong>
-            <address>
-              <a className="scheme-a-footer__contact-link" href={buildGoogleMapOpenUrl(settings.address, settings.map_latitude, settings.map_longitude)} target="_blank" rel="noopener noreferrer">
-                <MapPin aria-hidden="true" />
-                <span className="scheme-a-footer__contact-value">{settings.address}</span>
-                <span className="scheme-a-footer__contact-action">{footer.openMap}<ArrowUpRight aria-hidden="true" /></span>
+        <div className="scheme-a-footer__frame scheme-a-frame">
+          <div className="scheme-a-footer__grid">
+            <section className="scheme-a-footer__studio">
+              <p>{t.contactTitle}</p>
+              <strong>{settings.company_name}</strong>
+              <address>
+                <a className="scheme-a-footer__contact-link" href={buildGoogleMapOpenUrl(settings.address, settings.map_latitude, settings.map_longitude)} target="_blank" rel="noopener noreferrer">
+                  <MapPin aria-hidden="true" />
+                  <span className="scheme-a-footer__contact-value">{settings.address}</span>
+                  <span className="scheme-a-footer__contact-action">{footer.openMap}<ArrowUpRight aria-hidden="true" /></span>
+                </a>
+              </address>
+              <a className="scheme-a-footer__contact-link" href={settings.phone_href}>
+                <Phone aria-hidden="true" />
+                <span className="scheme-a-footer__contact-value">{settings.phone_display}</span>
+                <span className="scheme-a-footer__contact-action">{footer.callAction}<ArrowUpRight aria-hidden="true" /></span>
               </a>
-            </address>
-            <a className="scheme-a-footer__contact-link" href={settings.phone_href}>
-              <Phone aria-hidden="true" />
-              <span className="scheme-a-footer__contact-value">{settings.phone_display}</span>
-              <span className="scheme-a-footer__contact-action">{footer.callAction}<ArrowUpRight aria-hidden="true" /></span>
-            </a>
-            <a className="scheme-a-footer__contact-link" href={`mailto:${settings.email}`}>
-              <Mail aria-hidden="true" />
-              <span className="scheme-a-footer__contact-value">{settings.email}</span>
-              <span className="scheme-a-footer__contact-action">{footer.emailAction}<ArrowUpRight aria-hidden="true" /></span>
-            </a>
-            <span><Clock />{footer.hours}</span>
-            <div className="scheme-a-footer__socials">
-              {settings.instagram_url ? <a href={settings.instagram_url} target="_blank" rel="noopener noreferrer" aria-label="Instagram"><Instagram /></a> : null}
-              {settings.facebook_url ? <a href={settings.facebook_url} target="_blank" rel="noopener noreferrer" aria-label="Facebook"><Facebook /></a> : null}
-            </div>
-          </section>
-          <nav className="scheme-a-footer__directory" aria-label={t.navigationTitle}>
-            {publicNavigationGroups.map((group) => (
-              <section key={group.key}>
-                <p>{getGroupLabel(group.key, navText)}</p>
-                {group.items.map((item) => <LocalizedLink key={item.path} to={item.path}>{translate(item.labelKey)}<ArrowUpRight /></LocalizedLink>)}
-              </section>
-            ))}
-          </nav>
-          <nav className="scheme-a-footer__mobile-directory" aria-label={t.navigationTitle}>
-            {publicNavigationGroups.map((group) => (
-              <details key={group.key}>
-                <summary><span>{getGroupLabel(group.key, navText)}</span><ChevronDown aria-hidden="true" /></summary>
-                <div>{group.items.map((item) => <LocalizedLink key={item.path} to={item.path}>{translate(item.labelKey)}<ArrowUpRight /></LocalizedLink>)}</div>
-              </details>
-            ))}
-          </nav>
-          <section className="scheme-a-footer__areas">
-            <p>{t.areasTitle}</p>
-            {areas.map((area) => <LocalizedLink key={area.slug} to={`/locations/${area.slug}`}>{area.name}</LocalizedLink>)}
-          </section>
+              <a className="scheme-a-footer__contact-link" href={`mailto:${settings.email}`}>
+                <Mail aria-hidden="true" />
+                <span className="scheme-a-footer__contact-value">{settings.email}</span>
+                <span className="scheme-a-footer__contact-action">{footer.emailAction}<ArrowUpRight aria-hidden="true" /></span>
+              </a>
+              <div className="scheme-a-footer__contact-note">
+                <span className="scheme-a-footer__hours"><Clock aria-hidden="true" />{footer.hours}</span>
+                <LocalizedLink className="scheme-a-footer__contact-cta" to="/contact">{translate("nav.contact")}<ArrowUpRight aria-hidden="true" /></LocalizedLink>
+              </div>
+              {settings.instagram_url || settings.facebook_url ? <div className="scheme-a-footer__socials">
+                {settings.instagram_url ? <a href={settings.instagram_url} target="_blank" rel="noopener noreferrer" aria-label="Instagram"><Instagram /></a> : null}
+                {settings.facebook_url ? <a href={settings.facebook_url} target="_blank" rel="noopener noreferrer" aria-label="Facebook"><Facebook /></a> : null}
+              </div> : null}
+            </section>
+            <nav className="scheme-a-footer__directory" aria-label={t.navigationTitle}>
+              {footerNavigationGroups.map((group) => (
+                <section key={group.titleKey}>
+                  <p>{footer[group.titleKey]}</p>
+                  {group.items.map((item) => <LocalizedLink key={item.path} to={item.path}>{translate(item.labelKey)}<ArrowUpRight aria-hidden="true" /></LocalizedLink>)}
+                </section>
+              ))}
+            </nav>
+            <nav className="scheme-a-footer__mobile-directory" aria-label={t.navigationTitle}>
+              {publicNavigationGroups.map((group) => (
+                <details key={group.key}>
+                  <summary><span>{getGroupLabel(group.key, navText)}</span><ChevronDown aria-hidden="true" /></summary>
+                  <div>{group.items.map((item) => <LocalizedLink key={item.path} to={item.path}>{translate(item.labelKey)}<ArrowUpRight /></LocalizedLink>)}</div>
+                </details>
+              ))}
+            </nav>
+            <section className="scheme-a-footer__areas">
+              <p>{t.areasTitle}</p>
+              <div className="scheme-a-footer__area-links">{areas.map((area) => <LocalizedLink key={area.slug} to={`/locations/${area.slug}`}>{area.name}</LocalizedLink>)}</div>
+              <small className="scheme-a-footer__area-summary">{footer.areasSummary}</small>
+            </section>
+          </div>
         </div>
         <div className="scheme-a-footer__legal scheme-a-frame">
           <span>{t.copyright} {footer.rights}</span>
