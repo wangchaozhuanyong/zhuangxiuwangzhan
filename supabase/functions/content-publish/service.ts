@@ -15,7 +15,7 @@ import {
   uploadMediaObject,
 } from "./repository.ts";
 import type { ContentPublishClient, ContentPublishRequest, ContentPublishResult, ContentRow, ContentStatus } from "./types.ts";
-import { MANAGED_AREAS, MANAGED_BLOGS, MANAGED_SERVICES, managedAction } from "./managed-targets.ts";
+import { MANAGED_AREAS, MANAGED_BLOGS, MANAGED_SERVICES, MANAGED_TARGETS, findManagedTarget, managedAction } from "./managed-targets.ts";
 import type { ManagedTarget } from "./managed-targets.ts";
 import { samePgTimestamp } from "./managed-timestamp.ts";
 
@@ -109,6 +109,8 @@ const SERVICE_AREA_FIELDS = new Set([
   "status",
   "sort_order",
 ]);
+const SERVICE_AREA_BASELINE_FIELDS = ["id", "slug", "status", "updated_at", ...[...SERVICE_AREA_FIELDS].filter((field) =>
+  !["id", "slug", "status"].includes(field))] as const;
 const BLOG_FIELDS = new Set([
   "id",
   "slug",
@@ -416,6 +418,9 @@ async function beginManagedCmsWrite(
   const identity = context.managedIdentity;
   const permit = input.managedPermit;
   const action = managedAction(target, permit?.operation === "rollback" ? "rollback" : "publish");
+  if (permit?.operation === "rollback" && target.rollbackAllowed === false) {
+    return errorResult("This managed CMS target cannot restore an unverified prior image.", 403);
+  }
   if (!identity || !existing || existing.id !== target.id || slug !== target.slug
       || input.record?.id !== target.id || input.contentType !== target.contentType
       || !permit || permit.taskId !== action.taskId || permit.actionId !== action.actionId
@@ -431,10 +436,11 @@ async function beginManagedCmsWrite(
     if (unrelatedChange || await sha256(changed) !== target.desiredFieldsSha256) {
       return errorResult("Managed CMS payload differs from the QA-locked fields.", 403);
     }
-    if (target.contentType === "service" && target.baselineFieldsSha256) {
-      const baseline = Object.fromEntries(SERVICE_BASELINE_FIELDS.map((field) => [field, existing[field] ?? null]));
+    if ((target.contentType === "service" || target.contentType === "service_area") && target.baselineFieldsSha256) {
+      const baselineFields = target.contentType === "service" ? SERVICE_BASELINE_FIELDS : SERVICE_AREA_BASELINE_FIELDS;
+      const baseline = Object.fromEntries(baselineFields.map((field) => [field, existing[field] ?? null]));
       if (await sha256(baseline) !== target.baselineFieldsSha256) {
-        return errorResult("Managed service row differs from the QA-locked baseline.", 409);
+        return errorResult("Managed CMS row differs from the QA-locked baseline.", 409);
       }
     }
   }
@@ -1260,9 +1266,13 @@ async function publishBlogContent(
       currentUpdatedAt: existing.updated_at || null,
     });
   }
-  const managedBlog = MANAGED_BLOGS.find((blog) => blog.id === existingId || blog.slug === cleaned.slug
-    || blog.id === providedId);
-  const isManagedExisting = Boolean(managedBlog);
+  const isManagedExisting = MANAGED_BLOGS.some((blog) => blog.id === existingId
+    || blog.slug === cleaned.slug || blog.id === providedId);
+  const managedBlog = findManagedTarget(MANAGED_BLOGS, existingId, cleaned.slug,
+    input.managedPermit || (mode === "dry-run" ? input.managedCandidate : undefined));
+  if (isManagedExisting && !managedBlog) {
+    return errorResult("Managed Blog requires an exact locked row and candidate.", 403);
+  }
   if (managedBlog && (nextStatus !== "published" || existing?.status !== "published")) {
     return errorResult("Managed Blog must preserve its published status.", 403);
   }
@@ -1534,9 +1544,13 @@ async function publishSingleRecordContent(
       currentUpdatedAt: existing.updated_at || null,
     });
   }
+  const isManagedArea = config.contentType === "service_area"
+    && (MANAGED_AREA_IDS.has(existingId) || MANAGED_AREA_SLUGS.has(cleaned.key));
   const managedArea = config.contentType === "service_area"
-    ? MANAGED_AREAS.find((area) => area.id === existingId || area.slug === cleaned.key)
+    ? findManagedTarget(MANAGED_AREAS, existingId, cleaned.key,
+      input.managedPermit || (mode === "dry-run" ? input.managedCandidate : undefined))
     : undefined;
+  if (isManagedArea && !managedArea) return errorResult("Managed service area requires an exact locked target.", 403);
   if (existing && expectedUpdatedAt && (managedArea
     ? !samePgTimestamp(existing.updated_at, expectedUpdatedAt)
     : normalizeDate(existing.updated_at) !== normalizeDate(expectedUpdatedAt))) {
@@ -1549,6 +1563,12 @@ async function publishSingleRecordContent(
   }
 
   delete cleaned.payload.id;
+  const writePayload = managedArea?.changedFields && managedArea.baselineFieldsSha256
+    ? Object.fromEntries(managedArea.changedFields.map((field) => [field, cleaned.payload[field]]))
+    : cleaned.payload;
+  if (Object.values(writePayload).some((value) => value === undefined)) {
+    return errorResult("Managed service area patch has an invalid field.", 403);
+  }
   const action = existing ? (nextStatus === "published" ? "publish" : "update") : nextStatus === "published" ? "publish" : "insert";
   const commonBody = {
     ok: true,
@@ -1567,17 +1587,17 @@ async function publishSingleRecordContent(
     auth_mode: context.authMode || "admin",
   };
 
-  if (mode === "dry-run") return { body: { ...commonBody, payload_preview: cleaned.payload } };
+  if (mode === "dry-run") return { body: { ...commonBody, payload_preview: writePayload } };
 
   if (managedArea) {
     const denied = await beginManagedCmsWrite(input, client, context, managedArea, existing, cleaned.key,
-      cleaned.payload, expectedUpdatedAt);
+      cleaned.payload, expectedUpdatedAt, writePayload);
     if (denied) return denied;
   }
   let saved: ContentRow | null;
   try {
     saved = managedArea
-      ? await updateContentRecordAtVersion(client, config.table, existingId, expectedUpdatedAt, cleaned.payload)
+      ? await updateContentRecordAtVersion(client, config.table, existingId, expectedUpdatedAt, writePayload)
       : existingId
       ? await updateContentRecord(client, config.table, existingId, cleaned.payload)
       : await insertContentRecord(client, config.table, cleaned.payload);
@@ -2007,6 +2027,13 @@ export async function publishContent(
   const mode = input.mode || "dry-run";
   if (mode !== "dry-run" && mode !== "publish") return errorResult("Invalid publish mode.");
   if (!input.record || typeof input.record !== "object" || Array.isArray(input.record)) return errorResult("record object is required.");
+  const permitTarget = mode === "publish" && input.managedPermit
+    ? findManagedTarget(MANAGED_TARGETS, String(input.record.id || ""),
+      normalizeSlug(input.record.slug), input.managedPermit)
+    : undefined;
+  if (mode === "publish" && input.managedPermit && permitTarget?.contentType !== input.contentType) {
+    return errorResult("Managed CMS permit does not match this exact row and action.", 403);
+  }
   if (mode === "publish" && (
     (input.contentType === "service" && (
       MANAGED_SERVICE_IDS.has(String(input.record.id || "")) ||
@@ -2111,8 +2138,10 @@ export async function publishContent(
     return errorResult("Service slug already belongs to another record.", 409);
   }
 
-  const managedService = MANAGED_SERVICES.find((service) => service.id === existingId || service.slug === cleaned.slug);
-  const isManagedExisting = Boolean(managedService);
+  const isManagedExisting = MANAGED_SERVICE_IDS.has(existingId) || MANAGED_SERVICE_SLUGS.has(cleaned.slug);
+  const managedService = findManagedTarget(MANAGED_SERVICES, existingId, cleaned.slug,
+    input.managedPermit || (mode === "dry-run" ? input.managedCandidate : undefined));
+  if (isManagedExisting && !managedService) return errorResult("Managed service requires an exact locked target.", 403);
   const expectedUpdatedAt = input.expectedUpdatedAt || (typeof input.record.updated_at === "string" ? input.record.updated_at : "");
   if (managedService && (!existing || existing.id !== managedService.id || cleaned.slug !== managedService.slug
       || input.record.id !== managedService.id || !expectedUpdatedAt)) {

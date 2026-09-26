@@ -4,6 +4,16 @@ import { describe, expect, it } from "vitest";
 import { JsonLdBlogPosting } from "@/components/JsonLd";
 
 describe("JsonLdBlogPosting", () => {
+  it("retains article metadata without advertising an unverified cover", () => {
+    const queryClient = new QueryClient({ defaultOptions: { queries: { retry: false } } });
+    const html = renderToStaticMarkup(<QueryClientProvider client={queryClient}>
+      <JsonLdBlogPosting headline="Office checklist" description="Published article" imageAlt="" datePublished="2026-09-25" dateModified="2026-09-25" canonicalPath="/blog/office-renovation-checklist-malaysia" keywords={["office"]} />
+    </QueryClientProvider>);
+    const data = JSON.parse(html.match(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/)?.[1] || "{}");
+    expect(data["@type"]).toBe("BlogPosting");
+    expect(data.headline).toBe("Office checklist");
+    expect(data).not.toHaveProperty("image");
+  });
   it("renders localized article metadata from the public blog model", () => {
     const queryClient = new QueryClient({ defaultOptions: { queries: { retry: false } } });
     const html = renderToStaticMarkup(

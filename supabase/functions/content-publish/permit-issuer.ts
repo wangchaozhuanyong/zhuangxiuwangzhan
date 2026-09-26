@@ -1,4 +1,4 @@
-import { MANAGED_TARGETS, managedAction } from "./managed-targets.ts";
+import { MANAGED_TARGETS, findManagedTarget, managedAction } from "./managed-targets.ts";
 import { samePgTimestamp } from "./managed-timestamp.ts";
 import type { ContentPublishClient } from "./types.ts";
 
@@ -34,10 +34,11 @@ export type ManagedPermitIssue = {
 };
 
 export async function issueManagedPermit(client: ContentPublishClient, input: ManagedPermitIssue, now = Date.now()) {
-  const target = MANAGED_TARGETS.find((item) => item.id === input.recordId && item.slug === input.slug);
+  const target = findManagedTarget(MANAGED_TARGETS, input.recordId, input.slug, input);
   const action = target && managedAction(target, input.operation);
   const expires = Date.parse(input.expiresAt);
   if (!target || !action || !["publish", "rollback"].includes(input.operation)
+      || (input.operation === "rollback" && target.rollbackAllowed === false)
       || !UUID.test(input.permitId) || input.actionClass !== "cms_write"
       || input.taskId !== action.taskId || input.actionId !== action.actionId
       || input.scope !== action.scope || input.candidateVersion !== action.candidateVersion
@@ -61,9 +62,9 @@ export async function issueManagedPermit(client: ContentPublishClient, input: Ma
     if (!input.parentPermitId || !UUID.test(input.parentPermitId) || input.rollbackPayloadSha256) {
       throw new Error("Rollback requires a distinct completed publish permit");
     }
-    if (target.contentType === "blog"
+    if ((target.contentType === "blog" || target.requiresParentRun)
         && (!Number.isSafeInteger(input.parentRunId) || Number(input.parentRunId) <= 0)) {
-      throw new Error("Managed Blog rollback requires the exact completed parent run ID");
+      throw new Error("Managed rollback requires the exact completed parent run ID");
     }
     const { data: rawParent, error: parentError } = await client.from("managed_cms_release_permits")
       .select("*").eq("permit_id", input.parentPermitId).maybeSingle();
@@ -71,7 +72,7 @@ export async function issueManagedPermit(client: ContentPublishClient, input: Ma
     if (parentError || !parent || parent.status !== "completed" || parent.operation !== "publish"
         || parent.task_id !== input.taskId || parent.record_id !== input.recordId || parent.slug !== input.slug
         || parent.scope !== input.scope || parent.candidate_version !== target.candidateVersion
-        || (target.contentType === "blog" && Number(parent.github_run_id) !== input.parentRunId)
+        || ((target.contentType === "blog" || target.requiresParentRun) && Number(parent.github_run_id) !== input.parentRunId)
         || parent.rollback_payload_sha256 !== input.payloadSha256
         || !samePgTimestamp(parent.saved_updated_at, input.expectedUpdatedAt)) {
       throw new Error("Rollback does not restore the completed candidate's exact prior version");

@@ -1,0 +1,269 @@
+{
+  "schema_version": "1.1",
+  "task_id": "fc-20260926-org026-service-media-cms-content-r1-v2",
+  "original_task_id": "fc-20260926-website-placeholder-media-audit-v1",
+  "prior_control_task_id": "fc-20260926-service-media-original-concepts-implementation-v2",
+  "backlog_item_id": "ORG-026",
+  "campaign_id": "free-seo-geo-longterm",
+  "candidate_version": "service-media-fields-r1-v5",
+  "supersedes_candidate_version": "service-media-fields-r1-v4",
+  "action_id": "org026-service-media-cms-fields-r1-v4",
+  "source_content_action_id": "service-media-repair-existing-rows-v1",
+  "risk": "R1_EXISTING_CMS_SERVICE_MEDIA_FIELDS",
+  "candidate_type": "cms_content_candidate",
+  "action_class": "cms_write",
+  "channel_lock": "cms_content_candidate -> cms_write -> protected content-publish",
+  "status": "READY_FOR_QA_NOT_PUBLISHED",
+  "read_only_extracted_at_utc": "2026-09-26T00:12:40.484458+00:00",
+  "read_only_full_row_path": "backups/fc-20260926-org026-service-media-cms-content-r1-v2/current-service-rows-readonly.json",
+  "read_only_manifest_path": "backups/fc-20260926-org026-service-media-cms-content-r1-v2/readback-manifest.json",
+  "read_only_backup_sha256": "27b61d4a4e9defa8eb83e80241936718918130d54a5c52b5aa87a29b332f1050",
+  "production_site_sha": "ac753cdae2532bb324fac86794acc41fe49f795b",
+  "public_asset_readback_path": "reports/evidence/2026-09-26-org026-cms-r1-v5/asset-readback.json",
+  "required_visible_disclosure": {
+    "zh": "AI 生成概念示意，非客户完工实景",
+    "en": "AI-generated concept illustration, not a completed client project"
+  },
+  "modified_fields": [
+    "image_url",
+    "alt_en",
+    "alt_zh"
+  ],
+  "items": [
+    {
+      "slug": "builtin",
+      "cms_row_id": "b401a610-a4dc-4a0b-a7e0-efcac6c81d71",
+      "expected_status": "published",
+      "read_only_expected_version": 1,
+      "read_only_expected_updated_at": "2026-09-24T17:38:07.807532+00:00",
+      "read_only_full_row_sha256": "c3eff5a3440062ffe390ab6450ea8b9ac5659833dc946ffa9739910379b1e231",
+      "allowed_fields": [
+        "image_url",
+        "alt_en",
+        "alt_zh"
+      ],
+      "field_diff": {
+        "image_url": {
+          "before": "https://rbsnyexjifounogswrjp.supabase.co/storage/v1/object/public/site-images/media/seo-generated/2026-08-30/flash-cast-hero-rendering-concept.webp",
+          "after": "/images/services/ai-concepts/builtin-concept.webp",
+          "before_sha256": "ec0f65d581cb0a1f7f6b50e1c180ac7d0fbffdf340164f9ab8ba3a7cb1b95350",
+          "after_sha256": "c3fea488a6e833164838ca683f97964bdccfdfcb0c66cef7987f02fb03789d9f"
+        },
+        "alt_en": {
+          "before": "Whole-house custom furniture, fitted wardrobe and storage planning concept for Kuala Lumpur and Selangor",
+          "after": "Italian-minimalist whole-house built-in cabinetry concept with a TV storage wall and kitchen tall units",
+          "before_sha256": "a5228e7200db608d96d038f45465e6fadbf435969cafe79ae26be2900c1c269f",
+          "after_sha256": "eb7d86f1db39db076b07b3f115a570af77d71f8ea089b15315cb5df2ef4b6ae0"
+        },
+        "alt_zh": {
+          "before": "吉隆坡与雪兰莪全屋定制、定制家具和衣柜收纳规划概念图",
+          "after": "意式极简客厅与厨房的全屋定制柜体、电视收纳墙和厨房高柜概念示意图",
+          "before_sha256": "8960499d298c765a3dc6e116d106cadeb9cd487ec43d062704d94b7258bfc7d4",
+          "after_sha256": "649d1f9d0e0ee698d667a3a4ef761f6614ef86cda5ace3bf9ccb6c1a750a9f56"
+        }
+      },
+      "unchanged_field_sha256": {
+        "id": "5964a6c1ccb6c048b6c92454fb27f48d530a9f3801701c88d168e177d804a101",
+        "slug": "6c715d0801b6e371dbeae2585e98e2dc0cd2230c5081f5a8af39071179f40fcf",
+        "title_zh": "13b7ad157d6e0103fb08401588a18536f53c80a90543cd27b5943a7641cbba48",
+        "title_en": "7c1ab56e6b7eec586718368e1defd8cc9c92f789b48c6e9b735276229450cc16",
+        "excerpt_zh": "9549265b574427b8a225358f949041bd6970e375468a4f45c27b82c08821a78c",
+        "excerpt_en": "03af7d616588ed4af3711338af2927e08343eb1603fb57462107f3340a15c79b",
+        "content_zh": "3c0329cc35c5c847565fdc7df8352308db8827dea18c73e20fba5a072f5eb079",
+        "content_en": "523797b5020d128d6464bea34fbad134d1617f8abb0fdb88d732842905a37b8b",
+        "suitable_for_zh": "b79bc1639a3fde2ca00c41baa00dd2f14ff72bcc8019dc2bf74ef55a74a14981",
+        "suitable_for_en": "d6fc1ac0b5a23fe5fd56a97b7e744f2f578f5cc74fd63b528be0b44bf945a5c8",
+        "common_projects_zh": "608ff8d7a6d65446da0c1c6299b66ffdff6c6b30dbe1089d3d13d19bbf7f0fff",
+        "common_projects_en": "7db006a6a04e4fd0ece36ba8a9977bd1d999fe69e89817901b95e9f9439f0c85",
+        "process_steps_zh": "784edd47b4ea8ce1da3361068f2aa9c7186c693298ae7a37b4fcfbe37553e56f",
+        "process_steps_en": "476aa3042531a7c360413577732b54a3f920b4cc71fc7b7b5965134c7e9baee3",
+        "scope_items_zh": "06626621924c0c35e84f37b5b5d782c0ef47fcf4f008b20e80f9b6625b438f36",
+        "scope_items_en": "70a8f6bcdc6af06eddb4df0a744a7ab03949e2ec4a27d98b17c61f5d332ddb88",
+        "faqs_zh": "bcb270fbb5b34379adfb14209bfca14fb0b880320a33e1b02af557b2f529ead4",
+        "faqs_en": "58cbbc1a9858f6db635aa050efe288343106c69ddea2bafe0307350fe6e63a0e",
+        "seo_title_zh": "4b5b86f7e05fa055b8dc5d344f305e2bb57bd8a0ffef83685e169b2e7dcc8841",
+        "seo_title_en": "b24df60111a9a9ed9a5d014d2aaf82a9a0f341e763dee22ba73047ad6c4c375b",
+        "seo_description_zh": "990fe1e9d3dbdbffc046bab4e373a6d37ffed6a4fe1af5d94a746d7f293d6680",
+        "seo_description_en": "83c62f50695ddf390e6b51bd04b4d773b46f1fb5a4f3b017881d3f9aa7e8962e",
+        "status": "dd2653c12a35c69d362d327a778f6e79f7e182293194fe0c3f4f68f6afdc8c1b",
+        "sort_order": "39fa9ec190eee7b6f4dff1100d6343e10918d044c75eac8f9e9a2596173f80c9",
+        "created_at": "9bd14572d63dfb236b19afc233a3a2146c6399fd317528e01d81b21d1eb12380",
+        "updated_at": "83873dddc886c9b1bbf0f6dcf310f67423c0c3f9a6861e58ba5945c2c34ae31d",
+        "version": "6b86b273ff34fce19d6b804eff5a3f5747ada4eaa22f1d49c01e52ddb7875b4b"
+      },
+      "asset": {
+        "public_url": "https://flashcast.com.my/images/services/ai-concepts/builtin-concept.webp",
+        "public_sha256": "a42e83c4d044d1f77db28da671642a829eb9b29ff9855b0637026ab07922a3ce",
+        "source_path": "delivery/creative/fc-20260926-website-placeholder-media-audit-v1/assets/builtin-concept.webp",
+        "rights_status": "ORIGINAL_CONCEPT_READY",
+        "truth_label": "ai_concept_not_client_project"
+      },
+      "scope": "flashcast.com.my:services/b401a610-a4dc-4a0b-a7e0-efcac6c81d71:image_url,alt_en,alt_zh",
+      "rollback_payload_from_read_only_baseline": {
+        "image_url": "https://rbsnyexjifounogswrjp.supabase.co/storage/v1/object/public/site-images/media/seo-generated/2026-08-30/flash-cast-hero-rendering-concept.webp",
+        "alt_en": "Whole-house custom furniture, fitted wardrobe and storage planning concept for Kuala Lumpur and Selangor",
+        "alt_zh": "吉隆坡与雪兰莪全屋定制、定制家具和衣柜收纳规划概念图"
+      },
+      "cms_saved_id": null,
+      "published": false
+    },
+    {
+      "slug": "warehouse",
+      "cms_row_id": "1fab3adb-aa8c-4aab-9c30-8931152cdc91",
+      "expected_status": "published",
+      "read_only_expected_version": 2,
+      "read_only_expected_updated_at": "2026-08-30T10:52:51.425098+00:00",
+      "read_only_full_row_sha256": "9610a31c806fe15189d7c761d7350063b81035e09882c045ecc0f0c6bf9fa983",
+      "allowed_fields": [
+        "image_url",
+        "alt_en",
+        "alt_zh"
+      ],
+      "field_diff": {
+        "image_url": {
+          "before": "https://rbsnyexjifounogswrjp.supabase.co/storage/v1/object/public/site-images/media/seo-generated/2026-08-30/flash-cast-hero-rendering-concept.webp",
+          "after": "/images/services/ai-concepts/warehouse-concept.webp",
+          "before_sha256": "ec0f65d581cb0a1f7f6b50e1c180ac7d0fbffdf340164f9ab8ba3a7cb1b95350",
+          "after_sha256": "0ebdc074bf9770900ee4c44281182d6292602349b52418cbcddaabf9af0121e2"
+        },
+        "alt_en": {
+          "before": "Warehouse shelving and storage-flow rendering concept for Selangor",
+          "after": "Warehouse shelving, central aisle, floor zoning and picking-area planning concept",
+          "before_sha256": "add3a642c605fd96cfffc428da9b95ad90a3e35fe1e5f3a64b00e42b0faf9584",
+          "after_sha256": "31c027048f3cf97d48400b86af34958d2860631846c55816b81de4b1702c9aa1"
+        },
+        "alt_zh": {
+          "before": "雪兰莪仓库货架与仓储动线规划概念设计",
+          "after": "仓库货架、中央通道、地面分区标线与拣货区规划概念示意图",
+          "before_sha256": "85ee3077731717f8c4153ae006a866adf0511387f6cebe3a9d71a8dcbc84e209",
+          "after_sha256": "ed273184e00a69a69b203f6bac1d1954fb70644bfb40464fdbae76da5474b42e"
+        }
+      },
+      "unchanged_field_sha256": {
+        "id": "9b4d687c534fa945ee6d9ff08c995576afdb09a6f454dcafe95323c1e28fd063",
+        "slug": "7cbbd0184f4d2461ac868af79bb683454c0d4ef36325ad99cb29cbd682c8a55a",
+        "title_zh": "790c37a7faba84315c56f9328b69f40252f1a3501fde85cf75dfd4d56ca05f69",
+        "title_en": "2d12c88d9470d6388c298dab64aa8a7e207bbf09680ae93a2f53720293fc4c9e",
+        "excerpt_zh": "cd35b9ad8f1ad2e2dc94753f6841b4e756c7c7b2733663655552c132043bdd6c",
+        "excerpt_en": "87411fc3317fd0b3998726692ee88cb71cd66ee3a0ae274b1a76393df235cbd3",
+        "content_zh": "0ecc86c97049e2640bb61be9b5723e1842b1228a96143d4576111f6bb8a532cf",
+        "content_en": "125f7fbfeb6c6317b0d34cea4139f0d708e53ad7adb0cb1c625740cf25086f0e",
+        "suitable_for_zh": "513c8093b88ad618654124af5115fb9260389d44665892b8dbb51ed825d7619a",
+        "suitable_for_en": "19709789bb546190bd874389b877cd1dc8087193de89ce6f09d0b6b6a4f8d9fc",
+        "common_projects_zh": "80a8db2bca232732cc572719a0416678a22d8b16d19a155d36fc1a253337f9c1",
+        "common_projects_en": "9bca88ac04a0191e6588f542f8faba7c6f94187e2b24fdf7a4204bfa4f27751e",
+        "process_steps_zh": "08ee074e1be657da81ab65359147ee56542a3be5f2d5d9080ead18fed7fe3927",
+        "process_steps_en": "9a7bb6fd87cd4e16d9e2d497e674df20a8ae4bbb5e5144aa33fc988b47a9de69",
+        "scope_items_zh": "fcc5f53d84bdbd5535d73d70d0235c721cef8ed97205dae493715fff3185fffa",
+        "scope_items_en": "c21c06349b0c5207ac6ea11ec4078b8a0608d7b43ff16706aef2bd7d72ed6a2f",
+        "faqs_zh": "30b70cb1d3b0f01639b0e477954d10eb1c243113acba381ec87577a3d02d687f",
+        "faqs_en": "6ebbd9f5f3bee3f042e7166bfaf6a977a2ad068f33af66c7dbe7a8502d403573",
+        "seo_title_zh": "8667f0b05af80638bee2f83c4a1409cc2a26cb1f05f8f20d6d23e05d646aa844",
+        "seo_title_en": "a6e2b2a309694c7f3c263faf37e450e3809cacbb10927f0338a5ecee0a6cbc12",
+        "seo_description_zh": "d0bc1e8e98787dc8c80ffef647864ebe1e201db565f71728f538263532971437",
+        "seo_description_en": "88ddd35602eff8ba41280a5215c25dcdee2a0cf0529679589f9af40fb5ec3faa",
+        "status": "dd2653c12a35c69d362d327a778f6e79f7e182293194fe0c3f4f68f6afdc8c1b",
+        "sort_order": "ff5a1ae012afa5d4c889c50ad427aaf545d31a4fac04ffc1c4d03d403ba4250a",
+        "created_at": "9bd14572d63dfb236b19afc233a3a2146c6399fd317528e01d81b21d1eb12380",
+        "updated_at": "5d4ba15a38377b1b1fd5c3cff6f3fd6ee5c1965f28cf18a9b314072b44fe4c12",
+        "version": "d4735e3a265e16eee03f59718b9b5d03019c07d8b6c51f90da3a666eec13ab35"
+      },
+      "asset": {
+        "public_url": "https://flashcast.com.my/images/services/ai-concepts/warehouse-concept.webp",
+        "public_sha256": "2bb0c8ea645c5d96d50b96fd553bfd3aac60be1f53a27ceb827276fd01a5031f",
+        "source_path": "delivery/creative/fc-20260926-website-placeholder-media-audit-v1/assets/warehouse-concept.webp",
+        "rights_status": "ORIGINAL_CONCEPT_READY",
+        "truth_label": "ai_concept_not_client_project"
+      },
+      "scope": "flashcast.com.my:services/1fab3adb-aa8c-4aab-9c30-8931152cdc91:image_url,alt_en,alt_zh",
+      "rollback_payload_from_read_only_baseline": {
+        "image_url": "https://rbsnyexjifounogswrjp.supabase.co/storage/v1/object/public/site-images/media/seo-generated/2026-08-30/flash-cast-hero-rendering-concept.webp",
+        "alt_en": "Warehouse shelving and storage-flow rendering concept for Selangor",
+        "alt_zh": "雪兰莪仓库货架与仓储动线规划概念设计"
+      },
+      "cms_saved_id": null,
+      "published": false
+    },
+    {
+      "slug": "office-renovation",
+      "cms_row_id": "a87541ac-1cba-4f1a-972d-428dccdbcc0f",
+      "expected_status": "published",
+      "read_only_expected_version": 2,
+      "read_only_expected_updated_at": "2026-09-25T20:35:44.197155+00:00",
+      "read_only_full_row_sha256": "88d9a3d9693f70f69d2d600e17df729017b26f6fecb1dcebbd524400435c0618",
+      "allowed_fields": [
+        "image_url",
+        "alt_en",
+        "alt_zh"
+      ],
+      "field_diff": {
+        "image_url": {
+          "before": "https://flashcast.com.my/images/_responsive/materials/w900/category-whole-house-custom.webp",
+          "after": "/images/services/ai-concepts/office-renovation-concept.webp",
+          "before_sha256": "f1fbc3925a9c9bdc230f820577127df51bf54527d25c201b9766cc79ac093dcb",
+          "after_sha256": "8d1d82ef5af386fdaf6c947d0f18a89662f5cee11accac68493eff5630cf2e47"
+        },
+        "alt_en": {
+          "before": "Office reception and waiting-area rendering concept",
+          "after": "Modern office concept with workstations, a glass meeting room, reception and integrated storage",
+          "before_sha256": "5eaf10425c0a8a81ae15ef65ec24ea23a27c220cd0e755fb9b5c7cd1e4557d2b",
+          "after_sha256": "690213f31dbe72a58fffacebb52ceb8367c9eabdf554e95910297dfe2949a8ba"
+        },
+        "alt_zh": {
+          "before": "办公室前台与等候区规划效果图概念",
+          "after": "现代办公室工位、玻璃会议室、前台与文件收纳规划概念示意图",
+          "before_sha256": "f38464ea0dacf61f253e485e3b9d357c994d6c43ffdcfea035ee8564c775e8aa",
+          "after_sha256": "f0adcd25a6e2866ae028c4d672447824e871b46f865438e6c2bcad042abff7d4"
+        }
+      },
+      "unchanged_field_sha256": {
+        "id": "f5544c8571734a8a67c1a80de8990a7d7e8a9e49cd85293cd4499d469b1fc149",
+        "slug": "c9dc059e484dc341d2169a11fe5cd90271d88c858d849947f77159ad40bc01de",
+        "title_zh": "e62c91ebbebc1bc7cbd7918bb59b932573666f4afcb36cf760392f05f8b106a6",
+        "title_en": "10d738a099073af46bc3106b6117d36d536b65e59fe27b04c4a2a02e7d4c9761",
+        "excerpt_zh": "566d624e53076bd36c17a4390a0357cf586395a953ff238f32f56cdc6f295060",
+        "excerpt_en": "ad39f92652e41c74cf2bd656af6b3e26108b122fb318982951388163c0ddc3e7",
+        "content_zh": "4643e1eb0e63c010b2b22be6315a981f0a9809d50638f7479994477b84b767c8",
+        "content_en": "c122965b0130aa5f81e4b13a2ca682c0c414172e1762f485e68f0ad0636e9d98",
+        "suitable_for_zh": "8c4008453313e5c4c2a045ac6ff0609844c938d8cf40ae893f6db49c88427ad8",
+        "suitable_for_en": "bf5c710674f06d514bb52f2354441fddf9e9941b135eba60d0692fd20b2793ca",
+        "common_projects_zh": "c8fff4609cadb6da4188fe8be6f4385786dcb0e68a65338486833c8844b8c5bf",
+        "common_projects_en": "9f691218c4bb0bf6873cf4e0554df03a7b27be2c3424f29bf2a30a8bd3f07a4c",
+        "process_steps_zh": "aa0687e0b0d62fdfdae3951a16582ec1a5e057caba4c40aba1737eecc973cd5a",
+        "process_steps_en": "d07fcf095a499d2238dcac8d170d61c3fa5ce60f786ccad2931ed22b08d89b1b",
+        "scope_items_zh": "2063dbfb4f3a57d406db0b1b8e38672905323e32ff9837d8eb07eb42c9bcf646",
+        "scope_items_en": "e94208ec507e0cda5d57eae80b26fd3d49b223ed0bd1fe0748834048cced6fb7",
+        "faqs_zh": "7a25aa30888b8f1af15ca53f4e98c4161654f3c21d95c1415cbfa811a02de3b7",
+        "faqs_en": "049421299192823ca2fecbc0cff6fbf350729648f29d8e84e5f71dd7eed80d94",
+        "seo_title_zh": "9f3b23a270a1c16ad28151dfd1e81ae6eb01fd91edfcdf206e8f10225316f6fb",
+        "seo_title_en": "38b58577f839b8c26fd1f9e2e65f0e1ac9bf23e096e667e34d15af8983253a5d",
+        "seo_description_zh": "678d5428e808eb49710581a4923b1147f4432fdf164e95fd8d0951df27110afc",
+        "seo_description_en": "29f9a7da08b280ff9c49a84a680d9880325fd12efce7efc3f70e03db29393155",
+        "status": "dd2653c12a35c69d362d327a778f6e79f7e182293194fe0c3f4f68f6afdc8c1b",
+        "sort_order": "d59eced1ded07f84c145592f65bdf854358e009c5cd705f5215bf18697fed103",
+        "created_at": "9bd14572d63dfb236b19afc233a3a2146c6399fd317528e01d81b21d1eb12380",
+        "updated_at": "ff4172c1bb567e0419321f5780bcfcca964cbd70ee52efe25167a1ad9bde034b",
+        "version": "d4735e3a265e16eee03f59718b9b5d03019c07d8b6c51f90da3a666eec13ab35"
+      },
+      "asset": {
+        "public_url": "https://flashcast.com.my/images/services/ai-concepts/office-renovation-concept.webp",
+        "public_sha256": "c4827da1eb580ecd4d6448a812e8a38c392908ae08e71e630d4b3c9b1666f38c",
+        "source_path": "delivery/creative/fc-20260926-website-placeholder-media-audit-v1/assets/office-renovation-concept.webp",
+        "rights_status": "ORIGINAL_CONCEPT_READY",
+        "truth_label": "ai_concept_not_client_project"
+      },
+      "scope": "flashcast.com.my:services/a87541ac-1cba-4f1a-972d-428dccdbcc0f:image_url,alt_en,alt_zh",
+      "rollback_payload_from_read_only_baseline": {
+        "image_url": "https://flashcast.com.my/images/_responsive/materials/w900/category-whole-house-custom.webp",
+        "alt_en": "Office reception and waiting-area rendering concept",
+        "alt_zh": "办公室前台与等候区规划效果图概念"
+      },
+      "cms_saved_id": null,
+      "published": false
+    }
+  ],
+  "release_gate": "New independent QA must review this exact v5 candidate. This read-only row is not release-time CAS. Exact protected media-field targets currently absent. Before each CMS write require separate R1 AUTO_RELEASE, exact one-time policy permit, fresh complete row backup and id/slug/status/version/updated_at/other-field comparison, protected zero-write dry-run, protected save, Saved ID, EN/ZH listing/detail postcheck at 390/1280, and actual prewrite-row rollback payload. Do not directly update DB or hardcode CMS fields into code.",
+  "cms_saved_ids": [],
+  "published": false,
+  "created_at_utc": "2026-09-26T00:14:06.266840+00:00"
+}

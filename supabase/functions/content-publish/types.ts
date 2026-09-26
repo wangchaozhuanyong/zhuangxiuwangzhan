@@ -49,6 +49,13 @@ export type ContentPublishRequest = {
   nextStatus?: ContentStatus;
   expectedUpdatedAt?: string | null;
   managedOperation?: "publish" | "rollback"; // Dry-run preview only; writes use managedPermit.operation.
+  managedCandidate?: { // Selects an exact locked target for a zero-write preview; never authorizes a write.
+    taskId: string;
+    actionId: string;
+    operation: "publish" | "rollback";
+    scope: string;
+    candidateVersion: string;
+  };
   ownerApproved?: boolean;
   explicitExecution?: boolean;
   approvalId?: string;

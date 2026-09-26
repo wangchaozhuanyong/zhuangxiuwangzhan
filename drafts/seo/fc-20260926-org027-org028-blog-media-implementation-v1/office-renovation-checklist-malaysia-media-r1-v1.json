@@ -1,0 +1,103 @@
+{
+  "schema_version": "1.0",
+  "task_id": "fc-20260926-org027-org028-blog-media-implementation-v1",
+  "backlog_item_id": "ORG-028",
+  "candidate_type": "cms_content_candidate",
+  "action_class": "cms_write",
+  "release_channel": "cms_content_candidate -> cms_write -> protected content-publish",
+  "risk": "R1_PENDING_FIXED_QA",
+  "candidate_version": "office-renovation-checklist-malaysia-media-r1-v1",
+  "action_id": "replace-office-renovation-checklist-malaysia-cover-alt-v1",
+  "scope": "flashcast.com.my:blog_posts/190d319c-b027-4730-ab34-df5010f4acc0:cover_image_url,alt_en,alt_zh",
+  "status": "READY_FOR_QA_EXECUTION_BLOCKED_PROTECTED_TARGET_MISSING",
+  "slug": "office-renovation-checklist-malaysia",
+  "cms_row_id": "190d319c-b027-4730-ab34-df5010f4acc0",
+  "source": {
+    "observed_at_utc": "2026-09-26T05:58:17.053Z",
+    "source": "Anonymous public browser blog_posts response",
+    "page_url": "https://flashcast.com.my/en/blog/office-renovation-checklist-malaysia",
+    "http_status": 200,
+    "fields": [
+      "id",
+      "slug",
+      "title_zh",
+      "title_en",
+      "excerpt_zh",
+      "excerpt_en",
+      "content_zh",
+      "content_en",
+      "category",
+      "tags",
+      "cover_image_url",
+      "alt_zh",
+      "alt_en",
+      "seo_title_zh",
+      "seo_title_en",
+      "seo_description_zh",
+      "seo_description_en",
+      "status",
+      "published_at",
+      "created_at",
+      "updated_at",
+      "sort_order",
+      "version"
+    ],
+    "cms_write": false,
+    "credentials_saved": false
+  },
+  "expected_status": "published",
+  "expected_version": 1,
+  "expected_updated_at": "2026-09-25T20:57:52.380141+00:00",
+  "baseline_full_row_file_sha256": "536216045e04f297ca3d6def38e0ad9d65e866fe926418248794520e72b42c71",
+  "baseline_canonical_fields_sha256": "04f3832b03bd1a0624b253b6fa031405a657a09a956ede77de6c42d05304fa3e",
+  "desired_canonical_fields_sha256": "266b7153d22f31ae71b46c10675ab7b4213aa4b2c31ff1b67be72e384b6a40db",
+  "hash_serialization": "UTF-8 JSON sort_keys=true ensure_ascii=false separators comma/colon; not an issuer-generated permit",
+  "source_full_row_backup": "/Users/wangchao/Desktop/装修公司虚拟员工/backups/fc-20260926-org027-org028-blog-media-implementation-v1/cms-readonly-baseline-v1/office-renovation-checklist-malaysia.json",
+  "allowed_fields": [
+    "cover_image_url",
+    "alt_en",
+    "alt_zh"
+  ],
+  "field_diff": {
+    "cover_image_url": {
+      "before": "/images/services/office-renovation.webp",
+      "after": "/images/blog/editorial-concepts-20260926-v1/office-renovation-checklist-malaysia/office-cover.webp"
+    },
+    "alt_zh": {
+      "before": "办公室与零售空间装修规划",
+      "after": "现代办公室工位、会议室与储物空间概念示意图"
+    },
+    "alt_en": {
+      "before": "Office and retail fit-out planning",
+      "after": "Concept illustration of a modern office with workstations, meeting room and storage"
+    }
+  },
+  "body_and_links_unchanged": true,
+  "desired_fields": {
+    "cover_image_url": "/images/blog/editorial-concepts-20260926-v1/office-renovation-checklist-malaysia/office-cover.webp",
+    "alt_en": "Concept illustration of a modern office with workstations, meeting room and storage",
+    "alt_zh": "现代办公室工位、会议室与储物空间概念示意图"
+  },
+  "site_dependency": "org027-org028-blog-media-renderer-r2-v1; deploy and verify asset URLs before CMS write",
+  "protected_target": {
+    "status": "MISSING_FOR_THIS_MEDIA_TUPLE",
+    "existing_target_fields": "content/SEO only, different task/action/version",
+    "owner": "operations / authorized CMS publisher custodian",
+    "required_tuple": [
+      "fc-20260926-org027-org028-blog-media-implementation-v1",
+      "replace-office-renovation-checklist-malaysia-cover-alt-v1",
+      "office-renovation-checklist-malaysia-media-r1-v1",
+      "190d319c-b027-4730-ab34-df5010f4acc0",
+      [
+        "cover_image_url",
+        "alt_en",
+        "alt_zh"
+      ]
+    ],
+    "capability_modified_this_task": false
+  },
+  "safe_recovery": "No restore of unverified old cover; rights-cleared forward repair or keep R2 text-only desktop transition; fresh row reread/CAS required before any later write",
+  "cms_saved_id": null,
+  "external_write_executed": false,
+  "paid_promotion_enabled": false
+}

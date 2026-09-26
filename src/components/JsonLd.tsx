@@ -197,7 +197,7 @@ export const JsonLdBlogPosting = ({
 }: {
   headline: string;
   description: string;
-  image: string;
+  image?: string;
   imageAlt: string;
   datePublished: string;
   dateModified: string;
@@ -208,7 +208,7 @@ export const JsonLdBlogPosting = ({
   const { language } = useLanguage();
   const path = withLanguagePrefix(stripLanguagePrefix(canonicalPath), language);
   const canonicalUrl = `${siteConfig.url}${path}`;
-  const imageUrl = image.startsWith("http") ? image : `${siteConfig.url}${image.startsWith("/") ? image : `/${image}`}`;
+  const imageUrl = image ? (image.startsWith("http") ? image : `${siteConfig.url}${image.startsWith("/") ? image : `/${image}`}`) : undefined;
   const organizationName = settings.company_name || siteConfig.name;
   const organizationId = `${siteConfig.url}/#localbusiness`;
   const data = {
@@ -221,11 +221,11 @@ export const JsonLdBlogPosting = ({
     },
     headline,
     description,
-    image: {
+    image: imageUrl ? {
       "@type": "ImageObject",
       url: imageUrl,
       caption: imageAlt,
-    },
+    } : undefined,
     datePublished,
     dateModified,
     inLanguage: language === "zh" ? "zh-CN" : "en",

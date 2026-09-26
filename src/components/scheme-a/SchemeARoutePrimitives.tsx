@@ -74,13 +74,14 @@ export function SchemeARouteHero({
   imagePosition,
   imageAlt,
   mediaDisclosure,
+  imageCaption,
   label,
   title,
   description,
   actions,
 }: {
   kind?: SchemeARouteKind;
-  image: string;
+  image?: string;
   imageSourceWidth?: number;
   tabletImage?: string;
   tabletImageSourceWidth?: number;
@@ -89,6 +90,7 @@ export function SchemeARouteHero({
   imagePosition?: SchemeARouteImagePosition;
   imageAlt: string;
   mediaDisclosure?: string;
+  imageCaption?: string;
   label: string;
   title: string;
   description: string;
@@ -131,29 +133,41 @@ export function SchemeARouteHero({
         : undefined
     : undefined;
 
+  const MediaTag = imageCaption ? "figure" : "div";
+  const heroImage = (
+    <SmartImage
+      src={image || mobileImage || ""}
+      pictureSources={[
+        ...(mobileImage ? [{ media: "(max-width: 767px)", srcSet: mobileSrcSet || mobileImage, sizes: "100vw" }] : []),
+        ...(tabletImage ? [{ media: "(min-width: 768px) and (max-width: 1023px) and (orientation: portrait)", srcSet: tabletSrcSet || tabletImage, sizes: "100vw" }] : []),
+      ]}
+      critical
+      sourceWidth={imageSourceWidth}
+      alt={imageAlt}
+      width={1600}
+      height={1100}
+      loading="eager"
+      fetchPriority="high"
+      revealOnLoad
+      sizes="(min-width: 1024px) 64vw, 100vw"
+      candidateWidths={[560, 720, 960, 1200, 1600]}
+      quality={86}
+    />
+  );
+
   return (
     <ImmersiveHero className={`fc-route-hero fc-route-hero-${kind}`} data-route-hero-layout="editorial-rail">
-      <div className="fc-route-hero-media" data-cinematic-media style={mediaStyle}>
-          <SmartImage
-            src={image}
-            pictureSources={[
-              ...(mobileImage ? [{ media: "(max-width: 767px)", srcSet: mobileSrcSet || mobileImage, sizes: "100vw" }] : []),
-              ...(tabletImage ? [{ media: "(min-width: 768px) and (max-width: 1023px) and (orientation: portrait)", srcSet: tabletSrcSet || tabletImage, sizes: "100vw" }] : []),
-            ]}
-            critical
-            sourceWidth={imageSourceWidth}
-            alt={imageAlt}
-            width={1600}
-            height={1100}
-            loading="eager"
-            fetchPriority="high"
-            revealOnLoad
-            sizes="(min-width: 1024px) 64vw, 100vw"
-            candidateWidths={[560, 720, 960, 1200, 1600]}
-            quality={86}
-          />
-      </div>
-      <div className="fc-route-hero-copy">
+      {image || mobileImage ? (
+        <MediaTag className={`fc-route-hero-media${image ? "" : " md:hidden"}`} data-cinematic-media style={mediaStyle}>
+          {imageCaption ? (
+            <div className="flex h-full flex-col">
+              <div className="min-h-0 flex-1">{heroImage}</div>
+              <figcaption className="relative z-10 shrink-0 bg-background px-6 py-3 text-sm leading-relaxed text-muted-foreground">{imageCaption}</figcaption>
+            </div>
+          ) : heroImage}
+        </MediaTag>
+      ) : null}
+      <div className="fc-route-hero-copy" style={{ ...(!image ? { gridColumn: "1 / -1" } : {}), ...(imageCaption ? { marginTop: 0 } : {}) }}>
         <span className="fc-route-kicker">{label}</span>
         {mediaDisclosure ? <span className="fc-route-media-disclosure">{mediaDisclosure}</span> : null}
         <h1 className={usesCompactTitleScale ? "fc-route-title-long" : undefined}>{title}</h1>

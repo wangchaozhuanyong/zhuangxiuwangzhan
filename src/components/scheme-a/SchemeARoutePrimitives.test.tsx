@@ -2,7 +2,31 @@ import { act } from "react";
 import { createRoot } from "react-dom/client";
 import { MemoryRouter } from "react-router-dom";
 import { describe, expect, it } from "vitest";
-import { SchemeAGallery, SchemeALinkGrid, SchemeAListingGrid, SchemeASection } from "@/components/scheme-a/SchemeARoutePrimitives";
+import { PublicChromeProvider } from "@/contexts/PublicChromeContext";
+import { SchemeAGallery, SchemeALinkGrid, SchemeAListingGrid, SchemeASection, SchemeARouteHero } from "@/components/scheme-a/SchemeARoutePrimitives";
+
+describe("SchemeARouteHero safe cover transition", () => {
+  it("uses approved mobile media without an unverified desktop URL, then preserves the CMS cover", () => {
+    const container = document.createElement("div");
+    document.body.appendChild(container);
+    const root = createRoot(container);
+    const props = { title: "Office checklist", label: "Planning", description: "Article", imageAlt: "Reviewed concept", imageCaption: "AI-generated concept, not a completed client project", mobileImage: "/images/blog/office-mobile.webp" };
+    act(() => root.render(<MemoryRouter><PublicChromeProvider isAdminRoute={false} routeKey="blog"><SchemeARouteHero {...props} /></PublicChromeProvider></MemoryRouter>));
+    expect(container.querySelector("img")).toHaveAttribute("src", props.mobileImage);
+    expect(container.querySelector(".fc-route-hero-media")).toHaveClass("md:hidden");
+    expect(container.querySelector(".fc-route-hero-copy")).toHaveStyle({ gridColumn: "1 / -1" });
+    expect(container.querySelector(".fc-route-hero-copy")).toHaveStyle({ marginTop: "0px" });
+    expect(container.querySelector("figure.fc-route-hero-media figcaption")).toHaveTextContent(props.imageCaption);
+    act(() => root.render(<MemoryRouter><PublicChromeProvider isAdminRoute={false} routeKey="blog"><SchemeARouteHero {...props} image="/images/blog/cms-cover.webp" /></PublicChromeProvider></MemoryRouter>));
+    expect(container.querySelector("img")).toHaveAttribute("src", "/images/blog/cms-cover.webp");
+    expect(container.querySelector(".fc-route-hero-media")).not.toHaveClass("md:hidden");
+    act(() => root.render(<MemoryRouter><PublicChromeProvider isAdminRoute={false} routeKey="blog"><SchemeARouteHero {...props} imageCaption={undefined} image="/images/blog/cms-cover.webp" /></PublicChromeProvider></MemoryRouter>));
+    expect(container.querySelector("div.fc-route-hero-media")).not.toBeNull();
+    expect(container.querySelector("figcaption")).toBeNull();
+    act(() => root.unmount());
+    container.remove();
+  });
+});
 
 describe("SchemeASection", () => {
   it("renders CMS paragraph text as separate escaped paragraphs and keeps single-string callers working", () => {

@@ -45,7 +45,7 @@ const clientFor = (parent?: Record<string, unknown>) => {
 };
 
 describe("protected managed CMS permit issuer", () => {
-  it.each([...MANAGED_SERVICES.slice(-3), ...MANAGED_AREAS, ...MANAGED_BLOGS])(
+  it.each([...MANAGED_SERVICES.slice(-3).filter((target) => target.rollbackAllowed !== false), ...MANAGED_AREAS, ...MANAGED_BLOGS.filter((target) => target.rollbackAllowed !== false)])(
     "binds a distinct publish and rollback permit to $slug", async (target) => {
       const publish = { ...base, taskId: target.taskId, actionId: target.actionId,
         candidateVersion: target.candidateVersion, recordId: target.id, slug: target.slug, scope: target.scope };
@@ -56,16 +56,16 @@ describe("protected managed CMS permit issuer", () => {
         candidateVersion: `${target.candidateVersion}-rollback-v1`, operation: "rollback" as const,
         expectedUpdatedAt: "2026-09-21T12:01:00Z", payloadSha256: base.rollbackPayloadSha256,
         rollbackPayloadSha256: undefined, parentPermitId: base.permitId,
-        parentRunId: target.contentType === "blog" ? 12345 : undefined };
+        parentRunId: target.contentType === "blog" || target.requiresParentRun ? 12345 : undefined };
       const parent = { status: "completed", operation: "publish", task_id: target.taskId,
         record_id: target.id, slug: target.slug, scope: target.scope,
         candidate_version: target.candidateVersion, rollback_payload_sha256: base.rollbackPayloadSha256,
         saved_updated_at: rollback.expectedUpdatedAt, github_run_id: 12345 };
       await expect(issueManagedPermit(clientFor(parent).client, rollback, now))
         .resolves.toMatchObject({ operation: "rollback" });
-      await expect(issueManagedPermit(clientFor({ ...parent, record_id: base.recordId }).client, rollback, now))
+      await expect(issueManagedPermit(clientFor({ ...parent, record_id: "22222222-2222-4222-8222-222222222222" }).client, rollback, now))
         .rejects.toThrow(/prior version/);
-      if (target.contentType === "blog") {
+      if (target.contentType === "blog" || target.requiresParentRun) {
         await expect(issueManagedPermit(clientFor(parent).client, { ...rollback, parentRunId: undefined }, now))
           .rejects.toThrow(/completed parent run ID/);
         await expect(issueManagedPermit(clientFor(parent).client, { ...rollback, parentRunId: 12344 }, now))
@@ -74,6 +74,17 @@ describe("protected managed CMS permit issuer", () => {
         await expect(issueManagedPermit(clientFor({ ...parent, record_id: otherBlog.id, slug: otherBlog.slug }).client,
           rollback, now)).rejects.toThrow(/prior version/);
       }
+    },
+  );
+  it.each([...MANAGED_SERVICES, ...MANAGED_BLOGS].filter((target) => target.rollbackAllowed === false))(
+    "refuses to re-expose an unverified old image for $slug", async (target) => {
+      const rollback = { ...base, taskId: target.taskId, recordId: target.id, slug: target.slug,
+        scope: target.scope, actionId: `rollback-${target.candidateVersion}`,
+        candidateVersion: `${target.candidateVersion}-rollback-v1`, operation: "rollback" as const,
+        parentPermitId: base.permitId, parentRunId: 12345, rollbackPayloadSha256: undefined };
+      const { client, inserted } = clientFor();
+      await expect(issueManagedPermit(client, rollback, now)).rejects.toThrow(/identity/);
+      expect(inserted).toHaveLength(0);
     },
   );
   it("issues an exact short-lived unbound publish permit", async () => {
