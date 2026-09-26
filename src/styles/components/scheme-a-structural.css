@@ -1528,7 +1528,7 @@
 
   @media (max-width: 767px) {
     :root {
-      --scheme-a-gutter: 1.375rem;
+      --scheme-a-gutter: 16px;
       --scheme-a-section: 4.75rem;
     }
 
@@ -1782,6 +1782,12 @@
       gap: 0.7rem;
     }
 
+  }
+
+  @media (max-width: 374px) {
+    :root {
+      --scheme-a-gutter: 12px;
+    }
   }
 
   @media (prefers-reduced-motion: reduce) {
