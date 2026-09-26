@@ -248,36 +248,15 @@
     margin-top: 56px;
   }
 
-  .scheme-a-public-shell .fc-route-page .fc-route-hero-media::after {
-    display: block !important;
-    position: absolute;
-    inset: 0;
-    content: "";
-    pointer-events: none;
-    background: linear-gradient(180deg, 
-      rgba(13, 14, 17, 0.15) 0%, 
-      transparent 35%, 
-      rgba(13, 14, 17, 0.55) 65%, 
-      rgba(13, 14, 17, 0.92) 88%, 
-      #0d0e11 100%
-    );
-  }
-
   .scheme-a-public-shell .fc-route-page .fc-route-hero-media img {
     object-position: var(--fc-route-hero-position-mobile, center);
   }
 
   .scheme-a-public-shell .fc-route-page .fc-route-hero-copy {
-    margin-top: -36px;
-    padding: 0 var(--scheme-a-gutter, 16px) 16px;
+    margin-top: 0;
+    padding: 20px var(--scheme-a-gutter, 16px) 16px;
     border-top: 0;
-    background: transparent;
-  }
-
-  .scheme-a-public-shell .fc-route-page:is(.fc-route-quote-page, .fc-route-contact-page) .fc-route-hero-copy {
-    margin-top: -36px;
-    padding-top: 0;
-    padding-bottom: 16px;
+    background: #0d0e11;
   }
 
   .scheme-a-public-shell .fc-route-page .fc-route-hero h1 {
@@ -285,7 +264,7 @@
     font-size: clamp(30px, 8.5vw, 38px);
     line-height: 1.18;
     color: #ffffff;
-    text-shadow: 0 2px 12px rgba(0, 0, 0, 0.8);
+    text-shadow: none;
   }
 
   .scheme-a-public-shell .fc-route-page .fc-route-hero h1.fc-route-title-long {
