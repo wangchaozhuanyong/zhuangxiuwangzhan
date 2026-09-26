@@ -18,112 +18,7 @@
 .fc-route-page :is(h1, h2, h3, p, ol, ul, blockquote) { margin: 0; }
 .fc-route-page :is(button, input, select, textarea) { font: inherit; }
 
-.fc-route-hero {
-  position: relative;
-  display: grid;
-  grid-template-columns: minmax(380px, 42vw) 1fr;
-  min-height: clamp(520px, 58vh, 700px);
-  overflow: hidden;
-  color: #f5f1e9;
-  background: #0d0e11;
-}
-
-.fc-route-hero::before {
-  position: absolute;
-  z-index: 3;
-  inset: 0 auto 0 calc(42vw - 1px);
-  width: 1px;
-  content: "";
-  pointer-events: none;
-  background: linear-gradient(180deg, transparent, rgba(214, 182, 126, 0.45) 20%, rgba(214, 182, 126, 0.2) 80%, transparent);
-}
-
-.fc-route-hero-detail { min-height: clamp(540px, 60vh, 720px); }
-.fc-route-hero-article,
-.fc-route-hero-legal { min-height: clamp(460px, 50vh, 580px); }
-.fc-route-hero-form { min-height: clamp(520px, 56vh, 660px); }
-.fc-route-projects-page .fc-route-hero-listing { min-height: clamp(460px, 50vh, 600px); }
-
-.fc-route-hero-copy {
-  grid-column: 1;
-  grid-row: 1;
-  position: relative;
-  z-index: 2;
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-end;
-  background: #0d0e11;
-  padding: clamp(7.5rem, 16vh, 10.5rem) clamp(2rem, 4vw, 4.5rem) clamp(3.5rem, 7vh, 5rem);
-  width: 100%;
-  margin: 0;
-}
-
-.fc-route-hero-media {
-  grid-column: 2;
-  grid-row: 1;
-  position: relative;
-  z-index: 1;
-  width: 100%;
-  height: 100%;
-  min-height: 100%;
-  overflow: hidden;
-  background: radial-gradient(circle at 60% 40%, #20242c 0%, #121417 100%);
-}
-
-.fc-route-hero-media::after {
-  position: absolute;
-  inset: 0;
-  content: "";
-  pointer-events: none;
-  background: linear-gradient(90deg, rgba(13, 14, 17, 0.5) 0%, transparent 18%);
-}
-
-.fc-route-hero-media :is(picture, img) {
-  display: block;
-  width: 100%;
-  height: 100%;
-}
-
-.fc-route-hero-media img {
-  object-fit: cover;
-  object-position: center;
-  width: 100%;
-  height: 100%;
-  filter: brightness(1.03) contrast(1.02) !important;
-  transition: transform 700ms cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-.fc-route-hero-detail .fc-route-hero-media img { object-position: 58% center; }
-
-@media (max-width: 1023px) {
-  .fc-route-hero {
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-end;
-    min-height: clamp(480px, 125vw, 560px);
-    position: relative;
-    background: #141518;
-  }
-
-  .fc-route-hero::before {
-    display: none;
-  }
-
-  .fc-route-hero-media {
-    position: absolute;
-    inset: 0;
-    z-index: 0;
-  }
-
-  .fc-route-hero-copy {
-    position: relative;
-    z-index: 2;
-    padding: clamp(6rem, 12vh, 8rem) clamp(18px, 5vw, 32px) clamp(2.5rem, 5vh, 3.5rem);
-    background: linear-gradient(0deg, rgba(13, 14, 17, 0.96) 0%, rgba(13, 14, 17, 0.85) 55%, rgba(13, 14, 17, 0.3) 85%, transparent 100%);
-  }
-
-  .fc-route-projects-page .fc-route-hero-listing { min-height: clamp(400px, 100vw, 480px); }
-}
+/* Shared hero geometry and typography live in scheme-a-route-hero-v5.css. */
 
 .fc-route-kicker {
   display: inline-flex;
@@ -151,32 +46,7 @@
 .fc-route-media-disclosure { margin-bottom: 12px; }
 .fc-route-card-disclosure { margin-top: 12px; }
 
-.fc-route-hero h1 {
-  max-width: 16ch;
-  color: #ffffff;
-  font-family: var(--font-display);
-  font-size: clamp(34px, 3.6vw, 48px);
-  font-weight: 500;
-  line-height: 1.15;
-  letter-spacing: -0.02em;
-  text-wrap: balance;
-  text-shadow: 0 4px 24px rgba(0, 0, 0, 0.6);
-}
-
-.fc-route-hero h1.fc-route-title-long {
-  max-width: 18ch;
-  font-size: clamp(28px, 3vw, 40px);
-  line-height: 1.18;
-}
-
-.fc-route-hero-copy > p {
-  max-width: 38rem;
-  margin-top: 16px;
-  color: rgba(245, 241, 233, 0.82);
-  font-size: clamp(13.5px, 0.95vw, 15px);
-  line-height: 1.75;
-  text-wrap: pretty;
-}
+.fc-route-section-frame { display: contents; }
 
 .fc-route-section {
   width: 100%;
@@ -190,8 +60,8 @@
   box-shadow: inset 0 1px 0 rgba(212, 175, 55, 0.14);
 }
 
-/* Shared alignment for page introductions and section headings, including
-   home. Reading content and card bodies have their own layout. */
+/* Independent section headings are centered. Split introductions opt in to
+   left alignment on desktop; the existing small-screen alignment is retained. */
 .scheme-a-heading { text-align: center; }
 .scheme-a-public-shell :is(.scheme-a-home, .fc-route-page) .scheme-a-heading > :is(h1, h2, p) { margin-inline: auto; }
 .scheme-a-heading > :is(h1, h2) { text-wrap: balance; }
@@ -936,7 +806,7 @@ html[data-public-theme="dark"] .scheme-a-public-shell input[type="range"] {
 .fc-route-missing a { display: inline-flex; margin-top: 20px; padding-bottom: 4px; color: #d4af37; text-underline-offset: 5px; }
 
 .fc-route-form-page :is(.fc-route-contact-body, .fc-route-quote-body, .forest-map-section) {
-  padding-inline: clamp(20px, 4vw, 48px) !important;
+  padding-inline: var(--fc-form-gutter, clamp(20px, 4vw, 48px)) !important;
   background: #0d0e11 !important;
   color: #f7f4ee !important;
   display: flex !important;
@@ -944,8 +814,8 @@ html[data-public-theme="dark"] .scheme-a-public-shell input[type="range"] {
 }
 
 .fc-route-form-page :is(.container-narrow, .fc-route-quote-layout, .fc-route-contact-layout) {
-  width: min(100%, 1200px) !important;
-  max-width: 1200px !important;
+  width: min(100%, var(--fc-form-width, 1200px)) !important;
+  max-width: var(--fc-form-width, 1200px) !important;
   margin-inline: auto !important;
   padding-inline: 0 !important;
 }
@@ -1571,11 +1441,6 @@ html[data-public-theme="dark"] .home-footer-prelude__button--secondary svg { col
 }
 
 @media (min-width: 768px) {
-  .fc-route-hero { min-height: min(65svh, 600px); }
-  .fc-route-hero-copy { max-width: 1200px; margin-inline: auto; padding: 0 clamp(32px, 5vw, 64px) clamp(40px, 5vw, 64px); }
-  .fc-route-hero h1 { max-width: 12em; font-size: clamp(40px, 4.2vw, 64px); }
-  .fc-route-hero h1.fc-route-title-long { max-width: 14em; font-size: clamp(34px, 3.8vw, 54px); }
-  .fc-route-hero-copy > p { max-width: 38em; font-size: 14px; }
   .fc-route-section { padding: clamp(64px, 7vw, 100px) clamp(32px, 5vw, 64px); }
   .fc-route-section-head { display: block; margin-bottom: 40px; }
   .fc-route-section-head h2 { font-size: clamp(32px, 3.2vw, 48px); }
@@ -1657,16 +1522,85 @@ html[data-public-theme="dark"] .home-footer-prelude__button--secondary svg { col
 }
 
 @media (min-width: 1024px) {
-  .fc-blog-topics__grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
-  html[data-public-theme="dark"] .scheme-a-home .scheme-a-hero {
-    height: clamp(680px, 82svh, 780px);
-    min-height: clamp(680px, 82svh, 780px);
-    max-height: 780px;
+  .scheme-a-public-shell :is(.scheme-a-home, .fc-route-page) .scheme-a-heading--split {
+    text-align: left;
+  }
+  .scheme-a-public-shell :is(.scheme-a-home, .fc-route-page) .scheme-a-heading--split > :is(h1, h2, p) {
+    margin-inline: 0;
+    text-wrap: pretty;
+  }
+  .fc-route-section {
+    max-width: none;
+    padding-inline: 0;
+  }
+  .fc-route-section-frame { display: block; }
+  .fc-route-section-head { margin-bottom: 32px; }
+  .fc-route-section-head h2 {
+    max-width: 100%;
+    font-size: clamp(36px, 3vw, 44px);
+    line-height: 1.25;
+  }
+  .fc-route-section-head p { font-size: 17px; }
+  .fc-route-grid { gap: 24px; }
+  .fc-route-card-body { padding: 24px; }
+  .fc-route-card h3, .fc-route-link-card h3 { font-size: clamp(22px, 1.7vw, 26px); }
+  .fc-route-card p, .fc-route-link-card p, .fc-route-service-overview-copy { font-size: 16px; }
+  .fc-route-page > .fc-route-facts { --fc-route-facts-gutter: var(--scheme-a-gutter); }
+  .fc-route-faq {
+    width: min(100%, 1040px);
+    margin-inline: auto;
+  }
+  .fc-route-faq button span.fc-route-faq-question { font-size: 18px; }
+  .fc-route-faq p { font-size: 16px; line-height: 1.8; }
+  .fc-route-editorial .blog-editorial-layout,
+  .fc-route-cms-copy {
+    width: min(100%, 760px);
+    max-width: 760px;
+    margin-inline: auto;
+    font-size: 17px;
+    line-height: 1.8;
+  }
+  .fc-route-editorial .blog-editorial-layout :is(h2, h3),
+  .fc-route-cms-copy :is(h2, h3) {
+    margin: 32px 0 16px;
+    color: #f7f4ee;
+    font-family: var(--font-display);
+    font-weight: 500;
+    line-height: 1.3;
+  }
+  .fc-route-editorial .blog-editorial-layout h2,
+  .fc-route-cms-copy h2 { font-size: 36px; }
+  .fc-route-editorial .blog-editorial-layout h3,
+  .fc-route-cms-copy h3 { font-size: 26px; }
+  .fc-route-editorial .blog-editorial-layout :is(p, ul, ol) + p,
+  .fc-route-cms-copy p + p { margin-top: 16px; }
+  .fc-route-editorial .blog-editorial-layout :is(ul, ol),
+  .fc-route-cms-copy :is(ul, ol) { padding-left: 24px; }
+  .fc-route-editorial .blog-editorial-layout li,
+  .fc-route-cms-copy li { margin-block: 8px; }
+  .fc-route-editorial .blog-editorial-layout a,
+  .fc-route-cms-copy a { color: #e5ca7c; text-underline-offset: 4px; }
+  .fc-route-editorial .blog-editorial-prologue > p { margin-top: 16px; font-size: 24px; line-height: 1.6; }
+  .fc-route-editorial .blog-editorial-prologue :is(span, time) { color: rgba(246, 241, 232, .7); }
+  .fc-route-editorial :is(.blog-editorial-judgements, .blog-editorial-article, .blog-editorial-tags) { margin-top: 32px; }
+  .fc-route-editorial :is(.blog-editorial-figure, .blog-editorial-concept-figure) { margin-block: 32px; }
+  .fc-route-cms-copy { color: rgba(246, 241, 232, .82); }
+  .fc-route-form-page {
+    --fc-form-width: 1440px;
+    --fc-form-gutter: max(var(--scheme-a-gutter), calc((100% - 1440px) / 2));
+  }
+  .fc-route-legal-intro, .fc-route-legal-layout {
+    width: min(100%, var(--scheme-a-frame));
+    margin-inline: auto;
+    padding-inline: var(--scheme-a-gutter);
+  }
+  .fc-route-legal-document { max-width: 760px; }
+  .fc-route-section [id], .fc-route-form-page [id] {
+    scroll-margin-top: calc(var(--site-header-height, 76px) + 24px);
   }
 
-  html[data-public-theme="dark"] .scheme-a-home .scheme-a-hero h1 {
-    font-size: clamp(3.8rem, 5.8vw, 5.9rem);
-  }
+  .fc-blog-topics__grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+
 }
 
 @media (max-width: 1023px) {

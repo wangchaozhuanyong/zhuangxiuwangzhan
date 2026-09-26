@@ -30,6 +30,13 @@
     padding-bottom: var(--public-section-space-end);
   }
 
+  @media (min-width: 1024px) {
+    html[lang][data-public-theme="dark"] {
+      --public-section-space-start: 32px;
+      --public-section-space-end: 32px;
+    }
+  }
+
   @media (max-width: 47.9375rem) {
     html[lang][data-public-theme="dark"] {
     --public-section-space-start: 18px;

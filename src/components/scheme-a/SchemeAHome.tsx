@@ -16,6 +16,7 @@ type SchemeAHomeProps = {
   content: PublishedHomeContentBundle | undefined;
 };
 
+// A 16:9 source covers a desktop panel up to 680px high (1209px before cropping).
 const HOME_HERO_ASSETS = {
   desktop: "/images/heroes/v4/home-atelier-desktop.webp",
   tablet: "/images/heroes/v4/home-atelier-tablet.webp",
@@ -83,73 +84,79 @@ const SchemeAHome = ({ content }: SchemeAHomeProps) => {
   return (
     <div className="scheme-a-home scheme-a-home--atelier">
       <ImmersiveHero className="scheme-a-hero" aria-labelledby="scheme-a-home-title" data-home-section="hero">
-        <figure className="scheme-a-hero__media" data-cinematic-media>
-          {usesAtelierHero ? (
+        <div className="scheme-a-frame scheme-a-hero__frame">
+          <figure className="scheme-a-hero__media" data-cinematic-media>
+            {usesAtelierHero ? (
+                <SmartImage
+                  src={HOME_HERO_ASSETS.desktop}
+                  pictureSources={[
+                    { media: "(max-width: 47.9375rem)", srcSet: buildHomeHeroSrcSet(HOME_HERO_ASSETS.mobile, 1200, [360, 560, 720, 900]), sizes: "100vw" },
+                    { media: "(max-width: 1023px)", srcSet: buildHomeHeroSrcSet(HOME_HERO_ASSETS.tablet, 1600, [560, 720, 900, 1200]), sizes: "100vw" },
+                  ]}
+                  pictureClassName="scheme-a-hero__picture"
+                  critical
+                  alt={heroAlt}
+                  width={2880}
+                  height={1620}
+                  sizes="(min-width: 1024px) 1209px, 100vw"
+                  candidateWidths={[720, 900, 1200, 1600]}
+                  sourceWidth={2880}
+                  quality={88}
+                  loading="eager"
+                  fetchPriority="high"
+                />
+            ) : (
               <SmartImage
-                src={HOME_HERO_ASSETS.desktop}
-                pictureSources={[
-                  { media: "(max-width: 47.9375rem)", srcSet: buildHomeHeroSrcSet(HOME_HERO_ASSETS.mobile, 1200, [360, 560, 720, 900]), sizes: "100vw" },
-                  { media: "(max-width: 73.6875rem)", srcSet: buildHomeHeroSrcSet(HOME_HERO_ASSETS.tablet, 1600, [560, 720, 900, 1200]), sizes: "100vw" },
-                ]}
-                pictureClassName="scheme-a-hero__picture"
+                src={heroImage}
                 critical
                 alt={heroAlt}
-                width={2880}
-                height={1620}
-                sizes="(min-width: 90rem) max(58vw, 178vh), (min-width: 73.75rem) max(60vw, 178vh), 100vw"
-                candidateWidths={[720, 900, 1200, 1600]}
-                sourceWidth={2880}
+                width={1920}
+                height={1080}
+                sizes="(min-width: 1024px) 1209px, 100vw"
+                candidateWidths={[360, 560, 720, 900, 1200, 1600]}
                 quality={88}
                 loading="eager"
                 fetchPriority="high"
               />
-          ) : (
-            <SmartImage
-              src={heroImage}
-              critical
-              alt={heroAlt}
-              width={1920}
-              height={1080}
-              sizes="100vw"
-              candidateWidths={[360, 560, 720, 900, 1200, 1600]}
-              quality={88}
-              loading="eager"
-              fetchPriority="high"
-            />
-          )}
-        </figure>
-        <div className="scheme-a-hero__copy scheme-a-heading">
-          <p className="sr-only">{copy.heroKicker}</p>
-          <h1 id="scheme-a-home-title">
-            <span>{copy.heroTitle}</span>
-            {" "}
-            <span>{copy.heroTitleAccent}</span>
-          </h1>
-          <p className="scheme-a-hero__lead">{copy.heroDescription}</p>
-          <div className="scheme-a-actions">
-            <LocalizedLink className="scheme-a-button scheme-a-button--paper" to={presentation.heroAction.url}>
-              {presentation.heroAction.label}
-            </LocalizedLink>
-            <LocalizedLink className="scheme-a-button scheme-a-button--glass" to="/projects">
-              {copy.projectsCta}
-              <ArrowUpRight aria-hidden="true" />
-            </LocalizedLink>
-          </div>
-          {presentation.stats.length > 0 && (
-            <div className="scheme-a-hero__metrics" data-content-source={presentation.statsSource} aria-label={language === "zh" ? "交付保障指标" : "Delivery trust metrics"}>
-              {presentation.stats.map((stat) => (
-                <div key={stat.label} className="scheme-a-hero__metric-item">
-                  <strong>{stat.value}</strong>
-                  <span>{stat.label}</span>
-                </div>
-              ))}
+            )}
+          </figure>
+          <div className="scheme-a-hero__copy">
+            <div className="scheme-a-hero__intro scheme-a-heading scheme-a-heading--split">
+              <p className="sr-only">{copy.heroKicker}</p>
+              <h1 id="scheme-a-home-title">
+                <span>{copy.heroTitle}</span>
+                {" "}
+                <span>{copy.heroTitleAccent}</span>
+              </h1>
+              <p className="scheme-a-hero__lead">{copy.heroDescription}</p>
+              <div className="scheme-a-actions">
+                <LocalizedLink className="scheme-a-button scheme-a-button--paper" to={presentation.heroAction.url}>
+                  {presentation.heroAction.label}
+                </LocalizedLink>
+                <LocalizedLink className="scheme-a-button scheme-a-button--glass" to="/projects">
+                  {copy.projectsCta}
+                  <ArrowUpRight aria-hidden="true" />
+                </LocalizedLink>
+              </div>
             </div>
-          )}
-          <div className="scheme-a-hero__capabilities">
-            <p className="scheme-a-hero__capabilities-label">{copy.heroCapabilitiesLabel}</p>
-            <ul className="scheme-a-hero__disciplines" aria-label={copy.heroCapabilitiesLabel}>
-              {copy.heroCapabilities.map((capability) => <li key={capability}>{capability}</li>)}
-            </ul>
+            <div className="scheme-a-hero__assurance">
+              {presentation.stats.length > 0 && (
+                <div className="scheme-a-hero__metrics" data-content-source={presentation.statsSource} aria-label={language === "zh" ? "交付保障指标" : "Delivery trust metrics"}>
+                  {presentation.stats.map((stat) => (
+                    <div key={stat.label} className="scheme-a-hero__metric-item">
+                      <strong>{stat.value}</strong>
+                      <span>{stat.label}</span>
+                    </div>
+                  ))}
+                </div>
+              )}
+              <div className="scheme-a-hero__capabilities">
+                <p className="scheme-a-hero__capabilities-label">{copy.heroCapabilitiesLabel}</p>
+                <ul className="scheme-a-hero__disciplines" aria-label={copy.heroCapabilitiesLabel}>
+                  {copy.heroCapabilities.map((capability) => <li key={capability}>{capability}</li>)}
+                </ul>
+              </div>
+            </div>
           </div>
         </div>
       </ImmersiveHero>
@@ -201,7 +208,7 @@ const SchemeAHome = ({ content }: SchemeAHomeProps) => {
             width={1600}
             height={1050}
             rootMargin="1000px"
-            sizes="100vw"
+            sizes="(min-width: 1536px) 1440px, (min-width: 1024px) calc(100vw - 96px), 100vw"
             candidateWidths={[560, 720, 960, 1200, 1600]}
             quality={86}
             loading="lazy"
@@ -242,8 +249,8 @@ const SchemeAHome = ({ content }: SchemeAHomeProps) => {
                         width={PROJECT_CARD_INTRINSIC_WIDTH}
                         height={desktopIntrinsicHeight}
                         sizes={supportingProjects.length === 2
-                          ? "(max-width: 767px) 78vw, (max-width: 1100px) 46vw, 48vw"
-                          : "(max-width: 767px) 78vw, (max-width: 1100px) 46vw, 31vw"}
+                          ? "(max-width: 767px) 78vw, (min-width: 1536px) 708px, calc((100vw - 120px) / 2)"
+                          : "(max-width: 767px) 78vw, (min-width: 1536px) 464px, calc((100vw - 144px) / 3)"}
                         candidateWidths={PROJECT_CARD_DESKTOP_WIDTHS}
                         quality={84}
                         resize="cover"
@@ -279,7 +286,7 @@ const SchemeAHome = ({ content }: SchemeAHomeProps) => {
               alt={copy.materialTitle}
               width={1280}
               height={960}
-              sizes="(max-width: 767px) calc(100vw - 44px), 50vw"
+              sizes="(max-width: 374px) calc(100vw - 24px), (max-width: 767px) calc(100vw - 32px), (min-width: 1536px) 739px, 50vw"
               candidateWidths={[560, 720, 960, 1280]}
               quality={86}
               loading="lazy"
@@ -293,7 +300,7 @@ const SchemeAHome = ({ content }: SchemeAHomeProps) => {
             </div>
           </figure>
           <div className="scheme-a-materials__copy">
-            <header className="scheme-a-heading">
+            <header className="scheme-a-heading scheme-a-heading--split">
               <p className="scheme-a-eyebrow">{copy.trustLabel}</p>
               <h2>{copy.trustTitle}</h2>
               <p>{copy.trustBody}</p>

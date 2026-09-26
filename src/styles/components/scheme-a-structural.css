@@ -12,6 +12,13 @@
     --scheme-a-frame: 86rem;
   }
 
+  @media (min-width: 1024px) {
+    :root {
+      --scheme-a-gutter: clamp(32px, 3vw, 48px);
+      --scheme-a-frame: calc(1440px + 2 * var(--scheme-a-gutter));
+    }
+  }
+
   html[data-public-theme="dark"] {
     --font-display: "Inter Tight Local", "Arial Narrow", "Helvetica Neue", Arial, sans-serif;
     --font-body: "Inter Local", "Helvetica Neue", Arial, sans-serif;
@@ -1442,6 +1449,18 @@
     color: rgb(238 233 223 / 0.62);
     font-size: 0.82rem;
     line-height: 1.8;
+  }
+
+  @media (min-width: 1024px) {
+    html[data-public-theme="dark"] .scheme-a-page-cta { padding-block: 32px; }
+    html[data-public-theme="dark"] .scheme-a-page-cta__layout { gap: 32px; }
+    html[data-public-theme="dark"] .scheme-a-page-cta__copy h2 {
+      max-width: none;
+      font-size: clamp(36px, 3vw, 44px);
+      line-height: 1.25;
+      text-align: left;
+    }
+    html[data-public-theme="dark"] .scheme-a-page-cta__copy > span { font-size: 17px; }
   }
 
   html[data-public-theme="dark"] .scheme-a-page-cta__actions {

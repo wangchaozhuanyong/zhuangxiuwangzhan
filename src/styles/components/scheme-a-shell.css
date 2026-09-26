@@ -665,6 +665,8 @@
     display: none;
   }
 
+  .scheme-a-footer-prelude__frame { display: contents; }
+
   .scheme-a-footer__panorama {
     position: relative;
     min-height: clamp(380px, 48vh, 560px);
@@ -795,6 +797,25 @@
   .scheme-a-footer__invitation svg {
     width: 17px;
     height: 17px;
+  }
+
+  @media (min-width: 1024px) {
+    .scheme-a-chrome__bar { padding-inline: var(--scheme-a-gutter); }
+    .scheme-a-footer-prelude { padding-block: 32px; }
+    .scheme-a-footer-prelude__frame { display: block; }
+    .scheme-a-footer__panorama .scheme-a-footer__invitation {
+      width: 100%;
+      max-width: none;
+      margin: 0;
+      padding: 48px;
+    }
+    .scheme-a-footer__invitation h2 {
+      max-width: 760px;
+      font-size: clamp(36px, 3vw, 44px);
+      line-height: 1.25;
+      text-wrap: balance;
+    }
+    .scheme-a-footer__invitation > span { font-size: 17px; }
   }
 
   .scheme-a-footer__surface {
