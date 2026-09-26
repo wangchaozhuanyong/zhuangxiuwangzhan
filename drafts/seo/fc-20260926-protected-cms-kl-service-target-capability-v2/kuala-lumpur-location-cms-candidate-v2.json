@@ -1,0 +1,91 @@
+{
+  "schema_version": "1.1",
+  "task_id": "fc-20260926-kl-location-cms-r1-closure-v1",
+  "original_task_id": "fc-20260926-seo-owner-existing-page-wave3",
+  "parent_backlog_item_id": "ORG-020",
+  "campaign_id": "free-seo-geo-longterm",
+  "roadmap_item_id": null,
+  "candidate_version": "kl-location-intent-r1-v2",
+  "supersedes_candidate_version": "kl-location-intent-r1-v1",
+  "action_id": "update-kl-location-bilingual-content-v1",
+  "risk": "R1_EXISTING_CMS_SERVICE_AREA_CONTENT",
+  "candidate_type": "cms_content_candidate",
+  "action_class": "cms_write",
+  "channel_lock": "cms_content_candidate -> cms_write -> protected content-publish",
+  "scope": "flashcast.com.my:service_areas/4e2cd77f-ac25-4a16-87bc-03652c4121b1:content_en,content_zh",
+  "target_urls": [
+    "https://flashcast.com.my/en/locations/kuala-lumpur",
+    "https://flashcast.com.my/zh/locations/kuala-lumpur"
+  ],
+  "content_type": "service_area",
+  "record_key": {
+    "id": "4e2cd77f-ac25-4a16-87bc-03652c4121b1",
+    "slug": "kuala-lumpur"
+  },
+  "expected_status": "published",
+  "read_only_row_updated_at": "2026-08-22T08:45:19.308454+00:00",
+  "read_only_row_sha256": "e041a994f3c4fe156fce51ba15158af85d8a86d575223e82d131b7a6ab818813",
+  "read_only_row_path": "backups/fc-20260926-kl-location-cms-r1-closure-v1/current-row-readonly.json",
+  "read_only_row_checked_at_utc": "2026-09-25T22:07:25.632566+00:00",
+  "modified_fields": [
+    "content_en",
+    "content_zh"
+  ],
+  "unchanged_field_sha256": {
+    "id": "dc989c37cc7fd4cc295bdfecb96edaa5b122a9d459863556fe7fb7270b57c792",
+    "slug": "f2d65d0ff0a04c3c8877833fefee52062e59eb6aa0f4f835f788bc6965c3f8ef",
+    "title_zh": "e72dafbc795a8e1808fad71056f87e0f694523b0f9a75c3de22bcb4da36a284e",
+    "title_en": "4b851f208d424d5ffbda4dbc729cf0128dc3386089206480ceabebfab6e18d06",
+    "excerpt_zh": "4ea14aea1db6e2c2776e81b9d9998c731c5e8002be6f5e480945a70d196f092e",
+    "excerpt_en": "d366ccc25e9497b2380f8ecc6b2795da1b7093bfcf0fdb2a0fbd8a32596c305c",
+    "area_name": "a2489885d81cf22789a8fe91a9e56512b079f1ca864485c9bf9fd4c31f1f2be0",
+    "seo_title_zh": "33c2a10c92e2f22ad1cda061e41d0e62ab2bd8af99a52d52042d872a6d47bd73",
+    "seo_title_en": "5871d31b2c43397387c375f2b199a786fbef54400c562a05e4524638f2747c74",
+    "seo_description_zh": "626dccd81b83df83a5ab281ae151ddaaab1c47c67d3b5421468380cefde7d5de",
+    "seo_description_en": "12d5bdb042ead32c145c2cc9cc90312151e1dce6e0f5ed03ad417af62233dde8",
+    "status": "dd2653c12a35c69d362d327a778f6e79f7e182293194fe0c3f4f68f6afdc8c1b",
+    "sort_order": "4a44dc15364204a80fe80e9039455cc1608281820fe2b24f1e5233ade6af1dd5",
+    "created_at": "9bd14572d63dfb236b19afc233a3a2146c6399fd317528e01d81b21d1eb12380",
+    "updated_at": "9c4906e18c9fff755e50cca48f104a398f3009ddaf89409d7308e2ad65c3200c",
+    "property_types": "0d8941e3b8c463b7ceb202052eebaea5ff52a68f34387b4f6c68f8a11c21e622",
+    "common_needs": "58101790c5d99931276470f5c6e59b73eb2e00facb502224f8ecdf6a18fba80e",
+    "construction_notes_zh": "6bad3d02122858363246a7de69bd0357f4627b7540722f6dd24f69b0f4610774",
+    "construction_notes_en": "fee183c9fa081d789060db2a4708e7acd8ad5988608ce56c9057fa7adba984e8",
+    "projects": "ff18e562c68fa0d115d0f80956d20c250b80e2294e12cee70d24db7656d1c7a3",
+    "faqs_zh": "9204c0cac6965deaa80430f2d96abc04e9a7e0a48a38f53ab932fd2c1362dc51",
+    "faqs_en": "6a0a8f9234ff28da34154f75cee1d6ec6573ba3e0a1a3874658c0e8be31252e3",
+    "version": "6b86b273ff34fce19d6b804eff5a3f5747ada4eaa22f1d49c01e52ddb7875b4b"
+  },
+  "field_diff": {
+    "content_en": {
+      "before": "<p>Kuala Lumpur renovation projects should consider property type, management rules, working hours, material delivery, itemized budget, and after-sales responsibility. Common project types include Condo, Terrace house, Semi-D, Office, Retail shop, Warehouse, with frequent requests such as Full renovation, Kitchen cabinet, Bathroom waterproofing, Built-in furniture, Office fit-out, Shop renovation.</p><p>FLASH CAST first reviews the location, area, project type, budget, photos, and site condition before preparing a practical scope. Owners can send details by WhatsApp or the free quote form so we can advise whether a site measurement is needed.</p><p>Kuala Lumpur projects should confirm management application, working hours, material delivery, protection works, parking, and noise limits early. This page supports searches for Kuala Lumpur renovation contractor, home renovation, kitchen cabinet, bathroom waterproofing, office renovation, shop renovation, and custom cabinet services.</p>",
+      "after": "<p>FLASH CAST provides renovation planning and project coordination for homes and commercial spaces in Kuala Lumpur. We can discuss home renovation, kitchens and bathrooms, custom built-in cabinetry, office fit-outs and shop spaces. The practical scope depends on the property condition, layout and access; a written quotation follows review of the actual work.</p><p>To compare renovation contractors in Kuala Lumpur, share the property location and type, approximate size, site photos, intended work and budget range. We review these details and confirm whether a site visit or measurement is needed. Quotations are free. Measurement within 30 km of our company or service point is free; beyond 30 km it is charged, with the fee confirmed before arranging a visit.</p><p>For managed properties, working hours, deliveries, access and any landlord, management or authority submissions depend on the specific building and work scope. We can help review the available requirements, while the relevant parties decide approvals. Use the service links on this page to review the matching work, then send your details through the free quotation form.</p>",
+      "before_sha256": "26c16396ffe7b9b6071e73ce0acd819d1caf7747907fe751f0ddb959c6665744",
+      "after_sha256": "739b107cf8de2126dbc06d90cd52eca17afe71490dd619ca69766bdeb214e77d"
+    },
+    "content_zh": {
+      "before": "<p>Kuala Lumpur 装修项目需要同时考虑房屋类型、管理处规定、施工时段、材料进场、预算分项和售后责任。公寓、办公室、商业店铺和旧屋翻新需求集中，常见重点是管理处审批、施工时间、停车搬运和材料进场安排。</p><p>FLASH CAST 会先了解地区、面积、项目类型、预算和照片，再根据现场条件整理可执行的施工范围。业主可以通过 WhatsApp 或免费报价表单先提交资料，我们会协助判断下一步是否需要现场测量。</p><p>如果你正在寻找 Kuala Lumpur renovation contractor、装修公司、厨房橱柜、浴室防水、办公室装修或店铺装修服务，这个页面会持续整理本地区案例、FAQ 和材料建议。</p>",
+      "after": "<p>FLASH CAST 在吉隆坡承接住宅与商业空间装修咨询，可按实际需求讨论住宅翻新、厨房及浴室、定制柜、办公室装修与店铺空间。可施工范围取决于物业现况、布局和进场条件；书面报价会在核对具体工程后准备。</p><p>选择吉隆坡装修公司时，可先提供物业地点和类型、约略面积、现场照片、计划施工项目及预算范围。我们先审核资料，再确认是否需要上门查看或量房。报价免费；距离公司或服务点 30 公里以内量房免费，超过 30 公里则收费，并在安排行程前确认费用。</p><p>如物业受管理处管理，施工时段、材料进场、出入安排及业主、管理处或主管部门所需文件，都应按实际大楼和工程范围核对。我们可协助查看已有要求，审批决定仍由相关单位作出。可通过本页服务链接了解对应项目，再使用免费报价表单提交资料。</p>",
+      "before_sha256": "7a9f90b2bb9e51220eb48e752a8e325f66c87eb02f734fc6e727829b49012897",
+      "after_sha256": "cbbfa9bc2dc41bb48ef3394b7fc8a1f4f40f98f0b4e59373722d4c609aa19d54"
+    }
+  },
+  "owned_queries": [
+    "renovation contractor KL",
+    "renovation company Kuala Lumpur"
+  ],
+  "source_evidence": [
+    "company-context.md",
+    "service-area.md",
+    "services-and-pricing.md",
+    "faq.md",
+    "drafts/seo/fc-20260923-seo-all-keywords-site-alignment-v2/query-execution-matrix-466.csv",
+    "reports/2026-09-26-kl-location-paragraphs-r2-pr103-published-v1.md",
+    "backups/fc-20260926-kl-location-cms-r1-closure-v1/readback-manifest.json"
+  ],
+  "content_correction": "Replace old visible Chinese query phrase that localizes to 装修装修承包商; avoid unverified local case promise; preserve free quotation and the 30 km measurement boundary. The separate service-list duplicate wording is outside these two CMS fields.",
+  "release_gate": "This read-only full row is a candidate baseline, not a write-time CAS. Before any CMS write require exact protected KL target, independent QA PASS, operations AUTO_RELEASE, exact single-use policy permit, fresh full-row backup and updated_at/other-field recheck, protected zero-write dry-run, saved ID and bilingual public postcheck.",
+  "cms_saved_id": null,
+  "published": false,
+  "created_at": "2026-09-26T06:08:19.845196+08:00"
+}

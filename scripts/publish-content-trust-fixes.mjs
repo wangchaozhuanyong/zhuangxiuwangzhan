@@ -5,6 +5,7 @@ import { fileURLToPath } from "node:url";
 import { loadEnv } from "vite";
 import { buildTopicClusterBlogRecord, topicClusterBlogConfigs } from "./topic-cluster-blog-records.mjs";
 import { lockedR3Candidates } from "./managed-cms-targets-r3-v2.mjs";
+import { lockedKlMediaCandidates } from "./managed-cms-targets-kl-media-v1.mjs";
 
 const args = process.argv.slice(2);
 const execute = args.includes("--execute");
@@ -959,7 +960,7 @@ const targetConfigs = {
     ],
   },
   ...Object.fromEntries(
-    Object.entries({ ...lockedServiceCandidates, ...lockedR3Candidates }).map(([name, locked]) => [name, {
+    Object.entries({ ...lockedServiceCandidates, ...lockedR3Candidates, ...lockedKlMediaCandidates }).map(([name, locked]) => [name, {
       contentType: locked.contentType || "service",
       table: locked.contentType === "service_area" ? "service_areas" : locked.contentType === "blog" ? "blog_posts" : "services",
       keyField: "slug",
@@ -1054,6 +1055,13 @@ const buildLockedDryRunRequest = (locked, record, source, operation = "publish")
   mode: "dry-run",
   nextStatus: "published",
   expectedUpdatedAt: locked.expectedUpdatedAt,
+  managedCandidate: {
+    taskId: locked.taskId,
+    actionId: operation === "rollback" ? `rollback-${locked.candidateVersion}` : locked.actionId,
+    operation,
+    scope: locked.scope,
+    candidateVersion: operation === "rollback" ? `${locked.candidateVersion}-rollback-v1` : locked.candidateVersion,
+  },
   ...(locked.contentType === "blog" ? { managedOperation: operation } : {}),
   record,
   source,
@@ -1066,7 +1074,9 @@ const assertLockedDryRunResult = (locked, response, httpStatus, before, after, d
     fail(`Protected dry-run did not confirm the exact locked candidate ${locked.candidateVersion}.`);
   }
   if (!valuesMatch(after, before)) fail(`CMS row changed during dry-run for ${locked.candidateVersion}.`);
-  if (locked.changedFields && (locked.contentType === "blog" || (locked.contentType || "service") === "service")) {
+  if (locked.changedFields && (locked.contentType === "blog"
+      || (locked.contentType === "service_area" && locked.baselineFieldsSha256)
+      || (locked.contentType || "service") === "service")) {
     const patch = Object.fromEntries(locked.changedFields.map((field) => [field, desired[field]]));
     if (!valuesMatch(response.payload_preview, patch) || stableDigest(response.payload_preview) !== stableDigest(patch)) {
       fail(`Managed dry-run payload does not match its exact SQL patch for ${locked.candidateVersion}.`);
@@ -1085,6 +1095,9 @@ const fetchJson = async (url, options = {}, onStatus) => {
 const main = async () => {
   const config = targetConfigs[target];
   if (!config) fail(`--target must be one of: ${Object.keys(targetConfigs).join(", ")}`);
+  if (rollbackFrom && config.lockedCandidate?.rollbackAllowed === false) {
+    fail("Restoring the unverified prior service image is blocked; prepare a separately reviewed forward correction.");
+  }
   if (config.lockedCandidate && execute) assertLockedPublishGate(config.lockedCandidate);
   if (execute && !approvalId) fail("--execute requires --approval-id=<authorization reference>.");
   if (rollbackFrom && !execute && !config.lockedCandidate) fail("--rollback-from requires --execute for legacy targets.");

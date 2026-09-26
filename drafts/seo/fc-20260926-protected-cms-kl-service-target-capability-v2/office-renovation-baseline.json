@@ -1,0 +1,162 @@
+{
+  "id": "a87541ac-1cba-4f1a-972d-428dccdbcc0f",
+  "slug": "office-renovation",
+  "title_zh": "马来西亚办公室装修与商业空间规划",
+  "title_en": "Office Renovation & Commercial Fit-Out Malaysia",
+  "excerpt_zh": "为吉隆坡、雪兰莪与巴生谷的办公室和商业空间整理布局、隔间、前台、会议室、工作站、灯光、机电协调与报价范围。",
+  "excerpt_en": "Plan office renovation and commercial fit-out across Kuala Lumpur, Selangor and the Klang Valley, covering layout, partitions, reception, meeting rooms, workstations, lighting, M&E coordination and quotation scope.",
+  "content_zh": "<p>规划吉隆坡或雪兰莪的办公室装修与商业空间 fit-out，先从实际单位和业务用途出发。可准备平面图或现场照片、约略面积、员工人数、访客动线、拟保留项目、进出场限制及大楼管理处要求。这样才能在报价前分清必要工程与可选的装饰升级。</p><p>书面工程范围可逐项确认布局、隔间、接待区与会议室、工作站、收纳、灯光、地面、电力及数据点、局部定制柜和材料方向，并写明业主自备项目、排除项、允许施工时段、管理处提交资料与工种之间的依赖。图纸或文件协助的责任、费用和范围，应按实际大楼要求及双方确认内容厘清。</p><p>新办公室 fit-out 与租约退租复原义务应分开核对；如租约有交还条件，可提供条款供范围讨论，只有书面报价明确列入时才视为包含复原工程。最终价格、工期及审批要求仍取决于现场查看、确认的工程范围和物业规定；本页不承诺固定价格、完工日期或审批结果。</p>",
+  "content_en": "<p>For an office fit-out in Kuala Lumpur or Selangor, start with the actual unit and its intended use. Share a floor plan or site photos, approximate area, headcount, visitor flow, the items to retain, access rules and any building-management requirements. These details help separate essential operational work from optional finishes before a quotation is prepared.</p><p>A written scope can then identify the agreed layout, partitions, reception and meeting areas, workstations, storage, lighting, flooring, electrical and data points, selected built-ins and material direction. It should also record owner-supplied items, exclusions, restricted work hours, management submissions and dependencies between trades. Any drawing or document support, responsibility and cost must be confirmed against the actual building requirements and agreed scope.</p><p>New fit-out work and lease handback or reinstatement obligations should be reviewed as separate scopes. If the tenancy has a handback clause, share it for review; reinstatement is included only when the written quotation expressly covers it. Final price, programme and any approval requirements depend on the site review, confirmed work and the property rules. No fixed price, completion date or approval outcome is promised here.</p>",
+  "image_url": "https://flashcast.com.my/images/_responsive/materials/w900/category-whole-house-custom.webp",
+  "alt_zh": "办公室前台与等候区规划效果图概念",
+  "alt_en": "Office reception and waiting-area rendering concept",
+  "suitable_for_zh": [
+    "准备新办公室、诊所前区、展示空间或中小企业工作空间的业主",
+    "搬迁、扩充或重新整理现有办公室的企业",
+    "需要规划接待区、会议室、工作站、茶水间与收纳的商业客户",
+    "希望先整理装修范围，再进入详细报价的商业租户或经营者"
+  ],
+  "suitable_for_en": [
+    "Businesses setting up a new office, clinic front area, showroom or SME workspace",
+    "Companies relocating, expanding or refreshing an existing office",
+    "Commercial owners planning reception, meeting rooms, workstations, pantry and storage",
+    "Tenants who want to organize the fit-out scope before requesting a detailed quotation"
+  ],
+  "common_projects_zh": [
+    "新办公室装修范围规划",
+    "接待区、会议室与工作站布局",
+    "玻璃或石膏隔间与功能分区",
+    "灯光、地面、数据点与机电协调",
+    "品牌墙、柜台、茶水间与收纳方向",
+    "基于真实现场条件的报价前准备"
+  ],
+  "common_projects_en": [
+    "New office fit-out scope planning",
+    "Reception, meeting-room and workstation layouts",
+    "Glass or gypsum partitions and functional zoning",
+    "Lighting, flooring, data-point and M&E coordination",
+    "Brand wall, counter, pantry and storage direction",
+    "Quotation preparation based on actual site conditions"
+  ],
+  "process_steps_zh": [
+    {
+      "desc": "了解办公室类型、员工人数、客户动线、搬入方向与主要使用需求。",
+      "title": "确认业务用途"
+    },
+    {
+      "desc": "确认尺寸、现况、进场限制、管理规则、隔间、机电点位与保留项目。",
+      "title": "查看真实现场"
+    },
+    {
+      "desc": "规划接待区、会议室、工作站、茶水间、收纳与日常动线。",
+      "title": "整理布局重点"
+    },
+    {
+      "desc": "整理隔间、灯光、地面、天花、品牌墙、柜台与数据点等报价项目。",
+      "title": "确认范围方向"
+    },
+    {
+      "desc": "在使用范围、现场条件与施工优先级清楚后，再准备书面报价。",
+      "title": "进入报价沟通"
+    }
+  ],
+  "process_steps_en": [
+    {
+      "desc": "Review office type, headcount, customer flow, move-in direction and key operational needs.",
+      "title": "Confirm Business Use"
+    },
+    {
+      "desc": "Confirm dimensions, condition, access, building rules, partitions, M&E points and retained items.",
+      "title": "Review the Real Site"
+    },
+    {
+      "desc": "Plan reception, meeting rooms, workstations, pantry, storage and daily circulation.",
+      "title": "Organize Layout Priorities"
+    },
+    {
+      "desc": "Organize partitions, lighting, flooring, ceiling, brand wall, counters and data points for quotation.",
+      "title": "Define Scope Direction"
+    },
+    {
+      "desc": "Move into a written quotation after use, site conditions and work priorities are clear.",
+      "title": "Prepare the Quotation"
+    }
+  ],
+  "scope_items_zh": [
+    "办公室布局与客户动线规划",
+    "玻璃或石膏隔间方向",
+    "接待区、会议室与工作站设置",
+    "茶水间、收纳与柜台规划",
+    "天花、灯光、地面与墙面方向",
+    "数据点、电路与机电范围确认",
+    "品牌墙、招牌方向与局部定制柜",
+    "需要时确认大楼或管理处要求",
+    "清楚标注的办公室设计或效果图概念",
+    "基于现场条件整理报价资料"
+  ],
+  "scope_items_en": [
+    "Office layout and customer-flow planning",
+    "Glass or gypsum partition direction",
+    "Reception, meeting-room and workstation setup",
+    "Pantry, storage and counter planning",
+    "Ceiling, lighting, flooring and wall-finish direction",
+    "Data-point, electrical and M&E scope review",
+    "Brand-wall, signage direction and selected built-ins",
+    "Building-management requirement review where relevant",
+    "Clearly labeled office design or rendering concepts",
+    "Quotation preparation based on actual site conditions"
+  ],
+  "faqs_zh": [
+    {
+      "a": "建议准备平面图或现场照片、面积、业务用途、员工人数、管理处要求、预算方向和预计搬入时间。",
+      "q": "办公室装修前要准备什么？"
+    },
+    {
+      "a": "面积、隔间、机电与数据点、灯光、地面、柜台、品牌墙、施工时段和材料选择都会影响范围与报价。",
+      "q": "哪些因素会影响办公室装修报价？"
+    },
+    {
+      "a": "可以。布局概念和效果图可用于前期规划，但必须清楚标注，不能作为真实完工项目或客户案例证明。",
+      "q": "可以先做办公室设计方案或效果图吗？"
+    },
+    {
+      "a": "可按已确认项目范围讨论所需图纸与资料；具体要求、责任、费用和时间以大楼管理方或相关单位的实际规定为准。",
+      "q": "可以协助整理管理处或审批资料吗？"
+    },
+    {
+      "a": "提交空间照片或平面图、面积、用途、员工人数、地点和预计时间，先确认是否需要现场查看。",
+      "q": "怎样开始办公室装修咨询？"
+    }
+  ],
+  "faqs_en": [
+    {
+      "a": "Prepare a floor plan or site photos, floor area, business use, headcount, building requirements, budget direction and intended move-in timing.",
+      "q": "What should I prepare before an office renovation?"
+    },
+    {
+      "a": "Area, partitions, M&E and data points, lighting, flooring, counters, brand walls, work-hour restrictions and material choices all affect scope and quotation.",
+      "q": "What affects an office renovation quotation?"
+    },
+    {
+      "a": "Yes. Layout and rendering concepts can support early planning, but they must be clearly labeled and cannot be used as proof of a completed customer project.",
+      "q": "Can we prepare office design or rendering concepts first?"
+    },
+    {
+      "a": "Required drawings and documents can be discussed against the confirmed project scope. Exact requirements, responsibility, cost and timing depend on the building management or relevant authority.",
+      "q": "Can you help organize management or approval documents?"
+    },
+    {
+      "a": "Share site photos or a floor plan, floor area, business use, headcount, location and intended timing so the need for a site review can be confirmed.",
+      "q": "How do I start an office renovation enquiry?"
+    }
+  ],
+  "seo_title_zh": "马来西亚办公室装修与商业空间规划 | FLASH CAST",
+  "seo_title_en": "Office Renovation & Commercial Fit-Out Malaysia | FLASH CAST",
+  "seo_description_zh": "了解吉隆坡、雪兰莪与巴生谷办公室装修和商业 fit-out 的布局、隔间、前台、会议室、机电协调、报价因素与咨询步骤。",
+  "seo_description_en": "Plan an office renovation or commercial fit-out in Kuala Lumpur and Selangor. Review layouts, partitions, reception, M&E coordination, quotation factors and next steps.",
+  "status": "published",
+  "sort_order": 40,
+  "created_at": "2026-05-25T10:58:29.820388+00:00",
+  "updated_at": "2026-09-25T20:35:44.197155+00:00",
+  "version": 2
+}
