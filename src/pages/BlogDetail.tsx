@@ -22,6 +22,7 @@ import { blogDetailPageText } from "@/i18n/blogDetailPageText";
 import { pageHeroImages, resolveEditorialHeroImage } from "@/lib/pageHeroImages";
 import { resolveBlogTopic } from "@/lib/blogTopics";
 import { translateBlogContent } from "@/lib/contentApi";
+import { findBlogConceptImage, getBlogEditorialMedia, type BlogConceptImage } from "@/lib/blogEditorialMedia";
 
 const EDITORIAL_STORY_IMAGES = [
   "/images/projects/generated-portfolio/mont-kiara-luxury-condo-renovation.webp",
@@ -161,22 +162,56 @@ const BlogDetail = () => {
   const articleDescription = displayText(post.seoDescription || post.excerpt);
   const articleImageAlt = displayText(post.imageAlt || post.title);
   const articleHeroImage = resolveEditorialHeroImage(post.image, pageHeroImages.blog);
+  const editorialMedia = getBlogEditorialMedia(post.slug);
+  const approvedCmsCover = Boolean(editorialMedia && (
+    post.image === editorialMedia.cmsCover || post.image === `https://flashcast.com.my${editorialMedia.cmsCover}`
+  ));
+  const safeArticleImage = editorialMedia && !approvedCmsCover ? undefined : post.image;
+
+  const renderConceptImage = (image: BlogConceptImage) => (
+    <figure className="blog-editorial-concept-figure my-8" data-cinematic-media data-blog-concept-image={image.id}>
+      <div className="aspect-[3/2] overflow-hidden">
+        <SmartImage
+          src={image.src}
+          alt={image.alt[language]}
+          width={1536}
+          height={1024}
+          sizes="(max-width: 900px) 100vw, 1100px"
+          loading={image === editorialMedia?.inline[0] ? "eager" : "lazy"}
+          decoding="async"
+          className="h-full w-full object-cover"
+        />
+      </div>
+      <figcaption className="mt-3 text-sm leading-relaxed text-muted-foreground">{editorialMedia?.disclosure[language]}</figcaption>
+    </figure>
+  );
+
+  const conceptForHtmlSection = (section: string) => {
+    if (!editorialMedia || typeof DOMParser === "undefined") return undefined;
+    const sectionNode = new DOMParser().parseFromString(section, "text/html");
+    const heading = sectionNode.querySelector("h2, h3, h4")?.textContent || "";
+    return findBlogConceptImage(post.slug, heading, language);
+  };
 
   const renderContent = (content: string) => {
     if (isHtmlText(content)) {
       const htmlSections = splitSanitizedHtmlSections(sanitizeHtml(content));
       return (
         <div className="blog-editorial-html">
-          {htmlSections.map((section, index) => (
+          {htmlSections.map((section, index) => {
+            const conceptImage = conceptForHtmlSection(section);
+            return (
             <div key={index} className="blog-editorial-html-section" data-cinematic-section>
               <div className="prose prose-neutral max-w-none" dangerouslySetInnerHTML={{ __html: section }} />
-              {(index + 1) % 2 === 0 ? (
+              {conceptImage ? renderConceptImage(conceptImage) : null}
+              {!editorialMedia && (index + 1) % 2 === 0 ? (
                 <figure className="blog-editorial-figure blog-editorial-figure--wide" data-cinematic-media>
                   <SmartImage src={EDITORIAL_STORY_IMAGES[index % EDITORIAL_STORY_IMAGES.length]} alt={t.editorialImageAlt} width={1200} height={760} sizes="(max-width: 900px) 100vw, 1100px" candidateWidths={[720, 900, 1200]} quality={78} className="h-full w-full object-cover" revealOnLoad />
                 </figure>
               ) : null}
             </div>
-          ))}
+            );
+          })}
         </div>
       );
     }
@@ -184,6 +219,7 @@ const BlogDetail = () => {
     return splitEditorialSections(content).map((block, index) => {
       const isSection = block.startsWith("## ");
       const cleanBlock = isSection ? block.replace(/^##\s+/, "") : block;
+      const conceptImage = isSection ? findBlogConceptImage(post.slug, cleanBlock.split("\n")[0], language) : undefined;
       if (block.startsWith("- [ ] ")) {
         const items = block.split("\n").filter(Boolean);
         return (
@@ -200,7 +236,8 @@ const BlogDetail = () => {
       return (
         <div key={index} className={`blog-editorial-section ${isSection ? "blog-editorial-section--chapter" : "blog-editorial-section--lead"}`} data-cinematic-section>
           {renderPlainParagraph(cleanBlock, `blog-block-${index}`)}
-          {isSection && index % 2 === 0 ? (
+          {conceptImage ? renderConceptImage(conceptImage) : null}
+          {!editorialMedia && isSection && index % 2 === 0 ? (
             <figure className="blog-editorial-figure blog-editorial-figure--wide" data-cinematic-media>
               <SmartImage
                 src={EDITORIAL_STORY_IMAGES[(index / 2) % EDITORIAL_STORY_IMAGES.length]}
@@ -227,14 +264,14 @@ const BlogDetail = () => {
         description={articleDescription}
         keywords={post.tags.join(", ")}
         canonicalPath={`/blog/${post.slug}`}
-        ogImage={post.image}
+        ogImage={safeArticleImage}
         ogType="article"
       />
       <JsonLdBreadcrumb items={[{ name: t.breadcrumbHome, url: "/" }, { name: t.breadcrumbBlog, url: "/blog" }, { name: articleTitle, url: `/blog/${post.slug}` }]} />
       <JsonLdBlogPosting
         headline={articleTitle}
         description={articleDescription}
-        image={post.image}
+        image={safeArticleImage}
         imageAlt={articleImageAlt}
         datePublished={post.date}
         dateModified={post.updatedAt || post.date}
@@ -242,7 +279,13 @@ const BlogDetail = () => {
         keywords={post.tags}
       />
 
-      <SchemeARouteHero kind="article" image={articleHeroImage.desktop} mobileImage={articleHeroImage.mobile} imageAlt={articleImageAlt} label={`${translateBlogCategory(resolveBlogTopic(post.category, post.slug), language)} / ${readTime}`} title={articleTitle} description={displayText(post.excerpt)} />
+      {editorialMedia ? (
+        <div data-blog-concept-hero>
+          <SchemeARouteHero kind="article" image={approvedCmsCover ? articleHeroImage.desktop : undefined} imageSourceWidth={approvedCmsCover ? 1536 : undefined} mobileImage={editorialMedia.mobileHero} mobileImageSourceWidth={900} imageCaption={editorialMedia.disclosure[language]} imageAlt={approvedCmsCover ? articleImageAlt : editorialMedia.mobileAlt[language]} label={`${translateBlogCategory(resolveBlogTopic(post.category, post.slug), language)} / ${readTime}`} title={articleTitle} description={displayText(post.excerpt)} />
+        </div>
+      ) : (
+        <SchemeARouteHero kind="article" image={articleHeroImage.desktop} mobileImage={articleHeroImage.mobile} imageAlt={articleImageAlt} label={`${translateBlogCategory(resolveBlogTopic(post.category, post.slug), language)} / ${readTime}`} title={articleTitle} description={displayText(post.excerpt)} />
+      )}
 
       <SchemeASection className="fc-route-editorial">
         <div className="blog-editorial-layout">
