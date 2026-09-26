@@ -872,7 +872,7 @@
 
   .scheme-a-footer__studio address,
   .scheme-a-footer__studio > a,
-  .scheme-a-footer__studio > span {
+  .scheme-a-footer__studio .scheme-a-footer__hours {
     display: flex;
     align-items: flex-start;
     gap: 0.65rem;
@@ -942,6 +942,10 @@
     height: 15px;
     flex: 0 0 auto;
     color: #cda766;
+  }
+
+  .scheme-a-footer__contact-note {
+    display: contents;
   }
 
   .scheme-a-footer__studio .scheme-a-footer__contact-cta {
@@ -1131,7 +1135,8 @@
       color: #ccc6bc;
     }
 
-    .scheme-a-footer__studio .scheme-a-footer__contact-action {
+    .scheme-a-footer__studio .scheme-a-footer__contact-action,
+    .scheme-a-footer__studio .scheme-a-footer__contact-cta {
       display: inline-flex;
       min-height: 36px;
       align-items: center;
@@ -1147,8 +1152,19 @@
       transition: background 180ms ease, border-color 180ms ease, color 180ms ease;
     }
 
-    .scheme-a-footer__studio .scheme-a-footer__contact-cta {
-      margin-top: 4px;
+    .scheme-a-footer__contact-note {
+      display: grid;
+      width: 100%;
+      grid-template-columns: minmax(0, 1fr) 96px;
+      align-items: center;
+      gap: 10px;
+      min-height: 48px;
+      padding-block: 4px;
+    }
+
+    .scheme-a-footer__studio .scheme-a-footer__contact-cta svg {
+      width: 12px;
+      height: 12px;
     }
 
     .scheme-a-footer__contact-link:hover .scheme-a-footer__contact-action,
@@ -1158,7 +1174,7 @@
       color: #f3d59d;
     }
 
-    .scheme-a-footer__studio > span {
+    .scheme-a-footer__studio .scheme-a-footer__hours {
       align-items: center;
       color: #aaa397;
       font-size: 14px;
@@ -1796,7 +1812,7 @@
       flex-shrink: 0;
     }
 
-    .scheme-a-footer__studio > span {
+    .scheme-a-footer__studio .scheme-a-footer__hours {
       display: flex;
       align-items: center;
       gap: 0.55rem;
@@ -1811,7 +1827,7 @@
       line-height: 1.45;
     }
 
-    .scheme-a-footer__studio > span svg {
+    .scheme-a-footer__studio .scheme-a-footer__hours svg {
       width: 14px;
       height: 14px;
       color: #d4af37;
