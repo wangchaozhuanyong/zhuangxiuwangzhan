@@ -8,7 +8,7 @@ import { MANAGED_TARGETS } from "../../supabase/functions/content-publish/manage
 import { targetConfigs, assertLockedServiceCandidate, buildLockedDryRunRequest, stableDigest } from "../../scripts/publish-content-trust-fixes.mjs";
 
 const names = ["kl-location-intent-r1-v2", "org026-builtin-media-r1-v5",
-  "org026-warehouse-media-r1-v5", "org026-office-renovation-media-r1-v5"] as const;
+  "org026-warehouse-media-r1-v6", "org026-office-renovation-media-r1-v6"] as const;
 const permitId = "11111111-1111-4111-8111-111111111111";
 const identity = { repositoryId: 1248188229, actorId: 98765, workflowSha: "a".repeat(40),
   workflowRef: "wangchaozhuanyong/zhuangxiuwangzhan/.github/workflows/content-publish-approved.yml@refs/heads/main",
@@ -153,6 +153,10 @@ describe("four exact KL and service-media CMS targets", () => {
     ];
     if (locked.contentType === "service") {
       variants.push({ ...original, record: { ...original.record, image_url: "/images/services/ai-concepts/unpublished.webp" } });
+      if (locked.slug !== "builtin") {
+        variants.push({ ...original, managedPermit: { ...original.managedPermit!,
+          actionId: "org026-service-media-cms-fields-r1-v4", candidateVersion: "service-media-fields-r1-v5" } });
+      }
     }
     for (const variant of variants) {
       const mock = mockClient(row);

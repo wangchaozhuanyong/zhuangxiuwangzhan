@@ -27,7 +27,7 @@ export const oldHouseRenovationPageText = {
     tags: ["Site Assessment", "Scope Planning", "Waterproofing Review", "Material Direction"],
     comparisonsTitle: "Old House Planning Concepts: Existing and Proposed",
     comparisonsDescription:
-      "Three illustrative planning directions for older terrace homes. These concepts are not evidence of completed client projects.",
+      "Drag the divider to compare an illustrative existing condition with a proposed renovation concept from the same viewpoint. These are AI-generated planning visuals. Concept renovation illustration, not evidence of a completed client project.",
     before: "Existing concept",
     after: "Proposed concept",
     compareAria: (title: string) => `Compare the illustrative existing and proposed concepts for ${title}`,
@@ -171,7 +171,7 @@ export const oldHouseRenovationPageText = {
     tags: ["现场评估", "范围规划", "防水检查", "材料方向"],
     comparisonsTitle: "旧屋现状与拟议翻新概念示意",
     comparisonsDescription:
-      "以下是三种旧排屋翻新规划方向示意，仅供理解范围；不是客户完工项目的证据。",
+      "拖动滑块，对比同一视角下的现状示意与拟议翻新方案。这些画面由 AI 生成，仅供规划。概念改造示意，非客户完工实景证据。",
     before: "现状示意",
     after: "方案示意",
     compareAria: (title: string) => `比较「${title}」的现状示意与拟议方案概念图`,

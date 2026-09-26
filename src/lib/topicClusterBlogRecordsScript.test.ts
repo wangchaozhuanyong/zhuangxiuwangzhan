@@ -143,7 +143,7 @@ describe("topic-cluster Blog publish records", () => {
     }
     expect(workflow).toContain("Reject unverified locked-target writes before loading production credentials");
     const mediaTargets = [
-      "org026-builtin-media-r1-v5", "org026-warehouse-media-r1-v5", "org026-office-renovation-media-r1-v5",
+      "org026-builtin-media-r1-v5", "org026-warehouse-media-r1-v6", "org026-office-renovation-media-r1-v6",
       "blog-kitchen-cabinet-media-r1-v1", "blog-office-checklist-media-r1-v1",
     ];
     const rollbackTargets = [...lockedTargets, "kl-location-intent-r1-v2"];

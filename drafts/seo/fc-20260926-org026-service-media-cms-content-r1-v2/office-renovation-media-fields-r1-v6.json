@@ -1,0 +1,131 @@
+{
+  "schema_version": "1.1",
+  "task_id": "fc-20260926-org026-service-media-cms-content-r1-v2",
+  "original_task_id": "fc-20260926-website-placeholder-media-audit-v1",
+  "backlog_item_id": "ORG-026",
+  "campaign_id": "free-seo-geo-longterm",
+  "candidate_version": "office-renovation-media-fields-r1-v6",
+  "action_id": "org026-office-renovation-media-cms-fields-r1-v6",
+  "target": "org026-office-renovation-media-r1-v6",
+  "candidate_type": "cms_content_candidate",
+  "action_class": "cms_write",
+  "risk": "R1_EXISTING_CMS_SERVICE_MEDIA_FIELDS",
+  "scope": "flashcast.com.my:services/a87541ac-1cba-4f1a-972d-428dccdbcc0f:image_url,alt_en,alt_zh",
+  "channel_lock": "cms_content_candidate -> cms_write -> protected content-publish",
+  "status": "READY_FOR_QA_NOT_PUBLISHED",
+  "supersedes_candidate_version": "service-media-fields-r1-v5",
+  "supersedes_action_id": "org026-service-media-cms-fields-r1-v4",
+  "identity_repair_task_id": "fc-20260926-two-service-row-identity-old-house-b-code-v1",
+  "original_source_candidate_path": "drafts/seo/fc-20260926-protected-cms-kl-service-target-capability-v2/service-media-fields-r1-v5.json",
+  "original_source_candidate_sha256": "3c643421acbfc8df06df7041f7e189da13b8513f4f5ea35c6f72c208ed0c9cce",
+  "inherited_evidence": {
+    "original_media_candidate_version": "service-media-fields-r1-v5",
+    "media_and_field_bytes_unchanged": true,
+    "new_identity_independent_qa_required": true,
+    "prior_published_four_targets_not_replayed": true
+  },
+  "modified_fields": [
+    "image_url",
+    "alt_en",
+    "alt_zh"
+  ],
+  "record_id": "a87541ac-1cba-4f1a-972d-428dccdbcc0f",
+  "slug": "office-renovation",
+  "expected_updated_at": "2026-09-25T20:35:44.197155+00:00",
+  "baseline_fields_sha256": "6876f9426d27b93e47c433a255bd75abfea61486b85e4ce1fee686ec3d32d0a1",
+  "desired_fields_sha256": "85362f8b3219c91996460040c332a1a6b739fe6c37a03a4dbe86dbfd8bf37152",
+  "desired_fields": {
+    "image_url": "/images/services/ai-concepts/office-renovation-concept.webp",
+    "alt_en": "Modern office concept with workstations, a glass meeting room, reception and integrated storage",
+    "alt_zh": "现代办公室工位、玻璃会议室、前台与文件收纳规划概念示意图"
+  },
+  "baseline_record_path": "drafts/seo/fc-20260926-protected-cms-kl-service-target-capability-v2/office-renovation-baseline.json",
+  "baseline_record_sha256": "28cf8dfa1c84e9e39a663f673b89851b9727c694445b275dacaedb65f08a4eaf",
+  "required_visible_disclosure": {
+    "zh": "AI 生成概念示意，非客户完工实景",
+    "en": "AI-generated concept illustration, not a completed client project"
+  },
+  "items": [
+    {
+      "slug": "office-renovation",
+      "cms_row_id": "a87541ac-1cba-4f1a-972d-428dccdbcc0f",
+      "expected_status": "published",
+      "read_only_expected_version": 2,
+      "read_only_expected_updated_at": "2026-09-25T20:35:44.197155+00:00",
+      "read_only_full_row_sha256": "88d9a3d9693f70f69d2d600e17df729017b26f6fecb1dcebbd524400435c0618",
+      "allowed_fields": [
+        "image_url",
+        "alt_en",
+        "alt_zh"
+      ],
+      "field_diff": {
+        "image_url": {
+          "before": "https://flashcast.com.my/images/_responsive/materials/w900/category-whole-house-custom.webp",
+          "after": "/images/services/ai-concepts/office-renovation-concept.webp",
+          "before_sha256": "f1fbc3925a9c9bdc230f820577127df51bf54527d25c201b9766cc79ac093dcb",
+          "after_sha256": "8d1d82ef5af386fdaf6c947d0f18a89662f5cee11accac68493eff5630cf2e47"
+        },
+        "alt_en": {
+          "before": "Office reception and waiting-area rendering concept",
+          "after": "Modern office concept with workstations, a glass meeting room, reception and integrated storage",
+          "before_sha256": "5eaf10425c0a8a81ae15ef65ec24ea23a27c220cd0e755fb9b5c7cd1e4557d2b",
+          "after_sha256": "690213f31dbe72a58fffacebb52ceb8367c9eabdf554e95910297dfe2949a8ba"
+        },
+        "alt_zh": {
+          "before": "办公室前台与等候区规划效果图概念",
+          "after": "现代办公室工位、玻璃会议室、前台与文件收纳规划概念示意图",
+          "before_sha256": "f38464ea0dacf61f253e485e3b9d357c994d6c43ffdcfea035ee8564c775e8aa",
+          "after_sha256": "f0adcd25a6e2866ae028c4d672447824e871b46f865438e6c2bcad042abff7d4"
+        }
+      },
+      "unchanged_field_sha256": {
+        "id": "f5544c8571734a8a67c1a80de8990a7d7e8a9e49cd85293cd4499d469b1fc149",
+        "slug": "c9dc059e484dc341d2169a11fe5cd90271d88c858d849947f77159ad40bc01de",
+        "title_zh": "e62c91ebbebc1bc7cbd7918bb59b932573666f4afcb36cf760392f05f8b106a6",
+        "title_en": "10d738a099073af46bc3106b6117d36d536b65e59fe27b04c4a2a02e7d4c9761",
+        "excerpt_zh": "566d624e53076bd36c17a4390a0357cf586395a953ff238f32f56cdc6f295060",
+        "excerpt_en": "ad39f92652e41c74cf2bd656af6b3e26108b122fb318982951388163c0ddc3e7",
+        "content_zh": "4643e1eb0e63c010b2b22be6315a981f0a9809d50638f7479994477b84b767c8",
+        "content_en": "c122965b0130aa5f81e4b13a2ca682c0c414172e1762f485e68f0ad0636e9d98",
+        "suitable_for_zh": "8c4008453313e5c4c2a045ac6ff0609844c938d8cf40ae893f6db49c88427ad8",
+        "suitable_for_en": "bf5c710674f06d514bb52f2354441fddf9e9941b135eba60d0692fd20b2793ca",
+        "common_projects_zh": "c8fff4609cadb6da4188fe8be6f4385786dcb0e68a65338486833c8844b8c5bf",
+        "common_projects_en": "9f691218c4bb0bf6873cf4e0554df03a7b27be2c3424f29bf2a30a8bd3f07a4c",
+        "process_steps_zh": "aa0687e0b0d62fdfdae3951a16582ec1a5e057caba4c40aba1737eecc973cd5a",
+        "process_steps_en": "d07fcf095a499d2238dcac8d170d61c3fa5ce60f786ccad2931ed22b08d89b1b",
+        "scope_items_zh": "2063dbfb4f3a57d406db0b1b8e38672905323e32ff9837d8eb07eb42c9bcf646",
+        "scope_items_en": "e94208ec507e0cda5d57eae80b26fd3d49b223ed0bd1fe0748834048cced6fb7",
+        "faqs_zh": "7a25aa30888b8f1af15ca53f4e98c4161654f3c21d95c1415cbfa811a02de3b7",
+        "faqs_en": "049421299192823ca2fecbc0cff6fbf350729648f29d8e84e5f71dd7eed80d94",
+        "seo_title_zh": "9f3b23a270a1c16ad28151dfd1e81ae6eb01fd91edfcdf206e8f10225316f6fb",
+        "seo_title_en": "38b58577f839b8c26fd1f9e2e65f0e1ac9bf23e096e667e34d15af8983253a5d",
+        "seo_description_zh": "678d5428e808eb49710581a4923b1147f4432fdf164e95fd8d0951df27110afc",
+        "seo_description_en": "29f9a7da08b280ff9c49a84a680d9880325fd12efce7efc3f70e03db29393155",
+        "status": "dd2653c12a35c69d362d327a778f6e79f7e182293194fe0c3f4f68f6afdc8c1b",
+        "sort_order": "d59eced1ded07f84c145592f65bdf854358e009c5cd705f5215bf18697fed103",
+        "created_at": "9bd14572d63dfb236b19afc233a3a2146c6399fd317528e01d81b21d1eb12380",
+        "updated_at": "ff4172c1bb567e0419321f5780bcfcca964cbd70ee52efe25167a1ad9bde034b",
+        "version": "d4735e3a265e16eee03f59718b9b5d03019c07d8b6c51f90da3a666eec13ab35"
+      },
+      "asset": {
+        "public_url": "https://flashcast.com.my/images/services/ai-concepts/office-renovation-concept.webp",
+        "public_sha256": "c4827da1eb580ecd4d6448a812e8a38c392908ae08e71e630d4b3c9b1666f38c",
+        "source_path": "delivery/creative/fc-20260926-website-placeholder-media-audit-v1/assets/office-renovation-concept.webp",
+        "rights_status": "ORIGINAL_CONCEPT_READY",
+        "truth_label": "ai_concept_not_client_project"
+      },
+      "scope": "flashcast.com.my:services/a87541ac-1cba-4f1a-972d-428dccdbcc0f:image_url,alt_en,alt_zh",
+      "rollback_payload_from_read_only_baseline": {
+        "image_url": "https://flashcast.com.my/images/_responsive/materials/w900/category-whole-house-custom.webp",
+        "alt_en": "Office reception and waiting-area rendering concept",
+        "alt_zh": "办公室前台与等候区规划效果图概念"
+      },
+      "cms_saved_id": null,
+      "published": false
+    }
+  ],
+  "rollback_allowed": false,
+  "release_gate": "New exact identity QA, current full-row CAS readback and zero-write dry-run, Ops AUTO_RELEASE and fresh per-row single-use policy are required. Old shared target is audit-only. Preserve existing fields, image/alt bytes and all completed permits. No old unverified image restoration.",
+  "cms_saved_id": null,
+  "published": false
+}

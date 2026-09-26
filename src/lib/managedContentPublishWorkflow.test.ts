@@ -276,8 +276,8 @@ describe("three locked CMS targets in the existing protected workflow", () => {
     expect(Object.keys(targetConfigs).filter((target) => targetConfigs[target].lockedCandidate).sort())
       .toEqual([...lockedTargets.map((item) => item.name), ...newTargets.map((item) => item.name),
         "blog-kitchen-cabinet-cost-r1-v1", "blog-renovation-quotation-links-r1-v1", "blog-office-checklist-links-r1-v1",
-        "kl-location-intent-r1-v2", "org026-builtin-media-r1-v5", "org026-warehouse-media-r1-v5",
-        "org026-office-renovation-media-r1-v5", "blog-kitchen-cabinet-media-r1-v1",
+        "kl-location-intent-r1-v2", "org026-builtin-media-r1-v5", "org026-warehouse-media-r1-v6",
+        "org026-office-renovation-media-r1-v6", "blog-kitchen-cabinet-media-r1-v1",
         "blog-office-checklist-media-r1-v1"].sort());
   });
 });
