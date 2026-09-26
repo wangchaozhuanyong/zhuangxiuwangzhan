@@ -370,11 +370,14 @@ export const SchemeANavbar = () => {
 };
 
 export const SchemeAFooterPrelude = () => {
+  const { hasPageConsultation } = usePublicChrome();
   const { language } = useLanguage();
   const location = useLocation();
   const settings = useSiteSettings();
   const t = schemeAChromeText[language];
   const isHome = stripLanguagePrefix(location.pathname) === "/";
+
+  if (hasPageConsultation) return null;
 
   return (
     <section className="scheme-a-footer-prelude" data-home-section={isHome ? "cta" : undefined} data-cinematic-section>

@@ -98,26 +98,37 @@ test.describe("Scheme A approved-design fidelity", () => {
     await expect(trigger).toBeFocused();
   });
 
-  test("desktop heroes add useful density and avoid upscaling the home artwork", async ({ page }) => {
-    await page.setViewportSize({ width: 2048, height: 990 });
+  test("homepage keeps live copy over a clear full-width photograph", async ({ page }) => {
+    await page.setViewportSize({ width: 1440, height: 900 });
     await page.goto("/zh", { waitUntil: "domcontentloaded" });
 
     const homeHero = page.locator(".scheme-a-home--atelier .scheme-a-hero");
-    const heroImage = homeHero.locator(".scheme-a-hero__media img");
-    await expect(homeHero.locator(".scheme-a-hero__capabilities-label")).toBeVisible();
-    await expect(homeHero.locator(".scheme-a-hero__disciplines li")).toHaveCount(3);
-    const imageScale = await heroImage.evaluate((image: HTMLImageElement) => {
-      const rect = image.getBoundingClientRect();
-      return {
-        currentSrc: image.currentSrc,
-        horizontal: (rect.width * window.devicePixelRatio) / 2880,
-        vertical: (rect.height * window.devicePixelRatio) / 1620,
-      };
-    });
-    expect(imageScale.currentSrc).toContain("/images/heroes/v4/home-atelier-desktop.webp");
-    expect(imageScale.horizontal).toBeLessThanOrEqual(1);
-    expect(imageScale.vertical).toBeLessThanOrEqual(1);
+    const heroImage = homeHero.locator(".scheme-a-hero__media img").last();
+    await expect(homeHero.locator("h1")).toHaveText("全屋定制与室内装修 住宅与商业空间");
+    await expect(page.locator(".scheme-a-home-summary__metrics > div")).toHaveCount(3);
+    await expect(homeHero.locator(".scheme-a-home-summary__metrics")).toHaveCount(0);
+    await expect.poll(() => heroImage.evaluate((image: HTMLImageElement) => image.complete && image.naturalWidth > 0)).toBe(true);
+    const artwork = await heroImage.evaluate((image: HTMLImageElement) => ({
+      currentSrc: image.currentSrc,
+      filter: getComputedStyle(image).filter,
+      width: image.getBoundingClientRect().width,
+      viewportWidth: document.documentElement.clientWidth,
+    }));
+    expect(artwork.currentSrc).toContain("/v6/home-daylight-desktop.webp");
+    expect(artwork.filter).toBe("none");
+    expect(Math.abs(artwork.width - artwork.viewportWidth)).toBeLessThanOrEqual(1);
+    await expect(homeHero.locator('a[href="/zh/quote#quote-form"]')).toBeVisible();
 
+    await page.setViewportSize({ width: 390, height: 844 });
+    await expect(homeHero.locator("h1")).toBeVisible();
+    await expect.poll(() => heroImage.evaluate((image: HTMLImageElement) => image.currentSrc)).toContain("/v6/home-daylight-mobile.webp");
+    await expect.poll(() => page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth)).toBeLessThanOrEqual(1);
+    const mobileCopy = await homeHero.locator("h1").boundingBox();
+    expect(mobileCopy?.x).toBe(20);
+  });
+
+  test("service hero support responds to the viewport", async ({ page }) => {
+    await page.setViewportSize({ width: 1440, height: 900 });
     await page.goto("/zh/services", { waitUntil: "domcontentloaded" });
     const support = page.locator(".fc-route-hero-support");
     await expect(support).toBeVisible();
@@ -125,9 +136,9 @@ test.describe("Scheme A approved-design fidelity", () => {
     await expect.poll(() => page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth)).toBeLessThanOrEqual(1);
 
     await page.setViewportSize({ width: 390, height: 844 });
-    await expect(page.locator(".fc-route-hero-support")).not.toBeVisible();
-    await page.goto("/zh", { waitUntil: "domcontentloaded" });
-    await expect(page.locator(".scheme-a-home--atelier .scheme-a-hero__capabilities-label")).not.toBeVisible();
+    await expect(support).toBeVisible();
+    await expect(support.locator(":scope > div")).toHaveCount(3);
+    await expect.poll(() => page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth)).toBeLessThanOrEqual(1);
   });
 
   test("mobile directory is complete, collapsible and keyboard safe", async ({ page }) => {
@@ -301,11 +312,11 @@ test.describe("Scheme A approved-design fidelity", () => {
     await page.setViewportSize({ width: 1440, height: 900 });
     await page.goto("/zh", { waitUntil: "domcontentloaded" });
     await expect(page.locator(".scheme-a-hero")).toBeVisible();
-    await expect(page.locator(".scheme-a-services")).toBeAttached();
+    await expect(page.locator(".scheme-a-home-summary")).toBeAttached();
 
     const metrics = await page.evaluate(() => {
       const hero = document.querySelector<HTMLElement>(".scheme-a-hero");
-      const next = document.querySelector<HTMLElement>(".scheme-a-services");
+      const next = document.querySelector<HTMLElement>(".scheme-a-home-summary");
       const header = document.querySelector<HTMLElement>(".scheme-a-chrome");
       if (!hero || !next || !header) throw new Error("Missing Scheme A opening regions");
       return {

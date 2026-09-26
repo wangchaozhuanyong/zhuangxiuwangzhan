@@ -1,4 +1,4 @@
-import { ArrowRight, ArrowUpRight } from "lucide-react";
+import { ArrowRight, ArrowUpRight, ClipboardList, MessagesSquare, Ruler } from "lucide-react";
 import DeferredSmartImage from "@/components/DeferredSmartImage";
 import ImmersiveHero from "@/components/ImmersiveHero";
 import LocalizedLink from "@/components/LocalizedLink";
@@ -16,12 +16,13 @@ type SchemeAHomeProps = {
   content: PublishedHomeContentBundle | undefined;
 };
 
-// A 16:9 source covers a desktop panel up to 680px high (1209px before cropping).
+// Art-directed photographs leave natural light wall space for live HTML copy.
 const HOME_HERO_ASSETS = {
-  desktop: "/images/heroes/v4/home-atelier-desktop.webp",
-  tablet: "/images/heroes/v4/home-atelier-tablet.webp",
-  mobile: "/images/heroes/v4/home-atelier-mobile.webp",
+  desktop: "/images/heroes/v6/home-daylight-desktop.webp",
+  mobile: "/images/heroes/v6/home-daylight-mobile.webp",
 } as const;
+
+const HOME_SUMMARY_ICONS = [Ruler, ClipboardList, MessagesSquare] as const;
 
 const PROJECT_CARD_MOBILE_MEDIA = "(max-width: 47.9375rem)";
 const PROJECT_CARD_MOBILE_SIZES = "(max-width: 397px) 78vw, 310px";
@@ -83,24 +84,23 @@ const SchemeAHome = ({ content }: SchemeAHomeProps) => {
 
   return (
     <div className="scheme-a-home scheme-a-home--atelier">
-      <ImmersiveHero className="scheme-a-hero" aria-labelledby="scheme-a-home-title" data-home-section="hero">
-        <div className="scheme-a-frame scheme-a-hero__frame">
+      <ImmersiveHero className="scheme-a-hero" standardPageHero={false} aria-labelledby="scheme-a-home-title" data-home-section="hero" data-hero-art={usesAtelierHero ? "daylight" : "custom"}>
+        <div className="scheme-a-hero__frame">
           <figure className="scheme-a-hero__media" data-cinematic-media>
             {usesAtelierHero ? (
                 <SmartImage
                   src={HOME_HERO_ASSETS.desktop}
                   pictureSources={[
-                    { media: "(max-width: 47.9375rem)", srcSet: buildHomeHeroSrcSet(HOME_HERO_ASSETS.mobile, 1200, [360, 560, 720, 900]), sizes: "100vw" },
-                    { media: "(max-width: 1023px)", srcSet: buildHomeHeroSrcSet(HOME_HERO_ASSETS.tablet, 1600, [560, 720, 900, 1200]), sizes: "100vw" },
+                    { media: "(max-width: 1023px)", srcSet: buildHomeHeroSrcSet(HOME_HERO_ASSETS.mobile, 887, [360, 560, 720]), sizes: "100vw" },
                   ]}
                   pictureClassName="scheme-a-hero__picture"
                   critical
                   alt={heroAlt}
-                  width={2880}
-                  height={1620}
-                  sizes="(min-width: 1024px) 1209px, 100vw"
+                  width={1672}
+                  height={941}
+                  sizes="100vw"
                   candidateWidths={[720, 900, 1200, 1600]}
-                  sourceWidth={2880}
+                  sourceWidth={1672}
                   quality={88}
                   loading="eager"
                   fetchPriority="high"
@@ -112,7 +112,7 @@ const SchemeAHome = ({ content }: SchemeAHomeProps) => {
                 alt={heroAlt}
                 width={1920}
                 height={1080}
-                sizes="(min-width: 1024px) 1209px, 100vw"
+                sizes="100vw"
                 candidateWidths={[360, 560, 720, 900, 1200, 1600]}
                 quality={88}
                 loading="eager"
@@ -121,14 +121,13 @@ const SchemeAHome = ({ content }: SchemeAHomeProps) => {
             )}
           </figure>
           <div className="scheme-a-hero__copy">
-            <div className="scheme-a-hero__intro scheme-a-heading scheme-a-heading--split">
-              <p className="sr-only">{copy.heroKicker}</p>
+            <div className="scheme-a-hero__intro">
               <h1 id="scheme-a-home-title">
                 <span>{copy.heroTitle}</span>
                 {" "}
                 <span>{copy.heroTitleAccent}</span>
               </h1>
-              <p className="scheme-a-hero__lead">{copy.heroDescription}</p>
+              <p className="scheme-a-hero__lead">{copy.heroKicker}</p>
               <div className="scheme-a-actions">
                 <LocalizedLink className="scheme-a-button scheme-a-button--paper" to={presentation.heroAction.url}>
                   {presentation.heroAction.label}
@@ -139,27 +138,34 @@ const SchemeAHome = ({ content }: SchemeAHomeProps) => {
                 </LocalizedLink>
               </div>
             </div>
-            <div className="scheme-a-hero__assurance">
-              {presentation.stats.length > 0 && (
-                <div className="scheme-a-hero__metrics" data-content-source={presentation.statsSource} aria-label={language === "zh" ? "交付保障指标" : "Delivery trust metrics"}>
-                  {presentation.stats.map((stat) => (
-                    <div key={stat.label} className="scheme-a-hero__metric-item">
-                      <strong>{stat.value}</strong>
-                      <span>{stat.label}</span>
-                    </div>
-                  ))}
-                </div>
-              )}
-              <div className="scheme-a-hero__capabilities">
-                <p className="scheme-a-hero__capabilities-label">{copy.heroCapabilitiesLabel}</p>
-                <ul className="scheme-a-hero__disciplines" aria-label={copy.heroCapabilitiesLabel}>
-                  {copy.heroCapabilities.map((capability) => <li key={capability}>{capability}</li>)}
-                </ul>
-              </div>
-            </div>
           </div>
         </div>
       </ImmersiveHero>
+
+      <section className="scheme-a-home-summary" aria-labelledby="scheme-a-home-summary-title" data-home-section="summary" data-cinematic-section>
+        <div className="scheme-a-frame scheme-a-home-summary__layout">
+          <header className="scheme-a-home-summary__intro">
+            <h2 id="scheme-a-home-summary-title">
+              <span>{copy.summaryTitle}</span>{" "}<span>{copy.summaryTitleAccent}</span>
+            </h2>
+            <p className="scheme-a-home-summary__description">{copy.summaryDescription}</p>
+          </header>
+          {presentation.stats.length > 0 && (
+            <div className="scheme-a-home-summary__metrics" role="list" data-content-source={presentation.statsSource} aria-label={copy.summaryCardsLabel}>
+              {presentation.stats.map((stat, index) => {
+                const Icon = HOME_SUMMARY_ICONS[index] || Ruler;
+                return (
+                  <div key={stat.label} className="scheme-a-home-summary__metric-item" role="listitem">
+                    <Icon className="scheme-a-home-summary__icon" aria-hidden="true" strokeWidth={1.5} />
+                    <h3>{stat.value}</h3>
+                    <p>{stat.label}</p>
+                  </div>
+                );
+              })}
+            </div>
+          )}
+        </div>
+      </section>
 
       <section className="scheme-a-services" data-home-section="services" data-cinematic-section>
         <div className="scheme-a-frame scheme-a-services__layout">
@@ -305,12 +311,15 @@ const SchemeAHome = ({ content }: SchemeAHomeProps) => {
               <h2>{copy.trustTitle}</h2>
               <p>{copy.trustBody}</p>
             </header>
-            {copy.trustPoints && (
-              <ul className="scheme-a-materials__tags" aria-label={copy.trustLabel}>
-                {copy.trustPoints.map((point) => (
-                  <li key={point}><span>•</span>{point}</li>
+            {copy.trustDetails && (
+              <dl className="scheme-a-materials__details" aria-label={copy.trustLabel}>
+                {copy.trustDetails.map((detail) => (
+                  <div key={detail.title}>
+                    <dt>{detail.title}</dt>
+                    <dd>{detail.description}</dd>
+                  </div>
                 ))}
-              </ul>
+              </dl>
             )}
             <LocalizedLink to="/materials">
               {copy.trustCta}

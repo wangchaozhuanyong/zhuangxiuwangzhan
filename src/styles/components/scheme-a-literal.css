@@ -128,7 +128,6 @@
       display: none;
     }
 
-    html[data-public-theme="dark"] .scheme-a-hero,
     html[data-public-theme="dark"] body .forest-home-hero,
     html[data-public-theme="dark"][data-theme] body .forest-home-hero {
       width: 100% !important;
@@ -145,13 +144,11 @@
         linear-gradient(to top, rgb(15 15 13 / 0.84) 0, rgb(15 15 13 / 0.48) 34%, transparent 62%) !important;
     }
 
-    html[data-public-theme="dark"] .scheme-a-hero__media img,
     html[data-public-theme="dark"] body .forest-home-hero__media img {
       object-position: center center !important;
       filter: none !important;
     }
 
-    html[data-public-theme="dark"] .scheme-a-hero__copy,
     html[data-public-theme="dark"][data-theme] body .forest-home-hero__copy {
       width: 100% !important;
       max-width: none !important;
@@ -163,34 +160,6 @@
       font-size: 11px;
       line-height: 1.5;
       letter-spacing: 0.16em;
-    }
-
-    html[lang="en"][data-public-theme="dark"] .scheme-a-hero .scheme-a-eyebrow {
-      max-width: 30em;
-      font-size: 9px;
-      line-height: 1.65;
-      letter-spacing: 0.12em;
-    }
-
-    html[data-public-theme="dark"] .scheme-a-hero h1,
-    html[lang^="zh"][data-public-theme="dark"] .scheme-a-hero h1 {
-      max-width: 100% !important;
-      padding-top: 14px !important;
-      font-size: clamp(30px, 9vw, 38px) !important;
-      line-height: 1.28 !important;
-      letter-spacing: 0 !important;
-    }
-
-    html[lang^="zh"][data-public-theme="dark"] .scheme-a-hero h1 span {
-      white-space: normal;
-    }
-
-    html[data-public-theme="dark"] .scheme-a-hero__lead {
-      max-width: 30em;
-      padding-top: 15px;
-      color: rgb(245 241 233 / 0.88);
-      font-size: 13px;
-      line-height: 1.75;
     }
 
     html[data-public-theme="dark"] .scheme-a-actions {

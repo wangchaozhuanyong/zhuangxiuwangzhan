@@ -5,7 +5,7 @@ import Link from "@/components/LocalizedLink";
 import PageMeta from "@/components/PageMeta";
 import { JsonLdBreadcrumb, JsonLdFAQ, JsonLdService } from "@/components/JsonLd";
 import CTABanner from "@/components/blocks/CTABanner";
-import { SchemeAContentState, SchemeAFacts, SchemeAFaqList, SchemeALinkGrid, SchemeAListingGrid, SchemeANumberList, SchemeARouteHero, SchemeASection, type SchemeAListingItem } from "@/components/scheme-a/SchemeARoutePrimitives";
+import { SchemeAContentState, SchemeAFacts, SchemeAFaqList, SchemeAFeatureList, SchemeALinkGrid, SchemeAListingGrid, SchemeANumberList, SchemeARouteHero, SchemeASection, type SchemeAListingItem } from "@/components/scheme-a/SchemeARoutePrimitives";
 import { servicesData } from "@/data/services";
 import { usePublishedServiceBySlug, usePublishedServices } from "@/hooks/usePublishedContent";
 import { useLanguage } from "@/i18n/LanguageContext";
@@ -96,15 +96,15 @@ export default function ServiceDetail() {
         <div className="fc-route-scope-grid">
           <div className="fc-route-scope-group">
             <h3>{copy.suitableFor}</h3>
-            <SchemeANumberList items={suitable.map((item) => ({ title: item }))} />
+            <SchemeAFeatureList items={suitable} layout="list" />
           </div>
           <div className="fc-route-scope-group">
             <h3>{copy.offer}</h3>
-            <SchemeANumberList items={offered.map((item) => ({ title: item }))} />
+            <SchemeAFeatureList items={offered} layout="list" />
           </div>
         </div>
       </SchemeASection>
-      {commonProjects.length ? <SchemeASection title={copy.commonProjects}><SchemeANumberList items={commonProjects.map((item) => ({ title: item }))} /></SchemeASection> : null}
+      {commonProjects.length ? <SchemeASection title={copy.commonProjects}><SchemeAFeatureList items={commonProjects} /></SchemeASection> : null}
       {process.length ? <SchemeASection title={copy.process} description={copy.processDescription}><SchemeANumberList items={process} /></SchemeASection> : null}
       {contextLinks.length ? <SchemeASection title={copy.resourceTitle(title)} description={copy.resourceDescription}><SchemeALinkGrid items={contextLinks} actionLabel={copy.resourceAction} /></SchemeASection> : null}
       {faqs.length ? <SchemeASection title={copy.faq}><SchemeAFaqList items={faqs} /></SchemeASection> : null}

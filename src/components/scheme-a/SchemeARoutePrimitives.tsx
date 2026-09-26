@@ -281,10 +281,12 @@ export function SchemeALinkGrid({ items, actionLabel }: { items: readonly Scheme
     <div className="fc-route-link-grid">
       {items.map((item) => (
         <Link key={item.id} to={item.href} className="fc-route-link-card">
-          <span className="fc-route-link-card-label">{item.label}</span>
-          <h3>{item.title}</h3>
-          <p>{item.description}</p>
-          <span className="fc-route-link-card-action">{actionLabel}<ArrowUpRight aria-hidden="true" /></span>
+          <div className="fc-route-link-card-copy">
+            <span className="fc-route-link-card-label">{item.label}</span>
+            <h3>{item.title}</h3>
+            <p>{item.description}</p>
+          </div>
+          <span className="fc-route-link-card-action"><span className="sr-only">{actionLabel}</span><ArrowUpRight aria-hidden="true" /></span>
         </Link>
       ))}
     </div>
@@ -311,6 +313,15 @@ export function SchemeAFacts({ items }: { items: readonly SchemeAFact[] }) {
     <section className="fc-route-facts">
       {items.map((item) => <div key={`${item.label}-${item.value}`}><span>{item.label}</span><strong>{item.value}</strong></div>)}
     </section>
+  );
+}
+
+/** Non-sequential topics; descriptive steps continue to use SchemeANumberList. */
+export function SchemeAFeatureList({ items, layout = "grid" }: { items: readonly string[]; layout?: "grid" | "list" }) {
+  return (
+    <ul className={`fc-route-feature-list fc-route-feature-list--${layout}`}>
+      {items.map((item, index) => <li key={`${item}-${index}`}>{item}</li>)}
+    </ul>
   );
 }
 

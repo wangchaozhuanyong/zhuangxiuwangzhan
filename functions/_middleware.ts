@@ -301,40 +301,27 @@ const DEFAULT_HOME_HERO_IMAGE = "/images/heroes/hero-luxury-living.webp";
 const HOME_HERO_IMAGE_SIZES = "(max-width: 767px) 100vw, (max-width: 1199px) 58vw, 60vw";
 const HOME_ATELIER_HERO_PRELOADS: ImagePreload[] = [
   {
-    href: "/images/_responsive/heroes/w360/v4/home-atelier-mobile.webp",
+    href: "/images/_responsive/heroes/w360/v6/home-daylight-mobile.webp",
     srcSet: [
-      "/images/_responsive/heroes/w360/v4/home-atelier-mobile.webp 360w",
-      "/images/_responsive/heroes/w560/v4/home-atelier-mobile.webp 560w",
-      "/images/_responsive/heroes/w720/v4/home-atelier-mobile.webp 720w",
-      "/images/_responsive/heroes/w900/v4/home-atelier-mobile.webp 900w",
-      "/images/heroes/v4/home-atelier-mobile.webp 1200w",
+      "/images/_responsive/heroes/w360/v6/home-daylight-mobile.webp 360w",
+      "/images/_responsive/heroes/w560/v6/home-daylight-mobile.webp 560w",
+      "/images/_responsive/heroes/w720/v6/home-daylight-mobile.webp 720w",
+      "/images/heroes/v6/home-daylight-mobile.webp 887w",
     ].join(", "),
     sizes: "100vw",
-    media: "(max-width: 767px)",
+    media: "(max-width: 1023px)",
   },
   {
-    href: "/images/_responsive/heroes/w560/v4/home-atelier-tablet.webp",
+    href: "/images/_responsive/heroes/w720/v6/home-daylight-desktop.webp",
     srcSet: [
-      "/images/_responsive/heroes/w560/v4/home-atelier-tablet.webp 560w",
-      "/images/_responsive/heroes/w720/v4/home-atelier-tablet.webp 720w",
-      "/images/_responsive/heroes/w900/v4/home-atelier-tablet.webp 900w",
-      "/images/_responsive/heroes/w1200/v4/home-atelier-tablet.webp 1200w",
-      "/images/heroes/v4/home-atelier-tablet.webp 1600w",
+      "/images/_responsive/heroes/w720/v6/home-daylight-desktop.webp 720w",
+      "/images/_responsive/heroes/w900/v6/home-daylight-desktop.webp 900w",
+      "/images/_responsive/heroes/w1200/v6/home-daylight-desktop.webp 1200w",
+      "/images/_responsive/heroes/w1600/v6/home-daylight-desktop.webp 1600w",
+      "/images/heroes/v6/home-daylight-desktop.webp 1672w",
     ].join(", "),
     sizes: "100vw",
-    media: "(min-width: 768px) and (max-width: 1179px)",
-  },
-  {
-    href: "/images/_responsive/heroes/w720/v4/home-atelier-desktop.webp",
-    srcSet: [
-      "/images/_responsive/heroes/w720/v4/home-atelier-desktop.webp 720w",
-      "/images/_responsive/heroes/w900/v4/home-atelier-desktop.webp 900w",
-      "/images/_responsive/heroes/w1200/v4/home-atelier-desktop.webp 1200w",
-      "/images/_responsive/heroes/w1600/v4/home-atelier-desktop.webp 1600w",
-      "/images/heroes/v4/home-atelier-desktop.webp 2880w",
-    ].join(", "),
-    sizes: "(min-width: 90rem) max(58vw, 178vh), (min-width: 73.75rem) max(60vw, 178vh), 100vw",
-    media: "(min-width: 1180px)",
+    media: "(min-width: 1024px)",
   },
 ];
 const SUPABASE_PUBLIC_OBJECT_SEGMENT = "/storage/v1/object/public/";

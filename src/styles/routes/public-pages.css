@@ -1,12 +1,12 @@
 /* Canonical public design bundle. Import order is deliberate and stable:
    structural foundations, approved proportions, route primitives, the
-   page-scoped home variation, desktop home composition, the shared
+   page-scoped home variation, responsive home composition, the shared
    framed route-hero layout, then the shared section rhythm as final authority. */
 @import "../components/scheme-a-structural.css";
 @import "../components/scheme-a-literal.css";
 @import "../components/scheme-a-native-pages.css";
 @import "../components/home-atelier.css";
-@import "../components/scheme-a-desktop-hero.css";
+@import "../components/scheme-a-home-hero.css";
 @import "../components/scheme-a-route-hero-v5.css";
 @import "../components/public-section-spacing.css";
 @tailwind components;

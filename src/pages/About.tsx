@@ -51,7 +51,6 @@ const About = () => {
   const values = useMemo(() => normalizeCards(valuesSection?.items, localizedValues[language]) || localizedValues[language], [valuesSection?.items, language]);
   const team = localizedTeam[language];
   const heroImage = resolvePageHeroImage(pageContent?.image_url || (heroSection?.image_url as string | undefined), pageHeroImages.about);
-  const officeDescription = settings.address ? t.officeAddress.replace("{address}", settings.address) : t.officeDescription;
 
   return (
     <main className="fc-route-page">
@@ -76,9 +75,13 @@ const About = () => {
         <ol className="fc-route-history">{milestones.map((item) => <li key={`${item.year}-${item.title}`}><span className="fc-route-history-index">{item.year}</span><div><strong>{item.title}</strong><p>{item.desc}</p></div></li>)}</ol>
       </SchemeASection>
 
-      <SchemeASection title={t.officeTitle} description={officeDescription} className="fc-route-office">
+      <SchemeASection title={t.officeTitle} description={t.officeDescription} className="fc-route-office">
         <div className="fc-route-office-grid">
-          <div className="fc-route-office-copy"><MapPin aria-hidden="true" /><h2>{settings.company_name}</h2><address>{settings.address}</address><p>{t.visitNote}</p></div>
+          <div className="fc-route-office-copy">
+            <header><MapPin aria-hidden="true" /><h3>{settings.company_name}</h3></header>
+            <address>{settings.address}</address>
+            <p>{t.visitNote}</p>
+          </div>
           <GoogleMapEmbed title={t.mapTitle} addressLabel={settings.address} latitude={settings.map_latitude} longitude={settings.map_longitude} height={360} className="min-h-[360px]" />
         </div>
       </SchemeASection>
