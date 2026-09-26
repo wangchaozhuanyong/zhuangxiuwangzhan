@@ -68,22 +68,6 @@
     filter: none !important;
   }
 
-  html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-hero__media figcaption {
-    position: absolute;
-    z-index: 3;
-    right: clamp(1.5rem, 3vw, 3.5rem);
-    bottom: clamp(1.5rem, 3vw, 3rem);
-    padding: 0.55rem 0.85rem;
-    border: 1px solid rgba(212, 175, 55, 0.35);
-    color: #e5ca7c;
-    background: rgba(10, 11, 13, 0.65);
-    font-size: 0.65rem;
-    letter-spacing: 0.16em;
-    line-height: 1;
-    backdrop-filter: blur(12px);
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
-  }
-
   html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-hero__copy {
     position: relative;
     z-index: 2;
@@ -1053,13 +1037,6 @@
     html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-hero__media img {
       object-position: center 48% !important;
       transform: none !important;
-    }
-
-    html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-hero__media figcaption {
-      top: 12px;
-      right: var(--scheme-a-gutter);
-      bottom: auto;
-      font-size: 10.5px;
     }
 
     html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-hero__copy,

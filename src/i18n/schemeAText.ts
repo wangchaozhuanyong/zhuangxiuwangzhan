@@ -5,7 +5,6 @@ export const schemeAHomeText = {
     heroTitleAccent: "服务住宅与商业空间。",
     heroDescription: "FLASH CAST 服务吉隆坡、雪兰莪与巴生谷，重点规划全屋定制、定制家具与衣柜，并协助住宅、厨房、浴室、办公室和店铺装修。先了解现场与使用需求，再确认材料、书面报价和施工协调范围。",
     heroAlt: "暖色石材、深木饰面与庭院光影构成的高端住宅设计效果图",
-    heroConceptLabel: "设计效果图 / 视觉方向",
     heroCapabilitiesLabel: "装修服务能力",
     heroCapabilities: ["01 / 住宅与商业空间装修", "02 / 厨房、浴室与定制柜体", "03 / 规划、材料与现场协调"],
     heroStats: [
@@ -77,7 +76,6 @@ export const schemeAHomeText = {
     heroTitleAccent: "for homes and commercial spaces.",
     heroDescription: "FLASH CAST plans whole-house custom furniture, built-ins and fitted wardrobes in Kuala Lumpur, Selangor and the Klang Valley, alongside home, kitchen, bathroom, office and shop renovation. Site conditions and daily use guide the materials, written quotation and coordination scope.",
     heroAlt: "High-end residential design concept with warm stone, dark timber and courtyard light",
-    heroConceptLabel: "DESIGN CONCEPT / VISUAL DIRECTION",
     heroCapabilitiesLabel: "Renovation capabilities",
     heroCapabilities: ["01 / Home & Commercial Renovation", "02 / Kitchen, Bathroom & Built-Ins", "03 / Planning, Materials & Site Coordination"],
     heroStats: [
