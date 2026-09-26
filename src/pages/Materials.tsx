@@ -22,11 +22,10 @@ export default function Materials() {
     id: category.slug,
     title: translateMaterialCategory(category.name, language),
     description: translateDisplayText(category.description || "", language),
-    meta: pageContent?.subtitle || copy.eyebrow,
     image: category.image,
     imageAlt: category.alt || translateMaterialCategory(category.name, language),
     href: `/materials/category/${category.slug}`,
-  })), [categories, copy.eyebrow, language, pageContent?.subtitle]);
+  })), [categories, language]);
 
   return (
     <main className="fc-route-page">
