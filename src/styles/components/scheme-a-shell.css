@@ -831,6 +831,12 @@
     gap: 0.7rem;
   }
 
+  .scheme-a-footer__studio > p,
+  .scheme-a-footer__studio strong {
+    align-self: center;
+    text-align: center;
+  }
+
   .scheme-a-footer__studio strong {
     margin-bottom: 0.65rem;
     font-family: var(--font-display);
