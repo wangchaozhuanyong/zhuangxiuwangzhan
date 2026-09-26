@@ -117,7 +117,6 @@ const SchemeAHome = ({ content }: SchemeAHomeProps) => {
               fetchPriority="high"
             />
           )}
-          {usesAtelierHero && <figcaption>{copy.heroConceptLabel}</figcaption>}
         </figure>
         <div className="scheme-a-hero__copy scheme-a-heading">
           <p className="sr-only">{copy.heroKicker}</p>
