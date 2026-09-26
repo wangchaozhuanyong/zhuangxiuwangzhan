@@ -1,37 +1,21 @@
 import { expect, test } from "@playwright/test";
 
-test("old-house service page provides three usable terrace renovation comparisons", async ({ page }) => {
-  await page.setViewportSize({ width: 1440, height: 1000 });
-  await page.goto("/zh/services/old-house", { waitUntil: "domcontentloaded" });
+for (const language of ["zh", "en"] as const) {
+  for (const viewport of [{ width: 390, height: 844 }, { width: 1440, height: 1000 }]) {
+    test(`old-house safe recovery keeps planning and quote without comparison images: ${language} ${viewport.width}`, async ({ page }) => {
+      await page.setViewportSize(viewport);
+      await page.goto(`/${language}/services/old-house`, { waitUntil: "domcontentloaded" });
 
-  const comparisons = page.locator(".scheme-a-transformation__compare");
-  await expect(comparisons).toHaveCount(3);
-  await expect(page.getByText("改造前", { exact: true })).toHaveCount(3);
-  await expect(page.getByText("改造后", { exact: true })).toHaveCount(3);
+      await expect(page.locator("h1")).toHaveCount(1);
+      await expect(page.locator(".scheme-a-transformations .fc-route-number-list li")).toHaveCount(3);
+      await expect(page.locator(".fc-route-budget-card")).toHaveCount(3);
+      await expect(page.locator(".scheme-a-transformation__compare")).toHaveCount(0);
+      await expect(page.locator('img[src*="old-terrace"]')).toHaveCount(0);
+      await expect(page.getByText(language === "zh" ? "不是客户完工项目的证据" : "not evidence of completed client projects", { exact: false })).toBeVisible();
 
-  for (let index = 0; index < 3; index += 1) {
-    const comparison = comparisons.nth(index);
-    await comparison.scrollIntoViewIfNeeded();
-    const images = comparison.locator("img");
-    await expect(images).toHaveCount(2);
-    await expect.poll(
-      () => images.evaluateAll((nodes) => nodes.every((node) => node.complete && node.naturalWidth > 0)),
-      { message: `comparison ${index + 1} images should load` },
-    ).toBe(true);
+      const quoteLink = page.locator('.fc-route-action-panel a[href*="/quote"]').first();
+      await expect(quoteLink).toHaveAttribute("href", new RegExp(`^/${language}/quote\\?source=service`));
+      await expect.poll(() => page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth)).toBeLessThanOrEqual(1);
+    });
   }
-
-  const firstComparison = comparisons.first();
-  const slider = firstComparison.locator('input[type="range"]');
-  await slider.focus();
-  const initialValue = Number(await slider.inputValue());
-  await page.keyboard.press("ArrowRight");
-  await expect(slider).toHaveValue(String(initialValue + 1));
-
-  const bounds = await firstComparison.boundingBox();
-  if (!bounds) throw new Error("Old-house comparison is not visible");
-  await page.mouse.move(bounds.x + bounds.width * 0.35, bounds.y + bounds.height * 0.5);
-  await page.mouse.down();
-  await page.mouse.move(bounds.x + bounds.width * 0.75, bounds.y + bounds.height * 0.5, { steps: 8 });
-  await page.mouse.up();
-  await expect(slider).toHaveValue(/^(7[4-6])$/);
-});
+}
