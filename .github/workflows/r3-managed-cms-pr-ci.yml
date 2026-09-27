@@ -9,6 +9,16 @@ on:
       - src/components/services/SurfaceRepairContent*
       - src/i18n/surfaceRepairPageText.ts
       - src/styles/surface-repair.css
+      - functions/_middleware.ts
+      - functions/readablePublicBody.ts
+      - public/robots.txt
+      - scripts/generate-seo-manifest.mjs
+      - src/lib/contentApi.ts
+      - src/lib/projectPublicMetadata.*
+      - src/lib/geoSourceBinding.integration.test.ts
+      - src/test/fixtures/geo-public-source-binding.json
+      - src/pages/ProjectDetail.tsx
+      - src/i18n/processPageText.ts
       - .env.example
       - .github/workflows/content-publish-approved.yml
       - .github/workflows/supabase-content-publish-r3.yml
@@ -104,6 +114,9 @@ jobs:
         run: |
           npm test -- src/components/services/SurfaceRepairContent.test.tsx src/components/services/DesignServiceContent.cms.test.tsx src/data/services.seo.test.ts src/styles/publicDesignBoundary.test.ts
           node --test scripts/publish-surface-repair.test.mjs
+
+      - name: Check bounded GEO source bindings and existing HTML cache
+        run: npm test -- src/lib/geoSourceBinding.integration.test.ts src/lib/edgeHtmlCache.integration.test.ts
 
       - name: Run Supabase release gate tests without linking production
         run: |
