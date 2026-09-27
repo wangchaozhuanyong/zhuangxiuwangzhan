@@ -19,10 +19,10 @@ import "@/styles/design-service.css";
 type Study = "concept" | "plan" | "detail";
 type Material = "wood" | "stone" | "linen" | "bronze";
 type Project = "courtyard" | "reading";
-function DesignSectionHeading({ id, title, description }: { id: string; title: string; description: string }) {
+function DesignSectionHeading({ id, title, description }: { id: string; title: string; description?: string }) {
     return <header className="fcd-section-heading fc-route-section-head scheme-a-heading scheme-a-heading--split">
       <h2 id={id}>{title}</h2>
-      <p>{description}</p>
+      {description && <p>{description}</p>}
     </header>;
 }
 
@@ -455,8 +455,8 @@ export default function DesignServiceContent({ service }: { service: Pick<Publis
     </div>
     </section>
     {overviewHtml && <section data-cinematic-section aria-labelledby="fcd-overview-title" className="fcd-text-module fcd-page-gutter fcd-section-space">
-      <h2 id="fcd-overview-title">{serviceCopy.overview}</h2>
-      <div className="prose prose-stone max-w-none" dangerouslySetInnerHTML={{ __html: overviewHtml }} />
+      <DesignSectionHeading id="fcd-overview-title" title={serviceCopy.overview} />
+      <div className="fc-route-service-overview-copy" dangerouslySetInnerHTML={{ __html: overviewHtml }} />
     </section>}
     <section data-cinematic-section aria-labelledby="fcd-services-title" className="fcd-services fcd-text-module fcd-page-gutter fcd-section-space" id="fcd-services">
     <DesignSectionHeading id="fcd-services-title" title={copy.servicesTitle} description={copy.servicesSummary} />
