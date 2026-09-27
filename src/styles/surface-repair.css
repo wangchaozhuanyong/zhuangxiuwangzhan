@@ -7,8 +7,8 @@
 .fc-surface-repair .repair-body summary {cursor:pointer}
 .fc-surface-repair .repair-body .toggle {color:var(--fcd-gold);font-size:23px;text-align:center;flex-shrink:0}
 .fc-surface-repair .repair-body details[open]>summary>.toggle {transform:rotate(45deg)}
-.fc-surface-repair .repair-body :is(.service,.faq,.damage-details)>summary {list-style:none}
-.fc-surface-repair .repair-body :is(.service,.faq,.damage-details)>summary::-webkit-details-marker {display:none}
+.fc-surface-repair .repair-body :is(.service,.faq,.damage-details,.assessment-detail)>summary {list-style:none}
+.fc-surface-repair .repair-body :is(.service,.faq,.damage-details,.assessment-detail)>summary::-webkit-details-marker {display:none}
 .fc-surface-repair .repair-body .text-link {display:inline-flex;align-items:center;justify-content:space-between;gap:18px;min-height:44px;font-size:15px;border:0;background:transparent;padding:4px 0;color:var(--fcd-text)}
 .fc-surface-repair .damage-grid {display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:24px}
 .fc-surface-repair .damage-card {min-width:0;background:#191a17}
@@ -40,11 +40,13 @@
 .fc-surface-repair .service-body .text-link {margin-top:22px}
 .fc-surface-repair .assessment {background:#191a17}
 .fc-surface-repair .assessment-grid {display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:20px;align-items:stretch}
-.fc-surface-repair .assessment-item {min-width:0;padding:28px;background:var(--fcd-bg);display:flex;flex-direction:column}
-.fc-surface-repair .assessment-status {align-self:flex-start;color:var(--fcd-gold);margin-bottom:16px;font-size:12px;letter-spacing:.04em;padding:4px 10px;background:#2c2c25}
-.fc-surface-repair .repair-body .assessment-item>p {font-size:16px;margin:12px 0 16px}
-.fc-surface-repair .assessment-detail {margin-top:auto}
-.fc-surface-repair .assessment-detail summary {min-height:44px;padding-block:12px;font-size:13px;color:var(--fcd-soft)}
+.fc-surface-repair .assessment-item {min-width:0;padding:24px 24px 12px;background:var(--fcd-bg);display:flex;flex-direction:column}
+.fc-surface-repair .assessment-heading {display:flex;align-items:flex-start;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.fc-surface-repair .assessment-heading h3 {flex:1 1 auto;min-width:0}
+.fc-surface-repair .assessment-status {flex:0 0 auto;max-width:100%;margin-left:auto;color:var(--fcd-gold);font-size:12px;letter-spacing:.04em;padding:4px 8px;background:#2c2c25}
+.fc-surface-repair .repair-body .assessment-item>p {font-size:16px;margin:10px 0 18px}
+.fc-surface-repair .assessment-detail {margin-top:auto;border-top:1px solid var(--fcd-line)}
+.fc-surface-repair .assessment-detail summary {display:flex;align-items:center;justify-content:space-between;gap:16px;min-height:44px;padding-block:8px;font-size:13px;color:var(--fcd-soft)}
 .fc-surface-repair .repair-body .assessment-detail p {font-size:15px;line-height:1.8;margin:8px 0 0}
 .fc-surface-repair .process-grid {display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px;margin:0 0 20px;padding:0;list-style:none}
 .fc-surface-repair .process-grid li {min-width:0;display:grid;grid-template-columns:36px minmax(0,1fr);align-content:start;gap:8px 16px;padding:24px;background:#191a17}
@@ -103,7 +105,7 @@
  .fc-surface-repair .repair-body {font-size:16px}
  .fc-surface-repair :is(.damage-grid,.assessment-grid,.process-grid,.price .triple,.service-grid,.consult-layout) {grid-template-columns:1fr}
  .fc-surface-repair .assessment-grid {gap:16px}
- .fc-surface-repair .assessment-item {padding:24px}
+.fc-surface-repair .assessment-item {padding:20px 20px 10px}
  .fc-surface-repair :is(.process-grid,.price .triple) {gap:12px}
  .fc-surface-repair .process-grid li {padding:20px}
  .fc-surface-repair .damage-copy {padding:20px}
