@@ -66,6 +66,10 @@ describe("18 exact original-identity bilingual body targets", () => {
       const target = findManagedTarget(MANAGED_TARGETS, locked.recordId, locked.slug, { ...locked, operation: "publish" });
       expect(target).toMatchObject({ desiredFieldsSha256: stableDigest(locked.desiredFields), rollbackFieldsSha256: stableDigest(Object.fromEntries(locked.changedFields.map((key: string) => [key, row[key]]))) });
       expect(targetConfigs[name].lockedCandidate).toEqual(locked);
+      for (const page of locked.publicPaths) {
+        const lang = page.path.split("/")[1];
+        expect(page.expected).toBe(String(row[`seo_title_${lang}`]).replaceAll("&", "&amp;"));
+      }
       expect(workflow.split(name).length - 1).toBe(3);
       expect(createHash("sha256").update(readFileSync(locked.sourceCandidatePath)).digest("hex")).toBe(locked.originalFrozenSourceSha256);
       expect(() => assertLockedServiceCandidate(locked, row)).not.toThrow();

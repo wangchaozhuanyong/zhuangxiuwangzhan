@@ -99,11 +99,11 @@
     "publicPaths": [
       {
         "path": "/en/services/design",
-        "expected": "Interior Design and Space Planning"
+        "expected": "Interior Design Kuala Lumpur | FLASH CAST"
       },
       {
         "path": "/zh/services/design",
-        "expected": "室内设计与空间规划"
+        "expected": "吉隆坡室内设计与空间规划｜住宅与商业设计施工衔接"
       }
     ]
   },
@@ -207,11 +207,11 @@
     "publicPaths": [
       {
         "path": "/en/services/kitchen",
-        "expected": "Kitchen Renovation in Kuala Lumpur & Selangor"
+        "expected": "Kitchen Renovation Kuala Lumpur &amp; Selangor | FLASH CAST"
       },
       {
         "path": "/zh/services/kitchen",
-        "expected": "吉隆坡与雪兰莪厨房装修服务"
+        "expected": "吉隆坡与雪兰莪厨房装修｜橱柜、台面与干湿厨房规划 | FLASH CAST"
       }
     ]
   },
@@ -315,11 +315,11 @@
     "publicPaths": [
       {
         "path": "/en/services/bathroom",
-        "expected": "Bathroom Renovation and Waterproofing"
+        "expected": "Bathroom Renovation Malaysia | FLASH CAST"
       },
       {
         "path": "/zh/services/bathroom",
-        "expected": "浴室装修与防水工程"
+        "expected": "浴室装修与防水工程｜吉隆坡、雪兰莪 Bathroom Renovation"
       }
     ]
   },
@@ -423,11 +423,11 @@
     "publicPaths": [
       {
         "path": "/en/services/flooring",
-        "expected": "Flooring Services and Project Consultation"
+        "expected": "Flooring Services in Kuala Lumpur &amp; Selangor | FLASH CAST"
       },
       {
         "path": "/zh/services/flooring",
-        "expected": "地板服务与方案沟通"
+        "expected": "吉隆坡与雪兰莪地板服务 | FLASH CAST"
       }
     ]
   },
@@ -531,11 +531,11 @@
     "publicPaths": [
       {
         "path": "/en/services/office-renovation",
-        "expected": "Office Renovation & Commercial Fit-Out Malaysia"
+        "expected": "Office Renovation &amp; Commercial Fit-Out Malaysia | FLASH CAST"
       },
       {
         "path": "/zh/services/office-renovation",
-        "expected": "马来西亚办公室装修与商业空间规划"
+        "expected": "马来西亚办公室装修与商业空间规划 | FLASH CAST"
       }
     ]
   },
@@ -639,11 +639,11 @@
     "publicPaths": [
       {
         "path": "/en/services/builtin",
-        "expected": "Whole-House Custom Furniture, Built-In Storage & Wardrobes"
+        "expected": "Custom Built-In Furniture &amp; Wardrobes | FLASH CAST"
       },
       {
         "path": "/zh/services/builtin",
-        "expected": "全屋定制、定制家具与定制衣柜"
+        "expected": "全屋定制与定制家具｜衣柜、电视柜、收纳柜｜FLASH CAST"
       }
     ]
   },
@@ -747,11 +747,11 @@
     "publicPaths": [
       {
         "path": "/en/services/warehouse",
-        "expected": "Warehouse Shelving and Storage Planning"
+        "expected": "Warehouse Shelving &amp; Storage Planning | FLASH CAST"
       },
       {
         "path": "/zh/services/warehouse",
-        "expected": "雪兰莪仓库货架与仓储空间规划"
+        "expected": "雪兰莪仓库货架与仓储空间规划｜FLASH CAST"
       }
     ]
   },
@@ -855,11 +855,11 @@
     "publicPaths": [
       {
         "path": "/en/services/approval",
-        "expected": "Permit & Drawing Support"
+        "expected": "Permit &amp; Drawing Support Kuala Lumpur | FLASH CAST"
       },
       {
         "path": "/zh/services/approval",
-        "expected": "装修准证与图纸支持"
+        "expected": "装修准证与图纸支持 | FLASH CAST"
       }
     ]
   },
