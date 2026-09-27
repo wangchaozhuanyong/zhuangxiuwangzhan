@@ -95,7 +95,8 @@ export default function SurfaceRepairContent({ service }: { service: PublishedSe
     <JsonLdFAQ faqs={faqs} />
     <div className="fc-design fc-surface-repair" data-locale={language === "zh" ? "zh-CN" : "en"}>
       <ImmersiveHero className="fcd-design-hero repair-hero" standardPageHero={false} aria-labelledby="repair-hero-title">
-        <figure className="fcd-design-hero__media"><SmartImage src={service.image || `${imageRoot}hero.webp`} width={1672} height={941} sourceWidth={1672} candidateWidths={[560, 900, 1200, 1600]} critical loading="eager" fetchPriority="high" sizes="100vw" showFailureFallback alt={service.imageAlt || copy.siteHero.imageAlt} /></figure>
+        {/* The landscape image covers a tall hero: its source width must also cover the hero height at 1672:941. */}
+        <figure className="fcd-design-hero__media"><SmartImage src={service.image || `${imageRoot}hero.webp`} width={1672} height={941} sourceWidth={1672} candidateWidths={[560, 900, 1200, 1600]} critical loading="eager" fetchPriority="high" sizes="max(100vw, 178vh, 1174px)" showFailureFallback alt={service.imageAlt || copy.siteHero.imageAlt} /></figure>
         <div className="fcd-design-hero__frame fcd-page-gutter"><div className="fcd-design-hero__copy">
           <p className="fcd-design-hero__location">{copy.regions}</p>
           <h1 id="repair-hero-title">{titleLines.map((line, index) => <span key={line}>{line}{language === "en" && index < titleLines.length - 1 ? " " : ""}</span>)}</h1>
