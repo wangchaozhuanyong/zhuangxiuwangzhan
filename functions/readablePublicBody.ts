@@ -1,4 +1,5 @@
 import { translateDisplayText } from "../src/i18n/displayLabels";
+import { isServiceConceptImage } from "../src/lib/serviceMedia";
 // Same public content for every user agent; this fallback is rendered only without JS.
 export const readableBodyPaths = ["/services/builtin", "/blog/renovation-materials-malaysia", "/projects/bangsar-walk-in-wardrobe-system"] as const;
 const allowedTags = new Set(["p", "h2", "h3", "h4", "strong", "em", "b", "i", "br", "ul", "ol", "li", "a", "blockquote"]);
@@ -63,7 +64,7 @@ export function buildReadablePublicBody(key: string, row: Record<string, unknown
   const list = (name: string, value: unknown) => Array.isArray(value) && value.length
     ? `<section><h2>${escape(name)}</h2><ul>${value.filter(x => typeof x === "string" && x.trim()).map(x => `<li>${escape(translateDisplayText(plain(x), lang))}</li>`).join("")}</ul></section>` : "";
   let body = `<h1>${escape(title)}</h1>`;
-  if (path.startsWith("/projects/")) body += `<p>${labels.label}</p>`;
+  if (path.startsWith("/projects/") || (path.startsWith("/services/") && isServiceConceptImage(plain(field("alt"))))) body += `<p>${labels.label}</p>`;
   if (plain(field("excerpt"))) body += `<p>${escape(plain(field("excerpt")))}</p>`;
   body += sanitizeReadableContent(content, lang);
   if (path.startsWith("/services/")) {

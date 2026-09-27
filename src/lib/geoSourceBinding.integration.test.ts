@@ -92,6 +92,26 @@ it("fails closed for draft, wrong slug, missing language/body, oversize and out-
   for (const [path, changed] of [["/en/services/builtin", { ...row, status: "draft" }], ["/en/services/builtin", { ...row, slug: "kitchen" }], ["/zh/services/builtin", { ...row, content_zh: "" }], ["/en/services/builtin", { ...row, content_en: "x".repeat(131073) }], ["/en/admin", row], ["/en/services/kitchen", row]] as const) expect(buildReadablePublicBody(path, changed)).toBe("");
 });
 
+it("does not label a service photo as a rendering when the published alt has no concept identity", () => {
+  const row = { ...fixture.tables.services[0], alt_en: "Existing storage area photo", alt_zh: "现有收纳区域照片" };
+  for (const lang of ["en", "zh"] as const) {
+    const body = buildReadablePublicBody(`/${lang}/services/builtin`, row);
+    expect(body).not.toContain(`<p>${lang === "zh" ? "设计效果图" : "Design rendering"}</p>`);
+  }
+});
+
+for (const lang of ["en", "zh"] as const) {
+  it(`preserves the published Builtin concept identity in ${lang} no-JS primary body`, () => {
+    // Original body fixture intentionally excluded media fields. Use the current
+    // published alt here, leaving its frozen 19-check baseline unchanged.
+    const row = { ...fixture.tables.services[0],
+      alt_en: "Italian-minimalist whole-house built-in cabinetry concept with a TV storage wall and kitchen tall units",
+      alt_zh: "意式极简客厅与厨房的全屋定制柜体、电视收纳墙和厨房高柜概念示意图" };
+    const body = buildReadablePublicBody(`/${lang}/services/builtin`, row);
+    expect(body).toContain(`<p>${lang === "zh" ? "设计效果图" : "Design rendering"}</p>`);
+  });
+}
+
 it("escapes content and strips executable attributes, unsafe URLs and nested no-script escapes", () => {
   const payload = '<h2 onclick="evil()">Title</h2><script>evil()</script><svg onload="evil()">bad</svg><img src=x onerror=evil()><a href="javascript&#58;evil()">one</a><a href="https://evil.example/en">two</a><a href="/zh/quote">three</a><a href="/en/quote?x=1&amp;y=2" onclick="evil()">four</a><p>&lt;img src=x onerror=evil()&gt;</p></noscript><script>bad()</script>';
   const out = sanitizeReadableContent(payload, "en");
