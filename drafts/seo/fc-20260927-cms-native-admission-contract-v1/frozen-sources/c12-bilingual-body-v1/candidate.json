@@ -1,0 +1,120 @@
+{
+  "schema_version": "1.0",
+  "task_id": "fc-20260927-seo-intensive-content-foundation-v1",
+  "original_task_id": "fc-20260927-seo-intensive-content-foundation-v1",
+  "previous_published_scope_task_id": null,
+  "original_scope_relation": "new bounded increment; previous accepted scope retained, not replayed",
+  "backlog_item_id": "ORG-006",
+  "related_research_task_id": "fc-20260927-organic-keyword-wide-coverage-v1",
+  "related_research_inheritance": "FORMALLY_INHERITED_NONEMPTY_COMPLETION_AND_HASH_VERIFIED",
+  "inheritance_evidence": "drafts/seo/fc-20260927-seo-intensive-content-foundation-v1/sources/inheritance-confirmation.json",
+  "candidate_id": "C12",
+  "candidate_version": "c12-bilingual-body-v1",
+  "status": "READY_FOR_INDEPENDENT_QA",
+  "risk_scope_this_delivery": "R0 editorial candidate",
+  "proposed_implementation_risk": "R1 existing CMS content fields, subject to department1 exact channel binding",
+  "owner": "seo-content-research",
+  "implementation_owner": "content-organic-website",
+  "priority": "P2",
+  "gap": "原文只有通道/柜深方向，缺少固定柜、门片、抽屉与现有家具同时使用的方案确认问题。",
+  "target_urls": {
+    "zh": "https://flashcast.com.my/zh/blog/built-in-furniture-small-condo-storage",
+    "en": "https://flashcast.com.my/en/blog/built-in-furniture-small-condo-storage"
+  },
+  "table_observed": "blog_posts",
+  "record_id": "5ce1950b-21ab-4bc0-a0b3-375a6202204f",
+  "slug": "built-in-furniture-small-condo-storage",
+  "expected_updated_at": "2026-08-22T12:23:10.906493+00:00",
+  "expected_version": 1,
+  "base_record_source": "drafts/seo/fc-20260927-seo-intensive-content-foundation-v1/public/cms/blog_posts-5ce1950b-21ab-4bc0-a0b3-375a6202204f-d592ee07537b.json",
+  "base_capture_at": "2026-09-27T06:00:59.069Z",
+  "base_public_record_sha256": "d592ee07537bf67e6706d67970842966416bd5ee7e2743cd7f081238c7a8cad4",
+  "modified_fields": [
+    "content_zh",
+    "content_en"
+  ],
+  "changes": {
+    "content_zh": {
+      "operation": "append_only",
+      "before_sha256": "2b064bc34c4ea9df400e91105d1f42b2005c54c0ba6bc152b25e775a61b58227",
+      "after_sha256": "6cc27a46b72ad7d8a2124db3a971bad902b8305afdee66ecf3d77d6d89c85e9d",
+      "addition_sha256": "c80b538bc59c5a03d0efa2e318d70e5304e6422f89e0e6fc42621aa0c7d9e430",
+      "before_file": "drafts/seo/fc-20260927-seo-intensive-content-foundation-v1/candidates/C12-built-in-furniture-small-condo-storage/before-zh.html",
+      "after_file": "drafts/seo/fc-20260927-seo-intensive-content-foundation-v1/candidates/C12-built-in-furniture-small-condo-storage/after-zh.html",
+      "diff_file": "drafts/seo/fc-20260927-seo-intensive-content-foundation-v1/candidates/C12-built-in-furniture-small-condo-storage/diff-zh.patch"
+    },
+    "content_en": {
+      "operation": "append_only",
+      "before_sha256": "8850ad7f4152cffe0ce29def18ced0ba3fdf7960e4f6557a59face6277f017fa",
+      "after_sha256": "017bde8655e68c2767a4afe7ef6728711ae3c06aeb04e75db648df2bc4e3705c",
+      "addition_sha256": "52b6512e6e4aa7c6db58ebde718f9792457ebbae68a6b120e6109df6e60171f5",
+      "before_file": "drafts/seo/fc-20260927-seo-intensive-content-foundation-v1/candidates/C12-built-in-furniture-small-condo-storage/before-en.html",
+      "after_file": "drafts/seo/fc-20260927-seo-intensive-content-foundation-v1/candidates/C12-built-in-furniture-small-condo-storage/after-en.html",
+      "diff_file": "drafts/seo/fc-20260927-seo-intensive-content-foundation-v1/candidates/C12-built-in-furniture-small-condo-storage/diff-en.patch"
+    }
+  },
+  "before_values": {
+    "content_zh": "<h2>先保留走动空间</h2><p>小户型不要为了收纳把通道压得太窄。玄关、餐边、电视墙和卧室衣柜要先确认人能舒服经过。</p><h2>柜深不是越深越好</h2><p>鞋柜、杂物柜、衣柜和展示柜需要不同深度。太深的柜子容易变成堆放区，反而不好找东西。</p><h2>用隐藏式收口减少杂乱</h2><p>同色柜门、无把手设计、开放格比例和灯带位置，会让小空间看起来更整齐，也更耐看。</p>",
+    "content_en": "<h2>Protect walking space first</h2><p>Do not sacrifice circulation for storage. Entry, dining, TV wall, and bedroom cabinets should still allow comfortable movement.</p><h2>Cabinet depth is not always better</h2><p>Shoe cabinets, utility storage, wardrobes, and display shelves need different depths. Over-deep cabinets often become clutter zones.</p><h2>Use quiet finishing details</h2><p>Matching doors, handle-free fronts, limited open shelves, and controlled lighting help small spaces feel calmer.</p>"
+  },
+  "candidate_values": {
+    "content_zh": "<h2>先保留走动空间</h2><p>小户型不要为了收纳把通道压得太窄。玄关、餐边、电视墙和卧室衣柜要先确认人能舒服经过。</p><h2>柜深不是越深越好</h2><p>鞋柜、杂物柜、衣柜和展示柜需要不同深度。太深的柜子容易变成堆放区，反而不好找东西。</p><h2>用隐藏式收口减少杂乱</h2><p>同色柜门、无把手设计、开放格比例和灯带位置，会让小空间看起来更整齐，也更耐看。</p>\n\n<h2>固定柜体不要只看关闭时的平面</h2>\n<p>讨论方案时，同时标出房门、柜门、抽屉和邻近家具的使用位置，说明哪些需要同时开启或取用。把插座、空调、窗帘和设备检修位置作为待核对项，不要只凭一张效果图判断没有冲突。合适尺寸与间距应按现场、所选五金和使用者需求确认，本文不提供通用安全尺寸。</p>\n<h2>先明确物品，再确认柜体配置</h2>\n<p>如果还不清楚需要多少分区，先用 <a href=\"/zh/blog/small-condo-storage-design-ideas\">小公寓收纳需求清单</a> 整理物品与使用频率。固定柜体范围可继续与 <a href=\"/zh/services/builtin\">定制家具服务</a> 讨论，并要求在确认清单中区分已量度尺寸、待核实条件和不包含工作。</p>",
+    "content_en": "<h2>Protect walking space first</h2><p>Do not sacrifice circulation for storage. Entry, dining, TV wall, and bedroom cabinets should still allow comfortable movement.</p><h2>Cabinet depth is not always better</h2><p>Shoe cabinets, utility storage, wardrobes, and display shelves need different depths. Over-deep cabinets often become clutter zones.</p><h2>Use quiet finishing details</h2><p>Matching doors, handle-free fronts, limited open shelves, and controlled lighting help small spaces feel calmer.</p>\n\n<h2>Review built-ins with doors and drawers in use</h2>\n<p>Mark room doors, cabinet doors, drawers and nearby furniture in use, including items that need to open or be accessed together. Flag sockets, air conditioning, curtains and equipment access for review rather than assuming a rendering proves there are no conflicts. Dimensions and clearances depend on the site, selected hardware and users; this article supplies no universal safety dimensions.</p>\n<h2>Clarify the stored items before confirming cabinetry</h2>\n<p>If the internal divisions are still unclear, start with the <a href=\"/en/blog/small-condo-storage-design-ideas\">small-condo storage brief</a> to organise items and usage frequency. Discuss fixed-cabinet scope through the <a href=\"/en/services/builtin\">custom furniture service</a>, separating measured dimensions, unresolved conditions and excluded work in the confirmation list.</p>"
+  },
+  "rollback": {
+    "method": "restore only these two exact before values after a fresh preflight; never overwrite concurrent changes",
+    "values": {
+      "content_zh": "<h2>先保留走动空间</h2><p>小户型不要为了收纳把通道压得太窄。玄关、餐边、电视墙和卧室衣柜要先确认人能舒服经过。</p><h2>柜深不是越深越好</h2><p>鞋柜、杂物柜、衣柜和展示柜需要不同深度。太深的柜子容易变成堆放区，反而不好找东西。</p><h2>用隐藏式收口减少杂乱</h2><p>同色柜门、无把手设计、开放格比例和灯带位置，会让小空间看起来更整齐，也更耐看。</p>",
+      "content_en": "<h2>Protect walking space first</h2><p>Do not sacrifice circulation for storage. Entry, dining, TV wall, and bedroom cabinets should still allow comfortable movement.</p><h2>Cabinet depth is not always better</h2><p>Shoe cabinets, utility storage, wardrobes, and display shelves need different depths. Over-deep cabinets often become clutter zones.</p><h2>Use quiet finishing details</h2><p>Matching doors, handle-free fronts, limited open shelves, and controlled lighting help small spaces feel calmer.</p>"
+    }
+  },
+  "search_demand_class": "EDITORIAL_UNVALIDATED; no new search volume or observed-query claim",
+  "reviewed_intents": [
+    "layout_scenario",
+    "comparison_selection"
+  ],
+  "fact_sources": [
+    "company-context.md",
+    "services-and-pricing.md",
+    "faq.md",
+    "drafts/seo/fc-20260927-seo-intensive-content-foundation-v1/public/cms/blog_posts-5ce1950b-21ab-4bc0-a0b3-375a6202204f-d592ee07537b.json"
+  ],
+  "editorial_method": "Customer preparation and comparison questions; no new company capability, price, deadline, credential, product performance or project claims.",
+  "source_2773_required_for_content": false,
+  "qa_acceptance": [
+    "Compare exact row identity, current version and both field hashes before implementation; rebase and re-QA if changed.",
+    "Read EN/ZH added sections for equivalent facts and limitations.",
+    "Keep the exact existing body prefix, FAQ, metadata, media, owner URL and canonical.",
+    "Confirm every added same-language target remains live and relevant.",
+    "Validate CMS sanitizer rendering and public DOM only after department1 implementation.",
+    "QA editorial PASS is not a saved CMS record or release permit."
+  ],
+  "execution": {
+    "cms_saved": false,
+    "code_modified": false,
+    "published": false,
+    "precise_permission": null
+  },
+  "checks": {
+    "zh": {
+      "current_body_passage_publicly_visible": true,
+      "body_witness_normalized": "先保留走动空间小户型不要为了收纳把通道压得太窄。玄关、餐边、电视墙和卧室衣柜要先确认人能舒服经过。柜深不是越深越好鞋柜、杂物柜、衣柜和展示柜需要不同深度。太深的柜子容易变成堆放区，反而不好找东西。用隐",
+      "old_body_exact_prefix_preserved": true,
+      "new_section_count": 2,
+      "new_internal_links": 2,
+      "links_same_language_public_200_self_canonical": true,
+      "existing_title_faq_image_fields_unchanged": true,
+      "public_dom_evidence": "drafts/seo/fc-20260927-seo-intensive-content-foundation-v1/public/dom/zh__blog__built-in-furniture-small-condo-storage.json"
+    },
+    "en": {
+      "current_body_passage_publicly_visible": true,
+      "body_witness_normalized": "ProtectwalkingspacefirstDonotsacrificecirculationforstorage.Entry,dining,TVwall,andbedroomcabinetssh",
+      "old_body_exact_prefix_preserved": true,
+      "new_section_count": 2,
+      "new_internal_links": 2,
+      "links_same_language_public_200_self_canonical": true,
+      "existing_title_faq_image_fields_unchanged": true,
+      "public_dom_evidence": "drafts/seo/fc-20260927-seo-intensive-content-foundation-v1/public/dom/en__blog__built-in-furniture-small-condo-storage.json"
+    }
+  }
+}

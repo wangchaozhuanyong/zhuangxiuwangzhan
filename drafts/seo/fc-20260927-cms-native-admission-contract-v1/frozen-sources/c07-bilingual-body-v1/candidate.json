@@ -1,0 +1,120 @@
+{
+  "schema_version": "1.0",
+  "task_id": "fc-20260927-seo-intensive-content-foundation-v1",
+  "original_task_id": "fc-20260927-seo-intensive-content-foundation-v1",
+  "previous_published_scope_task_id": null,
+  "original_scope_relation": "new bounded increment; previous accepted scope retained, not replayed",
+  "backlog_item_id": "ORG-006",
+  "related_research_task_id": "fc-20260927-organic-keyword-wide-coverage-v1",
+  "related_research_inheritance": "FORMALLY_INHERITED_NONEMPTY_COMPLETION_AND_HASH_VERIFIED",
+  "inheritance_evidence": "drafts/seo/fc-20260927-seo-intensive-content-foundation-v1/sources/inheritance-confirmation.json",
+  "candidate_id": "C07",
+  "candidate_version": "c07-bilingual-body-v1",
+  "status": "READY_FOR_INDEPENDENT_QA",
+  "risk_scope_this_delivery": "R0 editorial candidate",
+  "proposed_implementation_risk": "R1 existing CMS content fields, subject to department1 exact channel binding",
+  "owner": "seo-content-research",
+  "implementation_owner": "content-organic-website",
+  "priority": "P1",
+  "gap": "原文指出五金与结构影响价格，但没有同规格比较记录和图纸/现场未确认项的区分。",
+  "target_urls": {
+    "zh": "https://flashcast.com.my/zh/blog/custom-wardrobe-price-malaysia",
+    "en": "https://flashcast.com.my/en/blog/custom-wardrobe-price-malaysia"
+  },
+  "table_observed": "blog_posts",
+  "record_id": "bf690bf8-fbc3-41aa-9ce1-161fdddda184",
+  "slug": "custom-wardrobe-price-malaysia",
+  "expected_updated_at": "2026-08-22T12:23:05.625076+00:00",
+  "expected_version": 1,
+  "base_record_source": "drafts/seo/fc-20260927-seo-intensive-content-foundation-v1/public/cms/blog_posts-bf690bf8-fbc3-41aa-9ce1-161fdddda184-3d26babe51db.json",
+  "base_capture_at": "2026-09-27T06:00:59.068Z",
+  "base_public_record_sha256": "3d26babe51db30fc496733b76dd12419e4c55721080244c3345be185509ff02b",
+  "modified_fields": [
+    "content_zh",
+    "content_en"
+  ],
+  "changes": {
+    "content_zh": {
+      "operation": "append_only",
+      "before_sha256": "0949c1a1b4ed9f813e0835661c7b440f140580e52c596c75f29ee4ef58c4ea15",
+      "after_sha256": "c3d8d388083531d880e0689671c6bf4b6f06cf43b5b34700c96f076df80100f3",
+      "addition_sha256": "4a505cd5f14cc30ff68e76bf73b120efd3ba26e6383beb2d10702220114f75d3",
+      "before_file": "drafts/seo/fc-20260927-seo-intensive-content-foundation-v1/candidates/C07-custom-wardrobe-price-malaysia/before-zh.html",
+      "after_file": "drafts/seo/fc-20260927-seo-intensive-content-foundation-v1/candidates/C07-custom-wardrobe-price-malaysia/after-zh.html",
+      "diff_file": "drafts/seo/fc-20260927-seo-intensive-content-foundation-v1/candidates/C07-custom-wardrobe-price-malaysia/diff-zh.patch"
+    },
+    "content_en": {
+      "operation": "append_only",
+      "before_sha256": "52bc399871dae965e8bd8ff8d7a20a3cb4919d817185d8a822c203b3fd0d2a06",
+      "after_sha256": "aa97f2591a44688883791b8b227fc88b5e69d2e89a52d179fed377bc82246645",
+      "addition_sha256": "0e81c46c24ae1d7be75911fd6a2d4086b369cc72722f6e447450a1d7c6f4831d",
+      "before_file": "drafts/seo/fc-20260927-seo-intensive-content-foundation-v1/candidates/C07-custom-wardrobe-price-malaysia/before-en.html",
+      "after_file": "drafts/seo/fc-20260927-seo-intensive-content-foundation-v1/candidates/C07-custom-wardrobe-price-malaysia/after-en.html",
+      "diff_file": "drafts/seo/fc-20260927-seo-intensive-content-foundation-v1/candidates/C07-custom-wardrobe-price-malaysia/diff-en.patch"
+    }
+  },
+  "before_values": {
+    "content_zh": "<h2>价格差通常来自规格差</h2><p>同样是衣柜，平开门、移门、玻璃门、抽屉数量、五金等级和内部收纳都会影响价格。报价要先确认尺寸和结构。</p><h2>常用区域要耐用</h2><p>每天开关的门铰、抽屉轨道和挂衣杆不要只看便宜。五金顺不顺，往往决定衣柜好不好用。</p><h2>先整理收纳习惯</h2><p>报价前准备墙面尺寸、衣物类型、长衣比例、抽屉需求和镜子或灯带需求，设计会更贴近日常使用。</p>",
+    "content_en": "<h2>Price differences come from specifications</h2><p>Door type, glass panels, drawer count, hardware grade, and internal accessories can change the price even when the wardrobe size looks similar.</p><h2>Daily-use hardware matters</h2><p>Hinges, runners, hanging rails, and sliding tracks affect long-term comfort. Cheap hardware can become the first source of frustration.</p><h2>Share storage habits early</h2><p>Prepare wall dimensions, clothing types, long-hanging needs, drawer requirements, mirrors, and lighting preferences before asking for pricing.</p>"
+  },
+  "candidate_values": {
+    "content_zh": "<h2>价格差通常来自规格差</h2><p>同样是衣柜，平开门、移门、玻璃门、抽屉数量、五金等级和内部收纳都会影响价格。报价要先确认尺寸和结构。</p><h2>常用区域要耐用</h2><p>每天开关的门铰、抽屉轨道和挂衣杆不要只看便宜。五金顺不顺，往往决定衣柜好不好用。</p><h2>先整理收纳习惯</h2><p>报价前准备墙面尺寸、衣物类型、长衣比例、抽屉需求和镜子或灯带需求，设计会更贴近日常使用。</p>\n\n<h2>怎样把两个衣柜方案放在同一条件下比较？</h2>\n<p>把总尺寸、柜内分区、门片数量与开门方式、抽屉和其他配件、板材与饰面、供应与安装范围列在同一张表。写明哪些尺寸已现场量度，哪些仅来自平面图或口头估算。相同墙长不代表内部配置和交付相同，未定型号或配件应保留待确认，不能假设已包含。</p>\n<h2>改了配置后，怎样保持报价可核对？</h2>\n<p>保留每次确认的图纸或清单版本，将新增、取消和替代项目分别标注，再请负责方说明价格与安装范围是否改变。先用 <a href=\"/zh/blog/built-in-cabinet-cost-malaysia\">定制柜报价范围指南</a> 核对项目，再到 <a href=\"/zh/services/builtin\">定制衣柜与收纳服务</a> 讨论实际空间。本文不提供统一单价，也不承诺任何五金型号、库存或交期。</p>",
+    "content_en": "<h2>Price differences come from specifications</h2><p>Door type, glass panels, drawer count, hardware grade, and internal accessories can change the price even when the wardrobe size looks similar.</p><h2>Daily-use hardware matters</h2><p>Hinges, runners, hanging rails, and sliding tracks affect long-term comfort. Cheap hardware can become the first source of frustration.</p><h2>Share storage habits early</h2><p>Prepare wall dimensions, clothing types, long-hanging needs, drawer requirements, mirrors, and lighting preferences before asking for pricing.</p>\n\n<h2>How can two wardrobe proposals be compared on equal terms?</h2>\n<p>Put overall dimensions, internal divisions, door quantities and opening method, drawers and accessories, boards and finishes, supply and installation on one comparison sheet. Distinguish site-measured dimensions from plans or verbal estimates. The same wall length does not mean the same configuration or deliverables. Keep unspecified models and accessories pending rather than assuming they are included.</p>\n<h2>How can the quotation stay traceable after a configuration change?</h2>\n<p>Retain each agreed drawing or list revision, marking additions, removals and substitutions, and ask the responsible party whether price or installation scope changes. Review the <a href=\"/en/blog/built-in-cabinet-cost-malaysia\">built-in quotation scope guide</a>, then discuss the actual space through the <a href=\"/en/services/builtin\">wardrobe and storage service</a>. This article provides no universal unit price, hardware availability or delivery commitment.</p>"
+  },
+  "rollback": {
+    "method": "restore only these two exact before values after a fresh preflight; never overwrite concurrent changes",
+    "values": {
+      "content_zh": "<h2>价格差通常来自规格差</h2><p>同样是衣柜，平开门、移门、玻璃门、抽屉数量、五金等级和内部收纳都会影响价格。报价要先确认尺寸和结构。</p><h2>常用区域要耐用</h2><p>每天开关的门铰、抽屉轨道和挂衣杆不要只看便宜。五金顺不顺，往往决定衣柜好不好用。</p><h2>先整理收纳习惯</h2><p>报价前准备墙面尺寸、衣物类型、长衣比例、抽屉需求和镜子或灯带需求，设计会更贴近日常使用。</p>",
+      "content_en": "<h2>Price differences come from specifications</h2><p>Door type, glass panels, drawer count, hardware grade, and internal accessories can change the price even when the wardrobe size looks similar.</p><h2>Daily-use hardware matters</h2><p>Hinges, runners, hanging rails, and sliding tracks affect long-term comfort. Cheap hardware can become the first source of frustration.</p><h2>Share storage habits early</h2><p>Prepare wall dimensions, clothing types, long-hanging needs, drawer requirements, mirrors, and lighting preferences before asking for pricing.</p>"
+    }
+  },
+  "search_demand_class": "EDITORIAL_UNVALIDATED; no new search volume or observed-query claim",
+  "reviewed_intents": [
+    "cost_quote",
+    "comparison_selection"
+  ],
+  "fact_sources": [
+    "company-context.md",
+    "services-and-pricing.md",
+    "faq.md",
+    "drafts/seo/fc-20260927-seo-intensive-content-foundation-v1/public/cms/blog_posts-bf690bf8-fbc3-41aa-9ce1-161fdddda184-3d26babe51db.json"
+  ],
+  "editorial_method": "Customer preparation and comparison questions; no new company capability, price, deadline, credential, product performance or project claims.",
+  "source_2773_required_for_content": false,
+  "qa_acceptance": [
+    "Compare exact row identity, current version and both field hashes before implementation; rebase and re-QA if changed.",
+    "Read EN/ZH added sections for equivalent facts and limitations.",
+    "Keep the exact existing body prefix, FAQ, metadata, media, owner URL and canonical.",
+    "Confirm every added same-language target remains live and relevant.",
+    "Validate CMS sanitizer rendering and public DOM only after department1 implementation.",
+    "QA editorial PASS is not a saved CMS record or release permit."
+  ],
+  "execution": {
+    "cms_saved": false,
+    "code_modified": false,
+    "published": false,
+    "precise_permission": null
+  },
+  "checks": {
+    "zh": {
+      "current_body_passage_publicly_visible": true,
+      "body_witness_normalized": "价格差通常来自规格差同样是衣柜，平开门、移门、玻璃门、抽屉数量、五金等级和内部收纳都会影响价格。报价要先确认尺寸和结构。常用区域要耐用每天开关的门铰、抽屉轨道和挂衣杆不要只看便宜。五金顺不顺，往往决定",
+      "old_body_exact_prefix_preserved": true,
+      "new_section_count": 2,
+      "new_internal_links": 2,
+      "links_same_language_public_200_self_canonical": true,
+      "existing_title_faq_image_fields_unchanged": true,
+      "public_dom_evidence": "drafts/seo/fc-20260927-seo-intensive-content-foundation-v1/public/dom/zh__blog__custom-wardrobe-price-malaysia.json"
+    },
+    "en": {
+      "current_body_passage_publicly_visible": true,
+      "body_witness_normalized": "PricedifferencescomefromspecificationsDoortype,glasspanels,drawercount,hardwaregrade,andinternalacce",
+      "old_body_exact_prefix_preserved": true,
+      "new_section_count": 2,
+      "new_internal_links": 2,
+      "links_same_language_public_200_self_canonical": true,
+      "existing_title_faq_image_fields_unchanged": true,
+      "public_dom_evidence": "drafts/seo/fc-20260927-seo-intensive-content-foundation-v1/public/dom/en__blog__custom-wardrobe-price-malaysia.json"
+    }
+  }
+}

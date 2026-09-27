@@ -1,0 +1,121 @@
+{
+  "schema_version": "1.0",
+  "task_id": "fc-20260927-seo-intensive-content-foundation-v1",
+  "original_task_id": "fc-20260927-seo-intensive-content-foundation-v1",
+  "previous_published_scope_task_id": null,
+  "original_scope_relation": "new bounded increment; previous accepted scope retained, not replayed",
+  "backlog_item_id": "ORG-006",
+  "related_research_task_id": "fc-20260927-organic-keyword-wide-coverage-v1",
+  "related_research_inheritance": "FORMALLY_INHERITED_NONEMPTY_COMPLETION_AND_HASH_VERIFIED",
+  "inheritance_evidence": "drafts/seo/fc-20260927-seo-intensive-content-foundation-v1/sources/inheritance-confirmation.json",
+  "candidate_id": "C06",
+  "candidate_version": "c06-bilingual-body-v1",
+  "status": "READY_FOR_INDEPENDENT_QA",
+  "risk_scope_this_delivery": "R0 editorial candidate",
+  "proposed_implementation_risk": "R1 existing CMS content fields, subject to department1 exact channel binding",
+  "owner": "seo-content-research",
+  "implementation_owner": "content-organic-website",
+  "priority": "P1",
+  "gap": "现有content_zh字段只有195字符（含HTML），讲用途、样板与维护，缺少能用于同条件比较的资料清单、变更记录和具体承接链接。",
+  "target_urls": {
+    "zh": "https://flashcast.com.my/zh/blog/renovation-materials-malaysia",
+    "en": "https://flashcast.com.my/en/blog/renovation-materials-malaysia"
+  },
+  "table_observed": "blog_posts",
+  "record_id": "46faa278-295f-486d-9b90-263954993153",
+  "slug": "renovation-materials-malaysia",
+  "expected_updated_at": "2026-08-22T12:23:45.597996+00:00",
+  "expected_version": 1,
+  "base_record_source": "drafts/seo/fc-20260927-seo-intensive-content-foundation-v1/public/cms/blog_posts-46faa278-295f-486d-9b90-263954993153-d8113d5d9604.json",
+  "base_capture_at": "2026-09-27T06:00:59.070Z",
+  "base_public_record_sha256": "d8113d5d9604a96188cb28b3b3b10e393525cab7554a24e68e552617f5825383",
+  "modified_fields": [
+    "content_zh",
+    "content_en"
+  ],
+  "changes": {
+    "content_zh": {
+      "operation": "append_only",
+      "before_sha256": "f024510c643efe3d84dda0eacf19914b48821ebfd7108aa4ddd1dbf7fb1db12a",
+      "after_sha256": "8ac4c43b91d0162b1d3fa42e1f0eea46e2ae88c618fe8eb711d055bebaf6775c",
+      "addition_sha256": "8c7d5b28d45df9ddf0f0c3e5b25e90e72a912e31075c5a54504dfef4120171d4",
+      "before_file": "drafts/seo/fc-20260927-seo-intensive-content-foundation-v1/candidates/C06-renovation-materials-malaysia/before-zh.html",
+      "after_file": "drafts/seo/fc-20260927-seo-intensive-content-foundation-v1/candidates/C06-renovation-materials-malaysia/after-zh.html",
+      "diff_file": "drafts/seo/fc-20260927-seo-intensive-content-foundation-v1/candidates/C06-renovation-materials-malaysia/diff-zh.patch"
+    },
+    "content_en": {
+      "operation": "append_only",
+      "before_sha256": "cfffbadd2439446b565be84412db77b57060b38731d4e963f3232d967e698def",
+      "after_sha256": "69a983a86e716959e2bb0cdd7effc8c8a221b019a6b9542a2fb43dbe6dd42e52",
+      "addition_sha256": "773ceb5becb2875c8efeed54018c99cb3d6d1a0367ecb2933f696a49a0559ff8",
+      "before_file": "drafts/seo/fc-20260927-seo-intensive-content-foundation-v1/candidates/C06-renovation-materials-malaysia/before-en.html",
+      "after_file": "drafts/seo/fc-20260927-seo-intensive-content-foundation-v1/candidates/C06-renovation-materials-malaysia/after-en.html",
+      "diff_file": "drafts/seo/fc-20260927-seo-intensive-content-foundation-v1/candidates/C06-renovation-materials-malaysia/diff-en.patch"
+    }
+  },
+  "before_values": {
+    "content_zh": "<h2>每个空间的重点不同</h2><p>浴室看防滑和防水，厨房看耐污和耐热，客厅看耐磨和视觉效果，卧室则更重视舒适和触感。</p><h2>样板比效果图更可靠</h2><p>同一款材料在自然光、暖光和冷光下都可能不同。确认前最好把样板放到现场看。</p><h2>维护方式要先问清楚</h2><p>有些材料好看但怕刮、怕水或需要特别清洁。日常维护能不能接受，比短时间的视觉效果更重要。</p>",
+    "content_en": "<h2>Each space has a different priority</h2><p>Bathrooms need slip resistance and waterproofing, kitchens need stain and heat resistance, living areas need durability, and bedrooms need comfort.</p><h2>Samples are more reliable than renders</h2><p>A material can look different under natural, warm, and cool light. Review samples on site before confirming.</p><h2>Ask about maintenance early</h2><p>Some finishes look good but scratch easily, dislike moisture, or need special cleaning. Daily maintenance should match your habits.</p>"
+  },
+  "candidate_values": {
+    "content_zh": "<h2>每个空间的重点不同</h2><p>浴室看防滑和防水，厨房看耐污和耐热，客厅看耐磨和视觉效果，卧室则更重视舒适和触感。</p><h2>样板比效果图更可靠</h2><p>同一款材料在自然光、暖光和冷光下都可能不同。确认前最好把样板放到现场看。</p><h2>维护方式要先问清楚</h2><p>有些材料好看但怕刮、怕水或需要特别清洁。日常维护能不能接受，比短时间的视觉效果更重要。</p>\n\n<h2>把选材比较写成同一份清单</h2>\n<p>每个备选先填写使用房间、具体型号或产品名称、尺寸与饰面、样板编号、供应商资料日期、报价包含范围和仍需确认的问题。用同一用途和交付范围比较，才能看清价格差异来自材料、规格、安装还是配套工作；品牌名或一张效果图不能代替具体产品资料。</p>\n<h2>样板、替代选项和维护说明一起确认</h2>\n<p>保留确认样板的名称或编号，以及现场光线下的比较记录。若型号、颜色、批次方向或供应安排改变，应重新核对实际替代品、价格与相关施工范围，并记录确认结果。清洁方法、适用环境、安装条件及保修限制要向具体产品供应方索取当前资料；没有产品证据时，不把“防水”“防火”“环保”等字样写成已验证性能。</p>\n<h2>按主要问题进入详细答案</h2>\n<p>地面方案可查看 <a href=\"/zh/blog/spc-vinyl-vs-laminate-flooring\">地板材料比较</a>；定制柜可查看 <a href=\"/zh/blog/kitchen-cabinet-material-guide\">橱柜材料选择指南</a>；墙面颜色与肌理可结合 <a href=\"/zh/services/artistic-coating\">艺术墙面规划</a>。准备好空间照片与比较清单后，<a href=\"/zh/quote\">申请范围与报价咨询</a>。文章和材料目录用于帮助讨论，不证明现货、品牌合作、特定认证或最终项目适用性。</p>",
+    "content_en": "<h2>Each space has a different priority</h2><p>Bathrooms need slip resistance and waterproofing, kitchens need stain and heat resistance, living areas need durability, and bedrooms need comfort.</p><h2>Samples are more reliable than renders</h2><p>A material can look different under natural, warm, and cool light. Review samples on site before confirming.</p><h2>Ask about maintenance early</h2><p>Some finishes look good but scratch easily, dislike moisture, or need special cleaning. Daily maintenance should match your habits.</p>\n\n<h2>Put material comparisons on the same checklist</h2>\n<p>For each option, record the intended room, exact model or product name, dimensions and finish, sample reference, date of supplier information, quoted scope and unresolved questions. Compare the same use and deliverables to see whether a price difference comes from the material, specification, installation or related work. A brand name or rendering does not replace product-specific information.</p>\n<h2>Confirm samples, substitutions and care information together</h2>\n<p>Keep the agreed sample name or reference and notes from comparison under the site's lighting. If the model, colour, batch selection or supply arrangement changes, review the actual alternative, price and associated installation scope and record the decision. Obtain current care, use, installation and warranty information from the specific product supplier. Without product evidence, labels such as waterproof, fire-resistant or environmentally friendly are not verified performance claims.</p>\n<h2>Follow the detailed answer for the main decision</h2>\n<p>For floors, read the <a href=\"/en/blog/spc-vinyl-vs-laminate-flooring\">flooring comparison guide</a>; for cabinetry, use the <a href=\"/en/blog/kitchen-cabinet-material-guide\">kitchen cabinet material guide</a>; for wall colour and texture, review <a href=\"/en/services/artistic-coating\">artistic wall planning</a>. With space photos and the comparison list ready, <a href=\"/en/quote\">request scope and quotation advice</a>. Articles and catalogues support discussion; they do not establish stock, brand partnerships, specific certification or final project suitability.</p>"
+  },
+  "rollback": {
+    "method": "restore only these two exact before values after a fresh preflight; never overwrite concurrent changes",
+    "values": {
+      "content_zh": "<h2>每个空间的重点不同</h2><p>浴室看防滑和防水，厨房看耐污和耐热，客厅看耐磨和视觉效果，卧室则更重视舒适和触感。</p><h2>样板比效果图更可靠</h2><p>同一款材料在自然光、暖光和冷光下都可能不同。确认前最好把样板放到现场看。</p><h2>维护方式要先问清楚</h2><p>有些材料好看但怕刮、怕水或需要特别清洁。日常维护能不能接受，比短时间的视觉效果更重要。</p>",
+      "content_en": "<h2>Each space has a different priority</h2><p>Bathrooms need slip resistance and waterproofing, kitchens need stain and heat resistance, living areas need durability, and bedrooms need comfort.</p><h2>Samples are more reliable than renders</h2><p>A material can look different under natural, warm, and cool light. Review samples on site before confirming.</p><h2>Ask about maintenance early</h2><p>Some finishes look good but scratch easily, dislike moisture, or need special cleaning. Daily maintenance should match your habits.</p>"
+    }
+  },
+  "search_demand_class": "EDITORIAL_UNVALIDATED; no new search volume or observed-query claim",
+  "reviewed_intents": [
+    "materials_comparison",
+    "comparison_selection",
+    "acceptance_care"
+  ],
+  "fact_sources": [
+    "company-context.md",
+    "services-and-pricing.md",
+    "faq.md",
+    "drafts/seo/fc-20260927-seo-intensive-content-foundation-v1/public/cms/blog_posts-46faa278-295f-486d-9b90-263954993153-d8113d5d9604.json"
+  ],
+  "editorial_method": "Customer preparation and comparison questions; no new company capability, price, deadline, credential, product performance or project claims.",
+  "source_2773_required_for_content": false,
+  "qa_acceptance": [
+    "Compare exact row identity, current version and both field hashes before implementation; rebase and re-QA if changed.",
+    "Read EN/ZH added sections for equivalent facts and limitations.",
+    "Keep the exact existing body prefix, FAQ, metadata, media, owner URL and canonical.",
+    "Confirm every added same-language target remains live and relevant.",
+    "Validate CMS sanitizer rendering and public DOM only after department1 implementation.",
+    "QA editorial PASS is not a saved CMS record or release permit."
+  ],
+  "execution": {
+    "cms_saved": false,
+    "code_modified": false,
+    "published": false,
+    "precise_permission": null
+  },
+  "checks": {
+    "zh": {
+      "current_body_passage_publicly_visible": true,
+      "body_witness_normalized": "每个空间的重点不同浴室看防滑和防水，厨房看耐污和耐热，客厅看耐磨和视觉效果，卧室则更重视舒适和触感。样板比效果图更可靠同一款材料在自然光、暖光和冷光下都可能不同。确认前最好把样板放到现场看。维护方式要",
+      "old_body_exact_prefix_preserved": true,
+      "new_section_count": 3,
+      "new_internal_links": 4,
+      "links_same_language_public_200_self_canonical": true,
+      "existing_title_faq_image_fields_unchanged": true,
+      "public_dom_evidence": "drafts/seo/fc-20260927-seo-intensive-content-foundation-v1/public/dom/zh__blog__renovation-materials-malaysia.json"
+    },
+    "en": {
+      "current_body_passage_publicly_visible": true,
+      "body_witness_normalized": "EachspacehasadifferentpriorityBathroomsneedslipresistanceandwaterproofing,kitchensneedstainandheatre",
+      "old_body_exact_prefix_preserved": true,
+      "new_section_count": 3,
+      "new_internal_links": 4,
+      "links_same_language_public_200_self_canonical": true,
+      "existing_title_faq_image_fields_unchanged": true,
+      "public_dom_evidence": "drafts/seo/fc-20260927-seo-intensive-content-foundation-v1/public/dom/en__blog__renovation-materials-malaysia.json"
+    }
+  }
+}

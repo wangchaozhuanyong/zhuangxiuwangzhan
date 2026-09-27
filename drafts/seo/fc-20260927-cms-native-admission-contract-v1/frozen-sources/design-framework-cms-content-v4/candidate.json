@@ -1,0 +1,103 @@
+{
+  "schema_version": "1.0",
+  "task_id": "fc-20260927-interior-design-keyword-plan-v1",
+  "parent_backlog_item_id": "ORG-020",
+  "candidate_version": "design-framework-cms-content-v4",
+  "action_id": "publish-design-framework-cms-content-v4",
+  "candidate_type": "cms_content_candidate",
+  "action_class": "cms_write",
+  "risk": "R1_EXISTING_CMS_SERVICE_CONTENT",
+  "channel_lock": "cms_content_candidate -> cms_write -> protected content-publish",
+  "scope": "flashcast.com.my:services/design:content_en,content_zh:framework-v4",
+  "target_urls": [
+    "https://flashcast.com.my/zh/services/design",
+    "https://flashcast.com.my/en/services/design"
+  ],
+  "content_type": "service",
+  "table": "services",
+  "record_selector": {
+    "slug": "design"
+  },
+  "observed_record_key": {
+    "id": "0af89b93-8938-4a98-ba65-6525fbbe92c1",
+    "slug": "design"
+  },
+  "observed_base": {
+    "path": "reports/evidence/2026-09-27-initial-framework-sprint/design-current-public-row.json",
+    "sha256": "ec63b6f0cd4f3fabea9f08ba9a049431cfec3e2752a82b7bceec32b8aa2a34d0",
+    "checked_at": "2026-09-27T04:40:50.340470+00:00",
+    "updated_at": "2026-09-24T16:55:25.345204+00:00",
+    "version": 1,
+    "status": "FRESH_READBACK_FOR_CANDIDATE_PREPARATION"
+  },
+  "expected_updated_at": "2026-09-24T16:55:25.345204+00:00",
+  "expected_version": 1,
+  "base_readback_required": false,
+  "prewrite_compare_and_swap_required": true,
+  "base_refresh_before_execution_required": true,
+  "execution_readiness": "FRESH_BASELINED_DESIRED_FIELDS_READY_FOR_INDEPENDENT_QA_NOT_AUTHORIZED_TO_WRITE",
+  "modified_fields": [
+    "content_zh",
+    "content_en"
+  ],
+  "desired_fields": {
+    "content_zh": "<p>室内设计不是只挑颜色或摆家具。好的设计应先解决空间动线、收纳、采光、材料搭配、施工可行性和预算优先级。FLASH CAST 可根据确认范围，把空间规划、设计方案、定制家具、材料选择和装修协调衔接起来。 如果同时考虑室内设计与装修，请先提供空间用途、平面图或现场照片，以及想调整的布局、收纳和材料方向。我们会据此讨论设计方向与装修范围如何衔接；图纸、3D 效果图、施工及报价的具体交付，以现场条件和确认范围为准。</p><h2>室内设计服务与空间规划方向</h2><p>FLASH CAST 的室内设计与空间规划面向住宅和商业空间，主要服务地区为吉隆坡、雪兰莪与巴生谷。咨询可从布局动线、功能分区、收纳、家具与柜体位置、材料和视觉方向开始，再按现场条件及确认范围讨论与装修的衔接。</p><p>规划厨房或全屋收纳时，设计方向应同时考虑使用习惯、可用尺寸和柜体需求；商业空间则可先整理使用人数、工作或经营方式及需要调整的功能区。具体设计内容、图纸、3D 可视化和施工协调范围需在项目确认时逐项说明。</p><h2>开始设计咨询前，建议准备这些资料</h2><p>项目地点、空间类型、大致面积与当前使用状态。</p><p>现有平面图（如有）和现场照片，以及想保留或调整的位置。</p><p>主要使用需求，例如动线、厨房操作、衣物收纳或办公分区。</p><p>材料与风格参考、预算方向、优先事项及希望安排的时间。</p><p>不必为了首次咨询先制作完整设计图。可先通过现有联系或报价入口说明手头资料，再与团队确认哪些现场信息需要补充。</p><h2>怎样整理设计与装修的规划顺序</h2><p>1. 先说明空间用途与主要问题，整理照片、平面图及预算方向。</p><p>2. 结合现场测量和条件，讨论布局、动线、收纳、材料及视觉方向。</p><p>3. 把设计方向与拟实施范围对照，确认图纸或效果图需求、施工衔接与报价范围。</p><p>具体工作内容、交付资料和安排，以双方确认范围为准。</p><h2>哪些因素会影响设计与装修报价</h2><p>空间面积、现有布局、图纸与效果图需求、材料选择、定制柜体、修改范围及协调需求都会影响报价。比较方案时，建议同时核对包含内容、可选项目和未包含事项。</p><p>报价免费；这不等于设计、3D 效果图或施工图免费，也不代表这些项目自动包含在任何装修报价中。请在确认范围前核对具体费用与交付内容。</p><h2>把设计方向连接到相关服务</h2><p>全屋柜体、衣柜和收纳需求：查看<a href=\"/zh/services/builtin\">全屋定制与定制家具</a>。</p><p>厨房动线、柜体和材料：查看<a href=\"/zh/services/kitchen\">厨房装修与橱柜规划</a>。</p><p>住宅整体施工范围：查看<a href=\"/zh/services/renovation\">住宅装修服务</a>。</p><p>工作区、会议区和办公室收纳：查看<a href=\"/zh/services/office-renovation\">办公室装修与空间规划</a>。</p><p>店铺和经营空间：查看<a href=\"/zh/services/shop-renovation\">店铺装修与商业空间规划</a>。</p><p>准备好项目地点、空间类型、照片或现有平面图后，前往<a href=\"/zh/quote\">室内设计与装修报价咨询</a>，先说明需要评估的范围。</p>",
+    "content_en": "<p>Interior design should clarify layout flow, storage, daylight, material direction, construction feasibility, and budget priorities before renovation begins. FLASH CAST helps owners and business operators connect space planning, design concepts, custom built-in furniture, material selection, and renovation coordination after the scope is confirmed. If you are planning interior design alongside renovation, share the intended use, a floor plan or site photos, and the layout, storage and material priorities you want to review. We can then discuss how the design direction connects with the renovation scope. Specific drawings, 3D visuals, construction work and quotation support depend on site conditions and the scope agreed for your project.</p><h2>Interior design services and space planning</h2><p>FLASH CAST provides interior design and space planning for residential and commercial spaces, with Kuala Lumpur, Selangor and Klang Valley as its main service areas. An enquiry can start with circulation, functional zones, storage, furniture and cabinet positions, materials and visual direction, before discussing how the design connects with renovation under the confirmed scope and actual site conditions.</p><p>For kitchen or whole-home storage planning, review daily use, available dimensions and cabinet needs together. For a commercial space, start with the number of users, working or operating requirements and the zones you want to change. Specific design work, drawings, 3D visualization and construction coordination should be clarified when the project scope is confirmed.</p><h2>What to prepare for an interior design enquiry</h2><p>The project location, space type, approximate area and current use.</p><p>An existing floor plan, if available, and site photos showing what you want to keep or change.</p><p>Main needs, such as circulation, kitchen use, wardrobe storage or office zoning.</p><p>Material and style references, budget direction, priorities and preferred timing.</p><p>You do not need to prepare a complete design drawing before an initial enquiry. Use the existing contact or quotation route to describe the information you have, then confirm which site details the team needs next.</p><h2>Planning the connection between design and renovation</h2><p>1. Describe the intended use and main issues, and gather photos, a floor plan and a budget direction.</p><p>2. Review layout, circulation, storage, materials and visual direction alongside site measurements and conditions.</p><p>3. Compare the design direction with the intended work scope, and clarify drawing or visualization needs, construction coordination and quotation scope.</p><p>Specific work, deliverables and arrangements are based on the scope agreed by both parties.</p><h2>What affects design and renovation quotations?</h2><p>Space size, the existing layout, drawing and visualization needs, material choices, custom cabinets, revision scope and coordination requirements can affect a quotation. When comparing options, review included work, optional items and exclusions together.</p><p>Quotations are free. This does not mean that design work, 3D visuals or construction drawings are free, or automatically included in every renovation quotation. Confirm the specific fees and deliverables before agreeing the scope.</p><h2>Connect the design direction with the relevant service</h2><p>Whole-home cabinets, wardrobes and storage: explore <a href=\"/en/services/builtin\">whole-house custom and built-in furniture</a>.</p><p>Kitchen layout, cabinets and materials: explore <a href=\"/en/services/kitchen\">kitchen renovation and cabinet planning</a>.</p><p>The wider residential work scope: explore <a href=\"/en/services/renovation\">residential renovation services</a>.</p><p>Work areas, meeting spaces and office storage: explore <a href=\"/en/services/office-renovation\">office renovation and space planning</a>.</p><p>Retail and operating spaces: explore <a href=\"/en/services/shop-renovation\">shop renovation and commercial space planning</a>.</p><p>With the project location, space type, photos or an existing floor plan ready, use the <a href=\"/en/quote\">interior design and renovation quotation enquiry</a> to explain the scope you want assessed.</p>"
+  },
+  "unchanged_guards": [
+    "id",
+    "slug",
+    "status",
+    "sort_order",
+    "title_zh",
+    "title_en",
+    "excerpt_zh",
+    "excerpt_en",
+    "seo_title_zh",
+    "seo_title_en",
+    "seo_description_zh",
+    "seo_description_en",
+    "faqs_zh",
+    "faqs_en",
+    "image_url",
+    "alt_zh",
+    "alt_en",
+    "suitable_for_zh",
+    "suitable_for_en",
+    "common_projects_zh",
+    "common_projects_en",
+    "scope_items_zh",
+    "scope_items_en",
+    "process_steps_zh",
+    "process_steps_en",
+    "URL",
+    "canonical",
+    "hreflang",
+    "contact details",
+    "original 466 keyword owners"
+  ],
+  "dependencies": [
+    "Fresh baseline is recorded for candidate preparation; recheck unique row, ID, version, updated_at and content under CAS before formal save; rebase and return to QA if changed.",
+    "Original R2 design-cms-read-path-r2-v1 must be integrated and independently QA verified for visible CMS HTML and actual clickable links.",
+    "Independent QA must lock this exact two-field candidate; operations AUTO_RELEASE and one-use exact policy/publisher target admission required.",
+    "Remote protected zero-write dry-run must accept this exact original task/action/row/field set; no reuse of previous task permit."
+  ],
+  "content_revision": "sanitizer-compatible-canonical-fix",
+  "qa_status": "PENDING_INDEPENDENT_QA_NOT_PREVIOUSLY_SUBMITTED",
+  "publication_status": "NOT_EXECUTED",
+  "cms_saved_id": null,
+  "production_sha": null,
+  "performed_write": false,
+  "rollback": {
+    "prewrite_fresh_backup_required": true,
+    "restore_fields": [
+      "content_zh",
+      "content_en"
+    ],
+    "before_field_payload": "before-field-rollback.json",
+    "fresh_readback_source": "reports/evidence/2026-09-27-initial-framework-sprint/design-current-public-row.json",
+    "historical_reference_only": "historical-base-content-and-faqs.json",
+    "do_not_restore_historical_snapshot_over_newer_content": true,
+    "execution": "Fresh before-values plus actual write receipt must produce rollback payload; separate protected rollback permit required."
+  }
+}

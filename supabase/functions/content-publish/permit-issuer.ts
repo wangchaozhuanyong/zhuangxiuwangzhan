@@ -49,9 +49,10 @@ export async function issueManagedPermit(client: ContentPublishClient, input: Ma
       || !Number.isFinite(expires) || expires <= now || expires > now + 15 * 60_000) {
     throw new Error("Managed permit identity, evidence, or short expiry is invalid");
   }
-  if (target.baselineProjectionFields && (input.operation !== "publish"
-      || !samePgTimestamp(input.expectedUpdatedAt, target.expectedUpdatedAt)
-      || input.payloadSha256 !== target.desiredFieldsSha256)) {
+  if (target.baselineProjectionFields && (input.operation === "publish"
+      ? !samePgTimestamp(input.expectedUpdatedAt, target.expectedUpdatedAt)
+        || input.payloadSha256 !== target.desiredFieldsSha256
+      : !target.rollbackFieldsSha256 || input.payloadSha256 !== target.rollbackFieldsSha256)) {
     throw new Error("Exact frozen target version or changed-fields payload digest is invalid");
   }
 
@@ -59,6 +60,7 @@ export async function issueManagedPermit(client: ContentPublishClient, input: Ma
   let rollbackPayloadSha256: string | null = null;
   if (input.operation === "publish") {
     if (!input.rollbackPayloadSha256 || !SHA256.test(input.rollbackPayloadSha256)
+        || (target.rollbackFieldsSha256 && input.rollbackPayloadSha256 !== target.rollbackFieldsSha256)
         || input.parentPermitId || input.parentRunId !== undefined) {
       throw new Error("Publish requires the exact independently restorable prior payload digest");
     }

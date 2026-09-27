@@ -1,0 +1,122 @@
+{
+  "id": "912750be-05ad-40e5-b20a-d1e5c33f232f",
+  "slug": "approval",
+  "title_zh": "装修准证与图纸支持",
+  "title_en": "Permit & Drawing Support",
+  "excerpt_zh": "根据房产类型与已确认项目范围，检查装修审批、管理方、图纸与文件协调需求。",
+  "excerpt_en": "Review renovation approval, management, drawing and document-coordination needs against the property and confirmed project scope.",
+  "content_zh": "审批与文件要求取决于房产类型、拟议工程、管理方或业主规则，以及相关单位的当前流程。如已纳入确认范围，FLASH CAST 可协助检查与协调部分图纸或文件。具体责任、专业人士参与、费用、时间与结果必须针对项目确认。",
+  "content_en": "Approval and document requirements vary by property, proposed work, management or landlord rules, and the relevant current authority process. FLASH CAST can help identify and coordinate selected drawings or documents when they are included in the confirmed scope. Exact responsibility, qualified-party input, fees, timing and outcome must be confirmed for the project.",
+  "image_url": "/images/services/approval-docs.webp",
+  "alt_zh": "Permit & Drawing Support",
+  "alt_en": "Permit & Drawing Support",
+  "suitable_for_zh": [
+    "管理处监管项目业主",
+    "需要 DBKL 或地方政府审批的项目",
+    "需要合规文件的商业装修"
+  ],
+  "suitable_for_en": [
+    "Anyone doing renovation in a managed property",
+    "Projects requiring DBKL or local council permits",
+    "Commercial renovations needing compliance documentation"
+  ],
+  "common_projects_zh": [
+    "公寓管理处申请",
+    "DBKL 装修准证申请",
+    "图纸与平面图提交",
+    "现场检查协调"
+  ],
+  "common_projects_en": [
+    "Condo management office renovation applications",
+    "DBKL renovation permit submissions",
+    "Drawing and plan submissions",
+    "Site inspection coordination"
+  ],
+  "process_steps_zh": [
+    {
+      "desc": "确认房产、拟议工程、当前要求与责任方。",
+      "title": "要求检查"
+    },
+    {
+      "desc": "确认所需图纸、表格、支持文件、费用与专业人士。",
+      "title": "文件范围"
+    },
+    {
+      "desc": "如已纳入项目范围，协调已约定的提交与回复任务。",
+      "title": "提交协调"
+    },
+    {
+      "desc": "将相关已提交、已批准或退回文件纳入项目记录。",
+      "title": "记录交付"
+    }
+  ],
+  "process_steps_en": [
+    {
+      "desc": "Identify the property, proposed work, current requirements and responsible parties.",
+      "title": "Requirement Check"
+    },
+    {
+      "desc": "Confirm which drawings, forms, supporting documents, fees and qualified parties are required.",
+      "title": "Document Scope"
+    },
+    {
+      "desc": "Coordinate the agreed submission tasks and responses when included in the project scope.",
+      "title": "Submission Coordination"
+    },
+    {
+      "desc": "Keep relevant submitted, approved or returned documents with the project records.",
+      "title": "Record Handover"
+    }
+  ],
+  "scope_items_zh": [
+    "管理处申请协助",
+    "DBKL 准证协助",
+    "图纸提交协调",
+    "文件准备",
+    "现场检查协调"
+  ],
+  "scope_items_en": [
+    "Management Office Renovation Application",
+    "DBKL Renovation Permit Assistance",
+    "Drawing Submission Coordination",
+    "Documentation Preparation",
+    "Site Inspection Coordination"
+  ],
+  "faqs_zh": [
+    {
+      "a": "时间取决于当前流程、文件完整度、审核意见、责任方、费用与管理方或相关单位。排期前应确认最新要求。",
+      "q": "装修审批需要多长时间？"
+    },
+    {
+      "a": "已纳入确认范围的部分任务可以协调。业主、顾问、房东、管理方与相关单位的责任应分别列明。",
+      "q": "可以协调文件准备与跟进吗？"
+    },
+    {
+      "a": "提交现场地址、房产类型、管理方或房东指南、现有与拟议图纸、计划工程与已收到的往来文件。",
+      "q": "初步检查审批需求时应准备什么？"
+    }
+  ],
+  "faqs_en": [
+    {
+      "a": "Timing depends on the current process, document completeness, review comments, responsible parties, fees and the management or authority. Confirm the latest requirements before scheduling work.",
+      "q": "How long does a renovation approval take?"
+    },
+    {
+      "a": "Selected tasks can be coordinated when they are included in the confirmed scope. Owner, consultant, landlord, management and authority responsibilities should be listed separately.",
+      "q": "Can document preparation and follow-up be coordinated?"
+    },
+    {
+      "a": "Share the site address, property type, management or landlord guide, existing and proposed plans, intended work, and any correspondence already received.",
+      "q": "What should I prepare for an initial approval review?"
+    }
+  ],
+  "seo_title_zh": "装修准证与图纸支持 | FLASH CAST",
+  "seo_title_en": "Permit & Drawing Support Kuala Lumpur | FLASH CAST",
+  "seo_description_zh": "FLASH CAST 在吉隆坡、雪兰莪与巴生谷提供装修准证与图纸支持服务，适合住宅、办公室、店铺和商业空间项目。我们会根据现场尺寸、材料选择、预算和工期确认施工范围，并提供中文咨询与免费报价建议。",
+  "seo_description_en": "Renovation permit applications, management office coordination, architectural drawings, and all documentation services for your project.",
+  "status": "published",
+  "sort_order": 100,
+  "created_at": "2026-05-29T10:14:07.868773+00:00",
+  "updated_at": "2026-08-22T07:27:29.2592+00:00",
+  "version": 1
+}

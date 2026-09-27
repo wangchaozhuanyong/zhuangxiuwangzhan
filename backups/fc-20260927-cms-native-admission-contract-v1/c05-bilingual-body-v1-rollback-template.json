@@ -1,0 +1,14 @@
+{
+  "original_task_id": "fc-20260927-seo-intensive-content-foundation-v1",
+  "candidate_version": "c05-bilingual-body-v1",
+  "record_id": "912750be-05ad-40e5-b20a-d1e5c33f232f",
+  "restore_fields": {
+    "content_zh": "审批与文件要求取决于房产类型、拟议工程、管理方或业主规则，以及相关单位的当前流程。如已纳入确认范围，FLASH CAST 可协助检查与协调部分图纸或文件。具体责任、专业人士参与、费用、时间与结果必须针对项目确认。",
+    "content_en": "Approval and document requirements vary by property, proposed work, management or landlord rules, and the relevant current authority process. FLASH CAST can help identify and coordinate selected drawings or documents when they are included in the confirmed scope. Exact responsibility, qualified-party input, fees, timing and outcome must be confirmed for the project."
+  },
+  "expected_postsave_updated_at": null,
+  "expected_postsave_version": null,
+  "fill_from_actual_saved_receipt_only": true,
+  "separate_protected_rollback_permit_required": true,
+  "applied": false
+}

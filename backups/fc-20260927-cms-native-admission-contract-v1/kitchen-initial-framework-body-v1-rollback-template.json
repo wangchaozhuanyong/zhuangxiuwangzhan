@@ -1,0 +1,16 @@
+{
+  "task_id": "fc-20260927-website-growth-daily",
+  "action_id": "publish-kitchen-initial-framework-body-v1",
+  "candidate_version": "kitchen-initial-framework-body-v1",
+  "record_id": "ce4156db-9034-42c8-ba29-b35724ea7d6d",
+  "restore_fields": {
+    "content_zh": "厨房装修不只是换橱柜，而是重新整理日常使用动线、收纳、台面、家电点位、给排水和湿作范围。FLASH CAST 可从现场测量、现有水电点位、干湿厨房分区、柜体结构、材料方向和报价范围开始整理；最终范围以真实现场与书面报价为准。",
+    "content_en": "Kitchen renovation should address daily workflow, storage, countertop use, appliance points, plumbing, and wet-work scope together. FLASH CAST can begin with site measurements, existing service points, dry and wet kitchen zoning, cabinet structure, material direction, and quotation scope. Final scope follows the real site and written quotation."
+  },
+  "expected_current_updated_at": null,
+  "expected_current_version": null,
+  "fill_only_from_actual_saved_receipt": true,
+  "separate_protected_rollback_permit_required": true,
+  "never_overwrite_later_record": true,
+  "applied": false
+}

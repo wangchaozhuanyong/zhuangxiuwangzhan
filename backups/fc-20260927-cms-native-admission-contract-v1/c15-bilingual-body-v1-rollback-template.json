@@ -1,0 +1,14 @@
+{
+  "original_task_id": "fc-20260927-seo-intensive-content-foundation-v1",
+  "candidate_version": "c15-bilingual-body-v1",
+  "record_id": "d6eb44ba-4c99-4fd4-bd78-1eeb0be1d1a9",
+  "restore_fields": {
+    "content_zh": "<h2>不要只按现在人数排座位</h2><p>团队如果还会扩充，工位、电位、网络点和储物要留一点余量。否则很快又要改。</p><h2>会议室要看真实使用频率</h2><p>不是每家公司都需要很多大会议室。小讨论区、电话间和安静工作位有时更实用。</p><h2>大楼规则会影响工期</h2><p>搬运时间、电梯预约、消防要求和噪音限制要提前确认，避免材料到了却不能进场。</p><p>准备进入现场范围讨论时，可先查看我们的<a href=\"/zh/services/office-renovation\">办公室装修与商业空间规划服务</a>，并在申请报价前整理大楼要求。</p>",
+    "content_en": "<h2>Do not plan seats only for today</h2><p>If the team may grow, leave allowance for workstations, sockets, network points, and storage.</p><h2>Match meeting rooms to real usage</h2><p>Not every office needs many large rooms. Small discussion areas, call rooms, and quiet seats may be more useful.</p><h2>Building rules affect schedule</h2><p>Delivery hours, lift booking, fire-safety requirements, and noisy-work limits should be confirmed before materials arrive.</p><p>When planning a site-specific scope, review our <a href=\"/en/services/office-renovation\">office renovation and commercial fit-out service</a> and prepare the building requirements before requesting a quotation.</p>"
+  },
+  "expected_postsave_updated_at": null,
+  "expected_postsave_version": null,
+  "fill_from_actual_saved_receipt_only": true,
+  "separate_protected_rollback_permit_required": true,
+  "applied": false
+}

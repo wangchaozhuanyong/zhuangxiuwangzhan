@@ -1,0 +1,14 @@
+{
+  "original_task_id": "fc-20260927-seo-intensive-content-foundation-v1",
+  "candidate_version": "c10-bilingual-body-v1",
+  "record_id": "ef92b60e-3541-40c7-8997-621df78cbdea",
+  "restore_fields": {
+    "content_zh": "<h2>先看租客会怎样使用空间</h2><p>出租单位最怕后期维修频繁。地板、墙面、橱柜和门锁要优先选择耐磨、容易清洁、替换方便的做法，风格保持干净耐看就够了。</p><h2>预算别全部压在表面效果</h2><p>可以把预算分成基础维修、耐用材料、必要收纳和交屋清洁。水电、防水、门窗这些看不见的部分如果省过头，后面更容易产生投诉。</p><h2>报价前准备这些资料</h2><p>准备单位地点、面积、照片、目标租金、预算范围和预计出租时间。承包商越早知道使用目标，越容易把规格控制在合理范围。</p>",
+    "content_en": "<h2>Start with tenant usage</h2><p>Rental units need finishes that can handle frequent use. Flooring, walls, cabinets, and locks should be durable, easy to clean, and simple to repair.</p><h2>Do not spend everything on appearance</h2><p>Split the budget into repair work, durable finishes, basic storage, and final cleaning. Wiring, waterproofing, doors, and windows should not be ignored.</p><h2>Prepare details before pricing</h2><p>Share the location, area, photos, target rent, budget range, and expected rental date so the scope can be matched to the investment goal.</p>"
+  },
+  "expected_postsave_updated_at": null,
+  "expected_postsave_version": null,
+  "fill_from_actual_saved_receipt_only": true,
+  "separate_protected_rollback_permit_required": true,
+  "applied": false
+}

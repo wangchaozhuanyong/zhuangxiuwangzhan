@@ -146,7 +146,27 @@ describe("topic-cluster Blog publish records", () => {
       "org026-builtin-media-r1-v5", "org026-warehouse-media-r1-v6", "org026-office-renovation-media-r1-v6",
       "blog-kitchen-cabinet-media-r1-v1", "blog-office-checklist-media-r1-v1",
     ];
-    const rollbackTargets = [...lockedTargets, "kl-location-intent-r1-v2"];
+    const nativeBodyTargets = [
+      "design-framework-cms-content-v4",
+      "kitchen-initial-framework-body-v1",
+      "bathroom-initial-framework-body-v1",
+      "c01-bilingual-body-v1",
+      "c02-bilingual-body-v1",
+      "c03-bilingual-body-v1",
+      "c04-bilingual-body-v1",
+      "c05-bilingual-body-v1",
+      "c06-bilingual-body-v1",
+      "c07-bilingual-body-v1",
+      "c08-bilingual-body-v1",
+      "c09-bilingual-body-v1",
+      "c10-bilingual-body-v1",
+      "c11-bilingual-body-v1",
+      "c12-bilingual-body-v1",
+      "c13-bilingual-body-v1",
+      "c14-bilingual-body-v1",
+      "c15-bilingual-body-v1",
+    ];
+    const rollbackTargets = [...lockedTargets, "kl-location-intent-r1-v2", ...nativeBodyTargets];
     const org020Targets = [
       "org020-shop-intent-body-r1-v7",
       "org020-zh-renovation-study-room-r1-v7",
@@ -177,7 +197,7 @@ describe("topic-cluster Blog publish records", () => {
       "org020-condo-current-sources-r1-v7",
       "org020-dbkl-current-sources-r1-v7",
     ];
-    const publishTargets = [...rollbackTargets, ...mediaTargets, ...org020Targets];
+    const publishTargets = [...lockedTargets, "kl-location-intent-r1-v2", ...mediaTargets, ...org020Targets, ...nativeBodyTargets];
     const cases = [...workflow.matchAll(/case "\$PUBLISH_TARGET" in\s*([^)]*)\)/g)]
       .map((match) => match[1].trim().split("|"));
     expect(cases).toHaveLength(2);

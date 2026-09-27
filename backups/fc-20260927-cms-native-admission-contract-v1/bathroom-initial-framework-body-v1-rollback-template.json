@@ -1,0 +1,16 @@
+{
+  "task_id": "fc-20260927-website-growth-daily",
+  "action_id": "publish-bathroom-initial-framework-body-v1",
+  "candidate_version": "bathroom-initial-framework-body-v1",
+  "record_id": "0f294e6d-2e2c-4f13-a93f-096728ccc6af",
+  "restore_fields": {
+    "content_zh": "浴室装修不能只看瓷砖和洁具外观。真正影响后期使用的是防水范围、排水坡度、地漏位置、墙地砖铺贴、淋浴区隔断、洗手盆和镜柜收纳、马桶位置、通风、照明和维护便利性。FLASH CAST 可先从现场检查和需求确认开始，把防水、瓷砖、给排水、洁具、浴室柜和施工范围衔接起来。",
+    "content_en": "A bathroom renovation is not only about choosing tiles and sanitary fittings. Long-term usability depends on waterproofing scope, drainage slope, floor trap position, wall and floor tile works, shower screen planning, vanity storage, toilet position, ventilation, lighting, and maintenance access. FLASH CAST can help connect site inspection, waterproofing direction, tile and fitting selection, plumbing review, and renovation coordination after the scope is confirmed."
+  },
+  "expected_current_updated_at": null,
+  "expected_current_version": null,
+  "fill_only_from_actual_saved_receipt": true,
+  "separate_protected_rollback_permit_required": true,
+  "never_overwrite_later_record": true,
+  "applied": false
+}

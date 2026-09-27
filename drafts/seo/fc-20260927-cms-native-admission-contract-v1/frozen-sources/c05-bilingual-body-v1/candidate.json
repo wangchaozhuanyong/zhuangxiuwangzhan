@@ -1,0 +1,120 @@
+{
+  "schema_version": "1.0",
+  "task_id": "fc-20260927-seo-intensive-content-foundation-v1",
+  "original_task_id": "fc-20260927-seo-intensive-content-foundation-v1",
+  "previous_published_scope_task_id": null,
+  "original_scope_relation": "new bounded increment; previous accepted scope retained, not replayed",
+  "backlog_item_id": "ORG-003",
+  "related_research_task_id": "fc-20260927-organic-keyword-wide-coverage-v1",
+  "related_research_inheritance": "FORMALLY_INHERITED_NONEMPTY_COMPLETION_AND_HASH_VERIFIED",
+  "inheritance_evidence": "drafts/seo/fc-20260927-seo-intensive-content-foundation-v1/sources/inheritance-confirmation.json",
+  "candidate_id": "C05",
+  "candidate_version": "c05-bilingual-body-v1",
+  "status": "READY_FOR_INDEPENDENT_QA",
+  "risk_scope_this_delivery": "R0 editorial candidate",
+  "proposed_implementation_risk": "R1 existing CMS content fields, subject to department1 exact channel binding",
+  "owner": "seo-content-research",
+  "implementation_owner": "content-organic-website",
+  "priority": "P1",
+  "gap": "现有正文和流程说明责任需确认，但缺少可交给客户填写的咨询资料清单及按责任方拆分的范围问项。",
+  "target_urls": {
+    "zh": "https://flashcast.com.my/zh/services/approval",
+    "en": "https://flashcast.com.my/en/services/approval"
+  },
+  "table_observed": "services",
+  "record_id": "912750be-05ad-40e5-b20a-d1e5c33f232f",
+  "slug": "approval",
+  "expected_updated_at": "2026-08-22T07:27:29.2592+00:00",
+  "expected_version": 1,
+  "base_record_source": "drafts/seo/fc-20260927-seo-intensive-content-foundation-v1/public/cms/services-912750be-05ad-40e5-b20a-d1e5c33f232f-5b1fdb12053c.json",
+  "base_capture_at": "2026-09-27T06:01:27.786Z",
+  "base_public_record_sha256": "5b1fdb12053c4f0f5e3e95bcedf2c8600f2de211f2a6815282a4c9dfda6b215e",
+  "modified_fields": [
+    "content_zh",
+    "content_en"
+  ],
+  "changes": {
+    "content_zh": {
+      "operation": "append_only",
+      "before_sha256": "7c77e695c856c7f142e61600c0abd7a905f40a37bcc640524b2bb4d553824770",
+      "after_sha256": "078be1158365b8e8e57f2d3e62d60b151a8d1d7ae2ff628870b7940ea68ddf58",
+      "addition_sha256": "9fe1c8551a826aae97c7a6f08978dd6f725945e1aac8ee327647d5631d3d3694",
+      "before_file": "drafts/seo/fc-20260927-seo-intensive-content-foundation-v1/candidates/C05-approval/before-zh.html",
+      "after_file": "drafts/seo/fc-20260927-seo-intensive-content-foundation-v1/candidates/C05-approval/after-zh.html",
+      "diff_file": "drafts/seo/fc-20260927-seo-intensive-content-foundation-v1/candidates/C05-approval/diff-zh.patch"
+    },
+    "content_en": {
+      "operation": "append_only",
+      "before_sha256": "99c4a48e6f728803f849ab47f4f1a540135bb273450713fcfc03c97c5e19d6d6",
+      "after_sha256": "3b74402ede9466dab22819c3372c689b949fb21dc43f56bcef362d6800c14111",
+      "addition_sha256": "1a88132d92a43e20384309ded24b3141bb7e3de9a6c13b1c6dec5ecb0407729c",
+      "before_file": "drafts/seo/fc-20260927-seo-intensive-content-foundation-v1/candidates/C05-approval/before-en.html",
+      "after_file": "drafts/seo/fc-20260927-seo-intensive-content-foundation-v1/candidates/C05-approval/after-en.html",
+      "diff_file": "drafts/seo/fc-20260927-seo-intensive-content-foundation-v1/candidates/C05-approval/diff-en.patch"
+    }
+  },
+  "before_values": {
+    "content_zh": "审批与文件要求取决于房产类型、拟议工程、管理方或业主规则，以及相关单位的当前流程。如已纳入确认范围，FLASH CAST 可协助检查与协调部分图纸或文件。具体责任、专业人士参与、费用、时间与结果必须针对项目确认。",
+    "content_en": "Approval and document requirements vary by property, proposed work, management or landlord rules, and the relevant current authority process. FLASH CAST can help identify and coordinate selected drawings or documents when they are included in the confirmed scope. Exact responsibility, qualified-party input, fees, timing and outcome must be confirmed for the project."
+  },
+  "candidate_values": {
+    "content_zh": "审批与文件要求取决于房产类型、拟议工程、管理方或业主规则，以及相关单位的当前流程。如已纳入确认范围，FLASH CAST 可协助检查与协调部分图纸或文件。具体责任、专业人士参与、费用、时间与结果必须针对项目确认。\n\n<h2>初次沟通前，怎样整理已有资料？</h2>\n<p>可先准备项目地点、物业类型、现场照片、现有平面资料和计划调整的范围，并附上已经收到的管理处或业主指南、来函和联系信息。将缺少、未确认或版本不明的资料单独标记；这份清单用于沟通，不是任何机构的完整申请要求，也不表示这些资料足以获批。</p>\n<h2>文件协助的费用与责任应怎样确认？</h2>\n<p>逐项询问谁提供原始资料、谁准备或修改文件、谁与管理方联系，以及何时需要由相关合格专业人士处理。把服务费、可能的第三方费用、待确认工作和未包含项目分别列明，进度以实际资料与相关方回复为依据。住宅范围可先整理在 <a href=\"/zh/services/renovation\">住宅装修咨询</a> 中；商业单位可结合 <a href=\"/zh/services/office-renovation\">办公室装修范围</a>，再 <a href=\"/zh/quote\">提交文件协助需求</a>。具体要求须向实际管理方及有关单位核实，本页不承诺专业签署、固定费用、审批时限或结果。</p>",
+    "content_en": "Approval and document requirements vary by property, proposed work, management or landlord rules, and the relevant current authority process. FLASH CAST can help identify and coordinate selected drawings or documents when they are included in the confirmed scope. Exact responsibility, qualified-party input, fees, timing and outcome must be confirmed for the project.\n\n<h2>How can you organise existing information before the first discussion?</h2>\n<p>Prepare the project location, property type, site photos, available plans and proposed changes, together with any management or landlord guidance, correspondence and contact information already received. Mark missing, unconfirmed or undated versions separately. This is a discussion checklist, not an authority's complete application requirement or a statement that the information will secure approval.</p>\n<h2>How should document-support fees and responsibilities be clarified?</h2>\n<p>Clarify who supplies the original information, prepares or revises documents, contacts management, and handles work requiring relevant qualified professionals. Separate service fees, possible third-party charges, unresolved work and exclusions, with progress based on actual information and responses. Organise residential requirements through <a href=\"/en/services/renovation\">home-renovation planning</a> or commercial requirements through the <a href=\"/en/services/office-renovation\">office fit-out scope</a>, then <a href=\"/en/quote\">submit the document-support enquiry</a>. Confirm requirements with the actual management and relevant authorities. No professional sign-off, fixed fee, approval period or result is promised here.</p>"
+  },
+  "rollback": {
+    "method": "restore only these two exact before values after a fresh preflight; never overwrite concurrent changes",
+    "values": {
+      "content_zh": "审批与文件要求取决于房产类型、拟议工程、管理方或业主规则，以及相关单位的当前流程。如已纳入确认范围，FLASH CAST 可协助检查与协调部分图纸或文件。具体责任、专业人士参与、费用、时间与结果必须针对项目确认。",
+      "content_en": "Approval and document requirements vary by property, proposed work, management or landlord rules, and the relevant current authority process. FLASH CAST can help identify and coordinate selected drawings or documents when they are included in the confirmed scope. Exact responsibility, qualified-party input, fees, timing and outcome must be confirmed for the project."
+    }
+  },
+  "search_demand_class": "EDITORIAL_UNVALIDATED; no new search volume or observed-query claim",
+  "reviewed_intents": [
+    "process_delivery",
+    "cost_quote"
+  ],
+  "fact_sources": [
+    "company-context.md",
+    "services-and-pricing.md",
+    "faq.md",
+    "drafts/seo/fc-20260927-seo-intensive-content-foundation-v1/public/cms/services-912750be-05ad-40e5-b20a-d1e5c33f232f-5b1fdb12053c.json"
+  ],
+  "editorial_method": "Customer preparation and comparison questions; no new company capability, price, deadline, credential, product performance or project claims.",
+  "source_2773_required_for_content": false,
+  "qa_acceptance": [
+    "Compare exact row identity, current version and both field hashes before implementation; rebase and re-QA if changed.",
+    "Read EN/ZH added sections for equivalent facts and limitations.",
+    "Keep the exact existing body prefix, FAQ, metadata, media, owner URL and canonical.",
+    "Confirm every added same-language target remains live and relevant.",
+    "Validate CMS sanitizer rendering and public DOM only after department1 implementation.",
+    "QA editorial PASS is not a saved CMS record or release permit."
+  ],
+  "execution": {
+    "cms_saved": false,
+    "code_modified": false,
+    "published": false,
+    "precise_permission": null
+  },
+  "checks": {
+    "zh": {
+      "current_body_passage_publicly_visible": true,
+      "body_witness_normalized": "审批与文件要求取决于房产类型、拟议工程、管理方或业主规则，以及相关单位的当前流程。如已纳入确认范围，FLASHCAST可协助检查与协调部分图纸或文件。具体责任、专业人士参与、费用、时间与结果必须针对项",
+      "old_body_exact_prefix_preserved": true,
+      "new_section_count": 2,
+      "new_internal_links": 3,
+      "links_same_language_public_200_self_canonical": true,
+      "existing_title_faq_image_fields_unchanged": true,
+      "public_dom_evidence": "drafts/seo/fc-20260927-seo-intensive-content-foundation-v1/public/dom/zh__services__approval.json"
+    },
+    "en": {
+      "current_body_passage_publicly_visible": true,
+      "body_witness_normalized": "Approvalanddocumentrequirementsvarybyproperty,proposedwork,managementorlandlordrules,andtherelevantc",
+      "old_body_exact_prefix_preserved": true,
+      "new_section_count": 2,
+      "new_internal_links": 3,
+      "links_same_language_public_200_self_canonical": true,
+      "existing_title_faq_image_fields_unchanged": true,
+      "public_dom_evidence": "drafts/seo/fc-20260927-seo-intensive-content-foundation-v1/public/dom/en__services__approval.json"
+    }
+  }
+}

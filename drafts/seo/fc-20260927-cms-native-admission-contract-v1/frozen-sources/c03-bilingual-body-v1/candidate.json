@@ -1,0 +1,121 @@
+{
+  "schema_version": "1.0",
+  "task_id": "fc-20260927-seo-intensive-content-foundation-v1",
+  "original_task_id": "fc-20260927-seo-intensive-content-foundation-v1",
+  "previous_published_scope_task_id": "fc-20260920-builtin-whole-house-custom-v1",
+  "original_scope_relation": "new bounded increment; previous accepted scope retained, not replayed",
+  "backlog_item_id": "ORG-020",
+  "related_research_task_id": "fc-20260927-organic-keyword-wide-coverage-v1",
+  "related_research_inheritance": "FORMALLY_INHERITED_NONEMPTY_COMPLETION_AND_HASH_VERIFIED",
+  "inheritance_evidence": "drafts/seo/fc-20260927-seo-intensive-content-foundation-v1/sources/inheritance-confirmation.json",
+  "candidate_id": "C03",
+  "candidate_version": "c03-bilingual-body-v1",
+  "status": "READY_FOR_INDEPENDENT_QA",
+  "risk_scope_this_delivery": "R0 editorial candidate",
+  "proposed_implementation_risk": "R1 existing CMS content fields, subject to department1 exact channel binding",
+  "owner": "seo-content-research",
+  "implementation_owner": "content-organic-website",
+  "priority": "P1",
+  "gap": "已覆盖品类、费用与选材；缺少安装交付记录的直接答案，以及到衣柜专项报价和交付清单的准确内容入口。",
+  "target_urls": {
+    "zh": "https://flashcast.com.my/zh/services/builtin",
+    "en": "https://flashcast.com.my/en/services/builtin"
+  },
+  "table_observed": "services",
+  "record_id": "b401a610-a4dc-4a0b-a7e0-efcac6c81d71",
+  "slug": "builtin",
+  "expected_updated_at": "2026-09-26T09:59:07.897407+00:00",
+  "expected_version": 1,
+  "base_record_source": "drafts/seo/fc-20260927-seo-intensive-content-foundation-v1/public/cms/services-b401a610-a4dc-4a0b-a7e0-efcac6c81d71-68b43eefafe8.json",
+  "base_capture_at": "2026-09-27T06:01:27.784Z",
+  "base_public_record_sha256": "68b43eefafe8a817f0784d03f08a8cf9238d6a42db445eb477ef0e30c07e8b7a",
+  "modified_fields": [
+    "content_zh",
+    "content_en"
+  ],
+  "changes": {
+    "content_zh": {
+      "operation": "append_only",
+      "before_sha256": "c0c462242cbe7db4ed12d7e6899e247eb929d4511c4c9d5c3f872bafb3bed15c",
+      "after_sha256": "ce3962645a60b9d6cee3788b0cc8c6f8d8b6f35475760843ef7857cae6600d6c",
+      "addition_sha256": "f90d1d067114c9da6e77fb892974d712785ed63069b6094678d46bc56dcfd5af",
+      "before_file": "drafts/seo/fc-20260927-seo-intensive-content-foundation-v1/candidates/C03-builtin/before-zh.html",
+      "after_file": "drafts/seo/fc-20260927-seo-intensive-content-foundation-v1/candidates/C03-builtin/after-zh.html",
+      "diff_file": "drafts/seo/fc-20260927-seo-intensive-content-foundation-v1/candidates/C03-builtin/diff-zh.patch"
+    },
+    "content_en": {
+      "operation": "append_only",
+      "before_sha256": "9b37c87da21d2f093e87a6b3f3d1f18f94359c13c1e10f1be6cc2075180a16de",
+      "after_sha256": "db63d9cfdcd2824129a45dc532357faa11a5825c97dd210482fff6ad457a3343",
+      "addition_sha256": "89af9d18a06118f491689ac7c833524b459fb58ec6c253912c79ef16bc01f8ae",
+      "before_file": "drafts/seo/fc-20260927-seo-intensive-content-foundation-v1/candidates/C03-builtin/before-en.html",
+      "after_file": "drafts/seo/fc-20260927-seo-intensive-content-foundation-v1/candidates/C03-builtin/after-en.html",
+      "diff_file": "drafts/seo/fc-20260927-seo-intensive-content-foundation-v1/candidates/C03-builtin/diff-en.patch"
+    }
+  },
+  "before_values": {
+    "content_zh": "<p><strong>直接答案：</strong>FLASH CAST 为吉隆坡、雪兰莪与巴生谷的住宅及商业空间规划全屋定制、定制家具与定制衣柜。方案会按现场尺寸、日常使用、收纳分类、材料、五金、搬运和安装条件整理，而不是套用一个固定套餐。</p>\n<h2>按空间和使用方式规划</h2>\n<p>可讨论的范围包括定制衣柜、walk-in wardrobe、电视柜、鞋柜、餐边柜、展示柜、书柜、工作区与其他嵌入式收纳。若需求属于厨房橱柜与厨房整体动线，应进入独立的 <a href=\"/zh/services/kitchen\">定制厨房与厨房装修服务</a>，避免两个页面争夺同一搜索意图。</p>\n<h2>报价前先确认的项目</h2>\n<p>报价会根据现场量度、柜体尺寸与分区、板材和饰面、门板、台面、五金、内部配件、灯光衔接、搬运、电梯、安装通道及其他工种配合范围评估。可讨论的材料方向包括 Melamine、Acrylic 与 Solid Wood，最终规格应以样板、现场条件和书面报价为准。</p>\n<h2>从参考到咨询</h2>\n<p>可先查看 <a href=\"/zh/materials/category/whole-house-custom/wardrobes\">衣柜材料</a>、<a href=\"/zh/materials/category/whole-house-custom/storage-cabinets\">收纳柜材料</a>、<a href=\"/zh/projects/bangsar-walk-in-wardrobe-system\">Bangsar walk-in wardrobe 参考</a> 和 <a href=\"/zh/blog/built-in-cabinet-cost-malaysia\">马来西亚定制柜报价影响因素</a>。准备地点、平面图或现场照片及主要收纳需求后，可前往 <a href=\"/zh/quote\">获取免费报价</a>。距离公司或服务点 30 公里以内可免费上门量房；超过 30 公里会收费，具体费用需先确认。</p>",
+    "content_en": "<p><strong>Direct answer:</strong> FLASH CAST plans whole-house custom furniture, built-in storage and fitted wardrobes for homes and commercial spaces across Kuala Lumpur, Selangor and Klang Valley. Each scope is organised around site measurements, daily use, storage categories, materials, hardware, delivery and installation conditions instead of a fixed package.</p>\n<h2>Plan around the room and how it is used</h2>\n<p>The scope can cover fitted wardrobes, walk-in wardrobes, TV units, shoe cabinets, sideboards, display cabinets, bookshelves, study areas and other built-in storage. Kitchen cabinetry and the wider kitchen workflow belong on the dedicated <a href=\"/en/services/kitchen\">custom kitchen and kitchen renovation service</a>, keeping the search intent of both pages clear.</p>\n<h2>What shapes the quotation</h2>\n<p>The quotation is assessed from site measurements, cabinet dimensions and zones, board and finish direction, doors, worktops, hardware, internal accessories, lighting coordination, delivery, lift and installation access, and coordination with other trades. Material directions can include Melamine, Acrylic and Solid Wood; final specifications remain subject to approved samples, site conditions and the written quotation.</p>\n<h2>Move from research to an enquiry</h2>\n<p>Review <a href=\"/en/materials/category/whole-house-custom/wardrobes\">wardrobe materials</a>, <a href=\"/en/materials/category/whole-house-custom/storage-cabinets\">storage cabinet materials</a>, the <a href=\"/en/projects/bangsar-walk-in-wardrobe-system\">Bangsar walk-in wardrobe reference</a> and the <a href=\"/en/blog/built-in-cabinet-cost-malaysia\">Malaysia built-in cabinet cost guide</a>. When the location, floor plan or site photos and main storage needs are ready, <a href=\"/en/quote\">request a free quotation</a>. Site measurement is free within 30 km of the company or service point; travel beyond 30 km is chargeable and the amount must be confirmed first.</p>"
+  },
+  "candidate_values": {
+    "content_zh": "<p><strong>直接答案：</strong>FLASH CAST 为吉隆坡、雪兰莪与巴生谷的住宅及商业空间规划全屋定制、定制家具与定制衣柜。方案会按现场尺寸、日常使用、收纳分类、材料、五金、搬运和安装条件整理，而不是套用一个固定套餐。</p>\n<h2>按空间和使用方式规划</h2>\n<p>可讨论的范围包括定制衣柜、walk-in wardrobe、电视柜、鞋柜、餐边柜、展示柜、书柜、工作区与其他嵌入式收纳。若需求属于厨房橱柜与厨房整体动线，应进入独立的 <a href=\"/zh/services/kitchen\">定制厨房与厨房装修服务</a>，避免两个页面争夺同一搜索意图。</p>\n<h2>报价前先确认的项目</h2>\n<p>报价会根据现场量度、柜体尺寸与分区、板材和饰面、门板、台面、五金、内部配件、灯光衔接、搬运、电梯、安装通道及其他工种配合范围评估。可讨论的材料方向包括 Melamine、Acrylic 与 Solid Wood，最终规格应以样板、现场条件和书面报价为准。</p>\n<h2>从参考到咨询</h2>\n<p>可先查看 <a href=\"/zh/materials/category/whole-house-custom/wardrobes\">衣柜材料</a>、<a href=\"/zh/materials/category/whole-house-custom/storage-cabinets\">收纳柜材料</a>、<a href=\"/zh/projects/bangsar-walk-in-wardrobe-system\">Bangsar walk-in wardrobe 参考</a> 和 <a href=\"/zh/blog/built-in-cabinet-cost-malaysia\">马来西亚定制柜报价影响因素</a>。准备地点、平面图或现场照片及主要收纳需求后，可前往 <a href=\"/zh/quote\">获取免费报价</a>。距离公司或服务点 30 公里以内可免费上门量房；超过 30 公里会收费，具体费用需先确认。</p>\n\n<h2>确认方案时，需要把哪些选择记录下来？</h2>\n<p>可把柜体位置与尺寸、内部划分、门板与饰面、把手或开门方式、五金及配件整理到同一份确认清单，并标注哪些仍待现场核对。衣柜应按实际衣物、抽屉和取用习惯讨论，而不是只比较外观或总长度；详细问项可参考 <a href=\"/zh/blog/custom-wardrobe-price-malaysia\">定制衣柜报价比较指南</a>。图纸、样板、修改与安装由谁提供，以及包含哪些交付，应在书面范围中分别确认。</p>\n<h2>安装交付时怎样保留可跟进的记录？</h2>\n<p>与负责方对照已确认清单，记录可见饰面、门和抽屉操作、配件及待调整项。每个问题写明柜体位置、照片、需确认的处理方式和跟进人，再保留复查结果；具体检查方法与责任按项目约定。可参考 <a href=\"/zh/blog/renovation-handover-defect-checklist-malaysia\">装修交付记录清单</a>，并询问所选材料与五金的保养说明、适用售后条款和联系方法。这不新增固定保修范围或未经确认的材料性能承诺。</p>",
+    "content_en": "<p><strong>Direct answer:</strong> FLASH CAST plans whole-house custom furniture, built-in storage and fitted wardrobes for homes and commercial spaces across Kuala Lumpur, Selangor and Klang Valley. Each scope is organised around site measurements, daily use, storage categories, materials, hardware, delivery and installation conditions instead of a fixed package.</p>\n<h2>Plan around the room and how it is used</h2>\n<p>The scope can cover fitted wardrobes, walk-in wardrobes, TV units, shoe cabinets, sideboards, display cabinets, bookshelves, study areas and other built-in storage. Kitchen cabinetry and the wider kitchen workflow belong on the dedicated <a href=\"/en/services/kitchen\">custom kitchen and kitchen renovation service</a>, keeping the search intent of both pages clear.</p>\n<h2>What shapes the quotation</h2>\n<p>The quotation is assessed from site measurements, cabinet dimensions and zones, board and finish direction, doors, worktops, hardware, internal accessories, lighting coordination, delivery, lift and installation access, and coordination with other trades. Material directions can include Melamine, Acrylic and Solid Wood; final specifications remain subject to approved samples, site conditions and the written quotation.</p>\n<h2>Move from research to an enquiry</h2>\n<p>Review <a href=\"/en/materials/category/whole-house-custom/wardrobes\">wardrobe materials</a>, <a href=\"/en/materials/category/whole-house-custom/storage-cabinets\">storage cabinet materials</a>, the <a href=\"/en/projects/bangsar-walk-in-wardrobe-system\">Bangsar walk-in wardrobe reference</a> and the <a href=\"/en/blog/built-in-cabinet-cost-malaysia\">Malaysia built-in cabinet cost guide</a>. When the location, floor plan or site photos and main storage needs are ready, <a href=\"/en/quote\">request a free quotation</a>. Site measurement is free within 30 km of the company or service point; travel beyond 30 km is chargeable and the amount must be confirmed first.</p>\n\n<h2>Which choices should be recorded when confirming a design?</h2>\n<p>Keep cabinet positions and dimensions, internal divisions, doors and finishes, handles or opening method, hardware and accessories in one confirmation list, marking items that still need site review. Wardrobes should reflect the actual clothing, drawers and access habits rather than appearance or total length alone; see the <a href=\"/en/blog/custom-wardrobe-price-malaysia\">custom wardrobe quotation guide</a>. Separately confirm who supplies drawings, samples, revisions and installation, and which deliverables are included in the written scope.</p>\n<h2>What records make installation handover easier to follow up?</h2>\n<p>Review visible finishes, door and drawer operation, accessories and outstanding adjustments with the responsible party against the agreed list. Record the cabinet location, photos, proposed follow-up and owner for each issue, then retain the recheck result; methods and responsibilities follow the project agreement. Use the <a href=\"/en/blog/renovation-handover-defect-checklist-malaysia\">handover recording checklist</a> and ask for care information for the selected materials and hardware, applicable after-sales terms and contact details. This does not add a fixed warranty scope or an unconfirmed performance promise.</p>"
+  },
+  "rollback": {
+    "method": "restore only these two exact before values after a fresh preflight; never overwrite concurrent changes",
+    "values": {
+      "content_zh": "<p><strong>直接答案：</strong>FLASH CAST 为吉隆坡、雪兰莪与巴生谷的住宅及商业空间规划全屋定制、定制家具与定制衣柜。方案会按现场尺寸、日常使用、收纳分类、材料、五金、搬运和安装条件整理，而不是套用一个固定套餐。</p>\n<h2>按空间和使用方式规划</h2>\n<p>可讨论的范围包括定制衣柜、walk-in wardrobe、电视柜、鞋柜、餐边柜、展示柜、书柜、工作区与其他嵌入式收纳。若需求属于厨房橱柜与厨房整体动线，应进入独立的 <a href=\"/zh/services/kitchen\">定制厨房与厨房装修服务</a>，避免两个页面争夺同一搜索意图。</p>\n<h2>报价前先确认的项目</h2>\n<p>报价会根据现场量度、柜体尺寸与分区、板材和饰面、门板、台面、五金、内部配件、灯光衔接、搬运、电梯、安装通道及其他工种配合范围评估。可讨论的材料方向包括 Melamine、Acrylic 与 Solid Wood，最终规格应以样板、现场条件和书面报价为准。</p>\n<h2>从参考到咨询</h2>\n<p>可先查看 <a href=\"/zh/materials/category/whole-house-custom/wardrobes\">衣柜材料</a>、<a href=\"/zh/materials/category/whole-house-custom/storage-cabinets\">收纳柜材料</a>、<a href=\"/zh/projects/bangsar-walk-in-wardrobe-system\">Bangsar walk-in wardrobe 参考</a> 和 <a href=\"/zh/blog/built-in-cabinet-cost-malaysia\">马来西亚定制柜报价影响因素</a>。准备地点、平面图或现场照片及主要收纳需求后，可前往 <a href=\"/zh/quote\">获取免费报价</a>。距离公司或服务点 30 公里以内可免费上门量房；超过 30 公里会收费，具体费用需先确认。</p>",
+      "content_en": "<p><strong>Direct answer:</strong> FLASH CAST plans whole-house custom furniture, built-in storage and fitted wardrobes for homes and commercial spaces across Kuala Lumpur, Selangor and Klang Valley. Each scope is organised around site measurements, daily use, storage categories, materials, hardware, delivery and installation conditions instead of a fixed package.</p>\n<h2>Plan around the room and how it is used</h2>\n<p>The scope can cover fitted wardrobes, walk-in wardrobes, TV units, shoe cabinets, sideboards, display cabinets, bookshelves, study areas and other built-in storage. Kitchen cabinetry and the wider kitchen workflow belong on the dedicated <a href=\"/en/services/kitchen\">custom kitchen and kitchen renovation service</a>, keeping the search intent of both pages clear.</p>\n<h2>What shapes the quotation</h2>\n<p>The quotation is assessed from site measurements, cabinet dimensions and zones, board and finish direction, doors, worktops, hardware, internal accessories, lighting coordination, delivery, lift and installation access, and coordination with other trades. Material directions can include Melamine, Acrylic and Solid Wood; final specifications remain subject to approved samples, site conditions and the written quotation.</p>\n<h2>Move from research to an enquiry</h2>\n<p>Review <a href=\"/en/materials/category/whole-house-custom/wardrobes\">wardrobe materials</a>, <a href=\"/en/materials/category/whole-house-custom/storage-cabinets\">storage cabinet materials</a>, the <a href=\"/en/projects/bangsar-walk-in-wardrobe-system\">Bangsar walk-in wardrobe reference</a> and the <a href=\"/en/blog/built-in-cabinet-cost-malaysia\">Malaysia built-in cabinet cost guide</a>. When the location, floor plan or site photos and main storage needs are ready, <a href=\"/en/quote\">request a free quotation</a>. Site measurement is free within 30 km of the company or service point; travel beyond 30 km is chargeable and the amount must be confirmed first.</p>"
+    }
+  },
+  "search_demand_class": "EDITORIAL_UNVALIDATED; no new search volume or observed-query claim",
+  "reviewed_intents": [
+    "acceptance_care",
+    "process_delivery",
+    "comparison_selection"
+  ],
+  "fact_sources": [
+    "company-context.md",
+    "services-and-pricing.md",
+    "faq.md",
+    "drafts/seo/fc-20260927-seo-intensive-content-foundation-v1/public/cms/services-b401a610-a4dc-4a0b-a7e0-efcac6c81d71-68b43eefafe8.json"
+  ],
+  "editorial_method": "Customer preparation and comparison questions; no new company capability, price, deadline, credential, product performance or project claims.",
+  "source_2773_required_for_content": false,
+  "qa_acceptance": [
+    "Compare exact row identity, current version and both field hashes before implementation; rebase and re-QA if changed.",
+    "Read EN/ZH added sections for equivalent facts and limitations.",
+    "Keep the exact existing body prefix, FAQ, metadata, media, owner URL and canonical.",
+    "Confirm every added same-language target remains live and relevant.",
+    "Validate CMS sanitizer rendering and public DOM only after department1 implementation.",
+    "QA editorial PASS is not a saved CMS record or release permit."
+  ],
+  "execution": {
+    "cms_saved": false,
+    "code_modified": false,
+    "published": false,
+    "precise_permission": null
+  },
+  "checks": {
+    "zh": {
+      "current_body_passage_publicly_visible": true,
+      "body_witness_normalized": "直接答案：FLASHCAST为吉隆坡、雪兰莪与巴生谷的住宅及商业空间规划全屋定制、定制家具与定制衣柜。方案会按现场尺寸、日常使用、收纳分类、材料、五金、搬运和安装条件整理，而不是套用一个固定套餐。按空",
+      "old_body_exact_prefix_preserved": true,
+      "new_section_count": 2,
+      "new_internal_links": 2,
+      "links_same_language_public_200_self_canonical": true,
+      "existing_title_faq_image_fields_unchanged": true,
+      "public_dom_evidence": "drafts/seo/fc-20260927-seo-intensive-content-foundation-v1/public/dom/zh__services__builtin.json"
+    },
+    "en": {
+      "current_body_passage_publicly_visible": true,
+      "body_witness_normalized": "Directanswer:FLASHCASTplanswhole-housecustomfurniture,built-instorageandfittedwardrobesforhomesandco",
+      "old_body_exact_prefix_preserved": true,
+      "new_section_count": 2,
+      "new_internal_links": 2,
+      "links_same_language_public_200_self_canonical": true,
+      "existing_title_faq_image_fields_unchanged": true,
+      "public_dom_evidence": "drafts/seo/fc-20260927-seo-intensive-content-foundation-v1/public/dom/en__services__builtin.json"
+    }
+  }
+}

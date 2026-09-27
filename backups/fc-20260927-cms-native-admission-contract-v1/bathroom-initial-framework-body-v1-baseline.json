@@ -1,0 +1,176 @@
+{
+  "id": "0f294e6d-2e2c-4f13-a93f-096728ccc6af",
+  "slug": "bathroom",
+  "title_zh": "浴室装修与防水工程",
+  "title_en": "Bathroom Renovation and Waterproofing",
+  "excerpt_zh": "FLASH CAST 提供吉隆坡、雪兰莪与 Klang Valley 浴室装修和防水工程规划，包括漏水检查、瓷砖、排水、洁具、shower screen、浴室柜、通风和报价咨询。",
+  "excerpt_en": "Bathroom renovation and waterproofing planning for homes, condos, old-house upgrades, rental units, and resale units, including leakage review, tile works, drainage, sanitary fittings, shower screen planning, ventilation, storage, and quotation scope.",
+  "content_zh": "浴室装修不能只看瓷砖和洁具外观。真正影响后期使用的是防水范围、排水坡度、地漏位置、墙地砖铺贴、淋浴区隔断、洗手盆和镜柜收纳、马桶位置、通风、照明和维护便利性。FLASH CAST 可先从现场检查和需求确认开始，把防水、瓷砖、给排水、洁具、浴室柜和施工范围衔接起来。",
+  "content_en": "A bathroom renovation is not only about choosing tiles and sanitary fittings. Long-term usability depends on waterproofing scope, drainage slope, floor trap position, wall and floor tile works, shower screen planning, vanity storage, toilet position, ventilation, lighting, and maintenance access. FLASH CAST can help connect site inspection, waterproofing direction, tile and fitting selection, plumbing review, and renovation coordination after the scope is confirmed.",
+  "image_url": "/images/services/bathroom-renovation.webp",
+  "alt_zh": "吉隆坡浴室装修与防水工程效果图方案，展示淋浴区、瓷砖和浴室柜规划",
+  "alt_en": "Bathroom renovation and waterproofing design concept in Kuala Lumpur showing shower area, tiles and vanity planning",
+  "suitable_for_zh": [
+    "浴室漏水、墙地面发霉或防水需要重新检查的业主",
+    "旧瓷砖、旧洁具、旧浴室柜需要翻新的屋主",
+    "公寓业主需要在管理处规定下安排浴室装修",
+    "旧屋翻新客户需要浴室、厨房、水电和防水一起协调",
+    "出租单位或转售单位需要基础浴室升级的业主"
+  ],
+  "suitable_for_en": [
+    "Homeowners with bathroom leakage, mold, or waterproofing concerns",
+    "Owners replacing old tiles, old sanitary fittings, or outdated bathroom cabinets",
+    "Condo owners who need bathroom renovation under management rules",
+    "Old-house renovation clients coordinating bathroom, kitchen, plumbing, wiring, and waterproofing",
+    "Landlords or sellers preparing a unit with a practical bathroom upgrade"
+  ],
+  "common_projects_zh": [
+    "浴室防水范围与现场检查",
+    "墙砖、地砖、niche、backsplash 和收口方向",
+    "Shower screen、淋浴区、干湿分区和排水坡度",
+    "马桶、洗手盆、龙头、花洒、bidet 和洁具点位",
+    "洗手盆柜、镜柜、收纳和台面方向",
+    "排水、给水、电热水器、插座和灯光规划",
+    "浴室效果图方案或 bathroom design concept"
+  ],
+  "common_projects_en": [
+    "Bathroom waterproofing scope and site inspection",
+    "Wall tiles, floor tiles, niche, backsplash, and edge finishing direction",
+    "Shower screen, shower area, wet/dry separation, and drainage slope",
+    "Toilet, basin, tap, mixer, bidet, and sanitary fitting positions",
+    "Vanity cabinet, mirror cabinet, storage, and countertop direction",
+    "Drainage, water supply, water heater, socket, and lighting planning",
+    "Bathroom rendering concept or bathroom design concept"
+  ],
+  "process_steps_zh": [
+    {
+      "desc": "检查漏水位置、地面坡度、地漏、排水管、墙面空鼓、现有洁具、热水器、电源、通风和管理处要求。",
+      "title": "现场检查"
+    },
+    {
+      "desc": "确认湿区使用方式、墙地面范围、淋浴区、管口、墙角、门槛和排水条件。",
+      "title": "防水范围"
+    },
+    {
+      "desc": "规划墙砖、地砖、洁具、shower screen、浴室柜、镜柜、通风和维护便利性。",
+      "title": "瓷砖与洁具方向"
+    },
+    {
+      "desc": "确认是否包含拆除、防水、排水、给水、瓷砖、洁具、浴室柜、shower screen 或效果图方案。",
+      "title": "范围与报价"
+    },
+    {
+      "desc": "在现场条件、材料和报价确认后，协调已确认的浴室装修范围。",
+      "title": "装修协调"
+    }
+  ],
+  "process_steps_en": [
+    {
+      "desc": "Check leakage signs, floor slope, floor trap, drainage pipes, hollow tiles, existing fittings, water heater, electrical points, ventilation, and management requirements.",
+      "title": "Site Inspection"
+    },
+    {
+      "desc": "Review wet-area usage, wall and floor scope, shower area, pipe penetrations, wall corners, thresholds, and drainage condition.",
+      "title": "Waterproofing Scope"
+    },
+    {
+      "desc": "Plan wall tiles, floor tiles, sanitary fittings, shower screen, vanity cabinet, mirror cabinet, ventilation, and maintenance access.",
+      "title": "Tile & Fitting Direction"
+    },
+    {
+      "desc": "Confirm whether hacking, waterproofing, drainage, plumbing, tile works, fittings, cabinets, shower screen, or rendering concepts are included.",
+      "title": "Scope & Quotation"
+    },
+    {
+      "desc": "Coordinate the confirmed bathroom scope after site conditions, materials, and quotation are approved.",
+      "title": "Renovation Coordination"
+    }
+  ],
+  "scope_items_zh": [
+    "浴室防水范围",
+    "墙砖与地砖",
+    "排水坡度和地漏检查",
+    "Shower screen 规划",
+    "马桶、洗手盆、龙头和花洒点位",
+    "浴室柜与镜柜",
+    "给排水位置",
+    "热水器和电源点位",
+    "灯光与通风",
+    "防潮材料方向",
+    "浴室效果图方案"
+  ],
+  "scope_items_en": [
+    "Bathroom Waterproofing Scope",
+    "Wall & Floor Tiling",
+    "Drainage Slope and Floor Trap Review",
+    "Shower Screen Planning",
+    "Toilet, Basin, Tap and Mixer Positions",
+    "Vanity Cabinet and Mirror Cabinet",
+    "Plumbing and Water Supply",
+    "Water Heater and Electrical Points",
+    "Lighting and Ventilation",
+    "Moisture-Resistant Material Direction",
+    "Bathroom Rendering Concept"
+  ],
+  "faqs_zh": [
+    {
+      "a": "不一定。合适范围取决于漏水来源、防水、排水、瓷砖与洁具，建议先查看现场。",
+      "q": "浴室漏水一定要全部翻新吗？"
+    },
+    {
+      "a": "建议先准备浴室照片、面积、主要问题、希望更换的项目，以及公寓或管理处对施工时间的限制。",
+      "q": "浴室装修前需要准备什么资料？"
+    },
+    {
+      "a": "浴室漏水可能来自地面、墙角、管口、地漏、门槛或楼上/隔壁位置。先确认范围，才能判断是否需要重做防水、调整排水或更换瓷砖。",
+      "q": "浴室防水为什么要先检查范围？"
+    },
+    {
+      "a": "尺寸、拆除、防水、排水、水管、瓷砖、洁具、淋浴屏、浴室柜与恢复工程都会影响报价。",
+      "q": "哪些因素会影响浴室装修报价？"
+    },
+    {
+      "a": "可以。清楚标注的概念图可用于规划，但不作为真实客户完工项目证明。",
+      "q": "可以先准备浴室效果图吗？"
+    },
+    {
+      "a": "不同大楼要求不同，应向管理处确认施工时段、保护、押金、表格与所需资料。",
+      "q": "公寓浴室装修需要管理处批准吗？"
+    }
+  ],
+  "faqs_en": [
+    {
+      "a": "Not always. The right scope depends on the leak source, waterproofing, drainage, tiles and fittings. A site review should come first.",
+      "q": "Does bathroom leakage always require a full renovation?"
+    },
+    {
+      "a": "Prepare bathroom photos, size, main issues, the items you want to replace, and any building-management restrictions on work timing.",
+      "q": "What should I prepare before starting a bathroom renovation?"
+    },
+    {
+      "a": "Bathroom leakage can come from floor areas, wall corners, pipe penetrations, floor traps, thresholds, or even adjacent areas. Checking the scope first helps decide whether waterproofing, drainage adjustment, or tile replacement is needed.",
+      "q": "Why should waterproofing scope be checked first?"
+    },
+    {
+      "a": "Size, demolition, waterproofing, drainage, plumbing, tiles, fittings, shower screen, vanity and reinstatement needs affect the quotation.",
+      "q": "What affects a bathroom renovation quotation?"
+    },
+    {
+      "a": "Yes. A clearly labeled concept can support planning, but it is not proof of a completed customer project.",
+      "q": "Can a bathroom rendering be prepared first?"
+    },
+    {
+      "a": "Requirements vary by building. Confirm working hours, protection, deposits, forms and documents with the property management.",
+      "q": "Does a condo bathroom renovation need management approval?"
+    }
+  ],
+  "seo_title_zh": "浴室装修与防水工程｜吉隆坡、雪兰莪 Bathroom Renovation",
+  "seo_title_en": "Bathroom Renovation Malaysia | FLASH CAST",
+  "seo_description_zh": "FLASH CAST 提供吉隆坡、雪兰莪与 Klang Valley 浴室装修和防水工程规划，包括防水、瓷砖、排水、洁具、shower screen、浴室柜和报价咨询。",
+  "seo_description_en": "FLASH CAST provides bathroom renovation in Kuala Lumpur, Selangor, and Klang Valley, covering waterproofing, tile works, drainage, sanitary fittings, shower screen planning, vanity storage, and quotation advice.",
+  "status": "published",
+  "sort_order": 30,
+  "created_at": "2026-05-25T10:58:29.820388+00:00",
+  "updated_at": "2026-09-24T14:58:51.371384+00:00",
+  "version": 1
+}

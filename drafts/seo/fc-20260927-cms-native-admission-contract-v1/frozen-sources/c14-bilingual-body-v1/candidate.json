@@ -1,0 +1,120 @@
+{
+  "schema_version": "1.0",
+  "task_id": "fc-20260927-seo-intensive-content-foundation-v1",
+  "original_task_id": "fc-20260927-seo-intensive-content-foundation-v1",
+  "previous_published_scope_task_id": null,
+  "original_scope_relation": "new bounded increment; previous accepted scope retained, not replayed",
+  "backlog_item_id": "ORG-006",
+  "related_research_task_id": "fc-20260927-organic-keyword-wide-coverage-v1",
+  "related_research_inheritance": "FORMALLY_INHERITED_NONEMPTY_COMPLETION_AND_HASH_VERIFIED",
+  "inheritance_evidence": "drafts/seo/fc-20260927-seo-intensive-content-foundation-v1/sources/inheritance-confirmation.json",
+  "candidate_id": "C14",
+  "candidate_version": "c14-bilingual-body-v1",
+  "status": "READY_FOR_INDEPENDENT_QA",
+  "risk_scope_this_delivery": "R0 editorial candidate",
+  "proposed_implementation_risk": "R1 existing CMS content fields, subject to department1 exact channel binding",
+  "owner": "seo-content-research",
+  "implementation_owner": "content-organic-website",
+  "priority": "P2",
+  "gap": "原文提供风格意见，缺少把参考图转成预算和使用需求的brief，也未说明设计概念与确定交付的边界。",
+  "target_urls": {
+    "zh": "https://flashcast.com.my/zh/blog/modern-warm-minimalist-home-design-malaysia",
+    "en": "https://flashcast.com.my/en/blog/modern-warm-minimalist-home-design-malaysia"
+  },
+  "table_observed": "blog_posts",
+  "record_id": "5a0322a0-0f58-4c28-a370-569428c13508",
+  "slug": "modern-warm-minimalist-home-design-malaysia",
+  "expected_updated_at": "2026-08-22T12:23:48.386851+00:00",
+  "expected_version": 1,
+  "base_record_source": "drafts/seo/fc-20260927-seo-intensive-content-foundation-v1/public/cms/blog_posts-5a0322a0-0f58-4c28-a370-569428c13508-4afa5bdcc1ba.json",
+  "base_capture_at": "2026-09-27T06:00:59.071Z",
+  "base_public_record_sha256": "4afa5bdcc1bac142cd5575eaef77508edcf9513159e72d9ce5d9f50123315c8d",
+  "modified_fields": [
+    "content_zh",
+    "content_en"
+  ],
+  "changes": {
+    "content_zh": {
+      "operation": "append_only",
+      "before_sha256": "1a81ce351335a817f6a940f62ce7e85e9b80a7a81ab232aae8132342c5d30bef",
+      "after_sha256": "fd4822f06c3fd4067da997a07f0fc5655c8982c4eab0d5348e155459300c6d7b",
+      "addition_sha256": "c17e88292fab1682a687dde1973f88f242eb1d372830318cf0ff1120f10414fa",
+      "before_file": "drafts/seo/fc-20260927-seo-intensive-content-foundation-v1/candidates/C14-modern-warm-minimalist-home-design-malaysia/before-zh.html",
+      "after_file": "drafts/seo/fc-20260927-seo-intensive-content-foundation-v1/candidates/C14-modern-warm-minimalist-home-design-malaysia/after-zh.html",
+      "diff_file": "drafts/seo/fc-20260927-seo-intensive-content-foundation-v1/candidates/C14-modern-warm-minimalist-home-design-malaysia/diff-zh.patch"
+    },
+    "content_en": {
+      "operation": "append_only",
+      "before_sha256": "91f07e7cdbce0663253d6135655a13505bb753132720645abff56bfc9c36aeb9",
+      "after_sha256": "cca4db10424bb724dd1b671ed3068f6491aefe1e0b8dc1aaeeb0740798289153",
+      "addition_sha256": "1121d9fe2043df7e6178da7171dae0e61e3527d5c9a41dfd1bd4553bcc61810a",
+      "before_file": "drafts/seo/fc-20260927-seo-intensive-content-foundation-v1/candidates/C14-modern-warm-minimalist-home-design-malaysia/before-en.html",
+      "after_file": "drafts/seo/fc-20260927-seo-intensive-content-foundation-v1/candidates/C14-modern-warm-minimalist-home-design-malaysia/after-en.html",
+      "diff_file": "drafts/seo/fc-20260927-seo-intensive-content-foundation-v1/candidates/C14-modern-warm-minimalist-home-design-malaysia/diff-en.patch"
+    }
+  },
+  "before_values": {
+    "content_zh": "<h2>暖色要有层次</h2><p>木纹、浅石纹、布艺、哑光墙面和金属细节可以一起使用，但比例要控制。全部同色会变平，材质对比才有质感。</p><h2>收纳要藏得自然</h2><p>极简空间最怕杂物外露。电视墙、玄关、餐边和卧室柜可以用同色门片弱化存在感。</p><h2>灯光决定温度</h2><p>主灯、灯带、壁灯和局部照明要分层，色温保持一致，空间才会温暖但不杂乱。</p>",
+    "content_en": "<h2>Warm tones need layers</h2><p>Woodgrain, light stone, fabric, matte walls, and metal details can work together, but the proportion must be controlled.</p><h2>Storage should disappear quietly</h2><p>Minimal spaces suffer when clutter is exposed. Matching cabinet fronts can soften TV walls, entries, dining areas, and bedrooms.</p><h2>Lighting sets the mood</h2><p>Main lights, strips, wall lights, and task lighting should be layered with consistent colour temperature.</p>"
+  },
+  "candidate_values": {
+    "content_zh": "<h2>暖色要有层次</h2><p>木纹、浅石纹、布艺、哑光墙面和金属细节可以一起使用，但比例要控制。全部同色会变平，材质对比才有质感。</p><h2>收纳要藏得自然</h2><p>极简空间最怕杂物外露。电视墙、玄关、餐边和卧室柜可以用同色门片弱化存在感。</p><h2>灯光决定温度</h2><p>主灯、灯带、壁灯和局部照明要分层，色温保持一致，空间才会温暖但不杂乱。</p>\n\n<h2>怎样把喜欢的参考图转成设计brief？</h2>\n<p>不要只写喜欢某种风格，可在每张参考图旁标注喜欢的颜色、收纳方式、材质感觉或光线，并说明不想保留的部分。另列现有家具、日常活动、清洁习惯与预算优先级，让视觉偏好和使用需求同时进入讨论。参考图的材质与造型不自动证明适用于实际空间。</p>\n<h2>概念方向与最终范围应分开确认</h2>\n<p>可通过 <a href=\"/zh/services/design\">室内设计与空间规划</a> 讨论布局和材料方向，再用 <a href=\"/zh/blog/renovation-materials-malaysia\">选材比较清单</a> 记录实际样板与待确认项。图纸、效果图、修改及施工衔接是否包含，应按书面范围确认；概念图不代表真实完工案例，也不构成固定价格或交付保证。</p>",
+    "content_en": "<h2>Warm tones need layers</h2><p>Woodgrain, light stone, fabric, matte walls, and metal details can work together, but the proportion must be controlled.</p><h2>Storage should disappear quietly</h2><p>Minimal spaces suffer when clutter is exposed. Matching cabinet fronts can soften TV walls, entries, dining areas, and bedrooms.</p><h2>Lighting sets the mood</h2><p>Main lights, strips, wall lights, and task lighting should be layered with consistent colour temperature.</p>\n\n<h2>How can reference images become a useful design brief?</h2>\n<p>Annotate each reference with the colours, storage approach, material character or lighting you like, as well as elements to avoid. Separately list retained furniture, daily activities, cleaning habits and budget priorities so appearance and use are discussed together. Materials and forms in a reference image are not automatically suitable for the actual space.</p>\n<h2>Confirm the concept direction separately from the final scope</h2>\n<p>Discuss layout and material direction through <a href=\"/en/services/design\">interior design and space planning</a>, then use the <a href=\"/en/blog/renovation-materials-malaysia\">material comparison checklist</a> to record actual samples and unresolved points. Confirm drawings, visuals, revisions and construction coordination in the written scope. Concept images are not completed-project evidence or a fixed-price or delivery guarantee.</p>"
+  },
+  "rollback": {
+    "method": "restore only these two exact before values after a fresh preflight; never overwrite concurrent changes",
+    "values": {
+      "content_zh": "<h2>暖色要有层次</h2><p>木纹、浅石纹、布艺、哑光墙面和金属细节可以一起使用，但比例要控制。全部同色会变平，材质对比才有质感。</p><h2>收纳要藏得自然</h2><p>极简空间最怕杂物外露。电视墙、玄关、餐边和卧室柜可以用同色门片弱化存在感。</p><h2>灯光决定温度</h2><p>主灯、灯带、壁灯和局部照明要分层，色温保持一致，空间才会温暖但不杂乱。</p>",
+      "content_en": "<h2>Warm tones need layers</h2><p>Woodgrain, light stone, fabric, matte walls, and metal details can work together, but the proportion must be controlled.</p><h2>Storage should disappear quietly</h2><p>Minimal spaces suffer when clutter is exposed. Matching cabinet fronts can soften TV walls, entries, dining areas, and bedrooms.</p><h2>Lighting sets the mood</h2><p>Main lights, strips, wall lights, and task lighting should be layered with consistent colour temperature.</p>"
+    }
+  },
+  "search_demand_class": "EDITORIAL_UNVALIDATED; no new search volume or observed-query claim",
+  "reviewed_intents": [
+    "layout_scenario",
+    "process_delivery"
+  ],
+  "fact_sources": [
+    "company-context.md",
+    "services-and-pricing.md",
+    "faq.md",
+    "drafts/seo/fc-20260927-seo-intensive-content-foundation-v1/public/cms/blog_posts-5a0322a0-0f58-4c28-a370-569428c13508-4afa5bdcc1ba.json"
+  ],
+  "editorial_method": "Customer preparation and comparison questions; no new company capability, price, deadline, credential, product performance or project claims.",
+  "source_2773_required_for_content": false,
+  "qa_acceptance": [
+    "Compare exact row identity, current version and both field hashes before implementation; rebase and re-QA if changed.",
+    "Read EN/ZH added sections for equivalent facts and limitations.",
+    "Keep the exact existing body prefix, FAQ, metadata, media, owner URL and canonical.",
+    "Confirm every added same-language target remains live and relevant.",
+    "Validate CMS sanitizer rendering and public DOM only after department1 implementation.",
+    "QA editorial PASS is not a saved CMS record or release permit."
+  ],
+  "execution": {
+    "cms_saved": false,
+    "code_modified": false,
+    "published": false,
+    "precise_permission": null
+  },
+  "checks": {
+    "zh": {
+      "current_body_passage_publicly_visible": true,
+      "body_witness_normalized": "暖色要有层次木纹、浅石纹、布艺、哑光墙面和金属细节可以一起使用，但比例要控制。全部同色会变平，材质对比才有质感。收纳要藏得自然极简空间最怕杂物外露。电视墙、玄关、餐边和卧室柜可以用同色门片弱化存在感。",
+      "old_body_exact_prefix_preserved": true,
+      "new_section_count": 2,
+      "new_internal_links": 2,
+      "links_same_language_public_200_self_canonical": true,
+      "existing_title_faq_image_fields_unchanged": true,
+      "public_dom_evidence": "drafts/seo/fc-20260927-seo-intensive-content-foundation-v1/public/dom/zh__blog__modern-warm-minimalist-home-design-malaysia.json"
+    },
+    "en": {
+      "current_body_passage_publicly_visible": true,
+      "body_witness_normalized": "WarmtonesneedlayersWoodgrain,lightstone,fabric,mattewalls,andmetaldetailscanworktogether,butthepropo",
+      "old_body_exact_prefix_preserved": true,
+      "new_section_count": 2,
+      "new_internal_links": 2,
+      "links_same_language_public_200_self_canonical": true,
+      "existing_title_faq_image_fields_unchanged": true,
+      "public_dom_evidence": "drafts/seo/fc-20260927-seo-intensive-content-foundation-v1/public/dom/en__blog__modern-warm-minimalist-home-design-malaysia.json"
+    }
+  }
+}

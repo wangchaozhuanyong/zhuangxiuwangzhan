@@ -1,0 +1,14 @@
+{
+  "original_task_id": "fc-20260927-seo-intensive-content-foundation-v1",
+  "candidate_version": "c12-bilingual-body-v1",
+  "record_id": "5ce1950b-21ab-4bc0-a0b3-375a6202204f",
+  "restore_fields": {
+    "content_zh": "<h2>先保留走动空间</h2><p>小户型不要为了收纳把通道压得太窄。玄关、餐边、电视墙和卧室衣柜要先确认人能舒服经过。</p><h2>柜深不是越深越好</h2><p>鞋柜、杂物柜、衣柜和展示柜需要不同深度。太深的柜子容易变成堆放区，反而不好找东西。</p><h2>用隐藏式收口减少杂乱</h2><p>同色柜门、无把手设计、开放格比例和灯带位置，会让小空间看起来更整齐，也更耐看。</p>",
+    "content_en": "<h2>Protect walking space first</h2><p>Do not sacrifice circulation for storage. Entry, dining, TV wall, and bedroom cabinets should still allow comfortable movement.</p><h2>Cabinet depth is not always better</h2><p>Shoe cabinets, utility storage, wardrobes, and display shelves need different depths. Over-deep cabinets often become clutter zones.</p><h2>Use quiet finishing details</h2><p>Matching doors, handle-free fronts, limited open shelves, and controlled lighting help small spaces feel calmer.</p>"
+  },
+  "expected_postsave_updated_at": null,
+  "expected_postsave_version": null,
+  "fill_from_actual_saved_receipt_only": true,
+  "separate_protected_rollback_permit_required": true,
+  "applied": false
+}
