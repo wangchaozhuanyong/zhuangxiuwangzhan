@@ -1,3 +1,5 @@
+import { localResponsiveImageMetadata } from "@/data/localResponsiveImageMetadata";
+
 const RESPONSIVE_IMAGE_PREFIX = "/images/_responsive";
 const LOCAL_RESPONSIVE_IMAGE_PATTERN = /^\/images\/(projects|services|materials|heroes|before-after)\/(.+\.webp)([?#].*)?$/i;
 const VERSIONED_LOCAL_RESPONSIVE_IMAGES = new Map([
@@ -35,6 +37,10 @@ export function isLocalResponsiveImageCandidate(src: string) {
   return LOCAL_RESPONSIVE_IMAGE_PATTERN.test(src);
 }
 
+export function getLocalResponsiveImageDimensions(src: string) {
+  return localResponsiveImageMetadata[toVersionedLocalResponsiveImageSrc(src).split(/[?#]/)[0]];
+}
+
 export function normalizeLocalResponsiveImageWidths(widths: number[]) {
   return Array.from(
     new Set(
@@ -58,11 +64,26 @@ export function toLocalResponsiveImageSrc(src: string, width: number) {
   return `${RESPONSIVE_IMAGE_PREFIX}/${folder}/w${generatedWidth}/${relativePath}${suffix}`;
 }
 
-export function buildLocalResponsiveSrcSet(src: string, widths: number[]) {
+export function buildLocalResponsiveSrcSet(src: string, widths: number[], sourceWidth?: number) {
   if (!isLocalResponsiveImageCandidate(src)) return undefined;
 
   const normalizedWidths = normalizeLocalResponsiveImageWidths(widths);
   if (!normalizedWidths.length) return undefined;
 
-  return normalizedWidths.map((width) => `${toLocalResponsiveImageSrc(src, width)} ${width}w`).join(", ");
+  const dimensions = getLocalResponsiveImageDimensions(src);
+  const originalWidth = dimensions?.width ?? sourceWidth;
+  const originalSrc = toVersionedLocalResponsiveImageSrc(src);
+  const candidates = new Map<number, string>();
+  for (const width of normalizedWidths) {
+    const actualWidth = dimensions ? dimensions.variants[width] : width;
+    if (!actualWidth) continue;
+    if (originalWidth && actualWidth >= originalWidth) {
+      candidates.set(originalWidth, originalSrc);
+    } else {
+      candidates.set(actualWidth, toLocalResponsiveImageSrc(src, width));
+    }
+  }
+  // Native originals retain details beyond the largest generated variant.
+  if (originalWidth) candidates.set(originalWidth, originalSrc);
+  return [...candidates].sort(([a], [b]) => a - b).map(([width, url]) => `${url} ${width}w`).join(", ") || undefined;
 }

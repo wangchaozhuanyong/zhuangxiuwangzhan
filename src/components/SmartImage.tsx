@@ -33,7 +33,6 @@ type SmartImageProps = Omit<React.ImgHTMLAttributes<HTMLImageElement>, "src" | "
   /** Keeps the previous decoded bitmap visible while a replacement is loading. */
   critical?: boolean;
   showFailureFallback?: boolean;
-  timeoutMs?: number;
   /** Retained for existing callers; decoded images now appear without a fade. */
   revealOnLoad?: boolean;
 };
@@ -56,7 +55,7 @@ const retrySrcSet = (srcSet: string | undefined, retry: number) =>
 export function SmartImage({
   src, alt, className, loading, decoding, fetchPriority, width, height, sizes,
   candidateWidths, sourceWidth, quality, resize, targetAspectRatio,
-  pictureSources, pictureClassName, critical = false, showFailureFallback = false, timeoutMs, revealOnLoad = false,
+  pictureSources, pictureClassName, critical = false, showFailureFallback = false, revealOnLoad = false,
   onLoad, onError, ...rest
 }: SmartImageProps) {
   const isSupabase = isSupabasePublicObjectUrl(src);
@@ -68,12 +67,8 @@ export function SmartImage({
   const fallbackWidth = candidateWidths?.[0] ?? width ?? widths[0] ?? 480;
   const localResponsiveWidths = !isSupabase && candidateWidths && isLocalResponsiveImageCandidate(localSrc)
     ? normalizeLocalResponsiveImageWidths(widths) : [];
-  const generatedLocalSrcSet = localResponsiveWidths.length
-    ? buildLocalResponsiveSrcSet(localSrc, localResponsiveWidths) : undefined;
-  const largestGeneratedWidth = localResponsiveWidths[localResponsiveWidths.length - 1] ?? 0;
-  const localResponsiveSrcSet = sourceWidth && sourceWidth > largestGeneratedWidth
-    ? [generatedLocalSrcSet, `${localSrc} ${sourceWidth}w`].filter(Boolean).join(", ")
-    : generatedLocalSrcSet;
+  const localResponsiveSrcSet = localResponsiveWidths.length
+    ? buildLocalResponsiveSrcSet(localSrc, localResponsiveWidths, sourceWidth) : undefined;
   const srcSet = isSupabase
     ? buildSupabaseSrcSet(src, widths, { height, quality, resize, targetAspectRatio })
     : localResponsiveSrcSet;
@@ -125,25 +120,6 @@ export function SmartImage({
     // The selected source changes when the browser swaps a picture candidate.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [sourceKey]);
-
-  React.useEffect(() => {
-    if (!timeoutMs || imageState !== "loading") return;
-    const timer = window.setTimeout(() => {
-      setState((current) => current.sourceKey === sourceKey && current.status === "loading"
-        ? { sourceKey, status: "error" } : current);
-    }, timeoutMs);
-    return () => window.clearTimeout(timer);
-  }, [imageState, sourceKey, timeoutMs]);
-
-  React.useEffect(() => {
-    if (!critical) return;
-    const handleTimeout = () => {
-      setState((current) => current.sourceKey === sourceKey && current.status === "loading"
-        ? { sourceKey, status: "error" } : current);
-    };
-    window.addEventListener("public-image-timeout", handleTimeout);
-    return () => window.removeEventListener("public-image-timeout", handleTimeout);
-  }, [critical, sourceKey]);
 
   const handleLoad: React.ReactEventHandler<HTMLImageElement> = (event) => {
     const img = event.currentTarget;

@@ -46,6 +46,8 @@ const getSectionBody = (section: PublishedCmsSection) => {
   return "";
 };
 
+const renderCmsBody = (body: string) => sanitizeHtml(body.includes("<") ? body : `<p>${body}</p>`);
+
 const renderList = (items: unknown[]) => {
   if (!items.length) return null;
   return (
@@ -66,23 +68,27 @@ const renderList = (items: unknown[]) => {
   );
 };
 
-const CmsSection = ({ section }: { section: PublishedCmsSection }) => {
+const CmsSection = ({ section, pageBody }: { section: PublishedCmsSection; pageBody: string }) => {
   const type = section.section_type.toLowerCase();
   if (type.includes("hero")) return null;
 
   const content = section.content || {};
   const title = section.title || String(content.title || "");
   const body = getSectionBody(section);
+  // The CMS mapper exposes its first rich-text section as page.content too.
+  // Keep the section's title and list, but show identical body text only once.
+  const sectionHtml = body ? renderCmsBody(body) : "";
+  const visibleBody = pageBody && sectionHtml === renderCmsBody(pageBody) ? "" : sectionHtml;
   const items = Array.isArray(content.items) ? content.items : [];
 
-  if (!title && !body && !items.length) return null;
+  if (!title && !visibleBody && !items.length) return null;
 
   return (
     <SchemeASection title={title || undefined}>
-        {body && (
+        {visibleBody && (
           <div
             className="fc-route-cms-copy prose prose-neutral"
-            dangerouslySetInnerHTML={{ __html: sanitizeHtml(body.includes("<") ? body : `<p>${body}</p>`) }}
+            dangerouslySetInnerHTML={{ __html: visibleBody }}
           />
         )}
         {renderList(items)}
@@ -157,13 +163,13 @@ export default function CmsDynamicPage() {
         <SchemeASection>
             <div
               className="fc-route-cms-copy prose prose-neutral"
-              dangerouslySetInnerHTML={{ __html: sanitizeHtml(page.content.includes("<") ? page.content : `<p>${page.content}</p>`) }}
+              dangerouslySetInnerHTML={{ __html: renderCmsBody(page.content) }}
             />
             <div className="fc-route-action-panel"><h2>{page.cta_title || t.quote}</h2><div><Link to="/quote#quote-form">{page.cta_title || t.quote}</Link><Link to="/contact">{t.fallbackDescription}</Link></div></div>
         </SchemeASection>
       )}
 
-      {sections.map((section) => <CmsSection key={section.id} section={section} />)}
+      {sections.map((section) => <CmsSection key={section.id} section={section} pageBody={page.content} />)}
     </main>
   );
 }

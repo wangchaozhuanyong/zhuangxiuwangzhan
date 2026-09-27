@@ -63,11 +63,38 @@ test("requests deferred home media before it scrolls into view", async ({ page }
   await expect(image).toHaveAttribute("data-image-state", "loaded", { timeout: 10_000 });
 });
 
-test("does not remain on the brand screen after the five second image deadline", async ({ page }) => {
+test("continues browsing after the image deadline without marking pending transfers as failures", async ({ page }) => {
   await page.route("**/images/**", () => { /* Keep the image request pending. */ });
   await page.goto("/en/about", { waitUntil: "domcontentloaded" });
   await expect(page.locator(loader)).toBeVisible();
   await expect(page.locator(loader)).toBeHidden({ timeout: 7_000 });
-  await expect(page.locator(".smart-image-failure")).toBeVisible();
-  await expect(page.locator(".smart-image-failure").getByRole("button", { name: "Retry" })).toBeVisible();
+  await expect(page.locator(criticalImage)).toHaveAttribute("data-image-state", "loading");
+  await expect(page.locator(".smart-image-failure")).toHaveCount(0);
+  await page.unroute("**/images/**");
+});
+
+test("keeps detail loading geometry stable until the first published data result", async ({ page }) => {
+  for (const path of ["/zh/projects/corporate-office-petaling-jaya", "/zh/materials/acrylic-cabinet-gloss-white"]) {
+    await page.setViewportSize({ width: 390, height: 844 });
+    let release = () => {};
+    const pending = new Promise<void>((resolve) => { release = resolve; });
+    await page.route("**/rest/v1/**", async (route) => {
+      if (!["GET", "HEAD"].includes(route.request().method())) return route.fallback();
+      await pending;
+      await route.continue();
+    });
+    try {
+      await page.goto(path, { waitUntil: "domcontentloaded" });
+      await expect(page.locator('[data-route-pending="true"]')).toBeVisible();
+      await expect(page.locator("main h1")).toHaveCount(0);
+      const footerTop = await page.locator(".scheme-a-footer").evaluate((footer) => footer.getBoundingClientRect().top);
+      expect(footerTop).toBeGreaterThanOrEqual(844);
+      release();
+      await expect(page.locator('[data-route-pending="true"]')).toHaveCount(0, { timeout: 20_000 });
+      await expect(page.locator("main h1")).toBeVisible();
+    } finally {
+      release();
+      await page.unroute("**/rest/v1/**");
+    }
+  }
 });

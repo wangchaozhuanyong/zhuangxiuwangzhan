@@ -62,4 +62,28 @@ describe("SmartImage", () => {
     expect(image?.dataset.imageState).toBe("loading");
     await act(async () => root.unmount());
   });
+
+  it("keeps a pending healthy transfer loading after the route's browsing deadline", async () => {
+    vi.useFakeTimers();
+    const container = document.createElement("div");
+    document.body.appendChild(container);
+    const root = createRoot(container);
+    try {
+      await act(async () => root.render(<SmartImage src="/slow.webp" alt="Slow" critical />));
+      await act(async () => {
+        window.dispatchEvent(new Event("public-image-timeout"));
+        vi.advanceTimersByTime(6000);
+      });
+      const image = container.querySelector<HTMLImageElement>(".smart-image");
+      expect(image?.dataset.imageState).toBe("loading");
+      expect(container.querySelector(".smart-image-failure")).toBeNull();
+      Object.defineProperty(image, "decode", { value: () => Promise.resolve() });
+      await act(async () => image?.dispatchEvent(new Event("load", { bubbles: true })));
+      expect(image?.dataset.imageState).toBe("loaded");
+    } finally {
+      await act(async () => root.unmount());
+      container.remove();
+      vi.useRealTimers();
+    }
+  });
 });

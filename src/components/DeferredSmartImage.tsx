@@ -36,12 +36,6 @@ export function DeferredSmartImage({
     return () => observer.disconnect();
   }, [nearViewport, rootMargin]);
 
-  React.useEffect(() => {
-    if ((!nearViewport && imageProps.loading !== "eager") || imageState !== "loading") return;
-    const timer = window.setTimeout(() => setImageState("error"), 5000);
-    return () => window.clearTimeout(timer);
-  }, [imageProps.loading, imageState, nearViewport]);
-
   return (
     <span
       ref={wrapperRef}
@@ -54,7 +48,6 @@ export function DeferredSmartImage({
         loading={nearViewport || imageProps.loading === "eager" ? "eager" : "lazy"}
         revealOnLoad={imageProps.revealOnLoad ?? false}
         showFailureFallback
-        timeoutMs={nearViewport ? 5000 : undefined}
         className={className}
         onLoad={(event) => {
           setImageState("loaded");
