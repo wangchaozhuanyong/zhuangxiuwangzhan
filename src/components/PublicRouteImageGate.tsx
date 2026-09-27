@@ -25,6 +25,7 @@ export function PublicRouteImageGate({ children, routeKey }: { children: ReactNo
     let frame = 0;
     let stopped = false;
     let timeout = 0;
+    let deadlineReached = false;
     const cachedImages = readyRouteImages.get(routeKey);
     let usingCache = cachedImages !== undefined;
     const isReady = () => {
@@ -48,13 +49,16 @@ export function PublicRouteImageGate({ children, routeKey }: { children: ReactNo
     };
     const startTimeout = () => {
       window.clearTimeout(timeout);
+      deadlineReached = false;
       timeout = window.setTimeout(() => {
+        deadlineReached = true;
         if (isReady()) {
           markReady();
           return;
         }
-        window.dispatchEvent(new Event("public-image-timeout"));
-        setStatus("timeout");
+        // A browsing deadline is not evidence of a failed image request.
+        // Keep downloading while allowing visitors to read the ready page.
+        setStatus(main.querySelector('[data-route-pending="true"]') ? "timeout" : "ready");
       }, MAX_WAIT_MS);
     };
     const check = () => {
@@ -70,6 +74,7 @@ export function PublicRouteImageGate({ children, routeKey }: { children: ReactNo
         startTimeout();
       }
       if (isReady()) markReady();
+      else if (deadlineReached && !main.querySelector('[data-route-pending="true"]')) setStatus("ready");
     };
     const observer = new MutationObserver(check);
     observer.observe(main, { childList: true, subtree: true, attributes: true, attributeFilter: ["data-image-state", "data-decoded-src", "data-route-pending", "src", "srcset"] });
@@ -93,9 +98,7 @@ export function PublicRouteImageGate({ children, routeKey }: { children: ReactNo
           <div className="scheme-a-page-loader__brand">
             <p>{publicContentStatusText[language].loaderBrand}</p>
             <strong><span>FLASH</span><em>CAST</em></strong>
-            <span>{status === "timeout"
-              ? publicContentStatusText[language].loaderTimeout
-              : publicContentStatusText[language].loaderPending}</span>
+            <span>{publicContentStatusText[language].loaderPending}</span>
             {status === "waiting" ? <i aria-hidden="true" /> : (
               <div className="scheme-a-page-loader__actions">
                 <button type="button" onClick={() => window.location.reload()}>{publicContentStatusText[language].loaderRetry}</button>

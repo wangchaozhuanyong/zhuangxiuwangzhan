@@ -45,7 +45,7 @@ const PublicLoadingState = ({
   }
 
   return (
-    <main className="forest-state-page pt-site-header" data-route-pending="true">
+    <main className="forest-state-page min-h-svh pt-site-header" role="status" aria-live="polite" aria-busy="true" data-route-pending="true">
       <div className="forest-page-frame">
         <ForestContentState variant="loading" label={label} title={title} description={description} />
       </div>

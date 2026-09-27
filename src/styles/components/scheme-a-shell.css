@@ -29,7 +29,7 @@
 
   /* Existing light cards and link bands retain their own readable text roles
      when nested inside a dark route. */
-  .scheme-a-public-shell :is(.bg-card, .subpage-link-band) {
+  .scheme-a-public-shell :is(.bg-card, .subpage-link-band, .fc-route-media-caption) {
     --foreground: var(--card-foreground);
     --muted-foreground: 31 9% 38%;
     --accent: var(--card-foreground);
@@ -175,6 +175,18 @@
 
   .scheme-a-chrome__spacer {
     height: 64px;
+  }
+
+  /* Immersive routes have no final header spacer. Keep it out of the loading
+     geometry too, before their hero has mounted and registered. */
+  .scheme-a-public-shell:has([data-route-pending="true"]) .scheme-a-chrome__spacer {
+    height: 0;
+  }
+
+  /* Shared data-wait states keep the footer outside the initial viewport.
+     This only reserves space while loading; completed layouts are unchanged. */
+  .scheme-a-public-shell #main-content:has([data-route-pending="true"]) {
+    min-height: 100svh;
   }
 
   .scheme-a-chrome__bar {
@@ -624,6 +636,13 @@
     font-weight: 400;
   }
 
+  @media (max-width: 1179px) {
+    .scheme-a-directory__preview figcaption :is(span, strong) {
+      background: #0d0e11;
+      box-shadow: 0 0 0 4px #0d0e11;
+    }
+  }
+
   .scheme-a-directory__contact {
     display: none;
   }
@@ -1053,7 +1072,7 @@
     justify-content: space-between;
     gap: 2rem;
     border-top: 1px solid rgb(238 233 223 / 0.12);
-    color: #777269;
+    color: #aaa397;
     font-size: 0.68rem;
   }
 

@@ -35,8 +35,9 @@ describe("CMS page shared layout", () => {
       ));
       expect(container.querySelectorAll("h1")).toHaveLength(1);
       expect(container.querySelector(".fc-route-hero-frame h1")).toHaveTextContent(title);
-      expect(container.querySelectorAll(".fc-route-section-frame .fc-route-cms-copy")).toHaveLength(2);
+      expect(container.querySelectorAll(".fc-route-section-frame .fc-route-cms-copy")).toHaveLength(1);
       expect(container.querySelector(".fc-route-cms-list")).toHaveTextContent(body);
+      expect(container.querySelector(".fc-route-cms-list h3")).toHaveTextContent(title);
       expect(container.querySelector(`a[href="/${language}/quote#quote-form"]`)).toBeTruthy();
       expect(container.querySelector(`a[href="/${language}/contact"]`)).toBeTruthy();
       act(() => root.unmount());
@@ -44,4 +45,60 @@ describe("CMS page shared layout", () => {
       container.remove();
     });
   }
+
+  it("keeps a section body when it differs from the page introduction", () => {
+    window.history.replaceState({}, "", "/en/layout-preview");
+    const client = new QueryClient({ defaultOptions: { queries: { retry: false, staleTime: Infinity } } });
+    client.setQueryData(["published", "cms_path", "en", "/layout-preview"], {
+      title: "Space planning", path: "/layout-preview", description: "Overview", content: "Page introduction",
+      sections: [{ id: "details", section_type: "content", title: "Details", content: { text: "Unique section details" } }],
+    });
+    const container = document.createElement("div");
+    document.body.appendChild(container);
+    const root = createRoot(container);
+    act(() => root.render(
+      <QueryClientProvider client={client}>
+        <HelmetProvider><LanguageProvider>
+          <PublicChromeProvider isAdminRoute={false} routeKey="layout-preview">
+            <MemoryRouter initialEntries={["/en/layout-preview"]}>
+              <Routes><Route path="/:lang/*" element={<CmsDynamicPage />} /></Routes>
+            </MemoryRouter>
+          </PublicChromeProvider>
+        </LanguageProvider></HelmetProvider>
+      </QueryClientProvider>,
+    ));
+    expect(container.querySelectorAll(".fc-route-section-frame .fc-route-cms-copy")).toHaveLength(2);
+    expect(Array.from(container.querySelectorAll(".fc-route-section-frame h2")).some((heading) => heading.textContent === "Details")).toBe(true);
+    act(() => root.unmount());
+    client.clear();
+    container.remove();
+  });
+
+  it("keeps distinct links even when the visible words match the page introduction", () => {
+    window.history.replaceState({}, "", "/en/layout-preview");
+    const client = new QueryClient({ defaultOptions: { queries: { retry: false, staleTime: Infinity } } });
+    client.setQueryData(["published", "cms_path", "en", "/layout-preview"], {
+      title: "Space planning", path: "/layout-preview", description: "Overview", content: "<p>Read terms</p>",
+      sections: [{ id: "details", section_type: "content", title: "Details", content: { text: '<p><a href="/terms">Read terms</a></p>' } }],
+    });
+    const container = document.createElement("div");
+    document.body.appendChild(container);
+    const root = createRoot(container);
+    act(() => root.render(
+      <QueryClientProvider client={client}>
+        <HelmetProvider><LanguageProvider>
+          <PublicChromeProvider isAdminRoute={false} routeKey="layout-preview">
+            <MemoryRouter initialEntries={["/en/layout-preview"]}>
+              <Routes><Route path="/:lang/*" element={<CmsDynamicPage />} /></Routes>
+            </MemoryRouter>
+          </PublicChromeProvider>
+        </LanguageProvider></HelmetProvider>
+      </QueryClientProvider>,
+    ));
+    expect(container.querySelectorAll(".fc-route-section-frame .fc-route-cms-copy")).toHaveLength(2);
+    expect(container.querySelector('.fc-route-cms-copy a[href="/terms"]')).toBeTruthy();
+    act(() => root.unmount());
+    client.clear();
+    container.remove();
+  });
 });

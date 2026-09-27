@@ -86,4 +86,16 @@ describe("imageUrl", () => {
       "/images/services/kitchen-renovation.webp",
     );
   });
+
+  it("uses the encoded width and avoids duplicate overclaimed material candidates", () => {
+    const srcSet = buildLocalResponsiveSrcSet("/images/materials/kitchen-acrylic-cabinets.webp?v=2", [560, 720, 1200, 1600], 1600);
+    expect(srcSet).toContain("/images/materials/kitchen-acrylic-cabinets.webp?v=2 800w");
+    expect(srcSet).not.toMatch(/(?:1200|1600)w/);
+    expect(srcSet?.match(/800w/g)).toHaveLength(1);
+  });
+
+  it("includes the original's real pixels beyond the largest generated image", () => {
+    const srcSet = buildLocalResponsiveSrcSet("/images/heroes/v6/home-daylight-mobile.webp", [360, 560, 720]);
+    expect(srcSet).toContain("/images/heroes/v6/home-daylight-mobile.webp 887w");
+  });
 });

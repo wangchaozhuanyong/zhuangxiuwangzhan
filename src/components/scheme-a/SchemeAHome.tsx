@@ -12,6 +12,7 @@ import type { PublishedHomeContentBundle } from "@/lib/homeContentApi";
 import { isRenderingConceptProject } from "@/lib/projectContentClassification";
 import { resolveSchemeAHomePresentation } from "@/lib/schemeAHomePresentation";
 import { buildSupabaseSrcSet, type SupabaseTargetAspectRatio } from "@/lib/supabaseImage";
+import { buildLocalResponsiveSrcSet } from "@/lib/localResponsiveImage";
 
 type SchemeAHomeProps = {
   content: PublishedHomeContentBundle | undefined;
@@ -36,15 +37,6 @@ const PROJECT_CARD_DESKTOP_WIDTHS = [360, 560, 720, 900, 1200, 1600];
 const PROJECT_CARD_MOBILE_ASPECT_RATIO = { width: 4, height: 5 } as const satisfies SupabaseTargetAspectRatio;
 const PROJECT_CARD_DESKTOP_ASPECT_RATIO = { width: 16, height: 10 } as const satisfies SupabaseTargetAspectRatio;
 const PROJECT_CARD_INTRINSIC_WIDTH = 960;
-
-const buildHomeHeroSrcSet = (src: string, sourceWidth: number, widths: number[]) => {
-  const relativePath = src.replace(/^\/images\/heroes\//, "");
-  const responsive = widths
-    .filter((width) => width < sourceWidth)
-    .map((width) => `/images/_responsive/heroes/w${width}/${relativePath} ${width}w`);
-
-  return [...responsive, `${src} ${sourceWidth}w`].join(", ");
-};
 
 const SchemeAHome = ({ content }: SchemeAHomeProps) => {
   const { language } = useLanguage();
@@ -96,7 +88,7 @@ const SchemeAHome = ({ content }: SchemeAHomeProps) => {
                 <SmartImage
                   src={HOME_HERO_ASSETS.desktop}
                   pictureSources={[
-                    { media: "(max-width: 1023px)", srcSet: buildHomeHeroSrcSet(HOME_HERO_ASSETS.mobile, 887, [360, 560, 720]), sizes: "100vw" },
+                    { media: "(max-width: 1023px)", srcSet: buildLocalResponsiveSrcSet(HOME_HERO_ASSETS.mobile, [360, 560, 720], 887), sizes: "100vw" },
                   ]}
                   pictureClassName="scheme-a-hero__picture"
                   critical

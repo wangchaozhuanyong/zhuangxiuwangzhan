@@ -32,7 +32,17 @@ async function readContrast(locator: Locator) {
     };
     const style = getComputedStyle(element);
     const foregroundLuminance = luminance(parseRgb(style.color));
-    const backgroundLuminance = luminance(parseRgb(style.backgroundColor));
+    let background: Rgb = [255, 255, 255];
+    const layers: number[][] = [];
+    for (let node: Element | null = element; node; node = node.parentElement) {
+      const values = getComputedStyle(node).backgroundColor.match(/[\d.]+/g)?.map(Number);
+      if (values?.length && values.length >= 3) layers.push(values);
+    }
+    for (const values of layers.reverse()) {
+      const alpha = values[3] ?? 1;
+      background = background.map((value, index) => values[index] * alpha + value * (1 - alpha)) as Rgb;
+    }
+    const backgroundLuminance = luminance(background);
     return {
       backgroundImage: style.backgroundImage,
       contrast: (Math.max(foregroundLuminance, backgroundLuminance) + 0.05)
@@ -42,6 +52,42 @@ async function readContrast(locator: Locator) {
 }
 
 test.describe("public text readability", () => {
+  test("shared light photo captions and footer legal links retain readable text roles", async ({ page }) => {
+    for (const width of [390, 1440]) {
+      await page.setViewportSize({ width, height: 900 });
+      for (const language of ["zh", "en"]) {
+        for (const slug of ["kitchen-cabinet-price-malaysia", "office-renovation-checklist-malaysia"]) {
+          await page.goto(`/${language}/blog/${slug}`, { waitUntil: "domcontentloaded" });
+          const caption = page.locator(".fc-route-media-caption");
+          await expect(caption).toBeVisible({ timeout: 20_000 });
+          expect((await readContrast(caption)).contrast).toBeGreaterThanOrEqual(4.5);
+          const legal = page.locator(".scheme-a-footer__legal");
+          await legal.scrollIntoViewIfNeeded();
+          expect((await readContrast(legal)).contrast).toBeGreaterThanOrEqual(4.5);
+          expect((await readContrast(legal.locator("a").first())).contrast).toBeGreaterThanOrEqual(4.5);
+        }
+      }
+    }
+  });
+
+  test("phone directory captions keep local contrast while leaving the photograph visible", async ({ page }) => {
+    for (const language of ["zh", "en"]) {
+      for (const width of [390, 767]) {
+        await page.setViewportSize({ width, height: 900 });
+        await page.goto(`/${language}/services/surface-repair`, { waitUntil: "domcontentloaded" });
+        await expect(page.locator(".scheme-a-page-loader--overlay")).toBeHidden({ timeout: 15_000 });
+        await page.getByRole("button", { name: language === "zh" ? "打开完整网站目录" : "Open the complete site directory", exact: true }).click();
+        const preview = page.locator(".scheme-a-directory__preview");
+        await expect(preview).toBeVisible();
+        for (const tag of ["span", "strong"]) {
+          expect((await readContrast(preview.locator(`figcaption ${tag}`))).contrast).toBeGreaterThanOrEqual(4.5);
+        }
+        expect(await preview.locator("img").evaluate((image) => getComputedStyle(image).filter)).toBe("none");
+        await page.getByRole("button", { name: language === "zh" ? "关闭网站目录" : "Close the site directory", exact: true }).click();
+      }
+    }
+  });
+
   test("blog topic cards keep readable dark-theme contrast", async ({ page }) => {
     await page.setViewportSize({ width: 1440, height: 1000 });
     await page.goto("/zh/blog", { waitUntil: "domcontentloaded" });
@@ -237,17 +283,35 @@ test.describe("public text readability", () => {
         await expect(header).toBeVisible();
         await expect(directoryTrigger).toBeVisible();
         await expect(hero).toBeVisible();
+        if (await hero.getAttribute("data-hero-art") === "daylight") {
+          await expect(header).toHaveCSS("color", "rgb(33, 30, 25)");
+          await expect(header).toHaveCSS("background-color", "rgba(0, 0, 0, 0)");
+        }
+        await expect.poll(async () => {
+          const headerBottom = await header.evaluate((element) => element.getBoundingClientRect().bottom);
+          const heroTop = await hero.evaluate((element) => element.getBoundingClientRect().top);
+          return heroTop < headerBottom;
+        }).toBe(true);
         const result = await header.evaluate((element) => {
           const surface = getComputedStyle(element);
           const hero = document.querySelector<HTMLElement>(".scheme-a-hero");
           return {
             surfaceImage: surface.backgroundImage,
+            surfaceColor: surface.backgroundColor,
+            foreground: surface.color,
+            heroArt: hero?.dataset.heroArt,
             headerBottom: Math.round(element.getBoundingClientRect().bottom),
             heroTop: Math.round(hero?.getBoundingClientRect().top ?? -1),
           };
         });
 
-        expect(result.surfaceImage).toContain("linear-gradient");
+        if (result.heroArt === "daylight") {
+          expect(result.surfaceImage).toBe("none");
+          expect(result.surfaceColor).toBe("rgba(0, 0, 0, 0)");
+          expect(result.foreground).toBe("rgb(33, 30, 25)");
+        } else {
+          expect(result.surfaceImage).toContain("linear-gradient");
+        }
         expect(result.heroTop).toBeLessThan(result.headerBottom);
       });
     }

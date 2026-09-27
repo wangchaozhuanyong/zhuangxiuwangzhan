@@ -12,9 +12,6 @@ const ROUTE_HERO_MOBILE_WIDTHS = [560, 720, 900];
 const ROUTE_HERO_TABLET_WIDTHS = [720, 900];
 const WIDE_TITLE_CHARACTER = /[\p{Script=Han}\p{Script=Hiragana}\p{Script=Katakana}\p{Script=Hangul}]/u;
 
-const appendOriginalCandidate = (srcSet: string | undefined, src: string, sourceWidth?: number) =>
-  sourceWidth ? [srcSet, `${src} ${sourceWidth}w`].filter(Boolean).join(", ") : srcSet;
-
 export type SchemeARouteKind = "listing" | "detail" | "content" | "article" | "legal" | "form" | "compare";
 
 export type SchemeARouteImagePosition = {
@@ -114,22 +111,14 @@ export function SchemeARouteHero({
     ? isSupabasePublicObjectUrl(mobileImage)
       ? buildSupabaseSrcSet(mobileImage, ROUTE_HERO_MOBILE_WIDTHS, { height: 1120, quality: 86, resize: "cover" })
       : isLocalResponsiveImageCandidate(mobileImage)
-        ? appendOriginalCandidate(
-            buildLocalResponsiveSrcSet(mobileImage, ROUTE_HERO_MOBILE_WIDTHS),
-            mobileImage,
-            mobileImageSourceWidth,
-          )
+        ? buildLocalResponsiveSrcSet(mobileImage, ROUTE_HERO_MOBILE_WIDTHS, mobileImageSourceWidth)
         : undefined
     : undefined;
   const tabletSrcSet = tabletImage
     ? isSupabasePublicObjectUrl(tabletImage)
       ? buildSupabaseSrcSet(tabletImage, ROUTE_HERO_TABLET_WIDTHS, { height: 1400, quality: 84, resize: "cover" })
       : isLocalResponsiveImageCandidate(tabletImage)
-        ? appendOriginalCandidate(
-            buildLocalResponsiveSrcSet(tabletImage, ROUTE_HERO_TABLET_WIDTHS),
-            tabletImage,
-            tabletImageSourceWidth,
-          )
+        ? buildLocalResponsiveSrcSet(tabletImage, ROUTE_HERO_TABLET_WIDTHS, tabletImageSourceWidth)
         : undefined
     : undefined;
 
@@ -163,7 +152,7 @@ export function SchemeARouteHero({
             {imageCaption ? (
               <div className="flex h-full flex-col">
                 <div className="min-h-0 flex-1">{heroImage}</div>
-                <figcaption className="relative z-10 shrink-0 bg-background px-6 py-3 text-sm leading-relaxed text-muted-foreground">{imageCaption}</figcaption>
+                <figcaption className="fc-route-media-caption relative z-10 shrink-0 bg-background px-6 py-3 text-sm leading-relaxed text-muted-foreground">{imageCaption}</figcaption>
               </div>
             ) : heroImage}
           </MediaTag>
