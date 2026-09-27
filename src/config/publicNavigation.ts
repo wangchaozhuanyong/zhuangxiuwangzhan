@@ -50,6 +50,7 @@ export const publicNavigationGroups: readonly PublicNavGroup[] = [
     key: "services",
     items: [
       { labelKey: "nav.services", path: "/services", icon: "services", previewImage: previewImages.services },
+      { labelKey: "nav.design", path: "/services/design", icon: "services", previewImage: "/images/services/design-services.webp" },
       { labelKey: "nav.oldHouse", path: "/services/old-house", icon: "oldHouse", previewImage: "/images/heroes/v2/hero-old-house-premium.webp" },
       { labelKey: "nav.materials", path: "/materials", icon: "materials", previewImage: "/images/heroes/v2/hero-materials-premium.webp" },
       { labelKey: "nav.promotions", path: "/promotions", icon: "promotions", previewImage: previewImages.contact },
@@ -77,7 +78,7 @@ export const publicNavigationGroups: readonly PublicNavGroup[] = [
 export const publicNavigationItems: PublicNavItem[] = publicNavigationGroups.flatMap((group) => [...group.items]);
 
 export const primaryPublicNavigationItems = publicNavigationItems.filter((item) =>
-  ["/", "/projects", "/services", "/materials"].includes(item.path),
+  ["/", "/projects", "/services", "/services/design", "/materials"].includes(item.path),
 );
 
 export const findPublicNavigationItem = (path: string) =>

@@ -278,12 +278,11 @@
     counter-increment: atelier-service;
     background: transparent;
     border-bottom: 1px solid rgba(212, 175, 55, 0.18);
-    transition: background 260ms ease, border-color 260ms ease;
   }
 
   html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-services li a {
     display: grid;
-    grid-template-columns: auto minmax(0, 1fr) 2rem;
+    grid-template-columns: auto minmax(0, 1fr) auto;
     column-gap: clamp(16px, 2.5vw, 24px);
     min-height: 7rem;
     padding: 1.6rem 1rem;
@@ -293,13 +292,9 @@
     -webkit-tap-highlight-color: transparent;
   }
 
-  html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-services li a:active {
-    background: rgba(212, 175, 55, 0.09);
-  }
-
   html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-services li a:focus-visible {
     outline: 2px solid var(--atelier-gold);
-    outline-offset: -2px;
+    outline-offset: 4px;
   }
 
   html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-services li a::before {
@@ -325,6 +320,9 @@
     grid-row: 1;
     display: block;
     align-self: end;
+    transition: color 180ms ease;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 0.2em;
   }
 
   html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-services li small {
@@ -342,21 +340,54 @@
     position: static;
     grid-column: 3;
     grid-row: 1 / span 2;
-    width: 22px;
-    height: 22px;
+    width: 40px;
+    height: 40px;
+    padding: 9px;
+    border: 1px solid rgba(212, 175, 55, 0.4);
+    border-radius: 50%;
+    box-sizing: border-box;
     color: var(--atelier-gold);
     align-self: center;
-    transition: transform 220ms ease;
+    transition: transform 180ms ease, color 180ms ease, background-color 180ms ease;
+    pointer-events: none;
+  }
+
+  html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-services li a:is(:active, :focus-visible, [data-service-pressed="true"]) span {
+    color: var(--atelier-gold-soft);
+    text-decoration-line: underline;
+  }
+
+  html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-services li a:is(:active, :focus-visible, [data-service-pressed="true"]) svg {
+    background-color: var(--atelier-gold);
+    color: var(--atelier-ink);
   }
 
   @media (hover: hover) and (pointer: fine) {
-    html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-services li:hover {
-      background: rgba(212, 175, 55, 0.06);
-      border-color: rgba(212, 175, 55, 0.45);
+    html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-services li a:hover span {
+      color: var(--atelier-gold-soft);
+      text-decoration-line: underline;
     }
 
-    html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-services li:hover svg {
-      transform: translate(2px, -2px);
+    html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-services li a:hover svg {
+      background-color: var(--atelier-gold);
+      color: var(--atelier-ink);
+      transform: rotate(45deg);
+    }
+  }
+
+  html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-services li a:is(:active, [data-service-pressed="true"]) svg {
+    transform: scale(0.9);
+    transition-duration: 0s;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-services li a span,
+    html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-services li a svg {
+      transition: none;
+    }
+
+    html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-services li a:is(:hover, :active, [data-service-pressed="true"]) svg {
+      transform: none;
     }
   }
 
