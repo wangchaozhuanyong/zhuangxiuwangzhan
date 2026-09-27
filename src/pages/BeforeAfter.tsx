@@ -28,7 +28,6 @@ function BeforeAfterComparison({
   return (
     <article className="scheme-a-transformation" data-cinematic-section>
       <header className="scheme-a-transformation__copy">
-        <p className="scheme-a-transformation__index">{String(index + 1).padStart(2, "0")}</p>
         <div>
           <h2>{item.title}</h2>
           <p className="scheme-a-transformation__description">{t.itemDescription}</p>

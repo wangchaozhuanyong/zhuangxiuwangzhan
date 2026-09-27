@@ -70,7 +70,6 @@ const OldHouseRenovation = () => {
             return (
               <article key={comparison.id} className="scheme-a-transformation" data-cinematic-section>
                 <header className="scheme-a-transformation__copy">
-                  <p className="scheme-a-transformation__index">{String(index + 1).padStart(2, "0")}</p>
                   <div>
                     <h2>{comparison.title}</h2>
                     <p className="scheme-a-transformation__location">{comparison.meta}</p>

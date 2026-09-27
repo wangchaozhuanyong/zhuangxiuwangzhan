@@ -51,6 +51,7 @@ export const publicNavigationGroups: readonly PublicNavGroup[] = [
     items: [
       { labelKey: "nav.services", path: "/services", icon: "services", previewImage: previewImages.services },
       { labelKey: "nav.design", path: "/services/design", icon: "services", previewImage: "/images/services/design-services.webp" },
+      { labelKey: "nav.surfaceRepair", path: "/services/surface-repair", icon: "services", previewImage: "/images/services/surface-repair/hero.webp" },
       { labelKey: "nav.oldHouse", path: "/services/old-house", icon: "oldHouse", previewImage: "/images/heroes/v2/hero-old-house-premium.webp" },
       { labelKey: "nav.materials", path: "/materials", icon: "materials", previewImage: "/images/heroes/v2/hero-materials-premium.webp" },
       { labelKey: "nav.promotions", path: "/promotions", icon: "promotions", previewImage: previewImages.contact },
