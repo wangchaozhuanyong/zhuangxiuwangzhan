@@ -114,7 +114,24 @@ export default function SurfaceRepairContent({ service }: { service: PublishedSe
           </article>)}</div>
           <section className="all-scope" aria-labelledby="all-scope-title"><div className="all-scope-heading"><strong id="all-scope-title">{copy.allScopeTitle}</strong><small>{copy.allScopeHint}</small></div><div className="service-grid">{copy.services.map((item, i) => <details className="service" key={item.id}><summary><span className="index">{String(i + 1).padStart(2, "0")}</span><span><span className="name">{item.title}</span><span className="desc">{item.summary}</span></span><span className="toggle" aria-hidden="true">+</span></summary><div className="service-body"><dl>{(["problems", "direction", "boundary"] as const).map((key, n) => <div key={key}><dt>{copy.detailLabels[n]}</dt><dd>{item[key]}</dd></div>)}</dl><button type="button" className="text-link" onClick={() => chooseCategory(item.id)}>{copy.categoryAction}<ArrowUpRight size={16} aria-hidden="true" /></button></div></details>)}</div></section>
         </section>
-        <section className="section assessment" id="repair-assessment" tabIndex={-1}><div className="frame"><SectionHeading title={copy.assessmentTitle} description={copy.assessmentDescription} /><div className="assessment-grid">{copy.assessment.map(item => <article className="assessment-item" key={item.title}><span className="assessment-status">{item.label}</span><h3>{item.title}</h3><p>{item.description}</p><details className="assessment-detail"><summary>{copy.exampleDetails}</summary><p>{item.details}</p></details></article>)}</div></div></section>
+        <section className="section assessment" id="repair-assessment" tabIndex={-1}>
+          <div className="frame">
+            <SectionHeading title={copy.assessmentTitle} description={copy.assessmentDescription} />
+            <div className="assessment-grid">
+              {copy.assessment.map(item => <article className="assessment-item" key={item.title}>
+                <header className="assessment-heading">
+                  <h3>{item.title}</h3>
+                  <span className="assessment-status">{item.label}</span>
+                </header>
+                <p>{item.description}</p>
+                <details className="assessment-detail">
+                  <summary>{copy.exampleDetails}<span className="toggle" aria-hidden="true">+</span></summary>
+                  <p>{item.details}</p>
+                </details>
+              </article>)}
+            </div>
+          </div>
+        </section>
         <section className="section frame" id="repair-process" tabIndex={-1}><SectionHeading title={copy.processTitle} description={copy.processDescription} /><ol className="process-grid">{steps.map((item, i) => <li key={i}><span className="step-index">{String(i + 1).padStart(2, "0")}</span><h3>{item.title}</h3><p>{item.desc}</p></li>)}</ol><p className="situations">{copy.situations}</p><section className="price"><SectionHeading title={copy.priceTitle} /><div className="triple">{copy.priceFactors.map(item => <article key={item.title}><h3>{item.title}</h3><p>{item.description}</p></article>)}</div></section></section>
         {faqs.length > 0 && <section className="section faq-section frame"><SectionHeading title={copy.faqTitle} />{faqs.map(item => <details className="faq" key={item.question}><summary>{item.question}<span className="toggle" aria-hidden="true">+</span></summary><p>{item.answer}</p></details>)}</section>}
         <section className="section consult" id="repair-consult" tabIndex={-1}><div className="frame consult-layout"><div><SectionHeading title={copy.consultTitle} description={copy.consultDescription} /><ol className="photo-list">{copy.photoGuide.map((item, i) => { const Icon = photoIcons[i]; return <li key={item.title}><div className="photo-visual"><span className="photo-index">{String(i + 1).padStart(2, "0")}</span><Icon aria-hidden="true" /></div><strong>{item.title}</strong><p>{item.description}</p></li>; })}</ol></div>
