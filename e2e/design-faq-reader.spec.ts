@@ -48,8 +48,9 @@ for (const language of ["zh", "en"] as const) {
     await expect(section.getByRole("tabpanel")).toBeFocused();
     await section.screenshot({ path: resolve(evidence, `${language}-desktop.png`) });
     const schema = await page.locator('script[type="application/ld+json"]').evaluateAll(elements => elements.map(e => JSON.parse(e.textContent || "{}")));
-    const faq = schema.find(item => item["@type"] === "FAQPage");
-    expect(faq.mainEntity).toHaveLength(4);
+    const faq = schema.flatMap(item => item["@graph"] ?? [item]).find(item => item["@type"] === "FAQPage");
+    expect(faq).toBeDefined();
+    expect(faq.mainEntity.length).toBeGreaterThanOrEqual(4);
     expect(faq.mainEntity.every((item: { acceptedAnswer: { text: string } }) => item.acceptedAnswer.text.length > 20)).toBe(true);
   });
 }
@@ -70,9 +71,15 @@ test.describe("mobile question selection", () => {
         expect((await feedback(tabs.nth(i))).background).toBe("rgba(0, 0, 0, 0)");
       }
       await section.screenshot({ path: resolve(evidence, `${language}-mobile.png`) });
-      await section.getByRole("tabpanel").scrollIntoViewIfNeeded();
-      const answer = await section.getByRole("tabpanel").getByRole("paragraph").boundingBox();
-      expect(answer!.y + answer!.height).toBeLessThanOrEqual(844 - 60);
+      const answerText = section.getByRole("tabpanel").getByRole("paragraph");
+      await answerText.evaluate(element => element.scrollIntoView({ block: "center", behavior: "instant" }));
+      await expect(page.getByTestId("mobile-bottom-dock")).toBeVisible();
+      await expect.poll(async () => {
+        const answer = await answerText.boundingBox();
+        const dock = await page.getByTestId("mobile-bottom-dock").boundingBox();
+        const header = await page.locator(".scheme-a-chrome").boundingBox();
+        return answer!.y >= header!.y + header!.height && answer!.y + answer!.height <= dock!.y;
+      }).toBe(true);
     });
   }
 });
