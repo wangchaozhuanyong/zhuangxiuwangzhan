@@ -1,3 +1,4 @@
+import { projectPublicMetadata } from "../src/lib/projectPublicMetadata.mjs";
 import { existsSync, readFileSync, writeFileSync, mkdirSync } from "node:fs";
 import { buildStaticManifest, SITE_URL, OG_IMAGE, COMPANY } from "./seo-static-pages.mjs";
 import { loadMaterialSeoCategories } from "./seo-material-pages.mjs";
@@ -201,8 +202,8 @@ for (const lang of ["en", "zh"]) {
       lang,
       "/projects",
       row.slug,
-      lang === "zh" ? row.title_zh || row.title_en : row.title_en || row.title_zh,
-      lang === "zh" ? row.excerpt_zh || row.excerpt_en : row.excerpt_en || row.excerpt_zh,
+      projectPublicMetadata(row, lang)?.title || (lang === "zh" ? row.title_zh || row.title_en : row.title_en || row.title_zh),
+      projectPublicMetadata(row, lang)?.description || (lang === "zh" ? row.excerpt_zh || row.excerpt_en : row.excerpt_en || row.excerpt_zh),
     );
   }
   for (const row of posts) {

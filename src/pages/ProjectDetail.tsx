@@ -50,6 +50,7 @@ export default function ProjectDetail() {
   const materials = project.materialsUsed.map((item: string) => translateDisplayText(item, language));
   const images = (project.images.length ? project.images : [project.thumbnail]).filter(Boolean);
   const usesRenderingConcept = isRenderingConceptProject({ ...project, images });
+  const publicMetadata = "publicMetadata" in project ? project.publicMetadata : undefined;
   const publicDescription = usesRenderingConcept ? `${copy.renderingDisclaimer} ${description}` : description;
   const quotePath = buildQuotePath({
     source: "project",
@@ -59,7 +60,7 @@ export default function ProjectDetail() {
 
   return (
     <main className="fc-route-page">
-      <PageMeta title={`${title} | ${copy.metaSuffix}`} description={usesRenderingConcept ? copy.conceptMetaDescription(type) : copy.metaDescription(type)} keywords={copy.metaKeywords(type, title)} canonicalPath={`/projects/${project.slug}`} />
+      <PageMeta title={publicMetadata?.title || `${title} | ${copy.metaSuffix}`} description={publicMetadata?.description || (usesRenderingConcept ? copy.conceptMetaDescription(type) : copy.metaDescription(type))} keywords={copy.metaKeywords(type, title)} canonicalPath={`/projects/${project.slug}`} />
       <JsonLdBreadcrumb items={[{ name: copy.breadcrumbHome, url: "/" }, { name: copy.breadcrumbProjects, url: "/projects" }, { name: title, url: `/projects/${project.slug}` }]} />
       <SchemeARouteHero kind="detail" image={images[0]} imageAlt={`${title} - ${copy.imageLabel} 1`} label={[type, usesRenderingConcept ? mediaLabels[language].renderingConcept : ""].filter(Boolean).join(" · ")} title={title} description={publicDescription} />
       <SchemeAFacts items={[

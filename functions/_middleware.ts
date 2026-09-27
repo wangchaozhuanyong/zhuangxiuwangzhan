@@ -1,3 +1,5 @@
+import { buildReadablePublicBody } from "./readablePublicBody";
+import { projectPublicMetadata } from "../src/lib/projectPublicMetadata.mjs";
 import manifest from "./seo-manifest.json";
 import {
   PUBLIC_LANGUAGE_COOKIE,
@@ -988,14 +990,14 @@ const injectEdgeStructuredData = (html: string, meta: SeoEntry, siteSettings?: S
   );
 };
 
-const injectGeoSummary = (html: string, meta: SeoEntry) => {
+const injectGeoSummary = (html: string, meta: SeoEntry, readableBody = "") => {
   if (html.includes("data-flashcast-geo-summary")) return html;
 
   const title = escapeHtml(meta.title);
   const description = escapeHtml(meta.description);
   const canonical = escapeHtml(meta.canonical);
   const lang = meta.lang === "zh" ? "zh-CN" : "en";
-  const summary = `<noscript data-flashcast-geo-summary><section lang="${lang}" aria-label="Page summary"><h1>${title}</h1><p>${description}</p><p><a href="${canonical}">${canonical}</a></p></section></noscript>`;
+  const summary = readableBody ? `<noscript data-flashcast-geo-summary>${readableBody}</noscript>` : `<noscript data-flashcast-geo-summary><section lang="${lang}" aria-label="Page summary"><h1>${title}</h1><p>${description}</p><p><a href="${canonical}">${canonical}</a></p></section></noscript>`;
   return html.replace(/<body([^>]*)>/i, `<body$1>\n    ${summary}`);
 };
 
@@ -1299,6 +1301,7 @@ const buildDynamicSeoEntry = (
       boundedLocalizedContent(row, lang) ||
       fallback?.description ||
       rawTitle;
+  const boundProjectMetadata = kind === "project" ? projectPublicMetadata(row, lang) : undefined;
   const title = /flash cast/i.test(rawTitle) ? rawTitle : `${rawTitle} | FLASH CAST`;
   const canonicalPath = key === "/" ? "/en" : key;
   const pathWithoutLanguage = canonicalPath.replace(/^\/(?:en|zh)/, "") || "/";
@@ -1325,8 +1328,8 @@ const buildDynamicSeoEntry = (
   return {
     lang,
     path: pathWithoutLanguage,
-    title: sanitizePublicDraftMarkers(stripMarkup(title)).slice(0, 180),
-    description: sanitizePublicDraftMarkers(stripMarkup(rawDescription)).slice(0, 300),
+    title: boundProjectMetadata?.title || sanitizePublicDraftMarkers(stripMarkup(title)).slice(0, 180),
+    description: boundProjectMetadata?.description || sanitizePublicDraftMarkers(stripMarkup(rawDescription)).slice(0, 300),
     keywords: tags.length ? tags.join(", ") : keywordValue || fallback?.keywords,
     faqs: faqs.length ? faqs : fallback?.faqs,
     canonical: `${PUBLIC_SITE_URL}${canonicalPath}`,
@@ -1379,7 +1382,7 @@ const fetchDynamicRouteState = async (
     if (!routeMatch?.[1]) continue;
     const slug = decodeURIComponent(routeMatch[1]);
     const readResult = await fetchFreshPublicRowsResult(env, route.table, (url) => {
-      url.searchParams.set("select", route.select || "*");
+      url.searchParams.set("select", route.kind === "blog" && slug === "renovation-materials-malaysia" ? `${BLOG_EDGE_META_SELECT},content_en,content_zh,status` : route.select || "*");
       url.searchParams.set("status", "eq.published");
       url.searchParams.set("slug", `eq.${slug}`);
       url.searchParams.set("limit", "1");
@@ -1751,7 +1754,7 @@ const isRedirectOnlySitemapPath = (pathname: string) => Boolean(
   || getLandingToServiceRedirectPath(pathname),
 );
 
-const injectSeo = (html: string, meta: SeoEntry, siteSettings?: SiteSettingsHead | null) => {
+const injectSeo = (html: string, meta: SeoEntry, siteSettings?: SiteSettingsHead | null, readableBody = "") => {
   const safeMeta = {
     ...meta,
     title: sanitizePublicDraftMarkers(meta.title),
@@ -1792,7 +1795,7 @@ const injectSeo = (html: string, meta: SeoEntry, siteSettings?: SiteSettingsHead
   out = replaceOrInsertTag(out, /<meta\b[^>]*name="twitter:image"[^>]*>/i, `<meta data-rh="true" name="twitter:image" content="${ogImage}" />`);
   out = injectHeadIcons(out, favicon, touchIcon);
   out = injectEdgeStructuredData(out, safeMeta, siteSettings);
-  out = injectGeoSummary(out, safeMeta);
+  out = injectGeoSummary(out, safeMeta, readableBody);
 
   return out;
 };
@@ -2237,7 +2240,7 @@ export const onRequest: PagesFunction = async (context) => {
   ]);
 
   const html = await response.text();
-  let transformed = meta ? injectSeo(html, meta, siteSettings) : injectNoIndexNotFound(html, siteSettings);
+  let transformed = meta ? injectSeo(html, meta, siteSettings, buildReadablePublicBody(key, dynamicRouteState?.row)) : injectNoIndexNotFound(html, siteSettings);
   let publicDataOmitted = false;
   const publicDataPayload: Record<string, unknown> = {};
   if (siteSettings) {
