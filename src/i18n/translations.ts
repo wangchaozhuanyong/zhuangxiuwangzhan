@@ -11,6 +11,7 @@ export const translations: Translations = {
   "nav.home": { en: "Home", zh: "首页" },
   "nav.about": { en: "About", zh: "关于我们" },
   "nav.services": { en: "Services", zh: "服务项目" },
+  "nav.design": { en: "Interior Design", zh: "室内设计" },
   "nav.materials": { en: "Materials", zh: "材料库" },
   "nav.projects": { en: "Projects", zh: "项目案例" },
   "nav.process": { en: "Process", zh: "施工流程" },

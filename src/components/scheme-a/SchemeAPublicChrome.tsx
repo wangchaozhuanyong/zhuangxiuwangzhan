@@ -65,8 +65,10 @@ const footerNavigationGroups = [
   },
 ] as const;
 
-const getCurrentNavigationItem = (pathname: string) =>
-  publicNavigationItems.find((item) => isActivePath(pathname, item.path)) ?? publicNavigationItems[0];
+const getCurrentNavigationItem = (pathname: string, items: readonly PublicNavItem[] = publicNavigationItems) =>
+  items.find((item) => item.path === stripLanguagePrefix(pathname))
+  ?? items.find((item) => isActivePath(pathname, item.path))
+  ?? items[0];
 
 const getCurrentNavigationGroup = (pathname: string): PublicNavGroupKey =>
   publicNavigationGroups.find((group) => group.items.some((item) => isActivePath(pathname, item.path)))?.key
@@ -152,6 +154,7 @@ export const SchemeANavbar = () => {
   const settings = useSiteSettings();
   const { hasImmersiveHero, menuOpen, setMenuOpen } = usePublicChrome();
   const currentItem = getCurrentNavigationItem(location.pathname);
+  const currentPrimaryItem = getCurrentNavigationItem(location.pathname, primaryPublicNavigationItems);
   const currentGroup = getCurrentNavigationGroup(location.pathname);
   const [openGroup, setOpenGroup] = useState<PublicNavGroupKey | null>(null);
   const [previewItem, setPreviewItem] = useState<PublicNavItem>(currentItem);
@@ -262,7 +265,7 @@ export const SchemeANavbar = () => {
           <BrandMark logo={logo} name={companyName} />
           <nav className="scheme-a-chrome__primary" aria-label={t.mainNavigation}>
             {primaryPublicNavigationItems.map((item) => (
-              <LocalizedLink key={item.path} to={item.path} aria-current={isActivePath(location.pathname, item.path) ? "page" : undefined}>
+              <LocalizedLink key={item.path} to={item.path} aria-current={isActivePath(location.pathname, currentPrimaryItem.path) && currentPrimaryItem.path === item.path ? "page" : undefined}>
                 {translate(item.labelKey)}
               </LocalizedLink>
             ))}
@@ -328,7 +331,7 @@ export const SchemeANavbar = () => {
                   <ul id={`scheme-a-directory-group-${group.key}`}>
                     {group.items.map((item) => (
                       <li key={item.path}>
-                        <LocalizedLink to={item.path === "/quote" ? QUOTE_FORM_PATH : item.path} aria-current={isActivePath(location.pathname, item.path) ? "page" : undefined} onFocus={() => setPreviewItem(item)} onPointerEnter={() => setPreviewItem(item)}>
+                        <LocalizedLink to={item.path === "/quote" ? QUOTE_FORM_PATH : item.path} aria-current={isActivePath(location.pathname, currentItem.path) && currentItem.path === item.path ? "page" : undefined} onFocus={() => setPreviewItem(item)} onPointerEnter={() => setPreviewItem(item)}>
                           <span>{translate(item.labelKey)}</span><ArrowUpRight aria-hidden="true" />
                         </LocalizedLink>
                       </li>

@@ -151,7 +151,7 @@ test.describe("Scheme A approved-design fidelity", () => {
     const dialog = page.getByRole("dialog", { name: "完整目录" });
     await expect(dialog).toBeVisible();
     await expect(dialog.locator(".scheme-a-directory__groups section")).toHaveCount(4);
-    await expect(dialog.locator(".scheme-a-directory__groups a")).toHaveCount(14);
+    await expect(dialog.locator(".scheme-a-directory__groups a")).toHaveCount(15);
     await expect(dialog.locator('.scheme-a-directory__groups section[data-open="true"]')).toHaveCount(1);
     await expect(dialog.getByRole("button", { name: "空间作品", exact: true })).toHaveAttribute("aria-expanded", "true");
     await expect(dialog.locator(".scheme-a-directory__preview")).toBeVisible();

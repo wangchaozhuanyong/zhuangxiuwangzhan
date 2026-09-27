@@ -1,4 +1,5 @@
 import { ArrowRight, ArrowUpRight, ClipboardList, MessagesSquare, Ruler } from "lucide-react";
+import type { FocusEvent, PointerEvent } from "react";
 import DeferredSmartImage from "@/components/DeferredSmartImage";
 import ImmersiveHero from "@/components/ImmersiveHero";
 import LocalizedLink from "@/components/LocalizedLink";
@@ -14,6 +15,10 @@ import { buildSupabaseSrcSet, type SupabaseTargetAspectRatio } from "@/lib/supab
 
 type SchemeAHomeProps = {
   content: PublishedHomeContentBundle | undefined;
+};
+
+const clearServicePress = (event: PointerEvent<HTMLAnchorElement> | FocusEvent<HTMLAnchorElement>) => {
+  delete event.currentTarget.dataset.servicePressed;
 };
 
 // Art-directed photographs leave natural light wall space for live HTML copy.
@@ -180,7 +185,16 @@ const SchemeAHome = ({ content }: SchemeAHomeProps) => {
           <ol>
             {resolvedServices.map((service) => (
               <li key={`${service.path}-${service.title}`}>
-                <LocalizedLink to={service.path}>
+                <LocalizedLink
+                  to={service.path}
+                  onPointerDown={(event) => {
+                    if (event.pointerType !== "mouse") event.currentTarget.dataset.servicePressed = "true";
+                  }}
+                  onPointerUp={clearServicePress}
+                  onPointerCancel={clearServicePress}
+                  onPointerLeave={clearServicePress}
+                  onBlur={clearServicePress}
+                >
                   <span>{service.title}</span>
                   <small>{service.summary}</small>
                   <ArrowUpRight aria-hidden="true" />
