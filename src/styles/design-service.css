@@ -227,3 +227,12 @@
   .fc-design .fcd-section-space { padding-block: 32px; }
   .fc-design .fcd-feature-grid, .fc-design .fcd-service-grid { print-color-adjust: exact; }
 }
+
+/* Shared service-page refinements accepted in the repair preview. */
+.fc-design-service-page .fc-design .fcd-faq-section > .fcd-section-heading {margin-bottom:28px}
+.fc-design-service-page .fc-design .fcd-faq-section > .fcd-section-heading p {max-width:38rem}
+@media(max-width:767px){
+ .fc-design .fcd-design-hero__actions {display:grid;grid-template-columns:minmax(0,1fr)}
+ .fc-design .fcd-design-hero__secondary {width:100%}
+ .fc-design .fcd-design-hero__credit {left:auto;right:var(--fcd-gutter);justify-content:flex-end}
+}

@@ -1,0 +1,123 @@
+.fc-surface-repair .repair-hero .fcd-design-hero__media img {object-position:65% center}
+.fc-surface-repair .repair-body {font-family:var(--font-body);background:var(--fcd-bg);color:var(--fcd-text);font-size:17px;line-height:1.75}
+.fc-surface-repair .repair-body .frame {width:min(100%,var(--scheme-a-frame));margin-inline:auto;padding-inline:var(--scheme-a-gutter)}
+.fc-surface-repair .repair-body .section {padding-top:var(--public-section-space-start);padding-bottom:var(--public-section-space-end)}
+.fc-surface-repair .repair-body p {color:var(--fcd-soft);text-wrap:pretty;margin:0 0 1rem}
+.fc-surface-repair .repair-body :is(button,a,summary,input,textarea,select):focus-visible {outline:3px solid var(--fcd-gold);outline-offset:5px}
+.fc-surface-repair .repair-body summary {cursor:pointer}
+.fc-surface-repair .repair-body .toggle {color:var(--fcd-gold);font-size:23px;text-align:center;flex-shrink:0}
+.fc-surface-repair .repair-body details[open]>summary>.toggle {transform:rotate(45deg)}
+.fc-surface-repair .repair-body :is(.service,.faq,.damage-details)>summary {list-style:none}
+.fc-surface-repair .repair-body :is(.service,.faq,.damage-details)>summary::-webkit-details-marker {display:none}
+.fc-surface-repair .repair-body .text-link {display:inline-flex;align-items:center;justify-content:space-between;gap:18px;min-height:44px;font-size:15px;border:0;background:transparent;padding:4px 0;color:var(--fcd-text)}
+.fc-surface-repair .damage-grid {display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:24px}
+.fc-surface-repair .damage-card {min-width:0;background:#191a17}
+.fc-surface-repair .damage-photo {position:relative;aspect-ratio:4/3;margin:0;overflow:hidden}
+.fc-surface-repair .damage-photo :is(.smart-image-frame,picture,img) {width:100%;height:100%;display:block}
+.fc-surface-repair .damage-photo img {object-fit:contain}
+.fc-surface-repair .damage-photo figcaption {position:absolute;inset:16px auto auto 16px;font-size:12px;padding:4px 8px;background:rgb(13 14 17 / 85%);color:var(--fcd-text)}
+.fc-surface-repair .damage-copy {padding:24px 28px}
+.fc-surface-repair .repair-body .damage-condition {font-size:13px;margin-bottom:9px}
+.fc-surface-repair .repair-body .damage-approach {font-size:16px;margin:11px 0 16px}
+.fc-surface-repair .damage-details {border-top:1px solid var(--fcd-line)}
+.fc-surface-repair .damage-details summary {min-height:44px;display:flex;align-items:center;justify-content:space-between;gap:20px;font-size:13px;color:var(--fcd-soft)}
+.fc-surface-repair .repair-body .damage-details p {font-size:14px;line-height:1.8;margin:5px 0 14px}
+.fc-surface-repair .repair-body .damage-card .text-link {font-size:14px;margin-top:5px;width:100%}
+.fc-surface-repair .all-scope {margin-top:34px;padding:0 28px;background:#171817}
+.fc-surface-repair .all-scope-heading {min-height:100px;padding:22px 0}
+.fc-surface-repair .all-scope-heading strong {display:block;font-weight:400;font-size:19px}
+.fc-surface-repair .all-scope-heading small {display:block;margin-top:6px;font-size:13px;color:var(--fcd-soft)}
+.fc-surface-repair .service-grid {display:grid;grid-template-columns:repeat(2,minmax(0,1fr));column-gap:48px;align-items:start;padding-bottom:20px}
+.fc-surface-repair .repair-body .service {border-top:1px solid var(--fcd-line);padding:0 0 5px;min-width:0}
+.fc-surface-repair .service summary {display:grid;grid-template-columns:30px 1fr 24px;gap:12px;padding:24px 0;align-items:start}
+.fc-surface-repair .service .index {color:var(--fcd-gold);font-size:13px;padding-top:6px}
+.fc-surface-repair .service .name {display:block;font-size:19px;font-weight:400}
+.fc-surface-repair .service .desc {display:block;color:var(--fcd-soft);font-size:13px;line-height:1.65;margin-top:7px}
+.fc-surface-repair .service-body {padding:0 0 24px 42px}
+.fc-surface-repair .service-body dl {margin:0}
+.fc-surface-repair .service-body dt {font-size:13px;color:var(--fcd-gold);margin-top:17px}
+.fc-surface-repair .service-body dd {margin:4px 0 0;color:var(--fcd-soft);line-height:1.8}
+.fc-surface-repair .service-body .text-link {margin-top:22px}
+.fc-surface-repair .assessment {background:#191a17}
+.fc-surface-repair .assessment-grid {display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:20px;align-items:stretch}
+.fc-surface-repair .assessment-item {min-width:0;padding:28px;background:var(--fcd-bg);display:flex;flex-direction:column}
+.fc-surface-repair .assessment-status {align-self:flex-start;color:var(--fcd-gold);margin-bottom:16px;font-size:12px;letter-spacing:.04em;padding:4px 10px;background:#2c2c25}
+.fc-surface-repair .repair-body .assessment-item>p {font-size:16px;margin:12px 0 16px}
+.fc-surface-repair .assessment-detail {margin-top:auto}
+.fc-surface-repair .assessment-detail summary {min-height:44px;padding-block:12px;font-size:13px;color:var(--fcd-soft)}
+.fc-surface-repair .repair-body .assessment-detail p {font-size:15px;line-height:1.8;margin:8px 0 0}
+.fc-surface-repair .process-grid {display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px;margin:0 0 20px;padding:0;list-style:none}
+.fc-surface-repair .process-grid li {min-width:0;display:grid;grid-template-columns:36px minmax(0,1fr);align-content:start;gap:8px 16px;padding:24px;background:#191a17}
+.fc-surface-repair .step-index {display:grid;place-items:center;grid-row:span 2;width:36px;height:36px;font:16px Georgia,serif;color:var(--fcd-gold);border:1px solid #655c43;border-radius:50%}
+.fc-surface-repair .process-grid h3 {align-self:center}
+.fc-surface-repair .repair-body .process-grid p {font-size:15px;line-height:1.8;margin:0}
+.fc-surface-repair .repair-body .situations {margin:0;font-size:13px}
+.fc-surface-repair .price {margin-top:36px}
+.fc-surface-repair .price .triple {display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
+.fc-surface-repair .price article {min-width:0;padding:24px;background:#191a17}
+.fc-surface-repair .price h3 {margin-bottom:10px}
+.fc-surface-repair .repair-body .price p {font-size:16px;line-height:1.8;margin:0}
+.fc-surface-repair .faq-section {border-top:1px solid var(--fcd-line)}
+.fc-surface-repair .faq {border-bottom:1px solid var(--fcd-line)}
+.fc-surface-repair .faq summary {display:flex;justify-content:space-between;align-items:center;gap:24px;min-height:64px;padding-block:18px;font-size:17px}
+.fc-surface-repair .repair-body .faq p {max-width:52rem;padding:4px 34px 15px 0;margin:0;font-size:15px}
+.fc-surface-repair .consult {background:var(--scheme-a-paper);color:var(--scheme-a-ink)}
+.fc-surface-repair .consult :is(h2,h3) {color:var(--scheme-a-ink)}
+.fc-surface-repair .repair-body .consult p {color:#655f55}
+.fc-surface-repair .consult-layout {display:grid;grid-template-columns:1.2fr .8fr;gap:7%;align-items:start}
+.fc-surface-repair .photo-list {display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;list-style:none;padding:0;margin:0}
+.fc-surface-repair .photo-list li {min-width:0}
+.fc-surface-repair .photo-visual {position:relative;display:grid;place-items:center;aspect-ratio:1.12;background:#e1d8c8;margin-bottom:15px;color:#776444}
+.fc-surface-repair .photo-visual svg {width:55%;max-width:100px;height:auto;stroke-width:1}
+.fc-surface-repair .photo-index {position:absolute;top:7px;left:9px;font-size:11px;line-height:1.5;color:#7e6b4b}
+.fc-surface-repair .photo-list strong {display:block;font-size:16px;font-weight:500;line-height:1.5}
+.fc-surface-repair .repair-body .photo-list p {font-size:13px;line-height:1.7;margin:7px 0 0}
+.fc-surface-repair .consult-panel {padding:30px;background:#fbf7ee;border:1px solid #cfc6b7;min-width:0;margin-top:40px}
+.fc-surface-repair .consult-panel>.scheme-a-button {width:100%;margin-bottom:20px}
+.fc-surface-repair .tool summary {min-height:48px;padding-block:10px;font-size:17px}
+.fc-surface-repair .repair-body .tool>p {font-size:13px;margin:12px 0 20px}
+.fc-surface-repair .consult label {display:block;font-size:14px;font-weight:500;margin:18px 0 7px}
+.fc-surface-repair .consult :is(input,select,textarea) {width:100%;min-width:0;min-height:48px;border:1px solid #aaa396;border-radius:3px;background:#fffdf8;color:#24221d;padding:10px 12px;line-height:1.6;font:inherit}
+.fc-surface-repair .consult textarea {resize:vertical;min-height:104px}
+.fc-surface-repair .consult :is(input,textarea)::placeholder {color:#777163;font-size:14px}
+.fc-surface-repair .consult .check {display:flex;gap:10px;align-items:flex-start;font-weight:400;line-height:1.7}
+.fc-surface-repair .consult .check input {width:18px;height:18px;min-height:18px;flex:none;margin-top:3px}
+.fc-surface-repair .repair-body .notice {font-size:13px;background:#eae1cc;padding:12px;margin-top:14px;color:#534521}
+.fc-surface-repair .repair-body .error {font-size:14px;color:#9c2525;margin-top:9px}
+.fc-surface-repair .generate {display:flex;align-items:center;justify-content:center;gap:8px;width:100%;background:#252620;color:#fffdf8;border:1px solid #252620;min-height:48px;border-radius:3px;padding:11px 16px;margin-top:20px}
+.fc-surface-repair .result {margin-top:20px;padding-top:20px;border-top:1px solid #c8bfad}
+.fc-surface-repair .result textarea {min-height:235px;font-size:14px}
+.fc-surface-repair .actions {display:flex;flex-wrap:wrap;align-items:center;gap:12px;margin-top:25px}
+.fc-surface-repair .secondary {display:inline-flex;align-items:center;justify-content:center;gap:16px;min-height:48px;max-width:100%;padding:10px 15px;border:1px solid #797362;border-radius:3px;background:transparent;font-weight:600;font-size:14px;line-height:1.5;text-align:left}
+.fc-surface-repair .repair-body .status {font-size:13px;min-height:1.7em;margin-top:12px}
+.fc-surface-repair .replace-warning {padding:16px;background:#eae1cc}
+.fc-surface-repair .repair-body .replace-warning p {margin:0;font-size:14px}
+.fc-surface-repair .replace-warning .actions {margin-top:12px}
+.fc-surface-repair .related {padding-block:36px 42px}
+.fc-surface-repair .related nav {display:flex;gap:35px;flex-wrap:wrap}
+.fc-surface-repair .related a {font-size:15px;min-height:44px;display:inline-flex;align-items:center;gap:15px;color:var(--fcd-gold)}
+@media(min-width:768px) and (max-width:1199px){.fc-surface-repair .process-grid {grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:1000px){.fc-surface-repair .consult-layout {grid-template-columns:1fr 1fr;gap:30px}.fc-surface-repair .consult-panel {padding:24px}.fc-surface-repair .service-grid {column-gap:28px}}
+@media(max-width:767px){
+ .fc-surface-repair .repair-hero .fcd-design-hero__media img {object-position:73% center}
+ .fc-surface-repair .repair-body {font-size:16px}
+ .fc-surface-repair :is(.damage-grid,.assessment-grid,.process-grid,.price .triple,.service-grid,.consult-layout) {grid-template-columns:1fr}
+ .fc-surface-repair .assessment-grid {gap:16px}
+ .fc-surface-repair .assessment-item {padding:24px}
+ .fc-surface-repair :is(.process-grid,.price .triple) {gap:12px}
+ .fc-surface-repair .process-grid li {padding:20px}
+ .fc-surface-repair .damage-copy {padding:20px}
+ .fc-surface-repair .damage-photo figcaption {top:12px;left:12px}
+ .fc-surface-repair .fcd-page-index a {font-size:13px;text-align:center;line-height:1.5}
+ .fc-surface-repair .all-scope {padding-inline:20px;margin-top:26px}
+ .fc-surface-repair .all-scope-heading strong {font-size:17px}
+ .fc-surface-repair .all-scope-heading small {font-size:12px;line-height:1.9}
+ .fc-surface-repair .service summary {padding-block:21px}
+ .fc-surface-repair .service-body {padding-left:0;font-size:16px}
+ .fc-surface-repair .faq summary {font-size:16px}
+ .fc-surface-repair .consult-panel {padding:22px;margin-top:0}
+ .fc-surface-repair .photo-list {gap:10px}
+ .fc-surface-repair .repair-body .photo-list p {font-size:12px}
+ .fc-surface-repair .related nav {display:grid;gap:8px}
+}
+@media(max-width:359px){.fc-surface-repair .consult-panel {padding:16px}.fc-surface-repair .service summary {grid-template-columns:25px 1fr 18px;gap:8px}}

@@ -1,0 +1,18 @@
+{
+  "tool": "image_gen.imagegen",
+  "action_id": "exec-60701890-86bd-46fa-88cb-058dac86755c",
+  "prompt": "hero-v4-prompt.txt",
+  "referenced_image_paths": "omitted",
+  "num_last_images_to_include": "omitted",
+  "source": "/Users/wangchao/.codex/generated_images/01a0e0f8-e9ee-7060-9b18-6b30da701345/exec-60701890-86bd-46fa-88cb-058dac86755c.png",
+  "project_png": "/Users/wangchao/Desktop/装修网站/zhuangxiuwangzhan-main/drafts/repair-page-plan-20260927/assets/surface-repair-hero-v4.png",
+  "web_jpg": "/Users/wangchao/Desktop/装修网站/zhuangxiuwangzhan-main/drafts/repair-page-plan-20260927/assets/surface-repair-hero-v4.jpg",
+  "source_sha256": "2902194503505fccc3dc235ef3fc1d8d324028c8eea2de0499f96eb0de4e9f49",
+  "png_sha256": "2902194503505fccc3dc235ef3fc1d8d324028c8eea2de0499f96eb0de4e9f49",
+  "jpg_sha256": "b8605255096f91ce4ae237202d913f05cd51359c381b88bf35931896e87997fd",
+  "conversion": "sips JPEG quality 86; no retouch or crop",
+  "public_label": "设计效果图 / Design rendering",
+  "web_asset": "/Users/wangchao/Desktop/装修网站/zhuangxiuwangzhan-main/drafts/repair-page-plan-20260927/assets/surface-repair-hero-v4.webp",
+  "webp_sha256": "cdf783640aba54a90247f8dfdc87134539339886246301bc5172691de8773029",
+  "webp_conversion": "sharp WebP quality 88 from original PNG; no retouch or crop"
+}

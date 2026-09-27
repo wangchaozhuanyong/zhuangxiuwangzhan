@@ -147,6 +147,8 @@ const servicesFaqs = {
 };
 
 const staticDefs = [
+  page("en", "/services/surface-repair", "Home Surface Repair in Kuala Lumpur | Furniture, Tiles & Worktops | FLASH CAST", "Send photos of chipped doors, scratched furniture, damaged cabinetry, tiles or worktops. Discuss local surface repairs in Kuala Lumpur, Selangor and Klang Valley, subject to material and site assessment.", "", {"ogImage": "/images/services/surface-repair/hero.webp"}),
+  page("zh", "/services/surface-repair", "吉隆坡家居表面修复｜木门、家具、瓷砖与台面修补 | FLASH CAST", "木门掉漆、家具划痕、柜体崩边与瓷砖台面缺口，可先发送照片咨询局部修复。服务吉隆坡、雪兰莪与巴生谷，按材质、损伤及现场条件确认处理范围。", "", {"ogImage": "/images/services/surface-repair/hero.webp"}),
   page("en", "/", "Renovation Company Kuala Lumpur & Selangor | FLASH CAST", "FLASH CAST plans and coordinates home and commercial renovation across Kuala Lumpur, Selangor, and Klang Valley, including kitchens, bathrooms, offices, shops, custom built-ins, material advice, and site work.", "", { faqs: homeFaqs.en }),
   page("zh", "/", "吉隆坡装修公司 | 住宅、商业装修与定制柜 | FLASH CAST", "FLASH CAST 为吉隆坡、雪兰莪与巴生谷提供住宅装修、旧屋翻新、厨房与浴室、办公室与店铺装修、定制柜体、材料建议和施工协调。提交空间照片、地点与计划范围，获取免费报价。", "", { faqs: homeFaqs.zh }),
   page("en", "/about", "About FLASH CAST | Renovation Company Kuala Lumpur", "Learn about FLASH CAST SDN. BHD., a Kuala Lumpur renovation company specializing in residential, commercial, and custom interior projects."),
@@ -230,7 +232,7 @@ export function buildStaticManifest() {
         zh: `${SITE_URL}${zhPath}`,
         xDefault: `${SITE_URL}${enPath}`,
       },
-      ogImage: OG_IMAGE,
+      ogImage: def.ogImage ? new URL(def.ogImage, SITE_URL).href : OG_IMAGE,
       ...(def.faqs ? { faqs: def.faqs } : {}),
       ...(def.path.startsWith("/services/") ? { schemaType: "Service" } : {}),
     };

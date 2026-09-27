@@ -38,6 +38,7 @@ const staticPaths = [
   "/services",
   "/services/renovation",
   "/services/design",
+  "/services/surface-repair",
   "/services/builtin",
   "/services/kitchen",
   "/services/bathroom",

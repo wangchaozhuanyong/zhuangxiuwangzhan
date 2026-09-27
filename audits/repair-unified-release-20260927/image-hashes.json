@@ -1,0 +1,27 @@
+[
+  {
+    "file": "public/images/services/surface-repair/damage-cabinet.webp",
+    "sha256": "3ae529add19b3c55f282d22857942a0d88d8666bb1ee00590271e88eda0bab3f",
+    "bytes": 106410
+  },
+  {
+    "file": "public/images/services/surface-repair/damage-stone.webp",
+    "sha256": "6264274d63eb98b7e080e76732a3e0d708c53892a6d8a0730b51066d4880220a",
+    "bytes": 59882
+  },
+  {
+    "file": "public/images/services/surface-repair/damage-tile.webp",
+    "sha256": "57e0998e04a8ab9a1fb4c826e570680f559b5764b4afd40aba9d7dffad263ff9",
+    "bytes": 233036
+  },
+  {
+    "file": "public/images/services/surface-repair/damage-wood.webp",
+    "sha256": "021be338927e85b4d9bf8cc9bd0fc308df341c67bcf1e42187034dffe296e4bc",
+    "bytes": 169512
+  },
+  {
+    "file": "public/images/services/surface-repair/hero.webp",
+    "sha256": "caa6ef95bb0f3fa543ee2ce102dfadcfafe298eb840b2ab11a9a59dbf961c904",
+    "bytes": 90458
+  }
+]

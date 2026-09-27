@@ -17,6 +17,7 @@ on:
         default: all-20260906
         type: choice
         options:
+          - surface-repair-20260927
           - all-20260906
           - topic-cluster-links-20260907
           - kitchen
@@ -187,6 +188,19 @@ jobs:
           MANAGED_OPERATION: ${{ inputs.managed_operation }}
           PARENT_RUN_ID: ${{ inputs.parent_run_id }}
         run: |
+          if [ "$PUBLISH_TARGET" = "surface-repair-20260927" ]; then
+            if [ "$MANAGED_OPERATION" != "publish" ]; then
+              echo "::error::Repair creation does not accept managed rollback."
+              exit 1
+            fi
+            repair_args=("--artifact-dir=$PWD/audits/content-publish-${GITHUB_RUN_ID}/surface-repair")
+            if [ "$PUBLISH_MODE" = "publish" ]; then
+              repair_args+=("--execute" "--approval-id=$APPROVAL_ID" "--expected-source-sha=$GITHUB_SHA")
+            fi
+            node scripts/publish-surface-repair.mjs "${repair_args[@]}"
+            exit 0
+          fi
+
           if [ "$PUBLISH_TARGET" = "all-20260906" ]; then
             TARGETS="kitchen old-house-renovation-checklist old-house-renovation-hidden-costs-malaysia"
           elif [ "$PUBLISH_TARGET" = "topic-cluster-links-20260907" ]; then
