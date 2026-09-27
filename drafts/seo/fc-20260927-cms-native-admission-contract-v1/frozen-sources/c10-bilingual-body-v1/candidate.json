@@ -1,0 +1,120 @@
+{
+  "schema_version": "1.0",
+  "task_id": "fc-20260927-seo-intensive-content-foundation-v1",
+  "original_task_id": "fc-20260927-seo-intensive-content-foundation-v1",
+  "previous_published_scope_task_id": null,
+  "original_scope_relation": "new bounded increment; previous accepted scope retained, not replayed",
+  "backlog_item_id": "ORG-006",
+  "related_research_task_id": "fc-20260927-organic-keyword-wide-coverage-v1",
+  "related_research_inheritance": "FORMALLY_INHERITED_NONEMPTY_COMPLETION_AND_HASH_VERIFIED",
+  "inheritance_evidence": "drafts/seo/fc-20260927-seo-intensive-content-foundation-v1/sources/inheritance-confirmation.json",
+  "candidate_id": "C10",
+  "candidate_version": "c10-bilingual-body-v1",
+  "status": "READY_FOR_INDEPENDENT_QA",
+  "risk_scope_this_delivery": "R0 editorial candidate",
+  "proposed_implementation_risk": "R1 existing CMS content fields, subject to department1 exact channel binding",
+  "owner": "seo-content-research",
+  "implementation_owner": "content-organic-website",
+  "priority": "P2",
+  "gap": "原文有耐用与预算方向，但缺少保留/更换清单和业主日后维护资料的具体整理办法。",
+  "target_urls": {
+    "zh": "https://flashcast.com.my/zh/blog/rental-unit-renovation-kl",
+    "en": "https://flashcast.com.my/en/blog/rental-unit-renovation-kl"
+  },
+  "table_observed": "blog_posts",
+  "record_id": "ef92b60e-3541-40c7-8997-621df78cbdea",
+  "slug": "rental-unit-renovation-kl",
+  "expected_updated_at": "2026-08-22T12:22:36.094404+00:00",
+  "expected_version": 1,
+  "base_record_source": "drafts/seo/fc-20260927-seo-intensive-content-foundation-v1/public/cms/blog_posts-ef92b60e-3541-40c7-8997-621df78cbdea-fbf4e77b85ef.json",
+  "base_capture_at": "2026-09-27T06:00:59.068Z",
+  "base_public_record_sha256": "fbf4e77b85ef1daac06d86e3c08087ad4099226f460d81c6dbad9b026fe493fe",
+  "modified_fields": [
+    "content_zh",
+    "content_en"
+  ],
+  "changes": {
+    "content_zh": {
+      "operation": "append_only",
+      "before_sha256": "3216c7347424acfc051a67c1320af26e4118aadb70f359d8b7e4f357a4894626",
+      "after_sha256": "c32853813cbb602bbc8668fa9d4b4e36f352a052404f08cc5ea5cc8fbdda9e0e",
+      "addition_sha256": "72152232efb8ef080735d0e2f5b5d0a851018439548146218471e291f982c93e",
+      "before_file": "drafts/seo/fc-20260927-seo-intensive-content-foundation-v1/candidates/C10-rental-unit-renovation-kl/before-zh.html",
+      "after_file": "drafts/seo/fc-20260927-seo-intensive-content-foundation-v1/candidates/C10-rental-unit-renovation-kl/after-zh.html",
+      "diff_file": "drafts/seo/fc-20260927-seo-intensive-content-foundation-v1/candidates/C10-rental-unit-renovation-kl/diff-zh.patch"
+    },
+    "content_en": {
+      "operation": "append_only",
+      "before_sha256": "c1fec79bf61718d1780be27a3153b5a47119b4edcf6d4334bdadf7e4604916eb",
+      "after_sha256": "7e075b6a6fdab5aa8757c584644a5171c614ed8b9eeaf5eae7c1834129e31042",
+      "addition_sha256": "96c5bf1463187fd5416d57e9122017610857b562bfd8d9113c115f08931cc6ca",
+      "before_file": "drafts/seo/fc-20260927-seo-intensive-content-foundation-v1/candidates/C10-rental-unit-renovation-kl/before-en.html",
+      "after_file": "drafts/seo/fc-20260927-seo-intensive-content-foundation-v1/candidates/C10-rental-unit-renovation-kl/after-en.html",
+      "diff_file": "drafts/seo/fc-20260927-seo-intensive-content-foundation-v1/candidates/C10-rental-unit-renovation-kl/diff-en.patch"
+    }
+  },
+  "before_values": {
+    "content_zh": "<h2>先看租客会怎样使用空间</h2><p>出租单位最怕后期维修频繁。地板、墙面、橱柜和门锁要优先选择耐磨、容易清洁、替换方便的做法，风格保持干净耐看就够了。</p><h2>预算别全部压在表面效果</h2><p>可以把预算分成基础维修、耐用材料、必要收纳和交屋清洁。水电、防水、门窗这些看不见的部分如果省过头，后面更容易产生投诉。</p><h2>报价前准备这些资料</h2><p>准备单位地点、面积、照片、目标租金、预算范围和预计出租时间。承包商越早知道使用目标，越容易把规格控制在合理范围。</p>",
+    "content_en": "<h2>Start with tenant usage</h2><p>Rental units need finishes that can handle frequent use. Flooring, walls, cabinets, and locks should be durable, easy to clean, and simple to repair.</p><h2>Do not spend everything on appearance</h2><p>Split the budget into repair work, durable finishes, basic storage, and final cleaning. Wiring, waterproofing, doors, and windows should not be ignored.</p><h2>Prepare details before pricing</h2><p>Share the location, area, photos, target rent, budget range, and expected rental date so the scope can be matched to the investment goal.</p>"
+  },
+  "candidate_values": {
+    "content_zh": "<h2>先看租客会怎样使用空间</h2><p>出租单位最怕后期维修频繁。地板、墙面、橱柜和门锁要优先选择耐磨、容易清洁、替换方便的做法，风格保持干净耐看就够了。</p><h2>预算别全部压在表面效果</h2><p>可以把预算分成基础维修、耐用材料、必要收纳和交屋清洁。水电、防水、门窗这些看不见的部分如果省过头，后面更容易产生投诉。</p><h2>报价前准备这些资料</h2><p>准备单位地点、面积、照片、目标租金、预算范围和预计出租时间。承包商越早知道使用目标，越容易把规格控制在合理范围。</p>\n\n<h2>出租单位怎样区分保留、更换与待检查项目？</h2>\n<p>逐个房间记录现有地面、墙面、柜体、门和设备的照片，将可保留、拟更换和需要进一步检查的项目分开。再列出日常清洁、储物和维修进入的需求，避免仅为了统一风格把可用部分一并更换。涉及电气、漏水或其他专业问题时，先由适当负责方确认范围，不用装饰升级替代检查。</p>\n<h2>交屋时哪些资料有助于日后跟进？</h2>\n<p>可保留约定范围、房间照片、所选产品型号、适用保养说明和未完成事项的联系人与记录。先看 <a href=\"/zh/blog/renovation-handover-defect-checklist-malaysia\">交付记录清单</a>，再结合 <a href=\"/zh/services/renovation\">住宅装修规划</a> 讨论实际范围。这些准备不保证租金提升、出租速度或固定维修费用。</p>",
+    "content_en": "<h2>Start with tenant usage</h2><p>Rental units need finishes that can handle frequent use. Flooring, walls, cabinets, and locks should be durable, easy to clean, and simple to repair.</p><h2>Do not spend everything on appearance</h2><p>Split the budget into repair work, durable finishes, basic storage, and final cleaning. Wiring, waterproofing, doors, and windows should not be ignored.</p><h2>Prepare details before pricing</h2><p>Share the location, area, photos, target rent, budget range, and expected rental date so the scope can be matched to the investment goal.</p>\n\n<h2>How can a rental unit separate retained, replacement and review items?</h2>\n<p>Record photos of existing floors, walls, cabinetry, doors and equipment by room. Separate items to retain, replace or inspect further, then list cleaning, storage and maintenance-access needs. This avoids replacing usable elements solely for a uniform appearance. Electrical, leakage or other specialist issues need scope confirmation by the appropriate responsible parties; decorative updates do not replace assessment.</p>\n<h2>Which handover information helps later follow-up?</h2>\n<p>Retain the agreed scope, room photos, selected product models, applicable care information and contacts for outstanding items. Review the <a href=\"/en/blog/renovation-handover-defect-checklist-malaysia\">handover recording checklist</a> and discuss the actual scope through <a href=\"/en/services/renovation\">residential renovation planning</a>. These preparations do not guarantee rental growth, faster letting or fixed maintenance costs.</p>"
+  },
+  "rollback": {
+    "method": "restore only these two exact before values after a fresh preflight; never overwrite concurrent changes",
+    "values": {
+      "content_zh": "<h2>先看租客会怎样使用空间</h2><p>出租单位最怕后期维修频繁。地板、墙面、橱柜和门锁要优先选择耐磨、容易清洁、替换方便的做法，风格保持干净耐看就够了。</p><h2>预算别全部压在表面效果</h2><p>可以把预算分成基础维修、耐用材料、必要收纳和交屋清洁。水电、防水、门窗这些看不见的部分如果省过头，后面更容易产生投诉。</p><h2>报价前准备这些资料</h2><p>准备单位地点、面积、照片、目标租金、预算范围和预计出租时间。承包商越早知道使用目标，越容易把规格控制在合理范围。</p>",
+      "content_en": "<h2>Start with tenant usage</h2><p>Rental units need finishes that can handle frequent use. Flooring, walls, cabinets, and locks should be durable, easy to clean, and simple to repair.</p><h2>Do not spend everything on appearance</h2><p>Split the budget into repair work, durable finishes, basic storage, and final cleaning. Wiring, waterproofing, doors, and windows should not be ignored.</p><h2>Prepare details before pricing</h2><p>Share the location, area, photos, target rent, budget range, and expected rental date so the scope can be matched to the investment goal.</p>"
+    }
+  },
+  "search_demand_class": "EDITORIAL_UNVALIDATED; no new search volume or observed-query claim",
+  "reviewed_intents": [
+    "layout_scenario",
+    "acceptance_care"
+  ],
+  "fact_sources": [
+    "company-context.md",
+    "services-and-pricing.md",
+    "faq.md",
+    "drafts/seo/fc-20260927-seo-intensive-content-foundation-v1/public/cms/blog_posts-ef92b60e-3541-40c7-8997-621df78cbdea-fbf4e77b85ef.json"
+  ],
+  "editorial_method": "Customer preparation and comparison questions; no new company capability, price, deadline, credential, product performance or project claims.",
+  "source_2773_required_for_content": false,
+  "qa_acceptance": [
+    "Compare exact row identity, current version and both field hashes before implementation; rebase and re-QA if changed.",
+    "Read EN/ZH added sections for equivalent facts and limitations.",
+    "Keep the exact existing body prefix, FAQ, metadata, media, owner URL and canonical.",
+    "Confirm every added same-language target remains live and relevant.",
+    "Validate CMS sanitizer rendering and public DOM only after department1 implementation.",
+    "QA editorial PASS is not a saved CMS record or release permit."
+  ],
+  "execution": {
+    "cms_saved": false,
+    "code_modified": false,
+    "published": false,
+    "precise_permission": null
+  },
+  "checks": {
+    "zh": {
+      "current_body_passage_publicly_visible": true,
+      "body_witness_normalized": "先看租客会怎样使用空间出租单位最怕后期维修频繁。地板、墙面、橱柜和门锁要优先选择耐磨、容易清洁、替换方便的做法，风格保持干净耐看就够了。预算别全部压在表面效果可以把预算分成基础维修、耐用材料、必要收纳",
+      "old_body_exact_prefix_preserved": true,
+      "new_section_count": 2,
+      "new_internal_links": 2,
+      "links_same_language_public_200_self_canonical": true,
+      "existing_title_faq_image_fields_unchanged": true,
+      "public_dom_evidence": "drafts/seo/fc-20260927-seo-intensive-content-foundation-v1/public/dom/zh__blog__rental-unit-renovation-kl.json"
+    },
+    "en": {
+      "current_body_passage_publicly_visible": true,
+      "body_witness_normalized": "StartwithtenantusageRentalunitsneedfinishesthatcanhandlefrequentuse.Flooring,walls,cabinets,andlocks",
+      "old_body_exact_prefix_preserved": true,
+      "new_section_count": 2,
+      "new_internal_links": 2,
+      "links_same_language_public_200_self_canonical": true,
+      "existing_title_faq_image_fields_unchanged": true,
+      "public_dom_evidence": "drafts/seo/fc-20260927-seo-intensive-content-foundation-v1/public/dom/en__blog__rental-unit-renovation-kl.json"
+    }
+  }
+}

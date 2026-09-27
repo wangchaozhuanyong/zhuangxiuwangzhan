@@ -1,0 +1,14 @@
+{
+  "original_task_id": "fc-20260927-seo-intensive-content-foundation-v1",
+  "candidate_version": "c08-bilingual-body-v1",
+  "record_id": "e871c29f-b4e1-4b3b-ab0f-0a83a41c9f35",
+  "restore_fields": {
+    "content_zh": "<h2>费用差异来自范围</h2><p>同样面积的单位，如果一个只做油漆地板，另一个包含水电、橱柜、浴室和天花，预算会完全不同。</p><h2>现场限制也会加成本</h2><p>公寓电梯预约、停车、搬运距离、施工时间限制和管理处要求都会影响人工和排期。</p><h2>先做范围表再比价</h2><p>把必须做、想升级、可之后再做的项目分开，报价会更清楚，也比较容易控制预算。</p>",
+    "content_en": "<h2>Cost differences come from scope</h2><p>Two units with the same area can have very different budgets if one includes wiring, cabinets, bathrooms, and ceiling work.</p><h2>Site restrictions add cost</h2><p>Lift booking, parking, carrying distance, working-hour limits, and management requirements affect labour and schedule.</p><h2>Prepare a scope list before comparing</h2><p>Separate must-do items, upgrades, and later-phase items so quotations become easier to control.</p>"
+  },
+  "expected_postsave_updated_at": null,
+  "expected_postsave_version": null,
+  "fill_from_actual_saved_receipt_only": true,
+  "separate_protected_rollback_permit_required": true,
+  "applied": false
+}

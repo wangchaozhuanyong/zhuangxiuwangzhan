@@ -1,0 +1,16 @@
+{
+  "task_id": "fc-20260927-interior-design-keyword-plan-v1",
+  "action_id": "publish-design-framework-cms-content-v4",
+  "candidate_version": "design-framework-cms-content-v4",
+  "record_id": "0af89b93-8938-4a98-ba65-6525fbbe92c1",
+  "restore_fields": {
+    "content_zh": "室内设计不是只挑颜色或摆家具。好的设计应先解决空间动线、收纳、采光、材料搭配、施工可行性和预算优先级。FLASH CAST 可根据确认范围，把空间规划、设计方案、定制家具、材料选择和装修协调衔接起来。 如果同时考虑室内设计与装修，请先提供空间用途、平面图或现场照片，以及想调整的布局、收纳和材料方向。我们会据此讨论设计方向与装修范围如何衔接；图纸、3D 效果图、施工及报价的具体交付，以现场条件和确认范围为准。",
+    "content_en": "Interior design should clarify layout flow, storage, daylight, material direction, construction feasibility, and budget priorities before renovation begins. FLASH CAST helps owners and business operators connect space planning, design concepts, custom built-in furniture, material selection, and renovation coordination after the scope is confirmed. If you are planning interior design alongside renovation, share the intended use, a floor plan or site photos, and the layout, storage and material priorities you want to review. We can then discuss how the design direction connects with the renovation scope. Specific drawings, 3D visuals, construction work and quotation support depend on site conditions and the scope agreed for your project."
+  },
+  "expected_current_updated_at": null,
+  "expected_current_version": null,
+  "fill_only_from_actual_saved_receipt": true,
+  "separate_protected_rollback_permit_required": true,
+  "never_overwrite_later_record": true,
+  "applied": false
+}

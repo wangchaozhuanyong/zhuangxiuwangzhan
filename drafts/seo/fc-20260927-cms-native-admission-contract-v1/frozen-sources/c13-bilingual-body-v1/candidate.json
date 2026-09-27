@@ -1,0 +1,120 @@
+{
+  "schema_version": "1.0",
+  "task_id": "fc-20260927-seo-intensive-content-foundation-v1",
+  "original_task_id": "fc-20260927-seo-intensive-content-foundation-v1",
+  "previous_published_scope_task_id": null,
+  "original_scope_relation": "new bounded increment; previous accepted scope retained, not replayed",
+  "backlog_item_id": "ORG-006",
+  "related_research_task_id": "fc-20260927-organic-keyword-wide-coverage-v1",
+  "related_research_inheritance": "FORMALLY_INHERITED_NONEMPTY_COMPLETION_AND_HASH_VERIFIED",
+  "inheritance_evidence": "drafts/seo/fc-20260927-seo-intensive-content-foundation-v1/sources/inheritance-confirmation.json",
+  "candidate_id": "C13",
+  "candidate_version": "c13-bilingual-body-v1",
+  "status": "READY_FOR_INDEPENDENT_QA",
+  "risk_scope_this_delivery": "R0 editorial candidate",
+  "proposed_implementation_risk": "R1 existing CMS content fields, subject to department1 exact channel binding",
+  "owner": "seo-content-research",
+  "implementation_owner": "content-organic-website",
+  "priority": "P2",
+  "gap": "原文仅给背景墙方向，缺少功能输入、保留设备和样板确认的可执行问题清单。",
+  "target_urls": {
+    "zh": "https://flashcast.com.my/zh/blog/feature-wall-ideas-2025",
+    "en": "https://flashcast.com.my/en/blog/feature-wall-ideas-2025"
+  },
+  "table_observed": "blog_posts",
+  "record_id": "429a087a-2a91-4b56-9d39-39644e519541",
+  "slug": "feature-wall-ideas-2025",
+  "expected_updated_at": "2026-08-22T12:23:56.852625+00:00",
+  "expected_version": 1,
+  "base_record_source": "drafts/seo/fc-20260927-seo-intensive-content-foundation-v1/public/cms/blog_posts-429a087a-2a91-4b56-9d39-39644e519541-366c047c773d.json",
+  "base_capture_at": "2026-09-27T06:00:59.072Z",
+  "base_public_record_sha256": "366c047c773d3d05819634787d9fe89309e40c0de9d04f7afcfbaa289c34c73b",
+  "modified_fields": [
+    "content_zh",
+    "content_en"
+  ],
+  "changes": {
+    "content_zh": {
+      "operation": "append_only",
+      "before_sha256": "93c45bace8bd9efb7a7e1909bf57a51ce47f064c5d070af40e8cfa6442274e07",
+      "after_sha256": "6b0a7fe670c2f1e2080f2b2fcb417f687866ee859a5789a56f05d22acdb47f64",
+      "addition_sha256": "998474e2469811419fd7e4517ab6ff7f1937b9ab2c64da497a706b739a68594d",
+      "before_file": "drafts/seo/fc-20260927-seo-intensive-content-foundation-v1/candidates/C13-feature-wall-ideas-2025/before-zh.html",
+      "after_file": "drafts/seo/fc-20260927-seo-intensive-content-foundation-v1/candidates/C13-feature-wall-ideas-2025/after-zh.html",
+      "diff_file": "drafts/seo/fc-20260927-seo-intensive-content-foundation-v1/candidates/C13-feature-wall-ideas-2025/diff-zh.patch"
+    },
+    "content_en": {
+      "operation": "append_only",
+      "before_sha256": "949ebb4b046668571bb71b743ab401fa63fa1d842dd898c6884e3eda9e8ca7e8",
+      "after_sha256": "06aa7e60d550a4d1d4916de9e0e81a9551434f2474a2a45ab1236734f7c75b40",
+      "addition_sha256": "0ba3192900bbf3bfdfe21bc0b19ba9a85aa13d63ed1f77336be5a8b639cc0cae",
+      "before_file": "drafts/seo/fc-20260927-seo-intensive-content-foundation-v1/candidates/C13-feature-wall-ideas-2025/before-en.html",
+      "after_file": "drafts/seo/fc-20260927-seo-intensive-content-foundation-v1/candidates/C13-feature-wall-ideas-2025/after-en.html",
+      "diff_file": "drafts/seo/fc-20260927-seo-intensive-content-foundation-v1/candidates/C13-feature-wall-ideas-2025/diff-en.patch"
+    }
+  },
+  "before_values": {
+    "content_zh": "<h2>先决定背景墙要解决什么</h2><p>有些背景墙是为了遮线，有些是增加收纳，有些是提升空间重点。目的不同，材料和厚度也不同。</p><h2>小空间不要做太重</h2><p>浅色线条板、局部木饰面、薄石纹板或艺术涂料会比厚重造型更适合小户型。</p><h2>电位和灯光先排好</h2><p>电视、电箱、路由器、壁灯、灯带和插座位置要先确认，不然完工后很难收得干净。</p>",
+    "content_en": "<h2>Decide what the wall should solve</h2><p>Some feature walls hide wiring, some add storage, and some create a focal point. The purpose changes material and thickness choices.</p><h2>Keep small spaces lighter</h2><p>Light fluted panels, partial timber, thin stone-look panels, or artistic coating can work better than heavy built forms.</p><h2>Plan sockets and lighting first</h2><p>TV, router, wall lights, strips, and sockets should be placed before construction so the final wall stays clean.</p>"
+  },
+  "candidate_values": {
+    "content_zh": "<h2>先决定背景墙要解决什么</h2><p>有些背景墙是为了遮线，有些是增加收纳，有些是提升空间重点。目的不同，材料和厚度也不同。</p><h2>小空间不要做太重</h2><p>浅色线条板、局部木饰面、薄石纹板或艺术涂料会比厚重造型更适合小户型。</p><h2>电位和灯光先排好</h2><p>电视、电箱、路由器、壁灯、灯带和插座位置要先确认，不然完工后很难收得干净。</p>\n\n<h2>背景墙需求应先说明哪些功能？</h2>\n<p>说明它主要用于装饰、电视、展示还是收纳，再列出拟保留设备、插座和需要取用或维护的位置。提供墙面尺寸与照片，并把已知潮湿、破损或其他现场问题单独标注给负责方评估。效果图用于沟通视觉方向，不证明具体设备安装、墙体条件或材料性能已经确认。</p>\n<h2>按主要工作连接合适的服务范围</h2>\n<p>以颜色和肌理为主时，可查看 <a href=\"/zh/services/artistic-coating\">艺术墙面规划</a>；涉及电视柜、展示柜和收纳时，可查看 <a href=\"/zh/services/builtin\">定制家具服务</a>。样板、收边、设备接口和报价包含范围应分别确认。文章中的风格方向不代表当年市场趋势调查、可用库存或已经完成的客户案例。</p>",
+    "content_en": "<h2>Decide what the wall should solve</h2><p>Some feature walls hide wiring, some add storage, and some create a focal point. The purpose changes material and thickness choices.</p><h2>Keep small spaces lighter</h2><p>Light fluted panels, partial timber, thin stone-look panels, or artistic coating can work better than heavy built forms.</p><h2>Plan sockets and lighting first</h2><p>TV, router, wall lights, strips, and sockets should be placed before construction so the final wall stays clean.</p>\n\n<h2>Which functions should a feature-wall brief identify first?</h2>\n<p>Identify whether the wall is mainly decorative, for a television, display or storage, then list retained equipment, sockets and access needs. Supply dimensions and photos, separately flagging known dampness, damage or other site concerns for assessment. A rendering communicates visual direction; it does not confirm equipment installation, wall conditions or material performance.</p>\n<h2>Connect the main work to the appropriate service scope</h2>\n<p>For colour and texture, review <a href=\"/en/services/artistic-coating\">artistic wall planning</a>; for television units, display cabinetry and storage, see <a href=\"/en/services/builtin\">custom furniture</a>. Confirm samples, edge details, equipment interfaces and quotation inclusions separately. These style ideas are not evidence of a current trend survey, available stock or completed client work.</p>"
+  },
+  "rollback": {
+    "method": "restore only these two exact before values after a fresh preflight; never overwrite concurrent changes",
+    "values": {
+      "content_zh": "<h2>先决定背景墙要解决什么</h2><p>有些背景墙是为了遮线，有些是增加收纳，有些是提升空间重点。目的不同，材料和厚度也不同。</p><h2>小空间不要做太重</h2><p>浅色线条板、局部木饰面、薄石纹板或艺术涂料会比厚重造型更适合小户型。</p><h2>电位和灯光先排好</h2><p>电视、电箱、路由器、壁灯、灯带和插座位置要先确认，不然完工后很难收得干净。</p>",
+      "content_en": "<h2>Decide what the wall should solve</h2><p>Some feature walls hide wiring, some add storage, and some create a focal point. The purpose changes material and thickness choices.</p><h2>Keep small spaces lighter</h2><p>Light fluted panels, partial timber, thin stone-look panels, or artistic coating can work better than heavy built forms.</p><h2>Plan sockets and lighting first</h2><p>TV, router, wall lights, strips, and sockets should be placed before construction so the final wall stays clean.</p>"
+    }
+  },
+  "search_demand_class": "EDITORIAL_UNVALIDATED; no new search volume or observed-query claim",
+  "reviewed_intents": [
+    "layout_scenario",
+    "materials_comparison"
+  ],
+  "fact_sources": [
+    "company-context.md",
+    "services-and-pricing.md",
+    "faq.md",
+    "drafts/seo/fc-20260927-seo-intensive-content-foundation-v1/public/cms/blog_posts-429a087a-2a91-4b56-9d39-39644e519541-366c047c773d.json"
+  ],
+  "editorial_method": "Customer preparation and comparison questions; no new company capability, price, deadline, credential, product performance or project claims.",
+  "source_2773_required_for_content": false,
+  "qa_acceptance": [
+    "Compare exact row identity, current version and both field hashes before implementation; rebase and re-QA if changed.",
+    "Read EN/ZH added sections for equivalent facts and limitations.",
+    "Keep the exact existing body prefix, FAQ, metadata, media, owner URL and canonical.",
+    "Confirm every added same-language target remains live and relevant.",
+    "Validate CMS sanitizer rendering and public DOM only after department1 implementation.",
+    "QA editorial PASS is not a saved CMS record or release permit."
+  ],
+  "execution": {
+    "cms_saved": false,
+    "code_modified": false,
+    "published": false,
+    "precise_permission": null
+  },
+  "checks": {
+    "zh": {
+      "current_body_passage_publicly_visible": true,
+      "body_witness_normalized": "先决定背景墙要解决什么有些背景墙是为了遮线，有些是增加收纳，有些是提升空间重点。目的不同，材料和厚度也不同。小空间不要做太重浅色线条板、局部木饰面、薄石纹板或艺术涂料会比厚重造型更适合小户型。电位和灯",
+      "old_body_exact_prefix_preserved": true,
+      "new_section_count": 2,
+      "new_internal_links": 2,
+      "links_same_language_public_200_self_canonical": true,
+      "existing_title_faq_image_fields_unchanged": true,
+      "public_dom_evidence": "drafts/seo/fc-20260927-seo-intensive-content-foundation-v1/public/dom/zh__blog__feature-wall-ideas-2025.json"
+    },
+    "en": {
+      "current_body_passage_publicly_visible": true,
+      "body_witness_normalized": "DecidewhatthewallshouldsolveSomefeaturewallshidewiring,someaddstorage,andsomecreateafocalpoint.Thepu",
+      "old_body_exact_prefix_preserved": true,
+      "new_section_count": 2,
+      "new_internal_links": 2,
+      "links_same_language_public_200_self_canonical": true,
+      "existing_title_faq_image_fields_unchanged": true,
+      "public_dom_evidence": "drafts/seo/fc-20260927-seo-intensive-content-foundation-v1/public/dom/en__blog__feature-wall-ideas-2025.json"
+    }
+  }
+}

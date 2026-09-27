@@ -1,0 +1,120 @@
+{
+  "schema_version": "1.0",
+  "task_id": "fc-20260927-seo-intensive-content-foundation-v1",
+  "original_task_id": "fc-20260927-seo-intensive-content-foundation-v1",
+  "previous_published_scope_task_id": null,
+  "original_scope_relation": "new bounded increment; previous accepted scope retained, not replayed",
+  "backlog_item_id": "ORG-006",
+  "related_research_task_id": "fc-20260927-organic-keyword-wide-coverage-v1",
+  "related_research_inheritance": "FORMALLY_INHERITED_NONEMPTY_COMPLETION_AND_HASH_VERIFIED",
+  "inheritance_evidence": "drafts/seo/fc-20260927-seo-intensive-content-foundation-v1/sources/inheritance-confirmation.json",
+  "candidate_id": "C11",
+  "candidate_version": "c11-bilingual-body-v1",
+  "status": "READY_FOR_INDEPENDENT_QA",
+  "risk_scope_this_delivery": "R0 editorial candidate",
+  "proposed_implementation_risk": "R1 existing CMS content fields, subject to department1 exact channel binding",
+  "owner": "seo-content-research",
+  "implementation_owner": "content-organic-website",
+  "priority": "P2",
+  "gap": "原文列收纳位置，但缺少按物品频率形成房间brief的步骤；需与内嵌柜通道文章保持意图区分。",
+  "target_urls": {
+    "zh": "https://flashcast.com.my/zh/blog/small-condo-storage-design-ideas",
+    "en": "https://flashcast.com.my/en/blog/small-condo-storage-design-ideas"
+  },
+  "table_observed": "blog_posts",
+  "record_id": "5e8933ab-bda4-46f2-aed6-e63f83fac415",
+  "slug": "small-condo-storage-design-ideas",
+  "expected_updated_at": "2026-09-12T22:45:40.31716+00:00",
+  "expected_version": 1,
+  "base_record_source": "drafts/seo/fc-20260927-seo-intensive-content-foundation-v1/public/cms/blog_posts-5e8933ab-bda4-46f2-aed6-e63f83fac415-c78103adc21f.json",
+  "base_capture_at": "2026-09-27T06:00:59.071Z",
+  "base_public_record_sha256": "c78103adc21f8b577f438f552cf8a6797f81725ecf7e72aee03296e1eeb1d713",
+  "modified_fields": [
+    "content_zh",
+    "content_en"
+  ],
+  "changes": {
+    "content_zh": {
+      "operation": "append_only",
+      "before_sha256": "6fbf46cb555d3e760ea091ba6122c32cc4dc0758f55c40525379c4fb97564d76",
+      "after_sha256": "122028ce4f495442b31526a938b7a176dc034c85d5908cd5d2e525741cdd22d6",
+      "addition_sha256": "0a46ceac908acddaafed64fea5c3f22cd73c5a98895354d73dfb5cc1faae0639",
+      "before_file": "drafts/seo/fc-20260927-seo-intensive-content-foundation-v1/candidates/C11-small-condo-storage-design-ideas/before-zh.html",
+      "after_file": "drafts/seo/fc-20260927-seo-intensive-content-foundation-v1/candidates/C11-small-condo-storage-design-ideas/after-zh.html",
+      "diff_file": "drafts/seo/fc-20260927-seo-intensive-content-foundation-v1/candidates/C11-small-condo-storage-design-ideas/diff-zh.patch"
+    },
+    "content_en": {
+      "operation": "append_only",
+      "before_sha256": "17267313feb2fee81387ebcaf713c6711312d4de10b4acf13445eda6d8075d4c",
+      "after_sha256": "07ea1483e9e6b9a6321c5d571a90eac1584a24ea74ca8404b914c1da01ab1acb",
+      "addition_sha256": "b85caee5753289ca34ff8c79e106be8f1122e421e01cebdf86a3df483760959d",
+      "before_file": "drafts/seo/fc-20260927-seo-intensive-content-foundation-v1/candidates/C11-small-condo-storage-design-ideas/before-en.html",
+      "after_file": "drafts/seo/fc-20260927-seo-intensive-content-foundation-v1/candidates/C11-small-condo-storage-design-ideas/after-en.html",
+      "diff_file": "drafts/seo/fc-20260927-seo-intensive-content-foundation-v1/candidates/C11-small-condo-storage-design-ideas/diff-en.patch"
+    }
+  },
+  "before_values": {
+    "content_zh": "<h2>把零散柜子整合起来</h2><p>小空间如果到处加柜，会显得更乱。可以把电视墙、餐边柜、玄关柜和展示区整合成同一套语言。</p><h2>垂直空间很好用</h2><p>到顶柜、吊柜和高柜可以增加容量，但要搭配开放格或灯光，避免压迫感太重。</p><h2>常用物品要顺手</h2><p>钥匙、鞋子、清洁工具、行李箱、小家电和文件都要有固定位置，收纳才真的好用。</p><p>如果要按实际尺寸和日常使用规划收纳，可先查看我们的<a href=\"/zh/services/builtin\">定制家具与收纳柜服务</a>，再准备现场量房。</p>",
+    "content_en": "<h2>Integrate scattered cabinets</h2><p>Too many separate cabinets make a small space feel busier. TV wall, dining storage, entry cabinet, and display shelves can share one design language.</p><h2>Use vertical space carefully</h2><p>Full-height cabinets and wall units add capacity, but open sections or lighting can reduce heaviness.</p><h2>Daily items need easy homes</h2><p>Keys, shoes, cleaning tools, luggage, appliances, and documents should each have a planned location.</p><p>For storage planning based on actual dimensions and daily use, review our <a href=\"/en/services/builtin\">custom built-in furniture service</a> before arranging a site measurement.</p>"
+  },
+  "candidate_values": {
+    "content_zh": "<h2>把零散柜子整合起来</h2><p>小空间如果到处加柜，会显得更乱。可以把电视墙、餐边柜、玄关柜和展示区整合成同一套语言。</p><h2>垂直空间很好用</h2><p>到顶柜、吊柜和高柜可以增加容量，但要搭配开放格或灯光，避免压迫感太重。</p><h2>常用物品要顺手</h2><p>钥匙、鞋子、清洁工具、行李箱、小家电和文件都要有固定位置，收纳才真的好用。</p><p>如果要按实际尺寸和日常使用规划收纳，可先查看我们的<a href=\"/zh/services/builtin\">定制家具与收纳柜服务</a>，再准备现场量房。</p>\n\n<h2>先按物品和频率写收纳brief</h2>\n<p>把常用、偶尔使用和长期存放的物品分开，记录大件尺寸与需要靠近的使用位置。例如先说明进门要放什么、工作区有哪些文件和设备、清洁用品在哪里取用，再决定哪些需求适合共用柜体。重点是把真实使用习惯交给规划者，不是先用更多柜子填满空间。</p>\n<h2>物品清单怎样变成空间讨论？</h2>\n<p>将清单与平面图或现场照片对应，标注门窗、现有家具与希望保留的通道。涉及固定柜体的尺寸和开启条件时，继续看 <a href=\"/zh/blog/built-in-furniture-small-condo-storage\">小公寓内嵌柜布局指南</a>；需要协调不同房间时，可向 <a href=\"/zh/services/builtin\">全屋定制与收纳服务</a> 提交这些资料。实际可用容量和配置须经量度与方案确认。</p>",
+    "content_en": "<h2>Integrate scattered cabinets</h2><p>Too many separate cabinets make a small space feel busier. TV wall, dining storage, entry cabinet, and display shelves can share one design language.</p><h2>Use vertical space carefully</h2><p>Full-height cabinets and wall units add capacity, but open sections or lighting can reduce heaviness.</p><h2>Daily items need easy homes</h2><p>Keys, shoes, cleaning tools, luggage, appliances, and documents should each have a planned location.</p><p>For storage planning based on actual dimensions and daily use, review our <a href=\"/en/services/builtin\">custom built-in furniture service</a> before arranging a site measurement.</p>\n\n<h2>Start the storage brief with items and frequency</h2>\n<p>Separate daily, occasional and long-term storage, noting bulky-item dimensions and where items are used. Explain what is put away at the entrance, which documents and devices belong in the work area, and where cleaning items are needed before deciding which requirements can share cabinetry. The aim is to communicate actual habits, not fill the space with more cabinets.</p>\n<h2>How can the item list become a space-planning discussion?</h2>\n<p>Match the list to a plan or site photos, marking doors, windows, existing furniture and routes to retain. For fixed-cabinet dimensions and opening conditions, continue to the <a href=\"/en/blog/built-in-furniture-small-condo-storage\">small-condo built-in layout guide</a>. For coordination across rooms, share the information with the <a href=\"/en/services/builtin\">whole-house cabinetry and storage service</a>. Usable capacity and configuration require measurement and design confirmation.</p>"
+  },
+  "rollback": {
+    "method": "restore only these two exact before values after a fresh preflight; never overwrite concurrent changes",
+    "values": {
+      "content_zh": "<h2>把零散柜子整合起来</h2><p>小空间如果到处加柜，会显得更乱。可以把电视墙、餐边柜、玄关柜和展示区整合成同一套语言。</p><h2>垂直空间很好用</h2><p>到顶柜、吊柜和高柜可以增加容量，但要搭配开放格或灯光，避免压迫感太重。</p><h2>常用物品要顺手</h2><p>钥匙、鞋子、清洁工具、行李箱、小家电和文件都要有固定位置，收纳才真的好用。</p><p>如果要按实际尺寸和日常使用规划收纳，可先查看我们的<a href=\"/zh/services/builtin\">定制家具与收纳柜服务</a>，再准备现场量房。</p>",
+      "content_en": "<h2>Integrate scattered cabinets</h2><p>Too many separate cabinets make a small space feel busier. TV wall, dining storage, entry cabinet, and display shelves can share one design language.</p><h2>Use vertical space carefully</h2><p>Full-height cabinets and wall units add capacity, but open sections or lighting can reduce heaviness.</p><h2>Daily items need easy homes</h2><p>Keys, shoes, cleaning tools, luggage, appliances, and documents should each have a planned location.</p><p>For storage planning based on actual dimensions and daily use, review our <a href=\"/en/services/builtin\">custom built-in furniture service</a> before arranging a site measurement.</p>"
+    }
+  },
+  "search_demand_class": "EDITORIAL_UNVALIDATED; no new search volume or observed-query claim",
+  "reviewed_intents": [
+    "layout_scenario",
+    "process_delivery"
+  ],
+  "fact_sources": [
+    "company-context.md",
+    "services-and-pricing.md",
+    "faq.md",
+    "drafts/seo/fc-20260927-seo-intensive-content-foundation-v1/public/cms/blog_posts-5e8933ab-bda4-46f2-aed6-e63f83fac415-c78103adc21f.json"
+  ],
+  "editorial_method": "Customer preparation and comparison questions; no new company capability, price, deadline, credential, product performance or project claims.",
+  "source_2773_required_for_content": false,
+  "qa_acceptance": [
+    "Compare exact row identity, current version and both field hashes before implementation; rebase and re-QA if changed.",
+    "Read EN/ZH added sections for equivalent facts and limitations.",
+    "Keep the exact existing body prefix, FAQ, metadata, media, owner URL and canonical.",
+    "Confirm every added same-language target remains live and relevant.",
+    "Validate CMS sanitizer rendering and public DOM only after department1 implementation.",
+    "QA editorial PASS is not a saved CMS record or release permit."
+  ],
+  "execution": {
+    "cms_saved": false,
+    "code_modified": false,
+    "published": false,
+    "precise_permission": null
+  },
+  "checks": {
+    "zh": {
+      "current_body_passage_publicly_visible": true,
+      "body_witness_normalized": "把零散柜子整合起来小空间如果到处加柜，会显得更乱。可以把电视墙、餐边柜、玄关柜和展示区整合成同一套语言。垂直空间很好用到顶柜、吊柜和高柜可以增加容量，但要搭配开放格或灯光，避免压迫感太重。常用物品要顺",
+      "old_body_exact_prefix_preserved": true,
+      "new_section_count": 2,
+      "new_internal_links": 2,
+      "links_same_language_public_200_self_canonical": true,
+      "existing_title_faq_image_fields_unchanged": true,
+      "public_dom_evidence": "drafts/seo/fc-20260927-seo-intensive-content-foundation-v1/public/dom/zh__blog__small-condo-storage-design-ideas.json"
+    },
+    "en": {
+      "current_body_passage_publicly_visible": true,
+      "body_witness_normalized": "IntegratescatteredcabinetsToomanyseparatecabinetsmakeasmallspacefeelbusier.TVwall,diningstorage,entr",
+      "old_body_exact_prefix_preserved": true,
+      "new_section_count": 2,
+      "new_internal_links": 2,
+      "links_same_language_public_200_self_canonical": true,
+      "existing_title_faq_image_fields_unchanged": true,
+      "public_dom_evidence": "drafts/seo/fc-20260927-seo-intensive-content-foundation-v1/public/dom/en__blog__small-condo-storage-design-ideas.json"
+    }
+  }
+}

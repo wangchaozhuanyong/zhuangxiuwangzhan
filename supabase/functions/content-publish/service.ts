@@ -1202,6 +1202,31 @@ async function resolveExistingBlog(client: ContentPublishClient, payload: Record
   return fetchRecordByField(client, "blog_posts", "slug", slug);
 }
 
+// Exact body bindings share the ordinary two-column writer, with the same checks for previews and writes.
+async function validateNativeBodyPatch(
+  target: ManagedTarget, existing: ContentRow, requestRecord: Record<string, unknown>,
+  patch: Record<string, unknown>, operation: "publish" | "rollback",
+): Promise<ContentPublishResult | null> {
+  if (!target.rollbackFieldsSha256) return null;
+  const fields = new Set(target.changedFields);
+  const baselineFields = target.baselineProjectionFields || [];
+  const unrelated = Object.entries(requestRecord).some(([field, value]) =>
+    !baselineFields.includes(field) || (!fields.has(field) && !READONLY_FIELDS.has(field)
+      && JSON.stringify(stableValue(value)) !== JSON.stringify(stableValue(existing[field]))));
+  const baseline = Object.fromEntries(baselineFields.map((field) => [field, existing[field] ?? null]));
+  const retained = Object.fromEntries((target.retainedProjectionFields || []).map((field) => [field, existing[field] ?? null]));
+  const currentBody = Object.fromEntries([...fields].map((field) => [field, existing[field]]));
+  if (unrelated || existing.status !== "published" || requestRecord.status !== "published"
+      || await sha256(patch) !== (operation === "publish" ? target.desiredFieldsSha256 : target.rollbackFieldsSha256)) {
+    return errorResult("Exact body patch changes an unlocked field or frozen content.", 403);
+  }
+  if (operation === "publish" ? await sha256(baseline) !== target.baselineFieldsSha256
+      : await sha256(retained) !== target.retainedFieldsSha256 || await sha256(currentBody) !== target.desiredFieldsSha256) {
+    return errorResult("Exact body patch baseline differs; refresh and obtain a new candidate.", 409);
+  }
+  return null;
+}
+
 async function managedBlogPatch(
   target: ManagedTarget,
   existing: ContentRow | null,
@@ -1227,12 +1252,14 @@ async function managedBlogPatch(
     return { denied: errorResult("Managed Blog patch has an invalid field.", 403) };
   }
   if (operation === "publish") {
-    const baseline = Object.fromEntries(BLOG_BASELINE_FIELDS.map((field) => [field, existing[field] ?? null]));
+    const baseline = Object.fromEntries((target.baselineProjectionFields || BLOG_BASELINE_FIELDS).map((field) => [field, existing[field] ?? null]));
     if (await sha256(baseline) !== target.baselineFieldsSha256
         || await sha256(patch) !== target.desiredFieldsSha256) {
       return { denied: errorResult("Managed Blog row or patch differs from the QA-locked candidate.", 409) };
     }
   }
+  const denied = await validateNativeBodyPatch(target, existing, requestRecord, patch, operation);
+  if (denied) return { denied };
   return { patch };
 }
 
@@ -2257,6 +2284,11 @@ export async function publishContent(
     : cleaned.payload;
   if (managedService?.changedFields && Object.values(writePayload).some((value) => value === undefined)) {
     return errorResult("Managed service patch has an invalid field.", 403);
+  }
+  if (managedService && existing) {
+    const operation = (mode === "dry-run" ? input.managedCandidate?.operation : input.managedPermit?.operation) === "rollback" ? "rollback" : "publish";
+    const denied = await validateNativeBodyPatch(managedService, existing, input.record, writePayload, operation);
+    if (denied) return denied;
   }
 
   const action = existing ? (nextStatus === "published" ? "publish" : "update") : nextStatus === "published" ? "publish" : "insert";

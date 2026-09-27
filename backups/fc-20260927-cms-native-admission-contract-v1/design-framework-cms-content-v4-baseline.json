@@ -1,0 +1,160 @@
+{
+  "id": "0af89b93-8938-4a98-ba65-6525fbbe92c1",
+  "slug": "design",
+  "title_zh": "室内设计与空间规划",
+  "title_en": "Interior Design and Space Planning",
+  "excerpt_zh": "为住宅和商业装修提供室内设计与空间规划，包括 layout 方向、3D 效果图方向、材料建议、施工图协调和装修报价咨询。",
+  "excerpt_en": "Interior design and space planning for residential and commercial renovation, including layout direction, 3D visualization direction, material advice, drawing coordination, and renovation quotation support.",
+  "content_zh": "室内设计不是只挑颜色或摆家具。好的设计应先解决空间动线、收纳、采光、材料搭配、施工可行性和预算优先级。FLASH CAST 可根据确认范围，把空间规划、设计方案、定制家具、材料选择和装修协调衔接起来。 如果同时考虑室内设计与装修，请先提供空间用途、平面图或现场照片，以及想调整的布局、收纳和材料方向。我们会据此讨论设计方向与装修范围如何衔接；图纸、3D 效果图、施工及报价的具体交付，以现场条件和确认范围为准。",
+  "content_en": "Interior design should clarify layout flow, storage, daylight, material direction, construction feasibility, and budget priorities before renovation begins. FLASH CAST helps owners and business operators connect space planning, design concepts, custom built-in furniture, material selection, and renovation coordination after the scope is confirmed. If you are planning interior design alongside renovation, share the intended use, a floor plan or site photos, and the layout, storage and material priorities you want to review. We can then discuss how the design direction connects with the renovation scope. Specific drawings, 3D visuals, construction work and quotation support depend on site conditions and the scope agreed for your project.",
+  "image_url": "/images/services/design-services.webp",
+  "alt_zh": "吉隆坡住宅与商业室内设计规划概念设计",
+  "alt_en": "residential and commercial interior design planning concept in Kuala Lumpur",
+  "suitable_for_zh": [
+    "准备装修公寓、排屋、半独立或独立式住宅，但还不确定布局和风格方向的业主",
+    "需要先看 3D 效果图方案、layout idea 或材料方向，再决定施工范围的客户",
+    "办公室、店铺、诊所、showroom 或商业空间，需要规划动线、前台、展示、收纳和品牌墙",
+    "想把室内设计、定制家具、材料选择和施工协调放在同一套流程中处理的客户"
+  ],
+  "suitable_for_en": [
+    "Homeowners planning a condo, terrace house, semi-D, or bungalow renovation but still unsure about layout and style direction",
+    "Clients who want to review 3D visualization, layout ideas, or material direction before confirming renovation scope",
+    "Office, shop, clinic, showroom, or commercial owners who need circulation, reception, display, storage, and brand-wall planning",
+    "Clients who want interior design, custom built-in furniture, material selection, and renovation coordination to connect in one workflow"
+  ],
+  "common_projects_zh": [
+    "住宅 layout 与空间规划",
+    "客厅、厨房、卧室、浴室、书房和收纳区设计方向",
+    "办公室前台、会议室、展示区、柜台、等候区和品牌墙规划",
+    "3D 可视化方向、效果图方案或概念设计",
+    "材料、颜色、灯光、柜体和饰面搭配建议"
+  ],
+  "common_projects_en": [
+    "Residential layout and space planning",
+    "Living room, kitchen, bedroom, bathroom, study, and storage direction",
+    "Office reception, meeting room, display area, counter, waiting area, and brand-wall planning",
+    "3D visualization direction, rendering concepts, or design concepts",
+    "Material, colour, lighting, cabinet, and finish coordination"
+  ],
+  "process_steps_zh": [
+    {
+      "desc": "了解空间类型、目标风格、预算因素、照片和地址区域。",
+      "title": "初步咨询"
+    },
+    {
+      "desc": "确认尺寸、结构限制、采光、插座、水位、门窗和现场条件。",
+      "title": "现场测量"
+    },
+    {
+      "desc": "整理动线、功能分区、收纳和家具/柜体位置。",
+      "title": "Layout 规划"
+    },
+    {
+      "desc": "准备材料方向、颜色建议、3D visualization 或 rendering concept。",
+      "title": "视觉方向"
+    },
+    {
+      "desc": "把设计方向转成可报价、可协调、可施工的范围。",
+      "title": "施工衔接"
+    },
+    {
+      "desc": "根据已确认范围、材料和现场条件进入下一步报价。",
+      "title": "报价与材料确认"
+    }
+  ],
+  "process_steps_en": [
+    {
+      "desc": "Review space type, design goals, budget factors, photos, and location.",
+      "title": "Initial Consultation"
+    },
+    {
+      "desc": "Confirm dimensions, site limits, daylight, power points, plumbing points, doors, windows, and existing conditions.",
+      "title": "Site Measurement"
+    },
+    {
+      "desc": "Organize circulation, functional zones, storage, furniture, and cabinet positions.",
+      "title": "Layout Planning"
+    },
+    {
+      "desc": "Prepare material direction, colour advice, 3D visualization, or rendering concepts where useful.",
+      "title": "Visual Direction"
+    },
+    {
+      "desc": "Translate design direction into a scope that can be quoted, coordinated, and built.",
+      "title": "Construction Alignment"
+    },
+    {
+      "desc": "Move into the next quotation step after scope, materials, and site conditions are confirmed.",
+      "title": "Quotation & Material Confirmation"
+    }
+  ],
+  "scope_items_zh": [
+    "空间规划与动线建议",
+    "住宅室内设计方向",
+    "商业空间设计方向",
+    "3D 可视化方向与效果图方案",
+    "材料、颜色、灯光、柜体和饰面搭配建议",
+    "施工图、尺寸、现场条件和报价范围协调"
+  ],
+  "scope_items_en": [
+    "Space planning and circulation advice",
+    "Residential interior design direction",
+    "Commercial interior design direction",
+    "3D visualization direction and rendering concepts",
+    "Material, colour, lighting, cabinet, and finish coordination",
+    "Drawing, dimension, site-condition, and quotation-scope coordination"
+  ],
+  "faqs_zh": [
+    {
+      "a": "可沟通动线、收纳、灯光、材料、定制木作、效果图与已确认装修范围的衔接。",
+      "q": "室内设计规划包含哪些内容？"
+    },
+    {
+      "a": "空间面积、图纸与效果图需求、材料选择、修改范围和协调需求都会影响报价。",
+      "q": "哪些因素会影响室内设计报价？"
+    },
+    {
+      "a": "可以。概念图会清楚标注为规划参考，不作为真实客户完工项目证明。",
+      "q": "可以先用设计或效果图概念讨论吗？"
+    },
+    {
+      "a": "提交平面图或现场照片、大致面积、用途、优先需求、地点与计划时间。",
+      "q": "如何开始室内设计咨询？"
+    },
+    {
+      "a": "先核对空间用途、图纸或现场照片、布局与材料需求，再讨论设计方向、施工范围和报价支持；具体交付按现场条件和确认范围确定。",
+      "q": "室内设计与装修可以怎样衔接？"
+    }
+  ],
+  "faqs_en": [
+    {
+      "a": "It can cover layout flow, storage, lighting direction, material selection, built-in planning, visualization and coordination with the confirmed renovation scope.",
+      "q": "What does interior design planning cover?"
+    },
+    {
+      "a": "Space size, drawing and visualization needs, material decisions, revision scope and coordination requirements all affect the quotation.",
+      "q": "What affects an interior design quotation?"
+    },
+    {
+      "a": "Yes. Clearly labeled concepts can support planning, but they are not evidence of a completed customer project.",
+      "q": "Can design or rendering concepts be used for planning?"
+    },
+    {
+      "a": "Share a floor plan or site photos, approximate area, intended use, priorities, location and preferred timing.",
+      "q": "How do I start an interior design enquiry?"
+    },
+    {
+      "a": "Start with the intended use, a floor plan or site photos, and layout and material priorities. Then discuss the design direction, renovation scope and quotation support. Specific deliverables depend on site conditions and the agreed scope.",
+      "q": "How can interior design and renovation be planned together?"
+    }
+  ],
+  "seo_title_zh": "吉隆坡室内设计与空间规划｜住宅与商业设计施工衔接",
+  "seo_title_en": "Interior Design Kuala Lumpur | FLASH CAST",
+  "seo_description_zh": "FLASH CAST 提供吉隆坡、雪兰莪与 Klang Valley 室内设计、空间规划、3D 效果图方向、材料建议、施工图协调和装修报价咨询。",
+  "seo_description_en": "FLASH CAST provides interior design in Kuala Lumpur, Selangor, and Klang Valley, including space planning, 3D visualization direction, material advice, drawing coordination, and renovation quotation support.",
+  "status": "published",
+  "sort_order": 20,
+  "created_at": "2026-05-29T10:14:07.159452+00:00",
+  "updated_at": "2026-09-24T16:55:25.345204+00:00",
+  "version": 1
+}

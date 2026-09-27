@@ -1,0 +1,14 @@
+{
+  "original_task_id": "fc-20260927-seo-intensive-content-foundation-v1",
+  "candidate_version": "c11-bilingual-body-v1",
+  "record_id": "5e8933ab-bda4-46f2-aed6-e63f83fac415",
+  "restore_fields": {
+    "content_zh": "<h2>把零散柜子整合起来</h2><p>小空间如果到处加柜，会显得更乱。可以把电视墙、餐边柜、玄关柜和展示区整合成同一套语言。</p><h2>垂直空间很好用</h2><p>到顶柜、吊柜和高柜可以增加容量，但要搭配开放格或灯光，避免压迫感太重。</p><h2>常用物品要顺手</h2><p>钥匙、鞋子、清洁工具、行李箱、小家电和文件都要有固定位置，收纳才真的好用。</p><p>如果要按实际尺寸和日常使用规划收纳，可先查看我们的<a href=\"/zh/services/builtin\">定制家具与收纳柜服务</a>，再准备现场量房。</p>",
+    "content_en": "<h2>Integrate scattered cabinets</h2><p>Too many separate cabinets make a small space feel busier. TV wall, dining storage, entry cabinet, and display shelves can share one design language.</p><h2>Use vertical space carefully</h2><p>Full-height cabinets and wall units add capacity, but open sections or lighting can reduce heaviness.</p><h2>Daily items need easy homes</h2><p>Keys, shoes, cleaning tools, luggage, appliances, and documents should each have a planned location.</p><p>For storage planning based on actual dimensions and daily use, review our <a href=\"/en/services/builtin\">custom built-in furniture service</a> before arranging a site measurement.</p>"
+  },
+  "expected_postsave_updated_at": null,
+  "expected_postsave_version": null,
+  "fill_from_actual_saved_receipt_only": true,
+  "separate_protected_rollback_permit_required": true,
+  "applied": false
+}

@@ -1,0 +1,14 @@
+{
+  "original_task_id": "fc-20260927-seo-intensive-content-foundation-v1",
+  "candidate_version": "c09-bilingual-body-v1",
+  "record_id": "9914e1fc-c475-42e0-8d11-9e92117a5e4f",
+  "restore_fields": {
+    "content_zh": "<h2>先看沟通是否清楚</h2><p>好的承包商会先问现场条件、预算、工期和使用需求，而不是一开始就给很笼统的价格。</p><h2>报价要能追到细节</h2><p>范围、材料、数量、人工、工期、不包含项目和付款节点要写清楚。越清楚，后面越少争议。</p><h2>案例要看真实完成面</h2><p>看照片时不要只看效果图，也要看收口、现场保护、柜体细节和完工后的实际质感。</p>",
+    "content_en": "<h2>Start with communication</h2><p>A reliable contractor asks about site conditions, budget, timeline, and usage before giving a broad number.</p><h2>The quotation should be traceable</h2><p>Scope, materials, quantities, labour, timeline, exclusions, and payment milestones should be clear.</p><h2>Look at real completed work</h2><p>Do not judge by renders alone. Check finishing details, site protection, cabinet work, and actual handover quality.</p>"
+  },
+  "expected_postsave_updated_at": null,
+  "expected_postsave_version": null,
+  "fill_from_actual_saved_receipt_only": true,
+  "separate_protected_rollback_permit_required": true,
+  "applied": false
+}

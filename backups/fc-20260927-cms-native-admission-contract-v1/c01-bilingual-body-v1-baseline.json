@@ -1,0 +1,106 @@
+{
+  "id": "22782cff-239c-45ec-8075-9deaa5932269",
+  "slug": "flooring",
+  "title_zh": "地板服务与方案沟通",
+  "title_en": "Flooring Services and Project Consultation",
+  "excerpt_zh": "面向住宅与商业空间的地板项目咨询，协助沟通现场条件、材料方向、施工范围和报价需求。",
+  "excerpt_en": "Flooring project consultation for homes and commercial spaces, covering site conditions, material direction, scope discussions, and quotation requirements.",
+  "content_zh": "<p>地板项目需要结合现场条件、使用需求与整体装修安排。FLASH CAST 会先了解空间情况，再沟通材料方向、施工范围和报价需求。</p><p>请提交地区、空间类型、面积和现场照片，便于安排下一步咨询。</p>",
+  "content_en": "<p>Every flooring project should take site conditions, everyday use, and the wider renovation plan into account. FLASH CAST first reviews your space, then discusses material direction, scope, and quotation requirements.</p><p>Share your location, space type, area, and site photos so we can arrange the next consultation.</p>",
+  "image_url": "/images/materials/category-flooring.webp",
+  "alt_zh": "地板材质与空间效果图（示意）",
+  "alt_en": "Flooring material and interior concept image",
+  "suitable_for_zh": [
+    "希望更新地面使用体验的住宅空间",
+    "需要配合整体装修规划的商业空间"
+  ],
+  "suitable_for_en": [
+    "Residential spaces planning a flooring update",
+    "Commercial spaces coordinating flooring with a renovation plan"
+  ],
+  "common_projects_zh": [
+    "住宅地板更新与空间改造",
+    "办公室或商铺的地板方案沟通"
+  ],
+  "common_projects_en": [
+    "Residential flooring updates and space improvement",
+    "Flooring planning for offices or retail spaces"
+  ],
+  "process_steps_zh": [
+    {
+      "desc": "提供地区、空间类型、面积与现场照片，便于初步了解需求。",
+      "title": "提交项目资料"
+    },
+    {
+      "desc": "结合地面现况、使用方式和整体装修安排讨论方向。",
+      "title": "沟通现场与使用需求"
+    },
+    {
+      "desc": "根据沟通内容确认材料方向、施工范围与报价所需资料。",
+      "title": "整理方案与报价范围"
+    },
+    {
+      "desc": "在范围确认后安排后续咨询与项目衔接。",
+      "title": "确认下一步"
+    }
+  ],
+  "process_steps_en": [
+    {
+      "desc": "Provide your location, space type, area, and site photos so we can understand the initial requirements.",
+      "title": "Share project details"
+    },
+    {
+      "desc": "We discuss the existing floor, intended use, and how the flooring work fits the wider renovation plan.",
+      "title": "Discuss site conditions and use"
+    },
+    {
+      "desc": "We confirm the material direction, scope, and information needed for a quotation discussion.",
+      "title": "Define the scope and quotation inputs"
+    },
+    {
+      "desc": "Once the scope is clear, we arrange the next consultation and project coordination step.",
+      "title": "Confirm the next step"
+    }
+  ],
+  "scope_items_zh": [
+    "现场条件与使用需求沟通",
+    "材料方向与预算需求讨论",
+    "地板施工范围与衔接事项确认",
+    "报价咨询与下一步安排"
+  ],
+  "scope_items_en": [
+    "Discussion of site conditions and use requirements",
+    "Material direction and budget requirement discussion",
+    "Confirmation of flooring scope and related coordination items",
+    "Quotation consultation and next-step planning"
+  ],
+  "faqs_zh": [
+    {
+      "a": "请提供地区、空间类型、面积及现场照片，我们会先了解需求并安排下一步沟通。",
+      "q": "开始地板项目咨询需要什么资料？"
+    },
+    {
+      "a": "可以。我们会先根据使用需求和现场资料沟通方向；最终范围和报价以确认内容为准。",
+      "q": "可以先沟通预算和材料方向吗？"
+    }
+  ],
+  "faqs_en": [
+    {
+      "a": "Please share your location, space type, area, and site photos. We will review the requirements and arrange the next discussion.",
+      "q": "What details are useful for a flooring consultation?"
+    },
+    {
+      "a": "Yes. We can discuss a direction based on the site information and intended use; the final scope and quotation follow the confirmed requirements.",
+      "q": "Can we discuss budget and material direction first?"
+    }
+  ],
+  "seo_title_zh": "吉隆坡与雪兰莪地板服务 | FLASH CAST",
+  "seo_title_en": "Flooring Services in Kuala Lumpur & Selangor | FLASH CAST",
+  "seo_description_zh": "FLASH CAST 为住宅与商业空间提供地板项目咨询，了解现场条件、材料方向、施工范围与报价沟通方式。",
+  "seo_description_en": "Flooring project consultation for homes and commercial spaces. Discuss site conditions, material direction, scope, and quotation requirements with FLASH CAST.",
+  "status": "published",
+  "sort_order": 85,
+  "created_at": "2026-08-30T12:47:49.142184+00:00",
+  "updated_at": "2026-08-30T12:49:05.911041+00:00",
+  "version": 1
+}

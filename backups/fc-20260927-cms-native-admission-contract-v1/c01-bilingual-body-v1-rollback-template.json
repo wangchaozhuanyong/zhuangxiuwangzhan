@@ -1,0 +1,14 @@
+{
+  "original_task_id": "fc-20260927-seo-intensive-content-foundation-v1",
+  "candidate_version": "c01-bilingual-body-v1",
+  "record_id": "22782cff-239c-45ec-8075-9deaa5932269",
+  "restore_fields": {
+    "content_zh": "<p>地板项目需要结合现场条件、使用需求与整体装修安排。FLASH CAST 会先了解空间情况，再沟通材料方向、施工范围和报价需求。</p><p>请提交地区、空间类型、面积和现场照片，便于安排下一步咨询。</p>",
+    "content_en": "<p>Every flooring project should take site conditions, everyday use, and the wider renovation plan into account. FLASH CAST first reviews your space, then discusses material direction, scope, and quotation requirements.</p><p>Share your location, space type, area, and site photos so we can arrange the next consultation.</p>"
+  },
+  "expected_postsave_updated_at": null,
+  "expected_postsave_version": null,
+  "fill_from_actual_saved_receipt_only": true,
+  "separate_protected_rollback_permit_required": true,
+  "applied": false
+}

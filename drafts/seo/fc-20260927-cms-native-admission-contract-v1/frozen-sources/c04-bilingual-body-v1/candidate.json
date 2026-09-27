@@ -1,0 +1,121 @@
+{
+  "schema_version": "1.0",
+  "task_id": "fc-20260927-seo-intensive-content-foundation-v1",
+  "original_task_id": "fc-20260927-seo-intensive-content-foundation-v1",
+  "previous_published_scope_task_id": "fc-20260926-org026-service-media-cms-content-r1-v2",
+  "original_scope_relation": "new bounded increment; previous accepted scope retained, not replayed",
+  "backlog_item_id": "ORG-020",
+  "related_research_task_id": "fc-20260927-organic-keyword-wide-coverage-v1",
+  "related_research_inheritance": "FORMALLY_INHERITED_NONEMPTY_COMPLETION_AND_HASH_VERIFIED",
+  "inheritance_evidence": "drafts/seo/fc-20260927-seo-intensive-content-foundation-v1/sources/inheritance-confirmation.json",
+  "candidate_id": "C04",
+  "candidate_version": "c04-bilingual-body-v1",
+  "status": "READY_FOR_INDEPENDENT_QA",
+  "risk_scope_this_delivery": "R0 editorial candidate",
+  "proposed_implementation_risk": "R1 existing CMS content fields, subject to department1 exact channel binding",
+  "owner": "seo-content-research",
+  "implementation_owner": "content-organic-website",
+  "priority": "P1",
+  "gap": "已覆盖货物输入和动线，未直接回答货架报价应附哪些配置/责任资料、以及交付问题如何记录；无到现有交付指南的正文入口。",
+  "target_urls": {
+    "zh": "https://flashcast.com.my/zh/services/warehouse",
+    "en": "https://flashcast.com.my/en/services/warehouse"
+  },
+  "table_observed": "services",
+  "record_id": "1fab3adb-aa8c-4aab-9c30-8931152cdc91",
+  "slug": "warehouse",
+  "expected_updated_at": "2026-09-26T11:44:30.455353+00:00",
+  "expected_version": 2,
+  "base_record_source": "drafts/seo/fc-20260927-seo-intensive-content-foundation-v1/public/cms/services-1fab3adb-aa8c-4aab-9c30-8931152cdc91-fd932d0f3604.json",
+  "base_capture_at": "2026-09-27T06:01:27.785Z",
+  "base_public_record_sha256": "fd932d0f3604f75b6486881fcfb97cab1a5bd2a1e985b4936e65e2fff83c338f",
+  "modified_fields": [
+    "content_zh",
+    "content_en"
+  ],
+  "changes": {
+    "content_zh": {
+      "operation": "append_only",
+      "before_sha256": "ead6f406eb4fe898cda389fe859bd5a83f863541754189c963931e6615480db4",
+      "after_sha256": "a6d22fcc0f26e27b7ef5343934d0f17cc999f5ae2b4739ecb69afd6234845787",
+      "addition_sha256": "6cf814535f156f0644737ec31aa979dd30dacf29f3addd834e2cf7e2817736ed",
+      "before_file": "drafts/seo/fc-20260927-seo-intensive-content-foundation-v1/candidates/C04-warehouse/before-zh.html",
+      "after_file": "drafts/seo/fc-20260927-seo-intensive-content-foundation-v1/candidates/C04-warehouse/after-zh.html",
+      "diff_file": "drafts/seo/fc-20260927-seo-intensive-content-foundation-v1/candidates/C04-warehouse/diff-zh.patch"
+    },
+    "content_en": {
+      "operation": "append_only",
+      "before_sha256": "ced4c25fb086ec7ecb0709a6d9bdc9a212d81776762103a07d7a18f7d87513ff",
+      "after_sha256": "faa4a241de9719f297216a7880ed5e796fb2cd7c5eb342c3c9a33df862af9969",
+      "addition_sha256": "6e6eaeacc376e7821c761a97ea1d1b8594675353fda7dd8f693390116f8a5a84",
+      "before_file": "drafts/seo/fc-20260927-seo-intensive-content-foundation-v1/candidates/C04-warehouse/before-en.html",
+      "after_file": "drafts/seo/fc-20260927-seo-intensive-content-foundation-v1/candidates/C04-warehouse/after-en.html",
+      "diff_file": "drafts/seo/fc-20260927-seo-intensive-content-foundation-v1/candidates/C04-warehouse/diff-en.patch"
+    }
+  },
+  "before_values": {
+    "content_zh": "<h1>仓库货架与仓储空间规划</h1>\n<p>仓储空间不是只把货架排满。货物尺寸、周转频率、拣货方式、通道、装卸区和现有设备都会影响布局。FLASH CAST 可协助雪兰莪及巴生谷的仓库与工业单位梳理这些条件，形成便于讨论的空间规划与施工协同范围。</p>\n<p><strong>概念设计说明：</strong>本页视觉内容为仓储布局与动线的规划示例，不代表已完成项目、真实仓库照片或任何承载能力承诺。</p>\n<h2>规划前应提供的资料</h2>\n<ul><li>货物、托盘、纸箱或设备的尺寸与重量资料。</li><li>入库、存放、拣货、出库和装卸的日常动线。</li><li>叉车、推车、工作台、消防通道和门口位置。</li><li>地面、柱网、照明、排水与既有设施的现场情况。</li></ul>\n<h2>空间规划重点</h2>\n<ul><li>将收货、暂存、存储、拣货、包装和出库区域区分清楚。</li><li>按货物周转频率安排较容易取放的位置。</li><li>预留操作、转弯、补货与维护需要的合理通道。</li><li>把货架、地面、照明与其他装修工序的衔接列入范围讨论。</li></ul>\n<h2>沟通与执行流程</h2>\n<ol><li>了解仓库用途、货物流向和现有问题。</li><li>核对平面、尺寸、进出货与设备条件。</li><li>讨论分区、货架类型方向和施工协调事项。</li><li>确认需要处理的装修或配套工作范围。</li><li>按确认内容推进现场协调与后续检查。</li></ol>\n<h2>相关服务</h2>\n<p>办公区需要同步调整时，可查看 <a href=\"/zh/services/office-renovation\">办公室装修服务</a>；涉及装修报批或文件准备时，可查看 <a href=\"/zh/services/approval\">装修报批协助</a>。可通过 <a href=\"/zh/quote\">获取装修咨询与报价</a> 提交平面图、货物资料和现场照片。</p>\n<h2>常见问题</h2>\n<h3>初次沟通要准备哪些资料？</h3><p>建议提供平面图、货物和设备尺寸、日常进出货流程，以及现场照片或视频，方便判断量度与协调重点。</p>\n<h3>可以只调整仓库的一部分吗？</h3><p>可以。收货区、暂存区、拣货区或办公室连接区都可单独讨论，范围将以实际使用和现场条件为准。</p>\n<h3>规划示例是否代表真实项目？</h3><p>不是。本页概念设计用于说明动线和空间组织，最终配置及现场要求需要按具体货物、设备和场地确认。</p>\n<p><a href=\"/zh/quote\">获取装修咨询与报价</a></p>",
+    "content_en": "<h1>Warehouse Shelving and Storage Planning</h1>\n<p>A useful warehouse layout is more than filling a floor with racks. Goods dimensions, movement frequency, picking methods, aisles, loading areas and existing equipment all shape the plan. FLASH CAST helps warehouse and industrial-unit operators in Selangor and the Klang Valley organise these conditions into a practical planning and coordination scope.</p>\n<p><strong>Rendering concept note:</strong> the visuals on this page are storage-layout and movement-planning examples. They are not completed projects, real warehouse photographs or a load-capacity commitment.</p>\n<h2>Information to Share Before Planning</h2>\n<ul><li>Dimensions and weight information for goods, pallets, cartons and equipment.</li><li>Daily receiving, storage, picking, dispatch and loading flow.</li><li>Positions for forklifts, trolleys, worktables, fire routes and access doors.</li><li>Existing floors, columns, lighting, drainage and site services.</li></ul>\n<h2>Storage-Planning Priorities</h2>\n<ul><li>Separate receiving, holding, storage, picking, packing and dispatch zones clearly.</li><li>Place faster-moving goods where access is more direct.</li><li>Allow for operation, turning, replenishment and maintenance routes.</li><li>Coordinate shelving, floors, lighting and any related renovation work in one clear scope.</li></ul>\n<h2>Discussion and Delivery Process</h2>\n<ol><li>Review warehouse use, goods flow and current bottlenecks.</li><li>Check the plan, measurements, loading activity and equipment constraints.</li><li>Discuss zoning, shelving directions and site-coordination items.</li><li>Confirm the related renovation or supporting-work scope.</li><li>Proceed with site coordination and checks against the agreed scope.</li></ol>\n<h2>Related Services</h2>\n<p>If the office area needs to change at the same time, see <a href=\"/en/services/office-renovation\">Office Renovation</a>. If permits or renovation documents may be relevant, see <a href=\"/en/services/approval\">Renovation Approval Support</a>. Use <a href=\"/en/quote\">Request a Renovation Consultation</a> to share a floor plan, goods information and site photos.</p>\n<h2>FAQs</h2>\n<h3>What information helps with an initial discussion?</h3><p>A floor plan, goods and equipment dimensions, the daily goods-flow process and site photos or video help identify the measuring and coordination priorities.</p>\n<h3>Can only part of a warehouse be adjusted?</h3><p>Yes. A receiving, holding, picking or office-adjacent zone can be discussed separately. The workable scope depends on use and site conditions.</p>\n<h3>Do the planning examples show real completed sites?</h3><p>No. The rendering concept explains storage flow and spatial organisation. Final configuration and site requirements must be confirmed for the specific goods, equipment and facility.</p>\n<p><a href=\"/en/quote\">Request a Renovation Consultation</a></p>"
+  },
+  "candidate_values": {
+    "content_zh": "<h1>仓库货架与仓储空间规划</h1>\n<p>仓储空间不是只把货架排满。货物尺寸、周转频率、拣货方式、通道、装卸区和现有设备都会影响布局。FLASH CAST 可协助雪兰莪及巴生谷的仓库与工业单位梳理这些条件，形成便于讨论的空间规划与施工协同范围。</p>\n<p><strong>概念设计说明：</strong>本页视觉内容为仓储布局与动线的规划示例，不代表已完成项目、真实仓库照片或任何承载能力承诺。</p>\n<h2>规划前应提供的资料</h2>\n<ul><li>货物、托盘、纸箱或设备的尺寸与重量资料。</li><li>入库、存放、拣货、出库和装卸的日常动线。</li><li>叉车、推车、工作台、消防通道和门口位置。</li><li>地面、柱网、照明、排水与既有设施的现场情况。</li></ul>\n<h2>空间规划重点</h2>\n<ul><li>将收货、暂存、存储、拣货、包装和出库区域区分清楚。</li><li>按货物周转频率安排较容易取放的位置。</li><li>预留操作、转弯、补货与维护需要的合理通道。</li><li>把货架、地面、照明与其他装修工序的衔接列入范围讨论。</li></ul>\n<h2>沟通与执行流程</h2>\n<ol><li>了解仓库用途、货物流向和现有问题。</li><li>核对平面、尺寸、进出货与设备条件。</li><li>讨论分区、货架类型方向和施工协调事项。</li><li>确认需要处理的装修或配套工作范围。</li><li>按确认内容推进现场协调与后续检查。</li></ol>\n<h2>相关服务</h2>\n<p>办公区需要同步调整时，可查看 <a href=\"/zh/services/office-renovation\">办公室装修服务</a>；涉及装修报批或文件准备时，可查看 <a href=\"/zh/services/approval\">装修报批协助</a>。可通过 <a href=\"/zh/quote\">获取装修咨询与报价</a> 提交平面图、货物资料和现场照片。</p>\n<h2>常见问题</h2>\n<h3>初次沟通要准备哪些资料？</h3><p>建议提供平面图、货物和设备尺寸、日常进出货流程，以及现场照片或视频，方便判断量度与协调重点。</p>\n<h3>可以只调整仓库的一部分吗？</h3><p>可以。收货区、暂存区、拣货区或办公室连接区都可单独讨论，范围将以实际使用和现场条件为准。</p>\n<h3>规划示例是否代表真实项目？</h3><p>不是。本页概念设计用于说明动线和空间组织，最终配置及现场要求需要按具体货物、设备和场地确认。</p>\n<p><a href=\"/zh/quote\">获取装修咨询与报价</a></p>\n\n<h2>货架方案与报价要怎样对应？</h2>\n<p>请负责方把货架类型、数量、尺寸、层数、布局版本、搬运与安装范围写清楚，并说明哪些现场资料仍待确认。涉及承载、地面、固定方式或工程确认的内容，应索取对应配置的供应商资料，并确认是否需要相关专业人员评估。通用图片、类似项目或一句载重描述不能证明该现场配置适用；本页不提供承载设计、数值保证或工程认证。</p>\n<h2>交付时应留下哪些范围和问题记录？</h2>\n<p>按已确认的布局、配置和范围，与负责方核对交付项目，记录位置、可见损伤或未完成事项、照片、责任人及复查安排。产品说明、标识、使用限制和维护资料应与实际交付配置对应，具体检查由约定的负责方执行。可用 <a href=\"/zh/blog/renovation-handover-defect-checklist-malaysia\">交付问题记录清单</a> 整理沟通，不能将一般装修清单视为货架安全认证。需要讨论范围时，<a href=\"/zh/quote\">提交仓库平面与货物资料</a>。</p>",
+    "content_en": "<h1>Warehouse Shelving and Storage Planning</h1>\n<p>A useful warehouse layout is more than filling a floor with racks. Goods dimensions, movement frequency, picking methods, aisles, loading areas and existing equipment all shape the plan. FLASH CAST helps warehouse and industrial-unit operators in Selangor and the Klang Valley organise these conditions into a practical planning and coordination scope.</p>\n<p><strong>Rendering concept note:</strong> the visuals on this page are storage-layout and movement-planning examples. They are not completed projects, real warehouse photographs or a load-capacity commitment.</p>\n<h2>Information to Share Before Planning</h2>\n<ul><li>Dimensions and weight information for goods, pallets, cartons and equipment.</li><li>Daily receiving, storage, picking, dispatch and loading flow.</li><li>Positions for forklifts, trolleys, worktables, fire routes and access doors.</li><li>Existing floors, columns, lighting, drainage and site services.</li></ul>\n<h2>Storage-Planning Priorities</h2>\n<ul><li>Separate receiving, holding, storage, picking, packing and dispatch zones clearly.</li><li>Place faster-moving goods where access is more direct.</li><li>Allow for operation, turning, replenishment and maintenance routes.</li><li>Coordinate shelving, floors, lighting and any related renovation work in one clear scope.</li></ul>\n<h2>Discussion and Delivery Process</h2>\n<ol><li>Review warehouse use, goods flow and current bottlenecks.</li><li>Check the plan, measurements, loading activity and equipment constraints.</li><li>Discuss zoning, shelving directions and site-coordination items.</li><li>Confirm the related renovation or supporting-work scope.</li><li>Proceed with site coordination and checks against the agreed scope.</li></ol>\n<h2>Related Services</h2>\n<p>If the office area needs to change at the same time, see <a href=\"/en/services/office-renovation\">Office Renovation</a>. If permits or renovation documents may be relevant, see <a href=\"/en/services/approval\">Renovation Approval Support</a>. Use <a href=\"/en/quote\">Request a Renovation Consultation</a> to share a floor plan, goods information and site photos.</p>\n<h2>FAQs</h2>\n<h3>What information helps with an initial discussion?</h3><p>A floor plan, goods and equipment dimensions, the daily goods-flow process and site photos or video help identify the measuring and coordination priorities.</p>\n<h3>Can only part of a warehouse be adjusted?</h3><p>Yes. A receiving, holding, picking or office-adjacent zone can be discussed separately. The workable scope depends on use and site conditions.</p>\n<h3>Do the planning examples show real completed sites?</h3><p>No. The rendering concept explains storage flow and spatial organisation. Final configuration and site requirements must be confirmed for the specific goods, equipment and facility.</p>\n<p><a href=\"/en/quote\">Request a Renovation Consultation</a></p>\n\n<h2>How should a racking proposal relate to its quotation?</h2>\n<p>Ask the responsible party to specify the rack type, quantity, dimensions, levels, layout revision, handling and installation scope, including site information that remains unresolved. For loading, floor conditions, fixing or engineering confirmation, request supplier documents for the exact configuration and establish whether a relevant professional assessment is needed. A generic image, similar project or isolated load statement does not establish suitability for this site. This page supplies no load design, numerical guarantee or engineering certification.</p>\n<h2>Which scope and issue records should be retained at handover?</h2>\n<p>Review delivered items with the responsible party against the agreed layout, configuration and scope. Record locations, visible damage or outstanding items, photos, ownership and recheck arrangements. Instructions, labels, use limits and maintenance information should match the delivered configuration, with specific checks carried out by the agreed responsible parties. The <a href=\"/en/blog/renovation-handover-defect-checklist-malaysia\">handover issue-recording checklist</a> can organise the discussion; a general renovation checklist is not racking safety certification. To discuss the scope, <a href=\"/en/quote\">send the warehouse layout and goods information</a>.</p>"
+  },
+  "rollback": {
+    "method": "restore only these two exact before values after a fresh preflight; never overwrite concurrent changes",
+    "values": {
+      "content_zh": "<h1>仓库货架与仓储空间规划</h1>\n<p>仓储空间不是只把货架排满。货物尺寸、周转频率、拣货方式、通道、装卸区和现有设备都会影响布局。FLASH CAST 可协助雪兰莪及巴生谷的仓库与工业单位梳理这些条件，形成便于讨论的空间规划与施工协同范围。</p>\n<p><strong>概念设计说明：</strong>本页视觉内容为仓储布局与动线的规划示例，不代表已完成项目、真实仓库照片或任何承载能力承诺。</p>\n<h2>规划前应提供的资料</h2>\n<ul><li>货物、托盘、纸箱或设备的尺寸与重量资料。</li><li>入库、存放、拣货、出库和装卸的日常动线。</li><li>叉车、推车、工作台、消防通道和门口位置。</li><li>地面、柱网、照明、排水与既有设施的现场情况。</li></ul>\n<h2>空间规划重点</h2>\n<ul><li>将收货、暂存、存储、拣货、包装和出库区域区分清楚。</li><li>按货物周转频率安排较容易取放的位置。</li><li>预留操作、转弯、补货与维护需要的合理通道。</li><li>把货架、地面、照明与其他装修工序的衔接列入范围讨论。</li></ul>\n<h2>沟通与执行流程</h2>\n<ol><li>了解仓库用途、货物流向和现有问题。</li><li>核对平面、尺寸、进出货与设备条件。</li><li>讨论分区、货架类型方向和施工协调事项。</li><li>确认需要处理的装修或配套工作范围。</li><li>按确认内容推进现场协调与后续检查。</li></ol>\n<h2>相关服务</h2>\n<p>办公区需要同步调整时，可查看 <a href=\"/zh/services/office-renovation\">办公室装修服务</a>；涉及装修报批或文件准备时，可查看 <a href=\"/zh/services/approval\">装修报批协助</a>。可通过 <a href=\"/zh/quote\">获取装修咨询与报价</a> 提交平面图、货物资料和现场照片。</p>\n<h2>常见问题</h2>\n<h3>初次沟通要准备哪些资料？</h3><p>建议提供平面图、货物和设备尺寸、日常进出货流程，以及现场照片或视频，方便判断量度与协调重点。</p>\n<h3>可以只调整仓库的一部分吗？</h3><p>可以。收货区、暂存区、拣货区或办公室连接区都可单独讨论，范围将以实际使用和现场条件为准。</p>\n<h3>规划示例是否代表真实项目？</h3><p>不是。本页概念设计用于说明动线和空间组织，最终配置及现场要求需要按具体货物、设备和场地确认。</p>\n<p><a href=\"/zh/quote\">获取装修咨询与报价</a></p>",
+      "content_en": "<h1>Warehouse Shelving and Storage Planning</h1>\n<p>A useful warehouse layout is more than filling a floor with racks. Goods dimensions, movement frequency, picking methods, aisles, loading areas and existing equipment all shape the plan. FLASH CAST helps warehouse and industrial-unit operators in Selangor and the Klang Valley organise these conditions into a practical planning and coordination scope.</p>\n<p><strong>Rendering concept note:</strong> the visuals on this page are storage-layout and movement-planning examples. They are not completed projects, real warehouse photographs or a load-capacity commitment.</p>\n<h2>Information to Share Before Planning</h2>\n<ul><li>Dimensions and weight information for goods, pallets, cartons and equipment.</li><li>Daily receiving, storage, picking, dispatch and loading flow.</li><li>Positions for forklifts, trolleys, worktables, fire routes and access doors.</li><li>Existing floors, columns, lighting, drainage and site services.</li></ul>\n<h2>Storage-Planning Priorities</h2>\n<ul><li>Separate receiving, holding, storage, picking, packing and dispatch zones clearly.</li><li>Place faster-moving goods where access is more direct.</li><li>Allow for operation, turning, replenishment and maintenance routes.</li><li>Coordinate shelving, floors, lighting and any related renovation work in one clear scope.</li></ul>\n<h2>Discussion and Delivery Process</h2>\n<ol><li>Review warehouse use, goods flow and current bottlenecks.</li><li>Check the plan, measurements, loading activity and equipment constraints.</li><li>Discuss zoning, shelving directions and site-coordination items.</li><li>Confirm the related renovation or supporting-work scope.</li><li>Proceed with site coordination and checks against the agreed scope.</li></ol>\n<h2>Related Services</h2>\n<p>If the office area needs to change at the same time, see <a href=\"/en/services/office-renovation\">Office Renovation</a>. If permits or renovation documents may be relevant, see <a href=\"/en/services/approval\">Renovation Approval Support</a>. Use <a href=\"/en/quote\">Request a Renovation Consultation</a> to share a floor plan, goods information and site photos.</p>\n<h2>FAQs</h2>\n<h3>What information helps with an initial discussion?</h3><p>A floor plan, goods and equipment dimensions, the daily goods-flow process and site photos or video help identify the measuring and coordination priorities.</p>\n<h3>Can only part of a warehouse be adjusted?</h3><p>Yes. A receiving, holding, picking or office-adjacent zone can be discussed separately. The workable scope depends on use and site conditions.</p>\n<h3>Do the planning examples show real completed sites?</h3><p>No. The rendering concept explains storage flow and spatial organisation. Final configuration and site requirements must be confirmed for the specific goods, equipment and facility.</p>\n<p><a href=\"/en/quote\">Request a Renovation Consultation</a></p>"
+    }
+  },
+  "search_demand_class": "EDITORIAL_UNVALIDATED; no new search volume or observed-query claim",
+  "reviewed_intents": [
+    "cost_quote",
+    "comparison_selection",
+    "acceptance_care"
+  ],
+  "fact_sources": [
+    "company-context.md",
+    "services-and-pricing.md",
+    "faq.md",
+    "drafts/seo/fc-20260927-seo-intensive-content-foundation-v1/public/cms/services-1fab3adb-aa8c-4aab-9c30-8931152cdc91-fd932d0f3604.json"
+  ],
+  "editorial_method": "Customer preparation and comparison questions; no new company capability, price, deadline, credential, product performance or project claims.",
+  "source_2773_required_for_content": false,
+  "qa_acceptance": [
+    "Compare exact row identity, current version and both field hashes before implementation; rebase and re-QA if changed.",
+    "Read EN/ZH added sections for equivalent facts and limitations.",
+    "Keep the exact existing body prefix, FAQ, metadata, media, owner URL and canonical.",
+    "Confirm every added same-language target remains live and relevant.",
+    "Validate CMS sanitizer rendering and public DOM only after department1 implementation.",
+    "QA editorial PASS is not a saved CMS record or release permit."
+  ],
+  "execution": {
+    "cms_saved": false,
+    "code_modified": false,
+    "published": false,
+    "precise_permission": null
+  },
+  "checks": {
+    "zh": {
+      "current_body_passage_publicly_visible": true,
+      "body_witness_normalized": "仓库货架与仓储空间规划仓储空间不是只把货架排满。货物尺寸、周转频率、拣货方式、通道、装卸区和现有设备都会影响布局。FLASHCAST可协助雪兰莪及巴生谷的仓库与工业单位梳理这些条件，形成便于讨论的空间",
+      "old_body_exact_prefix_preserved": true,
+      "new_section_count": 2,
+      "new_internal_links": 2,
+      "links_same_language_public_200_self_canonical": true,
+      "existing_title_faq_image_fields_unchanged": true,
+      "public_dom_evidence": "drafts/seo/fc-20260927-seo-intensive-content-foundation-v1/public/dom/zh__services__warehouse.json"
+    },
+    "en": {
+      "current_body_passage_publicly_visible": true,
+      "body_witness_normalized": "WarehouseShelvingandStoragePlanningAusefulwarehouselayoutismorethanfillingafloorwithracks.Goodsdimen",
+      "old_body_exact_prefix_preserved": true,
+      "new_section_count": 2,
+      "new_internal_links": 2,
+      "links_same_language_public_200_self_canonical": true,
+      "existing_title_faq_image_fields_unchanged": true,
+      "public_dom_evidence": "drafts/seo/fc-20260927-seo-intensive-content-foundation-v1/public/dom/en__services__warehouse.json"
+    }
+  }
+}

@@ -1,0 +1,120 @@
+{
+  "schema_version": "1.0",
+  "task_id": "fc-20260927-seo-intensive-content-foundation-v1",
+  "original_task_id": "fc-20260927-seo-intensive-content-foundation-v1",
+  "previous_published_scope_task_id": null,
+  "original_scope_relation": "new bounded increment; previous accepted scope retained, not replayed",
+  "backlog_item_id": "ORG-006",
+  "related_research_task_id": "fc-20260927-organic-keyword-wide-coverage-v1",
+  "related_research_inheritance": "FORMALLY_INHERITED_NONEMPTY_COMPLETION_AND_HASH_VERIFIED",
+  "inheritance_evidence": "drafts/seo/fc-20260927-seo-intensive-content-foundation-v1/sources/inheritance-confirmation.json",
+  "candidate_id": "C08",
+  "candidate_version": "c08-bilingual-body-v1",
+  "status": "READY_FOR_INDEPENDENT_QA",
+  "risk_scope_this_delivery": "R0 editorial candidate",
+  "proposed_implementation_risk": "R1 existing CMS content fields, subject to department1 exact channel binding",
+  "owner": "seo-content-research",
+  "implementation_owner": "content-organic-website",
+  "priority": "P1",
+  "gap": "原费用文章仅解释范围/现场影响，缺少可填写的预算对照格式，年份标题也不能充当当年市场报价证据。",
+  "target_urls": {
+    "zh": "https://flashcast.com.my/zh/blog/klang-valley-renovation-cost-2026",
+    "en": "https://flashcast.com.my/en/blog/klang-valley-renovation-cost-2026"
+  },
+  "table_observed": "blog_posts",
+  "record_id": "e871c29f-b4e1-4b3b-ab0f-0a83a41c9f35",
+  "slug": "klang-valley-renovation-cost-2026",
+  "expected_updated_at": "2026-08-22T12:22:32.864064+00:00",
+  "expected_version": 1,
+  "base_record_source": "drafts/seo/fc-20260927-seo-intensive-content-foundation-v1/public/cms/blog_posts-e871c29f-b4e1-4b3b-ab0f-0a83a41c9f35-ee6e67216b05.json",
+  "base_capture_at": "2026-09-27T06:00:59.070Z",
+  "base_public_record_sha256": "ee6e67216b056667263f071b4f2befc3b1b1a67f18ce48b7c51d8efab38d492e",
+  "modified_fields": [
+    "content_zh",
+    "content_en"
+  ],
+  "changes": {
+    "content_zh": {
+      "operation": "append_only",
+      "before_sha256": "dfa42154061ae472bf2fca89898ad9283492fb3a4f5b050b05557b96dbf69986",
+      "after_sha256": "eb22b769d61b7ca5553fe9ca5c0c2ef6c669cbc71976ccca4aa0c71a52d10eb8",
+      "addition_sha256": "f14525777d3eb7736e1ae11dc8474ee43caa39ee7e9ee8a4ef95f46beefaab62",
+      "before_file": "drafts/seo/fc-20260927-seo-intensive-content-foundation-v1/candidates/C08-klang-valley-renovation-cost-2026/before-zh.html",
+      "after_file": "drafts/seo/fc-20260927-seo-intensive-content-foundation-v1/candidates/C08-klang-valley-renovation-cost-2026/after-zh.html",
+      "diff_file": "drafts/seo/fc-20260927-seo-intensive-content-foundation-v1/candidates/C08-klang-valley-renovation-cost-2026/diff-zh.patch"
+    },
+    "content_en": {
+      "operation": "append_only",
+      "before_sha256": "ae6edcc44e3cd65f2765857385d626cfcd4da3df8089c3f63cb093b544f78141",
+      "after_sha256": "4dbda4d9e419155c521acb5a52840ebc754a1b3a668f29462c64b44f51f04185",
+      "addition_sha256": "28bd8068a667023c29f94f5b2263de758d0ca6b6a1f58b005d3843bcdff37d52",
+      "before_file": "drafts/seo/fc-20260927-seo-intensive-content-foundation-v1/candidates/C08-klang-valley-renovation-cost-2026/before-en.html",
+      "after_file": "drafts/seo/fc-20260927-seo-intensive-content-foundation-v1/candidates/C08-klang-valley-renovation-cost-2026/after-en.html",
+      "diff_file": "drafts/seo/fc-20260927-seo-intensive-content-foundation-v1/candidates/C08-klang-valley-renovation-cost-2026/diff-en.patch"
+    }
+  },
+  "before_values": {
+    "content_zh": "<h2>费用差异来自范围</h2><p>同样面积的单位，如果一个只做油漆地板，另一个包含水电、橱柜、浴室和天花，预算会完全不同。</p><h2>现场限制也会加成本</h2><p>公寓电梯预约、停车、搬运距离、施工时间限制和管理处要求都会影响人工和排期。</p><h2>先做范围表再比价</h2><p>把必须做、想升级、可之后再做的项目分开，报价会更清楚，也比较容易控制预算。</p>",
+    "content_en": "<h2>Cost differences come from scope</h2><p>Two units with the same area can have very different budgets if one includes wiring, cabinets, bathrooms, and ceiling work.</p><h2>Site restrictions add cost</h2><p>Lift booking, parking, carrying distance, working-hour limits, and management requirements affect labour and schedule.</p><h2>Prepare a scope list before comparing</h2><p>Separate must-do items, upgrades, and later-phase items so quotations become easier to control.</p>"
+  },
+  "candidate_values": {
+    "content_zh": "<h2>费用差异来自范围</h2><p>同样面积的单位，如果一个只做油漆地板，另一个包含水电、橱柜、浴室和天花，预算会完全不同。</p><h2>现场限制也会加成本</h2><p>公寓电梯预约、停车、搬运距离、施工时间限制和管理处要求都会影响人工和排期。</p><h2>先做范围表再比价</h2><p>把必须做、想升级、可之后再做的项目分开，报价会更清楚，也比较容易控制预算。</p>\n\n<h2>先把预算问题分成三栏</h2>\n<p>第一栏列已确定的必要工程与数量；第二栏列可以取舍的饰面、收纳或设备方向；第三栏列仍需现场确认的事项。每项附上对应房间、照片或平面位置，以及报价是否包含材料、人工和相关配套。这样可以讨论删减或分阶段的影响，而不是把范围不同的总价直接比较。</p>\n<h2>这篇文章是否代表2026年的市场均价？</h2>\n<p>不代表。本文提供范围比较方法，没有同条件市场报价样本，不能据此推算固定总价、每平方尺价格或预算保证。详细项目可对照 <a href=\"/zh/blog/renovation-quotation-checklist-malaysia\">装修报价检查清单</a>，再通过 <a href=\"/zh/quote\">免费报价入口</a> 提供地点、面积、屋况和优先范围；最终价格以具体现场和书面报价为准。</p>",
+    "content_en": "<h2>Cost differences come from scope</h2><p>Two units with the same area can have very different budgets if one includes wiring, cabinets, bathrooms, and ceiling work.</p><h2>Site restrictions add cost</h2><p>Lift booking, parking, carrying distance, working-hour limits, and management requirements affect labour and schedule.</p><h2>Prepare a scope list before comparing</h2><p>Separate must-do items, upgrades, and later-phase items so quotations become easier to control.</p>\n\n<h2>Separate the budget discussion into three columns</h2>\n<p>Use one column for confirmed essential work and quantities, one for optional finishes, storage or equipment, and one for items needing site confirmation. Add the room, photo or plan location and whether materials, labour and related work are included. This makes scope reductions or phasing discussable without comparing totals for different work.</p>\n<h2>Does this article establish a 2026 market average?</h2>\n<p>No. This article offers a way to compare scope, without a matched sample of market quotations. It cannot establish a fixed total, price per square foot or budget guarantee. Review the <a href=\"/en/blog/renovation-quotation-checklist-malaysia\">quotation checklist</a>, then use the <a href=\"/en/quote\">free quotation form</a> to share location, area, condition and priorities. Pricing depends on the actual site and written quotation.</p>"
+  },
+  "rollback": {
+    "method": "restore only these two exact before values after a fresh preflight; never overwrite concurrent changes",
+    "values": {
+      "content_zh": "<h2>费用差异来自范围</h2><p>同样面积的单位，如果一个只做油漆地板，另一个包含水电、橱柜、浴室和天花，预算会完全不同。</p><h2>现场限制也会加成本</h2><p>公寓电梯预约、停车、搬运距离、施工时间限制和管理处要求都会影响人工和排期。</p><h2>先做范围表再比价</h2><p>把必须做、想升级、可之后再做的项目分开，报价会更清楚，也比较容易控制预算。</p>",
+      "content_en": "<h2>Cost differences come from scope</h2><p>Two units with the same area can have very different budgets if one includes wiring, cabinets, bathrooms, and ceiling work.</p><h2>Site restrictions add cost</h2><p>Lift booking, parking, carrying distance, working-hour limits, and management requirements affect labour and schedule.</p><h2>Prepare a scope list before comparing</h2><p>Separate must-do items, upgrades, and later-phase items so quotations become easier to control.</p>"
+    }
+  },
+  "search_demand_class": "EDITORIAL_UNVALIDATED; no new search volume or observed-query claim",
+  "reviewed_intents": [
+    "cost_quote",
+    "comparison_selection"
+  ],
+  "fact_sources": [
+    "company-context.md",
+    "services-and-pricing.md",
+    "faq.md",
+    "drafts/seo/fc-20260927-seo-intensive-content-foundation-v1/public/cms/blog_posts-e871c29f-b4e1-4b3b-ab0f-0a83a41c9f35-ee6e67216b05.json"
+  ],
+  "editorial_method": "Customer preparation and comparison questions; no new company capability, price, deadline, credential, product performance or project claims.",
+  "source_2773_required_for_content": false,
+  "qa_acceptance": [
+    "Compare exact row identity, current version and both field hashes before implementation; rebase and re-QA if changed.",
+    "Read EN/ZH added sections for equivalent facts and limitations.",
+    "Keep the exact existing body prefix, FAQ, metadata, media, owner URL and canonical.",
+    "Confirm every added same-language target remains live and relevant.",
+    "Validate CMS sanitizer rendering and public DOM only after department1 implementation.",
+    "QA editorial PASS is not a saved CMS record or release permit."
+  ],
+  "execution": {
+    "cms_saved": false,
+    "code_modified": false,
+    "published": false,
+    "precise_permission": null
+  },
+  "checks": {
+    "zh": {
+      "current_body_passage_publicly_visible": true,
+      "body_witness_normalized": "费用差异来自范围同样面积的单位，如果一个只做油漆地板，另一个包含水电、橱柜、浴室和天花，预算会完全不同。现场限制也会加成本公寓电梯预约、停车、搬运距离、施工时间限制和管理处要求都会影响人工和排期。先做",
+      "old_body_exact_prefix_preserved": true,
+      "new_section_count": 2,
+      "new_internal_links": 2,
+      "links_same_language_public_200_self_canonical": true,
+      "existing_title_faq_image_fields_unchanged": true,
+      "public_dom_evidence": "drafts/seo/fc-20260927-seo-intensive-content-foundation-v1/public/dom/zh__blog__klang-valley-renovation-cost-2026.json"
+    },
+    "en": {
+      "current_body_passage_publicly_visible": true,
+      "body_witness_normalized": "CostdifferencescomefromscopeTwounitswiththesameareacanhaveverydifferentbudgetsifoneincludeswiring,ca",
+      "old_body_exact_prefix_preserved": true,
+      "new_section_count": 2,
+      "new_internal_links": 2,
+      "links_same_language_public_200_self_canonical": true,
+      "existing_title_faq_image_fields_unchanged": true,
+      "public_dom_evidence": "drafts/seo/fc-20260927-seo-intensive-content-foundation-v1/public/dom/en__blog__klang-valley-renovation-cost-2026.json"
+    }
+  }
+}

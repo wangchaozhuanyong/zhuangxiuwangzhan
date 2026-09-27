@@ -1,0 +1,14 @@
+{
+  "original_task_id": "fc-20260927-seo-intensive-content-foundation-v1",
+  "candidate_version": "c06-bilingual-body-v1",
+  "record_id": "46faa278-295f-486d-9b90-263954993153",
+  "restore_fields": {
+    "content_zh": "<h2>每个空间的重点不同</h2><p>浴室看防滑和防水，厨房看耐污和耐热，客厅看耐磨和视觉效果，卧室则更重视舒适和触感。</p><h2>样板比效果图更可靠</h2><p>同一款材料在自然光、暖光和冷光下都可能不同。确认前最好把样板放到现场看。</p><h2>维护方式要先问清楚</h2><p>有些材料好看但怕刮、怕水或需要特别清洁。日常维护能不能接受，比短时间的视觉效果更重要。</p>",
+    "content_en": "<h2>Each space has a different priority</h2><p>Bathrooms need slip resistance and waterproofing, kitchens need stain and heat resistance, living areas need durability, and bedrooms need comfort.</p><h2>Samples are more reliable than renders</h2><p>A material can look different under natural, warm, and cool light. Review samples on site before confirming.</p><h2>Ask about maintenance early</h2><p>Some finishes look good but scratch easily, dislike moisture, or need special cleaning. Daily maintenance should match your habits.</p>"
+  },
+  "expected_postsave_updated_at": null,
+  "expected_postsave_version": null,
+  "fill_from_actual_saved_receipt_only": true,
+  "separate_protected_rollback_permit_required": true,
+  "applied": false
+}

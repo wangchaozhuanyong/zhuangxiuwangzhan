@@ -1,0 +1,120 @@
+{
+  "schema_version": "1.0",
+  "task_id": "fc-20260927-seo-intensive-content-foundation-v1",
+  "original_task_id": "fc-20260927-seo-intensive-content-foundation-v1",
+  "previous_published_scope_task_id": null,
+  "original_scope_relation": "new bounded increment; previous accepted scope retained, not replayed",
+  "backlog_item_id": "ORG-006",
+  "related_research_task_id": "fc-20260927-organic-keyword-wide-coverage-v1",
+  "related_research_inheritance": "FORMALLY_INHERITED_NONEMPTY_COMPLETION_AND_HASH_VERIFIED",
+  "inheritance_evidence": "drafts/seo/fc-20260927-seo-intensive-content-foundation-v1/sources/inheritance-confirmation.json",
+  "candidate_id": "C15",
+  "candidate_version": "c15-bilingual-body-v1",
+  "status": "READY_FOR_INDEPENDENT_QA",
+  "risk_scope_this_delivery": "R0 editorial candidate",
+  "proposed_implementation_risk": "R1 existing CMS content fields, subject to department1 exact channel binding",
+  "owner": "seo-content-research",
+  "implementation_owner": "content-organic-website",
+  "priority": "P2",
+  "gap": "原文建议预留发展余量，但缺少将确定需求与未来假设分开的工作区清单，以及机电/IT详细资料入口。",
+  "target_urls": {
+    "zh": "https://flashcast.com.my/zh/blog/selangor-office-fit-out-tips",
+    "en": "https://flashcast.com.my/en/blog/selangor-office-fit-out-tips"
+  },
+  "table_observed": "blog_posts",
+  "record_id": "d6eb44ba-4c99-4fd4-bd78-1eeb0be1d1a9",
+  "slug": "selangor-office-fit-out-tips",
+  "expected_updated_at": "2026-09-12T22:42:17.136295+00:00",
+  "expected_version": 1,
+  "base_record_source": "drafts/seo/fc-20260927-seo-intensive-content-foundation-v1/public/cms/blog_posts-d6eb44ba-4c99-4fd4-bd78-1eeb0be1d1a9-4f016e3d54b7.json",
+  "base_capture_at": "2026-09-27T06:00:59.070Z",
+  "base_public_record_sha256": "4f016e3d54b7a53cfba6f6ed34cfe626704e1c2644b3679b3b371fa43526cad4",
+  "modified_fields": [
+    "content_zh",
+    "content_en"
+  ],
+  "changes": {
+    "content_zh": {
+      "operation": "append_only",
+      "before_sha256": "1fcc3d6bae51731dc463088d6a0b2583167a9b985117c6290a11e0aa6d7cd220",
+      "after_sha256": "a2e72385ee0fc610d72423ee585a6265df92b48e588440a2035438b88d9b0219",
+      "addition_sha256": "3625290a9ac9f638d3636476127ab260aa05d7f1e6a31880d98627d1bfb7b996",
+      "before_file": "drafts/seo/fc-20260927-seo-intensive-content-foundation-v1/candidates/C15-selangor-office-fit-out-tips/before-zh.html",
+      "after_file": "drafts/seo/fc-20260927-seo-intensive-content-foundation-v1/candidates/C15-selangor-office-fit-out-tips/after-zh.html",
+      "diff_file": "drafts/seo/fc-20260927-seo-intensive-content-foundation-v1/candidates/C15-selangor-office-fit-out-tips/diff-zh.patch"
+    },
+    "content_en": {
+      "operation": "append_only",
+      "before_sha256": "61728a6a2ce0b66b254d3438b849d67750d528b79dffc5ae1a62920676816481",
+      "after_sha256": "9b7605bbfa97ae8b21650e509224817de12c4bd71889714f81a039a9bdb38d8a",
+      "addition_sha256": "ccba90c9d47a0c2b4015387f47eb29ab3ecfc03e0a713fe7a5ca3998f16f1428",
+      "before_file": "drafts/seo/fc-20260927-seo-intensive-content-foundation-v1/candidates/C15-selangor-office-fit-out-tips/before-en.html",
+      "after_file": "drafts/seo/fc-20260927-seo-intensive-content-foundation-v1/candidates/C15-selangor-office-fit-out-tips/after-en.html",
+      "diff_file": "drafts/seo/fc-20260927-seo-intensive-content-foundation-v1/candidates/C15-selangor-office-fit-out-tips/diff-en.patch"
+    }
+  },
+  "before_values": {
+    "content_zh": "<h2>不要只按现在人数排座位</h2><p>团队如果还会扩充，工位、电位、网络点和储物要留一点余量。否则很快又要改。</p><h2>会议室要看真实使用频率</h2><p>不是每家公司都需要很多大会议室。小讨论区、电话间和安静工作位有时更实用。</p><h2>大楼规则会影响工期</h2><p>搬运时间、电梯预约、消防要求和噪音限制要提前确认，避免材料到了却不能进场。</p><p>准备进入现场范围讨论时，可先查看我们的<a href=\"/zh/services/office-renovation\">办公室装修与商业空间规划服务</a>，并在申请报价前整理大楼要求。</p>",
+    "content_en": "<h2>Do not plan seats only for today</h2><p>If the team may grow, leave allowance for workstations, sockets, network points, and storage.</p><h2>Match meeting rooms to real usage</h2><p>Not every office needs many large rooms. Small discussion areas, call rooms, and quiet seats may be more useful.</p><h2>Building rules affect schedule</h2><p>Delivery hours, lift booking, fire-safety requirements, and noisy-work limits should be confirmed before materials arrive.</p><p>When planning a site-specific scope, review our <a href=\"/en/services/office-renovation\">office renovation and commercial fit-out service</a> and prepare the building requirements before requesting a quotation.</p>"
+  },
+  "candidate_values": {
+    "content_zh": "<h2>不要只按现在人数排座位</h2><p>团队如果还会扩充，工位、电位、网络点和储物要留一点余量。否则很快又要改。</p><h2>会议室要看真实使用频率</h2><p>不是每家公司都需要很多大会议室。小讨论区、电话间和安静工作位有时更实用。</p><h2>大楼规则会影响工期</h2><p>搬运时间、电梯预约、消防要求和噪音限制要提前确认，避免材料到了却不能进场。</p><p>准备进入现场范围讨论时，可先查看我们的<a href=\"/zh/services/office-renovation\">办公室装修与商业空间规划服务</a>，并在申请报价前整理大楼要求。</p>\n\n<h2>怎样区分现有需求和未来扩充假设？</h2>\n<p>把现有员工、访客、会议和储物需求列为当前范围，把可能增加的人数、设备或空间单独列为待讨论假设。说明哪些部门需要同时办公、哪些设施可共用，以及哪些改动可能安排在另一阶段。是否预留或分期，应结合实际现场、租约与预算确认，不能把未来估计自动加入承诺交付。</p>\n<h2>空间清单如何与设备协调衔接？</h2>\n<p>按区域附上设备清单和现有设施资料，再参考 <a href=\"/zh/blog/office-fit-out-me-it-planning-checklist-malaysia\">办公室机电与IT协调清单</a> 整理需要负责方核实的问题。确认大楼资料和主要工作范围后，可前往 <a href=\"/zh/services/office-renovation\">办公室装修服务</a> 继续咨询。具体专业设计、容量、提交责任和进度须按项目确认，本页不新增当地审批或固定工期承诺。</p>",
+    "content_en": "<h2>Do not plan seats only for today</h2><p>If the team may grow, leave allowance for workstations, sockets, network points, and storage.</p><h2>Match meeting rooms to real usage</h2><p>Not every office needs many large rooms. Small discussion areas, call rooms, and quiet seats may be more useful.</p><h2>Building rules affect schedule</h2><p>Delivery hours, lift booking, fire-safety requirements, and noisy-work limits should be confirmed before materials arrive.</p><p>When planning a site-specific scope, review our <a href=\"/en/services/office-renovation\">office renovation and commercial fit-out service</a> and prepare the building requirements before requesting a quotation.</p>\n\n<h2>How can current needs be separated from expansion assumptions?</h2>\n<p>List current staff, visitors, meeting and storage needs as the present scope, and keep possible additional people, equipment or space as separate assumptions. Explain which teams work simultaneously, which facilities can be shared and which changes might belong to another stage. Provision or phasing depends on the site, tenancy and budget; future estimates should not automatically become committed deliverables.</p>\n<h2>How can the space list connect to equipment coordination?</h2>\n<p>Attach equipment and existing-facility information by area, then use the <a href=\"/en/blog/office-fit-out-me-it-planning-checklist-malaysia\">office M&E and IT coordination checklist</a> to organise questions for the responsible parties. Once building information and the main scope are clear, continue through the <a href=\"/en/services/office-renovation\">office renovation service</a>. Professional design, capacity, submission responsibility and programme remain project-specific; this page adds no local-approval or fixed-duration promise.</p>"
+  },
+  "rollback": {
+    "method": "restore only these two exact before values after a fresh preflight; never overwrite concurrent changes",
+    "values": {
+      "content_zh": "<h2>不要只按现在人数排座位</h2><p>团队如果还会扩充，工位、电位、网络点和储物要留一点余量。否则很快又要改。</p><h2>会议室要看真实使用频率</h2><p>不是每家公司都需要很多大会议室。小讨论区、电话间和安静工作位有时更实用。</p><h2>大楼规则会影响工期</h2><p>搬运时间、电梯预约、消防要求和噪音限制要提前确认，避免材料到了却不能进场。</p><p>准备进入现场范围讨论时，可先查看我们的<a href=\"/zh/services/office-renovation\">办公室装修与商业空间规划服务</a>，并在申请报价前整理大楼要求。</p>",
+      "content_en": "<h2>Do not plan seats only for today</h2><p>If the team may grow, leave allowance for workstations, sockets, network points, and storage.</p><h2>Match meeting rooms to real usage</h2><p>Not every office needs many large rooms. Small discussion areas, call rooms, and quiet seats may be more useful.</p><h2>Building rules affect schedule</h2><p>Delivery hours, lift booking, fire-safety requirements, and noisy-work limits should be confirmed before materials arrive.</p><p>When planning a site-specific scope, review our <a href=\"/en/services/office-renovation\">office renovation and commercial fit-out service</a> and prepare the building requirements before requesting a quotation.</p>"
+    }
+  },
+  "search_demand_class": "EDITORIAL_UNVALIDATED; no new search volume or observed-query claim",
+  "reviewed_intents": [
+    "layout_scenario",
+    "process_delivery"
+  ],
+  "fact_sources": [
+    "company-context.md",
+    "services-and-pricing.md",
+    "faq.md",
+    "drafts/seo/fc-20260927-seo-intensive-content-foundation-v1/public/cms/blog_posts-d6eb44ba-4c99-4fd4-bd78-1eeb0be1d1a9-4f016e3d54b7.json"
+  ],
+  "editorial_method": "Customer preparation and comparison questions; no new company capability, price, deadline, credential, product performance or project claims.",
+  "source_2773_required_for_content": false,
+  "qa_acceptance": [
+    "Compare exact row identity, current version and both field hashes before implementation; rebase and re-QA if changed.",
+    "Read EN/ZH added sections for equivalent facts and limitations.",
+    "Keep the exact existing body prefix, FAQ, metadata, media, owner URL and canonical.",
+    "Confirm every added same-language target remains live and relevant.",
+    "Validate CMS sanitizer rendering and public DOM only after department1 implementation.",
+    "QA editorial PASS is not a saved CMS record or release permit."
+  ],
+  "execution": {
+    "cms_saved": false,
+    "code_modified": false,
+    "published": false,
+    "precise_permission": null
+  },
+  "checks": {
+    "zh": {
+      "current_body_passage_publicly_visible": true,
+      "body_witness_normalized": "不要只按现在人数排座位团队如果还会扩充，工位、电位、网络点和储物要留一点余量。否则很快又要改。会议室要看真实使用频率不是每家公司都需要很多大会议室。小讨论区、电话间和安静工作位有时更实用。大楼规则会影",
+      "old_body_exact_prefix_preserved": true,
+      "new_section_count": 2,
+      "new_internal_links": 2,
+      "links_same_language_public_200_self_canonical": true,
+      "existing_title_faq_image_fields_unchanged": true,
+      "public_dom_evidence": "drafts/seo/fc-20260927-seo-intensive-content-foundation-v1/public/dom/zh__blog__selangor-office-fit-out-tips.json"
+    },
+    "en": {
+      "current_body_passage_publicly_visible": true,
+      "body_witness_normalized": "DonotplanseatsonlyfortodayIftheteammaygrow,leaveallowanceforworkstations,sockets,networkpoints,andst",
+      "old_body_exact_prefix_preserved": true,
+      "new_section_count": 2,
+      "new_internal_links": 2,
+      "links_same_language_public_200_self_canonical": true,
+      "existing_title_faq_image_fields_unchanged": true,
+      "public_dom_evidence": "drafts/seo/fc-20260927-seo-intensive-content-foundation-v1/public/dom/en__blog__selangor-office-fit-out-tips.json"
+    }
+  }
+}

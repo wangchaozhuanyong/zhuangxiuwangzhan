@@ -1,0 +1,14 @@
+{
+  "original_task_id": "fc-20260927-seo-intensive-content-foundation-v1",
+  "candidate_version": "c14-bilingual-body-v1",
+  "record_id": "5a0322a0-0f58-4c28-a370-569428c13508",
+  "restore_fields": {
+    "content_zh": "<h2>暖色要有层次</h2><p>木纹、浅石纹、布艺、哑光墙面和金属细节可以一起使用，但比例要控制。全部同色会变平，材质对比才有质感。</p><h2>收纳要藏得自然</h2><p>极简空间最怕杂物外露。电视墙、玄关、餐边和卧室柜可以用同色门片弱化存在感。</p><h2>灯光决定温度</h2><p>主灯、灯带、壁灯和局部照明要分层，色温保持一致，空间才会温暖但不杂乱。</p>",
+    "content_en": "<h2>Warm tones need layers</h2><p>Woodgrain, light stone, fabric, matte walls, and metal details can work together, but the proportion must be controlled.</p><h2>Storage should disappear quietly</h2><p>Minimal spaces suffer when clutter is exposed. Matching cabinet fronts can soften TV walls, entries, dining areas, and bedrooms.</p><h2>Lighting sets the mood</h2><p>Main lights, strips, wall lights, and task lighting should be layered with consistent colour temperature.</p>"
+  },
+  "expected_postsave_updated_at": null,
+  "expected_postsave_version": null,
+  "fill_from_actual_saved_receipt_only": true,
+  "separate_protected_rollback_permit_required": true,
+  "applied": false
+}

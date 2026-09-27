@@ -1,0 +1,50 @@
+{
+  "task_id": "fc-20260927-website-growth-daily",
+  "original_task_id": "fc-20260924-seo-owner-implementation-v1",
+  "backlog_item_id": "ORG-003",
+  "candidate_version": "kitchen-initial-framework-body-v1",
+  "action_id": "publish-kitchen-initial-framework-body-v1",
+  "candidate_type": "cms_content_candidate",
+  "action_class": "cms_write",
+  "risk": "R1",
+  "scope": "flashcast.com.my:services/ce4156db-9034-42c8-ba29-b35724ea7d6d:content_en,content_zh:initial-framework-v1",
+  "record_selector": {
+    "id": "ce4156db-9034-42c8-ba29-b35724ea7d6d",
+    "slug": "kitchen"
+  },
+  "expected_updated_at": "2026-09-24T16:26:07.596036+00:00",
+  "expected_version": 1,
+  "desired_fields": {
+    "content_zh": "<p>厨房装修不只是换橱柜，而是重新整理日常使用动线、收纳、台面、家电点位、给排水和湿作范围。FLASH CAST 可从现场测量、现有水电点位、干湿厨房分区、柜体结构、材料方向和报价范围开始整理；最终范围以真实现场与书面报价为准。</p><h2>橱柜规划前怎样整理家电与现场资料？</h2><p>先整理拟保留或更换的冰箱、灶具、烤箱和其他家电清单，以及尺寸与现有位置。连同厨房照片、主要尺寸、给排水和插座位置交给团队核对，再讨论地柜、吊柜、高柜、台面及收纳。最终尺寸、点位和安装衔接须经现场确认。</p><h2>怎样比较厨房装修的报价范围？</h2><p>比较方案时，把橱柜尺寸与配置、门板和材料方向、台面、五金、家电点位、给排水、湿作、拆除与安装分别核对。写清保留项目、业主自备项目、可选项目和待检查事项，让两份报价按相近范围比较；不要只看每尺价格或总价。</p><h2>厨房与其他空间收纳应怎样衔接？</h2><p>厨房橱柜应围绕煮食、备餐、清洗、家电和台面规划；卧室衣柜、电视柜、鞋柜和跨房间收纳则可由全屋定制服务继续讨论。共同确认柜体与现场条件，分别列出各空间的材料、五金、制作及安装范围。</p><p>继续了解：<a href=\"/zh/services/builtin\">全屋定制与其他空间收纳</a>；<a href=\"/zh/services/design\">室内设计与空间规划</a>；<a href=\"/zh/quote\">厨房装修报价咨询</a></p>",
+    "content_en": "<p>Kitchen renovation should address daily workflow, storage, countertop use, appliance points, plumbing, and wet-work scope together. FLASH CAST can begin with site measurements, existing service points, dry and wet kitchen zoning, cabinet structure, material direction, and quotation scope. Final scope follows the real site and written quotation.</p><h2>How should appliances and site information be prepared before cabinet planning?</h2><p>List the fridge, hob, oven and other appliances you plan to keep or replace, including their dimensions and current positions. Share these with kitchen photos, key dimensions, plumbing and electrical points before discussing base, wall and tall cabinets, worktops and storage. Final dimensions, points and installation coordination require a site check.</p><h2>How can kitchen renovation quotations be compared fairly?</h2><p>Compare cabinet dimensions and configuration, door and material direction, worktops, hardware, appliance points, plumbing, wet works, demolition and installation separately. Clarify retained items, owner-supplied items, optional work and matters awaiting inspection so quotations cover a similar scope. A per-foot rate or headline total alone does not explain that scope.</p><h2>How should kitchen cabinetry connect with storage in other rooms?</h2><p>Plan kitchen cabinetry around cooking, preparation, washing, appliances and worktops. Bedroom wardrobes, TV units, shoe cabinets and storage across other rooms can be discussed under the built-in furniture service. Confirm each room’s materials, hardware, fabrication and installation scope against the site.</p><p>Continue planning: <a href=\"/en/services/builtin\">Built-in furniture and storage</a>; <a href=\"/en/services/design\">Interior design and space planning</a>; <a href=\"/en/quote\">Kitchen renovation enquiry</a></p>"
+  },
+  "modified_fields": [
+    "content_zh",
+    "content_en"
+  ],
+  "unchanged_fields": [
+    "faqs_en",
+    "faqs_zh",
+    "title_en",
+    "title_zh",
+    "seo_title_en",
+    "seo_title_zh",
+    "image_url",
+    "slug",
+    "status"
+  ],
+  "base_path": "reports/evidence/2026-09-27-initial-framework-sprint/commercial-current-public-rows.json",
+  "base_sha256": "ffbafa766dba70e9928fa43efaf7011477d1376cfc565840cbff53dcbe8db85e",
+  "base_observed_at": "2026-09-27T04:53:13.795514+00:00",
+  "prewrite_cas_recheck_required": true,
+  "fact_sources": [
+    "company-context.md",
+    "services-and-pricing.md",
+    "faq.md",
+    "reports/evidence/2026-09-27-initial-framework-sprint/commercial-current-public-rows.json"
+  ],
+  "qa_status": "READY_FOR_QA_NOT_DISPATCHED",
+  "publisher_exact_target_registration": "REQUIRED_FOR_NEW_TASK_ACTION_CANDIDATE_NOT_OLD_PERMIT_REPLAY",
+  "saved": false,
+  "published": false
+}

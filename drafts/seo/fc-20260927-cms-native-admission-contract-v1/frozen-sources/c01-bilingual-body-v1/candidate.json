@@ -1,0 +1,121 @@
+{
+  "schema_version": "1.0",
+  "task_id": "fc-20260927-seo-intensive-content-foundation-v1",
+  "original_task_id": "fc-20260927-seo-intensive-content-foundation-v1",
+  "previous_published_scope_task_id": null,
+  "original_scope_relation": "new bounded increment; previous accepted scope retained, not replayed",
+  "backlog_item_id": "ORG-003",
+  "related_research_task_id": "fc-20260927-organic-keyword-wide-coverage-v1",
+  "related_research_inheritance": "FORMALLY_INHERITED_NONEMPTY_COMPLETION_AND_HASH_VERIFIED",
+  "inheritance_evidence": "drafts/seo/fc-20260927-seo-intensive-content-foundation-v1/sources/inheritance-confirmation.json",
+  "candidate_id": "C01",
+  "candidate_version": "c01-bilingual-body-v1",
+  "status": "READY_FOR_INDEPENDENT_QA",
+  "risk_scope_this_delivery": "R0 editorial candidate",
+  "proposed_implementation_risk": "R1 existing CMS content fields, subject to department1 exact channel binding",
+  "owner": "seo-content-research",
+  "implementation_owner": "content-organic-website",
+  "priority": "P1",
+  "gap": "公开服务正文只有通用咨询说明；缺少可执行的地板报价输入、范围比较及到既有材料比较答案的正文入口。",
+  "target_urls": {
+    "zh": "https://flashcast.com.my/zh/services/flooring",
+    "en": "https://flashcast.com.my/en/services/flooring"
+  },
+  "table_observed": "services",
+  "record_id": "22782cff-239c-45ec-8075-9deaa5932269",
+  "slug": "flooring",
+  "expected_updated_at": "2026-08-30T12:49:05.911041+00:00",
+  "expected_version": 1,
+  "base_record_source": "drafts/seo/fc-20260927-seo-intensive-content-foundation-v1/public/cms/services-22782cff-239c-45ec-8075-9deaa5932269-44b9294dbc07.json",
+  "base_capture_at": "2026-09-27T06:01:27.785Z",
+  "base_public_record_sha256": "44b9294dbc07224b38474b099a5c70523b42716ffed8e9decebf621bbfef2627",
+  "modified_fields": [
+    "content_zh",
+    "content_en"
+  ],
+  "changes": {
+    "content_zh": {
+      "operation": "append_only",
+      "before_sha256": "8d926658afd414e9666c5b45674a0a125be6145f62d95a21afd8255e1a585f61",
+      "after_sha256": "26f9c1dab7510c5e30f554dcbaa960f2423d282e18a149845fa4c8d3205ae317",
+      "addition_sha256": "f9ae92466c990ef8c19b6841101f8e1c2cf28afc87ef959982e608870b52ac5f",
+      "before_file": "drafts/seo/fc-20260927-seo-intensive-content-foundation-v1/candidates/C01-flooring/before-zh.html",
+      "after_file": "drafts/seo/fc-20260927-seo-intensive-content-foundation-v1/candidates/C01-flooring/after-zh.html",
+      "diff_file": "drafts/seo/fc-20260927-seo-intensive-content-foundation-v1/candidates/C01-flooring/diff-zh.patch"
+    },
+    "content_en": {
+      "operation": "append_only",
+      "before_sha256": "e913a8ef80a290e247168e43a654d93b853c448c02765f067a54ea862c1ec4df",
+      "after_sha256": "98dd899b5510fc0e526ab5050585c4cc9a91b983c574da114945a41be5f1248a",
+      "addition_sha256": "819e76f5126b6dc6844c81398fadd44478b7c228786b72c1e64b0a07a3865e91",
+      "before_file": "drafts/seo/fc-20260927-seo-intensive-content-foundation-v1/candidates/C01-flooring/before-en.html",
+      "after_file": "drafts/seo/fc-20260927-seo-intensive-content-foundation-v1/candidates/C01-flooring/after-en.html",
+      "diff_file": "drafts/seo/fc-20260927-seo-intensive-content-foundation-v1/candidates/C01-flooring/diff-en.patch"
+    }
+  },
+  "before_values": {
+    "content_zh": "<p>地板项目需要结合现场条件、使用需求与整体装修安排。FLASH CAST 会先了解空间情况，再沟通材料方向、施工范围和报价需求。</p><p>请提交地区、空间类型、面积和现场照片，便于安排下一步咨询。</p>",
+    "content_en": "<p>Every flooring project should take site conditions, everyday use, and the wider renovation plan into account. FLASH CAST first reviews your space, then discusses material direction, scope, and quotation requirements.</p><p>Share your location, space type, area, and site photos so we can arrange the next consultation.</p>"
+  },
+  "candidate_values": {
+    "content_zh": "<p>地板项目需要结合现场条件、使用需求与整体装修安排。FLASH CAST 会先了解空间情况，再沟通材料方向、施工范围和报价需求。</p><p>请提交地区、空间类型、面积和现场照片，便于安排下一步咨询。</p>\n\n<h2>怎样准备地板报价资料？</h2>\n<p>除地点、面积和照片外，可按房间列出日常用途、现有地面、希望保留或更换的部分，以及需要一起考虑的门、柜体和相邻空间。标明家具是否搬离、进场与施工时段限制，并把已知的潮湿、松动或高差问题单独列出。照片和概略尺寸用于初步沟通，不能代替现场评估或具体产品的安装要求。</p>\n<h2>比较报价时，哪些项目要单独确认？</h2>\n<p>用同一房间清单和材料规格比较，逐项询问原地面处理、基层准备、材料与安装、踢脚和收边、门口衔接、家具搬移、保护及清运是否包含。未核实项目应标为待确认，材料型号或范围改变后重新确认差异；不能只凭面积单价判断两个方案相同。</p>\n<h2>先看选材问题，再确认现场范围</h2>\n<p>可先阅读 <a href=\"/zh/blog/spc-vinyl-vs-laminate-flooring\">SPC、PVC与复合地板比较指南</a>，整理具体型号、使用环境、维护和安装条件。涉及其他房间或工种时，可结合 <a href=\"/zh/services/renovation\">住宅装修规划</a> 一起讨论，再通过 <a href=\"/zh/quote\">免费报价入口</a> 提交资料。目录或参考文章不代表某款产品现货、性能认证或已经包含在报价中。</p>",
+    "content_en": "<p>Every flooring project should take site conditions, everyday use, and the wider renovation plan into account. FLASH CAST first reviews your space, then discusses material direction, scope, and quotation requirements.</p><p>Share your location, space type, area, and site photos so we can arrange the next consultation.</p>\n\n<h2>What should you prepare for a flooring quotation?</h2>\n<p>Alongside the location, area and photos, list each room's use, existing floor, items to retain or replace, and adjoining doors, cabinetry and spaces. Note furniture removal, access and working-hour restrictions, and any known moisture, loose areas or changes in level. Photos and approximate measurements support an initial discussion; they do not replace a site assessment or the selected product's installation requirements.</p>\n<h2>Which items should be separated when comparing quotations?</h2>\n<p>Compare the same room list and material specification. Ask whether existing-floor work, substrate preparation, materials and installation, skirting and trims, doorway transitions, furniture moving, protection and disposal are included. Mark unresolved items as pending confirmation and review changes when the product or scope changes. A price per area alone does not establish that two proposals cover the same work.</p>\n<h2>Review material questions before confirming the site scope</h2>\n<p>Start with the <a href=\"/en/blog/spc-vinyl-vs-laminate-flooring\">SPC, vinyl and laminate comparison guide</a> to organise questions about the exact model, use, care and installation conditions. Where other rooms or trades are involved, review <a href=\"/en/services/renovation\">residential renovation planning</a>, then send the details through the <a href=\"/en/quote\">free quotation form</a>. A catalogue or reference article does not confirm stock, certification or inclusion in a quotation.</p>"
+  },
+  "rollback": {
+    "method": "restore only these two exact before values after a fresh preflight; never overwrite concurrent changes",
+    "values": {
+      "content_zh": "<p>地板项目需要结合现场条件、使用需求与整体装修安排。FLASH CAST 会先了解空间情况，再沟通材料方向、施工范围和报价需求。</p><p>请提交地区、空间类型、面积和现场照片，便于安排下一步咨询。</p>",
+      "content_en": "<p>Every flooring project should take site conditions, everyday use, and the wider renovation plan into account. FLASH CAST first reviews your space, then discusses material direction, scope, and quotation requirements.</p><p>Share your location, space type, area, and site photos so we can arrange the next consultation.</p>"
+    }
+  },
+  "search_demand_class": "EDITORIAL_UNVALIDATED; no new search volume or observed-query claim",
+  "reviewed_intents": [
+    "cost_quote",
+    "materials_comparison",
+    "comparison_selection"
+  ],
+  "fact_sources": [
+    "company-context.md",
+    "services-and-pricing.md",
+    "faq.md",
+    "drafts/seo/fc-20260927-seo-intensive-content-foundation-v1/public/cms/services-22782cff-239c-45ec-8075-9deaa5932269-44b9294dbc07.json"
+  ],
+  "editorial_method": "Customer preparation and comparison questions; no new company capability, price, deadline, credential, product performance or project claims.",
+  "source_2773_required_for_content": false,
+  "qa_acceptance": [
+    "Compare exact row identity, current version and both field hashes before implementation; rebase and re-QA if changed.",
+    "Read EN/ZH added sections for equivalent facts and limitations.",
+    "Keep the exact existing body prefix, FAQ, metadata, media, owner URL and canonical.",
+    "Confirm every added same-language target remains live and relevant.",
+    "Validate CMS sanitizer rendering and public DOM only after department1 implementation.",
+    "QA editorial PASS is not a saved CMS record or release permit."
+  ],
+  "execution": {
+    "cms_saved": false,
+    "code_modified": false,
+    "published": false,
+    "precise_permission": null
+  },
+  "checks": {
+    "zh": {
+      "current_body_passage_publicly_visible": true,
+      "body_witness_normalized": "地板项目需要结合现场条件、使用需求与整体装修安排。FLASHCAST会先了解空间情况，再沟通材料方向、施工范围和报价需求。请提交地区、空间类型、面积和现场照片，便于安排下一步咨询。",
+      "old_body_exact_prefix_preserved": true,
+      "new_section_count": 3,
+      "new_internal_links": 3,
+      "links_same_language_public_200_self_canonical": true,
+      "existing_title_faq_image_fields_unchanged": true,
+      "public_dom_evidence": "drafts/seo/fc-20260927-seo-intensive-content-foundation-v1/public/dom/zh__services__flooring.json"
+    },
+    "en": {
+      "current_body_passage_publicly_visible": true,
+      "body_witness_normalized": "Everyflooringprojectshouldtakesiteconditions,everydayuse,andthewiderrenovationplanintoaccount.FLASHC",
+      "old_body_exact_prefix_preserved": true,
+      "new_section_count": 3,
+      "new_internal_links": 3,
+      "links_same_language_public_200_self_canonical": true,
+      "existing_title_faq_image_fields_unchanged": true,
+      "public_dom_evidence": "drafts/seo/fc-20260927-seo-intensive-content-foundation-v1/public/dom/en__services__flooring.json"
+    }
+  }
+}

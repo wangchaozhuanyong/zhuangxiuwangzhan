@@ -8,6 +8,7 @@ import { lockedR3Candidates } from "./managed-cms-targets-r3-v2.mjs";
 import { lockedKlMediaCandidates } from "./managed-cms-targets-kl-media-v1.mjs";
 import { lockedBlogMediaCandidates } from "./managed-cms-targets-blog-media-v1.mjs";
 import { lockedOrg020V7Candidates } from "./managed-cms-targets-org020-v7.mjs";
+import { lockedNativeBodyCandidates } from "./managed-cms-targets-native-body-v1.mjs";
 
 const args = process.argv.slice(2);
 const execute = args.includes("--execute");
@@ -962,7 +963,7 @@ const targetConfigs = {
     ],
   },
   ...Object.fromEntries(
-    Object.entries({ ...lockedServiceCandidates, ...lockedR3Candidates, ...lockedKlMediaCandidates, ...lockedBlogMediaCandidates, ...lockedOrg020V7Candidates }).map(([name, locked]) => [name, {
+    Object.entries({ ...lockedServiceCandidates, ...lockedR3Candidates, ...lockedKlMediaCandidates, ...lockedBlogMediaCandidates, ...lockedOrg020V7Candidates, ...lockedNativeBodyCandidates }).map(([name, locked]) => [name, {
       contentType: locked.contentType || "service",
       table: locked.table || (locked.contentType === "service_area" ? "service_areas" : locked.contentType === "blog" ? "blog_posts" : "services"),
       keyField: locked.keyField || "slug",
@@ -1161,12 +1162,14 @@ const main = async () => {
           || stableDigest(baseline) !== locked.baselineFieldsSha256) {
         fail(`Rollback artifact does not contain the exact prior version of ${locked.candidateVersion}.`);
       }
-      if (config.fields.some((field) => !["updated_at", ...locked.changedFields].includes(field)
+      if (config.fields.some((field) => !["updated_at", ...(locked.rollbackFieldsSha256 ? ["version"] : []), ...locked.changedFields].includes(field)
           && !valuesMatch(current[field], rollback.record[field]))) {
         fail(`Rollback would overwrite an unrelated field of ${locked.candidateVersion}.`);
       }
     }
-    desired = rollback.record;
+    desired = config.lockedCandidate?.rollbackFieldsSha256
+      ? { ...current, ...Object.fromEntries(config.lockedCandidate.changedFields.map((field) => [field, rollback.record[field]])) }
+      : rollback.record;
     operation = "rollback";
   } else {
     desired = config.buildRecord(current);
@@ -1238,7 +1241,7 @@ const main = async () => {
       payload_sha256: stableDigest(dryRun.payload_preview),
       expected_updated_at: rollbackFrom ? current.updated_at : config.lockedCandidate.expectedUpdatedAt,
     });
-    if (!rollbackFrom && !config.lockedCandidate.exactPatchOnly) {
+    if (!rollbackFrom && !config.lockedCandidate.exactPatchOnly && !config.lockedCandidate.rollbackFieldsSha256) {
       const restoreDryRun = await postContentPublish(buildLockedDryRunRequest(config.lockedCandidate, current, `${source}:rollback-preview`, "rollback"));
       const afterRestorePreview = await fetchCurrent();
       assertLockedDryRunResult(config.lockedCandidate, restoreDryRun, publisherHttpStatus, current, afterRestorePreview, current);
@@ -1247,6 +1250,19 @@ const main = async () => {
         candidate_version: config.lockedCandidate.candidateVersion,
         payload_sha256: stableDigest(restoreDryRun.payload_preview),
         baseline_fields_sha256: config.lockedCandidate.baselineFieldsSha256,
+      });
+    }
+    if (!rollbackFrom && config.lockedCandidate.rollbackFieldsSha256) {
+      const prior = Object.fromEntries(config.lockedCandidate.changedFields.map((field) => [field, current[field]]));
+      if (stableDigest(prior) !== config.lockedCandidate.rollbackFieldsSha256) fail("Frozen prior body digest differs.");
+      writeJson(path.join(outputDir, "rollback-payload-digest.json"), {
+        task_id: config.lockedCandidate.taskId,
+        candidate_version: config.lockedCandidate.candidateVersion,
+        payload_sha256: stableDigest(prior),
+        baseline_fields_sha256: config.lockedCandidate.baselineFieldsSha256,
+        restoration_requires_distinct_completed_parent_permit: true,
+        native_restore_preview_executed: false,
+        reason: "Rollback preview requires the actual successful saved row; this is a readonly prior-payload hash.",
       });
     }
     if (config.lockedCandidate.exactPatchOnly) {

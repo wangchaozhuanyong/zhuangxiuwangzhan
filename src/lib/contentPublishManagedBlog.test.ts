@@ -3,11 +3,13 @@ import { createHash } from "node:crypto";
 import { resolve } from "node:path";
 import { describe, expect, it } from "vitest";
 import { publishContent } from "../../supabase/functions/content-publish/service.ts";
-import { MANAGED_BLOGS } from "../../supabase/functions/content-publish/managed-targets.ts";
+import { MANAGED_BLOGS as ALL_MANAGED_BLOGS } from "../../supabase/functions/content-publish/managed-targets.ts";
 import type { ContentPublishClient, ContentPublishRequest } from "../../supabase/functions/content-publish/types.ts";
 import { assertLockedServiceCandidate, targetConfigs, stableDigest } from "../../scripts/publish-content-trust-fixes.mjs";
 
 type Row = Record<string, unknown>;
+// Legacy fixtures remain unchanged. The 10 new frozen bodies have their own full-row contract suite.
+const MANAGED_BLOGS = ALL_MANAGED_BLOGS.filter((target) => !target.rollbackFieldsSha256 && target.rollbackAllowed !== false);
 const baseline = (version: string): Row => {
   const file = resolve(process.cwd(), `drafts/seo/fc-20260925-three-blog-managed-target-code-v1/blog-${version}-baseline.json`);
   const raw = JSON.parse(readFileSync(file, "utf8"));
@@ -118,7 +120,9 @@ describe("three locked managed Blog rows", () => {
     const current = { ...before, ...locked.desiredFields, updated_at: "2026-09-25T03:00:00.123456+00:00" };
     const { client, writes } = mockClient(current);
     const request: ContentPublishRequest = { contentType: "blog", mode: "dry-run", nextStatus: "published",
-      expectedUpdatedAt: String(current.updated_at), managedOperation: "rollback", record: before };
+      expectedUpdatedAt: String(current.updated_at), managedOperation: "rollback", record: before,
+      managedCandidate: { taskId: target.taskId, actionId: `rollback-${target.candidateVersion}`,
+        candidateVersion: `${target.candidateVersion}-rollback-v1`, scope: target.scope, operation: "rollback" } };
     const preview = await publishContent(request, client, context);
     const restoredPatch = Object.fromEntries(target.changedFields!.map((field) => [field, before[field]]));
     expect(preview.body.payload_preview).toEqual(restoredPatch);

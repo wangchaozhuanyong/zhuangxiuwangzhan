@@ -1,0 +1,14 @@
+{
+  "original_task_id": "fc-20260927-seo-intensive-content-foundation-v1",
+  "candidate_version": "c13-bilingual-body-v1",
+  "record_id": "429a087a-2a91-4b56-9d39-39644e519541",
+  "restore_fields": {
+    "content_zh": "<h2>先决定背景墙要解决什么</h2><p>有些背景墙是为了遮线，有些是增加收纳，有些是提升空间重点。目的不同，材料和厚度也不同。</p><h2>小空间不要做太重</h2><p>浅色线条板、局部木饰面、薄石纹板或艺术涂料会比厚重造型更适合小户型。</p><h2>电位和灯光先排好</h2><p>电视、电箱、路由器、壁灯、灯带和插座位置要先确认，不然完工后很难收得干净。</p>",
+    "content_en": "<h2>Decide what the wall should solve</h2><p>Some feature walls hide wiring, some add storage, and some create a focal point. The purpose changes material and thickness choices.</p><h2>Keep small spaces lighter</h2><p>Light fluted panels, partial timber, thin stone-look panels, or artistic coating can work better than heavy built forms.</p><h2>Plan sockets and lighting first</h2><p>TV, router, wall lights, strips, and sockets should be placed before construction so the final wall stays clean.</p>"
+  },
+  "expected_postsave_updated_at": null,
+  "expected_postsave_version": null,
+  "fill_from_actual_saved_receipt_only": true,
+  "separate_protected_rollback_permit_required": true,
+  "applied": false
+}
