@@ -26,6 +26,8 @@ The CMS delivery binds 18 frozen producer candidates (8 service rows, 10 blog ro
 - Supabase and Pages release controls: 18/18 passed.
 - Actual in-app browser process routes in zh/en at 390/1440px: 4/4; all six steps, changed scope/coordination/cleaning text, no overflow. Existing CMS override behavior is retained.
 
+The first CI run (36309107468) detected an additional existing workflow-contract test still expecting only the 12 old rollback targets: 351/352 passed. Updated that exact target-set assertion to include the 18 frozen native targets, keeping the old targets, main-only gate, credential ordering, non-rollback media restrictions and permit controls. The final CI run is recorded separately; the first failure is retained for traceability.
+
 ## Release boundaries
 
 Use the existing Cloudflare Pages workflow once for the final merged SHA and compare the live version. The protected content-publish function uses its separate existing Supabase release workflow, tied to the same main/live SHA. That workflow requires a reviewed, expiring, single-use approval binding and required GitHub environment review before credentials. Current environment and repository approval-variable listings are empty; record/resolve that prerequisite before claiming the backend is deployed. Do not weaken the approval workflow or write the 18 CMS bodies as part of a function-code deployment.
