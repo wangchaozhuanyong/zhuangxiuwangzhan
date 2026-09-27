@@ -5,6 +5,10 @@ on:
     branches: [main]
     paths:
       - .github/workflows/r3-managed-cms-pr-ci.yml
+      - scripts/publish-surface-repair*
+      - src/components/services/SurfaceRepairContent*
+      - src/i18n/surfaceRepairPageText.ts
+      - src/styles/surface-repair.css
       - .env.example
       - .github/workflows/content-publish-approved.yml
       - .github/workflows/supabase-content-publish-r3.yml
@@ -83,6 +87,11 @@ jobs:
             src/lib/managedPermitAuth.test.ts \
             src/lib/managedPermitIssuer.test.ts \
             src/lib/managedTimestamp.test.ts
+
+      - name: Check repair UI and protected publish guards
+        run: |
+          npm test -- src/components/services/SurfaceRepairContent.test.tsx src/components/services/DesignServiceContent.cms.test.tsx src/data/services.seo.test.ts src/styles/publicDesignBoundary.test.ts
+          node --test scripts/publish-surface-repair.test.mjs
 
       - name: Run Supabase release gate tests without linking production
         run: |

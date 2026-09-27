@@ -1,3 +1,4 @@
+import { surfaceRepairService } from "./surfaceRepairService";
 import { ServiceItem } from "./types";
 
 const designImg = "/images/services/design-services.webp";
@@ -869,4 +870,5 @@ export const servicesData: ServiceItem[] = [
     ],
     image: approvalImg,
   },
+  surfaceRepairService,
 ];

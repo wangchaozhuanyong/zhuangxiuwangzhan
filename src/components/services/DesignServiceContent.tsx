@@ -12,6 +12,9 @@ import { useLanguage } from "@/i18n/LanguageContext";
 import { designServicePageText } from "@/i18n/designServicePageText";
 import { serviceDetailPageText } from "@/i18n/serviceDetailPageText";
 import { buildQuotePath } from "@/lib/quoteContext";
+import type { PublishedServiceSummary } from "@/lib/contentApi";
+import { sanitizeServiceOverviewHtml } from "@/lib/serviceOverviewHtml";
+import { stripHtml } from "@/lib/text";
 import "@/styles/design-service.css";
 type Study = "concept" | "plan" | "detail";
 type Material = "wood" | "stone" | "linen" | "bronze";
@@ -24,10 +27,15 @@ function DesignSectionHeading({ id, title, description }: { id: string; title: s
 }
 
 /** Design body only; App owns all current public chrome and contact configuration. */
-export default function DesignServiceContent() {
+export default function DesignServiceContent({ service }: { service: Pick<PublishedServiceSummary, "title" | "summary" | "description" | "seoTitle" | "seoDescription" | "faqs"> }) {
     const { language } = useLanguage();
     const copy = designServicePageText[language];
     const serviceCopy = serviceDetailPageText[language];
+    const serviceTitle = stripHtml(service.title);
+    const serviceSummary = stripHtml(service.summary);
+    const seoTitle = stripHtml(service.seoTitle || service.title);
+    const seoDescription = stripHtml(service.seoDescription || service.summary);
+    const overviewHtml = sanitizeServiceOverviewHtml(service.description || service.summary, language);
     const [study, setStudy] = useState<Study>("concept");
     const [material, setMaterial] = useState<Material>("wood");
     const [materialTouched, setMaterialTouched] = useState(false);
@@ -35,7 +43,7 @@ export default function DesignServiceContent() {
     const [activeProject, setActiveProject] = useState<Project | null>(null);
     const projectOpener = useRef<HTMLAnchorElement | null>(null);
     const links = {
-        quote: buildQuotePath({ source: "service", title: copy.serviceName }),
+        quote: buildQuotePath({ source: "service", title: serviceTitle }),
         projects: "/projects", materials: "/materials", services: "/services",
     };
     const studyDetails = {
@@ -65,10 +73,9 @@ export default function DesignServiceContent() {
     const projectDetails = { courtyard: { title: copy.courtyardTitle, category: copy.courtyardCategory, description: copy.courtyardDescription, alt: copy.courtyardImageAlt, src: "/images/services/design/space-1200.webp", width: 1200, height: 800 },
         reading: { title: copy.readingTitle, category: copy.readingCategory, description: copy.readingDescription, alt: copy.readingImageAlt, src: "/images/services/design/reading.webp", width: 860, height: 912 } };
     const selectedProject = activeProject ? projectDetails[activeProject] : null;
-    const faqs = [{ question: copy.faqQuestion1, answer: copy.faqAnswer1 },
-        { question: copy.faqQuestion2, answer: copy.faqAnswer2 },
-        { question: copy.faqQuestion3, answer: copy.faqAnswer3 },
-        { question: copy.faqQuestion4, answer: copy.faqAnswer4 }];
+    const faqs = service.faqs.map((faq) => ({ question: stripHtml(faq.q || ""), answer: stripHtml(faq.a || "") }))
+        .filter((faq) => faq.question && faq.answer);
+    const selectedFaq = faqs.some((_, index) => activeFaq === `faq-${index}`) ? activeFaq : "faq-0";
     const openProject = (event: MouseEvent<HTMLAnchorElement>, key: Project) => {
         if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey)
             return;
@@ -77,9 +84,9 @@ export default function DesignServiceContent() {
         setActiveProject(key);
     };
     return (<main className="fc-route-page fc-design-service-page">
-      <PageMeta title={copy.metaTitle} description={copy.metaDescription} canonicalPath="/services/design" ogImage="/images/services/design/space-1200.webp"/>
-      <JsonLdService name={copy.serviceName} description={copy.metaDescription}/>
-      <JsonLdBreadcrumb items={[{ name: serviceCopy.breadcrumbHome, url: "/" }, { name: serviceCopy.breadcrumbServices, url: "/services" }, { name: copy.serviceName, url: "/services/design" }]}/>
+      <PageMeta title={seoTitle} description={seoDescription} canonicalPath="/services/design" ogImage="/images/services/design/space-1200.webp"/>
+      <JsonLdService name={serviceTitle} description={seoDescription}/>
+      <JsonLdBreadcrumb items={[{ name: serviceCopy.breadcrumbHome, url: "/" }, { name: serviceCopy.breadcrumbServices, url: "/services" }, { name: serviceTitle, url: "/services/design" }]}/>
       <JsonLdFAQ faqs={faqs}/>
       <div data-enhanced="true" data-dialog-ready="true" className="fc-design fc-design-integrated" data-locale={language === "zh" ? "zh-CN" : "en"} id="fc-design-root">
     <ImmersiveHero className="fcd-design-hero" standardPageHero={false} aria-labelledby="fcd-hero-heading">
@@ -103,11 +110,9 @@ export default function DesignServiceContent() {
         <div className="fcd-design-hero__copy">
           <p className="fcd-design-hero__location">{copy.heroLocation}</p>
           <h1 id="fcd-hero-heading">
-            <span>{copy.heroServiceTitle}</span>
-            {" "}
-            <span>{copy.heroServiceTitle2}</span>
+            <span>{serviceTitle}</span>
           </h1>
-          <p className="fcd-design-hero__lead">{copy.heroLead}</p>
+          <p className="fcd-design-hero__lead">{serviceSummary}</p>
           <div className="fcd-design-hero__actions">
             <Link className="scheme-a-button scheme-a-button--gold fcd-design-hero__primary" data-fcd-link="quote" to={links.quote}>
               {copy.button}<ArrowUpRight aria-hidden="true" size={18} />
@@ -449,6 +454,10 @@ export default function DesignServiceContent() {
     </div>
     </div>
     </section>
+    {overviewHtml && <section data-cinematic-section aria-labelledby="fcd-overview-title" className="fcd-text-module fcd-page-gutter fcd-section-space">
+      <h2 id="fcd-overview-title">{serviceCopy.overview}</h2>
+      <div className="prose prose-stone max-w-none" dangerouslySetInnerHTML={{ __html: overviewHtml }} />
+    </section>}
     <section data-cinematic-section aria-labelledby="fcd-services-title" className="fcd-services fcd-text-module fcd-page-gutter fcd-section-space" id="fcd-services">
     <DesignSectionHeading id="fcd-services-title" title={copy.servicesTitle} description={copy.servicesSummary} />
     <div className="fcd-service-grid">
@@ -462,9 +471,9 @@ export default function DesignServiceContent() {
     <DesignSectionHeading id="fcd-process-title" title={copy.processTitle} description={copy.processSummary} />
     <SchemeANumberList items={process} />
     </section>
-    <section data-cinematic-section aria-labelledby="fcd-faq-title" className="fcd-faq-section fcd-text-module fcd-page-gutter fcd-section-space">
+    {faqs.length > 0 && <section data-cinematic-section aria-labelledby="fcd-faq-title" className="fcd-faq-section fcd-text-module fcd-page-gutter fcd-section-space">
     <DesignSectionHeading id="fcd-faq-title" title={copy.faqTitle} description={copy.faqSummary} />
-    <Tabs className="fcd-faq-reader" orientation="vertical" value={activeFaq} onValueChange={setActiveFaq}>
+    <Tabs className="fcd-faq-reader" orientation="vertical" value={selectedFaq} onValueChange={setActiveFaq}>
       <TabsList className="fcd-faq-questions" aria-label={copy.faqTitle}>
         {faqs.map((faq, index) => <TabsTrigger className="fcd-faq-question" key={faq.question} value={`faq-${index}`}>
           <span className="fcd-faq-question__index" aria-hidden="true">{String(index + 1).padStart(2, "0")}</span>
@@ -472,13 +481,13 @@ export default function DesignServiceContent() {
         </TabsTrigger>)}
       </TabsList>
       <div className="fcd-faq-answers">
-        {faqs.map((faq, index) => <TabsContent className="fcd-faq-answer" key={faq.question} value={`faq-${index}`} forceMount hidden={activeFaq !== `faq-${index}`}>
+        {faqs.map((faq, index) => <TabsContent className="fcd-faq-answer" key={faq.question} value={`faq-${index}`} forceMount hidden={selectedFaq !== `faq-${index}`}>
           <h3>{faq.question}</h3>
           <p>{faq.answer}</p>
         </TabsContent>)}
       </div>
     </Tabs>
-    </section>
+    </section>}
 
     </div>
       <Dialog open={activeProject !== null} onOpenChange={(open) => { if (!open)

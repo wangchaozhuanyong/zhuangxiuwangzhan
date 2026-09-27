@@ -1,0 +1,10 @@
+{
+  "base": "160eca3239b65d57f2f6d045c1c07891ba64170d",
+  "designSource": "/Users/wangchao/Desktop/\u88c5\u4fee\u7f51\u7ad9/zhuangxiuwangzhan-main/.worktrees/fc-design-cms-read-path-rework-v3",
+  "files": {
+    "src/components/services/DesignServiceContent.tsx": "c3e375aff133a9925a0f7c42764feafe1edc74d8fa88e23248627482de172f30",
+    "src/components/services/DesignServiceContent.cms.test.tsx": "8c55bcdec229ec40fdd96be6d916f06efc79745567480f589b4aec13470f5ca1",
+    "src/pages/ServiceDetail.tsx": "32b9d1041b9ed3fbe598cd8e0812313dae90dfe1c7ef09dda81d05d473b44866",
+    "e2e/design-faq-reader.spec.ts": "7ce39c53f0bd839473c20987285748799c808880c106968b923a16c267ed4708"
+  }
+}

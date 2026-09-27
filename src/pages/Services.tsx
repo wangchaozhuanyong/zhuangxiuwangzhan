@@ -27,7 +27,7 @@ type ServiceGroup = "all" | "residential" | "commercial" | "specialty";
 
 const groupForService = (slug: string): Exclude<ServiceGroup, "all"> => {
   if (/office|shop|warehouse|commercial|retail|clinic/.test(slug)) return "commercial";
-  if (/design|approval|coating|permit|drawing/.test(slug)) return "specialty";
+  if (/design|approval|coating|permit|drawing|surface-repair/.test(slug)) return "specialty";
   return "residential";
 };
 

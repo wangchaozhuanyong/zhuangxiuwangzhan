@@ -1,10 +1,28 @@
-import { expect, test, type Locator } from "@playwright/test";
+import { expect, test, type Locator, type Page } from "@playwright/test";
 import { resolve } from "node:path";
 
 const evidence = resolve("audits/design-faq-reader-20260927", process.env.PLAYWRIGHT_BASE_URL?.startsWith("https:") ? "production" : "local");
 const copy = {
-  zh: { title: "常见问题", answers: ["现有平面图", "以正式报价为准", "修改轮次及交付格式", "实际衔接方式按项目约定执行"] },
-  en: { title: "Frequently asked questions", answers: ["available plans", "formal quotation", "revisions and file formats", "actual arrangement follows the project agreement"] },
+  zh: { title: "常见问题" },
+  en: { title: "Frequently asked questions" },
+};
+// Published FAQ records can change independently of the page code. The reader
+// must match the current visible-page schema, rather than four local draft FAQs.
+const publishedFaqs = async (page: Page, section: Locator) => {
+  await expect(section.getByRole("tab").first()).toBeVisible();
+  const entities = await page.locator('script[type="application/ld+json"]').evaluateAll(elements => {
+    const entries = elements.flatMap(element => {
+      const item = JSON.parse(element.textContent || "{}");
+      return item["@graph"] ?? [item];
+    });
+    return (entries.find(item => item["@type"] === "FAQPage")?.mainEntity ?? []) as Array<{ name: string; acceptedAnswer: { text: string } }>;
+  });
+  expect(entities.length).toBeGreaterThanOrEqual(2);
+  await expect(section.getByRole("tab")).toHaveCount(entities.length);
+  for (const [index, entity] of entities.entries()) {
+    await expect(section.getByRole("tab").nth(index).locator(".fcd-faq-question__text")).toHaveText(entity.name);
+  }
+  return entities.map(entity => entity.acceptedAnswer.text);
 };
 const feedback = (tab: Locator) => tab.evaluate(element => {
   const label = element.querySelector(".fcd-faq-question__text")!;
@@ -20,15 +38,15 @@ for (const language of ["zh", "en"] as const) {
     await page.goto(`/${language}/services/design`);
     const section = page.getByRole("region", { name: copy[language].title, exact: true });
     const tabs = section.getByRole("tab");
-    await expect(tabs).toHaveCount(4);
+    const answers = await publishedFaqs(page, section);
     await expect(section.locator(".fc-route-faq")).toHaveCount(0);
     await expect(section.getByRole("tabpanel")).toHaveCount(1);
-    await expect(section.getByRole("tabpanel")).toContainText(copy[language].answers[0]);
-    for (let i = 0; i < 4; i++) {
+    await expect(section.getByRole("tabpanel")).toContainText(answers[0]);
+    for (let i = 0; i < answers.length; i++) {
       await tabs.nth(i).click();
       await expect(tabs.nth(i)).toHaveAttribute("aria-selected", "true");
       await expect(section.getByRole("tabpanel")).toHaveCount(1);
-      await expect(section.getByRole("tabpanel")).toContainText(copy[language].answers[i]);
+      await expect(section.getByRole("tabpanel")).toContainText(answers[i]);
     }
     await page.emulateMedia({ reducedMotion: "reduce" });
     await tabs.last().focus();
@@ -36,21 +54,21 @@ for (const language of ["zh", "en"] as const) {
     await expect(tabs.first()).toBeFocused();
     await page.keyboard.press("ArrowDown");
     await expect(tabs.nth(1)).toBeFocused();
-    await expect(section.getByRole("tabpanel")).toContainText(copy[language].answers[1]);
+    await expect(section.getByRole("tabpanel")).toContainText(answers[1]);
     const focused = await feedback(tabs.nth(1));
     expect(focused).toMatchObject({ background: "rgba(0, 0, 0, 0)", outline: "none", shadow: "none", border: "0px", decoration: "underline", decorationStyle: "double", keyboardFocus: true });
     await tabs.nth(1).hover();
     expect((await feedback(tabs.nth(1))).background).toBe(focused.background);
     await page.keyboard.press("End");
     await expect(tabs.last()).toBeFocused();
-    await expect(section.getByRole("tabpanel")).toContainText(copy[language].answers[3]);
+    await expect(section.getByRole("tabpanel")).toContainText(answers[answers.length - 1]);
     await page.keyboard.press("Tab");
     await expect(section.getByRole("tabpanel")).toBeFocused();
     await section.screenshot({ path: resolve(evidence, `${language}-desktop.png`) });
     const schema = await page.locator('script[type="application/ld+json"]').evaluateAll(elements => elements.map(e => JSON.parse(e.textContent || "{}")));
     const faq = schema.flatMap(item => item["@graph"] ?? [item]).find(item => item["@type"] === "FAQPage");
     expect(faq).toBeDefined();
-    expect(faq.mainEntity.length).toBeGreaterThanOrEqual(4);
+    expect(faq.mainEntity).toHaveLength(answers.length);
     expect(faq.mainEntity.every((item: { acceptedAnswer: { text: string } }) => item.acceptedAnswer.text.length > 20)).toBe(true);
   });
 }
@@ -62,10 +80,11 @@ test.describe("mobile question selection", () => {
       await page.goto(`/${language}/services/design`);
       const section = page.getByRole("region", { name: copy[language].title, exact: true });
       const tabs = section.getByRole("tab");
-      for (let i = 3; i >= 0; i--) {
+      const answers = await publishedFaqs(page, section);
+      for (let i = answers.length - 1; i >= 0; i--) {
         await tabs.nth(i).tap();
         await expect(tabs.nth(i)).toHaveAttribute("aria-selected", "true");
-        await expect(section.getByRole("tabpanel")).toContainText(copy[language].answers[i]);
+        await expect(section.getByRole("tabpanel")).toContainText(answers[i]);
         const rect = await tabs.nth(i).boundingBox();
         expect(rect!.height).toBeGreaterThanOrEqual(44);
         expect((await feedback(tabs.nth(i))).background).toBe("rgba(0, 0, 0, 0)");
@@ -88,7 +107,7 @@ test("question navigation and answers fit desktop and mobile layouts in both lan
   for (const language of ["zh", "en"] as const) {
     await page.goto(`/${language}/services/design`);
     const section = page.getByRole("region", { name: copy[language].title, exact: true });
-    await expect(section.getByRole("tab")).toHaveCount(4);
+    await publishedFaqs(page, section);
     for (const width of [360, 390, 768, 1024, 1440]) {
       await page.setViewportSize({ width, height: 900 });
       const layout = await section.evaluate(element => {
