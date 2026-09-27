@@ -247,7 +247,7 @@
     html[data-public-theme="dark"] .scheme-a-section-head > a {
       padding-bottom: 4px;
       border-bottom: 0;
-      color: #8f6d3b;
+      color: var(--scheme-a-gold);
       font-size: 11px;
     }
 

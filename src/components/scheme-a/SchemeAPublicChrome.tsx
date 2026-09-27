@@ -331,7 +331,7 @@ export const SchemeANavbar = () => {
                   <ul id={`scheme-a-directory-group-${group.key}`}>
                     {group.items.map((item) => (
                       <li key={item.path}>
-                        <LocalizedLink to={item.path === "/quote" ? QUOTE_FORM_PATH : item.path} aria-current={isActivePath(location.pathname, currentItem.path) && currentItem.path === item.path ? "page" : undefined} onFocus={() => setPreviewItem(item)} onPointerEnter={() => setPreviewItem(item)}>
+                        <LocalizedLink to={item.path === "/quote" ? QUOTE_FORM_PATH : item.path} aria-current={isActivePath(location.pathname, currentItem.path) && currentItem.path === item.path ? "page" : undefined} onClick={closeDirectory} onFocus={() => setPreviewItem(item)} onPointerEnter={() => setPreviewItem(item)}>
                           <span>{translate(item.labelKey)}</span><ArrowUpRight aria-hidden="true" />
                         </LocalizedLink>
                       </li>

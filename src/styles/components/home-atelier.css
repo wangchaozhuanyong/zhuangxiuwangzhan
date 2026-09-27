@@ -328,7 +328,6 @@
   html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-services li small {
     display: block;
     margin-top: 0.35rem;
-    color: rgba(246, 241, 232, 0.65);
     font-size: 0.85rem;
     line-height: 1.6;
     grid-column: 2;
@@ -577,7 +576,6 @@
     margin-top: 1.5rem;
     padding-right: 0;
     padding-left: 0;
-    color: rgba(246, 241, 232, 0.6);
   }
 
   html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-home-process {
@@ -689,14 +687,6 @@
     color: rgba(236, 232, 223, 0.7);
     font-size: 0.85rem;
     line-height: 1.75;
-  }
-
-  html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-home-faq .fc-route-faq {
-    box-shadow: inset 0 1px 0 rgba(212, 175, 55, 0.2);
-  }
-
-  html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-home-faq .fc-route-faq > div {
-    box-shadow: inset 0 -1px 0 rgba(212, 175, 55, 0.16);
   }
 
   html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-home-faq .fc-route-faq button {

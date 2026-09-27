@@ -71,7 +71,7 @@
 .fc-surface-repair .photo-list li {min-width:0}
 .fc-surface-repair .photo-visual {position:relative;display:grid;place-items:center;aspect-ratio:1.12;background:#e1d8c8;margin-bottom:15px;color:#776444}
 .fc-surface-repair .photo-visual svg {width:55%;max-width:100px;height:auto;stroke-width:1}
-.fc-surface-repair .photo-index {position:absolute;top:7px;left:9px;font-size:11px;line-height:1.5;color:#7e6b4b}
+.fc-surface-repair .photo-index {position:absolute;top:7px;left:9px;font-size:11px;line-height:1.5;color:hsl(var(--gold-foreground))}
 .fc-surface-repair .photo-list strong {display:block;font-size:16px;font-weight:500;line-height:1.5}
 .fc-surface-repair .repair-body .photo-list p {font-size:13px;line-height:1.7;margin:7px 0 0}
 .fc-surface-repair .consult-panel {padding:30px;background:#fbf7ee;border:1px solid #cfc6b7;min-width:0;margin-top:40px}

@@ -19,6 +19,22 @@
     content: none !important;
   }
 
+  /* Text roles follow the public dark surface. Keep the root's light palette
+     for light sections and admin screens, and keep ink for light controls. */
+  .scheme-a-public-shell :is(.scheme-a-home--atelier, .fc-route-page) {
+    --foreground: var(--surface-dark-foreground);
+    --muted-foreground: 38 10% 72%;
+    --scheme-a-gold: var(--scheme-a-gold-soft);
+  }
+
+  /* Existing light cards and link bands retain their own readable text roles
+     when nested inside a dark route. */
+  .scheme-a-public-shell :is(.bg-card, .subpage-link-band) {
+    --foreground: var(--card-foreground);
+    --muted-foreground: 31 9% 38%;
+    --accent: var(--card-foreground);
+  }
+
   .scheme-a-home-page {
     min-height: 100svh;
     overflow-x: clip;
@@ -681,17 +697,16 @@
     height: 100%;
     object-fit: cover;
     object-position: center;
-    filter: brightness(0.82) contrast(1.04);
   }
 
   .scheme-a-footer__panorama::after {
     position: absolute;
     inset: 0;
-    background: linear-gradient(90deg, 
-      rgba(9, 10, 12, 0.92) 0%, 
-      rgba(9, 10, 12, 0.82) 42%, 
-      rgba(9, 10, 12, 0.48) 72%, 
-      rgba(9, 10, 12, 0.22) 100%
+    background: linear-gradient(90deg,
+      rgba(9, 10, 12, 0.62) 0%,
+      rgba(9, 10, 12, 0.58) min(600px, 80%),
+      rgba(9, 10, 12, 0.18) min(820px, 94%),
+      rgba(9, 10, 12, 0) 100%
     );
     content: "";
     pointer-events: none;
@@ -1642,11 +1657,11 @@
     }
 
     .scheme-a-footer__panorama::after {
-      background: linear-gradient(180deg, 
-        rgba(9, 10, 12, 0.86) 0%, 
-        rgba(9, 10, 12, 0.68) 32%, 
-        rgba(9, 10, 12, 0.84) 68%, 
-        rgba(9, 10, 12, 0.96) 100%
+      background: linear-gradient(180deg,
+        rgba(9, 10, 12, 0.08) 0%,
+        rgba(9, 10, 12, 0.6) 20%,
+        rgba(9, 10, 12, 0.64) 52%,
+        rgba(9, 10, 12, 0.7) 100%
       );
     }
 
