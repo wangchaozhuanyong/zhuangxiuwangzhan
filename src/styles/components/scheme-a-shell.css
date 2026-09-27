@@ -1827,10 +1827,20 @@
       flex-shrink: 0;
     }
 
-    .scheme-a-footer__studio .scheme-a-footer__hours {
-      display: flex;
+    .scheme-a-footer__contact-note {
+      display: grid;
+      width: 100%;
+      grid-template-columns: minmax(0, 1fr) auto;
       align-items: center;
       gap: 0.55rem;
+    }
+
+    .scheme-a-footer__studio .scheme-a-footer__hours {
+      display: grid;
+      grid-template-columns: 14px minmax(0, 1fr);
+      align-items: center;
+      gap: 0.55rem;
+      min-width: 0;
       width: 100%;
       box-sizing: border-box;
       padding: 0.55rem 0.85rem;
@@ -1882,7 +1892,13 @@
     }
 
     .scheme-a-footer__studio .scheme-a-footer__contact-cta {
-      display: none;
+      display: inline-flex;
+      min-height: 44px;
+      gap: 0.25rem;
+      padding: 8px;
+      border-radius: 6px;
+      font-size: 0.72rem;
+      white-space: nowrap;
     }
 
     .scheme-a-footer__directory {
