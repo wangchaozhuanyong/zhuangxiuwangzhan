@@ -3,7 +3,7 @@ import { ArrowUpRight } from "lucide-react";
 import Link from "@/components/LocalizedLink";
 import SmartImage from "@/components/SmartImage";
 import ImmersiveHero from "@/components/ImmersiveHero";
-import { SchemeAFaqList, SchemeAFilter, SchemeANumberList } from "@/components/scheme-a/SchemeARoutePrimitives";
+import { SchemeAFilter, SchemeANumberList } from "@/components/scheme-a/SchemeARoutePrimitives";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import PageMeta from "@/components/PageMeta";
 import { JsonLdBreadcrumb, JsonLdFAQ, JsonLdService } from "@/components/JsonLd";
@@ -31,6 +31,7 @@ export default function DesignServiceContent() {
     const [study, setStudy] = useState<Study>("concept");
     const [material, setMaterial] = useState<Material>("wood");
     const [materialTouched, setMaterialTouched] = useState(false);
+    const [activeFaq, setActiveFaq] = useState("faq-0");
     const [activeProject, setActiveProject] = useState<Project | null>(null);
     const projectOpener = useRef<HTMLAnchorElement | null>(null);
     const links = {
@@ -463,7 +464,20 @@ export default function DesignServiceContent() {
     </section>
     <section data-cinematic-section aria-labelledby="fcd-faq-title" className="fcd-faq-section fcd-text-module fcd-page-gutter fcd-section-space">
     <DesignSectionHeading id="fcd-faq-title" title={copy.faqTitle} description={copy.faqSummary} />
-    <SchemeAFaqList items={faqs} />
+    <Tabs className="fcd-faq-reader" orientation="vertical" value={activeFaq} onValueChange={setActiveFaq}>
+      <TabsList className="fcd-faq-questions" aria-label={copy.faqTitle}>
+        {faqs.map((faq, index) => <TabsTrigger className="fcd-faq-question" key={faq.question} value={`faq-${index}`}>
+          <span className="fcd-faq-question__index" aria-hidden="true">{String(index + 1).padStart(2, "0")}</span>
+          <span className="fcd-faq-question__text">{faq.question}</span>
+        </TabsTrigger>)}
+      </TabsList>
+      <div className="fcd-faq-answers">
+        {faqs.map((faq, index) => <TabsContent className="fcd-faq-answer" key={faq.question} value={`faq-${index}`} forceMount hidden={activeFaq !== `faq-${index}`}>
+          <h3>{faq.question}</h3>
+          <p>{faq.answer}</p>
+        </TabsContent>)}
+      </div>
+    </Tabs>
     </section>
 
     </div>
