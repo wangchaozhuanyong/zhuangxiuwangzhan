@@ -1,44 +1,72 @@
 User-agent: Googlebot
 Allow: /
+Disallow: /admin
+Disallow: /admin/
 
 User-agent: Bingbot
 Allow: /
+Disallow: /admin
+Disallow: /admin/
 
 User-agent: Twitterbot
 Allow: /
+Disallow: /admin
+Disallow: /admin/
 
 User-agent: facebookexternalhit
 Allow: /
+Disallow: /admin
+Disallow: /admin/
 
 User-agent: GPTBot
 Allow: /
+Disallow: /admin
+Disallow: /admin/
 
 User-agent: ChatGPT-User
 Allow: /
+Disallow: /admin
+Disallow: /admin/
 
 User-agent: OAI-SearchBot
 Allow: /
+Disallow: /admin
+Disallow: /admin/
 
 User-agent: Google-Extended
 Allow: /
+Disallow: /admin
+Disallow: /admin/
 
 User-agent: ClaudeBot
 Allow: /
+Disallow: /admin
+Disallow: /admin/
 
 User-agent: Claude-SearchBot
 Allow: /
+Disallow: /admin
+Disallow: /admin/
 
 User-agent: PerplexityBot
 Allow: /
+Disallow: /admin
+Disallow: /admin/
 
 User-agent: Perplexity-User
 Allow: /
+Disallow: /admin
+Disallow: /admin/
 
 User-agent: meta-externalagent
 Allow: /
+Disallow: /admin
+Disallow: /admin/
 
 User-agent: CCBot
 Allow: /
+Disallow: /admin
+Disallow: /admin/
 
 User-agent: *
 Content-Signal: search=yes,ai-input=yes,ai-train=yes

@@ -1,3 +1,4 @@
+import { projectPublicMetadata } from "@/lib/projectPublicMetadata.mjs";
 import {
   fetchPublishedBlogPostRowBySlug,
   fetchPublishedBlogPostRows,
@@ -398,6 +399,7 @@ export function mapPublishedProjectDetail(data: UnknownRecord, language: Languag
     .filter(Boolean);
 
   return {
+    publicMetadata: projectPublicMetadata(data, language),
     id: readText(data, "id"),
     slug: readText(data, "slug"),
     title: language === "zh" ? translateDisplayText(pickLocalizedText(data, "title", language), language) : pickLocalizedText(data, "title", language),

@@ -13,7 +13,7 @@ Read-only inventory covers 52 worktrees. The earlier 49-tree classification is r
 | Repair assessment cards | PR 126 | Already merged and published |
 | Bilingual process wording | fefb1734a7d9d1a961804fec39a800f69c1b5d39 | Included: 519a52d |
 | CMS native body admission and frozen sources | 5f150be, 868837d | Included: 3713a41, 0915927 |
-| GEO source binding | Uncommitted five tracked edits and five untracked entries; no completed handoff or validation receipt | Unfinished: preserve source worktree, exclude from completed scope |
+| GEO source binding | Initially unfinished; became a clean committed delivery at 17:33 MYT: db687ab and 88b8561 | Included in final completion PR as 3994bcf and 5d98626 |
 | Untracked local reports, screenshots, previews and old unreferenced material textures | Existing local artifacts | Preserve; not production application changes |
 
 The CMS delivery binds 18 frozen producer candidates (8 service rows, 10 blog rows) to their original task, record, two changed body fields and source hashes. Explicit owner execution, OIDC identity, single-use permits, CAS and retained-field guards remain required. Rollback restores only the original two fields and checks unrelated drift. It does not publish these 18 bodies by merging code.
@@ -46,3 +46,33 @@ The Edge workflow captures the prior function source and schema, verifies the pe
 8. Business behavior changed: process wording now conditions coordination/deliverables on agreed scope; fixed native target admission extends the protected publisher while retaining explicit approvals and field restrictions.
 9. arch:check result: passed.
 10. Remaining architecture risk: production Edge rollout and candidate-body execution must be reported separately from main merge/Pages deployment.
+
+## Final collection amendment: completed GEO delivery
+
+PR 127 merged the process and native publisher controls as f26139e. While its Pages build was running, the GEO delivery became clean and committed. Cancelled run 36309700270 before its deployment step; public version was still 8086a4e. The final completion PR incorporates that newly completed delivery and extends the existing strict CI coverage to its source paths and GEO integration and existing cache tests (55/55 passed locally). Preserve the first inventory as a timestamped snapshot; the later delivery supersedes only its unfinished GEO classification.
+
+### Architecture Decision
+
+1. Target module: seo; projects.
+2. Why this module: public metadata, robots rules and readable public-body fallback belong to SEO; project PageMeta consumes its existing public data adapter.
+3. Target layer: public metadata resolver, existing data mapper and Cloudflare HTML presentation adapter.
+4. Why this layer: preserve existing published-row reads and route contracts without adding a content-writing service.
+5. Files allowed to edit: the ten GEO delivery files, the existing R3 PR workflow coverage and this release record.
+6. Files forbidden to edit: authentication, schema/migrations, real CMS rows, dependency files, other source worktrees and original dirty checkout.
+7. API paths affected: none added; three exact published paths get sanitized no-JS bodies, four project slugs share rendering metadata.
+8. Database access location: existing fresh public-row middleware reader; the selected blog gets body fields in its existing metadata query, without an extra query.
+9. Cross-module dependency risk: shared pure metadata and media-identity helpers are used only through existing adapters; no backend frozen-body import into frontend.
+10. Business behavior impact: clearer concept provenance and readable published content without JavaScript; no lead, form or CMS content write.
+
+### Architecture Compliance Report, final GEO amendment
+
+1. Target module: seo; projects.
+2. Target layer: public metadata and HTML/data adapters.
+3. Edited files: functions/_middleware.ts, readablePublicBody.ts, public/robots.txt, generate-seo-manifest.mjs, contentApi.ts, projectPublicMetadata.mjs and declaration, ProjectDetail.tsx, GEO integration test and fixture, CI coverage, this report.
+4. Forbidden files touched: no.
+5. API paths changed: no.
+6. Database access changed: existing select includes the targeted published blog body/status; no additional query, write, table or migration.
+7. Cross-module dependency introduced: shared public metadata helper through existing adapters, no internal repository call.
+8. Business behavior changed: rendering identity and bounded sanitized no-JS fallback; existing cache, authorization and forms retained.
+9. arch:check result: passed; lint, typecheck, i18n and git diff checks also passed locally.
+10. Remaining architecture risk: Pages version, actual no-JS production bodies and separate protected Supabase function rollout must each be verified before claiming completion. The 18 candidate body writes remain unpublished and await their own independent QA.
