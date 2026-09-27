@@ -25,7 +25,7 @@ for (const language of ["zh", "en"]) {
     const links = page.locator(".scheme-a-services li a");
     await expect(links).toHaveCount(6);
     const link = links.first();
-    await page.waitForLoadState("networkidle");
+    await expect(page.locator(".scheme-a-services")).toBeVisible();
     await page.evaluate(() => document.fonts.ready);
     await link.scrollIntoViewIfNeeded();
     await link.click({ trial: true });
@@ -61,7 +61,7 @@ test.describe("touch service interaction", () => {
     test(`home services respond to touch and clear cancelled presses (${language})`, async ({ page, context }) => {
       await page.goto(`/${language}`);
       const link = page.locator(".scheme-a-services li a").first();
-      await page.waitForLoadState("networkidle");
+      await expect(page.locator(".scheme-a-services")).toBeVisible();
       await page.evaluate(() => document.fonts.ready);
       await link.scrollIntoViewIfNeeded();
       await link.click({ trial: true });
