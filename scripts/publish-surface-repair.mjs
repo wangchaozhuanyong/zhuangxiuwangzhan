@@ -2,6 +2,7 @@
 // Credentials stay in process memory; artifacts contain public content only.
 import fs from "node:fs";
 import path from "node:path";
+import { isDeepStrictEqual } from "node:util";
 import { execFileSync } from "node:child_process";
 import { loadEnv } from "vite";
 
@@ -51,7 +52,7 @@ const readPublished = async () => {
 const before = await readPublished();
 // This release creates one new record, and must not overwrite existing content.
 if (before) {
-  const identical = before.status === "published" && Object.entries(record).every(([field, value]) => JSON.stringify(before[field]) === JSON.stringify(value));
+  const identical = before.status === "published" && Object.entries(record).every(([field, value]) => isDeepStrictEqual(before[field], value));
   if (!identical) throw new Error("An existing repair service differs from this candidate; review the conflict before publishing.");
   save("already-published.json", { saved_id: before.id, saved_updated_at: before.updated_at, source: head });
   console.log(JSON.stringify({ ok: true, alreadyPublished: true, saved_id: before.id }));
@@ -81,7 +82,7 @@ for (const name of ["hero", "damage-cabinet", "damage-wood", "damage-tile", "dam
 const receipt = await publish("publish");
 const after = await readPublished();
 save("readback.json", after);
-const mismatches = Object.entries(record).filter(([field, value]) => JSON.stringify(after?.[field]) !== JSON.stringify(value)).map(([field]) => field);
+const mismatches = Object.entries(record).filter(([field, value]) => !isDeepStrictEqual(after?.[field], value)).map(([field]) => field);
 if (!after || after.id !== receipt.saved_id || after.status !== "published" || mismatches.length) throw new Error(`Saved service requires review: ${mismatches.join(", ")}. Do not retry blindly.`);
 save("rollback.json", { action: "archive-created-service-through-content-publish", saved_id: after.id, expectedUpdatedAt: after.updated_at, prior_record: null, note: "Restore visibility by archiving this exact newly-created row through the same protected API, never deleting the row." });
 console.log(JSON.stringify({ ok: true, published: true, saved_id: after.id, saved_updated_at: after.updated_at, source: head }));
