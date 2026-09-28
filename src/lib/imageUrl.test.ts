@@ -87,11 +87,14 @@ describe("imageUrl", () => {
     );
   });
 
-  it("uses the encoded width and avoids duplicate overclaimed material candidates", () => {
+  it("serves the new high-resolution material photo through the published image URL", () => {
     const srcSet = buildLocalResponsiveSrcSet("/images/materials/kitchen-acrylic-cabinets.webp?v=2", [560, 720, 1200, 1600], 1600);
-    expect(srcSet).toContain("/images/materials/kitchen-acrylic-cabinets.webp?v=2 800w");
-    expect(srcSet).not.toMatch(/(?:1200|1600)w/);
-    expect(srcSet?.match(/800w/g)).toHaveLength(1);
+    expect(srcSet).toContain("/images/_responsive/materials/w1200/v20260928/kitchen-acrylic-cabinets.webp?v=2 1200w");
+    expect(srcSet).toContain("/images/_responsive/materials/w1600/v20260928/kitchen-acrylic-cabinets.webp?v=2 1600w");
+    expect(srcSet).toContain("/images/materials/v20260928/kitchen-acrylic-cabinets.webp?v=2 2400w");
+    const fallbackSrcSet = buildLocalResponsiveSrcSet("/images/materials/acrylic-high-gloss-white.webp", [1200, 1600], 1600);
+    expect(fallbackSrcSet).toContain("/images/_responsive/materials/w1600/v20260928/acrylic-high-gloss-white.webp 1600w");
+    expect(fallbackSrcSet).toContain("/images/materials/v20260928/acrylic-high-gloss-white.webp 2400w");
   });
 
   it("includes the original's real pixels beyond the largest generated image", () => {
