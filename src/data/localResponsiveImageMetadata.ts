@@ -4128,6 +4128,30 @@ export const localResponsiveImageMetadata: Record<string, { width: number; heigh
       "1600": 800
     }
   },
+  "/images/materials/v20260928/acrylic-high-gloss-white.webp": {
+    "width": 2400,
+    "height": 2400,
+    "variants": {
+      "360": 360,
+      "560": 560,
+      "720": 720,
+      "900": 900,
+      "1200": 1200,
+      "1600": 1600
+    }
+  },
+  "/images/materials/v20260928/kitchen-acrylic-cabinets.webp": {
+    "width": 2400,
+    "height": 1800,
+    "variants": {
+      "360": 360,
+      "560": 560,
+      "720": 720,
+      "900": 900,
+      "1200": 1200,
+      "1600": 1600
+    }
+  },
   "/images/materials/vinyl-plank-ash-grey.webp": {
     "width": 800,
     "height": 800,

@@ -3,6 +3,8 @@ import { localResponsiveImageMetadata } from "@/data/localResponsiveImageMetadat
 const RESPONSIVE_IMAGE_PREFIX = "/images/_responsive";
 const LOCAL_RESPONSIVE_IMAGE_PATTERN = /^\/images\/(projects|services|materials|heroes|before-after)\/(.+\.webp)([?#].*)?$/i;
 const VERSIONED_LOCAL_RESPONSIVE_IMAGES = new Map([
+  ["/images/materials/acrylic-high-gloss-white.webp", "/images/materials/v20260928/acrylic-high-gloss-white.webp"],
+  ["/images/materials/kitchen-acrylic-cabinets.webp", "/images/materials/v20260928/kitchen-acrylic-cabinets.webp"],
   ["/images/before-after/after-bathroom.webp", "/images/before-after/v20260824/after-bathroom.webp"],
   ["/images/before-after/after-kitchen.webp", "/images/before-after/v20260824/after-kitchen.webp"],
   ["/images/before-after/after-living.webp", "/images/before-after/v20260824/after-living.webp"],
