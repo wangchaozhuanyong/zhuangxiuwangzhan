@@ -2,9 +2,8 @@ import { useParams, useSearchParams } from "react-router-dom";
 import { SmartImage } from "@/components/SmartImage";
 import PageMeta from "@/components/PageMeta";
 import LocalizedLink from "@/components/LocalizedLink";
-import WhatsAppIcon from "@/components/WhatsAppIcon";
 import { JsonLdBreadcrumb } from "@/components/JsonLd";
-import { useSiteSettings } from "@/hooks/useSiteSettings";
+import { SchemeARouteHero } from "@/components/scheme-a/SchemeARoutePrimitives";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { furnitureCategoryName, furnitureSubcategoryName, furnitureText } from "@/i18n/furnitureText";
 import { furnitureCatalog, furnitureProductPath, furnitureShopUrl, getFurnitureCategory, getFurnitureProducts, getFurnitureSubcategory, localizeFurnitureProduct } from "@/lib/furnitureCatalog";
@@ -16,7 +15,6 @@ export default function FurnitureShowcase() {
   const [searchParams] = useSearchParams();
   const { language } = useLanguage();
   const copy = furnitureText[language];
-  const settings = useSiteSettings();
   const category = getFurnitureCategory(categoryKey || "new");
   const subcategory = category && subcategoryKey ? getFurnitureSubcategory(category, subcategoryKey) : undefined;
   const validSelection = Boolean(category && (!subcategoryKey || subcategory));
@@ -42,17 +40,16 @@ export default function FurnitureShowcase() {
         ...(categoryKey && category ? [{ name: categoryLabel, url: `/furniture/${category.key}` }] : []),
         ...(subcategory ? [{ name: subcategoryLabel, url: currentPath }] : []),
       ]} />
-      <header className="fc-furniture-intro">
-        <div className="fc-furniture-intro__inner">
-          <div className="fc-furniture-intro__copy">
-            <h1>{copy.title}</h1>
-            <p>{copy.intro}</p>
-          </div>
-          <div className="fc-furniture-intro__media">
-            <SmartImage src="/images/furniture/assets/7596c932c602dfc05255.webp" alt={copy.heroImageAlt} width={1080} height={1080} sizes="(max-width: 760px) 100vw, 48vw" loading="eager" fetchPriority="high" />
-          </div>
-        </div>
-      </header>
+      <SchemeARouteHero
+        kind="listing"
+        image="/images/furniture/assets/7596c932c602dfc05255.webp"
+        imageSourceWidth={1080}
+        imagePosition={{ mobile: "center 55%" }}
+        imageAlt={copy.heroImageAlt}
+        label={copy.title}
+        title={copy.title}
+        description={copy.intro}
+      />
       <div className="fc-furniture-body">
         <nav className="fc-furniture-primary" aria-label={copy.title}>
           {furnitureCatalog.taxonomy.map((item) => (
@@ -83,18 +80,18 @@ export default function FurnitureShowcase() {
               const image = product.images[0] || product.sourceImages[0];
               return (
                 <article className="fc-furniture-card" key={product.sourceUrl}>
-                  <LocalizedLink className="fc-furniture-card__image" to={furnitureProductPath(product)} aria-label={`${copy.viewDetails}: ${product.name}`}>
-                    {image ? <SmartImage src={image} alt={product.name} width={480} height={480} sizes="(max-width: 680px) 48vw, (max-width: 1024px) 33vw, 25vw" loading={index < 4 ? "eager" : "lazy"} fetchPriority={index < 2 ? "high" : "auto"} /> : <span>{product.name}</span>}
-                  </LocalizedLink>
-                  <div className="fc-furniture-card__body">
-                    <h3><LocalizedLink to={furnitureProductPath(product)}>{product.name}</LocalizedLink></h3>
-                    <p className="fc-furniture-card__description">{(product.shortDescription || product.description || copy.descriptionUnavailable).replace(/\s+/g, " ")}</p>
-                    <p className="fc-furniture-card__price">{product.price || copy.priceOnRequest}</p>
-                    <div className="fc-furniture-card__actions">
-                      <LocalizedLink to={furnitureProductPath(product)}>{copy.viewDetails}</LocalizedLink>
-                      <a href={settings.whatsapp_url(copy.enquiryMessage.replace("{name}", product.name))} target="_blank" rel="noopener noreferrer" aria-label={`${copy.enquire}: ${product.name}`}><WhatsAppIcon />{copy.enquire}</a>
-                      <a href={furnitureShopUrl} target="_blank" rel="noopener noreferrer" aria-label={`${copy.buyNow}: ${product.name}`}>{copy.buyNow}</a>
+                  <LocalizedLink className="fc-furniture-card__main" to={furnitureProductPath(product)} aria-label={`${copy.viewDetails}: ${product.name}`}>
+                    <div className="fc-furniture-card__image">
+                      {image ? <SmartImage src={image} alt={product.name} width={480} height={480} sizes="(max-width: 680px) 48vw, (max-width: 1024px) 33vw, 25vw" loading={index < 4 ? "eager" : "lazy"} fetchPriority={index < 2 ? "high" : "auto"} /> : <span>{product.name}</span>}
                     </div>
+                    <div className="fc-furniture-card__body">
+                      <h3>{product.name}</h3>
+                      <p className="fc-furniture-card__description">{(product.shortDescription || product.description || copy.descriptionUnavailable).replace(/\s+/g, " ")}</p>
+                      <p className="fc-furniture-card__price">{product.price || copy.priceOnRequest}</p>
+                    </div>
+                  </LocalizedLink>
+                  <div className="fc-furniture-card__actions">
+                    <a href={furnitureShopUrl} target="_blank" rel="noopener noreferrer" aria-label={`${copy.buyNow}: ${product.name}`}>{copy.buyNow}</a>
                   </div>
                 </article>
               );
