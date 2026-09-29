@@ -295,9 +295,15 @@ type ImagePreload = {
   srcSet?: string;
   sizes?: string;
   media?: string;
+  fetchPriority?: "high" | "low";
 };
 
 const PROJECT_CARD_IMAGE_WIDTHS = [360, 560, 720, 900];
+const HOME_FEATURED_PROJECT_WIDTHS = [560, 720, 960, 1200, 1600];
+const HOME_SUPPORTING_PROJECT_MOBILE_WIDTHS = [360, 560, 720, 960];
+const HOME_SUPPORTING_PROJECT_DESKTOP_WIDTHS = [360, 560, 720, 900, 1200, 1600];
+const PROJECT_DETAIL_HERO_WIDTHS = [560, 720, 960, 1200, 1600];
+const PROJECT_DETAIL_RELATED_WIDTHS = [360, 560, 720, 960, 1200];
 const HOME_HERO_IMAGE_WIDTHS = [480, 720, 960, 1280, 1600];
 const DEFAULT_HOME_HERO_IMAGE = "/images/heroes/hero-luxury-living.webp";
 const HOME_HERO_IMAGE_SIZES = "(max-width: 767px) 100vw, (max-width: 1199px) 58vw, 60vw";
@@ -394,15 +400,22 @@ const sanitizePublicDataDraftMarkers = (value: unknown): unknown => {
 const isSupabasePublicObjectUrl = (value: string) =>
   /^https?:\/\//i.test(value) && value.includes(SUPABASE_PUBLIC_OBJECT_SEGMENT);
 
-const toSupabaseRenderImageUrl = (value: string, width: number, height: number) => {
+const toSupabaseRenderImageUrl = (
+  value: string,
+  width: number,
+  height: number,
+  quality = 70,
+  resize?: "cover",
+) => {
   const renderBase = value.replace(SUPABASE_PUBLIC_OBJECT_SEGMENT, SUPABASE_PUBLIC_RENDER_SEGMENT);
   const separator = renderBase.includes("?") ? "&" : "?";
   const params = new URLSearchParams({
-    quality: "70",
+    quality: String(quality),
     width: String(width),
     height: String(height),
-    format: "webp",
   });
+  if (resize) params.set("resize", resize);
+  params.set("format", "webp");
 
   return `${renderBase}${separator}${params.toString()}`;
 };
@@ -525,15 +538,136 @@ const buildProjectImagePreloads = (
   return preloads;
 };
 
+const buildSupabaseImagePreload = (
+  imageUrl: string,
+  widths: number[],
+  options: {
+    height: number;
+    quality: number;
+    sizes: string;
+    media?: string;
+    resize?: "cover";
+    aspectRatio?: { width: number; height: number };
+    fetchPriority?: "high" | "low";
+  },
+): ImagePreload => {
+  const candidate = (width: number) => toSupabaseRenderImageUrl(
+    imageUrl,
+    width,
+    options.aspectRatio ? Math.round(width * options.aspectRatio.height / options.aspectRatio.width) : options.height,
+    options.quality,
+    options.resize,
+  );
+
+  return {
+    href: candidate(widths[0] ?? 560),
+    srcSet: widths.map((width) => `${candidate(width)} ${width}w`).join(", "),
+    sizes: options.sizes,
+    media: options.media,
+    fetchPriority: options.fetchPriority,
+  };
+};
+
+const getHomeProjectImagePreloads = (bundle: HomeContentBundleRow | null): ImagePreload[] => {
+  const seen = new Set<string>();
+  const projects = readRecordArray(bundle?.projects)
+    .filter((project) => {
+      const identity = getProjectThumbnailUrl(project) || readString(project, "slug");
+      if (seen.has(identity)) return false;
+      seen.add(identity);
+      return true;
+    })
+    .slice(0, 4)
+    .map(getProjectThumbnailUrl);
+  const preloads: ImagePreload[] = [];
+  let remoteImageCount = 0;
+
+  for (const [index, imageUrl] of projects.entries()) {
+    if (remoteImageCount >= 2) break;
+    if (!isSupabasePublicObjectUrl(imageUrl)) continue;
+    remoteImageCount++;
+
+    if (index === 0) {
+      preloads.push(buildSupabaseImagePreload(imageUrl, HOME_FEATURED_PROJECT_WIDTHS, {
+        height: 1050,
+        quality: 86,
+        sizes: "(min-width: 1536px) 1440px, (min-width: 1024px) calc(100vw - 96px), 100vw",
+        fetchPriority: "low",
+      }));
+    } else {
+      preloads.push(buildSupabaseImagePreload(imageUrl, HOME_SUPPORTING_PROJECT_MOBILE_WIDTHS, {
+        height: 450,
+        quality: 84,
+        sizes: "(max-width: 397px) 78vw, 310px",
+        media: "(max-width: 47.9375rem)",
+        resize: "cover",
+        aspectRatio: { width: 4, height: 5 },
+        fetchPriority: "low",
+      }));
+      preloads.push(buildSupabaseImagePreload(imageUrl, HOME_SUPPORTING_PROJECT_DESKTOP_WIDTHS, {
+        height: 600,
+        quality: 84,
+        sizes: projects.length === 3
+          ? "(max-width: 767px) 78vw, (min-width: 1536px) 708px, calc((100vw - 120px) / 2)"
+          : "(max-width: 767px) 78vw, (min-width: 1536px) 464px, calc((100vw - 144px) / 3)",
+        media: "(min-width: 48rem)",
+        resize: "cover",
+        aspectRatio: { width: 16, height: 10 },
+        fetchPriority: "low",
+      }));
+    }
+  }
+
+  return preloads;
+};
+
+const getProjectDetailImagePreloads = (
+  detail: ProjectDetailRow | null,
+  projectSummaries: ProjectSummaryRow[] | null,
+): ImagePreload[] => {
+  if (!detail) return [];
+  const preloads: ImagePreload[] = [];
+  const seen = new Set<string>();
+  const heroImage = getProjectThumbnailUrl(detail);
+
+  if (isSupabasePublicObjectUrl(heroImage)) {
+    seen.add(heroImage);
+    preloads.push(buildSupabaseImagePreload(heroImage, PROJECT_DETAIL_HERO_WIDTHS, {
+      height: 1100,
+      quality: 86,
+      sizes: "(min-width: 1536px) 789px, (min-width: 1024px) calc((100vw - 128px) * 0.56), 100vw",
+    }));
+  }
+
+  const related = readRecordArray(projectSummaries)
+    .filter((project) => readString(project, "slug") !== readString(detail, "slug"))
+    .slice(0, 3);
+  for (const [index, project] of related.entries()) {
+    if (preloads.length >= 3) break;
+    const imageUrl = getProjectThumbnailUrl(project);
+    if (!isSupabasePublicObjectUrl(imageUrl) || seen.has(imageUrl)) continue;
+    seen.add(imageUrl);
+    preloads.push(buildSupabaseImagePreload(imageUrl, PROJECT_DETAIL_RELATED_WIDTHS, {
+      height: index === 0 ? 750 : 540,
+      quality: 82,
+      sizes: "(max-width: 374px) calc(100vw - 24px), (max-width: 639px) calc(100vw - 32px), (max-width: 1023px) 46vw, (min-width: 1536px) 464px, calc((100vw - 144px) / 3)",
+      fetchPriority: "low",
+    }));
+  }
+
+  return preloads;
+};
+
 const getDynamicImagePreloads = (
   key: string,
   projectSummaries: ProjectSummaryRow[] | null,
   homeContentBundle: HomeContentBundleRow | null,
+  projectDetail: ProjectDetailRow | null,
 ) => {
   if (isHomePageKey(key)) {
     const heroImageUrl = getHomeHeroImageUrl(homeContentBundle, key);
     if (normalizePreloadImageUrl(heroImageUrl).split(/[?#]/, 1)[0].endsWith("/hero-luxury-living.webp")) {
-      return HOME_ATELIER_HERO_PRELOADS;
+      return [...HOME_ATELIER_HERO_PRELOADS, ...getHomeProjectImagePreloads(homeContentBundle)];
     }
 
     return [
@@ -541,7 +675,12 @@ const getDynamicImagePreloads = (
         height: 1100,
         sizes: HOME_HERO_IMAGE_SIZES,
       }),
+      ...getHomeProjectImagePreloads(homeContentBundle),
     ];
+  }
+
+  if (getProjectDetailSlugFromKey(key)) {
+    return getProjectDetailImagePreloads(projectDetail, projectSummaries);
   }
 
   if (getTopLevelPublicPageKey(key) === "projects") {
@@ -720,7 +859,7 @@ const injectDynamicImagePreloads = (html: string, preloads: ImagePreload[]) => {
         ? ` imagesrcset="${escapeHtml(preload.srcSet)}" imagesizes="${escapeHtml(preload.sizes)}"`
         : "";
       const mediaAttribute = preload.media ? ` media="${escapeHtml(preload.media)}"` : "";
-      return `<link rel="preload" as="image" href="${escapeHtml(preload.href)}"${responsiveAttributes}${mediaAttribute} fetchpriority="high" />`;
+      return `<link rel="preload" as="image" href="${escapeHtml(preload.href)}"${responsiveAttributes}${mediaAttribute} fetchpriority="${preload.fetchPriority || "high"}" />`;
     }),
   ];
 
@@ -2292,7 +2431,7 @@ export const onRequest: PagesFunction = async (context) => {
   }
   transformed = injectDynamicImagePreloads(
     transformed,
-    getDynamicImagePreloads(key, projectSummaries, homeContentBundle),
+    getDynamicImagePreloads(key, projectSummaries, homeContentBundle, projectDetail),
   );
   transformed = injectPerformanceHints(
     transformed,
