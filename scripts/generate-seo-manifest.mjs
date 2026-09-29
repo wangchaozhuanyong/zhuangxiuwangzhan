@@ -3,6 +3,13 @@ import { existsSync, readFileSync, writeFileSync, mkdirSync } from "node:fs";
 import { buildStaticManifest, SITE_URL, OG_IMAGE, COMPANY } from "./seo-static-pages.mjs";
 import { loadMaterialSeoCategories } from "./seo-material-pages.mjs";
 
+const furnitureCatalog = JSON.parse(readFileSync(new URL("../src/data/furnitureCatalog.json", import.meta.url), "utf8"));
+const furnitureLabels = JSON.parse(readFileSync(new URL("../src/i18n/furnitureTaxonomyLabels.json", import.meta.url), "utf8"));
+const furnitureLocales = Object.fromEntries(["en", "zh"].map((lang) => [
+  lang,
+  JSON.parse(readFileSync(new URL(`../src/data/furnitureCatalog${lang === "zh" ? "Zh" : "En"}.json`, import.meta.url), "utf8")),
+]));
+
 const loadEnv = () => {
   if (!existsSync(".env")) return;
   for (const line of readFileSync(".env", "utf8").split(/\r?\n/)) {
@@ -196,6 +203,30 @@ const [projects, posts, materials, areas, landings, services, sitePages] = await
 const materialCategories = await loadMaterialSeoCategories(materials);
 
 for (const lang of ["en", "zh"]) {
+  const furnitureMeta = furnitureLabels.meta[lang];
+  addDynamic(lang, "", "furniture", furnitureMeta.title, furnitureMeta.description, {
+    ogImage: "/images/furniture/assets/7596c932c602dfc05255.webp",
+  });
+  for (const category of furnitureCatalog.taxonomy) {
+    if (category.key === "new") continue;
+    const categoryName = furnitureLabels.categories[category.key]?.[lang] || category.name;
+    addDynamic(lang, "/furniture", category.key, categoryName, `${categoryName} · ${furnitureMeta.description}`);
+    for (const subcategory of category.subcategories) {
+      const subcategoryName = furnitureLabels.subcategories[subcategory.key]?.[lang] || subcategory.name;
+      addDynamic(lang, `/furniture/${category.key}`, subcategory.key, `${subcategoryName} | ${categoryName}`, `${subcategoryName} · ${furnitureMeta.description}`);
+    }
+  }
+  for (const product of furnitureCatalog.products) {
+    const localized = furnitureLocales[lang][product.slug] || product;
+    addDynamic(
+      lang,
+      "/furniture/product",
+      encodeURIComponent(decodeURIComponent(product.slug)),
+      localized.name,
+      (localized.shortDescription || localized.description || furnitureMeta.description).replace(/\s+/g, " ").trim(),
+      { ogImage: product.images[0], imageAlt: localized.name },
+    );
+  }
   for (const row of sitePages) addSitePage(lang, row);
   for (const row of projects) {
     addDynamic(

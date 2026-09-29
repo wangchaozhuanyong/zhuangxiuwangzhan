@@ -24,6 +24,8 @@ const About = lazyPublicPage(() => import("@/pages/About"));
 const Services = lazyPublicPage(() => import("@/pages/Services"));
 const ServiceDetail = lazyPublicPage(() => import("@/pages/ServiceDetail"));
 const Materials = lazyPublicPage(() => import("@/pages/Materials"));
+const FurnitureShowcase = lazyPublicPage(() => import("@/pages/FurnitureShowcase"));
+const FurnitureProductDetail = lazyPublicPage(() => import("@/pages/FurnitureProductDetail"));
 const Promotions = lazyPublicPage(() => import("@/pages/Promotions"));
 const Locations = lazyPublicPage(() => import("@/pages/Locations"));
 const MaterialCategoryPage = lazyPublicPage(() => import("@/pages/MaterialCategoryPage"));
@@ -85,6 +87,10 @@ export const publicRoutes = (
     <Route path="/:lang/materials/category/:categorySlug" element={withLanguageSync(<MaterialCategoryPage />)} />
     <Route path="/:lang/materials/category/:categorySlug/:subcategorySlug" element={withLanguageSync(<MaterialSubcategoryPage />)} />
     <Route path="/:lang/materials/:slug" element={withLanguageSync(<MaterialDetail />)} />
+    <Route path="/:lang/furniture" element={withLanguageSync(<FurnitureShowcase />)} />
+    <Route path="/:lang/furniture/product/:slug" element={withLanguageSync(<FurnitureProductDetail />)} />
+    <Route path="/:lang/furniture/:category" element={withLanguageSync(<FurnitureShowcase />)} />
+    <Route path="/:lang/furniture/:category/:subcategory" element={withLanguageSync(<FurnitureShowcase />)} />
     <Route path="/:lang/products" element={<ProductsToMaterialsRedirect />} />
     <Route path="/:lang/products/:slug" element={<ProductsToMaterialsRedirect />} />
     <Route path="/:lang/promotions" element={withLanguageSync(<Promotions />)} />
@@ -105,6 +111,7 @@ export const publicRoutes = (
     <Route path="/about" element={<LegacyLanguageRedirect />} />
     <Route path="/services/*" element={<LegacyLanguageRedirect />} />
     <Route path="/materials/*" element={<LegacyLanguageRedirect />} />
+    <Route path="/furniture/*" element={<LegacyLanguageRedirect />} />
     <Route path="/products/*" element={<LegacyLanguageRedirect />} />
     <Route path="/promotions" element={<LegacyLanguageRedirect />} />
     <Route path="/projects/*" element={<LegacyLanguageRedirect />} />

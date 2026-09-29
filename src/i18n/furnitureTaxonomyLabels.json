@@ -1,0 +1,45 @@
+{
+  "meta": {
+    "zh": {
+      "title": "家具展示",
+      "description": "浏览 FLASH CAST 家具展示，按卧室、饭厅、客厅、书房、新品与预购商品查看家具及详情。"
+    },
+    "en": {
+      "title": "Furniture Showcase",
+      "description": "Explore the FLASH CAST furniture showcase by bedroom, dining room, living room, study room, new products and pre-order items."
+    }
+  },
+  "categories": {
+    "new": { "zh": "新品", "en": "New Products" },
+    "bedroom": { "zh": "卧室", "en": "Bedroom" },
+    "dining": { "zh": "饭厅", "en": "Dining Room" },
+    "living": { "zh": "客厅", "en": "Living Room" },
+    "study": { "zh": "书房", "en": "Study Room" },
+    "preorder": { "zh": "预购商品", "en": "Pre-Order Items" }
+  },
+  "subcategories": {
+    "bed-frame": { "zh": "床架", "en": "Bed Frame" },
+    "bedside-table": { "zh": "床头柜", "en": "Bedside Table" },
+    "chest-drawer": { "zh": "抽屉柜", "en": "Chest Drawer" },
+    "dressing-table": { "zh": "梳妆台", "en": "Dressing Table" },
+    "dressing-chair": { "zh": "梳妆椅", "en": "Dressing Chair" },
+    "garment-rack": { "zh": "衣帽架", "en": "Garment Rack" },
+    "standing-mirror": { "zh": "落地镜", "en": "Standing Mirror" },
+    "mattress": { "zh": "床垫", "en": "Mattress" },
+    "dining-set-malaysia": { "zh": "餐桌椅套装", "en": "Dining Set" },
+    "dining-chair": { "zh": "餐椅", "en": "Dining Chair" },
+    "dining-table": { "zh": "餐桌", "en": "Dining Table" },
+    "sideboard": { "zh": "餐边柜", "en": "Sideboard" },
+    "kitchen-cabinet": { "zh": "厨房柜", "en": "Kitchen Cabinet" },
+    "sofa-bed": { "zh": "沙发床", "en": "Sofa Bed" },
+    "sofa": { "zh": "沙发", "en": "Sofa" },
+    "pouf-stool": { "zh": "矮凳与脚凳", "en": "Pouf & Stool" },
+    "side-table": { "zh": "边桌", "en": "Side Table" },
+    "display-rack": { "zh": "展示架", "en": "Display Rack" },
+    "shoe-cabinet": { "zh": "鞋柜", "en": "Shoe Cabinet" },
+    "bookcase": { "zh": "书柜", "en": "Bookcase" },
+    "study-desk": { "zh": "书桌", "en": "Study Desk" },
+    "kids-ergonomic-study-desk": { "zh": "儿童人体工学书桌", "en": "Kids Ergonomic Study Desk" },
+    "kids-stool": { "zh": "儿童凳", "en": "Kids Stool" }
+  }
+}
