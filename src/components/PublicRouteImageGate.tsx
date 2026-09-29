@@ -4,6 +4,7 @@ import { publicContentStatusText } from "@/i18n/publicContentStatusText";
 
 const MAX_WAIT_MS = 5000;
 const readyRouteImages = new Map<string, string[]>();
+let hasMountedPublicRoute = false;
 
 const criticalImages = (main: HTMLElement) => [...main.querySelectorAll<HTMLImageElement>('img[data-critical-image="true"]')];
 const imageSourceKey = (img: HTMLImageElement) => [
@@ -12,14 +13,20 @@ const imageSourceKey = (img: HTMLImageElement) => [
   ...[...(img.closest("picture")?.querySelectorAll("source") || [])].map((source) => `${source.media}:${source.srcset}`),
 ].join("|");
 
-/** Keeps the existing brand screen above a new public route until its visible images can be painted. */
+/** Shows the brand screen only on the initial public route while its visible images load. */
 export function PublicRouteImageGate({ children, routeKey }: { children: ReactNode; routeKey: string }) {
   const { language } = useLanguage();
+  const [showBrandScreen] = useState(() => !hasMountedPublicRoute);
   const [status, setStatus] = useState<"waiting" | "ready" | "timeout">(
-    () => readyRouteImages.has(routeKey) ? "ready" : "waiting",
+    () => showBrandScreen && !readyRouteImages.has(routeKey) ? "waiting" : "ready",
   );
 
   useLayoutEffect(() => {
+    hasMountedPublicRoute = true;
+  }, []);
+
+  useLayoutEffect(() => {
+    if (!showBrandScreen) return;
     const main = document.getElementById("main-content");
     if (!main) return;
     let frame = 0;
@@ -58,7 +65,8 @@ export function PublicRouteImageGate({ children, routeKey }: { children: ReactNo
         }
         // A browsing deadline is not evidence of a failed image request.
         // Keep downloading while allowing visitors to read the ready page.
-        setStatus(main.querySelector('[data-route-pending="true"]') ? "timeout" : "ready");
+        const isRoutePending = Boolean(main.querySelector('[data-route-pending="true"]'));
+        setStatus(isRoutePending ? "timeout" : "ready");
       }, MAX_WAIT_MS);
     };
     const check = () => {
@@ -88,7 +96,7 @@ export function PublicRouteImageGate({ children, routeKey }: { children: ReactNo
       cancelAnimationFrame(frame);
       window.clearTimeout(timeout);
     };
-  }, [routeKey]);
+  }, [routeKey, showBrandScreen]);
 
   return (
     <>

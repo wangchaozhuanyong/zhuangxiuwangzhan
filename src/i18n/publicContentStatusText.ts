@@ -2,6 +2,7 @@ export const publicContentStatusText = {
   en: {
     loaderBrand: "INTERIOR & RENOVATION",
     loaderPending: "Bringing the space into focus",
+    loaderRoutePending: "Loading page…",
     loaderTimeout: "Images are taking too long",
     loaderRetry: "Retry",
     loaderContinue: "Continue",
@@ -15,6 +16,7 @@ export const publicContentStatusText = {
   zh: {
     loaderBrand: "室内设计与装修",
     loaderPending: "空间正在显影",
+    loaderRoutePending: "页面加载中…",
     loaderTimeout: "页面图片加载超时",
     loaderRetry: "重试",
     loaderContinue: "继续浏览",
