@@ -3,7 +3,7 @@ import { expect, test } from "@playwright/test";
 const loader = ".scheme-a-page-loader--overlay";
 const criticalImage = "#main-content img[data-critical-image='true']";
 
-test("keeps the brand screen until the selected hero is decoded on direct load and navigation", async ({ page }) => {
+test("shows the brand screen on direct load without repeating it during navigation", async ({ page }) => {
   await page.route("**/images/**", async (route) => {
     await new Promise((resolve) => setTimeout(resolve, 450));
     await route.continue();
@@ -15,18 +15,32 @@ test("keeps the brand screen until the selected hero is decoded on direct load a
   await expect(page.locator(".scheme-a-chrome__brand img").first()).toHaveAttribute("data-image-state", "loaded");
   expect(await page.locator(criticalImage).evaluate((img: HTMLImageElement) => img.currentSrc && img.naturalWidth > 0)).toBeTruthy();
 
+  await page.evaluate(() => {
+    document.body.dataset.brandOverlayAdds = "0";
+    new MutationObserver((records) => {
+      for (const record of records) {
+        for (const node of record.addedNodes) {
+          if (node instanceof Element && (node.matches(".scheme-a-page-loader--overlay") || node.querySelector(".scheme-a-page-loader--overlay"))) {
+            document.body.dataset.brandOverlayAdds = String(Number(document.body.dataset.brandOverlayAdds) + 1);
+          }
+        }
+      }
+    }).observe(document.body, { childList: true, subtree: true });
+  });
+
   await page.locator('a[href="/zh/about"]').first().evaluate((link: HTMLAnchorElement) => link.click());
-  await expect(page.locator(loader)).toBeVisible();
-  await expect(page.locator(loader)).toBeHidden({ timeout: 10_000 });
-  await expect(page.locator(criticalImage)).toHaveAttribute("data-image-state", "loaded");
+  await expect(page).toHaveURL(/\/zh\/about$/);
+  await expect(page.locator(loader)).toHaveCount(0);
+  await expect(page.locator(criticalImage)).toHaveAttribute("data-image-state", "loaded", { timeout: 10_000 });
 
   await page.goBack({ waitUntil: "domcontentloaded" });
-  await expect(page.locator(loader)).toBeHidden({ timeout: 10_000 });
+  await expect(page.locator(loader)).toHaveCount(0);
   await expect(page.locator(criticalImage)).toHaveAttribute("data-image-state", "loaded");
 
   await page.locator('.scheme-a-language-switch a[href="/en/services"]').first().click();
-  await expect(page.locator(loader)).toBeHidden({ timeout: 10_000 });
+  await expect(page.locator(loader)).toHaveCount(0);
   await expect(page.locator(criticalImage)).toHaveAttribute("data-image-state", "loaded");
+  expect(await page.locator("body").getAttribute("data-brand-overlay-adds")).toBe("0");
 });
 
 test("supports both languages at the requested viewport widths", async ({ page }) => {

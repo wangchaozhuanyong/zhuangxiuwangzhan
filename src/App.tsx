@@ -91,15 +91,16 @@ const queryClient = new QueryClient({
 
 const PageLoader = () => {
   const { language } = useLanguage();
+  const [showMessage, setShowMessage] = useState(false);
+
+  useEffect(() => {
+    const timer = window.setTimeout(() => setShowMessage(true), 200);
+    return () => window.clearTimeout(timer);
+  }, []);
 
   return (
-    <main className="scheme-a-page-loader" role="status" aria-live="polite" aria-busy="true" data-route-pending="true">
-      <div className="scheme-a-page-loader__brand">
-        <p>{publicContentStatusText[language].loaderBrand}</p>
-        <strong><span>FLASH</span><em>CAST</em></strong>
-        <span>{publicContentStatusText[language].loaderPending}</span>
-        <i aria-hidden="true" />
-      </div>
+    <main className="fc-route-page min-h-screen" role="status" aria-live="polite" aria-busy="true" data-route-pending="true">
+      {showMessage && <p className="px-6 py-24 text-center text-sm text-muted-foreground">{publicContentStatusText[language].loaderRoutePending}</p>}
     </main>
   );
 };
