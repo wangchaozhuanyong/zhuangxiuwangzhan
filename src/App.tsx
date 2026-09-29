@@ -18,6 +18,7 @@ import { focusElementByIdWhenReady } from "@/lib/instantScroll";
 import { publicRoutes } from "@/routes/publicRoutes";
 import { PublicRouteImageGate } from "@/components/PublicRouteImageGate";
 import { publicContentStatusText } from "@/i18n/publicContentStatusText";
+import FurnitureFloatingLink from "@/components/FurnitureFloatingLink";
 import ScrollToTop from "./components/ScrollToTop";
 
 const AdminRouteTree = lazy(() => import("@/routes/AdminRouteTree"));
@@ -219,7 +220,7 @@ const AppShell = () => {
   const isAdminLoginRoute = /^\/admin\/?$/.test(location.pathname);
   const publicPath = stripLanguagePrefix(location.pathname);
   const isHomeRoute = !isAdminRoute && publicPath === "/";
-  const isProductDetailRoute = !isAdminRoute && /^\/products\/[^/]+$/.test(publicPath);
+  const isProductDetailRoute = !isAdminRoute && (/^\/products\/[^/]+$/.test(publicPath) || /^\/furniture\/product\/[^/]+$/.test(publicPath));
   const publicMainClass = isAdminRoute
     ? undefined
     : isHomeRoute
@@ -281,6 +282,7 @@ const AppShell = () => {
             <SchemeAFooter />
             <PublicUpdateNotice />
             <MobileBottomDock />
+            <FurnitureFloatingLink />
           </PublicPageFrame>
         </PublicSiteShell>
       )}

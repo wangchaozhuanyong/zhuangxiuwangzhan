@@ -8,5 +8,6 @@
 @import "../components/home-atelier.css";
 @import "../components/scheme-a-home-hero.css";
 @import "../components/scheme-a-route-hero-v5.css";
+@import "../components/furniture-showcase.css";
 @import "../components/public-section-spacing.css";
 @tailwind components;

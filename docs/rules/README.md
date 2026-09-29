@@ -5,6 +5,7 @@
 | 规则 | 文件 | 适用场景 |
 | --- | --- | --- |
 | 多语言 i18n | `i18n.md` | 页面、组件、后台、SEO、CMS 文案 |
+| 家具展示定价 | `furniture-pricing.md` | 采集、更新和展示家具商品价格 |
 | 用户界面禁止直出技术字段 | `user-facing-technical-fields.md` | 后台表格、系统日志、状态、错误码、通知消息 |
 | 组件复用和设计系统 | `component-reuse.md` | UI、组件、Tailwind、后台组件 |
 | 表单和数据提交 | `forms-and-submissions.md` | 联系表单、报价表单、后台表单、写入操作 |

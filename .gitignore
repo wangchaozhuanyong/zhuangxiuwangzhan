@@ -46,3 +46,4 @@ public/videos/*
 
 # Release retry receipts and isolated release-control fixtures
 /.release/
+src/data/furniturePriceAudit.json

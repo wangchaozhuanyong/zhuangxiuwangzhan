@@ -1,6 +1,16 @@
 import { readFileSync, writeFileSync, existsSync } from "node:fs";
 import { loadMaterialSeoPaths } from "./seo-material-pages.mjs";
 
+const furnitureCatalog = JSON.parse(readFileSync(new URL("../src/data/furnitureCatalog.json", import.meta.url), "utf8"));
+const furniturePaths = [
+  "/furniture",
+  ...furnitureCatalog.taxonomy.filter((category) => category.key !== "new").flatMap((category) => [
+    `/furniture/${category.key}`,
+    ...category.subcategories.map((subcategory) => `/furniture/${category.key}/${subcategory.key}`),
+  ]),
+  ...furnitureCatalog.products.map((product) => `/furniture/product/${encodeURIComponent(decodeURIComponent(product.slug))}`),
+];
+
 const loadEnv = () => {
   if (!existsSync(".env")) return;
   for (const line of readFileSync(".env", "utf8").split(/\r?\n/)) {
@@ -115,6 +125,7 @@ const materialSeoPaths = await loadMaterialSeoPaths(materials);
 
 const paths = unique([
   ...staticPaths,
+  ...furniturePaths,
   ...projects.map((item) => `/projects/${item.slug}`),
   ...posts.map((item) => `/blog/${item.slug}`),
   ...materialSeoPaths,
