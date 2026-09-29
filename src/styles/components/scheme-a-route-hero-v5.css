@@ -110,29 +110,24 @@
   }
 }
 
-/* One quiet information group across breakpoints, with no pill frames or
-   truncated values. Labels and values remain a semantic description list. */
+/* Shared two-column information group for every public route hero. */
 .scheme-a-public-shell .fc-route-page .fc-route-hero-support {
   display: grid;
   order: 5;
-  width: 100%;
-  gap: 10px;
+  grid-template-columns: max-content minmax(0, 1fr);
+  column-gap: 16px;
+  row-gap: 10px;
+  width: fit-content;
+  max-width: 100%;
   margin: 24px 0 0;
-}
-
-.scheme-a-public-shell .fc-route-page .fc-route-hero-support > div {
-  display: flex;
-  min-width: 0;
-  align-items: baseline;
-  justify-content: flex-start;
-  flex-wrap: wrap;
-  gap: 4px 8px;
+  text-align: left;
 }
 
 .scheme-a-public-shell .fc-route-page .fc-route-hero-support dt,
 .scheme-a-public-shell .fc-route-page .fc-route-hero-support dd {
   margin: 0;
-  font-size: 11px;
+  min-width: 0;
+  font-size: 13px;
   line-height: 1.6;
 }
 
@@ -143,7 +138,6 @@
 }
 
 .scheme-a-public-shell .fc-route-page .fc-route-hero-support dd {
-  min-width: 0;
   color: var(--public-text-secondary);
   text-wrap: pretty;
 }
@@ -263,8 +257,8 @@
     text-align: left;
   }
 
-  .scheme-a-public-shell .fc-route-page .fc-route-hero-support :is(dt, dd) {
-    font-size: 13px;
+  .scheme-a-public-shell .fc-route-page .fc-route-hero-support {
+    margin-inline: auto;
   }
 }
 
@@ -316,7 +310,8 @@
   }
 
   .scheme-a-public-shell .fc-route-page .fc-route-hero-support {
-    gap: 5px;
+    column-gap: 12px;
+    row-gap: 5px;
     margin-top: 14px;
   }
 
@@ -339,39 +334,5 @@
 @media (prefers-reduced-motion: reduce) {
   .scheme-a-public-shell .fc-route-page .fc-route-hero-media img {
     transition: none;
-  }
-}
-
-/* The promotions introduction is a short editorial statement. Its longer
-   qualification text keeps a fixed reading column below the centred title. */
-@media (min-width: 1024px) {
-  .scheme-a-public-shell .fc-route-promotions-page .fc-route-hero-copy {
-    align-items: center;
-    text-align: center;
-  }
-
-  .scheme-a-public-shell .fc-route-promotions-page .fc-route-hero-copy > p {
-    width: min(100%, 35rem);
-    margin-inline: auto;
-    text-align: center;
-  }
-
-  .scheme-a-public-shell .fc-route-promotions-page .fc-route-hero-support > div {
-    justify-content: center;
-  }
-}
-
-@media (max-width: 1023px) {
-  .scheme-a-public-shell .fc-route-promotions-page .fc-route-hero-copy > p {
-    width: min(100%, 42rem);
-    text-align: left;
-  }
-
-  .scheme-a-public-shell .fc-route-promotions-page .fc-route-hero-support > div {
-    display: grid;
-    grid-template-columns: minmax(4.5rem, auto) minmax(0, 1fr);
-    gap: 10px;
-    justify-content: stretch;
-    text-align: left;
   }
 }

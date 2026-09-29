@@ -1,4 +1,4 @@
-import { useId, useState, type CSSProperties, type ReactNode } from "react";
+import { Fragment, useId, useState, type CSSProperties, type ReactNode } from "react";
 import { ArrowUpRight, ChevronDown, Plus } from "lucide-react";
 import Link from "@/components/LocalizedLink";
 import SmartImage from "@/components/SmartImage";
@@ -61,6 +61,22 @@ export type SchemeAFaqItem = {
   answer: string;
 };
 
+function SchemeARouteHeroSupport() {
+  const { language } = useLanguage();
+  const supportCopy = schemeARouteHeroSupportText[language];
+
+  return (
+    <dl className="fc-route-hero-support" aria-label={supportCopy.ariaLabel}>
+      {supportCopy.items.map((item) => (
+        <Fragment key={item.label}>
+          <dt>{item.label}</dt>
+          <dd>{item.value}</dd>
+        </Fragment>
+      ))}
+    </dl>
+  );
+}
+
 export function SchemeARouteHero({
   kind = "content",
   image,
@@ -94,8 +110,6 @@ export function SchemeARouteHero({
   description: string;
   actions?: ReactNode;
 }) {
-  const { language } = useLanguage();
-  const supportCopy = schemeARouteHeroSupportText[language];
   const mediaStyle: SchemeARouteHeroMediaStyle = {
     "--fc-route-hero-position-desktop": imagePosition?.desktop || "center",
     "--fc-route-hero-position-tablet": imagePosition?.tablet || imagePosition?.desktop || "center",
@@ -164,16 +178,7 @@ export function SchemeARouteHero({
           <h1 className={usesCompactTitleScale ? "fc-route-title-long" : undefined}>{title}</h1>
           <p>{description}</p>
           {actions ? <div className="fc-route-hero-actions">{actions}</div> : null}
-          {kind !== "legal" ? (
-            <dl className="fc-route-hero-support" aria-label={supportCopy.ariaLabel}>
-              {supportCopy.items.map((item) => (
-                <div key={item.label}>
-                  <dt>{item.label}</dt>
-                  <dd>{item.value}</dd>
-                </div>
-              ))}
-            </dl>
-          ) : null}
+          {kind !== "legal" ? <SchemeARouteHeroSupport /> : null}
         </div>
       </div>
     </ImmersiveHero>
