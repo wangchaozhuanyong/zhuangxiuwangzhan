@@ -26,6 +26,14 @@ export function PublicRouteImageGate({ children, routeKey }: { children: ReactNo
   }, []);
 
   useLayoutEffect(() => {
+    if (status === "ready") return;
+    document.documentElement.dataset.publicRouteLoading = "true";
+    return () => {
+      delete document.documentElement.dataset.publicRouteLoading;
+    };
+  }, [status]);
+
+  useLayoutEffect(() => {
     if (!showBrandScreen) return;
     const main = document.getElementById("main-content");
     if (!main) return;

@@ -282,10 +282,10 @@ const AppShell = () => {
               </div>
             </PublicRouteImageGate>
             <SchemeAFooterPrelude />
+            <FurnitureFloatingLink />
             <SchemeAFooter />
             <PublicUpdateNotice />
             <MobileBottomDock />
-            <FurnitureFloatingLink />
           </PublicPageFrame>
         </PublicSiteShell>
       )}

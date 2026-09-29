@@ -264,11 +264,26 @@
 .fc-furniture-description h2 { margin-bottom: 1.4rem; font-family: var(--font-display); font-size: clamp(1.6rem, 2.6vw, 2.3rem); font-weight: 500; }
 .fc-furniture-description p { margin-top: 0.6rem !important; color: #d6d1c9; line-height: 1.8; overflow-wrap: anywhere; }
 
-.fc-furniture-floating {
-  position: fixed;
-  right: clamp(1rem, 2vw, 2rem);
-  bottom: clamp(1rem, 2vw, 2rem);
-  z-index: 105;
+.fc-furniture-entry {
+  border-block: 1px solid rgb(220 192 143 / 0.2);
+  background: #0d0e11;
+}
+
+.fc-furniture-entry__inner {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+  padding-block: clamp(1rem, 2.5vw, 2rem);
+}
+
+.fc-furniture-entry__inner::before {
+  flex: 1;
+  height: 1px;
+  background: rgb(220 192 143 / 0.2);
+  content: "";
+}
+
+.fc-furniture-entry__link {
   display: inline-flex;
   min-height: 3.25rem;
   align-items: center;
@@ -277,14 +292,13 @@
   border-radius: 100px;
   padding: 0.7rem 1.15rem;
   color: #171714;
-  background: var(--furniture-accent, #e6c989);
-  box-shadow: 0 0.65rem 2rem rgb(0 0 0 / 0.28);
+  background: #e6c989;
   font-size: 0.9rem;
   font-weight: 750;
 }
 
-.fc-furniture-floating:hover { background: #f2dba7; }
-.fc-furniture-floating:focus-visible,
+.fc-furniture-entry__link:hover { background: #f2dba7; }
+.fc-furniture-entry__link:focus-visible,
 .fc-furniture-page a:focus-visible,
 .fc-furniture-page button:focus-visible { outline: 3px solid #f2dba7; outline-offset: 3px; }
 
@@ -297,7 +311,6 @@
   .fc-furniture-detail { width: min(100% - 2rem, 86rem); }
   .fc-furniture-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .fc-furniture-detail__layout { grid-template-columns: 1fr; }
-  .fc-furniture-floating { bottom: calc(82px + env(safe-area-inset-bottom)); right: 1rem; }
 }
 
 @media (max-width: 540px) {
