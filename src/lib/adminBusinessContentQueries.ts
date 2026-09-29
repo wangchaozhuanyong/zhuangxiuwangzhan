@@ -145,12 +145,12 @@ export function useAdminProjects(options: AdminListQuery = {}) {
   });
 }
 
-export function useAdminMaterials(options: AdminListQuery = {}) {
+export function useAdminMaterials(options: AdminListQuery & { category?: string } = {}) {
   const search = normalizeAdminSearch(options.search);
   const page = clampPage(options.page);
   const pageSize = clampPageSize(options.pageSize);
   return useQuery({
-    queryKey: ["admin", "materials", { page, pageSize, status: options.status || "all", search }],
+    queryKey: ["admin", "materials", { page, pageSize, status: options.status || "all", search, category: options.category || "all" }],
     enabled: adminQueriesEnabled,
     placeholderData: keepPreviousData,
     staleTime: ADMIN_LIST_STALE_TIME,
@@ -161,6 +161,7 @@ export function useAdminMaterials(options: AdminListQuery = {}) {
         pageSize,
         status: options.status,
         search,
+        category: options.category,
       }),
   });
 }

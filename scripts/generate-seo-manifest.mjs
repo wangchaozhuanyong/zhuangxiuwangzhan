@@ -200,7 +200,8 @@ const [projects, posts, materials, areas, landings, services, sitePages] = await
   fetchRows("services", "slug,title_en,title_zh,seo_title_en,seo_title_zh,seo_description_en,seo_description_zh"),
   fetchRows("site_pages", "page_key,path,title_en,title_zh,description_en,description_zh,seo_title_en,seo_title_zh,seo_description_en,seo_description_zh,seo_keywords_en,seo_keywords_zh,image_url"),
 ]);
-const materialCategories = await loadMaterialSeoCategories(materials);
+const regularMaterials = materials.filter((row) => row.category !== "furniture");
+const materialCategories = await loadMaterialSeoCategories(regularMaterials);
 
 for (const lang of ["en", "zh"]) {
   const furnitureMeta = furnitureLabels.meta[lang];
@@ -283,7 +284,7 @@ for (const lang of ["en", "zh"]) {
       );
     }
   }
-  for (const row of materials) {
+  for (const row of regularMaterials) {
     addDynamic(
       lang,
       "/materials",

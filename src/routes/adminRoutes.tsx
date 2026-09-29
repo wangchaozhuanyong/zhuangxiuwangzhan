@@ -32,6 +32,8 @@ const AdminProjectList = lazy(() => import("@/pages/admin/AdminProjectList"));
 const AdminProjectEditor = lazy(() => import("@/pages/admin/AdminProjectEditor"));
 const AdminMaterialList = lazy(() => import("@/pages/admin/AdminMaterialList"));
 const AdminMaterialEditor = lazy(() => import("@/pages/admin/AdminMaterialEditor"));
+const AdminFurnitureList = lazy(() => import("@/pages/admin/AdminMaterialList").then((module) => ({ default: () => <module.default furnitureMode /> })));
+const AdminFurnitureEditor = lazy(() => import("@/pages/admin/AdminMaterialEditor").then((module) => ({ default: () => <module.default furnitureMode /> })));
 const AdminPromotionsEditor = lazy(() => import("@/pages/admin/AdminPromotionsEditor"));
 const AdminBlogList = lazy(() => import("@/pages/admin/AdminBlogList"));
 const AdminBlogEditor = lazy(() => import("@/pages/admin/AdminBlogEditor"));
@@ -107,6 +109,9 @@ export const adminRoutes = (
         <Route path="materials" element={withRoleGate(<AdminMaterialList />, ADMIN_ROLE_GROUPS.contentWrite)} />
         <Route path="materials/new" element={withRoleGate(<AdminMaterialEditor />, ADMIN_ROLE_GROUPS.contentWrite)} />
         <Route path="materials/:id" element={withRoleGate(<AdminMaterialEditor />, ADMIN_ROLE_GROUPS.contentWrite)} />
+        <Route path="furniture" element={withRoleGate(<AdminFurnitureList />, ADMIN_ROLE_GROUPS.contentWrite)} />
+        <Route path="furniture/new" element={withRoleGate(<AdminFurnitureEditor />, ADMIN_ROLE_GROUPS.contentWrite)} />
+        <Route path="furniture/:id" element={withRoleGate(<AdminFurnitureEditor />, ADMIN_ROLE_GROUPS.contentWrite)} />
         <Route path="promotions" element={withRoleGate(<AdminPromotionsEditor />, ADMIN_ROLE_GROUPS.contentWrite)} />
         <Route path="blog" element={withRoleGate(<AdminBlogList />, ADMIN_ROLE_GROUPS.contentWrite)} />
         <Route path="blog/new" element={withRoleGate(<AdminBlogEditor />, ADMIN_ROLE_GROUPS.contentWrite)} />

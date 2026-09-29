@@ -59,6 +59,7 @@ export type AdminCopy = {
   projects: string;
   blog: string;
   materials: string;
+  furniture: string;
   promotions: string;
   testimonials: string;
   serviceAreas: string;
@@ -146,6 +147,7 @@ export const copy: Record<AdminLang, AdminCopy> = {
     projects: "Projects",
     blog: "Blog",
     materials: "Products / Materials",
+    furniture: "Furniture Showcase",
     promotions: "Promotions",
     testimonials: "Testimonials",
     serviceAreas: "Service Areas",
@@ -204,6 +206,7 @@ export const copy: Record<AdminLang, AdminCopy> = {
     projects: "装修案例",
     blog: "博客",
     materials: "装修商品 / 材料",
+    furniture: "家具展示",
     promotions: "优惠活动",
     testimonials: "客户评价",
     serviceAreas: "服务区域",
@@ -273,6 +276,7 @@ export const navGroups: NavGroup[] = [
       { key: "services", path: "/admin/services", icon: Wrench, allowedRoles: ADMIN_ROLE_GROUPS.contentWrite },
       { key: "projects", path: "/admin/projects", icon: FolderKanban, allowedRoles: ADMIN_ROLE_GROUPS.contentWrite },
       { key: "materials", path: "/admin/materials", icon: BookOpen, allowedRoles: ADMIN_ROLE_GROUPS.contentWrite },
+      { key: "furniture", path: "/admin/furniture", icon: Images, allowedRoles: ADMIN_ROLE_GROUPS.contentWrite },
       { key: "promotions", path: "/admin/promotions", icon: BadgePercent, allowedRoles: ADMIN_ROLE_GROUPS.contentWrite },
       { key: "blog", path: "/admin/blog", icon: Newspaper, allowedRoles: ADMIN_ROLE_GROUPS.contentWrite },
       { key: "serviceAreas", path: "/admin/content/service_areas", icon: MapPinned, allowedRoles: ADMIN_ROLE_GROUPS.contentWrite },
@@ -411,6 +415,7 @@ export const getAdminActiveNavHelp = (activeNavKey: keyof AdminCopy, adminLang: 
     case "services":
     case "projects":
     case "materials":
+    case "furniture":
     case "blog":
       return zh ? "这里管理前台业务内容的标题、图片、正文和发布状态。" : "Manage titles, images, content, and publish state for public business pages.";
     case "leads":

@@ -23,6 +23,7 @@ import { landingContent } from "@/i18n/landingContent";
 import { estimateBlogReadMinutes } from "@/lib/blogMeta";
 import type { MaterialCatalogCategory } from "@/lib/materialCatalog";
 import { formatMaterialPrice } from "@/lib/materialPrice";
+import { FURNITURE_MATERIAL_CATEGORY } from "@/lib/furnitureCatalogConfig";
 import { readPreloadedPublicData } from "@/lib/publicPreload";
 import { toArray, toRecord, toText, type UnknownRecord } from "@/lib/recordUtils";
 
@@ -428,11 +429,12 @@ export function mapPublishedProjectDetail(data: UnknownRecord, language: Languag
 export const getPublishedMaterials = async (language: "en" | "zh" = "en"): Promise<MaterialCatalogCategory[]> => {
   const preloadedRows = readPreloadedPublicData()?.materials;
   if (Array.isArray(preloadedRows) && preloadedRows.length) {
-    return mapPublishedMaterialRows(preloadedRows, language);
+    const materialRows = preloadedRows.filter((row) => String(row.category || "").toLowerCase() !== FURNITURE_MATERIAL_CATEGORY);
+    return materialRows.length ? mapPublishedMaterialRows(materialRows, language) : getFallbackMaterials();
   }
 
   if (!hasPublicContentDatabaseClient()) return getFallbackMaterials();
-  const data = await fetchPublishedMaterialRows();
+  const data = await fetchPublishedMaterialRows(undefined, FURNITURE_MATERIAL_CATEGORY);
   if (!data?.length) return getFallbackMaterials();
 
   return mapPublishedMaterialRows(data, language);
@@ -521,12 +523,18 @@ export const getPublishedProductHighlights = async (
   language: "en" | "zh" = "en",
   limit = 4,
 ): Promise<MaterialCatalogCategory["items"]> => {
-  const mapRows = (rows: UnknownRecord[]) => mapPublishedMaterialRows(rows, language).flatMap((category) => category.items).slice(0, limit);
+  const mapRows = (rows: UnknownRecord[]) => mapPublishedMaterialRows(
+    rows.filter((row) => String(row.category || "").toLowerCase() !== FURNITURE_MATERIAL_CATEGORY),
+    language,
+  ).flatMap((category) => category.items).slice(0, limit);
   const preloadedRows = readPreloadedPublicData()?.productHighlights;
-  if (Array.isArray(preloadedRows) && preloadedRows.length) return mapRows(preloadedRows);
+  if (Array.isArray(preloadedRows) && preloadedRows.length) {
+    const highlights = mapRows(preloadedRows);
+    if (highlights.length >= limit) return highlights;
+  }
 
   if (hasPublicContentDatabaseClient()) {
-    const data = await fetchPublishedMaterialRows(limit);
+    const data = await fetchPublishedMaterialRows(limit, FURNITURE_MATERIAL_CATEGORY);
     if (data?.length) return mapRows(data as unknown as UnknownRecord[]);
   }
 

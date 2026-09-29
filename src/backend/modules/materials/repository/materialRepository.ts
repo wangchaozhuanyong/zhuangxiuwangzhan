@@ -23,6 +23,7 @@ export type AdminMaterialListInput = {
   pageSize: number;
   status?: string;
   search?: string;
+  category?: string;
 };
 
 const applySearch = <TQuery extends SearchableQuery>(query: TQuery, fields: string[], search?: string): TQuery => {
@@ -47,6 +48,7 @@ export async function fetchAdminMaterialList<T extends Record<string, unknown>>(
     .from("materials")
     .select("id,title_zh,title_en,slug,status,sort_order,category,subcategory,material_type,image_url,updated_at,created_at", { count: "exact" });
   if (input.status && input.status !== "all") query = query.eq("status", input.status as MaterialStatus);
+  if (input.category) query = query.eq("category", input.category);
   query = applySearch(query, ["title_zh", "title_en", "slug", "category", "subcategory", "material_type"], input.search);
   query = query.order("sort_order", { ascending: true }).order("updated_at", { ascending: false });
 

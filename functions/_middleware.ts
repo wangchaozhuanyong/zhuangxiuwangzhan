@@ -907,6 +907,8 @@ const formatBreadcrumbName = (segment: string, lang: string) => {
     about: { en: "About", zh: "关于我们" },
     services: { en: "Services", zh: "服务项目" },
     materials: { en: "Materials", zh: "材料库" },
+    furniture: { en: "Furniture Showcase", zh: "家具展示" },
+    product: { en: "Product", zh: "商品" },
     products: { en: "Products", zh: "装修商品" },
     promotions: { en: "Promotions", zh: "优惠活动" },
     projects: { en: "Projects", zh: "装修案例" },
@@ -1507,9 +1509,11 @@ const fetchDynamicRouteState = async (
   const match = key.match(/^\/(en|zh)(\/.*)?$/);
   if (!match) return null;
   const path = match[2] || "/";
-  const routePatterns: Array<{ pattern: RegExp; table: string; kind: DynamicRouteKind; select?: string }> = [
+  if (/^\/furniture\/product\/[^/]+$/.test(path) && fallback) return null;
+  const routePatterns: Array<{ pattern: RegExp; table: string; kind: DynamicRouteKind; select?: string; category?: string }> = [
     { pattern: /^\/services\/([^/]+)$/, table: "services", kind: "service" },
     { pattern: /^\/projects\/([^/]+)$/, table: "projects", kind: "project", select: "*,project_images(*)" },
+    { pattern: /^\/furniture\/product\/([^/]+)$/, table: "materials", kind: "material", category: "furniture" },
     { pattern: /^\/(?:materials|products)\/([^/]+)$/, table: "materials", kind: "material" },
     { pattern: /^\/blog\/([^/]+)$/, table: "blog_posts", kind: "blog", select: BLOG_EDGE_META_SELECT },
     { pattern: /^\/locations\/([^/]+)$/, table: "service_areas", kind: "service_area" },
@@ -1524,6 +1528,7 @@ const fetchDynamicRouteState = async (
       url.searchParams.set("select", route.kind === "blog" && slug === "renovation-materials-malaysia" ? `${BLOG_EDGE_META_SELECT},content_en,content_zh,status` : route.select || "*");
       url.searchParams.set("status", "eq.published");
       url.searchParams.set("slug", `eq.${slug}`);
+      if (route.category) url.searchParams.set("category", `eq.${route.category}`);
       url.searchParams.set("limit", "1");
     }, { route: key, stage: `${route.kind}-meta` });
     if (readResult.ok === false) throw new Error(`edge_read_${readResult.category}`);
@@ -1606,6 +1611,7 @@ const fetchPublicMaterials = async (env: Record<string, string | undefined>) =>
   fetchPublicRows(env, "materials", "materials", (url) => {
     url.searchParams.set("select", "*");
     url.searchParams.set("status", "eq.published");
+    url.searchParams.set("or", "(category.is.null,category.neq.furniture)");
     url.searchParams.set("order", "sort_order.asc");
   });
 
@@ -1992,20 +1998,42 @@ const fetchLiveSitemapXml = async (env: PagesEnv) => {
   }
 };
 
-const mergeSitemapXml = (staticXml: string, dynamicXml: string) => {
+const fetchLiveFurnitureSlugs = async (env: PagesEnv) => {
+  const rows = await fetchPublicRows(env as Record<string, string | undefined>, "furniture-sitemap", "materials", (url) => {
+    url.searchParams.set("select", "slug");
+    url.searchParams.set("status", "eq.published");
+    url.searchParams.set("category", "eq.furniture");
+  });
+  return (rows || []).map((row) => readString(row, "slug")).filter(Boolean);
+};
+
+const mergeSitemapXml = (staticXml: string, dynamicXml: string, furnitureSlugs: string[]) => {
   const blocks = [...staticXml.matchAll(/<url>\s*[\s\S]*?<\/url>/gi), ...dynamicXml.matchAll(/<url>\s*[\s\S]*?<\/url>/gi)];
-  if (!blocks.length) return staticXml || dynamicXml;
+  if (!blocks.length && !furnitureSlugs.length) return staticXml || dynamicXml;
+  const furnitureSlugSet = new Set(furnitureSlugs);
   const byLocation = new Map<string, string>();
   for (const match of blocks) {
     const block = match[0].trim();
     const location = block.match(/<loc>([^<]+)<\/loc>/i)?.[1]?.trim();
     if (!location) continue;
     try {
-      if (isRedirectOnlySitemapPath(new URL(location).pathname)) continue;
+      const pathname = new URL(location).pathname;
+      if (isRedirectOnlySitemapPath(pathname)) continue;
+      const materialSlug = pathname.match(/^\/(?:en|zh)\/materials\/([^/]+)$/)?.[1];
+      if (materialSlug && furnitureSlugSet.has(decodeURIComponent(materialSlug))) continue;
     } catch {
       continue;
     }
     if (!byLocation.has(location)) byLocation.set(location, block);
+  }
+  for (const slug of furnitureSlugSet) {
+    const path = `/furniture/product/${encodeURIComponent(slug)}`;
+    const en = `${PUBLIC_SITE_URL}/en${path}`;
+    const zh = `${PUBLIC_SITE_URL}/zh${path}`;
+    for (const location of [en, zh]) {
+      if (byLocation.has(location)) continue;
+      byLocation.set(location, `<url><loc>${location}</loc><xhtml:link rel="alternate" hreflang="en" href="${en}" /><xhtml:link rel="alternate" hreflang="zh-CN" href="${zh}" /><xhtml:link rel="alternate" hreflang="x-default" href="${en}" /></url>`);
+    }
   }
   const body = Array.from(byLocation.values()).sort((a, b) => {
     const left = a.match(/<loc>([^<]+)<\/loc>/i)?.[1] || "";
@@ -2044,10 +2072,10 @@ const serveDynamicSeoAsset = async (
   env: PagesEnv,
   loadStatic: () => Promise<Response>,
 ) => {
-  const [staticResponse, dynamicXml] = await Promise.all([loadStatic(), fetchLiveSitemapXml(env)]);
+  const [staticResponse, dynamicXml, furnitureSlugs] = await Promise.all([loadStatic(), fetchLiveSitemapXml(env), fetchLiveFurnitureSlugs(env)]);
   const staticText = staticResponse.ok ? await staticResponse.text() : "";
   if (pathname === "/sitemap.xml") {
-    const xml = mergeSitemapXml(staticText, dynamicXml);
+    const xml = mergeSitemapXml(staticText, dynamicXml, furnitureSlugs);
     return new Response(request.method === "HEAD" ? null : xml, {
       status: xml ? 200 : staticResponse.status,
       headers: dynamicAssetHeaders("application/xml; charset=utf-8"),
@@ -2058,7 +2086,7 @@ const serveDynamicSeoAsset = async (
     ? await env.ASSETS.fetch(new Request(new URL("/sitemap.xml", request.url).toString(), request))
     : null;
   const staticSitemapXml = staticSitemapResponse?.ok ? await staticSitemapResponse.text() : "";
-  const mergedSitemap = mergeSitemapXml(staticSitemapXml, dynamicXml);
+  const mergedSitemap = mergeSitemapXml(staticSitemapXml, dynamicXml, furnitureSlugs);
   const llms = replaceLlmsCanonicalUrls(staticText, sitemapCanonicalUrls(mergedSitemap));
   return new Response(request.method === "HEAD" ? null : llms, {
     status: llms ? 200 : staticResponse.status,

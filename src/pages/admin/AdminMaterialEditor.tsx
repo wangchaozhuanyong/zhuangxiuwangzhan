@@ -12,10 +12,15 @@ import AdminStickyActionBar from "@/components/admin/AdminStickyActionBar";
 import AdminPageHeader from "@/components/admin/AdminPageHeader";
 import AdminFormSection from "@/components/admin/AdminFormSection";
 import AdminEmptyState from "@/components/admin/AdminEmptyState";
+import AdminLoadingState from "@/components/admin/AdminLoadingState";
 import { adminConfirm } from "@/components/admin/AdminConfirmProvider";
 import ImageField from "@/components/admin/ImageField";
 import AdminMaterialImages from "@/pages/admin/AdminMaterialImages";
 import { adminMaterialEditorText } from "@/i18n/adminMaterialEditorText";
+import { adminFurnitureEditorText } from "@/i18n/adminFurnitureText";
+import { furnitureCategoryName, furnitureSubcategoryName } from "@/i18n/furnitureText";
+import { FURNITURE_MATERIAL_CATEGORY } from "@/lib/furnitureCatalogConfig";
+import { furnitureCatalog, getFurnitureProduct } from "@/lib/furnitureCatalog";
 import { invalidateAdminContentDetail, invalidateAfterAdminContentSave } from "@/lib/adminInvalidate";
 import { useAdminMaterialDetail } from "@/lib/adminBusinessContentQueries";
 import { adminStatusLabel, getAdminLang, publishStatusOptions } from "@/lib/adminLocale";
@@ -156,9 +161,10 @@ const toPriceMode = (value: unknown): MaterialRecord["price_mode"] =>
 const toPriceUnit = (value: unknown): MaterialRecord["price_unit"] =>
   value === "sqft" || value === "foot_run" || value === "unit" || value === "set" || value === "panel" || value === "scope" ? value : "none";
 
-export default function AdminMaterialEditor() {
+export default function AdminMaterialEditor({ furnitureMode = false }: { furnitureMode?: boolean }) {
   const language = getAdminLang();
   const A = useCallback((key: AdminMaterialEditorTextKey): string => adminMaterialEditorText[key][language], [language]);
+  const F = useCallback((key: keyof typeof adminFurnitureEditorText): string => adminFurnitureEditorText[key][language], [language]);
   const formatA = useCallback(
     (key: AdminMaterialEditorTextKey, values: Record<string, string>): string =>
       Object.entries(values).reduce<string>((text, [name, value]) => text.replaceAll(`{${name}}`, value), A(key)),
@@ -168,15 +174,16 @@ export default function AdminMaterialEditor() {
   const navigate = useNavigate();
   const { id } = useParams<{ id?: string }>();
   const isNew = isNewAdminRouteRecord(id);
+  const initialRecord = useMemo(() => furnitureMode ? { ...empty, category: FURNITURE_MATERIAL_CATEGORY } : empty, [furnitureMode]);
   const [showEnglish, setShowEnglish] = useState(true);
   const [slugChecking, setSlugChecking] = useState(false);
   const [slugError, setSlugError] = useState<string>("");
   const [saveBusy, setSaveBusy] = useState(false);
 
-  const { data: loaded, isLoading, isError, error: loadError } = useAdminMaterialDetail(isNew ? undefined : id);
+  const { data: loaded, isLoading, isError, error: loadError, refetch: refetchLoaded } = useAdminMaterialDetail(isNew ? undefined : id);
 
   const loadedRecord = useMemo<MaterialRecord | undefined>(() => {
-    if (isNew || !loaded) return isNew ? empty : undefined;
+    if (isNew || !loaded) return isNew ? initialRecord : undefined;
     const loadedRecordData = loaded as Partial<MaterialRecord>;
     return {
       ...empty,
@@ -201,13 +208,15 @@ export default function AdminMaterialEditor() {
       price_note_zh: toText(loadedRecordData.price_note_zh),
       price_note_en: toText(loadedRecordData.price_note_en),
     };
-  }, [isNew, loaded]);
+  }, [initialRecord, isNew, loaded]);
 
   const { state: record, setForm: setRecord, applyRemote, dirty } = useAdminFormState<MaterialRecord>(loadedRecord, {
-    resetKey: id ?? "new",
-    initial: empty,
+    resetKey: `${furnitureMode ? "furniture" : "material"}-${id ?? "new"}`,
+    initial: initialRecord,
   });
-  const englishMissing = hasAnyMissingEnglish(record as unknown as Record<string, unknown>, materialEnglishFields);
+  const isFurniture = furnitureMode || record.category === FURNITURE_MATERIAL_CATEGORY;
+  const selectedFurnitureCategory = furnitureCatalog.taxonomy.find((category) => category.key === record.subcategory && category.key !== "new");
+  const englishMissing = hasAnyMissingEnglish(record as unknown as Record<string, unknown>, isFurniture ? ["title_en", "excerpt_en", "content_en"] : materialEnglishFields);
   useUnsavedChangesWarning(dirty && !saveBusy);
 
   useEffect(() => {
@@ -221,6 +230,10 @@ export default function AdminMaterialEditor() {
       if (!hasMaterialBackendConfig()) return true;
       const value = normalizeMaterialSlug(slug);
       if (!value) return false;
+      if (isFurniture && getFurnitureProduct(value)) {
+        setSlugError(F("staticSlugConflict"));
+        return false;
+      }
       setSlugChecking(true);
       setSlugError("");
       try {
@@ -237,18 +250,38 @@ export default function AdminMaterialEditor() {
         setSlugChecking(false);
       }
     },
-    [A, language, record.id],
+    [A, F, isFurniture, language, record.id],
   );
 
   const previewUrl = useMemo(() => {
     const lang = "zh";
     const slug = record.slug ? normalizeMaterialSlug(record.slug) : "";
     if (!slug) return "";
-    return `/${lang}/materials/${slug}`;
-  }, [record.slug]);
+    return isFurniture ? `/${lang}/furniture/product/${slug}` : `/${lang}/materials/${slug}`;
+  }, [isFurniture, record.slug]);
 
   const save = async (nextStatus?: MaterialRecord["status"], generateEnglish?: boolean, forceEnglish?: boolean) => {
-    if (!hasMaterialBackendConfig()) return;
+    if (!hasMaterialBackendConfig() || saveBusy) return;
+    if (furnitureMode && !isNew && (!loaded || isLoading || isError)) return;
+    if (isFurniture && (nextStatus ?? record.status) === "published") {
+      const selectedCategory = furnitureCatalog.taxonomy.find((category) => category.key === record.subcategory && category.key !== "new");
+      if (!record.title_zh.trim() || !record.title_en.trim()) {
+        toast({ title: F("requiredBilingual"), variant: "destructive" });
+        return;
+      }
+      if (!record.image_url.trim()) {
+        toast({ title: F("requiredImage"), variant: "destructive" });
+        return;
+      }
+      if (!selectedCategory || (selectedCategory.subcategories.length > 0 && !selectedCategory.subcategories.some((item) => item.key === record.material_type))) {
+        toast({ title: F("requiredCategory"), variant: "destructive" });
+        return;
+      }
+      if ((record.price_mode === "range" || record.price_mode === "from") && record.price_min === "") {
+        toast({ title: F("requiredPrice"), variant: "destructive" });
+        return;
+      }
+    }
     const slug = normalizeMaterialSlug(record.slug || record.title_zh);
     if (!slug) {
       toast({ title: A("slugRequired"), variant: "destructive" });
@@ -264,7 +297,7 @@ export default function AdminMaterialEditor() {
     let savedResult: Awaited<ReturnType<typeof saveAdminMaterial>>;
     try {
       savedResult = await saveAdminMaterial({
-        record,
+        record: isFurniture ? { ...record, category: FURNITURE_MATERIAL_CATEGORY } : record,
         nextStatus,
         queryClient,
       });
@@ -280,7 +313,7 @@ export default function AdminMaterialEditor() {
     await invalidateAfterAdminContentSave(queryClient);
     setSaveBusy(false);
 
-    if (isNew) navigate(`/admin/materials/${savedId}`, { replace: true });
+    if (isNew) navigate(`${isFurniture ? "/admin/furniture" : "/admin/materials"}/${savedId}`, { replace: true });
 
     if (generateEnglish) {
       try {
@@ -309,13 +342,27 @@ export default function AdminMaterialEditor() {
     return <AdminEmptyState title={A("supabaseMissingTitle")} description={A("supabaseMissingDescription")} />;
   }
 
+  if (furnitureMode && !isNew && isLoading && !loaded) return <AdminLoadingState />;
+
+  if (furnitureMode && !isNew && (isError || !loaded)) {
+    return <AdminEmptyState
+      title={A("loadFailed")}
+      description={formatUserFacingError(loadError, language) || F("description")}
+      action={<Button type="button" onClick={() => void refetchLoaded()}>{F("retry")}</Button>}
+    />;
+  }
+
+  if (furnitureMode && !isNew && loaded && (loaded as Partial<MaterialRecord>).category !== FURNITURE_MATERIAL_CATEGORY) {
+    return <AdminEmptyState title={F("wrongRecord")} description={F("description")} action={<Button asChild><Link to="/admin/furniture">{A("backToList")}</Link></Button>} />;
+  }
+
   return (
     <>
     <AdminStickyActionBar
         left={
           <>
             <Button asChild variant="outline">
-              <Link to="/admin/materials">{A("backToList")}</Link>
+              <Link to={isFurniture ? "/admin/furniture" : "/admin/materials"}>{A("backToList")}</Link>
             </Button>
             {record.status && <span className="text-xs text-muted-foreground">{formatA("statusPrefix", { status: adminStatusLabel("default", record.status) })}</span>}
             {slugChecking && <span className="text-xs text-muted-foreground">{A("slugChecking")}</span>}
@@ -361,9 +408,9 @@ export default function AdminMaterialEditor() {
         className="space-y-6"
       >
         <AdminPageHeader
-          title={isNew ? A("newTitle") : A("editTitle")}
-          description={A("pageDescription")}
-          helpText={A("pageHelpText")}
+          title={isFurniture ? F(isNew ? "newTitle" : "editTitle") : isNew ? A("newTitle") : A("editTitle")}
+          description={isFurniture ? F("description") : A("pageDescription")}
+          helpText={isFurniture ? F("description") : A("pageHelpText")}
           actions={
             <Button type="button" variant="outline" onClick={() => setShowEnglish((v) => !v)}>
               {showEnglish ? A("hideEnglish") : A("showEnglish")}
@@ -377,7 +424,7 @@ export default function AdminMaterialEditor() {
           </div>
         )}
 
-        <AdminFormSection title={A("publishSectionTitle")} description={A("publishSectionDescription")} helpText={A("publishSectionHelp")}>
+        <AdminFormSection title={A("publishSectionTitle")} description={isFurniture ? F("description") : A("publishSectionDescription")} helpText={isFurniture ? F("description") : A("publishSectionHelp")}>
           <div className="grid gap-4 md:grid-cols-3">
             <div>
               <label className="mb-1 block text-sm font-medium">{A("status")}</label>
@@ -400,10 +447,10 @@ export default function AdminMaterialEditor() {
           </div>
         </AdminFormSection>
 
-        <AdminFormSection title={A("basicZhTitle")} description={A("basicZhDescription")} helpText={A("basicZhHelp")}>
+        <AdminFormSection title={A("basicZhTitle")} description={isFurniture ? F("description") : A("basicZhDescription")} helpText={isFurniture ? F("description") : A("basicZhHelp")}>
           <div className="grid gap-4 md:grid-cols-2">
             <div className="md:col-span-2">
-              <label className="mb-1 block text-sm font-medium">{A("materialName")}</label>
+              <label className="mb-1 block text-sm font-medium">{isFurniture ? F("productName") : A("materialName")}</label>
               <Input value={record.title_zh} onChange={(e) => setRecord((r) => ({ ...r, title_zh: e.target.value }))} />
             </div>
 
@@ -448,20 +495,55 @@ export default function AdminMaterialEditor() {
           </div>
         </AdminFormSection>
 
-        <AdminFormSection title={A("classificationTitle")} description={A("classificationDescription")} helpText={A("classificationHelp")}>
+        <AdminFormSection title={A("classificationTitle")} description={isFurniture ? F("description") : A("classificationDescription")} helpText={isFurniture ? F("description") : A("classificationHelp")}>
           <div className="grid gap-4 md:grid-cols-2">
-            <div>
-              <label className="mb-1 block text-sm font-medium">{A("category")}</label>
-              <Input value={record.category} onChange={(e) => setRecord((r) => ({ ...r, category: e.target.value }))} />
-            </div>
-            <div>
-              <label className="mb-1 block text-sm font-medium">{A("subcategory")}</label>
-              <Input value={record.subcategory} onChange={(e) => setRecord((r) => ({ ...r, subcategory: e.target.value }))} />
-            </div>
-            <div>
-              <label className="mb-1 block text-sm font-medium">{A("materialType")}</label>
-              <Input value={record.material_type} onChange={(e) => setRecord((r) => ({ ...r, material_type: e.target.value }))} />
-            </div>
+            {isFurniture ? (
+              <>
+                <div>
+                  <label className="mb-1 block text-sm font-medium">{F("roomCategory")}</label>
+                  <select
+                    value={record.subcategory}
+                    onChange={(e) => setRecord((r) => ({ ...r, subcategory: e.target.value, material_type: "" }))}
+                    className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+                  >
+                    <option value="">{F("chooseCategory")}</option>
+                    {furnitureCatalog.taxonomy.filter((category) => category.key !== "new").map((category) => (
+                      <option key={category.key} value={category.key}>{furnitureCategoryName(category.key, language)}</option>
+                    ))}
+                  </select>
+                </div>
+                {selectedFurnitureCategory?.subcategories.length ? (
+                  <div>
+                    <label className="mb-1 block text-sm font-medium">{F("itemCategory")}</label>
+                    <select
+                      value={record.material_type}
+                      onChange={(e) => setRecord((r) => ({ ...r, material_type: e.target.value }))}
+                      className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+                    >
+                      <option value="">{F("chooseItemCategory")}</option>
+                      {selectedFurnitureCategory.subcategories.map((item) => (
+                        <option key={item.key} value={item.key}>{furnitureSubcategoryName(item.key, language, item.name)}</option>
+                      ))}
+                    </select>
+                  </div>
+                ) : null}
+              </>
+            ) : (
+              <>
+                <div>
+                  <label className="mb-1 block text-sm font-medium">{A("category")}</label>
+                  <Input value={record.category} onChange={(e) => setRecord((r) => ({ ...r, category: e.target.value }))} />
+                </div>
+                <div>
+                  <label className="mb-1 block text-sm font-medium">{A("subcategory")}</label>
+                  <Input value={record.subcategory} onChange={(e) => setRecord((r) => ({ ...r, subcategory: e.target.value }))} />
+                </div>
+                <div>
+                  <label className="mb-1 block text-sm font-medium">{A("materialType")}</label>
+                  <Input value={record.material_type} onChange={(e) => setRecord((r) => ({ ...r, material_type: e.target.value }))} />
+                </div>
+              </>
+            )}
             <div>
               <label className="mb-1 block text-sm font-medium">{A("color")}</label>
               <Input value={record.color} onChange={(e) => setRecord((r) => ({ ...r, color: e.target.value }))} />
@@ -545,7 +627,7 @@ export default function AdminMaterialEditor() {
           </div>
         </AdminFormSection>
 
-        <AdminFormSection title={A("imageTitle")} description={A("imageDescription")} helpText={A("imageHelp")}>
+        <AdminFormSection title={A("imageTitle")} description={A("imageDescription")} helpText={isFurniture ? F("description") : A("imageHelp")}>
           <div className="grid gap-4 md:grid-cols-2">
             <div className="md:col-span-2">
               <ImageField
@@ -569,7 +651,7 @@ export default function AdminMaterialEditor() {
 
         <AdminMaterialImages materialId={record.id} />
 
-        <AdminFormSection title={A("usageZhTitle")} description={A("usageZhDescription")} helpText={A("usageZhHelp")}>
+        {!isFurniture ? <AdminFormSection title={A("usageZhTitle")} description={A("usageZhDescription")} helpText={A("usageZhHelp")}>
           <div className="grid gap-4 md:grid-cols-2">
             <div>
               <label className="mb-1 block text-sm font-medium">{A("suitableSpacesZh")}</label>
@@ -593,9 +675,9 @@ export default function AdminMaterialEditor() {
               <Textarea rows={3} value={record.note_zh} onChange={(e) => setRecord((r) => ({ ...r, note_zh: e.target.value }))} />
             </div>
           </div>
-        </AdminFormSection>
+        </AdminFormSection> : null}
 
-        <AdminFormSection title={A("seoZhTitle")} description={A("seoZhDescription")} helpText={A("seoZhHelp")}>
+        <AdminFormSection title={A("seoZhTitle")} description={A("seoZhDescription")} helpText={isFurniture ? F("description") : A("seoZhHelp")}>
           <div className="grid gap-4 md:grid-cols-2">
             <div className="md:col-span-2">
               <label className="mb-1 block text-sm font-medium">{A("seoTitleZh")}</label>
@@ -627,7 +709,7 @@ export default function AdminMaterialEditor() {
               </div>
             </AdminFormSection>
 
-        <AdminFormSection title={A("autoEnglishUsageTitle")} description={autoEnglishDescription} helpText={A("autoEnglishUsageHelp")} collapsible defaultOpen={false}>
+        {!isFurniture ? <AdminFormSection title={A("autoEnglishUsageTitle")} description={autoEnglishDescription} helpText={A("autoEnglishUsageHelp")} collapsible defaultOpen={false}>
               <div className="grid gap-4 md:grid-cols-2">
                 <div>
                   <label className="mb-1 block text-sm font-medium">{A("suitableSpacesEn")}</label>
@@ -650,7 +732,7 @@ export default function AdminMaterialEditor() {
                   <Textarea rows={3} value={record.note_en} onChange={(e) => setRecord((r) => ({ ...r, note_en: e.target.value }))} />
                 </div>
               </div>
-            </AdminFormSection>
+            </AdminFormSection> : null}
 
             <AdminFormSection title={A("englishSeoTitle")} description={autoEnglishDescription} helpText={A("englishSeoHelp")} collapsible defaultOpen={false}>
               <div className="grid gap-4 md:grid-cols-2">

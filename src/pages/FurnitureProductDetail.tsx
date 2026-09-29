@@ -7,6 +7,7 @@ import WhatsAppIcon from "@/components/WhatsAppIcon";
 import { JsonLdBreadcrumb } from "@/components/JsonLd";
 import { useSiteSettings } from "@/hooks/useSiteSettings";
 import { useLanguage } from "@/i18n/LanguageContext";
+import { usePublishedManagedFurnitureProductBySlug } from "@/hooks/usePublishedContent";
 import { furnitureCategoryName, furnitureText } from "@/i18n/furnitureText";
 import { furnitureShopUrl, getFurnitureProduct, getFurnitureProductCategory, localizeFurnitureProduct } from "@/lib/furnitureCatalog";
 
@@ -15,10 +16,29 @@ export default function FurnitureProductDetail() {
   const { language } = useLanguage();
   const copy = furnitureText[language];
   const settings = useSiteSettings();
-  const product = getFurnitureProduct(slug);
+  const staticProduct = getFurnitureProduct(slug);
+  const managedQuery = usePublishedManagedFurnitureProductBySlug(staticProduct ? undefined : slug, language);
+  const product = staticProduct || managedQuery.data;
   const [selectedImage, setSelectedImage] = useState(0);
 
   useEffect(() => setSelectedImage(0), [slug]);
+
+  if (!product && managedQuery.isFetching) return (
+    <main className="fc-route-page fc-furniture-page">
+      <PageMeta title={copy.title} description={copy.metaDescription} canonicalPath={`/furniture/product/${slug || ""}`} noIndex />
+      <div className="fc-furniture-not-found" role="status">{copy.loadingManagedProducts}</div>
+    </main>
+  );
+
+  if (!product && managedQuery.isError) return (
+    <main className="fc-route-page fc-furniture-page">
+      <PageMeta title={copy.title} description={copy.metaDescription} canonicalPath={`/furniture/product/${slug || ""}`} noIndex />
+      <div className="fc-furniture-not-found" role="alert">
+        <h1>{copy.managedLoadFailed}</h1>
+        <button type="button" onClick={() => void managedQuery.refetch()}>{copy.retry}</button>
+      </div>
+    </main>
+  );
 
   if (!product) return (
     <main className="fc-route-page fc-furniture-page">
@@ -40,7 +60,7 @@ export default function FurnitureProductDetail() {
 
   return (
     <main className="fc-route-page fc-furniture-page">
-      <PageMeta title={localizedProduct.name} description={copy.detailMeta.replace("{name}", localizedProduct.name)} canonicalPath={`/furniture/product/${encodeURIComponent(decodeURIComponent(product.slug))}`} ogImage={currentImage} />
+      <PageMeta title={product.seoTitle || localizedProduct.name} description={product.seoDescription || copy.detailMeta.replace("{name}", localizedProduct.name)} canonicalPath={`/furniture/product/${encodeURIComponent(decodeURIComponent(product.slug))}`} ogImage={currentImage} />
       <JsonLdBreadcrumb items={[
         { name: copy.home, url: "/" },
         { name: copy.title, url: "/furniture" },

@@ -13,19 +13,23 @@ import AdminStatusBadge from "@/components/admin/AdminStatusBadge";
 import AdminEmptyState from "@/components/admin/AdminEmptyState";
 import SmartImage from "@/components/SmartImage";
 import { adminMaterialListText } from "@/i18n/adminMaterialListText";
+import { adminFurnitureListText } from "@/i18n/adminFurnitureText";
+import { furnitureCategoryName, furnitureSubcategoryName, furnitureText } from "@/i18n/furnitureText";
+import { FURNITURE_MATERIAL_CATEGORY } from "@/lib/furnitureCatalogConfig";
 import { getAdminLang, publishStatusOptions } from "@/lib/adminLocale";
 import { formatUserFacingError } from "@/lib/userFacingText";
 
 type AdminMaterialListTextKey = keyof typeof adminMaterialListText;
 
-export default function AdminMaterialList() {
+export default function AdminMaterialList({ furnitureMode = false }: { furnitureMode?: boolean }) {
   const language = getAdminLang();
-  const A = (key: AdminMaterialListTextKey) => adminMaterialListText[key][language];
+  const A = (key: AdminMaterialListTextKey) => (furnitureMode ? adminFurnitureListText : adminMaterialListText)[key][language];
+  const basePath = furnitureMode ? "/admin/furniture" : "/admin/materials";
   const [status, setStatus] = useState<string>("all");
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(0);
   const deferredSearch = useDeferredValue(search);
-  const { data, error, isFetching, refetch } = useAdminMaterials({ page, status, search: deferredSearch });
+  const { data, error, isFetching, refetch } = useAdminMaterials({ page, status, search: deferredSearch, category: furnitureMode ? FURNITURE_MATERIAL_CATEGORY : undefined });
   const rows = data?.rows ?? [];
   const total = data?.count ?? 0;
   const pageSize = data?.pageSize ?? 30;
@@ -48,7 +52,7 @@ export default function AdminMaterialList() {
               {row.image_url ? <SmartImage src={row.image_url} alt={title} width={112} height={80} className="h-full w-full object-cover" /> : null}
             </div>
             <div className="min-w-0">
-              <Link to={`/admin/materials/${row.id}`} className="font-medium hover:underline">
+              <Link to={`${basePath}/${row.id}`} className="font-medium hover:underline">
                 {title}
               </Link>
               <div className="mt-0.5 text-xs text-muted-foreground">/{row.slug}</div>
@@ -62,9 +66,9 @@ export default function AdminMaterialList() {
       header: A("categoryHeader"),
       cell: (row) => (
         <div className="text-xs text-muted-foreground">
-          <div>{row.category || "-"}</div>
-          <div>{row.subcategory || "-"}</div>
-          <div>{row.material_type || "-"}</div>
+          <div>{furnitureMode ? furnitureText[language].title : row.category === FURNITURE_MATERIAL_CATEGORY ? furnitureText[language].title : row.category || "-"}</div>
+          <div>{furnitureMode && row.subcategory ? furnitureCategoryName(row.subcategory, language) : row.subcategory || "-"}</div>
+          <div>{furnitureMode && row.material_type ? furnitureSubcategoryName(row.material_type, language, row.material_type) : row.material_type || "-"}</div>
         </div>
       ),
     },
@@ -104,7 +108,7 @@ export default function AdminMaterialList() {
               {isFetching ? A("refreshing") : A("refresh")}
             </Button>
             <Button asChild>
-              <Link to="/admin/materials/new">{A("newMaterial")}</Link>
+              <Link to={`${basePath}/new`}>{A("newMaterial")}</Link>
             </Button>
           </div>
         }
@@ -142,7 +146,7 @@ export default function AdminMaterialList() {
               description={A("emptyDescription")}
               action={
                 <Button asChild>
-                  <Link to="/admin/materials/new">{A("newMaterial")}</Link>
+                  <Link to={`${basePath}/new`}>{A("newMaterial")}</Link>
                 </Button>
               }
             />
