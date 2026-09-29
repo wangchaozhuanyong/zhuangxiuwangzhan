@@ -121,7 +121,8 @@ const [projects, posts, materials, areas, landingPages, services] = await Promis
   fetchRows("landing_pages"),
   fetchRows("services"),
 ]);
-const materialSeoPaths = await loadMaterialSeoPaths(materials);
+const regularMaterials = materials.filter((item) => item.category !== "furniture");
+const materialSeoPaths = await loadMaterialSeoPaths(regularMaterials);
 
 const paths = unique([
   ...staticPaths,
@@ -129,7 +130,7 @@ const paths = unique([
   ...projects.map((item) => `/projects/${item.slug}`),
   ...posts.map((item) => `/blog/${item.slug}`),
   ...materialSeoPaths,
-  ...materials.map((item) => `/materials/${item.slug}`),
+  ...regularMaterials.map((item) => `/materials/${item.slug}`),
   ...areas.map((item) => `/locations/${item.slug}`),
   ...landingPages.filter((item) => !landingServiceRedirectSlugs.has(item.slug)).map((item) => `/landing/${item.slug}`),
   ...services.map((item) => `/services/${item.slug}`),

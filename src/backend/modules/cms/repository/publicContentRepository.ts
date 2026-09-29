@@ -154,16 +154,51 @@ export async function fetchPublishedProjectRowBySlug(slug: string) {
   return data || null;
 }
 
-export async function fetchPublishedMaterialRows(limit?: number) {
+export async function fetchPublishedMaterialRows(limit?: number, excludedCategory?: string) {
   const supabase = await getPublicContentClient();
   if (!supabase) return null;
-  const query = applyLimit(
-    supabase.from("materials").select("*").eq("status", "published").order("sort_order"),
-    limit,
-  );
+  let query = supabase.from("materials").select("*").eq("status", "published").order("sort_order");
+  if (excludedCategory) query = query.or(`category.is.null,category.neq.${excludedCategory}`);
+  query = applyLimit(query, limit);
   const { data, error } = await query;
   if (error) return null;
   return data || [];
+}
+
+export async function fetchPublishedMaterialRowsByCategory(category: string) {
+  const supabase = await getPublicContentClient();
+  if (!supabase) return null;
+  const { data, error } = await supabase
+    .from("materials")
+    .select("*")
+    .eq("status", "published")
+    .eq("category", category)
+    .order("sort_order", { ascending: true })
+    .order("created_at", { ascending: false });
+  if (error) throw error;
+  return data || [];
+}
+
+export async function fetchPublishedMaterialBySlugAndCategory(slug: string, category: string) {
+  const supabase = await getPublicContentClient();
+  if (!supabase) return null;
+  const { data, error } = await supabase
+    .from("materials")
+    .select("*")
+    .eq("status", "published")
+    .eq("category", category)
+    .eq("slug", slug)
+    .maybeSingle();
+  if (error) throw error;
+  if (!data) return null;
+
+  const { data: gallery, error: galleryError } = await supabase
+    .from("material_images")
+    .select("image_url,sort_order")
+    .eq("material_id", data.id)
+    .eq("is_active", true)
+    .order("sort_order", { ascending: true });
+  return galleryError ? data : { ...data, material_images: gallery || [] };
 }
 
 export async function fetchPublishedMaterialRowBySlug(slug: string) {

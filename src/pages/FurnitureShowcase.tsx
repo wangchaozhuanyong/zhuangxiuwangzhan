@@ -5,8 +5,9 @@ import LocalizedLink from "@/components/LocalizedLink";
 import { JsonLdBreadcrumb } from "@/components/JsonLd";
 import { SchemeARouteHero } from "@/components/scheme-a/SchemeARoutePrimitives";
 import { useLanguage } from "@/i18n/LanguageContext";
+import { usePublishedManagedFurnitureProducts } from "@/hooks/usePublishedContent";
 import { furnitureCategoryName, furnitureSubcategoryName, furnitureText } from "@/i18n/furnitureText";
-import { furnitureCatalog, furnitureProductPath, furnitureShopUrl, getFurnitureCategory, getFurnitureProducts, getFurnitureSubcategory, localizeFurnitureProduct } from "@/lib/furnitureCatalog";
+import { furnitureCatalog, furnitureProductPath, furnitureShopUrl, getFurnitureCategory, getFurnitureProducts, getFurnitureSubcategory, getManagedFurnitureProductsForCategory, localizeFurnitureProduct } from "@/lib/furnitureCatalog";
 
 const pageSize = 18;
 
@@ -15,11 +16,15 @@ export default function FurnitureShowcase() {
   const [searchParams] = useSearchParams();
   const { language } = useLanguage();
   const copy = furnitureText[language];
+  const managedQuery = usePublishedManagedFurnitureProducts(language);
+  const managedProducts = managedQuery.data || [];
   const category = getFurnitureCategory(categoryKey || "new");
   const subcategory = category && subcategoryKey ? getFurnitureSubcategory(category, subcategoryKey) : undefined;
   const validSelection = Boolean(category && (!subcategoryKey || subcategory));
   const urls = validSelection ? (subcategory?.productUrls || category?.productUrls || []) : [];
-  const products = getFurnitureProducts(urls);
+  const products = validSelection
+    ? [...getManagedFurnitureProductsForCategory(managedProducts, category!.key, subcategory?.key), ...getFurnitureProducts(urls)]
+    : [];
   const totalPages = Math.max(1, Math.ceil(products.length / pageSize));
   const requestedPage = Number(searchParams.get("page") || 1);
   const page = Number.isInteger(requestedPage) ? Math.min(totalPages, Math.max(1, requestedPage)) : 1;
@@ -55,7 +60,7 @@ export default function FurnitureShowcase() {
           {furnitureCatalog.taxonomy.map((item) => (
             <LocalizedLink key={item.key} to={item.key === "new" ? "/furniture" : `/furniture/${item.key}`} aria-current={category?.key === item.key ? "page" : undefined}>
               <span>{furnitureCategoryName(item.key, language)}</span>
-              <small>{item.productUrls.length}</small>
+              <small>{item.productUrls.length + getManagedFurnitureProductsForCategory(managedProducts, item.key).length}</small>
             </LocalizedLink>
           ))}
         </nav>
@@ -68,6 +73,12 @@ export default function FurnitureShowcase() {
               </LocalizedLink>
             ))}
           </nav>
+        ) : null}
+        {managedQuery.isFetching && !managedQuery.data ? <p className="fc-furniture-sync-status" role="status">{copy.loadingManagedProducts}</p> : null}
+        {managedQuery.isError ? (
+          <div className="fc-furniture-sync-status" role="alert">
+            {copy.managedLoadFailed} <button type="button" onClick={() => void managedQuery.refetch()}>{copy.retry}</button>
+          </div>
         ) : null}
         <div className="fc-furniture-list-head">
           <span>{subcategoryLabel || categoryLabel}</span>

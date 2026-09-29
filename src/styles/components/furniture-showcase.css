@@ -234,6 +234,9 @@
 .fc-furniture-not-found { padding: 5rem 1rem; text-align: center; }
 .fc-furniture-not-found h1 { margin-bottom: 1.5rem; font-size: 2rem; }
 .fc-furniture-not-found a { color: var(--furniture-accent); }
+.fc-furniture-sync-status { margin: 1rem 0; color: var(--furniture-muted); font-size: 0.88rem; }
+.fc-furniture-sync-status button,
+.fc-furniture-not-found button { color: var(--furniture-accent); text-decoration: underline; text-underline-offset: 0.2em; }
 
 .fc-furniture-detail { padding-top: clamp(2rem, 4vw, 3.5rem); }
 .fc-furniture-back { display: inline-flex; margin-bottom: 2rem; color: var(--furniture-accent); font-size: 0.9rem; }

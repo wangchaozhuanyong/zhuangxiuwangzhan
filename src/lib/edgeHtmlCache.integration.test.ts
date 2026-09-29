@@ -241,6 +241,62 @@ describe("public Edge HTML cache", () => {
     expect(xml).not.toContain("https://flashcast.com.my/zh/landing/office-renovation");
   });
 
+  it("publishes admin furniture URLs in the sitemap without material detail URLs", async () => {
+    const dynamicSitemap = '<urlset><url><loc>https://flashcast.com.my/en/materials/test-furniture-chair</loc></url><url><loc>https://flashcast.com.my/zh/materials/test-furniture-chair</loc></url></urlset>';
+    vi.stubGlobal("fetch", vi.fn(async (input: RequestInfo | URL) => {
+      const url = new URL(String(input));
+      if (url.pathname.endsWith("/functions/v1/sitemap")) return new Response(dynamicSitemap);
+      if (url.pathname.endsWith("/rest/v1/materials") && url.searchParams.get("category") === "eq.furniture") {
+        return new Response('[{"slug":"test-furniture-chair"}]', { headers: { "content-type": "application/json" } });
+      }
+      return new Response("[]", { headers: { "content-type": "application/json" } });
+    }));
+
+    const response = await onRequest({
+      request: new Request("https://flashcast.com.my/sitemap.xml"),
+      env: {
+        VITE_SUPABASE_URL: "https://example.supabase.co",
+        VITE_SUPABASE_ANON_KEY: "test-anon-key",
+        ASSETS: { fetch: async () => new Response("<urlset></urlset>") },
+      },
+      next: async () => new Response("not used"),
+    } as never);
+    const xml = await response.text();
+
+    expect(xml).toContain("https://flashcast.com.my/en/furniture/product/test-furniture-chair");
+    expect(xml).toContain("https://flashcast.com.my/zh/furniture/product/test-furniture-chair");
+    expect(xml).not.toContain("/materials/test-furniture-chair");
+  });
+
+  it("serves localized metadata for a published admin furniture product", async () => {
+    vi.stubGlobal("fetch", vi.fn(async (input: RequestInfo | URL) => {
+      const url = new URL(String(input));
+      if (url.pathname.endsWith("/rest/v1/materials")) {
+        expect(url.searchParams.get("category")).toBe("eq.furniture");
+        return new Response(JSON.stringify([{
+          id: "managed-furniture-1",
+          slug: "test-furniture-chair",
+          category: "furniture",
+          status: "published",
+          title_zh: "测试餐椅",
+          title_en: "Test dining chair",
+          seo_description_zh: "测试餐椅的商品详情",
+          image_url: "/images/furniture/test-chair.webp",
+          updated_at: "2026-09-29T00:00:00.000Z",
+        }]), { headers: { "content-type": "application/json" } });
+      }
+      return new Response("[]", { headers: { "content-type": "application/json" } });
+    }));
+
+    const response = await requestPage({ path: "/zh/furniture/product/test-furniture-chair" });
+    const html = await response.text();
+
+    expect(response.status).toBe(200);
+    expect(html).toContain("测试餐椅");
+    expect(html).toContain('rel="canonical" href="https://flashcast.com.my/zh/furniture/product/test-furniture-chair"');
+    expect(html).toContain("测试餐椅的商品详情");
+  });
+
   it("reads only blog metadata at the Edge and never uses the article body as the description fallback", async () => {
     const requestedSelects: string[] = [];
     vi.stubGlobal("fetch", vi.fn(async (input: RequestInfo | URL) => {

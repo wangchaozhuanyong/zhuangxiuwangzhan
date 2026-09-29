@@ -28,6 +28,7 @@ import {
   getPublishedSitePage,
 } from "@/lib/homeContentApi";
 import { isSupabaseConfigured } from "@/lib/supabaseConfig";
+import { getPublishedManagedFurnitureProductBySlug, getPublishedManagedFurnitureProducts } from "@/lib/furnitureCatalog";
 
 const STALE = 60 * 1000;
 const GC = 30 * 60 * 1000;
@@ -86,6 +87,24 @@ export function usePublishedMaterials(language: "en" | "zh", options?: PublicQue
     queryKey: ["published", "materials", language],
     queryFn: () => getPublishedMaterials(language),
     enabled: isEnabled(options),
+    ...queryDefaults,
+  });
+}
+
+export function usePublishedManagedFurnitureProducts(language: "en" | "zh", options?: PublicQueryOptions) {
+  return useQuery({
+    queryKey: ["published", "furniture", language],
+    queryFn: () => getPublishedManagedFurnitureProducts(language),
+    enabled: isSupabaseQueryEnabled(options),
+    ...queryDefaults,
+  });
+}
+
+export function usePublishedManagedFurnitureProductBySlug(slug: string | undefined, language: "en" | "zh") {
+  return useQuery({
+    queryKey: ["published", "furniture", "detail", slug, language],
+    queryFn: () => getPublishedManagedFurnitureProductBySlug(slug!, language),
+    enabled: isSupabaseConfigured && Boolean(slug),
     ...queryDefaults,
   });
 }
