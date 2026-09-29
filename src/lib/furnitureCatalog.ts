@@ -53,7 +53,7 @@ export type FurnitureCatalog = {
 export const furnitureCatalog = catalogJson as FurnitureCatalog;
 const localizedProducts = catalogZhJson as Record<string, Pick<FurnitureProduct, "name" | "shortDescription" | "description">>;
 const localizedEnglishProducts = catalogEnJson as Record<string, Pick<FurnitureProduct, "name" | "shortDescription" | "description">>;
-export const furnitureShopUrl = "https://shop.flashcast.com.my/";
+export { furnitureShopUrl } from "@/lib/furnitureCatalogConfig";
 
 export const localizeFurnitureProduct = (product: FurnitureProduct, language: Language): FurnitureProduct =>
   language === "zh"
