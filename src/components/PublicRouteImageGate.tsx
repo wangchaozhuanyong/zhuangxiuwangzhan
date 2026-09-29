@@ -49,7 +49,9 @@ export function PublicRouteImageGate({ children, routeKey }: { children: ReactNo
       const images = [...main.querySelectorAll<HTMLImageElement>("img"), ...(brandImage ? [brandImage] : [])].filter((img) => {
         if (img.dataset.criticalImage === "true") return true;
         const rect = img.getBoundingClientRect();
-        return rect.width > 0 && rect.height > 0 && rect.bottom > 0 && rect.top < window.innerHeight;
+        return rect.width > 0 && rect.height > 0
+          && rect.bottom > 0 && rect.top < window.innerHeight
+          && rect.right > 0 && rect.left < window.innerWidth;
       });
       return images.every((img) => (img.dataset.imageState === "loaded" && img.dataset.decodedSrc === img.currentSrc) || img.dataset.imageState === "error"
         || (!img.dataset.imageState && img.complete && img.naturalWidth > 0));

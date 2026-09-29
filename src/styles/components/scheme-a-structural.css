@@ -60,7 +60,7 @@
 
   html[data-public-theme="dark"] .scheme-a-eyebrow {
     color: var(--scheme-a-gold);
-    font-size: clamp(0.66rem, 1vw, 0.75rem);
+    font-size: clamp(0.75rem, 1vw, 0.82rem);
     line-height: 1.5;
     letter-spacing: 0.13em;
   }

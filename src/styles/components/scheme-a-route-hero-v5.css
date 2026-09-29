@@ -11,7 +11,7 @@
   height: auto;
   align-items: stretch;
   overflow: hidden;
-  background: #0d0e11;
+  background: var(--public-surface-base);
 }
 
 .scheme-a-public-shell .fc-route-page .fc-route-hero::before {
@@ -33,8 +33,8 @@
   align-items: flex-start;
   justify-content: center;
   border-right: 0;
-  color: #f5f1e9;
-  background: #0d0e11;
+  color: var(--public-text-primary);
+  background: var(--public-surface-base);
 }
 
 .scheme-a-public-shell .fc-route-page .fc-route-hero-copy::after {
@@ -43,7 +43,7 @@
 
 .scheme-a-public-shell .fc-route-page .fc-route-hero h1 {
   max-width: none;
-  color: #fff;
+  color: var(--public-text-primary);
   font-size: clamp(44px, 3.2vw, 60px);
   font-family: var(--font-display);
   text-wrap: balance;
@@ -63,7 +63,7 @@
   max-width: 38em;
   margin-top: 20px;
   order: 3;
-  color: rgba(245, 241, 233, 0.76);
+  color: var(--public-text-secondary);
   font-size: 17px;
   line-height: 1.8;
   letter-spacing: 0.01em;
@@ -86,11 +86,11 @@
   align-items: center;
   justify-content: center;
   gap: 10px;
-  border: 1px solid #d6b66a;
+  border: 1px solid var(--public-accent);
   padding: 12px 20px;
   color: #14120d;
-  background: #d6b66a;
-  font-size: 12px;
+  background: var(--public-accent);
+  font-size: 13px;
   font-weight: 700;
   letter-spacing: 0.04em;
   text-decoration: none;
@@ -104,8 +104,8 @@
 
 @media (hover: hover) {
   .scheme-a-public-shell .fc-route-page .fc-route-hero-actions a:hover {
-    border-color: #e5ca7c;
-    background: #e5ca7c;
+    border-color: var(--public-accent-hover);
+    background: var(--public-accent-hover);
     transform: translateY(-2px);
   }
 }
@@ -137,14 +137,14 @@
 }
 
 .scheme-a-public-shell .fc-route-page .fc-route-hero-support dt {
-  color: rgba(229, 202, 124, 0.82);
+  color: var(--public-accent);
   font-weight: 600;
   white-space: nowrap;
 }
 
 .scheme-a-public-shell .fc-route-page .fc-route-hero-support dd {
   min-width: 0;
-  color: rgba(245, 241, 233, 0.7);
+  color: var(--public-text-secondary);
   text-wrap: pretty;
 }
 
@@ -160,7 +160,7 @@
   min-height: 0;
   margin-top: 0;
   overflow: hidden;
-  background: #17181a;
+  background: var(--public-surface-section);
 }
 
 .scheme-a-public-shell .fc-route-page .fc-route-hero-media::after {
@@ -207,7 +207,7 @@
     min-height: 0;
     flex-direction: column;
     justify-content: flex-start;
-    background: #0d0e11;
+    background: var(--public-surface-base);
   }
 
   .scheme-a-public-shell .fc-route-page .fc-route-hero-media {
@@ -233,9 +233,9 @@
     width: 100%;
     min-height: 0;
     padding: clamp(42px, 7vw, 62px) clamp(32px, 6vw, 64px) clamp(50px, 8vw, 72px);
-    border-top: 1px solid rgba(214, 182, 126, 0.42);
+    border-top: 1px solid var(--public-border);
     border-right: 0;
-    background: #0d0e11;
+    background: var(--public-surface-base);
   }
 
   .scheme-a-public-shell .fc-route-page .fc-route-hero-actions,
@@ -254,10 +254,17 @@
   }
 
   .scheme-a-public-shell .fc-route-page .fc-route-hero-copy > p {
-    max-width: 46em;
+    width: min(100%, 42rem);
+    max-width: 100%;
+    margin-inline: auto;
     margin-top: 24px;
-    font-size: 14.5px;
-    line-height: 1.9;
+    font-size: 16px;
+    line-height: 1.75;
+    text-align: left;
+  }
+
+  .scheme-a-public-shell .fc-route-page .fc-route-hero-support :is(dt, dd) {
+    font-size: 13px;
   }
 }
 
@@ -265,11 +272,11 @@
   .scheme-a-public-shell .fc-route-page .fc-route-hero {
     position: relative;
     overflow: hidden;
-    background: #0d0e11;
+    background: var(--public-surface-base);
   }
 
   .scheme-a-public-shell .fc-route-page .fc-route-hero-media {
-    height: clamp(260px, 72vw, 340px);
+    height: clamp(228px, 62vw, 290px);
     position: relative;
     margin-top: 56px;
   }
@@ -280,35 +287,42 @@
 
   .scheme-a-public-shell .fc-route-page .fc-route-hero-copy {
     margin-top: 0;
-    padding: 20px var(--scheme-a-gutter, 16px) 16px;
+    padding: 22px var(--scheme-a-gutter, 16px) 20px;
     border-top: 0;
-    background: #0d0e11;
+    background: var(--public-surface-base);
   }
 
   .scheme-a-public-shell .fc-route-page .fc-route-hero h1 {
-    max-width: 15ch;
+    max-width: 100%;
     font-size: clamp(30px, 8.5vw, 38px);
     line-height: 1.18;
-    color: #ffffff;
+    color: var(--public-text-primary);
     text-shadow: none;
   }
 
   .scheme-a-public-shell .fc-route-page .fc-route-hero h1.fc-route-title-long {
-    max-width: 17ch;
+    max-width: 100%;
     font-size: clamp(26px, 7.5vw, 32px);
   }
 
   .scheme-a-public-shell .fc-route-page .fc-route-hero-copy > p {
     order: 4;
     margin-top: 14px;
-    color: rgba(245, 241, 233, 0.82);
-    font-size: 13.5px;
-    line-height: 1.65;
+    color: var(--public-text-secondary);
+    font-size: 15px;
+    line-height: 1.7;
+    text-wrap: pretty;
+    text-align: left;
   }
 
   .scheme-a-public-shell .fc-route-page .fc-route-hero-support {
-    gap: 8px;
-    margin-top: 18px;
+    gap: 5px;
+    margin-top: 14px;
+  }
+
+  .scheme-a-public-shell .fc-route-page .fc-route-hero-support :is(dt, dd) {
+    font-size: 13px;
+    line-height: 1.65;
   }
 
   .scheme-a-public-shell .fc-route-page .fc-route-hero-actions {
@@ -325,5 +339,39 @@
 @media (prefers-reduced-motion: reduce) {
   .scheme-a-public-shell .fc-route-page .fc-route-hero-media img {
     transition: none;
+  }
+}
+
+/* The promotions introduction is a short editorial statement. Its longer
+   qualification text keeps a fixed reading column below the centred title. */
+@media (min-width: 1024px) {
+  .scheme-a-public-shell .fc-route-promotions-page .fc-route-hero-copy {
+    align-items: center;
+    text-align: center;
+  }
+
+  .scheme-a-public-shell .fc-route-promotions-page .fc-route-hero-copy > p {
+    width: min(100%, 35rem);
+    margin-inline: auto;
+    text-align: center;
+  }
+
+  .scheme-a-public-shell .fc-route-promotions-page .fc-route-hero-support > div {
+    justify-content: center;
+  }
+}
+
+@media (max-width: 1023px) {
+  .scheme-a-public-shell .fc-route-promotions-page .fc-route-hero-copy > p {
+    width: min(100%, 42rem);
+    text-align: left;
+  }
+
+  .scheme-a-public-shell .fc-route-promotions-page .fc-route-hero-support > div {
+    display: grid;
+    grid-template-columns: minmax(4.5rem, auto) minmax(0, 1fr);
+    gap: 10px;
+    justify-content: stretch;
+    text-align: left;
   }
 }

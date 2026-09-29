@@ -5,8 +5,8 @@
    * hard-coded paddings into an oversized blank band.
    */
   html[lang][data-public-theme="dark"] {
-    --public-section-space-start: clamp(24px, 2.2vw, 32px);
-    --public-section-space-end: clamp(24px, 2.2vw, 32px);
+    --public-section-space-start: clamp(32px, 3vw, 40px);
+    --public-section-space-end: clamp(32px, 3vw, 40px);
   }
 
   html[lang][data-public-theme="dark"] .scheme-a-home--atelier :is(
@@ -32,15 +32,40 @@
 
   @media (min-width: 1024px) {
     html[lang][data-public-theme="dark"] {
-      --public-section-space-start: 32px;
-      --public-section-space-end: 32px;
+      --public-section-space-start: 44px;
+      --public-section-space-end: 44px;
     }
   }
 
   @media (max-width: 47.9375rem) {
     html[lang][data-public-theme="dark"] {
-    --public-section-space-start: 18px;
-    --public-section-space-end: 18px;
+      --public-section-space-start: 28px;
+      --public-section-space-end: 28px;
     }
+  }
+
+  html[lang][data-public-theme="dark"] .fc-route-promotions-offers {
+    padding-top: clamp(64px, 7vw, 88px);
+    padding-bottom: clamp(64px, 7vw, 88px);
+  }
+
+  /* One restrained corner shape for public actions; cards and media keep their own geometry. */
+  .scheme-a-public-shell :is(
+    button,
+    input[type="submit"],
+    [role="button"],
+    .scheme-a-button,
+    .btn-brand-primary,
+    .btn-brand-secondary,
+    .btn-on-dark-primary,
+    .btn-on-dark-secondary,
+    .fc-furniture-primary a,
+    .fc-furniture-secondary a,
+    .fc-furniture-card__actions a,
+    .fc-furniture-entry__link,
+    .fc-route-more,
+    .fc-route-action-panel a
+  ) {
+    border-radius: 6px !important;
   }
 }
