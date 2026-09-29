@@ -1,4 +1,5 @@
 import { useParams, useSearchParams } from "react-router-dom";
+import type { MouseEvent } from "react";
 import { SmartImage } from "@/components/SmartImage";
 import PageMeta from "@/components/PageMeta";
 import LocalizedLink from "@/components/LocalizedLink";
@@ -8,8 +9,14 @@ import { useLanguage } from "@/i18n/LanguageContext";
 import { usePublishedManagedFurnitureProducts } from "@/hooks/usePublishedContent";
 import { furnitureCategoryName, furnitureSubcategoryName, furnitureText } from "@/i18n/furnitureText";
 import { furnitureCatalog, furnitureProductPath, furnitureShopUrl, getFurnitureCategory, getFurnitureProducts, getFurnitureSubcategory, getManagedFurnitureProductsForCategory, localizeFurnitureProduct } from "@/lib/furnitureCatalog";
+import { rememberFurnitureNavigationScroll } from "@/lib/publicScrollRestoration";
 
 const pageSize = 18;
+
+const keepFurnitureScrollPosition = (event: MouseEvent<HTMLAnchorElement>) => {
+  if (event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+  rememberFurnitureNavigationScroll(event.currentTarget.pathname, window.scrollY);
+};
 
 export default function FurnitureShowcase() {
   const { category: categoryKey, subcategory: subcategoryKey } = useParams<{ category?: string; subcategory?: string }>();
@@ -58,7 +65,7 @@ export default function FurnitureShowcase() {
       <div className="fc-furniture-body">
         <nav className="fc-furniture-primary" aria-label={copy.title}>
           {furnitureCatalog.taxonomy.map((item) => (
-            <LocalizedLink key={item.key} to={item.key === "new" ? "/furniture" : `/furniture/${item.key}`} aria-current={category?.key === item.key ? "page" : undefined}>
+            <LocalizedLink key={item.key} to={item.key === "new" ? "/furniture" : `/furniture/${item.key}`} viewTransition={false} onClick={keepFurnitureScrollPosition} aria-current={category?.key === item.key ? "page" : undefined}>
               <span>{furnitureCategoryName(item.key, language)}</span>
               <small>{item.productUrls.length + getManagedFurnitureProductsForCategory(managedProducts, item.key).length}</small>
             </LocalizedLink>
@@ -66,9 +73,9 @@ export default function FurnitureShowcase() {
         </nav>
         {category?.subcategories.length ? (
           <nav className="fc-furniture-secondary" aria-label={categoryLabel}>
-            <LocalizedLink to={`/furniture/${category.key}`} aria-current={!subcategory ? "page" : undefined}>{copy.allProducts}</LocalizedLink>
+            <LocalizedLink to={`/furniture/${category.key}`} viewTransition={false} onClick={keepFurnitureScrollPosition} aria-current={!subcategory ? "page" : undefined}>{copy.allProducts}</LocalizedLink>
             {category.subcategories.map((item) => (
-              <LocalizedLink key={item.key} to={`/furniture/${category.key}/${item.key}`} aria-current={subcategory?.key === item.key ? "page" : undefined}>
+              <LocalizedLink key={item.key} to={`/furniture/${category.key}/${item.key}`} viewTransition={false} onClick={keepFurnitureScrollPosition} aria-current={subcategory?.key === item.key ? "page" : undefined}>
                 {furnitureSubcategoryName(item.key, language, item.name)}
               </LocalizedLink>
             ))}

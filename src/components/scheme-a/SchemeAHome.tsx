@@ -170,9 +170,9 @@ const SchemeAHome = ({ content }: SchemeAHomeProps) => {
             <p className="scheme-a-eyebrow">{copy.servicesLabel}</p>
             <h2>{copy.servicesTitle}</h2>
             <div className="scheme-a-services__context">
-              <p>{copy.designPrompt} <LocalizedLink to="/services/design">{copy.designLink}<ArrowUpRight aria-hidden="true" /></LocalizedLink></p>
-              <p>{copy.repairPrompt} <LocalizedLink to="/services/surface-repair">{copy.repairLink}<ArrowUpRight aria-hidden="true" /></LocalizedLink></p>
-              <p>{copy.areasPrompt} <LocalizedLink to="/locations">{copy.areasLink}<ArrowUpRight aria-hidden="true" /></LocalizedLink></p>
+              <p><span>{copy.designPrompt} </span><LocalizedLink to="/services/design">{copy.designLink}<ArrowUpRight aria-hidden="true" /></LocalizedLink></p>
+              <p><span>{copy.repairPrompt} </span><LocalizedLink to="/services/surface-repair">{copy.repairLink}<ArrowUpRight aria-hidden="true" /></LocalizedLink></p>
+              <p><span>{copy.areasPrompt} </span><LocalizedLink to="/locations">{copy.areasLink}<ArrowUpRight aria-hidden="true" /></LocalizedLink></p>
             </div>
           </header>
           <ol>

@@ -15,6 +15,7 @@ import { initAnalytics, trackPageView } from "@/lib/analytics";
 import { recordWebsiteVisit } from "@/lib/websiteVisits";
 import { getAdminLang } from "@/lib/adminLocale";
 import { focusElementByIdWhenReady } from "@/lib/instantScroll";
+import { isFurnitureListingPath } from "@/lib/publicScrollRestoration";
 import { publicRoutes } from "@/routes/publicRoutes";
 import { PublicRouteImageGate } from "@/components/PublicRouteImageGate";
 import { publicContentStatusText } from "@/i18n/publicContentStatusText";
@@ -221,14 +222,16 @@ const AppShell = () => {
   const publicPath = stripLanguagePrefix(location.pathname);
   const isHomeRoute = !isAdminRoute && publicPath === "/";
   const isProductDetailRoute = !isAdminRoute && (/^\/products\/[^/]+$/.test(publicPath) || /^\/furniture\/product\/[^/]+$/.test(publicPath));
+  const isFurnitureListingRoute = !isAdminRoute && isFurnitureListingPath(location.pathname);
   const publicMainClass = isAdminRoute
     ? undefined
     : isHomeRoute
       ? "public-main public-main--home"
       : "public-main public-main--subpage";
-  const publicMainTransitionClass = !isAdminRoute ? "public-main-transition" : undefined;
+  const publicMainTransitionClass = !isAdminRoute && !isFurnitureListingRoute ? "public-main-transition" : undefined;
   const mainContentClass = [publicMainClass, publicMainTransitionClass].filter(Boolean).join(" ") || undefined;
-  const mainContentKey = isAdminRoute ? "admin-main-content" : publicPath;
+  const mainContentKey = isAdminRoute ? "admin-main-content" : isFurnitureListingRoute ? "furniture-listing" : publicPath;
+  const publicImageGateKey = isFurnitureListingRoute ? mainContentKey : location.key;
   const publicSurface = publicPath.startsWith("/landing/") ? "campaign" : "scheme-a";
 
   useEffect(() => {
@@ -269,7 +272,7 @@ const AppShell = () => {
           <SchemeANavbar />
           <PublicCinematicMotionGate />
           <PublicPageFrame isAdminRoute={false}>
-            <PublicRouteImageGate key={location.key} routeKey={location.pathname}>
+            <PublicRouteImageGate key={publicImageGateKey} routeKey={location.pathname}>
               <div key={mainContentKey} id="main-content" tabIndex={-1} className={mainContentClass} data-public-surface={publicSurface}>
                 <AppErrorBoundary isAdminRoute={false}>
                   <Suspense fallback={<PageLoader />}>
@@ -279,10 +282,10 @@ const AppShell = () => {
               </div>
             </PublicRouteImageGate>
             <SchemeAFooterPrelude />
+            <FurnitureFloatingLink />
             <SchemeAFooter />
             <PublicUpdateNotice />
             <MobileBottomDock />
-            <FurnitureFloatingLink />
           </PublicPageFrame>
         </PublicSiteShell>
       )}

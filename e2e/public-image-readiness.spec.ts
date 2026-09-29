@@ -1,7 +1,22 @@
 import { expect, test } from "@playwright/test";
+import path from "node:path";
 
 const loader = ".scheme-a-page-loader--overlay";
 const criticalImage = "#main-content img[data-critical-image='true']";
+
+test("does not hold a mobile product detail for offscreen gallery thumbnails", async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.route("**/*", (route) => route.request().resourceType() === "image"
+    ? route.fulfill({ path: path.join(process.cwd(), "public/logo-flashcast.png"), contentType: "image/png" })
+    : route.fallback());
+  await page.goto("/zh/furniture/product/ws-2102-wooden-bunk-bed-white", { waitUntil: "domcontentloaded" });
+  await expect(page.locator(".fc-furniture-gallery__main img")).toHaveAttribute("data-image-state", "loaded");
+  const offscreenThumbnails = await page.locator(".fc-furniture-gallery__thumbs img").evaluateAll((images) =>
+    images.filter((image) => image.getBoundingClientRect().left >= window.innerWidth && !image.currentSrc).length,
+  );
+  expect(offscreenThumbnails).toBeGreaterThan(0);
+  await expect(page.locator(loader)).toBeHidden({ timeout: 3000 });
+});
 
 test("shows the brand screen on direct load without repeating it during navigation", async ({ page }) => {
   await page.route("**/images/**", async (route) => {

@@ -53,6 +53,7 @@ export type SchemeAFact = {
 export type SchemeANumberItem = {
   title: string;
   description?: string;
+  supplement?: string;
 };
 
 export type SchemeAFaqItem = {
@@ -320,7 +321,11 @@ export function SchemeANumberList({ items }: { items: readonly SchemeANumberItem
       {items.map((item, index) => (
         <li key={`${item.title}-${index}`}>
           <b>{String(index + 1).padStart(2, "0")}</b>
-          <div><strong>{item.title}</strong>{item.description ? <span>{item.description}</span> : null}</div>
+          <div>
+            <strong>{item.title}</strong>
+            {item.description ? <span>{item.description}</span> : null}
+            {item.supplement ? <span className="fc-route-number-list__supplement">{item.supplement}</span> : null}
+          </div>
         </li>
       ))}
     </ol>

@@ -214,6 +214,10 @@
     display: none;
   }
 
+  html[data-public-route-loading="true"] .scheme-a-mobile-switcher {
+    display: none;
+  }
+
   @media (max-width: 767px) {
     .scheme-a-mobile-switcher {
       position: fixed;

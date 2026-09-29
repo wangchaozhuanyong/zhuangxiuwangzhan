@@ -33,7 +33,7 @@ for (const language of ["zh", "en"]) {
     await page.mouse.move(0, 0);
     const initial = await readFeedback(link);
     await link.hover();
-    await expect.poll(async () => (await readFeedback(link)).arrowBackground).toBe("rgb(212, 175, 55)");
+    await expect.poll(async () => (await readFeedback(link)).arrowBackground).toBe("rgb(216, 184, 122)");
     const hovered = await readFeedback(link);
     expect(hovered.underline).toBe("underline");
     expect(hovered.background).toBe(initial.background);
@@ -76,7 +76,7 @@ test.describe("touch service interaction", () => {
       await expect.poll(async () => (await readFeedback(link)).active).toBe(true);
       const pressed = await readFeedback(link);
       expect(pressed.transform).toBe("matrix(0.9, 0, 0, 0.9, 0, 0)");
-      expect(pressed.arrowBackground).toBe("rgb(212, 175, 55)");
+      expect(pressed.arrowBackground).toBe("rgb(216, 184, 122)");
       expect(pressed.background).toBe(initial.background);
       expect(pressed.rowBackground).toBe(initial.rowBackground);
       await page.screenshot({ path: resolve(screenshotDirectory, `${language}-mobile-pressed.png`) });

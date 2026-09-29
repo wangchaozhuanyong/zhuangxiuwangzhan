@@ -19,15 +19,15 @@ const PublicContentNotice = ({ result, onRetry }: PublicContentNoticeProps) => {
   if (!copy || !isPublicContentDegraded(result)) return null;
 
   return (
-    <section className="border-b border-amber-200/70 bg-amber-50/85 px-4 py-3 text-amber-950">
-      <div className="container-narrow flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <div className="flex min-w-0 gap-3">
-          <span className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-amber-100 text-amber-700">
-            <WifiOff className="h-4 w-4" aria-hidden="true" />
+    <section className="fc-public-content-notice border-b border-[#cfc5b2] bg-[#e4ded1] px-4 py-2 text-[#352d24]">
+      <div className="container-narrow flex items-start justify-between gap-2.5 sm:items-center">
+        <div className="flex min-w-0 gap-2">
+          <span className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-[#f5ead0] text-[#8d6c35]">
+            <WifiOff className="h-3.5 w-3.5" aria-hidden="true" />
           </span>
           <div className="min-w-0">
-            <p className="text-sm font-semibold">{copy.title}</p>
-            <p className="text-sm leading-relaxed text-amber-900/80">{copy.description}</p>
+            <p className="text-[13px] font-semibold leading-5">{copy.title}</p>
+            <p className="text-xs leading-[1.45] text-[#655747] sm:text-[13px]">{copy.description}</p>
           </div>
         </div>
         {onRetry ? (
@@ -35,10 +35,10 @@ const PublicContentNotice = ({ result, onRetry }: PublicContentNoticeProps) => {
             type="button"
             variant="outline"
             size="sm"
-            className="w-full shrink-0 border-amber-300 bg-white/70 text-amber-950 hover:bg-white sm:w-auto"
+            className="h-9 w-auto shrink-0 border-[#b9aa8d] bg-[#f3ecdd] px-2 text-xs text-[#352d24] hover:bg-[#faf5e9] sm:px-3"
             onClick={onRetry}
           >
-            <RefreshCw className="mr-2 h-4 w-4" aria-hidden="true" />
+            <RefreshCw className="mr-1 h-3.5 w-3.5" aria-hidden="true" />
             {copy.action}
           </Button>
         ) : null}

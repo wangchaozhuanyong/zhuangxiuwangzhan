@@ -3,6 +3,7 @@ import { useLocation, useNavigationType } from "react-router-dom";
 import {
   hasBottomNavScrollIntent,
   isBottomNavPath,
+  consumeFurnitureNavigationScroll,
 } from "@/lib/publicScrollRestoration";
 import { scrollWindowToImmediately } from "@/lib/instantScroll";
 
@@ -83,6 +84,7 @@ const ScrollToTop = () => {
     const routeContext = routeContextRef.current;
     document.documentElement.dataset.navigationType = routeContext.navigationType.toLowerCase();
     const pathname = routeContext.location.pathname;
+    const furniturePosition = consumeFurnitureNavigationScroll(pathname);
     const isRestorableRoute = isBottomNavPath(pathname);
     const positionKey = getScrollPositionKey(pathname);
     const shouldRestore = isRestorableRoute
@@ -90,9 +92,9 @@ const ScrollToTop = () => {
         routeContext.navigationType === "POP"
         || hasBottomNavScrollIntent(routeContext.location.state)
       );
-    const targetPosition = shouldRestore
+    const targetPosition = furniturePosition ?? (shouldRestore
       ? scrollPositions.get(positionKey) ?? 0
-      : 0;
+      : 0);
     const cancelRestoration = restoreScrollPosition(targetPosition);
 
     return () => {
