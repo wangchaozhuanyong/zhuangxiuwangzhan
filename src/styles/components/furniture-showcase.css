@@ -271,41 +271,6 @@
 .fc-furniture-description h2 { margin-bottom: 1.4rem; font-family: var(--font-display); font-size: clamp(1.6rem, 2.6vw, 2.3rem); font-weight: 500; }
 .fc-furniture-description p { margin-top: 0.6rem !important; color: #d6d1c9; line-height: 1.8; overflow-wrap: anywhere; }
 
-.fc-furniture-entry {
-  border-block: 1px solid var(--public-border);
-  background: var(--public-surface-base);
-}
-
-.fc-furniture-entry__inner {
-  display: flex;
-  align-items: center;
-  gap: 1.25rem;
-  padding-block: clamp(1rem, 2.5vw, 2rem);
-}
-
-.fc-furniture-entry__inner::before {
-  flex: 1;
-  height: 1px;
-  background: var(--public-border);
-  content: "";
-}
-
-.fc-furniture-entry__link {
-  display: inline-flex;
-  min-height: 3.25rem;
-  align-items: center;
-  gap: 0.65rem;
-  border: 1px solid var(--public-accent);
-  border-radius: 100px;
-  padding: 0.7rem 1.15rem;
-  color: #211b13;
-  background: var(--public-accent);
-  font-size: 0.9rem;
-  font-weight: 750;
-}
-
-.fc-furniture-entry__link:hover { background: var(--public-accent-hover); }
-.fc-furniture-entry__link:focus-visible,
 .fc-furniture-page a:focus-visible,
 .fc-furniture-page button:focus-visible { outline: 3px solid #f2dba7; outline-offset: 3px; }
 

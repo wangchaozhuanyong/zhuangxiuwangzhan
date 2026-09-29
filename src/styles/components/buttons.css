@@ -101,4 +101,34 @@
     position: relative;
     z-index: 1;
   }
+
+  .fc-furniture-floating {
+    position: fixed;
+    right: clamp(1rem, 2vw, 2rem);
+    bottom: clamp(1rem, 2vw, 2rem);
+    z-index: 105;
+    display: inline-flex;
+    min-height: 3.25rem;
+    align-items: center;
+    gap: 0.65rem;
+    border: 1px solid var(--public-accent);
+    border-radius: 100px;
+    padding: 0.7rem 1.15rem;
+    color: #211b13;
+    background: var(--public-accent);
+    box-shadow: 0 0.65rem 2rem rgb(0 0 0 / 0.28);
+    font-size: 0.9rem;
+    font-weight: 750;
+    white-space: nowrap;
+  }
+
+  .fc-furniture-floating:hover { background: var(--public-accent-hover); }
+  .fc-furniture-floating:focus-visible { outline: 3px solid #f2dba7; outline-offset: 3px; }
+
+  @media (max-width: 767px) {
+    .fc-furniture-floating {
+      right: 1rem;
+      bottom: calc(82px + env(safe-area-inset-bottom));
+    }
+  }
 }
