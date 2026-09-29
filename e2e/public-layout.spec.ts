@@ -32,6 +32,49 @@ const ignoredConsoleErrorPatterns = [
 ];
 
 test.describe("public responsive layout", () => {
+  test("shared hero facts keep aligned columns on project and promotion pages", async ({ page }) => {
+    for (const width of [320, 360, 390, 768, 1024, 1440]) {
+      await page.setViewportSize({ width, height: 900 });
+      const firstLabelByLanguage = new Map<string, number>();
+
+      for (const path of ["/zh/projects", "/zh/promotions", "/en/projects", "/en/promotions"]) {
+        await page.goto(path, { waitUntil: "domcontentloaded" });
+        const facts = page.locator(".fc-route-hero-support");
+        await expect(facts.locator("dt")).toHaveCount(3);
+        await expect(facts.locator("dd")).toHaveCount(3);
+
+        const layout = await facts.evaluate((element) => {
+          const labels = Array.from(element.querySelectorAll("dt"), (item) => item.getBoundingClientRect());
+          const values = Array.from(element.querySelectorAll("dd"), (item) => item.getBoundingClientRect());
+          const group = element.getBoundingClientRect();
+          return {
+            labelXs: labels.map((rect) => rect.left),
+            valueXs: values.map((rect) => rect.left),
+            labelRights: labels.map((rect) => rect.right),
+            groupLeft: group.left,
+            groupRight: group.right,
+            viewportWidth: document.documentElement.clientWidth,
+            valueTextAlign: getComputedStyle(element.querySelector("dd")!).textAlign,
+          };
+        });
+
+        const language = path.split("/")[1];
+        const previousFirstLabel = firstLabelByLanguage.get(language);
+        if (previousFirstLabel !== undefined) {
+          expect(Math.abs(layout.labelXs[0] - previousFirstLabel), path).toBeLessThanOrEqual(1);
+        } else {
+          firstLabelByLanguage.set(language, layout.labelXs[0]);
+        }
+        expect(Math.max(...layout.labelXs) - Math.min(...layout.labelXs), path).toBeLessThanOrEqual(1);
+        expect(Math.max(...layout.valueXs) - Math.min(...layout.valueXs), path).toBeLessThanOrEqual(1);
+        expect(layout.valueXs[0] - Math.max(...layout.labelRights), path).toBeGreaterThanOrEqual(8);
+        expect(layout.valueTextAlign, path).toBe("left");
+        expect(layout.groupLeft, path).toBeGreaterThanOrEqual(0);
+        expect(layout.groupRight, path).toBeLessThanOrEqual(layout.viewportWidth);
+      }
+    }
+  });
+
   for (const viewport of targetViewports) {
     for (const route of primaryRoutes) {
       test(`${viewport.name} ${route} has no horizontal overflow or broken text`, async ({ page }) => {
