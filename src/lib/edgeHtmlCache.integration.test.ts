@@ -1,5 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { onRequest } from "../../functions/_middleware";
+import { buildSupabaseSrcSet } from "./supabaseImage";
 
 declare global {
   interface CacheStorage {
@@ -531,6 +532,70 @@ describe("public Edge HTML cache", () => {
     expect(html).toContain('imagesizes="100vw"');
     expect(html).not.toContain('home-atelier-');
     expect(html).not.toContain('rel="preload" as="image" href="/images/heroes/hero-luxury-living.webp"');
+  });
+
+  it("starts the first two published homepage project images from the HTML", async () => {
+    const imageUrl = (name: string) => `https://home-preload-test.supabase.co/storage/v1/object/public/site-images/${name}.webp`;
+    vi.stubGlobal("fetch", vi.fn(async (input: RequestInfo | URL) => {
+      const url = String(input);
+      const body = url.includes("/rest/v1/rpc/get_public_home_bundle")
+        ? JSON.stringify({ projects: ["featured", "supporting"].map((name) => ({
+            slug: name,
+            project_images: [{ image_type: "cover", sort_order: 0, image_url: imageUrl(name) }],
+          })) })
+        : url.includes("/rest/v1/site_settings")
+          ? JSON.stringify([{ updated_at: siteSettingsRevision }])
+          : "[]";
+      return new Response(body, { headers: { "content-type": "application/json" } });
+    }));
+
+    const response = await requestPage({ path: "/zh", supabaseUrl: "https://home-preload-test.supabase.co" });
+    const html = await response.text();
+
+    expect(html).toContain("/render/image/public/site-images/featured.webp?quality=86&amp;width=560&amp;height=1050&amp;format=webp");
+    expect(html).toContain("/render/image/public/site-images/supporting.webp?quality=84&amp;width=360&amp;height=450&amp;resize=cover&amp;format=webp");
+    expect(html).toContain('media="(max-width: 47.9375rem)" fetchpriority="low"');
+    expect(html).toContain('media="(min-width: 48rem)" fetchpriority="low"');
+    const preloads = [...new DOMParser().parseFromString(html, "text/html").querySelectorAll('link[rel="preload"][as="image"]')];
+    const featured = preloads.find((link) => link.getAttribute("href")?.includes("featured.webp"));
+    const supportingMobile = preloads.find((link) => link.getAttribute("media") === "(max-width: 47.9375rem)");
+    expect(featured?.getAttribute("imagesrcset")).toBe(buildSupabaseSrcSet(imageUrl("featured"), [560, 720, 960, 1200, 1600], { height: 1050, quality: 86 }));
+    expect(supportingMobile?.getAttribute("imagesrcset")).toBe(buildSupabaseSrcSet(imageUrl("supporting"), [360, 560, 720, 960], { quality: 84, resize: "cover", targetAspectRatio: { width: 4, height: 5 } }));
+  });
+
+  it("starts the project detail hero and two related images from the HTML", async () => {
+    const imageUrl = (name: string) => `https://detail-preload-test.supabase.co/storage/v1/object/public/site-images/${name}.webp`;
+    const project = (slug: string) => ({
+      slug,
+      title_en: slug,
+      title_zh: slug,
+      project_images: [{ image_type: "cover", sort_order: 0, image_url: imageUrl(slug) }],
+    });
+    vi.stubGlobal("fetch", vi.fn(async (input: RequestInfo | URL) => {
+      const url = new URL(String(input));
+      const body = url.pathname.endsWith("/projects")
+        ? url.searchParams.has("slug")
+          ? JSON.stringify([project("detail")])
+          : JSON.stringify([project("related-one"), project("detail"), project("related-two")])
+        : url.pathname.endsWith("/site_settings")
+          ? JSON.stringify([{ updated_at: siteSettingsRevision }])
+          : "[]";
+      return new Response(body, { headers: { "content-type": "application/json" } });
+    }));
+
+    const response = await requestPage({
+      path: "/zh/projects/detail",
+      supabaseUrl: "https://detail-preload-test.supabase.co",
+    });
+    const html = await response.text();
+
+    expect(html).toContain("/render/image/public/site-images/detail.webp?quality=86&amp;width=560&amp;height=1100&amp;format=webp");
+    expect(html).toContain("/render/image/public/site-images/related-one.webp?quality=82&amp;width=360&amp;height=750&amp;format=webp");
+    expect(html).toContain("/render/image/public/site-images/related-two.webp?quality=82&amp;width=360&amp;height=540&amp;format=webp");
+    expect((html.match(/fetchpriority="low"/g) || []).length).toBe(2);
+    const preloads = [...new DOMParser().parseFromString(html, "text/html").querySelectorAll('link[rel="preload"][as="image"]')];
+    const hero = preloads.find((link) => link.getAttribute("href")?.includes("detail.webp"));
+    expect(hero?.getAttribute("imagesrcset")).toBe(buildSupabaseSrcSet(imageUrl("detail"), [560, 720, 960, 1200, 1600], { height: 1100, quality: 86 }));
   });
 
   it("does not preload the homepage hero on non-home routes", async () => {
