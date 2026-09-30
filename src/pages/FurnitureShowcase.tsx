@@ -54,8 +54,9 @@ export default function FurnitureShowcase() {
       ]} />
       <SchemeARouteHero
         kind="listing"
-        image="/images/furniture/assets/7596c932c602dfc05255.webp"
-        imageSourceWidth={1080}
+        showIntro={false}
+        image="/images/heroes/v20260930/furniture-showcase.webp"
+        imageSourceWidth={1536}
         imagePosition={{ mobile: "center 55%" }}
         imageAlt={copy.heroImageAlt}
         label={copy.title}
@@ -88,8 +89,8 @@ export default function FurnitureShowcase() {
           </div>
         ) : null}
         <div className="fc-furniture-list-head">
-          <span>{subcategoryLabel || categoryLabel}</span>
-          <h2>{products.length} {copy.products}</h2>
+          <h2>{subcategoryLabel || categoryLabel}</h2>
+          <p>{products.length} {copy.products}</p>
         </div>
         {visibleProducts.length ? (
           <div className="fc-furniture-grid">

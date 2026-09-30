@@ -13,7 +13,7 @@ export const furnitureSubcategoryName = (key: string, language: Language, fallba
 export const furnitureText = {
   zh: {
     title: furnitureTaxonomyLabels.meta.zh.title,
-    heroImageAlt: "家具展示中的米色休闲椅",
+    heroImageAlt: "米色休闲椅与暖色阅读角设计效果图",
     intro: "按空间与品类查看家具。选择喜欢的商品，查看规格，并通过 WhatsApp 咨询或前往商城购买。",
     metaDescription: furnitureTaxonomyLabels.meta.zh.description,
     allProducts: "全部商品",
@@ -42,11 +42,12 @@ export const furnitureText = {
     shopLabel: "前往 FLASH CAST 商城",
     detailMeta: "查看 {name} 的图片、描述与规格，可通过 WhatsApp 咨询或前往商城。",
     floating: "家具展示",
+    floatingShop: "前往购买",
     enquiryMessage: "你好，我想咨询家具：{name}",
   },
   en: {
     title: furnitureTaxonomyLabels.meta.en.title,
-    heroImageAlt: "Cream lounge chair from the furniture collection",
+    heroImageAlt: "Design rendering of a cream lounge chair in a warm reading corner",
     intro: "Explore furniture by room and type. View product details, ask us on WhatsApp, or visit our shop to buy.",
     metaDescription: furnitureTaxonomyLabels.meta.en.description,
     allProducts: "All products",
@@ -75,6 +76,7 @@ export const furnitureText = {
     shopLabel: "Visit FLASH CAST Shop",
     detailMeta: "View images, description and specifications for {name}. Ask on WhatsApp or visit our shop.",
     floating: "Furniture",
+    floatingShop: "Shop now",
     enquiryMessage: "Hi, I would like to ask about this furniture item: {name}",
   },
 } as const;

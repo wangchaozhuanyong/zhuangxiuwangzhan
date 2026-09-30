@@ -1,5 +1,6 @@
 export const materialDetailPageText = {
   en: {
+    sampleImagePending: "The sample image is being updated. Contact us to confirm the finish and request a matching sample.",
     notFound: "Material Not Found",
     loadingTitle: "Loading material",
     loadingDescription: "Material details are loading.",
@@ -24,6 +25,7 @@ export const materialDetailPageText = {
     view: "View",
   },
   zh: {
+    sampleImagePending: "样板图片更新中，可联系我们确认花色并查看对应样板。",
     notFound: "材料不存在",
     loadingTitle: "正在准备材料内容",
     loadingDescription: "材料信息正在载入，马上就好。",

@@ -660,6 +660,18 @@ export const localResponsiveImageMetadata: Record<string, { width: number; heigh
       "1600": 1600
     }
   },
+  "/images/heroes/v20260930/furniture-showcase.webp": {
+    "width": 1536,
+    "height": 1024,
+    "variants": {
+      "360": 360,
+      "560": 560,
+      "720": 720,
+      "900": 900,
+      "1200": 1200,
+      "1600": 1536
+    }
+  },
   "/images/heroes/v3/hero-about-v3-desktop.webp": {
     "width": 1728,
     "height": 909,
@@ -3936,6 +3948,54 @@ export const localResponsiveImageMetadata: Record<string, { width: number; heigh
       "1600": 800
     }
   },
+  "/images/materials/content-20260930/grey-stone-counter.webp": {
+    "width": 1536,
+    "height": 1024,
+    "variants": {
+      "360": 360,
+      "560": 560,
+      "720": 720,
+      "900": 900,
+      "1200": 1200,
+      "1600": 1536
+    }
+  },
+  "/images/materials/content-20260930/grey-stone-floor.webp": {
+    "width": 1536,
+    "height": 1024,
+    "variants": {
+      "360": 360,
+      "560": 560,
+      "720": 720,
+      "900": 900,
+      "1200": 1200,
+      "1600": 1536
+    }
+  },
+  "/images/materials/content-20261001/melamine-cabinet.webp": {
+    "width": 1536,
+    "height": 1024,
+    "variants": {
+      "360": 360,
+      "560": 560,
+      "720": 720,
+      "900": 900,
+      "1200": 1200,
+      "1600": 1536
+    }
+  },
+  "/images/materials/content-20261001/natural-oak-floor.webp": {
+    "width": 1536,
+    "height": 1024,
+    "variants": {
+      "360": 360,
+      "560": 560,
+      "720": 720,
+      "900": 900,
+      "1200": 1200,
+      "1600": 1536
+    }
+  },
   "/images/materials/engineered-walnut-herringbone.webp": {
     "width": 800,
     "height": 800,
@@ -4872,6 +4932,66 @@ export const localResponsiveImageMetadata: Record<string, { width: number; heigh
       "1600": 1200
     }
   },
+  "/images/services/content-20260930/coating.webp": {
+    "width": 1536,
+    "height": 1024,
+    "variants": {
+      "360": 360,
+      "560": 560,
+      "720": 720,
+      "900": 900,
+      "1200": 1200,
+      "1600": 1536
+    }
+  },
+  "/images/services/content-20260930/kitchen.webp": {
+    "width": 1536,
+    "height": 1024,
+    "variants": {
+      "360": 360,
+      "560": 560,
+      "720": 720,
+      "900": 900,
+      "1200": 1200,
+      "1600": 1536
+    }
+  },
+  "/images/services/content-20260930/planning.webp": {
+    "width": 1536,
+    "height": 1024,
+    "variants": {
+      "360": 360,
+      "560": 560,
+      "720": 720,
+      "900": 900,
+      "1200": 1200,
+      "1600": 1536
+    }
+  },
+  "/images/services/content-20260930/retail.webp": {
+    "width": 1536,
+    "height": 1024,
+    "variants": {
+      "360": 360,
+      "560": 560,
+      "720": 720,
+      "900": 900,
+      "1200": 1200,
+      "1600": 1536
+    }
+  },
+  "/images/services/content-20260930/wardrobe.webp": {
+    "width": 1536,
+    "height": 1024,
+    "variants": {
+      "360": 360,
+      "560": 560,
+      "720": 720,
+      "900": 900,
+      "1200": 1200,
+      "1600": 1536
+    }
+  },
   "/images/services/design-services.webp": {
     "width": 1200,
     "height": 800,
@@ -4892,7 +5012,14 @@ export const localResponsiveImageMetadata: Record<string, { width: number; heigh
   "/images/services/design/detail.webp": {
     "width": 891,
     "height": 481,
-    "variants": {}
+    "variants": {
+      "360": 360,
+      "560": 560,
+      "720": 720,
+      "900": 891,
+      "1200": 891,
+      "1600": 891
+    }
   },
   "/images/services/design/material-board-v2-1200.webp": {
     "width": 1200,
@@ -4937,7 +5064,50 @@ export const localResponsiveImageMetadata: Record<string, { width: number; heigh
   "/images/services/design/space.webp": {
     "width": 1536,
     "height": 1024,
-    "variants": {}
+    "variants": {
+      "360": 360,
+      "560": 560,
+      "720": 720,
+      "900": 900,
+      "1200": 1200,
+      "1600": 1536
+    }
+  },
+  "/images/services/design/v20260930/hero-mobile.webp": {
+    "width": 887,
+    "height": 1774,
+    "variants": {
+      "360": 360,
+      "560": 560,
+      "720": 720,
+      "900": 887,
+      "1200": 887,
+      "1600": 887
+    }
+  },
+  "/images/services/design/v20260930/hero-tablet.webp": {
+    "width": 1086,
+    "height": 1448,
+    "variants": {
+      "360": 360,
+      "560": 560,
+      "720": 720,
+      "900": 900,
+      "1200": 1086,
+      "1600": 1086
+    }
+  },
+  "/images/services/design/v20260930/reading.webp": {
+    "width": 1536,
+    "height": 1024,
+    "variants": {
+      "360": 360,
+      "560": 560,
+      "720": 720,
+      "900": 900,
+      "1200": 1200,
+      "1600": 1536
+    }
   },
   "/images/services/exterior-works.webp": {
     "width": 1200,
@@ -5107,6 +5277,18 @@ export const localResponsiveImageMetadata: Record<string, { width: number; heigh
       "1600": 1600
     }
   },
+  "/images/services/surface-repair/v20260930/hero-mobile.webp": {
+    "width": 887,
+    "height": 1774,
+    "variants": {
+      "360": 360,
+      "560": 560,
+      "720": 720,
+      "900": 887,
+      "1200": 887,
+      "1600": 887
+    }
+  },
   "/images/services/v20260824/old-house-renovation.webp": {
     "width": 1920,
     "height": 1080,
@@ -5117,6 +5299,30 @@ export const localResponsiveImageMetadata: Record<string, { width: number; heigh
       "900": 900,
       "1200": 1200,
       "1600": 1600
+    }
+  },
+  "/images/services/v20260930/bathroom-renovation.webp": {
+    "width": 1536,
+    "height": 1024,
+    "variants": {
+      "360": 360,
+      "560": 560,
+      "720": 720,
+      "900": 900,
+      "1200": 1200,
+      "1600": 1536
+    }
+  },
+  "/images/services/v20260930/kitchen-renovation.webp": {
+    "width": 1536,
+    "height": 1024,
+    "variants": {
+      "360": 360,
+      "560": 560,
+      "720": 720,
+      "900": 900,
+      "1200": 1200,
+      "1600": 1536
     }
   },
   "/images/services/warehouse-shelving.webp": {

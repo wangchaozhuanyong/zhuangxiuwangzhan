@@ -37,6 +37,7 @@ export const schemeAHomeText = {
     areasLink: "查看服务地区",
     materialTitle: "材料要适合空间，也要适合日常使用。",
     trustLabel: "为什么找 FLASH CAST",
+    planningImageAlt: "户型图、尺寸测量工具与材料选样搭配示意",
     trustTitle: "先看现场，再规划细节。",
     trustBody: "从现场到施工，把影响日常使用的细节逐项理清；范围与费用以现场评估和书面报价为准。",
     trustDetails: [
@@ -116,6 +117,7 @@ export const schemeAHomeText = {
     areasLink: "Browse service areas",
     materialTitle: "Materials should suit the space and everyday use.",
     trustLabel: "WHY FLASH CAST",
+    planningImageAlt: "Floor plan, measuring tools and material samples — planning study",
     trustTitle: "Real spaces. Thoughtful details.",
     trustBody: "Site conditions and daily use guide the details. Final scope follows the site assessment and written quotation.",
     trustDetails: [
@@ -193,6 +195,7 @@ export const schemeAProjectsIndexText = {
 
 export const schemeARouteText = {
   zh: {
+    imagePending: "图片更新中",
     home: "首页",
     services: "服务项目",
     projects: "项目案例",
@@ -223,6 +226,7 @@ export const schemeARouteText = {
     materialContext: "图片与空间细节",
   },
   en: {
+    imagePending: "Image being updated",
     home: "Home",
     services: "Services",
     projects: "Projects",
@@ -276,6 +280,7 @@ export const schemeAChromeText = {
     backToTop: "返回顶部",
     language: "语言",
     dockHome: "首页",
+    dockFurniture: "家具",
     dockProjects: "案例",
     dockMaterials: "材料",
     dockPromotions: "优惠",
@@ -303,6 +308,7 @@ export const schemeAChromeText = {
     backToTop: "Back to top",
     language: "Language",
     dockHome: "Home",
+    dockFurniture: "Furniture",
     dockProjects: "Projects",
     dockMaterials: "Materials",
     dockPromotions: "Offers",

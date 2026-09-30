@@ -37,15 +37,12 @@ html[data-public-theme] #root .scheme-a-public-shell {
   --font-body: "Noto Sans SC", "PingFang SC", "Microsoft YaHei", sans-serif;
   --font-display: "Noto Serif SC", "Songti SC", Georgia, serif;
 }
-html[data-public-theme] #root :is(.scheme-a-chrome, .scheme-a-directory, .scheme-a-mobile-dock, .scheme-a-contact-dock) {
+html[data-public-theme] #root :is(.scheme-a-directory, .scheme-a-mobile-dock, .scheme-a-contact-dock) {
   color: #292E29 !important;
   background: #FDFCFA !important;
   border-color: #D4D9CF !important;
   box-shadow: none !important;
 }
-html[data-public-theme] #root .scheme-a-chrome.is-overlay { background: rgb(253 252 250 / .9) !important; }
-html[data-public-theme] #root .scheme-a-chrome__brand img { filter: brightness(0) !important; }
-html[data-public-theme] #root :is(.scheme-a-chrome__primary a, .scheme-a-chrome__nav-more) { color: #292E29 !important; }
 html[data-public-theme] #root :is(.scheme-a-chrome__primary a, .scheme-a-chrome__nav-more)::after { background: #3F4E42 !important; }
 html[data-public-theme] #root :is(.scheme-a-language-switch, .scheme-a-chrome__menu-trigger, .scheme-a-directory__close) {
   background: #FDFCFA !important; color: #3F4E42 !important; border-color: #7B8775 !important; box-shadow: none !important; border-radius: 6px !important;
@@ -57,10 +54,10 @@ html[data-public-theme] #root :is(.scheme-a-chrome__quote, .scheme-a-button--pap
 }
 html[data-public-theme] #root :is(.scheme-a-chrome__quote, .scheme-a-button--paper, .btn-brand-primary, .btn-on-dark-primary, .fc-route-hero-actions a, button[type="submit"], .scheme-a-footer__invitation a:first-child):hover { background: #344237 !important; }
 html[data-public-theme] #root :is(.scheme-a-chrome__quote, .scheme-a-button--paper, .btn-brand-primary, .btn-on-dark-primary, .fc-route-hero-actions a, button[type="submit"], .scheme-a-footer__invitation a:first-child):active { background: #29362C !important; }
-html[data-public-theme] #root :is(.scheme-a-button--glass, .btn-brand-secondary, .btn-on-dark-secondary, .scheme-a-footer__invitation a:last-child, .scheme-a-footer__contact-action, .fc-furniture-floating) {
+html[data-public-theme] #root :is(.scheme-a-button--glass, .btn-brand-secondary, .btn-on-dark-secondary, .scheme-a-footer__invitation a:last-child, .scheme-a-footer__contact-action) {
   color: #3F4E42 !important; background: #FDFCFA !important; border-color: #7B8775 !important; border-radius: 6px !important; box-shadow: none !important; text-shadow: none !important;
 }
-html[data-public-theme] #root :is(.scheme-a-button--glass, .btn-brand-secondary, .btn-on-dark-secondary, .scheme-a-footer__invitation a:last-child, .scheme-a-footer__contact-action, .fc-furniture-floating):hover { background: #E4E8DE !important; }
+html[data-public-theme] #root :is(.scheme-a-button--glass, .btn-brand-secondary, .btn-on-dark-secondary, .scheme-a-footer__invitation a:last-child, .scheme-a-footer__contact-action):hover { background: #E4E8DE !important; }
 html[data-public-theme] #root :is(.scheme-a-footer, .scheme-a-footer-prelude) { background: #ECEDE6 !important; color: #292E29 !important; }
 html[data-public-theme] #root :is(.scheme-a-footer__grid, .scheme-a-footer__studio, .scheme-a-footer__contact-link) { background: transparent !important; border-color: #D4D9CF !important; box-shadow: none !important; }
 html[data-public-theme] #root :is(.scheme-a-footer__studio strong, .scheme-a-footer__studio p, .scheme-a-footer__directory section > p, .scheme-a-footer__areas > p) { color: #292E29 !important; }
@@ -98,9 +95,26 @@ html[data-public-theme] #root .blog-editorial-article :is(p, li, td) { color: #2
   html[data-public-theme] #root .scheme-a-footer__legal { padding-inline-end: 152px; }
 }
 
+/* The tablet portrait artwork reserves its lower area for the service copy. */
+@media (min-width: 768px) and (max-width: 1199px) and (orientation: portrait) {
+  html[data-public-theme] #root .fc-design-service-page .fcd-design-hero__frame { align-items: flex-end; padding-bottom: 110px; }
+  html[data-public-theme] #root .fc-design-service-page .fcd-design-hero__media::after { background: linear-gradient(0deg,rgb(13 16 14 / 82%),rgb(13 16 14 / 60%) 30%,transparent 64%) !important; }
+}
+
 @media (max-width: 767px) {
   html[data-public-theme] #root .scheme-a-footer__legal { padding-bottom: 84px; }
-  html[data-public-theme] #root .fcd-design-hero__media::after { background: linear-gradient(0deg,rgb(13 16 14 / 90%),rgb(13 16 14 / 64%) 36%,rgb(13 16 14 / 12%) 76%,transparent) !important; }
+  /* Anchor the scrim to the actual bilingual copy height, leaving the subject bright. */
+  html[data-public-theme] #root .fcd-design-hero__media::after { background: none !important; }
+  html[data-public-theme] #root .fcd-design-hero__frame { padding-top: max(300px, 38svh); }
+  html[data-public-theme] #root .fcd-design-hero__copy { position: relative; isolation: isolate; }
+  html[data-public-theme] #root .fcd-design-hero__copy::before {
+    content: "";
+    position: absolute;
+    z-index: -1;
+    inset: -64px calc(-1 * var(--fcd-gutter)) -92px;
+    background: linear-gradient(180deg, transparent, rgb(13 16 14 / 64%) 64px, rgb(13 16 14 / 82%));
+    pointer-events: none;
+  }
 }
 
 /* One display family and a clear title / section / functional text hierarchy. */

@@ -1,3 +1,4 @@
+import { resolveReviewedBlogCover, resolveReviewedImageSource, resolveReviewedMaterialImage, wardrobeCover } from "../src/lib/reviewedContentMedia.mjs";
 import { projectPublicMetadata } from "../src/lib/projectPublicMetadata.mjs";
 import { existsSync, readFileSync, writeFileSync, mkdirSync } from "node:fs";
 import { buildStaticManifest, SITE_URL, OG_IMAGE, COMPANY } from "./seo-static-pages.mjs";
@@ -126,8 +127,9 @@ const addDynamic = (lang, basePath, slug, title, description, metadata = {}) => 
   const rawTitle = title || COMPANY;
   const safeTitle = sanitizeSeoText(rawTitle.includes("FLASH CAST") ? rawTitle : `${rawTitle} | ${COMPANY}`);
   const safeDescription = sanitizeSeoText(description || rawTitle).slice(0, 300);
-  const dynamicOgImage = metadata.ogImage
-    ? (String(metadata.ogImage).startsWith("http") ? metadata.ogImage : `${SITE_URL}${metadata.ogImage}`)
+  const correctedOgImage = metadata.ogImage ? resolveReviewedImageSource(metadata.ogImage) : undefined;
+  const dynamicOgImage = correctedOgImage
+    ? (String(correctedOgImage).startsWith("http") ? correctedOgImage : `${SITE_URL}${correctedOgImage}`)
     : OG_IMAGE;
   manifest[localized] = {
     lang,
@@ -194,7 +196,7 @@ const addSitePage = (lang, row) => {
 const [projects, posts, materials, areas, landings, services, sitePages] = await Promise.all([
   fetchRows("projects", "slug,title_en,title_zh,excerpt_en,excerpt_zh"),
   fetchRows("blog_posts", "slug,title_en,title_zh,excerpt_en,excerpt_zh,seo_title_en,seo_title_zh,seo_description_en,seo_description_zh,category,tags,cover_image_url,alt_en,alt_zh,published_at,updated_at"),
-  fetchRows("materials", "slug,title_en,title_zh,excerpt_en,excerpt_zh,seo_description_en,seo_description_zh,category,subcategory"),
+  fetchRows("materials", "slug,title_en,title_zh,excerpt_en,excerpt_zh,seo_description_en,seo_description_zh,category,subcategory,image_url"),
   fetchRows("service_areas", "slug,title_en,title_zh,seo_description_en,seo_description_zh,excerpt_en,excerpt_zh"),
   fetchRows("landing_pages", "slug,seo_title_en,seo_title_zh,seo_description_en,seo_description_zh,title_en,title_zh"),
   fetchRows("services", "slug,title_en,title_zh,seo_title_en,seo_title_zh,seo_description_en,seo_description_zh"),
@@ -260,8 +262,8 @@ for (const lang of ["en", "zh"]) {
         datePublished: row.published_at,
         dateModified: row.updated_at || row.published_at,
         articleSection: row.category,
-        imageAlt,
-        ogImage: row.cover_image_url,
+        imageAlt: resolveReviewedBlogCover(row.slug, row.cover_image_url) === wardrobeCover ? title : imageAlt,
+        ogImage: resolveReviewedImageSource(resolveReviewedBlogCover(row.slug, row.cover_image_url)),
         keywords: Array.isArray(row.tags) ? row.tags.join(", ") : "",
       },
     );
@@ -293,6 +295,7 @@ for (const lang of ["en", "zh"]) {
       lang === "zh"
         ? row.seo_description_zh || row.excerpt_zh || row.seo_description_en || row.excerpt_en
         : row.seo_description_en || row.excerpt_en || row.seo_description_zh || row.excerpt_zh,
+      { ogImage: resolveReviewedMaterialImage(row.image_url || "", row.slug) || OG_IMAGE },
     );
   }
   for (const row of areas) {

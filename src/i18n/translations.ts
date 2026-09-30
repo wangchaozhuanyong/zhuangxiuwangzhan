@@ -9,6 +9,7 @@ type Translations = Record<string, Record<string, string>>;
 export const translations: Translations = {
   // ============ NAVIGATION ============
   "nav.home": { en: "Home", zh: "首页" },
+  "nav.furniture": { en: "Furniture showcase", zh: "家具展示" },
   "nav.about": { en: "About", zh: "关于我们" },
   "nav.services": { en: "Services", zh: "服务项目" },
   "nav.design": { en: "Interior Design", zh: "室内设计" },

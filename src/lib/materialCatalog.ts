@@ -1,3 +1,4 @@
+import { resolveReviewedMaterialImage } from "@/lib/reviewedContentMedia.mjs";
 import { materialsData } from "@/data/materials";
 import type { MaterialCategory, MaterialItem, MaterialSubcategory } from "@/data/types";
 
@@ -32,7 +33,17 @@ export type MaterialCatalogCategory = Omit<MaterialCategory, "items" | "subcateg
   subcategories: MaterialCatalogSubcategory[];
 };
 
-const fallbackMaterials = materialsData as MaterialCatalogCategory[];
+export const reviewMaterialImages = (categories: MaterialCatalogCategory[]): MaterialCatalogCategory[] => categories.map((category) => ({
+  ...category,
+  image: resolveReviewedMaterialImage(category.image, category.slug),
+  subcategories: category.subcategories.map((subcategory) => ({ ...subcategory, image: resolveReviewedMaterialImage(subcategory.image, subcategory.slug) })),
+  items: category.items.map((item) => ({
+    ...item,
+    image: resolveReviewedMaterialImage(item.image, item.slug),
+    gallery: item.gallery?.map((image) => ({ ...image, image: resolveReviewedMaterialImage(image.image, item.slug) })).filter((image) => image.image),
+  })),
+}));
+const fallbackMaterials = reviewMaterialImages(materialsData as MaterialCatalogCategory[]);
 
 const mergeBySlug = <T extends { slug: string }>(fallbackItems: T[] = [], publishedItems: T[] = []) => {
   const merged = new Map<string, T>();
@@ -62,5 +73,5 @@ export const mergeMaterialCategoriesWithFallback = (
     });
   }
 
-  return Array.from(merged.values());
+  return reviewMaterialImages(Array.from(merged.values()));
 };

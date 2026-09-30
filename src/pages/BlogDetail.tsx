@@ -1,4 +1,4 @@
-﻿import { useMemo } from "react";
+import { useMemo } from "react";
 import { useParams } from "react-router-dom";
 import Link from "@/components/LocalizedLink";
 import { AlertCircle, ArrowRight, RefreshCw } from "lucide-react";
@@ -24,12 +24,6 @@ import { resolveBlogTopic } from "@/lib/blogTopics";
 import { translateBlogContent } from "@/lib/contentApi";
 import { findBlogConceptImage, getBlogEditorialMedia, type BlogConceptImage } from "@/lib/blogEditorialMedia";
 import "@/styles/routes/blog.css";
-
-const EDITORIAL_STORY_IMAGES = [
-  "/images/projects/generated-portfolio/mont-kiara-luxury-condo-renovation.webp",
-  "/images/projects/generated-portfolio/bukit-jalil-family-condo-upgrade.webp",
-  "/images/materials/art-lime-wash.webp",
-] as const;
 
 const splitEditorialSections = (content: string) =>
   content
@@ -166,7 +160,7 @@ const BlogDetail = () => {
   const articleDescription = displayText(post.seoDescription || post.excerpt);
   const articleImageAlt = displayText(post.imageAlt || post.title);
   const articleHeroImage = resolveEditorialHeroImage(post.image, pageHeroImages.blog);
-  const editorialMedia = getBlogEditorialMedia(post.slug);
+  const editorialMedia = getBlogEditorialMedia(post.slug, post.image);
   const approvedCmsCover = Boolean(editorialMedia && (
     post.image === editorialMedia.cmsCover || post.image === `https://flashcast.com.my${editorialMedia.cmsCover}`
   ));
@@ -208,11 +202,6 @@ const BlogDetail = () => {
             <div key={index} className="blog-editorial-html-section" data-cinematic-section>
               <div className="blog-editorial-rich-text" dangerouslySetInnerHTML={{ __html: section }} />
               {conceptImage ? renderConceptImage(conceptImage) : null}
-              {!editorialMedia && (index + 1) % 2 === 0 ? (
-                <figure className="blog-editorial-figure blog-editorial-figure--wide" data-cinematic-media>
-                  <SmartImage src={EDITORIAL_STORY_IMAGES[index % EDITORIAL_STORY_IMAGES.length]} alt={t.editorialImageAlt} width={1200} height={760} sizes="(max-width: 767px) calc(100vw - 32px), (max-width: 1023px) calc(100vw - 96px), 760px" candidateWidths={[720, 900, 1200]} quality={78} className="h-full w-full object-cover" revealOnLoad />
-                </figure>
-              ) : null}
             </div>
             );
           })}
@@ -248,21 +237,6 @@ const BlogDetail = () => {
             ? (bodyLines.length ? renderPlainParagraph(bodyLines.join("\n"), `blog-block-${index}`) : null)
             : renderPlainParagraph(cleanBlock, `blog-block-${index}`)}
           {conceptImage ? renderConceptImage(conceptImage) : null}
-          {!editorialMedia && isSection && index % 2 === 0 ? (
-            <figure className="blog-editorial-figure blog-editorial-figure--wide" data-cinematic-media>
-              <SmartImage
-                src={EDITORIAL_STORY_IMAGES[(index / 2) % EDITORIAL_STORY_IMAGES.length]}
-                alt={t.editorialImageAlt}
-                width={1200}
-                height={760}
-                sizes="(max-width: 767px) calc(100vw - 32px), (max-width: 1023px) calc(100vw - 96px), 760px"
-                candidateWidths={[720, 900, 1200]}
-                quality={78}
-                className="h-full w-full object-cover"
-                revealOnLoad
-              />
-            </figure>
-          ) : null}
         </div>
       );
     });
@@ -292,7 +266,7 @@ const BlogDetail = () => {
 
       {editorialMedia ? (
         <div data-blog-concept-hero>
-          <SchemeARouteHero kind="article" image={approvedCmsCover ? articleHeroImage.desktop : undefined} imageSourceWidth={approvedCmsCover ? 1536 : undefined} mobileImage={editorialMedia.mobileHero} mobileImageSourceWidth={900} imageCaption={editorialMedia.disclosure[language]} imageAlt={approvedCmsCover ? articleImageAlt : editorialMedia.mobileAlt[language]} label={`${translateBlogCategory(resolveBlogTopic(post.category, post.slug), language)} / ${readTime}`} title={articleTitle} description={displayText(post.excerpt)} />
+          <SchemeARouteHero kind="article" image={approvedCmsCover ? articleHeroImage.desktop : undefined} imageSourceWidth={approvedCmsCover ? 1536 : undefined} mobileImage={editorialMedia.mobileHero} mobileImageSourceWidth={editorialMedia.mobileWidth} imageCaption={editorialMedia.disclosure[language]} imageAlt={editorialMedia.mobileAlt[language]} label={`${translateBlogCategory(resolveBlogTopic(post.category, post.slug), language)} / ${readTime}`} title={articleTitle} description={displayText(post.excerpt)} />
         </div>
       ) : (
         <SchemeARouteHero kind="article" image={articleHeroImage.desktop} mobileImage={articleHeroImage.mobile} imageAlt={articleImageAlt} label={`${translateBlogCategory(resolveBlogTopic(post.category, post.slug), language)} / ${readTime}`} title={articleTitle} description={displayText(post.excerpt)} />

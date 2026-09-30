@@ -17,6 +17,7 @@ import { sanitizeServiceOverviewHtml } from "@/lib/serviceOverviewHtml";
 import { isHtmlText, stripHtml } from "@/lib/text";
 import { isAiServiceConceptImage, isServiceConceptImage } from "@/lib/serviceMedia";
 import { mediaLabels } from "@/i18n/mediaLabels";
+import { resolveReviewedImageSource } from "@/lib/reviewedContentMedia.mjs";
 
 const DesignServiceContent = lazy(() => import("@/components/services/DesignServiceContent"));
 const SurfaceRepairContent = lazy(() => import("@/components/services/SurfaceRepairContent"));
@@ -82,7 +83,7 @@ export default function ServiceDetail() {
 
   return (
     <main className="fc-route-page">
-      <PageMeta title={service.seoTitle || copy.metaTitleFallback(title, copy.metaSuffix)} description={service.seoDescription || summary} keywords={copy.metaKeywords(title)} canonicalPath={`/services/${service.slug}`} />
+      <PageMeta title={service.seoTitle || copy.metaTitleFallback(title, copy.metaSuffix)} description={service.seoDescription || summary} keywords={copy.metaKeywords(title)} canonicalPath={`/services/${service.slug}`} ogImage={resolveReviewedImageSource(service.image)} />
       <JsonLdService name={title} description={summary} />
       <JsonLdBreadcrumb items={[{ name: copy.breadcrumbHome, url: "/" }, { name: copy.breadcrumbServices, url: "/services" }, { name: title, url: `/services/${service.slug}` }]} />
       {faqs.length ? <JsonLdFAQ faqs={faqs} /> : null}

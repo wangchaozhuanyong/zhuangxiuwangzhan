@@ -14,7 +14,7 @@ export const beforeAfterPageText = {
       "Compare an existing-space reference with a possible planning direction before confirming the real project scope.",
     sectionTitle: "Compare planning directions",
     sectionDescription:
-      "These visuals are planning references, not verified same-angle photos of completed customer projects. Drag each divider to compare two design states.",
+      "Design renderings compare layout, materials and lighting. Drag each divider to explore the planning direction.",
     before: "Existing reference",
     after: "Planning direction",
     itemDescription:
@@ -62,7 +62,7 @@ export const beforeAfterPageText = {
     heroDescription: "在确认真实工程范围前，对比现况参考与可能的空间规划方向。",
     sectionTitle: "比较不同规划方向",
     sectionDescription:
-      "这些图片是规划参考，不是经核实的同角度真实客户完工照片。拖动分隔线可比较两种设计状态。",
+      "通过设计效果图比较布局、材料与采光的变化。拖动分隔线，查看对应的空间规划方向。",
     before: "现况参考",
     after: "规划方向",
     itemDescription: "仅作规划对比参考；最终布局、材料与施工范围以真实现场和确认报价为准。",

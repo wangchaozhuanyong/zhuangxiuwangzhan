@@ -3,6 +3,7 @@ import { useLocation } from "react-router-dom";
 import {
   ArrowUp,
   ArrowUpRight,
+  Armchair,
   BadgePercent,
   ChevronDown,
   Clock,
@@ -158,6 +159,7 @@ export const SchemeANavbar = () => {
   const currentGroup = getCurrentNavigationGroup(location.pathname);
   const [openGroup, setOpenGroup] = useState<PublicNavGroupKey | null>(null);
   const [previewItem, setPreviewItem] = useState<PublicNavItem>(currentItem);
+  const [canPreview, setCanPreview] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const sentinelRef = useRef<HTMLSpanElement>(null);
   const desktopTriggerRef = useRef<HTMLButtonElement>(null);
@@ -179,6 +181,18 @@ export const SchemeANavbar = () => {
   };
   const publicPath = stripLanguagePrefix(location.pathname);
   const overlay = hasImmersiveHero && !scrolled && !menuOpen;
+  const directoryPreviewItem = canPreview ? previewItem : currentItem;
+
+  useEffect(() => {
+    const media = window.matchMedia("(min-width: 1180px) and (hover: hover) and (pointer: fine)");
+    const updatePreviewMode = () => {
+      setCanPreview(media.matches);
+      setPreviewItem(currentItem);
+    };
+    updatePreviewMode();
+    media.addEventListener("change", updatePreviewMode);
+    return () => media.removeEventListener("change", updatePreviewMode);
+  }, [currentItem]);
 
   const closeDirectory = useCallback(() => {
     setMenuOpen(false);
@@ -328,21 +342,39 @@ export const SchemeANavbar = () => {
                     <span>{getGroupLabel(group.key, navText)}</span>
                     <ChevronDown aria-hidden="true" />
                   </button>
-                  <ul id={`scheme-a-directory-group-${group.key}`}>
-                    {group.items.map((item) => (
-                      <li key={item.path}>
-                        <LocalizedLink to={item.path === "/quote" ? QUOTE_FORM_PATH : item.path} aria-current={isActivePath(location.pathname, currentItem.path) && currentItem.path === item.path ? "page" : undefined} onClick={closeDirectory} onFocus={() => setPreviewItem(item)} onPointerEnter={() => setPreviewItem(item)}>
-                          <span>{translate(item.labelKey)}</span><ArrowUpRight aria-hidden="true" />
-                        </LocalizedLink>
-                      </li>
-                    ))}
-                  </ul>
+                  <div
+                    id={`scheme-a-directory-group-${group.key}`}
+                    className="scheme-a-directory__group-panel"
+                    aria-hidden={openGroup !== group.key}
+                  >
+                    <div className="scheme-a-directory__group-content">
+                      <ul>
+                        {group.items.map((item) => (
+                          <li key={item.path}>
+                            <LocalizedLink
+                              to={item.path === "/quote" ? QUOTE_FORM_PATH : item.path}
+                              aria-current={isActivePath(location.pathname, item.path) && currentItem.path === item.path ? "page" : undefined}
+                              tabIndex={openGroup === group.key ? undefined : -1}
+                              onClick={closeDirectory}
+                              onFocus={() => { if (canPreview) setPreviewItem(item); }}
+                              onPointerEnter={(event) => { if (canPreview && event.pointerType === "mouse") setPreviewItem(item); }}
+                            >
+                              <span>{translate(item.labelKey)}</span>
+                              {isActivePath(location.pathname, item.path) && currentItem.path === item.path
+                                ? <span className="scheme-a-directory__current">{navText.currentPageBadge}</span>
+                                : <ArrowUpRight aria-hidden="true" />}
+                            </LocalizedLink>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  </div>
                 </section>
               ))}
             </nav>
             <figure className="scheme-a-directory__preview">
-              <SmartImage src={previewItem.previewImage} alt={navText.previewAlt} width={1100} height={800} quality={84} revealOnLoad />
-              <figcaption><span>{language === "zh" ? "当前章节" : "Current chapter"}</span><strong>{translate(previewItem.labelKey)}</strong></figcaption>
+              <SmartImage src={directoryPreviewItem.previewImage} alt={navText.previewAlt} width={1100} height={800} quality={84} revealOnLoad />
+              <figcaption><span>{canPreview ? navText.sectionPreview : navText.currentPage}</span><strong>{translate(directoryPreviewItem.labelKey)}</strong></figcaption>
             </figure>
             <div className="scheme-a-directory__contact">
               <a
@@ -355,10 +387,11 @@ export const SchemeANavbar = () => {
                 <span className="scheme-a-directory__contact-copy"><small>{t.call}</small><strong>{settings.phone_display}</strong></span>
                 <span className="scheme-a-directory__contact-action"><span>{t.callNow}</span><ArrowUpRight aria-hidden="true" /></span>
               </a>
-              <span className="scheme-a-directory__hours">
+              <LocalizedLink className="scheme-a-directory__hours" to="/contact" onClick={closeDirectory}>
                 <span className="scheme-a-directory__contact-icon"><Clock aria-hidden="true" /></span>
                 <span className="scheme-a-directory__contact-copy"><small>{t.businessHours}</small><strong>{footer.hours}</strong></span>
-              </span>
+                <span className="scheme-a-directory__contact-action"><span>{translate("cta.contactUs")}</span><ArrowUpRight aria-hidden="true" /></span>
+              </LocalizedLink>
             </div>
           </div>
           <div className="scheme-a-directory__foot scheme-a-frame">
@@ -386,7 +419,7 @@ export const SchemeAFooterPrelude = () => {
     <section className="scheme-a-footer-prelude" data-home-section={isHome ? "cta" : undefined} data-cinematic-section>
       <div className="scheme-a-footer-prelude__frame scheme-a-frame">
         <div className="scheme-a-footer__panorama">
-          <SmartImage src="/images/projects/generated-portfolio/mont-kiara-luxury-condo-renovation.webp" alt={t.footerTitle} width={2560} height={1440} sizes="(min-width: 1536px) 1440px, (min-width: 1024px) calc(100vw - 96px), 100vw" candidateWidths={[360, 560, 720, 960, 1200, 1600, 2560]} quality={88} />
+          <SmartImage src="/images/projects/generated-portfolio/mont-kiara-luxury-condo-renovation.webp" alt={t.footerTitle} width={2560} height={1440} sizes="(max-width: 767px) max(100vw, 783px), (min-width: 1536px) 1440px, (min-width: 1024px) calc(100vw - 96px), 100vw" candidateWidths={[560, 720, 960, 1200, 1600, 2560]} quality={88} />
           <div className="scheme-a-footer__invitation scheme-a-frame">
             <p className="scheme-a-footer__kicker"><span>{t.footerKicker}</span></p>
             <h2>{t.footerTitle}</h2>
@@ -488,6 +521,7 @@ export const SchemeAMobileDock = () => {
   const t = schemeAChromeText[language];
   const items = [
     { path: "/", label: t.dockHome, icon: Home },
+    { path: "/furniture", label: t.dockFurniture, icon: Armchair },
     { path: "/projects", label: t.dockProjects, icon: FolderOpen },
     { path: "/materials", label: t.dockMaterials, icon: PackageSearch },
     { path: "/promotions", label: t.dockPromotions, icon: BadgePercent },

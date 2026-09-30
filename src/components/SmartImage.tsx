@@ -4,6 +4,7 @@ import {
   buildLocalResponsiveSrcSet,
   isLocalResponsiveImageCandidate,
   normalizeLocalResponsiveImageWidths,
+  resolveLocalCoverSizes,
   toLocalResponsiveImageSrc,
   toVersionedLocalResponsiveImageSrc,
 } from "@/lib/localResponsiveImage";
@@ -62,7 +63,9 @@ export function SmartImage({
   const normalizedSrc = isSupabase ? src : toLocalStaticImageSrc(src);
   const normalizedLocalSrc = !isSupabase && isLocalImageSrc(normalizedSrc) ? preferWebpSrc(normalizedSrc) : normalizedSrc;
   const localSrc = !isSupabase ? toVersionedLocalResponsiveImageSrc(normalizedLocalSrc) : normalizedLocalSrc;
-  const resolvedSizes = sizes ?? "100vw";
+  const resolvedSizes = isSupabase
+    ? sizes ?? "100vw"
+    : resolveLocalCoverSizes(localSrc, sizes ?? "100vw", targetAspectRatio);
   const widths = candidateWidths ?? (width ? [width, Math.min(width * 2, 2400)] : [480, 768, 1024, 1440]);
   const fallbackWidth = candidateWidths?.[0] ?? width ?? widths[0] ?? 480;
   const localResponsiveWidths = !isSupabase && candidateWidths && isLocalResponsiveImageCandidate(localSrc)

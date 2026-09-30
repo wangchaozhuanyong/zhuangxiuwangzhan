@@ -1,16 +1,13 @@
+import { reviewedImageReplacements } from "@/lib/reviewedContentMedia.mjs";
 import { localResponsiveImageMetadata } from "@/data/localResponsiveImageMetadata";
 
 const RESPONSIVE_IMAGE_PREFIX = "/images/_responsive";
 const LOCAL_RESPONSIVE_IMAGE_PATTERN = /^\/images\/(projects|services|materials|heroes|before-after)\/(.+\.webp)([?#].*)?$/i;
 const VERSIONED_LOCAL_RESPONSIVE_IMAGES = new Map([
+  ...reviewedImageReplacements,
+  ["/images/services/bathroom-renovation.webp", "/images/services/v20260930/bathroom-renovation.webp"],
   ["/images/materials/acrylic-high-gloss-white.webp", "/images/materials/v20260928/acrylic-high-gloss-white.webp"],
   ["/images/materials/kitchen-acrylic-cabinets.webp", "/images/materials/v20260928/kitchen-acrylic-cabinets.webp"],
-  ["/images/before-after/after-bathroom.webp", "/images/before-after/v20260824/after-bathroom.webp"],
-  ["/images/before-after/after-kitchen.webp", "/images/before-after/v20260824/after-kitchen.webp"],
-  ["/images/before-after/after-living.webp", "/images/before-after/v20260824/after-living.webp"],
-  ["/images/before-after/before-bathroom.webp", "/images/before-after/v20260824/before-bathroom.webp"],
-  ["/images/before-after/before-kitchen.webp", "/images/before-after/v20260824/before-kitchen.webp"],
-  ["/images/before-after/before-living.webp", "/images/before-after/v20260824/before-living.webp"],
   [
     "/images/projects/generated-portfolio/mont-kiara-luxury-condo-renovation.webp",
     "/images/projects/v20260824/generated-portfolio/mont-kiara-luxury-condo-renovation.webp",
@@ -43,6 +40,41 @@ export function getLocalResponsiveImageDimensions(src: string) {
   return localResponsiveImageMetadata[toVersionedLocalResponsiveImageSrc(src).split(/[?#]/)[0]];
 }
 
+/** Local variants retain their source ratio, so cover may need more pixels than the frame width. */
+export function resolveLocalCoverSizes(src: string, sizes: string, target?: { width: number; height: number }) {
+  const source = getLocalResponsiveImageDimensions(src);
+  if (!source || !target || target.width <= 0 || target.height <= 0) return sizes;
+  const scale = (source.width / source.height) / (target.width / target.height);
+  if (!Number.isFinite(scale) || scale <= 1) return sizes;
+
+  // Split at top-level commas only: max(), min() and clamp() can contain commas too.
+  const entries: string[] = [];
+  let depth = 0;
+  let start = 0;
+  for (let index = 0; index < sizes.length; index++) {
+    if (sizes[index] === "(") depth++;
+    if (sizes[index] === ")") depth--;
+    if (sizes[index] === "," && depth === 0) {
+      entries.push(sizes.slice(start, index).trim());
+      start = index + 1;
+    }
+  }
+  entries.push(sizes.slice(start).trim());
+
+  return entries.map((entry) => {
+    let valueStart = 0;
+    let parentheses = 0;
+    for (let index = 0; index < entry.length; index++) {
+      if (entry[index] === "(") parentheses++;
+      if (entry[index] === ")") parentheses--;
+      if (/\s/.test(entry[index]) && parentheses === 0) valueStart = index + 1;
+    }
+    const value = entry.slice(valueStart);
+    if (!value || value === "auto") return entry;
+    return `${entry.slice(0, valueStart)}calc((${value}) * ${Number(scale.toFixed(5))})`;
+  }).join(", ");
+}
+
 export function normalizeLocalResponsiveImageWidths(widths: number[]) {
   return Array.from(
     new Set(
@@ -63,6 +95,8 @@ export function toLocalResponsiveImageSrc(src: string, width: number) {
   if (!relativePath) return src;
   const suffix = match[3] ?? "";
   const generatedWidth = chooseGeneratedWidth(Math.round(width));
+  const dimensions = getLocalResponsiveImageDimensions(versionedSrc);
+  if (dimensions && !dimensions.variants[generatedWidth]) return versionedSrc;
   return `${RESPONSIVE_IMAGE_PREFIX}/${folder}/w${generatedWidth}/${relativePath}${suffix}`;
 }
 

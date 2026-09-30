@@ -1,8 +1,10 @@
+import { isReviewedMaterialConceptImage } from "@/lib/reviewedContentMedia.mjs";
 import { useMemo } from "react";
 import PageMeta from "@/components/PageMeta";
 import { JsonLdBreadcrumb } from "@/components/JsonLd";
 import { SchemeAListingGrid, SchemeARouteHero, SchemeASection, type SchemeAListingItem } from "@/components/scheme-a/SchemeARoutePrimitives";
 import { materialsData } from "@/data/materials";
+import { reviewMaterialImages } from "@/lib/materialCatalog";
 import { usePublishedMaterials, usePublishedSitePage } from "@/hooks/usePublishedContent";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { translateDisplayText, translateMaterialCategory } from "@/i18n/displayLabels";
@@ -15,7 +17,7 @@ export default function Materials() {
   const copy = materialsPageText[language];
   const { data: publishedCategories } = usePublishedMaterials(language);
   const { data: pageContent } = usePublishedSitePage(language, "materials");
-  const categories = publishedCategories?.length ? publishedCategories : materialsData;
+  const categories = useMemo(() => reviewMaterialImages(publishedCategories?.length ? publishedCategories : materialsData), [publishedCategories]);
   const hero = resolvePageHeroImage(pageContent?.image_url, pageHeroImages.materials);
 
   const items = useMemo<SchemeAListingItem[]>(() => categories.map((category) => ({
@@ -23,6 +25,7 @@ export default function Materials() {
     title: translateMaterialCategory(category.name, language),
     description: translateDisplayText(category.description || "", language),
     image: category.image,
+    mediaDisclosure: isReviewedMaterialConceptImage(category.image) ? mediaLabels[language].materialPalette : undefined,
     imageAlt: category.alt || translateMaterialCategory(category.name, language),
     href: `/materials/category/${category.slug}`,
   })), [categories, language]);

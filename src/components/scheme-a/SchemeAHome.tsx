@@ -58,11 +58,7 @@ const SchemeAHome = ({ content }: SchemeAHomeProps) => {
   const featuredProject = projects[0];
   const supportingProjects = projects.slice(1, 4);
   const projectImage = featuredProject?.thumbnail || "/images/projects/generated-portfolio/mont-kiara-luxury-condo-renovation.webp";
-  const displayedProjectImages = new Set([projectImage, ...supportingProjects.map((project) => project.thumbnail)]);
-  const materialImage = projects
-    .flatMap((project) => [...project.images, project.thumbnail])
-    .find((image) => image && !displayedProjectImages.has(image))
-    || "/images/projects/proj1-condo-2.webp";
+  const materialImage = "/images/services/content-20260930/planning.webp";
   const displayText = (value: string) => language === "zh" ? translateDisplayText(value, language) : value;
   const resolvedServices = copy.serviceFallbacks.map((fallback) => {
     const slug = fallback.path.split("/").filter(Boolean).at(-1);
@@ -296,7 +292,7 @@ const SchemeAHome = ({ content }: SchemeAHomeProps) => {
           <figure className="scheme-a-materials__media" data-cinematic-media>
             <DeferredSmartImage
               src={materialImage}
-              alt={copy.materialTitle}
+              alt={copy.planningImageAlt}
               width={1280}
               height={960}
               sizes="(max-width: 374px) calc(100vw - 24px), (max-width: 767px) calc(100vw - 32px), (min-width: 1536px) 739px, 50vw"
