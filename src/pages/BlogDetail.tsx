@@ -7,7 +7,7 @@ import { blogPosts } from "@/data/blog";
 import { usePublishedBlogPostBySlug, usePublishedBlogPosts } from "@/hooks/usePublishedContent";
 import { useLanguage } from "@/i18n/LanguageContext";
 import PageMeta from "@/components/PageMeta";
-import PublicLoadingState from "@/components/blocks/PublicLoadingState";
+import BlogArticleLoading, { BlogContentSkeleton } from "@/components/blocks/BlogArticleLoading";
 import { Button } from "@/components/ui/button";
 import SmartImage from "@/components/SmartImage";
 import { JsonLdBlogPosting, JsonLdBreadcrumb } from "@/components/JsonLd";
@@ -23,6 +23,7 @@ import { pageHeroImages, resolveEditorialHeroImage } from "@/lib/pageHeroImages"
 import { resolveBlogTopic } from "@/lib/blogTopics";
 import { translateBlogContent } from "@/lib/contentApi";
 import { findBlogConceptImage, getBlogEditorialMedia, type BlogConceptImage } from "@/lib/blogEditorialMedia";
+import "@/styles/routes/blog.css";
 
 const EDITORIAL_STORY_IMAGES = [
   "/images/projects/generated-portfolio/mont-kiara-luxury-condo-renovation.webp",
@@ -55,6 +56,13 @@ const splitSanitizedHtmlSections = (html: string) => {
 };
 
 const renderPlainParagraph = (block: string, key: string) => {
+  const lines = block.split(/\r?\n/).map((line) => line.trim()).filter(Boolean);
+  if (lines.length && lines.every((line) => /^\d+[.)]\s+/.test(line))) {
+    return <ol key={key}>{lines.map((line, index) => <li key={`${key}-${index}`}>{line.replace(/^\d+[.)]\s+/, "")}</li>)}</ol>;
+  }
+  if (lines.length && lines.every((line) => /^[-*]\s+/.test(line))) {
+    return <ul key={key}>{lines.map((line, index) => <li key={`${key}-${index}`}>{line.replace(/^[-*]\s+/, "")}</li>)}</ul>;
+  }
   const listParts = block.split(/\s+-\s+/).filter(Boolean);
   if (listParts.length > 2) {
     const [lead, ...items] = listParts;
@@ -69,6 +77,7 @@ const renderPlainParagraph = (block: string, key: string) => {
   }
   return <p key={key} className="blog-editorial-copy">{block}</p>;
 };
+
 const BlogDetail = () => {
   const { slug } = useParams<{ slug: string }>();
   const { language } = useLanguage();
@@ -92,9 +101,10 @@ const BlogDetail = () => {
     refetch: refetchPost,
   } = usePublishedBlogPostBySlug(slug, language);
   const { data: cmsPosts } = usePublishedBlogPosts(language);
+  const listPost = cmsPosts?.find((item) => item.slug === slug);
   const post = useMemo(
-    () => cmsPost ?? fallbackPost,
-    [cmsPost, fallbackPost],
+    () => cmsPost ?? (postPending ? listPost : undefined) ?? fallbackPost,
+    [cmsPost, postPending, listPost, fallbackPost],
   );
   const otherPosts = useMemo(() => {
     const source = cmsPosts?.length ? cmsPosts : initialPosts;
@@ -105,17 +115,11 @@ const BlogDetail = () => {
       .slice(0, 3);
   }, [cmsPosts, initialPosts, post, slug]);
 
-  if (postPending && !fallbackPost) {
-    return (
-      <PublicLoadingState
-        label="FLASH CAST"
-        title={t.loadingTitle}
-        description={t.loadingDescription}
-      />
-    );
+  if (postPending && !post) {
+    return <BlogArticleLoading />;
   }
 
-  if (postError && !fallbackPost) {
+  if (postError && !post) {
     return (
       <main className="fc-route-page fc-route-missing">
         <PageMeta
@@ -202,7 +206,7 @@ const BlogDetail = () => {
             const conceptImage = conceptForHtmlSection(section);
             return (
             <div key={index} className="blog-editorial-html-section" data-cinematic-section>
-              <div className="prose prose-neutral max-w-none" dangerouslySetInnerHTML={{ __html: section }} />
+              <div className="blog-editorial-rich-text" dangerouslySetInnerHTML={{ __html: section }} />
               {conceptImage ? renderConceptImage(conceptImage) : null}
               {!editorialMedia && (index + 1) % 2 === 0 ? (
                 <figure className="blog-editorial-figure blog-editorial-figure--wide" data-cinematic-media>
@@ -219,6 +223,10 @@ const BlogDetail = () => {
     return splitEditorialSections(content).map((block, index) => {
       const isSection = block.startsWith("## ");
       const cleanBlock = isSection ? block.replace(/^##\s+/, "") : block;
+      const [headingLine, ...bodyLines] = cleanBlock.split("\n");
+      // Only promote an explicit Markdown heading line. Legacy inline copy has
+      // no reliable heading/body boundary, so keep its complete text intact.
+      const hasHeading = isSection && content.split(/\r?\n/).some((line) => line.trim() === `## ${headingLine}`);
       const conceptImage = isSection ? findBlogConceptImage(post.slug, cleanBlock.split("\n")[0], language) : undefined;
       if (block.startsWith("- [ ] ")) {
         const items = block.split("\n").filter(Boolean);
@@ -235,7 +243,10 @@ const BlogDetail = () => {
       }
       return (
         <div key={index} className={`blog-editorial-section ${isSection ? "blog-editorial-section--chapter" : "blog-editorial-section--lead"}`} data-cinematic-section>
-          {renderPlainParagraph(cleanBlock, `blog-block-${index}`)}
+          {hasHeading ? <h2>{headingLine}</h2> : null}
+          {hasHeading
+            ? (bodyLines.length ? renderPlainParagraph(bodyLines.join("\n"), `blog-block-${index}`) : null)
+            : renderPlainParagraph(cleanBlock, `blog-block-${index}`)}
           {conceptImage ? renderConceptImage(conceptImage) : null}
           {!editorialMedia && isSection && index % 2 === 0 ? (
             <figure className="blog-editorial-figure blog-editorial-figure--wide" data-cinematic-media>
@@ -315,8 +326,13 @@ const BlogDetail = () => {
               </ol>
             </div>
 
-            <article className="blog-editorial-article">
-              {renderContent(post.content)}
+            <article className="blog-editorial-article" aria-busy={postPending && !post.content?.trim()} data-route-pending={postPending && !post.content?.trim() ? "true" : undefined}>
+              {postPending && !post.content?.trim() ? (
+                <>
+                  <span className="sr-only" role="status">{t.loadingTitle}</span>
+                  <BlogContentSkeleton />
+                </>
+              ) : renderContent(post.content)}
             </article>
 
             <div className="blog-editorial-tags">

@@ -14,6 +14,7 @@ import { BLOG_TOPIC_KEYS, BLOG_TOPIC_SERVICE_PATHS, resolveBlogTopic } from "@/l
 import { pageHeroImages, resolvePageHeroImage } from "@/lib/pageHeroImages";
 import { getBlogEditorialMedia } from "@/lib/blogEditorialMedia";
 import Link from "@/components/LocalizedLink";
+import "@/styles/routes/blog.css";
 
 const PAGE_SIZE = 9;
 const matchesCategory = (postCategory: string, slug: string, filter: string) =>
@@ -34,6 +35,16 @@ export default function Blog() {
 
   useEffect(() => setVisibleCount(PAGE_SIZE), [filter]);
 
+  const selectTopic = (topic: string) => {
+    setFilter(topic);
+    const articles = document.getElementById("blog-articles");
+    articles?.focus({ preventScroll: true });
+    articles?.scrollIntoView({
+      behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "instant" : "smooth",
+      block: "start",
+    });
+  };
+
   const items = useMemo<SchemeAListingItem[]>(() => filtered.slice(0, visibleCount).map((post) => ({
     id: post.slug,
     title: translateDisplayText(post.title, language),
@@ -47,10 +58,20 @@ export default function Blog() {
   })), [filtered, language, visibleCount]);
 
   return (
-    <main className="fc-route-page">
+    <main className="fc-route-page fc-blog-page">
       <PageMeta title={pageContent?.seo_title || copy.metaTitle} description={pageContent?.seo_description || copy.metaDescription} keywords={pageContent?.seo_keywords || copy.metaKeywords} canonicalPath="/blog" />
       <JsonLdBreadcrumb items={[{ name: copy.breadcrumbHome, url: "/" }, { name: copy.breadcrumbBlog, url: "/blog" }]} />
       <SchemeARouteHero kind="listing" image={hero.desktop} imageSourceWidth={hero.desktopWidth} tabletImage={hero.tablet} tabletImageSourceWidth={hero.tabletWidth} mobileImage={hero.mobile} mobileImageSourceWidth={hero.mobileWidth} imagePosition={hero.imagePosition} imageAlt={pageContent?.alt || copy.heroAlt} label={[pageContent?.subtitle || copy.eyebrow, hero.claimLevel ? mediaLabels[language].renderingConcept : ""].filter(Boolean).join(" · ")} title={pageContent?.title || copy.title} description={pageContent?.description || copy.intro} />
+      <SchemeASection title={routeText.blogLatest} description={routeText.blogLatestText} className="fc-blog-articles">
+        <div id="blog-articles" tabIndex={-1} role="region" aria-label={routeText.blogLatest}>
+          <SchemeAFilter items={blogCategoryFilters.map((category) => ({ value: category.value, label: category[language] }))} value={filter} onChange={setFilter} ariaLabel={copy.breadcrumbBlog} />
+          {isLoading ? <SchemeAContentState>{routeText.blogLoading}</SchemeAContentState> : null}
+          {isError ? <SchemeAContentState action={<button type="button" onClick={() => void refetch()}>{routeText.reload}</button>}>{routeText.blogError}</SchemeAContentState> : null}
+          {!isLoading && !isError && !items.length ? <SchemeAContentState>{routeText.blogEmpty}</SchemeAContentState> : null}
+          {!isLoading && !isError && items.length ? <SchemeAListingGrid items={items} actionLabel={copy.read} /> : null}
+          {visibleCount < filtered.length ? <SchemeALoadMore label={copy.loadMore} onClick={() => setVisibleCount((count) => count + PAGE_SIZE)} /> : null}
+        </div>
+      </SchemeASection>
       <SchemeASection title={topicCopy.heading} description={topicCopy.description} className="fc-blog-topics">
         <div className="fc-blog-topics__grid">
           {BLOG_TOPIC_KEYS.map((topicKey) => {
@@ -58,7 +79,7 @@ export default function Blog() {
             const topic = topicCopy.topics[topicKey];
             return (
               <article key={topicKey} className="fc-blog-topic-card">
-                <button type="button" onClick={() => setFilter(topicKey)} aria-controls="blog-articles">
+                <button type="button" onClick={() => selectTopic(topicKey)} aria-controls="blog-articles" aria-pressed={filter === topicKey}>
                   <span>{String(BLOG_TOPIC_KEYS.indexOf(topicKey) + 1).padStart(2, "0")}</span>
                   <strong>{topic.label}</strong>
                   <span>{topic.description}</span>
@@ -72,15 +93,6 @@ export default function Blog() {
             );
           })}
         </div>
-      </SchemeASection>
-      <SchemeASection title={routeText.blogLatest} description={routeText.blogLatestText} className="fc-blog-articles">
-        <div id="blog-articles" />
-        <SchemeAFilter items={blogCategoryFilters.map((category) => ({ value: category.value, label: category[language] }))} value={filter} onChange={setFilter} ariaLabel={copy.breadcrumbBlog} />
-        {isLoading ? <SchemeAContentState>{routeText.blogLoading}</SchemeAContentState> : null}
-        {isError ? <SchemeAContentState action={<button type="button" onClick={() => void refetch()}>{routeText.reload}</button>}>{routeText.blogError}</SchemeAContentState> : null}
-        {!isLoading && !isError && !items.length ? <SchemeAContentState>{routeText.blogEmpty}</SchemeAContentState> : null}
-        {!isLoading && !isError && items.length ? <SchemeAListingGrid items={items} actionLabel={copy.read} /> : null}
-        {visibleCount < filtered.length ? <SchemeALoadMore label={copy.loadMore} onClick={() => setVisibleCount((count) => count + PAGE_SIZE)} /> : null}
       </SchemeASection>
     </main>
   );

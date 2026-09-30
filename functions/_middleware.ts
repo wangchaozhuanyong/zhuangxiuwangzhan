@@ -1,4 +1,4 @@
-import { buildReadablePublicBody } from "./readablePublicBody";
+import { buildReadablePublicBody, sanitizeReadableContent } from "./readablePublicBody";
 import { projectPublicMetadata } from "../src/lib/projectPublicMetadata.mjs";
 import manifest from "./seo-manifest.json";
 import {
@@ -1379,6 +1379,23 @@ const stripMarkup = (value: unknown) =>
 const boundedLocalizedContent = (row: PublicDataRow, lang: "en" | "zh") =>
   localizedField(row, "content", lang).slice(0, 4_096);
 
+const buildReadableRenovationBodyMarkup = (
+  key: string,
+  state: Pick<DynamicRouteState, "kind" | "row"> | null | undefined,
+) => {
+  const match = key.match(/^\/(en|zh)\/services\/renovation$/);
+  if (!match || state?.kind !== "service") return "";
+
+  const lang = match[1] as "en" | "zh";
+  if (readString(state.row, "slug") !== "renovation" || readString(state.row, "status") !== "published") return "";
+
+  const content = readString(state.row, `content_${lang}`).slice(0, 4_096);
+  const sanitizedContent = sanitizeReadableContent(content, lang);
+  if (!sanitizedContent.trim()) return "";
+
+  return `<div data-flashcast-readable-service-body lang="${lang === "zh" ? "zh-CN" : "en"}">${sanitizedContent}</div>`;
+};
+
 const validDateString = (value: string | undefined) =>
   value && Number.isFinite(Date.parse(value)) ? value : undefined;
 
@@ -2407,7 +2424,9 @@ export const onRequest: PagesFunction = async (context) => {
   ]);
 
   const html = await response.text();
-  let transformed = meta ? injectSeo(html, meta, siteSettings, buildReadablePublicBody(key, dynamicRouteState?.row)) : injectNoIndexNotFound(html, siteSettings);
+  const readableBody = buildReadablePublicBody(key, dynamicRouteState?.row)
+    || buildReadableRenovationBodyMarkup(key, dynamicRouteState);
+  let transformed = meta ? injectSeo(html, meta, siteSettings, readableBody) : injectNoIndexNotFound(html, siteSettings);
   let publicDataOmitted = false;
   const publicDataPayload: Record<string, unknown> = {};
   if (siteSettings) {

@@ -67,6 +67,14 @@
 .scheme-a-heading > :is(h1, h2) { text-wrap: balance; }
 .scheme-a-heading > h2 + p { margin-top: 12px; }
 
+@media (max-width: 767px) {
+  /* Keep mobile descriptions on their full line before breaking; Safari's
+     pretty wrapping can leave several Chinese characters of unused space. */
+  html[data-public-theme] .scheme-a-public-shell :is(.scheme-a-home, .fc-route-page, .fc-design) p {
+    text-wrap: wrap;
+  }
+}
+
 .fc-route-section-head { margin-bottom: 32px; }
 
 .fc-route-section-head h2 {
