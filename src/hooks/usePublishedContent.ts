@@ -1,4 +1,4 @@
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   getPublishedBlogPostBySlug,
   getPublishedBlogPosts,
@@ -237,10 +237,21 @@ export function usePublishedMaterialBySlug(slug: string | undefined, language: "
 }
 
 export function usePublishedBlogPostBySlug(slug: string | undefined, language: "en" | "zh") {
+  const queryClient = useQueryClient();
+  const listKey = ["published", "blog", language];
   return useQuery({
     queryKey: ["published", "blog_post", slug, language],
     queryFn: () => getPublishedBlogPostBySlug(slug!, language),
     enabled: Boolean(slug),
+    // Only complete articles can seed the detail cache. Edge-injected listing
+    // summaries have no body and must still fetch the actual article.
+    initialData: () => {
+      if (queryClient.getQueryState(listKey)?.isInvalidated) return undefined;
+      return queryClient
+        .getQueryData<Awaited<ReturnType<typeof getPublishedBlogPosts>>>(listKey)
+        ?.find((post) => post.slug === slug && Boolean(post.content?.trim()));
+    },
+    initialDataUpdatedAt: () => queryClient.getQueryState(listKey)?.dataUpdatedAt,
     ...queryDefaults,
   });
 }

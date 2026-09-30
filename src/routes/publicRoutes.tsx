@@ -1,6 +1,7 @@
-import { lazy, type ComponentType } from "react";
+import { lazy, Suspense, type ComponentType } from "react";
 import { Navigate, Route, useParams } from "react-router-dom";
 import { LanguageRouteSync, LegacyLanguageRedirect, ProductsToMaterialsRedirect, RootLanguageRedirect } from "@/components/LanguageRouteSync";
+import BlogArticleLoading from "@/components/blocks/BlogArticleLoading";
 
 type PageModule = { default: ComponentType };
 type StyleModule = typeof import("*.css");
@@ -102,7 +103,7 @@ export const publicRoutes = (
     <Route path="/:lang/contact" element={withLanguageSync(<Contact />)} />
     <Route path="/:lang/quote" element={withLanguageSync(<Quote />)} />
     <Route path="/:lang/blog" element={withLanguageSync(<Blog />)} />
-    <Route path="/:lang/blog/:slug" element={withLanguageSync(<BlogDetail />)} />
+    <Route path="/:lang/blog/:slug" element={withLanguageSync(<Suspense fallback={<BlogArticleLoading />}><BlogDetail /></Suspense>)} />
     <Route path="/:lang/locations" element={withLanguageSync(<Locations />)} />
     <Route path="/:lang/locations/:slug" element={withLanguageSync(<LocationPage />)} />
     <Route path="/:lang/landing/:slug" element={<LandingPageRoute />} />
