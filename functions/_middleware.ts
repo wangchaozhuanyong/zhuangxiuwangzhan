@@ -1,3 +1,4 @@
+import { resolveReviewedBlogCover, resolveReviewedImageSource, resolveReviewedMaterialImage, wardrobeCover } from "../src/lib/reviewedContentMedia.mjs";
 import { buildReadablePublicBody, sanitizeReadableContent } from "./readablePublicBody";
 import { projectPublicMetadata } from "../src/lib/projectPublicMetadata.mjs";
 import manifest from "./seo-manifest.json";
@@ -1482,6 +1483,10 @@ const buildDynamicSeoEntry = (
     readString(row, "image_url") ||
     fallback?.ogImage ||
     DEFAULT_OG_IMAGE;
+  const reviewedImage = kind === "blog"
+    ? resolveReviewedBlogCover(readString(row, "slug"), imageUrl)
+    : kind === "material" ? resolveReviewedMaterialImage(imageUrl, readString(row, "slug")) : imageUrl;
+  const resolvedImage = resolveReviewedImageSource(reviewedImage) || DEFAULT_OG_IMAGE;
 
   return {
     lang,
@@ -1496,7 +1501,7 @@ const buildDynamicSeoEntry = (
       zh: `${PUBLIC_SITE_URL}${zhPath}`,
       xDefault: `${PUBLIC_SITE_URL}${enPath}`,
     },
-    ogImage: absolutePublicUrl(imageUrl),
+    ogImage: absolutePublicUrl(resolvedImage),
     schemaType: kind === "blog" ? "BlogPosting" : kind === "service" ? "Service" : fallback?.schemaType,
     entityName: kind === "service" ? localizedField(row, "title", lang) || rawTitle : fallback?.entityName,
     headline: kind === "blog" ? localizedField(row, "title", lang) || rawTitle : fallback?.headline,
@@ -1505,7 +1510,7 @@ const buildDynamicSeoEntry = (
       : fallback?.datePublished,
     dateModified: validDateString(readString(row, "updated_at")) || fallback?.dateModified,
     articleSection: kind === "blog" ? readString(row, "category") || undefined : fallback?.articleSection,
-    imageAlt: localizedField(row, "alt", lang) || localizedField(row, "title", alternateLang) || fallback?.imageAlt,
+    imageAlt: reviewedImage === wardrobeCover ? localizedField(row, "title", lang) : !reviewedImage ? undefined : localizedField(row, "alt", lang) || localizedField(row, "title", alternateLang) || fallback?.imageAlt,
   };
 };
 

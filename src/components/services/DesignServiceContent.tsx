@@ -2,6 +2,7 @@ import { useRef, useState, type MouseEvent } from "react";
 import { ArrowUpRight } from "lucide-react";
 import Link from "@/components/LocalizedLink";
 import SmartImage from "@/components/SmartImage";
+import { buildLocalResponsiveSrcSet } from "@/lib/localResponsiveImage";
 import ImmersiveHero from "@/components/ImmersiveHero";
 import { SchemeAFilter, SchemeANumberList } from "@/components/scheme-a/SchemeARoutePrimitives";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
@@ -18,7 +19,10 @@ import { stripHtml } from "@/lib/text";
 import "@/styles/design-service.css";
 type Study = "concept" | "plan" | "detail";
 type Material = "wood" | "stone" | "linen" | "bronze";
-type Project = "courtyard" | "reading";
+type Project = "courtyard" | "reading" | "hero-mobile" | "hero-tablet";
+const mobileHero = "/images/services/design/v20260930/hero-mobile.webp";
+const tabletHero = "/images/services/design/v20260930/hero-tablet.webp";
+const heroWidths = [360, 560, 720, 900, 1200, 1600];
 function DesignSectionHeading({ id, title, description }: { id: string; title: string; description?: string }) {
     return <header className="fcd-section-heading fc-route-section-head scheme-a-heading scheme-a-heading--split">
       <h2 id={id}>{title}</h2>
@@ -70,8 +74,11 @@ export default function DesignServiceContent({ service }: { service: Pick<Publis
         { title: copy.processGrid11, description: copy.processGrid12 },
     ];
     const materialTitles = { wood: copy.woodMaterialTitle, stone: copy.stoneMaterialTitle, linen: copy.linenMaterialTitle, bronze: copy.bronzeMaterialTitle };
-    const projectDetails = { courtyard: { title: copy.courtyardTitle, category: copy.courtyardCategory, description: copy.courtyardDescription, alt: copy.courtyardImageAlt, src: "/images/services/design/space-1200.webp", width: 1200, height: 800 },
-        reading: { title: copy.readingTitle, category: copy.readingCategory, description: copy.readingDescription, alt: copy.readingImageAlt, src: "/images/services/design/reading.webp", width: 860, height: 912 } };
+    const projectDetails = {
+        "hero-mobile": { title: copy.warmRoomTitle, category: copy.conceptLabel, description: copy.warmRoomDescription, alt: copy.heroImageAlt, src: mobileHero, width: 887, height: 1774 },
+        "hero-tablet": { title: copy.warmRoomTitle, category: copy.conceptLabel, description: copy.warmRoomDescription, alt: copy.heroImageAlt, src: tabletHero, width: 1086, height: 1448 },
+        courtyard: { title: copy.courtyardTitle, category: copy.courtyardCategory, description: copy.courtyardDescription, alt: copy.courtyardImageAlt, src: "/images/services/design/space.webp", width: 1536, height: 1024 },
+        reading: { title: copy.readingTitle, category: copy.readingCategory, description: copy.readingDescription, alt: copy.readingImageAlt, src: "/images/services/design/v20260930/reading.webp", width: 1536, height: 1024 } };
     const selectedProject = activeProject ? projectDetails[activeProject] : null;
     const faqs = service.faqs.map((faq) => ({ question: stripHtml(faq.q || ""), answer: stripHtml(faq.a || "") }))
         .filter((faq) => faq.question && faq.answer);
@@ -93,17 +100,18 @@ export default function DesignServiceContent({ service }: { service: Pick<Publis
       <figure className="fcd-design-hero__media">
         <SmartImage showFailureFallback
           src="/images/services/design/space.webp"
-          alt={copy.courtyardImageAlt}
+          alt={copy.heroImageAlt}
           width={1536}
           height={1024}
           critical
           loading="eager"
           fetchPriority="high"
-          sizes="(max-width: 767px) 1100px, 100vw"
-          pictureSources={[{
-            srcSet: "/images/services/design/space-768.webp 768w, /images/services/design/space-1200.webp 1200w, /images/services/design/space.webp 1536w",
-            sizes: "(max-width: 767px) 1100px, 100vw",
-          }]}
+          sizes="max(100vw, 150svh, 990px)"
+          candidateWidths={heroWidths}
+          pictureSources={[
+            { media: "(max-width: 767px)", srcSet: buildLocalResponsiveSrcSet(mobileHero, heroWidths), sizes: "max(100vw, 50svh, 300px)" },
+            { media: "(min-width: 768px) and (max-width: 1199px) and (orientation: portrait)", srcSet: buildLocalResponsiveSrcSet(tabletHero, heroWidths), sizes: "max(100vw, 75svh, 495px)" },
+          ]}
         />
       </figure>
       <div className="fcd-design-hero__frame fcd-page-gutter">
@@ -127,8 +135,10 @@ export default function DesignServiceContent({ service }: { service: Pick<Publis
           aria-controls="fcd-project-dialog"
           aria-haspopup="dialog"
           aria-label={copy.imageExploreAriaLabel}
-          href="#fcd-concept-courtyard"
-          onClick={(event) => openProject(event, "courtyard")}
+          href="#fcd-project-dialog"
+          onClick={(event) => openProject(event,
+            window.matchMedia("(max-width: 767px)").matches ? "hero-mobile"
+              : window.matchMedia("(max-width: 1199px) and (orientation: portrait)").matches ? "hero-tablet" : "courtyard")}
         >
           {copy.conceptLabel}<ArrowUpRight aria-hidden="true" size={15} />
         </a>
@@ -150,7 +160,7 @@ export default function DesignServiceContent({ service }: { service: Pick<Publis
     <div className="fcd-project-grid">
     <article className="fcd-project-card fcd-project-large fcd-reveal">
     <div className="fcd-project-image">
-    <SmartImage showFailureFallback alt={copy.projectImageAlt} decoding="async" height={800} loading="lazy" sizes="(max-width: 767px) calc(100vw - 44px), (max-width: 1100px) 52vw, 720px" src="/images/services/design/space-1200.webp" width={1200} pictureSources={[{ srcSet: "/images/services/design/space-480.webp 480w, /images/services/design/space-768.webp 768w, /images/services/design/space-1200.webp 1200w, /images/services/design/space.webp 1536w", sizes: "(max-width: 767px) calc(100vw - 44px), (max-width: 1100px) 52vw, 720px" }]}/>
+    <SmartImage showFailureFallback alt={copy.projectImageAlt} decoding="async" height={1024} loading="lazy" sizes="(max-width: 767px) calc(100vw - 32px), 52vw" src="/images/services/design/space.webp" width={1536} candidateWidths={heroWidths} targetAspectRatio={{ width: 4, height: 3 }} />
     <a aria-controls="fcd-project-dialog" aria-haspopup="dialog" aria-label={copy.projectImageAriaLabel} className="fcd-project-open" data-project="courtyard" href="#fcd-concept-courtyard" onClick={(event) => openProject(event, "courtyard")}>
     <span className="fcd-project-badge">
     {copy.captionKind}
@@ -173,7 +183,7 @@ export default function DesignServiceContent({ service }: { service: Pick<Publis
     </article>
     <article className="fcd-project-card fcd-project-small fcd-reveal">
     <div className="fcd-project-image">
-    <SmartImage showFailureFallback alt={copy.readingImageAlt} decoding="async" height={912} loading="lazy" sizes="(max-width: 767px) calc(100vw - 44px), (max-width: 1100px) 52vw, 720px" src="/images/services/design/reading.webp" width={860} pictureSources={[{ srcSet: "/images/services/design/reading-480.webp 480w, /images/services/design/reading.webp 860w", sizes: "(max-width: 767px) calc(100vw - 44px), (max-width: 1100px) 52vw, 720px" }]}/>
+    <SmartImage showFailureFallback alt={copy.readingImageAlt} decoding="async" height={1024} loading="lazy" sizes="(max-width: 767px) calc(100vw - 32px), 52vw" src="/images/services/design/v20260930/reading.webp" width={1536} candidateWidths={heroWidths} targetAspectRatio={{ width: 4, height: 3 }} />
     <a aria-controls="fcd-project-dialog" aria-haspopup="dialog" aria-label={copy.projectImageAriaLabel2} className="fcd-project-open" data-project="reading" href="#fcd-concept-reading" onClick={(event) => openProject(event, "reading")}>
     <span className="fcd-project-badge">
     {copy.captionKind}
@@ -236,7 +246,7 @@ export default function DesignServiceContent({ service }: { service: Pick<Publis
     </TabsList>
     <div className="fcd-study-visual" data-view={study}>
     <TabsContent value="concept" className="fcd-study-panel">
-    <SmartImage showFailureFallback alt={copy.panelConceptAlt} decoding="async" height={800} loading="eager" fetchPriority="auto" sizes="(max-width: 767px) calc(100vw - 44px), (max-width: 1100px) 52vw, 720px" src="/images/services/design/space-1200.webp" width={1200} pictureSources={[{ srcSet: "/images/services/design/space-480.webp 480w, /images/services/design/space-768.webp 768w, /images/services/design/space-1200.webp 1200w, /images/services/design/space.webp 1536w", sizes: "(max-width: 767px) calc(100vw - 44px), (max-width: 1100px) 52vw, 720px" }]}/>
+    <SmartImage showFailureFallback alt={copy.panelConceptAlt} decoding="async" height={1024} loading="eager" sizes="(max-width: 1023px) calc(100vw - 32px), 52vw" src="/images/services/design/space.webp" width={1536} candidateWidths={heroWidths} targetAspectRatio={{ width: 4, height: 3 }} />
     <span className="fcd-study-image-label">
     {copy.studyImageLabel}
     </span>
@@ -368,7 +378,7 @@ export default function DesignServiceContent({ service }: { service: Pick<Publis
     </p>
     </TabsContent>
     <TabsContent value="detail" className="fcd-study-panel">
-    <SmartImage showFailureFallback alt={copy.panelDetailAlt} decoding="async" height={481} loading="eager" fetchPriority="auto" sizes="(max-width: 767px) calc(100vw - 44px), (max-width: 1100px) 52vw, 720px" src="/images/services/design/detail.webp" width={891} pictureSources={[{ srcSet: "/images/services/design/detail-480.webp 480w, /images/services/design/detail.webp 891w", sizes: "(max-width: 767px) calc(100vw - 44px), (max-width: 1100px) 52vw, 720px" }]}/>
+    <SmartImage showFailureFallback alt={copy.panelDetailAlt} decoding="async" height={481} loading="eager" sizes="(max-width: 1023px) calc(100vw - 32px), 52vw" src="/images/services/design/detail.webp" width={891} candidateWidths={heroWidths} targetAspectRatio={{ width: 4, height: 3 }} />
     <span className="fcd-study-image-label">
     {copy.studyImageLabel2}
     </span>
@@ -396,10 +406,10 @@ export default function DesignServiceContent({ service }: { service: Pick<Publis
           height={1200}
           loading="lazy"
           decoding="async"
-          sizes="(max-width: 767px) calc(100vw - 32px), (max-width: 1100px) 52vw, 720px"
+          sizes="(max-width: 1023px) calc(100vw - 32px), 52vw"
           pictureSources={[{
             srcSet: "/images/services/design/material-board-v2-480.webp 480w, /images/services/design/material-board-v2-768.webp 768w, /images/services/design/material-board-v2-1200.webp 1200w",
-            sizes: "(max-width: 767px) calc(100vw - 32px), (max-width: 1100px) 52vw, 720px",
+            sizes: "(max-width: 1023px) calc(100vw - 32px), 52vw",
           }]}
         />
         <button className="fcd-material-pin fcd-material-pin--wood" aria-controls="fcd-material-wood" aria-label={copy.materialSampleAriaLabel2} aria-pressed={material === "wood"} type="button" onClick={() => { setMaterial("wood"); setMaterialTouched(true); }}>01</button>

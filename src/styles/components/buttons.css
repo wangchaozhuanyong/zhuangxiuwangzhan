@@ -110,22 +110,81 @@
     bottom: clamp(1rem, 2vw, 2rem);
     z-index: 105;
     display: inline-flex;
+    min-width: 9rem;
     min-height: 3.25rem;
     align-items: center;
-    gap: 0.65rem;
+    justify-content: center;
+    gap: 0.75rem;
     border: 1px solid var(--public-accent);
-    border-radius: 100px;
-    padding: 0.7rem 1.15rem;
-    color: #211b13;
+    border-radius: 8px;
+    padding: 0.65rem 1rem 0.65rem 1.25rem;
+    color: var(--public-surface-card);
     background: var(--public-accent);
-    box-shadow: 0 0.65rem 2rem rgb(0 0 0 / 0.28);
+    box-shadow: 0 4px 16px rgb(41 46 41 / 0.2), 0 0 0 1px rgb(253 252 250 / 0.55);
+    font-family: var(--font-body);
     font-size: 0.9rem;
-    font-weight: 750;
+    font-weight: 600;
+    line-height: 1.4;
+    text-decoration: none;
     white-space: nowrap;
+    -webkit-tap-highlight-color: transparent;
+    transition: background 180ms ease, box-shadow 180ms ease, transform 180ms ease;
   }
 
-  .fc-furniture-floating:hover { background: var(--public-accent-hover); }
-  .fc-furniture-floating:focus-visible { outline: 3px solid #f2dba7; outline-offset: 3px; }
+  .fc-furniture-floating > span {
+    display: grid;
+    width: 1.75rem;
+    height: 1.75rem;
+    flex: 0 0 auto;
+    place-items: center;
+    border-radius: 5px;
+    color: var(--public-accent);
+    background: var(--public-surface-section);
+  }
+
+  .fc-furniture-floating svg { transition: transform 180ms ease; }
+
+  @media (hover: hover) and (pointer: fine) {
+    .fc-furniture-floating:hover {
+      background: var(--public-accent-hover);
+      box-shadow: 0 6px 20px rgb(41 46 41 / 0.25), 0 0 0 1px rgb(253 252 250 / 0.55);
+      transform: translateY(-2px);
+    }
+
+    .fc-furniture-floating:hover svg { transform: translate(2px, -2px); }
+  }
+
+  .fc-furniture-floating:focus-visible {
+    outline: 2px solid var(--public-accent);
+    outline-offset: 4px;
+    box-shadow: 0 0 0 4px var(--public-surface-card);
+  }
+
+  .fc-furniture-floating:active { transform: scale(0.98); }
+
+  /* Brief discovery cue on entry; keep the viewport anchor still. */
+  @media (prefers-reduced-motion: no-preference) {
+    .fc-furniture-floating:not(:hover):not(:focus-visible) svg {
+      animation: fc-furniture-arrow-cue 1.8s ease-in-out 0.6s 2;
+    }
+  }
+
+  @keyframes fc-furniture-arrow-cue {
+    0%, 35%, 100% { transform: translate(0, 0); }
+    55% { transform: translate(2px, -2px); }
+    75% { transform: translate(0, 0); }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .fc-furniture-floating,
+    .fc-furniture-floating svg,
+    .fc-furniture-floating:is(:hover, :active),
+    .fc-furniture-floating:is(:hover, :active) svg {
+      transition: none;
+      transform: none;
+      animation: none;
+    }
+  }
 
   @media (max-width: 767px) {
     .fc-furniture-floating {

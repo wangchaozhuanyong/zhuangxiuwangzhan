@@ -26,6 +26,9 @@ export const navbarText = {
     studioGroup: "Brand & method",
     contactGroup: "Areas & contact",
     previewAlt: "Selected FLASH CAST interior project",
+    sectionPreview: "Section preview",
+    currentPage: "Current page",
+    currentPageBadge: "Current",
     menuDescription: "Explore spaces, services and the way we deliver each project.",
   },
   zh: {
@@ -55,6 +58,9 @@ export const navbarText = {
     studioGroup: "品牌与方法",
     contactGroup: "地区与联系",
     previewAlt: "FLASH CAST 精选室内项目",
+    sectionPreview: "栏目预览",
+    currentPage: "当前页面",
+    currentPageBadge: "当前",
     menuDescription: "从空间作品、服务体系到项目交付方式，完整浏览网站。",
   },
 } as const;

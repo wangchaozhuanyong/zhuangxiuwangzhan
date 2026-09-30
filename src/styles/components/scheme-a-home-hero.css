@@ -289,6 +289,5 @@
     .scheme-a-home-summary__metric-item { padding: 17px 0; }
     .scheme-a-home-summary__metric-item + .scheme-a-home-summary__metric-item { border-left: 0; border-top: 1px solid var(--public-border); }
     .scheme-a-home-summary__icon { width: 20px; height: 20px; }
-    .scheme-a-public-shell:has(.scheme-a-hero[data-hero-art="daylight"]) .scheme-a-chrome.is-overlay .scheme-a-chrome__bar { padding-inline: 20px; }
   }
 }

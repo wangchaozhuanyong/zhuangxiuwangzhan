@@ -182,7 +182,20 @@
   gap: 32px;
 }
 
+.fc-route-hero[data-route-hero-layout="media-only"] .fc-route-hero-frame {
+  display: block;
+}
+
+.scheme-a-public-shell .fc-route-page .fc-route-hero[data-route-hero-layout="media-only"] .fc-route-hero-media {
+  margin-inline: auto;
+}
+
 @media (min-width: 1024px) {
+  .scheme-a-public-shell .fc-route-page .fc-route-hero[data-route-hero-layout="media-only"] .fc-route-hero-media {
+    width: calc((100% - 32px) * 0.56);
+    height: clamp(440px, 35vw, 560px);
+  }
+
   .scheme-a-public-shell .fc-route-page .fc-route-hero-support :is(dt, dd) { font-size: 14px; }
   .fc-route-hero-media > :is(img, picture, .smart-image-frame, .flex) {
     position: absolute;
@@ -193,10 +206,16 @@
 }
 
 @media (max-width: 1023px) {
-  .fc-route-hero-frame { display: contents; }
+  /* Keep the shared frame at every breakpoint so media, copy and navigation
+     use the same gutter. Only the arrangement changes from columns to a stack. */
+  .fc-route-hero-frame {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+  }
 
   .scheme-a-public-shell .fc-route-page .fc-route-hero {
-    padding-top: 0;
+    padding-top: calc(var(--site-header-height, 76px) + 12px);
     display: flex;
     min-height: 0;
     flex-direction: column;
@@ -209,7 +228,7 @@
     inset: auto;
     order: 1;
     align-self: auto;
-    margin-top: var(--site-header-height, 76px);
+    margin-top: 0;
     width: 100%;
     height: clamp(360px, 48svh, 500px);
     min-height: 0;
@@ -226,7 +245,7 @@
     order: 2;
     width: 100%;
     min-height: 0;
-    padding: clamp(42px, 7vw, 62px) clamp(32px, 6vw, 64px) clamp(50px, 8vw, 72px);
+    padding: clamp(42px, 7vw, 62px) 0 clamp(50px, 8vw, 72px);
     border-top: 1px solid var(--public-border);
     border-right: 0;
     background: var(--public-surface-base);
@@ -265,6 +284,7 @@
 @media (max-width: 767px) {
   .scheme-a-public-shell .fc-route-page .fc-route-hero {
     position: relative;
+    padding-top: calc(56px + 12px);
     overflow: hidden;
     background: var(--public-surface-base);
   }
@@ -272,7 +292,7 @@
   .scheme-a-public-shell .fc-route-page .fc-route-hero-media {
     height: clamp(228px, 62vw, 290px);
     position: relative;
-    margin-top: 56px;
+    margin-top: 0;
   }
 
   .scheme-a-public-shell .fc-route-page .fc-route-hero-media img {
@@ -281,7 +301,7 @@
 
   .scheme-a-public-shell .fc-route-page .fc-route-hero-copy {
     margin-top: 0;
-    padding: 22px var(--scheme-a-gutter, 16px) 20px;
+    padding: 22px 0 20px;
     border-top: 0;
     background: var(--public-surface-base);
   }

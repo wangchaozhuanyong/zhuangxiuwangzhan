@@ -1,5 +1,8 @@
 export const designServicePageText = {
   "zh": {
+    "heroImageAlt": "自然光、木色与石材搭配的室内设计效果图",
+    "warmRoomTitle": "木色与日光",
+    "warmRoomDescription": "以暖木定制柜、浅色布艺与石材茶几组织客厅空间，保留窗边采光与舒展的活动区域。",
     "courtyardTitle": "庭院之间",
     "courtyardCategory": "01 / 空间概念",
     "courtyardDescription": "这是一组关于“自然如何进入日常”的视觉概念。以庭院为视觉落点，用木、石与织物建立温润而清晰的空间关系；用低矮家具留出视线，让光线与绿意成为空间的主角。",
@@ -46,7 +49,7 @@ export const designServicePageText = {
     "imageTopNote": "生活之美",
     "heroImageCaption": "庭院空间研究",
     "conceptLabel": "设计效果图",
-    "imageExploreAriaLabel": "查看庭院之间概念提案",
+    "imageExploreAriaLabel": "查看当前设计效果图",
     "sideCaption": "设计研究 / 概念 001",
     "heroBottom": "住宅 / 商业空间 / 定制整合",
     "heroBottom2": "向下，发现空间的另一种可能",
@@ -218,6 +221,9 @@ export const designServicePageText = {
     "faqSummary": "了解设计咨询需要的资料、设计费用与方案交付范围。"
   },
   "en": {
+    "heroImageAlt": "Interior design rendering combining natural light, warm wood and stone",
+    "warmRoomTitle": "Wood and daylight",
+    "warmRoomDescription": "Warm timber cabinetry, light upholstery and a stone coffee table shape a living room with natural light and an open circulation area.",
     "courtyardTitle": "The Courtyard",
     "courtyardCategory": "01 / SPATIAL CONCEPT",
     "courtyardDescription": "A visual study of how nature can enter everyday life. A courtyard anchors the view, while timber, stone and textiles establish a warm, clear material relationship. Low furniture keeps sightlines open, giving daylight and greenery room to shape the space.",
@@ -264,7 +270,7 @@ export const designServicePageText = {
     "imageTopNote": "THE ART OF LIVING WELL",
     "heroImageCaption": "COURTYARD STUDY",
     "conceptLabel": "Design rendering",
-    "imageExploreAriaLabel": "Explore The Courtyard concept",
+    "imageExploreAriaLabel": "View the current design rendering",
     "sideCaption": "DESIGN STUDY / CONCEPT 001",
     "heroBottom": "RESIDENTIAL / COMMERCIAL / BUILT-IN DESIGN",
     "heroBottom2": "Scroll to explore a different perspective",

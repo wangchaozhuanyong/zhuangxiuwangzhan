@@ -1,3 +1,4 @@
+import { resolveReviewedBlogCover, resolveReviewedImageSource, wardrobeCover } from "@/lib/reviewedContentMedia.mjs";
 import { projectPublicMetadata } from "@/lib/projectPublicMetadata.mjs";
 import {
   fetchPublishedBlogPostRowBySlug,
@@ -354,7 +355,7 @@ export const mapPublishedService = (item: UnknownRecord, language: Language): Pu
     processSteps: pickLocalizedList<{ title?: string; desc?: string }>(item, "process_steps", language),
     items: pickLocalizedList<string>(item, "scope_items", language),
     faqs: pickLocalizedList<{ q?: string; a?: string }>(item, "faqs", language),
-    image: readText(item, "image_url"),
+    image: resolveReviewedImageSource(readText(item, "image_url")),
     imageAlt: pickLocalizedText(item, "alt", language, pickLocalizedText(item, "title", language)),
     seoTitle: pickLocalizedText(item, "seo_title", language),
     seoDescription: pickLocalizedText(item, "seo_description", language),
@@ -597,8 +598,8 @@ export const mapPublishedBlogPost = (item: UnknownRecord, language: Language = "
     category: localize(readText(item, "category", "Renovation")),
     date: readText(item, "published_at") || readText(item, "created_at"),
     readTime: `${readMinutes} min`,
-    image: readText(item, "cover_image_url"),
-    imageAlt: localize(localizedText("alt", title)),
+    image: resolveReviewedBlogCover(readText(item, "slug"), readText(item, "cover_image_url")),
+    imageAlt: resolveReviewedBlogCover(readText(item, "slug"), readText(item, "cover_image_url")) === wardrobeCover ? title : localize(localizedText("alt", title)),
     tags: toArray<string>(item.tags).map((tag) => localize(tag)),
     seoTitle: localize(localizedText("seo_title")),
     seoDescription: localize(localizedText("seo_description")),

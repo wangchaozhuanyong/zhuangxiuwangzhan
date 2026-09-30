@@ -1,3 +1,5 @@
+import { mediaLabels } from "@/i18n/mediaLabels";
+import { isReviewedMaterialConceptImage } from "@/lib/reviewedContentMedia.mjs";
 import { useParams } from "react-router-dom";
 import Link from "@/components/LocalizedLink";
 import PageMeta from "@/components/PageMeta";
@@ -24,11 +26,11 @@ export default function MaterialSubcategoryPage() {
   const name = translateMaterialSubcategory(subcategory.name, language);
   const description = translateDisplayText(subcategory.description, language);
   const guidance = getMaterialSubcategoryGuidance(category.slug, categoryName, name, language);
-  const items: SchemeAListingItem[] = materials.map((item) => ({ id: String(item.id), title: translateDisplayText(item.name, language), description: item.suitableSpaces.map((space) => translateSpaceLabel(space, language)).join(" / "), meta: translateDisplayText(item.color || categoryName, language), image: item.image, imageAlt: item.alt || item.name, href: `/materials/${item.slug}` }));
+  const items: SchemeAListingItem[] = materials.map((item) => ({ id: String(item.id), title: translateDisplayText(item.name, language), description: item.suitableSpaces.map((space) => translateSpaceLabel(space, language)).join(" / "), meta: translateDisplayText(item.color || categoryName, language), image: item.image, mediaDisclosure: isReviewedMaterialConceptImage(item.image) ? mediaLabels[language].materialPalette : undefined, imageAlt: item.alt || item.name, href: `/materials/${item.slug}` }));
   return <main className="fc-route-page">
     <PageMeta title={copy.metaTitle(name, categoryName)} description={copy.metaDescription(description, name)} keywords={copy.metaKeywords(name, categoryName)} canonicalPath={`/materials/category/${category.slug}/${subcategory.slug}`} />
     <JsonLdBreadcrumb items={[{ name: copy.breadcrumbHome, url: "/" }, { name: copy.breadcrumbMaterials, url: "/materials" }, { name: categoryName, url: `/materials/category/${category.slug}` }, { name, url: `/materials/category/${category.slug}/${subcategory.slug}` }]} />
-    <SchemeARouteHero kind="listing" image={subcategory.image} imageAlt={subcategory.alt || name} label={categoryName} title={name} description={description} />
+    <SchemeARouteHero kind="listing" image={subcategory.image} mediaDisclosure={isReviewedMaterialConceptImage(subcategory.image) ? mediaLabels[language].materialPalette : undefined} imageAlt={subcategory.alt || name} label={categoryName} title={name} description={description} />
     <SchemeASection title={guidance.checklistTitle} description={guidance.checklistDescription}>
       <SchemeANumberList items={guidance.checklist} />
     </SchemeASection>

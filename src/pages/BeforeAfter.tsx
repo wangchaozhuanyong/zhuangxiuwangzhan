@@ -1,3 +1,4 @@
+import { reviewedComparisonRoom, resolveReviewedImageSource } from "@/lib/reviewedContentMedia.mjs";
 import { DeferredSmartImage } from "@/components/DeferredSmartImage";
 import ImageComparisonSlider from "@/components/ImageComparisonSlider";
 import { JsonLdBreadcrumb } from "@/components/JsonLd";
@@ -23,13 +24,16 @@ function BeforeAfterComparison({
   language: "en" | "zh";
 }) {
   const t = beforeAfterPageText[language];
-  const imageAlt = item.alt || item.title;
+  const reviewedRoom = reviewedComparisonRoom(item.before_image_url, item.after_image_url);
+  const reviewedCopy = reviewedRoom ? t.fallbackItems[["kitchen", "living", "bathroom"].indexOf(reviewedRoom)] : undefined;
+  const title = reviewedCopy?.title || item.title;
+  const imageAlt = reviewedCopy?.alt || item.alt || item.title;
 
   return (
     <article className="scheme-a-transformation" data-cinematic-section>
       <header className="scheme-a-transformation__copy">
         <div>
-          <h2>{item.title}</h2>
+          <h2>{title}</h2>
           <p className="scheme-a-transformation__description">{t.itemDescription}</p>
         </div>
       </header>
@@ -38,7 +42,7 @@ function BeforeAfterComparison({
         className="scheme-a-transformation__compare"
         positionVariable="--compare-position"
         initialValue={index % 2 === 0 ? 55 : 48}
-        ariaLabel={t.compareAria(item.title)}
+        ariaLabel={t.compareAria(title)}
       >
         <DeferredSmartImage
           src={item.after_image_url}
@@ -93,7 +97,7 @@ export default function BeforeAfter() {
     ? items
     : fallbackItems;
   const hero = pageHeroImages.projects;
-  const ogImage = displayItems[0]?.after_image_url || hero.desktop;
+  const ogImage = resolveReviewedImageSource(displayItems[0]?.after_image_url || hero.desktop);
 
   return (
     <main className="fc-route-page scheme-a-before-after-route">

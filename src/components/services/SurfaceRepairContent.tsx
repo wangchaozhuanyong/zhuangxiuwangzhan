@@ -3,6 +3,7 @@ import { ArrowDown, ArrowUpRight, Camera, Focus, Ruler } from "lucide-react";
 import Link from "@/components/LocalizedLink";
 import ImmersiveHero from "@/components/ImmersiveHero";
 import SmartImage from "@/components/SmartImage";
+import { buildLocalResponsiveSrcSet } from "@/lib/localResponsiveImage";
 import PageMeta from "@/components/PageMeta";
 import { JsonLdBreadcrumb, JsonLdFAQ, JsonLdService } from "@/components/JsonLd";
 import { Input } from "@/components/ui/input";
@@ -96,7 +97,11 @@ export default function SurfaceRepairContent({ service }: { service: PublishedSe
     <div className="fc-design fc-surface-repair" data-locale={language === "zh" ? "zh-CN" : "en"}>
       <ImmersiveHero className="fcd-design-hero repair-hero" standardPageHero={false} aria-labelledby="repair-hero-title">
         {/* The landscape image covers a tall hero: its source width must also cover the hero height at 1672:941. */}
-        <figure className="fcd-design-hero__media"><SmartImage src={service.image || `${imageRoot}hero.webp`} width={1672} height={941} sourceWidth={1672} candidateWidths={[560, 900, 1200, 1600]} critical loading="eager" fetchPriority="high" sizes="max(100vw, 178vh, 1174px)" showFailureFallback alt={service.imageAlt || copy.siteHero.imageAlt} /></figure>
+        <figure className="fcd-design-hero__media"><SmartImage src={service.image || `${imageRoot}hero.webp`} width={1672} height={941} sourceWidth={1672} candidateWidths={[560, 900, 1200, 1600]} critical loading="eager" fetchPriority="high" sizes="max(100vw, 178vh, 1174px)" pictureSources={[{
+          media: "(max-width: 767px)",
+          srcSet: buildLocalResponsiveSrcSet("/images/services/surface-repair/v20260930/hero-mobile.webp", [360, 560, 720, 900]),
+          sizes: "max(100vw, 50svh, 300px)",
+        }]} showFailureFallback alt={service.imageAlt || copy.siteHero.imageAlt} /></figure>
         <div className="fcd-design-hero__frame fcd-page-gutter"><div className="fcd-design-hero__copy">
           <p className="fcd-design-hero__location">{copy.regions}</p>
           <h1 id="repair-hero-title">{titleLines.map((line, index) => <span key={line}>{line}{language === "en" && index < titleLines.length - 1 ? " " : ""}</span>)}</h1>

@@ -4,12 +4,12 @@ import Link from "@/components/LocalizedLink";
 import SmartImage from "@/components/SmartImage";
 import ImmersiveHero from "@/components/ImmersiveHero";
 import { useLanguage } from "@/i18n/LanguageContext";
-import { schemeARouteHeroSupportText } from "@/i18n/schemeAText";
+import { schemeARouteHeroSupportText, schemeARouteText } from "@/i18n/schemeAText";
 import { buildLocalResponsiveSrcSet, isLocalResponsiveImageCandidate } from "@/lib/localResponsiveImage";
 import { buildSupabaseSrcSet, isSupabasePublicObjectUrl } from "@/lib/supabaseImage";
 
-const ROUTE_HERO_MOBILE_WIDTHS = [560, 720, 900];
-const ROUTE_HERO_TABLET_WIDTHS = [720, 900];
+const ROUTE_HERO_MOBILE_WIDTHS = [560, 720, 900, 1200, 1600];
+const ROUTE_HERO_TABLET_WIDTHS = [720, 900, 1200, 1600, 2000];
 const WIDE_TITLE_CHARACTER = /[\p{Script=Han}\p{Script=Hiragana}\p{Script=Katakana}\p{Script=Hangul}]/u;
 
 export type SchemeARouteKind = "listing" | "detail" | "content" | "article" | "legal" | "form" | "compare";
@@ -93,6 +93,7 @@ export function SchemeARouteHero({
   title,
   description,
   actions,
+  showIntro = true,
 }: {
   kind?: SchemeARouteKind;
   image?: string;
@@ -109,6 +110,7 @@ export function SchemeARouteHero({
   title: string;
   description: string;
   actions?: ReactNode;
+  showIntro?: boolean;
 }) {
   const mediaStyle: SchemeARouteHeroMediaStyle = {
     "--fc-route-hero-position-desktop": imagePosition?.desktop || "center",
@@ -124,14 +126,14 @@ export function SchemeARouteHero({
   const usesCompactTitleScale = titleVisualLength > (hasWideTitleCharacter ? 10 : 16);
   const mobileSrcSet = mobileImage
     ? isSupabasePublicObjectUrl(mobileImage)
-      ? buildSupabaseSrcSet(mobileImage, ROUTE_HERO_MOBILE_WIDTHS, { height: 1120, quality: 86, resize: "cover" })
+      ? buildSupabaseSrcSet(mobileImage, ROUTE_HERO_MOBILE_WIDTHS, { targetAspectRatio: { width: 16, height: 11 }, quality: 86, resize: "cover" })
       : isLocalResponsiveImageCandidate(mobileImage)
         ? buildLocalResponsiveSrcSet(mobileImage, ROUTE_HERO_MOBILE_WIDTHS, mobileImageSourceWidth)
         : undefined
     : undefined;
   const tabletSrcSet = tabletImage
     ? isSupabasePublicObjectUrl(tabletImage)
-      ? buildSupabaseSrcSet(tabletImage, ROUTE_HERO_TABLET_WIDTHS, { height: 1400, quality: 84, resize: "cover" })
+      ? buildSupabaseSrcSet(tabletImage, ROUTE_HERO_TABLET_WIDTHS, { targetAspectRatio: { width: 16, height: 11 }, quality: 84, resize: "cover" })
       : isLocalResponsiveImageCandidate(tabletImage)
         ? buildLocalResponsiveSrcSet(tabletImage, ROUTE_HERO_TABLET_WIDTHS, tabletImageSourceWidth)
         : undefined
@@ -150,6 +152,8 @@ export function SchemeARouteHero({
       alt={imageAlt}
       width={1600}
       height={1100}
+      targetAspectRatio={{ width: 16, height: 11 }}
+      resize="cover"
       loading="eager"
       fetchPriority="high"
       revealOnLoad
@@ -160,8 +164,9 @@ export function SchemeARouteHero({
   );
 
   return (
-    <ImmersiveHero className={`fc-route-hero fc-route-hero-${kind}`} data-route-hero-layout="framed-split">
+    <ImmersiveHero className={`fc-route-hero fc-route-hero-${kind}`} data-route-hero-layout={showIntro ? "framed-split" : "media-only"}>
       <div className="scheme-a-frame fc-route-hero-frame">
+        {!showIntro ? <h1 className="sr-only">{title}</h1> : null}
         {image || mobileImage ? (
           <MediaTag className={`fc-route-hero-media${image ? "" : " md:hidden"}`} data-cinematic-media style={mediaStyle}>
             {imageCaption ? (
@@ -172,14 +177,14 @@ export function SchemeARouteHero({
             ) : heroImage}
           </MediaTag>
         ) : null}
-        <div className="fc-route-hero-copy scheme-a-heading scheme-a-heading--split" style={{ ...(!image ? { gridColumn: "1 / -1" } : {}), ...(imageCaption ? { marginTop: 0 } : {}) }}>
+        {showIntro ? <div className="fc-route-hero-copy scheme-a-heading scheme-a-heading--split" style={{ ...(!image ? { gridColumn: "1 / -1" } : {}), ...(imageCaption ? { marginTop: 0 } : {}) }}>
           <span className="sr-only">{label}</span>
           {mediaDisclosure ? <span className="fc-route-media-disclosure">{mediaDisclosure}</span> : null}
           <h1 className={usesCompactTitleScale ? "fc-route-title-long" : undefined}>{title}</h1>
           <p>{description}</p>
           {actions ? <div className="fc-route-hero-actions">{actions}</div> : null}
           {kind !== "legal" ? <SchemeARouteHeroSupport /> : null}
-        </div>
+        </div> : null}
       </div>
     </ImmersiveHero>
   );
@@ -244,23 +249,26 @@ export function SchemeAFilter({
 }
 
 export function SchemeAListingGrid({ items, actionLabel }: { items: readonly SchemeAListingItem[]; actionLabel: string }) {
+  const { language } = useLanguage();
   return (
     <div className="fc-route-grid">
       {items.map((item, index) => (
         <Link key={item.id} to={item.href} className="fc-route-card">
-          <div className="fc-route-card-media" data-cinematic-media>
-            <SmartImage
+          <div className="fc-route-card-media relative" data-cinematic-media>
+            {item.image ? <SmartImage
               src={item.image}
               alt={item.imageAlt || item.title}
               width={index === 0 ? 1200 : 720}
               height={index === 0 ? 750 : 540}
+              targetAspectRatio={{ width: 4, height: 3 }}
+              resize="cover"
               loading="lazy"
               fetchPriority="auto"
               revealOnLoad
               sizes="(max-width: 374px) calc(100vw - 24px), (max-width: 639px) calc(100vw - 32px), (max-width: 1023px) 46vw, (min-width: 1536px) 464px, calc((100vw - 144px) / 3)"
               candidateWidths={[360, 560, 720, 960, 1200]}
               quality={82}
-            />
+            /> : <span className="absolute inset-0 flex items-center justify-center bg-muted p-6 text-center text-sm text-muted-foreground">{schemeARouteText[language].imagePending}</span>}
           </div>
           <div className="fc-route-card-body">
             {item.mediaDisclosure ? <span className="fc-route-card-disclosure">{item.mediaDisclosure}</span> : null}
@@ -369,7 +377,7 @@ export function SchemeAFaqList({ items }: { items: readonly SchemeAFaqItem[] }) 
 export function SchemeAGallery({
   images,
 }: {
-  images: readonly { src: string; alt: string }[];
+  images: readonly { src: string; alt: string; caption?: string }[];
 }) {
   const visibleImages = images.slice(0, 8);
   const isSingle = visibleImages.length === 1;
@@ -380,18 +388,23 @@ export function SchemeAGallery({
       style={isSingle ? { gridTemplateColumns: "1fr" } : undefined}
     >
       {visibleImages.map((image, index) => (
-        <div key={`${image.src}-${index}`} className="fc-route-gallery-media" data-cinematic-media>
+        <figure key={`${image.src}-${index}`} className="m-0 min-w-0">
+        <div className="fc-route-gallery-media" data-cinematic-media>
           <SmartImage
             src={image.src}
             alt={image.alt}
             width={1200}
             height={750}
+            targetAspectRatio={{ width: 8, height: 5 }}
+            resize="cover"
             sizes={isSingle ? "(max-width: 767px) calc(100vw - 32px), (min-width: 1536px) 1440px, calc(100vw - 96px)" : "(max-width: 767px) calc(100vw - 32px), (min-width: 1536px) 710px, calc((100vw - 116px) / 2)"}
-            candidateWidths={[560, 720, 960, 1200]}
+            candidateWidths={isSingle ? [560, 720, 960, 1200, 1600, 2400] : [560, 720, 960, 1200, 1600]}
             quality={84}
             revealOnLoad
           />
         </div>
+        {image.caption ? <figcaption className="pt-3 text-sm leading-relaxed text-muted-foreground">{image.caption}</figcaption> : null}
+        </figure>
       ))}
     </div>
   );

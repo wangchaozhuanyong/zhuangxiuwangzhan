@@ -42,6 +42,7 @@ export const publicNavigationGroups: readonly PublicNavGroup[] = [
     key: "spaces",
     items: [
       { labelKey: "nav.home", path: "/", icon: "home", previewImage: "/images/heroes/hero-luxury-living.webp" },
+      { labelKey: "nav.furniture", path: "/furniture", icon: "products", previewImage: "/images/heroes/v20260930/furniture-showcase.webp" },
       { labelKey: "nav.projects", path: "/projects", icon: "projects", previewImage: previewImages.spaces },
       { labelKey: "nav.beforeAfter", path: "/before-after", icon: "beforeAfter", previewImage: "/images/before-after/after-living.webp" },
     ],

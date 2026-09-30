@@ -1,7 +1,8 @@
 export const blogEditorialMediaText = {
+  wardrobeCoverAlt: { en: "Built-in wardrobe with hanging space, drawers and shelves — design rendering", zh: "展示挂衣区、抽屉和层板的定制衣柜设计效果图" },
   "disclosure": {
-    "zh": "仅设计效果图｜AI 生成概念示意，非客户完工实景",
-    "en": "Design visualisation only | AI-generated concept, not a completed client project"
+    "zh": "设计效果图",
+    "en": "Design rendering"
   },
   "articles": {
     "kitchen-cabinet-price-malaysia": {

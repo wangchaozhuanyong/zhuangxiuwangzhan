@@ -1,3 +1,5 @@
+import { mediaLabels } from "@/i18n/mediaLabels";
+import { isReviewedMaterialConceptImage } from "@/lib/reviewedContentMedia.mjs";
 import { useParams } from "react-router-dom";
 import Link from "@/components/LocalizedLink";
 import PageMeta from "@/components/PageMeta";
@@ -30,7 +32,11 @@ export default function MaterialDetail() {
   const categoryName = translateMaterialCategory(category.name, language);
   const description = stripHtml(translateDisplayText(material.description, language));
   const related = category.items.filter((item) => item.slug !== slug);
-  const relatedItems: SchemeAListingItem[] = related.slice(0, 4).map((item) => ({ id: String(item.id), title: translateDisplayText(item.name, language), description: translateDisplayText(item.description, language), meta: translateMaterialType(item.type, language), image: item.image, imageAlt: item.alt || item.name, href: `/materials/${item.slug}` }));
+  const relatedItems: SchemeAListingItem[] = related.slice(0, 4).map((item) => ({ id: String(item.id), title: translateDisplayText(item.name, language), description: translateDisplayText(item.description, language), meta: translateMaterialType(item.type, language), image: item.image, mediaDisclosure: isReviewedMaterialConceptImage(item.image) ? mediaLabels[language].materialPalette : undefined, imageAlt: item.alt || item.name, href: `/materials/${item.slug}` }));
+  const galleryImages = [
+    ...(material.gallery || []).map((image) => ({ src: image.image, alt: image.alt || name })),
+    ...(material.image ? [{ src: material.image, alt: material.alt || name }] : []),
+  ].filter((image, index, all) => image.src && all.findIndex((entry) => entry.src === image.src) === index).map((image) => ({ ...image, caption: isReviewedMaterialConceptImage(image.src) ? mediaLabels[language].materialPalette : undefined }));
   const judgementItems = [
     ...material.suitableSpaces.map((space: string) => ({ title: translateSpaceLabel(space, language), description: copy.suitableSpaces })),
     ...(material.pros || []).map((item: string) => ({ title: translateDisplayText(item, language), description: copy.pros })),
@@ -39,9 +45,10 @@ export default function MaterialDetail() {
 
   return (
     <main className="fc-route-page">
-      <PageMeta title={format(copy.metaTitle, { name })} description={format(copy.metaDescription, { description, spaces: material.suitableSpaces.map((space: string) => translateSpaceLabel(space, language)).join(language === "zh" ? "、" : ", ") })} keywords={format(copy.metaKeywords, { name, category: categoryName })} canonicalPath={`/materials/${material.slug}`} />
+      <PageMeta title={format(copy.metaTitle, { name })} description={format(copy.metaDescription, { description, spaces: material.suitableSpaces.map((space: string) => translateSpaceLabel(space, language)).join(language === "zh" ? "、" : ", ") })} keywords={format(copy.metaKeywords, { name, category: categoryName })} canonicalPath={`/materials/${material.slug}`} ogImage={material.image || undefined} />
       <JsonLdBreadcrumb items={[{ name: copy.breadcrumbHome, url: "/" }, { name: copy.breadcrumbMaterials, url: "/materials" }, { name: categoryName, url: `/materials/category/${category.slug}` }, { name, url: `/materials/${material.slug}` }]} />
-      <SchemeARouteHero kind="detail" image={material.image} imageAlt={material.alt || name} label={categoryName} title={name} description={description} />
+      <SchemeARouteHero kind="detail" image={material.image} mediaDisclosure={isReviewedMaterialConceptImage(material.image) ? mediaLabels[language].materialPalette : undefined} imageAlt={material.alt || name} label={categoryName} title={name} description={description} />
+      {!material.image ? <SchemeAContentState action={<Link to="/contact">{copy.enquire}</Link>}>{copy.sampleImagePending}</SchemeAContentState> : null}
       <SchemeAFacts items={[
         { label: copy.type, value: translateMaterialType(material.type || "", language) || "-" },
         { label: copy.color, value: translateDisplayText(material.color || "-", language) },
@@ -51,9 +58,9 @@ export default function MaterialDetail() {
       <SchemeASection title={routeText.materialConsiderations} description={description}>
         <SchemeANumberList items={judgementItems} />
       </SchemeASection>
-      <SchemeASection title={routeText.materialContext} description={translateDisplayText(material.recommendedPairing || material.note || description, language)}>
-        <SchemeAGallery images={[{ src: material.image, alt: material.alt || name }, { src: related[0]?.image || material.image, alt: related[0]?.alt || name }]} />
-      </SchemeASection>
+      {galleryImages.length ? <SchemeASection title={routeText.materialContext} description={translateDisplayText(material.recommendedPairing || material.note || description, language)}>
+        <SchemeAGallery images={galleryImages} />
+      </SchemeASection> : null}
       {relatedItems.length ? <SchemeASection title={format(copy.more, { name: categoryName })}><SchemeAListingGrid items={relatedItems} actionLabel={copy.view} /></SchemeASection> : null}
     </main>
   );
