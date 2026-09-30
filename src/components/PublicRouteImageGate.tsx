@@ -1,126 +1,147 @@
-import { useLayoutEffect, useState, type ReactNode } from "react";
+import { useLayoutEffect, useRef, useState, type ReactNode } from "react";
+import { useQueryClient } from "@tanstack/react-query";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { publicContentStatusText } from "@/i18n/publicContentStatusText";
+import { getPublicRoutePrefetchTasks } from "@/lib/publicRoutePrefetch";
+import { getLanguageFromPath } from "@/i18n/routes";
 
 const MAX_WAIT_MS = 5000;
-const readyRouteImages = new Map<string, string[]>();
 let hasMountedPublicRoute = false;
 
-const criticalImages = (main: HTMLElement) => [...main.querySelectorAll<HTMLImageElement>('img[data-critical-image="true"]')];
-const imageSourceKey = (img: HTMLImageElement) => [
-  img.getAttribute("src"),
-  img.getAttribute("srcset"),
-  ...[...(img.closest("picture")?.querySelectorAll("source") || [])].map((source) => `${source.media}:${source.srcset}`),
-].join("|");
+const isInViewport = (image: HTMLImageElement) => {
+  const rect = image.getBoundingClientRect();
+  return rect.width > 0 && rect.height > 0 && rect.bottom > 0 && rect.top < window.innerHeight
+    && rect.right > 0 && rect.left < window.innerWidth;
+};
 
-/** Shows the brand screen only on the initial public route while its visible images load. */
+/** Every route waits for its visible images; only the first visit shows the brand. */
 export function PublicRouteImageGate({ children, routeKey }: { children: ReactNode; routeKey: string }) {
   const { language } = useLanguage();
+  const queryClient = useQueryClient();
   const [showBrandScreen] = useState(() => !hasMountedPublicRoute);
-  const [status, setStatus] = useState<"waiting" | "ready" | "timeout">(
-    () => showBrandScreen && !readyRouteImages.has(routeKey) ? "waiting" : "ready",
-  );
+  const [state, setState] = useState({ routeKey, status: "waiting" as "waiting" | "ready" | "timeout" });
+  const status = state.routeKey === routeKey ? state.status : "waiting";
+  const contentRef = useRef<HTMLDivElement>(null);
+  const blocked = status !== "ready";
 
   useLayoutEffect(() => {
     hasMountedPublicRoute = true;
   }, []);
 
   useLayoutEffect(() => {
-    if (status === "ready") return;
-    document.documentElement.dataset.publicRouteLoading = "true";
+    const content = contentRef.current;
+    content?.toggleAttribute("inert", blocked);
+    if (!blocked) return;
+    // Keep navigation available during SPA transitions, including the mobile dock.
+    document.documentElement.dataset.publicRouteLoading = showBrandScreen ? "true" : "navigation";
     return () => {
       delete document.documentElement.dataset.publicRouteLoading;
+      content?.removeAttribute("inert");
     };
-  }, [status]);
+  }, [blocked, showBrandScreen]);
 
   useLayoutEffect(() => {
-    if (!showBrandScreen) return;
-    const main = document.getElementById("main-content");
+    const main = contentRef.current;
     if (!main) return;
-    let frame = 0;
     let stopped = false;
-    let timeout = 0;
-    let deadlineReached = false;
-    const cachedImages = readyRouteImages.get(routeKey);
-    let usingCache = cachedImages !== undefined;
-    const isReady = () => {
-      if (main.querySelector('[data-route-pending="true"]')) return false;
-      const brandImage = document.querySelector<HTMLImageElement>(".scheme-a-chrome__brand img");
-      const images = [...main.querySelectorAll<HTMLImageElement>("img"), ...(brandImage ? [brandImage] : [])].filter((img) => {
-        if (img.dataset.criticalImage === "true") return true;
-        const rect = img.getBoundingClientRect();
-        return rect.width > 0 && rect.height > 0
-          && rect.bottom > 0 && rect.top < window.innerHeight
-          && rect.right > 0 && rect.left < window.innerWidth;
-      });
-      return images.every((img) => (img.dataset.imageState === "loaded" && img.dataset.decodedSrc === img.currentSrc) || img.dataset.imageState === "error"
-        || (!img.dataset.imageState && img.complete && img.naturalWidth > 0));
-    };
-    const markReady = () => {
-      const images = criticalImages(main);
-      if (images.every((img) => img.dataset.imageState !== "error")) {
-        readyRouteImages.set(routeKey, images.map(imageSourceKey));
-      }
-      window.clearTimeout(timeout);
-      setStatus("ready");
-    };
-    const startTimeout = () => {
-      window.clearTimeout(timeout);
-      deadlineReached = false;
-      timeout = window.setTimeout(() => {
-        deadlineReached = true;
-        if (isReady()) {
-          markReady();
-          return;
-        }
-        // A browsing deadline is not evidence of a failed image request.
-        // Keep downloading while allowing visitors to read the ready page.
-        const isRoutePending = Boolean(main.querySelector('[data-route-pending="true"]'));
-        setStatus(isRoutePending ? "timeout" : "ready");
-      }, MAX_WAIT_MS);
-    };
+    let settled = false;
+    let frame = 0;
+    const decoded = new WeakMap<HTMLImageElement, string>();
+    const decoding = new WeakMap<HTMLImageElement, string>();
+    const pathname = routeKey.split("?")[0];
+    const routeQueries = getPublicRoutePrefetchTasks(pathname, getLanguageFromPath(pathname) || language).map(({ queryKey }) => queryKey);
+    const brandContainer = showBrandScreen ? document.querySelector(".scheme-a-chrome__brand") : null;
+
     const check = () => {
-      if (stopped) return;
-      if (usingCache) {
-        if (main.querySelector('[data-route-pending="true"]')) return;
-        const images = criticalImages(main);
-        if (images.length === cachedImages?.length && images.every((img, index) =>
-          imageSourceKey(img) === cachedImages[index] && img.complete && img.naturalWidth > 0)) return;
-        usingCache = false;
-        readyRouteImages.delete(routeKey);
-        setStatus("waiting");
-        startTimeout();
+      if (stopped || settled) return;
+      if (main.querySelector('[data-route-pending="true"]')) { main.dataset.routeWaitReason = "route"; return; }
+      const pendingQuery = routeQueries.find((key) => {
+        const query = queryClient.getQueryCache().find({ queryKey: key, exact: true });
+        return query?.isActive() && query.state.status === "pending";
+      });
+      if (pendingQuery) { main.dataset.routeWaitReason = `data:${pendingQuery[1]}`; return; }
+      // Site settings can replace the fallback logo element after mount.
+      const brand = brandContainer?.querySelector<HTMLImageElement>("img");
+      const images = [...main.querySelectorAll<HTMLImageElement>("img"), ...(brand ? [brand] : [])]
+        .filter((image) => !image.classList.contains("smart-image-previous") && isInViewport(image));
+      const ready = images.every((image) => {
+        if (image.dataset.imageState === "error") return true; // The image owns its retry UI.
+        const selected = image.currentSrc || image.src;
+        if (!image.complete || image.naturalWidth === 0 || !selected) { main.dataset.routeWaitReason = "image-transfer"; return false; }
+        if (image.dataset.imageState) {
+          main.dataset.routeWaitReason = "image-decode";
+          return image.dataset.imageState === "loaded" && image.dataset.decodedSrc === selected;
+        }
+        if (decoded.get(image) === selected) return true;
+        if (decoding.get(image) !== selected) {
+          decoding.set(image, selected);
+          void Promise.resolve(typeof image.decode === "function" ? image.decode() : undefined).then(() => {
+            if (stopped || (image.currentSrc || image.src) !== selected) return;
+            decoded.set(image, selected);
+            schedule();
+          }, () => {
+            if (stopped) return;
+            decoding.delete(image);
+          });
+        }
+        return false;
+      });
+      if (ready) {
+        delete main.dataset.routeWaitReason;
+        settled = true;
+        window.clearTimeout(timeout);
+        setState({ routeKey, status: "ready" });
       }
-      if (isReady()) markReady();
-      else if (deadlineReached && !main.querySelector('[data-route-pending="true"]')) setStatus("ready");
     };
-    const observer = new MutationObserver(check);
-    observer.observe(main, { childList: true, subtree: true, attributes: true, attributeFilter: ["data-image-state", "data-decoded-src", "data-route-pending", "src", "srcset"] });
-    const brand = document.querySelector(".scheme-a-chrome__brand");
-    if (brand) observer.observe(brand, { childList: true, subtree: true, attributes: true, attributeFilter: ["data-image-state", "data-decoded-src"] });
-    frame = requestAnimationFrame(check);
-    if (!usingCache) startTimeout();
+    const schedule = () => {
+      if (stopped || settled || frame) return;
+      frame = requestAnimationFrame(() => { frame = 0; check(); });
+    };
+    const timeout = window.setTimeout(() => {
+      check();
+      // Slow is not failed. Keep a recoverable waiting state; never expose an empty hero automatically.
+      if (!settled) setState({ routeKey, status: "timeout" });
+    }, MAX_WAIT_MS);
+    const observer = new MutationObserver(schedule);
+    const unsubscribeQueries = queryClient.getQueryCache().subscribe(schedule);
+    observer.observe(main, { childList: true, subtree: true, attributes: true,
+      attributeFilter: ["data-image-state", "data-decoded-src", "data-route-pending", "src", "srcset", "sizes", "media"] });
+    if (brandContainer) observer.observe(brandContainer, { childList: true, subtree: true, attributes: true, attributeFilter: ["data-image-state", "data-decoded-src", "src", "srcset"] });
+    main.addEventListener("load", schedule, true);
+    main.addEventListener("error", schedule, true);
+    window.addEventListener("resize", schedule);
+    window.addEventListener("scroll", schedule, { passive: true });
+    // Synchronous check avoids a loading flash for cached, already decoded content.
+    check();
+    schedule();
     return () => {
       stopped = true;
       observer.disconnect();
+      unsubscribeQueries();
       cancelAnimationFrame(frame);
       window.clearTimeout(timeout);
+      main.removeEventListener("load", schedule, true);
+      main.removeEventListener("error", schedule, true);
+      window.removeEventListener("resize", schedule);
+      window.removeEventListener("scroll", schedule);
     };
-  }, [routeKey, showBrandScreen]);
+  }, [language, queryClient, routeKey, showBrandScreen]);
 
+  const copy = publicContentStatusText[language];
   return (
     <>
-      {children}
-      {status !== "ready" ? (
-        <div className="scheme-a-page-loader scheme-a-page-loader--overlay" role="status" aria-live="polite" aria-busy={status === "waiting"}>
-          <div className="scheme-a-page-loader__brand">
-            <p>{publicContentStatusText[language].loaderBrand}</p>
-            <strong><span>FLASH</span><em>CAST</em></strong>
-            <span>{publicContentStatusText[language].loaderPending}</span>
+      <div ref={contentRef} className="public-route-content" data-route-visual-state={status} aria-hidden={blocked || undefined} aria-busy={blocked || undefined}>
+        {children}
+      </div>
+      {blocked ? (
+        <div className={showBrandScreen ? "scheme-a-page-loader scheme-a-page-loader--overlay" : "public-route-loader"}
+          role="status" aria-live="polite" aria-busy={status === "waiting"} data-route-loader={showBrandScreen ? "initial" : "navigation"}>
+          <div className={showBrandScreen ? "scheme-a-page-loader__brand" : "public-route-loader__progress"}>
+            {showBrandScreen ? <><p>{copy.loaderBrand}</p><strong><span>FLASH</span><em>CAST</em></strong><span>{copy.loaderPending}</span></> : <span className="sr-only">{copy.loaderRoutePending}</span>}
             {status === "waiting" ? <i aria-hidden="true" /> : (
               <div className="scheme-a-page-loader__actions">
-                <button type="button" onClick={() => window.location.reload()}>{publicContentStatusText[language].loaderRetry}</button>
-                <button type="button" onClick={() => setStatus("ready")}>{publicContentStatusText[language].loaderContinue}</button>
+                <button type="button" onClick={() => window.location.reload()}>{copy.loaderRetry}</button>
+                <button type="button" onClick={() => setState({ routeKey, status: "ready" })}>{copy.loaderContinue}</button>
               </div>
             )}
           </div>

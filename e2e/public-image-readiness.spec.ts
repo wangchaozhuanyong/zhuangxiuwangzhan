@@ -92,14 +92,48 @@ test("requests deferred home media before it scrolls into view", async ({ page }
   await expect(image).toHaveAttribute("data-image-state", "loaded", { timeout: 10_000 });
 });
 
-test("continues browsing after the image deadline without marking pending transfers as failures", async ({ page }) => {
+test("offers explicit recovery after a slow image without exposing an empty hero automatically", async ({ page }) => {
   await page.route("**/images/**", () => { /* Keep the image request pending. */ });
   await page.goto("/en/about", { waitUntil: "domcontentloaded" });
   await expect(page.locator(loader)).toBeVisible();
-  await expect(page.locator(loader)).toBeHidden({ timeout: 7_000 });
+  await expect(page.locator(".scheme-a-page-loader__actions")).toBeVisible({ timeout: 7_000 });
+  await expect(page.locator(loader)).toBeVisible();
   await expect(page.locator(criticalImage)).toHaveAttribute("data-image-state", "loading");
   await expect(page.locator(".smart-image-failure")).toHaveCount(0);
+  await page.getByRole("button", { name: "Continue", exact: true }).click();
+  await expect(page.locator(loader)).toBeHidden();
   await page.unroute("**/images/**");
+});
+
+test("covers every navigation frame until the selected visible images have decoded", async ({ page }) => {
+  await page.goto("/zh/services", { waitUntil: "domcontentloaded" });
+  await expect(page.locator("[data-route-loader]")).toBeHidden();
+  await page.route("**/images/**/hero-materials*", async (route) => {
+    await new Promise((resolve) => setTimeout(resolve, 900));
+    await route.continue();
+  });
+  await page.evaluate(() => {
+    document.body.dataset.emptyHeroFrames = "0";
+    const sample = () => {
+      const images = Array.from(document.querySelectorAll<HTMLImageElement>("#main-content img[data-critical-image='true']"));
+      const exposed = !document.querySelector("[data-route-loader]");
+      const pending = images.some((img) => {
+        const rect = img.getBoundingClientRect();
+        return rect.width > 0 && rect.height > 0 && rect.top < innerHeight && rect.bottom > 0
+          && img.dataset.imageState !== "error"
+          && (img.dataset.imageState !== "loaded" || img.dataset.decodedSrc !== img.currentSrc);
+      });
+      if (exposed && pending) document.body.dataset.emptyHeroFrames = String(Number(document.body.dataset.emptyHeroFrames) + 1);
+      if (document.body.dataset.sampleNavigation !== "stop") requestAnimationFrame(sample);
+    };
+    requestAnimationFrame(sample);
+  });
+  await page.locator('a[href="/zh/materials"]').first().click();
+  await expect(page.locator('[data-route-loader="navigation"]')).toBeVisible();
+  await expect(page.locator(loader)).toHaveCount(0);
+  await expect(page.locator('[data-route-loader="navigation"]')).toBeHidden({ timeout: 15_000 });
+  expect(await page.locator("body").getAttribute("data-empty-hero-frames")).toBe("0");
+  await page.evaluate(() => { document.body.dataset.sampleNavigation = "stop"; });
 });
 
 test("keeps detail loading geometry stable until the first published data result", async ({ page }) => {

@@ -1,8 +1,8 @@
-import { forwardRef, useCallback, useEffect, useRef, useState, type MouseEvent } from "react";
+import { forwardRef, useCallback, useEffect, useRef, type MouseEvent } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { Link, useLocation, useNavigate, type LinkProps } from "react-router-dom";
 import { useLanguage } from "@/i18n/LanguageContext";
-import { stripLanguagePrefix, type Language } from "@/i18n/routes";
+import { type Language } from "@/i18n/routes";
 import { prefetchPublishedRouteContent } from "@/lib/publicRoutePrefetch";
 
 type LanguageRouteLinkProps = Omit<LinkProps, "to"> & {
@@ -29,7 +29,6 @@ const LanguageRouteLink = forwardRef<HTMLAnchorElement, LanguageRouteLinkProps>(
   const location = useLocation();
   const navigate = useNavigate();
   const { setLanguage } = useLanguage();
-  const [isSwitching, setIsSwitching] = useState(false);
   const prefetchRef = useRef<Promise<void> | null>(null);
 
   const prefetch = useCallback(() => {
@@ -56,22 +55,16 @@ const LanguageRouteLink = forwardRef<HTMLAnchorElement, LanguageRouteLinkProps>(
     };
   }, [prefetch, prefetchOnReady, to]);
 
-  const handleClick = async (event: MouseEvent<HTMLAnchorElement>) => {
+  const handleClick = (event: MouseEvent<HTMLAnchorElement>) => {
     onClick?.(event);
     if (event.defaultPrevented || !isPlainLeftClick(event) || props.target === "_blank") return;
 
     event.preventDefault();
-    if (isSwitching) return;
-    setIsSwitching(true);
-
-    try {
-      const targetContent = prefetch();
-      if (stripLanguagePrefix(location.pathname) !== "/") await targetContent;
-      setLanguage(targetLanguage);
-      navigate(to);
-    } finally {
-      setIsSwitching(false);
-    }
+    // Navigation owns the bounded readiness state. A stalled prefetch must not
+    // leave the language button unresponsive or navigate after a later click.
+    void prefetch();
+    setLanguage(targetLanguage);
+    navigate(to);
   };
 
   return (
@@ -92,8 +85,6 @@ const LanguageRouteLink = forwardRef<HTMLAnchorElement, LanguageRouteLinkProps>(
         void prefetch();
         onTouchStart?.(event);
       }}
-      aria-busy={isSwitching || undefined}
-      data-language-switching={isSwitching ? "true" : undefined}
     >
       {children}
     </Link>

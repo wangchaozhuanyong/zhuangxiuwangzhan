@@ -31,4 +31,10 @@ describe("public route language prefetch", () => {
   it("keeps static legal pages free of unnecessary content requests", () => {
     expect(keysFor("/en/privacy", "zh")).toEqual([]);
   });
+
+  it("does not request CMS pages for the furniture catalog or product routes", () => {
+    expect(keysFor("/zh/furniture", "zh")).toEqual([]);
+    expect(keysFor("/en/furniture/bedroom", "en")).toEqual([]);
+    expect(keysFor("/zh/furniture/product/ws-2102-wooden-bunk-bed-white", "zh")).toEqual([]);
+  });
 });
