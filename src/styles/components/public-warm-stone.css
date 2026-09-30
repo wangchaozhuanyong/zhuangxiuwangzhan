@@ -1,0 +1,253 @@
+/* Public-only tokens: removing data-public-theme restores the admin theme. */
+html[data-public-theme] {
+  --background: 48 24% 96%;
+  --foreground: 120 6% 17%;
+  --card: 40 33% 99%;
+  --card-foreground: 120 6% 17%;
+  --popover: 40 33% 99%;
+  --popover-foreground: 120 6% 17%;
+  --primary: 132 11% 28%;
+  --primary-foreground: 40 33% 99%;
+  --secondary: 77 16% 90%;
+  --secondary-foreground: 120 6% 17%;
+  --muted: 77 16% 90%;
+  --muted-foreground: 108 5% 40%;
+  --accent: 132 11% 28%;
+  --accent-foreground: 40 33% 99%;
+  --border: 90 10% 84%;
+  --input: 93 7% 49%;
+  --ring: 132 11% 28%;
+  --steel: 108 5% 40%;
+  --gold: 132 11% 28%;
+  --warm: 77 16% 90%;
+  --surface-dark: 77 16% 90%;
+  --surface-dark-foreground: 120 6% 17%;
+  --surface-elevated: 40 33% 99%;
+  --gold-foreground: 40 33% 99%;
+  --font-display: "Noto Serif SC", "Songti SC", Georgia, serif;
+  --font-body: "Noto Sans SC", "PingFang SC", "Microsoft YaHei", sans-serif;
+  --font-cjk-display: "Noto Serif SC", "Songti SC", Georgia, serif;
+}
+
+/* Approved warm-stone public skin. Legacy public-theme selectors remain for
+   shared-layout compatibility. Admin tokens and styles remain separate. */
+html[data-public-theme] { color-scheme: light; }
+html[data-public-theme] body { background: #F7F6F2; color: #292E29; }
+html[data-public-theme] #root .scheme-a-public-shell {
+  --font-body: "Noto Sans SC", "PingFang SC", "Microsoft YaHei", sans-serif;
+  --font-display: "Noto Serif SC", "Songti SC", Georgia, serif;
+}
+html[data-public-theme] #root :is(.scheme-a-chrome, .scheme-a-directory, .scheme-a-mobile-dock, .scheme-a-contact-dock) {
+  color: #292E29 !important;
+  background: #FDFCFA !important;
+  border-color: #D4D9CF !important;
+  box-shadow: none !important;
+}
+html[data-public-theme] #root .scheme-a-chrome.is-overlay { background: rgb(253 252 250 / .9) !important; }
+html[data-public-theme] #root .scheme-a-chrome__brand img { filter: brightness(0) !important; }
+html[data-public-theme] #root :is(.scheme-a-chrome__primary a, .scheme-a-chrome__nav-more) { color: #292E29 !important; }
+html[data-public-theme] #root :is(.scheme-a-chrome__primary a, .scheme-a-chrome__nav-more)::after { background: #3F4E42 !important; }
+html[data-public-theme] #root :is(.scheme-a-language-switch, .scheme-a-chrome__menu-trigger, .scheme-a-directory__close) {
+  background: #FDFCFA !important; color: #3F4E42 !important; border-color: #7B8775 !important; box-shadow: none !important; border-radius: 6px !important;
+}
+html[data-public-theme] #root .scheme-a-language-option { color: #626A60 !important; }
+html[data-public-theme] #root .scheme-a-language-option.is-active { color: #3F4E42 !important; background: #E4E8DE !important; }
+html[data-public-theme] #root :is(.scheme-a-chrome__quote, .scheme-a-button--paper, .btn-brand-primary, .btn-on-dark-primary, .fc-route-hero-actions a, button[type="submit"], .scheme-a-footer__invitation a:first-child, .scheme-a-directory__foot .is-quote, .landing-quote-card__submit) {
+  color: #FDFCFA !important; background: #3F4E42 !important; border-color: #3F4E42 !important; border-radius: 6px !important; box-shadow: none !important; text-shadow: none !important;
+}
+html[data-public-theme] #root :is(.scheme-a-chrome__quote, .scheme-a-button--paper, .btn-brand-primary, .btn-on-dark-primary, .fc-route-hero-actions a, button[type="submit"], .scheme-a-footer__invitation a:first-child):hover { background: #344237 !important; }
+html[data-public-theme] #root :is(.scheme-a-chrome__quote, .scheme-a-button--paper, .btn-brand-primary, .btn-on-dark-primary, .fc-route-hero-actions a, button[type="submit"], .scheme-a-footer__invitation a:first-child):active { background: #29362C !important; }
+html[data-public-theme] #root :is(.scheme-a-button--glass, .btn-brand-secondary, .btn-on-dark-secondary, .scheme-a-footer__invitation a:last-child, .scheme-a-footer__contact-action, .fc-furniture-floating) {
+  color: #3F4E42 !important; background: #FDFCFA !important; border-color: #7B8775 !important; border-radius: 6px !important; box-shadow: none !important; text-shadow: none !important;
+}
+html[data-public-theme] #root :is(.scheme-a-button--glass, .btn-brand-secondary, .btn-on-dark-secondary, .scheme-a-footer__invitation a:last-child, .scheme-a-footer__contact-action, .fc-furniture-floating):hover { background: #E4E8DE !important; }
+html[data-public-theme] #root :is(.scheme-a-footer, .scheme-a-footer-prelude) { background: #ECEDE6 !important; color: #292E29 !important; }
+html[data-public-theme] #root :is(.scheme-a-footer__grid, .scheme-a-footer__studio, .scheme-a-footer__contact-link) { background: transparent !important; border-color: #D4D9CF !important; box-shadow: none !important; }
+html[data-public-theme] #root :is(.scheme-a-footer__studio strong, .scheme-a-footer__studio p, .scheme-a-footer__directory section > p, .scheme-a-footer__areas > p) { color: #292E29 !important; }
+html[data-public-theme] #root :is(.scheme-a-footer__contact-value, .scheme-a-footer__directory a, .scheme-a-footer__areas a, .scheme-a-footer__legal, .scheme-a-footer__area-summary) { color: #626A60 !important; }
+html[data-public-theme] #root .scheme-a-footer__panorama::after { background: linear-gradient(90deg, rgb(20 27 22 / .78), rgb(20 27 22 / .5) 60%, transparent) !important; }
+html[data-public-theme] #root .scheme-a-footer__invitation :is(h2, span) { color: #FDFCFA !important; text-shadow: none !important; }
+html[data-public-theme] #root .scheme-a-footer__kicker { background: #E4E8DE !important; border-color: #7B8775 !important; border-radius: 6px !important; box-shadow: none !important; }
+html[data-public-theme] #root .scheme-a-footer__kicker span { color: #3F4E42 !important; background: none !important; -webkit-text-fill-color: #3F4E42 !important; }
+html[data-public-theme] #root :is(input, select, textarea) { color: #292E29 !important; background: #FDFCFA !important; border-color: #7B8775 !important; border-radius: 6px !important; box-shadow: none !important; }
+html[data-public-theme] #root :is(input, textarea)::placeholder { color: #626A60 !important; }
+html[data-public-theme] #root :is(a, button, input, select, textarea):focus-visible { outline-color: #3F4E42 !important; }
+html[data-public-theme] #root :is(input, select, textarea)[aria-invalid="true"] { border-color: #A84636 !important; }
+html[data-public-theme] #root :is(button, input, select, textarea):disabled { color: #5D665B !important; background: #E4E8DE !important; }
+html[data-public-theme] #root :is(.fc-route-filters button, .fc-route-chip, .scheme-a-directory__tab) { border-radius: 6px !important; }
+html[data-public-theme] #root :is(.fc-route-filters button, .fc-route-chip, .scheme-a-directory__tab)[aria-pressed="true"] { color: #FDFCFA !important; background: #3F4E42 !important; border-color: #3F4E42 !important; }
+html[data-public-theme] #root :is(.fc-route-card-media, .fc-route-hero-media, .scheme-a-project__main, .scheme-a-materials__media) { border-radius: 8px; }
+
+/* Preserve the online photograph treatment where text overlays a photograph. */
+html[data-public-theme] #root .fcd-design-hero__media::after { background: linear-gradient(90deg,rgb(13 16 14 / 76%),rgb(13 16 14 / 30%) 48%,transparent 78%),linear-gradient(0deg,rgb(13 16 14 / 36%),transparent 30%) !important; }
+html[data-public-theme] #root :is(.fcd-design-hero, .fcd-design-hero__location, .fcd-design-hero__lead, .fcd-design-hero__secondary, .fcd-design-hero__credit) { color: #FDFCFA !important; }
+html[data-public-theme] #root .scheme-a-button--gold { color: #FDFCFA !important; background: #3F4E42 !important; border-color: #3F4E42 !important; border-radius: 6px !important; box-shadow: none !important; }
+html[data-public-theme] #root .scheme-a-button--gold:hover { background: #344237 !important; }
+html[data-public-theme] #root .scheme-a-page-loader__brand strong em { color: #3F4E42 !important; background: none !important; -webkit-text-fill-color: #3F4E42 !important; }
+html[data-public-theme] #root .contact-detail-row__action { color: #3F4E42 !important; background: #FDFCFA !important; border-color: #7B8775 !important; border-radius: 6px !important; box-shadow: none !important; }
+html[data-public-theme] #root .fc-route-filter button { color: #3F4E42 !important; background: #FDFCFA !important; border-color: #7B8775 !important; border-radius: 6px !important; }
+html[data-public-theme] #root .fc-route-filter button[aria-pressed="true"] { color: #FDFCFA !important; background: #3F4E42 !important; border-color: #3F4E42 !important; }
+html[data-public-theme] #root .scheme-a-mobile-dock a { color: #626A60; }
+html[data-public-theme] #root .scheme-a-mobile-dock a[aria-current="page"] { color: #3F4E42; background: #E4E8DE; }
+html[data-public-theme] #root .scheme-a-contact-dock__item { color: #3F4E42 !important; background: #FDFCFA !important; border-color: #D4D9CF !important; }
+html[data-public-theme] #root .scheme-a-contact-dock__item--primary { color: #FDFCFA !important; background: #3F4E42 !important; }
+html[data-public-theme] #root .blog-editorial-article,
+html[data-public-theme] #root .blog-editorial-article :is(p, li, td) { color: #292E29 !important; }
+@media (max-width: 767px) {
+  html[data-public-theme] #root .fcd-design-hero__media::after { background: linear-gradient(0deg,rgb(13 16 14 / 90%),rgb(13 16 14 / 64%) 36%,rgb(13 16 14 / 12%) 76%,transparent) !important; }
+}
+
+/* One display family and a clear title / section / functional text hierarchy. */
+html[data-public-theme] #root :is(.font-display, .scheme-a-heading h1, .scheme-a-heading h2, .scheme-a-home-summary h2) {
+  font-family: var(--font-display) !important;
+}
+html[data-public-theme] #root .scheme-a-hero h1 {
+  font-size: clamp(36px, 3.5vw, 52px) !important;
+  font-weight: 500 !important;
+  line-height: 1.3 !important;
+  letter-spacing: 0 !important;
+}
+html[data-public-theme] #root :is(.scheme-a-home-summary h2, .scheme-a-heading h2) {
+  font-size: clamp(30px, 2.5vw, 36px) !important;
+  font-weight: 500 !important;
+  line-height: 1.4 !important;
+  letter-spacing: 0 !important;
+}
+html[data-public-theme] #root .fc-route-hero-copy h1 {
+  font-size: clamp(36px, 3.1vw, 44px) !important;
+  font-weight: 500 !important;
+  line-height: 1.35 !important;
+  letter-spacing: 0 !important;
+}
+html[data-public-theme] #root .fc-route-hero-copy .fc-route-title-long {
+  font-family: var(--font-body) !important;
+  font-size: clamp(30px, 2.5vw, 36px) !important;
+  font-weight: 600 !important;
+  line-height: 1.4 !important;
+}
+html[data-public-theme] #root :is(.scheme-a-hero__lead, .fc-route-hero-copy > p, .fc-route-section-head > p, .scheme-a-home-summary__description) {
+  font-family: var(--font-body) !important;
+  font-size: 17px !important;
+  line-height: 1.8 !important;
+  letter-spacing: 0 !important;
+  text-wrap: wrap !important;
+}
+html[data-public-theme] #root .font-body { font-family: var(--font-body) !important; }
+html[data-public-theme] #root .fc-route-section-head h2 { max-inline-size: 100% !important; }
+html[data-public-theme] #root .scheme-a-heading-phrase { display: inline; }
+html[data-public-theme] #root .scheme-a-home-faq p { max-inline-size: 760px !important; }
+html[data-public-theme] #root .scheme-a-hero .scheme-a-button {
+  min-height: 48px !important;
+  padding: 12px 24px !important;
+  font-size: 15px !important;
+  line-height: 1.4 !important;
+  font-weight: 600 !important;
+}
+html[data-public-theme] #root .scheme-a-hero .scheme-a-button--glass {
+  min-width: 144px !important;
+  padding-inline: 28px !important;
+  justify-content: center !important;
+  gap: 10px !important;
+}
+html[data-public-theme] #root .scheme-a-hero .scheme-a-button--glass svg {
+  width: 16px !important;
+  height: 16px !important;
+  flex-shrink: 0 !important;
+}
+
+/* Contact controls wrap below their text when the actual panel is narrow. */
+html[data-public-theme] #root .fc-route-contact-info { container: skin-contact / inline-size; }
+html[data-public-theme] #root .contact-detail-row__copy h3 {
+  font-family: var(--font-body) !important;
+  font-size: 15px !important;
+  line-height: 1.5 !important;
+  font-weight: 600 !important;
+}
+html[data-public-theme] #root .contact-detail-row__copy p {
+  font-family: var(--font-body) !important;
+  font-size: 15px !important;
+  line-height: 1.65 !important;
+  word-break: normal !important;
+  overflow-wrap: anywhere;
+}
+html[data-public-theme] #root :is(.contact-detail-row__action, .scheme-a-footer__contact-action) {
+  width: 128px !important;
+  min-height: 44px !important;
+  padding: 10px 12px !important;
+  font-size: 13px !important;
+  line-height: 1.5 !important;
+}
+html[data-public-theme] #root :is(.contact-detail-row__action, .scheme-a-footer__contact-action):lang(en) { width: 144px !important; }
+html[data-public-theme] #root :is(.contact-detail-row__action, .scheme-a-footer__contact-action) svg {
+  width: 16px !important;
+  height: 16px !important;
+  flex-shrink: 0 !important;
+}
+@container skin-contact (max-width: 460px) {
+  html[data-public-theme] #root .contact-detail-row {
+    display: grid !important;
+    grid-template-columns: 32px minmax(0, 1fr) !important;
+    align-items: start !important;
+    column-gap: 12px !important;
+    row-gap: 12px !important;
+  }
+  html[data-public-theme] #root .contact-detail-row__icon {
+    grid-column: 1;
+    grid-row: 1;
+    width: 32px !important;
+    height: 32px !important;
+  }
+  html[data-public-theme] #root .contact-detail-row__copy { grid-column: 2; grid-row: 1; }
+  html[data-public-theme] #root .contact-detail-row__action {
+    grid-column: 2 !important;
+    grid-row: 2 !important;
+    justify-self: start !important;
+  }
+}
+@container skin-contact (max-width: 275px) {
+  html[data-public-theme] #root .contact-detail-row__copy { display: contents; }
+  html[data-public-theme] #root .contact-detail-row__copy h3 { grid-column: 2; grid-row: 1; align-self: center; }
+  html[data-public-theme] #root .contact-detail-row__copy p { grid-column: 1 / -1; grid-row: 2; }
+  html[data-public-theme] #root .contact-detail-row__action { grid-column: 1 / -1 !important; grid-row: 3 !important; }
+}
+
+/* All four shared footer contact rows retain the same text and action layout. */
+html[data-public-theme] #root .scheme-a-footer__studio { container: skin-footer-contact / inline-size; }
+html[data-public-theme] #root .scheme-a-footer__contact-value {
+  font-size: 14px !important;
+  line-height: 1.65 !important;
+  word-break: normal !important;
+}
+@container skin-footer-contact (max-width: 440px) {
+  html[data-public-theme] #root .scheme-a-footer__contact-link {
+    display: grid !important;
+    grid-template-columns: 18px minmax(0, 1fr) !important;
+    gap: 10px 12px !important;
+    padding-block: 14px !important;
+  }
+  html[data-public-theme] #root .scheme-a-footer__contact-link > svg { grid-column: 1; grid-row: 1; align-self: start; margin-top: 4px; }
+  html[data-public-theme] #root .scheme-a-footer__contact-value { grid-column: 2; grid-row: 1; }
+  html[data-public-theme] #root .scheme-a-footer__contact-action {
+    grid-column: 2;
+    grid-row: 2;
+    justify-self: start;
+    justify-content: center;
+    width: 128px;
+    min-height: 44px;
+    padding: 10px 12px !important;
+    font-size: 13px !important;
+    line-height: 1.5;
+    border: 1px solid #7B8775 !important;
+  }
+}
+
+@media (max-width: 767px) {
+  html[data-public-theme] #root .scheme-a-hero h1 { font-size: clamp(28px, 7.8vw, 34px) !important; line-height: 1.35 !important; }
+  html[data-public-theme] #root .fc-route-hero-copy h1 { font-size: 30px !important; }
+  html[data-public-theme] #root .fc-route-hero-copy .fc-route-title-long { font-size: 28px !important; }
+  html[data-public-theme] #root :is(.scheme-a-home-summary h2, .scheme-a-heading h2) { font-size: 26px !important; line-height: 1.45 !important; }
+  html[data-public-theme] #root .scheme-a-heading-phrase { display: inline-block; max-inline-size: 100%; text-wrap: wrap; vertical-align: top; }
+  html[data-public-theme] #root .fc-route-section-head h2 { text-wrap: wrap !important; }
+  html[data-public-theme] #root :is(.fc-route-hero-copy > p, .fc-route-section-head > p) { max-inline-size: 100% !important; }
+  /* Furniture remains viewport-fixed using the synchronous buttons.css rules. */
+}

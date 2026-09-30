@@ -29,6 +29,19 @@ describe("SchemeARouteHero safe cover transition", () => {
 });
 
 describe("SchemeASection", () => {
+  it("groups Chinese title phrases without changing text and handles language updates", () => {
+    const container = document.createElement("div");
+    const root = createRoot(container);
+    const title = "从项目参考，看见空间规划方向";
+    act(() => root.render(<SchemeASection title={title}><p>Content</p></SchemeASection>));
+    expect(container.querySelector("h2")?.textContent).toBe(title);
+    expect(Array.from(container.querySelectorAll(".scheme-a-heading-phrase"), (node) => node.textContent)).toEqual(["从项目参考，", "看见空间规划方向"]);
+    act(() => root.render(<SchemeASection title="Explore project references"><p>Content</p></SchemeASection>));
+    expect(container.querySelector("h2")?.textContent).toBe("Explore project references");
+    expect(container.querySelector(".scheme-a-heading-phrase")).toBeNull();
+    act(() => root.unmount());
+  });
+
   it("renders CMS paragraph text as separate escaped paragraphs and keeps single-string callers working", () => {
     const container = document.createElement("div");
     document.body.appendChild(container);

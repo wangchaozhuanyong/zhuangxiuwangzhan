@@ -11,11 +11,11 @@
 .fc-surface-repair .repair-body :is(.service,.faq,.damage-details,.assessment-detail)>summary::-webkit-details-marker {display:none}
 .fc-surface-repair .repair-body .text-link {display:inline-flex;align-items:center;justify-content:space-between;gap:18px;min-height:44px;font-size:15px;border:0;background:transparent;padding:4px 0;color:var(--fcd-text)}
 .fc-surface-repair .damage-grid {display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:24px}
-.fc-surface-repair .damage-card {min-width:0;background:#191a17}
+.fc-surface-repair .damage-card {min-width:0;background:#F7F6F2}
 .fc-surface-repair .damage-photo {position:relative;aspect-ratio:4/3;margin:0;overflow:hidden}
 .fc-surface-repair .damage-photo :is(.smart-image-frame,picture,img) {width:100%;height:100%;display:block}
 .fc-surface-repair .damage-photo img {object-fit:contain}
-.fc-surface-repair .damage-photo figcaption {position:absolute;inset:16px auto auto 16px;font-size:12px;padding:4px 8px;background:rgb(13 14 17 / 85%);color:var(--fcd-text)}
+.fc-surface-repair .damage-photo figcaption {position:absolute;inset:16px auto auto 16px;font-size:12px;padding:4px 8px;background:rgb(247 246 242 / 0.85);color:var(--fcd-text)}
 .fc-surface-repair .damage-copy {padding:24px 28px}
 .fc-surface-repair .repair-body .damage-condition {font-size:13px;margin-bottom:9px}
 .fc-surface-repair .repair-body .damage-approach {font-size:16px;margin:11px 0 16px}
@@ -23,7 +23,7 @@
 .fc-surface-repair .damage-details summary {min-height:44px;display:flex;align-items:center;justify-content:space-between;gap:20px;font-size:13px;color:var(--fcd-soft)}
 .fc-surface-repair .repair-body .damage-details p {font-size:14px;line-height:1.8;margin:5px 0 14px}
 .fc-surface-repair .repair-body .damage-card .text-link {font-size:14px;margin-top:5px;width:100%}
-.fc-surface-repair .all-scope {margin-top:34px;padding:0 28px;background:#171817}
+.fc-surface-repair .all-scope {margin-top:34px;padding:0 28px;background:#F7F6F2}
 .fc-surface-repair .all-scope-heading {min-height:100px;padding:22px 0}
 .fc-surface-repair .all-scope-heading strong {display:block;font-weight:400;font-size:19px}
 .fc-surface-repair .all-scope-heading small {display:block;margin-top:6px;font-size:13px;color:var(--fcd-soft)}
@@ -38,25 +38,25 @@
 .fc-surface-repair .service-body dt {font-size:13px;color:var(--fcd-gold);margin-top:17px}
 .fc-surface-repair .service-body dd {margin:4px 0 0;color:var(--fcd-soft);line-height:1.8}
 .fc-surface-repair .service-body .text-link {margin-top:22px}
-.fc-surface-repair .assessment {background:#191a17}
+.fc-surface-repair .assessment {background:#F7F6F2}
 .fc-surface-repair .assessment-grid {display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:20px;align-items:stretch}
 .fc-surface-repair .assessment-item {min-width:0;padding:24px 24px 12px;background:var(--fcd-bg);display:flex;flex-direction:column}
 .fc-surface-repair .assessment-heading {display:flex;align-items:flex-start;justify-content:space-between;gap:12px;flex-wrap:wrap}
 .fc-surface-repair .assessment-heading h3 {flex:1 1 auto;min-width:0}
-.fc-surface-repair .assessment-status {flex:0 0 auto;max-width:100%;margin-left:auto;color:var(--fcd-gold);font-size:12px;letter-spacing:.04em;padding:4px 8px;background:#2c2c25}
+.fc-surface-repair .assessment-status {flex:0 0 auto;max-width:100%;margin-left:auto;color:var(--fcd-gold);font-size:12px;letter-spacing:.04em;padding:4px 8px;background:#ECEDE6}
 .fc-surface-repair .repair-body .assessment-item>p {font-size:16px;margin:10px 0 18px}
 .fc-surface-repair .assessment-detail {margin-top:auto;border-top:1px solid var(--fcd-line)}
 .fc-surface-repair .assessment-detail summary {display:flex;align-items:center;justify-content:space-between;gap:16px;min-height:44px;padding-block:8px;font-size:13px;color:var(--fcd-soft)}
 .fc-surface-repair .repair-body .assessment-detail p {font-size:15px;line-height:1.8;margin:8px 0 0}
 .fc-surface-repair .process-grid {display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px;margin:0 0 20px;padding:0;list-style:none}
-.fc-surface-repair .process-grid li {min-width:0;display:grid;grid-template-columns:36px minmax(0,1fr);align-content:start;gap:8px 16px;padding:24px;background:#191a17}
-.fc-surface-repair .step-index {display:grid;place-items:center;grid-row:span 2;width:36px;height:36px;font:16px Georgia,serif;color:var(--fcd-gold);border:1px solid #655c43;border-radius:50%}
+.fc-surface-repair .process-grid li {min-width:0;display:grid;grid-template-columns:36px minmax(0,1fr);align-content:start;gap:8px 16px;padding:24px;background:#F7F6F2}
+.fc-surface-repair .step-index {display:grid;place-items:center;grid-row:span 2;width:36px;height:36px;font:16px Georgia,serif;color:var(--fcd-gold);border:1px solid #7B8775;border-radius:50%}
 .fc-surface-repair .process-grid h3 {align-self:center}
 .fc-surface-repair .repair-body .process-grid p {font-size:15px;line-height:1.8;margin:0}
 .fc-surface-repair .repair-body .situations {margin:0;font-size:13px}
 .fc-surface-repair .price {margin-top:36px}
 .fc-surface-repair .price .triple {display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
-.fc-surface-repair .price article {min-width:0;padding:24px;background:#191a17}
+.fc-surface-repair .price article {min-width:0;padding:24px;background:#F7F6F2}
 .fc-surface-repair .price h3 {margin-bottom:10px}
 .fc-surface-repair .repair-body .price p {font-size:16px;line-height:1.8;margin:0}
 .fc-surface-repair .faq-section {border-top:1px solid var(--fcd-line)}
@@ -65,34 +65,34 @@
 .fc-surface-repair .repair-body .faq p {max-width:52rem;padding:4px 34px 15px 0;margin:0;font-size:15px}
 .fc-surface-repair .consult {background:var(--scheme-a-paper);color:var(--scheme-a-ink)}
 .fc-surface-repair .consult :is(h2,h3) {color:var(--scheme-a-ink)}
-.fc-surface-repair .repair-body .consult p {color:#655f55}
+.fc-surface-repair .repair-body .consult p {color:#626A60}
 .fc-surface-repair .consult-layout {display:grid;grid-template-columns:1.2fr .8fr;gap:7%;align-items:start}
 .fc-surface-repair .photo-list {display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;list-style:none;padding:0;margin:0}
 .fc-surface-repair .photo-list li {min-width:0}
-.fc-surface-repair .photo-visual {position:relative;display:grid;place-items:center;aspect-ratio:1.12;background:#e1d8c8;margin-bottom:15px;color:#776444}
+.fc-surface-repair .photo-visual {position:relative;display:grid;place-items:center;aspect-ratio:1.12;background:#FDFCFA;margin-bottom:15px;color:#3F4E42}
 .fc-surface-repair .photo-visual svg {width:55%;max-width:100px;height:auto;stroke-width:1}
 .fc-surface-repair .photo-index {position:absolute;top:7px;left:9px;font-size:11px;line-height:1.5;color:hsl(var(--gold-foreground))}
 .fc-surface-repair .photo-list strong {display:block;font-size:16px;font-weight:500;line-height:1.5}
 .fc-surface-repair .repair-body .photo-list p {font-size:13px;line-height:1.7;margin:7px 0 0}
-.fc-surface-repair .consult-panel {padding:30px;background:#fbf7ee;border:1px solid #cfc6b7;min-width:0;margin-top:40px}
+.fc-surface-repair .consult-panel {padding:30px;background:#FDFCFA;border:1px solid #D4D9CF;min-width:0;margin-top:40px}
 .fc-surface-repair .consult-panel>.scheme-a-button {width:100%;margin-bottom:20px}
 .fc-surface-repair .tool summary {min-height:48px;padding-block:10px;font-size:17px}
 .fc-surface-repair .repair-body .tool>p {font-size:13px;margin:12px 0 20px}
 .fc-surface-repair .consult label {display:block;font-size:14px;font-weight:500;margin:18px 0 7px}
-.fc-surface-repair .consult :is(input,select,textarea) {width:100%;min-width:0;min-height:48px;border:1px solid #aaa396;border-radius:3px;background:#fffdf8;color:#24221d;padding:10px 12px;line-height:1.6;font:inherit}
+.fc-surface-repair .consult :is(input,select,textarea) {width:100%;min-width:0;min-height:48px;border:1px solid #D4D9CF;border-radius:3px;background:#FDFCFA;color:#292E29;padding:10px 12px;line-height:1.6;font:inherit}
 .fc-surface-repair .consult textarea {resize:vertical;min-height:104px}
-.fc-surface-repair .consult :is(input,textarea)::placeholder {color:#777163;font-size:14px}
+.fc-surface-repair .consult :is(input,textarea)::placeholder {color:#626A60;font-size:14px}
 .fc-surface-repair .consult .check {display:flex;gap:10px;align-items:flex-start;font-weight:400;line-height:1.7}
 .fc-surface-repair .consult .check input {width:18px;height:18px;min-height:18px;flex:none;margin-top:3px}
-.fc-surface-repair .repair-body .notice {font-size:13px;background:#eae1cc;padding:12px;margin-top:14px;color:#534521}
+.fc-surface-repair .repair-body .notice {font-size:13px;background:#FDFCFA;padding:12px;margin-top:14px;color:#3F4E42}
 .fc-surface-repair .repair-body .error {font-size:14px;color:#9c2525;margin-top:9px}
-.fc-surface-repair .generate {display:flex;align-items:center;justify-content:center;gap:8px;width:100%;background:#252620;color:#fffdf8;border:1px solid #252620;min-height:48px;border-radius:3px;padding:11px 16px;margin-top:20px}
-.fc-surface-repair .result {margin-top:20px;padding-top:20px;border-top:1px solid #c8bfad}
+.fc-surface-repair .generate {display:flex;align-items:center;justify-content:center;gap:8px;width:100%;background:#F7F6F2;color:#292E29;border:1px solid #D4D9CF;min-height:48px;border-radius:3px;padding:11px 16px;margin-top:20px}
+.fc-surface-repair .result {margin-top:20px;padding-top:20px;border-top:1px solid #D4D9CF}
 .fc-surface-repair .result textarea {min-height:235px;font-size:14px}
 .fc-surface-repair .actions {display:flex;flex-wrap:wrap;align-items:center;gap:12px;margin-top:25px}
-.fc-surface-repair .secondary {display:inline-flex;align-items:center;justify-content:center;gap:16px;min-height:48px;max-width:100%;padding:10px 15px;border:1px solid #797362;border-radius:3px;background:transparent;font-weight:600;font-size:14px;line-height:1.5;text-align:left}
+.fc-surface-repair .secondary {display:inline-flex;align-items:center;justify-content:center;gap:16px;min-height:48px;max-width:100%;padding:10px 15px;border:1px solid #D4D9CF;border-radius:3px;background:transparent;font-weight:600;font-size:14px;line-height:1.5;text-align:left}
 .fc-surface-repair .repair-body .status {font-size:13px;min-height:1.7em;margin-top:12px}
-.fc-surface-repair .replace-warning {padding:16px;background:#eae1cc}
+.fc-surface-repair .replace-warning {padding:16px;background:#FDFCFA}
 .fc-surface-repair .repair-body .replace-warning p {margin:0;font-size:14px}
 .fc-surface-repair .replace-warning .actions {margin-top:12px}
 .fc-surface-repair .related {padding-block:36px 42px}
