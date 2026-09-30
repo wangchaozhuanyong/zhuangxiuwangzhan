@@ -60,10 +60,11 @@ export default function FurnitureShowcase() {
         imagePosition={{ mobile: "center 55%" }}
         imageAlt={copy.heroImageAlt}
         label={copy.title}
-        title={copy.title}
+        title={subcategoryLabel || (categoryKey ? categoryLabel : copy.title)}
         description={copy.intro}
       />
       <div className="fc-furniture-body">
+        <p className="fc-furniture-detail__note">{copy.intro}</p>
         <nav className="fc-furniture-primary" aria-label={copy.title}>
           {furnitureCatalog.taxonomy.map((item) => (
             <LocalizedLink key={item.key} to={item.key === "new" ? "/furniture" : `/furniture/${item.key}`} viewTransition={false} onClick={keepFurnitureScrollPosition} aria-current={category?.key === item.key ? "page" : undefined}>
@@ -105,12 +106,12 @@ export default function FurnitureShowcase() {
                     </div>
                     <div className="fc-furniture-card__body">
                       <h3>{product.name}</h3>
-                      <p className="fc-furniture-card__description">{(product.shortDescription || product.description || copy.descriptionUnavailable).replace(/\s+/g, " ")}</p>
+                      <p className="fc-furniture-card__description">{(product.shortDescription || product.description || copy.listingDescriptionUnavailable).replace(/\s+/g, " ")}</p>
                       <p className="fc-furniture-card__price">{product.price || copy.priceOnRequest}</p>
                     </div>
                   </LocalizedLink>
                   <div className="fc-furniture-card__actions">
-                    <a href={furnitureShopUrl} target="_blank" rel="noopener noreferrer" aria-label={`${copy.buyNow}: ${product.name}`}>{copy.buyNow}</a>
+                    <a href={furnitureShopUrl} target="_blank" rel="noopener noreferrer" aria-label={copy.openShopHomepage}>{copy.openShopHomepage}</a>
                   </div>
                 </article>
               );
