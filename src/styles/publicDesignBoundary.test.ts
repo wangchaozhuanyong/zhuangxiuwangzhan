@@ -1,7 +1,8 @@
 /// <reference types="node" />
 
-import { existsSync, readFileSync } from "node:fs";
+import { existsSync, readFileSync, readdirSync } from "node:fs";
 import { resolve } from "node:path";
+import postcss from "postcss";
 import { describe, expect, it } from "vitest";
 
 const retiredPublicDesignFiles = [
@@ -59,6 +60,47 @@ const retiredPublicDesignFiles = [
 ] as const;
 
 describe("public design boundary", () => {
+  it("shares public surface and text tokens with design and repair content", () => {
+    const design = readFileSync(resolve(process.cwd(), "src/styles/design-service.css"), "utf8");
+    expect(design).toContain("--fcd-bg: var(--public-surface-base)");
+    expect(design).toContain("--fcd-text: var(--public-text-primary)");
+    expect(design).toContain("--fcd-soft: var(--public-text-secondary)");
+    expect(design).not.toContain("var(--scheme-a-bg");
+    expect(design).not.toContain("var(--scheme-a-text");
+  });
+
+  it("keeps dark accent controls readable in the warm stone skin", () => {
+    const directory = resolve(process.cwd(), "src/styles/components");
+    for (const file of ["furniture-showcase.css", "home-atelier.css", "scheme-a-native-pages.css", "scheme-a-route-hero-v5.css", "scheme-a-shell.css"]) {
+      postcss.parse(readFileSync(resolve(directory, file), "utf8")).walkRules((rule) => {
+        const declarations = rule.nodes.filter((node) => node.type === "decl");
+        const hasAccentBackground = declarations.some((node) => node.prop === "background"
+          && /^var\(--(?:public-accent|furniture-accent)\)$/.test(node.value));
+        if (hasAccentBackground) {
+          const color = declarations.find((node) => node.prop === "color");
+          if (color) expect(color.value, `${file}: ${rule.selector}`).toBe("#FDFCFA");
+        }
+      });
+    }
+  });
+
+  it("keeps the furniture entry viewport-fixed across public skins", () => {
+    const componentDirectory = resolve(process.cwd(), "src/styles/components");
+    const positions: string[] = [];
+    for (const file of readdirSync(componentDirectory).filter((name) => name.endsWith(".css"))) {
+      postcss.parse(readFileSync(resolve(componentDirectory, file), "utf8")).walkRules((rule) => {
+        if (rule.selector.includes(".fc-furniture-floating")) {
+          rule.walkDecls("position", (declaration) => { positions.push(declaration.value); });
+        }
+      });
+    }
+    expect(positions).toEqual(["fixed"]);
+    const globalStyles = readFileSync(resolve(process.cwd(), "src/styles/components.css"), "utf8");
+    const buttons = readFileSync(resolve(componentDirectory, "buttons.css"), "utf8");
+    expect(globalStyles).toContain('@import "./components/buttons.css"');
+    expect(buttons).toContain("bottom: calc(82px + env(safe-area-inset-bottom))");
+  });
+
   it.each(retiredPublicDesignFiles)("keeps retired design file deleted: %s", (file) => {
     expect(existsSync(resolve(process.cwd(), file))).toBe(false);
   });

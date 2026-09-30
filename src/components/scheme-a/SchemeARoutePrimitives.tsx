@@ -202,7 +202,11 @@ export function SchemeASection({
       <div className="scheme-a-frame fc-route-section-frame">
         {title || paragraphs.length ? (
           <header className="fc-route-section-head scheme-a-heading">
-            {title ? <h2>{title}</h2> : null}
+            {title ? <h2>{/[，；：]/u.test(title)
+              ? title.match(/[^，；：]*[，；：]|[^，；：]+$/gu)?.map((phrase, index) => (
+                <span className="scheme-a-heading-phrase" key={`${index}-${phrase}`}>{phrase}</span>
+              ))
+              : title}</h2> : null}
             {paragraphs.map((paragraph, index) => <p key={`${index}-${paragraph}`}>{paragraph}</p>)}
           </header>
         ) : null}

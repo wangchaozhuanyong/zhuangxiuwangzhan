@@ -52,7 +52,7 @@
       flex-basis: 66px !important;
       border: 0 !important;
       padding: 2px !important;
-      background: rgb(255 255 255 / 0.075) !important;
+      background: rgb(253 252 250 / 0.075) !important;
     }
 
     html[data-public-theme="dark"] .site-header__mobile-language-label {
@@ -68,7 +68,7 @@
       height: 28px !important;
       min-height: 28px !important;
       padding: 0 4px !important;
-      color: rgb(245 241 233 / 0.62) !important;
+      color: #626A60 !important;
       background: transparent !important;
       opacity: 1 !important;
       font-size: 10px !important;
@@ -76,8 +76,8 @@
     }
 
     html[data-public-theme="dark"] .site-header__mobile-language-text[data-active="true"] {
-      color: #1c1b17 !important;
-      background: #c9a25e !important;
+      color: #292E29 !important;
+      background: #E4E8DE !important;
     }
 
     html[data-public-theme="dark"] .site-header__mobile-controls > button.site-header__mobile-button {
@@ -140,8 +140,8 @@
 
     html[data-public-theme="dark"] body .forest-home-hero::after {
       background:
-        linear-gradient(to bottom, rgb(15 15 13 / 0.2) 0, transparent 24%),
-        linear-gradient(to top, rgb(15 15 13 / 0.84) 0, rgb(15 15 13 / 0.48) 34%, transparent 62%) !important;
+        linear-gradient(to bottom, rgb(247 246 242 / 0.2) 0, transparent 24%),
+        linear-gradient(to top, rgb(247 246 242 / 0.84) 0, rgb(247 246 242 / 0.48) 34%, transparent 62%) !important;
     }
 
     html[data-public-theme="dark"] body .forest-home-hero__media img {
@@ -182,16 +182,16 @@
     }
 
     html[data-public-theme="dark"] .scheme-a-button--paper {
-      color: #24231f;
-      background: linear-gradient(135deg, #f5f0e8 0%, #e7ddcf 100%);
-      box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.72), 0 13px 28px rgb(11 11 10 / 0.2);
+      color: #292E29;
+      background: linear-gradient(135deg, #FDFCFA 0%, #FDFCFA 100%);
+      box-shadow: none;
     }
 
     html[data-public-theme="dark"] .scheme-a-button--glass {
-      color: #f6f0e6;
+      color: #292E29;
       border: 0;
-      background: linear-gradient(135deg, rgb(196 157 95 / 0.34), rgb(196 157 95 / 0.14));
-      box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.16), inset 0 0 0 1px rgb(224 196 151 / 0.16);
+      background: linear-gradient(135deg, rgb(228 232 222 / 0.34), rgb(228 232 222 / 0.14));
+      box-shadow: none;
       backdrop-filter: blur(8px);
       -webkit-backdrop-filter: blur(8px);
     }
@@ -299,7 +299,7 @@
 
     html[data-public-theme="dark"] .scheme-a-services li {
       border: 0;
-      background: rgb(121 99 66 / 0.038);
+      background: rgb(228 232 222 / 0.038);
     }
 
     html[data-public-theme="dark"] .scheme-a-services li:last-child {
@@ -434,7 +434,7 @@
 
     html[data-public-theme="dark"] .footer-surface {
       border: 0;
-      background: radial-gradient(circle at 7% 4%, rgb(184 141 76 / 0.11), transparent 30%), linear-gradient(145deg, #171714, #0f0f0d 64%, #13110e);
+      background: radial-gradient(circle at 7% 4%, rgb(228 232 222 / 0.11), transparent 30%), linear-gradient(145deg, #F7F6F2, #F7F6F2 64%, #F7F6F2);
     }
 
     html[data-public-theme="dark"] .footer-surface::before,
@@ -453,7 +453,7 @@
       margin: 0;
       padding-bottom: 0;
       border: 0;
-      color: #f2ede4;
+      color: #292E29;
       font-family: var(--font-display);
       font-size: clamp(46px, 13vw, 72px);
       font-weight: 400;
@@ -463,7 +463,7 @@
     }
 
     html[data-public-theme="dark"] .footer-wordmark em {
-      color: #bc9254;
+      color: #3F4E42;
       font-style: normal;
     }
 
@@ -476,8 +476,8 @@
       padding: 22px;
       border: 0;
       border-radius: 0;
-      background: rgb(255 255 255 / 0.045);
-      box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.045);
+      background: rgb(253 252 250 / 0.045);
+      box-shadow: none;
     }
 
     html[data-public-theme="dark"] .footer-logo-row {
@@ -491,7 +491,7 @@
       width: 1px;
       height: 30px;
       border-radius: 0;
-      background: #c39b5d;
+      background: #E4E8DE;
     }
 
     html[data-public-theme="dark"] .footer-logo-card {
@@ -502,14 +502,14 @@
     html[data-public-theme="dark"] .footer-brand-copy {
       max-width: 48em;
       margin-top: 20px;
-      color: rgb(242 237 228 / 0.72);
+      color: #626A60;
       font-size: 11px;
       line-height: 1.85;
     }
 
     html[data-public-theme="dark"] .footer-trust-line {
       margin-top: 10px;
-      color: #c29a5d;
+      color: #3F4E42;
       font-size: 9px;
       letter-spacing: 0.08em;
     }
@@ -526,7 +526,7 @@
       align-items: center;
       gap: 10px;
       min-height: 34px;
-      color: rgb(242 237 228 / 0.72);
+      color: #626A60;
       font-size: 10px;
       line-height: 1.55;
     }
@@ -536,8 +536,8 @@
       height: 28px;
       border: 0;
       border-radius: 0;
-      color: #c39b5d;
-      background: rgb(195 155 93 / 0.09);
+      color: #3F4E42;
+      background: rgb(228 232 222 / 0.09);
     }
 
     html[data-public-theme="dark"] .footer-social-list {
@@ -552,8 +552,8 @@
       height: 28px;
       border: 0;
       border-radius: 0;
-      color: #c39b5d;
-      background: rgb(195 155 93 / 0.09);
+      color: #3F4E42;
+      background: rgb(228 232 222 / 0.09);
     }
 
     html[data-public-theme="dark"] .footer-mobile-nav {
@@ -563,14 +563,14 @@
     html[data-public-theme="dark"] .footer-mobile-panel {
       border: 0;
       border-radius: 0;
-      background: rgb(255 255 255 / 0.038);
+      background: rgb(253 252 250 / 0.038);
       box-shadow: none;
     }
 
     html[data-public-theme="dark"] .footer-mobile-panel > button {
       min-height: 50px;
       padding: 10px 14px;
-      color: rgb(242 237 228 / 0.9);
+      color: #292E29;
       font-family: var(--font-display);
     }
 
@@ -588,8 +588,8 @@
       margin-top: 10px;
       padding: 18px;
       border: 0;
-      color: rgb(242 237 228 / 0.48);
-      background: rgb(255 255 255 / 0.025);
+      color: #626A60;
+      background: rgb(253 252 250 / 0.025);
       font-size: 9px;
       text-align: left;
     }
@@ -606,7 +606,7 @@
       min-height: 0;
       border: 0;
       padding: 0;
-      color: rgb(242 237 228 / 0.7);
+      color: #626A60;
       background: transparent;
       font-size: inherit;
     }

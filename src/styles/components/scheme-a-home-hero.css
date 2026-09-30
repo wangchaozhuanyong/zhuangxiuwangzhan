@@ -8,8 +8,8 @@
     min-height: max(620px, 100svh);
     margin: 0;
     padding: 0;
-    color: #211e19;
-    background: #e6dccb;
+    color: #292E29;
+    background: #FDFCFA;
     overflow: hidden;
   }
 
@@ -100,7 +100,7 @@
     padding: 12px 22px;
     border: 0;
     border-radius: 5px;
-    color: #211e19;
+    color: #292E29;
     box-shadow: none;
     backdrop-filter: none;
     font-size: 14px;
@@ -112,11 +112,11 @@
   }
 
   html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-hero .scheme-a-button--paper {
-    background: #d4ad56;
+    background: #E4E8DE;
   }
 
   html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-hero .scheme-a-button--paper:hover {
-    background: #e0bd6c;
+    background: #E4E8DE;
   }
 
   html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-hero .scheme-a-button--glass {
@@ -125,19 +125,19 @@
   }
 
   .scheme-a-hero .scheme-a-button--glass:hover { text-decoration: underline; }
-  .scheme-a-hero .scheme-a-button:focus-visible { outline: 2px solid #211e19; outline-offset: 4px; }
+  .scheme-a-hero .scheme-a-button:focus-visible { outline: 2px solid #D4D9CF; outline-offset: 4px; }
 
   /* A separately configured CMS photograph still works without dimming it.
      Only unknown compositions get a local light reading surface. */
   .scheme-a-hero[data-hero-art="custom"] .scheme-a-hero__intro {
     padding: 24px;
-    background: rgb(247 244 238 / 95%);
+    background: rgb(253 252 250 / 0.9500000000000001);
   }
 
   /* This selector only applies while the approved home photograph is present.
      The existing solid header and menu keep their shared behavior and styling. */
   .scheme-a-public-shell:has(.scheme-a-hero[data-hero-art="daylight"]) .scheme-a-chrome.is-overlay {
-    color: #211e19;
+    color: #292E29;
     background: transparent;
     box-shadow: none;
     backdrop-filter: none;
@@ -148,20 +148,20 @@
   }
 
   .scheme-a-public-shell:has(.scheme-a-hero[data-hero-art="daylight"]) .scheme-a-chrome.is-overlay :is(.scheme-a-language-switch, .scheme-a-chrome__menu-trigger) {
-    border-color: rgb(33 30 25 / 35%);
-    background: rgb(247 244 238 / 82%);
+    border-color: rgb(212 217 207 / 0.35000000000000003);
+    background: rgb(253 252 250 / 0.8200000000000001);
     color: inherit;
     box-shadow: none;
     backdrop-filter: none;
   }
 
   .scheme-a-public-shell:has(.scheme-a-hero[data-hero-art="daylight"]) .scheme-a-chrome.is-overlay .scheme-a-language-option {
-    color: #211e19;
+    color: #292E29;
   }
 
   .scheme-a-public-shell:has(.scheme-a-hero[data-hero-art="daylight"]) .scheme-a-chrome.is-overlay .scheme-a-chrome__quote {
     border-radius: 5px;
-    background: #d4ad56;
+    background: #E4E8DE;
     box-shadow: none;
   }
 
