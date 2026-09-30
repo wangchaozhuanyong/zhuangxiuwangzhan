@@ -440,10 +440,11 @@ export const SchemeAFooter = () => {
                 <span className="scheme-a-footer__contact-value">{settings.email}</span>
                 <span className="scheme-a-footer__contact-action">{footer.emailAction}<ArrowUpRight aria-hidden="true" /></span>
               </a>
-              <div className="scheme-a-footer__contact-note">
-                <span className="scheme-a-footer__hours"><Clock aria-hidden="true" />{footer.hours}</span>
-                <LocalizedLink className="scheme-a-footer__contact-cta" to="/contact">{translate("nav.contact")}<ArrowUpRight aria-hidden="true" /></LocalizedLink>
-              </div>
+              <LocalizedLink className="scheme-a-footer__contact-link" to="/contact">
+                <Clock aria-hidden="true" />
+                <span className="scheme-a-footer__contact-value">{footer.hours}</span>
+                <span className="scheme-a-footer__contact-action">{translate("nav.contact")}<ArrowUpRight aria-hidden="true" /></span>
+              </LocalizedLink>
               {settings.instagram_url || settings.facebook_url ? <div className="scheme-a-footer__socials">
                 {settings.instagram_url ? <a href={settings.instagram_url} target="_blank" rel="noopener noreferrer" aria-label="Instagram"><Instagram /></a> : null}
                 {settings.facebook_url ? <a href={settings.facebook_url} target="_blank" rel="noopener noreferrer" aria-label="Facebook"><Facebook /></a> : null}
