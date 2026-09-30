@@ -60,6 +60,15 @@ const retiredPublicDesignFiles = [
 ] as const;
 
 describe("public design boundary", () => {
+  it("shares public surface and text tokens with design and repair content", () => {
+    const design = readFileSync(resolve(process.cwd(), "src/styles/design-service.css"), "utf8");
+    expect(design).toContain("--fcd-bg: var(--public-surface-base)");
+    expect(design).toContain("--fcd-text: var(--public-text-primary)");
+    expect(design).toContain("--fcd-soft: var(--public-text-secondary)");
+    expect(design).not.toContain("var(--scheme-a-bg");
+    expect(design).not.toContain("var(--scheme-a-text");
+  });
+
   it("keeps dark accent controls readable in the warm stone skin", () => {
     const directory = resolve(process.cwd(), "src/styles/components");
     for (const file of ["furniture-showcase.css", "home-atelier.css", "scheme-a-native-pages.css", "scheme-a-route-hero-v5.css", "scheme-a-shell.css"]) {

@@ -1,10 +1,10 @@
 /* Design service content. Public chrome, fonts, buttons and image loading belong to the shared site. */
 .fc-design {
-  --fcd-bg: var(--scheme-a-bg, #0d0e11);
-  --fcd-text: var(--scheme-a-text, #f7f4ee);
-  --fcd-soft: #b7b1a7;
-  --fcd-line: var(--scheme-a-dark-line, rgb(238 233 223 / 16%));
-  --fcd-gold: var(--scheme-a-gold-soft, #c9a66a);
+  --fcd-bg: var(--public-surface-base);
+  --fcd-text: var(--public-text-primary);
+  --fcd-soft: var(--public-text-secondary);
+  --fcd-line: var(--public-border);
+  --fcd-gold: var(--public-accent);
   --fcd-gutter: var(--scheme-a-gutter, 16px);
   --fcd-frame: var(--scheme-a-frame, 86rem);
   color: var(--fcd-text);
@@ -157,7 +157,7 @@
 .fc-design .fcd-project-dialog-body h2 { font-size: 28px; }
 .fc-design .fcd-project-dialog-body p { color: var(--fcd-soft); }
 .fc-design .fcd-project-dialog-body .fcd-dialog-note { font-size: 14px; }
-.fc-design.fcd-integrated-dialog > button { position: sticky; bottom: 12px; float: right; margin: 0 12px 12px 0; width: 44px; height: 44px; opacity: 1; background: var(--fcd-gold); color: #292E29; }
+.fc-design.fcd-integrated-dialog > button { position: sticky; bottom: 12px; float: right; margin: 0 12px 12px 0; width: 44px; height: 44px; opacity: 1; background: var(--fcd-gold); color: #FDFCFA; }
 
 .fc-design .fcd-dialog-media { aspect-ratio: 3 / 2; max-height: 45dvh; }
 .fc-design .fcd-dialog-media :is(.smart-image-frame,picture,img) { width: 100%; height: 100%; object-fit: contain; }
