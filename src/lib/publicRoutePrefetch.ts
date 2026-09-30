@@ -142,7 +142,9 @@ export const getPublicRoutePrefetchTasks = (pathname: string, language: Language
     return [sitePageTask(language, section)];
   }
 
-  if (["privacy", "terms"].includes(section || "")) return [];
+  // Furniture has its own static catalog and optional managed-product queries.
+  // It is not a CMS path; a speculative CMS lookup only adds a wasted request.
+  if (["privacy", "terms", "furniture"].includes(section || "")) return [];
 
   return [{
     queryKey: ["published", "cms_path", language, path],

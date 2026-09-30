@@ -20,6 +20,7 @@ import { publicRoutes } from "@/routes/publicRoutes";
 import { PublicRouteImageGate } from "@/components/PublicRouteImageGate";
 import { publicContentStatusText } from "@/i18n/publicContentStatusText";
 import FurnitureFloatingLink from "@/components/FurnitureFloatingLink";
+import PublicRoutePrefetch from "@/components/PublicRoutePrefetch";
 import ScrollToTop from "./components/ScrollToTop";
 
 const AdminRouteTree = lazy(() => import("@/routes/AdminRouteTree"));
@@ -93,16 +94,10 @@ const queryClient = new QueryClient({
 
 const PageLoader = () => {
   const { language } = useLanguage();
-  const [showMessage, setShowMessage] = useState(false);
-
-  useEffect(() => {
-    const timer = window.setTimeout(() => setShowMessage(true), 200);
-    return () => window.clearTimeout(timer);
-  }, []);
 
   return (
     <main className="fc-route-page min-h-screen" role="status" aria-live="polite" aria-busy="true" data-route-pending="true">
-      {showMessage && <p className="px-6 py-24 text-center text-sm text-muted-foreground">{publicContentStatusText[language].loaderRoutePending}</p>}
+      <span className="sr-only">{publicContentStatusText[language].loaderRoutePending}</span>
     </main>
   );
 };
@@ -270,9 +265,10 @@ const AppShell = () => {
       ) : (
         <PublicSiteShell surface={publicSurface} productDetail={isProductDetailRoute}>
           <SchemeANavbar />
+          <PublicRoutePrefetch />
           <PublicCinematicMotionGate />
           <PublicPageFrame isAdminRoute={false}>
-            <PublicRouteImageGate key={publicImageGateKey} routeKey={location.pathname}>
+            <PublicRouteImageGate key={publicImageGateKey} routeKey={`${location.pathname}${location.search}`}>
               <div key={mainContentKey} id="main-content" tabIndex={-1} className={mainContentClass} data-public-surface={publicSurface}>
                 <AppErrorBoundary isAdminRoute={false}>
                   <Suspense fallback={<PageLoader />}>
