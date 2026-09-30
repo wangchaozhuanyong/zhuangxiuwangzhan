@@ -93,7 +93,13 @@ html[data-public-theme] #root .scheme-a-contact-dock__item { color: #3F4E42 !imp
 html[data-public-theme] #root .scheme-a-contact-dock__item--primary { color: #FDFCFA !important; background: #3F4E42 !important; }
 html[data-public-theme] #root .blog-editorial-article,
 html[data-public-theme] #root .blog-editorial-article :is(p, li, td) { color: #292E29 !important; }
+/* Reserve space for the viewport-fixed furniture entry at the page end. */
+@media (min-width: 768px) {
+  html[data-public-theme] #root .scheme-a-footer__legal { padding-inline-end: 152px; }
+}
+
 @media (max-width: 767px) {
+  html[data-public-theme] #root .scheme-a-footer__legal { padding-bottom: 84px; }
   html[data-public-theme] #root .fcd-design-hero__media::after { background: linear-gradient(0deg,rgb(13 16 14 / 90%),rgb(13 16 14 / 64%) 36%,rgb(13 16 14 / 12%) 76%,transparent) !important; }
 }
 
