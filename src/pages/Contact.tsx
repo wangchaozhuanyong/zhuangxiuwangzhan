@@ -131,7 +131,7 @@ const Contact = () => {
     { icon: Phone, title: t.phoneTitle, text: settings.phone_display, href: settings.phone_href, track: "phone", action: t.callAction },
     { icon: Mail, title: t.emailTitle, text: settings.email, href: `mailto:${settings.email}`, track: "email", action: t.emailAction },
     { icon: MapPin, title: t.addressTitle, text: mapAddress, track: "map", action: t.navigateAction, navigation: true },
-    { icon: Clock, title: t.hoursTitle, text: t.hoursText, track: "hours" },
+    { icon: Clock, title: t.hoursTitle, text: t.hoursText, href: "#contact-form-title", track: "contact", action: t.heroTitle },
   ];
 
   const mapDescription = mapAddress
@@ -284,7 +284,7 @@ const Contact = () => {
                     <div className="w-14 h-14 mx-auto mb-5 rounded-full bg-accent/10 flex items-center justify-center">
                       <CheckCircle className="w-7 h-7 text-accent" />
                     </div>
-                    <h2 id="contact-form-title" className="font-display text-2xl font-bold mb-3">{t.successTitle}</h2>
+                    <h2 id="contact-form-title" tabIndex={-1} className="font-display text-2xl font-bold mb-3">{t.successTitle}</h2>
                     <p className="text-muted-foreground text-sm mb-2">{t.successThanks}, <strong className="text-foreground">{form.name}</strong>.</p>
                     <p className="text-muted-foreground text-sm mb-6">{t.successText}</p>
                     <Button variant="outline" className="btn-press" onClick={() => { setStatus("idle"); setForm({ name: "", phone: "", email: "", projectType: "", location: "", message: "" }); }}>
@@ -293,7 +293,7 @@ const Contact = () => {
                   </div>
                 ) : (
                   <>
-                    <h2 id="contact-form-title" className="font-display text-2xl font-bold mb-6">{t.formTitle}</h2>
+                    <h2 id="contact-form-title" tabIndex={-1} className="font-display text-2xl font-bold mb-6">{t.formTitle}</h2>
 
                     {status === "error" && (
                       <div role="alert" aria-live="polite" className="mb-6 p-4 bg-destructive/10 border border-destructive/20 rounded-lg flex items-start gap-3">
