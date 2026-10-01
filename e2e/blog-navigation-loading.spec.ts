@@ -21,7 +21,7 @@ const preloadListing = async (page: Page, fullContent: boolean) => {
   const listingPost = fullContent ? post : { ...post, content_zh: "", content_en: "" };
   await page.route("**/zh/blog", async (route) => {
     const response = await route.fetch();
-    const html = await response.text();
+    const html = (await response.text()).replace(/<script[^>]+id="flashcast-public-data"[^>]*>[\s\S]*?<\/script>/, "");
     const preload = `<script id="flashcast-public-data" type="application/json">${JSON.stringify({ blogPosts: [listingPost] })}</script>`;
     await route.fulfill({ response, body: html.replace("</head>", `${preload}</head>`) });
   });
@@ -104,7 +104,8 @@ test("uses the article skeleton while the first article code download is pending
     await expect(page.locator(".blog-loading-page")).toHaveAttribute("data-route-pending", "true");
     await expect(page.locator(".forest-state-page")).toHaveCount(0);
     await expect(page.locator("#main-content main h1, #main-content main h2")).toHaveCount(0);
-    await expect(page.locator(".public-route-retained")).toContainText("装修博客");
+    await expect(page.locator(".public-route-retained")).toHaveCount(0);
+    await expect(page.locator(".public-route-scene")).toHaveCSS("opacity", "0");
     await expect(page.locator(".scheme-a-page-loader--overlay")).toHaveCount(0);
     await page.screenshot({ path: testInfo.outputPath("article-code-pending.png"), fullPage: true });
     releaseModule();

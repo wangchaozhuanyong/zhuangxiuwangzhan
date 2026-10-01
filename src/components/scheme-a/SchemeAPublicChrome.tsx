@@ -82,7 +82,7 @@ const getCurrentNavigationGroup = (pathname: string): PublicNavGroupKey =>
 const BrandMark = ({ logo, name }: { logo: string; name: string }) => {
   const [failedLogo, setFailedLogo] = useState<string | null>(null);
   return (
-    <LocalizedLink className="scheme-a-chrome__brand" data-adaptive-logo to="/" aria-label={name}>
+    <LocalizedLink className="scheme-a-chrome__brand" to="/" aria-label={name}>
       <SmartImage
         src={failedLogo === logo ? logoFallback : logo}
         alt=""
@@ -308,11 +308,11 @@ export const SchemeANavbar = () => {
           <BrandMark logo={logo} name={companyName} />
           <nav className="scheme-a-chrome__primary" aria-label={t.mainNavigation}>
             {primaryPublicNavigationItems.map((item) => (
-              <LocalizedLink key={item.path} data-adaptive-text to={item.path} aria-current={isActivePath(location.pathname, currentPrimaryItem.path) && currentPrimaryItem.path === item.path ? "page" : undefined}>
+              <LocalizedLink key={item.path} to={item.path} aria-current={isActivePath(location.pathname, currentPrimaryItem.path) && currentPrimaryItem.path === item.path ? "page" : undefined}>
                 {translate(item.labelKey)}
               </LocalizedLink>
             ))}
-            <button ref={desktopTriggerRef} className="scheme-a-chrome__nav-more" data-adaptive-text type="button" aria-label={t.openMenu} aria-expanded={menuOpen} aria-controls="scheme-a-directory" onClick={toggleDirectory}>
+            <button ref={desktopTriggerRef} className="scheme-a-chrome__nav-more" type="button" aria-label={t.openMenu} aria-expanded={menuOpen} aria-controls="scheme-a-directory" onClick={toggleDirectory}>
               <span>{navText.more}</span>
               <Menu aria-hidden="true" />
             </button>

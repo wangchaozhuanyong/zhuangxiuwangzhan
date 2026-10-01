@@ -3,6 +3,8 @@ import type { CSSProperties } from "react";
 /** Shared public interaction timings. CSS reads the matching custom properties. */
 export const PUBLIC_MOTION = {
   handoff: 240,
+  exit: 120,
+  enter: 320,
   image: 200,
   menuClose: 180,
   control: 180,

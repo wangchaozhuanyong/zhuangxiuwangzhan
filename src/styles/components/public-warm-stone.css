@@ -164,39 +164,31 @@ html[data-public-theme] #root .scheme-a-hero .scheme-a-button--glass svg {
   /* Furniture remains viewport-fixed using the synchronous buttons.css rules. */
 }
 
-/* Computed by the one public-shell contrast controller, not page-specific skins.
-   Only the foreground changes. A local glyph halo handles mixed/unknown pixels. */
-html[data-public-theme] #root .scheme-a-public-shell :is([data-adaptive-text],[data-adaptive-logo])[data-adaptive-contrast]:not([data-adaptive-contrast="off"]) {
-  color: var(--adaptive-color) !important;
-  -webkit-text-fill-color: var(--adaptive-color) !important;
-  text-shadow: var(--adaptive-shadow) !important;
-  text-decoration-color: currentColor;
+/* Photo copy has one stable foreground. Contrast comes from the reading surface,
+   never sampled pixels, glyph outlines, or independently changing text fill. */
+html[data-public-theme] #root :is(.scheme-a-hero__intro, .fcd-design-hero__copy, .fcd-design-hero__credit),
+html[data-public-theme] #root :is(.scheme-a-hero__intro, .fcd-design-hero__copy) :is(h1, p, .fcd-design-hero__secondary) {
+  color: var(--public-surface-card);
+  -webkit-text-fill-color: currentColor;
+  -webkit-text-stroke-width: 0;
+  text-shadow: none;
 }
-html[data-public-theme] #root [data-adaptive-contrast]:focus-visible {
-  outline-color: var(--adaptive-color) !important;
+html[data-public-theme] #root :is(.scheme-a-hero__media, .fcd-design-hero__media)::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(90deg, rgb(24 31 25 / .76), rgb(24 31 25 / .5) 44%, rgb(24 31 25 / .08) 78%);
 }
-html[data-public-theme] #root :is(.scheme-a-chrome__primary a, .scheme-a-chrome__nav-more)[data-adaptive-contrast]::after {
-  background: var(--adaptive-color) !important;
-}
-html[data-public-theme] #root [data-adaptive-logo][data-adaptive-contrast] img {
-  filter: var(--adaptive-logo-filter) !important;
-}
-html[data-public-theme] #root [data-adaptive-contrast="outline"] > svg {
-  filter: drop-shadow(1px 0 0 var(--adaptive-outline)) drop-shadow(-1px 0 0 var(--adaptive-outline))
-    drop-shadow(0 1px 0 var(--adaptive-outline)) drop-shadow(0 -1px 0 var(--adaptive-outline));
+@media (max-width: 767px) {
+  html[data-public-theme] #root :is(.scheme-a-hero__media, .fcd-design-hero__media)::after {
+    background: linear-gradient(180deg, rgb(24 31 25 / .58), rgb(24 31 25 / .72) 64%, rgb(24 31 25 / .3));
+  }
 }
 @media (forced-colors: active) {
-  html[data-public-theme] #root [data-adaptive-contrast] {
-    color: CanvasText !important;
-    -webkit-text-fill-color: CanvasText !important;
-    text-shadow: none !important;
+  html[data-public-theme] #root :is(.scheme-a-hero__intro, .fcd-design-hero__copy, .fcd-design-hero__credit),
+  html[data-public-theme] #root :is(.scheme-a-hero__intro, .fcd-design-hero__copy) :is(h1, p, .fcd-design-hero__secondary) {
+    color: CanvasText;
+    -webkit-text-fill-color: currentColor;
   }
-}
-@media print {
-  html[data-public-theme] #root [data-adaptive-contrast] {
-    color: var(--public-text-primary) !important;
-    -webkit-text-fill-color: var(--public-text-primary) !important;
-    text-shadow: none !important;
-  }
-  html[data-public-theme] #root [data-adaptive-logo][data-adaptive-contrast] img { filter: brightness(0) !important; }
 }

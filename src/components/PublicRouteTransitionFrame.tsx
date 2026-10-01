@@ -1,93 +1,97 @@
 import { Component, createRef, type ReactNode } from "react";
 import { PUBLIC_MOTION, prefersReducedMotion } from "@/lib/publicMotion";
+import { PUBLIC_NAVIGATION_EVENT, type PublicNavigation } from "@/lib/publicNavigation";
+import { isFurnitureListingPath } from "@/lib/publicScrollRestoration";
 
 type Props = {
   routeKey: string;
   pending: boolean;
   regionOnly: boolean;
+  initial?: boolean;
   children: ReactNode;
 };
-type Snapshot = { surface: HTMLElement; routeKey: string; clip: string } | null;
 
-/** Capture before React changes the DOM. The inert visual copy has no React effects,
- * duplicate IDs, live controls or image candidate requests. Only one copy is retained. */
+/** Animate the live scene before navigation, then reveal the prepared destination.
+ * No cloned page, duplicate media, or old content underneath the destination. */
 export class PublicRouteTransitionFrame extends Component<Props> {
   private content = createRef<HTMLDivElement>();
-  private retained = createRef<HTMLDivElement>();
   private animation: Animation | null = null;
+  private leave: Animation | null = null;
+  private presented: string | null = null;
   previousRoute: string | null = null;
   whenPresented() { return this.animation?.finished.catch(() => {}) ?? Promise.resolve(); }
 
-  getSnapshotBeforeUpdate(previous: Props): Snapshot {
-    if (!this.content.current) return null;
-    if (previous.routeKey === this.props.routeKey) return null;
-    // Rapid navigation keeps the last complete picture, never a half-loaded route.
-    if (previous.pending && this.retained.current?.firstChild) return null;
-    const source = this.content.current;
-    const region = this.props.regionOnly ? source.querySelector<HTMLElement>("[data-public-results]")?.getBoundingClientRect() : null;
-    if (previous.pending) return null;
-    const surface = source.cloneNode(true) as HTMLElement;
-    const rect = source.getBoundingClientRect();
-    const originals = source.querySelectorAll<HTMLImageElement>("img");
-    surface.querySelectorAll<HTMLImageElement>("img").forEach((image, index) => {
-      const original = originals[index];
-      image.removeAttribute("srcset");
-      image.removeAttribute("sizes");
-      image.loading = "lazy";
-      if (original?.complete && original.naturalWidth > 0) image.src = original.currentSrc || original.src;
-      else image.removeAttribute("src");
-    });
-    surface.querySelectorAll("script, style, link, source, iframe").forEach((node) => node.remove());
-    surface.querySelectorAll("[id], [autofocus], [name]").forEach((node) => {
-      node.removeAttribute("id");
-      node.removeAttribute("autofocus");
-      node.removeAttribute("name");
-    });
-    surface.setAttribute("inert", "");
-    surface.removeAttribute("id");
-    surface.removeAttribute("aria-busy");
-    surface.style.cssText = `position:absolute;left:${rect.left}px;top:${rect.top}px;width:${rect.width}px;margin:0;pointer-events:none;`;
-    return { surface, routeKey: previous.routeKey, clip: region ? `inset(${Math.max(0, region.top)}px ${Math.max(0, window.innerWidth - region.right)}px 0 ${Math.max(0, region.left)}px)` : "none" };
-  }
-
-  componentDidUpdate(previous: Props, _state: unknown, snapshot: Snapshot) {
-    const retained = this.retained.current;
-    if (!retained) return;
-    if (previous.routeKey !== this.props.routeKey) {
-      this.animation?.cancel();
-      this.animation = null;
-    }
-    if (snapshot) {
-      this.previousRoute = snapshot.routeKey;
-      retained.replaceChildren(snapshot.surface);
-      retained.style.clipPath = snapshot.clip;
-    }
-    if (!this.props.regionOnly) retained.style.clipPath = "none";
-    if (this.props.pending || !retained.firstChild) return;
-    if (this.animation) return;
-    if (prefersReducedMotion() || typeof retained.animate !== "function") {
-      retained.replaceChildren();
+  private navigate = (event: Event) => {
+    const request = event as CustomEvent<PublicNavigation>;
+    request.preventDefault();
+    this.leave?.cancel();
+    this.leave = null;
+    const next = new URL(request.detail.destination, window.location.href);
+    const current = new URL(this.props.routeKey, window.location.href);
+    const localUpdate = current.pathname === next.pathname ||
+      isFurnitureListingPath(current.pathname) && isFurnitureListingPath(next.pathname);
+    const scene = this.content.current;
+    if (!scene || localUpdate || this.props.pending || this.animation || prefersReducedMotion() || typeof scene.animate !== "function") {
+      request.detail.commit();
       return;
     }
-    const animation = retained.animate([{ opacity: 1 }, { opacity: 0 }], {
-      duration: this.props.regionOnly ? PUBLIC_MOTION.image : PUBLIC_MOTION.handoff,
-      easing: PUBLIC_MOTION.easing,
+    const exit = scene.animate([{ opacity: 1 }, { opacity: 0 }], {
+      duration: PUBLIC_MOTION.exit, easing: "ease-in", fill: "forwards",
+    });
+    this.leave = exit;
+    void exit.finished.then(() => {
+      if (this.leave !== exit) return;
+      request.detail.commit();
+    }, () => { /* A newer click or browser navigation superseded this exit. */ });
+  };
+
+  componentDidMount() {
+    if (!this.props.pending) this.presented = this.props.routeKey;
+    window.addEventListener(PUBLIC_NAVIGATION_EVENT, this.navigate);
+  }
+
+  componentDidUpdate(previous: Props) {
+    const changed = previous.routeKey !== this.props.routeKey;
+    if (changed || !previous.pending && this.props.pending) {
+      this.leave?.cancel();
+      this.leave = null;
+      this.animation?.cancel();
+      this.animation = null;
+      this.previousRoute = this.presented;
+    }
+    if (this.props.pending || !changed && !previous.pending) return;
+    const target = this.props.regionOnly
+      ? this.content.current?.querySelector<HTMLElement>("[data-public-results]")
+      : this.content.current;
+    if (!target || this.props.initial || prefersReducedMotion() || typeof target.animate !== "function") {
+      this.presented = this.props.routeKey;
+      return;
+    }
+    const route = this.props.routeKey;
+    const animation = target.animate([{ opacity: 0 }, { opacity: 1 }], {
+      duration: this.props.regionOnly ? PUBLIC_MOTION.image : PUBLIC_MOTION.enter,
+      easing: "cubic-bezier(0.2, 0.65, 0.3, 1)",
     });
     this.animation = animation;
     void animation.finished.then(() => {
       if (this.animation !== animation) return;
-      retained.replaceChildren();
+      this.presented = route;
       this.animation = null;
-    }, () => { /* Superseded by the next navigation or unmount. */ });
+    }, () => { /* Superseded by another route or retry. */ });
   }
 
-  componentWillUnmount() { this.animation?.cancel(); }
+  componentWillUnmount() {
+    window.removeEventListener(PUBLIC_NAVIGATION_EVENT, this.navigate);
+    this.leave?.cancel();
+    this.animation?.cancel();
+    this.leave = null;
+    this.animation = null;
+  }
 
   render() {
-    return <>
-      <div ref={this.content} className="public-route-scene">{this.props.children}</div>
-      <div ref={this.retained} className="public-route-retained" data-region-only={this.props.regionOnly || undefined}
-        aria-hidden="true" />
-    </>;
+    return <div ref={this.content} className="public-route-scene"
+      data-pending={this.props.pending || undefined} data-region-only={this.props.regionOnly || undefined}>
+      {this.props.children}
+    </div>;
   }
 }

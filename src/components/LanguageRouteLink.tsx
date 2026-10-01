@@ -3,6 +3,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { Link, useLocation, useNavigate, type LinkProps } from "react-router-dom";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { type Language } from "@/i18n/routes";
+import { requestPublicNavigation } from "@/lib/publicNavigation";
 import { prefetchPublishedRouteContent } from "@/lib/publicRoutePrefetch";
 
 type LanguageRouteLinkProps = Omit<LinkProps, "to"> & {
@@ -63,8 +64,10 @@ const LanguageRouteLink = forwardRef<HTMLAnchorElement, LanguageRouteLinkProps>(
     // Navigation owns the bounded readiness state. A stalled prefetch must not
     // leave the language button unresponsive or navigate after a later click.
     void prefetch();
-    setLanguage(targetLanguage);
-    navigate(to);
+    requestPublicNavigation(to, () => {
+      setLanguage(targetLanguage);
+      navigate(to);
+    });
   };
 
   return (

@@ -80,7 +80,7 @@ describe("public route visual readiness", () => {
   it("waits on subsequent routes with lightweight feedback instead of the brand screen", async () => {
     await render(<Image ready />, "/zh/projects");
     await render(<Image />);
-    expect(container.querySelector(".public-route-retained img")).not.toBeNull();
+    expect(container.querySelector(".public-route-scene")).toHaveAttribute("data-pending", "true");
     expect(loader()).toBeNull();
     await act(async () => vi.advanceTimersByTime(180));
     expect(loader()?.getAttribute("data-route-loader")).toBe("navigation");
@@ -139,7 +139,7 @@ describe("public route visual readiness", () => {
     await render(<Image ready />, "/zh/furniture");
     expect(loader()).toBeNull();
     await render(<Image />, nextRoute);
-    expect(container.querySelector(".public-route-retained img")).not.toBeNull();
+    expect(container.querySelector(".public-route-scene")).toHaveAttribute("data-pending", "true");
     await act(async () => vi.advanceTimersByTime(180));
     expect(loader()).not.toBeNull();
     await render(<Image ready />, nextRoute);
@@ -162,16 +162,15 @@ describe("public route visual readiness", () => {
     window.removeEventListener("public-route-ready", ready);
   });
 
-  it("retains one complete scene through rapid navigation and strips duplicate IDs", async () => {
+  it("keeps only the latest destination through rapid navigation", async () => {
     await render(<Image ready />, "/zh/projects");
     await render(<Image />, "/zh/materials");
     await render(<div data-route-pending="true" />, "/zh/blog");
     expect(container.querySelectorAll("#main-content")).toHaveLength(1);
-    expect(container.querySelectorAll(".public-route-retained > div")).toHaveLength(1);
-    expect(container.querySelector(".public-route-retained img")?.getAttribute("src")).toBe(src);
-    expect(container.querySelector(".public-route-retained > div")).toHaveAttribute("inert");
+    expect(container.querySelector(".public-route-retained")).toBeNull();
+    expect(container.querySelector(".public-route-scene")).toHaveAttribute("data-pending", "true");
     await render(<Image ready />, "/zh/blog");
-    expect(container.querySelector(".public-route-retained")?.childElementCount).toBe(0);
+    expect(container.querySelector(".public-route-scene")).not.toHaveAttribute("data-pending");
   });
 
   it("does not let an obsolete route timer cover the next ready route", async () => {
