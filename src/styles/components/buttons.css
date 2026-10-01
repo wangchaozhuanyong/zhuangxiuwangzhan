@@ -104,10 +104,21 @@
 
   /* Keep this viewport anchor synchronous on every public route. A skin may
      change its appearance, but must not move the entry into document flow. */
+  .scheme-a-public-shell {
+    /* Shared viewport reservation for the floating entry and update notice. */
+    --public-floating-bottom: clamp(1rem, 2vw, 2rem);
+  }
+
+  .public-update-notice {
+    bottom: calc(var(--public-floating-bottom) + 3.25rem + 1rem + env(safe-area-inset-bottom));
+    max-height: calc(100dvh - var(--public-floating-bottom) - 3.25rem - 6rem - env(safe-area-inset-bottom));
+    overflow-y: auto;
+  }
+
   .fc-furniture-floating {
     position: fixed;
     right: clamp(1rem, 2vw, 2rem);
-    bottom: clamp(1rem, 2vw, 2rem);
+    bottom: calc(var(--public-floating-bottom) + env(safe-area-inset-bottom));
     z-index: 105;
     display: inline-flex;
     min-width: 9rem;
@@ -187,9 +198,9 @@
   }
 
   @media (max-width: 767px) {
+    .scheme-a-public-shell { --public-floating-bottom: 82px; }
     .fc-furniture-floating {
       right: 1rem;
-      bottom: calc(82px + env(safe-area-inset-bottom));
     }
   }
 }

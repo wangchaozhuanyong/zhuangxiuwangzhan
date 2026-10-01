@@ -3,6 +3,8 @@ import { createContext, useCallback, useContext, useLayoutEffect, useMemo, useRe
 type PublicChromeContextValue = {
   menuOpen: boolean;
   setMenuOpen: (open: boolean) => void;
+  hasOpenDialog: boolean;
+  registerDialog: (id: symbol) => () => void;
   hasImmersiveHero: boolean;
   registerImmersiveHero: (id: symbol) => () => void;
   hasPageConsultation: boolean;
@@ -41,6 +43,16 @@ export function PublicChromeProvider({
   const [hasImmersiveHero, setHasImmersiveHero] = useState(false);
   const consultationIds = useRef(new Set<symbol>());
   const [hasPageConsultation, setHasPageConsultation] = useState(false);
+  const dialogIds = useRef(new Set<symbol>());
+  const [hasOpenDialog, setHasOpenDialog] = useState(false);
+  const registerDialog = useCallback((id: symbol) => {
+    dialogIds.current.add(id);
+    setHasOpenDialog(true);
+    return () => {
+      dialogIds.current.delete(id);
+      setHasOpenDialog(dialogIds.current.size > 0);
+    };
+  }, []);
 
   const registerPageConsultation = useCallback((id: symbol) => {
     consultationIds.current.add(id);
@@ -173,13 +185,15 @@ export function PublicChromeProvider({
     () => ({
       menuOpen,
       setMenuOpen,
+      hasOpenDialog,
+      registerDialog,
       hasImmersiveHero,
       registerImmersiveHero,
       hasPageConsultation,
       registerPageConsultation,
       showMobileActionBar,
     }),
-    [hasImmersiveHero, hasPageConsultation, menuOpen, registerImmersiveHero, registerPageConsultation, showMobileActionBar],
+    [hasImmersiveHero, hasPageConsultation, hasOpenDialog, menuOpen, registerDialog, registerImmersiveHero, registerPageConsultation, showMobileActionBar],
   );
 
   return <PublicChromeContext.Provider value={value}>{children}</PublicChromeContext.Provider>;
@@ -191,6 +205,12 @@ export function usePublicChrome() {
     throw new Error("usePublicChrome must be used within PublicChromeProvider");
   }
   return context;
+}
+
+/** Shared dialog contents register only when mounted; admin/standalone use stays optional. */
+export function usePublicDialogLayer() {
+  const registerDialog = useContext(PublicChromeContext)?.registerDialog;
+  useLayoutEffect(() => registerDialog?.(Symbol("public-dialog")), [registerDialog]);
 }
 
 /** A mounted page CTA replaces the generic footer invitation, including on route changes. */
