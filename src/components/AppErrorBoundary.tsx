@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { appErrorBoundaryText } from "@/i18n/appErrorBoundaryText";
 import { getDefaultLanguage, getLanguageFromPath } from "@/i18n/routes";
 import { getAdminLang } from "@/lib/adminLocale";
-import { getFriendlySystemMessage, isChunkLoadError, recoverFromChunkLoadError } from "@/lib/chunkLoadRecovery";
+import { getFriendlySystemMessage, isChunkLoadError } from "@/lib/chunkLoadRecovery";
 
 type Props = {
   children: ReactNode;
@@ -41,8 +41,6 @@ export class AppErrorBoundary extends Component<Props, State> {
         },
       }),
     );
-
-    recoverFromChunkLoadError(error);
   }
 
   render() {
