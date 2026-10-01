@@ -37,7 +37,7 @@ html[data-public-theme] #root .scheme-a-public-shell {
   --font-body: "Noto Sans SC", "PingFang SC", "Microsoft YaHei", sans-serif;
   --font-display: "Noto Serif SC", "Songti SC", Georgia, serif;
 }
-html[data-public-theme] #root :is(.scheme-a-directory, .scheme-a-mobile-dock, .scheme-a-contact-dock) {
+html[data-public-theme] #root :is(.scheme-a-mobile-dock, .scheme-a-contact-dock) {
   color: var(--public-text-primary) !important;
   background: var(--public-surface-card) !important;
   border-color: var(--public-border) !important;

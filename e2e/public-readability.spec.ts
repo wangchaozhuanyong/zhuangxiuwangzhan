@@ -72,19 +72,18 @@ test.describe("public text readability", () => {
     }
   });
 
-  test("phone directory captions keep local contrast while leaving the photograph visible", async ({ page }) => {
+  test("phone directory labels and actions keep readable contrast", async ({ page }) => {
     for (const language of ["zh", "en"]) {
       for (const width of [390, 767]) {
         await page.setViewportSize({ width, height: 900 });
         await page.goto(`/${language}/services/surface-repair`, { waitUntil: "domcontentloaded" });
         await expect(page.locator(".scheme-a-page-loader--overlay")).toBeHidden({ timeout: 15_000 });
         await page.getByRole("button", { name: language === "zh" ? "打开完整网站目录" : "Open the complete site directory", exact: true }).click();
-        const preview = page.locator(".scheme-a-directory__preview");
-        await expect(preview).toBeVisible();
-        for (const tag of ["span", "strong"]) {
-          expect((await readContrast(preview.locator(`figcaption ${tag}`))).contrast).toBeGreaterThanOrEqual(4.5);
+        const directory = page.getByRole('dialog');
+        await expect(directory).toBeVisible();
+        for (const selector of ['.scheme-a-directory__head > span', '.scheme-a-directory__group-toggle', '.scheme-a-directory__groups section[data-open="true"] a', '.scheme-a-directory__foot a']) {
+          expect((await readContrast(directory.locator(selector).first())).contrast).toBeGreaterThanOrEqual(4.5);
         }
-        expect(await preview.locator("img").evaluate((image) => getComputedStyle(image).filter)).toBe("none");
         await page.getByRole("button", { name: language === "zh" ? "关闭网站目录" : "Close the site directory", exact: true }).click();
       }
     }
