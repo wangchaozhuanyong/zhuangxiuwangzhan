@@ -44,7 +44,7 @@ export default function Projects() {
   const routeText = schemeARouteText[language];
   const { filter, setFilter, visibleCount, setVisibleCount } = usePublicListingState(categories, "All", PAGE_SIZE);
   const { data: projects = [], isLoading, isError, refetch } = usePublishedProjectSummaries(language);
-  const { data: pageContent } = usePublishedSitePage(language, "projects");
+  const { data: pageContent, isLoading: pageLoading } = usePublishedSitePage(language, "projects");
   const heroImage = resolvePageHeroImage(pageContent?.image_url, pageHeroImages.projects);
   const filtered = filter === "All" ? projects : projects.filter((project) => project.type === filter);
   const visible = filtered.slice(0, visibleCount);
@@ -65,7 +65,7 @@ export default function Projects() {
   }), [copy, language, visible]);
 
   return (
-    <main className="fc-route-page fc-route-projects-page">
+    <main className="fc-route-page fc-route-projects-page" data-route-pending={pageLoading || isLoading || undefined}>
       <PageMeta title={pageContent?.seo_title || copy.metaTitle} description={pageContent?.seo_description || copy.metaDescription} keywords={pageContent?.seo_keywords || copy.metaKeywords} canonicalPath="/projects" />
       <JsonLdBreadcrumb items={[{ name: copy.breadcrumbHome, url: "/" }, { name: copy.breadcrumbProjects, url: "/projects" }]} />
       <SchemeARouteHero

@@ -98,6 +98,9 @@ export const chooseAdaptiveTextColor = (
 ): AdaptiveTextColor => {
   const known = samples.filter((sample): sample is RgbColor => sample !== null && sample.a === 1);
   const uncertain = !samples.length || known.length !== samples.length;
+  // Unknown pixels are not evidence for changing the authored foreground.
+  // Keep the last stable glyph color while photos, overlays or fonts settle.
+  if (uncertain) return { color: previous || preferred, outline: true, minimumRatio: null };
   const ratio = (color: string) => {
     const foreground = parseCssColor(color);
     if (!foreground || !known.length) return 0;

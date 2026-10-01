@@ -4,6 +4,7 @@ import { QueryClient, QueryClientProvider, QueryObserver } from "@tanstack/react
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { LanguageProvider } from "@/i18n/LanguageContext";
 import { PublicRouteImageGate } from "@/components/PublicRouteImageGate";
+import { PublicRouteTransitionFrame } from "@/components/PublicRouteTransitionFrame";
 
 let container: HTMLDivElement;
 let root: Root;
@@ -114,12 +115,12 @@ describe("public route visual readiness", () => {
     expect(loader()).toBeNull();
   });
 
-  it("waits for initial route queries but not background refetches or other routes", async () => {
+  it("leaves speculative and background queries to their owners instead of treating prefetch as readiness", async () => {
     const observer = new QueryObserver(client, { queryKey: ["published", "site_page", "zh", "services"], queryFn: () => new Promise(() => {}) });
     const unsubscribe = observer.subscribe(() => {});
     client.getQueryCache().build(client, { queryKey: ["published", "blog", "zh"] });
     await render(<Image ready />);
-    expect(loader()).not.toBeNull();
+    expect(loader()).toBeNull();
     await act(async () => client.setQueryData(["published", "site_page", "zh", "services"], {}));
     await act(async () => vi.advanceTimersByTime(40));
     expect(loader()).toBeNull();
@@ -146,12 +147,19 @@ describe("public route visual readiness", () => {
   });
 
   it("allows explicit continue after a slow response without manufacturing image errors", async () => {
+    const ready = vi.fn();
+    window.addEventListener("public-route-ready", ready);
     await render(<Image />);
     await act(async () => vi.advanceTimersByTime(5100));
     const buttons = container.querySelectorAll<HTMLButtonElement>(".scheme-a-page-loader__actions button");
     await act(async () => buttons[1].click());
     expect(loader()).toBeNull();
     expect(container.querySelector("img")).toHaveAttribute("data-image-state", "loading");
+    expect(state()).toBe("degraded");
+    await render(<Image ready />);
+    expect(state()).toBe("degraded");
+    expect(ready).toHaveBeenCalledTimes(1);
+    window.removeEventListener("public-route-ready", ready);
   });
 
   it("retains one complete scene through rapid navigation and strips duplicate IDs", async () => {
@@ -172,5 +180,31 @@ describe("public route visual readiness", () => {
     await act(async () => vi.advanceTimersByTime(6000));
     expect(loader()).toBeNull();
     expect(state()).toBe("ready");
+  });
+
+  it("invalidates an old handoff even when rapid navigation returns to the same URL", async () => {
+    await render(<Image ready />, "/zh/start");
+    let release!: () => void;
+    const pending = new Promise<void>((resolve) => release = resolve);
+    const transition = vi.spyOn(PublicRouteTransitionFrame.prototype, "whenPresented").mockReturnValueOnce(pending);
+    const ready = vi.fn();
+    window.addEventListener("public-route-ready", ready);
+    try {
+      await render(<Image ready />, "/zh/materials");
+      expect(state()).toBe("handoff");
+      await render(<Image />, "/zh/projects");
+      await render(<Image />, "/zh/materials");
+      expect(state()).toBe("waiting");
+      await act(async () => release());
+      expect(state()).toBe("waiting");
+      expect(container.querySelector(".public-route-content")).toHaveAttribute("inert");
+      expect(ready).not.toHaveBeenCalled();
+      await render(<Image ready />, "/zh/materials");
+      expect(state()).toBe("ready");
+      expect(ready).toHaveBeenCalledTimes(1);
+    } finally {
+      transition.mockRestore();
+      window.removeEventListener("public-route-ready", ready);
+    }
   });
 });

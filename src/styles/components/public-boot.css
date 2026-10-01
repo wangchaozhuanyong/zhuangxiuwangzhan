@@ -1,0 +1,29 @@
+/* Inline critical CSS: the same brand DOM survives entry/CSS loading and handoff. */
+#flashcast-public-boot { display: none; }
+html[data-public-boot] { background: #F7F6F2; }
+html[data-public-boot="waiting"] #root,
+html[data-public-boot="timeout"] #root { visibility: hidden; }
+html[data-public-boot] #flashcast-public-boot {
+  position: fixed; inset: 0; z-index: 130; display: grid; place-items: center;
+  min-height: 100svh; padding: 76px 24px 0; box-sizing: border-box;
+  background: radial-gradient(circle at 50% 45%, #ECEDE6 0%, #F7F6F2 72%);
+  color: #292E29; font-family: "PingFang SC", "Microsoft YaHei", sans-serif;
+}
+#flashcast-public-boot .scheme-a-page-loader__brand { display: grid; justify-items: center; text-align: center; width: min(100%, 760px); }
+#flashcast-public-boot .scheme-a-page-loader__brand p { margin: 0 0 1.2rem; color: #3F4E42; font-size: 12px; font-weight: 700; letter-spacing: .28em; }
+#flashcast-public-boot strong { display: flex; gap: .25em; align-items: baseline; font: 400 clamp(3.6rem, 10vw, 7.5rem)/.92 Georgia, "Times New Roman", serif; letter-spacing: -.04em; }
+#flashcast-public-boot strong span { color: #292E29; }
+#flashcast-public-boot strong em { color: #3F4E42; font-style: normal; }
+#flashcast-public-boot :is(p,strong,span,em,button) { -webkit-text-fill-color: currentColor; -webkit-text-stroke: 0; text-shadow: none; }
+#flashcast-public-boot strong em { background: none; }
+#flashcast-public-boot .scheme-a-page-loader__brand > span { margin-top: 1.35rem; color: #626A60; font-size: 14px; letter-spacing: .16em; }
+#flashcast-public-boot .scheme-a-page-loader__brand > i { display: block; width: 180px; height: 2px; margin-top: 24px; overflow: hidden; background: #D4D9CF; }
+#flashcast-public-boot .scheme-a-page-loader__brand > i::after { content: ""; display: block; height: 100%; width: 40%; background: #3F4E42; animation: public-boot-progress 1.1s ease-in-out infinite alternate; }
+#flashcast-public-boot [hidden] { display: none !important; }
+#flashcast-public-boot [data-boot-recovery] { margin-top: 24px; font-size: 14px; }
+#flashcast-public-boot .scheme-a-page-loader__actions { display: flex; justify-content: center; gap: 12px; margin-top: 16px; }
+#flashcast-public-boot button { min-height: 44px; padding: 10px 20px; border: 1px solid #D4D9CF; border-radius: 6px; background: #FDFCFA; color: #292E29; font: inherit; cursor: pointer; }
+#flashcast-public-boot button:focus-visible { outline: 2px solid #3F4E42; outline-offset: 3px; }
+@keyframes public-boot-progress { to { transform: translateX(150%); } }
+@media (max-width: 767px) { html[data-public-boot] #flashcast-public-boot { padding-top: 56px; } }
+@media (prefers-reduced-motion: reduce) { #flashcast-public-boot i::after { animation: none !important; } }

@@ -84,7 +84,7 @@ const Quote = () => {
   const quoteContext = useMemo(() => parseQuoteContext(searchParams, language), [language, searchParams]);
   const previousQuoteContextRef = useRef(quoteContext);
   const contextLabel = formatQuoteContextLabel(quoteContext, language);
-  const { data: pageContent } = usePublishedSitePage(language, "quote");
+  const { data: pageContent, isLoading: pageLoading } = usePublishedSitePage(language, "quote");
   const heroImage = resolvePageHeroImage(pageContent?.image_url, pageHeroImages.quote);
   const officeAddress = settings.short_address || settings.address || t.office;
   const whatsappHref = settings.whatsapp_url(t.whatsappMessage);
@@ -213,7 +213,7 @@ const Quote = () => {
 
   if (status === "success") {
     return (
-      <main className="fc-route-page fc-route-form-page fc-route-quote-page">
+      <main className="fc-route-page fc-route-form-page fc-route-quote-page" data-route-pending={pageLoading || undefined}>
         <PageMeta title={t.successTitle} description={pageContent?.seo_description || t.metaDescription} canonicalPath="/quote" />
         <section className="fc-route-quote-success section-padding flex min-h-[70vh] items-center bg-background">
           <div className="container-narrow mx-auto max-w-xl text-center">
@@ -275,7 +275,7 @@ const Quote = () => {
   }
 
   return (
-    <main className="fc-route-page fc-route-form-page fc-route-quote-page">
+    <main className="fc-route-page fc-route-form-page fc-route-quote-page" data-route-pending={pageLoading || undefined}>
       <PageMeta
         title={pageContent?.seo_title || t.metaTitle}
         description={pageContent?.seo_description || t.metaDescription}

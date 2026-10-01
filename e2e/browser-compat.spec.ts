@@ -181,6 +181,7 @@ test.describe("mainstream browser compatibility", () => {
 
     await page.goto("/zh/quote", { waitUntil: "domcontentloaded" });
     await page.waitForLoadState("load");
+    await expect(page.locator("[data-route-visual-state]")).toHaveAttribute("data-route-visual-state", "ready");
     await page.locator("#quote-name").fill("Browser Test");
     await page.locator("#quote-phone").fill("+60123456789");
     await page.locator("#quote-location").fill("Kuala Lumpur");
@@ -210,7 +211,7 @@ test.describe("mainstream browser compatibility", () => {
     await mobileNavigation.locator('#scheme-a-directory-group-services a[href$="/services"]').first().click();
 
     await expect(page).toHaveURL(/\/zh\/services$/);
-    await expect(mobileNavigation).toHaveCount(0);
+    await expect(mobileNavigation).toBeHidden();
     await expect
       .poll(() => hasVisibleElement(page, "main"), { message: "mobile service navigation renders main content", timeout: 20_000 })
       .toBe(true);

@@ -52,7 +52,8 @@ describe("adaptive local text contrast", () => {
   });
   it("treats unavailable, unpainted and cross-origin pixels as unknown, with a glyph fallback", () => {
     for (const samples of [[], [null], [sample("#fff"), null], [sample("transparent")]]) {
-      expect(chooseAdaptiveTextColor(samples, "#292E29")).toMatchObject({ outline: true, minimumRatio: null });
+      expect(chooseAdaptiveTextColor(samples, "#292E29")).toMatchObject({ color: "#292E29", outline: true, minimumRatio: null });
+      expect(chooseAdaptiveTextColor(samples, "#292E29", "#FDFCFA").color).toBe("#FDFCFA");
     }
   });
 });

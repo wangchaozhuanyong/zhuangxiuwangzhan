@@ -11,7 +11,7 @@ test("mobile navigation remains stable while the header changes state", async ({
   const actionBar = page.locator(".scheme-a-contact-dock");
   await expect(header).toHaveClass(/is-overlay/);
   await expect(dock).toBeVisible();
-  await expect(dock.locator("a")).toHaveCount(5);
+  await expect(dock.locator("a")).toHaveCount(6);
 
   const heroHeight = await page.locator(".scheme-a-hero").evaluate((element) => element.getBoundingClientRect().height);
   await page.evaluate((target) => window.scrollTo({ top: target, behavior: "auto" }), heroHeight + 120);
@@ -41,6 +41,7 @@ test("mobile navigation remains stable while the header changes state", async ({
   await expect(switcher).toHaveAttribute("data-mode", "hidden");
 
   await page.goto("/en/quote", { waitUntil: "domcontentloaded" });
+  await expect(page.locator("[data-route-visual-state]")).toHaveAttribute("data-route-visual-state", "ready");
   await expect(switcher).toHaveAttribute("data-mode", "navigation");
   await page.evaluate(() => window.scrollTo({ top: 200, behavior: "auto" }));
   await expect(switcher).toHaveAttribute("data-mode", "actions");

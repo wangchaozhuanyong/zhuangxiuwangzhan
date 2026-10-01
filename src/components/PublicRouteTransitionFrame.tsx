@@ -16,17 +16,16 @@ export class PublicRouteTransitionFrame extends Component<Props> {
   private retained = createRef<HTMLDivElement>();
   private animation: Animation | null = null;
   previousRoute: string | null = null;
+  whenPresented() { return this.animation?.finished.catch(() => {}) ?? Promise.resolve(); }
 
   getSnapshotBeforeUpdate(previous: Props): Snapshot {
     if (!this.content.current) return null;
-    const initial = previous.pending && !this.props.pending
-      ? this.content.current.querySelector<HTMLElement>('[data-route-loader="initial"]') : null;
-    if (previous.routeKey === this.props.routeKey && !initial) return null;
+    if (previous.routeKey === this.props.routeKey) return null;
     // Rapid navigation keeps the last complete picture, never a half-loaded route.
     if (previous.pending && this.retained.current?.firstChild) return null;
-    const source = initial || this.content.current;
+    const source = this.content.current;
     const region = this.props.regionOnly ? source.querySelector<HTMLElement>("[data-public-results]")?.getBoundingClientRect() : null;
-    if (previous.pending && !initial) return null;
+    if (previous.pending) return null;
     const surface = source.cloneNode(true) as HTMLElement;
     const rect = source.getBoundingClientRect();
     const originals = source.querySelectorAll<HTMLImageElement>("img");

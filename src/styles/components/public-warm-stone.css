@@ -166,7 +166,7 @@ html[data-public-theme] #root .scheme-a-hero .scheme-a-button--glass svg {
 
 /* Computed by the one public-shell contrast controller, not page-specific skins.
    Only the foreground changes. A local glyph halo handles mixed/unknown pixels. */
-html[data-public-theme] #root [data-adaptive-contrast]:not([data-adaptive-contrast="off"]) {
+html[data-public-theme] #root .scheme-a-public-shell :is([data-adaptive-text],[data-adaptive-logo])[data-adaptive-contrast]:not([data-adaptive-contrast="off"]) {
   color: var(--adaptive-color) !important;
   -webkit-text-fill-color: var(--adaptive-color) !important;
   text-shadow: var(--adaptive-shadow) !important;

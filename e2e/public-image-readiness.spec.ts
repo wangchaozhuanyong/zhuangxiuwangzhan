@@ -74,10 +74,10 @@ test("shows a visible retry state when a hero image fails", async ({ page }) => 
   await page.route("**/images/**", (route) => route.abort());
   await page.goto("/zh/about", { waitUntil: "domcontentloaded" });
   await expect(page.locator(loader)).toBeHidden({ timeout: 10_000 });
-  await expect(page.locator(".smart-image-failure")).toBeVisible();
-  await expect(page.locator(".smart-image-failure button")).toBeVisible();
+  await expect(page.locator("#main-content .smart-image-failure")).toBeVisible();
+  await expect(page.locator("#main-content .smart-image-failure button")).toBeVisible();
   await page.unroute("**/images/**");
-  await page.locator(".smart-image-failure button").click();
+  await page.locator("#main-content .smart-image-failure button").click();
   await expect(page.locator(criticalImage)).toHaveAttribute("data-image-state", "loaded", { timeout: 10_000 });
 });
 
@@ -116,7 +116,7 @@ test("covers every navigation frame until the selected visible images have decod
     document.body.dataset.emptyHeroFrames = "0";
     const sample = () => {
       const images = Array.from(document.querySelectorAll<HTMLImageElement>("#main-content img[data-critical-image='true']"));
-      const exposed = !document.querySelector("[data-route-loader]");
+      const exposed = document.querySelector(".public-route-content")?.getAttribute("aria-hidden") !== "true";
       const pending = images.some((img) => {
         const rect = img.getBoundingClientRect();
         return rect.width > 0 && rect.height > 0 && rect.top < innerHeight && rect.bottom > 0
@@ -148,7 +148,8 @@ test("keeps detail loading geometry stable until the first published data result
     });
     try {
       await page.goto(path, { waitUntil: "domcontentloaded" });
-      await expect(page.locator('[data-route-pending="true"]')).toBeVisible();
+      await expect(page.locator('#main-content [data-route-pending="true"]')).toBeAttached();
+      await expect(page.locator(loader)).toBeVisible();
       await expect(page.locator("main h1")).toHaveCount(0);
       const footerTop = await page.locator(".scheme-a-footer").evaluate((footer) => footer.getBoundingClientRect().top);
       expect(footerTop).toBeGreaterThanOrEqual(844);

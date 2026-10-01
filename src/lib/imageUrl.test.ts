@@ -58,16 +58,16 @@ describe("imageUrl", () => {
 
   it("builds responsive variants for local service, material, and hero images", () => {
     expect(toLocalResponsiveImageSrc("/images/services/kitchen-renovation.webp", 360)).toBe(
-      "/images/_responsive/services/w360/kitchen-renovation.webp",
+      "/images/_responsive/services/w360/content-20260930/kitchen.webp",
     );
     expect(toLocalResponsiveImageSrc("/images/materials/category-kitchen-cabinets.webp?v=1", 640)).toBe(
-      "/images/_responsive/materials/w720/category-kitchen-cabinets.webp?v=1",
+      "/images/_responsive/materials/w720/content-20261001/melamine-cabinet.webp?v=1",
     );
     expect(toLocalResponsiveImageSrc("/images/heroes/v2/hero-services-premium-mobile.webp", 720)).toBe(
       "/images/_responsive/heroes/w720/v2/hero-services-premium-mobile.webp",
     );
     expect(toLocalResponsiveImageSrc("/images/before-after/before-kitchen.webp", 560)).toBe(
-      "/images/_responsive/before-after/w560/v20260824/before-kitchen.webp",
+      "/images/_responsive/before-after/w560/old-terrace-concept-v2/kitchen-before.webp",
     );
   });
 
@@ -83,7 +83,7 @@ describe("imageUrl", () => {
       "/images/projects/v20260824/generated-portfolio/mont-kiara-luxury-condo-renovation.webp?fit=cover#preview",
     );
     expect(toVersionedLocalResponsiveImageSrc("/images/services/kitchen-renovation.webp")).toBe(
-      "/images/services/kitchen-renovation.webp",
+      "/images/services/content-20260930/kitchen.webp",
     );
   });
 

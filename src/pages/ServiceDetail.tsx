@@ -82,7 +82,7 @@ export default function ServiceDetail() {
   });
 
   return (
-    <main className="fc-route-page">
+    <main className="fc-route-page" data-route-pending={isLoading || undefined}>
       <PageMeta title={service.seoTitle || copy.metaTitleFallback(title, copy.metaSuffix)} description={service.seoDescription || summary} keywords={copy.metaKeywords(title)} canonicalPath={`/services/${service.slug}`} ogImage={resolveReviewedImageSource(service.image)} />
       <JsonLdService name={title} description={summary} />
       <JsonLdBreadcrumb items={[{ name: copy.breadcrumbHome, url: "/" }, { name: copy.breadcrumbServices, url: "/services" }, { name: title, url: `/services/${service.slug}` }]} />

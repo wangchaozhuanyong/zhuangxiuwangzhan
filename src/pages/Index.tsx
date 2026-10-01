@@ -13,6 +13,7 @@ const Index = () => {
   const copy = indexPageText[language];
   const {
     data: homeContentResult,
+    isLoading,
     refetch: retryHomeContent,
   } = usePublishedHomeContentBundle(language);
   const homeContent = homeContentResult?.data;
@@ -25,7 +26,7 @@ const Index = () => {
     .filter((faq) => faq.question && faq.answer);
 
   return (
-    <main className="scheme-a-home-page">
+    <main className="scheme-a-home-page" data-route-pending={isLoading || undefined}>
       <PageMeta
         title={metaTitle}
         description={metaDescription}

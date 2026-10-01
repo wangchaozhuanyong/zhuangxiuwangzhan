@@ -1,6 +1,6 @@
 import { lazy, Suspense, useEffect, useRef, useState, type MouseEvent, type ReactNode } from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, useLocation, useNavigate, useNavigationType } from "react-router-dom";
+import { BrowserRouter, Routes, useLocation, useNavigate } from "react-router-dom";
 import { HelmetProvider } from "react-helmet-async";
 import { LanguageProvider, useLanguage } from "@/i18n/LanguageContext";
 import { SchemeAFooter, SchemeAFooterPrelude, SchemeANavbar } from "@/components/scheme-a/SchemeAPublicChrome";
@@ -217,7 +217,6 @@ const handleSkipToMainContent = (event: MouseEvent<HTMLAnchorElement>) => {
 const AppShell = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const navigationType = useNavigationType();
   const { language } = useLanguage();
   const isAdminRoute = location.pathname.startsWith("/admin");
   const isAdminLoginRoute = /^\/admin\/?$/.test(location.pathname);
@@ -233,14 +232,6 @@ const AppShell = () => {
   const mainContentClass = publicMainClass;
   const mainContentKey = isAdminRoute ? "admin-main-content" : isFurnitureListingRoute ? "furniture-listing" : publicPath;
   const publicSurface = publicPath.startsWith("/landing/") ? "campaign" : "scheme-a";
-
-  useEffect(() => {
-    document.documentElement.dataset.navigationType = navigationType.toLowerCase();
-
-    return () => {
-      delete document.documentElement.dataset.navigationType;
-    };
-  }, [navigationType]);
 
   return (
     <PublicChromeProvider
