@@ -8,7 +8,7 @@ import { SchemeAContentState, SchemeAFacts, SchemeAGallery, SchemeAListingGrid, 
 import { projectsData } from "@/data/projects";
 import { usePublishedProjectBySlug, usePublishedProjectSummaries } from "@/hooks/usePublishedContent";
 import { useLanguage } from "@/i18n/LanguageContext";
-import { translateDisplayText, translateProjectType } from "@/i18n/displayLabels";
+import { translateDisplayText, translateProjectScopedLabel, translateProjectType } from "@/i18n/displayLabels";
 import { projectDetailPageText } from "@/i18n/projectDetailPageText";
 import { mediaLabels } from "@/i18n/mediaLabels";
 import { buildQuotePath, quoteProjectTypeFromProjectType } from "@/lib/quoteContext";
@@ -45,7 +45,7 @@ export default function ProjectDetail() {
   const type = translateProjectType(project.type, language);
   const description = stripHtml(translateDisplayText(project.description || "", language));
   const clientNeed = stripHtml(translateDisplayText(project.clientNeed || "", language));
-  const scope = project.scope.map((item: string) => translateDisplayText(item, language));
+  const scope = project.scope.map((item: string) => translateProjectScopedLabel(item, language, project.slug, "scope"));
   const highlights = project.highlights.map((item: string) => translateDisplayText(item, language));
   const materials = project.materialsUsed.map((item: string) => translateDisplayText(item, language));
   const images = (project.images.length ? project.images : [project.thumbnail]).filter(Boolean);

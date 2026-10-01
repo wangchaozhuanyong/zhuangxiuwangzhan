@@ -789,3 +789,42 @@ export const translateDisplayText = (value: string, language: Language) => {
     .replace(/\s{2,}/g, " ")
     .trim();
 };
+
+// Exact shared project labels only; CMS prose and unrelated slugs remain untouched.
+const reviewedProjectLabels: Record<string, Partial<Record<"scope" | "materials", Record<string, string>>>> = {
+  "puchong-home-library-built-in": {
+    "scope": {
+      "Bookcase": "整墙书柜",
+      "Integrated desk": "一体式书桌",
+      "Display lighting": "展示灯光",
+      "Storage bench": "收纳坐凳"
+    }
+  },
+  "subang-jaya-restaurant-fit-out": {
+    "scope": {
+      "Dining area": "用餐区",
+      "Booth seating": "卡座",
+      "Ceiling feature": "天花造型"
+    }
+  },
+  "kepong-tv-feature-wall-storage": {
+    "scope": {
+      "Floating console": "悬浮电视柜",
+      "Display niche": "展示格",
+      "Cable concealment": "线路隐藏"
+    }
+  },
+  "ampang-landed-exterior-repaint": {
+    "scope": {
+      "Exterior repaint": "外墙重漆",
+      "Stone feature": "石材造型",
+      "Porch lighting": "门廊灯光",
+      "Driveway refresh": "车道翻新"
+    }
+  }
+};
+
+export const translateProjectScopedLabel = (value: string, language: Language, slug: string, field: "scope" | "materials") => {
+  if (language !== "zh") return value;
+  return reviewedProjectLabels[slug]?.[field]?.[value] ?? translateDisplayText(value, language);
+};
