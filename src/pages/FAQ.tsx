@@ -12,9 +12,9 @@ import { pageHeroImages, resolvePageHeroImage } from "@/lib/pageHeroImages";
 const FAQ = () => {
   const { language } = useLanguage();
   const t = faqPageText[language];
-  const { data: pageContent } = usePublishedSitePage(language, "faq");
-  const { data: generalFaqs } = usePublishedFaqs(language, "general");
-  const { data: homeFaqs } = usePublishedFaqs(language, "home");
+  const { data: pageContent, isLoading: pageLoading } = usePublishedSitePage(language, "faq");
+  const { data: generalFaqs, isLoading } = usePublishedFaqs(language, "general");
+  const { data: homeFaqs, isLoading: homeLoading } = usePublishedFaqs(language, "home");
   const categories = useMemo(() => {
     const publishedFaqs = [...(generalFaqs || []), ...(homeFaqs || [])].filter((item, index, list) => list.findIndex((faq) => faq.question === item.question) === index);
     if (!publishedFaqs.length) return t.categories;
@@ -25,7 +25,7 @@ const FAQ = () => {
   const heroImage = resolvePageHeroImage(pageContent?.image_url, pageHeroImages.faq);
 
   return (
-    <main className="fc-route-page">
+    <main className="fc-route-page" data-route-pending={pageLoading || isLoading || homeLoading || undefined}>
       <PageMeta title={pageContent?.seo_title || t.metaTitle} description={pageContent?.seo_description || t.metaDescription} keywords={pageContent?.seo_keywords || t.metaKeywords} canonicalPath="/faq" />
       <JsonLdFAQ faqs={allFaqs} />
       <JsonLdBreadcrumb items={[{ name: t.breadcrumbHome, url: "/" }, { name: t.breadcrumbFaq, url: "/faq" }]} />

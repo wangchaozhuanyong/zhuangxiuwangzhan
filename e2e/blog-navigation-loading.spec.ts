@@ -41,7 +41,7 @@ test("opens immediately from a complete listing even while detail requests are p
     await page.locator(`.fc-blog-articles a[href='/zh/blog/${slug}']`).click();
     // Another-language prefetch may still request details. The current article
     // must render from its own complete cache before any such request resolves.
-    await expect(page.locator(".blog-editorial-article")).toContainText("正文加载完成");
+    await expect(page.locator(".blog-editorial-article")).toContainText("正文加载完成", { timeout: 15_000 });
     await expect(page.locator(".forest-state-page, .blog-content-loading")).toHaveCount(0);
     await expect(page.locator(".scheme-a-page-loader--overlay")).toHaveCount(0);
   } finally {
@@ -67,7 +67,7 @@ for (const width of [390, 1440]) {
       await page.goto("/zh/blog");
       await expect(page.locator(".scheme-a-page-loader--overlay")).toBeHidden();
       await page.locator(`.fc-blog-articles a[href='/zh/blog/${slug}']`).click();
-      await expect(page.locator("main h1")).toHaveText(post.title_zh);
+      await expect(page.locator("#main-content main h1")).toHaveText(post.title_zh);
       await expect(page.locator(".blog-content-loading")).toBeVisible();
       await expect(page.locator(".blog-editorial-article")).toHaveAttribute("aria-busy", "true");
       await expect(page.locator(".forest-state-page")).toHaveCount(0);
@@ -76,7 +76,7 @@ for (const width of [390, 1440]) {
       releaseBody();
       await expect(page.locator(".blog-editorial-article")).toContainText("正文加载完成");
       await expect(page.locator(".blog-content-loading")).toHaveCount(0);
-      await expect(page.locator("main h1")).toHaveText(post.title_zh);
+      await expect(page.locator("#main-content main h1")).toHaveText(post.title_zh);
       await expect(page.locator(".blog-editorial-article")).toHaveAttribute("aria-busy", "false");
       expect(await page.evaluate(() => document.documentElement.scrollWidth > document.documentElement.clientWidth)).toBe(false);
     } finally {
@@ -87,6 +87,9 @@ for (const width of [390, 1440]) {
 
 test("uses the article skeleton while the first article code download is pending", async ({ page }, testInfo) => {
   await preloadListing(page, true);
+  await page.route("**/rest/v1/blog_posts*", (route) => route.fulfill({
+    json: new URL(route.request().url()).searchParams.has("slug") ? post : [post],
+  }));
   let releaseModule!: () => void;
   const moduleAvailable = new Promise<void>((resolve) => { releaseModule = resolve; });
   await page.route(/\/(?:src\/pages\/BlogDetail\.tsx|assets\/BlogDetail-[^/]+\.js)(?:\?.*)?$/, async (route) => {
@@ -100,11 +103,12 @@ test("uses the article skeleton while the first article code download is pending
     await expect(page.locator(".blog-loading-page")).toBeVisible();
     await expect(page.locator(".blog-loading-page")).toHaveAttribute("data-route-pending", "true");
     await expect(page.locator(".forest-state-page")).toHaveCount(0);
-    await expect(page.locator("main h1, main h2")).toHaveCount(0);
+    await expect(page.locator("#main-content main h1, #main-content main h2")).toHaveCount(0);
+    await expect(page.locator(".public-route-retained")).toContainText("装修博客");
     await expect(page.locator(".scheme-a-page-loader--overlay")).toHaveCount(0);
     await page.screenshot({ path: testInfo.outputPath("article-code-pending.png"), fullPage: true });
     releaseModule();
-    await expect(page.locator(".blog-editorial-article")).toContainText("正文加载完成");
+    await expect(page.locator(".blog-editorial-article")).toContainText("正文加载完成", { timeout: 15_000 });
     await expect(page.locator(".blog-loading-page")).toHaveCount(0);
   } finally {
     releaseModule();

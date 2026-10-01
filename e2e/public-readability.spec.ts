@@ -31,7 +31,9 @@ async function readContrast(locator: Locator) {
       return 0.2126 * linear[0] + 0.7152 * linear[1] + 0.0722 * linear[2];
     };
     const style = getComputedStyle(element);
-    const foregroundLuminance = luminance(parseRgb(style.color));
+    const fill = style.getPropertyValue("-webkit-text-fill-color");
+    if (fill && fill !== style.color) throw new Error(`Glyph fill ${fill} differs from color ${style.color}`);
+    const foregroundLuminance = luminance(parseRgb(fill || style.color));
     let background: Rgb = [255, 255, 255];
     const layers: number[][] = [];
     for (let node: Element | null = element; node; node = node.parentElement) {
@@ -137,11 +139,11 @@ test.describe("public text readability", () => {
     await selectedFilter.click();
     await expect(selectedFilter).toHaveAttribute("aria-pressed", "true");
     await selectedFilter.hover();
-    await expect(selectedFilter).toHaveCSS("background-color", "rgb(212, 175, 55)");
+    await expect(selectedFilter).toHaveCSS("background-color", "rgb(63, 78, 66)");
 
     const colors = await readContrast(selectedFilter);
 
-    expect(colors.backgroundImage).toContain("linear-gradient");
+    expect(colors.backgroundImage).toBe("none");
     expect(colors.contrast).toBeGreaterThanOrEqual(4.5);
   });
 
@@ -154,9 +156,9 @@ test.describe("public text readability", () => {
 
     const actions = page.locator(".scheme-a-contact-dock__item");
     await expect(actions).toHaveCount(3);
-    await expect(actions.nth(0)).toHaveCSS("background-color", "rgb(18, 18, 15)");
-    await expect(actions.nth(1)).toHaveCSS("background-color", "rgb(18, 18, 15)");
-    await expect(actions.nth(2)).toHaveCSS("background-color", "rgb(205, 167, 102)");
+    await expect(actions.nth(0)).toHaveCSS("background-color", "rgb(253, 252, 250)");
+    await expect(actions.nth(1)).toHaveCSS("background-color", "rgb(253, 252, 250)");
+    await expect(actions.nth(2)).toHaveCSS("background-color", "rgb(63, 78, 66)");
     for (let index = 0; index < await actions.count(); index += 1) {
       const colors = await readContrast(actions.nth(index));
       expect(colors.contrast, `mobile action ${index + 1} contrast`).toBeGreaterThanOrEqual(4.5);
@@ -284,7 +286,7 @@ test.describe("public text readability", () => {
         await expect(directoryTrigger).toBeVisible();
         await expect(hero).toBeVisible();
         if (await hero.getAttribute("data-hero-art") === "daylight") {
-          await expect(header).toHaveCSS("color", "rgb(33, 30, 25)");
+          await expect(header).toHaveCSS("color", "rgb(41, 46, 41)");
           await expect(header).toHaveCSS("background-color", "rgba(0, 0, 0, 0)");
         }
         await expect.poll(async () => {
@@ -308,7 +310,7 @@ test.describe("public text readability", () => {
         if (result.heroArt === "daylight") {
           expect(result.surfaceImage).toBe("none");
           expect(result.surfaceColor).toBe("rgba(0, 0, 0, 0)");
-          expect(result.foreground).toBe("rgb(33, 30, 25)");
+          expect(result.foreground).toBe("rgb(41, 46, 41)");
         } else {
           expect(result.surfaceImage).toContain("linear-gradient");
         }

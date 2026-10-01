@@ -15,8 +15,8 @@ import { pageHeroImages, resolvePageHeroImage } from "@/lib/pageHeroImages";
 export default function Materials() {
   const { language } = useLanguage();
   const copy = materialsPageText[language];
-  const { data: publishedCategories } = usePublishedMaterials(language);
-  const { data: pageContent } = usePublishedSitePage(language, "materials");
+  const { data: publishedCategories, isLoading } = usePublishedMaterials(language);
+  const { data: pageContent, isLoading: pageLoading } = usePublishedSitePage(language, "materials");
   const categories = useMemo(() => reviewMaterialImages(publishedCategories?.length ? publishedCategories : materialsData), [publishedCategories]);
   const hero = resolvePageHeroImage(pageContent?.image_url, pageHeroImages.materials);
 
@@ -31,7 +31,7 @@ export default function Materials() {
   })), [categories, language]);
 
   return (
-    <main className="fc-route-page">
+    <main className="fc-route-page" data-route-pending={pageLoading || isLoading || undefined}>
       <PageMeta title={pageContent?.seo_title || copy.metaTitle} description={pageContent?.seo_description || copy.metaDescription} keywords={pageContent?.seo_keywords || copy.metaKeywords} canonicalPath="/materials" />
       <JsonLdBreadcrumb items={[{ name: copy.breadcrumbHome, url: "/" }, { name: copy.breadcrumbMaterials, url: "/materials" }]} />
       <SchemeARouteHero kind="listing" image={hero.desktop} imageSourceWidth={hero.desktopWidth} tabletImage={hero.tablet} tabletImageSourceWidth={hero.tabletWidth} mobileImage={hero.mobile} mobileImageSourceWidth={hero.mobileWidth} imagePosition={hero.imagePosition} imageAlt={pageContent?.alt || copy.heroAlt} label={[pageContent?.subtitle || copy.eyebrow, hero.claimLevel ? mediaLabels[language].renderingConcept : ""].filter(Boolean).join(" · ")} title={pageContent?.title || copy.title} description={pageContent?.description || copy.intro} />

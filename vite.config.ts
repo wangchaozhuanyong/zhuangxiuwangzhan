@@ -4,6 +4,7 @@ import path from "path";
 import { preferWebpAssets } from "./scripts/vite-prefer-webp.mjs";
 import { pruneDuplicatePublicMedia } from "./scripts/vite-prune-public-media.mjs";
 import { LOCAL_SITE_CSP_POLICY } from "./scripts/site-csp.mjs";
+import { publicBootHtml } from "./scripts/vite-public-boot.mjs";
 
 const securityHeaders = {
   "Content-Security-Policy": LOCAL_SITE_CSP_POLICY,
@@ -25,7 +26,7 @@ export default defineConfig(() => ({
   preview: {
     headers: securityHeaders,
   },
-  plugins: [preferWebpAssets(), react(), pruneDuplicatePublicMedia()],
+  plugins: [publicBootHtml(), preferWebpAssets(), react(), pruneDuplicatePublicMedia()],
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),

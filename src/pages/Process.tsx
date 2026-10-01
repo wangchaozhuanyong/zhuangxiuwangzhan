@@ -11,8 +11,8 @@ import { pageHeroImages, resolvePageHeroImage } from "@/lib/pageHeroImages";
 const Process = () => {
   const { language } = useLanguage();
   const t = processPageText[language];
-  const { data: publishedSteps } = usePublishedProcessSteps(language);
-  const { data: pageContent } = usePublishedSitePage(language, "process");
+  const { data: publishedSteps, isLoading } = usePublishedProcessSteps(language);
+  const { data: pageContent, isLoading: pageLoading } = usePublishedSitePage(language, "process");
   const steps = useMemo(() => {
     if (!publishedSteps?.length) return t.steps;
     return publishedSteps.map((row, index) => ({
@@ -25,7 +25,7 @@ const Process = () => {
   const heroImage = resolvePageHeroImage(pageContent?.image_url, pageHeroImages.process);
 
   return (
-    <main className="fc-route-page">
+    <main className="fc-route-page" data-route-pending={pageLoading || isLoading || undefined}>
       <PageMeta title={pageContent?.seo_title || t.metaTitle} description={pageContent?.seo_description || t.metaDescription} keywords={pageContent?.seo_keywords || t.metaKeywords} canonicalPath="/process" />
       <JsonLdBreadcrumb items={[{ name: t.breadcrumbHome, url: "/" }, { name: t.breadcrumbProcess, url: "/process" }]} />
       <SchemeARouteHero kind="content" image={heroImage.desktop} imageSourceWidth={heroImage.desktopWidth} tabletImage={heroImage.tablet} tabletImageSourceWidth={heroImage.tabletWidth} mobileImage={heroImage.mobile} mobileImageSourceWidth={heroImage.mobileWidth} imagePosition={heroImage.imagePosition} imageAlt={pageContent?.alt || t.imageAlt} label={[pageContent?.subtitle || t.label, heroImage.claimLevel ? mediaLabels[language].renderingConcept : ""].filter(Boolean).join(" · ")} title={pageContent?.title || t.title} description={pageContent?.description || t.description} />

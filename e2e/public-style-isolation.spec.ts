@@ -56,7 +56,7 @@ test.describe("public route style isolation", () => {
       await expect(page.locator(".scheme-a-hero h1")).toBeVisible();
 
       const before = await readPublicStyleSignature(page);
-      expect(before.bodyFont).toContain("Inter");
+      expect(before.bodyFont).toContain("Noto Sans SC");
       expect(before.headerFont).toMatch(/PingFang SC|Noto Sans SC|Microsoft YaHei UI/);
       if (viewport.width < 768) expect(before.heroSpanWhiteSpace).toBe("normal");
 
@@ -64,7 +64,7 @@ test.describe("public route style isolation", () => {
       await expect(page).toHaveURL(/\/zh\/quote#quote-form$/);
       await expect(page.locator(".fc-route-form-page")).toBeVisible();
 
-      await page.locator('.scheme-a-chrome__brand[href="/zh"]').click();
+      await page.locator('header .scheme-a-chrome__brand[href="/zh"]').click();
       await expect(page).toHaveURL(/\/zh$/);
       await expect(page.locator(".scheme-a-hero h1")).toBeVisible();
 
@@ -75,7 +75,7 @@ test.describe("public route style isolation", () => {
   test("standard routes keep the same global chrome after visiting contact", async ({ page }) => {
     await page.setViewportSize({ width: 1440, height: 900 });
     await page.goto("/zh/services", { waitUntil: "networkidle" });
-    await expect(page.locator(".fc-route-hero h1")).toBeVisible();
+    await expect(page.locator("#main-content .fc-route-hero h1")).toBeVisible();
     const before = await readPublicStyleSignature(page);
 
     await page.locator('a[href="/zh/contact"]:visible').first().click();
@@ -84,7 +84,7 @@ test.describe("public route style isolation", () => {
 
     await page.locator('a[href="/zh/services"]:visible').first().click();
     await expect(page).toHaveURL(/\/zh\/services$/);
-    await expect(page.locator(".fc-route-hero h1")).toBeVisible();
+    await expect(page.locator("#main-content .fc-route-hero h1")).toBeVisible();
 
     expectStableSignature(before, await readPublicStyleSignature(page));
   });

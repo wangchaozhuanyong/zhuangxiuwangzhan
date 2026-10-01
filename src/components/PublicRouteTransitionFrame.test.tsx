@@ -27,6 +27,12 @@ afterEach(async () => {
 });
 
 describe("public visual handoff", () => {
+  it("does not clone the initial brand screen when the first route becomes ready", async () => {
+    await render("/zh", true);
+    await render("/zh", false);
+    expect(container.querySelector(".public-route-retained")?.childElementCount).toBe(0);
+    expect(animate).not.toHaveBeenCalled();
+  });
   it("crossfades a retained scene without duplicate identities or live controls", async () => {
     await render("/zh");
     await render("/zh/projects");

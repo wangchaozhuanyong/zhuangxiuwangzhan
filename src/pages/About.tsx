@@ -35,10 +35,10 @@ const About = () => {
   const { language } = useLanguage();
   const t = aboutCopy[language];
   const settings = useSiteSettings();
-  const { data: heroSection } = usePublishedAboutSection(language, "hero");
+  const { data: heroSection, isLoading: heroLoading } = usePublishedAboutSection(language, "hero");
   const { data: statsSection } = usePublishedAboutSection(language, "stats");
   const { data: valuesSection } = usePublishedAboutSection(language, "core_values");
-  const { data: pageContent } = usePublishedSitePage(language, "about");
+  const { data: pageContent, isLoading: pageLoading } = usePublishedSitePage(language, "about");
 
   const introParagraphs: readonly string[] = t.intro;
   const stats = useMemo(() => {
@@ -53,7 +53,7 @@ const About = () => {
   const heroImage = resolvePageHeroImage(pageContent?.image_url || (heroSection?.image_url as string | undefined), pageHeroImages.about);
 
   return (
-    <main className="fc-route-page">
+    <main className="fc-route-page" data-route-pending={pageLoading || heroLoading || undefined}>
       <PageMeta title={pageContent?.seo_title || t.metaTitle} description={pageContent?.seo_description || t.metaDescription} keywords={pageContent?.seo_keywords || t.metaKeywords} canonicalPath="/about" />
       <JsonLdBreadcrumb items={[{ name: t.breadcrumbHome, url: "/" }, { name: t.breadcrumbAbout, url: "/about" }]} />
       <SchemeARouteHero kind="content" image={heroImage.desktop} imageSourceWidth={heroImage.desktopWidth} tabletImage={heroImage.tablet} tabletImageSourceWidth={heroImage.tabletWidth} mobileImage={heroImage.mobile} mobileImageSourceWidth={heroImage.mobileWidth} imagePosition={heroImage.imagePosition} imageAlt={pageContent?.alt || t.imageAlt} label={[t.label, heroImage.claimLevel ? mediaLabels[language].renderingConcept : ""].filter(Boolean).join(" · ")} title={(heroSection?.title as string) || t.title} description={t.description} />

@@ -49,7 +49,7 @@ const Contact = () => {
   const { language } = useLanguage();
   const settings = useSiteSettings();
   const t = contactPageText[language];
-  const { data: pageContent } = usePublishedSitePage(language, "contact");
+  const { data: pageContent, isLoading: pageLoading } = usePublishedSitePage(language, "contact");
   const heroImage = resolvePageHeroImage(pageContent?.image_url, pageHeroImages.contact);
   const [form, setForm] = useState({ name: "", phone: "", email: "", projectType: "", location: "", message: "" });
   const [errors, setErrors] = useState<FormErrors>({});
@@ -149,7 +149,7 @@ const Contact = () => {
     ) : null;
 
   return (
-    <main className="fc-route-page fc-route-form-page fc-route-contact-page">
+    <main className="fc-route-page fc-route-form-page fc-route-contact-page" data-route-pending={pageLoading || undefined}>
       <PageMeta
         title={pageContent?.seo_title || t.metaTitle}
         description={pageContent?.seo_description || t.metaDescription}

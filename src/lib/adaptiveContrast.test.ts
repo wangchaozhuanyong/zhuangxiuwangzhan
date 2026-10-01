@@ -27,6 +27,7 @@ describe("public contrast controller", () => {
     vi.unstubAllGlobals();
     vi.useRealTimers();
     document.body.innerHTML = "";
+    delete document.documentElement.dataset.publicBoot;
   });
   it("responds to a changed background and keeps the header transparent", async () => {
     const root = document.getElementById("root")!;
@@ -48,6 +49,30 @@ describe("public contrast controller", () => {
     expect(link.dataset.adaptiveSource).toBe("unavailable");
     expect(link.hasAttribute("data-adaptive-ratio")).toBe(false);
     expect(link.style.getPropertyValue("--adaptive-shadow")).toContain("1px");
+    expect(link.style.getPropertyValue("--adaptive-color")).toBe("rgb(41, 46, 41)");
+  });
+  it("never recolors ordinary text, solid controls, forms or retained scenes", () => {
+    const root = document.getElementById("root")!;
+    root.insertAdjacentHTML("beforeend", '<h1>Heading</h1><a data-adaptive-text style="background-color:#3F4E42;color:#FDFCFA">Quote</a><form><label data-adaptive-text>Email</label></form><div class="public-route-retained" aria-hidden="true"><span data-adaptive-text>Old page</span></div>');
+    const quote = root.querySelectorAll("a")[1];
+    quote.getBoundingClientRect = root.querySelector("a")!.getBoundingClientRect;
+    stop = observeAdaptiveContrast(root);
+    expect(root.querySelector("h1")!.hasAttribute("data-adaptive-contrast")).toBe(false);
+    expect(quote.hasAttribute("data-adaptive-contrast")).toBe(false);
+    expect(root.querySelector("label")!.hasAttribute("data-adaptive-contrast")).toBe(false);
+    expect(root.querySelector(".public-route-retained span")!.hasAttribute("data-adaptive-contrast")).toBe(false);
+  });
+  it("ignores the fading brand and retained overlay when sampling the destination", () => {
+    const root = document.getElementById("root")!;
+    const link = root.querySelector("a")!;
+    const overlay = document.createElement("div");
+    overlay.id = "flashcast-public-boot";
+    overlay.style.backgroundImage = "linear-gradient(black,white)";
+    document.body.prepend(overlay);
+    Object.defineProperty(document, "elementsFromPoint", { configurable: true, value: () => [overlay, link, root, document.body] });
+    stop = observeAdaptiveContrast(root);
+    expect(link.dataset.adaptiveSource).toBe("surface");
+    expect(link.style.getPropertyValue("--adaptive-color")).toBe("rgb(41, 46, 41)");
   });
   it("re-evaluates CSS controlled by component data-state attributes", async () => {
     const root = document.getElementById("root")!;
@@ -81,6 +106,34 @@ describe("public contrast controller", () => {
     stop = observeAdaptiveContrast(root);
     expect(root.querySelector("a")!.style.getPropertyValue("--adaptive-color")).toBe("#ffffff");
     expect(root.querySelector("a")!.dataset.adaptiveSource).toBe("image");
+  });
+  it("prepares real photo layers before handoff and restores the interaction gate synchronously", () => {
+    const root = document.getElementById("root")!;
+    const link = root.querySelector("a")!;
+    const content = document.createElement("div");
+    content.className = "public-route-content";
+    content.dataset.routeVisualState = "handoff";
+    content.setAttribute("inert", "");
+    const image = document.createElement("img");
+    image.src = "/contrast-fixture.webp";
+    image.getBoundingClientRect = () => ({ x: 0, y: 0, left: 0, top: 0, right: 400, bottom: 200, width: 400, height: 200, toJSON: () => ({}) });
+    Object.defineProperties(image, { complete: { value: true }, naturalWidth: { value: 400 }, naturalHeight: { value: 200 } });
+    content.append(image);
+    root.append(content);
+    vi.mocked(HTMLCanvasElement.prototype.getContext).mockReturnValue({ drawImage: () => {}, getImageData: (_x: number, _y: number, width: number, height: number) => {
+      const data = new Uint8ClampedArray(width * height * 4);
+      for (let offset = 3; offset < data.length; offset += 4) data[offset] = 255;
+      return { data };
+    } } as unknown as CanvasRenderingContext2D);
+    Object.defineProperty(document, "elementsFromPoint", { configurable: true, value: () => root.hasAttribute("inert") || content.hasAttribute("inert") ? [root] : [link, image, content, root] });
+    root.setAttribute("inert", "");
+    document.documentElement.dataset.publicBoot = "handoff";
+    stop = observeAdaptiveContrast(root);
+    window.dispatchEvent(new Event("public-scene-prepare"));
+    expect(link.dataset.adaptiveSource).toBe("image");
+    expect(link.style.getPropertyValue("--adaptive-color")).toBe("#ffffff");
+    expect(root.hasAttribute("inert")).toBe(true);
+    expect(content.hasAttribute("inert")).toBe(true);
   });
   it("restores skin foregrounds and leaves unrelated inline styles intact when unmounted", () => {
     const root = document.getElementById("root")!;

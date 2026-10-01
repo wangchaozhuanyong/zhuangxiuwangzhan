@@ -1,4 +1,5 @@
 import { createContext, useCallback, useContext, useLayoutEffect, useMemo, useRef, useState, type ReactNode } from "react";
+import { getPublicBoot, syncPublicTheme } from "@/lib/publicBoot";
 
 type PublicChromeContextValue = {
   menuOpen: boolean;
@@ -150,24 +151,8 @@ export function PublicChromeProvider({
     );
 
   useLayoutEffect(() => {
-    if (isAdminRoute) {
-      delete document.documentElement.dataset.publicTheme;
-      delete document.documentElement.dataset.theme;
-      document.documentElement.style.removeProperty("color-scheme");
-      return;
-    }
-
-    document.documentElement.dataset.publicTheme = "dark";
-    document.documentElement.dataset.theme = "dark";
-    // The public selector remains stable for legacy component compatibility,
-    // while Scheme A itself uses light form controls and a warm paper canvas.
-    document.documentElement.style.colorScheme = "light";
-
-    return () => {
-      delete document.documentElement.dataset.publicTheme;
-      delete document.documentElement.dataset.theme;
-      document.documentElement.style.removeProperty("color-scheme");
-    };
+    syncPublicTheme(isAdminRoute);
+    if (isAdminRoute) getPublicBoot()?.dismiss();
   }, [isAdminRoute]);
 
   useLayoutEffect(() => {

@@ -144,12 +144,25 @@ const ScrollToTop = () => {
       }
       record();
     };
-    const restoreLayout = () => restore();
+    const belongsToRoute = (event: Event) => !(event instanceof CustomEvent) || !event.detail?.routeKey || event.detail.routeKey === pathname + search;
+    const restoreLayout = (event: Event) => { if (belongsToRoute(event)) restore(); };
+    const focusReadyTarget = (event: Event) => {
+      const continued = event instanceof CustomEvent && event.detail?.degraded === true;
+      if (interrupted && !continued || !belongsToRoute(event)) return;
+      try {
+        const targetId = !isPop ? getPublicScrollTarget(state) : null;
+        const fragmentId = hash ? decodeURIComponent(hash.slice(1)) : null;
+        if (isPop && savedPosition !== undefined) return;
+        const anchor = document.getElementById(targetId || fragmentId || "");
+        const labelId = anchor?.getAttribute("aria-labelledby")?.split(" ")[0];
+        (labelId ? document.getElementById(labelId) : anchor)?.focus({ preventScroll: true });
+      } catch { /* Ignore malformed fragments. */ }
+    };
     // The shared readiness owner emits this after the destination layout exists,
     // before deciding which images intersect the restored viewport.
     window.addEventListener("public-route-layout", restoreLayout);
     // Destination content is inert during preparation; focus it once the gate unlocks.
-    window.addEventListener("public-route-ready", restoreLayout);
+    window.addEventListener("public-route-ready", focusReadyTarget);
     window.addEventListener("scroll", record, { passive: true });
     // A later readiness event must not undo a user's wheel, touch, or keyboard action.
     window.addEventListener("wheel", interrupt, { passive: true });
@@ -161,7 +174,7 @@ const ScrollToTop = () => {
     return () => {
       cancelRestoration();
       window.removeEventListener("public-route-layout", restoreLayout);
-      window.removeEventListener("public-route-ready", restoreLayout);
+      window.removeEventListener("public-route-ready", focusReadyTarget);
       window.removeEventListener("scroll", record);
       window.removeEventListener("wheel", interrupt);
       window.removeEventListener("touchstart", interrupt);

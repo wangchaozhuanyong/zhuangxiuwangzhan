@@ -110,8 +110,13 @@ describe("single public scroll owner", () => {
     await go("/zh/blog#articles");
     expect(window.scrollY).toBe(1110);
     const focus = vi.spyOn(target, "focus");
+    const scroll = vi.spyOn(window, "scrollTo");
+    scroll.mockClear();
     window.dispatchEvent(new Event("public-route-ready"));
     expect(focus).toHaveBeenCalledWith({ preventScroll: true });
     expect(window.scrollY).toBe(1110);
+    expect(scroll).not.toHaveBeenCalled();
+    window.dispatchEvent(new CustomEvent("public-route-layout", { detail: { routeKey: "/zh/old-route" } }));
+    expect(scroll).not.toHaveBeenCalled();
   });
 });

@@ -27,7 +27,7 @@ export default function Blog() {
   const routeText = schemeARouteText[language];
   const topicCopy = blogTopicText[language];
   const { filter, setFilter, visibleCount, setVisibleCount } = usePublicListingState(blogCategoryFilters.map((item) => item.value), "all", PAGE_SIZE);
-  const { data: pageContent } = usePublishedSitePage(language, "blog");
+  const { data: pageContent, isLoading: pageLoading } = usePublishedSitePage(language, "blog");
   const { data: cmsPosts, isLoading, isError, refetch } = usePublishedBlogPosts(language);
   const posts = cmsPosts?.length ? cmsPosts : blogPosts;
   const filtered = posts.filter((post) => matchesCategory(post.category, post.slug, filter));
@@ -51,7 +51,7 @@ export default function Blog() {
   })), [filtered, language, visibleCount]);
 
   return (
-    <main className="fc-route-page fc-blog-page">
+    <main className="fc-route-page fc-blog-page" data-route-pending={pageLoading || isLoading || undefined}>
       <PageMeta title={pageContent?.seo_title || copy.metaTitle} description={pageContent?.seo_description || copy.metaDescription} keywords={pageContent?.seo_keywords || copy.metaKeywords} canonicalPath="/blog" />
       <JsonLdBreadcrumb items={[{ name: copy.breadcrumbHome, url: "/" }, { name: copy.breadcrumbBlog, url: "/blog" }]} />
       <SchemeARouteHero kind="listing" image={hero.desktop} imageSourceWidth={hero.desktopWidth} tabletImage={hero.tablet} tabletImageSourceWidth={hero.tabletWidth} mobileImage={hero.mobile} mobileImageSourceWidth={hero.mobileWidth} imagePosition={hero.imagePosition} imageAlt={pageContent?.alt || copy.heroAlt} label={[pageContent?.subtitle || copy.eyebrow, hero.claimLevel ? mediaLabels[language].renderingConcept : ""].filter(Boolean).join(" · ")} title={pageContent?.title || copy.title} description={pageContent?.description || copy.intro} />

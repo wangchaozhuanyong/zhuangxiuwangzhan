@@ -1,12 +1,13 @@
 import { chooseAdaptiveTextColor, compositeColors, getImageSourcePoint, getRelativeLuminance, parseCssColor, type RgbColor } from "./colorContrast";
 
-const EXCLUDED = '.sr-only,.fcd-sr-only,[aria-hidden="true"],[hidden],svg,script,style,noscript,template,[data-adaptive-contrast="off"],input,textarea,select';
+const EXCLUDED = '.sr-only,.fcd-sr-only,[aria-hidden="true"],[hidden],.public-route-retained,#flashcast-public-boot,[data-route-loader],form,svg,script,style,noscript,template,[data-adaptive-contrast="off"],input,textarea,select';
 const TRANSPARENT: RgbColor = { r: 0, g: 0, b: 0, a: 0 };
 type Bitmap = { width: number; height: number; data: Uint8ClampedArray };
 
-/** One public-shell controller. It changes glyphs only, never backgrounds or image URLs. */
+/** Only explicitly opted-in photo glyphs belong to this controller. */
 export const observeAdaptiveContrast = (root: HTMLElement) => {
   let stopped = false;
+  let preparing = false;
   let dirty = true;
   let targets: HTMLElement[] = [];
   let images: HTMLImageElement[] = [];
@@ -115,21 +116,16 @@ export const observeAdaptiveContrast = (root: HTMLElement) => {
     frame = 0;
     timer = 0;
     if (stopped || document.hidden) return;
+    if (!preparing && (document.documentElement.dataset.publicBoot === "handoff"
+      || root.querySelector('.public-route-content[data-route-visual-state="handoff"]'))) return;
     lastUpdate = performance.now();
     if (dirty) {
-      const candidates = new Set(root.querySelectorAll<HTMLElement>("[data-adaptive-text],[data-adaptive-logo]"));
-      const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
-      let node: Node | null;
-      while ((node = walker.nextNode())) {
-        if (node.textContent?.trim() && node.parentElement instanceof HTMLElement) candidates.add(node.parentElement);
-      }
-      targets = Array.from(candidates).filter((element) => {
+      targets = Array.from(root.querySelectorAll<HTMLElement>("[data-adaptive-text],[data-adaptive-logo]")).filter((element) => {
         if (element.closest(EXCLUDED) || element.closest('[disabled],[aria-disabled="true"]')) return false;
         const parentScope = element.parentElement?.closest("[data-adaptive-text],[data-adaptive-logo]");
-        return !parentScope && (element.matches("[data-adaptive-text],[data-adaptive-logo]")
-          || Array.from(element.childNodes).some((node) => node.nodeType === Node.TEXT_NODE && node.textContent?.trim()));
+        return !parentScope;
       });
-      images = Array.from(root.querySelectorAll<HTMLImageElement>("img"));
+      images = Array.from(root.querySelectorAll<HTMLImageElement>("img")).filter((image) => !image.closest(EXCLUDED));
       dirty = false;
     }
     // Read the target skin color, not an interpolated transition color. The
@@ -178,7 +174,15 @@ export const observeAdaptiveContrast = (root: HTMLElement) => {
     const backgroundAt = (target: HTMLElement, x: number, y: number): { color: RgbColor | null; image: boolean } => {
       let front = TRANSPARENT;
       let imageSeen = false;
-      const layers = document.elementsFromPoint(x, y);
+      const layers = document.elementsFromPoint(x, y).filter((layer) =>
+        !layer.closest(EXCLUDED) && (root.contains(layer) || layer.contains(root)));
+      // The first handoff prepares under an inert root and the original brand
+      // screen. Hit testing omits inert descendants, so use their real ancestors.
+      if (!layers.includes(target)) {
+        const ancestors: Element[] = [];
+        for (let node: Element | null = target; node; node = node.parentElement) ancestors.push(node);
+        layers.unshift(...ancestors.filter((node) => !layers.includes(node)));
+      }
       // Decorative photos can opt out of pointer hit testing. Insert the photo
       // above its containing background, below any opaque control over it.
       for (const { image, rect } of nonHitImages) {
@@ -213,10 +217,15 @@ export const observeAdaptiveContrast = (root: HTMLElement) => {
     const results: { element: HTMLElement; color: string; outline: boolean; ratio: number | null; image: boolean }[] = [];
     for (const element of targets) {
       if (!element.isConnected || element.closest(EXCLUDED) || element.closest('[disabled],[aria-disabled="true"]')) continue;
+      const inert = element.closest("[inert]");
+      if (inert && !(inert.id === "root" && document.documentElement.dataset.publicBoot === "handoff")
+        && !inert.matches('.public-route-content[data-route-visual-state="handoff"]')) continue;
       const rects = textRects(element).filter((rect) => rect.width > 1 && rect.height > 1 && rect.right > 0 && rect.left < innerWidth && rect.bottom > 0 && rect.top < innerHeight);
       if (!rects.length) continue;
       const style = styleOf(element);
       if (style.visibility !== "visible" || Number(style.opacity) === 0) continue;
+      // Solid controls keep their designed colors, even if accidentally opted in.
+      if (element.matches("button,a") && (parseCssColor(style.backgroundColor)?.a || style.backgroundImage !== "none")) continue;
       const samples: (RgbColor | null)[] = [];
       let image = false;
       for (const rect of rects.slice(0, 8)) {
@@ -264,6 +273,24 @@ export const observeAdaptiveContrast = (root: HTMLElement) => {
     if (delay) timer = window.setTimeout(() => { timer = 0; frame = requestAnimationFrame(update); }, delay);
     else frame = requestAnimationFrame(update);
   };
+  const prepare = () => {
+    cancelAnimationFrame(frame);
+    clearTimeout(timer);
+    dirty = true;
+    // Inert removes the destination's photo layers from hit testing. Measure
+    // the real scene synchronously under the opaque brand/retained screen,
+    // then restore the gate before any paint or input can occur.
+    const application = root.closest<HTMLElement>("#root") || root;
+    const measuring = [application, ...application.querySelectorAll<HTMLElement>('.public-route-content[data-route-visual-state="handoff"],.public-route-content[data-route-visual-state="handoff"] [data-public-results]')]
+      .filter((element) => element.hasAttribute("inert") && (element !== application || document.documentElement.dataset.publicBoot === "handoff"));
+    for (const element of measuring) element.removeAttribute("inert");
+    preparing = true;
+    try { update(); }
+    finally {
+      preparing = false;
+      for (const element of measuring) element.setAttribute("inert", "");
+    }
+  };
   const observer = new MutationObserver((mutations) => {
     if (mutations.every((mutation) => mutation.type === "attributes" && mutation.attributeName === "style"
       && writtenStyles.get(mutation.target as HTMLElement) === (mutation.target as HTMLElement).getAttribute("style"))) return;
@@ -271,7 +298,7 @@ export const observeAdaptiveContrast = (root: HTMLElement) => {
     schedule();
   });
   observer.observe(root, { childList: true, subtree: true, characterData: true, attributes: true,
-    attributeFilter: ["class", "style", "src", "srcset", "sizes", "hidden", "disabled", "aria-hidden", "aria-disabled",
+      attributeFilter: ["class", "style", "src", "srcset", "sizes", "hidden", "disabled", "inert", "aria-hidden", "aria-disabled",
       "data-state", "data-theme", "data-public-theme", "data-surface", "aria-pressed", "aria-selected", "checked", "open"] });
   observer.observe(document.documentElement, { attributes: true, attributeFilter: ["class", "style", "data-public-theme"] });
   observer.observe(document.body, { attributes: true, attributeFilter: ["class", "style"] });
@@ -288,6 +315,7 @@ export const observeAdaptiveContrast = (root: HTMLElement) => {
   root.addEventListener("change", schedule);
   window.addEventListener("scroll", schedule, { passive: true, capture: true });
   window.addEventListener("resize", schedule, { passive: true });
+  window.addEventListener("public-scene-prepare", prepare);
   document.addEventListener("visibilitychange", schedule);
   document.fonts?.ready.then(schedule);
   document.fonts?.addEventListener("loadingdone", schedule);
@@ -309,6 +337,7 @@ export const observeAdaptiveContrast = (root: HTMLElement) => {
     root.removeEventListener("change", schedule);
     window.removeEventListener("scroll", schedule, true);
     window.removeEventListener("resize", schedule);
+    window.removeEventListener("public-scene-prepare", prepare);
     document.removeEventListener("visibilitychange", schedule);
     document.fonts?.removeEventListener("loadingdone", schedule);
     for (const element of active) clear(element);

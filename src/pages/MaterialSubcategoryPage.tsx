@@ -16,12 +16,12 @@ export default function MaterialSubcategoryPage() {
   const { categorySlug, subcategorySlug } = useParams<{ categorySlug: string; subcategorySlug: string }>();
   const { language } = useLanguage();
   const copy = materialSubcategoryPageText[language];
-  const { data: published, isPending } = usePublishedMaterials(language);
+  const { data: published, isPending, isLoading } = usePublishedMaterials(language);
   const category = mergeMaterialCategoriesWithFallback(published).find((item) => item.slug === categorySlug);
   const subcategory = category?.subcategories.find((item) => item.slug === subcategorySlug);
   const materials = category?.items.filter((item) => item.subcategory === subcategorySlug) || [];
   if (isPending && !subcategory) return <main className="fc-route-page" data-route-pending="true"><SchemeAContentState>{copy.loadingDescription}</SchemeAContentState></main>;
-  if (!category || !subcategory) return <main className="fc-route-page"><PageMeta title={copy.notFound} description={copy.notFound} canonicalPath={`/materials/category/${categorySlug || ""}/${subcategorySlug || ""}`} noIndex /><SchemeAContentState action={<Link to="/materials">{copy.viewAll}</Link>}>{copy.notFound}</SchemeAContentState></main>;
+  if (!category || !subcategory) return <main className="fc-route-page" data-route-pending={isLoading || undefined}><PageMeta title={copy.notFound} description={copy.notFound} canonicalPath={`/materials/category/${categorySlug || ""}/${subcategorySlug || ""}`} noIndex /><SchemeAContentState action={<Link to="/materials">{copy.viewAll}</Link>}>{copy.notFound}</SchemeAContentState></main>;
   const categoryName = translateMaterialCategory(category.name, language);
   const name = translateMaterialSubcategory(subcategory.name, language);
   const description = translateDisplayText(subcategory.description, language);

@@ -14,7 +14,7 @@ export default function Locations() {
   const copy = locationsPageText[language];
   const routeText = schemeARouteText[language];
   const { data: locations = [], isLoading, isError, refetch } = usePublishedServiceAreas(language);
-  const { data: pageContent } = usePublishedSitePage(language, "locations");
+  const { data: pageContent, isLoading: pageLoading } = usePublishedSitePage(language, "locations");
   const hero = resolvePageHeroImage(pageContent?.image_url, pageHeroImages.locations);
 
   const items = useMemo<SchemeAListingItem[]>(() => locations.map((location, index) => ({
@@ -28,7 +28,7 @@ export default function Locations() {
   })), [locations]);
 
   return (
-    <main className="fc-route-page">
+    <main className="fc-route-page" data-route-pending={pageLoading || isLoading || undefined}>
       <PageMeta title={pageContent?.seo_title || copy.metaTitle} description={pageContent?.seo_description || copy.metaDescription} keywords={pageContent?.seo_keywords} canonicalPath="/locations" />
       <JsonLdBreadcrumb items={[{ name: routeText.home, url: "/" }, { name: routeText.locations, url: "/locations" }]} />
       <SchemeARouteHero kind="listing" image={hero.desktop} imageSourceWidth={hero.desktopWidth} tabletImage={hero.tablet} tabletImageSourceWidth={hero.tabletWidth} mobileImage={hero.mobile} mobileImageSourceWidth={hero.mobileWidth} imagePosition={hero.imagePosition} imageAlt={pageContent?.alt || copy.title} label={[pageContent?.subtitle || copy.eyebrow, hero.claimLevel ? mediaLabels[language].renderingConcept : ""].filter(Boolean).join(" · ")} title={pageContent?.title || copy.title} description={pageContent?.description || copy.intro} />

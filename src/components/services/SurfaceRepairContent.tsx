@@ -103,11 +103,11 @@ export default function SurfaceRepairContent({ service }: { service: PublishedSe
           sizes: "max(100vw, 50svh, 300px)",
         }]} showFailureFallback alt={service.imageAlt || copy.siteHero.imageAlt} /></figure>
         <div className="fcd-design-hero__frame fcd-page-gutter"><div className="fcd-design-hero__copy">
-          <p className="fcd-design-hero__location">{copy.regions}</p>
-          <h1 id="repair-hero-title">{titleLines.map((line, index) => <span key={line}>{line}{language === "en" && index < titleLines.length - 1 ? " " : ""}</span>)}</h1>
-          <p className="fcd-design-hero__lead">{summary}</p>
-          <div className="fcd-design-hero__actions"><a className="scheme-a-button scheme-a-button--gold fcd-design-hero__primary" href={settings.whatsapp_url(copy.genericMessage)} target="_blank" rel="noopener noreferrer" onClick={trackEnquiry}>{copy.primaryAction}<ArrowUpRight size={18} aria-hidden="true" /></a><a className="fcd-design-hero__secondary" href="#repair-scope" onClick={() => focusChapter("repair-scope")}>{copy.siteHero.secondaryAction}<ArrowDown size={18} aria-hidden="true" /></a></div>
-        </div><span className="fcd-design-hero__credit">{copy.materialLabel}</span></div>
+          <p className="fcd-design-hero__location" data-adaptive-text>{copy.regions}</p>
+          <h1 id="repair-hero-title" data-adaptive-text>{titleLines.map((line, index) => <span key={line}>{line}{language === "en" && index < titleLines.length - 1 ? " " : ""}</span>)}</h1>
+          <p className="fcd-design-hero__lead" data-adaptive-text>{summary}</p>
+          <div className="fcd-design-hero__actions"><a className="scheme-a-button scheme-a-button--gold fcd-design-hero__primary" href={settings.whatsapp_url(copy.genericMessage)} target="_blank" rel="noopener noreferrer" onClick={trackEnquiry}>{copy.primaryAction}<ArrowUpRight size={18} aria-hidden="true" /></a><a className="fcd-design-hero__secondary" data-adaptive-text href="#repair-scope" onClick={() => focusChapter("repair-scope")}>{copy.siteHero.secondaryAction}<ArrowDown size={18} aria-hidden="true" /></a></div>
+        </div><span className="fcd-design-hero__credit" data-adaptive-text>{copy.materialLabel}</span></div>
       </ImmersiveHero>
       <nav aria-label={copy.siteHero.sectionNavLabel} className="fcd-page-index fcd-frame">{["repair-scope", "repair-assessment", "repair-process", "repair-consult"].map((id, i) => <a href={`#${id}`} key={id} onClick={() => focusChapter(id)}>{copy.siteHero.navLabels[i]}</a>)}</nav>
       <div className="repair-body">

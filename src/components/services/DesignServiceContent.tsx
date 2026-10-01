@@ -116,22 +116,22 @@ export default function DesignServiceContent({ service }: { service: Pick<Publis
       </figure>
       <div className="fcd-design-hero__frame fcd-page-gutter">
         <div className="fcd-design-hero__copy">
-          <p className="fcd-design-hero__location">{copy.heroLocation}</p>
-          <h1 id="fcd-hero-heading">
+          <p className="fcd-design-hero__location" data-adaptive-text>{copy.heroLocation}</p>
+          <h1 id="fcd-hero-heading" data-adaptive-text>
             <span>{serviceTitle}</span>
           </h1>
-          <p className="fcd-design-hero__lead">{serviceSummary}</p>
+          <p className="fcd-design-hero__lead" data-adaptive-text>{serviceSummary}</p>
           <div className="fcd-design-hero__actions">
             <Link className="scheme-a-button scheme-a-button--gold fcd-design-hero__primary" data-fcd-link="quote" to={links.quote}>
               {copy.button}<ArrowUpRight aria-hidden="true" size={18} />
             </Link>
-            <a className="fcd-design-hero__secondary" href="#fcd-works">
+            <a className="fcd-design-hero__secondary" data-adaptive-text href="#fcd-works">
               {copy.textLink}<span aria-hidden="true">↓</span>
             </a>
           </div>
         </div>
         <a
-          className="fcd-design-hero__credit"
+          className="fcd-design-hero__credit" data-adaptive-text
           aria-controls="fcd-project-dialog"
           aria-haspopup="dialog"
           aria-label={copy.imageExploreAriaLabel}

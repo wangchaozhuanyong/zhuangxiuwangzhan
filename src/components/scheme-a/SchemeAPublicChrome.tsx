@@ -33,7 +33,7 @@ import {
   type PublicNavItem,
 } from "@/config/publicNavigation";
 import { usePublicChrome } from "@/contexts/PublicChromeContext";
-import { useSiteSettings } from "@/hooks/useSiteSettings";
+import { useSiteSettings, useSiteSettingsReadiness } from "@/hooks/useSiteSettings";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { footerCopy, footerLocationLinks } from "@/i18n/footerText";
 import { navbarText } from "@/i18n/navbarText";
@@ -157,6 +157,7 @@ export const SchemeANavbar = () => {
   const navText = navbarText[language];
   const footer = footerCopy[language];
   const settings = useSiteSettings();
+  const settingsPending = useSiteSettingsReadiness();
   const { hasImmersiveHero, menuOpen, setMenuOpen } = usePublicChrome();
   const currentItem = getCurrentNavigationItem(location.pathname);
   const currentPrimaryItem = getCurrentNavigationItem(location.pathname, primaryPublicNavigationItems);
@@ -302,12 +303,12 @@ export const SchemeANavbar = () => {
   return (
     <>
       <span ref={sentinelRef} className="scheme-a-chrome__sentinel" aria-hidden="true" />
-      <header className={`scheme-a-chrome is-fixed ${overlay ? "is-overlay" : "is-solid"}`}>
+      <header className={`scheme-a-chrome is-fixed ${overlay ? "is-overlay" : "is-solid"}`} data-route-pending={settingsPending || undefined}>
         <div className="scheme-a-chrome__bar scheme-a-frame">
           <BrandMark logo={logo} name={companyName} />
           <nav className="scheme-a-chrome__primary" aria-label={t.mainNavigation}>
             {primaryPublicNavigationItems.map((item) => (
-              <LocalizedLink key={item.path} to={item.path} aria-current={isActivePath(location.pathname, currentPrimaryItem.path) && currentPrimaryItem.path === item.path ? "page" : undefined}>
+              <LocalizedLink key={item.path} data-adaptive-text to={item.path} aria-current={isActivePath(location.pathname, currentPrimaryItem.path) && currentPrimaryItem.path === item.path ? "page" : undefined}>
                 {translate(item.labelKey)}
               </LocalizedLink>
             ))}

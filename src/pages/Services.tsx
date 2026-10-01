@@ -36,7 +36,7 @@ export default function Services() {
   const copy = servicesPageText[language];
   const routeText = schemeARouteText[language];
   const [group, setGroup] = useState<ServiceGroup>("all");
-  const { data: pageContent } = usePublishedSitePage(language, "services");
+  const { data: pageContent, isLoading: pageLoading } = usePublishedSitePage(language, "services");
   const { data: publishedServices, isLoading, isError, refetch } = usePublishedServices(language);
   const services = publishedServices?.length ? publishedServices : servicesData;
   const visible = group === "all" ? services : services.filter((service) => groupForService(service.slug) === group);
@@ -60,7 +60,7 @@ export default function Services() {
   }), [copy.groups, language, visible]);
 
   return (
-    <main className="fc-route-page">
+    <main className="fc-route-page" data-route-pending={pageLoading || isLoading || undefined}>
       <PageMeta title={pageContent?.seo_title || copy.metaTitle} description={pageContent?.seo_description || copy.metaDescription} keywords={pageContent?.seo_keywords || copy.metaKeywords} canonicalPath="/services" />
       <JsonLdBreadcrumb items={[{ name: copy.breadcrumbHome, url: "/" }, { name: copy.breadcrumbServices, url: "/services" }]} />
       <SchemeARouteHero

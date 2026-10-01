@@ -808,6 +808,9 @@
     align-items: flex-start;
     gap: 4px;
     padding: 12px 16px;
+    /* Photo captions own a stable reading surface without global glyph changes. */
+    background: rgb(20 27 22 / 0.88);
+    border-radius: 6px;
     pointer-events: none;
   }
 
