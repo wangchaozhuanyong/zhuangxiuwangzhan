@@ -122,7 +122,7 @@ export default function FurnitureShowcase() {
                     </div>
                   </LocalizedLink>
                   <div className="fc-furniture-card__actions">
-                    <a href={furnitureShopUrl} target="_blank" rel="noopener noreferrer" aria-label={copy.openShopHomepage}>{copy.openShopHomepage}</a>
+                    <a href={furnitureShopUrl} target="_blank" rel="noopener noreferrer" aria-label={`${copy.openShopHomepage}: ${product.name}`}>{copy.openShopHomepage}</a>
                   </div>
                 </article>
               );
