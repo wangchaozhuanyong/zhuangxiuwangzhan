@@ -1,0 +1,26 @@
+[
+  {
+    "background": "rgba(0, 0, 0, 0)",
+    "header": "scheme-a-chrome is-fixed is-overlay",
+    "width": 1440,
+    "y": 0
+  },
+  {
+    "background": "rgba(0, 0, 0, 0)",
+    "header": "scheme-a-chrome is-fixed is-overlay",
+    "width": 390,
+    "y": 0
+  },
+  {
+    "background": "rgba(0, 0, 0, 0)",
+    "header": "scheme-a-chrome is-fixed is-overlay",
+    "width": 1024,
+    "y": 0
+  },
+  {
+    "background": "rgba(0, 0, 0, 0)",
+    "header": "scheme-a-chrome is-fixed is-overlay",
+    "width": 360,
+    "y": 0
+  }
+]

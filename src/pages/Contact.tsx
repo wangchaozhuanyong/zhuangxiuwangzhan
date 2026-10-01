@@ -1,6 +1,7 @@
-﻿import { FormEvent, useEffect, useState } from "react";
+import { FormEvent, useEffect, useState } from "react";
 import Link from "@/components/LocalizedLink";
 import { Button } from "@/components/ui/button";
+import PublicContactRow from "@/components/PublicContactRow";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { MapPin, Phone, Mail, Clock, ArrowRight, CheckCircle, Loader2, AlertCircle, ExternalLink, Navigation } from "lucide-react";
@@ -127,11 +128,10 @@ const Contact = () => {
   ];
   const whatsappHref = settings.whatsapp_url(t.whatsappMessage);
   const contactItems = [
-    { icon: WhatsAppIcon, title: t.whatsappTitle, text: settings.phone_display, href: whatsappHref, external: true, track: "whatsapp", action: t.whatsappCta },
     { icon: Phone, title: t.phoneTitle, text: settings.phone_display, href: settings.phone_href, track: "phone", action: t.callAction },
     { icon: Mail, title: t.emailTitle, text: settings.email, href: `mailto:${settings.email}`, track: "email", action: t.emailAction },
     { icon: MapPin, title: t.addressTitle, text: mapAddress, track: "map", action: t.navigateAction, navigation: true },
-    { icon: Clock, title: t.hoursTitle, text: t.hoursText, href: "#contact-form-title", track: "contact", action: t.heroTitle },
+    { icon: Clock, title: t.hoursTitle, text: t.hoursText, track: "hours" },
   ];
 
   const mapDescription = mapAddress
@@ -168,33 +168,28 @@ const Contact = () => {
                 <div className="subpage-local-heading">
                   <h2 id="contact-info-title" className="font-display text-2xl font-bold">{t.infoTitle}</h2>
                 </div>
-                <div className="contact-detail-list">
+                <Button asChild className="fc-route-contact-primary min-h-12 w-full">
+                  <a href={whatsappHref} target="_blank" rel="noopener noreferrer" onClick={() => trackCtaClick("whatsapp", "contact_info", { destination: "whatsapp" })}>
+                    <WhatsAppIcon aria-hidden="true" />{t.whatsappCta}<ArrowRight aria-hidden="true" />
+                  </a>
+                </Button>
+                <div className="public-contact-list">
                   {contactItems.map((item) => {
                     const Icon = item.icon;
-                    const content = (
-                      <>
-                        <div className="contact-detail-row__icon">
-                          <Icon className="h-5 w-5" />
-                        </div>
-                        <div className="contact-detail-row__copy">
-                          <h3 className="font-semibold text-sm mb-1">{item.title}</h3>
-                          <p className="text-muted-foreground text-sm whitespace-pre-line">{item.text}</p>
-                        </div>
-                        {item.action ? (
-                          <span className="contact-detail-row__action">
-                            {item.action}
-                            {item.navigation ? <Navigation className="h-4 w-4" /> : <ArrowRight className="h-4 w-4" />}
-                          </span>
-                        ) : null}
-                      </>
-                    );
+                    const rowProps = {
+                      icon: <Icon />,
+                      title: item.title,
+                      value: item.text,
+                      action: item.action,
+                      actionIcon: item.navigation ? <Navigation /> : <ArrowRight />,
+                    };
 
                     return item.navigation ? (
                       <Dialog key={item.title}>
                         <DialogTrigger asChild>
-                          <button type="button" className="contact-detail-row w-full text-left">
-                            {content}
-                          </button>
+                          <PublicContactRow {...rowProps} asChild>
+                            <button type="button" />
+                          </PublicContactRow>
                         </DialogTrigger>
                         <DialogContent className="navigation-dialog rounded-sm border-border bg-background">
                           <DialogHeader>
@@ -221,20 +216,11 @@ const Contact = () => {
                         </DialogContent>
                       </Dialog>
                     ) : item.href ? (
-                      <a
-                        key={item.title}
-                        href={item.href}
-                        target={item.external ? "_blank" : undefined}
-                        rel={item.external ? "noopener noreferrer" : undefined}
-                        className="contact-detail-row"
-                        onClick={() => trackCtaClick(item.track, "contact_info_card", { destination: item.track })}
-                      >
-                        {content}
-                      </a>
+                      <PublicContactRow key={item.title} {...rowProps} asChild>
+                        <a href={item.href} onClick={() => trackCtaClick(item.track, "contact_info_card", { destination: item.track })} />
+                      </PublicContactRow>
                     ) : (
-                      <div key={item.title} className="contact-detail-row">
-                        {content}
-                      </div>
+                      <PublicContactRow key={item.title} {...rowProps} />
                     );
                   })}
                 </div>
@@ -257,22 +243,16 @@ const Contact = () => {
                 </section>
 
                 <div className="fc-route-contact-actions">
-                  <Link
-                    to="/quote#quote-form"
-                    className="btn-brand-primary min-h-12 w-full justify-center px-8 sm:w-auto"
-                    onClick={() => trackCtaClick("quote", "contact_info", { destination: "/quote#quote-form" })}
-                  >
-                    {t.quoteCta} <ArrowRight className="h-4 w-4" />
-                  </Link>
-                  <a
-                    href={whatsappHref}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="btn-brand-secondary min-h-12 w-full justify-center px-8 sm:w-auto"
-                    onClick={() => trackCtaClick("whatsapp", "contact_info", { destination: "whatsapp" })}
-                  >
-                    <WhatsAppIcon className="mr-2 h-[18px] w-[18px] text-whatsapp" /> {t.whatsappCta}
-                  </a>
+                  <Button variant="outline" asChild className="min-h-12">
+                    <Link to="/quote#quote-form" onClick={() => trackCtaClick("quote", "contact_info", { destination: "/quote#quote-form" })}>
+                      {t.quoteCta}<ArrowRight aria-hidden="true" />
+                    </Link>
+                  </Button>
+                  <Button variant="outline" asChild className="min-h-12">
+                    <a href="#contact-form-title" onClick={() => trackCtaClick("contact", "contact_info_card", { destination: "contact" })}>
+                      {t.heroTitle}<ArrowRight aria-hidden="true" />
+                    </a>
+                  </Button>
                 </div>
               </div>
             </aside>

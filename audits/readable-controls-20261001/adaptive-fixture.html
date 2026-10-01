@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="zh" data-public-theme="dark">
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>透明文字自适应验收夹具</title>
+<link rel="stylesheet" href="/src/styles/components/public-warm-stone.css">
+<style>
+html { --public-text-primary:#292e29; --public-surface-base:#f7f6f2; --public-surface-card:#fdfcfa; }
+body { margin:0;font-family:Arial,sans-serif; }
+#root { padding:24px; }
+h1 { font-size:24px; }
+.controls { display:flex;gap:12px;margin-block:20px;flex-wrap:wrap; }
+button { padding:12px;cursor:pointer; }
+.cases { display:grid;grid-template-columns:repeat(3,1fr);gap:16px; }
+.case { position:relative;height:180px;display:grid;place-items:center;overflow:hidden; }
+.case img { position:absolute;inset:0;width:100%;height:100%;object-fit:cover; }
+.case a { position:relative;color:#292e29;font-size:18px;font-weight:600;text-decoration:none; }
+.white { background:white; }.black { background:black; }.gray { background:#808080; }
+.unknown { background:linear-gradient(90deg,black,white); }
+.scene { height:180px;position:relative;display:flex;justify-content:space-around;align-items:center;margin-block:20px;background:white; }
+.scene a { color:#292e29;font-size:20px;position:relative; }
+.scene img { position:absolute;inset:0;width:100%;height:100%;object-fit:fill; }
+.scene[data-surface="white"] { background:white; }.scene[data-surface="black"] { background:black; }
+.scene:not([data-surface="image"]) img { display:none; }
+@media(max-width:600px){.cases{grid-template-columns:1fr 1fr;}#root{padding:16px}.scene a{font-size:16px}.case a{font-size:16px}}
+</style>
+<div id="root"><div class="scheme-a-public-shell">
+<h1>纯透明文字：同一共享控制器验收</h1>
+<div class="controls"><button id="white">切换浅底</button><button id="black">切换深底</button><button id="image">切换图片</button></div>
+<div class="scene" data-surface="image"><img src="adaptive-scene.svg" alt="左侧深色、中间灰色、右侧浅色的验收图"><a href="#cases" data-adaptive-text>左侧文字</a><a href="#cases" data-adaptive-text>中间文字</a><a href="#cases" data-adaptive-text>右侧文字</a></div>
+<div class="cases" id="cases">
+<div class="case white" data-case="white"><a href="#cases" data-adaptive-text>浅底自动深字</a></div>
+<div class="case black" data-case="black"><a href="#cases" data-adaptive-text>深底自动浅字</a></div>
+<div class="case gray" data-case="gray"><a href="#cases" data-adaptive-text>中灰保持可读</a></div>
+<div class="case" data-case="mixed"><img src="adaptive-mixed.svg" alt="明暗交错验收图"><a href="#cases" data-adaptive-text>混合背景保护</a></div>
+<div class="case unknown" data-case="unavailable"><a href="#cases" data-adaptive-text>无法取色保护</a></div>
+</div>
+</div></div>
+<script type="module">
+import { observeAdaptiveContrast } from '/src/lib/adaptiveContrast.ts';
+const root=document.querySelector('.scheme-a-public-shell');
+const dispose=observeAdaptiveContrast(root);
+for(const id of ['white','black','image'])document.getElementById(id).addEventListener('click',()=>{
+  const scene=document.querySelector('.scene');
+  scene.dataset.surface=id;
+  scene.className=`scene ${id}`;
+});
+window.addEventListener('pagehide',dispose,{once:true});
+</script>
+</html>

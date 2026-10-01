@@ -1,0 +1,74 @@
+[
+  {
+    "path": "/zh/services/design",
+    "width": 1440,
+    "minimum": 7.362558352000987,
+    "pass": true
+  },
+  {
+    "path": "/zh/services/design",
+    "width": 390,
+    "minimum": 7.362558352000987,
+    "pass": true
+  },
+  {
+    "path": "/en/services/design",
+    "width": 1440,
+    "minimum": 7.362558352000987,
+    "pass": true
+  },
+  {
+    "path": "/en/services/design",
+    "width": 390,
+    "minimum": 7.362558352000987,
+    "pass": true
+  },
+  {
+    "path": "/zh",
+    "width": 1440,
+    "minimum": 7.362558352000987,
+    "pass": true
+  },
+  {
+    "path": "/zh",
+    "width": 390,
+    "minimum": 7.362558352000987,
+    "pass": true
+  },
+  {
+    "path": "/en",
+    "width": 1440,
+    "minimum": 7.362558352000987,
+    "pass": true
+  },
+  {
+    "path": "/en",
+    "width": 390,
+    "minimum": 7.362558352000987,
+    "pass": true
+  },
+  {
+    "path": "/zh/services/surface-repair",
+    "width": 1440,
+    "minimum": 7.362558352000987,
+    "pass": true
+  },
+  {
+    "path": "/zh/services/surface-repair",
+    "width": 390,
+    "minimum": 7.362558352000987,
+    "pass": true
+  },
+  {
+    "path": "/en/services/surface-repair",
+    "width": 1440,
+    "minimum": 7.362558352000987,
+    "pass": true
+  },
+  {
+    "path": "/en/services/surface-repair",
+    "width": 390,
+    "minimum": 7.362558352000987,
+    "pass": true
+  }
+]

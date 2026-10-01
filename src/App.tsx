@@ -22,6 +22,7 @@ import { publicContentStatusText } from "@/i18n/publicContentStatusText";
 import FurnitureFloatingLink from "@/components/FurnitureFloatingLink";
 import PublicRoutePrefetch from "@/components/PublicRoutePrefetch";
 import { publicMotionStyle } from "@/lib/publicMotion";
+import { useAdaptiveContrast } from "@/hooks/useAdaptiveContrast";
 import ScrollToTop from "./components/ScrollToTop";
 
 const AdminRouteTree = lazy(() => import("@/routes/AdminRouteTree"));
@@ -190,9 +191,12 @@ const PublicSiteShell = ({
   children: ReactNode;
 }) => {
   const { hasImmersiveHero } = usePublicChrome();
+  const rootRef = useRef<HTMLDivElement>(null);
+  useAdaptiveContrast(rootRef);
 
   return (
     <div
+      ref={rootRef}
       className="scheme-a-public-shell"
       style={publicMotionStyle}
       data-theme="dark"

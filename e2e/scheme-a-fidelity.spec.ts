@@ -642,12 +642,12 @@ test.describe("Scheme A approved-design fidelity", () => {
 
       for (const route of ["/zh/contact", "/en/contact"]) {
         await page.goto(route, { waitUntil: "domcontentloaded" });
-        const actionableRows = page.locator(".contact-detail-row:has(.contact-detail-row__action)");
-        await expect(actionableRows).toHaveCount(4);
+        const actionableRows = page.locator(".fc-route-contact-info .public-contact-row:has(.public-contact-row__action), .scheme-a-footer__studio .public-contact-row:has(.public-contact-row__action)");
+        await expect(actionableRows).toHaveCount(6);
 
         const alignments = await actionableRows.evaluateAll((rows) => rows.map((row) => {
-          const copy = row.querySelector<HTMLElement>(".contact-detail-row__copy");
-          const action = row.querySelector<HTMLElement>(".contact-detail-row__action");
+          const copy = row.querySelector<HTMLElement>(".public-contact-row__copy");
+          const action = row.querySelector<HTMLElement>(".public-contact-row__action");
           if (!copy || !action) throw new Error("Missing contact detail content or action");
 
           const rowRect = row.getBoundingClientRect();
@@ -665,6 +665,17 @@ test.describe("Scheme A approved-design fidelity", () => {
           expect(alignment.actionInsideRow, `${route} at ${viewport.width}px`).toBe(true);
           expect(alignment.actionVerticallyAligned, `${route} at ${viewport.width}px`).toBe(true);
         }
+
+        await expect(page.locator('.fc-route-contact-info a[href^="https://wa.me/"]')).toHaveCount(1);
+        await expect(page.locator('.public-contact-row a, .public-contact-row button')).toHaveCount(0);
+        const secondaryActions = await page.locator('.fc-route-contact-actions > a').evaluateAll((actions) => actions.map((action) => {
+          const bounds = action.getBoundingClientRect();
+          return { top: bounds.top, left: bounds.left, right: bounds.right, height: bounds.height };
+        }));
+        expect(secondaryActions).toHaveLength(2);
+        expect(Math.abs(secondaryActions[0].top - secondaryActions[1].top)).toBeLessThan(1);
+        expect(secondaryActions[0].right).toBeLessThanOrEqual(secondaryActions[1].left);
+        expect(secondaryActions.every((action) => action.height >= 48)).toBe(true);
 
         await expect.poll(() => page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth)).toBeLessThanOrEqual(1);
       }

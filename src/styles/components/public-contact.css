@@ -1,0 +1,61 @@
+@layer components {
+  .public-contact-list { width: 100%; container: public-contact / inline-size; }
+
+  .public-contact-row {
+    display: grid;
+    grid-template-columns: 28px minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 12px;
+    width: 100%;
+    min-height: 64px;
+    padding: 16px 0;
+    border: 0;
+    border-bottom: 1px solid var(--public-border);
+    border-radius: 0;
+    color: var(--public-text-primary);
+    background: transparent;
+    font-family: var(--font-body);
+    font-style: normal;
+    text-align: left;
+    text-decoration: none;
+  }
+
+  .public-contact-row__icon,
+  .public-contact-row__action { color: var(--public-accent); }
+  .public-contact-row__icon { display: grid; place-items: center; }
+  .public-contact-row__icon svg { width: 22px; height: 22px; }
+  .public-contact-row__copy { display: grid; gap: 3px; min-width: 0; }
+  .public-contact-row__copy strong { font-size: 15px; font-weight: 600; line-height: 1.5; }
+  .public-contact-row__value {
+    color: var(--public-text-secondary);
+    font-size: 14px;
+    line-height: 1.65;
+    white-space: pre-line;
+    overflow-wrap: anywhere;
+  }
+  .public-contact-row__action {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 13px;
+    line-height: 1.5;
+    white-space: nowrap;
+  }
+  .public-contact-row__action svg { display: block; width: 16px; height: 16px; }
+  :is(a, button).public-contact-row { cursor: pointer; }
+  :is(a, button).public-contact-row:hover { background: hsl(var(--secondary) / 0.45); }
+  :is(a, button).public-contact-row:hover .public-contact-row__action-label { text-decoration: underline; text-underline-offset: 4px; }
+  :is(a, button).public-contact-row:focus-visible { outline: 2px solid var(--public-accent); outline-offset: 3px; }
+
+  /* Preserve text width in a narrow panel without moving actions below it. */
+  @container public-contact (max-width: 360px) {
+    .public-contact-row__action-label {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      overflow: hidden;
+      clip-path: inset(50%);
+      white-space: nowrap;
+    }
+  }
+}

@@ -1,0 +1,1241 @@
+[
+  {
+    "overflow": false,
+    "path": "/en/services/design",
+    "samples": [
+      {
+        "background": "color(srgb 0.992157 0.988235 0.980392 / 0.96)",
+        "color": "rgb(41, 46, 41)",
+        "fontSize": "16px",
+        "surface": "scheme-a-chrome is-fixed is-overlay",
+        "text": "FLASH CAST SDN. BHD."
+      },
+      {
+        "background": "color(srgb 0.992157 0.988235 0.980392 / 0.96)",
+        "color": "rgb(41, 46, 41)",
+        "fontSize": "13.12px",
+        "surface": "scheme-a-chrome is-fixed is-overlay",
+        "text": "Home"
+      },
+      {
+        "background": "color(srgb 0.992157 0.988235 0.980392 / 0.96)",
+        "color": "rgb(41, 46, 41)",
+        "fontSize": "13.12px",
+        "surface": "scheme-a-chrome is-fixed is-overlay",
+        "text": "Projects"
+      },
+      {
+        "background": "color(srgb 0.992157 0.988235 0.980392 / 0.96)",
+        "color": "rgb(41, 46, 41)",
+        "fontSize": "13.12px",
+        "surface": "scheme-a-chrome is-fixed is-overlay",
+        "text": "Services"
+      },
+      {
+        "background": "color(srgb 0.992157 0.988235 0.980392 / 0.96)",
+        "color": "rgb(41, 46, 41)",
+        "fontSize": "13.12px",
+        "surface": "scheme-a-chrome is-fixed is-overlay",
+        "text": "Interior Design"
+      },
+      {
+        "background": "color(srgb 0.992157 0.988235 0.980392 / 0.96)",
+        "color": "rgb(41, 46, 41)",
+        "fontSize": "13.12px",
+        "surface": "scheme-a-chrome is-fixed is-overlay",
+        "text": "Materials"
+      },
+      {
+        "background": "color(srgb 0.992157 0.988235 0.980392 / 0.96)",
+        "color": "rgb(41, 46, 41)",
+        "fontSize": "13.12px",
+        "surface": "scheme-a-chrome is-fixed is-overlay",
+        "text": "More"
+      },
+      {
+        "background": "rgb(63, 78, 66)",
+        "color": "rgb(253, 252, 250)",
+        "fontSize": "12.48px",
+        "surface": "scheme-a-chrome is-fixed is-overlay",
+        "text": "Get a free quote"
+      },
+      {
+        "background": "rgb(253, 252, 250)",
+        "color": "rgb(98, 106, 96)",
+        "fontSize": "11.5px",
+        "surface": "scheme-a-chrome is-fixed is-overlay",
+        "text": "中文"
+      },
+      {
+        "background": "rgb(63, 78, 66)",
+        "color": "rgb(253, 252, 250)",
+        "fontSize": "11.5px",
+        "surface": "scheme-a-chrome is-fixed is-overlay",
+        "text": "EN"
+      },
+      {
+        "background": "rgba(15, 13, 11, 0.88)",
+        "color": "rgb(255, 255, 255)",
+        "fontSize": "14px",
+        "surface": "fcd-design-hero__copy public-reading-surface",
+        "text": "Kuala Lumpur · Selangor · Klang Valley"
+      },
+      {
+        "background": "rgba(15, 13, 11, 0.88)",
+        "color": "rgb(255, 255, 255)",
+        "fontSize": "46.08px",
+        "surface": "fcd-design-hero__copy public-reading-surface",
+        "text": "Interior Design and Space Planning"
+      },
+      {
+        "background": "rgba(15, 13, 11, 0.88)",
+        "color": "rgb(255, 255, 255)",
+        "fontSize": "17px",
+        "surface": "fcd-design-hero__copy public-reading-surface",
+        "text": "Interior design and space planning for residential and comme"
+      },
+      {
+        "background": "rgb(63, 78, 66)",
+        "color": "rgb(253, 252, 250)",
+        "fontSize": "13.12px",
+        "surface": "fcd-design-hero__copy public-reading-surface",
+        "text": "Book a design consultation"
+      },
+      {
+        "background": "rgba(15, 13, 11, 0.88)",
+        "color": "rgb(255, 255, 255)",
+        "fontSize": "14px",
+        "surface": "fcd-design-hero__copy public-reading-surface",
+        "text": "Explore concepts↓"
+      },
+      {
+        "background": "rgba(15, 13, 11, 0.88)",
+        "color": "rgb(255, 255, 255)",
+        "fontSize": "14px",
+        "surface": "fcd-design-hero__copy public-reading-surface",
+        "text": "↓"
+      },
+      {
+        "background": "color(srgb 0.992157 0.988235 0.980392 / 0.96)",
+        "color": "rgb(41, 46, 41)",
+        "fontSize": "12px",
+        "surface": "fcd-design-hero__credit public-reading-surface",
+        "text": "Design rendering"
+      },
+      {
+        "background": "color(srgb 0.992157 0.988235 0.980392 / 0.96)",
+        "color": "rgb(41, 46, 41)",
+        "fontSize": "12px",
+        "surface": "fcd-project-badge public-reading-surface",
+        "text": "Design rendering"
+      },
+      {
+        "background": "color(srgb 0.992157 0.988235 0.980392 / 0.96)",
+        "color": "rgb(41, 46, 41)",
+        "fontSize": "24px",
+        "surface": "fcd-project-circle public-reading-surface",
+        "text": "↗"
+      },
+      {
+        "background": "color(srgb 0.992157 0.988235 0.980392 / 0.96)",
+        "color": "rgb(41, 46, 41)",
+        "fontSize": "12px",
+        "surface": "fcd-project-badge public-reading-surface",
+        "text": "Design rendering"
+      },
+      {
+        "background": "color(srgb 0.992157 0.988235 0.980392 / 0.96)",
+        "color": "rgb(41, 46, 41)",
+        "fontSize": "24px",
+        "surface": "fcd-project-circle public-reading-surface",
+        "text": "↗"
+      },
+      {
+        "background": "rgb(231, 234, 225)",
+        "color": "rgb(63, 78, 66)",
+        "fontSize": "11.52px",
+        "surface": "scheme-a-footer__invitation-copy public-reading-surface",
+        "text": "READY TO BEGIN A NEW SPACE?"
+      },
+      {
+        "background": "rgba(15, 13, 11, 0.88)",
+        "color": "rgb(253, 252, 250)",
+        "fontSize": "43.2px",
+        "surface": "scheme-a-footer__invitation-copy public-reading-surface",
+        "text": "Talk about life first. Then begin the design."
+      },
+      {
+        "background": "rgba(15, 13, 11, 0.88)",
+        "color": "rgb(253, 252, 250)",
+        "fontSize": "17px",
+        "surface": "scheme-a-footer__invitation-copy public-reading-surface",
+        "text": "Share the space type, location and budget direction. We begi"
+      },
+      {
+        "background": "rgb(63, 78, 66)",
+        "color": "rgb(253, 252, 250)",
+        "fontSize": "12.48px",
+        "surface": "scheme-a-footer__invitation-copy public-reading-surface",
+        "text": "Get a free quote"
+      },
+      {
+        "background": "rgb(253, 252, 250)",
+        "color": "rgb(63, 78, 66)",
+        "fontSize": "12.48px",
+        "surface": "scheme-a-footer__invitation-copy public-reading-surface",
+        "text": "WhatsApp"
+      }
+    ],
+    "width": 1440
+  },
+  {
+    "overflow": false,
+    "path": "/en/services/design",
+    "samples": [
+      {
+        "background": "color(srgb 0.992157 0.988235 0.980392 / 0.96)",
+        "color": "rgb(41, 46, 41)",
+        "fontSize": "16px",
+        "surface": "scheme-a-chrome is-fixed is-overlay",
+        "text": "FLASH CAST SDN. BHD."
+      },
+      {
+        "background": "rgb(253, 252, 250)",
+        "color": "rgb(98, 106, 96)",
+        "fontSize": "11px",
+        "surface": "scheme-a-chrome is-fixed is-overlay",
+        "text": "中文"
+      },
+      {
+        "background": "rgb(63, 78, 66)",
+        "color": "rgb(253, 252, 250)",
+        "fontSize": "11px",
+        "surface": "scheme-a-chrome is-fixed is-overlay",
+        "text": "EN"
+      },
+      {
+        "background": "rgba(15, 13, 11, 0.88)",
+        "color": "rgb(255, 255, 255)",
+        "fontSize": "13px",
+        "surface": "fcd-design-hero__copy public-reading-surface",
+        "text": "Kuala Lumpur · Selangor · Klang Valley"
+      },
+      {
+        "background": "rgba(15, 13, 11, 0.88)",
+        "color": "rgb(255, 255, 255)",
+        "fontSize": "30px",
+        "surface": "fcd-design-hero__copy public-reading-surface",
+        "text": "Interior Design and Space Planning"
+      },
+      {
+        "background": "rgba(15, 13, 11, 0.88)",
+        "color": "rgb(255, 255, 255)",
+        "fontSize": "16px",
+        "surface": "fcd-design-hero__copy public-reading-surface",
+        "text": "Interior design and space planning for residential and comme"
+      },
+      {
+        "background": "rgb(63, 78, 66)",
+        "color": "rgb(253, 252, 250)",
+        "fontSize": "12px",
+        "surface": "fcd-design-hero__copy public-reading-surface",
+        "text": "Book a design consultation"
+      },
+      {
+        "background": "rgba(15, 13, 11, 0.88)",
+        "color": "rgb(255, 255, 255)",
+        "fontSize": "14px",
+        "surface": "fcd-design-hero__copy public-reading-surface",
+        "text": "Explore concepts↓"
+      },
+      {
+        "background": "rgba(15, 13, 11, 0.88)",
+        "color": "rgb(255, 255, 255)",
+        "fontSize": "14px",
+        "surface": "fcd-design-hero__copy public-reading-surface",
+        "text": "↓"
+      },
+      {
+        "background": "color(srgb 0.992157 0.988235 0.980392 / 0.96)",
+        "color": "rgb(41, 46, 41)",
+        "fontSize": "12px",
+        "surface": "fcd-design-hero__credit public-reading-surface",
+        "text": "Design rendering"
+      },
+      {
+        "background": "color(srgb 0.992157 0.988235 0.980392 / 0.96)",
+        "color": "rgb(41, 46, 41)",
+        "fontSize": "12px",
+        "surface": "fcd-project-badge public-reading-surface",
+        "text": "Design rendering"
+      },
+      {
+        "background": "color(srgb 0.992157 0.988235 0.980392 / 0.96)",
+        "color": "rgb(41, 46, 41)",
+        "fontSize": "24px",
+        "surface": "fcd-project-circle public-reading-surface",
+        "text": "↗"
+      },
+      {
+        "background": "color(srgb 0.992157 0.988235 0.980392 / 0.96)",
+        "color": "rgb(41, 46, 41)",
+        "fontSize": "12px",
+        "surface": "fcd-project-badge public-reading-surface",
+        "text": "Design rendering"
+      },
+      {
+        "background": "color(srgb 0.992157 0.988235 0.980392 / 0.96)",
+        "color": "rgb(41, 46, 41)",
+        "fontSize": "24px",
+        "surface": "fcd-project-circle public-reading-surface",
+        "text": "↗"
+      },
+      {
+        "background": "rgb(231, 234, 225)",
+        "color": "rgb(63, 78, 66)",
+        "fontSize": "11.52px",
+        "surface": "scheme-a-footer__invitation-copy public-reading-surface",
+        "text": "READY TO BEGIN A NEW SPACE?"
+      },
+      {
+        "background": "rgba(15, 13, 11, 0.88)",
+        "color": "rgb(253, 252, 250)",
+        "fontSize": "36px",
+        "surface": "scheme-a-footer__invitation-copy public-reading-surface",
+        "text": "Talk about life first. Then begin the design."
+      },
+      {
+        "background": "rgba(15, 13, 11, 0.88)",
+        "color": "rgb(253, 252, 250)",
+        "fontSize": "13.5px",
+        "surface": "scheme-a-footer__invitation-copy public-reading-surface",
+        "text": "Share the space type, location and budget direction. We begi"
+      },
+      {
+        "background": "rgb(63, 78, 66)",
+        "color": "rgb(253, 252, 250)",
+        "fontSize": "12.48px",
+        "surface": "scheme-a-footer__invitation-copy public-reading-surface",
+        "text": "Get a free quote"
+      },
+      {
+        "background": "rgb(253, 252, 250)",
+        "color": "rgb(63, 78, 66)",
+        "fontSize": "12.48px",
+        "surface": "scheme-a-footer__invitation-copy public-reading-surface",
+        "text": "WhatsApp"
+      }
+    ],
+    "width": 390
+  },
+  {
+    "overflow": false,
+    "path": "/zh",
+    "samples": [
+      {
+        "background": "color(srgb 0.992157 0.988235 0.980392 / 0.96)",
+        "color": "rgb(41, 46, 41)",
+        "fontSize": "16px",
+        "surface": "scheme-a-chrome is-fixed is-overlay",
+        "text": "FLASH CAST SDN. BHD."
+      },
+      {
+        "background": "rgb(63, 78, 66)",
+        "color": "rgb(253, 252, 250)",
+        "fontSize": "11px",
+        "surface": "scheme-a-chrome is-fixed is-overlay",
+        "text": "中文"
+      },
+      {
+        "background": "rgb(253, 252, 250)",
+        "color": "rgb(98, 106, 96)",
+        "fontSize": "11px",
+        "surface": "scheme-a-chrome is-fixed is-overlay",
+        "text": "EN"
+      },
+      {
+        "background": "color(srgb 0.992157 0.988235 0.980392 / 0.96)",
+        "color": "rgb(41, 46, 41)",
+        "fontSize": "28.08px",
+        "surface": "scheme-a-hero__intro public-reading-surface",
+        "text": "全屋定制与室内装修"
+      },
+      {
+        "background": "color(srgb 0.992157 0.988235 0.980392 / 0.96)",
+        "color": "rgb(41, 46, 41)",
+        "fontSize": "28.08px",
+        "surface": "scheme-a-hero__intro public-reading-surface",
+        "text": "住宅与商业空间"
+      },
+      {
+        "background": "color(srgb 0.992157 0.988235 0.980392 / 0.96)",
+        "color": "rgb(41, 46, 41)",
+        "fontSize": "17px",
+        "surface": "scheme-a-hero__intro public-reading-surface",
+        "text": "服务吉隆坡 · 雪兰莪 · 巴生谷"
+      },
+      {
+        "background": "rgb(63, 78, 66)",
+        "color": "rgb(253, 252, 250)",
+        "fontSize": "15px",
+        "surface": "scheme-a-hero__intro public-reading-surface",
+        "text": "获取报价"
+      },
+      {
+        "background": "rgb(253, 252, 250)",
+        "color": "rgb(63, 78, 66)",
+        "fontSize": "15px",
+        "surface": "scheme-a-hero__intro public-reading-surface",
+        "text": "查看案例"
+      },
+      {
+        "background": "rgb(231, 234, 225)",
+        "color": "rgb(63, 78, 66)",
+        "fontSize": "11.52px",
+        "surface": "scheme-a-footer__invitation-copy public-reading-surface",
+        "text": "准备开始一个新空间？"
+      },
+      {
+        "background": "rgba(15, 13, 11, 0.88)",
+        "color": "rgb(253, 252, 250)",
+        "fontSize": "39.6px",
+        "surface": "scheme-a-footer__invitation-copy public-reading-surface",
+        "text": "先聊生活，再开始设计。"
+      },
+      {
+        "background": "rgba(15, 13, 11, 0.88)",
+        "color": "rgb(253, 252, 250)",
+        "fontSize": "13.5px",
+        "surface": "scheme-a-footer__invitation-copy public-reading-surface",
+        "text": "告诉我们空间类型、地点与预算方向，我们会从真实现场条件开始判断。"
+      },
+      {
+        "background": "rgb(63, 78, 66)",
+        "color": "rgb(253, 252, 250)",
+        "fontSize": "12.48px",
+        "surface": "scheme-a-footer__invitation-copy public-reading-surface",
+        "text": "获取免费报价"
+      },
+      {
+        "background": "rgb(253, 252, 250)",
+        "color": "rgb(63, 78, 66)",
+        "fontSize": "12.48px",
+        "surface": "scheme-a-footer__invitation-copy public-reading-surface",
+        "text": "WhatsApp 咨询"
+      }
+    ],
+    "width": 360
+  },
+  {
+    "overflow": false,
+    "path": "/zh",
+    "samples": [
+      {
+        "background": "color(srgb 0.992157 0.988235 0.980392 / 0.96)",
+        "color": "rgb(41, 46, 41)",
+        "fontSize": "16px",
+        "surface": "scheme-a-chrome is-fixed is-overlay",
+        "text": "FLASH CAST SDN. BHD."
+      },
+      {
+        "background": "rgb(63, 78, 66)",
+        "color": "rgb(253, 252, 250)",
+        "fontSize": "11px",
+        "surface": "scheme-a-chrome is-fixed is-overlay",
+        "text": "中文"
+      },
+      {
+        "background": "rgb(253, 252, 250)",
+        "color": "rgb(98, 106, 96)",
+        "fontSize": "11px",
+        "surface": "scheme-a-chrome is-fixed is-overlay",
+        "text": "EN"
+      },
+      {
+        "background": "color(srgb 0.992157 0.988235 0.980392 / 0.96)",
+        "color": "rgb(41, 46, 41)",
+        "fontSize": "30.42px",
+        "surface": "scheme-a-hero__intro public-reading-surface",
+        "text": "全屋定制与室内装修"
+      },
+      {
+        "background": "color(srgb 0.992157 0.988235 0.980392 / 0.96)",
+        "color": "rgb(41, 46, 41)",
+        "fontSize": "30.42px",
+        "surface": "scheme-a-hero__intro public-reading-surface",
+        "text": "住宅与商业空间"
+      },
+      {
+        "background": "color(srgb 0.992157 0.988235 0.980392 / 0.96)",
+        "color": "rgb(41, 46, 41)",
+        "fontSize": "17px",
+        "surface": "scheme-a-hero__intro public-reading-surface",
+        "text": "服务吉隆坡 · 雪兰莪 · 巴生谷"
+      },
+      {
+        "background": "rgb(63, 78, 66)",
+        "color": "rgb(253, 252, 250)",
+        "fontSize": "15px",
+        "surface": "scheme-a-hero__intro public-reading-surface",
+        "text": "获取报价"
+      },
+      {
+        "background": "rgb(253, 252, 250)",
+        "color": "rgb(63, 78, 66)",
+        "fontSize": "15px",
+        "surface": "scheme-a-hero__intro public-reading-surface",
+        "text": "查看案例"
+      },
+      {
+        "background": "rgb(231, 234, 225)",
+        "color": "rgb(63, 78, 66)",
+        "fontSize": "11.52px",
+        "surface": "scheme-a-footer__invitation-copy public-reading-surface",
+        "text": "准备开始一个新空间？"
+      },
+      {
+        "background": "rgba(15, 13, 11, 0.88)",
+        "color": "rgb(253, 252, 250)",
+        "fontSize": "42.9px",
+        "surface": "scheme-a-footer__invitation-copy public-reading-surface",
+        "text": "先聊生活，再开始设计。"
+      },
+      {
+        "background": "rgba(15, 13, 11, 0.88)",
+        "color": "rgb(253, 252, 250)",
+        "fontSize": "13.5px",
+        "surface": "scheme-a-footer__invitation-copy public-reading-surface",
+        "text": "告诉我们空间类型、地点与预算方向，我们会从真实现场条件开始判断。"
+      },
+      {
+        "background": "rgb(63, 78, 66)",
+        "color": "rgb(253, 252, 250)",
+        "fontSize": "12.48px",
+        "surface": "scheme-a-footer__invitation-copy public-reading-surface",
+        "text": "获取免费报价"
+      },
+      {
+        "background": "rgb(253, 252, 250)",
+        "color": "rgb(63, 78, 66)",
+        "fontSize": "12.48px",
+        "surface": "scheme-a-footer__invitation-copy public-reading-surface",
+        "text": "WhatsApp 咨询"
+      }
+    ],
+    "width": 390
+  },
+  {
+    "overflow": false,
+    "path": "/zh",
+    "samples": [
+      {
+        "background": "color(srgb 0.992157 0.988235 0.980392 / 0.96)",
+        "color": "rgb(41, 46, 41)",
+        "fontSize": "16px",
+        "surface": "scheme-a-chrome is-fixed is-overlay",
+        "text": "FLASH CAST SDN. BHD."
+      },
+      {
+        "background": "rgb(63, 78, 66)",
+        "color": "rgb(253, 252, 250)",
+        "fontSize": "11.5px",
+        "surface": "scheme-a-chrome is-fixed is-overlay",
+        "text": "中文"
+      },
+      {
+        "background": "rgb(253, 252, 250)",
+        "color": "rgb(98, 106, 96)",
+        "fontSize": "11.5px",
+        "surface": "scheme-a-chrome is-fixed is-overlay",
+        "text": "EN"
+      },
+      {
+        "background": "rgb(253, 252, 250)",
+        "color": "rgb(63, 78, 66)",
+        "fontSize": "11.52px",
+        "surface": "scheme-a-chrome is-fixed is-overlay",
+        "text": "更多"
+      },
+      {
+        "background": "color(srgb 0.992157 0.988235 0.980392 / 0.96)",
+        "color": "rgb(41, 46, 41)",
+        "fontSize": "36px",
+        "surface": "scheme-a-hero__intro public-reading-surface",
+        "text": "全屋定制与室内装修"
+      },
+      {
+        "background": "color(srgb 0.992157 0.988235 0.980392 / 0.96)",
+        "color": "rgb(41, 46, 41)",
+        "fontSize": "36px",
+        "surface": "scheme-a-hero__intro public-reading-surface",
+        "text": "住宅与商业空间"
+      },
+      {
+        "background": "color(srgb 0.992157 0.988235 0.980392 / 0.96)",
+        "color": "rgb(41, 46, 41)",
+        "fontSize": "17px",
+        "surface": "scheme-a-hero__intro public-reading-surface",
+        "text": "服务吉隆坡 · 雪兰莪 · 巴生谷"
+      },
+      {
+        "background": "rgb(63, 78, 66)",
+        "color": "rgb(253, 252, 250)",
+        "fontSize": "15px",
+        "surface": "scheme-a-hero__intro public-reading-surface",
+        "text": "获取免费报价"
+      },
+      {
+        "background": "rgb(253, 252, 250)",
+        "color": "rgb(63, 78, 66)",
+        "fontSize": "15px",
+        "surface": "scheme-a-hero__intro public-reading-surface",
+        "text": "查看案例"
+      },
+      {
+        "background": "rgb(231, 234, 225)",
+        "color": "rgb(63, 78, 66)",
+        "fontSize": "11.52px",
+        "surface": "scheme-a-footer__invitation-copy public-reading-surface",
+        "text": "准备开始一个新空间？"
+      },
+      {
+        "background": "rgba(15, 13, 11, 0.88)",
+        "color": "rgb(253, 252, 250)",
+        "fontSize": "46.08px",
+        "surface": "scheme-a-footer__invitation-copy public-reading-surface",
+        "text": "先聊生活，再开始设计。"
+      },
+      {
+        "background": "rgba(15, 13, 11, 0.88)",
+        "color": "rgb(253, 252, 250)",
+        "fontSize": "16px",
+        "surface": "scheme-a-footer__invitation-copy public-reading-surface",
+        "text": "告诉我们空间类型、地点与预算方向，我们会从真实现场条件开始判断。"
+      },
+      {
+        "background": "rgb(63, 78, 66)",
+        "color": "rgb(253, 252, 250)",
+        "fontSize": "12.48px",
+        "surface": "scheme-a-footer__invitation-copy public-reading-surface",
+        "text": "获取免费报价"
+      },
+      {
+        "background": "rgb(253, 252, 250)",
+        "color": "rgb(63, 78, 66)",
+        "fontSize": "12.48px",
+        "surface": "scheme-a-footer__invitation-copy public-reading-surface",
+        "text": "WhatsApp 咨询"
+      }
+    ],
+    "width": 768
+  },
+  {
+    "overflow": false,
+    "path": "/zh",
+    "samples": [
+      {
+        "background": "color(srgb 0.992157 0.988235 0.980392 / 0.96)",
+        "color": "rgb(41, 46, 41)",
+        "fontSize": "16px",
+        "surface": "scheme-a-chrome is-fixed is-overlay",
+        "text": "FLASH CAST SDN. BHD."
+      },
+      {
+        "background": "rgb(63, 78, 66)",
+        "color": "rgb(253, 252, 250)",
+        "fontSize": "11.5px",
+        "surface": "scheme-a-chrome is-fixed is-overlay",
+        "text": "中文"
+      },
+      {
+        "background": "rgb(253, 252, 250)",
+        "color": "rgb(98, 106, 96)",
+        "fontSize": "11.5px",
+        "surface": "scheme-a-chrome is-fixed is-overlay",
+        "text": "EN"
+      },
+      {
+        "background": "rgb(253, 252, 250)",
+        "color": "rgb(63, 78, 66)",
+        "fontSize": "11.52px",
+        "surface": "scheme-a-chrome is-fixed is-overlay",
+        "text": "更多"
+      },
+      {
+        "background": "color(srgb 0.992157 0.988235 0.980392 / 0.96)",
+        "color": "rgb(41, 46, 41)",
+        "fontSize": "36px",
+        "surface": "scheme-a-hero__intro public-reading-surface",
+        "text": "全屋定制与室内装修"
+      },
+      {
+        "background": "color(srgb 0.992157 0.988235 0.980392 / 0.96)",
+        "color": "rgb(41, 46, 41)",
+        "fontSize": "36px",
+        "surface": "scheme-a-hero__intro public-reading-surface",
+        "text": "住宅与商业空间"
+      },
+      {
+        "background": "color(srgb 0.992157 0.988235 0.980392 / 0.96)",
+        "color": "rgb(41, 46, 41)",
+        "fontSize": "17px",
+        "surface": "scheme-a-hero__intro public-reading-surface",
+        "text": "服务吉隆坡 · 雪兰莪 · 巴生谷"
+      },
+      {
+        "background": "rgb(63, 78, 66)",
+        "color": "rgb(253, 252, 250)",
+        "fontSize": "15px",
+        "surface": "scheme-a-hero__intro public-reading-surface",
+        "text": "获取免费报价"
+      },
+      {
+        "background": "rgb(253, 252, 250)",
+        "color": "rgb(63, 78, 66)",
+        "fontSize": "15px",
+        "surface": "scheme-a-hero__intro public-reading-surface",
+        "text": "查看案例"
+      },
+      {
+        "background": "rgb(231, 234, 225)",
+        "color": "rgb(63, 78, 66)",
+        "fontSize": "11.52px",
+        "surface": "scheme-a-footer__invitation-copy public-reading-surface",
+        "text": "准备开始一个新空间？"
+      },
+      {
+        "background": "rgba(15, 13, 11, 0.88)",
+        "color": "rgb(253, 252, 250)",
+        "fontSize": "36px",
+        "surface": "scheme-a-footer__invitation-copy public-reading-surface",
+        "text": "先聊生活，再开始设计。"
+      },
+      {
+        "background": "rgba(15, 13, 11, 0.88)",
+        "color": "rgb(253, 252, 250)",
+        "fontSize": "17px",
+        "surface": "scheme-a-footer__invitation-copy public-reading-surface",
+        "text": "告诉我们空间类型、地点与预算方向，我们会从真实现场条件开始判断。"
+      },
+      {
+        "background": "rgb(63, 78, 66)",
+        "color": "rgb(253, 252, 250)",
+        "fontSize": "12.48px",
+        "surface": "scheme-a-footer__invitation-copy public-reading-surface",
+        "text": "获取免费报价"
+      },
+      {
+        "background": "rgb(253, 252, 250)",
+        "color": "rgb(63, 78, 66)",
+        "fontSize": "12.48px",
+        "surface": "scheme-a-footer__invitation-copy public-reading-surface",
+        "text": "WhatsApp 咨询"
+      }
+    ],
+    "width": 1024
+  },
+  {
+    "overflow": false,
+    "path": "/zh",
+    "samples": [
+      {
+        "background": "color(srgb 0.992157 0.988235 0.980392 / 0.96)",
+        "color": "rgb(41, 46, 41)",
+        "fontSize": "16px",
+        "surface": "scheme-a-chrome is-fixed is-overlay",
+        "text": "FLASH CAST SDN. BHD."
+      },
+      {
+        "background": "color(srgb 0.992157 0.988235 0.980392 / 0.96)",
+        "color": "rgb(41, 46, 41)",
+        "fontSize": "13.12px",
+        "surface": "scheme-a-chrome is-fixed is-overlay",
+        "text": "首页"
+      },
+      {
+        "background": "color(srgb 0.992157 0.988235 0.980392 / 0.96)",
+        "color": "rgb(41, 46, 41)",
+        "fontSize": "13.12px",
+        "surface": "scheme-a-chrome is-fixed is-overlay",
+        "text": "项目案例"
+      },
+      {
+        "background": "color(srgb 0.992157 0.988235 0.980392 / 0.96)",
+        "color": "rgb(41, 46, 41)",
+        "fontSize": "13.12px",
+        "surface": "scheme-a-chrome is-fixed is-overlay",
+        "text": "服务项目"
+      },
+      {
+        "background": "color(srgb 0.992157 0.988235 0.980392 / 0.96)",
+        "color": "rgb(41, 46, 41)",
+        "fontSize": "13.12px",
+        "surface": "scheme-a-chrome is-fixed is-overlay",
+        "text": "室内设计"
+      },
+      {
+        "background": "color(srgb 0.992157 0.988235 0.980392 / 0.96)",
+        "color": "rgb(41, 46, 41)",
+        "fontSize": "13.12px",
+        "surface": "scheme-a-chrome is-fixed is-overlay",
+        "text": "材料库"
+      },
+      {
+        "background": "color(srgb 0.992157 0.988235 0.980392 / 0.96)",
+        "color": "rgb(41, 46, 41)",
+        "fontSize": "13.12px",
+        "surface": "scheme-a-chrome is-fixed is-overlay",
+        "text": "更多"
+      },
+      {
+        "background": "rgb(63, 78, 66)",
+        "color": "rgb(253, 252, 250)",
+        "fontSize": "12.48px",
+        "surface": "scheme-a-chrome is-fixed is-overlay",
+        "text": "获取免费报价"
+      },
+      {
+        "background": "rgb(63, 78, 66)",
+        "color": "rgb(253, 252, 250)",
+        "fontSize": "11.5px",
+        "surface": "scheme-a-chrome is-fixed is-overlay",
+        "text": "中文"
+      },
+      {
+        "background": "rgb(253, 252, 250)",
+        "color": "rgb(98, 106, 96)",
+        "fontSize": "11.5px",
+        "surface": "scheme-a-chrome is-fixed is-overlay",
+        "text": "EN"
+      },
+      {
+        "background": "color(srgb 0.992157 0.988235 0.980392 / 0.96)",
+        "color": "rgb(41, 46, 41)",
+        "fontSize": "50.4px",
+        "surface": "scheme-a-hero__intro public-reading-surface",
+        "text": "全屋定制与室内装修"
+      },
+      {
+        "background": "color(srgb 0.992157 0.988235 0.980392 / 0.96)",
+        "color": "rgb(41, 46, 41)",
+        "fontSize": "50.4px",
+        "surface": "scheme-a-hero__intro public-reading-surface",
+        "text": "住宅与商业空间"
+      },
+      {
+        "background": "color(srgb 0.992157 0.988235 0.980392 / 0.96)",
+        "color": "rgb(41, 46, 41)",
+        "fontSize": "17px",
+        "surface": "scheme-a-hero__intro public-reading-surface",
+        "text": "服务吉隆坡 · 雪兰莪 · 巴生谷"
+      },
+      {
+        "background": "rgb(63, 78, 66)",
+        "color": "rgb(253, 252, 250)",
+        "fontSize": "15px",
+        "surface": "scheme-a-hero__intro public-reading-surface",
+        "text": "获取免费报价"
+      },
+      {
+        "background": "rgb(253, 252, 250)",
+        "color": "rgb(63, 78, 66)",
+        "fontSize": "15px",
+        "surface": "scheme-a-hero__intro public-reading-surface",
+        "text": "查看案例"
+      },
+      {
+        "background": "rgb(231, 234, 225)",
+        "color": "rgb(63, 78, 66)",
+        "fontSize": "11.52px",
+        "surface": "scheme-a-footer__invitation-copy public-reading-surface",
+        "text": "准备开始一个新空间？"
+      },
+      {
+        "background": "rgba(15, 13, 11, 0.88)",
+        "color": "rgb(253, 252, 250)",
+        "fontSize": "43.2px",
+        "surface": "scheme-a-footer__invitation-copy public-reading-surface",
+        "text": "先聊生活，再开始设计。"
+      },
+      {
+        "background": "rgba(15, 13, 11, 0.88)",
+        "color": "rgb(253, 252, 250)",
+        "fontSize": "17px",
+        "surface": "scheme-a-footer__invitation-copy public-reading-surface",
+        "text": "告诉我们空间类型、地点与预算方向，我们会从真实现场条件开始判断。"
+      },
+      {
+        "background": "rgb(63, 78, 66)",
+        "color": "rgb(253, 252, 250)",
+        "fontSize": "12.48px",
+        "surface": "scheme-a-footer__invitation-copy public-reading-surface",
+        "text": "获取免费报价"
+      },
+      {
+        "background": "rgb(253, 252, 250)",
+        "color": "rgb(63, 78, 66)",
+        "fontSize": "12.48px",
+        "surface": "scheme-a-footer__invitation-copy public-reading-surface",
+        "text": "WhatsApp 咨询"
+      }
+    ],
+    "width": 1440
+  },
+  {
+    "overflow": false,
+    "path": "/zh/services/surface-repair",
+    "samples": [
+      {
+        "background": "color(srgb 0.992157 0.988235 0.980392 / 0.96)",
+        "color": "rgb(41, 46, 41)",
+        "fontSize": "16px",
+        "surface": "scheme-a-chrome is-fixed is-overlay",
+        "text": "FLASH CAST SDN. BHD."
+      },
+      {
+        "background": "rgb(63, 78, 66)",
+        "color": "rgb(253, 252, 250)",
+        "fontSize": "11px",
+        "surface": "scheme-a-chrome is-fixed is-overlay",
+        "text": "中文"
+      },
+      {
+        "background": "rgb(253, 252, 250)",
+        "color": "rgb(98, 106, 96)",
+        "fontSize": "11px",
+        "surface": "scheme-a-chrome is-fixed is-overlay",
+        "text": "EN"
+      },
+      {
+        "background": "rgba(15, 13, 11, 0.88)",
+        "color": "rgb(255, 255, 255)",
+        "fontSize": "13px",
+        "surface": "fcd-design-hero__copy public-reading-surface",
+        "text": "吉隆坡 · 雪兰莪 · 巴生谷"
+      },
+      {
+        "background": "rgba(15, 13, 11, 0.88)",
+        "color": "rgb(255, 255, 255)",
+        "fontSize": "36px",
+        "surface": "fcd-design-hero__copy public-reading-surface",
+        "text": "家具与家装"
+      },
+      {
+        "background": "rgba(15, 13, 11, 0.88)",
+        "color": "rgb(255, 255, 255)",
+        "fontSize": "36px",
+        "surface": "fcd-design-hero__copy public-reading-surface",
+        "text": "表面修复"
+      },
+      {
+        "background": "rgba(15, 13, 11, 0.88)",
+        "color": "rgb(255, 255, 255)",
+        "fontSize": "16px",
+        "surface": "fcd-design-hero__copy public-reading-surface",
+        "text": "从木门、柜体到瓷砖与台面，先看材质和损伤，再判断局部修复方案。"
+      },
+      {
+        "background": "rgb(63, 78, 66)",
+        "color": "rgb(253, 252, 250)",
+        "fontSize": "12px",
+        "surface": "fcd-design-hero__copy public-reading-surface",
+        "text": "拍照咨询修复"
+      },
+      {
+        "background": "rgba(15, 13, 11, 0.88)",
+        "color": "rgb(255, 255, 255)",
+        "fontSize": "14px",
+        "surface": "fcd-design-hero__copy public-reading-surface",
+        "text": "查看损伤示例"
+      },
+      {
+        "background": "color(srgb 0.992157 0.988235 0.980392 / 0.96)",
+        "color": "rgb(41, 46, 41)",
+        "fontSize": "12px",
+        "surface": "fcd-design-hero__credit public-reading-surface",
+        "text": "设计效果图"
+      }
+    ],
+    "width": 390
+  },
+  {
+    "overflow": false,
+    "path": "/zh/services/surface-repair",
+    "samples": [
+      {
+        "background": "rgb(253, 252, 250)",
+        "color": "rgb(41, 46, 41)",
+        "fontSize": "16px",
+        "surface": "scheme-a-chrome is-fixed is-solid",
+        "text": "FLASH CAST SDN. BHD."
+      },
+      {
+        "background": "rgb(63, 78, 66)",
+        "color": "rgb(253, 252, 250)",
+        "fontSize": "11px",
+        "surface": "scheme-a-chrome is-fixed is-solid",
+        "text": "中文"
+      },
+      {
+        "background": "rgb(253, 252, 250)",
+        "color": "rgb(98, 106, 96)",
+        "fontSize": "11px",
+        "surface": "scheme-a-chrome is-fixed is-solid",
+        "text": "EN"
+      },
+      {
+        "background": "rgba(15, 13, 11, 0.88)",
+        "color": "rgb(253, 252, 250)",
+        "fontSize": "12px",
+        "surface": "public-reading-surface",
+        "text": "当前页面"
+      },
+      {
+        "background": "rgba(15, 13, 11, 0.88)",
+        "color": "rgb(255, 255, 255)",
+        "fontSize": "22px",
+        "surface": "public-reading-surface",
+        "text": "家具与家装修复"
+      },
+      {
+        "background": "rgba(15, 13, 11, 0.88)",
+        "color": "rgb(255, 255, 255)",
+        "fontSize": "13px",
+        "surface": "fcd-design-hero__copy public-reading-surface",
+        "text": "吉隆坡 · 雪兰莪 · 巴生谷"
+      },
+      {
+        "background": "rgba(15, 13, 11, 0.88)",
+        "color": "rgb(255, 255, 255)",
+        "fontSize": "36px",
+        "surface": "fcd-design-hero__copy public-reading-surface",
+        "text": "家具与家装"
+      },
+      {
+        "background": "rgba(15, 13, 11, 0.88)",
+        "color": "rgb(255, 255, 255)",
+        "fontSize": "36px",
+        "surface": "fcd-design-hero__copy public-reading-surface",
+        "text": "表面修复"
+      },
+      {
+        "background": "rgba(15, 13, 11, 0.88)",
+        "color": "rgb(255, 255, 255)",
+        "fontSize": "16px",
+        "surface": "fcd-design-hero__copy public-reading-surface",
+        "text": "从木门、柜体到瓷砖与台面，先看材质和损伤，再判断局部修复方案。"
+      },
+      {
+        "background": "rgb(63, 78, 66)",
+        "color": "rgb(253, 252, 250)",
+        "fontSize": "12px",
+        "surface": "fcd-design-hero__copy public-reading-surface",
+        "text": "拍照咨询修复"
+      },
+      {
+        "background": "rgba(15, 13, 11, 0.88)",
+        "color": "rgb(255, 255, 255)",
+        "fontSize": "14px",
+        "surface": "fcd-design-hero__copy public-reading-surface",
+        "text": "查看损伤示例"
+      },
+      {
+        "background": "color(srgb 0.992157 0.988235 0.980392 / 0.96)",
+        "color": "rgb(41, 46, 41)",
+        "fontSize": "12px",
+        "surface": "fcd-design-hero__credit public-reading-surface",
+        "text": "设计效果图"
+      }
+    ],
+    "width": 390
+  },
+  {
+    "overflow": false,
+    "path": "/zh/contact",
+    "samples": [
+      {
+        "background": "rgb(253, 252, 250)",
+        "color": "rgb(41, 46, 41)",
+        "fontSize": "16px",
+        "surface": "scheme-a-chrome is-fixed is-solid",
+        "text": "FLASH CAST SDN. BHD."
+      },
+      {
+        "background": "rgb(63, 78, 66)",
+        "color": "rgb(253, 252, 250)",
+        "fontSize": "11px",
+        "surface": "scheme-a-chrome is-fixed is-solid",
+        "text": "中文"
+      },
+      {
+        "background": "rgb(253, 252, 250)",
+        "color": "rgb(98, 106, 96)",
+        "fontSize": "11px",
+        "surface": "scheme-a-chrome is-fixed is-solid",
+        "text": "EN"
+      },
+      {
+        "background": "rgb(231, 234, 225)",
+        "color": "rgb(63, 78, 66)",
+        "fontSize": "11.52px",
+        "surface": "scheme-a-footer__invitation-copy public-reading-surface",
+        "text": "准备开始一个新空间？"
+      },
+      {
+        "background": "rgba(15, 13, 11, 0.88)",
+        "color": "rgb(253, 252, 250)",
+        "fontSize": "42.9px",
+        "surface": "scheme-a-footer__invitation-copy public-reading-surface",
+        "text": "先聊生活，再开始设计。"
+      },
+      {
+        "background": "rgba(15, 13, 11, 0.88)",
+        "color": "rgb(253, 252, 250)",
+        "fontSize": "13.5px",
+        "surface": "scheme-a-footer__invitation-copy public-reading-surface",
+        "text": "告诉我们空间类型、地点与预算方向，我们会从真实现场条件开始判断。"
+      },
+      {
+        "background": "rgb(63, 78, 66)",
+        "color": "rgb(253, 252, 250)",
+        "fontSize": "12.48px",
+        "surface": "scheme-a-footer__invitation-copy public-reading-surface",
+        "text": "获取免费报价"
+      },
+      {
+        "background": "rgb(253, 252, 250)",
+        "color": "rgb(63, 78, 66)",
+        "fontSize": "12.48px",
+        "surface": "scheme-a-footer__invitation-copy public-reading-surface",
+        "text": "WhatsApp 咨询"
+      }
+    ],
+    "width": 390
+  },
+  {
+    "overflow": false,
+    "path": "/zh/services/surface-repair",
+    "samples": [
+      {
+        "background": "color(srgb 0.992157 0.988235 0.980392 / 0.96)",
+        "color": "rgb(41, 46, 41)",
+        "fontSize": "16px",
+        "surface": "scheme-a-chrome is-fixed is-overlay",
+        "text": "FLASH CAST SDN. BHD."
+      },
+      {
+        "background": "color(srgb 0.992157 0.988235 0.980392 / 0.96)",
+        "color": "rgb(41, 46, 41)",
+        "fontSize": "13.12px",
+        "surface": "scheme-a-chrome is-fixed is-overlay",
+        "text": "首页"
+      },
+      {
+        "background": "color(srgb 0.992157 0.988235 0.980392 / 0.96)",
+        "color": "rgb(41, 46, 41)",
+        "fontSize": "13.12px",
+        "surface": "scheme-a-chrome is-fixed is-overlay",
+        "text": "项目案例"
+      },
+      {
+        "background": "color(srgb 0.992157 0.988235 0.980392 / 0.96)",
+        "color": "rgb(41, 46, 41)",
+        "fontSize": "13.12px",
+        "surface": "scheme-a-chrome is-fixed is-overlay",
+        "text": "服务项目"
+      },
+      {
+        "background": "color(srgb 0.992157 0.988235 0.980392 / 0.96)",
+        "color": "rgb(41, 46, 41)",
+        "fontSize": "13.12px",
+        "surface": "scheme-a-chrome is-fixed is-overlay",
+        "text": "室内设计"
+      },
+      {
+        "background": "color(srgb 0.992157 0.988235 0.980392 / 0.96)",
+        "color": "rgb(41, 46, 41)",
+        "fontSize": "13.12px",
+        "surface": "scheme-a-chrome is-fixed is-overlay",
+        "text": "材料库"
+      },
+      {
+        "background": "color(srgb 0.992157 0.988235 0.980392 / 0.96)",
+        "color": "rgb(41, 46, 41)",
+        "fontSize": "13.12px",
+        "surface": "scheme-a-chrome is-fixed is-overlay",
+        "text": "更多"
+      },
+      {
+        "background": "rgb(63, 78, 66)",
+        "color": "rgb(253, 252, 250)",
+        "fontSize": "12.48px",
+        "surface": "scheme-a-chrome is-fixed is-overlay",
+        "text": "获取免费报价"
+      },
+      {
+        "background": "rgb(63, 78, 66)",
+        "color": "rgb(253, 252, 250)",
+        "fontSize": "11.5px",
+        "surface": "scheme-a-chrome is-fixed is-overlay",
+        "text": "中文"
+      },
+      {
+        "background": "rgb(253, 252, 250)",
+        "color": "rgb(98, 106, 96)",
+        "fontSize": "11.5px",
+        "surface": "scheme-a-chrome is-fixed is-overlay",
+        "text": "EN"
+      },
+      {
+        "background": "rgba(15, 13, 11, 0.88)",
+        "color": "rgb(255, 255, 255)",
+        "fontSize": "14px",
+        "surface": "fcd-design-hero__copy public-reading-surface",
+        "text": "吉隆坡 · 雪兰莪 · 巴生谷"
+      },
+      {
+        "background": "rgba(15, 13, 11, 0.88)",
+        "color": "rgb(255, 255, 255)",
+        "fontSize": "46.08px",
+        "surface": "fcd-design-hero__copy public-reading-surface",
+        "text": "家具与家装"
+      },
+      {
+        "background": "rgba(15, 13, 11, 0.88)",
+        "color": "rgb(255, 255, 255)",
+        "fontSize": "46.08px",
+        "surface": "fcd-design-hero__copy public-reading-surface",
+        "text": "表面修复"
+      },
+      {
+        "background": "rgba(15, 13, 11, 0.88)",
+        "color": "rgb(255, 255, 255)",
+        "fontSize": "17px",
+        "surface": "fcd-design-hero__copy public-reading-surface",
+        "text": "从木门、柜体到瓷砖与台面，先看材质和损伤，再判断局部修复方案。"
+      },
+      {
+        "background": "rgb(63, 78, 66)",
+        "color": "rgb(253, 252, 250)",
+        "fontSize": "13.12px",
+        "surface": "fcd-design-hero__copy public-reading-surface",
+        "text": "拍照咨询修复"
+      },
+      {
+        "background": "rgba(15, 13, 11, 0.88)",
+        "color": "rgb(255, 255, 255)",
+        "fontSize": "14px",
+        "surface": "fcd-design-hero__copy public-reading-surface",
+        "text": "查看损伤示例"
+      },
+      {
+        "background": "color(srgb 0.992157 0.988235 0.980392 / 0.96)",
+        "color": "rgb(41, 46, 41)",
+        "fontSize": "12px",
+        "surface": "fcd-design-hero__credit public-reading-surface",
+        "text": "设计效果图"
+      }
+    ],
+    "width": 1440
+  }
+]

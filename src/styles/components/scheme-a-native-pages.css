@@ -981,75 +981,7 @@ html[data-public-theme="dark"] .scheme-a-public-shell input[type="range"] {
   border-color: #7B8775 !important;
   box-shadow: none !important;
 }
-.fc-route-form-page .contact-detail-list { box-shadow: none; }
 .fc-route-contact-page #contact-form-title { scroll-margin-top: calc(var(--site-header-height, 76px) + 24px); }
-.fc-route-form-page .contact-detail-row {
-  display: flex !important;
-  flex-direction: row !important;
-  align-items: center !important;
-  justify-content: space-between !important;
-  gap: 16px !important;
-  padding: 18px 0 !important;
-  border: 0 !important;
-  border-radius: 0 !important;
-  color: #292E29 !important;
-  background: transparent !important;
-  box-shadow: none !important;
-  text-decoration: none !important;
-}
-.fc-route-form-page .contact-detail-row__icon {
-  display: flex !important;
-  width: 38px !important;
-  height: 38px !important;
-  flex-shrink: 0 !important;
-  align-items: center !important;
-  justify-content: center !important;
-  color: #3F4E42 !important;
-  background: rgb(228 232 222 / 0.12) !important;
-  border: 1px solid rgb(123 135 117 / 0.28) !important;
-  border-radius: 50% !important;
-}
-.fc-route-form-page .contact-detail-row__copy {
-  flex: 1 1 auto !important;
-  min-width: 0 !important;
-}
-.fc-route-form-page .contact-detail-row__copy h3 {
-  margin: 0 0 3px !important;
-  font-size: 14px !important;
-  font-weight: 600 !important;
-  color: #292E29 !important;
-}
-.fc-route-form-page .contact-detail-row__copy p {
-  margin: 0 !important;
-  font-size: 13px !important;
-  color: #626A60 !important;
-  line-height: 1.5 !important;
-  overflow-wrap: anywhere;
-}
-html[data-public-theme] .fc-route-form-page .contact-detail-row__action {
-  display: inline-flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-  gap: 6px !important;
-  min-height: 34px !important;
-  width: auto !important;
-  padding: 5px 14px !important;
-  border: 1px solid rgb(123 135 117 / 0.35) !important;
-  border-radius: 6px !important;
-  color: #3F4E42 !important;
-  background: rgb(228 232 222 / 0.12) !important;
-  font-size: 11.5px !important;
-  font-weight: 600 !important;
-  white-space: nowrap !important;
-  flex-shrink: 0 !important;
-  transition: background var(--motion-image) var(--motion-ease), border-color var(--motion-image) var(--motion-ease), transform var(--motion-control) var(--motion-ease) !important;
-}
-html[data-public-theme] .fc-route-form-page .contact-detail-row__action:hover {
-  background: rgb(228 232 222 / 0.28) !important;
-  border-color: #7B8775 !important;
-  color: #292E29 !important;
-  transform: translateY(-1px) !important;
-}
 .fc-route-form-page .fc-route-contact-services {
   margin-top: 32px !important;
   padding-top: 22px !important;
@@ -1081,10 +1013,11 @@ html[data-public-theme] .fc-route-form-page .contact-detail-row__action:hover {
   color: #3F4E42 !important;
 }
 
+.fc-route-form-page .fc-route-contact-primary { margin-bottom: 16px; }
 .fc-route-form-page .fc-route-contact-actions {
-  display: flex !important;
-  flex-direction: column !important;
-  gap: 16px !important;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
   margin-top: 32px !important;
 }
 
@@ -1093,7 +1026,11 @@ html[data-public-theme] .fc-route-form-page .contact-detail-row__action:hover {
   align-items: center !important;
   justify-content: center !important;
   width: 100% !important;
+  min-width: 0;
   min-height: 48px !important;
+  padding-inline: 12px;
+  white-space: normal;
+  text-align: center;
   font-size: 14px !important;
   font-weight: 700 !important;
 }
@@ -1726,49 +1663,8 @@ html[data-public-theme="dark"] .home-footer-prelude__button--secondary svg { col
   .scheme-a-public-shell .fc-route-page .fc-route-section:first-of-type {
     padding-top: 32px !important;
   }
-  .fc-route-form-page .fc-route-contact-actions { display: grid; grid-template-columns: 1fr; }
   .fc-route-form-page .fc-route-contact-info {
     padding: clamp(18px, 5vw, 24px) !important;
-  }
-  .fc-route-form-page .contact-detail-row {
-    display: grid !important;
-    grid-template-columns: 38px minmax(0, 1fr) max-content !important;
-    align-items: center !important;
-    justify-content: stretch !important;
-    column-gap: clamp(8px, 2.8vw, 14px) !important;
-    row-gap: 0 !important;
-  }
-  .fc-route-form-page .contact-detail-row__icon {
-    grid-column: 1;
-    grid-row: 1;
-  }
-  .fc-route-form-page .contact-detail-row__copy {
-    grid-column: 2;
-    grid-row: 1;
-    align-self: center;
-  }
-  .fc-route-form-page .contact-detail-row__action {
-    grid-column: 3 !important;
-    grid-row: 1;
-    align-self: center;
-    justify-self: end;
-  }
-  html[data-public-theme] .fc-route-form-page .contact-detail-row__action {
-    padding-inline: clamp(8px, 2.6vw, 12px) !important;
-    font-size: clamp(10.5px, 2.8vw, 11.5px) !important;
-  }
-}
-
-@media (max-width: 359px) {
-  .fc-route-form-page .contact-detail-row {
-    grid-template-columns: 38px minmax(0, 1fr) !important;
-    align-items: start !important;
-    row-gap: 10px !important;
-  }
-  .fc-route-form-page .contact-detail-row__action {
-    grid-column: 2 !important;
-    grid-row: 2;
-    justify-self: start;
   }
 }
 

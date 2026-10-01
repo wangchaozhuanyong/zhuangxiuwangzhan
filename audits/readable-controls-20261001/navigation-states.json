@@ -1,0 +1,33 @@
+{
+  "scrolled": {
+    "background": "rgb(253, 252, 250)",
+    "color": "rgb(41, 46, 41)",
+    "gradient": "linear-gradient(rgba(15, 13, 11, 0.72) 0px, rgba(15, 13, 11, 0.7) 76px, rgba(15, 13, 11, 0) 100%)",
+    "gradientOpacity": "0",
+    "hasSpacer": false,
+    "headerClass": "scheme-a-chrome is-fixed is-solid",
+    "headerHeight": 56,
+    "heroTop": -270,
+    "logoFilter": "brightness(0)",
+    "navColors": [],
+    "overflow": false,
+    "path": "/en/services/surface-repair",
+    "width": 390
+  },
+  "atTop": {
+    "background": "rgba(0, 0, 0, 0)",
+    "color": "rgb(255, 255, 255)",
+    "gradient": "linear-gradient(rgba(15, 13, 11, 0.72) 0px, rgba(15, 13, 11, 0.7) 76px, rgba(15, 13, 11, 0) 100%)",
+    "gradientOpacity": "1",
+    "hasSpacer": false,
+    "headerClass": "scheme-a-chrome is-fixed is-overlay",
+    "headerHeight": 56,
+    "heroTop": 0,
+    "logoFilter": "brightness(0) invert(1)",
+    "navColors": [],
+    "overflow": false,
+    "path": "/en/services/surface-repair",
+    "width": 390
+  },
+  "menuClosed": "false"
+}
