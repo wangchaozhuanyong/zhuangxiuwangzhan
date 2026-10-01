@@ -103,13 +103,27 @@ test("prepaints the brand before entry JS or CSS, then hands off the same DOM on
   await expect(page.locator("#root")).toBeEmpty();
   const screen = await page.locator("#flashcast-public-boot").evaluate((node) => {
     node.setAttribute("data-test-original", "true");
+    const evidence = { seen: false, sameNode: false, count: 0 };
+    (window as unknown as { bootHandoffEvidence: typeof evidence }).bootHandoffEvidence = evidence;
+    const observer = new MutationObserver(() => {
+      if (node.getAttribute("data-boot-state") !== "handoff") return;
+      evidence.seen = true;
+      evidence.sameNode = document.getElementById("flashcast-public-boot") === node;
+      evidence.count = document.querySelectorAll("[data-route-loader='initial']").length;
+      observer.disconnect();
+    });
+    observer.observe(node, { attributes: true, attributeFilter: ["data-boot-state"] });
     return node.textContent;
   });
   expect(screen).toContain("FLASH");
   try { await page.screenshot({ path: info.outputPath("01-brand-before-react.png"), timeout: 5000 }); }
   finally { release(); }
-  await expect(page.locator("#flashcast-public-boot")).toHaveAttribute("data-boot-state", "handoff", { timeout: 15_000 });
-  await expect(page.locator("#flashcast-public-boot")).toHaveAttribute("data-test-original", "true");
+  // Persist the 240ms handoff observation: locator polling can miss the whole
+  // phase after a real network request without any application regression.
+  await page.waitForFunction(() => (window as unknown as { bootHandoffEvidence: { seen: boolean } }).bootHandoffEvidence.seen,
+    undefined, { timeout: 15_000 });
+  expect(await page.evaluate(() => (window as unknown as { bootHandoffEvidence: unknown }).bootHandoffEvidence))
+    .toEqual({ seen: true, sameNode: true, count: 1 });
   await page.screenshot({ path: info.outputPath("02-single-handoff.png") });
   const audit = await auditFrames(page, "prepaint");
   const firstPaint = audit.paintTiming.find((entry) => entry.name === "first-paint");
