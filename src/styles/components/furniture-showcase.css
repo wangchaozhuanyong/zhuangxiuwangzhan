@@ -34,7 +34,7 @@
   font-weight: 600;
   line-height: 1.25;
   text-align: center;
-  transition: border-color 180ms ease, background 180ms ease, color 180ms ease;
+  transition: border-color var(--motion-control) var(--motion-ease), background var(--motion-control) var(--motion-ease), color var(--motion-control) var(--motion-ease);
 }
 
 .fc-furniture-primary a:hover {

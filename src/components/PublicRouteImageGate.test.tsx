@@ -27,7 +27,7 @@ function Image({ ready = false, offscreen = false, failed = false, raw = false }
 
 const render = async (children: React.ReactNode, routeKey = "/zh/services") => {
   await act(async () => root.render(<QueryClientProvider client={client}><LanguageProvider><PublicRouteImageGate routeKey={routeKey}><main id="main-content">{children}</main></PublicRouteImageGate></LanguageProvider></QueryClientProvider>));
-  await act(async () => vi.advanceTimersByTime(20));
+  await act(async () => vi.advanceTimersByTime(40));
 };
 const loader = () => container.querySelector("[data-route-loader]");
 const state = () => container.querySelector("[data-route-visual-state]")?.getAttribute("data-route-visual-state");
@@ -77,7 +77,11 @@ describe("public route visual readiness", () => {
   });
 
   it("waits on subsequent routes with lightweight feedback instead of the brand screen", async () => {
+    await render(<Image ready />, "/zh/projects");
     await render(<Image />);
+    expect(container.querySelector(".public-route-retained img")).not.toBeNull();
+    expect(loader()).toBeNull();
+    await act(async () => vi.advanceTimersByTime(180));
     expect(loader()?.getAttribute("data-route-loader")).toBe("navigation");
     expect(document.documentElement.dataset.publicRouteLoading).toBe("navigation");
     expect(container.querySelector(".scheme-a-page-loader__brand")).toBeNull();
@@ -117,7 +121,7 @@ describe("public route visual readiness", () => {
     await render(<Image ready />);
     expect(loader()).not.toBeNull();
     await act(async () => client.setQueryData(["published", "site_page", "zh", "services"], {}));
-    await act(async () => vi.advanceTimersByTime(20));
+    await act(async () => vi.advanceTimersByTime(40));
     expect(loader()).toBeNull();
     unsubscribe();
   });
@@ -134,6 +138,8 @@ describe("public route visual readiness", () => {
     await render(<Image ready />, "/zh/furniture");
     expect(loader()).toBeNull();
     await render(<Image />, nextRoute);
+    expect(container.querySelector(".public-route-retained img")).not.toBeNull();
+    await act(async () => vi.advanceTimersByTime(180));
     expect(loader()).not.toBeNull();
     await render(<Image ready />, nextRoute);
     expect(loader()).toBeNull();
@@ -146,6 +152,18 @@ describe("public route visual readiness", () => {
     await act(async () => buttons[1].click());
     expect(loader()).toBeNull();
     expect(container.querySelector("img")).toHaveAttribute("data-image-state", "loading");
+  });
+
+  it("retains one complete scene through rapid navigation and strips duplicate IDs", async () => {
+    await render(<Image ready />, "/zh/projects");
+    await render(<Image />, "/zh/materials");
+    await render(<div data-route-pending="true" />, "/zh/blog");
+    expect(container.querySelectorAll("#main-content")).toHaveLength(1);
+    expect(container.querySelectorAll(".public-route-retained > div")).toHaveLength(1);
+    expect(container.querySelector(".public-route-retained img")?.getAttribute("src")).toBe(src);
+    expect(container.querySelector(".public-route-retained > div")).toHaveAttribute("inert");
+    await render(<Image ready />, "/zh/blog");
+    expect(container.querySelector(".public-route-retained")?.childElementCount).toBe(0);
   });
 
   it("does not let an obsolete route timer cover the next ready route", async () => {

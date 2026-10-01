@@ -94,7 +94,7 @@
   font-weight: 700;
   letter-spacing: 0.04em;
   text-decoration: none;
-  transition: border-color 180ms ease, background 180ms ease, transform 180ms ease;
+  transition: border-color var(--motion-control) var(--motion-ease), background var(--motion-control) var(--motion-ease), transform var(--motion-control) var(--motion-ease);
 }
 
 .scheme-a-public-shell .fc-route-page .fc-route-hero-actions svg {

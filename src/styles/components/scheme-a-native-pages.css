@@ -145,7 +145,7 @@
   border: 1px solid rgb(123 135 117 / 0.3);
   box-shadow: none;
   backdrop-filter: blur(14px);
-  transition: background 200ms ease, border-color 200ms ease, box-shadow 200ms ease;
+  transition: background var(--motion-image) var(--motion-ease), border-color var(--motion-image) var(--motion-ease), box-shadow var(--motion-image) var(--motion-ease);
 }
 
 .fc-route-search svg {
@@ -220,7 +220,7 @@ html[data-public-theme="dark"] .scheme-a-public-shell input[type="range"] {
   font-weight: 600;
   letter-spacing: 0.02em;
   cursor: pointer;
-  transition: color 200ms ease, background-color 200ms ease, border-color 200ms ease, box-shadow 200ms ease, transform 200ms ease;
+  transition: color var(--motion-image) var(--motion-ease), background-color var(--motion-image) var(--motion-ease), border-color var(--motion-image) var(--motion-ease), box-shadow var(--motion-image) var(--motion-ease), transform var(--motion-image) var(--motion-ease);
 }
 
 @media (max-width: 540px) {
@@ -289,7 +289,7 @@ html[data-public-theme="dark"] .scheme-a-public-shell input[type="range"] {
     linear-gradient(145deg, rgb(247 246 242 / 0.98), rgb(247 246 242 / 0.98));
   border-radius: 4px;
   box-shadow: none;
-  transition: transform 260ms ease, box-shadow 260ms ease, background-color 260ms ease;
+  transition: transform 260ms var(--motion-ease), box-shadow 260ms var(--motion-ease), background-color 260ms var(--motion-ease);
 }
 .fc-blog-topic-card:hover {
   transform: translateY(-2px);
@@ -357,7 +357,7 @@ html[data-public-theme="dark"] .scheme-a-public-shell input[type="range"] {
   line-height: 1.55;
   text-decoration-color: rgb(123 135 117 / 0.48);
   text-underline-offset: 4px;
-  transition: color 180ms ease, text-decoration-color 180ms ease;
+  transition: color var(--motion-control) var(--motion-ease), text-decoration-color var(--motion-control) var(--motion-ease);
 }
 .fc-blog-topic-card a:hover {
   color: #292E29;
@@ -405,7 +405,7 @@ html[data-public-theme="dark"] .scheme-a-public-shell input[type="range"] {
   padding: 0;
   overflow: hidden;
   box-shadow: none;
-  transition: transform 300ms cubic-bezier(0.16, 1, 0.3, 1), border-color 260ms ease, box-shadow 260ms ease;
+  transition: border-color var(--motion-hover) var(--motion-ease), box-shadow var(--motion-hover) var(--motion-ease);
 }
 
 .fc-route-card:hover {
@@ -437,10 +437,10 @@ html[data-public-theme="dark"] .scheme-a-public-shell input[type="range"] {
 .fc-route-card-media img {
   object-fit: cover;
   filter: none !important;
-  transition: transform 700ms cubic-bezier(0.16, 1, 0.3, 1);
+  transition: transform var(--motion-hover) var(--motion-ease);
 }
 
-.fc-route-card:hover .fc-route-card-media img { transform: scale(1.045); }
+@media (hover: hover) and (pointer: fine) { .fc-route-card:hover .fc-route-card-media img { transform: scale(1.015); } }
 .fc-route-card-meta { display: block; margin-top: 0; color: var(--public-accent); font-size: 12px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; }
 .fc-route-card h3 {
   margin-top: 10px;
@@ -456,7 +456,7 @@ html[data-public-theme="dark"] .scheme-a-public-shell input[type="range"] {
   -webkit-box-orient: vertical;
   overflow: hidden;
   text-overflow: ellipsis;
-  transition: color 220ms ease;
+  transition: color var(--motion-hover) var(--motion-ease);
 }
 
 .fc-route-card:hover h3 {
@@ -485,14 +485,14 @@ html[data-public-theme="dark"] .scheme-a-public-shell input[type="range"] {
   color: var(--public-accent);
   font-size: 13px;
   font-weight: 600;
-  transition: color 200ms ease, gap 200ms ease;
+  transition: color var(--motion-image) var(--motion-ease), gap var(--motion-image) var(--motion-ease);
 }
 
 .fc-route-card:hover .fc-route-card-action {
   color: #3F4E42;
   gap: 8px;
 }
-.fc-route-card-action svg { width: 14px; height: 14px; transition: transform 200ms ease; }
+.fc-route-card-action svg { width: 14px; height: 14px; transition: transform var(--motion-image) var(--motion-ease); }
 .fc-route-card:hover .fc-route-card-action svg { transform: translate(1px, -1px); }
 
 .fc-route-more {
@@ -512,7 +512,7 @@ html[data-public-theme="dark"] .scheme-a-public-shell input[type="range"] {
   backdrop-filter: blur(10px);
   text-align: left;
   font-weight: 600;
-  transition: background 200ms ease, box-shadow 200ms ease, transform 200ms ease, border-color 200ms ease;
+  transition: background var(--motion-image) var(--motion-ease), box-shadow var(--motion-image) var(--motion-ease), transform var(--motion-image) var(--motion-ease), border-color var(--motion-image) var(--motion-ease);
 }
 
 .fc-route-more:hover {
@@ -526,7 +526,7 @@ html[data-public-theme="dark"] .scheme-a-public-shell input[type="range"] {
 .fc-route-more svg { width: 15px; height: 15px; color: #3F4E42; }
 
 .fc-route-state { display: grid; min-height: 220px; place-items: center; padding: 30px; color: var(--public-text-secondary); text-align: center; }
-.fc-route-state button { min-height: 44px; margin-top: 15px; border: 0; border-radius: 999px; padding: 10px 22px; background: var(--public-accent); color: #FDFCFA; font-weight: 700; transition: transform 180ms ease; }
+.fc-route-state button { min-height: 44px; margin-top: 15px; border: 0; border-radius: 999px; padding: 10px 22px; background: var(--public-accent); color: #FDFCFA; font-weight: 700; transition: transform var(--motion-control) var(--motion-ease); }
 .fc-route-state button:hover { transform: translateY(-1px); }
 
 .fc-route-facts { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); background: var(--public-surface-section); border: 1px solid var(--public-border); border-radius: 6px; overflow: hidden; }
@@ -620,7 +620,7 @@ html[data-public-theme="dark"] .scheme-a-public-shell input[type="range"] {
 }
 .fc-route-link-card-copy { min-width: 0; }
 .fc-route-link-card-label { color: var(--public-accent); font-size: 12.5px; font-weight: 600; letter-spacing: 0.04em; }
-.fc-route-link-card h3 { margin-top: 6px; color: #292E29; font-family: var(--font-display); font-size: 20px; font-weight: 500; line-height: 1.4; overflow-wrap: anywhere; transition: color 180ms ease; }
+.fc-route-link-card h3 { margin-top: 6px; color: #292E29; font-family: var(--font-display); font-size: 20px; font-weight: 500; line-height: 1.4; overflow-wrap: anywhere; transition: color var(--motion-control) var(--motion-ease); }
 .fc-route-link-card p { margin-top: 8px; color: var(--public-text-secondary); font-size: 15px; line-height: 1.7; }
 .fc-route-link-card-action { display: inline-flex; color: #3F4E42; }
 .fc-route-link-card-action svg { width: 20px; height: 20px; }
@@ -669,7 +669,7 @@ html[data-public-theme="dark"] .scheme-a-public-shell input[type="range"] {
   flex-shrink: 0;
   min-width: 2.2ch;
   text-align: left;
-  transition: color 220ms ease, text-shadow 220ms ease;
+  transition: color var(--motion-hover) var(--motion-ease), text-shadow var(--motion-hover) var(--motion-ease);
 }
 .fc-route-faq button[aria-expanded="true"] .fc-route-faq-index {
   color: #3F4E42;
@@ -686,7 +686,7 @@ html[data-public-theme="dark"] .scheme-a-public-shell input[type="range"] {
   font-weight: 500;
   line-height: 1.45;
   color: var(--public-text-primary);
-  transition: color 220ms ease;
+  transition: color var(--motion-hover) var(--motion-ease);
 }
 .fc-route-faq button[aria-expanded="true"] span.fc-route-faq-question {
   color: #292E29;
@@ -697,7 +697,7 @@ html[data-public-theme="dark"] .scheme-a-public-shell input[type="range"] {
   color: var(--atelier-gold, #3F4E42);
   flex-shrink: 0;
   margin-left: auto;
-  transition: transform 240ms cubic-bezier(0.16, 1, 0.3, 1), color 220ms ease;
+  transition: transform var(--motion-handoff) var(--motion-ease), color var(--motion-hover) var(--motion-ease);
 }
 .fc-route-faq button svg[data-open="true"] {
   transform: rotate(45deg);
@@ -801,7 +801,7 @@ html[data-public-theme="dark"] .scheme-a-public-shell input[type="range"] {
   background: var(--public-surface-card);
   border: 1px solid var(--public-border);
   border-radius: 6px;
-  transition: border-color 220ms ease, background-color 220ms ease;
+  transition: border-color var(--motion-hover) var(--motion-ease), background-color var(--motion-hover) var(--motion-ease);
 }
 .fc-route-budget-card:hover,
 .fc-route-budget-grid article:hover {
@@ -936,7 +936,7 @@ html[data-public-theme="dark"] .scheme-a-public-shell input[type="range"] {
   background-color: var(--public-surface-base) !important;
   color: var(--public-text-primary) !important;
   line-height: 42px !important;
-  transition: border-color 200ms ease, box-shadow 200ms ease, background-color 200ms ease;
+  transition: border-color var(--motion-image) var(--motion-ease), box-shadow var(--motion-image) var(--motion-ease), background-color var(--motion-image) var(--motion-ease);
 }
 .fc-route-form-page select:focus,
 .fc-route-quote-form select:focus,
@@ -955,7 +955,7 @@ html[data-public-theme="dark"] .scheme-a-public-shell input[type="range"] {
   border-radius: 6px !important;
   background-color: var(--public-surface-base) !important;
   color: var(--public-text-primary) !important;
-  transition: border-color 200ms ease, box-shadow 200ms ease;
+  transition: border-color var(--motion-image) var(--motion-ease), box-shadow var(--motion-image) var(--motion-ease);
 }
 .fc-route-form-page textarea,
 .fc-route-quote-form textarea {
@@ -964,7 +964,7 @@ html[data-public-theme="dark"] .scheme-a-public-shell input[type="range"] {
   border-radius: 6px !important;
   background-color: var(--public-surface-base) !important;
   color: var(--public-text-primary) !important;
-  transition: border-color 200ms ease, box-shadow 200ms ease;
+  transition: border-color var(--motion-image) var(--motion-ease), box-shadow var(--motion-image) var(--motion-ease);
 }
 .fc-route-form-page input::placeholder,
 .fc-route-quote-form input::placeholder,
@@ -1042,7 +1042,7 @@ html[data-public-theme] .fc-route-form-page .contact-detail-row__action {
   font-weight: 600 !important;
   white-space: nowrap !important;
   flex-shrink: 0 !important;
-  transition: background 200ms ease, border-color 200ms ease, transform 180ms ease !important;
+  transition: background var(--motion-image) var(--motion-ease), border-color var(--motion-image) var(--motion-ease), transform var(--motion-control) var(--motion-ease) !important;
 }
 html[data-public-theme] .fc-route-form-page .contact-detail-row__action:hover {
   background: rgb(228 232 222 / 0.28) !important;
@@ -1107,7 +1107,7 @@ html[data-public-theme] .fc-route-form-page .contact-detail-row__action:hover {
   background: var(--public-accent) !important;
   box-shadow: none !important;
   font-weight: 700 !important;
-  transition: transform 180ms ease, box-shadow 180ms ease !important;
+  transition: transform var(--motion-control) var(--motion-ease), box-shadow var(--motion-control) var(--motion-ease) !important;
 }
 .fc-route-form-page :is(.btn-brand-primary, button[type="submit"]):hover {
   transform: translateY(-1px) !important;
@@ -1119,7 +1119,7 @@ html[data-public-theme] .fc-route-form-page .contact-detail-row__action:hover {
   color: var(--public-text-primary) !important;
   background: var(--public-surface-section) !important;
   box-shadow: none !important;
-  transition: transform 180ms ease, border-color 180ms ease, background 180ms ease !important;
+  transition: transform var(--motion-control) var(--motion-ease), border-color var(--motion-control) var(--motion-ease), background var(--motion-control) var(--motion-ease) !important;
 }
 .fc-route-form-page :is(.btn-brand-secondary, .fc-route-contact-actions a:last-child):hover {
   transform: translateY(-1px) !important;
@@ -1313,7 +1313,7 @@ html[data-public-theme] .fc-route-form-page .contact-detail-row__action:hover {
   border: 1px solid rgb(123 135 117 / 0.2) !important;
   color: #292E29 !important;
   text-decoration: none !important;
-  transition: color 180ms ease, background-color 180ms ease, border-color 180ms ease, transform 180ms ease !important;
+  transition: color var(--motion-control) var(--motion-ease), background-color var(--motion-control) var(--motion-ease), border-color var(--motion-control) var(--motion-ease), transform var(--motion-control) var(--motion-ease) !important;
   box-shadow: none !important;
 }
 
@@ -1357,7 +1357,7 @@ html[data-public-theme] .fc-route-form-page .contact-detail-row__action:hover {
 .fc-route-form-page .quote-side-nav__arrow {
   flex-shrink: 0 !important;
   color: #3F4E42 !important;
-  transition: transform 180ms ease !important;
+  transition: transform var(--motion-control) var(--motion-ease) !important;
 }
 
 .fc-route-form-page .quote-side-nav__link:hover .quote-side-nav__arrow {
@@ -1569,7 +1569,7 @@ html[data-public-theme="dark"] .home-footer-prelude__button--secondary svg { col
     background-size: 16px 16px;
     padding-right: 2.5rem;
     border-color: rgb(123 135 117 / 0.24);
-    transition: border-color 180ms ease, box-shadow 180ms ease;
+    transition: border-color var(--motion-control) var(--motion-ease), box-shadow var(--motion-control) var(--motion-ease);
   }
   .fc-route-form-page select:focus,
   .fc-route-quote-form select:focus,
@@ -1773,6 +1773,7 @@ html[data-public-theme="dark"] .home-footer-prelude__button--secondary svg { col
 }
 
 @media (prefers-reduced-motion: reduce) {
+  .fc-route-card:hover .fc-route-card-media img { transform: none; }
   .fc-route-card-media img,
   .fc-route-filter button,
   .fc-route-more { transition: none; }

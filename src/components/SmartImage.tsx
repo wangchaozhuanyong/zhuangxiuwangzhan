@@ -1,4 +1,5 @@
 import * as React from "react";
+import { PUBLIC_MOTION, prefersReducedMotion } from "@/lib/publicMotion";
 import { isLocalImageSrc, preferWebpSrc, toLocalStaticImageSrc } from "@/lib/imageUrl";
 import {
   buildLocalResponsiveSrcSet,
@@ -34,7 +35,7 @@ type SmartImageProps = Omit<React.ImgHTMLAttributes<HTMLImageElement>, "src" | "
   /** Keeps the previous decoded bitmap visible while a replacement is loading. */
   critical?: boolean;
   showFailureFallback?: boolean;
-  /** Retained for existing callers; decoded images now appear without a fade. */
+  /** Keeps a stable image frame and gently hands off decoded replacements. */
   revealOnLoad?: boolean;
 };
 
@@ -93,7 +94,7 @@ export function SmartImage({
   const [state, setState] = React.useState<ImageState>({ sourceKey, status: "loading" });
   const [previous, setPrevious] = React.useState<string | null>(null);
   const requestId = React.useRef(0);
-  const framed = critical || showFailureFallback;
+  const framed = critical || showFailureFallback || revealOnLoad;
   const selectedSrc = imgRef.current?.currentSrc;
   const imageState = state.sourceKey === sourceKey &&
     (!state.currentSrc || !selectedSrc || state.currentSrc === selectedSrc)
@@ -113,7 +114,7 @@ export function SmartImage({
         .then(() => {
           if (request !== requestId.current || !img.isConnected) return;
           setState({ sourceKey, status: "loaded", currentSrc: img.currentSrc || img.src });
-          setPrevious(null);
+
         })
         .catch(() => {
           if (request === requestId.current) setState({ sourceKey, status: "error" });
@@ -122,6 +123,19 @@ export function SmartImage({
     return () => { if (requestId.current === request) requestId.current = request + 1; };
     // The selected source changes when the browser swaps a picture candidate.
     // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [sourceKey]);
+
+  React.useEffect(() => {
+    if (!previous || imageState !== "loaded") return;
+    const timer = window.setTimeout(() => setPrevious(null), prefersReducedMotion() ? 0 : PUBLIC_MOTION.image);
+    return () => window.clearTimeout(timer);
+  }, [previous, imageState, sourceKey]);
+
+  React.useEffect(() => {
+    const image = imgRef.current;
+    const retryTransfer = () => setRetry(Date.now());
+    image?.addEventListener("public-image-retry", retryTransfer);
+    return () => image?.removeEventListener("public-image-retry", retryTransfer);
   }, [sourceKey]);
 
   const handleLoad: React.ReactEventHandler<HTMLImageElement> = (event) => {
@@ -136,7 +150,7 @@ export function SmartImage({
       .then(() => {
         if (request !== requestId.current || !img.isConnected || (img.currentSrc || img.src) !== selected) return;
         setState({ sourceKey, status: "loaded", currentSrc: selected });
-        setPrevious(null);
+
         onLoad?.(event);
       })
       .catch(() => {
@@ -184,8 +198,8 @@ export function SmartImage({
   if (!framed) return selectedImage;
 
   return (
-    <span className="smart-image-frame">
-      {previous ? <img src={previous} alt="" aria-hidden="true" className="smart-image-previous" /> : null}
+    <span className="smart-image-frame" data-image-ready={imageState === "loaded" || undefined}>
+      {previous ? <img src={previous} alt="" aria-hidden="true" className={cn("smart-image-previous", className)} style={rest.style} /> : null}
       {selectedImage}
       {imageState === "error" ? (
         <span className="smart-image-failure" role="alert">

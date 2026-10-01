@@ -1,4 +1,5 @@
-import { useEffect, useMemo, useState } from "react";
+import { useMemo } from "react";
+import { usePublicListingState } from "@/hooks/usePublicListingState";
 import PageMeta from "@/components/PageMeta";
 import { JsonLdBreadcrumb } from "@/components/JsonLd";
 import {
@@ -41,15 +42,13 @@ export default function Projects() {
   const copy = projectsPageText[language];
   const indexCopy = schemeAProjectsIndexText[language];
   const routeText = schemeARouteText[language];
-  const [filter, setFilter] = useState<(typeof categories)[number]>("All");
-  const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
+  const { filter, setFilter, visibleCount, setVisibleCount } = usePublicListingState(categories, "All", PAGE_SIZE);
   const { data: projects = [], isLoading, isError, refetch } = usePublishedProjectSummaries(language);
   const { data: pageContent } = usePublishedSitePage(language, "projects");
   const heroImage = resolvePageHeroImage(pageContent?.image_url, pageHeroImages.projects);
   const filtered = filter === "All" ? projects : projects.filter((project) => project.type === filter);
   const visible = filtered.slice(0, visibleCount);
 
-  useEffect(() => setVisibleCount(PAGE_SIZE), [filter]);
 
   const items = useMemo<SchemeAListingItem[]>(() => visible.map((project) => {
     const title = translateDisplayText(project.title, language);
@@ -90,6 +89,7 @@ export default function Projects() {
           onChange={(value) => setFilter(value as (typeof categories)[number])}
           ariaLabel={copy.categoryFilterAria}
         />
+        <div data-public-results>
         <p className="fc-route-filter-summary" role="status" aria-live="polite" aria-atomic="true">
           {!isLoading && !isError ? copy.showing(visible.length, filtered.length) : ""}
         </p>
@@ -100,6 +100,7 @@ export default function Projects() {
         {!isLoading && !isError && visible.length < filtered.length ? (
           <SchemeALoadMore label={copy.loadMore} detail={copy.showing(visible.length, filtered.length)} onClick={() => setVisibleCount((count) => Math.min(count + PAGE_SIZE, filtered.length))} />
         ) : null}
+        </div>
       </SchemeASection>
     </main>
   );
