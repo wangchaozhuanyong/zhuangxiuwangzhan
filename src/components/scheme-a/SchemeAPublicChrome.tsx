@@ -155,7 +155,6 @@ export const SchemeANavbar = () => {
   const translate = useT();
   const t = schemeAChromeText[language];
   const navText = navbarText[language];
-  const footer = footerCopy[language];
   const settings = useSiteSettings();
   const settingsPending = useSiteSettingsReadiness();
   const { hasImmersiveHero, menuOpen, setMenuOpen } = usePublicChrome();
@@ -163,8 +162,7 @@ export const SchemeANavbar = () => {
   const currentPrimaryItem = getCurrentNavigationItem(location.pathname, primaryPublicNavigationItems);
   const currentGroup = getCurrentNavigationGroup(location.pathname);
   const [openGroup, setOpenGroup] = useState<PublicNavGroupKey | null>(null);
-  const [previewItem, setPreviewItem] = useState<PublicNavItem>(currentItem);
-  const [canPreview, setCanPreview] = useState(false);
+  const [compactDirectory, setCompactDirectory] = useState(true);
   const [scrolled, setScrolled] = useState(false);
   const sentinelRef = useRef<HTMLSpanElement>(null);
   const desktopTriggerRef = useRef<HTMLButtonElement>(null);
@@ -189,18 +187,14 @@ export const SchemeANavbar = () => {
   };
   const publicPath = stripLanguagePrefix(location.pathname);
   const overlay = hasImmersiveHero && !scrolled && !menuOpen;
-  const directoryPreviewItem = canPreview ? previewItem : currentItem;
 
   useEffect(() => {
-    const media = window.matchMedia("(min-width: 1180px) and (hover: hover) and (pointer: fine)");
-    const updatePreviewMode = () => {
-      setCanPreview(media.matches);
-      setPreviewItem(currentItem);
-    };
-    updatePreviewMode();
-    media.addEventListener("change", updatePreviewMode);
-    return () => media.removeEventListener("change", updatePreviewMode);
-  }, [currentItem]);
+    const media = window.matchMedia("(max-width: 767px)");
+    const updateLayout = () => setCompactDirectory(media.matches);
+    updateLayout();
+    media.addEventListener("change", updateLayout);
+    return () => media.removeEventListener("change", updateLayout);
+  }, []);
 
   const closeDirectory = useCallback((restoreFocus = true) => {
     returnFocus.current = restoreFocus;
@@ -231,13 +225,11 @@ export const SchemeANavbar = () => {
     window.clearTimeout(closeTimer.current);
     setClosing(false);
     setOpenGroup(currentGroup);
-    setPreviewItem(currentItem);
     setMenuOpen(true);
-  }, [closeDirectory, currentGroup, currentItem, menuOpen, setMenuOpen]);
+  }, [closeDirectory, currentGroup, menuOpen, setMenuOpen]);
 
   useEffect(() => {
     if (menuRef.current && menuRef.current.dataset.state !== "closed") closeDirectory(false);
-    setPreviewItem(currentItem);
   }, [currentItem, location.pathname, location.search, closeDirectory]);
 
   useEffect(() => {
@@ -273,14 +265,15 @@ export const SchemeANavbar = () => {
     const previousBodyOverflow = document.body.style.overflow;
     document.documentElement.style.overflow = "hidden";
     document.body.style.overflow = "hidden";
-    window.requestAnimationFrame(() => closeRef.current?.focus());
+    const focusFrame = window.requestAnimationFrame(() => closeRef.current?.focus({ preventScroll: true }));
     const handleKey = (event: KeyboardEvent) => {
       if (event.key === "Escape") {
         closeDirectory();
         return;
       }
       if (event.key !== "Tab") return;
-      const focusable = Array.from(menuRef.current?.querySelectorAll<HTMLElement>('a[href], button:not([disabled])') || []).filter((item) => item.offsetParent !== null);
+      const focusable = Array.from(menuRef.current?.querySelectorAll<HTMLElement>('a[href], button:not([disabled])') || [])
+        .filter((item) => item.tabIndex >= 0 && item.getClientRects().length > 0 && getComputedStyle(item).visibility !== "hidden");
       if (!focusable.length) return;
       const first = focusable[0];
       const last = focusable[focusable.length - 1];
@@ -296,6 +289,7 @@ export const SchemeANavbar = () => {
     return () => {
       document.documentElement.style.overflow = previousRootOverflow;
       document.body.style.overflow = previousBodyOverflow;
+      window.cancelAnimationFrame(focusFrame);
       window.removeEventListener("keydown", handleKey);
     };
   }, [closeDirectory, menuOpen]);
@@ -312,7 +306,7 @@ export const SchemeANavbar = () => {
                 {translate(item.labelKey)}
               </LocalizedLink>
             ))}
-            <button ref={desktopTriggerRef} className="scheme-a-chrome__nav-more" type="button" aria-label={t.openMenu} aria-expanded={menuOpen} aria-controls="scheme-a-directory" onClick={toggleDirectory}>
+            <button ref={desktopTriggerRef} className="scheme-a-chrome__nav-more" type="button" aria-label={t.openMenu} aria-haspopup="dialog" aria-expanded={menuOpen} aria-controls="scheme-a-directory" onClick={toggleDirectory}>
               <span>{navText.more}</span>
               <Menu aria-hidden="true" />
             </button>
@@ -322,7 +316,7 @@ export const SchemeANavbar = () => {
               {t.quote}<ArrowUpRight aria-hidden="true" />
             </LocalizedLink>
             <LanguageSwitch language={language} paths={languagePaths} labels={languageLabels} />
-            <button ref={compactTriggerRef} className="scheme-a-chrome__menu-trigger scheme-a-chrome__menu-trigger--compact" type="button" aria-label={t.openMenu} aria-expanded={menuOpen} aria-controls="scheme-a-directory" onClick={toggleDirectory}>
+            <button ref={compactTriggerRef} className="scheme-a-chrome__menu-trigger scheme-a-chrome__menu-trigger--compact" type="button" aria-label={t.openMenu} aria-haspopup="dialog" aria-expanded={menuOpen} aria-controls="scheme-a-directory" onClick={toggleDirectory}>
               <span className="scheme-a-chrome__menu-label">{navText.more}</span>
               <Menu aria-hidden="true" />
             </button>
@@ -332,50 +326,49 @@ export const SchemeANavbar = () => {
       {!hasImmersiveHero ? <div className="scheme-a-chrome__spacer" aria-hidden="true" /> : null}
 
       <div
-          ref={menuRef}
-          id="scheme-a-directory"
-          className="scheme-a-directory"
-          data-state={!menuOpen ? "closed" : closing ? "closing" : "open"}
-          aria-hidden={!menuOpen || undefined}
-          role="dialog"
-          aria-modal={menuOpen || undefined}
-          aria-label={t.directory}
-          onPointerDown={(event) => {
-            const target = event.target;
-            if (!(target instanceof Element)) return;
-            if (target.closest("a, button, figure, .scheme-a-directory__contact")) return;
-            closeDirectory();
-          }}
-        >
-          <div className="scheme-a-directory__head scheme-a-frame">
-            <BrandMark logo={logo} name={companyName} />
-            <div className="scheme-a-directory__intro"><span>{t.directory}</span><p>{t.directoryIntro}</p></div>
-            <div className="scheme-a-directory__actions">
-              <LanguageSwitch language={language} paths={languagePaths} labels={languageLabels} />
-              <button ref={closeRef} className="scheme-a-chrome__menu-trigger" type="button" aria-label={t.closeMenu} aria-expanded="true" aria-controls="scheme-a-directory" onClick={toggleDirectory}>
-                <span className="scheme-a-chrome__menu-label">{navText.more}</span>
-                <X aria-hidden="true" />
-              </button>
-            </div>
-          </div>
-          <div className="scheme-a-directory__body scheme-a-frame">
-            <nav className="scheme-a-directory__groups" aria-label={t.directory}>
-              {publicNavigationGroups.map((group) => (
-                <section key={group.key} data-open={openGroup === group.key ? "true" : "false"}>
-                  <button
-                    type="button"
-                    className="scheme-a-directory__group-toggle"
-                    aria-expanded={openGroup === group.key}
-                    aria-controls={`scheme-a-directory-group-${group.key}`}
-                    onClick={() => setOpenGroup((value) => value === group.key ? null : group.key)}
-                  >
-                    <span>{getGroupLabel(group.key, navText)}</span>
-                    <ChevronDown aria-hidden="true" />
-                  </button>
+        className="scheme-a-directory-backdrop"
+        data-state={!menuOpen ? "closed" : closing ? "closing" : "open"}
+        aria-hidden="true"
+        onClick={() => closeDirectory()}
+      />
+      <div
+        ref={menuRef}
+        id="scheme-a-directory"
+        className="scheme-a-directory"
+        data-state={!menuOpen ? "closed" : closing ? "closing" : "open"}
+        aria-hidden={!menuOpen || undefined}
+        role="dialog"
+        aria-modal={menuOpen || undefined}
+        aria-label={t.directory}
+      >
+        <div className="scheme-a-directory__head">
+          <span>{t.directory}</span>
+          <button ref={closeRef} className="scheme-a-directory__close" type="button" aria-label={t.closeMenu} onClick={() => closeDirectory()}>
+            <X aria-hidden="true" />
+          </button>
+        </div>
+        <div className="scheme-a-directory__body">
+          <nav className="scheme-a-directory__groups" aria-label={t.directory}>
+            {publicNavigationGroups.map((group) => {
+              const expanded = !compactDirectory || openGroup === group.key;
+              return (
+                <section key={group.key} data-open={expanded ? "true" : "false"}>
+                  {compactDirectory ? (
+                    <button
+                      type="button"
+                      className="scheme-a-directory__group-toggle"
+                      aria-expanded={expanded}
+                      aria-controls={`scheme-a-directory-group-${group.key}`}
+                      onClick={() => setOpenGroup((value) => value === group.key ? null : group.key)}
+                    >
+                      <span>{getGroupLabel(group.key, navText)}</span>
+                      <ChevronDown aria-hidden="true" />
+                    </button>
+                  ) : <h3 className="scheme-a-directory__group-title">{getGroupLabel(group.key, navText)}</h3>}
                   <div
                     id={`scheme-a-directory-group-${group.key}`}
                     className="scheme-a-directory__group-panel"
-                    aria-hidden={openGroup !== group.key}
+                    aria-hidden={!expanded}
                   >
                     <div className="scheme-a-directory__group-content">
                       <ul>
@@ -384,12 +377,10 @@ export const SchemeANavbar = () => {
                             <LocalizedLink
                               to={item.path === "/quote" ? QUOTE_FORM_PATH : item.path}
                               aria-current={isActivePath(location.pathname, item.path) && currentItem.path === item.path ? "page" : undefined}
-                              tabIndex={openGroup === group.key ? undefined : -1}
+                              tabIndex={expanded ? undefined : -1}
                               onClick={(event) => {
                                 if (event.button === 0 && !event.metaKey && !event.ctrlKey && !event.shiftKey && !event.altKey) closeDirectory(false);
                               }}
-                              onFocus={() => { if (canPreview) setPreviewItem(item); }}
-                              onPointerEnter={(event) => { if (canPreview && event.pointerType === "mouse") setPreviewItem(item); }}
                             >
                               <span>{translate(item.labelKey)}</span>
                               {isActivePath(location.pathname, item.path) && currentItem.path === item.path
@@ -402,38 +393,16 @@ export const SchemeANavbar = () => {
                     </div>
                   </div>
                 </section>
-              ))}
-            </nav>
-            <figure className="scheme-a-directory__preview">
-              <SmartImage src={directoryPreviewItem.previewImage} alt={navText.previewAlt} width={1100} height={800} quality={84} loading="eager" fetchPriority="low" revealOnLoad />
-              <figcaption><span>{canPreview ? navText.sectionPreview : navText.currentPage}</span><strong>{translate(directoryPreviewItem.labelKey)}</strong></figcaption>
-            </figure>
-            <div className="scheme-a-directory__contact">
-              <a
-                className="scheme-a-directory__call"
-                href={settings.phone_href}
-                aria-label={`${t.call}: ${settings.phone_display}`}
-                onClick={() => trackCtaClick("phone", "scheme_a_menu_contact", { destination: "phone" })}
-              >
-                <span className="scheme-a-directory__contact-icon"><Phone aria-hidden="true" /></span>
-                <span className="scheme-a-directory__contact-copy"><small>{t.call}</small><strong>{settings.phone_display}</strong></span>
-                <span className="scheme-a-directory__contact-action"><span>{t.callNow}</span><ArrowUpRight aria-hidden="true" /></span>
-              </a>
-              <LocalizedLink className="scheme-a-directory__hours" to="/contact" onClick={(event) => {
-                                if (event.button === 0 && !event.metaKey && !event.ctrlKey && !event.shiftKey && !event.altKey) closeDirectory(false);
-                              }}>
-                <span className="scheme-a-directory__contact-icon"><Clock aria-hidden="true" /></span>
-                <span className="scheme-a-directory__contact-copy"><small>{t.businessHours}</small><strong>{footer.hours}</strong></span>
-                <span className="scheme-a-directory__contact-action"><span>{translate("cta.contactUs")}</span><ArrowUpRight aria-hidden="true" /></span>
-              </LocalizedLink>
-            </div>
-          </div>
-          <div className="scheme-a-directory__foot scheme-a-frame">
-            <a href={settings.phone_href} onClick={() => trackCtaClick("phone", "scheme_a_menu", { destination: "phone" })}><Phone aria-hidden="true" />{t.call}</a>
-            <a className="is-whatsapp" href={settings.whatsapp_url()} target="_blank" rel="noopener noreferrer" onClick={() => trackCtaClick("whatsapp", "scheme_a_menu", { destination: "whatsapp" })}><WhatsAppIcon />{t.whatsapp}</a>
-            <LocalizedLink className="is-quote" to={QUOTE_FORM_PATH}>{t.quote}<ArrowUpRight aria-hidden="true" /></LocalizedLink>
-          </div>
+              );
+            })}
+          </nav>
         </div>
+        <div className="scheme-a-directory__foot">
+          <a href={settings.phone_href} onClick={() => trackCtaClick("phone", "scheme_a_menu", { destination: "phone" })}><Phone aria-hidden="true" />{t.call}</a>
+          <a className="is-whatsapp" href={settings.whatsapp_url()} target="_blank" rel="noopener noreferrer" onClick={() => trackCtaClick("whatsapp", "scheme_a_menu", { destination: "whatsapp" })}><WhatsAppIcon />{t.whatsapp}</a>
+          <LocalizedLink className="is-quote" to={QUOTE_FORM_PATH}>{t.quote}<ArrowUpRight aria-hidden="true" /></LocalizedLink>
+        </div>
+      </div>
 
     </>
   );
@@ -504,11 +473,13 @@ export const SchemeAFooter = () => {
                 <PublicContactRow icon={<Mail />} value={settings.email} action={footer.emailAction} asChild>
                   <a href={`mailto:${settings.email}`} />
                 </PublicContactRow>
-                <PublicContactRow icon={<Clock />} value={footer.hours} />
+                <div className="scheme-a-footer__appointment">
+                  <PublicContactRow icon={<Clock />} value={footer.hours} />
+                  <Button variant="outline" size="sm" asChild className="scheme-a-footer__contact-entry">
+                    <LocalizedLink to="/contact">{translate("nav.contact")}<ArrowUpRight aria-hidden="true" /></LocalizedLink>
+                  </Button>
+                </div>
               </div>
-              <Button variant="outline" asChild className="scheme-a-footer__contact-entry">
-                <LocalizedLink to="/contact">{translate("nav.contact")}<ArrowUpRight aria-hidden="true" /></LocalizedLink>
-              </Button>
               {settings.instagram_url || settings.facebook_url ? <div className="scheme-a-footer__socials">
                 {settings.instagram_url ? <a href={settings.instagram_url} target="_blank" rel="noopener noreferrer" aria-label="Instagram"><Instagram /></a> : null}
                 {settings.facebook_url ? <a href={settings.facebook_url} target="_blank" rel="noopener noreferrer" aria-label="Facebook"><Facebook /></a> : null}

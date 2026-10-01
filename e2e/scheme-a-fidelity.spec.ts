@@ -86,14 +86,17 @@ test.describe("Scheme A approved-design fidelity", () => {
     const dialog = page.getByRole("dialog", { name: "完整目录" });
     await expect(dialog).toBeVisible();
     const close = dialog.getByRole("button", { name: "关闭网站目录", exact: true });
-    await expect(close).toContainText("更多");
+    await expect(dialog.locator('.scheme-a-directory__group-title')).toHaveCount(4);
+    await expect(dialog.locator('.scheme-a-directory__groups a:visible')).toHaveCount(17);
     await close.click();
     await expect(dialog).toHaveCount(0);
     await expect(trigger).toBeFocused();
 
     await trigger.click();
     await expect(dialog).toBeVisible();
-    await dialog.click({ position: { x: 720, y: 32 } });
+    await dialog.locator('.scheme-a-directory__head > span').click();
+    await expect(dialog).toBeVisible();
+    await page.locator('.scheme-a-directory-backdrop').click({ position: { x: 8, y: 890 } });
     await expect(dialog).toHaveCount(0);
     await expect(trigger).toBeFocused();
   });
@@ -151,15 +154,17 @@ test.describe("Scheme A approved-design fidelity", () => {
     const dialog = page.getByRole("dialog", { name: "完整目录" });
     await expect(dialog).toBeVisible();
     await expect(dialog.locator(".scheme-a-directory__groups section")).toHaveCount(4);
-    await expect(dialog.locator(".scheme-a-directory__groups a")).toHaveCount(15);
+    await expect(dialog.locator(".scheme-a-directory__groups a")).toHaveCount(17);
     await expect(dialog.locator('.scheme-a-directory__groups section[data-open="true"]')).toHaveCount(1);
     await expect(dialog.getByRole("button", { name: "空间作品", exact: true })).toHaveAttribute("aria-expanded", "true");
-    await expect(dialog.locator(".scheme-a-directory__preview")).toBeVisible();
-    const languageSwitch = dialog.getByRole("group", { name: "切换语言" });
-    await expect(languageSwitch.getByRole("link", { name: "切换到中文" })).toContainText("中文");
-    await expect(languageSwitch.getByRole("link", { name: "切换到英文" })).toContainText("EN");
-    await expect(dialog).toContainText("营业时间");
-    await expect(dialog.locator(".scheme-a-directory__preview figcaption strong")).toContainText("项目案例");
+    await expect(dialog.locator(".scheme-a-directory__preview")).toHaveCount(0);
+    await expect(dialog.locator('a[aria-current="page"]')).toContainText("项目案例");
+    const close = dialog.getByRole('button', { name: '关闭网站目录', exact: true });
+    await expect(close).toBeFocused();
+    await page.keyboard.press('Shift+Tab');
+    await expect(dialog.locator('.is-quote')).toBeFocused();
+    await page.keyboard.press('Tab');
+    await expect(close).toBeFocused();
 
     const openGroupLabels = dialog.locator('.scheme-a-directory__groups section[data-open="true"] a > span:first-child');
     const labelLeftEdges = await openGroupLabels.evaluateAll((labels) => labels.map((label) => label.getBoundingClientRect().left));
@@ -177,26 +182,12 @@ test.describe("Scheme A approved-design fidelity", () => {
       };
     });
     expect(hierarchy.primaryFontSize).toBeGreaterThan(hierarchy.secondaryFontSize);
-    expect(hierarchy.primaryHeight).toBeGreaterThanOrEqual(52);
+    expect(hierarchy.primaryHeight).toBeGreaterThanOrEqual(44);
     expect(hierarchy.secondaryHeight).toBeGreaterThanOrEqual(44);
 
-    const callButton = dialog.locator(".scheme-a-directory__call");
+    const callButton = dialog.locator('.scheme-a-directory__foot a').first();
     await expect(callButton).toHaveAttribute("href", /^tel:\+/);
-    await expect(callButton).toContainText("立即拨打");
-    const contactMetrics = await dialog.locator(".scheme-a-directory__contact").evaluate((contact) => {
-      const call = contact.querySelector<HTMLElement>(".scheme-a-directory__call");
-      const callLabel = call?.querySelector<HTMLElement>("small");
-      const hoursLabel = contact.querySelector<HTMLElement>(".scheme-a-directory__hours small");
-      if (!call || !callLabel || !hoursLabel) throw new Error("Missing directory contact actions");
-      return {
-        callHeight: call.getBoundingClientRect().height,
-        callLabelSize: Number.parseFloat(getComputedStyle(callLabel).fontSize),
-        hoursLabelSize: Number.parseFloat(getComputedStyle(hoursLabel).fontSize),
-      };
-    });
-    expect(contactMetrics.callHeight).toBeGreaterThanOrEqual(60);
-    expect(contactMetrics.callLabelSize).toBeGreaterThanOrEqual(14);
-    expect(contactMetrics.hoursLabelSize).toBeGreaterThanOrEqual(14);
+    expect(await callButton.evaluate(el => el.getBoundingClientRect().height)).toBeGreaterThanOrEqual(44);
 
     await dialog.getByRole("button", { name: "服务体系", exact: true }).click();
     await expect(dialog.getByRole("link", { name: "材料库", exact: true })).toHaveAttribute("href", "/zh/materials");
@@ -209,12 +200,51 @@ test.describe("Scheme A approved-design fidelity", () => {
     await page.keyboard.press("Escape");
     await expect(dialog).toHaveCount(0);
     await expect(trigger).toBeFocused();
+    const languageSwitch = page.locator('header').getByRole('group', { name: '切换语言' });
+    await expect(languageSwitch.getByRole('link', { name: '切换到中文' })).toContainText('中文');
+    await expect(languageSwitch.getByRole('link', { name: '切换到英文' })).toContainText('EN');
 
     await trigger.click();
     await expect(dialog.locator('.scheme-a-directory__groups section[data-open="true"]')).toHaveCount(1);
     await expect(dialog.getByRole("button", { name: "空间作品", exact: true })).toHaveAttribute("aria-expanded", "true");
     await page.keyboard.press("Escape");
     await expect(trigger).toBeFocused();
+  });
+
+  test("directory dropdown stays below the header and keeps every route reachable across viewports", async ({ page }) => {
+    for (const language of ['zh', 'en']) {
+      for (const width of [360, 390, 768, 1024, 1440]) {
+        await page.setViewportSize({ width, height: 844 });
+        await page.goto(`/${language}/materials`, { waitUntil: 'domcontentloaded' });
+        const trigger = page.locator(width < 1180 ? '.scheme-a-chrome__menu-trigger--compact' : '.scheme-a-chrome__nav-more');
+        await trigger.click();
+        const dialog = page.getByRole('dialog');
+        await expect(dialog).toBeVisible();
+        const layout = await dialog.evaluate(el => {
+          const box = el.getBoundingClientRect();
+          const header = document.querySelector('header')!.getBoundingClientRect();
+          return { top: box.top, bottom: box.bottom, left: box.left, right: box.right, headerBottom: header.bottom, overflow: document.documentElement.scrollWidth - innerWidth };
+        });
+        expect(layout.top).toBeGreaterThanOrEqual(layout.headerBottom);
+        expect(layout.bottom).toBeLessThan(844 - 24);
+        expect(layout.left).toBeGreaterThanOrEqual(8);
+        expect(layout.right).toBeLessThanOrEqual(width - 8);
+        expect(layout.overflow).toBeLessThanOrEqual(1);
+        const groups = dialog.locator('.scheme-a-directory__groups > section');
+        for (const group of await groups.all()) {
+          if (await group.getAttribute('data-open') !== 'true') await group.locator('button').click();
+          for (const link of await group.locator('a').all()) {
+            await link.scrollIntoViewIfNeeded();
+            await expect(link).toBeInViewport();
+            expect(await link.evaluate(el => el.getBoundingClientRect().height)).toBeGreaterThanOrEqual(44);
+          }
+        }
+        await page.keyboard.press('Escape');
+        await expect(dialog).toHaveCount(0);
+        await expect(trigger).toBeFocused();
+        expect(await page.evaluate(() => document.documentElement.style.overflow)).not.toBe('hidden');
+      }
+    }
   });
 
   test("home project cards use the approved mobile and desktop image slots", async ({ page }) => {
