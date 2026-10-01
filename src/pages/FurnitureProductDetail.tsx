@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useLocation, useParams } from "react-router-dom";
 import { SmartImage } from "@/components/SmartImage";
 import PageMeta from "@/components/PageMeta";
 import LocalizedLink from "@/components/LocalizedLink";
@@ -10,10 +10,13 @@ import { useLanguage } from "@/i18n/LanguageContext";
 import { usePublishedManagedFurnitureProductBySlug } from "@/hooks/usePublishedContent";
 import { furnitureCategoryName, furnitureText } from "@/i18n/furnitureText";
 import { furnitureShopUrl, getFurnitureProduct, getFurnitureProductCategory, localizeFurnitureProduct } from "@/lib/furnitureCatalog";
+import { getFurnitureListingOrigin, LISTING_SCROLL_INTENT } from "@/lib/publicScrollRestoration";
 
 export default function FurnitureProductDetail() {
   const { slug } = useParams<{ slug: string }>();
   const { language } = useLanguage();
+  const origin = getFurnitureListingOrigin(useLocation().state);
+  const returnState = origin ? { scrollIntent: LISTING_SCROLL_INTENT, scrollTop: origin.top } : undefined;
   const copy = furnitureText[language];
   const settings = useSiteSettings();
   const staticProduct = getFurnitureProduct(slug);
@@ -43,7 +46,7 @@ export default function FurnitureProductDetail() {
   if (!product) return (
     <main className="fc-route-page fc-furniture-page">
       <PageMeta title={copy.notFound} description={copy.notFound} canonicalPath={`/furniture/product/${slug || ""}`} noIndex />
-      <div className="fc-furniture-not-found"><h1>{copy.notFound}</h1><LocalizedLink to="/furniture">{copy.backToCatalog}</LocalizedLink></div>
+      <div className="fc-furniture-not-found"><h1>{copy.notFound}</h1><LocalizedLink to={origin ? origin.pathname + origin.search : "/furniture"} state={returnState}>{copy.backToCatalog}</LocalizedLink></div>
     </main>
   );
 
@@ -68,7 +71,7 @@ export default function FurnitureProductDetail() {
         { name: localizedProduct.name, url: `/furniture/product/${encodeURIComponent(decodeURIComponent(product.slug))}` },
       ]} />
       <div className="fc-furniture-detail">
-        <LocalizedLink className="fc-furniture-back" to={category ? `/furniture/${category.key}` : "/furniture"}>← {copy.backToCatalog}</LocalizedLink>
+        <LocalizedLink className="fc-furniture-back" to={origin ? origin.pathname + origin.search : category ? `/furniture/${category.key}` : "/furniture"} state={returnState}>← {copy.backToCatalog}</LocalizedLink>
         <div className="fc-furniture-detail__layout">
           <div className="fc-furniture-gallery">
             <div className="fc-furniture-gallery__main">

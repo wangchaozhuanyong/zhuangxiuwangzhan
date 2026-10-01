@@ -1,5 +1,5 @@
 import { FormEvent, useEffect, useMemo, useRef, useState } from "react";
-import { useLocation, useSearchParams } from "react-router-dom";
+import { useSearchParams } from "react-router-dom";
 import LocalizedLink from "@/components/LocalizedLink";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -22,7 +22,7 @@ import { pageHeroImages, resolvePageHeroImage } from "@/lib/pageHeroImages";
 import { formatQuoteContextLabel, parseQuoteContext, QUOTE_FORM_ID } from "@/lib/quoteContext";
 import { preloadTurnstile } from "@/lib/turnstile";
 import { quotePageText } from "@/i18n/quotePageText";
-import { focusElementByIdWhenReady, scrollWindowToImmediately } from "@/lib/instantScroll";
+import { focusElementByIdWhenReady } from "@/lib/instantScroll";
 
 const projectTypes = [
   { value: "Residential Renovation", en: "Residential Renovation", zh: "住宅装修" },
@@ -78,7 +78,6 @@ const focusFirstQuoteError = (errors: FormErrors) => {
 
 const Quote = () => {
   const { language } = useLanguage();
-  const location = useLocation();
   const [searchParams] = useSearchParams();
   const settings = useSiteSettings();
   const t = quotePageText[language];
@@ -129,27 +128,6 @@ const Quote = () => {
     if (status === "success") focusElementByIdWhenReady("quote-success-status", "start");
     if (status === "error") focusElementByIdWhenReady("quote-submit-error", "start");
   }, [status]);
-
-  useEffect(() => {
-    if (location.hash !== `#${QUOTE_FORM_ID}`) return;
-    focusElementByIdWhenReady("quote-form-title", "start");
-
-    // The route hero and web fonts can finish settling after the browser's native
-    // hash jump. Re-anchor once so the focused heading stays below the fixed bar.
-    const correctionTimer = window.setTimeout(() => {
-      const formPanel = document.getElementById(QUOTE_FORM_ID);
-      const title = document.getElementById("quote-form-title");
-      if (!(formPanel instanceof HTMLElement) || !(title instanceof HTMLElement)) return;
-
-      const header = document.querySelector<HTMLElement>(".scheme-a-chrome");
-      const headerHeight = header?.getBoundingClientRect().height ?? 76;
-      const formTop = window.scrollY + formPanel.getBoundingClientRect().top;
-      scrollWindowToImmediately(formTop - headerHeight - 20);
-      title.focus({ preventScroll: true });
-    }, 320);
-
-    return () => window.clearTimeout(correctionTimer);
-  }, [location.hash]);
 
   useEffect(() => {
     const previous = previousQuoteContextRef.current;

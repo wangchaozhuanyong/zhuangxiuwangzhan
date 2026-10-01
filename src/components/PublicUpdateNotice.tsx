@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { publicUpdateNoticeText } from "@/i18n/publicUpdateNoticeText";
+import { usePublicChrome } from "@/contexts/PublicChromeContext";
 import {
   createCurrentPublicVersion,
   fetchPublicVersion,
@@ -13,6 +14,7 @@ const PUBLIC_VERSION_CHECK_INTERVAL_MS = 30 * 1000;
 
 const PublicUpdateNotice = () => {
   const { language } = useLanguage();
+  const { menuOpen, hasOpenDialog } = usePublicChrome();
   const text = publicUpdateNoticeText[language];
   const [updateAvailable, setUpdateAvailable] = useState(false);
   const baselineRef = useRef<PublicVersion | null>(null);
@@ -79,7 +81,7 @@ const PublicUpdateNotice = () => {
     };
   }, []);
 
-  if (!updateAvailable) return null;
+  if (!updateAvailable || menuOpen || hasOpenDialog) return null;
 
   const dismiss = () => {
     if (pendingRef.current) baselineRef.current = pendingRef.current;
@@ -90,7 +92,7 @@ const PublicUpdateNotice = () => {
 
   return (
     <aside
-      className="fixed inset-x-4 bottom-[calc(env(safe-area-inset-bottom)+6rem)] z-[120] mx-auto max-w-xl rounded-2xl border border-white/15 bg-[#111411]/95 p-4 text-white shadow-2xl backdrop-blur-md md:bottom-6 md:flex md:items-center md:gap-5 md:px-5"
+      className="public-update-notice fixed inset-x-4 z-[115] mx-auto max-w-xl rounded-2xl border border-white/15 bg-[#111411]/95 p-4 text-white shadow-2xl backdrop-blur-md md:flex md:items-center md:gap-5 md:px-5"
       role="status"
       aria-live="polite"
     >
