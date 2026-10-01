@@ -8,6 +8,8 @@ import { mobileActionBarText } from "@/i18n/mobileActionBarText";
 import { stripLanguagePrefix } from "@/i18n/routes";
 import { useSiteSettings } from "@/hooks/useSiteSettings";
 import { trackCtaClick } from "@/lib/analytics";
+import { usePublicChrome } from "@/contexts/PublicChromeContext";
+import { furnitureText } from "@/i18n/furnitureText";
 import { QUOTE_FORM_PATH } from "@/lib/quoteContext";
 
 const formatMessage = (template: string, source: string) => template.replace("{source}", source);
@@ -26,6 +28,7 @@ const MobileActionBar = () => {
   const { language } = useLanguage();
   const location = useLocation();
   const settings = useSiteSettings();
+  const { pageWhatsAppMessage } = usePublicChrome();
   const t = mobileActionBarText[language];
   const publicPath = stripLanguagePrefix(location.pathname);
   const isQuotePage = publicPath === "/quote";
@@ -37,7 +40,11 @@ const MobileActionBar = () => {
       : publicPath === "/services/renovation"
         ? t.renovationSource
         : t.websiteSource;
-  const whatsappHref = settings.whatsapp_url(formatMessage(t.whatsappMessage, source));
+  const isFurniture = publicPath === "/furniture" || publicPath.startsWith("/furniture/");
+  const whatsappMessage = isFurniture
+    ? pageWhatsAppMessage || furnitureText[language].generalEnquiryMessage
+    : formatMessage(t.whatsappMessage, source);
+  const whatsappHref = settings.whatsapp_url(whatsappMessage);
   const formAction = isQuotePage
     ? { href: "#quote-name", label: t.fillQuote, ctaName: "quote_form_jump" }
     : isContactPage

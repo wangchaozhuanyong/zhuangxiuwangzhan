@@ -8,8 +8,9 @@ import { JsonLdBreadcrumb } from "@/components/JsonLd";
 import { useSiteSettings } from "@/hooks/useSiteSettings";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { usePublishedManagedFurnitureProductBySlug } from "@/hooks/usePublishedContent";
-import { furnitureCategoryName, furnitureText } from "@/i18n/furnitureText";
+import { furnitureCategoryName, furnitureText, formatFurnitureEnquiryMessage } from "@/i18n/furnitureText";
 import { furnitureShopUrl, getFurnitureProduct, getFurnitureProductCategory, localizeFurnitureProduct } from "@/lib/furnitureCatalog";
+import { usePageWhatsAppMessage } from "@/contexts/PublicChromeContext";
 import { getFurnitureListingOrigin, LISTING_SCROLL_INTENT } from "@/lib/publicScrollRestoration";
 
 export default function FurnitureProductDetail() {
@@ -22,6 +23,11 @@ export default function FurnitureProductDetail() {
   const staticProduct = getFurnitureProduct(slug);
   const managedQuery = usePublishedManagedFurnitureProductBySlug(staticProduct ? undefined : slug, language);
   const product = staticProduct || managedQuery.data;
+  const localizedProduct = product ? localizeFurnitureProduct(product, language) : undefined;
+  const message = product && localizedProduct
+    ? formatFurnitureEnquiryMessage(localizedProduct.name, product.sku, language)
+    : undefined;
+  usePageWhatsAppMessage(message);
   const [selectedImage, setSelectedImage] = useState(0);
 
   useEffect(() => setSelectedImage(0), [slug]);
@@ -43,7 +49,7 @@ export default function FurnitureProductDetail() {
     </main>
   );
 
-  if (!product) return (
+  if (!product || !localizedProduct) return (
     <main className="fc-route-page fc-furniture-page">
       <PageMeta title={copy.notFound} description={copy.notFound} canonicalPath={`/furniture/product/${slug || ""}`} noIndex />
       <div className="fc-furniture-not-found"><h1>{copy.notFound}</h1><LocalizedLink to={origin ? origin.pathname + origin.search : "/furniture"} state={returnState}>{copy.backToCatalog}</LocalizedLink></div>
@@ -51,14 +57,11 @@ export default function FurnitureProductDetail() {
   );
 
   const category = getFurnitureProductCategory(product);
-  const localizedProduct = localizeFurnitureProduct(product, language);
   const images = product.images.length ? product.images : product.sourceImages;
   const currentImage = images[selectedImage] || images[0];
   const displaySku = language === "en" && /[\u3400-\u9fff]/.test(product.sku)
     ? product.sku.match(/^[A-Za-z0-9-]+/)?.[0] || ""
     : product.sku;
-  const message = copy.enquiryMessage.replace("{name}", localizedProduct.name)
-    + (displaySku && displaySku !== "N/A" ? ` (${displaySku})` : "");
   const description = localizedProduct.description || localizedProduct.shortDescription;
 
   return (

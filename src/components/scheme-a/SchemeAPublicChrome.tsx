@@ -32,6 +32,7 @@ import {
   type PublicNavGroupKey,
   type PublicNavItem,
 } from "@/config/publicNavigation";
+import { furnitureText } from "@/i18n/furnitureText";
 import { usePublicChrome } from "@/contexts/PublicChromeContext";
 import { useSiteSettings, useSiteSettingsReadiness } from "@/hooks/useSiteSettings";
 import { useLanguage } from "@/i18n/LanguageContext";
@@ -157,7 +158,7 @@ export const SchemeANavbar = () => {
   const navText = navbarText[language];
   const settings = useSiteSettings();
   const settingsPending = useSiteSettingsReadiness();
-  const { hasImmersiveHero, menuOpen, setMenuOpen } = usePublicChrome();
+  const { hasImmersiveHero, menuOpen, setMenuOpen, pageWhatsAppMessage } = usePublicChrome();
   const currentItem = getCurrentNavigationItem(location.pathname);
   const currentPrimaryItem = getCurrentNavigationItem(location.pathname, primaryPublicNavigationItems);
   const currentGroup = getCurrentNavigationGroup(location.pathname);
@@ -186,6 +187,9 @@ export const SchemeANavbar = () => {
     enShort: navText.englishShort,
   };
   const publicPath = stripLanguagePrefix(location.pathname);
+  const furnitureMessage = publicPath === "/furniture" || publicPath.startsWith("/furniture/")
+    ? pageWhatsAppMessage || furnitureText[language].generalEnquiryMessage
+    : undefined;
   const overlay = hasImmersiveHero && !scrolled && !menuOpen;
 
   useEffect(() => {
@@ -399,7 +403,7 @@ export const SchemeANavbar = () => {
         </div>
         <div className="scheme-a-directory__foot">
           <a href={settings.phone_href} onClick={() => trackCtaClick("phone", "scheme_a_menu", { destination: "phone" })}><Phone aria-hidden="true" />{t.call}</a>
-          <a className="is-whatsapp" href={settings.whatsapp_url()} target="_blank" rel="noopener noreferrer" onClick={() => trackCtaClick("whatsapp", "scheme_a_menu", { destination: "whatsapp" })}><WhatsAppIcon />{t.whatsapp}</a>
+          <a className="is-whatsapp" href={settings.whatsapp_url(furnitureMessage)} target="_blank" rel="noopener noreferrer" onClick={() => trackCtaClick("whatsapp", "scheme_a_menu", { destination: "whatsapp" })}><WhatsAppIcon />{t.whatsapp}</a>
           <LocalizedLink className="is-quote" to={QUOTE_FORM_PATH}>{t.quote}<ArrowUpRight aria-hidden="true" /></LocalizedLink>
         </div>
       </div>
@@ -409,12 +413,16 @@ export const SchemeANavbar = () => {
 };
 
 export const SchemeAFooterPrelude = () => {
-  const { hasPageConsultation } = usePublicChrome();
+  const { hasPageConsultation, pageWhatsAppMessage } = usePublicChrome();
   const { language } = useLanguage();
   const location = useLocation();
   const settings = useSiteSettings();
   const t = schemeAChromeText[language];
-  const isHome = stripLanguagePrefix(location.pathname) === "/";
+  const publicPath = stripLanguagePrefix(location.pathname);
+  const isHome = publicPath === "/";
+  const furnitureMessage = publicPath === "/furniture" || publicPath.startsWith("/furniture/")
+    ? pageWhatsAppMessage || furnitureText[language].generalEnquiryMessage
+    : undefined;
 
   if (hasPageConsultation) return null;
 
@@ -430,7 +438,7 @@ export const SchemeAFooterPrelude = () => {
               <span>{t.footerBody}</span>
               <div className="scheme-a-footer__invitation-actions">
                 <LocalizedLink to={QUOTE_FORM_PATH} onClick={() => trackCtaClick("quote", "scheme_a_footer_prelude", { destination: QUOTE_FORM_PATH })}>{t.quote}<ArrowUpRight /></LocalizedLink>
-                <a href={settings.whatsapp_url()} target="_blank" rel="noopener noreferrer" onClick={() => trackCtaClick("whatsapp", "scheme_a_footer_prelude", { destination: "whatsapp" })}><WhatsAppIcon />{t.whatsapp}</a>
+                <a href={settings.whatsapp_url(furnitureMessage)} target="_blank" rel="noopener noreferrer" onClick={() => trackCtaClick("whatsapp", "scheme_a_footer_prelude", { destination: "whatsapp" })}><WhatsAppIcon />{t.whatsapp}</a>
               </div>
             </div>
           </div>

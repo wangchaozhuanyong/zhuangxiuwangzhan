@@ -10,6 +10,8 @@ type PublicChromeContextValue = {
   registerImmersiveHero: (id: symbol) => () => void;
   hasPageConsultation: boolean;
   registerPageConsultation: (id: symbol) => () => void;
+  pageWhatsAppMessage?: string;
+  registerPageWhatsAppMessage: (message: string) => () => void;
   /** 是否显示移动端底部固定行动栏（非后台且菜单未打开） */
   showMobileActionBar: boolean;
 };
@@ -35,6 +37,14 @@ export function PublicChromeProvider({
   mobileActionBarMode?: MobileActionBarMode;
   children: ReactNode;
 }) {
+  const [whatsAppContext, setWhatsAppContext] = useState<{ id: symbol; routeKey: string; message: string } | null>(null);
+  const pageWhatsAppMessage = whatsAppContext?.routeKey === routeKey ? whatsAppContext.message : undefined;
+  const registerPageWhatsAppMessage = useCallback((message: string) => {
+    const id = Symbol("page-whatsapp");
+    setWhatsAppContext({ id, routeKey, message });
+    return () => setWhatsAppContext((current) => current?.id === id ? null : current);
+  }, [routeKey]);
+
   const [menuOpen, setMenuOpen] = useState(false);
   const [mobileScrollingUp, setMobileScrollingUp] = useState(false);
   const lastMobileScrollY = useRef(0);
@@ -177,8 +187,10 @@ export function PublicChromeProvider({
       hasPageConsultation,
       registerPageConsultation,
       showMobileActionBar,
+      pageWhatsAppMessage,
+      registerPageWhatsAppMessage,
     }),
-    [hasImmersiveHero, hasPageConsultation, hasOpenDialog, menuOpen, registerDialog, registerImmersiveHero, registerPageConsultation, showMobileActionBar],
+    [pageWhatsAppMessage, registerPageWhatsAppMessage, hasImmersiveHero, hasPageConsultation, hasOpenDialog, menuOpen, registerDialog, registerImmersiveHero, registerPageConsultation, showMobileActionBar],
   );
 
   return <PublicChromeContext.Provider value={value}>{children}</PublicChromeContext.Provider>;
@@ -202,4 +214,10 @@ export function usePublicDialogLayer() {
 export function usePageConsultation() {
   const { registerPageConsultation } = usePublicChrome();
   useLayoutEffect(() => registerPageConsultation(Symbol("page-consultation")), [registerPageConsultation]);
+}
+
+/** Only the mounted page supplies known inquiry context; cleanup prevents stale product messages. */
+export function usePageWhatsAppMessage(message: string | undefined) {
+  const { registerPageWhatsAppMessage } = usePublicChrome();
+  useLayoutEffect(() => message ? registerPageWhatsAppMessage(message) : undefined, [message, registerPageWhatsAppMessage]);
 }
