@@ -53,7 +53,7 @@ let cancelSmoothScroll = () => {};
 export const scrollWindowToSmoothly = (top: number) => {
   cancelSmoothScroll();
   const target = Math.max(0, Math.min(top, document.documentElement.scrollHeight - window.innerHeight));
-  if (prefersReducedMotion()) { scrollWindowToImmediately(target); return; }
+  if (prefersReducedMotion()) { scrollWindowToImmediately(target); return () => {}; }
   const start = window.scrollY;
   const startedAt = performance.now();
   let frame = 0;
@@ -76,4 +76,5 @@ export const scrollWindowToSmoothly = (top: number) => {
   window.addEventListener("pointerdown", cancel, { passive: true });
   window.addEventListener("keydown", cancel);
   frame = requestAnimationFrame(tick);
+  return cancel;
 };

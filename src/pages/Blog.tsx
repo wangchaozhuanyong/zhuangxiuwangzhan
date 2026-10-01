@@ -35,13 +35,7 @@ export default function Blog() {
 
 
   const selectTopic = (topic: (typeof BLOG_TOPIC_KEYS)[number]) => {
-    setFilter(topic);
-    const articles = document.getElementById("blog-articles");
-    articles?.focus({ preventScroll: true });
-    articles?.scrollIntoView({
-      behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "instant" : "smooth",
-      block: "start",
-    });
+    setFilter(topic, "blog-articles");
   };
 
   const items = useMemo<SchemeAListingItem[]>(() => filtered.slice(0, visibleCount).map((post) => ({

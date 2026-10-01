@@ -1,4 +1,4 @@
-import { useParams, useSearchParams } from "react-router-dom";
+import { useLocation, useNavigate, useParams, useSearchParams } from "react-router-dom";
 import type { MouseEvent } from "react";
 import { SmartImage } from "@/components/SmartImage";
 import PageMeta from "@/components/PageMeta";
@@ -10,6 +10,7 @@ import { usePublishedManagedFurnitureProducts } from "@/hooks/usePublishedConten
 import { furnitureCategoryName, furnitureSubcategoryName, furnitureText } from "@/i18n/furnitureText";
 import { furnitureCatalog, furnitureProductPath, furnitureShopUrl, getFurnitureCategory, getFurnitureProducts, getFurnitureSubcategory, getManagedFurnitureProductsForCategory, localizeFurnitureProduct } from "@/lib/furnitureCatalog";
 import { rememberFurnitureNavigationScroll } from "@/lib/publicScrollRestoration";
+import { withLanguagePrefix } from "@/i18n/routes";
 
 const pageSize = 18;
 
@@ -22,6 +23,15 @@ export default function FurnitureShowcase() {
   const { category: categoryKey, subcategory: subcategoryKey } = useParams<{ category?: string; subcategory?: string }>();
   const [searchParams] = useSearchParams();
   const { language } = useLanguage();
+  const location = useLocation();
+  const navigate = useNavigate();
+  const openProduct = (event: MouseEvent<HTMLAnchorElement>, path: string) => {
+    if (event.defaultPrevented || event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+    event.preventDefault();
+    navigate(withLanguagePrefix(path, language), {
+      state: { furnitureOrigin: { pathname: location.pathname, search: location.search, top: window.scrollY } },
+    });
+  };
   const copy = furnitureText[language];
   const managedQuery = usePublishedManagedFurnitureProducts(language);
   const managedProducts = managedQuery.data || [];
@@ -101,7 +111,7 @@ export default function FurnitureShowcase() {
               const image = product.images[0] || product.sourceImages[0];
               return (
                 <article className="fc-furniture-card" key={product.sourceUrl}>
-                  <LocalizedLink className="fc-furniture-card__main" to={furnitureProductPath(product)} aria-label={`${copy.viewDetails}: ${product.name}`}>
+                  <LocalizedLink className="fc-furniture-card__main" to={furnitureProductPath(product)} onClick={(event) => openProduct(event, furnitureProductPath(product))} aria-label={`${copy.viewDetails}: ${product.name}`}>
                     <div className="fc-furniture-card__image">
                       {image ? <SmartImage src={image} alt={product.name} width={480} height={480} sizes="(max-width: 680px) 48vw, (max-width: 1024px) 33vw, 25vw" loading={index < 4 ? "eager" : "lazy"} fetchPriority={index < 2 ? "high" : "auto"} /> : <span>{product.name}</span>}
                     </div>

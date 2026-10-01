@@ -98,7 +98,8 @@ describe("public design boundary", () => {
     const globalStyles = readFileSync(resolve(process.cwd(), "src/styles/components.css"), "utf8");
     const buttons = readFileSync(resolve(componentDirectory, "buttons.css"), "utf8");
     expect(globalStyles).toContain('@import "./components/buttons.css"');
-    expect(buttons).toContain("bottom: calc(82px + env(safe-area-inset-bottom))");
+    expect(buttons).toContain("--public-floating-bottom: 82px");
+    expect(buttons).toContain("bottom: calc(var(--public-floating-bottom) + env(safe-area-inset-bottom))");
   });
 
   it.each(retiredPublicDesignFiles)("keeps retired design file deleted: %s", (file) => {
