@@ -83,20 +83,12 @@
   .public-route-content { display: contents; }
   .public-route-scene { display: block; }
 
-  /* Retained content sits below all persistent navigation and floating controls. */
-  .public-route-retained {
-    position: fixed;
-    inset: 0;
-    z-index: 80;
-    overflow: hidden;
-    background: var(--public-surface-base);
-    pointer-events: auto;
-    touch-action: none;
+  /* Pending content keeps its measured layout for scroll and image decoding. */
+  .public-route-scene[data-pending="true"]:not([data-region-only]),
+  .public-route-scene[data-pending="true"][data-region-only] [data-public-results] {
+    opacity: 0;
+    pointer-events: none;
   }
-  .public-route-retained:empty { display: none; }
-  .public-route-retained * { animation: none !important; transition: none !important; }
-  .public-route-retained [data-public-results] { background: var(--public-surface-base); }
-  .public-route-retained [data-cinematic-state] { opacity: 1; transform: none; }
 
   .public-route-feedback {
     position: fixed;
@@ -242,12 +234,13 @@
     height: 76px;
   }
 
-  /* The image remains untouched. The public contrast controller adjusts glyphs. */
+  /* Stable brand foregrounds on one shared reading surface, including photo heroes. */
   .scheme-a-chrome::before { content: none; }
 
   .scheme-a-chrome.is-overlay {
     color: var(--public-text-primary);
-    background: transparent;
+    background: color-mix(in srgb, var(--public-surface-card) 94%, transparent);
+    backdrop-filter: blur(16px);
   }
 
   .scheme-a-chrome.is-overlay .scheme-a-chrome__nav-more:is(:hover, :focus-visible) { color: inherit; }

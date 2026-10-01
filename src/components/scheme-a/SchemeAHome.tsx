@@ -115,12 +115,12 @@ const SchemeAHome = ({ content }: SchemeAHomeProps) => {
           </figure>
           <div className="scheme-a-hero__copy">
             <div className="scheme-a-hero__intro">
-              <h1 id="scheme-a-home-title" data-adaptive-text>
+              <h1 id="scheme-a-home-title">
                 <span>{copy.heroTitle}</span>
                 {" "}
                 <span>{copy.heroTitleAccent}</span>
               </h1>
-              <p className="scheme-a-hero__lead" data-adaptive-text>{copy.heroKicker}</p>
+              <p className="scheme-a-hero__lead">{copy.heroKicker}</p>
               <div className="scheme-a-actions">
                 <LocalizedLink className="scheme-a-button scheme-a-button--paper" to={presentation.heroAction.url}>
                   {presentation.heroAction.label}

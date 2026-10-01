@@ -15,7 +15,7 @@ const isInViewport = (image: HTMLImageElement) => {
     && rect.right > 0 && rect.left < window.innerWidth;
 };
 
-/** One readiness owner for all public routes; keep the last complete scene while preparing. */
+/** One readiness owner for all public routes; prepare the destination before revealing it. */
 export function PublicRouteImageGate({ children, routeKey, onCancel }: { children: ReactNode; routeKey: string; onCancel?: (route: string) => void }) {
   const { language } = useLanguage();
   const queryClient = useQueryClient();
@@ -212,11 +212,13 @@ export function PublicRouteImageGate({ children, routeKey, onCancel }: { childre
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [boot, showBrandScreen, routeKey, attempt, blocked]);
   return (
-    <PublicRouteTransitionFrame ref={frameRef} routeKey={routeKey} pending={blocked} regionOnly={regionOnly}>
-      <div ref={contentRef} className="public-route-content" data-route-visual-state={status}
-        aria-hidden={blocked && !regionOnly || undefined} aria-busy={blocked || status === "handoff" || undefined}>
-        {children}
-      </div>
+    <>
+      <PublicRouteTransitionFrame ref={frameRef} routeKey={routeKey} pending={blocked} regionOnly={regionOnly} initial={showBrandScreen}>
+        <div ref={contentRef} className="public-route-content" data-route-visual-state={status}
+          aria-hidden={blocked && !regionOnly || undefined} aria-busy={blocked || status === "handoff" || undefined}>
+          {children}
+        </div>
+      </PublicRouteTransitionFrame>
       {blocked && (showBrandScreen ? !boot : feedbackCycle === cycle) ? (
         <div className={showBrandScreen ? "scheme-a-page-loader scheme-a-page-loader--overlay" : "public-route-feedback"}
           role="status" aria-live="polite" aria-busy={status === "waiting"} data-route-loader={showBrandScreen ? "initial" : "navigation"}>
@@ -232,6 +234,6 @@ export function PublicRouteImageGate({ children, routeKey, onCancel }: { childre
           )}
         </div>
       ) : null}
-    </PublicRouteTransitionFrame>
+    </>
   );
 }

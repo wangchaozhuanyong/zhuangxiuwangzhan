@@ -56,7 +56,7 @@ for (const language of ["zh", "en"] as const) {
     await expect(tabs.nth(1)).toBeFocused();
     await expect(section.getByRole("tabpanel")).toContainText(answers[1]);
     const focused = await feedback(tabs.nth(1));
-    expect(focused).toMatchObject({ background: "rgba(0, 0, 0, 0)", outline: "none", shadow: "none", border: "0px", decoration: "underline", decorationStyle: "double", keyboardFocus: true });
+    expect(focused).toMatchObject({ background: "rgba(0, 0, 0, 0)", outline: "solid", shadow: "none", border: "0px", decoration: "underline", decorationStyle: "double", keyboardFocus: true });
     await tabs.nth(1).hover();
     expect((await feedback(tabs.nth(1))).background).toBe(focused.background);
     await page.keyboard.press("End");

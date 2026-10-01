@@ -200,21 +200,22 @@ test("font delays and background refresh cannot reopen the completed initial loa
   await expect(page.locator("[data-route-loader='initial']")).toHaveCount(0);
 });
 
-test("photo copy declares contrast ownership while solid actions keep their glyph fill", async ({ page }, info) => {
+test("photo copy and solid actions keep stable design colors without glyph outlines", async ({ page }, info) => {
   await page.setViewportSize({ width: 1440, height: 900 });
   for (const language of ["zh", "en"]) for (const service of ["design", "surface-repair"]) {
     await page.goto(`/${language}/services/${service}`, { waitUntil: "domcontentloaded" });
     await expect(page.locator("[data-route-loader='initial']")).toHaveCount(0, { timeout: 15_000 });
     const heading = page.locator("#main-content h1");
-    await expect(heading).toHaveAttribute("data-adaptive-text");
-    await expect(heading).toHaveAttribute("data-adaptive-contrast", /^(color|outline)$/);
+    await expect(heading).not.toHaveAttribute("data-adaptive-contrast");
     for (const selector of ["#main-content h1", ".fcd-design-hero__lead", ".fcd-design-hero__primary", ".scheme-a-chrome__quote"]) {
       const glyph = await page.locator(selector).evaluate((element) => {
         const css = getComputedStyle(element);
-        return { color: css.color, fill: css.getPropertyValue("-webkit-text-fill-color"), adaptive: element.hasAttribute("data-adaptive-contrast") };
+        return { color: css.color, fill: css.getPropertyValue("-webkit-text-fill-color"), adaptive: element.hasAttribute("data-adaptive-contrast"), shadow: css.textShadow, stroke: css.webkitTextStrokeWidth };
       });
       expect(glyph.fill).toBe(glyph.color);
-      if (selector.includes("primary") || selector.includes("quote")) expect(glyph.adaptive).toBe(false);
+      expect(glyph.adaptive).toBe(false);
+      expect(glyph.shadow).toBe("none");
+      expect(glyph.stroke).toBe("0px");
     }
     if (language === "zh" && service === "design") await page.screenshot({ path: info.outputPath("04-photo-copy-and-solid-actions.png") });
   }
