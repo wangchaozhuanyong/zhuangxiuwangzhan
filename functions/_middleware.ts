@@ -962,6 +962,9 @@ const buildBreadcrumb = (meta: SeoEntry, origin: string) => {
   };
 };
 
+// Owner-confirmed on 2026-09-29; the approved candidate covers only these 26 EN/ZH URLs.
+const OWNER_CONFIRMED_AREA_SERVED_PATH = /^\/(?:en|zh)\/(?:locations\/(?:balakong|desa-parkcity|kajang|klang|putrajaya|rawang|semenyih|seri-kembangan|sungai-buloh|taman-tun-dr-ismail|wangsa-maju)|services\/(?:renovation|kitchen))$/;
+
 const buildEdgeStructuredData = (meta: SeoEntry, siteSettings?: SiteSettingsHead | null) => {
   const canonical = new URL(meta.canonical);
   const origin = canonical.origin;
@@ -1070,6 +1073,19 @@ const buildEdgeStructuredData = (meta: SeoEntry, siteSettings?: SiteSettingsHead
           "Subang Jaya",
           "Shah Alam",
           "Puchong",
+          ...(OWNER_CONFIRMED_AREA_SERVED_PATH.test(canonical.pathname) ? [
+            "Balakong",
+            "Desa ParkCity",
+            "Kajang",
+            "Klang",
+            "Putrajaya",
+            "Rawang",
+            "Semenyih",
+            "Seri Kembangan",
+            "Sungai Buloh",
+            "Taman Tun Dr Ismail",
+            "Wangsa Maju",
+          ] : []),
         ],
         knowsAbout: [
           "renovation",
