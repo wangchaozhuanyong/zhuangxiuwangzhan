@@ -160,12 +160,12 @@
     box-shadow: 0 0 0 4px var(--public-surface-card);
   }
 
-  .fc-furniture-floating:active { transform: scale(0.98); }
+  .fc-furniture-floating:active { transform: scale(0.985); }
 
   /* Brief discovery cue on entry; keep the viewport anchor still. */
   @media (prefers-reduced-motion: no-preference) {
-    .fc-furniture-floating:not(:hover):not(:focus-visible) svg {
-      animation: fc-furniture-arrow-cue 1.8s ease-in-out 0.6s 2;
+    .fc-furniture-floating[data-discover="true"]:not(:hover):not(:focus-visible) svg {
+      animation: fc-furniture-arrow-cue 1.8s ease-in-out 0.6s 1;
     }
   }
 
@@ -191,5 +191,20 @@
       right: 1rem;
       bottom: calc(82px + env(safe-area-inset-bottom));
     }
+  }
+}
+
+@layer components {
+  .scheme-a-public-shell :is(.scheme-a-button, .fc-route-button, .scheme-a-page-cta__button, .btn-press, button[type="submit"]) {
+    transition: background-color var(--motion-feedback) var(--motion-ease), border-color var(--motion-feedback) var(--motion-ease), color var(--motion-feedback) var(--motion-ease), box-shadow var(--motion-feedback) var(--motion-ease), transform var(--motion-feedback) var(--motion-ease);
+  }
+  .scheme-a-public-shell :is(.scheme-a-button, .fc-route-button, .scheme-a-page-cta__button, .btn-press, button[type="submit"]):active:not(:disabled) { transform: scale(.985); }
+  .scheme-a-public-shell :is(input, textarea, select) {
+    transition: border-color var(--motion-feedback) var(--motion-ease), box-shadow var(--motion-feedback) var(--motion-ease);
+  }
+  .scheme-a-public-shell :is(button, a):focus-visible { outline-offset: 3px; }
+  @media (prefers-reduced-motion: reduce) {
+    .scheme-a-public-shell :is(.scheme-a-button, .fc-route-button, .scheme-a-page-cta__button, .btn-press, button[type="submit"], input, textarea, select) { transition: none; }
+    .scheme-a-public-shell :is(.scheme-a-button, .fc-route-button, .scheme-a-page-cta__button, .btn-press, button[type="submit"]):active { transform: none; }
   }
 }

@@ -88,6 +88,7 @@ export default function FurnitureShowcase() {
             {copy.managedLoadFailed} <button type="button" onClick={() => void managedQuery.refetch()}>{copy.retry}</button>
           </div>
         ) : null}
+        <div data-public-results>
         <div className="fc-furniture-list-head">
           <h2>{subcategoryLabel || categoryLabel}</h2>
           <p>{products.length} {copy.products}</p>
@@ -124,6 +125,7 @@ export default function FurnitureShowcase() {
             {page < totalPages ? <LocalizedLink to={pagePath(page + 1)}>{copy.next}</LocalizedLink> : <span />}
           </nav>
         ) : null}
+        </div>
       </div>
     </main>
   );

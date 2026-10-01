@@ -1,6 +1,6 @@
 import { lazy, Suspense, useEffect, useRef, useState, type MouseEvent, type ReactNode } from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, useLocation, useNavigationType } from "react-router-dom";
+import { BrowserRouter, Routes, useLocation, useNavigate, useNavigationType } from "react-router-dom";
 import { HelmetProvider } from "react-helmet-async";
 import { LanguageProvider, useLanguage } from "@/i18n/LanguageContext";
 import { SchemeAFooter, SchemeAFooterPrelude, SchemeANavbar } from "@/components/scheme-a/SchemeAPublicChrome";
@@ -15,12 +15,13 @@ import { initAnalytics, trackPageView } from "@/lib/analytics";
 import { recordWebsiteVisit } from "@/lib/websiteVisits";
 import { getAdminLang } from "@/lib/adminLocale";
 import { focusElementByIdWhenReady } from "@/lib/instantScroll";
-import { isFurnitureListingPath } from "@/lib/publicScrollRestoration";
+import { BOTTOM_NAV_SCROLL_INTENT, isFurnitureListingPath } from "@/lib/publicScrollRestoration";
 import { publicRoutes } from "@/routes/publicRoutes";
 import { PublicRouteImageGate } from "@/components/PublicRouteImageGate";
 import { publicContentStatusText } from "@/i18n/publicContentStatusText";
 import FurnitureFloatingLink from "@/components/FurnitureFloatingLink";
 import PublicRoutePrefetch from "@/components/PublicRoutePrefetch";
+import { publicMotionStyle } from "@/lib/publicMotion";
 import ScrollToTop from "./components/ScrollToTop";
 
 const AdminRouteTree = lazy(() => import("@/routes/AdminRouteTree"));
@@ -193,6 +194,7 @@ const PublicSiteShell = ({
   return (
     <div
       className="scheme-a-public-shell"
+      style={publicMotionStyle}
       data-theme="dark"
       data-surface={surface}
       data-header-overlay={hasImmersiveHero ? "true" : "false"}
@@ -209,6 +211,7 @@ const handleSkipToMainContent = (event: MouseEvent<HTMLAnchorElement>) => {
 };
 
 const AppShell = () => {
+  const navigate = useNavigate();
   const location = useLocation();
   const navigationType = useNavigationType();
   const { language } = useLanguage();
@@ -223,10 +226,8 @@ const AppShell = () => {
     : isHomeRoute
       ? "public-main public-main--home"
       : "public-main public-main--subpage";
-  const publicMainTransitionClass = !isAdminRoute && !isFurnitureListingRoute ? "public-main-transition" : undefined;
-  const mainContentClass = [publicMainClass, publicMainTransitionClass].filter(Boolean).join(" ") || undefined;
+  const mainContentClass = publicMainClass;
   const mainContentKey = isAdminRoute ? "admin-main-content" : isFurnitureListingRoute ? "furniture-listing" : publicPath;
-  const publicImageGateKey = isFurnitureListingRoute ? mainContentKey : location.key;
   const publicSurface = publicPath.startsWith("/landing/") ? "campaign" : "scheme-a";
 
   useEffect(() => {
@@ -268,7 +269,7 @@ const AppShell = () => {
           <PublicRoutePrefetch />
           <PublicCinematicMotionGate />
           <PublicPageFrame isAdminRoute={false}>
-            <PublicRouteImageGate key={publicImageGateKey} routeKey={`${location.pathname}${location.search}`}>
+            <PublicRouteImageGate routeKey={`${location.pathname}${location.search}`} onCancel={(route) => navigate(route, { replace: true, state: { scrollIntent: BOTTOM_NAV_SCROLL_INTENT } })}>
               <div key={mainContentKey} id="main-content" tabIndex={-1} className={mainContentClass} data-public-surface={publicSurface}>
                 <AppErrorBoundary isAdminRoute={false}>
                   <Suspense fallback={<PageLoader />}>
@@ -276,10 +277,10 @@ const AppShell = () => {
                   </Suspense>
                 </AppErrorBoundary>
               </div>
+              <SchemeAFooterPrelude />
+              <SchemeAFooter />
             </PublicRouteImageGate>
-            <SchemeAFooterPrelude />
             <FurnitureFloatingLink />
-            <SchemeAFooter />
             <PublicUpdateNotice />
             <MobileBottomDock />
           </PublicPageFrame>
