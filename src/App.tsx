@@ -9,9 +9,10 @@ import MobileBottomDock from "@/components/MobileBottomDock";
 import PublicUpdateNotice from "@/components/PublicUpdateNotice";
 import { AppErrorBoundary } from "@/components/AppErrorBoundary";
 import { PublicChromeProvider, usePublicChrome } from "@/contexts/PublicChromeContext";
-import { stripLanguagePrefix } from "@/i18n/routes";
+import { getLanguageFromPath, stripLanguagePrefix } from "@/i18n/routes";
 import { adminRouteText } from "@/i18n/adminRouteText";
-import { initAnalytics, trackPageView } from "@/lib/analytics";
+import { createPublicPageViewLifecycle } from "@/lib/analytics";
+import { createAnalyticsRouterWindow } from "@/lib/analyticsRouterWindow";
 import { recordWebsiteVisit } from "@/lib/websiteVisits";
 import { getAdminLang } from "@/lib/adminLocale";
 import { focusElementByIdWhenReady } from "@/lib/instantScroll";
@@ -121,29 +122,22 @@ const AdminPageLoader = () => {
   );
 };
 
+const analyticsRouterWindow = typeof window === "undefined" ? undefined : createAnalyticsRouterWindow(window);
+
 const AnalyticsRouteTracker = () => {
   const location = useLocation();
   const { language } = useLanguage();
+  const routeLanguage = getLanguageFromPath(location.pathname) || language;
+  const [tracker] = useState(() => createPublicPageViewLifecycle((pathname) => {
+    void recordWebsiteVisit(pathname);
+  }));
+
+  useEffect(() => tracker.start(), [tracker]);
 
   useEffect(() => {
-    initAnalytics();
-  }, []);
-
-  useEffect(() => {
-    if (location.pathname.startsWith("/admin")) return;
-
-    const path = `${location.pathname}${location.search}`;
-    const timer = window.setTimeout(() => {
-      trackPageView({
-        path,
-        title: document.title,
-        language,
-      });
-      void recordWebsiteVisit(location.pathname);
-    }, 0);
-
-    return () => window.clearTimeout(timer);
-  }, [language, location.pathname, location.search]);
+    tracker.updateRoute(`${location.pathname}${location.search}`, routeLanguage);
+    return tracker.cancelPending;
+  }, [tracker, routeLanguage, location.pathname, location.search]);
 
   return null;
 };
@@ -285,7 +279,7 @@ const App = () => (
   <LanguageProvider>
     <HelmetProvider>
       <QueryClientProvider client={queryClient}>
-        <BrowserRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
+        <BrowserRouter window={analyticsRouterWindow} future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
           <AnalyticsRouteTracker />
           <AppShell />
         </BrowserRouter>

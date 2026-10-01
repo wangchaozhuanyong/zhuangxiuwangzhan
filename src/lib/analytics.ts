@@ -61,6 +61,7 @@ const canUseBrowserAnalytics = () =>
   typeof window !== "undefined" &&
   typeof document !== "undefined" &&
   isAnalyticsEnabled &&
+  !window.location.pathname.startsWith("/admin") &&
   (import.meta.env.MODE === "test" || isProductionAnalyticsHost(window.location.hostname));
 
 const sanitizeParams = (params: AnalyticsParams) =>
@@ -69,6 +70,21 @@ const sanitizeParams = (params: AnalyticsParams) =>
   );
 
 const currentPagePath = () => (typeof window !== "undefined" ? window.location.pathname : "");
+
+const publicReferrerOverride = (): { page_referrer?: string } => {
+  if (!document.referrer) return {};
+  try {
+    const referrer = new URL(document.referrer);
+    if (referrer.origin === window.location.origin && referrer.pathname.startsWith("/admin")) {
+      // Keep the empty override outside sanitizeParams: a new public document
+      // must not forward the private admin page it came from to GA4.
+      return { page_referrer: "" };
+    }
+  } catch {
+    // An invalid/missing referrer should not prevent public measurement.
+  }
+  return {};
+};
 
 const trackSuccessfulLeadEvent = (
   leadType: "quote_form" | "contact_form",
@@ -119,6 +135,9 @@ const scheduleGoogleTagScript = () => {
   };
   const load = () => {
     cleanup();
+    // A public route can become admin before the idle/interaction callback runs.
+    // Allow the next public route to schedule again when this load is skipped.
+    analyticsLoadScheduled = false;
     ensureGoogleTagScript();
   };
 
@@ -223,7 +242,11 @@ const observeWebVitals = () => {
 };
 
 export const initAnalytics = () => {
-  if (!canUseBrowserAnalytics() || initialized) return;
+  if (!canUseBrowserAnalytics()) return;
+  if (initialized) {
+    scheduleGoogleTagScript();
+    return;
+  }
 
   window.dataLayer = window.dataLayer || [];
   window.gtag =
@@ -235,7 +258,7 @@ export const initAnalytics = () => {
     };
 
   window.gtag("js", new Date());
-  if (gaMeasurementId) window.gtag("config", gaMeasurementId, { send_page_view: false });
+  if (gaMeasurementId) window.gtag("config", gaMeasurementId, { send_page_view: false, ...publicReferrerOverride() });
   if (googleAdsId) window.gtag("config", googleAdsId);
   initialized = true;
   observeWebVitals();
@@ -253,18 +276,23 @@ export const trackPageView = ({
 }) => {
   if (!canUseBrowserAnalytics()) return;
 
-  initAnalytics();
-  const pageLocation = new URL(path, window.location.origin).href;
+  const pageUrl = new URL(path, window.location.origin);
+  if (pageUrl.pathname.startsWith("/admin")) return;
 
+  initAnalytics();
+  const pageLocation = pageUrl.href;
   window.gtag?.(
     "event",
     "page_view",
-    sanitizeParams({
-      page_title: title || document.title,
-      page_location: pageLocation,
-      page_path: path,
-      language,
-    }),
+    {
+      ...sanitizeParams({
+        page_title: title || document.title,
+        page_location: pageLocation,
+        page_path: path,
+        language,
+      }),
+      ...publicReferrerOverride(),
+    },
   );
 };
 
@@ -273,6 +301,46 @@ export const trackEvent = (eventName: string, params: AnalyticsParams = {}) => {
 
   initAnalytics();
   window.gtag?.("event", eventName, sanitizeParams(params));
+};
+
+/** React route effects do not rerun when the browser restores a cached document. */
+export const createPublicPageViewLifecycle = (onVisit: (pathname: string) => void) => {
+  let timer = 0;
+  let restoredPath: string | null = null;
+  let fallbackLanguage = "";
+  const cancelPending = () => window.clearTimeout(timer);
+  const send = (path: string, language: string) => {
+    trackPageView({ path, title: document.title, language });
+    onVisit(new URL(path, window.location.origin).pathname);
+  };
+  const restore = (event: PageTransitionEvent) => {
+    if (!event.persisted || window.location.pathname.startsWith("/admin")) return;
+    cancelPending();
+    restoredPath = `${window.location.pathname}${window.location.search}`;
+    const prefix = window.location.pathname.split("/")[1];
+    send(restoredPath, prefix === "en" || prefix === "zh" ? prefix : fallbackLanguage);
+  };
+  return {
+    cancelPending,
+    start: () => {
+      window.addEventListener("pageshow", restore);
+      window.addEventListener("pagehide", cancelPending);
+      return () => {
+        cancelPending();
+        window.removeEventListener("pageshow", restore);
+        window.removeEventListener("pagehide", cancelPending);
+      };
+    },
+    updateRoute: (path: string, language: string) => {
+      cancelPending();
+      fallbackLanguage = language;
+      const restored = restoredPath === path;
+      restoredPath = null;
+      if (restored || new URL(path, window.location.origin).pathname.startsWith("/admin")) return;
+      initAnalytics();
+      timer = window.setTimeout(() => send(path, language), 0);
+    },
+  };
 };
 
 export const trackCtaClick = (ctaName: string, ctaLocation: string, params: AnalyticsParams = {}) => {
