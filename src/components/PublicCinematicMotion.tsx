@@ -41,7 +41,7 @@ const PublicCinematicMotion = () => {
     };
     registerSections();
     const contentObserver = new MutationObserver(registerSections);
-    contentObserver.observe(root, { childList: true, subtree: true });
+    contentObserver.observe(root, { childList: true, subtree: true, attributes: true, attributeFilter: ["aria-hidden"] });
 
     return () => {
       contentObserver.disconnect();

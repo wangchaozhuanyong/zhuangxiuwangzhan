@@ -1,4 +1,5 @@
-import { useEffect, useMemo, useState } from "react";
+import { useMemo } from "react";
+import { usePublicListingState } from "@/hooks/usePublicListingState";
 import PageMeta from "@/components/PageMeta";
 import { JsonLdBreadcrumb } from "@/components/JsonLd";
 import { SchemeAContentState, SchemeAFilter, SchemeAListingGrid, SchemeALoadMore, SchemeARouteHero, SchemeASection, type SchemeAListingItem } from "@/components/scheme-a/SchemeARoutePrimitives";
@@ -25,17 +26,15 @@ export default function Blog() {
   const copy = blogPageText[language];
   const routeText = schemeARouteText[language];
   const topicCopy = blogTopicText[language];
-  const [filter, setFilter] = useState("all");
-  const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
+  const { filter, setFilter, visibleCount, setVisibleCount } = usePublicListingState(blogCategoryFilters.map((item) => item.value), "all", PAGE_SIZE);
   const { data: pageContent } = usePublishedSitePage(language, "blog");
   const { data: cmsPosts, isLoading, isError, refetch } = usePublishedBlogPosts(language);
   const posts = cmsPosts?.length ? cmsPosts : blogPosts;
   const filtered = posts.filter((post) => matchesCategory(post.category, post.slug, filter));
   const hero = resolvePageHeroImage(pageContent?.image_url, pageHeroImages.blog);
 
-  useEffect(() => setVisibleCount(PAGE_SIZE), [filter]);
 
-  const selectTopic = (topic: string) => {
+  const selectTopic = (topic: (typeof BLOG_TOPIC_KEYS)[number]) => {
     setFilter(topic);
     const articles = document.getElementById("blog-articles");
     articles?.focus({ preventScroll: true });
@@ -65,11 +64,13 @@ export default function Blog() {
       <SchemeASection title={routeText.blogLatest} description={routeText.blogLatestText} className="fc-blog-articles">
         <div id="blog-articles" tabIndex={-1} role="region" aria-label={routeText.blogLatest}>
           <SchemeAFilter items={blogCategoryFilters.map((category) => ({ value: category.value, label: category[language] }))} value={filter} onChange={setFilter} ariaLabel={copy.breadcrumbBlog} />
+          <div data-public-results>
           {isLoading ? <SchemeAContentState>{routeText.blogLoading}</SchemeAContentState> : null}
           {isError ? <SchemeAContentState action={<button type="button" onClick={() => void refetch()}>{routeText.reload}</button>}>{routeText.blogError}</SchemeAContentState> : null}
           {!isLoading && !isError && !items.length ? <SchemeAContentState>{routeText.blogEmpty}</SchemeAContentState> : null}
           {!isLoading && !isError && items.length ? <SchemeAListingGrid items={items} actionLabel={copy.read} /> : null}
           {visibleCount < filtered.length ? <SchemeALoadMore label={copy.loadMore} onClick={() => setVisibleCount((count) => count + PAGE_SIZE)} /> : null}
+          </div>
         </div>
       </SchemeASection>
       <SchemeASection title={topicCopy.heading} description={topicCopy.description} className="fc-blog-topics">

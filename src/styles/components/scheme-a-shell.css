@@ -70,7 +70,7 @@
     padding: 76px var(--cinematic-gutter) 0;
     background: radial-gradient(circle at 50% 45%, var(--public-surface-section) 0%, var(--public-surface-base) 72%);
     color: var(--public-text-primary);
-    transition: opacity 320ms cubic-bezier(0.16, 1, 0.3, 1), background 320ms ease;
+    transition: opacity 320ms var(--motion-ease), background 320ms var(--motion-ease);
   }
 
   .scheme-a-page-loader--overlay {
@@ -80,44 +80,59 @@
     min-height: 100svh;
   }
 
-  .public-route-content {
-    display: contents;
-  }
+  .public-route-content { display: contents; }
+  .public-route-scene { display: block; }
 
-  .public-route-loader {
+  /* Retained content sits below all persistent navigation and floating controls. */
+  .public-route-retained {
     position: fixed;
-    inset: 76px 0 0;
+    inset: 0;
     z-index: 80;
-    display: grid;
-    place-items: center;
+    overflow: hidden;
     background: var(--public-surface-base);
+    pointer-events: auto;
+    touch-action: none;
+  }
+  .public-route-retained:empty { display: none; }
+  .public-route-retained * { animation: none !important; transition: none !important; }
+  .public-route-retained [data-public-results] { background: var(--public-surface-base); }
+  .public-route-retained [data-cinematic-state] { opacity: 1; transform: none; }
+
+  .public-route-feedback {
+    position: fixed;
+    inset: 76px 0 auto;
+    z-index: 106;
+    pointer-events: none;
     color: var(--public-text-primary);
   }
-
-  .public-route-loader__progress > i {
+  .public-route-feedback > i {
     display: block;
-    width: 96px;
     height: 2px;
     overflow: hidden;
     background: var(--public-border);
   }
-
-  .public-route-loader__progress > i::after {
+  .public-route-feedback > i::after {
     content: "";
     display: block;
-    width: 50%;
+    width: 35%;
     height: 100%;
     background: var(--public-accent);
     animation: scheme-loader 1.1s ease-in-out infinite alternate;
   }
-
-  @media (max-width: 767px) {
-    .public-route-loader { top: 56px; bottom: calc(68px + env(safe-area-inset-bottom, 0px)); }
+  .public-route-feedback__recovery {
+    width: fit-content;
+    max-width: calc(100vw - 2rem);
+    margin: 1rem auto;
+    padding: 1rem 1.25rem;
+    border: 1px solid var(--public-border);
+    border-radius: 8px;
+    background: var(--public-surface-card);
+    box-shadow: 0 4px 24px rgb(41 46 41 / .12);
+    pointer-events: auto;
   }
-
-  @media (prefers-reduced-motion: reduce) {
-    .public-route-loader__progress > i::after { animation: none; }
-  }
+  .public-route-feedback__recovery .scheme-a-page-loader__actions { margin-top: .75rem; }
+  @media (max-width: 767px) { .public-route-feedback { top: 56px; } }
+  @media (prefers-reduced-motion: reduce) { .public-route-feedback > i::after { animation: none; } }
 
   .scheme-a-page-loader__actions {
     display: flex;
@@ -210,7 +225,7 @@
     z-index: 90;
     height: 76px;
     color: #292E29;
-    transition: color 220ms ease, background 220ms ease, box-shadow 220ms ease;
+    transition: color var(--motion-hover) var(--motion-ease), background var(--motion-hover) var(--motion-ease), box-shadow var(--motion-hover) var(--motion-ease);
   }
 
   .scheme-a-chrome__sentinel {
@@ -279,7 +294,7 @@
     object-fit: contain;
     object-position: left center;
     filter: brightness(0) !important;
-    transition: filter 260ms ease;
+    transition: filter 260ms var(--motion-ease);
   }
 
   .scheme-a-chrome__primary {
@@ -316,7 +331,7 @@
     font-weight: 700;
     letter-spacing: 0.08em;
     text-decoration: none;
-    transition: color 180ms ease, background-color 180ms ease, border-color 180ms ease, box-shadow 180ms ease, transform 180ms ease;
+    transition: color var(--motion-control) var(--motion-ease), background-color var(--motion-control) var(--motion-ease), border-color var(--motion-control) var(--motion-ease), box-shadow var(--motion-control) var(--motion-ease), transform var(--motion-control) var(--motion-ease);
   }
 
   .scheme-a-language-single-toggle:hover {
@@ -333,7 +348,7 @@
     align-items: center;
     color: inherit;
     white-space: nowrap;
-    transition: color 200ms ease;
+    transition: color var(--motion-image) var(--motion-ease);
   }
 
   .scheme-a-chrome__nav-more {
@@ -360,7 +375,7 @@
     content: "";
     transform: scaleX(0);
     transform-origin: right;
-    transition: transform 260ms cubic-bezier(0.16, 1, 0.3, 1);
+    transition: transform 260ms var(--motion-ease);
   }
 
   .scheme-a-chrome__primary a:hover::after,
@@ -395,7 +410,7 @@
     border: 1px solid var(--public-border);
     box-shadow: none;
     backdrop-filter: blur(14px);
-    transition: border-color 180ms ease, box-shadow 180ms ease;
+    transition: border-color var(--motion-control) var(--motion-ease), box-shadow var(--motion-control) var(--motion-ease);
   }
 
   .scheme-a-language-switch:hover {
@@ -416,7 +431,7 @@
     font-weight: 600;
     line-height: 1;
     text-decoration: none;
-    transition: color 180ms ease, background-color 180ms ease, opacity 180ms ease, transform 140ms ease;
+    transition: color var(--motion-control) var(--motion-ease), background-color var(--motion-control) var(--motion-ease), opacity var(--motion-control) var(--motion-ease), transform var(--motion-feedback) var(--motion-ease);
   }
 
   .scheme-a-language-option:hover:not(.is-active) {
@@ -456,7 +471,7 @@
     box-shadow: none;
     backdrop-filter: blur(14px);
     cursor: pointer;
-    transition: color 180ms ease, border-color 180ms ease, background-color 180ms ease, transform 140ms ease;
+    transition: color var(--motion-control) var(--motion-ease), border-color var(--motion-control) var(--motion-ease), background-color var(--motion-control) var(--motion-ease), transform var(--motion-feedback) var(--motion-ease);
   }
 
   .scheme-a-chrome__menu-trigger--compact {
@@ -499,7 +514,7 @@
     font-size: 0.78rem;
     font-weight: 700;
     letter-spacing: 0.04em;
-    transition: box-shadow 180ms ease, transform 180ms ease;
+    transition: box-shadow var(--motion-control) var(--motion-ease), transform var(--motion-control) var(--motion-ease);
   }
 
   .scheme-a-chrome__quote:hover {
@@ -533,7 +548,14 @@
     grid-template-rows: auto minmax(0, 1fr) auto;
     color: #292E29;
     background: #F7F6F2;
-    animation: scheme-directory-in 200ms ease both;
+    animation: scheme-directory-in var(--motion-handoff) var(--motion-ease) both;
+  }
+
+  .scheme-a-directory[data-state="closed"] { display: none; }
+
+  .scheme-a-directory[data-state="closing"] {
+    animation: scheme-directory-out var(--motion-close) var(--motion-ease) both;
+    pointer-events: none;
   }
 
   .scheme-a-directory__head {
@@ -611,7 +633,7 @@
     font-weight: 600;
     line-height: 1.4;
     text-align: left;
-    transition: color 200ms ease, background 200ms ease;
+    transition: color var(--motion-image) var(--motion-ease), background var(--motion-image) var(--motion-ease);
   }
 
   .scheme-a-directory__groups section[data-open="true"] .scheme-a-directory__group-toggle {
@@ -640,7 +662,7 @@
     flex: 0 0 auto;
     width: 18px;
     height: 18px;
-    transition: transform 200ms ease;
+    transition: transform var(--motion-image) var(--motion-ease);
   }
 
   .scheme-a-directory__groups section[data-open="true"] .scheme-a-directory__group-toggle > svg {
@@ -653,7 +675,7 @@
     visibility: hidden;
     opacity: 0;
     pointer-events: none;
-    transition: grid-template-rows 200ms ease, opacity 180ms ease, visibility 0s linear 200ms;
+    transition: grid-template-rows var(--motion-image) var(--motion-ease), opacity var(--motion-control) var(--motion-ease), visibility 0s linear var(--motion-image);
   }
 
   .scheme-a-directory__groups section[data-open="true"] .scheme-a-directory__group-panel {
@@ -693,7 +715,7 @@
     font-size: 15px;
     font-weight: 400;
     line-height: 1.5;
-    transition: color 180ms ease, background 180ms ease;
+    transition: color var(--motion-control) var(--motion-ease), background var(--motion-control) var(--motion-ease);
   }
 
   .scheme-a-directory__groups a[aria-current="page"] {
@@ -729,7 +751,7 @@
     flex: 0 0 auto;
     color: #3F4E42;
     opacity: 0;
-    transition: opacity 180ms ease;
+    transition: opacity var(--motion-control) var(--motion-ease);
   }
 
   .scheme-a-directory__groups a:is(:hover, :focus-visible) svg {
@@ -821,7 +843,7 @@
     font-weight: 700;
     background: #F7F6F2;
     box-shadow: none;
-    transition: background 180ms ease, transform 120ms ease, box-shadow 180ms ease;
+    transition: background var(--motion-control) var(--motion-ease), transform 120ms var(--motion-ease), box-shadow var(--motion-control) var(--motion-ease);
   }
 
   .scheme-a-directory__foot a svg {
@@ -963,7 +985,7 @@
     font-weight: 700;
     background: rgb(247 246 242 / 0.78);
     box-shadow: none;
-    transition: transform 140ms ease, background 180ms ease, box-shadow 180ms ease;
+    transition: transform var(--motion-feedback) var(--motion-ease), background var(--motion-control) var(--motion-ease), box-shadow var(--motion-control) var(--motion-ease);
   }
 
   .scheme-a-footer__invitation a:first-child {
@@ -1148,7 +1170,7 @@
     font-size: 14px;
     line-height: 1.5;
     text-decoration: none;
-    transition: background 180ms ease, border-color 180ms ease, color 180ms ease;
+    transition: background var(--motion-control) var(--motion-ease), border-color var(--motion-control) var(--motion-ease), color var(--motion-control) var(--motion-ease);
   }
 
   .scheme-a-footer__studio .scheme-a-footer__contact-cta:hover,
@@ -1204,7 +1226,7 @@
     gap: 0.35rem;
     color: #626A60;
     font-size: 0.78rem;
-    transition: color 180ms ease, transform 180ms ease;
+    transition: color var(--motion-control) var(--motion-ease), transform var(--motion-control) var(--motion-ease);
   }
 
   .scheme-a-footer__directory a:hover,
@@ -1244,7 +1266,7 @@
     padding: 0 0.2rem;
     color: inherit;
     background: transparent;
-    transition: color 180ms ease, transform 180ms ease;
+    transition: color var(--motion-control) var(--motion-ease), transform var(--motion-control) var(--motion-ease);
   }
 
   .scheme-a-footer__legal a:hover,
@@ -1335,7 +1357,7 @@
       color: #3F4E42;
       font-size: 12px;
       line-height: 1.5;
-      transition: background 180ms ease, border-color 180ms ease, color 180ms ease;
+      transition: background var(--motion-control) var(--motion-ease), border-color var(--motion-control) var(--motion-ease), color var(--motion-control) var(--motion-ease);
     }
 
     .scheme-a-footer__contact-note {
@@ -1630,7 +1652,7 @@
       color: #292E29;
       background: linear-gradient(135deg, #ECEDE6, #F7F6F2);
       box-shadow: none;
-      transition: background 180ms ease, box-shadow 180ms ease, transform 120ms ease;
+      transition: background var(--motion-control) var(--motion-ease), box-shadow var(--motion-control) var(--motion-ease), transform 120ms var(--motion-ease);
     }
 
     .scheme-a-directory__call:hover,
@@ -1867,7 +1889,7 @@
       background: rgb(253 252 250 / 0.02);
       border: 1px solid rgb(212 217 207 / 0.05);
       box-sizing: border-box;
-      transition: background 160ms ease, border-color 160ms ease;
+      transition: background 160ms var(--motion-ease), border-color 160ms var(--motion-ease);
     }
 
     .scheme-a-footer__studio .scheme-a-footer__contact-link:hover,
@@ -1897,7 +1919,7 @@
       font-weight: 500;
       white-space: nowrap;
       flex-shrink: 0;
-      transition: background 160ms ease, border-color 160ms ease, color 160ms ease;
+      transition: background 160ms var(--motion-ease), border-color 160ms var(--motion-ease), color 160ms var(--motion-ease);
     }
 
     .scheme-a-footer__studio .scheme-a-footer__contact-link:hover .scheme-a-footer__contact-action,
@@ -1963,7 +1985,7 @@
       border: 1px solid rgb(212 217 207 / 0.08);
       box-shadow: none;
       color: #626A60;
-      transition: background 160ms ease, border-color 160ms ease, color 160ms ease;
+      transition: background 160ms var(--motion-ease), border-color 160ms var(--motion-ease), color 160ms var(--motion-ease);
     }
 
     .scheme-a-footer__studio .scheme-a-footer__socials a:hover,
@@ -2004,7 +2026,7 @@
       border-radius: 12px;
       background: rgb(253 252 250 / 0.025);
       overflow: hidden;
-      transition: background 180ms ease, border-color 180ms ease;
+      transition: background var(--motion-control) var(--motion-ease), border-color var(--motion-control) var(--motion-ease);
     }
 
     .scheme-a-footer__mobile-directory details[open] {
@@ -2055,7 +2077,7 @@
       width: 14px;
       height: 14px;
       color: #3F4E42;
-      transition: transform 200ms ease;
+      transition: transform var(--motion-image) var(--motion-ease);
     }
 
     .scheme-a-footer__mobile-directory details[open] summary svg {
@@ -2083,7 +2105,7 @@
       border: 1px solid transparent;
       color: #626A60;
       font-size: 0.76rem;
-      transition: background 160ms ease, color 160ms ease, border-color 160ms ease;
+      transition: background 160ms var(--motion-ease), color 160ms var(--motion-ease), border-color 160ms var(--motion-ease);
     }
 
     .scheme-a-footer__mobile-directory a:hover,
@@ -2138,7 +2160,7 @@
       border-radius: 8px;
       color: #626A60;
       font-size: 0.76rem;
-      transition: background 160ms ease, border-color 160ms ease, color 160ms ease;
+      transition: background 160ms var(--motion-ease), border-color 160ms var(--motion-ease), color 160ms var(--motion-ease);
     }
 
     .scheme-a-footer__areas a:hover,
@@ -2269,6 +2291,7 @@
 
   @media (prefers-reduced-motion: reduce) {
     .scheme-a-directory,
+    .scheme-a-directory[data-state="closing"],
     .scheme-a-directory__group-panel,
     .scheme-a-directory__group-toggle,
     .scheme-a-chrome,
@@ -2287,8 +2310,8 @@
   }
 
   @keyframes scheme-directory-in {
-    from { opacity: 0; clip-path: inset(0 0 100% 0); }
-    to { opacity: 1; clip-path: inset(0); }
+    from { opacity: 0; transform: translateY(-6px); }
+    to { opacity: 1; transform: translateY(0); }
   }
 
   @keyframes scheme-loader {
@@ -2301,3 +2324,5 @@
     to { opacity: 1; filter: blur(0); transform: scale(1); }
   }
 }
+
+@keyframes scheme-directory-out { from { opacity: 1; transform: translateY(0); } to { opacity: 0; transform: translateY(-4px); } }

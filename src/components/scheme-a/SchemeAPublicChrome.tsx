@@ -1,3 +1,5 @@
+import { scrollWindowToSmoothly } from "@/lib/instantScroll";
+import { PUBLIC_MOTION, prefersReducedMotion } from "@/lib/publicMotion";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useLocation } from "react-router-dom";
 import {
@@ -166,6 +168,9 @@ export const SchemeANavbar = () => {
   const compactTriggerRef = useRef<HTMLButtonElement>(null);
   const closeRef = useRef<HTMLButtonElement>(null);
   const menuRef = useRef<HTMLDivElement>(null);
+  const [closing, setClosing] = useState(false);
+  const closeTimer = useRef(0);
+  const returnFocus = useRef(true);
   const logo = settings.logo_url ? addCacheBuster(settings.logo_url, settings.updated_at) : logoFallback;
   const companyName = settings.company_name || "FLASH CAST SDN. BHD.";
   const languagePaths = {
@@ -194,14 +199,25 @@ export const SchemeANavbar = () => {
     return () => media.removeEventListener("change", updatePreviewMode);
   }, [currentItem]);
 
-  const closeDirectory = useCallback(() => {
-    setMenuOpen(false);
-    window.requestAnimationFrame(() => {
+  const closeDirectory = useCallback((restoreFocus = true) => {
+    returnFocus.current = restoreFocus;
+    window.clearTimeout(closeTimer.current);
+    setClosing(true);
+    const finish = () => {
+      setMenuOpen(false);
+      setClosing(false);
+      if (!returnFocus.current) {
+        if (!document.documentElement.dataset.publicRouteLoading) document.getElementById("main-content")?.focus({ preventScroll: true });
+        return;
+      }
       const trigger = [desktopTriggerRef.current, compactTriggerRef.current]
         .find((candidate) => candidate && candidate.getClientRects().length > 0);
-      trigger?.focus();
-    });
+      trigger?.focus({ preventScroll: true });
+    };
+    closeTimer.current = window.setTimeout(finish, prefersReducedMotion() ? 0 : PUBLIC_MOTION.menuClose);
   }, [setMenuOpen]);
+
+  useEffect(() => () => window.clearTimeout(closeTimer.current), []);
 
   const toggleDirectory = useCallback(() => {
     if (menuOpen) {
@@ -209,16 +225,17 @@ export const SchemeANavbar = () => {
       return;
     }
 
+    window.clearTimeout(closeTimer.current);
+    setClosing(false);
     setOpenGroup(currentGroup);
     setPreviewItem(currentItem);
     setMenuOpen(true);
   }, [closeDirectory, currentGroup, currentItem, menuOpen, setMenuOpen]);
 
   useEffect(() => {
-    setMenuOpen(false);
-    setOpenGroup(null);
+    if (menuRef.current && menuRef.current.dataset.state !== "closed") closeDirectory(false);
     setPreviewItem(currentItem);
-  }, [currentItem, publicPath, setMenuOpen]);
+  }, [currentItem, location.pathname, location.search, closeDirectory]);
 
   useEffect(() => {
     const sentinel = sentinelRef.current;
@@ -302,13 +319,14 @@ export const SchemeANavbar = () => {
       </header>
       {!hasImmersiveHero ? <div className="scheme-a-chrome__spacer" aria-hidden="true" /> : null}
 
-      {menuOpen ? (
-        <div
+      <div
           ref={menuRef}
           id="scheme-a-directory"
           className="scheme-a-directory"
+          data-state={!menuOpen ? "closed" : closing ? "closing" : "open"}
+          aria-hidden={!menuOpen || undefined}
           role="dialog"
-          aria-modal="true"
+          aria-modal={menuOpen || undefined}
           aria-label={t.directory}
           onPointerDown={(event) => {
             const target = event.target;
@@ -355,7 +373,9 @@ export const SchemeANavbar = () => {
                               to={item.path === "/quote" ? QUOTE_FORM_PATH : item.path}
                               aria-current={isActivePath(location.pathname, item.path) && currentItem.path === item.path ? "page" : undefined}
                               tabIndex={openGroup === group.key ? undefined : -1}
-                              onClick={closeDirectory}
+                              onClick={(event) => {
+                                if (event.button === 0 && !event.metaKey && !event.ctrlKey && !event.shiftKey && !event.altKey) closeDirectory(false);
+                              }}
                               onFocus={() => { if (canPreview) setPreviewItem(item); }}
                               onPointerEnter={(event) => { if (canPreview && event.pointerType === "mouse") setPreviewItem(item); }}
                             >
@@ -373,7 +393,7 @@ export const SchemeANavbar = () => {
               ))}
             </nav>
             <figure className="scheme-a-directory__preview">
-              <SmartImage src={directoryPreviewItem.previewImage} alt={navText.previewAlt} width={1100} height={800} quality={84} revealOnLoad />
+              <SmartImage src={directoryPreviewItem.previewImage} alt={navText.previewAlt} width={1100} height={800} quality={84} loading="eager" fetchPriority="low" revealOnLoad />
               <figcaption><span>{canPreview ? navText.sectionPreview : navText.currentPage}</span><strong>{translate(directoryPreviewItem.labelKey)}</strong></figcaption>
             </figure>
             <div className="scheme-a-directory__contact">
@@ -387,7 +407,9 @@ export const SchemeANavbar = () => {
                 <span className="scheme-a-directory__contact-copy"><small>{t.call}</small><strong>{settings.phone_display}</strong></span>
                 <span className="scheme-a-directory__contact-action"><span>{t.callNow}</span><ArrowUpRight aria-hidden="true" /></span>
               </a>
-              <LocalizedLink className="scheme-a-directory__hours" to="/contact" onClick={closeDirectory}>
+              <LocalizedLink className="scheme-a-directory__hours" to="/contact" onClick={(event) => {
+                                if (event.button === 0 && !event.metaKey && !event.ctrlKey && !event.shiftKey && !event.altKey) closeDirectory(false);
+                              }}>
                 <span className="scheme-a-directory__contact-icon"><Clock aria-hidden="true" /></span>
                 <span className="scheme-a-directory__contact-copy"><small>{t.businessHours}</small><strong>{footer.hours}</strong></span>
                 <span className="scheme-a-directory__contact-action"><span>{translate("cta.contactUs")}</span><ArrowUpRight aria-hidden="true" /></span>
@@ -400,7 +422,7 @@ export const SchemeANavbar = () => {
             <LocalizedLink className="is-quote" to={QUOTE_FORM_PATH}>{t.quote}<ArrowUpRight aria-hidden="true" /></LocalizedLink>
           </div>
         </div>
-      ) : null}
+
     </>
   );
 };
@@ -508,7 +530,7 @@ export const SchemeAFooter = () => {
         </div>
         <div className="scheme-a-footer__legal scheme-a-frame">
           <span>{t.copyright} {footer.rights}</span>
-          <nav><LocalizedLink to="/privacy">{footer.privacy}</LocalizedLink><LocalizedLink to="/terms">{footer.terms}</LocalizedLink><LanguageRouteLink to={languagePath} targetLanguage={nextLanguage}>{t.language}: {nextLanguage === "zh" ? "中文" : "EN"}</LanguageRouteLink><button type="button" onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}>{t.backToTop}<ArrowUp /></button></nav>
+          <nav><LocalizedLink to="/privacy">{footer.privacy}</LocalizedLink><LocalizedLink to="/terms">{footer.terms}</LocalizedLink><LanguageRouteLink to={languagePath} targetLanguage={nextLanguage}>{t.language}: {nextLanguage === "zh" ? "中文" : "EN"}</LanguageRouteLink><button type="button" onClick={() => scrollWindowToSmoothly(0)}>{t.backToTop}<ArrowUp /></button></nav>
         </div>
       </div>
     </footer>

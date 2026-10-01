@@ -237,6 +237,14 @@
     object-fit: cover;
   }
 
+  .smart-image-previous {
+    opacity: 1;
+    pointer-events: none;
+    transition: opacity var(--motion-image, 200ms) var(--motion-ease, ease);
+  }
+  .smart-image-frame[data-image-ready="true"] > .smart-image-previous { opacity: 0; }
+  @media (prefers-reduced-motion: reduce) { .smart-image-previous { transition: none; } }
+
   .smart-image-failure {
     position: absolute;
     inset: 0;

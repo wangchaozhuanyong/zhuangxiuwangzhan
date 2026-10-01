@@ -32,6 +32,9 @@ describe("SmartImage", () => {
     Object.defineProperty(image, "decode", { configurable: true, value: () => Promise.resolve() });
     await act(async () => image?.dispatchEvent(new Event("load", { bubbles: true })));
     expect(image?.dataset.imageState).toBe("loaded");
+    expect(container.querySelector(".smart-image-previous")).not.toBeNull();
+    expect(container.querySelector(".smart-image-frame")).toHaveAttribute("data-image-ready", "true");
+    await act(async () => new Promise((resolve) => setTimeout(resolve, 220)));
     expect(container.querySelector(".smart-image-previous")).toBeNull();
 
     await act(async () => root.unmount());
@@ -49,6 +52,17 @@ describe("SmartImage", () => {
     expect(container.querySelector(".smart-image-failure button")?.textContent).toContain("Retry");
     await act(async () => (container.querySelector(".smart-image-failure button") as HTMLButtonElement).click());
     expect(container.querySelector<HTMLImageElement>(".smart-image")?.src).toContain("image_retry=");
+    await act(async () => root.unmount());
+    container.remove();
+  });
+
+  it("restarts a stalled transfer when the shared route recovery requests a retry", async () => {
+    const container = document.createElement("div");
+    document.body.appendChild(container);
+    const root = createRoot(container);
+    await act(async () => root.render(<SmartImage src="/stalled.webp" alt="Example" critical />));
+    await act(async () => container.querySelector("img")?.dispatchEvent(new Event("public-image-retry")));
+    expect(container.querySelector<HTMLImageElement>("img")?.src).toContain("image_retry=");
     await act(async () => root.unmount());
     container.remove();
   });
