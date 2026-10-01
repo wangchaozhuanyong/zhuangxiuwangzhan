@@ -9,31 +9,32 @@ const selectedTargets = (process.env.REAL_BROWSER_TARGETS || "")
   .split(",")
   .map((target) => target.trim())
   .filter(Boolean);
+const brandSelector = "header a[data-adaptive-logo]";
 
 const pages = [
   {
     path: "/zh",
-    selectors: [".site-header__brand", "main", "footer", 'a[href^="tel:"]'],
+    selectors: [brandSelector, "main", "footer", 'a[href^="tel:"]'],
     minTextLength: 800,
   },
   {
     path: "/en",
-    selectors: [".site-header__brand", "main", "footer", 'a[href^="tel:"]'],
+    selectors: [brandSelector, "main", "footer", 'a[href^="tel:"]'],
     minTextLength: 800,
   },
   {
     path: "/zh/services",
-    selectors: [".site-header__brand", "main", "footer", 'a[href*="/quote"]'],
+    selectors: [brandSelector, "main", "footer", 'a[href*="/quote"]'],
     minTextLength: 800,
   },
   {
     path: "/zh/materials",
-    selectors: [".site-header__brand", "main", "footer"],
+    selectors: [brandSelector, "main", "footer"],
     minTextLength: 500,
   },
   {
     path: "/zh/projects",
-    selectors: [".site-header__brand", "main", "footer", 'a[href*="/quote"]'],
+    selectors: [brandSelector, "main", "footer", 'a[href*="/quote"]'],
     minTextLength: 500,
   },
   {
@@ -226,8 +227,26 @@ const runTarget = async (target) => {
       await runPageChecks(driver, page);
     }
 
-    await setSessionStatus(driver, "passed", "Core pages rendered and stayed usable.");
-    return { id: target.id, ok: true };
+    await runPageChecks(driver, pages[0]);
+    const refreshed = [];
+    for (let round = 0; round < 3; round++) {
+      const previousDocument = await driver.executeScript(() => performance.timeOrigin);
+      await driver.navigate().refresh();
+      await waitForVisible(driver, brandSelector);
+      await waitForVisible(driver, "main");
+      await driver.wait(async () => driver.executeScript((previous) =>
+        document.readyState === "complete" && performance.timeOrigin !== previous &&
+        !document.querySelector(".public-update-notice") &&
+        !document.querySelector('[data-route-pending="true"]'), previousDocument), waitTimeoutMs);
+      const currentDocument = await driver.executeScript(() => performance.timeOrigin);
+      await driver.sleep(1000);
+      if (await driver.executeScript(() => performance.timeOrigin) !== currentDocument) {
+        throw new Error("Native refresh unexpectedly navigated again after completing.");
+      }
+      refreshed.push({ round: round + 1, documentComplete: true, remainedStable: true });
+    }
+    await setSessionStatus(driver, "passed", "Core pages and three native refreshes stayed usable.");
+    return { id: target.id, ok: true, refreshed };
   } catch (error) {
     await setSessionStatus(driver, "failed", error instanceof Error ? error.message : String(error));
     return { id: target.id, ok: false, error: error instanceof Error ? error.message : String(error) };
