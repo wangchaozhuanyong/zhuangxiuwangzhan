@@ -20,4 +20,15 @@ describe("sanitizeServiceOverviewHtml", () => {
     expect(output).toContain("wrong locale");
     expect(output).not.toMatch(/<a|<script|<svg|alert\(/);
   });
+
+  it.each(["en", "zh"] as const)("preserves material lists only when requested and keeps safe %s links", (language) => {
+    const raw = `<h2>Detail</h2><ul onclick="alert(1)"><li>One</li><li><a href="/${language}/quote">Quote</a></li></ul><ol><li>Step</li></ol><iframe>unsafe</iframe><script>alert(2)</script>`;
+    const output = sanitizeServiceOverviewHtml(raw, language, { preserveLists: true });
+    const container = document.createElement("div"); container.innerHTML = output;
+    expect(container.querySelectorAll("li")).toHaveLength(3);
+    expect(container.querySelector("h2")).toHaveTextContent("Detail");
+    expect(container.querySelector("a")).toHaveAttribute("href", `/${language}/quote`);
+    expect(output).not.toMatch(/onclick|iframe|script|unsafe|alert/);
+    expect(sanitizeServiceOverviewHtml(raw, language)).not.toMatch(/<ul|<ol|<li/);
+  });
 });
