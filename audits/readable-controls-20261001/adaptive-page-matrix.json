@@ -1,0 +1,4796 @@
+[
+  {
+    "background": "rgba(0, 0, 0, 0)",
+    "headerClass": "scheme-a-chrome is-fixed is-overlay",
+    "headerHeight": 56,
+    "heroTop": 0,
+    "languageBackground": "rgb(63, 78, 66)",
+    "languageColor": "rgb(253, 252, 250)",
+    "nav": [
+      {
+        "color": "rgb(0, 0, 0)",
+        "label": "FLASH CAST SDN. BHD.",
+        "mode": "outline",
+        "ratio": "3.904",
+        "shadow": "rgb(255, 255, 255) -1px -1px 0px, rgb(255, 255, 255) 0px -1px 0px, rgb(255, 255, 255) 1px -1px 0px, rgb(255, 255, 255) -1px 0px 0px, rgb(255, 255, 255) 1px 0px 0px, rgb(255, 255, 255) -1px 1px 0px, rgb(255, 255, 255) 0px 1px 0px, rgb(255, 255, 255) 1px 1px 0px",
+        "source": "image"
+      }
+    ],
+    "overflow": false,
+    "path": "/zh/services/design",
+    "pseudo": "none",
+    "readingPanels": 0,
+    "spacer": false,
+    "texts": [
+      {
+        "color": "rgb(0, 0, 0)",
+        "mode": "outline",
+        "ratio": "3.904",
+        "shadow": "rgb(255, 255, 255) -1px -1px 0px, rgb(255, 255, 255) 0px -1px 0px, rgb(255, 255, 255) 1px -1px 0px, rgb(255, 255, 255) -1px 0px 0px, rgb(255, 255, 255) 1px 0px 0px, rgb(255, 255, 255) -1px 1px 0px, rgb(255, 255, 255) 0px 1px 0px, rgb(255, 255, 255) 1px 1px 0px",
+        "source": "image",
+        "tag": "A"
+      },
+      {
+        "color": "rgb(253, 252, 250)",
+        "mode": "color",
+        "ratio": "8.606",
+        "shadow": "none",
+        "source": "surface",
+        "tag": "A"
+      },
+      {
+        "color": "rgb(98, 106, 96)",
+        "mode": "color",
+        "ratio": "5.462",
+        "shadow": "none",
+        "source": "surface",
+        "tag": "A"
+      },
+      {
+        "color": "rgb(0, 0, 0)",
+        "mode": "outline",
+        "ratio": "1.856",
+        "shadow": "rgb(255, 255, 255) -1px -1px 0px, rgb(255, 255, 255) 0px -1px 0px, rgb(255, 255, 255) 1px -1px 0px, rgb(255, 255, 255) -1px 0px 0px, rgb(255, 255, 255) 1px 0px 0px, rgb(255, 255, 255) -1px 1px 0px, rgb(255, 255, 255) 0px 1px 0px, rgb(255, 255, 255) 1px 1px 0px",
+        "source": "image",
+        "tag": "P"
+      },
+      {
+        "color": "rgb(0, 0, 0)",
+        "mode": "outline",
+        "ratio": "1.903",
+        "shadow": "rgb(255, 255, 255) -1px -1px 0px, rgb(255, 255, 255) 0px -1px 0px, rgb(255, 255, 255) 1px -1px 0px, rgb(255, 255, 255) -1px 0px 0px, rgb(255, 255, 255) 1px 0px 0px, rgb(255, 255, 255) -1px 1px 0px, rgb(255, 255, 255) 0px 1px 0px, rgb(255, 255, 255) 1px 1px 0px",
+        "source": "image",
+        "tag": "SPAN"
+      },
+      {
+        "color": "rgb(41, 46, 41)",
+        "mode": "color",
+        "ratio": "6.415",
+        "shadow": "none",
+        "source": "image",
+        "tag": "P"
+      },
+      {
+        "color": "rgb(253, 252, 250)",
+        "mode": "color",
+        "ratio": "8.606",
+        "shadow": "none",
+        "source": "surface",
+        "tag": "A"
+      },
+      {
+        "color": "rgb(41, 46, 41)",
+        "mode": "color",
+        "ratio": "6.169",
+        "shadow": "none",
+        "source": "image",
+        "tag": "A"
+      },
+      {
+        "color": "rgb(0, 0, 0)",
+        "mode": "outline",
+        "ratio": "2.380",
+        "shadow": "rgb(255, 255, 255) -1px -1px 0px, rgb(255, 255, 255) 0px -1px 0px, rgb(255, 255, 255) 1px -1px 0px, rgb(255, 255, 255) -1px 0px 0px, rgb(255, 255, 255) 1px 0px 0px, rgb(255, 255, 255) -1px 1px 0px, rgb(255, 255, 255) 0px 1px 0px, rgb(255, 255, 255) 1px 1px 0px",
+        "source": "surface",
+        "tag": "A"
+      },
+      {
+        "color": "rgb(98, 106, 96)",
+        "mode": "color",
+        "ratio": "5.462",
+        "shadow": "none",
+        "source": "surface",
+        "tag": "A"
+      },
+      {
+        "color": "rgb(98, 106, 96)",
+        "mode": "color",
+        "ratio": "5.462",
+        "shadow": "none",
+        "source": "surface",
+        "tag": "A"
+      },
+      {
+        "color": "rgb(98, 106, 96)",
+        "mode": "color",
+        "ratio": "5.462",
+        "shadow": "none",
+        "source": "surface",
+        "tag": "A"
+      },
+      {
+        "color": "rgb(98, 106, 96)",
+        "mode": "color",
+        "ratio": "5.462",
+        "shadow": "none",
+        "source": "surface",
+        "tag": "A"
+      },
+      {
+        "color": "rgb(253, 252, 250)",
+        "mode": "color",
+        "ratio": "8.606",
+        "shadow": "none",
+        "source": "surface",
+        "tag": "A"
+      },
+      {
+        "color": "rgb(98, 106, 96)",
+        "mode": "color",
+        "ratio": "5.462",
+        "shadow": "none",
+        "source": "surface",
+        "tag": "SPAN"
+      },
+      {
+        "color": "rgb(98, 106, 96)",
+        "mode": "color",
+        "ratio": "5.462",
+        "shadow": "none",
+        "source": "surface",
+        "tag": "SPAN"
+      },
+      {
+        "color": "rgb(98, 106, 96)",
+        "mode": "color",
+        "ratio": "5.462",
+        "shadow": "none",
+        "source": "surface",
+        "tag": "SPAN"
+      },
+      {
+        "color": "rgb(98, 106, 96)",
+        "mode": "color",
+        "ratio": "5.462",
+        "shadow": "none",
+        "source": "surface",
+        "tag": "SPAN"
+      },
+      {
+        "color": "rgb(98, 106, 96)",
+        "mode": "color",
+        "ratio": "5.462",
+        "shadow": "none",
+        "source": "surface",
+        "tag": "SPAN"
+      },
+      {
+        "color": "rgb(98, 106, 96)",
+        "mode": "color",
+        "ratio": "5.462",
+        "shadow": "none",
+        "source": "surface",
+        "tag": "SPAN"
+      }
+    ],
+    "width": 360,
+    "expectedWidth": 360
+  },
+  {
+    "background": "rgba(0, 0, 0, 0)",
+    "headerClass": "scheme-a-chrome is-fixed is-overlay",
+    "headerHeight": 56,
+    "heroTop": 0,
+    "languageBackground": "rgb(63, 78, 66)",
+    "languageColor": "rgb(253, 252, 250)",
+    "nav": [
+      {
+        "color": "rgb(0, 0, 0)",
+        "label": "FLASH CAST SDN. BHD.",
+        "mode": "outline",
+        "ratio": "3.904",
+        "shadow": "rgb(255, 255, 255) -1px -1px 0px, rgb(255, 255, 255) 0px -1px 0px, rgb(255, 255, 255) 1px -1px 0px, rgb(255, 255, 255) -1px 0px 0px, rgb(255, 255, 255) 1px 0px 0px, rgb(255, 255, 255) -1px 1px 0px, rgb(255, 255, 255) 0px 1px 0px, rgb(255, 255, 255) 1px 1px 0px",
+        "source": "image"
+      }
+    ],
+    "overflow": false,
+    "path": "/en/services/design",
+    "pseudo": "none",
+    "readingPanels": 0,
+    "spacer": false,
+    "texts": [
+      {
+        "color": "rgb(0, 0, 0)",
+        "mode": "outline",
+        "ratio": "3.904",
+        "shadow": "rgb(255, 255, 255) -1px -1px 0px, rgb(255, 255, 255) 0px -1px 0px, rgb(255, 255, 255) 1px -1px 0px, rgb(255, 255, 255) -1px 0px 0px, rgb(255, 255, 255) 1px 0px 0px, rgb(255, 255, 255) -1px 1px 0px, rgb(255, 255, 255) 0px 1px 0px, rgb(255, 255, 255) 1px 1px 0px",
+        "source": "image",
+        "tag": "A"
+      },
+      {
+        "color": "rgb(98, 106, 96)",
+        "mode": "color",
+        "ratio": "5.462",
+        "shadow": "none",
+        "source": "surface",
+        "tag": "A"
+      },
+      {
+        "color": "rgb(253, 252, 250)",
+        "mode": "color",
+        "ratio": "8.606",
+        "shadow": "none",
+        "source": "surface",
+        "tag": "A"
+      },
+      {
+        "color": "rgb(0, 0, 0)",
+        "mode": "color",
+        "ratio": "5.070",
+        "shadow": "none",
+        "source": "image",
+        "tag": "P"
+      },
+      {
+        "color": "rgb(0, 0, 0)",
+        "mode": "outline",
+        "ratio": "2.633",
+        "shadow": "rgb(255, 255, 255) -1px -1px 0px, rgb(255, 255, 255) 0px -1px 0px, rgb(255, 255, 255) 1px -1px 0px, rgb(255, 255, 255) -1px 0px 0px, rgb(255, 255, 255) 1px 0px 0px, rgb(255, 255, 255) -1px 1px 0px, rgb(255, 255, 255) 0px 1px 0px, rgb(255, 255, 255) 1px 1px 0px",
+        "source": "image",
+        "tag": "SPAN"
+      },
+      {
+        "color": "rgb(0, 0, 0)",
+        "mode": "outline",
+        "ratio": "3.261",
+        "shadow": "rgb(255, 255, 255) -1px -1px 0px, rgb(255, 255, 255) 0px -1px 0px, rgb(255, 255, 255) 1px -1px 0px, rgb(255, 255, 255) -1px 0px 0px, rgb(255, 255, 255) 1px 0px 0px, rgb(255, 255, 255) -1px 1px 0px, rgb(255, 255, 255) 0px 1px 0px, rgb(255, 255, 255) 1px 1px 0px",
+        "source": "image",
+        "tag": "P"
+      },
+      {
+        "color": "rgb(253, 252, 250)",
+        "mode": "color",
+        "ratio": "8.606",
+        "shadow": "none",
+        "source": "surface",
+        "tag": "A"
+      },
+      {
+        "color": "rgb(41, 46, 41)",
+        "mode": "color",
+        "ratio": "6.409",
+        "shadow": "none",
+        "source": "image",
+        "tag": "A"
+      },
+      {
+        "color": "rgb(0, 0, 0)",
+        "mode": "outline",
+        "ratio": "2.380",
+        "shadow": "rgb(255, 255, 255) -1px -1px 0px, rgb(255, 255, 255) 0px -1px 0px, rgb(255, 255, 255) 1px -1px 0px, rgb(255, 255, 255) -1px 0px 0px, rgb(255, 255, 255) 1px 0px 0px, rgb(255, 255, 255) -1px 1px 0px, rgb(255, 255, 255) 0px 1px 0px, rgb(255, 255, 255) 1px 1px 0px",
+        "source": "surface",
+        "tag": "A"
+      },
+      {
+        "color": "rgb(98, 106, 96)",
+        "mode": "color",
+        "ratio": "5.462",
+        "shadow": "none",
+        "source": "surface",
+        "tag": "A"
+      },
+      {
+        "color": "rgb(98, 106, 96)",
+        "mode": "color",
+        "ratio": "5.462",
+        "shadow": "none",
+        "source": "surface",
+        "tag": "A"
+      },
+      {
+        "color": "rgb(98, 106, 96)",
+        "mode": "color",
+        "ratio": "5.462",
+        "shadow": "none",
+        "source": "surface",
+        "tag": "A"
+      },
+      {
+        "color": "rgb(98, 106, 96)",
+        "mode": "color",
+        "ratio": "5.462",
+        "shadow": "none",
+        "source": "surface",
+        "tag": "A"
+      },
+      {
+        "color": "rgb(253, 252, 250)",
+        "mode": "color",
+        "ratio": "8.606",
+        "shadow": "none",
+        "source": "surface",
+        "tag": "A"
+      },
+      {
+        "color": "rgb(98, 106, 96)",
+        "mode": "color",
+        "ratio": "5.462",
+        "shadow": "none",
+        "source": "surface",
+        "tag": "SPAN"
+      },
+      {
+        "color": "rgb(98, 106, 96)",
+        "mode": "color",
+        "ratio": "5.462",
+        "shadow": "none",
+        "source": "surface",
+        "tag": "SPAN"
+      },
+      {
+        "color": "rgb(98, 106, 96)",
+        "mode": "color",
+        "ratio": "5.462",
+        "shadow": "none",
+        "source": "surface",
+        "tag": "SPAN"
+      },
+      {
+        "color": "rgb(98, 106, 96)",
+        "mode": "color",
+        "ratio": "5.462",
+        "shadow": "none",
+        "source": "surface",
+        "tag": "SPAN"
+      },
+      {
+        "color": "rgb(98, 106, 96)",
+        "mode": "color",
+        "ratio": "5.462",
+        "shadow": "none",
+        "source": "surface",
+        "tag": "SPAN"
+      },
+      {
+        "color": "rgb(98, 106, 96)",
+        "mode": "color",
+        "ratio": "5.462",
+        "shadow": "none",
+        "source": "surface",
+        "tag": "SPAN"
+      }
+    ],
+    "width": 360,
+    "expectedWidth": 360
+  },
+  {
+    "background": "rgba(0, 0, 0, 0)",
+    "headerClass": "scheme-a-chrome is-fixed is-overlay",
+    "headerHeight": 56,
+    "heroTop": 0,
+    "languageBackground": "rgb(63, 78, 66)",
+    "languageColor": "rgb(253, 252, 250)",
+    "nav": [
+      {
+        "color": "rgb(41, 46, 41)",
+        "label": "FLASH CAST SDN. BHD.",
+        "mode": "color",
+        "ratio": "8.360",
+        "shadow": "none",
+        "source": "image"
+      }
+    ],
+    "overflow": false,
+    "path": "/zh",
+    "pseudo": "none",
+    "readingPanels": 0,
+    "spacer": false,
+    "texts": [
+      {
+        "color": "rgb(41, 46, 41)",
+        "mode": "color",
+        "ratio": "8.360",
+        "shadow": "none",
+        "source": "image",
+        "tag": "A"
+      },
+      {
+        "color": "rgb(253, 252, 250)",
+        "mode": "color",
+        "ratio": "8.606",
+        "shadow": "none",
+        "source": "surface",
+        "tag": "A"
+      },
+      {
+        "color": "rgb(98, 106, 96)",
+        "mode": "color",
+        "ratio": "5.462",
+        "shadow": "none",
+        "source": "surface",
+        "tag": "A"
+      },
+      {
+        "color": "rgb(41, 46, 41)",
+        "mode": "color",
+        "ratio": "6.141",
+        "shadow": "none",
+        "source": "image",
+        "tag": "SPAN"
+      },
+      {
+        "color": "rgb(41, 46, 41)",
+        "mode": "color",
+        "ratio": "8.548",
+        "shadow": "none",
+        "source": "image",
+        "tag": "SPAN"
+      },
+      {
+        "color": "rgb(41, 46, 41)",
+        "mode": "color",
+        "ratio": "8.662",
+        "shadow": "none",
+        "source": "image",
+        "tag": "P"
+      },
+      {
+        "color": "rgb(253, 252, 250)",
+        "mode": "color",
+        "ratio": "8.606",
+        "shadow": "none",
+        "source": "surface",
+        "tag": "A"
+      },
+      {
+        "color": "rgb(63, 78, 66)",
+        "mode": "color",
+        "ratio": "8.606",
+        "shadow": "none",
+        "source": "surface",
+        "tag": "A"
+      },
+      {
+        "color": "rgb(41, 46, 41)",
+        "mode": "color",
+        "ratio": "13.500",
+        "shadow": "none",
+        "source": "surface",
+        "tag": "SPAN"
+      },
+      {
+        "color": "rgb(253, 252, 250)",
+        "mode": "color",
+        "ratio": "8.606",
+        "shadow": "none",
+        "source": "surface",
+        "tag": "A"
+      },
+      {
+        "color": "rgb(63, 78, 66)",
+        "mode": "color",
+        "ratio": "7.250",
+        "shadow": "none",
+        "source": "surface",
+        "tag": "SPAN"
+      },
+      {
+        "color": "rgb(98, 106, 96)",
+        "mode": "color",
+        "ratio": "5.462",
+        "shadow": "none",
+        "source": "surface",
+        "tag": "SPAN"
+      },
+      {
+        "color": "rgb(98, 106, 96)",
+        "mode": "color",
+        "ratio": "5.462",
+        "shadow": "none",
+        "source": "surface",
+        "tag": "SPAN"
+      },
+      {
+        "color": "rgb(98, 106, 96)",
+        "mode": "color",
+        "ratio": "5.462",
+        "shadow": "none",
+        "source": "surface",
+        "tag": "SPAN"
+      },
+      {
+        "color": "rgb(98, 106, 96)",
+        "mode": "color",
+        "ratio": "5.462",
+        "shadow": "none",
+        "source": "surface",
+        "tag": "SPAN"
+      },
+      {
+        "color": "rgb(98, 106, 96)",
+        "mode": "color",
+        "ratio": "5.462",
+        "shadow": "none",
+        "source": "surface",
+        "tag": "SPAN"
+      }
+    ],
+    "width": 360,
+    "expectedWidth": 360
+  },
+  {
+    "background": "rgba(0, 0, 0, 0)",
+    "headerClass": "scheme-a-chrome is-fixed is-overlay",
+    "headerHeight": 56,
+    "heroTop": 0,
+    "languageBackground": "rgb(63, 78, 66)",
+    "languageColor": "rgb(253, 252, 250)",
+    "nav": [
+      {
+        "color": "rgb(41, 46, 41)",
+        "label": "FLASH CAST SDN. BHD.",
+        "mode": "color",
+        "ratio": "8.360",
+        "shadow": "none",
+        "source": "image"
+      }
+    ],
+    "overflow": false,
+    "path": "/en",
+    "pseudo": "none",
+    "readingPanels": 0,
+    "spacer": false,
+    "texts": [
+      {
+        "color": "rgb(41, 46, 41)",
+        "mode": "color",
+        "ratio": "8.360",
+        "shadow": "none",
+        "source": "image",
+        "tag": "A"
+      },
+      {
+        "color": "rgb(98, 106, 96)",
+        "mode": "color",
+        "ratio": "5.462",
+        "shadow": "none",
+        "source": "surface",
+        "tag": "A"
+      },
+      {
+        "color": "rgb(253, 252, 250)",
+        "mode": "color",
+        "ratio": "8.606",
+        "shadow": "none",
+        "source": "surface",
+        "tag": "A"
+      },
+      {
+        "color": "rgb(41, 46, 41)",
+        "mode": "color",
+        "ratio": "8.992",
+        "shadow": "none",
+        "source": "image",
+        "tag": "SPAN"
+      },
+      {
+        "color": "rgb(41, 46, 41)",
+        "mode": "color",
+        "ratio": "8.902",
+        "shadow": "none",
+        "source": "image",
+        "tag": "SPAN"
+      },
+      {
+        "color": "rgb(0, 0, 0)",
+        "mode": "outline",
+        "ratio": "1.260",
+        "shadow": "rgb(255, 255, 255) -1px -1px 0px, rgb(255, 255, 255) 0px -1px 0px, rgb(255, 255, 255) 1px -1px 0px, rgb(255, 255, 255) -1px 0px 0px, rgb(255, 255, 255) 1px 0px 0px, rgb(255, 255, 255) -1px 1px 0px, rgb(255, 255, 255) 0px 1px 0px, rgb(255, 255, 255) 1px 1px 0px",
+        "source": "image",
+        "tag": "P"
+      },
+      {
+        "color": "rgb(253, 252, 250)",
+        "mode": "color",
+        "ratio": "8.606",
+        "shadow": "none",
+        "source": "surface",
+        "tag": "A"
+      },
+      {
+        "color": "rgb(63, 78, 66)",
+        "mode": "color",
+        "ratio": "8.606",
+        "shadow": "none",
+        "source": "surface",
+        "tag": "A"
+      },
+      {
+        "color": "rgb(41, 46, 41)",
+        "mode": "color",
+        "ratio": "13.500",
+        "shadow": "none",
+        "source": "surface",
+        "tag": "SPAN"
+      },
+      {
+        "color": "rgb(253, 252, 250)",
+        "mode": "color",
+        "ratio": "8.606",
+        "shadow": "none",
+        "source": "surface",
+        "tag": "A"
+      },
+      {
+        "color": "rgb(63, 78, 66)",
+        "mode": "color",
+        "ratio": "7.250",
+        "shadow": "none",
+        "source": "surface",
+        "tag": "SPAN"
+      },
+      {
+        "color": "rgb(98, 106, 96)",
+        "mode": "color",
+        "ratio": "5.462",
+        "shadow": "none",
+        "source": "surface",
+        "tag": "SPAN"
+      },
+      {
+        "color": "rgb(98, 106, 96)",
+        "mode": "color",
+        "ratio": "5.462",
+        "shadow": "none",
+        "source": "surface",
+        "tag": "SPAN"
+      },
+      {
+        "color": "rgb(98, 106, 96)",
+        "mode": "color",
+        "ratio": "5.462",
+        "shadow": "none",
+        "source": "surface",
+        "tag": "SPAN"
+      },
+      {
+        "color": "rgb(98, 106, 96)",
+        "mode": "color",
+        "ratio": "5.462",
+        "shadow": "none",
+        "source": "surface",
+        "tag": "SPAN"
+      },
+      {
+        "color": "rgb(98, 106, 96)",
+        "mode": "color",
+        "ratio": "5.462",
+        "shadow": "none",
+        "source": "surface",
+        "tag": "SPAN"
+      }
+    ],
+    "width": 360,
+    "expectedWidth": 360
+  },
+  {
+    "background": "rgba(0, 0, 0, 0)",
+    "headerClass": "scheme-a-chrome is-fixed is-overlay",
+    "headerHeight": 56,
+    "heroTop": 0,
+    "languageBackground": "rgb(63, 78, 66)",
+    "languageColor": "rgb(253, 252, 250)",
+    "nav": [
+      {
+        "color": "rgb(0, 0, 0)",
+        "label": "FLASH CAST SDN. BHD.",
+        "mode": "outline",
+        "ratio": "2.610",
+        "shadow": "rgb(255, 255, 255) -1px -1px 0px, rgb(255, 255, 255) 0px -1px 0px, rgb(255, 255, 255) 1px -1px 0px, rgb(255, 255, 255) -1px 0px 0px, rgb(255, 255, 255) 1px 0px 0px, rgb(255, 255, 255) -1px 1px 0px, rgb(255, 255, 255) 0px 1px 0px, rgb(255, 255, 255) 1px 1px 0px",
+        "source": "image"
+      }
+    ],
+    "overflow": false,
+    "path": "/zh/services/surface-repair",
+    "pseudo": "none",
+    "readingPanels": 0,
+    "spacer": false,
+    "texts": [
+      {
+        "color": "rgb(0, 0, 0)",
+        "mode": "outline",
+        "ratio": "2.610",
+        "shadow": "rgb(255, 255, 255) -1px -1px 0px, rgb(255, 255, 255) 0px -1px 0px, rgb(255, 255, 255) 1px -1px 0px, rgb(255, 255, 255) -1px 0px 0px, rgb(255, 255, 255) 1px 0px 0px, rgb(255, 255, 255) -1px 1px 0px, rgb(255, 255, 255) 0px 1px 0px, rgb(255, 255, 255) 1px 1px 0px",
+        "source": "image",
+        "tag": "A"
+      },
+      {
+        "color": "rgb(253, 252, 250)",
+        "mode": "color",
+        "ratio": "8.606",
+        "shadow": "none",
+        "source": "surface",
+        "tag": "A"
+      },
+      {
+        "color": "rgb(98, 106, 96)",
+        "mode": "color",
+        "ratio": "5.462",
+        "shadow": "none",
+        "source": "surface",
+        "tag": "A"
+      },
+      {
+        "color": "rgb(0, 0, 0)",
+        "mode": "outline",
+        "ratio": "3.628",
+        "shadow": "rgb(255, 255, 255) -1px -1px 0px, rgb(255, 255, 255) 0px -1px 0px, rgb(255, 255, 255) 1px -1px 0px, rgb(255, 255, 255) -1px 0px 0px, rgb(255, 255, 255) 1px 0px 0px, rgb(255, 255, 255) -1px 1px 0px, rgb(255, 255, 255) 0px 1px 0px, rgb(255, 255, 255) 1px 1px 0px",
+        "source": "image",
+        "tag": "P"
+      },
+      {
+        "color": "rgb(0, 0, 0)",
+        "mode": "outline",
+        "ratio": "3.986",
+        "shadow": "rgb(255, 255, 255) -1px -1px 0px, rgb(255, 255, 255) 0px -1px 0px, rgb(255, 255, 255) 1px -1px 0px, rgb(255, 255, 255) -1px 0px 0px, rgb(255, 255, 255) 1px 0px 0px, rgb(255, 255, 255) -1px 1px 0px, rgb(255, 255, 255) 0px 1px 0px, rgb(255, 255, 255) 1px 1px 0px",
+        "source": "image",
+        "tag": "SPAN"
+      },
+      {
+        "color": "rgb(0, 0, 0)",
+        "mode": "outline",
+        "ratio": "3.811",
+        "shadow": "rgb(255, 255, 255) -1px -1px 0px, rgb(255, 255, 255) 0px -1px 0px, rgb(255, 255, 255) 1px -1px 0px, rgb(255, 255, 255) -1px 0px 0px, rgb(255, 255, 255) 1px 0px 0px, rgb(255, 255, 255) -1px 1px 0px, rgb(255, 255, 255) 0px 1px 0px, rgb(255, 255, 255) 1px 1px 0px",
+        "source": "image",
+        "tag": "SPAN"
+      },
+      {
+        "color": "rgb(255, 255, 255)",
+        "mode": "outline",
+        "ratio": "1.631",
+        "shadow": "rgb(0, 0, 0) -1px -1px 0px, rgb(0, 0, 0) 0px -1px 0px, rgb(0, 0, 0) 1px -1px 0px, rgb(0, 0, 0) -1px 0px 0px, rgb(0, 0, 0) 1px 0px 0px, rgb(0, 0, 0) -1px 1px 0px, rgb(0, 0, 0) 0px 1px 0px, rgb(0, 0, 0) 1px 1px 0px",
+        "source": "image",
+        "tag": "P"
+      },
+      {
+        "color": "rgb(253, 252, 250)",
+        "mode": "color",
+        "ratio": "8.606",
+        "shadow": "none",
+        "source": "surface",
+        "tag": "A"
+      },
+      {
+        "color": "rgb(255, 255, 255)",
+        "mode": "color",
+        "ratio": "5.019",
+        "shadow": "none",
+        "source": "image",
+        "tag": "A"
+      },
+      {
+        "color": "rgb(0, 0, 0)",
+        "mode": "outline",
+        "ratio": "2.380",
+        "shadow": "rgb(255, 255, 255) -1px -1px 0px, rgb(255, 255, 255) 0px -1px 0px, rgb(255, 255, 255) 1px -1px 0px, rgb(255, 255, 255) -1px 0px 0px, rgb(255, 255, 255) 1px 0px 0px, rgb(255, 255, 255) -1px 1px 0px, rgb(255, 255, 255) 0px 1px 0px, rgb(255, 255, 255) 1px 1px 0px",
+        "source": "surface",
+        "tag": "SPAN"
+      },
+      {
+        "color": "rgb(98, 106, 96)",
+        "mode": "color",
+        "ratio": "5.462",
+        "shadow": "none",
+        "source": "surface",
+        "tag": "A"
+      },
+      {
+        "color": "rgb(98, 106, 96)",
+        "mode": "color",
+        "ratio": "5.462",
+        "shadow": "none",
+        "source": "surface",
+        "tag": "A"
+      },
+      {
+        "color": "rgb(98, 106, 96)",
+        "mode": "color",
+        "ratio": "5.462",
+        "shadow": "none",
+        "source": "surface",
+        "tag": "A"
+      },
+      {
+        "color": "rgb(98, 106, 96)",
+        "mode": "color",
+        "ratio": "5.462",
+        "shadow": "none",
+        "source": "surface",
+        "tag": "A"
+      },
+      {
+        "color": "rgb(253, 252, 250)",
+        "mode": "color",
+        "ratio": "8.606",
+        "shadow": "none",
+        "source": "surface",
+        "tag": "A"
+      },
+      {
+        "color": "rgb(98, 106, 96)",
+        "mode": "color",
+        "ratio": "5.462",
+        "shadow": "none",
+        "source": "surface",
+        "tag": "SPAN"
+      },
+      {
+        "color": "rgb(98, 106, 96)",
+        "mode": "color",
+        "ratio": "5.462",
+        "shadow": "none",
+        "source": "surface",
+        "tag": "SPAN"
+      },
+      {
+        "color": "rgb(98, 106, 96)",
+        "mode": "color",
+        "ratio": "5.462",
+        "shadow": "none",
+        "source": "surface",
+        "tag": "SPAN"
+      },
+      {
+        "color": "rgb(98, 106, 96)",
+        "mode": "color",
+        "ratio": "5.462",
+        "shadow": "none",
+        "source": "surface",
+        "tag": "SPAN"
+      },
+      {
+        "color": "rgb(98, 106, 96)",
+        "mode": "color",
+        "ratio": "5.462",
+        "shadow": "none",
+        "source": "surface",
+        "tag": "SPAN"
+      },
+      {
+        "color": "rgb(98, 106, 96)",
+        "mode": "color",
+        "ratio": "5.462",
+        "shadow": "none",
+        "source": "surface",
+        "tag": "SPAN"
+      }
+    ],
+    "width": 360,
+    "expectedWidth": 360
+  },
+  {
+    "background": "rgba(0, 0, 0, 0)",
+    "headerClass": "scheme-a-chrome is-fixed is-overlay",
+    "headerHeight": 56,
+    "heroTop": 0,
+    "languageBackground": "rgb(63, 78, 66)",
+    "languageColor": "rgb(253, 252, 250)",
+    "nav": [
+      {
+        "color": "rgb(0, 0, 0)",
+        "label": "FLASH CAST SDN. BHD.",
+        "mode": "outline",
+        "ratio": "2.610",
+        "shadow": "rgb(255, 255, 255) -1px -1px 0px, rgb(255, 255, 255) 0px -1px 0px, rgb(255, 255, 255) 1px -1px 0px, rgb(255, 255, 255) -1px 0px 0px, rgb(255, 255, 255) 1px 0px 0px, rgb(255, 255, 255) -1px 1px 0px, rgb(255, 255, 255) 0px 1px 0px, rgb(255, 255, 255) 1px 1px 0px",
+        "source": "image"
+      }
+    ],
+    "overflow": false,
+    "path": "/en/services/surface-repair",
+    "pseudo": "none",
+    "readingPanels": 0,
+    "spacer": false,
+    "texts": [
+      {
+        "color": "rgb(0, 0, 0)",
+        "mode": "outline",
+        "ratio": "2.610",
+        "shadow": "rgb(255, 255, 255) -1px -1px 0px, rgb(255, 255, 255) 0px -1px 0px, rgb(255, 255, 255) 1px -1px 0px, rgb(255, 255, 255) -1px 0px 0px, rgb(255, 255, 255) 1px 0px 0px, rgb(255, 255, 255) -1px 1px 0px, rgb(255, 255, 255) 0px 1px 0px, rgb(255, 255, 255) 1px 1px 0px",
+        "source": "image",
+        "tag": "A"
+      },
+      {
+        "color": "rgb(98, 106, 96)",
+        "mode": "color",
+        "ratio": "5.462",
+        "shadow": "none",
+        "source": "surface",
+        "tag": "A"
+      },
+      {
+        "color": "rgb(253, 252, 250)",
+        "mode": "color",
+        "ratio": "8.606",
+        "shadow": "none",
+        "source": "surface",
+        "tag": "A"
+      },
+      {
+        "color": "rgb(0, 0, 0)",
+        "mode": "outline",
+        "ratio": "3.912",
+        "shadow": "rgb(255, 255, 255) -1px -1px 0px, rgb(255, 255, 255) 0px -1px 0px, rgb(255, 255, 255) 1px -1px 0px, rgb(255, 255, 255) -1px 0px 0px, rgb(255, 255, 255) 1px 0px 0px, rgb(255, 255, 255) -1px 1px 0px, rgb(255, 255, 255) 0px 1px 0px, rgb(255, 255, 255) 1px 1px 0px",
+        "source": "image",
+        "tag": "P"
+      },
+      {
+        "color": "rgb(0, 0, 0)",
+        "mode": "outline",
+        "ratio": "3.823",
+        "shadow": "rgb(255, 255, 255) -1px -1px 0px, rgb(255, 255, 255) 0px -1px 0px, rgb(255, 255, 255) 1px -1px 0px, rgb(255, 255, 255) -1px 0px 0px, rgb(255, 255, 255) 1px 0px 0px, rgb(255, 255, 255) -1px 1px 0px, rgb(255, 255, 255) 0px 1px 0px, rgb(255, 255, 255) 1px 1px 0px",
+        "source": "image",
+        "tag": "SPAN"
+      },
+      {
+        "color": "rgb(0, 0, 0)",
+        "mode": "outline",
+        "ratio": "3.706",
+        "shadow": "rgb(255, 255, 255) -1px -1px 0px, rgb(255, 255, 255) 0px -1px 0px, rgb(255, 255, 255) 1px -1px 0px, rgb(255, 255, 255) -1px 0px 0px, rgb(255, 255, 255) 1px 0px 0px, rgb(255, 255, 255) -1px 1px 0px, rgb(255, 255, 255) 0px 1px 0px, rgb(255, 255, 255) 1px 1px 0px",
+        "source": "image",
+        "tag": "SPAN"
+      },
+      {
+        "color": "rgb(255, 255, 255)",
+        "mode": "outline",
+        "ratio": "1.648",
+        "shadow": "rgb(0, 0, 0) -1px -1px 0px, rgb(0, 0, 0) 0px -1px 0px, rgb(0, 0, 0) 1px -1px 0px, rgb(0, 0, 0) -1px 0px 0px, rgb(0, 0, 0) 1px 0px 0px, rgb(0, 0, 0) -1px 1px 0px, rgb(0, 0, 0) 0px 1px 0px, rgb(0, 0, 0) 1px 1px 0px",
+        "source": "image",
+        "tag": "P"
+      },
+      {
+        "color": "rgb(253, 252, 250)",
+        "mode": "color",
+        "ratio": "8.606",
+        "shadow": "none",
+        "source": "surface",
+        "tag": "A"
+      },
+      {
+        "color": "rgb(255, 255, 255)",
+        "mode": "outline",
+        "ratio": "1.967",
+        "shadow": "rgb(0, 0, 0) -1px -1px 0px, rgb(0, 0, 0) 0px -1px 0px, rgb(0, 0, 0) 1px -1px 0px, rgb(0, 0, 0) -1px 0px 0px, rgb(0, 0, 0) 1px 0px 0px, rgb(0, 0, 0) -1px 1px 0px, rgb(0, 0, 0) 0px 1px 0px, rgb(0, 0, 0) 1px 1px 0px",
+        "source": "image",
+        "tag": "A"
+      },
+      {
+        "color": "rgb(0, 0, 0)",
+        "mode": "outline",
+        "ratio": "2.380",
+        "shadow": "rgb(255, 255, 255) -1px -1px 0px, rgb(255, 255, 255) 0px -1px 0px, rgb(255, 255, 255) 1px -1px 0px, rgb(255, 255, 255) -1px 0px 0px, rgb(255, 255, 255) 1px 0px 0px, rgb(255, 255, 255) -1px 1px 0px, rgb(255, 255, 255) 0px 1px 0px, rgb(255, 255, 255) 1px 1px 0px",
+        "source": "surface",
+        "tag": "SPAN"
+      },
+      {
+        "color": "rgb(98, 106, 96)",
+        "mode": "color",
+        "ratio": "5.462",
+        "shadow": "none",
+        "source": "surface",
+        "tag": "A"
+      },
+      {
+        "color": "rgb(98, 106, 96)",
+        "mode": "color",
+        "ratio": "5.462",
+        "shadow": "none",
+        "source": "surface",
+        "tag": "A"
+      },
+      {
+        "color": "rgb(98, 106, 96)",
+        "mode": "color",
+        "ratio": "5.462",
+        "shadow": "none",
+        "source": "surface",
+        "tag": "A"
+      },
+      {
+        "color": "rgb(98, 106, 96)",
+        "mode": "color",
+        "ratio": "5.462",
+        "shadow": "none",
+        "source": "surface",
+        "tag": "A"
+      },
+      {
+        "color": "rgb(253, 252, 250)",
+        "mode": "color",
+        "ratio": "8.606",
+        "shadow": "none",
+        "source": "surface",
+        "tag": "A"
+      },
+      {
+        "color": "rgb(98, 106, 96)",
+        "mode": "color",
+        "ratio": "5.462",
+        "shadow": "none",
+        "source": "surface",
+        "tag": "SPAN"
+      },
+      {
+        "color": "rgb(98, 106, 96)",
+        "mode": "color",
+        "ratio": "5.462",
+        "shadow": "none",
+        "source": "surface",
+        "tag": "SPAN"
+      },
+      {
+        "color": "rgb(98, 106, 96)",
+        "mode": "color",
+        "ratio": "5.462",
+        "shadow": "none",
+        "source": "surface",
+        "tag": "SPAN"
+      },
+      {
+        "color": "rgb(98, 106, 96)",
+        "mode": "color",
+        "ratio": "5.462",
+        "shadow": "none",
+        "source": "surface",
+        "tag": "SPAN"
+      },
+      {
+        "color": "rgb(98, 106, 96)",
+        "mode": "color",
+        "ratio": "5.462",
+        "shadow": "none",
+        "source": "surface",
+        "tag": "SPAN"
+      },
+      {
+        "color": "rgb(98, 106, 96)",
+        "mode": "color",
+        "ratio": "5.462",
+        "shadow": "none",
+        "source": "surface",
+        "tag": "SPAN"
+      }
+    ],
+    "width": 360,
+    "expectedWidth": 360
+  },
+  {
+    "background": "rgba(0, 0, 0, 0)",
+    "headerClass": "scheme-a-chrome is-fixed is-overlay",
+    "headerHeight": 56,
+    "heroTop": 0,
+    "languageBackground": "rgb(63, 78, 66)",
+    "languageColor": "rgb(253, 252, 250)",
+    "nav": [
+      {
+        "color": "rgb(0, 0, 0)",
+        "label": "FLASH CAST SDN. BHD.",
+        "mode": "outline",
+        "ratio": "2.451",
+        "shadow": "rgb(255, 255, 255) -1px -1px 0px, rgb(255, 255, 255) 0px -1px 0px, rgb(255, 255, 255) 1px -1px 0px, rgb(255, 255, 255) -1px 0px 0px, rgb(255, 255, 255) 1px 0px 0px, rgb(255, 255, 255) -1px 1px 0px, rgb(255, 255, 255) 0px 1px 0px, rgb(255, 255, 255) 1px 1px 0px",
+        "source": "image"
+      }
+    ],
+    "overflow": false,
+    "path": "/zh/services/design",
+    "pseudo": "none",
+    "readingPanels": 0,
+    "spacer": false,
+    "texts": [
+      {
+        "color": "rgb(0, 0, 0)",
+        "mode": "outline",
+        "ratio": "2.451",
+        "shadow": "rgb(255, 255, 255) -1px -1px 0px, rgb(255, 255, 255) 0px -1px 0px, rgb(255, 255, 255) 1px -1px 0px, rgb(255, 255, 255) -1px 0px 0px, rgb(255, 255, 255) 1px 0px 0px, rgb(255, 255, 255) -1px 1px 0px, rgb(255, 255, 255) 0px 1px 0px, rgb(255, 255, 255) 1px 1px 0px",
+        "source": "image",
+        "tag": "A"
+      },
+      {
+        "color": "rgb(253, 252, 250)",
+        "mode": "color",
+        "ratio": "8.606",
+        "shadow": "none",
+        "source": "surface",
+        "tag": "A"
+      },
+      {
+        "color": "rgb(98, 106, 96)",
+        "mode": "color",
+        "ratio": "5.462",
+        "shadow": "none",
+        "source": "surface",
+        "tag": "A"
+      },
+      {
+        "color": "rgb(0, 0, 0)",
+        "mode": "outline",
+        "ratio": "2.473",
+        "shadow": "rgb(255, 255, 255) -1px -1px 0px, rgb(255, 255, 255) 0px -1px 0px, rgb(255, 255, 255) 1px -1px 0px, rgb(255, 255, 255) -1px 0px 0px, rgb(255, 255, 255) 1px 0px 0px, rgb(255, 255, 255) -1px 1px 0px, rgb(255, 255, 255) 0px 1px 0px, rgb(255, 255, 255) 1px 1px 0px",
+        "source": "image",
+        "tag": "P"
+      },
+      {
+        "color": "rgb(0, 0, 0)",
+        "mode": "outline",
+        "ratio": "3.646",
+        "shadow": "rgb(255, 255, 255) -1px -1px 0px, rgb(255, 255, 255) 0px -1px 0px, rgb(255, 255, 255) 1px -1px 0px, rgb(255, 255, 255) -1px 0px 0px, rgb(255, 255, 255) 1px 0px 0px, rgb(255, 255, 255) -1px 1px 0px, rgb(255, 255, 255) 0px 1px 0px, rgb(255, 255, 255) 1px 1px 0px",
+        "source": "image",
+        "tag": "SPAN"
+      },
+      {
+        "color": "rgb(41, 46, 41)",
+        "mode": "color",
+        "ratio": "6.500",
+        "shadow": "none",
+        "source": "image",
+        "tag": "P"
+      },
+      {
+        "color": "rgb(253, 252, 250)",
+        "mode": "color",
+        "ratio": "8.606",
+        "shadow": "none",
+        "source": "surface",
+        "tag": "A"
+      },
+      {
+        "color": "rgb(41, 46, 41)",
+        "mode": "color",
+        "ratio": "6.379",
+        "shadow": "none",
+        "source": "image",
+        "tag": "A"
+      },
+      {
+        "color": "rgb(0, 0, 0)",
+        "mode": "outline",
+        "ratio": "2.380",
+        "shadow": "rgb(255, 255, 255) -1px -1px 0px, rgb(255, 255, 255) 0px -1px 0px, rgb(255, 255, 255) 1px -1px 0px, rgb(255, 255, 255) -1px 0px 0px, rgb(255, 255, 255) 1px 0px 0px, rgb(255, 255, 255) -1px 1px 0px, rgb(255, 255, 255) 0px 1px 0px, rgb(255, 255, 255) 1px 1px 0px",
+        "source": "surface",
+        "tag": "A"
+      },
+      {
+        "color": "rgb(98, 106, 96)",
+        "mode": "color",
+        "ratio": "5.462",
+        "shadow": "none",
+        "source": "surface",
+        "tag": "A"
+      },
+      {
+        "color": "rgb(98, 106, 96)",
+        "mode": "color",
+        "ratio": "5.462",
+        "shadow": "none",
+        "source": "surface",
+        "tag": "A"
+      },
+      {
+        "color": "rgb(98, 106, 96)",
+        "mode": "color",
+        "ratio": "5.462",
+        "shadow": "none",
+        "source": "surface",
+        "tag": "A"
+      },
+      {
+        "color": "rgb(98, 106, 96)",
+        "mode": "color",
+        "ratio": "5.462",
+        "shadow": "none",
+        "source": "surface",
+        "tag": "A"
+      },
+      {
+        "color": "rgb(253, 252, 250)",
+        "mode": "color",
+        "ratio": "8.606",
+        "shadow": "none",
+        "source": "surface",
+        "tag": "A"
+      },
+      {
+        "color": "rgb(98, 106, 96)",
+        "mode": "color",
+        "ratio": "5.462",
+        "shadow": "none",
+        "source": "surface",
+        "tag": "SPAN"
+      },
+      {
+        "color": "rgb(98, 106, 96)",
+        "mode": "color",
+        "ratio": "5.462",
+        "shadow": "none",
+        "source": "surface",
+        "tag": "SPAN"
+      },
+      {
+        "color": "rgb(98, 106, 96)",
+        "mode": "color",
+        "ratio": "5.462",
+        "shadow": "none",
+        "source": "surface",
+        "tag": "SPAN"
+      },
+      {
+        "color": "rgb(98, 106, 96)",
+        "mode": "color",
+        "ratio": "5.462",
+        "shadow": "none",
+        "source": "surface",
+        "tag": "SPAN"
+      },
+      {
+        "color": "rgb(98, 106, 96)",
+        "mode": "color",
+        "ratio": "5.462",
+        "shadow": "none",
+        "source": "surface",
+        "tag": "SPAN"
+      },
+      {
+        "color": "rgb(98, 106, 96)",
+        "mode": "color",
+        "ratio": "5.462",
+        "shadow": "none",
+        "source": "surface",
+        "tag": "SPAN"
+      }
+    ],
+    "width": 390,
+    "expectedWidth": 390
+  },
+  {
+    "background": "rgba(0, 0, 0, 0)",
+    "headerClass": "scheme-a-chrome is-fixed is-overlay",
+    "headerHeight": 56,
+    "heroTop": 0,
+    "languageBackground": "rgb(63, 78, 66)",
+    "languageColor": "rgb(253, 252, 250)",
+    "nav": [
+      {
+        "color": "rgb(0, 0, 0)",
+        "label": "FLASH CAST SDN. BHD.",
+        "mode": "outline",
+        "ratio": "2.451",
+        "shadow": "rgb(255, 255, 255) -1px -1px 0px, rgb(255, 255, 255) 0px -1px 0px, rgb(255, 255, 255) 1px -1px 0px, rgb(255, 255, 255) -1px 0px 0px, rgb(255, 255, 255) 1px 0px 0px, rgb(255, 255, 255) -1px 1px 0px, rgb(255, 255, 255) 0px 1px 0px, rgb(255, 255, 255) 1px 1px 0px",
+        "source": "image"
+      }
+    ],
+    "overflow": false,
+    "path": "/en/services/design",
+    "pseudo": "none",
+    "readingPanels": 0,
+    "spacer": false,
+    "texts": [
+      {
+        "color": "rgb(0, 0, 0)",
+        "mode": "outline",
+        "ratio": "2.451",
+        "shadow": "rgb(255, 255, 255) -1px -1px 0px, rgb(255, 255, 255) 0px -1px 0px, rgb(255, 255, 255) 1px -1px 0px, rgb(255, 255, 255) -1px 0px 0px, rgb(255, 255, 255) 1px 0px 0px, rgb(255, 255, 255) -1px 1px 0px, rgb(255, 255, 255) 0px 1px 0px, rgb(255, 255, 255) 1px 1px 0px",
+        "source": "image",
+        "tag": "A"
+      },
+      {
+        "color": "rgb(98, 106, 96)",
+        "mode": "color",
+        "ratio": "5.462",
+        "shadow": "none",
+        "source": "surface",
+        "tag": "A"
+      },
+      {
+        "color": "rgb(253, 252, 250)",
+        "mode": "color",
+        "ratio": "8.606",
+        "shadow": "none",
+        "source": "surface",
+        "tag": "A"
+      },
+      {
+        "color": "rgb(0, 0, 0)",
+        "mode": "outline",
+        "ratio": "2.592",
+        "shadow": "rgb(255, 255, 255) -1px -1px 0px, rgb(255, 255, 255) 0px -1px 0px, rgb(255, 255, 255) 1px -1px 0px, rgb(255, 255, 255) -1px 0px 0px, rgb(255, 255, 255) 1px 0px 0px, rgb(255, 255, 255) -1px 1px 0px, rgb(255, 255, 255) 0px 1px 0px, rgb(255, 255, 255) 1px 1px 0px",
+        "source": "image",
+        "tag": "P"
+      },
+      {
+        "color": "rgb(0, 0, 0)",
+        "mode": "outline",
+        "ratio": "2.821",
+        "shadow": "rgb(255, 255, 255) -1px -1px 0px, rgb(255, 255, 255) 0px -1px 0px, rgb(255, 255, 255) 1px -1px 0px, rgb(255, 255, 255) -1px 0px 0px, rgb(255, 255, 255) 1px 0px 0px, rgb(255, 255, 255) -1px 1px 0px, rgb(255, 255, 255) 0px 1px 0px, rgb(255, 255, 255) 1px 1px 0px",
+        "source": "image",
+        "tag": "SPAN"
+      },
+      {
+        "color": "rgb(0, 0, 0)",
+        "mode": "outline",
+        "ratio": "3.227",
+        "shadow": "rgb(255, 255, 255) -1px -1px 0px, rgb(255, 255, 255) 0px -1px 0px, rgb(255, 255, 255) 1px -1px 0px, rgb(255, 255, 255) -1px 0px 0px, rgb(255, 255, 255) 1px 0px 0px, rgb(255, 255, 255) -1px 1px 0px, rgb(255, 255, 255) 0px 1px 0px, rgb(255, 255, 255) 1px 1px 0px",
+        "source": "image",
+        "tag": "P"
+      },
+      {
+        "color": "rgb(253, 252, 250)",
+        "mode": "color",
+        "ratio": "8.606",
+        "shadow": "none",
+        "source": "surface",
+        "tag": "A"
+      },
+      {
+        "color": "rgb(41, 46, 41)",
+        "mode": "color",
+        "ratio": "6.409",
+        "shadow": "none",
+        "source": "image",
+        "tag": "A"
+      },
+      {
+        "color": "rgb(0, 0, 0)",
+        "mode": "outline",
+        "ratio": "2.380",
+        "shadow": "rgb(255, 255, 255) -1px -1px 0px, rgb(255, 255, 255) 0px -1px 0px, rgb(255, 255, 255) 1px -1px 0px, rgb(255, 255, 255) -1px 0px 0px, rgb(255, 255, 255) 1px 0px 0px, rgb(255, 255, 255) -1px 1px 0px, rgb(255, 255, 255) 0px 1px 0px, rgb(255, 255, 255) 1px 1px 0px",
+        "source": "surface",
+        "tag": "A"
+      },
+      {
+        "color": "rgb(98, 106, 96)",
+        "mode": "color",
+        "ratio": "5.462",
+        "shadow": "none",
+        "source": "surface",
+        "tag": "A"
+      },
+      {
+        "color": "rgb(98, 106, 96)",
+        "mode": "color",
+        "ratio": "5.462",
+        "shadow": "none",
+        "source": "surface",
+        "tag": "A"
+      },
+      {
+        "color": "rgb(98, 106, 96)",
+        "mode": "color",
+        "ratio": "5.462",
+        "shadow": "none",
+        "source": "surface",
+        "tag": "A"
+      },
+      {
+        "color": "rgb(98, 106, 96)",
+        "mode": "color",
+        "ratio": "5.462",
+        "shadow": "none",
+        "source": "surface",
+        "tag": "A"
+      },
+      {
+        "color": "rgb(253, 252, 250)",
+        "mode": "color",
+        "ratio": "8.606",
+        "shadow": "none",
+        "source": "surface",
+        "tag": "A"
+      },
+      {
+        "color": "rgb(98, 106, 96)",
+        "mode": "color",
+        "ratio": "5.462",
+        "shadow": "none",
+        "source": "surface",
+        "tag": "SPAN"
+      },
+      {
+        "color": "rgb(98, 106, 96)",
+        "mode": "color",
+        "ratio": "5.462",
+        "shadow": "none",
+        "source": "surface",
+        "tag": "SPAN"
+      },
+      {
+        "color": "rgb(98, 106, 96)",
+        "mode": "color",
+        "ratio": "5.462",
+        "shadow": "none",
+        "source": "surface",
+        "tag": "SPAN"
+      },
+      {
+        "color": "rgb(98, 106, 96)",
+        "mode": "color",
+        "ratio": "5.462",
+        "shadow": "none",
+        "source": "surface",
+        "tag": "SPAN"
+      },
+      {
+        "color": "rgb(98, 106, 96)",
+        "mode": "color",
+        "ratio": "5.462",
+        "shadow": "none",
+        "source": "surface",
+        "tag": "SPAN"
+      },
+      {
+        "color": "rgb(98, 106, 96)",
+        "mode": "color",
+        "ratio": "5.462",
+        "shadow": "none",
+        "source": "surface",
+        "tag": "SPAN"
+      }
+    ],
+    "width": 390,
+    "expectedWidth": 390
+  },
+  {
+    "background": "rgba(0, 0, 0, 0)",
+    "headerClass": "scheme-a-chrome is-fixed is-overlay",
+    "headerHeight": 56,
+    "heroTop": 0,
+    "languageBackground": "rgb(63, 78, 66)",
+    "languageColor": "rgb(253, 252, 250)",
+    "nav": [
+      {
+        "color": "rgb(41, 46, 41)",
+        "label": "FLASH CAST SDN. BHD.",
+        "mode": "color",
+        "ratio": "8.600",
+        "shadow": "none",
+        "source": "image"
+      }
+    ],
+    "overflow": false,
+    "path": "/zh",
+    "pseudo": "none",
+    "readingPanels": 0,
+    "spacer": false,
+    "texts": [
+      {
+        "color": "rgb(41, 46, 41)",
+        "mode": "color",
+        "ratio": "8.600",
+        "shadow": "none",
+        "source": "image",
+        "tag": "A"
+      },
+      {
+        "color": "rgb(253, 252, 250)",
+        "mode": "color",
+        "ratio": "8.606",
+        "shadow": "none",
+        "source": "surface",
+        "tag": "A"
+      },
+      {
+        "color": "rgb(98, 106, 96)",
+        "mode": "color",
+        "ratio": "5.462",
+        "shadow": "none",
+        "source": "surface",
+        "tag": "A"
+      },
+      {
+        "color": "rgb(41, 46, 41)",
+        "mode": "color",
+        "ratio": "7.430",
+        "shadow": "none",
+        "source": "image",
+        "tag": "SPAN"
+      },
+      {
+        "color": "rgb(41, 46, 41)",
+        "mode": "color",
+        "ratio": "8.610",
+        "shadow": "none",
+        "source": "image",
+        "tag": "SPAN"
+      },
+      {
+        "color": "rgb(41, 46, 41)",
+        "mode": "color",
+        "ratio": "8.575",
+        "shadow": "none",
+        "source": "image",
+        "tag": "P"
+      },
+      {
+        "color": "rgb(253, 252, 250)",
+        "mode": "color",
+        "ratio": "8.606",
+        "shadow": "none",
+        "source": "surface",
+        "tag": "A"
+      },
+      {
+        "color": "rgb(63, 78, 66)",
+        "mode": "color",
+        "ratio": "8.606",
+        "shadow": "none",
+        "source": "surface",
+        "tag": "A"
+      },
+      {
+        "color": "rgb(41, 46, 41)",
+        "mode": "color",
+        "ratio": "13.500",
+        "shadow": "none",
+        "source": "surface",
+        "tag": "SPAN"
+      },
+      {
+        "color": "rgb(253, 252, 250)",
+        "mode": "color",
+        "ratio": "8.606",
+        "shadow": "none",
+        "source": "surface",
+        "tag": "A"
+      },
+      {
+        "color": "rgb(63, 78, 66)",
+        "mode": "color",
+        "ratio": "7.250",
+        "shadow": "none",
+        "source": "surface",
+        "tag": "SPAN"
+      },
+      {
+        "color": "rgb(98, 106, 96)",
+        "mode": "color",
+        "ratio": "5.462",
+        "shadow": "none",
+        "source": "surface",
+        "tag": "SPAN"
+      },
+      {
+        "color": "rgb(98, 106, 96)",
+        "mode": "color",
+        "ratio": "5.462",
+        "shadow": "none",
+        "source": "surface",
+        "tag": "SPAN"
+      },
+      {
+        "color": "rgb(98, 106, 96)",
+        "mode": "color",
+        "ratio": "5.462",
+        "shadow": "none",
+        "source": "surface",
+        "tag": "SPAN"
+      },
+      {
+        "color": "rgb(98, 106, 96)",
+        "mode": "color",
+        "ratio": "5.462",
+        "shadow": "none",
+        "source": "surface",
+        "tag": "SPAN"
+      },
+      {
+        "color": "rgb(98, 106, 96)",
+        "mode": "color",
+        "ratio": "5.462",
+        "shadow": "none",
+        "source": "surface",
+        "tag": "SPAN"
+      }
+    ],
+    "width": 390,
+    "expectedWidth": 390
+  },
+  {
+    "background": "rgba(0, 0, 0, 0)",
+    "headerClass": "scheme-a-chrome is-fixed is-overlay",
+    "headerHeight": 56,
+    "heroTop": 0,
+    "languageBackground": "rgb(63, 78, 66)",
+    "languageColor": "rgb(253, 252, 250)",
+    "nav": [
+      {
+        "color": "rgb(41, 46, 41)",
+        "label": "FLASH CAST SDN. BHD.",
+        "mode": "color",
+        "ratio": "8.600",
+        "shadow": "none",
+        "source": "image"
+      }
+    ],
+    "overflow": false,
+    "path": "/en",
+    "pseudo": "none",
+    "readingPanels": 0,
+    "spacer": false,
+    "texts": [
+      {
+        "color": "rgb(41, 46, 41)",
+        "mode": "color",
+        "ratio": "8.600",
+        "shadow": "none",
+        "source": "image",
+        "tag": "A"
+      },
+      {
+        "color": "rgb(98, 106, 96)",
+        "mode": "color",
+        "ratio": "5.462",
+        "shadow": "none",
+        "source": "surface",
+        "tag": "A"
+      },
+      {
+        "color": "rgb(253, 252, 250)",
+        "mode": "color",
+        "ratio": "8.606",
+        "shadow": "none",
+        "source": "surface",
+        "tag": "A"
+      },
+      {
+        "color": "rgb(41, 46, 41)",
+        "mode": "color",
+        "ratio": "8.992",
+        "shadow": "none",
+        "source": "image",
+        "tag": "SPAN"
+      },
+      {
+        "color": "rgb(41, 46, 41)",
+        "mode": "color",
+        "ratio": "4.999",
+        "shadow": "none",
+        "source": "image",
+        "tag": "SPAN"
+      },
+      {
+        "color": "rgb(0, 0, 0)",
+        "mode": "outline",
+        "ratio": "1.055",
+        "shadow": "rgb(255, 255, 255) -1px -1px 0px, rgb(255, 255, 255) 0px -1px 0px, rgb(255, 255, 255) 1px -1px 0px, rgb(255, 255, 255) -1px 0px 0px, rgb(255, 255, 255) 1px 0px 0px, rgb(255, 255, 255) -1px 1px 0px, rgb(255, 255, 255) 0px 1px 0px, rgb(255, 255, 255) 1px 1px 0px",
+        "source": "image",
+        "tag": "P"
+      },
+      {
+        "color": "rgb(253, 252, 250)",
+        "mode": "color",
+        "ratio": "8.606",
+        "shadow": "none",
+        "source": "surface",
+        "tag": "A"
+      },
+      {
+        "color": "rgb(63, 78, 66)",
+        "mode": "color",
+        "ratio": "8.606",
+        "shadow": "none",
+        "source": "surface",
+        "tag": "A"
+      },
+      {
+        "color": "rgb(41, 46, 41)",
+        "mode": "color",
+        "ratio": "13.500",
+        "shadow": "none",
+        "source": "surface",
+        "tag": "SPAN"
+      },
+      {
+        "color": "rgb(253, 252, 250)",
+        "mode": "color",
+        "ratio": "8.606",
+        "shadow": "none",
+        "source": "surface",
+        "tag": "A"
+      },
+      {
+        "color": "rgb(63, 78, 66)",
+        "mode": "color",
+        "ratio": "7.250",
+        "shadow": "none",
+        "source": "surface",
+        "tag": "SPAN"
+      },
+      {
+        "color": "rgb(98, 106, 96)",
+        "mode": "color",
+        "ratio": "5.462",
+        "shadow": "none",
+        "source": "surface",
+        "tag": "SPAN"
+      },
+      {
+        "color": "rgb(98, 106, 96)",
+        "mode": "color",
+        "ratio": "5.462",
+        "shadow": "none",
+        "source": "surface",
+        "tag": "SPAN"
+      },
+      {
+        "color": "rgb(98, 106, 96)",
+        "mode": "color",
+        "ratio": "5.462",
+        "shadow": "none",
+        "source": "surface",
+        "tag": "SPAN"
+      },
+      {
+        "color": "rgb(98, 106, 96)",
+        "mode": "color",
+        "ratio": "5.462",
+        "shadow": "none",
+        "source": "surface",
+        "tag": "SPAN"
+      },
+      {
+        "color": "rgb(98, 106, 96)",
+        "mode": "color",
+        "ratio": "5.462",
+        "shadow": "none",
+        "source": "surface",
+        "tag": "SPAN"
+      }
+    ],
+    "width": 390,
+    "expectedWidth": 390
+  },
+  {
+    "background": "rgba(0, 0, 0, 0)",
+    "headerClass": "scheme-a-chrome is-fixed is-overlay",
+    "headerHeight": 56,
+    "heroTop": 0,
+    "languageBackground": "rgb(63, 78, 66)",
+    "languageColor": "rgb(253, 252, 250)",
+    "nav": [
+      {
+        "color": "rgb(0, 0, 0)",
+        "label": "FLASH CAST SDN. BHD.",
+        "mode": "outline",
+        "ratio": "2.586",
+        "shadow": "rgb(255, 255, 255) -1px -1px 0px, rgb(255, 255, 255) 0px -1px 0px, rgb(255, 255, 255) 1px -1px 0px, rgb(255, 255, 255) -1px 0px 0px, rgb(255, 255, 255) 1px 0px 0px, rgb(255, 255, 255) -1px 1px 0px, rgb(255, 255, 255) 0px 1px 0px, rgb(255, 255, 255) 1px 1px 0px",
+        "source": "image"
+      }
+    ],
+    "overflow": false,
+    "path": "/zh/services/surface-repair",
+    "pseudo": "none",
+    "readingPanels": 0,
+    "spacer": false,
+    "texts": [
+      {
+        "color": "rgb(0, 0, 0)",
+        "mode": "outline",
+        "ratio": "2.586",
+        "shadow": "rgb(255, 255, 255) -1px -1px 0px, rgb(255, 255, 255) 0px -1px 0px, rgb(255, 255, 255) 1px -1px 0px, rgb(255, 255, 255) -1px 0px 0px, rgb(255, 255, 255) 1px 0px 0px, rgb(255, 255, 255) -1px 1px 0px, rgb(255, 255, 255) 0px 1px 0px, rgb(255, 255, 255) 1px 1px 0px",
+        "source": "image",
+        "tag": "A"
+      },
+      {
+        "color": "rgb(253, 252, 250)",
+        "mode": "color",
+        "ratio": "8.606",
+        "shadow": "none",
+        "source": "surface",
+        "tag": "A"
+      },
+      {
+        "color": "rgb(98, 106, 96)",
+        "mode": "color",
+        "ratio": "5.462",
+        "shadow": "none",
+        "source": "surface",
+        "tag": "A"
+      },
+      {
+        "color": "rgb(0, 0, 0)",
+        "mode": "outline",
+        "ratio": "4.039",
+        "shadow": "rgb(255, 255, 255) -1px -1px 0px, rgb(255, 255, 255) 0px -1px 0px, rgb(255, 255, 255) 1px -1px 0px, rgb(255, 255, 255) -1px 0px 0px, rgb(255, 255, 255) 1px 0px 0px, rgb(255, 255, 255) -1px 1px 0px, rgb(255, 255, 255) 0px 1px 0px, rgb(255, 255, 255) 1px 1px 0px",
+        "source": "image",
+        "tag": "P"
+      },
+      {
+        "color": "rgb(0, 0, 0)",
+        "mode": "outline",
+        "ratio": "3.991",
+        "shadow": "rgb(255, 255, 255) -1px -1px 0px, rgb(255, 255, 255) 0px -1px 0px, rgb(255, 255, 255) 1px -1px 0px, rgb(255, 255, 255) -1px 0px 0px, rgb(255, 255, 255) 1px 0px 0px, rgb(255, 255, 255) -1px 1px 0px, rgb(255, 255, 255) 0px 1px 0px, rgb(255, 255, 255) 1px 1px 0px",
+        "source": "image",
+        "tag": "SPAN"
+      },
+      {
+        "color": "rgb(0, 0, 0)",
+        "mode": "outline",
+        "ratio": "3.811",
+        "shadow": "rgb(255, 255, 255) -1px -1px 0px, rgb(255, 255, 255) 0px -1px 0px, rgb(255, 255, 255) 1px -1px 0px, rgb(255, 255, 255) -1px 0px 0px, rgb(255, 255, 255) 1px 0px 0px, rgb(255, 255, 255) -1px 1px 0px, rgb(255, 255, 255) 0px 1px 0px, rgb(255, 255, 255) 1px 1px 0px",
+        "source": "image",
+        "tag": "SPAN"
+      },
+      {
+        "color": "rgb(0, 0, 0)",
+        "mode": "outline",
+        "ratio": "1.183",
+        "shadow": "rgb(255, 255, 255) -1px -1px 0px, rgb(255, 255, 255) 0px -1px 0px, rgb(255, 255, 255) 1px -1px 0px, rgb(255, 255, 255) -1px 0px 0px, rgb(255, 255, 255) 1px 0px 0px, rgb(255, 255, 255) -1px 1px 0px, rgb(255, 255, 255) 0px 1px 0px, rgb(255, 255, 255) 1px 1px 0px",
+        "source": "image",
+        "tag": "P"
+      },
+      {
+        "color": "rgb(253, 252, 250)",
+        "mode": "color",
+        "ratio": "8.606",
+        "shadow": "none",
+        "source": "surface",
+        "tag": "A"
+      },
+      {
+        "color": "rgb(255, 255, 255)",
+        "mode": "color",
+        "ratio": "5.019",
+        "shadow": "none",
+        "source": "image",
+        "tag": "A"
+      },
+      {
+        "color": "rgb(0, 0, 0)",
+        "mode": "outline",
+        "ratio": "2.380",
+        "shadow": "rgb(255, 255, 255) -1px -1px 0px, rgb(255, 255, 255) 0px -1px 0px, rgb(255, 255, 255) 1px -1px 0px, rgb(255, 255, 255) -1px 0px 0px, rgb(255, 255, 255) 1px 0px 0px, rgb(255, 255, 255) -1px 1px 0px, rgb(255, 255, 255) 0px 1px 0px, rgb(255, 255, 255) 1px 1px 0px",
+        "source": "surface",
+        "tag": "SPAN"
+      },
+      {
+        "color": "rgb(98, 106, 96)",
+        "mode": "color",
+        "ratio": "5.462",
+        "shadow": "none",
+        "source": "surface",
+        "tag": "A"
+      },
+      {
+        "color": "rgb(98, 106, 96)",
+        "mode": "color",
+        "ratio": "5.462",
+        "shadow": "none",
+        "source": "surface",
+        "tag": "A"
+      },
+      {
+        "color": "rgb(98, 106, 96)",
+        "mode": "color",
+        "ratio": "5.462",
+        "shadow": "none",
+        "source": "surface",
+        "tag": "A"
+      },
+      {
+        "color": "rgb(98, 106, 96)",
+        "mode": "color",
+        "ratio": "5.462",
+        "shadow": "none",
+        "source": "surface",
+        "tag": "A"
+      },
+      {
+        "color": "rgb(253, 252, 250)",
+        "mode": "color",
+        "ratio": "8.606",
+        "shadow": "none",
+        "source": "surface",
+        "tag": "A"
+      },
+      {
+        "color": "rgb(98, 106, 96)",
+        "mode": "color",
+        "ratio": "5.462",
+        "shadow": "none",
+        "source": "surface",
+        "tag": "SPAN"
+      },
+      {
+        "color": "rgb(98, 106, 96)",
+        "mode": "color",
+        "ratio": "5.462",
+        "shadow": "none",
+        "source": "surface",
+        "tag": "SPAN"
+      },
+      {
+        "color": "rgb(98, 106, 96)",
+        "mode": "color",
+        "ratio": "5.462",
+        "shadow": "none",
+        "source": "surface",
+        "tag": "SPAN"
+      },
+      {
+        "color": "rgb(98, 106, 96)",
+        "mode": "color",
+        "ratio": "5.462",
+        "shadow": "none",
+        "source": "surface",
+        "tag": "SPAN"
+      },
+      {
+        "color": "rgb(98, 106, 96)",
+        "mode": "color",
+        "ratio": "5.462",
+        "shadow": "none",
+        "source": "surface",
+        "tag": "SPAN"
+      },
+      {
+        "color": "rgb(98, 106, 96)",
+        "mode": "color",
+        "ratio": "5.462",
+        "shadow": "none",
+        "source": "surface",
+        "tag": "SPAN"
+      }
+    ],
+    "width": 390,
+    "expectedWidth": 390
+  },
+  {
+    "background": "rgba(0, 0, 0, 0)",
+    "headerClass": "scheme-a-chrome is-fixed is-overlay",
+    "headerHeight": 56,
+    "heroTop": 0,
+    "languageBackground": "rgb(63, 78, 66)",
+    "languageColor": "rgb(253, 252, 250)",
+    "nav": [
+      {
+        "color": "rgb(0, 0, 0)",
+        "label": "FLASH CAST SDN. BHD.",
+        "mode": "outline",
+        "ratio": "2.586",
+        "shadow": "rgb(255, 255, 255) -1px -1px 0px, rgb(255, 255, 255) 0px -1px 0px, rgb(255, 255, 255) 1px -1px 0px, rgb(255, 255, 255) -1px 0px 0px, rgb(255, 255, 255) 1px 0px 0px, rgb(255, 255, 255) -1px 1px 0px, rgb(255, 255, 255) 0px 1px 0px, rgb(255, 255, 255) 1px 1px 0px",
+        "source": "image"
+      }
+    ],
+    "overflow": false,
+    "path": "/en/services/surface-repair",
+    "pseudo": "none",
+    "readingPanels": 0,
+    "spacer": false,
+    "texts": [
+      {
+        "color": "rgb(0, 0, 0)",
+        "mode": "outline",
+        "ratio": "2.586",
+        "shadow": "rgb(255, 255, 255) -1px -1px 0px, rgb(255, 255, 255) 0px -1px 0px, rgb(255, 255, 255) 1px -1px 0px, rgb(255, 255, 255) -1px 0px 0px, rgb(255, 255, 255) 1px 0px 0px, rgb(255, 255, 255) -1px 1px 0px, rgb(255, 255, 255) 0px 1px 0px, rgb(255, 255, 255) 1px 1px 0px",
+        "source": "image",
+        "tag": "A"
+      },
+      {
+        "color": "rgb(98, 106, 96)",
+        "mode": "color",
+        "ratio": "5.462",
+        "shadow": "none",
+        "source": "surface",
+        "tag": "A"
+      },
+      {
+        "color": "rgb(253, 252, 250)",
+        "mode": "color",
+        "ratio": "8.606",
+        "shadow": "none",
+        "source": "surface",
+        "tag": "A"
+      },
+      {
+        "color": "rgb(0, 0, 0)",
+        "mode": "outline",
+        "ratio": "3.414",
+        "shadow": "rgb(255, 255, 255) -1px -1px 0px, rgb(255, 255, 255) 0px -1px 0px, rgb(255, 255, 255) 1px -1px 0px, rgb(255, 255, 255) -1px 0px 0px, rgb(255, 255, 255) 1px 0px 0px, rgb(255, 255, 255) -1px 1px 0px, rgb(255, 255, 255) 0px 1px 0px, rgb(255, 255, 255) 1px 1px 0px",
+        "source": "image",
+        "tag": "P"
+      },
+      {
+        "color": "rgb(0, 0, 0)",
+        "mode": "outline",
+        "ratio": "3.611",
+        "shadow": "rgb(255, 255, 255) -1px -1px 0px, rgb(255, 255, 255) 0px -1px 0px, rgb(255, 255, 255) 1px -1px 0px, rgb(255, 255, 255) -1px 0px 0px, rgb(255, 255, 255) 1px 0px 0px, rgb(255, 255, 255) -1px 1px 0px, rgb(255, 255, 255) 0px 1px 0px, rgb(255, 255, 255) 1px 1px 0px",
+        "source": "image",
+        "tag": "SPAN"
+      },
+      {
+        "color": "rgb(0, 0, 0)",
+        "mode": "outline",
+        "ratio": "2.819",
+        "shadow": "rgb(255, 255, 255) -1px -1px 0px, rgb(255, 255, 255) 0px -1px 0px, rgb(255, 255, 255) 1px -1px 0px, rgb(255, 255, 255) -1px 0px 0px, rgb(255, 255, 255) 1px 0px 0px, rgb(255, 255, 255) -1px 1px 0px, rgb(255, 255, 255) 0px 1px 0px, rgb(255, 255, 255) 1px 1px 0px",
+        "source": "image",
+        "tag": "SPAN"
+      },
+      {
+        "color": "rgb(0, 0, 0)",
+        "mode": "outline",
+        "ratio": "1.237",
+        "shadow": "rgb(255, 255, 255) -1px -1px 0px, rgb(255, 255, 255) 0px -1px 0px, rgb(255, 255, 255) 1px -1px 0px, rgb(255, 255, 255) -1px 0px 0px, rgb(255, 255, 255) 1px 0px 0px, rgb(255, 255, 255) -1px 1px 0px, rgb(255, 255, 255) 0px 1px 0px, rgb(255, 255, 255) 1px 1px 0px",
+        "source": "image",
+        "tag": "P"
+      },
+      {
+        "color": "rgb(253, 252, 250)",
+        "mode": "color",
+        "ratio": "8.606",
+        "shadow": "none",
+        "source": "surface",
+        "tag": "A"
+      },
+      {
+        "color": "rgb(255, 255, 255)",
+        "mode": "outline",
+        "ratio": "1.967",
+        "shadow": "rgb(0, 0, 0) -1px -1px 0px, rgb(0, 0, 0) 0px -1px 0px, rgb(0, 0, 0) 1px -1px 0px, rgb(0, 0, 0) -1px 0px 0px, rgb(0, 0, 0) 1px 0px 0px, rgb(0, 0, 0) -1px 1px 0px, rgb(0, 0, 0) 0px 1px 0px, rgb(0, 0, 0) 1px 1px 0px",
+        "source": "image",
+        "tag": "A"
+      },
+      {
+        "color": "rgb(0, 0, 0)",
+        "mode": "outline",
+        "ratio": "2.380",
+        "shadow": "rgb(255, 255, 255) -1px -1px 0px, rgb(255, 255, 255) 0px -1px 0px, rgb(255, 255, 255) 1px -1px 0px, rgb(255, 255, 255) -1px 0px 0px, rgb(255, 255, 255) 1px 0px 0px, rgb(255, 255, 255) -1px 1px 0px, rgb(255, 255, 255) 0px 1px 0px, rgb(255, 255, 255) 1px 1px 0px",
+        "source": "surface",
+        "tag": "SPAN"
+      },
+      {
+        "color": "rgb(98, 106, 96)",
+        "mode": "color",
+        "ratio": "5.462",
+        "shadow": "none",
+        "source": "surface",
+        "tag": "A"
+      },
+      {
+        "color": "rgb(98, 106, 96)",
+        "mode": "color",
+        "ratio": "5.462",
+        "shadow": "none",
+        "source": "surface",
+        "tag": "A"
+      },
+      {
+        "color": "rgb(98, 106, 96)",
+        "mode": "color",
+        "ratio": "5.462",
+        "shadow": "none",
+        "source": "surface",
+        "tag": "A"
+      },
+      {
+        "color": "rgb(98, 106, 96)",
+        "mode": "color",
+        "ratio": "5.462",
+        "shadow": "none",
+        "source": "surface",
+        "tag": "A"
+      },
+      {
+        "color": "rgb(253, 252, 250)",
+        "mode": "color",
+        "ratio": "8.606",
+        "shadow": "none",
+        "source": "surface",
+        "tag": "A"
+      },
+      {
+        "color": "rgb(98, 106, 96)",
+        "mode": "color",
+        "ratio": "5.462",
+        "shadow": "none",
+        "source": "surface",
+        "tag": "SPAN"
+      },
+      {
+        "color": "rgb(98, 106, 96)",
+        "mode": "color",
+        "ratio": "5.462",
+        "shadow": "none",
+        "source": "surface",
+        "tag": "SPAN"
+      },
+      {
+        "color": "rgb(98, 106, 96)",
+        "mode": "color",
+        "ratio": "5.462",
+        "shadow": "none",
+        "source": "surface",
+        "tag": "SPAN"
+      },
+      {
+        "color": "rgb(98, 106, 96)",
+        "mode": "color",
+        "ratio": "5.462",
+        "shadow": "none",
+        "source": "surface",
+        "tag": "SPAN"
+      },
+      {
+        "color": "rgb(98, 106, 96)",
+        "mode": "color",
+        "ratio": "5.462",
+        "shadow": "none",
+        "source": "surface",
+        "tag": "SPAN"
+      },
+      {
+        "color": "rgb(98, 106, 96)",
+        "mode": "color",
+        "ratio": "5.462",
+        "shadow": "none",
+        "source": "surface",
+        "tag": "SPAN"
+      }
+    ],
+    "width": 390,
+    "expectedWidth": 390
+  },
+  {
+    "background": "rgba(0, 0, 0, 0)",
+    "headerClass": "scheme-a-chrome is-fixed is-overlay",
+    "headerHeight": 76,
+    "heroTop": 0,
+    "languageBackground": "rgb(63, 78, 66)",
+    "languageColor": "rgb(253, 252, 250)",
+    "nav": [
+      {
+        "color": "rgb(0, 0, 0)",
+        "label": "FLASH CAST SDN. BHD.",
+        "mode": "color",
+        "ratio": "5.772",
+        "shadow": "none",
+        "source": "image"
+      }
+    ],
+    "overflow": false,
+    "path": "/zh/services/design",
+    "pseudo": "none",
+    "readingPanels": 0,
+    "spacer": false,
+    "texts": [
+      {
+        "color": "rgb(0, 0, 0)",
+        "mode": "color",
+        "ratio": "5.772",
+        "shadow": "none",
+        "source": "image",
+        "tag": "A"
+      },
+      {
+        "color": "rgb(253, 252, 250)",
+        "mode": "color",
+        "ratio": "8.606",
+        "shadow": "none",
+        "source": "surface",
+        "tag": "A"
+      },
+      {
+        "color": "rgb(98, 106, 96)",
+        "mode": "color",
+        "ratio": "5.462",
+        "shadow": "none",
+        "source": "surface",
+        "tag": "A"
+      },
+      {
+        "color": "rgb(63, 78, 66)",
+        "mode": "color",
+        "ratio": "8.606",
+        "shadow": "none",
+        "source": "surface",
+        "tag": "SPAN"
+      },
+      {
+        "color": "rgb(0, 0, 0)",
+        "mode": "outline",
+        "ratio": "3.008",
+        "shadow": "rgb(255, 255, 255) -1px -1px 0px, rgb(255, 255, 255) 0px -1px 0px, rgb(255, 255, 255) 1px -1px 0px, rgb(255, 255, 255) -1px 0px 0px, rgb(255, 255, 255) 1px 0px 0px, rgb(255, 255, 255) -1px 1px 0px, rgb(255, 255, 255) 0px 1px 0px, rgb(255, 255, 255) 1px 1px 0px",
+        "source": "image",
+        "tag": "P"
+      },
+      {
+        "color": "rgb(0, 0, 0)",
+        "mode": "outline",
+        "ratio": "3.051",
+        "shadow": "rgb(255, 255, 255) -1px -1px 0px, rgb(255, 255, 255) 0px -1px 0px, rgb(255, 255, 255) 1px -1px 0px, rgb(255, 255, 255) -1px 0px 0px, rgb(255, 255, 255) 1px 0px 0px, rgb(255, 255, 255) -1px 1px 0px, rgb(255, 255, 255) 0px 1px 0px, rgb(255, 255, 255) 1px 1px 0px",
+        "source": "image",
+        "tag": "SPAN"
+      },
+      {
+        "color": "rgb(0, 0, 0)",
+        "mode": "outline",
+        "ratio": "2.933",
+        "shadow": "rgb(255, 255, 255) -1px -1px 0px, rgb(255, 255, 255) 0px -1px 0px, rgb(255, 255, 255) 1px -1px 0px, rgb(255, 255, 255) -1px 0px 0px, rgb(255, 255, 255) 1px 0px 0px, rgb(255, 255, 255) -1px 1px 0px, rgb(255, 255, 255) 0px 1px 0px, rgb(255, 255, 255) 1px 1px 0px",
+        "source": "image",
+        "tag": "P"
+      },
+      {
+        "color": "rgb(253, 252, 250)",
+        "mode": "color",
+        "ratio": "8.606",
+        "shadow": "none",
+        "source": "surface",
+        "tag": "A"
+      },
+      {
+        "color": "rgb(0, 0, 0)",
+        "mode": "outline",
+        "ratio": "3.928",
+        "shadow": "rgb(255, 255, 255) -1px -1px 0px, rgb(255, 255, 255) 0px -1px 0px, rgb(255, 255, 255) 1px -1px 0px, rgb(255, 255, 255) -1px 0px 0px, rgb(255, 255, 255) 1px 0px 0px, rgb(255, 255, 255) -1px 1px 0px, rgb(255, 255, 255) 0px 1px 0px, rgb(255, 255, 255) 1px 1px 0px",
+        "source": "image",
+        "tag": "A"
+      },
+      {
+        "color": "rgb(41, 46, 41)",
+        "mode": "color",
+        "ratio": "7.832",
+        "shadow": "none",
+        "source": "image",
+        "tag": "A"
+      },
+      {
+        "color": "rgb(253, 252, 250)",
+        "mode": "color",
+        "ratio": "8.606",
+        "shadow": "none",
+        "source": "surface",
+        "tag": "A"
+      }
+    ],
+    "width": 768,
+    "expectedWidth": 768
+  },
+  {
+    "background": "rgba(0, 0, 0, 0)",
+    "headerClass": "scheme-a-chrome is-fixed is-overlay",
+    "headerHeight": 76,
+    "heroTop": 0,
+    "languageBackground": "rgb(63, 78, 66)",
+    "languageColor": "rgb(253, 252, 250)",
+    "nav": [
+      {
+        "color": "rgb(0, 0, 0)",
+        "label": "FLASH CAST SDN. BHD.",
+        "mode": "color",
+        "ratio": "5.772",
+        "shadow": "none",
+        "source": "image"
+      }
+    ],
+    "overflow": false,
+    "path": "/en/services/design",
+    "pseudo": "none",
+    "readingPanels": 0,
+    "spacer": false,
+    "texts": [
+      {
+        "color": "rgb(0, 0, 0)",
+        "mode": "color",
+        "ratio": "5.772",
+        "shadow": "none",
+        "source": "image",
+        "tag": "A"
+      },
+      {
+        "color": "rgb(98, 106, 96)",
+        "mode": "color",
+        "ratio": "5.462",
+        "shadow": "none",
+        "source": "surface",
+        "tag": "A"
+      },
+      {
+        "color": "rgb(253, 252, 250)",
+        "mode": "color",
+        "ratio": "8.606",
+        "shadow": "none",
+        "source": "surface",
+        "tag": "A"
+      },
+      {
+        "color": "rgb(63, 78, 66)",
+        "mode": "color",
+        "ratio": "8.606",
+        "shadow": "none",
+        "source": "surface",
+        "tag": "SPAN"
+      },
+      {
+        "color": "rgb(0, 0, 0)",
+        "mode": "outline",
+        "ratio": "4.371",
+        "shadow": "rgb(255, 255, 255) -1px -1px 0px, rgb(255, 255, 255) 0px -1px 0px, rgb(255, 255, 255) 1px -1px 0px, rgb(255, 255, 255) -1px 0px 0px, rgb(255, 255, 255) 1px 0px 0px, rgb(255, 255, 255) -1px 1px 0px, rgb(255, 255, 255) 0px 1px 0px, rgb(255, 255, 255) 1px 1px 0px",
+        "source": "image",
+        "tag": "P"
+      },
+      {
+        "color": "rgb(0, 0, 0)",
+        "mode": "outline",
+        "ratio": "2.611",
+        "shadow": "rgb(255, 255, 255) -1px -1px 0px, rgb(255, 255, 255) 0px -1px 0px, rgb(255, 255, 255) 1px -1px 0px, rgb(255, 255, 255) -1px 0px 0px, rgb(255, 255, 255) 1px 0px 0px, rgb(255, 255, 255) -1px 1px 0px, rgb(255, 255, 255) 0px 1px 0px, rgb(255, 255, 255) 1px 1px 0px",
+        "source": "image",
+        "tag": "SPAN"
+      },
+      {
+        "color": "rgb(0, 0, 0)",
+        "mode": "outline",
+        "ratio": "1.824",
+        "shadow": "rgb(255, 255, 255) -1px -1px 0px, rgb(255, 255, 255) 0px -1px 0px, rgb(255, 255, 255) 1px -1px 0px, rgb(255, 255, 255) -1px 0px 0px, rgb(255, 255, 255) 1px 0px 0px, rgb(255, 255, 255) -1px 1px 0px, rgb(255, 255, 255) 0px 1px 0px, rgb(255, 255, 255) 1px 1px 0px",
+        "source": "image",
+        "tag": "P"
+      },
+      {
+        "color": "rgb(253, 252, 250)",
+        "mode": "color",
+        "ratio": "8.606",
+        "shadow": "none",
+        "source": "surface",
+        "tag": "A"
+      },
+      {
+        "color": "rgb(41, 46, 41)",
+        "mode": "color",
+        "ratio": "7.906",
+        "shadow": "none",
+        "source": "image",
+        "tag": "A"
+      },
+      {
+        "color": "rgb(41, 46, 41)",
+        "mode": "color",
+        "ratio": "6.587",
+        "shadow": "none",
+        "source": "image",
+        "tag": "A"
+      },
+      {
+        "color": "rgb(253, 252, 250)",
+        "mode": "color",
+        "ratio": "8.606",
+        "shadow": "none",
+        "source": "surface",
+        "tag": "A"
+      }
+    ],
+    "width": 768,
+    "expectedWidth": 768
+  },
+  {
+    "background": "rgba(0, 0, 0, 0)",
+    "headerClass": "scheme-a-chrome is-fixed is-overlay",
+    "headerHeight": 76,
+    "heroTop": 0,
+    "languageBackground": "rgb(63, 78, 66)",
+    "languageColor": "rgb(253, 252, 250)",
+    "nav": [
+      {
+        "color": "rgb(41, 46, 41)",
+        "label": "FLASH CAST SDN. BHD.",
+        "mode": "color",
+        "ratio": "9.291",
+        "shadow": "none",
+        "source": "image"
+      }
+    ],
+    "overflow": false,
+    "path": "/zh",
+    "pseudo": "none",
+    "readingPanels": 0,
+    "spacer": false,
+    "texts": [
+      {
+        "color": "rgb(41, 46, 41)",
+        "mode": "color",
+        "ratio": "9.291",
+        "shadow": "none",
+        "source": "image",
+        "tag": "A"
+      },
+      {
+        "color": "rgb(253, 252, 250)",
+        "mode": "color",
+        "ratio": "8.606",
+        "shadow": "none",
+        "source": "surface",
+        "tag": "A"
+      },
+      {
+        "color": "rgb(98, 106, 96)",
+        "mode": "color",
+        "ratio": "5.462",
+        "shadow": "none",
+        "source": "surface",
+        "tag": "A"
+      },
+      {
+        "color": "rgb(63, 78, 66)",
+        "mode": "color",
+        "ratio": "8.606",
+        "shadow": "none",
+        "source": "surface",
+        "tag": "SPAN"
+      },
+      {
+        "color": "rgb(41, 46, 41)",
+        "mode": "color",
+        "ratio": "9.200",
+        "shadow": "none",
+        "source": "image",
+        "tag": "SPAN"
+      },
+      {
+        "color": "rgb(41, 46, 41)",
+        "mode": "color",
+        "ratio": "9.200",
+        "shadow": "none",
+        "source": "image",
+        "tag": "SPAN"
+      },
+      {
+        "color": "rgb(41, 46, 41)",
+        "mode": "color",
+        "ratio": "5.093",
+        "shadow": "none",
+        "source": "image",
+        "tag": "P"
+      },
+      {
+        "color": "rgb(253, 252, 250)",
+        "mode": "color",
+        "ratio": "8.606",
+        "shadow": "none",
+        "source": "surface",
+        "tag": "A"
+      },
+      {
+        "color": "rgb(63, 78, 66)",
+        "mode": "color",
+        "ratio": "8.606",
+        "shadow": "none",
+        "source": "surface",
+        "tag": "A"
+      },
+      {
+        "color": "rgb(253, 252, 250)",
+        "mode": "color",
+        "ratio": "8.606",
+        "shadow": "none",
+        "source": "surface",
+        "tag": "A"
+      }
+    ],
+    "width": 768,
+    "expectedWidth": 768
+  },
+  {
+    "background": "rgba(0, 0, 0, 0)",
+    "headerClass": "scheme-a-chrome is-fixed is-overlay",
+    "headerHeight": 76,
+    "heroTop": 0,
+    "languageBackground": "rgb(63, 78, 66)",
+    "languageColor": "rgb(253, 252, 250)",
+    "nav": [
+      {
+        "color": "rgb(41, 46, 41)",
+        "label": "FLASH CAST SDN. BHD.",
+        "mode": "color",
+        "ratio": "9.291",
+        "shadow": "none",
+        "source": "image"
+      }
+    ],
+    "overflow": false,
+    "path": "/en",
+    "pseudo": "none",
+    "readingPanels": 0,
+    "spacer": false,
+    "texts": [
+      {
+        "color": "rgb(41, 46, 41)",
+        "mode": "color",
+        "ratio": "9.291",
+        "shadow": "none",
+        "source": "image",
+        "tag": "A"
+      },
+      {
+        "color": "rgb(98, 106, 96)",
+        "mode": "color",
+        "ratio": "5.462",
+        "shadow": "none",
+        "source": "surface",
+        "tag": "A"
+      },
+      {
+        "color": "rgb(253, 252, 250)",
+        "mode": "color",
+        "ratio": "8.606",
+        "shadow": "none",
+        "source": "surface",
+        "tag": "A"
+      },
+      {
+        "color": "rgb(63, 78, 66)",
+        "mode": "color",
+        "ratio": "8.606",
+        "shadow": "none",
+        "source": "surface",
+        "tag": "SPAN"
+      },
+      {
+        "color": "rgb(41, 46, 41)",
+        "mode": "color",
+        "ratio": "9.031",
+        "shadow": "none",
+        "source": "image",
+        "tag": "SPAN"
+      },
+      {
+        "color": "rgb(41, 46, 41)",
+        "mode": "color",
+        "ratio": "8.998",
+        "shadow": "none",
+        "source": "image",
+        "tag": "SPAN"
+      },
+      {
+        "color": "rgb(41, 46, 41)",
+        "mode": "color",
+        "ratio": "5.093",
+        "shadow": "none",
+        "source": "image",
+        "tag": "P"
+      },
+      {
+        "color": "rgb(253, 252, 250)",
+        "mode": "color",
+        "ratio": "8.606",
+        "shadow": "none",
+        "source": "surface",
+        "tag": "A"
+      },
+      {
+        "color": "rgb(63, 78, 66)",
+        "mode": "color",
+        "ratio": "8.606",
+        "shadow": "none",
+        "source": "surface",
+        "tag": "A"
+      },
+      {
+        "color": "rgb(253, 252, 250)",
+        "mode": "color",
+        "ratio": "8.606",
+        "shadow": "none",
+        "source": "surface",
+        "tag": "A"
+      }
+    ],
+    "width": 768,
+    "expectedWidth": 768
+  },
+  {
+    "background": "rgba(0, 0, 0, 0)",
+    "headerClass": "scheme-a-chrome is-fixed is-overlay",
+    "headerHeight": 76,
+    "heroTop": 0,
+    "languageBackground": "rgb(63, 78, 66)",
+    "languageColor": "rgb(253, 252, 250)",
+    "nav": [
+      {
+        "color": "rgb(0, 0, 0)",
+        "label": "FLASH CAST SDN. BHD.",
+        "mode": "outline",
+        "ratio": "2.521",
+        "shadow": "rgb(255, 255, 255) -1px -1px 0px, rgb(255, 255, 255) 0px -1px 0px, rgb(255, 255, 255) 1px -1px 0px, rgb(255, 255, 255) -1px 0px 0px, rgb(255, 255, 255) 1px 0px 0px, rgb(255, 255, 255) -1px 1px 0px, rgb(255, 255, 255) 0px 1px 0px, rgb(255, 255, 255) 1px 1px 0px",
+        "source": "image"
+      }
+    ],
+    "overflow": false,
+    "path": "/zh/services/surface-repair",
+    "pseudo": "none",
+    "readingPanels": 0,
+    "spacer": false,
+    "texts": [
+      {
+        "color": "rgb(0, 0, 0)",
+        "mode": "outline",
+        "ratio": "2.521",
+        "shadow": "rgb(255, 255, 255) -1px -1px 0px, rgb(255, 255, 255) 0px -1px 0px, rgb(255, 255, 255) 1px -1px 0px, rgb(255, 255, 255) -1px 0px 0px, rgb(255, 255, 255) 1px 0px 0px, rgb(255, 255, 255) -1px 1px 0px, rgb(255, 255, 255) 0px 1px 0px, rgb(255, 255, 255) 1px 1px 0px",
+        "source": "image",
+        "tag": "A"
+      },
+      {
+        "color": "rgb(253, 252, 250)",
+        "mode": "color",
+        "ratio": "8.606",
+        "shadow": "none",
+        "source": "surface",
+        "tag": "A"
+      },
+      {
+        "color": "rgb(98, 106, 96)",
+        "mode": "color",
+        "ratio": "5.462",
+        "shadow": "none",
+        "source": "surface",
+        "tag": "A"
+      },
+      {
+        "color": "rgb(63, 78, 66)",
+        "mode": "color",
+        "ratio": "8.606",
+        "shadow": "none",
+        "source": "surface",
+        "tag": "SPAN"
+      },
+      {
+        "color": "rgb(0, 0, 0)",
+        "mode": "outline",
+        "ratio": "1.869",
+        "shadow": "rgb(255, 255, 255) -1px -1px 0px, rgb(255, 255, 255) 0px -1px 0px, rgb(255, 255, 255) 1px -1px 0px, rgb(255, 255, 255) -1px 0px 0px, rgb(255, 255, 255) 1px 0px 0px, rgb(255, 255, 255) -1px 1px 0px, rgb(255, 255, 255) 0px 1px 0px, rgb(255, 255, 255) 1px 1px 0px",
+        "source": "image",
+        "tag": "P"
+      },
+      {
+        "color": "rgb(0, 0, 0)",
+        "mode": "outline",
+        "ratio": "1.536",
+        "shadow": "rgb(255, 255, 255) -1px -1px 0px, rgb(255, 255, 255) 0px -1px 0px, rgb(255, 255, 255) 1px -1px 0px, rgb(255, 255, 255) -1px 0px 0px, rgb(255, 255, 255) 1px 0px 0px, rgb(255, 255, 255) -1px 1px 0px, rgb(255, 255, 255) 0px 1px 0px, rgb(255, 255, 255) 1px 1px 0px",
+        "source": "image",
+        "tag": "SPAN"
+      },
+      {
+        "color": "rgb(255, 255, 255)",
+        "mode": "outline",
+        "ratio": "1.850",
+        "shadow": "rgb(0, 0, 0) -1px -1px 0px, rgb(0, 0, 0) 0px -1px 0px, rgb(0, 0, 0) 1px -1px 0px, rgb(0, 0, 0) -1px 0px 0px, rgb(0, 0, 0) 1px 0px 0px, rgb(0, 0, 0) -1px 1px 0px, rgb(0, 0, 0) 0px 1px 0px, rgb(0, 0, 0) 1px 1px 0px",
+        "source": "image",
+        "tag": "SPAN"
+      },
+      {
+        "color": "rgb(0, 0, 0)",
+        "mode": "outline",
+        "ratio": "4.082",
+        "shadow": "rgb(255, 255, 255) -1px -1px 0px, rgb(255, 255, 255) 0px -1px 0px, rgb(255, 255, 255) 1px -1px 0px, rgb(255, 255, 255) -1px 0px 0px, rgb(255, 255, 255) 1px 0px 0px, rgb(255, 255, 255) -1px 1px 0px, rgb(255, 255, 255) 0px 1px 0px, rgb(255, 255, 255) 1px 1px 0px",
+        "source": "image",
+        "tag": "P"
+      },
+      {
+        "color": "rgb(253, 252, 250)",
+        "mode": "color",
+        "ratio": "8.606",
+        "shadow": "none",
+        "source": "surface",
+        "tag": "A"
+      },
+      {
+        "color": "rgb(255, 255, 255)",
+        "mode": "color",
+        "ratio": "4.529",
+        "shadow": "none",
+        "source": "image",
+        "tag": "A"
+      },
+      {
+        "color": "rgb(41, 46, 41)",
+        "mode": "color",
+        "ratio": "5.277",
+        "shadow": "none",
+        "source": "image",
+        "tag": "SPAN"
+      },
+      {
+        "color": "rgb(253, 252, 250)",
+        "mode": "color",
+        "ratio": "8.606",
+        "shadow": "none",
+        "source": "surface",
+        "tag": "A"
+      }
+    ],
+    "width": 768,
+    "expectedWidth": 768
+  },
+  {
+    "background": "rgba(0, 0, 0, 0)",
+    "headerClass": "scheme-a-chrome is-fixed is-overlay",
+    "headerHeight": 76,
+    "heroTop": 0,
+    "languageBackground": "rgb(63, 78, 66)",
+    "languageColor": "rgb(253, 252, 250)",
+    "nav": [
+      {
+        "color": "rgb(0, 0, 0)",
+        "label": "FLASH CAST SDN. BHD.",
+        "mode": "outline",
+        "ratio": "2.521",
+        "shadow": "rgb(255, 255, 255) -1px -1px 0px, rgb(255, 255, 255) 0px -1px 0px, rgb(255, 255, 255) 1px -1px 0px, rgb(255, 255, 255) -1px 0px 0px, rgb(255, 255, 255) 1px 0px 0px, rgb(255, 255, 255) -1px 1px 0px, rgb(255, 255, 255) 0px 1px 0px, rgb(255, 255, 255) 1px 1px 0px",
+        "source": "image"
+      }
+    ],
+    "overflow": false,
+    "path": "/en/services/surface-repair",
+    "pseudo": "none",
+    "readingPanels": 0,
+    "spacer": false,
+    "texts": [
+      {
+        "color": "rgb(0, 0, 0)",
+        "mode": "outline",
+        "ratio": "2.521",
+        "shadow": "rgb(255, 255, 255) -1px -1px 0px, rgb(255, 255, 255) 0px -1px 0px, rgb(255, 255, 255) 1px -1px 0px, rgb(255, 255, 255) -1px 0px 0px, rgb(255, 255, 255) 1px 0px 0px, rgb(255, 255, 255) -1px 1px 0px, rgb(255, 255, 255) 0px 1px 0px, rgb(255, 255, 255) 1px 1px 0px",
+        "source": "image",
+        "tag": "A"
+      },
+      {
+        "color": "rgb(98, 106, 96)",
+        "mode": "color",
+        "ratio": "5.462",
+        "shadow": "none",
+        "source": "surface",
+        "tag": "A"
+      },
+      {
+        "color": "rgb(253, 252, 250)",
+        "mode": "color",
+        "ratio": "8.606",
+        "shadow": "none",
+        "source": "surface",
+        "tag": "A"
+      },
+      {
+        "color": "rgb(63, 78, 66)",
+        "mode": "color",
+        "ratio": "8.606",
+        "shadow": "none",
+        "source": "surface",
+        "tag": "SPAN"
+      },
+      {
+        "color": "rgb(0, 0, 0)",
+        "mode": "outline",
+        "ratio": "2.454",
+        "shadow": "rgb(255, 255, 255) -1px -1px 0px, rgb(255, 255, 255) 0px -1px 0px, rgb(255, 255, 255) 1px -1px 0px, rgb(255, 255, 255) -1px 0px 0px, rgb(255, 255, 255) 1px 0px 0px, rgb(255, 255, 255) -1px 1px 0px, rgb(255, 255, 255) 0px 1px 0px, rgb(255, 255, 255) 1px 1px 0px",
+        "source": "image",
+        "tag": "P"
+      },
+      {
+        "color": "rgb(0, 0, 0)",
+        "mode": "outline",
+        "ratio": "1.622",
+        "shadow": "rgb(255, 255, 255) -1px -1px 0px, rgb(255, 255, 255) 0px -1px 0px, rgb(255, 255, 255) 1px -1px 0px, rgb(255, 255, 255) -1px 0px 0px, rgb(255, 255, 255) 1px 0px 0px, rgb(255, 255, 255) -1px 1px 0px, rgb(255, 255, 255) 0px 1px 0px, rgb(255, 255, 255) 1px 1px 0px",
+        "source": "image",
+        "tag": "SPAN"
+      },
+      {
+        "color": "rgb(255, 255, 255)",
+        "mode": "outline",
+        "ratio": "2.950",
+        "shadow": "rgb(0, 0, 0) -1px -1px 0px, rgb(0, 0, 0) 0px -1px 0px, rgb(0, 0, 0) 1px -1px 0px, rgb(0, 0, 0) -1px 0px 0px, rgb(0, 0, 0) 1px 0px 0px, rgb(0, 0, 0) -1px 1px 0px, rgb(0, 0, 0) 0px 1px 0px, rgb(0, 0, 0) 1px 1px 0px",
+        "source": "image",
+        "tag": "SPAN"
+      },
+      {
+        "color": "rgb(0, 0, 0)",
+        "mode": "outline",
+        "ratio": "3.710",
+        "shadow": "rgb(255, 255, 255) -1px -1px 0px, rgb(255, 255, 255) 0px -1px 0px, rgb(255, 255, 255) 1px -1px 0px, rgb(255, 255, 255) -1px 0px 0px, rgb(255, 255, 255) 1px 0px 0px, rgb(255, 255, 255) -1px 1px 0px, rgb(255, 255, 255) 0px 1px 0px, rgb(255, 255, 255) 1px 1px 0px",
+        "source": "image",
+        "tag": "P"
+      },
+      {
+        "color": "rgb(253, 252, 250)",
+        "mode": "color",
+        "ratio": "8.606",
+        "shadow": "none",
+        "source": "surface",
+        "tag": "A"
+      },
+      {
+        "color": "rgb(255, 255, 255)",
+        "mode": "outline",
+        "ratio": "4.235",
+        "shadow": "rgb(0, 0, 0) -1px -1px 0px, rgb(0, 0, 0) 0px -1px 0px, rgb(0, 0, 0) 1px -1px 0px, rgb(0, 0, 0) -1px 0px 0px, rgb(0, 0, 0) 1px 0px 0px, rgb(0, 0, 0) -1px 1px 0px, rgb(0, 0, 0) 0px 1px 0px, rgb(0, 0, 0) 1px 1px 0px",
+        "source": "image",
+        "tag": "A"
+      },
+      {
+        "color": "rgb(255, 255, 255)",
+        "mode": "outline",
+        "ratio": "2.201",
+        "shadow": "rgb(0, 0, 0) -1px -1px 0px, rgb(0, 0, 0) 0px -1px 0px, rgb(0, 0, 0) 1px -1px 0px, rgb(0, 0, 0) -1px 0px 0px, rgb(0, 0, 0) 1px 0px 0px, rgb(0, 0, 0) -1px 1px 0px, rgb(0, 0, 0) 0px 1px 0px, rgb(0, 0, 0) 1px 1px 0px",
+        "source": "image",
+        "tag": "SPAN"
+      },
+      {
+        "color": "rgb(253, 252, 250)",
+        "mode": "color",
+        "ratio": "8.606",
+        "shadow": "none",
+        "source": "surface",
+        "tag": "A"
+      }
+    ],
+    "width": 768,
+    "expectedWidth": 768
+  },
+  {
+    "background": "rgba(0, 0, 0, 0)",
+    "headerClass": "scheme-a-chrome is-fixed is-overlay",
+    "headerHeight": 76,
+    "heroTop": 0,
+    "languageBackground": "rgb(63, 78, 66)",
+    "languageColor": "rgb(253, 252, 250)",
+    "nav": [
+      {
+        "color": "rgb(255, 255, 255)",
+        "label": "FLASH CAST SDN. BHD.",
+        "mode": "outline",
+        "ratio": "2.946",
+        "shadow": "rgb(0, 0, 0) -1px -1px 0px, rgb(0, 0, 0) 0px -1px 0px, rgb(0, 0, 0) 1px -1px 0px, rgb(0, 0, 0) -1px 0px 0px, rgb(0, 0, 0) 1px 0px 0px, rgb(0, 0, 0) -1px 1px 0px, rgb(0, 0, 0) 0px 1px 0px, rgb(0, 0, 0) 1px 1px 0px",
+        "source": "image"
+      }
+    ],
+    "overflow": false,
+    "path": "/zh/services/design",
+    "pseudo": "none",
+    "readingPanels": 0,
+    "spacer": false,
+    "texts": [
+      {
+        "color": "rgb(255, 255, 255)",
+        "mode": "outline",
+        "ratio": "2.946",
+        "shadow": "rgb(0, 0, 0) -1px -1px 0px, rgb(0, 0, 0) 0px -1px 0px, rgb(0, 0, 0) 1px -1px 0px, rgb(0, 0, 0) -1px 0px 0px, rgb(0, 0, 0) 1px 0px 0px, rgb(0, 0, 0) -1px 1px 0px, rgb(0, 0, 0) 0px 1px 0px, rgb(0, 0, 0) 1px 1px 0px",
+        "source": "image",
+        "tag": "A"
+      },
+      {
+        "color": "rgb(253, 252, 250)",
+        "mode": "color",
+        "ratio": "8.606",
+        "shadow": "none",
+        "source": "surface",
+        "tag": "A"
+      },
+      {
+        "color": "rgb(98, 106, 96)",
+        "mode": "color",
+        "ratio": "5.462",
+        "shadow": "none",
+        "source": "surface",
+        "tag": "A"
+      },
+      {
+        "color": "rgb(63, 78, 66)",
+        "mode": "color",
+        "ratio": "8.606",
+        "shadow": "none",
+        "source": "surface",
+        "tag": "SPAN"
+      },
+      {
+        "color": "rgb(255, 255, 255)",
+        "mode": "outline",
+        "ratio": "1.924",
+        "shadow": "rgb(0, 0, 0) -1px -1px 0px, rgb(0, 0, 0) 0px -1px 0px, rgb(0, 0, 0) 1px -1px 0px, rgb(0, 0, 0) -1px 0px 0px, rgb(0, 0, 0) 1px 0px 0px, rgb(0, 0, 0) -1px 1px 0px, rgb(0, 0, 0) 0px 1px 0px, rgb(0, 0, 0) 1px 1px 0px",
+        "source": "image",
+        "tag": "P"
+      },
+      {
+        "color": "rgb(255, 255, 255)",
+        "mode": "outline",
+        "ratio": "1.646",
+        "shadow": "rgb(0, 0, 0) -1px -1px 0px, rgb(0, 0, 0) 0px -1px 0px, rgb(0, 0, 0) 1px -1px 0px, rgb(0, 0, 0) -1px 0px 0px, rgb(0, 0, 0) 1px 0px 0px, rgb(0, 0, 0) -1px 1px 0px, rgb(0, 0, 0) 0px 1px 0px, rgb(0, 0, 0) 1px 1px 0px",
+        "source": "image",
+        "tag": "SPAN"
+      },
+      {
+        "color": "rgb(255, 255, 255)",
+        "mode": "outline",
+        "ratio": "1.743",
+        "shadow": "rgb(0, 0, 0) -1px -1px 0px, rgb(0, 0, 0) 0px -1px 0px, rgb(0, 0, 0) 1px -1px 0px, rgb(0, 0, 0) -1px 0px 0px, rgb(0, 0, 0) 1px 0px 0px, rgb(0, 0, 0) -1px 1px 0px, rgb(0, 0, 0) 0px 1px 0px, rgb(0, 0, 0) 1px 1px 0px",
+        "source": "image",
+        "tag": "P"
+      },
+      {
+        "color": "rgb(253, 252, 250)",
+        "mode": "color",
+        "ratio": "8.606",
+        "shadow": "none",
+        "source": "surface",
+        "tag": "A"
+      },
+      {
+        "color": "rgb(255, 255, 255)",
+        "mode": "outline",
+        "ratio": "2.107",
+        "shadow": "rgb(0, 0, 0) -1px -1px 0px, rgb(0, 0, 0) 0px -1px 0px, rgb(0, 0, 0) 1px -1px 0px, rgb(0, 0, 0) -1px 0px 0px, rgb(0, 0, 0) 1px 0px 0px, rgb(0, 0, 0) -1px 1px 0px, rgb(0, 0, 0) 0px 1px 0px, rgb(0, 0, 0) 1px 1px 0px",
+        "source": "image",
+        "tag": "A"
+      },
+      {
+        "color": "rgb(41, 46, 41)",
+        "mode": "color",
+        "ratio": "9.060",
+        "shadow": "none",
+        "source": "image",
+        "tag": "A"
+      },
+      {
+        "color": "rgb(253, 252, 250)",
+        "mode": "color",
+        "ratio": "8.606",
+        "shadow": "none",
+        "source": "surface",
+        "tag": "A"
+      }
+    ],
+    "width": 1024,
+    "expectedWidth": 1024
+  },
+  {
+    "background": "rgba(0, 0, 0, 0)",
+    "headerClass": "scheme-a-chrome is-fixed is-overlay",
+    "headerHeight": 76,
+    "heroTop": 0,
+    "languageBackground": "rgb(63, 78, 66)",
+    "languageColor": "rgb(253, 252, 250)",
+    "nav": [
+      {
+        "color": "rgb(255, 255, 255)",
+        "label": "FLASH CAST SDN. BHD.",
+        "mode": "outline",
+        "ratio": "2.946",
+        "shadow": "rgb(0, 0, 0) -1px -1px 0px, rgb(0, 0, 0) 0px -1px 0px, rgb(0, 0, 0) 1px -1px 0px, rgb(0, 0, 0) -1px 0px 0px, rgb(0, 0, 0) 1px 0px 0px, rgb(0, 0, 0) -1px 1px 0px, rgb(0, 0, 0) 0px 1px 0px, rgb(0, 0, 0) 1px 1px 0px",
+        "source": "image"
+      }
+    ],
+    "overflow": false,
+    "path": "/en/services/design",
+    "pseudo": "none",
+    "readingPanels": 0,
+    "spacer": false,
+    "texts": [
+      {
+        "color": "rgb(255, 255, 255)",
+        "mode": "outline",
+        "ratio": "2.946",
+        "shadow": "rgb(0, 0, 0) -1px -1px 0px, rgb(0, 0, 0) 0px -1px 0px, rgb(0, 0, 0) 1px -1px 0px, rgb(0, 0, 0) -1px 0px 0px, rgb(0, 0, 0) 1px 0px 0px, rgb(0, 0, 0) -1px 1px 0px, rgb(0, 0, 0) 0px 1px 0px, rgb(0, 0, 0) 1px 1px 0px",
+        "source": "image",
+        "tag": "A"
+      },
+      {
+        "color": "rgb(98, 106, 96)",
+        "mode": "color",
+        "ratio": "5.462",
+        "shadow": "none",
+        "source": "surface",
+        "tag": "A"
+      },
+      {
+        "color": "rgb(253, 252, 250)",
+        "mode": "color",
+        "ratio": "8.606",
+        "shadow": "none",
+        "source": "surface",
+        "tag": "A"
+      },
+      {
+        "color": "rgb(63, 78, 66)",
+        "mode": "color",
+        "ratio": "8.606",
+        "shadow": "none",
+        "source": "surface",
+        "tag": "SPAN"
+      },
+      {
+        "color": "rgb(255, 255, 255)",
+        "mode": "outline",
+        "ratio": "1.500",
+        "shadow": "rgb(0, 0, 0) -1px -1px 0px, rgb(0, 0, 0) 0px -1px 0px, rgb(0, 0, 0) 1px -1px 0px, rgb(0, 0, 0) -1px 0px 0px, rgb(0, 0, 0) 1px 0px 0px, rgb(0, 0, 0) -1px 1px 0px, rgb(0, 0, 0) 0px 1px 0px, rgb(0, 0, 0) 1px 1px 0px",
+        "source": "image",
+        "tag": "P"
+      },
+      {
+        "color": "rgb(255, 255, 255)",
+        "mode": "outline",
+        "ratio": "1.617",
+        "shadow": "rgb(0, 0, 0) -1px -1px 0px, rgb(0, 0, 0) 0px -1px 0px, rgb(0, 0, 0) 1px -1px 0px, rgb(0, 0, 0) -1px 0px 0px, rgb(0, 0, 0) 1px 0px 0px, rgb(0, 0, 0) -1px 1px 0px, rgb(0, 0, 0) 0px 1px 0px, rgb(0, 0, 0) 1px 1px 0px",
+        "source": "image",
+        "tag": "SPAN"
+      },
+      {
+        "color": "rgb(0, 0, 0)",
+        "mode": "outline",
+        "ratio": "1.069",
+        "shadow": "rgb(255, 255, 255) -1px -1px 0px, rgb(255, 255, 255) 0px -1px 0px, rgb(255, 255, 255) 1px -1px 0px, rgb(255, 255, 255) -1px 0px 0px, rgb(255, 255, 255) 1px 0px 0px, rgb(255, 255, 255) -1px 1px 0px, rgb(255, 255, 255) 0px 1px 0px, rgb(255, 255, 255) 1px 1px 0px",
+        "source": "image",
+        "tag": "P"
+      },
+      {
+        "color": "rgb(253, 252, 250)",
+        "mode": "color",
+        "ratio": "8.606",
+        "shadow": "none",
+        "source": "surface",
+        "tag": "A"
+      },
+      {
+        "color": "rgb(0, 0, 0)",
+        "mode": "outline",
+        "ratio": "3.405",
+        "shadow": "rgb(255, 255, 255) -1px -1px 0px, rgb(255, 255, 255) 0px -1px 0px, rgb(255, 255, 255) 1px -1px 0px, rgb(255, 255, 255) -1px 0px 0px, rgb(255, 255, 255) 1px 0px 0px, rgb(255, 255, 255) -1px 1px 0px, rgb(255, 255, 255) 0px 1px 0px, rgb(255, 255, 255) 1px 1px 0px",
+        "source": "image",
+        "tag": "A"
+      },
+      {
+        "color": "rgb(41, 46, 41)",
+        "mode": "color",
+        "ratio": "6.030",
+        "shadow": "none",
+        "source": "image",
+        "tag": "A"
+      },
+      {
+        "color": "rgb(253, 252, 250)",
+        "mode": "color",
+        "ratio": "8.606",
+        "shadow": "none",
+        "source": "surface",
+        "tag": "A"
+      }
+    ],
+    "width": 1024,
+    "expectedWidth": 1024
+  },
+  {
+    "background": "rgba(0, 0, 0, 0)",
+    "headerClass": "scheme-a-chrome is-fixed is-overlay",
+    "headerHeight": 76,
+    "heroTop": 0,
+    "languageBackground": "rgb(63, 78, 66)",
+    "languageColor": "rgb(253, 252, 250)",
+    "nav": [
+      {
+        "color": "rgb(41, 46, 41)",
+        "label": "FLASH CAST SDN. BHD.",
+        "mode": "color",
+        "ratio": "8.189",
+        "shadow": "none",
+        "source": "image"
+      }
+    ],
+    "overflow": false,
+    "path": "/zh",
+    "pseudo": "none",
+    "readingPanels": 0,
+    "spacer": false,
+    "texts": [
+      {
+        "color": "rgb(41, 46, 41)",
+        "mode": "color",
+        "ratio": "8.189",
+        "shadow": "none",
+        "source": "image",
+        "tag": "A"
+      },
+      {
+        "color": "rgb(253, 252, 250)",
+        "mode": "color",
+        "ratio": "8.606",
+        "shadow": "none",
+        "source": "surface",
+        "tag": "A"
+      },
+      {
+        "color": "rgb(98, 106, 96)",
+        "mode": "color",
+        "ratio": "5.462",
+        "shadow": "none",
+        "source": "surface",
+        "tag": "A"
+      },
+      {
+        "color": "rgb(63, 78, 66)",
+        "mode": "color",
+        "ratio": "8.606",
+        "shadow": "none",
+        "source": "surface",
+        "tag": "SPAN"
+      },
+      {
+        "color": "rgb(41, 46, 41)",
+        "mode": "color",
+        "ratio": "8.549",
+        "shadow": "none",
+        "source": "image",
+        "tag": "SPAN"
+      },
+      {
+        "color": "rgb(41, 46, 41)",
+        "mode": "color",
+        "ratio": "8.776",
+        "shadow": "none",
+        "source": "image",
+        "tag": "SPAN"
+      },
+      {
+        "color": "rgb(41, 46, 41)",
+        "mode": "color",
+        "ratio": "8.781",
+        "shadow": "none",
+        "source": "image",
+        "tag": "P"
+      },
+      {
+        "color": "rgb(253, 252, 250)",
+        "mode": "color",
+        "ratio": "8.606",
+        "shadow": "none",
+        "source": "surface",
+        "tag": "A"
+      },
+      {
+        "color": "rgb(63, 78, 66)",
+        "mode": "color",
+        "ratio": "8.606",
+        "shadow": "none",
+        "source": "surface",
+        "tag": "A"
+      },
+      {
+        "color": "rgb(253, 252, 250)",
+        "mode": "color",
+        "ratio": "8.606",
+        "shadow": "none",
+        "source": "surface",
+        "tag": "A"
+      }
+    ],
+    "width": 1024,
+    "expectedWidth": 1024
+  },
+  {
+    "background": "rgba(0, 0, 0, 0)",
+    "headerClass": "scheme-a-chrome is-fixed is-overlay",
+    "headerHeight": 76,
+    "heroTop": 0,
+    "languageBackground": "rgb(63, 78, 66)",
+    "languageColor": "rgb(253, 252, 250)",
+    "nav": [
+      {
+        "color": "rgb(41, 46, 41)",
+        "label": "FLASH CAST SDN. BHD.",
+        "mode": "color",
+        "ratio": "8.189",
+        "shadow": "none",
+        "source": "image"
+      }
+    ],
+    "overflow": false,
+    "path": "/en",
+    "pseudo": "none",
+    "readingPanels": 0,
+    "spacer": false,
+    "texts": [
+      {
+        "color": "rgb(41, 46, 41)",
+        "mode": "color",
+        "ratio": "8.189",
+        "shadow": "none",
+        "source": "image",
+        "tag": "A"
+      },
+      {
+        "color": "rgb(98, 106, 96)",
+        "mode": "color",
+        "ratio": "5.462",
+        "shadow": "none",
+        "source": "surface",
+        "tag": "A"
+      },
+      {
+        "color": "rgb(253, 252, 250)",
+        "mode": "color",
+        "ratio": "8.606",
+        "shadow": "none",
+        "source": "surface",
+        "tag": "A"
+      },
+      {
+        "color": "rgb(63, 78, 66)",
+        "mode": "color",
+        "ratio": "8.606",
+        "shadow": "none",
+        "source": "surface",
+        "tag": "SPAN"
+      },
+      {
+        "color": "rgb(41, 46, 41)",
+        "mode": "color",
+        "ratio": "8.637",
+        "shadow": "none",
+        "source": "image",
+        "tag": "SPAN"
+      },
+      {
+        "color": "rgb(41, 46, 41)",
+        "mode": "color",
+        "ratio": "8.781",
+        "shadow": "none",
+        "source": "image",
+        "tag": "SPAN"
+      },
+      {
+        "color": "rgb(41, 46, 41)",
+        "mode": "color",
+        "ratio": "8.876",
+        "shadow": "none",
+        "source": "image",
+        "tag": "P"
+      },
+      {
+        "color": "rgb(253, 252, 250)",
+        "mode": "color",
+        "ratio": "8.606",
+        "shadow": "none",
+        "source": "surface",
+        "tag": "A"
+      },
+      {
+        "color": "rgb(63, 78, 66)",
+        "mode": "color",
+        "ratio": "8.606",
+        "shadow": "none",
+        "source": "surface",
+        "tag": "A"
+      },
+      {
+        "color": "rgb(253, 252, 250)",
+        "mode": "color",
+        "ratio": "8.606",
+        "shadow": "none",
+        "source": "surface",
+        "tag": "A"
+      }
+    ],
+    "width": 1024,
+    "expectedWidth": 1024
+  },
+  {
+    "background": "rgba(0, 0, 0, 0)",
+    "headerClass": "scheme-a-chrome is-fixed is-overlay",
+    "headerHeight": 76,
+    "heroTop": 0,
+    "languageBackground": "rgb(63, 78, 66)",
+    "languageColor": "rgb(253, 252, 250)",
+    "nav": [
+      {
+        "color": "rgb(0, 0, 0)",
+        "label": "FLASH CAST SDN. BHD.",
+        "mode": "outline",
+        "ratio": "3.826",
+        "shadow": "rgb(255, 255, 255) -1px -1px 0px, rgb(255, 255, 255) 0px -1px 0px, rgb(255, 255, 255) 1px -1px 0px, rgb(255, 255, 255) -1px 0px 0px, rgb(255, 255, 255) 1px 0px 0px, rgb(255, 255, 255) -1px 1px 0px, rgb(255, 255, 255) 0px 1px 0px, rgb(255, 255, 255) 1px 1px 0px",
+        "source": "image"
+      }
+    ],
+    "overflow": false,
+    "path": "/zh/services/surface-repair",
+    "pseudo": "none",
+    "readingPanels": 0,
+    "spacer": false,
+    "texts": [
+      {
+        "color": "rgb(0, 0, 0)",
+        "mode": "outline",
+        "ratio": "3.826",
+        "shadow": "rgb(255, 255, 255) -1px -1px 0px, rgb(255, 255, 255) 0px -1px 0px, rgb(255, 255, 255) 1px -1px 0px, rgb(255, 255, 255) -1px 0px 0px, rgb(255, 255, 255) 1px 0px 0px, rgb(255, 255, 255) -1px 1px 0px, rgb(255, 255, 255) 0px 1px 0px, rgb(255, 255, 255) 1px 1px 0px",
+        "source": "image",
+        "tag": "A"
+      },
+      {
+        "color": "rgb(253, 252, 250)",
+        "mode": "color",
+        "ratio": "8.606",
+        "shadow": "none",
+        "source": "surface",
+        "tag": "A"
+      },
+      {
+        "color": "rgb(98, 106, 96)",
+        "mode": "color",
+        "ratio": "5.462",
+        "shadow": "none",
+        "source": "surface",
+        "tag": "A"
+      },
+      {
+        "color": "rgb(63, 78, 66)",
+        "mode": "color",
+        "ratio": "8.606",
+        "shadow": "none",
+        "source": "surface",
+        "tag": "SPAN"
+      },
+      {
+        "color": "rgb(0, 0, 0)",
+        "mode": "outline",
+        "ratio": "1.677",
+        "shadow": "rgb(255, 255, 255) -1px -1px 0px, rgb(255, 255, 255) 0px -1px 0px, rgb(255, 255, 255) 1px -1px 0px, rgb(255, 255, 255) -1px 0px 0px, rgb(255, 255, 255) 1px 0px 0px, rgb(255, 255, 255) -1px 1px 0px, rgb(255, 255, 255) 0px 1px 0px, rgb(255, 255, 255) 1px 1px 0px",
+        "source": "image",
+        "tag": "P"
+      },
+      {
+        "color": "rgb(255, 255, 255)",
+        "mode": "outline",
+        "ratio": "2.317",
+        "shadow": "rgb(0, 0, 0) -1px -1px 0px, rgb(0, 0, 0) 0px -1px 0px, rgb(0, 0, 0) 1px -1px 0px, rgb(0, 0, 0) -1px 0px 0px, rgb(0, 0, 0) 1px 0px 0px, rgb(0, 0, 0) -1px 1px 0px, rgb(0, 0, 0) 0px 1px 0px, rgb(0, 0, 0) 1px 1px 0px",
+        "source": "image",
+        "tag": "SPAN"
+      },
+      {
+        "color": "rgb(255, 255, 255)",
+        "mode": "outline",
+        "ratio": "2.781",
+        "shadow": "rgb(0, 0, 0) -1px -1px 0px, rgb(0, 0, 0) 0px -1px 0px, rgb(0, 0, 0) 1px -1px 0px, rgb(0, 0, 0) -1px 0px 0px, rgb(0, 0, 0) 1px 0px 0px, rgb(0, 0, 0) -1px 1px 0px, rgb(0, 0, 0) 0px 1px 0px, rgb(0, 0, 0) 1px 1px 0px",
+        "source": "image",
+        "tag": "SPAN"
+      },
+      {
+        "color": "rgb(0, 0, 0)",
+        "mode": "outline",
+        "ratio": "2.973",
+        "shadow": "rgb(255, 255, 255) -1px -1px 0px, rgb(255, 255, 255) 0px -1px 0px, rgb(255, 255, 255) 1px -1px 0px, rgb(255, 255, 255) -1px 0px 0px, rgb(255, 255, 255) 1px 0px 0px, rgb(255, 255, 255) -1px 1px 0px, rgb(255, 255, 255) 0px 1px 0px, rgb(255, 255, 255) 1px 1px 0px",
+        "source": "image",
+        "tag": "P"
+      },
+      {
+        "color": "rgb(253, 252, 250)",
+        "mode": "color",
+        "ratio": "8.606",
+        "shadow": "none",
+        "source": "surface",
+        "tag": "A"
+      },
+      {
+        "color": "rgb(0, 0, 0)",
+        "mode": "outline",
+        "ratio": "3.243",
+        "shadow": "rgb(255, 255, 255) -1px -1px 0px, rgb(255, 255, 255) 0px -1px 0px, rgb(255, 255, 255) 1px -1px 0px, rgb(255, 255, 255) -1px 0px 0px, rgb(255, 255, 255) 1px 0px 0px, rgb(255, 255, 255) -1px 1px 0px, rgb(255, 255, 255) 0px 1px 0px, rgb(255, 255, 255) 1px 1px 0px",
+        "source": "image",
+        "tag": "A"
+      },
+      {
+        "color": "rgb(41, 46, 41)",
+        "mode": "color",
+        "ratio": "4.579",
+        "shadow": "none",
+        "source": "image",
+        "tag": "SPAN"
+      },
+      {
+        "color": "rgb(253, 252, 250)",
+        "mode": "color",
+        "ratio": "8.606",
+        "shadow": "none",
+        "source": "surface",
+        "tag": "A"
+      }
+    ],
+    "width": 1024,
+    "expectedWidth": 1024
+  },
+  {
+    "background": "rgba(0, 0, 0, 0)",
+    "headerClass": "scheme-a-chrome is-fixed is-overlay",
+    "headerHeight": 76,
+    "heroTop": 0,
+    "languageBackground": "rgb(63, 78, 66)",
+    "languageColor": "rgb(253, 252, 250)",
+    "nav": [
+      {
+        "color": "rgb(0, 0, 0)",
+        "label": "FLASH CAST SDN. BHD.",
+        "mode": "outline",
+        "ratio": "3.826",
+        "shadow": "rgb(255, 255, 255) -1px -1px 0px, rgb(255, 255, 255) 0px -1px 0px, rgb(255, 255, 255) 1px -1px 0px, rgb(255, 255, 255) -1px 0px 0px, rgb(255, 255, 255) 1px 0px 0px, rgb(255, 255, 255) -1px 1px 0px, rgb(255, 255, 255) 0px 1px 0px, rgb(255, 255, 255) 1px 1px 0px",
+        "source": "image"
+      }
+    ],
+    "overflow": false,
+    "path": "/en/services/surface-repair",
+    "pseudo": "none",
+    "readingPanels": 0,
+    "spacer": false,
+    "texts": [
+      {
+        "color": "rgb(0, 0, 0)",
+        "mode": "outline",
+        "ratio": "3.826",
+        "shadow": "rgb(255, 255, 255) -1px -1px 0px, rgb(255, 255, 255) 0px -1px 0px, rgb(255, 255, 255) 1px -1px 0px, rgb(255, 255, 255) -1px 0px 0px, rgb(255, 255, 255) 1px 0px 0px, rgb(255, 255, 255) -1px 1px 0px, rgb(255, 255, 255) 0px 1px 0px, rgb(255, 255, 255) 1px 1px 0px",
+        "source": "image",
+        "tag": "A"
+      },
+      {
+        "color": "rgb(98, 106, 96)",
+        "mode": "color",
+        "ratio": "5.462",
+        "shadow": "none",
+        "source": "surface",
+        "tag": "A"
+      },
+      {
+        "color": "rgb(253, 252, 250)",
+        "mode": "color",
+        "ratio": "8.606",
+        "shadow": "none",
+        "source": "surface",
+        "tag": "A"
+      },
+      {
+        "color": "rgb(63, 78, 66)",
+        "mode": "color",
+        "ratio": "8.606",
+        "shadow": "none",
+        "source": "surface",
+        "tag": "SPAN"
+      },
+      {
+        "color": "rgb(0, 0, 0)",
+        "mode": "outline",
+        "ratio": "1.691",
+        "shadow": "rgb(255, 255, 255) -1px -1px 0px, rgb(255, 255, 255) 0px -1px 0px, rgb(255, 255, 255) 1px -1px 0px, rgb(255, 255, 255) -1px 0px 0px, rgb(255, 255, 255) 1px 0px 0px, rgb(255, 255, 255) -1px 1px 0px, rgb(255, 255, 255) 0px 1px 0px, rgb(255, 255, 255) 1px 1px 0px",
+        "source": "image",
+        "tag": "P"
+      },
+      {
+        "color": "rgb(255, 255, 255)",
+        "mode": "outline",
+        "ratio": "1.584",
+        "shadow": "rgb(0, 0, 0) -1px -1px 0px, rgb(0, 0, 0) 0px -1px 0px, rgb(0, 0, 0) 1px -1px 0px, rgb(0, 0, 0) -1px 0px 0px, rgb(0, 0, 0) 1px 0px 0px, rgb(0, 0, 0) -1px 1px 0px, rgb(0, 0, 0) 0px 1px 0px, rgb(0, 0, 0) 1px 1px 0px",
+        "source": "image",
+        "tag": "SPAN"
+      },
+      {
+        "color": "rgb(255, 255, 255)",
+        "mode": "outline",
+        "ratio": "1.850",
+        "shadow": "rgb(0, 0, 0) -1px -1px 0px, rgb(0, 0, 0) 0px -1px 0px, rgb(0, 0, 0) 1px -1px 0px, rgb(0, 0, 0) -1px 0px 0px, rgb(0, 0, 0) 1px 0px 0px, rgb(0, 0, 0) -1px 1px 0px, rgb(0, 0, 0) 0px 1px 0px, rgb(0, 0, 0) 1px 1px 0px",
+        "source": "image",
+        "tag": "SPAN"
+      },
+      {
+        "color": "rgb(0, 0, 0)",
+        "mode": "outline",
+        "ratio": "2.613",
+        "shadow": "rgb(255, 255, 255) -1px -1px 0px, rgb(255, 255, 255) 0px -1px 0px, rgb(255, 255, 255) 1px -1px 0px, rgb(255, 255, 255) -1px 0px 0px, rgb(255, 255, 255) 1px 0px 0px, rgb(255, 255, 255) -1px 1px 0px, rgb(255, 255, 255) 0px 1px 0px, rgb(255, 255, 255) 1px 1px 0px",
+        "source": "image",
+        "tag": "P"
+      },
+      {
+        "color": "rgb(253, 252, 250)",
+        "mode": "color",
+        "ratio": "8.606",
+        "shadow": "none",
+        "source": "surface",
+        "tag": "A"
+      },
+      {
+        "color": "rgb(255, 255, 255)",
+        "mode": "outline",
+        "ratio": "4.355",
+        "shadow": "rgb(0, 0, 0) -1px -1px 0px, rgb(0, 0, 0) 0px -1px 0px, rgb(0, 0, 0) 1px -1px 0px, rgb(0, 0, 0) -1px 0px 0px, rgb(0, 0, 0) 1px 0px 0px, rgb(0, 0, 0) -1px 1px 0px, rgb(0, 0, 0) 0px 1px 0px, rgb(0, 0, 0) 1px 1px 0px",
+        "source": "image",
+        "tag": "A"
+      },
+      {
+        "color": "rgb(41, 46, 41)",
+        "mode": "color",
+        "ratio": "4.579",
+        "shadow": "none",
+        "source": "image",
+        "tag": "SPAN"
+      },
+      {
+        "color": "rgb(253, 252, 250)",
+        "mode": "color",
+        "ratio": "8.606",
+        "shadow": "none",
+        "source": "surface",
+        "tag": "A"
+      }
+    ],
+    "width": 1024,
+    "expectedWidth": 1024
+  },
+  {
+    "background": "rgba(0, 0, 0, 0)",
+    "headerClass": "scheme-a-chrome is-fixed is-overlay",
+    "headerHeight": 76,
+    "heroTop": 0,
+    "languageBackground": "rgb(63, 78, 66)",
+    "languageColor": "rgb(253, 252, 250)",
+    "nav": [
+      {
+        "color": "rgb(0, 0, 0)",
+        "label": "FLASH CAST SDN. BHD.",
+        "mode": "outline",
+        "ratio": "1.101",
+        "shadow": "rgb(255, 255, 255) -1px -1px 0px, rgb(255, 255, 255) 0px -1px 0px, rgb(255, 255, 255) 1px -1px 0px, rgb(255, 255, 255) -1px 0px 0px, rgb(255, 255, 255) 1px 0px 0px, rgb(255, 255, 255) -1px 1px 0px, rgb(255, 255, 255) 0px 1px 0px, rgb(255, 255, 255) 1px 1px 0px",
+        "source": "image"
+      },
+      {
+        "color": "rgb(255, 255, 255)",
+        "label": "首页",
+        "mode": "color",
+        "ratio": "4.761",
+        "shadow": "none",
+        "source": "image"
+      },
+      {
+        "color": "rgb(255, 255, 255)",
+        "label": "项目案例",
+        "mode": "outline",
+        "ratio": "4.289",
+        "shadow": "rgb(0, 0, 0) -1px -1px 0px, rgb(0, 0, 0) 0px -1px 0px, rgb(0, 0, 0) 1px -1px 0px, rgb(0, 0, 0) -1px 0px 0px, rgb(0, 0, 0) 1px 0px 0px, rgb(0, 0, 0) -1px 1px 0px, rgb(0, 0, 0) 0px 1px 0px, rgb(0, 0, 0) 1px 1px 0px",
+        "source": "image"
+      },
+      {
+        "color": "rgb(255, 255, 255)",
+        "label": "服务项目",
+        "mode": "color",
+        "ratio": "6.015",
+        "shadow": "none",
+        "source": "image"
+      },
+      {
+        "color": "rgb(255, 255, 255)",
+        "label": "室内设计",
+        "mode": "color",
+        "ratio": "6.637",
+        "shadow": "none",
+        "source": "image"
+      },
+      {
+        "color": "rgb(255, 255, 255)",
+        "label": "材料库",
+        "mode": "color",
+        "ratio": "5.634",
+        "shadow": "none",
+        "source": "image"
+      },
+      {
+        "color": "rgb(255, 255, 255)",
+        "label": "更多",
+        "mode": "color",
+        "ratio": "9.606",
+        "shadow": "none",
+        "source": "image"
+      }
+    ],
+    "overflow": false,
+    "path": "/zh/services/design",
+    "pseudo": "none",
+    "readingPanels": 0,
+    "spacer": false,
+    "texts": [
+      {
+        "color": "rgb(0, 0, 0)",
+        "mode": "outline",
+        "ratio": "1.101",
+        "shadow": "rgb(255, 255, 255) -1px -1px 0px, rgb(255, 255, 255) 0px -1px 0px, rgb(255, 255, 255) 1px -1px 0px, rgb(255, 255, 255) -1px 0px 0px, rgb(255, 255, 255) 1px 0px 0px, rgb(255, 255, 255) -1px 1px 0px, rgb(255, 255, 255) 0px 1px 0px, rgb(255, 255, 255) 1px 1px 0px",
+        "source": "image",
+        "tag": "A"
+      },
+      {
+        "color": "rgb(255, 255, 255)",
+        "mode": "color",
+        "ratio": "4.761",
+        "shadow": "none",
+        "source": "image",
+        "tag": "A"
+      },
+      {
+        "color": "rgb(255, 255, 255)",
+        "mode": "outline",
+        "ratio": "4.289",
+        "shadow": "rgb(0, 0, 0) -1px -1px 0px, rgb(0, 0, 0) 0px -1px 0px, rgb(0, 0, 0) 1px -1px 0px, rgb(0, 0, 0) -1px 0px 0px, rgb(0, 0, 0) 1px 0px 0px, rgb(0, 0, 0) -1px 1px 0px, rgb(0, 0, 0) 0px 1px 0px, rgb(0, 0, 0) 1px 1px 0px",
+        "source": "image",
+        "tag": "A"
+      },
+      {
+        "color": "rgb(255, 255, 255)",
+        "mode": "color",
+        "ratio": "6.015",
+        "shadow": "none",
+        "source": "image",
+        "tag": "A"
+      },
+      {
+        "color": "rgb(255, 255, 255)",
+        "mode": "color",
+        "ratio": "6.637",
+        "shadow": "none",
+        "source": "image",
+        "tag": "A"
+      },
+      {
+        "color": "rgb(255, 255, 255)",
+        "mode": "color",
+        "ratio": "5.634",
+        "shadow": "none",
+        "source": "image",
+        "tag": "A"
+      },
+      {
+        "color": "rgb(255, 255, 255)",
+        "mode": "color",
+        "ratio": "9.606",
+        "shadow": "none",
+        "source": "image",
+        "tag": "BUTTON"
+      },
+      {
+        "color": "rgb(253, 252, 250)",
+        "mode": "color",
+        "ratio": "8.606",
+        "shadow": "none",
+        "source": "surface",
+        "tag": "A"
+      },
+      {
+        "color": "rgb(253, 252, 250)",
+        "mode": "color",
+        "ratio": "8.606",
+        "shadow": "none",
+        "source": "surface",
+        "tag": "A"
+      },
+      {
+        "color": "rgb(98, 106, 96)",
+        "mode": "color",
+        "ratio": "5.462",
+        "shadow": "none",
+        "source": "surface",
+        "tag": "A"
+      },
+      {
+        "color": "rgb(255, 255, 255)",
+        "mode": "outline",
+        "ratio": "1.772",
+        "shadow": "rgb(0, 0, 0) -1px -1px 0px, rgb(0, 0, 0) 0px -1px 0px, rgb(0, 0, 0) 1px -1px 0px, rgb(0, 0, 0) -1px 0px 0px, rgb(0, 0, 0) 1px 0px 0px, rgb(0, 0, 0) -1px 1px 0px, rgb(0, 0, 0) 0px 1px 0px, rgb(0, 0, 0) 1px 1px 0px",
+        "source": "image",
+        "tag": "P"
+      },
+      {
+        "color": "rgb(255, 255, 255)",
+        "mode": "outline",
+        "ratio": "1.505",
+        "shadow": "rgb(0, 0, 0) -1px -1px 0px, rgb(0, 0, 0) 0px -1px 0px, rgb(0, 0, 0) 1px -1px 0px, rgb(0, 0, 0) -1px 0px 0px, rgb(0, 0, 0) 1px 0px 0px, rgb(0, 0, 0) -1px 1px 0px, rgb(0, 0, 0) 0px 1px 0px, rgb(0, 0, 0) 1px 1px 0px",
+        "source": "image",
+        "tag": "SPAN"
+      },
+      {
+        "color": "rgb(255, 255, 255)",
+        "mode": "outline",
+        "ratio": "1.728",
+        "shadow": "rgb(0, 0, 0) -1px -1px 0px, rgb(0, 0, 0) 0px -1px 0px, rgb(0, 0, 0) 1px -1px 0px, rgb(0, 0, 0) -1px 0px 0px, rgb(0, 0, 0) 1px 0px 0px, rgb(0, 0, 0) -1px 1px 0px, rgb(0, 0, 0) 0px 1px 0px, rgb(0, 0, 0) 1px 1px 0px",
+        "source": "image",
+        "tag": "P"
+      },
+      {
+        "color": "rgb(253, 252, 250)",
+        "mode": "color",
+        "ratio": "8.606",
+        "shadow": "none",
+        "source": "surface",
+        "tag": "A"
+      },
+      {
+        "color": "rgb(255, 255, 255)",
+        "mode": "outline",
+        "ratio": "1.510",
+        "shadow": "rgb(0, 0, 0) -1px -1px 0px, rgb(0, 0, 0) 0px -1px 0px, rgb(0, 0, 0) 1px -1px 0px, rgb(0, 0, 0) -1px 0px 0px, rgb(0, 0, 0) 1px 0px 0px, rgb(0, 0, 0) -1px 1px 0px, rgb(0, 0, 0) 0px 1px 0px, rgb(0, 0, 0) 1px 1px 0px",
+        "source": "image",
+        "tag": "A"
+      },
+      {
+        "color": "rgb(41, 46, 41)",
+        "mode": "color",
+        "ratio": "8.119",
+        "shadow": "none",
+        "source": "image",
+        "tag": "A"
+      },
+      {
+        "color": "rgb(253, 252, 250)",
+        "mode": "color",
+        "ratio": "8.606",
+        "shadow": "none",
+        "source": "surface",
+        "tag": "A"
+      }
+    ],
+    "width": 1440,
+    "expectedWidth": 1440
+  },
+  {
+    "background": "rgba(0, 0, 0, 0)",
+    "headerClass": "scheme-a-chrome is-fixed is-overlay",
+    "headerHeight": 76,
+    "heroTop": 0,
+    "languageBackground": "rgb(63, 78, 66)",
+    "languageColor": "rgb(253, 252, 250)",
+    "nav": [
+      {
+        "color": "rgb(0, 0, 0)",
+        "label": "FLASH CAST SDN. BHD.",
+        "mode": "outline",
+        "ratio": "1.101",
+        "shadow": "rgb(255, 255, 255) -1px -1px 0px, rgb(255, 255, 255) 0px -1px 0px, rgb(255, 255, 255) 1px -1px 0px, rgb(255, 255, 255) -1px 0px 0px, rgb(255, 255, 255) 1px 0px 0px, rgb(255, 255, 255) -1px 1px 0px, rgb(255, 255, 255) 0px 1px 0px, rgb(255, 255, 255) 1px 1px 0px",
+        "source": "image"
+      },
+      {
+        "color": "rgb(255, 255, 255)",
+        "label": "Home",
+        "mode": "color",
+        "ratio": "5.798",
+        "shadow": "none",
+        "source": "image"
+      },
+      {
+        "color": "rgb(0, 0, 0)",
+        "label": "Projects",
+        "mode": "outline",
+        "ratio": "4.225",
+        "shadow": "rgb(255, 255, 255) -1px -1px 0px, rgb(255, 255, 255) 0px -1px 0px, rgb(255, 255, 255) 1px -1px 0px, rgb(255, 255, 255) -1px 0px 0px, rgb(255, 255, 255) 1px 0px 0px, rgb(255, 255, 255) -1px 1px 0px, rgb(255, 255, 255) 0px 1px 0px, rgb(255, 255, 255) 1px 1px 0px",
+        "source": "image"
+      },
+      {
+        "color": "rgb(255, 255, 255)",
+        "label": "Services",
+        "mode": "color",
+        "ratio": "15.894",
+        "shadow": "none",
+        "source": "image"
+      },
+      {
+        "color": "rgb(255, 255, 255)",
+        "label": "Interior Design",
+        "mode": "color",
+        "ratio": "5.934",
+        "shadow": "none",
+        "source": "image"
+      },
+      {
+        "color": "rgb(255, 255, 255)",
+        "label": "Materials",
+        "mode": "color",
+        "ratio": "4.979",
+        "shadow": "none",
+        "source": "image"
+      },
+      {
+        "color": "rgb(255, 255, 255)",
+        "label": "More",
+        "mode": "color",
+        "ratio": "14.295",
+        "shadow": "none",
+        "source": "image"
+      }
+    ],
+    "overflow": false,
+    "path": "/en/services/design",
+    "pseudo": "none",
+    "readingPanels": 0,
+    "spacer": false,
+    "texts": [
+      {
+        "color": "rgb(0, 0, 0)",
+        "mode": "outline",
+        "ratio": "1.101",
+        "shadow": "rgb(255, 255, 255) -1px -1px 0px, rgb(255, 255, 255) 0px -1px 0px, rgb(255, 255, 255) 1px -1px 0px, rgb(255, 255, 255) -1px 0px 0px, rgb(255, 255, 255) 1px 0px 0px, rgb(255, 255, 255) -1px 1px 0px, rgb(255, 255, 255) 0px 1px 0px, rgb(255, 255, 255) 1px 1px 0px",
+        "source": "image",
+        "tag": "A"
+      },
+      {
+        "color": "rgb(255, 255, 255)",
+        "mode": "color",
+        "ratio": "5.798",
+        "shadow": "none",
+        "source": "image",
+        "tag": "A"
+      },
+      {
+        "color": "rgb(0, 0, 0)",
+        "mode": "outline",
+        "ratio": "4.225",
+        "shadow": "rgb(255, 255, 255) -1px -1px 0px, rgb(255, 255, 255) 0px -1px 0px, rgb(255, 255, 255) 1px -1px 0px, rgb(255, 255, 255) -1px 0px 0px, rgb(255, 255, 255) 1px 0px 0px, rgb(255, 255, 255) -1px 1px 0px, rgb(255, 255, 255) 0px 1px 0px, rgb(255, 255, 255) 1px 1px 0px",
+        "source": "image",
+        "tag": "A"
+      },
+      {
+        "color": "rgb(255, 255, 255)",
+        "mode": "color",
+        "ratio": "15.894",
+        "shadow": "none",
+        "source": "image",
+        "tag": "A"
+      },
+      {
+        "color": "rgb(255, 255, 255)",
+        "mode": "color",
+        "ratio": "5.934",
+        "shadow": "none",
+        "source": "image",
+        "tag": "A"
+      },
+      {
+        "color": "rgb(255, 255, 255)",
+        "mode": "color",
+        "ratio": "4.979",
+        "shadow": "none",
+        "source": "image",
+        "tag": "A"
+      },
+      {
+        "color": "rgb(255, 255, 255)",
+        "mode": "color",
+        "ratio": "14.295",
+        "shadow": "none",
+        "source": "image",
+        "tag": "BUTTON"
+      },
+      {
+        "color": "rgb(253, 252, 250)",
+        "mode": "color",
+        "ratio": "8.606",
+        "shadow": "none",
+        "source": "surface",
+        "tag": "A"
+      },
+      {
+        "color": "rgb(98, 106, 96)",
+        "mode": "color",
+        "ratio": "5.462",
+        "shadow": "none",
+        "source": "surface",
+        "tag": "A"
+      },
+      {
+        "color": "rgb(253, 252, 250)",
+        "mode": "color",
+        "ratio": "8.606",
+        "shadow": "none",
+        "source": "surface",
+        "tag": "A"
+      },
+      {
+        "color": "rgb(0, 0, 0)",
+        "mode": "outline",
+        "ratio": "1.057",
+        "shadow": "rgb(255, 255, 255) -1px -1px 0px, rgb(255, 255, 255) 0px -1px 0px, rgb(255, 255, 255) 1px -1px 0px, rgb(255, 255, 255) -1px 0px 0px, rgb(255, 255, 255) 1px 0px 0px, rgb(255, 255, 255) -1px 1px 0px, rgb(255, 255, 255) 0px 1px 0px, rgb(255, 255, 255) 1px 1px 0px",
+        "source": "image",
+        "tag": "P"
+      },
+      {
+        "color": "rgb(255, 255, 255)",
+        "mode": "outline",
+        "ratio": "1.526",
+        "shadow": "rgb(0, 0, 0) -1px -1px 0px, rgb(0, 0, 0) 0px -1px 0px, rgb(0, 0, 0) 1px -1px 0px, rgb(0, 0, 0) -1px 0px 0px, rgb(0, 0, 0) 1px 0px 0px, rgb(0, 0, 0) -1px 1px 0px, rgb(0, 0, 0) 0px 1px 0px, rgb(0, 0, 0) 1px 1px 0px",
+        "source": "image",
+        "tag": "SPAN"
+      },
+      {
+        "color": "rgb(255, 255, 255)",
+        "mode": "outline",
+        "ratio": "1.574",
+        "shadow": "rgb(0, 0, 0) -1px -1px 0px, rgb(0, 0, 0) 0px -1px 0px, rgb(0, 0, 0) 1px -1px 0px, rgb(0, 0, 0) -1px 0px 0px, rgb(0, 0, 0) 1px 0px 0px, rgb(0, 0, 0) -1px 1px 0px, rgb(0, 0, 0) 0px 1px 0px, rgb(0, 0, 0) 1px 1px 0px",
+        "source": "image",
+        "tag": "P"
+      },
+      {
+        "color": "rgb(253, 252, 250)",
+        "mode": "color",
+        "ratio": "8.606",
+        "shadow": "none",
+        "source": "surface",
+        "tag": "A"
+      },
+      {
+        "color": "rgb(255, 255, 255)",
+        "mode": "color",
+        "ratio": "10.880",
+        "shadow": "none",
+        "source": "image",
+        "tag": "A"
+      },
+      {
+        "color": "rgb(41, 46, 41)",
+        "mode": "color",
+        "ratio": "8.119",
+        "shadow": "none",
+        "source": "image",
+        "tag": "A"
+      },
+      {
+        "color": "rgb(253, 252, 250)",
+        "mode": "color",
+        "ratio": "8.606",
+        "shadow": "none",
+        "source": "surface",
+        "tag": "A"
+      }
+    ],
+    "width": 1440,
+    "expectedWidth": 1440
+  },
+  {
+    "background": "rgba(0, 0, 0, 0)",
+    "headerClass": "scheme-a-chrome is-fixed is-overlay",
+    "headerHeight": 76,
+    "heroTop": 0,
+    "languageBackground": "rgb(63, 78, 66)",
+    "languageColor": "rgb(253, 252, 250)",
+    "nav": [
+      {
+        "color": "rgb(41, 46, 41)",
+        "label": "FLASH CAST SDN. BHD.",
+        "mode": "color",
+        "ratio": "8.054",
+        "shadow": "none",
+        "source": "image"
+      },
+      {
+        "color": "rgb(41, 46, 41)",
+        "label": "首页",
+        "mode": "color",
+        "ratio": "8.283",
+        "shadow": "none",
+        "source": "image"
+      },
+      {
+        "color": "rgb(41, 46, 41)",
+        "label": "项目案例",
+        "mode": "color",
+        "ratio": "8.103",
+        "shadow": "none",
+        "source": "image"
+      },
+      {
+        "color": "rgb(41, 46, 41)",
+        "label": "服务项目",
+        "mode": "color",
+        "ratio": "7.970",
+        "shadow": "none",
+        "source": "image"
+      },
+      {
+        "color": "rgb(41, 46, 41)",
+        "label": "室内设计",
+        "mode": "color",
+        "ratio": "7.771",
+        "shadow": "none",
+        "source": "image"
+      },
+      {
+        "color": "rgb(41, 46, 41)",
+        "label": "材料库",
+        "mode": "color",
+        "ratio": "7.536",
+        "shadow": "none",
+        "source": "image"
+      },
+      {
+        "color": "rgb(41, 46, 41)",
+        "label": "更多",
+        "mode": "color",
+        "ratio": "7.405",
+        "shadow": "none",
+        "source": "image"
+      }
+    ],
+    "overflow": false,
+    "path": "/zh",
+    "pseudo": "none",
+    "readingPanels": 0,
+    "spacer": false,
+    "texts": [
+      {
+        "color": "rgb(41, 46, 41)",
+        "mode": "color",
+        "ratio": "8.054",
+        "shadow": "none",
+        "source": "image",
+        "tag": "A"
+      },
+      {
+        "color": "rgb(41, 46, 41)",
+        "mode": "color",
+        "ratio": "8.283",
+        "shadow": "none",
+        "source": "image",
+        "tag": "A"
+      },
+      {
+        "color": "rgb(41, 46, 41)",
+        "mode": "color",
+        "ratio": "8.103",
+        "shadow": "none",
+        "source": "image",
+        "tag": "A"
+      },
+      {
+        "color": "rgb(41, 46, 41)",
+        "mode": "color",
+        "ratio": "7.970",
+        "shadow": "none",
+        "source": "image",
+        "tag": "A"
+      },
+      {
+        "color": "rgb(41, 46, 41)",
+        "mode": "color",
+        "ratio": "7.771",
+        "shadow": "none",
+        "source": "image",
+        "tag": "A"
+      },
+      {
+        "color": "rgb(41, 46, 41)",
+        "mode": "color",
+        "ratio": "7.536",
+        "shadow": "none",
+        "source": "image",
+        "tag": "A"
+      },
+      {
+        "color": "rgb(41, 46, 41)",
+        "mode": "color",
+        "ratio": "7.405",
+        "shadow": "none",
+        "source": "image",
+        "tag": "BUTTON"
+      },
+      {
+        "color": "rgb(253, 252, 250)",
+        "mode": "color",
+        "ratio": "8.606",
+        "shadow": "none",
+        "source": "surface",
+        "tag": "A"
+      },
+      {
+        "color": "rgb(253, 252, 250)",
+        "mode": "color",
+        "ratio": "8.606",
+        "shadow": "none",
+        "source": "surface",
+        "tag": "A"
+      },
+      {
+        "color": "rgb(98, 106, 96)",
+        "mode": "color",
+        "ratio": "5.462",
+        "shadow": "none",
+        "source": "surface",
+        "tag": "A"
+      },
+      {
+        "color": "rgb(41, 46, 41)",
+        "mode": "color",
+        "ratio": "8.776",
+        "shadow": "none",
+        "source": "image",
+        "tag": "SPAN"
+      },
+      {
+        "color": "rgb(41, 46, 41)",
+        "mode": "color",
+        "ratio": "8.725",
+        "shadow": "none",
+        "source": "image",
+        "tag": "SPAN"
+      },
+      {
+        "color": "rgb(41, 46, 41)",
+        "mode": "color",
+        "ratio": "8.876",
+        "shadow": "none",
+        "source": "image",
+        "tag": "P"
+      },
+      {
+        "color": "rgb(253, 252, 250)",
+        "mode": "color",
+        "ratio": "8.606",
+        "shadow": "none",
+        "source": "surface",
+        "tag": "A"
+      },
+      {
+        "color": "rgb(63, 78, 66)",
+        "mode": "color",
+        "ratio": "8.606",
+        "shadow": "none",
+        "source": "surface",
+        "tag": "A"
+      },
+      {
+        "color": "rgb(253, 252, 250)",
+        "mode": "color",
+        "ratio": "8.606",
+        "shadow": "none",
+        "source": "surface",
+        "tag": "A"
+      }
+    ],
+    "width": 1440,
+    "expectedWidth": 1440
+  },
+  {
+    "background": "rgba(0, 0, 0, 0)",
+    "headerClass": "scheme-a-chrome is-fixed is-overlay",
+    "headerHeight": 76,
+    "heroTop": 0,
+    "languageBackground": "rgb(63, 78, 66)",
+    "languageColor": "rgb(253, 252, 250)",
+    "nav": [
+      {
+        "color": "rgb(41, 46, 41)",
+        "label": "FLASH CAST SDN. BHD.",
+        "mode": "color",
+        "ratio": "8.054",
+        "shadow": "none",
+        "source": "image"
+      },
+      {
+        "color": "rgb(41, 46, 41)",
+        "label": "Home",
+        "mode": "color",
+        "ratio": "8.198",
+        "shadow": "none",
+        "source": "image"
+      },
+      {
+        "color": "rgb(41, 46, 41)",
+        "label": "Projects",
+        "mode": "color",
+        "ratio": "8.113",
+        "shadow": "none",
+        "source": "image"
+      },
+      {
+        "color": "rgb(41, 46, 41)",
+        "label": "Services",
+        "mode": "color",
+        "ratio": "7.970",
+        "shadow": "none",
+        "source": "image"
+      },
+      {
+        "color": "rgb(41, 46, 41)",
+        "label": "Interior Design",
+        "mode": "color",
+        "ratio": "7.771",
+        "shadow": "none",
+        "source": "image"
+      },
+      {
+        "color": "rgb(41, 46, 41)",
+        "label": "Materials",
+        "mode": "color",
+        "ratio": "7.617",
+        "shadow": "none",
+        "source": "image"
+      },
+      {
+        "color": "rgb(41, 46, 41)",
+        "label": "More",
+        "mode": "color",
+        "ratio": "7.303",
+        "shadow": "none",
+        "source": "image"
+      }
+    ],
+    "overflow": false,
+    "path": "/en",
+    "pseudo": "none",
+    "readingPanels": 0,
+    "spacer": false,
+    "texts": [
+      {
+        "color": "rgb(41, 46, 41)",
+        "mode": "color",
+        "ratio": "8.054",
+        "shadow": "none",
+        "source": "image",
+        "tag": "A"
+      },
+      {
+        "color": "rgb(41, 46, 41)",
+        "mode": "color",
+        "ratio": "8.198",
+        "shadow": "none",
+        "source": "image",
+        "tag": "A"
+      },
+      {
+        "color": "rgb(41, 46, 41)",
+        "mode": "color",
+        "ratio": "8.113",
+        "shadow": "none",
+        "source": "image",
+        "tag": "A"
+      },
+      {
+        "color": "rgb(41, 46, 41)",
+        "mode": "color",
+        "ratio": "7.970",
+        "shadow": "none",
+        "source": "image",
+        "tag": "A"
+      },
+      {
+        "color": "rgb(41, 46, 41)",
+        "mode": "color",
+        "ratio": "7.771",
+        "shadow": "none",
+        "source": "image",
+        "tag": "A"
+      },
+      {
+        "color": "rgb(41, 46, 41)",
+        "mode": "color",
+        "ratio": "7.617",
+        "shadow": "none",
+        "source": "image",
+        "tag": "A"
+      },
+      {
+        "color": "rgb(41, 46, 41)",
+        "mode": "color",
+        "ratio": "7.303",
+        "shadow": "none",
+        "source": "image",
+        "tag": "BUTTON"
+      },
+      {
+        "color": "rgb(253, 252, 250)",
+        "mode": "color",
+        "ratio": "8.606",
+        "shadow": "none",
+        "source": "surface",
+        "tag": "A"
+      },
+      {
+        "color": "rgb(98, 106, 96)",
+        "mode": "color",
+        "ratio": "5.462",
+        "shadow": "none",
+        "source": "surface",
+        "tag": "A"
+      },
+      {
+        "color": "rgb(253, 252, 250)",
+        "mode": "color",
+        "ratio": "8.606",
+        "shadow": "none",
+        "source": "surface",
+        "tag": "A"
+      },
+      {
+        "color": "rgb(41, 46, 41)",
+        "mode": "color",
+        "ratio": "8.637",
+        "shadow": "none",
+        "source": "image",
+        "tag": "SPAN"
+      },
+      {
+        "color": "rgb(41, 46, 41)",
+        "mode": "color",
+        "ratio": "8.843",
+        "shadow": "none",
+        "source": "image",
+        "tag": "SPAN"
+      },
+      {
+        "color": "rgb(41, 46, 41)",
+        "mode": "color",
+        "ratio": "8.787",
+        "shadow": "none",
+        "source": "image",
+        "tag": "P"
+      },
+      {
+        "color": "rgb(253, 252, 250)",
+        "mode": "color",
+        "ratio": "8.606",
+        "shadow": "none",
+        "source": "surface",
+        "tag": "A"
+      },
+      {
+        "color": "rgb(63, 78, 66)",
+        "mode": "color",
+        "ratio": "8.606",
+        "shadow": "none",
+        "source": "surface",
+        "tag": "A"
+      },
+      {
+        "color": "rgb(253, 252, 250)",
+        "mode": "color",
+        "ratio": "8.606",
+        "shadow": "none",
+        "source": "surface",
+        "tag": "A"
+      }
+    ],
+    "width": 1440,
+    "expectedWidth": 1440
+  },
+  {
+    "background": "rgba(0, 0, 0, 0)",
+    "headerClass": "scheme-a-chrome is-fixed is-overlay",
+    "headerHeight": 76,
+    "heroTop": 0,
+    "languageBackground": "rgb(63, 78, 66)",
+    "languageColor": "rgb(253, 252, 250)",
+    "nav": [
+      {
+        "color": "rgb(0, 0, 0)",
+        "label": "FLASH CAST SDN. BHD.",
+        "mode": "color",
+        "ratio": "5.239",
+        "shadow": "none",
+        "source": "image"
+      },
+      {
+        "color": "rgb(0, 0, 0)",
+        "label": "首页",
+        "mode": "color",
+        "ratio": "6.579",
+        "shadow": "none",
+        "source": "image"
+      },
+      {
+        "color": "rgb(0, 0, 0)",
+        "label": "项目案例",
+        "mode": "color",
+        "ratio": "5.771",
+        "shadow": "none",
+        "source": "image"
+      },
+      {
+        "color": "rgb(0, 0, 0)",
+        "label": "服务项目",
+        "mode": "color",
+        "ratio": "6.134",
+        "shadow": "none",
+        "source": "image"
+      },
+      {
+        "color": "rgb(255, 255, 255)",
+        "label": "室内设计",
+        "mode": "outline",
+        "ratio": "3.163",
+        "shadow": "rgb(0, 0, 0) -1px -1px 0px, rgb(0, 0, 0) 0px -1px 0px, rgb(0, 0, 0) 1px -1px 0px, rgb(0, 0, 0) -1px 0px 0px, rgb(0, 0, 0) 1px 0px 0px, rgb(0, 0, 0) -1px 1px 0px, rgb(0, 0, 0) 0px 1px 0px, rgb(0, 0, 0) 1px 1px 0px",
+        "source": "image"
+      },
+      {
+        "color": "rgb(255, 255, 255)",
+        "label": "材料库",
+        "mode": "outline",
+        "ratio": "3.830",
+        "shadow": "rgb(0, 0, 0) -1px -1px 0px, rgb(0, 0, 0) 0px -1px 0px, rgb(0, 0, 0) 1px -1px 0px, rgb(0, 0, 0) -1px 0px 0px, rgb(0, 0, 0) 1px 0px 0px, rgb(0, 0, 0) -1px 1px 0px, rgb(0, 0, 0) 0px 1px 0px, rgb(0, 0, 0) 1px 1px 0px",
+        "source": "image"
+      },
+      {
+        "color": "rgb(255, 255, 255)",
+        "label": "更多",
+        "mode": "color",
+        "ratio": "5.683",
+        "shadow": "none",
+        "source": "image"
+      }
+    ],
+    "overflow": false,
+    "path": "/zh/services/surface-repair",
+    "pseudo": "none",
+    "readingPanels": 0,
+    "spacer": false,
+    "texts": [
+      {
+        "color": "rgb(0, 0, 0)",
+        "mode": "color",
+        "ratio": "5.239",
+        "shadow": "none",
+        "source": "image",
+        "tag": "A"
+      },
+      {
+        "color": "rgb(0, 0, 0)",
+        "mode": "color",
+        "ratio": "6.579",
+        "shadow": "none",
+        "source": "image",
+        "tag": "A"
+      },
+      {
+        "color": "rgb(0, 0, 0)",
+        "mode": "color",
+        "ratio": "5.771",
+        "shadow": "none",
+        "source": "image",
+        "tag": "A"
+      },
+      {
+        "color": "rgb(0, 0, 0)",
+        "mode": "color",
+        "ratio": "6.134",
+        "shadow": "none",
+        "source": "image",
+        "tag": "A"
+      },
+      {
+        "color": "rgb(255, 255, 255)",
+        "mode": "outline",
+        "ratio": "3.163",
+        "shadow": "rgb(0, 0, 0) -1px -1px 0px, rgb(0, 0, 0) 0px -1px 0px, rgb(0, 0, 0) 1px -1px 0px, rgb(0, 0, 0) -1px 0px 0px, rgb(0, 0, 0) 1px 0px 0px, rgb(0, 0, 0) -1px 1px 0px, rgb(0, 0, 0) 0px 1px 0px, rgb(0, 0, 0) 1px 1px 0px",
+        "source": "image",
+        "tag": "A"
+      },
+      {
+        "color": "rgb(255, 255, 255)",
+        "mode": "outline",
+        "ratio": "3.830",
+        "shadow": "rgb(0, 0, 0) -1px -1px 0px, rgb(0, 0, 0) 0px -1px 0px, rgb(0, 0, 0) 1px -1px 0px, rgb(0, 0, 0) -1px 0px 0px, rgb(0, 0, 0) 1px 0px 0px, rgb(0, 0, 0) -1px 1px 0px, rgb(0, 0, 0) 0px 1px 0px, rgb(0, 0, 0) 1px 1px 0px",
+        "source": "image",
+        "tag": "A"
+      },
+      {
+        "color": "rgb(255, 255, 255)",
+        "mode": "color",
+        "ratio": "5.683",
+        "shadow": "none",
+        "source": "image",
+        "tag": "BUTTON"
+      },
+      {
+        "color": "rgb(253, 252, 250)",
+        "mode": "color",
+        "ratio": "8.606",
+        "shadow": "none",
+        "source": "surface",
+        "tag": "A"
+      },
+      {
+        "color": "rgb(253, 252, 250)",
+        "mode": "color",
+        "ratio": "8.606",
+        "shadow": "none",
+        "source": "surface",
+        "tag": "A"
+      },
+      {
+        "color": "rgb(98, 106, 96)",
+        "mode": "color",
+        "ratio": "5.462",
+        "shadow": "none",
+        "source": "surface",
+        "tag": "A"
+      },
+      {
+        "color": "rgb(63, 78, 66)",
+        "mode": "color",
+        "ratio": "5.834",
+        "shadow": "none",
+        "source": "image",
+        "tag": "P"
+      },
+      {
+        "color": "rgb(0, 0, 0)",
+        "mode": "outline",
+        "ratio": "1.640",
+        "shadow": "rgb(255, 255, 255) -1px -1px 0px, rgb(255, 255, 255) 0px -1px 0px, rgb(255, 255, 255) 1px -1px 0px, rgb(255, 255, 255) -1px 0px 0px, rgb(255, 255, 255) 1px 0px 0px, rgb(255, 255, 255) -1px 1px 0px, rgb(255, 255, 255) 0px 1px 0px, rgb(255, 255, 255) 1px 1px 0px",
+        "source": "image",
+        "tag": "SPAN"
+      },
+      {
+        "color": "rgb(0, 0, 0)",
+        "mode": "outline",
+        "ratio": "1.431",
+        "shadow": "rgb(255, 255, 255) -1px -1px 0px, rgb(255, 255, 255) 0px -1px 0px, rgb(255, 255, 255) 1px -1px 0px, rgb(255, 255, 255) -1px 0px 0px, rgb(255, 255, 255) 1px 0px 0px, rgb(255, 255, 255) -1px 1px 0px, rgb(255, 255, 255) 0px 1px 0px, rgb(255, 255, 255) 1px 1px 0px",
+        "source": "image",
+        "tag": "SPAN"
+      },
+      {
+        "color": "rgb(0, 0, 0)",
+        "mode": "outline",
+        "ratio": "1.245",
+        "shadow": "rgb(255, 255, 255) -1px -1px 0px, rgb(255, 255, 255) 0px -1px 0px, rgb(255, 255, 255) 1px -1px 0px, rgb(255, 255, 255) -1px 0px 0px, rgb(255, 255, 255) 1px 0px 0px, rgb(255, 255, 255) -1px 1px 0px, rgb(255, 255, 255) 0px 1px 0px, rgb(255, 255, 255) 1px 1px 0px",
+        "source": "image",
+        "tag": "P"
+      },
+      {
+        "color": "rgb(253, 252, 250)",
+        "mode": "color",
+        "ratio": "8.606",
+        "shadow": "none",
+        "source": "surface",
+        "tag": "A"
+      },
+      {
+        "color": "rgb(0, 0, 0)",
+        "mode": "color",
+        "ratio": "5.481",
+        "shadow": "none",
+        "source": "image",
+        "tag": "A"
+      },
+      {
+        "color": "rgb(41, 46, 41)",
+        "mode": "color",
+        "ratio": "6.262",
+        "shadow": "none",
+        "source": "image",
+        "tag": "SPAN"
+      },
+      {
+        "color": "rgb(253, 252, 250)",
+        "mode": "color",
+        "ratio": "8.606",
+        "shadow": "none",
+        "source": "surface",
+        "tag": "A"
+      }
+    ],
+    "width": 1440,
+    "expectedWidth": 1440
+  },
+  {
+    "background": "rgba(0, 0, 0, 0)",
+    "headerClass": "scheme-a-chrome is-fixed is-overlay",
+    "headerHeight": 76,
+    "heroTop": 0,
+    "languageBackground": "rgb(63, 78, 66)",
+    "languageColor": "rgb(253, 252, 250)",
+    "nav": [
+      {
+        "color": "rgb(0, 0, 0)",
+        "label": "FLASH CAST SDN. BHD.",
+        "mode": "color",
+        "ratio": "5.239",
+        "shadow": "none",
+        "source": "image"
+      },
+      {
+        "color": "rgb(0, 0, 0)",
+        "label": "Home",
+        "mode": "outline",
+        "ratio": "3.673",
+        "shadow": "rgb(255, 255, 255) -1px -1px 0px, rgb(255, 255, 255) 0px -1px 0px, rgb(255, 255, 255) 1px -1px 0px, rgb(255, 255, 255) -1px 0px 0px, rgb(255, 255, 255) 1px 0px 0px, rgb(255, 255, 255) -1px 1px 0px, rgb(255, 255, 255) 0px 1px 0px, rgb(255, 255, 255) 1px 1px 0px",
+        "source": "image"
+      },
+      {
+        "color": "rgb(0, 0, 0)",
+        "label": "Projects",
+        "mode": "color",
+        "ratio": "5.771",
+        "shadow": "none",
+        "source": "image"
+      },
+      {
+        "color": "rgb(41, 46, 41)",
+        "label": "Services",
+        "mode": "color",
+        "ratio": "6.643",
+        "shadow": "none",
+        "source": "image"
+      },
+      {
+        "color": "rgb(255, 255, 255)",
+        "label": "Interior Design",
+        "mode": "outline",
+        "ratio": "2.916",
+        "shadow": "rgb(0, 0, 0) -1px -1px 0px, rgb(0, 0, 0) 0px -1px 0px, rgb(0, 0, 0) 1px -1px 0px, rgb(0, 0, 0) -1px 0px 0px, rgb(0, 0, 0) 1px 0px 0px, rgb(0, 0, 0) -1px 1px 0px, rgb(0, 0, 0) 0px 1px 0px, rgb(0, 0, 0) 1px 1px 0px",
+        "source": "image"
+      },
+      {
+        "color": "rgb(255, 255, 255)",
+        "label": "Materials",
+        "mode": "color",
+        "ratio": "4.706",
+        "shadow": "none",
+        "source": "image"
+      },
+      {
+        "color": "rgb(255, 255, 255)",
+        "label": "More",
+        "mode": "color",
+        "ratio": "4.942",
+        "shadow": "none",
+        "source": "image"
+      }
+    ],
+    "overflow": false,
+    "path": "/en/services/surface-repair",
+    "pseudo": "none",
+    "readingPanels": 0,
+    "spacer": false,
+    "texts": [
+      {
+        "color": "rgb(0, 0, 0)",
+        "mode": "color",
+        "ratio": "5.239",
+        "shadow": "none",
+        "source": "image",
+        "tag": "A"
+      },
+      {
+        "color": "rgb(0, 0, 0)",
+        "mode": "outline",
+        "ratio": "3.673",
+        "shadow": "rgb(255, 255, 255) -1px -1px 0px, rgb(255, 255, 255) 0px -1px 0px, rgb(255, 255, 255) 1px -1px 0px, rgb(255, 255, 255) -1px 0px 0px, rgb(255, 255, 255) 1px 0px 0px, rgb(255, 255, 255) -1px 1px 0px, rgb(255, 255, 255) 0px 1px 0px, rgb(255, 255, 255) 1px 1px 0px",
+        "source": "image",
+        "tag": "A"
+      },
+      {
+        "color": "rgb(0, 0, 0)",
+        "mode": "color",
+        "ratio": "5.771",
+        "shadow": "none",
+        "source": "image",
+        "tag": "A"
+      },
+      {
+        "color": "rgb(41, 46, 41)",
+        "mode": "color",
+        "ratio": "6.643",
+        "shadow": "none",
+        "source": "image",
+        "tag": "A"
+      },
+      {
+        "color": "rgb(255, 255, 255)",
+        "mode": "outline",
+        "ratio": "2.916",
+        "shadow": "rgb(0, 0, 0) -1px -1px 0px, rgb(0, 0, 0) 0px -1px 0px, rgb(0, 0, 0) 1px -1px 0px, rgb(0, 0, 0) -1px 0px 0px, rgb(0, 0, 0) 1px 0px 0px, rgb(0, 0, 0) -1px 1px 0px, rgb(0, 0, 0) 0px 1px 0px, rgb(0, 0, 0) 1px 1px 0px",
+        "source": "image",
+        "tag": "A"
+      },
+      {
+        "color": "rgb(255, 255, 255)",
+        "mode": "color",
+        "ratio": "4.706",
+        "shadow": "none",
+        "source": "image",
+        "tag": "A"
+      },
+      {
+        "color": "rgb(255, 255, 255)",
+        "mode": "color",
+        "ratio": "4.942",
+        "shadow": "none",
+        "source": "image",
+        "tag": "BUTTON"
+      },
+      {
+        "color": "rgb(253, 252, 250)",
+        "mode": "color",
+        "ratio": "8.606",
+        "shadow": "none",
+        "source": "surface",
+        "tag": "A"
+      },
+      {
+        "color": "rgb(98, 106, 96)",
+        "mode": "color",
+        "ratio": "5.462",
+        "shadow": "none",
+        "source": "surface",
+        "tag": "A"
+      },
+      {
+        "color": "rgb(253, 252, 250)",
+        "mode": "color",
+        "ratio": "8.606",
+        "shadow": "none",
+        "source": "surface",
+        "tag": "A"
+      },
+      {
+        "color": "rgb(0, 0, 0)",
+        "mode": "outline",
+        "ratio": "2.809",
+        "shadow": "rgb(255, 255, 255) -1px -1px 0px, rgb(255, 255, 255) 0px -1px 0px, rgb(255, 255, 255) 1px -1px 0px, rgb(255, 255, 255) -1px 0px 0px, rgb(255, 255, 255) 1px 0px 0px, rgb(255, 255, 255) -1px 1px 0px, rgb(255, 255, 255) 0px 1px 0px, rgb(255, 255, 255) 1px 1px 0px",
+        "source": "image",
+        "tag": "P"
+      },
+      {
+        "color": "rgb(0, 0, 0)",
+        "mode": "outline",
+        "ratio": "1.534",
+        "shadow": "rgb(255, 255, 255) -1px -1px 0px, rgb(255, 255, 255) 0px -1px 0px, rgb(255, 255, 255) 1px -1px 0px, rgb(255, 255, 255) -1px 0px 0px, rgb(255, 255, 255) 1px 0px 0px, rgb(255, 255, 255) -1px 1px 0px, rgb(255, 255, 255) 0px 1px 0px, rgb(255, 255, 255) 1px 1px 0px",
+        "source": "image",
+        "tag": "SPAN"
+      },
+      {
+        "color": "rgb(0, 0, 0)",
+        "mode": "outline",
+        "ratio": "1.652",
+        "shadow": "rgb(255, 255, 255) -1px -1px 0px, rgb(255, 255, 255) 0px -1px 0px, rgb(255, 255, 255) 1px -1px 0px, rgb(255, 255, 255) -1px 0px 0px, rgb(255, 255, 255) 1px 0px 0px, rgb(255, 255, 255) -1px 1px 0px, rgb(255, 255, 255) 0px 1px 0px, rgb(255, 255, 255) 1px 1px 0px",
+        "source": "image",
+        "tag": "SPAN"
+      },
+      {
+        "color": "rgb(0, 0, 0)",
+        "mode": "outline",
+        "ratio": "1.245",
+        "shadow": "rgb(255, 255, 255) -1px -1px 0px, rgb(255, 255, 255) 0px -1px 0px, rgb(255, 255, 255) 1px -1px 0px, rgb(255, 255, 255) -1px 0px 0px, rgb(255, 255, 255) 1px 0px 0px, rgb(255, 255, 255) -1px 1px 0px, rgb(255, 255, 255) 0px 1px 0px, rgb(255, 255, 255) 1px 1px 0px",
+        "source": "image",
+        "tag": "P"
+      },
+      {
+        "color": "rgb(253, 252, 250)",
+        "mode": "color",
+        "ratio": "8.606",
+        "shadow": "none",
+        "source": "surface",
+        "tag": "A"
+      },
+      {
+        "color": "rgb(0, 0, 0)",
+        "mode": "color",
+        "ratio": "4.704",
+        "shadow": "none",
+        "source": "image",
+        "tag": "A"
+      },
+      {
+        "color": "rgb(41, 46, 41)",
+        "mode": "color",
+        "ratio": "6.270",
+        "shadow": "none",
+        "source": "image",
+        "tag": "SPAN"
+      },
+      {
+        "color": "rgb(253, 252, 250)",
+        "mode": "color",
+        "ratio": "8.606",
+        "shadow": "none",
+        "source": "surface",
+        "tag": "A"
+      }
+    ],
+    "width": 1440,
+    "expectedWidth": 1440
+  }
+]

@@ -1,0 +1,278 @@
+[
+  {
+    "languageBackground": "rgb(63, 78, 66)",
+    "languageColor": "rgb(253, 252, 250)",
+    "overflow": false,
+    "path": "/zh/contact",
+    "primary": {
+      "background": "rgb(63, 78, 66)",
+      "color": "rgb(253, 252, 250)"
+    },
+    "rows": [
+      {
+        "actionInside": true,
+        "columns": "28px 234px 16px",
+        "display": "grid",
+        "height": 81.59375,
+        "tag": "A"
+      },
+      {
+        "actionInside": true,
+        "columns": "28px 234px 16px",
+        "display": "grid",
+        "height": 81.59375,
+        "tag": "A"
+      },
+      {
+        "actionInside": true,
+        "columns": "28px 234px 16px",
+        "display": "grid",
+        "height": 104.6875,
+        "tag": "BUTTON"
+      },
+      {
+        "actionInside": false,
+        "columns": "28px 250px 0px",
+        "display": "grid",
+        "height": 81.59375,
+        "tag": "DIV"
+      },
+      {
+        "actionInside": true,
+        "columns": "28px 241px 16px",
+        "display": "grid",
+        "height": 79.1875,
+        "tag": "A"
+      },
+      {
+        "actionInside": true,
+        "columns": "28px 241px 16px",
+        "display": "grid",
+        "height": 64,
+        "tag": "A"
+      },
+      {
+        "actionInside": true,
+        "columns": "28px 241px 16px",
+        "display": "grid",
+        "height": 64,
+        "tag": "A"
+      },
+      {
+        "actionInside": false,
+        "columns": "28px 257px 0px",
+        "display": "grid",
+        "height": 64,
+        "tag": "DIV"
+      }
+    ],
+    "width": 390
+  },
+  {
+    "languageBackground": "rgb(63, 78, 66)",
+    "languageColor": "rgb(253, 252, 250)",
+    "overflow": false,
+    "path": "/en/contact",
+    "primary": {
+      "background": "rgb(63, 78, 66)",
+      "color": "rgb(253, 252, 250)"
+    },
+    "rows": [
+      {
+        "actionInside": true,
+        "columns": "28px 234px 16px",
+        "display": "grid",
+        "height": 81.59375,
+        "tag": "A"
+      },
+      {
+        "actionInside": true,
+        "columns": "28px 234px 16px",
+        "display": "grid",
+        "height": 81.59375,
+        "tag": "A"
+      },
+      {
+        "actionInside": true,
+        "columns": "28px 234px 16px",
+        "display": "grid",
+        "height": 104.6875,
+        "tag": "BUTTON"
+      },
+      {
+        "actionInside": false,
+        "columns": "28px 250px 0px",
+        "display": "grid",
+        "height": 104.6875,
+        "tag": "DIV"
+      },
+      {
+        "actionInside": true,
+        "columns": "28px 241px 16px",
+        "display": "grid",
+        "height": 79.1875,
+        "tag": "A"
+      },
+      {
+        "actionInside": true,
+        "columns": "28px 241px 16px",
+        "display": "grid",
+        "height": 64,
+        "tag": "A"
+      },
+      {
+        "actionInside": true,
+        "columns": "28px 241px 16px",
+        "display": "grid",
+        "height": 64,
+        "tag": "A"
+      },
+      {
+        "actionInside": false,
+        "columns": "28px 257px 0px",
+        "display": "grid",
+        "height": 79.1875,
+        "tag": "DIV"
+      }
+    ],
+    "width": 390
+  },
+  {
+    "languageBackground": "rgb(63, 78, 66)",
+    "languageColor": "rgb(253, 252, 250)",
+    "overflow": false,
+    "path": "/zh/contact",
+    "primary": {
+      "background": "rgb(63, 78, 66)",
+      "color": "rgb(253, 252, 250)"
+    },
+    "rows": [
+      {
+        "actionInside": true,
+        "columns": "28px 315.453px 73px",
+        "display": "grid",
+        "height": 81.59375,
+        "tag": "A"
+      },
+      {
+        "actionInside": true,
+        "columns": "28px 315.453px 73px",
+        "display": "grid",
+        "height": 81.59375,
+        "tag": "A"
+      },
+      {
+        "actionInside": true,
+        "columns": "28px 315.453px 73px",
+        "display": "grid",
+        "height": 104.6875,
+        "tag": "BUTTON"
+      },
+      {
+        "actionInside": false,
+        "columns": "28px 388.453px 0px",
+        "display": "grid",
+        "height": 81.59375,
+        "tag": "DIV"
+      },
+      {
+        "actionInside": true,
+        "columns": "28px 343.656px 73px",
+        "display": "grid",
+        "height": 79.1875,
+        "tag": "A"
+      },
+      {
+        "actionInside": true,
+        "columns": "28px 343.656px 73px",
+        "display": "grid",
+        "height": 64,
+        "tag": "A"
+      },
+      {
+        "actionInside": true,
+        "columns": "28px 343.656px 73px",
+        "display": "grid",
+        "height": 64,
+        "tag": "A"
+      },
+      {
+        "actionInside": false,
+        "columns": "28px 416.656px 0px",
+        "display": "grid",
+        "height": 64,
+        "tag": "DIV"
+      }
+    ],
+    "width": 1440
+  },
+  {
+    "languageBackground": "rgb(63, 78, 66)",
+    "languageColor": "rgb(253, 252, 250)",
+    "overflow": false,
+    "path": "/en/contact",
+    "primary": {
+      "background": "rgb(63, 78, 66)",
+      "color": "rgb(253, 252, 250)"
+    },
+    "rows": [
+      {
+        "actionInside": true,
+        "columns": "28px 315.375px 73.0781px",
+        "display": "grid",
+        "height": 81.59375,
+        "tag": "A"
+      },
+      {
+        "actionInside": true,
+        "columns": "28px 299.766px 88.6875px",
+        "display": "grid",
+        "height": 81.59375,
+        "tag": "A"
+      },
+      {
+        "actionInside": true,
+        "columns": "28px 283.172px 105.281px",
+        "display": "grid",
+        "height": 104.6875,
+        "tag": "BUTTON"
+      },
+      {
+        "actionInside": false,
+        "columns": "28px 388.453px 0px",
+        "display": "grid",
+        "height": 81.59375,
+        "tag": "DIV"
+      },
+      {
+        "actionInside": true,
+        "columns": "28px 332.484px 84.1719px",
+        "display": "grid",
+        "height": 79.1875,
+        "tag": "A"
+      },
+      {
+        "actionInside": true,
+        "columns": "28px 343.578px 73.0781px",
+        "display": "grid",
+        "height": 64,
+        "tag": "A"
+      },
+      {
+        "actionInside": true,
+        "columns": "28px 327.969px 88.6875px",
+        "display": "grid",
+        "height": 64,
+        "tag": "A"
+      },
+      {
+        "actionInside": false,
+        "columns": "28px 416.656px 0px",
+        "display": "grid",
+        "height": 64,
+        "tag": "DIV"
+      }
+    ],
+    "width": 1440
+  }
+]

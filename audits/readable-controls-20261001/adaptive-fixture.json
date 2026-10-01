@@ -1,0 +1,229 @@
+{
+  "image": {
+    "cases": [
+      {
+        "background": "rgba(0, 0, 0, 0)",
+        "case": "white",
+        "color": "rgb(41, 46, 41)",
+        "mode": "color",
+        "ratio": "13.842",
+        "shadow": "none",
+        "source": "surface"
+      },
+      {
+        "background": "rgba(0, 0, 0, 0)",
+        "case": "black",
+        "color": "rgb(255, 255, 255)",
+        "mode": "color",
+        "ratio": "21.000",
+        "shadow": "none",
+        "source": "surface"
+      },
+      {
+        "background": "rgba(0, 0, 0, 0)",
+        "case": "gray",
+        "color": "rgb(0, 0, 0)",
+        "mode": "color",
+        "ratio": "5.317",
+        "shadow": "none",
+        "source": "surface"
+      },
+      {
+        "background": "rgba(0, 0, 0, 0)",
+        "case": "mixed",
+        "color": "rgb(0, 0, 0)",
+        "mode": "outline",
+        "ratio": "1.112",
+        "shadow": "rgb(255, 255, 255) -1px -1px 0px, rgb(255, 255, 255) 0px -1px 0px, rgb(255, 255, 255) 1px -1px 0px, rgb(255, 255, 255) -1px 0px 0px, rgb(255, 255, 255) 1px 0px 0px, rgb(255, 255, 255) -1px 1px 0px, rgb(255, 255, 255) 0px 1px 0px, rgb(255, 255, 255) 1px 1px 0px",
+        "source": "image"
+      },
+      {
+        "background": "rgba(0, 0, 0, 0)",
+        "case": "unavailable",
+        "color": "rgb(0, 0, 0)",
+        "mode": "outline",
+        "shadow": "rgb(255, 255, 255) -1px -1px 0px, rgb(255, 255, 255) 0px -1px 0px, rgb(255, 255, 255) 1px -1px 0px, rgb(255, 255, 255) -1px 0px 0px, rgb(255, 255, 255) 1px 0px 0px, rgb(255, 255, 255) -1px 1px 0px, rgb(255, 255, 255) 0px 1px 0px, rgb(255, 255, 255) 1px 1px 0px",
+        "source": "unavailable"
+      }
+    ],
+    "overflow": false,
+    "scene": "image",
+    "sceneText": [
+      {
+        "background": "rgba(0, 0, 0, 0)",
+        "color": "rgb(255, 255, 255)",
+        "mode": "color",
+        "ratio": "18.883",
+        "source": "image",
+        "text": "左侧文字"
+      },
+      {
+        "background": "rgba(0, 0, 0, 0)",
+        "color": "rgb(0, 0, 0)",
+        "mode": "color",
+        "ratio": "5.317",
+        "source": "image",
+        "text": "中间文字"
+      },
+      {
+        "background": "rgba(0, 0, 0, 0)",
+        "color": "rgb(41, 46, 41)",
+        "mode": "color",
+        "ratio": "13.842",
+        "source": "image",
+        "text": "右侧文字"
+      }
+    ],
+    "width": 1440
+  },
+  "black": {
+    "cases": [
+      {
+        "background": "rgba(0, 0, 0, 0)",
+        "case": "white",
+        "color": "rgb(41, 46, 41)",
+        "mode": "color",
+        "ratio": "13.842",
+        "shadow": "none",
+        "source": "surface"
+      },
+      {
+        "background": "rgba(0, 0, 0, 0)",
+        "case": "black",
+        "color": "rgb(255, 255, 255)",
+        "mode": "color",
+        "ratio": "21.000",
+        "shadow": "none",
+        "source": "surface"
+      },
+      {
+        "background": "rgba(0, 0, 0, 0)",
+        "case": "gray",
+        "color": "rgb(0, 0, 0)",
+        "mode": "color",
+        "ratio": "5.317",
+        "shadow": "none",
+        "source": "surface"
+      },
+      {
+        "background": "rgba(0, 0, 0, 0)",
+        "case": "mixed",
+        "color": "rgb(0, 0, 0)",
+        "mode": "outline",
+        "ratio": "1.112",
+        "shadow": "rgb(255, 255, 255) -1px -1px 0px, rgb(255, 255, 255) 0px -1px 0px, rgb(255, 255, 255) 1px -1px 0px, rgb(255, 255, 255) -1px 0px 0px, rgb(255, 255, 255) 1px 0px 0px, rgb(255, 255, 255) -1px 1px 0px, rgb(255, 255, 255) 0px 1px 0px, rgb(255, 255, 255) 1px 1px 0px",
+        "source": "image"
+      },
+      {
+        "background": "rgba(0, 0, 0, 0)",
+        "case": "unavailable",
+        "color": "rgb(41, 46, 41)",
+        "shadow": "none"
+      }
+    ],
+    "overflow": false,
+    "scene": "black",
+    "sceneText": [
+      {
+        "background": "rgba(0, 0, 0, 0)",
+        "color": "rgb(255, 255, 255)",
+        "mode": "color",
+        "ratio": "21.000",
+        "source": "surface",
+        "text": "左侧文字"
+      },
+      {
+        "background": "rgba(0, 0, 0, 0)",
+        "color": "rgb(255, 255, 255)",
+        "mode": "color",
+        "ratio": "21.000",
+        "source": "surface",
+        "text": "中间文字"
+      },
+      {
+        "background": "rgba(0, 0, 0, 0)",
+        "color": "rgb(255, 255, 255)",
+        "mode": "color",
+        "ratio": "21.000",
+        "source": "surface",
+        "text": "右侧文字"
+      }
+    ],
+    "width": 390
+  },
+  "white": {
+    "cases": [
+      {
+        "background": "rgba(0, 0, 0, 0)",
+        "case": "white",
+        "color": "rgb(41, 46, 41)",
+        "mode": "color",
+        "ratio": "13.842",
+        "shadow": "none",
+        "source": "surface"
+      },
+      {
+        "background": "rgba(0, 0, 0, 0)",
+        "case": "black",
+        "color": "rgb(255, 255, 255)",
+        "mode": "color",
+        "ratio": "21.000",
+        "shadow": "none",
+        "source": "surface"
+      },
+      {
+        "background": "rgba(0, 0, 0, 0)",
+        "case": "gray",
+        "color": "rgb(0, 0, 0)",
+        "mode": "color",
+        "ratio": "5.317",
+        "shadow": "none",
+        "source": "surface"
+      },
+      {
+        "background": "rgba(0, 0, 0, 0)",
+        "case": "mixed",
+        "color": "rgb(0, 0, 0)",
+        "mode": "outline",
+        "ratio": "1.112",
+        "shadow": "rgb(255, 255, 255) -1px -1px 0px, rgb(255, 255, 255) 0px -1px 0px, rgb(255, 255, 255) 1px -1px 0px, rgb(255, 255, 255) -1px 0px 0px, rgb(255, 255, 255) 1px 0px 0px, rgb(255, 255, 255) -1px 1px 0px, rgb(255, 255, 255) 0px 1px 0px, rgb(255, 255, 255) 1px 1px 0px",
+        "source": "image"
+      },
+      {
+        "background": "rgba(0, 0, 0, 0)",
+        "case": "unavailable",
+        "color": "rgb(41, 46, 41)",
+        "shadow": "none"
+      }
+    ],
+    "overflow": false,
+    "scene": "white",
+    "sceneText": [
+      {
+        "background": "rgba(0, 0, 0, 0)",
+        "color": "rgb(41, 46, 41)",
+        "mode": "color",
+        "ratio": "13.842",
+        "source": "surface",
+        "text": "左侧文字"
+      },
+      {
+        "background": "rgba(0, 0, 0, 0)",
+        "color": "rgb(41, 46, 41)",
+        "mode": "color",
+        "ratio": "13.842",
+        "source": "surface",
+        "text": "中间文字"
+      },
+      {
+        "background": "rgba(0, 0, 0, 0)",
+        "color": "rgb(41, 46, 41)",
+        "mode": "color",
+        "ratio": "13.842",
+        "source": "surface",
+        "text": "右侧文字"
+      }
+    ],
+    "width": 390
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "open": "open",
+  "closed": "closed",
+  "focus": "scheme-a-chrome__menu-trigger scheme-a-chrome__menu-trigger--compact",
+  "languagePath": "http://127.0.0.1:4186/en/services/design",
+  "scrolled": {
+    "header": "scheme-a-chrome is-fixed is-solid",
+    "y": 422
+  },
+  "top": {
+    "bg": "rgba(0, 0, 0, 0)",
+    "header": "scheme-a-chrome is-fixed is-overlay",
+    "y": 0
+  }
+}

@@ -21,6 +21,8 @@ import {
   X,
 } from "lucide-react";
 import LocalizedLink from "@/components/LocalizedLink";
+import PublicContactRow from "@/components/PublicContactRow";
+import { Button } from "@/components/ui/button";
 import LanguageRouteLink from "@/components/LanguageRouteLink";
 import SmartImage from "@/components/SmartImage";
 import WhatsAppIcon from "@/components/WhatsAppIcon";
@@ -80,7 +82,7 @@ const getCurrentNavigationGroup = (pathname: string): PublicNavGroupKey =>
 const BrandMark = ({ logo, name }: { logo: string; name: string }) => {
   const [failedLogo, setFailedLogo] = useState<string | null>(null);
   return (
-    <LocalizedLink className="scheme-a-chrome__brand" to="/" aria-label={name}>
+    <LocalizedLink className="scheme-a-chrome__brand" data-adaptive-logo to="/" aria-label={name}>
       <SmartImage
         src={failedLogo === logo ? logoFallback : logo}
         alt=""
@@ -243,16 +245,25 @@ export const SchemeANavbar = () => {
       setScrolled(true);
       return;
     }
-    if (!sentinel || !("IntersectionObserver" in window)) {
+    if (!sentinel) {
       setScrolled(false);
       return;
     }
 
-    const observer = new IntersectionObserver(([entry]) => {
-      setScrolled(!entry.isIntersecting);
-    }, { threshold: 0 });
-    observer.observe(sentinel);
-    return () => observer.disconnect();
+    // A hidden tab or viewport resize can report a non-intersecting entry
+    // while the page is still at the top. Keep the existing sentinel boundary,
+    // but derive the chrome state from its actual position.
+    const updateScrolled = () => setScrolled(window.scrollY > 0 && sentinel.getBoundingClientRect().bottom <= 0);
+    updateScrolled();
+    const observer = "IntersectionObserver" in window ? new IntersectionObserver(updateScrolled, { threshold: 0 }) : null;
+    observer?.observe(sentinel);
+    window.addEventListener("scroll", updateScrolled, { passive: true });
+    window.addEventListener("resize", updateScrolled, { passive: true });
+    return () => {
+      observer?.disconnect();
+      window.removeEventListener("scroll", updateScrolled);
+      window.removeEventListener("resize", updateScrolled);
+    };
   }, [hasImmersiveHero, publicPath]);
 
   useEffect(() => {
@@ -300,7 +311,7 @@ export const SchemeANavbar = () => {
                 {translate(item.labelKey)}
               </LocalizedLink>
             ))}
-            <button ref={desktopTriggerRef} className="scheme-a-chrome__nav-more" type="button" aria-label={t.openMenu} aria-expanded={menuOpen} aria-controls="scheme-a-directory" onClick={toggleDirectory}>
+            <button ref={desktopTriggerRef} className="scheme-a-chrome__nav-more" data-adaptive-text type="button" aria-label={t.openMenu} aria-expanded={menuOpen} aria-controls="scheme-a-directory" onClick={toggleDirectory}>
               <span>{navText.more}</span>
               <Menu aria-hidden="true" />
             </button>
@@ -443,12 +454,14 @@ export const SchemeAFooterPrelude = () => {
         <div className="scheme-a-footer__panorama">
           <SmartImage src="/images/projects/generated-portfolio/mont-kiara-luxury-condo-renovation.webp" alt={t.footerTitle} width={2560} height={1440} sizes="(max-width: 767px) max(100vw, 783px), (min-width: 1536px) 1440px, (min-width: 1024px) calc(100vw - 96px), 100vw" candidateWidths={[560, 720, 960, 1200, 1600, 2560]} quality={88} />
           <div className="scheme-a-footer__invitation scheme-a-frame">
-            <p className="scheme-a-footer__kicker"><span>{t.footerKicker}</span></p>
-            <h2>{t.footerTitle}</h2>
-            <span>{t.footerBody}</span>
-            <div>
-              <LocalizedLink to={QUOTE_FORM_PATH} onClick={() => trackCtaClick("quote", "scheme_a_footer_prelude", { destination: QUOTE_FORM_PATH })}>{t.quote}<ArrowUpRight /></LocalizedLink>
-              <a href={settings.whatsapp_url()} target="_blank" rel="noopener noreferrer" onClick={() => trackCtaClick("whatsapp", "scheme_a_footer_prelude", { destination: "whatsapp" })}><WhatsAppIcon />{t.whatsapp}</a>
+            <div className="scheme-a-footer__invitation-copy">
+              <p className="scheme-a-footer__kicker"><span>{t.footerKicker}</span></p>
+              <h2>{t.footerTitle}</h2>
+              <span>{t.footerBody}</span>
+              <div className="scheme-a-footer__invitation-actions">
+                <LocalizedLink to={QUOTE_FORM_PATH} onClick={() => trackCtaClick("quote", "scheme_a_footer_prelude", { destination: QUOTE_FORM_PATH })}>{t.quote}<ArrowUpRight /></LocalizedLink>
+                <a href={settings.whatsapp_url()} target="_blank" rel="noopener noreferrer" onClick={() => trackCtaClick("whatsapp", "scheme_a_footer_prelude", { destination: "whatsapp" })}><WhatsAppIcon />{t.whatsapp}</a>
+              </div>
             </div>
           </div>
         </div>
@@ -478,28 +491,23 @@ export const SchemeAFooter = () => {
             <section className="scheme-a-footer__studio">
               <p>{t.contactTitle}</p>
               <strong>{settings.company_name}</strong>
-              <address>
-                <a className="scheme-a-footer__contact-link" href={buildGoogleMapOpenUrl(settings.address, settings.map_latitude, settings.map_longitude)} target="_blank" rel="noopener noreferrer">
-                  <MapPin aria-hidden="true" />
-                  <span className="scheme-a-footer__contact-value">{settings.address}</span>
-                  <span className="scheme-a-footer__contact-action">{footer.openMap}<ArrowUpRight aria-hidden="true" /></span>
-                </a>
-              </address>
-              <a className="scheme-a-footer__contact-link" href={settings.phone_href}>
-                <Phone aria-hidden="true" />
-                <span className="scheme-a-footer__contact-value">{settings.phone_display}</span>
-                <span className="scheme-a-footer__contact-action">{footer.callAction}<ArrowUpRight aria-hidden="true" /></span>
-              </a>
-              <a className="scheme-a-footer__contact-link" href={`mailto:${settings.email}`}>
-                <Mail aria-hidden="true" />
-                <span className="scheme-a-footer__contact-value">{settings.email}</span>
-                <span className="scheme-a-footer__contact-action">{footer.emailAction}<ArrowUpRight aria-hidden="true" /></span>
-              </a>
-              <LocalizedLink className="scheme-a-footer__contact-link" to="/contact">
-                <Clock aria-hidden="true" />
-                <span className="scheme-a-footer__contact-value">{footer.hours}</span>
-                <span className="scheme-a-footer__contact-action">{translate("nav.contact")}<ArrowUpRight aria-hidden="true" /></span>
-              </LocalizedLink>
+              <div className="public-contact-list">
+                <address>
+                  <PublicContactRow icon={<MapPin />} value={settings.address} action={footer.openMap} asChild>
+                    <a href={buildGoogleMapOpenUrl(settings.address, settings.map_latitude, settings.map_longitude)} target="_blank" rel="noopener noreferrer" />
+                  </PublicContactRow>
+                </address>
+                <PublicContactRow icon={<Phone />} value={settings.phone_display} action={footer.callAction} asChild>
+                  <a href={settings.phone_href} />
+                </PublicContactRow>
+                <PublicContactRow icon={<Mail />} value={settings.email} action={footer.emailAction} asChild>
+                  <a href={`mailto:${settings.email}`} />
+                </PublicContactRow>
+                <PublicContactRow icon={<Clock />} value={footer.hours} />
+              </div>
+              <Button variant="outline" asChild className="scheme-a-footer__contact-entry">
+                <LocalizedLink to="/contact">{translate("nav.contact")}<ArrowUpRight aria-hidden="true" /></LocalizedLink>
+              </Button>
               {settings.instagram_url || settings.facebook_url ? <div className="scheme-a-footer__socials">
                 {settings.instagram_url ? <a href={settings.instagram_url} target="_blank" rel="noopener noreferrer" aria-label="Instagram"><Instagram /></a> : null}
                 {settings.facebook_url ? <a href={settings.facebook_url} target="_blank" rel="noopener noreferrer" aria-label="Facebook"><Facebook /></a> : null}
