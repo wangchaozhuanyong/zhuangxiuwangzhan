@@ -1,15 +1,41 @@
-import { beforeEach, describe, expect, it } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import {
   consumePendingChunkRecoveryLog,
   getFriendlySystemMessage,
   getSystemEventCategory,
   isChunkLoadError,
+  installChunkLoadRecovery,
 } from "@/lib/chunkLoadRecovery";
 import { chunkLoadRecoveryText } from "@/i18n/chunkLoadRecoveryText";
 
 describe("chunkLoadRecovery", () => {
   beforeEach(() => {
     window.sessionStorage.clear();
+    window.history.replaceState(null, "", "/zh");
+  });
+
+  afterEach(() => vi.restoreAllMocks());
+
+  it("cleans a legacy refresh parameter without dropping route, query, hash or browser state", () => {
+    window.history.replaceState({ draft: true }, "", "/en/services/design?preview=yes&__flashcast_refresh=123#details");
+    window.sessionStorage.setItem("draft", "keep");
+    window.localStorage.setItem("preference", "keep");
+    window.sessionStorage.setItem("flashcast:chunk-load-recovery", "legacy retry state");
+    installChunkLoadRecovery();
+    expect(window.location.pathname + window.location.search + window.location.hash).toBe("/en/services/design?preview=yes#details");
+    expect(window.history.state).toEqual({ draft: true });
+    expect(window.sessionStorage.getItem("draft")).toBe("keep");
+    expect(window.localStorage.getItem("preference")).toBe("keep");
+    expect(window.sessionStorage.getItem("flashcast:chunk-load-recovery")).toBeNull();
+  });
+
+  it("keeps normal URLs and does not register handlers that can initiate another navigation", () => {
+    const addListener = vi.spyOn(window, "addEventListener");
+    const url = window.location.href;
+    installChunkLoadRecovery();
+    installChunkLoadRecovery();
+    expect(window.location.href).toBe(url);
+    expect(addListener).not.toHaveBeenCalled();
   });
 
   it("detects missing dynamic import chunks", () => {
@@ -44,7 +70,7 @@ describe("chunkLoadRecovery", () => {
     );
 
     expect(friendly).not.toContain("Cannot read properties");
-    expect(friendly.length).toBeGreaterThan(20);
+    expect(friendly).toBe(chunkLoadRecoveryText.zh.loadMessage);
   });
 
   it("shows a friendly Chinese system log message for chunk failures", () => {

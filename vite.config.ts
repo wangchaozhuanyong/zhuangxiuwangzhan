@@ -33,6 +33,12 @@ export default defineConfig(() => ({
     dedupe: ["react", "react-dom", "react/jsx-runtime", "react/jsx-dev-runtime"],
   },
   build: {
+    // WebKit can retain failed modulepreload scripts across a native reload.
+    // Load lazy route scripts through import(); keep entry and CSS preloads.
+    modulePreload: {
+      resolveDependencies: (_filename, dependencies, { hostType }) =>
+        hostType === "js" ? dependencies.filter((dependency) => dependency.endsWith(".css")) : dependencies,
+    },
     rollupOptions: {
       output: {
         manualChunks(id) {
