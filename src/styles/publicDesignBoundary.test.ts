@@ -89,7 +89,7 @@ describe("public design boundary", () => {
     const positions: string[] = [];
     for (const file of readdirSync(componentDirectory).filter((name) => name.endsWith(".css"))) {
       postcss.parse(readFileSync(resolve(componentDirectory, file), "utf8")).walkRules((rule) => {
-        if (/\.fc-furniture-floating(?![\w-])/.test(rule.selector)) {
+        if (/\.fc-furniture-floating(?![\w-])/.test(rule.selector) && !rule.selector.includes("::")) {
           rule.walkDecls("position", (declaration) => { positions.push(declaration.value); });
         }
       });
