@@ -99,28 +99,29 @@ export default function FurnitureArrivalMotion({ entryRef }: { entryRef: RefObje
         || document.documentElement.dataset.publicRouteLoading || !hero?.complete || !hero.naturalWidth) { interrupt(); return; }
       arrivalClaimed = true;
       playing = true;
+      scene.setAttribute("data-active", "true");
+      const canvas = scene.getBoundingClientRect();
       let box = entry.getBoundingClientRect();
-      let width = window.innerWidth;
-      let height = window.innerHeight;
-      const mobile = width < 768;
+      const { width, height } = canvas;
+      const mobile = window.innerWidth < 768;
       const duration = mobile ? 2100 : 2400;
       const reduced = motion.matches;
-      let end = { x: box.x + 9, y: box.y };
+      let origin = { x: box.x - canvas.x, y: box.y - canvas.y };
+      let end = { x: origin.x + 9, y: origin.y };
       const start = mobile
-        ? { x: width * .76, y: Math.max(96, box.y - Math.min(270, height * .32)) }
-        : { x: Math.max(width * .52, end.x - Math.min(360, width * .25)), y: Math.max(100, box.y - Math.min(520, height * .48)) };
+        ? { x: width * .76, y: Math.max(96, origin.y - Math.min(270, height * .32)) }
+        : { x: Math.max(width * .52, end.x - Math.min(360, width * .25)), y: Math.max(100, origin.y - Math.min(520, height * .48)) };
       let points = mobile
         ? [start, { x: width - 20, y: start.y + 64 }, { x: end.x - 32, y: end.y - 60 }, end]
         : [start, { x: start.x + 110, y: start.y + 25 }, { x: end.x - 135, y: end.y - 80 }, end];
       const trailFraction = (mobile ? 110 : 210) / (Math.hypot(end.x - start.x, end.y - start.y) * 1.12);
-      scene.setAttribute("viewBox", `0 0 ${width} ${height}`);
-      outlines.forEach(outline => {
-        outline.setAttribute("x", String(box.x + .5));
-        outline.setAttribute("y", String(box.y + .5));
+      const alignOutlines = () => outlines.forEach(outline => {
+        outline.setAttribute("x", String(origin.x + .5));
+        outline.setAttribute("y", String(origin.y + .5));
         outline.setAttribute("width", String(box.width - 1));
         outline.setAttribute("height", String(box.height - 1));
       });
-      scene.setAttribute("data-active", "true");
+      alignOutlines();
       entry.dataset.arrival = reduced ? "settling" : "flying";
       head.style.opacity = "0";
       tails.forEach(tail => { tail.style.opacity = "0"; });
@@ -129,17 +130,17 @@ export default function FurnitureArrivalMotion({ entryRef }: { entryRef: RefObje
 
       const draw = (now: number) => {
         if (finished) return;
-        // Keep the landing point attached during mobile address-bar resizing.
-        if (width !== window.innerWidth || height !== window.innerHeight) {
-          width = window.innerWidth; height = window.innerHeight;
-          box = entry.getBoundingClientRect();
-          end = { x: box.x + 9, y: box.y };
+        // Track the rendered button, including hover transforms, scrollbar
+        // changes and mobile browser chrome that need not fire window.resize.
+        const nextBox = entry.getBoundingClientRect();
+        const nextCanvas = scene.getBoundingClientRect();
+        const nextOrigin = { x: nextBox.x - nextCanvas.x, y: nextBox.y - nextCanvas.y };
+        if (origin.x !== nextOrigin.x || origin.y !== nextOrigin.y || box.width !== nextBox.width || box.height !== nextBox.height) {
+          box = nextBox;
+          origin = nextOrigin;
+          end = { x: origin.x + 9, y: origin.y };
           points = [points[0], points[1], { x: end.x - (mobile ? 32 : 135), y: end.y - (mobile ? 60 : 80) }, end];
-          scene.setAttribute("viewBox", `0 0 ${width} ${height}`);
-          outlines.forEach(outline => {
-            outline.setAttribute("x", String(box.x + .5)); outline.setAttribute("y", String(box.y + .5));
-            outline.setAttribute("width", String(box.width - 1)); outline.setAttribute("height", String(box.height - 1));
-          });
+          alignOutlines();
         }
         const elapsed = now - started;
         if (reduced) {
@@ -223,6 +224,8 @@ export default function FurnitureArrivalMotion({ entryRef }: { entryRef: RefObje
 
   if (!eligible.current || stripLanguagePrefix(pathname) !== "/") return null;
   return (
+    // No viewBox: SVG units stay CSS pixels, matching getBoundingClientRect.
+    // innerWidth includes scrollbars; using it as a viewBox would scale the frame.
     <svg ref={sceneRef} className="fc-furniture-arrival" aria-hidden="true" focusable="false">
       <defs>
         <linearGradient id={`arrival-tail-${id}`} gradientUnits="userSpaceOnUse">
