@@ -81,7 +81,7 @@ describe("shared WhatsApp page context", () => {
       managedPageFixture.language = language;
       managedPageFixture.product = name ? { slug: "managed-loaded-fixture", name, sku: "", shortDescription: "", description: "", sourceUrl: "internal-fixture", sourceImages: [], images: [], sourceCategories: [], price: null } : undefined;
       const path = `/${language}/furniture/product/${name ? "managed-loaded-fixture" : "missing"}`;
-      await act(async () => root.render(createElement(MemoryRouter, { key: path, future: { v7_startTransition: true, v7_relativeSplatPath: true }, initialEntries: [path] }, createElement(PublicChromeProvider, {
+      await act(async () => root.render(createElement(MemoryRouter, { key: path, initialEntries: [path] }, createElement(PublicChromeProvider, {
         isAdminRoute: false, routeKey: path, children: [
           createElement(Routes, { key: "page" }, createElement(Route, { path: "/:lang/furniture/product/:slug", element: createElement(FurnitureProductDetail) })),
           createElement(SharedMessage, { key: "shared" }),

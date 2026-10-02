@@ -2,6 +2,12 @@ import { expect, it } from "vitest";
 import { translateDisplayText, translateProjectScopedLabel } from "./displayLabels";
 
 const approvedCases = [
+  ["kota-damansara-clinic-fit-out", "scope", "Reception counter", "接待柜台"],
+  ["kota-damansara-clinic-fit-out", "scope", "Waiting area", "候诊区"],
+  ["kota-damansara-clinic-fit-out", "scope", "Consultation corridor", "诊室走廊"],
+  ["kota-damansara-clinic-fit-out", "scope", "Commercial lighting", "商业照明"],
+  ["kota-damansara-clinic-fit-out", "materials", "Light oak veneer", "浅橡木饰面"],
+  ["kota-damansara-clinic-fit-out", "materials", "Frosted glass", "磨砂玻璃"],
   [
     "puchong-home-library-built-in",
     "scope",

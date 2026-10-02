@@ -70,7 +70,7 @@ export default function LocationPage() {
     href: project.href || (project.slug ? `/projects/${project.slug}` : "/projects"),
   }));
   const contextLinks = getLocationContextLinks(location.slug, language);
-  const usesReviewedLocalityContext = ["balakong", "klang", "sungai-buloh", "desa-parkcity", "semenyih", "putrajaya", "taman-tun-dr-ismail"].includes(location.slug);
+  const usesReviewedLocalityContext = ["balakong", "klang", "sungai-buloh", "desa-parkcity", "semenyih", "putrajaya", "taman-tun-dr-ismail", "rawang", "seri-kembangan"].includes(location.slug);
   const quotePath = buildQuotePath({
     source: "location",
     title: location.name,

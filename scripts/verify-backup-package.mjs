@@ -37,8 +37,15 @@ const manifest = JSON.parse(requireFile("manifest.json"));
 
 if (manifest.backup_type === "rest-json") {
   const tablesDir = path.join(backupPath, "tables");
-  const requiredTables = ["cms_pages", "cms_sections", "cms_content_entries", "site_settings"];
+  const declaredTables = Array.isArray(manifest.tables) ? manifest.tables : [];
+  const requiredTables = [...new Set(["cms_pages", "cms_sections", "cms_content_entries", "site_settings",
+    ...declaredTables.map((entry) => entry.table)])];
   const failures = [];
+
+  for (const entry of declaredTables) {
+    if (!/^[a-z][a-z0-9_]*$/.test(entry.table || "")) throw new Error("Invalid backup table name");
+    if (entry.ok !== true) failures.push(`${entry.table} was not backed up successfully`);
+  }
 
   if (!fs.existsSync(tablesDir)) failures.push("tables folder is missing");
   for (const table of requiredTables) {
@@ -49,9 +56,16 @@ if (manifest.backup_type === "rest-json") {
     }
     const rows = JSON.parse(fs.readFileSync(file, "utf8"));
     if (!Array.isArray(rows)) failures.push(`${table}.json is not an array`);
+    const declared = declaredTables.find((entry) => entry.table === table);
+    if (declared && rows.length !== declared.rows) failures.push(`${table}.json row count differs from manifest`);
   }
   if (!manifest.storage_bucket) failures.push("manifest missing storage bucket");
   if (typeof manifest.storage_file_count !== "number") failures.push("manifest missing storage file count");
+  const countStorageFiles = (folder) => fs.existsSync(folder)
+    ? fs.readdirSync(folder, { withFileTypes: true }).reduce((count, entry) => count
+      + (entry.isDirectory() ? countStorageFiles(path.join(folder, entry.name)) : entry.isFile() ? 1 : 0), 0) : 0;
+  const actualStorageFiles = countStorageFiles(path.join(backupPath, "site-images"));
+  if (actualStorageFiles !== manifest.storage_file_count) failures.push("storage file count differs from manifest");
 
   if (failures.length) {
     console.error("[verify-backup-package] Backup is not restorable enough:");

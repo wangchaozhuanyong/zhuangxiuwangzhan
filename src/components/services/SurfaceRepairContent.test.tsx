@@ -23,7 +23,7 @@ afterEach(() => { act(() => root?.unmount()); container?.remove(); vi.restoreAll
 async function render() {
   container = document.createElement("div"); document.body.appendChild(container); root = createRoot(container);
   const service = { ...surfaceRepairServiceForLanguage(state.language), seoTitle: "Published repair SEO", faqs: [{ q: "Published FAQ", a: "Published answer" }] };
-  await act(async () => { root.render(<MemoryRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}><SurfaceRepairContent service={service} /></MemoryRouter>); });
+  await act(async () => { root.render(<MemoryRouter><SurfaceRepairContent service={service} /></MemoryRouter>); });
 }
 const query = <T extends Element = HTMLElement>(selector: string) => container.querySelector<T>(selector)!;
 async function click(selector: string) { await act(async () => query<HTMLElement>(selector).click()); }

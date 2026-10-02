@@ -25,7 +25,7 @@ function fixture(body: string, excerpt = "Short excerpt") {
 }
 async function render() {
   container = document.createElement("div"); document.body.appendChild(container); root = createRoot(container);
-  await act(async () => root.render(<MemoryRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }} initialEntries={[`/${state.language}/materials/fixture`]}><Routes><Route path="/:lang/materials/:slug" element={<MaterialDetail />} /></Routes></MemoryRouter>));
+  await act(async () => root.render(<MemoryRouter initialEntries={[`/${state.language}/materials/fixture`]}><Routes><Route path="/:lang/materials/:slug" element={<MaterialDetail />} /></Routes></MemoryRouter>));
 }
 
 describe("Material detail CMS body rendering", () => {

@@ -25,6 +25,7 @@ import {
   type AdminTheme,
 } from "@/lib/adminLocale";
 import { cn } from "@/lib/utils";
+import { getAdminReturnPath } from "@/lib/adminRouteParams";
 
 const copy = adminLoginText;
 const workspaceIcons = [LayoutDashboard, FileText, Images, SearchCheck] as const;
@@ -103,10 +104,7 @@ const AdminLogin = () => {
   const emailInputRef = useRef<HTMLInputElement>(null);
   const t = copy[language];
   const locationState = location.state as { reason?: "signed-out" | "mfa-required"; redirectTo?: string } | null;
-  const redirectTo =
-    locationState?.redirectTo && locationState.redirectTo.startsWith("/admin") && !/^\/admin\/?$/.test(locationState.redirectTo)
-      ? locationState.redirectTo
-      : "/admin/dashboard";
+  const redirectTo = getAdminReturnPath(locationState?.redirectTo);
 
   useLayoutEffect(() => {
     applyAdminTheme(theme, language);

@@ -797,6 +797,18 @@ export const translateDisplayText = (value: string, language: Language) => {
 
 // Exact shared project labels only; CMS prose and unrelated slugs remain untouched.
 const reviewedProjectLabels: Record<string, Partial<Record<"scope" | "materials", Record<string, string>>>> = {
+  "kota-damansara-clinic-fit-out": {
+    scope: {
+      "Reception counter": "接待柜台",
+      "Waiting area": "候诊区",
+      "Consultation corridor": "诊室走廊",
+      "Commercial lighting": "商业照明",
+    },
+    materials: {
+      "Light oak veneer": "浅橡木饰面",
+      "Frosted glass": "磨砂玻璃",
+    },
+  },
   "puchong-home-library-built-in": {
     "scope": {
       "Bookcase": "整墙书柜",

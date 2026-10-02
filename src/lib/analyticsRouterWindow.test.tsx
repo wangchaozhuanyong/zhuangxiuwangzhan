@@ -109,7 +109,7 @@ describe("React Router uses the document boundary", () => {
     const navigate = vi.fn();
     root = createRoot(container);
     await act(() => root!.render(<BrowserRouter window={createAnalyticsRouterWindow(window, navigate)}
-      future={{ v7_startTransition: true, v7_relativeSplatPath: true }}><RouteProbe /></BrowserRouter>));
+      ><RouteProbe /></BrowserRouter>));
     await click("public");
     expect(container.querySelector("output")?.textContent).toBe("/zh/contact?source=nav");
     await click("admin");
@@ -128,7 +128,7 @@ describe("React Router uses the document boundary", () => {
     const navigate = vi.fn();
     root = createRoot(container);
     await act(() => root!.render(<BrowserRouter window={createAnalyticsRouterWindow(window, navigate)}
-      future={{ v7_startTransition: true, v7_relativeSplatPath: true }}><RouteProbe /></BrowserRouter>));
+      ><RouteProbe /></BrowserRouter>));
     await click("return");
     expect(navigate).toHaveBeenCalledExactlyOnceWith(
       new URL("/en/quote?source=admin", window.location.origin).href, true,

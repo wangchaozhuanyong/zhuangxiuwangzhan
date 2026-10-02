@@ -18,6 +18,7 @@ on:
         type: choice
         options:
           - surface-repair-20260927
+          - clinic-zh-copy-20261003
           - all-20260906
           - topic-cluster-links-20260907
           - kitchen

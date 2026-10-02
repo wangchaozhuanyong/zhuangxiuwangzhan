@@ -1,4 +1,5 @@
 import { chromium } from "@playwright/test";
+import { diagnosticUrl, diagnosticMessage, diagnosticTiming, isCriticalPublicRequest } from "./lib/public-network-diagnostics.mjs";
 
 const baseUrl = (process.env.PUBLIC_PERFORMANCE_BASE_URL || process.env.PREVIEW_URL || "http://127.0.0.1:8788").replace(/\/+$/, "");
 const chromiumChannel = process.env.PLAYWRIGHT_CHROMIUM_CHANNEL;
@@ -221,18 +222,40 @@ for (const pageSpec of pages) {
   const consoleErrors = [];
   const pageErrors = [];
   const failedAssets = [];
+  const httpErrors = [];
+  const networkFailures = [];
+  const slowResponses = [];
+  const responses = new Map();
 
   page.on("console", (message) => {
-    if (message.type() === "error") consoleErrors.push(message.text());
+    if (message.type() === "error") consoleErrors.push({ message: diagnosticMessage(message.text()),
+      url: diagnosticUrl(message.location().url), line: message.location().lineNumber });
   });
   page.on("pageerror", (error) => {
-    pageErrors.push(error.message);
+    pageErrors.push(diagnosticMessage(error.message));
   });
   page.on("response", (response) => {
     const url = response.url();
-    if ((url.includes("/assets/") || url.includes("/storage/v1/render/image/public/")) && response.status() >= 400) {
-      failedAssets.push({ url, status: response.status() });
+    const request = response.request();
+    const receipt = { url: diagnosticUrl(url), status: response.status(), resourceType: request.resourceType(),
+      critical: isCriticalPublicRequest(url, request.resourceType(), baseUrl), ...diagnosticTiming(request) };
+    responses.set(request, receipt);
+    if (response.status() >= 400) {
+      httpErrors.push(receipt);
+      if (receipt.critical) failedAssets.push(receipt);
     }
+  });
+  page.on("requestfinished", (request) => {
+    const receipt = responses.get(request);
+    if (!receipt) return;
+    Object.assign(receipt, diagnosticTiming(request));
+    if (receipt.responseEndMs >= 3000) slowResponses.push(receipt);
+    responses.delete(request);
+  });
+  page.on("requestfailed", (request) => {
+    networkFailures.push({ url: diagnosticUrl(request.url()), resourceType: request.resourceType(),
+      critical: isCriticalPublicRequest(request.url(), request.resourceType(), baseUrl),
+      error: diagnosticMessage(request.failure()?.errorText || "unknown"), ...diagnosticTiming(request) });
   });
 
   const url = `${baseUrl}${pageSpec.path}`;
@@ -241,6 +264,12 @@ for (const pageSpec of pages) {
   await scrollThroughPage(page);
 
   const metrics = await collectPageMetrics(page, lateImageStartMs);
+  const navigationTiming = await page.evaluate(() => {
+    const timing = performance.getEntriesByType("navigation")[0];
+    return timing ? { responseStartMs: timing.responseStart, responseEndMs: timing.responseEnd,
+      domContentLoadedMs: timing.domContentLoadedEventEnd, durationMs: timing.duration,
+      transferSize: timing.transferSize } : null;
+  });
   metrics.duplicatedRestEndpoints = countDuplicates(metrics.restResourcePaths.map(normalizeResourcePath));
   delete metrics.restResourcePaths;
 
@@ -249,12 +278,16 @@ for (const pageSpec of pages) {
     path: pageSpec.path,
     url,
     ...metrics,
+    navigationTiming,
     consoleErrorCount: consoleErrors.length,
     pageErrorCount: pageErrors.length,
     failedAssetCount: failedAssets.length,
-    consoleErrors: consoleErrors.slice(0, 3),
+    consoleErrors,
     pageErrors: pageErrors.slice(0, 3),
-    failedAssets: failedAssets.slice(0, 3),
+    failedAssets,
+    httpErrors,
+    networkFailures,
+    slowResponses,
   };
   results.push(result);
 
@@ -265,6 +298,11 @@ for (const pageSpec of pages) {
   if (result.brokenVisibleImageCount > 0) addFailure(`页面当前可见区域存在破图：visible=${result.brokenVisibleImageCount}`);
   if (result.pageErrorCount > 0) addFailure(`页面运行错误：${result.pageErrors.join(" | ")}`);
   if (result.failedAssetCount > 0) addFailure(`资源请求失败：${JSON.stringify(result.failedAssets)}`);
+  for (const receipt of networkFailures.filter((item) => item.critical && !item.error.includes("ERR_ABORTED"))) {
+    addFailure(`网络请求失败：${JSON.stringify(receipt)}`);
+  }
+  for (const receipt of httpErrors.filter((item) => !item.critical)) addWarning(`第三方请求失败：${JSON.stringify(receipt)}`);
+  if (consoleErrors.length) addWarning(`浏览器控制台错误：${JSON.stringify(consoleErrors)}`);
   if (typeof pageSpec.maxPreloadBytes === "number" && result.preloadJsonBytes > pageSpec.maxPreloadBytes) {
     addFailure(`HTML 预注入 JSON 过大：${result.preloadJsonBytes} bytes > ${pageSpec.maxPreloadBytes} bytes`);
   }
