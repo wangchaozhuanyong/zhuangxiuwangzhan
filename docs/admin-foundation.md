@@ -83,9 +83,15 @@ npm.cmd run restore:backup:dry-run
 
 If `SUPABASE_SERVICE_ROLE_KEY` is not set, the backup is a public content/media backup. For a full production backup, run the same script with `SUPABASE_SERVICE_ROLE_KEY` in a private environment, or run `USE_SUPABASE_CLI_DUMP=1` on a machine with Docker.
 
+`full_access` describes table-read access, not complete disaster recovery. REST packages contain the declared public-schema table data and downloaded media; they exclude Auth accounts/passwords/MFA and database schema. Public-schema SQL dumps also exclude Auth and media objects. Record these boundaries and backup age separately from package validation.
+
 ## Recovery
 
 - For wrong content: use CMS revision restore.
 - For deleted content: check archived rows first.
 - For database damage: restore from Supabase backup.
 - For app content damage: restore a verified backup package to staging first, then production.
+
+REST restore writes require `RESTORE_CONFIRM=YES`, an explicitly supplied staging `SUPABASE_SERVICE_ROLE_KEY`, and `--target-url=https://YOUR-ISOLATED-STAGING.supabase.co`. The script refuses the original production project and does not silently inherit its credential from `.env`. It restores tables in manifest order and uploads all declared media objects. Use a clean isolated target with the matching schema; generated CMS seed records can conflict on unique paths. A table/media rehearsal does not prove Auth account recovery. Production recovery needs its own approved procedure and verified environment backup.
+
+Before exact-count acceptance, account for database USER triggers: restoring CMS/admin rows through REST can create extra revision/audit records. In the isolated rehearsal only, pause those triggers during the import and re-enable them in a guaranteed cleanup step; keep foreign-key constraints active. Check restored counts, all original field values and media bytes after import. Do not disable production triggers or treat an HTTP success as an exact recovery result.
