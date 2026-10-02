@@ -27,11 +27,27 @@ describe("public document boot", () => {
     const screen = document.getElementById("flashcast-public-boot");
     const boot = initializePublicBoot()!;
     expect(document.documentElement.dataset.publicBoot).toBe("waiting");
+    expect(document.documentElement.dataset.publicBootHome).toBe("true");
     expect(document.documentElement.lang).toBe("zh-CN");
     expect(document.getElementById("root")).toHaveAttribute("inert");
     expect(screen?.textContent).toContain(publicContentStatusText.zh.loaderPending);
     expect(initializePublicBoot()).toBe(boot);
     expect(document.getElementById("flashcast-public-boot")).toBe(screen);
+  });
+  it("reserves reload scroll ownership before React and keeps the handoff transparent until removal", async () => {
+    Object.defineProperty(history, "scrollRestoration", { configurable: true, writable: true, value: "auto" });
+    vi.stubGlobal("matchMedia", vi.fn(() => ({ matches: false })));
+    let finish!: () => void;
+    const animate = vi.fn(() => ({ finished: new Promise<void>((resolve) => { finish = resolve; }), cancel: vi.fn() }));
+    Object.defineProperty(HTMLElement.prototype, "animate", { configurable: true, value: animate });
+    const boot = initializePublicBoot()!;
+    expect(history.scrollRestoration).toBe("manual");
+    const completion = boot.complete();
+    expect(animate).toHaveBeenCalledWith([{ opacity: 1 }, { opacity: 0 }], expect.objectContaining({ fill: "forwards", duration: 420 }));
+    finish(); await completion;
+    expect(document.documentElement.dataset.publicBootHome).toBeUndefined();
+    expect(document.getElementById("flashcast-public-boot")).toBeNull();
+    Reflect.deleteProperty(history, "scrollRestoration");
   });
   it("shows the template's original brand node before body parsing and moves it without a duplicate", async () => {
     const body = document.body;

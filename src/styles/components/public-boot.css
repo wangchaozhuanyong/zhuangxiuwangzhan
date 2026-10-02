@@ -1,6 +1,7 @@
 /* Inline critical CSS: the same brand DOM survives entry/CSS loading and handoff. */
 #flashcast-public-boot { display: none; }
 html[data-public-boot] { background: #F7F6F2; }
+html[data-public-boot] body { margin: 0; }
 html[data-public-boot="waiting"] #root,
 html[data-public-boot="timeout"] #root { visibility: hidden; }
 html[data-public-boot] #flashcast-public-boot {
@@ -27,3 +28,16 @@ html[data-public-boot] #flashcast-public-boot {
 @keyframes public-boot-progress { to { transform: translateX(150%); } }
 @media (max-width: 767px) { html[data-public-boot] #flashcast-public-boot { padding-top: 56px; } }
 @media (prefers-reduced-motion: reduce) { #flashcast-public-boot i::after { animation: none !important; } }
+
+/* Match the photographic homepage and the approved obsidian/champagne entry.
+   Critical, prepaint colours avoid a bright full-screen flash on refresh. */
+html[data-public-boot-home] { background: #24231F; }
+html[data-public-boot-home] #flashcast-public-boot {
+  background: #24231F;
+  color: #F5EBDD;
+}
+html[data-public-boot-home] #flashcast-public-boot strong span { color: #F5EBDD; }
+html[data-public-boot-home] #flashcast-public-boot :is(strong em, .scheme-a-page-loader__brand p) { color: #D9C19F; }
+html[data-public-boot-home] #flashcast-public-boot .scheme-a-page-loader__brand > span { color: #C3B7A5; }
+html[data-public-boot-home] #flashcast-public-boot .scheme-a-page-loader__brand > i { background: #514839; }
+html[data-public-boot-home] #flashcast-public-boot .scheme-a-page-loader__brand > i::after { background: #D9C19F; }

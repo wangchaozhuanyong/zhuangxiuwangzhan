@@ -154,8 +154,36 @@
     text-align: left;
     text-decoration: none;
     white-space: nowrap;
+    overflow: hidden;
     -webkit-tap-highlight-color: transparent;
     transition: background-color 260ms ease, border-color 260ms ease, box-shadow 260ms ease, transform 260ms cubic-bezier(.2, .8, .25, 1);
+  }
+
+  .fc-furniture-floating::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    pointer-events: none;
+    opacity: 0;
+    background: linear-gradient(110deg, transparent 20%, rgb(246 220 181 / .3) 48%, transparent 76%);
+    transform: translateX(-110%);
+  }
+  .fc-furniture-floating[data-arrival="settling"]::before {
+    animation: furniture-entry-sheen 900ms ease-out both;
+  }
+  .fc-furniture-floating[data-arrival="settling"] {
+    animation: furniture-entry-illuminate 900ms ease-out both;
+  }
+  @keyframes furniture-entry-sheen {
+    0% { opacity: 0; transform: translateX(-110%); }
+    20% { opacity: 1; }
+    75% { opacity: 1; }
+    100% { opacity: 0; transform: translateX(110%); }
+  }
+  @keyframes furniture-entry-illuminate {
+    0%, 100% { border-color: rgb(162 139 104 / .44); }
+    35% { border-color: #F4D7AC; box-shadow: 0 0 0 4px rgb(217 193 159 / .2), 0 0 28px rgb(217 193 159 / .45); background-color: #54422C; }
   }
 
   .fc-furniture-floating__icon {
@@ -194,6 +222,7 @@
     .fc-furniture-floating:hover .fc-furniture-floating__icon { color: #F4DDBD; transform: translateY(-2px); }
     .fc-furniture-floating:hover .fc-furniture-floating__action { color: #28231D; background: #D9C19F; border-color: #D9C19F; }
     .fc-furniture-floating:hover .fc-furniture-floating__arrow { transform: translate(3px, -3px); }
+    .fc-furniture-floating:hover::before { animation: furniture-entry-sheen 800ms ease-out; }
   }
 
   .fc-furniture-floating:focus-visible {
@@ -209,6 +238,7 @@
     border-color: #E8CCA6;
     transform: translateY(2px) scale(.94);
     box-shadow: 0 2px 7px rgb(27 19 15 / 0.17);
+    transition-duration: 70ms;
   }
   .fc-furniture-floating:is(:active, [data-pressed="true"]) .fc-furniture-floating__action { color: #28231D; background: #D9C19F; }
 
@@ -244,10 +274,17 @@
     .fc-furniture-floating[lang="en"] { grid-template-rows: 24px 26px; gap: 3px; padding-block: 9px; }
     .fc-furniture-floating[lang="en"] .fc-furniture-floating__label { max-width: 60px; white-space: normal; font-size: 11px; line-height: 13px; }
     .fc-furniture-floating[lang="en"] .fc-furniture-floating__icon svg { width: 24px; height: 24px; }
+    /* Keep the fixed mobile square anchored; press feedback lives inside it. */
+    .fc-furniture-floating:is(:active, [data-pressed="true"]) { transform: none; }
+    .fc-furniture-floating:is(:active, [data-pressed="true"]) .fc-furniture-floating__icon { transform: scale(.88); transition-duration: 70ms; }
   }
 
   @media (prefers-reduced-motion: reduce) {
     .fc-furniture-floating,
+    .fc-furniture-floating::before,
+    .fc-furniture-floating[data-arrival="settling"],
+    .fc-furniture-floating[data-arrival="settling"]::before,
+    .fc-furniture-floating:hover::before,
     .fc-furniture-floating:is(:hover, :active, [data-pressed="true"]),
     .fc-furniture-floating__icon,
     .fc-furniture-floating__action,

@@ -1,5 +1,5 @@
 import { publicContentStatusText } from "../i18n/publicContentStatusText";
-import { getDefaultLanguage, getLanguageFromPath } from "../i18n/routes";
+import { getDefaultLanguage, getLanguageFromPath, stripLanguagePrefix } from "../i18n/routes";
 import { PUBLIC_MOTION, prefersReducedMotion } from "./publicMotion";
 
 export type PublicBootState = "waiting" | "timeout" | "handoff" | "ready" | "degraded";
@@ -38,7 +38,11 @@ export const getPublicBoot = () => typeof window === "undefined" ? undefined : w
 export function initializePublicBoot(): PublicBoot | undefined {
   if (typeof window === "undefined" || window.__flashcastPublicBoot) return getPublicBoot();
   const isAdmin = /^\/admin(?:\/|$)/.test(location.pathname);
+  const homeEntry = !isAdmin && stripLanguagePrefix(location.pathname) === "/";
   syncPublicTheme(isAdmin);
+  // Establish reload scroll ownership before the browser can restore an old
+  // position, rather than waiting for React's ScrollToTop effect.
+  if (!isAdmin && "scrollRestoration" in history) history.scrollRestoration = "manual";
   // HTML parsing can paint the head before reaching the body. Move the HTML
   // template's original node into view synchronously; later move it into body.
   const template = document.getElementById("flashcast-public-boot-template");
@@ -74,11 +78,13 @@ export function initializePublicBoot(): PublicBoot | undefined {
     if (state === "ready" || state === "degraded") {
       element?.remove();
       delete document.documentElement.dataset.publicBoot;
+      delete document.documentElement.dataset.publicBootHome;
       if (document.documentElement.dataset.publicRouteLoading === "true") delete document.documentElement.dataset.publicRouteLoading;
       document.getElementById("root")?.removeAttribute("inert");
       return;
     }
     document.documentElement.dataset.publicBoot = state;
+    if (homeEntry) document.documentElement.dataset.publicBootHome = "true";
     document.documentElement.dataset.publicRouteLoading = "true";
     document.getElementById("root")?.setAttribute("inert", "");
     if (!element) return;
@@ -139,7 +145,12 @@ export function initializePublicBoot(): PublicBoot | undefined {
         finish(degraded);
         return completion = Promise.resolve();
       }
-      animation = element.animate([{ opacity: 1 }, { opacity: 0 }], { duration: PUBLIC_MOTION.handoff, easing: PUBLIC_MOTION.easing });
+      animation = element.animate([{ opacity: 1 }, { opacity: 0 }], {
+        duration: homeEntry ? 420 : PUBLIC_MOTION.handoff,
+        easing: homeEntry ? "ease-in-out" : PUBLIC_MOTION.easing,
+        // Keep the last transparent frame until removal, including busy mobile frames.
+        fill: "forwards",
+      });
       const owner = revision;
       completion = animation.finished.catch(() => {}).then(() => { if (owner === revision) finish(degraded); });
       return completion;
