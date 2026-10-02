@@ -143,6 +143,10 @@ export const oldHouseRenovationPageText = {
         q: "Can I review design or rendering concepts first?",
         a: "Yes. Design concepts, rendering concepts, and material directions can be prepared as planning references. Unless approved real project photos are provided, they must not be presented as completed project proof.",
       },
+      {
+        q: "Does this page confirm standalone roof, leak or electrical repair services?",
+        a: "This page covers site review, scope planning and coordination for an old-house renovation. References to roof condition, leakage, wiring and plumbing identify matters to assess before confirming the renovation scope; they do not confirm a standalone repair booking or 24-hour attendance. Share the property location, photos and whether you need a single repair or a wider renovation, then ask which work can be accepted and who will be responsible. Confirm the assessment needs, work scope and arrangements before booking; specialist work must be confirmed separately.",
+      },
     ],
     ctaTitle: "Planning to Renovate an Old House?",
     ctaDescription:
@@ -297,6 +301,10 @@ export const oldHouseRenovationPageText = {
       {
         q: "可以先看设计方案或效果图吗？",
         a: "可以。设计方案、效果图方案和材料方向可作为规划参考，但除非业主提供真实项目照片并确认可公开使用，否则不能写成真实完工案例。",
+      },
+      {
+        q: "本页是否确认承接独立屋顶、查漏或电工维修？",
+        a: "本页讨论旧屋翻新的现场评估、范围规划与项目协调。提到屋顶状况、渗漏、电线和水管，是提醒业主在确认装修范围前先评估，并不等于已确认单独维修预约或24小时到场。请先提供房屋地区、照片，并说明只做单项维修还是整体翻新，再确认哪些工作可以承接、由谁负责。预约前核清评估需求、工程范围和处理安排；专项工程须另行确认。",
       },
     ],
     ctaTitle: "准备翻新你的旧屋？",
