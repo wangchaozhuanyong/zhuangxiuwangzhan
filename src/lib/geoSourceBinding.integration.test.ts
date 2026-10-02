@@ -20,7 +20,7 @@ async function edgePage(path: string, ua = "human-browser") {
   vi.stubGlobal("fetch", vi.fn(async (input: RequestInfo | URL) => {
     const url = new URL(String(input)); requests.push(url);
     const slug = url.searchParams.get("slug")?.replace(/^eq\./, "");
-    const rows = slug ? allRows.filter(row => row.slug === slug).map(row => revisionOverride?.slug === row.slug ? revisionOverride : row) : [];
+    const rows = url.pathname.endsWith("/site_settings") ? [{ phone_e164: "+601128853888", email: "support@flashcast.com.my" }] : slug ? allRows.filter(row => row.slug === slug).map(row => revisionOverride?.slug === row.slug ? revisionOverride : row) : [];
     return new Response(JSON.stringify(rows), { headers: { "content-type": "application/json" } });
   }));
   const res = await onRequest({ request: new Request(`https://flashcast.com.my${path}`, { headers: { "user-agent": ua } }), env: { CF_PAGES_COMMIT_SHA: "geo-test", VITE_SUPABASE_URL: `https://fixture-${path.split("/").pop()}.supabase.co`, VITE_SUPABASE_ANON_KEY: "test-public-key", ASSETS: { fetch: async () => new Response(assets, { headers: { "content-type": "text/html" } }) } }, next: async () => new Response(assets, { headers: { "content-type": "text/html" } }), waitUntil: (p: Promise<unknown>) => pending.push(p) } as never);
@@ -153,4 +153,34 @@ it("refreshes the same cached fallback from the updated CMS body without adding 
   const revised = await edgePage(path);
   expect(revised).toContain("Revised public body fixture.");
   expect(revised).not.toBe(first);
+});
+
+for (const [table, slug, kind] of [["blog_posts", "renovation-materials-malaysia", "blog"], ["projects", "bangsar-walk-in-wardrobe-system", "projects"]] as const) for (const lang of ["en", "zh"] as const) {
+  it(`adds one reviewed native CTA after existing ${lang}/${kind}/${slug} body via existing settings read`, async () => {
+    const html = await edgePage(`/${lang}/${kind}/${slug}`);
+    const document = new JSDOM(html).window.document;
+    const main = document.querySelector("main[data-flashcast-readable-body]")!;
+    const cta = main.querySelector("section[data-flashcast-reviewed-cta]")!;
+    expect(main.querySelectorAll("section[data-flashcast-reviewed-cta]")).toHaveLength(1);
+    expect(main.lastElementChild).toBe(cta);
+    expect(cta.querySelectorAll("a")).toHaveLength(4);
+    expect(cta.querySelector(`a[href='/${lang}/quote#quote-form']`)).not.toBeNull();
+    expect(cta.querySelector(`a[href='/${lang}/contact']`)).not.toBeNull();
+    expect(cta.querySelector("a[href='tel:+601128853888']")).not.toBeNull();
+    expect(cta.querySelector("a[href='mailto:support@flashcast.com.my']")).not.toBeNull();
+    expect(requests.filter(url => url.pathname.endsWith("/site_settings")).length).toBeLessThanOrEqual(1); // Existing settings cache may reuse the same row.
+    const row = fixture.tables[table].find(row => row.slug === slug)!;
+    for (const identity of [undefined, {}, { phone_e164: "+60123456789", email: "wrong@example.test" }, { phone_e164: "+601128853888\" onclick=alert(1)", email: "support@flashcast.com.my?body=test" }]) {
+      const body = buildReadablePublicBody(`/${lang}/${kind}/${slug}`, row, identity);
+      expect(body).not.toMatch(/href="(?:tel:|mailto:)/);
+      expect(body).toContain(`href="/${lang}/contact"`);
+    }
+  });
+}
+it("keeps builtin bytes and generic sanitizer contact-protocol rejection unchanged", () => {
+  for (const lang of ["en", "zh"] as const) {
+    const row = fixture.tables.services[0];
+    expect(buildReadablePublicBody(`/${lang}/services/builtin`, row, { phone_e164: "+601128853888", email: "support@flashcast.com.my" })).toBe(buildReadablePublicBody(`/${lang}/services/builtin`, row));
+    expect(sanitizeReadableContent('<p><a href="tel:+601128853888">phone</a><a href="mailto:support@flashcast.com.my">email</a></p>', lang)).not.toMatch(/href=/);
+  }
 });

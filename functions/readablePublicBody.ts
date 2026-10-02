@@ -1,7 +1,7 @@
 import { translateDisplayText } from "../src/i18n/displayLabels";
 import { isServiceConceptImage } from "../src/lib/serviceMedia";
 // Same public content for every user agent; this fallback is rendered only without JS.
-export const readableBodyPaths = ["/services/builtin", "/blog/renovation-materials-malaysia", "/projects/bangsar-walk-in-wardrobe-system"] as const;
+export const readableBodyPaths = ["/services/builtin", "/blog/renovation-materials-malaysia", "/projects/bangsar-walk-in-wardrobe-system", "/blog/small-condo-storage-design-ideas"] as const;
 const allowedTags = new Set(["p", "h2", "h3", "h4", "strong", "em", "b", "i", "br", "ul", "ol", "li", "a", "blockquote"]);
 const escape = (s: string) => s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#39;");
 const decode = (s: string) => s.replace(/&#(x[\da-f]+|\d+);?|&(amp|lt|gt|quot|apos|colon|Tab|NewLine);/gi, (m, n: string, name: string) => {
@@ -49,7 +49,23 @@ const headings = {
   zh: { suitable: "适用需求", scope: "范围", common: "常见项目", process: "流程", faq: "常见问题", highlights: "设计重点", materials: "材料方向", label: "设计效果图" },
 };
 
-export function buildReadablePublicBody(key: string, row: Record<string, unknown> | null | undefined) {
+type ReadableContactIdentity = { phone_e164?: unknown; email?: unknown };
+
+// Only the four reviewed routes receive a structural CTA. CMS sanitization stays unchanged.
+function buildReviewedCta(path: string, lang: "en" | "zh", identity?: ReadableContactIdentity | null) {
+  if (path !== "/blog/renovation-materials-malaysia" && path !== "/projects/bangsar-walk-in-wardrobe-system") return "";
+  const heading = lang === "zh"
+    ? (path.startsWith("/blog/") ? "咨询装修材料需求" : "咨询类似衣帽间需求")
+    : (path.startsWith("/blog/") ? "Discuss your material requirements" : "Discuss a similar wardrobe requirement");
+  const quote = lang === "zh" ? "提交报价需求" : "Request a quotation";
+  const contact = lang === "zh" ? "联系 FLASH CAST" : "Contact FLASH CAST";
+  const links: string[] = [];
+  if (identity?.phone_e164 === "+601128853888") links.push('<a href="tel:+601128853888">+60 11-2885 3888</a>');
+  if (identity?.email === "support@flashcast.com.my") links.push('<a href="mailto:support@flashcast.com.my">support@flashcast.com.my</a>');
+  return `<section data-flashcast-reviewed-cta aria-label="${heading}"><h2>${heading}</h2><p><a href="/${lang}/quote#quote-form">${quote}</a> · <a href="/${lang}/contact">${contact}</a></p>${links.length ? `<p>${links.join(" · ")}</p>` : ""}</section>`;
+}
+
+export function buildReadablePublicBody(key: string, row: Record<string, unknown> | null | undefined, identity?: ReadableContactIdentity | null) {
   const match = key.match(/^\/(en|zh)(\/.*)$/);
   if (!match || !readableBodyPaths.some(path => path === match[2]) || row?.status !== "published") return "";
   const lang = match[1] as "en" | "zh";
@@ -76,6 +92,7 @@ export function buildReadablePublicBody(key: string, row: Record<string, unknown
   } else if (path.startsWith("/projects/")) {
     body += list(labels.highlights, field("highlights")) + list(labels.scope, row.scope) + list(labels.materials, row.materials);
   }
+  body += buildReviewedCta(path, lang, identity);
   if (body.length > 262144) return "";
   return `<main data-flashcast-readable-body lang="${lang === "zh" ? "zh-CN" : "en"}">${body}</main>`;
 }
