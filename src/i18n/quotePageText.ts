@@ -30,7 +30,7 @@ export const quotePageText = {
     approx: "approx.",
     details: "Project Details",
     selectProjectType: "Select project type",
-    selectBudgetRange: "Select budget range",
+    selectBudgetRange: "Select budget",
     namePlaceholder: "Your full name",
     emailPlaceholder: "your@email.com",
     locationPlaceholder: "e.g. Mont Kiara, KL",
