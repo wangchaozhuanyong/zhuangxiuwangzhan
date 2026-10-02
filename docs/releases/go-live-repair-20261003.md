@@ -44,3 +44,46 @@
 8. Business behavior changed: 安全返回路径与两地区咨询上下文；不改变真实提交/通知接口。
 9. arch:check result: PASS。
 10. Remaining risks: 真实通知及生产发布证据未完成前，整体状态不得写成全部闭环。
+
+## 补充工具链安全修补
+
+本批以已发布 main `030a860` 为基线，独立工作区为 `.worktrees/go-live-toolchain-20261003`。继续处理修复方案中的工具链通告，不混入主工作区后台语言修改，不重放已经发布的功能代码。
+
+Architecture Decision:
+1. Target module: system。
+2. Why this module: 网站构建、测试和依赖安全属于现有 system 边界。
+3. Target layer: 依赖版本清单、锁文件和发布证据。
+4. Why this layer: 公告由已锁定依赖版本触发，不需要修改业务层。
+5. Files allowed to edit: package.json、package-lock.json、本发布文档；方案 P2 文案项仅允许 src/i18n/displayLabels.ts 的现有项目类别表。
+6. Files forbidden to edit: 页面业务代码、数据库迁移、权限、环境变量、生产通知配置及其他工作区。
+7. API paths affected: none。
+8. Database access location: unchanged；不进行数据库写入。
+9. Cross-module dependency risk: 无新增业务模块依赖；构建和测试工具补丁需实际回归。
+10. Business behavior impact: 保持现有页面、表单及 API 行为；仅修补既有版本系列内的工具链通告。
+
+拟锁定 Vite 8.0.16、Vitest 4.1.11、esbuild 0.28.1，并在原声明范围内更新命中公告的 humanfs、browserslist、form-data、js-yaml、undici 与 ws。sharp 0.33.x 的修复需跨版本系列，未获相应具体升级许可前保持原版本；不使用 audit fix --force，也不增加跨版本 overrides。
+
+本批完整审计从13项降至6项（5高、1低），剩余为Wrangler固定链的esbuild、miniflare、sharp、undici、ws及Wrangler汇总项。拟另行升级sharp 0.35.5和Wrangler 4.147.0，后者随包引入Miniflare 5 alpha内部运行时；已提出具体升级确认，未经确认不安装、不改构建配置。之前的13项审计仍作为历史基线保留。
+
+方案 P2 的地区参考卡片英文分类来自共用项目类别表遗漏了 `Commercial Fit-Out`，地区页已经调用 `translateProjectType`。本批补齐单条精确双语映射，中文显示“商业空间装修”，英文保持原标签；不修改项目数据库记录或各地区页面。该项归 projects 模块的 i18n 展示层，不引入跨模块内部调用。
+
+### 本批实际验证与未完成项
+
+- Node22.20.0安装成功；完整120文件1082单元测试、类型、lint、架构、语言和界面文本检查通过。分类补充后，现有地区页/显示标签14项测试与语言检查再次通过。
+- 生产构建成功；响应式图片预生成约4分钟，未重启或绕过。构建生成文件不并入源码交付。
+- Vite前端预览15项浏览器测试通过，覆盖5配置45次核心页面访问；候选地区页桌面中文分类、390手机中文分类与无横向溢出、手机真实切换英文及原英文标签均读回通过。此项不等于Cloudflare Worker验收。
+- 本地Cloudflare预览失败：Wrangler 4.95.0默认选择当前2026-10-02兼容日期，但其workerd只支持到2026-06-02。没有降低兼容日期来改写结果；升级获许可后必须复测。
+- 本批尚未合并或生产部署；真实Telegram接收渠道、生产联系/报价保存与后台/通知去重仍未闭环。旧包32表72媒体恢复不覆盖Auth/schema，完整恢复仍未签收。
+
+### 本批 Architecture Compliance Report
+
+1. Target modules: system、projects。
+2. Target layers: 依赖清单/锁文件、既有i18n展示层。
+3. Edited files: package.json、package-lock.json、src/i18n/displayLabels.ts、本发布文档。
+4. Forbidden files touched: no。
+5. API paths changed: no。
+6. Database access changed: no。
+7. Cross-module dependency introduced: no。
+8. Business behavior changed: 仅中文类别显示补全；提交、通知与权限不变。
+9. arch:check result: PASS。
+10. Remaining architecture risk: 跨版本图片/部署工具须获具体许可并完成回归；不能以本批前端预览通过替代Cloudflare与真实业务验收。
