@@ -498,6 +498,13 @@ const Quote = () => {
                     </li>
                   ))}
                 </ul>
+                <section className="mt-6 border-t border-border/60 pt-5 text-left" aria-labelledby="quote-preparation-title">
+                  <h3 id="quote-preparation-title" className="mb-3 font-display text-lg font-bold">{t.preparation.heading}</h3>
+                  <p className="mb-3 text-sm leading-relaxed text-muted-foreground">{t.preparation.paragraphOne}</p>
+                  <p className="text-sm leading-relaxed text-muted-foreground">
+                    {t.preparation.paragraphTwoBeforeLink}<LocalizedLink to="/blog/renovation-quotation-checklist-malaysia" className="font-medium text-accent underline underline-offset-4">{t.preparation.linkText}</LocalizedLink>{t.preparation.paragraphTwoAfterLink}
+                  </p>
+                </section>
               </div>
 
               <div className="subpage-side-panel subpage-side-panel--centered mt-6 p-6">

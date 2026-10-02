@@ -1,0 +1,397 @@
+{
+  "task_id": "fc-20260928-seo-geo-50-daily-gap-review-v1",
+  "parent_audit_task_id": "fc-20260927-keyword-page-content-coverage-audit-v1",
+  "candidate_version": "organic-50-original-unreviewed-safe-content-v16-20261003",
+  "candidate_id": "QUOTE-SITE-REVIEW-PREP-01",
+  "action_id": "d2-original-unreviewed-safe-content-continuation-0231",
+  "backlog_item_id": "ORG-020",
+  "related_backlog_refs": [
+    "ORG-008"
+  ],
+  "research_owner": "seo-content-research",
+  "next_owner": "operations",
+  "implementation_owner": "content-organic-website",
+  "independent_QA_owner": "qa",
+  "status": "R0_AUTHOR_CANDIDATE_PENDING_INDEPENDENT_QA",
+  "priority": "P2",
+  "risk_level": "R0_RESEARCH; IMPLEMENTATION_R1_OR_R2_DEPENDS_ON_ACTUAL_SOURCE",
+  "new_pages": 0,
+  "new_keyword_keys": 0,
+  "bilingual_modules": 1,
+  "new_paragraphs": 4,
+  "new_same_language_links": 2,
+  "original_intent_keys": [
+    "en|interior design site visit",
+    "en|project requirements",
+    "en|site assessment",
+    "zh|全屋设计需求沟通",
+    "zh|找设计公司上门看房",
+    "zh|现场评估",
+    "zh|装修现场测量要准备什么",
+    "zh|项目需求"
+  ],
+  "demand_status_by_key": [
+    {
+      "keyword_key": "en|interior design site visit",
+      "source_category": "EDITORIAL_UNVALIDATED",
+      "query_demand": "UNVALIDATED_QUERY_DEMAND",
+      "volume": "DATA_MISSING",
+      "current_rank": "NOT_MEASURED",
+      "source_refs": [
+        {
+          "source_id": "design810",
+          "source_row_id": "DKW-0605",
+          "source_path": "drafts/seo/fc-20260927-interior-design-keyword-plan-v1/design-keyword-map.csv",
+          "source_sha256": "eab97a194a69dd3acfac7f1732c6f9eff1bb189953e77d99a9af1502ed136a11",
+          "source_record_date": "2026-09-27",
+          "source_record_date_kind": "DATED_SOURCE_PATH",
+          "observed_date": "",
+          "data_end": "",
+          "window_label": "",
+          "extracted_at": "",
+          "research_source_url": ""
+        }
+      ]
+    },
+    {
+      "keyword_key": "en|project requirements",
+      "source_category": "EDITORIAL_UNVALIDATED",
+      "query_demand": "UNVALIDATED_QUERY_DEMAND",
+      "volume": "DATA_MISSING",
+      "current_rank": "NOT_MEASURED",
+      "source_refs": [
+        {
+          "source_id": "core22",
+          "source_row_id": "17",
+          "source_path": "drafts/seo/fc-20260913-core-query-page-ownership-map-v1.csv",
+          "source_sha256": "3fca06f1bd9f2c2b5cb15f7a65472c1e10004e8c09d9fb23231b9fd63ad4042f",
+          "source_record_date": "2026-09-13",
+          "source_record_date_kind": "DATED_SOURCE_PATH",
+          "observed_date": "",
+          "data_end": "",
+          "window_label": "",
+          "extracted_at": "",
+          "research_source_url": ""
+        }
+      ]
+    },
+    {
+      "keyword_key": "en|site assessment",
+      "source_category": "EDITORIAL_UNVALIDATED",
+      "query_demand": "UNVALIDATED_QUERY_DEMAND",
+      "volume": "DATA_MISSING",
+      "current_rank": "NOT_MEASURED",
+      "source_refs": [
+        {
+          "source_id": "core22",
+          "source_row_id": "17",
+          "source_path": "drafts/seo/fc-20260913-core-query-page-ownership-map-v1.csv",
+          "source_sha256": "3fca06f1bd9f2c2b5cb15f7a65472c1e10004e8c09d9fb23231b9fd63ad4042f",
+          "source_record_date": "2026-09-13",
+          "source_record_date_kind": "DATED_SOURCE_PATH",
+          "observed_date": "",
+          "data_end": "",
+          "window_label": "",
+          "extracted_at": "",
+          "research_source_url": ""
+        }
+      ]
+    },
+    {
+      "keyword_key": "zh|全屋设计需求沟通",
+      "source_category": "EDITORIAL_UNVALIDATED",
+      "query_demand": "UNVALIDATED_QUERY_DEMAND",
+      "volume": "DATA_MISSING",
+      "current_rank": "NOT_MEASURED",
+      "source_refs": [
+        {
+          "source_id": "design810",
+          "source_row_id": "DKW-0592",
+          "source_path": "drafts/seo/fc-20260927-interior-design-keyword-plan-v1/design-keyword-map.csv",
+          "source_sha256": "eab97a194a69dd3acfac7f1732c6f9eff1bb189953e77d99a9af1502ed136a11",
+          "source_record_date": "2026-09-27",
+          "source_record_date_kind": "DATED_SOURCE_PATH",
+          "observed_date": "",
+          "data_end": "",
+          "window_label": "",
+          "extracted_at": "",
+          "research_source_url": ""
+        }
+      ]
+    },
+    {
+      "keyword_key": "zh|找设计公司上门看房",
+      "source_category": "EDITORIAL_UNVALIDATED",
+      "query_demand": "UNVALIDATED_QUERY_DEMAND",
+      "volume": "DATA_MISSING",
+      "current_rank": "NOT_MEASURED",
+      "source_refs": [
+        {
+          "source_id": "design810",
+          "source_row_id": "DKW-0595",
+          "source_path": "drafts/seo/fc-20260927-interior-design-keyword-plan-v1/design-keyword-map.csv",
+          "source_sha256": "eab97a194a69dd3acfac7f1732c6f9eff1bb189953e77d99a9af1502ed136a11",
+          "source_record_date": "2026-09-27",
+          "source_record_date_kind": "DATED_SOURCE_PATH",
+          "observed_date": "",
+          "data_end": "",
+          "window_label": "",
+          "extracted_at": "",
+          "research_source_url": ""
+        }
+      ]
+    },
+    {
+      "keyword_key": "zh|现场评估",
+      "source_category": "EDITORIAL_UNVALIDATED",
+      "query_demand": "UNVALIDATED_QUERY_DEMAND",
+      "volume": "DATA_MISSING",
+      "current_rank": "NOT_MEASURED",
+      "source_refs": [
+        {
+          "source_id": "core22",
+          "source_row_id": "18",
+          "source_path": "drafts/seo/fc-20260913-core-query-page-ownership-map-v1.csv",
+          "source_sha256": "3fca06f1bd9f2c2b5cb15f7a65472c1e10004e8c09d9fb23231b9fd63ad4042f",
+          "source_record_date": "2026-09-13",
+          "source_record_date_kind": "DATED_SOURCE_PATH",
+          "observed_date": "",
+          "data_end": "",
+          "window_label": "",
+          "extracted_at": "",
+          "research_source_url": ""
+        }
+      ]
+    },
+    {
+      "keyword_key": "zh|装修现场测量要准备什么",
+      "source_category": "EDITORIAL_UNVALIDATED",
+      "query_demand": "UNVALIDATED_QUERY_DEMAND",
+      "volume": "DATA_MISSING",
+      "current_rank": "NOT_MEASURED",
+      "source_refs": [
+        {
+          "source_id": "longtail61",
+          "source_row_id": "UTL-11",
+          "source_path": "drafts/seo/fc-20260920-chinese-longtail-keyword-expansion/keyword-landing-page-map.csv",
+          "source_sha256": "4831c1b2846765d09d560a6fd8e8596b030a53ddedd20e0b645c92e172a50d7d",
+          "source_record_date": "2026-09-20",
+          "source_record_date_kind": "DATED_SOURCE_PATH",
+          "observed_date": "",
+          "data_end": "",
+          "window_label": "",
+          "extracted_at": "",
+          "research_source_url": ""
+        }
+      ]
+    },
+    {
+      "keyword_key": "zh|项目需求",
+      "source_category": "EDITORIAL_UNVALIDATED",
+      "query_demand": "UNVALIDATED_QUERY_DEMAND",
+      "volume": "DATA_MISSING",
+      "current_rank": "NOT_MEASURED",
+      "source_refs": [
+        {
+          "source_id": "core22",
+          "source_row_id": "18",
+          "source_path": "drafts/seo/fc-20260913-core-query-page-ownership-map-v1.csv",
+          "source_sha256": "3fca06f1bd9f2c2b5cb15f7a65472c1e10004e8c09d9fb23231b9fd63ad4042f",
+          "source_record_date": "2026-09-13",
+          "source_record_date_kind": "DATED_SOURCE_PATH",
+          "observed_date": "",
+          "data_end": "",
+          "window_label": "",
+          "extracted_at": "",
+          "research_source_url": ""
+        }
+      ]
+    }
+  ],
+  "changes": [
+    {
+      "language": "en",
+      "canonical": "https://flashcast.com.my/en/quote",
+      "original_brief_id": "KB-U2b8a8c42f67b",
+      "original_keyword_keys": [
+        "en|interior design site visit",
+        "en|project requirements",
+        "en|site assessment"
+      ],
+      "before_public": {
+        "path": "drafts/seo/fc-20260928-seo-geo-50-daily-gap-review-v1/seo-content-research/organic-50-original-unreviewed-safe-content-v16-20261003/public/en_quote.json",
+        "sha256": "c194cdc1226441360a778eeac84ed2d7ddc9be16012f25cbd9062940fd3eef3e",
+        "size": 6645
+      },
+      "before_main_text_sha256": "cbef8f58ae1f1ac44bf3afb36399283c3322087d2394be384a27d1040ea16db8",
+      "before": {
+        "insert_after_exact_text": "Project scope and after-sales terms confirmed in the quotation",
+        "insert_before_exact_heading": "Prefer to Chat?",
+        "target_link_before_occurrences_in_main": 0,
+        "preparation_heading_before_occurrences": 0
+      },
+      "after": {
+        "heading": "What should I prepare before a design discussion or site review?",
+        "paragraphs": [
+          "List the rooms or built-in items you want to change, what should stay, and how the space needs to support daily use and storage. Include the location, current site photos and known problems, approximate area and a budget direction. Mark details you do not yet know rather than guessing.",
+          "If a site review is agreed, confirm who can provide access and whether building or landlord arrangements apply. Note the areas you want reviewed; dimensions and site conditions still need checking. Confirm the appointment, any applicable travel charge and the final scope separately. To prepare the items to compare in a quotation, read the renovation quotation checklist."
+        ],
+        "link_anchor": "renovation quotation checklist",
+        "link_href": "/en/blog/renovation-quotation-checklist-malaysia",
+        "after_anchor": "Project scope and after-sales terms confirmed in the quotation",
+        "before_anchor": "Prefer to Chat?"
+      },
+      "proposed_html_fragment": "<h3>What should I prepare before a design discussion or site review?</h3>\n<p>List the rooms or built-in items you want to change, what should stay, and how the space needs to support daily use and storage. Include the location, current site photos and known problems, approximate area and a budget direction. Mark details you do not yet know rather than guessing.</p>\n<p>If a site review is agreed, confirm who can provide access and whether building or landlord arrangements apply. Note the areas you want reviewed; dimensions and site conditions still need checking. Confirm the appointment, any applicable travel charge and the final scope separately. To prepare the items to compare in a quotation, read the <a href=\"/en/blog/renovation-quotation-checklist-malaysia\">renovation quotation checklist</a>.</p>",
+      "exact_diff": {
+        "path": "drafts/seo/fc-20260928-seo-geo-50-daily-gap-review-v1/seo-content-research/organic-50-original-unreviewed-safe-content-v16-20261003/quote-preparation-en.diff",
+        "sha256": "fd05d76fb64ecda03c4efae07169bc2c7ca12b36819cf0b8ec01bde42224a35b",
+        "size": 1027
+      },
+      "supporting_link_current_evidence": {
+        "path": "drafts/seo/fc-20260928-seo-geo-50-daily-gap-review-v1/seo-content-research/organic-50-original-unreviewed-safe-content-v16-20261003/public/en_quotation_checklist.json",
+        "sha256": "cadca79be30f8d0e70d099d316ef0d73d2a9108e74146dedc0b7ace285d6b54e",
+        "size": 11361
+      },
+      "preserve_existing_floorplan_helper_candidate": {
+        "source": {
+          "path": "drafts/seo/fc-20260929-seo-content-research-daily/keyword-page-content-next-wave-v2-1449/candidate-manifest.json",
+          "sha256": "42cd4d6f3820bc96f16ee540af56a9cb5191c7ea6a6a601e35d683b075f5105e",
+          "size": 8830
+        },
+        "candidate_id": "QUOTE-FLOORPLAN-INTAKE-01",
+        "placement": "Original under project-details/site-photo guidance; separate from this below-benefits preparation block."
+      },
+      "source_binding": "UNBOUND_PUBLIC_TEXT_ONLY_D1_MUST_IDENTIFY_EXACT_ACTUAL_OWNER_FIELD_OR_RENDERER",
+      "not_raw_CMS_CAS": true
+    },
+    {
+      "language": "zh",
+      "canonical": "https://flashcast.com.my/zh/quote",
+      "original_brief_id": "KB-Ue29f8b2100ec",
+      "original_keyword_keys": [
+        "zh|全屋设计需求沟通",
+        "zh|找设计公司上门看房",
+        "zh|现场评估",
+        "zh|装修现场测量要准备什么",
+        "zh|项目需求"
+      ],
+      "before_public": {
+        "path": "drafts/seo/fc-20260928-seo-geo-50-daily-gap-review-v1/seo-content-research/organic-50-original-unreviewed-safe-content-v16-20261003/public/zh_quote.json",
+        "sha256": "12fdde6ed791f17bcb824bad348c139a51e0695b5fc1dcc482451ad098f33d79",
+        "size": 6883
+      },
+      "before_main_text_sha256": "f2cc476705ee8694be3ca2b1d29eca89573abfd3d5e2d15938ce18261c294189",
+      "before": {
+        "insert_after_exact_text": "项目范围与售后条款会在报价或项目文件中确认",
+        "insert_before_exact_heading": "想先聊一聊？",
+        "target_link_before_occurrences_in_main": 0,
+        "preparation_heading_before_occurrences": 0
+      },
+      "after": {
+        "heading": "设计沟通或现场查看前，要准备什么？",
+        "paragraphs": [
+          "先列出想调整的房间或定制柜项目、希望保留的部分，以及日常使用和收纳需求。补充项目地点、当前现场照片与已知问题、大约面积和预算方向；尚未确定的资料可以注明待确认，不必猜测。",
+          "如双方确认需要现场查看，先确定谁能安排进入现场，以及是否涉及管理处或房东的出入安排，并列出希望重点查看的位置；尺寸和现场条件仍需核对。预约时间、适用交通费用及最终范围需另行确认。整理报价比较项目时，可参阅装修报价范围核对清单。"
+        ],
+        "link_anchor": "装修报价范围核对清单",
+        "link_href": "/zh/blog/renovation-quotation-checklist-malaysia",
+        "after_anchor": "项目范围与售后条款会在报价或项目文件中确认",
+        "before_anchor": "想先聊一聊？"
+      },
+      "proposed_html_fragment": "<h3>设计沟通或现场查看前，要准备什么？</h3>\n<p>先列出想调整的房间或定制柜项目、希望保留的部分，以及日常使用和收纳需求。补充项目地点、当前现场照片与已知问题、大约面积和预算方向；尚未确定的资料可以注明待确认，不必猜测。</p>\n<p>如双方确认需要现场查看，先确定谁能安排进入现场，以及是否涉及管理处或房东的出入安排，并列出希望重点查看的位置；尺寸和现场条件仍需核对。预约时间、适用交通费用及最终范围需另行确认。整理报价比较项目时，可参阅<a href=\"/zh/blog/renovation-quotation-checklist-malaysia\">装修报价范围核对清单</a>。</p>",
+      "exact_diff": {
+        "path": "drafts/seo/fc-20260928-seo-geo-50-daily-gap-review-v1/seo-content-research/organic-50-original-unreviewed-safe-content-v16-20261003/quote-preparation-zh.diff",
+        "sha256": "fd875a24ce9258defa2e4c80695692cf02126393bab60a205fa6df9338e9267d",
+        "size": 954
+      },
+      "supporting_link_current_evidence": {
+        "path": "drafts/seo/fc-20260928-seo-geo-50-daily-gap-review-v1/seo-content-research/organic-50-original-unreviewed-safe-content-v16-20261003/public/zh_quotation_checklist.json",
+        "sha256": "3a7df19c32714a56dddabb94e8ac67aa26fb70c3c05e3b2cd253de3115f6c52e",
+        "size": 10422
+      },
+      "preserve_existing_floorplan_helper_candidate": {
+        "source": {
+          "path": "drafts/seo/fc-20260929-seo-content-research-daily/keyword-page-content-next-wave-v2-1449/candidate-manifest.json",
+          "sha256": "42cd4d6f3820bc96f16ee540af56a9cb5191c7ea6a6a601e35d683b075f5105e",
+          "size": 8830
+        },
+        "candidate_id": "QUOTE-FLOORPLAN-INTAKE-01",
+        "placement": "Original under project-details/site-photo guidance; separate from this below-benefits preparation block."
+      },
+      "source_binding": "UNBOUND_PUBLIC_TEXT_ONLY_D1_MUST_IDENTIFY_EXACT_ACTUAL_OWNER_FIELD_OR_RENDERER",
+      "not_raw_CMS_CAS": true
+    }
+  ],
+  "fact_basis": [
+    {
+      "source": {
+        "path": "company-context.md",
+        "sha256": "9252e2bf2a9f509d52ccc9fd030ecf49848454889da4c88833acecf3c414ab01",
+        "size": 2849
+      },
+      "support": "Site measurement/planning/material advice/quotation support; visits by prior arrangement; no fixed total price before assessment."
+    },
+    {
+      "source": {
+        "path": "services-and-pricing.md",
+        "sha256": "b1ef8c9b6be8eff1d5f0254b55114a9cb407fec81c4f573d0216f9dd76a2b3b3",
+        "size": 4050
+      },
+      "support": "Interior design and custom built-in service directions; scope assessed by site dimensions, intended use, materials and installation."
+    },
+    {
+      "source": {
+        "path": "faq.md",
+        "sha256": "d6cc3d3136c6c068061aed8ee9db9ab0a32abba3ba28ec3a6635786cc7ca4291",
+        "size": 2325
+      },
+      "support": "Location, site photos, intended scope preparation; actual design deliverables and charges remain confirmation dependent."
+    },
+    {
+      "source": {
+        "path": "service-area.md",
+        "sha256": "d03a600b50b8e64987b4e229a3d2f0dfe8256c684019a6f74d34eb2ac50fb85b",
+        "size": 2476
+      },
+      "support": "30km rule has conditions; farther travel fee unspecified. Candidate uses conditional confirmation, no new radius promise."
+    }
+  ],
+  "editorial_advice_not_new_company_promise": [
+    "List desired/retained spaces and usage",
+    "Record known problems and unknown inputs",
+    "Arrange authorised site access if a visit is mutually agreed",
+    "Confirm appointment/travel charges/scope individually"
+  ],
+  "deduplication": {
+    "materials_hub_FAQ": "Reuse MAT-HUB-FAQ-01, no new copy.",
+    "floorplan_upload": "Reuse QUOTE-FLOORPLAN-INTAKE-01; no upload feature or confirmed transfer method.",
+    "quotation_guide": "Current existing article retained; only one new contextual link per quote language.",
+    "original_service_guide_link_candidate": {
+      "path": "drafts/seo/fc-20260928-keyword-page-answer-implementation-v1/renovation-guide-links-candidate-v1.json",
+      "sha256": "309a68c85563089fa86ecb2663cfd72db54a9e0dfe7865df604b998f71a75b0e",
+      "size": 22186
+    },
+    "NO07_NO08_NO10_and_other_active_scopes": "Excluded without another public recheck or copied answer."
+  },
+  "SEO_GEO_rationale": "Supports the existing quote action with a short direct answer to preparation intent and a descriptive same-language link to an existing detailed quotation guide. This is an understanding/discovery opportunity, not evidence of Google indexing, ranking, AI citation, recommendation or lead lift.",
+  "source_and_channel_gate": "D1 must identify the true quote explanatory source. If an existing CMS content field owns it, bind fresh exact fields/CAS and protected CMS route. If renderer/i18n owns it, use the existing site code candidate route. Do not invent a CMS field, duplicate the explanatory source, modify form behaviour, or hardcode existing CMS content into frontend.",
+  "QA_acceptance": [
+    "Verify original8 preparation keys and conditional scope, EN/ZH equivalence; generic action2 and old floorplan2 not counted as new8.",
+    "One block per language after the existing benefit list and before Prefer to Chat/想先聊一聊; all original paragraphs, bullets, form fields, validation, privacy and contact routes preserved.",
+    "Keep existing floorplan helper at its original independent location; no duplicate helper or upload capability claim.",
+    "New quotation-checklist anchor once per page, ordinary crawlable a/href, same-language actual destination; existing reverse guide-to-quote link retained.",
+    "No fixed price, travel fee amount, free design, visit booked from submission, safe-site assessment result, time guarantee, new product/stock/case/credential claim.",
+    "Raw owner/source and route identified; exact before/after diff, fresh CAS or Git source, correct preview, backups and rollback independently checked.",
+    "If concurrent candidate already supplies the same scoped preparation or link, reuse it rather than apply twice."
+  ],
+  "D1_postimplementation_acceptance": [
+    "Actual authorised Save ID or matching code deployment SHA plus locked channel and correct exact QA gates.",
+    "Both public quote URLs self-canonical/correct language and original controls/privacy unchanged; block and link each appear once at specified location.",
+    "Supporting EN/ZH article still has nonempty relevant body and self-canonical; link does not redirect languages.",
+    "No form submission/real customer payload in this content-only test; delivery and booking outcome separate NOT_MEASURED."
+  ],
+  "website_modified": false,
+  "published": false,
+  "approval_required_for_R0": false,
+  "business_goal_closed": false
+}
