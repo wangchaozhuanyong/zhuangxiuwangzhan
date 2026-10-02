@@ -1,5 +1,4 @@
-import { ArrowUpRight } from "lucide-react";
-import SmartImage from "@/components/SmartImage";
+import { Armchair, ArrowUpRight } from "lucide-react";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { furnitureText } from "@/i18n/furnitureText";
 import { furnitureShopUrl } from "@/lib/furnitureCatalogConfig";
@@ -10,19 +9,12 @@ export default function FurnitureFloatingLink() {
 
   return (
     <a className="fc-furniture-floating" lang={language} href={furnitureShopUrl} target="_blank" rel="noopener noreferrer" aria-label={copy.floatingShop}>
-      <SmartImage
-        className="fc-furniture-floating__photo"
-        src="/images/heroes/v20260930/furniture-showcase.webp"
-        alt=""
-        width={360}
-        height={240}
-        sizes="80px"
-        candidateWidths={[360]}
-        loading="eager"
-        fetchPriority="low"
-      />
-      <span className="fc-furniture-floating__label">{copy.floating}</span>
-      <ArrowUpRight className="fc-furniture-floating__arrow" size={15} strokeWidth={1.8} aria-hidden="true" />
+      <span className="fc-furniture-floating__icon" aria-hidden="true"><Armchair strokeWidth={1.8} /></span>
+      <span className="fc-furniture-floating__copy">
+        <span className="fc-furniture-floating__label">{copy.floating}</span>
+        <span className="fc-furniture-floating__hint" aria-hidden="true">{copy.openShopHomepage}</span>
+      </span>
+      <ArrowUpRight className="fc-furniture-floating__arrow" strokeWidth={1.8} aria-hidden="true" />
     </a>
   );
 }

@@ -191,6 +191,14 @@
 }
 
 @media (min-width: 1024px) {
+  /* Give split intro panels the same framed surface as the content cards below. */
+  .scheme-a-public-shell .fc-route-page .fc-route-hero[data-route-hero-layout="framed-split"] .fc-route-hero-media + .fc-route-hero-copy {
+    padding: clamp(28px, 3vw, 48px);
+    border: 1px solid var(--public-border);
+    border-radius: 8px;
+    background: var(--public-surface-card);
+  }
+
   .scheme-a-public-shell .fc-route-page .fc-route-hero[data-route-hero-layout="media-only"] .fc-route-hero-media {
     width: calc((100% - 32px) * 0.56);
     height: clamp(440px, 35vw, 560px);
