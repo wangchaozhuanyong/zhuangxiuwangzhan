@@ -1563,7 +1563,7 @@ const fetchDynamicRouteState = async (
     if (!routeMatch?.[1]) continue;
     const slug = decodeURIComponent(routeMatch[1]);
     const readResult = await fetchFreshPublicRowsResult(env, route.table, (url) => {
-      url.searchParams.set("select", route.kind === "blog" && slug === "renovation-materials-malaysia" ? `${BLOG_EDGE_META_SELECT},content_en,content_zh,status` : route.select || "*");
+      url.searchParams.set("select", route.kind === "blog" && (slug === "renovation-materials-malaysia" || slug === "small-condo-storage-design-ideas") ? `${BLOG_EDGE_META_SELECT},content_en,content_zh,status` : route.select || "*");
       url.searchParams.set("status", "eq.published");
       url.searchParams.set("slug", `eq.${slug}`);
       if (route.category) url.searchParams.set("category", `eq.${route.category}`);
@@ -2445,7 +2445,7 @@ export const onRequest: PagesFunction = async (context) => {
   ]);
 
   const html = await response.text();
-  const readableBody = buildReadablePublicBody(key, dynamicRouteState?.row)
+  const readableBody = buildReadablePublicBody(key, dynamicRouteState?.row, siteSettings)
     || buildReadableRenovationBodyMarkup(key, dynamicRouteState);
   let transformed = meta ? injectSeo(html, meta, siteSettings, readableBody) : injectNoIndexNotFound(html, siteSettings);
   let publicDataOmitted = false;

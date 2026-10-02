@@ -154,6 +154,12 @@ const OldHouseRenovation = () => {
         <SchemeALinkGrid items={contextLinks} actionLabel={t.resourceAction} />
       </SchemeASection>
 
+      {t.planningAnswers.map((answer) => (
+        <SchemeASection key={answer.title} title={answer.title} description={answer.paragraph}>
+          {null}
+        </SchemeASection>
+      ))}
+
       <SchemeASection title={t.faqTitle} description={t.faqDescription}>
         <SchemeAFaqList items={t.faqs.map((item) => ({ question: item.q, answer: item.a }))} />
         <div className="fc-route-action-panel">

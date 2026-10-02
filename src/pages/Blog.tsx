@@ -11,7 +11,7 @@ import { blogCategoryFilters, blogPageText, blogTopicText } from "@/i18n/blogPag
 import { schemeARouteText } from "@/i18n/schemeAText";
 import { translateBlogCategory, translateDisplayText } from "@/i18n/displayLabels";
 import { formatBlogDate, formatBlogReadTime } from "@/lib/blogMeta";
-import { BLOG_TOPIC_KEYS, BLOG_TOPIC_SERVICE_PATHS, resolveBlogTopic } from "@/lib/blogTopics";
+import { BLOG_TOPIC_KEYS, BLOG_TOPIC_SERVICE_PATHS, getBlogTopicGuides, resolveBlogTopic } from "@/lib/blogTopics";
 import { pageHeroImages, resolvePageHeroImage } from "@/lib/pageHeroImages";
 import { getBlogEditorialMedia } from "@/lib/blogEditorialMedia";
 import Link from "@/components/LocalizedLink";
@@ -70,7 +70,7 @@ export default function Blog() {
       <SchemeASection title={topicCopy.heading} description={topicCopy.description} className="fc-blog-topics">
         <div className="fc-blog-topics__grid">
           {BLOG_TOPIC_KEYS.map((topicKey) => {
-            const topicPosts = posts.filter((post) => resolveBlogTopic(post.category, post.slug) === topicKey).slice(0, 3);
+            const topicPosts = getBlogTopicGuides(posts, topicKey);
             const topic = topicCopy.topics[topicKey];
             return (
               <article key={topicKey} className="fc-blog-topic-card">

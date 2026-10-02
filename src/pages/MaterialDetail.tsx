@@ -11,7 +11,8 @@ import { translateDisplayText, translateMaterialCategory, translateMaterialType,
 import { materialDetailPageText } from "@/i18n/materialDetailPageText";
 import { schemeARouteText } from "@/i18n/schemeAText";
 import { mergeMaterialCategoriesWithFallback } from "@/lib/materialCatalog";
-import { stripHtml } from "@/lib/text";
+import { isHtmlText, plainTextParagraphs, stripHtml } from "@/lib/text";
+import { sanitizeServiceOverviewHtml } from "@/lib/serviceOverviewHtml";
 
 const format = (text: string, values: Record<string, string | number>) => Object.entries(values).reduce((current, [key, value]) => current.replaceAll(`{${key}}`, String(value)), text);
 
@@ -30,9 +31,13 @@ export default function MaterialDetail() {
 
   const name = translateDisplayText(material.name, language);
   const categoryName = translateMaterialCategory(category.name, language);
-  const description = stripHtml(translateDisplayText(material.description, language));
+  const rawDescription = material.description || "";
+  const description = stripHtml(translateDisplayText(material.excerpt || category.description || "", language));
+  const body = stripHtml(rawDescription) === description ? "" : rawDescription;
+  const richBody = isHtmlText(body) ? sanitizeServiceOverviewHtml(body, language, { preserveLists: true }) : "";
+  const paragraphs = richBody ? [] : plainTextParagraphs(body);
   const related = category.items.filter((item) => item.slug !== slug);
-  const relatedItems: SchemeAListingItem[] = related.slice(0, 4).map((item) => ({ id: String(item.id), title: translateDisplayText(item.name, language), description: translateDisplayText(item.description, language), meta: translateMaterialType(item.type, language), image: item.image, mediaDisclosure: isReviewedMaterialConceptImage(item.image) ? mediaLabels[language].materialPalette : undefined, imageAlt: item.alt || item.name, href: `/materials/${item.slug}` }));
+  const relatedItems: SchemeAListingItem[] = related.slice(0, 4).map((item) => ({ id: String(item.id), title: translateDisplayText(item.name, language), description: stripHtml(translateDisplayText(item.excerpt || item.description, language)), meta: translateMaterialType(item.type, language), image: item.image, mediaDisclosure: isReviewedMaterialConceptImage(item.image) ? mediaLabels[language].materialPalette : undefined, imageAlt: item.alt || item.name, href: `/materials/${item.slug}` }));
   const galleryImages = [
     ...(material.gallery || []).map((image) => ({ src: image.image, alt: image.alt || name })),
     ...(material.image ? [{ src: material.image, alt: material.alt || name }] : []),
@@ -45,7 +50,7 @@ export default function MaterialDetail() {
 
   return (
     <main className="fc-route-page">
-      <PageMeta title={format(copy.metaTitle, { name })} description={format(copy.metaDescription, { description, spaces: material.suitableSpaces.map((space: string) => translateSpaceLabel(space, language)).join(language === "zh" ? "、" : ", ") })} keywords={format(copy.metaKeywords, { name, category: categoryName })} canonicalPath={`/materials/${material.slug}`} ogImage={material.image || undefined} />
+      <PageMeta title={material.seoTitle || format(copy.metaTitle, { name })} description={material.seoDescription || format(copy.metaDescription, { description, spaces: material.suitableSpaces.map((space: string) => translateSpaceLabel(space, language)).join(language === "zh" ? "、" : ", ") })} keywords={format(copy.metaKeywords, { name, category: categoryName })} canonicalPath={`/materials/${material.slug}`} ogImage={material.image || undefined} />
       <JsonLdBreadcrumb items={[{ name: copy.breadcrumbHome, url: "/" }, { name: copy.breadcrumbMaterials, url: "/materials" }, { name: categoryName, url: `/materials/category/${category.slug}` }, { name, url: `/materials/${material.slug}` }]} />
       <SchemeARouteHero kind="detail" image={material.image} mediaDisclosure={isReviewedMaterialConceptImage(material.image) ? mediaLabels[language].materialPalette : undefined} imageAlt={material.alt || name} label={categoryName} title={name} description={description} />
       {!material.image ? <SchemeAContentState action={<Link to="/contact">{copy.enquire}</Link>}>{copy.sampleImagePending}</SchemeAContentState> : null}
@@ -55,10 +60,11 @@ export default function MaterialDetail() {
         { label: copy.texture, value: translateDisplayText(material.texture || "-", language) },
         { label: copy.category, value: categoryName },
       ]} />
-      <SchemeASection title={routeText.materialConsiderations} description={description}>
+      <SchemeASection title={routeText.materialConsiderations}>
+        {richBody ? <div className="fc-route-service-overview-copy [&_ul]:list-disc [&_ul]:pl-6 [&_ol]:list-decimal [&_ol]:pl-6 [&_li]:mb-2" dangerouslySetInnerHTML={{ __html: richBody }} /> : paragraphs.length ? <div className="fc-route-service-overview-copy">{paragraphs.map((paragraph, index) => <p key={index}>{translateDisplayText(paragraph, language)}</p>)}</div> : null}
         <SchemeANumberList items={judgementItems} />
       </SchemeASection>
-      {galleryImages.length ? <SchemeASection title={routeText.materialContext} description={translateDisplayText(material.recommendedPairing || material.note || description, language)}>
+      {galleryImages.length ? <SchemeASection title={routeText.materialContext} description={translateDisplayText(material.recommendedPairing || material.note || "", language)}>
         <SchemeAGallery images={galleryImages} />
       </SchemeASection> : null}
       {relatedItems.length ? <SchemeASection title={format(copy.more, { name: categoryName })}><SchemeAListingGrid items={relatedItems} actionLabel={copy.view} /></SchemeASection> : null}

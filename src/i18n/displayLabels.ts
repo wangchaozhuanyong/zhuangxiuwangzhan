@@ -510,6 +510,8 @@ const displayTextReplacements = Object.entries({
   .map(([key, value]) => ({ key, value }));
 
 const extraZhTextReplacements: Record<string, string> = {
+  "Built-in and walk-in wardrobes with modern sliding or swing doors.": "内嵌式衣柜与步入式衣帽间，可结合空间规划推拉门或平开门。",
+  "Multi-purpose storage solutions for every room.": "适用于不同房间用途的多用途收纳规划。",
   "Permit & Drawing Support": "装修准证与图纸支持",
   "Review renovation approval, management, drawing, and document-coordination needs against the property and confirmed project scope.": "根据房产类型与已确认项目范围，检查装修审批、管理方、图纸与文件协调需求。",
   "Smoked Glass and Walnut": "烟熏玻璃与胡桃木",
@@ -788,4 +790,43 @@ export const translateDisplayText = (value: string, language: Language) => {
     .replace(/([\u4e00-\u9fff])\s+([\u4e00-\u9fff])/g, "$1$2")
     .replace(/\s{2,}/g, " ")
     .trim();
+};
+
+// Exact shared project labels only; CMS prose and unrelated slugs remain untouched.
+const reviewedProjectLabels: Record<string, Partial<Record<"scope" | "materials", Record<string, string>>>> = {
+  "puchong-home-library-built-in": {
+    "scope": {
+      "Bookcase": "整墙书柜",
+      "Integrated desk": "一体式书桌",
+      "Display lighting": "展示灯光",
+      "Storage bench": "收纳坐凳"
+    }
+  },
+  "subang-jaya-restaurant-fit-out": {
+    "scope": {
+      "Dining area": "用餐区",
+      "Booth seating": "卡座",
+      "Ceiling feature": "天花造型"
+    }
+  },
+  "kepong-tv-feature-wall-storage": {
+    "scope": {
+      "Floating console": "悬浮电视柜",
+      "Display niche": "展示格",
+      "Cable concealment": "线路隐藏"
+    }
+  },
+  "ampang-landed-exterior-repaint": {
+    "scope": {
+      "Exterior repaint": "外墙重漆",
+      "Stone feature": "石材造型",
+      "Porch lighting": "门廊灯光",
+      "Driveway refresh": "车道翻新"
+    }
+  }
+};
+
+export const translateProjectScopedLabel = (value: string, language: Language, slug: string, field: "scope" | "materials") => {
+  if (language !== "zh") return value;
+  return reviewedProjectLabels[slug]?.[field]?.[value] ?? translateDisplayText(value, language);
 };

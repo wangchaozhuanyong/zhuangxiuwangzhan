@@ -273,7 +273,8 @@ const Contact = () => {
                   </div>
                 ) : (
                   <>
-                    <h2 id="contact-form-title" tabIndex={-1} className="font-display text-2xl font-bold mb-6">{t.formTitle}</h2>
+                    <h2 id="contact-form-title" tabIndex={-1} className="font-display text-2xl font-bold mb-3">{t.formTitle}</h2>
+                    <p id="contact-measurement-help" className="text-sm text-muted-foreground mb-6">{t.measurementHelp}</p>
 
                     {status === "error" && (
                       <div role="alert" aria-live="polite" className="mb-6 p-4 bg-destructive/10 border border-destructive/20 rounded-lg flex items-start gap-3">
@@ -368,6 +369,7 @@ const Contact = () => {
                           <label htmlFor="contact-location" className="block text-sm font-medium mb-1.5">{t.location}</label>
                           <select
                             id="contact-location"
+                            aria-describedby="contact-location-help"
                             name="location"
                             autoComplete="address-level2"
                             className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
@@ -377,6 +379,7 @@ const Contact = () => {
                             <option value="">{t.selectArea}</option>
                             {contactLocationOptions.map((option) => <option key={option.value} value={option.value}>{option[language]}</option>)}
                           </select>
+                          <p id="contact-location-help" className="text-sm text-muted-foreground mt-2">{t.locationHelp}</p>
                         </div>
                       </div>
                       <div>

@@ -92,6 +92,30 @@ export const resolveBlogTopic = (category: string, slug = ""): BlogTopicKey => {
   return BLOG_SLUG_TOPICS[slug] || LEGACY_CATEGORY_TOPICS[normalizedCategory] || "home-condo-approval";
 };
 
+// Supplemental references preserve the current three CMS-selected guides.
+// Titles and article content remain owned by the published post records.
+const BLOG_TOPIC_ADDITIONAL_GUIDE_SLUGS: Record<BlogTopicKey, readonly string[]> = {
+  "budget-quotation": ["how-to-choose-renovation-contractor-kl"],
+  "home-condo-approval": ["how-to-plan-condo-renovation-kl"],
+  "kitchen-cabinetry": ["kitchen-cabinet-price-malaysia", "built-in-cabinet-cost-malaysia"],
+  "bathroom-waterproofing": [],
+  "office-retail-fitout": [],
+  "materials-design": [],
+};
+
+export const getBlogTopicGuides = <T extends { category: string; slug: string }>(
+  posts: readonly T[],
+  topicKey: BlogTopicKey,
+): T[] => {
+  const current = posts.filter((post) => resolveBlogTopic(post.category, post.slug) === topicKey).slice(0, 3);
+  const existingSlugs = new Set(current.map((post) => post.slug));
+  const additional = BLOG_TOPIC_ADDITIONAL_GUIDE_SLUGS[topicKey]
+    .map((slug) => posts.find((post) => post.slug === slug))
+    .filter((post): post is T => Boolean(post))
+    .filter((post) => !existingSlugs.has(post.slug));
+  return [...current, ...additional];
+};
+
 export const BLOG_LEGACY_REDIRECTS = [
   { from: "renovation-cost-malaysia-2025", to: "malaysia-renovation-budget-guide" },
   { from: "renovation-materials-for-malaysia-climate", to: "renovation-materials-malaysia" },

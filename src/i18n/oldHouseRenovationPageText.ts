@@ -112,6 +112,18 @@ export const oldHouseRenovationPageText = {
     resourceDescription:
       "Continue with relevant service areas, project references, practical guides, and material options. Project pages retain their published completion or concept classification.",
     resourceAction: "Open resource",
+    planningAnswers: [
+      {
+        title: "What should be recorded if an old home remains occupied during renovation?",
+        paragraph:
+          "Make a room-by-room list of items to retain, repair or replace, and mark conditions that still need site assessment. Before agreeing a phase, discuss access to the occupied rooms, the usable bathroom and kitchen, material delivery, protection of retained furniture and finishes, and when the confirmed work may affect water or electricity. Ask the responsible project team to record dependencies between investigation, repairs and new finishes. Recheck the arrangement when a hidden condition changes the scope; remaining in the home is subject to the actual site and agreed work, not a guaranteed option.",
+      },
+      {
+        title: "How should renewed and retained areas be recorded at old-house handover?",
+        paragraph:
+          "Compare each room with the agreed retain/repair/replace list, drawings and quotation revisions. Record the visible condition of retained items alongside the renewed finishes, agreed fittings and accessible areas; distinguish a pre-existing issue from new work or an item awaiting assessment. For each outstanding item, record its location, dated photo, agreed follow-up, responsible contact and recheck result. Confirm what care information and after-sales terms apply to the actual materials and work. This record helps organise follow-up; it does not replace specialist testing, certify concealed work or extend the agreed warranty.",
+      },
+    ],
     faqTitle: "Old House Renovation FAQ",
     faqDescription: "Common questions about old house renovation planning, budget factors, and work scope in Malaysia.",
     faqs: [
@@ -130,6 +142,10 @@ export const oldHouseRenovationPageText = {
       {
         q: "Can I review design or rendering concepts first?",
         a: "Yes. Design concepts, rendering concepts, and material directions can be prepared as planning references. Unless approved real project photos are provided, they must not be presented as completed project proof.",
+      },
+      {
+        q: "Does this page confirm standalone roof, leak or electrical repair services?",
+        a: "This page covers site review, scope planning and coordination for an old-house renovation. References to roof condition, leakage, wiring and plumbing identify matters to assess before confirming the renovation scope; they do not confirm a standalone repair booking or 24-hour attendance. Share the property location, photos and whether you need a single repair or a wider renovation, then ask which work can be accepted and who will be responsible. Confirm the assessment needs, work scope and arrangements before booking; specialist work must be confirmed separately.",
       },
     ],
     ctaTitle: "Planning to Renovate an Old House?",
@@ -255,6 +271,18 @@ export const oldHouseRenovationPageText = {
     resourceTitle: "继续规划旧屋翻新咨询",
     resourceDescription: "继续查看相关服务地区、项目参考、实用指南和材料选择。项目页会保留已发布的完工或概念内容分类。",
     resourceAction: "查看内容",
+    planningAnswers: [
+      {
+        title: "旧屋翻新时仍有人居住，要先记录哪些安排？",
+        paragraph:
+          "按房间列出保留、维修与更换项目，并标明仍需现场评估的状况。确认一个施工阶段前，先讨论居住区域的进出、可用浴室与厨房、材料搬运、保留家具和饰面的保护，以及已确认工程可能影响供水或用电的时段。请项目负责方记录调查、维修和新饰面之间的前后依赖。发现隐蔽状况并改变范围时，再核对安排；是否能够留居须按实际现场与约定工程判断，不能预先保证。",
+      },
+      {
+        title: "旧屋交付时，怎样记录保留与翻新的区域？",
+        paragraph:
+          "逐房间对照已确认的保留、维修与更换清单、图纸及报价修订版本。记录保留物品的可见状况，以及新饰面、约定配件和可查看区域，并区分原有问题、新施工项目与待评估事项。每项待跟进问题写明位置、带日期照片、约定处理、联系负责人及复查结果；另确认实际材料和工程的保养说明与适用售后条款。这份记录用于整理跟进，不代替专业测试，不认证隐蔽工程，也不扩大约定保修范围。",
+      },
+    ],
     faqTitle: "旧屋翻新常见问题",
     faqDescription: "关于马来西亚旧屋翻新规划、预算因素和施工范围的常见问题。",
     faqs: [
@@ -273,6 +301,10 @@ export const oldHouseRenovationPageText = {
       {
         q: "可以先看设计方案或效果图吗？",
         a: "可以。设计方案、效果图方案和材料方向可作为规划参考，但除非业主提供真实项目照片并确认可公开使用，否则不能写成真实完工案例。",
+      },
+      {
+        q: "本页是否确认承接独立屋顶、查漏或电工维修？",
+        a: "本页讨论旧屋翻新的现场评估、范围规划与项目协调。提到屋顶状况、渗漏、电线和水管，是提醒业主在确认装修范围前先评估，并不等于已确认单独维修预约或24小时到场。请先提供房屋地区、照片，并说明只做单项维修还是整体翻新，再确认哪些工作可以承接、由谁负责。预约前核清评估需求、工程范围和处理安排；专项工程须另行确认。",
       },
     ],
     ctaTitle: "准备翻新你的旧屋？",

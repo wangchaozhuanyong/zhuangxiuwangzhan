@@ -43,8 +43,9 @@ export const furnitureText = {
     note: "价格、规格和供货情况请在购买或咨询前确认。",
     shopLabel: "前往 FLASH CAST 商城",
     detailMeta: "查看 {name} 的图片、描述与规格，可通过 WhatsApp 咨询或前往商城。",
-    floating: "家具展示",
-    floatingShop: "打开商城首页",
+    floating: "家具商城",
+    floatingShop: "前往家具商城（新窗口打开）",
+    generalEnquiryMessage: "你好，我想咨询 FLASH CAST 的家具产品。",
     enquiryMessage: "你好，我想咨询家具：{name}",
   },
   en: {
@@ -80,7 +81,16 @@ export const furnitureText = {
     shopLabel: "Visit FLASH CAST Shop",
     detailMeta: "View images, description and specifications for {name}. Ask on WhatsApp or visit our shop.",
     floating: "Furniture",
-    floatingShop: "Shop homepage",
+    floatingShop: "Open furniture shop (new window)",
+    generalEnquiryMessage: "Hi, I would like to enquire about FLASH CAST furniture products.",
     enquiryMessage: "Hi, I would like to ask about this furniture item: {name}",
   },
 } as const;
+
+export function formatFurnitureEnquiryMessage(name: string, sku: string, language: Language) {
+  const displaySku = language === "en" && /[\u3400-\u9fff]/.test(sku)
+    ? sku.match(/^[A-Za-z0-9-]+/)?.[0] || ""
+    : sku;
+  return furnitureText[language].enquiryMessage.replace("{name}", name)
+    + (displaySku && displaySku !== "N/A" ? ` (${displaySku})` : "");
+}

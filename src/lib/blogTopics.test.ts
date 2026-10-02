@@ -1,7 +1,7 @@
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import { describe, expect, it } from "vitest";
-import { BLOG_LEGACY_REDIRECTS, BLOG_TOPIC_KEYS, resolveBlogTopic } from "@/lib/blogTopics";
+import { BLOG_LEGACY_REDIRECTS, BLOG_TOPIC_KEYS, getBlogTopicGuides, resolveBlogTopic } from "@/lib/blogTopics";
 
 const expectedTopics = {
   "budget-quotation": [
@@ -83,5 +83,25 @@ describe("blog topic taxonomy", () => {
         expect(middleware).toContain(`"/${language}/blog/${redirect.from}": "/${language}/blog/${redirect.to}"`);
       }
     }
+  });
+});
+
+describe("published topic guide references", () => {
+  it("does not manufacture missing records or duplicate a guide already in the first three", () => {
+    const posts = [
+      { slug: "kitchen-cabinet-price-malaysia", category: "kitchen-cabinetry", title: "Current CMS title" },
+      { slug: "custom-wardrobe-price-malaysia", category: "kitchen-cabinetry", title: "Wardrobe" },
+    ];
+    expect(getBlogTopicGuides(posts, "kitchen-cabinetry")).toEqual(posts);
+    expect(getBlogTopicGuides(posts, "budget-quotation")).toEqual([]);
+  });
+
+  it("adds a budget reference without changing the contractor article's taxonomy or source object", () => {
+    const contractor = { slug: "how-to-choose-renovation-contractor-kl", category: "home-condo-approval", title: "CMS-owned title" };
+    const posts = Object.freeze([contractor]);
+    expect(getBlogTopicGuides(posts, "budget-quotation")).toEqual([contractor]);
+    expect(getBlogTopicGuides(posts, "home-condo-approval")).toEqual([contractor]);
+    expect(getBlogTopicGuides(posts, "budget-quotation")[0]).toBe(contractor);
+    expect(resolveBlogTopic(contractor.category, contractor.slug)).toBe("home-condo-approval");
   });
 });

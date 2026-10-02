@@ -234,16 +234,20 @@
     height: 76px;
   }
 
-  /* Stable brand foregrounds on one shared reading surface, including photo heroes. */
+  /* Immersive photos continue behind the header until scrolling or opening the menu. */
   .scheme-a-chrome::before { content: none; }
 
   .scheme-a-chrome.is-overlay {
     color: var(--public-text-primary);
-    background: color-mix(in srgb, var(--public-surface-card) 94%, transparent);
-    backdrop-filter: blur(16px);
+    background: transparent;
+    backdrop-filter: none;
   }
 
   .scheme-a-chrome.is-overlay .scheme-a-chrome__nav-more:is(:hover, :focus-visible) { color: inherit; }
+
+  .scheme-a-chrome.is-overlay :is(.scheme-a-chrome__primary a, .scheme-a-chrome__nav-more) {
+    text-shadow: 0 1px 4px rgb(253 252 250 / 0.9);
+  }
 
   .scheme-a-chrome.is-solid {
     color: var(--public-text-primary);
