@@ -121,7 +121,10 @@ const buildCategorySeoEntry = (category) => {
 const loadMaterialsData = async () => {
   if (!materialDataPromise) {
     materialDataPromise = build({
-      entryPoints: ["src/data/materials.ts"],
+      stdin: {
+        contents: 'export { materialsData } from "./src/data/materials.ts"; export { translateDisplayText } from "./src/i18n/displayLabels.ts"; export { materialSubcategoryPageText } from "./src/i18n/materialSubcategoryPageText.ts";',
+        resolveDir: process.cwd(),
+      },
       bundle: true,
       write: false,
       platform: "node",
@@ -131,14 +134,14 @@ const loadMaterialsData = async () => {
       const code = result.outputFiles[0]?.text || "";
       const moduleUrl = `data:text/javascript;base64,${Buffer.from(code).toString("base64")}`;
       const module = await import(moduleUrl);
-      return Array.isArray(module.materialsData) ? module.materialsData : [];
+      return module;
     });
   }
   return materialDataPromise;
 };
 
 export const loadMaterialSeoCategories = async (publishedMaterialRows = []) => {
-  const categories = await loadMaterialsData();
+  const { materialsData: categories, translateDisplayText, materialSubcategoryPageText } = await loadMaterialsData();
   const merged = new Map(categories.map((category) => {
     const entry = buildCategorySeoEntry(category);
     return [entry.slug, entry];
@@ -173,6 +176,24 @@ export const loadMaterialSeoCategories = async (publishedMaterialRows = []) => {
     });
   }
 
+  // Match the client catalog: the first published row in each subcategory
+  // supplies its localized excerpt. Keep the remaining taxonomy unchanged.
+  const selected = merged.get("whole-house-custom");
+  for (const slug of ["wardrobes", "storage-cabinets"]) {
+    const subcategory = selected?.subcategories.find((entry) => entry.slug === slug);
+    if (!subcategory) continue;
+    const row = publishedMaterialRows.find((entry) =>
+      slugify(entry?.category) === "whole-house-custom" && slugify(entry?.subcategory) === slug,
+    );
+    const fallback = categories.find((entry) => entry.slug === "whole-house-custom")
+      ?.subcategories.find((entry) => entry.slug === slug);
+    for (const language of ["en", "zh"]) {
+      const name = language === "zh" ? zhLabel(subcategoryZhLabels, row?.subcategory || fallback.name) : row?.subcategory || fallback.name;
+      const excerpt = row ? String(row[`excerpt_${language}`] || "") : fallback.description;
+      const description = translateDisplayText(excerpt, language);
+      subcategory[`description_${language}`] = materialSubcategoryPageText[language].metaDescription(description, name);
+    }
+  }
   return Array.from(merged.values());
 };
 

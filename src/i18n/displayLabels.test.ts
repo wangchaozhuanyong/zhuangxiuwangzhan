@@ -2,6 +2,17 @@ import { describe, expect, it } from "vitest";
 import { translateDisplayText, translateMaterialSubcategory } from "@/i18n/displayLabels";
 
 describe("translateDisplayText", () => {
+  it("localizes only the two curated whole-house fallback sentences and keeps EN/CMS text", () => {
+    const pairs = [
+      ["Built-in and walk-in wardrobes with modern sliding or swing doors.", "内嵌式衣柜与步入式衣帽间，可结合空间规划推拉门或平开门。"],
+      ["Multi-purpose storage solutions for every room.", "适用于不同房间用途的多用途收纳规划。"],
+    ];
+    for (const [en, zh] of pairs) {
+      expect(translateDisplayText(en, "zh")).toBe(zh);
+      expect(translateDisplayText(en, "en")).toBe(en);
+    }
+    expect(translateDisplayText("已发布的定制柜材料摘要。", "zh")).toBe("已发布的定制柜材料摘要。");
+  });
   it("does not replace a label inside a longer English word", () => {
     expect(translateDisplayText("Malaysian homes", "zh")).toBe("Malaysian homes");
   });

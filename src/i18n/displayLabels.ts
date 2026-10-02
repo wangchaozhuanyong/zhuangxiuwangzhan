@@ -510,6 +510,8 @@ const displayTextReplacements = Object.entries({
   .map(([key, value]) => ({ key, value }));
 
 const extraZhTextReplacements: Record<string, string> = {
+  "Built-in and walk-in wardrobes with modern sliding or swing doors.": "内嵌式衣柜与步入式衣帽间，可结合空间规划推拉门或平开门。",
+  "Multi-purpose storage solutions for every room.": "适用于不同房间用途的多用途收纳规划。",
   "Permit & Drawing Support": "装修准证与图纸支持",
   "Review renovation approval, management, drawing, and document-coordination needs against the property and confirmed project scope.": "根据房产类型与已确认项目范围，检查装修审批、管理方、图纸与文件协调需求。",
   "Smoked Glass and Walnut": "烟熏玻璃与胡桃木",
