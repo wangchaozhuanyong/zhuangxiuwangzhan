@@ -195,6 +195,7 @@ export const schemeAProjectsIndexText = {
 
 export const schemeARouteText = {
   zh: {
+    exploreContent: "继续浏览",
     imagePending: "图片更新中",
     home: "首页",
     services: "服务项目",
@@ -237,6 +238,7 @@ export const schemeARouteText = {
     projectsHero: "Spaces, completed with intention",
     projectsLoading: "Projects are loading…",
     projectsError: "Projects could not be loaded.",
+    exploreContent: "Explore this page",
     servicesHero: "From one room to a complete business space",
     servicesLoading: "Services are loading…",
     servicesError: "Services could not be loaded.",

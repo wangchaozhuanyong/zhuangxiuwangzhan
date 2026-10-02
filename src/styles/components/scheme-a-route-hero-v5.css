@@ -190,14 +190,83 @@
   margin-inline: auto;
 }
 
+.fc-route-hero-explore { display: none; }
+
 @media (min-width: 1024px) {
-  /* Give split intro panels the same framed surface as the content cards below. */
-  .scheme-a-public-shell .fc-route-page .fc-route-hero[data-route-hero-layout="framed-split"] .fc-route-hero-media + .fc-route-hero-copy {
-    padding: clamp(28px, 3vw, 48px);
-    border: 1px solid var(--public-border);
-    border-radius: 8px;
-    background: var(--public-surface-card);
+  .fc-route-hero[data-route-hero-layout="framed-split"] + * {
+    scroll-margin-top: calc(var(--site-header-height, 76px) + 24px);
   }
+  /* Approved warm-sand split: a continuous text/image surface, not two cards. */
+  .fc-route-hero[data-route-hero-layout="framed-split"] .fc-route-hero-frame {
+    grid-template-columns: minmax(0, 42fr) minmax(0, 58fr);
+    grid-template-rows: minmax(clamp(510px, 41vw, 580px), auto);
+    gap: 0;
+  }
+  .scheme-a-public-shell .fc-route-page .fc-route-hero[data-route-hero-layout="framed-split"] .fc-route-hero-media + .fc-route-hero-copy {
+    padding: clamp(32px, 3.6vw, 52px) clamp(32px, 3.6vw, 52px) 35px;
+    justify-content: flex-start;
+    border: 0;
+    border-radius: 8px 0 0 8px;
+    color: #342E26;
+    background: linear-gradient(135deg, #EDE4D7 0%, #E5DBCD 64%, #E0D4C4 100%);
+  }
+
+  html[data-public-theme] #root .fc-route-hero[data-route-hero-layout="framed-split"] .fc-route-hero-media {
+    border-radius: 0 8px 8px 0;
+  }
+
+  .scheme-a-public-shell .fc-route-page .fc-route-hero-media + .fc-route-hero-copy .fc-route-hero-label {
+    position: static;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    width: auto;
+    height: auto;
+    margin: 0 0 20px;
+    padding: 0;
+    overflow: visible;
+    clip: auto;
+    white-space: normal;
+    color: #806347;
+    font-size: 12px;
+    line-height: 1.7;
+    letter-spacing: 0.08em;
+  }
+  .fc-route-hero-label::before { content: ""; width: 28px; height: 1px; flex-shrink: 0; background: currentColor; }
+
+  .scheme-a-public-shell .fc-route-page .fc-route-hero-media + .fc-route-hero-copy h1 {
+    color: #342E26;
+    font-size: clamp(44px, 4vw, 56px);
+    line-height: 1.25;
+  }
+  .scheme-a-public-shell .fc-route-page .fc-route-hero-media + .fc-route-hero-copy h1.fc-route-title-long { font-size: clamp(36px, 3.3vw, 48px); }
+  .scheme-a-public-shell .fc-route-page .fc-route-hero-media + .fc-route-hero-copy > p { color: #695D4E; font-size: 16px; line-height: 1.9; margin-top: 18px; }
+  .scheme-a-public-shell .fc-route-page .fc-route-hero-media + .fc-route-hero-copy .fc-route-hero-support {
+    width: 100%;
+    margin-top: 28px;
+    padding-block: 17px;
+    border-block: 1px solid rgb(162 139 109 / 0.33);
+    column-gap: 14px;
+    row-gap: 12px;
+  }
+  .scheme-a-public-shell .fc-route-page .fc-route-hero-media + .fc-route-hero-copy .fc-route-hero-support dt { color: #342E26; }
+  .scheme-a-public-shell .fc-route-page .fc-route-hero-media + .fc-route-hero-copy .fc-route-hero-support dd { color: #695D4E; }
+  .scheme-a-public-shell .fc-route-page .fc-route-hero-media + .fc-route-hero-copy .fc-route-hero-support :is(dt, dd) { font-size: 13px; }
+  .fc-route-hero-explore {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    order: 6;
+    width: fit-content;
+    margin-top: auto;
+    padding-top: 26px;
+    color: #624B32;
+    font-size: 13px;
+    letter-spacing: 0.06em;
+  }
+  .fc-route-hero-explore svg { width: 30px; height: 30px; padding: 7px; border: 1px solid rgb(162 139 109 / 0.4); border-radius: 50%; transition: transform 220ms ease, background-color 220ms ease; }
+  .fc-route-hero-explore:is(:hover, :focus-visible) svg { transform: translateY(3px); background: rgb(255 255 255 / 0.24); }
+  .fc-route-hero-explore:active svg { transform: translateY(4px) scale(.94); }
 
   .scheme-a-public-shell .fc-route-page .fc-route-hero[data-route-hero-layout="media-only"] .fc-route-hero-media {
     width: calc((100% - 32px) * 0.56);
@@ -360,7 +429,9 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .scheme-a-public-shell .fc-route-page .fc-route-hero-media img {
+  .scheme-a-public-shell .fc-route-page .fc-route-hero-media img,
+  .fc-route-hero-explore svg {
     transition: none;
+    transform: none;
   }
 }

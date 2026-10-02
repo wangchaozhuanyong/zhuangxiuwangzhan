@@ -199,7 +199,7 @@ export const SchemeANavbar = () => {
     const main = document.getElementById("main-content");
     if (!overlay || !header || !main || window.matchMedia("(forced-colors: active)").matches) return;
     const targets = Array.from(header.querySelectorAll<HTMLElement>(
-      ".scheme-a-chrome__primary a, .scheme-a-chrome__nav-more, .scheme-a-chrome__brand",
+      ".scheme-a-chrome__brand",
     ));
     const preferred = getComputedStyle(header).color;
     const previous = new Map<HTMLElement, string>();
@@ -228,7 +228,7 @@ export const SchemeANavbar = () => {
           data = context.getImageData(0, 0, canvas.width, canvas.height);
         }
       } catch {
-        // Cross-origin or unavailable pixels keep the authored color plus a glyph outline.
+        // Cross-origin or unavailable logo pixels keep the authored color plus a glyph outline.
       }
       pixels.set(img, { source, data });
       return data;

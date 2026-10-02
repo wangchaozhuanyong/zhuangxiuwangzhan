@@ -2,6 +2,7 @@ import { resolveReviewedBlogCover, resolveReviewedImageSource, resolveReviewedMa
 import { buildReadablePublicBody, sanitizeReadableContent } from "./readablePublicBody";
 import { projectPublicMetadata } from "../src/lib/projectPublicMetadata.mjs";
 import manifest from "./seo-manifest.json";
+import { oldHouseRenovationPageText } from "../src/i18n/oldHouseRenovationPageText";
 import {
   PUBLIC_LANGUAGE_COOKIE,
   readCookieValue,
@@ -2365,7 +2366,13 @@ export const onRequest: PagesFunction = async (context) => {
 
   const generatePublicHtml = async (existingLastModified?: string | null) => {
     const dynamicRouteState = await fetchDynamicRouteState(env as Record<string, string | undefined>, key, staticMeta);
-    const meta = dynamicRouteState?.meta || staticMeta;
+    const resolvedMeta = dynamicRouteState?.meta || staticMeta;
+    // This route renders a static page, so its FAQ schema must use the same
+    // reviewed locale source as the visible accordion, rather than a CMS row.
+    const oldHouseLanguage = key === "/en/services/old-house" ? "en" : key === "/zh/services/old-house" ? "zh" : null;
+    const meta = resolvedMeta && oldHouseLanguage
+      ? { ...resolvedMeta, faqs: oldHouseRenovationPageText[oldHouseLanguage].faqs.map(({ q, a }) => ({ question: q, answer: a })) }
+      : resolvedMeta;
 
   const appShellUrl = new URL(request.url);
   appShellUrl.pathname = "/";
