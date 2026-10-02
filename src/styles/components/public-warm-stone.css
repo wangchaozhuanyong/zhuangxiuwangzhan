@@ -44,6 +44,31 @@ html[data-public-theme] #root :is(.scheme-a-mobile-dock, .scheme-a-contact-dock)
   box-shadow: none !important;
 }
 html[data-public-theme] #root :is(.scheme-a-chrome__primary a, .scheme-a-chrome__nav-more)::after { background: var(--public-accent) !important; }
+/* Transparent photo headers adapt each label to the pixels immediately behind it. */
+html[data-public-theme] #root .scheme-a-chrome.is-overlay [data-header-contrast="light"] {
+  color: #fff;
+  text-shadow: 0 1px 3px rgb(0 0 0 / 45%);
+}
+html[data-public-theme] #root .scheme-a-chrome.is-overlay [data-header-contrast="dark"] {
+  color: #000;
+  text-shadow: 0 1px 3px rgb(255 255 255 / 55%);
+}
+html[data-public-theme] #root .scheme-a-chrome.is-overlay [data-header-outline="true"] {
+  -webkit-text-stroke: 0.4px rgb(255 255 255 / 85%);
+  paint-order: stroke fill;
+}
+html[data-public-theme] #root .scheme-a-chrome.is-overlay [data-header-contrast="light"][data-header-outline="true"] {
+  -webkit-text-stroke-color: rgb(0 0 0 / 85%);
+}
+html[data-public-theme] #root .scheme-a-chrome.is-overlay [data-header-contrast]::after {
+  background: currentColor !important;
+}
+html[data-public-theme] #root .scheme-a-chrome.is-overlay [data-header-contrast]:focus-visible {
+  outline-color: currentColor !important;
+}
+html[data-public-theme] #root .scheme-a-chrome.is-overlay .scheme-a-chrome__brand[data-header-contrast="light"] img {
+  filter: brightness(0) invert(1) !important;
+}
 html[data-public-theme] #root :is(.scheme-a-language-switch, .scheme-a-chrome__menu-trigger, .scheme-a-directory__close) {
   background: var(--public-surface-card) !important; color: var(--public-accent) !important; border-color: hsl(var(--input)) !important; box-shadow: none !important; border-radius: 6px !important;
 }
@@ -77,7 +102,8 @@ html[data-public-theme] #root :is(input, select, textarea)[aria-invalid="true"] 
 html[data-public-theme] #root :is(button, input, select, textarea):disabled { color: #5D665B !important; background: hsl(var(--secondary)) !important; }
 html[data-public-theme] #root :is(.fc-route-filters button, .fc-route-chip, .scheme-a-directory__tab) { border-radius: 6px !important; }
 html[data-public-theme] #root :is(.fc-route-filters button, .fc-route-chip, .scheme-a-directory__tab)[aria-pressed="true"] { color: var(--public-surface-card) !important; background: var(--public-accent) !important; border-color: var(--public-accent) !important; }
-html[data-public-theme] #root :is(.fc-route-card-media, .fc-route-hero-media, .scheme-a-project__main, .scheme-a-materials__media) { border-radius: 8px; }
+/* Listing images share the outer card's clip; a second radius exposes its background. */
+html[data-public-theme] #root :is(.fc-route-hero-media, .scheme-a-project__main, .scheme-a-materials__media) { border-radius: 8px; }
 
 html[data-public-theme] #root .scheme-a-button--gold { color: var(--public-surface-card) !important; background: var(--public-accent) !important; border-color: var(--public-accent) !important; border-radius: 6px !important; box-shadow: none !important; }
 html[data-public-theme] #root .scheme-a-button--gold:hover { background: var(--public-accent-hover) !important; }
@@ -92,7 +118,15 @@ html[data-public-theme] #root .blog-editorial-article,
 html[data-public-theme] #root .blog-editorial-article :is(p, li, td) { color: var(--public-text-primary) !important; }
 /* Reserve space for the viewport-fixed furniture entry at the page end. */
 @media (min-width: 768px) {
-  html[data-public-theme] #root .scheme-a-footer__legal { padding-inline-end: 152px; }
+  html[data-public-theme] #root .scheme-a-footer__legal { padding-inline-end: 264px; flex-wrap: wrap; gap: 8px 2rem; }
+  html[data-public-theme] #root .scheme-a-footer__legal nav { flex-wrap: wrap; }
+  html[data-public-theme] #root .scheme-a-footer__legal :is(a, button) { white-space: nowrap; }
+}
+@media (min-width: 1024px) {
+  html[data-public-theme] #root .scheme-a-footer__legal { padding-inline-end: 312px; }
+}
+@media (max-width: 767px) {
+  html[data-public-theme] #root .scheme-a-footer__legal { padding-bottom: 5rem; }
 }
 
 /* One display family and a clear title / section / functional text hierarchy. */
