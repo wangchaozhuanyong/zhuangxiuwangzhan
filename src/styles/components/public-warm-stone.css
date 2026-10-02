@@ -44,7 +44,19 @@ html[data-public-theme] #root :is(.scheme-a-mobile-dock, .scheme-a-contact-dock)
   box-shadow: none !important;
 }
 html[data-public-theme] #root :is(.scheme-a-chrome__primary a, .scheme-a-chrome__nav-more)::after { background: var(--public-accent) !important; }
-/* Transparent photo headers adapt each label to the pixels immediately behind it. */
+/* Photo navigation uses one foreground for the entire row; the logo adapts separately. */
+html[data-public-theme] #root .scheme-a-chrome.is-overlay .scheme-a-chrome__primary {
+  flex: 0 1 auto;
+  padding-inline: 14px;
+  border-radius: 6px;
+  color: var(--public-text-primary);
+  background: rgb(253 252 250 / 92%);
+  backdrop-filter: blur(8px);
+}
+html[data-public-theme] #root .scheme-a-chrome.is-overlay .scheme-a-chrome__primary :is(a, button) {
+  color: var(--public-text-primary) !important;
+  text-shadow: none !important;
+}
 html[data-public-theme] #root .scheme-a-chrome.is-overlay [data-header-contrast="light"] {
   color: #fff;
   text-shadow: 0 1px 3px rgb(0 0 0 / 45%);

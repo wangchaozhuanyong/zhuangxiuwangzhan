@@ -112,6 +112,7 @@ export function SchemeARouteHero({
   actions?: ReactNode;
   showIntro?: boolean;
 }) {
+  const { language } = useLanguage();
   const mediaStyle: SchemeARouteHeroMediaStyle = {
     "--fc-route-hero-position-desktop": imagePosition?.desktop || "center",
     "--fc-route-hero-position-tablet": imagePosition?.tablet || imagePosition?.desktop || "center",
@@ -157,7 +158,7 @@ export function SchemeARouteHero({
       loading="eager"
       fetchPriority="high"
       revealOnLoad
-      sizes="(min-width: 1536px) 789px, (min-width: 1024px) calc((100vw - 128px) * 0.56), 100vw"
+      sizes={showIntro ? "(min-width: 1536px) 836px, (min-width: 1024px) calc((100vw - 96px) * 0.58), 100vw" : "(min-width: 1536px) 789px, (min-width: 1024px) calc((100vw - 128px) * 0.56), 100vw"}
       candidateWidths={[560, 720, 960, 1200, 1600]}
       quality={86}
     />
@@ -178,12 +179,24 @@ export function SchemeARouteHero({
           </MediaTag>
         ) : null}
         {showIntro ? <div className="fc-route-hero-copy scheme-a-heading scheme-a-heading--split" style={{ ...(!image ? { gridColumn: "1 / -1" } : {}), ...(imageCaption ? { marginTop: 0 } : {}) }}>
-          <span className="sr-only">{label}</span>
+          <span className="fc-route-hero-label sr-only">{label}</span>
           {mediaDisclosure ? <span className="fc-route-media-disclosure">{mediaDisclosure}</span> : null}
           <h1 className={usesCompactTitleScale ? "fc-route-title-long" : undefined}>{title}</h1>
           <p>{description}</p>
           {actions ? <div className="fc-route-hero-actions">{actions}</div> : null}
           {kind !== "legal" ? <SchemeARouteHeroSupport /> : null}
+          {image || mobileImage ? (
+            <button
+              type="button"
+              className="fc-route-hero-explore"
+              onClick={(event) => event.currentTarget.closest("[data-route-hero-layout]")?.nextElementSibling?.scrollIntoView({
+                behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "instant" : "smooth",
+                block: "start",
+              })}
+            >
+              {schemeARouteText[language].exploreContent}<ChevronDown aria-hidden="true" />
+            </button>
+          ) : null}
         </div> : null}
       </div>
     </ImmersiveHero>

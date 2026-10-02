@@ -70,6 +70,7 @@ export default function LocationPage() {
     href: project.href || (project.slug ? `/projects/${project.slug}` : "/projects"),
   }));
   const contextLinks = getLocationContextLinks(location.slug, language);
+  const usesReviewedLocalityContext = ["balakong", "klang", "sungai-buloh", "desa-parkcity", "semenyih", "putrajaya", "taman-tun-dr-ismail"].includes(location.slug);
   const quotePath = buildQuotePath({
     source: "location",
     title: location.name,
@@ -118,7 +119,7 @@ export default function LocationPage() {
       />
       <SchemeAFacts items={[
         { label: language === "zh" ? "地区" : "Area", value: location.name },
-        { label: copy.propertyTypes, value: location.propertyTypes.slice(0, 2).map(display).join(" / ") },
+        { label: usesReviewedLocalityContext ? copy.propertyTypeExamples : copy.propertyTypes, value: location.propertyTypes.slice(0, 2).map(display).join(" / ") },
         { label: language === "zh" ? "服务" : "Service", value: language === "zh" ? "设计 / 装修" : "Design / Build" },
         { label: language === "zh" ? "协调" : "Coordination", value: language === "zh" ? "管理处申请" : "Management approval" },
       ]} />
@@ -140,6 +141,7 @@ export default function LocationPage() {
         quotePath={quotePath}
         whatsappLabel={copy.whatsapp}
         whatsappSource={`Location Page CTA - ${location.name}`}
+        whatsappMessage={usesReviewedLocalityContext ? copy.consultationMessage(location.name) : undefined}
       />
     </main>
   );
