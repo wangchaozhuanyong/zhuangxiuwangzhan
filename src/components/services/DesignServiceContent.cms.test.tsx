@@ -47,7 +47,7 @@ function fixture(language: "en" | "zh"): ServiceItem {
 }
 
 function tree() {
-  return <MemoryRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }} initialEntries={[`/${state.language}/services/design`]}><Routes><Route path="/:lang/services/:slug" element={<ServiceDetail />} /></Routes></MemoryRouter>;
+  return <MemoryRouter initialEntries={[`/${state.language}/services/design`]}><Routes><Route path="/:lang/services/:slug" element={<ServiceDetail />} /></Routes></MemoryRouter>;
 }
 
 describe("Design service consumes published CMS through its existing route", () => {

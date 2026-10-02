@@ -39,6 +39,9 @@ const gotoSmokePage = async (page: Page, path: string) => {
   for (let attempt = 1; attempt <= navigationAttempts; attempt += 1) {
     try {
       await page.goto(path, { waitUntil: "domcontentloaded", timeout: navigationTimeout });
+      if (!path.startsWith("/admin")) {
+        await expect(page.locator(".public-route-content")).toHaveAttribute("data-route-visual-state", "ready", { timeout: 30_000 });
+      }
       return;
     } catch (error) {
       lastError = error;
@@ -208,7 +211,7 @@ test.describe("public site smoke", () => {
     await expect(page.locator("#quote-submit-error")).toBeFocused();
     await expect(page.locator("#quote-name")).toHaveValue("验收测试");
     await expect(page.locator("#quote-phone")).toHaveValue("+601128853888");
-    await expect(page.locator('a[href^="https://wa.me/"]').first()).toBeVisible();
+    await expect(page.locator("main").getByRole("link", { name: "立即 WhatsApp 联系" })).toBeVisible();
   });
 
   test("contact form validates empty required fields before submit", async ({ page }) => {
@@ -232,7 +235,7 @@ test.describe("public site smoke", () => {
     await gotoSmokePage(page, "/zh/contact");
     await page.waitForLoadState("load");
 
-    const contactCards = page.locator("main .contact-detail-list");
+    const contactCards = page.locator("main").getByRole("complementary", { name: "联系方式" });
     await expect(contactCards.locator('a[href^="tel:"]')).toHaveCount(1);
     await expect(contactCards.locator('a[href^="https://wa.me/"]')).toHaveCount(1);
     await expect(contactCards.locator('a[href^="tel:"]')).toContainText("电话");

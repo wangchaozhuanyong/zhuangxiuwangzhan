@@ -47,7 +47,7 @@ export default function ProjectDetail() {
   const clientNeed = stripHtml(translateDisplayText(project.clientNeed || "", language));
   const scope = project.scope.map((item: string) => translateProjectScopedLabel(item, language, project.slug, "scope"));
   const highlights = project.highlights.map((item: string) => translateDisplayText(item, language));
-  const materials = project.materialsUsed.map((item: string) => translateDisplayText(item, language));
+  const materials = project.materialsUsed.map((item: string) => translateProjectScopedLabel(item, language, project.slug, "materials"));
   const images = (project.images.length ? project.images : [project.thumbnail]).filter(Boolean);
   const usesRenderingConcept = isRenderingConceptProject({ ...project, images });
   const publicMetadata = "publicMetadata" in project ? project.publicMetadata : undefined;

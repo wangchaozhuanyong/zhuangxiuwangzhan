@@ -6,7 +6,7 @@ import { withLanguagePrefix } from "@/i18n/routes";
 
 const isExternal = (to: LinkProps["to"]) => {
   if (typeof to !== "string") return false;
-  return to.startsWith("http") || to.startsWith("mailto:") || to.startsWith("tel:");
+  return /^(?:https?:\/\/|mailto:|tel:|\/\/)/i.test(to);
 };
 
 const LocalizedLink = forwardRef<HTMLAnchorElement, LinkProps>(({ to, onClick, ...props }, ref) => {

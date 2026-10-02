@@ -279,7 +279,7 @@ const App = () => (
   <LanguageProvider>
     <HelmetProvider>
       <QueryClientProvider client={queryClient}>
-        <BrowserRouter window={analyticsRouterWindow} future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
+        <BrowserRouter window={analyticsRouterWindow}>
           <AnalyticsRouteTracker />
           <AppShell />
         </BrowserRouter>

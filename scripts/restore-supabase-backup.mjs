@@ -7,6 +7,9 @@ const root = process.cwd();
 const backupArg = process.argv[2];
 const dryRun = process.argv.includes("--dry-run") || process.env.RESTORE_DRY_RUN === "1";
 const confirmWrite = process.env.RESTORE_CONFIRM === "YES";
+const targetUrlArg = process.argv.find((arg) => arg.startsWith("--target-url="))?.slice("--target-url=".length);
+// A write must never silently inherit the production key from the repository .env.
+const explicitServiceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
 function loadDotEnv(file = ".env") {
   const full = path.join(root, file);
@@ -45,7 +48,13 @@ if (manifest.backup_type !== "rest-json") {
   console.log("[restore-supabase-backup] SQL dump backups should be restored with psql after testing on staging.");
 } else {
   const tablesDir = path.join(backupPath, "tables");
-  const tableFiles = fs.readdirSync(tablesDir).filter((file) => file.endsWith(".json"));
+  const availableFiles = fs.readdirSync(tablesDir).filter((file) => file.endsWith(".json"));
+  const declaredTables = Array.isArray(manifest.tables) ? manifest.tables.map((entry) => entry.table) : [];
+  if (declaredTables.some((table) => !/^[a-z][a-z0-9_]*$/.test(table))) throw new Error("Invalid backup table name");
+  // The backup manifest orders parent tables before children. Alphabetical order
+  // puts lead_followups before leads and can fail on otherwise valid backups.
+  const tableFiles = [...declaredTables.map((table) => `${table}.json`),
+    ...availableFiles.filter((file) => !declaredTables.includes(file.replace(/\.json$/, "")))];
   const summary = tableFiles.map((file) => {
     const rows = JSON.parse(fs.readFileSync(path.join(tablesDir, file), "utf8"));
     return { table: file.replace(/\.json$/, ""), rows: Array.isArray(rows) ? rows.length : 0 };
@@ -54,28 +63,25 @@ if (manifest.backup_type !== "rest-json") {
   if (dryRun) {
     console.log("[restore-supabase-backup] Dry run OK.");
     console.log(JSON.stringify({ backupPath, tables: summary }, null, 2));
-    await logSystemHealthEvent({
-      event_type: "backup_restore_dry_run_completed",
-      severity: "info",
-      message: "Backup restore dry run completed.",
-      metadata: {
-        backup_folder: path.basename(backupPath),
-        backup_type: manifest.backup_type,
-        table_count: summary.length,
-        total_rows: summary.reduce((total, item) => total + item.rows, 0),
-        checked_at: new Date().toISOString(),
-      },
-    }, root);
+    // Validation is read-only; do not insert a health event into a dotenv project.
   } else {
     if (!confirmWrite) {
       console.error("[restore-supabase-backup] Refusing to write. Set RESTORE_CONFIRM=YES after testing on staging.");
       process.exit(1);
     }
 
-    const supabaseUrl = process.env.VITE_SUPABASE_URL || process.env.SUPABASE_URL;
-    const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+    const supabaseUrl = targetUrlArg;
+    const serviceRoleKey = explicitServiceRoleKey;
     if (!supabaseUrl || !serviceRoleKey) {
-      console.error("[restore-supabase-backup] Restore writes require VITE_SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY.");
+      console.error("[restore-supabase-backup] Writes require --target-url and an explicitly supplied SUPABASE_SERVICE_ROLE_KEY.");
+      process.exit(1);
+    }
+    const target = new URL(supabaseUrl);
+    const local = ["127.0.0.1", "localhost", "[::1]"].includes(target.hostname);
+    if (target.hostname === `${manifest.project}.supabase.co` || target.username || target.password
+        || target.search || target.hash || !["http:", "https:"].includes(target.protocol)
+        || (!local && target.protocol !== "https:")) {
+      console.error("[restore-supabase-backup] Refusing the original production project or an unsafe target URL. Restore to an isolated test environment first.");
       process.exit(1);
     }
 
@@ -92,6 +98,32 @@ if (manifest.backup_type !== "rest-json") {
       console.log(`[restore-supabase-backup] restored ${table}: ${rows.length}`);
     }
 
+    const storageRoot = path.join(backupPath, "site-images");
+    const storageFiles = [];
+    const walkStorage = (folder) => {
+      if (!fs.existsSync(folder)) return;
+      for (const entry of fs.readdirSync(folder, { withFileTypes: true })) {
+        if (entry.isSymbolicLink()) throw new Error("Storage backup cannot contain symbolic links");
+        const full = path.join(folder, entry.name);
+        if (entry.isDirectory()) walkStorage(full);
+        else if (entry.isFile()) storageFiles.push(full);
+      }
+    };
+    walkStorage(storageRoot);
+    if (storageFiles.length !== manifest.storage_file_count) throw new Error("Storage backup count differs from manifest");
+    const mediaTypes = { ".webp": "image/webp", ".jpg": "image/jpeg", ".jpeg": "image/jpeg", ".png": "image/png", ".avif": "image/avif" };
+    for (const file of storageFiles) {
+      const objectPath = path.relative(storageRoot, file).split(path.sep).join("/");
+      const { error } = await supabase.storage.from(manifest.storage_bucket).upload(objectPath, fs.readFileSync(file),
+        { upsert: true, contentType: mediaTypes[path.extname(file).toLowerCase()] || "application/octet-stream" });
+      if (error) throw new Error("Storage restore failed; check the isolated environment without printing private records");
+    }
+    console.log(`[restore-supabase-backup] restored storage objects: ${storageFiles.length}`);
+
+    // Any operational receipt belongs to the explicit restore target too.
+    process.env.VITE_SUPABASE_URL = supabaseUrl;
+    process.env.SUPABASE_URL = supabaseUrl;
+    process.env.SUPABASE_SERVICE_ROLE_KEY = serviceRoleKey;
     await logSystemHealthEvent({
       event_type: "backup_restore_completed",
       severity: "warn",

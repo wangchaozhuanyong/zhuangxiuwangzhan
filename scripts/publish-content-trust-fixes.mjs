@@ -181,6 +181,19 @@ const montKiaraConceptRecord = (current) => ({
   status: "published",
 });
 
+const clinicChineseCopyRecord = (current) => {
+  if (current.id !== "2d580a53-4b91-48b0-82c2-98bb910073ff"
+      || current.updated_at !== "2026-08-14T14:23:44.447044+00:00"
+      || !["Light oak veneer", "Terrazzo", "Frosted glass"].every((term) => current.content_zh.includes(term))) {
+    fail("Clinic Chinese-copy source changed; review the current row before publishing.");
+  }
+  return { ...current,
+    content_zh: current.content_zh.replace("Light oak veneer", "浅橡木饰面").replace("Terrazzo", "水磨石").replace("Frosted glass", "磨砂玻璃"),
+    // The existing project publisher always applies the case privacy policy.
+    location: null, area: null,
+  };
+};
+
 const aboutMetadataRecord = (current) => ({
   ...current,
   title_zh: "关于 FLASH CAST",
@@ -948,6 +961,14 @@ const targetConfigs = {
     publicPaths: [
       { path: "/en/projects/mont-kiara-luxury-condo-renovation", expected: "Luxury Condo Living &amp; Dining Rendering Concept" },
       { path: "/zh/projects/mont-kiara-luxury-condo-renovation", expected: "高级公寓客餐厅效果图概念" },
+    ],
+  },
+  "clinic-zh-copy-20261003": {
+    contentType: "project", table: "projects", keyField: "slug", key: "kota-damansara-clinic-fit-out",
+    fields: projectFields, buildRecord: clinicChineseCopyRecord,
+    publicPaths: [
+      { path: "/zh/projects/kota-damansara-clinic-fit-out", expected: "浅橡木饰面", requiredPhrases: ["水磨石", "磨砂玻璃"] },
+      { path: "/en/projects/kota-damansara-clinic-fit-out", expected: "Clinic Curved Reception Fit-Out" },
     ],
   },
   "about-metadata": {
