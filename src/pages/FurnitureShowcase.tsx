@@ -109,7 +109,7 @@ export default function FurnitureShowcase() {
               const product = localizeFurnitureProduct(sourceProduct, language);
               const image = product.images[0] || product.sourceImages[0];
               return (
-                <article className="fc-furniture-card" key={product.sourceUrl}>
+                <article className={`fc-furniture-card${product.availabilityNote ? " fc-furniture-card--reviewed-display" : ""}`} key={product.sourceUrl}>
                   <LocalizedLink className="fc-furniture-card__main" to={furnitureProductPath(product)} onClick={(event) => openProduct(event, furnitureProductPath(product))} aria-label={`${copy.viewDetails}: ${product.name}`}>
                     <div className="fc-furniture-card__image">
                       {image ? <SmartImage src={image} alt={product.name} width={480} height={480} sizes="(max-width: 680px) 48vw, (max-width: 1024px) 33vw, 25vw" loading={index < 4 ? "eager" : "lazy"} fetchPriority={index < 2 ? "high" : "auto"} /> : <span>{product.name}</span>}

@@ -24,7 +24,7 @@ export default function FurnitureProductDetail() {
   const product = managedQuery.data;
   const localizedProduct = product ? localizeFurnitureProduct(product, language) : undefined;
   const message = product && localizedProduct
-    ? formatFurnitureEnquiryMessage(localizedProduct.name, product.sku, language)
+    ? formatFurnitureEnquiryMessage(localizedProduct.name, localizedProduct.sku, language)
     : undefined;
   usePageWhatsAppMessage(message);
   const [selectedImage, setSelectedImage] = useState(0);
@@ -58,9 +58,9 @@ export default function FurnitureProductDetail() {
   const category = getFurnitureProductCategory(product);
   const images = product.images.length ? product.images : product.sourceImages;
   const currentImage = images[selectedImage] || images[0];
-  const displaySku = language === "en" && /[\u3400-\u9fff]/.test(product.sku)
-    ? product.sku.match(/^[A-Za-z0-9-]+/)?.[0] || ""
-    : product.sku;
+  const displaySku = language === "en" && /[\u3400-\u9fff]/.test(localizedProduct.sku)
+    ? localizedProduct.sku.match(/^[A-Za-z0-9-]+/)?.[0] || ""
+    : localizedProduct.sku;
   const description = localizedProduct.description || localizedProduct.shortDescription;
 
   return (
@@ -92,14 +92,14 @@ export default function FurnitureProductDetail() {
           <div className="fc-furniture-detail__info">
             <span className="fc-furniture-eyebrow">{category ? furnitureCategoryName(category.key, language) : copy.title}</span>
             <h1>{localizedProduct.name}</h1>
-            <p className="fc-furniture-detail__price">{product.price || copy.priceOnRequest}</p>
+            <p className="fc-furniture-detail__price">{localizedProduct.price || copy.priceOnRequest}</p>
             {localizedProduct.shortDescription ? <p className="fc-furniture-detail__summary">{localizedProduct.shortDescription.split("\n").slice(0, 2).join("\n")}</p> : null}
             <div className="fc-furniture-detail__actions">
               <a className="is-whatsapp" href={settings.whatsapp_url(message)} target="_blank" rel="noopener noreferrer"><WhatsAppIcon />{copy.enquire}</a>
               <a className="is-shop" href={furnitureShopUrl} target="_blank" rel="noopener noreferrer" aria-label={`${copy.buyNow} · ${copy.shopLabel}`}>{copy.buyNow}</a>
             </div>
-            <p className="fc-furniture-detail__note">{copy.note}</p>
-            {displaySku && displaySku !== "N/A" ? <dl><dt>{copy.sku}</dt><dd>{displaySku}</dd></dl> : null}
+            <p className="fc-furniture-detail__note">{localizedProduct.availabilityNote || copy.note}</p>
+            {displaySku && displaySku !== "N/A" ? <dl><dt>{localizedProduct.skuLabel || copy.sku}</dt><dd>{displaySku}</dd></dl> : null}
           </div>
         </div>
         <section className="fc-furniture-description">

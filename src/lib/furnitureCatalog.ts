@@ -7,6 +7,7 @@ import type { Language } from "@/i18n/routes";
 import type { Database } from "@/lib/database.types";
 import { FURNITURE_MATERIAL_CATEGORY } from "@/lib/furnitureCatalogConfig";
 import { formatMaterialPrice } from "@/lib/materialPrice";
+import { resolveFurnitureDisplay } from "@/lib/furnitureDisplaySafety.mjs";
 
 type MaterialRow = Database["public"]["Tables"]["materials"]["Row"];
 export type FurnitureMaterialRow = MaterialRow & { material_images?: { image_url: string; sort_order: number }[] };
@@ -37,6 +38,8 @@ export type FurnitureProduct = {
   images: string[];
   sourceCategories: { name: string; url: string }[];
   price: string | null;
+  skuLabel?: string;
+  availabilityNote?: string;
   seoTitle?: string;
   seoDescription?: string;
   managedCategoryKey?: string;
@@ -58,9 +61,9 @@ const localizedEnglishProducts = catalogEnJson as Record<string, Pick<FurnitureP
 export { furnitureShopUrl } from "@/lib/furnitureCatalogConfig";
 
 export const localizeFurnitureProduct = (product: FurnitureProduct, language: Language): FurnitureProduct =>
-  product.localized ? product : language === "zh"
+  product.localized ? product : resolveFurnitureDisplay(language === "zh"
     ? { ...product, ...localizedProducts[product.slug] }
-    : { ...product, ...localizedEnglishProducts[product.slug] };
+    : { ...product, ...localizedEnglishProducts[product.slug] }, language);
 
 const productsByUrl = new Map(furnitureCatalog.products.map((product) => [product.sourceUrl, product]));
 const productsBySlug = new Map(furnitureCatalog.products.map((product) => [decodeURIComponent(product.slug), product]));

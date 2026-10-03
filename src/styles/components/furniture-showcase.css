@@ -181,6 +181,11 @@
 
 .fc-furniture-card__main:hover h3 { color: var(--furniture-accent); }
 
+.fc-furniture-card--reviewed-display h3 {
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+
 .fc-furniture-card__description {
   display: -webkit-box;
   overflow: hidden;
@@ -294,6 +299,10 @@
   .fc-furniture-detail__layout { grid-template-columns: 1fr; }
 }
 
+@media (max-width: 767px) {
+  .scheme-a-public-shell:has(.fc-furniture-detail) .fc-furniture-floating { display: none; }
+}
+
 @media (max-width: 540px) {
   .fc-furniture-primary { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0.5rem; }
   .fc-furniture-primary a { min-width: 0; min-height: 3rem; padding: 0.4rem 0.3rem; font-size: 0.875rem; line-height: 1.15; }
@@ -310,6 +319,8 @@
   .fc-furniture-card__price { padding-top: 0.2rem; font-size: 0.82rem; }
   .fc-furniture-card__actions { margin-top: 0; padding: 0.2rem 0.65rem 0.4rem; }
   .fc-furniture-card__actions a { min-height: 2.125rem; }
+  .fc-furniture-card--reviewed-display { height: auto; min-height: calc(9.25rem + 2px); }
+  .fc-furniture-card--reviewed-display .fc-furniture-card__actions a { min-height: 2.75rem; }
   .fc-furniture-detail { padding-top: 1rem; }
   .fc-furniture-back { margin-bottom: 1rem; }
   .fc-furniture-detail__layout { gap: 0.85rem; }

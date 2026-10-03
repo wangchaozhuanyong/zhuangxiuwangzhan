@@ -1,5 +1,6 @@
 import { resolveReviewedBlogCover, resolveReviewedImageSource, resolveReviewedMaterialImage, wardrobeCover } from "../src/lib/reviewedContentMedia.mjs";
 import { projectPublicMetadata } from "../src/lib/projectPublicMetadata.mjs";
+import { resolveFurnitureDisplay } from "../src/lib/furnitureDisplaySafety.mjs";
 import { existsSync, readFileSync, writeFileSync, mkdirSync } from "node:fs";
 import { buildStaticManifest, SITE_URL, OG_IMAGE, COMPANY } from "./seo-static-pages.mjs";
 import { loadMaterialSeoCategories } from "./seo-material-pages.mjs";
@@ -220,7 +221,7 @@ for (const lang of ["en", "zh"]) {
     }
   }
   for (const product of furnitureCatalog.products) {
-    const localized = furnitureLocales[lang][product.slug] || product;
+    const localized = resolveFurnitureDisplay({ ...product, ...furnitureLocales[lang][product.slug] }, lang);
     addDynamic(
       lang,
       "/furniture/product",
