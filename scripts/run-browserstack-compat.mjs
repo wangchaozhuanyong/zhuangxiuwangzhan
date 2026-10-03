@@ -1,6 +1,6 @@
 import { Builder, By } from "selenium-webdriver";
 import input from "selenium-webdriver/lib/input.js";
-import { validateBrowserBaseUrl, publicDeviceIdentity, assertMobileMotion, withNativeDeviceContext } from "./run-installed-browser-compat.mjs";
+import { validateBrowserBaseUrl, publicDeviceIdentity, assertMobileMotion, withNativeDeviceContext, hideNativeDeviceKeyboard } from "./run-installed-browser-compat.mjs";
 
 const username = process.env.BROWSERSTACK_USERNAME;
 const accessKey = process.env.BROWSERSTACK_ACCESS_KEY;
@@ -234,12 +234,19 @@ const touch = async (driver, selector) => {
     },{capture:true,once:true});
   },selector);
   if (nativeTapDrivers.has(driver)) {
-    // XCUITest translates web element coordinates for a real native tap.
-    // W3C native actions cannot consume a web element origin directly.
-    for(let attempt=0;attempt<3;attempt++){
-      try { await (await driver.findElement(By.css(selector))).click(); break; }
-      catch(error){if(error?.constructor?.name!=='StaleElementReferenceError'||attempt===2)throw error;}
-    }
+    // Observe the actual Safari webview frame in native coordinates. This avoids
+    // guessing browser toolbar offsets or using a web element as a native origin.
+    const geometry=await driver.executeScript(css=>{
+      const r=document.querySelector(css).getBoundingClientRect(),v=visualViewport;
+      return {x:r.left+r.width/2-(v?.offsetLeft||0),y:r.top+r.height/2-(v?.offsetTop||0),width:v?.width||innerWidth,height:v?.height||innerHeight};
+    },selector);
+    await withNativeDeviceContext(driver,async()=>{
+      const frame=await (await driver.findElement(By.className('XCUIElementTypeWebView'))).getRect();
+      const x=Math.round(frame.x+geometry.x*frame.width/geometry.width),y=Math.round(frame.y+geometry.y*frame.width/geometry.width);
+      if(x<frame.x||x>frame.x+frame.width||y<frame.y||y>frame.y+frame.height)throw new Error('NATIVE_TARGET_OUTSIDE_WEBVIEW');
+      const finger=new input.Pointer('qa-native-tap',input.Pointer.Type.TOUCH);
+      await driver.actions({async:true}).insert(finger,finger.move({x,y}),finger.press(),{type:'pause',duration:250},finger.release()).perform();
+    });
   } else {
   const position = await driver.executeScript(css => {
     const rect = document.querySelector(css).getBoundingClientRect();
@@ -251,6 +258,10 @@ const touch = async (driver, selector) => {
   // The shop tap can switch windows; its caller reads evidence in the original
   // document. Other controls must deliver a trusted click to the actual target.
   if (selector !== '.fc-furniture-floating') {
+    // Native input may return before WebKit dispatches its click. Observe the
+    // real event before deciding whether it arrived; never synthesize one.
+    try { await driver.wait(()=>driver.executeScript(()=>!!document.documentElement.dataset.qaNativeTap),5000); }
+    catch { throw new Error("TRUSTED_TARGET_TAP_NOT_OBSERVED"); }
     const delivered = await driver.executeScript(() => JSON.parse(document.documentElement.dataset.qaNativeTap || 'null'));
     if (delivered?.delivered !== true || delivered?.trusted !== true) throw new Error("TRUSTED_TARGET_TAP_NOT_OBSERVED");
   }
@@ -440,6 +451,7 @@ const mobileChecks = async (driver, target, identity) => {
     }
     // Mobile Safari may focus the new shop tab as part of the real native tap.
     // Read press evidence in the original document, then inspect the new tab.
+    try { await driver.wait(async()=>(await driver.getAllWindowHandles()).length>before.length,10000); } catch { /* Press evidence still decides the result below. */ }
     const after=await driver.getAllWindowHandles();
     await driver.switchTo().window(before[0]);
     const feedback = await driver.executeScript(() => JSON.parse(document.documentElement.dataset.qaFloatingPress || 'null'));
@@ -476,7 +488,9 @@ const mobileChecks = async (driver, target, identity) => {
     }
     const keyboardSnapshot = () => {
       const rect = document.activeElement.getBoundingClientRect(); const view = visualViewport;
-      return { height: view?.height || innerHeight, focusedName: document.activeElement.id === "contact-name", inputVisible: rect.top >= (view?.offsetTop || 0) && rect.bottom <= (view?.offsetTop || 0) + (view?.height || innerHeight),inputTop:rect.top,inputBottom:rect.bottom,viewportOffset:view?.offsetTop||0 };
+      // iOS reports independently rounded fractional layout/visual viewport
+      // offsets; one CSS pixel is the existing geometry rounding tolerance.
+      return { height: view?.height || innerHeight, focusedName: document.activeElement.id === "contact-name", inputVisible: rect.top >= (view?.offsetTop || 0)-1 && rect.bottom <= (view?.offsetTop || 0) + (view?.height || innerHeight)+1,inputTop:rect.top,inputBottom:rect.bottom,viewportOffset:view?.offsetTop||0 };
     };
     try { await driver.wait(async()=>{const item=await driver.executeScript(keyboardSnapshot);return item.focusedName&&item.inputVisible;},10000); }
     catch { const error=new Error('KEYBOARD_COVERS_ACTIVE_INPUT');error.metrics=await driver.executeScript(keyboardSnapshot);throw error; }
@@ -488,7 +502,7 @@ const mobileChecks = async (driver, target, identity) => {
     contactStage='native_keyboard_dismissal';
     // The keyboard pans the visual viewport beyond the fixed header. Use the
     // physical device's keyboard dismissal, then test the reachable menu.
-    await withNativeDeviceContext(driver, () => driver.executeScript('mobile: hideKeyboard', nativeTapDrivers.has(driver)?{keys:['Done','done']} : {}));
+    await hideNativeDeviceKeyboard(driver,nativeTapDrivers.has(driver));
     await driver.wait(() => driver.executeScript(before => (visualViewport?.height || innerHeight) >= before - 10, viewportBefore), 10000);
     contactStage='menu_after_keyboard';
     // Record geometry before tapping: Android can pan the visual viewport while

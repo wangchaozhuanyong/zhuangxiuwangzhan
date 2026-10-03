@@ -19,6 +19,11 @@ export async function withNativeDeviceContext(driver, action) {
   finally { if (original !== "NATIVE_APP") await run("qaSetContext", { name: original }); }
 }
 
+export async function hideNativeDeviceKeyboard(driver, ios = false) {
+  driver.getExecutor().defineCommand("qaHideKeyboard", "POST", "/session/:sessionId/appium/device/hide_keyboard");
+  return withNativeDeviceContext(driver, () => driver.execute(new command.Command("qaHideKeyboard").setParameters(ios ? { keyName: "Done" } : {})));
+}
+
 const baseUrl = (process.env.INSTALLED_BROWSER_BASE_URL || "https://flashcast.com.my").replace(/\/$/, "");
 const selectedTargets = (process.env.INSTALLED_BROWSER_TARGETS || "")
   .split(",")

@@ -2,7 +2,27 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import { spawnSync } from "node:child_process";
 import { Capabilities } from "selenium-webdriver";
-import { getBrowserTargets, resolveTarget, selectRunnableTargets, validateBrowserBaseUrl, publicDeviceIdentity, assertMobileMotion, withNativeDeviceContext } from "./run-installed-browser-compat.mjs";
+import { getBrowserTargets, resolveTarget, selectRunnableTargets, validateBrowserBaseUrl, publicDeviceIdentity, assertMobileMotion, withNativeDeviceContext, hideNativeDeviceKeyboard } from "./run-installed-browser-compat.mjs";
+
+test("keyboard dismissal uses the device protocol only in native context and restores the web context", async () => {
+  let context = "WEBVIEW_TEST";
+  const definitions = new Map();
+  const driver = {
+    getExecutor: () => ({ defineCommand(name, method, route) { definitions.set(name, { method, route }); } }),
+    execute: async item => {
+      if (item.getName() === "qaGetContext") return context;
+      if (item.getName() === "qaGetContexts") return [context, "NATIVE_APP"];
+      if (item.getName() === "qaSetContext") context = item.getParameters().name;
+      if (item.getName() === "qaHideKeyboard") {
+        assert.equal(context, "NATIVE_APP");
+        assert.deepEqual(item.getParameters(), { keyName: "Done" });
+      }
+    },
+  };
+  await hideNativeDeviceKeyboard(driver, true);
+  assert.equal(context, "WEBVIEW_TEST");
+  assert.deepEqual(definitions.get("qaHideKeyboard"), { method: "POST", route: "/session/:sessionId/appium/device/hide_keyboard" });
+});
 
 test("native context is restored when a device command fails and unavailable contexts fail closed", async () => {
   const calls = [];
