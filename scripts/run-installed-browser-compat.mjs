@@ -95,6 +95,9 @@ export function validateBrowserBaseUrl(value) {
 }
 
 export function publicDeviceIdentity(capabilities = {}, session = {}) {
+  if (typeof capabilities.get === "function") {
+    capabilities = Object.fromEntries(["browserName", "browserVersion", "version", "platformName", "platformVersion", "appium:platformVersion", "appium:deviceName", "deviceName", "bstack:options"].map(key => [key, capabilities.get(key)]));
+  }
   const options = capabilities["bstack:options"] || {};
   const pick = (values, pattern) => values.find(value => typeof value === "string" && pattern.test(value)) || null;
   return {

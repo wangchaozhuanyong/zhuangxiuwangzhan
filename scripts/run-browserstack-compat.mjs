@@ -429,22 +429,25 @@ const runTarget = async (target) => {
     },
   };
 
-  let driver;
+  let driver, stage = "session_creation", identity = {}, advancedChecks = [], refreshed = [];
   try {
     driver = await new Builder().usingServer("https://hub.browserstack.com/wd/hub").withCapabilities(capabilities).build();
     await driver.manage().setTimeouts({ pageLoad: 90_000, script: 45_000 });
-    const returned = Object.fromEntries((await driver.getCapabilities()).entries());
+    stage = "returned_capabilities";
+    const returned = await driver.getCapabilities();
     let details = {};
     try { const value = await driver.executeScript('browserstack_executor: {"action":"getSessionDetails"}'); details = typeof value === "string" ? JSON.parse(value) : value; } catch { /* Capabilities remain the fallback. */ }
-    const identity = publicDeviceIdentity(returned, details || {});
-    const advancedChecks = target.options.deviceName ? await mobileChecks(driver, target, identity) : [];
+    identity = publicDeviceIdentity(returned, details || {});
+    stage = "mobile_interactions";
+    advancedChecks = target.options.deviceName ? await mobileChecks(driver, target, identity) : [];
 
     for (const page of pages) {
+      stage = `basic_page_${pages.indexOf(page) + 1}`;
       await runPageChecks(driver, page);
     }
 
     await runPageChecks(driver, pages[0]);
-    const refreshed = [];
+    stage = "homepage_refreshes";
     for (let round = 0; round < 3; round++) {
       const previousDocument = await driver.executeScript(() => performance.timeOrigin);
       await driver.navigate().refresh();
@@ -471,7 +474,7 @@ const runTarget = async (target) => {
     return { id: target.id, ok, identity, advancedChecks, refreshed };
   } catch (error) {
     if (driver) await setSessionStatus(driver, "failed", "Browser or page check failed; private driver details withheld.");
-    return { id: target.id, ok: false, error: error?.constructor?.name || "CHECK_FAILED" };
+    return { id: target.id, ok: false, error: error?.constructor?.name || "CHECK_FAILED", stage, identity, advancedChecks, refreshed };
   } finally {
     if (driver) await driver.quit();
   }

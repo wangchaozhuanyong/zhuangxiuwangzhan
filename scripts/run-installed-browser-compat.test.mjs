@@ -1,6 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import { spawnSync } from "node:child_process";
+import { Capabilities } from "selenium-webdriver";
 import { getBrowserTargets, resolveTarget, selectRunnableTargets, validateBrowserBaseUrl, publicDeviceIdentity, assertMobileMotion } from "./run-installed-browser-compat.mjs";
 
 test("macOS discovers system and per-user vendor browsers without Windows paths", async () => {
@@ -51,6 +52,12 @@ test("device evidence includes returned versions but excludes provider credentia
 
 const motion = { activeFrames: 14, states: ["waiting", "flying", "settling", "done"], reducedMotion: false,
   maxAlignmentError: .5, maxButtonShift: 0, squareRatio: 1, insideViewport: true, hasViewBox: false };
+
+test("actual Selenium capabilities are read through their supported get API", () => {
+  const caps = new Capabilities({ browserName: "chrome", browserVersion: "141.0.7390.65", platformName: "android", "appium:platformVersion": "13.0", "appium:deviceName": "Samsung Galaxy S23 Ultra", accessKey: "never-copy" });
+  assert.equal(typeof caps.entries, "undefined");
+  assert.deepEqual(publicDeviceIdentity(caps), { browserName: "chrome", browserVersion: "141.0.7390.65", os: "android", osVersion: "13.0", deviceName: "Samsung Galaxy S23 Ultra" });
+});
 
 test("motion evidence cannot pass without actual animation frames or with a shifted landing frame", () => {
   assert.equal(assertMobileMotion(motion), true);
