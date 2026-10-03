@@ -226,6 +226,13 @@ const touch = async (driver, selector) => {
     previous = current;
     return stable;
   }, waitTimeoutMs);
+  await driver.executeScript(css => {
+    delete document.documentElement.dataset.qaNativeTap;
+    const target=document.querySelector(css);
+    document.addEventListener('click',event=>{
+      document.documentElement.dataset.qaNativeTap=JSON.stringify({delivered:target.contains(event.target),trusted:event.isTrusted});
+    },{capture:true,once:true});
+  },selector);
   if (nativeTapDrivers.has(driver)) {
     // XCUITest translates web element coordinates for a real native tap.
     // W3C native actions cannot consume a web element origin directly.
@@ -384,7 +391,10 @@ const mobileChecks = async (driver, target, identity) => {
     await touch(driver, '#scheme-a-directory a[href="/zh/projects"]');
     await driver.wait(() => driver.executeScript(() => location.pathname === "/zh/projects" && document.querySelector("#scheme-a-directory")?.dataset.state === "closed"), waitTimeoutMs);
     return { focusRestored: restored, nativeTouchNavigation: true };
-    }catch(error){error.metrics={...error.metrics,menuStage};throw error;}
+    }catch(error){
+      const delivered=await driver.executeScript(()=>JSON.parse(document.documentElement.dataset.qaNativeTap||'null'));
+      error.metrics={...error.metrics,menuStage,tapObserved:!!delivered,tapDeliveredToExpectedControl:delivered?.delivered===true,tapTrusted:delivered?.trusted===true};throw error;
+    }
   });
   await check("native_language_switch", async () => {
     await driver.get(`${baseUrl}/zh/projects`); await ready(driver);
@@ -419,10 +429,16 @@ const mobileChecks = async (driver, target, identity) => {
       const finger = new input.Pointer("qa-press", input.Pointer.Type.TOUCH);
       await driver.actions({ async: true }).insert(finger, finger.move(position), finger.press(), { type: "pause", duration: 250 }, finger.release()).perform();
     }
+    // Mobile Safari may focus the new shop tab as part of the real native tap.
+    // Read press evidence in the original document, then inspect the new tab.
+    const after=await driver.getAllWindowHandles();
+    await driver.switchTo().window(before[0]);
     const feedback = await driver.executeScript(() => JSON.parse(document.documentElement.dataset.qaFloatingPress || 'null'));
     if (!feedback?.pressed || feedback.pointer !== "touch" || feedback.trusted!==true || !feedback.transform || feedback.transform === "none") {
       const error=new Error("PRESS_FEEDBACK_NOT_OBSERVED");
-      error.metrics={pressObserved:!!feedback,pressed:feedback?.pressed===true,trusted:feedback?.trusted===true,touchPointer:feedback?.pointer==='touch',transformObserved:!!feedback?.transform&&feedback.transform!=='none',pressDuration:feedback?.pressDuration??0};
+      error.metrics={pressObserved:!!feedback,pressed:feedback?.pressed===true,trusted:feedback?.trusted===true,touchPointer:feedback?.pointer==='touch',transformObserved:!!feedback?.transform&&feedback.transform!=='none',pressDuration:feedback?.pressDuration??0,shopTabCreated:after.length>before.length};
+      for(const handle of after.filter(handle=>!before.includes(handle))){await driver.switchTo().window(handle);await driver.close();}
+      await driver.switchTo().window(before[0]);
       throw error;
     }
     await driver.wait(async () => (await driver.getAllWindowHandles()).length > before.length, 15000);
@@ -460,7 +476,12 @@ const mobileChecks = async (driver, target, identity) => {
     await (await driver.findElement(By.css("#contact-name"))).sendKeys("QA keyboard only");
     const typed = await driver.executeScript(() => document.querySelector("#contact-name")?.value === "QA keyboard only");
     if (!typed) throw new Error("NATIVE_KEYBOARD_INPUT_NOT_UPDATED");
-    contactStage='menu_with_keyboard';
+    contactStage='native_keyboard_dismissal';
+    // The keyboard pans the visual viewport beyond the fixed header. Use the
+    // physical device's keyboard dismissal, then test the reachable menu.
+    await driver.executeScript('mobile: hideKeyboard', nativeTapDrivers.has(driver)?{keys:['Done','done']} : {});
+    await driver.wait(() => driver.executeScript(before => (visualViewport?.height || innerHeight) >= before - 10, viewportBefore), 10000);
+    contactStage='menu_after_keyboard';
     // Record geometry before tapping: Android can pan the visual viewport while
     // keeping the header in layout coordinates. Do not silently click offscreen.
     const menuGeometry=await driver.executeScript(()=>{
@@ -534,7 +555,7 @@ const runTarget = async (target) => {
     browserName: target.browserName,
     pageLoadStrategy: "eager",
     ...(target.browserVersion ? { browserVersion: target.browserVersion } : {}),
-    ...(target.id==='iphone-safari-real'?{'appium:nativeWebTap':true}:{}),
+    ...(target.id==='iphone-safari-real'?{'appium:nativeWebTap':true,'appium:nativeWebTapStrict':true}:{}),
     "bstack:options": {
       userName: username,
       accessKey,
@@ -576,6 +597,9 @@ const runTarget = async (target) => {
     for (let round = 0; round < 3; round++) {
       const previousDocument = await driver.executeScript(() => performance.timeOrigin);
       await driver.navigate().refresh();
+      // Safari's native refresh can return while the previous document still
+      // exists. Do not mix its completed animation with the new document.
+      await driver.wait(() => driver.executeScript(previous=>performance.timeOrigin!==previous,previousDocument),waitTimeoutMs);
       let motion;
       if (target.options.deviceName) {
         motion = await captureMotion(driver);
