@@ -1,4 +1,5 @@
 import type { Language } from "@/i18n/routes";
+import { translateProjectType } from "@/i18n/displayLabels";
 
 export type AdminLeadReportPeriod = "30d" | "90d" | "all";
 
@@ -244,8 +245,9 @@ export const buildAdminLeadReport = ({
   };
 
   const touchProjectType = (value: string | null | undefined) => {
-    const label = value?.trim() || (language === "zh" ? "未填写项目类型" : "No project type");
-    const key = label.toLowerCase();
+    const raw = value?.trim();
+    const label = raw ? translateProjectType(raw, language) : (language === "zh" ? "未填写项目类型" : "No project type");
+    const key = (raw || label).toLowerCase();
     const existing =
       projectTypeMap.get(key) ||
       {

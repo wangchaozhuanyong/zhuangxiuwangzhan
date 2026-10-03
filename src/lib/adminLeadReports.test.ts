@@ -63,9 +63,27 @@ describe("adminLeadReports", () => {
     expect(report.funnel.map((stage) => stage.count)).toEqual([3, 2, 2, 2]);
     expect(report.sourceRows.map((row) => row.label)).toContain("装修案例：Mont Kiara Condo");
     expect(report.projectTypeRows[0]).toMatchObject({
-      label: "Residential Renovation",
+      key: "residential renovation",
+      label: "住宅装修",
       total: 3,
       won: 2,
     });
+  });
+
+  it("translates known project codes without changing grouping or totals", () => {
+    const leads = ["condo", "CONDO", "other", "Residential Renovation"].map((project_type, index) => ({
+      id: `lead-${index}`, project_type, status: "new",
+    }));
+    const zh = buildAdminLeadReport({ language: "zh", period: "all", leads, quotes: [] });
+    const en = buildAdminLeadReport({ language: "en", period: "all", leads, quotes: [] });
+    expect(zh.projectTypeRows.find(row => row.key === "condo")).toMatchObject({ label: "公寓", total: 2 });
+    expect(en.projectTypeRows.find(row => row.key === "condo")).toMatchObject({ label: "Condo", total: 2 });
+    expect(zh.projectTypeRows.find(row => row.key === "other")?.label).toBe("其他");
+    expect(en.projectTypeRows.find(row => row.key === "other")?.label).toBe("Other");
+    const statistics = (report: typeof zh) => report.projectTypeRows
+      .map(row => [row.key, row.total, row.quotes, row.won, row.quotedValue, row.closeRate])
+      .sort((left, right) => String(left[0]).localeCompare(String(right[0])));
+    expect(statistics(zh)).toEqual(statistics(en));
+    expect(zh.totals).toEqual(en.totals);
   });
 });
