@@ -555,7 +555,8 @@ const runTarget = async (target) => {
     browserName: target.browserName,
     pageLoadStrategy: "eager",
     ...(target.browserVersion ? { browserVersion: target.browserVersion } : {}),
-    ...(target.id==='iphone-safari-real'?{'appium:nativeWebTap':true,'appium:nativeWebTapStrict':true}:{}),
+    ...(target.id==='iphone-safari-real'?{platformName:'iOS','appium:automationName':'XCUITest','appium:nativeWebTap':true,'appium:nativeWebTapStrict':true}:{}),
+    ...(target.id==='android-chrome-real'?{platformName:'Android','appium:automationName':'UiAutomator2'}:{}),
     "bstack:options": {
       userName: username,
       accessKey,
