@@ -16,6 +16,8 @@ HTML 预注入仅允许 `publicQuerySeed` 初始化查询缓存，`publicQuerySe
 
 根使用现有 React Router Data router；`NavigationProtectionProvider` 统一处理站内跳转、前进后退、跨文档更新确认。表单用 `useUnsavedChangesWarning(dirty || isSubmitting)` 登记；原生刷新、关闭由 beforeunload 保护。公开语言切换、同页 hash 不算离开业务页面；禁止用 hash 作为后台页面 remount key。需要清空当前页面编辑的动作也必须先确认。
 
+后台权限提示与权限门内的页面统一由 `AdminLanguagePage` 订阅语言，重新渲染同一个页面实例；不可用语言作为 remount key，亦不可依赖查询刷新或下一次编辑才更新文案。无需各页面分别增加语言补丁，原有权限判断保持不变。
+
 只通过 `reloadDocumentSafely` 更新程序版本；内容版本变化仅失效缓存。不可自动整页刷新。跨前后台的文档切换继续保留分析隔离，不改变登录、权限、MFA。
 
 编辑必须区分最后确认的远端快照、提交快照、当前输入。`useAdminFormState` 保留 dirty 字段；`applyRemote(saved, submitted)` 合并保存响应并保留提交后的新输入；多区块、失焦保存用 `applyPatchRemote(savedPatch, submittedPatch)`，不得把未提交的兄弟区块标记为已保存。不同记录 resetKey 不同，不沿用前一条详情占位。读取失败、写入失败保留输入。用 `useSubmissionLock` 同步锁定相关提交动作，覆盖校验期间的重复点击。

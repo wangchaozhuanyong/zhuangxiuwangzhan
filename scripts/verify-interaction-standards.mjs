@@ -25,6 +25,15 @@ for (const file of walk(path.join(root,'src'))) {
  if (relative.startsWith('src/pages/') && /addEventListener\(["']beforeunload/.test(text)) failures.push(`${relative}: use the shared navigation guard`);
  const tree = ts.createSourceFile(file,text,ts.ScriptTarget.Latest,true,relative.endsWith('tsx')?ts.ScriptKind.TSX:ts.ScriptKind.TS);
  function check(node) {
+  if (relative === 'src/routes/adminRoutes.tsx' && ts.isVariableDeclaration(node) && node.name.getText(tree) === 'withRoleGate') {
+   let hasLanguagePage = false;
+   const inspectEntry = child => {
+    if ((ts.isJsxOpeningElement(child) || ts.isJsxSelfClosingElement(child)) && child.tagName.getText(tree) === 'AdminLanguagePage') hasLanguagePage = true;
+    ts.forEachChild(child, inspectEntry);
+   };
+   if (node.initializer) inspectEntry(node.initializer);
+   if (!hasLanguagePage) failures.push(`${relative}: cached admin pages must subscribe through AdminLanguagePage`);
+  }
   if (ts.isCallExpression(node) && /(?:^|\.)setTimeout$/.test(node.expression.getText(tree))) {
    const callback=node.arguments[0];
    if (callback) {
