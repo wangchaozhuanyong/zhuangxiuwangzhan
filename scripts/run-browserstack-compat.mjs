@@ -234,19 +234,11 @@ const touch = async (driver, selector) => {
     },{capture:true,once:true});
   },selector);
   if (nativeTapDrivers.has(driver)) {
-    // Observe the actual Safari webview frame in native coordinates. This avoids
-    // guessing browser toolbar offsets or using a web element as a native origin.
-    const geometry=await driver.executeScript(css=>{
-      const r=document.querySelector(css).getBoundingClientRect(),v=visualViewport;
-      return {x:r.left+r.width/2-(v?.offsetLeft||0),y:r.top+r.height/2-(v?.offsetTop||0),width:v?.width||innerWidth,height:v?.height||innerHeight};
-    },selector);
-    await withNativeDeviceContext(driver,async()=>{
-      const frame=await (await driver.findElement(By.xpath('//XCUIElementTypeWebView'))).getRect();
-      const x=Math.round(frame.x+geometry.x*frame.width/geometry.width),y=Math.round(frame.y+geometry.y*frame.width/geometry.width);
-      if(x<frame.x||x>frame.x+frame.width||y<frame.y||y>frame.y+frame.height)throw new Error('NATIVE_TARGET_OUTSIDE_WEBVIEW');
-      const finger=new input.Pointer('qa-native-tap',input.Pointer.Type.TOUCH);
-      await driver.actions({async:true}).insert(finger,finger.move({x,y}),finger.press(),{type:'pause',duration:250},finger.release()).perform();
-    });
+    // XCUITest's nativeWebTap capability translates this WebDriver command to
+    // a physical tap, including Safari's toolbar and viewport calibration.
+    // Keep the trusted-event and touch-pressure observations below: accepting
+    // the command alone does not establish that input reached the control.
+    await (await driver.findElement(By.css(selector))).click();
   } else {
   const position = await driver.executeScript(css => {
     const rect = document.querySelector(css).getBoundingClientRect();
