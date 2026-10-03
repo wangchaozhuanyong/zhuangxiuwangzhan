@@ -3,6 +3,7 @@ import path from "node:path";
 import { readRecoveryEnv } from "./lib/backup-env.mjs";
 import { decryptBackup, sha256 } from "./lib/private-backup.mjs";
 import { wranglerR2Request } from "./lib/wrangler-r2-transfer.mjs";
+import { scopedR2Request } from "./lib/r2-scoped-transfer.mjs";
 
 export const BACKUP_BUCKET = "flashcast-recovery-backups";
 const LIMIT = 100 * 1024 * 1024;
@@ -34,19 +35,20 @@ export function r2Context(root, request = fetch, { authentication = "api-token",
   if (refs.length !== 1 || env.APP_ENV !== "production"
     || new URL(env.VITE_SUPABASE_URL).hostname !== `${refs[0]}.supabase.co`
     || !/^[a-f0-9]{32}$/.test(env.CLOUDFLARE_ACCOUNT_ID || "")
-    || !["api-token", "wrangler"].includes(authentication)
+    || !["api-token", "wrangler", "scoped-s3"].includes(authentication)
     || (authentication === "api-token" && !env.CLOUDFLARE_API_TOKEN) || !env.SUPABASE_DB_PASSWORD) {
     throw new Error("Private production configuration does not match this project.");
   }
   return { env, project: refs[0], authentication,
-    request: authentication === "wrangler" ? wranglerR2Request(root, env.CLOUDFLARE_ACCOUNT_ID) : request,
+    request: authentication === "wrangler" ? wranglerR2Request(root, env.CLOUDFLARE_ACCOUNT_ID)
+      : authentication === "scoped-s3" ? scopedR2Request(root, env, { request }) : request,
     base: `https://api.cloudflare.com/client/v4/accounts/${env.CLOUDFLARE_ACCOUNT_ID}/r2/buckets` };
 }
 
 async function api(context, suffix = "", options = {}) {
   try {
     return await context.request(`${context.base}${suffix}`, { ...options,
-      headers: { Authorization: `Bearer ${context.env.CLOUDFLARE_API_TOKEN}`, ...options.headers },
+      headers: { ...(context.authentication === "scoped-s3" ? {} : { Authorization: `Bearer ${context.env.CLOUDFLARE_API_TOKEN}` }), ...options.headers },
       signal: AbortSignal.timeout(120000) });
   } catch { throw new Error("R2 request failed; private request details withheld."); }
 }

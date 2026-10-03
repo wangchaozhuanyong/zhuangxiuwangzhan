@@ -13,6 +13,8 @@ export function checkCloudTools(root, { execute = spawnSync, env = process.env }
     const result = execute(invocation.executable, invocation.args, { encoding: "utf8", stdio: ["ignore", "pipe", "pipe"], timeout: 10000 });
     if (result.status !== 0 || !/\(PostgreSQL\) 17\./.test(result.stdout || "")) throw new Error("Native PostgreSQL 17 backup tools are required.");
   }
+  const s3 = execute("aws", ["--version"], { encoding: "utf8", stdio: ["ignore", "pipe", "pipe"], timeout: 10000 });
+  if (s3.status !== 0 || !/^aws-cli\/2\./.test(s3.stdout || "")) throw new Error("Official AWS CLI v2 is required for bucket-scoped R2 transfers.");
 }
 
 export function removeEphemeralCloudCopy(root, result, { env = process.env } = {}) {
@@ -34,7 +36,7 @@ export function removeEphemeralCloudCopy(root, result, { env = process.env } = {
 
 export async function runCloudBackup(root = process.cwd()) {
   checkCloudTools(root);
-  const result = removeEphemeralCloudCopy(root, await runDailyBackup(root, { cloud: true, authentication: "api-token" }));
+  const result = removeEphemeralCloudCopy(root, await runDailyBackup(root, { cloud: true, authentication: "scoped-s3" }));
   const base = fs.realpathSync(path.join(root, "backups"));
   fs.writeFileSync(path.join(base, "daily-backup-result.json"), JSON.stringify(result, null, 2) + "\n", { mode: 0o600 });
   return result;
