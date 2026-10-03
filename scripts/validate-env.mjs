@@ -1,8 +1,10 @@
 /**
  * Fail production/CI builds when required VITE_* env vars are missing.
  */
-import { loadProjectEnv } from "./lib/project-env.mjs";
-loadProjectEnv();
+import { loadProjectEnv, requestedEnvMode } from "./lib/project-env.mjs";
+// This is the production prebuild entry; Vite's default build mode is production.
+// Development serving and environment-isolation checks keep explicit modes.
+loadProjectEnv({ mode: requestedEnvMode() ?? "production" });
 
 const required = [
   "VITE_SUPABASE_URL",
