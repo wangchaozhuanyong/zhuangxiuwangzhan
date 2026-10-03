@@ -13,6 +13,7 @@ const selectedTargets = (process.env.REAL_BROWSER_TARGETS || "")
   .map((target) => target.trim())
   .filter(Boolean);
 const brandSelector = ".scheme-a-chrome__brand";
+const nativeTapDrivers = new WeakSet();
 
 const pages = [
   {
@@ -211,12 +212,18 @@ const ready = driver => driver.wait(() => driver.executeScript(() => !!document.
 
 const touch = async (driver, selector) => {
   await waitForVisible(driver, selector);
+  if (nativeTapDrivers.has(driver)) {
+    // XCUITest translates web element coordinates for a real native tap.
+    // W3C native actions cannot consume a web element origin directly.
+    await (await driver.findElement(By.css(selector))).click();
+    return;
+  }
   const position = await driver.executeScript(css => {
     const rect = document.querySelector(css).getBoundingClientRect();
     return { x: Math.round(rect.left + rect.width / 2), y: Math.round(rect.top + rect.height / 2) };
   }, selector);
   const finger = new input.Pointer("qa-finger", input.Pointer.Type.TOUCH);
-  await driver.actions({ async: true }).insert(finger, finger.move(position), finger.press(), finger.release()).perform();
+  await driver.actions({ async: true }).insert(finger, finger.move(position), finger.press(), { type: "pause", duration: 100 }, finger.release()).perform();
 };
 
 const swipeTo = async (driver, selector) => {
@@ -241,8 +248,8 @@ const swipeTo = async (driver, selector) => {
 
 const captureMotion = async driver => {
   await driver.executeScript(() => {
-  window.__qaMotion = { complete: false };
-  const done = observation => { window.__qaMotion = { complete: true, observation }; };
+  delete document.documentElement.dataset.qaMotion;
+  const done = observation => { document.documentElement.dataset.qaMotion = JSON.stringify(observation); };
   const start = performance.now();
   const states = new Set();
   let activeFrames = 0, maxAlignmentError = 0, maxButtonShift = 0, original, minimumViewportHeight = Infinity, maximumViewportHeight = 0;
@@ -282,8 +289,12 @@ const captureMotion = async driver => {
   };
   sample();
   });
-  await driver.wait(() => driver.executeScript(() => window.__qaMotion?.complete === true), 15000);
-  return driver.executeScript(() => window.__qaMotion.observation);
+  try { await driver.wait(() => driver.executeScript(() => !!document.documentElement.dataset.qaMotion), 15000); }
+  catch(error) {
+    error.metrics=await driver.executeScript(() => ({ documentComplete:document.readyState==='complete',pageVisible:document.visibilityState==='visible',collectorResultPresent:!!document.documentElement.dataset.qaMotion,motionEntryPresent:!!document.querySelector('.fc-furniture-floating') }));
+    throw error;
+  }
+  return driver.executeScript(() => JSON.parse(document.documentElement.dataset.qaMotion));
 };
 
 const mobileChecks = async (driver, target, identity) => {
@@ -334,21 +345,24 @@ const mobileChecks = async (driver, target, identity) => {
   await check("floating_press_feedback_and_shop_open", async () => {
     await driver.get(`${baseUrl}/zh/services`); await ready(driver);
     await driver.executeScript(() => {
-      window.__qaFloatingPress = null;
+      delete document.documentElement.dataset.qaFloatingPress;
       const entry = document.querySelector(".fc-furniture-floating");
       entry.addEventListener("pointerdown", event => setTimeout(() => {
-        window.__qaFloatingPress = { pointer: event.pointerType, pressed: entry.dataset.pressed === "true", transform: getComputedStyle(entry.querySelector(".fc-furniture-floating__icon")).transform };
-      }, 100), { once: true });
+        document.documentElement.dataset.qaFloatingPress = JSON.stringify({ pointer: event.pointerType, trusted:event.isTrusted, pressed: entry.dataset.pressed === "true", transform: getComputedStyle(entry.querySelector(".fc-furniture-floating__icon")).transform });
+      }, 16), { once: true });
     });
     const before = await driver.getAllWindowHandles();
     const position = await driver.executeScript(() => {
       const rect = document.querySelector(".fc-furniture-floating").getBoundingClientRect();
       return { x: Math.round(rect.left + rect.width / 2), y: Math.round(rect.top + rect.height / 2) };
     });
-    const finger = new input.Pointer("qa-press", input.Pointer.Type.TOUCH);
-    await driver.actions({ async: true }).insert(finger, finger.move(position), finger.press(), { type: "pause", duration: 250 }, finger.release()).perform();
-    const feedback = await driver.executeScript(() => window.__qaFloatingPress);
-    if (!feedback?.pressed || feedback.pointer !== "touch" || feedback.transform === "none") throw new Error("PRESS_FEEDBACK_NOT_OBSERVED");
+    if(nativeTapDrivers.has(driver)) await touch(driver,'.fc-furniture-floating');
+    else {
+      const finger = new input.Pointer("qa-press", input.Pointer.Type.TOUCH);
+      await driver.actions({ async: true }).insert(finger, finger.move(position), finger.press(), { type: "pause", duration: 250 }, finger.release()).perform();
+    }
+    const feedback = await driver.executeScript(() => JSON.parse(document.documentElement.dataset.qaFloatingPress || 'null'));
+    if (!feedback?.pressed || feedback.pointer !== "touch" || feedback.trusted!==true || feedback.transform === "none") throw new Error("PRESS_FEEDBACK_NOT_OBSERVED");
     await driver.wait(async () => (await driver.getAllWindowHandles()).length > before.length, 15000);
     const added = (await driver.getAllWindowHandles()).filter(handle => !before.includes(handle));
     try {
@@ -370,11 +384,13 @@ const mobileChecks = async (driver, target, identity) => {
       error.metrics = await driver.executeScript(before => ({ keyboardHeightBefore: before, keyboardHeightAfter: visualViewport?.height || innerHeight, focusedName: document.activeElement.id === "contact-name", typedNamePresent: document.querySelector("#contact-name")?.value === "QA keyboard only" }), viewportBefore);
       throw error;
     }
-    const keyboard = await driver.executeScript(() => {
+    const keyboardSnapshot = () => {
       const rect = document.activeElement.getBoundingClientRect(); const view = visualViewport;
-      return { height: view?.height || innerHeight, focusedName: document.activeElement.id === "contact-name", inputVisible: rect.top >= (view?.offsetTop || 0) && rect.bottom <= (view?.offsetTop || 0) + (view?.height || innerHeight) };
-    });
-    if (!keyboard.focusedName || !keyboard.inputVisible) throw new Error("KEYBOARD_COVERS_ACTIVE_INPUT");
+      return { height: view?.height || innerHeight, focusedName: document.activeElement.id === "contact-name", inputVisible: rect.top >= (view?.offsetTop || 0) && rect.bottom <= (view?.offsetTop || 0) + (view?.height || innerHeight),inputTop:rect.top,inputBottom:rect.bottom,viewportOffset:view?.offsetTop||0 };
+    };
+    try { await driver.wait(async()=>{const item=await driver.executeScript(keyboardSnapshot);return item.focusedName&&item.inputVisible;},10000); }
+    catch { const error=new Error('KEYBOARD_COVERS_ACTIVE_INPUT');error.metrics=await driver.executeScript(keyboardSnapshot);throw error; }
+    const keyboard=await driver.executeScript(keyboardSnapshot);
     await (await driver.findElement(By.css("#contact-name"))).sendKeys("QA keyboard only");
     const typed = await driver.executeScript(() => document.querySelector("#contact-name")?.value === "QA keyboard only");
     if (!typed) throw new Error("NATIVE_KEYBOARD_INPUT_NOT_UPDATED");
@@ -440,6 +456,7 @@ const runTarget = async (target) => {
     browserName: target.browserName,
     pageLoadStrategy: "eager",
     ...(target.browserVersion ? { browserVersion: target.browserVersion } : {}),
+    ...(target.id==='iphone-safari-real'?{'appium:nativeWebTap':true}:{}),
     "bstack:options": {
       userName: username,
       accessKey,
@@ -456,6 +473,7 @@ const runTarget = async (target) => {
   let driver, stage = "session_creation", identity = {}, advancedChecks = [], refreshed = [];
   try {
     driver = await new Builder().usingServer("https://hub.browserstack.com/wd/hub").withCapabilities(capabilities).build();
+    if(target.id==='iphone-safari-real')nativeTapDrivers.add(driver);
     await driver.manage().setTimeouts({ pageLoad: 90_000, script: 45_000 });
     stage = "returned_capabilities";
     const returned = await driver.getCapabilities();
