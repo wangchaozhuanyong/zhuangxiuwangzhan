@@ -37,7 +37,7 @@ import AdminVideoUpload from "./AdminVideoUpload";
 import AdminConfirmDialog from "@/components/admin/AdminConfirmDialog";
 import { toast } from "@/hooks/use-toast";
 import { adminMediaLibraryText, adminMediaUsageTypeLabels } from "@/i18n/adminMediaLibraryText";
-import { getAdminLang } from "@/lib/adminLocale";
+import { useAdminLang } from "@/lib/adminLocale";
 import { formatAdminMutationError } from "@/lib/adminMutation";
 import { formatUserFacingError } from "@/lib/userFacingText";
 
@@ -55,7 +55,7 @@ type AdminMediaLibraryTextKey = keyof typeof adminMediaLibraryText;
 
 const AdminMediaLibrary = () => {
   const { protectSubmission, isSubmitting } = useSubmissionLock();
-  const language = getAdminLang();
+  const language = useAdminLang();
   const A = (key: AdminMediaLibraryTextKey) => adminMediaLibraryText[key][language];
   const formatA = (key: AdminMediaLibraryTextKey, values: Record<string, string>) =>
     Object.entries(values).reduce((text, [name, value]) => text.replaceAll(`{${name}}`, value), A(key));
