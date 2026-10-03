@@ -94,6 +94,27 @@ export function validateBrowserBaseUrl(value) {
   return url.origin;
 }
 
+export function publicDeviceIdentity(capabilities = {}, session = {}) {
+  const options = capabilities["bstack:options"] || {};
+  const pick = (values, pattern) => values.find(value => typeof value === "string" && pattern.test(value)) || null;
+  return {
+    browserName: pick([session.browser, capabilities.browserName], /^(chrome|chromium|safari|firefox|edge|microsoftedge)$/i),
+    browserVersion: pick([session.browser_version, capabilities.browserVersion, capabilities.version], /^\d+(?:\.\d+){0,5}$/),
+    os: pick([session.os, capabilities.platformName, options.os], /^(ios|android|windows|mac|macos|os x)$/i),
+    osVersion: pick([session.os_version, capabilities["appium:platformVersion"], capabilities.platformVersion, options.osVersion], /^\d+(?:\.\d+){0,4}$/),
+    deviceName: pick([session.device, capabilities["appium:deviceName"], capabilities.deviceName, options.deviceName], /^(iPhone|Samsung Galaxy)[A-Za-z0-9 ._-]{0,70}$/i),
+  };
+}
+
+export function assertMobileMotion(observation) {
+  if (!observation || observation.activeFrames < 3 || !observation.states?.includes("done")) throw new Error("MOTION_NOT_OBSERVED");
+  if (!observation.reducedMotion && (!observation.states.includes("flying") || !observation.states.includes("settling"))) throw new Error("MOTION_PHASE_MISSING");
+  if (!Number.isFinite(observation.maxAlignmentError) || observation.maxAlignmentError > 1.25 || observation.hasViewBox) throw new Error("MOTION_FRAME_MISALIGNED");
+  if (!Number.isFinite(observation.maxButtonShift) || observation.maxButtonShift > 1) throw new Error("FLOATING_BUTTON_JUMPED");
+  if (!Number.isFinite(observation.squareRatio) || Math.abs(observation.squareRatio - 1) > .025 || !observation.insideViewport) throw new Error("MOBILE_BUTTON_GEOMETRY_INVALID");
+  return true;
+}
+
 const pages = [
   { path: "/zh", selectors: [".scheme-a-chrome__brand", "main", "footer", 'a[href^="tel:"]'], minTextLength: 800 },
   { path: "/en", selectors: [".scheme-a-chrome__brand", "main", "footer", 'a[href^="tel:"]'], minTextLength: 800 },

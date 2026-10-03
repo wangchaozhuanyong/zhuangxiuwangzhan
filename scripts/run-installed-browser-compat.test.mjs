@@ -1,7 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import { spawnSync } from "node:child_process";
-import { getBrowserTargets, resolveTarget, selectRunnableTargets, validateBrowserBaseUrl } from "./run-installed-browser-compat.mjs";
+import { getBrowserTargets, resolveTarget, selectRunnableTargets, validateBrowserBaseUrl, publicDeviceIdentity, assertMobileMotion } from "./run-installed-browser-compat.mjs";
 
 test("macOS discovers system and per-user vendor browsers without Windows paths", async () => {
   const targets = getBrowserTargets("darwin", { HOME: "/Users/qa" });
@@ -39,4 +39,28 @@ test("a partially misspelled cloud target list fails before sessions are created
   assert.equal(result.status, 1);
   assert.match(result.stderr, /Unsupported BrowserStack target ids: windows-edeg/);
   assert.ok(!result.stdout.includes("starting"));
+});
+
+test("device evidence includes returned versions but excludes provider credentials and URLs", () => {
+  const identity = publicDeviceIdentity({ browserName: "safari", browserVersion: "18.7", accessKey: "never-copy", "appium:platformVersion": "18.7" },
+    { device: "iPhone 16", os: "ios", os_version: "18.7", browser: "safari", public_url: "https://private.test/session", userName: "never-copy" });
+  assert.deepEqual(identity, { browserName: "safari", browserVersion: "18.7", os: "ios", osVersion: "18.7", deviceName: "iPhone 16" });
+  assert.ok(!JSON.stringify(identity).includes("never-copy"));
+  assert.equal(publicDeviceIdentity({ browserVersion: "https://private.test?token=secret" }).browserVersion, null);
+});
+
+const motion = { activeFrames: 14, states: ["waiting", "flying", "settling", "done"], reducedMotion: false,
+  maxAlignmentError: .5, maxButtonShift: 0, squareRatio: 1, insideViewport: true, hasViewBox: false };
+
+test("motion evidence cannot pass without actual animation frames or with a shifted landing frame", () => {
+  assert.equal(assertMobileMotion(motion), true);
+  assert.throws(() => assertMobileMotion({ ...motion, activeFrames: 0 }), /MOTION_NOT_OBSERVED/);
+  assert.throws(() => assertMobileMotion({ ...motion, maxAlignmentError: 3 }), /MOTION_FRAME_MISALIGNED/);
+  assert.throws(() => assertMobileMotion({ ...motion, maxButtonShift: 6 }), /FLOATING_BUTTON_JUMPED/);
+  assert.throws(() => assertMobileMotion({ ...motion, squareRatio: 2 }), /MOBILE_BUTTON_GEOMETRY_INVALID/);
+});
+
+test("reduced motion requires measured settling frames without demanding a meteor flight", () => {
+  assert.equal(assertMobileMotion({ ...motion, reducedMotion: true, states: ["settling", "done"] }), true);
+  assert.throws(() => assertMobileMotion({ ...motion, states: ["settling", "done"] }), /MOTION_PHASE_MISSING/);
 });
