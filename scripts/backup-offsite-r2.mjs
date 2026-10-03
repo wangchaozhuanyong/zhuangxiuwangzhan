@@ -82,11 +82,20 @@ export async function checkSevenDayRetention(context) {
   const lifecycle = await jsonResult(await api(context, `/${BACKUP_BUCKET}/lifecycle`), "Check backup expiration");
   const locks = await jsonResult(await api(context, `/${BACKUP_BUCKET}/lock`), "Check backup retention locks");
   const expiration = lifecycle.rules?.filter(rule => rule.enabled && rule.deleteObjectsTransition);
-  if (!Array.isArray(expiration) || expiration.length !== 1 || expiration[0].conditions?.prefix !== ""
+  const rule = expiration?.[0];
+  const conditions = rule?.conditions;
+  // R2's all-object response omits the empty prefix inside an empty conditions object.
+  const allObjects = conditions && typeof conditions === "object" && !Array.isArray(conditions)
+    && (conditions.prefix === "" || Object.keys(conditions).length === 0);
+  if (!Array.isArray(expiration) || expiration.length !== 1 || !allObjects
     || expiration[0].deleteObjectsTransition.condition?.type !== "Age"
     || expiration[0].deleteObjectsTransition.condition?.maxAge !== 7 * 86400
-    || !Array.isArray(locks.rules) || locks.rules.length !== 0) {
-    throw new Error("Backup bucket must expire all objects after exactly seven days, with no retention locks.");
+    || !Array.isArray(locks?.rules) || locks.rules.length !== 0) {
+    const summary = { expiration_rules: expiration?.length ?? null, all_objects: !!allObjects,
+      seven_day_age: rule?.deleteObjectsTransition?.condition?.type === "Age"
+        && rule.deleteObjectsTransition.condition.maxAge === 7 * 86400,
+      lock_rules: Array.isArray(locks?.rules) ? locks.rules.length : null };
+    throw new Error(`Backup bucket must expire all objects after exactly seven days, with no retention locks. ${JSON.stringify(summary)}`);
   }
   return { retention_days: 7, r2_lifecycle_verified: true };
 }

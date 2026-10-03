@@ -123,6 +123,32 @@ test("daily policy verification accepts only all-object seven-day expiry with no
   }
 });
 
+test("Cloudflare's empty conditions object applies the seven-day rule to all objects", async () => {
+  const context = policyContext(); const request = context.request;
+  context.request = async url => {
+    const response = await request(url);
+    if (!url.endsWith("/lifecycle")) return response;
+    const body = await response.json(); body.result.rules[0].conditions = {};
+    body.result.rules.unshift({ id: "Default Multipart Abort Rule", enabled: true, conditions: {},
+      abortMultipartUploadsTransition: { condition: { type: "Age", maxAge: 7 * 86400 } } });
+    return Response.json(body);
+  };
+  assert.equal((await checkSevenDayRetention(context)).r2_lifecycle_verified, true);
+});
+
+test("missing or malformed lifecycle conditions cannot waive full-bucket coverage", async () => {
+  for (const conditions of [undefined, null, [], { prefix: null }, { unexpected: true }]) {
+    const context = policyContext(); const request = context.request;
+    context.request = async url => {
+      const response = await request(url);
+      if (!url.endsWith("/lifecycle")) return response;
+      const body = await response.json(); body.result.rules[0].conditions = conditions;
+      return Response.json(body);
+    };
+    await assert.rejects(checkSevenDayRetention(context), /exactly seven days/);
+  }
+});
+
 test("official CLI reads lifecycle and lock rules without granting mutation capability", async () => {
   const f = fixture(); const account = "0".repeat(32); const commands = [];
   try {
