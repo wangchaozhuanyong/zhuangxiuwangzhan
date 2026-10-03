@@ -12,6 +12,7 @@ const humanize = (value: string) =>
 const projectTypeLabels: Record<string, LabelPair> = {
   residential: { en: "Residential", zh: "住宅" },
   commercial: { en: "Commercial", zh: "商业" },
+  "commercial fit-out": { en: "Commercial Fit-Out", zh: "商业空间装修" },
   "residential renovation": { en: "Residential Renovation", zh: "住宅装修" },
   "commercial / office fit-out": { en: "Commercial / Office Fit-Out", zh: "商业 / 办公室装修" },
   "built-in": { en: "Built-In", zh: "定制内嵌家具" },
