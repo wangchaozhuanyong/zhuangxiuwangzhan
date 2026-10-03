@@ -86,7 +86,7 @@ const targets = [
   {
     id: "iphone-safari-real",
     browserName: "safari",
-    options: { deviceName: "iPhone 16", osVersion: "18", deviceOrientation: "portrait", realMobile: true },
+    options: { deviceName: "iPhone 16", osVersion: "18.6", deviceOrientation: "portrait", realMobile: true },
   },
   {
     id: "android-chrome-real",
@@ -239,16 +239,17 @@ const touch = async (driver, selector) => {
     // Keep the trusted-event and touch-pressure observations below: accepting
     // the command alone does not establish that input reached the control.
     if (selector === '.fc-furniture-floating') {
-      const mapping = await driver.executeScript('mobile: calibrateWebToRealCoordinatesTranslation', {});
-      if (!mapping || !['offsetX', 'offsetY', 'pixelRatioX', 'pixelRatioY'].every(key => Number.isFinite(mapping[key]))) throw new Error('NATIVE_COORDINATE_CALIBRATION_UNAVAILABLE');
-      const point = await driver.executeScript(css => {
-        const rect = document.querySelector(css).getBoundingClientRect();
-        return { x: rect.left + rect.width / 2, y: rect.top + rect.height / 2 };
-      }, selector);
+      const label = await (await driver.findElement(By.css(selector))).getAttribute('aria-label');
+      if (!label || /['"]/.test(label)) throw new Error('NATIVE_CONTROL_LABEL_UNSUPPORTED');
       await withNativeDeviceContext(driver, async () => {
-        const finger = new input.Pointer('qa-calibrated-press', input.Pointer.Type.TOUCH);
-        const x = Math.round(mapping.offsetX + point.x * mapping.pixelRatioX);
-        const y = Math.round(mapping.offsetY + point.y * mapping.pixelRatioY);
+        // The device's own accessibility rect already includes Safari chrome.
+        // No guessed offsets or unsupported calibration extension are needed.
+        const control = await driver.findElement(By.xpath(`//XCUIElementTypeLink[@name='${label}' or @label='${label}']`));
+        const rect = await control.getRect();
+        if (rect.width <= 0 || rect.height <= 0) throw new Error('NATIVE_CONTROL_NOT_VISIBLE');
+        const finger = new input.Pointer('qa-native-control-press', input.Pointer.Type.TOUCH);
+        const x = Math.round(rect.x + rect.width / 2);
+        const y = Math.round(rect.y + rect.height / 2);
         await driver.actions({ async: true }).insert(finger, finger.move({ x, y }), finger.press(), { type: 'pause', duration: 250 }, finger.release()).perform();
       });
     } else await (await driver.findElement(By.css(selector))).click();
@@ -512,10 +513,8 @@ const mobileChecks = async (driver, target, identity) => {
       // The iPhone keyboard may expose Done in Safari's accessory toolbar,
       // outside the keyboard subtree used by the generic hide-keyboard API.
       await withNativeDeviceContext(driver, async () => {
-        const controls = await driver.findElements(By.xpath('//XCUIElementTypeButton[@name="Done" or @label="Done" or @name="完成" or @label="完成"]'));
-        for (const control of controls) {
-          if (await control.isDisplayed()) { await control.click(); return; }
-        }
+        const controls = await driver.findElements(By.xpath('//XCUIElementTypeButton[@visible="true" and (@name="Done" or @label="Done" or @name="完成" or @label="完成")]'));
+        if (controls.length) { await controls[0].click(); return; }
         throw new Error('NATIVE_KEYBOARD_DISMISS_CONTROL_UNAVAILABLE');
       });
     } else await hideNativeDeviceKeyboard(driver);
