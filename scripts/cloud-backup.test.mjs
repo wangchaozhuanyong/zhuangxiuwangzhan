@@ -13,7 +13,8 @@ const cloudEnv = () => ({ GITHUB_ACTIONS: "true", GITHUB_REPOSITORY: "wangchaozh
   APP_ENV: "production", VITE_SUPABASE_URL: "https://rbsnyexjifounogswrjp.supabase.co",
   SUPABASE_SERVICE_ROLE_KEY: "fixture-only-service-role", SUPABASE_DB_PASSWORD: "fixture-only-password",
   SUPABASE_ACCESS_TOKEN: "fixture-only-access-token", CLOUDFLARE_ACCOUNT_ID: "a7e061557092f924beb4a7c8adc39c3d",
-  CLOUDFLARE_API_TOKEN: "fixture-only-r2-token" });
+  R2_CONFIG_READ_TOKEN: "fixture-only-read-token", R2_BACKUP_ACCESS_KEY_ID: "fixture-only-id",
+  R2_BACKUP_SECRET_ACCESS_KEY: "fixture-only-secret" });
 
 test("cloud credentials come only from guarded Actions secrets without reading or writing local env files", () => {
   const env = { ...cloudEnv(), UNRELATED_SECRET: "not-copied" };
@@ -28,6 +29,7 @@ test("cloud credentials come only from guarded Actions secrets without reading o
 for (const change of [{ GITHUB_ACTIONS: "false" }, { GITHUB_REPOSITORY: "foreign/project" },
   { GITHUB_REF: "refs/pull/42/merge" }, { GITHUB_EVENT_NAME: "pull_request" },
   { GITHUB_WORKFLOW: "unreviewed-job" }, { APP_ENV: "development" }, { SUPABASE_SERVICE_ROLE_KEY: "" },
+  { R2_CONFIG_READ_TOKEN: "" }, { R2_BACKUP_ACCESS_KEY_ID: "" }, { R2_BACKUP_SECRET_ACCESS_KEY: "" },
   { VITE_SUPABASE_URL: "https://another-project.supabase.co" }, { CLOUDFLARE_ACCOUNT_ID: "0".repeat(32) }]) {
   test(`foreign contexts or missing secrets cannot start cloud backup: ${JSON.stringify(change)}`, () => {
     assert.throws(() => readRecoveryEnv("/nonexistent-fixture-root", { cloud: true, env: { ...cloudEnv(), ...change } }));
@@ -48,12 +50,14 @@ test("missing or older native PostgreSQL tools fail before starting a backup", (
   const env = cloudEnv(); const invoked = [];
   checkCloudTools("/nonexistent-fixture-root", { env, execute: (file, args) => {
     invoked.push(file); assert.deepEqual(args, ["--version"]);
-    return { status: 0, stdout: "fixture (PostgreSQL) 17.11" };
+    return { status: 0, stdout: file === "aws" ? "aws-cli/2.36.49" : "fixture (PostgreSQL) 17.11" };
   } });
-  assert.equal(invoked.length, 3);
+  assert.equal(invoked.length, 4);
   for (const result of [{ status: 1 }, { status: 0, stdout: "fixture (PostgreSQL) 16.15" }]) {
     assert.throws(() => checkCloudTools("/nonexistent-fixture-root", { env, execute: () => result }), /Native PostgreSQL 17/);
   }
+  assert.throws(() => checkCloudTools("/nonexistent-fixture-root", { env, execute: file => ({ status: 0,
+    stdout: file === "aws" ? "aws-cli/1.46.1" : "fixture (PostgreSQL) 17.11" }) }), /AWS CLI v2/);
 });
 
 test("cloud package verification keeps database row, schema, administrator and media checks", (t) => {

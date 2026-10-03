@@ -28,7 +28,7 @@ test("standalone backup operations skip Pages deployment while mixed website cha
     "scripts/backup-offsite-r2.mjs", "scripts/backup-supabase-cloud.mjs", "scripts/backup-supabase-daily.mjs",
     "scripts/backup-supabase-full.mjs", "scripts/record-recovery-status.mjs", "scripts/verify-supabase-full.mjs",
     "scripts/lib/backup-env.mjs", "scripts/lib/backup-retention.mjs", "scripts/lib/database-recovery.mjs",
-    "scripts/lib/private-backup.mjs", "scripts/lib/wrangler-r2-transfer.mjs"];
+    "scripts/lib/private-backup.mjs", "scripts/lib/wrangler-r2-transfer.mjs", "scripts/lib/r2-scoped-transfer.mjs"];
   assert.equal(websiteInputsChanged(backupFiles), false);
   for (const runtime of ["src/App.tsx", "functions/_middleware.ts", "scripts/lib/new-build-helper.mjs", "scripts/lib/project-env.mjs"]) {
     assert.equal(websiteInputsChanged([...backupFiles, runtime]), true, runtime);

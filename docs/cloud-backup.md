@@ -2,7 +2,7 @@
 
 目标：每天马来西亚时间 03:00，在 GitHub 临时执行机生成数据库、Auth、结构和真实媒体文件的完整加密包，永久副本只保存到 Cloudflare 私有 R2 的 `flashcast-recovery-backups`，上传满 7 天自动过期。没有 30 天或每周/月长期副本。执行不依赖个人电脑、Codex、Wrangler 交互登录或 Docker。
 
-工作流：`.github/workflows/supabase-cloud-backup.yml`，名称 `FLASH CAST cloud encrypted backup`。沿用项目锁定 npm 依赖、Node 22 和 PostgreSQL 官方仓库的原生 17 版客户端。数据库一致性快照、包解密认证、表行数、结构/账号覆盖、逐个图片摘要、私有桶检查、7 天生命周期及无保留锁检查继续保留。通过后写回并读回真实运维摘要，再删除临时执行机上的加密副本，不将备份上传为 GitHub Artifact。
+工作流：`.github/workflows/supabase-cloud-backup.yml`，名称 `FLASH CAST cloud encrypted backup`。沿用项目锁定 npm 依赖、Node 22 和 PostgreSQL 官方仓库的原生 17 版客户端。对象传输使用云端执行机预装的官方 AWS CLI v2，连接的是 Cloudflare R2；没有 AWS 存储账号，也不需要本机安装。数据库一致性快照、包解密认证、表行数、结构/账号覆盖、逐个图片摘要、私有桶检查、7 天生命周期及无保留锁检查继续保留。通过后写回并读回真实运维摘要，再删除临时执行机上的加密副本，不将备份上传为 GitHub Artifact。
 
 所需 GitHub 加密 Secrets：
 
@@ -11,11 +11,13 @@
 | `VITE_SUPABASE_URL` | 已存在 |
 | `SUPABASE_ACCESS_TOKEN` | 已存在 |
 | `SUPABASE_DB_PASSWORD` | 已存在 |
-| `SUPABASE_SERVICE_ROLE_KEY` | 缺少；需仅在加密 Secrets 配置，本地已有私有配置可用于核对 |
+| `SUPABASE_SERVICE_ROLE_KEY` | 已在加密 Secrets 配置 |
 | `CLOUDFLARE_ACCOUNT_ID` | 已存在 |
-| `CLOUDFLARE_API_TOKEN` | 已存在；未证明 R2 权限及有效期，不替换现有发布 Token |
+| `R2_CONFIG_READ_TOKEN` | 独立 R2 管理只读凭据，仅用于读取私有状态、生命周期及保留锁，不写配置 |
+| `R2_BACKUP_ACCESS_KEY_ID` | 专用 S3 凭据，仅限 `flashcast-recovery-backups` 对象读写 |
+| `R2_BACKUP_SECRET_ACCESS_KEY` | 与上一项配套，只存 GitHub 加密 Secrets |
 
-若现有 Cloudflare Token 无效或不能访问 R2，先确认独立备份凭据方案；不要导出 Wrangler OAuth 登录、替换网站发布凭据或扩大旧 Token 的权限。秘密不进入代码、聊天、审计、环境示例或日志。云端直接读取进程内加密 Secrets，不写 `.env.production.local`。
+首次真实云端运行已证明现有发布 Token 读取 R2 返回 403。Cloudflare 的单桶对象权限只支持 S3，所以对象传输与配置只读检查使用独立凭据；配置只读凭据在平台权限层覆盖本账户 R2 配置，程序仅访问本备份桶的五个只读接口，不能修改配置。不要导出 Wrangler OAuth 登录、替换网站发布凭据或扩大旧 Token 的权限。秘密不进入代码、聊天、审计、环境示例或日志。云端直接读取进程内加密 Secrets，不写 `.env.production.local`。
 
 启用步骤：
 
@@ -25,10 +27,10 @@
 4. 先手动触发真实云端任务，核对 Actions 成功、R2 新包和实际下载认证、生产运维摘要读回及临时副本清理。
 5. 云端首轮确认成功后，将原本机 Codex 每日任务设为 PAUSED，完成交接；无需电脑常开。
 
-不能将本地模拟测试或文件存在冒充云端首轮成功。当前候选尚未推送、未启用，以上启用动作尚待授权。
+不能将本地模拟测试或文件存在冒充云端首轮成功。最初云端工作流已通过 PR #170 合入 main；原生客户端安装和检查通过，首轮受 R2 403 阻断。专用凭据及单桶 S3 修复在完成授权、真实运行和下载校验前均不算云端交接完成。最新状态以项目内 `audits/cloud-backup-20261003/result.md` 为准。
 
 GitHub 计划任务使用 default branch；可能延迟，公开仓库 60 天无活动可能被停用。备份失败会在 Actions 标记失败，R2 的 7 天清理仍独立继续，因此要检查失败与任务停用状态。规则到期后的删除通常在 24 小时内完成。数据库和媒体包仍不包含外部 SMTP/OAuth/Edge secrets 的完整恢复配置，新包不能继承旧包的实际恢复验收。
 
 回滚：云端失败时保留现场和 R2 已有包，恢复原本机任务；不恢复生产数据库，不重置账号或 MFA，不改变网站发布凭据。
 
-参考：[GitHub 定时事件](https://docs.github.com/en/actions/reference/workflows-and-actions/events-that-trigger-workflows#schedule)、[PostgreSQL 官方 Ubuntu 客户端](https://www.postgresql.org/download/linux/ubuntu/)、[Cloudflare 生命周期](https://developers.cloudflare.com/r2/buckets/object-lifecycles/)。
+参考：[GitHub 定时事件](https://docs.github.com/en/actions/reference/workflows-and-actions/events-that-trigger-workflows#schedule)、[PostgreSQL 官方 Ubuntu 客户端](https://www.postgresql.org/download/linux/ubuntu/)、[Cloudflare 生命周期](https://developers.cloudflare.com/r2/buckets/object-lifecycles/)、[R2 权限与 S3 凭据](https://developers.cloudflare.com/r2/api/tokens/)、[GitHub 执行机预装工具](https://github.com/actions/runner-images/blob/main/images/ubuntu/Ubuntu2404-Readme.md)。

@@ -21,7 +21,8 @@ export function readRecoveryEnv(root, { cloud = false, env = process.env } = {})
     throw new Error("Cloud backup requires the governed main-branch Actions workflow.");
   }
   const keys = ["APP_ENV", "VITE_SUPABASE_URL", "SUPABASE_SERVICE_ROLE_KEY", "SUPABASE_DB_PASSWORD",
-    "SUPABASE_ACCESS_TOKEN", "CLOUDFLARE_ACCOUNT_ID", "CLOUDFLARE_API_TOKEN"];
+    "SUPABASE_ACCESS_TOKEN", "CLOUDFLARE_ACCOUNT_ID", "R2_CONFIG_READ_TOKEN",
+    "R2_BACKUP_ACCESS_KEY_ID", "R2_BACKUP_SECRET_ACCESS_KEY"];
   if (keys.some(key => !env[key])) throw new Error("Cloud backup credentials are incomplete; no backup started.");
   if (!["https://rbsnyexjifounogswrjp.supabase.co", "https://rbsnyexjifounogswrjp.supabase.co/"].includes(env.VITE_SUPABASE_URL)
     || env.CLOUDFLARE_ACCOUNT_ID !== "a7e061557092f924beb4a7c8adc39c3d") {

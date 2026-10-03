@@ -15,6 +15,7 @@ const backupOperationFiles = new Set([
   "scripts/backup-supabase-daily.mjs", "scripts/backup-supabase-full.mjs", "scripts/record-recovery-status.mjs",
   "scripts/verify-supabase-full.mjs", "scripts/lib/backup-env.mjs", "scripts/lib/backup-retention.mjs",
   "scripts/lib/database-recovery.mjs", "scripts/lib/private-backup.mjs", "scripts/lib/wrangler-r2-transfer.mjs",
+  "scripts/lib/r2-scoped-transfer.mjs",
 ]);
 export function websiteInputsChanged(paths) {
   // Skip only known non-runtime inputs. Unknown/new build helpers must deploy.
