@@ -238,7 +238,20 @@ const touch = async (driver, selector) => {
     // a physical tap, including Safari's toolbar and viewport calibration.
     // Keep the trusted-event and touch-pressure observations below: accepting
     // the command alone does not establish that input reached the control.
-    await (await driver.findElement(By.css(selector))).click();
+    if (selector === '.fc-furniture-floating') {
+      const mapping = await driver.executeScript('mobile: calibrateWebToRealCoordinatesTranslation', {});
+      if (!mapping || !['offsetX', 'offsetY', 'pixelRatioX', 'pixelRatioY'].every(key => Number.isFinite(mapping[key]))) throw new Error('NATIVE_COORDINATE_CALIBRATION_UNAVAILABLE');
+      const point = await driver.executeScript(css => {
+        const rect = document.querySelector(css).getBoundingClientRect();
+        return { x: rect.left + rect.width / 2, y: rect.top + rect.height / 2 };
+      }, selector);
+      await withNativeDeviceContext(driver, async () => {
+        const finger = new input.Pointer('qa-calibrated-press', input.Pointer.Type.TOUCH);
+        const x = Math.round(mapping.offsetX + point.x * mapping.pixelRatioX);
+        const y = Math.round(mapping.offsetY + point.y * mapping.pixelRatioY);
+        await driver.actions({ async: true }).insert(finger, finger.move({ x, y }), finger.press(), { type: 'pause', duration: 250 }, finger.release()).perform();
+      });
+    } else await (await driver.findElement(By.css(selector))).click();
   } else {
   const position = await driver.executeScript(css => {
     const rect = document.querySelector(css).getBoundingClientRect();
@@ -431,6 +444,7 @@ const mobileChecks = async (driver, target, identity) => {
         document.documentElement.dataset.qaFloatingPress = JSON.stringify({ pointer: event.pointerType, trusted:event.isTrusted, pressed: entry.dataset.pressed === "true", transform: getComputedStyle(entry.querySelector(".fc-furniture-floating__icon")).transform,pressDuration:performance.now()-started });
       }, { once: true });
     });
+    const originalHandle = await driver.getWindowHandle();
     const before = await driver.getAllWindowHandles();
     const position = await driver.executeScript(() => {
       const rect = document.querySelector(".fc-furniture-floating").getBoundingClientRect();
@@ -445,13 +459,13 @@ const mobileChecks = async (driver, target, identity) => {
     // Read press evidence in the original document, then inspect the new tab.
     try { await driver.wait(async()=>(await driver.getAllWindowHandles()).length>before.length,10000); } catch { /* Press evidence still decides the result below. */ }
     const after=await driver.getAllWindowHandles();
-    await driver.switchTo().window(before[0]);
+    await driver.switchTo().window(originalHandle);
     const feedback = await driver.executeScript(() => JSON.parse(document.documentElement.dataset.qaFloatingPress || 'null'));
     if (!feedback?.pressed || feedback.pointer !== "touch" || feedback.trusted!==true || !feedback.transform || feedback.transform === "none") {
       const error=new Error("PRESS_FEEDBACK_NOT_OBSERVED");
       error.metrics={pressObserved:!!feedback,pressed:feedback?.pressed===true,trusted:feedback?.trusted===true,touchPointer:feedback?.pointer==='touch',transformObserved:!!feedback?.transform&&feedback.transform!=='none',pressDuration:feedback?.pressDuration??0,shopTabCreated:after.length>before.length};
       for(const handle of after.filter(handle=>!before.includes(handle))){await driver.switchTo().window(handle);await driver.close();}
-      await driver.switchTo().window(before[0]);
+      await driver.switchTo().window(originalHandle);
       throw error;
     }
     await driver.wait(async () => (await driver.getAllWindowHandles()).length > before.length, 15000);
@@ -461,7 +475,7 @@ const mobileChecks = async (driver, target, identity) => {
       await driver.wait(async () => new URL(await driver.getCurrentUrl()).hostname === "shop.flashcast.com.my", 15000);
     } finally {
       for (const handle of added) { await driver.switchTo().window(handle); await driver.close(); }
-      await driver.switchTo().window(before[0]);
+      await driver.switchTo().window(originalHandle);
     }
     return { touchPressFeedback: true, shopOpened: true, testTabClosed: true };
   });
@@ -494,7 +508,17 @@ const mobileChecks = async (driver, target, identity) => {
     contactStage='native_keyboard_dismissal';
     // The keyboard pans the visual viewport beyond the fixed header. Use the
     // physical device's keyboard dismissal, then test the reachable menu.
-    await hideNativeDeviceKeyboard(driver,nativeTapDrivers.has(driver));
+    if (nativeTapDrivers.has(driver)) {
+      // The iPhone keyboard may expose Done in Safari's accessory toolbar,
+      // outside the keyboard subtree used by the generic hide-keyboard API.
+      await withNativeDeviceContext(driver, async () => {
+        const controls = await driver.findElements(By.xpath('//XCUIElementTypeButton[@name="Done" or @label="Done" or @name="完成" or @label="完成"]'));
+        for (const control of controls) {
+          if (await control.isDisplayed()) { await control.click(); return; }
+        }
+        throw new Error('NATIVE_KEYBOARD_DISMISS_CONTROL_UNAVAILABLE');
+      });
+    } else await hideNativeDeviceKeyboard(driver);
     await driver.wait(() => driver.executeScript(before => (visualViewport?.height || innerHeight) >= before - 10, viewportBefore), 10000);
     contactStage='menu_after_keyboard';
     // Record geometry before tapping: Android can pan the visual viewport while
