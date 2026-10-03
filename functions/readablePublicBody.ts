@@ -12,6 +12,13 @@ const decode = (s: string) => s.replace(/&#(x[\da-f]+|\d+);?|&(amp|lt|gt|quot|ap
   return ({ amp: "&", lt: "<", gt: ">", quot: '"', apos: "'", colon: ":", tab: "\t", newline: "\n" } as Record<string, string>)[name.toLowerCase()] || m;
 });
 const text = (v: unknown) => typeof v === "string" ? v : "";
+export function buildReadableHomeFaqBody(key: string, faqs: readonly { question: string; answer: string }[], summary?: { title: string; description: string }) {
+  if (!/^\/(en|zh)$/.test(key) || !faqs.length) return "";
+  const lang = key === "/zh" ? "zh-CN" : "en";
+  const title = lang === "en" ? "Frequently asked questions" : "常见问题";
+  const overview = summary ? `<h1>${escape(summary.title)}</h1><p>${escape(summary.description)}</p>` : "";
+  return `<main lang="${lang}">${overview}<section data-flashcast-readable-home-faq><h2>${title}</h2>${faqs.map(faq => `<h3>${escape(faq.question)}</h3><p>${escape(faq.answer)}</p>`).join("")}</section></main>`;
+}
 const plain = (v: unknown) => decode(text(v).replace(/<[^>]*>/g, "")).trim();
 
 function publicHref(raw: string, lang: "en" | "zh") {

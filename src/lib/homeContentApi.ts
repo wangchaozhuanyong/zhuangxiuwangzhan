@@ -29,6 +29,7 @@ import {
   createRemoteContent,
   type PublicContentResult,
 } from "@/lib/publicContentStatus";
+import { mapPublicHomeFaqs } from "@/lib/publicHomeFaqs";
 import { toArray, toRecord, toText, type UnknownRecord } from "@/lib/recordUtils";
 
 type Language = "en" | "zh";
@@ -292,13 +293,6 @@ const mapPublishedBeforeAfterItem = (item: UnknownRecord, language: Language): P
   alt: pickLocalizedText(item, "alt", language, pickLocalizedText(item, "title", language)),
 });
 
-const mapPublishedFaq = (item: UnknownRecord, language: Language): PublishedFaq => ({
-  id: readText(item, "id"),
-  category: readText(item, "page_key", "general"),
-  question: pickLocalizedText(item, "question", language),
-  answer: pickLocalizedText(item, "answer", language),
-});
-
 const mapPublishedProcessStep = (row: UnknownRecord, language: Language): PublishedProcessStep => ({
   id: readText(row, "id"),
   step_number: Number(row.step_number || 0),
@@ -400,7 +394,7 @@ export const mapRemoteHomeContentBundle = (
       )
       .map((item) => mapPublishedBeforeAfterItem(item, language)),
     testimonials: readRecordArray(payload.testimonials).map((item) => mapPublishedTestimonial(item, language)),
-    faqs: readRecordArray(payload.faqs).map((item) => mapPublishedFaq(item, language)),
+    faqs: mapPublicHomeFaqs(payload.faqs, language),
     ctaBlock: ctaBlocks[0]
       ? mapPublishedCtaBlockRow(ctaBlocks[0], language)
       : null,

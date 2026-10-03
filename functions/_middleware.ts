@@ -1,6 +1,7 @@
 import { FURNITURE_CATALOG_SECTION_KEY, readFurnitureCatalogOverrides } from "../src/lib/furnitureCatalogOverrides";
 import { resolveReviewedBlogCover, resolveReviewedImageSource, resolveReviewedMaterialImage, wardrobeCover } from "../src/lib/reviewedContentMedia.mjs";
-import { buildReadablePublicBody, sanitizeReadableContent } from "./readablePublicBody";
+import { buildReadableHomeFaqBody, buildReadablePublicBody, sanitizeReadableContent } from "./readablePublicBody";
+import { mapPublicHomeFaqs } from "../src/lib/publicHomeFaqs";
 import { projectPublicMetadata } from "../src/lib/projectPublicMetadata.mjs";
 import manifest from "./seo-manifest.json";
 import { oldHouseRenovationPageText } from "../src/i18n/oldHouseRenovationPageText";
@@ -2419,7 +2420,7 @@ export const onRequest: PagesFunction = async (context) => {
     // This route renders a static page, so its FAQ schema must use the same
     // reviewed locale source as the visible accordion, rather than a CMS row.
     const oldHouseLanguage = key === "/en/services/old-house" ? "en" : key === "/zh/services/old-house" ? "zh" : null;
-    const meta = resolvedMeta && oldHouseLanguage
+    let meta = resolvedMeta && oldHouseLanguage
       ? { ...resolvedMeta, faqs: oldHouseRenovationPageText[oldHouseLanguage].faqs.map(({ q, a }) => ({ question: q, answer: a })) }
       : resolvedMeta;
 
@@ -2505,9 +2506,14 @@ export const onRequest: PagesFunction = async (context) => {
     shouldInjectFurniture ? fetchFurnitureCatalogPreload(env as Record<string, string | undefined>, furnitureDetailSlug ? decodeURIComponent(furnitureDetailSlug) : undefined) : Promise.resolve(null),
   ]);
 
+  const homeFaqs = shouldInjectHomeBundle
+    ? mapPublicHomeFaqs(homeContentBundle?.faqs, key === "/zh" ? "zh" : "en")
+    : [];
+  if (shouldInjectHomeBundle && meta) meta = { ...meta, faqs: homeFaqs };
   const html = await response.text();
   const readableBody = buildReadablePublicBody(key, dynamicRouteState?.row, siteSettings)
-    || buildReadableRenovationBodyMarkup(key, dynamicRouteState);
+    || buildReadableRenovationBodyMarkup(key, dynamicRouteState)
+    || buildReadableHomeFaqBody(key, homeFaqs, meta);
   let transformed = meta ? injectSeo(html, meta, siteSettings, readableBody) : injectNoIndexNotFound(html, siteSettings);
   let publicDataOmitted = false;
   const publicDataPayload: Record<string, unknown> = {};
@@ -2614,8 +2620,12 @@ export const onRequest: PagesFunction = async (context) => {
       }
 
       const html = await appShellResponse.text();
-      let transformed = staticMeta
-        ? injectSeo(html, staticMeta, prefetchedSiteSettings)
+      // No current home FAQ source was bound on this exception path.
+      const fallbackMeta = staticMeta && isHomePageKey(key)
+        ? { ...staticMeta, faqs: [] }
+        : staticMeta;
+      let transformed = fallbackMeta
+        ? injectSeo(html, fallbackMeta, prefetchedSiteSettings)
         : injectNoIndexNotFound(html, prefetchedSiteSettings);
       transformed = injectPerformanceHints(transformed, env as Record<string, string | undefined>);
       const headers = new Headers(appShellResponse.headers);
@@ -2629,11 +2639,11 @@ export const onRequest: PagesFunction = async (context) => {
       }
       await applyHtmlSecurityHeaders(headers, transformed);
       const fallbackResponse = new Response(transformed, {
-        status: staticMeta ? 200 : 404,
+        status: fallbackMeta ? 200 : 404,
         headers,
       });
       return {
-        response: staticMeta
+        response: fallbackMeta
           ? createPublicHtmlBrowserResponse(fallbackResponse, request, "miss")
           : withHtmlCacheDebugHeader(fallbackResponse, "bypass-not-found"),
         cacheWrite: null,
