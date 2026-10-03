@@ -212,6 +212,20 @@ const ready = driver => driver.wait(() => driver.executeScript(() => !!document.
 
 const touch = async (driver, selector) => {
   await waitForVisible(driver, selector);
+  // A visible dialog can still be sliding into place. Observe a stable hit
+  // target before issuing one native action, rather than retrying successful taps.
+  let previous;
+  await driver.wait(async () => {
+    const current = await driver.executeScript(css => {
+      const element = document.querySelector(css), rect = element.getBoundingClientRect();
+      const x = rect.left + rect.width / 2, y = rect.top + rect.height / 2;
+      const hit = document.elementFromPoint(x, y);
+      return { x, y, hit: !!hit && element.contains(hit) };
+    }, selector);
+    const stable = previous && current.hit && Math.abs(current.x - previous.x) < .5 && Math.abs(current.y - previous.y) < .5;
+    previous = current;
+    return stable;
+  }, waitTimeoutMs);
   if (nativeTapDrivers.has(driver)) {
     // XCUITest translates web element coordinates for a real native tap.
     // W3C native actions cannot consume a web element origin directly.
@@ -254,12 +268,15 @@ const captureMotion = async driver => {
     // Some remote iOS script contexts do not retain callbacks between commands.
     // Read real rendered frames synchronously; do not synthesize animation states.
     const start=Date.now(),states=new Set();
-    let original,activeFrames=0,maxAlignmentError=0,maxButtonShift=0,minimumViewportHeight=Infinity,maximumViewportHeight=0,last;
+    let original,activeFrames=0,maxAlignmentError=0,maxButtonShift=0,minimumViewportHeight=Infinity,maximumViewportHeight=0,last,hiddenFrames=0,visibleFrames=0;
     do {
       last=await driver.executeScript(()=>{
         const entry=document.querySelector('.fc-furniture-floating'),scene=document.querySelector('.fc-furniture-arrival');
         const box=entry?.getBoundingClientRect(),canvas=scene?.getBoundingClientRect(),outline=scene?.querySelector('[data-arrival-border] rect');
+        const style=entry?getComputedStyle(entry):null;
         return {state:entry?.dataset.arrival,box:box?{x:box.x,y:box.y,width:box.width,height:box.height,right:box.right,bottom:box.bottom}:null,
+          visible:style?.visibility==='visible'&&style.display!=='none'&&Number(style.opacity)>0,
+          fixed:style?.position==='fixed',
           viewportHeight:visualViewport?.height||innerHeight,reducedMotion:matchMedia('(prefers-reduced-motion: reduce)').matches,
           active:scene?.dataset.active==='true'&&outline?.hasAttribute('x'),hasViewBox:scene?.hasAttribute('viewBox')??true,
           alignment:box&&canvas&&outline?Math.max(Math.abs(canvas.x+Number(outline.getAttribute('x'))-box.x-.5),Math.abs(canvas.y+Number(outline.getAttribute('y'))-box.y-.5),Math.abs(Number(outline.getAttribute('width'))-box.width+1),Math.abs(Number(outline.getAttribute('height'))-box.height+1)):0,
@@ -267,12 +284,14 @@ const captureMotion = async driver => {
       });
       if(last.state)states.add(last.state);
       minimumViewportHeight=Math.min(minimumViewportHeight,last.viewportHeight);maximumViewportHeight=Math.max(maximumViewportHeight,last.viewportHeight);
-      if(last.box){original??=last.box;maxButtonShift=Math.max(maxButtonShift,Math.abs(last.box.x-original.x),Math.abs(last.box.y-original.y));}
-      if(last.active){activeFrames++;maxAlignmentError=Math.max(maxAlignmentError,last.alignment);}
+      if(last.box&&last.visible){visibleFrames++;original??=last.box;maxButtonShift=Math.max(maxButtonShift,Math.abs(last.box.x-original.x),Math.abs(last.box.y-original.y));}
+      else if(last.box)hiddenFrames++;
+      if(last.active&&last.visible){activeFrames++;maxAlignmentError=Math.max(maxAlignmentError,last.alignment);}
       if(last.state==='done'||last.state==='skipped')break;
     }while(Date.now()-start<15000);
     return {states:[...states],activeFrames,maxAlignmentError,maxButtonShift,minimumViewportHeight,maximumViewportHeight,reducedMotion:last.reducedMotion,
-      hasViewBox:last.hasViewBox,squareRatio:last.box?.width/last.box?.height,insideViewport:last.insideViewport};
+      hasViewBox:last.hasViewBox,squareRatio:last.box?.width/last.box?.height,insideViewport:last.insideViewport,hiddenFrames,visibleFrames,
+      firstVisibleX:original?.x,firstVisibleY:original?.y,finalX:last.box?.x,finalY:last.box?.y,finalFixed:last.fixed};
   }
   await driver.executeScript(() => {
   delete document.documentElement.dataset.qaMotion;
@@ -290,7 +309,8 @@ const captureMotion = async driver => {
     const viewportHeight = visualViewport?.height || innerHeight;
     minimumViewportHeight = Math.min(minimumViewportHeight, viewportHeight);
     maximumViewportHeight = Math.max(maximumViewportHeight, viewportHeight);
-    if (box?.width > 1) {
+    const style = entry ? getComputedStyle(entry) : null;
+    if (box?.width > 1 && style.visibility === 'visible' && style.display !== 'none' && Number(style.opacity) > 0) {
       if (!original) original = box;
       maxButtonShift = Math.max(maxButtonShift, Math.abs(box.x - original.x), Math.abs(box.y - original.y));
       if (scene?.dataset.active === "true") {
@@ -343,21 +363,28 @@ const mobileChecks = async (driver, target, identity) => {
     return observation;
   });
   await check("native_menu_close_and_navigation", async () => {
+    let menuStage='open_first';
+    try {
     await driver.get(`${baseUrl}/zh/services`); await ready(driver);
     const trigger = ".scheme-a-chrome__menu-trigger--compact";
     await touch(driver, trigger);
     await driver.wait(() => driver.executeScript(() => document.querySelector("#scheme-a-directory")?.dataset.state === "open"), waitTimeoutMs);
+    menuStage='close_first';
     await touch(driver, ".scheme-a-directory__close");
     await driver.wait(() => driver.executeScript(() => document.querySelector("#scheme-a-directory")?.dataset.state === "closed"), waitTimeoutMs);
     const restored = await driver.executeScript(css => document.activeElement === document.querySelector(css), trigger);
     if (!restored) throw new Error("MENU_FOCUS_NOT_RESTORED");
+    menuStage='open_second';
     await touch(driver, trigger);
     await driver.wait(() => driver.executeScript(() => document.querySelector("#scheme-a-directory")?.dataset.state === "open"), waitTimeoutMs);
     const group = '[aria-controls="scheme-a-directory-group-spaces"]';
+    menuStage='expand_group';
     if (await (await driver.findElement(By.css(group))).getAttribute("aria-expanded") !== "true") await touch(driver, group);
+    menuStage='navigate_projects';
     await touch(driver, '#scheme-a-directory a[href="/zh/projects"]');
     await driver.wait(() => driver.executeScript(() => location.pathname === "/zh/projects" && document.querySelector("#scheme-a-directory")?.dataset.state === "closed"), waitTimeoutMs);
     return { focusRestored: restored, nativeTouchNavigation: true };
+    }catch(error){error.metrics={...error.metrics,menuStage};throw error;}
   });
   await check("native_language_switch", async () => {
     await driver.get(`${baseUrl}/zh/projects`); await ready(driver);
@@ -374,9 +401,13 @@ const mobileChecks = async (driver, target, identity) => {
     await driver.executeScript(() => {
       delete document.documentElement.dataset.qaFloatingPress;
       const entry = document.querySelector(".fc-furniture-floating");
-      entry.addEventListener("pointerdown", event => setTimeout(() => {
-        document.documentElement.dataset.qaFloatingPress = JSON.stringify({ pointer: event.pointerType, trusted:event.isTrusted, pressed: entry.dataset.pressed === "true", transform: getComputedStyle(entry.querySelector(".fc-furniture-floating__icon")).transform });
-      }, 16), { once: true });
+      let started=0;
+      entry.addEventListener("pointerdown", () => { started=performance.now(); }, { once: true });
+      // Read before React's delegated pointerup clears the actual pressed state.
+      // This also measures short native taps, without fabricating pointer events.
+      entry.addEventListener("pointerup", event => {
+        document.documentElement.dataset.qaFloatingPress = JSON.stringify({ pointer: event.pointerType, trusted:event.isTrusted, pressed: entry.dataset.pressed === "true", transform: getComputedStyle(entry.querySelector(".fc-furniture-floating__icon")).transform,pressDuration:performance.now()-started });
+      }, { once: true });
     });
     const before = await driver.getAllWindowHandles();
     const position = await driver.executeScript(() => {
@@ -389,7 +420,11 @@ const mobileChecks = async (driver, target, identity) => {
       await driver.actions({ async: true }).insert(finger, finger.move(position), finger.press(), { type: "pause", duration: 250 }, finger.release()).perform();
     }
     const feedback = await driver.executeScript(() => JSON.parse(document.documentElement.dataset.qaFloatingPress || 'null'));
-    if (!feedback?.pressed || feedback.pointer !== "touch" || feedback.trusted!==true || feedback.transform === "none") throw new Error("PRESS_FEEDBACK_NOT_OBSERVED");
+    if (!feedback?.pressed || feedback.pointer !== "touch" || feedback.trusted!==true || !feedback.transform || feedback.transform === "none") {
+      const error=new Error("PRESS_FEEDBACK_NOT_OBSERVED");
+      error.metrics={pressObserved:!!feedback,pressed:feedback?.pressed===true,trusted:feedback?.trusted===true,touchPointer:feedback?.pointer==='touch',transformObserved:!!feedback?.transform&&feedback.transform!=='none',pressDuration:feedback?.pressDuration??0};
+      throw error;
+    }
     await driver.wait(async () => (await driver.getAllWindowHandles()).length > before.length, 15000);
     const added = (await driver.getAllWindowHandles()).filter(handle => !before.includes(handle));
     try {
@@ -426,8 +461,16 @@ const mobileChecks = async (driver, target, identity) => {
     const typed = await driver.executeScript(() => document.querySelector("#contact-name")?.value === "QA keyboard only");
     if (!typed) throw new Error("NATIVE_KEYBOARD_INPUT_NOT_UPDATED");
     contactStage='menu_with_keyboard';
+    // Record geometry before tapping: Android can pan the visual viewport while
+    // keeping the header in layout coordinates. Do not silently click offscreen.
+    const menuGeometry=await driver.executeScript(()=>{
+      const r=document.querySelector('.scheme-a-chrome__menu-trigger--compact').getBoundingClientRect();
+      return {menuTop:r.top,menuBottom:r.bottom,viewportOffset:visualViewport?.offsetTop||0,viewportHeight:visualViewport?.height||innerHeight};
+    });
+    try {
     await touch(driver, ".scheme-a-chrome__menu-trigger--compact");
     await driver.wait(() => driver.executeScript(() => document.querySelector("#scheme-a-directory")?.dataset.state === "open"), waitTimeoutMs);
+    }catch(error){error.metrics={...error.metrics,...menuGeometry};throw error;}
     await touch(driver, ".scheme-a-directory__close");
     contactStage='keyboard_dismissal';
     await driver.wait(() => driver.executeScript(before => (visualViewport?.height || innerHeight) >= before - 10, viewportBefore), 10000);
