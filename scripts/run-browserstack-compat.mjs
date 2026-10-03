@@ -365,7 +365,6 @@ const mobileChecks = async (driver, target, identity) => {
     await swipeTo(driver, "#contact-name");
     const viewportBefore = await driver.executeScript(() => visualViewport?.height || innerHeight);
     await touch(driver, "#contact-name");
-    await (await driver.findElement(By.css("#contact-name"))).sendKeys("QA keyboard only");
     try { await driver.wait(() => driver.executeScript(before => (visualViewport?.height || innerHeight) < before - 50, viewportBefore), 10000); }
     catch (error) {
       error.metrics = await driver.executeScript(before => ({ keyboardHeightBefore: before, keyboardHeightAfter: visualViewport?.height || innerHeight, focusedName: document.activeElement.id === "contact-name", typedNamePresent: document.querySelector("#contact-name")?.value === "QA keyboard only" }), viewportBefore);
@@ -376,6 +375,9 @@ const mobileChecks = async (driver, target, identity) => {
       return { height: view?.height || innerHeight, focusedName: document.activeElement.id === "contact-name", inputVisible: rect.top >= (view?.offsetTop || 0) && rect.bottom <= (view?.offsetTop || 0) + (view?.height || innerHeight) };
     });
     if (!keyboard.focusedName || !keyboard.inputVisible) throw new Error("KEYBOARD_COVERS_ACTIVE_INPUT");
+    await (await driver.findElement(By.css("#contact-name"))).sendKeys("QA keyboard only");
+    const typed = await driver.executeScript(() => document.querySelector("#contact-name")?.value === "QA keyboard only");
+    if (!typed) throw new Error("NATIVE_KEYBOARD_INPUT_NOT_UPDATED");
     await touch(driver, ".scheme-a-chrome__menu-trigger--compact");
     await driver.wait(() => driver.executeScript(() => document.querySelector("#scheme-a-directory")?.dataset.state === "open"), waitTimeoutMs);
     await touch(driver, ".scheme-a-directory__close");
