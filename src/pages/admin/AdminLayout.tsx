@@ -322,6 +322,7 @@ const AdminLayout = () => {
     let cancelled = false;
     let idleId: number | null = null;
     let timeoutId: number | null = null;
+    let forceScheduledScan = false;
     const browserWindow = window as typeof window & {
       requestIdleCallback?: (callback: () => void, options?: { timeout: number }) => number;
       cancelIdleCallback?: (id: number) => void;
@@ -339,11 +340,14 @@ const AdminLayout = () => {
     };
 
     const scheduleAccessibilityScan = (force = false) => {
+      forceScheduledScan ||= force;
       if (cancelled || idleId !== null || timeoutId !== null) return;
       const run = () => {
         idleId = null;
         timeoutId = null;
-        if (!cancelled) ensureAdminFormAccessibility(main, force);
+        const forceScan = forceScheduledScan;
+        forceScheduledScan = false;
+        if (!cancelled) ensureAdminFormAccessibility(main, forceScan);
       };
 
       if (browserWindow.requestIdleCallback) {
@@ -355,8 +359,12 @@ const AdminLayout = () => {
     };
 
     scheduleAccessibilityScan(true);
-    const observer = new MutationObserver(() => scheduleAccessibilityScan(false));
-    observer.observe(main, { childList: true, subtree: true });
+    const observer = new MutationObserver((records) => {
+      // Translated labels can commit after the layout's language effect.
+      // Upgrade a queued scan so owned names follow the final visible copy.
+      scheduleAccessibilityScan(records.some(({ type }) => type === "characterData"));
+    });
+    observer.observe(main, { childList: true, characterData: true, subtree: true });
     return () => {
       cancelled = true;
       clearScheduledScan();
