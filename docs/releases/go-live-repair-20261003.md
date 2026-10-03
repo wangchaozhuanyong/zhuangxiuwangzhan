@@ -30,7 +30,7 @@
 
 ## 发布与回滚
 
-同一候选 PR Head 通过现有 CI 后合并；生产仅由 main 的 `cloudflare-pages-deploy.yml` 部署，同SHA已有运行时不重复派发。CMS仅发布本轮诊所目标。上线后核对 `/version.json` 的 main SHA、导航/表单/核心页面、手机刷新及动效归位、SEO与性能回执。前端回滚采用恢复 `8c7633a` 的独立回滚提交并走相同工作流；内容回滚需对新保存版本重新核验并通过受保护发布器。
+同一候选 PR Head 通过现有 CI 后合并；生产仅由 main 的 `cloudflare-pages-deploy.yml` 部署，同SHA已有运行时不重复派发。CMS仅发布本轮诊所目标。上线后核对 `/__flashcast/version` 的 main SHA、导航/表单/核心页面、手机刷新及动效归位、SEO与性能回执。前端回滚采用恢复 `8c7633a` 的独立回滚提交并走相同工作流；内容回滚需对新保存版本重新核验并通过受保护发布器。
 
 ## Architecture Compliance Report
 
@@ -54,16 +54,16 @@ Architecture Decision:
 2. Why this module: 网站构建、测试和依赖安全属于现有 system 边界。
 3. Target layer: 依赖版本清单、锁文件和发布证据。
 4. Why this layer: 公告由已锁定依赖版本触发，不需要修改业务层。
-5. Files allowed to edit: package.json、package-lock.json、本发布文档；方案 P2 文案项仅允许 src/i18n/displayLabels.ts 的现有项目类别表。
+5. Files allowed to edit: package.json、package-lock.json、本发布文档；方案 P2 文案项仅允许 src/i18n/displayLabels.ts 的现有项目类别表；合并当前 main 后出现的回归误报仅修正 src/styles/publicDesignBoundary.test.ts 的选择器匹配。
 6. Files forbidden to edit: 页面业务代码、数据库迁移、权限、环境变量、生产通知配置及其他工作区。
 7. API paths affected: none。
 8. Database access location: unchanged；不进行数据库写入。
-9. Cross-module dependency risk: 无新增业务模块依赖；构建和测试工具补丁需实际回归。
-10. Business behavior impact: 保持现有页面、表单及 API 行为；仅修补既有版本系列内的工具链通告。
+9. Cross-module dependency risk: 无新增业务模块依赖；sharp 原生图片库与 Wrangler 随附的 Miniflare 5 alpha 需验证 Node22、图片产物和 Worker 运行兼容性。
+10. Business behavior impact: 保持现有页面、表单及 API 行为；已获用户“批准，继续执行”授权升级图片及部署工具，失败时回退本批版本提交，不修改业务 API 或兼容日期来绕过检查。
 
-拟锁定 Vite 8.0.16、Vitest 4.1.11、esbuild 0.28.1，并在原声明范围内更新命中公告的 humanfs、browserslist、form-data、js-yaml、undici 与 ws。sharp 0.33.x 的修复需跨版本系列，未获相应具体升级许可前保持原版本；不使用 audit fix --force，也不增加跨版本 overrides。
+锁定 Vite 8.0.16、Vitest 4.1.11、esbuild 0.28.1，并在原声明范围内更新命中公告的 humanfs、browserslist、form-data、js-yaml、undici 与 ws。不使用 audit fix --force，也不增加跨版本 overrides。
 
-本批完整审计从13项降至6项（5高、1低），剩余为Wrangler固定链的esbuild、miniflare、sharp、undici、ws及Wrangler汇总项。拟另行升级sharp 0.35.5和Wrangler 4.147.0，后者随包引入Miniflare 5 alpha内部运行时；已提出具体升级确认，未经确认不安装、不改构建配置。之前的13项审计仍作为历史基线保留。
+首阶段完整审计从13项降至6项（5高、1低），剩余为 Wrangler 固定链的 esbuild、miniflare、sharp、undici、ws 及 Wrangler 汇总项。用户随后批准 sharp 0.35.5 和 Wrangler 4.147.0，后者随包引入 Miniflare 5 alpha 内部运行时；本轮在同一候选中继续升级与验证。之前的13项和6项保留为历史基线，最终审计以新回执为准。
 
 方案 P2 的地区参考卡片英文分类来自共用项目类别表遗漏了 `Commercial Fit-Out`，地区页已经调用 `translateProjectType`。本批补齐单条精确双语映射，中文显示“商业空间装修”，英文保持原标签；不修改项目数据库记录或各地区页面。该项归 projects 模块的 i18n 展示层，不引入跨模块内部调用。
 
@@ -79,11 +79,23 @@ Architecture Decision:
 
 1. Target modules: system、projects。
 2. Target layers: 依赖清单/锁文件、既有i18n展示层。
-3. Edited files: package.json、package-lock.json、src/i18n/displayLabels.ts、本发布文档。
+3. Edited files: package.json、package-lock.json、src/i18n/displayLabels.ts、src/styles/publicDesignBoundary.test.ts、本发布文档。
 4. Forbidden files touched: no。
 5. API paths changed: no。
 6. Database access changed: no。
 7. Cross-module dependency introduced: no。
 8. Business behavior changed: 仅中文类别显示补全；提交、通知与权限不变。
 9. arch:check result: PASS。
-10. Remaining architecture risk: 跨版本图片/部署工具须获具体许可并完成回归；不能以本批前端预览通过替代Cloudflare与真实业务验收。
+10. Remaining architecture risk: 图片/部署工具升级已获具体许可，须完成回归；不能以前端预览通过替代 Cloudflare 与真实业务验收。
+
+### 获批升级执行记录（2026-10-03）
+
+sharp 固定0.35.5，Wrangler固定4.147.0；后者包含Miniflare 5.20261001.0-alpha。typescript-eslint在原8.x声明范围内更新锁文件，不增加overrides。已同步main上已发布的报价准备内容与悬浮入口阅读避让改动（bcba4ae），没有把主工作区WIP带入。合并后的既有布局测试错误匹配按钮内部箭头的绝对定位，已限定检查按钮本体，固定定位断言保留。
+
+最终npm完整审计与omit=dev审计均为5项高危条目，全部来自同一个braces栈耗尽通告及Tailwind依赖链。公告在2026-10-02更新；官方公告当前没有修补版本，注册表braces最新仍3.0.3。原先Wrangler/sharp那组6项已消除，不能与不同时间的公告快照直接相减，也不能声称审计清零。Tailwind仅参与构建，本项目src、Pages Functions与Supabase Functions没有导入该Node链路；npm仍按tailwindcss-animate的peer链把它计入omit=dev结果。未更改依赖分类以改写审计，未擅自迁移Tailwind4。来源：https://github.com/advisories/GHSA-vfj7-8cjw-p6xm 。
+
+合并后的122个测试文件1087项通过；类型、lint、架构、语言和界面文本检查通过。生产图片重生成、Worker完整预览、CI及本批生产发布另以实际回执记载。真实通知渠道尚待明确，当前完整恢复仍缺Auth/schema及最新可恢复点签收。
+
+获批升级后的生产构建成功（252秒），2700张已有响应式图片尺寸零漂移、24张抽样完整解码通过。Wrangler 4.147.0编译Pages Functions并在官方默认兼容日期2026-10-01启动本地workerd；未传兼容日期覆盖参数。Supabase公开绑定仅在内存提供，完整Worker预览公共性能10/10通过，原3000/3500ms门槛与最多20张延迟图片限制保留。
+
+完整Worker本地跨浏览器运行中Chrome/Firefox通过，WebKit停在加载屏。独立请求诊断确认CSP的upgrade-insecure-requests把HTTP4218的JS/CSS升级为HTTPS4218，该端口没有TLS服务；没有删除CSP或放宽测试门槛。原失败与中止回执保留，正式HTTPS生产同套15项检查作为上线后必验，不将本地HTTP失败记作通过。
