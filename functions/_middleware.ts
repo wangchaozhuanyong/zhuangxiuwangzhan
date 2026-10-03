@@ -1558,6 +1558,7 @@ const fetchDynamicRouteState = async (
   env: Record<string, string | undefined>,
   key: string,
   fallback?: SeoEntry,
+  onUnpublishedBlog?: () => void,
 ): Promise<DynamicRouteState | null> => {
   const match = key.match(/^\/(en|zh)(\/.*)?$/);
   if (!match) return null;
@@ -1598,7 +1599,10 @@ const fetchDynamicRouteState = async (
     if (readResult.ok === false) throw new Error(`edge_read_${readResult.category}`);
     const rows = readResult.rows;
     const row = rows?.[0];
-    if (!row) return null;
+    if (!row) {
+      if (route.kind === "blog") onUnpublishedBlog?.();
+      return null;
+    }
     const contentVersion = hashContentVersion([...collectContentTimestamps(row), row.id, row.slug]);
     return { kind: route.kind, row, meta: buildDynamicSeoEntry(key, row, route.kind, fallback), contentVersion };
   }
@@ -2098,9 +2102,27 @@ const fetchLiveFurnitureSlugs = async (env: PagesEnv) => {
   return (rows || []).map((row) => readString(row, "slug")).filter(Boolean);
 };
 
+const isFreshCompleteDynamicSitemap = (dynamicXml: string, now = Date.now()) => {
+  const marker = dynamicXml.match(/<!--\s*flashcast-sitemap-snapshot:v1\s+complete=true\s+generated-at="([^"]+)"\s*-->/i);
+  if (!marker) return false;
+
+  const generatedAt = Date.parse(marker[1]);
+  const age = now - generatedAt;
+  return Number.isFinite(generatedAt) && age >= 0 && age <= 24 * 60 * 60 * 1000;
+};
+
 const mergeSitemapXml = (staticXml: string, dynamicXml: string, furnitureSlugs: string[], hiddenSlugs: string[] = []) => {
   const blocks = [...staticXml.matchAll(/<url>\s*[\s\S]*?<\/url>/gi), ...dynamicXml.matchAll(/<url>\s*[\s\S]*?<\/url>/gi)];
   if (!blocks.length && !furnitureSlugs.length) return staticXml || dynamicXml;
+  const dynamicLocations = new Set(
+    Array.from(dynamicXml.matchAll(/<loc>([^<]+)<\/loc>/gi), (match) => match[1].trim())
+      .filter((location) => {
+        try { return new URL(location).origin === PUBLIC_SITE_URL; } catch { return false; }
+      }),
+  );
+  const liveSitemapAvailable = /<urlset\b[\s\S]*<\/urlset>/i.test(dynamicXml)
+    && dynamicLocations.size > 0
+    && isFreshCompleteDynamicSitemap(dynamicXml);
   const furnitureSlugSet = new Set(furnitureSlugs);
   const hiddenSlugSet = new Set(hiddenSlugs);
   const byLocation = new Map<string, string>();
@@ -2109,8 +2131,11 @@ const mergeSitemapXml = (staticXml: string, dynamicXml: string, furnitureSlugs: 
     const location = block.match(/<loc>([^<]+)<\/loc>/i)?.[1]?.trim();
     if (!location) continue;
     try {
-      const pathname = new URL(location).pathname;
+      const parsedLocation = new URL(location);
+      if (parsedLocation.origin !== PUBLIC_SITE_URL) continue;
+      const pathname = parsedLocation.pathname;
       if (isRedirectOnlySitemapPath(pathname)) continue;
+      if (liveSitemapAvailable && /^\/(?:en|zh)\/blog\/[^/]+$/.test(pathname) && !dynamicLocations.has(location)) continue;
       const materialSlug = pathname.match(/^\/(?:en|zh)\/materials\/([^/]+)$/)?.[1];
       if (materialSlug && furnitureSlugSet.has(decodeURIComponent(materialSlug))) continue;
       const furnitureSlug = pathname.match(/^\/(?:en|zh)\/furniture\/product\/([^/]+)$/)?.[1];
@@ -2422,8 +2447,14 @@ export const onRequest: PagesFunction = async (context) => {
     : null;
 
   const generatePublicHtml = async (existingLastModified?: string | null) => {
-    const dynamicRouteState = await fetchDynamicRouteState(env as Record<string, string | undefined>, key, staticMeta);
-    const resolvedMeta = dynamicRouteState?.hidden ? undefined : dynamicRouteState?.meta || staticMeta;
+    let unpublishedBlog = false;
+    const dynamicRouteState = await fetchDynamicRouteState(
+      env as Record<string, string | undefined>,
+      key,
+      staticMeta,
+      () => { unpublishedBlog = true; },
+    );
+    const resolvedMeta = unpublishedBlog || dynamicRouteState?.hidden ? null : dynamicRouteState?.meta || staticMeta;
     // This route renders a static page, so its FAQ schema must use the same
     // reviewed locale source as the visible accordion, rather than a CMS row.
     const oldHouseLanguage = key === "/en/services/old-house" ? "en" : key === "/zh/services/old-house" ? "zh" : null;
