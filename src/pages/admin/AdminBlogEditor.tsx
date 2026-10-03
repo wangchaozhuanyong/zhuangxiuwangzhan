@@ -16,10 +16,10 @@ import { adminConfirm } from "@/components/admin/AdminConfirmProvider";
 import ImageField from "@/components/admin/ImageField";
 import { invalidateAdminContentDetail, invalidateAfterAdminContentSave } from "@/lib/adminInvalidate";
 import { useAdminBlogPostDetail } from "@/lib/adminBusinessContentQueries";
-import { adminStatusLabel, getAdminLang, publishStatusOptions } from "@/lib/adminLocale";
+import { adminStatusLabel, getAdminLang, publishStatusOptions, useAdminLang } from "@/lib/adminLocale";
 import { formatAdminMutationError } from "@/lib/adminMutation";
 import { isNewAdminRouteRecord } from "@/lib/adminRouteParams";
-import { autoEnglishDescription, englishMissingHint, hasAnyMissingEnglish } from "@/lib/adminTranslation";
+import { hasAnyMissingEnglish } from "@/lib/adminTranslation";
 import { formatUserFacingError } from "@/lib/userFacingText";
 import { adminBlogEditorText } from "@/i18n/adminBlogEditorText";
 import {
@@ -115,6 +115,7 @@ const fromLocalInput = (value: string) => {
 };
 
 export default function AdminBlogEditor() {
+  const language = useAdminLang();
   const queryClient = useQueryClient();
   const navigate = useNavigate();
   const { id } = useParams<{ id?: string }>();
@@ -266,8 +267,14 @@ export default function AdminBlogEditor() {
                 </a>
               </Button>
             )}
-            <AdminActionButton action="content.write" type="button" variant="outline" onClick={() => void save("draft")} disabled={saveBusy || isLoading}>
-              {A("saveDraft")}
+            <AdminActionButton
+              action={record.status === "published" ? "content.publish" : record.status === "archived" ? "content.archive" : "content.write"}
+              type="button"
+              variant="outline"
+              onClick={() => void save()}
+              disabled={saveBusy || isLoading}
+            >
+              {record.status === "draft" ? A("saveDraft") : A("saveChanges")}
             </AdminActionButton>
             <AdminActionButton
               action="content.publish"
@@ -317,7 +324,7 @@ export default function AdminBlogEditor() {
 
         {englishMissing && (
           <div className="rounded-lg border border-amber-500/30 bg-amber-500/10 px-4 py-3 text-sm text-amber-800 dark:text-amber-200">
-            {englishMissingHint}
+            {adminBlogEditorText.englishMissingHint[language]}
           </div>
         )}
 
@@ -447,7 +454,7 @@ export default function AdminBlogEditor() {
 
         {showEnglish && (
           <>
-            <AdminFormSection title={A("englishSectionTitle")} description={autoEnglishDescription} helpText={A("englishSectionHelpText")} collapsible defaultOpen={false}>
+            <AdminFormSection title={A("englishSectionTitle")} description={adminBlogEditorText.autoEnglishDescription[language]} helpText={A("englishSectionHelpText")} collapsible defaultOpen={false}>
               <div className="grid gap-4 md:grid-cols-2">
                 <div className="md:col-span-2">
                   <label className="mb-1 block text-sm font-medium">{A("enTitle")}</label>
@@ -464,7 +471,7 @@ export default function AdminBlogEditor() {
               </div>
             </AdminFormSection>
 
-            <AdminFormSection title={A("enSeoSectionTitle")} description={autoEnglishDescription} helpText={A("enSeoSectionHelpText")} collapsible defaultOpen={false}>
+            <AdminFormSection title={A("enSeoSectionTitle")} description={adminBlogEditorText.autoEnglishDescription[language]} helpText={A("enSeoSectionHelpText")} collapsible defaultOpen={false}>
               <div className="grid gap-4 md:grid-cols-2">
                 <div className="md:col-span-2">
                   <label className="mb-1 block text-sm font-medium">{A("enSeoTitle")}</label>

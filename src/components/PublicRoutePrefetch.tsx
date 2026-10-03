@@ -1,7 +1,6 @@
 import { useEffect } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { getLanguageFromPath } from "@/i18n/routes";
-import { prefetchPublishedRouteContent } from "@/lib/publicRoutePrefetch";
 
 /** Warm only the route the visitor points to, focuses, or touches. */
 export default function PublicRoutePrefetch() {
@@ -14,7 +13,9 @@ export default function PublicRoutePrefetch() {
       const target = new URL(link.href, window.location.href);
       const language = getLanguageFromPath(target.pathname);
       if (target.origin !== window.location.origin || !language || target.pathname === window.location.pathname) return;
-      void prefetchPublishedRouteContent(queryClient, target.pathname, language);
+      void import("@/lib/publicRoutePrefetch")
+        .then(({ prefetchPublishedRouteContent }) => prefetchPublishedRouteContent(queryClient, target.pathname, language))
+        .catch(() => { /* Prefetch failure must not prevent normal navigation. */ });
     };
     const events = ["pointerover", "focusin", "pointerdown"];
     events.forEach((event) => document.addEventListener(event, warmRoute, { passive: true }));

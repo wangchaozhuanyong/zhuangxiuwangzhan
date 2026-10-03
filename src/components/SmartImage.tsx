@@ -50,7 +50,8 @@ const withRetry = (url: string, retry: number) => {
 
 const retrySrcSet = (srcSet: string | undefined, retry: number) =>
   srcSet?.split(",").map((candidate) => {
-    const [url, ...descriptor] = candidate.trim().split(/\s+/);
+    const [url = "", ...descriptor] = candidate.trim().split(/\s+/);
+    if (!url) return "";
     return [withRetry(url, retry), ...descriptor].join(" ");
   }).join(", ");
 

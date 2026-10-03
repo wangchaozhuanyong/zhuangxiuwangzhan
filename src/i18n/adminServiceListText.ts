@@ -22,5 +22,11 @@ export const adminServiceListText = {
     en: "Create a service first. It will appear on the frontend service page after publishing.",
     zh: "先新建一个服务项目，发布后前台服务页会显示。",
   },
+  noMatchesTitle: { en: "No matching services", zh: "没有匹配的服务" },
+  noMatchesDescription: {
+    en: "Try a different search or clear the filters to see all services.",
+    zh: "请更换搜索词，或清除筛选查看全部服务。",
+  },
+  clearFilters: { en: "Clear filters", zh: "清除筛选" },
   itemLabel: { en: "services", zh: "个服务" },
 } as const;

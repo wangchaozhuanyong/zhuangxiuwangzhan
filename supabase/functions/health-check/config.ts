@@ -28,6 +28,7 @@ export const backupEventTypes = [
   "backup_supabase_completed",
   "backup_package_verified",
   "backup_restore_dry_run_completed",
+  "backup_restore_verified",
 ];
 
 export const edgeFunctionChecks = (): Record<string, CheckResult | boolean> => ({

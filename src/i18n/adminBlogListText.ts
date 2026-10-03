@@ -21,4 +21,5 @@ export const adminBlogListText = {
   emptyTitle: { en: "No posts yet", zh: "暂无文章" },
   emptyDescription: { en: "Create and publish a post first, then it will appear on the public blog page.", zh: "先新建一篇文章并发布，前台博客页会显示。" },
   pagerItemLabel: { en: "posts", zh: "篇文章" },
+  unknownCategory: { en: "Other category", zh: "其他分类" },
 } as const;

@@ -156,6 +156,28 @@ export async function tryUploadMediaStorageObject(
   }
 }
 
+export async function downloadMediaStorageWebp(
+  bucket: string,
+  objectPath: string,
+  transform: { width: number; height: number; quality: number },
+): Promise<Blob> {
+  if (!supabase) throw new Error("Supabase is not configured.");
+
+  const { data, error } = await supabase.storage.from(bucket).createSignedUrl(objectPath, 60, {
+    transform: { ...transform, resize: "contain" },
+  });
+  if (error) throw error;
+  // The signed URL stays in memory; it is never returned to the UI or stored.
+  const response = await fetch(data.signedUrl, {
+    headers: { Accept: "image/webp" },
+    cache: "no-store",
+    credentials: "omit",
+    referrerPolicy: "no-referrer",
+  });
+  if (!response.ok) throw new Error("Image conversion failed.");
+  return response.blob();
+}
+
 export function getMediaStoragePublicUrl(bucket: string, objectPath: string) {
   if (!supabase) throw new Error("Supabase is not configured.");
   const { data } = supabase.storage.from(bucket).getPublicUrl(objectPath);

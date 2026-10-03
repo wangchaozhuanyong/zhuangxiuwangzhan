@@ -348,8 +348,8 @@ const AdminLayout = () => {
   }, [location.hash, location.pathname]);
 
   useEffect(() => {
-    document.title = `${activeNavLabel} | ${ADMIN_TITLE_SUFFIX}`;
-  }, [activeNavLabel]);
+    document.title = `${activeNavLabel} | ${ADMIN_TITLE_SUFFIX[adminLang]}`;
+  }, [activeNavLabel, adminLang]);
 
   useEffect(() => {
     const main = document.querySelector("main");

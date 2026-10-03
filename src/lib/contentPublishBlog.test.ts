@@ -100,6 +100,29 @@ function createMockContentClient(initialTables: Tables) {
 }
 
 describe("content-publish blog", () => {
+  it.each(["localhost", "127.0.0.1", "[::1]"])("accepts an exact local media host: %s", async (host) => {
+    const { client, tables } = createMockContentClient({ blog_posts: [] });
+    const result = await publishContent(
+      { contentType: "blog", mode: "dry-run", nextStatus: "published", record: { ...publishedBlogRecord, cover_image_url: `http://${host}:56321/storage/v1/object/public/site-images/qa.webp` } },
+      client as unknown as ContentPublishClient,
+      { role: "content_editor" },
+    );
+    expect(result.body.ok).toBe(true);
+    expect(tables.blog_posts).toHaveLength(0);
+  });
+
+  it.each(["http://localhost.example.com/qa.webp", "http://127.0.0.1.example.com/qa.webp", "http://user:password@localhost/qa.webp", "http://example.com/qa.webp"])("rejects a non-local or credential-bearing HTTP media URL: %s", async (cover_image_url) => {
+    const { client, tables } = createMockContentClient({ blog_posts: [] });
+    const result = await publishContent(
+      { contentType: "blog", mode: "dry-run", nextStatus: "published", record: { ...publishedBlogRecord, cover_image_url } },
+      client as unknown as ContentPublishClient,
+      { role: "content_editor" },
+    );
+    expect(result.status).toBe(400);
+    expect(result.body.error).toContain("cover_image_url must be");
+    expect(tables.blog_posts).toHaveLength(0);
+  });
+
   it("returns a cleaned bilingual dry-run preview without writing", async () => {
     const { client, tables } = createMockContentClient({ blog_posts: [], admin_audit_logs: [] });
 

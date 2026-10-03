@@ -37,7 +37,8 @@ export function isLocalResponsiveImageCandidate(src: string) {
 }
 
 export function getLocalResponsiveImageDimensions(src: string) {
-  return localResponsiveImageMetadata[toVersionedLocalResponsiveImageSrc(src).split(/[?#]/)[0]];
+  const [path = ""] = toVersionedLocalResponsiveImageSrc(src).split(/[?#]/);
+  return localResponsiveImageMetadata[path];
 }
 
 /** Local variants retain their source ratio, so cover may need more pixels than the frame width. */
@@ -67,7 +68,7 @@ export function resolveLocalCoverSizes(src: string, sizes: string, target?: { wi
     for (let index = 0; index < entry.length; index++) {
       if (entry[index] === "(") parentheses++;
       if (entry[index] === ")") parentheses--;
-      if (/\s/.test(entry[index]) && parentheses === 0) valueStart = index + 1;
+      if (/\s/.test(entry.charAt(index)) && parentheses === 0) valueStart = index + 1;
     }
     const value = entry.slice(valueStart);
     if (!value || value === "auto") return entry;

@@ -12,14 +12,16 @@ import AdminLoadingState from "@/components/admin/AdminLoadingState";
 import AdminStatusBadge from "@/components/admin/AdminStatusBadge";
 import AdminEmptyState from "@/components/admin/AdminEmptyState";
 import SmartImage from "@/components/SmartImage";
-import { getAdminLang, publishStatusOptions } from "@/lib/adminLocale";
+import { getAdminLang, publishStatusOptions, useAdminLang } from "@/lib/adminLocale";
+import { translateBlogCategory } from "@/i18n/displayLabels";
 import { adminBlogListText } from "@/i18n/adminBlogListText";
-import { formatUserFacingError } from "@/lib/userFacingText";
+import { formatUserFacingError, isTechnicalFieldLeak } from "@/lib/userFacingText";
 
 type AdminBlogListTextKey = keyof typeof adminBlogListText;
 const A = (key: AdminBlogListTextKey) => adminBlogListText[key][getAdminLang()];
 
 export default function AdminBlogList() {
+  const language = useAdminLang();
   const [status, setStatus] = useState<string>("all");
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(0);
@@ -40,7 +42,7 @@ export default function AdminBlogList() {
       key: "post",
       header: A("columnPost"),
       cell: (row) => {
-        const title = row.title_zh || row.title_en || row.slug;
+        const title = language === "en" ? row.title_en || row.title_zh || row.slug : row.title_zh || row.title_en || row.slug;
         return (
           <div className="flex items-center gap-3">
             <div className="h-10 w-14 overflow-hidden rounded-md border border-border bg-muted">
@@ -59,12 +61,15 @@ export default function AdminBlogList() {
     {
       key: "meta",
       header: A("columnMeta"),
-      cell: (row) => (
+      cell: (row) => {
+        const category = row.category ? translateBlogCategory(row.category, language) : "-";
+        return (
         <div className="text-xs text-muted-foreground">
-          <div>{row.category || "-"}</div>
+          <div>{isTechnicalFieldLeak(category, language) ? A("unknownCategory") : category}</div>
           <div>{row.published_at ? new Date(row.published_at).toLocaleString() : "-"}</div>
         </div>
-      ),
+        );
+      },
     },
     {
       key: "status",

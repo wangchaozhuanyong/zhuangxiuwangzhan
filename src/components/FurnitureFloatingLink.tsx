@@ -11,7 +11,7 @@ export default function FurnitureFloatingLink() {
   const { language } = useLanguage();
   const { pathname } = useLocation();
   const publicPath = stripLanguagePrefix(pathname).replace(/\/$/, "");
-  const reserveLane = publicPath === "/quote" || /^\/blog\/[^/]+$/.test(publicPath);
+  const reserveLane = publicPath === "/quote" || /^\/blog(?:\/[^/]+)?$/.test(publicPath);
   const copy = furnitureText[language];
   const [pressed, setPressed] = useState(false);
   const entryRef = useRef<HTMLAnchorElement>(null);

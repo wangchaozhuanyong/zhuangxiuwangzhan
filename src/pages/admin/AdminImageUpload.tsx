@@ -1,10 +1,11 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import SmartImage from "@/components/SmartImage";
 import { adminImageUploadText } from "@/i18n/adminImageUploadText";
 import {
   getMediaStoragePublicUrl,
+  downloadAdminMediaWebp,
   hasMediaStorageClient,
   tryUploadAdminMediaObject,
   uploadAdminMediaObject,
@@ -112,25 +113,71 @@ const getFaviconBounds = (imageData: ImageData): PixelBounds | null => {
   return transparentRatio > 0.05 ? alphaBounds : nonWhiteBounds || alphaBounds;
 };
 
-const encodeCanvasToWebp = (canvas: HTMLCanvasElement, quality: number): Promise<Blob> =>
+const canvasBlob = (canvas: HTMLCanvasElement, type: string, quality?: number): Promise<Blob> =>
   new Promise((resolve, reject) => {
     canvas.toBlob(
-      (blob) => (blob ? resolve(blob) : reject(new Error("WebP 编码失败"))),
-      "image/webp",
+      (blob) => (blob ? resolve(blob) : reject(new Error(A("conversionFailed")))),
+      type,
       quality,
     );
   });
+
+const isWebpBlob = async (blob: Blob): Promise<boolean> => {
+  if (blob.type !== "image/webp" || blob.size < 12) return false;
+  const header = new Uint8Array(await blob.slice(0, 12).arrayBuffer());
+  const marker = (offset: number) => String.fromCharCode(...header.slice(offset, offset + 4));
+  return marker(0) === "RIFF" && marker(8) === "WEBP"
+    && new DataView(header.buffer).getUint32(4, true) === blob.size - 8;
+};
+
+type WebpEncoder = (canvas: HTMLCanvasElement, quality: number) => Promise<Blob>;
+
+const createWebpEncoder = (folderPath: string, stamp: number, name: string): WebpEncoder => {
+  let canvasUnsupported = false;
+  let conversionPath: string | undefined;
+  return async (canvas, quality) => {
+    try {
+      if (!canvasUnsupported) {
+        const encoded = await canvasBlob(canvas, "image/webp", quality);
+        if (await isWebpBlob(encoded)) return encoded;
+        // Safari can return PNG when the requested encoder is unavailable.
+        canvasUnsupported = true;
+      }
+      if (!conversionPath) {
+        const png = await canvasBlob(canvas, "image/png");
+        if (png.type !== "image/png" || png.size > MAX_SOURCE_BYTES) throw new Error(A("conversionFailed"));
+        const candidate = `${folderPath}/processing/${stamp}-${sanitizeName(name)}.png`;
+        await uploadAdminMediaObject(ORIGINAL_BUCKET, candidate, new File([png], "conversion-source.png", { type: "image/png" }), {
+          upsert: false,
+          contentType: "image/png",
+        });
+        conversionPath = candidate;
+      }
+      const transformed = await downloadAdminMediaWebp(ORIGINAL_BUCKET, conversionPath, {
+        width: canvas.width,
+        height: canvas.height,
+        quality: Math.round(quality * 100),
+      });
+      if (!await isWebpBlob(transformed)) throw new Error(A("conversionFailed"));
+      return transformed;
+    } catch {
+      // Do not surface signed URLs or private Storage response details.
+      throw new Error(A("conversionFailed"));
+    }
+  };
+};
 
 const prepareIconUploadFile = async (
   file: File,
   bitmap: ImageBitmap,
   profile: ImageDeliveryProfile,
+  encodeWebp: WebpEncoder,
 ): Promise<PreparedUpload> => {
   const sourceCanvas = document.createElement("canvas");
   sourceCanvas.width = bitmap.width;
   sourceCanvas.height = bitmap.height;
   const sourceCtx = sourceCanvas.getContext("2d");
-  if (!sourceCtx) throw new Error("浏览器不支持图片处理画布");
+  if (!sourceCtx) throw new Error(A("canvasUnavailable"));
   sourceCtx.drawImage(bitmap, 0, 0);
 
   const sourceData = sourceCtx.getImageData(0, 0, sourceCanvas.width, sourceCanvas.height);
@@ -151,7 +198,7 @@ const prepareIconUploadFile = async (
   markCanvas.width = targetW;
   markCanvas.height = targetH;
   const markCtx = markCanvas.getContext("2d");
-  if (!markCtx) throw new Error("浏览器不支持图片处理画布");
+  if (!markCtx) throw new Error(A("canvasUnavailable"));
   markCtx.drawImage(sourceCanvas, bounds.minX, bounds.minY, sourceW, sourceH, 0, 0, targetW, targetH);
 
   const markData = markCtx.getImageData(0, 0, targetW, targetH);
@@ -174,10 +221,10 @@ const prepareIconUploadFile = async (
   canvas.width = ICON_OUTPUT_SIZE;
   canvas.height = ICON_OUTPUT_SIZE;
   const ctx = canvas.getContext("2d");
-  if (!ctx) throw new Error("浏览器不支持图片处理画布");
+  if (!ctx) throw new Error(A("canvasUnavailable"));
   ctx.drawImage(markCanvas, Math.round((ICON_OUTPUT_SIZE - targetW) / 2), Math.round((ICON_OUTPUT_SIZE - targetH) / 2));
 
-  const blob = await encodeCanvasToWebp(canvas, WEBP_QUALITY);
+  const blob = await encodeWebp(canvas, WEBP_QUALITY);
 
   if (blob.size > profile.maxBytes) {
     throw new Error(formatA("optimizedFileTooLarge", { maxSize: `${Math.round(profile.maxBytes / 1024)} KB` }));
@@ -197,6 +244,7 @@ const prepareIconUploadFile = async (
 
 async function prepareUploadFile(
   file: File,
+  encodeWebp: WebpEncoder,
   variant: AdminImagePreviewVariant = "cover",
   usageType = "general",
 ): Promise<PreparedUpload> {
@@ -204,12 +252,15 @@ async function prepareUploadFile(
   const ext = file.name.split(".").pop()?.toLowerCase() || "";
 
   if (file.size > MAX_SOURCE_BYTES) {
-    throw new Error("原图不能超过 20MB。后台会自动处理展示图，但太大的原图会让浏览器处理不稳定。");
+    throw new Error(A("sourceTooLarge"));
   }
 
   if (!ALLOWED_IMAGE_TYPES.has(mime) || !ALLOWED_EXTENSIONS.has(ext)) {
-    throw new Error("只允许上传 JPG、PNG、WebP 图片。GIF 动图暂时不进公共媒体库，避免体积过大影响客户端。");
+    throw new Error(A("invalidSource"));
   }
+
+  const sourceIsWebp = mime === "image/webp";
+  if (sourceIsWebp && !await isWebpBlob(file)) throw new Error(A("invalidWebp"));
 
   const bitmap = await createImageBitmap(file);
   const originalWidth = bitmap.width;
@@ -218,10 +269,16 @@ async function prepareUploadFile(
 
   if (variant === "icon") {
     try {
-      return await prepareIconUploadFile(file, bitmap, profile);
+      return await prepareIconUploadFile(file, bitmap, profile, encodeWebp);
     } finally {
       bitmap.close?.();
     }
+  }
+
+  if (sourceIsWebp && file.size <= Math.min(profile.maxBytes, MAX_UPLOAD_BYTES)
+    && Math.max(originalWidth, originalHeight) <= profile.maxEdge) {
+    bitmap.close?.();
+    return { file, width: originalWidth, height: originalHeight, originalWidth, originalHeight, converted: false, resized: false };
   }
 
   const canvas = document.createElement("canvas");
@@ -236,11 +293,11 @@ async function prepareUploadFile(
       canvas.width = targetW;
       canvas.height = targetH;
       const ctx = canvas.getContext("2d");
-      if (!ctx) throw new Error("浏览器不支持图片处理画布");
+      if (!ctx) throw new Error(A("canvasUnavailable"));
       ctx.drawImage(bitmap, 0, 0, targetW, targetH);
 
       for (let quality = WEBP_QUALITY; quality >= MIN_WEBP_QUALITY - 0.001; quality -= WEBP_QUALITY_STEP) {
-        blob = await encodeCanvasToWebp(canvas, Number(quality.toFixed(2)));
+        blob = await encodeWebp(canvas, Number(quality.toFixed(2)));
         if (blob.size <= targetMaxBytes) break;
       }
 
@@ -349,6 +406,8 @@ async function tryUploadOriginalCopy({ file, folderPath, stamp }: { file: File; 
 
 const AdminImageUpload = ({ value, folder = "content", previewVariant = "cover", recordAsset = false, assetUsageType = "general", onUploaded }: AdminImageUploadProps) => {
   const createMediaAsset = useCreateAdminMediaAsset();
+  const inputRef = useRef<HTMLInputElement>(null);
+  const [selectedFile, setSelectedFile] = useState<File>();
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState("");
   const [notes, setNotes] = useState<string[]>([]);
@@ -362,9 +421,9 @@ const AdminImageUpload = ({ value, folder = "content", previewVariant = "cover",
     setNotes([]);
 
     try {
-      const prepared = await prepareUploadFile(file, previewVariant, assetUsageType);
       const folderPath = sanitizeFolder(folder);
       const stamp = Date.now();
+      const prepared = await prepareUploadFile(file, createWebpEncoder(folderPath, stamp, file.name), previewVariant, assetUsageType);
       const originalPath = await tryUploadOriginalCopy({ file, folderPath, stamp });
       const safeName = sanitizeName(prepared.file.name);
       const path = `${folderPath}/${stamp}-${safeName}.webp`;
@@ -439,9 +498,14 @@ const AdminImageUpload = ({ value, folder = "content", previewVariant = "cover",
         </div>
       )}
       <div data-admin-filter-bar className="flex flex-col gap-2 sm:flex-row">
-        <Input type="file" accept="image/jpeg,image/png,image/webp" onChange={(event) => upload(event.target.files?.[0])} disabled={uploading} />
-        <Button type="button" variant="outline" className="w-full sm:w-auto" disabled={uploading}>
-          {uploading ? A("uploading") : A("upload")}
+        <Input ref={inputRef} type="file" accept="image/jpeg,image/png,image/webp" onChange={(event) => {
+          const nextFile = event.target.files?.[0];
+          setSelectedFile(nextFile);
+          void upload(nextFile);
+        }} disabled={uploading} />
+        <Button type="button" variant="outline" className="w-full shrink-0 whitespace-nowrap sm:w-auto" disabled={uploading}
+          onClick={() => error && selectedFile ? void upload(selectedFile) : inputRef.current?.click()}>
+          {uploading ? A("uploading") : error && selectedFile ? A("retry") : A("upload")}
         </Button>
       </div>
       {error && <p className="text-xs text-destructive">{error}</p>}

@@ -1,19 +1,10 @@
 /**
  * Fail production/CI builds when required VITE_* env vars are missing.
  */
-import { existsSync, readFileSync } from "node:fs";
-
-const loadEnvFile = () => {
-  if (!existsSync(".env")) return;
-  for (const line of readFileSync(".env", "utf8").split(/\r?\n/)) {
-    const match = line.match(/^\s*([A-Za-z_][A-Za-z0-9_]*)=(.*)\s*$/);
-    if (!match) continue;
-    const [, key, rawValue] = match;
-    if (!process.env[key]) process.env[key] = rawValue.replace(/^["']|["']$/g, "");
-  }
-};
-
-loadEnvFile();
+import { loadProjectEnv, requestedEnvMode } from "./lib/project-env.mjs";
+// This is the production prebuild entry; Vite's default build mode is production.
+// Development serving and environment-isolation checks keep explicit modes.
+loadProjectEnv({ mode: requestedEnvMode() ?? "production" });
 
 const required = [
   "VITE_SUPABASE_URL",

@@ -21,6 +21,7 @@ export const adminBlogEditorText = {
   checkingSlug: { en: "Checking slug...", zh: "链接标识检查中..." },
   preview: { en: "Preview", zh: "预览" },
   saveDraft: { en: "Save draft", zh: "保存草稿" },
+  saveChanges: { en: "Save changes", zh: "保存修改" },
   publish: { en: "Publish", zh: "发布" },
   saveAndGenerateEnglish: { en: "Save and auto-generate English", zh: "保存并自动生成英文" },
   forceRegenerateEnglish: { en: "Force regenerate English", zh: "强制重新生成英文" },
@@ -36,6 +37,14 @@ export const adminBlogEditorText = {
   },
   hideEnglish: { en: "Hide English content", zh: "隐藏英文内容" },
   showEnglish: { en: "Show English content", zh: "显示英文内容" },
+  englishMissingHint: {
+    en: "English content has not been generated. The English site prioritizes English fields; missing content may appear empty or use fallback content. Choose \"Save and auto-generate English\" to fill it in.",
+    zh: "英文未生成。英文站会优先使用英文字段；如果没有英文，可能显示空内容或最后兜底内容。建议点“保存并自动生成英文”。",
+  },
+  autoEnglishDescription: {
+    en: "Automatically generated English can be edited here. This section is collapsed by default; usually only the Chinese content needs maintenance.",
+    zh: "这里是自动生成的英文内容，可手动微调。默认折叠，平时主要维护中文即可。",
+  },
   publishSectionTitle: { en: "Publishing and sorting", zh: "发布与排序" },
   publishSectionDescription: {
     en: "Published posts appear on the public blog page. Publish time is used for public sorting and display.",

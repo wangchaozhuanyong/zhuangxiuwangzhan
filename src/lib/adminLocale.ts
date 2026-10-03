@@ -1,3 +1,4 @@
+import { useSyncExternalStore } from "react";
 import { translateStatusLabel } from "@/i18n/displayLabels";
 import type { Language } from "@/i18n/routes";
 import { readBrowserPreference, writeBrowserPreference } from "@/lib/browserPreference";
@@ -12,6 +13,12 @@ const ADMIN_THEME_COOKIE = "flashcast_admin_theme";
 
 let inMemoryAdminLang: AdminLang | null = null;
 let inMemoryAdminTheme: AdminTheme | null = null;
+const adminLangListeners = new Set<() => void>();
+
+const subscribeAdminLang = (listener: () => void) => {
+  adminLangListeners.add(listener);
+  return () => { adminLangListeners.delete(listener); };
+};
 
 const isAdminLang = (value: string | null): value is AdminLang => value === "zh" || value === "en";
 const isAdminTheme = (value: string | null): value is AdminTheme => value === "light" || value === "dark";
@@ -29,7 +36,11 @@ export const getAdminLang = (): AdminLang => {
 export const setAdminLang = (language: AdminLang) => {
   inMemoryAdminLang = language;
   writeBrowserPreference(ADMIN_LANG_KEY, language, ADMIN_LANG_COOKIE);
+  adminLangListeners.forEach((listener) => listener());
 };
+
+export const useAdminLang = (): AdminLang =>
+  useSyncExternalStore(subscribeAdminLang, getAdminLang, getAdminLang);
 
 export const getAdminTheme = (): AdminTheme => {
   if (isAdminTheme(inMemoryAdminTheme)) return inMemoryAdminTheme;

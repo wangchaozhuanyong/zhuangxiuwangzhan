@@ -33,7 +33,7 @@ import {
   type LucideIcon,
 } from "lucide-react";
 import { adminLayoutText } from "@/i18n/adminLayoutText";
-import type { AdminLang } from "@/lib/adminLocale";
+import { getAdminLang, type AdminLang } from "@/lib/adminLocale";
 import { ADMIN_ROLE_GROUPS, type AdminAllowedRoles } from "@/lib/adminRoleAccess";
 
 export type AdminCopy = {
@@ -114,7 +114,10 @@ export const NAV_COLLAPSED_KEY = "flashcast_admin_nav_collapsed";
 export const ADMIN_ENTRY_RE = /\/assets\/index-[^"']+\.js/;
 export const ADMIN_BUILD_VERSION = String(import.meta.env.VITE_APP_VERSION || "local").slice(0, 7);
 export const BUILD_CHECK_INTERVAL_MS = 60 * 1000;
-export const ADMIN_TITLE_SUFFIX = "FLASH CAST 后台管理";
+export const ADMIN_TITLE_SUFFIX = {
+  en: adminLayoutText.en.titleSuffix,
+  zh: adminLayoutText.zh.titleSuffix,
+} as const;
 
 export const getCurrentAdminEntry = () => {
   const current = Array.from(document.scripts)
@@ -140,9 +143,9 @@ export const copy: Record<AdminLang, AdminCopy> = {
     cmsBuilder: "CMS Builder",
     pages: "Page Content",
     about: "About Us",
-    faqs: "常见问题",
+    faqs: adminLayoutText.en.faqs,
     beforeAfter: "Before / After",
-    brandLogos: "品牌合作",
+    brandLogos: adminLayoutText.en.brandPartners,
     services: "Services",
     projects: "Projects",
     blog: "Blog",
@@ -199,9 +202,9 @@ export const copy: Record<AdminLang, AdminCopy> = {
     cmsBuilder: "通用页面搭建",
     pages: "页面内容",
     about: "关于我们",
-    faqs: "常见问题",
+    faqs: adminLayoutText.zh.faqs,
     beforeAfter: "改造前后",
-    brandLogos: "品牌合作",
+    brandLogos: adminLayoutText.zh.brandPartners,
     services: "服务项目",
     projects: "装修案例",
     blog: "博客",
@@ -365,13 +368,15 @@ export const ensureAdminFormAccessibility = (root: ParentNode = document, force 
   fields.forEach((field) => {
     if (!force && field.dataset.adminA11yChecked === "1") return;
     const hasAccessibleName = Boolean(field.labels?.length || field.getAttribute("aria-label") || field.getAttribute("aria-labelledby"));
-    if (hasAccessibleName) {
+    const ownsAccessibleName = field.dataset.adminGeneratedLabel !== undefined
+      && field.getAttribute("aria-label") === field.dataset.adminGeneratedLabel;
+    if (hasAccessibleName && !ownsAccessibleName) {
       field.dataset.adminA11yChecked = "1";
       return;
     }
 
     const parent = field.parentElement;
-    let label: HTMLLabelElement | null = null;
+    let label: HTMLLabelElement | null = field.labels?.[0] ?? null;
     let cursor = field.previousElementSibling;
     while (cursor && !label) {
       if (cursor instanceof HTMLLabelElement) label = cursor;
@@ -380,7 +385,8 @@ export const ensureAdminFormAccessibility = (root: ParentNode = document, force 
     label = label || parent?.querySelector("label:not([for])") || null;
 
     const labelText = label?.textContent?.replace(/\s+/g, " ").trim();
-    const fallbackLabel = labelText || field.getAttribute("placeholder") || field.getAttribute("name") || "后台表单字段";
+    const fallbackLabel = labelText || field.getAttribute("placeholder") || field.getAttribute("name")
+      || (getAdminLang() === "en" ? "Admin form field" : "后台表单字段");
 
     if (label) {
       if (!field.id) {
@@ -389,6 +395,7 @@ export const ensureAdminFormAccessibility = (root: ParentNode = document, force 
       label.htmlFor = field.id;
     }
     field.setAttribute("aria-label", fallbackLabel);
+    field.dataset.adminGeneratedLabel = fallbackLabel;
     field.dataset.adminA11yChecked = "1";
     fieldIndex += 1;
   });

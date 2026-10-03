@@ -44,7 +44,8 @@ const summarizeEvent = (row: SystemEventRow): SystemEventSummary => ({
 });
 
 const isRecent = (event: SystemEventSummary | null, maxHours = BACKUP_RECENT_HOURS) =>
-  Boolean(event && typeof event.age_hours === "number" && event.age_hours <= maxHours);
+  Boolean(event && typeof event.age_hours === "number" && event.age_hours <= maxHours
+    && (event.severity === "info" || event.severity === "debug") && event.metadata.full_access !== false);
 
 const getBackupStatus = async (client: HealthClient): Promise<BackupStatus> => {
   try {
@@ -52,16 +53,23 @@ const getBackupStatus = async (client: HealthClient): Promise<BackupStatus> => {
     const latestBackup = events.find((event) => event.event_type === "backup_supabase_completed") || null;
     const latestVerify = events.find((event) => event.event_type === "backup_package_verified") || null;
     const latestRestoreDryRun = events.find((event) => event.event_type === "backup_restore_dry_run_completed") || null;
-    const ok = isRecent(latestBackup) && isRecent(latestVerify) && isRecent(latestRestoreDryRun);
+    const latestRestore = events.find((event) => event.event_type === "backup_restore_verified") || null;
+    const folder = latestBackup?.metadata.backup_folder;
+    const sameBackup = typeof folder === "string" && folder.length > 0
+      && latestVerify?.metadata.backup_folder === folder && latestRestore?.metadata.backup_folder === folder;
+    const restoreScopes = ["data_verified", "schema_verified", "auth_verified", "media_verified", "original_admin_login_verified", "original_admin_mfa_verified", "permissions_verified"];
+    const ok = isRecent(latestBackup) && isRecent(latestVerify) && isRecent(latestRestore) && sameBackup
+      && restoreScopes.every((scope) => latestRestore?.metadata[scope] === true);
 
     return {
       ok,
       latest_backup: latestBackup,
       latest_verify: latestVerify,
       latest_restore_dry_run: latestRestoreDryRun,
+      latest_restore_verified: latestRestore,
       message: ok
-        ? "Recent backup, backup verification, and restore drill records are complete."
-        : "Backup, verification, or restore drill records are incomplete. Run the release checklist again.",
+        ? "Recent backup, package verification, and isolated account, schema, data and media restore verification are complete."
+        : "Backup, verification, or isolated restore acceptance is missing, outdated, incomplete, or belongs to a different backup.",
     };
   } catch (error) {
     return {
@@ -69,6 +77,7 @@ const getBackupStatus = async (client: HealthClient): Promise<BackupStatus> => {
       latest_backup: null,
       latest_verify: null,
       latest_restore_dry_run: null,
+      latest_restore_verified: null,
       message: `Backup log read failed: ${error instanceof Error ? error.message : String(error)}`,
     };
   }

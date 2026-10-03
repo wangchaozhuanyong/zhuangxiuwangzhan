@@ -1,3 +1,4 @@
+import { useCallback } from "react";
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import {
   adminContentHealthCoreText,
@@ -5,7 +6,7 @@ import {
   adminContentHealthSourceLabels,
 } from "@/i18n/adminContentHealthText";
 import { fetchAdminContentHealthRows } from "@/backend/modules/cms/repository/contentHealthRepository";
-import { getAdminLang } from "@/lib/adminLocale";
+import { getAdminLang, useAdminLang, type AdminLang } from "@/lib/adminLocale";
 import { adminQueriesEnabled } from "@/lib/adminQueryCore";
 
 const enabled = adminQueriesEnabled;
@@ -29,6 +30,11 @@ type HealthSource = {
   englishFields: string[];
   seoFields: string[];
   imageFields: string[];
+};
+
+type HealthSourceRows = {
+  source: HealthSource;
+  rows: Array<Record<string, unknown>> | null;
 };
 
 const healthSources: HealthSource[] = [
@@ -168,20 +174,23 @@ const healthSelectFields = (source: HealthSource) => {
 const formatAdminContentHealthText = (text: string, values: Record<string, string | number>) =>
   text.replace(/\{(\w+)\}/g, (_, key: string) => String(values[key] ?? ""));
 
-const getAdminContentHealthSourceLabel = (table: string) => {
-  const labels = adminContentHealthSourceLabels[getAdminLang()] as Record<string, string>;
+const getAdminContentHealthSourceLabel = (table: string, language: AdminLang) => {
+  const labels = adminContentHealthSourceLabels[language] as Record<string, string>;
   return labels[table] || table;
 };
 
-export const getAdminHealthFieldLabel = (field: string) =>
-  (adminContentHealthFieldLabels[getAdminLang()] as Record<string, string>)[field] ||
+const getLocalizedAdminHealthFieldLabel = (field: string, language: AdminLang) =>
+  (adminContentHealthFieldLabels[language] as Record<string, string>)[field] ||
   field
-    .replace(/_zh$/, adminContentHealthCoreText[getAdminLang()].chineseSuffix)
-    .replace(/_en$/, adminContentHealthCoreText[getAdminLang()].englishSuffix)
+    .replace(/_zh$/, adminContentHealthCoreText[language].chineseSuffix)
+    .replace(/_en$/, adminContentHealthCoreText[language].englishSuffix)
     .replace(/_/g, " ");
 
-const formatHealthIssue = (type: string, field: string) =>
-  `${type}${adminContentHealthCoreText[getAdminLang()].issueSeparator}${getAdminHealthFieldLabel(field)}`;
+export const getAdminHealthFieldLabel = (field: string) =>
+  getLocalizedAdminHealthFieldLabel(field, getAdminLang());
+
+const formatHealthIssue = (type: string, field: string, language: AdminLang) =>
+  `${type}${adminContentHealthCoreText[language].issueSeparator}${getLocalizedAdminHealthFieldLabel(field, language)}`;
 
 export type AdminContentHealthItem = {
   id: string;
@@ -221,8 +230,8 @@ const buildFrontHref = (source: HealthSource, row: Record<string, unknown>) => {
   return slug ? `${source.frontBase}/${slug}` : source.frontBase;
 };
 
-const buildHealthItem = (source: HealthSource, row: Record<string, unknown>): AdminContentHealthItem => {
-  const text = adminContentHealthCoreText[getAdminLang()];
+const buildHealthItem = (source: HealthSource, row: Record<string, unknown>, language: AdminLang): AdminContentHealthItem => {
+  const text = adminContentHealthCoreText[language];
   const title = source.titleFields.map((field) => row[field]).find((value) => !isBlankAdminValue(value));
   const missingRequired = source.requiredFields.filter((field) => isBlankAdminValue(row[field]));
   const missingEnglish = source.englishFields.filter((field) => isBlankAdminValue(row[field]));
@@ -232,16 +241,16 @@ const buildHealthItem = (source: HealthSource, row: Record<string, unknown>): Ad
       ? source.imageFields
       : [];
   const issues = [
-    ...missingRequired.map((field) => formatHealthIssue(text.requiredMissing, field)),
-    ...missingEnglish.map((field) => formatHealthIssue(text.englishMissing, field)),
-    ...missingSeo.map((field) => formatHealthIssue(text.seoMissing, field)),
-    ...missingMedia.map((field) => formatHealthIssue(text.imageMissing, field)),
+    ...missingRequired.map((field) => formatHealthIssue(text.requiredMissing, field, language)),
+    ...missingEnglish.map((field) => formatHealthIssue(text.englishMissing, field, language)),
+    ...missingSeo.map((field) => formatHealthIssue(text.seoMissing, field, language)),
+    ...missingMedia.map((field) => formatHealthIssue(text.imageMissing, field, language)),
   ];
 
   return {
     id: String(row.id || `${source.table}-${String(title || "row")}`),
     table: source.table,
-    tableLabel: getAdminContentHealthSourceLabel(source.table),
+    tableLabel: getAdminContentHealthSourceLabel(source.table, language),
     title: String(title || text.unnamedContent),
     status: String(row.status || "draft"),
     updated_at: typeof row.updated_at === "string" ? row.updated_at : null,
@@ -256,33 +265,38 @@ const buildHealthItem = (source: HealthSource, row: Record<string, unknown>): Ad
 };
 
 export function useAdminContentHealth(options: { enabled?: boolean } = {}) {
+  const language = useAdminLang();
+  const select = useCallback((results: HealthSourceRows[]): AdminContentHealthItem[] =>
+    results.flatMap(({ source, rows }) => rows
+      ? rows.map((row) => buildHealthItem(source, row, language))
+      : [buildHealthItem(source, {
+        id: `${source.table}-error`,
+        status: "error",
+        title_zh: formatAdminContentHealthText(adminContentHealthCoreText[language].readFailed, {
+          label: getAdminContentHealthSourceLabel(source.table, language),
+        }),
+        updated_at: null,
+      }, language)]),
+  [language]);
+
   return useQuery({
     queryKey: ["admin", "content_health"],
     enabled: enabled && options.enabled !== false,
     placeholderData: keepPreviousData,
     staleTime: ADMIN_HEAVY_STALE_TIME,
     gcTime: ADMIN_QUERY_GC_TIME,
-    queryFn: async (): Promise<AdminContentHealthItem[]> => {
-      const results = await Promise.all(
+    select,
+    queryFn: async (): Promise<HealthSourceRows[]> => {
+      return Promise.all(
         healthSources.map(async (source) => {
           try {
             const rows = await fetchAdminContentHealthRows(source.table, healthSelectFields(source));
-            return rows.map((row) => buildHealthItem(source, row));
+            return { source, rows };
           } catch {
-            return [
-              buildHealthItem(source, {
-                id: `${source.table}-error`,
-                status: "error",
-                title_zh: formatAdminContentHealthText(adminContentHealthCoreText[getAdminLang()].readFailed, {
-                  label: getAdminContentHealthSourceLabel(source.table),
-                }),
-                updated_at: null,
-              }),
-            ];
+            return { source, rows: null };
           }
         }),
       );
-      return results.flat();
     },
   });
 }

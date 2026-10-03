@@ -29,7 +29,10 @@ export const adminContentHealthText = {
   requiredMissing: { en: "Required missing", zh: "缺必填" },
   requiredMissingHelp: { en: "Key fields such as title, link, or status are missing.", zh: "标题、链接、状态等关键字段缺失。" },
   englishMissing: { en: "English missing", zh: "缺英文" },
-  englishMissingHelp: { en: "Fields required by the English site have not been generated or filled.", zh: "英文站需要的字段还没生成或没填写。" },
+  englishMissingHelp: {
+    en: "Content records with blank English fields. Check each frontend page before concluding that its English content is missing.",
+    zh: "存在空白英文字段的内容记录数量。需逐条核对前台，不能直接当作没有英文的页面数量。",
+  },
   seoMissing: { en: "SEO missing", zh: "缺 SEO" },
   seoMissingHelp: { en: "Search title or description has not been completed.", zh: "搜索标题或描述还没补齐。" },
   mediaMissing: { en: "Images missing", zh: "缺图片" },

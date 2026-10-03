@@ -90,12 +90,14 @@ describe("public Edge HTML cache", () => {
     path = "/zh/projects",
     supabaseUrl = "https://example.supabase.co",
     headers,
+    assetHeaders,
   }: {
     deploymentVersion?: string;
     html?: string;
     path?: string;
     supabaseUrl?: string;
     headers?: HeadersInit;
+    assetHeaders?: Record<string, string>;
   } = {}) => {
     const request = new Request(`https://flashcast.com.my${path}`, { headers });
     return onRequest({
@@ -106,16 +108,42 @@ describe("public Edge HTML cache", () => {
         VITE_SUPABASE_ANON_KEY: "test-anon-key",
         ASSETS: {
           fetch: async () => new Response(html, {
-            headers: { "content-type": "text/html; charset=utf-8" },
+            headers: { "content-type": "text/html; charset=utf-8", ...assetHeaders },
           }),
         },
       },
       next: async () => new Response(html, {
-        headers: { "content-type": "text/html; charset=utf-8" },
+        headers: { "content-type": "text/html; charset=utf-8", ...assetHeaders },
       }),
       waitUntil: (promise: Promise<unknown>) => pendingTasks.push(promise),
     } as never);
   };
+
+  it.each(["gzip", "br"])("keeps rewritten HTML and cache hits decodable after an asset encoded as %s", async (encoding) => {
+    const first = await requestPage({ assetHeaders: { "content-encoding": encoding, "content-length": "12" } });
+    expect(first.headers.get("content-encoding")).toBeNull();
+    expect(first.headers.get("content-length")).toBeNull();
+    const html = await first.text();
+    expect(html).toContain("<!doctype html>");
+    expect(html).toContain('rel="canonical"');
+    await Promise.all(pendingTasks.splice(0));
+    const cached = edgeCache.getPublicHtmlEntry();
+    expect(cached?.headers.get("content-encoding")).toBeNull();
+    expect(cached?.headers.get("content-length")).toBeNull();
+    const hit = await requestPage();
+    expect(hit.headers.get("x-flashcast-html-cache")).toBe("hit");
+    expect(await hit.text()).toBe(html);
+    const revalidated = await requestPage({ headers: { "if-none-match": first.headers.get("etag") || "" } });
+    expect(revalidated.status).toBe(304);
+  });
+
+  it.each(["/admin", "/en/not-a-published-route"])("removes old asset transport headers from bypass HTML at %s", async (path) => {
+    const response = await requestPage({ path, assetHeaders: { "content-encoding": "gzip", "content-length": "12" } });
+    expect(response.headers.get("content-encoding")).toBeNull();
+    expect(response.headers.get("content-length")).toBeNull();
+    expect(response.headers.get("cache-control")).toContain("no-store");
+    expect(await response.text()).toContain("noindex");
+  });
 
   const requestVersion = async () => onRequest({
     request: new Request("https://flashcast.com.my/__flashcast/version"),

@@ -1,9 +1,4 @@
-import {
-  fetchAdminSeoAuditRows,
-  type AdminSeoAuditTable,
-} from "@/backend/modules/seo/repository/seoAuditRepository";
-import { adminSeoSourceLabels } from "@/i18n/adminSeoManagerText";
-import { getAdminLang } from "@/lib/adminLocale";
+import { fetchAdminSeoAuditRows } from "@/backend/modules/seo/repository/seoAuditRepository";
 
 export const adminSeoSources = [
   { table: "site_pages" as const, route: "/admin/pages", front: "" },
@@ -17,7 +12,7 @@ export const adminSeoSources = [
 ];
 
 type AdminSeoSourceBase = (typeof adminSeoSources)[number];
-export type AdminSeoSource = AdminSeoSourceBase & { label: string };
+export type AdminSeoSource = AdminSeoSourceBase;
 
 export type AdminSeoAuditRow = Record<string, unknown> & {
   id?: string;
@@ -44,19 +39,16 @@ export type AdminSeoAuditRow = Record<string, unknown> & {
   alt_en?: string | null;
 };
 
-const getAdminSeoSourceLabel = (table: AdminSeoAuditTable) => adminSeoSourceLabels[getAdminLang()][table];
-
 const errorMessage = (error: unknown) => (error instanceof Error ? error.message : String(error || "SEO audit failed"));
 
 export async function loadAdminSeoAuditRows(): Promise<AdminSeoAuditRow[]> {
   const entries = await Promise.all(
     adminSeoSources.map(async (source) => {
-      const sourceWithLabel = { ...source, label: getAdminSeoSourceLabel(source.table) };
       try {
         const rows = await fetchAdminSeoAuditRows(source.table);
-        return rows.map((row) => ({ ...row, source: sourceWithLabel, table: source.table })) as AdminSeoAuditRow[];
+        return rows.map((row) => ({ ...row, source, table: source.table })) as AdminSeoAuditRow[];
       } catch (error) {
-        return [{ table: source.table, source: sourceWithLabel, error: errorMessage(error) }] as AdminSeoAuditRow[];
+        return [{ table: source.table, source, error: errorMessage(error) }] as AdminSeoAuditRow[];
       }
     }),
   );

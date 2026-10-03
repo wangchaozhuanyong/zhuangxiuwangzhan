@@ -30,7 +30,9 @@ for (const language of ["en", "zh"] as const) {
         act(() => go(`/${language}/blog/renovation-materials-malaysia`));
         expect(entry.dataset.reservedLane).toBe("true");
         act(() => go(`/${language}/blog`));
-        expect(entry.hasAttribute("data-reserved-lane")).toBe(false);
+        expect(entry.dataset.reservedLane).toBe("true");
+        act(() => go(`/${language}/blog/`));
+        expect(entry.dataset.reservedLane).toBe("true");
         act(() => go(`/${language}`));
         expect(entry.hasAttribute("data-reserved-lane")).toBe(false);
         entry.focus();

@@ -4,7 +4,6 @@ import { Link, useLocation, useNavigate, type LinkProps } from "react-router-dom
 import { useLanguage } from "@/i18n/LanguageContext";
 import { type Language } from "@/i18n/routes";
 import { requestPublicNavigation } from "@/lib/publicNavigation";
-import { prefetchPublishedRouteContent } from "@/lib/publicRoutePrefetch";
 
 type LanguageRouteLinkProps = Omit<LinkProps, "to"> & {
   prefetchOnReady?: boolean;
@@ -34,7 +33,9 @@ const LanguageRouteLink = forwardRef<HTMLAnchorElement, LanguageRouteLinkProps>(
 
   const prefetch = useCallback(() => {
     if (!prefetchRef.current) {
-      prefetchRef.current = prefetchPublishedRouteContent(queryClient, location.pathname, targetLanguage);
+      prefetchRef.current = import("@/lib/publicRoutePrefetch")
+        .then(({ prefetchPublishedRouteContent }) => prefetchPublishedRouteContent(queryClient, location.pathname, targetLanguage))
+        .catch(() => { /* Navigation remains available when prefetch cannot load. */ });
     }
     return prefetchRef.current;
   }, [location.pathname, queryClient, targetLanguage]);

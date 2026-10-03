@@ -12,7 +12,7 @@ import {
   adminSeoTechnicalFileText,
   adminSeoTechnicalWorkflowText,
 } from "@/i18n/adminSeoManagerText";
-import { adminStatusLabel, getAdminLang } from "@/lib/adminLocale";
+import { adminStatusLabel, getAdminLang, useAdminLang } from "@/lib/adminLocale";
 import { type AdminSeoAuditRow, useAdminSeoAudit } from "@/lib/adminSeoAudit";
 import { formatUserFacingError } from "@/lib/userFacingText";
 
@@ -212,7 +212,7 @@ const buildRowIssues = (row: AdminSeoAuditRow, language: AdminSeoLanguage): Audi
 };
 
 const AdminSeoAuditView = () => {
-  const language = getAdminLang();
+  const language = useAdminLang();
   const A = useCallback((key: AdminSeoManagerTextKey): string => adminSeoManagerText[key][language], [language]);
   const formatA = useCallback(
     (key: AdminSeoManagerTextKey, values: Record<string, string>): string =>
