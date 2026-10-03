@@ -239,7 +239,7 @@ const swipeTo = async (driver, selector) => {
 const captureMotion = driver => driver.executeAsyncScript(done => {
   const start = performance.now();
   const states = new Set();
-  let activeFrames = 0, maxAlignmentError = 0, maxButtonShift = 0, original;
+  let activeFrames = 0, maxAlignmentError = 0, maxButtonShift = 0, original, minimumViewportHeight = Infinity, maximumViewportHeight = 0;
   const reducedMotion = matchMedia("(prefers-reduced-motion: reduce)").matches;
   const sample = () => {
     const entry = document.querySelector(".fc-furniture-floating");
@@ -247,6 +247,9 @@ const captureMotion = driver => driver.executeAsyncScript(done => {
     const status = entry?.dataset.arrival;
     if (status) states.add(status);
     const box = entry?.getBoundingClientRect();
+    const viewportHeight = visualViewport?.height || innerHeight;
+    minimumViewportHeight = Math.min(minimumViewportHeight, viewportHeight);
+    maximumViewportHeight = Math.max(maximumViewportHeight, viewportHeight);
     if (box?.width > 1) {
       if (!original) original = box;
       maxButtonShift = Math.max(maxButtonShift, Math.abs(box.x - original.x), Math.abs(box.y - original.y));
@@ -264,6 +267,7 @@ const captureMotion = driver => driver.executeAsyncScript(done => {
     }
     if (status === "done" || status === "skipped" || performance.now() - start > 12000) {
       done({ states: [...states], activeFrames, reducedMotion, maxAlignmentError, maxButtonShift,
+        minimumViewportHeight, maximumViewportHeight,
         hasViewBox: scene?.hasAttribute("viewBox") ?? true, squareRatio: box?.width / box?.height,
         insideViewport: !!box && box.left >= 0 && box.right <= innerWidth + 1 && box.top >= 0 && box.bottom <= innerHeight + 1 });
       return;
@@ -278,7 +282,8 @@ const mobileChecks = async (driver, target, identity) => {
   const check = async (name, action) => {
     try { checks.push({ name, passed: true, metrics: await action() }); }
     catch (error) { const text = error instanceof Error ? error.message : "";
-      checks.push({ name, passed: false, code: /^[A-Z][A-Z0-9_]+$/.test(text) ? text : "WEBDRIVER_OR_CHECK_FAILED" }); }
+      checks.push({ name, passed: false, code: /^[A-Z][A-Z0-9_]+$/.test(text) ? text : "WEBDRIVER_OR_CHECK_FAILED", errorKind: error?.constructor?.name || "Unknown",
+        diagnostics: { unsupported: /unsupported|not implemented|not supported/i.test(text), invalidArgument: /invalid argument/i.test(text), viewport: /viewport|out of bounds/i.test(text), timeout: /timed out|timeout|Waiting/i.test(text) }, ...(error.metrics ? {metrics:error.metrics} : {}) }); }
   };
   await check("returned_device_versions", async () => {
     if (!identity.browserVersion || !identity.osVersion || !identity.deviceName || !/ios|android/i.test(identity.os || "")) throw new Error("DEVICE_IDENTITY_NOT_RETURNED");
@@ -287,7 +292,7 @@ const mobileChecks = async (driver, target, identity) => {
   await check("first_home_motion_and_landing", async () => {
     await driver.get(`${baseUrl}/zh`);
     const observation = await captureMotion(driver);
-    assertMobileMotion(observation);
+    try { assertMobileMotion(observation); } catch(error) { error.metrics = observation; throw error; }
     return observation;
   });
   await check("native_menu_close_and_navigation", async () => {
@@ -415,6 +420,7 @@ const mobileChecks = async (driver, target, identity) => {
 const runTarget = async (target) => {
   const capabilities = {
     browserName: target.browserName,
+    pageLoadStrategy: "eager",
     ...(target.browserVersion ? { browserVersion: target.browserVersion } : {}),
     "bstack:options": {
       userName: username,
@@ -438,6 +444,11 @@ const runTarget = async (target) => {
     let details = {};
     try { const value = await driver.executeScript('browserstack_executor: {"action":"getSessionDetails"}'); details = typeof value === "string" ? JSON.parse(value) : value; } catch { /* Capabilities remain the fallback. */ }
     identity = publicDeviceIdentity(returned, details || {});
+    if (!identity.browserVersion) {
+      const observedVersion = await driver.executeScript(() => navigator.userAgent.match(/Version\/(\d+(?:\.\d+){0,5})/)?.[1]
+        || navigator.userAgent.match(/Chrome\/(\d+(?:\.\d+){0,5})/)?.[1] || null);
+      if (typeof observedVersion === "string" && /^\d+(?:\.\d+){0,5}$/.test(observedVersion)) identity.browserVersion = observedVersion;
+    }
     stage = "mobile_interactions";
     advancedChecks = target.options.deviceName ? await mobileChecks(driver, target, identity) : [];
 
