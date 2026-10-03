@@ -1,4 +1,9 @@
-import { translateDisplayText } from "../src/i18n/displayLabels";
+import { translateDisplayText, translateMaterialCategory, translateMaterialSubcategory } from "../src/i18n/displayLabels";
+import { getServiceContextLinks } from "../src/i18n/serviceContextLinks";
+import { getMaterialSubcategoryGuidance } from "../src/i18n/materialSubcategoryGuidance";
+import { servicesPageText } from "../src/i18n/servicesPageText";
+import { materialCategoryPageText } from "../src/i18n/materialCategoryPageText";
+import { materialSubcategoryPageText } from "../src/i18n/materialSubcategoryPageText";
 import { isServiceConceptImage } from "../src/lib/serviceMedia";
 // Same public content for every user agent; this fallback is rendered only without JS.
 export const readableBodyPaths = ["/services/builtin", "/blog/renovation-materials-malaysia", "/projects/bangsar-walk-in-wardrobe-system", "/blog/small-condo-storage-design-ideas"] as const;
@@ -67,7 +72,8 @@ function buildReviewedCta(path: string, lang: "en" | "zh", identity?: ReadableCo
 
 export function buildReadablePublicBody(key: string, row: Record<string, unknown> | null | undefined, identity?: ReadableContactIdentity | null) {
   const match = key.match(/^\/(en|zh)(\/.*)$/);
-  if (!match || !readableBodyPaths.some(path => path === match[2]) || row?.status !== "published") return "";
+  const reviewedOffice = key === "/en/services/office-renovation";
+  if (!match || (!reviewedOffice && !readableBodyPaths.some(path => path === match[2])) || row?.status !== "published") return "";
   const lang = match[1] as "en" | "zh";
   const path = match[2];
   if (row.slug !== path.split("/").pop()) return "";
@@ -92,7 +98,81 @@ export function buildReadablePublicBody(key: string, row: Record<string, unknown
   } else if (path.startsWith("/projects/")) {
     body += list(labels.highlights, field("highlights")) + list(labels.scope, row.scope) + list(labels.materials, row.materials);
   }
+  if (reviewedOffice) {
+    body += buildContextLinks(getServiceContextLinks("office-renovation", lang), lang);
+  }
   body += buildReviewedCta(path, lang, identity);
   if (body.length > 262144) return "";
   return `<main data-flashcast-readable-body lang="${lang === "zh" ? "zh-CN" : "en"}">${body}</main>`;
+}
+
+type PublicRow = Record<string, unknown>;
+type ReadableCollectionSources = { services?: PublicRow[] | null; materials?: PublicRow[] | null; servicePage?: PublicRow | null };
+
+// Four reviewed material URLs, not a global SSR or static fallback expansion.
+export const isReviewedMaterialBodyPath = (key: string) =>
+  /^\/(en|zh)\/materials\/category\/whole-house-custom(?:\/solid-wood-finish)?$/.test(key);
+
+const slug = (value: unknown) => {
+  const result = plain(value);
+  return /^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(result) ? result : "";
+};
+const taxonomySlug = (value: unknown) => plain(value).toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
+const paragraph = (value: string) => value ? `<p>${escape(value)}</p>` : "";
+const localizedPlain = (row: PublicRow, field: string, lang: "en" | "zh") => plain(row[`${field}_${lang}`]);
+const localizedParagraph = (row: PublicRow, field: string, lang: "en" | "zh") => paragraph(translateDisplayText(localizedPlain(row, field, lang), lang));
+const wrapBody = (body: string, lang: "en" | "zh") => body.length <= 262144
+  ? `<main data-flashcast-readable-body lang="${lang === "zh" ? "zh-CN" : "en"}">${body}</main>` : "";
+
+function buildContextLinks(links: readonly { href: string; title: string; description: string }[], lang: "en" | "zh") {
+  return `<section>${links.map(link => {
+    const href = publicHref(`/${lang}${link.href}`, lang);
+    return href ? `<h3><a href="${escape(href)}">${escape(link.title)}</a></h3>${paragraph(link.description)}` : "";
+  }).join("")}</section>`;
+}
+
+export function buildReadableCollectionBody(key: string, sources: ReadableCollectionSources) {
+  if (key === "/en/services") {
+    const rows = sources.services?.filter(row => row.status === "published" && slug(row.slug) && localizedPlain(row, "title", "en")) || [];
+    if (!rows.length) return "";
+    const copy = servicesPageText.en;
+    const page = sources.servicePage?.status === "published" && sources.servicePage.path === "/services" ? sources.servicePage : null;
+    const title = page ? localizedPlain(page, "title", "en") || copy.title : copy.title;
+    const description = page ? localizedPlain(page, "description", "en") || copy.intro : copy.intro;
+    return wrapBody(`<h1>${escape(title)}</h1>${paragraph(description)}<section>${rows.map(row =>
+      `<h2><a href="/en/services/${slug(row.slug)}">${escape(localizedPlain(row, "title", "en"))}</a></h2>${localizedParagraph(row, "excerpt", "en")}`
+    ).join("")}</section>`, "en");
+  }
+  const match = key.match(/^\/(en|zh)\/materials\/category\/whole-house-custom(\/solid-wood-finish)?$/);
+  if (!match) return "";
+  const lang = match[1] as "en" | "zh";
+  const rows = sources.materials?.filter(row => row.status === "published" && taxonomySlug(row.category) === "whole-house-custom" && slug(row.slug)) || [];
+  if (!rows.length) return "";
+  const categoryName = translateMaterialCategory(plain(rows[0].category), lang);
+  const subcategoryRows = match[2] ? rows.filter(row => taxonomySlug(row.subcategory) === "solid-wood-finish") : rows;
+  if (!subcategoryRows.length) return "";
+  const source = subcategoryRows[0];
+  const name = match[2] ? translateMaterialSubcategory(plain(source.subcategory), lang) : categoryName;
+  let body = `<h1>${escape(name)}</h1>${localizedParagraph(source, "excerpt", lang)}`;
+  if (match[2]) {
+    // Reuse the currently visible selection guidance. Pending V14 answers are not a public source.
+    const guidance = getMaterialSubcategoryGuidance("whole-house-custom", categoryName, name, lang);
+    body += `<section><h2>${escape(guidance.checklistTitle)}</h2>${paragraph(guidance.checklistDescription)}<ol>${guidance.checklist.map(item =>
+      `<li><h3>${escape(item.title)}</h3>${paragraph(item.description)}</li>`
+    ).join("")}</ol></section><section><h2>${escape(materialSubcategoryPageText[lang].products(name))}</h2>`;
+  } else {
+    const subcategories = new Map<string, PublicRow>();
+    rows.forEach(row => { const sub = taxonomySlug(row.subcategory); if (sub && !subcategories.has(sub)) subcategories.set(sub, row); });
+    body += `<section><h2>${escape(materialCategoryPageText[lang].browseSubcategories)}</h2>${Array.from(subcategories, ([sub, row]) =>
+      `<h3><a href="/${lang}/materials/category/whole-house-custom/${sub}">${escape(translateMaterialSubcategory(plain(row.subcategory), lang))}</a></h3>${localizedParagraph(row, "excerpt", lang)}`
+    ).join("")}</section><section><h2>${escape(materialCategoryPageText[lang].allProducts(name))}</h2>`;
+  }
+  body += subcategoryRows.filter(row => localizedPlain(row, "title", lang)).map(row =>
+    `<h3><a href="/${lang}/materials/${slug(row.slug)}">${escape(translateDisplayText(localizedPlain(row, "title", lang), lang))}</a></h3>`
+  ).join("") + "</section>";
+  if (match[2]) {
+    const guidance = getMaterialSubcategoryGuidance("whole-house-custom", categoryName, name, lang);
+    body += `<h2>${escape(guidance.relatedTitle)}</h2>${paragraph(guidance.relatedDescription)}${buildContextLinks(guidance.relatedLinks, lang)}`;
+  }
+  return wrapBody(body, lang);
 }
