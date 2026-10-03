@@ -23,6 +23,18 @@ test("documentation and tests skip deployment; real build and Functions inputs d
   assert.equal(websiteInputsChanged(["src/App.tsx", "docs/release.md"]), true);
 });
 
+test("standalone backup operations skip Pages deployment while mixed website changes still deploy", () => {
+  const backupFiles = [".env.example", ".github/workflows/supabase-cloud-backup.yml", "docs/cloud-backup.md",
+    "scripts/backup-offsite-r2.mjs", "scripts/backup-supabase-cloud.mjs", "scripts/backup-supabase-daily.mjs",
+    "scripts/backup-supabase-full.mjs", "scripts/record-recovery-status.mjs", "scripts/verify-supabase-full.mjs",
+    "scripts/lib/backup-env.mjs", "scripts/lib/backup-retention.mjs", "scripts/lib/database-recovery.mjs",
+    "scripts/lib/private-backup.mjs", "scripts/lib/wrangler-r2-transfer.mjs"];
+  assert.equal(websiteInputsChanged(backupFiles), false);
+  for (const runtime of ["src/App.tsx", "functions/_middleware.ts", "scripts/lib/new-build-helper.mjs", "scripts/lib/project-env.mjs"]) {
+    assert.equal(websiteInputsChanged([...backupFiles, runtime]), true, runtime);
+  }
+});
+
 test("same-revision active and failed runs block new dispatches; the original run may retry", () => {
   const run = { id: 12, head_sha: sha, head_branch: "main", path: `.github/workflows/${workflow}` };
   for (const status of ["queued", "in_progress", "completed"])

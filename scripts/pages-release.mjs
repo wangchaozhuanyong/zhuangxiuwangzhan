@@ -9,9 +9,16 @@ export const workflow = "cloudflare-pages-deploy.yml";
 export const repository = "wangchaozhuanyong/zhuangxiuwangzhan";
 export const git = (...args) => execFileSync("git", args, { encoding: "utf8" }).trim();
 const digest = value => createHash("sha256").update(value).digest("hex");
+// These standalone operations never enter the Pages build or Functions bundle.
+const backupOperationFiles = new Set([
+  ".env.example", "scripts/backup-offsite-r2.mjs", "scripts/backup-supabase-cloud.mjs",
+  "scripts/backup-supabase-daily.mjs", "scripts/backup-supabase-full.mjs", "scripts/record-recovery-status.mjs",
+  "scripts/verify-supabase-full.mjs", "scripts/lib/backup-env.mjs", "scripts/lib/backup-retention.mjs",
+  "scripts/lib/database-recovery.mjs", "scripts/lib/private-backup.mjs", "scripts/lib/wrangler-r2-transfer.mjs",
+]);
 export function websiteInputsChanged(paths) {
   // Skip only known non-runtime inputs. Unknown/new build helpers must deploy.
-  return paths.some(p => !/\.(spec|test)\.[^/]+$/u.test(p) &&
+  return paths.some(p => !backupOperationFiles.has(p) && !/\.(spec|test)\.[^/]+$/u.test(p) &&
     !/^(?:docs\/|tests\/|e2e\/|\.github\/|(?:README|AGENTS|CHANGELOG|LICENSE)(?:\.md)?$|\.gitignore$|eslint\.config\.[^/]+$|(?:vitest|playwright)\.config\.[^/]+$|scripts\/(?:pages-release|deploy-cloudflare-pages|arch-check)\.mjs$)/u.test(p));
 }
 export function priorAttempt(runs, sha, currentId) {
