@@ -121,7 +121,7 @@ export default function LocationPage() {
       />
       <SchemeAFacts items={[
         { label: language === "zh" ? "地区" : "Area", value: location.name },
-        { label: usesReviewedLocalityContext ? copy.propertyTypeExamples : copy.propertyTypes, value: location.propertyTypes.slice(0, 2).map(display).join(" / ") },
+        { label: location.slug === "bangsar" ? copy.bangsarProjectTypes : usesReviewedLocalityContext ? copy.propertyTypeExamples : copy.propertyTypes, value: location.propertyTypes.slice(0, 2).map(display).join(" / ") },
         { label: language === "zh" ? "服务" : "Service", value: language === "zh" ? "设计 / 装修" : "Design / Build" },
         { label: language === "zh" ? "协调" : "Coordination", value: language === "zh" ? "管理处申请" : "Management approval" },
       ]} />
@@ -129,7 +129,7 @@ export default function LocationPage() {
         <SchemeAFeatureList items={location.commonNeeds.map(display)} />
       </SchemeASection>
       {location.constructionNotes ? <SchemeASection title={copy.permitNotes} description={display(location.constructionNotes)}><SchemeAFeatureList items={location.propertyTypes.map(display)} /></SchemeASection> : null}
-      {projectItems.length ? <SchemeASection title={copy.featuredProjects(location.name)}><SchemeAListingGrid items={projectItems} actionLabel={copy.internalProjects} /></SchemeASection> : null}
+      {projectItems.length ? <SchemeASection title={location.slug === "bangsar" ? copy.bangsarReferences : copy.featuredProjects(location.name)}><SchemeAListingGrid items={projectItems} actionLabel={copy.internalProjects} /></SchemeASection> : null}
       {contextLinks.length ? (
         <SchemeASection title={copy.resourceTitle(location.name)} description={copy.resourceDescription}>
           <SchemeALinkGrid items={contextLinks} actionLabel={copy.resourceAction} />
