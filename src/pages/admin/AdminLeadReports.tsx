@@ -6,7 +6,7 @@ import AdminStatCard from "@/components/admin/AdminStatCard";
 import { Button } from "@/components/ui/button";
 import { adminLeadReportsText } from "@/i18n/adminLeadReportsText";
 import { useAdminLeadReport } from "@/lib/adminLeadQueries";
-import { getAdminLang } from "@/lib/adminLocale";
+import { useAdminLang } from "@/lib/adminLocale";
 import {
   normalizeAdminLeadReportPeriod,
   type AdminLeadReportPeriod,
@@ -164,7 +164,7 @@ const ProjectTypeTable = ({
 };
 
 export default function AdminLeadReports() {
-  const language = getAdminLang();
+  const language = useAdminLang();
   const t = copy[language];
   const [searchParams, setSearchParams] = useSearchParams();
   const period = normalizeAdminLeadReportPeriod(searchParams.get("period"));

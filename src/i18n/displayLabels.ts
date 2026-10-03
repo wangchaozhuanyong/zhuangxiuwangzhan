@@ -10,6 +10,7 @@ const humanize = (value: string) =>
     .replace(/\b\w/g, (char) => char.toUpperCase());
 
 const projectTypeLabels: Record<string, LabelPair> = {
+  condo: { en: "Condo", zh: "公寓" },
   residential: { en: "Residential", zh: "住宅" },
   commercial: { en: "Commercial", zh: "商业" },
   "commercial fit-out": { en: "Commercial Fit-Out", zh: "商业空间装修" },
