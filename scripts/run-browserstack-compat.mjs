@@ -215,7 +215,10 @@ const touch = async (driver, selector) => {
   if (nativeTapDrivers.has(driver)) {
     // XCUITest translates web element coordinates for a real native tap.
     // W3C native actions cannot consume a web element origin directly.
-    await (await driver.findElement(By.css(selector))).click();
+    for(let attempt=0;attempt<3;attempt++){
+      try { await (await driver.findElement(By.css(selector))).click(); break; }
+      catch(error){if(error?.constructor?.name!=='StaleElementReferenceError'||attempt===2)throw error;}
+    }
     return;
   }
   const position = await driver.executeScript(css => {
@@ -247,6 +250,30 @@ const swipeTo = async (driver, selector) => {
 };
 
 const captureMotion = async driver => {
+  if(nativeTapDrivers.has(driver)) {
+    // Some remote iOS script contexts do not retain callbacks between commands.
+    // Read real rendered frames synchronously; do not synthesize animation states.
+    const start=Date.now(),states=new Set();
+    let original,activeFrames=0,maxAlignmentError=0,maxButtonShift=0,minimumViewportHeight=Infinity,maximumViewportHeight=0,last;
+    do {
+      last=await driver.executeScript(()=>{
+        const entry=document.querySelector('.fc-furniture-floating'),scene=document.querySelector('.fc-furniture-arrival');
+        const box=entry?.getBoundingClientRect(),canvas=scene?.getBoundingClientRect(),outline=scene?.querySelector('[data-arrival-border] rect');
+        return {state:entry?.dataset.arrival,box:box?{x:box.x,y:box.y,width:box.width,height:box.height,right:box.right,bottom:box.bottom}:null,
+          viewportHeight:visualViewport?.height||innerHeight,reducedMotion:matchMedia('(prefers-reduced-motion: reduce)').matches,
+          active:scene?.dataset.active==='true'&&outline?.hasAttribute('x'),hasViewBox:scene?.hasAttribute('viewBox')??true,
+          alignment:box&&canvas&&outline?Math.max(Math.abs(canvas.x+Number(outline.getAttribute('x'))-box.x-.5),Math.abs(canvas.y+Number(outline.getAttribute('y'))-box.y-.5),Math.abs(Number(outline.getAttribute('width'))-box.width+1),Math.abs(Number(outline.getAttribute('height'))-box.height+1)):0,
+          insideViewport:!!box&&box.x>=0&&box.right<=innerWidth+1&&box.y>=0&&box.bottom<=innerHeight+1};
+      });
+      if(last.state)states.add(last.state);
+      minimumViewportHeight=Math.min(minimumViewportHeight,last.viewportHeight);maximumViewportHeight=Math.max(maximumViewportHeight,last.viewportHeight);
+      if(last.box){original??=last.box;maxButtonShift=Math.max(maxButtonShift,Math.abs(last.box.x-original.x),Math.abs(last.box.y-original.y));}
+      if(last.active){activeFrames++;maxAlignmentError=Math.max(maxAlignmentError,last.alignment);}
+      if(last.state==='done'||last.state==='skipped')break;
+    }while(Date.now()-start<15000);
+    return {states:[...states],activeFrames,maxAlignmentError,maxButtonShift,minimumViewportHeight,maximumViewportHeight,reducedMotion:last.reducedMotion,
+      hasViewBox:last.hasViewBox,squareRatio:last.box?.width/last.box?.height,insideViewport:last.insideViewport};
+  }
   await driver.executeScript(() => {
   delete document.documentElement.dataset.qaMotion;
   const done = observation => { document.documentElement.dataset.qaMotion = JSON.stringify(observation); };
@@ -375,10 +402,13 @@ const mobileChecks = async (driver, target, identity) => {
     return { touchPressFeedback: true, shopOpened: true, testTabClosed: true };
   });
   await check("contact_keyboard_and_invalid_input", async () => {
+    let contactStage='open_contact';
+    try {
     await driver.get(`${baseUrl}/zh/contact`); await ready(driver);
     await swipeTo(driver, "#contact-name");
     const viewportBefore = await driver.executeScript(() => visualViewport?.height || innerHeight);
     await touch(driver, "#contact-name");
+    contactStage='keyboard_appearance';
     try { await driver.wait(() => driver.executeScript(before => (visualViewport?.height || innerHeight) < before - 50, viewportBefore), 10000); }
     catch (error) {
       error.metrics = await driver.executeScript(before => ({ keyboardHeightBefore: before, keyboardHeightAfter: visualViewport?.height || innerHeight, focusedName: document.activeElement.id === "contact-name", typedNamePresent: document.querySelector("#contact-name")?.value === "QA keyboard only" }), viewportBefore);
@@ -391,14 +421,18 @@ const mobileChecks = async (driver, target, identity) => {
     try { await driver.wait(async()=>{const item=await driver.executeScript(keyboardSnapshot);return item.focusedName&&item.inputVisible;},10000); }
     catch { const error=new Error('KEYBOARD_COVERS_ACTIVE_INPUT');error.metrics=await driver.executeScript(keyboardSnapshot);throw error; }
     const keyboard=await driver.executeScript(keyboardSnapshot);
+    contactStage='native_typing';
     await (await driver.findElement(By.css("#contact-name"))).sendKeys("QA keyboard only");
     const typed = await driver.executeScript(() => document.querySelector("#contact-name")?.value === "QA keyboard only");
     if (!typed) throw new Error("NATIVE_KEYBOARD_INPUT_NOT_UPDATED");
+    contactStage='menu_with_keyboard';
     await touch(driver, ".scheme-a-chrome__menu-trigger--compact");
     await driver.wait(() => driver.executeScript(() => document.querySelector("#scheme-a-directory")?.dataset.state === "open"), waitTimeoutMs);
     await touch(driver, ".scheme-a-directory__close");
+    contactStage='keyboard_dismissal';
     await driver.wait(() => driver.executeScript(before => (visualViewport?.height || innerHeight) >= before - 10, viewportBefore), 10000);
     await swipeTo(driver, 'main form button[type="submit"]');
+    contactStage='invalid_form_submit';
     const resourceCount = await driver.executeScript(() => performance.getEntriesByType("resource").filter(item => item.name.includes("/functions/v1/submit-lead")).length);
     const missingPhone = await (await driver.findElement(By.css("#contact-phone"))).getAttribute("value");
     if (missingPhone) throw new Error("NEGATIVE_FORM_GUARD_NOT_EMPTY");
@@ -407,6 +441,7 @@ const mobileChecks = async (driver, target, identity) => {
     const noRequest = await driver.executeScript(before => performance.getEntriesByType("resource").filter(item => item.name.includes("/functions/v1/submit-lead")).length === before, resourceCount);
     if (!noRequest) throw new Error("INVALID_FORM_SENT_NETWORK_REQUEST");
     return { keyboardHeightBefore: viewportBefore, keyboardHeightAfter: keyboard.height, inputVisible: true, keyboardDismissed: true, invalidPhoneDisplayed: true, leadRequestSent: false };
+    }catch(error){error.metrics={...error.metrics,contactStage};throw error;}
   });
   await check("quote_invalid_form_focus_and_message", async () => {
     await driver.get(`${baseUrl}/zh/quote`); await ready(driver);
