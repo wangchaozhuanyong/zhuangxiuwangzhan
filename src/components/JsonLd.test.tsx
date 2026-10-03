@@ -1,7 +1,10 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it, vi } from "vitest";
-import { JsonLdBlogPosting } from "@/components/JsonLd";
+import { JsonLdBlogPosting, JsonLdLocalBusiness } from "@/components/JsonLd";
+import { fallbackSiteSettings } from "@/lib/siteSettingsApi";
+import { MemoryRouter } from "react-router-dom";
+import { SchemeAFooter } from "@/components/scheme-a/SchemeAPublicChrome";
 
 vi.hoisted(() => { vi.stubEnv("VITE_SITE_URL", "https://flashcast.com.my"); });
 
@@ -44,5 +47,38 @@ describe("JsonLdBlogPosting", () => {
       url: "https://flashcast.com.my/images/blog/kitchen-planning.webp",
       caption: "Kitchen renovation planning concept",
     });
+  });
+});
+
+describe("JsonLdLocalBusiness", () => {
+  it("publishes the confirmed daily hours for all seven days", () => {
+    const queryClient = new QueryClient({ defaultOptions: { queries: { retry: false } } });
+    const html = renderToStaticMarkup(<QueryClientProvider client={queryClient}><JsonLdLocalBusiness /></QueryClientProvider>);
+    const data = JSON.parse(html.match(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/)?.[1] || "{}");
+    expect(data.openingHoursSpecification).toEqual([{
+      "@type": "OpeningHoursSpecification",
+      dayOfWeek: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"].map(day => `https://schema.org/${day}`),
+      opens: "10:00",
+      closes: "19:00",
+    }]);
+  });
+
+  it("omits unconfirmed social accounts from Footer and JSON-LD", () => {
+    const queryClient = new QueryClient({ defaultOptions: { queries: { retry: false } } });
+    queryClient.setQueryData(["site-settings"], {
+      ...fallbackSiteSettings,
+      facebook_url: "https://www.facebook.com/not-created-yet/",
+      instagram_url: "https://www.instagram.com/not-created-yet/",
+    });
+    const html = renderToStaticMarkup(<MemoryRouter initialEntries={["/en/"]}><QueryClientProvider client={queryClient}>
+      <>
+        <SchemeAFooter />
+        <JsonLdLocalBusiness />
+      </>
+    </QueryClientProvider></MemoryRouter>);
+    const data = JSON.parse(html.match(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/)?.[1] || "{}");
+    expect(data.sameAs).toEqual([]);
+    expect(html).not.toContain("scheme-a-footer__socials");
+    expect(html).not.toContain("not-created-yet");
   });
 });

@@ -46,6 +46,7 @@ import { chooseAdaptiveTextColor, compositeColors, getImageSourcePoint, parseCss
 import { buildGoogleMapOpenUrl } from "@/lib/mapUrls";
 import { QUOTE_FORM_PATH } from "@/lib/quoteContext";
 import { addCacheBuster } from "@/lib/siteSettingsApi";
+import { safeSocialProfileUrl } from "@/config/site";
 import logoFallback from "@/assets/logo-flashcast.webp";
 
 const isActivePath = (pathname: string, itemPath: string) => {
@@ -567,6 +568,8 @@ export const SchemeAFooter = () => {
   const location = useLocation();
   const translate = useT();
   const settings = useSiteSettings();
+  const instagramUrl = safeSocialProfileUrl(settings.instagram_url, "instagram");
+  const facebookUrl = safeSocialProfileUrl(settings.facebook_url, "facebook");
   const t = schemeAChromeText[language];
   const footer = footerCopy[language];
   const navText = navbarText[language];
@@ -602,9 +605,9 @@ export const SchemeAFooter = () => {
                   </Button>
                 </div>
               </div>
-              {settings.instagram_url || settings.facebook_url ? <div className="scheme-a-footer__socials">
-                {settings.instagram_url ? <a href={settings.instagram_url} target="_blank" rel="noopener noreferrer" aria-label="Instagram"><Instagram /></a> : null}
-                {settings.facebook_url ? <a href={settings.facebook_url} target="_blank" rel="noopener noreferrer" aria-label="Facebook"><Facebook /></a> : null}
+              {instagramUrl || facebookUrl ? <div className="scheme-a-footer__socials">
+                {instagramUrl ? <a href={instagramUrl} target="_blank" rel="noopener noreferrer" aria-label="Instagram"><Instagram /></a> : null}
+                {facebookUrl ? <a href={facebookUrl} target="_blank" rel="noopener noreferrer" aria-label="Facebook"><Facebook /></a> : null}
               </div> : null}
             </section>
             <nav className="scheme-a-footer__directory" aria-label={t.navigationTitle}>
