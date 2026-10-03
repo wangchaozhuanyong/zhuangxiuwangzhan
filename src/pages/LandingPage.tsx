@@ -1,3 +1,4 @@
+import PublicReadError from "@/components/PublicReadError";
 import { useMemo } from "react";
 import { useParams } from "react-router-dom";
 import { ArrowRight, CheckCircle, MapPin } from "lucide-react";
@@ -30,7 +31,7 @@ const LandingPage = () => {
   const settings = useSiteSettings();
   const t = landingPageText[language];
   const fallbackPage = slug ? landingPages[slug] : undefined;
-  const { data: cmsPage, isPending: pagePending } = usePublishedLandingPageBySlug(slug, language);
+  const { data: cmsPage, isPending: pagePending, isInitialError, refetch } = usePublishedLandingPageBySlug(slug, language);
   const page = useMemo(() => cmsPage ?? fallbackPage ?? null, [cmsPage, fallbackPage]);
   const displayText = (value: string) => translateDisplayText(value, language);
 
@@ -38,6 +39,7 @@ const LandingPage = () => {
     return <PublicLoadingState label="FLASH CAST" title={t.loadingTitle} description={t.loadingDescription} />;
   }
 
+  if (isInitialError && !page) return <PublicReadError onRetry={() => void refetch()} />;
   if (!page) {
     return <main className="fc-route-page fc-route-missing"><PageMeta title={`${t.notFound} | ${t.metaSuffix}`} description={t.notFound} canonicalPath={`/landing/${slug || ""}`} noIndex /><div><h1>{t.notFound}</h1><Link to="/">{t.backHome}</Link></div></main>;
   }

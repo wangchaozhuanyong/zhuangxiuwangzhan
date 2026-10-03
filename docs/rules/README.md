@@ -22,3 +22,7 @@ npm.cmd run arch:check
 ```
 
 如果某次规则改动还同步修改了脚本或运行时代码，再按影响范围补跑 `lint`、`typecheck`、`test`、`build`。
+
+## 加载、刷新、导航与编辑保护
+
+统一正文见 [加载刷新导航标准](loading-refresh-navigation.md)；新增路由同步登记 `docs/interaction-route-compliance.json`，执行 `npm run verify:interaction-standards`。

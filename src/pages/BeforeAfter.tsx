@@ -87,7 +87,7 @@ function BeforeAfterComparison({
 export default function BeforeAfter() {
   const { language } = useLanguage();
   const t = beforeAfterPageText[language];
-  const { data: items = [], isLoading, isError, refetch } = usePublishedBeforeAfterItems(language);
+  const { data: items = [], isLoading, isInitialError: isError, refetch } = usePublishedBeforeAfterItems(language);
   const fallbackItems: readonly PublishedBeforeAfterItem[] = beforeAfterFallbackMedia.map((media, index) => ({
     ...media,
     ...t.fallbackItems[index],

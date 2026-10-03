@@ -1,4 +1,6 @@
-import { keepPreviousData, useQuery } from "@tanstack/react-query";
+import { INTERACTION_POLICY } from "@/lib/interactionPolicy";
+import { useInteractionQuery as useQuery } from "@/hooks/useInteractionQuery";
+import { keepPreviousData } from "@tanstack/react-query";
 import { loadAdminLeadDetail, loadAdminLeadReportRows, loadAdminLeads } from "@/backend/modules/leads/service/leadService";
 import { loadAdminQuoteDetail, loadAdminQuoteReportRows, loadAdminQuotes } from "@/backend/modules/quotes/service/quoteService";
 import {
@@ -56,14 +58,14 @@ export function useAdminLeads(options: AdminListQuery = {}) {
     placeholderData: keepPreviousData,
     staleTime: ADMIN_LIST_STALE_TIME,
     gcTime: ADMIN_QUERY_GC_TIME,
-    queryFn: () =>
+    queryFn: ({ signal }) =>
       loadAdminLeads<AdminLeadListRow>({
         page,
         pageSize,
         status: options.status,
         workflow,
         search,
-      }),
+      }, signal),
   });
 }
 
@@ -78,14 +80,14 @@ export function useAdminQuotes(options: AdminListQuery = {}) {
     placeholderData: keepPreviousData,
     staleTime: ADMIN_LIST_STALE_TIME,
     gcTime: ADMIN_QUERY_GC_TIME,
-    queryFn: () =>
+    queryFn: ({ signal }) =>
       loadAdminQuotes<AdminQuoteListRow>({
         page,
         pageSize,
         status: options.status,
         workflow,
         search,
-      }),
+      }, signal),
   });
 }
 
@@ -96,13 +98,13 @@ export function useAdminLeadReport(options: { period?: AdminLeadReportPeriod | s
     queryKey: ["admin", "lead-report", { period, language }],
     enabled: adminQueriesEnabled,
     placeholderData: keepPreviousData,
-    staleTime: 2 * 60 * 1000,
+    staleTime: INTERACTION_POLICY.defaultStaleTime,
     gcTime: ADMIN_QUERY_GC_TIME,
-    queryFn: async () => {
+    queryFn: async ({ signal }) => {
       const startIso = getAdminLeadReportStartIso(period);
       const [leads, quotes] = await Promise.all([
-        loadAdminLeadReportRows(startIso),
-        loadAdminQuoteReportRows(startIso),
+        loadAdminLeadReportRows(startIso, signal),
+        loadAdminQuoteReportRows(startIso, signal),
       ]);
 
       return buildAdminLeadReport({
@@ -119,8 +121,7 @@ export function useAdminLead(id: string | undefined) {
   return useQuery({
     queryKey: ["admin", "leads", id],
     enabled: adminQueriesEnabled && Boolean(id),
-    placeholderData: keepPreviousData,
-    queryFn: () => loadAdminLeadDetail(id!),
+    queryFn: ({ signal }) => loadAdminLeadDetail(id!, signal),
   });
 }
 
@@ -128,7 +129,6 @@ export function useAdminQuote(id: string | undefined) {
   return useQuery({
     queryKey: ["admin", "quotes", id],
     enabled: adminQueriesEnabled && Boolean(id),
-    placeholderData: keepPreviousData,
-    queryFn: () => loadAdminQuoteDetail(id!),
+    queryFn: ({ signal }) => loadAdminQuoteDetail(id!, signal),
   });
 }

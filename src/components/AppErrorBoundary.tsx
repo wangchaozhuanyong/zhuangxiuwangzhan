@@ -1,8 +1,9 @@
+import { reloadDocumentSafely } from "@/lib/navigationProtection";
 import { Component, type ErrorInfo, type ReactNode } from "react";
 import { Button } from "@/components/ui/button";
 import { appErrorBoundaryText } from "@/i18n/appErrorBoundaryText";
 import { getDefaultLanguage, getLanguageFromPath } from "@/i18n/routes";
-import { getAdminLang } from "@/lib/adminLocale";
+import { getAdminLang } from "@/lib/adminPreferences";
 import { getFriendlySystemMessage, isChunkLoadError } from "@/lib/chunkLoadRecovery";
 
 type Props = {
@@ -54,7 +55,7 @@ export class AppErrorBoundary extends Component<Props, State> {
         <p className="text-sm font-semibold text-destructive">{copy.label}</p>
         <h1 className="font-display text-3xl font-bold">{isChunkError ? copy.chunkTitle : copy.title}</h1>
         <p className="text-muted-foreground">{isChunkError ? copy.chunkBody : copy.body}</p>
-        <Button type="button" onClick={() => window.location.reload()}>
+        <Button type="button" onClick={() => void reloadDocumentSafely()}>
           {copy.refresh}
         </Button>
       </main>

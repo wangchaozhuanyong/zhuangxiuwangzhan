@@ -1,4 +1,5 @@
-import { useMemo, useState } from "react";
+import { usePublicListingState } from "@/hooks/usePublicListingState";
+import { useMemo } from "react";
 import CTABanner from "@/components/blocks/CTABanner";
 import PageMeta from "@/components/PageMeta";
 import { JsonLdBreadcrumb } from "@/components/JsonLd";
@@ -35,9 +36,9 @@ export default function Services() {
   const { language } = useLanguage();
   const copy = servicesPageText[language];
   const routeText = schemeARouteText[language];
-  const [group, setGroup] = useState<ServiceGroup>("all");
+  const { filter: group, setFilter: setGroup } = usePublicListingState<ServiceGroup>(["all", "residential", "commercial", "specialty"], "all", 12);
   const { data: pageContent, isLoading: pageLoading } = usePublishedSitePage(language, "services");
-  const { data: publishedServices, isLoading, isError, refetch } = usePublishedServices(language);
+  const { data: publishedServices, isLoading, isInitialError: isError, refetch } = usePublishedServices(language);
   const services = publishedServices?.length ? publishedServices : servicesData;
   const visible = group === "all" ? services : services.filter((service) => groupForService(service.slug) === group);
   const hero = resolvePageHeroImage(pageContent?.image_url, pageHeroImages.services);
@@ -89,9 +90,11 @@ export default function Services() {
           onChange={(value) => setGroup(value as ServiceGroup)}
           ariaLabel={copy.directoryTitle}
         />
+        <div data-public-results>
         {isLoading ? <SchemeAContentState>{routeText.servicesLoading}</SchemeAContentState> : null}
         {isError ? <SchemeAContentState action={<button type="button" onClick={() => void refetch()}>{routeText.reload}</button>}>{routeText.servicesError}</SchemeAContentState> : null}
         {!isLoading && !isError ? <SchemeAListingGrid items={items} actionLabel={copy.details} /> : null}
+        </div>
       </SchemeASection>
       <SchemeASection title={copy.selectorTitle} description={copy.selectorText}>
         <ol className="fc-route-number-list">

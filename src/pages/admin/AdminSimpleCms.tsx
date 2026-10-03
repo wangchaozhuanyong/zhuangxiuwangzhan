@@ -1,4 +1,6 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useAdminFormState } from "@/hooks/useAdminFormState";
+import { useSubmissionLock } from "@/hooks/useSubmissionLock";
+import { useEffect, useMemo, useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { useAdminSimpleCmsRows } from "@/lib/adminCmsQueries";
 import AdminPageHeader from "@/components/admin/AdminPageHeader";
@@ -125,20 +127,19 @@ const formatAdminError = (module: ModuleKey, error: unknown, language: "en" | "z
 };
 
 const AdminSimpleCms = ({ module }: { module: ModuleKey }) => {
+  const { protectSubmission, isSubmitting } = useSubmissionLock();
   const language = getAdminLang();
   const t = adminSimpleCmsText[language];
   const configText = adminSimpleCmsConfigText[language][module];
   const config = configs[module];
   const queryClient = useQueryClient();
-  const { data: rows = [], error, refetch } = useAdminSimpleCmsRows(config.table);
-  const [record, setRecord] = useState<SimpleCmsRecord>(emptyRecord);
-  const recordDirtyRef = useRef(false);
+  const { data: rows = [], error } = useAdminSimpleCmsRows(config.table);
+  const { state: record, setForm: setRecord, applyRemote, dirty: recordDirty, isDirty } = useAdminFormState<SimpleCmsRecord>(undefined, { initial: emptyRecord, resetKey: module });
   const [message, setMessage] = useState(error ? formatAdminError(module, error, language) : "");
   const [saving, setSaving] = useState(false);
   const [deletingId, setDeletingId] = useState<string | null>(null);
-  const [recordDirty, setRecordDirty] = useState(false);
 
-  useUnsavedChangesWarning(recordDirty && !saving);
+  useUnsavedChangesWarning((recordDirty || saving) || isSubmitting);
 
   useEffect(() => {
     if (error) setMessage(formatAdminError(module, error, language));
@@ -157,18 +158,9 @@ const AdminSimpleCms = ({ module }: { module: ModuleKey }) => {
   const formatText = (key: AdminSimpleCmsTextKey, values: Record<string, string>) =>
     Object.entries(values).reduce((text, [name, value]) => text.replaceAll(`{${name}}`, value), t[key]);
 
-  const markRecordDirty = () => {
-    recordDirtyRef.current = true;
-    setRecordDirty(true);
-  };
-
-  const markRecordClean = () => {
-    recordDirtyRef.current = false;
-    setRecordDirty(false);
-  };
 
   const confirmDiscardUnsaved = async () => {
-    if (!recordDirtyRef.current) return true;
+    if (!isDirty()) return true;
     return adminConfirm({
       title: t.discardTitle,
       description: t.discardDescription,
@@ -177,23 +169,20 @@ const AdminSimpleCms = ({ module }: { module: ModuleKey }) => {
   };
 
   const update = (key: string, value: unknown) => {
-    markRecordDirty();
     setRecord((current) => ({ ...current, [key]: value }));
   };
 
   const loadRecord = async (row: SimpleCmsRecord) => {
     if (!(await confirmDiscardUnsaved())) return;
-    markRecordClean();
-    setRecord(row);
+    applyRemote(row);
   };
 
   const resetRecord = async () => {
     if (!(await confirmDiscardUnsaved())) return;
-    markRecordClean();
-    setRecord({ ...emptyRecord });
+    applyRemote({ ...emptyRecord });
   };
 
-  const save = async () => {
+  const save = protectSubmission("save", async () => {
     if (!isSupabaseConfigured || saving) return;
     setSaving(true);
     const payload = { ...record };
@@ -224,18 +213,16 @@ const AdminSimpleCms = ({ module }: { module: ModuleKey }) => {
         invalidate: "admin-content",
       });
       setMessage(t.saved);
-      markRecordClean();
-      setRecord(data || emptyRecord);
-      void queryClient.invalidateQueries({ queryKey: ["admin", config.table, "rows"] });
-      await refetch();
+      applyRemote(data || emptyRecord, record);
+
     } catch (saveError) {
       setMessage(formatAdminMutationError(saveError));
     } finally {
       setSaving(false);
     }
-  };
+  });
 
-  const remove = async (id: string) => {
+  const remove = protectSubmission("remove", async (id: string) => {
     if (!isSupabaseConfigured || deletingId) return;
     const confirmed = await adminConfirm({
       title: t.archiveTitle,
@@ -254,14 +241,13 @@ const AdminSimpleCms = ({ module }: { module: ModuleKey }) => {
         softDelete: true,
       });
       setMessage(t.archived);
-      void queryClient.invalidateQueries({ queryKey: ["admin", config.table, "rows"] });
-      await refetch();
+
     } catch (deleteError) {
       setMessage(formatAdminMutationError(deleteError));
     } finally {
       setDeletingId(null);
     }
-  };
+  });
 
   const renderField = (field: Field) => {
     const rawValue = record[field.key];

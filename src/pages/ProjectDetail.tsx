@@ -1,3 +1,4 @@
+import PublicReadError from "@/components/PublicReadError";
 import { useMemo } from "react";
 import { useParams } from "react-router-dom";
 import Link from "@/components/LocalizedLink";
@@ -20,7 +21,7 @@ export default function ProjectDetail() {
   const { language } = useLanguage();
   const copy = projectDetailPageText[language];
   const fallback = projectsData.find((item) => item.slug === slug);
-  const { data: publishedProject, isPending } = usePublishedProjectBySlug(slug, language);
+  const { data: publishedProject, isPending, isInitialError, refetch } = usePublishedProjectBySlug(slug, language);
   const { data: publishedProjects = [] } = usePublishedProjectSummaries(language);
   const project = publishedProject || fallback;
   const allProjects = publishedProjects.length ? publishedProjects : projectsData;
@@ -39,6 +40,7 @@ export default function ProjectDetail() {
   })), [allProjects, language, slug]);
 
   if (isPending) return <main className="fc-route-page" data-route-pending="true"><SchemeAContentState>{copy.loadingDescription}</SchemeAContentState></main>;
+  if (isInitialError && !project) return <PublicReadError onRetry={() => void refetch()} />;
   if (!project) return <main className="fc-route-page fc-route-not-found"><PageMeta title={copy.notFound} description={copy.notFoundDescription} canonicalPath="/projects" noIndex /><SchemeAContentState action={<Link to="/projects">{copy.viewAll}</Link>}>{copy.notFound}</SchemeAContentState></main>;
 
   const title = translateDisplayText(project.title, language);

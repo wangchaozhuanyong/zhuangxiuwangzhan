@@ -1,3 +1,4 @@
+import { withReadSignal } from "@/lib/readRequest";
 import { requireSupabase } from "@/lib/supabase";
 
 const COUNT_ONLY_SELECT = "id";
@@ -10,7 +11,7 @@ export type AdminDashboardStatsData = {
 
 const readCount = (result: { count: number | null }) => result.count || 0;
 
-export async function fetchAdminDashboardStatsData(): Promise<AdminDashboardStatsData> {
+export async function fetchAdminDashboardStatsData(signal?: AbortSignal): Promise<AdminDashboardStatsData> {
   const supabase = requireSupabase();
   const now = new Date();
   const dayStart = new Date(now);
@@ -38,7 +39,7 @@ export async function fetchAdminDashboardStatsData(): Promise<AdminDashboardStat
     toQuote,
     leads,
     quotes,
-  ] = await Promise.all([
+  ] = await withReadSignal(Promise.all([
     supabase.from("leads").select(COUNT_ONLY_SELECT, { count: "exact", head: true }).eq("status", "new"),
     supabase.from("quote_requests").select(COUNT_ONLY_SELECT, { count: "exact", head: true }).eq("status", "pending"),
     supabase.from("leads").select(COUNT_ONLY_SELECT, { count: "exact", head: true }).eq("status", "new").lt("created_at", since24h),
@@ -56,7 +57,7 @@ export async function fetchAdminDashboardStatsData(): Promise<AdminDashboardStat
     supabase.from("quote_requests").select(COUNT_ONLY_SELECT, { count: "exact", head: true }).in("status", ["pending", "contacted", "site_visit_scheduled"]),
     supabase.from("leads").select("id,name,phone,status,created_at,source_path,next_follow_up_at").order("created_at", { ascending: false }).limit(10),
     supabase.from("quote_requests").select("id,customer_name,customer_phone,status,created_at,project_type,source_path,next_follow_up_at").order("created_at", { ascending: false }).limit(10),
-  ]);
+  ]), signal);
 
   return {
     counts: {

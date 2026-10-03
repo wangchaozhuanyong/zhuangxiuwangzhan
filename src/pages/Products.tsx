@@ -18,7 +18,7 @@ export default function Products() {
   const routeText = schemeARouteText[language];
   const [search, setSearch] = useState("");
   const [category, setCategory] = useState("all");
-  const { data: categories = [], isLoading, isError, refetch } = usePublishedMaterials(language);
+  const { data: categories = [], isLoading, isInitialError: isError, refetch } = usePublishedMaterials(language);
   const { data: pageContent } = usePublishedSitePage(language, "products");
   const hero = resolvePageHeroImage(pageContent?.image_url, pageHeroImages.products);
   const display = (value: string) => stripHtml(translateDisplayText(value, language));

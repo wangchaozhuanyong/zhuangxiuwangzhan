@@ -1,4 +1,5 @@
-import { useDeferredValue, useEffect, useState } from "react";
+import { useAdminListingState } from "@/hooks/useAdminListingState";
+
 import { Link } from "react-router-dom";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -20,11 +21,12 @@ type AdminServiceListTextKey = keyof typeof adminServiceListText;
 export default function AdminServiceList() {
   const language = useAdminLang();
   const A = (key: AdminServiceListTextKey) => adminServiceListText[key][language];
-  const [status, setStatus] = useState<string>("all");
-  const [search, setSearch] = useState("");
-  const [page, setPage] = useState(0);
-  const deferredSearch = useDeferredValue(search);
-  const { data, error, isFetching, refetch } = useAdminServices({ page, status, search: deferredSearch });
+  const list = useAdminListingState();
+  const { search, setSearch, deferredSearch, page, setPage } = list;
+  const status = list.filter("status");
+  const setStatus = (value: string) => list.setFilter("status", value);
+
+  const { data, error, isFetching, isPlaceholderData, refetch } = useAdminServices({ page, status, search: deferredSearch });
   const rows = data?.rows ?? [];
   const total = data?.count ?? 0;
   const pageSize = data?.pageSize ?? 30;
@@ -37,9 +39,6 @@ export default function AdminServiceList() {
     setPage(0);
   };
 
-  useEffect(() => {
-    setPage(0);
-  }, [deferredSearch, status]);
 
   const columns: AdminDataTableColumn<AdminServiceRow>[] = [
     {
@@ -118,7 +117,7 @@ export default function AdminServiceList() {
       {initialLoading ? (
         <AdminLoadingState />
       ) : (
-        <AdminDataTable
+        <AdminDataTable busy={isPlaceholderData}
           columns={columns}
           rows={rows}
           rowKey={(r) => r.id}

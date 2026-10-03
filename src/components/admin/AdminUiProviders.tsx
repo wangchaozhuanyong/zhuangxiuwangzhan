@@ -1,3 +1,4 @@
+import PublicSyncRecovery from "@/components/PublicSyncRecovery";
 import type { ReactNode } from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -7,6 +8,7 @@ export default function AdminUiProviders({ children }: { children: ReactNode }) 
   return (
     <TooltipProvider>
       <Toaster />
+      <PublicSyncRecovery />
       {children}
     </TooltipProvider>
   );

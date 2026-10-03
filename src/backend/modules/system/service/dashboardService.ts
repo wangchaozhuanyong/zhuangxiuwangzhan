@@ -1,5 +1,5 @@
 import { fetchAdminDashboardStatsData } from "@/backend/modules/system/repository/dashboardRepository";
 
-export function loadAdminDashboardStats() {
-  return fetchAdminDashboardStatsData();
+export function loadAdminDashboardStats(signal?: AbortSignal) {
+  return fetchAdminDashboardStatsData(signal);
 }

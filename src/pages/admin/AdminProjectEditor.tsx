@@ -1,3 +1,5 @@
+import { navigateAfterSave } from "@/lib/navigationProtection";
+import { useSubmissionLock } from "@/hooks/useSubmissionLock";
 import { FormEvent, useCallback, useEffect, useMemo, useState } from "react";
 import { useAdminFormState } from "@/hooks/useAdminFormState";
 import { useUnsavedChangesWarning } from "@/hooks/useUnsavedChangesWarning";
@@ -15,7 +17,7 @@ import AdminEmptyState from "@/components/admin/AdminEmptyState";
 import { adminConfirm } from "@/components/admin/AdminConfirmProvider";
 import ImageField from "@/components/admin/ImageField";
 import { adminProjectEditorText } from "@/i18n/adminProjectEditorText";
-import { invalidateAdminContentDetail, invalidateAfterAdminContentSave } from "@/lib/adminInvalidate";
+import { invalidateAdminContentDetail } from "@/lib/adminInvalidate";
 import { useAdminProjectDetail } from "@/lib/adminBusinessContentQueries";
 import { adminStatusLabel, getAdminLang, publishStatusOptions } from "@/lib/adminLocale";
 import AdminProjectImages from "./AdminProjectImages";
@@ -115,6 +117,7 @@ const toStringArray = (value: unknown): string[] =>
   Array.isArray(value) ? value.map((item) => String(item).trim()).filter(Boolean) : [];
 
 export default function AdminProjectEditor() {
+  const { protectSubmission, isSubmitting } = useSubmissionLock();
   const language = getAdminLang();
   const A = useCallback((key: AdminProjectEditorTextKey): string => adminProjectEditorText[key][language], [language]);
   const formatA = useCallback(
@@ -131,7 +134,7 @@ export default function AdminProjectEditor() {
   const [slugError, setSlugError] = useState<string>("");
   const [saveBusy, setSaveBusy] = useState(false);
 
-  const { data: loaded, isLoading, isError, error: loadError } = useAdminProjectDetail(isNew ? undefined : id);
+  const { data: loaded, isLoading, isInitialError: isError, error: loadError } = useAdminProjectDetail(isNew ? undefined : id);
 
   const loadedRecord = useMemo<ProjectRecord | undefined>(() => {
     if (isNew || !loaded) return isNew ? empty : undefined;
@@ -146,12 +149,12 @@ export default function AdminProjectEditor() {
     };
   }, [isNew, loaded]);
 
-  const { state: record, setForm: setRecord, applyRemote, dirty } = useAdminFormState<ProjectRecord>(loadedRecord, {
+  const { state: record, setForm: setRecord, applyRemote, dirty, isDirty } = useAdminFormState<ProjectRecord>(loadedRecord, {
     resetKey: id ?? "new",
     initial: empty,
   });
   const englishMissing = hasAnyMissingEnglish(record as unknown as Record<string, unknown>, projectEnglishFields);
-  useUnsavedChangesWarning(dirty && !saveBusy);
+  useUnsavedChangesWarning((dirty || saveBusy) || isSubmitting);
 
   useEffect(() => {
     if (!isError || !loadError) return;
@@ -190,7 +193,7 @@ export default function AdminProjectEditor() {
     return `/${lang}/projects/${slug}`;
   }, [record.slug]);
 
-  const save = async (nextStatus?: ProjectRecord["status"], generateEnglish?: boolean, forceEnglish?: boolean) => {
+  const save = protectSubmission("save", async (nextStatus?: ProjectRecord["status"], generateEnglish?: boolean, forceEnglish?: boolean) => {
     if (!hasProjectBackendConfig()) return;
     const slug = normalizeProjectSlug(record.slug || record.title_zh);
     if (!slug) {
@@ -218,12 +221,11 @@ export default function AdminProjectEditor() {
     }
 
     const { saved, savedId } = savedResult;
-    applyRemote({ ...record, ...saved, id: savedId, slug: savedResult.slug, status: savedResult.status });
+    applyRemote({ ...record, ...saved, id: savedId, slug: savedResult.slug, status: savedResult.status }, record);
     toast({ title: A("saved") });
-    await invalidateAfterAdminContentSave(queryClient);
     setSaveBusy(false);
 
-    if (isNew) navigate(`/admin/projects/${savedId}`, { replace: true });
+    if (isNew) navigateAfterSave(isDirty, () => navigate(`/admin/projects/${savedId}`, { replace: true }));
 
     if (generateEnglish) {
       try {
@@ -235,7 +237,7 @@ export default function AdminProjectEditor() {
         toast({ title: A("savedGenerateFailed"), description, variant: "destructive" });
       }
     }
-  };
+  });
 
   const forceRegenerateEnglish = async () => {
     const confirmed = await adminConfirm({

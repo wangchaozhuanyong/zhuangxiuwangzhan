@@ -100,6 +100,13 @@ export function SmartImage({
   const imageState = state.sourceKey === sourceKey &&
     (!state.currentSrc || !selectedSrc || state.currentSrc === selectedSrc)
     ? state.status : "loading";
+  const [slowSource, setSlowSource] = React.useState<string | null>(null);
+  React.useEffect(() => {
+    if (!framed || imageState !== "loading") return;
+    const timer = window.setTimeout(() => setSlowSource(sourceKey), PUBLIC_MOTION.timeout);
+    return () => window.clearTimeout(timer);
+  }, [framed, imageState, sourceKey]);
+  const slowImage = imageState === "loading" && slowSource === sourceKey;
 
   React.useLayoutEffect(() => {
     const img = imgRef.current;
@@ -202,9 +209,9 @@ export function SmartImage({
     <span className="smart-image-frame" data-image-ready={imageState === "loaded" || undefined}>
       {previous ? <img src={previous} alt="" aria-hidden="true" className={cn("smart-image-previous", className)} style={rest.style} /> : null}
       {selectedImage}
-      {imageState === "error" ? (
-        <span className="smart-image-failure" role="alert">
-          <span lang="zh-CN">图片加载失败</span><span lang="en">Image unavailable</span>
+      {imageState === "error" || slowImage ? (
+        <span className={cn("smart-image-failure", slowImage && "smart-image-slow")} role={slowImage ? "status" : "alert"}>
+          <span lang="zh-CN">{slowImage ? "图片加载较慢" : "图片加载失败"}</span><span lang="en">{slowImage ? "Image loading slowly" : "Image unavailable"}</span>
           <button type="button" onClick={(event) => { event.preventDefault(); event.stopPropagation(); setRetry(Date.now()); }}><span lang="zh-CN">重试</span><span lang="en">Retry</span></button>
         </span>
       ) : null}

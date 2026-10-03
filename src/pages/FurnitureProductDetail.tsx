@@ -39,7 +39,7 @@ export default function FurnitureProductDetail() {
     </main>
   );
 
-  if (!product && managedQuery.isError) return (
+  if (!product && managedQuery.isInitialError) return (
     <main className="fc-route-page fc-furniture-page">
       <PageMeta title={copy.title} description={copy.metaDescription} canonicalPath={`/furniture/product/${slug || ""}`} noIndex />
       <div className="fc-furniture-not-found" role="alert">

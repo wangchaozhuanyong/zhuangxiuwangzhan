@@ -52,7 +52,9 @@
     "content:materials:dry-run": "node scripts/publish-material-catalog.mjs",
     "content:trust-fixes": "node scripts/publish-content-trust-fixes.mjs",
     "content:service-area-publish": "node scripts/publish-service-area-content.mjs",
-    "test:watch": "vitest"
+    "test:watch": "vitest",
+    "verify:interaction-standards": "node scripts/verify-interaction-standards.mjs",
+    "verify:interaction-quality": "npm run typecheck && npm run typecheck:strict-core && npm run lint && npm run arch:check && npm run verify:admin-foundation && npm run verify:interaction-standards && npm run i18n:check && npm run ui:text-check && npm test"
   },
   "dependencies": {
     "@gsap/react": "^2.1.2",

@@ -1,12 +1,11 @@
 import { lazy, Suspense, useEffect, useRef, useState, type MouseEvent, type ReactNode } from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, useLocation, useNavigate } from "react-router-dom";
+import { createBrowserRouter, RouterProvider, Routes, useLocation, useNavigate } from "react-router-dom";
 import { HelmetProvider } from "react-helmet-async";
 import { LanguageProvider, useLanguage } from "@/i18n/LanguageContext";
 import { SchemeAFooter, SchemeAFooterPrelude, SchemeANavbar } from "@/components/scheme-a/SchemeAPublicChrome";
 import DynamicBrandHead from "@/components/DynamicBrandHead";
 import MobileBottomDock from "@/components/MobileBottomDock";
-import PublicUpdateNotice from "@/components/PublicUpdateNotice";
 import { AppErrorBoundary } from "@/components/AppErrorBoundary";
 import { PublicChromeProvider, usePublicChrome } from "@/contexts/PublicChromeContext";
 import { getLanguageFromPath, stripLanguagePrefix } from "@/i18n/routes";
@@ -14,7 +13,7 @@ import { adminRouteText } from "@/i18n/adminRouteText";
 import { createPublicPageViewLifecycle } from "@/lib/analytics";
 import { createAnalyticsRouterWindow } from "@/lib/analyticsRouterWindow";
 import { recordWebsiteVisit } from "@/lib/websiteVisits";
-import { getAdminLang } from "@/lib/adminLocale";
+import { getAdminLang } from "@/lib/adminPreferences";
 import { focusElementByIdWhenReady } from "@/lib/instantScroll";
 import { BOTTOM_NAV_SCROLL_INTENT, isFurnitureListingPath } from "@/lib/publicScrollRestoration";
 import { publicRoutes } from "@/routes/publicRoutes";
@@ -24,11 +23,16 @@ import FurnitureFloatingLink from "@/components/FurnitureFloatingLink";
 import PublicRoutePrefetch from "@/components/PublicRoutePrefetch";
 import { publicMotionStyle } from "@/lib/publicMotion";
 import ScrollToTop from "./components/ScrollToTop";
+import NavigationProtectionProvider from "@/components/NavigationProtectionProvider";
+import { INTERACTION_POLICY } from "@/lib/interactionPolicy";
+import QueryInvalidationBridge from "@/components/QueryInvalidationBridge";
+import RouteReadFeedback from "@/components/RouteReadFeedback";
 
 const AdminRouteTree = lazy(() => import("@/routes/AdminRouteTree"));
 const AdminLoginPage = lazy(() => import("@/pages/admin/AdminLogin"));
 const AdminUiProviders = lazy(() => import("@/components/admin/AdminUiProviders"));
 const PublicCinematicMotion = lazy(() => import("@/components/PublicCinematicMotion"));
+const PublicUpdateNotice = lazy(() => import("@/components/PublicUpdateNotice"));
 
 const PublicCinematicMotionGate = () => {
   const [shouldLoadMotion, setShouldLoadMotion] = useState(false);
@@ -86,13 +90,16 @@ const PublicCinematicMotionGate = () => {
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
-      staleTime: 2 * 60 * 1000,
-      gcTime: 30 * 60 * 1000,
+      staleTime: INTERACTION_POLICY.defaultStaleTime,
+      gcTime: INTERACTION_POLICY.gcTime,
       refetchOnWindowFocus: false,
       retry: 1,
     },
+    mutations: { retry: false },
   },
 });
+queryClient.setQueryDefaults(["published"], { staleTime: INTERACTION_POLICY.publicStaleTime, refetchOnWindowFocus: true });
+queryClient.setQueryDefaults(["admin"], { refetchOnWindowFocus: true });
 
 const PageLoader = () => {
   const { language } = useLanguage();
@@ -230,6 +237,8 @@ const AppShell = () => {
       mobileActionBarMode={isAdminRoute ? "hidden" : "scroll-up"}
     >
       <DynamicBrandHead />
+      <QueryInvalidationBridge />
+      <RouteReadFeedback surface={isAdminRoute ? "admin" : "public"} />
       <ScrollToTop />
       {!isAdminRoute && (
         <a href="#main-content" onClick={handleSkipToMainContent} className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[100] focus:rounded-md focus:bg-background focus:px-4 focus:py-2 focus:text-sm focus:font-semibold focus:text-foreground focus:shadow-lg">
@@ -266,7 +275,7 @@ const AppShell = () => {
               <SchemeAFooter />
             </PublicRouteImageGate>
             <FurnitureFloatingLink />
-            <PublicUpdateNotice />
+            <AppErrorBoundary isAdminRoute={false}><Suspense fallback={null}><PublicUpdateNotice /></Suspense></AppErrorBoundary>
             <MobileBottomDock />
           </PublicPageFrame>
         </PublicSiteShell>
@@ -275,14 +284,13 @@ const AppShell = () => {
   );
 };
 
+const appRouter = createBrowserRouter([{ path: "*", element: <NavigationProtectionProvider><AnalyticsRouteTracker /><AppShell /></NavigationProtectionProvider> }], { window: analyticsRouterWindow });
+
 const App = () => (
   <LanguageProvider>
     <HelmetProvider>
       <QueryClientProvider client={queryClient}>
-        <BrowserRouter window={analyticsRouterWindow}>
-          <AnalyticsRouteTracker />
-          <AppShell />
-        </BrowserRouter>
+        <RouterProvider router={appRouter} />
       </QueryClientProvider>
     </HelmetProvider>
   </LanguageProvider>

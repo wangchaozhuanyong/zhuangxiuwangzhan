@@ -1,5 +1,6 @@
+import { useInteractionQuery as useQuery } from "@/hooks/useInteractionQuery";
 import { useCallback } from "react";
-import { keepPreviousData, useQuery } from "@tanstack/react-query";
+import { keepPreviousData } from "@tanstack/react-query";
 import {
   adminContentHealthCoreText,
   adminContentHealthFieldLabels,
@@ -286,11 +287,11 @@ export function useAdminContentHealth(options: { enabled?: boolean } = {}) {
     staleTime: ADMIN_HEAVY_STALE_TIME,
     gcTime: ADMIN_QUERY_GC_TIME,
     select,
-    queryFn: async (): Promise<HealthSourceRows[]> => {
+    queryFn: async ({ signal }): Promise<HealthSourceRows[]> => {
       return Promise.all(
         healthSources.map(async (source) => {
           try {
-            const rows = await fetchAdminContentHealthRows(source.table, healthSelectFields(source));
+            const rows = await fetchAdminContentHealthRows(source.table, healthSelectFields(source), signal);
             return { source, rows };
           } catch {
             return { source, rows: null };

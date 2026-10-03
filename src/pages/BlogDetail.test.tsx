@@ -13,7 +13,7 @@ const state = vi.hoisted(() => ({
 }));
 vi.mock("@/i18n/LanguageContext", () => ({ useLanguage: () => ({ language: "zh" }) }));
 vi.mock("@/hooks/usePublishedContent", () => ({
-  usePublishedBlogPostBySlug: () => ({ data: state.post, isPending: state.pending, isError: state.error, isFetching: state.pending, refetch: vi.fn() }),
+  usePublishedBlogPostBySlug: () => ({ data: state.post, isPending: state.pending, isError: state.error, isInitialError: state.error, isFetching: state.pending, refetch: vi.fn() }),
   usePublishedBlogPosts: () => ({ data: state.posts }),
 }));
 vi.mock("@/hooks/useSiteSettings", () => ({ useSiteSettings: () => ({ whatsapp_url: () => "https://wa.me/601128853888" }) }));

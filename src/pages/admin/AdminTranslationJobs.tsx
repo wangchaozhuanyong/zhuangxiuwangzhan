@@ -1,3 +1,6 @@
+import { useUnsavedChangesWarning } from "@/hooks/useUnsavedChangesWarning";
+import { useSubmissionLock } from "@/hooks/useSubmissionLock";
+import { useAdminListingState } from "@/hooks/useAdminListingState";
 import { useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { useQueryClient } from "@tanstack/react-query";
@@ -50,13 +53,18 @@ const buildRecordEditHref = (table: string | null, id: string | null) => {
 };
 
 const AdminTranslationJobs = () => {
+  const { protectSubmission, isSubmitting } = useSubmissionLock();
+  useUnsavedChangesWarning(isSubmitting);
   const lang = getAdminLang();
   const t = adminTranslationJobsText[lang];
   const queryClient = useQueryClient();
   const { data: jobs = [], isFetching, error, refetch } = useAdminTranslationJobs();
-  const [search, setSearch] = useState("");
-  const [statusFilter, setStatusFilter] = useState("all");
-  const [failureGroupFilter, setFailureGroupFilter] = useState("all");
+  const list = useAdminListingState();
+  const { search, setSearch } = list;
+  const statusFilter = list.filter("status");
+  const setStatusFilter = (value: string) => list.setFilter("status", value);
+  const failureGroupFilter = list.filter("failure");
+  const setFailureGroupFilter = (value: string) => list.setFilter("failure", value);
   const [retryingId, setRetryingId] = useState<string | null>(null);
   const [retryAllBusy, setRetryAllBusy] = useState(false);
   const [retryAllProgress, setRetryAllProgress] = useState<{ total: number; done: number; failed: number } | null>(null);
@@ -103,7 +111,7 @@ const AdminTranslationJobs = () => {
     ]);
   };
 
-  const retryJob = async (job: (typeof jobs)[number]) => {
+  const retryJob = protectSubmission("translation-retry", async (job: (typeof jobs)[number]) => {
     if (!job.table_name || !job.record_id) {
       toast({ title: t.retryBlocked, variant: "destructive" });
       return;
@@ -119,9 +127,9 @@ const AdminTranslationJobs = () => {
       toast({ title: t.retryFailureTitle, description: formatGenerationError(retryError), variant: "destructive" });
       return;
     }
-  };
+  });
 
-  const retryAllFailed = async () => {
+  const retryAllFailed = protectSubmission("translation-retry", async () => {
     if (!isSupabaseConfigured) return;
     const targets = failedJobs.filter((job) => job.table_name && job.record_id);
     if (!targets.length) {
@@ -150,7 +158,7 @@ const AdminTranslationJobs = () => {
     setRetryAllBusy(false);
     toast({ title: formatText(t.retryAllFinished, { success: targets.length - failed, failed }) });
     await refreshJobs();
-  };
+  });
 
   return (
     <div className="space-y-6">

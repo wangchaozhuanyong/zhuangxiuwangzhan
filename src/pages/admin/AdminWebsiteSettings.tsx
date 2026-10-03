@@ -1,5 +1,6 @@
+import { useInteractionQuery as useQuery } from "@/hooks/useInteractionQuery";
 import { useState } from "react";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQueryClient } from "@tanstack/react-query";
 import AdminPageHeader from "@/components/admin/AdminPageHeader";
 import { useAdminFormState } from "@/hooks/useAdminFormState";
 import { useUnsavedChangesWarning } from "@/hooks/useUnsavedChangesWarning";
@@ -7,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { fetchSiteSettings, fallbackSiteSettings, type SiteSettings } from "@/lib/siteSettingsApi";
-import { invalidateSiteSettings } from "@/lib/adminInvalidate";
+
 import { formatAdminMutationError, saveAdminRecord } from "@/lib/adminMutation";
 import { geocodeAddress } from "@/lib/geocodeApi";
 import AdminImageUpload, { getAdminImagePreviewVariant } from "./AdminImageUpload";
@@ -57,7 +58,7 @@ const AdminWebsiteSettings = () => {
   const queryClient = useQueryClient();
   const { data: remoteSettings, isFetched } = useQuery({
     queryKey: ["site-settings"],
-    queryFn: fetchSiteSettings,
+    queryFn: ({ signal }) => fetchSiteSettings(signal),
   });
   const { state: settings, setForm: setSettings, applyRemote, dirty } = useAdminFormState<SiteSettings>(
     isFetched ? remoteSettings ?? fallbackSiteSettings : undefined,
@@ -65,7 +66,7 @@ const AdminWebsiteSettings = () => {
   );
   const [status, setStatus] = useState("");
   const [saving, setSaving] = useState(false);
-  useUnsavedChangesWarning(dirty && !saving);
+  useUnsavedChangesWarning(dirty || saving);
 
   const updateField = (key: keyof SiteSettings, value: string) => {
     setSettings((current) => ({ ...current, [key]: value }));
@@ -128,9 +129,8 @@ const AdminWebsiteSettings = () => {
         queryClient,
         invalidate: "published",
       });
-      await invalidateSiteSettings(queryClient);
       const fresh = { ...fallbackSiteSettings, ...saved };
-      applyRemote(fresh);
+      applyRemote(fresh, settings);
       if (geocodeStatus === "updated") {
         setStatus(t.savedGeocodeUpdated);
       } else if (geocodeStatus === "failed") {

@@ -1,4 +1,7 @@
-import { useDeferredValue, useEffect, useState } from "react";
+import { useUnsavedChangesWarning } from "@/hooks/useUnsavedChangesWarning";
+import { useAdminListingState } from "@/hooks/useAdminListingState";
+import { useSubmissionLock } from "@/hooks/useSubmissionLock";
+import { useState } from "react";
 import AdminPageHeader from "@/components/admin/AdminPageHeader";
 import AdminListPager from "@/components/admin/AdminListPager";
 import AdminAlert from "@/components/admin/AdminAlert";
@@ -51,6 +54,7 @@ const statusClassName: Record<ReturnType<typeof getMediaPerformanceStatus>["tone
 type AdminMediaLibraryTextKey = keyof typeof adminMediaLibraryText;
 
 const AdminMediaLibrary = () => {
+  const { protectSubmission, isSubmitting } = useSubmissionLock();
   const language = getAdminLang();
   const A = (key: AdminMediaLibraryTextKey) => adminMediaLibraryText[key][language];
   const formatA = (key: AdminMediaLibraryTextKey, values: Record<string, string>) =>
@@ -58,26 +62,25 @@ const AdminMediaLibrary = () => {
   const usageLabel = (item: UsageType) => adminMediaUsageTypeLabels[item][language];
   const resolveUsageLabel = (value?: string | null) =>
     usageTypes.includes(value as UsageType) ? usageLabel(value as UsageType) : value || A("generic");
-  const [usageType, setUsageType] = useState<UsageType>("all");
-  const [search, setSearch] = useState("");
-  const [page, setPage] = useState(0);
-  const deferredSearch = useDeferredValue(search);
-  const { data, error, isFetching } = useAdminMediaAssets({ page, usageType, search: deferredSearch });
+  const list = useAdminListingState();
+  const { search, setSearch, deferredSearch, page, setPage } = list;
+  const usageType = list.filter("usage") as UsageType;
+  const setUsageType = (value: UsageType) => list.setFilter("usage", value);
+
+  const { data, error, isFetching, isPlaceholderData } = useAdminMediaAssets({ page, usageType, search: deferredSearch });
   const assets = data?.rows ?? [];
   const total = data?.count ?? 0;
   const pageSize = data?.pageSize ?? 30;
   const [editing, setEditing] = useState<AdminMediaAsset | null>(null);
+  useUnsavedChangesWarning(!!editing || isSubmitting);
   const [assetToDelete, setAssetToDelete] = useState<AdminMediaAsset | null>(null);
   const [message, setMessage] = useState("");
   const createMutation = useCreateAdminMediaAsset();
   const updateMutation = useUpdateAdminMediaAsset();
   const deleteMutation = useDeleteAdminMediaAsset();
 
-  useEffect(() => {
-    setPage(0);
-  }, [deferredSearch, usageType]);
 
-  const createAsset = async (url: string, upload?: AdminUploadedMedia) => {
+  const createAsset = protectSubmission("createAsset", async (url: string, upload?: AdminUploadedMedia) => {
     setMessage("");
     try {
       await createMutation.mutateAsync({
@@ -90,21 +93,21 @@ const AdminMediaLibrary = () => {
     } catch (e) {
       setMessage(formatAdminMutationError(e));
     }
-  };
+  });
 
-  const saveAsset = async () => {
+  const saveAsset = protectSubmission("saveAsset", async () => {
     if (!editing) return;
     setMessage("");
     try {
       await updateMutation.mutateAsync(editing);
-      setEditing(null);
+      setEditing((current) => JSON.stringify(current) === JSON.stringify(editing) ? null : current);
       toast({ title: A("saved") });
     } catch (e) {
       setMessage(formatAdminMutationError(e));
     }
-  };
+  });
 
-  const deleteAsset = async () => {
+  const deleteAsset = protectSubmission("deleteAsset", async () => {
     if (!assetToDelete) return;
     setMessage("");
     try {
@@ -114,7 +117,7 @@ const AdminMediaLibrary = () => {
     } catch (e) {
       setMessage(formatAdminMutationError(e));
     }
-  };
+  });
 
   const copyAssetUrl = async (url: string) => {
     try {
@@ -178,7 +181,7 @@ const AdminMediaLibrary = () => {
       {initialLoading ? (
         <AdminLoadingState />
       ) : (
-      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+      <div ref={(node) => node?.toggleAttribute("inert", isPlaceholderData)} aria-busy={isPlaceholderData} className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
         {assets.map((asset) => {
           const kind = inferMediaKind({ mimeType: asset.mime_type, url: asset.file_url });
           const status = getMediaPerformanceStatus(asset);

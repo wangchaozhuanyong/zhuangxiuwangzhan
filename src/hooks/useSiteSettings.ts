@@ -1,5 +1,6 @@
+import { useInteractionQuery as useQuery } from "@/hooks/useInteractionQuery";
 import { useMemo } from "react";
-import { useIsFetching, useQuery } from "@tanstack/react-query";
+import { useIsFetching } from "@tanstack/react-query";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { fetchSiteSettings, fallbackSiteSettings, resolveSiteSettings, type SiteSettings } from "@/lib/siteSettingsApi";
 
@@ -14,9 +15,9 @@ export const useSiteSettings = () => {
   const { language } = useLanguage();
   const { data: settings = fallbackSiteSettings } = useQuery<SiteSettings>({
     queryKey: ["site-settings"],
-    queryFn: async () => {
+    queryFn: async ({ signal }) => {
       try {
-        return await fetchSiteSettings();
+        return await fetchSiteSettings(signal);
       } catch {
         return fallbackSiteSettings;
       }

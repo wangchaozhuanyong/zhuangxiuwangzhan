@@ -1,4 +1,5 @@
 import type { CSSProperties } from "react";
+import { INTERACTION_POLICY } from "@/lib/interactionPolicy";
 
 /** Shared public interaction timings. CSS reads the matching custom properties. */
 export const PUBLIC_MOTION = {
@@ -9,8 +10,8 @@ export const PUBLIC_MOTION = {
   menuClose: 180,
   control: 180,
   hover: 220,
-  feedbackDelay: 180,
-  timeout: 5000,
+  feedbackDelay: INTERACTION_POLICY.feedbackDelay,
+  timeout: INTERACTION_POLICY.recoveryDelay,
   scroll: 320,
   easing: "cubic-bezier(0.22, 1, 0.36, 1)",
 } as const;

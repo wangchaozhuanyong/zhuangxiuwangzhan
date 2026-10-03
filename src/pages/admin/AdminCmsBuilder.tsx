@@ -1,5 +1,10 @@
+import { confirmProtectedNavigation } from "@/lib/navigationProtection";
+import { useAdminFormState } from "@/hooks/useAdminFormState";
+import { useSubmissionLock } from "@/hooks/useSubmissionLock";
+import { useUnsavedChangesWarning } from "@/hooks/useUnsavedChangesWarning";
+import { useInteractionQuery as useQuery } from "@/hooks/useInteractionQuery";
 import { useEffect, useMemo, useState } from "react";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQueryClient } from "@tanstack/react-query";
 import { AlertTriangle, ArrowDown, ArrowUp, ExternalLink, Globe2, GripVertical, Info, Plus, RotateCcw, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -49,16 +54,19 @@ const formatA = (key: AdminCmsBuilderTextKey, values: Record<string, string>) =>
   Object.entries(values).reduce((text, [name, value]) => text.replaceAll(`{${name}}`, value), A(key));
 
 export default function AdminCmsBuilder() {
+  const { protectSubmission, isSubmitting } = useSubmissionLock();
   const queryClient = useQueryClient();
   const adminLang = getAdminLang();
   const [message, setMessage] = useState("");
   const [selectedPageId, setSelectedPageId] = useState<string | null>(null);
-  const [pageDraft, setPageDraft] = useState<CmsPage>(emptyPage);
-  const [sectionDraft, setSectionDraft] = useState<CmsSection | null>(null);
-  const [contentZhText, setContentZhText] = useState("{}");
-  const [contentEnText, setContentEnText] = useState("{}");
-  const [settingsText, setSettingsText] = useState("{}");
-  const [dirty, setDirty] = useState(false);
+  const pageForm = useAdminFormState<CmsPage>(undefined, { initial: emptyPage });
+  const { state: pageDraft, setForm: setPageDraft, isDirty: isPageDirty, applyRemote: applyPageRemote } = pageForm;
+  const sectionForm = useAdminFormState(undefined, { initial: { sectionDraft: null as CmsSection | null, contentZhText: "{}", contentEnText: "{}", settingsText: "{}" } });
+  const [sectionDraft, setSectionDraft] = sectionForm.field("sectionDraft");
+  const [contentZhText, setContentZhText] = sectionForm.field("contentZhText");
+  const [contentEnText, setContentEnText] = sectionForm.field("contentEnText");
+  const [settingsText, setSettingsText] = sectionForm.field("settingsText");
+  const dirty = pageForm.dirty || sectionForm.dirty;
   const [saving, setSaving] = useState(false);
   const [sectionOrder, setSectionOrder] = useState<string[]>([]);
   const [draggingSectionId, setDraggingSectionId] = useState<string | null>(null);
@@ -74,38 +82,30 @@ export default function AdminCmsBuilder() {
     [adminLang],
   );
 
-  useEffect(() => {
-    if (!dirty) return;
-    const onBeforeUnload = (event: BeforeUnloadEvent) => {
-      event.preventDefault();
-      event.returnValue = "";
-    };
-    window.addEventListener("beforeunload", onBeforeUnload);
-    return () => window.removeEventListener("beforeunload", onBeforeUnload);
-  }, [dirty]);
+  useUnsavedChangesWarning((dirty || saving || reordering) || isSubmitting);
 
   const pagesQuery = useQuery({
     queryKey: ["admin", "cms_pages"],
     enabled: isSupabaseConfigured,
-    queryFn: loadAdminCmsPages,
+    queryFn: ({ signal }) => loadAdminCmsPages(signal),
   });
 
   const templatesQuery = useQuery({
     queryKey: ["admin", "cms_section_templates"],
     enabled: isSupabaseConfigured,
-    queryFn: loadAdminCmsSectionTemplates,
+    queryFn: ({ signal }) => loadAdminCmsSectionTemplates(signal),
   });
 
   const sectionsQuery = useQuery({
     queryKey: ["admin", "cms_sections", selectedPageId],
     enabled: isSupabaseConfigured && Boolean(selectedPageId),
-    queryFn: () => loadAdminCmsSections(selectedPageId!),
+    queryFn: ({ signal }) => loadAdminCmsSections(selectedPageId!, signal),
   });
 
   const revisionsQuery = useQuery({
     queryKey: ["admin", "cms_revisions", selectedPageId],
     enabled: isSupabaseConfigured && Boolean(selectedPageId),
-    queryFn: () => loadAdminCmsRevisions(selectedPageId!, sectionsQuery.data || []),
+    queryFn: ({ signal }) => loadAdminCmsRevisions(selectedPageId!, sectionsQuery.data || [], signal),
   });
 
   const pages = useMemo(() => pagesQuery.data || [], [pagesQuery.data]);
@@ -147,32 +147,32 @@ export default function AdminCmsBuilder() {
 
   useEffect(() => {
     if (selectedPage) {
-      setPageDraft(selectedPage);
-      setDirty(false);
+      if (!isPageDirty()) applyPageRemote(selectedPage);
     }
-  }, [selectedPage]);
+  }, [selectedPage, applyPageRemote, isPageDirty]);
 
   useEffect(() => {
     setSectionOrder(sections.map((section) => section.id).filter(Boolean) as string[]);
   }, [sections]);
 
-  const selectSection = (section: CmsSection) => {
-    setSectionDraft(section);
-    setContentZhText(prettyJson(section.content_zh));
-    setContentEnText(prettyJson(section.content_en));
-    setSettingsText(prettyJson(section.settings));
-    setDirty(false);
+  const selectSection = async (section: CmsSection) => {
+    if (sectionForm.isDirty() && !await confirmProtectedNavigation()) return;
+    sectionForm.applyRemote({ sectionDraft: section, contentZhText: prettyJson(section.content_zh), contentEnText: prettyJson(section.content_en), settingsText: prettyJson(section.settings) });
   };
 
-  const newPage = () => {
+  const newPage = async () => {
+    if (!await confirmProtectedNavigation()) return;
+    pageForm.applyRemote(emptyPage);
+    sectionForm.applyRemote({ sectionDraft: null, contentZhText: "{}", contentEnText: "{}", settingsText: "{}" });
     setSelectedPageId(null);
     setPageDraft(createCmsPageDraft(pages.length));
     setSectionDraft(null);
-    setDirty(true);
+
     setMessage(A("newPageMessage"));
   };
 
-  const newSection = () => {
+  const newSection = async () => {
+    if (sectionForm.isDirty() && !await confirmProtectedNavigation()) return;
     if (!selectedPageId) {
       setMessage(A("sectionNeedsPageMessage"));
       return;
@@ -194,10 +194,10 @@ export default function AdminCmsBuilder() {
     setContentZhText("{}");
     setContentEnText("{}");
     setSettingsText("{}");
-    setDirty(true);
+
   };
 
-  const savePage = async () => {
+  const savePage = protectSubmission("savePage", async () => {
     if (saving) return;
     setSaving(true);
     try {
@@ -218,17 +218,17 @@ export default function AdminCmsBuilder() {
       });
       setMessage(A("pageSavedMessage"));
       setSelectedPageId(saved.id || null);
-      setPageDraft(saved);
-      setDirty(false);
-      await queryClient.invalidateQueries({ queryKey: ["admin", "cms_pages"] });
+      pageForm.applyRemote(saved, pageDraft);
+
+
     } catch (error) {
       setMessage(formatAdminMutationError(error));
     } finally {
       setSaving(false);
     }
-  };
+  });
 
-  const saveSection = async () => {
+  const saveSection = protectSubmission("saveSection", async () => {
     if (!sectionDraft || saving) return;
     setSaving(true);
     try {
@@ -249,16 +249,16 @@ export default function AdminCmsBuilder() {
         invalidate: "admin-content",
       });
       setMessage(A("sectionSavedMessage"));
-      selectSection(saved);
-      await queryClient.invalidateQueries({ queryKey: ["admin", "cms_sections", selectedPageId] });
+      sectionForm.applyRemote({ sectionDraft: saved, contentZhText: prettyJson(saved.content_zh), contentEnText: prettyJson(saved.content_en), settingsText: prettyJson(saved.settings) }, { sectionDraft, contentZhText, contentEnText, settingsText });
+
     } catch (error) {
       setMessage(formatAdminMutationError(error));
     } finally {
       setSaving(false);
     }
-  };
+  });
 
-  const persistSectionOrder = async (nextSections: CmsSection[]) => {
+  const persistSectionOrder = protectSubmission("persistSectionOrder", async (nextSections: CmsSection[]) => {
     if (!reorderPermission.allowed) {
       setMessage(reorderPermission.reason);
       return;
@@ -293,12 +293,12 @@ export default function AdminCmsBuilder() {
       ]);
     } catch (error) {
       setMessage(formatAdminMutationError(error));
-      await queryClient.invalidateQueries({ queryKey: ["admin", "cms_sections", selectedPageId] });
+
     } finally {
       setReordering(false);
       setDraggingSectionId(null);
     }
-  };
+  });
 
   const reorderSectionById = (sourceId: string, targetId: string) => {
     if (sourceId === targetId) return;
@@ -324,7 +324,7 @@ export default function AdminCmsBuilder() {
     void persistSectionOrder(nextSections);
   };
 
-  const archivePage = async () => {
+  const archivePage = protectSubmission("archivePage", async () => {
     if (!pageDraft.id) return;
     const confirmed = await adminConfirm({
       title: A("archivePageDialogTitle"),
@@ -336,13 +336,13 @@ export default function AdminCmsBuilder() {
       await archiveOrDeleteAdminRecord({ table: "cms_pages", id: pageDraft.id, expectedUpdatedAt: pageDraft.updated_at || null, queryClient });
       setMessage(A("pageArchivedMessage"));
       setSelectedPageId(null);
-      await queryClient.invalidateQueries({ queryKey: ["admin", "cms_pages"] });
+
     } catch (error) {
       setMessage(formatAdminMutationError(error));
     }
-  };
+  });
 
-  const archiveSection = async (section: CmsSection) => {
+  const archiveSection = protectSubmission("archiveSection", async (section: CmsSection) => {
     if (!section.id) return;
     const confirmed = await adminConfirm({
       title: A("archiveSectionDialogTitle"),
@@ -354,13 +354,13 @@ export default function AdminCmsBuilder() {
       await archiveOrDeleteAdminRecord({ table: "cms_sections", id: section.id, expectedUpdatedAt: section.updated_at || null, queryClient });
       setMessage(A("sectionArchivedMessage"));
       setSectionDraft(null);
-      await queryClient.invalidateQueries({ queryKey: ["admin", "cms_sections", selectedPageId] });
+
     } catch (error) {
       setMessage(formatAdminMutationError(error));
     }
-  };
+  });
 
-  const restoreRevision = async (revision: CmsRevision) => {
+  const restoreRevision = protectSubmission("restoreRevision", async (revision: CmsRevision) => {
     const confirmed = await adminConfirm({
       title: A("restoreDialogTitle"),
       description: A("restoreDialogDescription"),
@@ -388,7 +388,7 @@ export default function AdminCmsBuilder() {
     } catch (error) {
       setMessage(formatAdminMutationError(error));
     }
-  };
+  });
 
   if (!isSupabaseConfigured) {
     return <AdminEmptyState title={A("supabaseMissingTitle")} description={A("supabaseMissingDescription")} />;
@@ -423,7 +423,7 @@ export default function AdminCmsBuilder() {
             <button
               type="button"
               key={page.id}
-              onClick={() => setSelectedPageId(page.id || null)}
+              onClick={async () => { if (!await confirmProtectedNavigation()) return; pageForm.applyRemote(page); sectionForm.applyRemote({ sectionDraft: null, contentZhText: "{}", contentEnText: "{}", settingsText: "{}" }); setSelectedPageId(page.id || null); }}
               className={`w-full rounded-lg border p-3 text-left transition ${selectedPageId === page.id ? "border-accent bg-accent/10" : "border-border bg-background hover:bg-muted"}`}
             >
               <div className="flex min-w-0 items-center justify-between gap-3">
@@ -490,11 +490,11 @@ export default function AdminCmsBuilder() {
           <div className="grid gap-4 md:grid-cols-2">
             <div>
               <AdminFieldLabel label={A("pageKeyLabel")} help={A("pageKeyHelp")} />
-              <Input value={pageDraft.page_key} onChange={(event) => { setDirty(true); setPageDraft((page) => ({ ...page, page_key: event.target.value })); }} />
+              <Input value={pageDraft.page_key} onChange={(event) => {  setPageDraft((page) => ({ ...page, page_key: event.target.value })); }} />
             </div>
             <div>
               <AdminFieldLabel label={A("pathLabel")} help={A("pathHelp")} />
-              <Input value={pageDraft.path} onChange={(event) => { setDirty(true); setPageDraft((page) => ({ ...page, path: event.target.value })); }} />
+              <Input value={pageDraft.path} onChange={(event) => {  setPageDraft((page) => ({ ...page, path: event.target.value })); }} />
               <div className="mt-2 grid gap-2 text-xs sm:grid-cols-2">
                 <div className="rounded-lg border border-border bg-muted/30 px-3 py-2">
                   <span className="text-muted-foreground">{A("zhAddressLabel")}</span>
@@ -514,17 +514,17 @@ export default function AdminCmsBuilder() {
             </div>
             <div>
               <AdminFieldLabel label={A("zhTitleLabel")} help={A("zhTitleHelp")} />
-              <Input value={pageDraft.title_zh || ""} onChange={(event) => { setDirty(true); setPageDraft((page) => ({ ...page, title_zh: event.target.value })); }} />
+              <Input value={pageDraft.title_zh || ""} onChange={(event) => {  setPageDraft((page) => ({ ...page, title_zh: event.target.value })); }} />
             </div>
             <div>
               <AdminFieldLabel label={A("enTitleLabel")} help={A("enTitleHelp")} />
-              <Input value={pageDraft.title_en || ""} onChange={(event) => { setDirty(true); setPageDraft((page) => ({ ...page, title_en: event.target.value })); }} />
+              <Input value={pageDraft.title_en || ""} onChange={(event) => {  setPageDraft((page) => ({ ...page, title_en: event.target.value })); }} />
             </div>
             <div>
               <AdminFieldLabel label={A("statusLabel")} help={A("statusHelp")} />
               <select
                 value={pageDraft.status}
-                onChange={(event) => { setDirty(true); setPageDraft((page) => ({ ...page, status: event.target.value as CmsPage["status"] })); }}
+                onChange={(event) => {  setPageDraft((page) => ({ ...page, status: event.target.value as CmsPage["status"] })); }}
                 className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
               >
                 {publishStatusOptions().map((item) => (
@@ -534,31 +534,31 @@ export default function AdminCmsBuilder() {
             </div>
             <div>
               <AdminFieldLabel label={A("sortLabel")} help={A("sortHelp")} />
-              <Input type="number" value={pageDraft.sort_order} onChange={(event) => { setDirty(true); setPageDraft((page) => ({ ...page, sort_order: Number(event.target.value || 0) })); }} />
+              <Input type="number" value={pageDraft.sort_order} onChange={(event) => {  setPageDraft((page) => ({ ...page, sort_order: Number(event.target.value || 0) })); }} />
             </div>
             <div className="md:col-span-2">
               <AdminFieldLabel label={A("zhSeoTitleLabel")} help={A("zhSeoTitleHelp")} />
-              <Input value={pageDraft.seo_title_zh || ""} onChange={(event) => { setDirty(true); setPageDraft((page) => ({ ...page, seo_title_zh: event.target.value })); }} />
+              <Input value={pageDraft.seo_title_zh || ""} onChange={(event) => {  setPageDraft((page) => ({ ...page, seo_title_zh: event.target.value })); }} />
             </div>
             <div className="md:col-span-2">
               <AdminFieldLabel label={A("enSeoTitleLabel")} help={A("enSeoTitleHelp")} />
-              <Input value={pageDraft.seo_title_en || ""} onChange={(event) => { setDirty(true); setPageDraft((page) => ({ ...page, seo_title_en: event.target.value })); }} />
+              <Input value={pageDraft.seo_title_en || ""} onChange={(event) => {  setPageDraft((page) => ({ ...page, seo_title_en: event.target.value })); }} />
             </div>
             <div className="md:col-span-2">
               <AdminFieldLabel label={A("zhSeoDescriptionLabel")} help={A("zhSeoDescriptionHelp")} />
-              <Textarea rows={3} value={pageDraft.seo_description_zh || ""} onChange={(event) => { setDirty(true); setPageDraft((page) => ({ ...page, seo_description_zh: event.target.value })); }} />
+              <Textarea rows={3} value={pageDraft.seo_description_zh || ""} onChange={(event) => {  setPageDraft((page) => ({ ...page, seo_description_zh: event.target.value })); }} />
             </div>
             <div className="md:col-span-2">
               <AdminFieldLabel label={A("enSeoDescriptionLabel")} help={A("enSeoDescriptionHelp")} />
-              <Textarea rows={3} value={pageDraft.seo_description_en || ""} onChange={(event) => { setDirty(true); setPageDraft((page) => ({ ...page, seo_description_en: event.target.value })); }} />
+              <Textarea rows={3} value={pageDraft.seo_description_en || ""} onChange={(event) => {  setPageDraft((page) => ({ ...page, seo_description_en: event.target.value })); }} />
             </div>
             <div className="md:col-span-2">
               <AdminFieldLabel label={A("zhSeoKeywordsLabel")} help={A("zhSeoKeywordsHelp")} />
-              <Textarea rows={2} value={pageDraft.seo_keywords_zh || ""} onChange={(event) => { setDirty(true); setPageDraft((page) => ({ ...page, seo_keywords_zh: event.target.value })); }} />
+              <Textarea rows={2} value={pageDraft.seo_keywords_zh || ""} onChange={(event) => {  setPageDraft((page) => ({ ...page, seo_keywords_zh: event.target.value })); }} />
             </div>
             <div className="md:col-span-2">
               <AdminFieldLabel label={A("enSeoKeywordsLabel")} help={A("enSeoKeywordsHelp")} />
-              <Textarea rows={2} value={pageDraft.seo_keywords_en || ""} onChange={(event) => { setDirty(true); setPageDraft((page) => ({ ...page, seo_keywords_en: event.target.value })); }} />
+              <Textarea rows={2} value={pageDraft.seo_keywords_en || ""} onChange={(event) => {  setPageDraft((page) => ({ ...page, seo_keywords_en: event.target.value })); }} />
             </div>
           </div>
           <div data-admin-card-actions className="mt-4 flex flex-wrap gap-2">
@@ -672,13 +672,13 @@ export default function AdminCmsBuilder() {
                 <div className="grid gap-4 md:grid-cols-2">
                   <div>
                     <AdminFieldLabel label={A("sectionKeyLabel")} help={A("sectionKeyHelp")} />
-                    <Input value={sectionDraft.section_key} onChange={(event) => { setDirty(true); setSectionDraft((section) => section ? { ...section, section_key: event.target.value } : section); }} />
+                    <Input value={sectionDraft.section_key} onChange={(event) => {  setSectionDraft((section) => section ? { ...section, section_key: event.target.value } : section); }} />
                   </div>
                   <div>
                     <AdminFieldLabel label={A("sectionTypeLabel")} help={A("sectionTypeHelp")} />
                     <select
                       value={sectionDraft.section_type}
-                      onChange={(event) => { setDirty(true); setSectionDraft((section) => section ? { ...section, section_type: event.target.value } : section); }}
+                      onChange={(event) => {  setSectionDraft((section) => section ? { ...section, section_type: event.target.value } : section); }}
                       className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
                     >
                       {cmsSectionTemplates.map((template) => (
@@ -688,17 +688,17 @@ export default function AdminCmsBuilder() {
                   </div>
                   <div>
                     <AdminFieldLabel label={A("zhSectionTitleLabel")} help={A("zhSectionTitleHelp")} />
-                    <Input value={sectionDraft.title_zh || ""} onChange={(event) => { setDirty(true); setSectionDraft((section) => section ? { ...section, title_zh: event.target.value } : section); }} />
+                    <Input value={sectionDraft.title_zh || ""} onChange={(event) => {  setSectionDraft((section) => section ? { ...section, title_zh: event.target.value } : section); }} />
                   </div>
                   <div>
                     <AdminFieldLabel label={A("enSectionTitleLabel")} help={A("enSectionTitleHelp")} />
-                    <Input value={sectionDraft.title_en || ""} onChange={(event) => { setDirty(true); setSectionDraft((section) => section ? { ...section, title_en: event.target.value } : section); }} />
+                    <Input value={sectionDraft.title_en || ""} onChange={(event) => {  setSectionDraft((section) => section ? { ...section, title_en: event.target.value } : section); }} />
                   </div>
                   <div>
                     <AdminFieldLabel label={A("statusLabel")} help={A("statusHelp")} />
                     <select
                       value={sectionDraft.status}
-                      onChange={(event) => { setDirty(true); setSectionDraft((section) => section ? { ...section, status: event.target.value as CmsSection["status"] } : section); }}
+                      onChange={(event) => {  setSectionDraft((section) => section ? { ...section, status: event.target.value as CmsSection["status"] } : section); }}
                       className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
                     >
                       {publishStatusOptions().map((item) => (
@@ -708,7 +708,7 @@ export default function AdminCmsBuilder() {
                   </div>
                   <div>
                     <AdminFieldLabel label={A("sortLabel")} help={A("sortHelp")} />
-                    <Input type="number" value={sectionDraft.sort_order} onChange={(event) => { setDirty(true); setSectionDraft((section) => section ? { ...section, sort_order: Number(event.target.value || 0) } : section); }} />
+                    <Input type="number" value={sectionDraft.sort_order} onChange={(event) => {  setSectionDraft((section) => section ? { ...section, sort_order: Number(event.target.value || 0) } : section); }} />
                   </div>
                 </div>
                 <SectionContentEditor
@@ -716,18 +716,18 @@ export default function AdminCmsBuilder() {
                   languageLabel={A("zhContentJsonLabel")}
                   text={contentZhText}
                   onChange={setContentZhText}
-                  onDirty={() => setDirty(true)}
+                  onDirty={() => {}}
                 />
                 <SectionContentEditor
                   sectionType={sectionDraft.section_type}
                   languageLabel={A("enContentJsonLabel")}
                   text={contentEnText}
                   onChange={setContentEnText}
-                  onDirty={() => setDirty(true)}
+                  onDirty={() => {}}
                 />
                 <div>
                   <AdminFieldLabel label={A("settingsLabel")} help={A("settingsHelp")} />
-                  <Textarea rows={5} value={settingsText} onChange={(event) => { setDirty(true); setSettingsText(event.target.value); }} />
+                  <Textarea rows={5} value={settingsText} onChange={(event) => {  setSettingsText(event.target.value); }} />
                 </div>
                 <div data-admin-card-actions className="flex flex-wrap gap-2">
                   <AdminActionButton action="content.write" type="button" disabled={saving} onClick={() => void saveSection()}>{saving ? A("saving") : A("saveSectionButton")}</AdminActionButton>

@@ -1,5 +1,6 @@
+import { useInteractionQuery as useQuery } from "@/hooks/useInteractionQuery";
 import { useParams } from "react-router-dom";
-import { useQuery } from "@tanstack/react-query";
+
 import { AlertCircle, RefreshCw } from "lucide-react";
 import Link from "@/components/LocalizedLink";
 import PageMeta from "@/components/PageMeta";
@@ -101,9 +102,9 @@ export default function CmsDynamicPage() {
   const { language } = useLanguage();
   const t = copy[language];
   const cmsPath = cmsPathFromSplat(params["*"]);
-  const { data: page, isError, isLoading, refetch } = useQuery({
+  const { data: page, isInitialError: isError, isLoading, refetch } = useQuery({
     queryKey: ["published", "cms_path", language, cmsPath],
-    queryFn: () => getPublishedCmsPageByPath(language, cmsPath),
+    queryFn: ({ signal }) => getPublishedCmsPageByPath(language, cmsPath, signal),
     enabled: cmsPath !== "/",
   });
 

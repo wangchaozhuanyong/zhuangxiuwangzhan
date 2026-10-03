@@ -1,4 +1,7 @@
-import { useEffect, useState } from "react";
+import { useAdminFormState } from "@/hooks/useAdminFormState";
+import { useUnsavedChangesWarning } from "@/hooks/useUnsavedChangesWarning";
+import { useSubmissionLock } from "@/hooks/useSubmissionLock";
+import { useState } from "react";
 import { Save, Trash2 } from "lucide-react";
 import { useQueryClient } from "@tanstack/react-query";
 import AdminFormSection from "@/components/admin/AdminFormSection";
@@ -7,7 +10,7 @@ import SmartImage from "@/components/SmartImage";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { adminMaterialEditorText } from "@/i18n/adminMaterialEditorText";
-import { invalidateAfterAdminContentSave } from "@/lib/adminInvalidate";
+import { invalidateAdminResource } from "@/lib/adminInvalidate";
 import { useAdminMaterialImages } from "@/lib/adminBusinessContentQueries";
 import { getAdminLang } from "@/lib/adminLocale";
 import { formatAdminMutationError } from "@/lib/adminMutation";
@@ -43,22 +46,22 @@ const imageTypes: MaterialImageType[] = ["cover", "scene", "detail", "installati
 const rightsOptions: MaterialImageRights[] = ["owned", "generated", "licensed", "supplier_approved"];
 
 const AdminMaterialImages = ({ materialId }: AdminMaterialImagesProps) => {
+  const { protectSubmission, isSubmitting } = useSubmissionLock();
   const lang = getAdminLang();
   const t = (key: keyof typeof adminMaterialEditorText) => adminMaterialEditorText[key][lang];
   const queryClient = useQueryClient();
-  const { data: rawImages = [], refetch } = useAdminMaterialImages(materialId);
+  const { data: rawImages = [] } = useAdminMaterialImages(materialId);
   const images = rawImages as MaterialImageRow[];
-  const [draft, setDraft] = useState<AdminMaterialImageDraft>(emptyImage);
+  const { state: draft, setForm: setDraft, dirty, applyRemote } = useAdminFormState<AdminMaterialImageDraft>(undefined, { initial: emptyImage, resetKey: materialId });
+  useUnsavedChangesWarning(dirty || isSubmitting);
   const [status, setStatus] = useState("");
   const [busy, setBusy] = useState(false);
 
   const refresh = async () => {
-    await queryClient.invalidateQueries({ queryKey: ["admin", "material_images", materialId] });
-    await invalidateAfterAdminContentSave(queryClient);
-    await refetch();
+    await invalidateAdminResource(queryClient, "material_images");
   };
 
-  const addImage = async () => {
+  const addImage = protectSubmission("addImage", async () => {
     if (!materialId || !draft.image_url || busy) {
       if (!materialId) setStatus(t("gallerySaveFirst"));
       return;
@@ -67,7 +70,7 @@ const AdminMaterialImages = ({ materialId }: AdminMaterialImagesProps) => {
     setStatus("");
     try {
       await addAdminMaterialImage(materialId, draft);
-      setDraft(emptyImage);
+      applyRemote(emptyImage, draft);
       setStatus(t("galleryAdded"));
       await refresh();
     } catch (error) {
@@ -75,23 +78,25 @@ const AdminMaterialImages = ({ materialId }: AdminMaterialImagesProps) => {
     } finally {
       setBusy(false);
     }
-  };
+  });
 
-  const saveImage = async (imageId: string, patch: Record<string, unknown>) => {
+  const saveImage = protectSubmission("saveImage", async (imageId: string, patch: Record<string, unknown>) => {
     setBusy(true);
     setStatus("");
     try {
       await updateAdminMaterialImage(imageId, patch);
       setStatus(t("gallerySaved"));
       await refresh();
+      return true;
     } catch (error) {
       setStatus(formatAdminMutationError(error));
+      return false;
     } finally {
       setBusy(false);
     }
-  };
+  });
 
-  const archiveImage = async (imageId: string) => {
+  const archiveImage = protectSubmission("archiveImage", async (imageId: string) => {
     const confirmed = await adminConfirm({
       title: t("galleryDeleteTitle"),
       description: t("galleryDeleteDescription"),
@@ -108,7 +113,7 @@ const AdminMaterialImages = ({ materialId }: AdminMaterialImagesProps) => {
     } finally {
       setBusy(false);
     }
-  };
+  });
 
   return (
     <AdminFormSection title={t("galleryTitle")} description={t("galleryDescription")} helpText={t("galleryHelp")}>
@@ -163,13 +168,13 @@ type MaterialImageEditorProps = {
   image: MaterialImageRow;
   busy: boolean;
   t: (key: keyof typeof adminMaterialEditorText) => string;
-  onSave: (imageId: string, patch: Record<string, unknown>) => Promise<void>;
+  onSave: (imageId: string, patch: Record<string, unknown>) => Promise<boolean | undefined>;
   onArchive: (imageId: string) => Promise<void>;
 };
 
 const MaterialImageEditor = ({ image, busy, t, onSave, onArchive }: MaterialImageEditorProps) => {
-  const [draft, setDraft] = useState(image);
-  useEffect(() => setDraft(image), [image]);
+  const { state: draft, setForm: setDraft, applyRemote, dirty } = useAdminFormState(image, { initial: image, resetKey: image.id });
+  useUnsavedChangesWarning(dirty || busy && dirty);
 
   return (
     <div className="grid gap-4 py-4 lg:grid-cols-[8rem_minmax(0,1fr)_auto] lg:items-start">
@@ -187,7 +192,7 @@ const MaterialImageEditor = ({ image, busy, t, onSave, onArchive }: MaterialImag
         <Input type="number" placeholder={t("gallerySortOrder")} value={draft.sort_order ?? 0} onChange={(event) => setDraft((current) => ({ ...current, sort_order: event.target.value }))} />
       </div>
       <div className="flex gap-2 lg:flex-col">
-        <Button type="button" size="sm" variant="outline" disabled={busy} onClick={() => void onSave(image.id, {
+        <Button type="button" size="sm" variant="outline" disabled={busy} onClick={async () => { const submitted = draft; const saved = await onSave(image.id, {
           image_url: draft.image_url,
           image_type: draft.image_type || "scene",
           alt_zh: draft.alt_zh || "",
@@ -195,7 +200,7 @@ const MaterialImageEditor = ({ image, busy, t, onSave, onArchive }: MaterialImag
           source_url: draft.source_url || null,
           rights_status: draft.rights_status || "owned",
           sort_order: Number(draft.sort_order || 0),
-        })}>
+        }); if (saved) applyRemote(submitted, submitted); }}>
           <Save className="h-4 w-4" /> {t("gallerySave")}
         </Button>
         <Button type="button" size="sm" variant="destructive" disabled={busy} onClick={() => void onArchive(image.id)}>

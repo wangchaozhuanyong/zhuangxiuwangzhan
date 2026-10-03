@@ -90,7 +90,7 @@ describe("SmartImage", () => {
       });
       const image = container.querySelector<HTMLImageElement>(".smart-image");
       expect(image?.dataset.imageState).toBe("loading");
-      expect(container.querySelector(".smart-image-failure")).toBeNull();
+      expect(container.querySelector(".smart-image-failure:not(.smart-image-slow)")).toBeNull();
       Object.defineProperty(image, "decode", { value: () => Promise.resolve() });
       await act(async () => image?.dispatchEvent(new Event("load", { bubbles: true })));
       expect(image?.dataset.imageState).toBe("loaded");

@@ -1,8 +1,8 @@
 import { requireSupabase } from "@/lib/supabase";
 
-export async function invokeSystemHealthCheck<T>() {
+export async function invokeSystemHealthCheck<T>(signal?: AbortSignal) {
   const supabase = requireSupabase();
-  const { data, error } = await supabase.functions.invoke<T>("health-check", { method: "GET" });
+  const { data, error } = await supabase.functions.invoke<T>("health-check", { method: "GET", signal });
   if (error) throw error;
 
   return data || ({} as T);

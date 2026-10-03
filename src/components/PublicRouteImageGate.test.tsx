@@ -44,11 +44,12 @@ afterEach(async () => {
   await act(async () => root.unmount());
   client.clear();
   container.remove();
+  document.querySelectorAll(".scheme-a-chrome__brand").forEach((node) => node.remove());
   vi.useRealTimers();
 });
 
 describe("public route visual readiness", () => {
-  it("waits past the deadline and follows the replacement site logo instead of a detached image", async () => {
+  it("degrades slow critical images after the deadline and leaves image recovery local", async () => {
     const brand = document.createElement("a");
     brand.className = "scheme-a-chrome__brand";
     const oldLogo = document.createElement("img");
@@ -60,9 +61,8 @@ describe("public route visual readiness", () => {
     expect(loader()).not.toBeNull();
     expect(state()).toBe("waiting");
     await act(async () => vi.advanceTimersByTime(5100));
-    expect(state()).toBe("timeout");
-    expect(loader()).not.toBeNull();
-    expect(container.querySelectorAll(".scheme-a-page-loader__actions button")).toHaveLength(2);
+    expect(state()).toBe("degraded");
+    expect(loader()).toBeNull();
     expect(container.querySelector(".smart-image-failure")).toBeNull();
     const newLogo = document.createElement("img");
     newLogo.src = src;
@@ -72,7 +72,7 @@ describe("public route visual readiness", () => {
     newLogo.getBoundingClientRect = oldLogo.getBoundingClientRect;
     await act(async () => brand.replaceChildren(newLogo));
     await render(<Image ready />);
-    expect(state()).toBe("ready");
+    expect(state()).toBe("degraded");
     expect(loader()).toBeNull();
     brand.remove();
   });
@@ -149,7 +149,7 @@ describe("public route visual readiness", () => {
   it("allows explicit continue after a slow response without manufacturing image errors", async () => {
     const ready = vi.fn();
     window.addEventListener("public-route-ready", ready);
-    await render(<Image />);
+    await render(<div data-route-pending="true"><Image /></div>);
     await act(async () => vi.advanceTimersByTime(5100));
     const buttons = container.querySelectorAll<HTMLButtonElement>(".scheme-a-page-loader__actions button");
     await act(async () => buttons[1].click());

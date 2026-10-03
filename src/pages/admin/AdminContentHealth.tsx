@@ -1,4 +1,5 @@
-import { useMemo, useState } from "react";
+import { useAdminListingState } from "@/hooks/useAdminListingState";
+import { useMemo } from "react";
 import { Link } from "react-router-dom";
 import { RefreshCw, Search } from "lucide-react";
 import AdminEmptyState from "@/components/admin/AdminEmptyState";
@@ -26,8 +27,10 @@ export default function AdminContentHealth() {
   const { data, isFetching, refetch } = useAdminContentHealth();
   const items = data ?? emptyContentHealthItems;
   const initialLoading = isFetching && !data;
-  const [filter, setFilter] = useState<AdminContentHealthFilterKey>("all");
-  const [search, setSearch] = useState("");
+  const list = useAdminListingState();
+  const filter = list.filter("filter") as AdminContentHealthFilterKey;
+  const setFilter = (value: AdminContentHealthFilterKey) => list.setFilter("filter", value);
+  const { search, setSearch } = list;
   const filters = adminContentHealthFilters.map((item) => ({
     key: item.key,
     label: item.label[getAdminLang()],

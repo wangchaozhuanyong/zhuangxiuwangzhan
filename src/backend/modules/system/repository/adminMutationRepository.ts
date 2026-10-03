@@ -1,3 +1,4 @@
+import { withReadSignal } from "@/lib/readRequest";
 import { requireSupabase } from "@/lib/supabase";
 import type { Json } from "@/lib/database.types";
 
@@ -67,9 +68,9 @@ export async function insertAdminAuditLog(args: {
   });
 }
 
-export async function fetchAdminMutationRecord(table: string, idField: string, id: string | number) {
+export async function fetchAdminMutationRecord(table: string, idField: string, id: string | number, signal?: AbortSignal) {
   const supabase = requireSupabase();
-  const { data, error } = await supabase.from(table).select("*").eq(idField, id).maybeSingle();
+  const { data, error } = await withReadSignal(supabase.from(table).select("*").eq(idField, id).maybeSingle(), signal);
   if (error) throw error;
   return (data as AdminMutationDbRecord | null) || null;
 }

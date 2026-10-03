@@ -1,3 +1,4 @@
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { act } from "react";
 import { createRoot, type Root } from "react-dom/client";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
@@ -11,16 +12,17 @@ vi.mock("@/lib/publicVersion", () => ({
   fetchPublicVersion: vi.fn(async () => ({ deploymentVersion: "new", contentVersion: "" })),
   hasNewPublicVersion: () => true,
 }));
+const queryClient = new QueryClient();
 let root: Root;
 let container: HTMLDivElement;
 let setMenuOpen: (open: boolean) => void;
 function Controls() { setMenuOpen = usePublicChrome().setMenuOpen; return null; }
 const render = async (open = false, second = false) => act(async () => root.render(
-  <PublicChromeProvider isAdminRoute={false} routeKey="/zh">
+  <QueryClientProvider client={queryClient}><PublicChromeProvider isAdminRoute={false} routeKey="/zh">
     <Controls /><PublicUpdateNotice />
     <Dialog open={open}><DialogContent><DialogTitle>Preview</DialogTitle><DialogDescription>Example</DialogDescription></DialogContent></Dialog>
     <Dialog open={second}><DialogContent><DialogTitle>Map</DialogTitle><DialogDescription>Example</DialogDescription></DialogContent></Dialog>
-  </PublicChromeProvider>,
+  </PublicChromeProvider></QueryClientProvider>,
 ));
 beforeEach(() => { container = document.createElement("div"); document.body.append(container); root = createRoot(container); });
 afterEach(async () => { await act(async () => root.unmount()); container.remove(); });

@@ -19,19 +19,21 @@ export default function AdminDataTable<T>({
   empty,
   className,
   rowKey,
+  busy = false,
 }: {
   columns: AdminDataTableColumn<T>[];
   rows: T[];
   rowKey: (row: T) => string;
   empty?: ReactNode;
   className?: string;
+  busy?: boolean;
 }) {
   const text = adminSharedText[getAdminLang()];
   const emptyText = text.noData;
   const mobileColumns = columns.filter((col) => !col.mobileHidden);
 
   return (
-    <Card
+    <Card ref={(node) => node?.toggleAttribute("inert", busy)} aria-busy={busy}
       className={cn(
         "min-w-0 overflow-hidden rounded-lg border-border bg-card shadow-sm sm:rounded-xl [&_a]:rounded-md [&_a]:focus-visible:outline-none [&_a]:focus-visible:ring-2 [&_a]:focus-visible:ring-ring max-md:[&_a]:inline-flex max-md:[&_a]:min-h-10 max-md:[&_a]:items-center max-md:[&_button]:w-full max-md:[&_button]:justify-center",
         className,

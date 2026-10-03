@@ -66,6 +66,6 @@ export async function logFrontendSystemEvent(event: SystemEvent) {
   }
 }
 
-export async function loadAdminSystemEventLogs(limit = 100) {
-  return (await fetchSystemEventLogs(limit)) as SystemLogRow[];
+export async function loadAdminSystemEventLogs(limit = 100, signal?: AbortSignal) {
+  return (await fetchSystemEventLogs(limit, signal)) as SystemLogRow[];
 }

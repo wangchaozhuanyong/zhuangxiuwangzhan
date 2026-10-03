@@ -1,3 +1,4 @@
+import { withReadSignal } from "@/lib/readRequest";
 import type { QueryClient } from "@tanstack/react-query";
 import { saveAdminRecord } from "@/lib/adminMutation";
 import type { Database } from "@/lib/database.types";
@@ -38,7 +39,7 @@ export async function findProjectIdsBySlug(slug: string) {
   return (data || []).map((row) => String(row.id));
 }
 
-export async function fetchAdminProjectList<T extends Record<string, unknown>>(input: AdminProjectListInput) {
+export async function fetchAdminProjectList<T extends Record<string, unknown>>(input: AdminProjectListInput, signal?: AbortSignal) {
   const supabase = requireSupabase();
   const from = input.page * input.pageSize;
   const to = from + input.pageSize - 1;
@@ -53,28 +54,28 @@ export async function fetchAdminProjectList<T extends Record<string, unknown>>(i
   query = applySearch(query, ["title_zh", "title_en", "slug", "location", "project_type"], input.search);
   query = query.order("sort_order", { ascending: true }).order("updated_at", { ascending: false });
 
-  const { data, error, count } = await query.range(from, to);
+  const { data, error, count } = await withReadSignal(query.range(from, to), signal);
   if (error) throw error;
   return { rows: (data ?? []) as unknown as T[], count: count ?? (data?.length || 0), page: input.page, pageSize: input.pageSize };
 }
 
-export async function fetchAdminProjectDetail(projectId: string) {
+export async function fetchAdminProjectDetail(projectId: string, signal?: AbortSignal) {
   const supabase = requireSupabase();
-  const { data, error } = await supabase.from("projects").select("*").eq("id", projectId).single();
+  const { data, error } = await withReadSignal(supabase.from("projects").select("*").eq("id", projectId).single(), signal);
   if (error) throw error;
   return data;
 }
 
-export async function fetchAdminProjectRows(limit: number) {
+export async function fetchAdminProjectRows(limit: number, signal?: AbortSignal) {
   const supabase = requireSupabase();
-  const { data, error } = await supabase.from("projects").select("*").order("created_at", { ascending: false }).limit(limit);
+  const { data, error } = await withReadSignal(supabase.from("projects").select("*").order("created_at", { ascending: false }).limit(limit), signal);
   if (error) throw error;
   return data ?? [];
 }
 
-export async function fetchAdminProjectImages(projectId: string) {
+export async function fetchAdminProjectImages(projectId: string, signal?: AbortSignal) {
   const supabase = requireSupabase();
-  const { data, error } = await supabase.from("project_images").select("*").eq("project_id", projectId).order("sort_order");
+  const { data, error } = await withReadSignal(supabase.from("project_images").select("*").eq("project_id", projectId).order("sort_order"), signal);
   if (error) throw error;
   return data ?? [];
 }

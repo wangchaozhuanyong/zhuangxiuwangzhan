@@ -53,16 +53,16 @@ export function updateAdminLead(leadId: string, patch: LeadUpdatePatch) {
   return updateLeadRecord(leadId, patch);
 }
 
-export function loadAdminLeads<T extends Record<string, unknown>>(input: AdminLeadListRepositoryInput) {
-  return fetchAdminLeadList<T>(input);
+export function loadAdminLeads<T extends Record<string, unknown>>(input: AdminLeadListRepositoryInput, signal?: AbortSignal) {
+  return fetchAdminLeadList<T>(input, signal);
 }
 
-export function loadAdminLeadDetail(leadId: string) {
-  return fetchAdminLeadDetail(leadId);
+export function loadAdminLeadDetail(leadId: string, signal?: AbortSignal) {
+  return fetchAdminLeadDetail(leadId, signal);
 }
 
-export function loadAdminLeadReportRows(startIso?: string | null) {
-  return fetchAdminLeadReportRows(startIso);
+export function loadAdminLeadReportRows(startIso?: string | null, signal?: AbortSignal) {
+  return fetchAdminLeadReportRows(startIso, signal);
 }
 
 export const submitContactLead = async (payload: ContactSubmission & FormGuardFields) => {

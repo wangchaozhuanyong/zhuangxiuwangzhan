@@ -20,8 +20,8 @@ export function createAdminMediaAsset(input: CreateMediaAssetRecordInput) {
   return createMediaAssetRecord(input);
 }
 
-export function loadAdminMediaAssets<T>(input: AdminMediaAssetListInput) {
-  return fetchAdminMediaAssetList<T>(input);
+export function loadAdminMediaAssets<T>(input: AdminMediaAssetListInput, signal?: AbortSignal) {
+  return fetchAdminMediaAssetList<T>(input, signal);
 }
 
 export function updateAdminMediaAsset(input: UpdateMediaAssetRecordInput) {

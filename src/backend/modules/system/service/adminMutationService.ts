@@ -9,7 +9,8 @@ import {
   updateAdminMutationRecord,
   type AdminMutationDbRecord,
 } from "@/backend/modules/system/repository/adminMutationRepository";
-import { invalidateAfterAdminContentSave, invalidatePublishedContent } from "@/lib/adminInvalidate";
+import { invalidateAdminResource } from "@/lib/adminInvalidate";
+import { registerPublicSyncIssue, resolvePublicSyncIssue } from "@/lib/publicSyncRecovery";
 import { formatUserFacingError } from "@/lib/userFacingText";
 import { getLandingProjectPrivacyIssues } from "@/lib/landingContentPrivacy";
 
@@ -62,10 +63,12 @@ const publicContentTables = new Set([
 
 export class AdminMutationError extends Error {
   code: "conflict" | "validation" | "database" | "unknown";
+  stage: "read" | "validation" | "write";
 
-  constructor(code: AdminMutationError["code"], message: string) {
+  constructor(code: AdminMutationError["code"], message: string, stage: AdminMutationError["stage"] = code === "validation" || code === "conflict" ? "validation" : "write") {
     super(message);
     this.code = code;
+    this.stage = stage;
     this.name = "AdminMutationError";
   }
 }
@@ -103,13 +106,9 @@ const normalizeDate = (value?: unknown) => {
   return Number.isNaN(time) ? String(value) : String(time);
 };
 
-async function invalidateAfterMutation(queryClient: QueryClient | undefined, mode: SaveAdminRecordOptions["invalidate"]) {
+async function invalidateAfterMutation(queryClient: QueryClient | undefined, mode: SaveAdminRecordOptions["invalidate"], table: string) {
   if (!queryClient || mode === "none") return;
-  if (mode === "published") {
-    await invalidatePublishedContent(queryClient);
-    return;
-  }
-  await invalidateAfterAdminContentSave(queryClient);
+  await invalidateAdminResource(queryClient, table);
 }
 
 export const mutationAffectsPublishedContent = (
@@ -128,18 +127,23 @@ const invalidatePublicDelivery = async (
   id: string | number | null | undefined,
   before: DbRecord | null | undefined,
   after: DbRecord | null | undefined,
+  queryClient?: QueryClient,
 ) => {
   if (!mutationAffectsPublishedContent(table, before, after)) return null;
 
   try {
     const result = await requestPublicContentInvalidation({ table, action, id });
     return result.cache_invalidation?.revision || null;
-  } catch (error) {
-    const message = formatUserFacingError(error, "zh");
-    throw new AdminMutationError(
-      "database",
-      `内容已经保存，但公开网页缓存刷新失败。请刷新后台确认保存结果后再重试发布。${message ? ` 原因：${message}` : ""}`,
-    );
+  } catch {
+    const key = `${table}:${id ?? ""}:${action}`;
+    registerPublicSyncIssue({ key, retry: async () => {
+      await requestPublicContentInvalidation({ table, action, id });
+      if (queryClient) await invalidateAdminResource(queryClient, table);
+      resolvePublicSyncIssue(key);
+    } });
+    // The write already succeeded. Retrying delivery must never repeat the write.
+    return null;
+
   }
 };
 
@@ -162,7 +166,7 @@ export async function saveAdminRecord<T extends DbRecord = DbRecord>({
     try {
       before = await fetchAdminMutationRecord(table, idField, id);
     } catch (error) {
-      throw new AdminMutationError("database", formatAdminMutationError(error));
+      throw new AdminMutationError("database", formatAdminMutationError(error), "read");
     }
 
     if (!before) throw new AdminMutationError("validation", "保存失败：这条数据已经不存在，请刷新列表。");
@@ -204,13 +208,14 @@ export async function saveAdminRecord<T extends DbRecord = DbRecord>({
     }
   }
 
-  await invalidateAfterMutation(queryClient, invalidate);
+  await invalidateAfterMutation(queryClient, invalidate, table);
   const publicRevision = await invalidatePublicDelivery(
     table,
     action || (isUpdate ? "update" : "insert"),
     typeof saved?.[idField] === "string" || typeof saved?.[idField] === "number" ? saved[idField] : id,
     before,
     saved,
+    queryClient,
   );
   if (table === "site_settings" && publicRevision) saved.updated_at = publicRevision;
   return saved as T;
@@ -228,7 +233,7 @@ export async function archiveOrDeleteAdminRecord({
   try {
     before = await fetchAdminMutationRecord(table, idField, id);
   } catch (error) {
-    throw new AdminMutationError("database", formatAdminMutationError(error));
+    throw new AdminMutationError("database", formatAdminMutationError(error), "read");
   }
 
   if (!before) throw new AdminMutationError("validation", "删除失败：这条数据已经不存在，请刷新列表。");
@@ -256,7 +261,7 @@ export async function archiveOrDeleteAdminRecord({
     // Keep delete/archive result stable even if audit insertion fails.
   }
 
-  await invalidateAfterMutation(queryClient, "admin-content");
-  await invalidatePublicDelivery(table, shouldArchive ? "archive" : "delete", id, before, after);
+  await invalidateAfterMutation(queryClient, "admin-content", table);
+  await invalidatePublicDelivery(table, shouldArchive ? "archive" : "delete", id, before, after, queryClient);
   return after;
 }

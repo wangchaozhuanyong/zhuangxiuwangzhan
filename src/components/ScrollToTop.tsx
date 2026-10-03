@@ -106,12 +106,14 @@ const ScrollToTop = () => {
     const previous = previousRouteRef.current;
     previousRouteRef.current = routeContext.location;
     const isAdmin = pathname.startsWith("/admin");
-    if (isAdmin && previous?.pathname === pathname) return;
+    // Same-page changes retain position, but must still own the new history entry.
+    const preserveAdminPosition = isAdmin && previous?.pathname === pathname
+      && routeContext.navigationType !== "POP" && previous.hash === hash;
     const furniturePosition = consumeFurnitureNavigationScroll(pathname);
     const positionKey = getScrollPositionKey(pathname + search);
     const isPop = routeContext.navigationType === "POP";
     const listingPosition = getListingScrollPosition(state);
-    const shouldRestore = !isAdmin && (isPop || hasBottomNavScrollIntent(state) || listingPosition !== null);
+    const shouldRestore = isPop || !isAdmin && (hasBottomNavScrollIntent(state) || listingPosition !== null);
     const savedPosition = isPop ? historyPositions.get(key) : listingPosition ?? scrollPositions.get(positionKey);
     const targetPosition = furniturePosition ?? (shouldRestore ? savedPosition ?? 0
       : previous?.pathname === pathname ? historyPositions.get(previous.key) ?? 0 : 0);
@@ -121,7 +123,7 @@ const ScrollToTop = () => {
     const record = () => { lastScroll = window.scrollY; };
     const interrupt = () => { interrupted = true; cancelRestoration(); };
     const restore = (smooth = false) => {
-      if (interrupted) return;
+      if (interrupted || preserveAdminPosition) return;
       cancelRestoration();
       const results = document.querySelector<HTMLElement>("#main-content [data-public-results]");
       const paginationTarget = !shouldRestore && furniturePosition === null && search && isFurnitureListingPath(pathname) && results
@@ -161,6 +163,7 @@ const ScrollToTop = () => {
     // The shared readiness owner emits this after the destination layout exists,
     // before deciding which images intersect the restored viewport.
     window.addEventListener("public-route-layout", restoreLayout);
+    window.addEventListener("admin-route-layout", restoreLayout);
     // Destination content is inert during preparation; focus it once the gate unlocks.
     window.addEventListener("public-route-ready", focusReadyTarget);
     window.addEventListener("scroll", record, { passive: true });
@@ -174,16 +177,15 @@ const ScrollToTop = () => {
     return () => {
       cancelRestoration();
       window.removeEventListener("public-route-layout", restoreLayout);
+      window.removeEventListener("admin-route-layout", restoreLayout);
       window.removeEventListener("public-route-ready", focusReadyTarget);
       window.removeEventListener("scroll", record);
       window.removeEventListener("wheel", interrupt);
       window.removeEventListener("touchstart", interrupt);
       window.removeEventListener("pointerdown", interrupt);
       window.removeEventListener("keydown", interrupt);
-      if (!isAdmin) {
-        historyPositions.set(key, Math.max(0, lastScroll));
-        scrollPositions.set(positionKey, Math.max(0, lastScroll));
-      }
+      historyPositions.set(key, Math.max(0, lastScroll));
+      scrollPositions.set(positionKey, Math.max(0, lastScroll));
     };
   }, [location.pathname, location.search, location.hash, location.key]);
 

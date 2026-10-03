@@ -1,6 +1,6 @@
 import { chunkLoadRecoveryText } from "@/i18n/chunkLoadRecoveryText";
 import { getLanguageFromPath } from "@/i18n/routes";
-import { getAdminLang } from "@/lib/adminLocale";
+import { getAdminLang } from "@/lib/adminPreferences";
 
 const CHUNK_LOG_KEY = "flashcast:chunk-load-recovery-log";
 const CHUNK_REFRESH_PARAM = "__flashcast_refresh";

@@ -1,4 +1,8 @@
 import { useEffect, useRef, useState } from "react";
+import { useQueryClient } from "@tanstack/react-query";
+import { useAdminLang } from "@/lib/adminPreferences";
+import { reloadDocumentSafely } from "@/lib/navigationProtection";
+import { runReadQuery } from "@/lib/interactionPolicy";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { publicUpdateNoticeText } from "@/i18n/publicUpdateNoticeText";
 import { usePublicChrome } from "@/contexts/PublicChromeContext";
@@ -12,10 +16,12 @@ import {
 
 const PUBLIC_VERSION_CHECK_INTERVAL_MS = 30 * 1000;
 
-const PublicUpdateNotice = () => {
+const PublicUpdateNotice = ({ surface = "public" }: { surface?: "public" | "admin" }) => {
+  const queryClient = useQueryClient();
+  const adminLanguage = useAdminLang();
   const { language } = useLanguage();
   const { menuOpen, hasOpenDialog } = usePublicChrome();
-  const text = publicUpdateNoticeText[language];
+  const text = publicUpdateNoticeText[surface === "admin" ? adminLanguage : language];
   const [updateAvailable, setUpdateAvailable] = useState(false);
   const baselineRef = useRef<PublicVersion | null>(null);
   const pendingRef = useRef<PublicVersion | null>(null);
@@ -41,7 +47,7 @@ const PublicUpdateNotice = () => {
       requestController = new AbortController();
 
       try {
-        const latest = await fetchPublicVersion(requestController.signal);
+        const latest = await runReadQuery(requestController.signal, fetchPublicVersion);
         if (!active) return;
 
         const baseline = baselineRef.current;
@@ -50,7 +56,10 @@ const PublicUpdateNotice = () => {
           return;
         }
 
-        if (hasNewPublicVersion(baseline, latest)) {
+        if (baseline.contentVersion && latest.contentVersion && baseline.contentVersion !== latest.contentVersion) {
+          await Promise.all([queryClient.invalidateQueries({ queryKey: ["published"] }), queryClient.invalidateQueries({ queryKey: ["site-settings"] })]);
+        }
+        if (hasNewPublicVersion(baseline, { ...latest, contentVersion: baseline.contentVersion })) {
           pendingRef.current = latest;
           updateAvailableRef.current = true;
           setUpdateAvailable(true);
@@ -79,7 +88,7 @@ const PublicUpdateNotice = () => {
       window.removeEventListener("focus", onPageActive);
       document.removeEventListener("visibilitychange", onPageActive);
     };
-  }, []);
+  }, [queryClient]);
 
   if (!updateAvailable || menuOpen || hasOpenDialog) return null;
 
@@ -92,7 +101,7 @@ const PublicUpdateNotice = () => {
 
   return (
     <aside
-      className="public-update-notice fixed inset-x-4 z-[115] mx-auto max-w-xl rounded-2xl border border-white/15 bg-[#111411]/95 p-4 text-white shadow-2xl backdrop-blur-md md:flex md:items-center md:gap-5 md:px-5"
+      className={`${surface === "admin" ? "bottom-4" : "public-update-notice"} fixed inset-x-4 z-[115] mx-auto max-w-xl rounded-2xl border border-white/15 bg-[#111411]/95 p-4 text-white shadow-2xl backdrop-blur-md md:flex md:items-center md:gap-5 md:px-5`}
       role="status"
       aria-live="polite"
     >
@@ -104,7 +113,7 @@ const PublicUpdateNotice = () => {
         <button
           type="button"
           className="min-h-11 flex-1 rounded-full bg-[#d5ff3f] px-5 text-sm font-semibold text-[#111411] transition hover:bg-[#e2ff78] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white md:flex-none"
-          onClick={() => window.location.reload()}
+          onClick={() => void reloadDocumentSafely()}
         >
           {text.refresh}
         </button>

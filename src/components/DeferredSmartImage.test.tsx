@@ -13,7 +13,7 @@ describe("DeferredSmartImage", () => {
       await act(async () => vi.advanceTimersByTime(6000));
       expect(container.querySelector(".smart-image-placeholder")).toHaveAttribute("data-image-state", "loading");
       expect(container.querySelector("img")).toHaveAttribute("data-image-state", "loading");
-      expect(container.querySelector(".smart-image-failure")).toBeNull();
+      expect(container.querySelector(".smart-image-failure:not(.smart-image-slow)")).toBeNull();
     } finally {
       await act(async () => root.unmount());
       vi.useRealTimers();

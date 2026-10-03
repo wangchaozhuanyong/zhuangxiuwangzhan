@@ -140,26 +140,26 @@ export type AdminUserRow = {
   version?: number | null;
 };
 
-async function fetchHomeSection(section_key: string): Promise<HomeSectionRow | null> {
-  const row = await fetchHomeSectionRecord(section_key);
+async function fetchHomeSection(section_key: string, signal?: AbortSignal): Promise<HomeSectionRow | null> {
+  const row = await fetchHomeSectionRecord(section_key, signal);
   return (row as HomeSectionRow | null) || null;
 }
 
-async function fetchAboutSection(section_key: string): Promise<AboutSectionRow | null> {
-  const row = await fetchAboutSectionRecord(section_key);
+async function fetchAboutSection(section_key: string, signal?: AbortSignal): Promise<AboutSectionRow | null> {
+  const row = await fetchAboutSectionRecord(section_key, signal);
   return (row as AboutSectionRow | null) || null;
 }
 
-export async function fetchAdminHomeEditorData(): Promise<AdminHomeEditorData> {
+export async function fetchAdminHomeEditorData(signal?: AbortSignal): Promise<AdminHomeEditorData> {
   if (!hasAdminEditorDatabaseClient()) {
     return { stats: null, why: null, brandPartnersVisibility: null, processSteps: [], faqRows: [], ctaBlock: null };
   }
 
   const [stats, why, brandPartnersVisibility, auxiliary] = await Promise.all([
-    fetchHomeSection("stats"),
-    fetchHomeSection("why_choose_us"),
-    fetchHomeSection("brand_partners"),
-    fetchHomeEditorAuxiliaryRows(),
+    fetchHomeSection("stats", signal),
+    fetchHomeSection("why_choose_us", signal),
+    fetchHomeSection("brand_partners", signal),
+    fetchHomeEditorAuxiliaryRows(signal),
   ]);
 
   return {
@@ -172,18 +172,18 @@ export async function fetchAdminHomeEditorData(): Promise<AdminHomeEditorData> {
   };
 }
 
-export async function fetchAdminAboutEditorData(): Promise<AdminAboutEditorData> {
+export async function fetchAdminAboutEditorData(signal?: AbortSignal): Promise<AdminAboutEditorData> {
   if (!hasAdminEditorDatabaseClient()) {
     return { sections: {}, ctaBlock: null };
   }
 
-  const rows = await Promise.all(aboutSectionKeys.map((key) => fetchAboutSection(key)));
+  const rows = await Promise.all(aboutSectionKeys.map((key) => fetchAboutSection(key, signal)));
   const sections: Record<string, AboutSectionRow | null> = {};
   aboutSectionKeys.forEach((key, index) => {
     sections[key] = rows[index] ?? null;
   });
 
-  const data = await fetchAboutEditorCtaBlock();
+  const data = await fetchAboutEditorCtaBlock(signal);
 
   return {
     sections,
@@ -191,13 +191,13 @@ export async function fetchAdminAboutEditorData(): Promise<AdminAboutEditorData>
   };
 }
 
-export async function fetchNotificationSettings(): Promise<NotificationSettings> {
-  const data = await invokeNotificationSettingsGet();
+export async function fetchNotificationSettings(signal?: AbortSignal): Promise<NotificationSettings> {
+  const data = await invokeNotificationSettingsGet(signal);
   return (data?.settings || {}) as NotificationSettings;
 }
 
-export async function fetchTranslationJobs(limit = 100): Promise<TranslationJob[]> {
-  const jobs = (await fetchTranslationJobRows(limit)) as TranslationJob[];
+export async function fetchTranslationJobs(limit = 100, signal?: AbortSignal): Promise<TranslationJob[]> {
+  const jobs = (await fetchTranslationJobRows(limit, signal)) as TranslationJob[];
   const labelSelects: Record<string, string> = {
     services: "id,title_zh,title_en,slug",
     projects: "id,title_zh,title_en,slug",
@@ -223,7 +223,7 @@ export async function fetchTranslationJobs(limit = 100): Promise<TranslationJob[
     Object.entries(labelSelects).map(async ([table, select]) => {
       const ids = jobs.filter((job) => job.table_name === table && job.record_id).map((job) => job.record_id as string);
       if (ids.length === 0) return;
-      const rows = await fetchTranslationLabelRows(table, select, ids);
+      const rows = await fetchTranslationLabelRows(table, select, ids, signal);
       for (const row of rows) {
         const label =
           row.title_zh ||
@@ -252,6 +252,6 @@ export async function fetchTranslationJobs(limit = 100): Promise<TranslationJob[
   }));
 }
 
-export async function fetchAdminUsers(): Promise<AdminUserRow[]> {
-  return (await fetchAdminUserRows()) as AdminUserRow[];
+export async function fetchAdminUsers(signal?: AbortSignal): Promise<AdminUserRow[]> {
+  return (await fetchAdminUserRows(signal)) as AdminUserRow[];
 }

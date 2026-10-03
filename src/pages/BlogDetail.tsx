@@ -90,7 +90,7 @@ const BlogDetail = () => {
   const {
     data: cmsPost,
     isPending: postPending,
-    isError: postError,
+    isInitialError: postError,
     isFetching: postFetching,
     refetch: refetchPost,
   } = usePublishedBlogPostBySlug(slug, language);

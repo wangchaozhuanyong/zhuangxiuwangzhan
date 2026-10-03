@@ -1,7 +1,10 @@
+import { useAdminFormState } from "@/hooks/useAdminFormState";
+import { useSubmissionLock } from "@/hooks/useSubmissionLock";
+import { useUnsavedChangesWarning } from "@/hooks/useUnsavedChangesWarning";
 import { useCallback, useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { adminConfirm } from "@/components/admin/AdminConfirmProvider";
-import { invalidateAfterAdminContentSave } from "@/lib/adminInvalidate";
+import { invalidateAdminResource } from "@/lib/adminInvalidate";
 import { useAdminProjectImages } from "@/lib/adminBusinessContentQueries";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -43,22 +46,23 @@ const formatImageType = (value: string, language: Language) =>
   adminProjectImageTypeLabels[value as keyof typeof adminProjectImageTypeLabels]?.[language] || value;
 
 const AdminProjectImages = ({ projectId }: AdminProjectImagesProps) => {
+  const { protectSubmission, queueSubmission, isSubmitting } = useSubmissionLock();
   const queryClient = useQueryClient();
   const lang = getAdminLang();
   const t = copy[lang];
-  const { data: images = [], refetch } = useAdminProjectImages(projectId);
-  const [draft, setDraft] = useState<AdminProjectImageDraft>(emptyImage);
+  const { data: images = [] } = useAdminProjectImages(projectId);
+  const { state: draft, setForm: setDraft, dirty, applyRemote } = useAdminFormState<AdminProjectImageDraft>(undefined, { initial: emptyImage, resetKey: projectId });
+  useUnsavedChangesWarning(dirty || isSubmitting);
   const [status, setStatus] = useState("");
   const [adding, setAdding] = useState(false);
   const [coverBusyId, setCoverBusyId] = useState<string | null>(null);
   const [deletingId, setDeletingId] = useState<string | null>(null);
 
   const refreshProjectCaches = useCallback(() => {
-    void invalidateAfterAdminContentSave(queryClient);
-    void queryClient.invalidateQueries({ queryKey: ["admin", "project_images", projectId] });
-  }, [queryClient, projectId]);
+    return invalidateAdminResource(queryClient, "project_images");
+  }, [queryClient]);
 
-  const addImage = async () => {
+  const addImage = protectSubmission("addImage", async () => {
     if (adding) return;
     if (!projectId || !draft.image_url) {
       setStatus(t.saveProjectFirst);
@@ -69,46 +73,43 @@ const AdminProjectImages = ({ projectId }: AdminProjectImagesProps) => {
     setStatus("");
     try {
       await addAdminProjectImage(projectId, draft);
-      setDraft(emptyImage);
+      applyRemote(emptyImage, draft);
       setStatus(t.added);
-      refreshProjectCaches();
-      await refetch();
+      await refreshProjectCaches();
     } catch (error) {
       setStatus(formatAdminMutationError(error));
     } finally {
       setAdding(false);
     }
-  };
+  });
 
-  const updateImage = async (image: AdminProjectImageRow, patch: Record<string, unknown>) => {
+  const updateImage = queueSubmission("updateImage", async (image: AdminProjectImageRow, patch: Record<string, unknown>) => {
     try {
       await updateAdminProjectImage(image.id, patch);
-      refreshProjectCaches();
-      await refetch();
+      await refreshProjectCaches();
       return true;
     } catch (error) {
       setStatus(formatAdminMutationError(error));
       return false;
     }
-  };
+  });
 
-  const setAsCover = async (image: AdminProjectImageRow) => {
+  const setAsCover = protectSubmission("setAsCover", async (image: AdminProjectImageRow) => {
     if (!projectId || coverBusyId) return;
     setCoverBusyId(image.id);
     setStatus("");
     try {
       await setAdminProjectImageAsCover(projectId, image.id);
-      refreshProjectCaches();
-      await refetch();
+      await refreshProjectCaches();
       setStatus(t.coverSet);
     } catch (error) {
       setStatus(formatAdminMutationError(error));
     } finally {
       setCoverBusyId(null);
     }
-  };
+  });
 
-  const deleteImage = async (id: string) => {
+  const deleteImage = protectSubmission("deleteImage", async (id: string) => {
     if (deletingId) return;
     const confirmed = await adminConfirm({
       title: t.confirmDeleteTitle,
@@ -120,14 +121,13 @@ const AdminProjectImages = ({ projectId }: AdminProjectImagesProps) => {
     setStatus("");
     try {
       await deleteAdminProjectImage(id);
-      refreshProjectCaches();
-      await refetch();
+      await refreshProjectCaches();
     } catch (error) {
       setStatus(formatAdminMutationError(error));
     } finally {
       setDeletingId(null);
     }
-  };
+  });
 
   if (!projectId) {
     return (

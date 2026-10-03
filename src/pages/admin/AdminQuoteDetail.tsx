@@ -1,4 +1,9 @@
-import { FormEvent, useEffect, useState } from "react";
+import { invalidateAdminResource } from "@/lib/adminInvalidate";
+import { useAdminFormState } from "@/hooks/useAdminFormState";
+import { useUnsavedChangesWarning } from "@/hooks/useUnsavedChangesWarning";
+import AdminPageSkeleton from "@/components/admin/AdminPageSkeleton";
+import { useSubmissionLock } from "@/hooks/useSubmissionLock";
+import { FormEvent, useState } from "react";
 import { useParams } from "react-router-dom";
 import { useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
@@ -40,6 +45,7 @@ type AdminQuoteDetailRow = Record<string, unknown> & {
 };
 
 const AdminQuoteDetail = () => {
+  const { protectSubmission, queueSubmission, isSubmitting } = useSubmissionLock();
   const lang = getAdminLang();
   const A = (key: AdminQuoteDetailTextKey) => adminQuoteDetailText[key][lang];
   const formatA = (key: AdminQuoteDetailTextKey, values: Record<string, string>) =>
@@ -48,8 +54,8 @@ const AdminQuoteDetail = () => {
     adminQuoteFollowupTypeLabels[type as AdminQuoteFollowupType]?.[lang] || type;
   const { id } = useParams<{ id: string }>();
   const queryClient = useQueryClient();
-  const { data, error } = useAdminQuote(id);
-  const [quote, setQuote] = useState<AdminQuoteDetailRow | null>(null);
+  const { data, error, isLoading } = useAdminQuote(id);
+  const { state: quote, setForm: setQuote, dirty, applyPatchRemote } = useAdminFormState<AdminQuoteDetailRow | null>(data?.quote, { initial: null, resetKey: id });
   const [content, setContent] = useState("");
   const [followupType, setFollowupType] = useState("note");
   const [nextFollowUpAt, setNextFollowUpAt] = useState("");
@@ -59,23 +65,16 @@ const AdminQuoteDetail = () => {
   const leadWritePermission = useAdminPermission("lead.write");
   const canWriteLead = leadWritePermission.allowed;
 
-  useEffect(() => {
-    if (data?.quote) setQuote(data.quote);
-  }, [data?.quote]);
+  useUnsavedChangesWarning(dirty || !!content.trim() || !!nextFollowUpAt || isSubmitting);
 
   const followups = data?.followups ?? [];
   const loadError = error ? formatUserFacingError(error, lang) : "";
   const whatsappHref = quote ? whatsappHrefFromPhone(quote.customer_phone) : "";
   const telHref = quote ? telHrefFromPhone(quote.customer_phone) : "";
 
-  const refresh = async () => {
-    await Promise.all([
-      queryClient.invalidateQueries({ queryKey: ["admin", "quotes"] }),
-      queryClient.invalidateQueries({ queryKey: ["admin", "dashboard"] }),
-    ]);
-  };
+  const refresh = () => invalidateAdminResource(queryClient, "quote_requests", false);
 
-  const updateQuote = async (patch: Record<string, unknown>, label = A("defaultFieldLabel")) => {
+  const updateQuote = queueSubmission("record-autosave", async (patch: Record<string, unknown>, label: string = A("defaultFieldLabel")) => {
     if (!id) return;
     if (!canWriteLead) {
       setMessage(A("readOnlyQuote"));
@@ -85,6 +84,7 @@ const AdminQuoteDetail = () => {
     setMessage(formatA("savingField", { label }));
     try {
       await updateAdminQuote(id, patch);
+      applyPatchRemote(patch, patch);
       setMessage(formatA("savedField", { label }));
       await refresh();
     } catch (updateError) {
@@ -92,9 +92,9 @@ const AdminQuoteDetail = () => {
     } finally {
       setSavingField(null);
     }
-  };
+  });
 
-  const addFollowup = async (event: FormEvent) => {
+  const addFollowup = protectSubmission("addFollowup", async (event: FormEvent) => {
     event.preventDefault();
     if (!canWriteLead) {
       setMessage(A("readOnlyFollowup"));
@@ -114,12 +114,12 @@ const AdminQuoteDetail = () => {
         content,
         nextFollowUpAt,
       });
+      setContent((current) => current === content ? "" : current);
+      setNextFollowUpAt((current) => current === nextFollowUpAt ? "" : current);
       if (result.syncError) {
         setMessage(formatA("followupSavedSyncFailed", { reason: formatAdminMutationError(result.syncError) }));
         return;
       }
-      setContent("");
-      setNextFollowUpAt("");
       setMessage(A("followupSaved"));
       await refresh();
     } catch (error) {
@@ -127,7 +127,7 @@ const AdminQuoteDetail = () => {
     } finally {
       setSavingFollowup(false);
     }
-  };
+  });
 
   return (
     <>
@@ -140,6 +140,7 @@ const AdminQuoteDetail = () => {
         {!canWriteLead && <AdminReadOnlyNotice />}
 
         {(message || loadError) && <div role="status" aria-live="polite" className="rounded-xl border border-border bg-card p-4 text-sm">{message || loadError}</div>}
+        {isLoading && <AdminPageSkeleton mode="form" />}
         {quote && (
           <>
             <div className="rounded-xl border border-border bg-card p-4 sm:p-6">

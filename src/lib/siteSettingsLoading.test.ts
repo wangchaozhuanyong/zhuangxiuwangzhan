@@ -8,10 +8,11 @@ vi.mock("@/backend/modules/settings/repository/siteSettingsRepository", () => ({
 describe("site settings deferred repository access", () => {
   beforeEach(() => { vi.clearAllMocks(); preload.mockReturnValue(null); });
 
-  it("uses public HTML settings without a repository request", async () => {
+  it("reads fresh settings even when the original HTML contains an older snapshot", async () => {
+    read.mockResolvedValue({ brand_name: "Repository brand" });
     preload.mockReturnValue({ siteSettings: { brand_name: "Fixture brand" } });
-    expect(await fetchSiteSettings()).toEqual({ ...fallbackSiteSettings, brand_name: "Fixture brand" });
-    expect(read).not.toHaveBeenCalled();
+    expect(await fetchSiteSettings()).toEqual({ ...fallbackSiteSettings, brand_name: "Repository brand" });
+    expect(read).toHaveBeenCalledOnce();
   });
 
   it("reads the same repository when no public settings were injected", async () => {

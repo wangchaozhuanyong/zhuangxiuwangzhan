@@ -1,4 +1,6 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useAdminFormState } from "@/hooks/useAdminFormState";
+import { useSubmissionLock } from "@/hooks/useSubmissionLock";
+import { useMemo, useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { Link } from "react-router-dom";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -14,7 +16,7 @@ import AdminFormSection from "@/components/admin/AdminFormSection";
 import AdminEmptyState from "@/components/admin/AdminEmptyState";
 import ImageField from "@/components/admin/ImageField";
 import { HomeSectionItemsEditor } from "@/components/admin/StructuredArrayEditors";
-import { invalidatePublishedContent } from "@/lib/adminInvalidate";
+
 import { archiveOrDeleteAdminRecord, formatAdminMutationError, saveAdminRecord } from "@/lib/adminMutation";
 import { useUnsavedChangesWarning } from "@/hooks/useUnsavedChangesWarning";
 import { adminHomeEditorText } from "@/i18n/adminHomeEditorText";
@@ -58,52 +60,43 @@ const mergeSectionItems = (itemsZh?: unknown, itemsEn?: unknown): HomeSectionIte
 };
 
 export default function AdminHomeEditor() {
+  const { protectSubmission, isSubmitting } = useSubmissionLock();
   const queryClient = useQueryClient();
   const { data: bundle, isFetching, refetch } = useAdminHomeEditorData();
   const [activeTab, setActiveTab] = useState("hero");
   const [manualRefreshing, setManualRefreshing] = useState(false);
   const initialLoading = !bundle && isFetching;
 
-  const [statsSection, setStatsSection] = useState<HomeSectionRow | null>(null);
-  const [whySection, setWhySection] = useState<HomeSectionRow | null>(null);
-  const [brandPartnersVisibility, setBrandPartnersVisibility] = useState<HomeSectionRow | null>(null);
-  const [brandPartnersEnabled, setBrandPartnersEnabled] = useState(false);
+  const remoteForm = useMemo(() => ({
+    statsSection: bundle?.stats ?? null,
+    whySection: bundle?.why ?? null,
+    brandPartnersVisibility: bundle?.brandPartnersVisibility ?? null,
+    brandPartnersEnabled: bundle?.brandPartnersVisibility?.status === "published",
+    processSteps: bundle?.processSteps ?? [] as ProcessStepRow[],
+    faqRows: bundle?.faqRows ?? [] as FaqRow[],
+    ctaBlock: bundle?.ctaBlock ?? null,
+    statsItems: mergeSectionItems(bundle?.stats?.items_zh, bundle?.stats?.items_en),
+    whyItems: mergeSectionItems(bundle?.why?.items_zh, bundle?.why?.items_en),
+    editingStep: null as ProcessStepRow | null,
+    editingFaq: null as FaqRow | null,
+    editingCta: null as CtaRow | null,
+  }), [bundle]);
+  const { state: form, field, dirty: formDirty, applyPatchRemote } = useAdminFormState(bundle ? remoteForm : undefined, { initial: remoteForm });
+  const [statsSection] = field("statsSection");
+  const [whySection] = field("whySection");
+  const [brandPartnersVisibility] = field("brandPartnersVisibility");
+  const [brandPartnersEnabled, setBrandPartnersEnabled] = field("brandPartnersEnabled");
+  const [processSteps] = field("processSteps");
+  const [faqRows] = field("faqRows");
+  const [ctaBlock] = field("ctaBlock");
+  const [statsItems, setStatsItems] = field("statsItems");
+  const [whyItems, setWhyItems] = field("whyItems");
+  const [editingStep, setEditingStep] = field("editingStep");
+  const [editingFaq, setEditingFaq] = field("editingFaq");
+  const [editingCta, setEditingCta] = field("editingCta");
   const [savingBrandPartnersVisibility, setSavingBrandPartnersVisibility] = useState(false);
-  const [processSteps, setProcessSteps] = useState<ProcessStepRow[]>([]);
-  const [faqRows, setFaqRows] = useState<FaqRow[]>([]);
-  const [ctaBlock, setCtaBlock] = useState<CtaRow | null>(null);
-
-  const [statsItems, setStatsItems] = useState<HomeSectionItem[]>([]);
-  const [whyItems, setWhyItems] = useState<HomeSectionItem[]>([]);
-  const formDirtyRef = useRef(false);
-  const [formDirty, setFormDirty] = useState(false);
-
-  const markDirty = () => {
-    formDirtyRef.current = true;
-    setFormDirty(true);
-  };
-  useUnsavedChangesWarning(formDirty);
-
-  useEffect(() => {
-    if (!bundle) return;
-    if (formDirtyRef.current) return;
-    setStatsSection(bundle.stats);
-    setWhySection(bundle.why);
-    setBrandPartnersVisibility(bundle.brandPartnersVisibility);
-    setBrandPartnersEnabled(bundle.brandPartnersVisibility?.status === "published");
-    setProcessSteps(bundle.processSteps);
-    setFaqRows(bundle.faqRows);
-    setCtaBlock(bundle.ctaBlock);
-    setStatsItems(mergeSectionItems(bundle.stats?.items_zh, bundle.stats?.items_en));
-    setWhyItems(mergeSectionItems(bundle.why?.items_zh, bundle.why?.items_en));
-  }, [bundle]);
-
-  const refreshEditor = async () => {
-    formDirtyRef.current = false;
-    setFormDirty(false);
-    void invalidatePublishedContent(queryClient);
-    await refetch();
-  };
+  useUnsavedChangesWarning(formDirty || isSubmitting || savingBrandPartnersVisibility);
+  const refreshEditor = async () => { await refetch(); };
 
   const handleManualRefresh = async () => {
     setManualRefreshing(true);
@@ -114,7 +107,7 @@ export default function AdminHomeEditor() {
     }
   };
 
-  const saveHomeSectionItems = async (row: HomeSectionRow | null, items: HomeSectionItem[]) => {
+  const saveHomeSectionItems = protectSubmission("saveHomeSectionItems", async (row: HomeSectionRow | null, items: HomeSectionItem[]) => {
     if (!supabase) return;
     if (!row?.id) {
       toast({ title: A("cannotSave"), description: A("homeDataNotLoaded"), variant: "destructive" });
@@ -122,22 +115,24 @@ export default function AdminHomeEditor() {
     }
     const cleaned = items.filter((item) => Object.values(item || {}).some((value) => String(value || "").trim()));
     try {
-      await saveAdminRecord({
+      const saved = await saveAdminRecord<HomeSectionRow>({
         table: "home_sections",
         payload: { items_zh: cleaned, items_en: cleaned },
         id: row.id,
         expectedUpdatedAt: row.updated_at || null,
         queryClient,
       });
+      const sectionKey = row.id === statsSection?.id ? "statsSection" : "whySection";
+      const itemsKey = sectionKey === "statsSection" ? "statsItems" : "whyItems";
+      applyPatchRemote({ [sectionKey]: saved, [itemsKey]: cleaned }, { [sectionKey]: row, [itemsKey]: items });
     } catch (error) {
       toast({ title: A("saveFailed"), description: formatAdminMutationError(error), variant: "destructive" });
       return;
     }
     toast({ title: A("saved") });
-    await refreshEditor();
-  };
+  });
 
-  const updateBrandPartnersVisibility = async (enabled: boolean) => {
+  const updateBrandPartnersVisibility = protectSubmission("updateBrandPartnersVisibility", async (enabled: boolean) => {
     if (!supabase || savingBrandPartnersVisibility) return;
     if (!brandPartnersVisibility?.id) {
       toast({ title: A("cannotSave"), description: A("homeDataNotLoaded"), variant: "destructive" });
@@ -155,7 +150,7 @@ export default function AdminHomeEditor() {
         expectedUpdatedAt: brandPartnersVisibility.updated_at || null,
         queryClient,
       });
-      setBrandPartnersVisibility(saved);
+      applyPatchRemote({ brandPartnersVisibility: saved, brandPartnersEnabled: enabled }, { brandPartnersVisibility, brandPartnersEnabled: enabled });
       toast({ title: enabled ? A("brandsEnabledToast") : A("brandsDisabledToast") });
     } catch (error) {
       setBrandPartnersEnabled(previousEnabled);
@@ -163,9 +158,9 @@ export default function AdminHomeEditor() {
     } finally {
       setSavingBrandPartnersVisibility(false);
     }
-  };
+  });
 
-  const upsertProcessStep = async (draft: ProcessStepRow) => {
+  const upsertProcessStep = protectSubmission("upsertProcessStep", async (draft: ProcessStepRow) => {
     if (!supabase) return;
     const payload = toRecordPayload({
       step_number: Number(draft.step_number || 0),
@@ -178,21 +173,22 @@ export default function AdminHomeEditor() {
       sort_order: Number(draft.sort_order || 0),
     });
     try {
-      await saveAdminRecord({
+      const saved = await saveAdminRecord<ProcessStepRow>({
         table: "process_steps",
         payload,
         id: draft.id,
         expectedUpdatedAt: draft.updated_at || null,
         queryClient,
       });
+      applyPatchRemote({ editingStep: null, processSteps: draft.id ? processSteps.map((row) => row.id === draft.id ? saved : row) : [...processSteps, saved] }, { editingStep: draft, processSteps: form.processSteps });
       toast({ title: A("saved") });
-      await refreshEditor();
+
     } catch (error) {
       toast({ title: A("saveFailed"), description: formatAdminMutationError(error), variant: "destructive" });
     }
-  };
+  });
 
-  const deleteProcessStep = async (id: string) => {
+  const deleteProcessStep = protectSubmission("deleteProcessStep", async (id: string) => {
     if (!supabase) return;
     const confirmed = await adminConfirm({
       title: A("deleteStepTitle"),
@@ -202,14 +198,15 @@ export default function AdminHomeEditor() {
     if (!confirmed) return;
     try {
       await archiveOrDeleteAdminRecord({ table: "process_steps", id, queryClient });
+      applyPatchRemote({ processSteps: processSteps.filter((row) => row.id !== id) }, { processSteps });
       toast({ title: A("deleted") });
-      await refreshEditor();
+
     } catch (error) {
       toast({ title: A("deleteFailed"), description: formatAdminMutationError(error), variant: "destructive" });
     }
-  };
+  });
 
-  const upsertFaq = async (draft: FaqRow) => {
+  const upsertFaq = protectSubmission("upsertFaq", async (draft: FaqRow) => {
     if (!supabase) return;
     const payload = toRecordPayload({
       page_key: "home",
@@ -221,21 +218,21 @@ export default function AdminHomeEditor() {
       sort_order: Number(draft.sort_order || 0),
     });
     try {
-      await saveAdminRecord({
+      const saved = await saveAdminRecord<FaqRow>({
         table: "faqs",
         payload,
         id: draft.id,
         expectedUpdatedAt: draft.updated_at || null,
         queryClient,
       });
+      applyPatchRemote({ editingFaq: null, faqRows: draft.id ? faqRows.map((row) => row.id === draft.id ? saved : row) : [...faqRows, saved] }, { editingFaq: draft, faqRows: form.faqRows });
       toast({ title: A("saved") });
-      await refreshEditor();
     } catch (error) {
       toast({ title: A("saveFailed"), description: formatAdminMutationError(error), variant: "destructive" });
     }
-  };
+  });
 
-  const deleteFaq = async (id: string) => {
+  const deleteFaq = protectSubmission("deleteFaq", async (id: string) => {
     if (!supabase) return;
     const confirmed = await adminConfirm({
       title: A("deleteFaqTitle"),
@@ -245,14 +242,14 @@ export default function AdminHomeEditor() {
     if (!confirmed) return;
     try {
       await archiveOrDeleteAdminRecord({ table: "faqs", id, queryClient });
+      applyPatchRemote({ faqRows: faqRows.filter((row) => row.id !== id) }, { faqRows });
       toast({ title: A("deleted") });
-      await refreshEditor();
     } catch (error) {
       toast({ title: A("deleteFailed"), description: formatAdminMutationError(error), variant: "destructive" });
     }
-  };
+  });
 
-  const upsertCta = async (draft: CtaRow) => {
+  const upsertCta = protectSubmission("upsertCta", async (draft: CtaRow) => {
     if (!supabase) return;
     const payload = toRecordPayload({
       block_key: "home_final",
@@ -271,19 +268,19 @@ export default function AdminHomeEditor() {
     });
 
     try {
-      await saveAdminRecord({
+      const saved = await saveAdminRecord<CtaRow>({
         table: "cta_blocks",
         payload,
         id: draft.id,
         expectedUpdatedAt: draft.updated_at || null,
         queryClient,
       });
+      applyPatchRemote({ editingCta: null, ctaBlock: saved }, { editingCta: draft, ctaBlock: form.ctaBlock });
       toast({ title: A("saved") });
-      await refreshEditor();
     } catch (error) {
       toast({ title: A("saveFailed"), description: formatAdminMutationError(error), variant: "destructive" });
     }
-  };
+  });
 
   const ctaDraft = useMemo<CtaRow>(
     () =>
@@ -305,9 +302,6 @@ export default function AdminHomeEditor() {
     [ctaBlock],
   );
 
-  const [editingStep, setEditingStep] = useState<ProcessStepRow | null>(null);
-  const [editingFaq, setEditingFaq] = useState<FaqRow | null>(null);
-  const [editingCta, setEditingCta] = useState<CtaRow | null>(null);
 
   if (!isSupabaseConfigured) {
     return <AdminEmptyState title={A("supabaseMissingTitle")} description={A("supabaseMissingDescription")} />;
@@ -366,7 +360,7 @@ export default function AdminHomeEditor() {
               variant="stats"
               value={statsItems}
               onChange={(value) => {
-                markDirty();
+
                 setStatsItems(value);
               }}
             />
@@ -389,7 +383,7 @@ export default function AdminHomeEditor() {
               variant="why"
               value={whyItems}
               onChange={(value) => {
-                markDirty();
+
                 setWhyItems(value);
               }}
             />

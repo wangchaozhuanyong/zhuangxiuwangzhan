@@ -1,4 +1,6 @@
-import { keepPreviousData, useQuery } from "@tanstack/react-query";
+import { INTERACTION_POLICY } from "@/lib/interactionPolicy";
+import { useInteractionQuery as useQuery } from "@/hooks/useInteractionQuery";
+import { keepPreviousData } from "@tanstack/react-query";
 import { loadAdminDashboardStats } from "@/backend/modules/system/service/dashboardService";
 import { adminQueriesEnabled, ADMIN_QUERY_GC_TIME } from "@/lib/adminQueryCore";
 
@@ -13,8 +15,8 @@ export function useAdminDashboardStats() {
     queryKey: ["admin", "dashboard", "stats"],
     enabled: adminQueriesEnabled,
     placeholderData: keepPreviousData,
-    staleTime: 2 * 60 * 1000,
+    staleTime: INTERACTION_POLICY.defaultStaleTime,
     gcTime: ADMIN_QUERY_GC_TIME,
-    queryFn: (): Promise<AdminDashboardStats> => loadAdminDashboardStats(),
+    queryFn: ({ signal }): Promise<AdminDashboardStats> => loadAdminDashboardStats(signal),
   });
 }

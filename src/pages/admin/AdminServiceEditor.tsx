@@ -1,3 +1,5 @@
+import { navigateAfterSave } from "@/lib/navigationProtection";
+import { useSubmissionLock } from "@/hooks/useSubmissionLock";
 import { FormEvent, useCallback, useEffect, useMemo, useState } from "react";
 import { useAdminFormState } from "@/hooks/useAdminFormState";
 import { useUnsavedChangesWarning } from "@/hooks/useUnsavedChangesWarning";
@@ -16,7 +18,7 @@ import { adminConfirm } from "@/components/admin/AdminConfirmProvider";
 import ImageField from "@/components/admin/ImageField";
 import { FaqListEditor, ProcessStepsEditor, TextListEditor } from "@/components/admin/StructuredArrayEditors";
 import { adminServiceEditorText } from "@/i18n/adminServiceEditorText";
-import { invalidateAdminContentDetail, invalidateAfterAdminContentSave } from "@/lib/adminInvalidate";
+import { invalidateAdminContentDetail, invalidateAdminResource } from "@/lib/adminInvalidate";
 import { useAdminServiceDetail } from "@/lib/adminBusinessContentQueries";
 import { adminStatusLabel, getAdminLang, publishStatusOptions } from "@/lib/adminLocale";
 import { getAdminFieldHelp } from "@/lib/adminHelpText";
@@ -131,6 +133,7 @@ const toRecordArray = <T extends Record<string, unknown>>(value: unknown): T[] =
     : [];
 
 export default function AdminServiceEditor() {
+  const { protectSubmission, isSubmitting } = useSubmissionLock();
   const language = getAdminLang();
   const A = useCallback((key: AdminServiceEditorTextKey): string => adminServiceEditorText[key][language], [language]);
   const formatA = useCallback(
@@ -147,7 +150,7 @@ export default function AdminServiceEditor() {
   const [slugError, setSlugError] = useState<string>("");
   const [saveBusy, setSaveBusy] = useState(false);
 
-  const { data: loaded, isLoading, isError, error: loadError } = useAdminServiceDetail(isNew ? undefined : id);
+  const { data: loaded, isLoading, isInitialError: isError, error: loadError } = useAdminServiceDetail(isNew ? undefined : id);
 
   const loadedRecord = useMemo<ServiceRecord | undefined>(() => {
     if (isNew || !loaded) return isNew ? empty : undefined;
@@ -168,12 +171,12 @@ export default function AdminServiceEditor() {
     };
   }, [isNew, loaded]);
 
-  const { state: record, setForm: setRecord, applyRemote, dirty } = useAdminFormState<ServiceRecord>(loadedRecord, {
+  const { state: record, setForm: setRecord, applyRemote, dirty, isDirty } = useAdminFormState<ServiceRecord>(loadedRecord, {
     resetKey: id ?? "new",
     initial: empty,
   });
   const englishMissing = hasAnyMissingEnglish(record as unknown as Record<string, unknown>, serviceEnglishFields);
-  useUnsavedChangesWarning(dirty && !saveBusy);
+  useUnsavedChangesWarning((dirty || saveBusy) || isSubmitting);
 
   useEffect(() => {
     if (!isError || !loadError) return;
@@ -212,7 +215,7 @@ export default function AdminServiceEditor() {
     return `/${lang}/services/${slug}`;
   }, [record.slug]);
 
-  const save = async (nextStatus?: ServiceRecord["status"], generateEnglish?: boolean, forceEnglish?: boolean) => {
+  const save = protectSubmission("record-write", async (nextStatus?: ServiceRecord["status"], generateEnglish?: boolean, forceEnglish?: boolean) => {
     if (!hasServiceBackendConfig()) return;
     const slug = normalizeServiceSlug(record.slug || record.title_zh);
     if (!slug) {
@@ -240,12 +243,11 @@ export default function AdminServiceEditor() {
     }
 
     const { saved, savedId } = savedResult;
-    applyRemote({ ...record, ...saved, id: savedId, slug: savedResult.slug, status: savedResult.status });
+    applyRemote({ ...record, ...saved, id: savedId, slug: savedResult.slug, status: savedResult.status }, record);
     toast({ title: A("saved") });
-    await invalidateAfterAdminContentSave(queryClient);
     setSaveBusy(false);
 
-    if (isNew) navigate(`/admin/services/${savedId}`, { replace: true });
+    if (isNew) navigateAfterSave(isDirty, () => navigate(`/admin/services/${savedId}`, { replace: true }));
 
     if (generateEnglish) {
       try {
@@ -257,9 +259,9 @@ export default function AdminServiceEditor() {
         toast({ title: A("savedGenerateFailed"), description, variant: "destructive" });
       }
     }
-  };
+  });
 
-  const publish = async () => {
+  const publish = protectSubmission("record-write", async () => {
     const confirmed = await adminConfirm({
       title: A("confirmPublishTitle"),
       description: A("confirmPublishDescription"),
@@ -289,8 +291,8 @@ export default function AdminServiceEditor() {
         source: "admin-service-editor",
       });
       const { saved, savedId, warnings } = savedResult;
-      applyRemote({ ...record, ...saved, id: savedId, slug: savedResult.slug, status: savedResult.status });
-      await invalidateAfterAdminContentSave(queryClient);
+      applyRemote({ ...record, ...saved, id: savedId, slug: savedResult.slug, status: savedResult.status }, record);
+      await invalidateAdminResource(queryClient, "services");
 
       if (warnings?.length) {
         toast({ title: A("publishSucceeded"), description: formatA("publishWarningPrefix", { notes: warnings.join(" | ") }) });
@@ -298,13 +300,13 @@ export default function AdminServiceEditor() {
         toast({ title: A("publishSucceeded") });
       }
 
-      if (isNew) navigate(`/admin/services/${savedId}`, { replace: true });
+      if (isNew) navigateAfterSave(isDirty, () => navigate(`/admin/services/${savedId}`, { replace: true }));
     } catch (error) {
       toast({ title: A("saveFailed"), description: formatAdminMutationError(error), variant: "destructive" });
     } finally {
       setSaveBusy(false);
     }
-  };
+  });
 
   const forceRegenerateEnglish = async () => {
     const confirmed = await adminConfirm({

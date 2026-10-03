@@ -1,3 +1,4 @@
+import { withReadSignal } from "@/lib/readRequest";
 import type { QueryClient } from "@tanstack/react-query";
 import { saveAdminRecord } from "@/lib/adminMutation";
 import type { Database } from "@/lib/database.types";
@@ -36,7 +37,7 @@ export async function findBlogPostIdsBySlug(slug: string) {
   return (data || []).map((row) => String(row.id));
 }
 
-export async function fetchAdminBlogPostList<T extends Record<string, unknown>>(input: AdminBlogListInput) {
+export async function fetchAdminBlogPostList<T extends Record<string, unknown>>(input: AdminBlogListInput, signal?: AbortSignal) {
   const supabase = requireSupabase();
   const from = input.page * input.pageSize;
   const to = from + input.pageSize - 1;
@@ -51,21 +52,21 @@ export async function fetchAdminBlogPostList<T extends Record<string, unknown>>(
     .order("published_at", { ascending: false, nullsFirst: false })
     .order("updated_at", { ascending: false });
 
-  const { data, error, count } = await query.range(from, to);
+  const { data, error, count } = await withReadSignal(query.range(from, to), signal);
   if (error) throw error;
   return { rows: (data ?? []) as unknown as T[], count: count ?? (data?.length || 0), page: input.page, pageSize: input.pageSize };
 }
 
-export async function fetchAdminBlogPostDetail(blogPostId: string) {
+export async function fetchAdminBlogPostDetail(blogPostId: string, signal?: AbortSignal) {
   const supabase = requireSupabase();
-  const { data, error } = await supabase.from("blog_posts").select("*").eq("id", blogPostId).single();
+  const { data, error } = await withReadSignal(supabase.from("blog_posts").select("*").eq("id", blogPostId).single(), signal);
   if (error) throw error;
   return data;
 }
 
-export async function fetchAdminBlogPostRows(limit: number) {
+export async function fetchAdminBlogPostRows(limit: number, signal?: AbortSignal) {
   const supabase = requireSupabase();
-  const { data, error } = await supabase.from("blog_posts").select("*").order("created_at", { ascending: false }).limit(limit);
+  const { data, error } = await withReadSignal(supabase.from("blog_posts").select("*").order("created_at", { ascending: false }).limit(limit), signal);
   if (error) throw error;
   return data ?? [];
 }

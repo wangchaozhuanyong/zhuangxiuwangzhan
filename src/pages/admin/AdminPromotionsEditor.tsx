@@ -1,4 +1,6 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useAdminFormState } from "@/hooks/useAdminFormState";
+import { useSubmissionLock } from "@/hooks/useSubmissionLock";
+import { useMemo, useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { ArrowDown, ArrowUp, Plus, Trash2 } from "lucide-react";
 import AdminPageHeader from "@/components/admin/AdminPageHeader";
@@ -123,6 +125,7 @@ const OfferEditor = ({
 };
 
 export default function AdminPromotionsEditor() {
+  const { protectSubmission, isSubmitting } = useSubmissionLock();
   const language = getAdminLang();
   const t = adminPromotionsEditorText[language];
   const queryClient = useQueryClient();
@@ -131,27 +134,19 @@ export default function AdminPromotionsEditor() {
     () => (rows as PromotionRecord[]).find((row) => String(row.page_key || "") === "promotions"),
     [rows],
   );
-  const [record, setRecord] = useState<PromotionRecord>(createDefaultRecord);
-  const [dirty, setDirty] = useState(false);
-  const dirtyRef = useRef(false);
+  const { state: record, setForm: setRecord, applyRemote, dirty } = useAdminFormState<PromotionRecord>(storedRecord, { initial: createDefaultRecord() });
   const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState("");
 
-  useUnsavedChangesWarning(dirty && !saving);
+  useUnsavedChangesWarning((dirty || saving) || isSubmitting);
 
-  useEffect(() => {
-    if (dirtyRef.current || isFetching) return;
-    setRecord(storedRecord ? { ...storedRecord } : createDefaultRecord());
-  }, [isFetching, storedRecord]);
 
   const update = (key: string, value: unknown) => {
-    dirtyRef.current = true;
-    setDirty(true);
     setMessage("");
     setRecord((current) => ({ ...current, [key]: value }));
   };
 
-  const save = async () => {
+  const save = protectSubmission("save", async () => {
     if (!isSupabaseConfigured || saving) return;
     setSaving(true);
     setMessage("");
@@ -191,18 +186,15 @@ export default function AdminPromotionsEditor() {
         payload,
         queryClient,
       });
-      dirtyRef.current = false;
-      setDirty(false);
-      setRecord(saved);
+      applyRemote(saved, record);
       setMessage(t.saved);
-      void queryClient.invalidateQueries({ queryKey: ["admin", "site_pages", "rows"] });
-      await refetch();
+
     } catch (saveError) {
       setMessage(formatAdminMutationError(saveError));
     } finally {
       setSaving(false);
     }
-  };
+  });
 
   const textField = (key: string, label: string, multiline = false) => (
     <div className={multiline ? "md:col-span-2" : ""}>

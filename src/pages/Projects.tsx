@@ -43,7 +43,7 @@ export default function Projects() {
   const indexCopy = schemeAProjectsIndexText[language];
   const routeText = schemeARouteText[language];
   const { filter, setFilter, visibleCount, setVisibleCount } = usePublicListingState(categories, "All", PAGE_SIZE);
-  const { data: projects = [], isLoading, isError, refetch } = usePublishedProjectSummaries(language);
+  const { data: projects = [], isLoading, isInitialError: isError, refetch } = usePublishedProjectSummaries(language);
   const { data: pageContent, isLoading: pageLoading } = usePublishedSitePage(language, "projects");
   const heroImage = resolvePageHeroImage(pageContent?.image_url, pageHeroImages.projects);
   const filtered = filter === "All" ? projects : projects.filter((project) => project.type === filter);

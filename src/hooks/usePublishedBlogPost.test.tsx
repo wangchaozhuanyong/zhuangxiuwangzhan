@@ -54,7 +54,7 @@ describe("blog list to article cache reuse", () => {
     await render();
     expect(result.data).toEqual(completePost);
     expect(result.dataUpdatedAt).toBe(updatedAt);
-    expect(getPublishedBlogPostBySlug).toHaveBeenCalledWith("cached-article", "zh");
+    expect(getPublishedBlogPostBySlug).toHaveBeenCalledWith("cached-article", "zh", expect.anything());
   });
 
   it("fetches the body when the list contains only an Edge preload summary", async () => {
@@ -69,7 +69,7 @@ describe("blog list to article cache reuse", () => {
     client.setQueryData(listKey, [completePost]);
     await render("en");
     expect(result.data).toBeUndefined();
-    expect(getPublishedBlogPostBySlug).toHaveBeenCalledWith("cached-article", "en");
+    expect(getPublishedBlogPostBySlug).toHaveBeenCalledWith("cached-article", "en", expect.anything());
   });
 
   it("does not reuse a different article", async () => {

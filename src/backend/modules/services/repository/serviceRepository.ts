@@ -1,3 +1,4 @@
+import { withReadSignal } from "@/lib/readRequest";
 import type { QueryClient } from "@tanstack/react-query";
 import { saveAdminRecord } from "@/lib/adminMutation";
 import type { Database } from "@/lib/database.types";
@@ -38,6 +39,7 @@ export type PublishServiceRecordResult = {
   next_steps?: string[];
   saved_record?: Record<string, unknown> | null;
   error?: string;
+  cache_invalidation?: { ok?: boolean; revision?: string | null };
 };
 
 export type AdminServiceListInput = {
@@ -60,7 +62,7 @@ export async function findServiceIdsBySlug(slug: string) {
   return (data || []).map((row) => String(row.id));
 }
 
-export async function fetchAdminServiceList<T extends Record<string, unknown>>(input: AdminServiceListInput) {
+export async function fetchAdminServiceList<T extends Record<string, unknown>>(input: AdminServiceListInput, signal?: AbortSignal) {
   const supabase = requireSupabase();
   const from = input.page * input.pageSize;
   const to = from + input.pageSize - 1;
@@ -72,21 +74,21 @@ export async function fetchAdminServiceList<T extends Record<string, unknown>>(i
   query = applySearch(query, ["title_zh", "title_en", "slug"], input.search);
   query = query.order("sort_order", { ascending: true }).order("updated_at", { ascending: false });
 
-  const { data, error, count } = await query.range(from, to);
+  const { data, error, count } = await withReadSignal(query.range(from, to), signal);
   if (error) throw error;
   return { rows: (data ?? []) as unknown as T[], count: count ?? (data?.length || 0), page: input.page, pageSize: input.pageSize };
 }
 
-export async function fetchAdminServiceDetail(serviceId: string) {
+export async function fetchAdminServiceDetail(serviceId: string, signal?: AbortSignal) {
   const supabase = requireSupabase();
-  const { data, error } = await supabase.from("services").select("*").eq("id", serviceId).single();
+  const { data, error } = await withReadSignal(supabase.from("services").select("*").eq("id", serviceId).single(), signal);
   if (error) throw error;
   return data;
 }
 
-export async function fetchAdminServiceRows(limit: number) {
+export async function fetchAdminServiceRows(limit: number, signal?: AbortSignal) {
   const supabase = requireSupabase();
-  const { data, error } = await supabase.from("services").select("*").order("created_at", { ascending: false }).limit(limit);
+  const { data, error } = await withReadSignal(supabase.from("services").select("*").order("created_at", { ascending: false }).limit(limit), signal);
   if (error) throw error;
   return data ?? [];
 }

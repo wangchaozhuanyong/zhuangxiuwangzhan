@@ -1,5 +1,8 @@
 import type { QueryClient } from "@tanstack/react-query";
 import { isSupabaseConfigured } from "@/lib/supabase";
+import { requestPublicContentInvalidation } from "@/lib/adminMutation";
+import { registerPublicSyncIssue, resolvePublicSyncIssue } from "@/lib/publicSyncRecovery";
+import { invalidateAdminResource } from "@/lib/adminInvalidate";
 import {
   fetchAdminServiceDetail,
   fetchAdminServiceList,
@@ -176,6 +179,14 @@ export async function publishAdminService(input: SaveAdminServiceInput & { appro
 
   const saved = (result.saved_record || {}) as Record<string, unknown>;
   const savedId = String(result.saved_id || saved.id || input.record.id || "");
+  const syncKey = `services:${savedId}:publish`;
+  if (result.cache_invalidation?.ok === false) {
+    registerPublicSyncIssue({ key: syncKey, retry: async () => {
+      await requestPublicContentInvalidation({ table: "services", action: "publish", id: savedId });
+      if (input.queryClient) await invalidateAdminResource(input.queryClient, "services");
+      resolvePublicSyncIssue(syncKey);
+    } });
+  } else resolvePublicSyncIssue(syncKey);
 
   return {
     saved,
@@ -191,14 +202,14 @@ export function generateAdminServiceEnglish(serviceId: string, force: boolean) {
   return invokeServiceEnglishGeneration(serviceId, force);
 }
 
-export function loadAdminServiceList<T extends Record<string, unknown>>(input: AdminServiceListInput) {
-  return fetchAdminServiceList<T>(input);
+export function loadAdminServiceList<T extends Record<string, unknown>>(input: AdminServiceListInput, signal?: AbortSignal) {
+  return fetchAdminServiceList<T>(input, signal);
 }
 
-export function loadAdminServiceDetail(serviceId: string) {
-  return fetchAdminServiceDetail(serviceId);
+export function loadAdminServiceDetail(serviceId: string, signal?: AbortSignal) {
+  return fetchAdminServiceDetail(serviceId, signal);
 }
 
-export function loadAdminServiceRows(limit: number) {
-  return fetchAdminServiceRows(limit);
+export function loadAdminServiceRows(limit: number, signal?: AbortSignal) {
+  return fetchAdminServiceRows(limit, signal);
 }
