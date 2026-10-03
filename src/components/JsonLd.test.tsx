@@ -1,7 +1,9 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { renderToStaticMarkup } from "react-dom/server";
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import { JsonLdBlogPosting } from "@/components/JsonLd";
+
+vi.hoisted(() => { vi.stubEnv("VITE_SITE_URL", "https://flashcast.com.my"); });
 
 describe("JsonLdBlogPosting", () => {
   it("retains article metadata without advertising an unverified cover", () => {

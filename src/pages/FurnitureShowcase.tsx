@@ -94,7 +94,7 @@ export default function FurnitureShowcase() {
           </nav>
         ) : null}
         {managedQuery.isFetching && !managedQuery.data ? <p className="fc-furniture-sync-status" role="status">{copy.loadingManagedProducts}</p> : null}
-        {managedQuery.isError ? (
+        {managedQuery.isInitialError ? (
           <div className="fc-furniture-sync-status" role="alert">
             {copy.managedLoadFailed} <button type="button" onClick={() => void managedQuery.refetch()}>{copy.retry}</button>
           </div>

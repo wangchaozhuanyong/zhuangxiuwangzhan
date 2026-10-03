@@ -32,7 +32,19 @@ afterEach(() => {
 });
 
 describe("public preload data", () => {
-  it("uses preloaded site settings before reading Supabase", async () => {
+  it("does not hydrate detail fields from a projected summary body fallback", async () => {
+    setPreloadedPublicData({ services: [{ slug: "fixture", content_en: "Summary fallback" }], materials: [{ slug: "fixture", category: "Flooring", content_en: "Summary fallback" }] });
+    const { getPublicQuerySeed } = await import("@/lib/publicQuerySeed");
+    expect(getPublicQuerySeed(["published", "service", "fixture", "en"])).toBeUndefined();
+    expect(getPublicQuerySeed(["published", "material", "fixture", "en"])).toBeUndefined();
+  });
+  it("hydrates a full projected product detail without another list/detail read", async () => {
+    setPreloadedPublicData({ materials: [{ id: "fixture", slug: "fixture", category: "Flooring", subcategory: "Vinyl", title_en: "Full detail", content_en: "Full body", material_images: [{ image_url: "/fixture.webp", image_type: "cover", is_active: true }] }] });
+    const { getPublicQuerySeed } = await import("@/lib/publicQuerySeed");
+    expect(getPublicQuerySeed(["published", "material", "fixture", "en"])).toMatchObject({ material: { slug: "fixture", description: "Full body" } });
+  });
+
+  it("seeds settings without a repository request", async () => {
     setPreloadedPublicData({
       siteSettings: {
         company_name: "FLASH CAST Test",
@@ -40,8 +52,9 @@ describe("public preload data", () => {
       },
     });
 
-    const { fetchSiteSettings, resolveSiteSettings } = await import("@/lib/siteSettingsApi");
-    const settings = resolveSiteSettings(await fetchSiteSettings(), "zh");
+    const { resolveSiteSettings } = await import("@/lib/siteSettingsApi");
+    const { getPublicQuerySeed } = await import("@/lib/publicQuerySeed");
+    const settings = resolveSiteSettings(getPublicQuerySeed(["site-settings"]) as Parameters<typeof resolveSiteSettings>[0], "zh");
 
     expect(settings.company_name).toBe("FLASH CAST Test");
     expect(settings.logo_url).toBe("/logo-flashcast-20260605.webp");
@@ -90,11 +103,13 @@ describe("public preload data", () => {
       ],
     });
 
-    const { getPublishedBlogPosts, getPublishedMaterials, getPublishedServices } = await import("@/lib/contentApi");
+    type getPublishedBlogPosts = typeof import("@/lib/contentApi")["getPublishedBlogPosts"];
+type getPublishedMaterials = typeof import("@/lib/contentApi")["getPublishedMaterials"];
+type getPublishedServices = typeof import("@/lib/contentApi")["getPublishedServices"];
 
-    expect((await getPublishedServices("en"))[0]?.title).toBe("Office Renovation");
-    expect((await getPublishedMaterials("en"))[0]?.items[0]?.name).toBe("Vinyl Plank");
-    const blogPost = (await getPublishedBlogPosts("en"))[0];
+    expect(((await import("@/lib/publicQuerySeed")).getPublicQuerySeed(["published", "services", "en"]) as Awaited<ReturnType<getPublishedServices>>)[0]?.title).toBe("Office Renovation");
+    expect(((await import("@/lib/publicQuerySeed")).getPublicQuerySeed(["published", "materials", "en"]) as Awaited<ReturnType<getPublishedMaterials>>)[0]?.items[0]?.name).toBe("Vinyl Plank");
+    const blogPost = ((await import("@/lib/publicQuerySeed")).getPublicQuerySeed(["published", "blog", "en"]) as Awaited<ReturnType<getPublishedBlogPosts>>)[0];
     expect(blogPost?.title).toBe("Renovation Guide");
     expect(blogPost?.imageAlt).toBe("Renovation planning guide cover");
     expect(blogPost?.seoTitle).toBe("Renovation Planning Guide | FLASH CAST");
@@ -158,23 +173,21 @@ describe("public preload data", () => {
       }]),
     });
 
-    const {
-      getPublishedBlogPosts,
-      getPublishedMaterials,
-      getPublishedProjectSummaries,
-      getPublishedServiceAreas,
-      getPublishedServices,
-    } = await import("@/lib/contentApi");
+    type getPublishedBlogPosts = typeof import("@/lib/contentApi")["getPublishedBlogPosts"];
+type getPublishedMaterials = typeof import("@/lib/contentApi")["getPublishedMaterials"];
+type getPublishedProjectSummaries = typeof import("@/lib/contentApi")["getPublishedProjectSummaries"];
+type getPublishedServiceAreas = typeof import("@/lib/contentApi")["getPublishedServiceAreas"];
+type getPublishedServices = typeof import("@/lib/contentApi")["getPublishedServices"];
 
-    expect((await getPublishedServices("en"))[0]?.title).toBe("Office Renovation");
-    expect((await getPublishedServices("zh"))[0]?.title).toBe("办公室装修");
-    expect((await getPublishedServices("en"))[0]?.imageAlt).toBe("Office layout concept");
-    expect((await getPublishedServices("zh"))[0]?.imageAlt).toBe("办公室布局概念图");
-    expect((await getPublishedMaterials("zh"))[0]?.items[0]?.name).toBe("乙烯基地板");
-    expect((await getPublishedProjectSummaries("en"))[0]?.thumbnail).toBe("/project.webp");
-    expect((await getPublishedServiceAreas("zh"))[0]?.description).toBe("孟沙装修");
-    expect((await getPublishedBlogPosts("en"))[0]?.readTime).toBe("2 min");
-    expect((await getPublishedBlogPosts("zh"))[0]?.readTime).toBe("2 min");
+    expect(((await import("@/lib/publicQuerySeed")).getPublicQuerySeed(["published", "services", "en"]) as Awaited<ReturnType<getPublishedServices>>)[0]?.title).toBe("Office Renovation");
+    expect(((await import("@/lib/publicQuerySeed")).getPublicQuerySeed(["published", "services", "zh"]) as Awaited<ReturnType<getPublishedServices>>)[0]?.title).toBe("办公室装修");
+    expect(((await import("@/lib/publicQuerySeed")).getPublicQuerySeed(["published", "services", "en"]) as Awaited<ReturnType<getPublishedServices>>)[0]?.imageAlt).toBe("Office layout concept");
+    expect(((await import("@/lib/publicQuerySeed")).getPublicQuerySeed(["published", "services", "zh"]) as Awaited<ReturnType<getPublishedServices>>)[0]?.imageAlt).toBe("办公室布局概念图");
+    expect(((await import("@/lib/publicQuerySeed")).getPublicQuerySeed(["published", "materials", "zh"]) as Awaited<ReturnType<getPublishedMaterials>>)[0]?.items[0]?.name).toBe("乙烯基地板");
+    expect(((await import("@/lib/publicQuerySeed")).getPublicQuerySeed(["published", "project_summaries", "en", "all"]) as Awaited<ReturnType<getPublishedProjectSummaries>>)[0]?.thumbnail).toBe("/project.webp");
+    expect(((await import("@/lib/publicQuerySeed")).getPublicQuerySeed(["published", "service_areas", "zh"]) as Awaited<ReturnType<getPublishedServiceAreas>>)[0]?.description).toBe("孟沙装修");
+    expect(((await import("@/lib/publicQuerySeed")).getPublicQuerySeed(["published", "blog", "en"]) as Awaited<ReturnType<getPublishedBlogPosts>>)[0]?.readTime).toBe("2 min");
+    expect(((await import("@/lib/publicQuerySeed")).getPublicQuerySeed(["published", "blog", "zh"]) as Awaited<ReturnType<getPublishedBlogPosts>>)[0]?.readTime).toBe("2 min");
   });
 
   it("uses preloaded site pages and footer CTA blocks", async () => {
@@ -204,10 +217,11 @@ describe("public preload data", () => {
       },
     });
 
-    const { getPublishedCtaBlock, getPublishedSitePage } = await import("@/lib/homeContentApi");
+    type getPublishedCtaBlock = typeof import("@/lib/homeContentApi")["getPublishedCtaBlock"];
+type getPublishedSitePage = typeof import("@/lib/homeContentApi")["getPublishedSitePage"];
 
-    expect((await getPublishedSitePage("en", "services"))?.seo_title).toBe("Services SEO");
-    expect((await getPublishedCtaBlock("en", "home_final"))?.title).toBe("Start your renovation");
+    expect(((await import("@/lib/publicQuerySeed")).getPublicQuerySeed(["published", "site_page", "en", "services"]) as Awaited<ReturnType<getPublishedSitePage>>)?.seo_title).toBe("Services SEO");
+    expect(((await import("@/lib/publicQuerySeed")).getPublicQuerySeed(["published", "cta", "en", "home_final"]) as Awaited<ReturnType<getPublishedCtaBlock>>)?.title).toBe("Start your renovation");
   });
 
   it("keeps preloaded homepage brands hidden when the visibility setting is off", async () => {
@@ -218,8 +232,8 @@ describe("public preload data", () => {
       },
     });
 
-    const { getPublishedHomeContentBundle } = await import("@/lib/homeContentApi");
-    const result = await getPublishedHomeContentBundle("en");
+    type getPublishedHomeContentBundle = typeof import("@/lib/homeContentApi")["getPublishedHomeContentBundle"];
+    const result = (await import("@/lib/publicQuerySeed")).getPublicQuerySeed(["published", "home_bundle", "en"]) as Awaited<ReturnType<getPublishedHomeContentBundle>>;
 
     expect(result.source).toBe("remote");
     expect(result.data.brandPartners).toHaveLength(1);
@@ -278,9 +292,9 @@ describe("public preload data", () => {
       }),
     });
 
-    const { getPublishedHomeContentBundle } = await import("@/lib/homeContentApi");
-    const english = await getPublishedHomeContentBundle("en");
-    const chinese = await getPublishedHomeContentBundle("zh");
+    type getPublishedHomeContentBundle = typeof import("@/lib/homeContentApi")["getPublishedHomeContentBundle"];
+    const english = (await import("@/lib/publicQuerySeed")).getPublicQuerySeed(["published", "home_bundle", "en"]) as Awaited<ReturnType<getPublishedHomeContentBundle>>;
+    const chinese = (await import("@/lib/publicQuerySeed")).getPublicQuerySeed(["published", "home_bundle", "zh"]) as Awaited<ReturnType<getPublishedHomeContentBundle>>;
 
     expect(english.data.pageContent?.seo_title).toBe("Home SEO");
     expect(chinese.data.pageContent?.seo_title).toBe("首页 SEO");
@@ -314,8 +328,8 @@ describe("public preload data", () => {
       },
     });
 
-    const { getPublishedHomeContentBundle } = await import("@/lib/homeContentApi");
-    const result = await getPublishedHomeContentBundle("en");
+    type getPublishedHomeContentBundle = typeof import("@/lib/homeContentApi")["getPublishedHomeContentBundle"];
+    const result = (await import("@/lib/publicQuerySeed")).getPublicQuerySeed(["published", "home_bundle", "en"]) as Awaited<ReturnType<getPublishedHomeContentBundle>>;
 
     expect(result.source).toBe("remote");
     expect(result.data.pageContent?.id).toBe("published-home");
@@ -330,8 +344,8 @@ describe("public preload data", () => {
       },
     });
 
-    const { getPublishedSitePage } = await import("@/lib/homeContentApi");
+    type getPublishedSitePage = typeof import("@/lib/homeContentApi")["getPublishedSitePage"];
 
-    expect(await getPublishedSitePage("en", "promotions")).toBeNull();
+    expect((await import("@/lib/publicQuerySeed")).getPublicQuerySeed(["published", "site_page", "en", "promotions"]) as Awaited<ReturnType<getPublishedSitePage>>).toBeNull();
   });
 });

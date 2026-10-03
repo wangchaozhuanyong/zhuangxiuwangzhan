@@ -1,4 +1,5 @@
-import { useDeferredValue, useEffect, useState } from "react";
+import { useAdminListingState } from "@/hooks/useAdminListingState";
+
 import { Link } from "react-router-dom";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -22,20 +23,18 @@ const A = (key: AdminBlogListTextKey) => adminBlogListText[key][getAdminLang()];
 
 export default function AdminBlogList() {
   const language = useAdminLang();
-  const [status, setStatus] = useState<string>("all");
-  const [search, setSearch] = useState("");
-  const [page, setPage] = useState(0);
-  const deferredSearch = useDeferredValue(search);
-  const { data, error, isFetching, refetch } = useAdminBlogPosts({ page, status, search: deferredSearch });
+  const list = useAdminListingState();
+  const { search, setSearch, deferredSearch, page, setPage } = list;
+  const status = list.filter("status");
+  const setStatus = (value: string) => list.setFilter("status", value);
+
+  const { data, error, isFetching, isPlaceholderData, refetch } = useAdminBlogPosts({ page, status, search: deferredSearch });
   const rows = data?.rows ?? [];
   const total = data?.count ?? 0;
   const pageSize = data?.pageSize ?? 30;
   const errorMessage = error ? formatUserFacingError(error, getAdminLang()) : "";
   const initialLoading = isFetching && !data;
 
-  useEffect(() => {
-    setPage(0);
-  }, [deferredSearch, status]);
 
   const columns: AdminDataTableColumn<AdminBlogRow>[] = [
     {
@@ -135,7 +134,7 @@ export default function AdminBlogList() {
       {initialLoading ? (
         <AdminLoadingState />
       ) : (
-        <AdminDataTable
+        <AdminDataTable busy={isPlaceholderData}
           columns={columns}
           rows={rows}
           rowKey={(r) => r.id}

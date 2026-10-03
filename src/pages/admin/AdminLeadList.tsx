@@ -1,5 +1,5 @@
-import { useDeferredValue, useEffect, useState } from "react";
-import { Link, useSearchParams } from "react-router-dom";
+import { useAdminListingState } from "@/hooks/useAdminListingState";
+import { Link } from "react-router-dom";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -34,13 +34,12 @@ const csvEscape = (value: unknown) => `"${String(value ?? "").replaceAll('"', '"
 
 const AdminLeadList = () => {
   const lang = getAdminLang();
-  const [searchParams, setSearchParams] = useSearchParams();
-  const [search, setSearch] = useState("");
-  const [status, setStatus] = useState(searchParams.get("status") || "all");
-  const [workflow, setWorkflow] = useState<AdminWorkflowFilter>(() => normalizeAdminWorkflowFilter(searchParams.get("filter"), "leads"));
-  const [page, setPage] = useState(0);
-  const deferredSearch = useDeferredValue(search);
-  const { data, error, isFetching } = useAdminLeads({ page, status, workflow, search: deferredSearch });
+  const list = useAdminListingState();
+  const { search, setSearch, page, setPage, deferredSearch } = list;
+  const status = statuses.includes(list.filter("status")) ? list.filter("status") : "all";
+  const workflow = normalizeAdminWorkflowFilter(list.filter("filter"), "leads");
+
+  const { data, error, isFetching, isPlaceholderData } = useAdminLeads({ page, status, workflow, search: deferredSearch });
   const rows = data?.rows ?? [];
   const total = data?.count ?? 0;
   const pageSize = data?.pageSize ?? 30;
@@ -48,40 +47,8 @@ const AdminLeadList = () => {
   const initialLoading = isFetching && !data;
   const workflowOptions = getAdminWorkflowOptions("leads", lang);
 
-  useEffect(() => {
-    setPage(0);
-  }, [deferredSearch, status, workflow]);
-
-  useEffect(() => {
-    const nextStatus = searchParams.get("status") || "all";
-    setStatus(statuses.includes(nextStatus) ? nextStatus : "all");
-    setWorkflow(normalizeAdminWorkflowFilter(searchParams.get("filter"), "leads"));
-  }, [searchParams]);
-
-  const updateListParams = (next: { status?: string; filter?: AdminWorkflowFilter }) => {
-    const params = new URLSearchParams(searchParams);
-    if (next.status !== undefined) {
-      if (next.status === "all") params.delete("status");
-      else params.set("status", next.status);
-    }
-    if (next.filter !== undefined) {
-      if (next.filter === "all") params.delete("filter");
-      else params.set("filter", next.filter);
-    }
-    setSearchParams(params, { replace: true });
-  };
-
-  const handleStatusChange = (value: string) => {
-    setStatus(value);
-    setWorkflow("all");
-    updateListParams({ status: value, filter: "all" });
-  };
-
-  const handleWorkflowChange = (value: AdminWorkflowFilter) => {
-    setWorkflow(value);
-    setStatus("all");
-    updateListParams({ status: "all", filter: value });
-  };
+  const handleStatusChange = (value: string) => list.update({ status: value, filter: "all", page: 0 });
+  const handleWorkflowChange = (value: AdminWorkflowFilter) => list.update({ status: "all", filter: value, page: 0 });
 
   const exportCsv = () => {
     const fields = ["created_at", "name", "phone", "email", "project_type", "location", "status", "source_path", "message", "notes"];
@@ -105,7 +72,7 @@ const AdminLeadList = () => {
         description={A("description")}
         helpText={A("helpText")}
         actions={
-          <Button type="button" variant="outline" onClick={exportCsv} disabled={rows.length === 0} title={formatA("exportCurrentTitle", { rows: String(rows.length), total: String(total) })}>
+          <Button type="button" variant="outline" onClick={exportCsv} disabled={rows.length === 0 || isPlaceholderData} title={formatA("exportCurrentTitle", { rows: String(rows.length), total: String(total) })}>
             {formatA("exportCurrentButton", { rows: String(rows.length), total: String(total) })}
           </Button>
         }
@@ -146,7 +113,7 @@ const AdminLeadList = () => {
       {initialLoading ? (
         <AdminLoadingState />
       ) : (
-      <div className="space-y-3">
+      <div ref={(node) => node?.toggleAttribute("inert", isPlaceholderData)} aria-busy={isPlaceholderData} className="space-y-3">
         {rows.map((lead) => {
           const whatsappHref = whatsappHrefFromPhone(lead.phone);
           const telHref = telHrefFromPhone(lead.phone);

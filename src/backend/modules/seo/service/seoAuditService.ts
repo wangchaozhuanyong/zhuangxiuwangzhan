@@ -41,11 +41,11 @@ export type AdminSeoAuditRow = Record<string, unknown> & {
 
 const errorMessage = (error: unknown) => (error instanceof Error ? error.message : String(error || "SEO audit failed"));
 
-export async function loadAdminSeoAuditRows(): Promise<AdminSeoAuditRow[]> {
+export async function loadAdminSeoAuditRows(signal?: AbortSignal): Promise<AdminSeoAuditRow[]> {
   const entries = await Promise.all(
     adminSeoSources.map(async (source) => {
       try {
-        const rows = await fetchAdminSeoAuditRows(source.table);
+        const rows = await fetchAdminSeoAuditRows(source.table, signal);
         return rows.map((row) => ({ ...row, source, table: source.table })) as AdminSeoAuditRow[];
       } catch (error) {
         return [{ table: source.table, source, error: errorMessage(error) }] as AdminSeoAuditRow[];

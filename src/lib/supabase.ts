@@ -1,8 +1,9 @@
 import { createClient } from "@supabase/supabase-js";
 import type { Database } from "./database.types";
 import { isSupabaseConfigured, supabaseAnonKey, supabaseUrl } from "@/lib/supabaseConfig";
+import { INTERACTION_POLICY } from "@/lib/interactionPolicy";
 
-const PUBLIC_READ_TIMEOUT_MS = 10_000;
+const PUBLIC_READ_TIMEOUT_MS = INTERACTION_POLICY.readTimeout;
 
 export { isSupabaseConfigured } from "@/lib/supabaseConfig";
 
@@ -30,9 +31,10 @@ const fetchWithReadTimeout: typeof fetch = async (input, init) => {
 
   const controller = new AbortController();
   const timeoutId = globalThis.setTimeout(() => controller.abort(), PUBLIC_READ_TIMEOUT_MS);
-  const upstreamSignal = init?.signal;
-  const abortFromUpstream = () => controller.abort();
-  upstreamSignal?.addEventListener("abort", abortFromUpstream, { once: true });
+  const upstreamSignal = init?.signal ?? (typeof Request !== "undefined" && input instanceof Request ? input.signal : undefined);
+  const abortFromUpstream = () => controller.abort(upstreamSignal?.reason);
+  if (upstreamSignal?.aborted) abortFromUpstream();
+  else upstreamSignal?.addEventListener("abort", abortFromUpstream, { once: true });
 
   try {
     return await fetch(input, { ...init, signal: controller.signal });

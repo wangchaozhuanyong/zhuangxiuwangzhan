@@ -112,16 +112,16 @@ const mapManagedFurnitureProduct = (row: FurnitureMaterialRow, language: Languag
   };
 };
 
-export async function getPublishedManagedFurnitureProducts(language: Language): Promise<FurnitureProduct[]> {
-  const rows = await fetchPublishedMaterialRowsByCategory(FURNITURE_MATERIAL_CATEGORY);
+export async function getPublishedManagedFurnitureProducts(language: Language, signal?: AbortSignal): Promise<FurnitureProduct[]> {
+  const rows = await fetchPublishedMaterialRowsByCategory(FURNITURE_MATERIAL_CATEGORY, signal);
   return (rows || [])
     .filter((row) => !productsBySlug.has(row.slug))
     .map((row) => mapManagedFurnitureProduct(row, language));
 }
 
-export async function getPublishedManagedFurnitureProductBySlug(slug: string, language: Language): Promise<FurnitureProduct | null> {
+export async function getPublishedManagedFurnitureProductBySlug(slug: string, language: Language, signal?: AbortSignal): Promise<FurnitureProduct | null> {
   if (productsBySlug.has(slug)) return null;
-  const row = await fetchPublishedMaterialBySlugAndCategory(slug, FURNITURE_MATERIAL_CATEGORY);
+  const row = await fetchPublishedMaterialBySlugAndCategory(slug, FURNITURE_MATERIAL_CATEGORY, signal);
   return row ? mapManagedFurnitureProduct(row, language) : null;
 }
 

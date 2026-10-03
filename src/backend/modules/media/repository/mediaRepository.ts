@@ -1,3 +1,4 @@
+import { withReadSignal } from "@/lib/readRequest";
 import { buildMediaAssetInsert, type AdminUploadedMedia } from "@/lib/adminMedia";
 import { supabase } from "@/lib/supabase";
 
@@ -55,7 +56,7 @@ export async function fetchAdminMediaAssetList<T>({
   pageSize,
   usageType = "all",
   search,
-}: AdminMediaAssetListInput) {
+}: AdminMediaAssetListInput, signal?: AbortSignal) {
   if (!supabase) throw new Error("Supabase is not configured.");
 
   let query = supabase
@@ -70,7 +71,7 @@ export async function fetchAdminMediaAssetList<T>({
   query = applyMediaSearch(query, search);
 
   const from = page * pageSize;
-  const { data, error, count } = await query.range(from, from + pageSize - 1);
+  const { data, error, count } = await withReadSignal(query.range(from, from + pageSize - 1), signal);
   if (error) throw error;
 
   return {

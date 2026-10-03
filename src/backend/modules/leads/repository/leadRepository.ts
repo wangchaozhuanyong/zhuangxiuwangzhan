@@ -1,3 +1,4 @@
+import { withReadSignal } from "@/lib/readRequest";
 import { requireSupabase } from "@/lib/supabase";
 import { adminDayStartIso, adminSince24hIso, type AdminWorkflowFilter } from "@/lib/adminLeadWorkflow";
 import type { Database } from "@/lib/database.types";
@@ -39,7 +40,7 @@ export async function invokeSubmitLeadFunction(body: Record<string, unknown>) {
   return data as { ok?: boolean; id?: string };
 }
 
-export async function fetchAdminLeadList<T extends Record<string, unknown>>(input: AdminLeadListRepositoryInput): Promise<AdminListPage<T>> {
+export async function fetchAdminLeadList<T extends Record<string, unknown>>(input: AdminLeadListRepositoryInput, signal?: AbortSignal): Promise<AdminListPage<T>> {
   const supabase = requireSupabase();
   const from = input.page * input.pageSize;
   const to = from + input.pageSize - 1;
@@ -64,7 +65,7 @@ export async function fetchAdminLeadList<T extends Record<string, unknown>>(inpu
   }
   query = query.order("created_at", { ascending: false });
 
-  const { data, error, count } = await query.range(from, to);
+  const { data, error, count } = await withReadSignal(query.range(from, to), signal);
   if (error) throw error;
 
   return {
@@ -75,18 +76,18 @@ export async function fetchAdminLeadList<T extends Record<string, unknown>>(inpu
   };
 }
 
-export async function fetchAdminLeadDetail(leadId: string) {
+export async function fetchAdminLeadDetail(leadId: string, signal?: AbortSignal) {
   const supabase = requireSupabase();
-  const [{ data: lead, error: leadError }, { data: followups }] = await Promise.all([
+  const [{ data: lead, error: leadError }, { data: followups }] = await withReadSignal(Promise.all([
     supabase.from("leads").select("*").eq("id", leadId).single(),
     supabase.from("lead_followups").select("*").eq("lead_id", leadId).order("created_at", { ascending: false }),
-  ]);
+  ]), signal);
 
   if (leadError) throw leadError;
   return { lead, followups: followups ?? [] };
 }
 
-export async function fetchAdminLeadReportRows(startIso?: string | null) {
+export async function fetchAdminLeadReportRows(startIso?: string | null, signal?: AbortSignal) {
   const supabase = requireSupabase();
   let query = supabase
     .from("leads")
@@ -96,7 +97,7 @@ export async function fetchAdminLeadReportRows(startIso?: string | null) {
 
   if (startIso) query = query.gte("created_at", startIso);
 
-  const { data, error } = await query;
+  const { data, error } = await withReadSignal(query, signal);
   if (error) throw error;
   return data || [];
 }

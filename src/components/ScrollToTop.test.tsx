@@ -51,6 +51,19 @@ beforeEach(() => {
 afterEach(async () => { await act(async () => root.unmount()); container.remove(); vi.useRealTimers(); });
 
 describe("single public scroll owner", () => {
+  it("records an admin filtered entry for detail/back without resetting its scroll", async () => {
+    await mount("/admin/services"); readAt(520);
+    await go("/admin/services?status=published&page=1"); expect(window.scrollY).toBe(520);
+    readAt(860); window.dispatchEvent(new Event("admin-route-layout")); expect(window.scrollY).toBe(860);
+    await go("/admin/services/synthetic"); expect(window.scrollY).toBe(0);
+    await go(-1); expect(location.search).toBe("?status=published&page=1"); expect(window.scrollY).toBe(860);
+  });
+  it("records admin fragment entries instead of losing the later reading position", async () => {
+    await mount("/admin/services"); readAt(410);
+    await go("/admin/services#section"); expect(window.scrollY).toBe(410);
+    readAt(740); await go("/admin/services/synthetic");
+    await go(-1); expect(location.hash).toBe("#section"); expect(window.scrollY).toBe(740);
+  });
   it("restores each same-page history entry, including a fragment entry read further down", async () => {
     await mount(); readAt(720);
     await click("normal-anchor");

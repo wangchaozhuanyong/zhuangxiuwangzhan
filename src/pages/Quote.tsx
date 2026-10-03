@@ -1,3 +1,6 @@
+import { interactionText } from "@/i18n/interactionText";
+import { useSubmissionLock } from "@/hooks/useSubmissionLock";
+import { useUnsavedChangesWarning } from "@/hooks/useUnsavedChangesWarning";
 import { FormEvent, useEffect, useMemo, useRef, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import LocalizedLink from "@/components/LocalizedLink";
@@ -77,6 +80,7 @@ const focusFirstQuoteError = (errors: FormErrors) => {
 };
 
 const Quote = () => {
+  const { protectSubmission, isSubmitting } = useSubmissionLock();
   const { language } = useLanguage();
   const [searchParams] = useSearchParams();
   const settings = useSiteSettings();
@@ -98,9 +102,12 @@ const Quote = () => {
     budget: "",
     details: quoteContext.details,
   });
+  const currentForm = useRef(form); currentForm.current = form;
+  const lastSavedForm = useRef<typeof form | null>(null);
   const [errors, setErrors] = useState<FormErrors>({});
   const [status, setStatus] = useState<"idle" | "submitting" | "success" | "error">("idle");
   const formGuard = useFormGuard();
+  useUnsavedChangesWarning(isSubmitting || status === "submitting" || Object.values(form).some((value) => String(value).trim() !== "") && JSON.stringify(form) !== JSON.stringify(lastSavedForm.current));
   const [honeypot, setHoneypot] = useState("");
   const requiredCompletion = useMemo(
     () => ({
@@ -173,7 +180,7 @@ const Quote = () => {
     return !hasErrors;
   };
 
-  const handleSubmit = async (event: FormEvent) => {
+  const handleSubmit = protectSubmission("submit", async (event: FormEvent) => {
     event.preventDefault();
     if (status === "submitting") return;
     if (!validate()) {
@@ -200,7 +207,8 @@ const Quote = () => {
         project_type: form.projectType,
         budget_range: form.budget,
       });
-      setStatus("success");
+      lastSavedForm.current = form;
+      setStatus(JSON.stringify(currentForm.current) === JSON.stringify(form) ? "success" : "idle");
     } catch (error) {
       console.error(error);
       trackQuoteFormSubmit("error", {
@@ -209,7 +217,7 @@ const Quote = () => {
       });
       setStatus("error");
     }
-  };
+  });
 
   if (status === "success") {
     return (
@@ -309,7 +317,8 @@ const Quote = () => {
                 </div>
               )}
 
-              <form onSubmit={handleSubmit} className="space-y-4" noValidate>
+              {lastSavedForm.current && status === "idle" ? <p role="status" className="mb-4 rounded-lg border border-border bg-background p-3 text-sm">{interactionText[language].savedWhileEditing}</p> : null}
+                    <form onSubmit={handleSubmit} className="space-y-4" noValidate>
                 {status === "error" && (
                   <div id="quote-submit-error" role="alert" aria-live="assertive" tabIndex={-1} className="mb-6 flex items-start gap-3 rounded-card border border-destructive/20 bg-destructive/5 p-4 text-sm focus:outline-none">
                     <AlertCircle className="mt-0.5 h-4 w-4 text-destructive" />

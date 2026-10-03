@@ -1,4 +1,6 @@
-import { useQuery } from "@tanstack/react-query";
+import AdminLoadingState from "@/components/admin/AdminLoadingState";
+import { useInteractionQuery as useQuery } from "@/hooks/useInteractionQuery";
+
 import AdminEmptyState from "@/components/admin/AdminEmptyState";
 import AdminPageHeader from "@/components/admin/AdminPageHeader";
 import { Badge } from "@/components/ui/badge";
@@ -11,10 +13,10 @@ import { formatAdminSystemLogRow } from "@/lib/adminSystemLogDisplay";
 const AdminSystemLogs = () => {
   const language = getAdminLang();
   const text = adminSystemLogsText[language];
-  const { data = [], isFetching, error, refetch } = useQuery({
+  const { data = [], isLoading, isInitialError, isFetching, refetch } = useQuery({
     queryKey: ["admin", "system_event_logs"],
     enabled: adminQueriesEnabled,
-    queryFn: () => loadAdminSystemEventLogs(100),
+    queryFn: ({ signal }) => loadAdminSystemEventLogs(100, signal),
   });
 
   if (!adminQueriesEnabled) {
@@ -33,7 +35,7 @@ const AdminSystemLogs = () => {
           </button>
         }
       />
-      {error ? (
+      {isLoading ? <AdminLoadingState label={text.refreshing} /> : isInitialError ? (
         <AdminEmptyState title={text.loadFailedTitle} description={text.loadFailedDescription} />
       ) : data.length === 0 ? (
         <AdminEmptyState title={text.emptyTitle} description={text.emptyDescription} />

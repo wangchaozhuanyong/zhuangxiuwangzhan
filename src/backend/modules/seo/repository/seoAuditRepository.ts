@@ -1,3 +1,4 @@
+import { withReadSignal } from "@/lib/readRequest";
 import { requireSupabase } from "@/lib/supabase";
 
 export const adminSeoAuditSelectByTable = {
@@ -20,9 +21,9 @@ export const adminSeoAuditSelectByTable = {
 
 export type AdminSeoAuditTable = keyof typeof adminSeoAuditSelectByTable;
 
-export async function fetchAdminSeoAuditRows(table: AdminSeoAuditTable) {
+export async function fetchAdminSeoAuditRows(table: AdminSeoAuditTable, signal?: AbortSignal) {
   const supabase = requireSupabase();
-  const { data, error } = await supabase.from(table).select(adminSeoAuditSelectByTable[table]).limit(200);
+  const { data, error } = await withReadSignal(supabase.from(table).select(adminSeoAuditSelectByTable[table]).limit(200), signal);
   if (error) throw error;
 
   return (data ?? []) as unknown as Array<Record<string, unknown>>;

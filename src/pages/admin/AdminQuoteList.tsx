@@ -1,5 +1,5 @@
-import { useDeferredValue, useEffect, useState } from "react";
-import { Link, useSearchParams } from "react-router-dom";
+import { useAdminListingState } from "@/hooks/useAdminListingState";
+import { Link } from "react-router-dom";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -30,13 +30,12 @@ const AdminQuoteList = () => {
   const A = (key: AdminQuoteListTextKey) => adminQuoteListText[key][lang];
   const formatA = (key: AdminQuoteListTextKey, values: Record<string, string>) =>
     Object.entries(values).reduce((text, [name, value]) => text.replaceAll(`{${name}}`, value), A(key));
-  const [searchParams, setSearchParams] = useSearchParams();
-  const [search, setSearch] = useState("");
-  const [status, setStatus] = useState(searchParams.get("status") || "all");
-  const [workflow, setWorkflow] = useState<AdminWorkflowFilter>(() => normalizeAdminWorkflowFilter(searchParams.get("filter"), "quote_requests"));
-  const [page, setPage] = useState(0);
-  const deferredSearch = useDeferredValue(search);
-  const { data, error, isFetching } = useAdminQuotes({ page, status, workflow, search: deferredSearch });
+  const list = useAdminListingState();
+  const { search, setSearch, page, setPage, deferredSearch } = list;
+  const status = statuses.includes(list.filter("status")) ? list.filter("status") : "all";
+  const workflow = normalizeAdminWorkflowFilter(list.filter("filter"), "quote_requests");
+
+  const { data, error, isFetching, isPlaceholderData } = useAdminQuotes({ page, status, workflow, search: deferredSearch });
   const rows = data?.rows ?? [];
   const total = data?.count ?? 0;
   const pageSize = data?.pageSize ?? 30;
@@ -44,40 +43,8 @@ const AdminQuoteList = () => {
   const initialLoading = isFetching && !data;
   const workflowOptions = getAdminWorkflowOptions("quote_requests", lang);
 
-  useEffect(() => {
-    setPage(0);
-  }, [deferredSearch, status, workflow]);
-
-  useEffect(() => {
-    const nextStatus = searchParams.get("status") || "all";
-    setStatus(statuses.includes(nextStatus) ? nextStatus : "all");
-    setWorkflow(normalizeAdminWorkflowFilter(searchParams.get("filter"), "quote_requests"));
-  }, [searchParams]);
-
-  const updateListParams = (next: { status?: string; filter?: AdminWorkflowFilter }) => {
-    const params = new URLSearchParams(searchParams);
-    if (next.status !== undefined) {
-      if (next.status === "all") params.delete("status");
-      else params.set("status", next.status);
-    }
-    if (next.filter !== undefined) {
-      if (next.filter === "all") params.delete("filter");
-      else params.set("filter", next.filter);
-    }
-    setSearchParams(params, { replace: true });
-  };
-
-  const handleStatusChange = (value: string) => {
-    setStatus(value);
-    setWorkflow("all");
-    updateListParams({ status: value, filter: "all" });
-  };
-
-  const handleWorkflowChange = (value: AdminWorkflowFilter) => {
-    setWorkflow(value);
-    setStatus("all");
-    updateListParams({ status: "all", filter: value });
-  };
+  const handleStatusChange = (value: string) => list.update({ status: value, filter: "all", page: 0 });
+  const handleWorkflowChange = (value: AdminWorkflowFilter) => list.update({ status: "all", filter: value, page: 0 });
 
   const exportCsv = () => {
     const fields = ["created_at", "customer_name", "customer_phone", "customer_email", "project_type", "location", "property_size", "estimated_budget", "quoted_amount", "status", "source_path", "notes"];
@@ -101,7 +68,7 @@ const AdminQuoteList = () => {
         description={A("description")}
         helpText={A("helpText")}
         actions={
-          <Button type="button" variant="outline" onClick={exportCsv} disabled={rows.length === 0} title={formatA("exportCurrentTitle", { rows: String(rows.length), total: String(total) })}>
+          <Button type="button" variant="outline" onClick={exportCsv} disabled={rows.length === 0 || isPlaceholderData} title={formatA("exportCurrentTitle", { rows: String(rows.length), total: String(total) })}>
             {formatA("exportCurrentButton", { rows: String(rows.length), total: String(total) })}
           </Button>
         }
@@ -142,7 +109,7 @@ const AdminQuoteList = () => {
       {initialLoading ? (
         <AdminLoadingState />
       ) : (
-      <div className="space-y-3">
+      <div ref={(node) => node?.toggleAttribute("inert", isPlaceholderData)} aria-busy={isPlaceholderData} className="space-y-3">
         {rows.map((quote) => {
           const whatsappHref = whatsappHrefFromPhone(quote.customer_phone);
           const telHref = telHrefFromPhone(quote.customer_phone);

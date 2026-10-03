@@ -1,4 +1,5 @@
-import { useMemo, useState } from "react";
+import { useAdminListingState } from "@/hooks/useAdminListingState";
+import { useMemo } from "react";
 import { Link } from "react-router-dom";
 import AdminPageHeader from "@/components/admin/AdminPageHeader";
 import AdminLoadingState from "@/components/admin/AdminLoadingState";
@@ -30,7 +31,9 @@ export default function AdminPublishCenter() {
   const { data, isFetching, refetch } = useAdminContentHealth();
   const items = data ?? emptyContentHealthItems;
   const initialLoading = isFetching && !data;
-  const [filter, setFilter] = useState<StatusFilter>("all");
+  const list = useAdminListingState();
+  const filter = list.filter("filter") as StatusFilter;
+  const setFilter = (value: StatusFilter) => list.setFilter("filter", value);
 
   const summary = useMemo(
     () => {

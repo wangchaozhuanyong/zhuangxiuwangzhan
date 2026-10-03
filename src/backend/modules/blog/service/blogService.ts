@@ -83,14 +83,14 @@ export function generateAdminBlogEnglish(blogPostId: string, force: boolean) {
   return invokeBlogPostEnglishGeneration(blogPostId, force);
 }
 
-export function loadAdminBlogPostList<T extends Record<string, unknown>>(input: AdminBlogListInput) {
-  return fetchAdminBlogPostList<T>(input);
+export function loadAdminBlogPostList<T extends Record<string, unknown>>(input: AdminBlogListInput, signal?: AbortSignal) {
+  return fetchAdminBlogPostList<T>(input, signal);
 }
 
-export function loadAdminBlogPostDetail(blogPostId: string) {
-  return fetchAdminBlogPostDetail(blogPostId);
+export function loadAdminBlogPostDetail(blogPostId: string, signal?: AbortSignal) {
+  return fetchAdminBlogPostDetail(blogPostId, signal);
 }
 
-export function loadAdminBlogPostRows(limit: number) {
-  return fetchAdminBlogPostRows(limit);
+export function loadAdminBlogPostRows(limit: number, signal?: AbortSignal) {
+  return fetchAdminBlogPostRows(limit, signal);
 }

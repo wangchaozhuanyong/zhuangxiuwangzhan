@@ -87,10 +87,16 @@ test.describe('network fault injection', () => {
 // WebKit cannot intercept requests controlled by a service worker. Normal
 // navigation above and the document-loading suite still exercise the worker.
 test.use({ serviceWorkers: 'block' });
-test('slow navigation hides unfinished content, offers recovery, and never restores an old page', async ({ page }) => {
+test('slow image navigation releases its placeholder and never restores an old page', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   let release!: () => void;
   const held = new Promise<void>(resolve => { release = resolve; });
+  await page.route('**/rest/v1/site_pages*', async route => {
+    if (new URL(route.request().url()).searchParams.get('page_key') !== 'eq.materials') return route.fallback();
+    const response = await route.fetch();
+    const rows = await response.json();
+    await route.fulfill({ response, json: rows.map((row: Record<string, unknown>) => ({ ...row, image_url: '/images/heroes/v5/hero-materials-v5-desktop.webp' })) });
+  });
   await page.route('**/images/**/hero-materials*', async route => { await held; await route.continue(); });
   try {
     await page.goto('/en'); await ready(page);
@@ -98,7 +104,8 @@ test('slow navigation hides unfinished content, offers recovery, and never resto
     await expect(page).toHaveURL(/\/en\/materials$/);
     await expect(page.locator('.public-route-scene')).toHaveCSS('opacity', '0');
     await expect(page.locator('[data-route-loader="navigation"]')).toBeVisible();
-    await expect(page.locator('.public-route-feedback__recovery')).toBeVisible({ timeout: 7000 });
+    await expect(page.locator('.public-route-content')).toHaveAttribute('data-route-visual-state', 'degraded', { timeout: 8000 });
+    await expect(page.locator('#main-content .smart-image-slow button').first()).toBeVisible();
     await expect(page.locator('.public-route-retained')).toHaveCount(0);
     // Navigation stays available while a dependency is slow.
     await navigationLink(page, 390, '/en/projects').click();

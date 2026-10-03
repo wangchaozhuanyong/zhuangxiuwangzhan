@@ -280,3 +280,7 @@ Architecture Compliance Report:
 - 发布前读取线上版本并比较线上提交到目标 main 的全部变更。仅文档、测试和流程修改跳过生产构建；不能只看最后一笔提交而漏掉之前待上线的页面改动。
 - 同一 SHA 已有发布记录时先检查该记录；失败后恢复原运行的失败 jobs，不新开一轮发布。构建缓存只用于原运行重试，必须核对源码、构建环境与全部产物摘要，并一起保留生成的 Functions SEO manifest。不同运行重新读取 CMS 内容，不复用旧内容快照。
 - 流程改动只运行发布控制测试和架构检查；页面、接口、依赖等改动按实际影响追加验证。已通过的检查没有新代码或新失败证据不重跑。线上版本相符仅代表版本验收，不能代替业务和浏览器验收。
+
+## 加载、刷新、导航与编辑保护
+
+统一正文见 [加载刷新导航标准](docs/rules/loading-refresh-navigation.md)；新增路由同步登记 `docs/interaction-route-compliance.json`，执行 `npm run verify:interaction-standards`。

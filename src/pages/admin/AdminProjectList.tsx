@@ -1,4 +1,5 @@
-import { useDeferredValue, useEffect, useState } from "react";
+import { useAdminListingState } from "@/hooks/useAdminListingState";
+
 import { Link } from "react-router-dom";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -29,20 +30,18 @@ const pickThumbnail = (row: AdminProjectRow) => {
 export default function AdminProjectList() {
   const language = getAdminLang();
   const A = (key: AdminProjectListTextKey) => adminProjectListText[key][language];
-  const [status, setStatus] = useState<string>("all");
-  const [search, setSearch] = useState("");
-  const [page, setPage] = useState(0);
-  const deferredSearch = useDeferredValue(search);
-  const { data, error, isFetching, refetch } = useAdminProjects({ page, status, search: deferredSearch });
+  const list = useAdminListingState();
+  const { search, setSearch, deferredSearch, page, setPage } = list;
+  const status = list.filter("status");
+  const setStatus = (value: string) => list.setFilter("status", value);
+
+  const { data, error, isFetching, isPlaceholderData, refetch } = useAdminProjects({ page, status, search: deferredSearch });
   const rows = data?.rows ?? [];
   const total = data?.count ?? 0;
   const pageSize = data?.pageSize ?? 30;
   const errorMessage = error ? formatUserFacingError(error, language) : "";
   const initialLoading = isFetching && !data;
 
-  useEffect(() => {
-    setPage(0);
-  }, [deferredSearch, status]);
 
   const columns: AdminDataTableColumn<AdminProjectRow>[] = [
     {
@@ -140,7 +139,7 @@ export default function AdminProjectList() {
       {initialLoading ? (
         <AdminLoadingState />
       ) : (
-        <AdminDataTable
+        <AdminDataTable busy={isPlaceholderData}
           columns={columns}
           rows={rows}
           rowKey={(r) => r.id}

@@ -1,4 +1,5 @@
-import type { QueryClient, QueryKey } from "@tanstack/react-query";
+import "@/lib/publicQuerySeed";
+import type { QueryClient, QueryKey, QueryFunction } from "@tanstack/react-query";
 import type { Language } from "@/i18n/routes";
 import { stripLanguagePrefix } from "@/i18n/routes";
 import {
@@ -24,17 +25,19 @@ import {
   getPublishedSitePage,
 } from "@/lib/homeContentApi";
 
-const STALE_TIME = 60 * 1000;
-const GC_TIME = 30 * 60 * 1000;
+import { claimPublicQuerySeed, documentSeedTime } from "@/lib/publicQuerySeedCache";
+import { INTERACTION_POLICY, runReadQuery } from "@/lib/interactionPolicy";
+const STALE_TIME = INTERACTION_POLICY.publicStaleTime;
+const GC_TIME = INTERACTION_POLICY.gcTime;
 
 type PrefetchTask = {
   queryKey: QueryKey;
-  queryFn: () => Promise<unknown>;
+  queryFn: QueryFunction<unknown, QueryKey>;
 };
 
 const sitePageTask = (language: Language, pageKey: string): PrefetchTask => ({
   queryKey: ["published", "site_page", language, pageKey],
-  queryFn: () => getPublishedSitePage(language, pageKey),
+  queryFn: ({ signal }) => getPublishedSitePage(language, pageKey, signal),
 });
 
 const pathSegments = (pathname: string) => stripLanguagePrefix(pathname).split("/").filter(Boolean);
@@ -47,7 +50,7 @@ export const getPublicRoutePrefetchTasks = (pathname: string, language: Language
   if (path === "/") {
     return [{
       queryKey: ["published", "home_bundle", language],
-      queryFn: () => getPublishedHomeContentBundle(language),
+      queryFn: ({ signal }) => getPublishedHomeContentBundle(language, signal),
     }];
   }
 
@@ -56,7 +59,7 @@ export const getPublicRoutePrefetchTasks = (pathname: string, language: Language
       sitePageTask(language, "about"),
       ...["hero", "stats", "core_values"].map((sectionKey) => ({
         queryKey: ["published", "about_section", language, sectionKey],
-        queryFn: () => getPublishedAboutSection(language, sectionKey),
+        queryFn: ({ signal }) => getPublishedAboutSection(language, sectionKey, signal),
       })),
     ];
   }
@@ -64,77 +67,77 @@ export const getPublicRoutePrefetchTasks = (pathname: string, language: Language
   if (section === "services") {
     if (slug && slug !== "old-house") {
       return [
-        { queryKey: ["published", "service", slug, language], queryFn: () => getPublishedServiceBySlug(slug, language) },
-        { queryKey: ["published", "services", language], queryFn: () => getPublishedServices(language) },
+        { queryKey: ["published", "service", slug, language], queryFn: ({ signal }) => getPublishedServiceBySlug(slug, language, signal) },
+        { queryKey: ["published", "services", language], queryFn: ({ signal }) => getPublishedServices(language, signal) },
       ];
     }
     if (slug === "old-house") return [];
     return [
       sitePageTask(language, "services"),
-      { queryKey: ["published", "services", language], queryFn: () => getPublishedServices(language) },
+      { queryKey: ["published", "services", language], queryFn: ({ signal }) => getPublishedServices(language, signal) },
     ];
   }
 
   if (section === "materials" || section === "products") {
     const isDirectory = segments.length === 1 || segments[1] === "category";
     if (!isDirectory && slug) {
-      return [{ queryKey: ["published", "material", slug, language], queryFn: () => getPublishedMaterialBySlug(slug, language) }];
+      return [{ queryKey: ["published", "material", slug, language], queryFn: ({ signal }) => getPublishedMaterialBySlug(slug, language, signal) }];
     }
     return [
       sitePageTask(language, section),
-      { queryKey: ["published", "materials", language], queryFn: () => getPublishedMaterials(language) },
+      { queryKey: ["published", "materials", language], queryFn: ({ signal }) => getPublishedMaterials(language, signal) },
     ];
   }
 
   if (section === "projects") {
     const projectsTask: PrefetchTask = {
       queryKey: ["published", "project_summaries", language, "all"],
-      queryFn: () => getPublishedProjectSummaries(language),
+      queryFn: ({ signal }) => getPublishedProjectSummaries(language, undefined, signal),
     };
     return slug
-      ? [{ queryKey: ["published", "project", slug, language], queryFn: () => getPublishedProjectBySlug(slug, language) }, projectsTask]
+      ? [{ queryKey: ["published", "project", slug, language], queryFn: ({ signal }) => getPublishedProjectBySlug(slug, language, signal) }, projectsTask]
       : [sitePageTask(language, "projects"), projectsTask];
   }
 
   if (section === "blog") {
     const blogTask: PrefetchTask = {
       queryKey: ["published", "blog", language],
-      queryFn: () => getPublishedBlogPosts(language),
+      queryFn: ({ signal }) => getPublishedBlogPosts(language, signal),
     };
     return slug
-      ? [{ queryKey: ["published", "blog_post", slug, language], queryFn: () => getPublishedBlogPostBySlug(slug, language) }, blogTask]
+      ? [{ queryKey: ["published", "blog_post", slug, language], queryFn: ({ signal }) => getPublishedBlogPostBySlug(slug, language, signal) }, blogTask]
       : [sitePageTask(language, "blog"), blogTask];
   }
 
   if (section === "locations") {
     return slug
-      ? [{ queryKey: ["published", "service_area", slug, language], queryFn: () => getPublishedServiceAreaBySlug(slug, language) }]
+      ? [{ queryKey: ["published", "service_area", slug, language], queryFn: ({ signal }) => getPublishedServiceAreaBySlug(slug, language, signal) }]
       : [
           sitePageTask(language, "locations"),
-          { queryKey: ["published", "service_areas", language], queryFn: () => getPublishedServiceAreas(language) },
+          { queryKey: ["published", "service_areas", language], queryFn: ({ signal }) => getPublishedServiceAreas(language, signal) },
         ];
   }
 
   if (section === "landing" && slug) {
-    return [{ queryKey: ["published", "landing", slug, language], queryFn: () => getPublishedLandingPageBySlug(slug, language) }];
+    return [{ queryKey: ["published", "landing", slug, language], queryFn: ({ signal }) => getPublishedLandingPageBySlug(slug, language, signal) }];
   }
 
   if (section === "before-after") {
-    return [{ queryKey: ["published", "before_after", language], queryFn: () => getPublishedBeforeAfterItems(language) }];
+    return [{ queryKey: ["published", "before_after", language], queryFn: ({ signal }) => getPublishedBeforeAfterItems(language, signal) }];
   }
 
   if (section === "process") {
     return [
       sitePageTask(language, "process"),
-      { queryKey: ["published", "process_steps", language], queryFn: () => getPublishedProcessSteps(language) },
+      { queryKey: ["published", "process_steps", language], queryFn: ({ signal }) => getPublishedProcessSteps(language, signal) },
     ];
   }
 
   if (section === "faq") {
     return [
       sitePageTask(language, "faq"),
-      { queryKey: ["published", "faqs", language, "general"], queryFn: () => getPublishedFaqs(language, "general") },
-      { queryKey: ["published", "faqs", language, "home"], queryFn: () => getPublishedFaqs(language, "home") },
+      { queryKey: ["published", "faqs", language, "general"], queryFn: ({ signal }) => getPublishedFaqs(language, "general", signal) },
+      { queryKey: ["published", "faqs", language, "home"], queryFn: ({ signal }) => getPublishedFaqs(language, "home", signal) },
     ];
   }
 
@@ -148,7 +151,7 @@ export const getPublicRoutePrefetchTasks = (pathname: string, language: Language
 
   return [{
     queryKey: ["published", "cms_path", language, path],
-    queryFn: () => getPublishedCmsPageByPath(language, path),
+    queryFn: ({ signal }) => getPublishedCmsPageByPath(language, path, signal),
   }];
 };
 
@@ -160,6 +163,9 @@ export const prefetchPublishedRouteContent = async (
   const tasks = getPublicRoutePrefetchTasks(pathname, language);
   await Promise.allSettled(tasks.map((task) => queryClient.prefetchQuery({
     ...task,
+    initialData: () => claimPublicQuerySeed(queryClient, task.queryKey),
+    initialDataUpdatedAt: documentSeedTime,
+    queryFn: (context) => runReadQuery(context.signal, async (signal) => task.queryFn({ ...context, signal })),
     staleTime: STALE_TIME,
     gcTime: GC_TIME,
   })));

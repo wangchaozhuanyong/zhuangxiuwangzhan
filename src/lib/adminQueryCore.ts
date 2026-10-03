@@ -1,9 +1,10 @@
 import type { AdminWorkflowFilter } from "@/lib/adminLeadWorkflow";
 import { isSupabaseConfigured, supabase } from "@/lib/supabase";
+import { INTERACTION_POLICY } from "@/lib/interactionPolicy";
 
 export const adminQueriesEnabled = isSupabaseConfigured && Boolean(supabase);
-export const ADMIN_LIST_STALE_TIME = 5 * 60 * 1000;
-export const ADMIN_QUERY_GC_TIME = 30 * 60 * 1000;
+export const ADMIN_LIST_STALE_TIME = INTERACTION_POLICY.adminListStaleTime;
+export const ADMIN_QUERY_GC_TIME = INTERACTION_POLICY.gcTime;
 export const ADMIN_DEFAULT_PAGE_SIZE = 30;
 const ADMIN_MAX_PAGE_SIZE = 80;
 export const COUNT_ONLY_SELECT = "id";

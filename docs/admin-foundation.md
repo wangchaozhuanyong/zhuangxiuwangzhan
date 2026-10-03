@@ -113,3 +113,7 @@ The health API retains legacy dry-run records and additionally reports `latest_r
 REST restore writes require `RESTORE_CONFIRM=YES`, an explicitly supplied staging `SUPABASE_SERVICE_ROLE_KEY`, and `--target-url=https://YOUR-ISOLATED-STAGING.supabase.co`. The script refuses the original production project and does not silently inherit its credential from `.env`. It restores tables in manifest order and uploads all declared media objects. Use a clean isolated target with the matching schema; generated CMS seed records can conflict on unique paths. A table/media rehearsal does not prove Auth account recovery. Production recovery needs its own approved procedure and verified environment backup.
 
 Before exact-count acceptance, account for database USER triggers: restoring CMS/admin rows through REST can create extra revision/audit records. In the isolated rehearsal only, pause those triggers during the import and re-enable them in a guaranteed cleanup step; keep foreign-key constraints active. Check restored counts, all original field values and media bytes after import. Do not disable production triggers or treat an HTTP success as an exact recovery result.
+
+## 加载、刷新、导航与编辑保护
+
+统一正文见 [加载刷新导航标准](rules/loading-refresh-navigation.md)；新增路由同步登记 `docs/interaction-route-compliance.json`，执行 `npm run verify:interaction-standards`。

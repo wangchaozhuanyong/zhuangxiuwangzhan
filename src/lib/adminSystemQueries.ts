@@ -1,4 +1,5 @@
-import { keepPreviousData, useQuery } from "@tanstack/react-query";
+import { useInteractionQuery as useQuery } from "@/hooks/useInteractionQuery";
+import { keepPreviousData } from "@tanstack/react-query";
 import {
   fetchAdminUsers,
   fetchNotificationSettings,
@@ -10,7 +11,7 @@ export function useAdminNotificationSettings() {
   return useQuery({
     queryKey: ["admin", "notification_settings"],
     enabled: adminQueriesEnabled,
-    queryFn: fetchNotificationSettings,
+    queryFn: ({ signal }) => fetchNotificationSettings(signal),
   });
 }
 
@@ -19,7 +20,7 @@ export function useAdminTranslationJobs(limit = 100) {
     queryKey: ["admin", "translation_jobs", { limit }],
     enabled: adminQueriesEnabled,
     placeholderData: keepPreviousData,
-    queryFn: () => fetchTranslationJobs(limit),
+    queryFn: ({ signal }) => fetchTranslationJobs(limit, signal),
   });
 }
 
@@ -28,6 +29,6 @@ export function useAdminUsers() {
     queryKey: ["admin", "users"],
     enabled: adminQueriesEnabled,
     placeholderData: keepPreviousData,
-    queryFn: fetchAdminUsers,
+    queryFn: ({ signal }) => fetchAdminUsers(signal),
   });
 }

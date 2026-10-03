@@ -1,3 +1,5 @@
+import { navigateAfterSave } from "@/lib/navigationProtection";
+import { useSubmissionLock } from "@/hooks/useSubmissionLock";
 import { FormEvent, useCallback, useEffect, useMemo, useState } from "react";
 import { useAdminFormState } from "@/hooks/useAdminFormState";
 import { useUnsavedChangesWarning } from "@/hooks/useUnsavedChangesWarning";
@@ -21,7 +23,7 @@ import { adminFurnitureEditorText } from "@/i18n/adminFurnitureText";
 import { furnitureCategoryName, furnitureSubcategoryName } from "@/i18n/furnitureText";
 import { FURNITURE_MATERIAL_CATEGORY } from "@/lib/furnitureCatalogConfig";
 import { furnitureCatalog, getFurnitureProduct } from "@/lib/furnitureCatalog";
-import { invalidateAdminContentDetail, invalidateAfterAdminContentSave } from "@/lib/adminInvalidate";
+import { invalidateAdminContentDetail } from "@/lib/adminInvalidate";
 import { useAdminMaterialDetail } from "@/lib/adminBusinessContentQueries";
 import { adminStatusLabel, getAdminLang, publishStatusOptions } from "@/lib/adminLocale";
 import { formatAdminMutationError } from "@/lib/adminMutation";
@@ -162,6 +164,7 @@ const toPriceUnit = (value: unknown): MaterialRecord["price_unit"] =>
   value === "sqft" || value === "foot_run" || value === "unit" || value === "set" || value === "panel" || value === "scope" ? value : "none";
 
 export default function AdminMaterialEditor({ furnitureMode = false }: { furnitureMode?: boolean }) {
+  const { protectSubmission, isSubmitting } = useSubmissionLock();
   const language = getAdminLang();
   const A = useCallback((key: AdminMaterialEditorTextKey): string => adminMaterialEditorText[key][language], [language]);
   const F = useCallback((key: keyof typeof adminFurnitureEditorText): string => adminFurnitureEditorText[key][language], [language]);
@@ -180,7 +183,7 @@ export default function AdminMaterialEditor({ furnitureMode = false }: { furnitu
   const [slugError, setSlugError] = useState<string>("");
   const [saveBusy, setSaveBusy] = useState(false);
 
-  const { data: loaded, isLoading, isError, error: loadError, refetch: refetchLoaded } = useAdminMaterialDetail(isNew ? undefined : id);
+  const { data: loaded, isLoading, isInitialError: isError, error: loadError, refetch: refetchLoaded } = useAdminMaterialDetail(isNew ? undefined : id);
 
   const loadedRecord = useMemo<MaterialRecord | undefined>(() => {
     if (isNew || !loaded) return isNew ? initialRecord : undefined;
@@ -210,14 +213,14 @@ export default function AdminMaterialEditor({ furnitureMode = false }: { furnitu
     };
   }, [initialRecord, isNew, loaded]);
 
-  const { state: record, setForm: setRecord, applyRemote, dirty } = useAdminFormState<MaterialRecord>(loadedRecord, {
+  const { state: record, setForm: setRecord, applyRemote, dirty, isDirty } = useAdminFormState<MaterialRecord>(loadedRecord, {
     resetKey: `${furnitureMode ? "furniture" : "material"}-${id ?? "new"}`,
     initial: initialRecord,
   });
   const isFurniture = furnitureMode || record.category === FURNITURE_MATERIAL_CATEGORY;
   const selectedFurnitureCategory = furnitureCatalog.taxonomy.find((category) => category.key === record.subcategory && category.key !== "new");
   const englishMissing = hasAnyMissingEnglish(record as unknown as Record<string, unknown>, isFurniture ? ["title_en", "excerpt_en", "content_en"] : materialEnglishFields);
-  useUnsavedChangesWarning(dirty && !saveBusy);
+  useUnsavedChangesWarning((dirty || saveBusy) || isSubmitting);
 
   useEffect(() => {
     if (!isError || !loadError) return;
@@ -260,7 +263,7 @@ export default function AdminMaterialEditor({ furnitureMode = false }: { furnitu
     return isFurniture ? `/${lang}/furniture/product/${slug}` : `/${lang}/materials/${slug}`;
   }, [isFurniture, record.slug]);
 
-  const save = async (nextStatus?: MaterialRecord["status"], generateEnglish?: boolean, forceEnglish?: boolean) => {
+  const save = protectSubmission("save", async (nextStatus?: MaterialRecord["status"], generateEnglish?: boolean, forceEnglish?: boolean) => {
     if (!hasMaterialBackendConfig() || saveBusy) return;
     if (furnitureMode && !isNew && (!loaded || isLoading || isError)) return;
     if (isFurniture && (nextStatus ?? record.status) === "published") {
@@ -308,12 +311,11 @@ export default function AdminMaterialEditor({ furnitureMode = false }: { furnitu
     }
 
     const { saved, savedId } = savedResult;
-    applyRemote({ ...record, ...saved, id: savedId, slug: savedResult.slug, status: savedResult.status });
+    applyRemote({ ...record, ...saved, id: savedId, slug: savedResult.slug, status: savedResult.status }, record);
     toast({ title: A("saved") });
-    await invalidateAfterAdminContentSave(queryClient);
     setSaveBusy(false);
 
-    if (isNew) navigate(`${isFurniture ? "/admin/furniture" : "/admin/materials"}/${savedId}`, { replace: true });
+    if (isNew) navigateAfterSave(isDirty, () => navigate(`${isFurniture ? "/admin/furniture" : "/admin/materials"}/${savedId}`, { replace: true }));
 
     if (generateEnglish) {
       try {
@@ -325,7 +327,7 @@ export default function AdminMaterialEditor({ furnitureMode = false }: { furnitu
         toast({ title: A("savedGenerateFailed"), description, variant: "destructive" });
       }
     }
-  };
+  });
 
   const forceRegenerateEnglish = async () => {
     const confirmed = await adminConfirm({

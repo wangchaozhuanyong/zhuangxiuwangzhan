@@ -1,5 +1,8 @@
+import { useUnsavedChangesWarning } from "@/hooks/useUnsavedChangesWarning";
+import { useSubmissionLock } from "@/hooks/useSubmissionLock";
+import { useInteractionQuery as useQuery } from "@/hooks/useInteractionQuery";
 import { useMemo, useState } from "react";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation } from "@tanstack/react-query";
 import {
   Activity,
   AlertTriangle,
@@ -260,6 +263,8 @@ const BackupCard = ({
 };
 
 export default function AdminSystemHealth() {
+  const { protectSubmission, isSubmitting } = useSubmissionLock();
+  useUnsavedChangesWarning(isSubmitting);
   const language = useAdminLang();
   const text = adminSystemHealthText[language];
   const checkLabels = adminSystemHealthCheckLabels[language];
@@ -269,9 +274,9 @@ export default function AdminSystemHealth() {
   const healthQuery = useQuery({
     queryKey: ["admin", "system-health"],
     enabled: isSupabaseConfigured,
-    queryFn: async () => {
+    queryFn: async ({ signal }) => {
       try {
-        return await fetchAdminSystemHealth<HealthPayload>();
+        return await fetchAdminSystemHealth<HealthPayload>(signal);
       } catch (error) {
         const payload = await readFunctionErrorPayload(error);
         if (payload) return payload;
@@ -321,15 +326,15 @@ export default function AdminSystemHealth() {
     },
   });
 
-  const runAttemptsCleanup = async () => {
+  const runAttemptsCleanup = protectSubmission("cleanup", async () => {
     const confirmed = await adminConfirm({
       title: text.cleanupConfirmTitle,
       description: formatText(text.cleanupConfirmDescription, { days: attemptRetentionDays }),
       confirmLabel: text.cleanupConfirmLabel,
     });
     if (!confirmed) return;
-    cleanupAttemptsMutation.mutate();
-  };
+    await cleanupAttemptsMutation.mutateAsync();
+  });
 
   const tableSummary = useMemo(() => {
     const failed = tableChecks.filter((item) => !item.ok).length;
@@ -391,7 +396,7 @@ export default function AdminSystemHealth() {
       <AdminFormSection title={text.alertsTitle} description={text.alertsDescription} helpText={text.alertsHelp}>
         {healthQuery.isLoading ? (
           <p className="text-sm text-muted-foreground">{text.checkingEllipsis}</p>
-        ) : healthQuery.isError ? (
+        ) : healthQuery.isInitialError ? (
           <p className="text-sm text-destructive">
             {formatText(text.healthFailed, { message: formatUserFacingError(healthQuery.error, language, text.unknownError) })}
           </p>

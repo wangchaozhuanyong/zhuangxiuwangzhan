@@ -1,3 +1,5 @@
+import { useUnsavedChangesWarning } from "@/hooks/useUnsavedChangesWarning";
+import { useSubmissionLock } from "@/hooks/useSubmissionLock";
 import { useEffect, useRef, useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import AdminPageHeader from "@/components/admin/AdminPageHeader";
@@ -131,9 +133,10 @@ const copy = {
 };
 
 const AdminNotificationSettings = () => {
+  const { protectSubmission, isSubmitting } = useSubmissionLock();
   const { toast } = useToast();
   const queryClient = useQueryClient();
-  const { data: remoteSettings, isLoading, error, refetch } = useAdminNotificationSettings();
+  const { data: remoteSettings, isLoading, error } = useAdminNotificationSettings();
   const settingsPermission = useAdminPermission("settings.write");
   const lang = getAdminLang();
   const t = copy[lang];
@@ -151,9 +154,14 @@ const AdminNotificationSettings = () => {
   const [testing, setTesting] = useState(false);
   const [testingMaintenance, setTestingMaintenance] = useState(false);
   const formDirtyRef = useRef(false);
+  const revision = useRef(0);
+  const [dirty, setDirty] = useState(false);
+  useUnsavedChangesWarning(dirty || saving || isSubmitting);
 
   const markDirty = () => {
     formDirtyRef.current = true;
+    revision.current += 1;
+    setDirty(true);
   };
 
   const applyNotificationForm = (nextSettings: NotificationSettings) => {
@@ -166,6 +174,7 @@ const AdminNotificationSettings = () => {
     setMaintenanceTimezone(nextSettings.maintenance_timezone || "Asia/Kuala_Lumpur");
     setBotToken("");
     formDirtyRef.current = false;
+    setDirty(false);
   };
 
   useEffect(() => {
@@ -179,7 +188,7 @@ const AdminNotificationSettings = () => {
     applyNotificationForm(remoteSettings);
   }, [remoteSettings]);
 
-  const saveSettings = async () => {
+  const saveSettings = protectSubmission("saveSettings", async () => {
     if (!canManageSettings) return;
 
     if (enabled && (!chatId.trim() || (!botToken.trim() && !settings.has_telegram_bot_token))) {
@@ -200,6 +209,7 @@ const AdminNotificationSettings = () => {
     }
 
     setSaving(true);
+    const submittedRevision = revision.current;
     try {
       const nextSettings = await saveAdminNotificationSettings({
         telegram_enabled: enabled,
@@ -211,18 +221,18 @@ const AdminNotificationSettings = () => {
         maintenance_timezone: maintenanceTimezone.trim(),
       });
 
-      applyNotificationForm(nextSettings || emptySettings);
+      if (revision.current === submittedRevision) applyNotificationForm(nextSettings || emptySettings);
+      else setSettings(nextSettings || emptySettings);
       setSaving(false);
       toast({ title: t.saved });
-      void queryClient.invalidateQueries({ queryKey: ["admin", "notification_settings"] });
-      await refetch();
+      queryClient.setQueryData(["admin", "notification_settings"], nextSettings);
     } catch (error) {
       toast({ title: t.saveFailed, description: formatUserFacingError(error, lang), variant: "destructive" });
       setSaving(false);
     }
-  };
+  });
 
-  const testTelegram = async () => {
+  const testTelegram = protectSubmission("testTelegram", async () => {
     if (!canManageSettings) return;
     setTesting(true);
     try {
@@ -233,9 +243,9 @@ const AdminNotificationSettings = () => {
       toast({ title: t.testFailed, description: formatUserFacingError(error, lang), variant: "destructive" });
       setTesting(false);
     }
-  };
+  });
 
-  const testMaintenanceReminder = async () => {
+  const testMaintenanceReminder = protectSubmission("testMaintenanceReminder", async () => {
     if (!canManageSettings) return;
     setTestingMaintenance(true);
     try {
@@ -246,7 +256,7 @@ const AdminNotificationSettings = () => {
       toast({ title: t.maintenanceTestFailed, description: formatUserFacingError(error, lang), variant: "destructive" });
       setTestingMaintenance(false);
     }
-  };
+  });
 
   return (
     <div className="grid gap-6">

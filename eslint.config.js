@@ -5,7 +5,7 @@ import reactRefresh from "eslint-plugin-react-refresh";
 import tseslint from "typescript-eslint";
 
 export default tseslint.config(
-  { ignores: ["dist", ".wrangler", ".deploy-cache", "test-results", "*.timestamp-*.mjs"] },
+  { ignores: ["audits", "backups", ".worktrees", ".codex-worktrees", ".release", "tmp", "dist", ".wrangler", ".deploy-cache", "test-results", "*.timestamp-*.mjs"] },
   {
     extends: [js.configs.recommended, ...tseslint.configs.recommended],
     files: ["**/*.{ts,tsx}"],

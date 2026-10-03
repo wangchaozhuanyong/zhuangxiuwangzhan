@@ -1,3 +1,4 @@
+import { hasProtectedChanges } from "@/lib/navigationProtection";
 import { Component, createRef, type ReactNode } from "react";
 import { PUBLIC_MOTION, prefersReducedMotion } from "@/lib/publicMotion";
 import { PUBLIC_NAVIGATION_EVENT, type PublicNavigation } from "@/lib/publicNavigation";
@@ -31,7 +32,7 @@ export class PublicRouteTransitionFrame extends Component<Props> {
     const localUpdate = current.pathname === next.pathname ||
       isFurnitureListingPath(current.pathname) && isFurnitureListingPath(next.pathname);
     const scene = this.content.current;
-    if (!scene || localUpdate || this.props.pending || this.animation || prefersReducedMotion() || typeof scene.animate !== "function") {
+    if (hasProtectedChanges() || !scene || localUpdate || this.props.pending || this.animation || prefersReducedMotion() || typeof scene.animate !== "function") {
       request.detail.commit();
       return;
     }

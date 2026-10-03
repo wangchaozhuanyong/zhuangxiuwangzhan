@@ -1,5 +1,10 @@
+import { INTERACTION_POLICY } from "@/lib/interactionPolicy";
+import { useInteractionQuery as useQuery } from "@/hooks/useInteractionQuery";
 import { lazy, Suspense, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
-import { useQuery } from "@tanstack/react-query";
+
+import { useIsFetching } from "@tanstack/react-query";
+import PublicUpdateNotice from "@/components/PublicUpdateNotice";
+import { navigateDocumentSafely } from "@/lib/navigationProtection";
 import { Link, Outlet, useLocation } from "react-router-dom";
 import {
   ChevronDown,
@@ -32,15 +37,12 @@ import {
 } from "@/lib/adminLocale";
 import {
   ADMIN_BUILD_VERSION,
-  ADMIN_ENTRY_RE,
   ADMIN_TITLE_SUFFIX,
-  BUILD_CHECK_INTERVAL_MS,
   NAV_COLLAPSED_KEY,
   NAV_EXPANDED_KEY,
   copy,
   ensureAdminFormAccessibility,
   getAdminActiveNavHelp,
-  getCurrentAdminEntry,
   isAdminNavItemActive,
   navGroups,
   readExpandedGroups,
@@ -54,8 +56,6 @@ import { cn } from "@/lib/utils";
 import { useAdminAuth } from "@/pages/admin/AdminAuthProvider";
 
 const AdminDefaultContentSeedStatus = lazy(() => import("@/components/admin/AdminDefaultContentSeedStatus"));
-const ROUTE_SETTLE_MS = 260;
-const PENDING_NAV_FALLBACK_MS = 2500;
 const IDLE_PRELOAD_LIMIT = 8;
 
 const adminRoutePreloaders: Array<[RegExp, () => Promise<unknown>]> = [
@@ -103,7 +103,10 @@ const preloadAdminRoute = (path: string) => {
   });
 };
 
-const getAdminRouteKey = (pathname: string, hash: string) => `${pathname}${hash}`;
+function AdminCodeLoading({ mode, label, onPending }: { mode: AdminPageSkeletonMode; label: string; onPending: (pending: boolean) => void }) {
+  useEffect(() => { onPending(true); return () => onPending(false); }, [onPending]);
+  return <AdminPageSkeleton mode={mode} label={label} />;
+}
 
 const getAdminSkeletonMode = (navKey: keyof AdminCopy): AdminPageSkeletonMode => {
   switch (navKey) {
@@ -137,17 +140,26 @@ const getAdminSkeletonMode = (navKey: keyof AdminCopy): AdminPageSkeletonMode =>
   }
 };
 
-const AdminTopProgress = ({ visible }: { visible: boolean }) => (
+const AdminTopProgress = ({ visible }: { visible: boolean }) => {
+  const [show, setShow] = useState(false);
+  useEffect(() => {
+    setShow(false);
+    if (!visible) return;
+    const timer = window.setTimeout(() => setShow(true), INTERACTION_POLICY.feedbackDelay);
+    return () => window.clearTimeout(timer);
+  }, [visible]);
+  return (
   <div
     aria-hidden="true"
     className={cn(
       "pointer-events-none absolute inset-x-0 bottom-0 h-0.5 overflow-hidden transition-opacity duration-150",
-      visible ? "opacity-100" : "opacity-0",
+      show ? "opacity-100" : "opacity-0",
     )}
   >
     <div data-admin-progress-bar className="h-full w-full origin-left bg-accent" />
   </div>
 );
+};
 
 const ControlButton = ({
   active,
@@ -184,16 +196,15 @@ const AdminLayout = () => {
   const [expandedGroups, setExpandedGroups] = useState<Record<string, boolean>>(() => readExpandedGroups());
   const [adminBrandIconFailed, setAdminBrandIconFailed] = useState(false);
   const [pendingNavPath, setPendingNavPath] = useState<string | null>(null);
-  const [routeSettling, setRouteSettling] = useState(false);
-  const lastBuildCheckAtRef = useRef(0);
+  const [codeLoading, setCodeLoading] = useState(false);
+  const pendingReads = useIsFetching({ predicate: (query) => query.queryKey[0] === "admin" && query.getObserversCount() > 0 && query.state.data === undefined });
   const pendingAdminLangRef = useRef(adminLang);
-  const routeKey = getAdminRouteKey(location.pathname, location.hash);
-  const previousRouteKeyRef = useRef(routeKey);
+  const routeKey = location.pathname;
   const t = copy[adminLang];
   const showDefaultContentSeedStatus = location.pathname === "/admin/dashboard";
   const { data: adminSiteSettings = fallbackSiteSettings } = useQuery({
     queryKey: ["site-settings"],
-    queryFn: fetchSiteSettings,
+    queryFn: ({ signal }) => fetchSiteSettings(signal),
     staleTime: 5 * 60 * 1000,
     placeholderData: fallbackSiteSettings,
   });
@@ -206,45 +217,6 @@ const AdminLayout = () => {
     setAdminBrandIconFailed(false);
   }, [adminBrandIconSrc]);
 
-  useEffect(() => {
-    let cancelled = false;
-
-    const checkFreshBuild = async (force = false) => {
-      const now = Date.now();
-      if (!force && now - lastBuildCheckAtRef.current < BUILD_CHECK_INTERVAL_MS) return;
-      lastBuildCheckAtRef.current = now;
-
-      try {
-        const response = await fetch(`/admin?version_check=${Date.now()}`, {
-          cache: "no-store",
-          headers: { "Cache-Control": "no-cache" },
-        });
-        const html = await response.text();
-        const latestEntry = html.match(ADMIN_ENTRY_RE)?.[0] || "";
-        const currentEntry = getCurrentAdminEntry();
-
-        if (!cancelled && latestEntry && currentEntry && latestEntry !== currentEntry) {
-          window.location.reload();
-        }
-      } catch {
-        // Keep the admin usable if the lightweight version check fails.
-      }
-    };
-
-    void checkFreshBuild(true);
-    const onFocus = () => {
-      if (document.visibilityState === "hidden") return;
-      void checkFreshBuild();
-    };
-    window.addEventListener("focus", onFocus);
-    document.addEventListener("visibilitychange", onFocus);
-
-    return () => {
-      cancelled = true;
-      window.removeEventListener("focus", onFocus);
-      document.removeEventListener("visibilitychange", onFocus);
-    };
-  }, []);
 
   const copyText = useMemo(
     () => (key: keyof AdminCopy) => {
@@ -316,18 +288,10 @@ const AdminLayout = () => {
   }, [location.hash, location.pathname, pendingNavPath]);
 
   useEffect(() => {
-    if (!pendingNavPath) return;
-    const timeoutId = window.setTimeout(() => setPendingNavPath(null), PENDING_NAV_FALLBACK_MS);
-    return () => window.clearTimeout(timeoutId);
-  }, [pendingNavPath]);
-
-  useEffect(() => {
-    if (previousRouteKeyRef.current === routeKey) return;
-    previousRouteKeyRef.current = routeKey;
-    setRouteSettling(true);
-    const timeoutId = window.setTimeout(() => setRouteSettling(false), ROUTE_SETTLE_MS);
-    return () => window.clearTimeout(timeoutId);
-  }, [routeKey]);
+    const clearPending = () => setPendingNavPath(null);
+    window.addEventListener("flashcast-navigation-decision", clearPending);
+    return () => window.removeEventListener("flashcast-navigation-decision", clearPending);
+  }, []);
 
   const activeNavLabel = useMemo(() => {
     for (const group of navGroups) {
@@ -402,7 +366,9 @@ const AdminLayout = () => {
 
   const activeNavHelp = useMemo(() => getAdminActiveNavHelp(activeNavKey, adminLang), [activeNavKey, adminLang]);
   const skeletonMode = useMemo(() => getAdminSkeletonMode(activeNavKey), [activeNavKey]);
-  const isAdminRouteBusy = Boolean(pendingNavPath) || routeSettling;
+  const isAdminRouteBusy = Boolean(pendingNavPath) || codeLoading || pendingReads > 0;
+
+  useEffect(() => { if (!isAdminRouteBusy) window.dispatchEvent(new CustomEvent("admin-route-layout", { detail: { routeKey: location.pathname + location.search } })); }, [isAdminRouteBusy, location.pathname, location.search]);
 
   const websitePath = adminPublicSitePath(adminLang);
 
@@ -707,8 +673,7 @@ const AdminLayout = () => {
                   variant="outline"
                   className="h-10 w-10 rounded-lg px-0 sm:w-auto sm:px-4"
                   onClick={async () => {
-                    await signOutAdmin();
-                    window.location.href = "/admin";
+                    await navigateDocumentSafely(async () => { await signOutAdmin(); window.location.href = "/admin"; });
                   }}
                 >
                   <LogOut className="h-4 w-4" />
@@ -719,6 +684,7 @@ const AdminLayout = () => {
             <AdminTopProgress visible={isAdminRouteBusy} />
           </header>
 
+          <PublicUpdateNotice surface="admin" />
           <main className="min-w-0 px-3 py-4 sm:px-6 sm:py-5 lg:px-8">
             <div className="mx-auto w-full max-w-[1480px] space-y-5">
               {showDefaultContentSeedStatus && (
@@ -728,7 +694,7 @@ const AdminLayout = () => {
               )}
 
               <Suspense
-                fallback={<AdminPageSkeleton mode={skeletonMode} label={t.switchingPage} />}
+                fallback={<AdminCodeLoading mode={skeletonMode} label={t.switchingPage} onPending={setCodeLoading} />}
               >
                 <AdminRouteTransition key={routeKey} routeKey={routeKey} busy={isAdminRouteBusy}>
                   <div

@@ -1,3 +1,5 @@
+import { useUnsavedChangesWarning } from "@/hooks/useUnsavedChangesWarning";
+import { useSubmissionLock } from "@/hooks/useSubmissionLock";
 import { useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { useQueryClient } from "@tanstack/react-query";
@@ -46,6 +48,8 @@ const buildRecordEditHref = (table: string | null, id: string | null) => {
 };
 
 export default function AdminEnglishCenter() {
+  const { protectSubmission, isSubmitting } = useSubmissionLock();
+  useUnsavedChangesWarning(isSubmitting);
   const queryClient = useQueryClient();
   const { data: items = [], isFetching, refetch } = useAdminContentHealth();
   const { data: jobs = [] } = useAdminTranslationJobs(100);
@@ -72,7 +76,7 @@ export default function AdminEnglishCenter() {
     ]);
   };
 
-  const generateEnglish = async (table: string, id: string, force = false) => {
+  const generateEnglish = protectSubmission("english-generation", async (table: string, id: string, force: boolean = false) => {
     if (!isSupabaseConfigured) return false;
     const key = `${table}:${id}`;
     setBusyId(key);
@@ -87,9 +91,9 @@ export default function AdminEnglishCenter() {
       toast({ title: A("generationFailed"), description: formatGenerationError(error), variant: "destructive" });
       return false;
     }
-  };
+  });
 
-  const batchGenerate = async () => {
+  const batchGenerate = protectSubmission("english-generation", async () => {
     if (!isSupabaseConfigured) return;
     const targets = missingEnglish.slice(0, batchLimit);
     if (!targets.length) return;
@@ -123,7 +127,7 @@ export default function AdminEnglishCenter() {
     setBatchBusy(false);
     toast({ title: formatA("batchCompleted", { success: String(successCount), failed: String(failedCount) }) });
     await refreshTranslationData();
-  };
+  });
 
   return (
     <div className="space-y-6">

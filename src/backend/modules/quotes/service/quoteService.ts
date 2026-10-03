@@ -23,16 +23,16 @@ export function updateAdminQuote(quoteRequestId: string, patch: QuoteUpdatePatch
   return updateQuoteRecord(quoteRequestId, patch);
 }
 
-export function loadAdminQuotes<T extends Record<string, unknown>>(input: AdminQuoteListRepositoryInput) {
-  return fetchAdminQuoteList<T>(input);
+export function loadAdminQuotes<T extends Record<string, unknown>>(input: AdminQuoteListRepositoryInput, signal?: AbortSignal) {
+  return fetchAdminQuoteList<T>(input, signal);
 }
 
-export function loadAdminQuoteDetail(quoteRequestId: string) {
-  return fetchAdminQuoteDetail(quoteRequestId);
+export function loadAdminQuoteDetail(quoteRequestId: string, signal?: AbortSignal) {
+  return fetchAdminQuoteDetail(quoteRequestId, signal);
 }
 
-export function loadAdminQuoteReportRows(startIso?: string | null) {
-  return fetchAdminQuoteReportRows(startIso);
+export function loadAdminQuoteReportRows(startIso?: string | null, signal?: AbortSignal) {
+  return fetchAdminQuoteReportRows(startIso, signal);
 }
 
 export async function addAdminQuoteFollowup(input: AddAdminQuoteFollowupInput): Promise<QuoteFollowupSyncResult> {

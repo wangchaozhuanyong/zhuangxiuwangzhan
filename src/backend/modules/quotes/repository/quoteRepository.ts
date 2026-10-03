@@ -1,3 +1,4 @@
+import { withReadSignal } from "@/lib/readRequest";
 import { requireSupabase } from "@/lib/supabase";
 import { adminDayStartIso, adminSince24hIso, type AdminWorkflowFilter } from "@/lib/adminLeadWorkflow";
 import type { Database } from "@/lib/database.types";
@@ -29,7 +30,7 @@ export async function updateQuoteRecord(quoteRequestId: string, patch: QuoteUpda
   return true;
 }
 
-export async function fetchAdminQuoteList<T extends Record<string, unknown>>(input: AdminQuoteListRepositoryInput): Promise<AdminListPage<T>> {
+export async function fetchAdminQuoteList<T extends Record<string, unknown>>(input: AdminQuoteListRepositoryInput, signal?: AbortSignal): Promise<AdminListPage<T>> {
   const supabase = requireSupabase();
   const from = input.page * input.pageSize;
   const to = from + input.pageSize - 1;
@@ -54,7 +55,7 @@ export async function fetchAdminQuoteList<T extends Record<string, unknown>>(inp
   }
   query = query.order("created_at", { ascending: false });
 
-  const { data, error, count } = await query.range(from, to);
+  const { data, error, count } = await withReadSignal(query.range(from, to), signal);
   if (error) throw error;
 
   return {
@@ -65,18 +66,18 @@ export async function fetchAdminQuoteList<T extends Record<string, unknown>>(inp
   };
 }
 
-export async function fetchAdminQuoteDetail(quoteRequestId: string) {
+export async function fetchAdminQuoteDetail(quoteRequestId: string, signal?: AbortSignal) {
   const supabase = requireSupabase();
-  const [{ data: quote, error: quoteError }, { data: followups }] = await Promise.all([
+  const [{ data: quote, error: quoteError }, { data: followups }] = await withReadSignal(Promise.all([
     supabase.from("quote_requests").select("*").eq("id", quoteRequestId).single(),
     supabase.from("lead_followups").select("*").eq("quote_request_id", quoteRequestId).order("created_at", { ascending: false }),
-  ]);
+  ]), signal);
 
   if (quoteError) throw quoteError;
   return { quote, followups: followups ?? [] };
 }
 
-export async function fetchAdminQuoteReportRows(startIso?: string | null) {
+export async function fetchAdminQuoteReportRows(startIso?: string | null, signal?: AbortSignal) {
   const supabase = requireSupabase();
   let query = supabase
     .from("quote_requests")
@@ -86,7 +87,7 @@ export async function fetchAdminQuoteReportRows(startIso?: string | null) {
 
   if (startIso) query = query.gte("created_at", startIso);
 
-  const { data, error } = await query;
+  const { data, error } = await withReadSignal(query, signal);
   if (error) throw error;
   return data || [];
 }

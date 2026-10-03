@@ -3,8 +3,8 @@ import {
   invokeSystemHealthCheck,
 } from "@/backend/modules/system/repository/systemHealthRepository";
 
-export function fetchAdminSystemHealth<T>() {
-  return invokeSystemHealthCheck<T>();
+export function fetchAdminSystemHealth<T>(signal?: AbortSignal) {
+  return invokeSystemHealthCheck<T>(signal);
 }
 
 export function cleanupAdminFormAttempts<T>(retentionDays: number) {

@@ -1,3 +1,4 @@
+import { completePublicSync } from "@/lib/publicSyncRecovery";
 import type { QueryClient } from "@tanstack/react-query";
 import { requestPublicContentInvalidation } from "@/lib/adminMutation";
 import { isSupabaseConfigured } from "@/lib/supabase";
@@ -140,20 +141,20 @@ export function generateAdminMaterialEnglish(materialId: string, force: boolean)
   return invokeMaterialEnglishGeneration(materialId, force);
 }
 
-export function loadAdminMaterialList<T extends Record<string, unknown>>(input: AdminMaterialListInput) {
-  return fetchAdminMaterialList<T>(input);
+export function loadAdminMaterialList<T extends Record<string, unknown>>(input: AdminMaterialListInput, signal?: AbortSignal) {
+  return fetchAdminMaterialList<T>(input, signal);
 }
 
-export function loadAdminMaterialDetail(materialId: string) {
-  return fetchAdminMaterialDetail(materialId);
+export function loadAdminMaterialDetail(materialId: string, signal?: AbortSignal) {
+  return fetchAdminMaterialDetail(materialId, signal);
 }
 
-export function loadAdminMaterialRows(limit: number) {
-  return fetchAdminMaterialRows(limit);
+export function loadAdminMaterialRows(limit: number, signal?: AbortSignal) {
+  return fetchAdminMaterialRows(limit, signal);
 }
 
-export function loadAdminMaterialImages(materialId: string) {
-  return fetchAdminMaterialImages(materialId);
+export function loadAdminMaterialImages(materialId: string, signal?: AbortSignal) {
+  return fetchAdminMaterialImages(materialId, signal);
 }
 
 export async function addAdminMaterialImage(materialId: string, draft: AdminMaterialImageDraft) {
@@ -165,18 +166,18 @@ export async function addAdminMaterialImage(materialId: string, draft: AdminMate
     sort_order: Number(draft.sort_order || 0),
     is_active: true,
   });
-  await requestPublicContentInvalidation({ table: "material_images", action: "insert", id: materialId });
+  await completePublicSync(`material_images:${materialId}:insert`, () => requestPublicContentInvalidation({ table: "material_images", action: "insert", id: materialId }));
   return result;
 }
 
 export async function updateAdminMaterialImage(imageId: string, patch: Record<string, unknown>) {
   const result = await updateMaterialImageRecord(imageId, patch);
-  await requestPublicContentInvalidation({ table: "material_images", action: "update", id: imageId });
+  await completePublicSync(`material_images:${imageId}:update`, () => requestPublicContentInvalidation({ table: "material_images", action: "update", id: imageId }));
   return result;
 }
 
 export async function archiveAdminMaterialImage(imageId: string) {
   const result = await archiveMaterialImageRecord(imageId);
-  await requestPublicContentInvalidation({ table: "material_images", action: "archive", id: imageId });
+  await completePublicSync(`material_images:${imageId}:archive`, () => requestPublicContentInvalidation({ table: "material_images", action: "archive", id: imageId }));
   return result;
 }

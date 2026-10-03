@@ -71,12 +71,12 @@ test("supports both languages at the requested viewport widths", async ({ page }
 });
 
 test("shows a visible retry state when a hero image fails", async ({ page }) => {
-  await page.route("**/images/**", (route) => route.abort());
+  await page.route("**/*", (route) => route.request().resourceType() === "image" && !route.request().url().includes("logo") ? route.abort() : route.fallback());
   await page.goto("/zh/about", { waitUntil: "domcontentloaded" });
   await expect(page.locator(loader)).toBeHidden({ timeout: 10_000 });
   await expect(page.locator("#main-content .smart-image-failure")).toBeVisible();
   await expect(page.locator("#main-content .smart-image-failure button")).toBeVisible();
-  await page.unroute("**/images/**");
+  await page.unroute("**/*");
   await page.locator("#main-content .smart-image-failure button").click();
   await expect(page.locator(criticalImage)).toHaveAttribute("data-image-state", "loaded", { timeout: 10_000 });
 });
@@ -92,22 +92,26 @@ test("requests deferred home media before it scrolls into view", async ({ page }
   await expect(image).toHaveAttribute("data-image-state", "loaded", { timeout: 10_000 });
 });
 
-test("offers explicit recovery after a slow image without exposing an empty hero automatically", async ({ page }) => {
-  await page.route("**/images/**", () => { /* Keep the image request pending. */ });
+test("releases a slow hero to its placeholder and exposes single-image retry", async ({ page }) => {
+  await page.route("**/*", (route) => { if (route.request().resourceType() !== "image" || route.request().url().includes("logo") || route.request().url().includes("image_retry=")) return route.fallback(); /* Hold only the original transfer; retry must reach the network. */ });
   await page.goto("/en/about", { waitUntil: "domcontentloaded" });
-  await expect(page.locator(loader)).toBeVisible();
-  await expect(page.locator(".scheme-a-page-loader__actions")).toBeVisible({ timeout: 7_000 });
-  await expect(page.locator(loader)).toBeVisible();
+  await expect(page.locator(loader)).toBeHidden({ timeout: 8_000 });
   await expect(page.locator(criticalImage)).toHaveAttribute("data-image-state", "loading");
-  await expect(page.locator(".smart-image-failure")).toHaveCount(0);
-  await page.getByRole("button", { name: "Continue", exact: true }).click();
-  await expect(page.locator(loader)).toBeHidden();
-  await page.unroute("**/images/**");
+  await expect(page.locator("#main-content .smart-image-slow button").first()).toBeVisible();
+  await page.locator("#main-content .smart-image-slow button").first().click();
+  await expect(page.locator(criticalImage)).toHaveAttribute("data-image-state", "loaded", { timeout: 10_000 });
+  await page.unroute("**/*");
 });
 
 test("covers every navigation frame until the selected visible images have decoded", async ({ page }) => {
   await page.goto("/zh/services", { waitUntil: "domcontentloaded" });
   await expect(page.locator("[data-route-loader]")).toBeHidden();
+  await page.route("**/rest/v1/site_pages*", async (route) => {
+    if (new URL(route.request().url()).searchParams.get("page_key") !== "eq.materials") return route.fallback();
+    const response = await route.fetch();
+    const rows = await response.json();
+    await route.fulfill({ response, json: rows.map((row: Record<string, unknown>) => ({ ...row, image_url: "/images/heroes/v5/hero-materials-v5-desktop.webp" })) });
+  });
   await page.route("**/images/**/hero-materials*", async (route) => {
     await new Promise((resolve) => setTimeout(resolve, 900));
     await route.continue();

@@ -109,7 +109,7 @@ export function PublicRouteImageGate({ children, routeKey, onCancel }: { childre
       }
       // Site settings can replace the fallback logo element after mount.
       const brand = brandContainer?.querySelector<HTMLImageElement>("img");
-      const images = [...main.querySelectorAll<HTMLImageElement>("img"), ...(brand ? [brand] : [])]
+      const images = [...main.querySelectorAll<HTMLImageElement>('img[data-critical-image="true"]'), ...(brand ? [brand] : [])]
         .filter((image) => !image.classList.contains("smart-image-previous") && isInViewport(image));
       const ready = images.every((image) => {
         if (failedImages.has(image) || image.dataset.imageState === "error") return true; // The image owns its retry UI.
@@ -149,10 +149,10 @@ export function PublicRouteImageGate({ children, routeKey, onCancel }: { childre
       if (stopped || settled || frame) return;
       frame = requestAnimationFrame(() => { frame = 0; check(); });
     };
-    const timeout = showBrandScreen && boot ? 0 : window.setTimeout(() => {
+    const timeout = window.setTimeout(() => {
       check();
-      // Slow is not failed. Keep a recoverable waiting state; never expose an empty hero automatically.
-      if (!settled) setState({ cycle, status: "timeout" });
+      // Required data/styles retain recovery; a slow image releases to its placeholder.
+      if (!settled) setState({ cycle, status: main.dataset.routeWaitReason?.startsWith("image-") ? "degraded" : "timeout" });
     }, PUBLIC_MOTION.timeout);
     const observer = new MutationObserver(schedule);
     observer.observe(main, { childList: true, subtree: true, attributes: true,
@@ -207,7 +207,7 @@ export function PublicRouteImageGate({ children, routeKey, onCancel }: { childre
   };
   useLayoutEffect(() => {
     if (!showBrandScreen || !boot || !blocked) return;
-    return boot.claim({ retry, continue: cancel, timeout: () => setState({ cycle, status: "timeout" }) });
+    return boot.claim({ retry, continue: cancel, timeout: () => setState({ cycle, status: contentRef.current?.dataset.routeWaitReason?.startsWith("image-") ? "degraded" : "timeout" }) });
     // Recovery handlers belong to this route/attempt; the boot owns its deadline.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [boot, showBrandScreen, routeKey, attempt, blocked]);

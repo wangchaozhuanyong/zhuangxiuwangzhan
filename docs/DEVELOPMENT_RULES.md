@@ -321,3 +321,7 @@ Architecture Compliance Report:
 当前项目只有不缓存 HTML 的离线兜底 Service Worker，不是完整 PWA。不要把它扩展为页面离线缓存，除非单独评估和立项。
 
 当前项目没有本地统一 `/api` 后端。不要为了单个功能临时创建新后端体系。
+
+## 加载、刷新、导航与编辑保护
+
+统一正文见 [加载刷新导航标准](rules/loading-refresh-navigation.md)；新增路由同步登记 `docs/interaction-route-compliance.json`，执行 `npm run verify:interaction-standards`。

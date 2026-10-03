@@ -1,4 +1,5 @@
-import { useCallback, useMemo, useState } from "react";
+import { useAdminListingState } from "@/hooks/useAdminListingState";
+import { useCallback, useMemo } from "react";
 import { Link, useLocation } from "react-router-dom";
 import AdminPageHeader from "@/components/admin/AdminPageHeader";
 import AdminAlert from "@/components/admin/AdminAlert";
@@ -221,10 +222,12 @@ const AdminSeoAuditView = () => {
   );
   const strategyCards = strategyCardKeys.map((key) => adminSeoStrategyCards[language][key]);
   const guidanceByTable = adminSeoGuidanceByTableText[language];
-  const { data, isFetching, isError, error, refetch } = useAdminSeoAudit();
+  const { data, isFetching, isInitialError: isError, error, refetch } = useAdminSeoAudit();
   const rows = data ?? emptySeoRows;
   const initialLoading = isFetching && !data;
-  const [status, setStatus] = useState("all");
+  const list = useAdminListingState();
+  const status = list.filter("status") as string;
+  const setStatus = (value: string) => list.setFilter("status", value);
 
   const checkedRows = useMemo<CheckedSeoRow[]>(() => rows.map((row) => ({ ...row, issues: buildRowIssues(row, language) })), [language, rows]);
 

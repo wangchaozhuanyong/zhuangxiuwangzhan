@@ -1,3 +1,4 @@
+import { withReadSignal } from "@/lib/readRequest";
 import { isSupabaseConfigured, supabase } from "@/lib/supabase";
 import type { Json } from "@/lib/database.types";
 
@@ -9,14 +10,14 @@ export type InsertSystemEventLogInput = {
   metadata: Record<string, unknown>;
 };
 
-export async function fetchSystemEventLogs(limit = 100) {
+export async function fetchSystemEventLogs(limit = 100, signal?: AbortSignal) {
   if (!isSupabaseConfigured || !supabase) return [];
 
-  const { data, error } = await supabase
+  const { data, error } = await withReadSignal(supabase
     .from("system_event_logs")
     .select("id,event_type,severity,source,message,metadata,created_at")
     .order("created_at", { ascending: false })
-    .limit(limit);
+    .limit(limit), signal);
 
   if (error) throw error;
   return data || [];

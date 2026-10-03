@@ -1,4 +1,6 @@
-import { keepPreviousData, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { invalidateAdminResource } from "@/lib/adminInvalidate";
+import { useInteractionQuery as useQuery } from "@/hooks/useInteractionQuery";
+import { keepPreviousData, useMutation, useQueryClient } from "@tanstack/react-query";
 import {
   createAdminMediaAsset,
   deleteAdminMediaAsset,
@@ -51,7 +53,7 @@ export function useAdminMediaAssets(options: Omit<AdminListQuery, "status"> & { 
     placeholderData: keepPreviousData,
     staleTime: ADMIN_LIST_STALE_TIME,
     gcTime: ADMIN_QUERY_GC_TIME,
-    queryFn: () => loadAdminMediaAssets<AdminMediaAsset>({ page, pageSize, usageType, search }),
+    queryFn: ({ signal }) => loadAdminMediaAssets<AdminMediaAsset>({ page, pageSize, usageType, search }, signal),
   });
 }
 
@@ -71,7 +73,7 @@ export function useCreateAdminMediaAsset() {
     }) => {
       return createAdminMediaAsset({ url, upload, usageType, folder });
     },
-    onSuccess: () => qc.invalidateQueries({ queryKey: ["admin", "media_assets"] }),
+    onSuccess: () => invalidateAdminResource(qc, "media_assets", false),
   });
 }
 
@@ -81,7 +83,7 @@ export function useUpdateAdminMediaAsset() {
     mutationFn: async (asset: Pick<AdminMediaAsset, "id" | "alt_zh" | "alt_en" | "usage_type" | "folder">) => {
       return updateAdminMediaAsset(asset);
     },
-    onSuccess: () => qc.invalidateQueries({ queryKey: ["admin", "media_assets"] }),
+    onSuccess: () => invalidateAdminResource(qc, "media_assets", false),
   });
 }
 
@@ -89,6 +91,6 @@ export function useDeleteAdminMediaAsset() {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: deleteAdminMediaAsset,
-    onSuccess: () => qc.invalidateQueries({ queryKey: ["admin", "media_assets"] }),
+    onSuccess: () => invalidateAdminResource(qc, "media_assets", false),
   });
 }

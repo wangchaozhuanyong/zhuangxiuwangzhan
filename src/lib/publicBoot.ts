@@ -1,3 +1,4 @@
+import { reloadDocumentSafely } from "@/lib/navigationProtection";
 import { publicContentStatusText } from "../i18n/publicContentStatusText";
 import { getDefaultLanguage, getLanguageFromPath, stripLanguagePrefix } from "../i18n/routes";
 import { PUBLIC_MOTION, prefersReducedMotion } from "./publicMotion";
@@ -124,7 +125,7 @@ export function initializePublicBoot(): PublicBoot | undefined {
       return () => { if (recovery === next) { recovery = undefined; render(); } };
     },
     retry() {
-      if (!stylesReady()) { location.reload(); return; }
+      if (!stylesReady()) { void reloadDocumentSafely(); return; }
       if (state !== "timeout") return;
       state = "waiting";
       deadline = performance.now() + PUBLIC_MOTION.timeout;
@@ -191,7 +192,7 @@ export function initializePublicBoot(): PublicBoot | undefined {
   if (!document.getElementById("root")) observer.observe(document.documentElement, { childList: true, subtree: true });
   document.addEventListener("click", (event) => {
     const action = event.target instanceof Element ? event.target.closest<HTMLElement>("[data-boot-action]")?.dataset.bootAction : undefined;
-    if (action === "retry") { if (recovery) recovery.retry(); else location.reload(); }
+    if (action === "retry") { if (recovery) recovery.retry(); else void reloadDocumentSafely(); }
     if (action === "continue") recovery?.continue();
   });
   if (!isAdmin) arm();

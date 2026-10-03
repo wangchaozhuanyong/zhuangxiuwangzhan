@@ -13,7 +13,7 @@ export default function Locations() {
   const { language } = useLanguage();
   const copy = locationsPageText[language];
   const routeText = schemeARouteText[language];
-  const { data: locations = [], isLoading, isError, refetch } = usePublishedServiceAreas(language);
+  const { data: locations = [], isLoading, isInitialError: isError, refetch } = usePublishedServiceAreas(language);
   const { data: pageContent, isLoading: pageLoading } = usePublishedSitePage(language, "locations");
   const hero = resolvePageHeroImage(pageContent?.image_url, pageHeroImages.locations);
 

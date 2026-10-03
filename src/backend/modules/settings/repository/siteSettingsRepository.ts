@@ -1,3 +1,4 @@
+import { withReadSignal } from "@/lib/readRequest";
 import { isSupabaseConfigured } from "@/lib/supabaseConfig";
 import type { SiteSettings } from "@/lib/siteSettingsApi";
 
@@ -8,10 +9,10 @@ const getSiteSettingsClient = async () => {
   return (await import("@/lib/supabase")).supabase;
 };
 
-export async function fetchDefaultSiteSettingsRecord() {
+export async function fetchDefaultSiteSettingsRecord(signal?: AbortSignal) {
   const supabase = await getSiteSettingsClient();
   if (!supabase) return null;
-  const { data, error } = await supabase.from("site_settings").select("*").eq("id", "default").maybeSingle();
+  const { data, error } = await withReadSignal(supabase.from("site_settings").select("*").eq("id", "default").maybeSingle(), signal);
   if (error) return null;
   return (data as Partial<SiteSettings> | null) || null;
 }

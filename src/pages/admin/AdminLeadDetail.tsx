@@ -1,4 +1,9 @@
-import { FormEvent, useEffect, useState } from "react";
+import { invalidateAdminResource } from "@/lib/adminInvalidate";
+import { useAdminFormState } from "@/hooks/useAdminFormState";
+import { useUnsavedChangesWarning } from "@/hooks/useUnsavedChangesWarning";
+import AdminPageSkeleton from "@/components/admin/AdminPageSkeleton";
+import { useSubmissionLock } from "@/hooks/useSubmissionLock";
+import { FormEvent, useState } from "react";
 import { useParams } from "react-router-dom";
 import { useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
@@ -46,11 +51,12 @@ const followupTypeLabel = (type: string) =>
   type in adminLeadFollowupTypeLabels ? adminLeadFollowupTypeLabels[type as AdminLeadFollowupTypeKey][getAdminLang()] : type;
 
 const AdminLeadDetail = () => {
+  const { protectSubmission, queueSubmission, isSubmitting } = useSubmissionLock();
   const lang = getAdminLang();
   const { id } = useParams<{ id: string }>();
   const queryClient = useQueryClient();
-  const { data, error } = useAdminLead(id);
-  const [lead, setLead] = useState<AdminLeadDetailRow | null>(null);
+  const { data, error, isLoading } = useAdminLead(id);
+  const { state: lead, setForm: setLead, dirty, applyPatchRemote } = useAdminFormState<AdminLeadDetailRow | null>(data?.lead, { initial: null, resetKey: id });
   const [content, setContent] = useState("");
   const [followupType, setFollowupType] = useState("note");
   const [nextFollowUpAt, setNextFollowUpAt] = useState("");
@@ -60,23 +66,16 @@ const AdminLeadDetail = () => {
   const leadWritePermission = useAdminPermission("lead.write");
   const canWriteLead = leadWritePermission.allowed;
 
-  useEffect(() => {
-    if (data?.lead) setLead(data.lead);
-  }, [data?.lead]);
+  useUnsavedChangesWarning(dirty || !!content.trim() || !!nextFollowUpAt || isSubmitting);
 
   const followups = data?.followups ?? [];
   const loadError = error ? formatUserFacingError(error, lang) : "";
   const whatsappHref = lead ? whatsappHrefFromPhone(lead.phone) : "";
   const telHref = lead ? telHrefFromPhone(lead.phone) : "";
 
-  const refresh = async () => {
-    await Promise.all([
-      queryClient.invalidateQueries({ queryKey: ["admin", "leads"] }),
-      queryClient.invalidateQueries({ queryKey: ["admin", "dashboard"] }),
-    ]);
-  };
+  const refresh = () => invalidateAdminResource(queryClient, "leads", false);
 
-  const updateLead = async (patch: Record<string, unknown>, label = A("defaultFieldLabel")) => {
+  const updateLead = queueSubmission("record-autosave", async (patch: Record<string, unknown>, label: string = A("defaultFieldLabel")) => {
     if (!id) return;
     if (!canWriteLead) {
       setMessage(A("readOnlyLead"));
@@ -86,6 +85,7 @@ const AdminLeadDetail = () => {
     setMessage(formatA("savingField", { label }));
     try {
       await updateAdminLead(id, patch);
+      applyPatchRemote(patch, patch);
       setMessage(formatA("savedField", { label }));
       await refresh();
     } catch (updateError) {
@@ -93,9 +93,9 @@ const AdminLeadDetail = () => {
     } finally {
       setSavingField(null);
     }
-  };
+  });
 
-  const addFollowup = async (event: FormEvent) => {
+  const addFollowup = protectSubmission("addFollowup", async (event: FormEvent) => {
     event.preventDefault();
     if (!canWriteLead) {
       setMessage(A("readOnlyFollowup"));
@@ -115,12 +115,12 @@ const AdminLeadDetail = () => {
         content,
         nextFollowUpAt,
       });
+      setContent((current) => current === content ? "" : current);
+      setNextFollowUpAt((current) => current === nextFollowUpAt ? "" : current);
       if (result.syncError) {
         setMessage(formatA("followupSavedSyncFailed", { reason: formatAdminMutationError(result.syncError) }));
         return;
       }
-      setContent("");
-      setNextFollowUpAt("");
       setMessage(A("followupSaved"));
       await refresh();
     } catch (insertError) {
@@ -128,7 +128,7 @@ const AdminLeadDetail = () => {
     } finally {
       setSavingFollowup(false);
     }
-  };
+  });
 
   return (
     <>
@@ -141,6 +141,7 @@ const AdminLeadDetail = () => {
         {!canWriteLead && <AdminReadOnlyNotice />}
 
         {(message || loadError) && <div role="status" aria-live="polite" className="rounded-xl border border-border bg-card p-4 text-sm">{message || loadError}</div>}
+        {isLoading && <AdminPageSkeleton mode="form" />}
         {lead && (
           <>
             <div className="rounded-xl border border-border bg-card p-4 sm:p-6">

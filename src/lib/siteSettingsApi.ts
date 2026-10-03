@@ -1,6 +1,5 @@
 import { siteConfig } from "@/config/site";
-import { readPreloadedPublicData } from "@/lib/publicPreload";
-import { toRecord } from "@/lib/recordUtils";
+
 
 export type SiteSettings = {
   updated_at?: string;
@@ -196,14 +195,10 @@ export const resolveSiteSettings = (
   };
 };
 
-export const fetchSiteSettings = async () => {
-  const preloadedSiteSettings = toRecord(readPreloadedPublicData()?.siteSettings);
-  if (Object.keys(preloadedSiteSettings).length) {
-    return { ...fallbackSiteSettings, ...preloadedSiteSettings } as SiteSettings;
-  }
+export const fetchSiteSettings = async (signal?: AbortSignal) => {
 
   const { fetchDefaultSiteSettingsRecord } = await import("@/backend/modules/settings/repository/siteSettingsRepository");
-  const data = await fetchDefaultSiteSettingsRecord();
+  const data = await fetchDefaultSiteSettingsRecord(signal);
   if (!data) return fallbackSiteSettings;
   return { ...fallbackSiteSettings, ...data } as SiteSettings;
 };

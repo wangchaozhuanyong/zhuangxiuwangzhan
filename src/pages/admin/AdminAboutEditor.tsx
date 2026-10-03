@@ -1,4 +1,6 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useAdminFormState } from "@/hooks/useAdminFormState";
+import { useSubmissionLock } from "@/hooks/useSubmissionLock";
+import { useMemo, useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
@@ -11,7 +13,6 @@ import AdminFormSection from "@/components/admin/AdminFormSection";
 import AdminEmptyState from "@/components/admin/AdminEmptyState";
 import ImageField from "@/components/admin/ImageField";
 import { AboutSectionItemsEditor } from "@/components/admin/StructuredArrayEditors";
-import { invalidatePublishedContent } from "@/lib/adminInvalidate";
 import { formatAdminMutationError, saveAdminRecord } from "@/lib/adminMutation";
 import { useUnsavedChangesWarning } from "@/hooks/useUnsavedChangesWarning";
 import { aboutSectionKeys, type AboutSectionKey, type AboutSectionRow, type CtaRow } from "@/lib/adminEditorData";
@@ -102,59 +103,36 @@ const cleanAboutItems = (sectionKey: string, value: unknown[]) => {
 };
 
 export default function AdminAboutEditor() {
+  const { protectSubmission, isSubmitting } = useSubmissionLock();
   const queryClient = useQueryClient();
   const { data: bundle, isFetching, refetch } = useAdminAboutEditorData();
   const [activeTab, setActiveTab] = useState<SectionKey | "cta">("hero");
-  const loading = isFetching;
+  const loading = isFetching && !bundle;
 
-  const [sections, setSections] = useState<Record<string, AboutSectionRow | null>>({});
-  const [itemsZh, setItemsZh] = useState<Record<string, AboutSectionItem[]>>({});
-  const [itemsEn, setItemsEn] = useState<Record<string, AboutSectionItem[]>>({});
-
-  const [ctaBlock, setCtaBlock] = useState<CtaRow | null>(null);
-  const [editingCta, setEditingCta] = useState<CtaRow | null>(null);
-  const formDirtyRef = useRef(false);
-  const [formDirty, setFormDirty] = useState(false);
-
-  const markDirty = () => {
-    formDirtyRef.current = true;
-    setFormDirty(true);
-  };
-  useUnsavedChangesWarning(formDirty);
-
-  const touchEditingCta: typeof setEditingCta = (value) => {
-    markDirty();
-    setEditingCta(value);
-  };
-
-  useEffect(() => {
-    if (!bundle) return;
-    if (formDirtyRef.current) return;
-    setSections(bundle.sections);
-    const zh: Record<string, AboutSectionItem[]> = {};
-    const en: Record<string, AboutSectionItem[]> = {};
+  const remoteForm = useMemo(() => {
+    const itemsZh: Record<string, AboutSectionItem[]> = {};
+    const itemsEn: Record<string, AboutSectionItem[]> = {};
     sectionKeys.forEach((key) => {
-      zh[key] = asArray(bundle.sections[key]?.items_zh).map(toItem);
-      en[key] = asArray(bundle.sections[key]?.items_en).map(toItem);
+      itemsZh[key] = asArray(bundle?.sections[key]?.items_zh).map(toItem);
+      itemsEn[key] = asArray(bundle?.sections[key]?.items_en).map(toItem);
     });
-    setItemsZh(zh);
-    setItemsEn(en);
-    setCtaBlock(bundle.ctaBlock);
+    return { sections: bundle?.sections ?? {} as Record<string, AboutSectionRow | null>, itemsZh, itemsEn, ctaBlock: bundle?.ctaBlock ?? null, editingCta: null as CtaRow | null };
   }, [bundle]);
-
-  const refreshEditor = async () => {
-    formDirtyRef.current = false;
-    setFormDirty(false);
-    void invalidatePublishedContent(queryClient);
-    await refetch();
-  };
+  const { state: form, field, dirty: formDirty, applyPatchRemote } = useAdminFormState(bundle ? remoteForm : undefined, { initial: remoteForm });
+  const [sections, setSections] = field("sections");
+  const [itemsZh, setItemsZh] = field("itemsZh");
+  const [itemsEn, setItemsEn] = field("itemsEn");
+  const [ctaBlock] = field("ctaBlock");
+  const [editingCta, setEditingCta] = field("editingCta");
+  useUnsavedChangesWarning(formDirty || isSubmitting);
+  const touchEditingCta: typeof setEditingCta = setEditingCta;
 
   const updateSection = (key: string, patch: Partial<AboutSectionRow>) => {
-    markDirty();
+
     setSections((prev) => ({ ...prev, [key]: { ...(prev[key] || { section_key: key }), ...patch } }));
   };
 
-  const saveSection = async (key: string) => {
+  const saveSection = protectSubmission("saveSection", async (key: string) => {
     if (!supabase) return;
     const row = sections[key];
     if (!row) {
@@ -181,19 +159,20 @@ export default function AdminAboutEditor() {
         status: row.status || "published",
         sort_order: Number(row.sort_order || 0),
       };
-      await saveAdminRecord({
+      const saved = await saveAdminRecord<AboutSectionRow>({
         table: "about_sections",
         payload,
         id: row.id,
         expectedUpdatedAt: row.updated_at || null,
         queryClient,
       });
+      applyPatchRemote({ sections: { [key]: saved }, itemsZh: { [key]: (itemsZh[key] || []) }, itemsEn: { [key]: (itemsEn[key] || []) } }, form);
       toast({ title: A("saved") });
-      await refreshEditor();
+
     } catch (error) {
       toast({ title: A("saveFailed"), description: formatAdminMutationError(error), variant: "destructive" });
     }
-  };
+  });
 
   const ctaDraft = useMemo<CtaRow>(
     () =>
@@ -216,7 +195,7 @@ export default function AdminAboutEditor() {
     [editingCta, ctaBlock],
   );
 
-  const saveCta = async () => {
+  const saveCta = protectSubmission("saveCta", async () => {
     if (!supabase) return;
     const payload: Record<string, unknown> = {
       block_key: "about_final",
@@ -234,23 +213,23 @@ export default function AdminAboutEditor() {
       status: ctaDraft.status || "published",
     };
     try {
-      await saveAdminRecord({
+      const saved = await saveAdminRecord<CtaRow>({
         table: "cta_blocks",
         payload,
         id: ctaDraft.id,
         expectedUpdatedAt: ctaDraft.updated_at || null,
         queryClient,
       });
+      applyPatchRemote({ ctaBlock: saved, editingCta: null }, { ctaBlock, editingCta });
     } catch (error) {
       toast({ title: A("saveFailed"), description: formatAdminMutationError(error), variant: "destructive" });
       return;
     }
 
     toast({ title: A("saved") });
-    void invalidatePublishedContent(queryClient);
-    setEditingCta(null);
-    await refreshEditor();
-  };
+
+
+  });
 
   if (!isSupabaseConfigured) {
     return <AdminEmptyState title={A("supabaseNotConfigured")} description={A("supabaseNotConfiguredDescription")} />;
@@ -364,7 +343,7 @@ export default function AdminAboutEditor() {
                           sectionKey={key}
                           value={itemsZh[key] || []}
                           onChange={(value) => {
-                            markDirty();
+
                             setItemsZh((prev) => ({ ...prev, [key]: value }));
                           }}
                         />
@@ -376,7 +355,7 @@ export default function AdminAboutEditor() {
                           sectionKey={key}
                           value={itemsEn[key] || []}
                           onChange={(value) => {
-                            markDirty();
+
                             setItemsEn((prev) => ({ ...prev, [key]: value }));
                           }}
                         />

@@ -28,49 +28,9 @@ import {
   createRemoteContent,
   type PublicContentResult,
 } from "@/lib/publicContentStatus";
-import { readPreloadedPublicData } from "@/lib/publicPreload";
 import { toArray, toRecord, toText, type UnknownRecord } from "@/lib/recordUtils";
 
 type Language = "en" | "zh";
-
-const HOME_BUNDLE_SNAPSHOT_TTL = 60 * 1000;
-type RawHomeBundle = Awaited<ReturnType<typeof fetchPublicHomeBundleData>>;
-type BrandPartnersVisibility = Awaited<ReturnType<typeof fetchPublishedHomeSectionRow>>;
-
-let homeBundleSnapshot: { data: RawHomeBundle; expiresAt: number } | null = null;
-let homeBundleRequest: Promise<RawHomeBundle> | null = null;
-let brandPartnersVisibilitySnapshot: { data: BrandPartnersVisibility; expiresAt: number } | null = null;
-let brandPartnersVisibilityRequest: Promise<BrandPartnersVisibility> | null = null;
-
-const fetchSharedHomeBundleData = async () => {
-  const now = Date.now();
-  if (homeBundleSnapshot && homeBundleSnapshot.expiresAt > now) return homeBundleSnapshot.data;
-  if (homeBundleRequest) return homeBundleRequest;
-
-  homeBundleRequest = fetchPublicHomeBundleData()
-    .then((data) => {
-      if (data) homeBundleSnapshot = { data, expiresAt: Date.now() + HOME_BUNDLE_SNAPSHOT_TTL };
-      return data;
-    })
-    .finally(() => { homeBundleRequest = null; });
-  return homeBundleRequest;
-};
-
-const fetchSharedBrandPartnersVisibility = async () => {
-  const now = Date.now();
-  if (brandPartnersVisibilitySnapshot && brandPartnersVisibilitySnapshot.expiresAt > now) {
-    return brandPartnersVisibilitySnapshot.data;
-  }
-  if (brandPartnersVisibilityRequest) return brandPartnersVisibilityRequest;
-
-  brandPartnersVisibilityRequest = fetchPublishedHomeSectionRow("brand_partners")
-    .then((data) => {
-      brandPartnersVisibilitySnapshot = { data, expiresAt: Date.now() + HOME_BUNDLE_SNAPSHOT_TTL };
-      return data;
-    })
-    .finally(() => { brandPartnersVisibilityRequest = null; });
-  return brandPartnersVisibilityRequest;
-};
 
 const readText = (record: UnknownRecord | null | undefined, field: string, fallback = "") => toText(record?.[field], fallback);
 const readRecordArray = (value: unknown): UnknownRecord[] => toArray<UnknownRecord>(value).map(toRecord);
@@ -299,7 +259,7 @@ const mapLegacySitePage = (row: UnknownRecord, language: Language): PublishedSit
   items: pickLocalizedList(row, "items", language),
 });
 
-const mapSitePageRows = (payload: UnknownRecord, language: "en" | "zh") => {
+export const mapSitePageRows = (payload: UnknownRecord, language: "en" | "zh") => {
   const legacyRow = readRecordArray(payload.site_pages)[0];
   const legacy = legacyRow ? mapLegacySitePage(legacyRow, language) : null;
   const cmsRow = readRecordArray(payload.cms_pages)[0];
@@ -346,7 +306,7 @@ const mapPublishedProcessStep = (row: UnknownRecord, language: Language): Publis
   icon_key: readText(row, "icon_key") || null,
 });
 
-const mapPublishedCtaBlockRow = (row: UnknownRecord, language: Language): PublishedCtaBlock => ({
+export const mapPublishedCtaBlockRow = (row: UnknownRecord, language: Language): PublishedCtaBlock => ({
   id: readText(row, "id"),
   block_key: readText(row, "block_key"),
   title: pickLocalizedText(row, "title", language),
@@ -407,7 +367,7 @@ export const isPublishedHomeSectionEnabled = (sectionKey: string, value: unknown
   return rows.some((row) => row.section_key === sectionKey && row.status === "published");
 };
 
-const mapRemoteHomeContentBundle = (
+export const mapRemoteHomeContentBundle = (
   payload: UnknownRecord,
   language: "en" | "zh",
   brandPartnersVisibility: unknown = null,
@@ -444,26 +404,16 @@ const mapRemoteHomeContentBundle = (
 
 export const getPublishedHomeContentBundle = async (
   language: "en" | "zh",
-): Promise<PublicContentResult<PublishedHomeContentBundle>> => {
+ signal?: AbortSignal): Promise<PublicContentResult<PublishedHomeContentBundle>> => {
   const fallback = async (reason: "supabase-not-configured" | "remote-empty" | "remote-error", error?: unknown) =>
     createLocalFallbackContent(await getLocalHomeContentBundle(language), reason, error);
-
-  const preloadedHomeBundle = toRecord(readPreloadedPublicData()?.homeContentBundle);
-  if (Object.keys(preloadedHomeBundle).length) {
-    const hasPreloadedBrandPartnersVisibility = readRecordArray(preloadedHomeBundle.home_sections)
-      .some((row) => row.section_key === "brand_partners" && typeof row.status === "string");
-    const brandPartnersVisibility = !hasPreloadedBrandPartnersVisibility && hasPublicContentDatabaseClient()
-      ? await fetchSharedBrandPartnersVisibility()
-      : null;
-    return createRemoteContent(mapRemoteHomeContentBundle(preloadedHomeBundle, language, brandPartnersVisibility));
-  }
 
   if (!hasPublicContentDatabaseClient()) return fallback("supabase-not-configured");
 
   try {
     const [data, brandPartnersVisibility] = await Promise.all([
-      fetchSharedHomeBundleData(),
-      fetchSharedBrandPartnersVisibility(),
+      fetchPublicHomeBundleData(signal),
+      fetchPublishedHomeSectionRow("brand_partners", signal),
     ]);
     const payload = toRecord(data);
     if (!Object.keys(payload).length) return fallback("remote-empty");
@@ -474,16 +424,16 @@ export const getPublishedHomeContentBundle = async (
   }
 };
 
-export const getPublishedBrandPartners = async (): Promise<PublishedBrandPartner[]> => {
+export const getPublishedBrandPartners = async (signal?: AbortSignal): Promise<PublishedBrandPartner[]> => {
   if (!hasPublicContentDatabaseClient()) return [];
-  const data = await fetchPublishedBrandPartnerRows();
+  const data = await fetchPublishedBrandPartnerRows(signal);
   return data || [];
 };
 
-export const getPublishedBeforeAfterItems = async (language: "en" | "zh"): Promise<PublishedBeforeAfterItem[]> => {
+export const getPublishedBeforeAfterItems = async (language: "en" | "zh", signal?: AbortSignal): Promise<PublishedBeforeAfterItem[]> => {
   if (!hasPublicContentDatabaseClient()) return [];
 
-  const data = await fetchPublishedBeforeAfterRows();
+  const data = await fetchPublishedBeforeAfterRows(signal);
   return (data || [])
     .filter(
       (item): item is typeof item & { before_image_url: string; after_image_url: string } =>
@@ -500,10 +450,10 @@ export const getPublishedBeforeAfterItems = async (language: "en" | "zh"): Promi
     }));
 };
 
-export const getPublishedFaqs = async (language: "en" | "zh", pageKey = "general"): Promise<PublishedFaq[]> => {
+export const getPublishedFaqs = async (language: "en" | "zh", pageKey = "general", signal?: AbortSignal): Promise<PublishedFaq[]> => {
   if (!hasPublicContentDatabaseClient()) return [];
 
-  const data = await fetchPublishedFaqRows(pageKey);
+  const data = await fetchPublishedFaqRows(pageKey, signal);
   return (data || []).map((item) => ({
     id: item.id,
     category: item.page_key || "general",
@@ -515,28 +465,24 @@ export const getPublishedFaqs = async (language: "en" | "zh", pageKey = "general
 export const getPublishedHomeSection = async (
   language: "en" | "zh",
   sectionKey: string,
-): Promise<PublishedHomeSection | null> => {
+ signal?: AbortSignal): Promise<PublishedHomeSection | null> => {
   if (!hasPublicContentDatabaseClient()) return null;
-  const row = toRecord(await fetchPublishedHomeSectionRow(sectionKey));
+  const row = toRecord(await fetchPublishedHomeSectionRow(sectionKey, signal));
   if (!Object.keys(row).length) return null;
   if (!row) return null;
   return mapPublishedHomeSectionRow(row, language);
 };
 
-export const getPublishedProcessSteps = async (language: "en" | "zh"): Promise<PublishedProcessStep[]> => {
+export const getPublishedProcessSteps = async (language: "en" | "zh", signal?: AbortSignal): Promise<PublishedProcessStep[]> => {
   if (!hasPublicContentDatabaseClient()) return [];
-  const data = await fetchPublishedProcessStepRows();
+  const data = await fetchPublishedProcessStepRows(signal);
   return ((data || []) as unknown as UnknownRecord[]).map((row) => mapPublishedProcessStep(row, language));
 };
 
-export const getPublishedCtaBlock = async (language: "en" | "zh", blockKey: string): Promise<PublishedCtaBlock | null> => {
-  const preloadedBlock = readPreloadedPublicData()?.ctaBlocks?.[blockKey];
-  if (preloadedBlock) {
-    return mapPublishedCtaBlockRow(preloadedBlock, language);
-  }
+export const getPublishedCtaBlock = async (language: "en" | "zh", blockKey: string, signal?: AbortSignal): Promise<PublishedCtaBlock | null> => {
 
   if (!hasPublicContentDatabaseClient()) return null;
-  const row = toRecord(await fetchPublishedCtaBlockRow(blockKey));
+  const row = toRecord(await fetchPublishedCtaBlockRow(blockKey, signal));
   if (!Object.keys(row).length) return null;
   return mapPublishedCtaBlockRow(row, language);
 };
@@ -544,9 +490,9 @@ export const getPublishedCtaBlock = async (language: "en" | "zh", blockKey: stri
 export const getPublishedAboutSection = async (
   language: "en" | "zh",
   sectionKey: string,
-): Promise<PublishedAboutSection | null> => {
+ signal?: AbortSignal): Promise<PublishedAboutSection | null> => {
   if (!hasPublicContentDatabaseClient()) return null;
-  const row = toRecord(await fetchPublishedAboutSectionRow(sectionKey));
+  const row = toRecord(await fetchPublishedAboutSectionRow(sectionKey, signal));
   if (!Object.keys(row).length) return null;
   return {
     id: readText(row, "id"),
@@ -562,17 +508,10 @@ export const getPublishedAboutSection = async (
 export const getPublishedSitePage = async (
   language: "en" | "zh",
   pageKey: string,
-): Promise<PublishedSitePage | null> => {
-  const preloadedPages = readPreloadedPublicData()?.sitePages;
-  const hasPreloadedPage = Boolean(preloadedPages && Object.prototype.hasOwnProperty.call(preloadedPages, pageKey));
-  const preloadedPageBundle = toRecord(preloadedPages?.[pageKey]);
-  if (Object.keys(preloadedPageBundle).length) {
-    return mapSitePageRows(preloadedPageBundle, language);
-  }
-  if (hasPreloadedPage) return null;
+ signal?: AbortSignal): Promise<PublishedSitePage | null> => {
 
   if (!hasPublicContentDatabaseClient()) return null;
-  const row = toRecord(await fetchPublishedLegacySitePageRow(pageKey));
+  const row = toRecord(await fetchPublishedLegacySitePageRow(pageKey, signal));
   const legacy: PublishedSitePage | null = Object.keys(row).length
     ? {
         id: readText(row, "id"),
@@ -593,7 +532,7 @@ export const getPublishedSitePage = async (
     }
     : null;
 
-  const cmsRow = toRecord(await fetchPublishedCmsPageByPageKey(pageKey));
+  const cmsRow = toRecord(await fetchPublishedCmsPageByPageKey(pageKey, signal));
   if (!Object.keys(cmsRow).length) return legacy;
 
   return mapPublishedCmsPage(cmsRow, language, legacy);
@@ -602,9 +541,9 @@ export const getPublishedSitePage = async (
 export const getPublishedCmsPageByPath = async (
   language: "en" | "zh",
   path: string,
-): Promise<PublishedSitePage | null> => {
+ signal?: AbortSignal): Promise<PublishedSitePage | null> => {
   if (!hasPublicContentDatabaseClient()) return null;
   const normalizedPath = `/${String(path || "").replace(/^\/+/, "").replace(/\/+$/, "")}`;
-  const cmsRow = toRecord(await fetchPublishedCmsPageByPath(normalizedPath));
+  const cmsRow = toRecord(await fetchPublishedCmsPageByPath(normalizedPath, signal));
   return Object.keys(cmsRow).length ? mapPublishedCmsPage(cmsRow, language) : null;
 };

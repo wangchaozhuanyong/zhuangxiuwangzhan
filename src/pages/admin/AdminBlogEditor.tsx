@@ -1,3 +1,5 @@
+import { navigateAfterSave } from "@/lib/navigationProtection";
+import { useSubmissionLock } from "@/hooks/useSubmissionLock";
 import { FormEvent, useCallback, useEffect, useMemo, useState } from "react";
 import { useAdminFormState } from "@/hooks/useAdminFormState";
 import { useUnsavedChangesWarning } from "@/hooks/useUnsavedChangesWarning";
@@ -14,7 +16,7 @@ import AdminFormSection from "@/components/admin/AdminFormSection";
 import AdminEmptyState from "@/components/admin/AdminEmptyState";
 import { adminConfirm } from "@/components/admin/AdminConfirmProvider";
 import ImageField from "@/components/admin/ImageField";
-import { invalidateAdminContentDetail, invalidateAfterAdminContentSave } from "@/lib/adminInvalidate";
+import { invalidateAdminContentDetail } from "@/lib/adminInvalidate";
 import { useAdminBlogPostDetail } from "@/lib/adminBusinessContentQueries";
 import { adminStatusLabel, getAdminLang, publishStatusOptions, useAdminLang } from "@/lib/adminLocale";
 import { formatAdminMutationError } from "@/lib/adminMutation";
@@ -115,6 +117,7 @@ const fromLocalInput = (value: string) => {
 };
 
 export default function AdminBlogEditor() {
+  const { protectSubmission, isSubmitting } = useSubmissionLock();
   const language = useAdminLang();
   const queryClient = useQueryClient();
   const navigate = useNavigate();
@@ -125,7 +128,7 @@ export default function AdminBlogEditor() {
   const [slugError, setSlugError] = useState<string>("");
   const [saveBusy, setSaveBusy] = useState(false);
 
-  const { data: loaded, isLoading, isError, error: loadError } = useAdminBlogPostDetail(isNew ? undefined : id);
+  const { data: loaded, isLoading, isInitialError: isError, error: loadError } = useAdminBlogPostDetail(isNew ? undefined : id);
 
   const loadedRecord = useMemo<BlogRecord | undefined>(() => {
     if (isNew || !loaded) return isNew ? empty : undefined;
@@ -139,12 +142,12 @@ export default function AdminBlogEditor() {
     };
   }, [isNew, loaded]);
 
-  const { state: record, setForm: setRecord, applyRemote, dirty } = useAdminFormState<BlogRecord>(loadedRecord, {
+  const { state: record, setForm: setRecord, applyRemote, dirty, isDirty } = useAdminFormState<BlogRecord>(loadedRecord, {
     resetKey: id ?? "new",
     initial: empty,
   });
   const englishMissing = hasAnyMissingEnglish(record as unknown as Record<string, unknown>, blogEnglishFields);
-  useUnsavedChangesWarning(dirty && !saveBusy);
+  useUnsavedChangesWarning((dirty || saveBusy) || isSubmitting);
 
   useEffect(() => {
     if (!isError || !loadError) return;
@@ -183,7 +186,7 @@ export default function AdminBlogEditor() {
     return `/${lang}/blog/${slug}`;
   }, [record.slug]);
 
-  const save = async (nextStatus?: BlogRecord["status"], generateEnglish?: boolean, forceEnglish?: boolean) => {
+  const save = protectSubmission("save", async (nextStatus?: BlogRecord["status"], generateEnglish?: boolean, forceEnglish?: boolean) => {
     if (!hasBlogBackendConfig()) return;
     const slug = normalizeBlogSlug(record.slug || record.title_zh);
     if (!slug) {
@@ -211,12 +214,11 @@ export default function AdminBlogEditor() {
     }
 
     const { saved, savedId } = savedResult;
-    applyRemote({ ...record, ...saved, id: savedId, slug: savedResult.slug, status: savedResult.status });
+    applyRemote({ ...record, ...saved, id: savedId, slug: savedResult.slug, status: savedResult.status }, record);
     toast({ title: A("saved") });
-    await invalidateAfterAdminContentSave(queryClient);
     setSaveBusy(false);
 
-    if (isNew) navigate(`/admin/blog/${savedId}`, { replace: true });
+    if (isNew) navigateAfterSave(isDirty, () => navigate(`/admin/blog/${savedId}`, { replace: true }));
 
     if (generateEnglish) {
       try {
@@ -228,7 +230,7 @@ export default function AdminBlogEditor() {
         toast({ title: A("savedButEnglishFailed"), description, variant: "destructive" });
       }
     }
-  };
+  });
 
   const forceRegenerateEnglish = async () => {
     const confirmed = await adminConfirm({

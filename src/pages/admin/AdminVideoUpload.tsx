@@ -1,3 +1,5 @@
+import { useUnsavedChangesWarning } from "@/hooks/useUnsavedChangesWarning";
+import { useSubmissionLock } from "@/hooks/useSubmissionLock";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -118,12 +120,14 @@ async function prepareVideo(file: File, text: AdminVideoUploadText): Promise<Pre
 }
 
 const AdminVideoUpload = ({ folder = "videos", onUploaded }: AdminVideoUploadProps) => {
+  const { protectSubmission } = useSubmissionLock();
   const text = adminVideoUploadText[getAdminLang()];
   const [uploading, setUploading] = useState(false);
+  useUnsavedChangesWarning(uploading);
   const [error, setError] = useState("");
   const [message, setMessage] = useState("");
 
-  const upload = async (input?: File) => {
+  const upload = protectSubmission("upload", async (input?: File) => {
     const file = input;
     if (!file || !hasMediaStorageClient()) return;
     setUploading(true);
@@ -181,7 +185,7 @@ const AdminVideoUpload = ({ folder = "videos", onUploaded }: AdminVideoUploadPro
     } finally {
       setUploading(false);
     }
-  };
+  });
 
   return (
     <div className="space-y-2">

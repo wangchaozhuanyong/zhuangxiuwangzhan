@@ -1,3 +1,4 @@
+import { completePublicSync } from "@/lib/publicSyncRecovery";
 import type { QueryClient } from "@tanstack/react-query";
 import { requestPublicContentInvalidation } from "@/lib/adminMutation";
 import { isSupabaseConfigured } from "@/lib/supabase";
@@ -110,42 +111,42 @@ export async function addAdminProjectImage(projectId: string, draft: AdminProjec
     image_type: (draft.image_type as ProjectImageType) || "gallery",
     sort_order: Number(draft.sort_order || 0),
   });
-  await requestPublicContentInvalidation({ table: "project_images", action: "insert", id: projectId });
+  await completePublicSync(`project_images:${projectId}:insert`, () => requestPublicContentInvalidation({ table: "project_images", action: "insert", id: projectId }));
   return result;
 }
 
 export async function updateAdminProjectImage(imageId: string, patch: Record<string, unknown>) {
   const result = await updateProjectImageRecord(imageId, patch);
-  await requestPublicContentInvalidation({ table: "project_images", action: "update", id: imageId });
+  await completePublicSync(`project_images:${imageId}:update`, () => requestPublicContentInvalidation({ table: "project_images", action: "update", id: imageId }));
   return result;
 }
 
 export async function setAdminProjectImageAsCover(projectId: string, imageId: string) {
   await resetProjectCoverRecords(projectId);
   await updateProjectImageRecord(imageId, { image_type: "cover", sort_order: 0 });
-  await requestPublicContentInvalidation({ table: "project_images", action: "set-cover", id: imageId });
+  await completePublicSync(`project_images:${imageId}:set-cover`, () => requestPublicContentInvalidation({ table: "project_images", action: "set-cover", id: imageId }));
 
   return true;
 }
 
 export async function deleteAdminProjectImage(imageId: string) {
   const result = await deleteProjectImageRecord(imageId);
-  await requestPublicContentInvalidation({ table: "project_images", action: "delete", id: imageId });
+  await completePublicSync(`project_images:${imageId}:delete`, () => requestPublicContentInvalidation({ table: "project_images", action: "delete", id: imageId }));
   return result;
 }
 
-export function loadAdminProjectList<T extends Record<string, unknown>>(input: AdminProjectListInput) {
-  return fetchAdminProjectList<T>(input);
+export function loadAdminProjectList<T extends Record<string, unknown>>(input: AdminProjectListInput, signal?: AbortSignal) {
+  return fetchAdminProjectList<T>(input, signal);
 }
 
-export function loadAdminProjectDetail(projectId: string) {
-  return fetchAdminProjectDetail(projectId);
+export function loadAdminProjectDetail(projectId: string, signal?: AbortSignal) {
+  return fetchAdminProjectDetail(projectId, signal);
 }
 
-export function loadAdminProjectRows(limit: number) {
-  return fetchAdminProjectRows(limit);
+export function loadAdminProjectRows(limit: number, signal?: AbortSignal) {
+  return fetchAdminProjectRows(limit, signal);
 }
 
-export function loadAdminProjectImages(projectId: string) {
-  return fetchAdminProjectImages(projectId);
+export function loadAdminProjectImages(projectId: string, signal?: AbortSignal) {
+  return fetchAdminProjectImages(projectId, signal);
 }

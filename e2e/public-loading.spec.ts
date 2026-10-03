@@ -214,7 +214,8 @@ test("photo copy and solid actions keep stable design colors without glyph outli
       });
       expect(glyph.fill).toBe(glyph.color);
       expect(glyph.adaptive).toBe(false);
-      expect(glyph.shadow).toBe("none");
+      if (selector.endsWith("__quote")) expect(glyph.shadow).toBe("none");
+      else expect(glyph.shadow).toBe("rgba(0, 0, 0, 0.75) 0px 1px 4px, rgba(0, 0, 0, 0.35) 0px 0px 12px");
       expect(glyph.stroke).toBe("0px");
     }
     if (language === "zh" && service === "design") await page.screenshot({ path: info.outputPath("04-photo-copy-and-solid-actions.png") });

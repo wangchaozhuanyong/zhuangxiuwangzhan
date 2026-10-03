@@ -1,5 +1,6 @@
+import { useInteractionQuery as useQuery } from "@/hooks/useInteractionQuery";
 import { useCallback } from "react";
-import { keepPreviousData, useQuery } from "@tanstack/react-query";
+import { keepPreviousData } from "@tanstack/react-query";
 import {
   loadAdminSeoAuditRows,
   adminSeoSources,
@@ -28,6 +29,6 @@ export function useAdminSeoAudit() {
     staleTime: ADMIN_HEAVY_STALE_TIME,
     gcTime: ADMIN_QUERY_GC_TIME,
     select,
-    queryFn: loadAdminSeoAuditRows,
+    queryFn: ({ signal }) => loadAdminSeoAuditRows(signal),
   });
 }

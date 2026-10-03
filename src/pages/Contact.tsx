@@ -1,4 +1,7 @@
-import { FormEvent, useEffect, useState } from "react";
+import { interactionText } from "@/i18n/interactionText";
+import { useSubmissionLock } from "@/hooks/useSubmissionLock";
+import { useUnsavedChangesWarning } from "@/hooks/useUnsavedChangesWarning";
+import { FormEvent, useEffect, useRef, useState } from "react";
 import Link from "@/components/LocalizedLink";
 import { Button } from "@/components/ui/button";
 import PublicContactRow from "@/components/PublicContactRow";
@@ -46,15 +49,19 @@ const focusFirstContactError = (errors: FormErrors) => {
 };
 
 const Contact = () => {
+  const { protectSubmission, isSubmitting } = useSubmissionLock();
   const { language } = useLanguage();
   const settings = useSiteSettings();
   const t = contactPageText[language];
   const { data: pageContent, isLoading: pageLoading } = usePublishedSitePage(language, "contact");
   const heroImage = resolvePageHeroImage(pageContent?.image_url, pageHeroImages.contact);
   const [form, setForm] = useState({ name: "", phone: "", email: "", projectType: "", location: "", message: "" });
+  const currentForm = useRef(form); currentForm.current = form;
+  const lastSavedForm = useRef<typeof form | null>(null);
   const [errors, setErrors] = useState<FormErrors>({});
   const [status, setStatus] = useState<"idle" | "submitting" | "success" | "error">("idle");
   const formGuard = useFormGuard();
+  useUnsavedChangesWarning(isSubmitting || status === "submitting" || Object.values(form).some((value) => String(value).trim() !== "") && JSON.stringify(form) !== JSON.stringify(lastSavedForm.current));
   const [honeypot, setHoneypot] = useState("");
 
   useEffect(() => {
@@ -85,7 +92,7 @@ const Contact = () => {
     return !hasErrors;
   };
 
-  const handleSubmit = async (e: FormEvent) => {
+  const handleSubmit = protectSubmission("submit", async (e: FormEvent) => {
     e.preventDefault();
     if (status === "submitting") return;
     if (!validate()) {
@@ -109,7 +116,8 @@ const Contact = () => {
         project_type: form.projectType,
         location: form.location,
       });
-      setStatus("success");
+      lastSavedForm.current = form;
+      setStatus(JSON.stringify(currentForm.current) === JSON.stringify(form) ? "success" : "idle");
     } catch (error) {
       console.error(error);
       trackContactFormSubmit("error", {
@@ -118,7 +126,7 @@ const Contact = () => {
       });
       setStatus("error");
     }
-  };
+  });
 
   const mapAddress = settings.address || t.addressText;
   const navigationLinks = [
@@ -307,6 +315,7 @@ const Contact = () => {
                       </div>
                     )}
 
+                    {lastSavedForm.current && status === "idle" ? <p role="status" className="mb-4 rounded-lg border border-border bg-background p-3 text-sm">{interactionText[language].savedWhileEditing}</p> : null}
                     <form className="space-y-4" onSubmit={handleSubmit} noValidate>
                       <div>
                         <label htmlFor="contact-name" className="block text-sm font-medium mb-1.5">{t.name} <span className="text-destructive">*</span></label>

@@ -1,3 +1,4 @@
+import { withReadSignal } from "@/lib/readRequest";
 import type { QueryClient } from "@tanstack/react-query";
 import { saveAdminRecord } from "@/lib/adminMutation";
 import type { Database } from "@/lib/database.types";
@@ -39,7 +40,7 @@ export async function findMaterialIdsBySlug(slug: string) {
   return (data || []).map((row) => String(row.id));
 }
 
-export async function fetchAdminMaterialList<T extends Record<string, unknown>>(input: AdminMaterialListInput) {
+export async function fetchAdminMaterialList<T extends Record<string, unknown>>(input: AdminMaterialListInput, signal?: AbortSignal) {
   const supabase = requireSupabase();
   const from = input.page * input.pageSize;
   const to = from + input.pageSize - 1;
@@ -52,33 +53,33 @@ export async function fetchAdminMaterialList<T extends Record<string, unknown>>(
   query = applySearch(query, ["title_zh", "title_en", "slug", "category", "subcategory", "material_type"], input.search);
   query = query.order("sort_order", { ascending: true }).order("updated_at", { ascending: false });
 
-  const { data, error, count } = await query.range(from, to);
+  const { data, error, count } = await withReadSignal(query.range(from, to), signal);
   if (error) throw error;
   return { rows: (data ?? []) as unknown as T[], count: count ?? (data?.length || 0), page: input.page, pageSize: input.pageSize };
 }
 
-export async function fetchAdminMaterialDetail(materialId: string) {
+export async function fetchAdminMaterialDetail(materialId: string, signal?: AbortSignal) {
   const supabase = requireSupabase();
-  const { data, error } = await supabase.from("materials").select("*").eq("id", materialId).single();
+  const { data, error } = await withReadSignal(supabase.from("materials").select("*").eq("id", materialId).single(), signal);
   if (error) throw error;
   return data;
 }
 
-export async function fetchAdminMaterialRows(limit: number) {
+export async function fetchAdminMaterialRows(limit: number, signal?: AbortSignal) {
   const supabase = requireSupabase();
-  const { data, error } = await supabase.from("materials").select("*").order("created_at", { ascending: false }).limit(limit);
+  const { data, error } = await withReadSignal(supabase.from("materials").select("*").order("created_at", { ascending: false }).limit(limit), signal);
   if (error) throw error;
   return data ?? [];
 }
 
-export async function fetchAdminMaterialImages(materialId: string) {
+export async function fetchAdminMaterialImages(materialId: string, signal?: AbortSignal) {
   const supabase = requireSupabase();
-  const { data, error } = await supabase
+  const { data, error } = await withReadSignal(supabase
     .from("material_images")
     .select("*")
     .eq("material_id", materialId)
     .eq("is_active", true)
-    .order("sort_order");
+    .order("sort_order"), signal);
   if (error) throw error;
   return data ?? [];
 }

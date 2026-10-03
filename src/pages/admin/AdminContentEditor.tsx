@@ -1,6 +1,12 @@
-import { useCallback, useDeferredValue, useEffect, useMemo, useRef, useState } from "react";
+import { useAdminListingState } from "@/hooks/useAdminListingState";
+import { interactionText } from "@/i18n/interactionText";
+import { useAdminFormState } from "@/hooks/useAdminFormState";
+import { invalidateAdminResource } from "@/lib/adminInvalidate";
+import { confirmProtectedNavigation } from "@/lib/navigationProtection";
+import { useSubmissionLock } from "@/hooks/useSubmissionLock";
+import { useCallback, useMemo, useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
-import { invalidateAdminContentLists, invalidatePublishedContent } from "@/lib/adminInvalidate";
+
 import { useAdminEditorRows } from "@/lib/adminCmsQueries";
 import { useParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -8,29 +14,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { translateFieldLabel, translateStatusLabel } from "@/i18n/displayLabels";
 import { getAdminLang } from "@/lib/adminLocale";
-import {
-  arrayLikeFields,
-  arrayValue,
-  autoTranslateTables,
-  contentFields,
-  copy,
-  editableTables,
-  englishFields,
-  exportRowsAsCsv,
-  formatFieldValue,
-  getRecordLabel,
-  getRecordMeta,
-  imageFields,
-  jsonFields,
-  listContentTables,
-  longTextFields,
-  parseFieldValue,
-  readOnlyFields,
-  readOnlyTables,
-  statusOptions,
-  tableFields,
-  tableLabels,
-} from "@/lib/adminContentEditorUtils";
+import { arrayLikeFields, arrayValue, autoTranslateTables, contentFields, copy, editableTables, englishFields, exportRowsAsCsv, formatFieldValue, getRecordLabel, getRecordMeta, imageFields, jsonFields, longTextFields, parseFieldValue, readOnlyFields, readOnlyTables, statusOptions, tableFields, tableLabels } from "@/lib/adminContentEditorUtils";
 import { isSupabaseConfigured } from "@/lib/supabase";
 import AdminImageUpload, { getAdminImagePreviewVariant } from "./AdminImageUpload";
 import AdminProjectImages from "./AdminProjectImages";
@@ -51,32 +35,25 @@ const toOptionalString = (value: unknown): string | null =>
 const toTextValue = (value: unknown): string => (typeof value === "string" ? value : "");
 
 const AdminContentEditor = () => {
+  const { protectSubmission, isSubmitting } = useSubmissionLock();
   const { type = "projects", id } = useParams<{ type: string; id?: string }>();
   const queryClient = useQueryClient();
   const lang = getAdminLang();
   const t = copy[lang];
-  const [record, setRecord] = useState<AdminContentRecord>({});
-  const recordDirtyRef = useRef(false);
-  const [recordDirty, setRecordDirty] = useState(false);
+  const canEdit = editableTables.has(type);
+  const { data: rows = [], isFetching, isInitialError, refetch } = useAdminEditorRows(type, canEdit);
+  const { state: record, setForm: setRecord, applyRemote, dirty: recordDirty } = useAdminFormState<AdminContentRecord>(id ? rows.find((item) => item.id === id) : undefined, { initial: {}, resetKey: `${type}:${id || ""}` });
   const [status, setStatus] = useState("");
-  const [search, setSearch] = useState("");
-  const [statusFilter, setStatusFilter] = useState("all");
-  const deferredSearch = useDeferredValue(search);
+  const { search, setSearch, deferredSearch, filter, setFilter } = useAdminListingState();
+  const statusFilter = filter("status");
+  const setStatusFilter = (value: string) => setFilter("status", value);
 
   const setRecordField = useCallback((patch: AdminContentRecord | ((prev: AdminContentRecord) => AdminContentRecord)) => {
-    recordDirtyRef.current = true;
-    setRecordDirty(true);
     setRecord((prev) => (typeof patch === "function" ? patch(prev) : { ...prev, ...patch }));
-  }, []);
-  useUnsavedChangesWarning(recordDirty);
-  const canEdit = editableTables.has(type);
-  const { data: rows = [], isFetching, error: rowsError, refetch } = useAdminEditorRows(type, canEdit);
-  const isLoading = isFetching;
+  }, [setRecord]);
+  useUnsavedChangesWarning((recordDirty) || isSubmitting);
+  const isLoading = isFetching && !rows.length;
 
-  const refreshContentCaches = useCallback(() => {
-    void invalidatePublishedContent(queryClient);
-    if (listContentTables.has(type)) void invalidateAdminContentLists(queryClient);
-  }, [queryClient, type]);
 
   const visibleFields = useMemo(() => tableFields[type] || [...contentFields, ...englishFields, "slug", "status", "sort_order"], [type]);
   const availableStatuses = statusOptions[type] || statusOptions.default;
@@ -93,25 +70,9 @@ const AdminContentEditor = () => {
     });
   }, [rows, deferredSearch, statusFilter, visibleFields]);
 
-  useEffect(() => {
-    recordDirtyRef.current = false;
-    setRecordDirty(false);
-  }, [id, type]);
 
-  useEffect(() => {
-    if (rowsError) {
-      setStatus(formatUserFacingError(rowsError, lang));
-      return;
-    }
-    if (recordDirtyRef.current) return;
-    if (id && rows.length) {
-      setRecord(rows.find((item) => item.id === id) || {});
-    } else if (!id) {
-      setRecord({});
-    }
-  }, [id, lang, rows, rowsError]);
-
-  const save = async () => {
+  const save = protectSubmission("save", async () => {
+    if (isInitialError || isLoading) return;
     setStatus(t.saving);
     const payload = { ...record };
     for (const field of Object.keys(payload)) {
@@ -132,9 +93,7 @@ const AdminContentEditor = () => {
       return;
     }
 
-    recordDirtyRef.current = false;
-    setRecordDirty(false);
-    setRecord(savedRecord);
+    applyRemote(savedRecord, record);
 
     const hasChineseContent = Object.keys(payload).some((field) => field.endsWith("_zh") && payload[field]);
     if (autoTranslateTables.has(type) && hasChineseContent) {
@@ -148,23 +107,17 @@ const AdminContentEditor = () => {
       }
 
       if (translatedRecord) {
-        recordDirtyRef.current = false;
-        setRecordDirty(false);
-        setRecord(translatedRecord);
+        applyRemote(translatedRecord, savedRecord);
       }
       setStatus(t.generated);
-      refreshContentCaches();
-      await refetch();
+      await invalidateAdminResource(queryClient, type);
       return;
     }
 
     setStatus(t.saved);
-    refreshContentCaches();
-    void queryClient.invalidateQueries({ queryKey: ["admin", type, "rows"] });
-    await refetch();
-  };
+  });
 
-  const regenerateEnglish = async () => {
+  const regenerateEnglish = protectSubmission("regenerateEnglish", async () => {
     const recordId = toRecordId(record.id);
     if (!recordId) {
       setStatus(t.saveFirst);
@@ -181,15 +134,11 @@ const AdminContentEditor = () => {
     }
 
     if (translatedRecord) {
-      recordDirtyRef.current = false;
-      setRecordDirty(false);
-      setRecord(translatedRecord);
+      applyRemote(translatedRecord, record);
     }
     setStatus(t.regenerated);
-    refreshContentCaches();
-    void queryClient.invalidateQueries({ queryKey: ["admin", type, "rows"] });
-    await refetch();
-  };
+    await invalidateAdminResource(queryClient, type);
+  });
 
   if (!canEdit) {
     return (
@@ -200,15 +149,15 @@ const AdminContentEditor = () => {
   return (
     <div className="grid min-w-0 gap-5 sm:gap-6 xl:grid-cols-[320px_1fr]">
         <div className="min-w-0 rounded-xl border border-border bg-card p-4">
-          <h2 className="font-display mb-3 text-lg font-bold">{tableLabels[type]?.[lang] || type}</h2>
+          <h1 className="font-display mb-3 text-lg font-bold">{tableLabels[type]?.[lang] || type}</h1>
+          {isInitialError && <p role="alert" className="mb-3 text-sm text-destructive">{interactionText[lang].loadingFailed}</p>}
           <p className="mb-3 text-xs leading-5 text-muted-foreground">{getAdminTableHelp(type)}</p>
           {!readOnlyTables.has(type) && (
             <Button
               className="mb-4 w-full"
-              onClick={() => {
-                recordDirtyRef.current = false;
-                setRecordDirty(false);
-                setRecord({ status: type === "leads" ? "new" : type === "quote_requests" ? "pending" : "draft", sort_order: 0 });
+              onClick={async () => {
+                if (!await confirmProtectedNavigation()) return;
+                applyRemote({ status: type === "leads" ? "new" : type === "quote_requests" ? "pending" : "draft", sort_order: 0 });
               }}
             >
               {t.createRecord}
@@ -244,8 +193,8 @@ const AdminContentEditor = () => {
                 key={String(row.id)}
                 className="block w-full rounded-lg border border-border p-3 text-left text-sm hover:bg-muted"
                 onClick={() => {
-                  recordDirtyRef.current = false;
-                  setRecordDirty(false);
+
+
                   setRecord(row);
                 }}
               >

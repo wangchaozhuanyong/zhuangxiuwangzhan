@@ -53,7 +53,7 @@ describe("published admin furniture catalog", () => {
     const chinese = await getPublishedManagedFurnitureProducts("zh");
     const english = await getPublishedManagedFurnitureProducts("en");
 
-    expect(fetchPublishedMaterialRowsByCategory).toHaveBeenCalledWith("furniture");
+    expect(fetchPublishedMaterialRowsByCategory).toHaveBeenCalledWith("furniture", undefined);
     expect(chinese[0]).toMatchObject({ name: "测试餐椅", price: "RM 180 / 件起", seoTitle: "餐椅 SEO" });
     expect(english[0]).toMatchObject({ name: "Test dining chair", price: "From RM 180 / unit", seoTitle: "Chair SEO" });
     expect(getManagedFurnitureProductsForCategory(chinese, "dining", "dining-chair")).toHaveLength(1);
@@ -79,7 +79,7 @@ describe("published admin furniture catalog", () => {
 
     const detail = await getPublishedManagedFurnitureProductBySlug(managedRow.slug, "zh");
 
-    expect(fetchPublishedMaterialBySlugAndCategory).toHaveBeenCalledWith(managedRow.slug, "furniture");
+    expect(fetchPublishedMaterialBySlugAndCategory).toHaveBeenCalledWith(managedRow.slug, "furniture", undefined);
     expect(detail?.images).toEqual(["/chair-cover.webp", "/chair-side.webp", "/chair-back.webp"]);
   });
 });

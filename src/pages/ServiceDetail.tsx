@@ -1,3 +1,4 @@
+import PublicReadError from "@/components/PublicReadError";
 import { lazy, useMemo } from "react";
 import { useParams } from "react-router-dom";
 import { ArrowUpRight } from "lucide-react";
@@ -31,13 +32,14 @@ export default function ServiceDetail() {
   const { slug } = useParams<{ slug: string }>();
   const { language } = useLanguage();
   const copy = serviceDetailPageText[language];
-  const { data: cmsService, isLoading } = usePublishedServiceBySlug(slug, language);
+  const { data: cmsService, isLoading, isInitialError, refetch } = usePublishedServiceBySlug(slug, language);
   const { data: cmsServices } = usePublishedServices(language);
   const fallbackServices = useMemo(() => servicesData.map((service) => language === "zh" ? ({ ...service, title: service.titleZh || translateDisplayText(service.title, language), summary: service.summaryZh || translateDisplayText(service.summary, language), description: service.descriptionZh || translateDisplayText(service.description, language), imageAlt: service.imageAltZh || service.imageAlt, suitableFor: service.suitableForZh || service.suitableFor.map((item) => translateDisplayText(item, language)), commonProjects: service.commonProjectsZh || service.commonProjects.map((item) => translateDisplayText(item, language)), processSteps: service.processStepsZh || service.processSteps, items: service.itemsZh || service.items, faqs: service.faqsZh || service.faqs, seoTitle: service.seoTitleZh || service.seoTitle, seoDescription: service.seoDescriptionZh || service.seoDescription }) : service), [language]);
   const services = cmsServices?.length ? cmsServices : fallbackServices;
   const service = cmsService || services.find((item) => item.slug === slug);
 
   if (isLoading && (!service || ((slug === "design" || slug === "surface-repair") && !cmsService))) return <main className="fc-route-page" data-route-pending="true"><SchemeAContentState>{copy.loadingDescription}</SchemeAContentState></main>;
+  if (isInitialError && !service) return <PublicReadError onRetry={() => void refetch()} />;
   if (!service) return <main className="fc-route-page"><PageMeta title={copy.notFound} description={copy.notFoundDescription} canonicalPath="/services" noIndex /><SchemeAContentState action={<Link to="/services">{copy.viewAll}</Link>}>{copy.notFound}</SchemeAContentState></main>;
 
   if (slug === "design") return <DesignServiceContent key={language} service={service} />;

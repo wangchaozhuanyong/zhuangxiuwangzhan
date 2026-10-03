@@ -1,3 +1,5 @@
+import { useUnsavedChangesWarning } from "@/hooks/useUnsavedChangesWarning";
+import { useSubmissionLock } from "@/hooks/useSubmissionLock";
 import { useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -405,15 +407,17 @@ async function tryUploadOriginalCopy({ file, folderPath, stamp }: { file: File; 
 }
 
 const AdminImageUpload = ({ value, folder = "content", previewVariant = "cover", recordAsset = false, assetUsageType = "general", onUploaded }: AdminImageUploadProps) => {
+  const { protectSubmission } = useSubmissionLock();
   const createMediaAsset = useCreateAdminMediaAsset();
   const inputRef = useRef<HTMLInputElement>(null);
   const [selectedFile, setSelectedFile] = useState<File>();
   const [uploading, setUploading] = useState(false);
+  useUnsavedChangesWarning(uploading);
   const [error, setError] = useState("");
   const [notes, setNotes] = useState<string[]>([]);
   const preview = previewConfig[previewVariant];
 
-  const upload = async (input?: File) => {
+  const upload = protectSubmission("upload", async (input?: File) => {
     const file = input;
     if (!file || !hasMediaStorageClient()) return;
     setUploading(true);
@@ -480,7 +484,7 @@ const AdminImageUpload = ({ value, folder = "content", previewVariant = "cover",
     } finally {
       setUploading(false);
     }
-  };
+  });
 
   return (
     <div className="space-y-2">

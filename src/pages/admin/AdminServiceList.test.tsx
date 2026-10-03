@@ -17,6 +17,7 @@ describe("service list empty states", () => {
     it(`distinguishes an empty catalog from no filter matches and clears filters in ${language}`, async () => {
       vi.stubGlobal("IS_REACT_ACT_ENVIRONMENT", true);
       setAdminLang(language);
+      window.history.replaceState(null, "", "/admin/services");
       const row = { id: "fixture", slug: "fixture-service", title_en: "Fixture service", title_zh: "服务示例", status: "published" };
       let emptyCatalog = true;
       read.mockImplementation(({ status, search }) => ({
@@ -27,7 +28,7 @@ describe("service list empty states", () => {
       document.body.appendChild(container);
       const root = createRoot(container);
       try {
-        await act(async () => root.render(<MemoryRouter><TooltipProvider><AdminServiceList /></TooltipProvider></MemoryRouter>));
+        await act(async () => root.render(<MemoryRouter initialEntries={["/admin/services"]}><TooltipProvider><AdminServiceList /></TooltipProvider></MemoryRouter>));
         expect(container.textContent).toContain(language === "en" ? "No services yet" : "暂无服务");
         emptyCatalog = false;
         const input = container.querySelector("input")!;
@@ -35,16 +36,19 @@ describe("service list empty states", () => {
           Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, "value")!.set!.call(input, "no-match");
           input.dispatchEvent(new Event("input", { bubbles: true }));
         });
+        await act(async () => { await new Promise((resolve) => setTimeout(resolve, 350)); });
         expect(container.textContent).toContain(language === "en" ? "No matching services" : "没有匹配的服务");
         expect(container.textContent).not.toContain(language === "en" ? "Create a service first" : "先新建一个服务");
         const clear = () => Array.from(container.querySelectorAll("button")).find((button) => button.textContent === (language === "en" ? "Clear filters" : "清除筛选"))!;
-        await act(async () => clear().click());
+        await act(async () => { clear().click(); });
+        await act(async () => { await new Promise((resolve) => setTimeout(resolve, 350)); });
         expect(input.value).toBe("");
         expect(container.textContent).toContain(language === "en" ? "Fixture service" : "服务示例");
         const select = container.querySelector("select")!;
         await act(async () => { select.value = "archived"; select.dispatchEvent(new Event("change", { bubbles: true })); });
         expect(container.textContent).toContain(language === "en" ? "No matching services" : "没有匹配的服务");
-        await act(async () => clear().click());
+        await act(async () => { clear().click(); });
+        await act(async () => { await new Promise((resolve) => setTimeout(resolve, 350)); });
         expect(select.value).toBe("all");
         expect(container.textContent).toContain(language === "en" ? "Fixture service" : "服务示例");
       } finally {

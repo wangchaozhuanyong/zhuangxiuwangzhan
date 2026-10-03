@@ -1,3 +1,6 @@
+import { useSubmissionLock } from "@/hooks/useSubmissionLock";
+import { invalidateAdminResource } from "@/lib/adminInvalidate";
+import { useUnsavedChangesWarning } from "@/hooks/useUnsavedChangesWarning";
 import { FormEvent, useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import AdminPageHeader from "@/components/admin/AdminPageHeader";
@@ -29,23 +32,24 @@ const formatAdminUserSaveError = (error: unknown, selfProtectionMessage: string)
 };
 
 const AdminUsers = () => {
+  const { protectSubmission, isSubmitting } = useSubmissionLock();
   const language = getAdminLang();
   const text = adminUsersText[language];
   const roleLabels = adminUserRoleLabels[language];
   const roleOptions = Object.entries(roleLabels);
   const queryClient = useQueryClient();
   const { isSuperAdmin, role, userId: currentUserId } = useAdminAuth();
-  const { data: users = [], error, refetch, isFetching } = useAdminUsers();
+  const { data: users = [], error, isFetching } = useAdminUsers();
   const [form, setForm] = useState({ user_id: "", email: "", role: "content_editor" });
   const [message, setMessage] = useState(error ? formatUserFacingError(error, language) : "");
   const [savingKey, setSavingKey] = useState<string | null>(null);
+  useUnsavedChangesWarning(!!form.user_id.trim() || !!form.email.trim() || !!savingKey || isSubmitting);
 
   const refreshUsers = async () => {
-    await queryClient.invalidateQueries({ queryKey: ["admin", "users"] });
-    await refetch();
+    await invalidateAdminResource(queryClient, "users", false);
   };
 
-  const addUser = async (event: FormEvent) => {
+  const addUser = protectSubmission("add-user", async (event: FormEvent) => {
     event.preventDefault();
     if (!isSuperAdmin || !isSupabaseConfigured) return;
     const userId = form.user_id.trim();
@@ -68,7 +72,7 @@ const AdminUsers = () => {
         existing,
         queryClient,
       );
-      setForm({ user_id: "", email: "", role: "content_editor" });
+      setForm((current) => JSON.stringify(current) === JSON.stringify(form) ? { user_id: "", email: "", role: "content_editor" } : current);
       setMessage(text.saved);
       await refreshUsers();
     } catch (saveError) {
@@ -76,7 +80,7 @@ const AdminUsers = () => {
     } finally {
       setSavingKey(null);
     }
-  };
+  });
 
   const toggleActive = async (user: AdminUserRow) => {
     if (!isSuperAdmin || user.user_id === currentUserId) return;

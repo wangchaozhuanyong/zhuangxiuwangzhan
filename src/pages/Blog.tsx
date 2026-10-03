@@ -28,7 +28,7 @@ export default function Blog() {
   const topicCopy = blogTopicText[language];
   const { filter, setFilter, visibleCount, setVisibleCount } = usePublicListingState(blogCategoryFilters.map((item) => item.value), "all", PAGE_SIZE);
   const { data: pageContent, isLoading: pageLoading } = usePublishedSitePage(language, "blog");
-  const { data: cmsPosts, isLoading, isError, refetch } = usePublishedBlogPosts(language);
+  const { data: cmsPosts, isLoading, isInitialError: isError, refetch } = usePublishedBlogPosts(language);
   const posts = cmsPosts?.length ? cmsPosts : blogPosts;
   const filtered = posts.filter((post) => matchesCategory(post.category, post.slug, filter));
   const hero = resolvePageHeroImage(pageContent?.image_url, pageHeroImages.blog);
