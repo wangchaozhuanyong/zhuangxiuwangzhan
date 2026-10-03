@@ -3,9 +3,10 @@ import { Link, Navigate, Route } from "react-router-dom";
 import AdminEmptyState from "@/components/admin/AdminEmptyState";
 import AdminPageHeader from "@/components/admin/AdminPageHeader";
 import AdminRoleGate from "@/components/admin/AdminRoleGate";
+import AdminLanguagePage from "@/components/admin/AdminLanguagePage";
 import { Button } from "@/components/ui/button";
 import { adminRouteText } from "@/i18n/adminRouteText";
-import { getAdminLang } from "@/lib/adminLocale";
+import { useAdminLang } from "@/lib/adminLocale";
 import { ADMIN_ROLE_GROUPS, type AdminAllowedRoles } from "@/lib/adminRoleAccess";
 import AdminRoute from "@/pages/admin/AdminRoute";
 import AdminAuthProvider from "@/pages/admin/AdminAuthProvider";
@@ -50,11 +51,13 @@ const AdminBeforeAfter = lazy(() => import("@/pages/admin/AdminSimpleCms").then(
 const AdminBrandPartners = lazy(() => import("@/pages/admin/AdminSimpleCms").then((module) => ({ default: () => <module.default module="brand_partners" /> })));
 
 const withRoleGate = (element: JSX.Element, allowedRoles: AdminAllowedRoles) => (
-  <AdminRoleGate allowedRoles={allowedRoles}>{element}</AdminRoleGate>
+  <AdminLanguagePage>
+    <AdminRoleGate allowedRoles={allowedRoles}><AdminLanguagePage>{element}</AdminLanguagePage></AdminRoleGate>
+  </AdminLanguagePage>
 );
 
 const AdminNotFound = () => {
-  const text = adminRouteText[getAdminLang()];
+  const text = adminRouteText[useAdminLang()];
 
   return (
     <div className="space-y-5">
