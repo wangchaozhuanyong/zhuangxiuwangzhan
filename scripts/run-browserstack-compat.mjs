@@ -211,9 +211,12 @@ const ready = driver => driver.wait(() => driver.executeScript(() => !!document.
 
 const touch = async (driver, selector) => {
   await waitForVisible(driver, selector);
-  const element = await driver.findElement(By.css(selector));
+  const position = await driver.executeScript(css => {
+    const rect = document.querySelector(css).getBoundingClientRect();
+    return { x: Math.round(rect.left + rect.width / 2), y: Math.round(rect.top + rect.height / 2) };
+  }, selector);
   const finger = new input.Pointer("qa-finger", input.Pointer.Type.TOUCH);
-  await driver.actions({ async: true }).insert(finger, finger.move({ origin: element }), finger.press(), finger.release()).perform();
+  await driver.actions({ async: true }).insert(finger, finger.move(position), finger.press(), finger.release()).perform();
 };
 
 const swipeTo = async (driver, selector) => {
@@ -236,7 +239,10 @@ const swipeTo = async (driver, selector) => {
   throw new Error("CONTROL_NOT_REACHABLE_BY_TOUCH");
 };
 
-const captureMotion = driver => driver.executeAsyncScript(done => {
+const captureMotion = async driver => {
+  await driver.executeScript(() => {
+  window.__qaMotion = { complete: false };
+  const done = observation => { window.__qaMotion = { complete: true, observation }; };
   const start = performance.now();
   const states = new Set();
   let activeFrames = 0, maxAlignmentError = 0, maxButtonShift = 0, original, minimumViewportHeight = Infinity, maximumViewportHeight = 0;
@@ -275,7 +281,10 @@ const captureMotion = driver => driver.executeAsyncScript(done => {
     requestAnimationFrame(sample);
   };
   sample();
-});
+  });
+  await driver.wait(() => driver.executeScript(() => window.__qaMotion?.complete === true), 15000);
+  return driver.executeScript(() => window.__qaMotion.observation);
+};
 
 const mobileChecks = async (driver, target, identity) => {
   const checks = [];
@@ -332,9 +341,12 @@ const mobileChecks = async (driver, target, identity) => {
       }, 100), { once: true });
     });
     const before = await driver.getAllWindowHandles();
-    const element = await driver.findElement(By.css(".fc-furniture-floating"));
+    const position = await driver.executeScript(() => {
+      const rect = document.querySelector(".fc-furniture-floating").getBoundingClientRect();
+      return { x: Math.round(rect.left + rect.width / 2), y: Math.round(rect.top + rect.height / 2) };
+    });
     const finger = new input.Pointer("qa-press", input.Pointer.Type.TOUCH);
-    await driver.actions({ async: true }).insert(finger, finger.move({ origin: element }), finger.press(), { type: "pause", duration: 250 }, finger.release()).perform();
+    await driver.actions({ async: true }).insert(finger, finger.move(position), finger.press(), { type: "pause", duration: 250 }, finger.release()).perform();
     const feedback = await driver.executeScript(() => window.__qaFloatingPress);
     if (!feedback?.pressed || feedback.pointer !== "touch" || feedback.transform === "none") throw new Error("PRESS_FEEDBACK_NOT_OBSERVED");
     await driver.wait(async () => (await driver.getAllWindowHandles()).length > before.length, 15000);
@@ -354,7 +366,11 @@ const mobileChecks = async (driver, target, identity) => {
     const viewportBefore = await driver.executeScript(() => visualViewport?.height || innerHeight);
     await touch(driver, "#contact-name");
     await (await driver.findElement(By.css("#contact-name"))).sendKeys("QA keyboard only");
-    await driver.wait(() => driver.executeScript(before => (visualViewport?.height || innerHeight) < before - 50, viewportBefore), 10000);
+    try { await driver.wait(() => driver.executeScript(before => (visualViewport?.height || innerHeight) < before - 50, viewportBefore), 10000); }
+    catch (error) {
+      error.metrics = await driver.executeScript(before => ({ keyboardHeightBefore: before, keyboardHeightAfter: visualViewport?.height || innerHeight, focusedName: document.activeElement.id === "contact-name", typedNamePresent: document.querySelector("#contact-name")?.value === "QA keyboard only" }), viewportBefore);
+      throw error;
+    }
     const keyboard = await driver.executeScript(() => {
       const rect = document.activeElement.getBoundingClientRect(); const view = visualViewport;
       return { height: view?.height || innerHeight, focusedName: document.activeElement.id === "contact-name", inputVisible: rect.top >= (view?.offsetTop || 0) && rect.bottom <= (view?.offsetTop || 0) + (view?.height || innerHeight) };
@@ -445,8 +461,8 @@ const runTarget = async (target) => {
     try { const value = await driver.executeScript('browserstack_executor: {"action":"getSessionDetails"}'); details = typeof value === "string" ? JSON.parse(value) : value; } catch { /* Capabilities remain the fallback. */ }
     identity = publicDeviceIdentity(returned, details || {});
     if (!identity.browserVersion) {
-      const observedVersion = await driver.executeScript(() => navigator.userAgent.match(/Version\/(\d+(?:\.\d+){0,5})/)?.[1]
-        || navigator.userAgent.match(/Chrome\/(\d+(?:\.\d+){0,5})/)?.[1] || null);
+      const observedVersion = await driver.executeScript(() => navigator.userAgent.match(/Chrome\/(\d+(?:\.\d+){0,5})/)?.[1]
+        || navigator.userAgent.match(/Version\/(\d+(?:\.\d+){0,5})/)?.[1] || null);
       if (typeof observedVersion === "string" && /^\d+(?:\.\d+){0,5}$/.test(observedVersion)) identity.browserVersion = observedVersion;
     }
     stage = "mobile_interactions";
