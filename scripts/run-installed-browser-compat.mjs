@@ -1,6 +1,23 @@
 import { access } from "node:fs/promises";
 import { fileURLToPath } from "node:url";
 import path from "node:path";
+import command from "selenium-webdriver/lib/command.js";
+
+export async function withNativeDeviceContext(driver, action) {
+  const executor = driver.getExecutor();
+  executor.defineCommand("qaGetContexts", "GET", "/session/:sessionId/contexts");
+  executor.defineCommand("qaGetContext", "GET", "/session/:sessionId/context");
+  executor.defineCommand("qaSetContext", "POST", "/session/:sessionId/context");
+  const run = (name, parameters = {}) => driver.execute(new command.Command(name).setParameters(parameters));
+  const original = await run("qaGetContext");
+  const contexts = await run("qaGetContexts");
+  if (typeof original !== "string" || !Array.isArray(contexts) || !contexts.includes("NATIVE_APP")) {
+    throw new Error("NATIVE_DEVICE_CONTEXT_UNAVAILABLE");
+  }
+  if (original !== "NATIVE_APP") await run("qaSetContext", { name: "NATIVE_APP" });
+  try { return await action(); }
+  finally { if (original !== "NATIVE_APP") await run("qaSetContext", { name: original }); }
+}
 
 const baseUrl = (process.env.INSTALLED_BROWSER_BASE_URL || "https://flashcast.com.my").replace(/\/$/, "");
 const selectedTargets = (process.env.INSTALLED_BROWSER_TARGETS || "")

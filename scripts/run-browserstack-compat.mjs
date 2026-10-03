@@ -1,6 +1,6 @@
 import { Builder, By } from "selenium-webdriver";
 import input from "selenium-webdriver/lib/input.js";
-import { validateBrowserBaseUrl, publicDeviceIdentity, assertMobileMotion } from "./run-installed-browser-compat.mjs";
+import { validateBrowserBaseUrl, publicDeviceIdentity, assertMobileMotion, withNativeDeviceContext } from "./run-installed-browser-compat.mjs";
 
 const username = process.env.BROWSERSTACK_USERNAME;
 const accessKey = process.env.BROWSERSTACK_ACCESS_KEY;
@@ -240,14 +240,20 @@ const touch = async (driver, selector) => {
       try { await (await driver.findElement(By.css(selector))).click(); break; }
       catch(error){if(error?.constructor?.name!=='StaleElementReferenceError'||attempt===2)throw error;}
     }
-    return;
-  }
+  } else {
   const position = await driver.executeScript(css => {
     const rect = document.querySelector(css).getBoundingClientRect();
     return { x: Math.round(rect.left + rect.width / 2), y: Math.round(rect.top + rect.height / 2) };
   }, selector);
   const finger = new input.Pointer("qa-finger", input.Pointer.Type.TOUCH);
   await driver.actions({ async: true }).insert(finger, finger.move(position), finger.press(), { type: "pause", duration: 100 }, finger.release()).perform();
+  }
+  // The shop tap can switch windows; its caller reads evidence in the original
+  // document. Other controls must deliver a trusted click to the actual target.
+  if (selector !== '.fc-furniture-floating') {
+    const delivered = await driver.executeScript(() => JSON.parse(document.documentElement.dataset.qaNativeTap || 'null'));
+    if (delivered?.delivered !== true || delivered?.trusted !== true) throw new Error("TRUSTED_TARGET_TAP_NOT_OBSERVED");
+  }
 };
 
 const swipeTo = async (driver, selector) => {
@@ -369,6 +375,9 @@ const mobileChecks = async (driver, target, identity) => {
     try { assertMobileMotion(observation); } catch(error) { error.metrics = observation; throw error; }
     return observation;
   });
+  await check("native_context_transport", async () => {
+    return withNativeDeviceContext(driver, async () => ({ nativeContextAvailable: true, restoredWebContextOnExit: true }));
+  });
   await check("native_menu_close_and_navigation", async () => {
     let menuStage='open_first';
     try {
@@ -479,7 +488,7 @@ const mobileChecks = async (driver, target, identity) => {
     contactStage='native_keyboard_dismissal';
     // The keyboard pans the visual viewport beyond the fixed header. Use the
     // physical device's keyboard dismissal, then test the reachable menu.
-    await driver.executeScript('mobile: hideKeyboard', nativeTapDrivers.has(driver)?{keys:['Done','done']} : {});
+    await withNativeDeviceContext(driver, () => driver.executeScript('mobile: hideKeyboard', nativeTapDrivers.has(driver)?{keys:['Done','done']} : {}));
     await driver.wait(() => driver.executeScript(before => (visualViewport?.height || innerHeight) >= before - 10, viewportBefore), 10000);
     contactStage='menu_after_keyboard';
     // Record geometry before tapping: Android can pan the visual viewport while
@@ -536,7 +545,7 @@ const mobileChecks = async (driver, target, identity) => {
           const rect = element.getBoundingClientRect(); return rect.width > 0 && rect.height > 0
             && Math.min(rect.right, floating.right) > Math.max(rect.left, floating.left) && Math.min(rect.bottom, floating.bottom) > Math.max(rect.top, floating.top);
         }).length;
-        return { overlaps, overflow: document.documentElement.scrollWidth - innerWidth };
+        return { overlaps, overflow: document.documentElement.scrollWidth - innerWidth, scrollY };
       }));
       const size = await driver.executeScript(() => ({ width: innerWidth, height: innerHeight }));
       const finger = new input.Pointer("qa-blog-scroll", input.Pointer.Type.TOUCH);
@@ -545,7 +554,8 @@ const mobileChecks = async (driver, target, identity) => {
         finger.move({ x, y: Math.round(size.height * .3), duration: 350 }), finger.release()).perform();
     }
     if (measures.some(item => item.overlaps || item.overflow > 1)) throw new Error("BLOG_FLOATING_OVERLAP");
-    return { inspectedScrollPositions: measures.length, overlaps: 0 };
+    if (new Set(measures.map(item => Math.round(item.scrollY))).size !== 3) throw new Error("BLOG_DISTINCT_SCROLL_POSITIONS_NOT_OBSERVED");
+    return { inspectedScrollPositions: measures.length, overlaps: 0, distinctNativeScrollPositions: 3 };
   });
   return checks;
 };
@@ -555,7 +565,7 @@ const runTarget = async (target) => {
     browserName: target.browserName,
     pageLoadStrategy: "eager",
     ...(target.browserVersion ? { browserVersion: target.browserVersion } : {}),
-    ...(target.id==='iphone-safari-real'?{platformName:'iOS','appium:automationName':'XCUITest','appium:nativeWebTap':true,'appium:nativeWebTapStrict':true}:{}),
+    ...(target.id==='iphone-safari-real'?{platformName:'iOS','appium:automationName':'XCUITest','appium:nativeWebTap':true,'appium:nativeWebTapStrict':false}:{}),
     ...(target.id==='android-chrome-real'?{platformName:'Android','appium:automationName':'UiAutomator2'}:{}),
     "bstack:options": {
       userName: username,
@@ -572,7 +582,7 @@ const runTarget = async (target) => {
 
   let driver, stage = "session_creation", identity = {}, advancedChecks = [], refreshed = [];
   try {
-    driver = await new Builder().usingServer("https://hub.browserstack.com/wd/hub").withCapabilities(capabilities).build();
+    driver = await new Builder().usingServer("https://hub-cloud.browserstack.com/wd/hub").withCapabilities(capabilities).build();
     if(target.id==='iphone-safari-real')nativeTapDrivers.add(driver);
     await driver.manage().setTimeouts({ pageLoad: 90_000, script: 45_000 });
     stage = "returned_capabilities";
@@ -631,6 +641,14 @@ const runTarget = async (target) => {
 };
 
 const results = [];
+const readProductionRevision = async () => {
+  const response = await fetch(`${baseUrl}/__flashcast/version`, { cache: "no-store" });
+  if (!response.ok) throw new Error("PRODUCTION_REVISION_NOT_RETURNED");
+  const value = (await response.json()).deploymentVersion;
+  if (typeof value !== "string" || !/^[0-9a-f]{40}$/.test(value)) throw new Error("PRODUCTION_REVISION_INVALID");
+  return value;
+};
+const productionRevisionBefore = await readProductionRevision();
 
 for (const target of filteredTargets) {
   console.log(`[real-browser] ${target.id} starting`);
@@ -640,8 +658,11 @@ for (const target of filteredTargets) {
 }
 
 const failed = results.filter((result) => !result.ok);
-console.log(JSON.stringify({ ok: failed.length === 0, baseUrl, buildName, results }, null, 2));
+const productionRevisionAfter = await readProductionRevision();
+const stableProductionRevision = productionRevisionBefore === productionRevisionAfter;
+console.log(JSON.stringify({ ok: failed.length === 0 && stableProductionRevision, baseUrl, buildName,
+  productionRevisionBefore, productionRevisionAfter, stableProductionRevision, results }, null, 2));
 
-if (failed.length > 0) {
+if (failed.length > 0 || !stableProductionRevision) {
   process.exit(1);
 }

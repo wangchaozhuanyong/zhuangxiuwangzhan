@@ -2,7 +2,31 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import { spawnSync } from "node:child_process";
 import { Capabilities } from "selenium-webdriver";
-import { getBrowserTargets, resolveTarget, selectRunnableTargets, validateBrowserBaseUrl, publicDeviceIdentity, assertMobileMotion } from "./run-installed-browser-compat.mjs";
+import { getBrowserTargets, resolveTarget, selectRunnableTargets, validateBrowserBaseUrl, publicDeviceIdentity, assertMobileMotion, withNativeDeviceContext } from "./run-installed-browser-compat.mjs";
+
+test("native context is restored when a device command fails and unavailable contexts fail closed", async () => {
+  const calls = [];
+  let context = "WEBVIEW_TEST";
+  let available = ["NATIVE_APP", context];
+  const driver = {
+    getExecutor: () => ({ defineCommand() {} }),
+    execute: async item => {
+      calls.push(item.getName());
+      if (item.getName() === "qaGetContext") return context;
+      if (item.getName() === "qaGetContexts") return available;
+      if (item.getName() === "qaSetContext") context = item.getParameters().name;
+    },
+  };
+  await assert.rejects(withNativeDeviceContext(driver, async () => {
+    assert.equal(context, "NATIVE_APP");
+    throw new Error("device command unsupported");
+  }), /device command unsupported/);
+  assert.equal(context, "WEBVIEW_TEST");
+  assert.deepEqual(calls.slice(-2), ["qaSetContext", "qaSetContext"]);
+  available = ["WEBVIEW_TEST"];
+  await assert.rejects(withNativeDeviceContext(driver, async () => assert.fail("must not run")), /NATIVE_DEVICE_CONTEXT_UNAVAILABLE/);
+  assert.equal(context, "WEBVIEW_TEST");
+});
 
 test("macOS discovers system and per-user vendor browsers without Windows paths", async () => {
   const targets = getBrowserTargets("darwin", { HOME: "/Users/qa" });
