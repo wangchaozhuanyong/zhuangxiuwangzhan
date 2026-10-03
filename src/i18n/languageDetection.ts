@@ -9,13 +9,8 @@ export const isSupportedLanguage = (value?: string | null): value is Language =>
 const normalizeLanguageTag = (value: string) => value.trim().toLowerCase().replace(/_/g, "-");
 
 export const detectLanguageFromTags = (languageTags: readonly string[]): Language => {
-  for (const tag of languageTags) {
-    const normalized = normalizeLanguageTag(tag);
-    if (normalized === "zh" || normalized.startsWith("zh-")) return "zh";
-    if (normalized === "en" || normalized.startsWith("en-")) return "en";
-  }
-
-  return DEFAULT_LANGUAGE;
+  const primaryLanguage = normalizeLanguageTag(languageTags[0] ?? "");
+  return primaryLanguage === "zh" || primaryLanguage.startsWith("zh-") ? "zh" : DEFAULT_LANGUAGE;
 };
 
 export const parseAcceptLanguage = (header?: string | null): string[] => {

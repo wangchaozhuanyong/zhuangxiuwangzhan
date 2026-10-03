@@ -1,6 +1,7 @@
 export const adminImageUploadText = {
   previewAlt: { en: "Uploaded preview", zh: "已上传预览" },
   upload: { en: "Upload", zh: "上传" },
+  retry: { en: "Retry upload", zh: "重试上传" },
   uploading: { en: "Uploading...", zh: "上传中..." },
   bucketTip: { en: "Public display bucket:", zh: "前台展示桶：" },
   automationTip: {
@@ -17,6 +18,17 @@ export const adminImageUploadText = {
     zh: "原图桶暂未准备好，本次已先上传前台优化图。",
   },
   uploadFailed: { en: "Upload failed. Please try again later.", zh: "上传失败，请稍后再试。" },
+  conversionFailed: {
+    en: "This browser could not convert the image to WebP. Please retry or choose an optimized WebP image.",
+    zh: "当前浏览器未能将图片转换为 WebP，请重试或选择已优化的 WebP 图片。",
+  },
+  invalidWebp: { en: "The selected file is not a valid WebP image.", zh: "所选文件不是有效的 WebP 图片。" },
+  sourceTooLarge: {
+    en: "The original image must be 20 MB or smaller. Please choose a smaller source image.",
+    zh: "原图不能超过 20MB，请选择较小的原图。",
+  },
+  invalidSource: { en: "Only JPG, PNG and WebP images are supported.", zh: "只允许上传 JPG、PNG、WebP 图片。" },
+  canvasUnavailable: { en: "This browser cannot process images. Please use a supported browser.", zh: "当前浏览器不支持图片处理，请使用支持的浏览器。" },
   optimizedFileTooLarge: {
     en: "The optimized WebP is still larger than {maxSize}. Please choose a more suitable source image.",
     zh: "自动优化后的 WebP 仍超过 {maxSize}，请换一张更适合该容器的原图。",

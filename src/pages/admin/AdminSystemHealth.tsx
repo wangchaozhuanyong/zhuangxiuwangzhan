@@ -22,9 +22,10 @@ import { useToast } from "@/hooks/use-toast";
 import {
   adminSystemHealthCheckLabels,
   adminSystemHealthEventLabels,
+  adminSystemHealthTableLabels,
   adminSystemHealthText,
 } from "@/i18n/adminSystemHealthText";
-import { getAdminLang } from "@/lib/adminLocale";
+import { useAdminLang, type AdminLang } from "@/lib/adminLocale";
 import { isSupabaseConfigured } from "@/lib/supabase";
 import {
   cleanupAdminFormAttempts,
@@ -59,6 +60,7 @@ type BackupStatus = {
   latest_backup: HealthEventSummary | null;
   latest_verify: HealthEventSummary | null;
   latest_restore_dry_run: HealthEventSummary | null;
+  latest_restore_verified?: HealthEventSummary | null;
   message: string;
 };
 
@@ -116,19 +118,29 @@ const formatAge = (hours: number | null | undefined, text: AdminSystemHealthText
   return formatText(text.daysAgo, { days: Math.round(hours / 24) });
 };
 
-const describeCheck = (value: HealthCheckValue, text: AdminSystemHealthText) => {
+const describeCheck = (name: string, value: HealthCheckValue, text: AdminSystemHealthText) => {
+  const ok = parseCheckOk(value);
+  const message = !ok ? text.checkNeedsAction : name === "edge_function" ? text.edgeAvailable
+    : name === "storage_site_images" ? text.storageReadable : text.checkPassed;
   if (value && typeof value === "object") {
-    const parts = [];
-    if ("count" in value && typeof value.count === "number") parts.push(formatText(text.countItems, { count: value.count }));
-    if ("message" in value && value.message) parts.push(String(value.message));
-    return parts.join("，") || (parseCheckOk(value) ? text.ok : text.abnormal);
+    return typeof value.count === "number" ? `${formatText(text.countItems, { count: value.count })}${text.listSeparator}${message}` : message;
   }
-  return String(value ?? "");
+  return message;
 };
 
-const getCheckLabel = (name: string, value: HealthCheckValue, labels: Record<string, string>) => {
-  if (value && typeof value === "object" && "label" in value && value.label) return String(value.label);
-  return labels[name] || name;
+const getCheckLabel = (name: string, labels: Record<string, string>, text: AdminSystemHealthText) =>
+  labels[name] || text.unknownCheck;
+
+const getTableLabels = (table: string, language: AdminLang, text: AdminSystemHealthText) =>
+  (adminSystemHealthTableLabels[language] as Record<string, { label: string; category: string }>)[table]
+  || { label: text.unknownTable, category: text.unknownGroup };
+
+const getReminderText = (message: string, tables: TableCheck[], backup: BackupStatus | null, language: AdminLang, text: AdminSystemHealthText) => {
+  if (message === text.backupStatusFallback) return text.backupStatusFallback;
+  if (backup && message === backup.message) return backup.ok ? text.backupRecordsComplete : text.backupRecordsIncomplete;
+  const table = tables.find((item) => message.startsWith(`${item.label}:`) || message.startsWith(`${item.label} read failed.`));
+  if (table) return `${getTableLabels(table.table, language, text).label}: ${formatUserFacingError(table.message, language, text.tableReadFailed)}`;
+  return formatUserFacingError(message, language, text.unknownReminder);
 };
 
 const readFunctionJsonPayload = async <T,>(error: unknown): Promise<T | null> => {
@@ -153,13 +165,26 @@ const getEventMetaLine = (event: HealthEventSummary | null, text: AdminSystemHea
   if (typeof meta.total_rows === "number") parts.push(formatText(text.rowCount, { count: meta.total_rows }));
   if (typeof meta.storage_file_count === "number") parts.push(formatText(text.storageFileCount, { count: meta.storage_file_count }));
   if (meta.full_access === false) parts.push(text.incompleteBackup);
+  if (event.event_type === "backup_restore_verified" && meta.original_admin_login_verified === false) parts.push(text.originalPasswordPending);
   return parts.join(" · ");
 };
 
+const RESTORE_SCOPES = ["data_verified", "schema_verified", "auth_verified", "media_verified", "original_admin_login_verified", "original_admin_mfa_verified", "permissions_verified"];
+const recentSuccessfulEvent = (event: HealthEventSummary | null | undefined) => Boolean(event
+  && typeof event.age_hours === "number" && event.age_hours <= RECENT_HOURS
+  && (event.severity === "info" || event.severity === "debug") && event.metadata?.full_access !== false);
+const completeRecovery = (status: BackupStatus) => {
+  const folder = status.latest_backup?.metadata?.backup_folder;
+  const restore = status.latest_restore_verified;
+  return typeof folder === "string" && folder.length > 0
+    && status.latest_verify?.metadata?.backup_folder === folder && restore?.metadata?.backup_folder === folder
+    && [status.latest_backup, status.latest_verify, restore].every(recentSuccessfulEvent)
+    && RESTORE_SCOPES.every((scope) => restore?.metadata?.[scope] === true);
+};
+
 const getHistoryMessage = (event: HealthEventSummary, text: AdminSystemHealthText, labels: Record<string, string>) => {
-  if (event.message.includes("passed")) return text.historyPassed;
-  if (event.message.includes("attention")) return text.historyAttention;
-  return labels[event.event_type] || event.message;
+  if (event.event_type === "system_health_check") return event.severity === "info" || event.severity === "debug" ? text.historyPassed : text.historyAttention;
+  return labels[event.event_type] || text.unknownEvent;
 };
 
 const CheckRow = ({
@@ -177,8 +202,8 @@ const CheckRow = ({
   return (
     <div className="flex flex-wrap items-center justify-between gap-3 rounded-lg border border-border bg-background p-3">
       <div className="min-w-0">
-        <p className="break-words text-sm font-semibold">{getCheckLabel(name, value, labels)}</p>
-        <p className="mt-1 break-words text-xs text-muted-foreground">{describeCheck(value, text) || (ok ? text.ok : text.abnormal)}</p>
+        <p className="break-words text-sm font-semibold">{getCheckLabel(name, labels, text)}</p>
+        <p className="mt-1 break-words text-xs text-muted-foreground">{describeCheck(name, value, text)}</p>
       </div>
       <span className={`inline-flex shrink-0 items-center gap-1 rounded-full border px-2.5 py-1 text-xs font-semibold ${statusClass(ok)}`}>
         {ok ? <CheckCircle2 className="h-3.5 w-3.5" /> : <AlertTriangle className="h-3.5 w-3.5" />}
@@ -188,19 +213,19 @@ const CheckRow = ({
   );
 };
 
-const TableCard = ({ item, text }: { item: TableCheck; text: AdminSystemHealthText }) => (
+const TableCard = ({ item, text, language }: { item: TableCheck; text: AdminSystemHealthText; language: AdminLang }) => (
   <div className="rounded-lg border border-border bg-background p-4">
     <div className="flex items-start justify-between gap-3">
       <div className="min-w-0">
-        <p className="break-words text-sm font-semibold">{item.label}</p>
-        <p className="mt-1 break-all text-xs text-muted-foreground">{item.category} · {item.table}</p>
+        <p className="break-words text-sm font-semibold">{getTableLabels(item.table, language, text).label}</p>
+        <p className="mt-1 text-xs text-muted-foreground">{getTableLabels(item.table, language, text).category}</p>
       </div>
       <span className={`shrink-0 rounded-full border px-2.5 py-1 text-xs font-semibold ${statusClass(item.ok)}`}>
         {item.ok ? text.readable : text.abnormal}
       </span>
     </div>
     <p className="mt-3 text-2xl font-bold">{item.ok ? item.count ?? 0 : "-"}</p>
-    {item.message && <p className="mt-2 break-words text-xs text-destructive">{item.message}</p>}
+    {item.message && <p className="mt-2 break-words text-xs text-destructive">{formatUserFacingError(item.message, language, text.tableReadFailed)}</p>}
   </div>
 );
 
@@ -217,8 +242,8 @@ const BackupCard = ({
   language: "en" | "zh";
   text: AdminSystemHealthText;
 }) => {
-  const fresh = Boolean(event && typeof event.age_hours === "number" && event.age_hours <= RECENT_HOURS);
-  const ok = fresh && event?.severity !== "error" && event?.severity !== "critical";
+  const accepted = event?.event_type !== "backup_restore_verified" || RESTORE_SCOPES.every((scope) => event.metadata?.[scope] === true);
+  const ok = recentSuccessfulEvent(event) && accepted;
   return (
     <div className="rounded-lg border border-border bg-background p-4">
       <div className="flex items-start justify-between gap-3">
@@ -228,14 +253,14 @@ const BackupCard = ({
         </span>
       </div>
       <p className="mt-3 font-semibold">{title}</p>
-      <p className="mt-2 text-sm leading-6 text-muted-foreground">{event ? `${formatDateTime(event.created_at, language, text)}，${formatAge(event.age_hours, text)}` : text.noExecutionRecord}</p>
+      <p className="mt-2 text-sm leading-6 text-muted-foreground">{event ? `${formatDateTime(event.created_at, language, text)}${text.listSeparator}${formatAge(event.age_hours, text)}` : text.noExecutionRecord}</p>
       {event && <p className="mt-2 break-words text-xs text-muted-foreground">{getEventMetaLine(event, text)}</p>}
     </div>
   );
 };
 
 export default function AdminSystemHealth() {
-  const language = getAdminLang();
+  const language = useAdminLang();
   const text = adminSystemHealthText[language];
   const checkLabels = adminSystemHealthCheckLabels[language];
   const eventLabels = adminSystemHealthEventLabels[language];
@@ -257,11 +282,16 @@ export default function AdminSystemHealth() {
 
   const payload = healthQuery.data;
   const tableChecks = useMemo(() => payload?.table_checks || [], [payload?.table_checks]);
-  const reminders = payload?.reminders || [];
-  const backupStatus = payload?.backup_status || null;
+  const rawBackupStatus = payload?.backup_status || null;
+  const backupStatus = rawBackupStatus ? { ...rawBackupStatus, ok: rawBackupStatus.ok && completeRecovery(rawBackupStatus) } : null;
   const healthHistory = payload?.health_history || [];
-  const overallOk = Boolean(payload?.ok);
   const isAdminMode = payload?.mode === "admin";
+  const overallOk = Boolean(payload?.ok) && (!isAdminMode || Boolean(backupStatus?.ok));
+  const reminders = [...(payload?.reminders || [])];
+  if (isAdminMode && !backupStatus?.ok) {
+    const reminder = backupStatus?.message || text.backupStatusFallback;
+    if (!reminders.includes(reminder)) reminders.push(reminder);
+  }
 
   const cleanupAttemptsMutation = useMutation({
     mutationFn: async () => {
@@ -370,7 +400,7 @@ export default function AdminSystemHealth() {
             {reminders.map((item) => (
               <div key={item} className="flex gap-3 rounded-lg border border-amber-200 bg-amber-50 p-3 text-sm text-amber-900">
                 <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0" />
-                <p className="break-words leading-6">{item}</p>
+                <p className="break-words leading-6">{getReminderText(item, tableChecks, backupStatus, language, text)}</p>
               </div>
             ))}
           </div>
@@ -419,7 +449,7 @@ export default function AdminSystemHealth() {
       <AdminFormSection title={text.tableSectionTitle} description={text.tableSectionDescription} helpText={text.tableSectionHelp}>
         <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
           {tableChecks.map((item) => (
-            <TableCard key={item.table} item={item} text={text} />
+            <TableCard key={item.table} item={item} text={text} language={language} />
           ))}
         </div>
       </AdminFormSection>
@@ -429,13 +459,15 @@ export default function AdminSystemHealth() {
           <BackupCard title={text.backupDatabaseTitle} event={backupStatus?.latest_backup} icon={<Database className="h-5 w-5" />} language={language} text={text} />
           <BackupCard title={text.backupVerifyTitle} event={backupStatus?.latest_verify} icon={<FileCheck2 className="h-5 w-5" />} language={language} text={text} />
           <BackupCard title={text.backupRestoreTitle} event={backupStatus?.latest_restore_dry_run} icon={<ShieldCheck className="h-5 w-5" />} language={language} text={text} />
+          <BackupCard title={text.backupActualRestoreTitle} event={backupStatus?.latest_restore_verified} icon={<ShieldCheck className="h-5 w-5" />} language={language} text={text} />
         </div>
         <div className={`mt-3 rounded-lg border p-3 text-sm ${statusClass(Boolean(backupStatus?.ok))}`}>
           <div className="flex items-start gap-2">
             <HardDrive className="mt-0.5 h-4 w-4 shrink-0" />
-            <p className="break-words">{backupStatus?.message || text.backupStatusFallback}</p>
+            <p className="break-words">{backupStatus ? backupStatus.ok ? text.backupRecordsComplete : text.backupRecordsIncomplete : text.backupStatusFallback}</p>
           </div>
         </div>
+        <p className="mt-2 text-xs leading-6 text-muted-foreground">{text.backupScopeNote}</p>
       </AdminFormSection>
 
       <AdminFormSection title={text.historyTitle} description={text.historyDescription} helpText={text.historyHelp}>
@@ -452,7 +484,7 @@ export default function AdminSystemHealth() {
                     </div>
                     <p className="mt-1 text-xs text-muted-foreground">
                       <Clock className="mr-1 inline h-3.5 w-3.5" />
-                      {formatDateTime(event.created_at, language, text)}，{formatAge(event.age_hours, text)}
+                      {formatDateTime(event.created_at, language, text)}{text.listSeparator}{formatAge(event.age_hours, text)}
                     </p>
                   </div>
                   <span className={`rounded-full border px-2.5 py-1 text-xs font-semibold ${statusClass(ok)}`}>{ok ? text.passed : text.needsAction}</span>

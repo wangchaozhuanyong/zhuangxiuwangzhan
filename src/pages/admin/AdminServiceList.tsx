@@ -12,13 +12,13 @@ import AdminLoadingState from "@/components/admin/AdminLoadingState";
 import AdminStatusBadge from "@/components/admin/AdminStatusBadge";
 import AdminEmptyState from "@/components/admin/AdminEmptyState";
 import { adminServiceListText } from "@/i18n/adminServiceListText";
-import { getAdminLang, publishStatusOptions } from "@/lib/adminLocale";
+import { useAdminLang, publishStatusOptions } from "@/lib/adminLocale";
 import { formatUserFacingError } from "@/lib/userFacingText";
 
 type AdminServiceListTextKey = keyof typeof adminServiceListText;
 
 export default function AdminServiceList() {
-  const language = getAdminLang();
+  const language = useAdminLang();
   const A = (key: AdminServiceListTextKey) => adminServiceListText[key][language];
   const [status, setStatus] = useState<string>("all");
   const [search, setSearch] = useState("");
@@ -30,6 +30,12 @@ export default function AdminServiceList() {
   const pageSize = data?.pageSize ?? 30;
   const errorMessage = error ? formatUserFacingError(error, language) : "";
   const initialLoading = isFetching && !data;
+  const hasFilters = status !== "all" || deferredSearch.trim().length > 0;
+  const clearFilters = () => {
+    setSearch("");
+    setStatus("all");
+    setPage(0);
+  };
 
   useEffect(() => {
     setPage(0);
@@ -42,7 +48,7 @@ export default function AdminServiceList() {
       cell: (row) => (
         <div className="min-w-0">
           <Link to={`/admin/services/${row.id}`} className="font-medium hover:underline">
-            {row.title_zh || row.title_en || row.slug}
+            {language === "en" ? row.title_en || row.title_zh || row.slug : row.title_zh || row.title_en || row.slug}
           </Link>
           <div className="mt-0.5 text-xs text-muted-foreground">/{row.slug}</div>
         </div>
@@ -118,10 +124,10 @@ export default function AdminServiceList() {
           rowKey={(r) => r.id}
           empty={
             <AdminEmptyState
-              title={A("emptyTitle")}
-              description={A("emptyDescription")}
+              title={A(hasFilters ? "noMatchesTitle" : "emptyTitle")}
+              description={A(hasFilters ? "noMatchesDescription" : "emptyDescription")}
               action={
-                <Button asChild>
+                hasFilters ? <Button variant="outline" onClick={clearFilters}>{A("clearFilters")}</Button> : <Button asChild>
                   <Link to="/admin/services/new">{A("newService")}</Link>
                 </Button>
               }

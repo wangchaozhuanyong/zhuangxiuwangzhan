@@ -8,15 +8,22 @@ import {
 
 describe("language detection", () => {
   it("recognizes simplified, traditional, Hong Kong, Singapore, and underscore Chinese tags", () => {
-    for (const tag of ["zh", "zh-CN", "zh-TW", "zh-HK", "zh-SG", "zh_Hans_CN"]) {
+    for (const tag of ["zh", "zh-CN", "zh-TW", "zh-HK", "zh-SG", "zh_Hans_CN", "zh-Hant", " ZH-hk "]) {
       expect(detectLanguageFromTags([tag])).toBe("zh");
     }
   });
 
-  it("uses the first supported browser language and defaults unsupported languages to English", () => {
-    expect(detectLanguageFromTags(["ms-MY", "zh-CN", "en-US"])).toBe("zh");
-    expect(detectLanguageFromTags(["ms-MY", "en-GB", "zh-CN"])).toBe("en");
-    expect(detectLanguageFromTags(["ms-MY"])).toBe("en");
+  it.each(["en-US", "ms-MY", "ja-JP", "fr-FR", "ar-SA"])(
+    "uses English when the first browser language is %s even if Chinese is second",
+    (tag) => {
+      expect(detectLanguageFromTags([tag, "zh-CN", "en-US"])).toBe("en");
+    },
+  );
+
+  it("uses Chinese when it is first and defaults missing language preferences to English", () => {
+    expect(detectLanguageFromTags(["zh-TW", "ja-JP", "en-US"])).toBe("zh");
+    expect(detectLanguageFromTags([])).toBe("en");
+    expect(detectLanguageFromTags([""])).toBe("en");
   });
 
   it("orders Accept-Language tags by quality and ignores disabled or wildcard values", () => {
@@ -35,6 +42,14 @@ describe("language detection", () => {
     expect(resolvePreferredLanguage({ acceptLanguage: "en-US;q=0.8,zh-CN;q=0.9" })).toBe("zh");
     expect(resolvePreferredLanguage({ acceptLanguage: "ms-MY,ja-JP;q=0.8" })).toBe("en");
     expect(resolvePreferredLanguage({})).toBe("en");
+  });
+
+  it("does not promote lower priority Chinese from Accept-Language", () => {
+    expect(resolvePreferredLanguage({ acceptLanguage: "ja-JP,zh-CN;q=0.9,en;q=0.8" })).toBe("en");
+    expect(resolvePreferredLanguage({ acceptLanguage: "zh-CN;q=0.8,ja-JP;q=1" })).toBe("en");
+    expect(resolvePreferredLanguage({ acceptLanguage: "ja-JP;q=0.9,zh-CN;q=0.9" })).toBe("en");
+    expect(resolvePreferredLanguage({ acceptLanguage: "zh-CN;q=0,ja-JP;q=0.8" })).toBe("en");
+    expect(resolvePreferredLanguage({ savedLanguage: "invalid", acceptLanguage: "ja-JP,zh-CN;q=0.9" })).toBe("en");
   });
 
   it("reads the exact language cookie without confusing similarly named cookies", () => {

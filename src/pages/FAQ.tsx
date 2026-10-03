@@ -5,6 +5,7 @@ import Link from "@/components/LocalizedLink";
 import { SchemeAFaqList, SchemeARouteHero, SchemeASection } from "@/components/scheme-a/SchemeARoutePrimitives";
 import { usePublishedFaqs, usePublishedSitePage } from "@/hooks/usePublishedContent";
 import { useLanguage } from "@/i18n/LanguageContext";
+import { useSiteSettings } from "@/hooks/useSiteSettings";
 import { faqPageText } from "@/i18n/faqPageText";
 import { mediaLabels } from "@/i18n/mediaLabels";
 import { pageHeroImages, resolvePageHeroImage } from "@/lib/pageHeroImages";
@@ -12,6 +13,7 @@ import { pageHeroImages, resolvePageHeroImage } from "@/lib/pageHeroImages";
 const FAQ = () => {
   const { language } = useLanguage();
   const t = faqPageText[language];
+  const settings = useSiteSettings();
   const { data: pageContent, isLoading: pageLoading } = usePublishedSitePage(language, "faq");
   const { data: generalFaqs, isLoading } = usePublishedFaqs(language, "general");
   const { data: homeFaqs, isLoading: homeLoading } = usePublishedFaqs(language, "home");
@@ -41,7 +43,7 @@ const FAQ = () => {
         <div className="fc-route-action-panel">
           <h2>{pageContent?.cta_title || t.ctaTitle}</h2>
           <p>{pageContent?.cta_description || t.ctaText}</p>
-          <div><Link to="/contact">{t.contact}</Link><Link to="/quote#quote-form">{t.whatsapp}</Link></div>
+          <div><Link to="/contact">{t.contact}</Link><a href={settings.whatsapp_url()} target="_blank" rel="noopener noreferrer">{t.whatsapp}</a></div>
         </div>
       </SchemeASection>
     </main>

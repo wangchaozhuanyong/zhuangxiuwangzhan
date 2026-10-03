@@ -1,6 +1,7 @@
 import {
   createMediaAssetRecord,
   deleteMediaAssetRecord,
+  downloadMediaStorageWebp,
   fetchAdminMediaAssetList,
   getMediaStoragePublicUrl,
   hasMediaStorageClient,
@@ -47,4 +48,12 @@ export function tryUploadAdminMediaObject(
   options: MediaStorageUploadOptions,
 ) {
   return tryUploadMediaStorageObject(bucket, objectPath, file, options);
+}
+
+export function downloadAdminMediaWebp(
+  bucket: string,
+  objectPath: string,
+  transform: { width: number; height: number; quality: number },
+) {
+  return downloadMediaStorageWebp(bucket, objectPath, transform);
 }

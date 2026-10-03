@@ -369,7 +369,15 @@ const hasMediaPlaceholder = (value: unknown) => JSON.stringify(value).includes("
 const isSafeImageUrl = (value: unknown) => {
   const text = cleanText(value, 1000);
   if (!text) return true;
-  return text.startsWith("/") || text.startsWith("https://") || text.startsWith("http://localhost");
+  if (text.startsWith("/") || text.startsWith("https://")) return true;
+  try {
+    const url = new URL(text);
+    return url.protocol === "http:"
+      && ["localhost", "127.0.0.1", "[::1]"].includes(url.hostname)
+      && !url.username && !url.password;
+  } catch {
+    return false;
+  }
 };
 
 const isWebpDeliveryUrl = (value: unknown) => {

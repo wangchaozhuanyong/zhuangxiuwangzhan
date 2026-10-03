@@ -8,6 +8,7 @@ import { pathToFileURL } from "node:url";
 import { chromium } from "@playwright/test";
 import { transform } from "esbuild";
 import ts from "typescript";
+import { loadProjectEnv } from "./lib/project-env.mjs";
 
 const rootDir = process.cwd();
 const configPath = path.join(rootDir, "i18n-locale-rules.json");
@@ -868,13 +869,19 @@ const launchRuntimeServer = async () => {
   }
 
   const commandText = process.env.I18N_RUNTIME_SERVER_COMMAND || config.runtime.serverCommand;
+  const runtimeEnv = { ...process.env };
+  loadProjectEnv({ root: rootDir, mode: "development", env: runtimeEnv });
+  // Configuration-free CI scans public fallback copy. Keep declared local
+  // configuration intact, and never connect this fallback to production.
+  runtimeEnv.VITE_SITE_URL ||= new URL(baseUrl).origin;
+  runtimeEnv.VITE_SUPABASE_URL ||= "http://127.0.0.1:1";
   const child = spawn(commandText, {
     cwd: rootDir,
     shell: true,
     stdio: ["ignore", "pipe", "pipe"],
     detached: process.platform !== "win32",
     env: {
-      ...process.env,
+      ...runtimeEnv,
       BROWSER: "none",
     },
   });

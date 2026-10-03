@@ -726,6 +726,10 @@ const buildHtmlContentSecurityPolicy = async (html: string) => {
 };
 
 const applyHtmlSecurityHeaders = async (headers: Headers, html: string) => {
+  // The asset body has been decoded and rewritten. Its original transport
+  // encoding/length must not describe the new body or be stored in Edge cache.
+  headers.delete("content-encoding");
+  headers.delete("content-length");
   headers.delete("access-control-allow-origin");
   headers.set("content-security-policy", await buildHtmlContentSecurityPolicy(html));
 };

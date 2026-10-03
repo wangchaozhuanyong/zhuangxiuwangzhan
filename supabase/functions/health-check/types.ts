@@ -49,6 +49,7 @@ export type BackupStatus = {
   latest_backup: SystemEventSummary | null;
   latest_verify: SystemEventSummary | null;
   latest_restore_dry_run: SystemEventSummary | null;
+  latest_restore_verified: SystemEventSummary | null;
   message: string;
 };
 

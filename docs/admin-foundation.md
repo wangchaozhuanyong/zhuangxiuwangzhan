@@ -73,7 +73,21 @@ Module order must be editable through drag-and-drop and keyboard-friendly up/dow
 
 ## Backup Checks
 
-Run:
+Environment verification requires an explicit supported `APP_ENV` or `NODE_ENV`. It parses HTTP(S) URLs and compares exact origins, using the existing governed Supabase release workflow as the production database identity. Non-production environments must use a separate site and database; missing or ambiguous production identity fails the check. Command-line environment values take precedence over `.env`, including explicitly empty values.
+
+Default development uses `.env` plus `.env.development.local`; the private production settings live in `.env.production.local`. `npm run dev` validates the development target before Vite starts. Production operations must select the production mode explicitly; see [environment and recovery runbook](./environment-recovery.md).
+
+For a full encrypted production package, run:
+
+```sh
+npm run backup:supabase:full
+npm run verify:backup -- backups/TIMESTAMP
+npm run restore:backup:full -- backups/TIMESTAMP
+```
+
+The full restore command only accepts this project's dedicated empty local rehearsal container, verifies encryption before SQL, preserves the source ownership/ACLs, and checks schema, table fields and media readback. A resumed verification never replaces imported data. Account acceptance is separate; original password, original MFA and effective permissions must pass before recovery is complete.
+
+Legacy content-only commands:
 
 ```powershell
 npm.cmd run backup:supabase
@@ -81,9 +95,13 @@ npm.cmd run verify:backup
 npm.cmd run restore:backup:dry-run
 ```
 
-If `SUPABASE_SERVICE_ROLE_KEY` is not set, the backup is a public content/media backup. For a full production backup, run the same script with `SUPABASE_SERVICE_ROLE_KEY` in a private environment, or run `USE_SUPABASE_CLI_DUMP=1` on a machine with Docker.
+If `SUPABASE_SERVICE_ROLE_KEY` is not set, the legacy backup is a public content/media backup. Supplying it increases table-read coverage but does not add Auth or database structure. Use the full encrypted procedure for account, schema and media recovery.
 
 `full_access` describes table-read access, not complete disaster recovery. REST packages contain the declared public-schema table data and downloaded media; they exclude Auth accounts/passwords/MFA and database schema. Public-schema SQL dumps also exclude Auth and media objects. Record these boundaries and backup age separately from package validation.
+
+`restore:backup:dry-run` validates the package without importing data. It does not replace an isolated restore with readback, or verification of account access and database structure. The health page keeps expired, warning and incomplete records marked as requiring attention.
+
+The health API retains legacy dry-run records and additionally reports `latest_restore_verified`. A passing result requires recent successful backup, package verification and actual isolated restore records for the same `backup_folder`, including schema, data, Auth, media, original password login, original MFA and permission acceptance. A recovery-link login alone leaves password acceptance pending. Local health changes require their own approved deployment before the online UI gains the new actual-restore card.
 
 ## Recovery
 

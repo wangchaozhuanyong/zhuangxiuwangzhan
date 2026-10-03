@@ -1,9 +1,4 @@
 import { siteConfig } from "@/config/site";
-import {
-  fetchDefaultSiteSettingsRecord,
-  hasSiteSettingsDatabaseClient,
-  upsertDefaultSiteSettingsRecord,
-} from "@/backend/modules/settings/repository/siteSettingsRepository";
 import { readPreloadedPublicData } from "@/lib/publicPreload";
 import { toRecord } from "@/lib/recordUtils";
 
@@ -207,13 +202,13 @@ export const fetchSiteSettings = async () => {
     return { ...fallbackSiteSettings, ...preloadedSiteSettings } as SiteSettings;
   }
 
-  if (!hasSiteSettingsDatabaseClient()) return fallbackSiteSettings;
-
+  const { fetchDefaultSiteSettingsRecord } = await import("@/backend/modules/settings/repository/siteSettingsRepository");
   const data = await fetchDefaultSiteSettingsRecord();
   if (!data) return fallbackSiteSettings;
   return { ...fallbackSiteSettings, ...data } as SiteSettings;
 };
 
 export const saveSiteSettings = async (settings: SiteSettings) => {
+  const { upsertDefaultSiteSettingsRecord } = await import("@/backend/modules/settings/repository/siteSettingsRepository");
   await upsertDefaultSiteSettingsRecord(settings);
 };

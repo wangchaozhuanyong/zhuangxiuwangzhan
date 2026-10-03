@@ -1,19 +1,8 @@
 /**
  * Fail production/CI builds when required VITE_* env vars are missing.
  */
-import { existsSync, readFileSync } from "node:fs";
-
-const loadEnvFile = () => {
-  if (!existsSync(".env")) return;
-  for (const line of readFileSync(".env", "utf8").split(/\r?\n/)) {
-    const match = line.match(/^\s*([A-Za-z_][A-Za-z0-9_]*)=(.*)\s*$/);
-    if (!match) continue;
-    const [, key, rawValue] = match;
-    if (!process.env[key]) process.env[key] = rawValue.replace(/^["']|["']$/g, "");
-  }
-};
-
-loadEnvFile();
+import { loadProjectEnv } from "./lib/project-env.mjs";
+loadProjectEnv();
 
 const required = [
   "VITE_SUPABASE_URL",
