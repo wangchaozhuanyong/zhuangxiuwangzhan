@@ -241,7 +241,7 @@ const touch = async (driver, selector) => {
       return {x:r.left+r.width/2-(v?.offsetLeft||0),y:r.top+r.height/2-(v?.offsetTop||0),width:v?.width||innerWidth,height:v?.height||innerHeight};
     },selector);
     await withNativeDeviceContext(driver,async()=>{
-      const frame=await (await driver.findElement(By.className('XCUIElementTypeWebView'))).getRect();
+      const frame=await (await driver.findElement(By.xpath('//XCUIElementTypeWebView'))).getRect();
       const x=Math.round(frame.x+geometry.x*frame.width/geometry.width),y=Math.round(frame.y+geometry.y*frame.width/geometry.width);
       if(x<frame.x||x>frame.x+frame.width||y<frame.y||y>frame.y+frame.height)throw new Error('NATIVE_TARGET_OUTSIDE_WEBVIEW');
       const finger=new input.Pointer('qa-native-tap',input.Pointer.Type.TOUCH);
