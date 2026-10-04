@@ -43,12 +43,15 @@ function CatalogEditor({ product, onClose }: { product: FurnitureProduct; onClos
   const remote = useMemo(() => {
     const zh = localizeFurnitureProduct(product, "zh");
     const en = localizeFurnitureProduct(product, "en");
-    return readFurnitureCatalogOverrides(setting?.items_zh).find((row) => row.slug === product.slug) || {
+    const saved = readFurnitureCatalogOverrides(setting?.items_zh).find((row) => row.slug === product.slug);
+    const price = (language === "zh" ? zh.price : en.price) || "";
+    if (saved) return { ...saved, price: [zh.price, en.price].includes(saved.price) ? price : saved.price };
+    return {
       slug: product.slug, enabled: true, name_zh: zh.name, name_en: en.name,
       shortDescription_zh: zh.shortDescription, shortDescription_en: en.shortDescription,
-      description_zh: zh.description, description_en: en.description, price: product.price || "", images: product.images,
+      description_zh: zh.description, description_en: en.description, price, images: product.images,
     };
-  }, [product, setting]);
+  }, [product, setting, language]);
   const { state: form, setForm, dirty, applyRemote } = useAdminFormState<FurnitureCatalogOverride>(remote, { initial: remote, resetKey: product.slug });
   const { protectSubmission, isSubmitting } = useSubmissionLock();
   useUnsavedChangesWarning(dirty || isSubmitting);
