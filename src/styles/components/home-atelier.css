@@ -1,5 +1,5 @@
 @layer components {
-  html[data-public-theme="dark"] .scheme-a-home--atelier {
+  html[data-public-theme="warm-stone"] .scheme-a-home--atelier {
     --atelier-ink: var(--public-surface-base);
     --atelier-charcoal: var(--public-surface-section);
     --atelier-paper: var(--public-surface-base);
@@ -10,55 +10,45 @@
     background: var(--atelier-paper);
   }
 
-  html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-actions {
+  html[data-public-theme="warm-stone"] .scheme-a-home--atelier .scheme-a-actions {
     justify-content: center;
     gap: 1.2rem;
     align-items: center;
     padding-top: clamp(1.5rem, 3.5vh, 2.4rem);
   }
 
-  html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-button {
+  html[data-public-theme="warm-stone"] .scheme-a-home--atelier .scheme-a-button {
     border-radius: 999px;
   }
 
-  html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-button--paper {
+  html[data-public-theme="warm-stone"] .scheme-a-home--atelier .scheme-a-button--paper {
     min-width: 12rem;
     min-height: 3rem;
-    color: #FDFCFA;
-    background: var(--public-accent);
-    box-shadow: none;
     font-weight: 700;
     letter-spacing: 0.04em;
     transition: transform 200ms ease, box-shadow 200ms ease;
   }
 
-  html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-button--paper:hover {
+  html[data-public-theme="warm-stone"] .scheme-a-home--atelier .scheme-a-button--paper:hover {
     transform: translateY(-2px);
-    background: var(--public-accent-hover);
-    box-shadow: none;
   }
 
-  html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-button--glass {
+  html[data-public-theme="warm-stone"] .scheme-a-home--atelier .scheme-a-button--glass {
     min-width: 0;
     min-height: 3rem;
     justify-content: center;
     padding: 0 1.6rem;
     border: 1px solid var(--public-border);
-    color: var(--public-text-primary);
-    background: rgb(247 246 242 / 0.7);
-    box-shadow: none;
     backdrop-filter: blur(10px);
     font-weight: 600;
     transition: background 200ms ease, border-color 200ms ease, transform 200ms ease;
   }
 
-  html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-button--glass:hover {
-    background: #ECEDE6;
-    border-color: var(--public-accent);
+  html[data-public-theme="warm-stone"] .scheme-a-home--atelier .scheme-a-button--glass:hover {
     transform: translateY(-2px);
   }
 
-  html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-principle {
+  html[data-public-theme="warm-stone"] .scheme-a-home--atelier .scheme-a-principle {
     border: 0;
     background:
       radial-gradient(circle at 92% 10%, rgb(228 232 222 / 0.12), transparent 34rem),
@@ -66,7 +56,7 @@
     color: #292E29;
   }
 
-  html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-principle__inner {
+  html[data-public-theme="warm-stone"] .scheme-a-home--atelier .scheme-a-principle__inner {
     display: grid;
     grid-template-columns: minmax(12rem, 0.28fr) minmax(0, 1fr);
     gap: clamp(2.5rem, 5vw, 6rem);
@@ -75,7 +65,7 @@
     padding-bottom: clamp(4.5rem, 6.5vw, 6.5rem);
   }
 
-  html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-principle h2 {
+  html[data-public-theme="warm-stone"] .scheme-a-home--atelier .scheme-a-principle h2 {
     max-width: 22ch;
     padding: 0;
     font-size: clamp(2rem, 3.4vw, 3.8rem);
@@ -83,14 +73,14 @@
     letter-spacing: -0.03em;
   }
 
-  html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-statement {
+  html[data-public-theme="warm-stone"] .scheme-a-home--atelier .scheme-a-statement {
     position: relative;
     background:
       linear-gradient(90deg, rgb(228 232 222 / 0.07) 1px, transparent 1px) 50% 0 / min(25vw, 22rem) 100%,
       var(--atelier-charcoal);
   }
 
-  html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-statement > .scheme-a-frame {
+  html[data-public-theme="warm-stone"] .scheme-a-home--atelier .scheme-a-statement > .scheme-a-frame {
     display: grid;
     grid-template-columns: minmax(12rem, 0.28fr) minmax(0, 1fr);
     gap: clamp(2.5rem, 5vw, 6rem);
@@ -99,7 +89,7 @@
     padding-bottom: clamp(5rem, 7vw, 7.5rem);
   }
 
-  html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-statement blockquote {
+  html[data-public-theme="warm-stone"] .scheme-a-home--atelier .scheme-a-statement blockquote {
     max-width: 20ch;
     padding: 0;
     font-size: clamp(2.2rem, 3.8vw, 4.2rem);
@@ -107,26 +97,26 @@
     letter-spacing: -0.03em;
   }
 
-  html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-project {
+  html[data-public-theme="warm-stone"] .scheme-a-home--atelier .scheme-a-project {
     padding-top: clamp(4.5rem, 6.5vw, 7rem);
     padding-bottom: clamp(5rem, 7vw, 7.5rem);
     background: var(--atelier-paper);
   }
 
-  html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-section-head {
+  html[data-public-theme="warm-stone"] .scheme-a-home--atelier .scheme-a-section-head {
     padding-bottom: clamp(2rem, 3.5vw, 3.5rem);
   }
 
-  html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-section-head h2,
-  html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-services h2,
-  html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-materials h2,
-  html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-contact h2 {
+  html[data-public-theme="warm-stone"] .scheme-a-home--atelier .scheme-a-section-head h2,
+  html[data-public-theme="warm-stone"] .scheme-a-home--atelier .scheme-a-services h2,
+  html[data-public-theme="warm-stone"] .scheme-a-home--atelier .scheme-a-materials h2,
+  html[data-public-theme="warm-stone"] .scheme-a-home--atelier .scheme-a-contact h2 {
     font-size: clamp(2.2rem, 3.6vw, 3.8rem);
     line-height: 1.18;
     letter-spacing: -0.03em;
   }
 
-  html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-project__media {
+  html[data-public-theme="warm-stone"] .scheme-a-home--atelier .scheme-a-project__media {
     display: block;
     width: min(calc(100% - 2 * var(--scheme-a-gutter)), calc(var(--scheme-a-frame) - 2 * var(--scheme-a-gutter)));
     height: min(56.25vw, 78vh);
@@ -137,28 +127,28 @@
     box-shadow: none;
   }
 
-  html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-project__meta {
+  html[data-public-theme="warm-stone"] .scheme-a-home--atelier .scheme-a-project__meta {
     padding-top: 2rem;
   }
 
-  html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-project__collection {
+  html[data-public-theme="warm-stone"] .scheme-a-home--atelier .scheme-a-project__collection {
     display: grid;
     grid-template-columns: repeat(3, minmax(0, 1fr));
     gap: clamp(1.5rem, 3vw, 3rem);
     margin-top: clamp(2.75rem, 4vw, 4.5rem);
   }
 
-  html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-project__collection[data-count="2"] {
+  html[data-public-theme="warm-stone"] .scheme-a-home--atelier .scheme-a-project__collection[data-count="2"] {
     grid-template-columns: repeat(2, minmax(0, 1fr));
     max-width: 58rem;
     margin-inline: auto;
   }
 
-  html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-project__collection-hint {
+  html[data-public-theme="warm-stone"] .scheme-a-home--atelier .scheme-a-project__collection-hint {
     display: none;
   }
 
-  html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-project__collection-item {
+  html[data-public-theme="warm-stone"] .scheme-a-home--atelier .scheme-a-project__collection-item {
     display: flex;
     flex-direction: column;
     align-content: start;
@@ -166,22 +156,22 @@
     color: var(--atelier-ink);
   }
 
-  html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-project__collection-item:first-child {
+  html[data-public-theme="warm-stone"] .scheme-a-home--atelier .scheme-a-project__collection-item:first-child {
     grid-row: auto;
   }
 
-  html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-project__collection-media,
-  html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-project__collection-media > span,
-  html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-project__collection-media picture,
-  html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-project__collection-media img {
+  html[data-public-theme="warm-stone"] .scheme-a-home--atelier .scheme-a-project__collection-media,
+  html[data-public-theme="warm-stone"] .scheme-a-home--atelier .scheme-a-project__collection-media > span,
+  html[data-public-theme="warm-stone"] .scheme-a-home--atelier .scheme-a-project__collection-media picture,
+  html[data-public-theme="warm-stone"] .scheme-a-home--atelier .scheme-a-project__collection-media img {
     display: block;
     width: 100%;
     height: 100%;
   }
 
-  html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-project__collection-media,
-  html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-project__collection-item:nth-child(2) .scheme-a-project__collection-media,
-  html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-project__collection-item:nth-child(3) .scheme-a-project__collection-media {
+  html[data-public-theme="warm-stone"] .scheme-a-home--atelier .scheme-a-project__collection-media,
+  html[data-public-theme="warm-stone"] .scheme-a-home--atelier .scheme-a-project__collection-item:nth-child(2) .scheme-a-project__collection-media,
+  html[data-public-theme="warm-stone"] .scheme-a-home--atelier .scheme-a-project__collection-item:nth-child(3) .scheme-a-project__collection-media {
     aspect-ratio: 16 / 10;
     overflow: hidden;
     background: #FDFCFA;
@@ -189,12 +179,12 @@
     box-shadow: none;
   }
 
-  html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-project__collection-media img {
+  html[data-public-theme="warm-stone"] .scheme-a-home--atelier .scheme-a-project__collection-media img {
     object-fit: cover;
     transition: transform 700ms cubic-bezier(0.16, 1, 0.3, 1);
   }
 
-  html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-project__collection-copy {
+  html[data-public-theme="warm-stone"] .scheme-a-home--atelier .scheme-a-project__collection-copy {
     display: flex;
     flex-direction: column;
     gap: 0.35rem;
@@ -203,7 +193,7 @@
     border-top: 1px solid rgb(123 135 117 / 0.25);
   }
 
-  html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-project__collection-copy strong {
+  html[data-public-theme="warm-stone"] .scheme-a-home--atelier .scheme-a-project__collection-copy strong {
     font-size: clamp(1.05rem, 1.4vw, 1.25rem);
     line-height: 1.4;
     color: #292E29;
@@ -214,7 +204,7 @@
     overflow: hidden;
   }
 
-  html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-project__collection-copy small {
+  html[data-public-theme="warm-stone"] .scheme-a-home--atelier .scheme-a-project__collection-copy small {
     color: var(--atelier-gold);
     font-size: 0.74rem;
     letter-spacing: 0.06em;
@@ -224,25 +214,25 @@
     align-items: center;
   }
 
-  html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-services {
+  html[data-public-theme="warm-stone"] .scheme-a-home--atelier .scheme-a-services {
     background:
       radial-gradient(circle at 8% 18%, rgb(228 232 222 / 0.06), transparent 28rem),
       var(--public-surface-section);
     color: var(--public-text-primary);
   }
 
-  html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-services__layout {
+  html[data-public-theme="warm-stone"] .scheme-a-home--atelier .scheme-a-services__layout {
     grid-template-columns: minmax(19rem, 0.75fr) minmax(0, 1.25fr);
     gap: clamp(3rem, 6vw, 6rem);
   }
 
-  html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-services header {
+  html[data-public-theme="warm-stone"] .scheme-a-home--atelier .scheme-a-services header {
     position: sticky;
     top: 8rem;
     align-self: start;
   }
 
-  html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-services__context {
+  html[data-public-theme="warm-stone"] .scheme-a-home--atelier .scheme-a-services__context {
     display: grid;
     grid-template-columns: repeat(3, minmax(0, 1fr));
     gap: 0.875rem;
@@ -252,7 +242,7 @@
     text-align: center;
   }
 
-  html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-services__context p {
+  html[data-public-theme="warm-stone"] .scheme-a-home--atelier .scheme-a-services__context p {
     display: flex;
     min-width: 0;
     min-height: 10rem;
@@ -269,12 +259,12 @@
     line-height: 1.7;
   }
 
-  html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-services__context p > span {
+  html[data-public-theme="warm-stone"] .scheme-a-home--atelier .scheme-a-services__context p > span {
     max-width: 28ch;
     text-wrap: balance;
   }
 
-  html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-services__context a {
+  html[data-public-theme="warm-stone"] .scheme-a-home--atelier .scheme-a-services__context a {
     display: inline-flex;
     align-items: center;
     gap: 0.2rem;
@@ -286,24 +276,24 @@
     padding-bottom: 2px;
   }
 
-  html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-services__context svg {
+  html[data-public-theme="warm-stone"] .scheme-a-home--atelier .scheme-a-services__context svg {
     width: 0.85rem;
     height: 0.85rem;
   }
 
-  html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-services ol {
+  html[data-public-theme="warm-stone"] .scheme-a-home--atelier .scheme-a-services ol {
     counter-reset: atelier-service;
     list-style: none;
     padding: 0;
   }
 
-  html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-services li {
+  html[data-public-theme="warm-stone"] .scheme-a-home--atelier .scheme-a-services li {
     counter-increment: atelier-service;
     background: transparent;
     border-bottom: 1px solid rgb(123 135 117 / 0.18);
   }
 
-  html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-services li a {
+  html[data-public-theme="warm-stone"] .scheme-a-home--atelier .scheme-a-services li a {
     display: grid;
     grid-template-columns: auto minmax(0, 1fr) auto;
     column-gap: clamp(16px, 2.5vw, 24px);
@@ -315,12 +305,12 @@
     -webkit-tap-highlight-color: transparent;
   }
 
-  html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-services li a:focus-visible {
+  html[data-public-theme="warm-stone"] .scheme-a-home--atelier .scheme-a-services li a:focus-visible {
     outline: 2px solid var(--atelier-gold);
     outline-offset: 4px;
   }
 
-  html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-services li a::before {
+  html[data-public-theme="warm-stone"] .scheme-a-home--atelier .scheme-a-services li a::before {
     grid-column: 1;
     grid-row: 1;
     content: counter(atelier-service, decimal-leading-zero);
@@ -334,7 +324,7 @@
     align-self: center;
   }
 
-  html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-services li span {
+  html[data-public-theme="warm-stone"] .scheme-a-home--atelier .scheme-a-services li span {
     font-family: var(--font-display);
     font-size: clamp(1.2rem, 1.8vw, 1.6rem);
     color: #292E29;
@@ -348,7 +338,7 @@
     text-underline-offset: 0.2em;
   }
 
-  html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-services li small {
+  html[data-public-theme="warm-stone"] .scheme-a-home--atelier .scheme-a-services li small {
     display: block;
     margin-top: 0.35rem;
     font-size: 0.91rem;
@@ -358,7 +348,7 @@
     align-self: start;
   }
 
-  html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-services li svg {
+  html[data-public-theme="warm-stone"] .scheme-a-home--atelier .scheme-a-services li svg {
     position: static;
     grid-column: 3;
     grid-row: 1 / span 2;
@@ -374,46 +364,46 @@
     pointer-events: none;
   }
 
-  html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-services li a:is(:active, :focus-visible, [data-service-pressed="true"]) span {
+  html[data-public-theme="warm-stone"] .scheme-a-home--atelier .scheme-a-services li a:is(:active, :focus-visible, [data-service-pressed="true"]) span {
     color: var(--atelier-gold-soft);
     text-decoration-line: underline;
   }
 
-  html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-services li a:is(:active, :focus-visible, [data-service-pressed="true"]) svg {
+  html[data-public-theme="warm-stone"] .scheme-a-home--atelier .scheme-a-services li a:is(:active, :focus-visible, [data-service-pressed="true"]) svg {
     background-color: var(--atelier-gold);
     color: var(--atelier-ink);
   }
 
   @media (hover: hover) and (pointer: fine) {
-    html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-services li a:hover span {
+    html[data-public-theme="warm-stone"] .scheme-a-home--atelier .scheme-a-services li a:hover span {
       color: var(--atelier-gold-soft);
       text-decoration-line: underline;
     }
 
-    html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-services li a:hover svg {
+    html[data-public-theme="warm-stone"] .scheme-a-home--atelier .scheme-a-services li a:hover svg {
       background-color: var(--atelier-gold);
       color: var(--atelier-ink);
       transform: rotate(45deg);
     }
   }
 
-  html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-services li a:is(:active, [data-service-pressed="true"]) svg {
+  html[data-public-theme="warm-stone"] .scheme-a-home--atelier .scheme-a-services li a:is(:active, [data-service-pressed="true"]) svg {
     transform: scale(0.9);
     transition-duration: 0s;
   }
 
   @media (prefers-reduced-motion: reduce) {
-    html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-services li a span,
-    html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-services li a svg {
+    html[data-public-theme="warm-stone"] .scheme-a-home--atelier .scheme-a-services li a span,
+    html[data-public-theme="warm-stone"] .scheme-a-home--atelier .scheme-a-services li a svg {
       transition: none;
     }
 
-    html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-services li a:is(:hover, :active, [data-service-pressed="true"]) svg {
+    html[data-public-theme="warm-stone"] .scheme-a-home--atelier .scheme-a-services li a:is(:hover, :active, [data-service-pressed="true"]) svg {
       transform: none;
     }
   }
 
-  html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-materials {
+  html[data-public-theme="warm-stone"] .scheme-a-home--atelier .scheme-a-materials {
     padding-top: clamp(5.5rem, 8vw, 8rem);
     padding-bottom: clamp(5.5rem, 8vw, 8rem);
     background:
@@ -422,13 +412,13 @@
     color: var(--public-text-primary);
   }
 
-  html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-materials__layout {
+  html[data-public-theme="warm-stone"] .scheme-a-home--atelier .scheme-a-materials__layout {
     grid-template-columns: minmax(0, 1.05fr) minmax(22rem, 0.95fr);
     gap: clamp(3rem, 6vw, 6rem);
     align-items: center;
   }
 
-  html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-materials__media {
+  html[data-public-theme="warm-stone"] .scheme-a-home--atelier .scheme-a-materials__media {
     position: relative;
     min-height: clamp(28rem, 40vw, 36rem);
     border: 1px solid rgb(123 135 117 / 0.3);
@@ -437,11 +427,11 @@
     box-shadow: none;
   }
 
-  html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-materials__media img {
+  html[data-public-theme="warm-stone"] .scheme-a-home--atelier .scheme-a-materials__media img {
     object-position: 70% center;
   }
 
-  html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-materials__badge {
+  html[data-public-theme="warm-stone"] .scheme-a-home--atelier .scheme-a-materials__badge {
     position: absolute;
     bottom: clamp(1rem, 2vw, 1.75rem);
     left: clamp(1rem, 2vw, 1.75rem);
@@ -460,7 +450,7 @@
     transform: translateZ(0);
   }
 
-  html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-materials__badge-dot {
+  html[data-public-theme="warm-stone"] .scheme-a-home--atelier .scheme-a-materials__badge-dot {
     width: 8px;
     height: 8px;
     border-radius: 50%;
@@ -469,7 +459,7 @@
     flex-shrink: 0;
   }
 
-  html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-materials__badge strong {
+  html[data-public-theme="warm-stone"] .scheme-a-home--atelier .scheme-a-materials__badge strong {
     display: block;
     color: #292E29;
     font-size: 0.88rem;
@@ -478,7 +468,7 @@
     line-height: 1.3;
   }
 
-  html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-materials__badge span {
+  html[data-public-theme="warm-stone"] .scheme-a-home--atelier .scheme-a-materials__badge span {
     display: block;
     color: var(--atelier-gold);
     font-size: 0.72rem;
@@ -486,7 +476,7 @@
     line-height: 1.3;
   }
 
-  html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-materials__copy {
+  html[data-public-theme="warm-stone"] .scheme-a-home--atelier .scheme-a-materials__copy {
     max-width: 34rem;
     align-content: center;
     gap: 0;
@@ -494,19 +484,19 @@
     border-left: 0;
   }
 
-  html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-materials__copy h2 {
+  html[data-public-theme="warm-stone"] .scheme-a-home--atelier .scheme-a-materials__copy h2 {
     max-width: 11em;
     font-size: clamp(2.1rem, 3vw, 3.25rem);
     line-height: 1.18;
     text-wrap: balance;
   }
 
-  html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-materials__copy p {
+  html[data-public-theme="warm-stone"] .scheme-a-home--atelier .scheme-a-materials__copy p {
     max-width: 32rem;
     margin-top: clamp(1rem, 1.6vw, 1.35rem);
   }
 
-  html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-materials__details {
+  html[data-public-theme="warm-stone"] .scheme-a-home--atelier .scheme-a-materials__details {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
     width: min(100%, 34rem);
@@ -515,7 +505,7 @@
     border-block: 1px solid rgba(212, 175, 55, 0.2);
   }
 
-  html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-materials__details > div {
+  html[data-public-theme="warm-stone"] .scheme-a-home--atelier .scheme-a-materials__details > div {
     display: grid;
     align-content: start;
     gap: 8px;
@@ -524,15 +514,15 @@
     min-width: 0;
   }
 
-  html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-materials__details > div:nth-child(even) {
+  html[data-public-theme="warm-stone"] .scheme-a-home--atelier .scheme-a-materials__details > div:nth-child(even) {
     border-left: 1px solid rgb(123 135 117 / 0.12);
   }
 
-  html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-materials__details > div:nth-child(n + 3) {
+  html[data-public-theme="warm-stone"] .scheme-a-home--atelier .scheme-a-materials__details > div:nth-child(n + 3) {
     border-top: 1px solid rgb(123 135 117 / 0.12);
   }
 
-  html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-materials__details dt {
+  html[data-public-theme="warm-stone"] .scheme-a-home--atelier .scheme-a-materials__details dt {
     margin: 0;
     color: #292E29;
     font-family: var(--font-display);
@@ -541,14 +531,14 @@
     line-height: 1.4;
   }
 
-  html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-materials__details dd {
+  html[data-public-theme="warm-stone"] .scheme-a-home--atelier .scheme-a-materials__details dd {
     margin: 0;
     color: #626A60;
     font-size: 15px;
     line-height: 1.6;
   }
 
-  html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-materials__copy > a {
+  html[data-public-theme="warm-stone"] .scheme-a-home--atelier .scheme-a-materials__copy > a {
     display: inline-flex;
     align-items: center;
     gap: 8px;
@@ -561,29 +551,29 @@
     transition: color 200ms ease, gap 200ms ease;
   }
 
-  html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-materials__copy > a:hover {
+  html[data-public-theme="warm-stone"] .scheme-a-home--atelier .scheme-a-materials__copy > a:hover {
     color: #3F4E42;
     gap: 12px;
   }
 
-  html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-materials__copy > a svg {
+  html[data-public-theme="warm-stone"] .scheme-a-home--atelier .scheme-a-materials__copy > a svg {
     width: 14px;
     height: 14px;
     transition: transform 200ms ease;
   }
 
-  html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-materials__copy > a:hover svg {
+  html[data-public-theme="warm-stone"] .scheme-a-home--atelier .scheme-a-materials__copy > a:hover svg {
     transform: translateX(3px);
   }
 
-  html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-before {
+  html[data-public-theme="warm-stone"] .scheme-a-home--atelier .scheme-a-before {
     padding-top: clamp(5.5rem, 8vw, 8rem);
     padding-bottom: clamp(5.5rem, 8vw, 8rem);
     background: #F7F6F2;
     color: #292E29;
   }
 
-  html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-compare {
+  html[data-public-theme="warm-stone"] .scheme-a-home--atelier .scheme-a-compare {
     width: min(88%, 96rem);
     height: auto;
     aspect-ratio: 16 / 9;
@@ -593,7 +583,7 @@
     box-shadow: none;
   }
 
-  html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-before__note {
+  html[data-public-theme="warm-stone"] .scheme-a-home--atelier .scheme-a-before__note {
     width: min(88%, var(--scheme-a-frame));
     margin-inline: auto;
     margin-top: 1.5rem;
@@ -601,7 +591,7 @@
     padding-left: 0;
   }
 
-  html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-home-process {
+  html[data-public-theme="warm-stone"] .scheme-a-home--atelier .scheme-a-home-process {
     padding-top: clamp(5rem, 7vw, 7rem);
     padding-bottom: clamp(5rem, 7vw, 7rem);
     color: #292E29;
@@ -612,20 +602,20 @@
     contain-intrinsic-size: 1px 600px;
   }
 
-  html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-home-process .scheme-a-section-head h2 {
+  html[data-public-theme="warm-stone"] .scheme-a-home--atelier .scheme-a-home-process .scheme-a-section-head h2 {
     color: #292E29;
     font-size: clamp(2.4rem, 4.5vw, 4.2rem);
     letter-spacing: -0.03em;
   }
 
-  html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-home-process__grid {
+  html[data-public-theme="warm-stone"] .scheme-a-home--atelier .scheme-a-home-process__grid {
     display: grid;
     grid-template-columns: repeat(4, minmax(0, 1fr));
     gap: clamp(1.2rem, 2vw, 2rem);
     margin-top: clamp(2rem, 4vw, 3.5rem);
   }
 
-  html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-home-process__card {
+  html[data-public-theme="warm-stone"] .scheme-a-home--atelier .scheme-a-home-process__card {
     display: grid;
     grid-template-columns: auto minmax(0, 1fr);
     grid-template-rows: auto 1fr;
@@ -641,14 +631,14 @@
     transition: transform 300ms ease, border-color 300ms ease, background-color 300ms ease, box-shadow 300ms ease;
   }
 
-  html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-home-process__card:hover {
+  html[data-public-theme="warm-stone"] .scheme-a-home--atelier .scheme-a-home-process__card:hover {
     transform: translateY(-5px);
     border-color: rgb(123 135 117 / 0.6);
     background: rgb(247 246 242 / 0.9);
     box-shadow: none;
   }
 
-  html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-home-process__number {
+  html[data-public-theme="warm-stone"] .scheme-a-home--atelier .scheme-a-home-process__number {
     grid-column: 1;
     grid-row: 1 / span 2;
     min-width: 2ch;
@@ -660,7 +650,7 @@
     line-height: 1.3;
   }
 
-  html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-home-process__card h3 {
+  html[data-public-theme="warm-stone"] .scheme-a-home--atelier .scheme-a-home-process__card h3 {
     grid-column: 2;
     grid-row: 1;
     margin: 0;
@@ -670,7 +660,7 @@
     line-height: 1.3;
   }
 
-  html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-home-process__card p {
+  html[data-public-theme="warm-stone"] .scheme-a-home--atelier .scheme-a-home-process__card p {
     grid-column: 2;
     grid-row: 2;
     margin: 0;
@@ -679,7 +669,7 @@
     line-height: 1.75;
   }
 
-  html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-home-faq {
+  html[data-public-theme="warm-stone"] .scheme-a-home--atelier .scheme-a-home-faq {
     padding-block: clamp(4.5rem, 7vw, 7rem);
     padding-inline: 0;
     color: #292E29;
@@ -688,13 +678,13 @@
     contain-intrinsic-size: 1px 500px;
   }
 
-  html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-home-faq__layout {
+  html[data-public-theme="warm-stone"] .scheme-a-home--atelier .scheme-a-home-faq__layout {
     display: grid;
     grid-template-columns: minmax(14rem, 0.38fr) minmax(0, 0.62fr);
     gap: clamp(2.5rem, 7vw, 7rem);
   }
 
-  html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-home-faq h2 {
+  html[data-public-theme="warm-stone"] .scheme-a-home--atelier .scheme-a-home-faq h2 {
     max-width: 12em;
     margin-top: 1rem;
     font-family: var(--font-display);
@@ -704,7 +694,7 @@
     color: #292E29;
   }
 
-  html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-home-faq header > p:last-child {
+  html[data-public-theme="warm-stone"] .scheme-a-home--atelier .scheme-a-home-faq header > p:last-child {
     max-width: 34rem;
     margin-top: 1.4rem;
     color: var(--public-text-secondary);
@@ -712,29 +702,29 @@
     line-height: 1.75;
   }
 
-  html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-home-faq .fc-route-faq button {
+  html[data-public-theme="warm-stone"] .scheme-a-home--atelier .scheme-a-home-faq .fc-route-faq button {
     color: #292E29;
   }
 
-  html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-home-faq .fc-route-faq p {
+  html[data-public-theme="warm-stone"] .scheme-a-home--atelier .scheme-a-home-faq .fc-route-faq p {
     color: #626A60;
     padding-left: 36px;
   }
 
   @media (max-width: 767px) {
-    html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-home-faq .fc-route-faq p {
+    html[data-public-theme="warm-stone"] .scheme-a-home--atelier .scheme-a-home-faq .fc-route-faq p {
       padding-left: 30px;
     }
   }
 
-  html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-contact {
+  html[data-public-theme="warm-stone"] .scheme-a-home--atelier .scheme-a-contact {
     background:
       radial-gradient(circle at 76% 22%, rgb(228 232 222 / 0.25), transparent 34rem),
       linear-gradient(115deg, #F7F6F2, #F7F6F2);
     color: #292E29;
   }
 
-  html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-contact > .scheme-a-frame {
+  html[data-public-theme="warm-stone"] .scheme-a-home--atelier .scheme-a-contact > .scheme-a-frame {
     display: grid;
     grid-template-columns: minmax(0, 1fr) auto;
     gap: 2rem clamp(3rem, 8vw, 8rem);
@@ -743,20 +733,20 @@
     padding-bottom: clamp(5rem, 8vw, 8rem);
   }
 
-  html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-contact h2 {
+  html[data-public-theme="warm-stone"] .scheme-a-home--atelier .scheme-a-contact h2 {
     max-width: 14ch;
     padding: 1.5rem 0 0;
     color: #292E29;
   }
 
-  html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-contact .scheme-a-button {
+  html[data-public-theme="warm-stone"] .scheme-a-home--atelier .scheme-a-contact .scheme-a-button {
     grid-column: 2;
     grid-row: 1 / span 2;
     align-self: end;
     border-radius: 999px;
   }
 
-  html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-contact__regions {
+  html[data-public-theme="warm-stone"] .scheme-a-home--atelier .scheme-a-contact__regions {
     grid-column: 1 / -1;
     gap: 0.75rem 1.5rem;
     margin-top: clamp(2.75rem, 5vw, 4.5rem);
@@ -766,23 +756,19 @@
   }
 
   @media (hover: hover) {
-    html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-button--glass:hover {
-      color: var(--atelier-gold-soft);
-      background: transparent;
-    }
 
-    html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-project__collection-item:hover img {
+    html[data-public-theme="warm-stone"] .scheme-a-home--atelier .scheme-a-project__collection-item:hover img {
       transform: scale(1.025);
     }
 
-    html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-project__collection-item:hover strong {
+    html[data-public-theme="warm-stone"] .scheme-a-home--atelier .scheme-a-project__collection-item:hover strong {
       color: #3F4E42;
     }
   }
 
   /* Desktop sections share one frame and one heading rhythm. */
   @media (min-width: 1024px) {
-    html[lang][data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-heading h2 {
+    html[lang][data-public-theme="warm-stone"] .scheme-a-home--atelier .scheme-a-heading h2 {
       max-width: 100%;
       margin-top: 12px;
       padding-top: 0;
@@ -790,33 +776,33 @@
       line-height: 1.25;
     }
 
-    html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-section-head {
+    html[data-public-theme="warm-stone"] .scheme-a-home--atelier .scheme-a-section-head {
       padding-bottom: 32px;
     }
 
-    html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-services__layout,
-    html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-home-faq__layout {
+    html[data-public-theme="warm-stone"] .scheme-a-home--atelier .scheme-a-services__layout,
+    html[data-public-theme="warm-stone"] .scheme-a-home--atelier .scheme-a-home-faq__layout {
       grid-template-columns: minmax(0, 1fr);
       gap: 32px;
     }
 
-    html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-services header {
+    html[data-public-theme="warm-stone"] .scheme-a-home--atelier .scheme-a-services header {
       position: static;
     }
 
-    html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-services__context {
+    html[data-public-theme="warm-stone"] .scheme-a-home--atelier .scheme-a-services__context {
       width: min(100%, 76rem);
       margin: 32px auto 0;
       gap: 14px;
     }
 
-    html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-services ol {
+    html[data-public-theme="warm-stone"] .scheme-a-home--atelier .scheme-a-services ol {
       display: grid;
       grid-template-columns: repeat(2, minmax(0, 1fr));
       gap: 24px;
     }
 
-    html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-services li a {
+    html[data-public-theme="warm-stone"] .scheme-a-home--atelier .scheme-a-services li a {
       height: 100%;
       padding: 24px 0;
       grid-template-rows: auto 1fr;
@@ -824,114 +810,114 @@
       text-align: left;
     }
 
-    html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-services li span {
+    html[data-public-theme="warm-stone"] .scheme-a-home--atelier .scheme-a-services li span {
       font-size: clamp(22px, 1.7vw, 26px);
       line-height: 1.4;
     }
 
-    html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-services li small,
-    html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-home-process__card p,
-    html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-home-faq header > p:last-child,
-    html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-materials__copy p,
-    html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-project__meta p {
+    html[data-public-theme="warm-stone"] .scheme-a-home--atelier .scheme-a-services li small,
+    html[data-public-theme="warm-stone"] .scheme-a-home--atelier .scheme-a-home-process__card p,
+    html[data-public-theme="warm-stone"] .scheme-a-home--atelier .scheme-a-home-faq header > p:last-child,
+    html[data-public-theme="warm-stone"] .scheme-a-home--atelier .scheme-a-materials__copy p,
+    html[data-public-theme="warm-stone"] .scheme-a-home--atelier .scheme-a-project__meta p {
       font-size: 16px;
       line-height: 1.75;
     }
 
-    html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-materials__layout {
+    html[data-public-theme="warm-stone"] .scheme-a-home--atelier .scheme-a-materials__layout {
       grid-template-columns: minmax(0, 1.05fr) minmax(0, .95fr);
       gap: 32px;
     }
 
-    html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-materials__copy {
+    html[data-public-theme="warm-stone"] .scheme-a-home--atelier .scheme-a-materials__copy {
       padding: 0;
     }
 
-    html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-materials__media {
+    html[data-public-theme="warm-stone"] .scheme-a-home--atelier .scheme-a-materials__media {
       min-height: 440px;
     }
 
-    html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-home-process__grid {
+    html[data-public-theme="warm-stone"] .scheme-a-home--atelier .scheme-a-home-process__grid {
       grid-template-columns: repeat(2, minmax(0, 1fr));
       gap: 24px;
       margin-top: 0;
     }
 
-    html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-home-process__card {
+    html[data-public-theme="warm-stone"] .scheme-a-home--atelier .scheme-a-home-process__card {
       padding: 28px 24px;
       text-align: left;
     }
 
-    html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-home-process__card h3,
-    html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-project__collection-copy strong {
+    html[data-public-theme="warm-stone"] .scheme-a-home--atelier .scheme-a-home-process__card h3,
+    html[data-public-theme="warm-stone"] .scheme-a-home--atelier .scheme-a-project__collection-copy strong {
       font-size: clamp(22px, 1.7vw, 26px);
       line-height: 1.4;
     }
 
-    html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-project__collection {
+    html[data-public-theme="warm-stone"] .scheme-a-home--atelier .scheme-a-project__collection {
       gap: 24px;
       margin-top: 32px;
     }
 
-    html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-project__collection[data-count="2"] {
+    html[data-public-theme="warm-stone"] .scheme-a-home--atelier .scheme-a-project__collection[data-count="2"] {
       max-width: var(--scheme-a-frame);
     }
 
-    html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-home-faq header > p:last-child {
+    html[data-public-theme="warm-stone"] .scheme-a-home--atelier .scheme-a-home-faq header > p:last-child {
       max-width: 760px;
       margin-top: 20px;
     }
   }
 
   @media (min-width: 1280px) {
-    html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-home-process__grid {
+    html[data-public-theme="warm-stone"] .scheme-a-home--atelier .scheme-a-home-process__grid {
       grid-template-columns: repeat(4, minmax(0, 1fr));
     }
   }
 
   @media (max-width: 1023px) {
 
-    html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-services__context {
+    html[data-public-theme="warm-stone"] .scheme-a-home--atelier .scheme-a-services__context {
       grid-template-columns: 1fr;
       max-width: 36rem;
     }
 
-    html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-services__context p {
+    html[data-public-theme="warm-stone"] .scheme-a-home--atelier .scheme-a-services__context p {
       min-height: 0;
       padding: 1.35rem 1.5rem;
     }
 
-    html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-principle__inner,
-    html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-statement > .scheme-a-frame {
+    html[data-public-theme="warm-stone"] .scheme-a-home--atelier .scheme-a-principle__inner,
+    html[data-public-theme="warm-stone"] .scheme-a-home--atelier .scheme-a-statement > .scheme-a-frame {
       grid-template-columns: minmax(8rem, 0.28fr) minmax(0, 1fr);
       gap: 3rem;
     }
 
-    html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-project__collection {
+    html[data-public-theme="warm-stone"] .scheme-a-home--atelier .scheme-a-project__collection {
       gap: 2.5rem;
     }
 
-    html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-services__layout,
-    html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-materials__layout {
+    html[data-public-theme="warm-stone"] .scheme-a-home--atelier .scheme-a-services__layout,
+    html[data-public-theme="warm-stone"] .scheme-a-home--atelier .scheme-a-materials__layout {
       gap: 4rem;
     }
 
-    html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-materials__media {
+    html[data-public-theme="warm-stone"] .scheme-a-home--atelier .scheme-a-materials__media {
       min-height: 36rem;
     }
   }
 
   @media (max-width: 47.9375rem) {
 
-    html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-actions {
+    html[data-public-theme="warm-stone"] .scheme-a-home--atelier .scheme-a-actions {
       display: grid;
       grid-template-columns: repeat(2, minmax(0, 1fr));
       gap: 10px;
       padding-top: 18px;
     }
 
-    html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-button--paper,
-    html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-button--glass {
+    html[data-public-theme="warm-stone"] .scheme-a-home--atelier .scheme-a-button--paper,
+    html[data-public-theme="warm-stone"] .scheme-a-home--atelier .scheme-a-button--glass {
       width: 100%;
       min-width: 0;
       height: 46px;
@@ -944,14 +930,13 @@
       border-radius: 999px;
     }
 
-    html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-button--glass {
+    html[data-public-theme="warm-stone"] .scheme-a-home--atelier .scheme-a-button--glass {
       border: 1px solid rgb(212 217 207 / 0.46);
-      background: rgb(247 246 242 / 0.5);
       backdrop-filter: blur(7px);
     }
 
-    html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-principle__inner,
-    html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-statement > .scheme-a-frame {
+    html[data-public-theme="warm-stone"] .scheme-a-home--atelier .scheme-a-principle__inner,
+    html[data-public-theme="warm-stone"] .scheme-a-home--atelier .scheme-a-statement > .scheme-a-frame {
       display: grid;
       grid-template-columns: 1fr;
       gap: 1.6rem;
@@ -959,36 +944,36 @@
       padding-left: var(--scheme-a-gutter);
     }
 
-    html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-principle__inner {
+    html[data-public-theme="warm-stone"] .scheme-a-home--atelier .scheme-a-principle__inner {
       padding-top: 56px;
       padding-bottom: 64px;
     }
 
-    html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-principle h2 {
+    html[data-public-theme="warm-stone"] .scheme-a-home--atelier .scheme-a-principle h2 {
       max-width: 14em;
       font-size: 30px;
       line-height: 1.42;
       letter-spacing: -0.02em;
     }
 
-    html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-statement > .scheme-a-frame {
+    html[data-public-theme="warm-stone"] .scheme-a-home--atelier .scheme-a-statement > .scheme-a-frame {
       padding-top: 64px;
       padding-bottom: 72px;
     }
 
-    html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-statement blockquote {
+    html[data-public-theme="warm-stone"] .scheme-a-home--atelier .scheme-a-statement blockquote {
       max-width: 12em;
       font-size: 34px;
       line-height: 1.42;
       letter-spacing: -0.025em;
     }
 
-    html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-project {
+    html[data-public-theme="warm-stone"] .scheme-a-home--atelier .scheme-a-project {
       padding-top: 64px;
       padding-bottom: 72px;
     }
 
-    html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-project__media {
+    html[data-public-theme="warm-stone"] .scheme-a-home--atelier .scheme-a-project__media {
       width: calc(100% - 2 * var(--scheme-a-gutter));
       height: auto;
       aspect-ratio: 16 / 10;
@@ -996,7 +981,7 @@
       margin-left: var(--scheme-a-gutter);
     }
 
-    html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-project__media {
+    html[data-public-theme="warm-stone"] .scheme-a-home--atelier .scheme-a-project__media {
       display: block;
       width: calc(100% - 2 * var(--scheme-a-gutter));
       height: auto;
@@ -1006,18 +991,18 @@
       overflow: hidden;
     }
 
-    html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-project__meta {
+    html[data-public-theme="warm-stone"] .scheme-a-home--atelier .scheme-a-project__meta {
       width: 100%;
       padding: 20px var(--scheme-a-gutter) 0;
     }
 
-    html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-project__meta p {
+    html[data-public-theme="warm-stone"] .scheme-a-home--atelier .scheme-a-project__meta p {
       padding-left: 0;
       border-left: 0;
       max-width: 100%;
     }
 
-    html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-project__collection {
+    html[data-public-theme="warm-stone"] .scheme-a-home--atelier .scheme-a-project__collection {
       display: flex;
       width: 100%;
       gap: 14px;
@@ -1028,23 +1013,23 @@
       scrollbar-width: none;
     }
 
-    html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-project__collection::-webkit-scrollbar {
+    html[data-public-theme="warm-stone"] .scheme-a-home--atelier .scheme-a-project__collection::-webkit-scrollbar {
       display: none;
     }
 
-    html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-project__collection-item {
+    html[data-public-theme="warm-stone"] .scheme-a-home--atelier .scheme-a-project__collection-item {
       width: min(80vw, 320px);
       flex: 0 0 auto;
       scroll-snap-align: start;
     }
 
-    html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-project__collection-item:nth-child(n) .scheme-a-project__collection-media {
+    html[data-public-theme="warm-stone"] .scheme-a-home--atelier .scheme-a-project__collection-item:nth-child(n) .scheme-a-project__collection-media {
       aspect-ratio: 16 / 10;
       border-radius: 4px;
       overflow: hidden;
     }
 
-    html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-project__collection-hint {
+    html[data-public-theme="warm-stone"] .scheme-a-home--atelier .scheme-a-project__collection-hint {
       display: block;
       padding: 0 var(--scheme-a-gutter);
       text-align: center;
@@ -1053,41 +1038,41 @@
       letter-spacing: 0.05em;
     }
 
-    html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-project__collection-copy {
+    html[data-public-theme="warm-stone"] .scheme-a-home--atelier .scheme-a-project__collection-copy {
       display: flex;
       flex-direction: column;
       gap: 4px;
       padding-top: 10px;
     }
 
-    html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-project__collection-copy strong {
+    html[data-public-theme="warm-stone"] .scheme-a-home--atelier .scheme-a-project__collection-copy strong {
       font-size: 14px;
       line-height: 1.35;
       min-height: auto;
     }
 
-    html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-project__collection-copy small {
+    html[data-public-theme="warm-stone"] .scheme-a-home--atelier .scheme-a-project__collection-copy small {
       font-size: 12px;
       color: var(--atelier-gold);
     }
 
-    html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-services header {
+    html[data-public-theme="warm-stone"] .scheme-a-home--atelier .scheme-a-services header {
       position: static;
     }
 
-    html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-services li a {
+    html[data-public-theme="warm-stone"] .scheme-a-home--atelier .scheme-a-services li a {
       grid-template-columns: auto minmax(0, 1fr) auto;
       column-gap: 16px;
       min-height: 5.5rem;
       padding: 1.1rem 0.5rem;
     }
 
-    html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-materials {
+    html[data-public-theme="warm-stone"] .scheme-a-home--atelier .scheme-a-materials {
       padding-block: 64px 72px;
       padding-inline: 0;
     }
 
-    html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-materials__layout {
+    html[data-public-theme="warm-stone"] .scheme-a-home--atelier .scheme-a-materials__layout {
       width: 100%;
       max-width: var(--scheme-a-frame);
       margin-inline: auto;
@@ -1095,7 +1080,7 @@
       box-sizing: border-box;
     }
 
-    html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-materials__media {
+    html[data-public-theme="warm-stone"] .scheme-a-home--atelier .scheme-a-materials__media {
       width: 100%;
       height: 310px;
       min-height: 310px;
@@ -1103,20 +1088,20 @@
       overflow: hidden;
     }
 
-    html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-materials__copy {
+    html[data-public-theme="warm-stone"] .scheme-a-home--atelier .scheme-a-materials__copy {
       width: 100%;
       margin-top: 24px;
       padding: 0;
     }
 
-    html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-materials__copy h2 {
+    html[data-public-theme="warm-stone"] .scheme-a-home--atelier .scheme-a-materials__copy h2 {
       max-width: 100%;
       font-size: 30px;
       line-height: 1.3;
       letter-spacing: -0.025em;
     }
 
-    html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-materials__copy p {
+    html[data-public-theme="warm-stone"] .scheme-a-home--atelier .scheme-a-materials__copy p {
       max-width: 100%;
       margin-top: 12px;
       color: var(--public-text-secondary);
@@ -1124,105 +1109,105 @@
       line-height: 1.7;
     }
 
-    html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-materials__details {
+    html[data-public-theme="warm-stone"] .scheme-a-home--atelier .scheme-a-materials__details {
       width: 100%;
       margin-top: 18px;
     }
 
-    html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-materials__details > div {
+    html[data-public-theme="warm-stone"] .scheme-a-home--atelier .scheme-a-materials__details > div {
       padding: 18px 12px;
     }
 
-    html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-materials__details dt {
+    html[data-public-theme="warm-stone"] .scheme-a-home--atelier .scheme-a-materials__details dt {
       font-size: 18px;
     }
 
-    html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-materials__details dd {
+    html[data-public-theme="warm-stone"] .scheme-a-home--atelier .scheme-a-materials__details dd {
       font-size: 14px;
     }
 
-    html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-materials__copy > a {
+    html[data-public-theme="warm-stone"] .scheme-a-home--atelier .scheme-a-materials__copy > a {
       justify-self: center;
       margin-top: 18px;
       padding-top: 0;
       font-size: 13px;
     }
 
-    html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-before {
+    html[data-public-theme="warm-stone"] .scheme-a-home--atelier .scheme-a-before {
       padding-top: 64px;
       padding-bottom: 72px;
     }
 
-    html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-compare {
+    html[data-public-theme="warm-stone"] .scheme-a-home--atelier .scheme-a-compare {
       width: calc(100% - 2 * var(--scheme-a-gutter));
       height: auto;
       aspect-ratio: 16 / 10;
       margin-inline: auto;
     }
 
-    html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-before__note {
+    html[data-public-theme="warm-stone"] .scheme-a-home--atelier .scheme-a-before__note {
       width: 100%;
       padding: 16px var(--scheme-a-gutter) 0;
     }
 
-    html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-home-process {
+    html[data-public-theme="warm-stone"] .scheme-a-home--atelier .scheme-a-home-process {
       padding-block: 64px 72px;
       padding-inline: 0;
     }
 
-    html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-home-process__grid {
+    html[data-public-theme="warm-stone"] .scheme-a-home--atelier .scheme-a-home-process__grid {
       grid-template-columns: 1fr;
       gap: 1.2rem;
     }
 
-    html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-home-process__card {
+    html[data-public-theme="warm-stone"] .scheme-a-home--atelier .scheme-a-home-process__card {
       padding-inline: var(--scheme-a-gutter);
     }
 
-    html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-home-faq {
+    html[data-public-theme="warm-stone"] .scheme-a-home--atelier .scheme-a-home-faq {
       padding-block: 64px 72px;
       padding-inline: 0;
     }
 
-    html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-home-faq__layout {
+    html[data-public-theme="warm-stone"] .scheme-a-home--atelier .scheme-a-home-faq__layout {
       grid-template-columns: 1fr;
       gap: 2.4rem;
     }
 
-    html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-contact > .scheme-a-frame {
+    html[data-public-theme="warm-stone"] .scheme-a-home--atelier .scheme-a-contact > .scheme-a-frame {
       display: block;
       padding: 72px var(--scheme-a-gutter) 56px;
     }
 
-    html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-contact h2 {
+    html[data-public-theme="warm-stone"] .scheme-a-home--atelier .scheme-a-contact h2 {
       max-width: 12em;
       padding: 20px 0 34px;
       font-size: clamp(34px, 9vw, 36px);
       line-height: 1.22;
     }
 
-    html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-contact__regions {
+    html[data-public-theme="warm-stone"] .scheme-a-home--atelier .scheme-a-contact__regions {
       margin-top: 32px;
       padding-top: 0;
     }
   }
 
   @media (min-width: 48rem) and (max-width: 1023px) {
-    html[lang="en"][data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-principle h2 {
+    html[lang="en"][data-public-theme="warm-stone"] .scheme-a-home--atelier .scheme-a-principle h2 {
       max-width: 30ch;
       font-size: clamp(2rem, 2.8vw, 3.1rem);
       line-height: 1.16;
       text-wrap: pretty;
     }
 
-    html[lang="en"][data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-statement blockquote {
+    html[lang="en"][data-public-theme="warm-stone"] .scheme-a-home--atelier .scheme-a-statement blockquote {
       max-width: 28ch;
       font-size: clamp(2.1rem, 3.1vw, 3.45rem);
       line-height: 1.2;
       text-wrap: pretty;
     }
 
-    html[lang="en"][data-public-theme="dark"] .scheme-a-home--atelier :is(
+    html[lang="en"][data-public-theme="warm-stone"] .scheme-a-home--atelier :is(
       .scheme-a-section-head h2,
       .scheme-a-services h2,
       .scheme-a-materials h2,
@@ -1234,40 +1219,40 @@
       text-wrap: pretty;
     }
 
-    html[lang="en"][data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-services__layout {
+    html[lang="en"][data-public-theme="warm-stone"] .scheme-a-home--atelier .scheme-a-services__layout {
       grid-template-columns: minmax(22rem, 0.9fr) minmax(0, 1.1fr);
       gap: clamp(3rem, 5vw, 5rem);
     }
 
-    html[lang="en"][data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-services li span {
+    html[lang="en"][data-public-theme="warm-stone"] .scheme-a-home--atelier .scheme-a-services li span {
       font-size: clamp(1.15rem, 1.55vw, 1.45rem);
       line-height: 1.24;
     }
 
-    html[lang="en"][data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-services li small {
+    html[lang="en"][data-public-theme="warm-stone"] .scheme-a-home--atelier .scheme-a-services li small {
       font-size: 0.9rem;
       line-height: 1.55;
     }
 
-    html[lang="en"][data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-home-process .scheme-a-section-head h2 {
+    html[lang="en"][data-public-theme="warm-stone"] .scheme-a-home--atelier .scheme-a-home-process .scheme-a-section-head h2 {
       max-width: 28ch;
       font-size: clamp(2.2rem, 3.2vw, 3.2rem);
       line-height: 1.14;
     }
 
-    html[lang="en"][data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-home-faq__layout {
+    html[lang="en"][data-public-theme="warm-stone"] .scheme-a-home--atelier .scheme-a-home-faq__layout {
       grid-template-columns: minmax(18rem, 0.42fr) minmax(0, 0.58fr);
       gap: clamp(2.5rem, 5vw, 5rem);
     }
 
-    html[lang="en"][data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-home-faq h2 {
+    html[lang="en"][data-public-theme="warm-stone"] .scheme-a-home--atelier .scheme-a-home-faq h2 {
       max-width: 18em;
       font-size: clamp(2rem, 3.1vw, 3rem);
       line-height: 1.14;
       text-wrap: pretty;
     }
 
-    html[lang="en"][data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-contact h2 {
+    html[lang="en"][data-public-theme="warm-stone"] .scheme-a-home--atelier .scheme-a-contact h2 {
       max-width: 22ch;
     }
 
@@ -1281,64 +1266,64 @@
 
   @media (min-width: 48rem) and (max-width: 1023px) {
 
-    html[lang="en"][data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-project__collection-copy {
+    html[lang="en"][data-public-theme="warm-stone"] .scheme-a-home--atelier .scheme-a-project__collection-copy {
       grid-template-columns: 1fr;
       gap: 0.55rem;
     }
 
-    html[lang="en"][data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-services__layout,
-    html[lang="en"][data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-home-faq__layout {
+    html[lang="en"][data-public-theme="warm-stone"] .scheme-a-home--atelier .scheme-a-services__layout,
+    html[lang="en"][data-public-theme="warm-stone"] .scheme-a-home--atelier .scheme-a-home-faq__layout {
       grid-template-columns: 1fr;
       gap: 2.5rem;
     }
 
-    html[lang="en"][data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-services header {
+    html[lang="en"][data-public-theme="warm-stone"] .scheme-a-home--atelier .scheme-a-services header {
       position: static;
     }
 
-    html[lang="en"][data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-services h2,
-    html[lang="en"][data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-home-faq h2 {
+    html[lang="en"][data-public-theme="warm-stone"] .scheme-a-home--atelier .scheme-a-services h2,
+    html[lang="en"][data-public-theme="warm-stone"] .scheme-a-home--atelier .scheme-a-home-faq h2 {
       max-width: 24ch;
     }
 
-    html[lang="en"][data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-home-process__grid {
+    html[lang="en"][data-public-theme="warm-stone"] .scheme-a-home--atelier .scheme-a-home-process__grid {
       grid-template-columns: repeat(2, minmax(0, 1fr));
     }
   }
 
   @media (max-width: 47.9375rem) {
 
-    html[lang="en"][data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-principle__inner {
+    html[lang="en"][data-public-theme="warm-stone"] .scheme-a-home--atelier .scheme-a-principle__inner {
       padding-top: 48px;
       padding-bottom: 56px;
     }
 
-    html[lang="en"][data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-principle h2 {
+    html[lang="en"][data-public-theme="warm-stone"] .scheme-a-home--atelier .scheme-a-principle h2 {
       max-width: none;
       font-size: 26px;
       line-height: 1.3;
       text-wrap: pretty;
     }
 
-    html[lang="en"][data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-statement > .scheme-a-frame {
+    html[lang="en"][data-public-theme="warm-stone"] .scheme-a-home--atelier .scheme-a-statement > .scheme-a-frame {
       padding-top: 56px;
       padding-bottom: 64px;
     }
 
-    html[lang="en"][data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-statement blockquote {
+    html[lang="en"][data-public-theme="warm-stone"] .scheme-a-home--atelier .scheme-a-statement blockquote {
       max-width: none;
       font-size: 29px;
       line-height: 1.28;
       text-wrap: pretty;
     }
 
-    html[lang="en"][data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-project,
-    html[lang="en"][data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-before {
+    html[lang="en"][data-public-theme="warm-stone"] .scheme-a-home--atelier .scheme-a-project,
+    html[lang="en"][data-public-theme="warm-stone"] .scheme-a-home--atelier .scheme-a-before {
       padding-top: 56px;
       padding-bottom: 64px;
     }
 
-    html[lang="en"][data-public-theme="dark"] .scheme-a-home--atelier :is(
+    html[lang="en"][data-public-theme="warm-stone"] .scheme-a-home--atelier :is(
       .scheme-a-section-head h2,
       .scheme-a-services h2,
       .scheme-a-materials h2,
@@ -1350,11 +1335,11 @@
       text-wrap: pretty;
     }
 
-    html[lang="en"][data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-services__layout {
+    html[lang="en"][data-public-theme="warm-stone"] .scheme-a-home--atelier .scheme-a-services__layout {
       gap: 2rem;
     }
 
-    html[lang="en"][data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-services li a {
+    html[lang="en"][data-public-theme="warm-stone"] .scheme-a-home--atelier .scheme-a-services li a {
       grid-template-columns: auto minmax(0, 1fr) auto;
       column-gap: 14px;
       min-height: 0;
@@ -1362,74 +1347,74 @@
       padding: 1rem 0;
     }
 
-    html[lang="en"][data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-services li span {
+    html[lang="en"][data-public-theme="warm-stone"] .scheme-a-home--atelier .scheme-a-services li span {
       font-size: 18px;
       line-height: 1.25;
     }
 
-    html[lang="en"][data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-services li small {
+    html[lang="en"][data-public-theme="warm-stone"] .scheme-a-home--atelier .scheme-a-services li small {
       font-size: 14px;
       line-height: 1.6;
     }
 
-    html[lang="en"][data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-materials,
-    html[lang="en"][data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-home-process,
-    html[lang="en"][data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-home-faq {
+    html[lang="en"][data-public-theme="warm-stone"] .scheme-a-home--atelier .scheme-a-materials,
+    html[lang="en"][data-public-theme="warm-stone"] .scheme-a-home--atelier .scheme-a-home-process,
+    html[lang="en"][data-public-theme="warm-stone"] .scheme-a-home--atelier .scheme-a-home-faq {
       padding-top: 56px;
       padding-bottom: 64px;
     }
 
-    html[lang="en"][data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-materials__media {
+    html[lang="en"][data-public-theme="warm-stone"] .scheme-a-home--atelier .scheme-a-materials__media {
       height: 300px;
       min-height: 300px;
     }
 
-    html[lang="en"][data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-materials__copy {
+    html[lang="en"][data-public-theme="warm-stone"] .scheme-a-home--atelier .scheme-a-materials__copy {
       margin-top: 28px;
     }
 
-    html[lang="en"][data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-home-process .scheme-a-section-head h2 {
+    html[lang="en"][data-public-theme="warm-stone"] .scheme-a-home--atelier .scheme-a-home-process .scheme-a-section-head h2 {
       max-width: none;
       font-size: 31px;
       line-height: 1.16;
     }
 
-    html[lang="en"][data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-home-process__grid {
+    html[lang="en"][data-public-theme="warm-stone"] .scheme-a-home--atelier .scheme-a-home-process__grid {
       gap: 1rem;
       margin-top: 1.5rem;
     }
 
-    html[lang="en"][data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-home-process__card {
+    html[lang="en"][data-public-theme="warm-stone"] .scheme-a-home--atelier .scheme-a-home-process__card {
       padding-block: 22px;
     }
 
-    html[lang="en"][data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-home-process__card h3 {
+    html[lang="en"][data-public-theme="warm-stone"] .scheme-a-home--atelier .scheme-a-home-process__card h3 {
       font-size: 17px;
       line-height: 1.25;
     }
 
-    html[lang="en"][data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-home-process__card p {
+    html[lang="en"][data-public-theme="warm-stone"] .scheme-a-home--atelier .scheme-a-home-process__card p {
       font-size: 14px;
       line-height: 1.65;
     }
 
-    html[lang="en"][data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-home-faq__layout {
+    html[lang="en"][data-public-theme="warm-stone"] .scheme-a-home--atelier .scheme-a-home-faq__layout {
       gap: 1.9rem;
     }
 
-    html[lang="en"][data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-home-faq h2 {
+    html[lang="en"][data-public-theme="warm-stone"] .scheme-a-home--atelier .scheme-a-home-faq h2 {
       max-width: none;
       font-size: 29px;
       line-height: 1.18;
       text-wrap: pretty;
     }
 
-    html[lang="en"][data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-contact > .scheme-a-frame {
+    html[lang="en"][data-public-theme="warm-stone"] .scheme-a-home--atelier .scheme-a-contact > .scheme-a-frame {
       padding-top: 64px;
       padding-bottom: 48px;
     }
 
-    html[lang="en"][data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-contact h2 {
+    html[lang="en"][data-public-theme="warm-stone"] .scheme-a-home--atelier .scheme-a-contact h2 {
       max-width: none;
       padding-top: 16px;
       padding-bottom: 28px;
@@ -1446,7 +1431,7 @@
   }
 
   @media (max-width: 23.125rem) {
-    html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-actions {
+    html[data-public-theme="warm-stone"] .scheme-a-home--atelier .scheme-a-actions {
       grid-template-columns: 1fr;
     }
   }

@@ -24,14 +24,14 @@ describe("public theme preference", () => {
     window.localStorage.clear();
   });
 
-  it("uses the fixed dark public theme", () => {
-    expect(getInitialPublicTheme()).toBe("dark");
+  it("uses the fixed warm-stone public skin", () => {
+    expect(getInitialPublicTheme()).toBe("warm-stone");
   });
 
   it("ignores obsolete saved light preferences", () => {
     window.localStorage.setItem("flashcast-public-theme", "light");
 
-    expect(getInitialPublicTheme()).toBe("dark");
+    expect(getInitialPublicTheme()).toBe("warm-stone");
   });
 });
 

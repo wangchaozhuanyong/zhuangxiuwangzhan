@@ -145,6 +145,8 @@
     --muted-foreground: 215 12% 45%;
     --accent: 34 45% 50%;
     --accent-foreground: 42 35% 98%;
+    /* Keep white danger-button labels readable; status text has its own skin. */
+    --destructive: 0 72% 40%;
     --border: 35 22% 84%;
     --input: 35 22% 84%;
     --ring: 34 45% 50%;

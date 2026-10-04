@@ -60,6 +60,29 @@ const retiredPublicDesignFiles = [
 ] as const;
 
 describe("public design boundary", () => {
+  it("keeps the canonical public skin free of layout and typography declarations", () => {
+    const skin = postcss.parse(readFileSync(resolve(process.cwd(), "src/styles/components/public-warm-stone.css"), "utf8"));
+    const geometry = /^(?:--font|font(?:-|$)|line-height$|letter-spacing$|width$|height$|min-|max-|padding|margin|gap$|display$|position$|inset|flex|grid|border-radius$|border-width$|outline-offset$|content$|text-wrap$)/;
+    skin.walkDecls((declaration) => {
+      expect(declaration.prop, `${declaration.parent?.toString()}`).not.toMatch(geometry);
+    });
+  });
+
+  it("keeps admin status skins scoped and independent of component geometry", () => {
+    const admin = postcss.parse(readFileSync(resolve(process.cwd(), "src/styles/components/admin.css"), "utf8"));
+    let statuses = 0;
+    admin.walkRules((rule) => {
+      if (!/\.admin-(?:tone|text)-/.test(rule.selector)) return;
+      statuses++;
+      expect(rule.selector).toMatch(/^html\[data-admin-theme/);
+      rule.walkDecls((declaration) => {
+        expect(["color", "background-color", "border-color"]).toContain(declaration.prop);
+        expect(declaration.important).toBeFalsy();
+      });
+    });
+    expect(statuses).toBeGreaterThan(0);
+  });
+
   it("shares public surface and text tokens with design and repair content", () => {
     const design = readFileSync(resolve(process.cwd(), "src/styles/design-service.css"), "utf8");
     expect(design).toContain("--fcd-bg: var(--public-surface-base)");

@@ -82,7 +82,7 @@ export default function ImageField({
           onUploaded={(url, upload) => void handleUploaded(url, upload)}
         />
       </div>
-      {mediaMessage && <p className="text-xs text-amber-700">{mediaMessage}</p>}
+      {mediaMessage && <p className="text-xs admin-text-warning">{mediaMessage}</p>}
 
       {typeof altValue === "string" && onAltChange && (
         <div>

@@ -196,8 +196,8 @@ const AdminVideoUpload = ({ folder = "videos", onUploaded }: AdminVideoUploadPro
         </Button>
       </div>
       <p className="text-xs text-muted-foreground">{text.helpText}</p>
-      {message && <p className="rounded-md bg-emerald-50 px-3 py-2 text-xs text-emerald-800">{message}</p>}
-      {error && <p className="text-xs text-destructive">{error}</p>}
+      {message && <p className="rounded-md px-3 py-2 text-xs admin-tone-success">{message}</p>}
+      {error && <p className="text-xs admin-text-error">{error}</p>}
     </div>
   );
 };

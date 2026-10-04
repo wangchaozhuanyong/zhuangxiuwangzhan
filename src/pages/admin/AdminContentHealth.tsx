@@ -155,12 +155,12 @@ export default function AdminContentHealth() {
             <div className="flex flex-wrap gap-2">
               {item.issues.length ? (
                 item.issues.slice(0, 6).map((issue) => (
-                  <span key={issue} className="rounded-full border border-amber-500/30 bg-amber-500/10 px-2.5 py-1 text-xs text-amber-700 dark:text-amber-300">
+                  <span key={issue} className="rounded-full border px-2.5 py-1 text-xs admin-tone-warning">
                     {issue}
                   </span>
                 ))
               ) : (
-                <span className="rounded-full border border-emerald-500/30 bg-emerald-500/10 px-2.5 py-1 text-xs text-emerald-700 dark:text-emerald-300">
+                <span className="rounded-full border px-2.5 py-1 text-xs admin-tone-success">
                   {A("normal")}
                 </span>
               )}

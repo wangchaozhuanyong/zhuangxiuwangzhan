@@ -100,7 +100,7 @@ export default function AdminPublishCenter() {
                   <span className="rounded-full bg-muted px-2.5 py-1 text-xs text-muted-foreground">{item.tableLabel}</span>
                 </div>
                 <p className="mt-1 text-xs text-muted-foreground">{formatA("updatedAt", { time: formatTime(item.updated_at) })}</p>
-                {item.issues.length > 0 && <p className="mt-2 text-sm text-amber-700 dark:text-amber-300">{formatA("issuesBeforePublish", { issues: item.issues.slice(0, 4).join(language === "zh" ? "、" : ", ") })}</p>}
+                {item.issues.length > 0 && <p className="mt-2 text-sm admin-text-warning">{formatA("issuesBeforePublish", { issues: item.issues.slice(0, 4).join(language === "zh" ? "、" : ", ") })}</p>}
               </div>
               <div data-admin-card-actions className="flex flex-wrap gap-2">
                 <Button asChild size="sm" variant="outline">

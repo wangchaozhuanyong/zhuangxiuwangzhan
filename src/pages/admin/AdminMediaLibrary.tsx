@@ -45,10 +45,10 @@ const usageTypes = ["all", "hero", "project", "material", "blog", "logo", "icon"
 type UsageType = (typeof usageTypes)[number];
 
 const statusClassName: Record<ReturnType<typeof getMediaPerformanceStatus>["tone"], string> = {
-  ok: "border-emerald-200 bg-emerald-50 text-emerald-800",
-  warning: "border-amber-200 bg-amber-50 text-amber-800",
-  danger: "border-red-200 bg-red-50 text-red-800",
-  info: "border-slate-200 bg-slate-50 text-slate-700",
+  ok: "admin-tone-success",
+  warning: "admin-tone-warning",
+  danger: "admin-tone-error",
+  info: "admin-tone-neutral",
 };
 
 type AdminMediaLibraryTextKey = keyof typeof adminMediaLibraryText;
@@ -140,7 +140,7 @@ const AdminMediaLibrary = () => {
       />
 
       <div className="rounded-xl border border-border bg-card p-4 sm:p-6">
-        <div className="rounded-lg border border-emerald-200 bg-emerald-50 p-3 text-sm text-emerald-900">{A("uploadInfo")}</div>
+        <div className="rounded-lg border p-3 text-sm admin-tone-success">{A("uploadInfo")}</div>
         <div className="mt-5">
           <AdminImageUpload
             folder="media"

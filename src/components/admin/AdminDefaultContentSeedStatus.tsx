@@ -36,7 +36,7 @@ export default function AdminDefaultContentSeedStatus({ formatError }: AdminDefa
         <p className="text-sm font-semibold text-foreground">{copy.title}</p>
         <p className="mt-1 text-sm text-muted-foreground">{copy.description}</p>
         <p
-          className={seedSummary.status === "error" ? "mt-2 text-sm text-destructive" : "mt-2 text-sm text-muted-foreground"}
+          className={seedSummary.status === "error" ? "mt-2 text-sm admin-text-error" : "mt-2 text-sm text-muted-foreground"}
           aria-live="polite"
         >
           {seedSummary.status === "error" ? formatError(seedSummary.error || "Unknown error") : resultText}

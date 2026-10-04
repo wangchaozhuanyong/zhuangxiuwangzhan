@@ -59,7 +59,7 @@ export function AdminReadOnlyNotice({ className }: { className?: string }) {
 
   return (
     <div className={className}>
-      <div className="flex items-start gap-2 rounded-lg border border-amber-300/60 bg-amber-50 px-3 py-2 text-sm leading-6 text-amber-900 dark:border-amber-400/30 dark:bg-amber-500/10 dark:text-amber-100">
+      <div className="flex items-start gap-2 rounded-lg border px-3 py-2 text-sm leading-6 admin-tone-warning">
         <ShieldAlert className="mt-0.5 h-4 w-4 shrink-0" />
         <span>{text.readOnlyNotice}</span>
       </div>

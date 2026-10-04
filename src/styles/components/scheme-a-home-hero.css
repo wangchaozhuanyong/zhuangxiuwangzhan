@@ -1,6 +1,6 @@
 @layer components {
   /* One responsive home composition; shared reading surfaces supply contrast. */
-  html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-hero {
+  html[data-public-theme="warm-stone"] .scheme-a-home--atelier .scheme-a-hero {
     position: relative;
     isolation: isolate;
     display: grid;
@@ -83,7 +83,7 @@
     text-wrap: pretty;
   }
 
-  html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-hero .scheme-a-actions {
+  html[data-public-theme="warm-stone"] .scheme-a-home--atelier .scheme-a-hero .scheme-a-actions {
     display: flex;
     flex-wrap: wrap;
     justify-content: flex-start;
@@ -92,7 +92,7 @@
     padding-top: 26px;
   }
 
-  html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-hero .scheme-a-button {
+  html[data-public-theme="warm-stone"] .scheme-a-home--atelier .scheme-a-hero .scheme-a-button {
     width: auto;
     min-width: 0;
     min-height: 46px;
@@ -110,17 +110,8 @@
     transform: none;
   }
 
-  html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-hero .scheme-a-button--paper {
-    background: #E4E8DE;
-  }
-
-  html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-hero .scheme-a-button--paper:hover {
-    background: #E4E8DE;
-  }
-
-  html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-hero .scheme-a-button--glass {
+  html[data-public-theme="warm-stone"] .scheme-a-home--atelier .scheme-a-hero .scheme-a-button--glass {
     padding-inline: 0;
-    background: transparent;
   }
 
   .scheme-a-hero .scheme-a-button--glass:hover { text-decoration: underline; }
@@ -233,16 +224,16 @@
   }
 
   @media (max-width: 767px) {
-    html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-hero {
+    html[data-public-theme="warm-stone"] .scheme-a-home--atelier .scheme-a-hero {
       min-height: max(620px, calc(100svh - 68px - env(safe-area-inset-bottom, 0px)));
     }
     .scheme-a-hero__media img { object-position: center top; }
     .scheme-a-hero__copy { width: 100%; padding: clamp(96px, 12svh, 116px) 20px 90px; }
     html[lang] .scheme-a-hero h1 { font-size: clamp(24px, 6.65vw, 38px); line-height: 1.35; letter-spacing: -0.035em; }
     .scheme-a-hero__lead { max-width: 100%; padding-top: 12px; font-size: 14px; line-height: 1.6; }
-    html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-hero .scheme-a-actions { gap: 10px 18px; padding-top: 18px; }
-    html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-hero .scheme-a-button { min-height: 44px; padding: 10px 20px; font-size: 13px; }
-    html[data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-hero .scheme-a-button--glass { padding-inline: 0; }
+    html[data-public-theme="warm-stone"] .scheme-a-home--atelier .scheme-a-hero .scheme-a-actions { gap: 10px 18px; padding-top: 18px; }
+    html[data-public-theme="warm-stone"] .scheme-a-home--atelier .scheme-a-hero .scheme-a-button { min-height: 44px; padding: 10px 20px; font-size: 13px; }
+    html[data-public-theme="warm-stone"] .scheme-a-home--atelier .scheme-a-hero .scheme-a-button--glass { padding-inline: 0; }
     .scheme-a-home-summary__layout { gap: 30px; }
     .scheme-a-home-summary__intro { padding-inline: 8px; }
     .scheme-a-home-summary__intro h2 { font-size: 30px; }

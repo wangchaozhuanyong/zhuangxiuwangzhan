@@ -4,12 +4,12 @@
    * spacing intact while preventing adjacent sections from stacking two large
    * hard-coded paddings into an oversized blank band.
    */
-  html[lang][data-public-theme="dark"] {
+  html[lang][data-public-theme="warm-stone"] {
     --public-section-space-start: clamp(32px, 3vw, 40px);
     --public-section-space-end: clamp(32px, 3vw, 40px);
   }
 
-  html[lang][data-public-theme="dark"] .scheme-a-home--atelier :is(
+  html[lang][data-public-theme="warm-stone"] .scheme-a-home--atelier :is(
     .scheme-a-principle__inner,
     .scheme-a-statement > .scheme-a-frame,
     .scheme-a-project,
@@ -19,32 +19,32 @@
     .scheme-a-home-process,
     .scheme-a-home-faq
   ),
-  html[lang][data-public-theme="dark"] .scheme-a-home--atelier .scheme-a-contact > .scheme-a-frame,
-  html[lang][data-public-theme="dark"] .scheme-a-route-section,
-  html[lang][data-public-theme="dark"] .fc-route-section,
-  html[lang][data-public-theme="dark"] .fc-route-form-page :is(.fc-route-contact-body, .fc-route-quote-body, .forest-map-section),
-  html[lang][data-public-theme="dark"] .fc-c-form-section,
-  html[lang][data-public-theme="dark"] .fc-c-section,
-  html[lang][data-public-theme="dark"] .fc-c-final {
+  html[lang][data-public-theme="warm-stone"] .scheme-a-home--atelier .scheme-a-contact > .scheme-a-frame,
+  html[lang][data-public-theme="warm-stone"] .scheme-a-route-section,
+  html[lang][data-public-theme="warm-stone"] .fc-route-section,
+  html[lang][data-public-theme="warm-stone"] .fc-route-form-page :is(.fc-route-contact-body, .fc-route-quote-body, .forest-map-section),
+  html[lang][data-public-theme="warm-stone"] .fc-c-form-section,
+  html[lang][data-public-theme="warm-stone"] .fc-c-section,
+  html[lang][data-public-theme="warm-stone"] .fc-c-final {
     padding-top: var(--public-section-space-start);
     padding-bottom: var(--public-section-space-end);
   }
 
   @media (min-width: 1024px) {
-    html[lang][data-public-theme="dark"] {
+    html[lang][data-public-theme="warm-stone"] {
       --public-section-space-start: 44px;
       --public-section-space-end: 44px;
     }
   }
 
   @media (max-width: 47.9375rem) {
-    html[lang][data-public-theme="dark"] {
+    html[lang][data-public-theme="warm-stone"] {
       --public-section-space-start: 28px;
       --public-section-space-end: 28px;
     }
   }
 
-  html[lang][data-public-theme="dark"] .fc-route-promotions-offers {
+  html[lang][data-public-theme="warm-stone"] .fc-route-promotions-offers {
     padding-top: clamp(64px, 7vw, 88px);
     padding-bottom: clamp(64px, 7vw, 88px);
   }

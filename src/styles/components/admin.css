@@ -1,4 +1,24 @@
 @layer components {
+  /* State skin only: the calling component owns structure, border width and spacing. */
+  html[data-admin-theme] .admin-tone-success { color: #065F46; background-color: #ECFDF5; border-color: #A7F3D0; }
+  html[data-admin-theme] .admin-tone-warning { color: #92400E; background-color: #FFFBEB; border-color: #FCD34D; }
+  html[data-admin-theme] .admin-tone-info { color: #075985; background-color: #F0F9FF; border-color: #BAE6FD; }
+  html[data-admin-theme] .admin-tone-error { color: #991B1B; background-color: #FEF2F2; border-color: #FECACA; }
+  html[data-admin-theme] .admin-tone-neutral { color: #334155; background-color: #F8FAFC; border-color: #E2E8F0; }
+  html[data-admin-theme] .admin-text-error { color: #991B1B; }
+  html[data-admin-theme] .admin-text-warning { color: #92400E; }
+
+  html[data-admin-theme="dark"] .admin-tone-success { color: #A7F3D0; background-color: #102D26; border-color: #28684F; }
+  html[data-admin-theme="dark"] .admin-tone-warning { color: #FDE68A; background-color: #352B17; border-color: #725C2D; }
+  html[data-admin-theme="dark"] .admin-tone-info { color: #BAE6FD; background-color: #182F43; border-color: #365E7B; }
+  html[data-admin-theme="dark"] .admin-tone-error { color: #FECDD3; background-color: #381E23; border-color: #7F3544; }
+  html[data-admin-theme="dark"] .admin-tone-neutral { color: #CBD5E1; background-color: #252F3B; border-color: #475569; }
+  html[data-admin-theme="dark"] .admin-text-error { color: #FECDD3; }
+  html[data-admin-theme="dark"] .admin-text-warning { color: #FDE68A; }
+
+  /* Retain the status foreground instead of pairing it with an unrelated dark badge. */
+  html[data-admin-theme] .admin-tone-badge { background-color: hsl(var(--background) / 0.45); border-color: currentColor; }
+
   [data-admin-shell] {
     min-width: 0;
     overflow-x: clip;

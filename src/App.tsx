@@ -7,7 +7,7 @@ import { SchemeAFooter, SchemeAFooterPrelude, SchemeANavbar } from "@/components
 import DynamicBrandHead from "@/components/DynamicBrandHead";
 import MobileBottomDock from "@/components/MobileBottomDock";
 import { AppErrorBoundary } from "@/components/AppErrorBoundary";
-import { PublicChromeProvider, usePublicChrome } from "@/contexts/PublicChromeContext";
+import { getInitialPublicTheme, PublicChromeProvider, usePublicChrome } from "@/contexts/PublicChromeContext";
 import { getLanguageFromPath, stripLanguagePrefix } from "@/i18n/routes";
 import { adminRouteText } from "@/i18n/adminRouteText";
 import { createPublicPageViewLifecycle } from "@/lib/analytics";
@@ -196,7 +196,7 @@ const PublicSiteShell = ({
     <div
       className="scheme-a-public-shell"
       style={publicMotionStyle}
-      data-theme="dark"
+      data-theme={getInitialPublicTheme()}
       data-surface={surface}
       data-header-overlay={hasImmersiveHero ? "true" : "false"}
       data-product-detail={productDetail ? "true" : "false"}

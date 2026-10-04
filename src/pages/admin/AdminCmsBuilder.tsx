@@ -506,7 +506,7 @@ export default function AdminCmsBuilder() {
                 </div>
               </div>
               {pathWarning && (
-                <div className="mt-2 flex gap-2 rounded-lg border border-amber-300/60 bg-amber-50 px-3 py-2 text-xs leading-5 text-amber-900">
+                <div className="mt-2 flex gap-2 rounded-lg border px-3 py-2 text-xs leading-5 admin-tone-warning">
                   <AlertTriangle className="mt-0.5 h-3.5 w-3.5 shrink-0" />
                   <span>{pathWarning}</span>
                 </div>

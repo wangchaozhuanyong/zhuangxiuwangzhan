@@ -142,8 +142,8 @@ const AdminUsers = () => {
       />
 
       <div className="rounded-xl border border-border bg-card p-4 text-sm text-muted-foreground">{text.currentRole}<span className="font-semibold text-foreground">{roleLabels[role as keyof typeof roleLabels] || text.unknownRole}</span>
-        {!isSuperAdmin && <div className="mt-2 text-destructive">{text.notSuperAdmin}</div>}
-        {!isSupabaseConfigured && <div className="mt-2 text-destructive">{text.supabaseMissing}</div>}
+        {!isSuperAdmin && <div className="mt-2 admin-text-error">{text.notSuperAdmin}</div>}
+        {!isSupabaseConfigured && <div className="mt-2 admin-text-error">{text.supabaseMissing}</div>}
         {banner && <div className="mt-3 rounded-lg bg-muted p-3 text-sm text-foreground">{banner}</div>}
       </div>
 

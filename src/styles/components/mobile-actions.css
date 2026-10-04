@@ -260,9 +260,6 @@
       grid-template-columns: repeat(5, minmax(0, 1fr));
       border-top: 1px solid rgb(238 233 223 / 0.14);
       padding-bottom: env(safe-area-inset-bottom, 0px);
-      color: #a49d92;
-      background: #12120f;
-      box-shadow: 0 -12px 28px rgb(0 0 0 / 0.2);
     }
 
     .scheme-a-mobile-switcher .scheme-a-mobile-dock a {
@@ -275,9 +272,6 @@
       height: 100%;
       border-top: 1px solid rgb(238 233 223 / 0.16);
       padding-bottom: env(safe-area-inset-bottom, 0px);
-      color: #eee9df;
-      background: #12120f;
-      box-shadow: 0 -12px 28px rgb(0 0 0 / 0.22);
     }
 
     .scheme-a-contact-dock__inner {
@@ -296,19 +290,12 @@
       gap: 0.5rem;
       border-right: 1px solid rgb(238 233 223 / 0.12);
       padding: 0.55rem 0.6rem;
-      color: inherit;
-      background: #12120f;
       text-decoration: none;
       transition: color 160ms ease, background-color 160ms ease, transform 160ms ease;
     }
 
     .scheme-a-contact-dock__item:last-child {
       border-right: 0;
-    }
-
-    .scheme-a-contact-dock__item:hover,
-    .scheme-a-contact-dock__item:focus-visible {
-      background: #1a1a16;
     }
 
     .scheme-a-contact-dock__item:focus-visible {
@@ -327,13 +314,6 @@
 
     .scheme-a-contact-dock__item--call {
       color: #e6d6b9;
-    }
-
-    .scheme-a-contact-dock__item--primary,
-    .scheme-a-contact-dock__item--primary:hover,
-    .scheme-a-contact-dock__item--primary:focus-visible {
-      color: #17130d;
-      background: #cda766;
     }
 
     .scheme-a-contact-dock__icon {

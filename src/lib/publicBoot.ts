@@ -19,6 +19,8 @@ export type PublicBoot = {
 declare global { interface Window { __flashcastPublicBoot?: PublicBoot } }
 
 /** Public/admin classification has one owner, including before React's first paint. */
+export const PUBLIC_THEME = "warm-stone" as const;
+
 export function syncPublicTheme(isAdmin: boolean) {
   const html = document.documentElement;
   if (isAdmin) {
@@ -26,8 +28,8 @@ export function syncPublicTheme(isAdmin: boolean) {
     delete html.dataset.theme;
     html.style.removeProperty("color-scheme");
   } else {
-    html.dataset.publicTheme = "dark"; // Compatibility selector for the approved light skin.
-    html.dataset.theme = "dark";
+    html.dataset.publicTheme = PUBLIC_THEME;
+    html.dataset.theme = PUBLIC_THEME;
     html.style.colorScheme = "light";
   }
 }
