@@ -113,6 +113,13 @@
       --admin-header-height: 64px;
     }
 
+    /* iPhone Safari zooms focused controls below 16px and clips the sticky actions. */
+    [data-admin-shell] input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="color"]),
+    [data-admin-shell] textarea,
+    [data-admin-shell] select {
+      font-size: max(1rem, 16px);
+    }
+
     [data-admin-shell] [data-admin-mobile-actions] {
       display: grid;
       grid-template-columns: repeat(2, minmax(0, 1fr));
