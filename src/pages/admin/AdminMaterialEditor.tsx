@@ -368,7 +368,7 @@ export default function AdminMaterialEditor({ furnitureMode = false }: { furnitu
             </Button>
             {record.status && <span className="text-xs text-muted-foreground">{formatA("statusPrefix", { status: adminStatusLabel("default", record.status) })}</span>}
             {slugChecking && <span className="text-xs text-muted-foreground">{A("slugChecking")}</span>}
-            {slugError && <span className="text-xs text-destructive">{slugError}</span>}
+            {slugError && <span className="text-xs admin-text-error">{slugError}</span>}
           </>
         }
         right={
@@ -421,7 +421,7 @@ export default function AdminMaterialEditor({ furnitureMode = false }: { furnitu
         />
 
         {englishMissing && (
-          <div className="rounded-lg border border-amber-500/30 bg-amber-500/10 px-4 py-3 text-sm text-amber-800 dark:text-amber-200">
+          <div className="rounded-lg border px-4 py-3 text-sm admin-tone-warning">
             {englishMissingHint}
           </div>
         )}

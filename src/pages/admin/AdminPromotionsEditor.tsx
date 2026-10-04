@@ -220,14 +220,14 @@ export default function AdminPromotionsEditor() {
       />
 
       {error ? (
-        <div className="mb-5 rounded-lg border border-destructive/30 bg-destructive/5 p-4 text-sm" role="alert">
+        <div className="mb-5 rounded-lg border p-4 text-sm admin-tone-error" role="alert">
           <p>{t.loadError}</p>
           <Button type="button" variant="outline" size="sm" className="mt-3" onClick={() => void refetch()}>{t.retry}</Button>
         </div>
       ) : null}
-      {!isSupabaseConfigured ? <p className="mb-5 rounded-lg bg-amber-50 p-4 text-sm text-amber-900">{t.unavailable}</p> : null}
+      {!isSupabaseConfigured ? <p className="mb-5 rounded-lg p-4 text-sm admin-tone-warning">{t.unavailable}</p> : null}
       {message ? <p className="mb-5 rounded-lg bg-muted p-4 text-sm" role="status">{message}</p> : null}
-      {dirty ? <p className="mb-5 rounded-lg bg-amber-50 p-4 text-sm text-amber-900">{t.unsaved}</p> : null}
+      {dirty ? <p className="mb-5 rounded-lg p-4 text-sm admin-tone-warning">{t.unsaved}</p> : null}
 
       <div className="space-y-6">
         <section className="rounded-xl border border-border bg-card p-4 sm:p-6">

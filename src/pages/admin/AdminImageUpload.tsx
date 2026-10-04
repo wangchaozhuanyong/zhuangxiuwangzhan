@@ -512,9 +512,9 @@ const AdminImageUpload = ({ value, folder = "content", previewVariant = "cover",
           {uploading ? A("uploading") : error && selectedFile ? A("retry") : A("upload")}
         </Button>
       </div>
-      {error && <p className="text-xs text-destructive">{error}</p>}
+      {error && <p className="text-xs admin-text-error">{error}</p>}
       {notes.length > 0 && (
-        <div className="rounded-md bg-emerald-50 px-3 py-2 text-xs text-emerald-800">
+        <div className="rounded-md px-3 py-2 text-xs admin-tone-success">
           {notes.map((note) => (
             <p key={note}>{note}</p>
           ))}

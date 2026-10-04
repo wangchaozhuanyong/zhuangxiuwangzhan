@@ -257,7 +257,7 @@ export default function AdminBlogEditor() {
             </Button>
             {record.status && <span className="text-xs text-muted-foreground">{A("statusInline").replace("{status}", adminStatusLabel("default", record.status))}</span>}
             {slugChecking && <span className="text-xs text-muted-foreground">{A("checkingSlug")}</span>}
-            {slugError && <span className="text-xs text-destructive">{slugError}</span>}
+            {slugError && <span className="text-xs admin-text-error">{slugError}</span>}
           </>
         }
         right={
@@ -325,7 +325,7 @@ export default function AdminBlogEditor() {
         />
 
         {englishMissing && (
-          <div className="rounded-lg border border-amber-500/30 bg-amber-500/10 px-4 py-3 text-sm text-amber-800 dark:text-amber-200">
+          <div className="rounded-lg border px-4 py-3 text-sm admin-tone-warning">
             {adminBlogEditorText.englishMissingHint[language]}
           </div>
         )}

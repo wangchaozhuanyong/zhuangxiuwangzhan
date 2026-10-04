@@ -174,7 +174,7 @@ const AdminSeoTechnicalFiles = () => {
       </div>
     </section>
 
-    <section className="rounded-xl border border-amber-300/60 bg-amber-50 p-5 text-amber-950">
+    <section className="rounded-xl border p-5 admin-tone-warning">
       <h2 className="text-lg font-semibold">{A("currentBoundaryTitle")}</h2>
       <p className="mt-2 text-sm">{A("currentBoundaryDescription")}</p>
     </section>
@@ -318,7 +318,7 @@ const AdminSeoAuditView = () => {
         </div>
         <div className="rounded-xl border border-border bg-card p-4">
           <p className="text-xs text-muted-foreground">{A("missing")}</p>
-          <p className="mt-1 text-2xl font-bold text-destructive">{summary.missing}</p>
+          <p className="mt-1 text-2xl font-bold admin-text-error">{summary.missing}</p>
         </div>
         <div className="rounded-xl border border-border bg-card p-4">
           <p className="text-xs text-muted-foreground">{A("zhSeo")}</p>
@@ -374,7 +374,7 @@ const AdminSeoAuditView = () => {
                   <div className="mt-3 flex flex-wrap gap-2">
                     {row.issues.length ? (
                       row.issues.map((issue) => (
-                        <span key={`${issue.category}-${issue.label}`} className={`rounded-full px-2 py-1 text-xs ${issue.category === "geo" ? "bg-amber-500/10 text-amber-700" : issue.category === "ai" ? "bg-sky-500/10 text-sky-700" : issue.category === "en" ? "bg-muted text-muted-foreground" : "bg-destructive/10 text-destructive"}`}>
+                        <span key={`${issue.category}-${issue.label}`} className={`rounded-full px-2 py-1 text-xs ${issue.category === "geo" ? "admin-tone-warning" : issue.category === "ai" ? "admin-tone-info" : issue.category === "en" ? "bg-muted text-muted-foreground" : "admin-tone-error"}`}>
                           {issue.label}
                         </span>
                       ))

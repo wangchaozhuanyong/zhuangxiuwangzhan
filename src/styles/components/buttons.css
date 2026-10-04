@@ -1,49 +1,21 @@
 @layer components {
   .btn-brand-primary {
     @apply btn-press inline-flex items-center justify-center gap-2 rounded-full px-6 py-2.5 text-sm font-semibold transition-all;
-    background: #15120e;
-    color: #f8f3ea;
     border: 1px solid rgba(198, 164, 106, 0.28);
-  }
-
-  .btn-brand-primary:hover {
-    background: #2a2118;
-    box-shadow: 0 14px 32px -22px rgba(21, 18, 14, 0.7);
   }
 
   .btn-brand-secondary {
     @apply btn-press inline-flex items-center justify-center gap-2 rounded-full px-6 py-2.5 text-sm font-semibold transition-all;
-    background: transparent;
-    color: hsl(var(--foreground));
     border: 1px solid #d8cbb8;
-  }
-
-  .btn-brand-secondary:hover {
-    border-color: hsl(var(--accent));
-    background: hsl(var(--accent) / 0.08);
   }
 
   .btn-on-dark-primary {
     @apply btn-press inline-flex items-center justify-center gap-2 rounded-full px-6 py-2.5 text-sm font-semibold transition-all;
-    background: #f8f3ea;
-    color: #15120e;
-  }
-
-  .btn-on-dark-primary:hover {
-    background: #fffdf8;
-    box-shadow: 0 14px 32px -22px rgba(0, 0, 0, 0.45);
   }
 
   .btn-on-dark-secondary {
     @apply btn-press inline-flex items-center justify-center gap-2 rounded-full px-6 py-2.5 text-sm font-semibold transition-all;
-    background: transparent;
-    color: #fff;
     border: 1px solid rgba(255, 255, 255, 0.28);
-  }
-
-  .btn-on-dark-secondary:hover {
-    background: rgba(255, 255, 255, 0.08);
-    border-color: rgba(255, 255, 255, 0.4);
   }
 
   .btn-brand-primary,
@@ -64,9 +36,6 @@
   .btn-on-dark-secondary:focus-visible {
     outline: 2px solid hsl(var(--gold) / 0.76);
     outline-offset: 3px;
-    box-shadow:
-      0 0 0 6px hsl(var(--gold) / 0.12),
-      0 18px 42px -30px rgba(21, 18, 14, 0.58);
   }
 
   .btn-brand-primary::before,

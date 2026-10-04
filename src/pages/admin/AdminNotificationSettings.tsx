@@ -347,7 +347,7 @@ const AdminNotificationSettings = () => {
           <p className="text-xs font-semibold uppercase tracking-[0.25em] text-accent">{t.ops}</p>
           <h2 className="font-display text-2xl font-bold">{t.maintenance}</h2>
           <p className="mt-2 max-w-2xl text-sm text-muted-foreground">{t.maintenanceDesc}</p>
-          <p className="mt-3 max-w-2xl rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-xs leading-5 text-amber-900">
+          <p className="mt-3 max-w-2xl rounded-lg border px-3 py-2 text-xs leading-5 admin-tone-warning">
             {t.cronNotice}
           </p>
           {settings.maintenance_last_sent_at && (

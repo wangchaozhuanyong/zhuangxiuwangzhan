@@ -315,7 +315,7 @@ const AdminSimpleCms = ({ module }: { module: ModuleKey }) => {
             <Button type="button" variant="outline" onClick={() => void resetRecord()}>{t.newRecord}</Button>
           </div>
           {message && <p className="mb-4 rounded-lg bg-muted p-3 text-sm">{message}</p>}
-          {recordDirty && <p className="mb-4 rounded-lg bg-amber-50 p-3 text-sm text-amber-800">{t.unsavedWarning}</p>}
+          {recordDirty && <p className="mb-4 rounded-lg p-3 text-sm admin-tone-warning">{t.unsavedWarning}</p>}
           <div className="grid gap-4 md:grid-cols-2">
             {config.fields.map(renderField)}
             <div>

@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { initializePublicBoot } from "./publicBoot";
+import { initializePublicBoot, syncPublicTheme } from "./publicBoot";
 import { publicContentStatusText } from "../i18n/publicContentStatusText";
 
 const markup = '<div id="flashcast-public-boot" data-route-loader="initial"><p data-boot-copy="loaderPending"></p><div data-boot-recovery hidden><button data-boot-action="retry" data-boot-copy="loaderRetry"></button><button data-boot-action="continue" hidden></button></div></div><div id="root"></div>';
@@ -27,6 +27,9 @@ describe("public document boot", () => {
     const screen = document.getElementById("flashcast-public-boot");
     const boot = initializePublicBoot()!;
     expect(document.documentElement.dataset.publicBoot).toBe("waiting");
+    expect(document.documentElement.dataset.publicTheme).toBe("warm-stone");
+    expect(document.documentElement.dataset.theme).toBe("warm-stone");
+    expect(document.documentElement.style.colorScheme).toBe("light");
     expect(document.documentElement.dataset.publicBootHome).toBe("true");
     expect(document.documentElement.lang).toBe("zh-CN");
     expect(document.getElementById("root")).toHaveAttribute("inert");
@@ -149,5 +152,22 @@ describe("public document boot", () => {
     expect(document.documentElement.dataset.publicBoot).toBeUndefined();
     expect(document.getElementById("flashcast-public-boot")).toBeNull();
     expect(document.getElementById("root")).not.toHaveAttribute("inert");
+  });
+  it("removes public skin ownership on entry to admin without changing its dark preference", () => {
+    const html = document.documentElement;
+    html.dataset.adminTheme = "dark";
+    html.classList.add("dark");
+    try {
+      syncPublicTheme(false);
+      syncPublicTheme(true);
+      expect(html.dataset.publicTheme).toBeUndefined();
+      expect(html.dataset.theme).toBeUndefined();
+      expect(html.style.colorScheme).toBe("");
+      expect(html.dataset.adminTheme).toBe("dark");
+      expect(html.classList.contains("dark")).toBe(true);
+    } finally {
+      delete html.dataset.adminTheme;
+      html.classList.remove("dark");
+    }
   });
 });

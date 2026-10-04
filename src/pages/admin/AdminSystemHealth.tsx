@@ -96,7 +96,7 @@ const RECENT_HOURS = 24 * 7;
 type AdminSystemHealthText = Record<keyof typeof adminSystemHealthText.en, string>;
 
 const statusClass = (ok: boolean) =>
-  ok ? "border-emerald-200 bg-emerald-50 text-emerald-800" : "border-destructive/25 bg-destructive/10 text-destructive";
+  ok ? "admin-tone-success" : "admin-tone-error";
 
 const parseCheckOk = (value: HealthCheckValue) => {
   if (typeof value === "boolean") return value;
@@ -228,7 +228,7 @@ const TableCard = ({ item, text, language }: { item: TableCheck; text: AdminSyst
       </span>
     </div>
     <p className="mt-3 text-2xl font-bold">{item.ok ? item.count ?? 0 : "-"}</p>
-    {item.message && <p className="mt-2 break-words text-xs text-destructive">{formatUserFacingError(item.message, language, text.tableReadFailed)}</p>}
+    {item.message && <p className="mt-2 break-words text-xs admin-text-error">{formatUserFacingError(item.message, language, text.tableReadFailed)}</p>}
   </div>
 );
 
@@ -375,14 +375,14 @@ export default function AdminSystemHealth() {
             </div>
           </div>
           <div className="flex flex-wrap gap-2 text-xs font-semibold">
-            <span className="rounded-full border bg-background/70 px-3 py-1">{text.tableCheckBadge}{tableSummary.total - tableSummary.failed}/{tableSummary.total}</span>
-            <span className="rounded-full border bg-background/70 px-3 py-1">{isAdminMode ? text.adminFullReport : text.publicBasicReport}</span>
+            <span className="rounded-full border admin-tone-badge px-3 py-1">{text.tableCheckBadge}{tableSummary.total - tableSummary.failed}/{tableSummary.total}</span>
+            <span className="rounded-full border admin-tone-badge px-3 py-1">{isAdminMode ? text.adminFullReport : text.publicBasicReport}</span>
           </div>
         </div>
       </div>
 
       {!isAdminMode && payload && (
-        <div className="rounded-lg border border-amber-200 bg-amber-50 p-4 text-amber-900">
+        <div className="rounded-lg border p-4 admin-tone-warning">
           <div className="flex items-start gap-3">
             <AlertTriangle className="mt-0.5 h-5 w-5 shrink-0" />
             <div>
@@ -397,20 +397,20 @@ export default function AdminSystemHealth() {
         {healthQuery.isLoading ? (
           <p className="text-sm text-muted-foreground">{text.checkingEllipsis}</p>
         ) : healthQuery.isInitialError ? (
-          <p className="text-sm text-destructive">
+          <p className="text-sm admin-text-error">
             {formatText(text.healthFailed, { message: formatUserFacingError(healthQuery.error, language, text.unknownError) })}
           </p>
         ) : reminders.length ? (
           <div className="space-y-3">
             {reminders.map((item) => (
-              <div key={item} className="flex gap-3 rounded-lg border border-amber-200 bg-amber-50 p-3 text-sm text-amber-900">
+              <div key={item} className="flex gap-3 rounded-lg border p-3 text-sm admin-tone-warning">
                 <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0" />
                 <p className="break-words leading-6">{getReminderText(item, tableChecks, backupStatus, language, text)}</p>
               </div>
             ))}
           </div>
         ) : (
-          <div className="flex gap-3 rounded-lg border border-emerald-200 bg-emerald-50 p-3 text-sm text-emerald-800">
+          <div className="flex gap-3 rounded-lg border p-3 text-sm admin-tone-success">
             <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0" />
             <p>{text.noAlerts}</p>
           </div>

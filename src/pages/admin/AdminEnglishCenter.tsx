@@ -177,7 +177,7 @@ export default function AdminEnglishCenter() {
             <div className="h-full rounded-full bg-primary transition-all" style={{ width: `${batchPercent}%` }} />
           </div>
           {batchProgress.failures.length > 0 && (
-            <div className="mt-4 rounded-lg border border-amber-500/30 bg-amber-500/10 p-3 text-sm text-amber-800 dark:text-amber-200">
+            <div className="mt-4 rounded-lg border p-3 text-sm admin-tone-warning">
               <p className="font-semibold">{A("failureReasonsTitle")}</p>
               <ul className="mt-2 list-disc space-y-1 pl-5">
                 {batchProgress.failures.slice(0, 6).map((failure) => <li key={failure}>{failure}</li>)}
@@ -252,7 +252,7 @@ export default function AdminEnglishCenter() {
                     <AdminStatusBadge status={item.status} />
                     <span className="rounded-full bg-muted px-2.5 py-1 text-xs text-muted-foreground">{item.tableLabel}</span>
                   </div>
-                  <p className="mt-2 text-sm text-amber-700 dark:text-amber-300">
+                  <p className="mt-2 text-sm admin-text-warning">
                     {formatA("missingFields", { fields: item.missingEnglish.map(getAdminHealthFieldLabel).join("、") })}
                   </p>
                 </div>

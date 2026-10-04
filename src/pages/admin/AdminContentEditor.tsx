@@ -150,7 +150,7 @@ const AdminContentEditor = () => {
     <div className="grid min-w-0 gap-5 sm:gap-6 xl:grid-cols-[320px_1fr]">
         <div className="min-w-0 rounded-xl border border-border bg-card p-4">
           <h1 className="font-display mb-3 text-lg font-bold">{tableLabels[type]?.[lang] || type}</h1>
-          {isInitialError && <p role="alert" className="mb-3 text-sm text-destructive">{interactionText[lang].loadingFailed}</p>}
+          {isInitialError && <p role="alert" className="mb-3 text-sm admin-text-error">{interactionText[lang].loadingFailed}</p>}
           <p className="mb-3 text-xs leading-5 text-muted-foreground">{getAdminTableHelp(type)}</p>
           {!readOnlyTables.has(type) && (
             <Button

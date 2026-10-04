@@ -5,10 +5,10 @@ import { cn } from "@/lib/utils";
 type AdminAlertTone = "info" | "success" | "warning" | "error";
 
 const toneClassName: Record<AdminAlertTone, string> = {
-  info: "border-sky-300/50 bg-sky-500/10 text-sky-900 dark:border-sky-400/30 dark:text-sky-100",
-  success: "border-emerald-300/50 bg-emerald-500/10 text-emerald-900 dark:border-emerald-400/30 dark:text-emerald-100",
-  warning: "border-amber-300/60 bg-amber-500/10 text-amber-900 dark:border-amber-400/30 dark:text-amber-100",
-  error: "border-destructive/30 bg-destructive/10 text-destructive",
+  info: "admin-tone-info",
+  success: "admin-tone-success",
+  warning: "admin-tone-warning",
+  error: "admin-tone-error",
 };
 
 const toneIcon = {

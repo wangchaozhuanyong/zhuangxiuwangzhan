@@ -1,5 +1,5 @@
 import { createContext, useCallback, useContext, useLayoutEffect, useMemo, useRef, useState, type ReactNode } from "react";
-import { getPublicBoot, syncPublicTheme } from "@/lib/publicBoot";
+import { PUBLIC_THEME, getPublicBoot, syncPublicTheme } from "@/lib/publicBoot";
 
 type PublicChromeContextValue = {
   menuOpen: boolean;
@@ -22,7 +22,7 @@ const MOBILE_SCROLL_TOP_RESET = 24;
 const MOBILE_SCROLL_REVEAL_START = 96;
 const MOBILE_SCROLL_DIRECTION_TRAVEL = 24;
 
-export const getInitialPublicTheme = (): "dark" => "dark";
+export const getInitialPublicTheme = (): typeof PUBLIC_THEME => PUBLIC_THEME;
 
 const PublicChromeContext = createContext<PublicChromeContextValue | null>(null);
 
