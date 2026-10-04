@@ -54,11 +54,31 @@ describe("withdrawn published-blog source", () => {
     expect(await response.text()).toContain(withdrawn);
   });
 
+  it.each([[5_000, true], [5_001, false]])("checks the source clock skew boundary at %i ms", async (skew, accepted) => {
+    const now = Date.now();
+    vi.spyOn(Date, "now").mockReturnValue(now);
+    try {
+      vi.stubGlobal("fetch", vi.fn(async (input: RequestInfo | URL) => {
+        const url = new URL(input instanceof Request ? input.url : String(input));
+        if (url.pathname.endsWith("/functions/v1/sitemap")) return new Response(completeXml([staticAbout, current], new Date(now + skew).toISOString()));
+        return new Response("[]", { headers: { "content-type": "application/json" } });
+      }));
+      const assets = { fetch: async () => new Response(xml([staticAbout, withdrawn]), { headers: { "content-type": "application/xml" } }) };
+      const response = await onRequest({ request: new Request("https://flashcast.com.my/sitemap.xml"), env: { ...env, ASSETS: assets }, next: async () => new Response("") } as Parameters<typeof onRequest>[0]);
+      const sitemap = await response.text();
+      expect(sitemap).toContain(current);
+      expect(sitemap.includes(withdrawn)).toBe(!accepted);
+    } finally {
+      vi.restoreAllMocks();
+    }
+  });
+
   it.each([
     ["503", new Response("unavailable", { status: 503 })],
     ["empty 200", new Response("")],
     ["wrong-host 200", new Response(completeXml(["https://example.com/en/blog/other"]))],
     ["stale complete snapshot", new Response(completeXml([staticAbout, current], "2020-01-01T00:00:00.000Z"))],
+    ["far-future complete snapshot", new Response(completeXml([staticAbout, current], "2099-01-01T00:00:00.000Z"))],
   ])("keeps static blog URLs for %s dynamic fallback", async (_label, dynamicResponse) => {
     vi.stubGlobal("fetch", vi.fn(async (input: RequestInfo | URL) => {
       const url = new URL(input instanceof Request ? input.url : String(input));
