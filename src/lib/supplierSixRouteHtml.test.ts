@@ -12,10 +12,12 @@ afterEach(() => {
 });
 
 describe("supplier product route HTML through the current middleware", () => {
-  it("returns all six real built-shell responses with exact canonical, hreflang and safe summary", async () => {
+  it("returns all six HTML shell responses with exact canonical, hreflang and safe summary", async () => {
     vi.doMock("../../functions/seo-manifest.json", () => ({ default: manifest }));
     const { onRequest } = await import("../../functions/_middleware");
-    const shell = readFileSync("dist/index.html", "utf8");
+    // Exercise real middleware transforms without depending on a prior build.
+    // The deployed build is validated separately by the release workflow.
+    const shell = readFileSync("index.html", "utf8");
     expect(shell).toContain('<div id="root"></div>');
 
     for (const slug of slugs) {
