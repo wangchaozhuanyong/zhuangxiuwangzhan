@@ -31,6 +31,16 @@ test("dry run follows the declared dependency order rather than file-name order"
     assert.deepEqual(report.tables.map(item => item.table), ["leads", "lead_followups"]);
   } finally { fs.rmSync(folder, { recursive: true, force: true }); }
 });
+test("a backup supplied after the dry-run flag is actually checked", () => {
+  const folder = fixture();
+  try {
+    const env = { ...process.env, DISABLE_SYSTEM_HEALTH_LOG: "1" };
+    delete env.SUPABASE_SERVICE_ROLE_KEY;
+    const result = spawnSync(process.execPath, [path.join(root, "scripts/restore-supabase-backup.mjs"), "--dry-run", folder], { cwd: folder, env, encoding: "utf8" });
+    assert.equal(result.status, 0, result.stderr);
+    assert.equal(JSON.parse(result.stdout.slice(result.stdout.indexOf("{"))).backupPath, folder);
+  } finally { fs.rmSync(folder, { recursive: true, force: true }); }
+});
 test("writes refuse the original production project and a missing explicit target", () => {
   const folder = fixture();
   try {
