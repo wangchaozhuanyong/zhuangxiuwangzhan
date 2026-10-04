@@ -1,3 +1,4 @@
+import AdminFurnitureCatalog from "@/pages/admin/AdminFurnitureCatalog";
 import { useAdminListingState } from "@/hooks/useAdminListingState";
 
 import { Link } from "react-router-dom";
@@ -23,6 +24,11 @@ import { formatUserFacingError } from "@/lib/userFacingText";
 type AdminMaterialListTextKey = keyof typeof adminMaterialListText;
 
 export default function AdminMaterialList({ furnitureMode = false }: { furnitureMode?: boolean }) {
+  return furnitureMode ? <AdminFurnitureCatalog /> : <MaterialList />;
+}
+
+function MaterialList() {
+  const furnitureMode = false;
   const language = getAdminLang();
   const A = (key: AdminMaterialListTextKey) => (furnitureMode ? adminFurnitureListText : adminMaterialListText)[key][language];
   const basePath = furnitureMode ? "/admin/furniture" : "/admin/materials";

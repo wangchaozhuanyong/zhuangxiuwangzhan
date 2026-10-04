@@ -12,6 +12,7 @@ export type PublicDataPayload = {
   serviceAreas?: UnknownRecord[];
   blogPosts?: UnknownRecord[];
   ctaBlocks?: Record<string, UnknownRecord>;
+  furnitureCatalog?: { materials: UnknownRecord[]; setting: UnknownRecord | null; detailSlug?: string };
 };
 
 let preloadedPublicData: PublicDataPayload | null | undefined;

@@ -32,9 +32,9 @@ describe("public route language prefetch", () => {
     expect(keysFor("/en/privacy", "zh")).toEqual([]);
   });
 
-  it("does not request CMS pages for the furniture catalog or product routes", () => {
-    expect(keysFor("/zh/furniture", "zh")).toEqual([]);
-    expect(keysFor("/en/furniture/bedroom", "en")).toEqual([]);
-    expect(keysFor("/zh/furniture/product/ws-2102-wooden-bunk-bed-white", "zh")).toEqual([]);
+  it("prefetches shared furniture settings without requesting unrelated CMS pages", () => {
+    expect(keysFor("/zh/furniture", "zh")).toEqual([["published", "furniture_catalog", "zh"]]);
+    expect(keysFor("/en/furniture/bedroom", "en")).toEqual([["published", "furniture_catalog", "en"]]);
+    expect(keysFor("/zh/furniture/product/ws-2102-wooden-bunk-bed-white", "zh")).toEqual([["published", "furniture_catalog", "detail", "ws-2102-wooden-bunk-bed-white", "zh"]]);
   });
 });

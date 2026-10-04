@@ -1,3 +1,4 @@
+import AdminHomeSectionVisibility from "@/components/admin/AdminHomeSectionVisibility";
 import { useAdminFormState } from "@/hooks/useAdminFormState";
 import { useSubmissionLock } from "@/hooks/useSubmissionLock";
 import { useEffect, useMemo, useState } from "react";
@@ -305,6 +306,7 @@ const AdminSimpleCms = ({ module }: { module: ModuleKey }) => {
         helpText={t.pageHelpText}
       />
 
+      {module === "brand_partners" && <AdminHomeSectionVisibility sectionKey="brand_partners" />}
       <div className="grid min-w-0 gap-5 sm:gap-6 xl:grid-cols-[minmax(0,1fr)_420px] xl:items-start">
         <section className="min-w-0 rounded-xl border border-border bg-card p-4 sm:p-6">
           <div className="mb-5 flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">

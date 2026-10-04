@@ -27,6 +27,7 @@ import {
 
 import { claimPublicQuerySeed, documentSeedTime } from "@/lib/publicQuerySeedCache";
 import { INTERACTION_POLICY, runReadQuery } from "@/lib/interactionPolicy";
+import { getPublishedFurnitureCatalog, getPublishedFurnitureProductBySlug } from "@/lib/furnitureCatalog";
 const STALE_TIME = INTERACTION_POLICY.publicStaleTime;
 const GC_TIME = INTERACTION_POLICY.gcTime;
 
@@ -57,7 +58,7 @@ export const getPublicRoutePrefetchTasks = (pathname: string, language: Language
   if (section === "about") {
     return [
       sitePageTask(language, "about"),
-      ...["hero", "stats", "core_values"].map((sectionKey) => ({
+      ...["hero", "intro", "stats", "core_values", "team", "milestones", "office"].map((sectionKey) => ({
         queryKey: ["published", "about_section", language, sectionKey],
         queryFn: ({ signal }) => getPublishedAboutSection(language, sectionKey, signal),
       })),
@@ -147,7 +148,13 @@ export const getPublicRoutePrefetchTasks = (pathname: string, language: Language
 
   // Furniture has its own static catalog and optional managed-product queries.
   // It is not a CMS path; a speculative CMS lookup only adds a wasted request.
-  if (["privacy", "terms", "furniture"].includes(section || "")) return [];
+  if (section === "furniture") {
+    const productSlug = segments[1] === "product" ? segments[2] : undefined;
+    return productSlug
+      ? [{ queryKey: ["published", "furniture_catalog", "detail", productSlug, language], queryFn: ({ signal }) => getPublishedFurnitureProductBySlug(productSlug, language, signal) }]
+      : [{ queryKey: ["published", "furniture_catalog", language], queryFn: ({ signal }) => getPublishedFurnitureCatalog(language, signal) }];
+  }
+  if (["privacy", "terms"].includes(section || "")) return [];
 
   return [{
     queryKey: ["published", "cms_path", language, path],

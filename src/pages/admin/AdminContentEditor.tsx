@@ -1,3 +1,4 @@
+import AdminHomeSectionVisibility from "@/components/admin/AdminHomeSectionVisibility";
 import { useAdminListingState } from "@/hooks/useAdminListingState";
 import { interactionText } from "@/i18n/interactionText";
 import { useAdminFormState } from "@/hooks/useAdminFormState";
@@ -223,6 +224,7 @@ const AdminContentEditor = () => {
             <div className="mb-4 rounded-lg border border-accent/20 bg-accent/5 p-3 text-sm text-muted-foreground">{t.leadTip}</div>
           )}
           {status && <div className="mb-4 rounded-lg bg-muted p-3 text-sm">{status}</div>}
+          {type === "testimonials" && <AdminHomeSectionVisibility sectionKey="testimonials" />}
           <div className="grid min-w-0 gap-4 md:grid-cols-2">
             {visibleFields.map((field) => {
               const label = translateFieldLabel(field, lang);

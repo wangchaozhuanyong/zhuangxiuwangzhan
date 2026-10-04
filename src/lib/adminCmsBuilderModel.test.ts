@@ -12,6 +12,9 @@ import {
 
 describe("adminCmsBuilderModel", () => {
   it("normalizes CMS page keys and paths", () => {
+    expect(isCmsPathHandledByStaticRoute("/furniture")).toBe(true);
+    expect(isCmsPathHandledByStaticRoute("/furniture/product/chair")).toBe(true);
+    expect(isCmsPathHandledByStaticRoute("/promotions")).toBe(true);
     expect(normalizeCmsPageKey(" Promo Page ")).toBe("promo-page");
     expect(normalizeCmsPagePath("promo-page/")).toBe("/promo-page");
     expect(normalizeCmsPagePath("/promo-page/")).toBe("/promo-page");

@@ -1,0 +1,28 @@
+export const adminContentSyncText = {
+  zh: {
+    discardTitle: "放弃未保存的修改？", discardDescription: "关闭编辑窗口将丢弃本次未保存的内容。", discardConfirm: "放弃修改",
+    brand_partners: "品牌合作", testimonials: "客户评价", toggle: "在首页显示", enabled: "已开启", disabled: "已关闭（默认）",
+    saving: "正在保存…", saved: "已保存", failed: "保存失败", retry: "重试", preview: "预览客户端", edit: "编辑", cancel: "取消", save: "保存",
+    placement: "固定显示位置：首页施工流程下方、常见问题上方。关闭时不占用空间；开启后仅显示已发布且内容完整的资料。",
+    noContent: "请先添加并发布内容，再开启展示。", catalog: "客户端现有家具目录", managed: "后台新增家具", all: "全部家具",
+    catalogHelp: "这里包含客户端现有目录和后台新增商品。目录商品可编辑双语内容、价格、图片及显示状态；保存后列表与详情使用同一份设置。",
+    visible: "客户端显示", hidden: "客户端隐藏", source: "内容来源", titleZh: "中文名称", titleEn: "英文名称", summaryZh: "中文简介", summaryEn: "英文简介",
+    descriptionZh: "中文详情", descriptionEn: "英文详情", price: "展示价格（保留原有价格范围；留空表示询价）", images: "图片地址（每行一张，第一张为封面）",
+    required: "请填写双语名称，并至少提供一张有效图片。", invalidImage: "图片必须使用站内绝对路径或 HTTPS 地址。",
+    restoring: "恢复客户端原始内容", restoreHelp: "恢复后使用原目录的文案、价格和图片，并重新显示；不会删除原目录商品。",
+    legacy: "当前客户端未使用的旧首页模块已撤出管理入口，原资料保留。改造前后仍由独立页面管理。",
+  },
+  en: {
+    discardTitle: "Discard unsaved changes?", discardDescription: "Closing this editor will discard your unsaved changes.", discardConfirm: "Discard changes",
+    brand_partners: "Brand partners", testimonials: "Testimonials", toggle: "Show on homepage", enabled: "Enabled", disabled: "Disabled (default)",
+    saving: "Saving…", saved: "Saved", failed: "Save failed", retry: "Retry", preview: "Preview website", edit: "Edit", cancel: "Cancel", save: "Save",
+    placement: "Fixed position: below the homepage process and above FAQ. Hidden sections take no space. Only complete published records are displayed when enabled.",
+    noContent: "Add and publish content before enabling this section.", catalog: "Existing website furniture catalog", managed: "Admin furniture", all: "All furniture",
+    catalogHelp: "Includes the existing website catalog and admin products. Edit bilingual catalog content, prices, images, and visibility. Lists and details use the same saved settings.",
+    visible: "Visible on website", hidden: "Hidden on website", source: "Content source", titleZh: "Chinese name", titleEn: "English name", summaryZh: "Chinese summary", summaryEn: "English summary",
+    descriptionZh: "Chinese description", descriptionEn: "English description", price: "Display price (retain price ranges; leave empty for enquiries)", images: "Image URLs (one per line; first is cover)",
+    required: "Provide both names and at least one valid image.", invalidImage: "Images must use an absolute site path or an HTTPS URL.",
+    restoring: "Restore original website content", restoreHelp: "Restores the catalog text, price, images, and visibility without deleting the original product.",
+    legacy: "Unused legacy homepage modules have been removed from this editor; their records are retained. Before/after content still has its own page editor.",
+  },
+} as const;

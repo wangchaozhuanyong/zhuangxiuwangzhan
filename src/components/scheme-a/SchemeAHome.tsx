@@ -13,6 +13,7 @@ import { isRenderingConceptProject } from "@/lib/projectContentClassification";
 import { resolveSchemeAHomePresentation } from "@/lib/schemeAHomePresentation";
 import { buildSupabaseSrcSet, type SupabaseTargetAspectRatio } from "@/lib/supabaseImage";
 import { buildLocalResponsiveSrcSet } from "@/lib/localResponsiveImage";
+import SchemeAOptionalHomeSections from "@/components/scheme-a/SchemeAOptionalHomeSections";
 
 type SchemeAHomeProps = {
   content: PublishedHomeContentBundle | undefined;
@@ -351,6 +352,8 @@ const SchemeAHome = ({ content }: SchemeAHomeProps) => {
           </div>
         </section>
       )}
+
+      <SchemeAOptionalHomeSections content={content} />
 
       {faqItems.length > 0 && (
         <section className="scheme-a-home-faq" data-home-section="faq" data-cinematic-section>

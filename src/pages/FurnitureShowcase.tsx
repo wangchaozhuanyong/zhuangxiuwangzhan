@@ -6,9 +6,9 @@ import LocalizedLink from "@/components/LocalizedLink";
 import { JsonLdBreadcrumb } from "@/components/JsonLd";
 import { SchemeARouteHero } from "@/components/scheme-a/SchemeARoutePrimitives";
 import { useLanguage } from "@/i18n/LanguageContext";
-import { usePublishedManagedFurnitureProducts } from "@/hooks/usePublishedContent";
+import { usePublishedFurnitureCatalog } from "@/hooks/usePublishedContent";
 import { furnitureCategoryName, furnitureSubcategoryName, furnitureText } from "@/i18n/furnitureText";
-import { furnitureCatalog, furnitureProductPath, furnitureShopUrl, getFurnitureCategory, getFurnitureProducts, getFurnitureSubcategory, getManagedFurnitureProductsForCategory, localizeFurnitureProduct } from "@/lib/furnitureCatalog";
+import { furnitureCatalog, furnitureProductPath, furnitureShopUrl, getFurnitureCategory, getFurnitureSubcategory, getFurnitureCatalogProductsForCategory, localizeFurnitureProduct } from "@/lib/furnitureCatalog";
 import { rememberFurnitureNavigationScroll } from "@/lib/publicScrollRestoration";
 import { withLanguagePrefix } from "@/i18n/routes";
 
@@ -33,14 +33,13 @@ export default function FurnitureShowcase() {
     });
   };
   const copy = furnitureText[language];
-  const managedQuery = usePublishedManagedFurnitureProducts(language);
+  const managedQuery = usePublishedFurnitureCatalog(language);
   const managedProducts = managedQuery.data || [];
   const category = getFurnitureCategory(categoryKey || "new");
   const subcategory = category && subcategoryKey ? getFurnitureSubcategory(category, subcategoryKey) : undefined;
   const validSelection = Boolean(category && (!subcategoryKey || subcategory));
-  const urls = validSelection ? (subcategory?.productUrls || category?.productUrls || []) : [];
   const products = validSelection
-    ? [...getManagedFurnitureProductsForCategory(managedProducts, category!.key, subcategory?.key), ...getFurnitureProducts(urls)]
+    ? getFurnitureCatalogProductsForCategory(managedProducts, category!.key, subcategory?.key)
     : [];
   const totalPages = Math.max(1, Math.ceil(products.length / pageSize));
   const requestedPage = Number(searchParams.get("page") || 1);
@@ -54,7 +53,7 @@ export default function FurnitureShowcase() {
   const pagePath = (number: number) => `${currentPath}${number > 1 ? `?page=${number}` : ""}`;
 
   return (
-    <main className="fc-route-page fc-furniture-page">
+    <main className="fc-route-page fc-furniture-page" data-route-pending={managedQuery.isLoading || undefined}>
       <PageMeta title={[subcategoryLabel, categoryKey ? categoryLabel : copy.title].filter(Boolean).join(" | ")} description={copy.metaDescription} canonicalPath={currentPath} noIndex={!validSelection} />
       <JsonLdBreadcrumb items={[
         { name: copy.home, url: "/" },
@@ -79,7 +78,7 @@ export default function FurnitureShowcase() {
           {furnitureCatalog.taxonomy.map((item) => (
             <LocalizedLink key={item.key} to={item.key === "new" ? "/furniture" : `/furniture/${item.key}`} viewTransition={false} onClick={keepFurnitureScrollPosition} aria-current={category?.key === item.key ? "page" : undefined}>
               <span>{furnitureCategoryName(item.key, language)}</span>
-              <small>{item.productUrls.length + getManagedFurnitureProductsForCategory(managedProducts, item.key).length}</small>
+              <small>{getFurnitureCatalogProductsForCategory(managedProducts, item.key).length}</small>
             </LocalizedLink>
           ))}
         </nav>
@@ -128,7 +127,7 @@ export default function FurnitureShowcase() {
               );
             })}
           </div>
-        ) : <div className="fc-furniture-empty">{validSelection ? copy.noProducts : copy.notFound}</div>}
+        ) : managedQuery.isLoading || managedQuery.isInitialError ? null : <div className="fc-furniture-empty">{validSelection ? copy.noProducts : copy.notFound}</div>}
         {totalPages > 1 ? (
           <nav className="fc-furniture-pagination" aria-label={copy.page.replace("{page}", String(page)).replace("{total}", String(totalPages))}>
             {page > 1 ? <LocalizedLink to={pagePath(page - 1)}>{copy.previous}</LocalizedLink> : <span />}

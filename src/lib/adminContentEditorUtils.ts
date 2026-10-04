@@ -25,7 +25,7 @@ export const contentFields = ["title_zh", "excerpt_zh", "content_zh", "seo_title
 export const englishFields = ["title_en", "excerpt_en", "content_en", "seo_title_en", "seo_description_en", "alt_en"];
 
 export const tableFields: Record<string, string[]> = {
-  hero_slides: ["button_label_zh", "button_label_en", "button_url", "status", "sort_order"],
+  hero_slides: ["image_url", "alt_zh", "alt_en", "button_label_zh", "button_label_en", "button_url", "status", "sort_order"],
   services: [
     ...contentFields,
     "suitable_for_zh",
@@ -221,7 +221,7 @@ export const copy = {
 };
 
 export const tableLabels: Record<string, { en: string; zh: string }> = {
-  hero_slides: { en: "Hero Buttons", zh: "首屏按钮" },
+  hero_slides: { en: "Hero Media & Buttons", zh: "首屏图片与按钮" },
   services: { en: "Services", zh: "服务项目" },
   projects: { en: "Projects", zh: "装修案例" },
   materials: { en: "Materials", zh: "材料库" },

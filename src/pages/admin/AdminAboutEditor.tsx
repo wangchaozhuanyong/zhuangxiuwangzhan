@@ -263,7 +263,6 @@ export default function AdminAboutEditor() {
                 {sectionTabLabel(key)}
               </TabsTrigger>
             ))}
-            <TabsTrigger value="cta">{A("ctaTab")}</TabsTrigger>
           </TabsList>
         </div>
 

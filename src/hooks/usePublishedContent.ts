@@ -30,7 +30,7 @@ import {
   getPublishedSitePage,
 } from "@/lib/homeContentApi";
 import { isSupabaseConfigured } from "@/lib/supabaseConfig";
-import { getPublishedManagedFurnitureProductBySlug, getPublishedManagedFurnitureProducts } from "@/lib/furnitureCatalog";
+import { getPublishedFurnitureCatalog, getPublishedFurnitureProductBySlug, getPublishedManagedFurnitureProductBySlug, getPublishedManagedFurnitureProducts } from "@/lib/furnitureCatalog";
 import { INTERACTION_POLICY } from "@/lib/interactionPolicy";
 
 const STALE = INTERACTION_POLICY.publicStaleTime;
@@ -101,6 +101,16 @@ export function usePublishedManagedFurnitureProducts(language: "en" | "zh", opti
     enabled: isSupabaseQueryEnabled(options),
     ...queryDefaults,
   });
+}
+
+export function usePublishedFurnitureCatalog(language: "en" | "zh") {
+  return useQuery({ queryKey: ["published", "furniture_catalog", language],
+    queryFn: ({ signal }) => getPublishedFurnitureCatalog(language, signal), ...queryDefaults });
+}
+
+export function usePublishedFurnitureProduct(slug: string | undefined, language: "en" | "zh") {
+  return useQuery({ queryKey: ["published", "furniture_catalog", "detail", slug, language],
+    queryFn: ({ signal }) => getPublishedFurnitureProductBySlug(slug!, language, signal), enabled: Boolean(slug), ...queryDefaults });
 }
 
 export function usePublishedManagedFurnitureProductBySlug(slug: string | undefined, language: "en" | "zh") {

@@ -7,9 +7,9 @@ import WhatsAppIcon from "@/components/WhatsAppIcon";
 import { JsonLdBreadcrumb } from "@/components/JsonLd";
 import { useSiteSettings } from "@/hooks/useSiteSettings";
 import { useLanguage } from "@/i18n/LanguageContext";
-import { usePublishedManagedFurnitureProductBySlug } from "@/hooks/usePublishedContent";
+import { usePublishedFurnitureProduct } from "@/hooks/usePublishedContent";
 import { furnitureCategoryName, furnitureText, formatFurnitureEnquiryMessage } from "@/i18n/furnitureText";
-import { furnitureShopUrl, getFurnitureProduct, getFurnitureProductCategory, localizeFurnitureProduct } from "@/lib/furnitureCatalog";
+import { furnitureShopUrl, getFurnitureProductCategory, localizeFurnitureProduct } from "@/lib/furnitureCatalog";
 import { usePageWhatsAppMessage } from "@/contexts/PublicChromeContext";
 import { getFurnitureListingOrigin, LISTING_SCROLL_INTENT } from "@/lib/publicScrollRestoration";
 
@@ -20,9 +20,8 @@ export default function FurnitureProductDetail() {
   const returnState = origin ? { scrollIntent: LISTING_SCROLL_INTENT, scrollTop: origin.top } : undefined;
   const copy = furnitureText[language];
   const settings = useSiteSettings();
-  const staticProduct = getFurnitureProduct(slug);
-  const managedQuery = usePublishedManagedFurnitureProductBySlug(staticProduct ? undefined : slug, language);
-  const product = staticProduct || managedQuery.data;
+  const managedQuery = usePublishedFurnitureProduct(slug, language);
+  const product = managedQuery.data;
   const localizedProduct = product ? localizeFurnitureProduct(product, language) : undefined;
   const message = product && localizedProduct
     ? formatFurnitureEnquiryMessage(localizedProduct.name, product.sku, language)

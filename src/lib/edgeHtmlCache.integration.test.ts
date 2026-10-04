@@ -63,9 +63,15 @@ describe("public Edge HTML cache", () => {
   });
   const assetHtml = "<!doctype html><html><head><title>FLASH CAST</title></head><body><div id=\"root\"></div></body></html>";
 
+  const catalogOverride = { slug: "ws-2102-wooden-bunk-bed-white", enabled: true, name_zh: "已更新双层床", name_en: "Updated bunk bed", shortDescription_zh: "更新后的床简介", shortDescription_en: "Updated bed summary", description_zh: "床详情", description_en: "Bed details", price: "RM475.00 – RM495.00", images: ["/updated-bed.webp"] };
+
   beforeEach(() => {
     edgeCache.clear();
     siteSettingsRevision = "2026-08-21T00:00:00.000Z";
+    supabaseFetch.mockImplementation(async (input: RequestInfo | URL) => new Response(
+      String(input).includes("/rest/v1/site_settings") ? JSON.stringify([{ updated_at: siteSettingsRevision }]) : "[]",
+      { status: 200, headers: { "content-type": "application/json" } },
+    ));
     Object.defineProperty(globalThis, "caches", {
       configurable: true,
       value: { default: edgeCache },
@@ -267,6 +273,36 @@ describe("public Edge HTML cache", () => {
     expect(xml).not.toContain("https://flashcast.com.my/en/products");
     expect(xml).not.toContain("https://flashcast.com.my/en/landing/flooring");
     expect(xml).not.toContain("https://flashcast.com.my/zh/landing/office-renovation");
+  });
+
+  it("uses catalog override metadata and preloads settings for the same product", async () => {
+    supabaseFetch.mockImplementation(async (input: RequestInfo | URL) => {
+      const url = new URL(String(input));
+      const body = url.pathname.endsWith("/home_sections") ? [{ section_key: "furniture_catalog", items_zh: [catalogOverride], updated_at: "2026-10-04T01:00:00Z" }] : [];
+      return new Response(JSON.stringify(body), { headers: { "content-type": "application/json" } });
+    });
+    const response = await requestPage({ path: `/zh/furniture/product/${catalogOverride.slug}`, supabaseUrl: "https://catalog-edit.supabase.co" });
+    const html = await response.text();
+    expect(html).toContain("已更新双层床");
+    expect(html).toContain("更新后的床简介");
+    expect(html).toContain("https://flashcast.com.my/updated-bed.webp");
+    expect(html).toContain('"furnitureCatalog"');
+    expect(html).toContain('"detailSlug":"ws-2102-wooden-bunk-bed-white"');
+  });
+
+  it("returns noindex and removes both language links when a catalog product is hidden", async () => {
+    supabaseFetch.mockImplementation(async (input: RequestInfo | URL) => {
+      const url = new URL(String(input));
+      const body = url.pathname.endsWith("/home_sections") ? [{ section_key: "furniture_catalog", items_zh: [{ ...catalogOverride, enabled: false }] }]
+        : url.pathname.endsWith("/materials") ? [{ slug: catalogOverride.slug }] : [];
+      return new Response(JSON.stringify(body), { headers: { "content-type": "application/json" } });
+    });
+    const response = await requestPage({ path: `/en/furniture/product/${catalogOverride.slug}`, supabaseUrl: "https://catalog-hidden.supabase.co" });
+    expect(response.status).toBe(404);
+    expect(await response.text()).toContain("noindex, nofollow");
+    const xml = `<urlset><url><loc>https://flashcast.com.my/en/furniture/product/${catalogOverride.slug}</loc></url><url><loc>https://flashcast.com.my/zh/furniture/product/${catalogOverride.slug}</loc></url></urlset>`;
+    const sitemapResponse = await requestPage({ path: "/sitemap.xml", html: xml, supabaseUrl: "https://catalog-hidden-sitemap.supabase.co" });
+    expect(await sitemapResponse.text()).not.toContain(catalogOverride.slug);
   });
 
   it("publishes admin furniture URLs in the sitemap without material detail URLs", async () => {
