@@ -20,7 +20,7 @@ import { useSiteSettings } from "@/hooks/useSiteSettings";
 import { usePublishedSitePage } from "@/hooks/usePublishedContent";
 import { SchemeARouteHero } from "@/components/scheme-a/SchemeARoutePrimitives";
 import { trackCtaClick, trackQuoteFormSubmit } from "@/lib/analytics";
-import { isValidLeadEmail, isValidLeadPhone } from "@/lib/leadValidation";
+import { isValidLeadEmail, isValidLeadPhone, localizeLeadFormErrors } from "@/lib/leadValidation";
 import { pageHeroImages, resolvePageHeroImage } from "@/lib/pageHeroImages";
 import { formatQuoteContextLabel, parseQuoteContext, QUOTE_FORM_ID } from "@/lib/quoteContext";
 import { preloadTurnstile } from "@/lib/turnstile";
@@ -60,7 +60,8 @@ const getLocalizedOptionLabel = (options: { value: string; en: string; zh: strin
 const formatQuoteText = (template: string, values: Record<string, string>) =>
   Object.entries(values).reduce((text, [name, value]) => text.replaceAll(`{${name}}`, value), template);
 
-type FormErrors = Partial<Record<string, string>>;
+type FormErrorMessage = "requiredName" | "requiredPhone" | "invalidPhone" | "invalidEmail" | "requiredProject" | "requiredLocation";
+type FormErrors = Partial<Record<string, FormErrorMessage>>;
 
 const quoteFieldIds: Record<string, string> = {
   name: "quote-name",
@@ -104,7 +105,8 @@ const Quote = () => {
   });
   const currentForm = useRef(form); currentForm.current = form;
   const lastSavedForm = useRef<typeof form | null>(null);
-  const [errors, setErrors] = useState<FormErrors>({});
+  const [errorKeys, setErrorKeys] = useState<FormErrors>({});
+  const errors = localizeLeadFormErrors(errorKeys, t);
   const [status, setStatus] = useState<"idle" | "submitting" | "success" | "error">("idle");
   const formGuard = useFormGuard();
   useUnsavedChangesWarning(isSubmitting || status === "submitting" || Object.values(form).some((value) => String(value).trim() !== "") && JSON.stringify(form) !== JSON.stringify(lastSavedForm.current));
@@ -153,7 +155,7 @@ const Quote = () => {
 
   const updateForm = (key: keyof typeof form, value: string) => {
     setForm((current) => ({ ...current, [key]: value }));
-    setErrors((current) => {
+    setErrorKeys((current) => {
       const next = { ...current };
       delete next[key];
       return next;
@@ -163,14 +165,14 @@ const Quote = () => {
 
   const validate = (): boolean => {
     const next: FormErrors = {};
-    if (!form.name.trim()) next.name = t.requiredName;
-    if (!form.phone.trim()) next.phone = t.requiredPhone;
-    else if (!isValidLeadPhone(form.phone)) next.phone = t.invalidPhone;
-    if (form.email && !isValidLeadEmail(form.email)) next.email = t.invalidEmail;
-    if (!form.projectType) next.projectType = t.requiredProject;
-    if (!form.location.trim()) next.location = t.requiredLocation;
+    if (!form.name.trim()) next.name = "requiredName";
+    if (!form.phone.trim()) next.phone = "requiredPhone";
+    else if (!isValidLeadPhone(form.phone)) next.phone = "invalidPhone";
+    if (form.email && !isValidLeadEmail(form.email)) next.email = "invalidEmail";
+    if (!form.projectType) next.projectType = "requiredProject";
+    if (!form.location.trim()) next.location = "requiredLocation";
     const hasErrors = Object.keys(next).length > 0;
-    setErrors(next);
+    setErrorKeys(next);
     if (hasErrors && typeof window !== "undefined") {
       window.requestAnimationFrame(() => {
         document.getElementById("quote-validation-summary")?.focus({ preventScroll: true });
