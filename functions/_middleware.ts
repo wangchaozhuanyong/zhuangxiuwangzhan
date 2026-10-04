@@ -1,6 +1,6 @@
 import { FURNITURE_CATALOG_SECTION_KEY, readFurnitureCatalogOverrides } from "../src/lib/furnitureCatalogOverrides";
 import { resolveReviewedBlogCover, resolveReviewedImageSource, resolveReviewedMaterialImage, wardrobeCover } from "../src/lib/reviewedContentMedia.mjs";
-import { buildReadableHomeFaqBody, buildReadablePublicBody, sanitizeReadableContent } from "./readablePublicBody";
+import { buildReadableCollectionBody, buildReadableHomeFaqBody, buildReadablePublicBody, isReviewedMaterialBodyPath, sanitizeReadableContent } from "./readablePublicBody";
 import { mapPublicHomeFaqs } from "../src/lib/publicHomeFaqs";
 import { projectPublicMetadata } from "../src/lib/projectPublicMetadata.mjs";
 import manifest from "./seo-manifest.json";
@@ -1668,20 +1668,24 @@ const fetchDynamicRouteState = async (
   return { kind, row, meta: buildDynamicSeoEntry(key, row, kind, fallback), contentVersion: hashContentVersion(versionParts) };
 };
 
-const fetchPublicServices = async (env: Record<string, string | undefined>) =>
-  fetchPublicRows(env, "services", "services", (url) => {
+const fetchPublicServices = async (env: Record<string, string | undefined>, fresh = false) => {
+  const configure = (url: URL) => {
     url.searchParams.set("select", "*");
     url.searchParams.set("status", "eq.published");
     url.searchParams.set("order", "sort_order.asc");
-  });
+  };
+  return fresh ? fetchFreshPublicRows(env, "services", configure) : fetchPublicRows(env, "services", "services", configure);
+};
 
-const fetchPublicMaterials = async (env: Record<string, string | undefined>) =>
-  fetchPublicRows(env, "materials", "materials", (url) => {
+const fetchPublicMaterials = async (env: Record<string, string | undefined>, fresh = false) => {
+  const configure = (url: URL) => {
     url.searchParams.set("select", "*");
     url.searchParams.set("status", "eq.published");
     url.searchParams.set("or", "(category.is.null,category.neq.furniture)");
     url.searchParams.set("order", "sort_order.asc");
-  });
+  };
+  return fresh ? fetchFreshPublicRows(env, "materials", configure) : fetchPublicRows(env, "materials", "materials", configure);
+};
 
 const fetchPublicMaterialDetail = async (
   env: Record<string, string | undefined>,
@@ -2495,7 +2499,8 @@ export const onRequest: PagesFunction = async (context) => {
   const shouldInjectProjectSummaries = Boolean(meta && (key === "/en/projects" || key === "/zh/projects" || projectDetailSlug));
   const shouldInjectPublicPageBundle = Boolean(meta && topLevelPublicPageKey);
   const shouldInjectServices = topLevelPublicPageKey === "services";
-  const shouldInjectMaterials = topLevelPublicPageKey === "materials" || topLevelPublicPageKey === "products" || Boolean(productDetailSlug);
+  const reviewedMaterialBody = isReviewedMaterialBodyPath(key);
+  const shouldInjectMaterials = topLevelPublicPageKey === "materials" || topLevelPublicPageKey === "products" || Boolean(productDetailSlug) || reviewedMaterialBody;
   const shouldInjectServiceAreas = topLevelPublicPageKey === "locations";
   const shouldInjectBlogPosts = topLevelPublicPageKey === "blog";
   const furniturePath = key.replace(/^\/(?:en|zh)/, "");
@@ -2529,8 +2534,8 @@ export const onRequest: PagesFunction = async (context) => {
     shouldInjectPublicPageBundle && topLevelPublicPageKey
       ? fetchPublicSitePageBundle(env as Record<string, string | undefined>, topLevelPublicPageKey)
       : Promise.resolve(null),
-    shouldInjectServices ? fetchPublicServices(env as Record<string, string | undefined>) : Promise.resolve(null),
-    shouldInjectMaterials ? fetchPublicMaterials(env as Record<string, string | undefined>) : Promise.resolve(null),
+    shouldInjectServices ? fetchPublicServices(env as Record<string, string | undefined>, key === "/en/services") : Promise.resolve(null),
+    shouldInjectMaterials ? fetchPublicMaterials(env as Record<string, string | undefined>, reviewedMaterialBody) : Promise.resolve(null),
     productDetailSlug
       ? fetchPublicMaterialDetail(
           env as Record<string, string | undefined>,
@@ -2550,6 +2555,7 @@ export const onRequest: PagesFunction = async (context) => {
   if (shouldInjectHomeBundle && meta) meta = { ...meta, faqs: homeFaqs };
   const html = await response.text();
   const readableBody = buildReadablePublicBody(key, dynamicRouteState?.row, siteSettings)
+    || buildReadableCollectionBody(key, { services, materials, servicePage: dynamicRouteState?.kind === "site_page" ? dynamicRouteState.row : null })
     || buildReadableRenovationBodyMarkup(key, dynamicRouteState)
     || buildReadableHomeFaqBody(key, homeFaqs, meta);
   let transformed = meta ? injectSeo(html, meta, siteSettings, readableBody) : injectNoIndexNotFound(html, siteSettings);

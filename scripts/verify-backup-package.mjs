@@ -1,6 +1,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import { logSystemHealthEvent } from "./lib/system-health-events.mjs";
+import { verifyFullPackage } from "./verify-supabase-full.mjs";
 
 const root = process.cwd();
 const backupArg = process.argv[2];
@@ -35,7 +36,14 @@ const requireFile = (file) => {
 
 const manifest = JSON.parse(requireFile("manifest.json"));
 
-if (manifest.backup_type === "rest-json") {
+if (manifest.backup_type === "encrypted-postgres-storage") {
+  const result = verifyFullPackage(backupPath, root);
+  await logSystemHealthEvent({
+    event_type: "backup_package_verified", severity: "info", message: "Encrypted database, account and media package verification completed.",
+    metadata: { backup_folder: path.basename(backupPath), backup_type: manifest.backup_type, full_access: true, table_count: result.table_count, total_rows: result.total_rows, storage_file_count: result.storage_file_count, verified_at: new Date().toISOString() },
+  }, root);
+  console.log(`[verify-backup-package] OK: ${backupPath}`);
+} else if (manifest.backup_type === "rest-json") {
   const tablesDir = path.join(backupPath, "tables");
   const declaredTables = Array.isArray(manifest.tables) ? manifest.tables : [];
   const requiredTables = [...new Set(["cms_pages", "cms_sections", "cms_content_entries", "site_settings",

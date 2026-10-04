@@ -2,9 +2,10 @@ import fs from "node:fs";
 import path from "node:path";
 import { createClient } from "@supabase/supabase-js";
 import { logSystemHealthEvent } from "./lib/system-health-events.mjs";
+import { verifyFullPackage } from "./verify-supabase-full.mjs";
 
 const root = process.cwd();
-const backupArg = process.argv[2];
+const backupArg = process.argv.slice(2).find((argument) => !argument.startsWith("--"));
 const dryRun = process.argv.includes("--dry-run") || process.env.RESTORE_DRY_RUN === "1";
 const confirmWrite = process.env.RESTORE_CONFIRM === "YES";
 const targetUrlArg = process.argv.find((arg) => arg.startsWith("--target-url="))?.slice("--target-url=".length);
@@ -44,7 +45,11 @@ if (!backupPath || !fs.existsSync(backupPath)) {
 }
 
 const manifest = JSON.parse(fs.readFileSync(path.join(backupPath, "manifest.json"), "utf8"));
-if (manifest.backup_type !== "rest-json") {
+if (manifest.backup_type === "encrypted-postgres-storage") {
+  if (!dryRun) throw new Error("Encrypted restores require restore:backup:full and its dedicated local target guard.");
+  const result = verifyFullPackage(backupPath, root);
+  console.log(`[restore-supabase-backup] Dry run OK: ${result.table_count} tables, ${result.storage_file_count} media files. No data was imported.`);
+} else if (manifest.backup_type !== "rest-json") {
   console.log("[restore-supabase-backup] SQL dump backups should be restored with psql after testing on staging.");
 } else {
   const tablesDir = path.join(backupPath, "tables");

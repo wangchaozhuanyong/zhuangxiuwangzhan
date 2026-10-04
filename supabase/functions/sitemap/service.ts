@@ -39,6 +39,7 @@ export async function buildSitemapXml(client: SitemapClient) {
     .flatMap((path) => [`/en${path === "/" ? "" : path}`, `/zh${path === "/" ? "" : path}`]);
   const baseUrl = siteUrl();
   return `<?xml version="1.0" encoding="UTF-8"?>
+<!-- flashcast-sitemap-snapshot:v1 complete=true generated-at="${new Date().toISOString()}" -->
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">
 ${localizedPaths.map((path) => urlEntry(baseUrl, path)).join("\n")}
 </urlset>`;
