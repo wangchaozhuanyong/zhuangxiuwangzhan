@@ -9,7 +9,7 @@ import FurnitureProductDetail from "@/pages/FurnitureProductDetail";
 
 const managedPageFixture = vi.hoisted(() => ({ language: "en" as "en" | "zh", product: undefined as FurnitureProduct | undefined }));
 vi.mock("@/i18n/LanguageContext", () => ({ useLanguage: () => ({ language: managedPageFixture.language }) }));
-vi.mock("@/hooks/usePublishedContent", () => ({ usePublishedManagedFurnitureProductBySlug: () => ({ data: managedPageFixture.product, isFetching: false, isError: false }) }));
+vi.mock("@/hooks/usePublishedContent", () => ({ usePublishedFurnitureProduct: () => ({ data: managedPageFixture.product, isFetching: false, isError: false }) }));
 vi.mock("@/hooks/useSiteSettings", () => ({ useSiteSettingsReadiness: () => false, useSiteSettings: () => ({ whatsapp_url: (message = "") => `https://wa.me/601128853888?text=${encodeURIComponent(message)}` }) }));
 vi.mock("@/components/PageMeta", () => ({ default: () => null }));
 vi.mock("@/components/JsonLd", () => ({ JsonLdBreadcrumb: () => null }));

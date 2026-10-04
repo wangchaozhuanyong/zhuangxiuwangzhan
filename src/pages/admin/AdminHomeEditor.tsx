@@ -1,3 +1,5 @@
+import AdminHomeSectionVisibility from "@/components/admin/AdminHomeSectionVisibility";
+import { adminContentSyncText } from "@/i18n/adminContentSyncText";
 import { useAdminFormState } from "@/hooks/useAdminFormState";
 import { useSubmissionLock } from "@/hooks/useSubmissionLock";
 import { useMemo, useState } from "react";
@@ -7,8 +9,6 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { Switch } from "@/components/ui/switch";
-import { Label } from "@/components/ui/label";
 import { isSupabaseConfigured, supabase } from "@/lib/supabase";
 import { toast } from "@/hooks/use-toast";
 import AdminPageHeader from "@/components/admin/AdminPageHeader";
@@ -84,8 +84,6 @@ export default function AdminHomeEditor() {
   const { state: form, field, dirty: formDirty, applyPatchRemote } = useAdminFormState(bundle ? remoteForm : undefined, { initial: remoteForm });
   const [statsSection] = field("statsSection");
   const [whySection] = field("whySection");
-  const [brandPartnersVisibility] = field("brandPartnersVisibility");
-  const [brandPartnersEnabled, setBrandPartnersEnabled] = field("brandPartnersEnabled");
   const [processSteps] = field("processSteps");
   const [faqRows] = field("faqRows");
   const [ctaBlock] = field("ctaBlock");
@@ -94,8 +92,7 @@ export default function AdminHomeEditor() {
   const [editingStep, setEditingStep] = field("editingStep");
   const [editingFaq, setEditingFaq] = field("editingFaq");
   const [editingCta, setEditingCta] = field("editingCta");
-  const [savingBrandPartnersVisibility, setSavingBrandPartnersVisibility] = useState(false);
-  useUnsavedChangesWarning(formDirty || isSubmitting || savingBrandPartnersVisibility);
+  useUnsavedChangesWarning(formDirty || isSubmitting);
   const refreshEditor = async () => { await refetch(); };
 
   const handleManualRefresh = async () => {
@@ -130,34 +127,6 @@ export default function AdminHomeEditor() {
       return;
     }
     toast({ title: A("saved") });
-  });
-
-  const updateBrandPartnersVisibility = protectSubmission("updateBrandPartnersVisibility", async (enabled: boolean) => {
-    if (!supabase || savingBrandPartnersVisibility) return;
-    if (!brandPartnersVisibility?.id) {
-      toast({ title: A("cannotSave"), description: A("homeDataNotLoaded"), variant: "destructive" });
-      return;
-    }
-
-    const previousEnabled = brandPartnersEnabled;
-    setBrandPartnersEnabled(enabled);
-    setSavingBrandPartnersVisibility(true);
-    try {
-      const saved = await saveAdminRecord<HomeSectionRow>({
-        table: "home_sections",
-        payload: { status: enabled ? "published" : "draft" },
-        id: brandPartnersVisibility.id,
-        expectedUpdatedAt: brandPartnersVisibility.updated_at || null,
-        queryClient,
-      });
-      applyPatchRemote({ brandPartnersVisibility: saved, brandPartnersEnabled: enabled }, { brandPartnersVisibility, brandPartnersEnabled: enabled });
-      toast({ title: enabled ? A("brandsEnabledToast") : A("brandsDisabledToast") });
-    } catch (error) {
-      setBrandPartnersEnabled(previousEnabled);
-      toast({ title: A("saveFailed"), description: formatAdminMutationError(error), variant: "destructive" });
-    } finally {
-      setSavingBrandPartnersVisibility(false);
-    }
   });
 
   const upsertProcessStep = protectSubmission("upsertProcessStep", async (draft: ProcessStepRow) => {
@@ -320,18 +289,16 @@ export default function AdminHomeEditor() {
         }
       />
 
+      <p className="mb-4 text-sm text-muted-foreground">{adminContentSyncText[getAdminLang()].legacy}</p>
       <Tabs value={activeTab} onValueChange={setActiveTab}>
         <div className="mb-4 overflow-auto">
           <TabsList className="w-max">
             <TabsTrigger value="hero">{A("tabHero")}</TabsTrigger>
             <TabsTrigger value="stats">{A("tabStats")}</TabsTrigger>
-            <TabsTrigger value="why">{A("tabWhy")}</TabsTrigger>
             <TabsTrigger value="brands">{A("tabBrands")}</TabsTrigger>
             <TabsTrigger value="process">{A("tabProcess")}</TabsTrigger>
-            <TabsTrigger value="beforeAfter">{A("tabBeforeAfter")}</TabsTrigger>
             <TabsTrigger value="testimonials">{A("tabTestimonials")}</TabsTrigger>
             <TabsTrigger value="faq">{A("tabFaq")}</TabsTrigger>
-            <TabsTrigger value="cta">{A("tabCta")}</TabsTrigger>
           </TabsList>
         </div>
 
@@ -400,29 +367,7 @@ export default function AdminHomeEditor() {
             description={A("brandsDescription")}
             helpText={A("brandsHelpText")}
           >
-            <div className="flex flex-col gap-5 rounded-lg border border-border bg-background p-4 sm:flex-row sm:items-center sm:justify-between">
-              <div className="space-y-1">
-                <Label htmlFor="home-brand-partners-visibility">{A("brandsToggleLabel")}</Label>
-                <p id="home-brand-partners-visibility-status" className="text-sm text-muted-foreground" aria-live="polite">
-                  {savingBrandPartnersVisibility
-                    ? A("brandsSaving")
-                    : initialLoading
-                      ? A("loading")
-                      : !brandPartnersVisibility?.id
-                        ? A("brandsUnavailableState")
-                        : brandPartnersEnabled
-                          ? A("brandsEnabledState")
-                          : A("brandsDisabledState")}
-                </p>
-              </div>
-              <Switch
-                id="home-brand-partners-visibility"
-                checked={brandPartnersEnabled}
-                disabled
-                aria-describedby="home-brand-partners-visibility-status"
-                onCheckedChange={(enabled) => void updateBrandPartnersVisibility(enabled)}
-              />
-            </div>
+            <AdminHomeSectionVisibility sectionKey="brand_partners" />
 
             <div data-admin-card-actions className="mt-4 flex flex-wrap gap-2">
               <Button asChild variant="outline">
@@ -557,6 +502,7 @@ export default function AdminHomeEditor() {
 
         <TabsContent value="testimonials" className="space-y-6">
           <AdminFormSection title={A("testimonialsTitle")} description={A("testimonialsDescription")} helpText={A("testimonialsHelpText")}>
+            <AdminHomeSectionVisibility sectionKey="testimonials" />
             <div data-admin-card-actions className="flex flex-wrap gap-2">
               <Button asChild>
                 <Link to="/admin/content/testimonials">{A("manageTestimonials")}</Link>

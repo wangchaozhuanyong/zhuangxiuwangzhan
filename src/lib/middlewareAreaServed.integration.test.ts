@@ -68,6 +68,13 @@ describe("owner-confirmed company service areas", () => {
     expect(result.company[0].address).toMatchObject({ addressLocality: "Kuala Lumpur", addressCountry: "MY" });
     expect(result.company[0].telephone).toBe("+601128853888");
     expect(result.company[0].url).toBe("https://flashcast.com.my");
+    expect(result.company[0].openingHoursSpecification).toEqual([{
+      "@type": "OpeningHoursSpecification",
+      dayOfWeek: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
+        .map(day => `https://schema.org/${day}`),
+      opens: "10:00",
+      closes: "19:00",
+    }]);
     expect(result.company[0]).not.toHaveProperty("openingHours");
     expect(result.company[0]).not.toHaveProperty("department");
     expect(result.company[0]).not.toHaveProperty("branchOf");

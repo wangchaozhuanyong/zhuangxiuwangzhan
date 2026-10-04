@@ -65,6 +65,17 @@ export type AdminMaterialImageDraft = {
 
 export const hasMaterialBackendConfig = () => isSupabaseConfigured;
 
+export async function loadAdminFurnitureCatalogRows(signal?: AbortSignal) {
+  const rows: Record<string, unknown>[] = [];
+  let page = 0;
+  while (true) {
+    const result = await fetchAdminMaterialList({ page, pageSize: 200, category: "furniture" }, signal);
+    rows.push(...result.rows);
+    if (rows.length >= result.count || result.rows.length === 0) return rows;
+    page += 1;
+  }
+}
+
 export const normalizeMaterialSlug = (value: string) =>
   value
     .trim()

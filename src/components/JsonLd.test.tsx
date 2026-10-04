@@ -1,7 +1,12 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it, vi } from "vitest";
-import { JsonLdBlogPosting } from "@/components/JsonLd";
+import { JsonLdBlogPosting, JsonLdLocalBusiness } from "@/components/JsonLd";
+import { fallbackSiteSettings } from "@/lib/siteSettingsApi";
+import { MemoryRouter } from "react-router-dom";
+import { SchemeAFooter } from "@/components/scheme-a/SchemeAPublicChrome";
+import { contactPageText } from "@/i18n/contactPageText";
+import { footerCopy } from "@/i18n/footerText";
 
 vi.hoisted(() => { vi.stubEnv("VITE_SITE_URL", "https://flashcast.com.my"); });
 
@@ -44,5 +49,45 @@ describe("JsonLdBlogPosting", () => {
       url: "https://flashcast.com.my/images/blog/kitchen-planning.webp",
       caption: "Kitchen renovation planning concept",
     });
+  });
+});
+
+describe("JsonLdLocalBusiness", () => {
+  it("shows the owner-confirmed daily hours in English and Chinese contact and footer copy", () => {
+    expect(contactPageText.en.hoursText).toBe("Daily, 10:00 AM–7:00 PM (Malaysia time). Visits and consultations by prior arrangement");
+    expect(contactPageText.zh.hoursText).toBe("每天10:00–19:00（马来西亚时间）。到访与咨询请提前联系安排");
+    expect(footerCopy.en.hours).toBe("Business hours: Daily, 10:00 AM–7:00 PM (Malaysia time). Visits and consultations by prior arrangement");
+    expect(footerCopy.zh.hours).toBe("营业时间：每天10:00–19:00（马来西亚时间）。到访与咨询请提前联系确认");
+  });
+
+  it("publishes the confirmed daily hours for all seven days", () => {
+    const queryClient = new QueryClient({ defaultOptions: { queries: { retry: false } } });
+    const html = renderToStaticMarkup(<QueryClientProvider client={queryClient}><JsonLdLocalBusiness /></QueryClientProvider>);
+    const data = JSON.parse(html.match(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/)?.[1] || "{}");
+    expect(data.openingHoursSpecification).toEqual([{
+      "@type": "OpeningHoursSpecification",
+      dayOfWeek: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"].map(day => `https://schema.org/${day}`),
+      opens: "10:00",
+      closes: "19:00",
+    }]);
+  });
+
+  it("omits unconfirmed social accounts from Footer and JSON-LD", () => {
+    const queryClient = new QueryClient({ defaultOptions: { queries: { retry: false } } });
+    queryClient.setQueryData(["site-settings"], {
+      ...fallbackSiteSettings,
+      facebook_url: "https://www.facebook.com/not-created-yet/",
+      instagram_url: "https://www.instagram.com/not-created-yet/",
+    });
+    const html = renderToStaticMarkup(<MemoryRouter initialEntries={["/en/"]}><QueryClientProvider client={queryClient}>
+      <>
+        <SchemeAFooter />
+        <JsonLdLocalBusiness />
+      </>
+    </QueryClientProvider></MemoryRouter>);
+    const data = JSON.parse(html.match(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/)?.[1] || "{}");
+    expect(data.sameAs).toEqual([]);
+    expect(html).not.toContain("scheme-a-footer__socials");
+    expect(html).not.toContain("not-created-yet");
   });
 });

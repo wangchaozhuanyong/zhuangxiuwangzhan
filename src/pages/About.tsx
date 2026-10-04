@@ -36,29 +36,35 @@ const About = () => {
   const t = aboutCopy[language];
   const settings = useSiteSettings();
   const { data: heroSection, isLoading: heroLoading } = usePublishedAboutSection(language, "hero");
+  const { data: introSection } = usePublishedAboutSection(language, "intro");
+  const { data: teamSection } = usePublishedAboutSection(language, "team");
+  const { data: milestonesSection } = usePublishedAboutSection(language, "milestones");
+  const { data: officeSection } = usePublishedAboutSection(language, "office");
   const { data: statsSection } = usePublishedAboutSection(language, "stats");
   const { data: valuesSection } = usePublishedAboutSection(language, "core_values");
   const { data: pageContent, isLoading: pageLoading } = usePublishedSitePage(language, "about");
 
-  const introParagraphs: readonly string[] = t.intro;
+  const introItems = Array.isArray(introSection?.items) ? introSection.items.map((item) => typeof item === "string" ? item : String((item as Record<string, unknown>)?.title || "")).filter(Boolean) : [];
+  const introParagraphs: readonly string[] = introItems.length ? introItems : introSection?.content ? [introSection.content] : t.intro;
   const stats = useMemo(() => {
     const items = statsSection?.items;
     if (!Array.isArray(items)) return aboutStatCopy[language];
     const values = items.map((item) => { const record = item as Record<string, unknown>; return { value: String(record.value || ""), label: String(record.label || "") }; }).filter((item) => item.value && item.label);
     return values.length ? values : aboutStatCopy[language];
   }, [statsSection?.items, language]);
-  const milestones = aboutMilestoneCopy[language];
+  const milestoneItems = Array.isArray(milestonesSection?.items) ? milestonesSection.items.map((item) => { const row = item as Record<string, unknown>; return { year: String(row?.year || ""), title: String(row?.title || ""), desc: String(row?.desc || "") }; }).filter((item) => item.year && item.title && item.desc) : [];
+  const milestones = milestoneItems.length ? milestoneItems : aboutMilestoneCopy[language];
   const values = useMemo(() => normalizeCards(valuesSection?.items, localizedValues[language]) || localizedValues[language], [valuesSection?.items, language]);
-  const team = localizedTeam[language];
+  const team = useMemo(() => normalizeCards(teamSection?.items, localizedTeam[language]) || localizedTeam[language], [teamSection?.items, language]);
   const heroImage = resolvePageHeroImage(pageContent?.image_url || (heroSection?.image_url as string | undefined), pageHeroImages.about);
 
   return (
     <main className="fc-route-page" data-route-pending={pageLoading || heroLoading || undefined}>
       <PageMeta title={pageContent?.seo_title || t.metaTitle} description={pageContent?.seo_description || t.metaDescription} keywords={pageContent?.seo_keywords || t.metaKeywords} canonicalPath="/about" />
       <JsonLdBreadcrumb items={[{ name: t.breadcrumbHome, url: "/" }, { name: t.breadcrumbAbout, url: "/about" }]} />
-      <SchemeARouteHero kind="content" image={heroImage.desktop} imageSourceWidth={heroImage.desktopWidth} tabletImage={heroImage.tablet} tabletImageSourceWidth={heroImage.tabletWidth} mobileImage={heroImage.mobile} mobileImageSourceWidth={heroImage.mobileWidth} imagePosition={heroImage.imagePosition} imageAlt={pageContent?.alt || t.imageAlt} label={[t.label, heroImage.claimLevel ? mediaLabels[language].renderingConcept : ""].filter(Boolean).join(" · ")} title={(heroSection?.title as string) || t.title} description={t.description} />
+      <SchemeARouteHero kind="content" image={heroImage.desktop} imageSourceWidth={heroImage.desktopWidth} tabletImage={heroImage.tablet} tabletImageSourceWidth={heroImage.tabletWidth} mobileImage={heroImage.mobile} mobileImageSourceWidth={heroImage.mobileWidth} imagePosition={heroImage.imagePosition} imageAlt={pageContent?.alt || t.imageAlt} label={[t.label, heroImage.claimLevel ? mediaLabels[language].renderingConcept : ""].filter(Boolean).join(" · ")} title={(heroSection?.title as string) || t.title} description={heroSection?.subtitle || heroSection?.content || t.description} />
 
-      <SchemeASection title={t.introTitle} description={introParagraphs.join(" ")}>
+      <SchemeASection title={introSection?.title || t.introTitle} description={introParagraphs.join(" ")}>
         <SchemeAFacts items={stats} />
         <div className="fc-route-tagline" aria-label={t.label}>{t.tags.map((tag) => <span key={tag}>{tag}</span>)}</div>
       </SchemeASection>
@@ -67,15 +73,15 @@ const About = () => {
         <SchemeANumberList items={values.map((item) => ({ title: item.title, description: item.desc }))} />
       </SchemeASection>
 
-      <SchemeASection title={t.teamTitle} description={t.teamDescription}>
+      <SchemeASection title={teamSection?.title || t.teamTitle} description={teamSection?.content || teamSection?.subtitle || t.teamDescription}>
         <SchemeANumberList items={team.map((item) => ({ title: item.title, description: item.desc }))} />
       </SchemeASection>
 
-      <SchemeASection title={t.journeyTitle} description={t.journeyDescription}>
+      <SchemeASection title={milestonesSection?.title || t.journeyTitle} description={milestonesSection?.content || milestonesSection?.subtitle || t.journeyDescription}>
         <ol className="fc-route-history">{milestones.map((item) => <li key={`${item.year}-${item.title}`}><span className="fc-route-history-index">{item.year}</span><div><strong>{item.title}</strong><p>{item.desc}</p></div></li>)}</ol>
       </SchemeASection>
 
-      <SchemeASection title={t.officeTitle} description={t.officeDescription} className="fc-route-office">
+      <SchemeASection title={officeSection?.title || t.officeTitle} description={officeSection?.content || officeSection?.subtitle || t.officeDescription} className="fc-route-office">
         <div className="fc-route-office-grid">
           <div className="fc-route-office-copy">
             <header><MapPin aria-hidden="true" /><h3>{settings.company_name}</h3></header>

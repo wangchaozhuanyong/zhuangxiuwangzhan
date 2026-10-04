@@ -21,7 +21,7 @@ import { useSiteSettings } from "@/hooks/useSiteSettings";
 import { usePublishedSitePage } from "@/hooks/usePublishedContent";
 import { SchemeARouteHero } from "@/components/scheme-a/SchemeARoutePrimitives";
 import { trackContactFormSubmit, trackCtaClick } from "@/lib/analytics";
-import { isValidLeadEmail, isValidLeadPhone } from "@/lib/leadValidation";
+import { isValidLeadEmail, isValidLeadPhone, localizeLeadFormErrors } from "@/lib/leadValidation";
 import { pageHeroImages, resolvePageHeroImage } from "@/lib/pageHeroImages";
 import { preloadTurnstile } from "@/lib/turnstile";
 import { contactLocationOptions, contactPageText, contactProjectTypeOptions, contactServiceItems } from "@/i18n/contactPageText";
@@ -31,7 +31,8 @@ import { focusElementByIdWhenReady } from "@/lib/instantScroll";
 
 
 
-type FormErrors = Partial<Record<string, string>>;
+type FormErrorMessage = "requiredName" | "requiredPhone" | "invalidPhone" | "invalidEmail" | "requiredMessage" | "shortMessage";
+type FormErrors = Partial<Record<string, FormErrorMessage>>;
 
 const contactFieldIds: Record<string, string> = {
   name: "contact-name",
@@ -58,7 +59,8 @@ const Contact = () => {
   const [form, setForm] = useState({ name: "", phone: "", email: "", projectType: "", location: "", message: "" });
   const currentForm = useRef(form); currentForm.current = form;
   const lastSavedForm = useRef<typeof form | null>(null);
-  const [errors, setErrors] = useState<FormErrors>({});
+  const [errorKeys, setErrorKeys] = useState<FormErrors>({});
+  const errors = localizeLeadFormErrors(errorKeys, t);
   const [status, setStatus] = useState<"idle" | "submitting" | "success" | "error">("idle");
   const formGuard = useFormGuard();
   useUnsavedChangesWarning(isSubmitting || status === "submitting" || Object.values(form).some((value) => String(value).trim() !== "") && JSON.stringify(form) !== JSON.stringify(lastSavedForm.current));
@@ -70,7 +72,7 @@ const Contact = () => {
 
   const updateForm = (key: keyof typeof form, value: string) => {
     setForm((current) => ({ ...current, [key]: value }));
-    setErrors((current) => {
+    setErrorKeys((current) => {
       const next = { ...current };
       delete next[key];
       return next;
@@ -80,14 +82,14 @@ const Contact = () => {
 
   const validate = (): boolean => {
     const e: FormErrors = {};
-    if (!form.name.trim()) e.name = t.requiredName;
-    if (!form.phone.trim()) e.phone = t.requiredPhone;
-    else if (!isValidLeadPhone(form.phone)) e.phone = t.invalidPhone;
-    if (form.email && !isValidLeadEmail(form.email)) e.email = t.invalidEmail;
-    if (!form.message.trim()) e.message = t.requiredMessage;
-    else if (form.message.trim().length < 10) e.message = t.shortMessage;
+    if (!form.name.trim()) e.name = "requiredName";
+    if (!form.phone.trim()) e.phone = "requiredPhone";
+    else if (!isValidLeadPhone(form.phone)) e.phone = "invalidPhone";
+    if (form.email && !isValidLeadEmail(form.email)) e.email = "invalidEmail";
+    if (!form.message.trim()) e.message = "requiredMessage";
+    else if (form.message.trim().length < 10) e.message = "shortMessage";
     const hasErrors = Object.keys(e).length > 0;
-    setErrors(e);
+    setErrorKeys(e);
     if (hasErrors) focusFirstContactError(e);
     return !hasErrors;
   };

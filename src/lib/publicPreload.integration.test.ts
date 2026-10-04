@@ -60,6 +60,17 @@ describe("public preload data", () => {
     expect(settings.logo_url).toBe("/logo-flashcast-20260605.webp");
   });
 
+  it("hydrates catalog edits without replacing them with original localized text", async () => {
+    const { furnitureCatalog } = await import("@/lib/furnitureCatalog");
+    const slug = furnitureCatalog.products[0].slug;
+    const override = { slug, enabled: true, name_zh: "已保存名称", name_en: "Saved name", shortDescription_zh: "已保存简介", shortDescription_en: "Saved summary", description_zh: "已保存详情", description_en: "Saved detail", price: "RM 120", images: ["/saved.webp"] };
+    setPreloadedPublicData({ furnitureCatalog: { materials: [], setting: { items_zh: [override] } } });
+    const { getPublicQuerySeed } = await import("@/lib/publicQuerySeed");
+    const seed = getPublicQuerySeed(["published", "furniture_catalog", "zh"]) as Array<{ slug: string; name: string; images: string[] }>;
+    expect(seed.find((item) => item.slug === slug)).toMatchObject({ name: "已保存名称", images: ["/saved.webp"] });
+    expect(getPublicQuerySeed(["published", "furniture_catalog", "detail", slug, "zh"])).toBeUndefined();
+  });
+
   it("uses preloaded services, materials, and blog posts", async () => {
     setPreloadedPublicData({
       services: [

@@ -11,10 +11,10 @@ import LocationPage from "@/pages/LocationPage";
 
 vi.mock("@/hooks/usePublishedContent", async (importOriginal) => ({
   ...await importOriginal<typeof import("@/hooks/usePublishedContent")>(),
-  usePublishedServiceAreaBySlug: (_slug: string, language: "en" | "zh") => ({
+  usePublishedServiceAreaBySlug: (slug: string, language: "en" | "zh") => ({
     data: {
-      ...locationsData["kuala-lumpur"],
-      name: language === "zh" ? "吉隆坡" : "Kuala Lumpur",
+      ...locationsData[slug],
+      name: language === "zh" ? (locationsData[slug].nameZh || locationsData[slug].name) : locationsData[slug].name,
       intro: language === "zh"
         ? "<p>第一段介绍。</p><p>第二段服务。</p><p>第三段报价。</p>"
         : "<p>First introduction.</p><p>Second service.</p><p>Third quotation.</p>",
@@ -24,9 +24,9 @@ vi.mock("@/hooks/usePublishedContent", async (importOriginal) => ({
 }));
 
 describe("LocationPage CMS paragraph rendering", () => {
-  for (const language of ["en", "zh"] as const) {
-    it(`preserves three ${language} paragraphs, service links and quote destination`, () => {
-      window.history.replaceState({}, "", `/${language}/locations/kuala-lumpur`);
+  for (const slug of ["kuala-lumpur", "bangsar"]) for (const language of ["en", "zh"] as const) {
+    it(`preserves CMS ${slug}/${language} body, scopes source-reviewed labels and quote destination`, () => {
+      window.history.replaceState({}, "", `/${language}/locations/${slug}`);
       const container = document.createElement("div");
       document.body.appendChild(container);
       const root = createRoot(container);
@@ -37,7 +37,7 @@ describe("LocationPage CMS paragraph rendering", () => {
           <HelmetProvider>
             <LanguageProvider>
               <PublicChromeProvider isAdminRoute={false} routeKey="/locations/kuala-lumpur">
-                <MemoryRouter initialEntries={[`/${language}/locations/kuala-lumpur`]}>
+                <MemoryRouter initialEntries={[`/${language}/locations/${slug}`]}>
                   <Routes><Route path="/:language/locations/:slug" element={<LocationPage />} /></Routes>
                 </MemoryRouter>
               </PublicChromeProvider>
@@ -52,7 +52,16 @@ describe("LocationPage CMS paragraph rendering", () => {
       expect(Array.from(intro!.querySelectorAll(".fc-route-section-head p"), (paragraph) => paragraph.textContent)).toEqual(
         language === "zh" ? ["第一段介绍。", "第二段服务。", "第三段报价。"] : ["First introduction.", "Second service.", "Third quotation."],
       );
-      expect(container.querySelectorAll(`.fc-route-section a[href^="/${language}/services/"]`).length).toBeGreaterThan(0);
+      if (slug === "kuala-lumpur") expect(container.querySelectorAll(`.fc-route-section a[href^="/${language}/services/"]`).length).toBeGreaterThan(0);
+      const reviewedLabel = language === "zh" ? "可讨论的项目类型：" : "PROJECT TYPES TO DISCUSS:";
+      const reviewedHeading = language === "zh" ? "概念参考与规划资料" : "Concept References and Planning Guides";
+      if (slug === "bangsar") {
+        expect(container.textContent).toContain(reviewedLabel);
+        expect(Array.from(container.querySelectorAll("h2"), (h) => h.textContent)).toContain(reviewedHeading);
+      } else {
+        expect(container.textContent).not.toContain(reviewedLabel);
+        expect(Array.from(container.querySelectorAll("h2"), (h) => h.textContent)).not.toContain(reviewedHeading);
+      }
       expect(container.querySelector(`.scheme-a-page-cta a[href^="/${language}/quote?source=location"]`)).toBeTruthy();
 
       act(() => root.unmount());

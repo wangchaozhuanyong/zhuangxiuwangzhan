@@ -1,14 +1,16 @@
 import catalogJson from "@/data/furnitureCatalog.json";
 import catalogZhJson from "@/data/furnitureCatalogZh.json";
 import catalogEnJson from "@/data/furnitureCatalogEn.json";
-import { fetchPublishedMaterialBySlugAndCategory, fetchPublishedMaterialRowsByCategory } from "@/backend/modules/cms/repository/publicContentRepository";
+import { fetchPublishedHomeSectionRow, fetchPublishedMaterialBySlugAndCategory, fetchPublishedMaterialRowsByCategory } from "@/backend/modules/cms/repository/publicContentRepository";
+import { applyFurnitureCatalogOverrides, FURNITURE_CATALOG_SECTION_KEY, readFurnitureCatalogOverrides } from "@/lib/furnitureCatalogOverrides";
 import type { Language } from "@/i18n/routes";
 import type { Database } from "@/lib/database.types";
 import { FURNITURE_MATERIAL_CATEGORY } from "@/lib/furnitureCatalogConfig";
 import { formatMaterialPrice } from "@/lib/materialPrice";
+import { resolveFurnitureDisplay } from "@/lib/furnitureDisplaySafety.mjs";
 
 type MaterialRow = Database["public"]["Tables"]["materials"]["Row"];
-type FurnitureMaterialRow = MaterialRow & { material_images?: { image_url: string; sort_order: number }[] };
+export type FurnitureMaterialRow = MaterialRow & { material_images?: { image_url: string; sort_order: number }[] };
 
 export type FurnitureSubcategory = {
   key: string;
@@ -36,10 +38,13 @@ export type FurnitureProduct = {
   images: string[];
   sourceCategories: { name: string; url: string }[];
   price: string | null;
+  skuLabel?: string;
+  availabilityNote?: string;
   seoTitle?: string;
   seoDescription?: string;
   managedCategoryKey?: string;
   managedSubcategoryKey?: string;
+  localized?: boolean;
 };
 
 export type FurnitureCatalog = {
@@ -56,9 +61,9 @@ const localizedEnglishProducts = catalogEnJson as Record<string, Pick<FurnitureP
 export { furnitureShopUrl } from "@/lib/furnitureCatalogConfig";
 
 export const localizeFurnitureProduct = (product: FurnitureProduct, language: Language): FurnitureProduct =>
-  language === "zh"
+  product.localized ? product : resolveFurnitureDisplay(language === "zh"
     ? { ...product, ...localizedProducts[product.slug] }
-    : { ...product, ...localizedEnglishProducts[product.slug] };
+    : { ...product, ...localizedEnglishProducts[product.slug] }, language);
 
 const productsByUrl = new Map(furnitureCatalog.products.map((product) => [product.sourceUrl, product]));
 const productsBySlug = new Map(furnitureCatalog.products.map((product) => [decodeURIComponent(product.slug), product]));
@@ -81,7 +86,7 @@ export const getFurnitureProduct = (slug?: string) => {
   }
 };
 
-const mapManagedFurnitureProduct = (row: FurnitureMaterialRow, language: Language): FurnitureProduct => {
+export const mapManagedFurnitureProduct = (row: FurnitureMaterialRow, language: Language): FurnitureProduct => {
   const gallery = [...(row.material_images || [])].sort((a, b) => a.sort_order - b.sort_order);
   const images = Array.from(new Set([row.image_url, ...gallery.map((image) => image.image_url)].filter((url): url is string => Boolean(url))));
   const localized = (field: "title" | "excerpt" | "content") =>
@@ -109,6 +114,7 @@ const mapManagedFurnitureProduct = (row: FurnitureMaterialRow, language: Languag
     seoDescription: row[`seo_description_${language}`] || "",
     managedCategoryKey: row.subcategory || "",
     managedSubcategoryKey: row.material_type || "",
+    localized: true,
   };
 };
 
@@ -130,6 +136,38 @@ export const getManagedFurnitureProductsForCategory = (products: FurnitureProduc
     (categoryKey === "new" || product.managedCategoryKey === categoryKey)
     && (!subcategoryKey || product.managedSubcategoryKey === subcategoryKey),
   );
+
+export async function getPublishedFurnitureCatalog(language: Language, signal?: AbortSignal): Promise<FurnitureProduct[]> {
+  const [managed, setting] = await Promise.all([
+    getPublishedManagedFurnitureProducts(language, signal),
+    fetchPublishedHomeSectionRow(FURNITURE_CATALOG_SECTION_KEY, signal),
+  ]);
+  return [...managed, ...applyFurnitureCatalogOverrides(
+    furnitureCatalog.products.map((product) => localizeFurnitureProduct(product, language)),
+    readFurnitureCatalogOverrides(setting?.items_zh), language,
+  )];
+}
+
+export const mapFurnitureCatalogSeed = (rows: FurnitureMaterialRow[], setting: { items_zh?: unknown } | null, language: Language) => [
+  ...rows.filter((row) => !productsBySlug.has(row.slug)).map((row) => mapManagedFurnitureProduct(row, language)),
+  ...applyFurnitureCatalogOverrides(furnitureCatalog.products.map((product) => localizeFurnitureProduct(product, language)), readFurnitureCatalogOverrides(setting?.items_zh), language),
+];
+
+export async function getPublishedFurnitureProductBySlug(slug: string, language: Language, signal?: AbortSignal): Promise<FurnitureProduct | null> {
+  const baseline = getFurnitureProduct(slug);
+  if (!baseline) return getPublishedManagedFurnitureProductBySlug(slug, language, signal);
+  const setting = await fetchPublishedHomeSectionRow(FURNITURE_CATALOG_SECTION_KEY, signal);
+  return applyFurnitureCatalogOverrides([localizeFurnitureProduct(baseline, language)], readFurnitureCatalogOverrides(setting?.items_zh), language)[0] || null;
+}
+
+export const getFurnitureCatalogProductsForCategory = (products: FurnitureProduct[], categoryKey: string, subcategoryKey?: string) => {
+  const category = getFurnitureCategory(categoryKey);
+  if (!category) return [];
+  const urls = new Set(subcategoryKey ? getFurnitureSubcategory(category, subcategoryKey)?.productUrls || [] : category.productUrls);
+  return products.filter((product) => product.managedCategoryKey
+    ? getManagedFurnitureProductsForCategory([product], categoryKey, subcategoryKey).length > 0
+    : urls.has(product.sourceUrl));
+};
 
 export const furnitureProductPath = (product: FurnitureProduct) =>
   `/furniture/product/${encodeURIComponent(decodeURIComponent(product.slug))}`;

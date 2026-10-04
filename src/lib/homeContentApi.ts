@@ -1,3 +1,4 @@
+import { isOptionalHomeSectionEnabled } from "@/lib/homeOptionalSections";
 import {
   fetchPublicHomeBundleData,
   fetchPublishedAboutSectionRow,
@@ -28,6 +29,7 @@ import {
   createRemoteContent,
   type PublicContentResult,
 } from "@/lib/publicContentStatus";
+import { mapPublicHomeFaqs } from "@/lib/publicHomeFaqs";
 import { toArray, toRecord, toText, type UnknownRecord } from "@/lib/recordUtils";
 
 type Language = "en" | "zh";
@@ -135,6 +137,7 @@ export type PublishedHomeContentBundle = {
   statsSection: PublishedHomeSection | null;
   whyChooseUsSection: PublishedHomeSection | null;
   projects: PublishedProjectSummary[];
+  testimonialsEnabled?: boolean;
   brandPartnersEnabled: boolean;
   brandPartners: PublishedBrandPartner[];
   services: PublishedServiceSummary[];
@@ -290,13 +293,6 @@ const mapPublishedBeforeAfterItem = (item: UnknownRecord, language: Language): P
   alt: pickLocalizedText(item, "alt", language, pickLocalizedText(item, "title", language)),
 });
 
-const mapPublishedFaq = (item: UnknownRecord, language: Language): PublishedFaq => ({
-  id: readText(item, "id"),
-  category: readText(item, "page_key", "general"),
-  question: pickLocalizedText(item, "question", language),
-  answer: pickLocalizedText(item, "answer", language),
-});
-
 const mapPublishedProcessStep = (row: UnknownRecord, language: Language): PublishedProcessStep => ({
   id: readText(row, "id"),
   step_number: Number(row.step_number || 0),
@@ -324,6 +320,7 @@ const emptyHomeContentBundle = (): PublishedHomeContentBundle => ({
   statsSection: null,
   whyChooseUsSection: null,
   projects: [],
+  testimonialsEnabled: false,
   brandPartnersEnabled: false,
   brandPartners: [],
   services: [],
@@ -371,6 +368,7 @@ export const mapRemoteHomeContentBundle = (
   payload: UnknownRecord,
   language: "en" | "zh",
   brandPartnersVisibility: unknown = null,
+  testimonialsVisibility: unknown = null,
 ): PublishedHomeContentBundle => {
   const homeSectionRows = readRecordArray(payload.home_sections);
   const homeSections = homeSectionRows.map((row) => mapPublishedHomeSectionRow(row, language));
@@ -384,8 +382,9 @@ export const mapRemoteHomeContentBundle = (
     whyChooseUsSection: findHomeSection("why_choose_us"),
     projects: readRecordArray(payload.projects).map((item) => mapPublishedProjectSummary(item, language)),
     brandPartnersEnabled:
-      isPublishedHomeSectionEnabled("brand_partners", homeSectionRows) ||
-      isPublishedHomeSectionEnabled("brand_partners", brandPartnersVisibility),
+      isOptionalHomeSectionEnabled("brand_partners", homeSectionRows) ||
+      isOptionalHomeSectionEnabled("brand_partners", brandPartnersVisibility),
+    testimonialsEnabled: isOptionalHomeSectionEnabled("testimonials", homeSectionRows) || isOptionalHomeSectionEnabled("testimonials", testimonialsVisibility),
     brandPartners: toArray<PublishedBrandPartner>(payload.brand_partners).filter((item) => item.logo_url && item.name),
     services: readRecordArray(payload.services).map((item) => mapPublishedService(item, language)),
     processSteps: readRecordArray(payload.process_steps).map((row) => mapPublishedProcessStep(row, language)),
@@ -395,7 +394,7 @@ export const mapRemoteHomeContentBundle = (
       )
       .map((item) => mapPublishedBeforeAfterItem(item, language)),
     testimonials: readRecordArray(payload.testimonials).map((item) => mapPublishedTestimonial(item, language)),
-    faqs: readRecordArray(payload.faqs).map((item) => mapPublishedFaq(item, language)),
+    faqs: mapPublicHomeFaqs(payload.faqs, language),
     ctaBlock: ctaBlocks[0]
       ? mapPublishedCtaBlockRow(ctaBlocks[0], language)
       : null,
@@ -411,14 +410,15 @@ export const getPublishedHomeContentBundle = async (
   if (!hasPublicContentDatabaseClient()) return fallback("supabase-not-configured");
 
   try {
-    const [data, brandPartnersVisibility] = await Promise.all([
+    const [data, brandPartnersVisibility, testimonialsVisibility] = await Promise.all([
       fetchPublicHomeBundleData(signal),
       fetchPublishedHomeSectionRow("brand_partners", signal),
+      fetchPublishedHomeSectionRow("testimonials", signal),
     ]);
     const payload = toRecord(data);
     if (!Object.keys(payload).length) return fallback("remote-empty");
 
-    return createRemoteContent(mapRemoteHomeContentBundle(payload, language, brandPartnersVisibility));
+    return createRemoteContent(mapRemoteHomeContentBundle(payload, language, brandPartnersVisibility, testimonialsVisibility));
   } catch (error) {
     return fallback("remote-error", error);
   }

@@ -1,9 +1,14 @@
-import { siteConfig, socialProfileUrls } from "@/config/site";
+import { safeSocialProfileUrl, siteConfig, socialProfileUrls } from "@/config/site";
 import { useSiteSettings } from "@/hooks/useSiteSettings";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { stripLanguagePrefix, withLanguagePrefix } from "@/i18n/routes";
 
 const shouldRenderClientJsonLd = import.meta.env.DEV;
+const getSameAs = (settings: ReturnType<typeof useSiteSettings>) => Array.from(new Set([
+  safeSocialProfileUrl(settings.facebook_url, "facebook"),
+  safeSocialProfileUrl(settings.instagram_url, "instagram"),
+  ...socialProfileUrls,
+].filter(Boolean)));
 
 const JsonLdScript = ({ data }: { data: unknown }) => {
   if (!shouldRenderClientJsonLd) return null;
@@ -38,14 +43,7 @@ const createOrganizationData = (settings: ReturnType<typeof useSiteSettings>) =>
     addressRegion: "Kuala Lumpur",
     addressCountry: "MY",
   },
-  sameAs: [
-    settings.facebook_url,
-    settings.instagram_url,
-    settings.tiktok_url,
-    settings.xiaohongshu_url,
-    settings.linkedin_url,
-    ...socialProfileUrls,
-  ].filter(Boolean),
+  sameAs: getSameAs(settings),
 });
 
 const createLocalBusinessData = (settings: ReturnType<typeof useSiteSettings>) => ({
@@ -88,9 +86,9 @@ const createLocalBusinessData = (settings: ReturnType<typeof useSiteSettings>) =
   openingHoursSpecification: [
     {
       "@type": "OpeningHoursSpecification",
-      dayOfWeek: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"],
-      opens: "09:00",
-      closes: "18:00",
+      dayOfWeek: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"].map(day => `https://schema.org/${day}`),
+      opens: "10:00",
+      closes: "19:00",
     },
   ],
   priceRange: "$$",
@@ -111,14 +109,7 @@ const createLocalBusinessData = (settings: ReturnType<typeof useSiteSettings>) =
       { "@type": "Offer", itemOffered: { "@type": "Service", name: "Permit & Drawing Support" } },
     ],
   },
-  sameAs: [
-    settings.facebook_url,
-    settings.instagram_url,
-    settings.tiktok_url,
-    settings.xiaohongshu_url,
-    settings.linkedin_url,
-    ...socialProfileUrls,
-  ].filter(Boolean),
+  sameAs: getSameAs(settings),
   knowsAbout: [
     "renovation", "interior design", "built-in furniture", "kitchen renovation",
     "bathroom renovation", "office renovation", "commercial renovation",

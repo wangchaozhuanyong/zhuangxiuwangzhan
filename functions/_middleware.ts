@@ -1,5 +1,7 @@
+import { FURNITURE_CATALOG_SECTION_KEY, readFurnitureCatalogOverrides } from "../src/lib/furnitureCatalogOverrides";
 import { resolveReviewedBlogCover, resolveReviewedImageSource, resolveReviewedMaterialImage, wardrobeCover } from "../src/lib/reviewedContentMedia.mjs";
-import { buildReadablePublicBody, sanitizeReadableContent } from "./readablePublicBody";
+import { buildReadableHomeFaqBody, buildReadablePublicBody, sanitizeReadableContent } from "./readablePublicBody";
+import { mapPublicHomeFaqs } from "../src/lib/publicHomeFaqs";
 import { projectPublicMetadata } from "../src/lib/projectPublicMetadata.mjs";
 import manifest from "./seo-manifest.json";
 import { oldHouseRenovationPageText } from "../src/i18n/oldHouseRenovationPageText";
@@ -69,6 +71,7 @@ type DynamicRouteState = {
   row: PublicDataRow;
   meta: SeoEntry;
   contentVersion: string;
+  hidden?: boolean;
 };
 
 type EdgeRowsReadResult =
@@ -1068,6 +1071,13 @@ const buildEdgeStructuredData = (meta: SeoEntry, siteSettings?: SiteSettingsHead
           latitude: siteSettings?.map_latitude || DEFAULT_MAP_LATITUDE,
           longitude: siteSettings?.map_longitude || DEFAULT_MAP_LONGITUDE,
         },
+        openingHoursSpecification: [{
+          "@type": "OpeningHoursSpecification",
+          dayOfWeek: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
+            .map((day) => `https://schema.org/${day}`),
+          opens: "10:00",
+          closes: "19:00",
+        }],
         areaServed: [
           "Kuala Lumpur",
           "Selangor",
@@ -1265,10 +1275,10 @@ const fetchHomeContentBundle = async (env: Record<string, string | undefined>) =
         body: "{}",
       }, { route: "/", stage: "home-bundle" }),
       fetchPublicRows(env, "home_brand_partners_visibility", "home_sections", (url) => {
-        url.searchParams.set("select", "section_key,status");
-        url.searchParams.set("section_key", "eq.brand_partners");
+        url.searchParams.set("select", "section_key,status,items_zh,updated_at");
+        url.searchParams.set("section_key", "in.(brand_partners,testimonials)");
         url.searchParams.set("status", "eq.published");
-        url.searchParams.set("limit", "1");
+        url.searchParams.set("limit", "2");
       }),
     ]);
 
@@ -1278,7 +1288,7 @@ const fetchHomeContentBundle = async (env: Record<string, string | undefined>) =
     const homeSections = Array.isArray(value.home_sections) ? value.home_sections : [];
     value.home_sections = [
       ...homeSections,
-      brandPartnersVisibilityRows?.[0] || { section_key: "brand_partners", status: "draft" },
+      ...(brandPartnersVisibilityRows || []),
     ];
     homeContentBundleCache = {
       key: cacheKey,
@@ -1548,11 +1558,23 @@ const fetchDynamicRouteState = async (
   env: Record<string, string | undefined>,
   key: string,
   fallback?: SeoEntry,
+  onUnpublishedBlog?: () => void,
 ): Promise<DynamicRouteState | null> => {
   const match = key.match(/^\/(en|zh)(\/.*)?$/);
   if (!match) return null;
   const path = match[2] || "/";
-  if (/^\/furniture\/product\/[^/]+$/.test(path) && fallback) return null;
+  if (/^\/furniture\/product\/[^/]+$/.test(path)) {
+    const setting = await fetchFurnitureCatalogSetting(env);
+    const slug = decodeURIComponent(path.split("/").at(-1) || "");
+    const saved = readFurnitureCatalogOverrides(setting?.items_zh).find((item) => item.slug === slug);
+    if (saved) {
+    const row = { slug, title_zh: saved.name_zh, title_en: saved.name_en, excerpt_zh: saved.shortDescription_zh,
+      excerpt_en: saved.shortDescription_en, content_zh: saved.description_zh, content_en: saved.description_en,
+      image_url: saved.images[0], updated_at: setting?.updated_at };
+    return { kind: "material", row, hidden: !saved.enabled, meta: buildDynamicSeoEntry(key, row, "material", fallback), contentVersion: hashContentVersion([setting?.updated_at, saved]) };
+    }
+    if (fallback) return null;
+  }
   const routePatterns: Array<{ pattern: RegExp; table: string; kind: DynamicRouteKind; select?: string; category?: string }> = [
     { pattern: /^\/services\/([^/]+)$/, table: "services", kind: "service" },
     { pattern: /^\/projects\/([^/]+)$/, table: "projects", kind: "project", select: "*,project_images(*)" },
@@ -1577,7 +1599,10 @@ const fetchDynamicRouteState = async (
     if (readResult.ok === false) throw new Error(`edge_read_${readResult.category}`);
     const rows = readResult.rows;
     const row = rows?.[0];
-    if (!row) return null;
+    if (!row) {
+      if (route.kind === "blog") onUnpublishedBlog?.();
+      return null;
+    }
     const contentVersion = hashContentVersion([...collectContentTimestamps(row), row.id, row.slug]);
     return { kind: route.kind, row, meta: buildDynamicSeoEntry(key, row, route.kind, fallback), contentVersion };
   }
@@ -2041,6 +2066,33 @@ const fetchLiveSitemapXml = async (env: PagesEnv) => {
   }
 };
 
+const fetchFurnitureCatalogSetting = async (env: Record<string, string | undefined>) => {
+  const result = await fetchFreshPublicRowsResult(env, "home_sections", (url) => {
+    url.searchParams.set("select", "section_key,items_zh,updated_at");
+    url.searchParams.set("section_key", `eq.${FURNITURE_CATALOG_SECTION_KEY}`);
+    url.searchParams.set("status", "eq.published");
+    url.searchParams.set("limit", "1");
+  });
+  if (!result.ok) throw new Error("Furniture catalog settings unavailable");
+  return result.rows[0] || null;
+};
+
+const fetchFurnitureCatalogPreload = async (env: Record<string, string | undefined>, detailSlug?: string) => {
+  try {
+  const [materials, setting] = await Promise.all([
+    fetchPublicRows(env, `furniture-catalog-${detailSlug || "list"}`, "materials", (url) => {
+      url.searchParams.set("select", detailSlug ? "*,material_images(image_url,sort_order)" : "id,slug,title_zh,title_en,excerpt_zh,excerpt_en,content_zh,content_en,image_url,subcategory,material_type,reference_price,price_mode,price_min,price_max,price_currency,price_unit,seo_title_zh,seo_title_en,seo_description_zh,seo_description_en");
+      url.searchParams.set("status", "eq.published");
+      url.searchParams.set("category", "eq.furniture");
+      if (detailSlug) { url.searchParams.set("slug", `eq.${detailSlug}`); url.searchParams.set("material_images.is_active", "eq.true"); }
+      url.searchParams.set("order", "sort_order.asc");
+    }), fetchFurnitureCatalogSetting(env),
+  ]);
+  // Failed reads must not seed a successful empty catalog.
+  return materials ? { materials, setting, ...(detailSlug ? { detailSlug } : {}) } : null;
+  } catch { return null; }
+};
+
 const fetchLiveFurnitureSlugs = async (env: PagesEnv) => {
   const rows = await fetchPublicRows(env as Record<string, string | undefined>, "furniture-sitemap", "materials", (url) => {
     url.searchParams.set("select", "slug");
@@ -2050,26 +2102,51 @@ const fetchLiveFurnitureSlugs = async (env: PagesEnv) => {
   return (rows || []).map((row) => readString(row, "slug")).filter(Boolean);
 };
 
-const mergeSitemapXml = (staticXml: string, dynamicXml: string, furnitureSlugs: string[]) => {
+const isFreshCompleteDynamicSitemap = (dynamicXml: string, now = Date.now()) => {
+  const marker = dynamicXml.match(/<!--\s*flashcast-sitemap-snapshot:v1\s+complete=true\s+generated-at="([^"]+)"\s*-->/i);
+  if (!marker) return false;
+
+  const generatedAt = Date.parse(marker[1]);
+  const age = now - generatedAt;
+  return Number.isFinite(generatedAt) && age >= 0 && age <= 24 * 60 * 60 * 1000;
+};
+
+const mergeSitemapXml = (staticXml: string, dynamicXml: string, furnitureSlugs: string[], hiddenSlugs: string[] = []) => {
   const blocks = [...staticXml.matchAll(/<url>\s*[\s\S]*?<\/url>/gi), ...dynamicXml.matchAll(/<url>\s*[\s\S]*?<\/url>/gi)];
   if (!blocks.length && !furnitureSlugs.length) return staticXml || dynamicXml;
+  const dynamicLocations = new Set(
+    Array.from(dynamicXml.matchAll(/<loc>([^<]+)<\/loc>/gi), (match) => match[1].trim())
+      .filter((location) => {
+        try { return new URL(location).origin === PUBLIC_SITE_URL; } catch { return false; }
+      }),
+  );
+  const liveSitemapAvailable = /<urlset\b[\s\S]*<\/urlset>/i.test(dynamicXml)
+    && dynamicLocations.size > 0
+    && isFreshCompleteDynamicSitemap(dynamicXml);
   const furnitureSlugSet = new Set(furnitureSlugs);
+  const hiddenSlugSet = new Set(hiddenSlugs);
   const byLocation = new Map<string, string>();
   for (const match of blocks) {
     const block = match[0].trim();
     const location = block.match(/<loc>([^<]+)<\/loc>/i)?.[1]?.trim();
     if (!location) continue;
     try {
-      const pathname = new URL(location).pathname;
+      const parsedLocation = new URL(location);
+      if (parsedLocation.origin !== PUBLIC_SITE_URL) continue;
+      const pathname = parsedLocation.pathname;
       if (isRedirectOnlySitemapPath(pathname)) continue;
+      if (liveSitemapAvailable && /^\/(?:en|zh)\/blog\/[^/]+$/.test(pathname) && !dynamicLocations.has(location)) continue;
       const materialSlug = pathname.match(/^\/(?:en|zh)\/materials\/([^/]+)$/)?.[1];
       if (materialSlug && furnitureSlugSet.has(decodeURIComponent(materialSlug))) continue;
+      const furnitureSlug = pathname.match(/^\/(?:en|zh)\/furniture\/product\/([^/]+)$/)?.[1];
+      if (furnitureSlug && hiddenSlugSet.has(decodeURIComponent(furnitureSlug))) continue;
     } catch {
       continue;
     }
     if (!byLocation.has(location)) byLocation.set(location, block);
   }
   for (const slug of furnitureSlugSet) {
+    if (hiddenSlugSet.has(slug)) continue;
     const path = `/furniture/product/${encodeURIComponent(slug)}`;
     const en = `${PUBLIC_SITE_URL}/en${path}`;
     const zh = `${PUBLIC_SITE_URL}/zh${path}`;
@@ -2115,10 +2192,11 @@ const serveDynamicSeoAsset = async (
   env: PagesEnv,
   loadStatic: () => Promise<Response>,
 ) => {
-  const [staticResponse, dynamicXml, furnitureSlugs] = await Promise.all([loadStatic(), fetchLiveSitemapXml(env), fetchLiveFurnitureSlugs(env)]);
+  const [staticResponse, dynamicXml, furnitureSlugs, furnitureSetting] = await Promise.all([loadStatic(), fetchLiveSitemapXml(env), fetchLiveFurnitureSlugs(env), fetchFurnitureCatalogSetting(env as Record<string, string | undefined>)]);
+  const hiddenSlugs = readFurnitureCatalogOverrides(furnitureSetting?.items_zh).filter((row) => !row.enabled).map((row) => row.slug);
   const staticText = staticResponse.ok ? await staticResponse.text() : "";
   if (pathname === "/sitemap.xml") {
-    const xml = mergeSitemapXml(staticText, dynamicXml, furnitureSlugs);
+    const xml = mergeSitemapXml(staticText, dynamicXml, furnitureSlugs, hiddenSlugs);
     return new Response(request.method === "HEAD" ? null : xml, {
       status: xml ? 200 : staticResponse.status,
       headers: dynamicAssetHeaders("application/xml; charset=utf-8"),
@@ -2129,7 +2207,7 @@ const serveDynamicSeoAsset = async (
     ? await env.ASSETS.fetch(new Request(new URL("/sitemap.xml", request.url).toString(), request))
     : null;
   const staticSitemapXml = staticSitemapResponse?.ok ? await staticSitemapResponse.text() : "";
-  const mergedSitemap = mergeSitemapXml(staticSitemapXml, dynamicXml, furnitureSlugs);
+  const mergedSitemap = mergeSitemapXml(staticSitemapXml, dynamicXml, furnitureSlugs, hiddenSlugs);
   const llms = replaceLlmsCanonicalUrls(staticText, sitemapCanonicalUrls(mergedSitemap));
   return new Response(request.method === "HEAD" ? null : llms, {
     status: llms ? 200 : staticResponse.status,
@@ -2369,12 +2447,18 @@ export const onRequest: PagesFunction = async (context) => {
     : null;
 
   const generatePublicHtml = async (existingLastModified?: string | null) => {
-    const dynamicRouteState = await fetchDynamicRouteState(env as Record<string, string | undefined>, key, staticMeta);
-    const resolvedMeta = dynamicRouteState?.meta || staticMeta;
+    let unpublishedBlog = false;
+    const dynamicRouteState = await fetchDynamicRouteState(
+      env as Record<string, string | undefined>,
+      key,
+      staticMeta,
+      () => { unpublishedBlog = true; },
+    );
+    const resolvedMeta = unpublishedBlog || dynamicRouteState?.hidden ? null : dynamicRouteState?.meta || staticMeta;
     // This route renders a static page, so its FAQ schema must use the same
     // reviewed locale source as the visible accordion, rather than a CMS row.
     const oldHouseLanguage = key === "/en/services/old-house" ? "en" : key === "/zh/services/old-house" ? "zh" : null;
-    const meta = resolvedMeta && oldHouseLanguage
+    let meta = resolvedMeta && oldHouseLanguage
       ? { ...resolvedMeta, faqs: oldHouseRenovationPageText[oldHouseLanguage].faqs.map(({ q, a }) => ({ question: q, answer: a })) }
       : resolvedMeta;
 
@@ -2414,6 +2498,9 @@ export const onRequest: PagesFunction = async (context) => {
   const shouldInjectMaterials = topLevelPublicPageKey === "materials" || topLevelPublicPageKey === "products" || Boolean(productDetailSlug);
   const shouldInjectServiceAreas = topLevelPublicPageKey === "locations";
   const shouldInjectBlogPosts = topLevelPublicPageKey === "blog";
+  const furniturePath = key.replace(/^\/(?:en|zh)/, "");
+  const shouldInjectFurniture = /^\/furniture(?:\/|$)/.test(furniturePath);
+  const furnitureDetailSlug = furniturePath.match(/^\/furniture\/product\/([^/]+)$/)?.[1];
   const shouldInjectGlobalCtaBlock = Boolean(meta && shouldPreloadFooterCtaBlock(key));
   const [
     siteSettings,
@@ -2427,6 +2514,7 @@ export const onRequest: PagesFunction = async (context) => {
     serviceAreas,
     blogPosts,
     footerCtaBlock,
+    furniturePreload,
   ] = await Promise.all([
     prefetchedSiteSettings !== undefined
       ? Promise.resolve(prefetchedSiteSettings)
@@ -2453,11 +2541,17 @@ export const onRequest: PagesFunction = async (context) => {
     shouldInjectServiceAreas ? fetchPublicServiceAreas(env as Record<string, string | undefined>) : Promise.resolve(null),
     shouldInjectBlogPosts ? fetchPublicBlogPosts(env as Record<string, string | undefined>) : Promise.resolve(null),
     shouldInjectGlobalCtaBlock ? fetchPublicCtaBlock(env as Record<string, string | undefined>, "home_final") : Promise.resolve(null),
+    shouldInjectFurniture ? fetchFurnitureCatalogPreload(env as Record<string, string | undefined>, furnitureDetailSlug ? decodeURIComponent(furnitureDetailSlug) : undefined) : Promise.resolve(null),
   ]);
 
+  const homeFaqs = shouldInjectHomeBundle
+    ? mapPublicHomeFaqs(homeContentBundle?.faqs, key === "/zh" ? "zh" : "en")
+    : [];
+  if (shouldInjectHomeBundle && meta) meta = { ...meta, faqs: homeFaqs };
   const html = await response.text();
   const readableBody = buildReadablePublicBody(key, dynamicRouteState?.row, siteSettings)
-    || buildReadableRenovationBodyMarkup(key, dynamicRouteState);
+    || buildReadableRenovationBodyMarkup(key, dynamicRouteState)
+    || buildReadableHomeFaqBody(key, homeFaqs, meta);
   let transformed = meta ? injectSeo(html, meta, siteSettings, readableBody) : injectNoIndexNotFound(html, siteSettings);
   let publicDataOmitted = false;
   const publicDataPayload: Record<string, unknown> = {};
@@ -2503,6 +2597,7 @@ export const onRequest: PagesFunction = async (context) => {
       home_final: projectCtaBlockForPreload(footerCtaBlock),
     };
   }
+  if (furniturePreload) publicDataPayload.furnitureCatalog = furniturePreload;
   if (Object.keys(publicDataPayload).length) {
     const publicDataInjection = injectPublicData(transformed, publicDataPayload);
     transformed = publicDataInjection.html;
@@ -2563,8 +2658,12 @@ export const onRequest: PagesFunction = async (context) => {
       }
 
       const html = await appShellResponse.text();
-      let transformed = staticMeta
-        ? injectSeo(html, staticMeta, prefetchedSiteSettings)
+      // No current home FAQ source was bound on this exception path.
+      const fallbackMeta = staticMeta && isHomePageKey(key)
+        ? { ...staticMeta, faqs: [] }
+        : staticMeta;
+      let transformed = fallbackMeta
+        ? injectSeo(html, fallbackMeta, prefetchedSiteSettings)
         : injectNoIndexNotFound(html, prefetchedSiteSettings);
       transformed = injectPerformanceHints(transformed, env as Record<string, string | undefined>);
       const headers = new Headers(appShellResponse.headers);
@@ -2578,11 +2677,11 @@ export const onRequest: PagesFunction = async (context) => {
       }
       await applyHtmlSecurityHeaders(headers, transformed);
       const fallbackResponse = new Response(transformed, {
-        status: staticMeta ? 200 : 404,
+        status: fallbackMeta ? 200 : 404,
         headers,
       });
       return {
-        response: staticMeta
+        response: fallbackMeta
           ? createPublicHtmlBrowserResponse(fallbackResponse, request, "miss")
           : withHtmlCacheDebugHeader(fallbackResponse, "bypass-not-found"),
         cacheWrite: null,

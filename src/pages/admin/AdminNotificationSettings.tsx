@@ -291,6 +291,7 @@ const AdminNotificationSettings = () => {
               </div>
               <Switch
                 id="telegram-enabled"
+                language={lang}
                 checked={enabled}
                 disabled={!canManageSettings}
                 onCheckedChange={(value) => {
@@ -364,6 +365,7 @@ const AdminNotificationSettings = () => {
             </div>
             <Switch
               id="maintenance-enabled"
+              language={lang}
               checked={maintenanceEnabled}
               disabled={!canManageSettings}
               onCheckedChange={(value) => {
@@ -424,7 +426,7 @@ const AdminNotificationSettings = () => {
           </div>
 
           <div className="flex items-center gap-3">
-            <Switch id="include-monthly" checked={includeMonthly} disabled={!canManageSettings} onCheckedChange={setIncludeMonthly} />
+            <Switch id="include-monthly" language={lang} checked={includeMonthly} disabled={!canManageSettings} onCheckedChange={setIncludeMonthly} />
             <Label htmlFor="include-monthly">{t.includeMonthly}</Label>
           </div>
         </div>

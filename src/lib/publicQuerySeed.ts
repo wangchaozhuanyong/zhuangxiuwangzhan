@@ -7,6 +7,7 @@ import { fallbackSiteSettings } from "@/lib/siteSettingsApi";
 import { createRemoteContent } from "@/lib/publicContentStatus";
 import { FURNITURE_MATERIAL_CATEGORY } from "@/lib/furnitureCatalogConfig";
 import type { UnknownRecord } from "@/lib/recordUtils";
+import { mapFurnitureCatalogSeed, type FurnitureMaterialRow } from "@/lib/furnitureCatalog";
 
 /** HTML is an initial cache seed only. Network readers never consult it. */
 export function getPublicQuerySeed(key: QueryKey): unknown {
@@ -17,6 +18,13 @@ export function getPublicQuerySeed(key: QueryKey): unknown {
   const language = key.includes("zh") ? "zh" : "en";
   const limit = (rows: UnknownRecord[], value: unknown) => typeof value === "number" && value > 0 ? rows.slice(0, value) : rows;
   switch (key[1]) {
+    case "furniture_catalog": {
+      const bundle = payload.furnitureCatalog;
+      if (!bundle) return undefined;
+      const products = mapFurnitureCatalogSeed(bundle.materials as FurnitureMaterialRow[], bundle.setting, language);
+      if (key[2] === "detail") return bundle.detailSlug === key[3] ? products.find((product) => product.slug === key[3]) || null : undefined;
+      return bundle.detailSlug ? undefined : products;
+    }
     case "services": return payload.services?.map((row) => mapPublishedService(row, language));
     case "service_summaries": return payload.services ? limit(payload.services, key[3]).map((row) => mapPublishedService(row, language)) : undefined;
     case "service": {
