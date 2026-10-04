@@ -1,6 +1,7 @@
 import type { FurnitureProduct } from "@/lib/furnitureCatalog";
 import type { Language } from "@/i18n/routes";
 import { toRecord } from "./recordUtils";
+import { resolveFurnitureDisplay } from "./furnitureDisplaySafety.mjs";
 
 export const FURNITURE_CATALOG_SECTION_KEY = "furniture_catalog";
 export type FurnitureCatalogOverride = {
@@ -26,8 +27,13 @@ export const applyFurnitureCatalogOverrides = (products: FurnitureProduct[], ove
     const saved = bySlug.get(product.slug);
     if (!saved) return [product];
     if (!saved.enabled) return [];
-    return [{ ...product, name: saved[`name_${language}`], shortDescription: saved[`shortDescription_${language}`],
-      description: saved[`description_${language}`], price: saved.price || null, images: saved.images,
+    const reviewed = resolveFurnitureDisplay(product, language);
+    // A saved default price must retain its language and source qualification.
+    // Explicitly changed prices still use the existing shared price field.
+    const defaultPrices = (["zh", "en"] as const).map((locale) => resolveFurnitureDisplay(product, locale).price);
+    const price = defaultPrices.includes(saved.price) ? reviewed.price : saved.price || null;
+    return [{ ...reviewed, name: saved[`name_${language}`], shortDescription: saved[`shortDescription_${language}`],
+      description: saved[`description_${language}`], price, images: saved.images,
       localized: true,
     }];
   });

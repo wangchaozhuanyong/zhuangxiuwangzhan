@@ -111,4 +111,31 @@ describe("published admin furniture catalog", () => {
     vi.mocked(fetchPublishedHomeSectionRow).mockRejectedValue(new Error("Unavailable"));
     await expect(getPublishedFurnitureProductBySlug(furnitureCatalog.products[0].slug, "zh")).rejects.toThrow("Unavailable");
   });
+
+  it.each([
+    "danu-6-seater-sintered-stone-dining-set-cream",
+    "limited-stock-2209-dressing-table",
+    "ws-2102-wooden-bunk-bed-white",
+  ])("preserves reviewed bilingual prices and SKU when another field is edited: %s", async (slug) => {
+    const product = getFurnitureProduct(slug)!;
+    const zh = localizeFurnitureProduct(product, "zh");
+    const en = localizeFurnitureProduct(product, "en");
+    const saved = { slug, enabled: true, name_zh: `${zh.name} 更新`, name_en: `${en.name} updated`,
+      shortDescription_zh: zh.shortDescription, shortDescription_en: en.shortDescription,
+      description_zh: zh.description, description_en: en.description, price: en.price || "", images: product.images };
+    vi.mocked(fetchPublishedMaterialRowsByCategory).mockResolvedValue([]);
+    vi.mocked(fetchPublishedHomeSectionRow).mockResolvedValue({ items_zh: [saved] } as never);
+    for (const language of ["zh", "en"] as const) {
+      const before = localizeFurnitureProduct(product, language);
+      const detail = await getPublishedFurnitureProductBySlug(slug, language);
+      expect(detail?.name).toBe(saved[`name_${language}`]);
+      expect(detail?.price).toBe(before.price);
+      expect(detail?.sku).toBe(before.sku);
+      expect(detail?.skuLabel).toBe(before.skuLabel);
+      expect(detail?.availabilityNote).toBe(before.availabilityNote);
+    }
+    saved.price = "RM 2,000";
+    expect((await getPublishedFurnitureProductBySlug(slug, "zh"))?.price).toBe("RM 2,000");
+    expect((await getPublishedFurnitureProductBySlug(slug, "en"))?.price).toBe("RM 2,000");
+  });
 });
