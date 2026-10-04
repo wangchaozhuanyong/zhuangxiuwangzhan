@@ -29,7 +29,7 @@ export const footerCopy = {
     brandText:
       "FLASH CAST SDN. BHD. provides residential renovation, commercial fit-out, custom built-in furniture, and premium wall finishing services in Kuala Lumpur and Selangor.",
     trustLine: "Renovation Planning / Design, Build & Project Coordination",
-    hours: "Visits and consultations by prior arrangement",
+    hours: "Business hours: Daily, 10:00 AM–7:00 PM (Malaysia time). Visits and consultations by prior arrangement",
     openMap: "Open map",
     callAction: "Call now",
     emailAction: "Send email",
@@ -71,7 +71,7 @@ export const footerCopy = {
     brandText:
       "FLASH CAST SDN. BHD. 专注吉隆坡与雪兰莪住宅装修、商业空间装修、定制内嵌家具和高级墙面涂装服务。",
     trustLine: "装修规划 / 设计、施工与项目统筹",
-    hours: "到访与咨询请提前联系确认",
+    hours: "营业时间：每天10:00–19:00（马来西亚时间）。到访与咨询请提前联系确认",
     openMap: "打开地图",
     callAction: "点击拨打",
     emailAction: "发送邮件",

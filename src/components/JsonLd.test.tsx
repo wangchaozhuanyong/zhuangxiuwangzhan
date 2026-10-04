@@ -5,6 +5,8 @@ import { JsonLdBlogPosting, JsonLdLocalBusiness } from "@/components/JsonLd";
 import { fallbackSiteSettings } from "@/lib/siteSettingsApi";
 import { MemoryRouter } from "react-router-dom";
 import { SchemeAFooter } from "@/components/scheme-a/SchemeAPublicChrome";
+import { contactPageText } from "@/i18n/contactPageText";
+import { footerCopy } from "@/i18n/footerText";
 
 vi.hoisted(() => { vi.stubEnv("VITE_SITE_URL", "https://flashcast.com.my"); });
 
@@ -51,6 +53,13 @@ describe("JsonLdBlogPosting", () => {
 });
 
 describe("JsonLdLocalBusiness", () => {
+  it("shows the owner-confirmed daily hours in English and Chinese contact and footer copy", () => {
+    expect(contactPageText.en.hoursText).toBe("Daily, 10:00 AM–7:00 PM (Malaysia time). Visits and consultations by prior arrangement");
+    expect(contactPageText.zh.hoursText).toBe("每天10:00–19:00（马来西亚时间）。到访与咨询请提前联系安排");
+    expect(footerCopy.en.hours).toBe("Business hours: Daily, 10:00 AM–7:00 PM (Malaysia time). Visits and consultations by prior arrangement");
+    expect(footerCopy.zh.hours).toBe("营业时间：每天10:00–19:00（马来西亚时间）。到访与咨询请提前联系确认");
+  });
+
   it("publishes the confirmed daily hours for all seven days", () => {
     const queryClient = new QueryClient({ defaultOptions: { queries: { retry: false } } });
     const html = renderToStaticMarkup(<QueryClientProvider client={queryClient}><JsonLdLocalBusiness /></QueryClientProvider>);

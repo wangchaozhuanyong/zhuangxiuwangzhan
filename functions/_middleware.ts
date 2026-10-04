@@ -1071,6 +1071,13 @@ const buildEdgeStructuredData = (meta: SeoEntry, siteSettings?: SiteSettingsHead
           latitude: siteSettings?.map_latitude || DEFAULT_MAP_LATITUDE,
           longitude: siteSettings?.map_longitude || DEFAULT_MAP_LONGITUDE,
         },
+        openingHoursSpecification: [{
+          "@type": "OpeningHoursSpecification",
+          dayOfWeek: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
+            .map((day) => `https://schema.org/${day}`),
+          opens: "10:00",
+          closes: "19:00",
+        }],
         areaServed: [
           "Kuala Lumpur",
           "Selangor",
