@@ -2112,9 +2112,7 @@ const isFreshCompleteDynamicSitemap = (dynamicXml: string, now = Date.now()) => 
 
   const generatedAt = Date.parse(marker[1]);
   const age = now - generatedAt;
-  // The source and Pages run on different clocks. A small clock skew must not
-  // turn a complete, newly generated snapshot into a partial-source fallback.
-  return Number.isFinite(generatedAt) && age >= -5_000 && age <= 24 * 60 * 60 * 1000;
+  return Number.isFinite(generatedAt) && age >= 0 && age <= 24 * 60 * 60 * 1000;
 };
 
 const mergeSitemapXml = (staticXml: string, dynamicXml: string, furnitureSlugs: string[], hiddenSlugs: string[] = []) => {
