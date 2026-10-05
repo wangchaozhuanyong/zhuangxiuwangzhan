@@ -103,6 +103,7 @@
   }
   /* Visible full-route feedback stays between the shared header and mobile dock.
      Region-only updates retain the slim indicator beside the existing content. */
+  .public-route-scene[data-leaving="true"] + .public-route-feedback,
   .public-route-scene[data-pending="true"]:not([data-region-only]) + .public-route-feedback[aria-busy="true"] {
     inset: 76px 0 32px;
     display: grid;
@@ -111,6 +112,7 @@
     gap: 1rem;
     padding: 1.5rem;
   }
+  .public-route-scene[data-leaving="true"] + .public-route-feedback > span,
   .public-route-scene[data-pending="true"]:not([data-region-only]) + .public-route-feedback[aria-busy="true"] > span {
     position: static;
     display: block;
@@ -130,6 +132,7 @@
     line-height: 1.6;
     text-align: center;
   }
+  .public-route-scene[data-leaving="true"] + .public-route-feedback > i,
   .public-route-scene[data-pending="true"]:not([data-region-only]) + .public-route-feedback[aria-busy="true"] > i {
     width: min(144px, 100%);
     border-radius: 2px;
@@ -148,6 +151,7 @@
   .public-route-feedback__recovery .scheme-a-page-loader__actions { margin-top: .75rem; }
   @media (max-width: 767px) {
     .public-route-feedback { top: 56px; }
+    .public-route-scene[data-leaving="true"] + .public-route-feedback,
     .public-route-scene[data-pending="true"]:not([data-region-only]) + .public-route-feedback[aria-busy="true"] {
       bottom: calc(82px + env(safe-area-inset-bottom));
     }

@@ -1,5 +1,6 @@
 import { hasProtectedChanges } from "@/lib/navigationProtection";
 import { Component, createRef, type ReactNode } from "react";
+import { flushSync } from "react-dom";
 import { PUBLIC_MOTION, prefersReducedMotion } from "@/lib/publicMotion";
 import { PUBLIC_NAVIGATION_EVENT, type PublicNavigation } from "@/lib/publicNavigation";
 import { isFurnitureListingPath } from "@/lib/publicScrollRestoration";
@@ -9,6 +10,7 @@ type Props = {
   pending: boolean;
   regionOnly: boolean;
   initial?: boolean;
+  onBeforeCommit?: () => void;
   children: ReactNode;
 };
 
@@ -42,6 +44,9 @@ export class PublicRouteTransitionFrame extends Component<Props> {
     this.leave = exit;
     void exit.finished.then(() => {
       if (this.leave !== exit) return;
+      scene.dataset.leaving = "true";
+      // Publish the feedback DOM before Router changes the URL asynchronously.
+      flushSync(() => this.props.onBeforeCommit?.());
       request.detail.commit();
     }, () => { /* A newer click or browser navigation superseded this exit. */ });
   };
@@ -54,6 +59,7 @@ export class PublicRouteTransitionFrame extends Component<Props> {
   componentDidUpdate(previous: Props) {
     const changed = previous.routeKey !== this.props.routeKey;
     if (changed || !previous.pending && this.props.pending) {
+      this.content.current?.removeAttribute("data-leaving");
       this.leave?.cancel();
       this.leave = null;
       this.animation?.cancel();
@@ -69,7 +75,8 @@ export class PublicRouteTransitionFrame extends Component<Props> {
       return;
     }
     const route = this.props.routeKey;
-    const animation = target.animate([{ opacity: 0 }, { opacity: 1 }], {
+    // Prepared content is already readable when the waiting feedback is removed.
+    const animation = target.animate([{ opacity: .86 }, { opacity: 1 }], {
       duration: this.props.regionOnly ? PUBLIC_MOTION.image : PUBLIC_MOTION.enter,
       easing: "cubic-bezier(0.2, 0.65, 0.3, 1)",
     });

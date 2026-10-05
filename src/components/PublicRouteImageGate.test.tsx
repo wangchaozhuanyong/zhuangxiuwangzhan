@@ -82,7 +82,7 @@ describe("public route visual readiness", () => {
     await render(<Image ready />, "/zh/projects");
     await render(<Image />);
     expect(container.querySelector(".public-route-scene")).toHaveAttribute("data-pending", "true");
-    expect(loader()).toBeNull();
+    expect(loader()?.getAttribute("data-route-loader")).toBe("navigation");
     await act(async () => vi.advanceTimersByTime(180));
     expect(loader()?.getAttribute("data-route-loader")).toBe("navigation");
     expect(pageFeedback()).toBe(loader());

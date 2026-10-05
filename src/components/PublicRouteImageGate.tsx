@@ -62,6 +62,7 @@ export function PublicRouteImageGate({ children, routeKey, onCancel }: { childre
         content?.removeAttribute("inert");
         content?.setAttribute("aria-busy", "false");
         presentedRoute.current = routeKey;
+        setFeedbackCycle(null);
         if (status === "handoff") setState({ cycle, status: "ready" });
         window.dispatchEvent(new CustomEvent("public-route-ready", { detail: { routeKey, attempt, degraded: status === "degraded" } }));
         if (!regionOnly && !window.location.hash && !document.documentElement.dataset.menuOpen
@@ -213,17 +214,17 @@ export function PublicRouteImageGate({ children, routeKey, onCancel }: { childre
   }, [boot, showBrandScreen, routeKey, attempt, blocked]);
   return (
     <>
-      <PublicRouteTransitionFrame ref={frameRef} routeKey={routeKey} pending={blocked} regionOnly={regionOnly} initial={showBrandScreen}>
+      <PublicRouteTransitionFrame ref={frameRef} routeKey={routeKey} pending={blocked} regionOnly={regionOnly} initial={showBrandScreen} onBeforeCommit={() => setFeedbackCycle(cycle)}>
         <div ref={contentRef} className="public-route-content" data-route-visual-state={status}
           aria-hidden={blocked && !regionOnly || undefined} aria-busy={blocked || status === "handoff" || undefined}>
           {children}
         </div>
       </PublicRouteTransitionFrame>
-      {blocked && (showBrandScreen ? !boot : feedbackCycle === cycle) ? (
+      {(showBrandScreen ? blocked && !boot : feedbackCycle === cycle || blocked && !regionOnly) ? (
         <div className={showBrandScreen ? "scheme-a-page-loader scheme-a-page-loader--overlay" : "public-route-feedback"}
           role="status" aria-live="polite" aria-busy={status === "waiting"} data-route-loader={showBrandScreen ? "initial" : "navigation"}>
           {showBrandScreen ? <div className="scheme-a-page-loader__brand"><p>{copy.loaderBrand}</p><strong><span>FLASH</span><em>CAST</em></strong><span>{copy.loaderPending}</span></div> : <span className="sr-only">{copy.loaderRoutePending}</span>}
-          {status === "waiting" ? <i aria-hidden="true" /> : (
+          {status !== "timeout" ? <i aria-hidden="true" /> : (
             <div className="public-route-feedback__recovery">
               <p>{copy.loaderTimeout}</p>
               <div className="scheme-a-page-loader__actions">
