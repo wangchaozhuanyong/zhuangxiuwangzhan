@@ -364,7 +364,7 @@ const Contact = () => {
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <div>
                           <label htmlFor="contact-project-type" className="block text-sm font-medium mb-1.5">{t.projectType}</label>
-                          <select
+                          <select data-ui="select"
                             id="contact-project-type"
                             name="projectType"
                             autoComplete="off"
@@ -378,7 +378,7 @@ const Contact = () => {
                         </div>
                         <div>
                           <label htmlFor="contact-location" className="block text-sm font-medium mb-1.5">{t.location}</label>
-                          <select
+                          <select data-ui="select"
                             id="contact-location"
                             aria-describedby="contact-location-help"
                             name="location"
@@ -410,7 +410,7 @@ const Contact = () => {
                       </div>
                       <div className="absolute -left-[9999px] top-auto h-0 w-0 overflow-hidden" aria-hidden="true">
                         <label htmlFor="contact-website">Website</label>
-                        <input
+                        <input data-ui="input"
                           id="contact-website"
                           type="text"
                           name="website"

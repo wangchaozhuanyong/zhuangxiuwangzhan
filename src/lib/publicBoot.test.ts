@@ -1,6 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { initializePublicBoot, syncPublicTheme } from "./publicBoot";
 import { publicContentStatusText } from "../i18n/publicContentStatusText";
+import { PUBLIC_LOADING_PROGRESS } from "./publicLoadingProgress";
 
 const markup = '<div id="flashcast-public-boot" data-route-loader="initial"><p data-boot-copy="loaderPending"></p><div data-boot-recovery hidden><button data-boot-action="retry" data-boot-copy="loaderRetry"></button><button data-boot-action="continue" hidden></button></div></div><div id="root"></div>';
 let listeners: ReturnType<typeof vi.spyOn>;
@@ -124,6 +125,38 @@ describe("public document boot", () => {
     finishes[1]();
     await current;
     expect(boot.state).toBe("ready");
+  });
+  it("fills the brand bar before fading and cancels a superseded completion", async () => {
+    vi.stubGlobal("matchMedia", vi.fn(() => ({ matches: false })));
+    const screen = document.getElementById("flashcast-public-boot")!;
+    const brand = document.createElement("div");
+    brand.className = "scheme-a-page-loader__brand";
+    brand.innerHTML = "<i></i>";
+    screen.append(brand);
+    const track = brand.querySelector("i")!;
+    let finish!: () => void;
+    const animate = vi.fn(() => ({ finished: new Promise<void>((resolve) => { finish = resolve; }), cancel: vi.fn() }));
+    Object.defineProperty(HTMLElement.prototype, "animate", { configurable: true, value: animate });
+    const boot = initializePublicBoot()!;
+    vi.advanceTimersByTime(250);
+    expect(Number(track.style.getPropertyValue("--loading-progress"))).toBeLessThan(1);
+    const stale = boot.complete();
+    expect(track.style.getPropertyValue("--loading-progress")).toBe("1");
+    expect(animate).not.toHaveBeenCalled();
+    boot.hold();
+    await stale;
+    expect(animate).not.toHaveBeenCalled();
+    expect(boot.state).toBe("waiting");
+    expect(document.getElementById("root")).toHaveAttribute("inert");
+    const current = boot.complete();
+    expect(boot.complete()).toBe(current);
+    await vi.advanceTimersByTimeAsync(PUBLIC_LOADING_PROGRESS.finish);
+    expect(animate).toHaveBeenCalledOnce();
+    expect(document.getElementById("flashcast-public-boot")).toBe(screen);
+    finish();
+    await current;
+    expect(boot.state).toBe("ready");
+    expect(document.getElementById("flashcast-public-boot")).toBeNull();
   });
   it("keeps critical CSS pending while external fonts remain optional", () => {
     const boot = initializePublicBoot()!;

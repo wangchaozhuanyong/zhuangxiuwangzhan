@@ -6,6 +6,7 @@ import { getPublicBoot } from "@/lib/publicBoot";
 import { isFurnitureListingPath } from "@/lib/publicScrollRestoration";
 import { PUBLIC_MOTION } from "@/lib/publicMotion";
 import { PublicRouteTransitionFrame } from "@/components/PublicRouteTransitionFrame";
+import { PublicLoadingBar } from "@/components/PublicLoadingBar";
 
 
 
@@ -35,6 +36,7 @@ export function PublicRouteImageGate({ children, routeKey, onCancel }: { childre
   }
   const { regionOnly } = scope.current;
   const [feedbackCycle, setFeedbackCycle] = useState<number | null>(null);
+  const [finishedFeedbackCycle, setFinishedFeedbackCycle] = useState<number | null>(null);
   const [attempt, setAttempt] = useState(0);
   const owner = useRef({ routeKey, attempt, cycle: 0 });
   if (owner.current.routeKey !== routeKey || owner.current.attempt !== attempt) {
@@ -45,10 +47,12 @@ export function PublicRouteImageGate({ children, routeKey, onCancel }: { childre
   const status = state.cycle === cycle ? state.status : "waiting";
   const contentRef = useRef<HTMLDivElement>(null);
   const blocked = status === "waiting" || status === "timeout";
+  const presenting = status === "waiting" || status === "handoff";
   const currentCycle = useRef(cycle);
   currentCycle.current = cycle;
   const emitted = useRef<number | null>(null);
   const restored = useRef<number | null>(null);
+  const departingCycle = useRef<number | null>(null);
 
   useLayoutEffect(() => {
     const content = regionOnly ? contentRef.current?.querySelector<HTMLElement>("[data-public-results]") : contentRef.current;
@@ -89,7 +93,9 @@ export function PublicRouteImageGate({ children, routeKey, onCancel }: { childre
   useLayoutEffect(() => {
     const main = contentRef.current;
     if (!main || !blocked) return;
-    const feedback = window.setTimeout(() => setFeedbackCycle(cycle), PUBLIC_MOTION.feedbackDelay);
+    const feedback = window.setTimeout(() => {
+      if (!showBrandScreen) setFeedbackCycle(cycle);
+    }, PUBLIC_MOTION.feedbackDelay);
     let stopped = false;
     let settled = false;
     let readyFrames = 0;
@@ -101,6 +107,9 @@ export function PublicRouteImageGate({ children, routeKey, onCancel }: { childre
 
     const check = () => {
       if (stopped || settled) return;
+      // History can change before Router renders the destination. Cached data
+      // from the retiring route must not reopen its scene during that gap.
+      if (departingCycle.current === cycle) { readyFrames = 0; main.dataset.routeWaitReason = "route"; return; }
       if (boot && !boot.stylesReady) { readyFrames = 0; main.dataset.routeWaitReason = "stylesheet"; return; }
       if (main.querySelector('[data-route-pending="true"]') || brandContainer?.closest('[data-route-pending="true"]')) { readyFrames = 0; main.dataset.routeWaitReason = "route"; return; }
       if (restored.current !== cycle) {
@@ -213,17 +222,30 @@ export function PublicRouteImageGate({ children, routeKey, onCancel }: { childre
   }, [boot, showBrandScreen, routeKey, attempt, blocked]);
   return (
     <>
-      <PublicRouteTransitionFrame ref={frameRef} routeKey={routeKey} pending={blocked} regionOnly={regionOnly} initial={showBrandScreen}>
+      <PublicRouteTransitionFrame ref={frameRef} routeKey={routeKey} pending={blocked} regionOnly={regionOnly} initial={showBrandScreen} onBeforeCommit={() => {
+        departingCycle.current = cycle;
+        setFeedbackCycle(null);
+        setFinishedFeedbackCycle(null);
+        // Retire cached outgoing content before history changes. Feedback uses
+        // the normal delay and keeps its own completion after content is ready.
+        setState({ cycle, status: "waiting" });
+      }}>
         <div ref={contentRef} className="public-route-content" data-route-visual-state={status}
           aria-hidden={blocked && !regionOnly || undefined} aria-busy={blocked || status === "handoff" || undefined}>
           {children}
         </div>
       </PublicRouteTransitionFrame>
-      {blocked && (showBrandScreen ? !boot : feedbackCycle === cycle) ? (
+      {(showBrandScreen ? !boot && (blocked || status === "handoff")
+        : status === "timeout" || feedbackCycle === cycle && finishedFeedbackCycle !== cycle) ? (
         <div className={showBrandScreen ? "scheme-a-page-loader scheme-a-page-loader--overlay" : "public-route-feedback"}
-          role="status" aria-live="polite" aria-busy={status === "waiting"} data-route-loader={showBrandScreen ? "initial" : "navigation"}>
-          {showBrandScreen ? <div className="scheme-a-page-loader__brand"><p>{copy.loaderBrand}</p><strong><span>FLASH</span><em>CAST</em></strong><span>{copy.loaderPending}</span></div> : <span className="sr-only">{copy.loaderRoutePending}</span>}
-          {status === "waiting" ? <i aria-hidden="true" /> : (
+          role="status" aria-live="polite" aria-busy={presenting} data-route-loader={showBrandScreen ? "initial" : "navigation"}
+          data-feedback-scope={regionOnly ? "region" : "page"}>
+          {!showBrandScreen && status !== "timeout" && <PublicLoadingBar key={cycle} complete={status !== "waiting"}
+            onFinished={() => setFinishedFeedbackCycle(cycle)} />}
+          {showBrandScreen ? <div className="scheme-a-page-loader__brand"><p>{copy.loaderBrand}</p><strong><span>FLASH</span><em>CAST</em></strong><span>{copy.loaderPending}</span>
+            {presenting && <PublicLoadingBar key={cycle} complete={status === "handoff"} />}
+          </div> : <span className={regionOnly ? "sr-only" : "public-route-feedback__recovery public-route-feedback__pending"}>{copy.loaderRoutePending}</span>}
+          {status === "timeout" && (
             <div className="public-route-feedback__recovery">
               <p>{copy.loaderTimeout}</p>
               <div className="scheme-a-page-loader__actions">

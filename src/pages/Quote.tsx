@@ -374,7 +374,7 @@ const Quote = () => {
                 <div className="grid gap-4 md:grid-cols-2">
                   <div>
                     <label htmlFor="quote-project-type" className="mb-1.5 block text-sm">{t.projectType}</label>
-                    <select
+                    <select data-ui="select"
                       id="quote-project-type"
                       name="projectType"
                       autoComplete="off"
@@ -404,7 +404,7 @@ const Quote = () => {
 
                 <div>
                   <label htmlFor="quote-budget" className="mb-1.5 block text-sm">{t.budgetRange}</label>
-                  <select
+                  <select data-ui="select"
                     id="quote-budget"
                     name="budget"
                     autoComplete="off"
@@ -464,7 +464,7 @@ const Quote = () => {
 
                 <div className="hidden" aria-hidden="true">
                   <label htmlFor="quote-website">Website</label>
-                  <input
+                  <input data-ui="input"
                     id="quote-website"
                     type="text"
                     name="website"

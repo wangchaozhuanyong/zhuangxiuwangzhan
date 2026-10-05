@@ -1,6 +1,6 @@
 import { useAdminFormState } from "@/hooks/useAdminFormState";
 import { useSubmissionLock } from "@/hooks/useSubmissionLock";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
@@ -9,8 +9,11 @@ import { Textarea } from "@/components/ui/textarea";
 import { isSupabaseConfigured, supabase } from "@/lib/supabase";
 import { toast } from "@/hooks/use-toast";
 import AdminPageHeader from "@/components/admin/AdminPageHeader";
+import { adminMobileSaveText } from "@/i18n/adminMobileSaveText";
 import AdminFormSection from "@/components/admin/AdminFormSection";
 import AdminEmptyState from "@/components/admin/AdminEmptyState";
+import AdminAlert from "@/components/admin/AdminAlert";
+import { interactionText } from "@/i18n/interactionText";
 import ImageField from "@/components/admin/ImageField";
 import { AboutSectionItemsEditor } from "@/components/admin/StructuredArrayEditors";
 import { formatAdminMutationError, saveAdminRecord } from "@/lib/adminMutation";
@@ -105,7 +108,9 @@ const cleanAboutItems = (sectionKey: string, value: unknown[]) => {
 export default function AdminAboutEditor() {
   const { protectSubmission, isSubmitting } = useSubmissionLock();
   const queryClient = useQueryClient();
-  const { data: bundle, isFetching, refetch } = useAdminAboutEditorData();
+  const editorQuery = useAdminAboutEditorData();
+  const { data: bundle, isFetching, refetch } = editorQuery;
+  const [editorInitialized, setEditorInitialized] = useState(false);
   const [activeTab, setActiveTab] = useState<SectionKey | "cta">("hero");
   const loading = isFetching && !bundle;
 
@@ -119,6 +124,11 @@ export default function AdminAboutEditor() {
     return { sections: bundle?.sections ?? {} as Record<string, AboutSectionRow | null>, itemsZh, itemsEn, ctaBlock: bundle?.ctaBlock ?? null, editingCta: null as CtaRow | null };
   }, [bundle]);
   const { state: form, field, dirty: formDirty, applyPatchRemote } = useAdminFormState(bundle ? remoteForm : undefined, { initial: remoteForm });
+  useEffect(() => {
+    // The form hook applies the first confirmed snapshot before enabling edits.
+    if (bundle !== undefined) setEditorInitialized(true);
+  }, [bundle]);
+  const editorReady = editorInitialized && bundle !== undefined;
   const [sections, setSections] = field("sections");
   const [itemsZh, setItemsZh] = field("itemsZh");
   const [itemsEn, setItemsEn] = field("itemsEn");
@@ -154,11 +164,14 @@ export default function AdminAboutEditor() {
         content_zh: row.content_zh || null,
         content_en: row.content_en || null,
         image_url: row.image_url || null,
-        items_zh: cleanAboutItems(key, itemsZh[key] || []),
-        items_en: cleanAboutItems(key, itemsEn[key] || []),
         status: row.status || "published",
         sort_order: Number(row.sort_order || 0),
       };
+      // These sections have no list editor; preserve their existing opaque lists.
+      if (key !== "hero" && key !== "office") {
+        payload.items_zh = cleanAboutItems(key, itemsZh[key] || []);
+        payload.items_en = cleanAboutItems(key, itemsEn[key] || []);
+      }
       const saved = await saveAdminRecord<AboutSectionRow>({
         table: "about_sections",
         payload,
@@ -166,7 +179,7 @@ export default function AdminAboutEditor() {
         expectedUpdatedAt: row.updated_at || null,
         queryClient,
       });
-      applyPatchRemote({ sections: { [key]: saved }, itemsZh: { [key]: (itemsZh[key] || []) }, itemsEn: { [key]: (itemsEn[key] || []) } }, form);
+      applyPatchRemote({ sections: { [key]: saved }, itemsZh: { [key]: asArray(saved.items_zh).map(toItem) }, itemsEn: { [key]: asArray(saved.items_en).map(toItem) } }, form);
       toast({ title: A("saved") });
 
     } catch (error) {
@@ -235,6 +248,9 @@ export default function AdminAboutEditor() {
     return <AdminEmptyState title={A("supabaseNotConfigured")} description={A("supabaseNotConfiguredDescription")} />;
   }
 
+  const mobileText = adminMobileSaveText[getAdminLang()];
+  const readText = interactionText[getAdminLang()];
+
   return (
     <>
       <AdminPageHeader
@@ -255,8 +271,20 @@ export default function AdminAboutEditor() {
         }
       />
 
-      <Tabs value={activeTab} onValueChange={(v) => setActiveTab(toTabValue(v))}>
-        <div className="mb-4 overflow-auto">
+      <p className="mb-4 rounded-lg bg-muted/50 p-3 text-sm text-muted-foreground">{mobileText.sectionOnlyScope}</p>
+      {!editorReady ? (
+        <AdminAlert tone={editorQuery.isInitialError ? "error" : "info"}>
+          {editorQuery.isInitialError ? readText.loadingFailed : readText.loading}
+          {editorQuery.isInitialError && <Button variant="outline" disabled={isFetching} onClick={() => void refetch()}>{readText.retry}</Button>}
+        </AdminAlert>
+      ) : <Tabs value={activeTab} onValueChange={(v) => setActiveTab(toTabValue(v))}>
+        <label className="mb-4 block space-y-1 text-sm font-medium sm:hidden">
+          <span>{mobileText.currentSection}</span>
+          <select value={activeTab} onChange={(event) => setActiveTab(toTabValue(event.target.value))} className="h-11 w-full min-w-0 rounded-md border border-input bg-background px-3">
+            {sectionKeys.map((key) => <option key={key} value={key}>{sectionTabLabel(key)}</option>)}
+          </select>
+        </label>
+        <div className="mb-4 hidden overflow-auto sm:block">
           <TabsList className="w-max">
             {sectionKeys.map((key) => (
               <TabsTrigger key={key} value={key}>
@@ -361,7 +389,7 @@ export default function AdminAboutEditor() {
                       </div>
                     </div>
                     <div data-admin-card-actions className="mt-4 flex gap-2">
-                      <Button onClick={() => void saveSection(key)}>{A("save")}</Button>
+                      <Button onClick={() => void saveSection(key)} disabled={isSubmitting} aria-busy={isSubmitting}>{isSubmitting ? mobileText.saving : mobileText.saveSection}</Button>
                     </div>
                   </>
                 )}
@@ -442,11 +470,11 @@ export default function AdminAboutEditor() {
               </div>
             </div>
             <div data-admin-card-actions className="mt-4 flex gap-2">
-              <Button onClick={() => void saveCta()}>{A("save")}</Button>
+              <Button onClick={() => void saveCta()} disabled={isSubmitting} aria-busy={isSubmitting}>{isSubmitting ? mobileText.saving : mobileText.saveSection}</Button>
             </div>
           </AdminFormSection>
         </TabsContent>
-      </Tabs>
+      </Tabs>}
     </>
   );
 }

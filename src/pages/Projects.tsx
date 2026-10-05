@@ -1,9 +1,9 @@
+import PublicResultsBoundary from "@/components/PublicResultsBoundary";
 import { useMemo } from "react";
 import { usePublicListingState } from "@/hooks/usePublicListingState";
 import PageMeta from "@/components/PageMeta";
 import { JsonLdBreadcrumb } from "@/components/JsonLd";
 import {
-  SchemeAContentState,
   SchemeAFilter,
   SchemeAListingGrid,
   SchemeALoadMore,
@@ -43,7 +43,8 @@ export default function Projects() {
   const indexCopy = schemeAProjectsIndexText[language];
   const routeText = schemeARouteText[language];
   const { filter, setFilter, visibleCount, setVisibleCount } = usePublicListingState(categories, "All", PAGE_SIZE);
-  const { data: projects = [], isLoading, isInitialError: isError, refetch } = usePublishedProjectSummaries(language);
+  const resultsQuery = usePublishedProjectSummaries(language);
+  const { data: projects = [], isLoading } = resultsQuery;
   const { data: pageContent, isLoading: pageLoading } = usePublishedSitePage(language, "projects");
   const heroImage = resolvePageHeroImage(pageContent?.image_url, pageHeroImages.projects);
   const filtered = filter === "All" ? projects : projects.filter((project) => project.type === filter);
@@ -89,18 +90,13 @@ export default function Projects() {
           onChange={(value) => setFilter(value as (typeof categories)[number])}
           ariaLabel={copy.categoryFilterAria}
         />
-        <div data-public-results>
-        <p className="fc-route-filter-summary" role="status" aria-live="polite" aria-atomic="true">
-          {!isLoading && !isError ? copy.showing(visible.length, filtered.length) : ""}
-        </p>
-        {isLoading ? <SchemeAContentState>{routeText.projectsLoading}</SchemeAContentState> : null}
-        {isError ? <SchemeAContentState action={<button type="button" onClick={() => void refetch()}>{routeText.reload}</button>}>{routeText.projectsError}</SchemeAContentState> : null}
-        {!isLoading && !isError && !items.length ? <SchemeAContentState>{copy.empty}</SchemeAContentState> : null}
-        {!isLoading && !isError && items.length ? <SchemeAListingGrid items={items} actionLabel={copy.view} /> : null}
-        {!isLoading && !isError && visible.length < filtered.length ? (
-          <SchemeALoadMore label={copy.loadMore} detail={copy.showing(visible.length, filtered.length)} onClick={() => setVisibleCount((count) => Math.min(count + PAGE_SIZE, filtered.length))} />
-        ) : null}
-        </div>
+        <PublicResultsBoundary query={resultsQuery} loading={routeText.projectsLoading} error={routeText.projectsError} isEmpty={!items.length} empty={copy.empty}
+          summary={<p className="fc-route-filter-summary" role="status" aria-live="polite" aria-atomic="true">{copy.showing(visible.length, filtered.length)}</p>}>
+          <SchemeAListingGrid items={items} actionLabel={copy.view} />
+          {visible.length < filtered.length ? (
+            <SchemeALoadMore label={copy.loadMore} detail={copy.showing(visible.length, filtered.length)} onClick={() => setVisibleCount((count) => Math.min(count + PAGE_SIZE, filtered.length))} />
+          ) : null}
+        </PublicResultsBoundary>
       </SchemeASection>
     </main>
   );

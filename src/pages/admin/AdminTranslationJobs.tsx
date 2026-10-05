@@ -4,6 +4,7 @@ import { useAdminListingState } from "@/hooks/useAdminListingState";
 import { useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { useQueryClient } from "@tanstack/react-query";
+import AdminLoadingState from "@/components/admin/AdminLoadingState";
 import AdminPageHeader from "@/components/admin/AdminPageHeader";
 import AdminStatCard from "@/components/admin/AdminStatCard";
 import { adminConfirm } from "@/components/admin/AdminConfirmProvider";
@@ -58,7 +59,8 @@ const AdminTranslationJobs = () => {
   const lang = getAdminLang();
   const t = adminTranslationJobsText[lang];
   const queryClient = useQueryClient();
-  const { data: jobs = [], isFetching, error, refetch } = useAdminTranslationJobs();
+  const { data: loadedJobs, isLoading, isFetching, error, refetch } = useAdminTranslationJobs();
+  const jobs = useMemo(() => loadedJobs ?? [], [loadedJobs]);
   const list = useAdminListingState();
   const { search, setSearch } = list;
   const statusFilter = list.filter("status");
@@ -180,10 +182,10 @@ const AdminTranslationJobs = () => {
       />
 
       <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-        <AdminStatCard label={t.record} value={summary.total} helpText={t.totalHelp} />
-        <AdminStatCard label={t.completed} value={summary.completed} helpText={t.completedHelp} />
-        <AdminStatCard label={t.failed} value={summary.failed} helpText={t.failedHelp} />
-        <AdminStatCard label={t.processing} value={summary.processing} helpText={t.processingHelp} />
+        <AdminStatCard label={t.record} value={loadedJobs === undefined ? "…" : summary.total} helpText={t.totalHelp} />
+        <AdminStatCard label={t.completed} value={loadedJobs === undefined ? "…" : summary.completed} helpText={t.completedHelp} />
+        <AdminStatCard label={t.failed} value={loadedJobs === undefined ? "…" : summary.failed} helpText={t.failedHelp} />
+        <AdminStatCard label={t.processing} value={loadedJobs === undefined ? "…" : summary.processing} helpText={t.processingHelp} />
       </div>
 
       <div className="rounded-xl border border-border bg-card p-4 sm:p-6">
@@ -218,7 +220,7 @@ const AdminTranslationJobs = () => {
           </Button>
         </div>
         {message && <p className="mt-4 rounded-lg bg-muted p-3 text-sm">{message}</p>}
-        <p className="mt-4 text-xs text-muted-foreground">{formatText(t.showing, { filtered: filteredJobs.length, total: jobs.length })}</p>
+        {loadedJobs !== undefined && <p className="mt-4 text-xs text-muted-foreground">{formatText(t.showing, { filtered: filteredJobs.length, total: jobs.length })}</p>}
       </div>
 
       {failureGroups.length > 0 && (
@@ -289,7 +291,8 @@ const AdminTranslationJobs = () => {
             </article>
           );
         })}
-        {!isFetching && filteredJobs.length === 0 && (
+        {isLoading ? <AdminLoadingState /> : null}
+        {!isLoading && !isFetching && !error && filteredJobs.length === 0 && (
           <div className="rounded-xl border border-border bg-card p-6 text-sm text-muted-foreground">{t.empty}</div>
         )}
       </div>

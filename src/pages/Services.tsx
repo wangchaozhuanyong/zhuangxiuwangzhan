@@ -1,10 +1,10 @@
+import PublicResultsBoundary from "@/components/PublicResultsBoundary";
 import { usePublicListingState } from "@/hooks/usePublicListingState";
 import { useMemo } from "react";
 import CTABanner from "@/components/blocks/CTABanner";
 import PageMeta from "@/components/PageMeta";
 import { JsonLdBreadcrumb } from "@/components/JsonLd";
 import {
-  SchemeAContentState,
   SchemeAFilter,
   SchemeAFaqList,
   SchemeALinkGrid,
@@ -38,7 +38,8 @@ export default function Services() {
   const routeText = schemeARouteText[language];
   const { filter: group, setFilter: setGroup } = usePublicListingState<ServiceGroup>(["all", "residential", "commercial", "specialty"], "all", 12);
   const { data: pageContent, isLoading: pageLoading } = usePublishedSitePage(language, "services");
-  const { data: publishedServices, isLoading, isInitialError: isError, refetch } = usePublishedServices(language);
+  const resultsQuery = usePublishedServices(language);
+  const { data: publishedServices, isLoading } = resultsQuery;
   const services = publishedServices?.length ? publishedServices : servicesData;
   const visible = group === "all" ? services : services.filter((service) => groupForService(service.slug) === group);
   const hero = resolvePageHeroImage(pageContent?.image_url, pageHeroImages.services);
@@ -90,11 +91,9 @@ export default function Services() {
           onChange={(value) => setGroup(value as ServiceGroup)}
           ariaLabel={copy.directoryTitle}
         />
-        <div data-public-results>
-        {isLoading ? <SchemeAContentState>{routeText.servicesLoading}</SchemeAContentState> : null}
-        {isError ? <SchemeAContentState action={<button type="button" onClick={() => void refetch()}>{routeText.reload}</button>}>{routeText.servicesError}</SchemeAContentState> : null}
-        {!isLoading && !isError ? <SchemeAListingGrid items={items} actionLabel={copy.details} /> : null}
-        </div>
+        <PublicResultsBoundary query={resultsQuery} loading={routeText.servicesLoading} error={routeText.servicesError}>
+          <SchemeAListingGrid items={items} actionLabel={copy.details} />
+        </PublicResultsBoundary>
       </SchemeASection>
       <SchemeASection title={copy.selectorTitle} description={copy.selectorText}>
         <ol className="fc-route-number-list">

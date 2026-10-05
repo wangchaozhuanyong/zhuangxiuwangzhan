@@ -10,15 +10,20 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import AdminEmptyState from "@/components/admin/AdminEmptyState";
+import AdminLoadingState from "@/components/admin/AdminLoadingState";
 import AdminPageHeader from "@/components/admin/AdminPageHeader";
 import AdminFormSection from "@/components/admin/AdminFormSection";
 import AdminStatusBadge from "@/components/admin/AdminStatusBadge";
 import { AdminFieldLabel } from "@/components/admin/AdminHelpTip";
 import { AdminActionButton, AdminPermissionHint, useAdminPermission } from "@/components/admin/AdminPermission";
 import { adminCmsBuilderSectionTemplates, adminCmsBuilderText } from "@/i18n/adminCmsBuilderText";
+import { adminMobileCmsText } from "@/i18n/adminMobileCmsText";
+import { interactionText } from "@/i18n/interactionText";
 import { archiveOrDeleteAdminRecord, formatAdminMutationError, saveAdminRecord } from "@/lib/adminMutation";
 import { adminStatusLabel, getAdminLang, publishStatusOptions } from "@/lib/adminLocale";
 import { isSupabaseConfigured } from "@/lib/supabase";
+import { completePublicSync } from "@/lib/publicSyncRecovery";
+import { invalidatePublishedContent } from "@/lib/adminInvalidate";
 import { adminConfirm } from "@/components/admin/AdminConfirmProvider";
 import { SectionContentEditor } from "@/pages/admin/AdminCmsSectionContentEditor";
 import {
@@ -46,6 +51,8 @@ import {
   type CmsTemplate,
 } from "@/lib/adminCmsBuilderModel";
 
+import { CmsSectionOrderError, persistCmsSectionOrder } from "@/backend/modules/cms/service/cmsSectionOrderService";
+
 type AdminCmsBuilderTextKey = keyof typeof adminCmsBuilderText;
 
 const A = (key: AdminCmsBuilderTextKey) => adminCmsBuilderText[key][getAdminLang()];
@@ -57,7 +64,10 @@ export default function AdminCmsBuilder() {
   const { protectSubmission, isSubmitting } = useSubmissionLock();
   const queryClient = useQueryClient();
   const adminLang = getAdminLang();
+  const mobileText = adminMobileCmsText[adminLang];
+  const readText = interactionText[adminLang];
   const [message, setMessage] = useState("");
+  const [sectionDirectoryOpen, setSectionDirectoryOpen] = useState(false);
   const [selectedPageId, setSelectedPageId] = useState<string | null>(null);
   const pageForm = useAdminFormState<CmsPage>(undefined, { initial: emptyPage });
   const { state: pageDraft, setForm: setPageDraft, isDirty: isPageDirty, applyRemote: applyPageRemote } = pageForm;
@@ -71,6 +81,8 @@ export default function AdminCmsBuilder() {
   const [sectionOrder, setSectionOrder] = useState<string[]>([]);
   const [draggingSectionId, setDraggingSectionId] = useState<string | null>(null);
   const [reordering, setReordering] = useState(false);
+  const [sectionOrderBlocked, setSectionOrderBlocked] = useState(false);
+  useEffect(() => setSectionOrderBlocked(false), [selectedPageId]);
   const reorderPermission = useAdminPermission("content.reorder");
   const fallbackCmsSectionTemplates = useMemo<CmsTemplate[]>(
     () =>
@@ -102,9 +114,12 @@ export default function AdminCmsBuilder() {
     queryFn: ({ signal }) => loadAdminCmsSections(selectedPageId!, signal),
   });
 
+  const revisionSectionIds = useMemo(() => Array.from(new Set(
+    (sectionsQuery.data ?? []).flatMap((section) => section.id ? [section.id] : []),
+  )).sort(), [sectionsQuery.data]);
   const revisionsQuery = useQuery({
-    queryKey: ["admin", "cms_revisions", selectedPageId],
-    enabled: isSupabaseConfigured && Boolean(selectedPageId),
+    queryKey: ["admin", "cms_revisions", selectedPageId, { sectionIds: revisionSectionIds }],
+    enabled: isSupabaseConfigured && Boolean(selectedPageId) && sectionsQuery.data !== undefined,
     queryFn: ({ signal }) => loadAdminCmsRevisions(selectedPageId!, sectionsQuery.data || [], signal),
   });
 
@@ -158,6 +173,15 @@ export default function AdminCmsBuilder() {
   const selectSection = async (section: CmsSection) => {
     if (sectionForm.isDirty() && !await confirmProtectedNavigation()) return;
     sectionForm.applyRemote({ sectionDraft: section, contentZhText: prettyJson(section.content_zh), contentEnText: prettyJson(section.content_en), settingsText: prettyJson(section.settings) });
+    setSectionDirectoryOpen(false);
+  };
+
+  const selectPage = async (page: CmsPage) => {
+    if (!await confirmProtectedNavigation()) return;
+    pageForm.applyRemote(page);
+    sectionForm.applyRemote({ sectionDraft: null, contentZhText: "{}", contentEnText: "{}", settingsText: "{}" });
+    setSelectedPageId(page.id || null);
+    setSectionDirectoryOpen(false);
   };
 
   const newPage = async () => {
@@ -263,37 +287,52 @@ export default function AdminCmsBuilder() {
       setMessage(reorderPermission.reason);
       return;
     }
-    if (reordering) return;
+    if (reordering || sectionOrderBlocked || !selectedPageId) return;
 
     setReordering(true);
     setMessage("");
     try {
-      const changedSections = nextSections
-        .map((section, index) => ({ section, sortOrder: (index + 1) * 10 }))
-        .filter(({ section, sortOrder }) => section.id && Number(section.sort_order || 0) !== sortOrder);
-
-      for (const { section, sortOrder } of changedSections) {
-        await saveAdminRecord<CmsSection>({
-          table: "cms_sections",
-          id: section.id,
-          expectedUpdatedAt: section.updated_at || null,
-          payload: { ...section, sort_order: sortOrder },
-          action: "section_reorder",
-          queryClient,
-          invalidate: "none",
+      const result = await persistCmsSectionOrder(selectedPageId, nextSections, async (section, sortOrder) => {
+        const saved = await saveAdminRecord<CmsSection>({
+          table: "cms_sections", id: section.id, expectedUpdatedAt: section.updated_at || null,
+          payload: { ...section, sort_order: sortOrder }, action: "section_reorder", queryClient, invalidate: "none",
         });
-      }
-
-      setSectionOrder(nextSections.map((section) => section.id).filter(Boolean) as string[]);
-      setMessage(changedSections.length ? A("sectionOrderSaved") : A("sectionOrderUnchanged"));
-      await Promise.all([
+        // Advance only metadata from this confirmed write; retain edits and another row's identity.
+        if (sectionForm.getCurrent().sectionDraft?.id === section.id) {
+          sectionForm.applyPatchRemote(
+            { sectionDraft: { sort_order: saved.sort_order, updated_at: saved.updated_at } },
+            { sectionDraft: { sort_order: section.sort_order, updated_at: section.updated_at } },
+          );
+        }
+        return saved;
+      }, () => loadAdminCmsSections(selectedPageId));
+      queryClient.setQueryData(["admin", "cms_sections", selectedPageId], result.sections);
+      setSectionOrder(result.sections.map((section) => section.id!));
+      setMessage(result.changedCount ? A("sectionOrderSaved") : A("sectionOrderUnchanged"));
+      await completePublicSync(`cms-section-order:${selectedPageId}`, () => Promise.all([
         queryClient.invalidateQueries({ queryKey: ["admin", "cms_sections", selectedPageId] }),
         queryClient.invalidateQueries({ queryKey: ["admin", "cms_revisions", selectedPageId] }),
-        queryClient.invalidateQueries({ queryKey: ["published"] }),
-      ]);
+        invalidatePublishedContent(queryClient),
+      ]));
     } catch (error) {
-      setMessage(formatAdminMutationError(error));
-
+      setSectionOrder([]);
+      if (error instanceof CmsSectionOrderError) {
+        if (error.confirmedSections) {
+          queryClient.setQueryData(["admin", "cms_sections", selectedPageId], error.confirmedSections);
+          setMessage(A("sectionOrderIncomplete"));
+          setSectionOrderBlocked(false);
+        } else {
+          setSectionOrderBlocked(true);
+          setMessage(A(error.invalidInput ? "sectionOrderInvalid" : "sectionOrderReadbackFailed"));
+        }
+        // Earlier rows may already be committed. Refresh revisions/public readers even after failure.
+        await completePublicSync(`cms-section-order:${selectedPageId}`, () => Promise.all([
+          queryClient.invalidateQueries({ queryKey: ["admin", "cms_revisions", selectedPageId] }),
+          invalidatePublishedContent(queryClient),
+        ]));
+      } else {
+        setMessage(formatAdminMutationError(error));
+      }
     } finally {
       setReordering(false);
       setDraggingSectionId(null);
@@ -301,7 +340,7 @@ export default function AdminCmsBuilder() {
   });
 
   const reorderSectionById = (sourceId: string, targetId: string) => {
-    if (sourceId === targetId) return;
+    if (sourceId === targetId || reordering || sectionOrderBlocked) return;
     const nextSections = [...orderedSections];
     const sourceIndex = nextSections.findIndex((section) => section.id === sourceId);
     const targetIndex = nextSections.findIndex((section) => section.id === targetId);
@@ -313,7 +352,7 @@ export default function AdminCmsBuilder() {
   };
 
   const moveSection = (section: CmsSection, direction: -1 | 1) => {
-    if (!section.id) return;
+    if (!section.id || reordering || sectionOrderBlocked) return;
     const currentIndex = orderedSections.findIndex((item) => item.id === section.id);
     const nextIndex = currentIndex + direction;
     if (currentIndex < 0 || nextIndex < 0 || nextIndex >= orderedSections.length) return;
@@ -351,9 +390,21 @@ export default function AdminCmsBuilder() {
     });
     if (!confirmed) return;
     try {
-      await archiveOrDeleteAdminRecord({ table: "cms_sections", id: section.id, expectedUpdatedAt: section.updated_at || null, queryClient });
+      const submitted = sectionForm.getCurrent();
+      const archived = await archiveOrDeleteAdminRecord({ table: "cms_sections", id: section.id, expectedUpdatedAt: section.updated_at || null, queryClient });
       setMessage(A("sectionArchivedMessage"));
-      setSectionDraft(null);
+      const current = sectionForm.getCurrent();
+      if (current.sectionDraft?.id === section.id) {
+        if (current === submitted) {
+          sectionForm.applyRemote({ sectionDraft: null, contentZhText: "{}", contentEnText: "{}", settingsText: "{}" });
+        } else {
+          // Keep inputs added during archiving, with the confirmed archived identity/version.
+          sectionForm.applyPatchRemote(
+            { sectionDraft: { status: "archived", updated_at: typeof archived.updated_at === "string" ? archived.updated_at : null } },
+            { sectionDraft: { status: section.status, updated_at: section.updated_at } },
+          );
+        }
+      }
 
     } catch (error) {
       setMessage(formatAdminMutationError(error));
@@ -394,7 +445,7 @@ export default function AdminCmsBuilder() {
     return <AdminEmptyState title={A("supabaseMissingTitle")} description={A("supabaseMissingDescription")} />;
   }
 
-  const dbMissing = pagesQuery.error instanceof Error && pagesQuery.error.message.includes("cms_pages");
+  const dbMissing = pagesQuery.isInitialError && pagesQuery.error instanceof Error && pagesQuery.error.message.includes("cms_pages");
 
   if (dbMissing) {
     return <AdminEmptyState title={A("dbMissingTitle")} description={A("dbMissingDescription")} />;
@@ -402,17 +453,36 @@ export default function AdminCmsBuilder() {
 
   return (
     <div className="grid min-w-0 gap-5 sm:gap-6 xl:grid-cols-[300px_minmax(0,1fr)]">
-      <section className="min-w-0 rounded-xl border border-border bg-card p-4 shadow-sm xl:sticky xl:top-24 xl:max-h-[calc(100vh-7rem)] xl:overflow-y-auto">
+      <section className="min-w-0 rounded-xl border border-border bg-card p-4 shadow-sm xl:sticky xl:top-24 xl:max-h-[calc(100vh-7rem)] xl:overflow-y-auto" aria-busy={pagesQuery.isLoading || pagesQuery.isFetching || undefined}>
         <div className="mb-4 space-y-3">
-          <div>
+          <div className="hidden xl:block">
             <h2 className="font-display text-xl font-bold leading-tight">{A("pageListTitle")}</h2>
             <p className="mt-1 text-sm leading-6 text-muted-foreground">{A("pageListDescription")}</p>
+          </div>
+          <div className="space-y-2 xl:hidden">
+            <label htmlFor="admin-cms-current-page" className="block text-sm font-medium">{mobileText.currentPage}</label>
+            <select
+              id="admin-cms-current-page"
+              value={selectedPageId || ""}
+              onChange={(event) => {
+                const page = pages.find((item) => item.id === event.target.value);
+                if (page) void selectPage(page);
+              }}
+              className="min-h-11 w-full min-w-0 rounded-md border border-input bg-background px-3 py-2 text-base"
+            >
+              <option value="" disabled>{!pageDraft.id && dirty ? pageDraft.title_zh || A("newPageDraftFallback") : mobileText.choosePage}</option>
+              {pages.map((page) => (
+                <option key={page.id} value={page.id}>{page.title_zh || page.title_en || page.page_key} · {adminStatusLabel("default", page.status)}</option>
+              ))}
+            </select>
           </div>
           <AdminActionButton action="content.write" type="button" size="sm" className="w-full justify-center whitespace-nowrap" onClick={newPage}>
             <Plus className="mr-2 h-4 w-4" />{A("newPageButton")}</AdminActionButton>
         </div>
         {message && <div className="mb-4 rounded-lg bg-muted p-3 text-sm">{message}</div>}
-        <div className="space-y-2">
+        {pagesQuery.isLoading && <AdminLoadingState />}
+        {pagesQuery.isInitialError && <AdminEmptyState title={readText.loadingFailed} />}
+        <div className="hidden space-y-2 xl:block">
           {!pageDraft.id && dirty && (
             <div className="rounded-lg border border-dashed border-accent bg-accent/10 p-3 text-sm">
               <div className="font-medium">{pageDraft.title_zh || pageDraft.page_key || A("newPageDraftFallback")}</div>
@@ -423,7 +493,7 @@ export default function AdminCmsBuilder() {
             <button
               type="button"
               key={page.id}
-              onClick={async () => { if (!await confirmProtectedNavigation()) return; pageForm.applyRemote(page); sectionForm.applyRemote({ sectionDraft: null, contentZhText: "{}", contentEnText: "{}", settingsText: "{}" }); setSelectedPageId(page.id || null); }}
+              onClick={() => void selectPage(page)}
               className={`w-full rounded-lg border p-3 text-left transition ${selectedPageId === page.id ? "border-accent bg-accent/10" : "border-border bg-background hover:bg-muted"}`}
             >
               <div className="flex min-w-0 items-center justify-between gap-3">
@@ -433,11 +503,11 @@ export default function AdminCmsBuilder() {
               <p className="mt-1 break-all text-xs text-muted-foreground">{page.path}</p>
             </button>
           ))}
-          {!pages.length && <p className="text-sm text-muted-foreground">{A("noPages")}</p>}
+          {pagesQuery.data !== undefined && !pages.length && <p className="text-sm text-muted-foreground">{A("noPages")}</p>}
         </div>
       </section>
 
-      <div className="space-y-6">
+      <div className="min-w-0 space-y-6">
         <AdminPageHeader
           title={A("builderTitle")}
           description={
@@ -489,12 +559,12 @@ export default function AdminCmsBuilder() {
         <AdminFormSection title={A("pageBasicsTitle")} description={A("pageBasicsDescription")} helpText={A("pageBasicsHelp")}>
           <div className="grid gap-4 md:grid-cols-2">
             <div>
-              <AdminFieldLabel label={A("pageKeyLabel")} help={A("pageKeyHelp")} />
-              <Input value={pageDraft.page_key} onChange={(event) => {  setPageDraft((page) => ({ ...page, page_key: event.target.value })); }} />
+              <AdminFieldLabel htmlFor="cms-page-page_key" label={A("pageKeyLabel")} help={A("pageKeyHelp")} />
+              <Input id="cms-page-page_key" value={pageDraft.page_key} onChange={(event) => {  setPageDraft((page) => ({ ...page, page_key: event.target.value })); }} />
             </div>
             <div>
-              <AdminFieldLabel label={A("pathLabel")} help={A("pathHelp")} />
-              <Input value={pageDraft.path} onChange={(event) => {  setPageDraft((page) => ({ ...page, path: event.target.value })); }} />
+              <AdminFieldLabel htmlFor="cms-page-path" label={A("pathLabel")} help={A("pathHelp")} />
+              <Input id="cms-page-path" value={pageDraft.path} onChange={(event) => {  setPageDraft((page) => ({ ...page, path: event.target.value })); }} />
               <div className="mt-2 grid gap-2 text-xs sm:grid-cols-2">
                 <div className="rounded-lg border border-border bg-muted/30 px-3 py-2">
                   <span className="text-muted-foreground">{A("zhAddressLabel")}</span>
@@ -513,16 +583,17 @@ export default function AdminCmsBuilder() {
               )}
             </div>
             <div>
-              <AdminFieldLabel label={A("zhTitleLabel")} help={A("zhTitleHelp")} />
-              <Input value={pageDraft.title_zh || ""} onChange={(event) => {  setPageDraft((page) => ({ ...page, title_zh: event.target.value })); }} />
+              <AdminFieldLabel htmlFor="cms-page-title_zh" label={A("zhTitleLabel")} help={A("zhTitleHelp")} />
+              <Input id="cms-page-title_zh" value={pageDraft.title_zh || ""} onChange={(event) => {  setPageDraft((page) => ({ ...page, title_zh: event.target.value })); }} />
             </div>
             <div>
-              <AdminFieldLabel label={A("enTitleLabel")} help={A("enTitleHelp")} />
-              <Input value={pageDraft.title_en || ""} onChange={(event) => {  setPageDraft((page) => ({ ...page, title_en: event.target.value })); }} />
+              <AdminFieldLabel htmlFor="cms-page-title_en" label={A("enTitleLabel")} help={A("enTitleHelp")} />
+              <Input id="cms-page-title_en" value={pageDraft.title_en || ""} onChange={(event) => {  setPageDraft((page) => ({ ...page, title_en: event.target.value })); }} />
             </div>
             <div>
-              <AdminFieldLabel label={A("statusLabel")} help={A("statusHelp")} />
+              <AdminFieldLabel htmlFor="cms-page-status" label={A("statusLabel")} help={A("statusHelp")} />
               <select
+                id="cms-page-status"
                 value={pageDraft.status}
                 onChange={(event) => {  setPageDraft((page) => ({ ...page, status: event.target.value as CmsPage["status"] })); }}
                 className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
@@ -533,32 +604,32 @@ export default function AdminCmsBuilder() {
               </select>
             </div>
             <div>
-              <AdminFieldLabel label={A("sortLabel")} help={A("sortHelp")} />
-              <Input type="number" value={pageDraft.sort_order} onChange={(event) => {  setPageDraft((page) => ({ ...page, sort_order: Number(event.target.value || 0) })); }} />
+              <AdminFieldLabel htmlFor="cms-page-sort_order" label={A("sortLabel")} help={A("sortHelp")} />
+              <Input id="cms-page-sort_order" type="number" value={pageDraft.sort_order} onChange={(event) => {  setPageDraft((page) => ({ ...page, sort_order: Number(event.target.value || 0) })); }} />
             </div>
             <div className="md:col-span-2">
-              <AdminFieldLabel label={A("zhSeoTitleLabel")} help={A("zhSeoTitleHelp")} />
-              <Input value={pageDraft.seo_title_zh || ""} onChange={(event) => {  setPageDraft((page) => ({ ...page, seo_title_zh: event.target.value })); }} />
+              <AdminFieldLabel htmlFor="cms-page-seo_title_zh" label={A("zhSeoTitleLabel")} help={A("zhSeoTitleHelp")} />
+              <Input id="cms-page-seo_title_zh" value={pageDraft.seo_title_zh || ""} onChange={(event) => {  setPageDraft((page) => ({ ...page, seo_title_zh: event.target.value })); }} />
             </div>
             <div className="md:col-span-2">
-              <AdminFieldLabel label={A("enSeoTitleLabel")} help={A("enSeoTitleHelp")} />
-              <Input value={pageDraft.seo_title_en || ""} onChange={(event) => {  setPageDraft((page) => ({ ...page, seo_title_en: event.target.value })); }} />
+              <AdminFieldLabel htmlFor="cms-page-seo_title_en" label={A("enSeoTitleLabel")} help={A("enSeoTitleHelp")} />
+              <Input id="cms-page-seo_title_en" value={pageDraft.seo_title_en || ""} onChange={(event) => {  setPageDraft((page) => ({ ...page, seo_title_en: event.target.value })); }} />
             </div>
             <div className="md:col-span-2">
-              <AdminFieldLabel label={A("zhSeoDescriptionLabel")} help={A("zhSeoDescriptionHelp")} />
-              <Textarea rows={3} value={pageDraft.seo_description_zh || ""} onChange={(event) => {  setPageDraft((page) => ({ ...page, seo_description_zh: event.target.value })); }} />
+              <AdminFieldLabel htmlFor="cms-page-seo_description_zh" label={A("zhSeoDescriptionLabel")} help={A("zhSeoDescriptionHelp")} />
+              <Textarea id="cms-page-seo_description_zh" rows={3} value={pageDraft.seo_description_zh || ""} onChange={(event) => {  setPageDraft((page) => ({ ...page, seo_description_zh: event.target.value })); }} />
             </div>
             <div className="md:col-span-2">
-              <AdminFieldLabel label={A("enSeoDescriptionLabel")} help={A("enSeoDescriptionHelp")} />
-              <Textarea rows={3} value={pageDraft.seo_description_en || ""} onChange={(event) => {  setPageDraft((page) => ({ ...page, seo_description_en: event.target.value })); }} />
+              <AdminFieldLabel htmlFor="cms-page-seo_description_en" label={A("enSeoDescriptionLabel")} help={A("enSeoDescriptionHelp")} />
+              <Textarea id="cms-page-seo_description_en" rows={3} value={pageDraft.seo_description_en || ""} onChange={(event) => {  setPageDraft((page) => ({ ...page, seo_description_en: event.target.value })); }} />
             </div>
             <div className="md:col-span-2">
-              <AdminFieldLabel label={A("zhSeoKeywordsLabel")} help={A("zhSeoKeywordsHelp")} />
-              <Textarea rows={2} value={pageDraft.seo_keywords_zh || ""} onChange={(event) => {  setPageDraft((page) => ({ ...page, seo_keywords_zh: event.target.value })); }} />
+              <AdminFieldLabel htmlFor="cms-page-seo_keywords_zh" label={A("zhSeoKeywordsLabel")} help={A("zhSeoKeywordsHelp")} />
+              <Textarea id="cms-page-seo_keywords_zh" rows={2} value={pageDraft.seo_keywords_zh || ""} onChange={(event) => {  setPageDraft((page) => ({ ...page, seo_keywords_zh: event.target.value })); }} />
             </div>
             <div className="md:col-span-2">
-              <AdminFieldLabel label={A("enSeoKeywordsLabel")} help={A("enSeoKeywordsHelp")} />
-              <Textarea rows={2} value={pageDraft.seo_keywords_en || ""} onChange={(event) => {  setPageDraft((page) => ({ ...page, seo_keywords_en: event.target.value })); }} />
+              <AdminFieldLabel htmlFor="cms-page-seo_keywords_en" label={A("enSeoKeywordsLabel")} help={A("enSeoKeywordsHelp")} />
+              <Textarea id="cms-page-seo_keywords_en" rows={2} value={pageDraft.seo_keywords_en || ""} onChange={(event) => {  setPageDraft((page) => ({ ...page, seo_keywords_en: event.target.value })); }} />
             </div>
           </div>
           <div data-admin-card-actions className="mt-4 flex flex-wrap gap-2">
@@ -594,89 +665,123 @@ export default function AdminCmsBuilder() {
               <Plus className="mr-2 h-4 w-4" />{A("newSectionButton")}</AdminActionButton>
           </div>
           <div className="grid min-w-0 gap-4 lg:grid-cols-[320px_1fr]">
-            <div className="space-y-2">
-              <AdminPermissionHint action="content.reorder" />
-              {orderedSections.map((section, index) => (
-                <div
-                  key={section.id}
-                  draggable={reorderPermission.allowed && Boolean(section.id) && !reordering}
-                  onDragStart={(event) => {
-                    if (!section.id || !reorderPermission.allowed) return;
-                    setDraggingSectionId(section.id);
-                    event.dataTransfer.effectAllowed = "move";
-                    event.dataTransfer.setData("text/plain", section.id);
+            <div className="min-w-0 space-y-3" aria-busy={sectionsQuery.isLoading || sectionsQuery.isFetching || undefined}>
+              {sectionsQuery.isLoading && <AdminLoadingState />}
+              {sectionsQuery.isInitialError && <AdminEmptyState title={readText.loadingFailed} />}
+              <div className="space-y-2 lg:hidden">
+                <label htmlFor="admin-cms-current-section" className="block text-sm font-medium">{mobileText.currentSection}</label>
+                <select
+                  id="admin-cms-current-section"
+                  value={sectionDraft?.id || ""}
+                  onChange={(event) => {
+                    const section = orderedSections.find((item) => item.id === event.target.value);
+                    if (section) void selectSection(section);
                   }}
-                  onDragOver={(event) => {
-                    if (!reorderPermission.allowed || !draggingSectionId || draggingSectionId === section.id) return;
-                    event.preventDefault();
-                    event.dataTransfer.dropEffect = "move";
-                  }}
-                  onDrop={(event) => {
-                    event.preventDefault();
-                    const sourceId = event.dataTransfer.getData("text/plain") || draggingSectionId;
-                    if (sourceId && section.id) reorderSectionById(sourceId, section.id);
-                  }}
-                  onDragEnd={() => setDraggingSectionId(null)}
-                  className={`rounded-lg border p-3 transition ${sectionDraft?.id === section.id ? "border-accent bg-accent/10" : "border-border bg-background hover:bg-muted"} ${draggingSectionId === section.id ? "opacity-55" : ""}`}
+                  disabled={!orderedSections.length}
+                  className="min-h-11 w-full min-w-0 rounded-md border border-input bg-background px-3 py-2 text-base"
                 >
-                  <div className="flex items-start gap-2">
-                    <button
-                      type="button"
-                      title={reorderPermission.allowed ? A("dragSectionTitle") : reorderPermission.reason}
-                      className="mt-0.5 rounded-md p-1 text-muted-foreground hover:bg-muted"
-                      aria-label={A("dragSectionAria")}
-                      disabled={!reorderPermission.allowed || reordering}
-                    >
-                      <GripVertical className="h-4 w-4" />
-                    </button>
-                    <button type="button" onClick={() => selectSection(section)} className="min-w-0 flex-1 text-left">
-                      <div className="flex items-center justify-between gap-2">
-                        <span className="truncate font-medium">{section.title_zh || section.title_en || section.section_key}</span>
-                        <AdminStatusBadge status={section.status} />
+                  <option value="" disabled>{sectionDraft ? sectionDraft.title_zh || sectionDraft.section_key || mobileText.newSectionDraft : mobileText.chooseSection}</option>
+                  {orderedSections.map((section) => (
+                    <option key={section.id} value={section.id}>{section.title_zh || section.title_en || section.section_key} · {adminStatusLabel("default", section.status)}</option>
+                  ))}
+                </select>
+                {orderedSections.length > 0 && (
+                  <Button type="button" variant="outline" className="w-full" aria-expanded={sectionDirectoryOpen} aria-controls="admin-cms-section-directory" onClick={() => setSectionDirectoryOpen((open) => !open)}>
+                    {sectionDirectoryOpen ? mobileText.hideDirectory : mobileText.showDirectory}
+                  </Button>
+                )}
+                {selectedPageId && sectionsQuery.data !== undefined && !orderedSections.length && <p className="text-sm text-muted-foreground">{A("noSections")}</p>}
+              </div>
+              <div id="admin-cms-section-directory" className={sectionDirectoryOpen ? "space-y-2" : "hidden space-y-2 lg:block"}>
+                <AdminPermissionHint action="content.reorder" />
+                {orderedSections.map((section, index) => (
+                  <div
+                    key={section.id}
+                    draggable={reorderPermission.allowed && Boolean(section.id) && !reordering && !sectionOrderBlocked}
+                    onDragStart={(event) => {
+                      if (!section.id || !reorderPermission.allowed) return;
+                      setDraggingSectionId(section.id);
+                      event.dataTransfer.effectAllowed = "move";
+                      event.dataTransfer.setData("text/plain", section.id);
+                    }}
+                    onDragOver={(event) => {
+                      if (!reorderPermission.allowed || !draggingSectionId || draggingSectionId === section.id) return;
+                      event.preventDefault();
+                      event.dataTransfer.dropEffect = "move";
+                    }}
+                    onDrop={(event) => {
+                      event.preventDefault();
+                      const sourceId = event.dataTransfer.getData("text/plain") || draggingSectionId;
+                      if (sourceId && section.id) reorderSectionById(sourceId, section.id);
+                    }}
+                    onDragEnd={() => setDraggingSectionId(null)}
+                    className={`rounded-lg border p-3 transition ${sectionDraft?.id === section.id ? "border-accent bg-accent/10" : "border-border bg-background hover:bg-muted"} ${draggingSectionId === section.id ? "opacity-55" : ""}`}
+                  >
+                    <div className="flex items-start gap-2">
+                      <button
+                        type="button"
+                        title={reorderPermission.allowed ? A("dragSectionTitle") : reorderPermission.reason}
+                        className="mt-0.5 rounded-md p-1 text-muted-foreground hover:bg-muted"
+                        aria-label={A("dragSectionAria")}
+                        disabled={!reorderPermission.allowed || sectionOrderBlocked || reordering}
+                      >
+                        <GripVertical className="h-4 w-4" />
+                      </button>
+                      <button type="button" onClick={() => selectSection(section)} className="min-w-0 flex-1 text-left">
+                        <div className="flex items-center justify-between gap-2">
+                          <span className="truncate font-medium">{section.title_zh || section.title_en || section.section_key}</span>
+                          <AdminStatusBadge status={section.status} />
+                        </div>
+                        <p className="mt-1 text-xs text-muted-foreground">{section.section_type} · {A("sectionSortInlineLabel")} {section.sort_order}</p>
+                      </button>
+                      <div className="grid shrink-0 grid-cols-2 gap-1 sm:flex">
+                        <Button
+                          type="button"
+                          size="icon"
+                          variant="outline"
+                          title={reorderPermission.reason}
+                          disabled={!reorderPermission.allowed || sectionOrderBlocked || reordering || index === 0}
+                          onClick={() => moveSection(section, -1)}
+                          aria-label={A("moveSectionUpAria")}
+                        >
+                          <ArrowUp className="h-4 w-4" />
+                        </Button>
+                        <Button
+                          type="button"
+                          size="icon"
+                          variant="outline"
+                          title={reorderPermission.reason}
+                          disabled={!reorderPermission.allowed || sectionOrderBlocked || reordering || index === orderedSections.length - 1}
+                          onClick={() => moveSection(section, 1)}
+                          aria-label={A("moveSectionDownAria")}
+                        >
+                          <ArrowDown className="h-4 w-4" />
+                        </Button>
                       </div>
-                      <p className="mt-1 text-xs text-muted-foreground">{section.section_type} · {A("sectionSortInlineLabel")} {section.sort_order}</p>
-                    </button>
-                    <div className="grid shrink-0 grid-cols-2 gap-1 sm:flex">
-                      <Button
-                        type="button"
-                        size="icon"
-                        variant="outline"
-                        title={reorderPermission.reason}
-                        disabled={!reorderPermission.allowed || reordering || index === 0}
-                        onClick={() => moveSection(section, -1)}
-                        aria-label={A("moveSectionUpAria")}
-                      >
-                        <ArrowUp className="h-4 w-4" />
-                      </Button>
-                      <Button
-                        type="button"
-                        size="icon"
-                        variant="outline"
-                        title={reorderPermission.reason}
-                        disabled={!reorderPermission.allowed || reordering || index === orderedSections.length - 1}
-                        onClick={() => moveSection(section, 1)}
-                        aria-label={A("moveSectionDownAria")}
-                      >
-                        <ArrowDown className="h-4 w-4" />
-                      </Button>
                     </div>
                   </div>
-                </div>
-              ))}
-              {selectedPageId && !orderedSections.length && <p className="text-sm text-muted-foreground">{A("noSections")}</p>}
-              {reordering && <p className="text-xs text-muted-foreground">{A("reordering")}</p>}
+                ))}
+                {selectedPageId && sectionsQuery.data !== undefined && !orderedSections.length && <p className="text-sm text-muted-foreground">{A("noSections")}</p>}
+                {reordering && <p className="text-xs text-muted-foreground">{A("reordering")}</p>}
+                {sectionOrderBlocked && <Button variant="outline" disabled={sectionsQuery.isFetching} onClick={() => {
+                  void sectionsQuery.refetch().then((result) => {
+                    if (result.isSuccess) { setSectionOrder([]); setSectionOrderBlocked(false); setMessage(""); }
+                  });
+                }}>{A("sectionOrderReload")}</Button>}
+              </div>
             </div>
 
             {sectionDraft ? (
               <div className="min-w-0 space-y-4 rounded-lg border border-border bg-background p-4">
                 <div className="grid gap-4 md:grid-cols-2">
                   <div>
-                    <AdminFieldLabel label={A("sectionKeyLabel")} help={A("sectionKeyHelp")} />
-                    <Input value={sectionDraft.section_key} onChange={(event) => {  setSectionDraft((section) => section ? { ...section, section_key: event.target.value } : section); }} />
+                    <AdminFieldLabel htmlFor="cms-section-section_key" label={A("sectionKeyLabel")} help={A("sectionKeyHelp")} />
+                    <Input id="cms-section-section_key" value={sectionDraft.section_key} onChange={(event) => {  setSectionDraft((section) => section ? { ...section, section_key: event.target.value } : section); }} />
                   </div>
                   <div>
-                    <AdminFieldLabel label={A("sectionTypeLabel")} help={A("sectionTypeHelp")} />
+                    <AdminFieldLabel htmlFor="cms-section-section_type" label={A("sectionTypeLabel")} help={A("sectionTypeHelp")} />
                     <select
+                      id="cms-section-section_type"
                       value={sectionDraft.section_type}
                       onChange={(event) => {  setSectionDraft((section) => section ? { ...section, section_type: event.target.value } : section); }}
                       className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
@@ -687,16 +792,17 @@ export default function AdminCmsBuilder() {
                     </select>
                   </div>
                   <div>
-                    <AdminFieldLabel label={A("zhSectionTitleLabel")} help={A("zhSectionTitleHelp")} />
-                    <Input value={sectionDraft.title_zh || ""} onChange={(event) => {  setSectionDraft((section) => section ? { ...section, title_zh: event.target.value } : section); }} />
+                    <AdminFieldLabel htmlFor="cms-section-title_zh" label={A("zhSectionTitleLabel")} help={A("zhSectionTitleHelp")} />
+                    <Input id="cms-section-title_zh" value={sectionDraft.title_zh || ""} onChange={(event) => {  setSectionDraft((section) => section ? { ...section, title_zh: event.target.value } : section); }} />
                   </div>
                   <div>
-                    <AdminFieldLabel label={A("enSectionTitleLabel")} help={A("enSectionTitleHelp")} />
-                    <Input value={sectionDraft.title_en || ""} onChange={(event) => {  setSectionDraft((section) => section ? { ...section, title_en: event.target.value } : section); }} />
+                    <AdminFieldLabel htmlFor="cms-section-title_en" label={A("enSectionTitleLabel")} help={A("enSectionTitleHelp")} />
+                    <Input id="cms-section-title_en" value={sectionDraft.title_en || ""} onChange={(event) => {  setSectionDraft((section) => section ? { ...section, title_en: event.target.value } : section); }} />
                   </div>
                   <div>
-                    <AdminFieldLabel label={A("statusLabel")} help={A("statusHelp")} />
+                    <AdminFieldLabel htmlFor="cms-section-status" label={A("statusLabel")} help={A("statusHelp")} />
                     <select
+                      id="cms-section-status"
                       value={sectionDraft.status}
                       onChange={(event) => {  setSectionDraft((section) => section ? { ...section, status: event.target.value as CmsSection["status"] } : section); }}
                       className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
@@ -707,8 +813,8 @@ export default function AdminCmsBuilder() {
                     </select>
                   </div>
                   <div>
-                    <AdminFieldLabel label={A("sortLabel")} help={A("sortHelp")} />
-                    <Input type="number" value={sectionDraft.sort_order} onChange={(event) => {  setSectionDraft((section) => section ? { ...section, sort_order: Number(event.target.value || 0) } : section); }} />
+                    <AdminFieldLabel htmlFor="cms-section-sort_order" label={A("sortLabel")} help={A("sortHelp")} />
+                    <Input id="cms-section-sort_order" type="number" value={sectionDraft.sort_order} onChange={(event) => {  setSectionDraft((section) => section ? { ...section, sort_order: Number(event.target.value || 0) } : section); }} />
                   </div>
                 </div>
                 <SectionContentEditor
@@ -726,8 +832,8 @@ export default function AdminCmsBuilder() {
                   onDirty={() => {}}
                 />
                 <div>
-                  <AdminFieldLabel label={A("settingsLabel")} help={A("settingsHelp")} />
-                  <Textarea rows={5} value={settingsText} onChange={(event) => {  setSettingsText(event.target.value); }} />
+                  <AdminFieldLabel htmlFor="cms-section-settings" label={A("settingsLabel")} help={A("settingsHelp")} />
+                  <Textarea id="cms-section-settings" rows={5} value={settingsText} onChange={(event) => {  setSettingsText(event.target.value); }} />
                 </div>
                 <div data-admin-card-actions className="flex flex-wrap gap-2">
                   <AdminActionButton action="content.write" type="button" disabled={saving} onClick={() => void saveSection()}>{saving ? A("saving") : A("saveSectionButton")}</AdminActionButton>
@@ -746,7 +852,9 @@ export default function AdminCmsBuilder() {
         </AdminFormSection>
 
         <AdminFormSection title={A("revisionsTitle")} description={A("revisionsDescription")} helpText={A("revisionsHelp")}>
-          <div className="space-y-2">
+          <div className="space-y-2" aria-busy={revisionsQuery.isLoading || revisionsQuery.isFetching || (Boolean(selectedPageId) && sectionsQuery.isLoading) || undefined}>
+            {(revisionsQuery.isLoading || (selectedPageId && sectionsQuery.isLoading && revisionsQuery.data === undefined)) && <AdminLoadingState />}
+            {revisionsQuery.isInitialError && <AdminEmptyState title={readText.loadingFailed} />}
             {(revisionsQuery.data || []).map((revision) => (
               <div key={revision.id} className="flex flex-col gap-3 rounded-lg border border-border p-3 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between">
                 <div className="min-w-0">
@@ -759,7 +867,7 @@ export default function AdminCmsBuilder() {
                 </AdminActionButton>
               </div>
             ))}
-            {!(revisionsQuery.data || []).length && <p className="text-sm text-muted-foreground">{A("noRevisions")}</p>}
+            {selectedPageId && revisionsQuery.data !== undefined && !revisionsQuery.data.length && <p className="text-sm text-muted-foreground">{A("noRevisions")}</p>}
           </div>
         </AdminFormSection>
       </div>

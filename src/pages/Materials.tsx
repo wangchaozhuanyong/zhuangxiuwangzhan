@@ -1,3 +1,4 @@
+import PublicResultsBoundary from "@/components/PublicResultsBoundary";
 import { isReviewedMaterialConceptImage } from "@/lib/reviewedContentMedia.mjs";
 import { useMemo } from "react";
 import PageMeta from "@/components/PageMeta";
@@ -15,7 +16,8 @@ import { pageHeroImages, resolvePageHeroImage } from "@/lib/pageHeroImages";
 export default function Materials() {
   const { language } = useLanguage();
   const copy = materialsPageText[language];
-  const { data: publishedCategories, isLoading } = usePublishedMaterials(language);
+  const resultsQuery = usePublishedMaterials(language);
+  const { data: publishedCategories, isLoading } = resultsQuery;
   const { data: pageContent, isLoading: pageLoading } = usePublishedSitePage(language, "materials");
   const categories = useMemo(() => reviewMaterialImages(publishedCategories?.length ? publishedCategories : materialsData), [publishedCategories]);
   const hero = resolvePageHeroImage(pageContent?.image_url, pageHeroImages.materials);
@@ -36,7 +38,9 @@ export default function Materials() {
       <JsonLdBreadcrumb items={[{ name: copy.breadcrumbHome, url: "/" }, { name: copy.breadcrumbMaterials, url: "/materials" }]} />
       <SchemeARouteHero kind="listing" image={hero.desktop} imageSourceWidth={hero.desktopWidth} tabletImage={hero.tablet} tabletImageSourceWidth={hero.tabletWidth} mobileImage={hero.mobile} mobileImageSourceWidth={hero.mobileWidth} imagePosition={hero.imagePosition} imageAlt={pageContent?.alt || copy.heroAlt} label={[pageContent?.subtitle || copy.eyebrow, hero.claimLevel ? mediaLabels[language].renderingConcept : ""].filter(Boolean).join(" · ")} title={pageContent?.title || copy.title} description={pageContent?.description || copy.intro} />
       <SchemeASection title={copy.choose} description={copy.chooseText}>
-        <SchemeAListingGrid items={items} actionLabel={copy.view} />
+        <PublicResultsBoundary query={resultsQuery} keepFallback>
+          <SchemeAListingGrid items={items} actionLabel={copy.view} />
+        </PublicResultsBoundary>
       </SchemeASection>
     </main>
   );

@@ -49,23 +49,4 @@
     padding-bottom: clamp(64px, 7vw, 88px);
   }
 
-  /* One restrained corner shape for public actions; cards and media keep their own geometry. */
-  .scheme-a-public-shell :is(
-    button,
-    input[type="submit"],
-    [role="button"],
-    .scheme-a-button,
-    .btn-brand-primary,
-    .btn-brand-secondary,
-    .btn-on-dark-primary,
-    .btn-on-dark-secondary,
-    .fc-furniture-primary a,
-    .fc-furniture-secondary a,
-    .fc-furniture-card__actions a,
-    .fc-furniture-entry__link,
-    .fc-route-more,
-    .fc-route-action-panel a
-  ) {
-    border-radius: 6px !important;
-  }
 }

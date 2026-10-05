@@ -35,16 +35,18 @@ export default function AdminHelpTip({ text, className }: AdminHelpTipProps) {
 }
 
 export function AdminFieldLabel({
+  htmlFor,
   label,
   help,
   className,
 }: {
+  htmlFor?: string;
   label: string;
   help?: string | null;
   className?: string;
 }) {
   return (
-    <label className={cn("mb-1 flex items-center gap-1.5 text-sm font-medium", className)}>
+    <label htmlFor={htmlFor} className={cn("mb-1 flex items-center gap-1.5 text-sm font-medium", className)}>
       <span>{label}</span>
       <AdminHelpTip text={help} />
     </label>

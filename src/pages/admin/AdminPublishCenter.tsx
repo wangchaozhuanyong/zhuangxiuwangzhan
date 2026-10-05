@@ -28,9 +28,9 @@ export default function AdminPublishCenter() {
   const formatA = (key: AdminPublishCenterTextKey, values: Record<string, string>) =>
     Object.entries(values).reduce((text, [name, value]) => text.replaceAll(`{${name}}`, value), A(key));
   const filterLabel = (key: StatusFilter) => adminPublishCenterStatusFilters[key][language];
-  const { data, isFetching, refetch } = useAdminContentHealth();
+  const { data, isLoading, isFetching, refetch } = useAdminContentHealth();
   const items = data ?? emptyContentHealthItems;
-  const initialLoading = isFetching && !data;
+  const initialLoading = isLoading;
   const list = useAdminListingState();
   const filter = list.filter("filter") as StatusFilter;
   const setFilter = (value: StatusFilter) => list.setFilter("filter", value);

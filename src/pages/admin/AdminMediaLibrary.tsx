@@ -1,11 +1,12 @@
 import { useUnsavedChangesWarning } from "@/hooks/useUnsavedChangesWarning";
 import { useAdminListingState } from "@/hooks/useAdminListingState";
 import { useSubmissionLock } from "@/hooks/useSubmissionLock";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import AdminPageHeader from "@/components/admin/AdminPageHeader";
 import AdminListPager from "@/components/admin/AdminListPager";
 import AdminAlert from "@/components/admin/AdminAlert";
 import AdminLoadingState from "@/components/admin/AdminLoadingState";
+import AdminActionMenu from "@/components/admin/AdminActionMenu";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -67,13 +68,16 @@ const AdminMediaLibrary = () => {
   const usageType = list.filter("usage") as UsageType;
   const setUsageType = (value: UsageType) => list.setFilter("usage", value);
 
-  const { data, error, isFetching, isPlaceholderData } = useAdminMediaAssets({ page, usageType, search: deferredSearch });
+  const { data, error, isLoading, isFetching, isPlaceholderData } = useAdminMediaAssets({ page, usageType, search: deferredSearch });
   const assets = data?.rows ?? [];
   const total = data?.count ?? 0;
   const pageSize = data?.pageSize ?? 30;
   const [editing, setEditing] = useState<AdminMediaAsset | null>(null);
+  const [uploadOpen, setUploadOpen] = useState(false);
   useUnsavedChangesWarning(!!editing || isSubmitting);
   const [assetToDelete, setAssetToDelete] = useState<AdminMediaAsset | null>(null);
+  const deleteFocusReturn = useRef<HTMLElement | null>(null);
+  const uploadButton = useRef<HTMLButtonElement>(null);
   const [message, setMessage] = useState("");
   const createMutation = useCreateAdminMediaAsset();
   const updateMutation = useUpdateAdminMediaAsset();
@@ -129,7 +133,7 @@ const AdminMediaLibrary = () => {
   };
 
   const banner = message || (error ? formatUserFacingError(error, language) : "");
-  const initialLoading = isFetching && !data;
+  const initialLoading = isLoading;
 
   return (
     <div className="space-y-6">
@@ -137,27 +141,27 @@ const AdminMediaLibrary = () => {
         title={A("title")}
         description={A("description")}
         helpText={A("helpText")}
+        actions={<Button ref={uploadButton} type="button" variant="outline" aria-expanded={uploadOpen} aria-controls="admin-media-upload" onClick={() => setUploadOpen((open) => !open)}>{A("uploadMedia")}</Button>}
       />
 
-      <div className="rounded-xl border border-border bg-card p-4 sm:p-6">
-        <div className="rounded-lg border p-3 text-sm admin-tone-success">{A("uploadInfo")}</div>
-        <div className="mt-5">
-          <AdminImageUpload
-            folder="media"
-            assetUsageType={usageType === "all" ? "general" : usageType}
-            onUploaded={(url, upload) => void createAsset(url, upload)}
-          />
-        </div>
-        <div className="mt-5 rounded-lg border border-border bg-muted/20 p-4">
-          <div className="mb-2 text-sm font-medium">{A("uploadVideo")}</div>
-          <AdminVideoUpload folder="videos" onUploaded={(url, upload) => void createAsset(url, upload)} />
-        </div>
-        {banner && (
-          <AdminAlert tone={error ? "error" : "info"} className="mt-4">
-            {banner}
-          </AdminAlert>
-        )}
+      <div id="admin-media-upload" hidden={!uploadOpen} className="rounded-xl border border-border bg-card p-4 sm:p-6">
+        <p className="mb-3 text-sm text-muted-foreground">{A("uploadInfo")}</p>
+        <details className="rounded-lg border border-border px-3">
+          <summary className="cursor-pointer py-3 text-sm font-medium">{A("uploadImage")}</summary>
+          <div className="pb-3">
+            <AdminImageUpload
+              folder="media"
+              assetUsageType={usageType === "all" ? "general" : usageType}
+              onUploaded={(url, upload) => void createAsset(url, upload)}
+            />
+          </div>
+        </details>
+        <details className="mt-3 rounded-lg border border-border px-3">
+          <summary className="cursor-pointer py-3 text-sm font-medium">{A("uploadVideo")}</summary>
+          <div className="pb-3"><AdminVideoUpload folder="videos" onUploaded={(url, upload) => void createAsset(url, upload)} /></div>
+        </details>
       </div>
+      {banner && <AdminAlert tone={error ? "error" : "info"}>{banner}</AdminAlert>}
 
       <div className="rounded-xl border border-border bg-card p-4">
         <div data-admin-filter-bar className="grid gap-3 md:grid-cols-[1fr_220px]">
@@ -180,46 +184,54 @@ const AdminMediaLibrary = () => {
 
       {initialLoading ? (
         <AdminLoadingState />
+      ) : !error && assets.length === 0 ? (
+        <div className="rounded-xl border border-dashed border-border bg-card p-6 text-center text-sm text-muted-foreground">{A("empty")}</div>
       ) : (
-      <div ref={(node) => node?.toggleAttribute("inert", isPlaceholderData)} aria-busy={isPlaceholderData} className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+      <div ref={(node) => node?.toggleAttribute("inert", isPlaceholderData)} aria-busy={isPlaceholderData} className="grid grid-cols-1 items-start gap-3 min-[360px]:grid-cols-2 xl:grid-cols-3">
         {assets.map((asset) => {
           const kind = inferMediaKind({ mimeType: asset.mime_type, url: asset.file_url });
           const status = getMediaPerformanceStatus(asset);
 
           return (
-            <article key={asset.id} className="overflow-hidden rounded-xl border border-border bg-card">
+            <article key={asset.id} className="min-w-0 overflow-hidden rounded-xl border border-border bg-card">
+              <div className="aspect-[4/3] overflow-hidden">
               {kind === "video" ? (
                 <video
                   src={asset.file_url}
                   poster={asset.poster_url || undefined}
-                  className="h-48 w-full bg-black object-cover"
+                  className="h-full w-full bg-black object-cover"
                   preload="metadata"
                   controls
                 />
               ) : (
                 <SmartImage
                   src={asset.file_url}
-                  alt={asset.alt_zh || asset.alt_en || asset.file_name || "media"}
-                  className="h-48 w-full object-cover"
+                  alt={asset.alt_zh || asset.alt_en || asset.file_name || A("title")}
+                  className="h-full w-full object-cover"
                   width={640}
-                  height={384}
+                  height={480}
+                  sizes="(min-width: 1280px) 25vw, 50vw"
                 />
               )}
-              <div className="space-y-3 p-4 text-sm">
+              </div>
+              <div className="min-w-0 space-y-2 p-2.5 text-sm sm:p-4">
                 <div className="space-y-1">
-                  <p className="break-all font-medium sm:truncate">{asset.file_name || asset.file_url}</p>
-                  <p className="text-xs text-muted-foreground">{resolveUsageLabel(asset.usage_type)} · {asset.folder || "-"}</p>
-                  <p className="text-xs text-muted-foreground">{asset.mime_type || A("unknownFormat")} · {formatDimensions(asset.width, asset.height)} · {formatBytes(asset.size_bytes)}</p>
-                  {asset.original_file_path && <p className="text-xs text-muted-foreground">{formatA("originalKept", { size: formatBytes(asset.original_size_bytes) })}</p>}
+                  <p className="truncate font-medium" title={asset.file_name || asset.file_url}>{asset.file_name || asset.file_url}</p>
+                  <p className="truncate text-xs text-muted-foreground">{resolveUsageLabel(asset.usage_type)}</p>
                 </div>
-                <div className={`rounded-md border px-3 py-2 text-xs ${statusClassName[status.tone]}`}>
-                  <div className="font-medium">{status.label}</div>
-                  <div>{status.detail}</div>
+                <div className={`rounded-md border px-2 py-1.5 text-xs ${statusClassName[status.tone]}`}>
+                  <div className="truncate font-medium" title={status.label}>{status.label}</div>
                 </div>
-                <div data-admin-card-actions className="flex flex-wrap gap-2">
-                  <Button type="button" size="sm" variant="outline" onClick={() => void copyAssetUrl(asset.file_url)}>{A("copyLink")}</Button>
-                  <Button type="button" size="sm" variant="outline" onClick={() => setEditing(asset)}>{A("edit")}</Button>
-                  <Button type="button" size="sm" variant="outline" onClick={() => setAssetToDelete(asset)}>{A("deleteRecord")}</Button>
+                <div className="flex items-center gap-1.5">
+                  <Button type="button" size="sm" variant="outline" className="min-h-11 min-w-0 flex-1 px-2" onClick={() => setEditing(asset)}>{A("details")}</Button>
+                  <AdminActionMenu compact>
+                    <Button type="button" variant="outline" onClick={() => void copyAssetUrl(asset.file_url)}>{A("copyLink")}</Button>
+                    <Button type="button" variant="outline" onClick={(event) => {
+                      const triggerId = event.currentTarget.closest<HTMLElement>("[data-admin-confirm-focus-return]")?.dataset.adminConfirmFocusReturn;
+                      deleteFocusReturn.current = triggerId ? document.getElementById(triggerId) : event.currentTarget;
+                      setAssetToDelete(asset);
+                    }}>{A("deleteRecord")}</Button>
+                  </AdminActionMenu>
                 </div>
               </div>
             </article>
@@ -235,13 +247,19 @@ const AdminMediaLibrary = () => {
           if (!open) setEditing(null);
         }}
       >
-        <DialogContent className="max-w-xl">
-          <DialogHeader>
+        <DialogContent className="flex max-w-xl flex-col overflow-hidden [&>button]:h-11 [&>button]:w-11" closeLabel={A("close")}>
+          <DialogHeader className="shrink-0 text-left">
             <DialogTitle>{A("editDialogTitle")}</DialogTitle>
             <DialogDescription>{A("editDialogDescription")}</DialogDescription>
           </DialogHeader>
           {editing && (
-            <div className="space-y-4">
+            <div className="min-h-0 flex-1 space-y-4 overflow-y-auto overscroll-contain pr-1">
+              <div className="space-y-2 rounded-lg border border-border bg-muted/20 p-3 text-xs text-muted-foreground">
+                <p className="break-all font-medium text-foreground">{editing.file_name || editing.file_url}</p>
+                <p className="break-words">{editing.mime_type || A("unknownFormat")} · {formatDimensions(editing.width, editing.height)} · {formatBytes(editing.size_bytes)}</p>
+                {editing.original_file_path && <p>{formatA("originalKept", { size: formatBytes(editing.original_size_bytes) })}</p>}
+                <p>{getMediaPerformanceStatus(editing).label} · {getMediaPerformanceStatus(editing).detail}</p>
+              </div>
               <div>
                 <label htmlFor="admin-media-folder" className="mb-1.5 block text-sm font-medium">{A("folderLabel")}</label>
                 <Input
@@ -286,7 +304,7 @@ const AdminMediaLibrary = () => {
               </div>
             </div>
           )}
-          <DialogFooter data-admin-mobile-actions>
+          <DialogFooter data-admin-mobile-actions className="shrink-0 border-t border-border pt-3 [&_button]:min-h-11">
             <Button type="button" variant="outline" onClick={() => setEditing(null)}>{A("cancel")}</Button>
             <Button type="button" onClick={() => void saveAsset()} disabled={updateMutation.isPending || !editing} aria-busy={updateMutation.isPending}>
               {updateMutation.isPending ? A("saving") : A("save")}
@@ -304,6 +322,14 @@ const AdminMediaLibrary = () => {
         confirmLabel={A("confirmDeleteLabel")}
         loading={deleteMutation.isPending}
         onConfirm={deleteAsset}
+        onCloseAutoFocus={(event) => {
+          // The menu item has unmounted; a deleted card may also be gone.
+          const target = deleteFocusReturn.current?.isConnected ? deleteFocusReturn.current : uploadButton.current;
+          deleteFocusReturn.current = null;
+          if (!target || target.matches(":disabled, [aria-disabled='true']")) return;
+          event.preventDefault();
+          target.focus({ preventScroll: true });
+        }}
       />
     </div>
   );

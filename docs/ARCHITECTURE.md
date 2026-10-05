@@ -19,11 +19,13 @@
 - `src/App.tsx`: 应用总入口和前后台 shell 分流。
 - `src/routes/publicRoutes.tsx`: 前台公开路由。
 - `src/routes/adminRoutes.tsx`: 后台管理路由。
+- `src/routes/adminRouteDefinitions.ts`: 后台叶子路由、组件加载与角色配置的共同定义；路由树、菜单、预加载使用同一份记录。
 - `src/routes/AdminRouteTree.tsx`: 后台路由树懒加载入口。
 - `src/pages`: 前台页面。
 - `src/pages/admin`: 后台页面。
 - `src/lib`: Supabase 访问、业务工具、权限、校验、缓存刷新、错误转换等兼容封装。
 - `src/hooks`: React Query 和页面数据状态。
+- `src/lib/publicContentQueries.ts`: 公开内容查询键和参数定义；页面读取、路由预取和 HTML 数据种子复用同一份描述。
 - `src/components`: 公共组件。
 - `src/components/admin`: 后台专用组件。
 - `src/components/ui`: 基础 UI 组件。
@@ -114,6 +116,8 @@
 
 如果一个功能跨多个模块，必须先写清楚跨模块风险和调用边界，不允许直接 import 其他模块内部实现。
 
+跨业务模块通过目标模块 `index.ts` 的明确公开导出调用。公开入口按需要提供，禁止把全部内部文件透传为公共 API。首页和公司内容的后台读取分别由 `home`、`company` 的 repository / service 承接；旧 CMS / lib 入口仅保留兼容导出。线索、报价通过 `followups` 公开入口编排原跟进流程。
+
 ## 5. Fixed Layers
 
 新增本地后端模块的固定路径是：`src/backend/modules/<module>/{routes,controller,service,repository}`。
@@ -137,6 +141,10 @@
 - `routes` 写业务逻辑。
 - 页面组件直接写复杂数据库逻辑。
 
+通用后台持久化核心归 `system`：repository 负责数据库条件，service 负责版本和业务校验、写入及审计；`src/lib/adminMutation.ts` 作为浏览器兼容入口，负责 QueryClient 刷新、公开缓存同步和失败重试。更新、归档、删除在同一次写入中匹配读取到的版本；`updated_at` 保留数据库时间精度，现有整数 `version` 由核心递增。无版本字段的旧表不能保证并发保护，不得把它们描述为已解决。
+
+写入成功与刷新成功分别确认。刷新重试仅重复交付，不重复写入。CMS 多模块排序仍是逐条写入，不是数据库事务；中途失败后必须重新读取真实顺序和版本，读回失败时暂停再次排序。只同步本次已确认写入的编辑器版本，不能用其他人的最新版本掩盖编辑冲突。
+
 ## 6. Presentation Boundary Rules
 
 展示层边界规则：
@@ -159,6 +167,8 @@
 - `schemas` 按需创建。
 - `src/backend/modules` 下只能出现推荐的 16 个一级模块名。
 - 当前没有 `src/backend/modules` 目录时，表示还没有新增本地后端模块，不代表可以绕过模块归属判断。
+
+当前迁移债务登记在 `scripts/lib/architecture-boundary-debt.json`：5 个现有业务 service 的浏览器保存 / 缓存适配依赖暂时保留，以维持现有页面契约；repository 不得保留这些依赖。每个例外精确到规则、文件和导入目标，新增文件、路径或反向依赖不沿用例外。后续逐模块迁移这些适配责任到 `src/lib`，同时验证保存、审计、刷新和公开同步，不能直接跳过兼容入口。
 
 ## 8. Route And API Boundaries
 
@@ -247,5 +257,6 @@ Architecture Compliance Report:
 ## 11. Architecture Verification
 
 - 架构规则变更：运行 `npm run arch:check`。
+- 架构检查使用 TypeScript AST 识别静态导入、重导出、字面量动态导入、层级方向、跨模块公开入口和直接模块运行依赖循环，并检测常见 Supabase 客户端别名调用。它不等同于完整程序数据流或所有兼容层的传递依赖分析；例外清单不是全目录白名单。检查器回归使用 `node --test scripts/architecture-boundaries.test.mjs`。
 - 修改 `AGENTS.md`、`docs/ARCHITECTURE.md`、`docs/DEVELOPMENT_RULES.md`、`scripts/arch-check.mjs` 或 `src/backend/modules` 后，必须运行 `npm run arch:check`。
 - 修改公开页面性能、动态图片、媒体加载、HTML 预注入或 Edge 缓存后，必须运行或说明未运行 `npm run verify:public-performance`。

@@ -1,13 +1,17 @@
-import { useInteractionQuery as useQuery } from "@/hooks/useInteractionQuery";
+import { useSiteSettingsQuery } from "@/hooks/useSiteSettings";
+import { useSubmissionLock } from "@/hooks/useSubmissionLock";
 import { useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import AdminPageHeader from "@/components/admin/AdminPageHeader";
+import AdminStickyActionBar from "@/components/admin/AdminStickyActionBar";
+import { adminMobileSaveText } from "@/i18n/adminMobileSaveText";
+import { interactionText } from "@/i18n/interactionText";
 import { useAdminFormState } from "@/hooks/useAdminFormState";
 import { useUnsavedChangesWarning } from "@/hooks/useUnsavedChangesWarning";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { fetchSiteSettings, fallbackSiteSettings, type SiteSettings } from "@/lib/siteSettingsApi";
+import { fallbackSiteSettings, type SiteSettings } from "@/lib/siteSettingsApi";
 
 import { formatAdminMutationError, saveAdminRecord } from "@/lib/adminMutation";
 import { geocodeAddress } from "@/lib/geocodeApi";
@@ -54,18 +58,18 @@ const fields: Array<{ key: keyof SiteSettings; group: "company" | "contact" | "m
 const AdminWebsiteSettings = () => {
   const lang = getAdminLang();
   const t = adminWebsiteSettingsText[lang];
+  const mobileText = adminMobileSaveText[lang];
   const fieldText = adminWebsiteSettingsFieldText[lang];
   const queryClient = useQueryClient();
-  const { data: remoteSettings, isFetched } = useQuery({
-    queryKey: ["site-settings"],
-    queryFn: ({ signal }) => fetchSiteSettings(signal),
-  });
+  const { data: remoteSettings, isLoading, isInitialError, refetch } = useSiteSettingsQuery();
+  const readText = interactionText[lang];
   const { state: settings, setForm: setSettings, applyRemote, dirty } = useAdminFormState<SiteSettings>(
-    isFetched ? remoteSettings ?? fallbackSiteSettings : undefined,
+    remoteSettings,
     { initial: fallbackSiteSettings },
   );
   const [status, setStatus] = useState("");
-  const [saving, setSaving] = useState(false);
+  const { protectSubmission, isSubmitting: saving } = useSubmissionLock();
+  const settingsReady = remoteSettings !== undefined && (remoteSettings === fallbackSiteSettings || settings !== fallbackSiteSettings);
   useUnsavedChangesWarning(dirty || saving);
 
   const updateField = (key: keyof SiteSettings, value: string) => {
@@ -79,11 +83,11 @@ const AdminWebsiteSettings = () => {
     return "general";
   };
 
-  const handleSave = async () => {
-    setSaving(true);
+  const handleSave = protectSubmission("site-settings", async () => {
+    if (!settingsReady) return;
     setStatus(t.saving);
     try {
-      const original = remoteSettings ?? fallbackSiteSettings;
+      const original = remoteSettings;
       const addressChanged =
         normalizeComparableText(settings.address_zh) !== normalizeComparableText(original.address_zh) ||
         normalizeComparableText(settings.address_en) !== normalizeComparableText(original.address_en);
@@ -131,6 +135,8 @@ const AdminWebsiteSettings = () => {
       });
       const fresh = { ...fallbackSiteSettings, ...saved };
       applyRemote(fresh, settings);
+      // A delivery refresh can advance this server-owned version during save.
+      setSettings((current) => ({ ...current, updated_at: fresh.updated_at }));
       if (geocodeStatus === "updated") {
         setStatus(t.savedGeocodeUpdated);
       } else if (geocodeStatus === "failed") {
@@ -140,10 +146,8 @@ const AdminWebsiteSettings = () => {
       }
     } catch (error) {
       setStatus(formatAdminMutationError(error));
-    } finally {
-      setSaving(false);
     }
-  };
+  });
 
   const renderGroup = (group: "company" | "contact" | "media" | "seo" | "social") => (
     <section className="rounded-xl border border-border bg-card p-4 sm:p-5">
@@ -158,24 +162,24 @@ const AdminWebsiteSettings = () => {
         {fields.filter((field) => field.group === group).map((field) => {
           const copy = fieldText[field.key as keyof typeof fieldText];
           return (
-          <div key={field.key} className={field.textarea ? "md:col-span-2" : ""}>
-            <label className="mb-1 block text-sm font-medium">{copy.label}</label>
+          <div key={field.key} className={field.textarea ? "min-w-0 md:col-span-2" : "min-w-0"}>
+            <label htmlFor={`setting-${field.key}`} className="mb-1 block text-sm font-medium">{copy.label}</label>
             {field.textarea ? (
-              <Textarea rows={3} value={settings[field.key] || ""} onChange={(event) => updateField(field.key, event.target.value)} />
+              <Textarea id={`setting-${field.key}`} rows={3} value={settings[field.key] || ""} onChange={(event) => updateField(field.key, event.target.value)} />
             ) : mediaFields.has(field.key) ? (
               <div className="space-y-3">
-                <Input value={settings[field.key] || ""} onChange={(event) => updateField(field.key, event.target.value)} />
-                <AdminImageUpload
+                <Input id={`setting-${field.key}`} value={settings[field.key] || ""} onChange={(event) => updateField(field.key, event.target.value)} />
+                {settingsReady ? <AdminImageUpload
                   folder="site-settings"
                   value={settings[field.key] || ""}
                   previewVariant={getAdminImagePreviewVariant(String(field.key))}
                   recordAsset
                   assetUsageType={getMediaUsageType(field.key)}
                   onUploaded={(url) => updateField(field.key, url)}
-                />
+                /> : null}
               </div>
             ) : (
-              <Input value={settings[field.key] || ""} onChange={(event) => updateField(field.key, event.target.value)} />
+              <Input id={`setting-${field.key}`} value={settings[field.key] || ""} onChange={(event) => updateField(field.key, event.target.value)} />
             )}
             {"help" in copy && copy.help ? <p className="mt-1 text-xs text-muted-foreground">{copy.help}</p> : null}
             {coordinateFields.has(field.key) ? <p className="mt-1 text-xs text-muted-foreground">{t.coordinateHelp}</p> : null}
@@ -193,19 +197,21 @@ const AdminWebsiteSettings = () => {
         helpText={t.pageHelp}
       />
 
-      <div className="flex flex-col gap-4 rounded-xl border border-border bg-card p-4 md:flex-row md:items-start md:justify-between sm:p-6">
-        <div className="min-w-0">
-          <h1 className="font-display text-xl font-bold sm:text-2xl">{t.title}</h1>
-          <p className="mt-2 text-sm text-muted-foreground">{t.description}</p>
-          {status && <p className="mt-3 rounded-lg bg-muted p-3 text-sm">{status}</p>}
-        </div>
-        <Button className="w-full md:w-auto" onClick={handleSave} disabled={saving}>{saving ? t.saving : t.save}</Button>
-      </div>
+      <AdminStickyActionBar
+        mobileSticky
+        left={<span className="text-xs text-muted-foreground">{dirty ? mobileText.unsaved : mobileText.settingsScope}</span>}
+        right={<Button onClick={handleSave} disabled={!settingsReady || saving} aria-busy={saving}>{saving ? t.saving : t.save}</Button>}
+      />
+      {status && <p role="status" aria-live="polite" className="rounded-lg border border-border bg-muted p-3 text-sm">{status}</p>}
+      {isLoading ? <p role="status" aria-busy="true">{readText.loading}</p> : null}
+      {isInitialError ? <div role="alert"><p>{readText.loadingFailed}</p><Button variant="outline" onClick={() => void refetch()}>{readText.retry}</Button></div> : null}
+      <fieldset disabled={!settingsReady} className="min-w-0 space-y-6">
       {renderGroup("company")}
       {renderGroup("contact")}
       {renderGroup("media")}
       {renderGroup("social")}
       {renderGroup("seo")}
+      </fieldset>
     </div>
   );
 };

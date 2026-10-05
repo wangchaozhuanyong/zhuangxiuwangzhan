@@ -24,9 +24,9 @@ const formatA = (key: AdminContentHealthTextKey, values: Record<string, string>)
 const emptyContentHealthItems: NonNullable<ReturnType<typeof useAdminContentHealth>["data"]> = [];
 
 export default function AdminContentHealth() {
-  const { data, isFetching, refetch } = useAdminContentHealth();
+  const { data, isLoading, isFetching, refetch } = useAdminContentHealth();
   const items = data ?? emptyContentHealthItems;
-  const initialLoading = isFetching && !data;
+  const initialLoading = isLoading;
   const list = useAdminListingState();
   const filter = list.filter("filter") as AdminContentHealthFilterKey;
   const setFilter = (value: AdminContentHealthFilterKey) => list.setFilter("filter", value);

@@ -141,6 +141,8 @@ const AdminNotificationSettings = () => {
   const lang = getAdminLang();
   const t = copy[lang];
   const canManageSettings = settingsPermission.allowed;
+  const hasConfirmedSettings = remoteSettings !== undefined;
+  const canEditSettings = canManageSettings && hasConfirmedSettings;
   const [settings, setSettings] = useState<NotificationSettings>(emptySettings);
   const [botToken, setBotToken] = useState("");
   const [chatId, setChatId] = useState("");
@@ -189,7 +191,7 @@ const AdminNotificationSettings = () => {
   }, [remoteSettings]);
 
   const saveSettings = protectSubmission("saveSettings", async () => {
-    if (!canManageSettings) return;
+    if (!canManageSettings || !hasConfirmedSettings) return;
 
     if (enabled && (!chatId.trim() || (!botToken.trim() && !settings.has_telegram_bot_token))) {
       toast({ title: t.saveFailed, description: t.missingTelegramConfig, variant: "destructive" });
@@ -233,7 +235,7 @@ const AdminNotificationSettings = () => {
   });
 
   const testTelegram = protectSubmission("testTelegram", async () => {
-    if (!canManageSettings) return;
+    if (!canManageSettings || !hasConfirmedSettings) return;
     setTesting(true);
     try {
       await testAdminTelegramNotification();
@@ -246,7 +248,7 @@ const AdminNotificationSettings = () => {
   });
 
   const testMaintenanceReminder = protectSubmission("testMaintenanceReminder", async () => {
-    if (!canManageSettings) return;
+    if (!canManageSettings || !hasConfirmedSettings) return;
     setTestingMaintenance(true);
     try {
       await testAdminMaintenanceReminder(includeMonthly);
@@ -293,7 +295,7 @@ const AdminNotificationSettings = () => {
                 id="telegram-enabled"
                 language={lang}
                 checked={enabled}
-                disabled={!canManageSettings}
+                disabled={!canEditSettings}
                 onCheckedChange={(value) => {
                   markDirty();
                   setEnabled(value);
@@ -307,7 +309,7 @@ const AdminNotificationSettings = () => {
                 id="telegram-bot-token"
                 type="password"
                 value={botToken}
-                disabled={!canManageSettings}
+                disabled={!canEditSettings}
                 placeholder={settings.has_telegram_bot_token ? t.keepTokenPlaceholder : t.botTokenPlaceholder}
                 onChange={(event) => {
                   markDirty();
@@ -321,7 +323,7 @@ const AdminNotificationSettings = () => {
               <Input
                 id="telegram-chat-id"
                 value={chatId}
-                disabled={!canManageSettings}
+                disabled={!canEditSettings}
                 placeholder={t.chatIdPlaceholder}
                 onChange={(event) => {
                   markDirty();
@@ -332,10 +334,10 @@ const AdminNotificationSettings = () => {
 
             <p className="text-xs text-muted-foreground">{t.saveTip}</p>
             <div data-admin-mobile-actions className="flex flex-col gap-3 border-t border-border pt-5 sm:flex-row">
-              <AdminActionButton action="settings.write" onClick={saveSettings} disabled={saving || testing} showDeniedHint={false}>
+              <AdminActionButton action="settings.write" onClick={saveSettings} disabled={!hasConfirmedSettings || saving || testing} showDeniedHint={false}>
                 {saving ? t.saving : t.save}
               </AdminActionButton>
-              <AdminActionButton action="settings.write" variant="outline" onClick={testTelegram} disabled={saving || testing || !settings.has_telegram_bot_token || !settings.telegram_chat_id} showDeniedHint={false}>
+              <AdminActionButton action="settings.write" variant="outline" onClick={testTelegram} disabled={!hasConfirmedSettings || saving || testing || !settings.has_telegram_bot_token || !settings.telegram_chat_id} showDeniedHint={false}>
                 {testing ? t.sending : t.test}
               </AdminActionButton>
             </div>
@@ -367,7 +369,7 @@ const AdminNotificationSettings = () => {
               id="maintenance-enabled"
               language={lang}
               checked={maintenanceEnabled}
-              disabled={!canManageSettings}
+              disabled={!canEditSettings}
               onCheckedChange={(value) => {
                 markDirty();
                 setMaintenanceEnabled(value);
@@ -379,7 +381,7 @@ const AdminNotificationSettings = () => {
             <Label>{t.dayLabel}</Label>
             <Select
               value={maintenanceDay}
-              disabled={!canManageSettings}
+              disabled={!canEditSettings}
               onValueChange={(value) => {
                 markDirty();
                 setMaintenanceDay(value);
@@ -404,7 +406,7 @@ const AdminNotificationSettings = () => {
               id="maintenance-time"
               type="time"
               value={maintenanceTime}
-              disabled={!canManageSettings}
+              disabled={!canEditSettings}
               onChange={(e) => {
                 markDirty();
                 setMaintenanceTime(e.target.value);
@@ -417,7 +419,7 @@ const AdminNotificationSettings = () => {
             <Input
               id="maintenance-timezone"
               value={maintenanceTimezone}
-              disabled={!canManageSettings}
+              disabled={!canEditSettings}
               onChange={(e) => {
                 markDirty();
                 setMaintenanceTimezone(e.target.value);
@@ -426,17 +428,17 @@ const AdminNotificationSettings = () => {
           </div>
 
           <div className="flex items-center gap-3">
-            <Switch id="include-monthly" language={lang} checked={includeMonthly} disabled={!canManageSettings} onCheckedChange={setIncludeMonthly} />
+            <Switch id="include-monthly" language={lang} checked={includeMonthly} disabled={!canEditSettings} onCheckedChange={setIncludeMonthly} />
             <Label htmlFor="include-monthly">{t.includeMonthly}</Label>
           </div>
         </div>
 
         <p className="text-xs text-muted-foreground">{t.monthlyTip}</p>
         <div data-admin-mobile-actions className="flex flex-col gap-3 border-t border-border pt-5 sm:flex-row">
-          <AdminActionButton action="settings.write" onClick={saveSettings} disabled={saving || testingMaintenance} showDeniedHint={false}>
+          <AdminActionButton action="settings.write" onClick={saveSettings} disabled={!hasConfirmedSettings || saving || testingMaintenance} showDeniedHint={false}>
             {saving ? t.saving : t.save}
           </AdminActionButton>
-          <AdminActionButton action="settings.write" variant="outline" onClick={testMaintenanceReminder} disabled={testingMaintenance} showDeniedHint={false}>
+          <AdminActionButton action="settings.write" variant="outline" onClick={testMaintenanceReminder} disabled={!hasConfirmedSettings || testingMaintenance} showDeniedHint={false}>
             {testingMaintenance ? t.sending : t.sendReminder}
           </AdminActionButton>
         </div>

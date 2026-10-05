@@ -1,6 +1,4 @@
 import { withReadSignal } from "@/lib/readRequest";
-import type { QueryClient } from "@tanstack/react-query";
-import { saveAdminRecord } from "@/lib/adminMutation";
 import type { Database } from "@/lib/database.types";
 import { requireSupabase } from "@/lib/supabase";
 
@@ -9,14 +7,6 @@ type ProjectImageUpdate = Database["public"]["Tables"]["project_images"]["Update
 type ProjectStatus = NonNullable<Database["public"]["Tables"]["projects"]["Row"]["status"]>;
 type SearchableQuery = {
   or(filters: string): unknown;
-};
-
-export type SaveProjectRecordInput = {
-  payload: Record<string, unknown>;
-  id?: string | null;
-  expectedUpdatedAt?: string | null;
-  action: "insert" | "update" | "publish";
-  queryClient?: QueryClient;
 };
 
 export type AdminProjectListInput = {
@@ -78,17 +68,6 @@ export async function fetchAdminProjectImages(projectId: string, signal?: AbortS
   const { data, error } = await withReadSignal(supabase.from("project_images").select("*").eq("project_id", projectId).order("sort_order"), signal);
   if (error) throw error;
   return data ?? [];
-}
-
-export function saveProjectRecord(input: SaveProjectRecordInput) {
-  return saveAdminRecord({
-    table: "projects",
-    payload: input.payload,
-    id: input.id,
-    expectedUpdatedAt: input.expectedUpdatedAt,
-    action: input.action,
-    queryClient: input.queryClient,
-  });
 }
 
 export async function invokeProjectEnglishGeneration(projectId: string, force: boolean) {

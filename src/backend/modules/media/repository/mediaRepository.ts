@@ -1,13 +1,8 @@
 import { withReadSignal } from "@/lib/readRequest";
-import { buildMediaAssetInsert, type AdminUploadedMedia } from "@/lib/adminMedia";
+import type { Database } from "@/lib/database.types";
 import { supabase } from "@/lib/supabase";
 
-export type CreateMediaAssetRecordInput = {
-  url: string;
-  upload?: AdminUploadedMedia;
-  usageType?: string;
-  folder?: string;
-};
+export type MediaAssetInsert = Database["public"]["Tables"]["media_assets"]["Insert"];
 
 export type AdminMediaAssetListInput = {
   page: number;
@@ -82,24 +77,15 @@ export async function fetchAdminMediaAssetList<T>({
   };
 }
 
-export async function createMediaAssetRecord({
-  url,
-  upload,
-  usageType = "general",
-  folder = "media",
-}: CreateMediaAssetRecordInput) {
+export async function fetchMediaAssetCreatorId() {
   if (!supabase) throw new Error("Supabase is not configured.");
-
   const { data: userData } = await supabase.auth.getUser();
-  const { error } = await supabase.from("media_assets").insert({
-    ...buildMediaAssetInsert({
-      url,
-      upload,
-      usageType,
-      folder,
-      createdBy: userData.user?.id || null,
-    }),
-  });
+  return userData.user?.id || null;
+}
+
+export async function createMediaAssetRecord(payload: MediaAssetInsert) {
+  if (!supabase) throw new Error("Supabase is not configured.");
+  const { error } = await supabase.from("media_assets").insert(payload);
 
   if (error) throw error;
   return true;

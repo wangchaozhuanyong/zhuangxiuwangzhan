@@ -1,3 +1,6 @@
+import { applyHtmlNoStoreHeaders, applyPublicHtmlEdgeCacheHeaders, createHtmlEtag, createPublicHtmlBrowserResponse, withHtmlCacheDebugHeader, getEdgeCache, getPublicHtmlDeploymentVersion, getPublicHtmlCacheRequest, getPublicHtmlFreshnessRequest, createPublicHtmlFreshnessResponse, PUBLIC_HTML_CACHE_TAG } from "./publicHtmlCache";
+import { getDynamicImagePreloads, type ImagePreload } from "./publicImagePreloads";
+import { isRecord, readString, readRecordArray } from "./publicDataValues";
 import { FURNITURE_CATALOG_SECTION_KEY, readFurnitureCatalogOverrides } from "../src/lib/furnitureCatalogOverrides";
 import { resolveReviewedBlogCover, resolveReviewedImageSource, resolveReviewedMaterialImage, wardrobeCover } from "../src/lib/reviewedContentMedia.mjs";
 import { buildReadableCollectionBody, buildReadableHomeFaqBody, buildReadablePublicBody, isReviewedMaterialBodyPath, sanitizeReadableContent } from "./readablePublicBody";
@@ -10,12 +13,6 @@ import {
   readCookieValue,
   resolvePreferredLanguage,
 } from "../src/i18n/languageDetection";
-import {
-  buildLocalResponsiveSrcSet,
-  isLocalResponsiveImageCandidate,
-  normalizeLocalResponsiveImageWidths,
-  toLocalResponsiveImageSrc,
-} from "../src/lib/localResponsiveImage";
 import {
   projectBlogPostSummariesForPreload,
   projectCtaBlockForPreload,
@@ -101,10 +98,6 @@ const DEFAULT_EMAIL = "support@flashcast.com.my";
 const DEFAULT_MAP_LATITUDE = "3.0830403";
 const DEFAULT_MAP_LONGITUDE = "101.6708234";
 const PUBLIC_SITE_URL = "https://flashcast.com.my";
-const PUBLIC_HTML_EDGE_TTL_SECONDS = 300;
-const PUBLIC_HTML_FRESHNESS_TTL_SECONDS = 60;
-const PUBLIC_HTML_CACHE_VERSION = "20260821-public-browser-revalidate-v5";
-const PUBLIC_HTML_CACHE_TAG = "flashcast-public-html";
 const PUBLIC_VERSION_PATH = "/__flashcast/version";
 const SITE_SETTINGS_CACHE_TTL_MS = 5 * 1000;
 const PUBLIC_PROJECT_SUMMARIES_CACHE_TTL_MS = 0;
@@ -114,7 +107,6 @@ const PUBLIC_PAGE_DATA_CACHE_TTL_MS = 0;
 const EDGE_PUBLIC_READ_TIMEOUT_MS = 2_000;
 const PUBLIC_DATA_WARNING_BYTES = 150 * 1024;
 const PUBLIC_DATA_HARD_LIMIT_BYTES = 250 * 1024;
-const HTML_CACHE_DEBUG_HEADER = "x-flashcast-html-cache";
 const EDGE_FALLBACK_HEADER = "x-flashcast-edge-fallback";
 const PUBLIC_DATA_STATUS_HEADER = "x-flashcast-public-data";
 const PRODUCTION_SCRIPT_SRC = [
@@ -158,7 +150,6 @@ const CSP_DIRECTIVES = (scriptSrc: string[]) => [
   ["form-action", "'self'"],
 ];
 const INLINE_SCRIPT_PATTERN = /<script\b(?![^>]*\bsrc=)[^>]*>([\s\S]*?)<\/script>/gi;
-type HtmlCacheDebugState = "hit" | "stale" | "miss" | "bypass-admin" | "bypass-not-found";
 
 let siteSettingsCache:
   | {
@@ -295,63 +286,6 @@ const escapeHtml = (value: string) =>
     .replace(/>/g, "&gt;")
     .replace(/"/g, "&quot;");
 
-type ImagePreload = {
-  href: string;
-  srcSet?: string;
-  sizes?: string;
-  media?: string;
-  fetchPriority?: "high" | "low";
-};
-
-const PROJECT_CARD_IMAGE_WIDTHS = [360, 560, 720, 900];
-const HOME_FEATURED_PROJECT_WIDTHS = [560, 720, 960, 1200, 1600];
-const HOME_SUPPORTING_PROJECT_MOBILE_WIDTHS = [360, 560, 720, 960];
-const HOME_SUPPORTING_PROJECT_DESKTOP_WIDTHS = [360, 560, 720, 900, 1200, 1600];
-const PROJECT_DETAIL_HERO_WIDTHS = [560, 720, 960, 1200, 1600];
-const PROJECT_DETAIL_RELATED_WIDTHS = [360, 560, 720, 960, 1200];
-const HOME_HERO_IMAGE_WIDTHS = [480, 720, 960, 1280, 1600];
-const DEFAULT_HOME_HERO_IMAGE = "/images/heroes/hero-luxury-living.webp";
-const HOME_HERO_IMAGE_SIZES = "(max-width: 767px) 100vw, (max-width: 1199px) 58vw, 60vw";
-const HOME_ATELIER_HERO_PRELOADS: ImagePreload[] = [
-  {
-    href: "/images/_responsive/heroes/w360/v6/home-daylight-mobile.webp",
-    srcSet: [
-      "/images/_responsive/heroes/w360/v6/home-daylight-mobile.webp 360w",
-      "/images/_responsive/heroes/w560/v6/home-daylight-mobile.webp 560w",
-      "/images/_responsive/heroes/w720/v6/home-daylight-mobile.webp 720w",
-      "/images/heroes/v6/home-daylight-mobile.webp 887w",
-    ].join(", "),
-    sizes: "100vw",
-    media: "(max-width: 1023px)",
-  },
-  {
-    href: "/images/_responsive/heroes/w720/v6/home-daylight-desktop.webp",
-    srcSet: [
-      "/images/_responsive/heroes/w720/v6/home-daylight-desktop.webp 720w",
-      "/images/_responsive/heroes/w900/v6/home-daylight-desktop.webp 900w",
-      "/images/_responsive/heroes/w1200/v6/home-daylight-desktop.webp 1200w",
-      "/images/_responsive/heroes/w1600/v6/home-daylight-desktop.webp 1600w",
-      "/images/heroes/v6/home-daylight-desktop.webp 1672w",
-    ].join(", "),
-    sizes: "100vw",
-    media: "(min-width: 1024px)",
-  },
-];
-const SUPABASE_PUBLIC_OBJECT_SEGMENT = "/storage/v1/object/public/";
-const SUPABASE_PUBLIC_RENDER_SEGMENT = "/storage/v1/render/image/public/";
-const STATIC_SITE_HOSTS = new Set(["flashcast.com.my", "www.flashcast.com.my"]);
-
-const isRecord = (value: unknown): value is Record<string, unknown> =>
-  Boolean(value && typeof value === "object" && !Array.isArray(value));
-
-const readString = (record: Record<string, unknown> | null | undefined, field: string) => {
-  const value = record?.[field];
-  return typeof value === "string" ? value : "";
-};
-
-const readRecordArray = (value: unknown): Record<string, unknown>[] =>
-  Array.isArray(value) ? value.filter(isRecord) : [];
-
 const PUBLIC_DRAFT_MARKER_REPLACEMENTS: [RegExp, string][] = [
   [
     /FLASH CAST image-rich draft for shop renovation and retail fit-out planning, including pre-opening preparation, customer flow, counter and storage planning, rendering concepts, FAQ, and consultation CTA\./gi,
@@ -400,302 +334,6 @@ const sanitizePublicDataDraftMarkers = (value: unknown): unknown => {
   return Object.fromEntries(
     Object.entries(value).map(([key, item]) => [key, sanitizePublicDataDraftMarkers(item)]),
   );
-};
-
-const isSupabasePublicObjectUrl = (value: string) =>
-  /^https?:\/\//i.test(value) && value.includes(SUPABASE_PUBLIC_OBJECT_SEGMENT);
-
-const toSupabaseRenderImageUrl = (
-  value: string,
-  width: number,
-  height: number,
-  quality = 70,
-  resize?: "cover",
-) => {
-  const renderBase = value.replace(SUPABASE_PUBLIC_OBJECT_SEGMENT, SUPABASE_PUBLIC_RENDER_SEGMENT);
-  const separator = renderBase.includes("?") ? "&" : "?";
-  const params = new URLSearchParams({
-    quality: String(quality),
-    width: String(width),
-    height: String(height),
-  });
-  if (resize) params.set("resize", resize);
-  params.set("format", "webp");
-
-  return `${renderBase}${separator}${params.toString()}`;
-};
-
-const normalizePreloadImageUrl = (value: string) => {
-  if (!value) return value;
-  let normalized = value;
-
-  if (/^https?:\/\//i.test(value)) {
-    try {
-      const parsed = new URL(value);
-      if (STATIC_SITE_HOSTS.has(parsed.hostname.toLowerCase()) && /^\/(?:images|videos)\//i.test(parsed.pathname)) {
-        normalized = `${parsed.pathname}${parsed.search}${parsed.hash}`;
-      }
-    } catch {
-      return value;
-    }
-  }
-
-  return normalized.startsWith("/")
-    ? normalized.replace(/\.(?:jpe?g|png)(\?[^#]*)?($|#)/i, ".webp$1$2")
-    : normalized;
-};
-
-const buildImagePreload = (
-  imageUrl: string,
-  widths: number[],
-  options: { height: number; sizes: string },
-): ImagePreload => {
-  if (isSupabasePublicObjectUrl(imageUrl)) {
-    return {
-      href: toSupabaseRenderImageUrl(imageUrl, widths[0] ?? 480, options.height),
-      srcSet: widths
-        .map((width) => `${toSupabaseRenderImageUrl(imageUrl, width, options.height)} ${width}w`)
-        .join(", "),
-      sizes: options.sizes,
-    };
-  }
-
-  const normalizedUrl = normalizePreloadImageUrl(imageUrl);
-  if (isLocalResponsiveImageCandidate(normalizedUrl)) {
-    const responsiveWidths = normalizeLocalResponsiveImageWidths(widths);
-    return {
-      href: toLocalResponsiveImageSrc(normalizedUrl, responsiveWidths[0] ?? widths[0] ?? 480),
-      srcSet: buildLocalResponsiveSrcSet(normalizedUrl, responsiveWidths),
-      sizes: options.sizes,
-    };
-  }
-
-  return { href: normalizedUrl };
-};
-
-const getHomeHeroImageUrl = (bundle: HomeContentBundleRow | null, key: string) => {
-  const slideImage = readString(readRecordArray(bundle?.hero_slides)[0], "image_url");
-  if (slideImage) return slideImage;
-
-  const language = key.startsWith("/zh") ? "zh" : "en";
-  const cmsPage = readRecordArray(bundle?.cms_pages)[0];
-  const cmsSections = readRecordArray(cmsPage?.cms_sections).sort(
-    (a, b) => Number(a.sort_order || 0) - Number(b.sort_order || 0),
-  );
-  const cmsHero = cmsSections.find(
-    (section) => section.section_key === "hero" || section.section_type === "hero",
-  );
-  const localizedContent = cmsHero && isRecord(cmsHero[`content_${language}`])
-    ? (cmsHero[`content_${language}`] as Record<string, unknown>)
-    : null;
-  const cmsImage = readString(localizedContent, "image_url") || readString(
-    isRecord(cmsHero?.settings) ? cmsHero.settings : null,
-    "image_url",
-  );
-  if (cmsImage) return cmsImage;
-
-  return readString(readRecordArray(bundle?.site_pages)[0], "image_url") || DEFAULT_HOME_HERO_IMAGE;
-};
-
-const getProjectImageRank = (record: Record<string, unknown>) => {
-  const imageType = readString(record, "image_type");
-  if (imageType === "cover") return 0;
-  if (imageType === "gallery") return 1;
-  if (imageType === "before" || imageType === "after") return 2;
-  return 3;
-};
-
-const getProjectThumbnailUrl = (project: Record<string, unknown>) => {
-  const images = readRecordArray(project.project_images).sort((a, b) => {
-    const rank = getProjectImageRank(a) - getProjectImageRank(b);
-    if (rank !== 0) return rank;
-    return Number(a.sort_order || 0) - Number(b.sort_order || 0);
-  });
-
-  return readString(images[0], "image_url") || readString(project, "image_url");
-};
-
-const buildProjectImagePreloads = (
-  projects: unknown,
-  maxImages: number,
-  options: { height: number; sizes: string },
-) => {
-  const seen = new Set<string>();
-  const preloads: ImagePreload[] = [];
-
-  for (const project of readRecordArray(projects)) {
-    if (preloads.length >= maxImages) break;
-    const imageUrl = getProjectThumbnailUrl(project);
-    if (!imageUrl || !isSupabasePublicObjectUrl(imageUrl) || seen.has(imageUrl)) continue;
-    seen.add(imageUrl);
-
-    const srcSet = PROJECT_CARD_IMAGE_WIDTHS.map(
-      (width) => `${toSupabaseRenderImageUrl(imageUrl, width, options.height)} ${width}w`,
-    ).join(", ");
-
-    preloads.push({
-      href: toSupabaseRenderImageUrl(imageUrl, PROJECT_CARD_IMAGE_WIDTHS[0], options.height),
-      srcSet,
-      sizes: options.sizes,
-    });
-  }
-
-  return preloads;
-};
-
-const buildSupabaseImagePreload = (
-  imageUrl: string,
-  widths: number[],
-  options: {
-    height: number;
-    quality: number;
-    sizes: string;
-    media?: string;
-    resize?: "cover";
-    aspectRatio?: { width: number; height: number };
-    fetchPriority?: "high" | "low";
-  },
-): ImagePreload => {
-  const candidate = (width: number) => toSupabaseRenderImageUrl(
-    imageUrl,
-    width,
-    options.aspectRatio ? Math.round(width * options.aspectRatio.height / options.aspectRatio.width) : options.height,
-    options.quality,
-    options.resize,
-  );
-
-  return {
-    href: candidate(widths[0] ?? 560),
-    srcSet: widths.map((width) => `${candidate(width)} ${width}w`).join(", "),
-    sizes: options.sizes,
-    media: options.media,
-    fetchPriority: options.fetchPriority,
-  };
-};
-
-const getHomeProjectImagePreloads = (bundle: HomeContentBundleRow | null): ImagePreload[] => {
-  const seen = new Set<string>();
-  const projects = readRecordArray(bundle?.projects)
-    .filter((project) => {
-      const identity = getProjectThumbnailUrl(project) || readString(project, "slug");
-      if (seen.has(identity)) return false;
-      seen.add(identity);
-      return true;
-    })
-    .slice(0, 4)
-    .map(getProjectThumbnailUrl);
-  const preloads: ImagePreload[] = [];
-  let remoteImageCount = 0;
-
-  for (const [index, imageUrl] of projects.entries()) {
-    if (remoteImageCount >= 2) break;
-    if (!isSupabasePublicObjectUrl(imageUrl)) continue;
-    remoteImageCount++;
-
-    if (index === 0) {
-      preloads.push(buildSupabaseImagePreload(imageUrl, HOME_FEATURED_PROJECT_WIDTHS, {
-        height: 1050,
-        quality: 86,
-        sizes: "(min-width: 1536px) 1440px, (min-width: 1024px) calc(100vw - 96px), 100vw",
-        fetchPriority: "low",
-      }));
-    } else {
-      preloads.push(buildSupabaseImagePreload(imageUrl, HOME_SUPPORTING_PROJECT_MOBILE_WIDTHS, {
-        height: 450,
-        quality: 84,
-        sizes: "(max-width: 397px) 78vw, 310px",
-        media: "(max-width: 47.9375rem)",
-        resize: "cover",
-        aspectRatio: { width: 4, height: 5 },
-        fetchPriority: "low",
-      }));
-      preloads.push(buildSupabaseImagePreload(imageUrl, HOME_SUPPORTING_PROJECT_DESKTOP_WIDTHS, {
-        height: 600,
-        quality: 84,
-        sizes: projects.length === 3
-          ? "(max-width: 767px) 78vw, (min-width: 1536px) 708px, calc((100vw - 120px) / 2)"
-          : "(max-width: 767px) 78vw, (min-width: 1536px) 464px, calc((100vw - 144px) / 3)",
-        media: "(min-width: 48rem)",
-        resize: "cover",
-        aspectRatio: { width: 16, height: 10 },
-        fetchPriority: "low",
-      }));
-    }
-  }
-
-  return preloads;
-};
-
-const getProjectDetailImagePreloads = (
-  detail: ProjectDetailRow | null,
-  projectSummaries: ProjectSummaryRow[] | null,
-): ImagePreload[] => {
-  if (!detail) return [];
-  const preloads: ImagePreload[] = [];
-  const seen = new Set<string>();
-  const heroImage = getProjectThumbnailUrl(detail);
-
-  if (isSupabasePublicObjectUrl(heroImage)) {
-    seen.add(heroImage);
-    preloads.push(buildSupabaseImagePreload(heroImage, PROJECT_DETAIL_HERO_WIDTHS, {
-      height: 1100,
-      quality: 86,
-      sizes: "(min-width: 1536px) 789px, (min-width: 1024px) calc((100vw - 128px) * 0.56), 100vw",
-    }));
-  }
-
-  const related = readRecordArray(projectSummaries)
-    .filter((project) => readString(project, "slug") !== readString(detail, "slug"))
-    .slice(0, 3);
-  for (const [index, project] of related.entries()) {
-    if (preloads.length >= 3) break;
-    const imageUrl = getProjectThumbnailUrl(project);
-    if (!isSupabasePublicObjectUrl(imageUrl) || seen.has(imageUrl)) continue;
-    seen.add(imageUrl);
-    preloads.push(buildSupabaseImagePreload(imageUrl, PROJECT_DETAIL_RELATED_WIDTHS, {
-      height: index === 0 ? 750 : 540,
-      quality: 82,
-      sizes: "(max-width: 374px) calc(100vw - 24px), (max-width: 639px) calc(100vw - 32px), (max-width: 1023px) 46vw, (min-width: 1536px) 464px, calc((100vw - 144px) / 3)",
-      fetchPriority: "low",
-    }));
-  }
-
-  return preloads;
-};
-
-const getDynamicImagePreloads = (
-  key: string,
-  projectSummaries: ProjectSummaryRow[] | null,
-  homeContentBundle: HomeContentBundleRow | null,
-  projectDetail: ProjectDetailRow | null,
-) => {
-  if (isHomePageKey(key)) {
-    const heroImageUrl = getHomeHeroImageUrl(homeContentBundle, key);
-    if (normalizePreloadImageUrl(heroImageUrl).split(/[?#]/, 1)[0].endsWith("/hero-luxury-living.webp")) {
-      return [...HOME_ATELIER_HERO_PRELOADS, ...getHomeProjectImagePreloads(homeContentBundle)];
-    }
-
-    return [
-      buildImagePreload(heroImageUrl, HOME_HERO_IMAGE_WIDTHS, {
-        height: 1100,
-        sizes: HOME_HERO_IMAGE_SIZES,
-      }),
-      ...getHomeProjectImagePreloads(homeContentBundle),
-    ];
-  }
-
-  if (getProjectDetailSlugFromKey(key)) {
-    return getProjectDetailImagePreloads(projectDetail, projectSummaries);
-  }
-
-  if (getTopLevelPublicPageKey(key) === "projects") {
-    return buildProjectImagePreloads(projectSummaries, 12, {
-      height: 500,
-      sizes: "(max-width: 768px) 92vw, 45vw",
-    });
-  }
-
-  return [];
 };
 
 const serializeCsp = (items: string[][]) => items.map(([name, ...values]) => `${name} ${values.join(" ")}`).join("; ");
@@ -2219,108 +1857,6 @@ const serveDynamicSeoAsset = async (
   });
 };
 
-const applyHtmlNoStoreHeaders = (headers: Headers) => {
-  headers.set("content-type", "text/html; charset=utf-8");
-  headers.set("cache-control", "no-store, no-cache, must-revalidate, max-age=0");
-  headers.set("cdn-cache-control", "no-store");
-  headers.set("cloudflare-cdn-cache-control", "no-store");
-  headers.set("pragma", "no-cache");
-  headers.set("expires", "0");
-};
-
-const applyPublicHtmlEdgeCacheHeaders = (headers: Headers) => {
-  headers.set("content-type", "text/html; charset=utf-8");
-  headers.set("cache-control", `public, max-age=${PUBLIC_HTML_EDGE_TTL_SECONDS}`);
-  headers.set("cdn-cache-control", `public, max-age=${PUBLIC_HTML_EDGE_TTL_SECONDS}`);
-  headers.set("cloudflare-cdn-cache-control", `public, max-age=${PUBLIC_HTML_EDGE_TTL_SECONDS}`);
-  headers.set("cache-tag", PUBLIC_HTML_CACHE_TAG);
-  headers.delete("pragma");
-  headers.delete("expires");
-};
-
-const applyPublicHtmlBrowserCacheHeaders = (headers: Headers) => {
-  headers.set("content-type", "text/html; charset=utf-8");
-  headers.set("cache-control", "no-cache, max-age=0, must-revalidate");
-  headers.set("cdn-cache-control", "no-store");
-  headers.set("cloudflare-cdn-cache-control", "no-store");
-  headers.set("pragma", "no-cache");
-  headers.set("expires", "0");
-};
-
-const createHtmlEtag = async (html: string) => {
-  const digest = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(html));
-  const hash = Array.from(new Uint8Array(digest), (byte) => byte.toString(16).padStart(2, "0")).join("");
-  return `"sha256-${hash}"`;
-};
-
-const normalizeEtag = (etag: string) => etag.trim().replace(/^W\//i, "");
-
-const requestAcceptsEtag = (request: Request, etag: string) => {
-  const ifNoneMatch = request.headers.get("if-none-match");
-  if (!ifNoneMatch) return false;
-  const normalizedEtag = normalizeEtag(etag);
-  return ifNoneMatch
-    .split(",")
-    .some((candidate) => candidate.trim() === "*" || normalizeEtag(candidate) === normalizedEtag);
-};
-
-const requestAcceptsLastModified = (request: Request, lastModified: string) => {
-  // RFC conditional request precedence: If-None-Match wins whenever it is present.
-  if (request.headers.has("if-none-match")) return false;
-  const ifModifiedSince = request.headers.get("if-modified-since");
-  if (!ifModifiedSince) return false;
-  const lastModifiedTime = Date.parse(lastModified);
-  const ifModifiedSinceTime = Date.parse(ifModifiedSince);
-  return Number.isFinite(lastModifiedTime)
-    && Number.isFinite(ifModifiedSinceTime)
-    && lastModifiedTime <= ifModifiedSinceTime;
-};
-
-const createPublicHtmlBrowserResponse = (
-  response: Response,
-  request: Request,
-  state: HtmlCacheDebugState,
-) => {
-  const headers = new Headers(response.headers);
-  applyPublicHtmlBrowserCacheHeaders(headers);
-  headers.set(HTML_CACHE_DEBUG_HEADER, state);
-  const etag = headers.get("etag");
-  const lastModified = headers.get("last-modified");
-
-  if (
-    (etag && requestAcceptsEtag(request, etag))
-    || (lastModified && requestAcceptsLastModified(request, lastModified))
-  ) {
-    return new Response(null, { status: 304, headers });
-  }
-
-  return new Response(request.method === "HEAD" ? null : response.body, {
-    status: response.status,
-    statusText: response.statusText,
-    headers,
-  });
-};
-
-const withHtmlCacheDebugHeader = (response: Response, state: HtmlCacheDebugState) => {
-  const headers = new Headers(response.headers);
-  headers.set(HTML_CACHE_DEBUG_HEADER, state);
-  return new Response(response.body, {
-    status: response.status,
-    statusText: response.statusText,
-    headers,
-  });
-};
-
-const getEdgeCache = () => {
-  if (typeof caches === "undefined" || !caches.default) return null;
-  return caches.default;
-};
-
-const getPublicHtmlDeploymentVersion = (env: PagesEnv) => {
-  const version = env.CF_PAGES_COMMIT_SHA || env.CF_PAGES_URL;
-  return typeof version === "string" && version.trim() ? version.trim().slice(0, 128) : "local";
-};
-
 const servePublicVersion = async (request: Request, env: PagesEnv) => {
   const siteSettings = await fetchSiteSettings(env as Record<string, string | undefined>);
   const payload = JSON.stringify({
@@ -2340,35 +1876,6 @@ const servePublicVersion = async (request: Request, env: PagesEnv) => {
     },
   });
 };
-
-const getPublicHtmlCacheRequest = (
-  request: Request,
-  env: PagesEnv,
-  contentRevision?: string | null,
-) => {
-  const cacheUrl = new URL(request.url);
-  cacheUrl.search = "";
-  cacheUrl.searchParams.set("__flashcast_html_v", PUBLIC_HTML_CACHE_VERSION);
-  cacheUrl.searchParams.set("__flashcast_deploy_v", getPublicHtmlDeploymentVersion(env));
-  cacheUrl.searchParams.set("__flashcast_content_v", contentRevision?.trim() || "unknown");
-  cacheUrl.hash = "";
-  return new Request(cacheUrl.toString(), { method: "GET" });
-};
-
-const getPublicHtmlFreshnessRequest = (publicHtmlCacheRequest: Request) => {
-  const cacheUrl = new URL(publicHtmlCacheRequest.url);
-  cacheUrl.searchParams.set("__flashcast_html_fresh", "1");
-  return new Request(cacheUrl.toString(), { method: "GET" });
-};
-
-const createPublicHtmlFreshnessResponse = () => new Response(null, {
-  headers: {
-    "cache-control": `public, max-age=${PUBLIC_HTML_FRESHNESS_TTL_SECONDS}`,
-    "cdn-cache-control": `public, max-age=${PUBLIC_HTML_FRESHNESS_TTL_SECONDS}`,
-    "cloudflare-cdn-cache-control": `public, max-age=${PUBLIC_HTML_FRESHNESS_TTL_SECONDS}`,
-    "cache-tag": PUBLIC_HTML_CACHE_TAG,
-  },
-});
 
 export const onRequest: PagesFunction = async (context) => {
   const { request, next } = context;
@@ -2611,7 +2118,9 @@ export const onRequest: PagesFunction = async (context) => {
   }
   transformed = injectDynamicImagePreloads(
     transformed,
-    getDynamicImagePreloads(key, projectSummaries, homeContentBundle, projectDetail),
+    getDynamicImagePreloads(key, projectSummaries, homeContentBundle, projectDetail, {
+      isHomePage: isHomePageKey(key), projectDetailSlug, topLevelPublicPageKey,
+    }),
   );
   transformed = injectPerformanceHints(
     transformed,

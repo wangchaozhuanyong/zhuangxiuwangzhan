@@ -18,7 +18,7 @@
   }
 
   html[data-public-theme="warm-stone"] .scheme-a-home--atelier .scheme-a-button {
-    border-radius: 999px;
+    border-radius: var(--radius);
   }
 
   html[data-public-theme="warm-stone"] .scheme-a-home--atelier .scheme-a-button--paper {
@@ -743,7 +743,7 @@
     grid-column: 2;
     grid-row: 1 / span 2;
     align-self: end;
-    border-radius: 999px;
+    border-radius: var(--radius);
   }
 
   html[data-public-theme="warm-stone"] .scheme-a-home--atelier .scheme-a-contact__regions {
@@ -927,7 +927,7 @@
       border: 0;
       font-size: 13.5px;
       font-weight: 600;
-      border-radius: 999px;
+      border-radius: var(--radius);
     }
 
     html[data-public-theme="warm-stone"] .scheme-a-home--atelier .scheme-a-button--glass {

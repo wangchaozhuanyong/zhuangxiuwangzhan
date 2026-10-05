@@ -37,10 +37,9 @@ import { usePublicChrome } from "@/contexts/PublicChromeContext";
 import { useSiteSettings, useSiteSettingsReadiness } from "@/hooks/useSiteSettings";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { footerCopy, footerLocationLinks } from "@/i18n/footerText";
-import { navbarText } from "@/i18n/navbarText";
+import { getNavigationLabel, navbarText } from "@/i18n/navbarText";
 import { schemeAChromeText } from "@/i18n/schemeAText";
 import { stripLanguagePrefix, switchLanguagePath } from "@/i18n/routes";
-import { useT } from "@/i18n/useT";
 import { trackCtaClick } from "@/lib/analytics";
 import { chooseAdaptiveTextColor, compositeColors, getImageSourcePoint, parseCssColor, type RgbColor } from "@/lib/colorContrast";
 import { buildGoogleMapOpenUrl } from "@/lib/mapUrls";
@@ -155,7 +154,7 @@ const LanguageSwitch = ({
 export const SchemeANavbar = () => {
   const location = useLocation();
   const { language } = useLanguage();
-  const translate = useT();
+  const translate = (key: string) => getNavigationLabel(key, language);
   const t = schemeAChromeText[language];
   const navText = navbarText[language];
   const settings = useSiteSettings();
@@ -566,7 +565,7 @@ export const SchemeAFooterPrelude = () => {
 export const SchemeAFooter = () => {
   const { language } = useLanguage();
   const location = useLocation();
-  const translate = useT();
+  const translate = (key: string) => getNavigationLabel(key, language);
   const settings = useSiteSettings();
   const instagramUrl = safeSocialProfileUrl(settings.instagram_url, "instagram");
   const facebookUrl = safeSocialProfileUrl(settings.facebook_url, "facebook");

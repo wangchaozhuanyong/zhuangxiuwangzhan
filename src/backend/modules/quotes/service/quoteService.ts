@@ -1,4 +1,4 @@
-import { addQuoteFollowup } from "@/backend/modules/followups/service/followupService";
+import { addQuoteFollowup } from "@/backend/modules/followups";
 import {
   fetchAdminQuoteDetail,
   fetchAdminQuoteList,

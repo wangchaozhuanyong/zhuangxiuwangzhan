@@ -1,4 +1,4 @@
-import { addLeadFollowup } from "@/backend/modules/followups/service/followupService";
+import { addLeadFollowup } from "@/backend/modules/followups";
 import {
   fetchAdminLeadDetail,
   fetchAdminLeadList,

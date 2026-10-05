@@ -31,7 +31,7 @@ export default function FurnitureProductDetail() {
 
   useEffect(() => setSelectedImage(0), [slug]);
 
-  if (!product && managedQuery.isFetching) return (
+  if (!product && managedQuery.isLoading) return (
     <main className="fc-route-page fc-furniture-page" data-route-pending="true">
       <PageMeta title={copy.title} description={copy.metaDescription} canonicalPath={`/furniture/product/${slug || ""}`} noIndex />
       <div className="fc-furniture-not-found" role="status">{copy.loadingManagedProducts}</div>

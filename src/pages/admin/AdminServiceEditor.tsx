@@ -11,8 +11,11 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "@/hooks/use-toast";
 import AdminStickyActionBar from "@/components/admin/AdminStickyActionBar";
+import { adminMobileEditorText } from "@/i18n/adminMobileEditorText";
 import AdminPageHeader from "@/components/admin/AdminPageHeader";
 import AdminFormSection from "@/components/admin/AdminFormSection";
+import AdminContentPreflight from "@/components/admin/AdminContentPreflight";
+import AdminLoadingState from "@/components/admin/AdminLoadingState";
 import AdminEmptyState from "@/components/admin/AdminEmptyState";
 import { adminConfirm } from "@/components/admin/AdminConfirmProvider";
 import ImageField from "@/components/admin/ImageField";
@@ -20,18 +23,19 @@ import { FaqListEditor, ProcessStepsEditor, TextListEditor } from "@/components/
 import { adminServiceEditorText } from "@/i18n/adminServiceEditorText";
 import { invalidateAdminContentDetail, invalidateAdminResource } from "@/lib/adminInvalidate";
 import { useAdminServiceDetail } from "@/lib/adminBusinessContentQueries";
-import { adminStatusLabel, getAdminLang, publishStatusOptions } from "@/lib/adminLocale";
+import { adminStatusLabel, publishStatusOptions, useAdminLang } from "@/lib/adminLocale";
 import { getAdminFieldHelp } from "@/lib/adminHelpText";
 import { formatAdminMutationError } from "@/lib/adminMutation";
 import { isNewAdminRouteRecord } from "@/lib/adminRouteParams";
 import { autoEnglishDescription, englishMissingHint, hasAnyMissingEnglish } from "@/lib/adminTranslation";
+import { interactionText } from "@/i18n/interactionText";
 import { formatUserFacingError } from "@/lib/userFacingText";
-import { MoreHorizontal } from "lucide-react";
 import {
   checkAdminServiceSlugUnique,
   generateAdminServiceEnglish,
   hasServiceBackendConfig,
   normalizeServiceSlug,
+  previewAdminService,
   publishAdminService,
   saveAdminService,
 } from "@/backend/modules/services/service/serviceService";
@@ -52,6 +56,7 @@ type ServiceRecord = {
   id?: string;
   created_at?: string | null;
   updated_at?: string | null;
+  version?: number | null;
   slug: string;
   status: "draft" | "published" | "archived";
   sort_order: number;
@@ -134,7 +139,8 @@ const toRecordArray = <T extends Record<string, unknown>>(value: unknown): T[] =
 
 export default function AdminServiceEditor() {
   const { protectSubmission, isSubmitting } = useSubmissionLock();
-  const language = getAdminLang();
+  const language = useAdminLang();
+  const mobileText = adminMobileEditorText[language];
   const A = useCallback((key: AdminServiceEditorTextKey): string => adminServiceEditorText[key][language], [language]);
   const formatA = useCallback(
     (key: AdminServiceEditorTextKey, values: Record<string, string>): string =>
@@ -150,7 +156,7 @@ export default function AdminServiceEditor() {
   const [slugError, setSlugError] = useState<string>("");
   const [saveBusy, setSaveBusy] = useState(false);
 
-  const { data: loaded, isLoading, isInitialError: isError, error: loadError } = useAdminServiceDetail(isNew ? undefined : id);
+  const { data: loaded, isLoading, isInitialError: isError, error: loadError, refetch: refetchLoaded } = useAdminServiceDetail(isNew ? undefined : id);
 
   const loadedRecord = useMemo<ServiceRecord | undefined>(() => {
     if (isNew || !loaded) return isNew ? empty : undefined;
@@ -175,6 +181,7 @@ export default function AdminServiceEditor() {
     resetKey: id ?? "new",
     initial: empty,
   });
+  const recordReady = isNew || Boolean(loaded?.id && record.id === loaded.id);
   const englishMissing = hasAnyMissingEnglish(record as unknown as Record<string, unknown>, serviceEnglishFields);
   useUnsavedChangesWarning((dirty || saveBusy) || isSubmitting);
 
@@ -209,13 +216,13 @@ export default function AdminServiceEditor() {
   );
 
   const previewUrl = useMemo(() => {
-    const lang = "zh";
-    const slug = record.slug ? normalizeServiceSlug(record.slug) : "";
+    const slug = loadedRecord?.status === "published" ? normalizeServiceSlug(loadedRecord.slug) : "";
     if (!slug) return "";
-    return `/${lang}/services/${slug}`;
-  }, [record.slug]);
+    return `/${language}/services/${slug}`;
+  }, [language, loadedRecord]);
 
   const save = protectSubmission("record-write", async (nextStatus?: ServiceRecord["status"], generateEnglish?: boolean, forceEnglish?: boolean) => {
+    if (!recordReady) return;
     if (!hasServiceBackendConfig()) return;
     const slug = normalizeServiceSlug(record.slug || record.title_zh);
     if (!slug) {
@@ -262,6 +269,7 @@ export default function AdminServiceEditor() {
   });
 
   const publish = protectSubmission("record-write", async () => {
+    if (!recordReady) return;
     const confirmed = await adminConfirm({
       title: A("confirmPublishTitle"),
       description: A("confirmPublishDescription"),
@@ -323,9 +331,19 @@ export default function AdminServiceEditor() {
     return <AdminEmptyState title={A("supabaseMissingTitle")} description={A("supabaseMissingDescription")} />;
   }
 
+  if (!recordReady) {
+    if (!isError) return <AdminLoadingState />;
+    return <AdminEmptyState
+      title={A("loadFailed")}
+      description={formatUserFacingError(loadError, language)}
+      action={<Button type="button" onClick={() => void refetchLoaded()}>{interactionText[language].retry}</Button>}
+    />;
+  }
+
   return (
     <>
       <AdminStickyActionBar
+        mobileSticky
         left={
           <>
             <Button asChild variant="outline">
@@ -338,6 +356,16 @@ export default function AdminServiceEditor() {
         }
         right={
           <>
+            <AdminActionButton action="content.write" type="button" variant="outline" onClick={() => void save("draft")} disabled={saveBusy || !recordReady || isLoading}>
+              {record.status === "draft" ? A("saveDraft") : mobileText.moveToDraft}
+            </AdminActionButton>
+            <AdminActionButton action="content.publish" type="button" onClick={() => void publish()} disabled={saveBusy || !recordReady || isLoading}>
+              {record.status === "published" ? mobileText.updatePublished : A("publish")}
+            </AdminActionButton>
+          </>
+        }
+        more={
+          <>
             {previewUrl && (
               <Button asChild variant="outline">
                 <a href={previewUrl} target="_blank" rel="noreferrer">
@@ -345,43 +373,34 @@ export default function AdminServiceEditor() {
                 </a>
               </Button>
             )}
-            <AdminActionButton action="content.write" type="button" variant="outline" onClick={() => void save("draft")} disabled={saveBusy || isLoading}>
-              {A("saveDraft")}
+            <Button type="button" variant="outline" aria-expanded={showEnglish} onClick={() => setShowEnglish((value) => !value)}>
+              {showEnglish ? A("hideEnglish") : A("showEnglish")}
+            </Button>
+            <AdminActionButton
+              action="content.write"
+              type="button"
+              variant="outline"
+              className="w-full justify-center"
+              onClick={() => void save(undefined, true)}
+              disabled={saveBusy || !recordReady || isLoading || !record.id}
+            >
+              {A("saveAndGenerateEnglish")}
             </AdminActionButton>
-            <AdminActionButton action="content.publish" type="button" onClick={() => void publish()} disabled={saveBusy || isLoading}>
-              {A("publish")}
+            <AdminActionButton
+              action="content.write"
+              type="button"
+              variant="outline"
+              className="w-full justify-center"
+              onClick={() => void forceRegenerateEnglish()}
+              disabled={saveBusy || !recordReady || isLoading || !record.id}
+            >
+              {A("forceRegenerateEnglish")}
             </AdminActionButton>
-            <details className="group relative">
-              <summary className="inline-flex min-h-10 cursor-pointer list-none items-center justify-center gap-2 rounded-md border border-input bg-background px-4 py-2 text-sm font-medium ring-offset-background transition-colors hover:bg-accent hover:text-accent-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 [&::-webkit-details-marker]:hidden">
-                <MoreHorizontal className="h-4 w-4" aria-hidden="true" />
-                {A("englishTools")}
-              </summary>
-              <div className="mt-2 grid gap-2 rounded-md border border-border bg-card p-2 shadow-sm md:absolute md:right-0 md:z-40 md:w-72">
-                <AdminActionButton
-                  action="content.write"
-                  type="button"
-                  variant="outline"
-                  className="w-full justify-center"
-                  onClick={() => void save(undefined, true)}
-                  disabled={saveBusy || isLoading || !record.id}
-                >
-                  {A("saveAndGenerateEnglish")}
-                </AdminActionButton>
-                <AdminActionButton
-                  action="content.write"
-                  type="button"
-                  variant="outline"
-                  className="w-full justify-center"
-                  onClick={() => void forceRegenerateEnglish()}
-                  disabled={saveBusy || isLoading || !record.id}
-                >
-                  {A("forceRegenerateEnglish")}
-                </AdminActionButton>
-              </div>
-            </details>
           </>
         }
       />
+
+      <AdminContentPreflight record={record} disabled={saveBusy || isLoading || isSubmitting} onPreview={() => previewAdminService({ record })} />
 
       <form
         onSubmit={(e: FormEvent) => {
@@ -394,11 +413,6 @@ export default function AdminServiceEditor() {
           title={isNew ? A("newTitle") : A("editTitle")}
           description={A("pageDescription")}
           helpText={A("pageHelpText")}
-          actions={
-            <Button type="button" variant="outline" onClick={() => setShowEnglish((v) => !v)}>
-              {showEnglish ? A("hideEnglish") : A("showEnglish")}
-            </Button>
-          }
         />
 
         {englishMissing && (
@@ -446,9 +460,9 @@ export default function AdminServiceEditor() {
             </div>
 
             <div className="md:col-span-2">
-              <div className="flex items-center justify-between gap-2">
+              <div className="flex flex-col items-start gap-2 sm:flex-row sm:items-center sm:justify-between">
                 <label className="mb-1 block text-sm font-medium">{A("slug")}</label>
-                <div className="flex items-center gap-2">
+                <div className="flex flex-wrap items-center gap-2">
                   <Button
                     type="button"
                     variant="outline"
@@ -472,7 +486,7 @@ export default function AdminServiceEditor() {
                 onBlur={() => void checkSlugUnique(record.slug)}
                 placeholder={A("slugPlaceholder")}
               />
-              {previewUrl && <div className="mt-1 text-xs text-muted-foreground">{formatA("frontendPath", { path: previewUrl })}</div>}
+              {previewUrl && <div className="mt-1 break-words text-xs text-muted-foreground [overflow-wrap:anywhere]">{formatA("frontendPath", { path: previewUrl })}</div>}
             </div>
 
             <div className="md:col-span-2">
@@ -505,12 +519,10 @@ export default function AdminServiceEditor() {
                 helpText={A("coverImageHelp")}
               />
             </div>
-            {showEnglish && (
-              <div>
-                <label className="mb-1 block text-sm font-medium">{A("englishImageAlt")}</label>
-                <Input value={record.alt_en} onChange={(e) => setRecord((r) => ({ ...r, alt_en: e.target.value }))} />
-              </div>
-            )}
+            <div hidden={!showEnglish}>
+              <label className="mb-1 block text-sm font-medium">{A("englishImageAlt")}</label>
+              <Input value={record.alt_en} onChange={(e) => setRecord((r) => ({ ...r, alt_en: e.target.value }))} />
+            </div>
           </div>
         </AdminFormSection>
 
@@ -570,6 +582,8 @@ export default function AdminServiceEditor() {
           title={A("seoZhTitle")}
           description={A("seoZhDescription")}
           helpText={A("seoZhHelp")}
+          collapsible
+          defaultOpen={false}
         >
           <div className="grid gap-4 md:grid-cols-2">
             <div className="md:col-span-2">
@@ -583,105 +597,103 @@ export default function AdminServiceEditor() {
           </div>
         </AdminFormSection>
 
-        {showEnglish && (
-          <>
-            <AdminFormSection
-              title={A("autoEnglishTitle")}
-              description={autoEnglishDescription}
-              helpText={A("autoEnglishHelp")}
-              collapsible
-              defaultOpen={false}
-            >
-              <div className="grid gap-4 md:grid-cols-2">
-                <div className="md:col-span-2">
-                  <label className="mb-1 block text-sm font-medium">{A("englishTitle")}</label>
-                  <Input value={record.title_en} onChange={(e) => setRecord((r) => ({ ...r, title_en: e.target.value }))} />
-                </div>
-                <div className="md:col-span-2">
-                  <label className="mb-1 block text-sm font-medium">{A("englishExcerpt")}</label>
-                  <Textarea rows={3} value={record.excerpt_en} onChange={(e) => setRecord((r) => ({ ...r, excerpt_en: e.target.value }))} />
-                </div>
-                <div className="md:col-span-2">
-                  <label className="mb-1 block text-sm font-medium">{A("englishBody")}</label>
-                  <Textarea rows={10} value={record.content_en} onChange={(e) => setRecord((r) => ({ ...r, content_en: e.target.value }))} />
-                </div>
+        <div hidden={!showEnglish} className="space-y-6">
+          <AdminFormSection
+            title={A("autoEnglishTitle")}
+            description={autoEnglishDescription}
+            helpText={A("autoEnglishHelp")}
+            collapsible
+            defaultOpen={false}
+          >
+            <div className="grid gap-4 md:grid-cols-2">
+              <div className="md:col-span-2">
+                <label className="mb-1 block text-sm font-medium">{A("englishTitle")}</label>
+                <Input value={record.title_en} onChange={(e) => setRecord((r) => ({ ...r, title_en: e.target.value }))} />
               </div>
-            </AdminFormSection>
+              <div className="md:col-span-2">
+                <label className="mb-1 block text-sm font-medium">{A("englishExcerpt")}</label>
+                <Textarea rows={3} value={record.excerpt_en} onChange={(e) => setRecord((r) => ({ ...r, excerpt_en: e.target.value }))} />
+              </div>
+              <div className="md:col-span-2">
+                <label className="mb-1 block text-sm font-medium">{A("englishBody")}</label>
+                <Textarea rows={10} value={record.content_en} onChange={(e) => setRecord((r) => ({ ...r, content_en: e.target.value }))} />
+              </div>
+            </div>
+          </AdminFormSection>
 
-            <AdminFormSection
-              title={A("autoEnglishBusinessTitle")}
-              description={autoEnglishDescription}
-              helpText={A("autoEnglishBusinessHelp")}
-              collapsible
-              defaultOpen={false}
-            >
-              <div className="grid gap-4 md:grid-cols-2">
-                <div>
-                  <TextListEditor
-                    label={A("suitableForEn")}
-                    helpText={getAdminFieldHelp("suitable_for_en")}
-                    value={record.suitable_for_en}
-                    onChange={(value) => setRecord((r) => ({ ...r, suitable_for_en: value }))}
-                    placeholder={A("suitableForEnPlaceholder")}
-                  />
-                </div>
-                <div>
-                  <TextListEditor
-                    label={A("commonProjectsEn")}
-                    helpText={getAdminFieldHelp("common_projects_en")}
-                    value={record.common_projects_en}
-                    onChange={(value) => setRecord((r) => ({ ...r, common_projects_en: value }))}
-                    placeholder={A("commonProjectsEnPlaceholder")}
-                  />
-                </div>
-                <div className="md:col-span-2">
-                  <TextListEditor
-                    label={A("scopeItemsEn")}
-                    helpText={getAdminFieldHelp("scope_items_en")}
-                    value={record.scope_items_en}
-                    onChange={(value) => setRecord((r) => ({ ...r, scope_items_en: value }))}
-                    placeholder={A("scopeItemsEnPlaceholder")}
-                  />
-                </div>
-                <div className="md:col-span-2">
-                  <ProcessStepsEditor
-                    label={A("processStepsEn")}
-                    helpText={getAdminFieldHelp("process_steps_en")}
-                    value={record.process_steps_en}
-                    onChange={(value) => setRecord((r) => ({ ...r, process_steps_en: value }))}
-                  />
-                </div>
-                <div className="md:col-span-2">
-                  <FaqListEditor
-                    label={A("faqsEn")}
-                    helpText={getAdminFieldHelp("faqs_en")}
-                    value={record.faqs_en}
-                    onChange={(value) => setRecord((r) => ({ ...r, faqs_en: value }))}
-                  />
-                </div>
+          <AdminFormSection
+            title={A("autoEnglishBusinessTitle")}
+            description={autoEnglishDescription}
+            helpText={A("autoEnglishBusinessHelp")}
+            collapsible
+            defaultOpen={false}
+          >
+            <div className="grid gap-4 md:grid-cols-2">
+              <div>
+                <TextListEditor
+                  label={A("suitableForEn")}
+                  helpText={getAdminFieldHelp("suitable_for_en")}
+                  value={record.suitable_for_en}
+                  onChange={(value) => setRecord((r) => ({ ...r, suitable_for_en: value }))}
+                  placeholder={A("suitableForEnPlaceholder")}
+                />
               </div>
-            </AdminFormSection>
+              <div>
+                <TextListEditor
+                  label={A("commonProjectsEn")}
+                  helpText={getAdminFieldHelp("common_projects_en")}
+                  value={record.common_projects_en}
+                  onChange={(value) => setRecord((r) => ({ ...r, common_projects_en: value }))}
+                  placeholder={A("commonProjectsEnPlaceholder")}
+                />
+              </div>
+              <div className="md:col-span-2">
+                <TextListEditor
+                  label={A("scopeItemsEn")}
+                  helpText={getAdminFieldHelp("scope_items_en")}
+                  value={record.scope_items_en}
+                  onChange={(value) => setRecord((r) => ({ ...r, scope_items_en: value }))}
+                  placeholder={A("scopeItemsEnPlaceholder")}
+                />
+              </div>
+              <div className="md:col-span-2">
+                <ProcessStepsEditor
+                  label={A("processStepsEn")}
+                  helpText={getAdminFieldHelp("process_steps_en")}
+                  value={record.process_steps_en}
+                  onChange={(value) => setRecord((r) => ({ ...r, process_steps_en: value }))}
+                />
+              </div>
+              <div className="md:col-span-2">
+                <FaqListEditor
+                  label={A("faqsEn")}
+                  helpText={getAdminFieldHelp("faqs_en")}
+                  value={record.faqs_en}
+                  onChange={(value) => setRecord((r) => ({ ...r, faqs_en: value }))}
+                />
+              </div>
+            </div>
+          </AdminFormSection>
 
-            <AdminFormSection
-              title={A("englishSeoTitle")}
-              description={autoEnglishDescription}
-              helpText={A("englishSeoHelp")}
-              collapsible
-              defaultOpen={false}
-            >
-              <div className="grid gap-4 md:grid-cols-2">
-                <div className="md:col-span-2">
-                  <label className="mb-1 block text-sm font-medium">{A("seoTitleEn")}</label>
-                  <Input value={record.seo_title_en} onChange={(e) => setRecord((r) => ({ ...r, seo_title_en: e.target.value }))} />
-                </div>
-                <div className="md:col-span-2">
-                  <label className="mb-1 block text-sm font-medium">{A("seoDescriptionEn")}</label>
-                  <Textarea rows={3} value={record.seo_description_en} onChange={(e) => setRecord((r) => ({ ...r, seo_description_en: e.target.value }))} />
-                </div>
+          <AdminFormSection
+            title={A("englishSeoTitle")}
+            description={autoEnglishDescription}
+            helpText={A("englishSeoHelp")}
+            collapsible
+            defaultOpen={false}
+          >
+            <div className="grid gap-4 md:grid-cols-2">
+              <div className="md:col-span-2">
+                <label className="mb-1 block text-sm font-medium">{A("seoTitleEn")}</label>
+                <Input value={record.seo_title_en} onChange={(e) => setRecord((r) => ({ ...r, seo_title_en: e.target.value }))} />
               </div>
-            </AdminFormSection>
-          </>
-        )}
+              <div className="md:col-span-2">
+                <label className="mb-1 block text-sm font-medium">{A("seoDescriptionEn")}</label>
+                <Textarea rows={3} value={record.seo_description_en} onChange={(e) => setRecord((r) => ({ ...r, seo_description_en: e.target.value }))} />
+              </div>
+            </div>
+          </AdminFormSection>
+        </div>
 
         <div className="pb-10" />
       </form>

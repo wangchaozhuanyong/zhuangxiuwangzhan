@@ -1,8 +1,9 @@
+import PublicResultsBoundary from "@/components/PublicResultsBoundary";
 import { useMemo } from "react";
 import { usePublicListingState } from "@/hooks/usePublicListingState";
 import PageMeta from "@/components/PageMeta";
 import { JsonLdBreadcrumb } from "@/components/JsonLd";
-import { SchemeAContentState, SchemeAFilter, SchemeAListingGrid, SchemeALoadMore, SchemeARouteHero, SchemeASection, type SchemeAListingItem } from "@/components/scheme-a/SchemeARoutePrimitives";
+import { SchemeAFilter, SchemeAListingGrid, SchemeALoadMore, SchemeARouteHero, SchemeASection, type SchemeAListingItem } from "@/components/scheme-a/SchemeARoutePrimitives";
 import { blogPosts } from "@/data/blog";
 import { usePublishedBlogPosts, usePublishedSitePage } from "@/hooks/usePublishedContent";
 import { useLanguage } from "@/i18n/LanguageContext";
@@ -28,7 +29,8 @@ export default function Blog() {
   const topicCopy = blogTopicText[language];
   const { filter, setFilter, visibleCount, setVisibleCount } = usePublicListingState(blogCategoryFilters.map((item) => item.value), "all", PAGE_SIZE);
   const { data: pageContent, isLoading: pageLoading } = usePublishedSitePage(language, "blog");
-  const { data: cmsPosts, isLoading, isInitialError: isError, refetch } = usePublishedBlogPosts(language);
+  const resultsQuery = usePublishedBlogPosts(language);
+  const { data: cmsPosts, isLoading } = resultsQuery;
   const posts = cmsPosts?.length ? cmsPosts : blogPosts;
   const filtered = posts.filter((post) => matchesCategory(post.category, post.slug, filter));
   const hero = resolvePageHeroImage(pageContent?.image_url, pageHeroImages.blog);
@@ -58,13 +60,10 @@ export default function Blog() {
       <SchemeASection title={routeText.blogLatest} description={routeText.blogLatestText} className="fc-blog-articles">
         <div id="blog-articles" tabIndex={-1} role="region" aria-label={routeText.blogLatest}>
           <SchemeAFilter items={blogCategoryFilters.map((category) => ({ value: category.value, label: category[language] }))} value={filter} onChange={setFilter} ariaLabel={copy.breadcrumbBlog} />
-          <div data-public-results>
-          {isLoading ? <SchemeAContentState>{routeText.blogLoading}</SchemeAContentState> : null}
-          {isError ? <SchemeAContentState action={<button type="button" onClick={() => void refetch()}>{routeText.reload}</button>}>{routeText.blogError}</SchemeAContentState> : null}
-          {!isLoading && !isError && !items.length ? <SchemeAContentState>{routeText.blogEmpty}</SchemeAContentState> : null}
-          {!isLoading && !isError && items.length ? <SchemeAListingGrid items={items} actionLabel={copy.read} /> : null}
+          <PublicResultsBoundary query={resultsQuery} loading={routeText.blogLoading} error={routeText.blogError} isEmpty={!items.length} empty={routeText.blogEmpty}>
+          <SchemeAListingGrid items={items} actionLabel={copy.read} />
           {visibleCount < filtered.length ? <SchemeALoadMore label={copy.loadMore} onClick={() => setVisibleCount((count) => count + PAGE_SIZE)} /> : null}
-          </div>
+        </PublicResultsBoundary>
         </div>
       </SchemeASection>
       <SchemeASection title={topicCopy.heading} description={topicCopy.description} className="fc-blog-topics">

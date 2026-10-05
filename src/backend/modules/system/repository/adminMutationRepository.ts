@@ -4,6 +4,35 @@ import type { Json } from "@/lib/database.types";
 
 export type AdminMutationDbRecord = Record<string, unknown>;
 
+export type AdminContentPreflightRequest = {
+  contentType: "service" | "blog";
+  nextStatus: "draft" | "published" | "archived";
+  expectedUpdatedAt: string;
+  record: AdminMutationDbRecord;
+};
+
+export function requestAdminContentPreflight(input: AdminContentPreflightRequest) {
+  return requireSupabase().functions.invoke<Record<string, unknown>>("content-publish", {
+    body: {
+      contentType: input.contentType,
+      mode: "dry-run",
+      nextStatus: input.nextStatus,
+      expectedUpdatedAt: input.expectedUpdatedAt,
+      record: input.record,
+    },
+  });
+}
+
+export type AdminMutationVersion = {
+  field: "updated_at" | "version";
+  value: string | number | null;
+};
+
+const versionedPayload = (payload: AdminMutationDbRecord, version?: AdminMutationVersion): AdminMutationDbRecord =>
+  version?.field === "version" && typeof version.value === "number"
+    ? { ...payload, version: version.value + 1 }
+    : payload;
+
 export type PublicContentInvalidationResult = {
   ok?: boolean;
   cache_invalidation?: {
@@ -87,23 +116,30 @@ export async function updateAdminMutationRecord(
   idField: string,
   id: string | number,
   payload: AdminMutationDbRecord,
+  version?: AdminMutationVersion,
 ) {
   const supabase = requireSupabase();
-  const { data, error } = await supabase.from(table).update(payload).eq(idField, id).select("*").single();
+  let query = supabase.from(table).update(versionedPayload(payload, version)).eq(idField, id);
+  if (version) query = version.value === null ? query.is(version.field, null) : query.eq(version.field, version.value);
+  const { data, error } = await query.select("*").maybeSingle();
   if (error) throw error;
-  return data as AdminMutationDbRecord;
+  return data as AdminMutationDbRecord | null;
 }
 
-export async function archiveAdminMutationRecord(table: string, idField: string, id: string | number) {
+export async function archiveAdminMutationRecord(table: string, idField: string, id: string | number, version?: AdminMutationVersion) {
   const supabase = requireSupabase();
-  const { data, error } = await supabase.from(table).update({ status: "archived" }).eq(idField, id).select("*").single();
+  let query = supabase.from(table).update(versionedPayload({ status: "archived" }, version)).eq(idField, id);
+  if (version) query = version.value === null ? query.is(version.field, null) : query.eq(version.field, version.value);
+  const { data, error } = await query.select("*").maybeSingle();
   if (error) throw error;
-  return data as AdminMutationDbRecord;
+  return data as AdminMutationDbRecord | null;
 }
 
-export async function deleteAdminMutationRecord(table: string, idField: string, id: string | number) {
+export async function deleteAdminMutationRecord(table: string, idField: string, id: string | number, version?: AdminMutationVersion) {
   const supabase = requireSupabase();
-  const { data, error } = await supabase.from(table).delete().eq(idField, id).select("*").single();
+  let query = supabase.from(table).delete().eq(idField, id);
+  if (version) query = version.value === null ? query.is(version.field, null) : query.eq(version.field, version.value);
+  const { data, error } = await query.select("*").maybeSingle();
   if (error) throw error;
-  return data as AdminMutationDbRecord;
+  return data as AdminMutationDbRecord | null;
 }

@@ -38,7 +38,7 @@ export default function ServiceDetail() {
   const services = cmsServices?.length ? cmsServices : fallbackServices;
   const service = cmsService || services.find((item) => item.slug === slug);
 
-  if (isLoading && (!service || ((slug === "design" || slug === "surface-repair") && !cmsService))) return <main className="fc-route-page" data-route-pending="true"><SchemeAContentState>{copy.loadingDescription}</SchemeAContentState></main>;
+  if (isLoading && (!service || ((slug === "design" || slug === "surface-repair") && !cmsService))) return <main className="fc-route-page" data-route-pending="true"><SchemeAContentState variant="loading">{copy.loadingDescription}</SchemeAContentState></main>;
   if (isInitialError && !service) return <PublicReadError onRetry={() => void refetch()} />;
   if (!service) return <main className="fc-route-page"><PageMeta title={copy.notFound} description={copy.notFoundDescription} canonicalPath="/services" noIndex /><SchemeAContentState action={<Link to="/services">{copy.viewAll}</Link>}>{copy.notFound}</SchemeAContentState></main>;
 

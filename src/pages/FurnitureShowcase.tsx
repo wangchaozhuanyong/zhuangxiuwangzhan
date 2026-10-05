@@ -1,3 +1,4 @@
+import PublicResultsBoundary from "@/components/PublicResultsBoundary";
 import { useLocation, useNavigate, useParams, useSearchParams } from "react-router-dom";
 import type { MouseEvent } from "react";
 import { SmartImage } from "@/components/SmartImage";
@@ -92,17 +93,9 @@ export default function FurnitureShowcase() {
             ))}
           </nav>
         ) : null}
-        {managedQuery.isFetching && !managedQuery.data ? <p className="fc-furniture-sync-status" role="status">{copy.loadingManagedProducts}</p> : null}
-        {managedQuery.isInitialError ? (
-          <div className="fc-furniture-sync-status" role="alert">
-            {copy.managedLoadFailed} <button type="button" onClick={() => void managedQuery.refetch()}>{copy.retry}</button>
-          </div>
-        ) : null}
-        <div data-public-results>
-        <div className="fc-furniture-list-head">
-          <h2>{subcategoryLabel || categoryLabel}</h2>
-          <p>{products.length} {copy.products}</p>
-        </div>
+        <PublicResultsBoundary query={managedQuery} loading={copy.loadingManagedProducts} error={copy.managedLoadFailed}
+          isEmpty={!visibleProducts.length} empty={validSelection ? copy.noProducts : copy.notFound}
+          summary={<div className="fc-furniture-list-head"><h2>{subcategoryLabel || categoryLabel}</h2><p>{products.length} {copy.products}</p></div>}>
         {visibleProducts.length ? (
           <div className="fc-furniture-grid">
             {visibleProducts.map((sourceProduct, index) => {
@@ -127,7 +120,7 @@ export default function FurnitureShowcase() {
               );
             })}
           </div>
-        ) : managedQuery.isLoading || managedQuery.isInitialError ? null : <div className="fc-furniture-empty">{validSelection ? copy.noProducts : copy.notFound}</div>}
+        ) : null}
         {totalPages > 1 ? (
           <nav className="fc-furniture-pagination" aria-label={copy.page.replace("{page}", String(page)).replace("{total}", String(totalPages))}>
             {page > 1 ? <LocalizedLink to={pagePath(page - 1)}>{copy.previous}</LocalizedLink> : <span />}
@@ -135,7 +128,7 @@ export default function FurnitureShowcase() {
             {page < totalPages ? <LocalizedLink to={pagePath(page + 1)}>{copy.next}</LocalizedLink> : <span />}
           </nav>
         ) : null}
-        </div>
+        </PublicResultsBoundary>
       </div>
     </main>
   );

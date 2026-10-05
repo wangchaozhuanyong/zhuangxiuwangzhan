@@ -11,6 +11,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "@/hooks/use-toast";
 import AdminStickyActionBar from "@/components/admin/AdminStickyActionBar";
+import { adminMobileEditorText } from "@/i18n/adminMobileEditorText";
 import AdminPageHeader from "@/components/admin/AdminPageHeader";
 import AdminFormSection from "@/components/admin/AdminFormSection";
 import AdminEmptyState from "@/components/admin/AdminEmptyState";
@@ -29,6 +30,7 @@ import { adminStatusLabel, getAdminLang, publishStatusOptions } from "@/lib/admi
 import { formatAdminMutationError } from "@/lib/adminMutation";
 import { isNewAdminRouteRecord } from "@/lib/adminRouteParams";
 import { autoEnglishDescription, englishMissingHint, hasAnyMissingEnglish } from "@/lib/adminTranslation";
+import { interactionText } from "@/i18n/interactionText";
 import { formatUserFacingError } from "@/lib/userFacingText";
 import {
   checkAdminMaterialSlugUnique,
@@ -166,6 +168,7 @@ const toPriceUnit = (value: unknown): MaterialRecord["price_unit"] =>
 export default function AdminMaterialEditor({ furnitureMode = false }: { furnitureMode?: boolean }) {
   const { protectSubmission, isSubmitting } = useSubmissionLock();
   const language = getAdminLang();
+  const mobileText = adminMobileEditorText[language];
   const A = useCallback((key: AdminMaterialEditorTextKey): string => adminMaterialEditorText[key][language], [language]);
   const F = useCallback((key: keyof typeof adminFurnitureEditorText): string => adminFurnitureEditorText[key][language], [language]);
   const formatA = useCallback(
@@ -219,6 +222,7 @@ export default function AdminMaterialEditor({ furnitureMode = false }: { furnitu
   });
   const isFurniture = furnitureMode || record.category === FURNITURE_MATERIAL_CATEGORY;
   const selectedFurnitureCategory = furnitureCatalog.taxonomy.find((category) => category.key === record.subcategory && category.key !== "new");
+  const recordReady = isNew || Boolean(loaded?.id && record.id === loaded.id);
   const englishMissing = hasAnyMissingEnglish(record as unknown as Record<string, unknown>, isFurniture ? ["title_en", "excerpt_en", "content_en"] : materialEnglishFields);
   useUnsavedChangesWarning((dirty || saveBusy) || isSubmitting);
 
@@ -264,6 +268,7 @@ export default function AdminMaterialEditor({ furnitureMode = false }: { furnitu
   }, [isFurniture, record.slug]);
 
   const save = protectSubmission("save", async (nextStatus?: MaterialRecord["status"], generateEnglish?: boolean, forceEnglish?: boolean) => {
+    if (!recordReady) return;
     if (!hasMaterialBackendConfig() || saveBusy) return;
     if (furnitureMode && !isNew && (!loaded || isLoading || isError)) return;
     if (isFurniture && (nextStatus ?? record.status) === "published") {
@@ -358,9 +363,19 @@ export default function AdminMaterialEditor({ furnitureMode = false }: { furnitu
     return <AdminEmptyState title={F("wrongRecord")} description={F("description")} action={<Button asChild><Link to="/admin/furniture">{A("backToList")}</Link></Button>} />;
   }
 
+  if (!recordReady) {
+    if (!isError) return <AdminLoadingState />;
+    return <AdminEmptyState
+      title={A("loadFailed")}
+      description={formatUserFacingError(loadError, language)}
+      action={<Button type="button" onClick={() => void refetchLoaded()}>{interactionText[language].retry}</Button>}
+    />;
+  }
+
   return (
     <>
-    <AdminStickyActionBar
+      <AdminStickyActionBar
+        mobileSticky
         left={
           <>
             <Button asChild variant="outline">
@@ -373,6 +388,16 @@ export default function AdminMaterialEditor({ furnitureMode = false }: { furnitu
         }
         right={
           <>
+            <AdminActionButton action="content.write" type="button" variant="outline" onClick={() => void save("draft")} disabled={saveBusy || !recordReady || isLoading}>
+              {record.status === "draft" ? A("saveDraft") : mobileText.moveToDraft}
+            </AdminActionButton>
+            <AdminActionButton action="content.publish" type="button" onClick={() => void save("published")} disabled={saveBusy || !recordReady || isLoading}>
+              {record.status === "published" ? mobileText.updatePublished : A("publish")}
+            </AdminActionButton>
+          </>
+        }
+        more={
+          <>
             {previewUrl && (
               <Button asChild variant="outline">
                 <a href={previewUrl} target="_blank" rel="noreferrer">
@@ -380,13 +405,10 @@ export default function AdminMaterialEditor({ furnitureMode = false }: { furnitu
                 </a>
               </Button>
             )}
-            <AdminActionButton action="content.write" type="button" variant="outline" onClick={() => void save("draft")} disabled={saveBusy || isLoading}>
-              {A("saveDraft")}
-            </AdminActionButton>
-            <AdminActionButton action="content.publish" type="button" onClick={() => void save("published")} disabled={saveBusy || isLoading}>
-              {A("publish")}
-            </AdminActionButton>
-            <AdminActionButton action="content.write" type="button" variant="outline" onClick={() => void save(undefined, true)} disabled={saveBusy || isLoading || !record.id}>
+            <Button type="button" variant="outline" aria-expanded={showEnglish} onClick={() => setShowEnglish((value) => !value)}>
+              {showEnglish ? A("hideEnglish") : A("showEnglish")}
+            </Button>
+            <AdminActionButton action="content.write" type="button" variant="outline" onClick={() => void save(undefined, true)} disabled={saveBusy || !recordReady || isLoading || !record.id}>
               {A("saveAndGenerateEnglish")}
             </AdminActionButton>
             <AdminActionButton
@@ -394,7 +416,7 @@ export default function AdminMaterialEditor({ furnitureMode = false }: { furnitu
               type="button"
               variant="outline"
               onClick={() => void forceRegenerateEnglish()}
-              disabled={saveBusy || isLoading || !record.id}
+              disabled={saveBusy || !recordReady || isLoading || !record.id}
             >
               {A("forceRegenerateEnglish")}
             </AdminActionButton>
@@ -413,11 +435,6 @@ export default function AdminMaterialEditor({ furnitureMode = false }: { furnitu
           title={isFurniture ? F(isNew ? "newTitle" : "editTitle") : isNew ? A("newTitle") : A("editTitle")}
           description={isFurniture ? F("description") : A("pageDescription")}
           helpText={isFurniture ? F("description") : A("pageHelpText")}
-          actions={
-            <Button type="button" variant="outline" onClick={() => setShowEnglish((v) => !v)}>
-              {showEnglish ? A("hideEnglish") : A("showEnglish")}
-            </Button>
-          }
         />
 
         {englishMissing && (
@@ -457,9 +474,9 @@ export default function AdminMaterialEditor({ furnitureMode = false }: { furnitu
             </div>
 
             <div className="md:col-span-2">
-              <div className="flex items-center justify-between gap-2">
+              <div className="flex flex-col items-start gap-2 sm:flex-row sm:items-center sm:justify-between">
                 <label className="mb-1 block text-sm font-medium">{A("slug")}</label>
-                <div className="flex items-center gap-2">
+                <div className="flex flex-wrap items-center gap-2">
                   <Button
                     type="button"
                     variant="outline"
@@ -483,7 +500,7 @@ export default function AdminMaterialEditor({ furnitureMode = false }: { furnitu
                 onBlur={() => void checkSlugUnique(record.slug)}
                 placeholder={A("slugPlaceholder")}
               />
-              {previewUrl && <div className="mt-1 text-xs text-muted-foreground">{formatA("frontendPath", { path: previewUrl })}</div>}
+              {previewUrl && <div className="mt-1 break-words text-xs text-muted-foreground [overflow-wrap:anywhere]">{formatA("frontendPath", { path: previewUrl })}</div>}
             </div>
 
             <div className="md:col-span-2">
@@ -614,18 +631,14 @@ export default function AdminMaterialEditor({ furnitureMode = false }: { furnitu
               <label className="mb-1 block text-sm font-medium">{A("priceNoteZh")}</label>
               <Textarea rows={2} value={record.price_note_zh} onChange={(e) => setRecord((r) => ({ ...r, price_note_zh: e.target.value }))} />
             </div>
-            {showEnglish ? (
-              <>
-                <div className="md:col-span-2">
-                  <label className="mb-1 block text-sm font-medium">{A("priceScopeEn")}</label>
-                  <Textarea rows={2} value={record.price_scope_en} onChange={(e) => setRecord((r) => ({ ...r, price_scope_en: e.target.value }))} />
-                </div>
-                <div className="md:col-span-2">
-                  <label className="mb-1 block text-sm font-medium">{A("priceNoteEn")}</label>
-                  <Textarea rows={2} value={record.price_note_en} onChange={(e) => setRecord((r) => ({ ...r, price_note_en: e.target.value }))} />
-                </div>
-              </>
-            ) : null}
+            <div hidden={!showEnglish} className="md:col-span-2">
+              <label className="mb-1 block text-sm font-medium">{A("priceScopeEn")}</label>
+              <Textarea rows={2} value={record.price_scope_en} onChange={(e) => setRecord((r) => ({ ...r, price_scope_en: e.target.value }))} />
+            </div>
+            <div hidden={!showEnglish} className="md:col-span-2">
+              <label className="mb-1 block text-sm font-medium">{A("priceNoteEn")}</label>
+              <Textarea rows={2} value={record.price_note_en} onChange={(e) => setRecord((r) => ({ ...r, price_note_en: e.target.value }))} />
+            </div>
           </div>
         </AdminFormSection>
 
@@ -642,12 +655,10 @@ export default function AdminMaterialEditor({ furnitureMode = false }: { furnitu
                 onAltChange={(alt) => setRecord((r) => ({ ...r, alt_zh: alt }))}
               />
             </div>
-            {showEnglish && (
-              <div>
-                <label className="mb-1 block text-sm font-medium">{A("englishImageAlt")}</label>
-                <Input value={record.alt_en} onChange={(e) => setRecord((r) => ({ ...r, alt_en: e.target.value }))} />
-              </div>
-            )}
+            <div hidden={!showEnglish}>
+              <label className="mb-1 block text-sm font-medium">{A("englishImageAlt")}</label>
+              <Input value={record.alt_en} onChange={(e) => setRecord((r) => ({ ...r, alt_en: e.target.value }))} />
+            </div>
           </div>
         </AdminFormSection>
 
@@ -679,7 +690,7 @@ export default function AdminMaterialEditor({ furnitureMode = false }: { furnitu
           </div>
         </AdminFormSection> : null}
 
-        <AdminFormSection title={A("seoZhTitle")} description={A("seoZhDescription")} helpText={isFurniture ? F("description") : A("seoZhHelp")}>
+        <AdminFormSection title={A("seoZhTitle")} description={A("seoZhDescription")} helpText={isFurniture ? F("description") : A("seoZhHelp")} collapsible defaultOpen={false}>
           <div className="grid gap-4 md:grid-cols-2">
             <div className="md:col-span-2">
               <label className="mb-1 block text-sm font-medium">{A("seoTitleZh")}</label>
@@ -692,64 +703,62 @@ export default function AdminMaterialEditor({ furnitureMode = false }: { furnitu
           </div>
         </AdminFormSection>
 
-        {showEnglish && (
-          <>
-            <AdminFormSection title={A("autoEnglishTitle")} description={autoEnglishDescription} helpText={A("autoEnglishHelp")} collapsible defaultOpen={false}>
-              <div className="grid gap-4 md:grid-cols-2">
-                <div className="md:col-span-2">
-                  <label className="mb-1 block text-sm font-medium">{A("englishTitle")}</label>
-                  <Input value={record.title_en} onChange={(e) => setRecord((r) => ({ ...r, title_en: e.target.value }))} />
-                </div>
-                <div className="md:col-span-2">
-                  <label className="mb-1 block text-sm font-medium">{A("englishExcerpt")}</label>
-                  <Textarea rows={3} value={record.excerpt_en} onChange={(e) => setRecord((r) => ({ ...r, excerpt_en: e.target.value }))} />
-                </div>
-                <div className="md:col-span-2">
-                  <label className="mb-1 block text-sm font-medium">{A("englishDetails")}</label>
-                  <Textarea rows={10} value={record.content_en} onChange={(e) => setRecord((r) => ({ ...r, content_en: e.target.value }))} />
-                </div>
+        <div hidden={!showEnglish} className="space-y-6">
+          <AdminFormSection title={A("autoEnglishTitle")} description={autoEnglishDescription} helpText={A("autoEnglishHelp")} collapsible defaultOpen={false}>
+            <div className="grid gap-4 md:grid-cols-2">
+              <div className="md:col-span-2">
+                <label className="mb-1 block text-sm font-medium">{A("englishTitle")}</label>
+                <Input value={record.title_en} onChange={(e) => setRecord((r) => ({ ...r, title_en: e.target.value }))} />
               </div>
-            </AdminFormSection>
+              <div className="md:col-span-2">
+                <label className="mb-1 block text-sm font-medium">{A("englishExcerpt")}</label>
+                <Textarea rows={3} value={record.excerpt_en} onChange={(e) => setRecord((r) => ({ ...r, excerpt_en: e.target.value }))} />
+              </div>
+              <div className="md:col-span-2">
+                <label className="mb-1 block text-sm font-medium">{A("englishDetails")}</label>
+                <Textarea rows={10} value={record.content_en} onChange={(e) => setRecord((r) => ({ ...r, content_en: e.target.value }))} />
+              </div>
+            </div>
+          </AdminFormSection>
 
-        {!isFurniture ? <AdminFormSection title={A("autoEnglishUsageTitle")} description={autoEnglishDescription} helpText={A("autoEnglishUsageHelp")} collapsible defaultOpen={false}>
-              <div className="grid gap-4 md:grid-cols-2">
-                <div>
-                  <label className="mb-1 block text-sm font-medium">{A("suitableSpacesEn")}</label>
-                  <Textarea rows={6} value={formatLines(record.suitable_spaces_en)} onChange={(e) => setRecord((r) => ({ ...r, suitable_spaces_en: parseLines(e.target.value) }))} />
-                </div>
-                <div>
-                  <label className="mb-1 block text-sm font-medium">{A("prosEn")}</label>
-                  <Textarea rows={6} value={formatLines(record.pros_en)} onChange={(e) => setRecord((r) => ({ ...r, pros_en: parseLines(e.target.value) }))} />
-                </div>
-                <div>
-                  <label className="mb-1 block text-sm font-medium">{A("consEn")}</label>
-                  <Textarea rows={6} value={formatLines(record.cons_en)} onChange={(e) => setRecord((r) => ({ ...r, cons_en: parseLines(e.target.value) }))} />
-                </div>
-                <div className="md:col-span-2">
-                  <label className="mb-1 block text-sm font-medium">{A("recommendedPairingEn")}</label>
-                  <Textarea rows={4} value={record.recommended_pairing_en} onChange={(e) => setRecord((r) => ({ ...r, recommended_pairing_en: e.target.value }))} />
-                </div>
-                <div className="md:col-span-2">
-                  <label className="mb-1 block text-sm font-medium">{A("noteEn")}</label>
-                  <Textarea rows={3} value={record.note_en} onChange={(e) => setRecord((r) => ({ ...r, note_en: e.target.value }))} />
-                </div>
+      {!isFurniture ? <AdminFormSection title={A("autoEnglishUsageTitle")} description={autoEnglishDescription} helpText={A("autoEnglishUsageHelp")} collapsible defaultOpen={false}>
+            <div className="grid gap-4 md:grid-cols-2">
+              <div>
+                <label className="mb-1 block text-sm font-medium">{A("suitableSpacesEn")}</label>
+                <Textarea rows={6} value={formatLines(record.suitable_spaces_en)} onChange={(e) => setRecord((r) => ({ ...r, suitable_spaces_en: parseLines(e.target.value) }))} />
               </div>
-            </AdminFormSection> : null}
+              <div>
+                <label className="mb-1 block text-sm font-medium">{A("prosEn")}</label>
+                <Textarea rows={6} value={formatLines(record.pros_en)} onChange={(e) => setRecord((r) => ({ ...r, pros_en: parseLines(e.target.value) }))} />
+              </div>
+              <div>
+                <label className="mb-1 block text-sm font-medium">{A("consEn")}</label>
+                <Textarea rows={6} value={formatLines(record.cons_en)} onChange={(e) => setRecord((r) => ({ ...r, cons_en: parseLines(e.target.value) }))} />
+              </div>
+              <div className="md:col-span-2">
+                <label className="mb-1 block text-sm font-medium">{A("recommendedPairingEn")}</label>
+                <Textarea rows={4} value={record.recommended_pairing_en} onChange={(e) => setRecord((r) => ({ ...r, recommended_pairing_en: e.target.value }))} />
+              </div>
+              <div className="md:col-span-2">
+                <label className="mb-1 block text-sm font-medium">{A("noteEn")}</label>
+                <Textarea rows={3} value={record.note_en} onChange={(e) => setRecord((r) => ({ ...r, note_en: e.target.value }))} />
+              </div>
+            </div>
+          </AdminFormSection> : null}
 
-            <AdminFormSection title={A("englishSeoTitle")} description={autoEnglishDescription} helpText={A("englishSeoHelp")} collapsible defaultOpen={false}>
-              <div className="grid gap-4 md:grid-cols-2">
-                <div className="md:col-span-2">
-                  <label className="mb-1 block text-sm font-medium">{A("seoTitleEn")}</label>
-                  <Input value={record.seo_title_en} onChange={(e) => setRecord((r) => ({ ...r, seo_title_en: e.target.value }))} />
-                </div>
-                <div className="md:col-span-2">
-                  <label className="mb-1 block text-sm font-medium">{A("seoDescriptionEn")}</label>
-                  <Textarea rows={3} value={record.seo_description_en} onChange={(e) => setRecord((r) => ({ ...r, seo_description_en: e.target.value }))} />
-                </div>
+          <AdminFormSection title={A("englishSeoTitle")} description={autoEnglishDescription} helpText={A("englishSeoHelp")} collapsible defaultOpen={false}>
+            <div className="grid gap-4 md:grid-cols-2">
+              <div className="md:col-span-2">
+                <label className="mb-1 block text-sm font-medium">{A("seoTitleEn")}</label>
+                <Input value={record.seo_title_en} onChange={(e) => setRecord((r) => ({ ...r, seo_title_en: e.target.value }))} />
               </div>
-            </AdminFormSection>
-          </>
-        )}
+              <div className="md:col-span-2">
+                <label className="mb-1 block text-sm font-medium">{A("seoDescriptionEn")}</label>
+                <Textarea rows={3} value={record.seo_description_en} onChange={(e) => setRecord((r) => ({ ...r, seo_description_en: e.target.value }))} />
+              </div>
+            </div>
+          </AdminFormSection>
+        </div>
 
         <div className="pb-10" />
       </form>

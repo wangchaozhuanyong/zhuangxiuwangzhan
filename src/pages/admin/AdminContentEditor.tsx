@@ -42,7 +42,9 @@ const AdminContentEditor = () => {
   const lang = getAdminLang();
   const t = copy[lang];
   const canEdit = editableTables.has(type);
-  const { data: rows = [], isFetching, isInitialError, refetch } = useAdminEditorRows(type, canEdit);
+  const rowsQuery = useAdminEditorRows(type, canEdit);
+  const { data: rows = [], isFetching, isLoading: isInitialLoading, isInitialError, refetch } = rowsQuery;
+  const hasConfirmedRows = rowsQuery.data !== undefined;
   const { state: record, setForm: setRecord, applyRemote, dirty: recordDirty } = useAdminFormState<AdminContentRecord>(id ? rows.find((item) => item.id === id) : undefined, { initial: {}, resetKey: `${type}:${id || ""}` });
   const [status, setStatus] = useState("");
   const { search, setSearch, deferredSearch, filter, setFilter } = useAdminListingState();
@@ -50,10 +52,11 @@ const AdminContentEditor = () => {
   const setStatusFilter = (value: string) => setFilter("status", value);
 
   const setRecordField = useCallback((patch: AdminContentRecord | ((prev: AdminContentRecord) => AdminContentRecord)) => {
+    if (!hasConfirmedRows) return;
     setRecord((prev) => (typeof patch === "function" ? patch(prev) : { ...prev, ...patch }));
-  }, [setRecord]);
+  }, [hasConfirmedRows, setRecord]);
   useUnsavedChangesWarning((recordDirty) || isSubmitting);
-  const isLoading = isFetching && !rows.length;
+  const isLoading = isInitialLoading || (isFetching && !rows.length);
 
 
   const visibleFields = useMemo(() => tableFields[type] || [...contentFields, ...englishFields, "slug", "status", "sort_order"], [type]);
@@ -73,7 +76,7 @@ const AdminContentEditor = () => {
 
 
   const save = protectSubmission("save", async () => {
-    if (isInitialError || isLoading) return;
+    if (!hasConfirmedRows || isInitialError || isLoading) return;
     setStatus(t.saving);
     const payload = { ...record };
     for (const field of Object.keys(payload)) {
@@ -156,6 +159,7 @@ const AdminContentEditor = () => {
           {!readOnlyTables.has(type) && (
             <Button
               className="mb-4 w-full"
+              disabled={!hasConfirmedRows}
               onClick={async () => {
                 if (!await confirmProtectedNavigation()) return;
                 applyRemote({ status: type === "leads" ? "new" : type === "quote_requests" ? "pending" : "draft", sort_order: 0 });
@@ -205,7 +209,7 @@ const AdminContentEditor = () => {
             ))}
           </div>
         </div>
-        <div className="min-w-0 rounded-xl border border-border bg-card p-4 sm:p-6">
+        <fieldset disabled={!hasConfirmedRows} className="min-w-0 rounded-xl border border-border bg-card p-4 sm:p-6" aria-label={t.bilingualTitle}>
           <div className="mb-5 flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
             <div className="min-w-0">
               <h2 className="font-display text-xl font-bold">{t.bilingualTitle}</h2>
@@ -302,7 +306,7 @@ const AdminContentEditor = () => {
             })}
           </div>
           {type === "projects" && <AdminProjectImages projectId={String(toRecordId(record.id) || "")} />}
-        </div>
+        </fieldset>
       </div>
   );
 };

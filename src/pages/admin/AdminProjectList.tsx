@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { isSupabaseConfigured } from "@/lib/supabase";
 import { useAdminProjects, type AdminProjectRow } from "@/lib/adminBusinessContentQueries";
+import AdminFilterSummary from "@/components/admin/AdminFilterSummary";
 import AdminPageHeader from "@/components/admin/AdminPageHeader";
 import AdminAlert from "@/components/admin/AdminAlert";
 import AdminDataTable, { type AdminDataTableColumn } from "@/components/admin/AdminDataTable";
@@ -35,31 +36,32 @@ export default function AdminProjectList() {
   const status = list.filter("status");
   const setStatus = (value: string) => list.setFilter("status", value);
 
-  const { data, error, isFetching, isPlaceholderData, refetch } = useAdminProjects({ page, status, search: deferredSearch });
+  const { data, error, isLoading, isFetching, isPlaceholderData, refetch } = useAdminProjects({ page, status, search: deferredSearch });
   const rows = data?.rows ?? [];
   const total = data?.count ?? 0;
   const pageSize = data?.pageSize ?? 30;
   const errorMessage = error ? formatUserFacingError(error, language) : "";
-  const initialLoading = isFetching && !data;
+  const initialLoading = isLoading;
 
 
   const columns: AdminDataTableColumn<AdminProjectRow>[] = [
     {
       key: "project",
+      mobileRole: "title",
       header: A("projectHeader"),
       cell: (row) => {
         const thumb = pickThumbnail(row);
         const title = row.title_zh || row.title_en || row.slug;
         return (
           <div className="flex items-center gap-3">
-            <div className="h-10 w-14 overflow-hidden rounded-md border border-border bg-muted">
+            <div className="h-12 w-16 shrink-0 overflow-hidden rounded-md border border-border bg-muted">
               {thumb ? <SmartImage src={thumb} alt={title} className="h-full w-full object-cover" width={112} height={80} /> : null}
             </div>
             <div className="min-w-0">
               <Link to={`/admin/projects/${row.id}`} className="font-medium hover:underline">
                 {title}
               </Link>
-              <div className="mt-0.5 text-xs text-muted-foreground">/{row.slug}</div>
+              <div className="mt-0.5 hidden text-xs text-muted-foreground md:block">/{row.slug}</div>
             </div>
           </div>
         );
@@ -77,18 +79,21 @@ export default function AdminProjectList() {
     },
     {
       key: "status",
+      mobileRole: "badge",
       header: A("statusHeader"),
       className: "w-[120px]",
       cell: (row) => <AdminStatusBadge status={row.status || "draft"} />,
     },
     {
       key: "sort",
+      mobileRole: "detail",
       header: A("sortHeader"),
       className: "w-[100px]",
       cell: (row) => <span className="tabular-nums text-sm text-muted-foreground">{row.sort_order ?? 0}</span>,
     },
     {
       key: "updated",
+      mobileRole: "detail",
       header: A("updatedHeader"),
       className: "w-[180px]",
       cell: (row) => (
@@ -133,6 +138,14 @@ export default function AdminProjectList() {
           ))}
         </select>
       </div>
+
+      <AdminFilterSummary
+        filters={[
+          ...(status !== "all" ? [publishStatusOptions().find((option) => option.value === status)?.label || ""] : []),
+          ...(search.trim() ? [search.trim()] : []),
+        ].filter(Boolean)}
+        onClear={() => { setSearch(""); setStatus("all"); setPage(0); }}
+      />
 
       {errorMessage && <AdminAlert tone="error" className="mb-4">{errorMessage}</AdminAlert>}
 

@@ -6,7 +6,7 @@ export default function PublicReadError({ onRetry }: { onRetry: () => void }) {
   const { language } = useLanguage();
   const text = interactionText[language];
   return <main className="fc-route-page fc-route-error">
-    <SchemeAContentState action={<button type="button" onClick={onRetry}>{text.retry}</button>}>
+    <SchemeAContentState variant="error" action={<button type="button" onClick={onRetry}>{text.retry}</button>}>
       <h1>{text.loadingFailed}</h1>
     </SchemeAContentState>
   </main>;

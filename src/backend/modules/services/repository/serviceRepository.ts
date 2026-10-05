@@ -1,20 +1,10 @@
 import { withReadSignal } from "@/lib/readRequest";
-import type { QueryClient } from "@tanstack/react-query";
-import { saveAdminRecord } from "@/lib/adminMutation";
 import type { Database } from "@/lib/database.types";
 import { requireSupabase } from "@/lib/supabase";
 
 type ServiceStatus = NonNullable<Database["public"]["Tables"]["services"]["Row"]["status"]>;
 type SearchableQuery = {
   or(filters: string): unknown;
-};
-
-export type SaveServiceRecordInput = {
-  payload: Record<string, unknown>;
-  id?: string | null;
-  expectedUpdatedAt?: string | null;
-  action: "insert" | "update" | "publish";
-  queryClient?: QueryClient;
 };
 
 export type PublishServiceRecordInput = {
@@ -91,17 +81,6 @@ export async function fetchAdminServiceRows(limit: number, signal?: AbortSignal)
   const { data, error } = await withReadSignal(supabase.from("services").select("*").order("created_at", { ascending: false }).limit(limit), signal);
   if (error) throw error;
   return data ?? [];
-}
-
-export function saveServiceRecord(input: SaveServiceRecordInput) {
-  return saveAdminRecord({
-    table: "services",
-    payload: input.payload,
-    id: input.id,
-    expectedUpdatedAt: input.expectedUpdatedAt,
-    action: input.action,
-    queryClient: input.queryClient,
-  });
 }
 
 export async function publishServiceRecord(input: PublishServiceRecordInput) {

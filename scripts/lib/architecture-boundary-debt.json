@@ -1,0 +1,16 @@
+[
+  {"rule":"frontend-dependency","source":"src/backend/modules/admin-users/service/adminUserService.ts","specifier":"@tanstack/react-query","reason":"Existing browser application adapter; remove when its cache orchestration moves into the frontend facade."},
+  {"rule":"frontend-dependency","source":"src/backend/modules/blog/service/blogService.ts","specifier":"@tanstack/react-query","reason":"Existing browser application adapter; keep current saves compatible during migration."},
+  {"rule":"frontend-dependency","source":"src/backend/modules/materials/service/materialService.ts","specifier":"@tanstack/react-query","reason":"Existing browser application adapter; keep current saves compatible during migration."},
+  {"rule":"frontend-dependency","source":"src/backend/modules/projects/service/projectService.ts","specifier":"@tanstack/react-query","reason":"Existing browser application adapter; keep current saves compatible during migration."},
+  {"rule":"frontend-dependency","source":"src/backend/modules/services/service/serviceService.ts","specifier":"@tanstack/react-query","reason":"Existing browser application adapter; keep current saves compatible during migration."},
+  {"rule":"frontend-adapter","source":"src/backend/modules/admin-users/service/adminUserService.ts","specifier":"@/lib/adminMutation","reason":"Existing application save adapter; retains refresh/audit contracts, never allowed in repository."},
+  {"rule":"frontend-adapter","source":"src/backend/modules/blog/service/blogService.ts","specifier":"@/lib/adminMutation","reason":"Existing application save adapter; retains refresh/audit contracts, never allowed in repository."},
+  {"rule":"frontend-adapter","source":"src/backend/modules/materials/service/materialService.ts","specifier":"@/lib/adminMutation","reason":"Existing application save adapter; retains refresh/audit contracts, never allowed in repository."},
+  {"rule":"frontend-adapter","source":"src/backend/modules/projects/service/projectService.ts","specifier":"@/lib/adminMutation","reason":"Existing application save adapter; retains refresh/audit contracts, never allowed in repository."},
+  {"rule":"frontend-adapter","source":"src/backend/modules/services/service/serviceService.ts","specifier":"@/lib/adminMutation","reason":"Existing application save adapter; retains refresh/audit contracts, never allowed in repository."},
+  {"rule":"frontend-adapter","source":"src/backend/modules/materials/service/materialService.ts","specifier":"@/lib/publicSyncRecovery","reason":"Existing image/application workflow; preserve saved-write recovery while migrating."},
+  {"rule":"frontend-adapter","source":"src/backend/modules/projects/service/projectService.ts","specifier":"@/lib/publicSyncRecovery","reason":"Existing image/application workflow; preserve saved-write recovery while migrating."},
+  {"rule":"frontend-adapter","source":"src/backend/modules/services/service/serviceService.ts","specifier":"@/lib/publicSyncRecovery","reason":"Existing image/application workflow; preserve saved-write recovery while migrating."},
+  {"rule":"frontend-adapter","source":"src/backend/modules/services/service/serviceService.ts","specifier":"@/lib/adminInvalidate","reason":"Existing image/application workflow; preserve query refresh while migrating."}
+]

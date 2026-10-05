@@ -22,6 +22,13 @@ export const adminMediaLibraryText = {
     zh: "图片上传后会自动生成 WebP 展示图，原图会尽量保存在私有原图桶里；前台页面通过 SmartImage 按屏幕加载合适尺寸。",
   },
   uploadVideo: { en: "Upload video", zh: "上传视频" },
+  uploadMedia: { en: "Upload media", zh: "上传素材" },
+  uploadImage: { en: "Upload image", zh: "上传图片" },
+  imageUrl: { en: "Image URL", zh: "图片地址" },
+  details: { en: "Details", zh: "详情" },
+  close: { en: "Close", zh: "关闭" },
+  empty: { en: "No media matches the current filters.", zh: "当前条件下暂无素材。" },
+  emptyImages: { en: "No images match the current filters. Try another category or upload an image.", zh: "当前条件下暂无图片，可切换分类或上传图片。" },
   searchPlaceholder: {
     en: "Search file name, alt text, category...",
     zh: "搜索文件名、图片说明、分类...",

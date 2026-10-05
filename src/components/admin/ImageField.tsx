@@ -1,4 +1,4 @@
-import { ReactNode, useMemo, useState } from "react";
+import { ReactNode, useId, useMemo, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
@@ -9,6 +9,7 @@ import AdminImageUpload from "@/pages/admin/AdminImageUpload";
 import { getAdminLang } from "@/lib/adminLocale";
 import { useCreateAdminMediaAsset } from "@/lib/adminMediaQueries";
 import type { AdminUploadedMedia } from "@/lib/adminMedia";
+import { adminMediaLibraryText } from "@/i18n/adminMediaLibraryText";
 
 export default function ImageField({
   label,
@@ -32,10 +33,12 @@ export default function ImageField({
   className?: string;
 }) {
   const [pickerOpen, setPickerOpen] = useState(false);
+  const fieldId = useId();
   const [mediaMessage, setMediaMessage] = useState("");
   const createMediaAsset = useCreateAdminMediaAsset();
   const previewAlt = useMemo(() => (altValue ? altValue : label), [altValue, label]);
   const text = adminSharedText[getAdminLang()];
+  const mediaText = (key: keyof typeof adminMediaLibraryText) => adminMediaLibraryText[key][getAdminLang()];
 
   const handleUploaded = async (url: string, upload?: AdminUploadedMedia) => {
     onChange(url);
@@ -57,15 +60,13 @@ export default function ImageField({
   };
 
   return (
-    <div className={cn("space-y-2", className)}>
+    <div className={cn("min-w-0 space-y-3", className)}>
       <div className="flex flex-wrap items-center justify-between gap-2">
-        <label className="block text-sm font-medium">{label}</label>
+        <label htmlFor={`${fieldId}-url`} className="block text-sm font-medium">{label}</label>
         <div className="flex flex-wrap gap-2">
           <Button type="button" variant="outline" size="sm" onClick={() => setPickerOpen(true)}>{text.chooseFromMedia}</Button>
         </div>
       </div>
-
-      <Input value={value} onChange={(e) => onChange(e.target.value)} placeholder={text.imagePlaceholder} />
 
       {value && (
         <div className="overflow-hidden rounded-lg border border-border bg-muted">
@@ -73,21 +74,30 @@ export default function ImageField({
         </div>
       )}
 
-      <div className="rounded-lg border border-border bg-muted/20 p-3">
-        <div className="mb-2 text-xs font-medium text-muted-foreground">{text.uploadNewImage}</div>
-        <AdminImageUpload
-          value={value}
-          folder={folder}
-          assetUsageType={usageType || "general"}
-          onUploaded={(url, upload) => void handleUploaded(url, upload)}
-        />
-      </div>
+      <details className="rounded-lg border border-border bg-muted/20 px-3">
+        <summary className="cursor-pointer py-3 text-sm font-medium">{text.uploadNewImage}</summary>
+        <div className="pb-3">
+          <AdminImageUpload
+            value={value}
+            showPreview={false}
+            folder={folder}
+            assetUsageType={usageType || "general"}
+            onUploaded={(url, upload) => void handleUploaded(url, upload)}
+          />
+        </div>
+      </details>
+      <details className="rounded-lg border border-border px-3">
+        <summary className="cursor-pointer py-3 text-sm text-muted-foreground">{mediaText("imageUrl")}</summary>
+        <div className="pb-3">
+          <Input id={`${fieldId}-url`} value={value} onChange={(e) => onChange(e.target.value)} placeholder={text.imagePlaceholder} aria-label={`${label} · ${mediaText("imageUrl")}`} />
+        </div>
+      </details>
       {mediaMessage && <p className="text-xs admin-text-warning">{mediaMessage}</p>}
 
       {typeof altValue === "string" && onAltChange && (
         <div>
-          <label className="mb-1 block text-sm font-medium">{text.altLabel}</label>
-          <Input value={altValue} onChange={(e) => onAltChange(e.target.value)} placeholder={text.altPlaceholder} />
+          <label htmlFor={`${fieldId}-alt`} className="mb-1 block text-sm font-medium">{text.altLabel}</label>
+          <Input id={`${fieldId}-alt`} value={altValue} onChange={(e) => onAltChange(e.target.value)} placeholder={text.altPlaceholder} />
         </div>
       )}
 

@@ -4,6 +4,7 @@ import { useUnsavedChangesWarning } from "@/hooks/useUnsavedChangesWarning";
 import { FormEvent, useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import AdminPageHeader from "@/components/admin/AdminPageHeader";
+import AdminLoadingState from "@/components/admin/AdminLoadingState";
 import { Input } from "@/components/ui/input";
 import { AdminActionButton } from "@/components/admin/AdminPermission";
 import { isSupabaseConfigured } from "@/lib/supabase";
@@ -39,7 +40,8 @@ const AdminUsers = () => {
   const roleOptions = Object.entries(roleLabels);
   const queryClient = useQueryClient();
   const { isSuperAdmin, role, userId: currentUserId } = useAdminAuth();
-  const { data: users = [], error, isFetching } = useAdminUsers();
+  const { data: loadedUsers, error, isLoading, isFetching } = useAdminUsers();
+  const users = loadedUsers ?? [];
   const [form, setForm] = useState({ user_id: "", email: "", role: "content_editor" });
   const [message, setMessage] = useState(error ? formatUserFacingError(error, language) : "");
   const [savingKey, setSavingKey] = useState<string | null>(null);
@@ -192,8 +194,8 @@ const AdminUsers = () => {
         </form>
       )}
 
-      <div className="space-y-3">
-        {isFetching && <div className="rounded-xl border border-border bg-card p-4 text-sm text-muted-foreground">{text.refreshing}</div>}
+      <div className="space-y-3" aria-busy={isLoading || isFetching || undefined}>
+        {isLoading ? <AdminLoadingState /> : isFetching && <div className="rounded-xl border border-border bg-card p-4 text-sm text-muted-foreground">{text.refreshing}</div>}
         {users.map((user) => (
           <article key={user.user_id} className="rounded-xl border border-border bg-card p-4">
             <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
@@ -228,7 +230,7 @@ const AdminUsers = () => {
             </div>
           </article>
         ))}
-        {users.length === 0 && <div className="rounded-xl border border-border bg-card p-6 text-sm text-muted-foreground">{text.empty}</div>}
+        {loadedUsers !== undefined && users.length === 0 && <div className="rounded-xl border border-border bg-card p-6 text-sm text-muted-foreground">{text.empty}</div>}
       </div>
     </div>
   );

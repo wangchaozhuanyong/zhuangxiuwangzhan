@@ -27,7 +27,7 @@ export const adminServiceEditorText = {
   backToList: { en: "Back to list", zh: "返回列表" },
   statusPrefix: { en: "Status: {status}", zh: "状态：{status}" },
   slugChecking: { en: "Checking slug...", zh: "链接标识检查中..." },
-  preview: { en: "Preview", zh: "预览" },
+  preview: { en: "Open published page", zh: "打开已发布页面" },
   saveDraft: { en: "Save draft", zh: "保存草稿" },
   publish: { en: "Publish", zh: "发布" },
   englishTools: { en: "English tools", zh: "英文工具" },

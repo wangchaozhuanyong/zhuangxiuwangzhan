@@ -1,6 +1,4 @@
 import { withReadSignal } from "@/lib/readRequest";
-import type { QueryClient } from "@tanstack/react-query";
-import { saveAdminRecord } from "@/lib/adminMutation";
 import type { Database } from "@/lib/database.types";
 import { requireSupabase } from "@/lib/supabase";
 
@@ -9,14 +7,6 @@ type MaterialImageInsert = Database["public"]["Tables"]["material_images"]["Inse
 type MaterialImageUpdate = Database["public"]["Tables"]["material_images"]["Update"];
 type SearchableQuery = {
   or(filters: string): unknown;
-};
-
-export type SaveMaterialRecordInput = {
-  payload: Record<string, unknown>;
-  id?: string | null;
-  expectedUpdatedAt?: string | null;
-  action: "insert" | "update" | "publish";
-  queryClient?: QueryClient;
 };
 
 export type AdminMaterialListInput = {
@@ -82,17 +72,6 @@ export async function fetchAdminMaterialImages(materialId: string, signal?: Abor
     .order("sort_order"), signal);
   if (error) throw error;
   return data ?? [];
-}
-
-export function saveMaterialRecord(input: SaveMaterialRecordInput) {
-  return saveAdminRecord({
-    table: "materials",
-    payload: input.payload,
-    id: input.id,
-    expectedUpdatedAt: input.expectedUpdatedAt,
-    action: input.action,
-    queryClient: input.queryClient,
-  });
 }
 
 export async function invokeMaterialEnglishGeneration(materialId: string, force: boolean) {

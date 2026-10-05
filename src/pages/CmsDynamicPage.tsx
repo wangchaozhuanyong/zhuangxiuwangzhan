@@ -8,7 +8,8 @@ import PublicLoadingState from "@/components/blocks/PublicLoadingState";
 import { Button } from "@/components/ui/button";
 import { SchemeARouteHero, SchemeASection } from "@/components/scheme-a/SchemeARoutePrimitives";
 import { useLanguage } from "@/i18n/LanguageContext";
-import { getPublishedCmsPageByPath, type PublishedCmsSection } from "@/lib/homeContentApi";
+import type { PublishedCmsSection } from "@/lib/homeContentApi";
+import { publicContentQueries } from "@/lib/publicContentQueries";
 import { toText } from "@/lib/recordUtils";
 import { sanitizeHtml } from "@/lib/sanitizeHtml";
 import NotFound from "@/pages/NotFound";
@@ -103,8 +104,7 @@ export default function CmsDynamicPage() {
   const t = copy[language];
   const cmsPath = cmsPathFromSplat(params["*"]);
   const { data: page, isInitialError: isError, isLoading, refetch } = useQuery({
-    queryKey: ["published", "cms_path", language, cmsPath],
-    queryFn: ({ signal }) => getPublishedCmsPageByPath(language, cmsPath, signal),
+    ...publicContentQueries.cmsPage(language, cmsPath),
     enabled: cmsPath !== "/",
   });
 

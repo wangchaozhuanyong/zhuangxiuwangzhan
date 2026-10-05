@@ -4,12 +4,15 @@ import { useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { useQueryClient } from "@tanstack/react-query";
 import AdminPageHeader from "@/components/admin/AdminPageHeader";
+import AdminLoadingState from "@/components/admin/AdminLoadingState";
+import AdminEmptyState from "@/components/admin/AdminEmptyState";
 import AdminStatCard from "@/components/admin/AdminStatCard";
 import AdminStatusBadge from "@/components/admin/AdminStatusBadge";
 import { adminConfirm } from "@/components/admin/AdminConfirmProvider";
 import { Button } from "@/components/ui/button";
 import { toast } from "@/hooks/use-toast";
 import { adminEnglishCenterText } from "@/i18n/adminEnglishCenterText";
+import { interactionText } from "@/i18n/interactionText";
 import { getAdminHealthFieldLabel, useAdminContentHealth } from "@/lib/adminContentHealth";
 import { getAdminLang } from "@/lib/adminLocale";
 import { useAdminTranslationJobs } from "@/lib/adminSystemQueries";
@@ -51,14 +54,20 @@ export default function AdminEnglishCenter() {
   const { protectSubmission, isSubmitting } = useSubmissionLock();
   useUnsavedChangesWarning(isSubmitting);
   const queryClient = useQueryClient();
-  const { data: items = [], isFetching, refetch } = useAdminContentHealth();
-  const { data: jobs = [] } = useAdminTranslationJobs(100);
+  const healthQuery = useAdminContentHealth();
+  const jobsQuery = useAdminTranslationJobs(100);
+  const { isFetching, refetch } = healthQuery;
+  const items = useMemo(() => healthQuery.data ?? [], [healthQuery.data]);
+  const jobs = jobsQuery.data ?? [];
+  const readText = interactionText[getAdminLang()];
+  const hasUnreadSources = items.some((item) => item.status === "error");
+  const healthConfirmed = healthQuery.data !== undefined && !hasUnreadSources;
   const [busyId, setBusyId] = useState<string | null>(null);
   const [batchBusy, setBatchBusy] = useState(false);
   const [batchProgress, setBatchProgress] = useState<BatchProgress | null>(null);
 
   const missingEnglish = useMemo(
-    () => items.filter((item) => item.missingEnglish.length > 0 && translationEnabledTables.some((table) => table === item.table)),
+    () => items.filter((item) => item.status !== "error" && item.missingEnglish.length > 0 && translationEnabledTables.some((table) => table === item.table)),
     [items],
   );
   const failedJobs = jobs.filter((job) => job.status === "failed");
@@ -147,13 +156,15 @@ export default function AdminEnglishCenter() {
         }
       />
 
-      <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-5">
-        <AdminStatCard label={A("missingEnglishContent")} value={missingEnglish.length} helpText={A("missingEnglishContentHelp")} />
-        <AdminStatCard label={A("failedRecords")} value={failedJobs.length} helpText={A("failedRecordsHelp")} href="/admin/content/translation_jobs" />
-        <AdminStatCard label={A("processing")} value={runningJobs.length} helpText={A("processingHelp")} href="/admin/content/translation_jobs" />
-        <AdminStatCard label={A("needsReview")} value={completedJobs.length} helpText={A("needsReviewHelp")} />
-        <AdminStatCard label={A("batchAvailable")} value={Math.min(missingEnglish.length, batchLimit)} helpText={formatA("batchAvailableHelp", { limit: String(batchLimit) })} />
+      <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-5" aria-busy={healthQuery.isLoading || jobsQuery.isLoading || isFetching || jobsQuery.isFetching || undefined}>
+        <AdminStatCard label={A("missingEnglishContent")} value={healthConfirmed ? missingEnglish.length : "…"} helpText={A("missingEnglishContentHelp")} />
+        <AdminStatCard label={A("failedRecords")} value={jobsQuery.data === undefined ? "…" : failedJobs.length} helpText={A("failedRecordsHelp")} href="/admin/content/translation_jobs" />
+        <AdminStatCard label={A("processing")} value={jobsQuery.data === undefined ? "…" : runningJobs.length} helpText={A("processingHelp")} href="/admin/content/translation_jobs" />
+        <AdminStatCard label={A("needsReview")} value={jobsQuery.data === undefined ? "…" : completedJobs.length} helpText={A("needsReviewHelp")} />
+        <AdminStatCard label={A("batchAvailable")} value={healthConfirmed ? Math.min(missingEnglish.length, batchLimit) : "…"} helpText={formatA("batchAvailableHelp", { limit: String(batchLimit) })} />
       </div>
+      {jobsQuery.isLoading && <AdminLoadingState />}
+      {jobsQuery.isInitialError && <AdminEmptyState title={readText.loadingFailed} />}
 
       {batchProgress && (
         <div className="rounded-xl border border-border bg-card p-5">
@@ -192,7 +203,7 @@ export default function AdminEnglishCenter() {
         <div className="mt-3 grid gap-3 md:grid-cols-3">
           <div className="rounded-lg border border-border bg-background p-3 text-sm">
             <p className="font-semibold">{A("prioritizePublishedTitle")}</p>
-            <p className="mt-1 text-muted-foreground">{formatA("prioritizePublishedDescription", { count: String(publishedMissingEnglish) })}</p>
+            <p className="mt-1 text-muted-foreground">{formatA("prioritizePublishedDescription", { count: healthConfirmed ? String(publishedMissingEnglish) : "…" })}</p>
           </div>
           <div className="rounded-lg border border-border bg-background p-3 text-sm">
             <p className="font-semibold">{A("machineTranslationReviewTitle")}</p>
@@ -240,7 +251,9 @@ export default function AdminEnglishCenter() {
         <p className="mt-1 text-sm text-muted-foreground">{A("missingEnglishSectionDescription")}</p>
       </div>
 
-      <div className="grid gap-3">
+      <div className="grid gap-3" aria-busy={healthQuery.isLoading || isFetching || undefined}>
+        {healthQuery.isLoading && <AdminLoadingState />}
+        {(healthQuery.isInitialError || hasUnreadSources) && <AdminEmptyState title={readText.loadingFailed} />}
         {missingEnglish.map((item) => {
           const key = `${item.table}:${item.id}`;
           return (
@@ -288,7 +301,7 @@ export default function AdminEnglishCenter() {
             </article>
           );
         })}
-        {missingEnglish.length === 0 && <div className="rounded-xl border border-border bg-card p-8 text-sm text-muted-foreground">{A("noMissingEnglish")}</div>}
+        {healthConfirmed && missingEnglish.length === 0 && <div className="rounded-xl border border-border bg-card p-8 text-sm text-muted-foreground">{A("noMissingEnglish")}</div>}
       </div>
     </div>
   );

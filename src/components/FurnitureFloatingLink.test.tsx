@@ -11,7 +11,7 @@ vi.mock("@/components/FurnitureArrivalMotion", () => ({ default: () => null }));
 
 for (const language of ["en", "zh"] as const) {
   describe(`furniture entry ${language} route and accessibility preservation`, () => {
-    it("keeps the safe destination and language name while reserving quote/reading space and restoring home layout", () => {
+    it("keeps destination, language and keyboard/press behavior across routes without route exceptions", () => {
       window.history.replaceState({}, "", `/${language}/quote`);
       const container = document.createElement("div");
       document.body.appendChild(container);
@@ -26,13 +26,13 @@ for (const language of ["en", "zh"] as const) {
         expect(entry.getAttribute("rel")).toBe("noopener noreferrer");
         expect(entry.getAttribute("aria-label")).toBe(furnitureText[language].floatingShop);
         expect(entry.getAttribute("lang")).toBe(language);
-        expect(entry.dataset.reservedLane).toBe("true");
+        expect(entry.hasAttribute("data-reserved-lane")).toBe(false);
         act(() => go(`/${language}/blog/renovation-materials-malaysia`));
-        expect(entry.dataset.reservedLane).toBe("true");
+        expect(entry.hasAttribute("data-reserved-lane")).toBe(false);
         act(() => go(`/${language}/blog`));
-        expect(entry.dataset.reservedLane).toBe("true");
+        expect(entry.hasAttribute("data-reserved-lane")).toBe(false);
         act(() => go(`/${language}/blog/`));
-        expect(entry.dataset.reservedLane).toBe("true");
+        expect(entry.hasAttribute("data-reserved-lane")).toBe(false);
         act(() => go(`/${language}`));
         expect(entry.hasAttribute("data-reserved-lane")).toBe(false);
         entry.focus();
