@@ -1,6 +1,6 @@
 import { useAdminFormState } from "@/hooks/useAdminFormState";
 import { useSubmissionLock } from "@/hooks/useSubmissionLock";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
@@ -12,6 +12,8 @@ import AdminPageHeader from "@/components/admin/AdminPageHeader";
 import { adminMobileSaveText } from "@/i18n/adminMobileSaveText";
 import AdminFormSection from "@/components/admin/AdminFormSection";
 import AdminEmptyState from "@/components/admin/AdminEmptyState";
+import AdminAlert from "@/components/admin/AdminAlert";
+import { interactionText } from "@/i18n/interactionText";
 import ImageField from "@/components/admin/ImageField";
 import { AboutSectionItemsEditor } from "@/components/admin/StructuredArrayEditors";
 import { formatAdminMutationError, saveAdminRecord } from "@/lib/adminMutation";
@@ -106,7 +108,9 @@ const cleanAboutItems = (sectionKey: string, value: unknown[]) => {
 export default function AdminAboutEditor() {
   const { protectSubmission, isSubmitting } = useSubmissionLock();
   const queryClient = useQueryClient();
-  const { data: bundle, isFetching, refetch } = useAdminAboutEditorData();
+  const editorQuery = useAdminAboutEditorData();
+  const { data: bundle, isFetching, refetch } = editorQuery;
+  const [editorInitialized, setEditorInitialized] = useState(false);
   const [activeTab, setActiveTab] = useState<SectionKey | "cta">("hero");
   const loading = isFetching && !bundle;
 
@@ -120,6 +124,11 @@ export default function AdminAboutEditor() {
     return { sections: bundle?.sections ?? {} as Record<string, AboutSectionRow | null>, itemsZh, itemsEn, ctaBlock: bundle?.ctaBlock ?? null, editingCta: null as CtaRow | null };
   }, [bundle]);
   const { state: form, field, dirty: formDirty, applyPatchRemote } = useAdminFormState(bundle ? remoteForm : undefined, { initial: remoteForm });
+  useEffect(() => {
+    // The form hook applies the first confirmed snapshot before enabling edits.
+    if (bundle !== undefined) setEditorInitialized(true);
+  }, [bundle]);
+  const editorReady = editorInitialized && bundle !== undefined;
   const [sections, setSections] = field("sections");
   const [itemsZh, setItemsZh] = field("itemsZh");
   const [itemsEn, setItemsEn] = field("itemsEn");
@@ -237,6 +246,7 @@ export default function AdminAboutEditor() {
   }
 
   const mobileText = adminMobileSaveText[getAdminLang()];
+  const readText = interactionText[getAdminLang()];
 
   return (
     <>
@@ -259,7 +269,12 @@ export default function AdminAboutEditor() {
       />
 
       <p className="mb-4 rounded-lg bg-muted/50 p-3 text-sm text-muted-foreground">{mobileText.sectionOnlyScope}</p>
-      <Tabs value={activeTab} onValueChange={(v) => setActiveTab(toTabValue(v))}>
+      {!editorReady ? (
+        <AdminAlert tone={editorQuery.isInitialError ? "error" : "info"}>
+          {editorQuery.isInitialError ? readText.loadingFailed : readText.loading}
+          {editorQuery.isInitialError && <Button variant="outline" disabled={isFetching} onClick={() => void refetch()}>{readText.retry}</Button>}
+        </AdminAlert>
+      ) : <Tabs value={activeTab} onValueChange={(v) => setActiveTab(toTabValue(v))}>
         <label className="mb-4 block space-y-1 text-sm font-medium sm:hidden">
           <span>{mobileText.currentSection}</span>
           <select value={activeTab} onChange={(event) => setActiveTab(toTabValue(event.target.value))} className="h-11 w-full min-w-0 rounded-md border border-input bg-background px-3">
@@ -456,7 +471,7 @@ export default function AdminAboutEditor() {
             </div>
           </AdminFormSection>
         </TabsContent>
-      </Tabs>
+      </Tabs>}
     </>
   );
 }

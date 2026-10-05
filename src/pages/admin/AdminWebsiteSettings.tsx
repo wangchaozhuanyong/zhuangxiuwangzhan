@@ -12,7 +12,6 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { fallbackSiteSettings, type SiteSettings } from "@/lib/siteSettingsApi";
-import { interactionText } from "@/i18n/interactionText";
 
 import { formatAdminMutationError, saveAdminRecord } from "@/lib/adminMutation";
 import { geocodeAddress } from "@/lib/geocodeApi";
