@@ -1,8 +1,9 @@
+import PublicResultsBoundary from "@/components/PublicResultsBoundary";
 import { useMemo, useState } from "react";
 import { Search } from "lucide-react";
 import PageMeta from "@/components/PageMeta";
 import { JsonLdBreadcrumb } from "@/components/JsonLd";
-import { SchemeAContentState, SchemeAFilter, SchemeAListingGrid, SchemeARouteHero, SchemeASection, type SchemeAListingItem } from "@/components/scheme-a/SchemeARoutePrimitives";
+import { SchemeAFilter, SchemeAListingGrid, SchemeARouteHero, SchemeASection, type SchemeAListingItem } from "@/components/scheme-a/SchemeARoutePrimitives";
 import { usePublishedMaterials, usePublishedSitePage } from "@/hooks/usePublishedContent";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { translateDisplayText, translateMaterialCategory } from "@/i18n/displayLabels";
@@ -18,7 +19,8 @@ export default function Products() {
   const routeText = schemeARouteText[language];
   const [search, setSearch] = useState("");
   const [category, setCategory] = useState("all");
-  const { data: categories = [], isLoading, isInitialError: isError, refetch } = usePublishedMaterials(language);
+  const resultsQuery = usePublishedMaterials(language);
+  const { data: categories = [] } = resultsQuery;
   const { data: pageContent } = usePublishedSitePage(language, "products");
   const hero = resolvePageHeroImage(pageContent?.image_url, pageHeroImages.products);
   const display = (value: string) => stripHtml(translateDisplayText(value, language));
@@ -60,10 +62,9 @@ export default function Products() {
           <input data-ui="input" aria-label={copy.searchPlaceholder} type="search" value={search} placeholder={copy.searchPlaceholder} onChange={(event) => setSearch(event.target.value)} />
         </label>
         <SchemeAFilter items={[{ value: "all", label: copy.all }, ...categories.map((item) => ({ value: item.slug, label: translateMaterialCategory(item.name, language) }))]} value={category} onChange={setCategory} ariaLabel={copy.searchLabel} />
-        {isLoading ? <SchemeAContentState>{copy.loading}</SchemeAContentState> : null}
-        {isError ? <SchemeAContentState action={<button type="button" onClick={() => void refetch()}>{routeText.reload}</button>}>{copy.error}</SchemeAContentState> : null}
-        {!isLoading && !isError && !items.length ? <SchemeAContentState>{copy.empty}</SchemeAContentState> : null}
-        {!isLoading && !isError && items.length ? <SchemeAListingGrid items={items} actionLabel={copy.view} /> : null}
+        <PublicResultsBoundary query={resultsQuery} loading={copy.loading} error={copy.error} isEmpty={!items.length} empty={copy.empty}>
+          <SchemeAListingGrid items={items} actionLabel={copy.view} />
+        </PublicResultsBoundary>
       </SchemeASection>
     </main>
   );

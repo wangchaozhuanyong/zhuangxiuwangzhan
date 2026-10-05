@@ -96,7 +96,8 @@ export default function FurnitureArrivalMotion({ entryRef }: { entryRef: RefObje
       const hero = document.querySelector<HTMLImageElement>("#main-content [data-immersive-hero] img");
       if (document.visibilityState !== "visible" || window.scrollY > 24 || window.location.hash
         || stripLanguagePrefix(window.location.pathname) !== "/" || document.documentElement.dataset.menuOpen
-        || document.documentElement.dataset.publicRouteLoading || !hero?.complete || !hero.naturalWidth) { interrupt(); return; }
+        || document.documentElement.dataset.publicRouteLoading || entry.dataset.obstructed
+        || !hero?.complete || !hero.naturalWidth) { interrupt(); return; }
       arrivalClaimed = true;
       playing = true;
       scene.setAttribute("data-active", "true");

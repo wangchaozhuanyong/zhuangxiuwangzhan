@@ -10,84 +10,10 @@
       --scheme-a-section: 72px;
     }
 
-    html[data-public-theme="warm-stone"] .site-header,
-    html[data-public-theme="warm-stone"] .site-header__inner.site-container {
-      height: 76px !important;
-    }
-
-    html[data-public-theme="warm-stone"] .site-header {
-      position: absolute !important;
-    }
-
     html[data-public-theme="warm-stone"] .public-main--subpage,
     html[data-public-theme="warm-stone"] .public-main--subpage > main {
       overflow-x: clip !important;
       overflow-y: visible !important;
-    }
-
-    html[data-public-theme="warm-stone"] .site-header__inner.site-container {
-      width: 100% !important;
-      max-width: none !important;
-      padding: 15px 22px !important;
-    }
-
-    html[data-public-theme="warm-stone"] .site-header__brand {
-      width: min(42%, 158px) !important;
-      max-width: 158px !important;
-      height: 38px !important;
-      border: 0 !important;
-    }
-
-    html[data-public-theme="warm-stone"] .site-header__mobile-controls {
-      width: auto !important;
-      height: 40px !important;
-      gap: 7px;
-      border: 0 !important;
-      background: transparent !important;
-    }
-
-    html[data-public-theme="warm-stone"] .site-header__mobile-language-button {
-      width: 66px !important;
-      height: 32px !important;
-      flex-basis: 66px !important;
-      border: 0 !important;
-      padding: 2px !important;
-      background: rgb(253 252 250 / 0.075) !important;
-    }
-
-    html[data-public-theme="warm-stone"] .site-header__mobile-language-label {
-      width: 62px !important;
-      height: 28px !important;
-      gap: 2px !important;
-      padding: 0 !important;
-    }
-
-    html[data-public-theme="warm-stone"] .site-header__mobile-language-text {
-      width: 30px !important;
-      min-width: 30px !important;
-      height: 28px !important;
-      min-height: 28px !important;
-      padding: 0 4px !important;
-      color: #626A60 !important;
-      background: transparent !important;
-      opacity: 1 !important;
-      font-size: 10px !important;
-      font-weight: 500 !important;
-    }
-
-    html[data-public-theme="warm-stone"] .site-header__mobile-language-text[data-active="true"] {
-      color: #292E29 !important;
-      background: #E4E8DE !important;
-    }
-
-    html[data-public-theme="warm-stone"] .site-header__mobile-controls > button.site-header__mobile-button {
-      width: 40px !important;
-      height: 40px !important;
-      flex-basis: 40px !important;
-      border: 0 !important;
-      padding: 0 !important;
-      background: transparent !important;
-      box-shadow: none !important;
     }
 
     html[data-public-theme="warm-stone"] .mobile-navigation__footer {
@@ -175,7 +101,7 @@
       min-height: 50px;
       padding: 0 12px;
       border: 0;
-      border-radius: 2px;
+      border-radius: var(--radius);
       font-size: 12px;
       font-weight: 600;
       letter-spacing: 0.035em;

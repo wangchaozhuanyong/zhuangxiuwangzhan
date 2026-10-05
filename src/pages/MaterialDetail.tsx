@@ -27,7 +27,7 @@ export default function MaterialDetail() {
   const category = categories.find((item) => item.items.some((material) => material.slug === slug));
   const material = category?.items.find((item) => item.slug === slug);
 
-  if (isPending) return <main className="fc-route-page" data-route-pending="true"><SchemeAContentState>{copy.loadingDescription}</SchemeAContentState></main>;
+  if (isPending) return <main className="fc-route-page" data-route-pending="true"><SchemeAContentState variant="loading">{copy.loadingDescription}</SchemeAContentState></main>;
   if (isInitialError && !published) return <PublicReadError onRetry={() => void refetch()} />;
   if (!material || !category) return <main className="fc-route-page"><PageMeta title={copy.notFound} description={copy.notFound} canonicalPath={`/materials/${slug || ""}`} noIndex /><SchemeAContentState action={<Link to="/materials">{copy.viewAll}</Link>}>{copy.notFound}</SchemeAContentState></main>;
 

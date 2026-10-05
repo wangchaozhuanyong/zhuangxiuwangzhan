@@ -56,7 +56,7 @@ export default function LocationPage() {
   const { data: cmsLocation, isPending, isInitialError, refetch } = usePublishedServiceAreaBySlug(slug, language);
   const location = useMemo(() => cmsLocation || fallback, [cmsLocation, fallback]);
 
-  if (isPending && !location) return <main className="fc-route-page" data-route-pending="true"><SchemeAContentState>{copy.loadingDescription}</SchemeAContentState></main>;
+  if (isPending && !location) return <main className="fc-route-page" data-route-pending="true"><SchemeAContentState variant="loading">{copy.loadingDescription}</SchemeAContentState></main>;
   if (isInitialError && !location) return <PublicReadError onRetry={() => void refetch()} />;
   if (!location) return <main className="fc-route-page"><PageMeta title={copy.notFound} description={copy.notFound} canonicalPath={`/locations/${slug || ""}`} noIndex /><SchemeAContentState action={<Link to="/locations">{copy.backHome}</Link>}>{copy.notFound}</SchemeAContentState></main>;
 

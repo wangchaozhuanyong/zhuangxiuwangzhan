@@ -323,8 +323,17 @@ export function SchemeALoadMore({ label, onClick, detail }: { label: string; onC
   );
 }
 
-export function SchemeAContentState({ children, action }: { children: ReactNode; action?: ReactNode }) {
-  return <div className="fc-route-state"><p>{children}</p>{action}</div>;
+export function SchemeAContentState({ children, action, variant = "empty", compact = false }: {
+  children: ReactNode;
+  action?: ReactNode;
+  variant?: "loading" | "error" | "empty";
+  compact?: boolean;
+}) {
+  return <div className={`fc-route-state${compact ? " fc-route-state--inline" : ""}`}
+    data-content-state={variant} role={variant === "error" ? "alert" : "status"}
+    aria-live={variant === "error" ? "assertive" : "polite"} aria-busy={variant === "loading" || undefined}>
+    <div className="fc-route-state__message">{children}</div>{action}
+  </div>;
 }
 
 export function SchemeAFacts({ items }: { items: readonly SchemeAFact[] }) {

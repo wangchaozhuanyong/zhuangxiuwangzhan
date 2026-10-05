@@ -1,4 +1,5 @@
-import { useInteractionQuery as useQuery } from "@/hooks/useInteractionQuery";
+import { useSiteSettingsQuery } from "@/hooks/useSiteSettings";
+import { useSubmissionLock } from "@/hooks/useSubmissionLock";
 import { useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import AdminPageHeader from "@/components/admin/AdminPageHeader";
@@ -10,7 +11,8 @@ import { useUnsavedChangesWarning } from "@/hooks/useUnsavedChangesWarning";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { fetchSiteSettings, fallbackSiteSettings, type SiteSettings } from "@/lib/siteSettingsApi";
+import { fallbackSiteSettings, type SiteSettings } from "@/lib/siteSettingsApi";
+import { interactionText } from "@/i18n/interactionText";
 
 import { formatAdminMutationError, saveAdminRecord } from "@/lib/adminMutation";
 import { geocodeAddress } from "@/lib/geocodeApi";
@@ -58,19 +60,16 @@ const AdminWebsiteSettings = () => {
   const lang = getAdminLang();
   const t = adminWebsiteSettingsText[lang];
   const mobileText = adminMobileSaveText[lang];
-  const readText = interactionText[lang];
   const fieldText = adminWebsiteSettingsFieldText[lang];
   const queryClient = useQueryClient();
-  const { data: remoteSettings, isFetched, isLoading, isInitialError, refetch } = useQuery({
-    queryKey: ["site-settings"],
-    queryFn: ({ signal }) => fetchSiteSettings(signal),
-  });
+  const { data: remoteSettings, isLoading, isInitialError, refetch } = useSiteSettingsQuery();
+  const readText = interactionText[lang];
   const { state: settings, setForm: setSettings, applyRemote, dirty } = useAdminFormState<SiteSettings>(
-    isFetched ? remoteSettings ?? fallbackSiteSettings : undefined,
+    remoteSettings,
     { initial: fallbackSiteSettings },
   );
   const [status, setStatus] = useState("");
-  const [saving, setSaving] = useState(false);
+  const { protectSubmission, isSubmitting: saving } = useSubmissionLock();
   const settingsReady = remoteSettings !== undefined && (remoteSettings === fallbackSiteSettings || settings !== fallbackSiteSettings);
   useUnsavedChangesWarning(dirty || saving);
 
@@ -85,12 +84,11 @@ const AdminWebsiteSettings = () => {
     return "general";
   };
 
-  const handleSave = async () => {
+  const handleSave = protectSubmission("site-settings", async () => {
     if (!settingsReady) return;
-    setSaving(true);
     setStatus(t.saving);
     try {
-      const original = remoteSettings ?? fallbackSiteSettings;
+      const original = remoteSettings;
       const addressChanged =
         normalizeComparableText(settings.address_zh) !== normalizeComparableText(original.address_zh) ||
         normalizeComparableText(settings.address_en) !== normalizeComparableText(original.address_en);
@@ -147,10 +145,8 @@ const AdminWebsiteSettings = () => {
       }
     } catch (error) {
       setStatus(formatAdminMutationError(error));
-    } finally {
-      setSaving(false);
     }
-  };
+  });
 
   const renderGroup = (group: "company" | "contact" | "media" | "seo" | "social") => (
     <section className="rounded-xl border border-border bg-card p-4 sm:p-5">

@@ -2,19 +2,18 @@ import { useRef, useState } from "react";
 import { Armchair, ArrowUpRight } from "lucide-react";
 import { useLocation } from "react-router-dom";
 import { useLanguage } from "@/i18n/LanguageContext";
-import { stripLanguagePrefix } from "@/i18n/routes";
+import { useFloatingOcclusion } from "@/hooks/useFloatingOcclusion";
 import { furnitureText } from "@/i18n/furnitureText";
 import { furnitureShopUrl } from "@/lib/furnitureCatalogConfig";
 import FurnitureArrivalMotion from "@/components/FurnitureArrivalMotion";
 
 export default function FurnitureFloatingLink() {
   const { language } = useLanguage();
-  const { pathname } = useLocation();
-  const publicPath = stripLanguagePrefix(pathname).replace(/\/$/, "");
-  const reserveLane = publicPath === "/quote" || /^\/blog(?:\/[^/]+)?$/.test(publicPath);
+  const { pathname, search } = useLocation();
   const copy = furnitureText[language];
   const [pressed, setPressed] = useState(false);
   const entryRef = useRef<HTMLAnchorElement>(null);
+  const obstructed = useFloatingOcclusion(entryRef, `${pathname}${search}`);
 
   return (
     <>
@@ -22,7 +21,7 @@ export default function FurnitureFloatingLink() {
       <a
         ref={entryRef}
         className="fc-furniture-floating"
-        data-reserved-lane={reserveLane || undefined}
+        data-obstructed={obstructed || undefined}
         lang={language}
         href={furnitureShopUrl}
         target="_blank"

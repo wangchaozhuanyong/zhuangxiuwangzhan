@@ -30,6 +30,15 @@
     letter-spacing: 0;
   }
 
+  /* Public action geometry lives with controls. Component variants consume
+     the existing radius token; spacing and colour skins do not override it. */
+  .scheme-a-public-shell :is(
+    button, input[type="submit"], [role="button"], .scheme-a-button,
+    .btn-brand-primary, .btn-brand-secondary, .btn-on-dark-primary, .btn-on-dark-secondary,
+    .fc-furniture-primary a, .fc-furniture-secondary a, .fc-furniture-card__actions a,
+    .fc-furniture-entry__link, .fc-route-more, .fc-route-action-panel a
+  ) { border-radius: var(--radius); }
+
   .btn-brand-primary:focus-visible,
   .btn-brand-secondary:focus-visible,
   .btn-on-dark-primary:focus-visible,
@@ -248,39 +257,12 @@
     .fc-furniture-floating:is(:active, [data-pressed="true"]) .fc-furniture-floating__icon { transform: scale(.88); transition-duration: 70ms; }
   }
 
-  /* Articles and quote controls keep their full text and normal font sizes.
-     Reserve a separate viewport lane instead of painting the entry over them. */
-  .scheme-a-public-shell:has(.fc-furniture-floating[data-reserved-lane="true"]) {
-    --public-floating-height: 88px;
+  /* Shared collision detection preserves the page width and yields the promotion
+     whenever it would cover readable content, a form or a recovery control. */
+  .fc-furniture-floating[data-obstructed="true"] {
+    visibility: hidden;
+    pointer-events: none;
   }
-  .scheme-a-public-shell:has(.fc-furniture-floating[data-reserved-lane="true"]) #main-content {
-    margin-inline-end: 68px;
-  }
-  .fc-furniture-floating[data-reserved-lane="true"] {
-    right: 6px;
-    width: 56px;
-    height: 88px;
-    grid-template-columns: 1fr;
-    grid-template-rows: 24px 28px;
-    justify-items: center;
-    gap: 5px;
-    padding: 11px 4px;
-    text-align: center;
-  }
-  .fc-furniture-floating[data-reserved-lane="true"] .fc-furniture-floating__icon svg { width: 24px; height: 24px; }
-  .fc-furniture-floating[data-reserved-lane="true"] .fc-furniture-floating__copy { display: contents; }
-  .fc-furniture-floating[data-reserved-lane="true"] :is(.fc-furniture-floating__label--desktop, .fc-furniture-floating__hint) { display: none; }
-  .fc-furniture-floating[data-reserved-lane="true"] .fc-furniture-floating__label--mobile {
-    display: block;
-    max-width: 48px;
-    font-size: 11px;
-    line-height: 14px;
-    letter-spacing: 0;
-    white-space: normal;
-  }
-  .fc-furniture-floating[data-reserved-lane="true"] .fc-furniture-floating__action { position: absolute; right: 4px; top: 4px; width: 11px; height: 11px; border: 0; }
-  .fc-furniture-floating[data-reserved-lane="true"] .fc-furniture-floating__arrow { width: 11px; height: 11px; }
-  .fc-furniture-floating[data-reserved-lane="true"]:focus-visible { outline-offset: 2px; }
 
   @media (prefers-reduced-motion: reduce) {
     .fc-furniture-floating,

@@ -4,10 +4,11 @@ Flashcast 禁止每个页面重复造同一种 UI。复用优先级高于临时�
 
 ## 必须优先复用
 
-- `Navbar`
-- `Footer`
-- `FloatingCTA`
-- `MobileActionBar`
+- `SchemeANavbar`、`SchemeAFooterPrelude`、`SchemeAFooter`（`src/components/scheme-a/SchemeAPublicChrome.tsx`）
+- `MobileBottomDock`、`FurnitureFloatingLink`（共享悬浮避让，禁止按页面添加例外）
+- `PublicResultsBoundary`、`SchemeAContentState`、`PublicReadError`（列表状态、首次错误与重试）
+- `RouteReadFeedback`（统一刷新、失败、离线反馈）
+- `useSiteSettingsQuery`（公开页面与后台设置共用真实读取结果）
 - `PageMeta`
 - `DynamicBrandHead`
 - `SmartImage` / `DeferredSmartImage`
@@ -28,6 +29,7 @@ Flashcast 禁止每个页面重复造同一种 UI。复用优先级高于临时�
 - 颜色、字体、圆角、阴影、间距优先看 `tailwind.config.ts` 和 `src/styles/base.css`。
 - 后台页面优先复用 `src/components/admin`。
 - 基础控件优先复用 `src/components/ui`。
+- 公共按钮圆角统一读取既有 `--radius`；按钮样式归 `buttons.css` 和组件样式，区块间距文件只负责间距，颜色皮肤只负责颜色。禁止继续用全站 `!important` 覆盖组件圆角。
 - 新增设计 token 前必须说明为什么现有 token 不够。
 
 ## 禁止事项

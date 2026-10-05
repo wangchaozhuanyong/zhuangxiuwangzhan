@@ -1,5 +1,5 @@
 {
-  "version": 1,
+  "version": 2,
   "standards": "docs/rules/loading-refresh-navigation.md",
   "routes": [
     {
@@ -1276,5 +1276,12 @@
       "component": "LegacyLanguageRedirect",
       "evidence": "2026-10-03 local Vite + Cloudflare; synthetic data/MFA; normal route renders without page errors"
     }
-  ]
+  ],
+  "validation": {
+    "kind": "static-registration-and-source-checks",
+    "acceptanceEvidence": "historical-local",
+    "baselineDate": "2026-10-03",
+    "currentWholeSiteAcceptance": "NOT_MEASURED",
+    "requireCurrentBrowserEvidenceForRelease": true
+  }
 }

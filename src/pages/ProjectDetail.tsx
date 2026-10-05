@@ -39,7 +39,7 @@ export default function ProjectDetail() {
     href: `/projects/${item.slug}`,
   })), [allProjects, language, slug]);
 
-  if (isPending) return <main className="fc-route-page" data-route-pending="true"><SchemeAContentState>{copy.loadingDescription}</SchemeAContentState></main>;
+  if (isPending) return <main className="fc-route-page" data-route-pending="true"><SchemeAContentState variant="loading">{copy.loadingDescription}</SchemeAContentState></main>;
   if (isInitialError && !project) return <PublicReadError onRetry={() => void refetch()} />;
   if (!project) return <main className="fc-route-page fc-route-not-found"><PageMeta title={copy.notFound} description={copy.notFoundDescription} canonicalPath="/projects" noIndex /><SchemeAContentState action={<Link to="/projects">{copy.viewAll}</Link>}>{copy.notFound}</SchemeAContentState></main>;
 

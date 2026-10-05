@@ -1,5 +1,5 @@
 import { INTERACTION_POLICY } from "@/lib/interactionPolicy";
-import { useInteractionQuery as useQuery } from "@/hooks/useInteractionQuery";
+import { useSiteSettingsQuery } from "@/hooks/useSiteSettings";
 import { lazy, Suspense, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 
 import { useIsFetching } from "@tanstack/react-query";
@@ -52,7 +52,7 @@ import {
   type NavItem,
 } from "@/lib/adminLayoutConfig";
 import { canAdminRoleAccess } from "@/lib/adminRoleAccess";
-import { addCacheBuster, fallbackSiteSettings, fetchSiteSettings } from "@/lib/siteSettingsApi";
+import { addCacheBuster, fallbackSiteSettings } from "@/lib/siteSettingsApi";
 import { cn } from "@/lib/utils";
 import { useAdminAuth } from "@/pages/admin/AdminAuthProvider";
 import { adminMobileText } from "@/i18n/adminMobileText";
@@ -176,12 +176,7 @@ const AdminLayout = () => {
   const t = copy[adminLang];
   const mobileText = adminMobileText[adminLang];
   const showDefaultContentSeedStatus = location.pathname === "/admin/dashboard";
-  const { data: adminSiteSettings = fallbackSiteSettings } = useQuery({
-    queryKey: ["site-settings"],
-    queryFn: ({ signal }) => fetchSiteSettings(signal),
-    staleTime: 5 * 60 * 1000,
-    placeholderData: fallbackSiteSettings,
-  });
+  const { data: adminSiteSettings = fallbackSiteSettings } = useSiteSettingsQuery();
   const adminBrandIconSrc = addCacheBuster(
     adminSiteSettings.favicon_url || adminSiteSettings.logo_url || "",
     adminSiteSettings.updated_at,

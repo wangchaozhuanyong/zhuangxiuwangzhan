@@ -1,9 +1,9 @@
+import PublicResultsBoundary from "@/components/PublicResultsBoundary";
 import { reviewedComparisonRoom, resolveReviewedImageSource } from "@/lib/reviewedContentMedia.mjs";
 import { DeferredSmartImage } from "@/components/DeferredSmartImage";
 import ImageComparisonSlider from "@/components/ImageComparisonSlider";
 import { JsonLdBreadcrumb } from "@/components/JsonLd";
 import PageMeta from "@/components/PageMeta";
-import { ForestContentState } from "@/components/forest/ForestPagePrimitives";
 import Link from "@/components/LocalizedLink";
 import { SchemeARouteHero, SchemeASection } from "@/components/scheme-a/SchemeARoutePrimitives";
 import { usePublishedBeforeAfterItems } from "@/hooks/usePublishedContent";
@@ -87,7 +87,8 @@ function BeforeAfterComparison({
 export default function BeforeAfter() {
   const { language } = useLanguage();
   const t = beforeAfterPageText[language];
-  const { data: items = [], isLoading, isInitialError: isError, refetch } = usePublishedBeforeAfterItems(language);
+  const resultsQuery = usePublishedBeforeAfterItems(language);
+  const { data: items = [] } = resultsQuery;
   const fallbackItems: readonly PublishedBeforeAfterItem[] = beforeAfterFallbackMedia.map((media, index) => ({
     ...media,
     ...t.fallbackItems[index],
@@ -118,13 +119,10 @@ export default function BeforeAfter() {
       <SchemeARouteHero kind="compare" image={hero.desktop} imageSourceWidth={hero.desktopWidth} tabletImage={hero.tablet} tabletImageSourceWidth={hero.tabletWidth} mobileImage={hero.mobile} mobileImageSourceWidth={hero.mobileWidth} imagePosition={hero.imagePosition} imageAlt={t.heroAlt} label={[t.heroLabel, mediaLabels[language].renderingConcept].join(" · ")} title={t.heroTitle} description={t.heroDescription} />
 
       <SchemeASection title={t.sectionTitle} description={t.sectionDescription} className="scheme-a-transformations">
-        {!isLoading && isError ? (
-          <ForestContentState variant="error" description={t.error} onRetry={() => void refetch()} />
-        ) : null}
+        <PublicResultsBoundary query={resultsQuery} error={t.error} keepFallback>
         <div
           className="scheme-a-transformation-list"
           data-content-source={hasPublishedItems ? "cms" : "fallback"}
-          aria-busy={isLoading || undefined}
         >
           {displayItems.map((item, index) => (
             <BeforeAfterComparison
@@ -135,6 +133,7 @@ export default function BeforeAfter() {
             />
           ))}
         </div>
+        </PublicResultsBoundary>
         <div className="fc-route-action-panel"><h2>{t.ctaTitle}</h2><p>{t.ctaDescription}</p><div><Link to="/quote#quote-form">{t.ctaPrimary}</Link><Link to="/contact">{t.ctaSecondary}</Link></div></div>
       </SchemeASection>
     </main>

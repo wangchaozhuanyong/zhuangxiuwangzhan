@@ -87,7 +87,7 @@
 .fc-design .fcd-feature-copy { grid-area: copy; min-width: 0; padding: 0 36px 36px; }
 .fc-design .fcd-feature-copy p { margin-top: 12px; color: var(--fcd-soft); max-width: 32rem; }
 .fc-design .fcd-study-tabs { display: flex; height: auto; justify-content: flex-start; gap: 16px; padding: 0; border-radius: 0; background: transparent; border-bottom: 1px solid var(--fcd-line); }
-.fc-design .fcd-study-tabs button { flex: 1; min-height: 48px; min-width: 44px; padding: 8px 0 12px; border: 0; border-bottom: 2px solid transparent; border-radius: 0; box-shadow: none; color: var(--fcd-soft); background: transparent; font-size: 14px; white-space: normal; line-height: 1.5; }
+.fc-design .fcd-study-tabs button { flex: 1; min-height: 48px; min-width: 44px; padding: 8px 0 12px; border: 0; border-bottom: 2px solid transparent; border-radius: var(--radius); box-shadow: none; color: var(--fcd-soft); background: transparent; font-size: 14px; white-space: normal; line-height: 1.5; }
 .fc-design .fcd-study-tabs button[data-state="active"] { color: var(--fcd-text); border-bottom-color: var(--fcd-gold); background: transparent; }
 .fc-design .fcd-study-visual { grid-area: visual; position: relative; min-width: 0; min-height: 480px; background: #F7F6F2; }
 .fc-design .fcd-study-panel { position: absolute; inset: 0; height: 100%; margin: 0; }

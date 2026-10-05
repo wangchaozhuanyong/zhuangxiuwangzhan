@@ -13,7 +13,7 @@ export default function RouteReadFeedback({ surface }: { surface: "public" | "ad
   const location = useLocation();
   const text = interactionText[surface === "admin" ? adminLanguage : language];
   const prefix = surface === "admin" ? "admin" : "published";
-  const active = useCallback((query: Query) => query.queryKey[0] === prefix && query.getObserversCount() > 0, [prefix]);
+  const active = useCallback((query: Query) => (query.queryKey[0] === prefix || query.queryKey[0] === "site-settings") && query.getObserversCount() > 0, [prefix]);
   const count = useIsFetching({ predicate: active });
   const pending = count > 0;
   const [visible, setVisible] = useState(false);

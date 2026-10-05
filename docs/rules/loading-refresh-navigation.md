@@ -1,6 +1,6 @@
 # 加载、刷新、导航与编辑保护（唯一正文）
 
-适用：全部公开页面、后台页面、弹窗编辑和新增功能。其他规则仅链接本文件，不另设冲突的刷新规则。路由登记在 `docs/interaction-route-compliance.json`。
+适用：全部公开页面、后台页面、弹窗编辑和新增功能。其他规则仅链接本文件，不另设冲突的刷新规则。路由登记在 `docs/interaction-route-compliance.json`。登记表中的逐路由验收是标有日期的历史证据；`verify:interaction-standards` 只核对登记和静态规则，不能证明当前版本全站浏览器验收通过。当前测试与浏览器证据必须另行记录，发布前按实际源码版本核验。
 
 ## 状态与反馈
 
@@ -15,6 +15,12 @@
 公开首个文档保留品牌画面。`publicBoot` 管文档交接，`PublicRouteImageGate` 管路由真实就绪；必要数据由 `data-route-pending` 登记，关键图片由 `SmartImage critical` 登记。非首屏、非关键图片不得锁住整页；关键图片慢时降级为占位，失败显示单图重试。首屏不得按固定时间假装完成；路由准备不等待后台更新。保留导航和公共布局。CSS、chunk 错误必须保留可恢复入口。
 
 HTML 预注入仅允许 `publicQuerySeed` 初始化查询缓存，`publicQuerySeedCache` 按 QueryClient/查询键消费一次并保留文档时间。失效或缓存清理之后不得重新读取旧 HTML 作为刷新结果。摘要不满足详情字段时不能初始化详情；正文必须来自完整记录。queryFn 始终读取真实数据源。
+
+网站设置统一使用 `useSiteSettingsQuery`。请求失败必须保留查询错误和已成功缓存，默认设置只能用于显示兜底，不能写回成功缓存。后台设置首次读取成功前禁用编辑和保存；读取成功但没有记录时仍沿用既有初始化规则。保存保留提交快照、版本冲突检查与同步提交锁。
+
+公共列表统一用 `PublicResultsBoundary` 管理首次加载、首次错误、空结果、结果区域和 `aria-busy`；后台刷新保留内容与焦点，由 `RouteReadFeedback` 提示失败并重试。原有材料与装修对比的静态兜底必须显式声明 `keepFallback`，不能将兜底视为读取成功。
+
+悬浮推广统一由 `useFloatingOcclusion` 检测与正文、表单、可点击区域、弹窗和恢复提示的重叠，覆盖时暂时隐藏，空位恢复；焦点已经进入推广入口时保持可用。禁止按 pathname 添加专用侧栏、缩窄单页或减小正文字号。
 
 ## 导航与表单
 
@@ -38,11 +44,11 @@ HTML 预注入仅允许 `publicQuerySeed` 初始化查询缓存，`publicQuerySe
 
 ## 复用示例与新增页面验收
 
-公开列表：参考 `src/pages/Projects.tsx` + `usePublicListingState`；详情：`src/pages/BlogDetail.tsx`，只初始化完整正文；公开表单：`src/pages/Contact.tsx`/`Quote.tsx`，提交锁与未保存保护；后台编辑：`src/pages/admin/AdminServiceEditor.tsx`；多区块：`AdminHomeEditor.tsx`/`AdminAboutEditor.tsx`；失焦保存：`AdminLeadDetail.tsx`；后台列表：`AdminBlogList.tsx` + `AdminDataTable busy`。
+公开列表：参考 `src/pages/Projects.tsx` + `usePublicListingState` + `PublicResultsBoundary`；详情：`src/pages/BlogDetail.tsx`，只初始化完整正文；公开表单：`src/pages/Contact.tsx`/`Quote.tsx`，提交锁与未保存保护；后台编辑：`src/pages/admin/AdminServiceEditor.tsx`；多区块：`AdminHomeEditor.tsx`/`AdminAboutEditor.tsx`；失焦保存：`AdminLeadDetail.tsx`；后台列表：`AdminBlogList.tsx` + `AdminDataTable busy`。
 
 | 新页面类型 | 必须接入的实现 | 状态与恢复示例 |
 | --- | --- | --- |
-| 公开列表 | 既有 `usePublished*` hook、`usePublicListingState`、`data-public-results`、`SmartImage` | `isLoading` 登记首次必要数据；`isInitialError` 显示失败重试；`isFetching` 只标记结果更新；空结果必须来自成功读取 |
+| 公开列表 | 既有 `usePublished*` hook、`usePublicListingState`、`PublicResultsBoundary`、`SmartImage` | `isLoading` 登记首次必要数据；`isInitialError` 显示失败重试；`isFetching` 只标记结果更新；空结果必须来自成功读取 |
 | 公开详情 | 按 `slug`/语言查询、`data-route-pending`、完整详情缓存、`SmartImage critical` | 首次骨架、真实读取失败、成功但不存在分别处理；禁止跨记录 `keepPreviousData`；图片失败只重试图片 |
 | 公开表单 | `useSubmissionLock`、提交快照、`useUnsavedChangesWarning` | 提交前抓取本次输入；失败保留输入；成功只确认该快照，后来输入继续显示未提交；语言/hash 保留当前表单 |
 | 后台编辑 | `useAdminFormState(remote, { resetKey: id, initial })`、`useSubmissionLock`、`useUnsavedChangesWarning`、资源失效 | 保存使用 `applyRemote(saved, submitted)`；失焦/区块使用 `applyPatchRemote`；远端刷新不能覆盖 dirty 字段；提交期间同样保护离开 |

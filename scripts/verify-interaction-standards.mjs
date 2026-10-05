@@ -4,14 +4,19 @@ import ts from 'typescript';
 import { readInteractionRoutes } from './lib/interaction-route-inventory.mjs';
 const root = process.cwd(); const failures = [];
 const matrix = JSON.parse(fs.readFileSync(path.join(root, 'docs/interaction-route-compliance.json'), 'utf8'));
+if (matrix.version !== 2 || matrix.validation?.kind !== 'static-registration-and-source-checks'
+  || matrix.validation?.acceptanceEvidence !== 'historical-local'
+  || !/^\d{4}-\d{2}-\d{2}$/.test(matrix.validation?.baselineDate || '')
+  || matrix.validation?.currentWholeSiteAcceptance !== 'NOT_MEASURED'
+  || matrix.validation?.requireCurrentBrowserEvidenceForRelease !== true) failures.push('Route registry must identify its historical acceptance scope and require current browser evidence');
 const actual = readInteractionRoutes(root); const registered = new Map(matrix.routes.map(row => [`${row.surface}:${row.path}`,row]));
 for (const row of actual) {
   const entry = registered.get(`${row.surface}:${row.path}`);
   if (!entry) { failures.push(`Missing route: ${row.path}`); continue; }
   for (const field of ['loading','refresh','navigation','editing','acceptance','samplePath','evidence','component']) if (!entry[field]) failures.push(`${row.path}: missing ${field}`);
   if (entry.component !== row.component) failures.push(`${row.path}: registered page component is stale`);
-  if (!/^PASS_LOCAL_(?:SIMULATED|BROWSER)$/.test(entry.acceptance || '')) failures.push(`${row.path}: route acceptance remains pending`);
-  if (/[:*]/.test(entry.samplePath || '')) failures.push(`${row.path}: sample must be a concrete tested path`);
+  if (!/^(?:PASS_LOCAL_(?:SIMULATED|BROWSER)|NOT_MEASURED)$/.test(entry.acceptance || '')) failures.push(`${row.path}: unrecognized historical acceptance status`);
+  if (/[:*]/.test(entry.samplePath || '')) failures.push(`${row.path}: sample must be a concrete example path`);
 }
 if (registered.size !== matrix.routes.length) failures.push('Duplicate route registrations');
 for (const key of registered.keys()) if (!actual.some(row=>`${row.surface}:${row.path}`===key)) failures.push(`Stale route registration: ${key}`);
@@ -25,6 +30,8 @@ for (const file of walk(path.join(root,'src'))) {
  if (relative.startsWith('src/pages/') && /addEventListener\(["']beforeunload/.test(text)) failures.push(`${relative}: use the shared navigation guard`);
  const tree = ts.createSourceFile(file,text,ts.ScriptTarget.Latest,true,relative.endsWith('tsx')?ts.ScriptKind.TSX:ts.ScriptKind.TS);
  function check(node) {
+  if (ts.isCallExpression(node) && /^(?:useQuery|useInteractionQuery)$/.test(node.expression.getText(tree))
+    && relative !== 'src/hooks/useSiteSettings.ts' && /queryKey:\s*\[\s*["']site-settings["']\s*\]/.test(node.arguments[0]?.getText(tree) || '')) failures.push(`${relative}: website settings must use useSiteSettingsQuery`);
   if (relative === 'src/routes/adminRoutes.tsx' && ts.isVariableDeclaration(node) && node.name.getText(tree) === 'withRoleGate') {
    let hasLanguagePage = false;
    const inspectEntry = child => {
@@ -58,4 +65,4 @@ for (const file of walk(path.join(root,'src'))) {
  check(tree);
 }
 if(failures.length){ console.error(failures.join('\n')); process.exitCode=1; }
-else console.log(`Interaction standards passed: ${actual.length} registered routes; shared reads, navigation, cache seeding and detail identity checked.`);
+else console.log(`Interaction static checks passed: ${actual.length} registered routes; shared reads, navigation, cache seeding and detail identity checked. Route acceptance is historical (${matrix.validation.baselineDate}); current whole-site browser acceptance is ${matrix.validation.currentWholeSiteAcceptance}.`);

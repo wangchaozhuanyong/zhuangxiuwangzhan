@@ -92,4 +92,17 @@ describe("route read feedback cache subscription", () => {
     await settle();
     expect(container.querySelector("aside")).toBeNull();
   });
+
+  it("includes shared site settings failures in the retry lifecycle", async () => {
+    read.mockRejectedValue(new Error("Settings refresh failed"));
+    await renderReader({ prefix: "site-settings", initialData: "Confirmed settings" });
+    await settle();
+    expect(container.textContent).toContain("Confirmed settings");
+    expect(container.textContent).toContain("更新未完成，已保留上次取得的内容。");
+    read.mockResolvedValue("Fresh settings");
+    await act(async () => container.querySelector<HTMLButtonElement>("button")!.click());
+    await settle();
+    expect(container.textContent).toContain("Fresh settings");
+    expect(container.querySelector("aside")).toBeNull();
+  });
 });

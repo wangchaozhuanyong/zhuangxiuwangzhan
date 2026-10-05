@@ -26,7 +26,7 @@
   justify-content: center;
   gap: 0.65rem;
   border: 1px solid var(--furniture-line);
-  border-radius: 100px;
+  border-radius: var(--radius);
   padding: 0.6rem 1.15rem;
   color: var(--furniture-ink);
   background: var(--public-surface-card);
@@ -68,7 +68,7 @@
   min-height: 2.7rem;
   align-items: center;
   border: 1px solid var(--furniture-line);
-  border-radius: 100px;
+  border-radius: var(--radius);
   padding: 0.5rem 0.9rem;
   color: var(--furniture-ink);
   background: var(--public-surface-section);
@@ -217,7 +217,7 @@
   align-items: center;
   justify-content: center;
   border: 1px solid var(--furniture-line);
-  border-radius: 999px;
+  border-radius: var(--radius);
   padding: 0.5rem;
   color: var(--furniture-accent);
   background: var(--public-surface-section);
@@ -265,7 +265,7 @@
 .fc-furniture-gallery { min-width: 0; }
 .fc-furniture-gallery__main { border-radius: 0.3rem; }
 .fc-furniture-gallery__thumbs { display: flex; overflow-x: auto; gap: 0.65rem; margin-top: 0.8rem; padding-bottom: 0.35rem; }
-.fc-furniture-gallery__thumbs button { width: 5.4rem; height: 5.4rem; flex: none; overflow: hidden; border: 2px solid transparent; border-radius: 0.2rem; padding: 0; background: #FDFCFA; }
+.fc-furniture-gallery__thumbs button { width: 5.4rem; height: 5.4rem; flex: none; overflow: hidden; border: 2px solid transparent; border-radius: var(--radius); padding: 0; background: #FDFCFA; }
 .fc-furniture-gallery__thumbs button[aria-pressed="true"] { border-color: var(--furniture-accent); }
 .fc-furniture-gallery__thumbs img { width: 100%; height: 100%; object-fit: contain; }
 .fc-furniture-detail__info { padding-top: 0.3rem; }

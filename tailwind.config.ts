@@ -86,7 +86,7 @@ export default {
         lg: "var(--radius)",
         md: "calc(var(--radius) - 2px)",
         sm: "calc(var(--radius) - 4px)",
-        btn: "10px",
+        btn: "var(--radius)",
         card: "8px",
         "card-lg": "10px",
         hero: "22px",
