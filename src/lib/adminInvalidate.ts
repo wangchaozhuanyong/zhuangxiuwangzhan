@@ -18,8 +18,9 @@ export function invalidateSiteSettings(qc: QueryClient) {
 }
 
 /** Refresh public site caches after CMS content changes. */
-export function invalidatePublishedContent(qc: QueryClient) {
-  return qc.invalidateQueries({ queryKey: ["published"] });
+export async function invalidatePublishedContent(qc: QueryClient) {
+  await qc.invalidateQueries({ queryKey: ["published"] });
+  notifyQueryInvalidation({ resources: [], published: true, settings: false });
 }
 
 export async function invalidateAfterAdminContentSave(qc: QueryClient) {

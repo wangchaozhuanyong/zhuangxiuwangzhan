@@ -164,11 +164,14 @@ export default function AdminAboutEditor() {
         content_zh: row.content_zh || null,
         content_en: row.content_en || null,
         image_url: row.image_url || null,
-        items_zh: cleanAboutItems(key, itemsZh[key] || []),
-        items_en: cleanAboutItems(key, itemsEn[key] || []),
         status: row.status || "published",
         sort_order: Number(row.sort_order || 0),
       };
+      // These sections have no list editor; preserve their existing opaque lists.
+      if (key !== "hero" && key !== "office") {
+        payload.items_zh = cleanAboutItems(key, itemsZh[key] || []);
+        payload.items_en = cleanAboutItems(key, itemsEn[key] || []);
+      }
       const saved = await saveAdminRecord<AboutSectionRow>({
         table: "about_sections",
         payload,
@@ -176,7 +179,7 @@ export default function AdminAboutEditor() {
         expectedUpdatedAt: row.updated_at || null,
         queryClient,
       });
-      applyPatchRemote({ sections: { [key]: saved }, itemsZh: { [key]: (itemsZh[key] || []) }, itemsEn: { [key]: (itemsEn[key] || []) } }, form);
+      applyPatchRemote({ sections: { [key]: saved }, itemsZh: { [key]: asArray(saved.items_zh).map(toItem) }, itemsEn: { [key]: asArray(saved.items_en).map(toItem) } }, form);
       toast({ title: A("saved") });
 
     } catch (error) {

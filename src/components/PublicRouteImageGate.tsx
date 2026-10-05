@@ -50,6 +50,7 @@ export function PublicRouteImageGate({ children, routeKey, onCancel }: { childre
   currentCycle.current = cycle;
   const emitted = useRef<number | null>(null);
   const restored = useRef<number | null>(null);
+  const departingCycle = useRef<number | null>(null);
 
   useLayoutEffect(() => {
     const content = regionOnly ? contentRef.current?.querySelector<HTMLElement>("[data-public-results]") : contentRef.current;
@@ -103,6 +104,9 @@ export function PublicRouteImageGate({ children, routeKey, onCancel }: { childre
 
     const check = () => {
       if (stopped || settled) return;
+      // History can change before Router renders the destination. Cached data
+      // from the retiring route must not reopen its scene during that gap.
+      if (departingCycle.current === cycle) { readyFrames = 0; main.dataset.routeWaitReason = "route"; return; }
       if (boot && !boot.stylesReady) { readyFrames = 0; main.dataset.routeWaitReason = "stylesheet"; return; }
       if (main.querySelector('[data-route-pending="true"]') || brandContainer?.closest('[data-route-pending="true"]')) { readyFrames = 0; main.dataset.routeWaitReason = "route"; return; }
       if (restored.current !== cycle) {
@@ -215,7 +219,13 @@ export function PublicRouteImageGate({ children, routeKey, onCancel }: { childre
   }, [boot, showBrandScreen, routeKey, attempt, blocked]);
   return (
     <>
-      <PublicRouteTransitionFrame ref={frameRef} routeKey={routeKey} pending={blocked} regionOnly={regionOnly} initial={showBrandScreen} onBeforeCommit={() => setFeedbackCycle(cycle)}>
+      <PublicRouteTransitionFrame ref={frameRef} routeKey={routeKey} pending={blocked} regionOnly={regionOnly} initial={showBrandScreen} onBeforeCommit={() => {
+        departingCycle.current = cycle;
+        setFeedbackCycle(cycle);
+        // The frame flushes this before Router changes history: retire the old
+        // scene and show its busy feedback in the same synchronous render.
+        setState({ cycle, status: "waiting" });
+      }}>
         <div ref={contentRef} className="public-route-content" data-route-visual-state={status}
           aria-hidden={blocked && !regionOnly || undefined} aria-busy={blocked || status === "handoff" || undefined}>
           {children}

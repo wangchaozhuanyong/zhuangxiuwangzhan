@@ -5,6 +5,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { LanguageProvider } from "@/i18n/LanguageContext";
 import { PublicRouteImageGate } from "@/components/PublicRouteImageGate";
 import { PublicRouteTransitionFrame } from "@/components/PublicRouteTransitionFrame";
+import { requestPublicNavigation } from "@/lib/publicNavigation";
 
 let container: HTMLDivElement;
 let root: Root;
@@ -50,6 +51,48 @@ afterEach(async () => {
 });
 
 describe("public route visual readiness", () => {
+  it("hides the previous route and mounts busy feedback before the router changes the URL", async () => {
+    const previousAnimate = Object.getOwnPropertyDescriptor(HTMLElement.prototype, "animate");
+    let finishExit!: () => void;
+    const exit = new Promise<void>((resolve) => { finishExit = resolve; });
+    const cancel = vi.fn();
+    const animate = vi.fn().mockReturnValueOnce({ finished: exit, cancel })
+      .mockImplementation(() => ({ finished: Promise.resolve(), cancel: vi.fn() }));
+    Object.defineProperty(HTMLElement.prototype, "animate", { configurable: true, value: animate });
+    try {
+      await render(<Image ready />, "/zh/projects");
+      expect(state()).toBe("ready");
+      const commit = vi.fn(() => ({
+        state: state(),
+        feedbackVisible: pageFeedback() !== null && pageFeedback() === loader(),
+        busy: loader()?.getAttribute("aria-busy"),
+        hasPendingLabel: container.querySelector(".public-route-feedback__pending") !== null,
+        inert: container.querySelector(".public-route-content")?.hasAttribute("inert"),
+        hidden: container.querySelector(".public-route-content")?.getAttribute("aria-hidden"),
+        hasRecoveryActions: container.querySelector(".scheme-a-page-loader__actions") !== null,
+      }));
+      await act(async () => requestPublicNavigation("/zh/materials", commit));
+      expect(commit).not.toHaveBeenCalled();
+      await act(async () => finishExit());
+      expect(commit).toHaveBeenCalledOnce();
+      expect(commit.mock.results[0]?.value).toEqual({ state: "waiting", feedbackVisible: true, busy: "true", hasPendingLabel: true, inert: true, hidden: "true", hasRecoveryActions: false });
+      expect(cancel).toHaveBeenCalledOnce();
+      // Router can commit the URL before a deferred destination render finishes.
+      // The outgoing route's cached images must not mark it ready again.
+      await act(async () => vi.advanceTimersByTime(200));
+      expect(state()).toBe("waiting");
+      expect(pageFeedback()).toBe(loader());
+      expect(container.querySelector(".public-route-content")).toHaveAttribute("inert");
+      expect(animate).toHaveBeenCalledOnce();
+      await render(<Image ready />, "/zh/materials");
+      expect(state()).toBe("ready");
+      expect(loader()).toBeNull();
+    } finally {
+      if (previousAnimate) Object.defineProperty(HTMLElement.prototype, "animate", previousAnimate);
+      else Reflect.deleteProperty(HTMLElement.prototype, "animate");
+    }
+  });
+
   it("degrades slow critical images after the deadline and leaves image recovery local", async () => {
     const brand = document.createElement("a");
     brand.className = "scheme-a-chrome__brand";

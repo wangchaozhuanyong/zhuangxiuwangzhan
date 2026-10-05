@@ -75,4 +75,23 @@ describe("website settings confirmed-read and submission protection", () => {
     expect(save.mock.calls[0][0].expectedUpdatedAt).toBe(confirmed.updated_at);
     expect(container.textContent).toContain("Save failed"); expect(saveButton()).toBeEnabled();
   });
+  it("confirms the delivered version after an earlier cache refresh without creating false dirty state", async () => {
+    const refreshed = { ...confirmed, updated_at: "2026-10-05T00:01:00+00:00" };
+    const delivered = { ...refreshed, updated_at: "2026-10-05T00:01:01.123456+00:00" };
+    const pending = deferred<SiteSettings>();
+    read.mockResolvedValue(confirmed);
+    save.mockImplementation(() => {
+      client.setQueryData(["site-settings"], refreshed);
+      return pending.promise;
+    });
+    await render();
+    await act(async () => saveButton().click()); await settle();
+    await act(async () => pending.resolve(delivered)); await settle();
+    expect(container.textContent).toContain("设置已保存");
+    expect(container.textContent).not.toContain("有未保存修改");
+    save.mockResolvedValue(delivered);
+    await act(async () => saveButton().click()); await settle();
+    expect(save.mock.calls[1][0].expectedUpdatedAt).toBe(delivered.updated_at);
+  });
+
 });

@@ -51,6 +51,9 @@ jobs:
       - uses: actions/setup-node@v6
         with:
           node-version: '22'
+      - name: Install locked architecture-check dependencies
+        run: npm ci --ignore-scripts --no-audit --no-fund
+
       - name: Check exact release identity and local controls
         env:
           EXPECTED_SHA: ${{ inputs.expected_sha }}

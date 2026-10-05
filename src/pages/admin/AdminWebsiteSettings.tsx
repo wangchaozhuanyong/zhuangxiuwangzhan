@@ -135,6 +135,8 @@ const AdminWebsiteSettings = () => {
       });
       const fresh = { ...fallbackSiteSettings, ...saved };
       applyRemote(fresh, settings);
+      // A delivery refresh can advance this server-owned version during save.
+      setSettings((current) => ({ ...current, updated_at: fresh.updated_at }));
       if (geocodeStatus === "updated") {
         setStatus(t.savedGeocodeUpdated);
       } else if (geocodeStatus === "failed") {

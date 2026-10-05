@@ -6,6 +6,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import AdminCmsBuilder from "@/pages/admin/AdminCmsBuilder";
 import { setAdminLang } from "@/lib/adminLocale";
 import { getPublicSyncIssues, resolvePublicSyncIssue } from "@/lib/publicSyncRecovery";
+import { QUERY_INVALIDATION_EVENT, type QueryInvalidationNotice } from "@/lib/queryInvalidationEvents";
 
 const fixtures = vi.hoisted(() => ({
   pages: [
@@ -19,6 +20,8 @@ const fixtures = vi.hoisted(() => ({
   empty: [],
   confirmNavigation: vi.fn(),
   save: vi.fn(),
+  archive: vi.fn(),
+  confirmArchive: vi.fn(),
   loadSections: vi.fn(),
   refetch: vi.fn(),
 }));
@@ -51,7 +54,7 @@ vi.mock("@/backend/modules/cms/service/cmsService", () => ({
 }));
 vi.mock("@/lib/adminMutation", () => ({
   saveAdminRecord: fixtures.save,
-  archiveOrDeleteAdminRecord: vi.fn(),
+  archiveOrDeleteAdminRecord: fixtures.archive,
   formatAdminMutationError: (error: unknown) => String(error),
 }));
 vi.mock("@/lib/navigationProtection", async (importOriginal) => ({
@@ -59,6 +62,7 @@ vi.mock("@/lib/navigationProtection", async (importOriginal) => ({
   confirmProtectedNavigation: fixtures.confirmNavigation,
 }));
 vi.mock("@/pages/admin/AdminCmsSectionContentEditor", () => ({ SectionContentEditor: () => null }));
+vi.mock("@/components/admin/AdminConfirmProvider", () => ({ adminConfirm: fixtures.confirmArchive }));
 vi.mock("@/components/admin/AdminPermission", () => ({
   useAdminPermission: () => ({ allowed: true, reason: "" }),
   AdminPermissionHint: () => null,
@@ -67,6 +71,9 @@ vi.mock("@/components/admin/AdminPermission", () => ({
 }));
 
 async function mountBuilder() {
+  const notices: QueryInvalidationNotice[] = [];
+  const receive = (event: Event) => notices.push((event as CustomEvent<QueryInvalidationNotice>).detail);
+  window.addEventListener(QUERY_INVALIDATION_EVENT, receive);
   const container = document.createElement("div");
   document.body.appendChild(container);
   const root = createRoot(container);
@@ -77,7 +84,9 @@ async function mountBuilder() {
   return {
     container,
     client,
+    notices,
     async cleanup() {
+      window.removeEventListener(QUERY_INVALIDATION_EVENT, receive);
       await act(async () => root.unmount());
       client.clear();
       container.remove();
@@ -88,9 +97,10 @@ async function mountBuilder() {
 async function selectValue(select: HTMLSelectElement, value: string) {
   await act(async () => { select.value = value; select.dispatchEvent(new Event("change", { bubbles: true })); });
 }
-async function editValue(input: HTMLInputElement, value: string) {
+async function editValue(input: HTMLInputElement | HTMLTextAreaElement, value: string) {
   await act(async () => {
-    Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, "value")!.set!.call(input, value);
+    const prototype = input.tagName === "TEXTAREA" ? HTMLTextAreaElement.prototype : HTMLInputElement.prototype;
+    Object.getOwnPropertyDescriptor(prototype, "value")!.set!.call(input, value);
     input.dispatchEvent(new Event("input", { bubbles: true }));
   });
 }
@@ -101,6 +111,8 @@ describe("CMS compact mobile selectors", () => {
     setAdminLang("zh");
     fixtures.confirmNavigation.mockResolvedValue(true);
     fixtures.save.mockImplementation(async ({ payload, id }) => ({ ...payload, id }));
+    fixtures.confirmArchive.mockResolvedValue(true);
+    fixtures.archive.mockResolvedValue({ ...fixtures.sections[0], status: "archived", updated_at: "archive-version" });
     fixtures.loadSections.mockResolvedValue(fixtures.sections);
     fixtures.refetch.mockResolvedValue({ isSuccess: true, data: fixtures.sections });
   });
@@ -161,6 +173,7 @@ describe("CMS compact mobile selectors", () => {
       }));
       const options = Array.from(view.container.querySelector<HTMLSelectElement>("#admin-cms-current-section")!.options).slice(1);
       expect(options.map((option) => option.value)).toEqual(["section-b", "section-a"]);
+      expect(view.notices).toEqual([{ resources: [], published: true, settings: false }]);
     } finally { await view.cleanup(); }
   });
 
@@ -176,6 +189,7 @@ describe("CMS compact mobile selectors", () => {
       expect(fixtures.loadSections).toHaveBeenCalledWith("page-a");
       expect(view.client.getQueryData(["admin", "cms_sections", "page-a"])).toEqual(confirmed);
       expect(view.container.textContent).toContain("排序未全部保存，已重新读取当前顺序");
+      expect(view.notices).toEqual([{ resources: [], published: true, settings: false }]);
       await act(async () => view.container.querySelector<HTMLButtonElement>('button[aria-label="模块下移"]')!.click());
       expect(fixtures.save).toHaveBeenCalledTimes(3);
       expect(fixtures.save).toHaveBeenLastCalledWith(expect.objectContaining({ id: "section-a", payload: expect.objectContaining({ sort_order: 20 }) }));
@@ -191,6 +205,7 @@ describe("CMS compact mobile selectors", () => {
       await act(async () => view.container.querySelector<HTMLButtonElement>('button[aria-label="模块下移"]')!.click());
       const down = () => view.container.querySelector<HTMLButtonElement>('button[aria-label="模块下移"]')!;
       expect(down().disabled).toBe(true);
+      expect(view.notices).toEqual([{ resources: [], published: true, settings: false }]);
       await act(async () => down().click());
       expect(fixtures.save).toHaveBeenCalledTimes(1);
       const reload = () => Array.from(view.container.querySelectorAll("button")).find((button) => button.textContent === "重新读取模块顺序")!;
@@ -265,6 +280,40 @@ describe("CMS compact mobile selectors", () => {
         expect(["INPUT", "SELECT", "TEXTAREA"]).toContain(label.control!.tagName);
       }
       expect(new Set(labels.map((label) => label.htmlFor)).size).toBe(labels.length);
+    } finally { await view.cleanup(); }
+  });
+
+  it("clears an archived section without prompting about unsaved changes on the next selection", async () => {
+    const view = await mountBuilder();
+    try {
+      await selectValue(view.container.querySelector<HTMLSelectElement>("#admin-cms-current-section")!, "section-a");
+      const archive = Array.from(view.container.querySelectorAll<HTMLButtonElement>("button")).find((button) => button.textContent?.trim() === "归档模块")!;
+      await act(async () => archive.click());
+      expect(fixtures.archive).toHaveBeenCalledWith(expect.objectContaining({ id: "section-a" }));
+      await selectValue(view.container.querySelector<HTMLSelectElement>("#admin-cms-current-section")!, "section-b");
+      expect(fixtures.confirmNavigation).not.toHaveBeenCalled();
+      expect(view.container.querySelector<HTMLInputElement>("#cms-section-title_zh")!.value).toBe("模块乙");
+    } finally { await view.cleanup(); }
+  });
+
+  it("keeps inputs added during archiving and adopts the archived record version for the next save", async () => {
+    let finishArchive!: (record: Record<string, unknown>) => void;
+    fixtures.archive.mockImplementationOnce(() => new Promise((resolve) => { finishArchive = resolve; }));
+    const view = await mountBuilder();
+    try {
+      await selectValue(view.container.querySelector<HTMLSelectElement>("#admin-cms-current-section")!, "section-a");
+      const archive = Array.from(view.container.querySelectorAll<HTMLButtonElement>("button")).find((button) => button.textContent?.trim() === "归档模块")!;
+      await act(async () => archive.click());
+      await editValue(view.container.querySelector<HTMLTextAreaElement>("#cms-section-settings")!, '{"newInput":true}');
+      await act(async () => finishArchive({ ...fixtures.sections[0], status: "archived", updated_at: "archive-version" }));
+      expect(view.container.querySelector<HTMLTextAreaElement>("#cms-section-settings")?.value).toBe('{"newInput":true}');
+      expect(view.container.querySelector<HTMLSelectElement>("#cms-section-status")?.value).toBe("archived");
+      const save = Array.from(view.container.querySelectorAll<HTMLButtonElement>("button")).find((button) => button.textContent?.trim() === "保存模块")!;
+      await act(async () => save.click());
+      expect(fixtures.save).toHaveBeenLastCalledWith(expect.objectContaining({
+        id: "section-a", expectedUpdatedAt: "archive-version",
+        payload: expect.objectContaining({ status: "archived", settings: { newInput: true } }),
+      }));
     } finally { await view.cleanup(); }
   });
 });

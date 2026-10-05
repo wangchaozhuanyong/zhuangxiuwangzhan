@@ -23,6 +23,7 @@ import { archiveOrDeleteAdminRecord, formatAdminMutationError, saveAdminRecord }
 import { adminStatusLabel, getAdminLang, publishStatusOptions } from "@/lib/adminLocale";
 import { isSupabaseConfigured } from "@/lib/supabase";
 import { completePublicSync } from "@/lib/publicSyncRecovery";
+import { invalidatePublishedContent } from "@/lib/adminInvalidate";
 import { adminConfirm } from "@/components/admin/AdminConfirmProvider";
 import { SectionContentEditor } from "@/pages/admin/AdminCmsSectionContentEditor";
 import {
@@ -311,7 +312,7 @@ export default function AdminCmsBuilder() {
       await completePublicSync(`cms-section-order:${selectedPageId}`, () => Promise.all([
         queryClient.invalidateQueries({ queryKey: ["admin", "cms_sections", selectedPageId] }),
         queryClient.invalidateQueries({ queryKey: ["admin", "cms_revisions", selectedPageId] }),
-        queryClient.invalidateQueries({ queryKey: ["published"] }),
+        invalidatePublishedContent(queryClient),
       ]));
     } catch (error) {
       setSectionOrder([]);
@@ -327,7 +328,7 @@ export default function AdminCmsBuilder() {
         // Earlier rows may already be committed. Refresh revisions/public readers even after failure.
         await completePublicSync(`cms-section-order:${selectedPageId}`, () => Promise.all([
           queryClient.invalidateQueries({ queryKey: ["admin", "cms_revisions", selectedPageId] }),
-          queryClient.invalidateQueries({ queryKey: ["published"] }),
+          invalidatePublishedContent(queryClient),
         ]));
       } else {
         setMessage(formatAdminMutationError(error));
@@ -389,9 +390,21 @@ export default function AdminCmsBuilder() {
     });
     if (!confirmed) return;
     try {
-      await archiveOrDeleteAdminRecord({ table: "cms_sections", id: section.id, expectedUpdatedAt: section.updated_at || null, queryClient });
+      const submitted = sectionForm.getCurrent();
+      const archived = await archiveOrDeleteAdminRecord({ table: "cms_sections", id: section.id, expectedUpdatedAt: section.updated_at || null, queryClient });
       setMessage(A("sectionArchivedMessage"));
-      setSectionDraft(null);
+      const current = sectionForm.getCurrent();
+      if (current.sectionDraft?.id === section.id) {
+        if (current === submitted) {
+          sectionForm.applyRemote({ sectionDraft: null, contentZhText: "{}", contentEnText: "{}", settingsText: "{}" });
+        } else {
+          // Keep inputs added during archiving, with the confirmed archived identity/version.
+          sectionForm.applyPatchRemote(
+            { sectionDraft: { status: "archived", updated_at: typeof archived.updated_at === "string" ? archived.updated_at : null } },
+            { sectionDraft: { status: section.status, updated_at: section.updated_at } },
+          );
+        }
+      }
 
     } catch (error) {
       setMessage(formatAdminMutationError(error));
