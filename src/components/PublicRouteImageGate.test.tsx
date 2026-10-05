@@ -110,13 +110,17 @@ describe("public route visual readiness", () => {
     expect(container.querySelector("[data-public-results]")).toHaveAttribute("inert");
   });
 
-  it("clears visible page feedback and retains accessible recovery when data times out", async () => {
+  it("ends busy page feedback and keeps visible accessible recovery when data times out", async () => {
     await render(<Image ready />, "/zh/projects");
     await render(<div data-route-pending="true" />);
     await act(async () => vi.advanceTimersByTime(5100));
     expect(state()).toBe("timeout");
     expect(pageFeedback()).toBeNull();
-    expect(container.querySelector(".public-route-feedback > span")).toHaveClass("sr-only");
+    expect(loader()).toHaveAttribute("aria-busy", "false");
+    const pendingLabel = container.querySelector(".public-route-feedback > span");
+    expect(pendingLabel).toHaveClass("public-route-feedback__pending");
+    expect(pendingLabel).not.toHaveClass("sr-only");
+    expect(container.querySelector(".public-route-feedback__recovery p")?.textContent).toBeTruthy();
     expect(container.querySelectorAll(".public-route-feedback__recovery button")).toHaveLength(2);
     expect(container.querySelector(".public-route-content")).toHaveAttribute("inert");
   });
