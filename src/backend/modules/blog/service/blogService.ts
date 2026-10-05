@@ -1,5 +1,6 @@
 import type { QueryClient } from "@tanstack/react-query";
 import { isSupabaseConfigured } from "@/lib/supabase";
+import { previewAdminContent } from "@/lib/adminMutation";
 import {
   fetchAdminBlogPostDetail,
   fetchAdminBlogPostList,
@@ -59,6 +60,16 @@ export function buildAdminBlogPostPayload(record: AdminBlogPostRecord, nextStatu
       published_at: nextStatus === "published" ? record.published_at || new Date().toISOString() : record.published_at || null,
     },
   };
+}
+
+export function previewAdminBlogPost(input: Pick<SaveAdminBlogPostInput, "record" | "nextStatus">) {
+  const { payload } = buildAdminBlogPostPayload(input.record, input.nextStatus);
+  return previewAdminContent({
+    contentType: "blog",
+    nextStatus: payload.status || "draft",
+    expectedUpdatedAt: input.record.updated_at || "",
+    record: payload,
+  });
 }
 
 export async function saveAdminBlogPost(input: SaveAdminBlogPostInput) {

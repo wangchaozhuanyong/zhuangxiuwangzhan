@@ -1,6 +1,6 @@
 import type { QueryClient } from "@tanstack/react-query";
 import { isSupabaseConfigured } from "@/lib/supabase";
-import { requestPublicContentInvalidation } from "@/lib/adminMutation";
+import { previewAdminContent, requestPublicContentInvalidation } from "@/lib/adminMutation";
 import { registerPublicSyncIssue, resolvePublicSyncIssue } from "@/lib/publicSyncRecovery";
 import { invalidateAdminResource } from "@/lib/adminInvalidate";
 import {
@@ -145,6 +145,16 @@ export function buildAdminServicePayload(record: AdminServiceRecord, nextStatus?
       faqs_en: cleanFaqs(record.faqs_en),
     },
   };
+}
+
+export function previewAdminService(input: Pick<SaveAdminServiceInput, "record" | "nextStatus">) {
+  const { payload } = buildAdminServicePayload(input.record, input.nextStatus);
+  return previewAdminContent({
+    contentType: "service",
+    nextStatus: payload.status || "draft",
+    expectedUpdatedAt: input.record.updated_at || "",
+    record: payload,
+  });
 }
 
 export async function saveAdminService(input: SaveAdminServiceInput) {

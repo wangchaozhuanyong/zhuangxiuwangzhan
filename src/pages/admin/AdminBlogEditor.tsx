@@ -14,6 +14,7 @@ import AdminStickyActionBar from "@/components/admin/AdminStickyActionBar";
 import { adminMobileEditorText } from "@/i18n/adminMobileEditorText";
 import AdminPageHeader from "@/components/admin/AdminPageHeader";
 import AdminFormSection from "@/components/admin/AdminFormSection";
+import AdminContentPreflight from "@/components/admin/AdminContentPreflight";
 import AdminEmptyState from "@/components/admin/AdminEmptyState";
 import { adminConfirm } from "@/components/admin/AdminConfirmProvider";
 import ImageField from "@/components/admin/ImageField";
@@ -30,6 +31,7 @@ import {
   generateAdminBlogEnglish,
   hasBlogBackendConfig,
   normalizeBlogSlug,
+  previewAdminBlogPost,
   saveAdminBlogPost,
 } from "@/backend/modules/blog/service/blogService";
 
@@ -40,6 +42,7 @@ type BlogRecord = {
   id?: string;
   created_at?: string | null;
   updated_at?: string | null;
+  version?: number | null;
   slug: string;
   status: "draft" | "published" | "archived";
   sort_order: number;
@@ -182,11 +185,10 @@ export default function AdminBlogEditor() {
   );
 
   const previewUrl = useMemo(() => {
-    const lang = "zh";
-    const slug = record.slug ? normalizeBlogSlug(record.slug) : "";
+    const slug = loadedRecord?.status === "published" ? normalizeBlogSlug(loadedRecord.slug) : "";
     if (!slug) return "";
-    return `/${lang}/blog/${slug}`;
-  }, [record.slug]);
+    return `/${language}/blog/${slug}`;
+  }, [language, loadedRecord]);
 
   const save = protectSubmission("save", async (nextStatus?: BlogRecord["status"], generateEnglish?: boolean, forceEnglish?: boolean) => {
     if (!hasBlogBackendConfig()) return;
@@ -315,6 +317,8 @@ export default function AdminBlogEditor() {
           </>
         }
       />
+
+      <AdminContentPreflight record={record} disabled={saveBusy || isLoading || isSubmitting} onPreview={() => previewAdminBlogPost({ record })} />
 
       <form
         onSubmit={(e: FormEvent) => {

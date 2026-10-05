@@ -4,6 +4,25 @@ import type { Json } from "@/lib/database.types";
 
 export type AdminMutationDbRecord = Record<string, unknown>;
 
+export type AdminContentPreflightRequest = {
+  contentType: "service" | "blog";
+  nextStatus: "draft" | "published" | "archived";
+  expectedUpdatedAt: string;
+  record: AdminMutationDbRecord;
+};
+
+export function requestAdminContentPreflight(input: AdminContentPreflightRequest) {
+  return requireSupabase().functions.invoke<Record<string, unknown>>("content-publish", {
+    body: {
+      contentType: input.contentType,
+      mode: "dry-run",
+      nextStatus: input.nextStatus,
+      expectedUpdatedAt: input.expectedUpdatedAt,
+      record: input.record,
+    },
+  });
+}
+
 export type PublicContentInvalidationResult = {
   ok?: boolean;
   cache_invalidation?: {

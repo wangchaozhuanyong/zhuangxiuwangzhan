@@ -14,6 +14,7 @@ import AdminStickyActionBar from "@/components/admin/AdminStickyActionBar";
 import { adminMobileEditorText } from "@/i18n/adminMobileEditorText";
 import AdminPageHeader from "@/components/admin/AdminPageHeader";
 import AdminFormSection from "@/components/admin/AdminFormSection";
+import AdminContentPreflight from "@/components/admin/AdminContentPreflight";
 import AdminEmptyState from "@/components/admin/AdminEmptyState";
 import { adminConfirm } from "@/components/admin/AdminConfirmProvider";
 import ImageField from "@/components/admin/ImageField";
@@ -21,7 +22,7 @@ import { FaqListEditor, ProcessStepsEditor, TextListEditor } from "@/components/
 import { adminServiceEditorText } from "@/i18n/adminServiceEditorText";
 import { invalidateAdminContentDetail, invalidateAdminResource } from "@/lib/adminInvalidate";
 import { useAdminServiceDetail } from "@/lib/adminBusinessContentQueries";
-import { adminStatusLabel, getAdminLang, publishStatusOptions } from "@/lib/adminLocale";
+import { adminStatusLabel, publishStatusOptions, useAdminLang } from "@/lib/adminLocale";
 import { getAdminFieldHelp } from "@/lib/adminHelpText";
 import { formatAdminMutationError } from "@/lib/adminMutation";
 import { isNewAdminRouteRecord } from "@/lib/adminRouteParams";
@@ -32,6 +33,7 @@ import {
   generateAdminServiceEnglish,
   hasServiceBackendConfig,
   normalizeServiceSlug,
+  previewAdminService,
   publishAdminService,
   saveAdminService,
 } from "@/backend/modules/services/service/serviceService";
@@ -52,6 +54,7 @@ type ServiceRecord = {
   id?: string;
   created_at?: string | null;
   updated_at?: string | null;
+  version?: number | null;
   slug: string;
   status: "draft" | "published" | "archived";
   sort_order: number;
@@ -134,7 +137,7 @@ const toRecordArray = <T extends Record<string, unknown>>(value: unknown): T[] =
 
 export default function AdminServiceEditor() {
   const { protectSubmission, isSubmitting } = useSubmissionLock();
-  const language = getAdminLang();
+  const language = useAdminLang();
   const mobileText = adminMobileEditorText[language];
   const A = useCallback((key: AdminServiceEditorTextKey): string => adminServiceEditorText[key][language], [language]);
   const formatA = useCallback(
@@ -210,11 +213,10 @@ export default function AdminServiceEditor() {
   );
 
   const previewUrl = useMemo(() => {
-    const lang = "zh";
-    const slug = record.slug ? normalizeServiceSlug(record.slug) : "";
+    const slug = loadedRecord?.status === "published" ? normalizeServiceSlug(loadedRecord.slug) : "";
     if (!slug) return "";
-    return `/${lang}/services/${slug}`;
-  }, [record.slug]);
+    return `/${language}/services/${slug}`;
+  }, [language, loadedRecord]);
 
   const save = protectSubmission("record-write", async (nextStatus?: ServiceRecord["status"], generateEnglish?: boolean, forceEnglish?: boolean) => {
     if (!hasServiceBackendConfig()) return;
@@ -383,6 +385,8 @@ export default function AdminServiceEditor() {
           </>
         }
       />
+
+      <AdminContentPreflight record={record} disabled={saveBusy || isLoading || isSubmitting} onPreview={() => previewAdminService({ record })} />
 
       <form
         onSubmit={(e: FormEvent) => {
