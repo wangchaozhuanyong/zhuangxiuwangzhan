@@ -129,9 +129,9 @@ export default function AdminPromotionsEditor() {
   const language = getAdminLang();
   const t = adminPromotionsEditorText[language];
   const queryClient = useQueryClient();
-  const { data: rows = [], isFetching, error, refetch } = useAdminSimpleCmsRows("site_pages");
+  const { data: rows, isFetching, isLoading, error, refetch } = useAdminSimpleCmsRows("site_pages");
   const storedRecord = useMemo(
-    () => (rows as PromotionRecord[]).find((row) => String(row.page_key || "") === "promotions"),
+    () => ((rows || []) as PromotionRecord[]).find((row) => String(row.page_key || "") === "promotions"),
     [rows],
   );
   const { state: record, setForm: setRecord, applyRemote, dirty } = useAdminFormState<PromotionRecord>(storedRecord, { initial: createDefaultRecord() });
@@ -142,12 +142,13 @@ export default function AdminPromotionsEditor() {
 
 
   const update = (key: string, value: unknown) => {
+    if (rows === undefined) return;
     setMessage("");
     setRecord((current) => ({ ...current, [key]: value }));
   };
 
   const save = protectSubmission("save", async () => {
-    if (!isSupabaseConfigured || saving) return;
+    if (!isSupabaseConfigured || saving || rows === undefined) return;
     setSaving(true);
     setMessage("");
     const id = typeof record.id === "string" || typeof record.id === "number" ? record.id : undefined;
@@ -207,7 +208,7 @@ export default function AdminPromotionsEditor() {
     </div>
   );
 
-  if (isFetching && !storedRecord) {
+  if ((isLoading || isFetching) && !storedRecord) {
     return <div className="rounded-xl border border-border bg-card p-8 text-sm text-muted-foreground" role="status">{t.loading}</div>;
   }
 
@@ -229,7 +230,7 @@ export default function AdminPromotionsEditor() {
       {message ? <p className="mb-5 rounded-lg bg-muted p-4 text-sm" role="status">{message}</p> : null}
       {dirty ? <p className="mb-5 rounded-lg p-4 text-sm admin-tone-warning">{t.unsaved}</p> : null}
 
-      <div className="space-y-6">
+      <fieldset disabled={rows === undefined} className="min-w-0 space-y-6 border-0 p-0">
         <section className="rounded-xl border border-border bg-card p-4 sm:p-6">
           <h2 className="mb-5 text-lg font-semibold">{t.pageContent}</h2>
           <div className="grid gap-4 md:grid-cols-2">
@@ -285,10 +286,10 @@ export default function AdminPromotionsEditor() {
           </div>
         </section>
 
-        <Button type="button" className="w-full sm:w-auto" disabled={!isSupabaseConfigured || saving} onClick={() => void save()}>
+        <Button type="button" className="w-full sm:w-auto" disabled={!isSupabaseConfigured || saving || rows === undefined} onClick={() => void save()}>
           {saving ? t.saving : t.save}
         </Button>
-      </div>
+      </fieldset>
     </div>
   );
 }

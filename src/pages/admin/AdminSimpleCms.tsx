@@ -5,6 +5,7 @@ import { useEffect, useMemo, useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { useAdminSimpleCmsRows } from "@/lib/adminCmsQueries";
 import AdminPageHeader from "@/components/admin/AdminPageHeader";
+import AdminLoadingState from "@/components/admin/AdminLoadingState";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -134,7 +135,8 @@ const AdminSimpleCms = ({ module }: { module: ModuleKey }) => {
   const configText = adminSimpleCmsConfigText[language][module];
   const config = configs[module];
   const queryClient = useQueryClient();
-  const { data: rows = [], error } = useAdminSimpleCmsRows(config.table);
+  const { data: loadedRows, error, isLoading, isFetching } = useAdminSimpleCmsRows(config.table);
+  const rows = loadedRows ?? [];
   const { state: record, setForm: setRecord, applyRemote, dirty: recordDirty, isDirty } = useAdminFormState<SimpleCmsRecord>(undefined, { initial: emptyRecord, resetKey: module });
   const [message, setMessage] = useState(error ? formatAdminError(module, error, language) : "");
   const [saving, setSaving] = useState(false);
@@ -349,7 +351,8 @@ const AdminSimpleCms = ({ module }: { module: ModuleKey }) => {
             <h1 className="font-display text-xl font-bold sm:text-2xl">{configText.title}</h1>
             <p className="mt-1 text-sm text-muted-foreground">{getAdminTableHelp(config.table)}</p>
           </div>
-          <div className="space-y-3">
+          <div className="space-y-3" aria-busy={isFetching || isLoading || undefined}>
+            {isLoading && <AdminLoadingState />}
             {rows.map((row) => {
               const rowRecord = row as Record<string, unknown>;
               const rowId = String(rowRecord.id || "");
@@ -374,7 +377,7 @@ const AdminSimpleCms = ({ module }: { module: ModuleKey }) => {
                 </div>
               );
             })}
-            {rows.length === 0 && <p className="rounded-lg border border-dashed border-border p-4 text-sm text-muted-foreground">{t.emptyList}</p>}
+            {loadedRows !== undefined && rows.length === 0 && <p className="rounded-lg border border-dashed border-border p-4 text-sm text-muted-foreground">{t.emptyList}</p>}
           </div>
         </section>
       </div>

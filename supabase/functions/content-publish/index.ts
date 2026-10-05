@@ -102,25 +102,30 @@ serve(async (req) => {
     });
     if (result.body.ok === true && result.body.dry_run === false) {
       const revision = new Date().toISOString();
-      const { error: revisionError } = await client
+      const { data: revisionRow, error: revisionError } = await client
         .from("site_settings")
         .update({ updated_at: revision })
-        .eq("id", "default");
+        .eq("id", "default")
+        .select("updated_at")
+        .maybeSingle();
+      // The existing BEFORE UPDATE trigger owns the actual timestamp/precision.
+      const confirmedRevision = typeof revisionRow?.updated_at === "string" && revisionRow.updated_at
+        ? revisionRow.updated_at : null;
       const edgePurge = await purgePublicHtmlCache({
         apiToken: Deno.env.get("CLOUDFLARE_API_TOKEN"),
         zoneId: Deno.env.get("CLOUDFLARE_ZONE_ID"),
       });
       result.body.cache_invalidation = {
-        ok: !revisionError,
+        ok: !revisionError && confirmedRevision !== null,
         strategy: "content-revision",
-        revision: revisionError ? null : revision,
+        revision: revisionError ? null : confirmedRevision,
         edge_purge_requested: edgePurge,
       };
       const warnings = Array.isArray(result.body.warnings)
         ? result.body.warnings.filter((warning): warning is string => typeof warning === "string")
         : [];
-      if (revisionError) {
-        warnings.push(`Cache revision warning: ${revisionError.message}`);
+      if (revisionError || !confirmedRevision) {
+        warnings.push(`Cache revision warning: ${revisionError?.message || "Site settings revision was not returned."}`);
       }
       if (!edgePurge.ok) {
         warnings.push(`Cloudflare cache purge warning: ${edgePurge.error}`);

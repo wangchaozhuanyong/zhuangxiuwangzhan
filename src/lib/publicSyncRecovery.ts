@@ -9,12 +9,20 @@ export function registerPublicSyncIssue(issue: PublicSyncIssue) {
   issues = [...issues.filter((item) => item.key !== issue.key), issue];
   publish();
 }
-export function resolvePublicSyncIssue(key: string) { issues = issues.filter((item) => item.key !== key); publish(); }
+export function resolvePublicSyncIssue(key: string, expectedIssue?: PublicSyncIssue | null) {
+  // One-argument callers retain their explicit clear-by-key behavior. Async
+  // completions pass their captured identity (or null) to preserve newer work.
+  issues = issues.filter((item) => item.key !== key || expectedIssue === null
+    || expectedIssue !== undefined && item !== expectedIssue);
+  publish();
+}
 /** For legacy image writes: the caller's write has already completed. Retry delivery only. */
 export async function completePublicSync(key: string, sync: () => Promise<unknown>) {
-  try { await sync(); resolvePublicSyncIssue(key); return true; }
+  const previousIssue = issues.find((issue) => issue.key === key) || null;
+  try { await sync(); resolvePublicSyncIssue(key, previousIssue); return true; }
   catch {
-    registerPublicSyncIssue({ key, retry: async () => { await sync(); resolvePublicSyncIssue(key); } });
+    const issue: PublicSyncIssue = { key, retry: async () => { await sync(); resolvePublicSyncIssue(key, issue); } };
+    registerPublicSyncIssue(issue);
     return false;
   }
 }

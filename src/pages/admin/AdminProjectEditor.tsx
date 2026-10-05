@@ -14,6 +14,7 @@ import AdminStickyActionBar from "@/components/admin/AdminStickyActionBar";
 import { adminMobileEditorText } from "@/i18n/adminMobileEditorText";
 import AdminPageHeader from "@/components/admin/AdminPageHeader";
 import AdminFormSection from "@/components/admin/AdminFormSection";
+import AdminLoadingState from "@/components/admin/AdminLoadingState";
 import AdminEmptyState from "@/components/admin/AdminEmptyState";
 import { adminConfirm } from "@/components/admin/AdminConfirmProvider";
 import ImageField from "@/components/admin/ImageField";
@@ -25,6 +26,7 @@ import AdminProjectImages from "./AdminProjectImages";
 import { formatAdminMutationError } from "@/lib/adminMutation";
 import { isNewAdminRouteRecord } from "@/lib/adminRouteParams";
 import { autoEnglishDescription, englishMissingHint, hasAnyMissingEnglish } from "@/lib/adminTranslation";
+import { interactionText } from "@/i18n/interactionText";
 import { formatUserFacingError } from "@/lib/userFacingText";
 import {
   checkAdminProjectSlugUnique,
@@ -136,7 +138,7 @@ export default function AdminProjectEditor() {
   const [slugError, setSlugError] = useState<string>("");
   const [saveBusy, setSaveBusy] = useState(false);
 
-  const { data: loaded, isLoading, isInitialError: isError, error: loadError } = useAdminProjectDetail(isNew ? undefined : id);
+  const { data: loaded, isLoading, isInitialError: isError, error: loadError, refetch: refetchLoaded } = useAdminProjectDetail(isNew ? undefined : id);
 
   const loadedRecord = useMemo<ProjectRecord | undefined>(() => {
     if (isNew || !loaded) return isNew ? empty : undefined;
@@ -155,6 +157,7 @@ export default function AdminProjectEditor() {
     resetKey: id ?? "new",
     initial: empty,
   });
+  const recordReady = isNew || Boolean(loaded?.id && record.id === loaded.id);
   const englishMissing = hasAnyMissingEnglish(record as unknown as Record<string, unknown>, projectEnglishFields);
   useUnsavedChangesWarning((dirty || saveBusy) || isSubmitting);
 
@@ -196,6 +199,7 @@ export default function AdminProjectEditor() {
   }, [record.slug]);
 
   const save = protectSubmission("save", async (nextStatus?: ProjectRecord["status"], generateEnglish?: boolean, forceEnglish?: boolean) => {
+    if (!recordReady) return;
     if (!hasProjectBackendConfig()) return;
     const slug = normalizeProjectSlug(record.slug || record.title_zh);
     if (!slug) {
@@ -256,6 +260,15 @@ export default function AdminProjectEditor() {
     return <AdminEmptyState title={A("supabaseMissingTitle")} description={A("supabaseMissingDescription")} />;
   }
 
+  if (!recordReady) {
+    if (!isError) return <AdminLoadingState />;
+    return <AdminEmptyState
+      title={A("loadFailed")}
+      description={formatUserFacingError(loadError, language)}
+      action={<Button type="button" onClick={() => void refetchLoaded()}>{interactionText[language].retry}</Button>}
+    />;
+  }
+
   return (
     <>
       <AdminStickyActionBar
@@ -272,10 +285,10 @@ export default function AdminProjectEditor() {
         }
         right={
           <>
-            <AdminActionButton action="content.write" type="button" variant="outline" onClick={() => void save("draft")} disabled={saveBusy || isLoading}>
+            <AdminActionButton action="content.write" type="button" variant="outline" onClick={() => void save("draft")} disabled={saveBusy || !recordReady || isLoading}>
               {record.status === "draft" ? A("saveDraft") : mobileText.moveToDraft}
             </AdminActionButton>
-            <AdminActionButton action="content.publish" type="button" onClick={() => void save("published")} disabled={saveBusy || isLoading}>
+            <AdminActionButton action="content.publish" type="button" onClick={() => void save("published")} disabled={saveBusy || !recordReady || isLoading}>
               {record.status === "published" ? mobileText.updatePublished : A("publish")}
             </AdminActionButton>
           </>
@@ -292,7 +305,7 @@ export default function AdminProjectEditor() {
             <Button type="button" variant="outline" aria-expanded={showEnglish} onClick={() => setShowEnglish((value) => !value)}>
               {showEnglish ? A("hideEnglish") : A("showEnglish")}
             </Button>
-            <AdminActionButton action="content.write" type="button" variant="outline" onClick={() => void save(undefined, true)} disabled={saveBusy || isLoading || !record.id}>
+            <AdminActionButton action="content.write" type="button" variant="outline" onClick={() => void save(undefined, true)} disabled={saveBusy || !recordReady || isLoading || !record.id}>
               {A("saveAndGenerateEnglish")}
             </AdminActionButton>
             <AdminActionButton
@@ -300,7 +313,7 @@ export default function AdminProjectEditor() {
               type="button"
               variant="outline"
               onClick={() => void forceRegenerateEnglish()}
-              disabled={saveBusy || isLoading || !record.id}
+              disabled={saveBusy || !recordReady || isLoading || !record.id}
             >
               {A("forceRegenerateEnglish")}
             </AdminActionButton>

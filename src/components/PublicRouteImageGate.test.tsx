@@ -83,6 +83,7 @@ describe("public route visual readiness", () => {
     await render(<Image />);
     expect(container.querySelector(".public-route-scene")).toHaveAttribute("data-pending", "true");
     expect(loader()?.getAttribute("data-route-loader")).toBe("navigation");
+    expect(container.querySelector(".public-route-feedback__pending")).not.toBeNull();
     await act(async () => vi.advanceTimersByTime(180));
     expect(loader()?.getAttribute("data-route-loader")).toBe("navigation");
     expect(pageFeedback()).toBe(loader());
@@ -218,6 +219,9 @@ describe("public route visual readiness", () => {
     try {
       await render(<Image ready />, "/zh/materials");
       expect(state()).toBe("handoff");
+      expect(container.querySelector(".public-route-feedback__pending")).not.toBeNull();
+      expect(loader()).toHaveAttribute("aria-busy", "true");
+      expect(container.querySelector(".scheme-a-page-loader__actions")).toBeNull();
       await render(<Image />, "/zh/projects");
       await render(<Image />, "/zh/materials");
       expect(state()).toBe("waiting");
@@ -227,6 +231,7 @@ describe("public route visual readiness", () => {
       expect(ready).not.toHaveBeenCalled();
       await render(<Image ready />, "/zh/materials");
       expect(state()).toBe("ready");
+      expect(loader()).toBeNull();
       expect(ready).toHaveBeenCalledTimes(1);
     } finally {
       transition.mockRestore();

@@ -1,8 +1,8 @@
 import type { QueryClient } from "@tanstack/react-query";
 import type { AdminUserRow } from "@/lib/adminEditorData";
+import { saveAdminRecord } from "@/lib/adminMutation";
 import {
   findAdminUserByUserId,
-  saveAdminUserRecord,
 } from "@/backend/modules/admin-users/repository/adminUserRepository";
 
 export function getAdminUserForUpsert(userId: string) {
@@ -14,7 +14,17 @@ export function saveAdminUser(
   existing: AdminUserRow | null | undefined,
   queryClient?: QueryClient,
 ) {
-  return saveAdminUserRecord(payload, existing, queryClient);
+  return saveAdminRecord({
+    table: "admin_users",
+    id: existing?.user_id || null,
+    idField: "user_id",
+    expectedUpdatedAt: existing?.updated_at || null,
+    payload,
+    action: existing ? "admin_user_update" : "admin_user_insert",
+    queryClient,
+    invalidate: "none",
+    audit: false,
+  });
 }
 
 export function isProtectedAdminUserMutationError(error: unknown) {

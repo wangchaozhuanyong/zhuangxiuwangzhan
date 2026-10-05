@@ -2,7 +2,7 @@
 
 Purpose: about page, process content, FAQs, before-after items, brand partners, and shared company CTA content.
 
-Current status: scaffold only. Existing code remains in `src/lib`, `src/pages`, `src/pages/admin`, and current Supabase access wrappers until a scoped migration is approved.
+Current status: admin about/process/FAQ/CTA reads are migrated. `repository/adminEditorRepository.ts` reads `about_sections`, `process_steps`, `faqs`, and `cta_blocks`; `service/adminEditorService.ts` composes about-editor and homepage auxiliary data. `index.ts` is the stable application boundary. Existing `src/lib/adminEditorData` and CMS repository exports remain compatibility adapters. Public reads, before-after/brand-partner administration, and editor writes remain in their existing paths pending separate scoped migrations.
 
 Layer rules:
 

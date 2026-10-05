@@ -2,7 +2,7 @@ import { useQuery, useQueryClient, type QueryKey, type UseQueryOptions } from "@
 import { claimPublicQuerySeed, documentSeedTime } from "@/lib/publicQuerySeedCache";
 import { runReadQuery } from "@/lib/interactionPolicy";
 
-/** Shared read lifecycle; does not change TanStack's error or loading semantics. */
+/** Shared read lifecycle; an enabled first read also waits while offline-paused. */
 export function useInteractionQuery<TQueryFnData = unknown, TError = Error, TData = TQueryFnData>(
   options: UseQueryOptions<TQueryFnData, TError, TData, QueryKey>,
 ) {
@@ -23,5 +23,8 @@ export function useInteractionQuery<TQueryFnData = unknown, TError = Error, TDat
       return value;
     }) : read,
   });
-  return { ...result, isInitialError: result.isError && result.data === undefined, isRefreshing: result.isFetching && result.data !== undefined, refreshError: result.isError && result.data !== undefined ? result.error : null };
+  // A disabled observer may share the same paused query. Use the observer's
+  // resolved enabled state (including callback/skipToken), not pending alone.
+  const isLoading = result.isLoading || (result.isEnabled && result.isPending && result.isPaused && result.data === undefined);
+  return { ...result, isLoading, isInitialLoading: isLoading, isInitialError: result.isError && result.data === undefined, isRefreshing: result.isFetching && result.data !== undefined, refreshError: result.isError && result.data !== undefined ? result.error : null };
 }

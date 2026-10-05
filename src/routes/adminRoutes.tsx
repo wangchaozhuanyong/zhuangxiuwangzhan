@@ -7,48 +7,49 @@ import AdminLanguagePage from "@/components/admin/AdminLanguagePage";
 import { Button } from "@/components/ui/button";
 import { adminRouteText } from "@/i18n/adminRouteText";
 import { useAdminLang } from "@/lib/adminLocale";
-import { ADMIN_ROLE_GROUPS, type AdminAllowedRoles } from "@/lib/adminRoleAccess";
+import type { AdminAllowedRoles } from "@/lib/adminRoleAccess";
+import { adminRouteDefinitions } from "@/routes/adminRouteDefinitions";
 import AdminRoute from "@/pages/admin/AdminRoute";
 import AdminAuthProvider from "@/pages/admin/AdminAuthProvider";
 
 const AdminLogin = lazy(() => import("@/pages/admin/AdminLogin"));
 const AdminLayout = lazy(() => import("@/pages/admin/AdminLayout"));
-const AdminDashboard = lazy(() => import("@/pages/admin/AdminDashboard"));
-const AdminContentHealth = lazy(() => import("@/pages/admin/AdminContentHealth"));
-const AdminPublishCenter = lazy(() => import("@/pages/admin/AdminPublishCenter"));
-const AdminEnglishCenter = lazy(() => import("@/pages/admin/AdminEnglishCenter"));
-const AdminCmsBuilder = lazy(() => import("@/pages/admin/AdminCmsBuilder"));
-const AdminContentEditor = lazy(() => import("@/pages/admin/AdminContentEditor"));
-const AdminNotificationSettings = lazy(() => import("@/pages/admin/AdminNotificationSettings"));
-const AdminTranslationJobs = lazy(() => import("@/pages/admin/AdminTranslationJobs"));
-const AdminWebsiteSettings = lazy(() => import("@/pages/admin/AdminWebsiteSettings"));
-const AdminLeadList = lazy(() => import("@/pages/admin/AdminLeadList"));
-const AdminLeadDetail = lazy(() => import("@/pages/admin/AdminLeadDetail"));
-const AdminQuoteList = lazy(() => import("@/pages/admin/AdminQuoteList"));
-const AdminQuoteDetail = lazy(() => import("@/pages/admin/AdminQuoteDetail"));
-const AdminLeadReports = lazy(() => import("@/pages/admin/AdminLeadReports"));
-const AdminServiceList = lazy(() => import("@/pages/admin/AdminServiceList"));
-const AdminServiceEditor = lazy(() => import("@/pages/admin/AdminServiceEditor"));
-const AdminProjectList = lazy(() => import("@/pages/admin/AdminProjectList"));
-const AdminProjectEditor = lazy(() => import("@/pages/admin/AdminProjectEditor"));
-const AdminMaterialList = lazy(() => import("@/pages/admin/AdminMaterialList"));
-const AdminMaterialEditor = lazy(() => import("@/pages/admin/AdminMaterialEditor"));
-const AdminFurnitureList = lazy(() => import("@/pages/admin/AdminMaterialList").then((module) => ({ default: () => <module.default furnitureMode /> })));
-const AdminFurnitureEditor = lazy(() => import("@/pages/admin/AdminMaterialEditor").then((module) => ({ default: () => <module.default furnitureMode /> })));
-const AdminPromotionsEditor = lazy(() => import("@/pages/admin/AdminPromotionsEditor"));
-const AdminBlogList = lazy(() => import("@/pages/admin/AdminBlogList"));
-const AdminBlogEditor = lazy(() => import("@/pages/admin/AdminBlogEditor"));
-const AdminMediaLibrary = lazy(() => import("@/pages/admin/AdminMediaLibrary"));
-const AdminSeoManager = lazy(() => import("@/pages/admin/AdminSeoManager"));
-const AdminUsers = lazy(() => import("@/pages/admin/AdminUsers"));
-const AdminSystemLogs = lazy(() => import("@/pages/admin/AdminSystemLogs"));
-const AdminSystemHealth = lazy(() => import("@/pages/admin/AdminSystemHealth"));
-const AdminHomeEditor = lazy(() => import("@/pages/admin/AdminHomeEditor"));
-const AdminAboutEditor = lazy(() => import("@/pages/admin/AdminAboutEditor"));
-const AdminPages = lazy(() => import("@/pages/admin/AdminSimpleCms").then((module) => ({ default: () => <module.default module="site_pages" /> })));
-const AdminFaqs = lazy(() => import("@/pages/admin/AdminSimpleCms").then((module) => ({ default: () => <module.default module="faqs" /> })));
-const AdminBeforeAfter = lazy(() => import("@/pages/admin/AdminSimpleCms").then((module) => ({ default: () => <module.default module="before_after_items" /> })));
-const AdminBrandPartners = lazy(() => import("@/pages/admin/AdminSimpleCms").then((module) => ({ default: () => <module.default module="brand_partners" /> })));
+const AdminDashboard = lazy(adminRouteDefinitions.dashboard.load);
+const AdminContentHealth = lazy(adminRouteDefinitions.contentHealth.load);
+const AdminPublishCenter = lazy(adminRouteDefinitions.publishCenter.load);
+const AdminEnglishCenter = lazy(adminRouteDefinitions.englishCenter.load);
+const AdminCmsBuilder = lazy(adminRouteDefinitions.cmsBuilder.load);
+const AdminContentEditor = lazy(adminRouteDefinitions.contentEditor.load);
+const AdminNotificationSettings = lazy(adminRouteDefinitions.notificationSettings.load);
+const AdminTranslationJobs = lazy(adminRouteDefinitions.translationJobs.load);
+const AdminWebsiteSettings = lazy(adminRouteDefinitions.websiteSettings.load);
+const AdminLeadList = lazy(adminRouteDefinitions.leadList.load);
+const AdminLeadDetail = lazy(adminRouteDefinitions.leadDetail.load);
+const AdminQuoteList = lazy(adminRouteDefinitions.quoteList.load);
+const AdminQuoteDetail = lazy(adminRouteDefinitions.quoteDetail.load);
+const AdminLeadReports = lazy(adminRouteDefinitions.leadReports.load);
+const AdminServiceList = lazy(adminRouteDefinitions.serviceList.load);
+const AdminServiceEditor = lazy(adminRouteDefinitions.serviceEditorNew.load);
+const AdminProjectList = lazy(adminRouteDefinitions.projectList.load);
+const AdminProjectEditor = lazy(adminRouteDefinitions.projectEditorNew.load);
+const AdminMaterialList = lazy(adminRouteDefinitions.materialList.load);
+const AdminMaterialEditor = lazy(adminRouteDefinitions.materialEditorNew.load);
+const AdminFurnitureList = lazy(() => adminRouteDefinitions.furnitureList.load().then((module) => ({ default: () => <module.default furnitureMode /> })));
+const AdminFurnitureEditor = lazy(() => adminRouteDefinitions.furnitureEditorNew.load().then((module) => ({ default: () => <module.default furnitureMode /> })));
+const AdminPromotionsEditor = lazy(adminRouteDefinitions.promotionsEditor.load);
+const AdminBlogList = lazy(adminRouteDefinitions.blogList.load);
+const AdminBlogEditor = lazy(adminRouteDefinitions.blogEditorNew.load);
+const AdminMediaLibrary = lazy(adminRouteDefinitions.mediaLibrary.load);
+const AdminSeoManager = lazy(adminRouteDefinitions.seoManager.load);
+const AdminUsers = lazy(adminRouteDefinitions.users.load);
+const AdminSystemLogs = lazy(adminRouteDefinitions.systemLogs.load);
+const AdminSystemHealth = lazy(adminRouteDefinitions.systemHealth.load);
+const AdminHomeEditor = lazy(adminRouteDefinitions.homeEditor.load);
+const AdminAboutEditor = lazy(adminRouteDefinitions.aboutEditor.load);
+const AdminPages = lazy(() => adminRouteDefinitions.pages.load().then((module) => ({ default: () => <module.default module="site_pages" /> })));
+const AdminFaqs = lazy(() => adminRouteDefinitions.faqs.load().then((module) => ({ default: () => <module.default module="faqs" /> })));
+const AdminBeforeAfter = lazy(() => adminRouteDefinitions.beforeAfter.load().then((module) => ({ default: () => <module.default module="before_after_items" /> })));
+const AdminBrandPartners = lazy(() => adminRouteDefinitions.brandPartners.load().then((module) => ({ default: () => <module.default module="brand_partners" /> })));
 
 const withRoleGate = (element: JSX.Element, allowedRoles: AdminAllowedRoles) => (
   <AdminLanguagePage>
@@ -86,48 +87,48 @@ export const adminRoutes = (
       }
     >
       <Route path="/admin" element={<AdminLayout />}>
-        <Route path="dashboard" element={withRoleGate(<AdminDashboard />, ADMIN_ROLE_GROUPS.all)} />
-        <Route path="content-health" element={withRoleGate(<AdminContentHealth />, ADMIN_ROLE_GROUPS.contentRead)} />
-        <Route path="publish-center" element={withRoleGate(<AdminPublishCenter />, ADMIN_ROLE_GROUPS.contentWrite)} />
-        <Route path="english-center" element={withRoleGate(<AdminEnglishCenter />, ADMIN_ROLE_GROUPS.contentWrite)} />
-        <Route path="cms" element={withRoleGate(<AdminCmsBuilder />, ADMIN_ROLE_GROUPS.contentWrite)} />
-        <Route path="settings" element={withRoleGate(<AdminWebsiteSettings />, ADMIN_ROLE_GROUPS.system)} />
-        <Route path="leads" element={withRoleGate(<AdminLeadList />, ADMIN_ROLE_GROUPS.leadRead)} />
-        <Route path="leads/:id" element={withRoleGate(<AdminLeadDetail />, ADMIN_ROLE_GROUPS.leadRead)} />
-        <Route path="quotes" element={withRoleGate(<AdminQuoteList />, ADMIN_ROLE_GROUPS.leadRead)} />
-        <Route path="quotes/:id" element={withRoleGate(<AdminQuoteDetail />, ADMIN_ROLE_GROUPS.leadRead)} />
-        <Route path="lead-reports" element={withRoleGate(<AdminLeadReports />, ADMIN_ROLE_GROUPS.leadRead)} />
-        <Route path="home" element={withRoleGate(<AdminHomeEditor />, ADMIN_ROLE_GROUPS.contentWrite)} />
-        <Route path="pages" element={withRoleGate(<AdminPages />, ADMIN_ROLE_GROUPS.contentWrite)} />
-        <Route path="about" element={withRoleGate(<AdminAboutEditor />, ADMIN_ROLE_GROUPS.contentWrite)} />
-        <Route path="faqs" element={withRoleGate(<AdminFaqs />, ADMIN_ROLE_GROUPS.contentWrite)} />
-        <Route path="before-after" element={withRoleGate(<AdminBeforeAfter />, ADMIN_ROLE_GROUPS.contentWrite)} />
-        <Route path="brand-partners" element={withRoleGate(<AdminBrandPartners />, ADMIN_ROLE_GROUPS.contentWrite)} />
-        <Route path="services" element={withRoleGate(<AdminServiceList />, ADMIN_ROLE_GROUPS.contentWrite)} />
-        <Route path="services/new" element={withRoleGate(<AdminServiceEditor />, ADMIN_ROLE_GROUPS.contentWrite)} />
-        <Route path="services/:id" element={withRoleGate(<AdminServiceEditor />, ADMIN_ROLE_GROUPS.contentWrite)} />
-        <Route path="projects" element={withRoleGate(<AdminProjectList />, ADMIN_ROLE_GROUPS.contentWrite)} />
-        <Route path="projects/new" element={withRoleGate(<AdminProjectEditor />, ADMIN_ROLE_GROUPS.contentWrite)} />
-        <Route path="projects/:id" element={withRoleGate(<AdminProjectEditor />, ADMIN_ROLE_GROUPS.contentWrite)} />
-        <Route path="materials" element={withRoleGate(<AdminMaterialList />, ADMIN_ROLE_GROUPS.contentWrite)} />
-        <Route path="materials/new" element={withRoleGate(<AdminMaterialEditor />, ADMIN_ROLE_GROUPS.contentWrite)} />
-        <Route path="materials/:id" element={withRoleGate(<AdminMaterialEditor />, ADMIN_ROLE_GROUPS.contentWrite)} />
-        <Route path="furniture" element={withRoleGate(<AdminFurnitureList />, ADMIN_ROLE_GROUPS.contentWrite)} />
-        <Route path="furniture/new" element={withRoleGate(<AdminFurnitureEditor />, ADMIN_ROLE_GROUPS.contentWrite)} />
-        <Route path="furniture/:id" element={withRoleGate(<AdminFurnitureEditor />, ADMIN_ROLE_GROUPS.contentWrite)} />
-        <Route path="promotions" element={withRoleGate(<AdminPromotionsEditor />, ADMIN_ROLE_GROUPS.contentWrite)} />
-        <Route path="blog" element={withRoleGate(<AdminBlogList />, ADMIN_ROLE_GROUPS.contentWrite)} />
-        <Route path="blog/new" element={withRoleGate(<AdminBlogEditor />, ADMIN_ROLE_GROUPS.contentWrite)} />
-        <Route path="blog/:id" element={withRoleGate(<AdminBlogEditor />, ADMIN_ROLE_GROUPS.contentWrite)} />
-        <Route path="media" element={withRoleGate(<AdminMediaLibrary />, ADMIN_ROLE_GROUPS.contentWrite)} />
-        <Route path="seo" element={withRoleGate(<AdminSeoManager />, ADMIN_ROLE_GROUPS.contentWrite)} />
-        <Route path="users" element={withRoleGate(<AdminUsers />, ADMIN_ROLE_GROUPS.system)} />
-        <Route path="notifications" element={withRoleGate(<AdminNotificationSettings />, ADMIN_ROLE_GROUPS.system)} />
-        <Route path="system-health" element={withRoleGate(<AdminSystemHealth />, ADMIN_ROLE_GROUPS.system)} />
-        <Route path="system-logs" element={withRoleGate(<AdminSystemLogs />, ADMIN_ROLE_GROUPS.system)} />
-        <Route path="content/translation_jobs" element={withRoleGate(<AdminTranslationJobs />, ADMIN_ROLE_GROUPS.contentWrite)} />
-        <Route path="content/translation_jobs/:id" element={withRoleGate(<AdminTranslationJobs />, ADMIN_ROLE_GROUPS.contentWrite)} />
-        <Route path="content/:type/:id?" element={withRoleGate(<AdminContentEditor />, ADMIN_ROLE_GROUPS.contentWrite)} />
+        <Route path={adminRouteDefinitions.dashboard.path} element={withRoleGate(<AdminDashboard />, adminRouteDefinitions.dashboard.allowedRoles)} />
+        <Route path={adminRouteDefinitions.contentHealth.path} element={withRoleGate(<AdminContentHealth />, adminRouteDefinitions.contentHealth.allowedRoles)} />
+        <Route path={adminRouteDefinitions.publishCenter.path} element={withRoleGate(<AdminPublishCenter />, adminRouteDefinitions.publishCenter.allowedRoles)} />
+        <Route path={adminRouteDefinitions.englishCenter.path} element={withRoleGate(<AdminEnglishCenter />, adminRouteDefinitions.englishCenter.allowedRoles)} />
+        <Route path={adminRouteDefinitions.cmsBuilder.path} element={withRoleGate(<AdminCmsBuilder />, adminRouteDefinitions.cmsBuilder.allowedRoles)} />
+        <Route path={adminRouteDefinitions.websiteSettings.path} element={withRoleGate(<AdminWebsiteSettings />, adminRouteDefinitions.websiteSettings.allowedRoles)} />
+        <Route path={adminRouteDefinitions.leadList.path} element={withRoleGate(<AdminLeadList />, adminRouteDefinitions.leadList.allowedRoles)} />
+        <Route path={adminRouteDefinitions.leadDetail.path} element={withRoleGate(<AdminLeadDetail />, adminRouteDefinitions.leadDetail.allowedRoles)} />
+        <Route path={adminRouteDefinitions.quoteList.path} element={withRoleGate(<AdminQuoteList />, adminRouteDefinitions.quoteList.allowedRoles)} />
+        <Route path={adminRouteDefinitions.quoteDetail.path} element={withRoleGate(<AdminQuoteDetail />, adminRouteDefinitions.quoteDetail.allowedRoles)} />
+        <Route path={adminRouteDefinitions.leadReports.path} element={withRoleGate(<AdminLeadReports />, adminRouteDefinitions.leadReports.allowedRoles)} />
+        <Route path={adminRouteDefinitions.homeEditor.path} element={withRoleGate(<AdminHomeEditor />, adminRouteDefinitions.homeEditor.allowedRoles)} />
+        <Route path={adminRouteDefinitions.pages.path} element={withRoleGate(<AdminPages />, adminRouteDefinitions.pages.allowedRoles)} />
+        <Route path={adminRouteDefinitions.aboutEditor.path} element={withRoleGate(<AdminAboutEditor />, adminRouteDefinitions.aboutEditor.allowedRoles)} />
+        <Route path={adminRouteDefinitions.faqs.path} element={withRoleGate(<AdminFaqs />, adminRouteDefinitions.faqs.allowedRoles)} />
+        <Route path={adminRouteDefinitions.beforeAfter.path} element={withRoleGate(<AdminBeforeAfter />, adminRouteDefinitions.beforeAfter.allowedRoles)} />
+        <Route path={adminRouteDefinitions.brandPartners.path} element={withRoleGate(<AdminBrandPartners />, adminRouteDefinitions.brandPartners.allowedRoles)} />
+        <Route path={adminRouteDefinitions.serviceList.path} element={withRoleGate(<AdminServiceList />, adminRouteDefinitions.serviceList.allowedRoles)} />
+        <Route path={adminRouteDefinitions.serviceEditorNew.path} element={withRoleGate(<AdminServiceEditor />, adminRouteDefinitions.serviceEditorNew.allowedRoles)} />
+        <Route path={adminRouteDefinitions.serviceEditorDetail.path} element={withRoleGate(<AdminServiceEditor />, adminRouteDefinitions.serviceEditorDetail.allowedRoles)} />
+        <Route path={adminRouteDefinitions.projectList.path} element={withRoleGate(<AdminProjectList />, adminRouteDefinitions.projectList.allowedRoles)} />
+        <Route path={adminRouteDefinitions.projectEditorNew.path} element={withRoleGate(<AdminProjectEditor />, adminRouteDefinitions.projectEditorNew.allowedRoles)} />
+        <Route path={adminRouteDefinitions.projectEditorDetail.path} element={withRoleGate(<AdminProjectEditor />, adminRouteDefinitions.projectEditorDetail.allowedRoles)} />
+        <Route path={adminRouteDefinitions.materialList.path} element={withRoleGate(<AdminMaterialList />, adminRouteDefinitions.materialList.allowedRoles)} />
+        <Route path={adminRouteDefinitions.materialEditorNew.path} element={withRoleGate(<AdminMaterialEditor />, adminRouteDefinitions.materialEditorNew.allowedRoles)} />
+        <Route path={adminRouteDefinitions.materialEditorDetail.path} element={withRoleGate(<AdminMaterialEditor />, adminRouteDefinitions.materialEditorDetail.allowedRoles)} />
+        <Route path={adminRouteDefinitions.furnitureList.path} element={withRoleGate(<AdminFurnitureList />, adminRouteDefinitions.furnitureList.allowedRoles)} />
+        <Route path={adminRouteDefinitions.furnitureEditorNew.path} element={withRoleGate(<AdminFurnitureEditor />, adminRouteDefinitions.furnitureEditorNew.allowedRoles)} />
+        <Route path={adminRouteDefinitions.furnitureEditorDetail.path} element={withRoleGate(<AdminFurnitureEditor />, adminRouteDefinitions.furnitureEditorDetail.allowedRoles)} />
+        <Route path={adminRouteDefinitions.promotionsEditor.path} element={withRoleGate(<AdminPromotionsEditor />, adminRouteDefinitions.promotionsEditor.allowedRoles)} />
+        <Route path={adminRouteDefinitions.blogList.path} element={withRoleGate(<AdminBlogList />, adminRouteDefinitions.blogList.allowedRoles)} />
+        <Route path={adminRouteDefinitions.blogEditorNew.path} element={withRoleGate(<AdminBlogEditor />, adminRouteDefinitions.blogEditorNew.allowedRoles)} />
+        <Route path={adminRouteDefinitions.blogEditorDetail.path} element={withRoleGate(<AdminBlogEditor />, adminRouteDefinitions.blogEditorDetail.allowedRoles)} />
+        <Route path={adminRouteDefinitions.mediaLibrary.path} element={withRoleGate(<AdminMediaLibrary />, adminRouteDefinitions.mediaLibrary.allowedRoles)} />
+        <Route path={adminRouteDefinitions.seoManager.path} element={withRoleGate(<AdminSeoManager />, adminRouteDefinitions.seoManager.allowedRoles)} />
+        <Route path={adminRouteDefinitions.users.path} element={withRoleGate(<AdminUsers />, adminRouteDefinitions.users.allowedRoles)} />
+        <Route path={adminRouteDefinitions.notificationSettings.path} element={withRoleGate(<AdminNotificationSettings />, adminRouteDefinitions.notificationSettings.allowedRoles)} />
+        <Route path={adminRouteDefinitions.systemHealth.path} element={withRoleGate(<AdminSystemHealth />, adminRouteDefinitions.systemHealth.allowedRoles)} />
+        <Route path={adminRouteDefinitions.systemLogs.path} element={withRoleGate(<AdminSystemLogs />, adminRouteDefinitions.systemLogs.allowedRoles)} />
+        <Route path={adminRouteDefinitions.translationJobs.path} element={withRoleGate(<AdminTranslationJobs />, adminRouteDefinitions.translationJobs.allowedRoles)} />
+        <Route path={adminRouteDefinitions.translationJobsDetail.path} element={withRoleGate(<AdminTranslationJobs />, adminRouteDefinitions.translationJobsDetail.allowedRoles)} />
+        <Route path={adminRouteDefinitions.contentEditor.path} element={withRoleGate(<AdminContentEditor />, adminRouteDefinitions.contentEditor.allowedRoles)} />
         <Route path="*" element={<AdminNotFound />} />
       </Route>
     </Route>

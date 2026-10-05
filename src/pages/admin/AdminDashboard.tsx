@@ -7,6 +7,7 @@ import { useAdminDashboardStats } from "@/lib/adminDashboardQueries";
 import AdminPageHeader from "@/components/admin/AdminPageHeader";
 import AdminStatCard from "@/components/admin/AdminStatCard";
 import AdminEmptyState from "@/components/admin/AdminEmptyState";
+import AdminLoadingState from "@/components/admin/AdminLoadingState";
 import { ga4PagesReportUrl, isAnalyticsEnabled } from "@/lib/analytics";
 import { adminStatusLabel, getAdminLang } from "@/lib/adminLocale";
 import { buildAdminWorkflowHref } from "@/lib/adminLeadWorkflow";
@@ -40,10 +41,12 @@ const cardHrefs: Record<AdminDashboardCardKey, string> = {
 const AdminDashboard = () => {
   const lang = getAdminLang();
   const [loadHealthCards, setLoadHealthCards] = useState(false);
-  const { data } = useAdminDashboardStats();
-  const { data: healthItems = [] } = useAdminContentHealth({ enabled: loadHealthCards });
+  const { data, isLoading } = useAdminDashboardStats();
+  const healthQuery = useAdminContentHealth({ enabled: loadHealthCards });
+  const { data: healthItems = [] } = healthQuery;
   const counts = data?.counts ?? {};
-  const healthValue = (value: number) => (loadHealthCards ? value : "…");
+  const healthConfirmed = healthQuery.data !== undefined && !healthItems.some((item) => item.status === "error");
+  const healthValue = (value: number) => (loadHealthCards && healthConfirmed ? value : "…");
   const contentIssues = healthItems.filter((item) => item.issues.length > 0).length;
   const missingEnglish = healthItems.filter((item) => item.missingEnglish.length > 0).length;
   const draftContent = healthItems.filter((item) => item.status === "draft").length;
@@ -114,6 +117,7 @@ const AdminDashboard = () => {
         <div className="rounded-xl border border-border bg-card p-4 sm:p-6">
           <h2 className="mb-4 font-display text-xl font-bold">{A("recentLeads")}</h2>
           <div className="space-y-3">
+            {isLoading ? <AdminLoadingState /> : null}
             {recentLeads.map((lead) => (
               <Link key={lead.id} to={`/admin/leads/${lead.id}`} className="block rounded-lg border border-border p-3 text-sm hover:bg-muted">
                 <span className="font-medium">{lead.name || A("leadFallback")} · {lead.phone || "-"}</span>
@@ -122,7 +126,7 @@ const AdminDashboard = () => {
                 </span>
               </Link>
             ))}
-            {recentLeads.length === 0 && (
+            {data !== undefined && recentLeads.length === 0 && (
               <AdminEmptyState
                 title={A("empty")}
                 description={A("emptyLeadsDescription")}
@@ -138,6 +142,7 @@ const AdminDashboard = () => {
         <div className="rounded-xl border border-border bg-card p-4 sm:p-6">
           <h2 className="mb-4 font-display text-xl font-bold">{A("recentQuotes")}</h2>
           <div className="space-y-3">
+            {isLoading ? <AdminLoadingState /> : null}
             {recentQuotes.map((quote) => (
               <Link key={quote.id} to={`/admin/quotes/${quote.id}`} className="block rounded-lg border border-border p-3 text-sm hover:bg-muted">
                 <span className="font-medium">{quote.customer_name || A("quoteFallback")} · {quote.customer_phone || "-"}</span>
@@ -148,7 +153,7 @@ const AdminDashboard = () => {
                 </span>
               </Link>
             ))}
-            {recentQuotes.length === 0 && (
+            {data !== undefined && recentQuotes.length === 0 && (
               <AdminEmptyState
                 title={A("empty")}
                 description={A("emptyQuotesDescription")}

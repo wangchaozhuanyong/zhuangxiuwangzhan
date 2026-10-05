@@ -60,6 +60,16 @@ const retiredPublicDesignFiles = [
 ] as const;
 
 describe("public design boundary", () => {
+  it("paints explicit controls without restyling every HTML input or submit button", () => {
+    const skin = postcss.parse(readFileSync(resolve(process.cwd(), "src/styles/components/public-warm-stone.css"), "utf8"));
+    skin.walkRules((rule) => {
+      expect(rule.selector).not.toMatch(/button\[type=["']submit|:is\(input,|:is\(button, input/);
+    });
+    for (const [file, identity] of [["input", "input"], ["textarea", "textarea"], ["select", "select"]]) {
+      expect(readFileSync(resolve(process.cwd(), `src/components/ui/${file}.tsx`), "utf8")).toContain(`data-ui="${identity}"`);
+    }
+  });
+
   it("keeps the canonical public skin free of layout and typography declarations", () => {
     const skin = postcss.parse(readFileSync(resolve(process.cwd(), "src/styles/components/public-warm-stone.css"), "utf8"));
     const geometry = /^(?:--font|font(?:-|$)|line-height$|letter-spacing$|width$|height$|min-|max-|padding|margin|gap$|display$|position$|inset|flex|grid|border-radius$|border-width$|outline-offset$|content$|text-wrap$)/;

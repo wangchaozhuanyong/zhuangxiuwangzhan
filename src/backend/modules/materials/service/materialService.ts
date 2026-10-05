@@ -1,6 +1,6 @@
 import { completePublicSync } from "@/lib/publicSyncRecovery";
 import type { QueryClient } from "@tanstack/react-query";
-import { requestPublicContentInvalidation } from "@/lib/adminMutation";
+import { requestPublicContentInvalidation, saveAdminRecord } from "@/lib/adminMutation";
 import { isSupabaseConfigured } from "@/lib/supabase";
 import {
   fetchAdminMaterialDetail,
@@ -9,7 +9,6 @@ import {
   fetchAdminMaterialImages,
   findMaterialIdsBySlug,
   invokeMaterialEnglishGeneration,
-  saveMaterialRecord,
   createMaterialImageRecord,
   updateMaterialImageRecord,
   archiveMaterialImageRecord,
@@ -132,7 +131,8 @@ export function buildAdminMaterialPayload(record: AdminMaterialRecord, nextStatu
 
 export async function saveAdminMaterial(input: SaveAdminMaterialInput) {
   const { slug, payload } = buildAdminMaterialPayload(input.record, input.nextStatus);
-  const saved = await saveMaterialRecord({
+  const saved = await saveAdminRecord({
+    table: "materials",
     payload,
     id: input.record.id,
     expectedUpdatedAt: input.record.updated_at || null,

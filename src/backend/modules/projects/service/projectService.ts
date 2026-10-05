@@ -1,6 +1,6 @@
 import { completePublicSync } from "@/lib/publicSyncRecovery";
 import type { QueryClient } from "@tanstack/react-query";
-import { requestPublicContentInvalidation } from "@/lib/adminMutation";
+import { requestPublicContentInvalidation, saveAdminRecord } from "@/lib/adminMutation";
 import { isSupabaseConfigured } from "@/lib/supabase";
 import {
   createProjectImageRecord,
@@ -12,7 +12,6 @@ import {
   findProjectIdsBySlug,
   invokeProjectEnglishGeneration,
   resetProjectCoverRecords,
-  saveProjectRecord,
   updateProjectImageRecord,
   type AdminProjectListInput,
 } from "@/backend/modules/projects/repository/projectRepository";
@@ -84,7 +83,8 @@ export function buildAdminProjectPayload(record: AdminProjectRecord, nextStatus?
 
 export async function saveAdminProject(input: SaveAdminProjectInput) {
   const { slug, payload } = buildAdminProjectPayload(input.record, input.nextStatus);
-  const saved = await saveProjectRecord({
+  const saved = await saveAdminRecord({
+    table: "projects",
     payload,
     id: input.record.id,
     expectedUpdatedAt: input.record.updated_at || null,

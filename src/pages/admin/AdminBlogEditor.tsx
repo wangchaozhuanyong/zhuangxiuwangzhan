@@ -15,6 +15,7 @@ import { adminMobileEditorText } from "@/i18n/adminMobileEditorText";
 import AdminPageHeader from "@/components/admin/AdminPageHeader";
 import AdminFormSection from "@/components/admin/AdminFormSection";
 import AdminContentPreflight from "@/components/admin/AdminContentPreflight";
+import AdminLoadingState from "@/components/admin/AdminLoadingState";
 import AdminEmptyState from "@/components/admin/AdminEmptyState";
 import { adminConfirm } from "@/components/admin/AdminConfirmProvider";
 import ImageField from "@/components/admin/ImageField";
@@ -24,6 +25,7 @@ import { adminStatusLabel, getAdminLang, publishStatusOptions, useAdminLang } fr
 import { formatAdminMutationError } from "@/lib/adminMutation";
 import { isNewAdminRouteRecord } from "@/lib/adminRouteParams";
 import { hasAnyMissingEnglish } from "@/lib/adminTranslation";
+import { interactionText } from "@/i18n/interactionText";
 import { formatUserFacingError } from "@/lib/userFacingText";
 import { adminBlogEditorText } from "@/i18n/adminBlogEditorText";
 import {
@@ -133,7 +135,7 @@ export default function AdminBlogEditor() {
   const [slugError, setSlugError] = useState<string>("");
   const [saveBusy, setSaveBusy] = useState(false);
 
-  const { data: loaded, isLoading, isInitialError: isError, error: loadError } = useAdminBlogPostDetail(isNew ? undefined : id);
+  const { data: loaded, isLoading, isInitialError: isError, error: loadError, refetch: refetchLoaded } = useAdminBlogPostDetail(isNew ? undefined : id);
 
   const loadedRecord = useMemo<BlogRecord | undefined>(() => {
     if (isNew || !loaded) return isNew ? empty : undefined;
@@ -151,6 +153,7 @@ export default function AdminBlogEditor() {
     resetKey: id ?? "new",
     initial: empty,
   });
+  const recordReady = isNew || Boolean(loaded?.id && record.id === loaded.id);
   const englishMissing = hasAnyMissingEnglish(record as unknown as Record<string, unknown>, blogEnglishFields);
   useUnsavedChangesWarning((dirty || saveBusy) || isSubmitting);
 
@@ -191,6 +194,7 @@ export default function AdminBlogEditor() {
   }, [language, loadedRecord]);
 
   const save = protectSubmission("save", async (nextStatus?: BlogRecord["status"], generateEnglish?: boolean, forceEnglish?: boolean) => {
+    if (!recordReady) return;
     if (!hasBlogBackendConfig()) return;
     const slug = normalizeBlogSlug(record.slug || record.title_zh);
     if (!slug) {
@@ -251,6 +255,15 @@ export default function AdminBlogEditor() {
     return <AdminEmptyState title={A("supabaseNotConfigured")} description={A("supabaseNotConfiguredDescription")} />;
   }
 
+  if (!recordReady) {
+    if (!isError) return <AdminLoadingState />;
+    return <AdminEmptyState
+      title={A("loadFailed")}
+      description={formatUserFacingError(loadError, language)}
+      action={<Button type="button" onClick={() => void refetchLoaded()}>{interactionText[language].retry}</Button>}
+    />;
+  }
+
   return (
     <>
       <AdminStickyActionBar
@@ -272,7 +285,7 @@ export default function AdminBlogEditor() {
               type="button"
               variant="outline"
               onClick={() => void save()}
-              disabled={saveBusy || isLoading}
+              disabled={saveBusy || !recordReady || isLoading}
             >
               {record.status === "draft" ? A("saveDraft") : A("saveChanges")}
             </AdminActionButton>
@@ -284,7 +297,7 @@ export default function AdminBlogEditor() {
                 setRecord((r) => ({ ...r, published_at: r.published_at || new Date().toISOString() }));
                 void save("published");
               }}
-              disabled={saveBusy || isLoading}
+              disabled={saveBusy || !recordReady || isLoading}
             >
               {record.status === "published" ? mobileText.updatePublished : A("publish")}
             </AdminActionButton>
@@ -302,7 +315,7 @@ export default function AdminBlogEditor() {
             <Button type="button" variant="outline" aria-expanded={showEnglish} onClick={() => setShowEnglish((value) => !value)}>
               {showEnglish ? A("hideEnglish") : A("showEnglish")}
             </Button>
-            <AdminActionButton action="content.write" type="button" variant="outline" onClick={() => void save(undefined, true)} disabled={saveBusy || isLoading || !record.id}>
+            <AdminActionButton action="content.write" type="button" variant="outline" onClick={() => void save(undefined, true)} disabled={saveBusy || !recordReady || isLoading || !record.id}>
               {A("saveAndGenerateEnglish")}
             </AdminActionButton>
             <AdminActionButton
@@ -310,7 +323,7 @@ export default function AdminBlogEditor() {
               type="button"
               variant="outline"
               onClick={() => void forceRegenerateEnglish()}
-              disabled={saveBusy || isLoading || !record.id}
+              disabled={saveBusy || !recordReady || isLoading || !record.id}
             >
               {A("forceRegenerateEnglish")}
             </AdminActionButton>

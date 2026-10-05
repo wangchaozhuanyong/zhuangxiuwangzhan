@@ -88,3 +88,10 @@ export type ContentPublishResult = {
   status?: number;
   body: Record<string, unknown>;
 };
+
+export type PublishContext = {
+  adminUserId?: string | null;
+  role?: string | null;
+  authMode?: string | null;
+  managedIdentity?: { repositoryId: number; actorId: number; workflowRef: string; workflowSha: string; runId: number; runAttempt: number };
+};

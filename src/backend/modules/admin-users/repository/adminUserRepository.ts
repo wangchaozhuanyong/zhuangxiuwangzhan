@@ -1,6 +1,4 @@
-import type { QueryClient } from "@tanstack/react-query";
 import type { AdminUserRow } from "@/lib/adminEditorData";
-import { saveAdminRecord } from "@/lib/adminMutation";
 import { requireSupabase } from "@/lib/supabase";
 
 export async function findAdminUserByUserId(userId: string) {
@@ -21,22 +19,4 @@ export async function findAdminUserByUserId(userId: string) {
   if (fallback.error) throw fallback.error;
 
   return (fallback.data as AdminUserRow | null) || null;
-}
-
-export function saveAdminUserRecord(
-  payload: Partial<AdminUserRow> & { user_id: string },
-  existing: AdminUserRow | null | undefined,
-  queryClient?: QueryClient,
-) {
-  return saveAdminRecord({
-    table: "admin_users",
-    id: existing?.user_id || null,
-    idField: "user_id",
-    expectedUpdatedAt: existing?.updated_at || null,
-    payload,
-    action: existing ? "admin_user_update" : "admin_user_insert",
-    queryClient,
-    invalidate: "none",
-    audit: false,
-  });
 }

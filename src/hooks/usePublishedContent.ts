@@ -1,36 +1,9 @@
 import "@/lib/publicQuerySeed";
 import { useInteractionQuery as useQuery } from "@/hooks/useInteractionQuery";
 import { useQueryClient } from "@tanstack/react-query";
-import {
-  getPublishedBlogPostBySlug,
-  getPublishedBlogPosts,
-  getPublishedHeroSlides,
-  getPublishedLandingPageBySlug,
-  getPublishedMaterialBySlug,
-  getPublishedMaterials,
-  getPublishedProjectBySlug,
-  getPublishedProjectSummaries,
-  getPublishedProductHighlights,
-  getPublishedServiceBySlug,
-  getPublishedServiceAreaBySlug,
-  getPublishedServiceAreas,
-  getPublishedServiceSummaries,
-  getPublishedServices,
-  getPublishedTestimonials,
-} from "@/lib/contentApi";
-import {
-  getPublishedBeforeAfterItems,
-  getPublishedBrandPartners,
-  getPublishedAboutSection,
-  getPublishedCtaBlock,
-  getPublishedFaqs,
-  getPublishedHomeContentBundle,
-  getPublishedHomeSection,
-  getPublishedProcessSteps,
-  getPublishedSitePage,
-} from "@/lib/homeContentApi";
+import { publicContentQueries } from "@/lib/publicContentQueries";
+import type { getPublishedBlogPosts } from "@/lib/contentApi";
 import { isSupabaseConfigured } from "@/lib/supabaseConfig";
-import { getPublishedFurnitureCatalog, getPublishedFurnitureProductBySlug, getPublishedManagedFurnitureProductBySlug, getPublishedManagedFurnitureProducts } from "@/lib/furnitureCatalog";
 import { INTERACTION_POLICY } from "@/lib/interactionPolicy";
 
 const STALE = INTERACTION_POLICY.publicStaleTime;
@@ -51,8 +24,7 @@ const isSupabaseQueryEnabled = (options?: PublicQueryOptions) => isEnabled(optio
 
 export function usePublishedHomeContentBundle(language: "en" | "zh", options?: PublicQueryOptions) {
   return useQuery({
-    queryKey: ["published", "home_bundle", language],
-    queryFn: ({ signal }) => getPublishedHomeContentBundle(language, signal),
+    ...publicContentQueries.homeBundle(language),
     enabled: isEnabled(options),
     ...queryDefaults,
   });
@@ -60,8 +32,7 @@ export function usePublishedHomeContentBundle(language: "en" | "zh", options?: P
 
 export function usePublishedServices(language: "en" | "zh", options?: PublicQueryOptions) {
   return useQuery({
-    queryKey: ["published", "services", language],
-    queryFn: ({ signal }) => getPublishedServices(language, signal),
+    ...publicContentQueries.services(language),
     enabled: isEnabled(options),
     ...queryDefaults,
   });
@@ -69,8 +40,7 @@ export function usePublishedServices(language: "en" | "zh", options?: PublicQuer
 
 export function usePublishedServiceSummaries(language: "en" | "zh", limit?: number, options?: PublicQueryOptions) {
   return useQuery({
-    queryKey: ["published", "service_summaries", language, limit ?? "all"],
-    queryFn: ({ signal }) => getPublishedServiceSummaries(language, limit, signal),
+    ...publicContentQueries.serviceSummaries(language, limit),
     enabled: isEnabled(options),
     ...queryDefaults,
   });
@@ -78,8 +48,7 @@ export function usePublishedServiceSummaries(language: "en" | "zh", limit?: numb
 
 export function usePublishedProjectSummaries(language: "en" | "zh", limit?: number, options?: PublicQueryOptions) {
   return useQuery({
-    queryKey: ["published", "project_summaries", language, limit ?? "all"],
-    queryFn: ({ signal }) => getPublishedProjectSummaries(language, limit, signal),
+    ...publicContentQueries.projectSummaries(language, limit),
     enabled: isEnabled(options),
     ...queryDefaults,
   });
@@ -87,8 +56,7 @@ export function usePublishedProjectSummaries(language: "en" | "zh", limit?: numb
 
 export function usePublishedMaterials(language: "en" | "zh", options?: PublicQueryOptions) {
   return useQuery({
-    queryKey: ["published", "materials", language],
-    queryFn: ({ signal }) => getPublishedMaterials(language, signal),
+    ...publicContentQueries.materials(language),
     enabled: isEnabled(options),
     ...queryDefaults,
   });
@@ -96,27 +64,23 @@ export function usePublishedMaterials(language: "en" | "zh", options?: PublicQue
 
 export function usePublishedManagedFurnitureProducts(language: "en" | "zh", options?: PublicQueryOptions) {
   return useQuery({
-    queryKey: ["published", "furniture", language],
-    queryFn: ({ signal }) => getPublishedManagedFurnitureProducts(language, signal),
+    ...publicContentQueries.managedFurnitureProducts(language),
     enabled: isSupabaseQueryEnabled(options),
     ...queryDefaults,
   });
 }
 
 export function usePublishedFurnitureCatalog(language: "en" | "zh") {
-  return useQuery({ queryKey: ["published", "furniture_catalog", language],
-    queryFn: ({ signal }) => getPublishedFurnitureCatalog(language, signal), ...queryDefaults });
+  return useQuery({ ...publicContentQueries.furnitureCatalog(language), ...queryDefaults });
 }
 
 export function usePublishedFurnitureProduct(slug: string | undefined, language: "en" | "zh") {
-  return useQuery({ queryKey: ["published", "furniture_catalog", "detail", slug, language],
-    queryFn: ({ signal }) => getPublishedFurnitureProductBySlug(slug!, language, signal), enabled: Boolean(slug), ...queryDefaults });
+  return useQuery({ ...publicContentQueries.furnitureProduct(slug, language), enabled: Boolean(slug), ...queryDefaults });
 }
 
 export function usePublishedManagedFurnitureProductBySlug(slug: string | undefined, language: "en" | "zh") {
   return useQuery({
-    queryKey: ["published", "furniture", "detail", slug, language],
-    queryFn: ({ signal }) => getPublishedManagedFurnitureProductBySlug(slug!, language, signal),
+    ...publicContentQueries.managedFurnitureProduct(slug, language),
     enabled: isSupabaseConfigured && Boolean(slug),
     ...queryDefaults,
   });
@@ -124,8 +88,7 @@ export function usePublishedManagedFurnitureProductBySlug(slug: string | undefin
 
 export function usePublishedProductHighlights(language: "en" | "zh", limit = 4, options?: PublicQueryOptions) {
   return useQuery({
-    queryKey: ["published", "product_highlights", language, limit],
-    queryFn: ({ signal }) => getPublishedProductHighlights(language, limit, signal),
+    ...publicContentQueries.productHighlights(language, limit),
     enabled: isEnabled(options),
     ...queryDefaults,
   });
@@ -133,8 +96,7 @@ export function usePublishedProductHighlights(language: "en" | "zh", limit = 4, 
 
 export function usePublishedBlogPosts(language: "en" | "zh", options?: PublicQueryOptions) {
   return useQuery({
-    queryKey: ["published", "blog", language],
-    queryFn: ({ signal }) => getPublishedBlogPosts(language, signal),
+    ...publicContentQueries.blogPosts(language),
     enabled: isEnabled(options),
     ...queryDefaults,
   });
@@ -142,8 +104,7 @@ export function usePublishedBlogPosts(language: "en" | "zh", options?: PublicQue
 
 export function usePublishedFaqs(language: "en" | "zh", pageKey = "general", options?: PublicQueryOptions) {
   return useQuery({
-    queryKey: ["published", "faqs", language, pageKey],
-    queryFn: ({ signal }) => getPublishedFaqs(language, pageKey, signal),
+    ...publicContentQueries.faqs(language, pageKey),
     enabled: isEnabled(options),
     ...queryDefaults,
   });
@@ -151,8 +112,7 @@ export function usePublishedFaqs(language: "en" | "zh", pageKey = "general", opt
 
 export function usePublishedHeroSlides(language: "en" | "zh", options?: PublicQueryOptions) {
   return useQuery({
-    queryKey: ["published", "hero_slides", language],
-    queryFn: ({ signal }) => getPublishedHeroSlides(language, signal),
+    ...publicContentQueries.heroSlides(language),
     enabled: isSupabaseQueryEnabled(options),
     ...queryDefaults,
   });
@@ -160,8 +120,7 @@ export function usePublishedHeroSlides(language: "en" | "zh", options?: PublicQu
 
 export function usePublishedTestimonials(language: "en" | "zh", options?: PublicQueryOptions) {
   return useQuery({
-    queryKey: ["published", "testimonials", language],
-    queryFn: ({ signal }) => getPublishedTestimonials(language, signal),
+    ...publicContentQueries.testimonials(language),
     enabled: isSupabaseQueryEnabled(options),
     ...queryDefaults,
   });
@@ -169,8 +128,7 @@ export function usePublishedTestimonials(language: "en" | "zh", options?: Public
 
 export function usePublishedBrandPartners(options?: PublicQueryOptions) {
   return useQuery({
-    queryKey: ["published", "brand_partners"],
-    queryFn: ({ signal }) => getPublishedBrandPartners(signal),
+    ...publicContentQueries.brandPartners(),
     enabled: isSupabaseQueryEnabled(options),
     ...queryDefaults,
   });
@@ -178,8 +136,7 @@ export function usePublishedBrandPartners(options?: PublicQueryOptions) {
 
 export function usePublishedBeforeAfterItems(language: "en" | "zh", options?: PublicQueryOptions) {
   return useQuery({
-    queryKey: ["published", "before_after", language],
-    queryFn: ({ signal }) => getPublishedBeforeAfterItems(language, signal),
+    ...publicContentQueries.beforeAfterItems(language),
     enabled: isSupabaseQueryEnabled(options),
     ...queryDefaults,
   });
@@ -187,8 +144,7 @@ export function usePublishedBeforeAfterItems(language: "en" | "zh", options?: Pu
 
 export function usePublishedHomeSection(language: "en" | "zh", sectionKey: string, options?: PublicQueryOptions) {
   return useQuery({
-    queryKey: ["published", "home_section", language, sectionKey],
-    queryFn: ({ signal }) => getPublishedHomeSection(language, sectionKey, signal),
+    ...publicContentQueries.homeSection(language, sectionKey),
     enabled: isSupabaseQueryEnabled(options),
     ...queryDefaults,
   });
@@ -196,8 +152,7 @@ export function usePublishedHomeSection(language: "en" | "zh", sectionKey: strin
 
 export function usePublishedProcessSteps(language: "en" | "zh", options?: PublicQueryOptions) {
   return useQuery({
-    queryKey: ["published", "process_steps", language],
-    queryFn: ({ signal }) => getPublishedProcessSteps(language, signal),
+    ...publicContentQueries.processSteps(language),
     enabled: isSupabaseQueryEnabled(options),
     ...queryDefaults,
   });
@@ -205,8 +160,7 @@ export function usePublishedProcessSteps(language: "en" | "zh", options?: Public
 
 export function usePublishedCtaBlock(language: "en" | "zh", blockKey: string, options?: PublicQueryOptions) {
   return useQuery({
-    queryKey: ["published", "cta", language, blockKey],
-    queryFn: ({ signal }) => getPublishedCtaBlock(language, blockKey, signal),
+    ...publicContentQueries.ctaBlock(language, blockKey),
     enabled: isSupabaseQueryEnabled(options),
     retry: false,
     ...queryDefaults,
@@ -215,8 +169,7 @@ export function usePublishedCtaBlock(language: "en" | "zh", blockKey: string, op
 
 export function usePublishedAboutSection(language: "en" | "zh", sectionKey: string, options?: PublicQueryOptions) {
   return useQuery({
-    queryKey: ["published", "about_section", language, sectionKey],
-    queryFn: ({ signal }) => getPublishedAboutSection(language, sectionKey, signal),
+    ...publicContentQueries.aboutSection(language, sectionKey),
     enabled: isSupabaseQueryEnabled(options),
     ...queryDefaults,
   });
@@ -224,8 +177,7 @@ export function usePublishedAboutSection(language: "en" | "zh", sectionKey: stri
 
 export function usePublishedSitePage(language: "en" | "zh", pageKey: string, options?: PublicQueryOptions) {
   return useQuery({
-    queryKey: ["published", "site_page", language, pageKey],
-    queryFn: ({ signal }) => getPublishedSitePage(language, pageKey, signal),
+    ...publicContentQueries.sitePage(language, pageKey),
     enabled: isSupabaseQueryEnabled(options),
     ...queryDefaults,
   });
@@ -233,8 +185,7 @@ export function usePublishedSitePage(language: "en" | "zh", pageKey: string, opt
 
 export function usePublishedProjectBySlug(slug: string | undefined, language: "en" | "zh") {
   return useQuery({
-    queryKey: ["published", "project", slug, language],
-    queryFn: ({ signal }) => getPublishedProjectBySlug(slug!, language, signal),
+    ...publicContentQueries.project(slug, language),
     enabled: Boolean(slug),
     ...queryDefaults,
   });
@@ -242,8 +193,7 @@ export function usePublishedProjectBySlug(slug: string | undefined, language: "e
 
 export function usePublishedMaterialBySlug(slug: string | undefined, language: "en" | "zh") {
   return useQuery({
-    queryKey: ["published", "material", slug, language],
-    queryFn: ({ signal }) => getPublishedMaterialBySlug(slug!, language, signal),
+    ...publicContentQueries.material(slug, language),
     enabled: Boolean(slug),
     ...queryDefaults,
   });
@@ -251,10 +201,9 @@ export function usePublishedMaterialBySlug(slug: string | undefined, language: "
 
 export function usePublishedBlogPostBySlug(slug: string | undefined, language: "en" | "zh") {
   const queryClient = useQueryClient();
-  const listKey = ["published", "blog", language];
+  const listKey = publicContentQueries.blogPosts(language).queryKey;
   return useQuery({
-    queryKey: ["published", "blog_post", slug, language],
-    queryFn: ({ signal }) => getPublishedBlogPostBySlug(slug!, language, signal),
+    ...publicContentQueries.blogPost(slug, language),
     enabled: Boolean(slug),
     // Only complete articles can seed the detail cache. Edge-injected listing
     // summaries have no body and must still fetch the actual article.
@@ -271,8 +220,7 @@ export function usePublishedBlogPostBySlug(slug: string | undefined, language: "
 
 export function usePublishedServiceAreaBySlug(slug: string | undefined, language: "en" | "zh") {
   return useQuery({
-    queryKey: ["published", "service_area", slug, language],
-    queryFn: ({ signal }) => getPublishedServiceAreaBySlug(slug!, language, signal),
+    ...publicContentQueries.serviceArea(slug, language),
     enabled: Boolean(slug),
     ...queryDefaults,
   });
@@ -280,8 +228,7 @@ export function usePublishedServiceAreaBySlug(slug: string | undefined, language
 
 export function usePublishedServiceAreas(language: "en" | "zh", options?: PublicQueryOptions) {
   return useQuery({
-    queryKey: ["published", "service_areas", language],
-    queryFn: ({ signal }) => getPublishedServiceAreas(language, signal),
+    ...publicContentQueries.serviceAreas(language),
     enabled: isEnabled(options),
     ...queryDefaults,
   });
@@ -289,8 +236,7 @@ export function usePublishedServiceAreas(language: "en" | "zh", options?: Public
 
 export function usePublishedServiceBySlug(slug: string | undefined, language: "en" | "zh") {
   return useQuery({
-    queryKey: ["published", "service", slug, language],
-    queryFn: ({ signal }) => getPublishedServiceBySlug(slug!, language, signal),
+    ...publicContentQueries.service(slug, language),
     enabled: Boolean(slug),
     ...queryDefaults,
   });
@@ -298,8 +244,7 @@ export function usePublishedServiceBySlug(slug: string | undefined, language: "e
 
 export function usePublishedLandingPageBySlug(slug: string | undefined, language: "en" | "zh") {
   return useQuery({
-    queryKey: ["published", "landing", slug, language],
-    queryFn: ({ signal }) => getPublishedLandingPageBySlug(slug!, language, signal),
+    ...publicContentQueries.landingPage(slug, language),
     enabled: Boolean(slug),
     ...queryDefaults,
   });

@@ -38,12 +38,12 @@ const AdminQuoteList = () => {
   const status = statuses.includes(list.filter("status")) ? list.filter("status") : "all";
   const workflow = normalizeAdminWorkflowFilter(list.filter("filter"), "quote_requests");
 
-  const { data, error, isFetching, isPlaceholderData } = useAdminQuotes({ page, status, workflow, search: deferredSearch });
+  const { data, error, isLoading, isFetching, isPlaceholderData } = useAdminQuotes({ page, status, workflow, search: deferredSearch });
   const rows = data?.rows ?? [];
   const total = data?.count ?? 0;
   const pageSize = data?.pageSize ?? 30;
   const message = error ? formatUserFacingError(error, lang) : "";
-  const initialLoading = isFetching && !data;
+  const initialLoading = isLoading;
   const workflowOptions = getAdminWorkflowOptions("quote_requests", lang);
   const activeFilters = [
     search.trim(),

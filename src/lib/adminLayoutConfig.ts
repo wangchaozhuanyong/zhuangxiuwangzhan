@@ -34,7 +34,8 @@ import {
 } from "lucide-react";
 import { adminLayoutText } from "@/i18n/adminLayoutText";
 import { getAdminLang, type AdminLang } from "@/lib/adminLocale";
-import { ADMIN_ROLE_GROUPS, type AdminAllowedRoles } from "@/lib/adminRoleAccess";
+import type { AdminAllowedRoles } from "@/lib/adminRoleAccess";
+import { adminRouteDefinitions, getAdminContentPath } from "@/routes/adminRouteDefinitions";
 
 export type AdminCopy = {
   dashboard: string;
@@ -252,68 +253,68 @@ export const navGroups: NavGroup[] = [
     key: "groupWorkspace",
     icon: LayoutDashboard,
     items: [
-      { key: "dashboard", path: "/admin/dashboard", icon: BarChart3, allowedRoles: ADMIN_ROLE_GROUPS.all },
-      { key: "contentHealth", path: "/admin/content-health", icon: FileCheck2, allowedRoles: ADMIN_ROLE_GROUPS.contentRead },
-      { key: "publishCenter", path: "/admin/publish-center", icon: Rocket, allowedRoles: ADMIN_ROLE_GROUPS.contentWrite },
-      { key: "englishCenter", path: "/admin/english-center", icon: WandSparkles, allowedRoles: ADMIN_ROLE_GROUPS.contentWrite },
+      { key: "dashboard", path: adminRouteDefinitions.dashboard.fullPath, icon: BarChart3, allowedRoles: adminRouteDefinitions.dashboard.allowedRoles },
+      { key: "contentHealth", path: adminRouteDefinitions.contentHealth.fullPath, icon: FileCheck2, allowedRoles: adminRouteDefinitions.contentHealth.allowedRoles },
+      { key: "publishCenter", path: adminRouteDefinitions.publishCenter.fullPath, icon: Rocket, allowedRoles: adminRouteDefinitions.publishCenter.allowedRoles },
+      { key: "englishCenter", path: adminRouteDefinitions.englishCenter.fullPath, icon: WandSparkles, allowedRoles: adminRouteDefinitions.englishCenter.allowedRoles },
     ],
   },
   {
     key: "groupWebsite",
     icon: Globe2,
     items: [
-      { key: "home", path: "/admin/home", icon: Home, allowedRoles: ADMIN_ROLE_GROUPS.contentWrite },
-      { key: "cmsBuilder", path: "/admin/cms", icon: LayoutDashboard, allowedRoles: ADMIN_ROLE_GROUPS.contentWrite },
-      { key: "pages", path: "/admin/pages", icon: FileText, allowedRoles: ADMIN_ROLE_GROUPS.contentWrite },
-      { key: "about", path: "/admin/about", icon: Building2, allowedRoles: ADMIN_ROLE_GROUPS.contentWrite },
-      { key: "faqs", path: "/admin/faqs", icon: MessageSquareText, allowedRoles: ADMIN_ROLE_GROUPS.contentWrite },
-      { key: "testimonials", path: "/admin/content/testimonials", icon: Star, allowedRoles: ADMIN_ROLE_GROUPS.contentWrite },
-      { key: "brandLogos", path: "/admin/brand-partners", icon: Sparkles, allowedRoles: ADMIN_ROLE_GROUPS.contentWrite },
-      { key: "beforeAfter", path: "/admin/before-after", icon: Images, allowedRoles: ADMIN_ROLE_GROUPS.contentWrite },
+      { key: "home", path: adminRouteDefinitions.homeEditor.fullPath, icon: Home, allowedRoles: adminRouteDefinitions.homeEditor.allowedRoles },
+      { key: "cmsBuilder", path: adminRouteDefinitions.cmsBuilder.fullPath, icon: LayoutDashboard, allowedRoles: adminRouteDefinitions.cmsBuilder.allowedRoles },
+      { key: "pages", path: adminRouteDefinitions.pages.fullPath, icon: FileText, allowedRoles: adminRouteDefinitions.pages.allowedRoles },
+      { key: "about", path: adminRouteDefinitions.aboutEditor.fullPath, icon: Building2, allowedRoles: adminRouteDefinitions.aboutEditor.allowedRoles },
+      { key: "faqs", path: adminRouteDefinitions.faqs.fullPath, icon: MessageSquareText, allowedRoles: adminRouteDefinitions.faqs.allowedRoles },
+      { key: "testimonials", path: getAdminContentPath("testimonials"), icon: Star, allowedRoles: adminRouteDefinitions.contentEditor.allowedRoles },
+      { key: "brandLogos", path: adminRouteDefinitions.brandPartners.fullPath, icon: Sparkles, allowedRoles: adminRouteDefinitions.brandPartners.allowedRoles },
+      { key: "beforeAfter", path: adminRouteDefinitions.beforeAfter.fullPath, icon: Images, allowedRoles: adminRouteDefinitions.beforeAfter.allowedRoles },
     ],
   },
   {
     key: "groupBusiness",
     icon: BriefcaseBusiness,
     items: [
-      { key: "services", path: "/admin/services", icon: Wrench, allowedRoles: ADMIN_ROLE_GROUPS.contentWrite },
-      { key: "projects", path: "/admin/projects", icon: FolderKanban, allowedRoles: ADMIN_ROLE_GROUPS.contentWrite },
-      { key: "materials", path: "/admin/materials", icon: BookOpen, allowedRoles: ADMIN_ROLE_GROUPS.contentWrite },
-      { key: "furniture", path: "/admin/furniture", icon: Images, allowedRoles: ADMIN_ROLE_GROUPS.contentWrite },
-      { key: "promotions", path: "/admin/promotions", icon: BadgePercent, allowedRoles: ADMIN_ROLE_GROUPS.contentWrite },
-      { key: "blog", path: "/admin/blog", icon: Newspaper, allowedRoles: ADMIN_ROLE_GROUPS.contentWrite },
-      { key: "serviceAreas", path: "/admin/content/service_areas", icon: MapPinned, allowedRoles: ADMIN_ROLE_GROUPS.contentWrite },
-      { key: "landingPages", path: "/admin/content/landing_pages", icon: Globe2, allowedRoles: ADMIN_ROLE_GROUPS.contentWrite },
+      { key: "services", path: adminRouteDefinitions.serviceList.fullPath, icon: Wrench, allowedRoles: adminRouteDefinitions.serviceList.allowedRoles },
+      { key: "projects", path: adminRouteDefinitions.projectList.fullPath, icon: FolderKanban, allowedRoles: adminRouteDefinitions.projectList.allowedRoles },
+      { key: "materials", path: adminRouteDefinitions.materialList.fullPath, icon: BookOpen, allowedRoles: adminRouteDefinitions.materialList.allowedRoles },
+      { key: "furniture", path: adminRouteDefinitions.furnitureList.fullPath, icon: Images, allowedRoles: adminRouteDefinitions.furnitureList.allowedRoles },
+      { key: "promotions", path: adminRouteDefinitions.promotionsEditor.fullPath, icon: BadgePercent, allowedRoles: adminRouteDefinitions.promotionsEditor.allowedRoles },
+      { key: "blog", path: adminRouteDefinitions.blogList.fullPath, icon: Newspaper, allowedRoles: adminRouteDefinitions.blogList.allowedRoles },
+      { key: "serviceAreas", path: getAdminContentPath("service_areas"), icon: MapPinned, allowedRoles: adminRouteDefinitions.contentEditor.allowedRoles },
+      { key: "landingPages", path: getAdminContentPath("landing_pages"), icon: Globe2, allowedRoles: adminRouteDefinitions.contentEditor.allowedRoles },
     ],
   },
   {
     key: "groupCustomers",
     icon: Users,
     items: [
-      { key: "leads", path: "/admin/leads", icon: Users, allowedRoles: ADMIN_ROLE_GROUPS.leadRead },
-      { key: "quoteRequests", path: "/admin/quotes", icon: ClipboardList, allowedRoles: ADMIN_ROLE_GROUPS.leadRead },
-      { key: "leadReports", path: "/admin/lead-reports", icon: BarChart3, allowedRoles: ADMIN_ROLE_GROUPS.leadRead },
+      { key: "leads", path: adminRouteDefinitions.leadList.fullPath, icon: Users, allowedRoles: adminRouteDefinitions.leadList.allowedRoles },
+      { key: "quoteRequests", path: adminRouteDefinitions.quoteList.fullPath, icon: ClipboardList, allowedRoles: adminRouteDefinitions.quoteList.allowedRoles },
+      { key: "leadReports", path: adminRouteDefinitions.leadReports.fullPath, icon: BarChart3, allowedRoles: adminRouteDefinitions.leadReports.allowedRoles },
     ],
   },
   {
     key: "groupMediaSeo",
     icon: Image,
     items: [
-      { key: "media", path: "/admin/media", icon: Image, allowedRoles: ADMIN_ROLE_GROUPS.contentWrite },
-      { key: "seo", path: "/admin/seo", icon: Search, allowedRoles: ADMIN_ROLE_GROUPS.contentWrite },
-      { key: "sitemap", path: "/admin/seo#sitemap", icon: FileSearch, allowedRoles: ADMIN_ROLE_GROUPS.contentWrite },
+      { key: "media", path: adminRouteDefinitions.mediaLibrary.fullPath, icon: Image, allowedRoles: adminRouteDefinitions.mediaLibrary.allowedRoles },
+      { key: "seo", path: adminRouteDefinitions.seoManager.fullPath, icon: Search, allowedRoles: adminRouteDefinitions.seoManager.allowedRoles },
+      { key: "sitemap", path: `${adminRouteDefinitions.seoManager.fullPath}#sitemap`, icon: FileSearch, allowedRoles: adminRouteDefinitions.seoManager.allowedRoles },
     ],
   },
   {
     key: "groupSystem",
     icon: Settings,
     items: [
-      { key: "websiteSettings", path: "/admin/settings", icon: Settings, allowedRoles: ADMIN_ROLE_GROUPS.system },
-      { key: "notificationSettings", path: "/admin/notifications", icon: Bell, allowedRoles: ADMIN_ROLE_GROUPS.system },
-      { key: "systemHealth", path: "/admin/system-health", icon: Activity, allowedRoles: ADMIN_ROLE_GROUPS.system },
-      { key: "systemLogs", path: "/admin/system-logs", icon: ScrollText, allowedRoles: ADMIN_ROLE_GROUPS.system },
-      { key: "translationJobs", path: "/admin/content/translation_jobs", icon: Languages, allowedRoles: ADMIN_ROLE_GROUPS.contentWrite },
-      { key: "users", path: "/admin/users", icon: UserCog, allowedRoles: ADMIN_ROLE_GROUPS.system },
+      { key: "websiteSettings", path: adminRouteDefinitions.websiteSettings.fullPath, icon: Settings, allowedRoles: adminRouteDefinitions.websiteSettings.allowedRoles },
+      { key: "notificationSettings", path: adminRouteDefinitions.notificationSettings.fullPath, icon: Bell, allowedRoles: adminRouteDefinitions.notificationSettings.allowedRoles },
+      { key: "systemHealth", path: adminRouteDefinitions.systemHealth.fullPath, icon: Activity, allowedRoles: adminRouteDefinitions.systemHealth.allowedRoles },
+      { key: "systemLogs", path: adminRouteDefinitions.systemLogs.fullPath, icon: ScrollText, allowedRoles: adminRouteDefinitions.systemLogs.allowedRoles },
+      { key: "translationJobs", path: adminRouteDefinitions.translationJobs.fullPath, icon: Languages, allowedRoles: adminRouteDefinitions.translationJobs.allowedRoles },
+      { key: "users", path: adminRouteDefinitions.users.fullPath, icon: UserCog, allowedRoles: adminRouteDefinitions.users.allowedRoles },
     ],
   },
 ];

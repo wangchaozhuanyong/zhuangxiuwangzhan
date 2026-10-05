@@ -45,6 +45,7 @@ export function PublicRouteImageGate({ children, routeKey, onCancel }: { childre
   const status = state.cycle === cycle ? state.status : "waiting";
   const contentRef = useRef<HTMLDivElement>(null);
   const blocked = status === "waiting" || status === "timeout";
+  const presenting = status === "waiting" || status === "handoff";
   const currentCycle = useRef(cycle);
   currentCycle.current = cycle;
   const emitted = useRef<number | null>(null);
@@ -220,11 +221,11 @@ export function PublicRouteImageGate({ children, routeKey, onCancel }: { childre
           {children}
         </div>
       </PublicRouteTransitionFrame>
-      {(showBrandScreen ? blocked && !boot : feedbackCycle === cycle || blocked && !regionOnly) ? (
+      {(blocked || status === "handoff") && (showBrandScreen ? !boot : !regionOnly || feedbackCycle === cycle) ? (
         <div className={showBrandScreen ? "scheme-a-page-loader scheme-a-page-loader--overlay" : "public-route-feedback"}
-          role="status" aria-live="polite" aria-busy={status === "waiting"} data-route-loader={showBrandScreen ? "initial" : "navigation"}>
-          {showBrandScreen ? <div className="scheme-a-page-loader__brand"><p>{copy.loaderBrand}</p><strong><span>FLASH</span><em>CAST</em></strong><span>{copy.loaderPending}</span></div> : <span className="sr-only">{copy.loaderRoutePending}</span>}
-          {status !== "timeout" ? <i aria-hidden="true" /> : (
+          role="status" aria-live="polite" aria-busy={presenting} data-route-loader={showBrandScreen ? "initial" : "navigation"}>
+          {showBrandScreen ? <div className="scheme-a-page-loader__brand"><p>{copy.loaderBrand}</p><strong><span>FLASH</span><em>CAST</em></strong><span>{copy.loaderPending}</span></div> : <span className={regionOnly ? "sr-only" : "public-route-feedback__recovery public-route-feedback__pending"}>{copy.loaderRoutePending}</span>}
+          {presenting ? <i aria-hidden="true" /> : (
             <div className="public-route-feedback__recovery">
               <p>{copy.loaderTimeout}</p>
               <div className="scheme-a-page-loader__actions">

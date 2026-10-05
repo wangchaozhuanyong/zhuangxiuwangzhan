@@ -38,7 +38,8 @@ export class PublicRouteTransitionFrame extends Component<Props> {
       request.detail.commit();
       return;
     }
-    const exit = scene.animate([{ opacity: 1 }, { opacity: 0 }], {
+    // Keep the live page readable until commit mounts the destination's pending feedback.
+    const exit = scene.animate([{ opacity: 1 }, { opacity: 0.6 }], {
       duration: PUBLIC_MOTION.exit, easing: "ease-in", fill: "forwards",
     });
     this.leave = exit;

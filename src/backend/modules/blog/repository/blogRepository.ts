@@ -1,20 +1,10 @@
 import { withReadSignal } from "@/lib/readRequest";
-import type { QueryClient } from "@tanstack/react-query";
-import { saveAdminRecord } from "@/lib/adminMutation";
 import type { Database } from "@/lib/database.types";
 import { requireSupabase } from "@/lib/supabase";
 
 type BlogPostStatus = NonNullable<Database["public"]["Tables"]["blog_posts"]["Row"]["status"]>;
 type SearchableQuery = {
   or(filters: string): unknown;
-};
-
-export type SaveBlogPostRecordInput = {
-  payload: Record<string, unknown>;
-  id?: string | null;
-  expectedUpdatedAt?: string | null;
-  action: "insert" | "update" | "publish";
-  queryClient?: QueryClient;
 };
 
 export type AdminBlogListInput = {
@@ -69,17 +59,6 @@ export async function fetchAdminBlogPostRows(limit: number, signal?: AbortSignal
   const { data, error } = await withReadSignal(supabase.from("blog_posts").select("*").order("created_at", { ascending: false }).limit(limit), signal);
   if (error) throw error;
   return data ?? [];
-}
-
-export function saveBlogPostRecord(input: SaveBlogPostRecordInput) {
-  return saveAdminRecord({
-    table: "blog_posts",
-    payload: input.payload,
-    id: input.id,
-    expectedUpdatedAt: input.expectedUpdatedAt,
-    action: input.action,
-    queryClient: input.queryClient,
-  });
 }
 
 export async function invokeBlogPostEnglishGeneration(blogPostId: string, force: boolean) {

@@ -68,7 +68,7 @@ const AdminMediaLibrary = () => {
   const usageType = list.filter("usage") as UsageType;
   const setUsageType = (value: UsageType) => list.setFilter("usage", value);
 
-  const { data, error, isFetching, isPlaceholderData } = useAdminMediaAssets({ page, usageType, search: deferredSearch });
+  const { data, error, isLoading, isFetching, isPlaceholderData } = useAdminMediaAssets({ page, usageType, search: deferredSearch });
   const assets = data?.rows ?? [];
   const total = data?.count ?? 0;
   const pageSize = data?.pageSize ?? 30;
@@ -133,7 +133,7 @@ const AdminMediaLibrary = () => {
   };
 
   const banner = message || (error ? formatUserFacingError(error, language) : "");
-  const initialLoading = isFetching && !data;
+  const initialLoading = isLoading;
 
   return (
     <div className="space-y-6">

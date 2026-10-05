@@ -148,6 +148,7 @@
     box-shadow: 0 4px 24px rgb(41 46 41 / .12);
     pointer-events: auto;
   }
+  .public-route-feedback__pending { display: block; pointer-events: none; }
   .public-route-feedback__recovery .scheme-a-page-loader__actions { margin-top: .75rem; }
   @media (max-width: 767px) {
     .public-route-feedback { top: 56px; }

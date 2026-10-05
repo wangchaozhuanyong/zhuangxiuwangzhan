@@ -4,7 +4,11 @@
 
 ## 状态与反馈
 
-共用状态：首次加载、后台更新、成功、空结果、首次错误、离线、提交。读取必须使用既有业务 query hook 或 `useInteractionQuery`，保持 TanStack 原始状态语义。页面用 `isInitialError` 显示首次错误，用 `refreshError` 显示更新失败，禁止用错误结果代替“空内容”。有成功数据时保留内容、滚动、筛选、分页；错误仍可局部重试。结果更新期间必须通过 `aria-busy` 告知，旧结果依赖的编辑、选择和导出暂时暂停。
+共用状态：首次加载、后台更新、成功、空结果、首次错误、离线、提交。读取必须使用既有业务 query hook 或 `useInteractionQuery`。共享 hook 的显示层 `isLoading` / `isInitialLoading` 包含已启用查询首次 `pending + paused` 且 `data === undefined` 的离线等待；TanStack 的 `status`、`fetchStatus`、`isPending`、`isFetching` 保持原义。禁用的查询或 `skipToken` 不因 `pending` 而被标为加载。页面用 `isInitialError` 显示首次错误，用 `refreshError` 显示更新失败，禁止用错误结果代替“空内容”。有成功数据时保留内容、滚动、筛选、分页；错误仍可局部重试。结果更新期间必须通过 `aria-busy` 告知，旧结果依赖的编辑、选择和导出暂时暂停。
+
+首次未知数据不是空结果：`data ?? []` 仅用于安全遍历，不能据此显示“暂无记录”、不存在、已全部完成或统计为零。空结果与零统计必须来自已确认的 `data !== undefined`；独立查询分别确认，不能用一个查询的成功替另一个查询背书。首次暂停使用共享 `AdminLoadingState` 或既有公开加载边界；首次错误显示既有错误反馈及重试入口，不显示空结果。`isFetching` 只说明正在请求，离线暂停时可能为 `false`，新增页面不得照抄旧页面用它判断首次加载。
+
+组合读取仍须确认实际来源完整：内容健康 hook 会把单个来源失败转换为 `status: error` 项，此时整体 query 成功不代表全部内容已确认，不能显示全量零统计或“全部完成”，也不能将错误占位身份作为单条或批次生成目标；已确认的真实记录仍沿用原操作流程。依赖其他查询结果的读取，须等待依赖确认，且查询键包含影响结果的稳定身份集合；例如 CMS 版本查询等待模块列表确认，并跟随模块 ID 集合增减更新，保留既有资源键前缀供失效刷新使用。
 
 集中配置 `src/lib/interactionPolicy.ts`：反馈延迟 180ms，慢请求恢复操作 5s，读取超时 15s，搜索防抖 300ms；公开缓存 60s，后台列表 5min，其他后台默认 2min，保留 30min。读取消信号必须传到 repository 和实际 transport；读取最多自动重试一次，写入不得自动重试。
 
@@ -21,6 +25,8 @@ HTML 预注入仅允许 `publicQuerySeed` 初始化查询缓存，`publicQuerySe
 只通过 `reloadDocumentSafely` 更新程序版本；内容版本变化仅失效缓存。不可自动整页刷新。跨前后台的文档切换继续保留分析隔离，不改变登录、权限、MFA。
 
 编辑必须区分最后确认的远端快照、提交快照、当前输入。`useAdminFormState` 保留 dirty 字段；`applyRemote(saved, submitted)` 合并保存响应并保留提交后的新输入；多区块、失焦保存用 `applyPatchRemote(savedPatch, submittedPatch)`，不得把未提交的兄弟区块标记为已保存。不同记录 resetKey 不同，不沿用前一条详情占位。读取失败、写入失败保留输入。用 `useSubmissionLock` 同步锁定相关提交动作，覆盖校验期间的重复点击。
+
+既有记录编辑须先确认该记录的远端身份与快照；首次离线暂停或首次失败时不能用默认值制造 dirty 状态，也不能将带 ID 的读取失败当成新增保存。恢复联网后仍按原 ID、版本和提交锁保存。合法独立新增不依赖列表先读取成功；新建路由的禁用详情查询保持可用。已成功读取但无记录的初始化沿用既有规则；已有缓存或已确认编辑快照遇到后台刷新暂停/失败时继续保留正文及草稿，不能重新初始化或锁死所有新增功能。
 
 筛选、分类、分页放 URL；客户、CRM 搜索词只放 `useAdminListingState` 当前标签页内存，不能写入 URL、持久存储、跨标签消息。详情返回和 POP 恢复原列表位置；后台更新不重置滚动。
 

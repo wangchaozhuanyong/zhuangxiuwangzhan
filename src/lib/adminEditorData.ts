@@ -1,110 +1,24 @@
-import {
-  fetchAboutSectionRecord,
-  fetchHomeSectionRecord,
-  fetchAboutEditorCtaBlock,
-  fetchHomeEditorAuxiliaryRows,
-  hasAdminEditorDatabaseClient,
-} from "@/backend/modules/cms/repository/adminEditorRepository";
+export {
+  loadAdminHomeEditorData as fetchAdminHomeEditorData,
+  type HomeSectionRow,
+  type AdminHomeEditorData,
+} from "@/backend/modules/home";
+export {
+  loadAdminAboutEditorData as fetchAdminAboutEditorData,
+  aboutSectionKeys,
+  type AboutSectionKey,
+  type AboutSectionRow,
+  type ProcessStepRow,
+  type FaqRow,
+  type CtaRow,
+  type AdminAboutEditorData,
+} from "@/backend/modules/company";
 import {
   fetchAdminUserRows,
   fetchTranslationJobRows,
   fetchTranslationLabelRows,
   invokeNotificationSettingsGet,
 } from "@/backend/modules/system/repository/adminSystemDataRepository";
-
-export type HomeSectionRow = {
-  id?: string;
-  updated_at?: string | null;
-  section_key: string;
-  title_zh?: string | null;
-  title_en?: string | null;
-  subtitle_zh?: string | null;
-  subtitle_en?: string | null;
-  content_zh?: string | null;
-  content_en?: string | null;
-  image_url?: string | null;
-  items_zh?: unknown;
-  items_en?: unknown;
-  status?: "draft" | "published" | "archived";
-  sort_order?: number;
-};
-
-export type ProcessStepRow = {
-  id?: string;
-  updated_at?: string | null;
-  step_number: number;
-  title_zh?: string | null;
-  title_en?: string | null;
-  description_zh?: string | null;
-  description_en?: string | null;
-  icon_key?: string | null;
-  status?: "draft" | "published" | "archived";
-  sort_order?: number;
-};
-
-export type FaqRow = {
-  id?: string;
-  updated_at?: string | null;
-  page_key: string;
-  question_zh?: string | null;
-  answer_zh?: string | null;
-  question_en?: string | null;
-  answer_en?: string | null;
-  status?: "draft" | "published" | "archived";
-  sort_order?: number;
-};
-
-export type CtaRow = {
-  id?: string;
-  updated_at?: string | null;
-  block_key: string;
-  title_zh?: string | null;
-  title_en?: string | null;
-  description_zh?: string | null;
-  description_en?: string | null;
-  primary_label_zh?: string | null;
-  primary_label_en?: string | null;
-  primary_url?: string | null;
-  secondary_label_zh?: string | null;
-  secondary_label_en?: string | null;
-  secondary_url?: string | null;
-  image_url?: string | null;
-  status?: "draft" | "published" | "archived";
-};
-
-export type AboutSectionRow = {
-  id?: string;
-  updated_at?: string | null;
-  section_key: string;
-  title_zh?: string | null;
-  title_en?: string | null;
-  subtitle_zh?: string | null;
-  subtitle_en?: string | null;
-  content_zh?: string | null;
-  content_en?: string | null;
-  image_url?: string | null;
-  items_zh?: unknown;
-  items_en?: unknown;
-  status?: "draft" | "published" | "archived";
-  sort_order?: number;
-};
-
-export const aboutSectionKeys = ["hero", "intro", "stats", "core_values", "team", "milestones", "office"] as const;
-export type AboutSectionKey = (typeof aboutSectionKeys)[number];
-
-export type AdminHomeEditorData = {
-  stats: HomeSectionRow | null;
-  why: HomeSectionRow | null;
-  brandPartnersVisibility: HomeSectionRow | null;
-  processSteps: ProcessStepRow[];
-  faqRows: FaqRow[];
-  ctaBlock: CtaRow | null;
-};
-
-export type AdminAboutEditorData = {
-  sections: Record<string, AboutSectionRow | null>;
-  ctaBlock: CtaRow | null;
-};
 
 export type NotificationSettings = {
   telegram_enabled: boolean;
@@ -139,57 +53,6 @@ export type AdminUserRow = {
   updated_at?: string | null;
   version?: number | null;
 };
-
-async function fetchHomeSection(section_key: string, signal?: AbortSignal): Promise<HomeSectionRow | null> {
-  const row = await fetchHomeSectionRecord(section_key, signal);
-  return (row as HomeSectionRow | null) || null;
-}
-
-async function fetchAboutSection(section_key: string, signal?: AbortSignal): Promise<AboutSectionRow | null> {
-  const row = await fetchAboutSectionRecord(section_key, signal);
-  return (row as AboutSectionRow | null) || null;
-}
-
-export async function fetchAdminHomeEditorData(signal?: AbortSignal): Promise<AdminHomeEditorData> {
-  if (!hasAdminEditorDatabaseClient()) {
-    return { stats: null, why: null, brandPartnersVisibility: null, processSteps: [], faqRows: [], ctaBlock: null };
-  }
-
-  const [stats, why, brandPartnersVisibility, auxiliary] = await Promise.all([
-    fetchHomeSection("stats", signal),
-    fetchHomeSection("why_choose_us", signal),
-    fetchHomeSection("brand_partners", signal),
-    fetchHomeEditorAuxiliaryRows(signal),
-  ]);
-
-  return {
-    stats,
-    why,
-    brandPartnersVisibility,
-    processSteps: (auxiliary.processSteps as ProcessStepRow[]) ?? [],
-    faqRows: (auxiliary.faqRows as FaqRow[]) ?? [],
-    ctaBlock: (auxiliary.ctaBlock as CtaRow | null) ?? null,
-  };
-}
-
-export async function fetchAdminAboutEditorData(signal?: AbortSignal): Promise<AdminAboutEditorData> {
-  if (!hasAdminEditorDatabaseClient()) {
-    return { sections: {}, ctaBlock: null };
-  }
-
-  const rows = await Promise.all(aboutSectionKeys.map((key) => fetchAboutSection(key, signal)));
-  const sections: Record<string, AboutSectionRow | null> = {};
-  aboutSectionKeys.forEach((key, index) => {
-    sections[key] = rows[index] ?? null;
-  });
-
-  const data = await fetchAboutEditorCtaBlock(signal);
-
-  return {
-    sections,
-    ctaBlock: (data as CtaRow | null) ?? null,
-  };
-}
 
 export async function fetchNotificationSettings(signal?: AbortSignal): Promise<NotificationSettings> {
   const data = await invokeNotificationSettingsGet(signal);

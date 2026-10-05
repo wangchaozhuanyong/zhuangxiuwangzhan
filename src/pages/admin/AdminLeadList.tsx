@@ -42,12 +42,12 @@ const AdminLeadList = () => {
   const status = statuses.includes(list.filter("status")) ? list.filter("status") : "all";
   const workflow = normalizeAdminWorkflowFilter(list.filter("filter"), "leads");
 
-  const { data, error, isFetching, isPlaceholderData } = useAdminLeads({ page, status, workflow, search: deferredSearch });
+  const { data, error, isLoading, isFetching, isPlaceholderData } = useAdminLeads({ page, status, workflow, search: deferredSearch });
   const rows = data?.rows ?? [];
   const total = data?.count ?? 0;
   const pageSize = data?.pageSize ?? 30;
   const message = error ? formatUserFacingError(error, lang) : "";
-  const initialLoading = isFetching && !data;
+  const initialLoading = isLoading;
   const workflowOptions = getAdminWorkflowOptions("leads", lang);
   const activeFilters = [
     search.trim(),

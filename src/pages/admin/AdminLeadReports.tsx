@@ -1,6 +1,7 @@
 import { ClipboardList, Users } from "lucide-react";
 import { Link, useSearchParams } from "react-router-dom";
 import AdminEmptyState from "@/components/admin/AdminEmptyState";
+import AdminLoadingState from "@/components/admin/AdminLoadingState";
 import AdminPageHeader from "@/components/admin/AdminPageHeader";
 import AdminStatCard from "@/components/admin/AdminStatCard";
 import { Button } from "@/components/ui/button";
@@ -168,7 +169,7 @@ export default function AdminLeadReports() {
   const t = copy[language];
   const [searchParams, setSearchParams] = useSearchParams();
   const period = normalizeAdminLeadReportPeriod(searchParams.get("period"));
-  const { data, error, isFetching } = useAdminLeadReport({ period, language });
+  const { data, error, isLoading, isFetching } = useAdminLeadReport({ period, language });
   const report = data;
 
   const setPeriod = (nextPeriod: AdminLeadReportPeriod) => {
@@ -181,7 +182,7 @@ export default function AdminLeadReports() {
   const errorMessage = error ? formatUserFacingError(error, language) : "";
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6" aria-busy={isLoading || isFetching || undefined}>
       <AdminPageHeader
         title={t.title}
         description={t.description}
@@ -219,6 +220,7 @@ export default function AdminLeadReports() {
       </div>
 
       {errorMessage && <div className="rounded-lg border border-border bg-card p-4 text-sm">{errorMessage}</div>}
+      {isLoading && <AdminLoadingState label={t.loadingTitle} />}
 
       {report && report.totals.submitted > 0 ? (
         <>
@@ -253,12 +255,12 @@ export default function AdminLeadReports() {
             <ProjectTypeTable rows={report.projectTypeRows} language={language} />
           </section>
         </>
-      ) : (
+      ) : report !== undefined ? (
         <AdminEmptyState
-          title={isFetching ? t.loadingTitle : t.empty}
+          title={t.empty}
           description={t.emptyDescription}
         />
-      )}
+      ) : null}
     </div>
   );
 }

@@ -142,7 +142,7 @@ const ImageComparisonSlider = ({
       }}
     >
       {children}
-      <input
+      <input data-ui="input"
         ref={inputRef}
         type="range"
         min={min}

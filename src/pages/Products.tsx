@@ -57,7 +57,7 @@ export default function Products() {
         <label className="fc-route-search">
           <span className="sr-only">{copy.searchLabel}</span>
           <Search aria-hidden="true" />
-          <input type="search" value={search} placeholder={copy.searchPlaceholder} onChange={(event) => setSearch(event.target.value)} />
+          <input data-ui="input" aria-label={copy.searchPlaceholder} type="search" value={search} placeholder={copy.searchPlaceholder} onChange={(event) => setSearch(event.target.value)} />
         </label>
         <SchemeAFilter items={[{ value: "all", label: copy.all }, ...categories.map((item) => ({ value: item.slug, label: translateMaterialCategory(item.name, language) }))]} value={category} onChange={setCategory} ariaLabel={copy.searchLabel} />
         {isLoading ? <SchemeAContentState>{copy.loading}</SchemeAContentState> : null}

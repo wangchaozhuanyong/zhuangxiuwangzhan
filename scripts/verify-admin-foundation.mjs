@@ -1,5 +1,6 @@
 import fs from "node:fs";
 import path from "node:path";
+import { verifyAdminMutationContracts } from "./lib/admin-foundation-contracts.mjs";
 
 const root = process.cwd();
 const read = (file) => fs.readFileSync(path.join(root, file), "utf8");
@@ -44,7 +45,7 @@ const checks = [
   },
   {
     file: "src/backend/modules/system/service/adminMutationService.ts",
-    patterns: ["saveAdminRecord", "archiveOrDeleteAdminRecord", "expectedUpdatedAt", "insertAdminAuditLog"],
+    patterns: ["persistAdminRecord", "persistAdminRecordRemoval", "expectedUpdatedAt", "insertAdminAuditLog"],
   },
   {
     file: "src/backend/modules/system/repository/adminMutationRepository.ts",
@@ -137,6 +138,15 @@ for (const check of checks) {
     if (!content.includes(pattern)) failures.push(`${check.file} missing: ${pattern}`);
   }
 }
+
+const mutationContractFiles = [
+  "src/lib/adminMutation.ts",
+  "src/backend/modules/system/service/adminMutationService.ts",
+  "src/backend/modules/system/index.ts",
+];
+failures.push(...verifyAdminMutationContracts(new Map(mutationContractFiles
+  .filter((file) => fs.existsSync(path.join(root, file)))
+  .map((file) => [file, read(file)]))));
 
 if (failures.length) {
   console.error("[verify-admin-foundation] failures:");

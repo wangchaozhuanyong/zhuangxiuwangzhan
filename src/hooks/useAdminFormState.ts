@@ -69,9 +69,10 @@ export function useAdminFormState<T>(remote: T | undefined, options: Options<T> 
   }, [commit]);
   const markPristine = useCallback(() => { baseline.current = current.current; commit(current.current); }, [commit]);
   const isDirty = useCallback(() => dirtyRef.current, []);
+  const getCurrent = useCallback(() => current.current, []);
   const field = <K extends keyof T>(key: K): [T[K], (value: T[K] | ((previous: T[K]) => T[K])) => void] => [
     state?.[key] as T[K],
     (value) => setForm((previous) => ({ ...previous, [key]: typeof value === "function" ? (value as (previous: T[K]) => T[K])(previous[key]) : value })),
   ];
-  return { field, state: resetKeyRef.current === resetKey ? state : (remote ?? initial) as T, setForm, applyRemote, applyPatchRemote, markPristine, isDirty, dirty };
+  return { field, state: resetKeyRef.current === resetKey ? state : (remote ?? initial) as T, setForm, applyRemote, applyPatchRemote, markPristine, isDirty, getCurrent, dirty };
 }

@@ -222,9 +222,9 @@ const AdminSeoAuditView = () => {
   );
   const strategyCards = strategyCardKeys.map((key) => adminSeoStrategyCards[language][key]);
   const guidanceByTable = adminSeoGuidanceByTableText[language];
-  const { data, isFetching, isInitialError: isError, error, refetch } = useAdminSeoAudit();
+  const { data, isLoading, isFetching, isInitialError: isError, error, refetch } = useAdminSeoAudit();
   const rows = data ?? emptySeoRows;
-  const initialLoading = isFetching && !data;
+  const initialLoading = isLoading;
   const list = useAdminListingState();
   const status = list.filter("status") as string;
   const setStatus = (value: string) => list.setFilter("status", value);

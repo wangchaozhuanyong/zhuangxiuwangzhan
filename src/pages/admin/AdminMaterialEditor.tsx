@@ -30,6 +30,7 @@ import { adminStatusLabel, getAdminLang, publishStatusOptions } from "@/lib/admi
 import { formatAdminMutationError } from "@/lib/adminMutation";
 import { isNewAdminRouteRecord } from "@/lib/adminRouteParams";
 import { autoEnglishDescription, englishMissingHint, hasAnyMissingEnglish } from "@/lib/adminTranslation";
+import { interactionText } from "@/i18n/interactionText";
 import { formatUserFacingError } from "@/lib/userFacingText";
 import {
   checkAdminMaterialSlugUnique,
@@ -221,6 +222,7 @@ export default function AdminMaterialEditor({ furnitureMode = false }: { furnitu
   });
   const isFurniture = furnitureMode || record.category === FURNITURE_MATERIAL_CATEGORY;
   const selectedFurnitureCategory = furnitureCatalog.taxonomy.find((category) => category.key === record.subcategory && category.key !== "new");
+  const recordReady = isNew || Boolean(loaded?.id && record.id === loaded.id);
   const englishMissing = hasAnyMissingEnglish(record as unknown as Record<string, unknown>, isFurniture ? ["title_en", "excerpt_en", "content_en"] : materialEnglishFields);
   useUnsavedChangesWarning((dirty || saveBusy) || isSubmitting);
 
@@ -266,6 +268,7 @@ export default function AdminMaterialEditor({ furnitureMode = false }: { furnitu
   }, [isFurniture, record.slug]);
 
   const save = protectSubmission("save", async (nextStatus?: MaterialRecord["status"], generateEnglish?: boolean, forceEnglish?: boolean) => {
+    if (!recordReady) return;
     if (!hasMaterialBackendConfig() || saveBusy) return;
     if (furnitureMode && !isNew && (!loaded || isLoading || isError)) return;
     if (isFurniture && (nextStatus ?? record.status) === "published") {
@@ -360,6 +363,15 @@ export default function AdminMaterialEditor({ furnitureMode = false }: { furnitu
     return <AdminEmptyState title={F("wrongRecord")} description={F("description")} action={<Button asChild><Link to="/admin/furniture">{A("backToList")}</Link></Button>} />;
   }
 
+  if (!recordReady) {
+    if (!isError) return <AdminLoadingState />;
+    return <AdminEmptyState
+      title={A("loadFailed")}
+      description={formatUserFacingError(loadError, language)}
+      action={<Button type="button" onClick={() => void refetchLoaded()}>{interactionText[language].retry}</Button>}
+    />;
+  }
+
   return (
     <>
       <AdminStickyActionBar
@@ -376,10 +388,10 @@ export default function AdminMaterialEditor({ furnitureMode = false }: { furnitu
         }
         right={
           <>
-            <AdminActionButton action="content.write" type="button" variant="outline" onClick={() => void save("draft")} disabled={saveBusy || isLoading}>
+            <AdminActionButton action="content.write" type="button" variant="outline" onClick={() => void save("draft")} disabled={saveBusy || !recordReady || isLoading}>
               {record.status === "draft" ? A("saveDraft") : mobileText.moveToDraft}
             </AdminActionButton>
-            <AdminActionButton action="content.publish" type="button" onClick={() => void save("published")} disabled={saveBusy || isLoading}>
+            <AdminActionButton action="content.publish" type="button" onClick={() => void save("published")} disabled={saveBusy || !recordReady || isLoading}>
               {record.status === "published" ? mobileText.updatePublished : A("publish")}
             </AdminActionButton>
           </>
@@ -396,7 +408,7 @@ export default function AdminMaterialEditor({ furnitureMode = false }: { furnitu
             <Button type="button" variant="outline" aria-expanded={showEnglish} onClick={() => setShowEnglish((value) => !value)}>
               {showEnglish ? A("hideEnglish") : A("showEnglish")}
             </Button>
-            <AdminActionButton action="content.write" type="button" variant="outline" onClick={() => void save(undefined, true)} disabled={saveBusy || isLoading || !record.id}>
+            <AdminActionButton action="content.write" type="button" variant="outline" onClick={() => void save(undefined, true)} disabled={saveBusy || !recordReady || isLoading || !record.id}>
               {A("saveAndGenerateEnglish")}
             </AdminActionButton>
             <AdminActionButton
@@ -404,7 +416,7 @@ export default function AdminMaterialEditor({ furnitureMode = false }: { furnitu
               type="button"
               variant="outline"
               onClick={() => void forceRegenerateEnglish()}
-              disabled={saveBusy || isLoading || !record.id}
+              disabled={saveBusy || !recordReady || isLoading || !record.id}
             >
               {A("forceRegenerateEnglish")}
             </AdminActionButton>

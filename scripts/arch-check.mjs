@@ -1,5 +1,6 @@
 import fs from "node:fs";
 import path from "node:path";
+import { findArchitectureBoundaryIssues, findDirectDatabaseCalls } from "./lib/architecture-boundaries.mjs";
 
 const root = process.cwd();
 
@@ -158,6 +159,13 @@ function scanLegacySupabaseAccess() {
       if (firstMatches.length > 0) {
         matchingFiles.push(`${relativeFile}:${firstMatches.join(",")}`);
       }
+      // The existing lazy SDK bootstrap is the single transport adapter, not a business query facade.
+      if (target.level === "error" && relativeFile !== "src/lib/supabase.ts" && !/\.(?:test|spec)\.[cm]?[jt]sx?$/.test(file)) {
+        const aliasCalls = findDirectDatabaseCalls(relativeFile, source);
+        if (aliasCalls.length > 0 && firstMatches.length === 0) {
+          fail(`${relativeFile}:${aliasCalls.join(",")}: aliased direct database access is forbidden in this layer.`);
+        }
+      }
     }
 
     if (matchCount > 0) {
@@ -241,6 +249,14 @@ if (fs.existsSync(backendModulesPath)) {
 }
 
 scanLegacySupabaseAccess();
+
+const boundarySources = new Map(walkFiles("src/backend/modules", [".ts", ".tsx"])
+  .filter((file) => !/\.(?:test|spec)\.tsx?$/.test(file))
+  .map((file) => [path.relative(root, file).replaceAll(path.sep, "/"), fs.readFileSync(file, "utf8")]));
+const boundaryDebt = JSON.parse(read("scripts/lib/architecture-boundary-debt.json"));
+const boundaries = findArchitectureBoundaryIssues(boundarySources, boundaryDebt);
+for (const issue of boundaries.errors) fail(`${issue.source}:${issue.line}: ${issue.rule}: ${issue.message} (${issue.specifier})`);
+for (const issue of boundaries.legacy) legacyWarn(`${issue.source}:${issue.line}: ${issue.rule} (${issue.specifier}); explicitly tracked browser-adapter migration debt.`);
 
 if (errors.length > 0) {
   console.error("Architecture check failed:");

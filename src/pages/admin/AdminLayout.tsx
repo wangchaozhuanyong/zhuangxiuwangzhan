@@ -56,47 +56,17 @@ import { addCacheBuster, fallbackSiteSettings, fetchSiteSettings } from "@/lib/s
 import { cn } from "@/lib/utils";
 import { useAdminAuth } from "@/pages/admin/AdminAuthProvider";
 import { adminMobileText } from "@/i18n/adminMobileText";
+import { adminRouteDefinitions, getAdminRouteDefinition } from "@/routes/adminRouteDefinitions";
 
 const AdminDefaultContentSeedStatus = lazy(() => import("@/components/admin/AdminDefaultContentSeedStatus"));
 const IDLE_PRELOAD_LIMIT = 8;
-
-const adminRoutePreloaders: Array<[RegExp, () => Promise<unknown>]> = [
-  [/^\/admin\/dashboard$/, () => import("@/pages/admin/AdminDashboard")],
-  [/^\/admin\/content-health$/, () => import("@/pages/admin/AdminContentHealth")],
-  [/^\/admin\/publish-center$/, () => import("@/pages/admin/AdminPublishCenter")],
-  [/^\/admin\/english-center$/, () => import("@/pages/admin/AdminEnglishCenter")],
-  [/^\/admin\/cms$/, () => import("@/pages/admin/AdminCmsBuilder")],
-  [/^\/admin\/settings$/, () => import("@/pages/admin/AdminWebsiteSettings")],
-  [/^\/admin\/leads(?:\/|$)/, () => import("@/pages/admin/AdminLeadList")],
-  [/^\/admin\/quotes(?:\/|$)/, () => import("@/pages/admin/AdminQuoteList")],
-  [/^\/admin\/lead-reports$/, () => import("@/pages/admin/AdminLeadReports")],
-  [/^\/admin\/home$/, () => import("@/pages/admin/AdminHomeEditor")],
-  [/^\/admin\/pages$/, () => import("@/pages/admin/AdminSimpleCms")],
-  [/^\/admin\/about$/, () => import("@/pages/admin/AdminAboutEditor")],
-  [/^\/admin\/faqs$/, () => import("@/pages/admin/AdminSimpleCms")],
-  [/^\/admin\/before-after$/, () => import("@/pages/admin/AdminSimpleCms")],
-  [/^\/admin\/brand-partners$/, () => import("@/pages/admin/AdminSimpleCms")],
-  [/^\/admin\/services(?:\/|$)/, () => import("@/pages/admin/AdminServiceList")],
-  [/^\/admin\/projects(?:\/|$)/, () => import("@/pages/admin/AdminProjectList")],
-  [/^\/admin\/materials(?:\/|$)/, () => import("@/pages/admin/AdminMaterialList")],
-  [/^\/admin\/promotions$/, () => import("@/pages/admin/AdminPromotionsEditor")],
-  [/^\/admin\/blog(?:\/|$)/, () => import("@/pages/admin/AdminBlogList")],
-  [/^\/admin\/media$/, () => import("@/pages/admin/AdminMediaLibrary")],
-  [/^\/admin\/seo$/, () => import("@/pages/admin/AdminSeoManager")],
-  [/^\/admin\/users$/, () => import("@/pages/admin/AdminUsers")],
-  [/^\/admin\/notifications$/, () => import("@/pages/admin/AdminNotificationSettings")],
-  [/^\/admin\/system-health$/, () => import("@/pages/admin/AdminSystemHealth")],
-  [/^\/admin\/system-logs$/, () => import("@/pages/admin/AdminSystemLogs")],
-  [/^\/admin\/content\/translation_jobs(?:\/|$)/, () => import("@/pages/admin/AdminTranslationJobs")],
-  [/^\/admin\/content\//, () => import("@/pages/admin/AdminContentEditor")],
-];
 
 const preloadedAdminRoutes = new Set<string>();
 
 const preloadAdminRoute = (path: string) => {
   const normalizedPath = path.split("#")[0] || path;
   if (preloadedAdminRoutes.has(normalizedPath)) return;
-  const loader = adminRoutePreloaders.find(([pattern]) => pattern.test(normalizedPath))?.[1];
+  const loader = getAdminRouteDefinition(normalizedPath)?.load;
   if (!loader) return;
 
   preloadedAdminRoutes.add(normalizedPath);
@@ -390,14 +360,14 @@ const AdminLayout = () => {
       .flatMap((group) => group.items.map((item) => item.path));
     const priorityPaths = [
       ...currentGroupItems,
-      "/admin/dashboard",
-      "/admin/content-health",
-      "/admin/leads",
-      "/admin/quotes",
-      "/admin/services",
-      "/admin/projects",
-      "/admin/media",
-      "/admin/seo",
+      adminRouteDefinitions.dashboard.fullPath,
+      adminRouteDefinitions.contentHealth.fullPath,
+      adminRouteDefinitions.leadList.fullPath,
+      adminRouteDefinitions.quoteList.fullPath,
+      adminRouteDefinitions.serviceList.fullPath,
+      adminRouteDefinitions.projectList.fullPath,
+      adminRouteDefinitions.mediaLibrary.fullPath,
+      adminRouteDefinitions.seoManager.fullPath,
     ];
     const paths = Array.from(new Set(priorityPaths))
       .filter((path) => !isAdminNavItemActive(path, location.pathname, location.hash))

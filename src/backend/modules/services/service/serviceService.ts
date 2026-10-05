@@ -1,7 +1,7 @@
 import type { QueryClient } from "@tanstack/react-query";
 import { isSupabaseConfigured } from "@/lib/supabase";
-import { previewAdminContent, requestPublicContentInvalidation } from "@/lib/adminMutation";
-import { registerPublicSyncIssue, resolvePublicSyncIssue } from "@/lib/publicSyncRecovery";
+import { previewAdminContent, requestPublicContentInvalidation, saveAdminRecord } from "@/lib/adminMutation";
+import { getPublicSyncIssues, registerPublicSyncIssue, resolvePublicSyncIssue, type PublicSyncIssue } from "@/lib/publicSyncRecovery";
 import { invalidateAdminResource } from "@/lib/adminInvalidate";
 import {
   fetchAdminServiceDetail,
@@ -10,7 +10,6 @@ import {
   findServiceIdsBySlug,
   invokeServiceEnglishGeneration,
   publishServiceRecord,
-  saveServiceRecord,
   type AdminServiceListInput,
 } from "@/backend/modules/services/repository/serviceRepository";
 
@@ -160,7 +159,8 @@ export function previewAdminService(input: Pick<SaveAdminServiceInput, "record" 
 export async function saveAdminService(input: SaveAdminServiceInput) {
   const { slug, payload } = buildAdminServicePayload(input.record, input.nextStatus);
   assertPublishedServiceComplete(payload);
-  const saved = await saveServiceRecord({
+  const saved = await saveAdminRecord({
+    table: "services",
     payload,
     id: input.record.id,
     expectedUpdatedAt: input.record.updated_at || null,
@@ -179,6 +179,7 @@ export async function saveAdminService(input: SaveAdminServiceInput) {
 export async function publishAdminService(input: SaveAdminServiceInput & { approvalId?: string; source?: string }) {
   const { slug, payload } = buildAdminServicePayload(input.record, input.nextStatus || "published");
   assertPublishedServiceComplete(payload);
+  const previousSyncIssues = getPublicSyncIssues();
   const result = await publishServiceRecord({
     record: payload,
     nextStatus: (payload.status as AdminServiceRecord["status"]) || "published",
@@ -191,12 +192,15 @@ export async function publishAdminService(input: SaveAdminServiceInput & { appro
   const savedId = String(result.saved_id || saved.id || input.record.id || "");
   const syncKey = `services:${savedId}:publish`;
   if (result.cache_invalidation?.ok === false) {
-    registerPublicSyncIssue({ key: syncKey, retry: async () => {
+    const issue: PublicSyncIssue = { key: syncKey, retry: async () => {
       await requestPublicContentInvalidation({ table: "services", action: "publish", id: savedId });
       if (input.queryClient) await invalidateAdminResource(input.queryClient, "services");
-      resolvePublicSyncIssue(syncKey);
-    } });
-  } else resolvePublicSyncIssue(syncKey);
+      resolvePublicSyncIssue(syncKey, issue);
+    } };
+    registerPublicSyncIssue(issue);
+  } else {
+    resolvePublicSyncIssue(syncKey, previousSyncIssues.find((issue) => issue.key === syncKey) || null);
+  }
 
   return {
     saved,

@@ -127,7 +127,7 @@ const LandingQuoteForm = ({ landingTitle }: LandingQuoteFormProps) => {
         </div>
         <div className="landing-quote-card__field">
           <label htmlFor={fieldIds.projectType}>{t.formProject}</label>
-          <select id={fieldIds.projectType} value={form.projectType} onChange={(event) => updateField("projectType", event.target.value)} aria-invalid={Boolean(errors.projectType)} aria-describedby={errors.projectType ? `${fieldIds.projectType}-error` : undefined}>
+          <select data-ui="select" id={fieldIds.projectType} value={form.projectType} onChange={(event) => updateField("projectType", event.target.value)} aria-invalid={Boolean(errors.projectType)} aria-describedby={errors.projectType ? `${fieldIds.projectType}-error` : undefined}>
             <option value="">{t.formProjectPlaceholder}</option>
             {projectTypes.map((item) => <option key={item.value} value={item.value}>{item[language]}</option>)}
           </select>
@@ -141,10 +141,10 @@ const LandingQuoteForm = ({ landingTitle }: LandingQuoteFormProps) => {
 
         <div className="hidden" aria-hidden="true">
           <label htmlFor="landing-quote-website">Website</label>
-          <input id="landing-quote-website" tabIndex={-1} autoComplete="off" value={honeypot} onChange={(event) => setHoneypot(event.target.value)} />
+          <input data-ui="input" id="landing-quote-website" tabIndex={-1} autoComplete="off" value={honeypot} onChange={(event) => setHoneypot(event.target.value)} />
         </div>
 
-        <button type="submit" className="landing-quote-card__submit" disabled={status === "submitting"} aria-busy={status === "submitting"}>
+        <button data-ui="button" data-variant="default" type="submit" className="landing-quote-card__submit" disabled={status === "submitting"} aria-busy={status === "submitting"}>
           {status === "submitting" ? <Loader2 className="animate-spin" aria-hidden="true" /> : <ArrowRight aria-hidden="true" />}
           <span>{status === "submitting" ? t.formSubmitting : t.formSubmit}</span>
         </button>

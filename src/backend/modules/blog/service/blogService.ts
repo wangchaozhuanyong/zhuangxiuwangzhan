@@ -1,13 +1,12 @@
 import type { QueryClient } from "@tanstack/react-query";
 import { isSupabaseConfigured } from "@/lib/supabase";
-import { previewAdminContent } from "@/lib/adminMutation";
+import { previewAdminContent, saveAdminRecord } from "@/lib/adminMutation";
 import {
   fetchAdminBlogPostDetail,
   fetchAdminBlogPostList,
   fetchAdminBlogPostRows,
   findBlogPostIdsBySlug,
   invokeBlogPostEnglishGeneration,
-  saveBlogPostRecord,
   type AdminBlogListInput,
 } from "@/backend/modules/blog/repository/blogRepository";
 
@@ -74,7 +73,8 @@ export function previewAdminBlogPost(input: Pick<SaveAdminBlogPostInput, "record
 
 export async function saveAdminBlogPost(input: SaveAdminBlogPostInput) {
   const { slug, payload } = buildAdminBlogPostPayload(input.record, input.nextStatus);
-  const saved = await saveBlogPostRecord({
+  const saved = await saveAdminRecord({
+    table: "blog_posts",
     payload,
     id: input.record.id,
     expectedUpdatedAt: input.record.updated_at || null,

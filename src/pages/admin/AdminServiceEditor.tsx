@@ -15,6 +15,7 @@ import { adminMobileEditorText } from "@/i18n/adminMobileEditorText";
 import AdminPageHeader from "@/components/admin/AdminPageHeader";
 import AdminFormSection from "@/components/admin/AdminFormSection";
 import AdminContentPreflight from "@/components/admin/AdminContentPreflight";
+import AdminLoadingState from "@/components/admin/AdminLoadingState";
 import AdminEmptyState from "@/components/admin/AdminEmptyState";
 import { adminConfirm } from "@/components/admin/AdminConfirmProvider";
 import ImageField from "@/components/admin/ImageField";
@@ -27,6 +28,7 @@ import { getAdminFieldHelp } from "@/lib/adminHelpText";
 import { formatAdminMutationError } from "@/lib/adminMutation";
 import { isNewAdminRouteRecord } from "@/lib/adminRouteParams";
 import { autoEnglishDescription, englishMissingHint, hasAnyMissingEnglish } from "@/lib/adminTranslation";
+import { interactionText } from "@/i18n/interactionText";
 import { formatUserFacingError } from "@/lib/userFacingText";
 import {
   checkAdminServiceSlugUnique,
@@ -154,7 +156,7 @@ export default function AdminServiceEditor() {
   const [slugError, setSlugError] = useState<string>("");
   const [saveBusy, setSaveBusy] = useState(false);
 
-  const { data: loaded, isLoading, isInitialError: isError, error: loadError } = useAdminServiceDetail(isNew ? undefined : id);
+  const { data: loaded, isLoading, isInitialError: isError, error: loadError, refetch: refetchLoaded } = useAdminServiceDetail(isNew ? undefined : id);
 
   const loadedRecord = useMemo<ServiceRecord | undefined>(() => {
     if (isNew || !loaded) return isNew ? empty : undefined;
@@ -179,6 +181,7 @@ export default function AdminServiceEditor() {
     resetKey: id ?? "new",
     initial: empty,
   });
+  const recordReady = isNew || Boolean(loaded?.id && record.id === loaded.id);
   const englishMissing = hasAnyMissingEnglish(record as unknown as Record<string, unknown>, serviceEnglishFields);
   useUnsavedChangesWarning((dirty || saveBusy) || isSubmitting);
 
@@ -219,6 +222,7 @@ export default function AdminServiceEditor() {
   }, [language, loadedRecord]);
 
   const save = protectSubmission("record-write", async (nextStatus?: ServiceRecord["status"], generateEnglish?: boolean, forceEnglish?: boolean) => {
+    if (!recordReady) return;
     if (!hasServiceBackendConfig()) return;
     const slug = normalizeServiceSlug(record.slug || record.title_zh);
     if (!slug) {
@@ -265,6 +269,7 @@ export default function AdminServiceEditor() {
   });
 
   const publish = protectSubmission("record-write", async () => {
+    if (!recordReady) return;
     const confirmed = await adminConfirm({
       title: A("confirmPublishTitle"),
       description: A("confirmPublishDescription"),
@@ -326,6 +331,15 @@ export default function AdminServiceEditor() {
     return <AdminEmptyState title={A("supabaseMissingTitle")} description={A("supabaseMissingDescription")} />;
   }
 
+  if (!recordReady) {
+    if (!isError) return <AdminLoadingState />;
+    return <AdminEmptyState
+      title={A("loadFailed")}
+      description={formatUserFacingError(loadError, language)}
+      action={<Button type="button" onClick={() => void refetchLoaded()}>{interactionText[language].retry}</Button>}
+    />;
+  }
+
   return (
     <>
       <AdminStickyActionBar
@@ -342,10 +356,10 @@ export default function AdminServiceEditor() {
         }
         right={
           <>
-            <AdminActionButton action="content.write" type="button" variant="outline" onClick={() => void save("draft")} disabled={saveBusy || isLoading}>
+            <AdminActionButton action="content.write" type="button" variant="outline" onClick={() => void save("draft")} disabled={saveBusy || !recordReady || isLoading}>
               {record.status === "draft" ? A("saveDraft") : mobileText.moveToDraft}
             </AdminActionButton>
-            <AdminActionButton action="content.publish" type="button" onClick={() => void publish()} disabled={saveBusy || isLoading}>
+            <AdminActionButton action="content.publish" type="button" onClick={() => void publish()} disabled={saveBusy || !recordReady || isLoading}>
               {record.status === "published" ? mobileText.updatePublished : A("publish")}
             </AdminActionButton>
           </>
@@ -368,7 +382,7 @@ export default function AdminServiceEditor() {
               variant="outline"
               className="w-full justify-center"
               onClick={() => void save(undefined, true)}
-              disabled={saveBusy || isLoading || !record.id}
+              disabled={saveBusy || !recordReady || isLoading || !record.id}
             >
               {A("saveAndGenerateEnglish")}
             </AdminActionButton>
@@ -378,7 +392,7 @@ export default function AdminServiceEditor() {
               variant="outline"
               className="w-full justify-center"
               onClick={() => void forceRegenerateEnglish()}
-              disabled={saveBusy || isLoading || !record.id}
+              disabled={saveBusy || !recordReady || isLoading || !record.id}
             >
               {A("forceRegenerateEnglish")}
             </AdminActionButton>

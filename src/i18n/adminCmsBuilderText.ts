@@ -44,6 +44,10 @@ export const adminCmsBuilderText = {
     zh: "模块顺序已保存，前台会按新顺序读取。",
   },
   sectionOrderUnchanged: { en: "Section order did not change.", zh: "模块顺序没有变化。" },
+  sectionOrderIncomplete: { en: "The order was not fully saved. The current order has been reloaded; review it before retrying.", zh: "排序未全部保存，已重新读取当前顺序，请确认后重试。" },
+  sectionOrderReadbackFailed: { en: "The order was not fully saved and could not be reloaded. Reload the order before retrying.", zh: "排序未全部保存，当前顺序也未能读取。请先重新读取顺序，再重试。" },
+  sectionOrderReload: { en: "Reload section order", zh: "重新读取模块顺序" },
+  sectionOrderInvalid: { en: "The selected sections do not belong to this page. Reload before changing the order.", zh: "所选模块与当前页面不一致，请重新读取后再调整顺序。" },
   archivePageDialogTitle: { en: "Archive this page?", zh: "确认归档这个页面？" },
   archivePageDialogDescription: {
     en: "After archiving, it will no longer appear on the live frontend. Confirm that customers no longer need to access this page.",

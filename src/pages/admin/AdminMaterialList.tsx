@@ -38,12 +38,12 @@ function MaterialList() {
   const status = list.filter("status");
   const setStatus = (value: string) => list.setFilter("status", value);
 
-  const { data, error, isFetching, isPlaceholderData, refetch } = useAdminMaterials({ page, status, search: deferredSearch, category: furnitureMode ? FURNITURE_MATERIAL_CATEGORY : undefined });
+  const { data, error, isLoading, isFetching, isPlaceholderData, refetch } = useAdminMaterials({ page, status, search: deferredSearch, category: furnitureMode ? FURNITURE_MATERIAL_CATEGORY : undefined });
   const rows = data?.rows ?? [];
   const total = data?.count ?? 0;
   const pageSize = data?.pageSize ?? 30;
   const errorMessage = error ? formatUserFacingError(error, language) : "";
-  const initialLoading = isFetching && !data;
+  const initialLoading = isLoading;
 
 
   const columns: AdminDataTableColumn<AdminMaterialRow>[] = [

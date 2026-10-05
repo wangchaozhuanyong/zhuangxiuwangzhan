@@ -36,12 +36,12 @@ export default function AdminProjectList() {
   const status = list.filter("status");
   const setStatus = (value: string) => list.setFilter("status", value);
 
-  const { data, error, isFetching, isPlaceholderData, refetch } = useAdminProjects({ page, status, search: deferredSearch });
+  const { data, error, isLoading, isFetching, isPlaceholderData, refetch } = useAdminProjects({ page, status, search: deferredSearch });
   const rows = data?.rows ?? [];
   const total = data?.count ?? 0;
   const pageSize = data?.pageSize ?? 30;
   const errorMessage = error ? formatUserFacingError(error, language) : "";
-  const initialLoading = isFetching && !data;
+  const initialLoading = isLoading;
 
 
   const columns: AdminDataTableColumn<AdminProjectRow>[] = [

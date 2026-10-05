@@ -48,6 +48,6 @@ export default function RouteReadFeedback({ surface }: { surface: "public" | "ad
   return <aside data-interaction-feedback={surface} role="status" aria-live="polite"
     className="fixed bottom-5 left-1/2 z-[125] flex max-w-[calc(100vw-2rem)] -translate-x-1/2 items-center gap-3 rounded-lg border border-border bg-background px-4 py-3 text-sm text-foreground shadow-lg">
     <span>{!online ? text.offline : initialFailure ? text.loadingFailed : failedRefresh ? text.refreshFailed : slow ? text.slow : text.refreshing}</span>
-    {(slow || failedRefresh) && online && <button type="button" className="shrink-0 underline" onClick={retry} disabled={pending}>{text.retry}</button>}
+    {(slow || failedRefresh) && online && <button data-ui="button" type="button" className="shrink-0 underline" onClick={retry} disabled={pending}>{text.retry}</button>}
   </aside>;
 }

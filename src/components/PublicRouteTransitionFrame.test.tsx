@@ -40,6 +40,9 @@ describe("public visual handoff", () => {
     requestPublicNavigation("/zh/projects", commit);
     expect(commit).not.toHaveBeenCalled();
     expect(animate.mock.calls[0]?.[1]).toMatchObject({ duration: 120 });
+    const exitOpacity = Number(animate.mock.calls[0]?.[0].at(-1)?.opacity);
+    expect(exitOpacity).toBeGreaterThanOrEqual(0.5);
+    expect(container.querySelector("main")?.textContent).toContain("/zhResults");
     await act(async () => finish());
     expect(commit).toHaveBeenCalledOnce();
     expect(beforeCommit).toHaveBeenCalledOnce();
