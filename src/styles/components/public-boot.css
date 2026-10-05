@@ -19,15 +19,14 @@ html[data-public-boot] #flashcast-public-boot {
 #flashcast-public-boot strong em { background: none; }
 #flashcast-public-boot .scheme-a-page-loader__brand > span { margin-top: 1.35rem; color: #626A60; font-size: 14px; letter-spacing: .16em; }
 #flashcast-public-boot .scheme-a-page-loader__brand > i { display: block; width: 180px; height: 2px; margin-top: 24px; overflow: hidden; background: #D4D9CF; }
-#flashcast-public-boot .scheme-a-page-loader__brand > i::after { content: ""; display: block; height: 100%; width: 40%; background: #3F4E42; animation: public-boot-progress 1.1s ease-in-out infinite alternate; }
+#flashcast-public-boot .scheme-a-page-loader__brand > i::after { content: ""; display: block; height: 100%; width: 100%; background: #3F4E42; transform: scaleX(var(--loading-progress, 0.08)); transform-origin: left center; transition: transform 180ms linear; }
 #flashcast-public-boot [hidden] { display: none !important; }
 #flashcast-public-boot [data-boot-recovery] { margin-top: 24px; font-size: 14px; }
 #flashcast-public-boot .scheme-a-page-loader__actions { display: flex; justify-content: center; gap: 12px; margin-top: 16px; }
 #flashcast-public-boot button { min-height: 44px; padding: 10px 20px; border: 1px solid #D4D9CF; border-radius: 6px; background: #FDFCFA; color: #292E29; font: inherit; cursor: pointer; }
 #flashcast-public-boot button:focus-visible { outline: 2px solid #3F4E42; outline-offset: 3px; }
-@keyframes public-boot-progress { to { transform: translateX(150%); } }
 @media (max-width: 767px) { html[data-public-boot] #flashcast-public-boot { padding-top: 56px; } }
-@media (prefers-reduced-motion: reduce) { #flashcast-public-boot i::after { animation: none !important; } }
+@media (prefers-reduced-motion: reduce) { #flashcast-public-boot i::after { transition: none !important; } }
 
 /* Match the photographic homepage and the approved obsidian/champagne entry.
    Critical, prepaint colours avoid a bright full-screen flash on refresh. */

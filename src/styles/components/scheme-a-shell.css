@@ -88,23 +88,30 @@
     color: var(--public-text-primary);
   }
   .public-route-feedback > i {
+    position: absolute;
+    top: 0;
+    left: 0;
     display: block;
+    width: 100%;
     height: 2px;
     overflow: hidden;
     background: var(--public-border);
+    transition: opacity 140ms linear;
   }
   .public-route-feedback > i::after {
     content: "";
     display: block;
-    width: 35%;
+    width: 100%;
     height: 100%;
     background: var(--public-accent);
-    animation: scheme-loader 1.1s ease-in-out infinite alternate;
+    transform: scaleX(var(--loading-progress, 0.08));
+    transform-origin: left center;
+    transition: transform 180ms linear;
   }
+  .public-route-feedback > i[data-progress-state="fading"] { opacity: 0; }
   /* Visible full-route feedback stays between the shared header and mobile dock.
      Region-only updates retain the slim indicator beside the existing content. */
-  .public-route-scene[data-leaving="true"] + .public-route-feedback,
-  .public-route-scene[data-pending="true"]:not([data-region-only]) + .public-route-feedback[aria-busy="true"] {
+  .public-route-feedback[data-feedback-scope="page"] {
     inset: 76px 0 32px;
     display: grid;
     align-content: center;
@@ -112,8 +119,7 @@
     gap: 1rem;
     padding: 1.5rem;
   }
-  .public-route-scene[data-leaving="true"] + .public-route-feedback > span,
-  .public-route-scene[data-pending="true"]:not([data-region-only]) + .public-route-feedback[aria-busy="true"] > span {
+  .public-route-feedback[data-feedback-scope="page"] > span {
     position: static;
     display: block;
     width: auto;
@@ -132,11 +138,6 @@
     line-height: 1.6;
     text-align: center;
   }
-  .public-route-scene[data-leaving="true"] + .public-route-feedback > i,
-  .public-route-scene[data-pending="true"]:not([data-region-only]) + .public-route-feedback[aria-busy="true"] > i {
-    width: min(144px, 100%);
-    border-radius: 2px;
-  }
   .public-route-feedback__recovery {
     width: fit-content;
     max-width: calc(100vw - 2rem);
@@ -148,16 +149,19 @@
     box-shadow: 0 4px 24px rgb(41 46 41 / .12);
     pointer-events: auto;
   }
-  .public-route-feedback__pending { display: block; pointer-events: none; }
+  .public-route-feedback__pending { display: block; pointer-events: none; transition: opacity 140ms linear; }
+  .public-route-feedback > i[data-progress-state="fading"] + .public-route-feedback__pending { opacity: 0; }
   .public-route-feedback__recovery .scheme-a-page-loader__actions { margin-top: .75rem; }
   @media (max-width: 767px) {
     .public-route-feedback { top: 56px; }
-    .public-route-scene[data-leaving="true"] + .public-route-feedback,
-    .public-route-scene[data-pending="true"]:not([data-region-only]) + .public-route-feedback[aria-busy="true"] {
+    .public-route-feedback[data-feedback-scope="page"] {
       bottom: calc(82px + env(safe-area-inset-bottom));
     }
   }
-  @media (prefers-reduced-motion: reduce) { .public-route-feedback > i::after { animation: none; } }
+  @media (prefers-reduced-motion: reduce) {
+    .public-route-feedback > i,
+    .public-route-feedback > i::after { transition: none; }
+  }
 
   .scheme-a-page-loader__actions {
     display: flex;
@@ -225,6 +229,7 @@
   }
 
   .scheme-a-page-loader__brand > i {
+    display: block;
     width: min(220px, 50vw);
     height: 2px;
     margin-top: 1.5rem;
@@ -235,13 +240,15 @@
 
   .scheme-a-page-loader__brand > i::after {
     display: block;
-    width: 50%;
+    width: 100%;
     height: 100%;
     background: linear-gradient(90deg, transparent, #E4E8DE 50%, #E4E8DE 100%);
     box-shadow: none;
     border-radius: 999px;
     content: "";
-    animation: scheme-loader 1.1s cubic-bezier(0.65, 0, 0.35, 1) infinite alternate;
+    transform: scaleX(var(--loading-progress, 0.08));
+    transform-origin: left center;
+    transition: transform 180ms linear;
   }
 
   .scheme-a-chrome {
@@ -1730,11 +1737,6 @@
   @keyframes scheme-directory-in {
     from { opacity: 0; transform: translateY(-6px); }
     to { opacity: 1; transform: translateY(0); }
-  }
-
-  @keyframes scheme-loader {
-    from { transform: translateX(-110%); }
-    to { transform: translateX(220%); }
   }
 
   @keyframes scheme-brand-exposure {

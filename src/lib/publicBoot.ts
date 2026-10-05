@@ -2,6 +2,7 @@ import { reloadDocumentSafely } from "@/lib/navigationProtection";
 import { publicContentStatusText } from "../i18n/publicContentStatusText";
 import { getDefaultLanguage, getLanguageFromPath, stripLanguagePrefix } from "../i18n/routes";
 import { PUBLIC_MOTION, prefersReducedMotion } from "./publicMotion";
+import { startPublicLoadingProgress } from "./publicLoadingProgress";
 
 export type PublicBootState = "waiting" | "timeout" | "handoff" | "ready" | "degraded";
 type Recovery = { retry: () => void; continue: () => void; timeout: () => void };
@@ -63,6 +64,7 @@ export function initializePublicBoot(): PublicBoot | undefined {
   let recovery: Recovery | undefined;
   let completion: Promise<void> | undefined;
   let animation: Animation | undefined;
+  let progress: ReturnType<typeof startPublicLoadingProgress> | undefined;
   let revision = 0;
   const failedStyles = new WeakSet<HTMLLinkElement>();
   const stylesReady = () => Array.from(document.querySelectorAll<HTMLLinkElement>("link[data-public-style]"))
@@ -79,6 +81,8 @@ export function initializePublicBoot(): PublicBoot | undefined {
     const element = screen();
     if (element && document.body && element.parentElement !== document.body) document.body.prepend(element);
     if (state === "ready" || state === "degraded") {
+      progress?.cancel();
+      progress = undefined;
       element?.remove();
       delete document.documentElement.dataset.publicBoot;
       delete document.documentElement.dataset.publicBootHome;
@@ -92,6 +96,10 @@ export function initializePublicBoot(): PublicBoot | undefined {
     document.getElementById("root")?.setAttribute("inert", "");
     if (!element) return;
     element.dataset.bootState = state;
+    const track = element.querySelector<HTMLElement>(".scheme-a-page-loader__brand > i");
+    if (track && !progress) progress = startPublicLoadingProgress(track);
+    if (state === "timeout") progress?.pause();
+    else if (state === "waiting") progress?.resume();
     element.setAttribute("aria-busy", String(state !== "timeout"));
     for (const node of element.querySelectorAll<HTMLElement>("[data-boot-copy]")) {
       const key = node.dataset.bootCopy as keyof typeof copy;
@@ -148,20 +156,26 @@ export function initializePublicBoot(): PublicBoot | undefined {
         finish(degraded);
         return completion = Promise.resolve();
       }
-      animation = element.animate([{ opacity: 1 }, { opacity: 0 }], {
-        duration: homeEntry ? 420 : PUBLIC_MOTION.handoff,
-        easing: homeEntry ? "ease-in-out" : PUBLIC_MOTION.easing,
-        // Keep the last transparent frame until removal, including busy mobile frames.
-        fill: "forwards",
-      });
       const owner = revision;
-      completion = animation.finished.catch(() => {}).then(() => { if (owner === revision) finish(degraded); });
+      const fade = () => {
+        if (owner !== revision) return Promise.resolve();
+        animation = element.animate([{ opacity: 1 }, { opacity: 0 }], {
+          duration: homeEntry ? 420 : PUBLIC_MOTION.handoff,
+          easing: homeEntry ? "ease-in-out" : PUBLIC_MOTION.easing,
+          // Keep the last transparent frame until removal, including busy mobile frames.
+          fill: "forwards",
+        });
+        return animation.finished.catch(() => {}).then(() => { if (owner === revision) finish(degraded); });
+      };
+      completion = progress ? progress.complete().then(fade) : fade();
       return completion;
     },
     hold() {
       if (state !== "handoff") return;
       revision++;
       animation?.cancel();
+      progress?.cancel();
+      progress = undefined;
       completion = undefined;
       state = "waiting";
       render();
