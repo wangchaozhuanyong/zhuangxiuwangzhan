@@ -11,6 +11,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "@/hooks/use-toast";
 import AdminStickyActionBar from "@/components/admin/AdminStickyActionBar";
+import { adminMobileEditorText } from "@/i18n/adminMobileEditorText";
 import AdminPageHeader from "@/components/admin/AdminPageHeader";
 import AdminFormSection from "@/components/admin/AdminFormSection";
 import AdminEmptyState from "@/components/admin/AdminEmptyState";
@@ -119,6 +120,7 @@ const toStringArray = (value: unknown): string[] =>
 export default function AdminProjectEditor() {
   const { protectSubmission, isSubmitting } = useSubmissionLock();
   const language = getAdminLang();
+  const mobileText = adminMobileEditorText[language];
   const A = useCallback((key: AdminProjectEditorTextKey): string => adminProjectEditorText[key][language], [language]);
   const formatA = useCallback(
     (key: AdminProjectEditorTextKey, values: Record<string, string>): string =>
@@ -256,7 +258,8 @@ export default function AdminProjectEditor() {
 
   return (
     <>
-    <AdminStickyActionBar
+      <AdminStickyActionBar
+        mobileSticky
         left={
           <>
             <Button asChild variant="outline">
@@ -269,6 +272,16 @@ export default function AdminProjectEditor() {
         }
         right={
           <>
+            <AdminActionButton action="content.write" type="button" variant="outline" onClick={() => void save("draft")} disabled={saveBusy || isLoading}>
+              {record.status === "draft" ? A("saveDraft") : mobileText.moveToDraft}
+            </AdminActionButton>
+            <AdminActionButton action="content.publish" type="button" onClick={() => void save("published")} disabled={saveBusy || isLoading}>
+              {record.status === "published" ? mobileText.updatePublished : A("publish")}
+            </AdminActionButton>
+          </>
+        }
+        more={
+          <>
             {previewUrl && (
               <Button asChild variant="outline">
                 <a href={previewUrl} target="_blank" rel="noreferrer">
@@ -276,12 +289,9 @@ export default function AdminProjectEditor() {
                 </a>
               </Button>
             )}
-            <AdminActionButton action="content.write" type="button" variant="outline" onClick={() => void save("draft")} disabled={saveBusy || isLoading}>
-              {A("saveDraft")}
-            </AdminActionButton>
-            <AdminActionButton action="content.publish" type="button" onClick={() => void save("published")} disabled={saveBusy || isLoading}>
-              {A("publish")}
-            </AdminActionButton>
+            <Button type="button" variant="outline" aria-expanded={showEnglish} onClick={() => setShowEnglish((value) => !value)}>
+              {showEnglish ? A("hideEnglish") : A("showEnglish")}
+            </Button>
             <AdminActionButton action="content.write" type="button" variant="outline" onClick={() => void save(undefined, true)} disabled={saveBusy || isLoading || !record.id}>
               {A("saveAndGenerateEnglish")}
             </AdminActionButton>
@@ -309,11 +319,6 @@ export default function AdminProjectEditor() {
           title={isNew ? A("newTitle") : A("editTitle")}
           description={A("pageDescription")}
           helpText={A("pageHelpText")}
-          actions={
-            <Button type="button" variant="outline" onClick={() => setShowEnglish((v) => !v)}>
-              {showEnglish ? A("hideEnglish") : A("showEnglish")}
-            </Button>
-          }
         />
 
         {englishMissing && (
@@ -353,9 +358,9 @@ export default function AdminProjectEditor() {
             </div>
 
             <div className="md:col-span-2">
-              <div className="flex items-center justify-between gap-2">
+              <div className="flex flex-col items-start gap-2 sm:flex-row sm:items-center sm:justify-between">
                 <label className="mb-1 block text-sm font-medium">{A("slug")}</label>
-                <div className="flex items-center gap-2">
+                <div className="flex flex-wrap items-center gap-2">
                   <Button
                     type="button"
                     variant="outline"
@@ -379,7 +384,7 @@ export default function AdminProjectEditor() {
                 onBlur={() => void checkSlugUnique(record.slug)}
                 placeholder={A("slugPlaceholder")}
               />
-              {previewUrl && <div className="mt-1 text-xs text-muted-foreground">{formatA("frontendPath", { path: previewUrl })}</div>}
+              {previewUrl && <div className="mt-1 break-words text-xs text-muted-foreground [overflow-wrap:anywhere]">{formatA("frontendPath", { path: previewUrl })}</div>}
             </div>
 
             <div className="md:col-span-2">
@@ -452,7 +457,7 @@ export default function AdminProjectEditor() {
 
         <AdminProjectImages projectId={record.id} />
 
-        <AdminFormSection title={A("seoZhTitle")} description={A("seoZhDescription")} helpText={A("seoZhHelp")}>
+        <AdminFormSection title={A("seoZhTitle")} description={A("seoZhDescription")} helpText={A("seoZhHelp")} collapsible defaultOpen={false}>
           <div className="grid gap-4 md:grid-cols-2">
             <div className="md:col-span-2">
               <label className="mb-1 block text-sm font-medium">{A("seoTitleZh")}</label>
@@ -465,47 +470,45 @@ export default function AdminProjectEditor() {
           </div>
         </AdminFormSection>
 
-        {showEnglish && (
-          <>
-            <AdminFormSection title={A("autoEnglishTitle")} description={autoEnglishDescription} helpText={A("autoEnglishHelp")} collapsible defaultOpen={false}>
-              <div className="grid gap-4 md:grid-cols-2">
-                <div className="md:col-span-2">
-                  <label className="mb-1 block text-sm font-medium">{A("englishTitle")}</label>
-                  <Input value={record.title_en} onChange={(e) => setRecord((r) => ({ ...r, title_en: e.target.value }))} />
-                </div>
-                <div className="md:col-span-2">
-                  <label className="mb-1 block text-sm font-medium">{A("englishExcerpt")}</label>
-                  <Textarea rows={3} value={record.excerpt_en} onChange={(e) => setRecord((r) => ({ ...r, excerpt_en: e.target.value }))} />
-                </div>
-                <div className="md:col-span-2">
-                  <label className="mb-1 block text-sm font-medium">{A("englishBody")}</label>
-                  <Textarea rows={10} value={record.content_en} onChange={(e) => setRecord((r) => ({ ...r, content_en: e.target.value }))} />
-                </div>
-                <div className="md:col-span-2">
-                  <label className="mb-1 block text-sm font-medium">{A("clientNeedEn")}</label>
-                  <Textarea rows={4} value={record.client_need_en} onChange={(e) => setRecord((r) => ({ ...r, client_need_en: e.target.value }))} />
-                </div>
-                <div className="md:col-span-2">
-                  <label className="mb-1 block text-sm font-medium">{A("highlightsEn")}</label>
-                  <Textarea rows={6} value={formatLines(record.highlights_en)} onChange={(e) => setRecord((r) => ({ ...r, highlights_en: parseLines(e.target.value) }))} />
-                </div>
+        <div hidden={!showEnglish} className="space-y-6">
+          <AdminFormSection title={A("autoEnglishTitle")} description={autoEnglishDescription} helpText={A("autoEnglishHelp")} collapsible defaultOpen={false}>
+            <div className="grid gap-4 md:grid-cols-2">
+              <div className="md:col-span-2">
+                <label className="mb-1 block text-sm font-medium">{A("englishTitle")}</label>
+                <Input value={record.title_en} onChange={(e) => setRecord((r) => ({ ...r, title_en: e.target.value }))} />
               </div>
-            </AdminFormSection>
+              <div className="md:col-span-2">
+                <label className="mb-1 block text-sm font-medium">{A("englishExcerpt")}</label>
+                <Textarea rows={3} value={record.excerpt_en} onChange={(e) => setRecord((r) => ({ ...r, excerpt_en: e.target.value }))} />
+              </div>
+              <div className="md:col-span-2">
+                <label className="mb-1 block text-sm font-medium">{A("englishBody")}</label>
+                <Textarea rows={10} value={record.content_en} onChange={(e) => setRecord((r) => ({ ...r, content_en: e.target.value }))} />
+              </div>
+              <div className="md:col-span-2">
+                <label className="mb-1 block text-sm font-medium">{A("clientNeedEn")}</label>
+                <Textarea rows={4} value={record.client_need_en} onChange={(e) => setRecord((r) => ({ ...r, client_need_en: e.target.value }))} />
+              </div>
+              <div className="md:col-span-2">
+                <label className="mb-1 block text-sm font-medium">{A("highlightsEn")}</label>
+                <Textarea rows={6} value={formatLines(record.highlights_en)} onChange={(e) => setRecord((r) => ({ ...r, highlights_en: parseLines(e.target.value) }))} />
+              </div>
+            </div>
+          </AdminFormSection>
 
-            <AdminFormSection title={A("englishSeoTitle")} description={autoEnglishDescription} helpText={A("englishSeoHelp")} collapsible defaultOpen={false}>
-              <div className="grid gap-4 md:grid-cols-2">
-                <div className="md:col-span-2">
-                  <label className="mb-1 block text-sm font-medium">{A("seoTitleEn")}</label>
-                  <Input value={record.seo_title_en} onChange={(e) => setRecord((r) => ({ ...r, seo_title_en: e.target.value }))} />
-                </div>
-                <div className="md:col-span-2">
-                  <label className="mb-1 block text-sm font-medium">{A("seoDescriptionEn")}</label>
-                  <Textarea rows={3} value={record.seo_description_en} onChange={(e) => setRecord((r) => ({ ...r, seo_description_en: e.target.value }))} />
-                </div>
+          <AdminFormSection title={A("englishSeoTitle")} description={autoEnglishDescription} helpText={A("englishSeoHelp")} collapsible defaultOpen={false}>
+            <div className="grid gap-4 md:grid-cols-2">
+              <div className="md:col-span-2">
+                <label className="mb-1 block text-sm font-medium">{A("seoTitleEn")}</label>
+                <Input value={record.seo_title_en} onChange={(e) => setRecord((r) => ({ ...r, seo_title_en: e.target.value }))} />
               </div>
-            </AdminFormSection>
-          </>
-        )}
+              <div className="md:col-span-2">
+                <label className="mb-1 block text-sm font-medium">{A("seoDescriptionEn")}</label>
+                <Textarea rows={3} value={record.seo_description_en} onChange={(e) => setRecord((r) => ({ ...r, seo_description_en: e.target.value }))} />
+              </div>
+            </div>
+          </AdminFormSection>
+        </div>
 
         <div className="pb-10" />
       </form>

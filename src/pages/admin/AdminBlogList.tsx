@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { isSupabaseConfigured } from "@/lib/supabase";
 import { useAdminBlogPosts, type AdminBlogRow } from "@/lib/adminBusinessContentQueries";
+import AdminFilterSummary from "@/components/admin/AdminFilterSummary";
 import AdminPageHeader from "@/components/admin/AdminPageHeader";
 import AdminAlert from "@/components/admin/AdminAlert";
 import AdminDataTable, { type AdminDataTableColumn } from "@/components/admin/AdminDataTable";
@@ -39,19 +40,20 @@ export default function AdminBlogList() {
   const columns: AdminDataTableColumn<AdminBlogRow>[] = [
     {
       key: "post",
+      mobileRole: "title",
       header: A("columnPost"),
       cell: (row) => {
         const title = language === "en" ? row.title_en || row.title_zh || row.slug : row.title_zh || row.title_en || row.slug;
         return (
           <div className="flex items-center gap-3">
-            <div className="h-10 w-14 overflow-hidden rounded-md border border-border bg-muted">
+            <div className="h-12 w-16 shrink-0 overflow-hidden rounded-md border border-border bg-muted">
               {row.cover_image_url ? <SmartImage src={row.cover_image_url} alt={title} className="h-full w-full object-cover" width={112} height={80} /> : null}
             </div>
             <div className="min-w-0">
               <Link to={`/admin/blog/${row.id}`} className="font-medium hover:underline">
                 {title}
               </Link>
-              <div className="mt-0.5 text-xs text-muted-foreground">/{row.slug}</div>
+              <div className="mt-0.5 hidden text-xs text-muted-foreground md:block">/{row.slug}</div>
             </div>
           </div>
         );
@@ -72,18 +74,21 @@ export default function AdminBlogList() {
     },
     {
       key: "status",
+      mobileRole: "badge",
       header: A("columnStatus"),
       className: "w-[120px]",
       cell: (row) => <AdminStatusBadge status={row.status || "draft"} />,
     },
     {
       key: "sort",
+      mobileRole: "detail",
       header: A("columnSort"),
       className: "w-[100px]",
       cell: (row) => <span className="tabular-nums text-sm text-muted-foreground">{row.sort_order ?? 0}</span>,
     },
     {
       key: "updated",
+      mobileRole: "detail",
       header: A("columnUpdated"),
       className: "w-[180px]",
       cell: (row) => (
@@ -128,6 +133,14 @@ export default function AdminBlogList() {
           ))}
         </select>
       </div>
+
+      <AdminFilterSummary
+        filters={[
+          ...(status !== "all" ? [publishStatusOptions().find((option) => option.value === status)?.label || ""] : []),
+          ...(search.trim() ? [search.trim()] : []),
+        ].filter(Boolean)}
+        onClear={() => { setSearch(""); setStatus("all"); setPage(0); }}
+      />
 
       {errorMessage && <AdminAlert tone="error" className="mb-4">{errorMessage}</AdminAlert>}
 

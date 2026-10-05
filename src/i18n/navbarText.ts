@@ -1,3 +1,33 @@
+// Keep this lightweight navigation subset in sync through navbarText.test.ts.
+// Importing the complete table here would pull admin seed copy into the public entry.
+export const navigationTranslations: Record<string, Record<string, string>> = {
+  "nav.home": { en: "Home", zh: "首页" },
+  "nav.furniture": { en: "Furniture showcase", zh: "家具展示" },
+  "nav.about": { en: "About", zh: "关于我们" },
+  "nav.services": { en: "Services", zh: "服务项目" },
+  "nav.design": { en: "Interior Design", zh: "室内设计" },
+  "nav.materials": { en: "Materials", zh: "材料库" },
+  "nav.projects": { en: "Projects", zh: "项目案例" },
+  "nav.process": { en: "Process", zh: "施工流程" },
+  "nav.blog": { en: "Blog", zh: "博客" },
+  "nav.faq": { en: "FAQ", zh: "常见问题" },
+  "nav.contact": { en: "Contact", zh: "联系我们" },
+  "nav.products": { en: "Products", zh: "装修商品" },
+  "nav.promotions": { en: "Promotions", zh: "优惠活动" },
+  "nav.campaign": { en: "Renovation Campaign", zh: "装修报价专题" },
+  "nav.locations": { en: "Locations", zh: "服务地区" },
+  "nav.beforeAfter": { en: "Before & After", zh: "改造前后" },
+  "nav.oldHouse": { en: "Old House Renovation", zh: "旧屋翻新" },
+  "nav.surfaceRepair": { en: "Furniture & Surface Repair", zh: "家具与家装修复" },
+  "nav.quote": { en: "Get a Quote", zh: "获取报价" },
+  "nav.navigation": { en: "Navigation", zh: "导航" },
+};
+
+export function getNavigationLabel(key: string, language: string): string {
+  const entry = navigationTranslations[key];
+  return entry?.[language] || entry?.en || key;
+}
+
 export const navbarText = {
   en: {
     switchLanguage: "Switch language",

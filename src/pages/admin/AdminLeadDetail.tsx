@@ -15,6 +15,7 @@ import { useAdminLead } from "@/lib/adminLeadQueries";
 import { formatAdminMutationError } from "@/lib/adminMutation";
 import { addAdminLeadFollowup, updateAdminLead } from "@/backend/modules/leads/service/leadService";
 import AdminPageHeader from "@/components/admin/AdminPageHeader";
+import { adminMobileSaveText } from "@/i18n/adminMobileSaveText";
 import { getAdminLang } from "@/lib/adminLocale";
 import { adminLeadDetailText, adminLeadFollowupTypeLabels } from "@/i18n/adminLeadDetailText";
 import { translateProjectType, translateStatusLabel } from "@/i18n/displayLabels";
@@ -53,6 +54,7 @@ const followupTypeLabel = (type: string) =>
 const AdminLeadDetail = () => {
   const { protectSubmission, queueSubmission, isSubmitting } = useSubmissionLock();
   const lang = getAdminLang();
+  const mobileText = adminMobileSaveText[lang];
   const { id } = useParams<{ id: string }>();
   const queryClient = useQueryClient();
   const { data, error, isLoading } = useAdminLead(id);
@@ -132,7 +134,7 @@ const AdminLeadDetail = () => {
 
   return (
     <>
-    <div className="space-y-6">
+    <div className="space-y-4 sm:space-y-6">
         <AdminPageHeader
           title={A("pageTitle")}
           description={A("pageDescription")}
@@ -144,10 +146,10 @@ const AdminLeadDetail = () => {
         {isLoading && <AdminPageSkeleton mode="form" />}
         {lead && (
           <>
-            <div className="rounded-xl border border-border bg-card p-4 sm:p-6">
+            <div className="min-w-0 rounded-xl border border-border bg-card p-4 [overflow-wrap:anywhere] sm:p-6">
               <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
                 <div className="min-w-0">
-                  <h1 className="font-display text-xl font-bold sm:text-2xl">{lead.name || A("leadFallback")}</h1>
+                  <h2 className="break-words font-display text-xl font-bold sm:text-2xl">{lead.name || A("leadFallback")}</h2>
                   <p className="mt-1 break-words text-sm text-muted-foreground">{lead.phone} · {lead.email || "-"}</p>
                   <p className="mt-1 break-words text-sm text-muted-foreground">{formatSourcePath(lead.source_path, lang)} · {new Date(lead.created_at).toLocaleString()}</p>
                 </div>
@@ -158,16 +160,18 @@ const AdminLeadDetail = () => {
               </div>
             </div>
 
-            <div className="grid gap-6 lg:grid-cols-[1fr_360px]">
-              <section className="rounded-xl border border-border bg-card p-4 sm:p-6">
-                <h2 className="mb-4 font-display text-xl font-bold">{A("pageTitle")}</h2>
-                <div className="grid gap-4 text-sm md:grid-cols-2">
+            <div className="grid gap-4 sm:gap-6 lg:grid-cols-[minmax(0,1fr)_360px]">
+              <section className="min-w-0 rounded-xl border border-border bg-card p-4 [overflow-wrap:anywhere] sm:p-6">
+                <h2 className="font-display text-xl font-bold">{A("pageTitle")}</h2>
+                {canWriteLead && <p className="mb-4 mt-2 text-sm text-muted-foreground">{mobileText.automaticScope}</p>}
+                <div className="grid gap-4 text-sm md:grid-cols-2 [&>div]:min-w-0">
                   <div><span className="text-muted-foreground">{A("projectType")}</span> {lead.project_type ? translateProjectType(lead.project_type, lang) : "-"}</div>
                   <div><span className="text-muted-foreground">{A("budget")}</span> {lead.budget_range || "-"}</div>
                   <div className="md:col-span-2"><span className="text-muted-foreground">{A("message")}</span><p className="mt-1 whitespace-pre-wrap">{lead.message || "-"}</p></div>
                   <div>
-                    <label className="mb-1 block text-sm font-medium">{A("status")}</label>
+                    <label htmlFor="lead-status" className="mb-1 block text-sm font-medium">{A("status")}</label>
                     <select
+                      id="lead-status"
                       value={lead.status || "new"}
                       onChange={(event) => {
                         if (!canWriteLead) return;
@@ -186,24 +190,28 @@ const AdminLeadDetail = () => {
                     </select>
                   </div>
                   <div>
-                    <label className="mb-1 block text-sm font-medium">{A("nextFollowUp")}</label>
-                    <Input type="datetime-local" value={lead.next_follow_up_at ? lead.next_follow_up_at.slice(0, 16) : ""} onChange={(event) => setLead({ ...lead, next_follow_up_at: event.target.value })} onBlur={() => void updateLead({ next_follow_up_at: lead.next_follow_up_at || null }, A("nextFollowUp"))} disabled={!canWriteLead || savingField === A("nextFollowUp")} />
+                    <label htmlFor="lead-nextFollowUp" className="mb-1 block text-sm font-medium">{A("nextFollowUp")}</label>
+                    <Input id="lead-nextFollowUp" type="datetime-local" value={lead.next_follow_up_at ? lead.next_follow_up_at.slice(0, 16) : ""} onChange={(event) => setLead({ ...lead, next_follow_up_at: event.target.value })} onBlur={() => void updateLead({ next_follow_up_at: lead.next_follow_up_at || null }, A("nextFollowUp"))} disabled={!canWriteLead || savingField === A("nextFollowUp")} />
                   </div>
                   <div className="md:col-span-2">
-                    <label className="mb-1 block text-sm font-medium">{A("notes")}</label>
-                    <Textarea rows={4} value={lead.notes || ""} onChange={(event) => setLead({ ...lead, notes: event.target.value })} onBlur={() => void updateLead({ notes: lead.notes || null }, A("notes"))} disabled={!canWriteLead || savingField === A("notes")} />
+                    <label htmlFor="lead-notes" className="mb-1 block text-sm font-medium">{A("notes")}</label>
+                    <Textarea id="lead-notes" rows={4} value={lead.notes || ""} onChange={(event) => setLead({ ...lead, notes: event.target.value })} onBlur={() => void updateLead({ notes: lead.notes || null }, A("notes"))} disabled={!canWriteLead || savingField === A("notes")} />
                   </div>
                 </div>
               </section>
 
-              <section className="rounded-xl border border-border bg-card p-4 sm:p-6">
-                <h2 className="mb-4 font-display text-xl font-bold">{A("addFollowup")}</h2>
+              <section className="min-w-0 rounded-xl border border-border bg-card p-4 [overflow-wrap:anywhere] sm:p-6">
+                <h2 className="font-display text-xl font-bold">{A("addFollowup")}</h2>
+                <p className="mb-4 mt-2 text-sm text-muted-foreground">{mobileText.followupScope}</p>
                 <form onSubmit={addFollowup} className="space-y-3">
-                  <select value={followupType} onChange={(event) => setFollowupType(event.target.value)} disabled={!canWriteLead} className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm">
+                  <label htmlFor="lead-followup-type" className="block text-sm font-medium">{mobileText.followupType}</label>
+                  <select id="lead-followup-type" value={followupType} onChange={(event) => setFollowupType(event.target.value)} disabled={!canWriteLead} className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm">
                     {followupTypes.map((item) => <option key={item} value={item}>{followupTypeLabel(item)}</option>)}
                   </select>
-                  <Textarea rows={4} value={content} onChange={(event) => setContent(event.target.value)} placeholder={A("followupPlaceholder")} disabled={!canWriteLead} />
-                  <Input type="datetime-local" value={nextFollowUpAt} onChange={(event) => setNextFollowUpAt(event.target.value)} disabled={!canWriteLead} />
+                  <label htmlFor="lead-followup-content" className="block text-sm font-medium">{mobileText.followupContent}</label>
+                  <Textarea id="lead-followup-content" rows={4} value={content} onChange={(event) => setContent(event.target.value)} placeholder={A("followupPlaceholder")} disabled={!canWriteLead} />
+                  <label htmlFor="lead-followup-next" className="block text-sm font-medium">{A("nextFollowUp")}</label>
+                  <Input id="lead-followup-next" type="datetime-local" value={nextFollowUpAt} onChange={(event) => setNextFollowUpAt(event.target.value)} disabled={!canWriteLead} />
                   <AdminActionButton action="lead.write" type="submit" className="w-full" disabled={savingFollowup} aria-busy={savingFollowup}>
                     {savingFollowup ? A("saving") : A("saveFollowup")}
                   </AdminActionButton>
@@ -211,7 +219,7 @@ const AdminLeadDetail = () => {
               </section>
             </div>
 
-            <section className="rounded-xl border border-border bg-card p-4 sm:p-6">
+            <section className="min-w-0 rounded-xl border border-border bg-card p-4 [overflow-wrap:anywhere] sm:p-6">
               <h2 className="mb-4 font-display text-xl font-bold">{A("timeline")}</h2>
               <div className="space-y-3">
                 {followups.map((item) => (

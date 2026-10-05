@@ -9,6 +9,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { isSupabaseConfigured, supabase } from "@/lib/supabase";
 import { toast } from "@/hooks/use-toast";
 import AdminPageHeader from "@/components/admin/AdminPageHeader";
+import { adminMobileSaveText } from "@/i18n/adminMobileSaveText";
 import AdminFormSection from "@/components/admin/AdminFormSection";
 import AdminEmptyState from "@/components/admin/AdminEmptyState";
 import ImageField from "@/components/admin/ImageField";
@@ -235,6 +236,8 @@ export default function AdminAboutEditor() {
     return <AdminEmptyState title={A("supabaseNotConfigured")} description={A("supabaseNotConfiguredDescription")} />;
   }
 
+  const mobileText = adminMobileSaveText[getAdminLang()];
+
   return (
     <>
       <AdminPageHeader
@@ -255,8 +258,15 @@ export default function AdminAboutEditor() {
         }
       />
 
+      <p className="mb-4 rounded-lg bg-muted/50 p-3 text-sm text-muted-foreground">{mobileText.sectionOnlyScope}</p>
       <Tabs value={activeTab} onValueChange={(v) => setActiveTab(toTabValue(v))}>
-        <div className="mb-4 overflow-auto">
+        <label className="mb-4 block space-y-1 text-sm font-medium sm:hidden">
+          <span>{mobileText.currentSection}</span>
+          <select value={activeTab} onChange={(event) => setActiveTab(toTabValue(event.target.value))} className="h-11 w-full min-w-0 rounded-md border border-input bg-background px-3">
+            {sectionKeys.map((key) => <option key={key} value={key}>{sectionTabLabel(key)}</option>)}
+          </select>
+        </label>
+        <div className="mb-4 hidden overflow-auto sm:block">
           <TabsList className="w-max">
             {sectionKeys.map((key) => (
               <TabsTrigger key={key} value={key}>
@@ -361,7 +371,7 @@ export default function AdminAboutEditor() {
                       </div>
                     </div>
                     <div data-admin-card-actions className="mt-4 flex gap-2">
-                      <Button onClick={() => void saveSection(key)}>{A("save")}</Button>
+                      <Button onClick={() => void saveSection(key)} disabled={isSubmitting} aria-busy={isSubmitting}>{isSubmitting ? mobileText.saving : mobileText.saveSection}</Button>
                     </div>
                   </>
                 )}
@@ -442,7 +452,7 @@ export default function AdminAboutEditor() {
               </div>
             </div>
             <div data-admin-card-actions className="mt-4 flex gap-2">
-              <Button onClick={() => void saveCta()}>{A("save")}</Button>
+              <Button onClick={() => void saveCta()} disabled={isSubmitting} aria-busy={isSubmitting}>{isSubmitting ? mobileText.saving : mobileText.saveSection}</Button>
             </div>
           </AdminFormSection>
         </TabsContent>

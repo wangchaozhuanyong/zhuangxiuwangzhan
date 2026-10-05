@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import AdminConfirmDialog from "@/components/admin/AdminConfirmDialog";
 import type { ButtonProps } from "@/components/ui/button";
 import { adminSharedText } from "@/i18n/adminSharedText";
@@ -16,6 +16,7 @@ type AdminConfirmOptions = {
 
 type AdminConfirmRequest = AdminConfirmOptions & {
   resolve: (confirmed: boolean) => void;
+  focusReturnTarget: HTMLElement | null;
 };
 
 declare global {
@@ -33,10 +34,15 @@ export const adminConfirm = (options: string | AdminConfirmOptions) => {
     return Promise.resolve(window.confirm(normalized.description));
   }
 
+  const activeElement = document.activeElement instanceof HTMLElement ? document.activeElement : null;
+  // Action menus close after a click, so their child button cannot receive focus later.
+  const returnId = activeElement?.closest<HTMLElement>("[data-admin-confirm-focus-return]")?.dataset.adminConfirmFocusReturn;
+  const focusReturnTarget = (returnId ? document.getElementById(returnId) : null) || activeElement;
+
   return new Promise<boolean>((resolve) => {
     window.dispatchEvent(
       new CustomEvent<AdminConfirmRequest>(ADMIN_CONFIRM_EVENT, {
-        detail: { ...normalized, resolve },
+        detail: { ...normalized, resolve, focusReturnTarget },
       }),
     );
   });
@@ -44,12 +50,15 @@ export const adminConfirm = (options: string | AdminConfirmOptions) => {
 
 const AdminConfirmProvider = () => {
   const [request, setRequest] = useState<AdminConfirmRequest | null>(null);
+  const focusReturnTarget = useRef<HTMLElement | null>(null);
   const text = adminSharedText[getAdminLang()];
 
   useEffect(() => {
     window.__FLASHCAST_ADMIN_CONFIRM_READY__ = true;
     const onConfirm = (event: Event) => {
-      setRequest((event as CustomEvent<AdminConfirmRequest>).detail);
+      const nextRequest = (event as CustomEvent<AdminConfirmRequest>).detail;
+      focusReturnTarget.current = nextRequest.focusReturnTarget;
+      setRequest(nextRequest);
     };
     window.addEventListener(ADMIN_CONFIRM_EVENT, onConfirm);
     return () => {
@@ -75,6 +84,13 @@ const AdminConfirmProvider = () => {
       cancelLabel={request?.cancelLabel || text.cancelDefault}
       confirmVariant={request?.confirmVariant || "destructive"}
       onConfirm={() => close(true)}
+      onCloseAutoFocus={(event) => {
+        const target = focusReturnTarget.current;
+        focusReturnTarget.current = null;
+        if (!target?.isConnected || target.matches(":disabled, [aria-disabled='true']")) return;
+        event.preventDefault();
+        target.focus({ preventScroll: true });
+      }}
     />
   );
 };

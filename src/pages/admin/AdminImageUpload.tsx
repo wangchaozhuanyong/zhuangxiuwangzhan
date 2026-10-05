@@ -24,6 +24,7 @@ interface AdminImageUploadProps {
   value?: string;
   folder?: string;
   previewVariant?: AdminImagePreviewVariant;
+  showPreview?: boolean;
   recordAsset?: boolean;
   assetUsageType?: string;
   onUploaded: (url: string, upload?: AdminUploadedMedia) => void;
@@ -406,7 +407,7 @@ async function tryUploadOriginalCopy({ file, folderPath, stamp }: { file: File; 
   return uploaded ? originalPath : null;
 }
 
-const AdminImageUpload = ({ value, folder = "content", previewVariant = "cover", recordAsset = false, assetUsageType = "general", onUploaded }: AdminImageUploadProps) => {
+const AdminImageUpload = ({ value, folder = "content", previewVariant = "cover", showPreview = true, recordAsset = false, assetUsageType = "general", onUploaded }: AdminImageUploadProps) => {
   const { protectSubmission } = useSubmissionLock();
   const createMediaAsset = useCreateAdminMediaAsset();
   const inputRef = useRef<HTMLInputElement>(null);
@@ -487,8 +488,8 @@ const AdminImageUpload = ({ value, folder = "content", previewVariant = "cover",
   });
 
   return (
-    <div className="space-y-2">
-      {value && (
+    <div className="min-w-0 space-y-2">
+      {value && showPreview && (
         <div className={cn("rounded-lg border border-border", preview.frameClassName)}>
           <SmartImage
             src={value}
@@ -501,18 +502,19 @@ const AdminImageUpload = ({ value, folder = "content", previewVariant = "cover",
           />
         </div>
       )}
-      <div data-admin-filter-bar className="flex flex-col gap-2 sm:flex-row">
-        <Input ref={inputRef} type="file" accept="image/jpeg,image/png,image/webp" onChange={(event) => {
+      <div className="flex min-w-0 flex-col gap-2 sm:flex-row sm:items-center">
+        <Input ref={inputRef} type="file" className="sr-only" tabIndex={-1} aria-label={A("upload")} accept="image/jpeg,image/png,image/webp" onChange={(event) => {
           const nextFile = event.target.files?.[0];
           setSelectedFile(nextFile);
           void upload(nextFile);
         }} disabled={uploading} />
-        <Button type="button" variant="outline" className="w-full shrink-0 whitespace-nowrap sm:w-auto" disabled={uploading}
+        <Button type="button" variant="outline" className="min-h-11 w-full shrink-0 whitespace-nowrap sm:w-auto" disabled={uploading} aria-busy={uploading}
           onClick={() => error && selectedFile ? void upload(selectedFile) : inputRef.current?.click()}>
           {uploading ? A("uploading") : error && selectedFile ? A("retry") : A("upload")}
         </Button>
+        {selectedFile && <span className="min-w-0 truncate text-xs text-muted-foreground" title={selectedFile.name}>{selectedFile.name}</span>}
       </div>
-      {error && <p className="text-xs admin-text-error">{error}</p>}
+      {error && <p role="alert" className="break-words text-xs admin-text-error">{error}</p>}
       {notes.length > 0 && (
         <div className="rounded-md px-3 py-2 text-xs admin-tone-success">
           {notes.map((note) => (
@@ -521,9 +523,6 @@ const AdminImageUpload = ({ value, folder = "content", previewVariant = "cover",
         </div>
       )}
       <p className="text-xs text-muted-foreground">{A("automationTip")}</p>
-      <p className="text-xs text-muted-foreground">
-        {A("bucketTip")} <code className="break-all">{BUCKET}</code>
-      </p>
     </div>
   );
 };

@@ -12,6 +12,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { isSupabaseConfigured, supabase } from "@/lib/supabase";
 import { toast } from "@/hooks/use-toast";
 import AdminPageHeader from "@/components/admin/AdminPageHeader";
+import { adminMobileSaveText } from "@/i18n/adminMobileSaveText";
 import AdminFormSection from "@/components/admin/AdminFormSection";
 import AdminEmptyState from "@/components/admin/AdminEmptyState";
 import ImageField from "@/components/admin/ImageField";
@@ -276,6 +277,8 @@ export default function AdminHomeEditor() {
     return <AdminEmptyState title={A("supabaseMissingTitle")} description={A("supabaseMissingDescription")} />;
   }
 
+  const mobileText = adminMobileSaveText[getAdminLang()];
+
   return (
     <>
       <AdminPageHeader
@@ -290,8 +293,20 @@ export default function AdminHomeEditor() {
       />
 
       <p className="mb-4 text-sm text-muted-foreground">{adminContentSyncText[getAdminLang()].legacy}</p>
+      <p className="mb-4 rounded-lg bg-muted/50 p-3 text-sm text-muted-foreground">{mobileText.sectionScope}</p>
       <Tabs value={activeTab} onValueChange={setActiveTab}>
-        <div className="mb-4 overflow-auto">
+        <label className="mb-4 block space-y-1 text-sm font-medium sm:hidden">
+          <span>{mobileText.currentSection}</span>
+          <select value={activeTab} onChange={(event) => setActiveTab(event.target.value)} className="h-11 w-full min-w-0 rounded-md border border-input bg-background px-3">
+            <option value="hero">{A("tabHero")}</option>
+            <option value="stats">{A("tabStats")}</option>
+            <option value="brands">{A("tabBrands")}</option>
+            <option value="process">{A("tabProcess")}</option>
+            <option value="testimonials">{A("tabTestimonials")}</option>
+            <option value="faq">{A("tabFaq")}</option>
+          </select>
+        </label>
+        <div className="mb-4 hidden overflow-auto sm:block">
           <TabsList className="w-max">
             <TabsTrigger value="hero">{A("tabHero")}</TabsTrigger>
             <TabsTrigger value="stats">{A("tabStats")}</TabsTrigger>
@@ -333,7 +348,7 @@ export default function AdminHomeEditor() {
             />
 
             <div data-admin-card-actions className="mt-4 flex gap-2">
-              <Button onClick={() => void saveHomeSectionItems(statsSection, statsItems)}>{A("save")}</Button>
+              <Button onClick={() => void saveHomeSectionItems(statsSection, statsItems)} disabled={isSubmitting} aria-busy={isSubmitting}>{isSubmitting ? mobileText.saving : mobileText.saveSection}</Button>
             </div>
           </AdminFormSection>
         </TabsContent>
@@ -356,7 +371,7 @@ export default function AdminHomeEditor() {
             />
 
             <div data-admin-card-actions className="mt-4 flex gap-2">
-              <Button onClick={() => void saveHomeSectionItems(whySection, whyItems)}>{A("save")}</Button>
+              <Button onClick={() => void saveHomeSectionItems(whySection, whyItems)} disabled={isSubmitting} aria-busy={isSubmitting}>{isSubmitting ? mobileText.saving : mobileText.saveSection}</Button>
             </div>
           </AdminFormSection>
         </TabsContent>
@@ -481,7 +496,7 @@ export default function AdminHomeEditor() {
                 </div>
               </div>
               <div data-admin-card-actions className="mt-4 flex gap-2">
-                <Button onClick={() => void upsertProcessStep(editingStep)}>{A("save")}</Button>
+                <Button onClick={() => void upsertProcessStep(editingStep)} disabled={isSubmitting} aria-busy={isSubmitting}>{isSubmitting ? mobileText.saving : mobileText.saveItem}</Button>
                 <Button variant="outline" onClick={() => setEditingStep(null)}>
                   {A("cancel")}
                 </Button>
@@ -598,7 +613,7 @@ export default function AdminHomeEditor() {
                 </div>
               </div>
               <div data-admin-card-actions className="mt-4 flex gap-2">
-                <Button onClick={() => void upsertFaq(editingFaq)}>{A("save")}</Button>
+                <Button onClick={() => void upsertFaq(editingFaq)} disabled={isSubmitting} aria-busy={isSubmitting}>{isSubmitting ? mobileText.saving : mobileText.saveItem}</Button>
                 <Button variant="outline" onClick={() => setEditingFaq(null)}>
                   {A("cancel")}
                 </Button>
@@ -679,7 +694,7 @@ export default function AdminHomeEditor() {
             </div>
 
             <div data-admin-card-actions className="mt-4 flex gap-2">
-              <Button onClick={() => void upsertCta(editingCta || ctaDraft)}>{A("save")}</Button>
+              <Button onClick={() => void upsertCta(editingCta || ctaDraft)} disabled={isSubmitting} aria-busy={isSubmitting}>{isSubmitting ? mobileText.saving : mobileText.saveItem}</Button>
             </div>
           </AdminFormSection>
         </TabsContent>

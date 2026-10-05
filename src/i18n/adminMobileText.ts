@@ -1,0 +1,28 @@
+export const adminMobileText = {
+  zh: {
+    account: "账户与偏好",
+    chinese: "中文",
+    english: "英文",
+    accountDescription: "切换语言、外观或访问网站。",
+    more: "更多操作",
+    close: "关闭",
+    chooseAction: "选择要执行的操作。",
+    actions: "当前页面操作",
+    details: "更多信息",
+    activeFilters: "当前筛选",
+    clearFilters: "清除筛选",
+  },
+  en: {
+    account: "Account and preferences",
+    chinese: "Chinese",
+    english: "English",
+    accountDescription: "Change the language, appearance, or open the website.",
+    more: "More actions",
+    close: "Close",
+    chooseAction: "Choose an action to continue.",
+    actions: "Current page actions",
+    details: "More information",
+    activeFilters: "Active filters",
+    clearFilters: "Clear filters",
+  },
+};

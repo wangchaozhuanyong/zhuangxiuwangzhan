@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { isSupabaseConfigured } from "@/lib/supabase";
 import { useAdminServices, type AdminServiceRow } from "@/lib/adminBusinessContentQueries";
+import AdminFilterSummary from "@/components/admin/AdminFilterSummary";
 import AdminPageHeader from "@/components/admin/AdminPageHeader";
 import AdminDataTable, { type AdminDataTableColumn } from "@/components/admin/AdminDataTable";
 import AdminAlert from "@/components/admin/AdminAlert";
@@ -43,30 +44,34 @@ export default function AdminServiceList() {
   const columns: AdminDataTableColumn<AdminServiceRow>[] = [
     {
       key: "title",
+      mobileRole: "title",
       header: A("serviceHeader"),
       cell: (row) => (
         <div className="min-w-0">
           <Link to={`/admin/services/${row.id}`} className="font-medium hover:underline">
             {language === "en" ? row.title_en || row.title_zh || row.slug : row.title_zh || row.title_en || row.slug}
           </Link>
-          <div className="mt-0.5 text-xs text-muted-foreground">/{row.slug}</div>
+          <div className="mt-0.5 hidden text-xs text-muted-foreground md:block">/{row.slug}</div>
         </div>
       ),
     },
     {
       key: "status",
+      mobileRole: "badge",
       header: A("statusHeader"),
       className: "w-[120px]",
       cell: (row) => <AdminStatusBadge status={row.status || "draft"} />,
     },
     {
       key: "sort",
+      mobileRole: "detail",
       header: A("sortHeader"),
       className: "w-[100px]",
       cell: (row) => <span className="tabular-nums text-sm text-muted-foreground">{row.sort_order ?? 0}</span>,
     },
     {
       key: "updated",
+      mobileRole: "detail",
       header: A("updatedHeader"),
       className: "w-[180px]",
       cell: (row) => (
@@ -111,6 +116,14 @@ export default function AdminServiceList() {
           ))}
         </select>
       </div>
+
+      <AdminFilterSummary
+        filters={[
+          ...(status !== "all" ? [publishStatusOptions().find((option) => option.value === status)?.label || ""] : []),
+          ...(search.trim() ? [search.trim()] : []),
+        ].filter(Boolean)}
+        onClear={() => { setSearch(""); setStatus("all"); setPage(0); }}
+      />
 
       {errorMessage && <AdminAlert tone="error" className="mb-4">{errorMessage}</AdminAlert>}
 

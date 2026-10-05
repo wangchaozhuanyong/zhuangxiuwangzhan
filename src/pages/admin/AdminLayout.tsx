@@ -15,6 +15,7 @@ import {
   PanelLeftClose,
   PanelLeftOpen,
   Sun,
+  UserRound,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import AdminHelpTip from "@/components/admin/AdminHelpTip";
@@ -54,6 +55,7 @@ import { canAdminRoleAccess } from "@/lib/adminRoleAccess";
 import { addCacheBuster, fallbackSiteSettings, fetchSiteSettings } from "@/lib/siteSettingsApi";
 import { cn } from "@/lib/utils";
 import { useAdminAuth } from "@/pages/admin/AdminAuthProvider";
+import { adminMobileText } from "@/i18n/adminMobileText";
 
 const AdminDefaultContentSeedStatus = lazy(() => import("@/components/admin/AdminDefaultContentSeedStatus"));
 const IDLE_PRELOAD_LIMIT = 8;
@@ -192,6 +194,7 @@ const AdminLayout = () => {
   const [adminLang, setAdminLangState] = useState<AdminLang>(() => getAdminLang());
   const [theme, setTheme] = useState<AdminTheme>(() => getAdminTheme());
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
+  const [mobilePreferencesOpen, setMobilePreferencesOpen] = useState(false);
   const [navCollapsed, setNavCollapsed] = useState(() => readNavCollapsed());
   const [expandedGroups, setExpandedGroups] = useState<Record<string, boolean>>(() => readExpandedGroups());
   const [adminBrandIconFailed, setAdminBrandIconFailed] = useState(false);
@@ -201,6 +204,7 @@ const AdminLayout = () => {
   const pendingAdminLangRef = useRef(adminLang);
   const routeKey = location.pathname;
   const t = copy[adminLang];
+  const mobileText = adminMobileText[adminLang];
   const showDefaultContentSeedStatus = location.pathname === "/admin/dashboard";
   const { data: adminSiteSettings = fallbackSiteSettings } = useQuery({
     queryKey: ["site-settings"],
@@ -622,16 +626,16 @@ const AdminLayout = () => {
 
         <div className="min-w-0 overflow-x-clip">
           <header className="sticky top-0 z-40 border-b border-border bg-card/95 backdrop-blur-xl">
-            <div className="flex min-h-16 items-center justify-between gap-2 px-3 py-2 sm:min-h-[72px] sm:gap-3 sm:px-6 lg:px-8">
+            <div className="flex min-h-14 items-center justify-between gap-2 px-4 py-1.5 md:min-h-[72px] md:gap-3 md:px-6 lg:px-8">
               <div className="flex min-w-0 flex-1 items-center gap-2 sm:gap-3">
-                <Sheet open={mobileNavOpen} onOpenChange={setMobileNavOpen}>
+                <Sheet open={mobileNavOpen} onOpenChange={(open) => { setMobileNavOpen(open); if (open) setMobilePreferencesOpen(false); }}>
                   <SheetTrigger asChild>
-                    <Button type="button" variant="outline" size="icon" className="h-10 w-10 shrink-0 rounded-lg lg:hidden">
+                    <Button type="button" variant="outline" size="icon" className="h-11 w-11 shrink-0 rounded-lg lg:hidden">
                       <Menu className="h-4 w-4" />
                       <span className="sr-only">{t.menu}</span>
                     </Button>
                   </SheetTrigger>
-                  <SheetContent side="left" className="w-[calc(100vw-1rem)] max-w-none border-sidebar-border bg-sidebar p-0 text-sidebar-foreground sm:w-80">
+                  <SheetContent side="left" closeLabel={mobileText.close} data-admin-mobile-sheet className="w-[calc(100vw-2rem)] max-w-sm border-sidebar-border bg-sidebar p-0 pb-[env(safe-area-inset-bottom)] text-sidebar-foreground sm:w-80">
                     <SheetTitle className="sr-only">{t.brand}</SheetTitle>
                     <SheetDescription className="sr-only">{t.subtitle}</SheetDescription>
                     <Nav variant="mobile" />
@@ -648,7 +652,31 @@ const AdminLayout = () => {
               </div>
 
               <div className="flex shrink-0 items-center justify-end gap-1.5 sm:gap-2">
-                <div className="hidden min-h-12 items-center gap-1 rounded-full border border-border bg-muted/60 p-1 sm:inline-flex" aria-label={t.language}>
+                <Sheet open={mobilePreferencesOpen} onOpenChange={(open) => { setMobilePreferencesOpen(open); if (open) setMobileNavOpen(false); }}>
+                  <SheetTrigger asChild>
+                    <Button type="button" variant="outline" size="icon" className="h-11 w-11 rounded-lg md:hidden" aria-label={mobileText.account}>
+                      <UserRound className="h-4 w-4" aria-hidden="true" />
+                    </Button>
+                  </SheetTrigger>
+                  <SheetContent side="bottom" closeLabel={mobileText.close} data-admin-mobile-sheet className="mx-auto max-h-[85dvh] max-w-lg rounded-t-xl pb-[max(1rem,env(safe-area-inset-bottom))]">
+                    <SheetTitle className="pr-12">{mobileText.account}</SheetTitle>
+                    <SheetDescription className="mt-1">{mobileText.accountDescription}</SheetDescription>
+                    <div className="mt-5 space-y-4">
+                      <div role="group" aria-label={t.language} className="grid grid-cols-2 gap-3">
+                        <Button type="button" variant={adminLang === "zh" ? "default" : "outline"} aria-pressed={adminLang === "zh"} className="min-h-11" onClick={() => changeLanguage("zh")}>{mobileText.chinese}</Button>
+                        <Button type="button" variant={adminLang === "en" ? "default" : "outline"} aria-pressed={adminLang === "en"} className="min-h-11" onClick={() => changeLanguage("en")}>{mobileText.english}</Button>
+                      </div>
+                      <Button type="button" variant="outline" className="min-h-11 w-full justify-start gap-3" onClick={() => setTheme((value) => value === "dark" ? "light" : "dark")}>
+                        {theme === "dark" ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}{theme === "dark" ? t.lightTheme : t.darkTheme}
+                      </Button>
+                      <Button asChild variant="outline" className="min-h-11 w-full justify-start gap-3"><Link to={websitePath}><ExternalLink className="h-4 w-4" />{t.backToWebsite}</Link></Button>
+                      <div className="border-t border-border pt-4"><Button type="button" variant="outline" className="min-h-11 w-full justify-start gap-3" onClick={async () => {
+                        await navigateDocumentSafely(async () => { await signOutAdmin(); window.location.href = "/admin"; });
+                      }}><LogOut className="h-4 w-4" />{t.signOut}</Button></div>
+                    </div>
+                  </SheetContent>
+                </Sheet>
+                <div className="hidden min-h-12 items-center gap-1 rounded-full border border-border bg-muted/60 p-1 md:inline-flex" aria-label={t.language}>
                   <ControlButton active={adminLang === "zh"} label="中文" onClick={() => changeLanguage("zh")}>
                     中
                   </ControlButton>
@@ -661,7 +689,7 @@ const AdminLayout = () => {
                   type="button"
                   variant="outline"
                   size="icon"
-                  className="h-10 w-10 rounded-lg"
+                  className="hidden h-10 w-10 rounded-lg md:inline-flex"
                   aria-label={theme === "dark" ? t.lightTheme : t.darkTheme}
                   title={theme === "dark" ? t.lightTheme : t.darkTheme}
                   onClick={() => setTheme((value) => (value === "dark" ? "light" : "dark"))}
@@ -679,13 +707,13 @@ const AdminLayout = () => {
                 <Button
                   type="button"
                   variant="outline"
-                  className="h-10 w-10 rounded-lg px-0 sm:w-auto sm:px-4"
+                  className="hidden h-10 rounded-lg px-4 md:inline-flex"
                   onClick={async () => {
                     await navigateDocumentSafely(async () => { await signOutAdmin(); window.location.href = "/admin"; });
                   }}
                 >
                   <LogOut className="h-4 w-4" />
-                  <span className="hidden sm:inline">{t.signOut}</span>
+                  <span>{t.signOut}</span>
                 </Button>
               </div>
             </div>
@@ -693,7 +721,7 @@ const AdminLayout = () => {
           </header>
 
           <PublicUpdateNotice surface="admin" />
-          <main className="min-w-0 px-3 py-4 sm:px-6 sm:py-5 lg:px-8">
+          <main className="min-w-0 px-4 py-4 sm:px-6 sm:py-5 lg:px-8">
             <div className="mx-auto w-full max-w-[1480px] space-y-5">
               {showDefaultContentSeedStatus && (
                 <Suspense fallback={null}>

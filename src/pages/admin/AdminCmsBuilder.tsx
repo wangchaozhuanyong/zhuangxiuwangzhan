@@ -16,6 +16,7 @@ import AdminStatusBadge from "@/components/admin/AdminStatusBadge";
 import { AdminFieldLabel } from "@/components/admin/AdminHelpTip";
 import { AdminActionButton, AdminPermissionHint, useAdminPermission } from "@/components/admin/AdminPermission";
 import { adminCmsBuilderSectionTemplates, adminCmsBuilderText } from "@/i18n/adminCmsBuilderText";
+import { adminMobileCmsText } from "@/i18n/adminMobileCmsText";
 import { archiveOrDeleteAdminRecord, formatAdminMutationError, saveAdminRecord } from "@/lib/adminMutation";
 import { adminStatusLabel, getAdminLang, publishStatusOptions } from "@/lib/adminLocale";
 import { isSupabaseConfigured } from "@/lib/supabase";
@@ -57,7 +58,9 @@ export default function AdminCmsBuilder() {
   const { protectSubmission, isSubmitting } = useSubmissionLock();
   const queryClient = useQueryClient();
   const adminLang = getAdminLang();
+  const mobileText = adminMobileCmsText[adminLang];
   const [message, setMessage] = useState("");
+  const [sectionDirectoryOpen, setSectionDirectoryOpen] = useState(false);
   const [selectedPageId, setSelectedPageId] = useState<string | null>(null);
   const pageForm = useAdminFormState<CmsPage>(undefined, { initial: emptyPage });
   const { state: pageDraft, setForm: setPageDraft, isDirty: isPageDirty, applyRemote: applyPageRemote } = pageForm;
@@ -158,6 +161,15 @@ export default function AdminCmsBuilder() {
   const selectSection = async (section: CmsSection) => {
     if (sectionForm.isDirty() && !await confirmProtectedNavigation()) return;
     sectionForm.applyRemote({ sectionDraft: section, contentZhText: prettyJson(section.content_zh), contentEnText: prettyJson(section.content_en), settingsText: prettyJson(section.settings) });
+    setSectionDirectoryOpen(false);
+  };
+
+  const selectPage = async (page: CmsPage) => {
+    if (!await confirmProtectedNavigation()) return;
+    pageForm.applyRemote(page);
+    sectionForm.applyRemote({ sectionDraft: null, contentZhText: "{}", contentEnText: "{}", settingsText: "{}" });
+    setSelectedPageId(page.id || null);
+    setSectionDirectoryOpen(false);
   };
 
   const newPage = async () => {
@@ -404,15 +416,32 @@ export default function AdminCmsBuilder() {
     <div className="grid min-w-0 gap-5 sm:gap-6 xl:grid-cols-[300px_minmax(0,1fr)]">
       <section className="min-w-0 rounded-xl border border-border bg-card p-4 shadow-sm xl:sticky xl:top-24 xl:max-h-[calc(100vh-7rem)] xl:overflow-y-auto">
         <div className="mb-4 space-y-3">
-          <div>
+          <div className="hidden xl:block">
             <h2 className="font-display text-xl font-bold leading-tight">{A("pageListTitle")}</h2>
             <p className="mt-1 text-sm leading-6 text-muted-foreground">{A("pageListDescription")}</p>
+          </div>
+          <div className="space-y-2 xl:hidden">
+            <label htmlFor="admin-cms-current-page" className="block text-sm font-medium">{mobileText.currentPage}</label>
+            <select
+              id="admin-cms-current-page"
+              value={selectedPageId || ""}
+              onChange={(event) => {
+                const page = pages.find((item) => item.id === event.target.value);
+                if (page) void selectPage(page);
+              }}
+              className="min-h-11 w-full min-w-0 rounded-md border border-input bg-background px-3 py-2 text-base"
+            >
+              <option value="" disabled>{!pageDraft.id && dirty ? pageDraft.title_zh || A("newPageDraftFallback") : mobileText.choosePage}</option>
+              {pages.map((page) => (
+                <option key={page.id} value={page.id}>{page.title_zh || page.title_en || page.page_key} · {adminStatusLabel("default", page.status)}</option>
+              ))}
+            </select>
           </div>
           <AdminActionButton action="content.write" type="button" size="sm" className="w-full justify-center whitespace-nowrap" onClick={newPage}>
             <Plus className="mr-2 h-4 w-4" />{A("newPageButton")}</AdminActionButton>
         </div>
         {message && <div className="mb-4 rounded-lg bg-muted p-3 text-sm">{message}</div>}
-        <div className="space-y-2">
+        <div className="hidden space-y-2 xl:block">
           {!pageDraft.id && dirty && (
             <div className="rounded-lg border border-dashed border-accent bg-accent/10 p-3 text-sm">
               <div className="font-medium">{pageDraft.title_zh || pageDraft.page_key || A("newPageDraftFallback")}</div>
@@ -423,7 +452,7 @@ export default function AdminCmsBuilder() {
             <button
               type="button"
               key={page.id}
-              onClick={async () => { if (!await confirmProtectedNavigation()) return; pageForm.applyRemote(page); sectionForm.applyRemote({ sectionDraft: null, contentZhText: "{}", contentEnText: "{}", settingsText: "{}" }); setSelectedPageId(page.id || null); }}
+              onClick={() => void selectPage(page)}
               className={`w-full rounded-lg border p-3 text-left transition ${selectedPageId === page.id ? "border-accent bg-accent/10" : "border-border bg-background hover:bg-muted"}`}
             >
               <div className="flex min-w-0 items-center justify-between gap-3">
@@ -437,7 +466,7 @@ export default function AdminCmsBuilder() {
         </div>
       </section>
 
-      <div className="space-y-6">
+      <div className="min-w-0 space-y-6">
         <AdminPageHeader
           title={A("builderTitle")}
           description={
@@ -594,77 +623,103 @@ export default function AdminCmsBuilder() {
               <Plus className="mr-2 h-4 w-4" />{A("newSectionButton")}</AdminActionButton>
           </div>
           <div className="grid min-w-0 gap-4 lg:grid-cols-[320px_1fr]">
-            <div className="space-y-2">
-              <AdminPermissionHint action="content.reorder" />
-              {orderedSections.map((section, index) => (
-                <div
-                  key={section.id}
-                  draggable={reorderPermission.allowed && Boolean(section.id) && !reordering}
-                  onDragStart={(event) => {
-                    if (!section.id || !reorderPermission.allowed) return;
-                    setDraggingSectionId(section.id);
-                    event.dataTransfer.effectAllowed = "move";
-                    event.dataTransfer.setData("text/plain", section.id);
+            <div className="min-w-0 space-y-3">
+              <div className="space-y-2 lg:hidden">
+                <label htmlFor="admin-cms-current-section" className="block text-sm font-medium">{mobileText.currentSection}</label>
+                <select
+                  id="admin-cms-current-section"
+                  value={sectionDraft?.id || ""}
+                  onChange={(event) => {
+                    const section = orderedSections.find((item) => item.id === event.target.value);
+                    if (section) void selectSection(section);
                   }}
-                  onDragOver={(event) => {
-                    if (!reorderPermission.allowed || !draggingSectionId || draggingSectionId === section.id) return;
-                    event.preventDefault();
-                    event.dataTransfer.dropEffect = "move";
-                  }}
-                  onDrop={(event) => {
-                    event.preventDefault();
-                    const sourceId = event.dataTransfer.getData("text/plain") || draggingSectionId;
-                    if (sourceId && section.id) reorderSectionById(sourceId, section.id);
-                  }}
-                  onDragEnd={() => setDraggingSectionId(null)}
-                  className={`rounded-lg border p-3 transition ${sectionDraft?.id === section.id ? "border-accent bg-accent/10" : "border-border bg-background hover:bg-muted"} ${draggingSectionId === section.id ? "opacity-55" : ""}`}
+                  disabled={!orderedSections.length}
+                  className="min-h-11 w-full min-w-0 rounded-md border border-input bg-background px-3 py-2 text-base"
                 >
-                  <div className="flex items-start gap-2">
-                    <button
-                      type="button"
-                      title={reorderPermission.allowed ? A("dragSectionTitle") : reorderPermission.reason}
-                      className="mt-0.5 rounded-md p-1 text-muted-foreground hover:bg-muted"
-                      aria-label={A("dragSectionAria")}
-                      disabled={!reorderPermission.allowed || reordering}
-                    >
-                      <GripVertical className="h-4 w-4" />
-                    </button>
-                    <button type="button" onClick={() => selectSection(section)} className="min-w-0 flex-1 text-left">
-                      <div className="flex items-center justify-between gap-2">
-                        <span className="truncate font-medium">{section.title_zh || section.title_en || section.section_key}</span>
-                        <AdminStatusBadge status={section.status} />
+                  <option value="" disabled>{sectionDraft ? sectionDraft.title_zh || sectionDraft.section_key || mobileText.newSectionDraft : mobileText.chooseSection}</option>
+                  {orderedSections.map((section) => (
+                    <option key={section.id} value={section.id}>{section.title_zh || section.title_en || section.section_key} · {adminStatusLabel("default", section.status)}</option>
+                  ))}
+                </select>
+                {orderedSections.length > 0 && (
+                  <Button type="button" variant="outline" className="w-full" aria-expanded={sectionDirectoryOpen} aria-controls="admin-cms-section-directory" onClick={() => setSectionDirectoryOpen((open) => !open)}>
+                    {sectionDirectoryOpen ? mobileText.hideDirectory : mobileText.showDirectory}
+                  </Button>
+                )}
+                {selectedPageId && !orderedSections.length && <p className="text-sm text-muted-foreground">{A("noSections")}</p>}
+              </div>
+              <div id="admin-cms-section-directory" className={sectionDirectoryOpen ? "space-y-2" : "hidden space-y-2 lg:block"}>
+                <AdminPermissionHint action="content.reorder" />
+                {orderedSections.map((section, index) => (
+                  <div
+                    key={section.id}
+                    draggable={reorderPermission.allowed && Boolean(section.id) && !reordering}
+                    onDragStart={(event) => {
+                      if (!section.id || !reorderPermission.allowed) return;
+                      setDraggingSectionId(section.id);
+                      event.dataTransfer.effectAllowed = "move";
+                      event.dataTransfer.setData("text/plain", section.id);
+                    }}
+                    onDragOver={(event) => {
+                      if (!reorderPermission.allowed || !draggingSectionId || draggingSectionId === section.id) return;
+                      event.preventDefault();
+                      event.dataTransfer.dropEffect = "move";
+                    }}
+                    onDrop={(event) => {
+                      event.preventDefault();
+                      const sourceId = event.dataTransfer.getData("text/plain") || draggingSectionId;
+                      if (sourceId && section.id) reorderSectionById(sourceId, section.id);
+                    }}
+                    onDragEnd={() => setDraggingSectionId(null)}
+                    className={`rounded-lg border p-3 transition ${sectionDraft?.id === section.id ? "border-accent bg-accent/10" : "border-border bg-background hover:bg-muted"} ${draggingSectionId === section.id ? "opacity-55" : ""}`}
+                  >
+                    <div className="flex items-start gap-2">
+                      <button
+                        type="button"
+                        title={reorderPermission.allowed ? A("dragSectionTitle") : reorderPermission.reason}
+                        className="mt-0.5 rounded-md p-1 text-muted-foreground hover:bg-muted"
+                        aria-label={A("dragSectionAria")}
+                        disabled={!reorderPermission.allowed || reordering}
+                      >
+                        <GripVertical className="h-4 w-4" />
+                      </button>
+                      <button type="button" onClick={() => selectSection(section)} className="min-w-0 flex-1 text-left">
+                        <div className="flex items-center justify-between gap-2">
+                          <span className="truncate font-medium">{section.title_zh || section.title_en || section.section_key}</span>
+                          <AdminStatusBadge status={section.status} />
+                        </div>
+                        <p className="mt-1 text-xs text-muted-foreground">{section.section_type} · {A("sectionSortInlineLabel")} {section.sort_order}</p>
+                      </button>
+                      <div className="grid shrink-0 grid-cols-2 gap-1 sm:flex">
+                        <Button
+                          type="button"
+                          size="icon"
+                          variant="outline"
+                          title={reorderPermission.reason}
+                          disabled={!reorderPermission.allowed || reordering || index === 0}
+                          onClick={() => moveSection(section, -1)}
+                          aria-label={A("moveSectionUpAria")}
+                        >
+                          <ArrowUp className="h-4 w-4" />
+                        </Button>
+                        <Button
+                          type="button"
+                          size="icon"
+                          variant="outline"
+                          title={reorderPermission.reason}
+                          disabled={!reorderPermission.allowed || reordering || index === orderedSections.length - 1}
+                          onClick={() => moveSection(section, 1)}
+                          aria-label={A("moveSectionDownAria")}
+                        >
+                          <ArrowDown className="h-4 w-4" />
+                        </Button>
                       </div>
-                      <p className="mt-1 text-xs text-muted-foreground">{section.section_type} · {A("sectionSortInlineLabel")} {section.sort_order}</p>
-                    </button>
-                    <div className="grid shrink-0 grid-cols-2 gap-1 sm:flex">
-                      <Button
-                        type="button"
-                        size="icon"
-                        variant="outline"
-                        title={reorderPermission.reason}
-                        disabled={!reorderPermission.allowed || reordering || index === 0}
-                        onClick={() => moveSection(section, -1)}
-                        aria-label={A("moveSectionUpAria")}
-                      >
-                        <ArrowUp className="h-4 w-4" />
-                      </Button>
-                      <Button
-                        type="button"
-                        size="icon"
-                        variant="outline"
-                        title={reorderPermission.reason}
-                        disabled={!reorderPermission.allowed || reordering || index === orderedSections.length - 1}
-                        onClick={() => moveSection(section, 1)}
-                        aria-label={A("moveSectionDownAria")}
-                      >
-                        <ArrowDown className="h-4 w-4" />
-                      </Button>
                     </div>
                   </div>
-                </div>
-              ))}
-              {selectedPageId && !orderedSections.length && <p className="text-sm text-muted-foreground">{A("noSections")}</p>}
-              {reordering && <p className="text-xs text-muted-foreground">{A("reordering")}</p>}
+                ))}
+                {selectedPageId && !orderedSections.length && <p className="text-sm text-muted-foreground">{A("noSections")}</p>}
+                {reordering && <p className="text-xs text-muted-foreground">{A("reordering")}</p>}
+              </div>
             </div>
 
             {sectionDraft ? (

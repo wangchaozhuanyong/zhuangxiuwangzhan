@@ -22,8 +22,8 @@ export default function AdminFormSection({
 }) {
   if (collapsible) {
     return (
-      <details open={defaultOpen} className={cn("group min-w-0 overflow-hidden rounded-lg border border-border bg-card p-4 shadow-sm sm:rounded-xl sm:p-6", className)}>
-        <summary className="cursor-pointer list-none rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2">
+      <details open={defaultOpen} onInvalidCapture={(event) => { event.currentTarget.open = true; }} className={cn("group min-w-0 rounded-lg border border-border bg-card p-4 shadow-sm sm:rounded-xl sm:p-6", className)}>
+        <summary className="min-h-11 cursor-pointer list-none rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2">
           <div className="flex min-w-0 items-start justify-between gap-3">
             <div className="min-w-0">
               <h2 className="flex items-center gap-2 text-lg font-semibold tracking-normal">
