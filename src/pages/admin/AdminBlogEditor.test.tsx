@@ -52,21 +52,40 @@ describe("blog editor language changes", () => {
           </TooltipProvider></QueryClientProvider>
         </MemoryRouter>,
       ));
-      const publicLink = () => container.querySelector<HTMLAnchorElement>('a[target="_blank"]')!;
+      const openMore = async () => {
+        const trigger = container.querySelector<HTMLButtonElement>('button[aria-label="更多操作"], button[aria-label="More actions"]')!;
+        expect(trigger).not.toBeNull();
+        await act(async () => trigger.click());
+        const dialog = document.querySelector<HTMLElement>('[role="dialog"]')!;
+        expect(dialog).not.toBeNull();
+        return dialog;
+      };
+      const closeMore = async () => {
+        const close = Array.from(document.querySelectorAll<HTMLButtonElement>('[role="dialog"] button')).find((button) => button.textContent === "关闭" || button.textContent === "Close")!;
+        expect(close).not.toBeUndefined();
+        await act(async () => close.click());
+      };
+      const publicLink = () => document.querySelector<HTMLAnchorElement>('[role="dialog"] a[target="_blank"]')!;
+      await openMore();
       expect(publicLink().getAttribute("href")).toBe("/zh/blog/published-slug");
       expect(publicLink().textContent).toBe("打开已发布页面");
+      await closeMore();
       const slug = container.querySelector<HTMLInputElement>('input[placeholder="例如：renovation-cost-kl"]')!;
       await act(async () => {
         Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, "value")!.set!.call(slug, "unsaved-slug");
         slug.dispatchEvent(new Event("input", { bubbles: true }));
       });
+      await openMore();
       expect(publicLink().getAttribute("href")).toBe("/zh/blog/published-slug");
+      await closeMore();
       const preview = Array.from(container.querySelectorAll("button")).find((button) => button.textContent === "保存前预检（不写入）")!;
       await act(async () => preview.click());
       expect(previewPost).toHaveBeenCalledWith({ record: expect.objectContaining({ slug: "unsaved-slug", updated_at: updatedAt }) });
       await act(async () => setAdminLang("en"));
+      await openMore();
       expect(publicLink().getAttribute("href")).toBe("/en/blog/published-slug");
       expect(publicLink().textContent).toBe("Open published page");
+      await closeMore();
     } finally {
       await act(async () => root.unmount()); client.clear(); container.remove();
     }

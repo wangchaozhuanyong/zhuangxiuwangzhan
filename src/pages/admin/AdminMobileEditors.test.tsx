@@ -64,10 +64,10 @@ vi.mock("@/components/admin/AdminStickyActionBar", () => ({
 }));
 
 const editors = [
-  { path: "projects", Component: AdminProjectEditor, saveLabel: "转为草稿", expectedStatus: "draft", savePermission: "content.write" },
-  { path: "materials", Component: AdminMaterialEditor, saveLabel: "转为草稿", expectedStatus: "draft", savePermission: "content.write" },
-  { path: "services", Component: AdminServiceEditor, saveLabel: "转为草稿", expectedStatus: "draft", savePermission: "content.write" },
-  { path: "blog", Component: AdminBlogEditor, saveLabel: "保存修改", expectedStatus: undefined, savePermission: "content.publish" },
+  { path: "projects", Component: AdminProjectEditor, saveLabel: "转为草稿", expectedStatus: "draft", savePermission: "content.write", previewLabel: "预览" },
+  { path: "materials", Component: AdminMaterialEditor, saveLabel: "转为草稿", expectedStatus: "draft", savePermission: "content.write", previewLabel: "预览" },
+  { path: "services", Component: AdminServiceEditor, saveLabel: "转为草稿", expectedStatus: "draft", savePermission: "content.write", previewLabel: "打开已发布页面" },
+  { path: "blog", Component: AdminBlogEditor, saveLabel: "保存修改", expectedStatus: undefined, savePermission: "content.publish", previewLabel: "打开已发布页面" },
 ] as const;
 
 async function mountEditor(editor: typeof editors[number]) {
@@ -117,7 +117,7 @@ describe("mobile editor action behavior", () => {
       expect(buttons[0].textContent).toBe(editor.saveLabel);
       expect(buttons[0].dataset.action).toBe(editor.savePermission);
       expect(buttons[1].textContent).toBe("更新发布内容");
-      expect(view.container.querySelector("[data-more-actions]")?.textContent).toContain("预览");
+      expect(view.container.querySelector("[data-more-actions]")?.textContent).toContain(editor.previewLabel);
       expect(view.container.querySelector("[data-mobile-sticky]")?.getAttribute("data-mobile-sticky")).toBe("true");
       await act(async () => buttons[0].click());
       expect(fixtures.save).toHaveBeenCalledWith(expect.objectContaining({
