@@ -31,6 +31,7 @@ const render = async (children: React.ReactNode, routeKey = "/zh/services") => {
   await act(async () => vi.advanceTimersByTime(40));
 };
 const loader = () => container.querySelector("[data-route-loader]");
+const pageFeedback = () => container.querySelector('.public-route-scene[data-pending="true"]:not([data-region-only]) + .public-route-feedback[aria-busy="true"]');
 const state = () => container.querySelector("[data-route-visual-state]")?.getAttribute("data-route-visual-state");
 
 beforeEach(() => {
@@ -84,6 +85,8 @@ describe("public route visual readiness", () => {
     expect(loader()).toBeNull();
     await act(async () => vi.advanceTimersByTime(180));
     expect(loader()?.getAttribute("data-route-loader")).toBe("navigation");
+    expect(pageFeedback()).toBe(loader());
+    expect(container.querySelector(".public-route-feedback > span")?.textContent).toBeTruthy();
     expect(document.documentElement.dataset.publicRouteLoading).toBe("navigation");
     expect(container.querySelector(".scheme-a-page-loader__brand")).toBeNull();
     expect(container.querySelector(".public-route-content")).toHaveAttribute("inert");
@@ -91,6 +94,30 @@ describe("public route visual readiness", () => {
     expect(loader()).toBeNull();
     expect(document.documentElement.dataset.publicRouteLoading).toBeUndefined();
     expect(container.querySelector(".public-route-content")).not.toHaveAttribute("inert");
+  });
+
+  it("keeps page-level feedback out of local results updates and preserves existing content", async () => {
+    await render(<><h1>Furniture</h1><div data-public-results><Image ready /></div></>, "/zh/furniture");
+    await render(<><h1>Furniture</h1><div data-public-results data-route-pending="true"><Image /></div></>, "/zh/furniture?page=2");
+    await act(async () => vi.advanceTimersByTime(180));
+    expect(loader()?.getAttribute("data-route-loader")).toBe("navigation");
+    expect(pageFeedback()).toBeNull();
+    expect(container.querySelector(".public-route-feedback > span")).toHaveClass("sr-only");
+    expect(container.querySelector(".public-route-scene")).toHaveAttribute("data-region-only");
+    expect(container.querySelector("h1")).toHaveTextContent("Furniture");
+    expect(container.querySelector(".public-route-content")).not.toHaveAttribute("inert");
+    expect(container.querySelector("[data-public-results]")).toHaveAttribute("inert");
+  });
+
+  it("clears visible page feedback and retains accessible recovery when data times out", async () => {
+    await render(<Image ready />, "/zh/projects");
+    await render(<div data-route-pending="true" />);
+    await act(async () => vi.advanceTimersByTime(5100));
+    expect(state()).toBe("timeout");
+    expect(pageFeedback()).toBeNull();
+    expect(container.querySelector(".public-route-feedback > span")).toHaveClass("sr-only");
+    expect(container.querySelectorAll(".public-route-feedback__recovery button")).toHaveLength(2);
+    expect(container.querySelector(".public-route-content")).toHaveAttribute("inert");
   });
 
   it("releases cached decoded images without a fixed minimum loading delay", async () => {
