@@ -33,6 +33,7 @@ on:
       - src/lib/contentPublishService.test.ts
       - src/lib/contentPublishOrg020V7.test.ts
       - src/lib/contentPublishNativeBody.test.ts
+      - src/lib/contentPublishSparsePatch.test.ts
       - src/lib/contentPublishManagedBlog.test.ts
       - src/lib/contentPublishKlMediaTargets.test.ts
       - src/lib/contentPublishBlogMediaTargets.test.ts
@@ -98,6 +99,7 @@ jobs:
           npm test -- \
             src/lib/contentPublishOrg020V7.test.ts \
             src/lib/contentPublishNativeBody.test.ts \
+            src/lib/contentPublishSparsePatch.test.ts \
             src/lib/contentPublishManagedBlog.test.ts \
             src/lib/contentPublishKlMediaTargets.test.ts \
             src/lib/contentPublishBlogMediaTargets.test.ts \
