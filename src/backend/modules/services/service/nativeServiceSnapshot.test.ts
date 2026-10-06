@@ -45,7 +45,11 @@ describe("exact native service snapshot contracts", () => {
   it.each([{ id: targets.artistic.id }, { slug: "other" }, { status: "unknown" }, { suitable_for_en: [17] }, { process_steps_en: {} }, { content_en: undefined }])("fails closed on identity or type errors: %j", (change) => {
     expect(() => serializeNativeServiceSnapshot(targets.bathroom.id, { ...bath(), ...change })).toThrow();
   });
-  it.each([[{ desc: "only-one" }], [null, null, null, null, {}], [null, null, null, null, { desc: 4 }]])("does not guess missing or nonstring Artistic leaves", (steps) => {
+  it.each([
+    { steps: [{ desc: "only-one" }] },
+    { steps: [null, null, null, null, {}] },
+    { steps: [null, null, null, null, { desc: 4 }] },
+  ])("does not guess missing or nonstring Artistic leaves: %j", ({ steps }) => {
     expect(() => serializeNativeServiceSnapshot(targets.artistic.id, { ...art(), process_steps_en: steps })).toThrow();
   });
   it("rejects sparse arrays and non-JSON values without silently replacing them", () => {
