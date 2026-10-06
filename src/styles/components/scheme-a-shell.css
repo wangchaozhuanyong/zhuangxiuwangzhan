@@ -70,8 +70,39 @@
     min-height: 100svh;
   }
 
+  /* Reuse the entry brand while keeping the shared navigation available. */
+  .scheme-a-page-loader--navigation {
+    inset: 76px 0 0;
+    z-index: 80;
+    min-height: 0;
+    padding: 0 24px;
+    align-content: center;
+    pointer-events: none;
+    transition: opacity 140ms linear;
+  }
+
+  .scheme-a-page-loader--navigation:has(i[data-progress-state="fading"]) { opacity: 0; }
+
+  @media (max-width: 767px) {
+    .scheme-a-page-loader--navigation { top: 56px; }
+  }
+
   .public-route-content { display: contents; }
   .public-route-scene { display: block; }
+
+  /* Keep the old bitmap opaque until its replacement covers it. The live page
+     remains the sole interactive DOM, including the shared navigation. */
+  html[data-public-view-transition]::view-transition { pointer-events: none; }
+  html[data-public-view-transition]::view-transition-group(root) { animation: none; }
+  html[data-public-view-transition]::view-transition-old(root) {
+    animation: none;
+    mix-blend-mode: normal;
+  }
+  html[data-public-view-transition]::view-transition-new(root) {
+    animation: public-route-reveal 240ms ease-out both;
+    mix-blend-mode: normal;
+  }
+  @keyframes public-route-reveal { from { opacity: 0; } to { opacity: 1; } }
 
   /* Pending content keeps its measured layout for scroll and image decoding. */
   .public-route-scene[data-pending="true"]:not([data-region-only]),
@@ -149,8 +180,6 @@
     box-shadow: 0 4px 24px rgb(41 46 41 / .12);
     pointer-events: auto;
   }
-  .public-route-feedback__pending { display: block; pointer-events: none; transition: opacity 140ms linear; }
-  .public-route-feedback > i[data-progress-state="fading"] + .public-route-feedback__pending { opacity: 0; }
   .public-route-feedback__recovery .scheme-a-page-loader__actions { margin-top: .75rem; }
   @media (max-width: 767px) {
     .public-route-feedback { top: 56px; }
@@ -160,6 +189,7 @@
     }
   }
   @media (prefers-reduced-motion: reduce) {
+    .scheme-a-page-loader--navigation,
     .public-route-feedback > i,
     .public-route-feedback > i::after { transition: none; }
   }
@@ -200,7 +230,7 @@
     display: flex;
     align-items: baseline;
     gap: 0.25em;
-    font-family: var(--font-display);
+    font-family: Georgia, "Times New Roman", serif;
     font-size: clamp(3.6rem, 10vw, 7.5rem);
     font-weight: 400;
     line-height: 0.92;
@@ -215,9 +245,8 @@
 
   .scheme-a-page-loader__brand strong em {
     color: #3F4E42;
-    background: linear-gradient(135deg, #E4E8DE, #E4E8DE);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
+    background: none;
+    -webkit-text-fill-color: currentColor;
     font-style: normal;
   }
 
@@ -231,11 +260,11 @@
 
   .scheme-a-page-loader__brand > i {
     display: block;
-    width: min(220px, 50vw);
+    width: min(180px, 50vw);
     height: 2px;
     margin-top: 1.5rem;
     overflow: hidden;
-    background: rgb(228 232 222 / 0.2);
+    background: var(--public-border);
     border-radius: 999px;
   }
 
@@ -243,7 +272,7 @@
     display: block;
     width: 100%;
     height: 100%;
-    background: linear-gradient(90deg, transparent, #E4E8DE 50%, #E4E8DE 100%);
+    background: var(--public-accent);
     box-shadow: none;
     border-radius: 999px;
     content: "";

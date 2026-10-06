@@ -134,18 +134,18 @@ export function PublicRouteImageGate({ children, routeKey, onCancel }: { childre
           void Promise.resolve(typeof image.decode === "function" ? image.decode() : undefined).then(() => {
             if (stopped || (image.currentSrc || image.src) !== selected) return;
             decoded.set(image, selected);
-            schedule();
+            update();
           }, () => {
             if (stopped) return;
             decoding.delete(image);
             failedImages.add(image);
-            schedule();
+            update();
           });
         }
         return false;
       });
       if (!ready) readyFrames = 0;
-      if (ready && ++readyFrames < 2) { schedule(); return; }
+      if (ready && showBrandScreen && ++readyFrames < 2) { schedule(); return; }
       if (ready) {
         delete main.dataset.routeWaitReason;
         settled = true;
@@ -158,12 +158,15 @@ export function PublicRouteImageGate({ children, routeKey, onCancel }: { childre
       if (stopped || settled || frame) return;
       frame = requestAnimationFrame(() => { frame = 0; check(); });
     };
+    // Native snapshots pause painting (and rAF), not data/image readiness.
+    // Resolve actual dependency events without waiting for another painted frame.
+    const update = () => { check(); schedule(); };
     const timeout = window.setTimeout(() => {
       check();
       // Required data/styles retain recovery; a slow image releases to its placeholder.
       if (!settled) setState({ cycle, status: main.dataset.routeWaitReason?.startsWith("image-") ? "degraded" : "timeout" });
     }, PUBLIC_MOTION.timeout);
-    const observer = new MutationObserver(schedule);
+    const observer = new MutationObserver(update);
     observer.observe(main, { childList: true, subtree: true, attributes: true,
       attributeFilter: ["data-image-state", "data-decoded-src", "data-route-pending", "src", "srcset", "sizes", "media"] });
     if (brandContainer) observer.observe(brandContainer, { childList: true, subtree: true, attributes: true, attributeFilter: ["data-image-state", "data-decoded-src", "src", "srcset"] });
@@ -171,15 +174,18 @@ export function PublicRouteImageGate({ children, routeKey, onCancel }: { childre
     if (brandHeader) observer.observe(brandHeader, { attributes: true, attributeFilter: ["data-route-pending"] });
     const imageError = (event: Event) => {
       if (event.target instanceof HTMLImageElement) failedImages.add(event.target);
-      schedule();
+      update();
     };
-    main.addEventListener("load", schedule, true);
+    main.addEventListener("load", update, true);
     main.addEventListener("error", imageError, true);
     window.addEventListener("resize", schedule);
-    window.addEventListener("public-assets-change", schedule);
+    window.addEventListener("public-assets-change", update);
     window.addEventListener("scroll", schedule, { passive: true });
     // Synchronous check avoids a loading flash for cached, already decoded content.
     check();
+    // A full-page wait must be covered in this commit, before the browser paints.
+    // Only local results retain delayed feedback; they do not hide the whole page.
+    if (!settled && !showBrandScreen && !regionOnly && !frameRef.current?.isCapturing(routeKey)) setFeedbackCycle(cycle);
     schedule();
     return () => {
       stopped = true;
@@ -187,13 +193,13 @@ export function PublicRouteImageGate({ children, routeKey, onCancel }: { childre
       cancelAnimationFrame(frame);
       window.clearTimeout(timeout);
       window.clearTimeout(feedback);
-      main.removeEventListener("load", schedule, true);
+      main.removeEventListener("load", update, true);
       main.removeEventListener("error", imageError, true);
       window.removeEventListener("resize", schedule);
-      window.removeEventListener("public-assets-change", schedule);
+      window.removeEventListener("public-assets-change", update);
       window.removeEventListener("scroll", schedule);
     };
-  }, [routeKey, showBrandScreen, attempt, boot, blocked, cycle]);
+  }, [routeKey, showBrandScreen, regionOnly, attempt, boot, blocked, cycle]);
 
   const copy = publicContentStatusText[language];
   const retry = () => {
@@ -222,14 +228,17 @@ export function PublicRouteImageGate({ children, routeKey, onCancel }: { childre
   }, [boot, showBrandScreen, routeKey, attempt, blocked]);
   return (
     <>
-      <PublicRouteTransitionFrame ref={frameRef} routeKey={routeKey} pending={blocked} regionOnly={regionOnly} initial={showBrandScreen} onBeforeCommit={() => {
-        departingCycle.current = cycle;
-        setFeedbackCycle(null);
-        setFinishedFeedbackCycle(null);
-        // Retire cached outgoing content before history changes. Feedback uses
-        // the normal delay and keeps its own completion after content is ready.
-        setState({ cycle, status: "waiting" });
-      }}>
+      <PublicRouteTransitionFrame ref={frameRef} routeKey={routeKey} pending={blocked} regionOnly={regionOnly} initial={showBrandScreen}
+        covered={feedbackCycle === cycle && finishedFeedbackCycle !== cycle}
+        onSnapshotSkip={() => { if (blocked && !regionOnly && !showBrandScreen) setFeedbackCycle(cycle); }}
+        onBeforeCommit={(captured) => {
+          departingCycle.current = cycle;
+          setFeedbackCycle(captured ? null : cycle);
+          setFinishedFeedbackCycle(null);
+          // Retire the outgoing data before history changes; its cached data
+          // cannot release the new destination during asynchronous Router commit.
+          setState({ cycle, status: "waiting" });
+        }}>
         <div ref={contentRef} className="public-route-content" data-route-visual-state={status}
           aria-hidden={blocked && !regionOnly || undefined} aria-busy={blocked || status === "handoff" || undefined}>
           {children}
@@ -237,14 +246,16 @@ export function PublicRouteImageGate({ children, routeKey, onCancel }: { childre
       </PublicRouteTransitionFrame>
       {(showBrandScreen ? !boot && (blocked || status === "handoff")
         : status === "timeout" || feedbackCycle === cycle && finishedFeedbackCycle !== cycle) ? (
-        <div className={showBrandScreen ? "scheme-a-page-loader scheme-a-page-loader--overlay" : "public-route-feedback"}
+        <div className={showBrandScreen ? "scheme-a-page-loader scheme-a-page-loader--overlay"
+          : regionOnly ? "public-route-feedback" : "scheme-a-page-loader scheme-a-page-loader--overlay scheme-a-page-loader--navigation"}
           role="status" aria-live="polite" aria-busy={presenting} data-route-loader={showBrandScreen ? "initial" : "navigation"}
           data-feedback-scope={regionOnly ? "region" : "page"}>
-          {!showBrandScreen && status !== "timeout" && <PublicLoadingBar key={cycle} complete={status !== "waiting"}
+          {regionOnly && status !== "timeout" && <PublicLoadingBar key={cycle} complete={status !== "waiting"}
             onFinished={() => setFinishedFeedbackCycle(cycle)} />}
-          {showBrandScreen ? <div className="scheme-a-page-loader__brand"><p>{copy.loaderBrand}</p><strong><span>FLASH</span><em>CAST</em></strong><span>{copy.loaderPending}</span>
-            {presenting && <PublicLoadingBar key={cycle} complete={status === "handoff"} />}
-          </div> : <span className={regionOnly ? "sr-only" : "public-route-feedback__recovery public-route-feedback__pending"}>{copy.loaderRoutePending}</span>}
+          {!regionOnly ? <div className="scheme-a-page-loader__brand"><p>{copy.loaderBrand}</p><strong><span>FLASH</span><em>CAST</em></strong><span>{copy.loaderPending}</span>
+            {status !== "timeout" && <PublicLoadingBar key={cycle} complete={status !== "waiting"}
+              onFinished={() => setFinishedFeedbackCycle(cycle)} />}
+          </div> : <span className="sr-only">{copy.loaderRoutePending}</span>}
           {status === "timeout" && (
             <div className="public-route-feedback__recovery">
               <p>{copy.loaderTimeout}</p>

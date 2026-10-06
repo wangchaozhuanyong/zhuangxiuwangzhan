@@ -1,7 +1,9 @@
 import { expect, test, type Page } from "@playwright/test";
 
+test.afterEach(async ({ page }) => { await page.unrouteAll({ behavior: "wait" }); });
+
 const ready = (page: Page) => expect(page.locator('.public-route-content')).toHaveAttribute('data-route-visual-state', 'ready', { timeout: 20000 });
-const pageFeedback = '.public-route-scene[data-pending="true"]:not([data-region-only]) + .public-route-feedback[aria-busy="true"]';
+const pageFeedback = '.scheme-a-page-loader[data-feedback-scope="page"][data-route-loader="navigation"][aria-busy="true"]';
 const navigationLink = (page: Page, width: number, path: string) => page.locator(`${width < 768 ? '.scheme-a-mobile-dock' : width < 1180 ? '.scheme-a-directory' : '.scheme-a-chrome__primary'} a[href="${path}"]`);
 
 async function navigate(page: Page, width: number, path: string) {
@@ -11,6 +13,64 @@ async function navigate(page: Page, width: number, path: string) {
     if (await group.getAttribute('data-open') !== 'true') await group.locator('.scheme-a-directory__group-toggle').click();
   }
   await navigationLink(page, width, path).first().click();
+  await expect(page).toHaveURL(new RegExp(`${path}$`));
+}
+
+for (const width of [390, 1440]) for (const native of [true, false]) {
+  test(`continuous handoff has no blank frame at ${width}px, native=${native}`, async ({ page }, info) => {
+    await page.setViewportSize({ width, height: 900 });
+    if (!native) await page.addInitScript(() => {
+      Object.defineProperty(document, 'startViewTransition', { configurable: true, value: undefined });
+    });
+    let release = () => {};
+    const aboutReady = new Promise<void>(resolve => { release = resolve; });
+    await page.route(/\/(?:src\/pages\/About\.tsx|assets\/About-[^/]+\.js)(?:\?.*)?$/, async route => {
+      await aboutReady;
+      await route.continue();
+    });
+    try {
+      await page.goto('/zh/services'); await ready(page);
+      const auditStart = () => page.evaluate(() => {
+        const audit = { stop: false, blank: 0, brand: 0, frames: 0 };
+        (window as unknown as { continuityAudit: typeof audit }).continuityAudit = audit;
+        const sample = () => {
+          if (audit.stop) return;
+          const scene = document.querySelector('.public-route-scene');
+          const loader = document.querySelector('[data-route-loader="navigation"]');
+          const sceneOpacity = scene ? Number(getComputedStyle(scene).opacity) : 0;
+          const coverOpacity = loader ? Number(getComputedStyle(loader).opacity) : 0;
+          // A native snapshot retains the old paint while React prepares its replacement.
+          if (sceneOpacity < 0.01 && coverOpacity < 0.01 && !document.documentElement.dataset.publicViewTransition) audit.blank++;
+          if (loader?.querySelector('.scheme-a-page-loader__brand')) audit.brand++;
+          audit.frames++;
+          requestAnimationFrame(sample);
+        };
+        requestAnimationFrame(sample);
+      });
+      const auditStop = () => page.evaluate(() => {
+        const audit = (window as unknown as { continuityAudit: { stop: boolean; blank: number; brand: number; frames: number } }).continuityAudit;
+        audit.stop = true;
+        return audit;
+      });
+      await auditStart();
+      await page.locator('a[href="/zh/about"]').first().evaluate((link: HTMLAnchorElement) => link.click());
+      await expect(page.locator('[data-route-loader="navigation"] .scheme-a-page-loader__brand')).toBeVisible();
+      await page.locator('.scheme-a-chrome__brand').first().click({ trial: true });
+      release(); await ready(page);
+      await expect(page.locator('[data-route-loader]')).toHaveCount(0);
+      const slow = await auditStop();
+      expect(slow.frames).toBeGreaterThan(0);
+      expect(slow.blank).toBe(0);
+      await auditStart();
+      await page.locator('a[href="/zh/services"]').first().evaluate((link: HTMLAnchorElement) => link.click());
+      await expect(page).toHaveURL(/\/zh\/services$/); await ready(page);
+      await expect(page.locator('[data-route-loader]')).toHaveCount(0);
+      const cached = await auditStop();
+      expect(cached.blank).toBe(0);
+      if (native && await page.evaluate(() => typeof document.startViewTransition === 'function')) expect(cached.brand).toBe(0);
+      await info.attach('continuity-frames', { body: JSON.stringify({ slow, cached }), contentType: 'application/json' });
+    } finally { release(); }
+  });
 }
 
 for (const width of [360, 390, 768, 1024, 1440]) {
@@ -46,6 +106,7 @@ for (const width of [360, 390, 768, 1024, 1440]) {
       await navigate(page, width, `/${language}/projects`);
       await ready(page);
       await page.goBack();
+      await expect(page).toHaveURL(new RegExp(`/${language}/materials$`));
       await ready(page);
       const frames = await page.evaluate(() => {
         const audit = (window as unknown as { handoffAudit: { frames: object[]; stop: boolean } }).handoffAudit;
@@ -91,7 +152,7 @@ test.use({ serviceWorkers: 'block' });
 for (const width of [360, 390, 768, 1024, 1440]) {
 test(`slow language changes show visible feedback and release real content at ${width}px`, async ({ page }, info) => {
   await page.setViewportSize({ width, height: 844 });
-  for (const [source, target, label] of [['en', 'zh', '页面加载中…'], ['zh', 'en', 'Loading page…']]) {
+  for (const [source, target, label] of [['en', 'zh', '空间正在显影'], ['zh', 'en', 'Bringing the space into focus']]) {
     await page.goto(`/${source}`); await ready(page);
     let release!: () => void;
     const held = new Promise<void>(resolve => { release = resolve; });
@@ -106,8 +167,8 @@ test(`slow language changes show visible feedback and release real content at ${
       await page.locator(`.scheme-a-language-switch a[href="/${target}/materials"]`).click();
       const feedback = page.locator(pageFeedback);
       await expect(feedback).toBeVisible();
-      await expect(feedback.locator('span')).toHaveText(label);
-      const bounds = await feedback.locator('span').boundingBox();
+      await expect(feedback.locator('.scheme-a-page-loader__brand > span')).toHaveText(label);
+      const bounds = await feedback.locator('.scheme-a-page-loader__brand').boundingBox();
       expect(bounds).not.toBeNull();
       expect(bounds!.width).toBeGreaterThan(80);
       expect(bounds!.height).toBeGreaterThan(30);
@@ -147,10 +208,10 @@ test('slow language data retains visible retry and cancel recovery under reduced
   });
   try {
     await navigationLink(page,390,'/en/materials').click();
-    await expect(page.locator(pageFeedback + ' > span')).toBeVisible();
+    await expect(page.locator(pageFeedback + ' .scheme-a-page-loader__brand > span')).toBeVisible();
     await page.locator('.scheme-a-language-switch a[href="/zh/materials"]').click();
-    await expect(page.locator(pageFeedback + ' > span')).toBeVisible();
-    expect(await page.locator('.public-route-feedback > i').evaluate(element => getComputedStyle(element, '::after').animationName)).toBe('none');
+    await expect(page.locator(pageFeedback + ' .scheme-a-page-loader__brand > span')).toBeVisible();
+    expect(await page.locator('.scheme-a-page-loader__brand > i').evaluate(element => getComputedStyle(element, '::after').transitionDuration)).toBe('0s');
     await expect(page.locator('.public-route-content')).toHaveAttribute('data-route-visual-state','timeout',{timeout:8000});
     const recovery = page.locator('.public-route-feedback__recovery');
     await expect(recovery.getByRole('button',{name:'重试',exact:true})).toBeVisible();
@@ -185,7 +246,7 @@ test('slow image navigation releases its placeholder and never restores an old p
     await navigationLink(page, 390, '/en/projects').click();
     release();
     await expect(page).toHaveURL(/\/en\/projects$/); await ready(page);
-    await expect(page.locator('.public-route-feedback')).toHaveCount(0);
+    await expect(page.locator('[data-route-loader]')).toHaveCount(0);
   } finally { release(); }
 });
 

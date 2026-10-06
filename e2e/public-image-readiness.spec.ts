@@ -1,61 +1,133 @@
 import { expect, test } from "@playwright/test";
 import path from "node:path";
+import { readFileSync } from "node:fs";
+
+const furnitureCatalog = JSON.parse(readFileSync(path.resolve("src/data/furnitureCatalog.json"), "utf8")) as {
+  products: { slug: string; images: string[] }[];
+};
+
+test.afterEach(async ({ page }) => { await page.unrouteAll({ behavior: "wait" }); });
 
 const loader = ".scheme-a-page-loader--overlay";
 const criticalImage = "#main-content img[data-critical-image='true']";
 
 test("does not hold a mobile product detail for offscreen gallery thumbnails", async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
-  await page.route("**/*", (route) => route.request().resourceType() === "image"
-    ? route.fulfill({ path: path.join(process.cwd(), "public/logo-flashcast.png"), contentType: "image/png" })
-    : route.fallback());
-  await page.goto("/zh/furniture/product/ws-2102-wooden-bunk-bed-white", { waitUntil: "domcontentloaded" });
-  await expect(page.locator(".fc-furniture-gallery__main img")).toHaveAttribute("data-image-state", "loaded");
-  const offscreenThumbnails = await page.locator(".fc-furniture-gallery__thumbs img").evaluateAll((images) =>
-    images.filter((image) => image.getBoundingClientRect().left >= window.innerWidth && !image.currentSrc).length,
-  );
-  expect(offscreenThumbnails).toBeGreaterThan(0);
-  await expect(page.locator(loader)).toBeHidden({ timeout: 3000 });
+  // WebKit may request horizontally offscreen lazy images immediately. Hold a
+  // real last-thumbnail request rather than assuming currentSrc stays empty.
+  const product = furnitureCatalog.products.find((item) => item.slug === "ws-2102-wooden-bunk-bed-white")!;
+  const offscreenImage = path.parse(product.images.at(-1)!).name;
+  let release = () => {};
+  const held = new Promise<void>((resolve) => { release = resolve; });
+  await page.route("**/*", async (route) => {
+    if (route.request().resourceType() !== "image") return route.fallback();
+    if (route.request().url().includes(offscreenImage)) await held;
+    await route.fulfill({ path: path.join(process.cwd(), "public/logo-flashcast.png"), contentType: "image/png" });
+  });
+  try {
+    await page.goto("/zh/furniture/product/ws-2102-wooden-bunk-bed-white", { waitUntil: "domcontentloaded" });
+    await expect(page.locator(".fc-furniture-gallery__main img")).toHaveAttribute("data-image-state", "loaded");
+    const offscreenThumbnails = await page.locator(".fc-furniture-gallery__thumbs img").evaluateAll((images) =>
+      images.filter((image) => image.getBoundingClientRect().left >= window.innerWidth && image.getAttribute("data-image-state") !== "loaded").length,
+    );
+    expect(offscreenThumbnails).toBeGreaterThan(0);
+    await expect(page.locator(loader)).toBeHidden({ timeout: 3000 });
+  } finally { release(); }
 });
 
-test("shows the brand screen on direct load without repeating it during navigation", async ({ page }) => {
-  await page.route("**/images/**", async (route) => {
-    await new Promise((resolve) => setTimeout(resolve, 450));
+test("uses the brand screen for direct load, refresh and full-page navigation without a text card", async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  const initial = page.locator('[data-route-loader="initial"]');
+  const navigation = page.locator('[data-route-loader="navigation"]');
+  const ready = () => expect(page.locator(".public-route-content")).toHaveAttribute("data-route-visual-state", "ready", { timeout: 10_000 });
+  const navLink = (href: string) => page.locator(`.scheme-a-chrome__primary a[href="${href}"]`).first();
+  let releaseImages = () => {};
+  let imagesReady = new Promise<void>((resolve) => { releaseImages = resolve; });
+  let releaseAbout = () => {};
+  const aboutReady = new Promise<void>((resolve) => { releaseAbout = resolve; });
+  // Hold real dependencies instead of relying on an arbitrary delay or CMS data.
+  await page.route("**/*", async (route) => {
+    if (route.request().resourceType() !== "image") return route.fallback();
+    await imagesReady;
     await route.continue();
   });
-  await page.goto("/zh/services", { waitUntil: "domcontentloaded" });
-  await expect(page.locator(loader)).toBeVisible();
-  await expect(page.locator(loader)).toBeHidden({ timeout: 10_000 });
-  await expect(page.locator(criticalImage)).toHaveAttribute("data-image-state", "loaded");
-  await expect(page.locator(".scheme-a-chrome__brand img").first()).toHaveAttribute("data-image-state", "loaded");
-  expect(await page.locator(criticalImage).evaluate((img: HTMLImageElement) => img.currentSrc && img.naturalWidth > 0)).toBeTruthy();
+  await page.route(/\/(?:src\/pages\/About\.tsx|assets\/About-[^/]+\.js)(?:\?.*)?$/, async (route) => {
+    await aboutReady;
+    await route.continue();
+  });
+  try {
+    await page.goto("/zh/services", { waitUntil: "domcontentloaded" });
+    await expect(initial).toBeVisible();
+    await expect(initial.locator(".scheme-a-page-loader__brand strong")).toHaveText("FLASHCAST");
+    await expect(page.locator(".public-route-feedback__pending")).toHaveCount(0);
+    releaseImages();
+    await ready();
+    await expect(page.locator(loader)).toHaveCount(0);
+    await expect(page.locator(criticalImage)).toHaveAttribute("data-image-state", "loaded");
+    await expect(page.locator(".scheme-a-chrome__brand img").first()).toHaveAttribute("data-image-state", "loaded");
 
-  await page.evaluate(() => {
-    document.body.dataset.brandOverlayAdds = "0";
-    new MutationObserver((records) => {
-      for (const record of records) {
-        for (const node of record.addedNodes) {
-          if (node instanceof Element && (node.matches(".scheme-a-page-loader--overlay") || node.querySelector(".scheme-a-page-loader--overlay"))) {
-            document.body.dataset.brandOverlayAdds = String(Number(document.body.dataset.brandOverlayAdds) + 1);
+    imagesReady = new Promise<void>((resolve) => { releaseImages = resolve; });
+    await page.reload({ waitUntil: "domcontentloaded" });
+    await expect(initial).toBeVisible();
+    await expect(initial.locator(".scheme-a-page-loader__brand strong")).toHaveText("FLASHCAST");
+    await expect(page.locator(".public-route-feedback__pending")).toHaveCount(0);
+    releaseImages();
+    await ready();
+    await expect(page.locator(loader)).toHaveCount(0);
+
+    await page.evaluate(() => {
+      document.body.dataset.initialBrandReopened = "false";
+      document.body.dataset.plainLoadingCardAdded = "false";
+      new MutationObserver((records) => {
+        for (const record of records) for (const node of record.addedNodes) {
+          if (!(node instanceof Element)) continue;
+          if (node.matches('[data-route-loader="initial"]') || node.querySelector('[data-route-loader="initial"]')) {
+            document.body.dataset.initialBrandReopened = "true";
+          }
+          if (node.matches(".public-route-feedback__pending") || node.querySelector(".public-route-feedback__pending")) {
+            document.body.dataset.plainLoadingCardAdded = "true";
           }
         }
-      }
-    }).observe(document.body, { childList: true, subtree: true });
-  });
+      }).observe(document.body, { childList: true, subtree: true });
+    });
 
-  await page.locator('a[href="/zh/about"]').first().evaluate((link: HTMLAnchorElement) => link.click());
-  await expect(page).toHaveURL(/\/zh\/about$/);
-  await expect(page.locator(loader)).toHaveCount(0);
-  await expect(page.locator(criticalImage)).toHaveAttribute("data-image-state", "loaded", { timeout: 10_000 });
+    await page.locator(".scheme-a-chrome__nav-more").click();
+    await page.locator('.scheme-a-directory a[href="/zh/about"]').click();
+    await expect(page).toHaveURL(/\/zh\/about$/);
+    await expect(navigation).toBeVisible();
+    await expect(navigation.locator(".scheme-a-page-loader__brand strong")).toHaveText("FLASHCAST");
+    await expect(initial).toHaveCount(0);
+    await expect(page.locator(".public-route-feedback__pending")).toHaveCount(0);
+    // A real click must still reach the shared navigation while About is pending.
+    await navLink("/zh/services").click();
+    await expect(page).toHaveURL(/\/zh\/services$/);
+    await ready();
+    await expect(page.locator(loader)).toHaveCount(0);
 
-  await page.goBack({ waitUntil: "domcontentloaded" });
-  await expect(page.locator(loader)).toHaveCount(0);
-  await expect(page.locator(criticalImage)).toHaveAttribute("data-image-state", "loaded");
+    releaseAbout();
+    await page.locator(".scheme-a-chrome__nav-more").click();
+    await page.locator('.scheme-a-directory a[href="/zh/about"]').click();
+    await expect(page).toHaveURL(/\/zh\/about$/);
+    await ready();
+    await expect(page.locator(loader)).toHaveCount(0);
+    await expect(page.locator(criticalImage)).toHaveAttribute("data-image-state", "loaded");
+    expect(await page.locator(criticalImage).evaluate((img: HTMLImageElement) => img.currentSrc && img.naturalWidth > 0)).toBeTruthy();
 
-  await page.locator('.scheme-a-language-switch a[href="/en/services"]').first().click();
-  await expect(page.locator(loader)).toHaveCount(0);
-  await expect(page.locator(criticalImage)).toHaveAttribute("data-image-state", "loaded");
-  expect(await page.locator("body").getAttribute("data-brand-overlay-adds")).toBe("0");
+    await page.goBack({ waitUntil: "domcontentloaded" });
+    await expect(page).toHaveURL(/\/zh\/services$/);
+    await ready();
+    await expect(page.locator(loader)).toHaveCount(0);
+    await page.locator('.scheme-a-language-switch a[href="/en/services"]').first().click();
+    await expect(page).toHaveURL(/\/en\/services$/);
+    await ready();
+    await expect(page.locator(loader)).toHaveCount(0);
+    await expect(page.locator(criticalImage)).toHaveAttribute("data-image-state", "loaded");
+    await expect(page.locator("body")).toHaveAttribute("data-initial-brand-reopened", "false");
+    await expect(page.locator("body")).toHaveAttribute("data-plain-loading-card-added", "false");
+  } finally {
+    releaseImages();
+    releaseAbout();
+  }
 });
 
 test("supports both languages at the requested viewport widths", async ({ page }) => {
@@ -108,9 +180,12 @@ test("covers every navigation frame until the selected visible images have decod
   await expect(page.locator("[data-route-loader]")).toBeHidden();
   await page.route("**/rest/v1/site_pages*", async (route) => {
     if (new URL(route.request().url()).searchParams.get("page_key") !== "eq.materials") return route.fallback();
-    const response = await route.fetch();
-    const rows = await response.json();
-    await route.fulfill({ response, json: rows.map((row: Record<string, unknown>) => ({ ...row, image_url: "/images/heroes/v5/hero-materials-v5-desktop.webp" })) });
+    // This case controls image decoding, not live CMS content. Use the existing
+    // row fields to avoid a fetch/fulfill race when a browser cancels prefetch.
+    await route.fulfill({ status: 200, contentType: "application/json", json: [{
+      page_key: "materials", path: "/materials", status: "published",
+      image_url: "/images/heroes/v5/hero-materials-v5-desktop.webp",
+    }] });
   });
   await page.route("**/images/**/hero-materials*", async (route) => {
     await new Promise((resolve) => setTimeout(resolve, 900));
