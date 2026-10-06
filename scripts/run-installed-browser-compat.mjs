@@ -1,5 +1,6 @@
 import { access } from "node:fs/promises";
-import { chromium } from "playwright";
+import { fileURLToPath } from "node:url";
+import path from "node:path";
 
 const baseUrl = (process.env.INSTALLED_BROWSER_BASE_URL || "https://flashcast.com.my").replace(/\/$/, "");
 const selectedTargets = (process.env.INSTALLED_BROWSER_TARGETS || "")
@@ -8,8 +9,7 @@ const selectedTargets = (process.env.INSTALLED_BROWSER_TARGETS || "")
   .filter(Boolean);
 const headless = process.env.INSTALLED_BROWSER_HEADLESS !== "0";
 
-const env = process.env;
-const browserTargets = [
+const windowsTargets = (env) => [
   {
     id: "chrome",
     name: "Google Chrome",
@@ -59,12 +59,47 @@ const browserTargets = [
   },
 ];
 
+export function getBrowserTargets(platform = process.platform, environment = process.env) {
+  if (platform === "win32") return windowsTargets(environment).map((target) => ({
+    ...target,
+    candidates: target.candidates.filter((candidate) => !candidate.includes("undefined")),
+  }));
+  const apps = ["/Applications", environment.HOME && path.join(environment.HOME, "Applications")].filter(Boolean);
+  if (platform === "darwin") return [
+    { id: "chrome", name: "Google Chrome", candidates: apps.map((directory) => `${directory}/Google Chrome.app/Contents/MacOS/Google Chrome`) },
+    { id: "edge", name: "Microsoft Edge", candidates: apps.map((directory) => `${directory}/Microsoft Edge.app/Contents/MacOS/Microsoft Edge`) },
+  ];
+  if (platform === "linux") return [
+    { id: "chrome", name: "Google Chrome", candidates: ["/usr/bin/google-chrome", "/usr/bin/google-chrome-stable", "/opt/google/chrome/chrome"] },
+    { id: "edge", name: "Microsoft Edge", candidates: ["/usr/bin/microsoft-edge", "/usr/bin/microsoft-edge-stable", "/opt/microsoft/msedge/msedge"] },
+  ];
+  return [];
+}
+
+export function selectRunnableTargets(targets, requested = []) {
+  const unknown = requested.filter((id) => !targets.some((target) => target.id === id));
+  if (unknown.length) throw new Error(`Unsupported browser target ids: ${unknown.join(", ")}`);
+  const missing = targets.filter((target) => requested.includes(target.id) && !target.executablePath);
+  if (missing.length) throw new Error(`Requested browsers are not installed: ${missing.map((target) => target.id).join(", ")}`);
+  const available = targets.filter((target) => target.executablePath && (!requested.length || requested.includes(target.id)));
+  if (!available.length) throw new Error("No supported local browser executable was found.");
+  return available;
+}
+
+export function validateBrowserBaseUrl(value) {
+  const url = new URL(value);
+  if (!["http:", "https:"].includes(url.protocol) || url.username || url.password || url.search || url.hash || url.pathname !== "/") {
+    throw new Error("Browser test base URL must be an HTTP(S) origin without credentials, query or fragment.");
+  }
+  return url.origin;
+}
+
 const pages = [
-  { path: "/zh", selectors: [".site-header__brand", "main", "footer", 'a[href^="tel:"]'], minTextLength: 800 },
-  { path: "/en", selectors: [".site-header__brand", "main", "footer", 'a[href^="tel:"]'], minTextLength: 800 },
-  { path: "/zh/services", selectors: [".site-header__brand", "main", "footer", 'a[href*="/quote"]'], minTextLength: 800 },
-  { path: "/zh/materials", selectors: [".site-header__brand", "main", "footer"], minTextLength: 500 },
-  { path: "/zh/projects", selectors: [".site-header__brand", "main", "footer", 'a[href*="/quote"]'], minTextLength: 500 },
+  { path: "/zh", selectors: [".scheme-a-chrome__brand", "main", "footer", 'a[href^="tel:"]'], minTextLength: 800 },
+  { path: "/en", selectors: [".scheme-a-chrome__brand", "main", "footer", 'a[href^="tel:"]'], minTextLength: 800 },
+  { path: "/zh/services", selectors: [".scheme-a-chrome__brand", "main", "footer", 'a[href*="/quote"]'], minTextLength: 800 },
+  { path: "/zh/materials", selectors: [".scheme-a-chrome__brand", "main", "footer"], minTextLength: 500 },
+  { path: "/zh/projects", selectors: [".scheme-a-chrome__brand", "main", "footer", 'a[href*="/quote"]'], minTextLength: 500 },
   { path: "/zh/quote", selectors: ["main", "#quote-name", "#quote-phone", "#quote-project-type", "#quote-details"], minTextLength: 500 },
   { path: "/zh/contact", selectors: ["main", "#contact-name", "#contact-phone", "#contact-message", 'a[href^="tel:"]'], minTextLength: 500 },
   { path: "/admin", selectors: ['input[type="email"]', 'input[type="password"]', 'button[type="submit"]'], minTextLength: 100 },
@@ -80,9 +115,9 @@ const pathExists = async (path) => {
   }
 };
 
-const resolveTarget = async (target) => {
+export const resolveTarget = async (target, exists = pathExists) => {
   for (const candidate of target.candidates) {
-    if (await pathExists(candidate)) {
+    if (await exists(candidate)) {
       return { ...target, executablePath: candidate };
     }
   }
@@ -91,7 +126,9 @@ const resolveTarget = async (target) => {
 };
 
 const waitForVisible = async (page, selector) => {
-  const locator = page.locator(selector).first();
+  // The directory and footer can contain the same link. A hidden directory
+  // link must not mask a visible footer link in the current layout.
+  const locator = page.locator(`${selector}:visible`).first();
   await locator.waitFor({ state: "visible", timeout: 20_000 });
 };
 
@@ -157,65 +194,68 @@ const assertMobileMenu = async (page) => {
   await page.goto(`${baseUrl}/zh`, { waitUntil: "domcontentloaded", timeout: 45_000 });
   await waitForPageUsable(page);
 
-  const menuButton = page.locator('button[aria-controls="mobile-navigation"]');
+  const menuButton = page.locator(".scheme-a-chrome__menu-trigger--compact");
   await menuButton.waitFor({ state: "visible", timeout: 20_000 });
   await menuButton.click();
 
-  const menu = page.locator("#mobile-navigation");
+  const menu = page.locator("#scheme-a-directory");
   await menu.waitFor({ state: "visible", timeout: 20_000 });
-  await menu.locator('a[href*="/services"]').first().click();
+  await menu.locator('.scheme-a-directory__group-toggle[aria-controls="scheme-a-directory-group-services"]').click();
+  await menu.locator('#scheme-a-directory-group-services a[href$="/services"]').first().click();
   await page.waitForURL(/\/zh\/services$/, { timeout: 20_000 });
   await menu.waitFor({ state: "hidden", timeout: 20_000 });
   await waitForVisible(page, "main");
 };
 
 const runTarget = async (target) => {
-  const browser = await chromium.launch({
-    executablePath: target.executablePath,
-    headless,
-  });
-  const context = await browser.newContext();
-  const page = await context.newPage();
-
+  let browser;
+  const checks = [];
   try {
+    const { chromium } = await import("playwright");
+    browser = await chromium.launch({ executablePath: target.executablePath, headless });
+    const context = await browser.newContext({ viewport: { width: 1440, height: 900 }, bypassCSP: false });
+    const page = await context.newPage();
     for (const spec of pages) {
       await assertPageHealthy(page, spec);
+      checks.push(spec.path);
+      console.log(`[installed-browser] ${target.id} checked ${spec.path}`);
     }
     await assertMobileMenu(page);
-    return { id: target.id, name: target.name, executablePath: target.executablePath, ok: true };
+    checks.push("mobile-menu-navigation");
+    return { id: target.id, name: target.name, executablePath: target.executablePath, version: browser.version(), checks, ok: true };
   } catch (error) {
-    return { id: target.id, name: target.name, executablePath: target.executablePath, ok: false, error: error instanceof Error ? error.message : String(error) };
+    return { id: target.id, name: target.name, executablePath: target.executablePath, checks, ok: false, error: error instanceof Error ? error.message : String(error) };
   } finally {
-    await browser.close();
+    await browser?.close();
   }
 };
 
-const resolvedTargets = await Promise.all(browserTargets.map(resolveTarget));
-const installedTargets = resolvedTargets.filter((target) => target.executablePath);
-const runnableTargets =
-  selectedTargets.length > 0 ? installedTargets.filter((target) => selectedTargets.includes(target.id)) : installedTargets;
+async function main() {
+  validateBrowserBaseUrl(baseUrl);
+  const resolvedTargets = await Promise.all(getBrowserTargets().map((target) => resolveTarget(target)));
+  const runnableTargets = selectRunnableTargets(resolvedTargets, selectedTargets);
 
-if (runnableTargets.length === 0) {
-  console.error("No supported local browser executable was found.");
-  console.error(`Installed target ids detected: ${installedTargets.map((target) => target.id).join(", ") || "none"}`);
-  process.exit(1);
+  const results = [];
+  for (const target of runnableTargets) {
+    console.log(`[installed-browser] ${target.name} starting: ${target.executablePath}`);
+    const result = await runTarget(target);
+    results.push(result);
+    console.log(`[installed-browser] ${target.name} ${result.ok ? "passed" : `failed: ${result.error}`}`);
+  }
+
+  const missingTargets = resolvedTargets
+    .filter((target) => !target.executablePath)
+    .map((target) => ({ id: target.id, name: target.name }));
+  const failed = results.filter((result) => !result.ok);
+
+  console.log(JSON.stringify({ ok: failed.length === 0, scope: "installed-supported-browsers-only", baseUrl, headless, results, missingTargets,
+    notCovered: ["Safari native", "Firefox native", "physical phones", "authenticated admin business workflow"] }, null, 2));
+
+  if (failed.length > 0) {
+    process.exitCode = 1;
+  }
 }
 
-const results = [];
-for (const target of runnableTargets) {
-  console.log(`[installed-browser] ${target.name} starting: ${target.executablePath}`);
-  const result = await runTarget(target);
-  results.push(result);
-  console.log(`[installed-browser] ${target.name} ${result.ok ? "passed" : `failed: ${result.error}`}`);
-}
-
-const missingTargets = resolvedTargets
-  .filter((target) => !target.executablePath)
-  .map((target) => ({ id: target.id, name: target.name }));
-const failed = results.filter((result) => !result.ok);
-
-console.log(JSON.stringify({ ok: failed.length === 0, baseUrl, headless, results, missingTargets }, null, 2));
-
-if (failed.length > 0) {
-  process.exit(1);
+if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
+  main().catch((error) => { console.error(`[installed-browser] ${error.message}`); process.exitCode = 1; });
 }

@@ -1,15 +1,17 @@
 import { Builder } from "selenium-webdriver";
+import { validateBrowserBaseUrl } from "./run-installed-browser-compat.mjs";
 
 const username = process.env.BROWSERSTACK_USERNAME;
 const accessKey = process.env.BROWSERSTACK_ACCESS_KEY;
 const baseUrl = (process.env.REAL_BROWSER_BASE_URL || "https://flashcast.com.my").replace(/\/$/, "");
+validateBrowserBaseUrl(baseUrl);
 const buildName = process.env.BROWSERSTACK_BUILD_NAME || `flashcast-real-browser-${new Date().toISOString()}`;
 const waitTimeoutMs = Number(process.env.REAL_BROWSER_WAIT_TIMEOUT_MS || 60_000);
 const selectedTargets = (process.env.REAL_BROWSER_TARGETS || "")
   .split(",")
   .map((target) => target.trim())
   .filter(Boolean);
-const brandSelector = "header a[data-adaptive-logo]";
+const brandSelector = ".scheme-a-chrome__brand";
 
 const pages = [
   {
@@ -97,6 +99,11 @@ const failFast = (message) => {
   console.error(message);
   process.exit(1);
 };
+
+const unknownTargets = selectedTargets.filter((id) => !targets.some((target) => target.id === id));
+if (unknownTargets.length) {
+  failFast(`Unsupported BrowserStack target ids: ${unknownTargets.join(", ")}`);
+}
 
 if (!username || !accessKey) {
   failFast("Missing BROWSERSTACK_USERNAME or BROWSERSTACK_ACCESS_KEY. Add them as environment variables or GitHub Actions secrets.");
