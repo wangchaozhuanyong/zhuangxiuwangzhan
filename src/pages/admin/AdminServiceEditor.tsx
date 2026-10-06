@@ -15,6 +15,7 @@ import { adminMobileEditorText } from "@/i18n/adminMobileEditorText";
 import AdminPageHeader from "@/components/admin/AdminPageHeader";
 import AdminFormSection from "@/components/admin/AdminFormSection";
 import AdminContentPreflight from "@/components/admin/AdminContentPreflight";
+import AdminServiceNativeSnapshot from "@/components/admin/AdminServiceNativeSnapshot";
 import AdminLoadingState from "@/components/admin/AdminLoadingState";
 import AdminEmptyState from "@/components/admin/AdminEmptyState";
 import { adminConfirm } from "@/components/admin/AdminConfirmProvider";
@@ -401,6 +402,8 @@ export default function AdminServiceEditor() {
       />
 
       <AdminContentPreflight record={record} disabled={saveBusy || isLoading || isSubmitting} onPreview={() => previewAdminService({ record })} />
+
+      {!isNew && id && <AdminServiceNativeSnapshot key={`${id}:${loaded?.updated_at ?? ""}`} serviceId={id} language={language} disabled={saveBusy || isLoading || isSubmitting} />}
 
       <form
         onSubmit={(e: FormEvent) => {

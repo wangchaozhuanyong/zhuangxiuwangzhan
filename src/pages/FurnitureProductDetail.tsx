@@ -7,6 +7,7 @@ import WhatsAppIcon from "@/components/WhatsAppIcon";
 import { JsonLdBreadcrumb } from "@/components/JsonLd";
 import { useSiteSettings } from "@/hooks/useSiteSettings";
 import { useLanguage } from "@/i18n/LanguageContext";
+import { withLanguagePrefix } from "@/i18n/routes";
 import { usePublishedFurnitureProduct } from "@/hooks/usePublishedContent";
 import { furnitureCategoryName, furnitureText, formatFurnitureEnquiryMessage } from "@/i18n/furnitureText";
 import { furnitureShopUrl, getFurnitureProductCategory, localizeFurnitureProduct } from "@/lib/furnitureCatalog";
@@ -71,7 +72,7 @@ export default function FurnitureProductDetail() {
         { name: copy.title, url: "/furniture" },
         ...(category ? [{ name: furnitureCategoryName(category.key, language), url: `/furniture/${category.key}` }] : []),
         { name: localizedProduct.name, url: `/furniture/product/${encodeURIComponent(decodeURIComponent(product.slug))}` },
-      ]} />
+      ].map((item) => ({ ...item, url: withLanguagePrefix(item.url, language) }))} />
       <div className="fc-furniture-detail">
         <LocalizedLink className="fc-furniture-back" to={origin ? origin.pathname + origin.search : category ? `/furniture/${category.key}` : "/furniture"} state={returnState}>← {copy.backToCatalog}</LocalizedLink>
         <div className="fc-furniture-detail__layout">

@@ -2,7 +2,6 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 import { onRequest } from "../../functions/_middleware";
 
 const xml = (locations: string[]) => `<urlset>${locations.map((location) => `<url><loc>${location}</loc></url>`).join("")}</urlset>`;
-const completeXml = (locations: string[], generatedAt = new Date().toISOString()) => `<?xml version="1.0"?>\n<!-- flashcast-sitemap-snapshot:v1 complete=true generated-at="${generatedAt}" -->\n${xml(locations)}`;
 const withdrawn = "https://flashcast.com.my/en/blog/renovation-materials-malaysia";
 const current = "https://flashcast.com.my/en/blog/current-published-post";
 const staticAbout = "https://flashcast.com.my/en/about";
@@ -24,7 +23,7 @@ describe("withdrawn published-blog source", () => {
   it("removes a stale generated blog URL when the fresh published sitemap omits it", async () => {
     vi.stubGlobal("fetch", vi.fn(async (input: RequestInfo | URL) => {
       const url = new URL(input instanceof Request ? input.url : String(input));
-      if (url.pathname.endsWith("/functions/v1/sitemap")) return new Response(completeXml([staticAbout, current]), { headers: { "content-type": "application/xml" } });
+      if (url.pathname.endsWith("/rest/v1/blog_posts") && !url.searchParams.has("id")) return new Response(JSON.stringify([{id:"current",slug:"current-published-post",status:"published",title_en:"Current post",content_en:"Published source body"}]));
       return new Response("[]", { headers: { "content-type": "application/json" } });
     }));
     const staticXml = xml([staticAbout, withdrawn]);
@@ -41,34 +40,22 @@ describe("withdrawn published-blog source", () => {
     expect(sitemap).not.toContain("flashcast.com/en/");
   });
 
-  it("keeps static blog URLs when a partial 200 snapshot has no completeness proof", async () => {
-    vi.stubGlobal("fetch", vi.fn(async (input: RequestInfo | URL) => {
-      const url = new URL(input instanceof Request ? input.url : String(input));
-      if (url.pathname.endsWith("/functions/v1/sitemap")) return new Response(xml([staticAbout, current]), { headers: { "content-type": "application/xml" } });
-      return new Response("[]", { headers: { "content-type": "application/json" } });
-    }));
-    const staticXml = xml([staticAbout, withdrawn]);
-    const assets = { fetch: async () => new Response(staticXml, { headers: { "content-type": "application/xml" } }) };
-    const response = await onRequest({ request: new Request("https://flashcast.com.my/sitemap.xml"), env: { ...env, ASSETS: assets }, next: async () => new Response("") } as Parameters<typeof onRequest>[0]);
-    expect(response.status).toBe(200);
-    expect(await response.text()).toContain(withdrawn);
-  });
-
   it.each([
-    ["503", new Response("unavailable", { status: 503 })],
-    ["empty 200", new Response("")],
-    ["wrong-host 200", new Response(completeXml(["https://example.com/en/blog/other"]))],
-    ["stale complete snapshot", new Response(completeXml([staticAbout, current], "2020-01-01T00:00:00.000Z"))],
-  ])("keeps static blog URLs for %s dynamic fallback", async (_label, dynamicResponse) => {
+    ["503", () => new Response("unavailable", { status: 503 })],
+    ["empty response", () => new Response("")],
+    ["non-array response", () => new Response("{}")],
+    ["invalid source row", () => new Response('[{"id":"invalid","slug":"wrong/path","status":"published"}]')],
+  ])("returns 503 rather than revive static blog URLs for %s source failure", async (_label, response) => {
     vi.stubGlobal("fetch", vi.fn(async (input: RequestInfo | URL) => {
       const url = new URL(input instanceof Request ? input.url : String(input));
-      if (url.pathname.endsWith("/functions/v1/sitemap")) return dynamicResponse;
+      if (url.pathname.endsWith("/rest/v1/blog_posts")) return response();
       return new Response("[]", { headers: { "content-type": "application/json" } });
     }));
     const staticXml = xml([staticAbout, withdrawn]);
-    const assets = { fetch: async () => new Response(staticXml, { headers: { "content-type": "application/xml" } }) };
-    const response = await onRequest({ request: new Request("https://flashcast.com.my/sitemap.xml"), env: { ...env, ASSETS: assets }, next: async () => new Response("") } as Parameters<typeof onRequest>[0]);
-    expect(response.status).toBe(200);
-    expect(await response.text()).toContain(withdrawn);
+    const assets = { fetch: async () => new Response(staticXml) };
+    const result = await onRequest({ request: new Request("https://flashcast.com.my/sitemap.xml"), env: { ...env, ASSETS: assets }, next: async () => new Response("") } as Parameters<typeof onRequest>[0]);
+    expect(result.status).toBe(503);
+    expect(result.headers.get("cache-control")).toBe("no-store");
+    expect(await result.text()).not.toContain(withdrawn);
   });
 });

@@ -8,7 +8,7 @@ import { JsonLdBreadcrumb } from "@/components/JsonLd";
 import { SchemeARouteHero } from "@/components/scheme-a/SchemeARoutePrimitives";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { usePublishedFurnitureCatalog } from "@/hooks/usePublishedContent";
-import { furnitureCategoryName, furnitureSubcategoryName, furnitureText } from "@/i18n/furnitureText";
+import { furnitureCategoryName, furnitureCategoryPageCopy, furnitureSubcategoryName, furnitureText } from "@/i18n/furnitureText";
 import { furnitureCatalog, furnitureProductPath, furnitureShopUrl, getFurnitureCategory, getFurnitureSubcategory, getFurnitureCatalogProductsForCategory, localizeFurnitureProduct } from "@/lib/furnitureCatalog";
 import { rememberFurnitureNavigationScroll } from "@/lib/publicScrollRestoration";
 import { withLanguagePrefix } from "@/i18n/routes";
@@ -34,6 +34,7 @@ export default function FurnitureShowcase() {
     });
   };
   const copy = furnitureText[language];
+  const categoryCopy = furnitureCategoryPageCopy(categoryKey, language, subcategoryKey);
   const managedQuery = usePublishedFurnitureCatalog(language);
   const managedProducts = managedQuery.data || [];
   const category = getFurnitureCategory(categoryKey || "new");
@@ -55,13 +56,13 @@ export default function FurnitureShowcase() {
 
   return (
     <main className="fc-route-page fc-furniture-page" data-route-pending={managedQuery.isLoading || undefined}>
-      <PageMeta title={[subcategoryLabel, categoryKey ? categoryLabel : copy.title].filter(Boolean).join(" | ")} description={copy.metaDescription} canonicalPath={currentPath} noIndex={!validSelection} />
+      <PageMeta title={categoryCopy?.title || [subcategoryLabel, categoryKey ? categoryLabel : copy.title].filter(Boolean).join(" | ")} description={categoryCopy?.description || copy.metaDescription} canonicalPath={currentPath} noIndex={!validSelection} />
       <JsonLdBreadcrumb items={[
         { name: copy.home, url: "/" },
         { name: copy.title, url: "/furniture" },
         ...(categoryKey && category ? [{ name: categoryLabel, url: `/furniture/${category.key}` }] : []),
         ...(subcategory ? [{ name: subcategoryLabel, url: currentPath }] : []),
-      ]} />
+      ].map((item) => ({ ...item, url: withLanguagePrefix(item.url, language) }))} />
       <SchemeARouteHero
         kind="listing"
         showIntro={false}
@@ -70,11 +71,11 @@ export default function FurnitureShowcase() {
         imagePosition={{ mobile: "center 55%" }}
         imageAlt={copy.heroImageAlt}
         label={copy.title}
-        title={subcategoryLabel || (categoryKey ? categoryLabel : copy.title)}
-        description={copy.intro}
+        title={categoryCopy?.h1 || subcategoryLabel || (categoryKey ? categoryLabel : copy.title)}
+        description={categoryCopy?.intro || copy.intro}
       />
       <div className="fc-furniture-body">
-        <p className="fc-furniture-detail__note">{copy.intro}</p>
+        <p className="fc-furniture-detail__note">{categoryCopy?.intro || copy.intro}</p>
         <nav className="fc-furniture-primary" aria-label={copy.title}>
           {furnitureCatalog.taxonomy.map((item) => (
             <LocalizedLink key={item.key} to={item.key === "new" ? "/furniture" : `/furniture/${item.key}`} viewTransition={false} onClick={keepFurnitureScrollPosition} aria-current={category?.key === item.key ? "page" : undefined}>

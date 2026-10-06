@@ -5,6 +5,7 @@ import { servicesPageText } from "../src/i18n/servicesPageText";
 import { materialCategoryPageText } from "../src/i18n/materialCategoryPageText";
 import { materialSubcategoryPageText } from "../src/i18n/materialSubcategoryPageText";
 import { isServiceConceptImage } from "../src/lib/serviceMedia";
+import { quotePageText } from "../src/i18n/quotePageText";
 // Same public content for every user agent; this fallback is rendered only without JS.
 export const readableBodyPaths = ["/services/builtin", "/blog/renovation-materials-malaysia", "/projects/bangsar-walk-in-wardrobe-system", "/blog/small-condo-storage-design-ideas"] as const;
 const allowedTags = new Set(["p", "h2", "h3", "h4", "strong", "em", "b", "i", "br", "ul", "ol", "li", "a", "blockquote"]);
@@ -35,6 +36,17 @@ function publicHref(raw: string, lang: "en" | "zh") {
     if (url.pathname !== `/${lang}` && !url.pathname.startsWith(`/${lang}/`)) return null;
     return `${url.pathname}${url.search}${url.hash}`;
   } catch { return null; }
+}
+
+// Renderer-owned copy, shared with the quote page; no CMS or form data.
+export function buildQuotePreparationBody(key: string) {
+  const match = key.match(/^\/(en|zh)\/quote$/);
+  if (!match) return "";
+  const lang = match[1] as "en" | "zh";
+  const copy = quotePageText[lang].preparation;
+  const href = publicHref(`/${lang}/blog/renovation-quotation-checklist-malaysia`, lang);
+  if (!href) return "";
+  return `<section data-flashcast-quote-preparation lang="${lang === "zh" ? "zh-CN" : "en"}" aria-labelledby="quote-preparation-fallback-title"><h3 id="quote-preparation-fallback-title">${escape(copy.heading)}</h3><p>${escape(copy.paragraphOne)}</p><p>${escape(copy.paragraphTwoBeforeLink)}<a href="${escape(href)}">${escape(copy.linkText)}</a>${escape(copy.paragraphTwoAfterLink)}</p></section>`;
 }
 
 export function sanitizeReadableContent(value: string, lang: "en" | "zh") {

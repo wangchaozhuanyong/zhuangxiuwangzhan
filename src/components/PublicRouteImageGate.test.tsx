@@ -33,7 +33,10 @@ const render = async (children: React.ReactNode, routeKey = "/zh/services") => {
   await act(async () => vi.advanceTimersByTime(40));
 };
 const loader = () => container.querySelector("[data-route-loader]");
-const pageFeedback = () => container.querySelector('.public-route-scene[data-pending="true"]:not([data-region-only]) + .public-route-feedback[aria-busy="true"]');
+const pageFeedback = () => {
+  const feedback = container.querySelector('.public-route-scene[data-pending="true"]:not([data-region-only])')?.nextElementSibling;
+  return feedback?.getAttribute("data-feedback-scope") === "page" && feedback.getAttribute("aria-busy") === "true" ? feedback : null;
+};
 const state = () => container.querySelector("[data-route-visual-state]")?.getAttribute("data-route-visual-state");
 
 beforeEach(() => {
@@ -54,13 +57,10 @@ afterEach(async () => {
 });
 
 describe("public route visual readiness", () => {
-  it("retires cached content before navigation and delays a previously completed bar until needed", async () => {
+  it("retires cached content before navigation and immediately covers a real wait with a fresh brand bar", async () => {
     const previousAnimate = Object.getOwnPropertyDescriptor(HTMLElement.prototype, "animate");
-    let finishExit!: () => void;
-    const exit = new Promise<void>((resolve) => { finishExit = resolve; });
     const cancel = vi.fn();
-    const animate = vi.fn().mockReturnValueOnce({ finished: exit, cancel })
-      .mockImplementation(() => ({ finished: Promise.resolve(), cancel: vi.fn() }));
+    const animate = vi.fn(() => ({ finished: Promise.resolve(), cancel }));
     await render(<Image ready />, "/zh/start");
     await render(<Image />, "/zh/projects");
     await act(async () => vi.advanceTimersByTime(180));
@@ -82,11 +82,9 @@ describe("public route visual readiness", () => {
         hasRecoveryActions: container.querySelector(".scheme-a-page-loader__actions") !== null,
       }));
       await act(async () => requestPublicNavigation("/zh/materials", commit));
-      expect(commit).not.toHaveBeenCalled();
-      await act(async () => finishExit());
       expect(commit).toHaveBeenCalledOnce();
-      expect(commit.mock.results[0]?.value).toEqual({ state: "waiting", feedbackVisible: false, busy: undefined, hasPendingLabel: false, inert: true, hidden: "true", hasRecoveryActions: false });
-      expect(cancel).toHaveBeenCalledOnce();
+      expect(commit.mock.results[0]?.value).toEqual({ state: "waiting", feedbackVisible: true, busy: "true", hasPendingLabel: false, inert: true, hidden: "true", hasRecoveryActions: false });
+      expect(cancel).not.toHaveBeenCalled();
       // Router can commit the URL before a deferred destination render finishes.
       // The outgoing route's cached images must not mark it ready again.
       await act(async () => vi.advanceTimersByTime(200));
@@ -94,7 +92,7 @@ describe("public route visual readiness", () => {
       expect(pageFeedback()).not.toBeNull();
       expect(pageFeedback()).toBe(loader());
       expect(container.querySelector(".public-route-content")).toHaveAttribute("inert");
-      expect(animate).toHaveBeenCalledOnce();
+      expect(animate).not.toHaveBeenCalled();
       await render(<Image ready />, "/zh/materials");
       expect(state()).toBe("ready");
       expect(loader()).toBeNull();
@@ -132,18 +130,17 @@ describe("public route visual readiness", () => {
     brand.remove();
   });
 
-  it("waits on subsequent routes with lightweight feedback instead of the brand screen", async () => {
+  it("reuses the entry brand for full-page navigation and fades it after readiness", async () => {
     await render(<Image ready />, "/zh/projects");
     await render(<Image />);
     expect(container.querySelector(".public-route-scene")).toHaveAttribute("data-pending", "true");
-    expect(loader()).toBeNull();
-    await act(async () => vi.advanceTimersByTime(180));
+    // Cover a genuine wait before the first paint, without a 180ms blank interval.
     expect(loader()?.getAttribute("data-route-loader")).toBe("navigation");
-    expect(container.querySelector(".public-route-feedback__pending")).not.toBeNull();
+    expect(loader()).toHaveClass("scheme-a-page-loader--navigation");
+    expect(container.textContent).not.toContain("页面加载中");
     expect(pageFeedback()).toBe(loader());
-    expect(container.querySelector(".public-route-feedback > span")?.textContent).toBeTruthy();
     expect(document.documentElement.dataset.publicRouteLoading).toBe("navigation");
-    expect(container.querySelector(".scheme-a-page-loader__brand")).toBeNull();
+    expect(container.querySelector(".scheme-a-page-loader__brand")).toHaveTextContent("FLASHCAST");
     expect(container.querySelector(".public-route-content")).toHaveAttribute("inert");
     await render(<Image ready />);
     expect(state()).toBe("ready");
@@ -176,9 +173,7 @@ describe("public route visual readiness", () => {
     expect(state()).toBe("timeout");
     expect(pageFeedback()).toBeNull();
     expect(loader()).toHaveAttribute("aria-busy", "false");
-    const pendingLabel = container.querySelector(".public-route-feedback > span");
-    expect(pendingLabel).toHaveClass("public-route-feedback__pending");
-    expect(pendingLabel).not.toHaveClass("sr-only");
+    expect(container.querySelector(".scheme-a-page-loader__brand")).toHaveTextContent("FLASHCAST");
     expect(container.querySelector(".public-route-feedback__recovery p")?.textContent).toBeTruthy();
     expect(container.querySelectorAll(".public-route-feedback__recovery button")).toHaveLength(2);
     expect(container.querySelector(".public-route-content")).toHaveAttribute("inert");
@@ -231,13 +226,15 @@ describe("public route visual readiness", () => {
   });
 
   it.each(["/zh/furniture/bedroom", "/zh/furniture?page=2"])("rechecks readiness for preserved route %s", async (nextRoute) => {
-    await render(<Image ready />, "/zh/furniture");
+    await render(<div data-public-results><Image ready /></div>, "/zh/furniture");
     expect(loader()).toBeNull();
-    await render(<Image />, nextRoute);
+    await render(<div data-public-results><Image /></div>, nextRoute);
     expect(container.querySelector(".public-route-scene")).toHaveAttribute("data-pending", "true");
     await act(async () => vi.advanceTimersByTime(180));
     expect(loader()).not.toBeNull();
-    await render(<Image ready />, nextRoute);
+    expect(loader()).toHaveClass("public-route-feedback");
+    expect(container.querySelector(".scheme-a-page-loader__brand")).toBeNull();
+    await render(<div data-public-results><Image ready /></div>, nextRoute);
     expect(state()).toBe("ready");
     await act(async () => vi.advanceTimersByTimeAsync(PUBLIC_LOADING_PROGRESS.finish + PUBLIC_LOADING_PROGRESS.fade));
     expect(loader()).toBeNull();
@@ -299,6 +296,7 @@ describe("public route visual readiness", () => {
       expect(ready).not.toHaveBeenCalled();
       await render(<Image ready />, "/zh/materials");
       expect(state()).toBe("ready");
+      await act(async () => vi.advanceTimersByTimeAsync(PUBLIC_LOADING_PROGRESS.finish + PUBLIC_LOADING_PROGRESS.fade));
       expect(loader()).toBeNull();
       expect(ready).toHaveBeenCalledTimes(1);
     } finally {
