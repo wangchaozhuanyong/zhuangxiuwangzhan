@@ -49,8 +49,9 @@ export function serializeNativeServiceSnapshot(serviceId: string, raw: unknown):
       const steps = own(raw, `process_steps_${language}`);
       if (!Array.isArray(steps) || !hasOwn(steps, 4) || !isRecord(steps[4])) return invalid();
       const description = own(steps[4], "desc");
-      if (description !== null && typeof description !== "string") return invalid();
-      snapshot[`process_steps_${language}[4].desc`] = description;
+      if (description === null) snapshot[`process_steps_${language}[4].desc`] = null;
+      else if (typeof description === "string") snapshot[`process_steps_${language}[4].desc`] = description;
+      else return invalid();
     }
     snapshot.id = target.id;
     snapshot.slug = target.slug;
