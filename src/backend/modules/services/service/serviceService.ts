@@ -3,6 +3,7 @@ import { isSupabaseConfigured } from "@/lib/supabase";
 import { previewAdminContent, requestPublicContentInvalidation, saveAdminRecord } from "@/lib/adminMutation";
 import { getPublicSyncIssues, registerPublicSyncIssue, resolvePublicSyncIssue, type PublicSyncIssue } from "@/lib/publicSyncRecovery";
 import { invalidateAdminResource } from "@/lib/adminInvalidate";
+import { canReadNativeServiceSnapshot, serializeNativeServiceSnapshot } from "./nativeServiceSnapshot";
 import {
   fetchAdminServiceDetail,
   fetchAdminServiceList,
@@ -222,6 +223,15 @@ export function loadAdminServiceList<T extends Record<string, unknown>>(input: A
 
 export function loadAdminServiceDetail(serviceId: string, signal?: AbortSignal) {
   return fetchAdminServiceDetail(serviceId, signal);
+}
+
+export async function loadAdminServiceNativeSnapshot(serviceId: string, signal: AbortSignal): Promise<string> {
+  signal.throwIfAborted();
+  if (!canReadNativeServiceSnapshot(serviceId)) throw new Error("Native service snapshot is unavailable");
+  // A new normal detail read, independent of React Query caches and the edited form.
+  const raw = await fetchAdminServiceDetail(serviceId, signal);
+  signal.throwIfAborted();
+  return serializeNativeServiceSnapshot(serviceId, raw);
 }
 
 export function loadAdminServiceRows(limit: number, signal?: AbortSignal) {
