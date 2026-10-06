@@ -242,14 +242,10 @@ describe("public Edge HTML cache", () => {
       <url><loc>https://flashcast.com.my/en/products</loc></url>
       <url><loc>https://flashcast.com.my/zh/services/flooring</loc></url>
     </urlset>`;
-    const dynamicSitemap = `<?xml version="1.0" encoding="UTF-8"?><urlset>
-      <url><loc>https://flashcast.com.my/en/landing/flooring</loc></url>
-      <url><loc>https://flashcast.com.my/zh/landing/office-renovation</loc></url>
-      <url><loc>https://flashcast.com.my/en/services/flooring</loc></url>
-    </urlset>`;
     vi.stubGlobal("fetch", vi.fn(async (input: RequestInfo | URL) => {
-      if (String(input).includes("/functions/v1/sitemap")) {
-        return new Response(dynamicSitemap, { headers: { "content-type": "application/xml" } });
+      const url = new URL(String(input));
+      if (!url.searchParams.has("id") && ["/rest/v1/services", "/rest/v1/landing_pages"].includes(url.pathname)) {
+        return new Response(JSON.stringify([{ id: "001", status: "published", slug: "flooring", title_en: "Flooring", title_zh: "地板", content_en: "Published flooring service", content_zh: "已发布地板服务正文" }]));
       }
       return new Response("[]", { headers: { "content-type": "application/json" } });
     }));
@@ -294,7 +290,7 @@ describe("public Edge HTML cache", () => {
     supabaseFetch.mockImplementation(async (input: RequestInfo | URL) => {
       const url = new URL(String(input));
       const body = url.pathname.endsWith("/home_sections") ? [{ section_key: "furniture_catalog", items_zh: [{ ...catalogOverride, enabled: false }] }]
-        : url.pathname.endsWith("/materials") ? [{ slug: catalogOverride.slug }] : [];
+        : url.pathname.endsWith("/materials") && !url.searchParams.has("id") ? [{ id: "001", status: "published", category: "furniture", slug: catalogOverride.slug, title_en: "Bed", title_zh: "床", content_en: "Published bed", content_zh: "已发布床正文" }] : [];
       return new Response(JSON.stringify(body), { headers: { "content-type": "application/json" } });
     });
     const response = await requestPage({ path: `/en/furniture/product/${catalogOverride.slug}`, supabaseUrl: "https://catalog-hidden.supabase.co" });
@@ -302,16 +298,15 @@ describe("public Edge HTML cache", () => {
     expect(await response.text()).toContain("noindex, nofollow");
     const xml = `<urlset><url><loc>https://flashcast.com.my/en/furniture/product/${catalogOverride.slug}</loc></url><url><loc>https://flashcast.com.my/zh/furniture/product/${catalogOverride.slug}</loc></url></urlset>`;
     const sitemapResponse = await requestPage({ path: "/sitemap.xml", html: xml, supabaseUrl: "https://catalog-hidden-sitemap.supabase.co" });
+    expect(sitemapResponse.status).toBe(200);
     expect(await sitemapResponse.text()).not.toContain(catalogOverride.slug);
   });
 
   it("publishes admin furniture URLs in the sitemap without material detail URLs", async () => {
-    const dynamicSitemap = '<urlset><url><loc>https://flashcast.com.my/en/materials/test-furniture-chair</loc></url><url><loc>https://flashcast.com.my/zh/materials/test-furniture-chair</loc></url></urlset>';
     vi.stubGlobal("fetch", vi.fn(async (input: RequestInfo | URL) => {
       const url = new URL(String(input));
-      if (url.pathname.endsWith("/functions/v1/sitemap")) return new Response(dynamicSitemap);
-      if (url.pathname.endsWith("/rest/v1/materials") && url.searchParams.get("category") === "eq.furniture") {
-        return new Response('[{"slug":"test-furniture-chair"}]', { headers: { "content-type": "application/json" } });
+      if (url.pathname.endsWith("/rest/v1/materials") && !url.searchParams.has("id")) {
+        return new Response(JSON.stringify([{ id: "001", status: "published", category: "furniture", slug: "test-furniture-chair", title_en: "Chair", title_zh: "椅子", content_en: "Published chair", content_zh: "已发布椅子正文" }]), { headers: { "content-type": "application/json" } });
       }
       return new Response("[]", { headers: { "content-type": "application/json" } });
     }));
@@ -327,6 +322,7 @@ describe("public Edge HTML cache", () => {
     } as never);
     const xml = await response.text();
 
+    expect(response.status).toBe(200);
     expect(xml).toContain("https://flashcast.com.my/en/furniture/product/test-furniture-chair");
     expect(xml).toContain("https://flashcast.com.my/zh/furniture/product/test-furniture-chair");
     expect(xml).not.toContain("/materials/test-furniture-chair");

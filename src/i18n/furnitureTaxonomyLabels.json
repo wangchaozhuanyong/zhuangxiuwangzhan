@@ -9,6 +9,22 @@
       "description": "Explore the FLASH CAST furniture showcase by bedroom, dining room, living room, study room, new products and pre-order items."
     }
   },
+  "categoryPages": {
+    "bedroom": {
+      "en": {
+        "title": "Bedroom Furniture in Malaysia | FLASH CAST",
+        "h1": "Bedroom Furniture",
+        "description": "Browse bed frames, bedside tables, drawer chests, dressing furniture, mirrors and mattresses. Confirm each item’s specifications, price and availability before ordering.",
+        "intro": "Browse the bedroom furniture currently listed here, including bed frames, bedside tables, drawer chests, dressing tables and chairs, garment racks, standing mirrors and mattresses. Mostly stocked in Malaysia; some items require pre-order or customization. Open the item page to check its model, dimensions and listed price, then confirm availability and ordering terms for that item."
+      },
+      "zh": {
+        "title": "马来西亚卧室家具｜FLASH CAST",
+        "h1": "卧室家具",
+        "description": "浏览床架、床头柜、抽屉柜、梳妆家具、镜子与床垫；购买前逐件确认规格、当前价格和供货情况。",
+        "intro": "浏览本页当前列出的卧室家具，包括床架、床头柜、抽屉柜、梳妆台与梳妆椅、衣帽架、落地镜及床垫。以马来西亚现货为主，部分商品需预订或定制。打开对应商品详情核对型号、尺寸和页面标价，再逐件确认供货与购买条件。"
+      }
+    }
+  },
   "categories": {
     "new": { "zh": "新品", "en": "New Products" },
     "bedroom": { "zh": "卧室", "en": "Bedroom" },

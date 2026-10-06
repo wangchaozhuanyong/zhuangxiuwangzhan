@@ -1,3 +1,5 @@
+import { sourceKinds, sourceFields, knownSourceTemplates, qualifiesLocale, currentSourcePath, serializeSourcePath } from "../src/lib/publicContentQualification.mjs";
+export { qualifiesLocale, currentSourcePath, serializeSourcePath };
 import { build } from "esbuild";
 
 let materialDataPromise;
@@ -204,3 +206,55 @@ export const loadMaterialSeoPaths = async (publishedMaterialRows = []) => {
     ...category.subcategories.map((subcategory) => `/materials/category/${category.slug}/${subcategory.slug}`),
   ]);
 };
+
+
+// One complete, current public source snapshot drives all three documents.
+// Missing access or any later-page failure is unknown, never an empty success.
+export const readCompleteSeoSources = async ({url,key,fetchImpl=fetch,readAt=new Date().toISOString()}) => {
+ if(!url||!key) throw new Error("seo_source_access_missing");
+ const rows={};
+ for(const [table,kind] of Object.entries(sourceKinds)) {
+  const all=[];let cursor;
+  while(true) {
+   const endpoint=new URL(`/rest/v1/${table}`,url);
+   endpoint.searchParams.set("select",sourceFields[table]);endpoint.searchParams.set("status","eq.published");endpoint.searchParams.set("order","id.asc");endpoint.searchParams.set("limit","500");
+   if(table==="cms_pages")endpoint.searchParams.set("deleted_at","is.null");
+   if(cursor)endpoint.searchParams.set("id",`gt.${cursor}`);
+   const response=await fetchImpl(endpoint,{signal:AbortSignal.timeout(15000),headers:{apikey:key,Authorization:`Bearer ${key}`}});
+   if(!response.ok)throw new Error(`seo_source_unavailable:${table}:${response.status}`);
+   const data=await response.json();if(!Array.isArray(data))throw new Error(`seo_source_invalid:${table}`);
+   if(!data.length)break;
+   for(const row of data) {
+    const knownTemplate = knownSourceTemplates[table]?.has(row?.path) === true;
+    if(typeof row?.id!=="string"||!row.id||(cursor&&row.id<=cursor)||row.status!=="published"||(!knownTemplate&&!currentSourcePath(row,kind))||(table==="cms_pages"&&row.deleted_at))throw new Error(`seo_source_invalid:${table}`);
+    cursor=row.id;all.push(row);
+   }
+  }
+  rows[table]=all;
+ }
+ const {createHash}=await import("node:crypto");
+ const sourceHash=createHash("sha256").update(JSON.stringify(rows)).digest("hex");
+ return {rows,readAt,sourceHash,sourceVersion:`${readAt}:${sourceHash}`,complete:true};
+};
+export const snapshotProvenance=(snapshot,kind,recordRef,lang,ownedStatic=false)=>({source_kind:kind,record_ref:recordRef,language:lang,owned_static:ownedStatic,read_at:snapshot.readAt,source_hash:snapshot.sourceHash,source_version:snapshot.sourceVersion,qualification:"eligible",source_complete:snapshot.complete});
+export const isGeneratorEntry = metaUrl => process.argv[1] && decodeURIComponent(new URL(metaUrl).pathname) === process.argv[1];
+export async function runQualifiedSeoGeneration() {
+ const {existsSync,readFileSync,mkdirSync,writeFileSync,renameSync,rmSync}=await import("node:fs");
+ const {resolve}=await import("node:path");
+ if(existsSync(".env"))for(const line of readFileSync(".env","utf8").split(/\r?\n/)){const match=line.match(/^\s*([A-Za-z_][A-Za-z0-9_]*)=(.*)\s*$/);if(match&&!process.env[match[1]])process.env[match[1]]=match[2].replace(/^["']|["']$/g,"");}
+ const snapshot=await readCompleteSeoSources({url:process.env.VITE_SUPABASE_URL,key:process.env.VITE_SUPABASE_ANON_KEY});
+ const {buildQualifiedManifest}=await import("./generate-seo-manifest.mjs");
+ const {buildQualifiedSitemap}=await import("./generate-sitemap.mjs");
+ const {buildQualifiedLlms}=await import("./generate-llms.mjs");
+ const manifest=await buildQualifiedManifest(snapshot);
+ const artifacts={"public/sitemap.xml":buildQualifiedSitemap(manifest),"functions/seo-manifest.json":JSON.stringify(manifest),"public/seo-manifest.json":JSON.stringify(manifest),"public/llms.txt":buildQualifiedLlms(manifest)};
+ // No output is touched before all reads, qualifications and document builds succeed.
+ // Stage beside targets. If an IO replacement fails, restore prior bytes.
+ const staged=[],before=new Map();
+ try {
+  for(const [path,body] of Object.entries(artifacts)){mkdirSync(resolve(path,".."),{recursive:true});before.set(path,existsSync(path)?readFileSync(path):null);const tmp=`${path}.seo-stage-${process.pid}`;writeFileSync(tmp,body,"utf8");staged.push([path,tmp]);}
+  for(const [path,tmp] of staged)renameSync(tmp,path);
+ }catch(error){for(const [path,bytes] of before){if(bytes)writeFileSync(path,bytes);else rmSync(path,{force:true});}throw error;}
+ finally{for(const [,tmp] of staged)rmSync(tmp,{force:true});}
+ console.log(JSON.stringify({ok:true,urls:Object.keys(manifest).length,sourceVersion:snapshot.sourceVersion,outputs:Object.keys(artifacts)}));
+}

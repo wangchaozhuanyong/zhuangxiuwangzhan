@@ -1,15 +1,8 @@
-import { existsSync, readFileSync, writeFileSync } from "node:fs";
-
-const manifestPath = "public/seo-manifest.json";
-const sitemapPath = "public/sitemap.xml";
-const outputPath = "public/llms.txt";
-const siteUrl = (process.env.VITE_SITE_URL || "https://flashcast.com.my").replace(/\/$/, "");
-
-if (!existsSync(manifestPath)) {
-  throw new Error(`${manifestPath} is missing. Run generate-seo-manifest first.`);
-}
-
-const manifest = JSON.parse(readFileSync(manifestPath, "utf8"));
+import { isGeneratorEntry, runQualifiedSeoGeneration } from "./seo-material-pages.mjs";
+const siteUrl=(process.env.VITE_SITE_URL||"https://flashcast.com.my").replace(/\/$/, "");
+export function buildQualifiedLlms(manifest) {
+const versions=new Set(Object.values(manifest).map(meta=>meta.source_version));
+if(versions.size!==1||Object.values(manifest).some(meta=>!meta.source_complete||meta.qualification!=="eligible"||!meta.source_hash))throw new Error("seo_manifest_unqualified");
 const entries = Object.entries(manifest)
   .map(([route, meta]) => ({ route, ...meta }))
   .sort((a, b) => {
@@ -95,5 +88,6 @@ const lines = [
   "- Use the sitemap as the source of truth for crawlable public pages.",
 ];
 
-writeFileSync(outputPath, `${lines.join("\n")}\n`, "utf8");
-console.log(JSON.stringify({ ok: true, urls: canonicalUrls.length, output: outputPath, sitemapExists: existsSync(sitemapPath) }, null, 2));
+return `${lines.join("\n")}\n`;
+}
+if(isGeneratorEntry(import.meta.url)) runQualifiedSeoGeneration().catch(error=>{console.error(error.message);process.exitCode=1;});

@@ -4,7 +4,7 @@ import DeferredSmartImage from "@/components/DeferredSmartImage";
 import ImmersiveHero from "@/components/ImmersiveHero";
 import LocalizedLink from "@/components/LocalizedLink";
 import SmartImage from "@/components/SmartImage";
-import { SchemeAFaqList } from "@/components/scheme-a/SchemeARoutePrimitives";
+import { SchemeAFaqList, type SchemeAFaqItem } from "@/components/scheme-a/SchemeARoutePrimitives";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { translateDisplayText } from "@/i18n/displayLabels";
 import { schemeAHomeText } from "@/i18n/schemeAText";
@@ -17,6 +17,7 @@ import SchemeAOptionalHomeSections from "@/components/scheme-a/SchemeAOptionalHo
 
 type SchemeAHomeProps = {
   content: PublishedHomeContentBundle | undefined;
+  faqItems: SchemeAFaqItem[];
 };
 
 const clearServicePress = (event: PointerEvent<HTMLAnchorElement> | FocusEvent<HTMLAnchorElement>) => {
@@ -39,7 +40,7 @@ const PROJECT_CARD_MOBILE_ASPECT_RATIO = { width: 4, height: 5 } as const satisf
 const PROJECT_CARD_DESKTOP_ASPECT_RATIO = { width: 16, height: 10 } as const satisfies SupabaseTargetAspectRatio;
 const PROJECT_CARD_INTRINSIC_WIDTH = 960;
 
-const SchemeAHome = ({ content }: SchemeAHomeProps) => {
+const SchemeAHome = ({ content, faqItems }: SchemeAHomeProps) => {
   const { language } = useLanguage();
   const copy = schemeAHomeText[language];
   const presentation = resolveSchemeAHomePresentation(content, language, copy);
@@ -72,10 +73,6 @@ const SchemeAHome = ({ content }: SchemeAHomeProps) => {
   const projectMeta = featuredProject
     ? [displayText(featuredProject.type), featuredProjectIsConcept ? copy.projectConceptLabel : ""].filter(Boolean).join(" · ")
     : copy.projectFallbackMeta;
-  const faqItems = (content?.faqs || [])
-    .map((faq) => ({ question: faq.question, answer: faq.answer }))
-    .filter((faq) => faq.question && faq.answer);
-
   return (
     <div className="scheme-a-home scheme-a-home--atelier">
       <ImmersiveHero className="scheme-a-hero" standardPageHero={false} aria-labelledby="scheme-a-home-title" data-home-section="hero" data-hero-art={usesAtelierHero ? "daylight" : "custom"}>

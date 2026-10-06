@@ -3,8 +3,10 @@ import { getDynamicImagePreloads, type ImagePreload } from "./publicImagePreload
 import { isRecord, readString, readRecordArray } from "./publicDataValues";
 import { FURNITURE_CATALOG_SECTION_KEY, readFurnitureCatalogOverrides } from "../src/lib/furnitureCatalogOverrides";
 import { resolveReviewedBlogCover, resolveReviewedImageSource, resolveReviewedMaterialImage, wardrobeCover } from "../src/lib/reviewedContentMedia.mjs";
-import { buildReadableCollectionBody, buildReadableHomeFaqBody, buildReadablePublicBody, isReviewedMaterialBodyPath, sanitizeReadableContent } from "./readablePublicBody";
+import { buildQuotePreparationBody, buildReadableCollectionBody, buildReadableHomeFaqBody, buildReadablePublicBody, isReviewedMaterialBodyPath, sanitizeReadableContent } from "./readablePublicBody";
 import { mapPublicHomeFaqs } from "../src/lib/publicHomeFaqs";
+import { sourceKinds, sourceFields, knownSourceTemplates, qualifiesLocale, currentSourcePath, pickPublicSourceOwners, type PublicSourceTable, type PublicContentKind } from "../src/lib/publicContentQualification.mjs";
+import furnitureLabels from "../src/i18n/furnitureTaxonomyLabels.json";
 import { projectPublicMetadata } from "../src/lib/projectPublicMetadata.mjs";
 import manifest from "./seo-manifest.json";
 import { oldHouseRenovationPageText } from "../src/i18n/oldHouseRenovationPageText";
@@ -41,6 +43,8 @@ type SeoEntry = {
   dateModified?: string;
   articleSection?: string;
   imageAlt?: string;
+  breadcrumbCategory?: string;
+  owned_static?: boolean;
 };
 
 type SiteSettingsHead = {
@@ -590,6 +594,17 @@ const buildBreadcrumb = (meta: SeoEntry, origin: string) => {
     },
   ];
 
+  // The product segment has no parent page. Link only to real catalogue pages.
+  if (pathSegments[0] === "furniture" && pathSegments[1] === "product" && pathSegments.length === 3) {
+    items.push({ "@type": "ListItem", position: 2, name: furnitureLabels.meta[lang].title, item: `${origin}/${lang}/furniture` });
+    const category = meta.breadcrumbCategory as keyof typeof furnitureLabels.categories | undefined;
+    if (category && category !== "new" && furnitureLabels.categories[category]) {
+      items.push({ "@type": "ListItem", position: 3, name: furnitureLabels.categories[category][lang], item: `${origin}/${lang}/furniture/${category}` });
+    }
+    items.push({ "@type": "ListItem", position: items.length + 1, name: meta.title.replace(/\s*\|\s*FLASH CAST.*$/i, ""), item: meta.canonical });
+    return { "@type": "BreadcrumbList", "@id": `${meta.canonical}#breadcrumb`, itemListElement: items };
+  }
+
   let currentPath = `/${lang}`;
   pathSegments.forEach((segment, index) => {
     currentPath += `/${segment}`;
@@ -804,11 +819,15 @@ const injectEdgeStructuredData = (html: string, meta: SeoEntry, siteSettings?: S
 const injectGeoSummary = (html: string, meta: SeoEntry, readableBody = "") => {
   if (html.includes("data-flashcast-geo-summary")) return html;
 
-  const title = escapeHtml(meta.title);
-  const description = escapeHtml(meta.description);
+  const publicKey = new URL(meta.canonical).pathname;
+  const categoryCopy = publicKey === `/${meta.lang}/furniture/bedroom`
+    ? furnitureLabels.categoryPages.bedroom[meta.lang === "zh" ? "zh" : "en"] : undefined;
+  const title = escapeHtml(categoryCopy?.h1 || meta.title);
+  const description = escapeHtml(categoryCopy?.intro || meta.description);
   const canonical = escapeHtml(meta.canonical);
   const lang = meta.lang === "zh" ? "zh-CN" : "en";
-  const summary = readableBody ? `<noscript data-flashcast-geo-summary>${readableBody}</noscript>` : `<noscript data-flashcast-geo-summary><section lang="${lang}" aria-label="Page summary"><h1>${title}</h1><p>${description}</p><p><a href="${canonical}">${canonical}</a></p></section></noscript>`;
+  const preparation = buildQuotePreparationBody(publicKey);
+  const summary = readableBody ? `<noscript data-flashcast-geo-summary>${readableBody}${preparation}</noscript>` : `<noscript data-flashcast-geo-summary><section lang="${lang}" aria-label="Page summary"><h1>${title}</h1><p>${description}</p><p><a href="${canonical}">${canonical}</a></p></section>${preparation}</noscript>`;
   return html.replace(/<body([^>]*)>/i, `<body$1>\n    ${summary}`);
 };
 
@@ -1693,19 +1712,46 @@ const isAssetPath = (pathname: string) =>
   (/\.[a-z0-9]+$/i.test(pathname) && !pathname.endsWith(".html"));
 
 const fetchLiveSitemapXml = async (env: PagesEnv) => {
-  const supabaseUrl = env.VITE_SUPABASE_URL;
-  const supabaseAnonKey = env.VITE_SUPABASE_ANON_KEY;
-  if (!supabaseUrl) return "";
-  try {
-    const response = await fetchWithEdgeTimeout(`${supabaseUrl}/functions/v1/sitemap`, {
-      headers: supabaseAnonKey
-        ? { apikey: supabaseAnonKey, Authorization: `Bearer ${supabaseAnonKey}` }
-        : undefined,
-    }, { route: "/sitemap.xml", stage: "dynamic-sitemap" });
-    return response.ok ? await response.text() : "";
-  } catch {
-    return "";
+  if (!env.VITE_SUPABASE_URL || !env.VITE_SUPABASE_ANON_KEY) throw new Error("Public discovery source access missing");
+  const sources = Object.entries(sourceKinds) as [PublicSourceTable, PublicContentKind][];
+  const rowsBySource = await Promise.all(sources.map(async ([table, kind]) => {
+    const rows: PublicDataRow[] = [];
+    let cursor: string | undefined;
+    while (true) {
+      const result = await fetchFreshPublicRowsResult(env as Record<string, string | undefined>, table, (url) => {
+        url.searchParams.set("select", sourceFields[table]);
+        url.searchParams.set("status", "eq.published");
+        url.searchParams.set("order", "id.asc");
+        url.searchParams.set("limit", "500");
+        if (table === "cms_pages") url.searchParams.set("deleted_at", "is.null");
+        if (cursor) url.searchParams.set("id", `gt.${cursor}`);
+      });
+      if (!result.ok) throw new Error(`Public discovery source unavailable: ${table}`);
+      if (!result.rows.length) return rows;
+      for (const row of result.rows) {
+        const id = readString(row, "id");
+        const knownTemplate = knownSourceTemplates[table]?.has(readString(row, "path"));
+        if (!id || (cursor && id <= cursor) || row.status !== "published"
+          || (!knownTemplate && !currentSourcePath(row, kind)) || (table === "cms_pages" && row.deleted_at)) {
+          throw new Error(`Public discovery source invalid: ${table}`);
+        }
+        cursor = id;
+        rows.push(row);
+      }
+    }
+  }));
+  // Dedicated published sources precede legacy and generic page sources.
+  const current = pickPublicSourceOwners(Object.fromEntries(sources.map(([table], index) => [table, rowsBySource[index]])));
+  const blocks: string[] = [];
+  for (const [path, { row, kind }] of current) {
+    if (isRedirectOnlySitemapPath(`/en${path === "/" ? "" : path}`)) continue;
+    const url = (language: string) => `${PUBLIC_SITE_URL}/${language}${path === "/" ? "" : path}`;
+    const locales = (["en", "zh"] as const).filter((language) => qualifiesLocale(row, kind, language)
+      || Boolean((manifest as Record<string, SeoEntry>)[new URL(url(language)).pathname]?.owned_static));
+    const alternates = locales.map((language) => `<xhtml:link rel="alternate" hreflang="${language === "zh" ? "zh-CN" : "en"}" href="${escapeHtml(url(language))}" />`).join("");
+    for (const language of locales) blocks.push(`<url><loc>${escapeHtml(url(language))}</loc>${alternates}<xhtml:link rel="alternate" hreflang="x-default" href="${escapeHtml(url(locales.includes("en") ? "en" : language))}" /></url>`);
   }
+  return `<!-- flashcast-sitemap-snapshot:v1 complete=true generated-at="${new Date().toISOString()}" -->\n<urlset>${blocks.join("\n")}</urlset>`;
 };
 
 const fetchFurnitureCatalogSetting = async (env: Record<string, string | undefined>) => {
@@ -1735,15 +1781,6 @@ const fetchFurnitureCatalogPreload = async (env: Record<string, string | undefin
   } catch { return null; }
 };
 
-const fetchLiveFurnitureSlugs = async (env: PagesEnv) => {
-  const rows = await fetchPublicRows(env as Record<string, string | undefined>, "furniture-sitemap", "materials", (url) => {
-    url.searchParams.set("select", "slug");
-    url.searchParams.set("status", "eq.published");
-    url.searchParams.set("category", "eq.furniture");
-  });
-  return (rows || []).map((row) => readString(row, "slug")).filter(Boolean);
-};
-
 const isFreshCompleteDynamicSitemap = (dynamicXml: string, now = Date.now()) => {
   const marker = dynamicXml.match(/<!--\s*flashcast-sitemap-snapshot:v1\s+complete=true\s+generated-at="([^"]+)"\s*-->/i);
   if (!marker) return false;
@@ -1753,9 +1790,9 @@ const isFreshCompleteDynamicSitemap = (dynamicXml: string, now = Date.now()) => 
   return Number.isFinite(generatedAt) && age >= 0 && age <= 24 * 60 * 60 * 1000;
 };
 
-const mergeSitemapXml = (staticXml: string, dynamicXml: string, furnitureSlugs: string[], hiddenSlugs: string[] = []) => {
-  const blocks = [...staticXml.matchAll(/<url>\s*[\s\S]*?<\/url>/gi), ...dynamicXml.matchAll(/<url>\s*[\s\S]*?<\/url>/gi)];
-  if (!blocks.length && !furnitureSlugs.length) return staticXml || dynamicXml;
+const mergeSitemapXml = (staticXml: string, dynamicXml: string, hiddenSlugs: string[] = []) => {
+  const blocks = [...dynamicXml.matchAll(/<url>\s*[\s\S]*?<\/url>/gi), ...staticXml.matchAll(/<url>\s*[\s\S]*?<\/url>/gi)];
+  if (!blocks.length) return staticXml || dynamicXml;
   const dynamicLocations = new Set(
     Array.from(dynamicXml.matchAll(/<loc>([^<]+)<\/loc>/gi), (match) => match[1].trim())
       .filter((location) => {
@@ -1763,9 +1800,7 @@ const mergeSitemapXml = (staticXml: string, dynamicXml: string, furnitureSlugs: 
       }),
   );
   const liveSitemapAvailable = /<urlset\b[\s\S]*<\/urlset>/i.test(dynamicXml)
-    && dynamicLocations.size > 0
     && isFreshCompleteDynamicSitemap(dynamicXml);
-  const furnitureSlugSet = new Set(furnitureSlugs);
   const hiddenSlugSet = new Set(hiddenSlugs);
   const byLocation = new Map<string, string>();
   for (const match of blocks) {
@@ -1777,25 +1812,13 @@ const mergeSitemapXml = (staticXml: string, dynamicXml: string, furnitureSlugs: 
       if (parsedLocation.origin !== PUBLIC_SITE_URL) continue;
       const pathname = parsedLocation.pathname;
       if (isRedirectOnlySitemapPath(pathname)) continue;
-      if (liveSitemapAvailable && /^\/(?:en|zh)\/blog\/[^/]+$/.test(pathname) && !dynamicLocations.has(location)) continue;
-      const materialSlug = pathname.match(/^\/(?:en|zh)\/materials\/([^/]+)$/)?.[1];
-      if (materialSlug && furnitureSlugSet.has(decodeURIComponent(materialSlug))) continue;
+      if (liveSitemapAvailable && !(manifest as Record<string, SeoEntry>)[pathname]?.owned_static && !dynamicLocations.has(location)) continue;
       const furnitureSlug = pathname.match(/^\/(?:en|zh)\/furniture\/product\/([^/]+)$/)?.[1];
       if (furnitureSlug && hiddenSlugSet.has(decodeURIComponent(furnitureSlug))) continue;
     } catch {
       continue;
     }
     if (!byLocation.has(location)) byLocation.set(location, block);
-  }
-  for (const slug of furnitureSlugSet) {
-    if (hiddenSlugSet.has(slug)) continue;
-    const path = `/furniture/product/${encodeURIComponent(slug)}`;
-    const en = `${PUBLIC_SITE_URL}/en${path}`;
-    const zh = `${PUBLIC_SITE_URL}/zh${path}`;
-    for (const location of [en, zh]) {
-      if (byLocation.has(location)) continue;
-      byLocation.set(location, `<url><loc>${location}</loc><xhtml:link rel="alternate" hreflang="en" href="${en}" /><xhtml:link rel="alternate" hreflang="zh-CN" href="${zh}" /><xhtml:link rel="alternate" hreflang="x-default" href="${en}" /></url>`);
-    }
   }
   const body = Array.from(byLocation.values()).sort((a, b) => {
     const left = a.match(/<loc>([^<]+)<\/loc>/i)?.[1] || "";
@@ -1811,19 +1834,32 @@ const sitemapCanonicalUrls = (xml: string) =>
     .sort((a, b) => a.localeCompare(b));
 
 const replaceLlmsCanonicalUrls = (source: string, urls: string[]) => {
-  if (!source || !urls.length) return source;
-  const section = `## Canonical URL List\n${urls.map((url) => `- ${url}`).join("\n")}\n`;
-  if (/## Canonical URL List[\s\S]*?(?=\n## Notes For AI Assistants)/.test(source)) {
-    return source.replace(/## Canonical URL List[\s\S]*?(?=\n## Notes For AI Assistants)/, section.trimEnd());
+  // Counts and priority sections must use the same current set as canonical URLs.
+  // Otherwise a withdrawn URL can survive in a different AI-readable section.
+  const replaceSection = (text: string, title: string, lines: string[]) => {
+    const section = `## ${title}\n${lines.join("\n")}\n`;
+    const pattern = new RegExp(`## ${title}[^\\S\\n]*\\n[\\s\\S]*?(?=\\n## |$)`);
+    return pattern.test(text) ? text.replace(pattern, section.trimEnd()) : `${text.trimEnd()}\n\n${section}`;
+  };
+  const counts = new Map<string, number>();
+  for (const url of urls) {
+    const path = new URL(url).pathname.replace(/^\/(en|zh)(?=\/|$)/, "");
+    const group = path.split("/").filter(Boolean)[0] || "home";
+    counts.set(group, (counts.get(group) || 0) + 1);
   }
-  return `${source.trimEnd()}\n\n${section}`;
+  const priorityPaths = new Set(["/", "/services", "/projects", "/materials", "/locations/kuala-lumpur", "/contact", "/quote", "/blog"]);
+  const priorityUrls = urls.filter((url) => priorityPaths.has(new URL(url).pathname.replace(/^\/(en|zh)(?=\/|$)/, "") || "/"));
+  let out = replaceSection(source, "Route Inventory", [...counts].sort(([a], [b]) => a.localeCompare(b)).map(([group, count]) => `- ${group}: ${count} localized URLs`));
+  out = replaceSection(out, "Priority Chinese Pages", priorityUrls.filter((url) => new URL(url).pathname.startsWith("/zh")).map((url) => `- ${url}`));
+  out = replaceSection(out, "Priority English Pages", priorityUrls.filter((url) => new URL(url).pathname.startsWith("/en")).map((url) => `- ${url}`));
+  return replaceSection(out, "Canonical URL List", urls.map((url) => `- ${url}`));
 };
 
 const dynamicAssetHeaders = (contentType: string) => ({
   "content-type": contentType,
-  "cache-control": "public, max-age=60, stale-while-revalidate=300",
-  "cdn-cache-control": "public, max-age=60",
-  "cloudflare-cdn-cache-control": "public, max-age=60",
+  "cache-control": "no-store",
+  "cdn-cache-control": "no-store",
+  "cloudflare-cdn-cache-control": "no-store",
   "cache-tag": PUBLIC_HTML_CACHE_TAG,
   "x-content-type-options": "nosniff",
 });
@@ -1834,11 +1870,19 @@ const serveDynamicSeoAsset = async (
   env: PagesEnv,
   loadStatic: () => Promise<Response>,
 ) => {
-  const [staticResponse, dynamicXml, furnitureSlugs, furnitureSetting] = await Promise.all([loadStatic(), fetchLiveSitemapXml(env), fetchLiveFurnitureSlugs(env), fetchFurnitureCatalogSetting(env as Record<string, string | undefined>)]);
+  let values: [Response, string, PublicDataRow | null];
+  try {
+    values = await Promise.all([loadStatic(), fetchLiveSitemapXml(env), fetchFurnitureCatalogSetting(env as Record<string, string | undefined>)]);
+  } catch {
+    return new Response(request.method === "HEAD" ? null : "Public discovery temporarily unavailable.", {
+      status: 503, headers: dynamicAssetHeaders(pathname === "/sitemap.xml" ? "application/xml; charset=utf-8" : "text/plain; charset=utf-8"),
+    });
+  }
+  const [staticResponse, dynamicXml, furnitureSetting] = values;
   const hiddenSlugs = readFurnitureCatalogOverrides(furnitureSetting?.items_zh).filter((row) => !row.enabled).map((row) => row.slug);
   const staticText = staticResponse.ok ? await staticResponse.text() : "";
   if (pathname === "/sitemap.xml") {
-    const xml = mergeSitemapXml(staticText, dynamicXml, furnitureSlugs, hiddenSlugs);
+    const xml = mergeSitemapXml(staticText, dynamicXml, hiddenSlugs);
     return new Response(request.method === "HEAD" ? null : xml, {
       status: xml ? 200 : staticResponse.status,
       headers: dynamicAssetHeaders("application/xml; charset=utf-8"),
@@ -1849,7 +1893,7 @@ const serveDynamicSeoAsset = async (
     ? await env.ASSETS.fetch(new Request(new URL("/sitemap.xml", request.url).toString(), request))
     : null;
   const staticSitemapXml = staticSitemapResponse?.ok ? await staticSitemapResponse.text() : "";
-  const mergedSitemap = mergeSitemapXml(staticSitemapXml, dynamicXml, furnitureSlugs, hiddenSlugs);
+  const mergedSitemap = mergeSitemapXml(staticSitemapXml, dynamicXml, hiddenSlugs);
   const llms = replaceLlmsCanonicalUrls(staticText, sitemapCanonicalUrls(mergedSitemap));
   return new Response(request.method === "HEAD" ? null : llms, {
     status: llms ? 200 : staticResponse.status,
