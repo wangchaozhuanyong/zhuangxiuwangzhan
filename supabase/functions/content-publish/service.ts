@@ -1817,13 +1817,24 @@ const managedRecordKey = (input: ContentPublishRequest): string => input.content
   : input.contentType === "site_page" ? String(input.record?.page_key || "") : normalizeSlug(input.record?.slug);
 
 // Existing-row patches only. All validation precedes permit claim and SQL; no insertion or group replacement.
+function isSparseNativeBodyPatch(target: ManagedTarget, record: Record<string, unknown>, operation?: string) {
+  const nativeFields = target.contentType === "service"
+    ? ["content_en", "content_zh", "faqs_en", "faqs_zh", "process_steps_en", "process_steps_zh"]
+    : target.contentType === "blog" ? ["content_en", "content_zh"] : [];
+  return operation === "publish" && target.changedFields?.length === 2
+    && target.changedFields.every((field) => nativeFields.includes(field))
+    && Boolean(target.table && target.expectedUpdatedAt && target.baselineFieldsSha256
+      && target.desiredFieldsSha256 && (target.rollbackFieldsSha256 || ORG020_V7_TARGETS.includes(target)))
+    && Boolean(target.baselineProjectionFields?.some((field) => !READONLY_FIELDS.has(field) && record[field] === undefined));
+}
+
 async function publishOrg020ExactPatch(
   input: ContentPublishRequest, client: ContentPublishClient, context: PublishContext,
   mode: "dry-run" | "publish", nextStatus: ContentStatus, target: ManagedTarget,
 ): Promise<ContentPublishResult> {
   const record = input.record!;
   if ((input.managedPermit || input.managedCandidate)?.operation !== "publish"
-      || nextStatus !== "published" || target.rollbackAllowed !== false) {
+      || nextStatus !== "published" || (ORG020_V7_TARGETS.includes(target) && target.rollbackAllowed !== false)) {
     return errorResult("This exact candidate only permits a reviewed forward publish.", 403);
   }
   const existing = await fetchRecordByField(client, target.table!, "id", target.id);
@@ -1845,10 +1856,16 @@ async function publishOrg020ExactPatch(
     return errorResult("Only the exact frozen changed fields may differ; unknown or unrelated fields are rejected.", 403);
   }
   let cleaned: Record<string, unknown>;
+  // Only the already-approved projection may supply omitted published fields.
+  // A narrow projection still fails the ordinary required-field checks; do not
+  // validate from additional columns or send the merged row to the writer.
+  const validationRecord = isSparseNativeBodyPatch(target, record, "publish")
+    ? { ...Object.fromEntries(target.baselineProjectionFields!.map((field) => [field, existing[field] ?? null])), ...record }
+    : record;
   try {
-    if (target.contentType === "service") cleaned = cleanServicePayload(record, nextStatus).payload;
+    if (target.contentType === "service") cleaned = cleanServicePayload(validationRecord, nextStatus).payload;
     else if (target.contentType === "service_area") cleaned = cleanServiceAreaPayload(record, nextStatus).payload;
-    else if (target.contentType === "blog") cleaned = cleanBlogPayload(record, nextStatus).payload;
+    else if (target.contentType === "blog") cleaned = cleanBlogPayload(validationRecord, nextStatus).payload;
     else if (target.contentType === "site_page") cleaned = cleanStandaloneSitePagePayload(record, nextStatus).payload;
     else cleaned = Object.fromEntries(["answer_en", "answer_zh"].map((field) => [field, cleanText(record[field])]));
   } catch (error) {
@@ -1953,7 +1970,8 @@ export async function publishContent(
   if (mode === "publish" && (!input.ownerApproved || !input.explicitExecution)) {
     return errorResult("Publishing requires ownerApproved=true and explicitExecution=true.", 403);
   }
-  if (exact && ORG020_V7_TARGETS.includes(exact)) {
+  if (exact && (ORG020_V7_TARGETS.includes(exact)
+      || isSparseNativeBodyPatch(exact, input.record, selection?.operation))) {
     return publishOrg020ExactPatch(input, client, context, mode, nextStatus, exact);
   }
 
