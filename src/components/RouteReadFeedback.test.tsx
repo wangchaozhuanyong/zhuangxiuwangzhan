@@ -18,10 +18,12 @@ function Reader({ prefix, initialData }: { prefix: string; initialData?: string 
   return <p>{data}</p>;
 }
 
-async function renderReader({ show = true, prefix = "admin", initialData }: { show?: boolean; prefix?: string; initialData?: string } = {}) {
+async function renderReader({ show = true, surface = "admin", prefix = surface === "admin" ? "admin" : "published", initialData }: {
+  show?: boolean; surface?: "admin" | "public"; prefix?: string; initialData?: string;
+} = {}) {
   await act(async () => {
     root.render(<QueryClientProvider client={client}>
-      <RouteReadFeedback surface="admin" />
+      <RouteReadFeedback surface={surface} />
       {show && <Reader prefix={prefix} initialData={initialData} />}
     </QueryClientProvider>);
     await new Promise((resolve) => setTimeout(resolve, 20));
@@ -60,9 +62,9 @@ describe("route read feedback cache subscription", () => {
     expect(errors.mock.calls.map((args) => args.join(" ")).join("\n")).not.toMatch(/Cannot update a component.*while rendering a different component/);
   });
 
-  it("shows an initial error and recovers through the existing retry button", async () => {
+  it.each(["admin", "public"] as const)("shows an initial error and recovers through the existing retry button on %s", async (surface) => {
     read.mockRejectedValue(new Error("Synthetic failed read"));
-    await renderReader();
+    await renderReader({ surface });
     await settle();
     expect(container.textContent).toContain("内容加载失败，请重试。");
     const button = container.querySelector("button")!;

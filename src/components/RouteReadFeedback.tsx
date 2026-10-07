@@ -46,8 +46,8 @@ export default function RouteReadFeedback({ surface }: { surface: "public" | "ad
   if (surface === "public" && document.documentElement.dataset.publicBoot) return null;
   const retry = () => void client.refetchQueries({ predicate: (query) => active(query) && query.state.fetchStatus !== "fetching" });
   return <aside data-interaction-feedback={surface} role="status" aria-live="polite"
-    className="fixed bottom-5 left-1/2 z-[125] flex max-w-[calc(100vw-2rem)] -translate-x-1/2 items-center gap-3 rounded-lg border border-border bg-background px-4 py-3 text-sm text-foreground shadow-lg">
+    className={`${surface === "public" ? "bottom-[calc(82px+env(safe-area-inset-bottom))] md:bottom-5" : "bottom-5"} pointer-events-none fixed left-1/2 z-[125] flex max-w-[calc(100vw-2rem)] -translate-x-1/2 items-center gap-3 rounded-lg border border-border bg-background px-4 py-3 text-sm text-foreground shadow-lg`}>
     <span>{!online ? text.offline : initialFailure ? text.loadingFailed : failedRefresh ? text.refreshFailed : slow ? text.slow : text.refreshing}</span>
-    {(slow || failedRefresh) && online && <button data-ui="button" type="button" className="shrink-0 underline" onClick={retry} disabled={pending}>{text.retry}</button>}
+    {(slow || failedRefresh) && online && <button data-ui="button" type="button" className="pointer-events-auto shrink-0 underline" onClick={retry} disabled={pending}>{text.retry}</button>}
   </aside>;
 }
