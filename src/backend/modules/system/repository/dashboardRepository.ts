@@ -1,5 +1,6 @@
 import { withReadSignal } from "@/lib/readRequest";
 import { requireSupabase } from "@/lib/supabase";
+import { FORMAL_LEAD_SOURCE_FILTER } from "@/lib/leadTest";
 
 const COUNT_ONLY_SELECT = "id";
 
@@ -40,23 +41,23 @@ export async function fetchAdminDashboardStatsData(signal?: AbortSignal): Promis
     leads,
     quotes,
   ] = await withReadSignal(Promise.all([
-    supabase.from("leads").select(COUNT_ONLY_SELECT, { count: "exact", head: true }).eq("status", "new"),
-    supabase.from("quote_requests").select(COUNT_ONLY_SELECT, { count: "exact", head: true }).eq("status", "pending"),
-    supabase.from("leads").select(COUNT_ONLY_SELECT, { count: "exact", head: true }).eq("status", "new").lt("created_at", since24h),
-    supabase.from("quote_requests").select(COUNT_ONLY_SELECT, { count: "exact", head: true }).in("status", ["pending", "contacted"]).lt("created_at", since24h),
+    supabase.from("leads").select(COUNT_ONLY_SELECT, { count: "exact", head: true }).or(FORMAL_LEAD_SOURCE_FILTER).eq("status", "new"),
+    supabase.from("quote_requests").select(COUNT_ONLY_SELECT, { count: "exact", head: true }).or(FORMAL_LEAD_SOURCE_FILTER).eq("status", "pending"),
+    supabase.from("leads").select(COUNT_ONLY_SELECT, { count: "exact", head: true }).or(FORMAL_LEAD_SOURCE_FILTER).eq("status", "new").lt("created_at", since24h),
+    supabase.from("quote_requests").select(COUNT_ONLY_SELECT, { count: "exact", head: true }).or(FORMAL_LEAD_SOURCE_FILTER).in("status", ["pending", "contacted"]).lt("created_at", since24h),
     supabase.from("translation_jobs").select(COUNT_ONLY_SELECT, { count: "exact", head: true }).eq("status", "failed"),
     supabase.from("projects").select(COUNT_ONLY_SELECT, { count: "exact", head: true }).eq("status", "published"),
     supabase.from("services").select(COUNT_ONLY_SELECT, { count: "exact", head: true }).eq("status", "published"),
     supabase.from("blog_posts").select(COUNT_ONLY_SELECT, { count: "exact", head: true }).eq("status", "published"),
     supabase.from("services").select(COUNT_ONLY_SELECT, { count: "exact", head: true }).or("seo_title_zh.is.null,seo_description_zh.is.null"),
-    supabase.from("leads").select(COUNT_ONLY_SELECT, { count: "exact", head: true }).gte("created_at", todayIso),
-    supabase.from("quote_requests").select(COUNT_ONLY_SELECT, { count: "exact", head: true }).gte("created_at", monthIso),
-    supabase.from("leads").select(COUNT_ONLY_SELECT, { count: "exact", head: true }).gte("created_at", monthIso),
-    supabase.from("leads").select(COUNT_ONLY_SELECT, { count: "exact", head: true }).not("next_follow_up_at", "is", null).lte("next_follow_up_at", now.toISOString()),
-    supabase.from("quote_requests").select(COUNT_ONLY_SELECT, { count: "exact", head: true }).not("next_follow_up_at", "is", null).lte("next_follow_up_at", now.toISOString()),
-    supabase.from("quote_requests").select(COUNT_ONLY_SELECT, { count: "exact", head: true }).in("status", ["pending", "contacted", "site_visit_scheduled"]),
-    supabase.from("leads").select("id,name,phone,status,created_at,source_path,next_follow_up_at").order("created_at", { ascending: false }).limit(10),
-    supabase.from("quote_requests").select("id,customer_name,customer_phone,status,created_at,project_type,source_path,next_follow_up_at").order("created_at", { ascending: false }).limit(10),
+    supabase.from("leads").select(COUNT_ONLY_SELECT, { count: "exact", head: true }).or(FORMAL_LEAD_SOURCE_FILTER).gte("created_at", todayIso),
+    supabase.from("quote_requests").select(COUNT_ONLY_SELECT, { count: "exact", head: true }).or(FORMAL_LEAD_SOURCE_FILTER).gte("created_at", monthIso),
+    supabase.from("leads").select(COUNT_ONLY_SELECT, { count: "exact", head: true }).or(FORMAL_LEAD_SOURCE_FILTER).gte("created_at", monthIso),
+    supabase.from("leads").select(COUNT_ONLY_SELECT, { count: "exact", head: true }).or(FORMAL_LEAD_SOURCE_FILTER).not("next_follow_up_at", "is", null).lte("next_follow_up_at", now.toISOString()),
+    supabase.from("quote_requests").select(COUNT_ONLY_SELECT, { count: "exact", head: true }).or(FORMAL_LEAD_SOURCE_FILTER).not("next_follow_up_at", "is", null).lte("next_follow_up_at", now.toISOString()),
+    supabase.from("quote_requests").select(COUNT_ONLY_SELECT, { count: "exact", head: true }).or(FORMAL_LEAD_SOURCE_FILTER).in("status", ["pending", "contacted", "site_visit_scheduled"]),
+    supabase.from("leads").select("id,name,phone,status,created_at,source_path,next_follow_up_at").or(FORMAL_LEAD_SOURCE_FILTER).order("created_at", { ascending: false }).limit(10),
+    supabase.from("quote_requests").select("id,customer_name,customer_phone,status,created_at,project_type,source_path,next_follow_up_at").or(FORMAL_LEAD_SOURCE_FILTER).order("created_at", { ascending: false }).limit(10),
   ]), signal);
 
   return {

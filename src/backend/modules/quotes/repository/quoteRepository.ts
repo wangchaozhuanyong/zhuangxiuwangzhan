@@ -1,4 +1,5 @@
 import { withReadSignal } from "@/lib/readRequest";
+import { FORMAL_LEAD_SOURCE_FILTER } from "@/lib/leadTest";
 import { requireSupabase } from "@/lib/supabase";
 import { adminDayStartIso, adminSince24hIso, type AdminWorkflowFilter } from "@/lib/adminLeadWorkflow";
 import type { Database } from "@/lib/database.types";
@@ -82,6 +83,7 @@ export async function fetchAdminQuoteReportRows(startIso?: string | null, signal
   let query = supabase
     .from("quote_requests")
     .select("id,customer_name,status,source_path,project_type,location,quoted_amount,created_at")
+    .or(FORMAL_LEAD_SOURCE_FILTER)
     .order("created_at", { ascending: false })
     .limit(1000);
 

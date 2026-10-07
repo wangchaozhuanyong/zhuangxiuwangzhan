@@ -6,6 +6,17 @@ afterEach(() => {
 });
 
 describe("browser website visit recorder", () => {
+  it.each(["fc_paid_20261008_T01", "unknown"])("does not count marked TEST page %s as a formal website visit", async (marker) => {
+    Object.defineProperty(window, "location", {
+      configurable: true,
+      value: new URL(`https://flashcast.com.my/zh/quote?fc_test=${marker}`),
+    });
+    const fetchMock = vi.fn();
+    vi.stubGlobal("fetch", fetchMock);
+    const { recordWebsiteVisit } = await import("./websiteVisits");
+    await recordWebsiteVisit("/zh/quote");
+    expect(fetchMock).not.toHaveBeenCalled();
+  });
   it("sends only event id and public path without query data", async () => {
     Object.defineProperty(window, "location", {
       configurable: true,

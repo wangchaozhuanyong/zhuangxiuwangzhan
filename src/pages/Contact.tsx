@@ -97,8 +97,9 @@ const Contact = () => {
   const handleSubmit = protectSubmission("submit", async (e: FormEvent) => {
     e.preventDefault();
     if (status === "submitting") return;
+    const submittedSourcePath = `${window.location.pathname}${window.location.search}`;
     if (!validate()) {
-      trackContactFormSubmit("validation_error");
+      trackContactFormSubmit("validation_error", {}, submittedSourcePath);
       return;
     }
     setStatus("submitting");
@@ -110,14 +111,14 @@ const Contact = () => {
         projectType: form.projectType,
         location: form.location,
         message: form.message,
-        sourcePath: `${window.location.pathname}${window.location.search}`,
+        sourcePath: submittedSourcePath,
         website: honeypot,
         startedAt: formGuard.startedAt,
       });
       trackContactFormSubmit("success", {
         project_type: form.projectType,
         location: form.location,
-      });
+      }, submittedSourcePath);
       lastSavedForm.current = form;
       setStatus(JSON.stringify(currentForm.current) === JSON.stringify(form) ? "success" : "idle");
     } catch (error) {
@@ -125,7 +126,7 @@ const Contact = () => {
       trackContactFormSubmit("error", {
         project_type: form.projectType,
         location: form.location,
-      });
+      }, submittedSourcePath);
       setStatus("error");
     }
   });

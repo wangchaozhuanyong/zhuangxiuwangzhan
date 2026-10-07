@@ -110,6 +110,22 @@ describe("analytics defaults", () => {
 });
 
 describe("lead analytics events", () => {
+  it("does not count TEST responses after the URL changed while the request was pending", async () => {
+    const { analytics, gtag } = await loadAnalytics("/zh/quote");
+    analytics.trackQuoteFormSubmit("success", {}, "/zh/quote?fc_test=fc_paid_20261008_T01");
+    analytics.trackContactFormSubmit("success", {}, "/zh/contact?fc_test=fc_paid_20261008_T02");
+    expect(gtag).not.toHaveBeenCalled();
+  });
+  it.each(["/zh/quote?fc_test=fc_paid_20261008_T01", "/en/contact?fc_test=fc_paid_20261008_T02", "/zh/quote?fc_test=unknown"])(
+    "does not load tags or send events/conversions on internal TEST page %s", async (path) => {
+      const { analytics, gtag } = await loadAnalytics(path);
+      analytics.trackPageView({ path: path.split("?")[0], language: "zh" });
+      analytics.trackQuoteFormSubmit("success");
+      analytics.trackContactFormSubmit("success");
+      expect(gtag).not.toHaveBeenCalled();
+      expect(document.getElementById("flashcast-google-tag")).toBeNull();
+    },
+  );
   it("tracks successful quote submissions as a distinct GA4 lead event", async () => {
     const { analytics, gtag } = await loadAnalytics("/zh/quote");
 

@@ -1,5 +1,6 @@
 import type { Language } from "@/i18n/routes";
 import { translateProjectType } from "@/i18n/displayLabels";
+import { isStoredLeadTest } from "@/lib/leadTest";
 
 export type AdminLeadReportPeriod = "30d" | "90d" | "all";
 
@@ -233,8 +234,8 @@ export const buildAdminLeadReport = ({
   language?: Language;
   now?: Date;
 }): AdminLeadReport => {
-  const filteredLeads = leads.filter((lead) => inReportPeriod(lead.created_at, period, now));
-  const filteredQuotes = quotes.filter((quote) => inReportPeriod(quote.created_at, period, now));
+  const filteredLeads = leads.filter((lead) => !isStoredLeadTest(lead.source_path) && inReportPeriod(lead.created_at, period, now));
+  const filteredQuotes = quotes.filter((quote) => !isStoredLeadTest(quote.source_path) && inReportPeriod(quote.created_at, period, now));
   const sourceMap = new Map<string, LeadSourceSummary>();
   const projectTypeMap = new Map<string, LeadProjectTypeSummary>();
 

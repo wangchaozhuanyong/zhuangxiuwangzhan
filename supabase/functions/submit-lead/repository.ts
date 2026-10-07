@@ -1,5 +1,12 @@
 import type { ContactBody, QuoteBody, SubmitLeadClient } from "./types.ts";
 
+export async function findSubmittedTest(client: SubmitLeadClient, type: "contact" | "quote", id: string) {
+  const { data, error } = await client.from(type === "contact" ? "leads" : "quote_requests")
+    .select("id,source_path").eq("id", id).maybeSingle();
+  if (error) throw error;
+  return data as { id: string; source_path: string | null } | null;
+}
+
 const getServiceRoleKey = () =>
   Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") || Deno.env.get("SERVICE_ROLE_KEY");
 

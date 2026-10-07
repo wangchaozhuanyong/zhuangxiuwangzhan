@@ -3,10 +3,13 @@ import {
   countRecentAttemptsByPhone,
   createContactLead,
   createQuoteRequest,
+  findSubmittedTest,
   notifySubmittedLead,
   recordSubmissionAttempt,
 } from "./repository.ts";
 import type { SubmitBody, SubmitLeadClient, SubmitLeadResult } from "./types.ts";
+import { requireAdminAccess, requireSuperAdminAccess } from "../_shared/admin-auth.ts";
+import { readLeadTest } from "../_shared/lead-test-contract.ts";
 
 const MIN_SUBMIT_MS = 3000;
 const MAX_PER_IP_HOUR = 8;
@@ -63,7 +66,7 @@ const errorResult = (error: string, status = 400): SubmitLeadResult => ({ status
 const saveFailedError = "Submission could not be saved. Please try again later.";
 
 const waitForNotificationAttempt = async (attempt: Promise<unknown>) => {
-  let timeoutId = 0;
+  let timeoutId: ReturnType<typeof setTimeout> | undefined;
 
   const result = await Promise.race([
     attempt.then(() => "ok" as const).catch(() => "error" as const),
@@ -93,6 +96,51 @@ export async function submitLead(req: Request, body: SubmitBody, client: SubmitL
     return errorResult("Unknown form type");
   }
 
+  let test: ReturnType<typeof readLeadTest>["test"] = null;
+  const rawSourcePath = String(body.sourcePath ?? "");
+  // Reject overlong test markers before truncation, so they cannot become ordinary submissions.
+  if (rawSourcePath.length > 300 && /fc_test|__internal_test__/.test(rawSourcePath)) {
+    return errorResult("Invalid test submission");
+  }
+  try {
+    const classified = readLeadTest(rawSourcePath || "/", body.type);
+    if (!classified.valid) return errorResult("Invalid test submission");
+    test = classified.test;
+  } catch {
+    return errorResult("Invalid form data");
+  }
+  if (!test && /^\[TEST\]/i.test(clean(body.name, 120))) return errorResult("Invalid test submission");
+  if (test) {
+    // No cron/service-role bypass: reuse existing active administrator + AAL2 + super-admin checks.
+    const authClient = client as unknown as Parameters<typeof requireAdminAccess>[1];
+    const access = requireSuperAdminAccess(await requireAdminAccess(req, authClient));
+    if (!access.ok) return errorResult("Test submission requires an authorized administrator", access.status);
+    const notes = body.type === "contact" ? body.message : body.details;
+    if (!/^\[TEST\]/.test(clean(body.name, 120)) || !clean(notes, 4000).includes("非客户咨询") ||
+      clean(body.phone, 40).replace(/[+\s-]/g, "") !== "601128853888") {
+      return errorResult("Invalid test submission");
+    }
+    try {
+      const existing = await findSubmittedTest(client, body.type, test.id);
+      if (existing) return existing.source_path === test.sourcePath
+        ? { body: { ok: true, id: existing.id } }
+        : errorResult(saveFailedError, 500);
+    } catch {
+      return errorResult(saveFailedError, 500);
+    }
+  }
+
+  const sourcePath = test?.sourcePath ?? clean(body.sourcePath, 300);
+  const id = test?.id ?? crypto.randomUUID();
+  const recoverConcurrentTest = async (error: unknown): Promise<SubmitLeadResult | null> => {
+    if (!test || !error || typeof error !== "object" || !("code" in error) || error.code !== "23505") return null;
+    try {
+      const existing = await findSubmittedTest(client, body.type, id);
+      if (existing?.source_path === test.sourcePath) return { body: { ok: true, id } };
+    } catch { /* A failed verification must not acknowledge an unproven save. */ }
+    return null;
+  };
+
   const ipHash = await hashText(getClientIp(req));
   const phone = clean(body.phone, 40);
   if (!phoneOk(phone)) return errorResult("Invalid phone number");
@@ -108,7 +156,6 @@ export async function submitLead(req: Request, body: SubmitBody, client: SubmitL
     const message = clean(body.message, 4000);
     if (!name || message.length < 10) return errorResult("Invalid form data");
 
-    const id = crypto.randomUUID();
     try {
       await createContactLead(client, {
         id,
@@ -118,10 +165,10 @@ export async function submitLead(req: Request, body: SubmitBody, client: SubmitL
         projectType: clean(body.projectType, 120),
         location: clean(body.location, 200),
         message,
-        sourcePath: clean(body.sourcePath, 300),
+        sourcePath,
       });
-    } catch {
-      return errorResult(saveFailedError, 500);
+    } catch (error) {
+      return await recoverConcurrentTest(error) ?? errorResult(saveFailedError, 500);
     }
 
     await waitForNotificationAttempt(notifySubmittedLead(client, "contact", id));
@@ -135,7 +182,6 @@ export async function submitLead(req: Request, body: SubmitBody, client: SubmitL
     const location = clean(body.location, 200);
     if (!name || !projectType || !location) return errorResult("Invalid form data");
 
-    const id = crypto.randomUUID();
     try {
       await createQuoteRequest(client, {
         id,
@@ -147,10 +193,10 @@ export async function submitLead(req: Request, body: SubmitBody, client: SubmitL
         propertySize: clean(body.propertySize, 80),
         budget: clean(body.budget, 80),
         details: clean(body.details, 4000),
-        sourcePath: clean(body.sourcePath, 300),
+        sourcePath,
       });
-    } catch {
-      return errorResult(saveFailedError, 500);
+    } catch (error) {
+      return await recoverConcurrentTest(error) ?? errorResult(saveFailedError, 500);
     }
 
     await waitForNotificationAttempt(notifySubmittedLead(client, "quote", id));

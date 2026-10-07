@@ -1,3 +1,5 @@
+import { isLeadTestPage } from "@/lib/leadTest";
+
 type AnalyticsValue = string | number | boolean | null | undefined;
 type AnalyticsParams = Record<string, AnalyticsValue>;
 
@@ -62,6 +64,7 @@ const canUseBrowserAnalytics = () =>
   typeof document !== "undefined" &&
   isAnalyticsEnabled &&
   !window.location.pathname.startsWith("/admin") &&
+  !isLeadTestPage(`${window.location.pathname}${window.location.search}`) &&
   (import.meta.env.MODE === "test" || isProductionAnalyticsHost(window.location.hostname));
 
 const sanitizeParams = (params: AnalyticsParams) =>
@@ -379,7 +382,8 @@ export const trackGoogleAdsConversion = (conversionLabel: string, params: Analyt
   );
 };
 
-export const trackQuoteFormSubmit = (status: "success" | "error" | "validation_error", params: AnalyticsParams = {}) => {
+export const trackQuoteFormSubmit = (status: "success" | "error" | "validation_error", params: AnalyticsParams = {}, submittedSourcePath?: string) => {
+  if (submittedSourcePath && isLeadTestPage(submittedSourcePath)) return;
   trackEvent("quote_form_submit", {
     form_status: status,
     page_path: currentPagePath(),
@@ -395,7 +399,8 @@ export const trackQuoteFormSubmit = (status: "success" | "error" | "validation_e
   }
 };
 
-export const trackContactFormSubmit = (status: "success" | "error" | "validation_error", params: AnalyticsParams = {}) => {
+export const trackContactFormSubmit = (status: "success" | "error" | "validation_error", params: AnalyticsParams = {}, submittedSourcePath?: string) => {
+  if (submittedSourcePath && isLeadTestPage(submittedSourcePath)) return;
   trackEvent("contact_form_submit", {
     form_status: status,
     page_path: currentPagePath(),
