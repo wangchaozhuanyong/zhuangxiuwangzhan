@@ -51,6 +51,7 @@ export type PublishedProjectSummary = {
 
 export type PublishedServiceSummary = {
   id: string;
+  status?: string;
   slug: string;
   title: string;
   summary: string;
@@ -328,6 +329,7 @@ export const getPublishedServices = async (language: "en" | "zh" = "en", signal?
 
 export const mapPublishedService = (item: UnknownRecord, language: Language): PublishedServiceSummary & UnknownRecord => ({
     id: readText(item, "id"),
+    status: readText(item, "status"),
     title: pickLocalizedText(item, "title", language),
     slug: readText(item, "slug"),
     summary: pickLocalizedText(item, "excerpt", language),
