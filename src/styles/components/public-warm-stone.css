@@ -94,12 +94,10 @@ html[data-public-theme] #root :is(.scheme-a-footer, .scheme-a-footer-prelude) { 
 html[data-public-theme] #root :is(.scheme-a-footer__grid, .scheme-a-footer__studio) { background: transparent; border-color: var(--public-border) !important; box-shadow: none; }
 html[data-public-theme] #root :is(.scheme-a-footer__studio strong, .scheme-a-footer__studio p, .scheme-a-footer__directory section > p, .scheme-a-footer__areas > p) { color: var(--public-text-primary); }
 html[data-public-theme] #root :is(.scheme-a-footer__directory a, .scheme-a-footer__areas a, .scheme-a-footer__legal, .scheme-a-footer__area-summary) { color: var(--public-text-secondary); }
-html[data-public-theme] #root .scheme-a-footer__panorama::after {
-  background: linear-gradient(90deg,
-    color-mix(in srgb, var(--public-text-primary) 80%, transparent),
-    color-mix(in srgb, var(--public-text-primary) 72%, transparent));
-}
-html[data-public-theme] #root .scheme-a-footer__invitation :is(h2, span) { color: var(--public-surface-card); text-shadow: none; }
+html[data-public-theme] #root .scheme-a-footer__panorama::after { background: none; }
+html[data-public-theme] #root .scheme-a-footer__invitation-copy { background: color-mix(in srgb, var(--public-surface-card) 64%, transparent); }
+html[data-public-theme] #root .scheme-a-footer__invitation h2,
+html[data-public-theme] #root .scheme-a-footer__invitation-copy > span { color: var(--public-text-primary); text-shadow: none; }
 html[data-public-theme] #root .scheme-a-footer__kicker { background: hsl(var(--secondary)); border-color: hsl(var(--input)) !important; box-shadow: none; }
 html[data-public-theme] #root .scheme-a-footer__kicker span { color: var(--public-accent); background: none; -webkit-text-fill-color: var(--public-accent) !important; }
 html[data-public-theme] #root :is([data-ui="input"], [data-ui="select"], [data-ui="textarea"]) { color: var(--public-text-primary); background: var(--public-surface-card); border-color: hsl(var(--input)) !important; box-shadow: none; }
