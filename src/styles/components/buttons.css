@@ -230,11 +230,11 @@
   }
 
   @media (max-width: 767px) {
-    /* Share the dock's reserved viewport region instead of covering body copy. */
-    .scheme-a-public-shell { --public-floating-bottom: 0px; --public-floating-height: 68px; }
+    /* Float above the full-width mobile dock with a clear viewport edge gap. */
+    .scheme-a-public-shell { --public-floating-bottom: calc(68px + 1rem); --public-floating-height: 68px; }
     .fc-furniture-floating {
       width: 68px;
-      right: 0;
+      right: 1rem;
       grid-template-columns: 1fr;
       grid-template-rows: 24px 18px;
       justify-items: center;
@@ -259,9 +259,6 @@
     .scheme-a-public-shell:has(.scheme-a-mobile-switcher[data-mode="hidden"]) .fc-furniture-floating {
       visibility: hidden;
       pointer-events: none;
-    }
-    @media (max-width: 359px) {
-      .fc-furniture-floating { width: 56px; }
     }
   }
 

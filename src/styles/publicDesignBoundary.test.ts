@@ -133,7 +133,7 @@ describe("public design boundary", () => {
     const globalStyles = readFileSync(resolve(process.cwd(), "src/styles/components.css"), "utf8");
     const buttons = readFileSync(resolve(componentDirectory, "buttons.css"), "utf8");
     expect(globalStyles).toContain('@import "./components/buttons.css"');
-    expect(buttons).toContain("--public-floating-bottom: 0px");
+    expect(buttons).toContain("--public-floating-bottom: calc(68px + 1rem)");
     expect(buttons).toContain("bottom: calc(var(--public-floating-bottom) + env(safe-area-inset-bottom))");
   });
 
