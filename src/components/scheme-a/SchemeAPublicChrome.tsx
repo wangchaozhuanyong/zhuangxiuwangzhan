@@ -319,20 +319,39 @@ export const SchemeANavbar = () => {
     window.clearTimeout(closeTimer.current);
     setClosing(true);
     const finish = () => {
-      setMenuOpen(false);
-      setClosing(false);
-      if (!returnFocus.current) {
-        if (!document.documentElement.dataset.publicRouteLoading) document.getElementById("main-content")?.focus({ preventScroll: true });
-        return;
-      }
       const trigger = [desktopTriggerRef.current, compactTriggerRef.current]
         .find((candidate) => candidate && candidate.getClientRects().length > 0);
-      trigger?.focus({ preventScroll: true });
+      // The destination is still inert while the menu is open. Move focus to
+      // available chrome before hiding the dialog, then hand it to ready content.
+      if (returnFocus.current || menuRef.current?.contains(document.activeElement)) trigger?.focus({ preventScroll: true });
+      setMenuOpen(false);
+      setClosing(false);
     };
     closeTimer.current = window.setTimeout(finish, prefersReducedMotion() ? 0 : PUBLIC_MOTION.menuClose);
   }, [setMenuOpen]);
 
   useEffect(() => () => window.clearTimeout(closeTimer.current), []);
+
+  useEffect(() => {
+    if (menuOpen || returnFocus.current) return;
+    const focusMain = () => {
+      if (returnFocus.current) return;
+      const main = document.getElementById("main-content");
+      if (!main || document.documentElement.dataset.publicRouteLoading || main.closest('[inert], [aria-hidden="true"]')) return;
+      const active = document.activeElement;
+      // Preserve a newer focus choice made while the destination was loading.
+      if (active === desktopTriggerRef.current || active === compactTriggerRef.current || active === document.body) {
+        main.focus({ preventScroll: true });
+      }
+      returnFocus.current = true;
+    };
+    const frame = window.requestAnimationFrame(focusMain);
+    window.addEventListener("public-route-ready", focusMain);
+    return () => {
+      window.cancelAnimationFrame(frame);
+      window.removeEventListener("public-route-ready", focusMain);
+    };
+  }, [menuOpen]);
 
   const toggleDirectory = useCallback(() => {
     if (menuOpen) {

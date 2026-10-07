@@ -73,7 +73,7 @@ export default function FurnitureShowcase() {
         title={categoryCopy?.h1 || subcategoryLabel || (categoryKey ? categoryLabel : copy.title)}
         description={categoryCopy?.intro || copy.intro}
       />
-      <div className="fc-furniture-body">
+      <div className="scheme-a-frame fc-furniture-body">
         <p className="fc-furniture-detail__note">{categoryCopy?.intro || copy.intro}</p>
         <nav className="fc-furniture-primary" aria-label={copy.title}>
           {furnitureCatalog.taxonomy.map((item) => (

@@ -211,6 +211,57 @@ test.describe("Scheme A approved-design fidelity", () => {
     await expect(trigger).toBeFocused();
   });
 
+  for (const language of ["zh", "en"]) for (const width of [390, 1440]) {
+    test(`directory focus leaves the hidden menu during slow and cached navigation at ${width}px (${language})`, async ({ page }) => {
+      await page.setViewportSize({ width, height: 900 });
+      let releaseAbout = () => {};
+      let aboutRequested = false;
+      const aboutReady = new Promise<void>((resolve) => { releaseAbout = resolve; });
+      await page.route(/\/(?:src\/pages\/About\.tsx|assets\/About-[^/]+\.js)(?:\?.*)?$/, async (route) => {
+        aboutRequested = true;
+        await aboutReady;
+        await route.continue();
+      });
+      const ready = () => expect(page.locator(".public-route-content")).toHaveAttribute("data-route-visual-state", "ready", { timeout: 20000 });
+      const trigger = page.locator(width < 1180 ? ".scheme-a-chrome__menu-trigger--compact" : ".scheme-a-chrome__nav-more");
+      const dialog = page.locator("#scheme-a-directory");
+      const navigate = async (path: string) => {
+        await trigger.click();
+        const group = dialog.locator(".scheme-a-directory__groups > section").filter({ has: page.locator(`a[href="${path}"]`) });
+        if (width < 768 && await group.getAttribute("data-open") !== "true") await group.locator("button").click();
+        await group.locator(`a[href="${path}"]`).click();
+      };
+      try {
+        await page.goto(`/${language}/services`, { waitUntil: "domcontentloaded" });
+        await ready();
+        await navigate(`/${language}/about`);
+        await expect.poll(() => aboutRequested).toBe(true);
+        await expect(page.locator("html")).toHaveAttribute("data-public-route-loading", "navigation");
+        await expect(dialog).toHaveAttribute("aria-hidden", "true");
+        await expect(trigger).toBeFocused();
+
+        releaseAbout();
+        await ready();
+        await expect(page.locator("#main-content")).toBeFocused();
+
+        await navigate(`/${language}/services`);
+        await expect(page).toHaveURL(new RegExp(`/${language}/services$`));
+        await ready();
+        await expect(dialog).toHaveAttribute("aria-hidden", "true");
+        await expect(page.locator("#main-content")).toBeFocused();
+
+        await trigger.click();
+        await expect(dialog.locator(".scheme-a-directory__close")).toBeFocused();
+        await page.keyboard.press("Escape");
+        await expect(dialog).toHaveAttribute("aria-hidden", "true");
+        await expect(trigger).toBeFocused();
+      } finally {
+        releaseAbout();
+        await page.unrouteAll({ behavior: "wait" });
+      }
+    });
+  }
+
   test("directory dropdown stays below the header and keeps every route reachable across viewports", async ({ page }) => {
     for (const language of ['zh', 'en']) {
       for (const width of [360, 390, 768, 1024, 1440]) {
