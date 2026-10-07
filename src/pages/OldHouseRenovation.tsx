@@ -21,6 +21,8 @@ import { pageHeroImages } from "@/lib/pageHeroImages";
 import { buildQuotePath, quoteProjectTypeFromServiceSlug } from "@/lib/quoteContext";
 import { oldHouseRenovationPageText } from "@/i18n/oldHouseRenovationPageText";
 import { getServiceContextLinks } from "@/i18n/serviceContextLinks";
+import { usePublishedServiceBySlug } from "@/hooks/usePublishedContent";
+import { mapPublicServiceFaqs } from "@/lib/publicServiceFaqs";
 
 const oldHouseComparisonMedia = {
   "terrace-living": {
@@ -42,6 +44,11 @@ const OldHouseRenovation = () => {
   const { language } = useLanguage();
   const settings = useSiteSettings();
   const t = oldHouseRenovationPageText[language];
+  const { data: cmsService, isLoading } = usePublishedServiceBySlug("old-house", language);
+  // The existing query also returns local service fallbacks (without CMS status).
+  // Keep this page's reviewed fallback until a real published record is available.
+  const hasPublishedRecord = cmsService && "status" in cmsService && cmsService.status === "published";
+  const faqs = mapPublicServiceFaqs(hasPublishedRecord ? cmsService.faqs : t.faqs);
   const contextLinks = getServiceContextLinks("old-house", language);
   const quotePath = buildQuotePath({
     source: "service",
@@ -54,7 +61,7 @@ const OldHouseRenovation = () => {
       <PageMeta title={t.metaTitle} description={t.metaDescription} keywords={t.metaKeywords} canonicalPath="/services/old-house" />
       <JsonLdBreadcrumb items={[{ name: t.breadcrumbHome, url: "/" }, { name: t.breadcrumbServices, url: "/services" }, { name: t.breadcrumbCurrent, url: "/services/old-house" }]} />
       <JsonLdService name={t.title} description={t.description} />
-      <JsonLdFAQ faqs={t.faqs.map((item) => ({ question: item.q, answer: item.a }))} />
+      {faqs.length ? <JsonLdFAQ faqs={faqs} /> : null}
 
       <SchemeARouteHero kind="detail" image={pageHeroImages.oldHouse.desktop} imageSourceWidth={pageHeroImages.oldHouse.desktopWidth} tabletImage={pageHeroImages.oldHouse.tablet} tabletImageSourceWidth={pageHeroImages.oldHouse.tabletWidth} mobileImage={pageHeroImages.oldHouse.mobile} mobileImageSourceWidth={pageHeroImages.oldHouse.mobileWidth} imagePosition={pageHeroImages.oldHouse.imagePosition} imageAlt={t.heroAlt} label={[t.label, mediaLabels[language].renderingConcept].join(" · ")} title={t.title} description={t.description} actions={<Link to={quotePath} onClick={() => trackCtaClick("quote", "old_house_hero", { destination: quotePath })}>{t.assessment}</Link>} />
 
@@ -160,8 +167,10 @@ const OldHouseRenovation = () => {
         </SchemeASection>
       ))}
 
-      <SchemeASection title={t.faqTitle} description={t.faqDescription}>
-        <SchemeAFaqList items={t.faqs.map((item) => ({ question: item.q, answer: item.a }))} />
+      <SchemeASection title={faqs.length ? t.faqTitle : undefined} description={faqs.length ? t.faqDescription : undefined}>
+        <div aria-busy={isLoading || undefined}>
+          {faqs.length ? <SchemeAFaqList items={faqs} /> : null}
+        </div>
         <div className="fc-route-action-panel">
           <h2>{t.ctaTitle}</h2>
           <p>{t.ctaDescription}</p>

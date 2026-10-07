@@ -197,7 +197,9 @@ describe("topic-cluster Blog publish records", () => {
       "org020-condo-current-sources-r1-v7",
       "org020-dbkl-current-sources-r1-v7",
     ];
-    const publishTargets = [...lockedTargets, "kl-location-intent-r1-v2", ...mediaTargets, ...org020Targets, ...nativeBodyTargets];
+    const publisherThreeTargets = ["v17-owner-publisher-native-preparation-v2-20261007",
+      "v18-owner-publisher-native-preparation-v2-20261007", "v20-owner-publisher-native-preparation-v2-20261007"];
+    const publishTargets = [...lockedTargets, "kl-location-intent-r1-v2", ...mediaTargets, ...org020Targets, ...nativeBodyTargets, ...publisherThreeTargets];
     const cases = [...workflow.matchAll(/case "\$PUBLISH_TARGET" in\s*([^)]*)\)/g)]
       .map((match) => match[1].trim().split("|"));
     expect(cases).toHaveLength(2);
@@ -205,6 +207,7 @@ describe("topic-cluster Blog publish records", () => {
     expect(cases[1]).toEqual(publishTargets);
     for (const target of publishTargets) expect(workflow).toContain(`          - ${target}`);
     for (const target of mediaTargets) expect(cases[0]).not.toContain(target);
+    for (const target of publisherThreeTargets) expect(cases[0]).not.toContain(target);
     expect(workflow.indexOf("Reject unverified locked-target writes before loading production credentials"))
       .toBeLessThan(workflow.indexOf("Confirm production source and required secrets"));
     for (const reference of ["qa_receipt_id", "release_decision_id", "policy_permit_id", "policy_scope"]) {

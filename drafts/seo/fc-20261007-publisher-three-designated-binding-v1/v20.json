@@ -1,0 +1,126 @@
+{
+  "schema_version": 1,
+  "task_id": "fc-20260928-keyword-page-answer-implementation-v1",
+  "candidate_version": "v20-owner-publisher-native-preparation-v2-20261007",
+  "source_provenance": {
+    "preparation_candidate": {
+      "path": "drafts/publishing/fc-20261007-publisher-three-rollback-projection-rework-v1/three-native-preparation-v2-20261007/v20/cms-content-candidate.json",
+      "sha256": "58b554e334381fbbc37da2b10b30a25edafa3db709f2c6d5c071308f4193130b",
+      "size": 14544
+    },
+    "binding_request": {
+      "path": "drafts/publishing/fc-20261007-publisher-three-rollback-projection-rework-v1/three-native-preparation-v2-20261007/v20/product-runtime-CLI-binding-request.json",
+      "sha256": "67601c06cf375cc0f1cd8009e612bbb0a46ab7549171b7527480b5474a331536",
+      "size": 12893
+    },
+    "original_frozen_candidate": {
+      "path": "drafts/seo/fc-20260928-keyword-page-answer-implementation-v1/v20-design-semantic-delta-source-binding-20261005-v1/normalized-cms-candidate.json",
+      "sha256": "e546cbec5ba6965c58cbda1498082681e20cce98636c4abe67065ca5e29fb4c9",
+      "size": 8751
+    },
+    "before_backup": {
+      "path": "backups/fc-20261007-owner-publisher-execution-takeover-v1/three-native-preparation-v1-20261007/v20-before-backup.json",
+      "sha256": "11e376752d473e3798b84f748407b862e9bac9841ee2067a1366d53a5cd43444",
+      "size": 13433
+    },
+    "rollback_plan": {
+      "path": "drafts/publishing/fc-20261007-publisher-three-rollback-projection-rework-v1/three-native-preparation-v2-20261007/v20/rollback-plan.json",
+      "sha256": "465ee7062830e345e38d15632ab3fa9c28d061cbf5d835e5a94033b3adae9aa1",
+      "size": 1869
+    },
+    "field_source_proof": [
+      {
+        "native_storage_key": "faqs_en",
+        "language": "en",
+        "original_frozen_before": {
+          "candidate_pointer": "/localized_fields/en/before",
+          "sha256": "c740c4f160734989ffcc53dc9f806128bb650ec08186069bbcaa4e425c95cf19"
+        },
+        "original_frozen_after": {
+          "candidate_pointer": "/localized_fields/en/after",
+          "sha256": "b989b5c6cd87b1d127cfbc7ecae313e12b0c39d90516b19a86fcaa8312db7f01"
+        },
+        "original_value_hash_method": "Exact UTF8 for HTML; compact JSON preserving original object key order for original question/answer arrays",
+        "native_value_hash_method": "Exact UTF8 for HTML; recursively key-sorted compact JSON for native arrays",
+        "before_native_value_sha256": "1b3f011f5ff13669fc8a302030d180268f529b870ffd0b89ec90a8c1fc0ee373",
+        "after_native_value_sha256": "b3005ffe781872d90368b3faa2abd9a1ff12c33223e3e91a0495a59e47f1510c",
+        "before_equal_frozen": true,
+        "after_already_live": false,
+        "schema_mapping": "question->q, answer->a; preserve all existing native objects/list order"
+      },
+      {
+        "native_storage_key": "faqs_zh",
+        "language": "zh",
+        "original_frozen_before": {
+          "candidate_pointer": "/localized_fields/zh/before",
+          "sha256": "12b04d94d9a33c9ba269a9a0bc66246d36235179cd4a9c6440f27078bb3892a8"
+        },
+        "original_frozen_after": {
+          "candidate_pointer": "/localized_fields/zh/after",
+          "sha256": "1ad952719782fbc3d6ad53070065dfb92165386917d1f731077c25e7bf0dde97"
+        },
+        "original_value_hash_method": "Exact UTF8 for HTML; compact JSON preserving original object key order for original question/answer arrays",
+        "native_value_hash_method": "Exact UTF8 for HTML; recursively key-sorted compact JSON for native arrays",
+        "before_native_value_sha256": "a1f10362ad095f18a0915e25c6a69caa0819516bc82ff063bcc97188ca56b5b9",
+        "after_native_value_sha256": "2feb3f73578991b67464515da146c2502dbcc0a88c9527853568dbf03e05e651",
+        "before_equal_frozen": true,
+        "after_already_live": false,
+        "schema_mapping": "question->q, answer->a; preserve all existing native objects/list order"
+      }
+    ]
+  },
+  "desired_fields": {
+    "faqs_en": [
+      {
+        "a": "It can cover layout flow, storage, lighting direction, material selection, built-in planning, visualization and coordination with the confirmed renovation scope.",
+        "q": "What does interior design planning cover?"
+      },
+      {
+        "a": "Space size, drawing and visualization needs, material decisions, revision scope and coordination requirements all affect the quotation.",
+        "q": "What affects an interior design quotation?"
+      },
+      {
+        "a": "Yes. Clearly labeled concepts can support planning, but they are not evidence of a completed customer project.",
+        "q": "Can design or rendering concepts be used for planning?"
+      },
+      {
+        "a": "Share a floor plan or site photos, approximate area, intended use, priorities, location and preferred timing.",
+        "q": "How do I start an interior design enquiry?"
+      },
+      {
+        "a": "Start with the intended use, a floor plan or site photos, and layout and material priorities. Then discuss the design direction, renovation scope and quotation support. Specific deliverables depend on site conditions and the agreed scope.",
+        "q": "How can interior design and renovation be planned together?"
+      },
+      {
+        "a": "Before you confirm an interior-design scope, ask for a written list of the drawings or visual materials included and the spaces each item covers. Clarify what each item is intended to support, which details and revision checkpoints are included, and who will coordinate drawing questions with the site team. Record the confirmed deliverables, exclusions, responsibilities and any change process in the agreed scope. The specific drawing package and coordination depend on the project conditions and confirmed scope.",
+        "q": "What should I confirm about interior design drawing deliverables?"
+      }
+    ],
+    "faqs_zh": [
+      {
+        "a": "可沟通动线、收纳、灯光、材料、定制木作、效果图与已确认装修范围的衔接。",
+        "q": "室内设计规划包含哪些内容？"
+      },
+      {
+        "a": "空间面积、图纸与效果图需求、材料选择、修改范围和协调需求都会影响报价。",
+        "q": "哪些因素会影响室内设计报价？"
+      },
+      {
+        "a": "可以。概念图会清楚标注为规划参考，不作为真实客户完工项目证明。",
+        "q": "可以先用设计或效果图概念讨论吗？"
+      },
+      {
+        "a": "提交平面图或现场照片、大致面积、用途、优先需求、地点与计划时间。",
+        "q": "如何开始室内设计咨询？"
+      },
+      {
+        "a": "先核对空间用途、图纸或现场照片、布局与材料需求，再讨论设计方向、施工范围和报价支持；具体交付按现场条件和确认范围确定。",
+        "q": "室内设计与装修可以怎样衔接？"
+      },
+      {
+        "a": "确认室内设计范围前，可先索取书面成果清单，并确认每项对应的空间与用途；再问清图纸细化程度、修改确认节点，以及现场图纸问题由谁协调。把已确认的成果、未包含事项、责任和变更方式写入确认的服务范围。具体图纸与协调内容需按现场条件和确认范围确定。",
+        "q": "确认室内设计图纸交付前，应先问清什么？"
+      }
+    ]
+  }
+}

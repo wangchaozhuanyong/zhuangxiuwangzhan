@@ -1,0 +1,76 @@
+{
+  "schema_version": 1,
+  "task_id": "fc-20260928-keyword-page-answer-implementation-v1",
+  "candidate_version": "v18-owner-publisher-native-preparation-v2-20261007",
+  "source_provenance": {
+    "preparation_candidate": {
+      "path": "drafts/publishing/fc-20261007-publisher-three-rollback-projection-rework-v1/three-native-preparation-v2-20261007/v18/cms-content-candidate.json",
+      "sha256": "0d3dbaec1c183979e58969dfced524b104f08c92800123c0ea545b8f9f73b02e",
+      "size": 23706
+    },
+    "binding_request": {
+      "path": "drafts/publishing/fc-20261007-publisher-three-rollback-projection-rework-v1/three-native-preparation-v2-20261007/v18/product-runtime-CLI-binding-request.json",
+      "sha256": "0e718bb96f3954a3c148637b48f5b0b6adedb729e43b7f1a9c9845fdb38cd97e",
+      "size": 16468
+    },
+    "original_frozen_candidate": {
+      "path": "logs/handoffs/fc-20260928-keyword-page-answer-implementation-v1/native-bind-20261004-2000/v18-checklist/normalized-cms-candidate.json",
+      "sha256": "967ea19600f9dcc223b8d88daa3ad8849017d35b718e3a9870a41e9cd32b13eb",
+      "size": 18554
+    },
+    "before_backup": {
+      "path": "backups/fc-20261007-owner-publisher-execution-takeover-v1/three-native-preparation-v1-20261007/v18-before-backup.json",
+      "sha256": "eded0df85dd19823ca3a2b1bda4cb8a74659b48689fcdee63212492ca5583766",
+      "size": 16159
+    },
+    "rollback_plan": {
+      "path": "drafts/publishing/fc-20261007-publisher-three-rollback-projection-rework-v1/three-native-preparation-v2-20261007/v18/rollback-plan.json",
+      "sha256": "8ae40d6978a91de59e8786447e6bb9830bdd852fd95243b591ffd05d3bf2a17d",
+      "size": 1910
+    },
+    "field_source_proof": [
+      {
+        "native_storage_key": "content_en",
+        "language": "en",
+        "original_frozen_before": {
+          "candidate_pointer": "/before_html/en",
+          "sha256": "11b9629b98fbd553258d15894a82dec926b4237a5188502add035530d823a80c"
+        },
+        "original_frozen_after": {
+          "candidate_pointer": "/after_html/en",
+          "sha256": "c640964735d063d197c8447dfec0168cae6e0a3fd7121d3a97de8f498f35303b"
+        },
+        "original_value_hash_method": "Exact UTF8 for HTML; compact JSON preserving original object key order for original question/answer arrays",
+        "native_value_hash_method": "Exact UTF8 for HTML; recursively key-sorted compact JSON for native arrays",
+        "before_native_value_sha256": "11b9629b98fbd553258d15894a82dec926b4237a5188502add035530d823a80c",
+        "after_native_value_sha256": "c640964735d063d197c8447dfec0168cae6e0a3fd7121d3a97de8f498f35303b",
+        "before_equal_frozen": true,
+        "after_already_live": false,
+        "schema_mapping": "none; exact original HTML bytes"
+      },
+      {
+        "native_storage_key": "content_zh",
+        "language": "zh",
+        "original_frozen_before": {
+          "candidate_pointer": "/before_html/zh",
+          "sha256": "f0ec3e957b52d7606b3cfb28fcd498e5368436cccfb8a4e52d9005283a75454b"
+        },
+        "original_frozen_after": {
+          "candidate_pointer": "/after_html/zh",
+          "sha256": "e9fa5d193870f8244b87b8601aa4aebca81400b04ceab36697babbbaae57d9b5"
+        },
+        "original_value_hash_method": "Exact UTF8 for HTML; compact JSON preserving original object key order for original question/answer arrays",
+        "native_value_hash_method": "Exact UTF8 for HTML; recursively key-sorted compact JSON for native arrays",
+        "before_native_value_sha256": "f0ec3e957b52d7606b3cfb28fcd498e5368436cccfb8a4e52d9005283a75454b",
+        "after_native_value_sha256": "e9fa5d193870f8244b87b8601aa4aebca81400b04ceab36697babbbaae57d9b5",
+        "before_equal_frozen": true,
+        "after_already_live": false,
+        "schema_mapping": "none; exact original HTML bytes"
+      }
+    ]
+  },
+  "desired_fields": {
+    "content_en": "<p><strong>Direct answer：</strong>The best quotation is not automatically the cheapest or longest. It is the one that makes the proposed deliverable, assumptions, responsibilities and change process clear enough for both parties to use during construction.</p><p>How to use this guide: replace every point below with the property's actual dimensions, named responsibilities, approved drawings and written evidence before using it for quotation, approval or construction decisions.</p><h2>Before comparing quotations: a project checklist</h2><p>Before comparing individual quotations, organise the project in sequence: share site information and priorities; confirm site measurements and existing conditions; agree the design scope; review an itemised quotation and materials; confirm construction responsibilities and coordination; and record inspection, defect and handover arrangements. The sequence, deliverables, fees and timing depend on the actual project and agreed scope. See <a href=\"/en/process\">Our Renovation Process</a> for the full six-step overview.</p><h2>Check the project identity</h2><p>Confirm address, property type, drawing revision, quotation date and the exact scope basis. A quotation tied to an outdated layout cannot be compared reliably.</p><h2>Review quantities and specifications together</h2><p>Each line should make the work, quantity, material or performance specification and unit clear where applicable. Generic labels make substitutions and omissions difficult to detect.</p><p>For fitted cabinets or storage, request separate dimensions, board and finish direction, door and hardware specifications, delivery and installation access, and any provisional items. Use the <a href=\"/en/services/builtin\">custom built-in furniture service</a> to frame the cabinet brief, and the <a href=\"/en/services/renovation\">residential renovation service</a> for wider works. Share site photos and an itemised scope through the <a href=\"/en/quote\">free quotation form</a>; final specifications and price depend on the site and written quotation.</p><h2>Find allowances and owner-supplied items</h2><p>Identify provisional sums, prime-cost items, selections pending, owner purchases and work priced after inspection. Record how final differences will be calculated.</p><h2>Read exclusions before the total</h2><p>Check approvals, deposits, protection, access, hacking, disposal, testing, cleaning, delivery, taxes, utilities and reinstatement. Missing interfaces often create later disputes.</p><h2>Tie payments and changes to records</h2><p>State payment milestones, completion evidence, variation approval, price/time impact, defect reporting, handover documents and the contract that governs the work.</p><h2>Checklist before approval or start</h2><ul><li>Address and drawing revision</li><li>Itemised quantities and specifications</li><li>Allowances and owner-supplied items</li><li>Explicit exclusions</li><li>Payment evidence and milestones</li><li>Written variation and handover process</li></ul><h2>Frequently asked questions</h2><h3>Should I compare only the total?</h3><p>No. First normalise scope, specification, quantities, allowances and exclusions.</p><h3>What is a provisional item?</h3><p>It is an amount for work or a selection not fully defined; the adjustment method should be written.</p><h3>Are verbal additions acceptable?</h3><p>Record and approve the scope, cost and schedule effect in writing before work proceeds.</p><h2>Sources and scope boundary</h2><ul><li><a href=\"https://www.cidb.gov.my/jombinasempurna/panduan-kontraktor/tawaran-harga/\" target=\"_blank\" rel=\"noopener noreferrer\">CIDB homeowner guidance on quotations</a></li><li><a href=\"https://www.cidb.gov.my/jombinasempurna/panduan-kontraktor/kontrak-pembinaan/\" target=\"_blank\" rel=\"noopener noreferrer\">CIDB homeowner guidance on construction contracts</a></li></ul><p>Sources checked on 22 August 2026. Authority, management, consultant and manufacturer requirements can change; confirm the latest written requirements for the actual property, scope and selected product before making a final decision.</p>",
+    "content_zh": "<p><strong>直接答案：</strong>最合适的报价不一定最便宜或最长，而是能把交付结果、假设、责任和变更流程写清楚，让双方在施工期间都能使用。</p><p>使用方法：把下列各项替换为本项目的实际尺寸、明确责任人、获批图纸和书面记录，再用于报价、审批或施工决定。</p><h2>比较报价前：先核对整体项目步骤</h2><p>比较各项报价前，可先按项目整理：提供现场资料和使用重点；确认现场测量与现状；明确设计范围；复核分项报价和材料；确认施工责任与协调方式；记录验收、缺陷处理和交付安排。具体顺序、交付内容、费用与时间取决于实际项目和确认范围。完整六步说明请查看<a href=\"/zh/process\">《装修施工流程》</a>。</p><h2>核对项目身份</h2><p>确认地址、物业类型、图纸版本、报价日期和计价范围。基于旧布局的报价不能可靠比较。</p><h2>数量和规格一起看</h2><p>每一项应在适用时写清工程、数量、材料或性能规格和单位。过于笼统的名称会让替换和遗漏难以发现。</p><p>如包含定制柜或收纳柜，应将尺寸、板材与饰面方向、门板和五金规格、运输与安装条件，以及暂定项目分别列明。可参考<a href=\"/zh/services/builtin\">全屋定制与定制家具服务</a>整理柜体需求；整体工程可查看<a href=\"/zh/services/renovation\">住宅装修服务</a>。备好现场照片和分项范围后，可通过<a href=\"/zh/quote\">免费报价表</a>咨询；最终规格与价格仍以现场条件和书面报价为准。</p><h2>找出暂定和业主自购项目</h2><p>标明暂定金额、待选项目、业主采购和检查后再计价的工程，并写明最终差额如何计算。</p><h2>先读不包含项目再看总价</h2><p>核对审批、押金、保护、出入、拆除、清运、测试、清洁、运输、税费、水电和还原，接口遗漏常会造成后期争议。</p><h2>付款和变更都要有记录</h2><p>写明付款节点、完成证据、变更批准、价格和时间影响、缺陷报告、交付文件及适用合同。</p><h2>开工或签约前检查清单</h2><ul><li>地址和图纸版本</li><li>分项数量与规格</li><li>暂定及业主自购项目</li><li>明确不包含项目</li><li>付款证据和节点</li><li>书面变更与交付流程</li></ul><h2>常见问题</h2><h3>只比较总价可以吗？</h3><p>不可以，应先统一范围、规格、数量、暂定金额和不包含项目。</p><h3>什么是暂定项目？</h3><p>它是尚未完全确定的工程或选择所预留的金额，必须写明调整方式。</p><h3>口头加项可以吗？</h3><p>施工前应书面记录并批准范围、费用和工期影响。</p><h2>资料来源与适用边界</h2><ul><li><a href=\"https://www.cidb.gov.my/jombinasempurna/panduan-kontraktor/tawaran-harga/\" target=\"_blank\" rel=\"noopener noreferrer\">CIDB 业主装修报价指南</a></li><li><a href=\"https://www.cidb.gov.my/jombinasempurna/panduan-kontraktor/kontrak-pembinaan/\" target=\"_blank\" rel=\"noopener noreferrer\">CIDB 建筑合同指南</a></li></ul><p>资料核对日期：2026 年 8 月 22 日。相关部门、管理处、顾问和产品制造商的要求可能变化；正式决定前请以项目所在地、具体范围和所选产品的最新书面资料为准。</p>"
+  }
+}

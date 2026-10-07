@@ -17,6 +17,7 @@ import furnitureLabels from "../src/i18n/furnitureTaxonomyLabels.json";
 import { projectPublicMetadata } from "../src/lib/projectPublicMetadata.mjs";
 import manifest from "./seo-manifest.json";
 import { oldHouseRenovationPageText } from "../src/i18n/oldHouseRenovationPageText";
+import { mapPublicServiceFaqs } from "../src/lib/publicServiceFaqs";
 import {
   PUBLIC_LANGUAGE_COOKIE,
   readCookieValue,
@@ -2046,11 +2047,13 @@ export const onRequest: PagesFunction = async (context) => {
       () => { unpublishedBlog = true; },
     );
     const resolvedMeta = unpublishedBlog || dynamicRouteState?.hidden ? null : dynamicRouteState?.meta || staticMeta;
-    // This route renders a static page, so its FAQ schema must use the same
-    // reviewed locale source as the visible accordion, rather than a CMS row.
+    // Match the page's published FAQ projection; use its reviewed locale fallback
+    // only when the public service record is unavailable, not for an empty locale.
     const oldHouseLanguage = key === "/en/services/old-house" ? "en" : key === "/zh/services/old-house" ? "zh" : null;
     let meta = resolvedMeta && oldHouseLanguage
-      ? { ...resolvedMeta, faqs: oldHouseRenovationPageText[oldHouseLanguage].faqs.map(({ q, a }) => ({ question: q, answer: a })) }
+      ? { ...resolvedMeta, faqs: mapPublicServiceFaqs(dynamicRouteState?.kind === "service"
+          ? dynamicRouteState.row[`faqs_${oldHouseLanguage}`]
+          : oldHouseRenovationPageText[oldHouseLanguage].faqs) }
       : resolvedMeta;
 
   const appShellUrl = new URL(request.url);
@@ -2262,10 +2265,13 @@ export const onRequest: PagesFunction = async (context) => {
       }
 
       const html = await appShellResponse.text();
+      const fallbackOldHouseLanguage = key === "/en/services/old-house" ? "en" : key === "/zh/services/old-house" ? "zh" : null;
       // No current home FAQ source was bound on this exception path.
       const fallbackMeta = staticMeta && isHomePageKey(key)
         ? { ...staticMeta, faqs: [] }
-        : staticMeta;
+        : staticMeta && fallbackOldHouseLanguage
+          ? { ...staticMeta, faqs: mapPublicServiceFaqs(oldHouseRenovationPageText[fallbackOldHouseLanguage].faqs) }
+          : staticMeta;
       let transformed = fallbackMeta
         ? injectSeo(html, fallbackMeta, prefetchedSiteSettings)
         : injectNoIndexNotFound(html, prefetchedSiteSettings);
