@@ -233,8 +233,7 @@
 
     .scheme-a-mobile-switcher__panel {
       position: absolute;
-      /* The existing shop link owns the final slot in both dock modes. */
-      inset: 0 68px 0 0;
+      inset: 0;
       opacity: 0;
       visibility: hidden;
       pointer-events: none;
@@ -345,10 +344,6 @@
     }
 
     @media (max-width: 359px) {
-      .scheme-a-mobile-switcher__panel {
-        right: 56px;
-      }
-
       .scheme-a-contact-dock__item {
         flex-direction: column;
         gap: 0.18rem;
