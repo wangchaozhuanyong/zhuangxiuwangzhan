@@ -672,6 +672,18 @@ export const localResponsiveImageMetadata: Record<string, { width: number; heigh
       "1600": 1536
     }
   },
+  "/images/heroes/v20261007/furniture-showcase-wide.webp": {
+    "width": 2160,
+    "height": 720,
+    "variants": {
+      "360": 360,
+      "560": 560,
+      "720": 720,
+      "900": 900,
+      "1200": 1200,
+      "1600": 1600
+    }
+  },
   "/images/heroes/v3/hero-about-v3-desktop.webp": {
     "width": 1728,
     "height": 909,

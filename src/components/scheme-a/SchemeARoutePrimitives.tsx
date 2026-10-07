@@ -151,14 +151,14 @@ export function SchemeARouteHero({
       critical
       sourceWidth={imageSourceWidth}
       alt={imageAlt}
-      width={1600}
-      height={1100}
-      targetAspectRatio={{ width: 16, height: 11 }}
+      width={showIntro ? 1600 : 2160}
+      height={showIntro ? 1100 : 720}
+      targetAspectRatio={showIntro ? { width: 16, height: 11 } : { width: 3, height: 1 }}
       resize="cover"
       loading="eager"
       fetchPriority="high"
       revealOnLoad
-      sizes={showIntro ? "(min-width: 1536px) 836px, (min-width: 1024px) calc((100vw - 96px) * 0.58), 100vw" : "(min-width: 1536px) 789px, (min-width: 1024px) calc((100vw - 128px) * 0.56), 100vw"}
+      sizes={showIntro ? "(min-width: 1536px) 836px, (min-width: 1024px) calc((100vw - 96px) * 0.58), 100vw" : "(min-width: 1536px) 1440px, (min-width: 1024px) 94vw, 100vw"}
       candidateWidths={[560, 720, 960, 1200, 1600]}
       quality={86}
     />

@@ -66,9 +66,8 @@ export default function FurnitureShowcase() {
       <SchemeARouteHero
         kind="listing"
         showIntro={false}
-        image="/images/heroes/v20260930/furniture-showcase.webp"
-        imageSourceWidth={1536}
-        imagePosition={{ mobile: "center 55%" }}
+        image="/images/heroes/v20261007/furniture-showcase-wide.webp"
+        imageSourceWidth={2160}
         imageAlt={copy.heroImageAlt}
         label={copy.title}
         title={categoryCopy?.h1 || subcategoryLabel || (categoryKey ? categoryLabel : copy.title)}
