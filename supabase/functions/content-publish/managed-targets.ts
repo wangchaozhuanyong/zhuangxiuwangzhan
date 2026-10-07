@@ -1,5 +1,6 @@
 import { ORG020_V7_TARGETS } from "./org020-v7-targets.ts";
 import { NATIVE_BODY_TARGETS } from "./native-body-targets.ts";
+import { OWNER_PUBLISHER_THREE_TARGETS } from "./owner-publisher-three-targets.ts";
 export { ORG020_V7_TARGETS };
 
 export type ManagedTarget = {
@@ -25,6 +26,7 @@ export type ManagedTarget = {
 
 // Each target is a fixed CMS row and original content task. New candidates pin exact changed fields.
 export const MANAGED_SERVICES: readonly ManagedTarget[] = [
+  ...OWNER_PUBLISHER_THREE_TARGETS.filter((target) => target.contentType === "service"),
   ...NATIVE_BODY_TARGETS.filter((target) => target.contentType === "service"),
   { id: "b401a610-a4dc-4a0b-a7e0-efcac6c81d71", slug: "builtin", contentType: "service", taskId: "fc-20260920-builtin-whole-house-custom-v1", actionId: "publish-builtin-whole-house-custom-v1", candidateVersion: "builtin-whole-house-custom-v1", scope: "flashcast.com.my:services/b401a610-a4dc-4a0b-a7e0-efcac6c81d71" },
   { id: "0d947129-0595-43ef-baa1-0fd9d8b870e6", slug: "renovation", contentType: "service", taskId: "fc-20260920-en-renovation-owner-publish-v2", actionId: "publish-en-renovation-owner-cms-v2", candidateVersion: "en-renovation-owner-cms-v2", scope: "flashcast.com.my:/en/services/renovation:service:renovation:english-content-fields" },
@@ -44,6 +46,7 @@ export const MANAGED_AREAS: readonly ManagedTarget[] = [
 ];
 
 export const MANAGED_BLOGS: readonly ManagedTarget[] = [
+  ...OWNER_PUBLISHER_THREE_TARGETS.filter((target) => target.contentType === "blog"),
   ...NATIVE_BODY_TARGETS.filter((target) => target.contentType === "blog"),
   { id: "3fa4ff63-1ee6-4b7c-8f32-792c948c8545", slug: "kitchen-cabinet-price-malaysia", contentType: "blog", taskId: "fc-20260925-organic-query-page-completion-v1", actionId: "update-kitchen-cabinet-cost-existing-blog-v1", candidateVersion: "kitchen-cabinet-cost-r1-v1", scope: "flashcast.com.my:blog_posts/3fa4ff63-1ee6-4b7c-8f32-792c948c8545", changedFields: ["content_en", "content_zh", "seo_description_zh"], baselineFieldsSha256: "50b0c1510443cb59996e12117ad374ede0f279b4d1658cacb74d43d014f47704", desiredFieldsSha256: "4bca36e72073660d3328e6241cb3128c97b2c4a0230a17d2a5a2645726cf755f" },
   { id: "cf594080-7230-4d77-83ac-0be55dfb3b9d", slug: "renovation-quotation-checklist-malaysia", contentType: "blog", taskId: "fc-20260925-existing-page-content-gap-v1", actionId: "update-renovation-quotation-existing-blog-links-v1", candidateVersion: "renovation-quotation-links-r1-v1", scope: "flashcast.com.my:blog_posts/cf594080-7230-4d77-83ac-0be55dfb3b9d", changedFields: ["content_zh", "content_en"], baselineFieldsSha256: "ff1530642c3b9ffdfb1b68119a6339979e9e32361823d2a567e0ae45f0aeeda0", desiredFieldsSha256: "5b86bcfae21a0bbe685a2cf133428a8a86b190ab5900f9fa8bf29af4f9d52fee" },

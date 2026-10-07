@@ -280,6 +280,8 @@ describe("three locked CMS targets in the existing protected workflow", () => {
         "blog-kitchen-cabinet-cost-r1-v1", "blog-renovation-quotation-links-r1-v1", "blog-office-checklist-links-r1-v1",
         "kl-location-intent-r1-v2", "org026-builtin-media-r1-v5", "org026-warehouse-media-r1-v6",
         "org026-office-renovation-media-r1-v6", "blog-kitchen-cabinet-media-r1-v1",
-        "blog-office-checklist-media-r1-v1", ...Object.keys(lockedOrg020V7Candidates), ...Object.keys(lockedNativeBodyCandidates)].sort());
+        "blog-office-checklist-media-r1-v1", ...Object.keys(lockedOrg020V7Candidates), ...Object.keys(lockedNativeBodyCandidates),
+        "v17-owner-publisher-native-preparation-v2-20261007", "v18-owner-publisher-native-preparation-v2-20261007",
+        "v20-owner-publisher-native-preparation-v2-20261007"].sort());
   });
 });
