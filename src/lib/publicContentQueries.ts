@@ -3,6 +3,8 @@ import type { Language } from "@/i18n/routes";
 import {
   getPublishedBlogPostBySlug,
   getPublishedBlogPosts,
+  getPublishedHomeJournal,
+  getPublishedHomeServiceAreas,
   getPublishedHeroSlides,
   getPublishedLandingPageBySlug,
   getPublishedMaterialBySlug,
@@ -29,7 +31,7 @@ import {
   getPublishedProcessSteps,
   getPublishedSitePage,
 } from "@/lib/homeContentApi";
-import { getPublishedFurnitureCatalog, getPublishedFurnitureProductBySlug, getPublishedManagedFurnitureProductBySlug, getPublishedManagedFurnitureProducts } from "@/lib/furnitureCatalog";
+import { getPublishedHomeFurniture, getPublishedFurnitureCatalog, getPublishedFurnitureProductBySlug, getPublishedManagedFurnitureProductBySlug, getPublishedManagedFurnitureProducts } from "@/lib/furnitureCatalog";
 
 // Keys and readers are shared by hooks, route prefetch and HTML cache seeding.
 // Only the key shape is decoded here; seed completeness stays in publicQuerySeed.
@@ -51,6 +53,9 @@ function defineKey(resource: string, dimensions: readonly ParameterName[], prefi
 }
 
 const keys = {
+  homeFurniture: defineKey("home_furniture", ["language"]),
+  homeJournal: defineKey("home_journal", ["language"]),
+  homeServiceAreas: defineKey("home_service_areas", ["language"]),
   homeBundle: defineKey("home_bundle", ["language"]),
   services: defineKey("services", ["language"]),
   serviceSummaries: defineKey("service_summaries", ["language", "limit"]),
@@ -95,6 +100,12 @@ const query = <T>(queryKey: QueryKey, read: (signal: AbortSignal) => Promise<T>)
 });
 
 export const publicContentQueries = {
+  homeFurniture: (language: Language) =>
+    query(keys.homeFurniture.key(language), (signal) => getPublishedHomeFurniture(language, signal)),
+  homeJournal: (language: Language) =>
+    query(keys.homeJournal.key(language), (signal) => getPublishedHomeJournal(language, signal)),
+  homeServiceAreas: (language: Language) =>
+    query(keys.homeServiceAreas.key(language), (signal) => getPublishedHomeServiceAreas(language, signal)),
   homeBundle: (language: Language) =>
     query(keys.homeBundle.key(language), (signal) => getPublishedHomeContentBundle(language, signal)),
   services: (language: Language) =>

@@ -1,3 +1,4 @@
+import type { HomeFurnitureSeed } from "@/lib/homeFurniture";
 import type { UnknownRecord } from "@/lib/recordUtils";
 
 export type PublicDataPayload = {
@@ -5,6 +6,9 @@ export type PublicDataPayload = {
   projectSummaries?: UnknownRecord[];
   projectDetails?: Record<string, UnknownRecord>;
   homeContentBundle?: UnknownRecord;
+  homeFurniture?: HomeFurnitureSeed;
+  homeJournalPosts?: UnknownRecord[];
+  homeServiceAreas?: UnknownRecord[];
   sitePages?: Record<string, UnknownRecord>;
   services?: UnknownRecord[];
   materials?: UnknownRecord[];
