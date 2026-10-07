@@ -6,7 +6,6 @@
   padding-bottom: clamp(5rem, 8vw, 8rem);
 }
 
-.fc-furniture-body,
 .fc-furniture-detail {
   width: min(100% - 2.5rem, 86rem);
   margin-inline: auto;
@@ -293,7 +292,6 @@
 }
 
 @media (max-width: 760px) {
-  .fc-furniture-body,
   .fc-furniture-detail { width: min(100% - 2rem, 86rem); }
   .fc-furniture-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .fc-furniture-detail__layout { grid-template-columns: 1fr; }
