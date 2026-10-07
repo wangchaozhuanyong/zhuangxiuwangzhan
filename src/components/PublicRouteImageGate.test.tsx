@@ -12,6 +12,8 @@ let container: HTMLDivElement;
 let root: Root;
 let client: QueryClient;
 let previousAnimate: PropertyDescriptor | undefined;
+let originalUrl: string;
+let originalHistoryState: unknown;
 const src = "http://localhost/image.webp";
 
 function Image({ ready = false, offscreen = false, failed = false, raw = false }: { ready?: boolean; offscreen?: boolean; failed?: boolean; raw?: boolean }) {
@@ -41,6 +43,8 @@ const pageFeedback = () => {
 const state = () => container.querySelector("[data-route-visual-state]")?.getAttribute("data-route-visual-state");
 
 beforeEach(() => {
+  originalUrl = window.location.href;
+  originalHistoryState = window.history.state;
   vi.useFakeTimers();
   previousAnimate = Object.getOwnPropertyDescriptor(HTMLElement.prototype, "animate");
   vi.stubGlobal("IS_REACT_ACT_ENVIRONMENT", true);
@@ -53,6 +57,7 @@ afterEach(async () => {
   await act(async () => root.unmount());
   client.clear();
   container.remove();
+  window.history.replaceState(originalHistoryState, "", originalUrl);
   document.querySelectorAll(".scheme-a-chrome__brand").forEach((node) => node.remove());
   if (previousAnimate) Object.defineProperty(HTMLElement.prototype, "animate", previousAnimate);
   else Reflect.deleteProperty(HTMLElement.prototype, "animate");
@@ -125,6 +130,46 @@ describe("public route visual readiness", () => {
     expect(container.querySelector(".public-route-content")).not.toHaveAttribute("inert");
     expect(container.querySelector(".public-route-scene")).not.toHaveAttribute("data-leaving");
     await act(async () => vi.advanceTimersByTime(6000));
+    expect(state()).toBe("ready");
+    expect(loader()).toBeNull();
+  });
+
+  it("releases a retired route when POP returns before the departing destination renders", async () => {
+    const current = "/zh/materials?category=wood";
+    window.history.replaceState(null, "", current);
+    await render(<Image ready />, current);
+    const depart = vi.fn(() => window.history.replaceState(null, "", "/zh/projects"));
+    await act(async () => requestPublicNavigation("/zh/projects", depart));
+    expect(state()).toBe("waiting");
+    expect(container.querySelector(".public-route-content")).toHaveAttribute("inert");
+    // Emulate the browser URL change and POP event without rendering B in Router.
+    await act(async () => {
+      window.history.replaceState(null, "", `${current}#details`);
+      window.dispatchEvent(new PopStateEvent("popstate"));
+    });
+    expect(state()).toBe("ready");
+    expect(loader()).toBeNull();
+    expect(container.querySelector(".public-route-content")).not.toHaveAttribute("inert");
+    await act(async () => vi.advanceTimersByTime(6000));
+    expect(state()).toBe("ready");
+    expect(loader()).toBeNull();
+  });
+
+  it.each(["/zh/materials?category=stone", "/zh/projects?category=wood"])("keeps retired content locked when POP targets a different URL: %s", async (destination) => {
+    const current = "/zh/materials?category=wood";
+    window.history.replaceState(null, "", current);
+    await render(<Image ready />, current);
+    await act(async () => requestPublicNavigation("/zh/blog", vi.fn()));
+    await act(async () => {
+      window.history.replaceState(null, "", destination);
+      window.dispatchEvent(new PopStateEvent("popstate"));
+      vi.advanceTimersByTime(200);
+    });
+    expect(state()).toBe("waiting");
+    expect(loader()).not.toBeNull();
+    expect(container.querySelector(".public-route-content")).toHaveAttribute("inert");
+    // Only the destination's actual content may release this wait.
+    await render(<Image ready />, destination);
     expect(state()).toBe("ready");
     expect(loader()).toBeNull();
   });

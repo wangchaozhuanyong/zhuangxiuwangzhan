@@ -31,6 +31,12 @@ export class PublicRouteTransitionFrame extends Component<Props> {
   private historyChanged = () => {
     this.cancelQueuedNavigation();
     this.cancelAnimation();
+    const current = new URL(this.props.routeKey, window.location.href);
+    // History can return before Router has rendered the departing destination.
+    // Only reopen this route when the browser is actually back at its URL.
+    if (window.location.pathname === current.pathname && window.location.search === current.search) {
+      flushSync(() => this.props.onCancelDeparture?.());
+    }
   };
 
   private navigate = (event: Event) => {

@@ -9,6 +9,8 @@ import { registerNavigationProtection } from "@/lib/navigationProtection";
 let container: HTMLDivElement;
 let root: Root;
 let unmounted: boolean;
+let originalUrl: string;
+let originalHistoryState: unknown;
 let frame: ReturnType<typeof createRef<PublicRouteTransitionFrame>>;
 let finish: () => void;
 const cancel = vi.fn();
@@ -19,6 +21,8 @@ const render = async (route: string, pending = false, initial = false, regionOnl
   await act(async () => root.render(<PublicRouteTransitionFrame ref={frame} routeKey={route} pending={pending} initial={initial} regionOnly={regionOnly} onBeforeCommit={beforeCommit} onCancelDeparture={cancelDeparture}><main id="main-content">{route}<div data-public-results>Results</div></main></PublicRouteTransitionFrame>));
 };
 beforeEach(() => {
+  originalUrl = window.location.href;
+  originalHistoryState = window.history.state;
   container = document.createElement("div");
   document.body.append(container);
   root = createRoot(container);
@@ -31,6 +35,7 @@ beforeEach(() => {
 afterEach(async () => {
   if (!unmounted) await act(async () => root.unmount());
   container.remove();
+  window.history.replaceState(originalHistoryState, "", originalUrl);
   Reflect.deleteProperty(HTMLElement.prototype, "animate");
   Reflect.deleteProperty(document, "startViewTransition");
   vi.useRealTimers();
@@ -150,6 +155,23 @@ describe("public visual handoff", () => {
     window.dispatchEvent(new PopStateEvent("popstate"));
     await act(async () => {});
     expect(commit).not.toHaveBeenCalled();
+  });
+  it.each([
+    ["/zh/materials?category=wood#details", true],
+    ["/zh/materials?category=stone", false],
+    ["/zh/projects?category=wood", false],
+  ] as const)("only reopens retired content when POP returns to its URL: %s", async (destination, reopens) => {
+    window.history.replaceState(null, "", "/zh/materials?category=wood");
+    await render("/zh/materials?category=wood");
+    const depart = vi.fn();
+    await act(async () => requestPublicNavigation("/zh/projects", depart));
+    expect(depart).toHaveBeenCalledOnce();
+    expect(beforeCommit).toHaveBeenCalledOnce();
+    await act(async () => {
+      window.history.replaceState(null, "", destination);
+      window.dispatchEvent(new PopStateEvent("popstate"));
+    });
+    expect(cancelDeparture).toHaveBeenCalledTimes(reopens ? 1 : 0);
   });
   it("invalidates a queued click when another route commits", async () => {
     await render("/zh");
