@@ -10,105 +10,53 @@ type Props = {
   pending: boolean;
   regionOnly: boolean;
   initial?: boolean;
-  onBeforeCommit?: (captured?: boolean) => void;
-  covered?: boolean;
-  onSnapshotSkip?: () => void;
+  onBeforeCommit?: () => void;
+  onCancelDeparture?: () => void;
   children: ReactNode;
 };
 
-type Snapshot = {
-  route: string;
-  capturing: boolean;
-  release: () => void;
-  timer: number;
-  transition?: ViewTransition;
-};
-
-/** The gate owns readiness; native snapshots bridge full-page paints.
- * Only local results animate in the DOM. No duplicate route or cloned page. */
+/** Animate the live destination without suspending document hit testing.
+ * Readiness belongs to the gate; presentation never delays the next input. */
 export class PublicRouteTransitionFrame extends Component<Props> {
   private content = createRef<HTMLDivElement>();
   private animation: Animation | null = null;
   private navigationRevision = 0;
-  private snapshot: Snapshot | null = null;
   private presented: string | null = null;
   previousRoute: string | null = null;
-  whenPresented() { return (this.snapshot?.transition?.finished ?? this.animation?.finished)?.catch(() => {}) ?? Promise.resolve(); }
-  isCapturing(route: string) { return this.snapshot?.capturing && this.snapshot.route === route; }
-  private releaseSnapshot = () => {
-    if (!this.snapshot) return;
-    this.snapshot.capturing = false;
-    window.clearTimeout(this.snapshot.timer);
-    this.snapshot.release();
-  };
-  private cancelSnapshot = () => {
-    const snapshot = this.snapshot;
-    this.releaseSnapshot();
-    this.snapshot = null;
-    snapshot?.transition?.skipTransition();
-    delete document.documentElement.dataset.publicViewTransition;
+  private cancelAnimation = () => {
+    this.animation?.cancel();
+    this.animation = null;
   };
   private cancelQueuedNavigation = () => { this.navigationRevision++; };
   private historyChanged = () => {
     this.cancelQueuedNavigation();
-    this.cancelSnapshot();
-    this.props.onSnapshotSkip?.();
+    this.cancelAnimation();
   };
 
   private navigate = (event: Event) => {
     const request = event as CustomEvent<PublicNavigation>;
     request.preventDefault();
-    this.cancelSnapshot();
+    this.cancelAnimation();
     const revision = ++this.navigationRevision;
     const next = new URL(request.detail.destination, window.location.href);
     const current = new URL(this.props.routeKey, window.location.href);
     const localUpdate = current.pathname === next.pathname ||
       isFurnitureListingPath(current.pathname) && isFurnitureListingPath(next.pathname);
     if (hasProtectedChanges() || localUpdate) {
+      if (next.pathname === current.pathname && next.search === current.search) {
+        flushSync(() => this.props.onCancelDeparture?.());
+      }
       request.detail.commit();
       return;
     }
-    const commit = () => {
-      this.content.current?.setAttribute("data-leaving", "true");
-      flushSync(() => this.props.onBeforeCommit?.(Boolean(this.snapshot?.capturing)));
-      request.detail.commit();
-    };
-    // Coalesce same-turn requests without fading the live page or adding a delay.
+    // Coalesce same-turn requests without waiting for an exit or snapshot.
     queueMicrotask(() => {
       if (this.navigationRevision !== revision) return;
-      if (this.props.pending || prefersReducedMotion() || typeof document.startViewTransition !== "function") {
-        commit();
-        return;
-      }
-      // The browser keeps a bitmap of the live page while React prepares the
-      // destination. No duplicated route, media element or interactive DOM.
-      let release = () => {};
-      const captured = new Promise<void>((resolve) => { release = resolve; });
-      const snapshot: Snapshot = { route: next.pathname + next.search, capturing: true, release, timer: 0 };
-      this.snapshot = snapshot;
-      document.documentElement.dataset.publicViewTransition = "true";
-      const recover = () => {
-        if (this.snapshot !== snapshot) return;
-        flushSync(() => this.props.onSnapshotSkip?.());
-        this.cancelSnapshot();
-      };
-      try {
-        const transition = document.startViewTransition(() => {
-          if (this.navigationRevision !== revision) return;
-          // Bound the snapshot wait; a slow destination hands off to the brand.
-          snapshot.timer = window.setTimeout(recover, PUBLIC_MOTION.feedbackDelay + PUBLIC_MOTION.control);
-          commit();
-          return captured;
-        });
-        snapshot.transition = transition;
-        void transition.ready.catch(recover);
-        void transition.finished.catch(() => {}).then(() => {
-          if (this.snapshot === snapshot) this.cancelSnapshot();
-        });
-      } catch {
-        recover();
-        commit();
-      }
+      // Retire the old route synchronously so it cannot reveal stale content
+      // while React Router commits the next location.
+      this.content.current?.setAttribute("data-leaving", "true");
+      flushSync(() => this.props.onBeforeCommit?.());
+      request.detail.commit();
     });
   };
 
@@ -116,6 +64,8 @@ export class PublicRouteTransitionFrame extends Component<Props> {
     if (!this.props.pending) this.presented = this.props.routeKey;
     window.addEventListener(PUBLIC_NAVIGATION_EVENT, this.navigate);
     window.addEventListener("popstate", this.historyChanged);
+    window.addEventListener("pointerdown", this.cancelAnimation, { capture: true, passive: true });
+    window.addEventListener("keydown", this.cancelAnimation, true);
   }
 
   componentDidUpdate(previous: Props) {
@@ -123,21 +73,17 @@ export class PublicRouteTransitionFrame extends Component<Props> {
     if (changed || !previous.pending && this.props.pending) {
       this.content.current?.removeAttribute("data-leaving");
       this.cancelQueuedNavigation();
-      this.animation?.cancel();
-      this.animation = null;
+      this.cancelAnimation();
       this.previousRoute = this.presented;
     }
-    if (this.snapshot && changed && this.snapshot.route !== this.props.routeKey) this.cancelSnapshot();
-    if (this.snapshot?.route === this.props.routeKey && (!this.props.pending || this.props.covered)) this.releaseSnapshot();
     if (this.props.pending || !changed && !previous.pending) return;
+    this.presented = this.props.routeKey;
     const target = this.props.regionOnly
       ? this.content.current?.querySelector<HTMLElement>("[data-public-results]")
-      : null;
+      : this.content.current;
     if (!target || this.props.initial || prefersReducedMotion() || typeof target.animate !== "function") {
-      this.presented = this.props.routeKey;
       return;
     }
-    const route = this.props.routeKey;
     const animation = target.animate([{ opacity: .86 }, { opacity: 1 }], {
       duration: PUBLIC_MOTION.image,
       easing: "cubic-bezier(0.2, 0.65, 0.3, 1)",
@@ -145,7 +91,6 @@ export class PublicRouteTransitionFrame extends Component<Props> {
     this.animation = animation;
     void animation.finished.then(() => {
       if (this.animation !== animation) return;
-      this.presented = route;
       this.animation = null;
     }, () => { /* Superseded by another route or retry. */ });
   }
@@ -153,10 +98,10 @@ export class PublicRouteTransitionFrame extends Component<Props> {
   componentWillUnmount() {
     window.removeEventListener(PUBLIC_NAVIGATION_EVENT, this.navigate);
     window.removeEventListener("popstate", this.historyChanged);
+    window.removeEventListener("pointerdown", this.cancelAnimation, true);
+    window.removeEventListener("keydown", this.cancelAnimation, true);
     this.cancelQueuedNavigation();
-    this.cancelSnapshot();
-    this.animation?.cancel();
-    this.animation = null;
+    this.cancelAnimation();
   }
 
   render() {

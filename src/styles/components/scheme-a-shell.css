@@ -90,20 +90,6 @@
   .public-route-content { display: contents; }
   .public-route-scene { display: block; }
 
-  /* Keep the old bitmap opaque until its replacement covers it. The live page
-     remains the sole interactive DOM, including the shared navigation. */
-  html[data-public-view-transition]::view-transition { pointer-events: none; }
-  html[data-public-view-transition]::view-transition-group(root) { animation: none; }
-  html[data-public-view-transition]::view-transition-old(root) {
-    animation: none;
-    mix-blend-mode: normal;
-  }
-  html[data-public-view-transition]::view-transition-new(root) {
-    animation: public-route-reveal 240ms ease-out both;
-    mix-blend-mode: normal;
-  }
-  @keyframes public-route-reveal { from { opacity: 0; } to { opacity: 1; } }
-
   /* Pending content keeps its measured layout for scroll and image decoding. */
   .public-route-scene[data-pending="true"]:not([data-region-only]),
   .public-route-scene[data-pending="true"][data-region-only] [data-public-results] {

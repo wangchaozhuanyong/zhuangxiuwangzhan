@@ -13,33 +13,10 @@ let frame: ReturnType<typeof createRef<PublicRouteTransitionFrame>>;
 let finish: () => void;
 const cancel = vi.fn();
 const beforeCommit = vi.fn();
-const snapshotSkip = vi.fn();
+const cancelDeparture = vi.fn();
 const animate = vi.fn<(frames: Keyframe[], options: KeyframeAnimationOptions) => { finished: Promise<void>; cancel: () => void }>(() => ({ finished: new Promise<void>((resolve) => { finish = resolve; }), cancel }));
-const render = async (route: string, pending = false, initial = false, regionOnly = false, covered = false) => {
-  await act(async () => root.render(<PublicRouteTransitionFrame ref={frame} routeKey={route} pending={pending} initial={initial} regionOnly={regionOnly} covered={covered} onSnapshotSkip={snapshotSkip} onBeforeCommit={beforeCommit}><main id="main-content">{route}<div data-public-results>Results</div></main></PublicRouteTransitionFrame>));
-};
-const deferred = () => {
-  let resolve!: () => void;
-  let reject!: (error: Error) => void;
-  const promise = new Promise<void>((done, fail) => { resolve = done; reject = fail; });
-  return { promise, resolve, reject };
-};
-const mockViewTransitions = () => {
-  const transitions: {
-    update: () => void | Promise<void>;
-    ready: ReturnType<typeof deferred>;
-    finished: ReturnType<typeof deferred>;
-    skip: ReturnType<typeof vi.fn>;
-  }[] = [];
-  const start = vi.fn((update: () => void | Promise<void>) => {
-    const ready = deferred();
-    const finished = deferred();
-    const skip = vi.fn(() => finished.resolve());
-    transitions.push({ update, ready, finished, skip });
-    return { ready: ready.promise, finished: finished.promise, skipTransition: skip };
-  });
-  Object.defineProperty(document, "startViewTransition", { configurable: true, value: start });
-  return { start, transitions };
+const render = async (route: string, pending = false, initial = false, regionOnly = false) => {
+  await act(async () => root.render(<PublicRouteTransitionFrame ref={frame} routeKey={route} pending={pending} initial={initial} regionOnly={regionOnly} onBeforeCommit={beforeCommit} onCancelDeparture={cancelDeparture}><main id="main-content">{route}<div data-public-results>Results</div></main></PublicRouteTransitionFrame>));
 };
 beforeEach(() => {
   container = document.createElement("div");
@@ -61,152 +38,67 @@ afterEach(async () => {
   vi.clearAllMocks();
 });
 
-describe("native public scene handoff", () => {
-  it.each(["ready", "covered"] as const)("holds the old bitmap until the destination is %s", async (state) => {
-    const { start, transitions } = mockViewTransitions();
-    await render("/zh");
-    const commit = vi.fn();
-    requestPublicNavigation("/zh/projects?category=home", commit);
-    await act(async () => {});
-    expect(start).toHaveBeenCalledOnce();
-    expect(commit).not.toHaveBeenCalled();
-    expect(frame.current?.isCapturing("/zh/projects?category=home")).toBe(true);
-    const transition = transitions[0];
-    const updated = vi.fn();
-    void Promise.resolve(transition.update()).then(updated);
-    expect(commit).toHaveBeenCalledOnce();
-    await render("/zh/projects?category=home", true);
-    expect(updated).not.toHaveBeenCalled();
-    await render("/zh/projects?category=home", state === "covered", false, false, state === "covered");
-    expect(updated).toHaveBeenCalledOnce();
-    expect(frame.current?.isCapturing("/zh/projects?category=home")).toBe(false);
-    const presented = vi.fn();
-    void frame.current?.whenPresented().then(presented);
-    expect(presented).not.toHaveBeenCalled();
-    await act(async () => { transition.ready.resolve(); transition.finished.resolve(); });
-    expect(presented).toHaveBeenCalledOnce();
-    expect(document.documentElement.dataset.publicViewTransition).toBeUndefined();
-    expect(snapshotSkip).not.toHaveBeenCalled();
-    expect(animate).not.toHaveBeenCalled();
-  });
-
-  it("starts only the latest native transition for same-turn clicks", async () => {
-    const { start, transitions } = mockViewTransitions();
-    await render("/zh");
-    const first = vi.fn();
-    const last = vi.fn();
-    requestPublicNavigation("/zh/projects", first);
-    requestPublicNavigation("/zh/materials", last);
-    await act(async () => {});
-    expect(start).toHaveBeenCalledOnce();
-    void transitions[0].update();
-    expect(first).not.toHaveBeenCalled();
-    expect(last).toHaveBeenCalledOnce();
-    expect(frame.current?.isCapturing("/zh/materials")).toBe(true);
-  });
-
-  it("skips a superseded capture and prevents its delayed callback from navigating", async () => {
-    const { transitions } = mockViewTransitions();
-    await render("/zh");
-    const first = vi.fn();
-    requestPublicNavigation("/zh/projects", first);
-    await act(async () => {});
-    const old = transitions[0];
-    const last = vi.fn();
-    requestPublicNavigation("/zh/materials", last);
-    expect(old.skip).toHaveBeenCalledOnce();
-    await act(async () => {});
-    void old.update();
-    void transitions[1].update();
-    expect(first).not.toHaveBeenCalled();
-    expect(last).toHaveBeenCalledOnce();
-    await act(async () => old.ready.reject(new Error("superseded")));
-    expect(snapshotSkip).not.toHaveBeenCalled();
-    expect(frame.current?.isCapturing("/zh/materials")).toBe(true);
-  });
-
-  it("recovers a rejected snapshot and releases the waiting callback", async () => {
-    const { transitions } = mockViewTransitions();
-    await render("/zh");
-    const commit = vi.fn();
-    requestPublicNavigation("/zh/projects", commit);
-    await act(async () => {});
-    const transition = transitions[0];
-    const updated = vi.fn();
-    void Promise.resolve(transition.update()).then(updated);
-    await render("/zh/projects", true);
-    await act(async () => transition.ready.reject(new Error("snapshot unavailable")));
-    expect(snapshotSkip).toHaveBeenCalledOnce();
-    expect(transition.skip).toHaveBeenCalledOnce();
-    expect(updated).toHaveBeenCalledOnce();
-    expect(commit).toHaveBeenCalledOnce();
-    expect(document.documentElement.dataset.publicViewTransition).toBeUndefined();
-  });
-
-  it("falls back to one normal commit when native capture throws", async () => {
-    const start = vi.fn(() => { throw new Error("capture unavailable"); });
+describe("interruptible public scene handoff", () => {
+  it("never captures the whole document even when native view transitions are available", async () => {
+    const start = vi.fn(() => { throw new Error("Document snapshots block pointer input"); });
     Object.defineProperty(document, "startViewTransition", { configurable: true, value: start });
     await render("/zh");
     const commit = vi.fn();
     requestPublicNavigation("/zh/projects", commit);
     await act(async () => {});
     expect(commit).toHaveBeenCalledOnce();
-    expect(snapshotSkip).toHaveBeenCalledOnce();
-    expect(document.documentElement.dataset.publicViewTransition).toBeUndefined();
-  });
-
-  it.each(["unsupported", "reduced", "pending"] as const)("navigates normally when capture is %s", async (condition) => {
-    const { start } = mockViewTransitions();
-    if (condition === "unsupported") Object.defineProperty(document, "startViewTransition", { configurable: true, value: undefined });
-    if (condition === "reduced") vi.stubGlobal("matchMedia", vi.fn(() => ({ matches: true })));
-    await render("/zh", condition === "pending");
-    const commit = vi.fn();
-    requestPublicNavigation("/zh/projects", commit);
-    await act(async () => {});
-    expect(commit).toHaveBeenCalledOnce();
     expect(start).not.toHaveBeenCalled();
     expect(document.documentElement.dataset.publicViewTransition).toBeUndefined();
+    await render("/zh/projects");
+    expect(animate).toHaveBeenCalledOnce();
+    expect(animate.mock.instances[0]).toBe(container.querySelector(".public-route-scene"));
+    expect(animate.mock.calls[0]?.[0]).toEqual([{ opacity: .86 }, { opacity: 1 }]);
   });
 
-  it("releases a capture that misses its readiness deadline without repeating navigation", async () => {
-    vi.useFakeTimers({ toFake: ["setTimeout", "clearTimeout"] });
-    const { transitions } = mockViewTransitions();
+  it("accepts a new destination before the current visual animation finishes", async () => {
     await render("/zh");
-    const commit = vi.fn();
-    requestPublicNavigation("/zh/projects", commit);
+    await render("/zh/materials");
+    expect(animate).toHaveBeenCalledOnce();
+    const first = vi.fn();
+    const last = vi.fn();
+    requestPublicNavigation("/zh/projects", first);
+    requestPublicNavigation("/zh/services", last);
     await act(async () => {});
-    const transition = transitions[0];
-    const updated = vi.fn();
-    void Promise.resolve(transition.update()).then(updated);
+    expect(cancel).toHaveBeenCalledOnce();
+    expect(first).not.toHaveBeenCalled();
+    expect(last).toHaveBeenCalledOnce();
+    // No animation.finished resolution is needed to commit the last click.
+  });
+
+  it.each(["pointerdown", "keydown"])("cancels decorative motion on %s without taking over the interaction", async (type) => {
+    await render("/zh");
+    await render("/zh/projects");
+    const interaction = type === "keydown"
+      ? new KeyboardEvent(type, { key: "Enter", bubbles: true, cancelable: true })
+      : new Event(type, { bubbles: true, cancelable: true });
+    container.querySelector("main")!.dispatchEvent(interaction);
+    expect(cancel).toHaveBeenCalledOnce();
+    expect(interaction.defaultPrevented).toBe(false);
+    expect(container.querySelector(".public-route-scene")).not.toHaveAttribute("data-pending");
+  });
+
+  it("remembers a ready destination before its animation finishes for timeout cancellation", async () => {
+    await render("/zh");
+    await render("/zh/materials");
+    expect(animate).toHaveBeenCalledOnce();
     await render("/zh/projects", true);
-    await act(async () => vi.advanceTimersByTime(359));
-    expect(updated).not.toHaveBeenCalled();
-    expect(snapshotSkip).not.toHaveBeenCalled();
-    await act(async () => vi.advanceTimersByTime(1));
-    expect(snapshotSkip).toHaveBeenCalledOnce();
-    expect(updated).toHaveBeenCalledOnce();
-    expect(transition.skip).toHaveBeenCalledOnce();
-    expect(commit).toHaveBeenCalledOnce();
-    expect(document.documentElement.dataset.publicViewTransition).toBeUndefined();
-    expect(vi.getTimerCount()).toBe(0);
+    expect(frame.current?.previousRoute).toBe("/zh/materials");
+    expect(cancel).toHaveBeenCalledOnce();
   });
 
-  it.each(["pop", "unmount"] as const)("cancels a pending native callback on %s", async (action) => {
-    const { transitions } = mockViewTransitions();
+  it.each(["pop", "unmount"] as const)("cancels active decorative motion on %s", async (action) => {
     await render("/zh");
-    const commit = vi.fn();
-    requestPublicNavigation("/zh/projects", commit);
-    await act(async () => {});
-    const transition = transitions[0];
+    await render("/zh/materials");
     await act(async () => {
       if (action === "pop") window.dispatchEvent(new PopStateEvent("popstate"));
       else { root.unmount(); unmounted = true; }
     });
-    void transition.update();
-    expect(commit).not.toHaveBeenCalled();
-    expect(transition.skip).toHaveBeenCalledOnce();
-    expect(document.documentElement.dataset.publicViewTransition).toBeUndefined();
-    expect(snapshotSkip).toHaveBeenCalledTimes(action === "pop" ? 1 : 0);
+    expect(cancel).toHaveBeenCalledOnce();
   });
 });
 
@@ -216,7 +108,7 @@ describe("public visual handoff", () => {
     await render("/zh", false, true);
     expect(animate).not.toHaveBeenCalled();
   });
-  it("hands off a full page without dimming either scene or retaining the old page", async () => {
+  it("prepares one destination before starting its nonblocking full-page fade", async () => {
     await render("/zh");
     const commit = vi.fn();
     requestPublicNavigation("/zh/projects", commit);
@@ -235,8 +127,8 @@ describe("public visual handoff", () => {
     expect(container.querySelector("main")?.textContent).not.toContain("/zhResults");
     expect(container.querySelector(".public-route-scene")).toHaveAttribute("data-pending", "true");
     await render("/zh/projects");
-    expect(animate).not.toHaveBeenCalled();
-    await expect(frame.current?.whenPresented()).resolves.toBeUndefined();
+    expect(animate).toHaveBeenCalledOnce();
+    expect(animate.mock.calls[0]?.[1]).toMatchObject({ duration: 200 });
   });
   it.each([false, true])("only commits the latest same-turn full-page click, pending=%s", async (pending) => {
     await render("/zh", pending);
@@ -288,11 +180,9 @@ describe("public visual handoff", () => {
     await render("/zh/furniture?category=chairs", false, false, true);
     expect(animate.mock.instances.at(-1)).toBe(container.querySelector("[data-public-results]"));
     expect(animate.mock.calls.at(-1)?.[1]).toMatchObject({ duration: 200 });
-    const presented = vi.fn();
-    void frame.current?.whenPresented().then(presented);
-    expect(presented).not.toHaveBeenCalled();
+    expect(container.querySelector(".public-route-scene")).not.toHaveAttribute("data-pending");
     await act(async () => finish());
-    expect(presented).toHaveBeenCalledOnce();
+    expect(cancel).not.toHaveBeenCalled();
   });
   it("lets local updates and protected navigation supersede a queued full-page click immediately", async () => {
     await render("/zh/contact");
@@ -311,6 +201,35 @@ describe("public visual handoff", () => {
     } finally {
       unregister();
     }
+  });
+  it.each(["/zh/materials?category=wood", "/zh/materials?category=wood#details"])("reopens an unchanged destination before committing %s", async (destination) => {
+    await render("/zh/materials?category=wood");
+    const depart = vi.fn();
+    await act(async () => requestPublicNavigation("/zh/projects", depart));
+    expect(depart).toHaveBeenCalledOnce();
+    expect(beforeCommit).toHaveBeenCalledOnce();
+    // The router has not rendered /zh/projects, so the visible route is still A.
+    const returnToCurrent = vi.fn();
+    await act(async () => requestPublicNavigation(destination, returnToCurrent));
+    expect(cancelDeparture).toHaveBeenCalledOnce();
+    expect(returnToCurrent).toHaveBeenCalledOnce();
+    expect(cancelDeparture.mock.invocationCallOrder[0]).toBeLessThan(returnToCurrent.mock.invocationCallOrder[0]!);
+    expect(beforeCommit).toHaveBeenCalledOnce();
+  });
+  it("does not reopen unchanged content for a different local query or a protected destination", async () => {
+    await render("/zh/furniture?category=chairs");
+    const filter = vi.fn();
+    requestPublicNavigation("/zh/furniture?category=tables", filter);
+    expect(filter).toHaveBeenCalledOnce();
+    expect(cancelDeparture).not.toHaveBeenCalled();
+    const unregister = registerNavigationProtection();
+    try {
+      const guarded = vi.fn();
+      requestPublicNavigation("/zh/projects", guarded);
+      expect(guarded).toHaveBeenCalledOnce();
+      expect(cancelDeparture).not.toHaveBeenCalled();
+      expect(beforeCommit).not.toHaveBeenCalled();
+    } finally { unregister(); }
   });
   it("honors reduced motion without an animation or timer delay", async () => {
     vi.stubGlobal("matchMedia", vi.fn(() => ({ matches: true })));

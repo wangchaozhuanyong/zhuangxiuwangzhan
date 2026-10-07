@@ -7,21 +7,28 @@ const pageFeedback = '.scheme-a-page-loader[data-feedback-scope="page"][data-rou
 const navigationLink = (page: Page, width: number, path: string) => page.locator(`${width < 768 ? '.scheme-a-mobile-dock' : width < 1180 ? '.scheme-a-directory' : '.scheme-a-chrome__primary'} a[href="${path}"]`);
 
 async function navigate(page: Page, width: number, path: string) {
-  if (width >= 768 && width < 1180) {
-    await page.locator('.scheme-a-chrome__menu-trigger--compact').click();
+  let link = navigationLink(page, width, path).first();
+  if (width >= 768 && width < 1180 || await link.count() === 0) {
+    await page.locator(width >= 1180 ? '.scheme-a-chrome__nav-more' : '.scheme-a-chrome__menu-trigger--compact').click();
     const group = page.locator('.scheme-a-directory__groups > section').filter({ has: page.locator(`a[href="${path}"]`) });
     if (await group.getAttribute('data-open') !== 'true') await group.locator('.scheme-a-directory__group-toggle').click();
+    link = group.locator(`a[href="${path}"]`);
   }
-  await navigationLink(page, width, path).first().click();
+  await link.click({ force: true });
   await expect(page).toHaveURL(new RegExp(`${path}$`));
 }
 
 for (const width of [390, 1440]) for (const native of [true, false]) {
   test(`continuous handoff has no blank frame at ${width}px, native=${native}`, async ({ page }, info) => {
     await page.setViewportSize({ width, height: 900 });
-    if (!native) await page.addInitScript(() => {
-      Object.defineProperty(document, 'startViewTransition', { configurable: true, value: undefined });
-    });
+    await page.addInitScript((available) => {
+      const audit = { calls: 0 };
+      (window as unknown as { nativeTransitionAudit: typeof audit }).nativeTransitionAudit = audit;
+      Object.defineProperty(document, 'startViewTransition', { configurable: true, value: available ? () => {
+        audit.calls++;
+        throw new Error('Public navigation must not snapshot the document');
+      } : undefined });
+    }, native);
     let release = () => {};
     const aboutReady = new Promise<void>(resolve => { release = resolve; });
     await page.route(/\/(?:src\/pages\/About\.tsx|assets\/About-[^/]+\.js)(?:\?.*)?$/, async route => {
@@ -39,8 +46,7 @@ for (const width of [390, 1440]) for (const native of [true, false]) {
           const loader = document.querySelector('[data-route-loader="navigation"]');
           const sceneOpacity = scene ? Number(getComputedStyle(scene).opacity) : 0;
           const coverOpacity = loader ? Number(getComputedStyle(loader).opacity) : 0;
-          // A native snapshot retains the old paint while React prepares its replacement.
-          if (sceneOpacity < 0.01 && coverOpacity < 0.01 && !document.documentElement.dataset.publicViewTransition) audit.blank++;
+          if (sceneOpacity < 0.01 && coverOpacity < 0.01) audit.blank++;
           if (loader?.querySelector('.scheme-a-page-loader__brand')) audit.brand++;
           audit.frames++;
           requestAnimationFrame(sample);
@@ -53,7 +59,7 @@ for (const width of [390, 1440]) for (const native of [true, false]) {
         return audit;
       });
       await auditStart();
-      await page.locator('a[href="/zh/about"]').first().evaluate((link: HTMLAnchorElement) => link.click());
+      await navigate(page, width, "/zh/about");
       await expect(page.locator('[data-route-loader="navigation"] .scheme-a-page-loader__brand')).toBeVisible();
       await page.locator('.scheme-a-chrome__brand').first().click({ trial: true });
       release(); await ready(page);
@@ -62,12 +68,12 @@ for (const width of [390, 1440]) for (const native of [true, false]) {
       expect(slow.frames).toBeGreaterThan(0);
       expect(slow.blank).toBe(0);
       await auditStart();
-      await page.locator('a[href="/zh/services"]').first().evaluate((link: HTMLAnchorElement) => link.click());
+      await navigate(page, width, "/zh/services");
       await expect(page).toHaveURL(/\/zh\/services$/); await ready(page);
       await expect(page.locator('[data-route-loader]')).toHaveCount(0);
       const cached = await auditStop();
       expect(cached.blank).toBe(0);
-      if (native && await page.evaluate(() => typeof document.startViewTransition === 'function')) expect(cached.brand).toBe(0);
+      expect(await page.evaluate(() => (window as unknown as { nativeTransitionAudit: { calls: number } }).nativeTransitionAudit.calls)).toBe(0);
       await info.attach('continuity-frames', { body: JSON.stringify({ slow, cached }), contentType: 'application/json' });
     } finally { release(); }
   });
@@ -130,20 +136,57 @@ for (const width of [360, 390, 768, 1024, 1440]) {
   });
 }
 
-test('latest rapid tap wins and language navigation keeps a single destination', async ({ page }) => {
-  await page.setViewportSize({ width: 390, height: 844 });
-  await page.goto('/en'); await ready(page);
-  await page.evaluate(() => {
-    document.querySelector<HTMLAnchorElement>('.scheme-a-mobile-dock a[href="/en/materials"]')!.click();
-    document.querySelector<HTMLAnchorElement>('.scheme-a-mobile-dock a[href="/en/projects"]')!.click();
+for (const width of [390, 1440]) {
+  test(`real taps and content controls respond before decorative animation ends at ${width}px`, async ({ page }) => {
+    await page.setViewportSize({ width, height: 844 });
+    await page.emulateMedia({ reducedMotion: 'no-preference' });
+    await page.addInitScript(() => {
+      // Extend only the decorative route fade so this tests readiness, not timing luck.
+      const animate = HTMLElement.prototype.animate;
+      HTMLElement.prototype.animate = function (keyframes, options) {
+        const next = typeof options === 'number' ? { duration: options } : { ...options };
+        if (this.matches('.public-route-scene, [data-public-results]')) next.duration = 60000;
+        return animate.call(this, keyframes, next);
+      };
+      const audit = { clicks: [] as string[], nativeCalls: 0 };
+      (window as unknown as { inputAudit: typeof audit }).inputAudit = audit;
+      const native = document.startViewTransition?.bind(document);
+      if (native) document.startViewTransition = (...args) => {
+        audit.nativeCalls++;
+        return native(...args);
+      };
+      document.addEventListener('click', event => {
+        const link = event.target instanceof Element ? event.target.closest('a') : null;
+        if (link) audit.clicks.push(link.getAttribute('href') || '');
+      }, true);
+    });
+    await page.goto('/en'); await ready(page);
+    // Warm both destinations, then exercise real pointer input during a live fade.
+    for (const path of ['/en/materials', '/en/projects', '/en']) {
+      await navigationLink(page, width, path).first().click({ force: true });
+      await expect(page).toHaveURL(new RegExp(`${path}$`));
+      await ready(page);
+    }
+    await navigationLink(page, width, '/en/materials').click({ force: true });
+    await expect(page).toHaveURL(/\/en\/materials$/); await ready(page);
+    expect(await page.locator('.public-route-scene').evaluate(element => element.getAnimations().some(animation => animation.playState === 'running'))).toBe(true);
+    await navigationLink(page, width, '/en/projects').click({ force: true });
+    await expect(page).toHaveURL(/\/en\/projects$/); await ready(page);
+    await expect(page.locator('.public-route-content')).not.toHaveAttribute('inert');
+    await expect(page.locator('[data-route-loader]')).toHaveCount(0);
+    expect(await page.locator('.public-route-scene').evaluate(element => element.getAnimations().some(animation => animation.playState === 'running'))).toBe(true);
+    const residential = page.locator('#main-content').getByRole('button', { name: 'Residential', exact: true });
+    await residential.click({ force: true });
+    await expect(page).toHaveURL(/filter=Residential/);
+    await expect(residential).toHaveAttribute('aria-pressed', 'true');
+    const input = await page.evaluate(() => (window as unknown as { inputAudit: { clicks: string[]; nativeCalls: number } }).inputAudit);
+    expect(input.clicks.slice(-2)).toEqual(['/en/materials', '/en/projects']);
+    expect(input.nativeCalls).toBe(0);
+    await page.locator('.scheme-a-chrome .scheme-a-language-switch a[href^="/zh/projects"]').click({ force: true });
+    await expect(page).toHaveURL(/\/zh\/projects(?:\?|$)/); await ready(page);
+    await expect(page.locator('.public-route-retained')).toHaveCount(0);
   });
-  await expect(page).toHaveURL(/\/en\/projects$/); await ready(page);
-  await page.locator('.scheme-a-chrome .scheme-a-language-switch a[href="/zh/projects"]').click();
-  await expect(page).toHaveURL(/\/zh\/projects$/); await ready(page);
-  await page.waitForTimeout(600);
-  await expect(page).toHaveURL(/\/zh\/projects$/);
-  await expect(page.locator('.public-route-retained')).toHaveCount(0);
-});
+}
 
 test.describe('network fault injection', () => {
 // WebKit cannot intercept requests controlled by a service worker. Normal
