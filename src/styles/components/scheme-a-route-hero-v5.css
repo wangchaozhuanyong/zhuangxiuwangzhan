@@ -412,13 +412,15 @@
   }
 
   .scheme-a-public-shell .fc-route-page .fc-route-hero-actions {
-    order: 6;
+    /* Keep the primary action before support details at mobile widths. */
+    order: 4;
     width: 100%;
     margin-top: 16px;
   }
 
   .scheme-a-public-shell .fc-route-page .fc-route-hero-actions a {
     width: 100%;
+    scroll-margin-bottom: calc(84px + env(safe-area-inset-bottom, 0px));
   }
 }
 

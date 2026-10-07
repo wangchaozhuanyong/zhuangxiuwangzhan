@@ -230,31 +230,39 @@
   }
 
   @media (max-width: 767px) {
-    .scheme-a-public-shell { --public-floating-bottom: 82px; --public-floating-height: 76px; }
+    /* Share the dock's reserved viewport region instead of covering body copy. */
+    .scheme-a-public-shell { --public-floating-bottom: 0px; --public-floating-height: 68px; }
     .fc-furniture-floating {
-      width: 76px;
-      right: 1rem;
+      width: 68px;
+      right: 0;
       grid-template-columns: 1fr;
-      grid-template-rows: 28px 18px;
+      grid-template-rows: 24px 18px;
       justify-items: center;
-      gap: 5px;
-      padding: 12px 5px 10px;
+      gap: 3px;
+      padding: 11px 5px 10px;
       font-size: 12px;
       text-align: center;
     }
-    .fc-furniture-floating__icon svg { width: 28px; height: 28px; }
+    .fc-furniture-floating__icon svg { width: 24px; height: 24px; }
     .fc-furniture-floating__copy { display: contents; }
     .fc-furniture-floating__label { font-size: 12px; line-height: 18px; letter-spacing: 0.015em; }
     .fc-furniture-floating__label--desktop, .fc-furniture-floating__hint { display: none; }
     .fc-furniture-floating__label--mobile { display: block; }
     .fc-furniture-floating__action { position: absolute; right: 5px; top: 5px; width: 12px; height: 12px; border: 0; border-radius: 2px; }
     .fc-furniture-floating__arrow { width: 11px; height: 11px; }
-    .fc-furniture-floating[lang="en"] { grid-template-rows: 24px 26px; gap: 3px; padding-block: 9px; }
+    .fc-furniture-floating[lang="en"] { grid-template-rows: 24px 26px; gap: 3px; padding-block: 7px; }
     .fc-furniture-floating[lang="en"] .fc-furniture-floating__label { max-width: 60px; white-space: normal; font-size: 11px; line-height: 13px; }
     .fc-furniture-floating[lang="en"] .fc-furniture-floating__icon svg { width: 24px; height: 24px; }
     /* Keep the fixed mobile square anchored; press feedback lives inside it. */
     .fc-furniture-floating:is(:active, [data-pressed="true"]) { transform: none; }
     .fc-furniture-floating:is(:active, [data-pressed="true"]) .fc-furniture-floating__icon { transform: scale(.88); transition-duration: 70ms; }
+    .scheme-a-public-shell:has(.scheme-a-mobile-switcher[data-mode="hidden"]) .fc-furniture-floating {
+      visibility: hidden;
+      pointer-events: none;
+    }
+    @media (max-width: 359px) {
+      .fc-furniture-floating { width: 56px; }
+    }
   }
 
   /* Shared collision detection preserves the page width and yields the promotion
