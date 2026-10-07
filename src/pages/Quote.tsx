@@ -185,8 +185,9 @@ const Quote = () => {
   const handleSubmit = protectSubmission("submit", async (event: FormEvent) => {
     event.preventDefault();
     if (status === "submitting") return;
+    const submittedSourcePath = `${window.location.pathname}${window.location.search}`;
     if (!validate()) {
-      trackQuoteFormSubmit("validation_error");
+      trackQuoteFormSubmit("validation_error", {}, submittedSourcePath);
       return;
     }
     setStatus("submitting");
@@ -201,14 +202,14 @@ const Quote = () => {
         propertySize: form.propertySize,
         budget: form.budget,
         details: form.details,
-        sourcePath: `${window.location.pathname}${window.location.search}`,
+        sourcePath: submittedSourcePath,
         website: honeypot,
         startedAt: formGuard.startedAt,
       });
       trackQuoteFormSubmit("success", {
         project_type: form.projectType,
         budget_range: form.budget,
-      });
+      }, submittedSourcePath);
       lastSavedForm.current = form;
       setStatus(JSON.stringify(currentForm.current) === JSON.stringify(form) ? "success" : "idle");
     } catch (error) {
@@ -216,7 +217,7 @@ const Quote = () => {
       trackQuoteFormSubmit("error", {
         project_type: form.projectType,
         budget_range: form.budget,
-      });
+      }, submittedSourcePath);
       setStatus("error");
     }
   });
