@@ -126,7 +126,6 @@
   .scheme-a-hero__intro { padding: clamp(16px, 2vw, 24px); }
 
   .scheme-a-home-summary {
-    padding-block: clamp(36px, 4vw, 56px);
     color: var(--public-text-primary);
     background: var(--public-surface-base);
   }

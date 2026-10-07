@@ -20,11 +20,9 @@ export function HomeJournal() {
   return (
     <section className="home-journal" data-home-section="journal" aria-labelledby="home-journal-title">
       <div className="scheme-a-frame">
-        <header className="home-journal__header">
-          <div>
-            <p className="scheme-a-eyebrow">{copy.label}</p>
-            <h2 id="home-journal-title">{copy.title}</h2>
-          </div>
+        <header className="scheme-a-heading home-section-heading home-journal__header">
+          <p className="scheme-a-eyebrow">{copy.label}</p>
+          <h2 id="home-journal-title">{copy.title}</h2>
           <p>{copy.description}</p>
         </header>
         <PublicResultsBoundary
@@ -90,11 +88,9 @@ export function HomeServiceAreas() {
   return (
     <section className="home-areas" data-home-section="areas" aria-labelledby="home-areas-title">
       <div className="scheme-a-frame">
-        <header className="home-areas__header">
-          <div>
-            <p className="scheme-a-eyebrow">{copy.label}</p>
-            <h2 id="home-areas-title">{copy.title}</h2>
-          </div>
+        <header className="scheme-a-heading home-section-heading home-areas__header">
+          <p className="scheme-a-eyebrow">{copy.label}</p>
+          <h2 id="home-areas-title">{copy.title}</h2>
           <p>{copy.description}</p>
         </header>
         <PublicResultsBoundary

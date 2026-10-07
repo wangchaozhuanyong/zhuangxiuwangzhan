@@ -24,11 +24,9 @@ const SchemeAHomeRenovation = () => {
   return (
     <section className="home-renovation" data-home-section="renovation" aria-labelledby="home-renovation-title">
       <div className="scheme-a-frame home-renovation__frame">
-        <header className="home-renovation__header">
-          <div>
-            <p className="home-renovation__eyebrow">{copy.eyebrow}</p>
-            <h2 id="home-renovation-title">{copy.title}</h2>
-          </div>
+        <header className="scheme-a-heading home-section-heading home-renovation__header">
+          <p className="scheme-a-eyebrow">{copy.eyebrow}</p>
+          <h2 id="home-renovation-title">{copy.title}</h2>
           <p className="home-renovation__intro">{copy.intro}</p>
         </header>
 

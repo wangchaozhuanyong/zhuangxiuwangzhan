@@ -19,7 +19,7 @@ export default function SchemeAHomeFurniture() {
   return (
     <section className="home-furniture" data-home-section="furniture" aria-labelledby="home-furniture-title" data-cinematic-section>
       <div className="scheme-a-frame">
-        <header className="home-furniture__intro">
+        <header className="scheme-a-heading home-section-heading home-furniture__intro">
           <p className="scheme-a-eyebrow">{furnitureCopy.title}</p>
           <h2 id="home-furniture-title">{copy.title}</h2>
           <p>{copy.description}</p>

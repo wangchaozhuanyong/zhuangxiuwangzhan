@@ -969,7 +969,7 @@
     pointer-events: none;
   }
 
-  html[data-public-theme="warm-stone"] :is(.scheme-a-compare, .scheme-a-transformation__compare):focus-within {
+  html[data-public-theme="warm-stone"] :is(.scheme-a-compare, .scheme-a-transformation__compare):has(input:focus-visible) {
     outline: 2px solid var(--scheme-a-gold);
     outline-offset: 4px;
   }
