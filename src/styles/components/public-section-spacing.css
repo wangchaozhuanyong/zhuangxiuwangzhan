@@ -17,7 +17,16 @@
     .scheme-a-materials,
     .scheme-a-before,
     .scheme-a-home-process,
-    .scheme-a-home-faq
+    .scheme-a-home-faq,
+    .scheme-a-home-summary,
+    .scheme-a-home-brands,
+    .scheme-a-home-testimonials,
+    .home-renovation,
+    .home-services,
+    .home-materials,
+    .home-furniture,
+    .home-journal,
+    .home-areas
   ),
   html[lang][data-public-theme="warm-stone"] .scheme-a-home--atelier .scheme-a-contact > .scheme-a-frame,
   html[lang][data-public-theme="warm-stone"] .scheme-a-route-section,

@@ -272,8 +272,9 @@ const SchemeAHome = ({ content, faqItems }: SchemeAHomeProps) => {
 
       <section className="home-services" data-home-section="services" aria-labelledby="home-services-title">
         <div className="scheme-a-frame">
-          <header className="home-services__header">
-            <div><p className="scheme-a-eyebrow">{copy.servicesLabel}</p><h2 id="home-services-title">{editorial.servicesTitle}</h2></div>
+          <header className="scheme-a-heading home-section-heading home-services__header">
+            <p className="scheme-a-eyebrow">{copy.servicesLabel}</p>
+            <h2 id="home-services-title">{editorial.servicesTitle}</h2>
             <p>{editorial.servicesIntro}</p>
           </header>
           <div className="home-services__grid">
@@ -306,8 +307,9 @@ const SchemeAHome = ({ content, faqItems }: SchemeAHomeProps) => {
 
       <section className="home-materials" data-home-section="trust" aria-labelledby="home-materials-title">
         <div className="scheme-a-frame">
-          <header className="home-materials__header">
-            <div><p className="scheme-a-eyebrow">{editorial.materialsLabel}</p><h2 id="home-materials-title">{editorial.materialsTitle}</h2></div>
+          <header className="scheme-a-heading home-section-heading home-materials__header">
+            <p className="scheme-a-eyebrow">{editorial.materialsLabel}</p>
+            <h2 id="home-materials-title">{editorial.materialsTitle}</h2>
             <p>{editorial.materialsIntro}</p>
           </header>
           <div className="home-materials__gallery">
