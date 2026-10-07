@@ -21,6 +21,9 @@ export function getPublicQuerySeed(key: QueryKey): unknown {
   const language = parameters.language === "zh" ? "zh" : "en";
   const limit = (rows: UnknownRecord[], value: unknown) => typeof value === "number" && value > 0 ? rows.slice(0, value) : rows;
   switch (parameters.resource) {
+    case "home_furniture": return payload.homeFurniture?.[language];
+    case "home_journal": return payload.homeJournalPosts ? mapPublishedBlogPostRows(payload.homeJournalPosts, language) : undefined;
+    case "home_service_areas": return payload.homeServiceAreas?.map((row) => mapPublishedServiceAreaSummary(row, language));
     case "furniture_catalog": {
       const bundle = payload.furnitureCatalog;
       if (!bundle) return undefined;

@@ -3,6 +3,8 @@ import { projectPublicMetadata } from "@/lib/projectPublicMetadata.mjs";
 import {
   fetchPublishedBlogPostRowBySlug,
   fetchPublishedBlogPostRows,
+  fetchPublishedHomeJournalRows,
+  fetchPublishedHomeServiceAreaRows,
   fetchPublishedHeroSlideRows,
   fetchPublishedLandingPageRowBySlug,
   fetchPublishedMaterialRows,
@@ -26,6 +28,7 @@ import type { MaterialCatalogCategory } from "@/lib/materialCatalog";
 import { formatMaterialPrice } from "@/lib/materialPrice";
 import { FURNITURE_MATERIAL_CATEGORY } from "@/lib/furnitureCatalogConfig";
 import { toArray, toRecord, toText, type UnknownRecord } from "@/lib/recordUtils";
+import { HOME_JOURNAL_LIMIT, HOME_SERVICE_AREAS_LIMIT, projectHomeJournalPosts, projectHomeServiceAreas } from "@/lib/homeDiscoveryData";
 
 type Language = "en" | "zh";
 type ProjectImageRecord = UnknownRecord & {
@@ -573,6 +576,13 @@ export const mapPublishedBlogPost = (item: UnknownRecord, language: Language = "
 export const mapPublishedBlogPostRows = (rows: UnknownRecord[], language: Language = "en") =>
   rows.map((item) => mapPublishedBlogPost(item, language));
 
+export const getPublishedHomeJournal = async (language: Language = "en", signal?: AbortSignal) => {
+  if (!hasPublicContentDatabaseClient()) return (await getFallbackBlogPosts(language)).slice(0, HOME_JOURNAL_LIMIT);
+  const data = await fetchPublishedHomeJournalRows(signal);
+  if (!Array.isArray(data)) throw new Error("Homepage journal data unavailable");
+  return mapPublishedBlogPostRows(projectHomeJournalPosts(data as unknown as UnknownRecord[]), language);
+};
+
 export const getPublishedBlogPostBySlug = async (slug: string, language: "en" | "zh" = "en", signal?: AbortSignal) => {
   const fallbackPost = async () => (await getFallbackBlogPosts(language)).find((post) => post.slug === slug) || null;
   if (!hasPublicContentDatabaseClient()) return fallbackPost();
@@ -656,6 +666,21 @@ export const getPublishedServiceAreas = async (language: "en" | "zh" = "en", sig
   const data = await fetchPublishedServiceAreaRows(signal);
   if (!data?.length) return fallback();
   return (data as unknown as UnknownRecord[]).map((item) => mapPublishedServiceAreaSummary(item, language));
+};
+
+export const getPublishedHomeServiceAreas = async (language: Language = "en", signal?: AbortSignal): Promise<PublishedServiceAreaSummary[]> => {
+  if (!hasPublicContentDatabaseClient()) {
+    const locations = await getFallbackLocations(language);
+    return Object.values(locations).slice(0, HOME_SERVICE_AREAS_LIMIT).map((location) => ({
+      name: location.name,
+      slug: location.slug,
+      description: "",
+      propertyTypes: [],
+    }));
+  }
+  const data = await fetchPublishedHomeServiceAreaRows(signal);
+  if (!Array.isArray(data)) throw new Error("Homepage service area data unavailable");
+  return projectHomeServiceAreas(data as unknown as UnknownRecord[]).map((item) => mapPublishedServiceAreaSummary(item, language));
 };
 
 export const getPublishedLandingPageBySlug = async (slug: string, language: "en" | "zh" = "en", signal?: AbortSignal) => {

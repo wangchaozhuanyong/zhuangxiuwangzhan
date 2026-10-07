@@ -1,5 +1,13 @@
 import { withReadSignal } from "@/lib/readRequest";
 import { isSupabaseConfigured } from "@/lib/supabaseConfig";
+import {
+  HOME_JOURNAL_LIMIT,
+  HOME_JOURNAL_ORDER,
+  HOME_JOURNAL_SELECT,
+  HOME_SERVICE_AREAS_LIMIT,
+  HOME_SERVICE_AREAS_ORDER,
+  HOME_SERVICE_AREAS_SELECT,
+} from "@/lib/homeDiscoveryData";
 
 const byCreatedAtDesc = { ascending: false };
 
@@ -232,6 +240,22 @@ export async function fetchPublishedBlogPostRows(signal?: AbortSignal) {
   return data || [];
 }
 
+export async function fetchPublishedHomeJournalRows(signal?: AbortSignal) {
+  const supabase = await getPublicContentClient();
+  if (!supabase) return null;
+  const { data, error } = await withReadSignal(supabase
+    .from("blog_posts")
+    .select(HOME_JOURNAL_SELECT)
+    .eq("status", "published")
+    .order(HOME_JOURNAL_ORDER.column, { ascending: HOME_JOURNAL_ORDER.ascending })
+    .limit(HOME_JOURNAL_LIMIT), signal);
+  if (error) throw error;
+  if (!Array.isArray(data) || data.some((row) => !row || typeof row !== "object" || Array.isArray(row))) {
+    throw new Error("Homepage journal data unavailable");
+  }
+  return data;
+}
+
 export async function fetchPublishedBlogPostRowBySlug(slug: string, signal?: AbortSignal) {
   const supabase = await getPublicContentClient();
   if (!supabase) return null;
@@ -258,6 +282,22 @@ export async function fetchPublishedServiceAreaRows(signal?: AbortSignal) {
     .order("sort_order"), signal);
   if (error) throw error;
   return data || [];
+}
+
+export async function fetchPublishedHomeServiceAreaRows(signal?: AbortSignal) {
+  const supabase = await getPublicContentClient();
+  if (!supabase) return null;
+  const { data, error } = await withReadSignal(supabase
+    .from("service_areas")
+    .select(HOME_SERVICE_AREAS_SELECT)
+    .eq("status", "published")
+    .order(HOME_SERVICE_AREAS_ORDER.column, { ascending: HOME_SERVICE_AREAS_ORDER.ascending })
+    .limit(HOME_SERVICE_AREAS_LIMIT), signal);
+  if (error) throw error;
+  if (!Array.isArray(data) || data.some((row) => !row || typeof row !== "object" || Array.isArray(row))) {
+    throw new Error("Homepage service area data unavailable");
+  }
+  return data;
 }
 
 export async function fetchPublishedLandingPageRowBySlug(slug: string, signal?: AbortSignal) {

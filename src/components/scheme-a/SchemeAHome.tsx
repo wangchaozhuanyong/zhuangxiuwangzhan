@@ -1,4 +1,4 @@
-import { ArrowRight, ArrowUpRight, ClipboardList, MessagesSquare, Ruler } from "lucide-react";
+import { ArrowUpRight, ClipboardList, MessagesSquare, Ruler } from "lucide-react";
 import type { FocusEvent, PointerEvent } from "react";
 import DeferredSmartImage from "@/components/DeferredSmartImage";
 import ImmersiveHero from "@/components/ImmersiveHero";
@@ -13,6 +13,11 @@ import { isRenderingConceptProject } from "@/lib/projectContentClassification";
 import { resolveSchemeAHomePresentation } from "@/lib/schemeAHomePresentation";
 import { buildSupabaseSrcSet, type SupabaseTargetAspectRatio } from "@/lib/supabaseImage";
 import { buildLocalResponsiveSrcSet } from "@/lib/localResponsiveImage";
+import SchemeAHomeRenovation from "@/components/scheme-a/SchemeAHomeRenovation";
+import SchemeAHomeFurniture from "@/components/scheme-a/SchemeAHomeFurniture";
+import { HomeJournal, HomeServiceAreas } from "@/components/scheme-a/SchemeAHomeDiscovery";
+import { homeEditorialText } from "@/i18n/homeEditorialText";
+import { mediaLabels } from "@/i18n/mediaLabels";
 import SchemeAOptionalHomeSections from "@/components/scheme-a/SchemeAOptionalHomeSections";
 
 type SchemeAHomeProps = {
@@ -43,6 +48,8 @@ const PROJECT_CARD_INTRINSIC_WIDTH = 960;
 const SchemeAHome = ({ content, faqItems }: SchemeAHomeProps) => {
   const { language } = useLanguage();
   const copy = schemeAHomeText[language];
+  const editorial = homeEditorialText[language];
+  const mediaCopy = mediaLabels[language];
   const presentation = resolveSchemeAHomePresentation(content, language, copy);
   const hero = content?.heroSlides[0];
   const configuredHeroImage = hero?.image || content?.pageContent?.image_url;
@@ -58,9 +65,18 @@ const SchemeAHome = ({ content, faqItems }: SchemeAHomeProps) => {
     })
     .slice(0, 6);
   const featuredProject = projects[0];
-  const supportingProjects = projects.slice(1, 4);
+  const supportingProjects = projects.slice(1, 3);
   const projectImage = featuredProject?.thumbnail || "/images/projects/generated-portfolio/mont-kiara-luxury-condo-renovation.webp";
-  const materialImage = "/images/services/content-20260930/planning.webp";
+  const serviceImages: Record<string, string> = {
+    renovation: "/images/services/renovation-works.webp",
+    "office-renovation": "/images/services/ai-concepts/office-renovation-concept.webp",
+    builtin: "/images/services/ai-concepts/builtin-concept.webp",
+  };
+  const materialStudies = [
+    { image: "/images/projects/generated-portfolio/subang-jaya-dry-wet-kitchen-cabinet.webp", alt: editorial.materialsSpaceAlt, label: editorial.materialsSpaceLabel, disclosure: mediaCopy.renderingConcept, width: 1600, height: 1200 },
+    { image: "/images/blog/editorial-concepts-20260926-v1/kitchen-cabinet-price-malaysia/kitchen-materials-hardware.webp", alt: editorial.materialsDetailAlt, label: editorial.materialsDetailLabel, disclosure: mediaCopy.materialPalette, width: 1536, height: 1024 },
+    { image: "/images/services/design/material-board-v2-1200.webp", alt: editorial.materialsPaletteAlt, label: editorial.materialsPaletteLabel, disclosure: mediaCopy.materialPalette, width: 1200, height: 1200 },
+  ];
   const displayText = (value: string) => language === "zh" ? translateDisplayText(value, language) : value;
   const resolvedServices = copy.serviceFallbacks.map((fallback) => {
     const slug = fallback.path.split("/").filter(Boolean).at(-1);
@@ -74,7 +90,7 @@ const SchemeAHome = ({ content, faqItems }: SchemeAHomeProps) => {
     ? [displayText(featuredProject.type), featuredProjectIsConcept ? copy.projectConceptLabel : ""].filter(Boolean).join(" · ")
     : copy.projectFallbackMeta;
   return (
-    <div className="scheme-a-home scheme-a-home--atelier">
+    <div className="scheme-a-home scheme-a-home--atelier scheme-a-home--editorial">
       <ImmersiveHero className="scheme-a-hero" standardPageHero={false} aria-labelledby="scheme-a-home-title" data-home-section="hero" data-hero-art={usesAtelierHero ? "daylight" : "custom"}>
         <div className="scheme-a-hero__frame">
           <figure className="scheme-a-hero__media" data-cinematic-media>
@@ -118,6 +134,7 @@ const SchemeAHome = ({ content, faqItems }: SchemeAHomeProps) => {
                 {" "}
                 <span>{copy.heroTitleAccent}</span>
               </h1>
+              <p className="scheme-a-hero__service">{copy.heroService}</p>
               <p className="scheme-a-hero__lead">{copy.heroKicker}</p>
               <div className="scheme-a-actions">
                 <LocalizedLink className="scheme-a-button scheme-a-button--paper" to={presentation.heroAction.url}>
@@ -132,65 +149,6 @@ const SchemeAHome = ({ content, faqItems }: SchemeAHomeProps) => {
           </div>
         </div>
       </ImmersiveHero>
-
-      <section className="scheme-a-home-summary" aria-labelledby="scheme-a-home-summary-title" data-home-section="summary" data-cinematic-section>
-        <div className="scheme-a-frame scheme-a-home-summary__layout">
-          <header className="scheme-a-home-summary__intro">
-            <h2 id="scheme-a-home-summary-title">
-              <span>{copy.summaryTitle}</span>{" "}<span>{copy.summaryTitleAccent}</span>
-            </h2>
-            <p className="scheme-a-home-summary__description">{copy.summaryDescription}</p>
-          </header>
-          {presentation.stats.length > 0 && (
-            <div className="scheme-a-home-summary__metrics" role="list" data-content-source={presentation.statsSource} aria-label={copy.summaryCardsLabel}>
-              {presentation.stats.map((stat, index) => {
-                const Icon = HOME_SUMMARY_ICONS[index] || Ruler;
-                return (
-                  <div key={stat.label} className="scheme-a-home-summary__metric-item" role="listitem">
-                    <Icon className="scheme-a-home-summary__icon" aria-hidden="true" strokeWidth={1.5} />
-                    <h3>{stat.value}</h3>
-                    <p>{stat.label}</p>
-                  </div>
-                );
-              })}
-            </div>
-          )}
-        </div>
-      </section>
-
-      <section className="scheme-a-services" data-home-section="services" data-cinematic-section>
-        <div className="scheme-a-frame scheme-a-services__layout">
-          <header className="scheme-a-heading">
-            <p className="scheme-a-eyebrow">{copy.servicesLabel}</p>
-            <h2>{copy.servicesTitle}</h2>
-            <div className="scheme-a-services__context">
-              <p><span>{copy.designPrompt} </span><LocalizedLink to="/services/design">{copy.designLink}<ArrowUpRight aria-hidden="true" /></LocalizedLink></p>
-              <p><span>{copy.repairPrompt} </span><LocalizedLink to="/services/surface-repair">{copy.repairLink}<ArrowUpRight aria-hidden="true" /></LocalizedLink></p>
-              <p><span>{copy.areasPrompt} </span><LocalizedLink to="/locations">{copy.areasLink}<ArrowUpRight aria-hidden="true" /></LocalizedLink></p>
-            </div>
-          </header>
-          <ol>
-            {resolvedServices.map((service) => (
-              <li key={`${service.path}-${service.title}`}>
-                <LocalizedLink
-                  to={service.path}
-                  onPointerDown={(event) => {
-                    if (event.pointerType !== "mouse") event.currentTarget.dataset.servicePressed = "true";
-                  }}
-                  onPointerUp={clearServicePress}
-                  onPointerCancel={clearServicePress}
-                  onPointerLeave={clearServicePress}
-                  onBlur={clearServicePress}
-                >
-                  <span>{service.title}</span>
-                  <small>{service.summary}</small>
-                  <ArrowUpRight aria-hidden="true" />
-                </LocalizedLink>
-              </li>
-            ))}
-          </ol>
-        </div>
-      </section>
 
       <section className="scheme-a-project" data-home-section="projects" data-cinematic-section>
         <div className="scheme-a-frame scheme-a-section-head">
@@ -226,7 +184,7 @@ const SchemeAHome = ({ content, faqItems }: SchemeAHomeProps) => {
             <strong>{featuredProject?.title || copy.projectFallbackTitle}</strong>
             <span>{projectMeta}</span>
           </div>
-          <p>{featuredProject?.description || copy.projectDescription}</p>
+          <p>{copy.projectDescription}</p>
         </div>
         {supportingProjects.length > 0 && (
           <>
@@ -285,50 +243,87 @@ const SchemeAHome = ({ content, faqItems }: SchemeAHomeProps) => {
         )}
       </section>
 
-      <section className="scheme-a-materials" data-home-section="trust" data-cinematic-section>
-        <div className="scheme-a-frame scheme-a-materials__layout">
-          <figure className="scheme-a-materials__media" data-cinematic-media>
-            <DeferredSmartImage
-              src={materialImage}
-              alt={copy.planningImageAlt}
-              width={1280}
-              height={960}
-              sizes="(max-width: 374px) calc(100vw - 24px), (max-width: 767px) calc(100vw - 32px), (min-width: 1536px) 739px, 50vw"
-              candidateWidths={[560, 720, 960, 1280]}
-              quality={86}
-              loading="lazy"
-            />
-            <div className="scheme-a-materials__badge" aria-hidden="true">
-              <span className="scheme-a-materials__badge-dot" />
-              <div>
-                <strong>{copy.trustBadgeTitle}</strong>
-                <span>{copy.trustBadgeDetail}</span>
-              </div>
-            </div>
-          </figure>
-          <div className="scheme-a-materials__copy">
-            <header className="scheme-a-heading scheme-a-heading--split">
-              <p className="scheme-a-eyebrow">{copy.trustLabel}</p>
-              <h2>{copy.trustTitle}</h2>
-              <p>{copy.trustBody}</p>
-            </header>
-            {copy.trustDetails && (
-              <dl className="scheme-a-materials__details" aria-label={copy.trustLabel}>
-                {copy.trustDetails.map((detail) => (
-                  <div key={detail.title}>
-                    <dt>{detail.title}</dt>
-                    <dd>{detail.description}</dd>
+      <SchemeAHomeRenovation />
+
+      <section className="scheme-a-home-summary" aria-labelledby="scheme-a-home-summary-title" data-home-section="summary" data-cinematic-section>
+        <div className="scheme-a-frame scheme-a-home-summary__layout">
+          <header className="scheme-a-home-summary__intro">
+            <h2 id="scheme-a-home-summary-title">
+              <span>{copy.summaryTitle}</span>{" "}<span>{copy.summaryTitleAccent}</span>
+            </h2>
+            <p className="scheme-a-home-summary__description">{copy.summaryDescription}</p>
+          </header>
+          {presentation.stats.length > 0 && (
+            <div className="scheme-a-home-summary__metrics" role="list" data-content-source={presentation.statsSource} aria-label={copy.summaryCardsLabel}>
+              {presentation.stats.map((stat, index) => {
+                const Icon = HOME_SUMMARY_ICONS[index] || Ruler;
+                return (
+                  <div key={stat.label} className="scheme-a-home-summary__metric-item" role="listitem">
+                    <Icon className="scheme-a-home-summary__icon" aria-hidden="true" strokeWidth={1.5} />
+                    <h3>{stat.value}</h3>
+                    <p>{stat.label}</p>
                   </div>
-                ))}
-              </dl>
-            )}
-            <LocalizedLink to="/materials">
-              {copy.trustCta}
-              <ArrowRight aria-hidden="true" />
-            </LocalizedLink>
+                );
+              })}
+            </div>
+          )}
+        </div>
+      </section>
+
+      <section className="home-services" data-home-section="services" aria-labelledby="home-services-title">
+        <div className="scheme-a-frame">
+          <header className="home-services__header">
+            <div><p className="scheme-a-eyebrow">{copy.servicesLabel}</p><h2 id="home-services-title">{editorial.servicesTitle}</h2></div>
+            <p>{editorial.servicesIntro}</p>
+          </header>
+          <div className="home-services__grid">
+            {editorial.services.map((service) => {
+              const published = content?.services.find((item) => item.slug === service.slug);
+              return (
+                <LocalizedLink className="home-services__card" to={`/services/${service.slug}`} key={service.slug}
+                  onPointerDown={(event) => { if (event.pointerType !== "mouse") event.currentTarget.dataset.servicePressed = "true"; }}
+                  onPointerUp={clearServicePress} onPointerCancel={clearServicePress} onPointerLeave={clearServicePress} onBlur={clearServicePress}>
+                  <div className="home-services__image"><DeferredSmartImage src={published?.image || serviceImages[service.slug]} alt={published?.imageAlt || service.alt} width={960} height={1200} sizes="(max-width: 767px) calc(100vw - 32px), 32vw" candidateWidths={[360, 560, 720, 960]} rootMargin="1200px" loading="lazy" /></div>
+                  <div className="home-services__copy"><h3>{service.title}</h3><p>{service.description}</p><ArrowUpRight aria-hidden="true" /></div>
+                </LocalizedLink>
+              );
+            })}
+          </div>
+          <div className="home-services__directory">
+            {copy.serviceFallbacks.map((service) => <LocalizedLink key={service.path} to={service.path}>{service.title}<ArrowUpRight aria-hidden="true" /></LocalizedLink>)}
+          </div>
+          <details className="home-services__details">
+            <summary>{editorial.servicesDetails}</summary>
+            <ul>{resolvedServices.map((service) => <li key={service.path}><LocalizedLink to={service.path}>{service.title}</LocalizedLink><p>{service.summary}</p></li>)}</ul>
+          </details>
+          <div className="home-services__support">
+            <LocalizedLink to="/services/design">{copy.designLink}<ArrowUpRight aria-hidden="true" /></LocalizedLink>
+            <LocalizedLink to="/services/surface-repair">{copy.repairLink}<ArrowUpRight aria-hidden="true" /></LocalizedLink>
+            <LocalizedLink to="/services">{editorial.servicesAll}<ArrowUpRight aria-hidden="true" /></LocalizedLink>
           </div>
         </div>
       </section>
+
+      <section className="home-materials" data-home-section="trust" aria-labelledby="home-materials-title">
+        <div className="scheme-a-frame">
+          <header className="home-materials__header">
+            <div><p className="scheme-a-eyebrow">{editorial.materialsLabel}</p><h2 id="home-materials-title">{editorial.materialsTitle}</h2></div>
+            <p>{editorial.materialsIntro}</p>
+          </header>
+          <div className="home-materials__gallery">
+            {materialStudies.map((study) => <figure key={study.image}>
+              <div className="home-materials__image"><DeferredSmartImage src={study.image} alt={study.alt} width={study.width} height={study.height} sourceWidth={study.width} candidateWidths={[360, 560, 720, 960, 1200]} sizes="(max-width: 767px) 100vw, 60vw" rootMargin="1200px" loading="lazy" /></div>
+              <figcaption><span>{study.label}</span><small>{study.disclosure}</small></figcaption>
+            </figure>)}
+          </div>
+          <div className="home-materials__actions">
+            <LocalizedLink to="/materials">{editorial.materialsCta}<ArrowUpRight aria-hidden="true" /></LocalizedLink>
+            <LocalizedLink to="/services/builtin">{editorial.builtinsCta}<ArrowUpRight aria-hidden="true" /></LocalizedLink>
+          </div>
+        </div>
+      </section>
+
+      <SchemeAHomeFurniture />
 
       {presentation.processSteps.length > 0 && (
         <section className="scheme-a-home-process" data-home-section="process" data-content-source={presentation.processSource} data-cinematic-section>
@@ -350,6 +345,8 @@ const SchemeAHome = ({ content, faqItems }: SchemeAHomeProps) => {
         </section>
       )}
 
+      <HomeJournal />
+      <HomeServiceAreas />
       <SchemeAOptionalHomeSections content={content} />
 
       {faqItems.length > 0 && (

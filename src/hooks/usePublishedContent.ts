@@ -22,6 +22,18 @@ type PublicQueryOptions = {
 const isEnabled = (options?: PublicQueryOptions) => options?.enabled ?? true;
 const isSupabaseQueryEnabled = (options?: PublicQueryOptions) => isEnabled(options) && isSupabaseConfigured;
 
+export function usePublishedHomeFurniture(language: "en" | "zh") {
+  return useQuery({ ...publicContentQueries.homeFurniture(language), ...queryDefaults });
+}
+
+export function usePublishedHomeJournal(language: "en" | "zh") {
+  return useQuery({ ...publicContentQueries.homeJournal(language), ...queryDefaults });
+}
+
+export function usePublishedHomeServiceAreas(language: "en" | "zh") {
+  return useQuery({ ...publicContentQueries.homeServiceAreas(language), ...queryDefaults });
+}
+
 export function usePublishedHomeContentBundle(language: "en" | "zh", options?: PublicQueryOptions) {
   return useQuery({
     ...publicContentQueries.homeBundle(language),

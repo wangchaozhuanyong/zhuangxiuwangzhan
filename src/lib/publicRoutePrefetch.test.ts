@@ -8,6 +8,9 @@ describe("public route language prefetch", () => {
   it("matches the home and listing query keys used by the public hooks", () => {
     expect(keysFor("/zh", "en")).toEqual([
       ["published", "home_bundle", "en"],
+      ["published", "home_furniture", "en"],
+      ["published", "home_journal", "en"],
+      ["published", "home_service_areas", "en"],
     ]);
 
     expect(keysFor("/en/projects", "zh")).toEqual([

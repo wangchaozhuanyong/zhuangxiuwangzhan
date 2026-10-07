@@ -24,7 +24,12 @@ export const getPublicRoutePrefetchTasks = (pathname: string, language: Language
   const [section, slug] = segments;
 
   if (path === "/") {
-    return [publicContentQueries.homeBundle(language)];
+    return [
+      publicContentQueries.homeBundle(language),
+      publicContentQueries.homeFurniture(language),
+      publicContentQueries.homeJournal(language),
+      publicContentQueries.homeServiceAreas(language),
+    ];
   }
 
   if (section === "about") {

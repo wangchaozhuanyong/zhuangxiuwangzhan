@@ -1,0 +1,198 @@
+@layer components {
+  /* Home-only composition; shared navigation, controls and route styles stay owned by their components. */
+  .scheme-a-home--editorial :is(.home-renovation, .home-services, .home-materials, .home-furniture, .home-journal, .home-areas) {
+    padding-block: clamp(48px, 6vw, 88px);
+    color: var(--public-text-primary);
+    background: var(--public-surface-base);
+  }
+  .scheme-a-home--editorial :is(.home-renovation, .home-materials, .home-areas) {
+    background: var(--public-surface-section);
+  }
+  .scheme-a-home--editorial :is(.home-renovation__header, .home-services__header, .home-materials__header, .home-journal__header, .home-areas__header) {
+    display: grid;
+    grid-template-columns: minmax(0, 1.2fr) minmax(0, .8fr);
+    gap: 32px 8%;
+    align-items: end;
+    margin-bottom: 36px;
+  }
+  .scheme-a-home--editorial :is(.home-renovation, .home-services, .home-materials, .home-furniture, .home-journal, .home-areas) h2 {
+    margin: 12px 0 0;
+    font-family: var(--font-display);
+    font-size: clamp(29px, 3.2vw, 48px);
+    font-weight: 400;
+    line-height: 1.25;
+    text-wrap: pretty;
+  }
+  .scheme-a-home--editorial :is(.home-renovation__intro, .home-services__header > p, .home-materials__header > p, .home-furniture__intro > p:last-child, .home-journal__header > p, .home-areas__header > p) {
+    color: var(--public-text-secondary);
+    font-size: 16px;
+    line-height: 1.8;
+    max-width: 42rem;
+  }
+  .scheme-a-home--editorial .home-renovation__eyebrow {
+    font-size: 12px;
+    letter-spacing: .12em;
+    text-transform: uppercase;
+  }
+  .scheme-a-home--editorial a:focus-visible,
+  .scheme-a-home--editorial summary:focus-visible {
+    outline: 2px solid var(--public-accent);
+    outline-offset: 5px;
+  }
+  .scheme-a-home--editorial :is(.home-services__support, .home-materials__actions, .home-furniture__actions, .home-renovation__actions, .home-journal__actions, .home-areas__actions) {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 20px 32px;
+    margin-top: 30px;
+  }
+  .scheme-a-home--editorial :is(.home-services__support, .home-materials__actions, .home-furniture__actions, .home-renovation__actions, .home-journal__actions, .home-areas__actions) a {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    min-height: 44px;
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--public-accent);
+  }
+  .scheme-a-home--editorial :is(.home-services__support, .home-materials__actions, .home-furniture__actions, .home-renovation__actions, .home-journal__actions, .home-areas__actions) a:not(.scheme-a-button) {
+    border-bottom: 1px solid var(--public-border);
+  }
+  .scheme-a-home--editorial :is(.home-services, .home-materials, .home-furniture, .home-renovation, .home-journal, .home-areas) svg {
+    width: 18px;
+    height: 18px;
+    flex-shrink: 0;
+  }
+  .scheme-a-home--editorial :is(.home-services__card, .home-furniture__product-link, .home-journal__link) {
+    display: block;
+    min-width: 0;
+    color: inherit;
+    text-decoration: none;
+  }
+  .scheme-a-home--editorial :is(.home-services__card, .home-furniture__product-link, .home-journal__link):is(:hover, :focus-visible) h3,
+  .scheme-a-home--editorial .home-services__card[data-service-pressed="true"] h3 {
+    text-decoration: underline;
+    text-underline-offset: .2em;
+    text-decoration-thickness: 1px;
+  }
+  .scheme-a-home--editorial :is(.home-services__image, .home-materials__image, .home-furniture__product-image, .home-journal__image) {
+    overflow: hidden;
+    background: var(--public-surface-card);
+  }
+  .scheme-a-home--editorial :is(.home-services__image, .home-materials__image, .home-furniture__scene, .home-furniture__product-image, .home-journal__image) :is(.smart-image-frame, picture, img) {
+    display: block;
+    width: 100%;
+    height: 100%;
+  }
+  .scheme-a-home--editorial :is(.home-services__image, .home-materials__image, .home-furniture__scene, .home-journal__image) img { object-fit: cover; }
+  .scheme-a-home--editorial .home-renovation__caption {
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 8px 24px;
+    margin-top: 14px;
+    font-size: 13px;
+    color: var(--public-text-secondary);
+  }
+  .scheme-a-home--editorial .home-renovation__details { margin-top: 28px; }
+  .scheme-a-home--editorial .home-renovation__features {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 24px;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  .scheme-a-home--editorial .home-renovation__features li { border-top: 1px solid var(--public-border); padding-top: 16px; }
+  .scheme-a-home--editorial .home-renovation__features strong { display: block; font-size: 20px; font-weight: 400; }
+  .scheme-a-home--editorial .home-renovation__features span { display: block; margin-top: 6px; font-size: 14px; line-height: 1.7; color: var(--public-text-secondary); }
+  .scheme-a-home--editorial .home-services__grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 24px; }
+  .scheme-a-home--editorial .home-services__image { aspect-ratio: 4 / 5; }
+  .scheme-a-home--editorial .home-services__card:nth-child(2) { margin-top: 48px; }
+  .scheme-a-home--editorial .home-services__copy { position: relative; padding: 20px 30px 0 0; }
+  .scheme-a-home--editorial .home-services__copy h3 { font: 400 clamp(24px, 2vw, 30px)/1.3 var(--font-display); }
+  .scheme-a-home--editorial .home-services__copy p { margin-top: 10px; font-size: 14px; line-height: 1.7; color: var(--public-text-secondary); }
+  .scheme-a-home--editorial .home-services__copy svg { position: absolute; top: 26px; right: 0; }
+  .scheme-a-home--editorial .home-services__directory { display: flex; flex-wrap: wrap; gap: 10px 28px; border-top: 1px solid var(--public-border); margin-top: 40px; padding-top: 20px; }
+  .scheme-a-home--editorial .home-services__directory a { display: inline-flex; align-items: center; gap: 10px; min-height: 44px; font-size: 14px; }
+  .scheme-a-home--editorial .home-services__details { margin-top: 20px; border-block: 1px solid var(--public-border); }
+  .scheme-a-home--editorial .home-services__details summary { padding-block: 18px; cursor: pointer; font-size: 14px; }
+  .scheme-a-home--editorial .home-services__details ul { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px 40px; list-style: none; padding: 8px 0 28px; }
+  .scheme-a-home--editorial .home-services__details li a { font-weight: 500; line-height: 1.6; }
+  .scheme-a-home--editorial .home-services__details li p { margin-top: 8px; font-size: 14px; line-height: 1.8; color: var(--public-text-secondary); }
+  .scheme-a-home--editorial .home-materials__gallery { display: grid; grid-template-columns: 1.5fr 1fr; gap: 24px; }
+  .scheme-a-home--editorial .home-materials__gallery figure { display: flex; min-width: 0; flex-direction: column; }
+  .scheme-a-home--editorial .home-materials__gallery figure:first-child { grid-row: span 2; }
+  .scheme-a-home--editorial .home-materials__image { flex: 1; min-height: 0; aspect-ratio: 2 / 1; }
+  .scheme-a-home--editorial .home-materials__gallery figure:first-child .home-materials__image { aspect-ratio: auto; }
+  .scheme-a-home--editorial .home-materials__gallery figcaption { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 4px 12px; padding-top: 12px; font-size: 14px; }
+  .scheme-a-home--editorial .home-materials__gallery small { font-size: 12px; color: var(--public-text-secondary); }
+  .scheme-a-home--editorial .home-furniture__intro { max-width: 52rem; margin-bottom: 36px; }
+  .scheme-a-home--editorial .home-furniture__intro > p:last-child { margin-top: 20px; }
+  .scheme-a-home--editorial .home-furniture__layout { display: grid; grid-template-columns: 1fr 1fr; gap: 32px; align-items: stretch; }
+  .scheme-a-home--editorial .home-furniture__scene { position: relative; aspect-ratio: 1; min-height: 0; overflow: hidden; }
+  .scheme-a-home--editorial .home-furniture__scene > span { position: absolute; inset: 0; }
+  .scheme-a-home--editorial .home-furniture__scene figcaption { position: absolute; bottom: 16px; left: 16px; padding: 6px 10px; background: var(--public-surface-base); color: var(--public-text-secondary); font-size: 12px; }
+  .scheme-a-home--editorial .home-furniture__catalog { min-width: 0; }
+  .scheme-a-home--editorial .home-furniture__products { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 28px 20px; }
+  .scheme-a-home--editorial .home-furniture__product-image { aspect-ratio: 4 / 3; }
+  .scheme-a-home--editorial .home-furniture__product-image .smart-image-frame { background: var(--public-surface-card); }
+  .scheme-a-home--editorial .home-furniture__product-image img { object-fit: contain; }
+  .scheme-a-home--editorial .home-furniture__product-copy { position: relative; padding: 14px 24px 0 0; }
+  .scheme-a-home--editorial .home-furniture__product-copy p { font-size: 12px; color: var(--public-text-secondary); }
+  .scheme-a-home--editorial .home-furniture__product-copy h3 { margin-top: 7px; font-size: 16px; font-weight: 400; line-height: 1.6; }
+  .scheme-a-home--editorial .home-furniture__product-copy svg { position: absolute; top: 16px; right: 0; }
+  .scheme-a-home--editorial .home-journal__grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 28px; }
+  .scheme-a-home--editorial .home-journal__image { position: relative; aspect-ratio: 4 / 3; }
+  .scheme-a-home--editorial .home-journal__disclosure { position: absolute; bottom: 12px; left: 12px; background: var(--public-surface-base); padding: 5px 8px; font-size: 11px; }
+  .scheme-a-home--editorial .home-journal__copy { padding-top: 20px; }
+  .scheme-a-home--editorial .home-journal__category { color: var(--public-accent); font-size: 12px; }
+  .scheme-a-home--editorial .home-journal__copy h3 { margin-top: 12px; font: 400 clamp(20px, 1.8vw, 26px)/1.45 var(--font-display); }
+  .scheme-a-home--editorial .home-journal__excerpt { margin-top: 12px; color: var(--public-text-secondary); font-size: 14px; line-height: 1.8; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+  .scheme-a-home--editorial .home-journal__read { display: inline-flex; gap: 12px; align-items: center; margin-top: 20px; font-size: 13px; }
+  .scheme-a-home--editorial .home-areas__links { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 0 28px; margin: 0; padding: 0; list-style: none; }
+  .scheme-a-home--editorial .home-areas__links a { display: flex; justify-content: space-between; gap: 12px; align-items: center; min-height: 64px; padding-block: 12px; border-bottom: 1px solid var(--public-border); font-size: 15px; }
+
+  @media (min-width: 768px) {
+    html[data-public-theme="warm-stone"] .scheme-a-home--editorial .scheme-a-project__collection[data-count="2"] { grid-template-columns: 1.15fr .85fr; max-width: var(--scheme-a-frame); align-items: start; }
+    html[data-public-theme="warm-stone"] .scheme-a-home--editorial .scheme-a-project__collection-item:nth-child(2) { margin-top: 64px; }
+  }
+  @media (max-width: 1023px) {
+    .scheme-a-home--editorial :is(.home-renovation__header, .home-services__header, .home-materials__header, .home-journal__header, .home-areas__header) { grid-template-columns: 1fr; gap: 20px; }
+    .scheme-a-home--editorial .home-furniture__layout { gap: 24px; }
+    .scheme-a-home--editorial .home-areas__links { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  }
+  @media (max-width: 767px) {
+    .scheme-a-home--editorial .scheme-a-hero__intro { padding-inline: 0; }
+    .scheme-a-home--editorial .scheme-a-hero__service { font-size: 13px; line-height: 1.6; }
+    /* Match the specificity of the shared shell's explicit typography rules. */
+    html[data-public-theme] #root .scheme-a-home--editorial .scheme-a-hero__lead { padding-top: 8px; font-size: 13px !important; line-height: 1.6 !important; }
+    html[data-public-theme] #root .scheme-a-home--editorial .scheme-a-hero .scheme-a-button { min-height: 44px !important; padding: 12px 16px !important; font-size: 13px !important; }
+    .scheme-a-home--editorial :is(.home-renovation, .home-services, .home-materials, .home-furniture, .home-journal, .home-areas) { padding-block: 44px; }
+    .scheme-a-home--editorial .home-services__grid { grid-template-columns: 1fr; gap: 32px; }
+    .scheme-a-home--editorial .home-services__card:nth-child(2) { margin-top: 0; }
+    .scheme-a-home--editorial .home-services__image { aspect-ratio: 4 / 3; }
+    .scheme-a-home--editorial .home-services__details ul { grid-template-columns: 1fr; }
+    .scheme-a-home--editorial .home-renovation__features { grid-template-columns: 1fr; gap: 14px; }
+    .scheme-a-home--editorial .home-renovation__features li { display: grid; grid-template-columns: 4.5rem 1fr; gap: 12px; align-items: baseline; }
+    .scheme-a-home--editorial .home-renovation__features span { margin-top: 0; }
+    .scheme-a-home--editorial .home-renovation__actions { align-items: stretch; flex-direction: column; gap: 16px; }
+    .scheme-a-home--editorial .home-renovation__actions a { width: 100%; }
+    .scheme-a-home--editorial .home-renovation__compare .scheme-a-transformation__label { top: 10px; font-size: 10px; max-width: 46%; letter-spacing: 0; }
+    .scheme-a-home--editorial .home-renovation__compare .scheme-a-transformation__label--before { left: 10px; }
+    .scheme-a-home--editorial .home-renovation__compare .scheme-a-transformation__label--after { right: 10px; }
+    .scheme-a-home--editorial .home-materials__gallery { grid-template-columns: 1fr 1fr; gap: 24px 16px; }
+    .scheme-a-home--editorial .home-materials__gallery figure:first-child { grid-column: 1 / -1; grid-row: auto; }
+    .scheme-a-home--editorial .home-materials__gallery figure:first-child .home-materials__image { aspect-ratio: 4 / 3; }
+    .scheme-a-home--editorial .home-materials__image { aspect-ratio: 1; }
+    .scheme-a-home--editorial .home-furniture__layout { grid-template-columns: 1fr; }
+    .scheme-a-home--editorial .home-furniture__scene { aspect-ratio: 4 / 3; }
+    .scheme-a-home--editorial .home-furniture__products { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; gap: 18px; padding: 5px 5px 18px; margin: -5px; }
+    .scheme-a-home--editorial .home-furniture__product { flex: 0 0 76%; min-width: 0; scroll-snap-align: start; }
+    .scheme-a-home--editorial .home-furniture__product-image { aspect-ratio: 1; }
+    .scheme-a-home--editorial .home-furniture__actions { justify-content: flex-start; padding: 0; }
+    .scheme-a-home--editorial .home-journal__grid { grid-template-columns: 1fr; gap: 36px; }
+    .scheme-a-home--editorial .home-areas__links { gap: 0 20px; }
+  }
+}

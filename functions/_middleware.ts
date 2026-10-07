@@ -1,3 +1,10 @@
+import { mapHomeFurnitureSeed } from "../src/lib/homeFurniture";
+import type { FurnitureMaterialRow } from "../src/lib/furnitureCatalogPresentation";
+import {
+  HOME_JOURNAL_SELECT, HOME_JOURNAL_LIMIT, HOME_JOURNAL_ORDER,
+  HOME_SERVICE_AREAS_SELECT, HOME_SERVICE_AREAS_LIMIT, HOME_SERVICE_AREAS_ORDER,
+  projectHomeJournalPosts, projectHomeServiceAreas,
+} from "../src/lib/homeDiscoveryData";
 import { applyHtmlNoStoreHeaders, applyPublicHtmlEdgeCacheHeaders, createHtmlEtag, createPublicHtmlBrowserResponse, withHtmlCacheDebugHeader, getEdgeCache, getPublicHtmlDeploymentVersion, getPublicHtmlCacheRequest, getPublicHtmlFreshnessRequest, createPublicHtmlFreshnessResponse, PUBLIC_HTML_CACHE_TAG } from "./publicHtmlCache";
 import { getDynamicImagePreloads, type ImagePreload } from "./publicImagePreloads";
 import { isRecord, readString, readRecordArray } from "./publicDataValues";
@@ -1380,6 +1387,34 @@ const fetchPublicBlogPosts = async (env: Record<string, string | undefined>) =>
     url.searchParams.set("order", "published_at.desc");
   });
 
+// Homepage summaries have their own cache keys and payload fields. A failed
+// read is omitted; a successful empty result remains an authoritative empty list.
+const fetchHomeDiscoveryRows = async (
+  env: Record<string, string | undefined>,
+  kind: "journal" | "areas",
+) => {
+  const journal = kind === "journal";
+  const order = journal ? HOME_JOURNAL_ORDER : HOME_SERVICE_AREAS_ORDER;
+  const rows = await fetchPublicRows(env, `home-${kind}`, journal ? "blog_posts" : "service_areas", (url) => {
+    url.searchParams.set("select", journal ? HOME_JOURNAL_SELECT : HOME_SERVICE_AREAS_SELECT);
+    url.searchParams.set("status", "eq.published");
+    url.searchParams.set("order", `${order.column}.${order.ascending ? "asc" : "desc"}`);
+    url.searchParams.set("limit", String(journal ? HOME_JOURNAL_LIMIT : HOME_SERVICE_AREAS_LIMIT));
+  });
+  if (!Array.isArray(rows) || !rows.every(isRecord)) return null;
+  return journal ? projectHomeJournalPosts(rows) : projectHomeServiceAreas(rows);
+};
+
+const fetchHomeFurniture = async (env: Record<string, string | undefined>) => {
+  try {
+    const catalog = await fetchFurnitureCatalogPreload(env);
+    if (!catalog || !Array.isArray(catalog.materials) || !catalog.materials.every(isRecord)) return null;
+    return mapHomeFurnitureSeed(catalog.materials as FurnitureMaterialRow[], catalog.setting);
+  } catch {
+    return null;
+  }
+};
+
 const fetchPublicSitePageBundle = async (env: Record<string, string | undefined>, pageKey: string) => {
   if (!pageKey) return null;
   const [legacyRows, cmsRows] = await Promise.all([
@@ -1773,7 +1808,8 @@ const fetchFurnitureCatalogPreload = async (env: Record<string, string | undefin
       url.searchParams.set("status", "eq.published");
       url.searchParams.set("category", "eq.furniture");
       if (detailSlug) { url.searchParams.set("slug", `eq.${detailSlug}`); url.searchParams.set("material_images.is_active", "eq.true"); }
-      url.searchParams.set("order", "sort_order.asc");
+      // Match the client catalog order so equal-priority cards do not swap on refresh.
+      url.searchParams.set("order", "sort_order.asc,created_at.desc");
     }), fetchFurnitureCatalogSetting(env),
   ]);
   // Failed reads must not seed a successful empty catalog.
@@ -2071,6 +2107,9 @@ export const onRequest: PagesFunction = async (context) => {
     blogPosts,
     footerCtaBlock,
     furniturePreload,
+    homeFurniture,
+    homeJournalPosts,
+    homeServiceAreas,
   ] = await Promise.all([
     prefetchedSiteSettings !== undefined
       ? Promise.resolve(prefetchedSiteSettings)
@@ -2098,6 +2137,9 @@ export const onRequest: PagesFunction = async (context) => {
     shouldInjectBlogPosts ? fetchPublicBlogPosts(env as Record<string, string | undefined>) : Promise.resolve(null),
     shouldInjectGlobalCtaBlock ? fetchPublicCtaBlock(env as Record<string, string | undefined>, "home_final") : Promise.resolve(null),
     shouldInjectFurniture ? fetchFurnitureCatalogPreload(env as Record<string, string | undefined>, furnitureDetailSlug ? decodeURIComponent(furnitureDetailSlug) : undefined) : Promise.resolve(null),
+    shouldInjectHomeBundle ? fetchHomeFurniture(env as Record<string, string | undefined>) : Promise.resolve(null),
+    shouldInjectHomeBundle ? fetchHomeDiscoveryRows(env as Record<string, string | undefined>, "journal") : Promise.resolve(null),
+    shouldInjectHomeBundle ? fetchHomeDiscoveryRows(env as Record<string, string | undefined>, "areas") : Promise.resolve(null),
   ]);
 
   const homeFaqs = shouldInjectHomeBundle
@@ -2155,6 +2197,9 @@ export const onRequest: PagesFunction = async (context) => {
     };
   }
   if (furniturePreload) publicDataPayload.furnitureCatalog = furniturePreload;
+  if (homeFurniture !== null) publicDataPayload.homeFurniture = homeFurniture;
+  if (homeJournalPosts !== null) publicDataPayload.homeJournalPosts = homeJournalPosts;
+  if (homeServiceAreas !== null) publicDataPayload.homeServiceAreas = homeServiceAreas;
   if (Object.keys(publicDataPayload).length) {
     const publicDataInjection = injectPublicData(transformed, publicDataPayload);
     transformed = publicDataInjection.html;
