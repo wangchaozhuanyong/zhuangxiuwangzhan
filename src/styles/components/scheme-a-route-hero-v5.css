@@ -183,6 +183,9 @@
 }
 
 .scheme-a-public-shell .fc-route-page .fc-route-hero[data-route-hero-layout="media-only"] .fc-route-hero-media {
+  width: 100%;
+  height: auto;
+  aspect-ratio: 3 / 1;
   margin-inline: auto;
 }
 
@@ -263,11 +266,6 @@
   .fc-route-hero-explore svg { width: 30px; height: 30px; padding: 7px; border: 1px solid rgb(162 139 109 / 0.4); border-radius: 50%; transition: transform 220ms ease, background-color 220ms ease; }
   .fc-route-hero-explore:is(:hover, :focus-visible) svg { transform: translateY(3px); background: rgb(255 255 255 / 0.24); }
   .fc-route-hero-explore:active svg { transform: translateY(4px) scale(.94); }
-
-  .scheme-a-public-shell .fc-route-page .fc-route-hero[data-route-hero-layout="media-only"] .fc-route-hero-media {
-    width: calc((100% - 32px) * 0.56);
-    height: clamp(440px, 35vw, 560px);
-  }
 
   .scheme-a-public-shell .fc-route-page .fc-route-hero-support :is(dt, dd) { font-size: 14px; }
   .fc-route-hero-media > :is(img, picture, .smart-image-frame, .flex) {
