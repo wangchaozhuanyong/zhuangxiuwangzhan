@@ -12,7 +12,7 @@
 
 集中配置 `src/lib/interactionPolicy.ts`：反馈延迟 180ms，慢请求恢复操作 5s，读取超时 15s，搜索防抖 300ms；公开缓存 60s，后台列表 5min，其他后台默认 2min，保留 30min。读取消信号必须传到 repository 和实际 transport；读取最多自动重试一次，写入不得自动重试。
 
-公开首个文档保留品牌画面。`publicBoot` 管文档交接，`PublicRouteImageGate` 管路由真实就绪；必要数据由 `data-route-pending` 登记，关键图片由 `SmartImage critical` 登记。非首屏、非关键图片不得锁住整页；关键图片慢时降级为占位，失败显示单图重试。首屏不得按固定时间假装完成；路由准备不等待后台更新。保留导航和公共布局。CSS、chunk 错误必须保留可恢复入口。
+公开首个文档保留品牌画面。`publicBoot` 管文档交接，`PublicRouteImageGate` 管路由真实就绪；必要数据由 `data-route-pending` 登记，关键图片由 `SmartImage critical` 登记。非首屏、非关键图片不得锁住整页；关键图片慢时降级为占位，失败显示单图重试。首屏不得按固定时间假装完成；路由准备不等待后台更新。保留导航和公共布局。CSS、chunk 错误必须保留可恢复入口。站内切换使用真实 DOM 的轻量入场动画，不使用整个文档的 View Transition 快照阻断命中；数据就绪后立即解除正文交互锁及整页加载反馈，不等待装饰动画或进度条收尾。新的导航、指针或键盘操作可以中断入场动画，连续点击以最后一次有效导航为准。
 
 HTML 预注入仅允许 `publicQuerySeed` 初始化查询缓存，`publicQuerySeedCache` 按 QueryClient/查询键消费一次并保留文档时间。失效或缓存清理之后不得重新读取旧 HTML 作为刷新结果。摘要不满足详情字段时不能初始化详情；正文必须来自完整记录。queryFn 始终读取真实数据源。
 
@@ -20,7 +20,7 @@ HTML 预注入仅允许 `publicQuerySeed` 初始化查询缓存，`publicQuerySe
 
 公共列表统一用 `PublicResultsBoundary` 管理首次加载、首次错误、空结果、结果区域和 `aria-busy`；后台刷新保留内容与焦点，由 `RouteReadFeedback` 提示失败并重试。原有材料与装修对比的静态兜底必须显式声明 `keepFallback`，不能将兜底视为读取成功。
 
-悬浮推广统一由 `useFloatingOcclusion` 检测与正文、表单、可点击区域、弹窗和恢复提示的重叠，覆盖时暂时隐藏，空位恢复；焦点已经进入推广入口时保持可用。禁止按 pathname 添加专用侧栏、缩窄单页或减小正文字号。
+悬浮推广统一由 `useFloatingOcclusion` 管理必要交互避让。普通正文、标题空白、大卡片和链接滚动经过时不隐藏入口，所有公开页面保持稳定的固定入口。可见模态弹窗优先；恢复提示与正在聚焦的输入控件被入口实际覆盖时暂时让位，交互结束后恢复。关闭或祖先隐藏的弹窗不得触发避让，推广入口已有焦点不能覆盖模态交互的优先级。禁止按 pathname 添加专用侧栏、缩窄单页或减小正文字号。
 
 ## 导航与表单
 

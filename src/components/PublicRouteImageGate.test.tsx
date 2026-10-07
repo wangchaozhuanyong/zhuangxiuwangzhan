@@ -4,13 +4,16 @@ import { QueryClient, QueryClientProvider, QueryObserver } from "@tanstack/react
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { LanguageProvider } from "@/i18n/LanguageContext";
 import { PublicRouteImageGate } from "@/components/PublicRouteImageGate";
-import { PublicRouteTransitionFrame } from "@/components/PublicRouteTransitionFrame";
 import { requestPublicNavigation } from "@/lib/publicNavigation";
+import { registerNavigationProtection } from "@/lib/navigationProtection";
 import { PUBLIC_LOADING_PROGRESS } from "@/lib/publicLoadingProgress";
 
 let container: HTMLDivElement;
 let root: Root;
 let client: QueryClient;
+let previousAnimate: PropertyDescriptor | undefined;
+let originalUrl: string;
+let originalHistoryState: unknown;
 const src = "http://localhost/image.webp";
 
 function Image({ ready = false, offscreen = false, failed = false, raw = false }: { ready?: boolean; offscreen?: boolean; failed?: boolean; raw?: boolean }) {
@@ -28,8 +31,8 @@ function Image({ ready = false, offscreen = false, failed = false, raw = false }
     }} />;
 }
 
-const render = async (children: React.ReactNode, routeKey = "/zh/services") => {
-  await act(async () => root.render(<QueryClientProvider client={client}><LanguageProvider><PublicRouteImageGate routeKey={routeKey}><main id="main-content">{children}</main></PublicRouteImageGate></LanguageProvider></QueryClientProvider>));
+const render = async (children: React.ReactNode, routeKey = "/zh/services", onCancel?: (route: string) => void) => {
+  await act(async () => root.render(<QueryClientProvider client={client}><LanguageProvider><PublicRouteImageGate routeKey={routeKey} onCancel={onCancel}><main id="main-content">{children}</main></PublicRouteImageGate></LanguageProvider></QueryClientProvider>));
   await act(async () => vi.advanceTimersByTime(40));
 };
 const loader = () => container.querySelector("[data-route-loader]");
@@ -40,7 +43,10 @@ const pageFeedback = () => {
 const state = () => container.querySelector("[data-route-visual-state]")?.getAttribute("data-route-visual-state");
 
 beforeEach(() => {
+  originalUrl = window.location.href;
+  originalHistoryState = window.history.state;
   vi.useFakeTimers();
+  previousAnimate = Object.getOwnPropertyDescriptor(HTMLElement.prototype, "animate");
   vi.stubGlobal("IS_REACT_ACT_ENVIRONMENT", true);
   container = document.createElement("div");
   document.body.appendChild(container);
@@ -51,7 +57,11 @@ afterEach(async () => {
   await act(async () => root.unmount());
   client.clear();
   container.remove();
+  window.history.replaceState(originalHistoryState, "", originalUrl);
   document.querySelectorAll(".scheme-a-chrome__brand").forEach((node) => node.remove());
+  if (previousAnimate) Object.defineProperty(HTMLElement.prototype, "animate", previousAnimate);
+  else Reflect.deleteProperty(HTMLElement.prototype, "animate");
+  delete window.__flashcastPublicBoot;
   vi.useRealTimers();
   vi.unstubAllGlobals();
 });
@@ -102,6 +112,101 @@ describe("public route visual readiness", () => {
     }
   });
 
+  it("releases a retired route when returning before the destination has rendered", async () => {
+    const current = "/zh/materials?category=wood";
+    await render(<Image ready />, current);
+    const depart = vi.fn();
+    await act(async () => requestPublicNavigation("/zh/projects", depart));
+    expect(depart).toHaveBeenCalledOnce();
+    expect(state()).toBe("waiting");
+    expect(loader()).not.toBeNull();
+    expect(container.querySelector(".public-route-content")).toHaveAttribute("inert");
+    const returnToCurrent = vi.fn();
+    // Deliberately never render B: Router may reuse A for this newest request.
+    await act(async () => requestPublicNavigation(current, returnToCurrent));
+    expect(returnToCurrent).toHaveBeenCalledOnce();
+    expect(state()).toBe("ready");
+    expect(loader()).toBeNull();
+    expect(container.querySelector(".public-route-content")).not.toHaveAttribute("inert");
+    expect(container.querySelector(".public-route-scene")).not.toHaveAttribute("data-leaving");
+    await act(async () => vi.advanceTimersByTime(6000));
+    expect(state()).toBe("ready");
+    expect(loader()).toBeNull();
+  });
+
+  it("releases a retired route when POP returns before the departing destination renders", async () => {
+    const current = "/zh/materials?category=wood";
+    window.history.replaceState(null, "", current);
+    await render(<Image ready />, current);
+    const depart = vi.fn(() => window.history.replaceState(null, "", "/zh/projects"));
+    await act(async () => requestPublicNavigation("/zh/projects", depart));
+    expect(state()).toBe("waiting");
+    expect(container.querySelector(".public-route-content")).toHaveAttribute("inert");
+    // Emulate the browser URL change and POP event without rendering B in Router.
+    await act(async () => {
+      window.history.replaceState(null, "", `${current}#details`);
+      window.dispatchEvent(new PopStateEvent("popstate"));
+    });
+    expect(state()).toBe("ready");
+    expect(loader()).toBeNull();
+    expect(container.querySelector(".public-route-content")).not.toHaveAttribute("inert");
+    await act(async () => vi.advanceTimersByTime(6000));
+    expect(state()).toBe("ready");
+    expect(loader()).toBeNull();
+  });
+
+  it.each(["/zh/materials?category=stone", "/zh/projects?category=wood"])("keeps retired content locked when POP targets a different URL: %s", async (destination) => {
+    const current = "/zh/materials?category=wood";
+    window.history.replaceState(null, "", current);
+    await render(<Image ready />, current);
+    await act(async () => requestPublicNavigation("/zh/blog", vi.fn()));
+    await act(async () => {
+      window.history.replaceState(null, "", destination);
+      window.dispatchEvent(new PopStateEvent("popstate"));
+      vi.advanceTimersByTime(200);
+    });
+    expect(state()).toBe("waiting");
+    expect(loader()).not.toBeNull();
+    expect(container.querySelector(".public-route-content")).toHaveAttribute("inert");
+    // Only the destination's actual content may release this wait.
+    await render(<Image ready />, destination);
+    expect(state()).toBe("ready");
+    expect(loader()).toBeNull();
+  });
+
+  it("does not release slow data or reset its deadline when the same URL is clicked", async () => {
+    const current = "/zh/materials";
+    await render(<Image ready />, "/zh/start");
+    await render(<div data-route-pending="true" />, current);
+    await act(async () => vi.advanceTimersByTime(4700));
+    const commit = vi.fn();
+    await act(async () => requestPublicNavigation(current, commit));
+    expect(commit).toHaveBeenCalledOnce();
+    expect(state()).toBe("waiting");
+    expect(loader()).not.toBeNull();
+    expect(container.querySelector(".public-route-content")).toHaveAttribute("inert");
+    await act(async () => vi.advanceTimersByTime(300));
+    expect(state()).toBe("timeout");
+    expect(container.querySelector(".public-route-content")).toHaveAttribute("inert");
+    await render(<Image ready />, current);
+    expect(state()).toBe("ready");
+    expect(loader()).toBeNull();
+  });
+
+  it("keeps the form usable while its navigation protection owns an attempted departure", async () => {
+    await render(<input aria-label="Message" defaultValue="Draft remains" />, "/zh/contact");
+    const unregister = registerNavigationProtection();
+    try {
+      const guarded = vi.fn();
+      await act(async () => requestPublicNavigation("/zh/projects", guarded));
+      expect(guarded).toHaveBeenCalledOnce();
+      expect(state()).toBe("ready");
+      expect(loader()).toBeNull();
+      expect(container.querySelector(".public-route-content")).not.toHaveAttribute("inert");
+      expect(container.querySelector("input")).toHaveValue("Draft remains");
+    } finally { unregister(); }
+  });
+
   it("degrades slow critical images after the deadline and leaves image recovery local", async () => {
     const brand = document.createElement("a");
     brand.className = "scheme-a-chrome__brand";
@@ -130,7 +235,7 @@ describe("public route visual readiness", () => {
     brand.remove();
   });
 
-  it("reuses the entry brand for full-page navigation and fades it after readiness", async () => {
+  it("covers a full-page data wait and immediately removes the cover once ready", async () => {
     await render(<Image ready />, "/zh/projects");
     await render(<Image />);
     expect(container.querySelector(".public-route-scene")).toHaveAttribute("data-pending", "true");
@@ -144,13 +249,9 @@ describe("public route visual readiness", () => {
     expect(container.querySelector(".public-route-content")).toHaveAttribute("inert");
     await render(<Image ready />);
     expect(state()).toBe("ready");
-    expect(container.querySelector("[data-loading-progress]")).toHaveAttribute("data-progress-state", "complete");
+    expect(loader()).toBeNull();
     expect(document.documentElement.dataset.publicRouteLoading).toBeUndefined();
     expect(container.querySelector(".public-route-content")).not.toHaveAttribute("inert");
-    await act(async () => vi.advanceTimersByTime(PUBLIC_LOADING_PROGRESS.finish));
-    expect(container.querySelector("[data-loading-progress]")).toHaveAttribute("data-progress-state", "fading");
-    await act(async () => vi.advanceTimersByTime(PUBLIC_LOADING_PROGRESS.fade));
-    expect(loader()).toBeNull();
   });
 
   it("keeps page-level feedback out of local results updates and preserves existing content", async () => {
@@ -275,33 +376,95 @@ describe("public route visual readiness", () => {
     expect(state()).toBe("ready");
   });
 
-  it("invalidates an old handoff even when rapid navigation returns to the same URL", async () => {
+  it("releases content controls while its visual animation is still unfinished", async () => {
     await render(<Image ready />, "/zh/start");
-    let release!: () => void;
-    const pending = new Promise<void>((resolve) => release = resolve);
-    const transition = vi.spyOn(PublicRouteTransitionFrame.prototype, "whenPresented").mockReturnValueOnce(pending);
+    const finished = new Promise<void>(() => {});
+    const cancel = vi.fn();
+    const animate = vi.fn(() => ({ finished, cancel }));
+    Object.defineProperty(HTMLElement.prototype, "animate", { configurable: true, value: animate });
+    const clicked = vi.fn();
+    const ready = vi.fn();
+    window.addEventListener("public-route-ready", ready);
+    try {
+      await render(<Image />, "/zh/materials");
+      expect(loader()).not.toBeNull();
+      await render(<><Image ready /><button onClick={clicked}>Choose material</button></>, "/zh/materials");
+      expect(animate).toHaveBeenCalledOnce();
+      expect(state()).toBe("ready");
+      expect(loader()).toBeNull();
+      expect(container.querySelector(".public-route-content")).not.toHaveAttribute("inert");
+      expect(container.querySelector(".public-route-content")).not.toHaveAttribute("aria-busy", "true");
+      expect(ready).toHaveBeenCalledOnce();
+      const button = container.querySelector("button")!;
+      await act(async () => {
+        button.dispatchEvent(new Event("pointerdown", { bubbles: true }));
+        button.click();
+      });
+      expect(clicked).toHaveBeenCalledOnce();
+      expect(cancel).toHaveBeenCalledOnce();
+    } finally { window.removeEventListener("public-route-ready", ready); }
+  });
+
+  it("still waits for document boot completion before enabling the first page", async () => {
+    let finishBoot!: () => void;
+    const completion = new Promise<void>(resolve => { finishBoot = resolve; });
+    const complete = vi.fn(() => completion);
+    window.__flashcastPublicBoot = {
+      state: "waiting", deadline: 5000, stylesReady: true,
+      claim: () => () => {}, hold: vi.fn(), retry: vi.fn(), dismiss: vi.fn(), complete,
+    };
+    const ready = vi.fn();
+    window.addEventListener("public-route-ready", ready);
+    try {
+      await render(<Image ready />);
+      expect(complete).toHaveBeenCalledOnce();
+      expect(container.querySelector(".public-route-content")).toHaveAttribute("inert");
+      expect(ready).not.toHaveBeenCalled();
+      await act(async () => finishBoot());
+      expect(state()).toBe("ready");
+      expect(container.querySelector(".public-route-content")).not.toHaveAttribute("inert");
+      expect(ready).toHaveBeenCalledOnce();
+    } finally { window.removeEventListener("public-route-ready", ready); }
+  });
+
+  it("returns to the last ready route even if its visual animation never finished", async () => {
+    await render(<Image ready />, "/zh/start");
+    const animate = vi.fn(() => ({ finished: new Promise<void>(() => {}), cancel: vi.fn() }));
+    Object.defineProperty(HTMLElement.prototype, "animate", { configurable: true, value: animate });
+    await render(<Image ready />, "/zh/materials");
+    expect(state()).toBe("ready");
+    const cancel = vi.fn();
+    await render(<div data-route-pending="true" />, "/zh/projects", cancel);
+    await act(async () => vi.advanceTimersByTime(5100));
+    expect(state()).toBe("timeout");
+    const buttons = container.querySelectorAll<HTMLButtonElement>(".public-route-feedback__recovery button");
+    await act(async () => buttons[1].click());
+    expect(cancel).toHaveBeenCalledWith("/zh/materials");
+  });
+
+  it("does not let an old animation release a newer wait at the same URL", async () => {
+    await render(<Image ready />, "/zh/start");
+    let finish!: () => void;
+    const finished = new Promise<void>(resolve => { finish = resolve; });
+    const animate = vi.fn(() => ({ finished, cancel: vi.fn() }));
+    Object.defineProperty(HTMLElement.prototype, "animate", { configurable: true, value: animate });
     const ready = vi.fn();
     window.addEventListener("public-route-ready", ready);
     try {
       await render(<Image ready />, "/zh/materials");
-      expect(state()).toBe("handoff");
-      expect(loader()).toBeNull();
-      expect(container.querySelector(".scheme-a-page-loader__actions")).toBeNull();
+      expect(state()).toBe("ready");
+      expect(ready).toHaveBeenCalledTimes(1);
       await render(<Image />, "/zh/projects");
       await render(<Image />, "/zh/materials");
       expect(state()).toBe("waiting");
-      await act(async () => release());
+      await act(async () => finish());
       expect(state()).toBe("waiting");
       expect(container.querySelector(".public-route-content")).toHaveAttribute("inert");
-      expect(ready).not.toHaveBeenCalled();
+      expect(ready).toHaveBeenCalledTimes(1);
       await render(<Image ready />, "/zh/materials");
       expect(state()).toBe("ready");
-      await act(async () => vi.advanceTimersByTimeAsync(PUBLIC_LOADING_PROGRESS.finish + PUBLIC_LOADING_PROGRESS.fade));
       expect(loader()).toBeNull();
-      expect(ready).toHaveBeenCalledTimes(1);
-    } finally {
-      transition.mockRestore();
-      window.removeEventListener("public-route-ready", ready);
-    }
+      expect(ready).toHaveBeenCalledTimes(2);
+    } finally { window.removeEventListener("public-route-ready", ready); }
   });
 });

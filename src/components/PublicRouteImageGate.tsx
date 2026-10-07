@@ -56,8 +56,9 @@ export function PublicRouteImageGate({ children, routeKey, onCancel }: { childre
 
   useLayoutEffect(() => {
     const content = regionOnly ? contentRef.current?.querySelector<HTMLElement>("[data-public-results]") : contentRef.current;
-    content?.toggleAttribute("inert", blocked || status === "handoff");
-    content?.setAttribute("aria-busy", String(blocked || status === "handoff"));
+    const awaitingBoot = showBrandScreen && status === "handoff";
+    content?.toggleAttribute("inert", blocked || awaitingBoot);
+    content?.setAttribute("aria-busy", String(blocked || awaitingBoot));
     if (!blocked) {
       if (emitted.current === cycle) return;
       emitted.current = cycle;
@@ -76,8 +77,8 @@ export function PublicRouteImageGate({ children, routeKey, onCancel }: { childre
       if (showBrandScreen && boot) void boot.complete(status === "degraded").then(release);
       else {
         window.dispatchEvent(new Event("public-scene-prepare"));
-        content?.setAttribute("inert", "");
-        void (frameRef.current?.whenPresented() ?? Promise.resolve()).then(release);
+        // DOM entrance motion is decorative; ready content accepts input now.
+        release();
       }
       return;
     }
@@ -158,8 +159,7 @@ export function PublicRouteImageGate({ children, routeKey, onCancel }: { childre
       if (stopped || settled || frame) return;
       frame = requestAnimationFrame(() => { frame = 0; check(); });
     };
-    // Native snapshots pause painting (and rAF), not data/image readiness.
-    // Resolve actual dependency events without waiting for another painted frame.
+    // Resolve dependency events immediately rather than waiting for a paint.
     const update = () => { check(); schedule(); };
     const timeout = window.setTimeout(() => {
       check();
@@ -185,7 +185,7 @@ export function PublicRouteImageGate({ children, routeKey, onCancel }: { childre
     check();
     // A full-page wait must be covered in this commit, before the browser paints.
     // Only local results retain delayed feedback; they do not hide the whole page.
-    if (!settled && !showBrandScreen && !regionOnly && !frameRef.current?.isCapturing(routeKey)) setFeedbackCycle(cycle);
+    if (!settled && !showBrandScreen && !regionOnly) setFeedbackCycle(cycle);
     schedule();
     return () => {
       stopped = true;
@@ -229,23 +229,28 @@ export function PublicRouteImageGate({ children, routeKey, onCancel }: { childre
   return (
     <>
       <PublicRouteTransitionFrame ref={frameRef} routeKey={routeKey} pending={blocked} regionOnly={regionOnly} initial={showBrandScreen}
-        covered={feedbackCycle === cycle && finishedFeedbackCycle !== cycle}
-        onSnapshotSkip={() => { if (blocked && !regionOnly && !showBrandScreen) setFeedbackCycle(cycle); }}
-        onBeforeCommit={(captured) => {
+        onCancelDeparture={() => {
+          // The router may not have rendered the departing destination yet.
+          // Selecting this URL again must release that retired readiness cycle.
+          if (departingCycle.current !== cycle) return;
+          departingCycle.current = null;
+          setAttempt((value) => value + 1);
+        }}
+        onBeforeCommit={() => {
           departingCycle.current = cycle;
-          setFeedbackCycle(captured ? null : cycle);
+          setFeedbackCycle(cycle);
           setFinishedFeedbackCycle(null);
           // Retire the outgoing data before history changes; its cached data
           // cannot release the new destination during asynchronous Router commit.
           setState({ cycle, status: "waiting" });
         }}>
         <div ref={contentRef} className="public-route-content" data-route-visual-state={status}
-          aria-hidden={blocked && !regionOnly || undefined} aria-busy={blocked || status === "handoff" || undefined}>
+          aria-hidden={blocked && !regionOnly || undefined} aria-busy={blocked || showBrandScreen && status === "handoff" || undefined}>
           {children}
         </div>
       </PublicRouteTransitionFrame>
       {(showBrandScreen ? !boot && (blocked || status === "handoff")
-        : status === "timeout" || feedbackCycle === cycle && finishedFeedbackCycle !== cycle) ? (
+        : status === "timeout" || feedbackCycle === cycle && finishedFeedbackCycle !== cycle && (blocked || regionOnly)) ? (
         <div className={showBrandScreen ? "scheme-a-page-loader scheme-a-page-loader--overlay"
           : regionOnly ? "public-route-feedback" : "scheme-a-page-loader scheme-a-page-loader--overlay scheme-a-page-loader--navigation"}
           role="status" aria-live="polite" aria-busy={presenting} data-route-loader={showBrandScreen ? "initial" : "navigation"}
