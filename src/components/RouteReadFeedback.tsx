@@ -41,7 +41,10 @@ export default function RouteReadFeedback({ surface }: { surface: "public" | "ad
   }, [pending, location.pathname]);
   const failedRefresh = failure > 0;
   const initialFailure = failure === 2;
-  if (!visible && online && !failedRefresh) return null;
+  // Public reads keep their page/list loading state and aria-busy feedback.
+  // A routine background request must not add a floating notice over navigation.
+  // Failures and offline recovery still use this shared feedback on both surfaces.
+  if (online && !failedRefresh && (surface === "public" || !pending || !visible)) return null;
   // Initial public loading has its own single owner, including its recovery UI.
   if (surface === "public" && document.documentElement.dataset.publicBoot) return null;
   const retry = () => void client.refetchQueries({ predicate: (query) => active(query) && query.state.fetchStatus !== "fetching" });

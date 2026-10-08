@@ -16,10 +16,12 @@ interface Window {
       options: {
         sitekey: string;
         size: "invisible";
+        execution: "execute";
         action: string;
         callback: (token: string) => void;
         "error-callback": () => void;
         "expired-callback": () => void;
+        "timeout-callback": () => void;
       },
     ) => string;
     execute: (widgetId: string) => void;
