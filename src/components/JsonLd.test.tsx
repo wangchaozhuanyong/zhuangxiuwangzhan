@@ -78,6 +78,7 @@ describe("JsonLdLocalBusiness", () => {
       ...fallbackSiteSettings,
       facebook_url: "https://www.facebook.com/not-created-yet/",
       instagram_url: "https://www.instagram.com/not-created-yet/",
+      tiktok_url: "https://www.tiktok.com/@not-created-yet",
     });
     const html = renderToStaticMarkup(<MemoryRouter initialEntries={["/en/"]}><QueryClientProvider client={queryClient}>
       <>
@@ -89,5 +90,36 @@ describe("JsonLdLocalBusiness", () => {
     expect(data.sameAs).toEqual([]);
     expect(html).not.toContain("scheme-a-footer__socials");
     expect(html).not.toContain("not-created-yet");
+  });
+
+  it("uses the same four configured profiles in the footer and JSON-LD, including later edits and clearing", () => {
+    const queryClient = new QueryClient({ defaultOptions: { queries: { retry: false } } });
+    const render = (profiles: { facebook_url: string; instagram_url: string; tiktok_url: string; xiaohongshu_url: string }) => {
+      queryClient.setQueryData(["site-settings"], { ...fallbackSiteSettings, ...profiles });
+      return renderToStaticMarkup(<MemoryRouter initialEntries={["/en/"]}><QueryClientProvider client={queryClient}>
+        <SchemeAFooter /><JsonLdLocalBusiness />
+      </QueryClientProvider></MemoryRouter>);
+    };
+    const profiles = {
+      facebook_url: "https://www.facebook.com/flashcast111",
+      instagram_url: "https://www.instagram.com/flashcast2025/",
+      tiktok_url: "https://www.tiktok.com/@flashcast121",
+      xiaohongshu_url: "https://www.xiaohongshu.com/user/profile/62088ac5000000001000ac0a",
+    };
+    const html = render(profiles);
+    const data = JSON.parse(html.match(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/)?.[1] || "{}");
+    expect(data.sameAs).toEqual(Object.values(profiles));
+    for (const [label, url] of [["Facebook", profiles.facebook_url], ["Instagram", profiles.instagram_url], ["TikTok", profiles.tiktok_url], ["REDnote (Xiaohongshu)", profiles.xiaohongshu_url]]) {
+      expect(html).toContain(`href="${url}" target="_blank" rel="noopener noreferrer" aria-label="${label}"`);
+    }
+    const changed = render({ ...profiles, tiktok_url: "https://www.tiktok.com/@new_account" });
+    expect(changed).toContain("https://www.tiktok.com/@new_account");
+    expect(changed).not.toContain(profiles.tiktok_url);
+    const cleared = render({ facebook_url: "", instagram_url: "", tiktok_url: "", xiaohongshu_url: "" });
+    expect(cleared).not.toContain("scheme-a-footer__socials");
+    expect(JSON.parse(cleared.match(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/)?.[1] || "{}").sameAs).toEqual([]);
+    const onlyRednote = render({ facebook_url: "", instagram_url: "", tiktok_url: "", xiaohongshu_url: profiles.xiaohongshu_url });
+    expect(onlyRednote).toContain("scheme-a-footer__socials");
+    expect(onlyRednote).toContain(profiles.xiaohongshu_url);
   });
 });

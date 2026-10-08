@@ -1,14 +1,11 @@
-import { safeSocialProfileUrl, siteConfig, socialProfileUrls } from "@/config/site";
+import { siteConfig } from "@/config/site";
+import { getSocialProfileUrls } from "@/lib/socialProfiles";
 import { useSiteSettings } from "@/hooks/useSiteSettings";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { stripLanguagePrefix, withLanguagePrefix } from "@/i18n/routes";
 
 const shouldRenderClientJsonLd = import.meta.env.DEV;
-const getSameAs = (settings: ReturnType<typeof useSiteSettings>) => Array.from(new Set([
-  safeSocialProfileUrl(settings.facebook_url, "facebook"),
-  safeSocialProfileUrl(settings.instagram_url, "instagram"),
-  ...socialProfileUrls,
-].filter(Boolean)));
+const getSameAs = getSocialProfileUrls;
 
 const JsonLdScript = ({ data }: { data: unknown }) => {
   if (!shouldRenderClientJsonLd) return null;
