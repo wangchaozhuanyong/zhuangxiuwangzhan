@@ -46,7 +46,7 @@ import { trackCtaClick } from "@/lib/analytics";
 import { chooseAdaptiveTextColor, compositeColors, getImageSourcePoint, parseCssColor, type RgbColor } from "@/lib/colorContrast";
 import { buildGoogleMapOpenUrl } from "@/lib/mapUrls";
 import { QUOTE_FORM_PATH } from "@/lib/quoteContext";
-import { addCacheBuster } from "@/lib/siteSettingsApi";
+import { addCacheBuster, type SiteSettings } from "@/lib/siteSettingsApi";
 import { safeSocialProfileUrl } from "@/config/site";
 import logoFallback from "@/assets/logo-flashcast.webp";
 
@@ -149,6 +149,41 @@ const LanguageSwitch = ({
           </LanguageRouteLink>
         );
       })}
+    </div>
+  );
+};
+
+const SchemeASocialLinks = ({ settings, placement }: {
+  settings: Pick<SiteSettings, "facebook_url" | "instagram_url" | "tiktok_url" | "xiaohongshu_url">;
+  placement: "directory" | "footer";
+}) => {
+  const { language } = useLanguage();
+  const t = schemeAChromeText[language];
+  const profiles = [
+    { url: safeSocialProfileUrl(settings.facebook_url, "facebook"), label: "Facebook", accessibleLabel: "Facebook", Icon: Facebook },
+    { url: safeSocialProfileUrl(settings.instagram_url, "instagram"), label: "Instagram", accessibleLabel: "Instagram", Icon: Instagram },
+    { url: safeSocialProfileUrl(settings.tiktok_url, "tiktok"), label: "TikTok", accessibleLabel: "TikTok", Icon: TikTokIcon },
+    { url: safeSocialProfileUrl(settings.xiaohongshu_url, "xiaohongshu"), label: t.xiaohongshuShort, accessibleLabel: t.xiaohongshu, Icon: RednoteIcon },
+  ].filter(({ url }) => url);
+  if (profiles.length === 0) return null;
+  const classes = placement === "directory"
+    ? { group: "scheme-a-directory__social-group", heading: "scheme-a-directory__social-heading", links: "scheme-a-directory__socials" }
+    : { group: "scheme-a-footer__social-group", heading: "scheme-a-footer__social-heading", links: "scheme-a-footer__socials" };
+
+  return (
+    <div className={classes.group} role="group" aria-label={t.followUs}>
+      <div className={classes.heading}>
+        <h3>{t.followUs}</h3>
+        {placement === "directory" ? <span>{t.socialProfiles}</span> : null}
+      </div>
+      <div className={classes.links}>
+        {profiles.map(({ url, label, accessibleLabel, Icon }) => (
+          <a key={url} href={url} target="_blank" rel="noopener noreferrer" aria-label={accessibleLabel}>
+            <Icon aria-hidden="true" />
+            <span>{label}</span>
+          </a>
+        ))}
+      </div>
     </div>
   );
 };
@@ -535,6 +570,7 @@ export const SchemeANavbar = () => {
               );
             })}
           </nav>
+          <SchemeASocialLinks settings={settings} placement="directory" />
         </div>
         <div className="scheme-a-directory__foot">
           <a href={settings.phone_href} onClick={() => trackCtaClick("phone", "scheme_a_menu", { destination: "phone" })}><Phone aria-hidden="true" />{t.call}</a>
@@ -588,18 +624,8 @@ export const SchemeAFooter = () => {
   const location = useLocation();
   const translate = (key: string) => getNavigationLabel(key, language);
   const settings = useSiteSettings();
-  const instagramUrl = safeSocialProfileUrl(settings.instagram_url, "instagram");
-  const facebookUrl = safeSocialProfileUrl(settings.facebook_url, "facebook");
-  const tiktokUrl = safeSocialProfileUrl(settings.tiktok_url, "tiktok");
-  const xiaohongshuUrl = safeSocialProfileUrl(settings.xiaohongshu_url, "xiaohongshu");
   const t = schemeAChromeText[language];
   const footer = footerCopy[language];
-  const socialProfiles = [
-    { url: facebookUrl, label: "Facebook", accessibleLabel: "Facebook", Icon: Facebook },
-    { url: instagramUrl, label: "Instagram", accessibleLabel: "Instagram", Icon: Instagram },
-    { url: tiktokUrl, label: "TikTok", accessibleLabel: "TikTok", Icon: TikTokIcon },
-    { url: xiaohongshuUrl, label: t.xiaohongshuShort, accessibleLabel: t.xiaohongshu, Icon: RednoteIcon },
-  ].filter(({ url }) => url);
   const navText = navbarText[language];
   const areas = footerLocationLinks[language];
   const nextLanguage = language === "zh" ? "en" : "zh";
@@ -633,17 +659,7 @@ export const SchemeAFooter = () => {
                   </Button>
                 </div>
               </div>
-              {socialProfiles.length > 0 ? <div className="scheme-a-footer__social-group">
-                <h3>{t.followUs}</h3>
-                <div className="scheme-a-footer__socials">
-                  {socialProfiles.map(({ url, label, accessibleLabel, Icon }) => (
-                    <a key={url} href={url} target="_blank" rel="noopener noreferrer" aria-label={accessibleLabel}>
-                      <Icon aria-hidden="true" />
-                      <span>{label}</span>
-                    </a>
-                  ))}
-                </div>
-              </div> : null}
+              <SchemeASocialLinks settings={settings} placement="footer" />
             </section>
             <nav className="scheme-a-footer__directory" aria-label={t.navigationTitle}>
               {footerNavigationGroups.map((group) => (
