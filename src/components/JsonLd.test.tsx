@@ -4,7 +4,8 @@ import { describe, expect, it, vi } from "vitest";
 import { JsonLdBlogPosting, JsonLdLocalBusiness } from "@/components/JsonLd";
 import { fallbackSiteSettings } from "@/lib/siteSettingsApi";
 import { MemoryRouter } from "react-router-dom";
-import { SchemeAFooter } from "@/components/scheme-a/SchemeAPublicChrome";
+import { SchemeAFooter, SchemeANavbar } from "@/components/scheme-a/SchemeAPublicChrome";
+import { PublicChromeProvider } from "@/contexts/PublicChromeContext";
 import { contactPageText } from "@/i18n/contactPageText";
 import { footerCopy } from "@/i18n/footerText";
 
@@ -72,7 +73,7 @@ describe("JsonLdLocalBusiness", () => {
     }]);
   });
 
-  it("omits unconfirmed social accounts from Footer and JSON-LD", () => {
+  it("omits unconfirmed social accounts from the directory, footer and JSON-LD", () => {
     const queryClient = new QueryClient({ defaultOptions: { queries: { retry: false } } });
     queryClient.setQueryData(["site-settings"], {
       ...fallbackSiteSettings,
@@ -81,23 +82,27 @@ describe("JsonLdLocalBusiness", () => {
       tiktok_url: "https://www.tiktok.com/@not-created-yet",
     });
     const html = renderToStaticMarkup(<MemoryRouter initialEntries={["/en/"]}><QueryClientProvider client={queryClient}>
-      <>
+      <PublicChromeProvider isAdminRoute={false} routeKey="/en/">
+        <SchemeANavbar />
         <SchemeAFooter />
         <JsonLdLocalBusiness />
-      </>
+      </PublicChromeProvider>
     </QueryClientProvider></MemoryRouter>);
     const data = JSON.parse(html.match(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/)?.[1] || "{}");
     expect(data.sameAs).toEqual([]);
     expect(html).not.toContain("scheme-a-footer__socials");
+    expect(html).not.toContain("scheme-a-directory__social-group");
     expect(html).not.toContain("not-created-yet");
   });
 
-  it("uses the same four configured profiles in the footer and JSON-LD, including later edits and clearing", () => {
+  it("keeps directory, footer and JSON-LD profiles in sync after edits and clearing", () => {
     const queryClient = new QueryClient({ defaultOptions: { queries: { retry: false } } });
     const render = (profiles: { facebook_url: string; instagram_url: string; tiktok_url: string; xiaohongshu_url: string }) => {
       queryClient.setQueryData(["site-settings"], { ...fallbackSiteSettings, ...profiles });
       return renderToStaticMarkup(<MemoryRouter initialEntries={["/en/"]}><QueryClientProvider client={queryClient}>
-        <SchemeAFooter /><JsonLdLocalBusiness />
+        <PublicChromeProvider isAdminRoute={false} routeKey="/en/">
+          <SchemeANavbar /><SchemeAFooter /><JsonLdLocalBusiness />
+        </PublicChromeProvider>
       </QueryClientProvider></MemoryRouter>);
     };
     const profiles = {
@@ -109,17 +114,35 @@ describe("JsonLdLocalBusiness", () => {
     const html = render(profiles);
     const data = JSON.parse(html.match(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/)?.[1] || "{}");
     expect(data.sameAs).toEqual(Object.values(profiles));
+    const document = new DOMParser().parseFromString(html, "text/html");
+    for (const selector of [".scheme-a-directory__socials a", ".scheme-a-footer__socials a"]) {
+      const links = [...document.querySelectorAll(selector)];
+      expect(links.map(link => link.getAttribute("href"))).toEqual(Object.values(profiles));
+      expect(links.map(link => link.getAttribute("aria-label"))).toEqual(["Facebook", "Instagram", "TikTok", "REDnote (Xiaohongshu)"]);
+      for (const link of links) {
+        expect(link.getAttribute("target")).toBe("_blank");
+        expect(link.getAttribute("rel")).toBe("noopener noreferrer");
+        expect(link.hasAttribute("aria-current")).toBe(false);
+      }
+    }
+    expect(document.querySelector(".scheme-a-directory__body > .scheme-a-directory__social-group")).not.toBeNull();
+    expect(document.querySelector(".scheme-a-directory__foot .scheme-a-directory__social-group")).toBeNull();
     for (const [label, url] of [["Facebook", profiles.facebook_url], ["Instagram", profiles.instagram_url], ["TikTok", profiles.tiktok_url], ["REDnote (Xiaohongshu)", profiles.xiaohongshu_url]]) {
       expect(html).toContain(`href="${url}" target="_blank" rel="noopener noreferrer" aria-label="${label}"`);
     }
     const changed = render({ ...profiles, tiktok_url: "https://www.tiktok.com/@new_account" });
     expect(changed).toContain("https://www.tiktok.com/@new_account");
     expect(changed).not.toContain(profiles.tiktok_url);
+    expect(new DOMParser().parseFromString(changed, "text/html").querySelectorAll('a[href="https://www.tiktok.com/@new_account"]')).toHaveLength(2);
     const cleared = render({ facebook_url: "", instagram_url: "", tiktok_url: "", xiaohongshu_url: "" });
     expect(cleared).not.toContain("scheme-a-footer__socials");
+    expect(cleared).not.toContain("scheme-a-directory__social-group");
     expect(JSON.parse(cleared.match(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/)?.[1] || "{}").sameAs).toEqual([]);
     const onlyRednote = render({ facebook_url: "", instagram_url: "", tiktok_url: "", xiaohongshu_url: profiles.xiaohongshu_url });
     expect(onlyRednote).toContain("scheme-a-footer__socials");
     expect(onlyRednote).toContain(profiles.xiaohongshu_url);
+    const rednoteDocument = new DOMParser().parseFromString(onlyRednote, "text/html");
+    expect(rednoteDocument.querySelectorAll(".scheme-a-directory__socials a")).toHaveLength(1);
+    expect(rednoteDocument.querySelectorAll(".scheme-a-footer__socials a")).toHaveLength(1);
   });
 });

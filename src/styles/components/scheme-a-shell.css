@@ -1030,7 +1030,8 @@
     display: contents;
   }
 
-  .scheme-a-footer__social-group {
+  .scheme-a-footer__social-group,
+  .scheme-a-directory__social-group {
     container-type: inline-size;
     width: 100%;
     margin-top: 0.5rem;
@@ -1038,7 +1039,8 @@
     border-top: 1px solid rgb(123 135 117 / 0.24);
   }
 
-  .scheme-a-footer__social-group h3 {
+  .scheme-a-footer__social-group h3,
+  .scheme-a-directory__social-group h3 {
     margin: 0 0 0.75rem;
     color: #3F4E42;
     font-size: 0.9375rem;
@@ -1046,13 +1048,15 @@
     line-height: 1.5;
   }
 
-  .scheme-a-footer__socials {
+  .scheme-a-footer__socials,
+  .scheme-a-directory__socials {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 0.625rem;
   }
 
-  .scheme-a-footer__socials a {
+  .scheme-a-footer__socials a,
+  .scheme-a-directory__socials a {
     display: flex;
     min-width: 0;
     min-height: 60px;
@@ -1071,19 +1075,50 @@
   }
 
   .scheme-a-footer__socials a:hover,
-  .scheme-a-footer__socials a:active {
+  .scheme-a-footer__socials a:active,
+  .scheme-a-directory__socials a:hover,
+  .scheme-a-directory__socials a:active {
     background: #E4E8DE;
     border-color: #7B8775;
   }
 
-  .scheme-a-footer__socials a:focus-visible {
+  .scheme-a-footer__socials a:focus-visible,
+  .scheme-a-directory__socials a:focus-visible {
     outline: 2px solid #3F4E42;
     outline-offset: 3px;
   }
 
-  .scheme-a-footer__socials a svg {
+  .scheme-a-footer__socials a svg,
+  .scheme-a-directory__socials a svg {
     width: 24px;
     height: 24px;
+    flex: 0 0 auto;
+  }
+
+  .scheme-a-directory__social-group {
+    margin-top: 20px;
+  }
+
+  .scheme-a-directory__social-heading {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 12px;
+  }
+
+  .scheme-a-directory__social-heading h3 { margin: 0; }
+
+  .scheme-a-directory__social-heading > span {
+    color: var(--public-text-secondary);
+    font-size: 12px;
+    line-height: 1.5;
+  }
+
+  @media (min-width: 1024px) {
+    .scheme-a-directory__socials {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
   }
 
   @container (max-width: 279px) {
